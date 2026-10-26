@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "98e04257",
+ "commit": "3a99f0b2",
  "game": "SCUS_945.70",
- "generated": "2026-10-26T18:01:39Z",
+ "generated": "2026-10-26T18:11:17Z",
  "history": [
   {"commit": "9d2e150", "data_b": 0, "data_tb": 182932, "game_all_f": 1140, "game_b": 152, "game_f": 19, "game_named_f": 0, "game_tb": 247148, "lib_b": 0, "lib_f": 0, "lib_tb": 0, "ts": "2026-10-10T08:35:31Z", "units": {"arkenoid": [24, 3], "bash": [16, 2], "bonk": [32, 4], "chase": [48, 6], "dino": [24, 3], "engine": [80, 10], "hub": [32, 4], "main exe": [136, 17], "n2o": [40, 5], "papu": [16, 2], "pogo": [16, 2], "polar": [160, 20], "race": [16, 2], "spin": [24, 3], "tank": [72, 9], "titles": [40, 5]}},
   {"commit": "d76b415", "data_b": 0, "data_tb": 182932, "game_all_f": 574, "game_b": 136, "game_f": 17, "game_named_f": 0, "game_tb": 124840, "lib_b": 8, "lib_f": 1, "lib_tb": 118356, "ts": "2026-10-10T08:51:01Z", "units": {"main exe": [136, 17], "psyq": [121280, 535]}},
@@ -2205,13 +2205,14 @@
   {"commit": "ec5f8164", "data_b": 64624, "data_tb": 459851, "game_all_f": 2537, "game_b": 1019400, "game_c_f": 2537, "game_f": 2537, "game_named_f": 1127, "game_tb": 1019400, "game_typed_f": 2317, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-26T15:44:12Z", "units": {"arkenoid": [55000, 97], "bash": [62924, 104], "bonk": [24312, 80], "chase": [34052, 93], "dino": [41220, 80], "engine": [129264, 357], "hub": [31060, 94], "main exe": [125204, 575], "n2o": [66256, 135], "papu": [37616, 73], "pogo": [65808, 180], "polar": [130512, 216], "psyq": [122112, 564], "race": [76608, 139], "spin": [33528, 58], "tank": [86248, 179], "titles": [19788, 77]}},
   {"commit": "67cf3613", "data_b": 70889, "data_tb": 459851, "game_all_f": 2537, "game_b": 1019400, "game_c_f": 2537, "game_f": 2537, "game_named_f": 1127, "game_tb": 1019400, "game_typed_f": 2317, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-26T17:10:24Z", "units": {"arkenoid": [55000, 97], "bash": [62924, 104], "bonk": [24312, 80], "chase": [34052, 93], "dino": [41220, 80], "engine": [129264, 357], "hub": [31060, 94], "main exe": [125204, 575], "n2o": [66256, 135], "papu": [37616, 73], "pogo": [65808, 180], "polar": [130512, 216], "psyq": [122112, 564], "race": [76608, 139], "spin": [33528, 58], "tank": [86248, 179], "titles": [19788, 77]}},
   {"commit": "4d2dfc19", "data_b": 70889, "data_tb": 459851, "game_all_f": 2537, "game_b": 1019400, "game_c_f": 2537, "game_f": 2537, "game_named_f": 1192, "game_tb": 1019400, "game_typed_f": 2317, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-26T17:18:05Z", "units": {"arkenoid": [55000, 97], "bash": [62924, 104], "bonk": [24312, 80], "chase": [34052, 93], "dino": [41220, 80], "engine": [129264, 357], "hub": [31060, 94], "main exe": [125204, 575], "n2o": [66256, 135], "papu": [37616, 73], "pogo": [65808, 180], "polar": [130512, 216], "psyq": [122112, 564], "race": [76608, 139], "spin": [33528, 58], "tank": [86248, 179], "titles": [19788, 77]}},
-  {"commit": "98e04257", "data_b": 79327, "data_tb": 459851, "game_all_f": 2537, "game_b": 1019400, "game_c_f": 2537, "game_f": 2537, "game_named_f": 1192, "game_tb": 1019400, "game_typed_f": 2317, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-26T18:01:39Z", "units": {"arkenoid": [55000, 97], "bash": [62924, 104], "bonk": [24312, 80], "chase": [34052, 93], "dino": [41220, 80], "engine": [129264, 357], "hub": [31060, 94], "main exe": [125204, 575], "n2o": [66256, 135], "papu": [37616, 73], "pogo": [65808, 180], "polar": [130512, 216], "psyq": [122112, 564], "race": [76608, 139], "spin": [33528, 58], "tank": [86248, 179], "titles": [19788, 77]}}
+  {"commit": "98e04257", "data_b": 79327, "data_tb": 459851, "game_all_f": 2537, "game_b": 1019400, "game_c_f": 2537, "game_f": 2537, "game_named_f": 1192, "game_tb": 1019400, "game_typed_f": 2317, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-26T18:01:39Z", "units": {"arkenoid": [55000, 97], "bash": [62924, 104], "bonk": [24312, 80], "chase": [34052, 93], "dino": [41220, 80], "engine": [129264, 357], "hub": [31060, 94], "main exe": [125204, 575], "n2o": [66256, 135], "papu": [37616, 73], "pogo": [65808, 180], "polar": [130512, 216], "psyq": [122112, 564], "race": [76608, 139], "spin": [33528, 58], "tank": [86248, 179], "titles": [19788, 77]}},
+  {"commit": "3a99f0b2", "data_b": 79327, "data_tb": 459851, "game_all_f": 2537, "game_b": 1019400, "game_c_f": 2537, "game_f": 2537, "game_named_f": 1291, "game_tb": 1019400, "game_typed_f": 2317, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-26T18:11:17Z", "units": {"arkenoid": [55000, 97], "bash": [62924, 104], "bonk": [24312, 80], "chase": [34052, 93], "dino": [41220, 80], "engine": [129264, 357], "hub": [31060, 94], "main exe": [125204, 575], "n2o": [66256, 135], "papu": [37616, 73], "pogo": [65808, 180], "polar": [130512, 216], "psyq": [122112, 564], "race": [76608, 139], "spin": [33528, 58], "tank": [86248, 179], "titles": [19788, 77]}}
  ],
  "recent": [
   {
    "at": "2026-10-25T23:10:42Z",
    "auto": true,
-   "name": "func_800BE914",
+   "name": "RaceHeroesBump",
    "seg": "overlays/race/race",
    "size": 684,
    "tries": 0
@@ -2275,7 +2276,7 @@
   {
    "at": "2026-10-24T21:52:14Z",
    "auto": true,
-   "name": "func_800B980C",
+   "name": "RaceMoveHero",
    "seg": "overlays/race/race",
    "size": 1604,
    "tries": 0
@@ -2283,7 +2284,7 @@
   {
    "at": "2026-10-24T20:39:25Z",
    "auto": true,
-   "name": "func_800B7D94",
+   "name": "RaceTrackCollideC",
    "seg": "overlays/race/race",
    "size": 1384,
    "tries": 0
@@ -2299,7 +2300,7 @@
   {
    "at": "2026-10-24T13:27:56Z",
    "auto": true,
-   "name": "func_800B76A4",
+   "name": "RaceTrackCollideB",
    "seg": "overlays/race/race",
    "size": 1776,
    "tries": 0
@@ -2346,7 +2347,7 @@
    "c_f": 2537,
    "done_b": 1019400,
    "done_f": 2537,
-   "named_f": 1192,
+   "named_f": 1291,
    "pct": 100.0,
    "sony_b": 0,
    "total_b": 1019400,
@@ -2632,7 +2633,7 @@
     "file": "race.bin",
     "files": 1,
     "lib": false,
-    "named_f": 40,
+    "named_f": 139,
     "pct": 100.0,
     "phase": 4,
     "sony_b": 0,

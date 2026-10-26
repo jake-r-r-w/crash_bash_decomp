@@ -6,7 +6,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-s32 func_800B345C(s32 player) {
+s32 RaceAI_DodgeSpinners(s32 player) {
     s32 i;
     HeroInfo *h;
     s32 *p;
@@ -38,7 +38,7 @@ loop:
     return 0;
 }
 
-s32 func_800B35CC(s32 arg0) {
+s32 RaceAI_PickVictim(s32 arg0) {
     s32 start;
     s32 r;
     s32 i;
@@ -85,7 +85,7 @@ s32 func_800B35CC(s32 arg0) {
     return neg;
 }
 
-void func_800B372C(s32 player) {
+void RaceAI_SpinnerBrake(s32 player) {
     SLONG_XYZ pos;
     s32 *p;
     s32 i;
@@ -120,7 +120,7 @@ void func_800B372C(s32 player) {
     }
 }
 
-void func_800B3890(s32 player) {
+void RaceAI_AvoidBarrels(s32 player) {
     s32 b[3];
     s32 a[3];
     s16 c[8];
@@ -180,7 +180,7 @@ loop:
         c[0] = best->obj->pos.x - h->hero_eng->unk10.x;
         c[2] = best->obj->pos.z - h->hero_eng->unk10.z;
         c[3] = 0x180;
-        if (func_800B3E60(a, b, c) != 0) {
+        if (RaceRayHit(a, b, c) != 0) {
             x = best->obj->pos.x;
             z = best->obj->pos.z;
             d = x * x + z * z;
@@ -197,7 +197,7 @@ loop:
     }
 }
 
-void func_800B3BC0(s32 player) {
+void RaceAI_AvoidObjects(s32 player) {
     s32 b[3];
     s32 a[3];
     s16 c[8];
@@ -245,7 +245,7 @@ void func_800B3BC0(s32 player) {
         c[0] = best->Engine->unk10.x - h->hero_eng->unk10.x;
         c[2] = best->Engine->unk10.z - h->hero_eng->unk10.z;
         c[3] = 0x180;
-        if (func_800B3E60(a, b, c) != 0) {
+        if (RaceRayHit(a, b, c) != 0) {
             d = best->Engine->unk10.x;
             z = best->Engine->unk10.z;
             x = d * d + z * z;
@@ -266,7 +266,7 @@ void func_800B3BC0(s32 player) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/race/race", D_800B32B8);
 
-s32 func_800B3E60(a, b, c, unused)
+s32 RaceRayHit(a, b, c, unused)
     s32 *a;
     s32 *b;
     s16 *c;
@@ -337,7 +337,7 @@ one:
     return 1;
 }
 
-s32 func_800B406C(s32 player)
+s32 RaceAI_UseCloseWeapon(s32 player)
 {
   HeroInfo *h;
   HeroInfo *o;
@@ -365,7 +365,7 @@ s32 func_800B406C(s32 player)
   loop:
   if (i < 4)
   {
-    if (((i == player) || (i == h->hero_teammate)) || (func_800B35CC(player) != i))
+    if (((i == player) || (i == h->hero_teammate)) || (RaceAI_PickVictim(player) != i))
     {
       goto next;
     }
@@ -395,7 +395,7 @@ s32 func_800B406C(s32 player)
   return 0;
 }
 
-s32 func_800B41DC(s32 player)
+s32 RaceAI_UseAimedWeapon(s32 player)
 {
     TrigEntry *trig;
     RacePad *pad;
@@ -428,7 +428,7 @@ loop:
         if (i == h->hero_teammate) {
             goto next;
         }
-        if (func_800B35CC(player) != i) {
+        if (RaceAI_PickVictim(player) != i) {
             goto next;
         }
         a = get_angle(o->hero_eng->unk10.x, o->hero_eng->unk10.z) & 0xFFF;
@@ -443,7 +443,7 @@ loop:
         rel[0] = o->hero_eng->unk10.x - h->hero_eng->unk10.x;
         rel[2] = o->hero_eng->unk10.z - h->hero_eng->unk10.z;
         rel[3] = 0x180;
-        if (func_800B3E60(from, to, rel) != 0) {
+        if (RaceRayHit(from, to, rel) != 0) {
             h->hero_ai->AIpad |= 0x2000;
             pad[player].unk50 = h->hero_ai->AIpad;
             return 1;
@@ -455,7 +455,7 @@ loop:
     return 0;
 }
 
-s32 func_800B442C(s32 player)
+s32 RaceAI_SteerAtVictim(s32 player)
 {
     s32 i;
     s32 b[4];
@@ -500,7 +500,7 @@ s32 func_800B442C(s32 player)
             c[0] = o->hero_eng->unk10.x - h->hero_eng->unk10.x;
             c[2] = o->hero_eng->unk10.z - h->hero_eng->unk10.z;
             c[3] = 0x180;
-            if (func_800B3E60(a, b, c) != 0 && o->hero->FUX != NULL) {
+            if (RaceRayHit(a, b, c) != 0 && o->hero->FUX != NULL) {
                 x = o->hero_eng->unk10.x;
                 z = o->hero_eng->unk10.z;
                 if (x * x + z * z > 0x310000) {
@@ -525,7 +525,7 @@ s32 func_800B442C(s32 player)
     return 0;
 }
 
-void func_800B4708(arg0)
+void RaceAI_Think(arg0)
 s32 arg0;
 {
     HeroInfo *hero;
@@ -541,8 +541,8 @@ s32 arg0;
     if (ext != NULL) {
         hero->hero_ai->AIpad = 0;
         hero->hero_ai->AImode = 1;
-        ext->unk18 = func_800B5360;
-        nas = func_800C5C64(arg0);
+        ext->unk18 = RaceAI_SteerAhead;
+        nas = RaceNearestPickup(arg0);
         found = NULL;
         if (nas != NULL) {
             if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
@@ -556,27 +556,27 @@ s32 arg0;
         }
     done:
         if (found != NULL) {
-            ext->unk18 = func_800B5660;
+            ext->unk18 = RaceAI_ChasePickup;
             ext->unk14 = D_800C6980[Heroes[arg0].hero_name];
         }
         if (G63->unk34 != 0x17) {
-            func_800B442C(arg0);
+            RaceAI_SteerAtVictim(arg0);
         }
         ext->unk18(arg0);
         if (G63->unk34 == 0x19) {
-            func_800B372C(arg0);
+            RaceAI_SpinnerBrake(arg0);
         } else {
-            func_800B41DC(arg0);
+            RaceAI_UseAimedWeapon(arg0);
         }
         if (D_8005A648 == 0x18) {
-            func_800B3890(arg0);
-            func_800B3BC0(arg0);
-            func_800B406C(arg0);
+            RaceAI_AvoidBarrels(arg0);
+            RaceAI_AvoidObjects(arg0);
+            RaceAI_UseCloseWeapon(arg0);
         }
     }
 }
 
-void func_800B48EC(s32 player) {
+void RaceInitHeroAngle(s32 player) {
     HeroInfo *base;
     HeroInfo *h;
 
@@ -596,7 +596,7 @@ void func_800B48EC(s32 player) {
     }
 }
 
-void func_800B4A4C(void) {
+void InitialiseRACEFirst(void) {
     RaceHooks *h;
     u8 *g;
     u8 *g2;
@@ -606,29 +606,29 @@ void func_800B4A4C(void) {
 
     D_800C695C = 0;
     h = &D_8009D6E8;
-    h->unk38 = func_800C5D8C;
+    h->unk38 = Race_HeroBot;
     h->unk4 = D_800C68F8;
     do {} while (0);
     g = D_8005A614;
     if (*(s16 *)(g + 0x34) == 0x19) {
         h->unk4 = D_800C690C;
     }
-    h->unk0 = (s32)func_800C5918;
-    h->unk20 = func_800B8FD8;
-    h->unk24 = func_800B980C;
+    h->unk0 = (s32)RaceInitHero;
+    h->unk20 = RacePreMoveHero;
+    h->unk24 = RaceMoveHero;
     h->unkC = D_800C6BB4;
     h->unk18 = D_8008B29C;
     h->unk1C = D_8008B418;
     flags = *(u16 *)(g + 0x32);
-    h->unk64 = func_800BD99C;
+    h->unk64 = RaceChooseWinner;
     if (flags & 0x40) {
-        h->unk64 = func_800BCE88;
+        h->unk64 = RaceChooseWinnerTeam;
     }
     if (flags & 0x20) {
-        h->unk64 = func_800BCE88;
+        h->unk64 = RaceChooseWinnerTeam;
     }
     if (flags & 0x80) {
-        h->unk64 = func_800BCE88;
+        h->unk64 = RaceChooseWinnerTeam;
     }
     h->unk14 = D_800C6960;
     *(u16 *)(g + 0x32) = flags | 0x800;
@@ -693,7 +693,7 @@ void func_800B4A4C(void) {
     D_800C6924 = 0;
 }
 
-s32 func_800B4D64(s32 *arg0, s32 arg1, s32 *arg2)
+s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
 {
   u8 *base;
   s32 off;
@@ -747,7 +747,7 @@ s32 func_800B4D64(s32 *arg0, s32 arg1, s32 *arg2)
   return found;
 }
 
-u32 func_800B4EDC(s32 player) {
+u32 RaceAI_FollowTrack(s32 player) {
     HeroInfo *h;
     s32 *ext;
     RaceVelFux *fux;
@@ -804,7 +804,7 @@ u32 func_800B4EDC(s32 player) {
     return 0x8000;
 }
 
-void func_800B5360(s32 player) {
+void RaceAI_SteerAhead(s32 player) {
     RaceVelFux *fux;
     SLONG_XYZ pos;
     s32 d;
@@ -821,14 +821,14 @@ void func_800B5360(s32 player) {
             pos.y = 0;
             pos.z = Heroes[player].hero_eng->unk10.z - (d * D_80068BD4[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
             Heroes[player].hero_ai->AIpad |= 0x8000;
-            Heroes[player].hero_ai->AIpad |= func_800B4EDC(player);
+            Heroes[player].hero_ai->AIpad |= RaceAI_FollowTrack(player);
             Heroes[player].hero_ai->AIpad |= 0x800;
             ((RacePad *)D_80051338)[player].unk50 = Heroes[player].hero_ai->AIpad;
         }
     }
 }
 
-void func_800B5528(s32 player, SLONG_XYZ *pos) {
+void RaceAI_SteerTo(s32 player, SLONG_XYZ *pos) {
     HeroInfo *base;
     HeroInfo *hero;
     s32 d;
@@ -849,12 +849,12 @@ void func_800B5528(s32 player, SLONG_XYZ *pos) {
     ((RacePad *)D_80051338)[player].unk50 = hero->hero_ai->AIpad;
 }
 
-static inline NAS *func_800B5660_near(s32 arg0) {
+static inline NAS *RacePickupAheadInline(s32 arg0) {
     NAS *nas;
     HeroInfo *hero;
     s32 angle;
 
-    nas = func_800C5C64(arg0);
+    nas = RaceNearestPickup(arg0);
     if (nas != NULL) {
         hero = &Heroes[arg0];
         if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
@@ -867,22 +867,22 @@ static inline NAS *func_800B5660_near(s32 arg0) {
     return NULL;
 }
 
-void func_800B5660(s32 arg0) {
+void RaceAI_ChasePickup(s32 arg0) {
     s32 *ext;
     NAS *nas;
 
     ext = FindExtension(Heroes[arg0].hero, 0x20000000);
     if (ext != NULL) {
-        nas = func_800B5660_near(arg0);
+        nas = RacePickupAheadInline(arg0);
         if (nas != NULL) {
-            func_800B5528(arg0, &nas->Engine->unk10);
+            RaceAI_SteerTo(arg0, &nas->Engine->unk10);
             return;
         }
-        ext[6] = (s32)func_800B5360;
+        ext[6] = (s32)RaceAI_SteerAhead;
     }
 }
 
-void func_800B5778(void) {
+void RaceInitSpinners(void) {
     RaceSceneObj *obj;
     s32 i;
     u8 *r;
@@ -959,7 +959,7 @@ void func_800B5778(void) {
     }
 }
 
-s32 func_800B5A70(RacePattern *pats, s32 idx) {
+s32 RacePistonPattern(RacePattern *pats, s32 idx) {
     RacePattern *pat;
     RacePatStep *step;
     RacePiston *p;
@@ -1106,7 +1106,7 @@ loop:
         if (D_800C695C != 0) {
             D_800C69AC = 5;
         }
-        if (func_800B5A70(D_800C6B70, D_800C69AC) != 0) {
+        if (RacePistonPattern(D_800C6B70, D_800C69AC) != 0) {
             D_800C69AC = Random(5);
         }
     } else {
@@ -1114,7 +1114,7 @@ loop:
     }
 }
 
-void func_800B5F04(void) {
+void RaceInitBarrels(void) {
     RaceBarrelView *b;
     RaceSceneObj *obj;
     s32 n;
@@ -1146,7 +1146,7 @@ void func_800B5F04(void) {
     printf("%d  barrels found\n", n);
 }
 
-void func_800B5FFC(RaceEaseCam *c, s32 *pos) {
+void RaceEaseCamStep(RaceEaseCam *c, s32 *pos) {
     s32 step;
 
     if (c->x.cur != c->x.target) {
@@ -1189,7 +1189,7 @@ void func_800B5FFC(RaceEaseCam *c, s32 *pos) {
     pos[3] += c->z.cur >> 8;
 }
 
-s32 func_800B6108(RaceBarrelView *b) {
+s32 RaceBarrelHitHero(RaceBarrelView *b) {
     EXTengine *e;
     RaceSceneObj *obj;
     s32 hit;
@@ -1216,7 +1216,7 @@ s32 func_800B6108(RaceBarrelView *b) {
             d = 0x180 - d;
             e->unk10.x += d * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
             e->unk10.z += d * D_80068BD4[angle].unk2 >> 12;
-            func_800BE7B4(i, b);
+            RaceBarrelBump(i, b);
             if (Heroes[i].hero_mode != 0x61) {
                 r = Random(2);
                 if (r == 0) {
@@ -1234,7 +1234,7 @@ s32 func_800B6108(RaceBarrelView *b) {
     }
 }
 
-s32 func_800B62F4(RaceBarrelView *self) {
+s32 RaceBarrelSpaceFree(RaceBarrelView *self) {
     RaceBarrelView *b;
     RaceSceneObj *obj;
     RaceSceneObj *o;
@@ -1267,7 +1267,7 @@ s32 func_800B62F4(RaceBarrelView *self) {
     }
 }
 
-void func_800B6474(void) {
+void RaceUpdateBarrels(void) {
     RaceBarrelView *b;
     SLONG_XYZ pos;
     s32 i;
@@ -1284,7 +1284,7 @@ void func_800B6474(void) {
         case 1:
             b->unk24 = 0;
             b->unk44 = 0;
-            if (func_800B6108(b) != 0) {
+            if (RaceBarrelHitHero(b) != 0) {
                 pos = obj->pos;
                 pos.y = -0xD2;
                 b->unk58 = 0;
@@ -1308,7 +1308,7 @@ void func_800B6474(void) {
     }
 }
 
-s32 func_800B66C4(SLONG_XYZ *pos, s16 *tri) {
+s32 RaceTriHeight(SLONG_XYZ *pos, s16 *tri) {
     s32 d[3];
     s32 base[3];
     s32 e0[3];
@@ -1438,7 +1438,7 @@ s32 func_800B66C4(SLONG_XYZ *pos, s16 *tri) {
     }
 }
 
-s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1) {
+s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
     RaceNorm out;
     SLONG_XYZ pos;
     RaceNorm n;
@@ -1501,7 +1501,7 @@ s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1) {
                         if (lim < tri[0] && lim < tri[4] && lim < tri[8]) {
                             goto next;
                         }
-                        d = func_800B66C4(&pos, tri);
+                        d = RaceTriHeight(&pos, tri);
                         if (rad * rad < d) {
                             goto next;
                         }
@@ -1544,7 +1544,7 @@ s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1) {
     return hit;
 }
 
-s32 func_800B7190(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 flags) {
+s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 flags) {
     SLONG_XYZ p;
     SLONG_XYZ hit;
     SLONG_XYZ d;
@@ -1675,7 +1675,7 @@ s32 func_800B7190(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 flags)
     return found;
 }
 
-s32 func_800B76A4(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, RaceSegBlend *bl) {
+s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, RaceSegBlend *bl) {
     RaceVec p;
     RaceVec hit;
     RaceVec d;
@@ -1838,7 +1838,7 @@ s32 func_800B76A4(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, Rac
     return found;
 }
 
-s32 func_800B7D94(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, SVECTOR *rot) {
+s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, SVECTOR *rot) {
     SLONG_XYZ p;
     SLONG_XYZ hit;
     RaceVec d;
@@ -2141,7 +2141,7 @@ s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
     return -1;
 }
 
-void func_800B8890(void) {
+void InitialiseRACE(void) {
     s32 i;
     RaceAiExt *ai;
     EXTengine *eng;
@@ -2167,15 +2167,15 @@ void func_800B8890(void) {
     }
     D_800C66EC = NULL;
     World_floor_level = -0x10;
-    func_800C0F5C();
+    RaceInitStub();
     scene = *(s32 **)D_80058AD0;
     D_800C6928 = 0;
     func_8001682C(scene);
-    func_800B5778();
+    RaceInitSpinners();
     D_800C695C = 0;
     g = G63B;
     if (g->unk34 == 0x18) {
-        func_800B5F04();
+        RaceInitBarrels();
         CreateNAS(0, 0xC4, 0, 0x170B, 0x11);
         PlaySfx(0x42E, NULL, NULL, 0x1000, 0x1E00, 0);
     }
@@ -2191,7 +2191,7 @@ void func_800B8890(void) {
             break;
         }
         printf("hero status %d\n", Heroes[i].hero_status);
-        func_800B8F04(i);
+        RaceInitHeroMove(i);
         Heroes[i].hero_eng->unk5D = 1;
         fux = AddExt(Heroes[i].hero, 0x174, 0x10000000);
         if (fux == NULL) {
@@ -2208,7 +2208,7 @@ void func_800B8890(void) {
         if (ai != NULL) {
             ai->unkC = 0;
             ai->unk10 = Heroes[i].hero_move->forward_angle;
-            ai->unk18 = func_800B5360;
+            ai->unk18 = RaceAI_SteerAhead;
             ai->unk1C = 0;
             ai->unk14 = D_800C6980[Heroes[i].hero_name];
         }
@@ -2271,7 +2271,7 @@ void func_800B8890(void) {
     }
 }
 
-void func_800B8D68(void) {
+void UpdateRACE(void) {
     D_800C692C++;
     if (G63->unk30 & 0x800) {
         D_800C695C = 1;
@@ -2287,12 +2287,12 @@ void func_800B8D68(void) {
     } else {
         D_800AD12C = 1;
     }
-    func_800C04EC();
+    RacePickupMaster();
     if (G63->unk34 != 0x19) {
-        func_800C0CB4();
+        RacePickupRespawn();
     }
     if (G63->unk34 == 0x18) {
-        func_800B6474();
+        RaceUpdateBarrels();
     }
     if (G63->unk34 == 0x19) {
         MaintainCentre();
@@ -2315,7 +2315,7 @@ void func_800B8D68(void) {
     }
 }
 
-void func_800B8F04(s32 arg0) {
+void RaceInitHeroMove(s32 arg0) {
     EXTheromove *m;
 
     m = Heroes[arg0].hero_move;
@@ -2339,7 +2339,7 @@ void func_800B8F04(s32 arg0) {
     }
 }
 
-void func_800B8FD8(s32 player) {
+void RacePreMoveHero(s32 player) {
     HeroInfo *heroes;
     HeroInfo *h;
     RaceFux *fux;
@@ -2428,7 +2428,7 @@ void func_800B8FD8(s32 player) {
                     }
                 }
             }
-            func_800BEBC0(player);
+            RaceHeroCollide(player);
             if (Heroes[player].hero_status & 0x200) {
                 m->z_dir = 0;
                 m->x_max = 0;
@@ -2440,10 +2440,10 @@ void func_800B8FD8(s32 player) {
             m->facing_angle = m->forward_angle;
         }
     }
-    func_800B48EC(player);
+    RaceInitHeroAngle(player);
 }
 
-s32 func_800B96B0(s32 arg0, s32 arg1) {
+s32 RaceKeepOnTrack(s32 arg0, s32 arg1) {
     EXTengine *eng;
     s32 dist;
 
@@ -2473,7 +2473,7 @@ s32 func_800B96B0(s32 arg0, s32 arg1) {
     return 0;
 }
 
-void func_800B980C(s32 player) {
+void RaceMoveHero(s32 player) {
     SLONG_XYZ pos;
     RaceVec4 out;
     s32 ang0;
@@ -2518,7 +2518,7 @@ void func_800B980C(s32 player) {
         zacc = move->z_acc;
         step = fux->unk150;
         pos.y = D_800C6930;
-        func_800B6DBC(&pos, &ang0);
+        RaceFloorHeight(&pos, &ang0);
         if (move->velocity_calc != 3) {
             return;
         }
@@ -2590,7 +2590,7 @@ void func_800B980C(s32 player) {
         pos.x += dx;
         dz = vz >> 8;
         pos.z += dz;
-        if (func_800B6DBC(&pos, &ang) != 0) {
+        if (RaceFloorHeight(&pos, &ang) != 0) {
             move->x_max = 0;
             move->z_max = 0;
             if (ang != -1) {
@@ -2643,7 +2643,7 @@ void func_800B980C(s32 player) {
                 }
                 if (b == 1) {
                     if (G63->unk34 != 0x18 && G63->unk34 != 0x1A) {
-                        hit = func_800B7190(&pos, &out, 200, 1, 0);
+                        hit = RaceTrackCollide(&pos, &out, 200, 1, 0);
                     } else {
                         hit = Heroes[player].hero_eng->unk10.x * Heroes[player].hero_eng->unk10.x +
                                   Heroes[player].hero_eng->unk10.z * Heroes[player].hero_eng->unk10.z >
@@ -2656,11 +2656,11 @@ void func_800B980C(s32 player) {
                 b++;
             }
         }
-        func_800C0218(player);
+        RaceCountLaps(player);
     }
 }
 
-void func_800B9E50(Quat *q) {
+void RaceQuatNormalize(Quat *q) {
     s32 n;
     s32 sw;
     s32 sz;
@@ -2681,7 +2681,7 @@ void func_800B9E50(Quat *q) {
     q->v[3] = (q->v[3] << 12) / n;
 }
 
-void func_800BA004(VECTOR *ang, Quat *q) {
+void RaceEulerToQuat(VECTOR *ang, Quat *q) {
     s32 x, y, z;
     s32 sx, cx, sy, cy, sz, cz;
     s32 p, a, b, c, d;
@@ -2720,10 +2720,10 @@ void func_800BA004(VECTOR *ang, Quat *q) {
     m3 = cy * d;
     p = ((p >= 0 ? p + 0x800 : p - 0x800) >> 12) + ((cy * d >= 0 ? m3 + 0x800 : m3 - 0x800) >> 12);
     q->v[3] = p;
-    func_800B9E50(q);
+    RaceQuatNormalize(q);
 }
 
-void func_800BA278(s32 player) {
+void RaceHeroIdle(s32 player) {
     HeroInfo *h;
     RaceSwimFux *f;
     RacePad *pad;
@@ -2923,11 +2923,11 @@ void func_800BA278(s32 player) {
         D_800C6930 = -0xB4;
     }
     Heroes[player].hero_eng->unk10.y = D_800C6930;
-    func_800BC984(player);
+    RaceHeroUsePickup(player);
     if (G63B->unk34 == 0x19) {
-        func_800BCC20(player);
+        RaceHeroTestJump(player);
     }
-    func_800C5400(player);
+    TestRaceHeroWon(player);
     if (G63B->unk34 != 0x19) {
         if (func_8008502C(player) != 0) {
             SetHeroSeq(player, 0x48);
@@ -2937,7 +2937,7 @@ void func_800BA278(s32 player) {
     }
 }
 
-void func_800BAD54(s32 player) {
+void SetRaceHeroOffTrack(s32 player) {
     HeroInfo *h;
     RaceResetFux *f;
     HeroInfo *base;
@@ -2946,7 +2946,7 @@ void func_800BAD54(s32 player) {
     h = &base[player];
     h->hero_eng->unk1C = 0;
     h->hero_eng->unk5E = 1;
-    func_800C5400(player);
+    TestRaceHeroWon(player);
     f = (RaceResetFux *)h->hero->FUX;
     if (f != NULL) {
         f->unk54 = get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF;
@@ -2992,7 +2992,7 @@ void func_800BAD54(s32 player) {
     }
 }
 
-/* The splash a dive leaves in the water (func_800BAFC8). */
+/* The splash a dive leaves in the water (RaceHeroOffTrack). */
 static inline void RaceDiveSplash(SLONG_XYZ *pos, s32 kind) {
     NAS *fx;
     RaceFux *x;
@@ -3010,7 +3010,7 @@ static inline void RaceDiveSplash(SLONG_XYZ *pos, s32 kind) {
     }
 }
 
-void func_800BAFC8(s32 player) {
+void RaceHeroOffTrack(s32 player) {
     HeroInfo *h;
     RaceDiveFux *f;
     EXTheromove *m;
@@ -3020,7 +3020,7 @@ void func_800BAFC8(s32 player) {
     HeroInfo *hb;
     HeroInfo *h2;
 
-    if (func_800C5400(player) != 0) {
+    if (TestRaceHeroWon(player) != 0) {
         return;
     }
     base = Heroes;
@@ -3056,7 +3056,7 @@ void func_800BAFC8(s32 player) {
             f->unk13C = 0;
             f->unk140 = 0;
         }
-        if (func_800C467C((RaceBounceObj *)h->hero_eng, &f->bounce) != 0 && ++f->unk88 >= 2) {
+        if (RaceBounceObject((RaceBounceObj *)h->hero_eng, &f->bounce) != 0 && ++f->unk88 >= 2) {
             SetHeroAction(player, 0x5B);
             if (G63B->unk34 == 0x18 && G63B->unk5C[player] == 0 && (G63B->unk32 & 0x80)) {
                 PlaySfx(0x66A, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -3136,7 +3136,7 @@ void func_800BAFC8(s32 player) {
     Heroes[player].hero_eng->unk5E = 1;
 }
 
-void func_800BB794(s32 player) {
+void SetRaceHeroRun(s32 player) {
     HeroInfo *h;
     RaceFux40 *f;
     EXTheromove *m;
@@ -3157,7 +3157,7 @@ void func_800BB794(s32 player) {
     }
 }
 
-void func_800BB878(s32 player) {
+void RaceHeroRun(s32 player) {
     HeroInfo *h;
     RaceFux40 *f;
     EXTheromove *m;
@@ -3189,17 +3189,17 @@ void func_800BB878(s32 player) {
         m->z_max = (D_800C66E4 * D_80068BD4[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
     }
     func_8008502C(player);
-    func_800BC984(player);
+    RaceHeroUsePickup(player);
 }
 
-void func_800BBA04(s32 player) {
+void SetRaceHeroDazed(s32 player) {
     HeroInfo *h;
     RaceSpawnExt *f;
     EXTheromove *m;
     HeroInfo *base;
     s32 r;
 
-    func_800C5400(player);
+    TestRaceHeroWon(player);
     if (G63->unk34 != 0x19) {
         SetHeroSeq(player, 0x4A);
     }
@@ -3274,14 +3274,14 @@ void func_800BBA04(s32 player) {
     }
 }
 
-void func_800BC0A4(s32 arg0) {
+void RaceHeroDazed(s32 arg0) {
     HeroInfo *hero;
     EXTraceshield *fux;
     RacePad *pad;
     RacePad *pb;
     HeroInfo *base;
 
-    func_800C5400(arg0);
+    TestRaceHeroWon(arg0);
     base = Heroes;
     hero = &base[arg0];
     fux = (EXTraceshield *)hero->hero->FUX;
@@ -3309,7 +3309,7 @@ void func_800BC0A4(s32 arg0) {
     }
 }
 
-void func_800BC2D0(s32 player) {
+void SetRaceHeroJump(s32 player) {
     HeroInfo *h;
     RaceFux138 *f;
     EXTheromove *m;
@@ -3347,7 +3347,7 @@ void func_800BC2D0(s32 player) {
     }
 }
 
-void func_800BC4B0(s32 player) {
+void RaceHeroJump(s32 player) {
     RaceJumpFux *fux;
     EXTheromove *move;
 
@@ -3370,7 +3370,7 @@ void func_800BC4B0(s32 player) {
     }
 }
 
-void func_800BC6C8(s32 arg0) {
+void RaceHeroOiled(s32 arg0) {
     RaceFuxTimer *fux;
     HeroInfo *hero;
     EXTheromove *move;
@@ -3383,7 +3383,7 @@ void func_800BC6C8(s32 arg0) {
         return;
     }
     func_8008502C();
-    func_800BC984(arg0);
+    RaceHeroUsePickup(arg0);
     move = hero->hero_move;
     if (move == NULL) {
         return;
@@ -3406,7 +3406,7 @@ void func_800BC6C8(s32 arg0) {
     }
 }
 
-void func_800BC7C4(s32 arg0) {
+void RaceHeroKick(s32 arg0) {
     HeroInfo *hero;
     EXTraceshield *ext;
     s32 lim;
@@ -3461,7 +3461,7 @@ loop:
     func_8008502C(arg0);
 }
 
-s32 func_800BC984(s32 player) {
+s32 RaceHeroUsePickup(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
     HeroInfo *other;
@@ -3490,7 +3490,7 @@ s32 func_800BC984(s32 player) {
         if (st & 0x2200) {
             t = fux->unk18;
             if (t == 1) {
-                func_800C5154(player);
+                RaceFireMissile(player);
                 fux->unk18 &= ~1;
                 return 1;
             } else if (t == 0x20) {
@@ -3547,7 +3547,7 @@ s32 func_800BC984(s32 player) {
     return 0;
 }
 
-s32 func_800BCC20(s32 arg0) {
+s32 RaceHeroTestJump(s32 arg0) {
     RacePad *base;
     RacePad *pad;
     RacePad *b1;
@@ -3578,7 +3578,7 @@ act:
     return 0;
 }
 
-s32 func_800BCD1C(s32 arg0) {
+s32 RaceHeroTestOil(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = base + arg0;
 
@@ -3592,7 +3592,7 @@ s32 func_800BCD1C(s32 arg0) {
     return 1;
 }
 
-void func_800BCDAC(s32 player) {
+void SetRaceHeroWinner(s32 player) {
     HeroInfo *hero;
     HeroInfo *base;
 
@@ -3614,7 +3614,7 @@ void func_800BCDAC(s32 player) {
     func_80011D28((u8 *)&D_8004E0F0);
 }
 
-void func_800BCE88(s32 arg0, s32 arg1) {
+void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
     s32 taken;
     s32 j;
     s32 i;
@@ -3720,7 +3720,7 @@ void func_800BCE88(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800BD99C(s32 arg0, u16 arg1) {
+void RaceChooseWinner(s32 arg0, u16 arg1) {
     s32 i;
     RaceResultView *g;
     HeroInfo *hb;
@@ -3864,7 +3864,7 @@ void func_800BD99C(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800BE7B4(s32 player, RaceBarrelView *b) {
+void RaceBarrelBump(s32 player, RaceBarrelView *b) {
     RaceFuxView *f;
     s32 ma;
     s32 mb;
@@ -3911,7 +3911,7 @@ void func_800BE7B4(s32 player, RaceBarrelView *b) {
         (v) = (lim);                                                        \
     }
 
-void func_800BE914(s32 pa, s32 pb) {
+void RaceHeroesBump(s32 pa, s32 pb) {
     RaceFuxView *fa;
     RaceFuxView *fb;
     s32 ma;
@@ -3973,7 +3973,7 @@ void func_800BE914(s32 pa, s32 pb) {
     c += t;
 }
 
-s32 func_800BEBC0(s32 player)
+s32 RaceHeroCollide(s32 player)
 {
   s32 other;
   EXTengine *eng;
@@ -4036,7 +4036,7 @@ s32 func_800BEBC0(s32 player)
       dist = (lim - dist) + 8;
       eng->unk10.x -= (dist * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
       eng->unk10.z -= (dist * D_80068BD4[ang].unk2) >> 12;
-      func_800BE914(player, i);
+      RaceHeroesBump(player, i);
       a = (RaceBumpFux *) Heroes[player].hero->FUX;
       hit = 1;
       if (a == 0)
@@ -4132,7 +4132,7 @@ s32 func_800BEBC0(s32 player)
   return hit;
 }
 
-s32 func_800BF0F8(u8 *arg0, u32 arg1) {
+s32 RaceMissileHitHeroes(u8 *arg0, u32 arg1) {
     u32 i;
     s32 d;
     s32 j;
@@ -4247,7 +4247,7 @@ void PlotRaceMissile(NAS *m) {
     }
     ext->pos.x -= (ext->unk64 * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
     ext->pos.z -= (ext->unk64 * D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
-    if (func_800BF0F8((u8 *)&ext->pos, ext->unkC) != -1) {
+    if (RaceMissileHitHeroes((u8 *)&ext->pos, ext->unkC) != -1) {
         RaceSpawnPuff(&m->Engine->unk10, 1, &D_80054F84);
         PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
         if (m->Engine->sfx != NULL) {
@@ -4269,7 +4269,7 @@ void PlotRaceMissile(NAS *m) {
             if (i >= count) {
                 break;
             }
-            if (i != 1 && func_800B7190(&ext->pos, &hit, 0x96, i, 1) != 0) {
+            if (i != 1 && RaceTrackCollide(&ext->pos, &hit, 0x96, i, 1) != 0) {
                 n.x = D_80068BD4[hit.y & 0xFFF].unk2;
                 n.z = D_80068BD4[(hit.y - 0x400) & 0xFFF].unk2;
                 d.x = -D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2;
@@ -4367,7 +4367,7 @@ void PlotRacePickUp(NAS *m) {
         return;
     }
     if (D_8005A648 != 0x19) {
-        func_800C467C((RaceBounceObj *)m->Engine, (RaceBouncer *)&ext->pad0[0xC]);
+        RaceBounceObject((RaceBounceObj *)m->Engine, (RaceBouncer *)&ext->pad0[0xC]);
     }
     m->Engine->unk1E += 0x80;
     m->Engine->unk5E = 1;
@@ -4476,7 +4476,7 @@ void PlotRacePickUp(NAS *m) {
     }
 }
 
-void func_800C0218(s32 player) {
+void RaceCountLaps(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
     RaceLapFux *fux;
@@ -4546,7 +4546,7 @@ check:
     }
 }
 
-void func_800C04EC(void) {
+void RacePickupMaster(void) {
     NAS *nas;
     NAS *spawned;
     RacePickUpExt *pick;
@@ -4773,7 +4773,7 @@ held:
     }
 }
 
-void func_800C0CB4(void) {
+void RacePickupRespawn(void) {
     NAS *nas;
     NAS *spawned;
     RacePickUpExt *ext;
@@ -4882,7 +4882,7 @@ heroes_done:
     }
 }
 
-void func_800C0F5C(void) {
+void RaceInitStub(void) {
     u8 unused[24];
 }
 
@@ -5035,8 +5035,8 @@ void PlotDinoEgg(NAS *m) {
         ext->yang = m->Engine->unk1E = h->unk1E + 0x800;
         ext->vel = 0x80;
         ext->dec = 4;
-        func_800B7190(&m->Engine->unk10, &hit, 0x9E, 1, 0);
-        func_800B7190(&m->Engine->unk10, &hit, 0x9E, 0, 1);
+        RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0);
+        RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 0, 1);
         m->Engine->unk10.x += (D_80068BD4[(h->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11;
         m->Engine->unk10.z += (D_80068BD4[(u16)h->unk1E & 0xFFF].unk2 * 75) >> 11;
         break;
@@ -5046,10 +5046,10 @@ void PlotDinoEgg(NAS *m) {
         }
         m->Engine->unk20 = (D_80068BD4[(ext->angcounter - 0x400) & 0xFFF].unk2 * 3) >> 5;
         ext->angcounter += 0x80;
-        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0) {
+        if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0) {
             RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
         }
-        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
+        if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
             RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
         }
         m->Engine->unk10.x -= (ext->vel * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
@@ -5072,9 +5072,9 @@ void PlotDinoEgg(NAS *m) {
         m->Engine->unk10.z -= (D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2 * 0x20) >> 12;
         ext->angcounter += 0x80;
         func_800250B0(m);
-        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0)
+        if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0)
             ext->yang = RaceBounce(m->Engine->unk1E, hit.y);
-        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
+        if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
             RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
         }
         m->Engine->unk1E += ((ext->yang - m->Engine->unk1E) << 20) >> 21;
@@ -5576,7 +5576,7 @@ void PlotGlob(NAS *m) {
     }
 }
 
-s32 func_800C310C(SLONG_XYZ *pos) {
+s32 RaceExplodeHitHeroes(SLONG_XYZ *pos) {
     s32 hit;
     s32 i;
     s32 j;
@@ -5673,7 +5673,7 @@ void PlotBarrelRoll(NAS *nas) {
 
     ext = FindExtension(nas, 0x10000000);
     if (ext != NULL) {
-        if (func_800C310C(&nas->Engine->unk10) != 0) {
+        if (RaceExplodeHitHeroes(&nas->Engine->unk10) != 0) {
             RaceSpawnPuff(&nas->Engine->unk10, 1, &D_80054F84);
             KillNAS(nas);
             return;
@@ -6001,7 +6001,7 @@ void PlotDac(NAS *nas) {
     ext->shadow->unk10.y = 0x40;
 }
 
-void func_800C44B0(void) {
+void RaceResetJumps(void) {
     D_800C6BB4[0] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
     D_800C6BB4[1] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
     D_800C6BB4[2] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
@@ -6022,7 +6022,7 @@ void InitRaceSmokeBoostWater(NAS *nas) {
     nas->UserInfo.user1 = 0;
 }
 
-s32 func_800C467C(RaceBounceObj *obj, RaceBouncer *b) {
+s32 RaceBounceObject(RaceBounceObj *obj, RaceBouncer *b) {
     s32 pos;
 
     b->vel += b->accel;
@@ -6178,7 +6178,7 @@ void InitRaceSmokePoof(NAS *nas) {
     nas->UserInfo.user1 = 0;
 }
 
-s32 func_800C4D1C(u8 *arg0, u8 *arg1) {
+s32 RaceDist2(u8 *arg0, u8 *arg1) {
     s32 temp_v0;
     s32 temp_v0_2;
     s32 temp_v0_3;
@@ -6225,7 +6225,7 @@ static inline s32 DotXZ(s32 *u, s32 *v) {
     return (u[0] * v[0] >> 12) + (u[2] * v[2] >> 12);
 }
 
-s32 func_800C4E54(s32 a, s32 b) {
+s32 RaceReflectAngle(s32 a, s32 b) {
     s32 n[4];
     s32 d[4];
     s32 r[4];
@@ -6241,7 +6241,7 @@ s32 func_800C4E54(s32 a, s32 b) {
     return get_angle(r[0], r[2]) + 0x800;
 }
 
-s32 func_800C4F30(u8 *arg0) {
+s32 RaceDazeHeroNear(u8 *arg0) {
     HeroInfo *hero;
     u32 i;
 
@@ -6273,7 +6273,7 @@ void InitTNTCrate(NAS *m) {
     m->UserInfo.flags = 0;
 }
 
-s32 func_800C5014(s32 arg0) {
+s32 RaceToCell(s32 arg0) {
     s32 var_a0;
 
     var_a0 = arg0;
@@ -6300,7 +6300,7 @@ void InitRaceSmokeBoost(NAS *nas) {
     nas->UserInfo.user1 = 0;
 }
 
-s32 func_800C50B0(u8 *arg0, s32 arg1) {
+s32 RaceHeroNear(u8 *arg0, s32 arg1) {
     HeroInfo *hero;
     u32 i;
 
@@ -6320,7 +6320,7 @@ loop:
     return -1;
 }
 
-void func_800C5154(s32 player) {
+void RaceFireMissile(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = base + player;
     SLONG_XYZ pos;
@@ -6338,7 +6338,7 @@ void func_800C5154(s32 player) {
     }
 }
 
-void func_800C5204(EXTheromove *a, EXTheromove *b) {
+void RaceMovesSwap(EXTheromove *a, EXTheromove *b) {
     s32 ma;
     s32 mb;
     s32 d;
@@ -6362,7 +6362,7 @@ void func_800C5204(EXTheromove *a, EXTheromove *b) {
     }
 }
 
-s32 func_800C5334(s32 arg0) {
+s32 RaceTrackAngle(s32 arg0) {
     EXTengine *eng;
     s32 angle;
 
@@ -6374,7 +6374,7 @@ s32 func_800C5334(s32 arg0) {
     return angle;
 }
 
-void func_800C53BC(s32 arg0) {
+void RaceHeroWinner(s32 arg0) {
     func_80085890(arg0);
     if (func_8008A200(arg0) != 0) {
         func_8008A810();
@@ -6382,7 +6382,7 @@ void func_800C53BC(s32 arg0) {
     func_8008502C(arg0);
 }
 
-s32 func_800C5400(s32 arg0) {
+s32 TestRaceHeroWon(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = &base[arg0];
 
@@ -6395,7 +6395,7 @@ s32 func_800C5400(s32 arg0) {
     return 0;
 }
 
-s32 func_800C5470(s32 arg0) {
+s32 RaceHeroBreatheFire(s32 arg0) {
     HeroInfo *hero;
     RaceFuxCount *fux;
     EXTraceshield *ext;
@@ -6420,7 +6420,7 @@ s32 func_800C5470(s32 arg0) {
     return 0;
 }
 
-s32 func_800C554C(s32 arg0) {
+s32 RaceHeroTestIdle(s32 arg0) {
     if (((RacePad *)D_80051338)[arg0].unk50 & 0xF0) {
         return 0;
     }
@@ -6428,7 +6428,7 @@ s32 func_800C554C(s32 arg0) {
     return 1;
 }
 
-s32 func_800C55A4(s32 arg0) {
+s32 RaceHeroTestRun(s32 arg0) {
     if (!(((RacePad *)D_80051338)[arg0].unk54 & 0x8000)) {
         return 0;
     }
@@ -6436,7 +6436,7 @@ s32 func_800C55A4(s32 arg0) {
     return 1;
 }
 
-void func_800C55FC(s32 player) {
+void SetRaceHeroKick(s32 player) {
     EXTraceshield *ext;
 
     ext = (EXTraceshield *)Heroes[player].hero->FUX;
@@ -6445,7 +6445,7 @@ void func_800C55FC(s32 player) {
     }
 }
 
-s32 func_800C5640(u8 *arg0, u32 arg1, s32 arg2) {
+s32 RaceOtherHeroNear(u8 *arg0, u32 arg1, s32 arg2) {
     HeroInfo *hero;
     u32 i;
 
@@ -6465,7 +6465,7 @@ loop:
     return -1;
 }
 
-void func_800C56D4(s32 player) {
+void SetRaceHeroOiled(s32 player) {
     HeroInfo *hero;
     RaceSpinFux *fux;
     EXTheromove *move;
@@ -6488,7 +6488,7 @@ void func_800C56D4(s32 player) {
     }
 }
 
-void func_800C57B4(s32 player) {
+void SetRaceHeroIdle(s32 player) {
     EXTheromove *move;
     RaceHeroFux *fux;
 
@@ -6508,7 +6508,7 @@ void func_800C57B4(s32 player) {
     }
 }
 
-void func_800C5854(s32 *arg0, s32 *arg1)
+void RaceAxisAngleToQuat(s32 *arg0, s32 *arg1)
 {
     s32 a;
     s32 c;
@@ -6525,13 +6525,13 @@ void func_800C5854(s32 *arg0, s32 *arg1)
     arg1[2] = (t >= 0 ? t + 0x800 : t - 0x800) >> 12;
 }
 
-void func_800C5918(s32 arg0) {
+void RaceInitHero(s32 arg0) {
     SetHeroAction(arg0, 0x5B);
     Heroes[arg0].hero_eng->unk1E = 0;
     Heroes[arg0].hero_eng->unk5E = 1;
 }
 
-s32 func_800C5978(s32 player) {
+s32 RaceFallToFloor(s32 player) {
     EXTheromove *move;
     EXTengine *eng;
     s32 y;
@@ -6553,7 +6553,7 @@ s32 func_800C5978(s32 player) {
     return 0;
 }
 
-s32 func_800C5A50(s32 player) {
+s32 RaceJumpUp(s32 player) {
     EXTheromove *move;
     EXTengine *eng;
     s32 y;
@@ -6574,33 +6574,33 @@ s32 func_800C5A50(s32 player) {
     return 0;
 }
 
-s32 func_800C5AF8(void) {
+s32 RaceFloorY(void) {
     return D_800C6930;
 }
 
-void func_800C5B08(s32 *pos, s32 *polar) {
+void RacePolarOf(s32 *pos, s32 *polar) {
     polar[0] = csqrt(pos[0] * pos[0] + pos[2] * pos[2]) >> 6;
     polar[1] = get_angle(pos[0], pos[2]) & 0xFFF;
 }
 
-s32 func_800C5B7C(void) {
+s32 RaceAlwaysZero(void) {
     return 0;
 }
 
-void func_800C5B84(void) {
+void FirstTriggersRACE(void) {
 }
 
-void func_800C5B8C(void) {
+void RaceRestartLevel(void) {
 }
 
-void func_800C5B94(void) {
+void RaceSpawnBarrelRolls(void) {
     if (D_800C6BAC-- < 0) {
         CreateNAS(0, 0, 0, 0x170C, 0x11);
         D_800C6BAC = 0xB4;
     }
 }
 
-void func_800C5BEC(void) {
+void RaceCycleModel(void) {
     D_800C69B4->unk74 = (D_800C69B8 >> 8) + 0x4000;
     if (D_800C69BC == 0) {
         D_800C69B8 += 0x80;
@@ -6617,7 +6617,7 @@ void func_800C5BEC(void) {
     }
 }
 
-NAS *func_800C5C64(s32 arg0) {
+NAS *RaceNearestPickup(s32 arg0) {
     HeroInfo *base;
     HeroInfo *hero;
     NAS *nas;
@@ -6645,7 +6645,7 @@ loop:
     return best;
 }
 
-s32 func_800C5D0C(s32 arg0) {
+s32 RacePadAngle(s32 arg0) {
     s32 var_a1;
 
     var_a1 = 0;
@@ -6676,17 +6676,17 @@ s32 func_800C5D0C(s32 arg0) {
     return var_a1;
 }
 
-void func_800C5D8C(void) {
-    func_800B4708();
+void Race_HeroBot(void) {
+    RaceAI_Think();
 }
 
-NAS *func_800C5DAC(s32 arg0) {
+NAS *RacePickupAhead(s32 arg0) {
     NAS *nas;
     HeroInfo *base;
     HeroInfo *hero;
     s32 angle;
 
-    nas = func_800C5C64(arg0);
+    nas = RaceNearestPickup(arg0);
     if (nas != NULL) {
         base = Heroes;
         hero = base + arg0;
@@ -6700,7 +6700,7 @@ NAS *func_800C5DAC(s32 arg0) {
     return NULL;
 }
 
-s32 func_800C5E6C(s32 arg0, s32 arg1) {
+s32 RaceAI_TargetShare(s32 arg0, s32 arg1) {
     s32 total;
     s32 result;
     s32 i;
@@ -6721,12 +6721,12 @@ s32 func_800C5E6C(s32 arg0, s32 arg1) {
     return result;
 }
 
-void func_800C5F54(void) {
-    D_8005AA70[0] = (s32)func_800B4A4C;
-    D_8005AA70[1] = (s32)func_800B8890;
-    D_8005AA70[2] = (s32)func_800B8890;
-    D_8005AA70[3] = (s32)func_800B8D68;
-    D_8005AA70[5] = (s32)func_800C5B84;
+void RACESetUp(void) {
+    D_8005AA70[0] = (s32)InitialiseRACEFirst;
+    D_8005AA70[1] = (s32)InitialiseRACE;
+    D_8005AA70[2] = (s32)InitialiseRACE;
+    D_8005AA70[3] = (s32)UpdateRACE;
+    D_8005AA70[5] = (s32)FirstTriggersRACE;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
 }

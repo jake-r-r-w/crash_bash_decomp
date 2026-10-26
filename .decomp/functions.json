@@ -43628,7 +43628,7 @@
   "src": "src/overlays/polar/polar.c"
  },
  "race:800B345C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B345C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_DodgeSpinners.s",
   "bin": "disc/race.bin",
   "calls": [
    "800B82FC"
@@ -43636,7 +43636,7 @@
   "fp": "83d297afe96efaf2",
   "fpn": "d274722d483b57d4",
   "leaf": false,
-  "name": "func_800B345C",
+  "name": "RaceAI_DodgeSpinners",
   "orig": "func_800B345C",
   "rom": 424,
   "seg": "overlays/race/race",
@@ -43644,7 +43644,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B35CC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B35CC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_PickVictim.s",
   "bin": "disc/race.bin",
   "calls": [
    "80015590"
@@ -43652,7 +43652,7 @@
   "fp": "b2c292476c3d1543",
   "fpn": "79f3d6d4f8d9597b",
   "leaf": false,
-  "name": "func_800B35CC",
+  "name": "RaceAI_PickVictim",
   "orig": "func_800B35CC",
   "rom": 792,
   "seg": "overlays/race/race",
@@ -43660,7 +43660,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B372C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B372C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_SpinnerBrake.s",
   "bin": "disc/race.bin",
   "calls": [
    "800B82FC"
@@ -43668,7 +43668,7 @@
   "fp": "197f832655b8a366",
   "fpn": "e2bf402034849ab5",
   "leaf": false,
-  "name": "func_800B372C",
+  "name": "RaceAI_SpinnerBrake",
   "orig": "func_800B372C",
   "rom": 1144,
   "seg": "overlays/race/race",
@@ -43676,7 +43676,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B3890": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B3890.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_AvoidBarrels.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -43685,7 +43685,7 @@
   "fp": "2a7de78fbe512fa3",
   "fpn": "68f304ae00b6956b",
   "leaf": false,
-  "name": "func_800B3890",
+  "name": "RaceAI_AvoidBarrels",
   "orig": "func_800B3890",
   "rom": 1500,
   "seg": "overlays/race/race",
@@ -43693,7 +43693,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B3BC0": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B3BC0.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_AvoidObjects.s",
   "bin": "disc/race.bin",
   "calls": [
    "800B3E60"
@@ -43701,7 +43701,7 @@
   "fp": "726fbae31d01f93a",
   "fpn": "d34b12bb26073b2f",
   "leaf": false,
-  "name": "func_800B3BC0",
+  "name": "RaceAI_AvoidObjects",
   "orig": "func_800B3BC0",
   "rom": 2316,
   "seg": "overlays/race/race",
@@ -43709,7 +43709,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B3E60": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B3E60.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceRayHit.s",
   "bin": "disc/race.bin",
   "calls": [
    "800322FC",
@@ -43718,7 +43718,7 @@
   "fp": "53f89c1fc693cf93",
   "fpn": "69054840516c9029",
   "leaf": false,
-  "name": "func_800B3E60",
+  "name": "RaceRayHit",
   "orig": "func_800B3E60",
   "rom": 2988,
   "seg": "overlays/race/race",
@@ -43726,7 +43726,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B406C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B406C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_UseCloseWeapon.s",
   "bin": "disc/race.bin",
   "calls": [
    "800B35CC"
@@ -43734,7 +43734,7 @@
   "fp": "4014851a02a9577f",
   "fpn": "26b4fe2ebae62a0f",
   "leaf": false,
-  "name": "func_800B406C",
+  "name": "RaceAI_UseCloseWeapon",
   "orig": "func_800B406C",
   "rom": 3512,
   "seg": "overlays/race/race",
@@ -43742,7 +43742,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B41DC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B41DC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_UseAimedWeapon.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -43752,7 +43752,7 @@
   "fp": "c90f913bbe5042e7",
   "fpn": "0807ab3f4158b175",
   "leaf": false,
-  "name": "func_800B41DC",
+  "name": "RaceAI_UseAimedWeapon",
   "orig": "func_800B41DC",
   "rom": 3880,
   "seg": "overlays/race/race",
@@ -43760,7 +43760,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B442C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B442C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_SteerAtVictim.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -43769,7 +43769,7 @@
   "fp": "80e918142751a4dc",
   "fpn": "5518ab43ecb7d686",
   "leaf": false,
-  "name": "func_800B442C",
+  "name": "RaceAI_SteerAtVictim",
   "orig": "func_800B442C",
   "rom": 4472,
   "seg": "overlays/race/race",
@@ -43777,7 +43777,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B4708": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B4708.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_Think.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -43794,7 +43794,7 @@
   "fp": "1667f47a0d166bdf",
   "fpn": "f1e0bc0d6ca89baf",
   "leaf": false,
-  "name": "func_800B4708",
+  "name": "RaceAI_Think",
   "orig": "func_800B4708",
   "rom": 5204,
   "seg": "overlays/race/race",
@@ -43802,7 +43802,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B48EC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B48EC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceInitHeroAngle.s",
   "bin": "disc/race.bin",
   "calls": [
    "800154A0"
@@ -43810,7 +43810,7 @@
   "fp": "83a14970f64b7d14",
   "fpn": "e01af865ee2a7d6c",
   "leaf": false,
-  "name": "func_800B48EC",
+  "name": "RaceInitHeroAngle",
   "orig": "func_800B48EC",
   "rom": 5688,
   "seg": "overlays/race/race",
@@ -43818,13 +43818,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B4A4C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B4A4C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/InitialiseRACEFirst.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "ac3d4967570cd5d6",
   "fpn": "84021a1d6c53f5e3",
   "leaf": true,
-  "name": "func_800B4A4C",
+  "name": "InitialiseRACEFirst",
   "orig": "func_800B4A4C",
   "rom": 6040,
   "seg": "overlays/race/race",
@@ -43832,7 +43832,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B4D64": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B4D64.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceFindNode.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C"
@@ -43840,7 +43840,7 @@
   "fp": "cc0943d7cc66f3bf",
   "fpn": "4256245fbbcce710",
   "leaf": false,
-  "name": "func_800B4D64",
+  "name": "RaceFindNode",
   "orig": "func_800B4D64",
   "rom": 6832,
   "seg": "overlays/race/race",
@@ -43848,7 +43848,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B4EDC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B4EDC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_FollowTrack.s",
   "bin": "disc/race.bin",
   "calls": [
    "800264E8",
@@ -43858,7 +43858,7 @@
   "fp": "2f69a2b951cf67ff",
   "fpn": "2b7b2d90ddbd4de0",
   "leaf": false,
-  "name": "func_800B4EDC",
+  "name": "RaceAI_FollowTrack",
   "orig": "func_800B4EDC",
   "rom": 7208,
   "seg": "overlays/race/race",
@@ -43866,7 +43866,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B5360": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B5360.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_SteerAhead.s",
   "bin": "disc/race.bin",
   "calls": [
    "800264E8",
@@ -43876,7 +43876,7 @@
   "fp": "da3c71768e5697c8",
   "fpn": "0342bf29c5d6db5b",
   "leaf": false,
-  "name": "func_800B5360",
+  "name": "RaceAI_SteerAhead",
   "orig": "func_800B5360",
   "rom": 8364,
   "seg": "overlays/race/race",
@@ -43884,7 +43884,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B5528": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B5528.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_SteerTo.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C"
@@ -43892,7 +43892,7 @@
   "fp": "90b13410fc09acb3",
   "fpn": "8c3e43384c46ac05",
   "leaf": false,
-  "name": "func_800B5528",
+  "name": "RaceAI_SteerTo",
   "orig": "func_800B5528",
   "rom": 8820,
   "seg": "overlays/race/race",
@@ -43900,7 +43900,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B5660": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B5660.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_ChasePickup.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -43912,7 +43912,7 @@
   "fp": "d9a03655fe2042ce",
   "fpn": "3ec0f09060876bd3",
   "leaf": false,
-  "name": "func_800B5660",
+  "name": "RaceAI_ChasePickup",
   "orig": "func_800B5660",
   "rom": 9132,
   "seg": "overlays/race/race",
@@ -43920,7 +43920,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B5778": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B5778.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceInitSpinners.s",
   "bin": "disc/race.bin",
   "calls": [
    "80015590",
@@ -43930,7 +43930,7 @@
   "fp": "1fe1b1240bc6f30c",
   "fpn": "854a3326c6fe0901",
   "leaf": false,
-  "name": "func_800B5778",
+  "name": "RaceInitSpinners",
   "orig": "func_800B5778",
   "rom": 9412,
   "seg": "overlays/race/race",
@@ -43938,7 +43938,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B5A70": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B5A70.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RacePistonPattern.s",
   "bin": "disc/race.bin",
   "calls": [
    "80015590",
@@ -43947,7 +43947,7 @@
   "fp": "45a78beb2fc5c07c",
   "fpn": "d6f9f411e8db6bad",
   "leaf": false,
-  "name": "func_800B5A70",
+  "name": "RacePistonPattern",
   "orig": "func_800B5A70",
   "rom": 10172,
   "seg": "overlays/race/race",
@@ -43973,7 +43973,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B5F04": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B5F04.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceInitBarrels.s",
   "bin": "disc/race.bin",
   "calls": [
    "800322FC",
@@ -43982,7 +43982,7 @@
   "fp": "104aa3d02797fec9",
   "fpn": "2d87c006ded54674",
   "leaf": false,
-  "name": "func_800B5F04",
+  "name": "RaceInitBarrels",
   "orig": "func_800B5F04",
   "rom": 11344,
   "seg": "overlays/race/race",
@@ -43990,13 +43990,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B5FFC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B5FFC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceEaseCamStep.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "17708bf470415798",
   "fpn": "a2d74e3daa879756",
   "leaf": true,
-  "name": "func_800B5FFC",
+  "name": "RaceEaseCamStep",
   "orig": "func_800B5FFC",
   "rom": 11592,
   "seg": "overlays/race/race",
@@ -44004,7 +44004,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B6108": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B6108.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceBarrelHitHero.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44017,7 +44017,7 @@
   "fp": "b28a4b8726952a71",
   "fpn": "72b81e3c57c0f3c3",
   "leaf": false,
-  "name": "func_800B6108",
+  "name": "RaceBarrelHitHero",
   "orig": "func_800B6108",
   "rom": 11860,
   "seg": "overlays/race/race",
@@ -44025,7 +44025,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B62F4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B62F4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceBarrelSpaceFree.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44034,7 +44034,7 @@
   "fp": "dad9084b1de03481",
   "fpn": "03e31c0720e52e33",
   "leaf": false,
-  "name": "func_800B62F4",
+  "name": "RaceBarrelSpaceFree",
   "orig": "func_800B62F4",
   "rom": 12352,
   "seg": "overlays/race/race",
@@ -44042,7 +44042,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B6474": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B6474.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceUpdateBarrels.s",
   "bin": "disc/race.bin",
   "calls": [
    "80015590",
@@ -44053,7 +44053,7 @@
   "fp": "5d6224adbd92532f",
   "fpn": "2b73f3487fd86f00",
   "leaf": false,
-  "name": "func_800B6474",
+  "name": "RaceUpdateBarrels",
   "orig": "func_800B6474",
   "rom": 12736,
   "seg": "overlays/race/race",
@@ -44061,7 +44061,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B66C4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B66C4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceTriHeight.s",
   "bin": "disc/race.bin",
   "calls": [
    "80032F3C"
@@ -44069,7 +44069,7 @@
   "fp": "8b3bbece895184bd",
   "fpn": "a595d350f3324d5a",
   "leaf": false,
-  "name": "func_800B66C4",
+  "name": "RaceTriHeight",
   "orig": "func_800B66C4",
   "rom": 13328,
   "seg": "overlays/race/race",
@@ -44077,7 +44077,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B6DBC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B6DBC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceFloorHeight.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44088,7 +44088,7 @@
   "fp": "fd4be6c6082c897c",
   "fpn": "9dc21470aaa5bb8e",
   "leaf": false,
-  "name": "func_800B6DBC",
+  "name": "RaceFloorHeight",
   "orig": "func_800B6DBC",
   "rom": 15112,
   "seg": "overlays/race/race",
@@ -44096,7 +44096,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B7190": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B7190.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceTrackCollide.s",
   "bin": "disc/race.bin",
   "calls": [
    "80032490"
@@ -44104,7 +44104,7 @@
   "fp": "2e0911d43570fd18",
   "fpn": "cab66e6f0b88d44a",
   "leaf": false,
-  "name": "func_800B7190",
+  "name": "RaceTrackCollide",
   "orig": "func_800B7190",
   "rom": 16092,
   "seg": "overlays/race/race",
@@ -44112,7 +44112,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B76A4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B76A4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceTrackCollideB.s",
   "bin": "disc/race.bin",
   "calls": [
    "800322FC",
@@ -44123,7 +44123,7 @@
   "fp": "ef9d3285a1407bd5",
   "fpn": "fc9287f3bcb10375",
   "leaf": false,
-  "name": "func_800B76A4",
+  "name": "RaceTrackCollideB",
   "orig": "func_800B76A4",
   "rom": 17392,
   "seg": "overlays/race/race",
@@ -44131,7 +44131,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B7D94": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B7D94.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceTrackCollideC.s",
   "bin": "disc/race.bin",
   "calls": [
    "800322FC",
@@ -44142,7 +44142,7 @@
   "fp": "583784e9e7ceee48",
   "fpn": "810640d0eeb64408",
   "leaf": false,
-  "name": "func_800B7D94",
+  "name": "RaceTrackCollideC",
   "orig": "func_800B7D94",
   "rom": 19168,
   "seg": "overlays/race/race",
@@ -44172,7 +44172,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B8890": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B8890.s",
+  "asm": "asm/nonmatchings/overlays/race/race/InitialiseRACE.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001682C",
@@ -44191,7 +44191,7 @@
   "fp": "b36929241e51631f",
   "fpn": "7d7ca7470fbc4b0e",
   "leaf": false,
-  "name": "func_800B8890",
+  "name": "InitialiseRACE",
   "orig": "func_800B8890",
   "rom": 21980,
   "seg": "overlays/race/race",
@@ -44199,7 +44199,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B8D68": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B8D68.s",
+  "asm": "asm/nonmatchings/overlays/race/race/UpdateRACE.s",
   "bin": "disc/race.bin",
   "calls": [
    "800B5D14",
@@ -44210,7 +44210,7 @@
   "fp": "af2d4a59afe01a25",
   "fpn": "505efd12aba36ec4",
   "leaf": false,
-  "name": "func_800B8D68",
+  "name": "UpdateRACE",
   "orig": "func_800B8D68",
   "rom": 23220,
   "seg": "overlays/race/race",
@@ -44218,13 +44218,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B8F04": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B8F04.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceInitHeroMove.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "a22bed578b15ea0f",
   "fpn": "ea8f1500e2b42d24",
   "leaf": true,
-  "name": "func_800B8F04",
+  "name": "RaceInitHeroMove",
   "orig": "func_800B8F04",
   "rom": 23632,
   "seg": "overlays/race/race",
@@ -44232,7 +44232,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B8FD8": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B8FD8.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RacePreMoveHero.s",
   "bin": "disc/race.bin",
   "calls": [
    "800154A0",
@@ -44243,7 +44243,7 @@
   "fp": "c3dd0d8efa84dc84",
   "fpn": "cee8625db68a8290",
   "leaf": false,
-  "name": "func_800B8FD8",
+  "name": "RacePreMoveHero",
   "orig": "func_800B8FD8",
   "rom": 23844,
   "seg": "overlays/race/race",
@@ -44251,7 +44251,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B96B0": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B96B0.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceKeepOnTrack.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44260,7 +44260,7 @@
   "fp": "4f08073e9758823c",
   "fpn": "a8142e0f592c50aa",
   "leaf": false,
-  "name": "func_800B96B0",
+  "name": "RaceKeepOnTrack",
   "orig": "func_800B96B0",
   "rom": 25596,
   "seg": "overlays/race/race",
@@ -44268,7 +44268,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B980C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B980C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceMoveHero.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44284,7 +44284,7 @@
   "fp": "30497e6b83e09f16",
   "fpn": "0fd720330589b70a",
   "leaf": false,
-  "name": "func_800B980C",
+  "name": "RaceMoveHero",
   "orig": "func_800B980C",
   "rom": 25944,
   "seg": "overlays/race/race",
@@ -44292,13 +44292,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800B9E50": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800B9E50.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceQuatNormalize.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "f950d9dbed10a881",
   "fpn": "2580374a11adf779",
   "leaf": true,
-  "name": "func_800B9E50",
+  "name": "RaceQuatNormalize",
   "orig": "func_800B9E50",
   "rom": 27548,
   "seg": "overlays/race/race",
@@ -44306,7 +44306,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BA004": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BA004.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceEulerToQuat.s",
   "bin": "disc/race.bin",
   "calls": [
    "800B9E50"
@@ -44314,7 +44314,7 @@
   "fp": "3e67e004b1cbf091",
   "fpn": "dd8cdc801897f956",
   "leaf": false,
-  "name": "func_800BA004",
+  "name": "RaceEulerToQuat",
   "orig": "func_800BA004",
   "rom": 27984,
   "seg": "overlays/race/race",
@@ -44322,7 +44322,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BA278": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BA278.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroIdle.s",
   "bin": "disc/race.bin",
   "calls": [
    "800225C4",
@@ -44337,7 +44337,7 @@
   "fp": "012c3d9cba4c2840",
   "fpn": "0260b895b5f5798a",
   "leaf": false,
-  "name": "func_800BA278",
+  "name": "RaceHeroIdle",
   "orig": "func_800BA278",
   "rom": 28612,
   "seg": "overlays/race/race",
@@ -44345,7 +44345,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BAD54": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BAD54.s",
+  "asm": "asm/nonmatchings/overlays/race/race/SetRaceHeroOffTrack.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44357,7 +44357,7 @@
   "fp": "764885d89a00893f",
   "fpn": "b74d8159d2914bac",
   "leaf": false,
-  "name": "func_800BAD54",
+  "name": "SetRaceHeroOffTrack",
   "orig": "func_800BAD54",
   "rom": 31392,
   "seg": "overlays/race/race",
@@ -44365,7 +44365,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BAFC8": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BAFC8.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroOffTrack.s",
   "bin": "disc/race.bin",
   "calls": [
    "800225C4",
@@ -44381,7 +44381,7 @@
   "fp": "63c364533122a670",
   "fpn": "01d010162a4001ea",
   "leaf": false,
-  "name": "func_800BAFC8",
+  "name": "RaceHeroOffTrack",
   "orig": "func_800BAFC8",
   "rom": 32020,
   "seg": "overlays/race/race",
@@ -44389,13 +44389,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BB794": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BB794.s",
+  "asm": "asm/nonmatchings/overlays/race/race/SetRaceHeroRun.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "1a3ba9b63894857b",
   "fpn": "da435ba9e38b7fc0",
   "leaf": true,
-  "name": "func_800BB794",
+  "name": "SetRaceHeroRun",
   "orig": "func_800BB794",
   "rom": 34016,
   "seg": "overlays/race/race",
@@ -44403,7 +44403,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BB878": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BB878.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroRun.s",
   "bin": "disc/race.bin",
   "calls": [
    "8008502C",
@@ -44414,7 +44414,7 @@
   "fp": "68bbe85cc602e1d1",
   "fpn": "5a995e903642c6d7",
   "leaf": false,
-  "name": "func_800BB878",
+  "name": "RaceHeroRun",
   "orig": "func_800BB878",
   "rom": 34244,
   "seg": "overlays/race/race",
@@ -44422,7 +44422,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BBA04": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BBA04.s",
+  "asm": "asm/nonmatchings/overlays/race/race/SetRaceHeroDazed.s",
   "bin": "disc/race.bin",
   "calls": [
    "80015590",
@@ -44435,7 +44435,7 @@
   "fp": "34444a83cd537c40",
   "fpn": "831e7b95131f9ed3",
   "leaf": false,
-  "name": "func_800BBA04",
+  "name": "SetRaceHeroDazed",
   "orig": "func_800BBA04",
   "rom": 34640,
   "seg": "overlays/race/race",
@@ -44443,7 +44443,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BC0A4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BC0A4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroDazed.s",
   "bin": "disc/race.bin",
   "calls": [
    "80032F3C",
@@ -44454,7 +44454,7 @@
   "fp": "1b2bb0623fe5251e",
   "fpn": "580182d781c10548",
   "leaf": false,
-  "name": "func_800BC0A4",
+  "name": "RaceHeroDazed",
   "orig": "func_800BC0A4",
   "rom": 36336,
   "seg": "overlays/race/race",
@@ -44462,7 +44462,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BC2D0": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BC2D0.s",
+  "asm": "asm/nonmatchings/overlays/race/race/SetRaceHeroJump.s",
   "bin": "disc/race.bin",
   "calls": [
    "80022660"
@@ -44470,7 +44470,7 @@
   "fp": "0a4c103c98a29bba",
   "fpn": "303a42b4e1e7afb1",
   "leaf": false,
-  "name": "func_800BC2D0",
+  "name": "SetRaceHeroJump",
   "orig": "func_800BC2D0",
   "rom": 36892,
   "seg": "overlays/race/race",
@@ -44478,7 +44478,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BC4B0": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BC4B0.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroJump.s",
   "bin": "disc/race.bin",
   "calls": [
    "80032F3C",
@@ -44488,7 +44488,7 @@
   "fp": "ecfac83b9ccb3fba",
   "fpn": "a85c8917b6194b0a",
   "leaf": false,
-  "name": "func_800BC4B0",
+  "name": "RaceHeroJump",
   "orig": "func_800BC4B0",
   "rom": 37372,
   "seg": "overlays/race/race",
@@ -44496,7 +44496,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BC6C8": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BC6C8.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroOiled.s",
   "bin": "disc/race.bin",
   "calls": [
    "8008502C",
@@ -44506,7 +44506,7 @@
   "fp": "4401fbeed75c8e2b",
   "fpn": "a1e9783d6a8b0af5",
   "leaf": false,
-  "name": "func_800BC6C8",
+  "name": "RaceHeroOiled",
   "orig": "func_800BC6C8",
   "rom": 37908,
   "seg": "overlays/race/race",
@@ -44514,7 +44514,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BC7C4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BC7C4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroKick.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44525,7 +44525,7 @@
   "fp": "5adc39f6d3820b5b",
   "fpn": "8d95c79344e668f7",
   "leaf": false,
-  "name": "func_800BC7C4",
+  "name": "RaceHeroKick",
   "orig": "func_800BC7C4",
   "rom": 38160,
   "seg": "overlays/race/race",
@@ -44533,7 +44533,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BC984": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BC984.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroUsePickup.s",
   "bin": "disc/race.bin",
   "calls": [
    "80022A3C",
@@ -44544,7 +44544,7 @@
   "fp": "3aaac31528de7e22",
   "fpn": "ce819c77e44ece75",
   "leaf": false,
-  "name": "func_800BC984",
+  "name": "RaceHeroUsePickup",
   "orig": "func_800BC984",
   "rom": 38608,
   "seg": "overlays/race/race",
@@ -44552,7 +44552,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BCC20": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BCC20.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroTestJump.s",
   "bin": "disc/race.bin",
   "calls": [
    "800868B4"
@@ -44560,7 +44560,7 @@
   "fp": "201e0babce3e6f69",
   "fpn": "e0f2b97d4d63129e",
   "leaf": false,
-  "name": "func_800BCC20",
+  "name": "RaceHeroTestJump",
   "orig": "func_800BCC20",
   "rom": 39276,
   "seg": "overlays/race/race",
@@ -44568,7 +44568,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BCD1C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BCD1C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroTestOil.s",
   "bin": "disc/race.bin",
   "calls": [
    "800868B4",
@@ -44577,7 +44577,7 @@
   "fp": "41e3a67a93efa071",
   "fpn": "cf88c0650d4a1f0d",
   "leaf": false,
-  "name": "func_800BCD1C",
+  "name": "RaceHeroTestOil",
   "orig": "func_800BCD1C",
   "rom": 39528,
   "seg": "overlays/race/race",
@@ -44585,7 +44585,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BCDAC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BCDAC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/SetRaceHeroWinner.s",
   "bin": "disc/race.bin",
   "calls": [
    "80011D28",
@@ -44597,7 +44597,7 @@
   "fp": "ae59046cceabbf89",
   "fpn": "c60cc850d30120e8",
   "leaf": false,
-  "name": "func_800BCDAC",
+  "name": "SetRaceHeroWinner",
   "orig": "func_800BCDAC",
   "rom": 39672,
   "seg": "overlays/race/race",
@@ -44605,7 +44605,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BCE88": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BCE88.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceChooseWinnerTeam.s",
   "bin": "disc/race.bin",
   "calls": [
    "80026980"
@@ -44613,7 +44613,7 @@
   "fp": "dc45ec48b948d1b7",
   "fpn": "a66d230dba5d6202",
   "leaf": false,
-  "name": "func_800BCE88",
+  "name": "RaceChooseWinnerTeam",
   "orig": "func_800BCE88",
   "rom": 39892,
   "seg": "overlays/race/race",
@@ -44621,7 +44621,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BD99C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BD99C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceChooseWinner.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44631,7 +44631,7 @@
   "fp": "7ba06df07996f132",
   "fpn": "7af3be6f4f3aa151",
   "leaf": false,
-  "name": "func_800BD99C",
+  "name": "RaceChooseWinner",
   "orig": "func_800BD99C",
   "rom": 42728,
   "seg": "overlays/race/race",
@@ -44639,13 +44639,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BE7B4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BE7B4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceBarrelBump.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "4863917244e31134",
   "fpn": "657ee9350690980d",
   "leaf": true,
-  "name": "func_800BE7B4",
+  "name": "RaceBarrelBump",
   "orig": "func_800BE7B4",
   "rom": 46336,
   "seg": "overlays/race/race",
@@ -44653,13 +44653,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BE914": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BE914.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroesBump.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "63c26c351ea59354",
   "fpn": "8ff039df0836f250",
   "leaf": true,
-  "name": "func_800BE914",
+  "name": "RaceHeroesBump",
   "orig": "func_800BE914",
   "rom": 46688,
   "seg": "overlays/race/race",
@@ -44667,7 +44667,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BEBC0": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BEBC0.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroCollide.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44681,7 +44681,7 @@
   "fp": "8ba7867d90d7c877",
   "fpn": "8a08dd545acc198e",
   "leaf": false,
-  "name": "func_800BEBC0",
+  "name": "RaceHeroCollide",
   "orig": "func_800BEBC0",
   "rom": 47372,
   "seg": "overlays/race/race",
@@ -44689,7 +44689,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800BF0F8": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800BF0F8.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceMissileHitHeroes.s",
   "bin": "disc/race.bin",
   "calls": [
    "80026980",
@@ -44700,7 +44700,7 @@
   "fp": "c0f927292e6cfaac",
   "fpn": "a718a3f061cb4e32",
   "leaf": false,
-  "name": "func_800BF0F8",
+  "name": "RaceMissileHitHeroes",
   "orig": "func_800BF0F8",
   "rom": 48708,
   "seg": "overlays/race/race",
@@ -44791,7 +44791,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C0218": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C0218.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceCountLaps.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -44800,7 +44800,7 @@
   "fp": "22dcf9a5640cb894",
   "fpn": "a4d768bce734ddd2",
   "leaf": false,
-  "name": "func_800C0218",
+  "name": "RaceCountLaps",
   "orig": "func_800C0218",
   "rom": 53092,
   "seg": "overlays/race/race",
@@ -44808,7 +44808,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C04EC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C04EC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RacePickupMaster.s",
   "bin": "disc/race.bin",
   "calls": [
    "80015590",
@@ -44818,7 +44818,7 @@
   "fp": "1e3c869369bd0bf5",
   "fpn": "b660f815f04111a0",
   "leaf": false,
-  "name": "func_800C04EC",
+  "name": "RacePickupMaster",
   "orig": "func_800C04EC",
   "rom": 53816,
   "seg": "overlays/race/race",
@@ -44826,7 +44826,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C0CB4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C0CB4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RacePickupRespawn.s",
   "bin": "disc/race.bin",
   "calls": [
    "80015590",
@@ -44836,7 +44836,7 @@
   "fp": "fd94cf00bc1fec31",
   "fpn": "9debd2807487562e",
   "leaf": false,
-  "name": "func_800C0CB4",
+  "name": "RacePickupRespawn",
   "orig": "func_800C0CB4",
   "rom": 55808,
   "seg": "overlays/race/race",
@@ -44844,13 +44844,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C0F5C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C0F5C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceInitStub.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "1af7faf742a6925b",
   "fpn": "db2097c2024a6110",
   "leaf": true,
-  "name": "func_800C0F5C",
+  "name": "RaceInitStub",
   "orig": "func_800C0F5C",
   "rom": 56488,
   "seg": "overlays/race/race",
@@ -45026,7 +45026,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C310C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C310C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceExplodeHitHeroes.s",
   "bin": "disc/race.bin",
   "calls": [
    "80026980",
@@ -45035,7 +45035,7 @@
   "fp": "d76268c3251fa58a",
   "fpn": "9b5152aedad0e5e4",
   "leaf": false,
-  "name": "func_800C310C",
+  "name": "RaceExplodeHitHeroes",
   "orig": "func_800C310C",
   "rom": 65112,
   "seg": "overlays/race/race",
@@ -45164,13 +45164,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C44B0": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C44B0.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceResetJumps.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "13c7a2fda566a823",
   "fpn": "db8306642da679b0",
   "leaf": true,
-  "name": "func_800C44B0",
+  "name": "RaceResetJumps",
   "orig": "func_800C44B0",
   "rom": 70140,
   "seg": "overlays/race/race",
@@ -45210,7 +45210,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C467C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C467C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceBounceObject.s",
   "bin": "disc/race.bin",
   "calls": [
    "80032F3C"
@@ -45218,7 +45218,7 @@
   "fp": "e18ff5063d133988",
   "fpn": "5d5f44ccbcfefb25",
   "leaf": false,
-  "name": "func_800C467C",
+  "name": "RaceBounceObject",
   "orig": "func_800C467C",
   "rom": 70600,
   "seg": "overlays/race/race",
@@ -45408,13 +45408,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C4D1C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C4D1C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceDist2.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "ca15f37e5b02719c",
   "fpn": "f1e8941d39806a67",
   "leaf": true,
-  "name": "func_800C4D1C",
+  "name": "RaceDist2",
   "orig": "func_800C4D1C",
   "rom": 72296,
   "seg": "overlays/race/race",
@@ -45486,7 +45486,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C4E54": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C4E54.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceReflectAngle.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C"
@@ -45494,7 +45494,7 @@
   "fp": "f1b0d8ca70747dc8",
   "fpn": "422765a2d5525442",
   "leaf": false,
-  "name": "func_800C4E54",
+  "name": "RaceReflectAngle",
   "orig": "func_800C4E54",
   "rom": 72608,
   "seg": "overlays/race/race",
@@ -45502,7 +45502,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C4F30": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C4F30.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceDazeHeroNear.s",
   "bin": "disc/race.bin",
   "calls": [
    "800868B4",
@@ -45511,7 +45511,7 @@
   "fp": "be92b8886d92a0c9",
   "fpn": "833860bd85e8d005",
   "leaf": false,
-  "name": "func_800C4F30",
+  "name": "RaceDazeHeroNear",
   "orig": "func_800C4F30",
   "rom": 72828,
   "seg": "overlays/race/race",
@@ -45533,13 +45533,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5014": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5014.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceToCell.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "4005e5ac6a047ac9",
   "fpn": "004e61848698f14d",
   "leaf": true,
-  "name": "func_800C5014",
+  "name": "RaceToCell",
   "orig": "func_800C5014",
   "rom": 73056,
   "seg": "overlays/race/race",
@@ -45579,7 +45579,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C50B0": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C50B0.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroNear.s",
   "bin": "disc/race.bin",
   "calls": [
    "80032F3C",
@@ -45588,7 +45588,7 @@
   "fp": "108cfe1772fb1da5",
   "fpn": "0d56275d993fce73",
   "leaf": false,
-  "name": "func_800C50B0",
+  "name": "RaceHeroNear",
   "orig": "func_800C50B0",
   "rom": 73212,
   "seg": "overlays/race/race",
@@ -45596,7 +45596,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5154": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5154.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceFireMissile.s",
   "bin": "disc/race.bin",
   "calls": [
    "80022A3C",
@@ -45605,7 +45605,7 @@
   "fp": "4af1838331092287",
   "fpn": "503e89ef6d93d21e",
   "leaf": false,
-  "name": "func_800C5154",
+  "name": "RaceFireMissile",
   "orig": "func_800C5154",
   "rom": 73376,
   "seg": "overlays/race/race",
@@ -45613,13 +45613,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5204": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5204.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceMovesSwap.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "bf6df49d48deda3a",
   "fpn": "6fd4fe9ff774a71a",
   "leaf": true,
-  "name": "func_800C5204",
+  "name": "RaceMovesSwap",
   "orig": "func_800C5204",
   "rom": 73552,
   "seg": "overlays/race/race",
@@ -45627,7 +45627,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5334": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5334.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceTrackAngle.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -45636,7 +45636,7 @@
   "fp": "7b6960f05b7df144",
   "fpn": "9a9becd02cc2f407",
   "leaf": false,
-  "name": "func_800C5334",
+  "name": "RaceTrackAngle",
   "orig": "func_800C5334",
   "rom": 73856,
   "seg": "overlays/race/race",
@@ -45644,7 +45644,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C53BC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C53BC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroWinner.s",
   "bin": "disc/race.bin",
   "calls": [
    "8008502C",
@@ -45655,7 +45655,7 @@
   "fp": "a2ab33e9ba85d551",
   "fpn": "617ac22d4932ad35",
   "leaf": false,
-  "name": "func_800C53BC",
+  "name": "RaceHeroWinner",
   "orig": "func_800C53BC",
   "rom": 73992,
   "seg": "overlays/race/race",
@@ -45663,7 +45663,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5400": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5400.s",
+  "asm": "asm/nonmatchings/overlays/race/race/TestRaceHeroWon.s",
   "bin": "disc/race.bin",
   "calls": [
    "800868B4"
@@ -45671,7 +45671,7 @@
   "fp": "c24e2fc5efa7f49e",
   "fpn": "bfe4f38298514cc0",
   "leaf": false,
-  "name": "func_800C5400",
+  "name": "TestRaceHeroWon",
   "orig": "func_800C5400",
   "rom": 74060,
   "seg": "overlays/race/race",
@@ -45679,7 +45679,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5470": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5470.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroBreatheFire.s",
   "bin": "disc/race.bin",
   "calls": [
    "80022A3C",
@@ -45688,7 +45688,7 @@
   "fp": "d314d37282d05e44",
   "fpn": "ec8927ae4e7454ce",
   "leaf": false,
-  "name": "func_800C5470",
+  "name": "RaceHeroBreatheFire",
   "orig": "func_800C5470",
   "rom": 74172,
   "seg": "overlays/race/race",
@@ -45696,7 +45696,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C554C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C554C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroTestIdle.s",
   "bin": "disc/race.bin",
   "calls": [
    "800868B4"
@@ -45704,7 +45704,7 @@
   "fp": "67129cc1226c90cd",
   "fpn": "51ba5e65a8e8a73a",
   "leaf": false,
-  "name": "func_800C554C",
+  "name": "RaceHeroTestIdle",
   "orig": "func_800C554C",
   "rom": 74392,
   "seg": "overlays/race/race",
@@ -45712,7 +45712,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C55A4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C55A4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceHeroTestRun.s",
   "bin": "disc/race.bin",
   "calls": [
    "800868B4"
@@ -45720,7 +45720,7 @@
   "fp": "ebb51e31b6720ea2",
   "fpn": "8c80524866bb558c",
   "leaf": false,
-  "name": "func_800C55A4",
+  "name": "RaceHeroTestRun",
   "orig": "func_800C55A4",
   "rom": 74480,
   "seg": "overlays/race/race",
@@ -45728,13 +45728,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C55FC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C55FC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/SetRaceHeroKick.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "0873810becc9d087",
   "fpn": "2f5767c0b6d5601a",
   "leaf": true,
-  "name": "func_800C55FC",
+  "name": "SetRaceHeroKick",
   "orig": "func_800C55FC",
   "rom": 74568,
   "seg": "overlays/race/race",
@@ -45742,7 +45742,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5640": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5640.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceOtherHeroNear.s",
   "bin": "disc/race.bin",
   "calls": [
    "8008CEB0"
@@ -45750,7 +45750,7 @@
   "fp": "9321267bfc13571b",
   "fpn": "01c949273026f35a",
   "leaf": false,
-  "name": "func_800C5640",
+  "name": "RaceOtherHeroNear",
   "orig": "func_800C5640",
   "rom": 74636,
   "seg": "overlays/race/race",
@@ -45758,7 +45758,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C56D4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C56D4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/SetRaceHeroOiled.s",
   "bin": "disc/race.bin",
   "calls": [
    "80015590",
@@ -45767,7 +45767,7 @@
   "fp": "f244dfee96468438",
   "fpn": "da2fc39ac64d0307",
   "leaf": false,
-  "name": "func_800C56D4",
+  "name": "SetRaceHeroOiled",
   "orig": "func_800C56D4",
   "rom": 74784,
   "seg": "overlays/race/race",
@@ -45775,7 +45775,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C57B4": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C57B4.s",
+  "asm": "asm/nonmatchings/overlays/race/race/SetRaceHeroIdle.s",
   "bin": "disc/race.bin",
   "calls": [
    "800854C0"
@@ -45783,7 +45783,7 @@
   "fp": "e56c7e3f624a0182",
   "fpn": "59e10eed3d8fb88e",
   "leaf": false,
-  "name": "func_800C57B4",
+  "name": "SetRaceHeroIdle",
   "orig": "func_800C57B4",
   "rom": 75008,
   "seg": "overlays/race/race",
@@ -45791,13 +45791,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5854": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5854.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAxisAngleToQuat.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "56997682cc645f64",
   "fpn": "a3fbb0ccd9ac421a",
   "leaf": true,
-  "name": "func_800C5854",
+  "name": "RaceAxisAngleToQuat",
   "orig": "func_800C5854",
   "rom": 75168,
   "seg": "overlays/race/race",
@@ -45805,7 +45805,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5918": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5918.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceInitHero.s",
   "bin": "disc/race.bin",
   "calls": [
    "800868B4"
@@ -45813,7 +45813,7 @@
   "fp": "6b26f255549c6979",
   "fpn": "f67e2a78233fc5ce",
   "leaf": false,
-  "name": "func_800C5918",
+  "name": "RaceInitHero",
   "orig": "func_800C5918",
   "rom": 75364,
   "seg": "overlays/race/race",
@@ -45821,7 +45821,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5978": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5978.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceFallToFloor.s",
   "bin": "disc/race.bin",
   "calls": [
    "80032F3C"
@@ -45829,7 +45829,7 @@
   "fp": "d3f0f8c1b4878b5d",
   "fpn": "49367c071f9f04c6",
   "leaf": false,
-  "name": "func_800C5978",
+  "name": "RaceFallToFloor",
   "orig": "func_800C5978",
   "rom": 75460,
   "seg": "overlays/race/race",
@@ -45837,13 +45837,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5A50": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5A50.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceJumpUp.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "5d8933a38f2f2818",
   "fpn": "3a38aabfaa1aa4c5",
   "leaf": true,
-  "name": "func_800C5A50",
+  "name": "RaceJumpUp",
   "orig": "func_800C5A50",
   "rom": 75676,
   "seg": "overlays/race/race",
@@ -45851,13 +45851,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5AF8": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5AF8.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceFloorY.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "3f5427b863916ba8",
   "fpn": "3f5427b863916ba8",
   "leaf": true,
-  "name": "func_800C5AF8",
+  "name": "RaceFloorY",
   "orig": "func_800C5AF8",
   "rom": 75844,
   "seg": "overlays/race/race",
@@ -45865,7 +45865,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5B08": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5B08.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RacePolarOf.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -45874,7 +45874,7 @@
   "fp": "e0911207fd4823d7",
   "fpn": "a71c6bb4f90aaa11",
   "leaf": false,
-  "name": "func_800C5B08",
+  "name": "RacePolarOf",
   "orig": "func_800C5B08",
   "rom": 75860,
   "seg": "overlays/race/race",
@@ -45882,13 +45882,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5B7C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5B7C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAlwaysZero.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_800C5B7C",
+  "name": "RaceAlwaysZero",
   "orig": "func_800C5B7C",
   "rom": 75976,
   "seg": "overlays/race/race",
@@ -45896,13 +45896,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5B84": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5B84.s",
+  "asm": "asm/nonmatchings/overlays/race/race/FirstTriggersRACE.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C5B84",
+  "name": "FirstTriggersRACE",
   "orig": "func_800C5B84",
   "rom": 75984,
   "seg": "overlays/race/race",
@@ -45910,13 +45910,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5B8C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5B8C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceRestartLevel.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C5B8C",
+  "name": "RaceRestartLevel",
   "orig": "func_800C5B8C",
   "rom": 75992,
   "seg": "overlays/race/race",
@@ -45924,7 +45924,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5B94": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5B94.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceSpawnBarrelRolls.s",
   "bin": "disc/race.bin",
   "calls": [
    "80022A3C"
@@ -45932,7 +45932,7 @@
   "fp": "fd23b4f282fb45de",
   "fpn": "4ae440f1a2be8a14",
   "leaf": false,
-  "name": "func_800C5B94",
+  "name": "RaceSpawnBarrelRolls",
   "orig": "func_800C5B94",
   "rom": 76000,
   "seg": "overlays/race/race",
@@ -45940,13 +45940,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5BEC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5BEC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceCycleModel.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "d475de6e208e14a0",
   "fpn": "8d66f65e0223605b",
   "leaf": true,
-  "name": "func_800C5BEC",
+  "name": "RaceCycleModel",
   "orig": "func_800C5BEC",
   "rom": 76088,
   "seg": "overlays/race/race",
@@ -45954,7 +45954,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5C64": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5C64.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceNearestPickup.s",
   "bin": "disc/race.bin",
   "calls": [
    "8008CEB0"
@@ -45962,7 +45962,7 @@
   "fp": "a8b50ad252ed1349",
   "fpn": "46b20a1f8b46e6b8",
   "leaf": false,
-  "name": "func_800C5C64",
+  "name": "RaceNearestPickup",
   "orig": "func_800C5C64",
   "rom": 76208,
   "seg": "overlays/race/race",
@@ -45970,13 +45970,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5D0C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5D0C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RacePadAngle.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "180b3cab27e9edcd",
   "fpn": "20dd9205a2fddb6d",
   "leaf": true,
-  "name": "func_800C5D0C",
+  "name": "RacePadAngle",
   "orig": "func_800C5D0C",
   "rom": 76376,
   "seg": "overlays/race/race",
@@ -45984,7 +45984,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5D8C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5D8C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/Race_HeroBot.s",
   "bin": "disc/race.bin",
   "calls": [
    "800B4708"
@@ -45992,7 +45992,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_800C5D8C",
+  "name": "Race_HeroBot",
   "orig": "func_800C5D8C",
   "rom": 76504,
   "seg": "overlays/race/race",
@@ -46000,7 +46000,7 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5DAC": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5DAC.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RacePickupAhead.s",
   "bin": "disc/race.bin",
   "calls": [
    "8001463C",
@@ -46010,7 +46010,7 @@
   "fp": "fc917d85d539de1d",
   "fpn": "706834fceaa603e7",
   "leaf": false,
-  "name": "func_800C5DAC",
+  "name": "RacePickupAhead",
   "orig": "func_800C5DAC",
   "rom": 76536,
   "seg": "overlays/race/race",
@@ -46018,13 +46018,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5E6C": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5E6C.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RaceAI_TargetShare.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "b3e6c6ef755735e4",
   "fpn": "13fff2e2d401907e",
   "leaf": true,
-  "name": "func_800C5E6C",
+  "name": "RaceAI_TargetShare",
   "orig": "func_800C5E6C",
   "rom": 76728,
   "seg": "overlays/race/race",
@@ -46032,13 +46032,13 @@
   "src": "src/overlays/race/race.c"
  },
  "race:800C5F54": {
-  "asm": "asm/nonmatchings/overlays/race/race/func_800C5F54.s",
+  "asm": "asm/nonmatchings/overlays/race/race/RACESetUp.s",
   "bin": "disc/race.bin",
   "calls": [],
   "fp": "80110bd047df49bf",
   "fpn": "d1ba4fada9c6e999",
   "leaf": true,
-  "name": "func_800C5F54",
+  "name": "RACESetUp",
   "orig": "func_800C5F54",
   "rom": 76960,
   "seg": "overlays/race/race",

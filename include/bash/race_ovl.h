@@ -14,17 +14,17 @@ void PlotRaceSmokeBoostWater(NAS *nas);
 void PlotRaceGreenSmokeBoost(NAS *nas);
 void PlotRaceGreenSmokePoof(NAS *nas);
 void PlotRaceSmokePoof(NAS *nas);
-s32 func_800C4D1C(u8 *arg0, u8 *arg1);
+s32 RaceDist2(u8 *arg0, u8 *arg1);
 void InitRaceTag(u8 *arg0);
-s32 func_800C5014(s32 arg0);
+s32 RaceToCell(s32 arg0);
 void PlotRaceSmokeBoost(NAS *nas);
-void func_800C53BC(s32 arg0);
-s32 func_800C5AF8(void);
-s32 func_800C5B7C(void);
-void func_800C5B84(void);
-void func_800C5B8C(void);
-s32 func_800C5D0C(s32 arg0);
-void func_800C5D8C(void);
+void RaceHeroWinner(s32 arg0);
+s32 RaceFloorY(void);
+s32 RaceAlwaysZero(void);
+void FirstTriggersRACE(void);
+void RaceRestartLevel(void);
+s32 RacePadAngle(s32 arg0);
+void Race_HeroBot(void);
 
 extern s32 D_800C6930;
 extern s32 D_800C6D20;
@@ -39,17 +39,17 @@ extern s32 D_800C6BAC;
 extern u8 D_80052F94[];
 extern char D_800B3400[];
 
-void func_800B5360(s32 player);
-u32 func_800B4EDC(s32 player);
+void RaceAI_SteerAhead(s32 player);
+u32 RaceAI_FollowTrack(s32 player);
 
-/* A hero's FUX as func_800B5360 reads it: a 2D velocity at 0x13C. */
+/* A hero's FUX as RaceAI_SteerAhead reads it: a 2D velocity at 0x13C. */
 typedef struct RaceVelFux {
     /* 0x000 */ u8 pad0[0x13C];
     /* 0x13C */ s32 vx;
     /* 0x140 */ s32 vz;
 } RaceVelFux;
 
-/* A hero's FUX as func_800BEBC0 reads it: held item, timer, velocity. */
+/* A hero's FUX as RaceHeroCollide reads it: held item, timer, velocity. */
 typedef struct RaceBumpFux {
     /* 0x000 */ u8 pad0[0x18];
     /* 0x018 */ s32 item;
@@ -59,30 +59,30 @@ typedef struct RaceBumpFux {
     /* 0x13C */ s32 vx;
     /* 0x140 */ s32 vz;
 } RaceBumpFux;
-void func_800BE914(s32 a, s32 b);
+void RaceHeroesBump(s32 a, s32 b);
 
-/* Extension 0x20000000 as func_800B4708 drives it. */
+/* Extension 0x20000000 as RaceAI_Think drives it. */
 typedef struct EXTraceai {
     /* 0x00 */ s32 unk0[5];
     /* 0x14 */ s32 unk14;
     /* 0x18 */ void (*unk18)(s32 player);
 } EXTraceai;
 extern s32 D_800C6980[];
-void func_800B4708();
-void func_800B372C(s32 arg0);
-void func_800B3890(s32 arg0);
-void func_800B3BC0(s32 arg0);
-s32 func_800B406C(s32 arg0);
-s32 func_800B41DC(s32 arg0);
-s32 func_800B442C(s32 arg0);
+void RaceAI_Think();
+void RaceAI_SpinnerBrake(s32 arg0);
+void RaceAI_AvoidBarrels(s32 arg0);
+void RaceAI_AvoidObjects(s32 arg0);
+s32 RaceAI_UseCloseWeapon(s32 arg0);
+s32 RaceAI_UseAimedWeapon(s32 arg0);
+s32 RaceAI_SteerAtVictim(s32 arg0);
 
-void func_800B4A4C();
-void func_800B8890();
-void func_800B8D68();
+void InitialiseRACEFirst();
+void InitialiseRACE();
+void UpdateRACE();
 
 void PlotRaceFire(NAS *nas);
 
-/* A value func_800B5FFC eases toward its target by a fixed step. */
+/* A value RaceEaseCamStep eases toward its target by a fixed step. */
 typedef struct RaceEase {
     /* 0x00 */ s32 cur;
     /* 0x04 */ s32 target;
@@ -91,7 +91,7 @@ typedef struct RaceEase {
     /* 0x0C */ u8 padC[0x20 - 0xC];
 } RaceEase;
 
-/* The offsets func_800B5FFC eases and adds (>> 8) to a position. */
+/* The offsets RaceEaseCamStep eases and adds (>> 8) to a position. */
 typedef struct RaceEaseCam {
     /* 0x00 */ u8 pad0[0x20];
     /* 0x20 */ RaceEase x;
@@ -107,26 +107,26 @@ typedef struct EXTraceshield {
     /* 0x1C */ s32 unk1C;
 } EXTraceshield;
 
-/* A hero's FUX as func_800B406C reads it: a mode word at 0x18. */
+/* A hero's FUX as RaceAI_UseCloseWeapon reads it: a mode word at 0x18. */
 typedef struct RaceFux18 {
     /* 0x00 */ u8 pad0[0x18];
     /* 0x18 */ s32 mode;
 } RaceFux18;
 
-/* A hero's FUX as func_800C57B4 clears it. */
+/* A hero's FUX as SetRaceHeroIdle clears it. */
 typedef struct RaceHeroFux {
     /* 0x00 */ u8 unk0[0x8C];
     /* 0x8C */ s32 unk8C;
     /* 0x90 */ s32 unk90;
 } RaceHeroFux;
 
-/* A hero's FUX as func_800BB794 clears it: a word at 0x40. */
+/* A hero's FUX as SetRaceHeroRun clears it: a word at 0x40. */
 typedef struct RaceFux40 {
     /* 0x00 */ u8 unk0[0x40];
     /* 0x40 */ s32 unk40;
 } RaceFux40;
 
-/* A hero's FUX as func_800BC2D0 clears it: a word at 0x138. */
+/* A hero's FUX as SetRaceHeroJump clears it: a word at 0x138. */
 typedef struct RaceFux138 {
     /* 0x000 */ u8 unk0[0x138];
     /* 0x138 */ s32 unk138;
@@ -135,12 +135,12 @@ typedef struct RaceFux138 {
 /* Per-hero run speed rows: 3 u16 per hero_name. */
 extern u16 *D_8009D6F4;
 
-/* A hero's FUX as func_800C5470 reads it: a count at 0x3C. */
+/* A hero's FUX as RaceHeroBreatheFire reads it: a count at 0x3C. */
 typedef struct RaceFuxCount {
     /* 0x00 */ u8 unk0[0x3C];
     /* 0x3C */ s32 unk3C;
 } RaceFuxCount;
-/* A hero's FUX as func_800C56D4 fills it. */
+/* A hero's FUX as SetRaceHeroOiled fills it. */
 typedef struct RaceSpinFux {
     /* 0x00 */ u8 unk0[0x20];
     /* 0x20 */ s32 unk20;
@@ -148,13 +148,13 @@ typedef struct RaceSpinFux {
     /* 0x28 */ s32 unk28;
 } RaceSpinFux;
 
-/* A hero's FUX as func_800BC6C8 counts it down: a timer at 0x24. */
+/* A hero's FUX as RaceHeroOiled counts it down: a timer at 0x24. */
 typedef struct RaceFuxTimer {
     /* 0x00 */ u8 unk0[0x24];
     /* 0x24 */ s32 unk24;
 } RaceFuxTimer;
 
-/* Hero FUX pending-spawn flags, as seen by func_800BC984. */
+/* Hero FUX pending-spawn flags, as seen by RaceHeroUsePickup. */
 typedef struct RaceSpawnFux {
     /* 0x000 */ u8 pad0[0x18];
     /* 0x018 */ s32 unk18;
@@ -162,7 +162,7 @@ typedef struct RaceSpawnFux {
     /* 0x130 */ s32 unk130;
 } RaceSpawnFux;
 
-/* Extension 0x10000000 of the NAS spawned by func_800BC984. */
+/* Extension 0x10000000 of the NAS spawned by RaceHeroUsePickup. */
 typedef struct RaceSpawnExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
@@ -170,7 +170,7 @@ typedef struct RaceSpawnExt {
     /* 0x14 */ s32 unk14;
 } RaceSpawnExt;
 
-s32 func_800BC984(s32 player);
+s32 RaceHeroUsePickup(s32 player);
 
 void InitRaceShield(NAS *nas);
 typedef struct EXTracefire {
@@ -215,19 +215,19 @@ typedef struct RaceBounceObj {
     s32 pos;      /* 0x14 */
 } RaceBounceObj;
 
-void func_800C5204(EXTheromove *a, EXTheromove *b);
+void RaceMovesSwap(EXTheromove *a, EXTheromove *b);
 
 extern HeroInfo Heroes[4];
 void SetHeroAction(s32 player, s32 action);
 s32 func_8008C4C8(s32 *arg0, s32 arg1);
 s32 func_8008CEB0(u8 *arg0, u8 *arg1);
 
-s32 func_800C467C(RaceBounceObj *obj, RaceBouncer *b);
+s32 RaceBounceObject(RaceBounceObj *obj, RaceBouncer *b);
 
-s32 func_800C4F30(u8 *arg0);
+s32 RaceDazeHeroNear(u8 *arg0);
 
-void func_800C5F54(void);
-/* D_8005A614 as seen by func_800B8D68. */
+void RACESetUp(void);
+/* D_8005A614 as seen by UpdateRACE. */
 typedef struct RaceGameView {
     /* 0x00 */ u8 unk0[0x10];
     /* 0x10 */ s32 unk10;
@@ -237,7 +237,7 @@ typedef struct RaceGameView {
     /* 0x34 */ s16 unk34;
 } RaceGameView;
 #define G63 ((RaceGameView *)D_8005A614)
-/* D_8005A614 as seen by func_800BF0F8. */
+/* D_8005A614 as seen by RaceMissileHitHeroes. */
 typedef struct RaceGameView2 {
     /* 0x00 */ u8 unk0[4];
     /* 0x04 */ s32 unk4;
@@ -251,7 +251,7 @@ typedef struct RaceGameView2 {
 } RaceGameView2;
 #define G63B ((RaceGameView2 *)D_8005A614)
 
-/* One of four random voice sfx (func_800BBA04; as SFX4 in dino.h). */
+/* One of four random voice sfx (SetRaceHeroDazed; as SFX4 in dino.h). */
 #define RACE_SFX4(a, b, c, d)                              \
     r = Random(4);                                          \
     if (r == 0) {                                           \
@@ -272,7 +272,7 @@ void Set_Clock(u16 time, u16 flags);
 extern s32 D_800C6BA4;
 extern s32 D_800C6BA8;
 
-/* A hero's race FUX, AddExt(nas, 0x174, 0x10000000) in func_800B8890. */
+/* A hero's race FUX, AddExt(nas, 0x174, 0x10000000) in InitialiseRACE. */
 typedef struct RaceFux {
     /* 0x000 */ s32 unk0[3];
     /* 0x00C */ s32 unkC;
@@ -315,7 +315,7 @@ typedef struct RaceFux {
     /* 0x170 */ s32 unk170;
 } RaceFux;
 
-/* Extension 0x20000000 as func_800B8890 sets it up. */
+/* Extension 0x20000000 as InitialiseRACE sets it up. */
 typedef struct RaceAiExt {
     /* 0x00 */ s32 unk0[3];
     /* 0x0C */ s32 unkC;
@@ -325,7 +325,7 @@ typedef struct RaceAiExt {
     /* 0x1C */ s32 unk1C;
 } RaceAiExt;
 
-/* hero->FUX as reset by func_800BAD54. */
+/* hero->FUX as reset by SetRaceHeroOffTrack. */
 typedef struct RaceResetFux {
     /* 0x000 */ u8 unk0[0x18];
     /* 0x018 */ s32 unk18;
@@ -353,7 +353,7 @@ typedef struct RaceResetFux {
     /* 0x168 */ s32 unk168;
 } RaceResetFux;
 
-/* hero->FUX as func_800BAFC8 (the dive) reads it. */
+/* hero->FUX as RaceHeroOffTrack (the dive) reads it. */
 typedef struct RaceDiveFux {
     /* 0x000 */ u8 unk0[0x48];
     /* 0x048 */ s32 unk48;
@@ -370,7 +370,7 @@ typedef struct RaceDiveFux {
     /* 0x144 */ s32 unk144;
 } RaceDiveFux;
 
-/* hero->FUX as func_800BA278 (the swim) reads it. */
+/* hero->FUX as RaceHeroIdle (the swim) reads it. */
 typedef struct RaceSwimFux {
     /* 0x000 */ u8 unk0[0x24];
     /* 0x024 */ s32 unk24;
@@ -427,22 +427,22 @@ extern RaceSpinObj *D_800C69A4;
 extern s32 D_800CA608;
 extern s32 D_800C69AC;
 extern u8 D_800C6B70[];
-s32 func_800B5A70();
+s32 RacePistonPattern();
 
-/* A step of a func_800B5A70 pattern (0xC bytes). */
+/* A step of a RacePistonPattern pattern (0xC bytes). */
 typedef struct RacePatStep {
     /* 0x00 */ s32 hold;
     /* 0x04 */ s32 delay; /* -1: never */
     /* 0x08 */ s32 unk8;
 } RacePatStep;
 
-/* A func_800B5A70 pattern: its steps and its length. */
+/* A RacePistonPattern pattern: its steps and its length. */
 typedef struct RacePattern {
     /* 0x00 */ RacePatStep *steps;
     /* 0x04 */ s32 length;
 } RacePattern;
 
-/* One of the six pistons func_800B5A70 moves (0x1C bytes). */
+/* One of the six pistons RacePistonPattern moves (0x1C bytes). */
 typedef struct RacePiston {
     /* 0x00 */ s32 pos;
     /* 0x04 */ s32 state;
@@ -457,10 +457,10 @@ extern s32 D_800C69A8;
 extern s32 D_800C6BA0;
 
 void MaintainCentre(void);
-void func_800B6474(void);
-void func_800C04EC(void);
-void func_800C0CB4(void);
-/* PadState (D_80051338) as func_800C554C reads it: d-pad bits 0xF0 at 0x50. */
+void RaceUpdateBarrels(void);
+void RacePickupMaster(void);
+void RacePickupRespawn(void);
+/* PadState (D_80051338) as RaceHeroTestIdle reads it: d-pad bits 0xF0 at 0x50. */
 typedef struct RacePad {
     /* 0x00 */ u8 unk0[0x50];
     /* 0x50 */ s32 unk50;
@@ -499,7 +499,7 @@ typedef struct RaceVec4 {
     s32 pad;
 } RaceVec4;
 
-/* A wall segment of a scene collision object (func_800B7190; dino's DinoSeg). */
+/* A wall segment of a scene collision object (RaceTrackCollide; dino's DinoSeg). */
 typedef struct RaceSeg {
     /* 0x00 */ SLONG_XYZ p0;
     /* 0x0C */ SLONG_XYZ p1;
@@ -515,16 +515,16 @@ typedef struct RaceSegObj {
     /* 0x48 */ RaceSeg segs[1];
 } RaceSegObj;
 
-/* D_80058AD0 as func_800B7190 reads it. */
+/* D_80058AD0 as RaceTrackCollide reads it. */
 typedef struct RaceSegScene {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u8 pad4[0xC];
     /* 0x10 */ u8 *data;
 } RaceSegScene;
 
-s32 func_800B7190(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 flags);
+s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 flags);
 
-/* Heading a reflected off a wall of normal angle b (inline copy of func_800C4E54, PlotDinoEgg). */
+/* Heading a reflected off a wall of normal angle b (inline copy of RaceReflectAngle, PlotDinoEgg). */
 static inline s32 RaceBounce(s32 a, s32 b) {
     s32 n[4];
     s32 d[4];
@@ -558,7 +558,7 @@ static inline s32 RaceBounce(s32 a, s32 b) {
         (out) = get_angle(r[0], r[2]) + 0x800;                  \
     }
 
-/* First hero within reach of pos, knocked into action 0x5D, or -1 (inline copy of func_800C4F30). */
+/* First hero within reach of pos, knocked into action 0x5D, or -1 (inline copy of RaceDazeHeroNear). */
 static inline s32 RaceHitHero(u8 *pos) {
     HeroInfo *hero;
     u32 i;
@@ -610,7 +610,7 @@ typedef struct RacePickUpExt {
     /* 0x4C */ s32 unk4C;
 } RacePickUpExt;
 
-/* Pickup spawn slots func_800C0CB4 picks from: an angle and an in-use flag. */
+/* Pickup spawn slots RacePickupRespawn picks from: an angle and an in-use flag. */
 typedef struct RacePickUpSlot {
     /* 0x00 */ s32 angle;
     /* 0x04 */ s32 used;
@@ -619,14 +619,14 @@ extern RacePickUpSlot D_800CA64C[16];
 extern s32 D_800C6CB4;
 extern s32 D_800C6CB0;
 
-/* A hero's FUX as func_800C04EC reads it: a held pick-up and its engine. */
+/* A hero's FUX as RacePickupMaster reads it: a held pick-up and its engine. */
 typedef struct RaceFuxHeld {
     /* 0x00 */ u8 unk0[0x18];
     /* 0x18 */ s32 unk18;
     /* 0x1C */ EXTengine *unk1C;
 } RaceFuxHeld;
 
-/* A hero's FUX as func_800C0CB4 reads it: a state at 0x18. */
+/* A hero's FUX as RacePickupRespawn reads it: a state at 0x18. */
 typedef struct RaceFuxState {
     /* 0x00 */ u8 unk0[0x18];
     /* 0x18 */ s32 unk18;
@@ -724,7 +724,7 @@ void InitBarrelRoll(NAS *m);
 s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
 
 extern NAS *D_800C6920;
-NAS *func_800C5C64(s32 arg0);
+NAS *RaceNearestPickup(s32 arg0);
 
 void InitRaceMissile(NAS *m);
 
@@ -752,7 +752,7 @@ void InitRaceGreenSmokeBoost(NAS *nas);
 
 extern ScriptInit D_800C6F28;
 
-void func_800B9E50(Quat *q);
+void RaceQuatNormalize(Quat *q);
 
 void InitRaceGreenSmokePoof(NAS *nas);
 
@@ -762,23 +762,23 @@ void InitRaceFire(NAS *nas);
 
 void InitTNTCrate(NAS *m);
 
-s32 func_800C5334(s32 arg0);
+s32 RaceTrackAngle(s32 arg0);
 
-s32 func_800C5400(s32 arg0);
+s32 TestRaceHeroWon(s32 arg0);
 
-s32 func_800C554C(s32 arg0);
+s32 RaceHeroTestIdle(s32 arg0);
 
-void func_800C55FC(s32 player);
+void SetRaceHeroKick(s32 player);
 
-void func_800C5918(s32 arg0);
+void RaceInitHero(s32 arg0);
 
-void func_800C5B08(s32 *pos, s32 *polar);
+void RacePolarOf(s32 *pos, s32 *polar);
 
-void func_800C5B94(void);
+void RaceSpawnBarrelRolls(void);
 
-void func_800C5BEC(void);
+void RaceCycleModel(void);
 
-NAS *func_800C5DAC(s32 arg0);
+NAS *RacePickupAhead(s32 arg0);
 /* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
 typedef struct RaceOdds {
     s16 unk0;
@@ -788,9 +788,9 @@ typedef struct RaceOdds {
 
 extern RaceOdds D_8009D87C[];
 
-s32 func_800C5640(u8 *arg0, u32 arg1, s32 arg2);
+s32 RaceOtherHeroNear(u8 *arg0, u32 arg1, s32 arg2);
 
-s32 func_800C5E6C(s32 arg0, s32 arg1);
+s32 RaceAI_TargetShare(s32 arg0, s32 arg1);
 /* Glob extension, AddExt(nas, 0x1C, 0x10000000). */
 typedef struct EXTglob {
     /* 0x00 */ s32 unk0[3];
@@ -804,15 +804,15 @@ extern ScriptInit D_800C6E80;
 
 void InitGlob(NAS *m);
 
-s32 func_800C55A4(s32 arg0);
+s32 RaceHeroTestRun(s32 arg0);
 
-s32 func_800C5A50(s32 player);
-/* A scene object in the list at D_80058AD0 + 0x1C (func_800B5F04). */
+s32 RaceJumpUp(s32 player);
+/* A scene object in the list at D_80058AD0 + 0x1C (RaceInitBarrels). */
 typedef struct RaceSceneObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ SLONG_XYZ pos;
     /* 0x10 */ u8 pad10[2];
-    /* 0x12 */ s16 angle; /* set by func_800B5778 */
+    /* 0x12 */ s16 angle; /* set by RaceInitSpinners */
     /* 0x14 */ u8 pad14[0x51 - 0x14];
     /* 0x51 */ u8 unk51;
     /* 0x52 */ u8 pad52[0x5C - 0x52];
@@ -823,21 +823,21 @@ typedef struct RaceSceneObj {
     /* 0x74 */ u16 index;
 } RaceSceneObj;
 
-/* An RaceSceneObj's model as func_800B5778 reads it. */
+/* An RaceSceneObj's model as RaceInitSpinners reads it. */
 typedef struct RaceSceneModel {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ u8 *unkC; /* passed to entity_address */
 } RaceSceneModel;
 extern s32 D_800CA604;
 
-/* A collision normal (8 bytes, copied whole) read by func_800B6DBC. */
+/* A collision normal (8 bytes, copied whole) read by RaceFloorHeight. */
 typedef struct RaceNorm {
     s16 x, y, z, pad;
 } RaceNorm;
 
-s32 func_800B66C4(SLONG_XYZ *pos, s16 *tri);
+s32 RaceTriHeight(SLONG_XYZ *pos, s16 *tri);
 
-/* D_80058AD0 as seen by func_800B5F04. */
+/* D_80058AD0 as seen by RaceInitBarrels. */
 typedef struct RaceScene {
     /* 0x00 */ u8 pad0[0x1C];
     /* 0x1C */ RaceSceneObj *objs;
@@ -867,7 +867,7 @@ typedef struct RaceBarrelView {
 extern RaceBarrelView D_800C6F34[128];
 extern s32 D_800C66F0;
 
-/* A hero's NAS.FUX as func_800BE7B4 sees it (velocities). */
+/* A hero's NAS.FUX as RaceBarrelBump sees it (velocities). */
 typedef struct RaceFuxView {
     /* 0x000 */ u8 pad0[0x13C];
     /* 0x13C */ s32 unk13C;
@@ -876,14 +876,14 @@ typedef struct RaceFuxView {
     /* 0x164 */ s32 unk164; /* bounce factor, 8.8 (0x100 at setup) */
 } RaceFuxView;
 
-void func_800BE7B4(s32 player, RaceBarrelView *b);
+void RaceBarrelBump(s32 player, RaceBarrelView *b);
 
-void func_800B5F04(void);
+void RaceInitBarrels(void);
 
-s32 func_800BCD1C(s32 arg0);
+s32 RaceHeroTestOil(s32 arg0);
 
-void func_800C57B4(s32 player);
-/* D_8005A614 as seen by func_800C310C. */
+void SetRaceHeroIdle(s32 player);
+/* D_8005A614 as seen by RaceExplodeHitHeroes. */
 typedef struct D5A614View63 {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -899,13 +899,13 @@ typedef struct D5A614View63 {
 extern u16 D_800AD12C;
 extern HeroInfo Heroes[4];
 
-void func_800BC7C4(s32 arg0);
+void RaceHeroKick(s32 arg0);
 
-s32 func_800C310C(SLONG_XYZ *pos);
+s32 RaceExplodeHitHeroes(SLONG_XYZ *pos);
 
-s32 func_800C50B0(u8 *arg0, s32 arg1);
+s32 RaceHeroNear(u8 *arg0, s32 arg1);
 
-void func_800C5854(s32 *arg0, s32 *arg1);
+void RaceAxisAngleToQuat(s32 *arg0, s32 *arg1);
 
 extern s32 D_800C66CC;
 extern s32 D_800C66D0;
@@ -916,7 +916,7 @@ extern s32 D_800C66E0;
 extern s32 D_800C66E4;
 extern s32 D_800C66E8;
 extern s32 D_800CA534[];
-/* boost tables indexed by odds - 0x16 (func_800B8FD8) */
+/* boost tables indexed by odds - 0x16 (RacePreMoveHero) */
 extern s32 D_800C6BE4[];
 extern s32 D_800C6C10[];
 
@@ -927,17 +927,17 @@ typedef struct {
 } RaceShort3;
 extern RaceShort3 D_800C6BB4[8];
 
-s32 func_800B35CC(s32 arg0);
+s32 RaceAI_PickVictim(s32 arg0);
 
-void func_800B8F04(s32 arg0);
+void RaceInitHeroMove(s32 arg0);
 
-void func_800BCDAC(s32 player);
+void SetRaceHeroWinner(s32 player);
 
-s32 func_800BF0F8(u8 *arg0, u32 arg1);
+s32 RaceMissileHitHeroes(u8 *arg0, u32 arg1);
 
-void func_800C5154(s32 player);
+void RaceFireMissile(s32 player);
 
-s32 func_800C5978(s32 player);
+s32 RaceFallToFloor(s32 player);
 
 /* Ripple extension (id 0x10000000) as PlotRippled reads it. */
 typedef struct EXTripple {
@@ -948,29 +948,29 @@ typedef struct EXTripple {
     /* 0x18 */ u16 fade;
 } EXTripple;
 
-void func_800B5528(s32 player, SLONG_XYZ *pos);
+void RaceAI_SteerTo(s32 player, SLONG_XYZ *pos);
 
-void func_800B5660(s32 arg0);
-/* Six object pointers walked by func_800B372C and others. */
+void RaceAI_ChasePickup(s32 arg0);
+/* Six object pointers walked by RaceAI_SpinnerBrake and others. */
 extern s32 D_800CA544[];
 
 s32 XZBoxToSphere(s32 obj, SLONG_XYZ *a, s32 b, SLONG_XYZ *c);
 
-void func_800B5FFC(RaceEaseCam *c, s32 *pos);
+void RaceEaseCamStep(RaceEaseCam *c, s32 *pos);
 
-void func_800BB794(s32 player);
+void SetRaceHeroRun(s32 player);
 
-s32 func_800BCC20(s32 arg0);
+s32 RaceHeroTestJump(s32 arg0);
 
 void InitRacePickUp(NAS *m);
 
 void InitDinoEgg(NAS *m);
 
-s32 func_800C4E54(s32 a, s32 b);
+s32 RaceReflectAngle(s32 a, s32 b);
 
-s32 func_800C5470(s32 arg0);
+s32 RaceHeroBreatheFire(s32 arg0);
 
-void func_800C56D4(s32 player);
+void SetRaceHeroOiled(s32 player);
 
 /* Track glob extension, AddExt(nas, 0x8C, 0x10000000). */
 typedef struct EXTtrackglob {
@@ -997,36 +997,36 @@ extern ScriptInit D_800C6EA4;
 extern u8 *D_800C66EC;
 extern s32 D_800C6EB0;
 
-void func_800B372C(s32 player);
+void RaceAI_SpinnerBrake(s32 player);
 
-void func_800B48EC(s32 player);
+void RaceInitHeroAngle(s32 player);
 
-s32 func_800B6108(RaceBarrelView *b);
+s32 RaceBarrelHitHero(RaceBarrelView *b);
 
-void func_800BC2D0(s32 player);
+void SetRaceHeroJump(s32 player);
 
-void func_800BC6C8(s32 arg0);
+void RaceHeroOiled(s32 arg0);
 
 void InitRaceVolcano(NAS *nas);
 
 void InitTrackGlob(NAS *m);
 
-void func_800C44B0(void);
+void RaceResetJumps(void);
 
-/* A hero's FUX as func_800BC4B0 reads it: a jump phase at 0x138. */
+/* A hero's FUX as RaceHeroJump reads it: a jump phase at 0x138. */
 typedef struct RaceJumpFux {
     /* 0x000 */ u8 pad0[0x138];
     /* 0x138 */ s32 phase;
 } RaceJumpFux;
 
-/* 4.12 fixed-point product rounded to nearest (func_800BA004). */
+/* 4.12 fixed-point product rounded to nearest (RaceEulerToQuat). */
 static inline s32 RaceFixMul(s32 a, s32 b) {
     return ((a * b) >= 0 ? (a * b) + 0x800 : (a * b) - 0x800) >> 12;
 }
 
-/* Inline copy of func_800C5A50: steps the jump, true once above D_800C6930. */
-/* Inline copy of func_800C5A50: steps a hero's jump and reports a landing
- * above the floor (D_800C6930), as func_800BC0A4 inlines it. */
+/* Inline copy of RaceJumpUp: steps the jump, true once above D_800C6930. */
+/* Inline copy of RaceJumpUp: steps a hero's jump and reports a landing
+ * above the floor (D_800C6930), as RaceHeroDazed inlines it. */
 static inline s32 RaceJumpAbove(s32 player) {
     EXTheromove *move;
     EXTengine *eng;
@@ -1048,15 +1048,15 @@ static inline s32 RaceJumpAbove(s32 player) {
     return 0;
 }
 
-s32 func_800B96B0(s32 arg0, s32 arg1);
+s32 RaceKeepOnTrack(s32 arg0, s32 arg1);
 
-void func_800BA004(VECTOR *ang, Quat *q);
+void RaceEulerToQuat(VECTOR *ang, Quat *q);
 
-void func_800BB878(s32 player);
+void RaceHeroRun(s32 player);
 
-void func_800BC0A4(s32 arg0);
+void RaceHeroDazed(s32 arg0);
 
-void func_800BC4B0(s32 player);
+void RaceHeroJump(s32 player);
 extern s32 D_800CA544[];
 
 typedef struct RaceBoxHalf {
@@ -1078,7 +1078,7 @@ static inline s32 RaceBoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
 
 s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
 
-/* Spawns the 0x1605 puff at v (func_800B6474). */
+/* Spawns the 0x1605 puff at v (RaceUpdateBarrels). */
 static inline void RaceSpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
     NAS *nas;
     s32 *ext;
@@ -1101,9 +1101,9 @@ static inline void RaceSpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
     }
 }
 
-s32 func_800B345C(s32 player);
+s32 RaceAI_DodgeSpinners(s32 player);
 
-void func_800BAD54(s32 player);
+void SetRaceHeroOffTrack(s32 player);
 
 /* A hero's FUX as PlotRaceTag counts it down. */
 typedef struct RaceTagFux {
@@ -1129,11 +1129,11 @@ typedef struct RaceTagExt {
 
 extern s32 D_800C6928;
 
-s32 func_800B4D64(s32 *arg0, s32 arg1, s32 *arg2);
+s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2);
 
-s32 func_800B62F4(RaceBarrelView *self);
+s32 RaceBarrelSpaceFree(RaceBarrelView *self);
 
-void func_800C0F5C(void);
+void RaceInitStub(void);
 
 void PlotRaceTag(NAS *m);
 
@@ -1141,7 +1141,7 @@ void PlotBarrelRoll(NAS *nas);
 
 void InitRaceSmokeBoost(NAS *nas);
 
-/* A hero's FUX as func_800C0218 counts laps in it. */
+/* A hero's FUX as RaceCountLaps counts laps in it. */
 typedef struct RaceLapFux {
     /* 0x000 */ u8 pad0[0x30];
     /* 0x030 */ s32 cross;
@@ -1155,9 +1155,9 @@ typedef struct RaceLapFux {
 extern s32 D_8005A618;
 extern void (*D_8009D74C)(s32, s32);
 
-void func_800B5778(void);
+void RaceInitSpinners(void);
 
-void func_800C0218(s32 player);
+void RaceCountLaps(s32 player);
 
 void PlotGlob(NAS *m);
 
@@ -1224,24 +1224,24 @@ extern void *D_8009D900;
 extern void *D_8009D904;
 extern s32 D_80051658;
 
-/* Tables func_800B4A4C hooks into the engine. */
+/* Tables InitialiseRACEFirst hooks into the engine. */
 extern u8 D_800C68F8[], D_800C690C[], D_800C6960[], D_8008B29C[], D_8008B418[];
 extern u8 D_800C63FC[], D_800C6410[], D_800C6424[], D_800C6430[], D_800C6448[], D_800C645C[];
 extern u8 D_800C64B0[], D_800C64C4[], D_800C64D8[], D_800C64E4[], D_800C64FC[], D_800C6510[];
 extern u8 D_800C6564[], D_800C6578[], D_800C658C[], D_800C6598[], D_800C65B0[], D_800C65C4[];
 extern u8 D_800C6618[], D_800C662C[], D_800C6640[], D_800C664C[], D_800C6664[], D_800C6678[];
-s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1);
+s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1);
 
-void func_800B8FD8();
-void func_800B980C(s32 player);
-void func_800BAFC8(s32 player);
+void RacePreMoveHero();
+void RaceMoveHero(s32 player);
+void RaceHeroOffTrack(s32 player);
 
-void func_800BBA04(s32 player);
+void SetRaceHeroDazed(s32 player);
 
-void func_800BD99C(s32 arg0, u16 arg1);
-void func_800BCE88();
+void RaceChooseWinner(s32 arg0, u16 arg1);
+void RaceChooseWinnerTeam();
 
-/* hero->FUX as func_800BD99C (round result) reads it. */
+/* hero->FUX as RaceChooseWinner (round result) reads it. */
 typedef struct RaceResultFux {
     /* 0x000 */ u8 unk0[0x128];
     /* 0x128 */ _sfx_handler *unk128;
@@ -1249,7 +1249,7 @@ typedef struct RaceResultFux {
     /* 0x148 */ s32 unk148;
 } RaceResultFux;
 
-/* D_8005A614 as seen by func_800BD99C (round result). */
+/* D_8005A614 as seen by RaceChooseWinner (round result). */
 typedef struct RaceResultView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;
@@ -1266,7 +1266,7 @@ typedef struct RaceResultView {
 } RaceResultView;
 #define RV ((RaceResultView *)D_8005A614)
 
-/* func_800BD99C: a drawn round, counting with the caller's i. */
+/* RaceChooseWinner: a drawn round, counting with the caller's i. */
 #define RACE_DRAW_I(g, i, arg1)                                            \
     (g)->unk60 = 0;                                                         \
     (g)->unk30 |= (arg1);                                                   \
@@ -1274,7 +1274,7 @@ typedef struct RaceResultView {
         Heroes[i].hero_status |= 0x100;                                     \
     }
 
-/* func_800BD99C: team w wins by total, re-reading the team indices. */
+/* RaceChooseWinner: team w wins by total, re-reading the team indices. */
 #define RACE_TEAM_WIN_BY(g, hb, w, l)                                      \
     (g)->unk30 |= 0x800;                                                    \
     (g)->unk60 = hb[w].hero_name;                                           \
@@ -1288,7 +1288,7 @@ typedef struct RaceResultView {
     hb[l].hero_shadow->sub->flags &= ~0x8000;                               \
     hb[hb[l].hero_teammate].hero_shadow->sub->flags &= ~0x8000;
 
-/* func_800BD99C: hero p's facing, printed (func_800C5334's sum unfolded). */
+/* RaceChooseWinner: hero p's facing, printed (RaceTrackAngle's sum unfolded). */
 static inline s32 RaceFacing(s32 p) {
     EXTengine *eng;
     s32 ang;
@@ -1303,7 +1303,7 @@ static inline s32 RaceFacing(s32 p) {
 }
 
 
-/* func_800BCE88: a drawn round (every hero gets 0x100). */
+/* RaceChooseWinnerTeam: a drawn round (every hero gets 0x100). */
 #define RACE_DRAW(k, arg1)                                 \
     {                                                       \
         s32 k;                                              \
@@ -1314,7 +1314,7 @@ static inline s32 RaceFacing(s32 p) {
         }                                                   \
     }
 
-/* func_800BCE88: team w/wt wins, l/lt lose and lose their shadows. */
+/* RaceChooseWinnerTeam: team w/wt wins, l/lt lose and lose their shadows. */
 #define RACE_TEAM_WIN(w, wt, l, lt)                        \
     D_8005A614[0x60] = Heroes[w].hero_name;                 \
     D_8005A614[0x61] = Heroes[wt].hero_name;                \
@@ -1327,9 +1327,9 @@ static inline s32 RaceFacing(s32 p) {
     Heroes[lt].hero_status |= 0x8000;                       \
     Heroes[lt].hero_shadow->sub->flags &= ~0x8000;
 
-void func_800BA278(s32 player);
+void RaceHeroIdle(s32 player);
 
-s32 func_800BEBC0(s32 player);
+s32 RaceHeroCollide(s32 player);
 
 void PlotRaceMissile(NAS *m);
 
@@ -1347,7 +1347,7 @@ void PlotDac(NAS *nas);
 
 extern char D_800B3310[];
 
-/* func_800B76A4: wall segments of a scene collision object (as dino's func_800B9020). */
+/* RaceTrackCollideB: wall segments of a scene collision object (as dino's func_800B9020). */
 typedef struct RaceVec {
     s32 vx, vy, vz;
 } RaceVec;
@@ -1371,7 +1371,7 @@ typedef struct RaceRot {
     s16 ang; /* 0x12 */
 } RaceRot;
 
-/* The blend between two collision objects func_800B76A4 takes. */
+/* The blend between two collision objects RaceTrackCollideB takes. */
 typedef struct RaceSegBlend {
     s32 t;          /* 0x0 */
     s32 unk4;
@@ -1379,8 +1379,8 @@ typedef struct RaceSegBlend {
     RaceRot *rot;  /* 0xC */
 } RaceSegBlend;
 
-s32 func_800B76A4(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, RaceSegBlend *bl);
+s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, RaceSegBlend *bl);
 
-s32 func_800B7D94(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, SVECTOR *rot);
+s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, SVECTOR *rot);
 
 #endif /* BASH_RACE_OVL_H */

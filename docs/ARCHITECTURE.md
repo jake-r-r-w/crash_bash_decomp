@@ -692,6 +692,20 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Race** (race, the hover-board races; functions named 2026-10-26). Modes
+  0x17..0x1A (`LEV_DASH`, `TOXIC`, `WATER`, `LAVA`; Water sets its own hero
+  models and moves). `RACESetUp` fills `InitialiseRACEFirst`, `InitialiseRACE`,
+  `UpdateRACE` and `FirstTriggersRACE`; the engine hooks are `RaceInitHero`,
+  `RacePreMoveHero`, `RaceMoveHero`, `Race_HeroBot` and the winner choice
+  (`RaceChooseWinner`, or `RaceChooseWinnerTeam` in the 0x20/0x40/0x80
+  game-flag modes). The hero states are `HEROFunc` pairs 91..98
+  (`HEROmode_raceidle` .. `racewinner`, actions 0x5B..0x62). The level runs the
+  spinners and pistons (`RaceInitSpinners`, `RacePistonPattern` from
+  `MaintainCentre`), the rolling barrels (`RaceInitBarrels`, `RaceUpdateBarrels`,
+  the leak's `RaceBarrel`), laps (`RaceCountLaps`) and the pickups
+  (`RacePickupMaster`); about twenty functions nothing in the overlay calls
+  (`RaceTrackCollideB`/`C`, `RaceKeepOnTrack`, `RaceDazeHeroNear`, ...) are
+  named from their code.
 - **Papu's data** (papu, the crate games' boss; named 2026-10-26). Mode 4
   (`LEV_PAPU`); one engine world record (0x0105) points at `PAPU_PREMAP`,
   `papu_shell_info` and `PAPUSetUp`, the per-mode table at `file_group_PAPU`
