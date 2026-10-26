@@ -125,11 +125,17 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    typed with their structs from `tank.h` and the Oct 9 types) and check
    each step with `make check`. Data order inside a section follows
    definition order in the file, so keep the blocks in address order.
-4. **The engine's AST table as C** (`EngineASTTable`, `0x80098720`, `{id,
-   Init, Plot}` x 0xAE in `asm/data/overlays/engine/engine_data.data.s`): its
-   slot entries are raw `.word 0x800B...` numbers. As C with symbols, the
-   engine has to link against every overlay's symbol names (14 overlays
-   share the slot's addresses, so splat can't name them by address).
+4. **The engine's AST table as C: done** (2026-10-26). `asttable.c` is a
+   data-only unit between two pieces of the engine's asm data (`engine_data`,
+   `engine_data_2`; splat accepts a `.data` subsegment with no `c` one). The
+   Makefile links every slot overlay first, `slot_syms.py` reads the names
+   the table leaves undefined from their ELFs and writes
+   `build/engine_slot_syms.ld` for the engine's link (302 symbols). Left
+   for typing: 145 local prototypes in `asttable.c` (functions whose owner
+   headers don't declare them, or declare them otherwise: `80083708.h` has
+   `InitWeatherNas(u8 *)` where the leak's `polar.h` says `NAS *`, so the
+   file doesn't include the engine headers). Move each to its owner header
+   as the overlays are typed.
 5. **The shiftable build**: pad, relink the engine, rebuild
    `CRASHBSH.DAT` and its index for a grown entry (`pack_disc.py` and
    `dat.py` today only allow shrinking), stay inside the slot (up to
@@ -532,6 +538,16 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (the engine's AST table is C):** `src/overlays/engine/asttable.c`
+  (generated from the retail table): 174 `{id, Init, Plot}` entries by name,
+  every id an Oct 9 AST enum constant; the 7 entries whose id group doesn't
+  match their overlay (the Polar ids in `ovl63`/`ovl6a`, `0x0203`/`0x0204` in
+  `ovl5e`) resolved by the one overlay with a function there. New
+  `tools/scripts/slot_syms.py` (tested) and a Makefile step give the
+  engine's link the slot functions' addresses from the overlays' ELFs, so a
+  moved overlay moves its entries. `make verify` and `disc-check` OK; data
+  in C 4.79% -> 5.24%.
 
 - **2026-10-26 (Tank's data is C):** `tools/scripts/data2c.py` (tested)
   writes an overlay's asm data as typed C definitions from the retail

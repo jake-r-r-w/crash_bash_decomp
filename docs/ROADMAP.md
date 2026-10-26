@@ -178,11 +178,12 @@ retail does. The recipe is written up for Phase 4.
 - [ ] Tank's asset files extract: list the `CRASHBSH.DAT` entries its
   `file_group_TANK*` groups load and check each decodes (docs/ASSETS.md); a
   format still kept as bytes gets decoded here.
-- [ ] The engine's AST table (`EngineASTTable`, `0x80098720`) as C with
-  symbols: its slot entries are numbers today (`.word 0x800B...`), so a
-  moved overlay would still be called at its old addresses. The engine
-  links against each overlay's symbols for it (an id's high byte says which
-  overlay).
+- [x] The engine's AST table (`EngineASTTable`, `0x80098720`) as C with
+  symbols: its slot entries were numbers (`.word 0x800B...`), so a moved
+  overlay would still be called at its old addresses. Done 2026-10-26:
+  `src/overlays/engine/asttable.c`, all 174 entries by name with the AST
+  enums' ids; the engine's link takes the slot functions' addresses from
+  the overlays' own links (`tools/scripts/slot_syms.py`, a Makefile step).
 - [ ] A shiftable `NON_MATCHING` build: an option (say `make shift OVL=ovl5f
   PAD=N`) that pads a source-only slot overlay's code and data so every
   address in it moves, relinks the engine's AST table against it and packs a

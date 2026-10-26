@@ -365,6 +365,11 @@ code finds 15 code files; nothing else on the disc holds code.
   layout), so a real `switch` in a first file links at the retail table
   address; before the split it landed 4 bytes off, and the two matched ones
   (ovl61) had been `&&label` tables.
+- **The AST table is C** (2026-10-26): `src/overlays/engine/asttable.c`, a data-only unit
+  in the engine's `.data`. Its entries name the slot overlays' functions, and since the
+  overlays share one address range and link on their own, the engine's link gets those
+  names from the overlays' ELFs (`tools/scripts/slot_syms.py`, `build/engine_slot_syms.ld`):
+  a build that moves an overlay moves its table entries with it.
 - **Which game is which**: the engine's AST table at `0x80098720`
   (`{id, Init, Plot}` x 0xAE) points into the slot. Groups by id high byte:
   `0x13` -> `ovl5f`, `0x14` -> `ovl60` (Pogo), `0x15` -> `ovl61` (Arkenoid),

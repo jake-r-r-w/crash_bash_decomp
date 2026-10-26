@@ -66,6 +66,8 @@ segments:
       - [0x1D3FC, c, overlays/engine/8009608c]    # after func_800952F8, by func_8009608C
       # .data: written by the engine; the last word (0x800ADBCC) is followed by 8-byte alignment
       - [0x1F904, data, overlays/engine/engine_data]
+      - [0x1FA90, .data, overlays/engine/asttable]   # EngineASTTable, C (src/overlays/engine/asttable.c)
+      - [0x202B8, data, overlays/engine/engine_data_2]
       # .rodata: switch tables and strings, one block per file (first jtbl_800ADBD8 .. last ends 0x800AEC58)
       - [0x34F48, .rodata, overlays/engine/engine]
       - [0x34F9C, .rodata, overlays/engine/panel]

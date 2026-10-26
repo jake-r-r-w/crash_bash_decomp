@@ -154,7 +154,17 @@ $(TARGET): $(ELF)
 build/%.ovl.elf: linkers/%.ld $(O_FILES)
 	$(LD) -nostdlib --no-check-sections -Map build/$*.map \
 	  -T $< -T linkers/$*_undefined_syms_auto.txt -T linkers/$*_undefined_funcs_auto.txt \
-	  -T $(CFG)/undefined_syms_manual.txt -o $@
+	  -T $(CFG)/undefined_syms_manual.txt $(if $(filter engine,$*),-T $(SLOT_SYMS)) -o $@
+
+# The engine's AST table (src/overlays/engine/asttable.c) names the slot overlays' Init/Plot
+# functions: their addresses come from the overlays' own links, so a moved overlay moves its
+# entries (tools/scripts/slot_syms.py). The overlays link against the engine's fixed addresses,
+# not its ELF, so they can link first.
+SLOT_OVLS := $(filter-out engine,$(OVLS))
+SLOT_SYMS := build/engine_slot_syms.ld
+$(SLOT_SYMS): build/src/overlays/engine/asttable.c.o $(SLOT_OVLS:%=build/%.ovl.elf) tools/scripts/slot_syms.py
+	python3 tools/scripts/slot_syms.py $@ build/src/overlays/engine/asttable.c.o -- $(SLOT_OVLS:%=build/%.ovl.elf)
+build/engine.ovl.elf: $(SLOT_SYMS)
 
 build/%.bin: build/%.ovl.elf
 	$(OBJCOPY) -O binary $< $@
