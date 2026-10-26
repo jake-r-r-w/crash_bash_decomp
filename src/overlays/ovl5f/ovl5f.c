@@ -6660,7 +6660,7 @@ void PlotTankBossRocketTurret(NAS *nas) {
     }
 }
 
-void func_800C4320(NAS *nas, s32 id) {
+void InitMoeJoe(NAS *nas, s32 id) {
     EXTengine *eng;
     subengine *sub;
     subengine *s;
@@ -6721,7 +6721,7 @@ void func_800C4320(NAS *nas, s32 id) {
     }
 }
 
-void func_800C44E8(s32 arg0) {
+void LoopMoeJoeMoveAnim(s32 arg0) {
     if (arg0 == 3) {
         s32 val;
         D_800CB24C = D_800CAA0C;
@@ -6735,7 +6735,7 @@ void func_800C44E8(s32 arg0) {
     }
 }
 
-void func_800C4548(s32 player) {
+void AnimateMoeJoeTurret(s32 player) {
     TA_player *ta;
     EXTengine *eng;
     EXTengine *e;
@@ -6846,7 +6846,7 @@ void func_800C4548(s32 player) {
     }
 }
 
-void func_800C49F8(s32 arg0) {
+void SetMoeJoeIdle(s32 arg0) {
     EXTengine *eng;
     s32 pad[2];
 
@@ -6881,7 +6881,7 @@ void func_800C49F8(s32 arg0) {
     }
 }
 
-void func_800C4B60(s32 arg0) {
+void SetMoeJoeMove(s32 arg0) {
     if (arg0 == 3) {
         s32 val;
         D_800CB24C = D_800CAA0C;
@@ -6895,7 +6895,7 @@ void func_800C4B60(s32 arg0) {
     }
 }
 
-void func_800C4BC0(s32 arg0) {
+void SetMoeJoeRecoil(s32 arg0) {
     s32 val;
     s32 val2;
     s32 *p;
@@ -6928,7 +6928,7 @@ void func_800C4BC0(s32 arg0) {
     }
 }
 
-void func_800C4D04(s32 hero, s32 last_mode) {
+void SetMoeJoeDead(s32 hero, s32 last_mode) {
     subengine *s;
 
     Heroes[hero].hero_hit = 0;
@@ -6948,7 +6948,7 @@ void func_800C4D04(s32 hero, s32 last_mode) {
     }
 }
 
-void func_800C4DCC(s32 player) {
+void MoeJoeMove(s32 player) {
     EXTengine *eng;
     EXTengine *e;
     subengine *sub;
@@ -6989,7 +6989,7 @@ void func_800C4DCC(s32 player) {
         D_8009D60C->unk74 = v;
     }
     if (v == 0) {
-        func_800C44E8(player);
+        LoopMoeJoeMoveAnim(player);
     }
     if (D_800CB0F0 != 0) {
         return;
@@ -7125,7 +7125,7 @@ found:
     }
 }
 
-void func_800C53B0(s32 arg0) {
+void MoeJoeRecoil(s32 arg0) {
     EXTengine *eng;
     TA_player *p;
     HeroInfo *h;
@@ -7183,16 +7183,16 @@ void func_800C53B0(s32 arg0) {
         h->hero_last_mode = last;
         switch (mode) {
         case 0x6C:
-            func_800C49F8(arg0);
+            SetMoeJoeIdle(arg0);
             break;
         case 0x6E:
-            func_800C4B60(arg0);
+            SetMoeJoeMove(arg0);
             break;
         case 0x69:
-            func_800C4BC0(arg0);
+            SetMoeJoeRecoil(arg0);
             break;
         case 0x6B:
-            ((void (*)(s32))func_800C4D04)(arg0);
+            ((void (*)(s32))SetMoeJoeDead)(arg0);
             break;
         case 0x6A:
         case 0x6D:
@@ -7212,7 +7212,7 @@ void func_800C53B0(s32 arg0) {
     }
 }
 
-void func_800C5620(s32 arg0) {
+void MoeJoeDie(s32 arg0) {
     s32 val;
     EXTengine *eng;
     s32 *pos;
@@ -7250,11 +7250,11 @@ void func_800C5620(s32 arg0) {
         mode = Heroes[arg0].hero_mode;
         Heroes[arg0].hero_mode = 0x6B;
         Heroes[arg0].hero_last_mode = mode;
-        func_800C4D04(arg0, mode);
+        SetMoeJoeDead(arg0, mode);
     }
 }
 
-void func_800C57B0(NAS *nas, s32 id) {
+void MoeJoeBecomeHero(NAS *nas, s32 id) {
     EXTengine *eng;
     subengine *sub;
     HeroInfo *h;
@@ -7346,7 +7346,7 @@ void func_800C57B0(NAS *nas, s32 id) {
     mode = Heroes[p].hero_mode;
     Heroes[p].hero_mode = 0x6E;
     Heroes[p].hero_last_mode = mode;
-    func_800C4B60(p);
+    SetMoeJoeMove(p);
     sub = eng->sub;
     sub->unk68 = 0;
     sub = sub->next;
@@ -7355,7 +7355,7 @@ void func_800C57B0(NAS *nas, s32 id) {
     sub = sub->next;
     sub->unk51 = 1;
     sub->unk68 = 0;
-    func_800C49F8(p);
+    SetMoeJoeIdle(p);
     tb = TA_players;
     ta = &tb[p];
     ta->Speed = 0x1A;
@@ -7397,7 +7397,7 @@ void func_800C57B0(NAS *nas, s32 id) {
     }
 }
 
-void func_800C5BCC(NAS *nas, s32 id) {
+void PlotMoeJoeHero(NAS *nas, s32 id) {
     EXTengine *eng;
     TA_player *ta;
     s32 p;
@@ -7417,16 +7417,16 @@ void func_800C5BCC(NAS *nas, s32 id) {
         mode = Heroes[p].hero_mode;
         Heroes[p].hero_mode = 0x6E;
         Heroes[p].hero_last_mode = mode;
-        func_800C4B60(p);
+        SetMoeJoeMove(p);
         break;
     case 0x6E:
-        func_800C4DCC(p);
+        MoeJoeMove(p);
         break;
     case 0x69:
-        func_800C53B0(p);
+        MoeJoeRecoil(p);
         break;
     case 0x6A:
-        func_800C5620(p);
+        MoeJoeDie(p);
         break;
     case 0x6B:
         HeroGhost(p);
@@ -7444,7 +7444,7 @@ void func_800C5BCC(NAS *nas, s32 id) {
     if (eng->unk10.z < 0x100) {
         eng->unk10.z = 0x100;
     }
-    func_800C4548(p);
+    AnimateMoeJoeTurret(p);
     if (D_8005A648 != 5) {
         x = eng->unk10.x;
         dz = eng->unk10.z - eng->OldXYZ.z;
@@ -7477,7 +7477,7 @@ void func_800C5BCC(NAS *nas, s32 id) {
     }
 }
 
-void func_800C60AC(NAS *nas, s32 id) {
+void PlotMoeJoe(NAS *nas, s32 id) {
     JoeMoeFux *fux;
     EXTengine *eng;
     subengine *sub;
@@ -7492,7 +7492,7 @@ void func_800C60AC(NAS *nas, s32 id) {
     eng = nas->Engine;
     sub = eng->sub;
     if (fux->unk30 == 0x3B) {
-        func_800C5BCC(nas, id);
+        PlotMoeJoeHero(nas, id);
         return;
     }
     if (D_800CB0F0 != 0) {
@@ -7539,7 +7539,7 @@ void func_800C60AC(NAS *nas, s32 id) {
                 }
             }
             if (eng->unk10.z <= 0xF00) {
-                func_800C57B0(nas, id);
+                MoeJoeBecomeHero(nas, id);
                 fux->unk30 = 0x3B;
             }
             break;
@@ -7772,35 +7772,35 @@ void func_800C60AC(NAS *nas, s32 id) {
     sub->unk74 = anim;
 }
 
-void func_800C60AC(NAS *nas, s32 id);
+void PlotMoeJoe(NAS *nas, s32 id);
 
 void PlotJoe(NAS *nas) {
-    func_800C60AC(nas, 0x131F);
+    PlotMoeJoe(nas, 0x131F);
 }
 
-void func_800C4320(NAS *nas, s32 id);
+void InitMoeJoe(NAS *nas, s32 id);
 
 void InitJoe(NAS *nas) {
-    func_800C4320(nas, 0x131F);
+    InitMoeJoe(nas, 0x131F);
 }
 
 void PlotMoe(NAS *nas) {
-    func_800C60AC(nas, 0x131E);
+    PlotMoeJoe(nas, 0x131E);
 }
 
 void InitMoe(NAS *nas) {
-    func_800C4320(nas, 0x131E);
+    InitMoeJoe(nas, 0x131E);
 }
 
-void func_800C68A8(void) {
+void MoeJoeDead(void) {
     HeroGhost();
 }
 
-void func_800C68C8(s32 arg0) {
+void SwitchMoeJoeToMove(s32 arg0) {
     u16 prev = Heroes[arg0].hero_mode;
     Heroes[arg0].hero_mode = 0x6E;
     Heroes[arg0].hero_last_mode = prev;
-    func_800C4B60(arg0);
+    SetMoeJoeMove(arg0);
 }
 
 void SetMoeJoeMode(s32 hero, s32 mode) {
@@ -7810,16 +7810,16 @@ void SetMoeJoeMode(s32 hero, s32 mode) {
     Heroes[hero].hero_last_mode = last;
     switch (mode) {
     case 0x6C:
-        ((void (*)())func_800C49F8)();
+        ((void (*)())SetMoeJoeIdle)();
         break;
     case 0x6E:
-        ((void (*)())func_800C4B60)();
+        ((void (*)())SetMoeJoeMove)();
         break;
     case 0x69:
-        ((void (*)())func_800C4BC0)();
+        ((void (*)())SetMoeJoeRecoil)();
         break;
     case 0x6B:
-        func_800C4D04(hero, mode);
+        SetMoeJoeDead(hero, mode);
         break;
     case 0x6A:
     case 0x6D:

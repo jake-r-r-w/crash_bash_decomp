@@ -46,7 +46,7 @@ extern u8 D_800C9EC4[];
 void InitTotemBit(NAS *nas, s32 id);
 void PlotTotemBit(NAS *nas, s32 id);
 
-void func_800C68A8(void);
+void MoeJoeDead(void);
 void func_800C69BC(void);
 void func_800C831C(void);
 void func_800C83D0(void);
@@ -159,7 +159,7 @@ typedef struct {
 extern Ovl5fUnk74 *D_8009D60C;
 extern Ovl5fUnk74 *D_8009D678;
 
-/* Extension 0x10000000 of the NAS 0x1605 object func_800C5620 spawns. */
+/* Extension 0x10000000 of the NAS 0x1605 object MoeJoeDie spawns. */
 typedef struct Ovl5fExt1605 {
     /* 0x00 */ u8 pad[0xC];
     /* 0x0C */ s32 unkC;
@@ -177,7 +177,7 @@ typedef struct MineOffset {
     /* 0x08 */ s32 unk8;
 } MineOffset;
 extern MineOffset D_800C935C[4];
-void func_800C4D04(s32 hero, s32 last_mode);
+void SetMoeJoeDead(s32 hero, s32 last_mode);
 s32 func_8008502C();
 extern s32 *D_800CB24C;
 extern s32 *D_800CB250;
@@ -366,7 +366,7 @@ extern s8 D_8005A6C8;
 
 
 
-void func_800C5620(s32 arg0);
+void MoeJoeDie(s32 arg0);
 
 void func_800C69C4(s32 arg0, s32 *arg1);
 
@@ -503,15 +503,15 @@ void TotemBitExplode(EXTengine *arg0);
 
 void SpawnTankBossTurrets(void);
 
-void func_800C4320(NAS *nas, s32 id);
+void InitMoeJoe(NAS *nas, s32 id);
 
-void func_800C44E8(s32 arg0);
+void LoopMoeJoeMoveAnim(s32 arg0);
 
-void func_800C49F8(s32 arg0);
+void SetMoeJoeIdle(s32 arg0);
 
-void func_800C4B60(s32 arg0);
+void SetMoeJoeMove(s32 arg0);
 
-void func_800C68C8(s32 arg0);
+void SwitchMoeJoeToMove(s32 arg0);
 
 
 s32 func_800C6A30(s32 arg0);
@@ -638,7 +638,7 @@ static inline s32 Ovl5fRocketTile(s32 x, s32 z) {
     }
     return *(((z >> 9) * D_800CAFF4) + (x >> 9) + D_800CACFC);
 }
-/* func_800C4DCC: the D_800CACB4 cell under (x, z). */
+/* MoeJoeMove: the D_800CACB4 cell under (x, z). */
 static inline s32 Ovl5fMapCell(s32 x, s32 z) {
     return *(((z >> 9) * D_800CAFF4) + (x >> 9) + D_800CACB4);
 }
@@ -836,9 +836,9 @@ s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai);
 
 void TankBotSteer(s32 player);
 
-void func_800C4BC0(s32 arg0);
+void SetMoeJoeRecoil(s32 arg0);
 
-void func_800C53B0(s32 arg0);
+void MoeJoeRecoil(s32 arg0);
 
 /* Extension 0x10000000 of the TA helicopter (InitHelicopterTA). */
 typedef struct HelicopterTAExt {
@@ -896,11 +896,11 @@ void DamageTankHero(s32 player, s32 damage);
 
 void TankBossCrashTurretFire(EXTengine *arg0);
 
-void func_800C4548(s32 player);
+void AnimateMoeJoeTurret(s32 player);
 
-void func_800C57B0(NAS *nas, s32 id);
+void MoeJoeBecomeHero(NAS *nas, s32 id);
 
-/* SetHullSFX inlined by func_800C5BCC. */
+/* SetHullSFX inlined by PlotMoeJoeHero. */
 #define OVL5F_SET_HULL_SFX(player, pEngine, ReqdSFX)                        \
     {                                                                       \
         s32 sfx_ = (ReqdSFX);                                               \
@@ -917,7 +917,7 @@ void func_800C57B0(NAS *nas, s32 id);
         }                                                                   \
     }
 
-/* SetTurretSFX inlined by func_800C5BCC. */
+/* SetTurretSFX inlined by PlotMoeJoeHero. */
 #define OVL5F_SET_TURRET_SFX(player, ReqdSFX)                               \
     {                                                                       \
         s32 sfx_ = (ReqdSFX);                                               \
@@ -938,9 +938,9 @@ void TankHeroSteerMove(s32 player);
 
 void TankHeroGridMove(s32 player);
 
-void func_800C4DCC(s32 player);
+void MoeJoeMove(s32 player);
 
-void func_800C5BCC(NAS *nas, s32 id);
+void PlotMoeJoeHero(NAS *nas, s32 id);
 
 /* TA_InitLevel: level setup */
 typedef struct Ovl5fSetupView {
@@ -993,7 +993,7 @@ void Clock_Off(void);
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
 
-/* func_800C60AC (PlotJoe/PlotMoe): the boss NAS's FUX extension. */
+/* PlotMoeJoe (PlotJoe/PlotMoe): the boss NAS's FUX extension. */
 typedef struct JoeMoeFux {
     /* 0x00 */ u8 unk0[0x14];
     /* 0x14 */ s32 unk14;
@@ -1013,7 +1013,7 @@ typedef struct ModelRec {
 
 extern u8 D_8005373C[];
 extern NAS *D_800CB228;
-/* func_800C60AC: anim scripts, Moe (0x131E) and Joe */
+/* PlotMoeJoe: anim scripts, Moe (0x131E) and Joe */
 extern s32 D_800C8F54[];
 extern s32 D_800C8F68[];
 extern s32 D_800C8FA8[];
@@ -1033,6 +1033,6 @@ extern s32 D_800C9318[];
 
 void UpdateTankHeroWeapons(s32 player);
 
-void func_800C60AC(NAS *nas, s32 id);
+void PlotMoeJoe(NAS *nas, s32 id);
 
 #endif /* BASH_OVL5F_H */

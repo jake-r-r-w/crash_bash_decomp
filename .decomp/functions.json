@@ -28157,7 +28157,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C4320": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C4320.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/InitMoeJoe.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80018F3C",
@@ -28167,7 +28167,7 @@
   "fp": "cfc34a5c4e0d4767",
   "fpn": "340708b9a77ac978",
   "leaf": false,
-  "name": "func_800C4320",
+  "name": "InitMoeJoe",
   "orig": "func_800C4320",
   "rom": 69740,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28175,13 +28175,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C44E8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C44E8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/LoopMoeJoeMoveAnim.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "623690a1ca738521",
   "fpn": "89c135d1a55b9e64",
   "leaf": true,
-  "name": "func_800C44E8",
+  "name": "LoopMoeJoeMoveAnim",
   "orig": "func_800C44E8",
   "rom": 70196,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28189,7 +28189,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C4548": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C4548.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/AnimateMoeJoeTurret.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022660",
@@ -28201,7 +28201,7 @@
   "fp": "4b7d2fc9ce2bff4e",
   "fpn": "bff1f33d269d80e9",
   "leaf": false,
-  "name": "func_800C4548",
+  "name": "AnimateMoeJoeTurret",
   "orig": "func_800C4548",
   "rom": 70292,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28209,7 +28209,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C49F8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C49F8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/SetMoeJoeIdle.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590",
@@ -28218,7 +28218,7 @@
   "fp": "44ca3278c916f8c4",
   "fpn": "395abbc36fa33436",
   "leaf": false,
-  "name": "func_800C49F8",
+  "name": "SetMoeJoeIdle",
   "orig": "func_800C49F8",
   "rom": 71492,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28226,13 +28226,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C4B60": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C4B60.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/SetMoeJoeMove.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "623690a1ca738521",
   "fpn": "89c135d1a55b9e64",
   "leaf": true,
-  "name": "func_800C4B60",
+  "name": "SetMoeJoeMove",
   "orig": "func_800C4B60",
   "rom": 71852,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28240,7 +28240,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C4BC0": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C4BC0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/SetMoeJoeRecoil.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022660"
@@ -28248,7 +28248,7 @@
   "fp": "eccdeac98c40d491",
   "fpn": "3a9bea98ed03792b",
   "leaf": false,
-  "name": "func_800C4BC0",
+  "name": "SetMoeJoeRecoil",
   "orig": "func_800C4BC0",
   "rom": 71948,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28256,7 +28256,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C4D04": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C4D04.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/SetMoeJoeDead.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800898EC"
@@ -28264,7 +28264,7 @@
   "fp": "f90e00027d3ae3e4",
   "fpn": "863af737c82103f5",
   "leaf": false,
-  "name": "func_800C4D04",
+  "name": "SetMoeJoeDead",
   "orig": "func_800C4D04",
   "rom": 72272,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28272,7 +28272,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C4DCC": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C4DCC.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/MoeJoeMove.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800B5228",
@@ -28282,7 +28282,7 @@
   "fp": "d1000ec38cbe9be8",
   "fpn": "71aa8c465a8f61d1",
   "leaf": false,
-  "name": "func_800C4DCC",
+  "name": "MoeJoeMove",
   "orig": "func_800C4DCC",
   "rom": 72472,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28290,7 +28290,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C53B0": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C53B0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/MoeJoeRecoil.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800C49F8",
@@ -28301,7 +28301,7 @@
   "fp": "465dcbad0ddec273",
   "fpn": "b4fbf76be4c365cb",
   "leaf": false,
-  "name": "func_800C53B0",
+  "name": "MoeJoeRecoil",
   "orig": "func_800C53B0",
   "rom": 73980,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28309,7 +28309,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C5620": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C5620.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/MoeJoeDie.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022660",
@@ -28320,7 +28320,7 @@
   "fp": "8a2d5ca84ae86aa2",
   "fpn": "5a7721381c1edc19",
   "leaf": false,
-  "name": "func_800C5620",
+  "name": "MoeJoeDie",
   "orig": "func_800C5620",
   "rom": 74604,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28328,7 +28328,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C57B0": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C57B0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/MoeJoeBecomeHero.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590",
@@ -28342,7 +28342,7 @@
   "fp": "28b0f9f73948884b",
   "fpn": "3886c98a43023387",
   "leaf": false,
-  "name": "func_800C57B0",
+  "name": "MoeJoeBecomeHero",
   "orig": "func_800C57B0",
   "rom": 75004,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28350,7 +28350,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C5BCC": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C5BCC.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/PlotMoeJoeHero.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800225C4",
@@ -28365,7 +28365,7 @@
   "fp": "005a1de119689c52",
   "fpn": "c213590976d85cd2",
   "leaf": false,
-  "name": "func_800C5BCC",
+  "name": "PlotMoeJoeHero",
   "orig": "func_800C5BCC",
   "rom": 76056,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28373,7 +28373,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C60AC": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C60AC.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/PlotMoeJoe.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590",
@@ -28384,7 +28384,7 @@
   "fp": "7843a26e5d472ab5",
   "fpn": "bce47f901ea4d76a",
   "leaf": false,
-  "name": "func_800C60AC",
+  "name": "PlotMoeJoe",
   "orig": "func_800C60AC",
   "rom": 77304,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28464,7 +28464,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_800C68A8",
+  "name": "MoeJoeDead",
   "orig": "func_800C68A8",
   "rom": 79348,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28472,7 +28472,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C68C8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C68C8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/SwitchMoeJoeToMove.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800C4B60"
@@ -28480,7 +28480,7 @@
   "fp": "34475834226a0f5d",
   "fpn": "e22c6110e63a2ef1",
   "leaf": false,
-  "name": "func_800C68C8",
+  "name": "SwitchMoeJoeToMove",
   "orig": "func_800C68C8",
   "rom": 79380,
   "seg": "overlays/ovl5f/ovl5f",
