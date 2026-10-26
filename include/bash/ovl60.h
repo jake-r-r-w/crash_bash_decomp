@@ -8,13 +8,11 @@
 #include "common.h"
 #include "bash/nas.h"
 
-void func_800C318C(s32 arg0);
-void func_800C3390(void);
 void UpdatePOGO(void);
 extern u8 D_8008AB04[];
 extern u8 D_800C52CC[];
 extern u8 D_800C44A8[];
-void func_800B3534();
+void PogoInit_AIQuality();
 
 /* The engine callback table (EngineHooks in bash/engine.h). */
 typedef struct Ovl60Hooks {
@@ -49,12 +47,8 @@ typedef struct Ovl60Hooks {
 extern Ovl60Hooks D_8009D6E8;
 extern process_info D_800C52B8;
 extern process_control_info D_8009F8A4;
-void func_800C34B0(void);
-void func_800C34D0(void);
-void func_800C34F0(s32 arg0);
-void func_800C3510(u8 *arg0);
 
-void func_800C353C();
+void psxpogo_render_tile();
 
 void func_80089FA4(s32 arg0);
 extern u16 D_800AD12C;
@@ -132,7 +126,7 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 extern s32 D_800C53CC[];
 extern s16 D_800C44D8[];
 extern s32 D_800C4484[];
-void func_800C02AC(EXTengine *eng, s32 angle);
+void Roo_FireProjectile(EXTengine *eng, s32 angle);
 extern u8 D_80053B9C[];
 extern u8 D_80053ABC[];
 /* Plot_PogoMushroom's 16-step y scale bounce. */
@@ -319,20 +313,11 @@ typedef struct {
     s32 z;
 } Ovl60Offset;
 
-typedef struct {
-    u8 pad0[0x14];
-    s32 unk14;
-    s32 unk18;
-    s32 unk1C;
-    s16 unk20;
-} Ovl60Goal;
-
 extern Ovl60Move D_800C5ADC[];
 extern Ovl60Offset D_800C457C[];
 extern Ovl60Offset D_800C45BC[];
 extern s32 D_80051244[]; /* pad flags by direction octant */
 s32 PogoAI_CountMyTiles(u32 arg0);
-s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1);
 
 
 
@@ -411,7 +396,6 @@ void PogoWinner_Normal(s32 arg0, u16 arg1);
 
 
 
-s32 func_800C0F08(s32 arg0, EXTbotai *ai);
 
 
 
@@ -428,7 +412,6 @@ s32 func_800C0F08(s32 arg0, EXTbotai *ai);
 
 
 
-void func_800C3048(void);
 
 void PogoInit_Camera(void);
 
@@ -464,7 +447,7 @@ typedef struct Ovl60RankView {
 } Ovl60RankView;
 #define RANK60V ((Ovl60RankView *)D_8005A614)
 
-/* func_800B3FF0: per-mode entries picked by teams, with two values at 0xE/0x10. */
+/* PogoQuality_Init: per-mode entries picked by teams, with two values at 0xE/0x10. */
 typedef struct Ovl60ModeEntry {
     /* 0x00 */ u8 unk0[0xE];
     /* 0x0E */ u16 unkE;
@@ -483,7 +466,7 @@ extern u16 D_800C3678[];
 extern u16 D_800C3724[];
 extern u16 D_800C37BC[];
 extern u16 D_800C3854[];
-/* D_8005A614 as seen by func_800B3FF0. */
+/* D_8005A614 as seen by PogoQuality_Init. */
 typedef struct Ovl60ModeView {
     /* 0x00 */ u8 unk0[0x32];
     /* 0x32 */ u16 flags;
@@ -573,7 +556,7 @@ static inline s32 Ovl60TeamScore(s32 idx) {
 
     return h->hero_score + hb[h->hero_teammate].hero_score;
 }
-/* func_800B3534: the engine's per-mode table pointers. */
+/* PogoInit_AIQuality: the engine's per-mode table pointers. */
 extern void *D_8009D8F4;
 extern void *D_8009D8F8;
 extern void *D_8009D8FC;
@@ -607,7 +590,7 @@ extern s32 PanelCtrl;
 
 void PogoInit_RelicChallenge(void);
 
-void func_800B3FF0(void);
+void PogoQuality_Init(void);
 
 
 

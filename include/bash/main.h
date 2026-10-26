@@ -251,7 +251,7 @@ typedef struct {
     u16 tpage; /* 0x0C */
     u16 clut;  /* 0x0E */
     u16 uv;    /* 0x10: ORed into each vertex's uv */
-    u16 uv1;   /* 0x12: uv of vertices 1-3 (func_800C353C) */
+    u16 uv1;   /* 0x12: uv of vertices 1-3 (Pogo's psxpogo_render_tile) */
     u16 uv2;   /* 0x14 */
     u16 uv3;   /* 0x16 */
 } GfxTexInfo;

@@ -3,7 +3,7 @@
 #include "bash/ovl60.h"
 #include "bash/pogo.h"
 
-void func_800B3534(void) {
+void PogoInit_AIQuality(void) {
     D_8009D8F4 = &D_800C36DC;
     switch (((Ovl60ModeView *)D_8005A614)->mode) {
     case 10:
@@ -263,7 +263,7 @@ void InitPogo_Tiles(void) {
             p = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(D_800C53DC[0]) + (u32)base2);
             p->unk4 = (Ovl60CellPos *)obj;
             obj->flags |= 0x20000;
-            func_800C3510((u8 *)obj);
+            psxpogo_init_tile((subengine *)obj);
         }
         if (*(s16 *)(g + 0x34) == 11 && *(s16 *)id == 100) {
             D_800C5BB4 = obj;
@@ -345,7 +345,7 @@ loop:
     }
 }
 
-void func_800B3FF0(void) {
+void PogoQuality_Init(void) {
     Ovl60ModeView *g;
     Ovl60ModeView *h;
     Ovl60ModeEntry *e;
@@ -4594,13 +4594,13 @@ bool PogoAI_PrimeDirective(u32 arg0) {
         ai = Heroes[arg0].hero_ai;
         if (ai != NULL && ai->AItimer2 == 0) {
             ai->AItimer2 = Random(3) + 3;
-            if (func_800C0F08(arg0, ai) != 0) {
+            if (PogoAI_GoForMyOwn(arg0, ai) != 0) {
                 return 1;
             }
             if (PogoAI_StartEncircling(arg0, ai) != 0) {
                 return 1;
             }
-            if (func_800BE6C4(arg0, (Ovl60Goal *)ai) != 0) {
+            if (PogoAI_StartEnclosing(arg0, ai) != 0) {
                 return 1;
             }
         }
@@ -4824,7 +4824,7 @@ found:
     return D_800C53DC[px][pz].unkE == 0;
 }
 
-s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1) {
+bool PogoAI_StartEnclosing(u32 arg0, EXTbotai *ai) {
     Ovl60Move *m2;
     EXTengine *eng;
     Ovl60Move *m;
@@ -4871,13 +4871,13 @@ s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1) {
             base2 = D_800C5ADC;
             m2 = (Ovl60Move *)(arg0 * sizeof(Ovl60Move) + (u32)base2);
             if (m2->unk0 != 0) {
-                arg1->unk14 = x + D_800C457C[m2->unk8].x;
-                arg1->unk1C = z + D_800C457C[m2->unk8].z;
+                ai->TargetXYZ.x = x + D_800C457C[m2->unk8].x;
+                ai->TargetXYZ.z = z + D_800C457C[m2->unk8].z;
             } else {
-                arg1->unk14 = x + D_800C45BC[m2->unk8].x;
-                arg1->unk1C = z + D_800C45BC[m2->unk8].z;
+                ai->TargetXYZ.x = x + D_800C45BC[m2->unk8].x;
+                ai->TargetXYZ.z = z + D_800C45BC[m2->unk8].z;
             }
-            arg1->unk20 = 5;
+            ai->AImode = 5;
             return 1;
         }
     }
@@ -5605,24 +5605,24 @@ void Roo_ShootAtHumans(NAS *nas) {
         }
         if (x == hx) {
             if (z < hz) {
-                func_800C02AC(eng, 0x800);
+                Roo_FireProjectile(eng, 0x800);
             }
             if (hz < z) {
-                func_800C02AC(eng, 0);
+                Roo_FireProjectile(eng, 0);
             }
         }
         if (z == hz) {
             if (x < hx) {
-                func_800C02AC(eng, 0xC00);
+                Roo_FireProjectile(eng, 0xC00);
             }
             if (hx < x) {
-                func_800C02AC(eng, 0x400);
+                Roo_FireProjectile(eng, 0x400);
             }
         }
     }
 }
 
-void func_800C02AC(EXTengine *eng, s32 angle) {
+void Roo_FireProjectile(EXTengine *eng, s32 angle) {
     NAS *nas;
     EXTengine *e;
     subengine *sub;
@@ -5986,7 +5986,7 @@ bool PogoAI_RadialSearch_CheckKerbs(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_800C0F08(s32 arg0, EXTbotai *ai)
+bool PogoAI_GoForMyOwn(u32 arg0, EXTbotai *ai)
 {
     s32 x;
     s32 z;
@@ -6913,7 +6913,7 @@ void PogoInit_CrystalChallenge(void) {
     }
 }
 
-void func_800C3048(void) {
+void PogoInit_AllChallenges(void) {
     s32 i;
     s32 n;
 
@@ -6954,7 +6954,7 @@ void PogoInit_Camera(void) {
     ((Ovl60Cam *)D_80051640)->atZ = -0x650;
 }
 
-void func_800C318C(s32 arg0) {
+void PogoInit_SetClock(u32 arg0) {
     Set_Clock(arg0, 0x81D0);
 }
 
@@ -6971,10 +6971,10 @@ void InitialisePOGO(void) {
     D_800C52F8 = 0;
     D_800C5BB8 = 0x10;
     D_800C5BBC = 0x10;
-    func_800B3FF0();
+    PogoQuality_Init();
     PogoInit_Camera();
     InitPogo_Tiles();
-    func_800C3048();
+    PogoInit_AllChallenges();
     PogoInit_AllHeros();
     PogoInit_CrystalChallenge();
     PogoInit_GemChallenge();
@@ -7012,7 +7012,7 @@ void PogoCreateShadow(u32 arg0) {
 void FirstTriggersPOGO(void) {
 }
 
-void func_800C3390(void) {
+void POGOriggers(NASTrigger *trig, s32 arg1) {
 }
 
 void InitialisePOGOFirst(void) {
@@ -7026,7 +7026,7 @@ void InitialisePOGOFirst(void) {
     D_8009D6E8.unk5C = PogoHero_ExtraEffects;
     D_8009D6E8.unk18 = PogoCreateShadow;
     D_8009D6E8.unk38 = PogoAI_Poll;
-    func_800B3534();
+    PogoInit_AIQuality();
 }
 
 void POGOSetUp(void) {
@@ -7041,25 +7041,25 @@ void POGOSetUp(void) {
     func_8001E934(&D_8009F8A4, &D_800C52B8);
 }
 
-void func_800C34B0(void) {
+void pogo_kill(void) {
     func_800183DC();
 }
 
-void func_800C34D0(void) {
+void pogo_init(void) {
     func_80018430(0x80);
 }
 
-void func_800C34F0(s32 arg0) {
+void psxpogo_init_tile_heap(s32 arg0) {
     func_80018430(arg0 * 2);
 }
 
-void func_800C3510(u8 *arg0) {
-    (*(s32*)((u8*)(arg0) + 84)) = func_800C353C;
+void psxpogo_init_tile(subengine *arg0) {
+    (*(s32*)((u8*)(arg0) + 84)) = psxpogo_render_tile;
     (*(s32*)((u8*)(arg0) + 88)) = kill_sprim_sub;
     (*(s32*)((u8*)(arg0) + 0)) = (s32) ((*(s32*)((u8*)(arg0) + 0)) | 0x01000000);
 }
 
-void func_800C353C(ModelObj *obj, void *arg1, s32 flags) {
+void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags) {
     POLY_GT4 *p0;
     POLY_GT4 *p1;
     GfxTexInfo *ti;

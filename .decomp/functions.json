@@ -29840,13 +29840,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl60:800B3534": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800B3534.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/PogoInit_AIQuality.s",
   "bin": "disc/ovl60.bin",
   "calls": [],
   "fp": "cceafa99bb07a7aa",
   "fpn": "9ad41af458a6eea3",
   "leaf": true,
-  "name": "func_800B3534",
+  "name": "PogoInit_AIQuality",
   "orig": "func_800B3534",
   "rom": 640,
   "seg": "overlays/ovl60/ovl60",
@@ -29932,7 +29932,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800B3FF0": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800B3FF0.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/PogoQuality_Init.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "800C2EE0"
@@ -29940,7 +29940,7 @@
   "fp": "1897ad3d8675e72e",
   "fpn": "2d1ac30d05310522",
   "leaf": false,
-  "name": "func_800B3FF0",
+  "name": "PogoQuality_Init",
   "orig": "func_800B3FF0",
   "rom": 3388,
   "seg": "overlays/ovl60/ovl60",
@@ -31307,7 +31307,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BE6C4": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BE6C4.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/PogoAI_StartEnclosing.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "800C0DE4"
@@ -31315,7 +31315,7 @@
   "fp": "dffc3f3f9545614e",
   "fpn": "55b082c144cd8756",
   "leaf": false,
-  "name": "func_800BE6C4",
+  "name": "PogoAI_StartEnclosing",
   "orig": "func_800BE6C4",
   "rom": 46096,
   "seg": "overlays/ovl60/ovl60",
@@ -31518,7 +31518,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C02AC": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C02AC.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Roo_FireProjectile.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80018F3C",
@@ -31528,7 +31528,7 @@
   "fp": "6681124f6fd100d2",
   "fpn": "3299e807f683cbbb",
   "leaf": false,
-  "name": "func_800C02AC",
+  "name": "Roo_FireProjectile",
   "orig": "func_800C02AC",
   "rom": 53240,
   "seg": "overlays/ovl60/ovl60",
@@ -31707,7 +31707,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C0F08": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C0F08.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/PogoAI_GoForMyOwn.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "800BE158"
@@ -31715,7 +31715,7 @@
   "fp": "3d88d189ab50537c",
   "fpn": "e9e1481a91ef5a86",
   "leaf": false,
-  "name": "func_800C0F08",
+  "name": "PogoAI_GoForMyOwn",
   "orig": "func_800C0F08",
   "rom": 56404,
   "seg": "overlays/ovl60/ovl60",
@@ -32675,7 +32675,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C3048": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C3048.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/PogoInit_AllChallenges.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80022A3C",
@@ -32685,7 +32685,7 @@
   "fp": "b2a293a7b0aac3ac",
   "fpn": "af3d48b6676b4a1d",
   "leaf": false,
-  "name": "func_800C3048",
+  "name": "PogoInit_AllChallenges",
   "orig": "func_800C3048",
   "rom": 64916,
   "seg": "overlays/ovl60/ovl60",
@@ -32715,7 +32715,7 @@
   "fp": "13c3fc3f839aac0c",
   "fpn": "83b511327975a0ee",
   "leaf": false,
-  "name": "func_800C318C",
+  "name": "PogoInit_SetClock",
   "orig": "func_800C318C",
   "rom": 65240,
   "seg": "overlays/ovl60/ovl60",
@@ -32799,7 +32799,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C3390",
+  "name": "POGOriggers",
   "orig": "func_800C3390",
   "rom": 65756,
   "seg": "overlays/ovl60/ovl60",
@@ -32847,7 +32847,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_800C34B0",
+  "name": "pogo_kill",
   "orig": "func_800C34B0",
   "rom": 66044,
   "seg": "overlays/ovl60/ovl60",
@@ -32863,7 +32863,7 @@
   "fp": "454b2fa8aa76e07c",
   "fpn": "ceee4da8cee53ebc",
   "leaf": false,
-  "name": "func_800C34D0",
+  "name": "pogo_init",
   "orig": "func_800C34D0",
   "rom": 66076,
   "seg": "overlays/ovl60/ovl60",
@@ -32879,7 +32879,7 @@
   "fp": "834f3eec4898a8db",
   "fpn": "5bafcd31ee95eed0",
   "leaf": false,
-  "name": "func_800C34F0",
+  "name": "psxpogo_init_tile_heap",
   "orig": "func_800C34F0",
   "rom": 66108,
   "seg": "overlays/ovl60/ovl60",
@@ -32893,7 +32893,7 @@
   "fp": "37ab5e4ff72eca97",
   "fpn": "bef36e93bb196760",
   "leaf": true,
-  "name": "func_800C3510",
+  "name": "psxpogo_init_tile",
   "orig": "func_800C3510",
   "rom": 66140,
   "seg": "overlays/ovl60/ovl60",
@@ -32901,7 +32901,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C353C": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C353C.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/psxpogo_render_tile.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "8001AA48"
@@ -32909,7 +32909,7 @@
   "fp": "03b421b64bc6891d",
   "fpn": "a90221a73d3ef592",
   "leaf": false,
-  "name": "func_800C353C",
+  "name": "psxpogo_render_tile",
   "orig": "func_800C353C",
   "rom": 66184,
   "seg": "overlays/ovl60/ovl60",
