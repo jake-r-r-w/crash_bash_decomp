@@ -20,7 +20,7 @@ typedef struct Ovl61HeroBox {
     s32 x1, y1, z1;
 } Ovl61HeroBox;
 
-extern Ovl61HeroBox D_800C1A88[];
+extern Ovl61HeroBox ArkHeroBoxes[];
 
 typedef struct Ovl61Spawn {
     u8 pad0[0x10];
@@ -31,29 +31,29 @@ typedef struct Ovl61Spawn {
     s16 dir;
 } Ovl61Spawn;
 
-extern s32 *D_800C19C0[][3];
+extern s32 *ArkWallTargets[][3];
 extern u16 *D_8009D6EC;
-extern s32 D_800C1C68;
-extern s32 D_800C1C6C;
-extern u16 D_800C18E8[];
-extern u16 D_800C18E0[];
-extern u16 D_800C1F0C;
-extern s32 D_800C271C;
-extern s32 D_800C2720;
-extern s32 D_800C2724;
-extern s32 D_800C1C84;
-extern s32 D_800C2728;
-extern s32 D_800C1C84;
-extern u16 D_800C1C88;
-extern u16 D_800C1F14;
+extern s32 ArkFloorTiltX;
+extern s32 ArkFloorTiltZ;
+extern u16 ArkGrabTimes[];
+extern u16 ArkKickFrames[];
+extern u16 ArkRedKickTimer;
+extern s32 ArkSidePlayer1;
+extern s32 ArkSidePlayer2;
+extern s32 ArkSidePlayer3;
+extern s32 ArkDeadWalls;
+extern s32 ArkSidePlayer0;
+extern s32 ArkDeadWalls;
+extern u16 ArkFloorState;
+extern u16 ArkWallFlags;
 extern HeroInfo Heroes[4];
-extern s32 D_800C1C70;
-extern u16 D_800C13AC[][5];
-extern u16 D_800C1EE8[];
-extern s16 D_800C1EF0[];
-extern s32 D_800C18A8[4][3];
+extern s32 CrateMasterState;
+extern u16 ArkHeroSpeeds[][5];
+extern u16 ArkHeroSpeed[];
+extern s16 ArkHeroSpeedDelta[];
+extern s32 ArkHeroStarts[4][3];
 extern char D_8005453C[];
-extern u16 D_800C1F14;
+extern u16 ArkWallFlags;
 
 extern u16 D_8009D754;
 typedef struct Ovl61Cnt {
@@ -61,7 +61,7 @@ typedef struct Ovl61Cnt {
 } Ovl61Cnt;
 
 extern Ovl61Cnt D_8009E25C;
-extern s32 D_800C1C80;
+extern s32 ArkBallTimer;
 extern u16 D_8009E46C[];
 
 typedef struct Ovl61FuxType {
@@ -99,10 +99,10 @@ typedef struct {
 } Ovl61GinView;
 
 extern char D_80054574[];
-extern ScriptInit D_800C14A8;
-extern EXTengine *D_800C1B28;
+extern ScriptInit NGinScriptInit;
+extern EXTengine *ArkBallSpawner;
 extern s32 (*D_8009D750)(EXTengine *);
-extern Ovl61Gin *D_800C1B2C;
+extern Ovl61Gin *ArkNGin;
 typedef struct Ovl61Node {
     u8 pad0[0x10];
     s32 x;
@@ -118,9 +118,9 @@ typedef struct Ovl61Node {
     } *unk58;
 } Ovl61Node;
 
-extern Ovl61Circle *D_800C1A7C;
-extern Ovl61Circle D_800C1A44[];
-extern ScriptInit D_800C1554;
+extern Ovl61Circle *ArkPosts;
+extern Ovl61Circle CameraFlashCircles[];
+extern ScriptInit SeaweedScriptInit;
 
 typedef struct {
     u8 pad0[0x10];
@@ -128,7 +128,7 @@ typedef struct {
     s16 state;
 } Ovl61Slot;
 
-extern Ovl61Slot D_800C1E28[];
+extern Ovl61Slot ArkGoals[];
 
 typedef struct {
     u8 pad0[0x14];
@@ -139,12 +139,12 @@ typedef struct {
     s16 unk24;
 } Ovl61Spark;
 
-extern u16 D_800C2718;
-extern s16 D_800C1440[];
+extern u16 ArkPickupCount;
+extern s16 ArkPickupSpots[];
 
 
 
-extern u16 D_800C1EFE;
+extern u16 ArkPickupBounce;
 
 
 void ArkHeroPowerupTimers(s32 arg0);
@@ -163,35 +163,35 @@ u8 *ArkFreeBallSlot(void);
 
 
 void Ark_HeroBot(u32 arg0);
-extern u8 D_800C0E70[];
-extern s32 D_800C1054[];
-extern void *D_800C1C8C;
-extern void *D_800C1C90;
-extern void *D_800C1C94;
-extern u8 D_800C0E84[];
-extern u8 D_800C0E98[];
-extern u8 D_800C0EAC[];
-extern u8 D_800C0EB8[];
-extern u8 D_800C0ED0[];
-extern u8 D_800C0EE4[];
-extern u8 D_800C0EF8[];
-extern u8 D_800C0F0C[];
-extern u8 D_800C0F20[];
-extern u8 D_800C0F2C[];
-extern u8 D_800C0F44[];
-extern u8 D_800C0F58[];
-extern u8 D_800C0F6C[];
-extern u8 D_800C0F80[];
-extern u8 D_800C0F94[];
-extern u8 D_800C0FA0[];
-extern u8 D_800C0FB8[];
-extern u8 D_800C0FCC[];
-extern u8 D_800C0FE0[];
-extern u8 D_800C0FF4[];
-extern u8 D_800C1008[];
-extern u8 D_800C1014[];
-extern u8 D_800C102C[];
-extern u8 D_800C1040[];
+extern u16 ArkHeroModels[];
+extern s32 ArkVictorySeqs[];
+extern void *ArkBounceOnBounds;
+extern void *ArkTestOutOfBounds;
+extern void *ArkTestLaunchBounds;
+extern u16 ArkBallsAiSkill[];
+extern u16 ArkBallsAiSkillAlt[];
+extern u16 ArkBallsAiTeamSkill[];
+extern u16 ArkBallsAiHumanRoundTweak[];
+extern u16 ArkBallsAiBotTweak[];
+extern u16 ArkBallsAiHumanTweak[];
+extern u16 ArkBeachAiSkill[];
+extern u16 ArkBeachAiSkillAlt[];
+extern u16 ArkBeachAiTeamSkill[];
+extern u16 ArkBeachAiHumanRoundTweak[];
+extern u16 ArkBeachAiBotTweak[];
+extern u16 ArkBeachAiHumanTweak[];
+extern u16 ArkNginAiSkill[];
+extern u16 ArkNginAiSkillAlt[];
+extern u16 ArkNginAiTeamSkill[];
+extern u16 ArkNginAiHumanRoundTweak[];
+extern u16 ArkNginAiBotTweak[];
+extern u16 ArkNginAiHumanTweak[];
+extern u16 ArkSkyAiSkill[];
+extern u16 ArkSkyAiSkillAlt[];
+extern u16 ArkSkyAiTeamSkill[];
+extern u16 ArkSkyAiHumanRoundTweak[];
+extern u16 ArkSkyAiBotTweak[];
+extern u16 ArkSkyAiHumanTweak[];
 void AR_InitLevel(void);
 
 
@@ -217,7 +217,7 @@ typedef struct {
     u16 f1A;
 } Ovl61Wall;
 
-extern Ovl61Wall D_800C1E78[];
+extern Ovl61Wall ArkWalls[];
 
 typedef struct {
     u8 pad0[0x74];
@@ -233,7 +233,7 @@ typedef struct {
     u8 pad10[0x14 - 0x10];
 } Ovl61WallObj;
 
-extern Ovl61WallObj D_800C1DD8[];
+extern Ovl61WallObj ArkWallObjects[];
 
 typedef struct {
     u32 *flags;
@@ -243,8 +243,8 @@ typedef struct {
     u8 pad10[0x14 - 0x10];
 } Ovl61Door;
 
-extern Ovl61Door D_800C1D38[];
-extern Ovl61Door D_800C1D88[];
+extern Ovl61Door ArkDoorsA[];
+extern Ovl61Door ArkDoorsB[];
 
 typedef struct {
     u8 pad0[0x30];
@@ -257,41 +257,41 @@ typedef struct {
 
 /* AR_InitLevel (stage setup) */
 extern s32 D_8005AA3C;
-extern s16 D_800C1F02;
-extern s16 D_800C1F04;
-extern s16 D_800C1F06;
-extern s16 D_800C1F08;
-extern u16 D_800C1F0A;
-extern s16 D_800C1F16;
-extern s32 D_800C1C74;
-extern s32 D_800C1C78;
-extern s32 D_800C1C7C;
-extern u16 D_800C1EF8;
-extern u16 D_800C1EFA;
-extern u16 D_800C1EFC;
-extern EXTengine D_800C1B30;
-extern EXTengine D_800C1BCC;
-extern Ovl61Circle *D_800C1A80;
-extern Ovl61Circle *D_800C1A84;
-extern Ovl61Circle D_800C1094[];
-extern Ovl61Circle D_800C10AC[];
-extern Ovl61Circle D_800C10C4[];
-extern Ovl61Circle D_800C10F4[];
-extern Ovl61Circle D_800C110C[];
-extern Ovl61Circle D_800C1124[];
-extern Ovl61Circle D_800C1154[];
-extern Ovl61Circle D_800C116C[];
-extern Ovl61Circle D_800C1184[];
-extern Ovl61Circle D_800C11B4[];
-extern Ovl61Circle D_800C11CC[];
-extern Ovl61Circle D_800C11E4[];
+extern s16 ArkInitWord0;
+extern s16 ArkInitWord1;
+extern s16 ArkInitWord2;
+extern s16 ArkInitWord3;
+extern u16 CrateMasterWordC;
+extern s16 ArkBallCount;
+extern s32 CrateMasterTimer;
+extern s32 CrateMasterCount;
+extern s32 CrateMasterNext;
+extern u16 CrateMasterWordA;
+extern u16 CrateMasterWordB;
+extern u16 NGinState;
+extern EXTengine ArkCornerEngine;
+extern EXTengine ArkDieEngine;
+extern Ovl61Circle *ArkCircles;
+extern Ovl61Circle *ArkBumpers;
+extern Ovl61Circle ArkBallsPosts[];
+extern Ovl61Circle ArkBallsCircles[];
+extern Ovl61Circle ArkBallsBumpers[];
+extern Ovl61Circle ArkBeachPosts[];
+extern Ovl61Circle ArkBeachCircles[];
+extern Ovl61Circle ArkBeachBumpers[];
+extern Ovl61Circle ArkNginPosts[];
+extern Ovl61Circle ArkNginCircles[];
+extern Ovl61Circle ArkNginBumpers[];
+extern Ovl61Circle ArkSkyPosts[];
+extern Ovl61Circle ArkSkyCircles[];
+extern Ovl61Circle ArkSkyBumpers[];
 void InitARKfloor(void);
-extern u16 D_800C139C[];
+extern u16 CornerFailFrames[];
 
-/* Blinking light slots (D_800C1E28, D_800C1D38) as Ovl61Link (declared
+/* Blinking light slots (ArkGoals, ArkDoorsA) as Ovl61Link (declared
  * below), as seen by UpdateArkFloor. */
-#define BLINK_E28 ((Ovl61Link *)D_800C1E28)
-#define BLINK_D38 ((Ovl61Link *)D_800C1D38)
+#define BLINK_E28 ((Ovl61Link *)ArkGoals)
+#define BLINK_D38 ((Ovl61Link *)ArkDoorsA)
 
 typedef struct {
     u32 flags;
@@ -317,7 +317,7 @@ typedef struct {
     s16 max;
 } Ovl61RiseCfg;
 
-extern Ovl61RiseCfg D_800C1348[];
+extern Ovl61RiseCfg FloorRiseCfg[];
 
 typedef struct Ovl61Eng {
     u8 pad0[0xC];
@@ -392,9 +392,9 @@ typedef struct Ovl61GameView {
 } Ovl61GameView;
 #define O61GV ((Ovl61GameView *)D_8005A614)
 
-extern u16 D_800C1328[];
-extern u16 D_800C19FC[];
-extern u16 D_800C1A20[];
+extern u16 CrateMasterTimes[];
+extern u16 CrateMasterSpotsX[];
+extern u16 CrateMasterSpotsZ[];
 
 
 s32 ArkAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
@@ -415,14 +415,14 @@ typedef struct Ovl61Edge {
     s16 z1;
     s16 padE;
 } Ovl61Edge;
-extern Ovl61Edge D_800C1900[4];
-extern u16 D_800C1980[];
-extern s16 D_800C1F00;
+extern Ovl61Edge ArkBotEdgesA[4];
+extern u16 ArkBotAimAngles[];
+extern s16 ArkBotSkill;
 
 s32 ArkBotAimA(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
 
 s32 ArkBotAimB(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
-extern Ovl61Edge D_800C1940[4];
+extern Ovl61Edge ArkBotEdgesB[4];
 /* A scene object as InitARKfloor sorts it (list at GfxScene.objs). */
 typedef struct Ovl61ScnObj {
     u32 flags;
@@ -436,7 +436,7 @@ typedef struct Ovl61ScnObj {
     u16 unk74;
 } Ovl61ScnObj;
 
-/* The 0x14-byte link slots InitARKfloor fills (D_800C1CE8, D_800C1D38...). */
+/* The 0x14-byte link slots InitARKfloor fills (FloorLinks, ArkDoorsA...). */
 typedef struct {
     Ovl61ScnObj *a;
     Ovl61ScnObj *b;
@@ -448,13 +448,13 @@ typedef struct {
     u16 unk12;
 } Ovl61Link;
 
-extern Ovl61ScnObj *D_800C1C98[10];
-extern Ovl61ScnObj *D_800C1CC0[10];
-extern Ovl61Link D_800C1CE8[4];
-extern u16 D_800C1410[];
-extern u16 D_800C1420[];
-extern u16 D_800C1430[];
-extern u16 D_800C1464[][3];
+extern Ovl61ScnObj *FloorObjectsA[10];
+extern Ovl61ScnObj *FloorObjectsB[10];
+extern Ovl61Link FloorLinks[4];
+extern u16 FloorFramesA[];
+extern u16 FloorFramesB[];
+extern u16 FloorFramesC[];
+extern u16 FloorLayout[][3];
 
 s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
@@ -488,11 +488,11 @@ typedef struct {
     u8 on[8];
 } Ovl61Trail;
 
-extern u16 D_800C1214[][2];
-extern u16 D_800C1224[10][10];
-extern u16 D_800C1378[];
-extern u16 D_800C1388[];
-extern u16 D_800C13A4[];
+extern u16 BallSpeedFrames[][2];
+extern u16 BallSpeedTable[10][10];
+extern u16 BallFramesA[];
+extern u16 BallFramesB[];
+extern u16 BallFramesC[];
 
 /* Extension 0x800 of a ball (ArkHero2ObjectCollision). */
 typedef struct Ovl61Puck {
@@ -512,7 +512,7 @@ typedef struct Ovl61Spot {
     s16 z;
 } Ovl61Spot;
 
-extern u16 D_800C1380[];
+extern u16 ArkGrabFrames[];
 
 NAS *ArkHero2ObjectCollision(u32 arg0);
 
@@ -542,6 +542,6 @@ typedef struct Ovl61AiNode {
 } Ovl61AiNode;
 
 extern u32 D_80051244[];
-extern s16 D_800C19F0[];
+extern s16 ArkBotWaits[];
 
 #endif /* BASH_OVL61_H */

@@ -40,126 +40,124 @@ extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "BREATHE";
-const char D_800B32C0[] = "BANK";
-const char D_800B32C8[] = "IDLE_A";
-const char D_800B32D0[] = "TAUNT_A";
-const char D_800B32D8[] = "DIE";
-const char D_800B32DC[] = "WIN";
+const char ArkAnimBreathe[] = "BREATHE";
+const char ArkAnimBank[] = "BANK";
+const char ArkAnimIdleA[] = "IDLE_A";
+const char ArkAnimTauntA[] = "TAUNT_A";
+const char ArkAnimDie[] = "DIE";
+const char ArkAnimWin[] = "WIN";
 
 /* data, in address order */
-s32 D_800C0C00[3] = { 0x17001C, 0x7B001A, -0xFF86 };
-s32 D_800C0C0C[7] = {
-    (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32D0, (s32)&D_800B32D8,
-    (s32)&D_800B32DC, 0,
+s16 ArkPreLoadDB[6] = { 0x1C, 0x17, 0x1A, 0x7B, 0x7A, -1 };
+char *ArkAnims[7] = {
+    (char *)ArkAnimBreathe, (char *)ArkAnimBank, (char *)ArkAnimIdleA, (char *)ArkAnimTauntA,
+    (char *)ArkAnimDie, (char *)ArkAnimWin, NULL,
 };
-s32 D_800C0C28[1] = { 0xFFFF };
-s32 D_800C0C2C[1] = { -0xFF84 };
-s32 D_800C0C30[64] = {
-    0x6A, (s32)&D_800C0C0C, (s32)&D_800C0C28, 7, 0, 0, 0, 0, 0x6C, (s32)&D_800C0C0C,
-    (s32)&D_800C0C28, 7, 0, 0, 0, 0, 0x6E, (s32)&D_800C0C0C, (s32)&D_800C0C2C, 7, 0, 0, 0, 0,
-    0x70, (s32)&D_800C0C0C, (s32)&D_800C0C28, 7, 0, 0, 0, 0, 0x6B, (s32)&D_800C0C0C,
-    (s32)&D_800C0C28, 7, 0, 0, 0, 0, 0x6D, (s32)&D_800C0C0C, (s32)&D_800C0C28, 7, 0, 0, 0, 0,
-    0x6F, (s32)&D_800C0C0C, (s32)&D_800C0C2C, 7, 0, 0, 0, 0, 0x71, (s32)&D_800C0C0C,
-    (s32)&D_800C0C28, 7, 0, 0, 0, 0,
+s16 ArkLevelDB0[2] = { -1, 0 };
+s16 ArkLevelDB1[2] = { 0x7C, -1 };
+WWInf ArkWorldInfo[8] = {
+    { 0x6A, ArkAnims, ArkLevelDB0, 7 },
+    { 0x6C, ArkAnims, ArkLevelDB0, 7 },
+    { 0x6E, ArkAnims, ArkLevelDB1, 7 },
+    { 0x70, ArkAnims, ArkLevelDB0, 7 },
+    { 0x6B, ArkAnims, ArkLevelDB0, 7 },
+    { 0x6D, ArkAnims, ArkLevelDB0, 7 },
+    { 0x6F, ArkAnims, ArkLevelDB1, 7 },
+    { 0x71, ArkAnims, ArkLevelDB0, 7 },
 };
-s32 D_800C0D30[24] = {
+s32 ArkFiles[24] = {
     (s32)&D_80055684, (s32)&D_8004F138, (s32)&D_8004F130, (s32)&D_800555A4, (s32)&D_8004F118,
     (s32)&D_8004F110, (s32)&D_80053074, (s32)&D_8004F128, (s32)&D_8004F120, (s32)&D_80052F5C,
     (s32)&D_8004F108, (s32)&D_8004F100, (s32)&D_80053004, (s32)&D_8004F0F8, (s32)&D_8004F0F0,
     (s32)&D_8005453C, (s32)&D_8004F0D8, (s32)&D_8004F0D0, (s32)&D_80054504, (s32)&D_8004F0E8,
     (s32)&D_8004F0E0, 0, 0, 0,
 };
-s32 D_800C0D90[35] = {
+s32 ArkNginFiles[27] = {
     (s32)&D_80055684, (s32)&D_8004F0C8, (s32)&D_8004F0C0, (s32)&D_800555A4, (s32)&D_8004F0A8,
     (s32)&D_8004F0A0, (s32)&D_80053074, (s32)&D_8004F0B8, (s32)&D_8004F0B0, (s32)&D_80052F5C,
     (s32)&D_8004F098, (s32)&D_8004F090, (s32)&D_80053004, (s32)&D_8004F088, (s32)&D_8004F080,
     (s32)&D_8005453C, (s32)&D_8004F078, (s32)&D_8004F070, (s32)&D_80054504, (s32)&D_8004F068,
-    (s32)&D_8004F060, (s32)&D_80054574, (s32)&D_8004F058, (s32)&D_8004F050, 0, 0, 0,
-    (s32)&D_8005010C, (s32)&D_800C0D30, (s32)&D_8005010C, (s32)&D_800C0D30, (s32)&D_80050100,
-    (s32)&D_800C0D90, (s32)&D_8005010C, (s32)&D_800C0D30,
+    (s32)&D_8004F060, (s32)&D_80054574, (s32)&D_8004F058, (s32)&D_8004F050, 0, 0,
 };
-s32 D_800C0E1C[2] = { 0x16050003, 0x1508 };
-s32 D_800C0E24[19] = {
-    (s32)&D_800C0E1C, 3, (s32)&D_800C0C00, (s32)&D_800C0C30, (s32)&D_800C0E24, 0, 0, 0, 0,
-    0x4000, 0x20, 0x1800, 0xC8, 0x2BC, 0x200, (s32)&D_80063EC8, (s32)&D_80063BB8, 0x20, 0x5DC,
+/* the four levels' files (modes 14..17; the engine's table at 0x800A0030): the exe's file group
+ * and the model list; N. Gin's has more models */
+file_group_load_info file_group_BALLS = { D_8005010C, ArkFiles };
+file_group_load_info file_group_BEACHBALL = { D_8005010C, ArkFiles };
+file_group_load_info file_group_NGINBALL = { D_80050100, ArkNginFiles };
+file_group_load_info file_group_SKYBALL = { D_8005010C, ArkFiles };
+u16 ArkLUPtab[4] = { 3, 0x1605, 0x1508, 0 };
+TrigLookUp ArkLUP = { ArkLUPtab, 3 };
+PreMap ARKENOID_PREMAP = { ArkPreLoadDB, ArkWorldInfo, &ArkLUP };
+shell_setup arkenoid_shell_info = {
+    0x4000, 0x20, 0x1800, 0xC8, 0x2BC, 0x200, D_80063EC8, D_80063BB8, 0x20, 0x5DC,
 };
-u8 D_800C0E70[20] = { 0, 0, 0x72, 0, 0x73, 0, 0x74, 0, 0x75, 0, 0x78, 0, 0x79, 0, 0x76, 0, 0x77, 0, 0, 0 };
-u8 D_800C0E84[20] = { 9, 0, 6, 0, 3, 0, 1, 0, 8, 0, 0x12, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x14, 0 };
-u8 D_800C0E98[20] = { 9, 0, 6, 0, 3, 0, 1, 0, 0xE, 0, 0x15, 0, 0x12, 0, 0x10, 0, 0x10, 0, 0x15, 0 };
-u8 D_800C0EAC[12] = { 2, 0, 0xA, 0, 0x12, 0, 2, 0, 0xA, 0, 0x12, 0 };
-u8 D_800C0EB8[24] = { 8, 0, 0x10, 0, 0x18, 0, 7, 0, 0xE, 0, 0x15, 0, 6, 0, 0xC, 0, 0x13, 0, 5, 0, 0xA, 0, 0x10, 0 };
-u8 D_800C0ED0[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800C0EE4[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800C0EF8[20] = { 0xD, 0, 0xA, 0, 7, 0, 4, 0, 9, 0, 0x13, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x18, 0 };
-u8 D_800C0F0C[20] = { 0x10, 0, 0xD, 0, 0xA, 0, 7, 0, 0x11, 0, 0x16, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x1A, 0 };
-u8 D_800C0F20[12] = { 2, 0, 0xB, 0, 0x13, 0, 2, 0, 0xB, 0, 0x13, 0 };
-u8 D_800C0F2C[24] = {
-    0xE, 0, 0x15, 0, 0x1C, 0, 0xC, 0, 0x13, 0, 0x19, 0, 0xA, 0, 0xF, 0, 0x15, 0, 8, 0, 0xD, 0,
-    0x12, 0,
-};
-u8 D_800C0F44[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800C0F58[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800C0F6C[20] = { 0x10, 0, 0xD, 0, 0xA, 0, 7, 0, 0xE, 0, 0x12, 0, 0x14, 0, 0x10, 0, 0x10, 0, 0x15, 0 };
-u8 D_800C0F80[20] = { 0x10, 0, 0xD, 0, 0xA, 0, 7, 0, 0xE, 0, 0x14, 0, 0x14, 0, 0x10, 0, 0x10, 0, 0x15, 0 };
-u8 D_800C0F94[12] = { 2, 0, 0xB, 0, 0x12, 0, 2, 0, 0xB, 0, 0x12, 0 };
-u8 D_800C0FA0[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
-};
-u8 D_800C0FB8[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800C0FCC[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800C0FE0[20] = { 0x12, 0, 0xF, 0, 0xC, 0, 8, 0, 0x13, 0, 0x14, 0, 0x12, 0, 0x10, 0, 0x10, 0, 0x16, 0 };
-u8 D_800C0FF4[20] = { 0x14, 0, 0x11, 0, 0xE, 0, 0xA, 0, 0x15, 0, 0x15, 0, 0x12, 0, 0x10, 0, 0x10, 0, 0x18, 0 };
-u8 D_800C1008[12] = { 6, 0, 0xE, 0, 0x14, 0, 6, 0, 0xE, 0, 0x14, 0 };
-u8 D_800C1014[24] = {
-    0x14, 0, 0x16, 0, 0x20, 0, 0x12, 0, 0x15, 0, 0x1C, 0, 0x10, 0, 0x14, 0, 0x18, 0, 0xC, 0,
-    0x12, 0, 0x14, 0,
-};
-u8 D_800C102C[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800C1040[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-s32 D_800C1054[16] = {
-    (s32)&D_800B32DC, 0x1F, (s32)&D_800B32DC, 0x1F, (s32)&D_800B32DC, 0x1F, (s32)&D_800B32DC,
+u16 ArkHeroModels[10] = { 0, 0x72, 0x73, 0x74, 0x75, 0x78, 0x79, 0x76, 0x77, 0 };
+u16 ArkBallsAiSkill[10] = { 9, 6, 3, 1, 8, 0x12, 0x10, 0x10, 0x10, 0x14 };
+u16 ArkBallsAiSkillAlt[10] = { 9, 6, 3, 1, 0xE, 0x15, 0x12, 0x10, 0x10, 0x15 };
+u16 ArkBallsAiTeamSkill[6] = { 2, 0xA, 0x12, 2, 0xA, 0x12 };
+u16 ArkBallsAiHumanRoundTweak[12] = { 8, 0x10, 0x18, 7, 0xE, 0x15, 6, 0xC, 0x13, 5, 0xA, 0x10 };
+u16 ArkBallsAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+u16 ArkBallsAiHumanTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+u16 ArkBeachAiSkill[10] = { 0xD, 0xA, 7, 4, 9, 0x13, 0x10, 0x10, 0x10, 0x18 };
+u16 ArkBeachAiSkillAlt[10] = { 0x10, 0xD, 0xA, 7, 0x11, 0x16, 0x10, 0x10, 0x10, 0x1A };
+u16 ArkBeachAiTeamSkill[6] = { 2, 0xB, 0x13, 2, 0xB, 0x13 };
+u16 ArkBeachAiHumanRoundTweak[12] = { 0xE, 0x15, 0x1C, 0xC, 0x13, 0x19, 0xA, 0xF, 0x15, 8, 0xD, 0x12 };
+u16 ArkBeachAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+u16 ArkBeachAiHumanTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+u16 ArkNginAiSkill[10] = { 0x10, 0xD, 0xA, 7, 0xE, 0x12, 0x14, 0x10, 0x10, 0x15 };
+u16 ArkNginAiSkillAlt[10] = { 0x10, 0xD, 0xA, 7, 0xE, 0x14, 0x14, 0x10, 0x10, 0x15 };
+u16 ArkNginAiTeamSkill[6] = { 2, 0xB, 0x12, 2, 0xB, 0x12 };
+u16 ArkNginAiHumanRoundTweak[12] = { 0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14 };
+u16 ArkNginAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+u16 ArkNginAiHumanTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+u16 ArkSkyAiSkill[10] = { 0x12, 0xF, 0xC, 8, 0x13, 0x14, 0x12, 0x10, 0x10, 0x16 };
+u16 ArkSkyAiSkillAlt[10] = { 0x14, 0x11, 0xE, 0xA, 0x15, 0x15, 0x12, 0x10, 0x10, 0x18 };
+u16 ArkSkyAiTeamSkill[6] = { 6, 0xE, 0x14, 6, 0xE, 0x14 };
+u16 ArkSkyAiHumanRoundTweak[12] = { 0x14, 0x16, 0x20, 0x12, 0x15, 0x1C, 0x10, 0x14, 0x18, 0xC, 0x12, 0x14 };
+u16 ArkSkyAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+u16 ArkSkyAiHumanTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+s32 ArkVictorySeqs[16] = {
+    (s32)&ArkAnimWin, 0x1F, (s32)&ArkAnimWin, 0x1F, (s32)&ArkAnimWin, 0x1F, (s32)&ArkAnimWin,
     0x1F, 0x20001, 0x10002, 0x10002, 0x20001, 0x20001, 0x10002, 0x10002, 0x20001,
 };
-Ovl61Circle D_800C1094[4] = {
+Ovl61Circle ArkBallsPosts[4] = {
     { 0x800, 0x800, 0x200 }, { 0x800, -0x800, 0x200 }, { -0x800, 0x800, 0x200 },
     { -0x800, -0x800, 0x200 },
 };
-Ovl61Circle D_800C10AC[4] = { { 0, -0x1000, 0x200 }, { 0, 0x1000, 0x200 }, { 0x1000, 0, 0x200 }, { -0x1000, 0, 0x200 } };
-Ovl61Circle D_800C10C4[8] = {
+Ovl61Circle ArkBallsCircles[4] = { { 0, -0x1000, 0x200 }, { 0, 0x1000, 0x200 }, { 0x1000, 0, 0x200 }, { -0x1000, 0, 0x200 } };
+Ovl61Circle ArkBallsBumpers[8] = {
     { -0x800, -1, -0x20 }, { -1, -0x800, -1 }, { 0x800, 0, -0x20 }, { -1, -0x800, -1 },
     { -0x800, -1, -0x20 }, { -1, 0x800, 0 }, { 0x800, 0, -0x20 }, { -1, 0x800, 0 },
 };
-Ovl61Circle D_800C10F4[4] = {
+Ovl61Circle ArkBeachPosts[4] = {
     { 0x800, 0x800, 0x200 }, { 0x800, -0x800, 0x200 }, { -0x800, 0x800, 0x200 },
     { -0x800, -0x800, 0x200 },
 };
-Ovl61Circle D_800C110C[4] = { { 0, -0x1000, 0x200 }, { 0, 0x1000, 0x200 }, { 0x1000, 0, 0x200 }, { -0x1000, 0, 0x200 } };
-Ovl61Circle D_800C1124[8] = {
+Ovl61Circle ArkBeachCircles[4] = { { 0, -0x1000, 0x200 }, { 0, 0x1000, 0x200 }, { 0x1000, 0, 0x200 }, { -0x1000, 0, 0x200 } };
+Ovl61Circle ArkBeachBumpers[8] = {
     { -0x800, -1, -0x20 }, { -1, -0x800, -1 }, { 0x800, 0, -0x20 }, { -1, -0x800, -1 },
     { -0x800, -1, -0x20 }, { -1, 0x800, 0 }, { 0x800, 0, -0x20 }, { -1, 0x800, 0 },
 };
-Ovl61Circle D_800C1154[4] = {
+Ovl61Circle ArkNginPosts[4] = {
     { 0x850, 0x850, 0x1A0 }, { 0x850, -0x850, 0x1A0 }, { -0x850, 0x850, 0x1A0 },
     { -0x850, -0x850, 0x1A0 },
 };
-Ovl61Circle D_800C116C[4] = { { 0, -0x1000, 0x200 }, { 0, 0x1000, 0x200 }, { 0x1000, 0, 0x200 }, { -0x1000, 0, 0x200 } };
-Ovl61Circle D_800C1184[8] = {
+Ovl61Circle ArkNginCircles[4] = { { 0, -0x1000, 0x200 }, { 0, 0x1000, 0x200 }, { 0x1000, 0, 0x200 }, { -0x1000, 0, 0x200 } };
+Ovl61Circle ArkNginBumpers[8] = {
     { -0x900, -1, -0x500 }, { -1, -0x900, -1 }, { 0x900, 0, -0x500 }, { -1, -0x900, -1 },
     { -0x900, -1, -0x500 }, { -1, 0x900, 0 }, { 0x900, 0, -0x500 }, { -1, 0x900, 0 },
 };
-Ovl61Circle D_800C11B4[4] = {
+Ovl61Circle ArkSkyPosts[4] = {
     { 0x74D, 0x74D, 0x1D0 }, { 0x74D, -0x74D, 0x1D0 }, { -0x74D, 0x74D, 0x1D0 },
     { -0x74D, -0x74D, 0x1D0 },
 };
-Ovl61Circle D_800C11CC[4] = { { 0, -0x1000, 0x1B3 }, { 0, 0x1000, 0x1B3 }, { 0x1000, 0, 0x1B3 }, { -0x1000, 0, 0x1B3 } };
-Ovl61Circle D_800C11E4[8] = {
+Ovl61Circle ArkSkyCircles[4] = { { 0, -0x1000, 0x1B3 }, { 0, 0x1000, 0x1B3 }, { 0x1000, 0, 0x1B3 }, { -0x1000, 0, 0x1B3 } };
+Ovl61Circle ArkSkyBumpers[8] = {
     { -0x800, -1, -0x800 }, { -1, -0x800, -1 }, { 0x800, 0, -0x800 }, { -1, -0x800, -1 },
     { -0x800, -1, -0x800 }, { -1, 0x800, 0 }, { 0x800, 0, -0x800 }, { -1, 0x800, 0 },
 };
-u16 D_800C1214[4][2] = { { 0, 1 }, { 2, 3 }, { 1, 3 }, { 0, 2 } };
-u16 D_800C1224[10][10] = {
+u16 BallSpeedFrames[4][2] = { { 0, 1 }, { 2, 3 }, { 1, 3 }, { 0, 2 } };
+u16 BallSpeedTable[10][10] = {
     { 0x40, 0x40, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x40, 0x40 },
     { 0x40, 0x40, 0xFFE0, 0, 0, 0, 0, 0xFFE0, 0x40, 0x40 },
     { 0xFFE0, 0xFFE0, 0xFFF0, 0, 0, 0, 0, 0xFFF0, 0xFFE0, 0xFFE0 },
@@ -169,168 +167,326 @@ u16 D_800C1224[10][10] = {
     { 0x40, 0x40, 0x20, 0, 0, 0, 0, 0x20, 0x40, 0x40 },
     { 0xFFC0, 0xFFC0, 0xFFE0, 0xFFE0, 0xFFE0, 0xFFE0, 0xFFE0, 0xFFE0, 0xFFC0, 0xFFC0 },
 };
-s16 D_800C12EC[30] = {
+s16 ArkUnusedShorts[30] = {
     0x12, 0x17, 0x12, 0x17, 0x12, 0x17, 0x12, 0x17, 0x5000, 0x5000, 0x5000, 0x4000, 0x2000,
     0x4000, 0x1800, 0x1000, 0x1800, 0x800, 0xA00, 0x800, 0x200, 0x200, 0x200, 0, 0, 0, 0, 0, 0,
     0,
 };
-u16 D_800C1328[16] = { 0xA, 8, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-Ovl61RiseCfg D_800C1348[8] = {
+u16 CrateMasterTimes[16] = { 0xA, 8, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+Ovl61RiseCfg FloorRiseCfg[8] = {
     { 2, -0x3800, 0x4000 }, { 4, -0x3800, 0x3800 }, { 0, -0x1000, 0x1000 },
     { 8, -0x3800, 0x3800 }, { 0xF, -0x2800, 0x2800 }, { 0, -0x1000, 0x1000 },
     { 0, -0x1000, 0x1000 }, { 0, -0x1000, 0x1000 },
 };
-u16 D_800C1378[4] = { 0x58D, 0x58E, 0x58F, 0x590 };
-u16 D_800C1380[4] = { 0x57C, 0x57D, 0x57E, 0x57F };
-u16 D_800C1388[10] = { 0x587, 0x588, 0x589, 0x58A, 0x58B, 0x58C, 0x58D, 0x58E, 0x58F, 0x590 };
-u16 D_800C139C[4] = { 0x5CA, 0x5CB, 0x5CC, 0x5CD };
-u16 D_800C13A4[4] = { 0x578, 0x579, 0x57A, 0x57B };
-u16 D_800C13AC[10][5] = {
+u16 BallFramesA[4] = { 0x58D, 0x58E, 0x58F, 0x590 };
+u16 ArkGrabFrames[4] = { 0x57C, 0x57D, 0x57E, 0x57F };
+u16 BallFramesB[10] = { 0x587, 0x588, 0x589, 0x58A, 0x58B, 0x58C, 0x58D, 0x58E, 0x58F, 0x590 };
+u16 CornerFailFrames[4] = { 0x5CA, 0x5CB, 0x5CC, 0x5CD };
+u16 BallFramesC[4] = { 0x578, 0x579, 0x57A, 0x57B };
+u16 ArkHeroSpeeds[10][5] = {
     { 0, 0, 0, 0, 0 }, { 0x18, 0xA, 0xF, 0x1C, 0x417F }, { 0x18, 0xA, 0xF, 0x1C, 0x41FF },
     { 0x18, 0xA, 0xF, 0x1C, 0x41FF }, { 0x18, 0xA, 0xF, 0x1C, 0x41FF },
     { 0x15, 7, 0xE, 0x1C, 0x407F }, { 0x15, 7, 0xE, 0x1C, 0x417F },
     { 0x15, 7, 0xE, 0x1C, 0x41FF }, { 0x18, 0xA, 0xF, 0x1C, 0x407F }, { 0, 0, 0, 0, 0 },
 };
-u16 D_800C1410[8] = { 0x2010, 0x2012, 0x200F, 0x2011, 0x2016, 0x2014, 0x2015, 0x2013 };
-u16 D_800C1420[8] = { 0x200C, 0x200C, 0x200E, 0x200D, 0x201B, 0x2019, 0x201A, 0x2018 };
-u16 D_800C1430[8] = { 0x2022, 0x2020, 0x2021, 0x201F, 0x2026, 0x2024, 0x2025, 0x2023 };
-s16 D_800C1440[18] = { 0, 1, 2, 3, 1, 3, 0, 1, 0, 3, 2, 1, 2, 0, 2, 3, -1, 0 };
-u16 D_800C1464[6][3] = {
+u16 FloorFramesA[8] = { 0x2010, 0x2012, 0x200F, 0x2011, 0x2016, 0x2014, 0x2015, 0x2013 };
+u16 FloorFramesB[8] = { 0x200C, 0x200C, 0x200E, 0x200D, 0x201B, 0x2019, 0x201A, 0x2018 };
+u16 FloorFramesC[8] = { 0x2022, 0x2020, 0x2021, 0x201F, 0x2026, 0x2024, 0x2025, 0x2023 };
+s16 ArkPickupSpots[18] = { 0, 1, 2, 3, 1, 3, 0, 1, 0, 3, 2, 1, 2, 0, 2, 3, -1, 0 };
+u16 FloorLayout[6][3] = {
     { 0x201E, 0x201F, 0x2020 }, { 0x2021, 0x2022, 0x2023 }, { 0x201E, 0x201F, 0x2020 },
     { 0x2021, 0x2022, 0x2023 }, { 0, 0x8011, 0x14 }, { 0x4000, 0x8001, 0 },
 };
-s32 D_800C1488[4] = { (s32)0x80110000, 0x4080003C, 0x88005, 0x8001 };
-s32 D_800C1498[4] = { (s32)&D_800C1488, (s32)&D_800C1488, 0, 0 };
-ScriptInit D_800C14A8 = { 0, (void *)&D_800C1498, 0x401 };
-s32 D_800C14B4[7] = { 0x41000000, 0x41024101, 0x41044103, 0x41064105, 0x41084107, 0x458011, (s32)0x80004109 };
-s32 D_800C14D0[7] = { 0x41800000, 0x41824181, 0x41844183, 0x41864185, 0x41884187, 0x458011, (s32)0x80004189 };
-s32 D_800C14EC[7] = { 0x42800000, 0x42824281, 0x42844283, 0x42864285, 0x42884287, 0x458011, (s32)0x80004289 };
-s32 D_800C1508[3] = { (s32)0x80110000, 0x4200004F, 0x8000 };
-s32 D_800C1514[3] = { (s32)0x80110000, 0x4300004F, 0x8000 };
-s32 D_800C1520[3] = { (s32)0x80110000, 0x40800020, 0x8000 };
-s32 D_800C152C[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
-s32 D_800C1538[7] = {
-    (s32)&D_800C14B4, (s32)&D_800C14D0, (s32)&D_800C14EC, (s32)&D_800C1508, (s32)&D_800C1514,
-    (s32)&D_800C1520, (s32)&D_800C152C,
+s32 NGinSteps[4] = { (s32)0x80110000, 0x4080003C, 0x88005, 0x8001 };
+s32 NGinAnimList[4] = { (s32)&NGinSteps, (s32)&NGinSteps, 0, 0 };
+ScriptInit NGinScriptInit = { 0, (void *)&NGinAnimList, 0x401 };
+s32 SeaweedSteps0[7] = { 0x41000000, 0x41024101, 0x41044103, 0x41064105, 0x41084107, 0x458011, (s32)0x80004109 };
+s32 SeaweedSteps1[7] = { 0x41800000, 0x41824181, 0x41844183, 0x41864185, 0x41884187, 0x458011, (s32)0x80004189 };
+s32 SeaweedSteps2[7] = { 0x42800000, 0x42824281, 0x42844283, 0x42864285, 0x42884287, 0x458011, (s32)0x80004289 };
+s32 SeaweedSteps3[3] = { (s32)0x80110000, 0x4200004F, 0x8000 };
+s32 SeaweedSteps4[3] = { (s32)0x80110000, 0x4300004F, 0x8000 };
+s32 SeaweedSteps5[3] = { (s32)0x80110000, 0x40800020, 0x8000 };
+s32 SeaweedSteps6[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
+s32 SeaweedAnimList[7] = {
+    (s32)&SeaweedSteps0, (s32)&SeaweedSteps1, (s32)&SeaweedSteps2, (s32)&SeaweedSteps3, (s32)&SeaweedSteps4,
+    (s32)&SeaweedSteps5, (s32)&SeaweedSteps6,
 };
-ScriptInit D_800C1554 = { 0, (void *)&D_800C1538, 0x401 };
-s32 D_800C1560[210] = {
-    (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x4180001C, 0x8000, (s32)0x80070000,
-    0x4080006D, 0x198005, (s32)0x80070000, 0x42000034, 0x1C8004, (s32)0x80070000, 0x40000014,
-    0x8000, (s32)0x80070000, 0x4200006D, 0x8000, (s32)0x80070000, 0x41000044, 0x8000,
-    (s32)0x80070000, 0x42800013, 0x148007, (s32)0x80004293, 3, (s32)0x80070000, 0x40000014,
-    0x8000, (s32)0x80070000, 0x4200001C, 0x8000, (s32)0x80070000, 0x40800029, 0x198005,
-    (s32)0x80070000, 0x41800031, 0x1C8004, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x41800031, 0x8000, (s32)0x80070000, 0x41000040, 0x8000, (s32)0x80070000,
-    0x4280001E, 0x148007, (s32)0x8000429E, 3, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x4080001C, 0x8000, (s32)0x80070000, 0x4200002E, 0x198005,
-    (s32)0x80070000, 0x4180002A, 0x1C8004, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x4200002A, 0x8000, (s32)0x80070000, 0x4100000E, 0x1F8007,
-    (s32)0x8000410E, 3, (s32)0x80070000, 0x4280001E, 0x138007, (s32)0x8000429E, 3,
-    (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x4200001C, 0x8000, (s32)0x80070000,
-    0x4080003C, 0x198005, (s32)0x80070000, 0x41800034, 0x1C8004, (s32)0x80070000, 0x40000014,
-    0x8000, (s32)0x80070000, 0x41800034, 0x8000, (s32)0x80070000, 0x41000051, 0x8000,
-    (s32)0x80070000, 0x42800023, 0x638018, (s32)0x800042A2, 3, (s32)0x80070000, 0x40000014,
-    0x8000, (s32)0x80070000, 0x4200001C, 0x8000, (s32)0x80070000, 0x40800038, 0x198005,
-    (s32)0x80070000, 0x41800032, 0x1C8004, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x4180003C, 0x8000, (s32)0x80070000, 0x4100004B, 0x8000, (s32)0x80070000,
-    0x42800023, 0x638018, (s32)0x800042A2, 3, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x4200001C, 0x8000, (s32)0x80070000, 0x4080001F, 0x198005,
-    (s32)0x80070000, 0x4180003D, 0x1C8004, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x4180003D, 0x8000, (s32)0x80070000, 0x4100001E, 0x8000, (s32)0x80070000,
-    0x4280000C, 0xE8007, (s32)0x8000428B, 3, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x4180001C, 0x8000, (s32)0x80070000, 0x4100003C, 0x198005,
-    (s32)0x80070000, 0x4200002A, 0x1C8004, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x4200002A, 0x8000, (s32)0x80070000, 0x40800044, 0x8000, (s32)0x80070000,
-    0x4280000C, 0x268007, (s32)0x8000428C, 3, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x4080001C, 0x8000, (s32)0x80070000, 0x4180004B, 0x198005,
-    (s32)0x80070000, 0x42000028, 0x1C8004, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x42800040, 0x8000, (s32)0x80070000,
-    0x41000023, 0xA8018, (s32)0x80004122, 3,
+ScriptInit SeaweedScriptInit = { 0, (void *)&SeaweedAnimList, 0x401 };
+hero_seq CRA_seq_arkbreathe[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
 };
-s32 D_800C18A8[4][3] = { { 0, 0x1C, -0x880 }, { 0, 0x1C, 0x880 }, { 0x880, 0x1C, 0 }, { -0x880, 0x1C, 0 } };
-s32 D_800C18D8[2] = { 0x20001, 0x80004 };
-u16 D_800C18E0[4] = { 0x581, 0x582, 0x583, 0x584 };
-u16 D_800C18E8[12] = { 0x5AB, 0x5AC, 0x5AD, 0x5AE, 0x5AF, 0x5B0, 0x5B1, 0x5B2, 0x5B3, 0x5B4, 0x5B5, 0x5B6 };
-Ovl61Edge D_800C1900[4] = {
+hero_seq CRA_seq_arkmove[6] = {
+    0, 0x8007, 0x1C, 0x4180, 0x8000, 0,
+};
+hero_seq CRA_seq_arkidle[6] = {
+    0, 0x8007, 0x6D, 0x4080, 0x8005, 0x19,
+};
+hero_seq CRA_seq_arktaunt[6] = {
+    0, 0x8007, 0x34, 0x4200, 0x8004, 0x1C,
+};
+hero_seq CRA_seq_arkkick[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq CRA_seq_arkwin[6] = {
+    0, 0x8007, 0x6D, 0x4200, 0x8000, 0,
+};
+hero_seq CRA_seq_arkvictory[6] = {
+    0, 0x8007, 0x44, 0x4100, 0x8000, 0,
+};
+hero_seq CRA_seq_arklose[10] = {
+    0, 0x8007, 0x13, 0x4280, 0x8007, 0x14, 0x4293, 0x8000, 3, 0,
+};
+hero_seq COC_seq_arkbreathe[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq COC_seq_arkmove[6] = {
+    0, 0x8007, 0x1C, 0x4200, 0x8000, 0,
+};
+hero_seq COC_seq_arkidle[6] = {
+    0, 0x8007, 0x29, 0x4080, 0x8005, 0x19,
+};
+hero_seq COC_seq_arktaunt[6] = {
+    0, 0x8007, 0x31, 0x4180, 0x8004, 0x1C,
+};
+hero_seq COC_seq_arkkick[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq COC_seq_arkwin[6] = {
+    0, 0x8007, 0x31, 0x4180, 0x8000, 0,
+};
+hero_seq COC_seq_arkvictory[6] = {
+    0, 0x8007, 0x40, 0x4100, 0x8000, 0,
+};
+hero_seq COC_seq_arklose[10] = {
+    0, 0x8007, 0x1E, 0x4280, 0x8007, 0x14, 0x429E, 0x8000, 3, 0,
+};
+hero_seq TIN_seq_arkbreathe[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq TIN_seq_arkmove[6] = {
+    0, 0x8007, 0x1C, 0x4080, 0x8000, 0,
+};
+hero_seq TIN_seq_arkidle[6] = {
+    0, 0x8007, 0x2E, 0x4200, 0x8005, 0x19,
+};
+hero_seq TIN_seq_arktaunt[6] = {
+    0, 0x8007, 0x2A, 0x4180, 0x8004, 0x1C,
+};
+hero_seq TIN_seq_arkkick[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq TIN_seq_arkwin[6] = {
+    0, 0x8007, 0x2A, 0x4200, 0x8000, 0,
+};
+hero_seq TIN_seq_arkvictory[10] = {
+    0, 0x8007, 0xE, 0x4100, 0x8007, 0x1F, 0x410E, 0x8000, 3, 0,
+};
+hero_seq TIN_seq_arklose[10] = {
+    0, 0x8007, 0x1E, 0x4280, 0x8007, 0x13, 0x429E, 0x8000, 3, 0,
+};
+hero_seq CTX_seq_arkbreathe[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq CTX_seq_arkmove[6] = {
+    0, 0x8007, 0x1C, 0x4200, 0x8000, 0,
+};
+hero_seq CTX_seq_arkidle[6] = {
+    0, 0x8007, 0x3C, 0x4080, 0x8005, 0x19,
+};
+hero_seq CTX_seq_arktaunt[6] = {
+    0, 0x8007, 0x34, 0x4180, 0x8004, 0x1C,
+};
+hero_seq CTX_seq_arkkick[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq CTX_seq_arkwin[6] = {
+    0, 0x8007, 0x34, 0x4180, 0x8000, 0,
+};
+hero_seq CTX_seq_arkvictory[6] = {
+    0, 0x8007, 0x51, 0x4100, 0x8000, 0,
+};
+hero_seq CTX_seq_arklose[10] = {
+    0, 0x8007, 0x23, 0x4280, 0x8018, 0x63, 0x42A2, 0x8000, 3, 0,
+};
+hero_seq BRO_seq_arkbreathe[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq BRO_seq_arkmove[6] = {
+    0, 0x8007, 0x1C, 0x4200, 0x8000, 0,
+};
+hero_seq BRO_seq_arkidle[6] = {
+    0, 0x8007, 0x38, 0x4080, 0x8005, 0x19,
+};
+hero_seq BRO_seq_arktaunt[6] = {
+    0, 0x8007, 0x32, 0x4180, 0x8004, 0x1C,
+};
+hero_seq BRO_seq_arkkick[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq BRO_seq_arkwin[6] = {
+    0, 0x8007, 0x3C, 0x4180, 0x8000, 0,
+};
+hero_seq BRO_seq_arkvictory[6] = {
+    0, 0x8007, 0x4B, 0x4100, 0x8000, 0,
+};
+hero_seq BRO_seq_arklose[10] = {
+    0, 0x8007, 0x23, 0x4280, 0x8018, 0x63, 0x42A2, 0x8000, 3, 0,
+};
+hero_seq DNG_seq_arkbreathe[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq DNG_seq_arkmove[6] = {
+    0, 0x8007, 0x1C, 0x4200, 0x8000, 0,
+};
+hero_seq DNG_seq_arkidle[6] = {
+    0, 0x8007, 0x1F, 0x4080, 0x8005, 0x19,
+};
+hero_seq DNG_seq_arktaunt[6] = {
+    0, 0x8007, 0x3D, 0x4180, 0x8004, 0x1C,
+};
+hero_seq DNG_seq_arkkick[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq DNG_seq_arkwin[6] = {
+    0, 0x8007, 0x3D, 0x4180, 0x8000, 0,
+};
+hero_seq DNG_seq_arkvictory[6] = {
+    0, 0x8007, 0x1E, 0x4100, 0x8000, 0,
+};
+hero_seq DNG_seq_arklose[10] = {
+    0, 0x8007, 0xC, 0x4280, 0x8007, 0xE, 0x428B, 0x8000, 3, 0,
+};
+hero_seq KON_seq_arkbreathe[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq KON_seq_arkmove[6] = {
+    0, 0x8007, 0x1C, 0x4180, 0x8000, 0,
+};
+hero_seq KON_seq_arkidle[6] = {
+    0, 0x8007, 0x3C, 0x4100, 0x8005, 0x19,
+};
+hero_seq KON_seq_arktaunt[6] = {
+    0, 0x8007, 0x2A, 0x4200, 0x8004, 0x1C,
+};
+hero_seq KON_seq_arkkick[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq KON_seq_arkwin[6] = {
+    0, 0x8007, 0x2A, 0x4200, 0x8000, 0,
+};
+hero_seq KON_seq_arkvictory[6] = {
+    0, 0x8007, 0x44, 0x4080, 0x8000, 0,
+};
+hero_seq KON_seq_arklose[10] = {
+    0, 0x8007, 0xC, 0x4280, 0x8007, 0x26, 0x428C, 0x8000, 3, 0,
+};
+hero_seq KAN_seq_arkbreathe[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq KAN_seq_arkmove[6] = {
+    0, 0x8007, 0x1C, 0x4080, 0x8000, 0,
+};
+hero_seq KAN_seq_arkidle[6] = {
+    0, 0x8007, 0x4B, 0x4180, 0x8005, 0x19,
+};
+hero_seq KAN_seq_arktaunt[6] = {
+    0, 0x8007, 0x28, 0x4200, 0x8004, 0x1C,
+};
+hero_seq KAN_seq_arkkick[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq KAN_seq_arkwin[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq KAN_seq_arkvictory[6] = {
+    0, 0x8007, 0x40, 0x4280, 0x8000, 0,
+};
+hero_seq KAN_seq_arklose[10] = {
+    0, 0x8007, 0x23, 0x4100, 0x8018, 0xA, 0x4122, 0x8000, 3, 0,
+};
+s32 ArkHeroStarts[4][3] = { { 0, 0x1C, -0x880 }, { 0, 0x1C, 0x880 }, { 0x880, 0x1C, 0 }, { -0x880, 0x1C, 0 } };
+s32 ArkUnused2[2] = { 0x20001, 0x80004 };
+u16 ArkKickFrames[4] = { 0x581, 0x582, 0x583, 0x584 };
+u16 ArkGrabTimes[12] = { 0x5AB, 0x5AC, 0x5AD, 0x5AE, 0x5AF, 0x5B0, 0x5B1, 0x5B2, 0x5B3, 0x5B4, 0x5B5, 0x5B6 };
+Ovl61Edge ArkBotEdgesA[4] = {
     { -0x800, -1, -0x7A0, -1, 0x800, 0, -0x7A0, -1 },
     { -0x800, -1, 0x7A0, 0, 0x800, 0, 0x7A0, 0 }, { 0x7A0, 0, -0x800, -1, 0x7A0, 0, 0x800, 0 },
     { -0x7A0, -1, -0x800, -1, -0x7A0, -1, 0x800, 0 },
 };
-Ovl61Edge D_800C1940[4] = {
+Ovl61Edge ArkBotEdgesB[4] = {
     { -0x500, -1, -0x800, -1, 0x500, 0, -0x800, -1 },
     { -0x500, -1, 0x800, 0, 0x500, 0, 0x800, 0 }, { 0x800, 0, -0x500, -1, 0x800, 0, 0x500, 0 },
     { -0x800, -1, -0x500, -1, -0x800, -1, 0x500, 0 },
 };
-u16 D_800C1980[32] = {
+u16 ArkBotAimAngles[32] = {
     0x100, 0x140, 0x180, 0x1C0, 0x280, 0x240, 0x280, 0x2C0, 0x300, 0x340, 0x380, 0x3C0, 0x480,
     0x440, 0x480, 0x4C0, 0x500, 0x540, 0x580, 0x5C0, 0x680, 0x640, 0x680, 0x6C0, 0x700, 0x740,
     0x780, 0x7C0, 0x880, 0x840, 0x880, 0x8C0,
 };
-s32 *D_800C19C0[4][3] = {
-    { (void *)&D_800C271C, (void *)&D_800C2728, (void *)&D_800C2720 },
-    { (void *)&D_800C2720, (void *)&D_800C2724, (void *)&D_800C271C },
-    { (void *)&D_800C2724, (void *)&D_800C271C, (void *)&D_800C2728 },
-    { (void *)&D_800C2728, (void *)&D_800C2720, (void *)&D_800C2724 },
+s32 *ArkWallTargets[4][3] = {
+    { (void *)&ArkSidePlayer1, (void *)&ArkSidePlayer0, (void *)&ArkSidePlayer2 },
+    { (void *)&ArkSidePlayer2, (void *)&ArkSidePlayer3, (void *)&ArkSidePlayer1 },
+    { (void *)&ArkSidePlayer3, (void *)&ArkSidePlayer1, (void *)&ArkSidePlayer0 },
+    { (void *)&ArkSidePlayer0, (void *)&ArkSidePlayer2, (void *)&ArkSidePlayer3 },
 };
-s16 D_800C19F0[6] = { -0x40, 0, 0x40, 0, 0x20, 0 };
-u16 D_800C19FC[18] = { 1, 2, 3, 2, 3, 1, 3, 1, 2, 1, 2, 3, 2, 3, 1, 3, 1, 2 };
-u16 D_800C1A20[18] = { 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3 };
-Ovl61Circle D_800C1A44[9] = {
+s16 ArkBotWaits[6] = { -0x40, 0, 0x40, 0, 0x20, 0 };
+u16 CrateMasterSpotsX[18] = { 1, 2, 3, 2, 3, 1, 3, 1, 2, 1, 2, 3, 2, 3, 1, 3, 1, 2 };
+u16 CrateMasterSpotsZ[18] = { 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3 };
+Ovl61Circle CameraFlashCircles[9] = {
     { 0x5000, 0x5000, 0x5000 }, { 0x4000, 0x2000, 0x4000 }, { 0x1800, 0x1000, 0x1800 },
     { 0x800, 0xA00, 0x800 }, { 0x200, 0x200, 0x200 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
     { 0, 0, 0 },
 };
-Ovl61Circle *D_800C1A7C = 0;
-Ovl61Circle *D_800C1A80 = 0;
-Ovl61Circle *D_800C1A84 = 0;
-Ovl61HeroBox D_800C1A88[4] = {0};
-EXTengine *D_800C1B28 = 0;
-Ovl61Gin *D_800C1B2C = 0;
-EXTengine D_800C1B30 = {0};
-EXTengine D_800C1BCC = {0};
-s32 D_800C1C68 = 0;
-s32 D_800C1C6C = 0;
-s32 D_800C1C70 = 0;
-s32 D_800C1C74 = 0;
-s32 D_800C1C78 = 0;
-s32 D_800C1C7C = 0;
-s32 D_800C1C80 = 0;
-s32 D_800C1C84 = 0;
-u16 D_800C1C88 = 0;
-void *D_800C1C8C = 0;
-void *D_800C1C90 = 0;
-void *D_800C1C94 = 0;
-Ovl61ScnObj *D_800C1C98[10] = {0};
-Ovl61ScnObj *D_800C1CC0[10] = {0};
-Ovl61Link D_800C1CE8[4] = {0};
-Ovl61Door D_800C1D38[4] = {0};
-Ovl61Door D_800C1D88[4] = {0};
-Ovl61WallObj D_800C1DD8[4] = {0};
-Ovl61Slot D_800C1E28[4] = {0};
-Ovl61Wall D_800C1E78[4] = {0};
-u16 D_800C1EE8[4] = {0};
-s16 D_800C1EF0[4] = {0};
-u16 D_800C1EF8 = 0;
-u16 D_800C1EFA = 0;
-u16 D_800C1EFC = 0;
-u16 D_800C1EFE = 0;
-s16 D_800C1F00 = 0;
-s16 D_800C1F02 = 0;
-s16 D_800C1F04 = 0;
-s16 D_800C1F06 = 0;
-s16 D_800C1F08 = 0;
-u16 D_800C1F0A = 0;
-u16 D_800C1F0C = 0;
-s16 D_800C1F10[2] = {0};
-u16 D_800C1F14 = 0;
-s16 D_800C1F16 = 0;
-s16 D_800C1F18[1024] = {0};
-u16 D_800C2718 = 0;
-s32 D_800C271C = 0;
-s32 D_800C2720 = 0;
-s32 D_800C2724 = 0;
-s32 D_800C2728 = 0;
+Ovl61Circle *ArkPosts = 0;
+Ovl61Circle *ArkCircles = 0;
+Ovl61Circle *ArkBumpers = 0;
+Ovl61HeroBox ArkHeroBoxes[4] = {0};
+EXTengine *ArkBallSpawner = 0;
+Ovl61Gin *ArkNGin = 0;
+EXTengine ArkCornerEngine = {0};
+EXTengine ArkDieEngine = {0};
+s32 ArkFloorTiltX = 0;
+s32 ArkFloorTiltZ = 0;
+s32 CrateMasterState = 0;
+s32 CrateMasterTimer = 0;
+s32 CrateMasterCount = 0;
+s32 CrateMasterNext = 0;
+s32 ArkBallTimer = 0;
+s32 ArkDeadWalls = 0;
+u16 ArkFloorState = 0;
+void *ArkBounceOnBounds = 0;
+void *ArkTestOutOfBounds = 0;
+void *ArkTestLaunchBounds = 0;
+Ovl61ScnObj *FloorObjectsA[10] = {0};
+Ovl61ScnObj *FloorObjectsB[10] = {0};
+Ovl61Link FloorLinks[4] = {0};
+Ovl61Door ArkDoorsA[4] = {0};
+Ovl61Door ArkDoorsB[4] = {0};
+Ovl61WallObj ArkWallObjects[4] = {0};
+Ovl61Slot ArkGoals[4] = {0};
+Ovl61Wall ArkWalls[4] = {0};
+u16 ArkHeroSpeed[4] = {0};
+s16 ArkHeroSpeedDelta[4] = {0};
+u16 CrateMasterWordA = 0;
+u16 CrateMasterWordB = 0;
+u16 NGinState = 0;
+u16 ArkPickupBounce = 0;
+s16 ArkBotSkill = 0;
+s16 ArkInitWord0 = 0;
+s16 ArkInitWord1 = 0;
+s16 ArkInitWord2 = 0;
+s16 ArkInitWord3 = 0;
+u16 CrateMasterWordC = 0;
+u16 ArkRedKickTimer = 0;
+s16 ArkUnused3[2] = {0};
+u16 ArkWallFlags = 0;
+s16 ArkBallCount = 0;
+s16 ArkUnusedBuffer[1024] = {0};
+u16 ArkPickupCount = 0;
+s32 ArkSidePlayer1 = 0;
+s32 ArkSidePlayer2 = 0;
+s32 ArkSidePlayer3 = 0;
+s32 ArkSidePlayer0 = 0;
 
 void ArkHeroEngineUpdate(s32 arg0) {
     VECTOR sp10;
@@ -349,7 +505,7 @@ void ArkHeroEngineUpdate(s32 arg0) {
     r = func_80025A48(e, 1);
     if (r == NULL) goto next;
     {
-        base = D_800C1A88;
+        base = ArkHeroBoxes;
         b = (Ovl61HeroBox *)(arg0 << 2);
         b = (Ovl61HeroBox *)((s32)b + arg0);
         b = (Ovl61HeroBox *)((s32)b << 3);
@@ -367,7 +523,7 @@ next:
     r = func_80025A48(e, 2);
     v = &sp10;
     if (r != NULL) {
-        base = D_800C1A88;
+        base = ArkHeroBoxes;
         b = (Ovl61HeroBox *)(arg0 << 2);
         b = (Ovl61HeroBox *)((s32)b + arg0);
         b = (Ovl61HeroBox *)((s32)b << 3);
@@ -389,104 +545,104 @@ void AR_PreInitLevel(void) {
     void **p4;
     void *t;
 
-    D_8009D6E8.unk4 = D_800C0E70;
+    D_8009D6E8.unk4 = ArkHeroModels;
     D_8009D6E8.unk0 = (s32)AR_InitHero;
     D_8009D6E8.unk18 = AR_InitShadow;
     D_8009D6E8.unk1C = AR_UpdateShadow;
     D_8009D6E8.unk38 = Ark_HeroBot;
-    D_8009D6E8.unk14 = D_800C1054;
+    D_8009D6E8.unk14 = ArkVictorySeqs;
     if (D_8005A680[0] != 0) {
-        D_800C271C = 1;
-        D_800C2720 = 3;
-        D_800C2724 = 2;
+        ArkSidePlayer1 = 1;
+        ArkSidePlayer2 = 3;
+        ArkSidePlayer3 = 2;
     } else {
-        D_800C271C = 2;
-        D_800C2720 = 3;
-        D_800C2724 = 1;
+        ArkSidePlayer1 = 2;
+        ArkSidePlayer2 = 3;
+        ArkSidePlayer3 = 1;
     }
-    D_800C2728 = 0;
+    ArkSidePlayer0 = 0;
     g = D_8005A614;
     switch (*(s16 *)(g + 0x34)) {
     case 15:
         D_8009D6E8.unk68 = AR_KeepInBounds;
         D_8009D6E8.unk20 = AR_PreMoveHero;
         D_8009D6E8.unk24 = AR_MoveHero;
-        D_800C1C8C = AR_BA_BounceOnBounds;
-        D_800C1C90 = AR_BA_TestOutOfBounds;
-        D_800C1C94 = AR_BA_TestLaunchBounds;
+        ArkBounceOnBounds = AR_BA_BounceOnBounds;
+        ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
+        ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
-        D_8009D8F4 = D_800C0F44;
-        D_8009D8F8 = D_800C0F58;
-        D_8009D904 = D_800C0F2C;
+        D_8009D8F4 = ArkBeachAiBotTweak;
+        D_8009D8F8 = ArkBeachAiHumanTweak;
+        D_8009D904 = ArkBeachAiHumanRoundTweak;
         p = &D_8009D8FC;
         if (*(s32 *)(g + 0x6C) != 0) {
-            t = D_800C0F0C;
+            t = ArkBeachAiSkillAlt;
         } else {
-            t = D_800C0EF8;
+            t = ArkBeachAiSkill;
         }
         *p = t;
-        D_8009D900 = D_800C0F20;
+        D_8009D900 = ArkBeachAiTeamSkill;
         return;
     case 16:
         D_8009D6E8.unk68 = AR_KeepInBounds;
         D_8009D6E8.unk20 = AR_PreMoveHero;
         D_8009D6E8.unk24 = AR_MoveHero;
-        D_800C1C8C = AR_BA_BounceOnBounds;
-        D_800C1C90 = AR_NG_TestOutOfBounds;
-        D_800C1C94 = AR_BA_TestLaunchBounds;
+        ArkBounceOnBounds = AR_BA_BounceOnBounds;
+        ArkTestOutOfBounds = AR_NG_TestOutOfBounds;
+        ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
-        D_8009D8F4 = D_800C0FB8;
-        D_8009D8F8 = D_800C0FCC;
-        D_8009D904 = D_800C0FA0;
+        D_8009D8F4 = ArkNginAiBotTweak;
+        D_8009D8F8 = ArkNginAiHumanTweak;
+        D_8009D904 = ArkNginAiHumanRoundTweak;
         p2 = &D_8009D8FC;
         if (*(s32 *)(g + 0x6C) != 0) {
-            t = D_800C0F80;
+            t = ArkNginAiSkillAlt;
         } else {
-            t = D_800C0F6C;
+            t = ArkNginAiSkill;
         }
         *p2 = t;
-        D_8009D900 = D_800C0F94;
+        D_8009D900 = ArkNginAiTeamSkill;
         return;
     case 17:
         D_8009D6E8.unk68 = AR_PI_KeepInBounds;
         D_8009D6E8.unk20 = AR_PI_PreMoveHero;
         D_8009D6E8.unk24 = AR_PI_MoveHero;
-        D_800C1C8C = AR_PI_BounceOnBounds;
-        D_800C1C90 = AR_PI_TestOutOfBounds;
-        D_800C1C94 = AR_PI_TestLaunchBounds;
+        ArkBounceOnBounds = AR_PI_BounceOnBounds;
+        ArkTestOutOfBounds = AR_PI_TestOutOfBounds;
+        ArkTestLaunchBounds = AR_PI_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkPIContour;
-        D_8009D8F4 = D_800C102C;
-        D_8009D8F8 = D_800C1040;
-        D_8009D904 = D_800C1014;
+        D_8009D8F4 = ArkSkyAiBotTweak;
+        D_8009D8F8 = ArkSkyAiHumanTweak;
+        D_8009D904 = ArkSkyAiHumanRoundTweak;
         p3 = &D_8009D8FC;
         if (*(s32 *)(g + 0x6C) != 0) {
-            t = D_800C0FF4;
+            t = ArkSkyAiSkillAlt;
         } else {
-            t = D_800C0FE0;
+            t = ArkSkyAiSkill;
         }
         *p3 = t;
-        D_8009D900 = D_800C1008;
+        D_8009D900 = ArkSkyAiTeamSkill;
         return;
     case 0:
     default:
         D_8009D6E8.unk68 = AR_KeepInBounds;
         D_8009D6E8.unk20 = AR_PreMoveHero;
         D_8009D6E8.unk24 = AR_MoveHero;
-        D_800C1C8C = AR_BA_BounceOnBounds;
-        D_800C1C90 = AR_BA_TestOutOfBounds;
-        D_800C1C94 = AR_BA_TestLaunchBounds;
+        ArkBounceOnBounds = AR_BA_BounceOnBounds;
+        ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
+        ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
-        D_8009D8F4 = D_800C0ED0;
-        D_8009D8F8 = D_800C0EE4;
-        D_8009D904 = D_800C0EB8;
+        D_8009D8F4 = ArkBallsAiBotTweak;
+        D_8009D8F8 = ArkBallsAiHumanTweak;
+        D_8009D904 = ArkBallsAiHumanRoundTweak;
         p4 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800C0E98;
+            t = ArkBallsAiSkillAlt;
         } else {
-            t = D_800C0E84;
+            t = ArkBallsAiSkill;
         }
         *p4 = t;
-        D_8009D900 = D_800C0EAC;
+        D_8009D900 = ArkBallsAiTeamSkill;
         return;
     }
 }
@@ -503,31 +659,31 @@ void AR_InitLevel(void) {
     World_floor_level = 0;
     D_8005AA38 = 0;
     D_8005AA3C = 0;
-    D_800C1F02 = 0;
-    D_800C1F04 = 0;
-    D_800C1F06 = 0;
-    D_800C1F08 = 0;
-    D_800C1F0A = 0xB4;
-    D_800C1F0C = 0xB4;
-    D_800C1F14 = 0;
-    D_800C1F16 = -1;
-    D_800C1B28 = 0;
-    D_800C1B2C = 0;
-    D_800C1C84 = 0;
-    D_800C2718 = Random(15);
-    D_800C1C70 = 150;
-    D_800C1C74 = Random(18);
-    D_800C1C78 = 270;
-    D_800C1C7C = Random(18);
-    D_800C1C80 = -1;
-    D_800C1EF8 = 0;
-    D_800C1EFA = 0;
-    D_800C1EFC = 10;
-    D_800C1F00 = 0;
-    D_800C1B30 = EngineTemplate;
-    D_800C1BCC = EngineTemplate;
-    D_800C1C88 = 30;
-    D_800C1EFE = 0;
+    ArkInitWord0 = 0;
+    ArkInitWord1 = 0;
+    ArkInitWord2 = 0;
+    ArkInitWord3 = 0;
+    CrateMasterWordC = 0xB4;
+    ArkRedKickTimer = 0xB4;
+    ArkWallFlags = 0;
+    ArkBallCount = -1;
+    ArkBallSpawner = 0;
+    ArkNGin = 0;
+    ArkDeadWalls = 0;
+    ArkPickupCount = Random(15);
+    CrateMasterState = 150;
+    CrateMasterTimer = Random(18);
+    CrateMasterCount = 270;
+    CrateMasterNext = Random(18);
+    ArkBallTimer = -1;
+    CrateMasterWordA = 0;
+    CrateMasterWordB = 0;
+    NGinState = 10;
+    ArkBotSkill = 0;
+    ArkCornerEngine = EngineTemplate;
+    ArkDieEngine = EngineTemplate;
+    ArkFloorState = 30;
+    ArkPickupBounce = 0;
 
     for (i = 0, m = (Ovl61ModeView *)D_8005A614; i < 4; i++) {
         h = &Heroes[i];
@@ -541,11 +697,11 @@ void AR_InitLevel(void) {
         func_80026980(h->hero);
         switch (m->unk34) {
         case 15:
-            D_800C1A7C = D_800C10F4;
-            D_800C1A80 = D_800C110C;
+            ArkPosts = ArkBeachPosts;
+            ArkCircles = ArkBeachCircles;
             h->hero_score = 12;
             h->hero_health = 12;
-            D_800C1A84 = D_800C1124;
+            ArkBumpers = ArkBeachBumpers;
             if (m->unk32 & 0x40) {
                 if (m->unk6C != 0) {
                     Heroes[0].hero_score = 18;
@@ -561,11 +717,11 @@ void AR_InitLevel(void) {
             }
             break;
         case 16:
-            D_800C1A7C = D_800C1154;
-            D_800C1A80 = D_800C116C;
+            ArkPosts = ArkNginPosts;
+            ArkCircles = ArkNginCircles;
             h->hero_score = 20;
             h->hero_health = 20;
-            D_800C1A84 = D_800C1184;
+            ArkBumpers = ArkNginBumpers;
             if (m->unk32 & 0x40) {
                 if (m->unk6C != 0) {
                     Heroes[0].hero_score = 30;
@@ -581,9 +737,9 @@ void AR_InitLevel(void) {
             }
             break;
         case 17:
-            D_800C1A7C = D_800C11B4;
-            D_800C1A80 = D_800C11CC;
-            D_800C1A84 = D_800C11E4;
+            ArkPosts = ArkSkyPosts;
+            ArkCircles = ArkSkyCircles;
+            ArkBumpers = ArkSkyBumpers;
             if (m->unk32 & 0x80) {
                 h->hero_score = 10;
                 h->hero_health = 10;
@@ -607,11 +763,11 @@ void AR_InitLevel(void) {
             break;
         case 0:
         default:
-            D_800C1A7C = D_800C1094;
-            D_800C1A80 = D_800C10AC;
+            ArkPosts = ArkBallsPosts;
+            ArkCircles = ArkBallsCircles;
             h->hero_score = 15;
             h->hero_health = 15;
-            D_800C1A84 = D_800C10C4;
+            ArkBumpers = ArkBallsBumpers;
             if (m->unk32 & 0x40) {
                 if (m->unk6C != 0) {
                     Heroes[0].hero_score = Heroes[0].hero_score_displayed = 18;
@@ -642,7 +798,7 @@ void AR_InitLevel(void) {
         CreateNAS(0, World_floor_level, 0, 0x1507, 0x11);
         break;
     case 0x11:
-        PlaySfx(0x5C8, &D_800C1B30.sfx, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x5C8, &ArkCornerEngine.sfx, 0, 0x1000, 0x1E00, 0);
         break;
     }
     InitARKfloor();
@@ -659,24 +815,24 @@ void AR_UpdateLevel(void) {
     u16 *cnt;
 
     func_80086F78();
-    if ((D_8005A644 & 0x801) && D_800C1C88 != 0) {
-        D_800C1C88 = D_800C1C88 - 1;
+    if ((D_8005A644 & 0x801) && ArkFloorState != 0) {
+        ArkFloorState = ArkFloorState - 1;
     }
     i = 12;
     if (D_8009D908 != 0) {
-        if (D_800C1C80 == -1) {
+        if (ArkBallTimer == -1) {
             best = 99;
             for (i = 0; i < 4; i++) {
                 D_8009D87C[i].unk4 = 4;
                 D_8009D87C[i].unk0 = 32;
                 if (!(Heroes[i].hero_status & 0xFA00) && Heroes[i].hero_score < best) {
                     best = Heroes[i].hero_score;
-                    D_800C1C80 = i;
+                    ArkBallTimer = i;
                 }
             }
-            if (D_800C1C80 != -1 && D_800C1C80 < 4) {
-                D_8009D87C[D_800C1C80].unk4 = 32;
-                D_8009D87C[D_800C1C80].unk0 = 0;
+            if (ArkBallTimer != -1 && ArkBallTimer < 4) {
+                D_8009D87C[ArkBallTimer].unk4 = 32;
+                D_8009D87C[ArkBallTimer].unk0 = 0;
             }
             i = 12;
         }
@@ -725,22 +881,22 @@ bool AR_KeepInBounds(EXTengine *arg0) {
     s32 a;
 
     for (i = 0; i < 4; i++) {
-        dx = arg0->unk10.x - D_800C1A7C[i].x;
-        dz = arg0->unk10.z - D_800C1A7C[i].z;
+        dx = arg0->unk10.x - ArkPosts[i].x;
+        dz = arg0->unk10.z - ArkPosts[i].z;
         if (arg0->collision_box.flags & 0x40) {
-            r = D_800C1A7C[i].r + arg0->collision_box.radius;
+            r = ArkPosts[i].r + arg0->collision_box.radius;
         } else {
-            r = D_800C1A7C[i].r + 0x80;
+            r = ArkPosts[i].r + 0x80;
         }
         if (dx * dx + dz * dz < r * r) {
             a = get_angle(-dx, -dz);
-            if ((void *)arg0 != (void *)Heroes[D_800C2720].hero_eng &&
-                (void *)arg0 != (void *)Heroes[D_800C271C].hero_eng) {
-                arg0->unk10.x = D_800C1A7C[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
+            if ((void *)arg0 != (void *)Heroes[ArkSidePlayer2].hero_eng &&
+                (void *)arg0 != (void *)Heroes[ArkSidePlayer1].hero_eng) {
+                arg0->unk10.x = ArkPosts[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
             }
-            if ((void *)arg0 != (void *)Heroes[D_800C2724].hero_eng &&
-                (void *)arg0 != (void *)Heroes[D_800C2728].hero_eng) {
-                arg0->unk10.z = D_800C1A7C[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
+            if ((void *)arg0 != (void *)Heroes[ArkSidePlayer3].hero_eng &&
+                (void *)arg0 != (void *)Heroes[ArkSidePlayer0].hero_eng) {
+                arg0->unk10.z = ArkPosts[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
             }
             return 1;
         }
@@ -767,22 +923,22 @@ bool AR_PI_KeepInBounds(EXTengine *arg0) {
     arg0->unk10.x = D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
     arg0->unk10.z = D_80068BD4[a & 0xFFF].unk2 * 9 >> 4;
     for (i = 0; i < 4; i++) {
-        dx = arg0->unk10.x - D_800C1A7C[i].x;
-        dz = arg0->unk10.z - D_800C1A7C[i].z;
+        dx = arg0->unk10.x - ArkPosts[i].x;
+        dz = arg0->unk10.z - ArkPosts[i].z;
         if (arg0->collision_box.flags & 0x40) {
-            r = D_800C1A7C[i].r + arg0->collision_box.radius;
+            r = ArkPosts[i].r + arg0->collision_box.radius;
         } else {
-            r = D_800C1A7C[i].r + 0x80;
+            r = ArkPosts[i].r + 0x80;
         }
         if (dx * dx + dz * dz < r * r) {
             a = get_angle(-dx, -dz);
-            if ((void *)arg0 != (void *)Heroes[D_800C2720].hero_eng &&
-                (void *)arg0 != (void *)Heroes[D_800C271C].hero_eng) {
-                arg0->unk10.x = D_800C1A7C[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
+            if ((void *)arg0 != (void *)Heroes[ArkSidePlayer2].hero_eng &&
+                (void *)arg0 != (void *)Heroes[ArkSidePlayer1].hero_eng) {
+                arg0->unk10.x = ArkPosts[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
             }
-            if ((void *)arg0 != (void *)Heroes[D_800C2724].hero_eng &&
-                (void *)arg0 != (void *)Heroes[D_800C2728].hero_eng) {
-                arg0->unk10.z = D_800C1A7C[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
+            if ((void *)arg0 != (void *)Heroes[ArkSidePlayer3].hero_eng &&
+                (void *)arg0 != (void *)Heroes[ArkSidePlayer0].hero_eng) {
+                arg0->unk10.z = ArkPosts[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
             }
             a = get_angle(arg0->unk10.x, arg0->unk10.z);
             arg0->unk1E = a;
@@ -810,11 +966,11 @@ s32 AR_BA_BounceOnBounds(EXTengine *arg0, s32 arg1) {
 
     for (i = 0; i < 4; i++) {
         if (arg0->collision_box.flags & 0x40) {
-            r = D_800C1A7C[i].r + arg0->collision_box.radius;
+            r = ArkPosts[i].r + arg0->collision_box.radius;
         } else {
-            r = D_800C1A7C[i].r + 0x80;
+            r = ArkPosts[i].r + 0x80;
         }
-        base = D_800C1A7C;
+        base = ArkPosts;
         c = &base[i];
         cx = c->x;
         x = arg0->unk10.x;
@@ -827,7 +983,7 @@ s32 AR_BA_BounceOnBounds(EXTengine *arg0, s32 arg1) {
         }
     }
     ret = -1;
-    if (D_800C1F14 == 0) {
+    if (ArkWallFlags == 0) {
         goto fail;
     }
     dx = x;
@@ -837,19 +993,19 @@ s32 AR_BA_BounceOnBounds(EXTengine *arg0, s32 arg1) {
     } else {
         r = 0x800;
     }
-    if (dx > r && (D_800C1F14 & 0x88)) {
+    if (dx > r && (ArkWallFlags & 0x88)) {
         arg0->unk10.x = r;
         ret = 0x400;
     }
-    if (dx < -r && (D_800C1F14 & 0x44)) {
+    if (dx < -r && (ArkWallFlags & 0x44)) {
         arg0->unk10.x = -r;
         ret = 0xC00;
     }
-    if (dz > r && (D_800C1F14 & 0x22)) {
+    if (dz > r && (ArkWallFlags & 0x22)) {
         arg0->unk10.z = r;
         ret = 0;
     }
-    if (dz < -r && (D_800C1F14 & 0x11)) {
+    if (dz < -r && (ArkWallFlags & 0x11)) {
         arg0->unk10.z = -r;
         ret = 0x800;
     }
@@ -862,8 +1018,8 @@ found:
     v.y = 0;
     v.z = base[i].z;
     LineToCircleTest(&arg0->unk10, arg1, &v, r);
-    ret = get_angle(D_800C1A7C[i].x - arg0->unk10.x, D_800C1A7C[i].z - arg0->unk10.z);
-    D_800C1E28[i].state = 3;
+    ret = get_angle(ArkPosts[i].x - arg0->unk10.x, ArkPosts[i].z - arg0->unk10.z);
+    ArkGoals[i].state = 3;
     return ret;
 fail:
     return -1;
@@ -883,23 +1039,23 @@ s32 AR_PI_BounceOnBounds(EXTengine *arg0, s32 arg1) {
     a = ret = -1;
     for (i = 0; i < 4; i++) {
         if (arg0->collision_box.flags & 0x40) {
-            r = D_800C1A7C[i].r + arg0->collision_box.radius;
+            r = ArkPosts[i].r + arg0->collision_box.radius;
         } else {
-            r = D_800C1A7C[i].r + 0x80;
+            r = ArkPosts[i].r + 0x80;
         }
-        cx = D_800C1A7C[i].x;
+        cx = ArkPosts[i].x;
         dx = arg0->unk10.x - cx;
-        dz = arg0->unk10.z - D_800C1A7C[i].z;
+        dz = arg0->unk10.z - ArkPosts[i].z;
         if (dx * dx + dz * dz < r * r) {
             v.x = cx;
             v.y = 0;
-            v.z = D_800C1A7C[i].z;
+            v.z = ArkPosts[i].z;
             LineToCircleTest(&arg0->unk10, arg1, &v, r);
-            a = get_angle(D_800C1A7C[i].x - arg0->unk10.x, D_800C1A7C[i].z - arg0->unk10.z);
-            D_800C1E28[i].state = 3;
+            a = get_angle(ArkPosts[i].x - arg0->unk10.x, ArkPosts[i].z - arg0->unk10.z);
+            ArkGoals[i].state = 3;
             ret = a;
         }
-        if (D_800C1F14 != 0) {
+        if (ArkWallFlags != 0) {
             dx = arg0->unk10.x;
             dz = arg0->unk10.z;
             if (arg0->collision_box.flags & 0x40) {
@@ -907,30 +1063,30 @@ s32 AR_PI_BounceOnBounds(EXTengine *arg0, s32 arg1) {
             } else {
                 r = 0x800;
             }
-            if (dx > r && (D_800C1F14 & 0x88)) {
+            if (dx > r && (ArkWallFlags & 0x88)) {
                 arg0->unk10.x = r;
                 a = 0x400;
             }
-            if (dx < -r && (D_800C1F14 & 0x44)) {
+            if (dx < -r && (ArkWallFlags & 0x44)) {
                 arg0->unk10.x = -r;
                 a = 0xC00;
             }
-            if (dz > r && (D_800C1F14 & 0x22)) {
+            if (dz > r && (ArkWallFlags & 0x22)) {
                 arg0->unk10.z = r;
                 a = 0;
             }
-            if (dz < -r && (D_800C1F14 & 0x11)) {
+            if (dz < -r && (ArkWallFlags & 0x11)) {
                 arg0->unk10.z = -r;
                 a = 0x800;
             }
             if (a != -1) {
-                if (D_800C1EFE != 0) {
-                    t = D_800C1EFE - 1;
+                if (ArkPickupBounce != 0) {
+                    t = ArkPickupBounce - 1;
                 } else {
                     PlaySfx(0x592, NULL, NULL, 0x1000, 0x1E00, 0);
                     t = 3;
                 }
-                D_800C1EFE = t;
+                ArkPickupBounce = t;
                 ret = a;
             }
         }
@@ -952,22 +1108,22 @@ bool AR_PI_TestOutOfBounds(EXTengine *arg0, EXTobject *arg1, bool arg2) {
         a = get_angle(-x, -z) + 0x200;
         a &= 0xC00;
         if (a == 0x400) {
-            arg1->player = D_800C2720;
+            arg1->player = ArkSidePlayer2;
             return 1;
         } else if (a == 0x800) {
-            arg1->player = D_800C2724;
+            arg1->player = ArkSidePlayer3;
             return 1;
         } else if (a == 0xC00) {
-            arg1->player = D_800C271C;
+            arg1->player = ArkSidePlayer1;
             return 1;
         } else {
-            arg1->player = D_800C2728;
+            arg1->player = ArkSidePlayer0;
             return 1;
         }
     }
     if (arg2 != 0) {
         s16 d = arg1->player;
-        if (d == D_800C2724 || d == D_800C2728) {
+        if (d == ArkSidePlayer3 || d == ArkSidePlayer0) {
             if (x >= 0x601) {
                 arg0->unk10.x = 0x600;
             }
@@ -987,7 +1143,7 @@ bool AR_PI_TestOutOfBounds(EXTengine *arg0, EXTobject *arg1, bool arg2) {
 }
 
 bool AR_BA_TestLaunchBounds(EXTengine *arg0, EXTobject *obj) {
-    Ovl61Circle *base = D_800C1A7C;
+    Ovl61Circle *base = ArkPosts;
     Ovl61Circle *c;
     s32 i;
     s32 dx;
@@ -1108,21 +1264,21 @@ void AR_InitHero(u32 arg0) {
     c = Heroes;
     h = c + arg0;
     e = h->hero_eng;
-    if (arg0 == D_800C2728) {
-        h->hero_eng->unk10.x = D_800C18A8[0][0];
-        h->hero_eng->unk10.z = D_800C18A8[0][2];
+    if (arg0 == ArkSidePlayer0) {
+        h->hero_eng->unk10.x = ArkHeroStarts[0][0];
+        h->hero_eng->unk10.z = ArkHeroStarts[0][2];
     }
-    if (arg0 == D_800C2724) {
-        h->hero_eng->unk10.x = D_800C18A8[1][0];
-        h->hero_eng->unk10.z = D_800C18A8[1][2];
+    if (arg0 == ArkSidePlayer3) {
+        h->hero_eng->unk10.x = ArkHeroStarts[1][0];
+        h->hero_eng->unk10.z = ArkHeroStarts[1][2];
     }
-    if (arg0 == D_800C271C) {
-        h->hero_eng->unk10.x = D_800C18A8[2][0];
-        h->hero_eng->unk10.z = D_800C18A8[2][2];
+    if (arg0 == ArkSidePlayer1) {
+        h->hero_eng->unk10.x = ArkHeroStarts[2][0];
+        h->hero_eng->unk10.z = ArkHeroStarts[2][2];
     }
-    if (arg0 == D_800C2720) {
-        h->hero_eng->unk10.x = D_800C18A8[3][0];
-        h->hero_eng->unk10.z = D_800C18A8[3][2];
+    if (arg0 == ArkSidePlayer2) {
+        h->hero_eng->unk10.x = ArkHeroStarts[3][0];
+        h->hero_eng->unk10.z = ArkHeroStarts[3][2];
     }
     e->unk5D = 0;
     s = h->hero_sub;
@@ -1142,7 +1298,7 @@ void AR_InitHero(u32 arg0) {
         }
     }
     s->unk6C = D_8005453C;
-    if (arg0 == D_800C2728) {
+    if (arg0 == ArkSidePlayer0) {
         switch (Heroes[arg0].hero_name) {
         case 5:
         case 6:
@@ -1152,7 +1308,7 @@ void AR_InitHero(u32 arg0) {
             break;
         }
     }
-    D_800C1EE8[arg0] = 0xF;
+    ArkHeroSpeed[arg0] = 0xF;
     s->unk74 = 0x2004;
     FetchDefaultColBox(e, 0x50);
     if (e->unk10.x > 0x880) {
@@ -1203,14 +1359,14 @@ void AR_PreMoveHero(u32 arg0) {
         ((PadButtons *)D_80051338)[arg0].unk54 = 0;
     }
     if ((D_80051338[arg0].unk0 & 1) || h->hero_ai->AImode != 0) {
-        if (arg0 == D_800C2724) {
+        if (arg0 == ArkSidePlayer3) {
             acc = 0x2A;
         }
         if (((PadButtons *)D_80051338)[arg0].unk50 & 0xF00) {
             max = 0xA0;
             acc = 0x38;
         }
-        if (arg0 == D_800C2724 || arg0 == D_800C2728) {
+        if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
             mask = 0xA0;
         } else {
             mask = 0x50;
@@ -1223,7 +1379,7 @@ void AR_PreMoveHero(u32 arg0) {
                 if (((s32 (*)(EXTengine *))D_8009D6E8.unk68)(Heroes[arg0].hero_eng) != 0) {
                     fast = 1;
                 }
-                if (arg0 == D_800C2724 || arg0 == D_800C2728) {
+                if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
                     b = p->unk50;
                     if (b & 0x80) {
                         d = -acc;
@@ -1266,9 +1422,9 @@ void AR_PreMoveHero(u32 arg0) {
                     }
                 }
             }
-            D_800C1EF0[arg0] = m->forward_speed;
+            ArkHeroSpeedDelta[arg0] = m->forward_speed;
         } else {
-            D_800C1EF0[arg0] = 0;
+            ArkHeroSpeedDelta[arg0] = 0;
             if (((s32 (*)(EXTengine *))D_8009D6E8.unk68)(Heroes[arg0].hero_eng) != 0) {
                 m->forward_speed = 0;
             }
@@ -1317,14 +1473,14 @@ void AR_PI_PreMoveHero(u32 arg0) {
         HPADS[arg0].unk54 = 0;
     }
     if ((*(s32 *)HPADS[arg0].unk0 & 1) || h->hero_ai->AImode != 0) {
-        if (arg0 == D_800C2724) {
+        if (arg0 == ArkSidePlayer3) {
             step = 0x15;
         }
         if (HPADS[arg0].unk50 & 0xF00) {
             max = 0x48;
             step = 0x12;
         }
-        mask = (arg0 == D_800C2724 || arg0 == D_800C2728) ? 0xA0 : 0x50;
+        mask = (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) ? 0xA0 : 0x50;
         {
             PadButtons *b = HPADS;
             p = &b[arg0];
@@ -1335,7 +1491,7 @@ void AR_PI_PreMoveHero(u32 arg0) {
                 if (D_8009D750(Heroes[arg0].hero_eng) != 0) {
                     hit = 1;
                 }
-                if (arg0 == D_800C2724 || arg0 == D_800C2728) {
+                if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
                     if (p->unk50 & 0x80) {
                         d = -step;
                     }
@@ -1371,9 +1527,9 @@ void AR_PI_PreMoveHero(u32 arg0) {
                     mv->forward_speed = (d < 0) ? -1 : 1;
                 }
             }
-            D_800C1EF0[arg0] = mv->forward_speed;
+            ArkHeroSpeedDelta[arg0] = mv->forward_speed;
         } else {
-            D_800C1EF0[arg0] = 0;
+            ArkHeroSpeedDelta[arg0] = 0;
             if (D_8009D750(Heroes[arg0].hero_eng) != 0) {
                 mv->forward_speed = 0;
             }
@@ -1423,19 +1579,19 @@ void AR_MoveHero(u32 arg0) {
     g = f + arg0;
     sp = g->hero_move->forward_speed;
     if (sp != 0) {
-        if (arg0 == D_800C2724) {
+        if (arg0 == ArkSidePlayer3) {
             a1 = sp;
             g->hero_eng->unk10.x += sp;
         }
-        if (arg0 == D_800C2728) {
+        if (arg0 == ArkSidePlayer0) {
             a1 = -sp;
             g->hero_eng->unk10.x += sp;
         }
-        if (arg0 == D_800C2720) {
+        if (arg0 == ArkSidePlayer2) {
             a1 = sp;
             g->hero_eng->unk10.z += sp;
         }
-        if (arg0 == D_800C271C) {
+        if (arg0 == ArkSidePlayer1) {
             a1 = -sp;
             g->hero_eng->unk10.z += sp;
         }
@@ -1495,19 +1651,19 @@ void AR_PI_MoveHero(u32 arg0) {
     sp = g->hero_move->forward_speed;
     a0 = g->hero_eng->unk1E;
     if (sp != 0) {
-        if (arg0 == D_800C2724) {
+        if (arg0 == ArkSidePlayer3) {
             a0 += sp;
             a1 = sp;
         }
-        if (arg0 == D_800C2728) {
+        if (arg0 == ArkSidePlayer0) {
             a0 -= sp;
             a1 = -sp;
         }
-        if (arg0 == D_800C2720) {
+        if (arg0 == ArkSidePlayer2) {
             a0 += sp;
             a1 = sp;
         }
-        if (arg0 == D_800C271C) {
+        if (arg0 == ArkSidePlayer1) {
             a0 -= sp;
             a1 = -sp;
         }
@@ -1604,21 +1760,21 @@ s32 arg0;
     s32 v;
     u16 t;
 
-    v = D_800C1EF0[arg0];
-    if (arg0 == D_800C2724 || arg0 == D_800C2720) {
+    v = ArkHeroSpeedDelta[arg0];
+    if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer2) {
         v = ~v + 1;
     }
     if (v < 0) {
-        t = D_800C13AC[Heroes[arg0].hero_name][2];
+        t = ArkHeroSpeeds[Heroes[arg0].hero_name][2];
     } else {
-        t = D_800C13AC[Heroes[arg0].hero_name][3];
+        t = ArkHeroSpeeds[Heroes[arg0].hero_name][3];
     }
-    b = D_800C1EE8;
+    b = ArkHeroSpeed;
     p = b + arg0;
-    if ((u32)(abs(*p - D_800C13AC[Heroes[arg0].hero_name][2]) - 2) >= 0x19U) {
+    if ((u32)(abs(*p - ArkHeroSpeeds[Heroes[arg0].hero_name][2]) - 2) >= 0x19U) {
         *p = t;
     }
-    if ((u32)(abs(*p - D_800C13AC[Heroes[arg0].hero_name][3]) - 2) >= 0x19U) {
+    if ((u32)(abs(*p - ArkHeroSpeeds[Heroes[arg0].hero_name][3]) - 2) >= 0x19U) {
         *p = t;
     }
 }
@@ -1632,15 +1788,15 @@ s32 arg0;
   u16 *p;
   u16 *d;
   subengine *s;
-  v = D_800C1EF0[arg0];
+  v = ArkHeroSpeedDelta[arg0];
   if (v == 0)
   {
-    d = &D_800C1EE8[arg0];
+    d = &ArkHeroSpeed[arg0];
     do
     {
     }
     while (0);
-    p = (u16 *) D_800C13AC;
+    p = (u16 *) ArkHeroSpeeds;
     p += Heroes[arg0].hero_name * 5;
     if ((*d) <= p[2])
     {
@@ -1650,7 +1806,7 @@ s32 arg0;
     {
       t = p[3];
     }
-    if (D_800C1EE8[arg0] == t)
+    if (ArkHeroSpeed[arg0] == t)
     {
       if (p || Heroes[arg0].hero_name)
       {
@@ -1664,35 +1820,35 @@ s32 arg0;
   }
   else
   {
-    if ((arg0 == D_800C2724) || (arg0 == D_800C2720))
+    if ((arg0 == ArkSidePlayer3) || (arg0 == ArkSidePlayer2))
     {
       v = (~v) + 1;
     }
     if (v < 0)
     {
-      u = D_800C13AC[Heroes[arg0].hero_name][0];
+      u = ArkHeroSpeeds[Heroes[arg0].hero_name][0];
     }
     else
     {
-      u = D_800C13AC[Heroes[arg0].hero_name][1];
+      u = ArkHeroSpeeds[Heroes[arg0].hero_name][1];
     }
-    if (D_800C1EE8[arg0] == u)
+    if (ArkHeroSpeed[arg0] == u)
     {
       goto skip;
     }
   }
-  D_800C1EE8[arg0] += 1;
+  ArkHeroSpeed[arg0] += 1;
   skip:
-  if (D_800C1EE8[arg0] >= 0x1D)
+  if (ArkHeroSpeed[arg0] >= 0x1D)
   {
-    D_800C1EE8[arg0] = 1;
+    ArkHeroSpeed[arg0] = 1;
   }
 
   s = Heroes[arg0].hero_sub;
   s = s->next;
   if (s != 0)
   {
-    s->unk74 = D_800C13AC[Heroes[arg0].hero_name][4] + D_800C1EE8[arg0];
+    s->unk74 = ArkHeroSpeeds[Heroes[arg0].hero_name][4] + ArkHeroSpeed[arg0];
     return 0;
   }
   return 1;
@@ -1908,7 +2064,7 @@ void ArkHeroWinner(u32 arg0) {
     s32 done;
 
     done = 0;
-    if (arg0 == D_800C2724) {
+    if (arg0 == ArkSidePlayer3) {
         e = Heroes[arg0].hero_eng;
         v = e->unk10.z;
         if (v > 0x500) {
@@ -1923,7 +2079,7 @@ void ArkHeroWinner(u32 arg0) {
             }
         }
     }
-    if (arg0 == D_800C2728) {
+    if (arg0 == ArkSidePlayer0) {
         e = Heroes[arg0].hero_eng;
         v = e->unk10.z;
         if (v < -0x500) {
@@ -1938,7 +2094,7 @@ void ArkHeroWinner(u32 arg0) {
             }
         }
     }
-    if (arg0 == D_800C271C) {
+    if (arg0 == ArkSidePlayer1) {
         e = Heroes[arg0].hero_eng;
         v = e->unk10.x;
         if (v > 0x500) {
@@ -1953,7 +2109,7 @@ void ArkHeroWinner(u32 arg0) {
             }
         }
     }
-    if (arg0 == D_800C2720) {
+    if (arg0 == ArkSidePlayer2) {
         e = Heroes[arg0].hero_eng;
         v = e->unk10.x;
         if (v < -0x500) {
@@ -2032,17 +2188,17 @@ void SetArkHeroDie(u32 arg0) {
             s->flags = 0;
         }
     }
-    if (arg0 == D_800C2728) {
+    if (arg0 == ArkSidePlayer0) {
         i = 0;
-    } else if (arg0 == D_800C2724) {
+    } else if (arg0 == ArkSidePlayer3) {
         i = 1;
-    } else if (arg0 == D_800C2720) {
+    } else if (arg0 == ArkSidePlayer2) {
         i = 3;
     } else {
-        i = (arg0 == D_800C271C) * 2;
+        i = (arg0 == ArkSidePlayer1) * 2;
     }
-    if (D_800C1D38[i].sub != NULL) {
-        D_800C1D38[i].sub->unk74 = D_800C1D38[i].unkE;
+    if (ArkDoorsA[i].sub != NULL) {
+        ArkDoorsA[i].sub->unk74 = ArkDoorsA[i].unkE;
     }
     m = (Ovl61ModeView *)D_8005A614;
     switch (m->unk34) {
@@ -2051,29 +2207,29 @@ void SetArkHeroDie(u32 arg0) {
         break;
     case 17:
         if (m->unk30 & 0x801) {
-            D_800C1F14 = 0;
-            if (D_800C1BCC.sfx != NULL) {
-                StopSfx(D_800C1BCC.sfx);
+            ArkWallFlags = 0;
+            if (ArkDieEngine.sfx != NULL) {
+                StopSfx(ArkDieEngine.sfx);
             }
         } else {
-            if (D_800C1D88[i].flags != NULL) {
-                *D_800C1D88[i].flags |= 0x8000;
+            if (ArkDoorsB[i].flags != NULL) {
+                *ArkDoorsB[i].flags |= 0x8000;
             }
-            if (D_800C1C84 == 0) {
-                PlaySfx(0x591, &D_800C1BCC.sfx, NULL, 0x1000, 0x1E00, 0);
-                D_800C1C84 = 1;
+            if (ArkDeadWalls == 0) {
+                PlaySfx(0x591, &ArkDieEngine.sfx, NULL, 0x1000, 0x1E00, 0);
+                ArkDeadWalls = 1;
             }
-            if (arg0 == D_800C2728) {
-                D_800C1F14 |= 1;
+            if (arg0 == ArkSidePlayer0) {
+                ArkWallFlags |= 1;
             }
-            if (arg0 == D_800C2724) {
-                D_800C1F14 |= 2;
+            if (arg0 == ArkSidePlayer3) {
+                ArkWallFlags |= 2;
             }
-            if (arg0 == D_800C2720) {
-                D_800C1F14 |= 4;
+            if (arg0 == ArkSidePlayer2) {
+                ArkWallFlags |= 4;
             }
-            if (arg0 == D_800C271C) {
-                D_800C1F14 |= 8;
+            if (arg0 == ArkSidePlayer1) {
+                ArkWallFlags |= 8;
             }
         }
         break;
@@ -2099,7 +2255,7 @@ void SetArkHeroKick(u32 arg0) {
     }
     h->hero_attack_counter = 0;
     h->hero_attack_timer = h->hero_attack_delay;
-    PlaySfx(D_800C18E0[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(ArkKickFrames[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
 void ArkHeroKick(u32 arg0) {
@@ -2347,25 +2503,25 @@ s32 ArkBotAimA(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle) {
     s32 num2;
     s32 t;
 
-    if (arg0 == D_800C2728) {
+    if (arg0 == ArkSidePlayer0) {
         i = 0;
-    } else if (arg0 == D_800C2724) {
+    } else if (arg0 == ArkSidePlayer3) {
         i = 1;
-    } else if (arg0 == D_800C2720) {
+    } else if (arg0 == ArkSidePlayer2) {
         i = 3;
     } else {
-        i = (arg0 == D_800C271C) * 2;
+        i = (arg0 == ArkSidePlayer1) * 2;
     }
     n = 0x20 - D_8009D87C[arg0].unk0;
-    n -= D_800C1F00;
-    x0 = D_800C1900[i].x0;
-    z0 = D_800C1900[i].z0;
-    x1 = D_800C1900[i].x1;
-    z1 = D_800C1900[i].z1;
+    n -= ArkBotSkill;
+    x0 = ArkBotEdgesA[i].x0;
+    z0 = ArkBotEdgesA[i].z0;
+    x1 = ArkBotEdgesA[i].x1;
+    z1 = ArkBotEdgesA[i].z1;
     if (n < 0) {
         n = 0;
     }
-    n = D_800C1980[n];
+    n = ArkBotAimAngles[n];
     /* The empty loops raise angle's ref count (flow.c weights refs by loop depth) so it gets s1. */
     do {
         do {
@@ -2445,25 +2601,25 @@ s32 ArkBotAimB(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle) {
     s32 num2;
     s32 t;
 
-    if (arg0 == D_800C2728) {
+    if (arg0 == ArkSidePlayer0) {
         i = 0;
-    } else if (arg0 == D_800C2724) {
+    } else if (arg0 == ArkSidePlayer3) {
         i = 1;
-    } else if (arg0 == D_800C2720) {
+    } else if (arg0 == ArkSidePlayer2) {
         i = 3;
     } else {
-        i = (arg0 == D_800C271C) * 2;
+        i = (arg0 == ArkSidePlayer1) * 2;
     }
     n = 0x20 - D_8009D87C[arg0].unk0;
-    n -= D_800C1F00;
-    x0 = D_800C1940[i].x0;
-    z0 = D_800C1940[i].z0;
-    x1 = D_800C1940[i].x1;
-    z1 = D_800C1940[i].z1;
+    n -= ArkBotSkill;
+    x0 = ArkBotEdgesB[i].x0;
+    z0 = ArkBotEdgesB[i].z0;
+    x1 = ArkBotEdgesB[i].x1;
+    z1 = ArkBotEdgesB[i].z1;
     if (n < 0) {
         n = 0;
     }
-    n = D_800C1980[n];
+    n = ArkBotAimAngles[n];
     /* The empty loops raise angle's ref count (flow.c weights refs by loop depth) so it gets s1. */
     do {
         do {
@@ -2700,7 +2856,7 @@ s32 ArkBallComingAtHero(s32 arg0) {
 
 /* a debug printf format nothing prints with in retail; its place in .rodata is between two
  * functions' jump tables, so it is defined here */
-const char D_800B3300[] = "%d ai mode %d target %x %x  angle %x dist %x\n";
+const char ArkAiDebugFormat[] = "%d ai mode %d target %x %x  angle %x dist %x\n";
 
 void Ark_HeroBot(u32 arg0) {
     s32 unused[2];
@@ -2782,33 +2938,33 @@ void Ark_HeroBot(u32 arg0) {
         }
     }
     if (target != -1) {
-        row = arg0 == D_800C2728;
-        if (arg0 == D_800C2720) {
+        row = arg0 == ArkSidePlayer0;
+        if (arg0 == ArkSidePlayer2) {
             row = 2;
         }
-        if (arg0 == D_800C271C) {
+        if (arg0 == ArkSidePlayer1) {
             row = 3;
         }
-        if (target == *D_800C19C0[row][0]) {
+        if (target == *ArkWallTargets[row][0]) {
             col = 0;
-        } else if (target == *D_800C19C0[row][1]) {
+        } else if (target == *ArkWallTargets[row][1]) {
             col = 1;
-        } else if (target == *D_800C19C0[row][2]) {
+        } else if (target == *ArkWallTargets[row][2]) {
             col = 2;
         } else {
             col = 3;
         }
-        v = D_800C19F0[col];
-        if (arg0 == D_800C2724) {
+        v = ArkBotWaits[col];
+        if (arg0 == ArkSidePlayer3) {
             best.x -= v;
         }
-        if (arg0 == D_800C2728) {
+        if (arg0 == ArkSidePlayer0) {
             best.x += v;
         }
-        if (arg0 == D_800C2720) {
+        if (arg0 == ArkSidePlayer2) {
             best.z -= v;
         }
-        if (arg0 == D_800C271C) {
+        if (arg0 == ArkSidePlayer1) {
             best.x -= v;
         }
     }
@@ -2882,7 +3038,7 @@ void Ark_HeroBot(u32 arg0) {
     case 3:
         k = D_8009D87C[arg0].unk0 * 0x10;
         sk = &D_8009D87C[arg0];
-        k -= D_800C1F00;
+        k -= ArkBotSkill;
         if (k <= 0) {
             k = 1;
         }
@@ -2949,7 +3105,7 @@ void Ark_HeroBot(u32 arg0) {
                     flag = 1;
                 }
                 if (((s32 (*)(s32, s32, s32, s32, s32, s32))ArkBotCanHit)(arg0, target, k, -0x200, 0x200, flag) != 0) {
-                    if ((D_8005A646 & 0x80) && (u16)D_800C1F0C == 0) {
+                    if ((D_8005A646 & 0x80) && (u16)ArkRedKickTimer == 0) {
                         ai->AIpad |= 0x2000;
                     } else {
                         ai->TargetPlayer = -1;
@@ -2964,12 +3120,12 @@ void Ark_HeroBot(u32 arg0) {
             eng = Heroes[arg0].hero_eng;
             dx = eng->unk10.x - best.x;
             r = eng->unk10.z - best.z;
-            if (arg0 == D_800C2724 || arg0 == D_800C2728) {
+            if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
                 v = abs(dx);
             } else {
                 v = abs(r);
             }
-            v += (D_8009D87C[arg0].unk0 + D_800C1F00) << 5;
+            v += (D_8009D87C[arg0].unk0 + ArkBotSkill) << 5;
             if (abs(v) > 0x280) {
                 if (dist < v) {
                     ai->AIpad |= 0xF00;
@@ -3021,7 +3177,7 @@ void Ark_HeroBot(u32 arg0) {
         break;
     default:
         ai->TargetXYZ = Heroes[arg0].hero_eng->unk10;
-        if (arg0 == D_800C2724 || arg0 == D_800C2728) {
+        if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
             ai->TargetXYZ.x = Random(0x400) - 0x200;
         } else {
             ai->TargetXYZ.z = Random(0x400) - 0x200;
@@ -3131,7 +3287,7 @@ void ArkSpawnBall(void) {
         } while (nas != NULL);
     }
     if (n < 8) {
-        nas = CreateNAS(((Ovl61Spawn *)D_800C1B28)->x, ((Ovl61Spawn *)D_800C1B28)->y, ((Ovl61Spawn *)D_800C1B28)->z, 0x1501, 0x11);
+        nas = CreateNAS(((Ovl61Spawn *)ArkBallSpawner)->x, ((Ovl61Spawn *)ArkBallSpawner)->y, ((Ovl61Spawn *)ArkBallSpawner)->z, 0x1501, 0x11);
         if (nas != NULL) {
             eng = nas->Engine;
             if (eng != NULL) {
@@ -3149,7 +3305,7 @@ void ArkSpawnBall(void) {
                         mot->Xdec = 1;
                         mot->Xvel = 0x80;
                         mot->Xmax = 0x80;
-                        dir = ((Ovl61Spawn *)D_800C1B28)->dir;
+                        dir = ((Ovl61Spawn *)ArkBallSpawner)->dir;
                         mot->Xa = dir;
                         eng->unk10.x = D_80068BD4[(dir - 0x400) & 0xFFF].unk2 * 13 >> 7;
                         eng->unk10.z = D_80068BD4[dir & 0xFFF].unk2 * 13 >> 7;
@@ -3256,16 +3412,16 @@ void InitBall(NAS *nas) {
 
 /* The side (0-3) a player defends. */
 static inline s32 ArkPlayerSide(s32 player) {
-    if (player == D_800C2728) {
+    if (player == ArkSidePlayer0) {
         return 0;
     }
-    if (player == D_800C2724) {
+    if (player == ArkSidePlayer3) {
         return 1;
     }
-    if (player == D_800C2720) {
+    if (player == ArkSidePlayer2) {
         return 3;
     }
-    return (player == D_800C271C) * 2;
+    return (player == ArkSidePlayer1) * 2;
 }
 
 void PlotBall(NAS *nas) {
@@ -3338,15 +3494,15 @@ void PlotBall(NAS *nas) {
                 eng->flags &= ~0x8000;
                 break;
             }
-            if ((u16)D_800C1F16 < 4) {
-                idx = D_800C1214[D_800C1F16][Random(2)];
+            if ((u16)ArkBallCount < 4) {
+                idx = BallSpeedFrames[ArkBallCount][Random(2)];
             } else {
                 idx = Random(4);
             }
-            if (D_800C1CE8[idx].unk12 == 0) {
-                D_800C1F16 = -1;
-                eng->unk10 = ((SLONG_XYZ *)D_800C1A84)[idx];
-                D_800C1CE8[idx].unk12 = 0x1F;
+            if (FloorLinks[idx].unk12 == 0) {
+                ArkBallCount = -1;
+                eng->unk10 = ((SLONG_XYZ *)ArkBumpers)[idx];
+                FloorLinks[idx].unk12 = 0x1F;
                 obj->countdown = 0xF;
                 obj->status = 12;
             }
@@ -3420,7 +3576,7 @@ void PlotBall(NAS *nas) {
             obj->owner = -1;
             break;
         case 6:
-            if (((s32 (*)(EXTengine *, EXTobject *))D_800C1C94)(eng, obj) != 0) {
+            if (((s32 (*)(EXTengine *, EXTobject *))ArkTestLaunchBounds)(eng, obj) != 0) {
                 hide = 1;
             } else {
                 mot->Xa = mot->Za;
@@ -3452,7 +3608,7 @@ void PlotBall(NAS *nas) {
             if (func_80025BBC(eng) != 0) {
                 obj->can_do |= 0x400;
                 if (nas->UserInfo.flags == 0) {
-                    PlaySfx(D_800C1378[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(BallFramesA[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
                     nas->UserInfo.flags |= 1;
                 }
                 if (((Ovl61BallView *)D_8005A614)->unk34 == 0x10) {
@@ -3469,7 +3625,7 @@ void PlotBall(NAS *nas) {
                 }
             }
             if (obj->can_do & 0x400) {
-                d = ((s16 (*)(EXTengine *, s32))D_800C1C8C)(eng, mot->Xa);
+                d = ((s16 (*)(EXTengine *, s32))ArkBounceOnBounds)(eng, mot->Xa);
                 if (d != -1) {
                     k = func_800154A0(((u16)mot->Xa + 0x800) & 0xFFF, d);
                     if (abs(k) < 8) {
@@ -3477,9 +3633,9 @@ void PlotBall(NAS *nas) {
                     }
                     mot->Xa = (d + k) & 0xFFF;
                     mot->Zmax = 0;
-                    PlaySfx(D_800C1388[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(BallFramesB[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 }
-                if (((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 0) != 0) {
+                if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 0) != 0) {
                     obj->countdown = 4;
                     switch (((Ovl61BallView *)D_8005A614)->unk34) {
                     case 17:
@@ -3506,18 +3662,18 @@ void PlotBall(NAS *nas) {
             eng->unk10.y -= 0x60;
             break;
         case 3:
-            if (((s32 (*)(EXTengine *, EXTobject *))D_800C1C94)(eng, obj) != 0) {
+            if (((s32 (*)(EXTengine *, EXTobject *))ArkTestLaunchBounds)(eng, obj) != 0) {
                 hide = 1;
             } else {
                 mot->Xa = mot->Za;
                 mot->Za = 0;
-                PlaySfx(D_800C1378[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(BallFramesA[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
                 obj->status = 1;
             }
             eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
             break;
         case 1:
-            d = ((s16 (*)(EXTengine *, s32))D_800C1C8C)(eng, mot->Xa);
+            d = ((s16 (*)(EXTengine *, s32))ArkBounceOnBounds)(eng, mot->Xa);
             if (d != -1) {
                 k = func_800154A0(((u16)mot->Xa + 0x800) & 0xFFF, d);
                 if (abs(k) < 8) {
@@ -3525,9 +3681,9 @@ void PlotBall(NAS *nas) {
                 }
                 mot->Xa = (d + k) & 0xFFF;
                 mot->Zmax = 0;
-                PlaySfx(D_800C1388[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(BallFramesB[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
-            if (((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 0) != 0) {
+            if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 0) != 0) {
                 obj->countdown = 8;
                 switch (((Ovl61BallView *)D_8005A614)->unk34) {
                 case 17:
@@ -3560,12 +3716,12 @@ void PlotBall(NAS *nas) {
             } else {
                 done = 1;
             }
-            if ((((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 0) ^ 1) != 0) {
+            if ((((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 0) ^ 1) != 0) {
                 obj->status = 1;
                 break;
             }
             mot->Xa = get_angle(-eng->unk10.x, -eng->unk10.z);
-            if (((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 1) != 0 || done != 0) {
+            if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 1) != 0 || done != 0) {
                 obj->status = 4;
                 mot->Yvel = 0x20;
                 mot->Ymax = 0x60;
@@ -3599,7 +3755,7 @@ void PlotBall(NAS *nas) {
                     }
                 }
             }
-            if (((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 1) != 0 || done != 0) {
+            if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 1) != 0 || done != 0) {
                 obj->status = 0x12;
             }
             eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
@@ -3643,7 +3799,7 @@ void PlotBall(NAS *nas) {
             }
             yv = mot->Yvel;
             eng->unk10.y += yv;
-            if (((s32 (*)(EXTengine *, EXTobject *, s32, s32))D_800C1C90)(eng, obj, 1, yv) != 0 ||
+            if (((s32 (*)(EXTengine *, EXTobject *, s32, s32))ArkTestOutOfBounds)(eng, obj, 1, yv) != 0 ||
                 done != 0) {
                 obj->status = 0x12;
             }
@@ -3663,10 +3819,10 @@ void PlotBall(NAS *nas) {
                 obj->can_do &= 0xFF7F;
                 pl = obj->player;
                 if (!(Heroes[pl].hero_status & 0xFA00)) {
-                    PlaySfx(D_800C13A4[pl], NULL, NULL, 0x1000, 0x1E00, 0);
+                    PlaySfx(BallFramesC[pl], NULL, NULL, 0x1000, 0x1E00, 0);
                     pl = obj->player;
                     if (pl != -1) {
-                        D_800C1F16 = ArkPlayerSide(pl);
+                        ArkBallCount = ArkPlayerSide(pl);
                     }
                     if ((((Ovl61BallView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001) {
                         if ((((Ovl61BallView *)D_8005A614)->unk32 & 0x40) &&
@@ -3687,8 +3843,8 @@ void PlotBall(NAS *nas) {
                         }
                         if ((((Ovl61BallView *)D_8005A614)->unk4 & 0x80000002) != 0x80000002 &&
                             Heroes[obj->player].hero_score == 0) {
-                            if (obj->player == D_800C1C80) {
-                                D_800C1C80 = -1;
+                            if (obj->player == ArkBallTimer) {
+                                ArkBallTimer = -1;
                             }
                             Heroes[obj->player].hero_status |= 0x2000;
                             if (((Ovl61BallView *)D_8005A614)->unk32 & 0x40) {
@@ -3726,7 +3882,7 @@ void PlotBall(NAS *nas) {
     if (dz < 0) {
         dz = 0;
     }
-    shade = D_800C1224[9 - dz][dx];
+    shade = BallSpeedTable[9 - dz][dx];
     switch (obj->status) {
     case 4:
     case 0x12:
@@ -3815,17 +3971,17 @@ void CalcArkInfluence(EXTmotion *m) {
     s32 scale;
 
     if (D_8005A648 == 0x11) {
-        sx = abs((D_80068BD4[(D_800C1C68 - 0x400) & 0xFFF].unk2 * 5) >> 3);
-        sz = abs((D_80068BD4[(D_800C1C6C - 0x400) & 0xFFF].unk2 * 5) >> 3);
+        sx = abs((D_80068BD4[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 * 5) >> 3);
+        sz = abs((D_80068BD4[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 * 5) >> 3);
         az = 0;
-        ax = (D_800C1C68 < 0) ? 0x800 : 0;
-        if (D_800C1C68 > 0) {
+        ax = (ArkFloorTiltX < 0) ? 0x800 : 0;
+        if (ArkFloorTiltX > 0) {
             ax = 0;
         }
-        if (D_800C1C6C < 0) {
+        if (ArkFloorTiltZ < 0) {
             az = 0x400;
         }
-        if (D_800C1C6C > 0) {
+        if (ArkFloorTiltZ > 0) {
             az = 0xC00;
         }
         scale = (s16)sx;
@@ -3883,7 +4039,7 @@ void FreeGrabbedObject(u32 arg0, bool arg1) {
                             if (mot != NULL) {
                                 spd = 0x30;
                                 if (arg1) {
-                                    PlaySfx(D_800C18E8[arg0 + 8], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                                    PlaySfx(ArkGrabTimes[arg0 + 8], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
                                     spd = 0xE0;
                                 }
                                 mot->Xvel = spd;
@@ -3940,17 +4096,17 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
     }
     for (i = 0; i < 4; i++) {
         if (arg0->collision_box.flags & 0x40) {
-            r = D_800C1A7C[i].r + arg0->collision_box.radius;
+            r = ArkPosts[i].r + arg0->collision_box.radius;
         } else {
-            r = D_800C1A7C[i].r + 0x80;
+            r = ArkPosts[i].r + 0x80;
         }
-        dx = arg0->unk10.x - D_800C1A7C[i].x;
-        dz = arg0->unk10.z - D_800C1A7C[i].z;
+        dx = arg0->unk10.x - ArkPosts[i].x;
+        dz = arg0->unk10.z - ArkPosts[i].z;
         if (dx * dx + dz * dz < r * r) {
             a1 = get_angle(-dx, -dz);
-            v.x = D_800C1A7C[i].x;
+            v.x = ArkPosts[i].x;
             v.y = 0;
-            v.z = D_800C1A7C[i].z;
+            v.z = ArkPosts[i].z;
             LineToCircleTest(&arg0->unk10, a1, &v, r);
             dx = -arg0->unk10.x;
             arg1->Xa = get_angle(dx + target.vx, (dz = -arg0->unk10.z) + target.vz);
@@ -4002,7 +4158,7 @@ void Plot_N_Gin(NAS *arg0) {
     if (eng == NULL) {
         return;
     }
-    if (FindExtension(arg0, 0x400) != NULL && (gin = D_800C1B2C) != NULL) {
+    if (FindExtension(arg0, 0x400) != NULL && (gin = ArkNGin) != NULL) {
         if (D_8005A644 & 0x801) {
             if ((u16)gin->unk1A != 0) {
                 gin->unk1A = 5;
@@ -4098,7 +4254,7 @@ void Plot_N_Gin(NAS *arg0) {
             gin->unk1C = 0;
             eng->unk10.y = -0x1000;
             eng->flags &= 0xFFFF7FFF;
-            D_800C1EFC = 0x19;
+            NGinState = 0x19;
             arg0->Class &= 0xFDFF;
             gin->unk1A = 0;
             gin->unk22 = (Random(0xF) + 8) * 0x1E;
@@ -4142,12 +4298,12 @@ void ArkCrateMaster(void) {
         return;
     }
     gin = 0;
-    if (D_800C1B2C != NULL) {
-        gin = (u16)D_800C1B2C->unk1A != 0;
+    if (ArkNGin != NULL) {
+        gin = (u16)ArkNGin->unk1A != 0;
     }
     if (g->mode == 0x10 && D_8009E25C.n == 0) {
-        if (D_800C1F0A != 0) {
-            D_800C1F0A--;
+        if (CrateMasterWordC != 0) {
+            CrateMasterWordC--;
         } else {
             for (i = cnt = 0; i < 4; i++) {
                 if (Heroes[i].hero_pu != 0) {
@@ -4156,7 +4312,7 @@ void ArkCrateMaster(void) {
             }
             if (cnt == 0) {
                 Create_ArkPickup();
-                D_800C1F0A = Random(0x5A) + 0x1E;
+                CrateMasterWordC = Random(0x5A) + 0x1E;
             }
         }
     }
@@ -4165,11 +4321,11 @@ void ArkCrateMaster(void) {
         y = -(Random(0x200) + 0x80);
         CreateNAS(x, y, Random(0x800) + 0x1000, 0x1504, 0x11);
     }
-    if (D_800C1EFC != 0) {
-        D_800C1EFC--;
+    if (NGinState != 0) {
+        NGinState--;
     } else {
-        D_800C1EF8++;
-        lim = (u16)(D_800C1EF8 / 300);
+        CrateMasterWordA++;
+        lim = (u16)(CrateMasterWordA / 300);
         lim++;
         if (D_8005A648 == 0xF) {
             if (lim >= 5) {
@@ -4182,12 +4338,12 @@ void ArkCrateMaster(void) {
             lim = 0;
         }
         n = D_8005AA38;
-        D_800C1EFA = 0;
+        CrateMasterWordB = 0;
         while (n != NULL) {
             n = n->next;
-            D_800C1EFA++;
+            CrateMasterWordB++;
         }
-        if (D_800C1EFA < lim) {
+        if (CrateMasterWordB < lim) {
             total = 0;
             for (n = D_8005AA38; n != NULL; n = n->next) {
                 total++;
@@ -4198,45 +4354,45 @@ void ArkCrateMaster(void) {
                     ((Ovl61Fux *)nas->FUX)->flag = 0;
                 }
             }
-            D_800C1EFC = 0x1E;
+            NGinState = 0x1E;
         }
     }
-    D_800C1F00 = D_800C1328[D_800C1EFA];
+    ArkBotSkill = CrateMasterTimes[CrateMasterWordB];
     if (O61GV->mode == 0xF && (O61GV->pad_buttons & 0x80)) {
-        if (D_800C1C70 != 0) {
-            D_800C1C70--;
+        if (CrateMasterState != 0) {
+            CrateMasterState--;
         } else {
-            if (++D_800C1C74 >= 0x12) {
-                D_800C1C74 = 0;
+            if (++CrateMasterTimer >= 0x12) {
+                CrateMasterTimer = 0;
             }
             if (O61GV->unk6C != 0) {
-                hero = D_800C1A20[D_800C1C74];
+                hero = CrateMasterSpotsZ[CrateMasterTimer];
             } else {
-                hero = D_800C19FC[D_800C1C74];
+                hero = CrateMasterSpotsX[CrateMasterTimer];
             }
             if (!(Heroes[hero].hero_status & 0xFA00)) {
                 CreateNAS(hero, 0, 0, 0x1509, 0x11);
             }
-            D_800C1C70 = Random(6) * 0x1E + 0x5A;
+            CrateMasterState = Random(6) * 0x1E + 0x5A;
         }
     }
     if (O61GV->mode == 0x11) {
-        if (D_800C1F0C != 0) {
-            D_800C1F0C--;
+        if (ArkRedKickTimer != 0) {
+            ArkRedKickTimer--;
         }
-        if (D_800C1C78 != 0) {
-            D_800C1C78--;
+        if (CrateMasterCount != 0) {
+            CrateMasterCount--;
         } else {
-            if (++D_800C1C7C >= 0x12) {
-                D_800C1C7C = 0;
+            if (++CrateMasterNext >= 0x12) {
+                CrateMasterNext = 0;
             }
             if (O61GV->unk6C != 0) {
-                i = D_800C1A20[D_800C1C7C];
+                i = CrateMasterSpotsZ[CrateMasterNext];
             } else {
-                i = D_800C19FC[D_800C1C7C];
+                i = CrateMasterSpotsX[CrateMasterNext];
             }
             SetCornerFailure((u16)i);
-            D_800C1C78 = Random(9) * 0x1E + 0x10E;
+            CrateMasterCount = Random(9) * 0x1E + 0x10E;
         }
     }
 }
@@ -4252,121 +4408,121 @@ void InitARKfloor(void) {
     u32 k;
 
     for (i = 9; i >= 0; i--) {
-        D_800C1C98[i] = 0;
+        FloorObjectsA[i] = 0;
     }
     for (i = 9; i >= 0; i--) {
-        D_800C1CC0[i] = 0;
+        FloorObjectsB[i] = 0;
     }
     for (i = 0; i < 4; i++) {
-        D_800C1CE8[i].a = 0;
-        D_800C1CE8[i].unkA = 0;
-        D_800C1CE8[i].unk12 = 0;
-        D_800C1CE8[i].unk10 = 0;
-        LINK(D_800C1E28)[i].a = 0;
-        LINK(D_800C1E28)[i].b = 0;
-        LINK(D_800C1E28)[i].unkE = 0;
-        LINK(D_800C1E28)[i].unk8 = 0;
-        LINK(D_800C1E28)[i].unkE = 0;
-        LINK(D_800C1E28)[i].unk8 = 0;
-        LINK(D_800C1E28)[i].unk12 = 0;
-        LINK(D_800C1D38)[i].a = 0;
-        LINK(D_800C1D38)[i].b = 0;
-        LINK(D_800C1D38)[i].unkE = 0;
-        LINK(D_800C1D38)[i].unk8 = 0;
-        LINK(D_800C1D38)[i].unkE = 0;
-        LINK(D_800C1D38)[i].unk8 = 0;
-        LINK(D_800C1D38)[i].unk12 = 0;
-        LINK(D_800C1D88)[i].a = 0;
-        LINK(D_800C1D88)[i].b = 0;
-        LINK(D_800C1D88)[i].unkE = 0;
-        LINK(D_800C1D88)[i].unk8 = 0;
-        LINK(D_800C1D88)[i].unkE = 0;
-        LINK(D_800C1D88)[i].unk8 = 0;
-        LINK(D_800C1D88)[i].unk12 = 0;
-        LINK(D_800C1DD8)[i].a = 0;
-        LINK(D_800C1DD8)[i].b = 0;
-        LINK(D_800C1DD8)[i].unkE = 0;
-        LINK(D_800C1DD8)[i].unk8 = 0;
-        LINK(D_800C1DD8)[i].unkE = 0;
-        LINK(D_800C1DD8)[i].unk8 = 0;
-        LINK(D_800C1DD8)[i].unk12 = 0;
-        D_800C1E78[i].pad0 = 0;
-        D_800C1E78[i].f4 = 0;
-        D_800C1E78[i].f8 = 0x60;
-        D_800C1E78[i].fC = 0;
-        D_800C1E78[i].f10 = 0;
-        D_800C1E78[i].f14 = 0;
-        D_800C1E78[i].f18 = 0;
-        D_800C1E78[i].f1A = 0;
+        FloorLinks[i].a = 0;
+        FloorLinks[i].unkA = 0;
+        FloorLinks[i].unk12 = 0;
+        FloorLinks[i].unk10 = 0;
+        LINK(ArkGoals)[i].a = 0;
+        LINK(ArkGoals)[i].b = 0;
+        LINK(ArkGoals)[i].unkE = 0;
+        LINK(ArkGoals)[i].unk8 = 0;
+        LINK(ArkGoals)[i].unkE = 0;
+        LINK(ArkGoals)[i].unk8 = 0;
+        LINK(ArkGoals)[i].unk12 = 0;
+        LINK(ArkDoorsA)[i].a = 0;
+        LINK(ArkDoorsA)[i].b = 0;
+        LINK(ArkDoorsA)[i].unkE = 0;
+        LINK(ArkDoorsA)[i].unk8 = 0;
+        LINK(ArkDoorsA)[i].unkE = 0;
+        LINK(ArkDoorsA)[i].unk8 = 0;
+        LINK(ArkDoorsA)[i].unk12 = 0;
+        LINK(ArkDoorsB)[i].a = 0;
+        LINK(ArkDoorsB)[i].b = 0;
+        LINK(ArkDoorsB)[i].unkE = 0;
+        LINK(ArkDoorsB)[i].unk8 = 0;
+        LINK(ArkDoorsB)[i].unkE = 0;
+        LINK(ArkDoorsB)[i].unk8 = 0;
+        LINK(ArkDoorsB)[i].unk12 = 0;
+        LINK(ArkWallObjects)[i].a = 0;
+        LINK(ArkWallObjects)[i].b = 0;
+        LINK(ArkWallObjects)[i].unkE = 0;
+        LINK(ArkWallObjects)[i].unk8 = 0;
+        LINK(ArkWallObjects)[i].unkE = 0;
+        LINK(ArkWallObjects)[i].unk8 = 0;
+        LINK(ArkWallObjects)[i].unk12 = 0;
+        ArkWalls[i].pad0 = 0;
+        ArkWalls[i].f4 = 0;
+        ArkWalls[i].f8 = 0x60;
+        ArkWalls[i].fC = 0;
+        ArkWalls[i].f10 = 0;
+        ArkWalls[i].f14 = 0;
+        ArkWalls[i].f18 = 0;
+        ArkWalls[i].f1A = 0;
     }
     for (obj = (Ovl61ScnObj *)((GfxScene *)D_80058AD0)->objs; obj != 0; obj = obj->next) {
         p = (s16 *)func_80015870(obj->unk6C, obj->unk74);
         k = *p;
         if (k - 1 < 9) {
-            D_800C1C98[k] = obj;
+            FloorObjectsA[k] = obj;
         }
         k = *p - 10;
         if (k < 4) {
-            D_800C1CE8[k].a = obj;
-            D_800C1CE8[k].unkA = obj->unk74;
+            FloorLinks[k].a = obj;
+            FloorLinks[k].unkA = obj->unk74;
             obj->unk68 = 0x44;
             obj->flags |= 0x2000000;
         }
         k = *p - 20;
         if (k < 4) {
-            LINK(D_800C1E28)[k].a = obj;
-            LINK(D_800C1E28)[k].unk8 = obj->unk74;
+            LINK(ArkGoals)[k].a = obj;
+            LINK(ArkGoals)[k].unk8 = obj->unk74;
             switch (((Ovl61ModeView *)D_8005A614)->unk34) {
             case 14:
-                LINK(D_800C1E28)[k].unkA = D_800C1410[k];
+                LINK(ArkGoals)[k].unkA = FloorFramesA[k];
                 break;
             case 16:
-                LINK(D_800C1E28)[k].unkA = D_800C1430[k];
+                LINK(ArkGoals)[k].unkA = FloorFramesC[k];
                 break;
             }
         }
         t = *p;
         k = t - 30;
         if (k < 4) {
-            LINK(D_800C1E28)[k].b = obj;
-            LINK(D_800C1E28)[k].unkC = obj->unk74;
+            LINK(ArkGoals)[k].b = obj;
+            LINK(ArkGoals)[k].unkC = obj->unk74;
             switch (((Ovl61ModeView *)D_8005A614)->unk34) {
             case 14:
-                LINK(D_800C1E28)[k].unkE = D_800C1410[t - 26];
+                LINK(ArkGoals)[k].unkE = FloorFramesA[t - 26];
                 break;
             case 16:
-                LINK(D_800C1E28)[k].unkE = D_800C1430[t - 26];
+                LINK(ArkGoals)[k].unkE = FloorFramesC[t - 26];
                 break;
             }
         }
         k = *p - 50;
         if (k < 4) {
-            LINK(D_800C1D38)[k].a = obj;
-            LINK(D_800C1D38)[k].unk8 = obj->unk74;
-            LINK(D_800C1D38)[k].unkA = D_800C1420[k];
+            LINK(ArkDoorsA)[k].a = obj;
+            LINK(ArkDoorsA)[k].unk8 = obj->unk74;
+            LINK(ArkDoorsA)[k].unkA = FloorFramesB[k];
         }
         t60 = *p;
         k = t60 - 60;
         if (k < 4) {
-            LINK(D_800C1D38)[k].b = obj;
-            LINK(D_800C1D38)[k].unkC = obj->unk74;
-            LINK(D_800C1D38)[k].unkE = D_800C1420[t60 - 56];
+            LINK(ArkDoorsA)[k].b = obj;
+            LINK(ArkDoorsA)[k].unkC = obj->unk74;
+            LINK(ArkDoorsA)[k].unkE = FloorFramesB[t60 - 56];
         }
         k = *p - 80;
         if (k < 4) {
-            LINK(D_800C1DD8)[k].a = obj;
-            LINK(D_800C1DD8)[k].unkA = obj->unk74;
-            LINK(D_800C1DD8)[k].unkE = D_800C1464[k][0];
+            LINK(ArkWallObjects)[k].a = obj;
+            LINK(ArkWallObjects)[k].unkA = obj->unk74;
+            LINK(ArkWallObjects)[k].unkE = FloorLayout[k][0];
         }
         k = *p - 90;
         if (k < 4) {
-            LINK(D_800C1D88)[k].a = obj;
-            LINK(D_800C1D88)[k].unkA = obj->unk74;
+            LINK(ArkDoorsB)[k].a = obj;
+            LINK(ArkDoorsB)[k].unkA = obj->unk74;
             obj->flags &= ~0x8000;
         }
         k = *p - 100;
         if (k < 10) {
-            D_800C1CC0[k] = obj;
+            FloorObjectsB[k] = obj;
         }
     }
 }
@@ -4383,30 +4539,30 @@ void UpdateArkFloor(void)
 
     a = (D_8004E0D8 << 5) & 0xFFF;
     if (D_8005A648 == 0x11) {
-        D_800C1C6C = ((D_80068BD4[(a * 2 - 0x400) & 0xFFF].unk2 + D_80068BD4[a].unk2) * 11) >> 12;
-        D_800C1C68 = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 5) >> 10;
+        ArkFloorTiltZ = ((D_80068BD4[(a * 2 - 0x400) & 0xFFF].unk2 + D_80068BD4[a].unk2) * 11) >> 12;
+        ArkFloorTiltX = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 5) >> 10;
         World_floor_level = (D_80068BD4[a].unk2 * 3) >> 7;
     }
     i = 0;
     do {
-        if (D_800C1E78[i].pad0 != 0) {
-            a = get_angle(0xA00, D_800C1E78[i].pad0 >> 4) - 0x400;
+        if (ArkWalls[i].pad0 != 0) {
+            a = get_angle(0xA00, ArkWalls[i].pad0 >> 4) - 0x400;
             switch (i) {
             case 1:
-                D_800C1C6C += a;
-                D_800C1C68 += a;
+                ArkFloorTiltZ += a;
+                ArkFloorTiltX += a;
                 break;
             case 2:
-                D_800C1C6C -= a;
-                D_800C1C68 += a;
+                ArkFloorTiltZ -= a;
+                ArkFloorTiltX += a;
                 break;
             case 3:
-                D_800C1C6C -= a;
-                D_800C1C68 -= a;
+                ArkFloorTiltZ -= a;
+                ArkFloorTiltX -= a;
                 break;
             default:
-                D_800C1C6C += a;
-                D_800C1C68 -= a;
+                ArkFloorTiltZ += a;
+                ArkFloorTiltX -= a;
                 break;
             }
         }
@@ -4414,8 +4570,8 @@ void UpdateArkFloor(void)
     } while (i < 4);
 
     for (j = 0; j < 4; j++) {
-        if (D_800C1CE8[j].unk12 != 0) {
-            D_800C1CE8[j].unk12--;
+        if (FloorLinks[j].unk12 != 0) {
+            FloorLinks[j].unk12--;
         }
         if (BLINK_E28[j].unk12 != 0) {
             BLINK_E28[j].unk12--;
@@ -4423,13 +4579,13 @@ void UpdateArkFloor(void)
         if (BLINK_D38[j].unk12 != 0) {
             BLINK_D38[j].unk12--;
         }
-        if ((p = D_800C1CE8[j].a) != NULL && ((Ovl61ModeView *)D_8005A614)->unk34 == 14) {
-            if (D_800C1CE8[j].unk12 != 0) {
-                D_800C1CE8[j].unk10++;
-                p->unk74 = D_800C1CE8[j].unkA + (u16)(((D_800C1CE8[j].unk10 >> 2) & 3) + 1);
+        if ((p = FloorLinks[j].a) != NULL && ((Ovl61ModeView *)D_8005A614)->unk34 == 14) {
+            if (FloorLinks[j].unk12 != 0) {
+                FloorLinks[j].unk10++;
+                p->unk74 = FloorLinks[j].unkA + (u16)(((FloorLinks[j].unk10 >> 2) & 3) + 1);
             } else {
-                p->unk74 = D_800C1CE8[j].unkA;
-                D_800C1CE8[j].unk10 = 0;
+                p->unk74 = FloorLinks[j].unkA;
+                FloorLinks[j].unk10 = 0;
             }
         }
         if ((p = BLINK_E28[j].a) != NULL) {
@@ -4468,45 +4624,45 @@ void UpdateArkFloor(void)
     }
 
     if (D_8005A648 == 0x11) {
-        if (D_800C1C88 == 0) {
-            D_800C1F14 = 0;
+        if (ArkFloorState == 0) {
+            ArkWallFlags = 0;
         }
         for (i = 1; i < 10; i++) {
-            sp = (Ovl61Spr **)&D_800C1C98[i];
+            sp = (Ovl61Spr **)&FloorObjectsA[i];
             if (*sp != NULL) {
                 (*sp)->unk51 = 2;
-                (*sp)->unk10 = D_800C1C68;
-                (*sp)->unk14 = D_800C1C6C;
+                (*sp)->unk10 = ArkFloorTiltX;
+                (*sp)->unk14 = ArkFloorTiltZ;
                 (*sp)->unk8 = World_floor_level;
                 (*sp)->unk52 = 1;
             }
         }
         for (i = 0; i < 10; i++) {
-            if (D_800C1CC0[i] != NULL) {
-                ((Ovl61Rise *)D_800C1CC0[i])->unk4 += D_800C1348[i].step;
-                if (D_800C1348[i].max < ((Ovl61Rise *)D_800C1CC0[i])->unk4) {
-                    ((Ovl61Rise *)D_800C1CC0[i])->unk4 = D_800C1348[i].reset;
+            if (FloorObjectsB[i] != NULL) {
+                ((Ovl61Rise *)FloorObjectsB[i])->unk4 += FloorRiseCfg[i].step;
+                if (FloorRiseCfg[i].max < ((Ovl61Rise *)FloorObjectsB[i])->unk4) {
+                    ((Ovl61Rise *)FloorObjectsB[i])->unk4 = FloorRiseCfg[i].reset;
                 }
             }
         }
         for (i = 0; i < 4; i++) {
-            s = (Ovl61Spr *)D_800C1D88[i].flags;
+            s = (Ovl61Spr *)ArkDoorsB[i].flags;
             if (s != NULL) {
-                if (D_800C1C88 == 0) {
+                if (ArkFloorState == 0) {
                     s->flags &= ~0x8000;
                 }
-                ((Ovl61Spr *)D_800C1D88[i].flags)->unk51 = 2;
-                ((Ovl61Spr *)D_800C1D88[i].flags)->unk10 = D_800C1C68;
-                ((Ovl61Spr *)D_800C1D88[i].flags)->unk14 = D_800C1C6C;
-                ((Ovl61Spr *)D_800C1D88[i].flags)->unk8 = World_floor_level;
-                ((Ovl61Spr *)D_800C1D88[i].flags)->unk52 = 1;
+                ((Ovl61Spr *)ArkDoorsB[i].flags)->unk51 = 2;
+                ((Ovl61Spr *)ArkDoorsB[i].flags)->unk10 = ArkFloorTiltX;
+                ((Ovl61Spr *)ArkDoorsB[i].flags)->unk14 = ArkFloorTiltZ;
+                ((Ovl61Spr *)ArkDoorsB[i].flags)->unk8 = World_floor_level;
+                ((Ovl61Spr *)ArkDoorsB[i].flags)->unk52 = 1;
             }
-            if (D_800C1DD8[i].sub != NULL) {
-                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk51 = 2;
-                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk10 = D_800C1C68;
-                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk14 = D_800C1C6C;
-                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk8 = World_floor_level;
-                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk52 = 1;
+            if (ArkWallObjects[i].sub != NULL) {
+                ((Ovl61Spr *)ArkWallObjects[i].sub)->unk51 = 2;
+                ((Ovl61Spr *)ArkWallObjects[i].sub)->unk10 = ArkFloorTiltX;
+                ((Ovl61Spr *)ArkWallObjects[i].sub)->unk14 = ArkFloorTiltZ;
+                ((Ovl61Spr *)ArkWallObjects[i].sub)->unk8 = World_floor_level;
+                ((Ovl61Spr *)ArkWallObjects[i].sub)->unk52 = 1;
             }
         }
     }
@@ -4523,44 +4679,44 @@ void Init_ArkDeadWall(NAS *nas)
     if (eng != 0) {
         dir = eng->unk10.x;
         eng->flags &= 0xFFFF7FFF;
-        if (dir == D_800C2724) {
+        if (dir == ArkSidePlayer3) {
             eng->unk10.x = -0x600;
             eng->unk10.z = 0x880;
             eng->unk1C = 0x38E;
             eng->unk1E = 0;
             nas->UserInfo.flags = 2;
-            D_800C1F14 |= 2;
+            ArkWallFlags |= 2;
         }
-        if (dir == D_800C2728) {
+        if (dir == ArkSidePlayer0) {
             eng->unk10.x = -0x600;
             eng->unk10.z = -0x880;
             eng->unk1C = 0x200;
             eng->unk1E = 0;
             nas->UserInfo.flags = 1;
-            D_800C1F14 |= 1;
+            ArkWallFlags |= 1;
         }
-        if (dir == D_800C2720) {
+        if (dir == ArkSidePlayer2) {
             eng->unk10.x = -0x880;
             eng->unk10.z = -0x600;
             eng->unk1E = 0xC00;
             eng->unk20 = 0;
             nas->UserInfo.flags = 4;
-            D_800C1F14 |= 4;
+            ArkWallFlags |= 4;
         }
-        if (dir == D_800C271C) {
+        if (dir == ArkSidePlayer1) {
             eng->unk10.x = 0x880;
             eng->unk10.z = -0x600;
             eng->unk1E = 0xC00;
             eng->unk20 = 0;
             nas->UserInfo.flags = 8;
-            D_800C1F14 |= 8;
+            ArkWallFlags |= 8;
         }
         eng->unk5D = 2;
         eng->unk5E = 1;
-        if (D_800C1C84 == 0) {
+        if (ArkDeadWalls == 0) {
             PlaySfx(0x591, &eng->sfx, 0, 0x1000, 0x1E00, 0);
         }
-        D_800C1C84 = 1;
+        ArkDeadWalls = 1;
         func_80018F3C(eng, 5);
         sub = eng->sub;
         off = 0;
@@ -4592,44 +4748,44 @@ void Init_NGArkDeadWall(NAS *arg0) {
     if (eng != NULL) {
         eng->flags &= 0xFFFF7FFF;
         x = eng->unk10.x;
-        if (x == D_800C2724) {
+        if (x == ArkSidePlayer3) {
             eng->unk10.x = -0x700;
             eng->unk10.z = 0x880;
             eng->unk1C = 0x38E;
             eng->unk1E = 0;
             arg0->UserInfo.flags = 2;
-            D_800C1F14 |= 2;
+            ArkWallFlags |= 2;
         }
-        if (x == D_800C2728) {
+        if (x == ArkSidePlayer0) {
             eng->unk10.x = -0x700;
             eng->unk10.z = -0x880;
             eng->unk1C = 0x200;
             eng->unk1E = 0;
             arg0->UserInfo.flags = 1;
-            D_800C1F14 |= 1;
+            ArkWallFlags |= 1;
         }
-        if (x == D_800C2720) {
+        if (x == ArkSidePlayer2) {
             eng->unk10.x = -0x880;
             eng->unk10.z = -0x700;
             eng->unk1E = 0xC00;
             eng->unk20 = 0;
             arg0->UserInfo.flags = 4;
-            D_800C1F14 |= 4;
+            ArkWallFlags |= 4;
         }
-        if (x == D_800C271C) {
+        if (x == ArkSidePlayer1) {
             eng->unk10.x = 0x880;
             eng->unk10.z = -0x700;
             eng->unk1E = 0xC00;
             eng->unk20 = 0;
             arg0->UserInfo.flags = 8;
-            D_800C1F14 |= 8;
+            ArkWallFlags |= 8;
         }
         eng->unk5D = 2;
         eng->unk5E = 1;
-        if (D_800C1C84 == 0) {
+        if (ArkDeadWalls == 0) {
             PlaySfx(0x591, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
         }
-        D_800C1C84 = 1;
+        ArkDeadWalls = 1;
         func_80018F3C(eng, 6);
         sub = eng->sub;
         off = 0;
@@ -4655,7 +4811,7 @@ void SetCornerFailure(u16 arg0) {
     Ovl61Wall *w;
     s32 r = Random(0x1E);
 
-    base = D_800C1E78;
+    base = ArkWalls;
     w = &base[arg0];
     w->f1A = r + 0x3C;
     w->f18 = 1;
@@ -4664,8 +4820,8 @@ void SetCornerFailure(u16 arg0) {
     w->f4 = 0;
     w->fC = 0;
     w->f14 = -1;
-    PlaySfx(0x5C9, &D_800C1B30.sfx, NULL, 0x1000, 0x1E00, 0);
-    PlaySfx(D_800C139C[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+    PlaySfx(0x5C9, &ArkCornerEngine.sfx, NULL, 0x1000, 0x1E00, 0);
+    PlaySfx(CornerFailFrames[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
 void HandleCornerFailure(void) {
@@ -4684,8 +4840,8 @@ void HandleCornerFailure(void) {
     two = 2;
     three = 3;
     neg = -1;
-    base = D_800C1E78;
-    ob = D_800C1DD8;
+    base = ArkWalls;
+    ob = ArkWallObjects;
     w = base;
     phase = (D_8004E0D8 >> 1) & 7;
     o = ob;
@@ -4806,21 +4962,21 @@ void Create_ArkPickup(void)
   s32 i;
   s32 k;
   i = 0;
-  if (((u16) D_800C1B2C->unk1A) != 0)
+  if (((u16) ArkNGin->unk1A) != 0)
   {
     return;
   }
   base = Heroes;
-  h1 = &base[D_800C2728];
-  h2 = &base[D_800C2720];
+  h1 = &base[ArkSidePlayer0];
+  h2 = &base[ArkSidePlayer2];
   for (;;)
   {
     if (i >= 5)
     {
       return;
     }
-    D_800C2718++;
-    s = D_800C1440[D_800C2718];
+    ArkPickupCount++;
+    s = ArkPickupSpots[ArkPickupCount];
     i++;
     switch (s)
     {
@@ -4836,7 +4992,7 @@ void Create_ArkPickup(void)
         break;
 
       case 1:
-        if ((h1->hero_status & 0xFA00) && (base[D_800C271C].hero_status & 0xFA00))
+        if ((h1->hero_status & 0xFA00) && (base[ArkSidePlayer1].hero_status & 0xFA00))
       {
         do
         {
@@ -4847,7 +5003,7 @@ void Create_ArkPickup(void)
         break;
 
       case 2:
-        if ((base[D_800C2724].hero_status & 0xFA00) && (h2->hero_status & 0xFA00))
+        if ((base[ArkSidePlayer3].hero_status & 0xFA00) && (h2->hero_status & 0xFA00))
       {
         do
         {
@@ -4858,7 +5014,7 @@ void Create_ArkPickup(void)
         break;
 
       case 3:
-        if ((base[D_800C2724].hero_status & 0xFA00) && (base[D_800C271C].hero_status & 0xFA00))
+        if ((base[ArkSidePlayer3].hero_status & 0xFA00) && (base[ArkSidePlayer1].hero_status & 0xFA00))
       {
         do
         {
@@ -4869,14 +5025,14 @@ void Create_ArkPickup(void)
         break;
 
       default:
-        D_800C2718 = 0;
+        ArkPickupCount = 0;
         break;
 
     }
 
     if (s >= 0)
     {
-      nas = CreateNAS(D_800C1A7C[s].x, 0, D_800C1A7C[s].z, 0x1502, 0x11);
+      nas = CreateNAS(ArkPosts[s].x, 0, ArkPosts[s].z, 0x1502, 0x11);
       if (nas == 0)
       {
         return;
@@ -4906,7 +5062,7 @@ void Create_ArkPickup(void)
   }
 
   pos = D_8005B2B8[s + 4].pos;
-  D_800C1E28[nas->UserInfo.user1].unk10 = 1;
+  ArkGoals[nas->UserInfo.user1].unk10 = 1;
   tgt = func_8007A464(1, (s32 *) (&pos), *((s32 *) D_80058AD0));
   if (tgt != 0)
   {
@@ -4947,12 +5103,12 @@ void Plot_Ark_Pickup(NAS *arg0) {
             for (i = 0; i < 4; i++) {
                 h = &Heroes[i];
                 e = h->hero_eng;
-                dx = e->unk10.x - D_800C1A7C[arg0->UserInfo.user1].x;
-                dz = e->unk10.z - D_800C1A7C[arg0->UserInfo.user1].z;
+                dx = e->unk10.x - ArkPosts[arg0->UserInfo.user1].x;
+                dz = e->unk10.z - ArkPosts[arg0->UserInfo.user1].z;
                 if (e->collision_box.flags & 0x40) {
-                    r = D_800C1A7C[arg0->UserInfo.user1].r + e->collision_box.radius;
+                    r = ArkPosts[arg0->UserInfo.user1].r + e->collision_box.radius;
                 } else {
-                    r = D_800C1A7C[arg0->UserInfo.user1].r + 0x80;
+                    r = ArkPosts[arg0->UserInfo.user1].r + 0x80;
                 }
                 r += 0x40;
                 if (dx * dx + dz * dz < r * r) {
@@ -4961,7 +5117,7 @@ void Plot_Ark_Pickup(NAS *arg0) {
                     if (fux->contains == 0x12 || fux->contains == 0x17) {
                         CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1503, 0x11);
                     }
-                    D_800C1E28[arg0->UserInfo.user1].unk10 = 0;
+                    ArkGoals[arg0->UserInfo.user1].unk10 = 0;
                     PlaySfx(0x5DA, NULL, NULL, 0x1000, 0x1E00, 0);
                     goto kill;
                 }
@@ -4969,7 +5125,7 @@ void Plot_Ark_Pickup(NAS *arg0) {
             break;
         }
     }
-    if ((u16)D_800C1B2C->unk1A != 0) {
+    if ((u16)ArkNGin->unk1A != 0) {
         arg0->UserInfo.user2 = 0;
     }
     if (arg0->UserInfo.user2 != 0) {
@@ -4977,7 +5133,7 @@ void Plot_Ark_Pickup(NAS *arg0) {
         return;
     }
     PlaySfx(0x5D8, NULL, NULL, 0x1000, 0x1E00, 0);
-    D_800C1E28[arg0->UserInfo.user1].unk10 = 0;
+    ArkGoals[arg0->UserInfo.user1].unk10 = 0;
 kill:
     if (arg0->Family.Child != NULL) {
         KillNAS(arg0->Family.Child);
@@ -5049,44 +5205,44 @@ void Init_ArkLaserWall(NAS *nas)
     s32 off;
 
     if (D_8005A644 & 0x801) {
-        D_800C1F14 &= ~nas->UserInfo.flags;
+        ArkWallFlags &= ~nas->UserInfo.flags;
         KillNAS(nas);
         return;
     }
     eng = nas->Engine;
     if (eng != 0) {
         dir = eng->unk10.x;
-        if (dir == D_800C2724) {
+        if (dir == ArkSidePlayer3) {
             eng->unk10.x = -0x600;
             eng->unk10.z = 0x880;
             eng->unk1C = 0x71;
             eng->unk1E = 0;
             nas->UserInfo.flags = 0x20;
-            D_800C1F14 |= 0x20;
+            ArkWallFlags |= 0x20;
         }
-        if (dir == D_800C2728) {
+        if (dir == ArkSidePlayer0) {
             eng->unk10.x = -0x600;
             eng->unk10.z = -0x880;
             eng->unk1C = 0x200;
             eng->unk1E = 0;
             nas->UserInfo.flags = 0x10;
-            D_800C1F14 |= 0x10;
+            ArkWallFlags |= 0x10;
         }
-        if (dir == D_800C2720) {
+        if (dir == ArkSidePlayer2) {
             eng->unk10.x = -0x880;
             eng->unk10.z = -0x600;
             eng->unk1E = 0xC00;
             eng->unk20 = 0;
             nas->UserInfo.flags = 0x40;
-            D_800C1F14 |= 0x40;
+            ArkWallFlags |= 0x40;
         }
-        if (dir == D_800C271C) {
+        if (dir == ArkSidePlayer1) {
             eng->unk10.x = 0x880;
             eng->unk10.z = -0x600;
             eng->unk1E = 0xC00;
             eng->unk20 = 0;
             nas->UserInfo.flags = 0x80;
-            D_800C1F14 |= 0x80;
+            ArkWallFlags |= 0x80;
         }
         eng->unk5D = 2;
         eng->unk5E = 1;
@@ -5220,13 +5376,13 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
         return 0;
     }
     speed = Heroes[arg0].hero_move->forward_speed;
-    if (arg0 == D_800C2720) {
+    if (arg0 == ArkSidePlayer2) {
         speed = -speed;
     }
-    if (arg0 == D_800C271C) {
+    if (arg0 == ArkSidePlayer1) {
         speed = Heroes[arg0].hero_move->forward_speed;
     }
-    if (arg0 == D_800C2724) {
+    if (arg0 == ArkSidePlayer3) {
         speed = -Heroes[arg0].hero_move->forward_speed;
     }
     if (func_80015780(me, me->sub, 1, &pos) == NULL) {
@@ -5242,7 +5398,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
     } else {
         grab = NULL;
     }
-    base = D_800C1A88;
+    base = ArkHeroBoxes;
     box = &base[arg0];
     top = box->b;
     bot = box->a;
@@ -5353,7 +5509,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
             puck->speed = 0;
             puck->max = 0;
             obj->status = 2;
-            PlaySfx(D_800C18E8[arg0 + 4], NULL, &me->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(ArkGrabTimes[arg0 + 4], NULL, &me->unk10, 0x1000, 0x1E00, 0);
             continue;
         }
         rad = puck->dir;
@@ -5363,40 +5519,40 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
             if (!(hero->hero_status & 0xFA00) &&
                 (arg0 == 0 || (D_8005A680[0] != 0 && arg0 == 1))) {
                 hero->hero_score = 0;
-                if (arg0 == D_800C2728) {
+                if (arg0 == ArkSidePlayer0) {
                     idx = 0;
-                } else if (arg0 == D_800C2724) {
+                } else if (arg0 == ArkSidePlayer3) {
                     idx = 1;
-                } else if (arg0 == D_800C2720) {
+                } else if (arg0 == ArkSidePlayer2) {
                     idx = 3;
                 } else {
-                    idx = (arg0 == D_800C271C) * 2;
+                    idx = (arg0 == ArkSidePlayer1) * 2;
                 }
-                if (D_800C1D88[idx].flags != NULL) {
-                    *D_800C1D88[idx].flags |= 0x8000;
+                if (ArkDoorsB[idx].flags != NULL) {
+                    *ArkDoorsB[idx].flags |= 0x8000;
                 }
-                if (D_800C1C84 == 0) {
-                    PlaySfx(0x591, &D_800C1BCC.sfx, NULL, 0x1000, 0x1E00, 0);
-                    D_800C1C84 = 1;
+                if (ArkDeadWalls == 0) {
+                    PlaySfx(0x591, &ArkDieEngine.sfx, NULL, 0x1000, 0x1E00, 0);
+                    ArkDeadWalls = 1;
                 }
-                if (arg0 == D_800C2728) {
-                    D_800C1F14 |= 1;
+                if (arg0 == ArkSidePlayer0) {
+                    ArkWallFlags |= 1;
                 }
-                if (arg0 == D_800C2724) {
-                    D_800C1F14 |= 2;
+                if (arg0 == ArkSidePlayer3) {
+                    ArkWallFlags |= 2;
                 }
-                if (arg0 == D_800C2720) {
-                    D_800C1F14 |= 4;
+                if (arg0 == ArkSidePlayer2) {
+                    ArkWallFlags |= 4;
                 }
-                if (arg0 == D_800C271C) {
-                    D_800C1F14 |= 8;
+                if (arg0 == ArkSidePlayer1) {
+                    ArkWallFlags |= 8;
                 }
                 ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xC, 0xFF);
                 SetHeroAction(arg0, 0x25);
                 return 0;
             }
         } else {
-            PlaySfx(D_800C1380[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(ArkGrabFrames[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
             fa = hero->hero_move->forward_angle & 0xFFF;
             ang = r;
             fc = fa;
@@ -5788,14 +5944,14 @@ void Plot_ArkLaserWall(NAS *nas) {
     subengine *sub;
 
     if (D_8005A644 & 0x801) {
-        D_800C1F14 &= ~nas->UserInfo.flags;
+        ArkWallFlags &= ~nas->UserInfo.flags;
         KillNAS(nas);
         return;
     }
     eng = nas->Engine;
     if (eng != NULL) {
-        if (D_800C1C70 == 0) {
-            D_800C1F14 &= ~nas->UserInfo.flags;
+        if (CrateMasterState == 0) {
+            ArkWallFlags &= ~nas->UserInfo.flags;
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
             }
@@ -5843,8 +5999,8 @@ void Init_RepulseRing(NAS *nas)
 }
 
 s32 GetArkPIContour(EXTengine *v) {
-    return v->unk10.y - ((World_floor_level - (v->unk10.z * D_80068BD4[(D_800C1C68 - 0x400) & 0xFFF].unk2 >> 12)) +
-                       (v->unk10.x * D_80068BD4[(D_800C1C6C - 0x400) & 0xFFF].unk2 >> 12));
+    return v->unk10.y - ((World_floor_level - (v->unk10.z * D_80068BD4[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 >> 12)) +
+                       (v->unk10.x * D_80068BD4[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 >> 12));
 }
 
 s32 GetArkContour(EXTengine *arg0) {
@@ -5855,8 +6011,8 @@ void Plot_ArkDeadWall(NAS *arg0) {
     EXTengine *eng;
     subengine *sub;
 
-    if (D_800C1C88 == 0) {
-        D_800C1F14 &= ~arg0->UserInfo.flags;
+    if (ArkFloorState == 0) {
+        ArkWallFlags &= ~arg0->UserInfo.flags;
         KillNAS(arg0);
         return;
     }
@@ -5883,7 +6039,7 @@ void Plot_ArkCameraFlash(NAS *arg0)
   EXTengine *eng = arg0->Engine;
   if (eng != 0)
   {
-    Ovl61Circle *base = D_800C1A44;
+    Ovl61Circle *base = CameraFlashCircles;
     subengine *sub = eng->sub;
     Ovl61Circle *c = &base[arg0->UserInfo.user1];
     if (c->x != 0)
@@ -5932,7 +6088,7 @@ void Init_seaweed(NAS *arg0) {
     if (eng != NULL) {
         ScriptCursor *cur;
         eng->sub->unk6C = *(s32*)D_80058AD0;
-        cur = func_80024E30(arg0, &D_800C1554);
+        cur = func_80024E30(arg0, &SeaweedScriptInit);
         if (cur != NULL) {
             u8 *trig = (u8*)arg0->trigger;
             if (trig != NULL) {
@@ -5959,11 +6115,11 @@ void Init_N_Gin(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        func_80024E30(nas, &D_800C14A8);
-        D_800C1B28 = eng;
+        func_80024E30(nas, &NGinScriptInit);
+        ArkBallSpawner = eng;
         eng->sub->unk6C = D_80054574;
         eng->sub->unk74 = 0x2001;
-        D_800C1B2C = obj = (Ovl61Gin *)AddObject(nas);
+        ArkNGin = obj = (Ovl61Gin *)AddObject(nas);
         if (obj != NULL) {
             func_80026AD8((u8 *)nas);
             func_8002694C(nas, 0x200);
@@ -6014,20 +6170,20 @@ u8 *ArkFreeBallSlot(void) {
 s32 ArkWallIndex(s32 arg0, s32 arg1) {
     s32 row;
 
-    row = arg0 == D_800C2728;
-    if (arg0 == D_800C2720) {
+    row = arg0 == ArkSidePlayer0;
+    if (arg0 == ArkSidePlayer2) {
         row = 2;
     }
-    if (arg0 == D_800C271C) {
+    if (arg0 == ArkSidePlayer1) {
         row = 3;
     }
-    if (arg1 == *D_800C19C0[row][0]) {
+    if (arg1 == *ArkWallTargets[row][0]) {
         return 0;
     }
-    if (arg1 == *D_800C19C0[row][1]) {
+    if (arg1 == *ArkWallTargets[row][1]) {
         return 1;
     }
-    if (arg1 == *D_800C19C0[row][2]) {
+    if (arg1 == *ArkWallTargets[row][2]) {
         return 2;
     }
     return 3;
@@ -6044,7 +6200,7 @@ void SetArkHeroGrab(u32 arg0) {
     SetHeroSeq(arg0, 0x1D);
     h->hero_weapon_timer = 0x96;
     h->hero_attack_counter = 0;
-    PlaySfx(D_800C18E8[arg0], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
+    PlaySfx(ArkGrabTimes[arg0], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
 }
 
 void SetArkHeroRedKick(u32 arg0) {
@@ -6056,9 +6212,9 @@ void SetArkHeroRedKick(u32 arg0) {
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
     SetHeroSeq(arg0, 0x1D);
-    D_800C1F0C = Random(0x3C) + 0x3C;
+    ArkRedKickTimer = Random(0x3C) + 0x3C;
     h->hero_attack_counter = 0;
-    PlaySfx(D_800C18E0[arg0], NULL, NULL, 0x1000, 0x1E00, 0);
+    PlaySfx(ArkKickFrames[arg0], NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
 void ArkHeroDie(u32 arg0) {
@@ -6173,7 +6329,7 @@ s32 ArkAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
 }
 
 bool AR_PI_TestLaunchBounds(EXTengine *arg0, EXTobject *obj) {
-    Ovl61Circle *base = D_800C1A7C;
+    Ovl61Circle *base = ArkPosts;
     Ovl61Circle *c;
     s32 i;
     s32 dx;
@@ -6208,25 +6364,25 @@ bool AR_NG_TestOutOfBounds(EXTengine *arg0, EXTobject *arg1, bool arg2) {
     }
     x = arg0->unk10.x;
     if (x > lim) {
-        arg1->player = D_800C271C;
+        arg1->player = ArkSidePlayer1;
         return 1;
     }
     if (x < -lim) {
-        arg1->player = D_800C2720;
+        arg1->player = ArkSidePlayer2;
         return 1;
     }
     z = arg0->unk10.z;
     if (z > lim) {
-        arg1->player = D_800C2724;
+        arg1->player = ArkSidePlayer3;
         return 1;
     }
     if (z < -lim) {
-        arg1->player = D_800C2728;
+        arg1->player = ArkSidePlayer0;
         return 1;
     }
     if (arg2 != 0) {
         d = arg1->player;
-        if (d == D_800C2724 || d == D_800C2728) {
+        if (d == ArkSidePlayer3 || d == ArkSidePlayer0) {
             if (x > 0x680) {
                 arg0->unk10.x = 0x680;
             }
@@ -6257,25 +6413,25 @@ bool AR_BA_TestOutOfBounds(EXTengine *arg0, EXTobject *arg1, bool arg2) {
     }
     x = arg0->unk10.x;
     if (x > lim) {
-        arg1->player = D_800C271C;
+        arg1->player = ArkSidePlayer1;
         return 1;
     }
     if (x < -lim) {
-        arg1->player = D_800C2720;
+        arg1->player = ArkSidePlayer2;
         return 1;
     }
     z = arg0->unk10.z;
     if (z > lim) {
-        arg1->player = D_800C2724;
+        arg1->player = ArkSidePlayer3;
         return 1;
     }
     if (z < -lim) {
-        arg1->player = D_800C2728;
+        arg1->player = ArkSidePlayer0;
         return 1;
     }
     if (arg2 != 0) {
         d = arg1->player;
-        if (d == D_800C2724 || d == D_800C2728) {
+        if (d == ArkSidePlayer3 || d == ArkSidePlayer0) {
             if (x > 0x600) {
                 arg0->unk10.x = 0x600;
             }
