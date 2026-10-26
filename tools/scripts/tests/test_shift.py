@@ -1,15 +1,11 @@
-"""Tests for the shift build: the padded linker script, and a grown overlay moving to the DAT's end.
+"""Tests for the shift build: the padded linker script, and the DAT laid out again around a grown entry.
 Run: tools/dk make test-tools"""
-import json
 import os
 import sys
-import tempfile
 import unittest
-from unittest import mock
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import dat  # noqa: E402
-import pack_disc  # noqa: E402
 import shift  # noqa: E402
 
 LD = """    .ovl5f 0x800B32B4 : AT(ovl5f_ROM_START) SUBALIGN(2)
@@ -40,25 +36,27 @@ class PadScript(unittest.TestCase):
             shift.pad_script(LD.replace("ovl5f.c.o(.data)", "ovl5f_data.data.s.o(.data)"), "ovl5f", 0x40)
 
 
-class Grow(unittest.TestCase):
-    def test_the_overlay_goes_to_the_end_and_the_index_follows(self):
-        with tempfile.TemporaryDirectory() as d:
-            idx = {"entries": [{"id": "000", "sector": 0, "size": 10}, {"id": "001", "sector": 1, "size": 3000,
-                                                                       "overlay": "ovl5f"}]}
-            os.makedirs(f"{d}/assets")
-            json.dump(idx, open(f"{d}/assets/{dat.INDEX}", "w"))
-            datp, exep = f"{d}/CRASHBSH.DAT", f"{d}/exe"
-            open(datp, "wb").write(bytes(3 * dat.SECTOR + 100))
-            t_addr = 0x80010000
-            open(exep, "wb").write(bytes(0x800 + dat.TABLE - t_addr + 16))
-            proj = {"header": {"t_addr": f"{t_addr:08X}"}}
-            with mock.patch.object(dat, "ASSETS", f"{d}/assets"):
-                pack_disc.grow(datp, exep, proj, "ovl5f", b"\x11" * 5000)
-            data = open(datp, "rb").read()
-            self.assertEqual(data[4 * dat.SECTOR:4 * dat.SECTOR + 5000], b"\x11" * 5000)
-            self.assertEqual(len(data) % dat.SECTOR, 0)
-            e = open(exep, "rb").read()[0x800 + dat.TABLE - t_addr + 8:][:8]
-            self.assertEqual((int.from_bytes(e[:4], "little"), int.from_bytes(e[4:], "little")), (4, 5000))
+class Relayout(unittest.TestCase):
+    S = dat.SECTOR
+
+    def test_a_grown_entry_that_fits_its_sectors_moves_nothing(self):
+        new, extra = dat.relayout([(0, 100), (2, 3000), (5, 10)], {1: 3 * self.S - 1})
+        self.assertEqual((new, extra), ([(0, 100), (2, 3 * self.S - 1), (5, 10)], 0))
+
+    def test_entries_after_a_grown_one_move_down_in_order(self):
+        new, extra = dat.relayout([(0, 100), (2, 3000), (4, 10)], {1: 2 * self.S + 1})
+        self.assertEqual((new, extra), ([(0, 100), (2, 2 * self.S + 1), (5, 10)], 1))
+
+    def test_the_relaid_dat_keeps_every_entry_and_the_filler(self):
+        old = [(0, 3), (1, 5)]
+        files = [b"AAA", b"B" * (self.S + 10)]
+        filler = b"x" * (self.S - 3) + b"y" * (self.S - 5)
+        new, extra = dat.relayout(old, {1: len(files[1])}, 2 * self.S)
+        out = dat.join_relaid(files, filler, old, new, 2 * self.S, (2 + extra) * self.S)
+        self.assertEqual(out[:3], b"AAA")
+        self.assertEqual(out[3:self.S], b"x" * (self.S - 3))
+        self.assertEqual(out[self.S:2 * self.S + 10], files[1])
+        self.assertEqual(len(out), 3 * self.S)
 
 
 if __name__ == "__main__":

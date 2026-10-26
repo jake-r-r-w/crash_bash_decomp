@@ -230,13 +230,68 @@ def entry_bytes(src, i, e):
     return data
 
 
-def build(out, src=ASSETS):
-    """Write the DAT rebuilt from src to out; returns its index (for the overlays' slots)."""
+def relayout(entries, sizes, total=None):
+    """(new [(sector, size)], total extra sectors) when entries grow: sizes maps an entry's index
+    to its new size. Entries keep their order (the exe loads a file group, a run of consecutive
+    entries, in one read and finds each by its sector offset from the first, so an entry can't
+    move elsewhere); one that outgrows the sectors before the next entry pushes every later
+    entry down by whole sectors; the last entry, given the DAT's total bytes, grows the DAT."""
+    order = sorted(range(len(entries)), key=lambda i: entries[i][0])
+    starts = sorted({s for s, _ in entries})
+    new, shift = list(entries), 0
+    for i in order:
+        sec, size = entries[i]
+        nsize = sizes.get(i, size)
+        new[i] = (sec + shift, nsize)
+        if nsize > size:
+            nxt = next((s for s in starts if s > sec), None)
+            room = (nxt - sec) * SECTOR if nxt is not None else (total - sec * SECTOR if total else None)
+            if room is not None and nsize > room:
+                shift += -(-(nsize - room) // SECTOR)
+    return new, shift
+
+
+def join_relaid(files, filler, old, new, old_total, new_total):
+    """join() for a relaid DAT: each gap's filler goes with the entry after it, cut or
+    zero-padded to the gap's new length (the bytes after a grown entry are gone)."""
+    out = bytearray(new_total)
+    for (sector, size), data in zip(new, files):
+        out[sector * SECTOR:sector * SECTOR + len(data)] = data
+    pieces, pos = [], 0
+    for a, b in gaps(old, old_total):
+        pieces.append((b, filler[pos:pos + b - a]))
+        pos += b - a
+    # where each old gap ends (an entry's start, or the DAT's end) is in the new layout
+    moved = {s * SECTOR: n * SECTOR for (s, _), (n, _) in zip(old, new)}
+    moved[old_total] = new_total
+    ends = sorted((sector * SECTOR + size) for sector, size in new)
+    for b, data in pieces:
+        nb = moved[b]
+        na = max([e for e in ends if e <= nb] + [0])
+        n = nb - na
+        out[na:nb] = (data[-n:] if len(data) >= n else data + bytes(n - len(data))) if n > 0 else b""
+    return bytes(out)
+
+
+def build(out, src=ASSETS, grow=None):
+    """Write the DAT rebuilt from src to out; returns its index (for the overlays' slots).
+    grow maps entry indexes to bytes bigger than their slots: the DAT is laid out again around
+    them (relayout) and the returned index has the new sectors and sizes."""
     meta = json.load(open(os.path.join(src, INDEX)))
     entries = [(e["sector"], e["size"]) for e in meta["entries"]]
     files = [entry_bytes(src, i, e) for i, e in enumerate(meta["entries"])]
+    filler = read(os.path.join(src, FILLER))
+    if not grow:
+        with open(out, "wb") as f:
+            f.write(join(files, filler, entries, meta["size"]))
+        return meta
+    for i, data in grow.items():
+        files[i] = data
+    new, extra = relayout(entries, {i: len(d) for i, d in grow.items()}, meta["size"])
+    total = meta["size"] + extra * SECTOR
     with open(out, "wb") as f:
-        f.write(join(files, read(os.path.join(src, FILLER)), entries, meta["size"]))
+        f.write(join_relaid(files, filler, entries, new, meta["size"], total))
+    meta = dict(meta, size=total, entries=[dict(e, sector=s, size=n) for e, (s, n) in zip(meta["entries"], new)])
     return meta
 
 

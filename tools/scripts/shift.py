@@ -14,7 +14,8 @@ From the matching build's objects (nothing is recompiled), into build/shift/:
    at a place only this overlay has (a function, object or string no other overlay has at that
    address) are rewritten from the old link's address to the new one, by name. Each is listed.
 5. CrashBash.bin/.cue: pack_disc.py --grow with the two binaries; the overlay, now bigger than
-   its DAT slot, moves to the DAT's end and the exe's index entry follows it.
+   its retail size, stays in its DAT place, which the DAT is laid out again around if it must
+   (the exe's index and file group sizes follow).
 Then the shift test: play the overlay's game on it (docs/PLAYING.md).
 """
 import argparse

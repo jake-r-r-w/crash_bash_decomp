@@ -143,7 +143,7 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    per-game table's `TA_SetUp`, the hero mode table at `0x8009DFE8`,
    `MoeJoeDead`, `D_800C8EEC`; `TankHeroMove` there is also a data label of
    ovl66, so a shared address next to fixed words counts too), and packs
-   `build/shift/CrashBash.bin` with Tank moved to DAT sector 35752. The
+   `build/shift/CrashBash.bin`, Tank in its own DAT place (relaid if needed). The
    rest of this item was written before: pad, relink the engine, rebuild
    `CRASHBSH.DAT` and its index for a grown entry (`pack_disc.py` and
    `dat.py` today only allow shrinking), stay inside the slot (up to
@@ -547,6 +547,21 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (shift disc: the DAT relaid, not appended):** the shifted
+  disc still crashed opening Tank, with a downloaded 200% save (GameFAQs,
+  NA DexDrive, converted to `scratch/card/CrashBash.srm`) and no cheat. The
+  exe loads a *file group* (the table at `0x80050010`: {first entry, count,
+  bytes}; the 13 slot overlays are group 30, entries 0x2CC..0x2D8) in one
+  read and finds each entry by its sector offset, so moving Tank's entry to
+  the DAT's end left the game loading the retail Tank under the shifted
+  engine. `dat.relayout` keeps entries in order and moves later ones down
+  only when an entry outgrows its sectors (Tank's slot has 49, it needs 48:
+  nothing moves); `pack_disc.py` rewrites the index and the groups' sizes.
+  Also: the game's cheat word is `0x8005A618` (0x2000 unlocks every list
+  entry, 0x10000 the pause menu's hidden fifth item; nothing in retail sets
+  them); RetroArch's network commands (`--appendconfig` with
+  `network_cmd_enable`) read and write it, PCSX-ReARMed maps RAM at 0x0.
+
 - **2026-10-26 (shift build: the first boot crashed in Tank):** two Tank
   references weren't moving. The engine's per-world record for Tank
   (`0x80098FC0`, `WORLD_TANK` 0x0106) points 8 bytes into `D_800C8E7C`, which
@@ -562,7 +577,7 @@ Newest first, a few lines each. Details are in the commits.
   (`tools/scripts/shift.py`, tested): Tank relinked padded, the engine
   relinked against it with the slot image as id + zeros, a stopgap rewrite
   of 19 engine data words that point at Tank, and `pack_disc.py --grow`
-  (tested) moving the grown Tank to the DAT's end and rewriting the exe's
+  (tested; first by moving Tank to the DAT's end, since relaid in place) rewriting the exe's
   index entry. The shifted engine differs from the matching one in exactly
   those 87 words and the slot image. `make check`/`disc-check` unchanged.
   The shift test (play Tank to a win) is next.

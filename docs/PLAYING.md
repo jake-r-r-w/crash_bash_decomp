@@ -64,8 +64,12 @@ matching build's objects and:
   words that point at a place only that overlay has (for Tank: `TA_SetUp`'s entry in the
   per-game table, the 16-entry hero mode table, `MoeJoeDead`, one level table), by name; each
   is printed;
-- packs a disc with `pack_disc.py --grow`: the overlay, now bigger than its DAT slot, goes to
-  the end of `CRASHBSH.DAT` and the exe's DAT index entry points there.
+- packs a disc with `pack_disc.py --grow`: the overlay, now bigger than its retail size, stays
+  in its place in `CRASHBSH.DAT`, which is laid out again around it when it outgrows the
+  sectors before the next entry, and the exe's DAT index and file group sizes follow. (It
+  can't move to the DAT's end: the 13 slot overlays are one file group, read in one go, each
+  found by its sector offset inside it. The first shift disc did that, and the game kept
+  loading the retail Tank from its old place, so it crashed.)
 
 It plays like any build (`retroarch ... build/shift/CrashBash.cue`). The shift test is to play the
 overlay's game on it through to a win, the same way as on the retail disc.
