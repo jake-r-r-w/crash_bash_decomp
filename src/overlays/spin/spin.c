@@ -1125,7 +1125,7 @@ void PlotHazardType(NAS *nas) {
     if (eng == NULL) {
         return;
     }
-    D_8009D750(eng);
+    HeroKeepInBoundsHook(eng);
     fux = (SpinFux *)nas->FUX;
     if (fux == NULL) {
         return;
@@ -1238,7 +1238,7 @@ void PlotHazardType(NAS *nas) {
         }
         break;
     case 13:
-        if (D_8009D750(eng) != 0) {
+        if (HeroKeepInBoundsHook(eng) != 0) {
             func_800270B0(nas);
             break;
         }
@@ -1436,7 +1436,7 @@ void PlotBalloon(NAS *nas) {
     if (eng == NULL) {
         return;
     }
-    D_8009D750(eng);
+    HeroKeepInBoundsHook(eng);
     fux = (SpinFux *)nas->FUX;
     if (fux != NULL) {
         kind = fux->kind;
@@ -2803,7 +2803,7 @@ void SpinHeroHit(s32 arg0) {
         }
     } else {
         SpinHitDone[arg0] = 1;
-        if (h->hero_health <= 0 && !(D_8005A618 & 2)) {
+        if (h->hero_health <= 0 && !(GameCheats & 2)) {
             h->hero_immunity = 0;
             h->hero_hit += 0x28;
             SetHeroSeq(arg0, 0x2D);

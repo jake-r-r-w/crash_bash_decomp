@@ -362,7 +362,7 @@ void func_8007976C(void) {
 
     func_80011410(&MainHeap);
     func_80079554();
-    if (D_8005A618 & 0x10) {
+    if (GameCheats & 0x10) {
         FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", D_8004E104, D_8004E10C);
     }
     func_8007906C();

@@ -101,7 +101,7 @@ typedef struct {
 extern char NginModel[];
 extern ScriptInit NGinScriptInit;
 extern EXTengine *ArkBallSpawner;
-extern s32 (*D_8009D750)(EXTengine *);
+extern s32 (*HeroKeepInBoundsHook)(EXTengine *);
 extern ArkenoidGin *ArkNGin;
 typedef struct ArkenoidNode {
     u8 pad0[0x10];

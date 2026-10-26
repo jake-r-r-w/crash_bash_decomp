@@ -5029,7 +5029,7 @@ check:
             Heroes[player].hero_score_displayed = Heroes[player].hero_score = 10 - fux->laps;
             if (Heroes[player].hero_score == 0) {
                 flags = 1;
-                if (D_8005A618 & 0x800) {
+                if (GameCheats & 0x800) {
                     flags = 0x201;
                 }
                 D_8009D74C(-1, flags);

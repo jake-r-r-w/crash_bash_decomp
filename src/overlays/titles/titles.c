@@ -529,21 +529,21 @@ void TitlesInitLevel(void) {
         core_process = 0;
         func_80092C54();
         *(u16 *)(g + 0x32) |= 0x200;
-        func_8001E934(&D_8009F8A4, &MainMenu);
+        func_8001E934(&MenuProcessControl, &MainMenu);
         break;
     case 0x29:
         p = BattleChainResume;
         g[0x27] = 4;
         a1 = (u8 *)*p;
         MenuChainPos = p;
-        func_8001E934(&D_8009F8A4, (process_info *)a1);
+        func_8001E934(&MenuProcessControl, (process_info *)a1);
         break;
     case 0x2A:
         p = TournamentChainResume;
         g[0x27] = 4;
         a1 = (u8 *)*p;
         MenuChainPos = p;
-        func_8001E934(&D_8009F8A4, (process_info *)a1);
+        func_8001E934(&MenuProcessControl, (process_info *)a1);
         break;
     }
     TitlesBackdropAnimator = ExtTemplate400;
@@ -673,7 +673,7 @@ void MainMenuUpdate(void) {
             break;
         case 3:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            process_interrupt(&D_8009F8A4, &OptionsScreen);
+            process_interrupt(&MenuProcessControl, &OptionsScreen);
             break;
         }
     }
@@ -936,14 +936,14 @@ void OptionsUpdate(void) {
                 func_80095BEC(4, (s32 *)OptionsControllerPlace);
                 break;
             case 2:
-                func_8001E824(&D_8009F8A4);
+                func_8001E824(&MenuProcessControl);
                 break;
             }
             OptionsCursor = 0;
         }
         if (D_80051380 & 0x1000) {
             PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_8001E824(&D_8009F8A4);
+            func_8001E824(&MenuProcessControl);
         }
         return;
     case 1:
@@ -1142,7 +1142,7 @@ void OptionsInit(void) {
 
 void MenuChainStart(process_info **chain) {
     MenuChainPos = chain;
-    func_8001E848(&D_8009F8A4, *chain);
+    func_8001E848(&MenuProcessControl, *chain);
 }
 
 void MenuChainStep(s32 n) {
@@ -1153,7 +1153,7 @@ void MenuChainStep(s32 n) {
     next = *p;
     MenuChainPos = p;
     if (next != NULL) {
-        func_8001E848(&D_8009F8A4, next);
+        func_8001E848(&MenuProcessControl, next);
     }
 }
 
@@ -1165,7 +1165,7 @@ void MenuChainBack(void) {
     next = *p;
     MenuChainPos = p;
     if (next != NULL) {
-        func_8001E848(&D_8009F8A4, next);
+        func_8001E848(&MenuProcessControl, next);
     }
 }
 
@@ -1177,7 +1177,7 @@ void MenuChainNext(void) {
     next = p[1];
     MenuChainPos = p + 1;
     if (next != NULL) {
-        func_8001E848(&D_8009F8A4, next);
+        func_8001E848(&MenuProcessControl, next);
     }
 }
 
@@ -1218,7 +1218,7 @@ void NewLoadMenuInit(void) {
 }
 
 void num_players_render(void) {
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     func_80018B08(&TitlesMenuView, &TitlesCamera);
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
@@ -1659,7 +1659,7 @@ void CharSelectRender(void) {
     eng->unk10.y = -0xF0;
     RenderTitlesBackdropAndMenu();
     func_80018B08(&TitlesMenuView, &CharSelectCamera);
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
 }
 
@@ -2065,7 +2065,7 @@ s32 LevelListName(s32 arg0, s32 arg1) {
     s32 idx = *(s32 *)(BattleArenas[arg0].unk0 + (arg1 << 4) + 4);
     s32 w = ModeTypes[idx * 3] - 0x101;
     s32 **tbl = (s32 **)D_8004DDBC;
-    return tbl[D_8005A640][w];
+    return tbl[GameLanguage][w];
 }
 
 s32 LevelListModel(s32 arg0, s32 arg1) {
@@ -2083,7 +2083,7 @@ s32 LevelListCount(s32 arg0) {
 s32 LevelListText(s32 a, s32 b) {
     s32 base = BattleArenas[a].unk0;
     s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
-    s32 *row = D_8004DD70[D_8005A640];
+    s32 *row = D_8004DD70[GameLanguage];
     return row[idx];
 }
 

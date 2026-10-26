@@ -91,7 +91,7 @@ void InitBigScore(void);
 /* Turns the heading half a quadrant when the engine collides. */
 #define SPIN_BOUNCE(eng, mot)                                          \
     do {                                                                \
-        if (D_8009D750(eng) != 0) {                                     \
+        if (HeroKeepInBoundsHook(eng) != 0) {                                     \
             (mot)->Xa = ((mot)->Xa - SpinSpeed * 0x200) & 0xFFF;       \
         }                                                               \
     } while (0)
@@ -195,7 +195,7 @@ typedef struct SpinGlow {
     /* 0x1C */ s16 unk1C;
     /* 0x1E */ s16 unk1E;
 } SpinGlow;
-extern s32 (*D_8009D750)(EXTengine *);
+extern s32 (*HeroKeepInBoundsHook)(EXTengine *);
 s32 GravitateNas(NAS *nas);
 void func_8008E27C(s32 *arg0, void *arg1, s32 arg2);
 
@@ -300,7 +300,7 @@ void SpinDropObject(u16 arg0, u16 arg1);
 void SpinHeroLose(s32 arg0);
 extern u16 SpinHitSfx[];
 extern u16 SpinHitDone[];
-extern s32 D_8005A618;
+extern s32 GameCheats;
 extern void (*D_8009D740)(s32);
 s32 func_8008502C();
 s32 func_800871E4(s32 arg0);
@@ -423,7 +423,7 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux);
 s32 SpinAI_ChooseTarget(s32 player);
 
 /* PlotBalloon */
-extern s32 (*D_8009D750)(EXTengine *);
+extern s32 (*HeroKeepInBoundsHook)(EXTengine *);
 extern u16 SpinBalloonModels[];
 extern s32 *SpinBalloonSfx[];
 

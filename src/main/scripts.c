@@ -34,7 +34,7 @@ void func_8001E984(s32 arg0, s32 arg1) {
         D_80058B68 = 0;
     }
     D_80058B64 = 0x10000;
-    D_80058B70 = (void *)D_80058B68;
+    ScriptList = (void *)D_80058B68;
 }
 
 void func_8001EAA4(u8 *arg0, u8 *arg1) {
@@ -668,7 +668,7 @@ void func_800201BC(u8 *arg0, GteSetup *arg1) {
         }
         p = *(u8 **)(p + 0xB4);
     }
-    D_800569AC = dp;
+    FadeAmount = dp;
 }
 
 void func_80020344(Quat *a, Quat *b, s32 t, Quat *out) {
@@ -904,8 +904,8 @@ void func_80020DF8(u8 *arg0) {
         if (fn != NULL) {
             fn(cur, p);
         }
-        old = D_80058B70;
-        D_80058B70 = cur;
+        old = ScriptList;
+        ScriptList = cur;
         *(void **)(cur + 0xB4) = old;
         cur = next;
     }
@@ -953,8 +953,8 @@ void func_80020F5C(u8 *arg0) {
         if (fn != NULL) {
             fn(cur, arg0);
         }
-        head = D_80058B70;
-        D_80058B70 = cur;
+        head = ScriptList;
+        ScriptList = cur;
         *(void **)(cur + 0xB4) = head;
         cur = next;
     }
@@ -995,8 +995,8 @@ void func_80021054(u8 *arg0) {
         if (fn != NULL) {
             fn(cur, arg0);
         }
-        head = D_80058B70;
-        D_80058B70 = cur;
+        head = ScriptList;
+        ScriptList = cur;
         *(void **)(cur + 0xB4) = head;
         cur = next;
     }
@@ -1066,9 +1066,9 @@ void func_80021238(u8 *arg0, s32 *arg1) {
 static inline u8 *Pop4(void) {
     u8 *cur;
 
-    cur = D_80058B70;
+    cur = ScriptList;
     if (cur != NULL) {
-        D_80058B70 = *(void **)(cur + 0xB4);
+        ScriptList = *(void **)(cur + 0xB4);
     }
     return cur;
 }
@@ -1224,9 +1224,9 @@ void func_80021604(u8 *arg0, u8 *arg1, s32 arg2) {
 static inline u8 *Pop3(void) {
     u8 *cur;
 
-    cur = D_80058B70;
+    cur = ScriptList;
     if (cur != NULL) {
-        D_80058B70 = *(void **)(cur + 0xB4);
+        ScriptList = *(void **)(cur + 0xB4);
     }
     return cur;
 }
@@ -1316,9 +1316,9 @@ s32 *func_800218DC(u8 *arg0, s32 arg1) {
 static inline u8 *Pop2(void) {
     u8 *cur;
 
-    cur = D_80058B70;
+    cur = ScriptList;
     if (cur != NULL) {
-        D_80058B70 = *(void **)(cur + 0xB4);
+        ScriptList = *(void **)(cur + 0xB4);
     }
     return cur;
 }
@@ -1489,9 +1489,9 @@ u8 *get_script_header(obj_dbase *db, s32 arg1) {
 static inline u8 *PopD_80058B70(void) {
     u8 *cur;
 
-    cur = D_80058B70;
+    cur = ScriptList;
     if (cur != NULL) {
-        D_80058B70 = *(void **)(cur + 0xB4);
+        ScriptList = *(void **)(cur + 0xB4);
     }
     return cur;
 }
@@ -1510,17 +1510,17 @@ u8 *func_80021E98(u8 *arg0) {
 void func_80021ED8(u8 *arg0) {
     u8 *temp_v1;
 
-    temp_v1 = D_80058B70;
-    D_80058B70 = arg0;
+    temp_v1 = ScriptList;
+    ScriptList = arg0;
     (*(s32*)((u8*)(arg0) + 180)) = temp_v1;
 }
 
 void *func_80021EEC(void) {
     u8 *cur;
 
-    cur = D_80058B70;
+    cur = ScriptList;
     if (cur != NULL) {
-        D_80058B70 = *(void **)(cur + 0xB4);
+        ScriptList = *(void **)(cur + 0xB4);
     }
     return cur;
 }

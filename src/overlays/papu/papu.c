@@ -387,7 +387,7 @@ void InitialisePAPUFirst(void) {
     HeroHooks.unk54 = PapuHeroKickCollision;
     HeroHooks.unk58 = PapuHeroCarryCollision;
     PapuInitCrateHooks();
-    D_8005AA94 = GetPapuContour;
+    LevelContourHook = GetPapuContour;
     HeroHooks.unk28 = PapuHeroCheckPit;
     g = (EngineGameView *)GameInfo;
     g->flags |= 0x900;
@@ -448,7 +448,7 @@ void InitialisePAPU(void) {
     InitBossHealthIcons();
     PapuInitMinionSlots();
     PapuInitTiles();
-    CreateNAS(D_8005B2B8[2].pos.x, D_8005B2B8[2].pos.y, D_8005B2B8[2].pos.z,
+    CreateNAS(MapPoints[2].pos.x, MapPoints[2].pos.y, MapPoints[2].pos.z,
                  0x1201, 0x11);
     PapuSetCrateMix(0, 0, 0, 0, 0xC, 4, 0, 0, 0);
     PapuDropFirstCrates();

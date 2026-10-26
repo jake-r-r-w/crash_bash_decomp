@@ -26,7 +26,7 @@ void InitialiseN2O(void);
 extern u16 *HeroModelTable;
 
 extern u8 OxideModel[];
-extern EXTengine *D_8009D530;
+extern EXTengine *CameraTarget;
 extern u16 CameraMode;
 extern u16 N2OKickSfx[];
 extern s16 N2OExplodeScales[][3];
@@ -39,7 +39,7 @@ void NoxResetHeroes(void);
 extern u16 N2OWallsHit;
 extern s16 N2OHeroSpeed[];
 extern u16 N2OUnusedRows[][5];
-extern s32 (*D_8009D750)(EXTengine *);
+extern s32 (*HeroKeepInBoundsHook)(EXTengine *);
 
 /* PadState (Pads) as N2OPreMoveHero reads it: the buttons at 0x50. */
 typedef struct N2OPad {
@@ -97,7 +97,7 @@ typedef struct N2OPuck {
 
 extern u16 N2OBallHitSfx[];
 extern u16 N2OExplosionSfx[];
-extern s32 D_8005A618;
+extern s32 GameCheats;
 extern s32 GameTeams[];
 
 s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
@@ -126,7 +126,7 @@ typedef struct N2OOut {
 } N2OOut;
 
 extern u16 N2OBallHitSfx[];
-extern s32 D_8005A618;
+extern s32 GameCheats;
 extern s32 GameTeams[];
 
 s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
@@ -570,7 +570,7 @@ extern SLONG_XYZ N2OBallStarts[];
 extern u16 N2OBallBounceSfx[];
 extern u16 N2OBallSfx[];
 
-/* D_8005AA94 as PlotN2OBall reads it: the level's contour hook. */
+/* LevelContourHook as PlotN2OBall reads it: the level's contour hook. */
 typedef struct N2OHook {
     s32 (*fn)(EXTengine *eng);
 } N2OHook;

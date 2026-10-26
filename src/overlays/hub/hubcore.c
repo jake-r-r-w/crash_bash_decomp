@@ -77,7 +77,7 @@ void InitialiseHUB(void) {
     }
     HubCamTarget();
     HubSelectSfx = 0;
-    func_8001E934(&D_8009F8A4, &HubDoorMenu);
+    func_8001E934(&MenuProcessControl, &HubDoorMenu);
 }
 
 /* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
@@ -155,7 +155,7 @@ void HubInitGateways(void) {
         }
         o = *(u8 **)(o + 0x5C);
     }
-    for (e = (EngSub90248 *)D_8009EDD4[GameWarpRoom][1]; e->unk0 != 0; e++) {
+    for (e = (EngSub90248 *)WarpRooms[GameWarpRoom][1]; e->unk0 != 0; e++) {
         i = e->unk0 - 1;
         p = &HubGateways[i];
         p->unk14 = e;
@@ -479,7 +479,7 @@ void HubPreMoveHero(s32 arg0) {
             func_80092AF4(&D_8009F46C, 0x200);
             break;
         default:
-            HubSpawnFlash(&D_8009D530->unk10.x, 9);
+            HubSpawnFlash(&CameraTarget->unk10.x, 9);
             break;
         }
     }
@@ -620,7 +620,7 @@ void HubDoorMenuUpdate(void) {
                     p = HubLockPanels;
                     for (i = 10; i != -1; i--) {
                         if (p->key == key) {
-                            recs = (s32 *)p->val[D_8005A640];
+                            recs = (s32 *)p->val[GameLanguage];
                             goto found;
                         }
                         p++;
@@ -646,7 +646,7 @@ void HubDoorMenuUpdate(void) {
             break;
         case 4:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
-                func_80095BEC(2, HubSavePanels[D_8005A640]);
+                func_80095BEC(2, HubSavePanels[GameLanguage]);
             }
             GetEngineSlot(2)->unk10.y = (HubDoorFade >> 4) - 200;
             break;
@@ -676,7 +676,7 @@ s32 HubSelectedLevel(void) {
         if (r < 0) {
             return -1;
         }
-        base = D_8009EDD4;
+        base = WarpRooms;
         t = base[GameWarpRoom];
         if (r < t[2]) {
             return ((s32 *)(t[3] + r * 8))[1];
@@ -687,7 +687,7 @@ s32 HubSelectedLevel(void) {
 }
 
 void HubLevelSelect(void) {
-    s32 (*base)[5] = D_8009EDD4;
+    s32 (*base)[5] = WarpRooms;
     HubSelView *g = (HubSelView *)GameInfo;
     HubSelEntry *ents = (HubSelEntry *)base[g->unk62][3];
     s32 r;
@@ -710,7 +710,7 @@ void HubLevelSelect(void) {
         }
         if (r != 0 && ((HubSelView *)GameInfo)->unk30 != 0x8008) {
             if ((D_80051380 & 0x20)
-                && HubSelectedEntry < D_8009EDD4[((HubSelView *)GameInfo)->unk62][2] - 1
+                && HubSelectedEntry < WarpRooms[((HubSelView *)GameInfo)->unk62][2] - 1
                 && ((s32(*)(s32))func_8007A6D0)(ents[HubSelectedEntry + 1].unk4)) {
                 PlaySfx(0x39F, NULL, NULL, 0x1000, 0x1E00, 0);
                 HubSelectedEntry++;
@@ -722,8 +722,8 @@ void HubLevelSelect(void) {
             if (HubSelectedEntry < 0) {
                 HubSelectedEntry = func_800900CC();
             }
-            if (HubSelectedEntry >= D_8009EDD4[GameWarpRoom][2]) {
-                n = D_8009EDD4[GameWarpRoom][2];
+            if (HubSelectedEntry >= WarpRooms[GameWarpRoom][2]) {
+                n = WarpRooms[GameWarpRoom][2];
                 HubSelectedEntry = n - 1;
             }
             if (HubSelectSub != NULL) {
@@ -731,10 +731,10 @@ void HubLevelSelect(void) {
                     HubSelectSub->unk74 = ents[HubSelectedEntry].unk0;
                     return;
                 }
-                HubSelectSub->unk74 = D_8009EDD4[GameWarpRoom][4];
+                HubSelectSub->unk74 = WarpRooms[GameWarpRoom][4];
             }
         } else if (HubSelectSub != NULL) {
-            HubSelectSub->unk74 = D_8009EDD4[GameWarpRoom][4];
+            HubSelectSub->unk74 = WarpRooms[GameWarpRoom][4];
         }
         break;
     case 1:
@@ -1088,7 +1088,7 @@ void HubDoorMenu2Render(void) {
     EXTengine *e;
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
@@ -1114,7 +1114,7 @@ void HubDoorMenuRender(void) {
     EXTengine *e;
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
@@ -1255,7 +1255,7 @@ void HubCameraFollow(u8 *arg0, s32 arg1) {
         n = 3;
     }
     HubCamFromPath((u8 *)&v, n);
-    v.at = *(CamXYZ *)&D_8009D530->unk10;
+    v.at = *(CamXYZ *)&CameraTarget->unk10;
     v.rot.vy = -D_8009EEA0;
     if (arg1 != 0) {
         func_80013F44(cam, &v, NULL);
@@ -2581,7 +2581,7 @@ void HubSaveMenuRender(void) {
     EXTengine *e;
 
     func_80018B08(&HubSaveViewport, (GfxCamera *)HubSaveCamera);
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     e = GetEngineSlot(0);
     i = 0;
     g = GameInfo;

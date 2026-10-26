@@ -411,7 +411,7 @@ extern void *D_8009EFDC[];
         b_ = *(s32 *)(off_ + p_) == 0;                \
         q_ = p_ + 8;                                  \
         a_ = q_ + off_;                               \
-        D_8009F3B8 = i_;                              \
+        CardSlotIndex = i_;                              \
         func_80090564(a_, b_);                        \
     }
 extern void *D_8009EFB0[];
@@ -582,7 +582,7 @@ typedef struct {
     /* 0x20 */ s32 sfxNext;
     /* 0x24 */ s32 delay;
 } IntroStep;
-extern IntroStep D_8009E4C0[];
+extern IntroStep IntroSteps[];
 extern s32 D_8009E4E4;
 extern s32 D_8005137C;
 extern Blk32 D_8009E560;

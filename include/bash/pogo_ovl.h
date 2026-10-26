@@ -47,7 +47,7 @@ typedef struct PogoHooks {
 } PogoHooks;
 extern PogoHooks HeroHooks;
 extern process_info PogoProcess;
-extern process_control_info D_8009F8A4;
+extern process_control_info MenuProcessControl;
 
 void psxpogo_render_tile();
 

@@ -71,7 +71,7 @@ typedef union {
     struct { u16 u : 8; u16 v : 8; } f;
 } TexUV;
 
-extern s32 D_8005A640;
+extern s32 GameLanguage;
 
 /* A viewpoint: its position (+0xC) is subtracted from world positions before
  * they go through the GTE (func_8002B6D0, func_8002B760). */
@@ -530,7 +530,7 @@ typedef struct SlotList {
     /* 0x58 */ SlotEntry entries[1];
 } SlotList;
 
-/* D_80056844: entries come from free (new_sprim) and go back on done. */
+/* PrimPool: entries come from free (new_sprim) and go back on done. */
 typedef struct NodePool {
     PoolNode *free;
     void *mem;                        /* heap block, freed by func_800183DC */
@@ -587,7 +587,7 @@ typedef struct PadStick {
     /* 0x54 */ s32 dirPressed;
 } PadStick;
 
-/* Loaded sound data and the sequence opened from it (D_8006557C); the name is
+/* Loaded sound data and the sequence opened from it (CurrentMusic); the name is
  * the C++ symbols' (music_dload_midi__FP4fileP10music_midil). */
 typedef struct music_midi {
     /* 0x00 */ s32 data;                 /* heap block, freed by func_8002C44C */
@@ -803,7 +803,7 @@ extern u8 D_80050010[];
 void func_8002D488(void);
 void func_8002D4F4();
 extern s32 D_80064414;
-extern s32 D_800569AC;
+extern s32 FadeAmount;
 extern s32 D_8006559C;
 extern s32 D_800655A4;
 extern s32 D_800655A0;
@@ -840,7 +840,7 @@ extern s32 cam_ramp_overide_count;
 extern s32 D_800517B4;
 extern s32 RandomSeedA;
 extern s32 RandomSeedB;
-extern void *D_80058B70;
+extern void *ScriptList;
 typedef struct {
     s32 unk0;
     s32 unk4;
@@ -904,14 +904,14 @@ extern u8 *D_8006E9FC;
 extern u8 FontModel[];
 extern void *D_8005AA34;
 extern void *HeadOfObjects;
-extern music_midi D_8006557C;
+extern music_midi CurrentMusic;
 extern LoaderState Loader;
 extern char D_8004C83C[];
 extern void func_80012840(u8 *, u8 *);
 extern void func_80012678(u8 *, u8 *);
 extern MusicEntry D_80058B88[];
 extern sfx_machine_bank_info SfxBanks[6];
-extern NodePool D_80056844;
+extern NodePool PrimPool;
 extern NAS *HeadOfSolids;
 extern NAS *D_8005AA9C;
 extern void *HeadOfMissiles;            /* tail of the HeadOfObjects list */
@@ -1085,7 +1085,7 @@ typedef struct U16Table {
 } U16Table;
 extern void *D_8005A5E0;
 extern void (*D_8005AA88)(NASTrigger *, s32);
-extern MapPoint D_8005B2B8[32];
+extern MapPoint MapPoints[32];
 /* A button-combo sequence: steps[] are pad masks, 0-terminated. */
 typedef struct ComboSeq {
     /* 0x00 */ void (*fn)(void);
@@ -1186,7 +1186,7 @@ typedef union {
 } SprPos;
 
 
-/* calc_rgbcode: fades r, g, b towards black by D_800569AC / 0x1000. */
+/* calc_rgbcode: fades r, g, b towards black by FadeAmount / 0x1000. */
 /* FadeColor reading the fade from gs->modelDp (func_80029F9C). */
 extern u16 D_800569DC;
 extern s32 D_800569C0;
@@ -1279,7 +1279,7 @@ typedef struct AnimStep {
     s16 cmd;
     u16 arg;
 } AnimStep;
-extern s32 (*D_8005AA94)(EXTengine *eng); /* optional hook: replaces AddPlatformContour */
+extern s32 (*LevelContourHook)(EXTengine *eng); /* optional hook: replaces AddPlatformContour */
 extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;

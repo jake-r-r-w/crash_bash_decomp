@@ -128,7 +128,7 @@ void func_80083708(void) {
         h->hero_eng = eng;
         h->hero_sub = sub;
         eng->unk5D = 0;
-        eng->unk10 = D_8005B2B8[i].pos;
+        eng->unk10 = MapPoints[i].pos;
         h->hero_eng->unk10.y = World_floor_level;
         eng->OldXYZ = eng->unk10;
         h->hero_anim = func_800265DC(h->hero);
@@ -225,7 +225,7 @@ void func_80083708(void) {
                 mv->z_acc = 0;
                 mv->z_dec = 0;
                 mv->z_dir = 0;
-                ang = D_8005B2B8[i].rot.x;
+                ang = MapPoints[i].rot.x;
                 eng->unk1E = ang;
                 mv->facing_angle = ang;
                 mv->forward_angle = ang;
@@ -4643,7 +4643,7 @@ void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             dz = e->unk10.z - z;
             dist = csqrt(dx * dx + dz * dz) >> 6;
             if (dist < arg1) {
-                if ((D_8005A618 & 0x80000001) != 0x80000001) {
+                if ((GameCheats & 0x80000001) != 0x80000001) {
                     ok = 1;
                     if (hero[i].hero_hit != 0) {
                         ok = hero[i].hero_immunity_level < 0x200;

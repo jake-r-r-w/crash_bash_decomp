@@ -468,7 +468,8 @@ Newest first, a few lines each. Details are in the commits.
   load into, and labels inside structs that typing will turn into fields); then
   the exe's 29 model slots from the files each game loads into them
   (`FontModel`, `PowerupsModel`, `AngelModel`, `PapuModel`, ...;
-  `tools/scripts/model_slots.py`), 4353 uses of 970 names left. Gotchas: `decomp.py rename` writes every exe or
+  `tools/scripts/model_slots.py`); then 15 more (`GameCheats`, `GameLanguage`,
+  `HeroKeepInBoundsHook`, `WarpRooms`, `MapPoints`, ...), 4071 uses of 955 names left. Gotchas: `decomp.py rename` writes every exe or
   engine data name to `sym.main.txt`; move the engine's (from `0x80078C90`)
   to `sym.engine.txt`. A renamed global's PROVIDE in
   `undefined_syms_manual.txt` needs the new name too. `GameState` is already

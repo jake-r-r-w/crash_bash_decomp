@@ -79,7 +79,7 @@ void func_8008E5BC(void) {
         func_80016F54((u8 *)D_800AEC5C);
         D_800AEC5C = 0;
     }
-    if (D_8009E5A4 == 1 && D_8009E5A8 == D_8009E4E4) {
+    if (IntroStepIndex == 1 && D_8009E5A8 == D_8009E4E4) {
         func_8002D4F4(0);
     }
     if (D_8009E5A8 < 0) {
@@ -92,14 +92,14 @@ void func_8008E5BC(void) {
         D_8009E5A8 = 1;
         return;
     }
-    if ((u32)D_8009E5A4 >= 4) {
+    if ((u32)IntroStepIndex >= 4) {
         ProcessControl.flags = 0x12;
         ProcessControl.next_process = &D_800A00DC;
         D_8009E5A8 = -1;
         return;
     }
-    tbl = D_8009E4C0;
-    e = &tbl[D_8009E5A4];
+    tbl = IntroSteps;
+    e = &tbl[IntroStepIndex];
     type = e->type;
     switch (type) {
     case 1:
@@ -111,12 +111,12 @@ void func_8008E5BC(void) {
         LoadImage(ScreenRect + 1, (u32 *)b);
         DrawSync(0);
         mal_free(b, &MainHeap);
-        if (D_8009E4C0[D_8009E5A4].sfx[0] != -1) {
-            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
-            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
-            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[2], &D_8009E5B8[2], NULL, 0x1000, 0x1E00, 0);
+        if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[2], &D_8009E5B8[2], NULL, 0x1000, 0x1E00, 0);
             D_8009E5B4 = 6;
-            D_8009E5B0 = D_8009E4C0[D_8009E5A4].sfxNext;
+            D_8009E5B0 = IntroSteps[IntroStepIndex].sfxNext;
         }
         break;
     case 2:
@@ -124,27 +124,27 @@ void func_8008E5BC(void) {
         func_80095258(e->model);
         D_80058B64 = 0x10000;
         D_8004E0E0 = type;
-        D_8009E5AC = func_8001FE80(D_8009E4C0[D_8009E5A4].model, D_8009E4C0[D_8009E5A4].unkC,
+        D_8009E5AC = func_8001FE80(IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
                                    &D_8009E560, &D_8009E580, 4, (u8 **)&D_800AEC58);
-        if (D_8009E4C0[D_8009E5A4].sfx[0] != -1) {
-            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
-            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
-            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[2], &D_8009E5B8[2], NULL, 0x1000, 0x1E00, 0);
+        if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[2], &D_8009E5B8[2], NULL, 0x1000, 0x1E00, 0);
             D_8009E5B4 = 0x16;
-            D_8009E5B0 = D_8009E4C0[D_8009E5A4].sfxNext;
+            D_8009E5B0 = IntroSteps[IntroStepIndex].sfxNext;
         }
-        if (D_8009E4C0[D_8009E5A4].unk10 != -1) {
-            func_8002C284(D_8009E4C0[D_8009E5A4].unk10);
+        if (IntroSteps[IntroStepIndex].unk10 != -1) {
+            func_8002C284(IntroSteps[IntroStepIndex].unk10);
         }
         if (D_800AEC5C != 0) {
             func_80016F54((u8 *)D_800AEC5C);
         }
-        D_800AEC5C = (s32)D_8009E4C0[D_8009E5A4].model;
+        D_800AEC5C = (s32)IntroSteps[IntroStepIndex].model;
         break;
     }
-    D_8009E5A4++;
-    if (D_8009E4C0[D_8009E5A4].type == 2) {
-        func_8001612C(D_8009E4C0[D_8009E5A4].model, 0);
+    IntroStepIndex++;
+    if (IntroSteps[IntroStepIndex].type == 2) {
+        func_8001612C(IntroSteps[IntroStepIndex].model, 0);
     }
 }
 
@@ -173,7 +173,7 @@ void func_8008EB3C(void) {
 }
 
 void func_8008EB8C(void) {
-    D_8009E5A4 = 0;
+    IntroStepIndex = 0;
     D_8009E5A8 = 0;
     D_800AEC58 = 0;
     D_800AEC5C = 0;
@@ -308,7 +308,7 @@ void func_8008ECE4(void) {
 }
 
 s32 func_8008EF70(void) {
-    return D_8009EDD4[GameWarpRoom][0];
+    return WarpRooms[GameWarpRoom][0];
 }
 
 void func_8008EF9C(void) {
@@ -420,12 +420,12 @@ void func_8008F41C(void) {
     s1 = (Sub3F0 *)(s0 + 0x3F0);
     if (CardStatus & 2) {
         if (CardStatus & 0x40) {
-            s1->f6C = D_8009EA6C[D_8005A640];
+            s1->f6C = D_8009EA6C[GameLanguage];
             *(s32 *)(s0 + 0x3F0) |= 0x8000;
             return;
         } else if (CardStatus & 0x10) {
             if (func_8008F248(0) != 0) {
-                s1->f6C = D_8009EA64[D_8005A640];
+                s1->f6C = D_8009EA64[GameLanguage];
                 *(s32 *)(s0 + 0x3F0) |= 0x8000;
                 if (D_80051380 & 0x2000) {
                     PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -433,7 +433,7 @@ void func_8008F41C(void) {
                 }
                 return;
             }
-            s1->f6C = D_8009EA70[D_8005A640];
+            s1->f6C = D_8009EA70[GameLanguage];
             *(s32 *)(s0 + 0x3F0) |= 0x8000;
             return;
         } else {
@@ -443,7 +443,7 @@ void func_8008F41C(void) {
 def:
         tab = D_8009EA68;
     }
-    s1->f6C = tab[D_8005A640];
+    s1->f6C = tab[GameLanguage];
     *(s32 *)(s0 + 0x3F0) |= 0x8000;
 }
 
@@ -677,7 +677,7 @@ static inline s32 func_800900CC_find(s32 arg0) {
     s32 i;
     s32 *p;
 
-    for (i = 0, p = D_8009EDD4[0]; (u32)i < 10; i++, p += 5) {
+    for (i = 0, p = WarpRooms[0]; (u32)i < 10; i++, p += 5) {
         if (*p == arg0) {
             return i;
         }
@@ -696,7 +696,7 @@ s32 func_800900CC(void) {
     if (i < 0) {
         t = 0;
     } else {
-        t = D_8009EDD4[i];
+        t = WarpRooms[i];
     }
     if (t == 0) {
         return best;
@@ -713,7 +713,7 @@ static inline s32 func_800901B4_find(s32 arg0) {
     s32 i;
     s32 *p;
 
-    for (i = 0, p = D_8009EDD4[0]; (u32)i < 10; i++, p += 5) {
+    for (i = 0, p = WarpRooms[0]; (u32)i < 10; i++, p += 5) {
         if (*p == arg0) {
             return i;
         }
@@ -727,14 +727,14 @@ s32 *func_800901B4(s32 arg0) {
     if (i < 0) {
         return 0;
     }
-    return D_8009EDD4[i];
+    return WarpRooms[i];
 }
 
 s32 func_8009020C(s32 arg0) {
     s32 i;
     s32 *p;
 
-    for (i = 0, p = D_8009EDD4[0]; (u32)i < 10; i++, p += 5) {
+    for (i = 0, p = WarpRooms[0]; (u32)i < 10; i++, p += 5) {
         if (*p == arg0) {
             return i;
         }
@@ -754,7 +754,7 @@ s32 func_80090248(void) {
 void func_8009029C(void) {
     s32 i;
     EngEntry *e;
-    EngTable *t = (EngTable *)D_8009EDD4;
+    EngTable *t = (EngTable *)WarpRooms;
 
     for (i = 9; i != -1; i--) {
         e = t->entries;
@@ -786,7 +786,7 @@ void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         e->sub[5].unk74 = 0;
         e->sub[6].unk74 = 0;
         e->sub[2].unk6C = NULL;
-        e->sub[1].unk6C = D_8009F004[D_8005A640];
+        e->sub[1].unk6C = D_8009F004[GameLanguage];
         e->sub[1].unk04 = 0x8096;
         e->sub[1].unk08 = 0x1E;
         return;
@@ -854,7 +854,7 @@ void func_80090A10(void) {
     u8 *src;
     u8 *p;
 
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     switch (D_8009F638) {
     case 0:
         pad = Pads;
@@ -876,13 +876,13 @@ void func_80090A10(void) {
                 return;
             } else if (CardStatus & 0x10) {
                 func_8009196C();
-                idx = D_8009F3B8 * 0x194;
+                idx = CardSlotIndex * 0x194;
                 p = (u8 *)CardSlots;
                 if (*(s32 *)(idx + p) != 0
                     && (*(s32 *)((u8 *)pad + 0x48) & 0x4000)) {
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                     func_8002C284(-1);
-                    src = D_8009F3B8 * 0x194 + p;
+                    src = CardSlotIndex * 0x194 + p;
                     {
                         u8 *q = GameInfo;
                         q[0x4C] = src[0];
@@ -907,11 +907,11 @@ void func_80090A10(void) {
                 return;
             } else {
                 if (CardStatus & 4) {
-                    GetEngineSlot(1)->sub[1].unk6C = D_8009EFD0[D_8005A640];
+                    GetEngineSlot(1)->sub[1].unk6C = D_8009EFD0[GameLanguage];
                 } else {
-                    GetEngineSlot(1)->sub[1].unk6C = D_8009EFD4[D_8005A640];
+                    GetEngineSlot(1)->sub[1].unk6C = D_8009EFD4[GameLanguage];
                 }
-                GetEngineSlot(1)->sub->unk6C = D_8009EFD8[D_8005A640];
+                GetEngineSlot(1)->sub->unk6C = D_8009EFD8[GameLanguage];
                 func_8001C2C0((u8 *)GetEngineSlot(1));
                 return;
             }
@@ -1024,7 +1024,7 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB1C);
 void func_80090E20(void) {
     s32 f;
 
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     switch (SaveMenuState) {
     case 0:
         f = CardStatus;
@@ -1048,7 +1048,7 @@ void func_80090E20(void) {
                 }
                 func_8009196C();
                 if (D_80051380 & 0x4000) {
-                    s32 idx = D_8009F3B8 * 0x194;
+                    s32 idx = CardSlotIndex * 0x194;
                     u8 *p = (u8 *)CardSlots;
                     if (*(s32 *)(idx + p) == 0) {
                         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1137,7 +1137,7 @@ void func_80090E20(void) {
             }
             switch (HubSaveChoice) {
             case 1: {
-                D_800657C8_Slot *dst = &CardSlots[D_8009F3B8];
+                D_800657C8_Slot *dst = &CardSlots[CardSlotIndex];
                 u8 *q = GameInfo;
                 dst->b[0] = q[0x4C];
                 dst->b[1] = q[0x4D];
@@ -1218,7 +1218,7 @@ void func_800917B4(void) {
     s->unk20.x = 0x2800;
     s->unk52 = 1;
     s->unk51 = 0;
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     func_8001C2C0((u8 *)e);
     func_80018B08(&D_8009F3BC, &D_8009F4C0);
     switch (D_8009F630) {
@@ -1266,22 +1266,22 @@ void func_8009196C(void) {
     pad = Pads;
     if (*(s32 *)((u8 *)pad + 0x48) & 0x10) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        SELECT_SLOT(D_8009F3B8 - 2);
+        SELECT_SLOT(CardSlotIndex - 2);
     }
     if (*(s32 *)((u8 *)pad + 0x48) & 0x40) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        SELECT_SLOT(D_8009F3B8 + 2);
+        SELECT_SLOT(CardSlotIndex + 2);
     }
     if (*(s32 *)((u8 *)pad + 0x48) & 0x80) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        SELECT_SLOT(D_8009F3B8 - 1);
+        SELECT_SLOT(CardSlotIndex - 1);
     }
     if (*(s32 *)((u8 *)pad + 0x48) & 0x20) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        SELECT_SLOT(D_8009F3B8 + 1);
+        SELECT_SLOT(CardSlotIndex + 1);
     }
-    D_8009F3B8 &= 3;
-    e = GetEngineSlot(D_8009F3B8 | 4);
+    CardSlotIndex &= 3;
+    e = GetEngineSlot(CardSlotIndex | 4);
     e2 = GetEngineSlot(2);
     e2->unk10.y = e->unk10.y;
     e2->unk10.x = e->unk10.x;
@@ -1298,12 +1298,12 @@ void func_8009196C(void) {
             s32 idx;
             u8 *p;
             u8 *g;
-            idx = D_8009F3B8 * 0x194;
+            idx = CardSlotIndex * 0x194;
             p = (u8 *)CardSlots;
             if (*(s32 *)(idx + p) == 0) {
                 GetEngineSlot(3)->sub[13].unk6C = 0;
             } else {
-                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB4[D_8005A640];
+                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB4[GameLanguage];
             }
             GetEngineSlot(3)->sub[12].unk6C = D_8009EFC8[*(s32 *)((g = GameInfo) + 0x2C)];
             GetEngineSlot(3)->sub[14].unk6C = D_8009F000[*(s32 *)(g + 0x2C)];
@@ -1314,12 +1314,12 @@ void func_8009196C(void) {
             s32 idx;
             u8 *p;
             u8 *g;
-            idx = D_8009F3B8 * 0x194;
+            idx = CardSlotIndex * 0x194;
             p = (u8 *)CardSlots;
             if (*(s32 *)(idx + p) == 0) {
-                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB8[D_8005A640];
+                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB8[GameLanguage];
             } else {
-                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB0[D_8005A640];
+                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB0[GameLanguage];
             }
             GetEngineSlot(3)->sub[12].unk6C = D_8009EFC0[*(s32 *)((g = GameInfo) + 0x2C)];
             GetEngineSlot(3)->sub[14].unk6C = D_8009EFC4[*(s32 *)(g + 0x2C)];
@@ -1337,13 +1337,13 @@ void func_80091E58(void) {
     func_80090310(p + 0x330, 2, *(s32 *)(p + 0x328) == 0, 0x28, 0x7C);
     func_80090310(p + 0x4C4, 3, *(s32 *)(p + 0x4BC) == 0, 0x140, 0x7C);
     func_80095BEC(3, &D_8009F008);
-    func_80090564(pad + D_8009F3B8 * 0x194,*(s32 *)(p + D_8009F3B8 * 0x194) == 0);
+    func_80090564(pad + CardSlotIndex * 0x194,*(s32 *)(p + CardSlotIndex * 0x194) == 0);
 }
 
 void func_80091F54(void) {
     subengine *sub;
 
-    D_8009F3B8 = 0;
+    CardSlotIndex = 0;
     D_8009F4BC = 0x4D2;
     func_800920DC();
     D_8005B2B4 = 0;
@@ -1367,7 +1367,7 @@ void func_80091F54(void) {
 void func_8009201C(void) {
     subengine *sub;
 
-    D_8009F3B8 = 0;
+    CardSlotIndex = 0;
     D_8009F4BC = 0x4D2;
     func_800920DC();
     D_8005B2B4 = 0;
@@ -1474,7 +1474,7 @@ void func_80092404(void) {
 void func_8009246C(void) {
     subengine *sub;
 
-    D_8009F3B8 = 0;
+    CardSlotIndex = 0;
     D_8009F4BC = 0x4D2;
     func_800920DC();
     D_8005B2B4 = 0;
@@ -1815,7 +1815,7 @@ void func_80092E40(void) {
     func_80022030();
     func_8007AB28();
     sfx_delete_all();
-    process_quit(&D_8009F8A4);
+    process_quit(&MenuProcessControl);
     func_8001888C();
     func_800183DC();
     func_8008ECE4();
@@ -1823,9 +1823,9 @@ void func_80092E40(void) {
 
 void func_80092E94(void) {
     D_8009F8B4();
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     func_80082590();
-    func_8001E898(&D_8009F8A4);
+    func_8001E898(&MenuProcessControl);
 }
 
 void func_80092EDC(void) {
@@ -1845,7 +1845,7 @@ void func_80092EDC(void) {
     *(s32 *)((u8 *)&D_8009F7EC + 8) = 0x40C;
     func_80097C28();
     scripts_update();
-    func_8001E610(&D_8009F8A4, &ScreenFade);
+    func_8001E610(&MenuProcessControl, &ScreenFade);
     func_8008EFD4();
 }
 

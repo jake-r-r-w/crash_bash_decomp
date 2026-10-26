@@ -7622,7 +7622,7 @@ void POGOSetUp(void) {
     LevelSpecs[7] = 0;
     LevelSpecs[8] = 0;
     LevelSpecs[9] = (s32)GetPogoContour;
-    func_8001E934(&D_8009F8A4, &PogoProcess);
+    func_8001E934(&MenuProcessControl, &PogoProcess);
 }
 
 void pogo_kill(void) {

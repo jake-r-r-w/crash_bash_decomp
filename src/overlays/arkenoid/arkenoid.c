@@ -570,7 +570,7 @@ void AR_PreInitLevel(void) {
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
-        D_8005AA94 = (void *)GetArkContour;
+        LevelContourHook = (void *)GetArkContour;
         AiBotTweakTable = ArkBeachAiBotTweak;
         AiHumanTweakTable = ArkBeachAiHumanTweak;
         AiHumanRoundTweakTable = ArkBeachAiHumanRoundTweak;
@@ -590,7 +590,7 @@ void AR_PreInitLevel(void) {
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_NG_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
-        D_8005AA94 = (void *)GetArkContour;
+        LevelContourHook = (void *)GetArkContour;
         AiBotTweakTable = ArkNginAiBotTweak;
         AiHumanTweakTable = ArkNginAiHumanTweak;
         AiHumanRoundTweakTable = ArkNginAiHumanRoundTweak;
@@ -610,7 +610,7 @@ void AR_PreInitLevel(void) {
         ArkBounceOnBounds = AR_PI_BounceOnBounds;
         ArkTestOutOfBounds = AR_PI_TestOutOfBounds;
         ArkTestLaunchBounds = AR_PI_TestLaunchBounds;
-        D_8005AA94 = (void *)GetArkPIContour;
+        LevelContourHook = (void *)GetArkPIContour;
         AiBotTweakTable = ArkSkyAiBotTweak;
         AiHumanTweakTable = ArkSkyAiHumanTweak;
         AiHumanRoundTweakTable = ArkSkyAiHumanRoundTweak;
@@ -631,7 +631,7 @@ void AR_PreInitLevel(void) {
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
-        D_8005AA94 = (void *)GetArkContour;
+        LevelContourHook = (void *)GetArkContour;
         AiBotTweakTable = ArkBallsAiBotTweak;
         AiHumanTweakTable = ArkBallsAiHumanTweak;
         AiHumanRoundTweakTable = ArkBallsAiHumanRoundTweak;
@@ -1488,7 +1488,7 @@ void AR_PI_PreMoveHero(u32 arg0) {
         if (p->unk50 & mask) {
             if (mv->velocity_enable != 0) {
                 d = 0;
-                if (D_8009D750(Heroes[arg0].hero_eng) != 0) {
+                if (HeroKeepInBoundsHook(Heroes[arg0].hero_eng) != 0) {
                     hit = 1;
                 }
                 if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
@@ -1530,7 +1530,7 @@ void AR_PI_PreMoveHero(u32 arg0) {
             ArkHeroSpeedDelta[arg0] = mv->forward_speed;
         } else {
             ArkHeroSpeedDelta[arg0] = 0;
-            if (D_8009D750(Heroes[arg0].hero_eng) != 0) {
+            if (HeroKeepInBoundsHook(Heroes[arg0].hero_eng) != 0) {
                 mv->forward_speed = 0;
             }
             if (mv->forward_speed > 0) {
@@ -5061,7 +5061,7 @@ void Create_ArkPickup(void)
     }
   }
 
-  pos = D_8005B2B8[s + 4].pos;
+  pos = MapPoints[s + 4].pos;
   ArkGoals[nas->UserInfo.user1].unk10 = 1;
   tgt = func_8007A464(1, (s32 *) (&pos), *((s32 *) MapScene));
   if (tgt != 0)

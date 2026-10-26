@@ -11,7 +11,7 @@ void sound_critical(void) {
 }
 
 void func_8002AABC(void) {
-    D_8006557C.data = 0;
+    CurrentMusic.data = 0;
     SsInit();
     SsSetTableSize(D_800654CC, 1, 1);
     SpuReserveReverbWorkArea(1);

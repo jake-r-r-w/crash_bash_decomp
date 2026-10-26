@@ -306,7 +306,7 @@ void func_80093BE8(void) {
         } else {
             func_8001E934(&D_800A015C, &D_8009F998);
         }
-        func_8001E934(&D_8009F8A4, NULL);
+        func_8001E934(&MenuProcessControl, NULL);
         func_80095DBC();
         func_80093588();
         g0 = (EngStateView *)GameInfo;
@@ -402,7 +402,7 @@ void realign_panel_dbase(void) {
     struct E { s32 a, b; u8 pad[0x30]; };
     struct G { struct E e[0x1C]; s32 x, y; } *g;
     struct E *e;
-    u16 i = D_800A00D0[D_8005A640];
+    u16 i = D_800A00D0[GameLanguage];
     g = (void *)HeroModelBank;
     e = &g->e[i];
     g->x = e->a;
@@ -461,7 +461,7 @@ void func_800941EC(void) {
 void func_8009421C(void) {
     if (D_800A0158 >= 2) {
         func_80018B08((GfxViewport *)D_8009F8BC, (GfxCamera *)D_800A016C);
-        D_800569AC = ScreenFade.amount;
+        FadeAmount = ScreenFade.amount;
         func_8001C298((EXTengine *)D_800A0224);
     }
 }

@@ -452,7 +452,7 @@ void InitialiseN2OFirst(void) {
     HeroHooks.unk14 = N2OVictorySeqs;
     HeroActHit = 0x2A;
     HeroActDead = 0x2E;
-    D_8005AA94 = (void *)GetN2OContour;
+    LevelContourHook = (void *)GetN2OContour;
     OVG->unk32 |= 0x100;
     if (OVG->unk6C == 0) {
         OVG->unk51 = 9;
@@ -926,7 +926,7 @@ void N2OPreMoveHero(s32 arg0) {
         if (p->unk50 & 0xA0) {
             if (m->velocity_enable != 0) {
                 d = 0;
-                if (D_8009D750(h->hero_eng) != 0) {
+                if (HeroKeepInBoundsHook(h->hero_eng) != 0) {
                     fast = 1;
                 }
                 b = p->unk50;
@@ -964,7 +964,7 @@ void N2OPreMoveHero(s32 arg0) {
             N2OHeroSpeed[arg0] = m->forward_speed;
         } else {
             N2OHeroSpeed[arg0] = 0;
-            if (D_8009D750(h->hero_eng) != 0) {
+            if (HeroKeepInBoundsHook(h->hero_eng) != 0) {
                 m->forward_speed = 0;
             }
             if (m->forward_speed > 0) {
@@ -1390,7 +1390,7 @@ void N2OHeroWinner(s32 arg0) {
     }
     if (GameTeams[0] != 0) {
         if (arg0 == 0) {
-            e = D_8009D530;
+            e = CameraTarget;
             t = e->unk10.x;
             if (t >= -0x27F) {
                 e->unk10.x = t - 0x40;
@@ -1938,7 +1938,7 @@ void PlotN2OBall(NAS *nas) {
                 }
             } else {
                 ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
-                if (!(D_8005A618 & 1) && !(Heroes[obj->player].hero_status & 0xFA00)) {
+                if (!(GameCheats & 1) && !(Heroes[obj->player].hero_status & 0xFA00)) {
                     Heroes[0].hero_health -= 0x10;
                     if (Heroes[0].hero_health < 0) {
                         Heroes[0].hero_health = 0;
@@ -1971,7 +1971,7 @@ void PlotN2OBall(NAS *nas) {
                 }
             } else {
                 ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
-                if (!(D_8005A618 & 1) && obj->player == 0) {
+                if (!(GameCheats & 1) && obj->player == 0) {
                     if (!(Heroes[0].hero_status & 0xFA00)) {
                         Heroes[0].hero_health -= 0x10;
                         if (Heroes[0].hero_health < 0) {
@@ -2018,7 +2018,7 @@ void PlotN2OBall(NAS *nas) {
     e2 = eng->Engine;
     if (e2 != NULL) {
         e2->unk10 = eng->unk10;
-        ((N2OHook *)&D_8005AA94)->fn(eng);
+        ((N2OHook *)&LevelContourHook)->fn(eng);
     }
 }
 
@@ -3514,7 +3514,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         rad &= 0xFFF;
         if (obj->whatami == 2 && !(hero->hero_status & 0xFA00) &&
             (arg0 == 0 || (GameTeams[0] != 0 && arg0 == 1))) {
-            if (!(D_8005A618 & 1)) {
+            if (!(GameCheats & 1)) {
                 hero->hero_score = 0;
                 hero->hero_health = 0;
                 ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xC, 0xFF);
@@ -4068,7 +4068,7 @@ void InitN2Ofirstmissile(NAS *nas) {
             mot->Xacc = 8;
             mot->Xdec = 0;
         }
-        d = D_8009D530->unk10.x;
+        d = CameraTarget->unk10.x;
         ang = get_angle(eng->unk10.x - d, eng->unk10.z - d);
         nas->UserInfo.user2 = ang;
         eng->unk1E = ang - 0x400;
@@ -4101,7 +4101,7 @@ void InitN2Omissile(NAS *nas) {
             mot->Xacc = 8;
             mot->Xdec = 0;
         }
-        ang = get_angle(eng->unk10.x - ((s32 *)D_8009D530)[4], eng->unk10.z - ((s32 *)D_8009D530)[4]);
+        ang = get_angle(eng->unk10.x - ((s32 *)CameraTarget)[4], eng->unk10.z - ((s32 *)CameraTarget)[4]);
         nas->UserInfo.user2 = ang;
         eng->unk1E = ang - 0x400;
         eng->boomshanka = 1;

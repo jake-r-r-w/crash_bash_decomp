@@ -1152,7 +1152,7 @@ typedef struct RaceLapFux {
     /* 0x170 */ s32 side;
 } RaceLapFux;
 
-extern s32 D_8005A618;
+extern s32 GameCheats;
 extern void (*D_8009D74C)(s32, s32);
 
 void RaceInitSpinners(void);

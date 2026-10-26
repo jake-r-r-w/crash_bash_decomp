@@ -8259,7 +8259,7 @@ void InitBearminator(NAS *m) {
             ext->unk38 = 0xB;
             ext->unk7C = 0x96;
             ext->unk3C = 0;
-            ext->unk50 = D_8009D530[0]->unk10.y;
+            ext->unk50 = CameraTarget[0]->unk10.y;
             ext->unk8C = 0;
             ext->unk1C = 0x5A;
             ext->unkA8 = 0;
@@ -9433,7 +9433,7 @@ void InitBigMissile(NAS *m) {
         ext->unkC = 0x10;
         ext->unk50 = 0x96;
         ext->unk10 = 0;
-        ext->unk24 = D_8009D530[0]->unk10.y;
+        ext->unk24 = CameraTarget[0]->unk10.y;
         ext->unk78 = 0;
         ext->pos = m->Engine->unk10;
         PlaySfx(0x22D, NULL, NULL, 0x1000, 0x1E00, 0);

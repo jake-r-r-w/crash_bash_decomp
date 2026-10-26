@@ -1133,8 +1133,8 @@ void func_80024AD8(void) {
     t = D_8005AA48;
     if (t != NULL) {
     for (i = 0; i < 32; i++) {
-        D_8005B2B8[i].pos.x = D_8005B2B8[i].pos.y = D_8005B2B8[i].pos.z = 0;
-        D_8005B2B8[i].rot.x = D_8005B2B8[i].rot.y = D_8005B2B8[i].rot.z = 0;
+        MapPoints[i].pos.x = MapPoints[i].pos.y = MapPoints[i].pos.z = 0;
+        MapPoints[i].rot.x = MapPoints[i].rot.y = MapPoints[i].rot.z = 0;
     }
     trig = D_8005AA48;
     for (i = 0; i < D_8005AA4C; i++, trig++) {
@@ -1142,10 +1142,10 @@ void func_80024AD8(void) {
         info = (MapTrigInfo *)((u8 *)src + ((src->info & ~3) + 0xC));
         trig->InfoStruct = (MapTriggerInfo *)info;
         if (info->flags & 0x4000) {
-            D_8005B2B8[info->slot].pos = src->pos;
-            D_8005B2B8[info->slot].rot.x = info->rot.x;
-            D_8005B2B8[info->slot].rot.y = info->rot.y;
-            D_8005B2B8[info->slot].rot.z = info->rot.z;
+            MapPoints[info->slot].pos = src->pos;
+            MapPoints[info->slot].rot.x = info->rot.x;
+            MapPoints[info->slot].rot.y = info->rot.y;
+            MapPoints[info->slot].rot.z = info->rot.z;
             trig->TrigXYZ = *(SLONG_XYZ *)&src->pos;
             trig->Status = 0x8000;
             trig->cast = *(u16 *)&src->info & 3;
@@ -1639,8 +1639,8 @@ s32 func_80025BBC(EXTengine *eng) {
     abs(eng->unk10.y - eng->OldXYZ.y);
     abs(eng->unk10.x - eng->OldXYZ.x);
     abs(eng->unk10.z - eng->OldXYZ.z);
-    if (D_8005AA94 != NULL) {
-        dy = D_8005AA94(eng);
+    if (LevelContourHook != NULL) {
+        dy = LevelContourHook(eng);
     } else {
         dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
@@ -1663,8 +1663,8 @@ s32 FollowUnderContour(EXTengine *eng) {
     if (lim < 0x10) {
         lim = 4;
     }
-    if (D_8005AA94 != NULL) {
-        dy = D_8005AA94(eng);
+    if (LevelContourHook != NULL) {
+        dy = LevelContourHook(eng);
     } else {
         dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
@@ -1690,8 +1690,8 @@ s32 FollowContour(EXTengine *eng) {
     new_var = -eng->OldXYZ.x + new_var;
     abs(new_var);
     abs(eng->unk10.z - eng->OldXYZ.z);
-    if (D_8005AA94 != NULL) {
-        dy = D_8005AA94(eng);
+    if (LevelContourHook != NULL) {
+        dy = LevelContourHook(eng);
     } else {
         dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
@@ -1747,10 +1747,10 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
 }
 
 void func_80025F44(EXTengine *eng) {
-    if (D_8005AA94 == NULL) {
+    if (LevelContourHook == NULL) {
         AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     } else {
-        D_8005AA94(eng);
+        LevelContourHook(eng);
     }
 }
 
@@ -3272,8 +3272,8 @@ void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set) {
             t->tpage = getTPage(0, 1, t->rect.x, y);
             uv.f.u = t->rect.x << 2;
         }
-        if ((t->flags & 2) && D_8005A640 < t->frames) {
-            p = t[D_8005A640].pix + base;
+        if ((t->flags & 2) && GameLanguage < t->frames) {
+            p = t[GameLanguage].pix + base;
         } else {
             p = t->pix + base;
         }
@@ -3785,7 +3785,7 @@ s32 calc_rgbcode(s32 r, s32 g, s32 b) {
     s32 t;
     s32 d;
 
-    d = D_800569AC;
+    d = FadeAmount;
     if (d != 0) {
         t = 0x1000 - d;
         r *= t;

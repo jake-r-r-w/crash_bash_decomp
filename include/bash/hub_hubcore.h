@@ -231,7 +231,7 @@ extern s32 PodiumCheerTimer;
 extern s32 PodiumCheerKind;
 extern s32 HubHeroTouchCount;
 extern u16 D_8009EEA0;
-extern EXTengine *D_8009D530;
+extern EXTengine *CameraTarget;
 extern CamEase HubCamEase;
 extern EXTengine *D_8009D538[];
 extern s32 D_8009EEA4;
@@ -583,7 +583,7 @@ typedef struct HubSelView {
     /* 0x62 */ u8 unk62;
     /* 0x63 */ s8 unk63;
 } HubSelView;
-/* 8-byte entries of D_8009EDD4[i][3]. */
+/* 8-byte entries of WarpRooms[i][3]. */
 typedef struct HubSelEntry {
     /* 0x0 */ u16 unk0;
     /* 0x2 */ u16 unk2;

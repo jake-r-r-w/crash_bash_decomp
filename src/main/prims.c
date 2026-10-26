@@ -538,7 +538,7 @@ void func_8001828C(void) {
     PoolNode *head;
 
     for (;;) {
-        pool = &D_80056844;
+        pool = &PrimPool;
         head = pool->done;
         if (head == NULL) {
             return;
@@ -553,8 +553,8 @@ void func_8001828C(void) {
                 } else {
                     pool->done = node->next;
                 }
-                node->next = D_80056844.free;
-                D_80056844.free = node;
+                node->next = PrimPool.free;
+                PrimPool.free = node;
             } else {
                 prev = node;
             }
@@ -568,7 +568,7 @@ void func_8001830C(void) {
     PoolNode *prev;
     PoolNode *cur;
 
-    cur = D_80056844.done;
+    cur = PrimPool.done;
     prev = NULL;
     if (cur != NULL) do {
         next = cur->next;
@@ -577,10 +577,10 @@ void func_8001830C(void) {
             if (prev != NULL) {
                 prev->next = cur->next;
             } else {
-                D_80056844.done = cur->next;
+                PrimPool.done = cur->next;
             }
-            cur->next = D_80056844.free;
-            D_80056844.free = cur;
+            cur->next = PrimPool.free;
+            PrimPool.free = cur;
         } else {
             prev = cur;
         }
@@ -589,7 +589,7 @@ void func_8001830C(void) {
 }
 
 void release_sprim(void *data) {
-    NodePool *pool = &D_80056844;
+    NodePool *pool = &PrimPool;
     PoolNode *node;
 
     node = (PoolNode *)data - 1;
@@ -601,9 +601,9 @@ void release_sprim(void *data) {
 void *new_sprim(void) {
     PoolNode *node;
 
-    node = D_80056844.free;
+    node = PrimPool.free;
     if (node != NULL) {
-        D_80056844.free = node->next;
+        PrimPool.free = node->next;
         return node + 1;
     }
     return NULL;
@@ -614,7 +614,7 @@ void func_800183DC(void) {
 
     DrawSync(0);
     func_8001828C();
-    pool = &D_80056844;
+    pool = &PrimPool;
     if (pool->mem != NULL) {
         mal_free(pool->mem, &MainHeap);
     }
@@ -627,10 +627,10 @@ void func_80018430(s32 count) {
     s32 i;
     s32 last;
 
-    if (D_80056844.mem == NULL) {
-        D_80056844.mem = func_80011654(count * 0x64, &MainHeap);
+    if (PrimPool.mem == NULL) {
+        PrimPool.mem = func_80011654(count * 0x64, &MainHeap);
     }
-    p = D_80056844.mem;
+    p = PrimPool.mem;
     last = count - 1;
     for (i = 0; i < last; i++) {
         n = (PoolNode *)((u8 *)p + 0x64);
@@ -638,8 +638,8 @@ void func_80018430(s32 count) {
         p = n;
     }
     p->next = NULL;
-    D_80056844.done = NULL;
-    D_80056844.free = D_80056844.mem;
+    PrimPool.done = NULL;
+    PrimPool.free = PrimPool.mem;
 }
 
 void func_800184D4(u8 **arg0) {
@@ -986,7 +986,7 @@ void *func_80019094(void *arg0, s32 arg1) {
     s32 c[3];
 
     prim = NULL;
-    if ((arg1 & 0x40000001) | D_800569AC | (D_80056878 != 0 && (u32)prim < D_80056AC4)) {
+    if ((arg1 & 0x40000001) | FadeAmount | (D_80056878 != 0 && (u32)prim < D_80056AC4)) {
         set = *(PrimSet **)arg0;
         if (set != NULL || (set = (PrimSet *)func_80018694((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);

@@ -120,7 +120,7 @@ extern u8 D_800999BC[];
 void func_8007D2F4(void);
 void UpdateScoreIcons(void);
 void Cups_Update(void);
-extern s32 D_8005A618;
+extern s32 GameCheats;
 extern u16 D_8009D524[4];
 s32 FntPrint();
 

@@ -781,7 +781,7 @@ void PAHeroHit(u32 arg0) {
         play8:
             PlaySfx(sfx, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
         }
-        if (Heroes[arg0].hero_health <= 0 && !(D_8005A618 & 2)) {
+        if (Heroes[arg0].hero_health <= 0 && !(GameCheats & 2)) {
             Heroes[arg0].hero_immunity = 0;
             Heroes[arg0].hero_hit += 0x28;
             SetHeroSeq(arg0, 0x18);

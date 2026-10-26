@@ -2720,7 +2720,7 @@ void InitTumbler(NAS *nas) {
         sub->unk6C = *(void **)MapScene;
         eng->sub->unk74 = 0x200A;
         eng->flags &= 0xFFFF7FFF;
-        eng->unk10 = D_8005B2B8[8].pos;
+        eng->unk10 = MapPoints[8].pos;
         eng->unk5D = 1;
         eng->unk5C = 1;
         func_8001D390(eng, 1);
@@ -2732,7 +2732,7 @@ void InitTumbler(NAS *nas) {
             sub->unk50 = 1;
             sub->unk76 = 0xB00;
         }
-        puff = BashSpawnPuff(&D_8005B2B8[8].pos);
+        puff = BashSpawnPuff(&MapPoints[8].pos);
         if (puff != NULL) {
             func_80026C38((u8 *)nas, (u8 *)puff);
         }
@@ -3544,7 +3544,7 @@ void BashDrawView(void) {
     u8 *vp = D_8009F6F4;
     func_80093038();
     func_80018B08((GfxViewport *)vp, (GfxCamera *)MainCamera);
-    D_800569AC = ScreenFade.amount;
+    FadeAmount = ScreenFade.amount;
     func_8009440C();
 }
 

@@ -22,7 +22,7 @@ void func_8002BD98(music_midi *slot, s32 idx) {
 }
 
 void func_8002BEA8(void) {
-    music_midi *slot = &D_8006557C;
+    music_midi *slot = &CurrentMusic;
     s32 next = D_8006559C;
     s32 cur = D_800655A4;
     s32 vol;
@@ -61,8 +61,8 @@ void func_8002BEA8(void) {
 }
 
 void func_8002C060(void) {
-    D_8006557C.data = 0;
-    D_8006557C.seq = -1;
+    CurrentMusic.data = 0;
+    CurrentMusic.seq = -1;
     D_800655A4 = -1;
     D_8006559C = -1;
     D_800655B4 = 0;
@@ -77,14 +77,14 @@ void func_8002C090(music_midi *slot) {
 }
 
 void continue_music(void) {
-    if (D_8006557C.seq >= 0) {
-        SsSeqReplay(D_8006557C.seq);
+    if (CurrentMusic.seq >= 0) {
+        SsSeqReplay(CurrentMusic.seq);
     }
 }
 
 void func_8002C11C(void) {
-    if (D_8006557C.seq >= 0) {
-        SsSeqPause(D_8006557C.seq);
+    if (CurrentMusic.seq >= 0) {
+        SsSeqPause(CurrentMusic.seq);
     }
 }
 
@@ -101,14 +101,14 @@ void func_8002C18C(u8 *arg0) {
 }
 
 void func_8002C1C0(s32 arg0, s32 arg1) {
-    if (D_8006557C.seq >= 0) {
-        SsSeqSetAccelerando((s16)D_8006557C.seq, (D_80058B88[GameMode].tempo * arg0) / 100, arg1);
+    if (CurrentMusic.seq >= 0) {
+        SsSeqSetAccelerando((s16)CurrentMusic.seq, (D_80058B88[GameMode].tempo * arg0) / 100, arg1);
     }
 }
 
 void music_fade_out(s32 arg0) {
-    if (D_8006557C.seq >= 0) {
-        SsSeqSetDecrescendo(D_8006557C.seq, 0x7F, arg0);
+    if (CurrentMusic.seq >= 0) {
+        SsSeqSetDecrescendo(CurrentMusic.seq, 0x7F, arg0);
     }
 }
 
@@ -167,16 +167,16 @@ void func_8002C3F0(s32 arg0, s32 *arg1) {
 }
 
 void func_8002C428(void) {
-    func_8002C090(&D_8006557C);
+    func_8002C090(&CurrentMusic);
 }
 
 void func_8002C44C(void) {
-    if (D_8006557C.data != 0) {
-        mal_free(D_8006557C.data, &MainHeap);
-        D_8006557C.data = 0;
+    if (CurrentMusic.data != 0) {
+        mal_free(CurrentMusic.data, &MainHeap);
+        CurrentMusic.data = 0;
     }
 }
 
 void func_8002C488(s32 arg0, s32 type) {
-    music_dload_midi(arg0, &D_8006557C, type);
+    music_dload_midi(arg0, &CurrentMusic, type);
 }

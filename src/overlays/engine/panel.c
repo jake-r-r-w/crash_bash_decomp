@@ -175,7 +175,7 @@ void func_8007AF3C(void) {
         func_8007D2F4();
     }
     Cups_Update();
-    if (D_8005A618 & 0x400) {
+    if (GameCheats & 0x400) {
         FntPrint("   HEALTH %2d   HEALTH %2d              HEALTH %2d    HEALTH %2d\n",
                  Heroes[0].hero_health, Heroes[1].hero_health, Heroes[2].hero_health,
                  Heroes[3].hero_health);
@@ -455,7 +455,7 @@ void Draw_Clock(void) {
             }
         } else {
             n = 1;
-            if (D_8005A618 & 0x800) {
+            if (GameCheats & 0x800) {
                 n = 0x201;
             }
             D_8009D74C(-1, n);
@@ -469,7 +469,7 @@ void Draw_Clock(void) {
             Clock_flags = 0x8200;
         } else {
             n = 1;
-            if (D_8005A618 & 0x800) {
+            if (GameCheats & 0x800) {
                 n = 0x201;
             }
             D_8009D74C(-1, n);

@@ -1230,7 +1230,7 @@ typedef struct BigMissileExt {
     /* 0x78 */ s32 unk78;
 } BigMissileExt;
 
-extern EXTengine *D_8009D530[];
+extern EXTengine *CameraTarget[];
 
 /* Value easing towards a target by a step (SniperAimUpdate). */
 typedef struct SniperEase {
