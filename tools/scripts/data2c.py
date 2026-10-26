@@ -498,12 +498,14 @@ class Converter:
         if total > size:
             raise ValueError(f"{name}: type {tname}{''.join(f'[{d}]' for d in dims)} is {total} bytes, the object {size}")
         rest = ""
-        if any(data[total:]) or size - ((total + 3) & ~3) >= 4:
+        if any(data[total:]) or (va + size) - ((va + total + 3) & ~3) >= 4:
             # the rest is another object (cc1 pads only to the next object's alignment), even if
             # it is zero: written as D_<address> so the layout holds
-            rva = va + ((total + 3) & ~3)
+            # the next word address after the object (not va + an aligned size: an s16 at 2 mod 4,
+            # D_800C1F16 in Arkenoid, puts its rest at the word right after it)
+            rva = (va + total + 3) & ~3
             rkinds = kinds - {"asciz"} or {"word"}
-            if rva - va >= size and total % 2 == 0:
+            if rva - va >= size and (va + total) % 2 == 0:
                 # less than a word is left: a halfword right after (the s16 pair D_800C52E8)
                 rva, rkinds = va + total, {"short"}
             rest = "\n" + self.define(f"D_{rva:08X}", rva, size - (rva - va), rkinds, local)
