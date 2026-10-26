@@ -37,7 +37,7 @@ extern ScriptInit D_800C6DD0;
 extern u8 D_800546C4[];
 extern s32 D_800C6BAC;
 extern u8 D_80052F94[];
-extern char D_800B3400[];
+extern const char D_800B3400[];
 
 void RaceAI_SteerAhead(s32 player);
 u32 RaceAI_FollowTrack(s32 player);
@@ -426,7 +426,6 @@ typedef struct RaceSpinObj {
 extern RaceSpinObj *D_800C69A4;
 extern s32 D_800CA608;
 extern s32 D_800C69AC;
-extern u8 D_800C6B70[];
 s32 RacePistonPattern();
 
 /* A step of a RacePistonPattern pattern (0xC bytes). */
@@ -441,6 +440,7 @@ typedef struct RacePattern {
     /* 0x00 */ RacePatStep *steps;
     /* 0x04 */ s32 length;
 } RacePattern;
+extern RacePattern D_800C6B70[];
 
 /* One of the six pistons RacePistonPattern moves (0x1C bytes). */
 typedef struct RacePiston {
@@ -1225,7 +1225,8 @@ extern void *D_8009D904;
 extern s32 D_80051658;
 
 /* Tables InitialiseRACEFirst hooks into the engine. */
-extern u8 D_800C68F8[], D_800C690C[], D_800C6960[], D_8008B29C[], D_8008B418[];
+extern u8 D_800C68F8[], D_800C690C[], D_8008B29C[], D_8008B418[];
+extern s32 D_800C6960[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern u8 D_800C63FC[], D_800C6410[], D_800C6424[], D_800C6430[], D_800C6448[], D_800C645C[];
 extern u8 D_800C64B0[], D_800C64C4[], D_800C64D8[], D_800C64E4[], D_800C64FC[], D_800C6510[];
 extern u8 D_800C6564[], D_800C6578[], D_800C658C[], D_800C6598[], D_800C65B0[], D_800C65C4[];
@@ -1345,7 +1346,7 @@ void PlotTrackGlob(NAS *nas);
 
 void PlotDac(NAS *nas);
 
-extern char D_800B3310[];
+extern const char D_800B3310[];
 
 /* RaceTrackCollideB: wall segments of a scene collision object (as dino's func_800B9020). */
 typedef struct RaceVec {
