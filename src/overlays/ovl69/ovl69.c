@@ -17,157 +17,166 @@ extern u8 D_80063EC8[];
 extern u8 D_8009EB84[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "complete each warp room to\nunlock further levels";
-const char D_800B32EC[] = "select a battle\nfrom unlocked levels";
-const char D_800B3314[] = "play a tournament";
-const char D_800B3328[] = "change the options";
-const char D_800B333C[] = "ADVENTURE MODE";
-const char D_800B334C[] = "BATTLE MODE";
-const char D_800B3358[] = "TOURNAMENT";
-const char D_800B3364[] = "OPTIONS";
-const char D_800B336C[] = "";
-const char D_800B3370[] = "SELECT GAME TYPE";
-const char D_800B3384[] = "1 PLAYER";
-const char D_800B3390[] = "2 PLAYER";
-const char D_800B339C[] = "3 PLAYER";
-const char D_800B33A8[] = "4 PLAYER";
-const char D_800B33B4[] = "SELECT NUMBER OF PLAYERS";
-const char D_800B33D0[] = "NEW GAME";
-const char D_800B33DC[] = "LOAD GAME";
-const char D_800B33E8[] = "5  X";
-const char D_800B33F0[] = "PRESS LEFT - RIGHT TO\nSELECT CUPS NEEDED\nTO WIN ROUND";
-const char D_800B3428[] = "PRESS UP - DOWN TO\nSELECT DIFFICULTY";
-const char D_800B3450[] = "BEGIN BATTLE";
-const char D_800B3460[] = "GAME OPTIONS";
-const char D_800B3470[] = "BREATHE";
-const char D_800B3478[] = "TAUNT_A";
-const char D_800B3480[] = "SLIDE";
-const char D_800B3488[] = "WIN";
-const char D_800B348C[] = "WIN2";
+const char TextAdventureHint[] = "complete each warp room to\nunlock further levels";
+const char TextBattleHint[] = "select a battle\nfrom unlocked levels";
+const char TextTournamentHint[] = "play a tournament";
+const char TextOptionsHint[] = "change the options";
+const char TextAdventureMode[] = "ADVENTURE MODE";
+const char TextBattleMode[] = "BATTLE MODE";
+const char TextTournament[] = "TOURNAMENT";
+const char TextOptions[] = "OPTIONS";
+const char TextEmpty[] = "";
+const char TextSelectGameType[] = "SELECT GAME TYPE";
+const char Text1Player[] = "1 PLAYER";
+const char Text2Player[] = "2 PLAYER";
+const char Text3Player[] = "3 PLAYER";
+const char Text4Player[] = "4 PLAYER";
+const char TextSelectNumberOfPlayers[] = "SELECT NUMBER OF PLAYERS";
+const char TextNewGame[] = "NEW GAME";
+const char TextLoadGame[] = "LOAD GAME";
+const char TextCupsCount[] = "5  X";
+const char TextSelectCups[] = "PRESS LEFT - RIGHT TO\nSELECT CUPS NEEDED\nTO WIN ROUND";
+const char TextSelectDifficulty[] = "PRESS UP - DOWN TO\nSELECT DIFFICULTY";
+const char TextBeginBattle[] = "BEGIN BATTLE";
+const char TextGameOptions[] = "GAME OPTIONS";
+const char TitlesAnimBreathe[] = "BREATHE";
+const char TitlesAnimTauntA[] = "TAUNT_A";
+const char TitlesAnimSlide[] = "SLIDE";
+const char TitlesAnimWin[] = "WIN";
+const char TitlesAnimWin2[] = "WIN2";
 /* the backdrop's position (AnimateTitlesBackdrop), then the menus' texts */
-const SLONG_XYZ D_800B3494 = { -0x17C, 0x190, -0x64 };
-const char D_800B34A0[] = "EASY";
-const char D_800B34A8[] = "MEDIUM";
-const char D_800B34B0[] = "HARD";
-const char D_800B34B8[] = "PRESS \xFC BUTTON TO START";
-const char D_800B34D0[] = "EXIT";
-const char D_800B34D8[] = "SOUND";
-const char D_800B34E0[] = "AUDIO MODE";
-const char D_800B34EC[] = "<STEREO>";
-const char D_800B34F8[] = "< MONO >";
-const char D_800B3504[] = "MUSIC VOLUME";
-const char D_800B3514[] = "FX VOLUME";
-const char D_800B3520[] = "CONTROLLER";
-const char D_800B352C[] = "VIBRATION";
-const char D_800B3538[] = "ON";
-const char D_800B353C[] = "OFF";
-const char D_800B3540[] = "PRESS \xFF BUTTON TO CHANGE";
-const char D_800B355C[] = "PRESS \xFC BUTTON TO ACCEPT";
-const char D_800B3578[] = "<100%>";
-const char D_800B3580[] = "<090%>";
-const char D_800B3588[] = "P1";
-const char D_800B358C[] = "P2";
-const char D_800B3590[] = "P3";
-const char D_800B3594[] = "P4";
-const char D_800B3598[20] = "CHARACTER SELECT\x00\x14";
-const char D_800B35AC[] = "PRESS \xFD BUTTON\r14TO UNLOCK LEVELS";
-const char D_800B35D0[] = "THERE ARE NO MORE\nUNLOCKED LEVELS\nON THIS MEMORY CARD\n";
-const char D_800B3608[] = "INSERT MEMORY CARD\nWITH CRASH BASH DATA\nTO CHECK FOR\nUNLOCKED LEVELS";
-const char D_800B3650[] = "LOCKED";
-const char D_800B3658[] = "PRESS LEFT - RIGHT TO CHANGE ARENA";
-const char D_800B367C[] = "PRESS UP - DOWN TO CHANGE LEVEL";
-const char D_800B369C[] = "PRESS \xFC BUTTON TO SELECT";
-const char D_800B36B8[] = "CHOOSE LEVEL";
-const char D_800B36C8[] = "PRESS \xFF TO\nCHECK MEMORY CARD\nFOR SAVED GAME";
-const char D_800B36F4[64] = "CHECKING MEMORY CARD\nIN MEMORY CARD SLOT 1\nFOR UNLOCKED\nLEVELS\x00\x14";
-const char D_800B3734[] = "SELECT BATTLE TYPE";
-const char D_800B3748[] = "PRESS LEFT - RIGHT TO CHANGE BATTLE TYPE";
-const char D_800B3774[] = "PRESS \xFC BUTTON TO START BATTLE";
-const char D_800B3794[] = "VS";
-const char D_800B3798[] = "VS BATTLE";
-const char D_800B37A4[] = "TEAM BATTLE";
-const char D_800B37B0[] = "SELECT SLOT";
+const SLONG_XYZ TitlesBackdropPos = { -0x17C, 0x190, -0x64 };
+const char TextEasy[] = "EASY";
+const char TextMedium[] = "MEDIUM";
+const char TextHard[] = "HARD";
+const char TextPressButtonToStart[] = "PRESS \xFC BUTTON TO START";
+const char TextExit[] = "EXIT";
+const char TextSound[] = "SOUND";
+const char TextAudioMode[] = "AUDIO MODE";
+const char TextStereo[] = "<STEREO>";
+const char TextMono[] = "< MONO >";
+const char TextMusicVolume[] = "MUSIC VOLUME";
+const char TextFxVolume[] = "FX VOLUME";
+const char TextController[] = "CONTROLLER";
+const char TextVibration[] = "VIBRATION";
+const char TextOn[] = "ON";
+const char TextOff[] = "OFF";
+const char TextPressButtonToChange[] = "PRESS \xFF BUTTON TO CHANGE";
+const char TextPressButtonToAccept[] = "PRESS \xFC BUTTON TO ACCEPT";
+const char TextPercent100[] = "<100%>";
+const char TextPercent90[] = "<090%>";
+const char TextP1[] = "P1";
+const char TextP2[] = "P2";
+const char TextP3[] = "P3";
+const char TextP4[] = "P4";
+const char TextCharacterSelect[20] = "CHARACTER SELECT\x00\x14";
+const char TextPressToUnlockLevels[] = "PRESS \xFD BUTTON\r14TO UNLOCK LEVELS";
+const char TextNoMoreUnlocked[] = "THERE ARE NO MORE\nUNLOCKED LEVELS\nON THIS MEMORY CARD\n";
+const char TextInsertCard[] = "INSERT MEMORY CARD\nWITH CRASH BASH DATA\nTO CHECK FOR\nUNLOCKED LEVELS";
+const char TextLocked[] = "LOCKED";
+const char TextChangeArena[] = "PRESS LEFT - RIGHT TO CHANGE ARENA";
+const char TextChangeLevel[] = "PRESS UP - DOWN TO CHANGE LEVEL";
+const char TextPressButtonToSelect[] = "PRESS \xFC BUTTON TO SELECT";
+const char TextChooseLevel[] = "CHOOSE LEVEL";
+const char TextCheckCardForSave[] = "PRESS \xFF TO\nCHECK MEMORY CARD\nFOR SAVED GAME";
+const char TextCheckingCard[64] = "CHECKING MEMORY CARD\nIN MEMORY CARD SLOT 1\nFOR UNLOCKED\nLEVELS\x00\x14";
+const char TextSelectBattleType[] = "SELECT BATTLE TYPE";
+const char TextChangeBattleType[] = "PRESS LEFT - RIGHT TO CHANGE BATTLE TYPE";
+const char TextStartBattle[] = "PRESS \xFC BUTTON TO START BATTLE";
+const char TextVs[] = "VS";
+const char TextVsBattle[] = "VS BATTLE";
+const char TextTeamBattle[] = "TEAM BATTLE";
+const char TextSelectSlot[] = "SELECT SLOT";
 
 /* data, in address order */
-s32 D_800B8508[4] = { (s32)&D_800B32B8, (s32)&D_800B32EC, (s32)&D_800B3314, (s32)&D_800B3328 };
-PlaceRec D_800B8518[9] = {
+s32 MainMenuHints[4] = { (s32)&TextAdventureHint, (s32)&TextBattleHint, (s32)&TextTournamentHint, (s32)&TextOptionsHint };
+PlaceRec MainMenuPlace[9] = {
     { 4, -0x20, 0x12C, -0x46, 0x72, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x2C, 0, 0, 0, 0, 0, 0, (s32)&D_800B333C, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0xA, 0, 0, 0, 0, 0, 0, (s32)&D_800B334C, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0x18, 0, 0, 0, 0, 0, 0, (s32)&D_800B3358, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0x3A, 0, 0, 0, 0, 0, 0, (s32)&D_800B3364, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0x82, 0, 0, 0, 0, 0, 0, (s32)&D_800B336C, 4, 0, 0, 0 },
-    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B3370, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x2C, 0, 0, 0, 0, 0, 0, (s32)&TextAdventureMode, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0xA, 0, 0, 0, 0, 0, 0, (s32)&TextBattleMode, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x18, 0, 0, 0, 0, 0, 0, (s32)&TextTournament, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x3A, 0, 0, 0, 0, 0, 0, (s32)&TextOptions, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x82, 0, 0, 0, 0, 0, 0, (s32)&TextEmpty, 4, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&TextSelectGameType, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800B865C[8] = {
+PlaceRec PlayersMenuPlace[8] = {
     { 4, -0x20, 0x12C, -0x46, 0x50, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x42, 0, 0, 0, 0, 0, 0, (s32)&D_800B3384, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x1C, 0, 0, 0, 0, 0, 0, (s32)&D_800B3390, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 8, 0, 0, 0, 0, 0, 0, (s32)&D_800B339C, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0x2C, 0, 0, 0, 0, 0, 0, (s32)&D_800B33A8, 0, 0, 0, 0 },
-    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B33B4, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x42, 0, 0, 0, 0, 0, 0, (s32)&Text1Player, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x1C, 0, 0, 0, 0, 0, 0, (s32)&Text2Player, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 8, 0, 0, 0, 0, 0, 0, (s32)&Text3Player, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x2C, 0, 0, 0, 0, 0, 0, (s32)&Text4Player, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&TextSelectNumberOfPlayers, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800B877C[8] = {
+PlaceRec PlayersMenuAdventurePlace[8] = {
     { 4, -0x20, 0x12C, -0x46, 0x50, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, (s32)&D_800B3384, 0, 0, 0, 0 },
-    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B3390, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, (s32)&Text1Player, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, (s32)&Text2Player, 0, 0, 0, 0 },
     { 3, 0x3A, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 3, 0x3A, 0x26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B33B4, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&TextSelectNumberOfPlayers, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800B889C[6] = {
-    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B333C, 0, 0, 0, 0 },
+PlaceRec NewLoadMenuPlace[6] = {
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&TextAdventureMode, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0x20, 0x12C, -0x46, 0x50, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, (s32)&D_800B33D0, 2, 0, 0, 0 },
-    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B33DC, 3, 0, 0, 0 },
+    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, (s32)&TextNewGame, 2, 0, 0, 0 },
+    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, (s32)&TextLoadGame, 3, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800B8974[12] = {
+PlaceRec BattleOptionsPlace[12] = {
     { 4, -0x8000, 0x190, -0x68, -0xA, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0xA, 0xB4, -0x14, 0, 0xCCC, 0, 0x28, 0, 0, 0, 0, 0xC7, 0x2009, 2 },
-    { 3, 0x3C, -0x46, 0, 0, 0, 0, 0, 0, (s32)&D_800B33E8, 0, 0, 0, 0 },
-    { 3, -0xDC, -0x55, 0, 0, 0, 0, 0, 0, (s32)&D_800B33F0, 4, 0, 0, 0 },
+    { 3, 0x3C, -0x46, 0, 0, 0, 0, 0, 0, (s32)&TextCupsCount, 0, 0, 0, 0 },
+    { 3, -0xDC, -0x55, 0, 0, 0, 0, 0, 0, (s32)&TextSelectCups, 4, 0, 0, 0 },
     { 4, -0x8000, 0x190, 0x28, 0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, 0x46, 0x37, 0, 0, 0, 0, 0, 0, (s32)&D_800B336C, 0, 0, 0, 0 },
-    { 3, -0xDC, 0x32, 0, 0, 0, 0, 0, 0, (s32)&D_800B3428, 4, 0, 0, 0 },
+    { 3, 0x46, 0x37, 0, 0, 0, 0, 0, 0, (s32)&TextEmpty, 0, 0, 0, 0 },
+    { 3, -0xDC, 0x32, 0, 0, 0, 0, 0, 0, (s32)&TextSelectDifficulty, 4, 0, 0, 0 },
     { 4, -0x8000, 0x258, 0x9A, 0xC0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x8000, 0xA5, 0, 0, 0, 0, 0, 0, (s32)&D_800B3450, 4, 0, 0, 0 },
+    { 3, -0x8000, 0xA5, 0, 0, 0, 0, 0, 0, (s32)&TextBeginBattle, 4, 0, 0, 0 },
     { 4, -0x15E, 0x258, -0xD0, -0xA6, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x8000, -0xCA, 0, 0, 0, 0, 0, 0, (s32)&D_800B3460, 0, 0, 0, 0 },
+    { 3, -0x8000, -0xCA, 0, 0, 0, 0, 0, 0, (s32)&TextGameOptions, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 D_800B8B24[11] = {
+s32 TitlesFiles[9] = {
     (s32)&D_80055684, (s32)&D_8004ED78, (s32)&D_8004ED70, (s32)&D_80053074, (s32)&D_8004ED68,
-    (s32)&D_8004ED60, 0, 0, 0, (s32)&D_800500B8, (s32)&D_800B8B24,
+    (s32)&D_8004ED60, 0, 0, 0,
 };
-s32 D_800B8B50[1] = { 0xFFFF };
-s32 D_800B8B54[6] = { (s32)&D_800B3470, (s32)&D_800B3478, (s32)&D_800B3480, (s32)&D_800B3488, (s32)&D_800B348C, 0 };
-s32 D_800B8B6C[3] = { 0xC800C7, 0x1C00C9, 0xFFFF };
-s32 D_800B8B78[34] = {
-    0xC5, (s32)&D_800B8B54, (s32)&D_800B8B6C, 3, 0, 0, 0, 0, 0xC5, (s32)&D_800B8B54,
-    (s32)&D_800B8B6C, 3, 0, 0, 0, 0, 0xC5, (s32)&D_800B8B54, (s32)&D_800B8B6C, 3, 0, 0, 0, 0,
-    0x1800, 0x10, 0x100, 0x40, 0x100, 0x40, (s32)&D_80063EC8, (s32)&D_80063BB8, 0x20, 0x76C,
+/* the engine's table at 0x800A0030 points at it for the front end's modes */
+file_group_load_info file_group_TITLES = { D_800500B8, TitlesFiles };
+s16 TitlesPreLoadDB[2] = { -1, 0 };
+char *TitlesAnims[6] = {
+    (char *)TitlesAnimBreathe, (char *)TitlesAnimTauntA, (char *)TitlesAnimSlide, (char *)TitlesAnimWin,
+    (char *)TitlesAnimWin2, NULL,
 };
-s32 D_800B8C00[2] = { 0x20D0003, 0x10021001 };
-s32 D_800B8C08[9] = { (s32)&D_800B8C00, 4, (s32)&D_800B8B50, (s32)&D_800B8B78, (s32)&D_800B8C08, 0, 0, 0, 0 };
-Ext400 D_800B8C2C = {
+s16 TitlesLevelDB[6] = { 0xC7, 0xC8, 0xC9, 0x1C, -1, 0 };
+WWInf TitlesWorldInfo[3] = {
+    { 0xC5, TitlesAnims, TitlesLevelDB, 3 },
+    { 0xC5, TitlesAnims, TitlesLevelDB, 3 },
+    { 0xC5, TitlesAnims, TitlesLevelDB, 3 },
+};
+shell_setup titles_shell_info = {
+    0x1800, 0x10, 0x100, 0x40, 0x100, 0x40, D_80063EC8, D_80063BB8, 0x20, 0x76C,
+};
+u16 TitlesLUPtab[4] = { 3, 0x20D, 0x1001, 0x1002 };
+TrigLookUp TitlesLUP = { TitlesLUPtab, 4 };
+PreMap TITLES_PREMAP = { TitlesPreLoadDB, TitlesWorldInfo, &TitlesLUP };
+Ext400 TitlesBackdropAtable = {
     {
         (s32)0x80110000, 0x40000016, 0x168011, (s32)0x80114000, 0x40000016, 0x168011,
         (s32)0x80114000, 0x40800038, 0x168011, (s32)0x80114000, 0x40000016,
     },
 };
-s32 D_800B8C58[11] = {
+s32 TitlesBackdropSteps[11] = {
     0x388011, (s32)0x80114100, 0x41800054, 0x168011, (s32)0x80114000, 0x40000016, 0x388011,
-    (s32)0x80004100, 0, (s32)&D_800B3470, 0,
+    (s32)0x80004100, 0, (s32)&TitlesAnimBreathe, 0,
 };
-PlaceRec D_800B8C84[9] = {
+PlaceRec TitlesBackdropPlace[9] = {
     { 6, -0x64, 0, 0x4C8, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x2007, 0 },
     { 7, -0x17C, 0x190, -0x64, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
     { 7, -0x17C, 0x190, -0x64, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x2001, 0 },
@@ -178,105 +187,108 @@ PlaceRec D_800B8C84[9] = {
     { 4, 0x8C, 0x11C, 0x60, 0xC0, 4, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-u16 D_800B8DC8[8] = { 0xA, 0, 0xE, 0, 0xA, 0, 0xE, 0 };
-GfxViewport D_800B8DD8 = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x10, 0x1EF, 0, 0, 0, 0, 0 };
-GfxViewport D_800B8E00 = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x800, 0x7FF, -0x80, 0, 0, 0, 1 };
-process_info D_800B8E28 = { MainMenuInit, MainMenuUpdate, RenderTitlesMenu, 0, 0 };
-process_info D_800B8E3C = { PlayersMenuInit, PlayersMenuUpdate, RenderTitlesMenu, 0, 0 };
-process_info D_800B8E50 = { NewLoadMenuInit, NewLoadMenuUpdate, RenderTitlesMenu, 0, 0 };
-process_info D_800B8E64 = { TitlesLeaveInit, 0, TitlesLeaveRender, 0, 0 };
-s32 D_800B8E78[1][3] = {
+u16 TitlesDemoModes[8] = { 0xA, 0, 0xE, 0, 0xA, 0, 0xE, 0 };
+GfxViewport TitlesMenuView = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x10, 0x1EF, 0, 0, 0, 0, 0 };
+GfxViewport TitlesBackdropView = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x800, 0x7FF, -0x80, 0, 0, 0, 1 };
+process_info MainMenu = { MainMenuInit, MainMenuUpdate, RenderTitlesMenu, 0, 0 };
+process_info PlayersMenu = { PlayersMenuInit, PlayersMenuUpdate, RenderTitlesMenu, 0, 0 };
+process_info NewLoadMenu = { NewLoadMenuInit, NewLoadMenuUpdate, RenderTitlesMenu, 0, 0 };
+process_info TitlesLeave = { TitlesLeaveInit, 0, TitlesLeaveRender, 0, 0 };
+s32 TextDifficulties[1][3] = {
     {
-        (s32)&D_800B34A0, (s32)&D_800B34A8,
-        (s32)&D_800B34B0,
+        (s32)&TextEasy, (s32)&TextMedium,
+        (s32)&TextHard,
     },
 };
-s32 D_800B8E84[1][2] = { { (s32)&D_800B34B8, (s32)&D_800B34B8 } };
-process_info D_800B8E8C = { BattleOptionsInit, BattleOptionsUpdate, BattleOptionsRender, BattleOptionsQuit, 0 };
-s32 D_800B8EA0[1] = { (s32)&D_800B8E28 };
-s32 D_800B8EA4[2] = { (s32)&D_800B8E3C, (s32)&D_800B9DF4 };
-s32 D_800B8EAC[3] = { (s32)&D_800BA72C, (s32)&D_800BAAB4, (s32)&D_800B8E8C };
-s32 *D_800B8EB8 = (void *)&D_800B8EAC;
-s32 D_800B8EBC[1] = { (s32)&D_800B8E28 };
-s32 D_800B8EC0[5] = { (s32)&D_800B8E50, (s32)&D_800B8E3C, (s32)&D_800B9DF4, (s32)&D_800B8E64, (s32)&D_800B8E28 };
-s32 D_800B8ED4[2] = { (s32)&D_800B8E3C, (s32)&D_800B9DF4 };
-s32 D_800B8EDC[2] = { (s32)&D_8009EB84, (s32)&D_800B8E8C };
-s32 *D_800B8EE4 = (void *)&D_800B8EDC;
-s32 D_800B8EE8[1] = { (s32)&D_800B3364 };
-s32 D_800B8EEC[1] = { (s32)&D_800B34D0 };
-s32 D_800B8EF0[1] = { (s32)&D_800B34D8 };
-s32 D_800B8EF4[1] = { (s32)&D_800B34E0 };
-s32 D_800B8EF8[1] = { (s32)&D_800B34EC };
-s32 D_800B8EFC[1] = { (s32)&D_800B34F8 };
-s32 D_800B8F00[1] = { (s32)&D_800B3504 };
-s32 D_800B8F04[1] = { (s32)&D_800B3514 };
-s32 D_800B8F08[1] = { (s32)&D_800B3520 };
-s32 D_800B8F0C[1] = { (s32)&D_800B352C };
-s32 D_800B8F10[1] = { (s32)&D_800B3538 };
-s32 D_800B8F14[1] = { (s32)&D_800B353C };
-s32 D_800B8F18[1] = { (s32)&D_800B3540 };
-s32 D_800B8F1C[1] = { (s32)&D_800B355C };
-PlaceRec D_800B8F20[7] = {
-    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EE8, 0, 0, 0, 0 },
+s32 TextBattleKinds[1][2] = { { (s32)&TextPressButtonToStart, (s32)&TextPressButtonToStart } };
+process_info BattleOptions = { BattleOptionsInit, BattleOptionsUpdate, BattleOptionsRender, BattleOptionsQuit, 0 };
+/* The menu chains MenuChainNext/Back walk (MenuChainPos): each starts at its second entry, so
+ * backing out of the first screen reaches the main menu before it. A Resume pointer is where a
+ * finished battle or tournament picks up again (TitlesInitLevel, modes 0x29 and 0x2A). */
+process_info *BattleChain[6] = {
+    &MainMenu, &PlayersMenu, &CharSelect, &LevelSelect, &TeamMode, &BattleOptions,
+};
+process_info **BattleChainResume = &BattleChain[3];
+process_info *AdventureChain[6] = {
+    &MainMenu, &NewLoadMenu, &PlayersMenu, &CharSelect, &TitlesLeave, &MainMenu,
+};
+process_info *TournamentChain[4] = { &PlayersMenu, &CharSelect, (process_info *)D_8009EB84, &BattleOptions };
+process_info **TournamentChainResume = &TournamentChain[2];
+s32 LangOptions[1] = { (s32)&TextOptions };
+s32 LangExit[1] = { (s32)&TextExit };
+s32 LangSound[1] = { (s32)&TextSound };
+s32 LangAudioMode[1] = { (s32)&TextAudioMode };
+s32 LangStereo[1] = { (s32)&TextStereo };
+s32 LangMono[1] = { (s32)&TextMono };
+s32 LangMusicVolume[1] = { (s32)&TextMusicVolume };
+s32 LangFxVolume[1] = { (s32)&TextFxVolume };
+s32 LangController[1] = { (s32)&TextController };
+s32 LangVibration[1] = { (s32)&TextVibration };
+s32 LangOn[1] = { (s32)&TextOn };
+s32 LangOff[1] = { (s32)&TextOff };
+s32 LangPressButtonToChange[1] = { (s32)&TextPressButtonToChange };
+s32 LangPressButtonToAccept[1] = { (s32)&TextPressButtonToAccept };
+PlaceRec OptionsPlace[7] = {
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&LangOptions, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0xBE, 0xBE, -0x4A, 0x5A, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0x8000, -0x32, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EF0, 0, 0, 0, 0 },
-    { 0xE, -0x8000, -0xA, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F08, 0, 0, 0, 0 },
-    { 0xE, -0x8000, 0x1E, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EEC, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0x32, 0, 0, 0, 0, 0, 0, (s32)&LangSound, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0xA, 0, 0, 0, 0, 0, 0, (s32)&LangController, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x1E, 0, 0, 0, 0, 0, 0, (s32)&LangExit, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800B901C[12] = {
-    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EF0, 0, 0, 0, 0 },
+PlaceRec OptionsSoundPlace[12] = {
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&LangSound, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0xFA, 0xFA, -0x40, 0x8C, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0xD2, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EF4, 0, 0, 0, 0 },
-    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EF8, 0, 0, 0, 0 },
-    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EFC, 0, 0, 0, 0 },
-    { 0xE, -0xD2, 0xA, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F00, 0, 0, 0, 0 },
-    { 3, 0x46, 0xA, 0, 0, 0, 0, 0, 0, (s32)&D_800B3578, 0, 0, 0, 0 },
-    { 0xE, -0xD2, 0x32, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F04, 0, 0, 0, 0 },
-    { 3, 0x46, 0x32, 0, 0, 0, 0, 0, 0, (s32)&D_800B3580, 0, 0, 0, 0 },
-    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F1C, 4, 0, 0, 0 },
+    { 0xE, -0xD2, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&LangAudioMode, 0, 0, 0, 0 },
+    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&LangStereo, 0, 0, 0, 0 },
+    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&LangMono, 0, 0, 0, 0 },
+    { 0xE, -0xD2, 0xA, 0, 0, 0, 0, 0, 0, (s32)&LangMusicVolume, 0, 0, 0, 0 },
+    { 3, 0x46, 0xA, 0, 0, 0, 0, 0, 0, (s32)&TextPercent100, 0, 0, 0, 0 },
+    { 0xE, -0xD2, 0x32, 0, 0, 0, 0, 0, 0, (s32)&LangFxVolume, 0, 0, 0, 0 },
+    { 3, 0x46, 0x32, 0, 0, 0, 0, 0, 0, (s32)&TextPercent90, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, (s32)&LangPressButtonToAccept, 4, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800B91CC[23] = {
-    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F08, 0, 0, 0, 0 },
+PlaceRec OptionsControllerPlace[23] = {
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&LangController, 0, 0, 0, 0 },
     { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0xBE, 0xBE, -0x4A, 0x82, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0x8000, -0x3C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F0C, 0, 0, 0, 0 },
-    { 0xE, -0x8F, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F10, 7, 0, 0, 0 },
-    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 0, 0, 0, 0 },
-    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 1, 0, 0, 0 },
-    { 0xE, -0x35, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F10, 7, 0, 0, 0 },
-    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 0, 0, 0, 0 },
-    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 1, 0, 0, 0 },
-    { 0xE, 0x25, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F10, 7, 0, 0, 0 },
-    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 0, 0, 0, 0 },
-    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 1, 0, 0, 0 },
-    { 0xE, 0x75, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F10, 7, 0, 0, 0 },
-    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 0, 0, 0, 0 },
-    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 1, 0, 0, 0 },
-    { 3, -0x87, -0xF, 0, 0, 0, 0, 0, 0, (s32)&D_800B3588, 4, 0, 0, 0 },
-    { 3, -0x2D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&D_800B358C, 4, 0, 0, 0 },
-    { 3, 0x2D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&D_800B3590, 4, 0, 0, 0 },
-    { 3, 0x7D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&D_800B3594, 4, 0, 0, 0 },
-    { 0xE, -0x8000, 0x3C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F18, 4, 0, 0, 0 },
-    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F1C, 4, 0, 0, 0 },
+    { 0xE, -0x8000, -0x3C, 0, 0, 0, 0, 0, 0, (s32)&LangVibration, 0, 0, 0, 0 },
+    { 0xE, -0x8F, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOn, 7, 0, 0, 0 },
+    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 0, 0, 0, 0 },
+    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 1, 0, 0, 0 },
+    { 0xE, -0x35, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOn, 7, 0, 0, 0 },
+    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 0, 0, 0, 0 },
+    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 1, 0, 0, 0 },
+    { 0xE, 0x25, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOn, 7, 0, 0, 0 },
+    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 0, 0, 0, 0 },
+    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 1, 0, 0, 0 },
+    { 0xE, 0x75, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOn, 7, 0, 0, 0 },
+    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 0, 0, 0, 0 },
+    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, (s32)&LangOff, 1, 0, 0, 0 },
+    { 3, -0x87, -0xF, 0, 0, 0, 0, 0, 0, (s32)&TextP1, 4, 0, 0, 0 },
+    { 3, -0x2D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&TextP2, 4, 0, 0, 0 },
+    { 3, 0x2D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&TextP3, 4, 0, 0, 0 },
+    { 3, 0x7D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&TextP4, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0x3C, 0, 0, 0, 0, 0, 0, (s32)&LangPressButtonToChange, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, (s32)&LangPressButtonToAccept, 4, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 D_800B9508 = 0;
-s32 D_800B950C = 0;
-process_info D_800B9510 = { OptionsInit, OptionsUpdate, OptionsRender, OptionsQuit, 0 };
-process_info D_800B9524 = { RunGameInit, RunGameUpdate, RunGameRender, RunGameQuit, 0 };
-GfxCamera D_800B9538 = {0};
-s32 D_800B95F0 = 0;
-Ext400 D_800B95F4 = {0};
-s32 *D_800B9620 = 0;
-s32 D_800B9624 = 0;
-s32 D_800B9628 = 0;
-s32 D_800B962C = 0;
-s32 D_800B9630[1] = { (s32)&D_800B3598 };
-PlaceRec D_800B9634[27] = {
+s32 OptionsCursor = 0;
+s32 OptionsPage = 0;
+process_info OptionsScreen = { OptionsInit, OptionsUpdate, OptionsRender, OptionsQuit, 0 };
+process_info RunGame = { RunGameInit, RunGameUpdate, RunGameRender, RunGameQuit, 0 };
+GfxCamera TitlesCamera = {0};
+s32 MainMenuCursor = 0;
+Ext400 TitlesBackdropAnimator = {0};
+process_info **MenuChainPos = 0;
+s32 MainMenuHintTimer = 0;
+s32 NewLoadMenuCursor = 0;
+s32 BattleOptionsState = 0;
+s32 LangCharacterSelect[1] = { (s32)&TextCharacterSelect };
+PlaceRec CharSelectPlace[27] = {
     { 0x11, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3075, 0 },
     { 0x11, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3077, 0 },
     { 0x11, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3079, 0 },
@@ -297,7 +309,7 @@ PlaceRec D_800B9634[27] = {
     { 0x10, 0xE8, 0x13E, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0x10, 0x142, 0x198, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0x10, 0x19C, 0x1F2, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0x8000, 0x116, 0, 0, 0, 0, 0, 0, (s32)&D_800B9630, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x116, 0, 0, 0, 0, 0, 0, (s32)&LangCharacterSelect, 0, 0, 0, 0 },
     { 4, -0xA, 0x28A, 0x112, 0x136, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0, 0x2BC, 0x28, 0x6E, 7, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0, 0x2BC, 0x8C, 0xD2, 8, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -305,7 +317,7 @@ PlaceRec D_800B9634[27] = {
     { 6, 0x230, 0xBE, 0, 0x4CC, 0, 0, 0, 0, 0, 0, 0xC7, 0x200C, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800B9A00[9] = {
+PlaceRec CharSelectModelsPlace[9] = {
     { 7, -0x1FE, 0x1A4, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 7, -0xAA, 0x1A4, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 7, 0xAA, 0x1A4, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -316,7 +328,7 @@ PlaceRec D_800B9A00[9] = {
     { 7, 0x1FE, 0x1A4, 0, 0x800, 0, 0, 0, 0, 0, 0, 0xC7, 0x2005, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-Ovl69Rec D_800B9B44[8] = {
+Ovl69Rec CharCards[8] = {
     {
         0,
         {
@@ -382,14 +394,14 @@ Ovl69Rec D_800B9B44[8] = {
         0,
     },
 };
-Ovl69Off D_800B9C84[4] = { { 7, 4 }, { 0x2D, 4 }, { 7, 0x30 }, { 0x2D, 0x30 } };
-s32 D_800B9CA4[4] = { 0x389, 0x38A, 0x38B, 0x38C };
-s32 D_800B9CB4[4] = { 0x385, 0x386, 0x387, 0x388 };
-s8 D_800B9CC4[48] = {
+Ovl69Off CharSelectorOffsets[4] = { { 7, 4 }, { 0x2D, 4 }, { 7, 0x30 }, { 0x2D, 0x30 } };
+s32 CharPickSfx[4] = { 0x389, 0x38A, 0x38B, 0x38C };
+s32 CharMoveSfx[4] = { 0x385, 0x386, 0x387, 0x388 };
+s8 AdventureHeadsSolo[48] = {
     3, 4, 6, 6, 8, 8, 3, 4, 6, 6, 8, 8, 1, 2, 5, 5, 7, 7, 1, 2, 5, 5, 7, 7, 3, 4, 6, 6, 8, 8,
     1, 2, 5, 5, 7, 7, 3, 4, 6, 6, 8, 8, 1, 2, 5, 5, 7, 7,
 };
-s8 D_800B9CF4[256] = {
+s8 AdventureHeadsTeam[256] = {
     0, 0, 0, 0, 3, 4, 6, 8, 7, 7, 6, 6, 7, 7, 6, 6, 3, 4, 8, 8, 7, 7, 3, 4, 3, 4, 6, 6, 5, 5,
     3, 4, 3, 4, 6, 8, 0, 0, 0, 0, 7, 7, 6, 6, 7, 7, 6, 6, 3, 4, 8, 8, 7, 7, 3, 4, 3, 4, 6, 6,
     5, 5, 3, 4, 7, 7, 6, 6, 7, 7, 6, 6, 0, 0, 0, 0, 1, 2, 5, 7, 1, 2, 8, 8, 1, 2, 7, 7, 1, 2,
@@ -400,111 +412,111 @@ s8 D_800B9CF4[256] = {
     6, 8, 1, 2, 3, 4, 0, 0, 0, 0, 1, 2, 3, 4, 5, 5, 3, 4, 5, 5, 3, 4, 1, 2, 5, 5, 1, 2, 5, 5,
     1, 2, 3, 4, 1, 2, 5, 7, 1, 2, 3, 4, 0, 0, 0, 0,
 };
-process_info D_800B9DF4 = { CharSelectInit, CharSelectUpdate, CharSelectRender, 0, 0 };
-s32 D_800B9E08[3] = { (s32)0x80110000, 0x43800020, 0x8000 };
-s32 D_800B9E14[6] = { (s32)&D_800B9E08, 0, 0, 0, (s32)&D_800B9E14, 0x401 };
-s32 D_800B9E2C[3] = { (s32)0x80110000, 0x42000014, 0x8000 };
-s32 D_800B9E38[6] = { (s32)&D_800B9E2C, 0, 0, 0, (s32)&D_800B9E38, 0x401 };
-s32 D_800B9E50[3] = { (s32)0x80110000, 0x42800016, 0x8000 };
-s32 D_800B9E5C[6] = { (s32)&D_800B9E50, 0, 0, 0, (s32)&D_800B9E5C, 0x401 };
-s32 D_800B9E74[3] = { (s32)0x80110000, 0x43000020, 0x8000 };
-s32 D_800B9E80[6] = { (s32)&D_800B9E74, 0, 0, 0, (s32)&D_800B9E80, 0x401 };
-s32 D_800B9E98[3] = { (s32)0x80110000, 0x44000016, 0x8000 };
-s32 D_800B9EA4[6] = { (s32)&D_800B9E98, 0, 0, 0, (s32)&D_800B9EA4, 0x401 };
-s32 D_800B9EBC[3] = { (s32)0x80110000, 0x44800014, 0x8000 };
-s32 D_800B9EC8[6] = { (s32)&D_800B9EBC, 0, 0, 0, (s32)&D_800B9EC8, 0x401 };
-s32 D_800B9EE0[3] = { (s32)0x80110000, 0x45000020, 0x8000 };
-s32 D_800B9EEC[6] = { (s32)&D_800B9EE0, 0, 0, 0, (s32)&D_800B9EEC, 0x401 };
-s32 D_800B9F04[6] = { (s32)0x80110000, 0x45800020, 0x8000, (s32)&D_800B9F04, 0, 0 };
-GfxCamera D_800B9F1C = {0};
-Ovl69Slot D_800B9FD4[4] = {0};
-s32 D_800BA154[1] = { (s32)&D_800B35AC };
-s32 D_800BA158[1] = { (s32)&D_800B35D0 };
-s32 D_800BA15C[1] = { (s32)&D_800B3608 };
-s32 D_800BA160[1] = { (s32)&D_800B3650 };
-s32 D_800BA164[16] = {
+process_info CharSelect = { CharSelectInit, CharSelectUpdate, CharSelectRender, 0, 0 };
+s32 CharSelectSteps0[3] = { (s32)0x80110000, 0x43800020, 0x8000 };
+s32 CharSelectAnim0[6] = { (s32)&CharSelectSteps0, 0, 0, 0, (s32)&CharSelectAnim0, 0x401 };
+s32 CharSelectSteps1[3] = { (s32)0x80110000, 0x42000014, 0x8000 };
+s32 CharSelectAnim1[6] = { (s32)&CharSelectSteps1, 0, 0, 0, (s32)&CharSelectAnim1, 0x401 };
+s32 CharSelectSteps2[3] = { (s32)0x80110000, 0x42800016, 0x8000 };
+s32 CharSelectAnim2[6] = { (s32)&CharSelectSteps2, 0, 0, 0, (s32)&CharSelectAnim2, 0x401 };
+s32 CharSelectSteps3[3] = { (s32)0x80110000, 0x43000020, 0x8000 };
+s32 CharSelectAnim3[6] = { (s32)&CharSelectSteps3, 0, 0, 0, (s32)&CharSelectAnim3, 0x401 };
+s32 CharSelectSteps4[3] = { (s32)0x80110000, 0x44000016, 0x8000 };
+s32 CharSelectAnim4[6] = { (s32)&CharSelectSteps4, 0, 0, 0, (s32)&CharSelectAnim4, 0x401 };
+s32 CharSelectSteps5[3] = { (s32)0x80110000, 0x44800014, 0x8000 };
+s32 CharSelectAnim5[6] = { (s32)&CharSelectSteps5, 0, 0, 0, (s32)&CharSelectAnim5, 0x401 };
+s32 CharSelectSteps6[3] = { (s32)0x80110000, 0x45000020, 0x8000 };
+s32 CharSelectAnim6[6] = { (s32)&CharSelectSteps6, 0, 0, 0, (s32)&CharSelectAnim6, 0x401 };
+s32 CharSelectAnim7[6] = { (s32)0x80110000, 0x45800020, 0x8000, (s32)&CharSelectAnim7, 0, 0 };
+GfxCamera CharSelectCamera = {0};
+Ovl69Slot CharSelectors[4] = {0};
+s32 LangPressToUnlockLevels[1] = { (s32)&TextPressToUnlockLevels };
+s32 LangNoMoreUnlocked[1] = { (s32)&TextNoMoreUnlocked };
+s32 LangInsertCard[1] = { (s32)&TextInsertCard };
+s32 LangLocked[1] = { (s32)&TextLocked };
+s32 BattleLevelsBash[16] = {
     1, 0, (s32)&D_80055614, 0x2005, 1, 1, (s32)&D_80055614, 0x2006, 1, 2, (s32)&D_80055614,
     0x2007, 1, 3, (s32)&D_80055614, 0x2008,
 };
-s32 D_800BA1A4[16] = {
+s32 BattleLevelsPolar[16] = {
     1, 0x13, (s32)&D_8005564C, 0x2005, 1, 0x12, (s32)&D_8005564C, 0x2006, 1, 0x14,
     (s32)&D_8005564C, 0x2007, 1, 0x15, (s32)&D_8005564C, 0x2008,
 };
-s32 D_800BA1E4[16] = {
+s32 BattleLevelsPogo[16] = {
     1, 0xA, (s32)&D_8005564C, 0x2001, 1, 0xB, (s32)&D_8005564C, 0x2002, 1, 0xC,
     (s32)&D_8005564C, 0x2003, 1, 0xD, (s32)&D_8005564C, 0x2004,
 };
-s32 D_800BA224[16] = {
+s32 BattleLevelsArkenoid[16] = {
     1, 0xE, (s32)&D_80055614, 0x2001, 1, 0xF, (s32)&D_80055614, 0x2002, 1, 0x10,
     (s32)&D_80055614, 0x2003, 1, 0x11, (s32)&D_80055614, 0x2004,
 };
-s32 D_800BA264[16] = {
+s32 BattleLevelsTank[16] = {
     2, 6, (s32)&D_8005564C, 0x2009, 2, 8, (s32)&D_8005564C, 0x200A, 2, 7, (s32)&D_8005564C,
     0x200B, 2, 5, (s32)&D_8005564C, 0x200C,
 };
-s32 D_800BA2A4[16] = {
+s32 BattleLevelsRace[16] = {
     2, 0x17, (s32)&D_80055614, 0x2009, 2, 0x18, (s32)&D_80055614, 0x200A, 2, 0x1A,
     (s32)&D_80055614, 0x200B, 2, 0x19, (s32)&D_80055614, 0x200C,
 };
-s32 D_800BA2E4[16] = {
+s32 BattleLevelsDino[16] = {
     2, 0x1B, (s32)&D_80055614, 0x200D, 2, 0x1C, (s32)&D_80055614, 0x200E, 2, 0x1D,
     (s32)&D_80055614, 0x200F, 2, 0x1E, (s32)&D_80055614, 0x2010,
 };
-Ovl69Entry D_800BA324[7] = {
-    { (s32)&D_800BA164, 4 }, { (s32)&D_800BA1A4, 4 }, { (s32)&D_800BA1E4, 4 },
-    { (s32)&D_800BA224, 4 }, { (s32)&D_800BA264, 4 }, { (s32)&D_800BA2A4, 4 },
-    { (s32)&D_800BA2E4, 4 },
+BattleArena BattleArenas[7] = {
+    { (s32)&BattleLevelsBash, 4 }, { (s32)&BattleLevelsPolar, 4 }, { (s32)&BattleLevelsPogo, 4 },
+    { (s32)&BattleLevelsArkenoid, 4 }, { (s32)&BattleLevelsTank, 4 }, { (s32)&BattleLevelsRace, 4 },
+    { (s32)&BattleLevelsDino, 4 },
 };
-PlaceRec D_800BA35C[2] = {
+PlaceRec LevelSelectPlace0[2] = {
     { 7, 0, 0, 0, 0xB33, 0, 0, 0, 0, 0, 0, 0xC8, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800BA3A4[2] = {
+PlaceRec LevelSelectPlace1[2] = {
     { 7, 0, 0, 0, 0x666, 0, 0, 0, 0, 0, 0, 0xC8, 0x2005, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800BA3EC[2] = {
+PlaceRec LevelSelectPlace2[2] = {
     { 7, 0, 0, 0, 0x666, 0, 0, 0, 0, 0, 0, 0xC8, 0x2006, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800BA434[2] = {
+PlaceRec LevelSelectPlace3[2] = {
     { 7, 0, 0, 0, 0x666, 0, 0, 0, 0, 0, 0, 0xC8, 0x2007, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-PlaceRec D_800BA47C[2] = {
+PlaceRec LevelSelectPlace4[2] = {
     { 7, 0, 0, 0, 0x666, 0, 0, 0, 0, 0, 0, 0xC8, 0x2008, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 D_800BA4C4[1] = { (s32)&D_800B3658 };
-s32 D_800BA4C8[1] = { (s32)&D_800B367C };
-s32 D_800BA4CC[1] = { (s32)&D_800B369C };
-s32 D_800BA4D0[1] = { (s32)&D_800B36B8 };
-PlaceRec D_800BA4D4[11] = {
+s32 LangChangeArena[1] = { (s32)&TextChangeArena };
+s32 LangChangeLevel[1] = { (s32)&TextChangeLevel };
+s32 LangPressButtonToSelect[1] = { (s32)&TextPressButtonToSelect };
+s32 LangChooseLevel[1] = { (s32)&TextChooseLevel };
+PlaceRec LevelSelectPlace[11] = {
     { 3, 0x7FA1, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 6, 0xD4, 0, 0, 0x266, 0, 0, 0, 0, 0, 0, 0xC7, 0x2008, 0 },
-    { 0xE, 0x7FA1, -0x96, 0, 0, 0, 0, 0, 0, (s32)&D_800BA4C4, 4, 0, 0, 0 },
-    { 0xE, 0x7FA1, -0x42, 0, 0, 0, 0, 0, 0, (s32)&D_800BA4C8, 4, 0, 0, 0 },
-    { 0xE, 0x7FA1, -0x28, 0, 0, 0, 0, 0, 0, (s32)&D_800BA4CC, 4, 0, 0, 0 },
-    { 0xE, 0x7FA1, -0xC8, 0, 0, 0, 0, 0, 0, (s32)&D_800BA4D0, 0, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0x96, 0, 0, 0, 0, 0, 0, (s32)&LangChangeArena, 4, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0x42, 0, 0, 0, 0, 0, 0, (s32)&LangChangeLevel, 4, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0x28, 0, 0, 0, 0, 0, 0, (s32)&LangPressButtonToSelect, 4, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0xC8, 0, 0, 0, 0, 0, 0, (s32)&LangChooseLevel, 0, 0, 0, 0 },
     { 3, 0x7FA1, -0x6E, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, -0x14A, 0x88, -0xCA, -0xA6, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0x120, 0x28A, -0xCC, -0xA6, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, 0x7FA1, 0x4E, 0, 0, 0, 0, 0, 0, (s32)&D_800B36C8, 4, 0, 0, 0 },
+    { 3, 0x7FA1, 0x4E, 0, 0, 0, 0, 0, 0, (s32)&TextCheckCardForSave, 4, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 D_800BA660[1] = { (s32)&D_800B36F4 };
-GfxViewport D_800BA664 = { 0x28, 0xEE, 0x19A, 0x1B0, 0, 0, 0x280, 0x1E0, 0xE1, 0x198, 0x200, 0x1FF, 0, 0, 0, 0, 0 };
-GfxViewport D_800BA68C = { 0x1CC, 0x24, 0x25C, 0x84, 0, 0, 0x280, 0x1E0, 0x214, 0x88, 0x400, 0xFF, 0, 0, 0, 0, 0 };
-GfxViewport D_800BA6B4 = { 0x1CC, 0x88, 0x25C, 0xE8, 0, 0, 0x280, 0x1E0, 0x214, 0xEC, 0x4CC, 0xFF, 0, 0, 0, 0, 0 };
-GfxViewport D_800BA6DC = { 0x1CC, 0xEC, 0x25C, 0x14C, 0, 0, 0x280, 0x1E0, 0x214, 0x150, 0x600, 0xFF, 0, 0, 0, 0, 0 };
-GfxViewport D_800BA704 = { 0x1CC, 0x150, 0x25C, 0x1B0, 0, 0, 0x280, 0x1E0, 0x214, 0x1B4, 0x700, 0xFF, 0, 0, 0, 0, 0 };
-process_info D_800BA72C = { LevelSelectInit, LevelSelectUpdate, LevelSelectRender, LevelSelectQuit, 0 };
-s32 D_800BA740 = 0;
-s32 D_800BA744 = 0;
-s32 D_800BA748[1] = { (s32)&D_800B3734 };
-s32 D_800BA74C[1] = { (s32)&D_800B3748 };
-s32 D_800BA750[1] = { (s32)&D_800B3774 };
-PlaceRec D_800BA754[19] = {
+s32 LangCheckingCard[1] = { (s32)&TextCheckingCard };
+GfxViewport LevelSelectView0 = { 0x28, 0xEE, 0x19A, 0x1B0, 0, 0, 0x280, 0x1E0, 0xE1, 0x198, 0x200, 0x1FF, 0, 0, 0, 0, 0 };
+GfxViewport LevelSelectView1 = { 0x1CC, 0x24, 0x25C, 0x84, 0, 0, 0x280, 0x1E0, 0x214, 0x88, 0x400, 0xFF, 0, 0, 0, 0, 0 };
+GfxViewport LevelSelectView2 = { 0x1CC, 0x88, 0x25C, 0xE8, 0, 0, 0x280, 0x1E0, 0x214, 0xEC, 0x4CC, 0xFF, 0, 0, 0, 0, 0 };
+GfxViewport LevelSelectView3 = { 0x1CC, 0xEC, 0x25C, 0x14C, 0, 0, 0x280, 0x1E0, 0x214, 0x150, 0x600, 0xFF, 0, 0, 0, 0, 0 };
+GfxViewport LevelSelectView4 = { 0x1CC, 0x150, 0x25C, 0x1B0, 0, 0, 0x280, 0x1E0, 0x214, 0x1B4, 0x700, 0xFF, 0, 0, 0, 0, 0 };
+process_info LevelSelect = { LevelSelectInit, LevelSelectUpdate, LevelSelectRender, LevelSelectQuit, 0 };
+s32 LevelSelectBusy = 0;
+s32 LevelSelectReload = 0;
+s32 LangSelectBattleType[1] = { (s32)&TextSelectBattleType };
+s32 LangChangeBattleType[1] = { (s32)&TextChangeBattleType };
+s32 LangStartBattle[1] = { (s32)&TextStartBattle };
+PlaceRec TeamModePlace[19] = {
     { 6, -0xFA, -0x5A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
     { 6, -0x6A, -0x5A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
     { 6, 0x38, -0x5A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
@@ -513,57 +525,55 @@ PlaceRec D_800BA754[19] = {
     { 4, -0x88, -0x10, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0x10, 0x88, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 4, 0xAA, 0x122, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0xAA, -0x46, 0, 0, 0, 0, 0, 0, (s32)&D_800B3794, 0, 0, 0, 0 },
-    { 3, -0x8000, -0x46, 0, 0, 0, 0, 0, 0, (s32)&D_800B3794, 0, 0, 0, 0 },
-    { 3, 0x88, -0x46, 0, 0, 0, 0, 0, 0, (s32)&D_800B3794, 0, 0, 0, 0 },
-    { 0xE, -0x8000, -0xC8, 0, 0, 0, 0, 0, 0, (s32)&D_800BA748, 0, 0, 0, 0 },
+    { 3, -0xAA, -0x46, 0, 0, 0, 0, 0, 0, (s32)&TextVs, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x46, 0, 0, 0, 0, 0, 0, (s32)&TextVs, 0, 0, 0, 0 },
+    { 3, 0x88, -0x46, 0, 0, 0, 0, 0, 0, (s32)&TextVs, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0xC8, 0, 0, 0, 0, 0, 0, (s32)&LangSelectBattleType, 0, 0, 0, 0 },
     { 4, -0x8000, 0x258, -0xCA, -0xA6, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, -0x8000, 0x42, 0, 0, 0, 0, 0, 0, (s32)&D_800B3798, 2, 0, 0, 0 },
+    { 3, -0x8000, 0x42, 0, 0, 0, 0, 0, 0, (s32)&TextVsBattle, 2, 0, 0, 0 },
     { 4, -0x78, 0x78, 0x3A, 0x6C, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 0xE, -0x8000, 0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800BA74C, 4, 0, 0, 0 },
-    { 0xE, -0x8000, 0xA6, 0, 0, 0, 0, 0, 0, (s32)&D_800BA750, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0x8C, 0, 0, 0, 0, 0, 0, (s32)&LangChangeBattleType, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0xA6, 0, 0, 0, 0, 0, 0, (s32)&LangStartBattle, 4, 0, 0, 0 },
     { 4, -0x10E, 0x10E, 0x87, 0xBE, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 D_800BAA00[1] = { (s32)&D_800B3798 };
-s32 D_800BAA04[1] = { (s32)&D_800B37A4 };
-Ovl69Preset D_800BAA08[2] = {
+s32 LangVsBattle[1] = { (s32)&TextVsBattle };
+s32 LangTeamBattle[1] = { (s32)&TextTeamBattle };
+Ovl69Preset TeamModePresets[2] = {
     {
         { 0, 1, 2, 3 }, { 0x8000, 0x8000, 0x8000 }, { -0x122, -0x88, 0x10, 0xAA },
-        (void *)&D_800BAA00, 0, 0, 2, -1, -1, -1, -1,
+        (void *)&LangVsBattle, 0, 0, 2, -1, -1, -1, -1,
     },
     {
-        { 0, 1, 2, 3 }, { 0, 0x8000, 0 }, { -0x116, -0x96, 0x1F, 0x9E }, (void *)&D_800BAA04,
+        { 0, 1, 2, 3 }, { 0, 0x8000, 0 }, { -0x116, -0x96, 0x1F, 0x9E }, (void *)&LangTeamBattle,
         1, 0, 2, 1, 0, 3, 2,
     },
 };
-u16 D_800BAAA0[10] = { 0, 0x306B, 0x3067, 0x3069, 0x307B, 0x3073, 0x3071, 0x306D, 0x306F, 0 };
-process_info D_800BAAB4 = { team_mode_init, TeamModeUpdate, RenderTitlesBackdropAndMenu, 0, 0 };
-s32 D_800BAAC8 = 0;
-s32 D_800BAACC = 0;
-PlaceRec D_800BAAD0[4] = {
+u16 TeamModeHeroFrames[10] = { 0, 0x306B, 0x3067, 0x3069, 0x307B, 0x3073, 0x3071, 0x306D, 0x306F, 0 };
+process_info TeamMode = { team_mode_init, TeamModeUpdate, RenderTitlesBackdropAndMenu, 0, 0 };
+s32 TeamModeRow = 0;
+s32 TeamModePreset = 0;
+PlaceRec TitlesExtraPlace[3] = {
     { 4, 0, 0x64, 0, 0x64, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 3, 0, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B37B0, 2, 0, 0, 0 },
+    { 3, 0, 0, 0, 0, 0, 0, 0, 0, (s32)&TextSelectSlot, 2, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    {
-        (s32)TitlesExtraScreenInit, 0, 0, -0x7B48, -0x7FF5, 0, 0, 0, 0,
-        (s32)TitlesShellScreenInit, (s32)TitlesShellScreenUpdate, -0x7B90, -0x7FF5, 0,
-    },
 };
-s32 D_800BAB60[1] = {0};
+/* two screens nothing in the front end chains to (the engine's own menus may) */
+process_info TitlesExtraScreen = { TitlesExtraScreenInit, 0, TitlesExtraScreenRender, 0, 0 };
+process_info TitlesShellScreen = { TitlesShellScreenInit, TitlesShellScreenUpdate, TitlesShellScreenRender, 0, 0 };
 
 void TitlesInitLevel(void) {
     u8 *g;
-    s32 *p;
+    process_info **p;
     u8 *a1;
 
     func_8009029C();
     g = D_8005A614;
     g[0x62] = 0;
-    cam_init((u8 *)&D_800B9538);
-    *(s32 *)((u8 *)&D_800B9538 + 8) = 0x400;
-    *(s32 *)((u8 *)&D_800B9538 + 0x18) = 0x190;
-    func_80095BEC(1, (s32 *)D_800B8C84);
+    cam_init((u8 *)&TitlesCamera);
+    *(s32 *)((u8 *)&TitlesCamera + 8) = 0x400;
+    *(s32 *)((u8 *)&TitlesCamera + 0x18) = 0x190;
+    func_80095BEC(1, (s32 *)TitlesBackdropPlace);
     GetEngineSlot(1)->sub[4].flags &= ~0x8000;
     GetEngineSlot(1)->sub[5].flags &= ~0x8000;
     GetEngineSlot(1)->sub[6].flags &= ~0x8000;
@@ -575,25 +585,25 @@ void TitlesInitLevel(void) {
         core_process = 0;
         func_80092C54();
         *(u16 *)(g + 0x32) |= 0x200;
-        func_8001E934(&D_8009F8A4, &D_800B8E28);
+        func_8001E934(&D_8009F8A4, &MainMenu);
         break;
     case 0x29:
-        p = D_800B8EB8;
+        p = BattleChainResume;
         g[0x27] = 4;
         a1 = (u8 *)*p;
-        D_800B9620 = p;
+        MenuChainPos = p;
         func_8001E934(&D_8009F8A4, (process_info *)a1);
         break;
     case 0x2A:
-        p = D_800B8EE4;
+        p = TournamentChainResume;
         g[0x27] = 4;
         a1 = (u8 *)*p;
-        D_800B9620 = p;
+        MenuChainPos = p;
         func_8001E934(&D_8009F8A4, (process_info *)a1);
         break;
     }
-    D_800B95F4 = D_8005A9A0;
-    D_800B95F4.w[3] = (s32)&D_800B8C2C;
+    TitlesBackdropAnimator = D_8005A9A0;
+    TitlesBackdropAnimator.w[3] = (s32)&TitlesBackdropAtable;
 }
 
 void TitlesCheckIdle(void) {
@@ -607,7 +617,7 @@ void TitlesCheckIdle(void) {
             func_80094D88((s32)D_800A0840, &D_800A00DC);
         } else {
             u8 *g = D_8005A614;
-            u8 *t = (u8 *)D_800B8DC8;
+            u8 *t = (u8 *)TitlesDemoModes;
             u16 v = *(u16 *)(t + ((f * 2) & 0xC));
             *(s32 *)(g + 0x68) = 1;
             *(s32 *)(g + 0x14) = 0x384;
@@ -638,7 +648,7 @@ void AnimateTitlesBackdrop(void) {
     sub->unk52 = 1;
     eng = GetEngineSlot(1);
     tbl = D_80068BD4;
-    pos = D_800B3494;
+    pos = TitlesBackdropPos;
     d = D_8004E0D8;
     pos.x += (tbl[(((d * 0x14) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x8F) >> 0xF;
     pos.y += (tbl[(((d * 0x2F) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x17) >> 0xC;
@@ -649,7 +659,7 @@ void AnimateTitlesBackdrop(void) {
     p2->unk51 = 0;
     p2->unk14 = ang;
     p2->unk52 = 1;
-    func_800251A8(NULL, eng, p2, &D_800B95F4);
+    func_800251A8(NULL, eng, p2, &TitlesBackdropAnimator);
     p2 = &eng->sub[2];
     *(SLONG_XYZ *)&p2->unk04 = pos;
     p2->unk51 = 0;
@@ -668,23 +678,23 @@ void MainMenuUpdate(void) {
     TitlesCheckIdle();
     s = GetEngineSlot(0)->sub;
     if (D_80051380 & 0x40) {
-        if (D_800B95F0 < 3) {
-            D_800B95F0++;
+        if (MainMenuCursor < 3) {
+            MainMenuCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        D_800B9624 = 0x5A;
+        MainMenuHintTimer = 0x5A;
     }
     if (D_80051380 & 0x10) {
-        if (D_800B95F0 > 0) {
-            D_800B95F0--;
+        if (MainMenuCursor > 0) {
+            MainMenuCursor--;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        D_800B9624 = 0x5A;
+        MainMenuHintTimer = 0x5A;
     }
     if (D_80051380 & 0x4000) {
         g = D_8005A614;
         ((u16 *)g)[0x19] &= 0xFF00;
-        switch (D_800B95F0) {
+        switch (MainMenuCursor) {
         case 0:
             g[0x27] = 2;
             *(s32 *)(g + 0x6C) = 1;
@@ -695,7 +705,7 @@ void MainMenuUpdate(void) {
             g[0x56] = 3;
             g[0x57] = 2;
             *(u16 *)(g + 0x32) |= 4;
-            MenuChainStart(D_800B8EC0);
+            MenuChainStart(&AdventureChain[1]);
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 1:
@@ -708,18 +718,18 @@ void MainMenuUpdate(void) {
             *(s32 *)(g + 0x6C) = 0;
             *(s16 *)(g + 0x48) = 0;
             *(u16 *)(g + 0x32) |= 1;
-            MenuChainStart(D_800B8EA4);
+            MenuChainStart(&BattleChain[1]);
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 2:
             g[0x27] = 4;
             *(u16 *)(g + 0x32) |= 2;
-            MenuChainStart(D_800B8ED4);
+            MenuChainStart(TournamentChain);
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 3:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            process_interrupt(&D_8009F8A4, &D_800B9510);
+            process_interrupt(&D_8009F8A4, &OptionsScreen);
             break;
         }
     }
@@ -727,14 +737,14 @@ void MainMenuUpdate(void) {
     s[2].unk7C = 0;
     s[4].unk7C = 0;
     s[3].unk7C = 0;
-    if (D_800B9624 != 0) {
+    if (MainMenuHintTimer != 0) {
         s[5].flags |= 0x8000;
-        D_800B9624--;
-        s[5].unk6C = (void *)D_800B8508[D_800B95F0];
+        MainMenuHintTimer--;
+        s[5].unk6C = (void *)MainMenuHints[MainMenuCursor];
     } else {
         s[5].flags &= ~0x8000;
     }
-    s[D_800B95F0 + 1].unk7C = 2;
+    s[MainMenuCursor + 1].unk7C = 2;
 }
 
 void PlayersMenuUpdate(void) {
@@ -830,20 +840,20 @@ void NewLoadMenuUpdate(void) {
     AnimateTitlesBackdrop();
     do {
         s = (Ovl69Sub *)GetEngineSlot(0)->sub;
-        s->a = (D_800B9628 == 0) * 2;
-        s->b = (D_800B9628 == 1) * 2;
+        s->a = (NewLoadMenuCursor == 0) * 2;
+        s->b = (NewLoadMenuCursor == 1) * 2;
         g = &D_80051380;
     } while (0);
-    if ((*g & 0x10) && (D_800B9628 > 0)) {
-        D_800B9628 -= 1;
+    if ((*g & 0x10) && (NewLoadMenuCursor > 0)) {
+        NewLoadMenuCursor -= 1;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((D_80051380 & 0x40) && (D_800B9628 <= 0)) {
-        D_800B9628 += 1;
+    if ((D_80051380 & 0x40) && (NewLoadMenuCursor <= 0)) {
+        NewLoadMenuCursor += 1;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if (D_80051380 & 0x4000) {
-        switch (D_800B9628) {
+        switch (NewLoadMenuCursor) {
         case 0:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             MenuChainNext();
@@ -895,12 +905,12 @@ void BattleOptionsUpdate(void) {
         O69OV->unk38++;
     }
     *(u8 *)GetEngineSlot(0)->sub[2].unk6C = O69OV->unk3A + '0';
-    GetEngineSlot(0)->sub[5].unk6C = (void *)D_800B8E78[O69OV->unk2C][O69OV->unk38];
+    GetEngineSlot(0)->sub[5].unk6C = (void *)TextDifficulties[O69OV->unk2C][O69OV->unk38];
     p = &GetEngineSlot(0)->sub[8];
     if (O69OV->unk32 & 1) {
-        p->unk6C = (void *)D_800B8E84[O69OV->unk2C][0];
+        p->unk6C = (void *)TextBattleKinds[O69OV->unk2C][0];
     } else {
-        p->unk6C = (void *)D_800B8E84[O69OV->unk2C][1];
+        p->unk6C = (void *)TextBattleKinds[O69OV->unk2C][1];
     }
     if (D_80051380 & 0x4000) {
         D_8005A644 = 0x8008;
@@ -916,10 +926,10 @@ void BattleOptionsRender(void) {
     *(s32 *)(p + 0xA8) &= 0xFFFF7FFF;
     p = (u8 *)GetEngineSlot(1)->sub;
     *(s32 *)(p + 0x150) &= 0xFFFF7FFF;
-    func_80018B08(&D_800B8E00, &D_800B9538);
+    func_80018B08(&TitlesBackdropView, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
-    func_80018B08(&D_800B8DD8, &D_800B9538);
+    func_80018B08(&TitlesMenuView, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
@@ -958,34 +968,34 @@ void OptionsUpdate(void) {
     cam->unk51 = 0;
     cam->unk52 = 1;
     sub = GetEngineSlot(4)->sub;
-    switch (D_800B950C) {
+    switch (OptionsPage) {
     case 0:
-        sub[D_800B9508 + 3].unk7C = 0;
-        if ((((PadButtons *)D_80051338)->pressed & 0x40) && D_800B9508 < 2) {
-            D_800B9508++;
+        sub[OptionsCursor + 3].unk7C = 0;
+        if ((((PadButtons *)D_80051338)->pressed & 0x40) && OptionsCursor < 2) {
+            OptionsCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        if ((D_80051380 & 0x10) && D_800B9508 > 0) {
-            D_800B9508--;
+        if ((D_80051380 & 0x10) && OptionsCursor > 0) {
+            OptionsCursor--;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        sub[D_800B9508 + 3].unk7C = 2;
+        sub[OptionsCursor + 3].unk7C = 2;
         if (((PadButtons *)D_80051338)->pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            switch (D_800B9508) {
+            switch (OptionsCursor) {
             case 0:
-                D_800B950C = 1;
-                func_80095BEC(4, (s32 *)D_800B901C);
+                OptionsPage = 1;
+                func_80095BEC(4, (s32 *)OptionsSoundPlace);
                 break;
             case 1:
-                D_800B950C = 2;
-                func_80095BEC(4, (s32 *)D_800B91CC);
+                OptionsPage = 2;
+                func_80095BEC(4, (s32 *)OptionsControllerPlace);
                 break;
             case 2:
                 func_8001E824(&D_8009F8A4);
                 break;
             }
-            D_800B9508 = 0;
+            OptionsCursor = 0;
         }
         if (D_80051380 & 0x1000) {
             PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -993,12 +1003,12 @@ void OptionsUpdate(void) {
         }
         return;
     case 1:
-        if ((D_80051380 & 0x40) && D_800B9508 < 2) {
-            D_800B9508++;
+        if ((D_80051380 & 0x40) && OptionsCursor < 2) {
+            OptionsCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        if ((D_80051380 & 0x10) && D_800B9508 > 0) {
-            D_800B9508--;
+        if ((D_80051380 & 0x10) && OptionsCursor > 0) {
+            OptionsCursor--;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         sub[3].unk7C = 0;
@@ -1008,7 +1018,7 @@ void OptionsUpdate(void) {
         sub[9].unk7C = 0;
         sub[6].unk7C = 0;
         sub[7].unk7C = 0;
-        switch (D_800B9508) {
+        switch (OptionsCursor) {
         case 0:
             if (D_80051380 & 0xA0) {
                 s32 *opt = (s32 *)D_8005A604;
@@ -1071,9 +1081,9 @@ void OptionsUpdate(void) {
     }
     if (D_80051380 & 0x5000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_800B950C = 0;
-        D_800B9508 = 0;
-        func_80095BEC(4, (s32 *)D_800B8F20);
+        OptionsPage = 0;
+        OptionsCursor = 0;
+        func_80095BEC(4, (s32 *)OptionsPlace);
     }
 }
 
@@ -1084,7 +1094,7 @@ void OptionsRender(void) {
 
     sub = GetEngineSlot(4)->sub;
     D_80056998.modelDp = D_8009F644.amount;
-    switch (D_800B950C) {
+    switch (OptionsPage) {
     case 1:
         func_8008D488(sub[7].unk6C, *(s32 *)D_8005A604);
         if (((s32 *)D_8005A604)[2] != 0) {
@@ -1127,11 +1137,11 @@ void OptionsRender(void) {
         }
         break;
     }
-    func_80018B08(&D_800B8DD8, &D_800B9538);
+    func_80018B08(&TitlesMenuView, &TitlesCamera);
     func_8001C2C0((u8 *)GetEngineSlot(4));
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
-    func_80018B08(&D_800B8E00, &D_800B9538);
+    func_80018B08(&TitlesBackdropView, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
@@ -1181,49 +1191,49 @@ void OptionsQuit(void) {
 }
 
 void OptionsInit(void) {
-    func_80095BEC(4, (s32 *)D_800B8F20);
-    D_800B9508 = 0;
-    D_800B950C = 0;
+    func_80095BEC(4, (s32 *)OptionsPlace);
+    OptionsCursor = 0;
+    OptionsPage = 0;
 }
 
-void MenuChainStart(s32 *arg0) {
-    D_800B9620 = arg0;
-    func_8001E848(&D_8009F8A4, (process_info *)*arg0);
+void MenuChainStart(process_info **chain) {
+    MenuChainPos = chain;
+    func_8001E848(&D_8009F8A4, *chain);
 }
 
-void MenuChainStep(s32 arg0) {
-    s32 *temp_v1;
-    s32 temp_a1;
+void MenuChainStep(s32 n) {
+    process_info **p;
+    process_info *next;
 
-    temp_v1 = &D_800B9620[arg0];
-    temp_a1 = *temp_v1;
-    D_800B9620 = temp_v1;
-    if (temp_a1 != 0) {
-        func_8001E848(&D_8009F8A4, (process_info *)temp_a1);
+    p = &MenuChainPos[n];
+    next = *p;
+    MenuChainPos = p;
+    if (next != NULL) {
+        func_8001E848(&D_8009F8A4, next);
     }
 }
 
 void MenuChainBack(void) {
-    s32 *temp_v0;
-    s32 temp_a1;
+    process_info **p;
+    process_info *next;
 
-    temp_v0 = D_800B9620 - 1;
-    temp_a1 = *temp_v0;
-    D_800B9620 = temp_v0;
-    if (temp_a1 != 0) {
-        func_8001E848(&D_8009F8A4, (process_info *)temp_a1);
+    p = MenuChainPos - 1;
+    next = *p;
+    MenuChainPos = p;
+    if (next != NULL) {
+        func_8001E848(&D_8009F8A4, next);
     }
 }
 
 void MenuChainNext(void) {
-    s32 *temp_v0;
-    s32 temp_a1;
+    process_info **p;
+    process_info *next;
 
-    temp_v0 = D_800B9620;
-    temp_a1 = temp_v0[1];
-    D_800B9620 = temp_v0 + 1;
-    if (temp_a1 != 0) {
-        func_8001E848(&D_8009F8A4, (process_info *)temp_a1);
+    p = MenuChainPos;
+    next = p[1];
+    MenuChainPos = p + 1;
+    if (next != NULL) {
+        func_8001E848(&D_8009F8A4, next);
     }
 }
 
@@ -1231,13 +1241,13 @@ void BattleOptionsQuit(void) {
 }
 
 void BattleOptionsInit(void) {
-    func_80095BEC(0, (s32 *)D_800B8974);
-    D_800B962C = 2;
+    func_80095BEC(0, (s32 *)BattleOptionsPlace);
+    BattleOptionsState = 2;
 }
 
 void TitlesLeaveRender(void) {
-    if (D_800B9DF4.render != NULL) {
-        D_800B9DF4.render();
+    if (CharSelect.render != NULL) {
+        CharSelect.render();
     }
 }
 
@@ -1248,9 +1258,9 @@ void TitlesLeaveInit(void) {
 
 void NewLoadMenuInit(void) {
     u8 *g;
-    func_80095BEC(0, (s32 *)D_800B889C);
-    D_800B9628 = 0;
-    D_800B95F0 = 0;
+    func_80095BEC(0, (s32 *)NewLoadMenuPlace);
+    NewLoadMenuCursor = 0;
+    MainMenuCursor = 0;
     g = D_8005A614;
     g[0x27] = 2;
     *(s32 *)(g + 0x6C) = 1;
@@ -1265,7 +1275,7 @@ void NewLoadMenuInit(void) {
 
 void num_players_render(void) {
     D_800569AC = D_8009F644.amount;
-    func_80018B08(&D_800B8DD8, &D_800B9538);
+    func_80018B08(&TitlesMenuView, &TitlesCamera);
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
 
@@ -1273,31 +1283,31 @@ extern u8 D_8005A63A;
 
 void PlayersMenuInit(void) {
     if (D_8005A646 & 4) {
-        func_80095BEC(0, (s32 *)D_800B877C);
+        func_80095BEC(0, (s32 *)PlayersMenuAdventurePlace);
     } else {
-        func_80095BEC(0, (s32 *)D_800B865C);
+        func_80095BEC(0, (s32 *)PlayersMenuPlace);
     }
     D_8005A63A = D_80051600 != 0;
 }
 
 void MainMenuInit(void) {
     u8 *g;
-    D_800B95F0 = 0;
+    MainMenuCursor = 0;
     func_80092C54();
     g = D_8005A614;
     *(s16 *)(g + 0x34) = 0x28;
-    D_800B9624 = 0;
+    MainMenuHintTimer = 0;
     *(u16 *)(g + 0x32) |= 0x200;
-    func_80095BEC(0, (s32 *)D_800B8518);
+    func_80095BEC(0, (s32 *)MainMenuPlace);
 }
 
 void RenderTitlesBackdropAndMenu(void) {
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
-    func_80018B08(&D_800B8E00, &D_800B9538);
+    func_80018B08(&TitlesBackdropView, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
-    func_80018B08(&D_800B8DD8, &D_800B9538);
+    func_80018B08(&TitlesMenuView, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
@@ -1305,7 +1315,7 @@ void RenderTitlesBackdropAndMenu(void) {
 void RenderTitlesBackdrop(void) {
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
-    func_80018B08(&D_800B8E00, &D_800B9538);
+    func_80018B08(&TitlesBackdropView, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
@@ -1313,10 +1323,10 @@ void RenderTitlesBackdrop(void) {
 void RenderTitlesMenu(void) {
     GetEngineSlot(1)->sub[1].flags |= 0x8000;
     GetEngineSlot(1)->sub[2].flags |= 0x8000;
-    func_80018B08(&D_800B8DD8, &D_800B9538);
+    func_80018B08(&TitlesMenuView, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(0));
-    func_80018B08(&D_800B8E00, &D_800B9538);
+    func_80018B08(&TitlesBackdropView, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
@@ -1412,7 +1422,7 @@ void InitCharSelector(s32 arg0) {
 
     e0 = GetEngineSlot(0);
     e2 = GetEngineSlot(2);
-    o = (Ovl69Obj *)&D_800B9FD4[arg0];
+    o = (Ovl69Obj *)&CharSelectors[arg0];
     s = e2->sub + arg0;
     o->unk8 = s;
     t = e0->sub + arg0;
@@ -1461,8 +1471,8 @@ void UpdateCharSelector(Ovl69Slot *slot) {
     s = o->unk8;
     t = o->unkC;
     s2 = o->unk10;
-    x = O69CARD[o->unk30].x + D_800B9C84[o->unk4].x;
-    y = O69CARD[o->unk30].y + D_800B9C84[o->unk4].y;
+    x = O69CARD[o->unk30].x + CharSelectorOffsets[o->unk4].x;
+    y = O69CARD[o->unk30].y + CharSelectorOffsets[o->unk4].y;
     t->unk04 = func_80015210(t->unk04, x, 0x800);
     t->unk08 = func_80015210(t->unk08, y, 0x800);
     still = abs(t->unk04 - x) + abs(t->unk08 - y);
@@ -1490,19 +1500,19 @@ void UpdateCharSelector(Ovl69Slot *slot) {
     }
     if (o->unk4 < D_8005A63A) {
         if (O69PAD[o->unk4].pressed & 0x80) {
-            PlaySfx(D_800B9CB4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(CharMoveSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
             o->unk30--;
         }
         if (O69PAD[o->unk4].pressed & 0x20) {
-            PlaySfx(D_800B9CB4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(CharMoveSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
             o->unk30++;
         }
         if (O69PAD[o->unk4].pressed & 0x10) {
-            PlaySfx(D_800B9CB4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(CharMoveSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
             o->unk30 -= 4;
         }
         if (O69PAD[o->unk4].pressed & 0x40) {
-            PlaySfx(D_800B9CB4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(CharMoveSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
             o->unk30 += 4;
         }
     }
@@ -1530,7 +1540,7 @@ void UpdateCharSelector(Ovl69Slot *slot) {
         }
         D_8005A614[o->unk4 + 0x50] = card[o->unk30].unk4;
         D_8005A614[o->unk4 + 0x4C] = card[o->unk30].unk4;
-        PlaySfx(D_800B9CA4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(CharPickSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
         o->ext = D_8005A9A0;
         {
             s32 w = O69CARD[o->unk30].unk1C;
@@ -1546,19 +1556,19 @@ void CharSelectInit(void) {
     s32 i;
     s32 off;
 
-    cam_init((u8 *)&D_800B9F1C);
-    *(s32 *)((u8 *)&D_800B9F1C + 8) = 0x400;
-    *(s32 *)((u8 *)&D_800B9F1C + 0x18) = 0x190;
+    cam_init((u8 *)&CharSelectCamera);
+    *(s32 *)((u8 *)&CharSelectCamera + 8) = 0x400;
+    *(s32 *)((u8 *)&CharSelectCamera + 0x18) = 0x190;
     eng = GetEngineSlot(0);
-    func_80095BEC(0, (s32 *)D_800B9634);
-    func_80095BEC(2, (s32 *)D_800B9A00);
+    func_80095BEC(0, (s32 *)CharSelectPlace);
+    func_80095BEC(2, (s32 *)CharSelectModelsPlace);
     i = 0;
     do {
         InitCharSelector(i);
         i++;
     } while (i < 4);
     i = 0;
-    rec = D_800B9B44;
+    rec = CharCards;
     off = 0x7E0;
     do {
         i++;
@@ -1578,15 +1588,15 @@ void ShuffleCharSelectors(void) {
     if (D_8005A63A != 0) {
         do {
             do {
-                D_800B9FD4[i].idx = Random(8);
+                CharSelectors[i].idx = Random(8);
                 for (j = 0; j < i; j++) {
-                    if (D_800B9FD4[j].idx == D_800B9FD4[i].idx) {
+                    if (CharSelectors[j].idx == CharSelectors[i].idx) {
                         break;
                     }
                 }
             } while (j != i);
-            D_800B9FD4[i].dst->unk4 = ((Ovl69Pt *)D_800B9B44)[D_800B9FD4[i].idx].x + D_800B9C84[i].x;
-            D_800B9FD4[i].dst->unk8 = ((Ovl69Pt *)D_800B9B44)[D_800B9FD4[i].idx].y + D_800B9C84[i].y;
+            CharSelectors[i].dst->unk4 = ((Ovl69Pt *)CharCards)[CharSelectors[i].idx].x + CharSelectorOffsets[i].x;
+            CharSelectors[i].dst->unk8 = ((Ovl69Pt *)CharCards)[CharSelectors[i].idx].y + CharSelectorOffsets[i].y;
             i++;
         } while (i < ((Ovl69ModeView *)D_8005A614)->unk26);
     }
@@ -1603,18 +1613,18 @@ s32 CpuPickCharacter(s32 a0) {
 
     if (*(u16 *)(g + 0x32) & 4) {
         if (g[0x26] == 1) {
-            s8 *t = D_800B9CC4;
+            s8 *t = AdventureHeadsSolo;
             s32 v = Random(2) + (a0 - 1) * 2;
             s32 w = (g[0x4C] - 1) * 6;
             r = t[v + w];
         } else {
-            s8 *t = D_800B9CF4;
+            s8 *t = AdventureHeadsTeam;
             s32 v = Random(2) + (a0 - 2) * 2 + (g[0x4D] - 1) * 4;
             s32 w = (g[0x4C] - 1) << 5;
             r = t[v + w];
         }
         i = 0;
-        rec = D_800B9B44;
+        rec = CharCards;
         do {
             if (*(s32 *)rec->unk4 == r) {
                 return i;
@@ -1625,7 +1635,7 @@ s32 CpuPickCharacter(s32 a0) {
         return -1;
     }
     {
-        Ovl69Rec *p = D_800B9B44;
+        Ovl69Rec *p = CharCards;
         s32 k;
         s32 j;
         do {
@@ -1660,8 +1670,8 @@ void CharSelectUpdate(void) {
     s2->unk52 = 1;
     min = 0x7FFFFFFF;
     for (i = 0; i < ((Ovl69ModeView *)D_8005A614)->unk26; i++) {
-        if (D_800B9FD4[i].pad10[5] < min) {
-            min = D_800B9FD4[i].pad10[5];
+        if (CharSelectors[i].pad10[5] < min) {
+            min = CharSelectors[i].pad10[5];
         }
     }
     if (min >= 0x10) {
@@ -1671,14 +1681,14 @@ void CharSelectUpdate(void) {
             if (i >= 4) {
                 break;
             }
-            w = D_800B9FD4[i].pad10[5];
+            w = CharSelectors[i].pad10[5];
             if (w > 0 && w < 15) {
                 min = 0;
                 break;
             }
             if (w == 0) {
-                D_800B9FD4[i].idx = CpuPickCharacter(i);
-                D_800B9FD4[i].pad10[7]++;
+                CharSelectors[i].idx = CpuPickCharacter(i);
+                CharSelectors[i].pad10[7]++;
                 min = 0;
                 break;
             }
@@ -1693,7 +1703,7 @@ void CharSelectUpdate(void) {
         MenuChainBack();
     }
     for (i = 0; i < 4; i++) {
-        UpdateCharSelector(&D_800B9FD4[i]);
+        UpdateCharSelector(&CharSelectors[i]);
     }
 }
 
@@ -1704,7 +1714,7 @@ void CharSelectRender(void) {
     eng->unk10.x = -0x140;
     eng->unk10.y = -0xF0;
     RenderTitlesBackdropAndMenu();
-    func_80018B08(&D_800B8DD8, &D_800B9F1C);
+    func_80018B08(&TitlesMenuView, &CharSelectCamera);
     D_800569AC = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
 }
@@ -1713,12 +1723,12 @@ s8 adventure_mode_head(s32 a0) {
     u8 *g = D_8005A614;
 
     if (g[0x26] == 1) {
-        s8 *t = D_800B9CC4;
+        s8 *t = AdventureHeadsSolo;
         s32 v = Random(2) + (a0 - 1) * 2;
         s32 w = (g[0x4C] - 1) * 6;
         return t[v + w];
     } else {
-        s8 *t = D_800B9CF4;
+        s8 *t = AdventureHeadsTeam;
         s32 v = Random(2) + (a0 - 2) * 2 + (g[0x4D] - 1) * 4;
         s32 w = (g[0x4C] - 1) << 5;
         return t[v + w];
@@ -1761,14 +1771,14 @@ s32 UnlockCardLevels(s32 arg0) {
     s32 *p;
     s32 *q;
     s32 j;
-    Ovl69Entry *e;
+    BattleArena *e;
     s32 count;
     u8 *g;
     s32 i;
     s32 found;
     u8 *tbl;
 
-    e = D_800BA324;
+    e = BattleArenas;
     count = 0;
     i = count;
     tbl = D_800657D0;
@@ -1839,19 +1849,19 @@ outer:
 void LevelSelectInit(void) {
     subengine *sub;
 
-    D_800BA744 = 0;
-    func_80095BEC(0, (s32 *)D_800BA4D4);
-    func_80095BEC(2, (s32 *)D_800BA35C);
-    func_80095BEC(3, (s32 *)D_800BA3A4);
-    func_80095BEC(4, (s32 *)D_800BA3EC);
-    func_80095BEC(5, (s32 *)D_800BA434);
-    func_80095BEC(6, (s32 *)D_800BA47C);
+    LevelSelectReload = 0;
+    func_80095BEC(0, (s32 *)LevelSelectPlace);
+    func_80095BEC(2, (s32 *)LevelSelectPlace0);
+    func_80095BEC(3, (s32 *)LevelSelectPlace1);
+    func_80095BEC(4, (s32 *)LevelSelectPlace2);
+    func_80095BEC(5, (s32 *)LevelSelectPlace3);
+    func_80095BEC(6, (s32 *)LevelSelectPlace4);
     GetEngineSlot(1)->sub[4].flags |= 0x8000;
     GetEngineSlot(1)->sub[5].flags |= 0x8000;
     GetEngineSlot(1)->sub[6].flags |= 0x8000;
     GetEngineSlot(1)->sub[7].flags |= 0x8000;
     sub = GetEngineSlot(1)->sub;
-    D_800BA740 = 0;
+    LevelSelectBusy = 0;
     sub[3].flags |= 0x8000;
     LevelSelectCursor(0);
 }
@@ -1864,12 +1874,12 @@ void LevelSelectInput(void) {
 
     if ((D_80051380 & 0x80) && (s8)D_8005A614[0x36] > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_800BA744 = 4;
+        LevelSelectReload = 4;
         D_8005A614[0x36]--;
     }
     if ((D_80051380 & 0x20) && (s8)D_8005A614[0x36] < 6) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_800BA744 = 4;
+        LevelSelectReload = 4;
         D_8005A614[0x36]++;
     }
     if ((D_80051380 & 0x10) && (s8)D_8005A614[0x37] > 0) {
@@ -1877,7 +1887,7 @@ void LevelSelectInput(void) {
         D_8005A614[0x37]--;
     }
     if ((D_80051380 & 0x40)
-        && (s8)D_8005A614[0x37] < D_800BA324[(s8)D_8005A614[0x36]].unk4 - 1) {
+        && (s8)D_8005A614[0x37] < BattleArenas[(s8)D_8005A614[0x36]].unk4 - 1) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         D_8005A614[0x37]++;
     }
@@ -1903,32 +1913,32 @@ void LevelSelectInput(void) {
         return;
     }
     e = GetEngineSlot(0);
-    tbl = D_800BA160;
+    tbl = LangLocked;
     g = D_8005A614;
     e->sub->unk6C = (void *)tbl[*(s32 *)(g + 0x2C)];
     GetEngineSlot(2)->sub->unk74 = 0;
     GetEngineSlot(0)->sub[4].flags &= ~0x8000;
     GetEngineSlot(0)->sub->unk08 = 0x1C;
     GetEngineSlot(0)->sub[9].flags |= 0x8000;
-    if ((c = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)D_8005A614[0x36]].unk0 + ((s8)D_8005A614[0x37] << 4)))->type == 2)) {
+    if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)D_8005A614[0x36]].unk0 + ((s8)D_8005A614[0x37] << 4)))->type == 2)) {
         if (D_800655C0 & 2) {
             if (D_800655C0 & 0x40) {
-                GetEngineSlot(0)->sub[9].unk6C = (void *)D_800BA660[*(s32 *)(D_8005A614 + 0x2C)];
+                GetEngineSlot(0)->sub[9].unk6C = (void *)LangCheckingCard[*(s32 *)(D_8005A614 + 0x2C)];
             } else if (D_800655C0 & 0x10) {
                 if (UnlockCardLevels(0) != 0) {
-                    *(s32 *)&GetEngineSlot(0)->sub[9].unk6C = D_800BA154[*(s32 *)(D_8005A614 + 0x2C)];
+                    *(s32 *)&GetEngineSlot(0)->sub[9].unk6C = LangPressToUnlockLevels[*(s32 *)(D_8005A614 + 0x2C)];
                     if (D_80051380 & 0x2000) {
                         PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
                         UnlockCardLevels(1);
                     }
                 } else {
-                    GetEngineSlot(0)->sub[9].unk6C = (void *)D_800BA158[*(s32 *)(D_8005A614 + 0x2C)];
+                    GetEngineSlot(0)->sub[9].unk6C = (void *)LangNoMoreUnlocked[*(s32 *)(D_8005A614 + 0x2C)];
                 }
             } else {
-                GetEngineSlot(0)->sub[9].unk6C = (void *)D_800BA15C[*(s32 *)(D_8005A614 + 0x2C)];
+                GetEngineSlot(0)->sub[9].unk6C = (void *)LangInsertCard[*(s32 *)(D_8005A614 + 0x2C)];
             }
         } else {
-            GetEngineSlot(0)->sub[9].unk6C = (void *)D_800BA15C[*(s32 *)(D_8005A614 + 0x2C)];
+            GetEngineSlot(0)->sub[9].unk6C = (void *)LangInsertCard[*(s32 *)(D_8005A614 + 0x2C)];
         }
     } else {
         GetEngineSlot(0)->sub[9].unk6C = NULL;
@@ -1936,7 +1946,7 @@ void LevelSelectInput(void) {
 }
 
 void LevelSelectUpdate(void) {
-    Ovl69ListSlot *slot;
+    BattleLevel *slot;
     subengine *q;
     s32 val;
     u8 *a;
@@ -1950,24 +1960,24 @@ void LevelSelectUpdate(void) {
     s32 w;
     s32 c;
     u8 *h;
-    Ovl69Entry *tbl;
+    BattleArena *tbl;
     TrigEntry *trig;
 
-    if (D_800BA744 != 0) {
+    if (LevelSelectReload != 0) {
         func_80017640();
         func_80011D28((u8 *)&D_8004E0F0);
-        D_800BA744--;
+        LevelSelectReload--;
     }
     AnimateTitlesBackdrop();
     a = D_800555DC;
     func_80029100((obj_textureset *)(a + 0x10));
     func_80029100((obj_textureset *)(a + 0x48));
-    val = D_800BA740;
+    val = LevelSelectBusy;
     if (val == 0) {
         LevelSelectInput();
     }
     e0 = GetEngineSlot(0);
-    boff = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)D_8005A614[0x36]].unk0 + ((s8)D_8005A614[0x37] << 4)))->idx;
+    boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)D_8005A614[0x36]].unk0 + ((s8)D_8005A614[0x37] << 4)))->idx;
     w = D_8004DDD0[boff * 3] - 0x101;
     off = ((s32 **)D_8004DDBC)[*(s32 *)(D_8005A614 + 0x2C)][w];
     e0->sub[6].unk6C = (void *)off;
@@ -1983,13 +1993,13 @@ void LevelSelectUpdate(void) {
         s32 fl;
         EXTengine *e;
 
-        if (i >= (D_800BA324 + (s8)D_8005A614[0x36])->unk4) {
+        if (i >= (BattleArenas + (s8)D_8005A614[0x36])->unk4) {
             break;
         }
         GetEngineSlot(1)->sub[off + 4].flags |= 0x8000;
         e = GetEngineSlot(i + 3);
         fl = *(s32 *)(D_8005A614 + 4) & 0x2000;
-        slot = &((Ovl69ListSlot *)D_800BA324[(s8)D_8005A614[0x36]].unk0)[off];
+        slot = &((BattleLevel *)BattleArenas[(s8)D_8005A614[0x36]].unk0)[off];
         idx = slot->idx;
         type = slot->type;
         s = e->sub;
@@ -2000,8 +2010,8 @@ void LevelSelectUpdate(void) {
             on = 0;
         }
         if (on) {
-            s->unk6C = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)D_8005A614[0x36]].unk0 + (off << 4)))->model;
-            c = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)D_8005A614[0x36]].unk0 + (off << 4)))->unkC;
+            s->unk6C = ((BattleLevel *)((u8 *)BattleArenas[(s8)D_8005A614[0x36]].unk0 + (off << 4)))->model;
+            c = ((BattleLevel *)((u8 *)BattleArenas[(s8)D_8005A614[0x36]].unk0 + (off << 4)))->unkC;
             s->unk74 = c;
             s->unk10 = 0x7D;
             s->unk12 = 0;
@@ -2023,12 +2033,12 @@ void LevelSelectUpdate(void) {
         s->unk51 = 0;
         s->unk52 = 1;
     }
-    for (i = (D_8005A64A + D_800BA324)->unk4; i < 4; i++) {
+    for (i = (D_8005A64A + BattleArenas)->unk4; i < 4; i++) {
         GetEngineSlot(1)->sub[i + 4].flags &= ~0x8000;
         GetEngineSlot(i + 3)->sub->unk74 = 0;
     }
     h = D_8005A614;
-    D_8009E5DC = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)h[0x36]].unk0 + ((s8)h[0x37] << 4)))->idx;
+    D_8009E5DC = ((BattleLevel *)((u8 *)BattleArenas[(s8)h[0x36]].unk0 + ((s8)h[0x37] << 4)))->idx;
     q = GetEngineSlot(2)->sub;
     q->unk10 = 0x7D;
     q->unk51 = 0;
@@ -2037,28 +2047,28 @@ void LevelSelectUpdate(void) {
 }
 
 void LevelSelectRender(void) {
-    s32 *cam = (s32 *)&D_800B9538;
+    s32 *cam = (s32 *)&TitlesCamera;
     s8 *m;
 
-    func_80018B08(&D_800BA664, &D_800B9538);
+    func_80018B08(&LevelSelectView0, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
     RenderTitlesBackdropAndMenu();
     m = (s8 *)D_8005A614;
     cam[2] = (m[0x37] != 0) ? 0x400 : 0x578;
-    func_80018B08(&D_800BA68C, &D_800B9538);
+    func_80018B08(&LevelSelectView1, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(3));
     cam[2] = (m[0x37] != 1) ? 0x400 : 0x578;
-    func_80018B08(&D_800BA6B4, &D_800B9538);
+    func_80018B08(&LevelSelectView2, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(4));
     cam[2] = (m[0x37] != 2) ? 0x400 : 0x578;
-    func_80018B08(&D_800BA6DC, &D_800B9538);
+    func_80018B08(&LevelSelectView3, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(5));
     cam[2] = (m[0x37] != 3) ? 0x400 : 0x578;
-    func_80018B08(&D_800BA704, &D_800B9538);
+    func_80018B08(&LevelSelectView4, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(6));
     cam[2] = 0x400;
@@ -2085,7 +2095,7 @@ void LevelSelectCursor(s32 arg0) {
 
 s32 IsLevelUnlocked(s32 arg0) {
     u8 *g = D_8005A614;
-    u8 *e = (u8 *)D_800BA324[(s8)g[0x36]].unk0 + (arg0 << 4);
+    u8 *e = (u8 *)BattleArenas[(s8)g[0x36]].unk0 + (arg0 << 4);
     s32 off = *(s32 *)(e + 4);
     s32 type = *(s32 *)e;
     u8 *p;
@@ -2100,7 +2110,7 @@ s32 IsLevelUnlocked(s32 arg0) {
 
 s32 IsCardLevel(s32 arg0) {
     s32 i = D_8005A64A;
-    u8 *s = (u8 *)D_800BA324[i].unk0;
+    u8 *s = (u8 *)BattleArenas[i].unk0;
     return *(s32 *)(s + (arg0 << 4)) == 2;
 }
 
@@ -2108,37 +2118,37 @@ void TitlesEmptyStub(void) {
 }
 
 s32 LevelListName(s32 arg0, s32 arg1) {
-    s32 idx = *(s32 *)(D_800BA324[arg0].unk0 + (arg1 << 4) + 4);
+    s32 idx = *(s32 *)(BattleArenas[arg0].unk0 + (arg1 << 4) + 4);
     s32 w = D_8004DDD0[idx * 3] - 0x101;
     s32 **tbl = (s32 **)D_8004DDBC;
     return tbl[D_8005A640][w];
 }
 
 s32 LevelListModel(s32 arg0, s32 arg1) {
-    return *(s32 *)(D_800BA324[arg0].unk0 + (arg1 << 4) + 8);
+    return *(s32 *)(BattleArenas[arg0].unk0 + (arg1 << 4) + 8);
 }
 
 s32 LevelListAnim(s32 a, s32 b) {
-    return *(s32 *)(D_800BA324[a].unk0 + (b << 4) + 0xC);
+    return *(s32 *)(BattleArenas[a].unk0 + (b << 4) + 0xC);
 }
 
 s32 LevelListCount(s32 arg0) {
-    return D_800BA324[arg0].unk4;
+    return BattleArenas[arg0].unk4;
 }
 
 s32 LevelListText(s32 a, s32 b) {
-    s32 base = D_800BA324[a].unk0;
+    s32 base = BattleArenas[a].unk0;
     s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
     s32 *row = D_8004DD70[D_8005A640];
     return row[idx];
 }
 
 s32 LevelListType(s32 a, s32 b) {
-    return *(s32 *)((u8 *)D_800BA324[a].unk0 + (b << 4));
+    return *(s32 *)((u8 *)BattleArenas[a].unk0 + (b << 4));
 }
 
 s32 LevelListLevel(s32 a, s32 b) {
-    return *(s32 *)((u8 *)D_800BA324[a].unk0 + (b << 4) + 4);
+    return *(s32 *)((u8 *)BattleArenas[a].unk0 + (b << 4) + 4);
 }
 
 s32 AnyCardHasLevel(s32 idx) {
@@ -2168,11 +2178,11 @@ void TeamModeShowPreset(void) {
     u8 *s;
 
     s = (u8 *)GetEngineSlot(0)->sub;
-    p = &D_800BAA08[D_800BAACC];
-    *(u16 *)(s + 0x74) = D_800BAAA0[O69PV->unk4C[p->hero[0]]];
-    *(u16 *)(s + 0x11C) = D_800BAAA0[O69PV->unk4C[p->hero[1]]];
-    *(u16 *)(s + 0x1C4) = D_800BAAA0[O69PV->unk4C[p->hero[2]]];
-    *(u16 *)(s + 0x26C) = D_800BAAA0[O69PV->unk4C[p->hero[3]]];
+    p = &TeamModePresets[TeamModePreset];
+    *(u16 *)(s + 0x74) = TeamModeHeroFrames[O69PV->unk4C[p->hero[0]]];
+    *(u16 *)(s + 0x11C) = TeamModeHeroFrames[O69PV->unk4C[p->hero[1]]];
+    *(u16 *)(s + 0x1C4) = TeamModeHeroFrames[O69PV->unk4C[p->hero[2]]];
+    *(u16 *)(s + 0x26C) = TeamModeHeroFrames[O69PV->unk4C[p->hero[3]]];
     *(s32 *)(s + 0x540) &= ~0x8000;
     *(s32 *)(s + 0x5E8) &= ~0x8000;
     *(s32 *)(s + 0x690) &= ~0x8000;
@@ -2200,20 +2210,20 @@ void TeamModeUpdate(void) {
     s32 temp_v0_2;
 
     SetupTitlesBackdrop();
-    if (D_800BAAC8 == 0) {
+    if (TeamModeRow == 0) {
         if (D_80051380 & 0x80) {
-            temp_v0 = D_800BAACC - 1;
-            D_800BAACC = temp_v0;
+            temp_v0 = TeamModePreset - 1;
+            TeamModePreset = temp_v0;
             if (temp_v0 < 0) {
-                D_800BAACC = 1;
+                TeamModePreset = 1;
             }
             PlaySfx(0x385, 0, 0, 0x1000, 0x1E00, 0);
         }
         if (D_80051380 & 0x20) {
-            temp_v0_2 = D_800BAACC + 1;
-            D_800BAACC = temp_v0_2;
+            temp_v0_2 = TeamModePreset + 1;
+            TeamModePreset = temp_v0_2;
             if (temp_v0_2 >= 2) {
-                D_800BAACC = 0;
+                TeamModePreset = 0;
             }
             PlaySfx(0x385, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -2223,11 +2233,11 @@ void TeamModeUpdate(void) {
             PlaySfx(0x192, 0, 0, 0x1000, 0x1E00, 0);
         }
     }
-    if ((D_80051380 & 0x10) && (D_800BAAC8 > 0)) {
-        D_800BAAC8 -= 1;
+    if ((D_80051380 & 0x10) && (TeamModeRow > 0)) {
+        TeamModeRow -= 1;
     }
-    if ((D_80051380 & 0x40) && (D_800BAAC8 < 0)) {
-        D_800BAAC8 += 1;
+    if ((D_80051380 & 0x40) && (TeamModeRow < 0)) {
+        TeamModeRow += 1;
     }
     if (D_80051380 & 0x1000) {
         PlaySfx(0x384, 0, 0, 0x1000, 0x1E00, 0);
@@ -2236,9 +2246,9 @@ void TeamModeUpdate(void) {
 }
 
 void team_mode_init(void) {
-    func_80095BEC(0, (s32 *)D_800BA754);
-    D_800BAAC8 = 0;
-    D_800BAACC = 0;
+    func_80095BEC(0, (s32 *)TeamModePlace);
+    TeamModeRow = 0;
+    TeamModePreset = 0;
 }
 
 void MoveTeamBar(s32 arg0, s32 arg1) {
@@ -2269,5 +2279,5 @@ void TitlesExtraScreenRender(void) {
 }
 
 void TitlesExtraScreenInit(void) {
-    func_80095BEC(2, (s32 *)D_800BAAD0);
+    func_80095BEC(2, (s32 *)TitlesExtraPlace);
 }

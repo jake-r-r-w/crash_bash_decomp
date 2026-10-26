@@ -518,20 +518,20 @@ void func_8008F554(void) {
 }
 
 void func_8008FB48(void) {
-    func_80018B08(&D_8009EA9C, &D_800B9538);
+    func_80018B08(&D_8009EA9C, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(3));
-    func_80018B08(&D_8009EAC4, &D_800B9538);
+    func_80018B08(&D_8009EAC4, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(4));
-    func_80018B08(&D_8009EAEC, &D_800B9538);
+    func_80018B08(&D_8009EAEC, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(5));
-    func_80018B08(&D_8009EB14, &D_800B9538);
+    func_80018B08(&D_8009EB14, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(6));
     RenderTitlesBackdropAndMenu();
-    func_80018B08(&D_8009EA74, &D_800B9538);
+    func_80018B08(&D_8009EA74, &TitlesCamera);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
 }

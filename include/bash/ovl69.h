@@ -11,12 +11,12 @@
 
 extern u8 D_8004E568[];
 extern void (*D_8009E58C)(void);
-extern PlaceRec D_800B865C[];
-extern PlaceRec D_800B877C[];
+extern PlaceRec PlayersMenuPlace[];
+extern PlaceRec PlayersMenuAdventurePlace[];
 void OptionsQuit(void);
 void OptionsInit(void);
-void MenuChainStart(s32 *arg0);
-void MenuChainStep(s32 arg0);
+void MenuChainStart(process_info **chain);
+void MenuChainStep(s32 n);
 void BattleOptionsQuit(void);
 void BattleOptionsInit(void);
 void TitlesInitLevel(void);
@@ -39,27 +39,27 @@ typedef struct Ovl69Sub {
 } Ovl69Sub;
 
 extern process_info D_8009F480;
-extern GfxViewport D_800B8DD8;
-extern s32 D_800B95F0;
-extern s32 D_800B9628;
-extern PlaceRec D_800B889C[];
-extern s32 D_800B9624;
-extern s8 D_800B9CC4[];
-extern s8 D_800B9CF4[];
-extern PlaceRec D_800B8518[];
+extern GfxViewport TitlesMenuView;
+extern s32 MainMenuCursor;
+extern s32 NewLoadMenuCursor;
+extern PlaceRec NewLoadMenuPlace[];
+extern s32 MainMenuHintTimer;
+extern s8 AdventureHeadsSolo[];
+extern s8 AdventureHeadsTeam[];
+extern PlaceRec MainMenuPlace[];
 extern u8 D_800A0840[];
 extern process_info D_8009E5C8;
-extern u16 D_800B8DC8[];
+extern u16 TitlesDemoModes[];
 void func_80094D88(s32 arg0, process_info *arg1);
-extern PlaceRec D_800BAAD0[];
-extern GfxViewport D_800B8DD8;
-extern GfxCamera D_800B9F1C;
-extern s32 *D_800B9620;
-extern PlaceRec D_800B8974[];
-extern s32 D_800B962C;
-extern PlaceRec D_800B8F20[];
-extern s32 D_800B9508;
-extern s32 D_800B950C;
+extern PlaceRec TitlesExtraPlace[];
+extern GfxViewport TitlesMenuView;
+extern GfxCamera CharSelectCamera;
+extern process_info **MenuChainPos;
+extern PlaceRec BattleOptionsPlace[];
+extern s32 BattleOptionsState;
+extern PlaceRec OptionsPlace[];
+extern s32 OptionsCursor;
+extern s32 OptionsPage;
 /* D_8005A604 as OptionsUpdate edits it (options menu). */
 typedef struct Ovl69Opt {
     /* 0x00 */ s32 unk0;
@@ -67,71 +67,73 @@ typedef struct Ovl69Opt {
     /* 0x08 */ s32 unk8;
     /* 0x0C */ u8 unkC[4];
 } Ovl69Opt;
-extern PlaceRec D_800B901C[];
-extern PlaceRec D_800B91CC[];
-extern PlaceRec D_800BA754[];
-extern s32 D_800BAAC8;
-extern s32 D_800BAACC;
+extern PlaceRec OptionsSoundPlace[];
+extern PlaceRec OptionsControllerPlace[];
+extern PlaceRec TeamModePlace[];
+extern s32 TeamModeRow;
+extern s32 TeamModePreset;
 /* each screen of the front end is a process (process_info); the menu chains list them */
-extern process_info D_800B8E3C;
-extern process_info D_800B8E50;
-extern process_info D_800B8E64;
-extern process_info D_800B8E8C;
-extern process_info D_800B9DF4;
-extern process_info D_800BA72C;
-extern process_info D_800BAAB4;
+extern process_info PlayersMenu;
+extern process_info NewLoadMenu;
+extern process_info TitlesLeave;
+extern process_info BattleOptions;
+extern process_info CharSelect;
+extern process_info LevelSelect;
+extern process_info TeamMode;
 
 void num_players_render(void);
 
 void CharSelectRender(void);
-/* 16-byte slot record of an Ovl69Entry list (LevelSelectUpdate). */
+/* 16-byte slot record of an BattleArena list (LevelSelectUpdate). */
 typedef struct {
-    s32 type;  /* 0x0: 1, or 2 = gated by D_8005A614[0xE4/0x168 + idx] */
-    s32 idx;   /* 0x4 */
+    s32 type;  /* 0x0: 1 open from the start, 2 unlocked by D_8005A614[0xE4/0x168 + idx] */
+    s32 idx;   /* 0x4: the game mode (D_8005A648) */
     void *model; /* 0x8 */
-    s32 unkC;  /* 0xC */
-} Ovl69ListSlot;
+    s32 unkC;  /* 0xC: the model's anim */
+} BattleLevel;
 
+/* One battle arena of the level select (BattleArenas, by D_8005A614[0x36]): unk0 its
+ * BattleLevel list, unk4 how many. */
 typedef struct {
     s32 unk0;
     s32 unk4;
-} Ovl69Entry;
+} BattleArena;
 
 void LevelSelectInput(void);
 
-extern Ovl69Entry D_800BA324[];
-extern s32 D_800BA154[];
-extern s32 D_800BA158[];
-extern s32 D_800BA15C[];
-extern s32 D_800BA160[];
-extern s32 D_800BA660[];
+extern BattleArena BattleArenas[];
+extern s32 LangPressToUnlockLevels[];
+extern s32 LangNoMoreUnlocked[];
+extern s32 LangInsertCard[];
+extern s32 LangLocked[];
+extern s32 LangCheckingCard[];
 
 /* Inline forms of the slot getters LevelListModel / LevelListAnim / LevelListText. */
 static inline s32 Ovl69SlotModelI(s32 a, s32 b) {
-    return *(s32 *)(D_800BA324[a].unk0 + (b << 4) + 8);
+    return *(s32 *)(BattleArenas[a].unk0 + (b << 4) + 8);
 }
 
 static inline s32 Ovl69SlotCI(s32 a, s32 b) {
-    return *(s32 *)(D_800BA324[a].unk0 + (b << 4) + 0xC);
+    return *(s32 *)(BattleArenas[a].unk0 + (b << 4) + 0xC);
 }
 
 extern s32 *D_8004DD70[];
 
 static inline s32 Ovl69SlotRowI(s32 a, s32 b) {
-    s32 base = D_800BA324[a].unk0;
+    s32 base = BattleArenas[a].unk0;
     s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
     s32 *row = D_8004DD70[*(s32 *)(D_8005A614 + 0x2C)];
     return row[idx];
 }
 
-/* LevelSelectInput: is the selected slot of D_800BA324 available? */
+/* LevelSelectInput: is the selected slot of BattleArenas available? */
 static inline s32 Ovl69SlotOn(void) {
     u8 *g = D_8005A614;
-    Ovl69ListSlot *slot;
+    BattleLevel *slot;
     s32 type;
     s32 idx;
 
-    slot = (Ovl69ListSlot *)((u8 *)D_800BA324[(s8)g[0x36]].unk0 + ((s8)g[0x37] << 4));
+    slot = (BattleLevel *)((u8 *)BattleArenas[(s8)g[0x36]].unk0 + ((s8)g[0x37] << 4));
     idx = slot->idx;
     type = slot->type;
     if ((*(s32 *)(g + 4) & 0x2000) || type == 1
@@ -143,20 +145,17 @@ static inline s32 Ovl69SlotOn(void) {
 
 void TitlesCheckIdle(void);
 void AnimateTitlesBackdrop(void);
-void MenuChainStart(s32 *arg0);
+void MenuChainStart(process_info **chain);
 
-extern s32 D_800B8508[];
-extern s32 D_800B8EA4[];
-extern s32 D_800B8EC0[];
-extern s32 D_800B8ED4[];
-extern process_info D_800B9510;
+extern s32 MainMenuHints[];
+extern process_info OptionsScreen;
 
-extern PlaceRec D_800B8C84[];
-extern process_info D_800B8E28;
-extern s32 *D_800B8EB8;
-extern s32 *D_800B8EE4;
-extern Ext400 D_800B95F4;
-extern Ext400 D_800B8C2C;
+extern PlaceRec TitlesBackdropPlace[];
+extern process_info MainMenu;
+extern process_info **BattleChainResume;
+extern process_info **TournamentChainResume;
+extern Ext400 TitlesBackdropAnimator;
+extern Ext400 TitlesBackdropAtable;
 
 typedef struct {
     s32 unk0;
@@ -164,17 +163,17 @@ typedef struct {
     u8 *unk24;
 } Ovl69Rec;
 
-extern Ovl69Rec D_800B9B44[];
-extern PlaceRec D_800B9634[];
-extern PlaceRec D_800B9A00[];
-extern PlaceRec D_800BA35C[];
-extern PlaceRec D_800BA3A4[];
-extern PlaceRec D_800BA3EC[];
-extern PlaceRec D_800BA434[];
-extern PlaceRec D_800BA47C[];
-extern PlaceRec D_800BA4D4[];
-extern s32 D_800BA740;
-extern s32 D_800BA744;
+extern Ovl69Rec CharCards[];
+extern PlaceRec CharSelectPlace[];
+extern PlaceRec CharSelectModelsPlace[];
+extern PlaceRec LevelSelectPlace0[];
+extern PlaceRec LevelSelectPlace1[];
+extern PlaceRec LevelSelectPlace2[];
+extern PlaceRec LevelSelectPlace3[];
+extern PlaceRec LevelSelectPlace4[];
+extern PlaceRec LevelSelectPlace[];
+extern s32 LevelSelectBusy;
+extern s32 LevelSelectReload;
 typedef struct Ovl69Obj {
     s32 unk0;
     s32 unk4;
@@ -216,8 +215,8 @@ typedef struct {
     s32 x;
     s32 y;
 } Ovl69Off;
-extern Ovl69Slot D_800B9FD4[];
-/* D_800B9B44 as UpdateCharSelector reads it: 8 cards of 0x28 bytes. */
+extern Ovl69Slot CharSelectors[];
+/* CharCards as UpdateCharSelector reads it: 8 cards of 0x28 bytes. */
 typedef struct {
     s32 flags;     /* 0x00: bit 0 taken */
     u8 unk4;
@@ -231,7 +230,7 @@ typedef struct {
     s32 sfx;       /* 0x20 */
     s32 pad24;
 } Ovl69Card;
-#define O69CARD ((Ovl69Card *)D_800B9B44)
+#define O69CARD ((Ovl69Card *)CharCards)
 /* UpdateCharSelector: speed toward tgt, +-lim (+-lim+900 when reversing), 0 when near. */
 static inline s32 Ovl69Steer(s32 pos, s32 tgt, s32 vx, s32 lim) {
     s32 v;
@@ -274,10 +273,10 @@ typedef struct {
     s8 lo;
     s8 hi;
 } Ovl69Trig;
-extern s32 D_800B9CA4[];
-extern s32 D_800B9CB4[];
+extern s32 CharPickSfx[];
+extern s32 CharMoveSfx[];
 extern u8 D_80052A54[];
-extern Ovl69Off D_800B9C84[];
+extern Ovl69Off CharSelectorOffsets[];
 /* D_8005A614 as seen by ShuffleCharSelectors (unk26 is D_8005A63A). */
 typedef struct {
     u8 pad0[0x26];
@@ -300,14 +299,14 @@ void MoveTeamBar(s32 arg0, s32 arg1);
 /* OptionsRender */
 #include "bash/main.h"
 void func_8008D488(u8 *arg0, s32 arg1);
-extern GfxCamera D_800B9538;
-extern GfxViewport D_800B8DD8;
-extern GfxViewport D_800B8E00;
-extern GfxViewport D_800BA664;
-extern GfxViewport D_800BA68C;
-extern GfxViewport D_800BA6B4;
-extern GfxViewport D_800BA6DC;
-extern GfxViewport D_800BA704;
+extern GfxCamera TitlesCamera;
+extern GfxViewport TitlesMenuView;
+extern GfxViewport TitlesBackdropView;
+extern GfxViewport LevelSelectView0;
+extern GfxViewport LevelSelectView1;
+extern GfxViewport LevelSelectView2;
+extern GfxViewport LevelSelectView3;
+extern GfxViewport LevelSelectView4;
 
 void OptionsRender(void);
 
@@ -390,7 +389,7 @@ void LevelSelectUpdate(void);
 
 s32 IsCardLevel(s32 arg0);
 
-/* 0x4C-byte preset record of D_800BAA08, picked by D_800BAACC (TeamModeShowPreset). */
+/* 0x4C-byte preset record of TeamModePresets, picked by TeamModePreset (TeamModeShowPreset). */
 typedef struct {
     s32 hero[4];   /* 0x00: indices into D_8005A614 (byte at +0x4C) */
     s32 flags[3];  /* 0x10: or-ed into sub[8/9/10].flags */
@@ -404,7 +403,7 @@ typedef struct {
     s32 unk44;
     s32 unk48;
 } Ovl69Preset;
-extern Ovl69Preset D_800BAA08[];
+extern Ovl69Preset TeamModePresets[];
 /* MoveTeamBar(i, val) inlined: ease sub[4 + i]'s +0x70 toward val. */
 #define OVL69_SETBAR(i, val)                                                  \
     {                                                                         \
@@ -432,7 +431,7 @@ typedef struct {
     s32 unk6C;     /* 0x6C */
 } Ovl69PresetView;
 #define O69PV ((Ovl69PresetView *)D_8005A614)
-extern u16 D_800BAAA0[];
+extern u16 TeamModeHeroFrames[];
 
 void TeamModeShowPreset(void);
 
@@ -447,8 +446,8 @@ typedef struct {
     u16 unk3A;     /* 0x3A */
 } Ovl69OptView;
 #define O69OV ((Ovl69OptView *)D_8005A614)
-extern s32 D_800B8E78[][3];
-extern s32 D_800B8E84[][2];
+extern s32 TextDifficulties[][3];
+extern s32 TextBattleKinds[][2];
 
 void MainMenuUpdate(void);
 

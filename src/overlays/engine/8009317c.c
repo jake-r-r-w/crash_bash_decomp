@@ -154,7 +154,7 @@ void func_800936C4(void) {
     D_800A0158 = 0;
     if (((D5A614View *)D_8005A614)->mode == 0x28 && D_800590CC != 0) {
         D_8009F658.flags = 0x1D;
-        D_8009F658.next_process = &D_800B9524;
+        D_8009F658.next_process = &RunGame;
     }
 }
 

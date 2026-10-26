@@ -18,7 +18,7 @@ extern GfxViewport D_8009EA9C;
 extern GfxViewport D_8009EAC4;
 extern GfxViewport D_8009EAEC;
 extern GfxViewport D_8009EB14;
-extern GfxCamera D_800B9538;
+extern GfxCamera TitlesCamera;
 void RenderTitlesBackdropAndMenu(void);
 
 typedef struct { s32 w[4]; } Blk16;

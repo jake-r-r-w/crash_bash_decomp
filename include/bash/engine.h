@@ -165,7 +165,7 @@ extern u8 *D_80098594;
 extern s32 D_8009F968;
 extern u8 D_800D7144[];
 extern ArenaDef D_80098F48;
-extern process_info D_800B9524;
+extern process_info RunGame;
 extern u8 D_8005B72C[];
 extern u8 D_8005B744[];
 extern s32 D_800A0D3C;
