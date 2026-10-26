@@ -232,3 +232,4 @@ ModeNameAdventureGem = 0x800ADE10;
 ModeNameAdventureChallenge = 0x800ADE20;
 ModeNameAdventureBoss = 0x800ADE38;
 ModeNameEmpty = 0x800ADE4C;
+TournamentSelect = 0x8009EB84;

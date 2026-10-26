@@ -14,7 +14,6 @@ extern u8 D_80055614[];
 extern u8 D_8005564C[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
-extern u8 D_8009EB84[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char TextAdventureHint[] = "complete each warp room to\nunlock further levels";
@@ -212,7 +211,7 @@ process_info **BattleChainResume = &BattleChain[3];
 process_info *AdventureChain[6] = {
     &MainMenu, &NewLoadMenu, &PlayersMenu, &CharSelect, &TitlesLeave, &MainMenu,
 };
-process_info *TournamentChain[4] = { &PlayersMenu, &CharSelect, (process_info *)D_8009EB84, &BattleOptions };
+process_info *TournamentChain[4] = { &PlayersMenu, &CharSelect, &TournamentSelect, &BattleOptions };
 process_info **TournamentChainResume = &TournamentChain[2];
 s32 LangOptions[1] = { (s32)&TextOptions };
 s32 LangExit[1] = { (s32)&TextExit };

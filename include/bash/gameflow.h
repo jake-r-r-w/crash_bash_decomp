@@ -452,9 +452,15 @@ extern s32 HubSaveChoice;
     }
 extern s32 D_8009F63C;
 void func_8009196C(void);
-extern u8 D_800A0858[];
-extern u8 D_800A0870[];
-extern u8 D_800A0888[];
+/* A step of the ending's messages (func_80094D88): two pointers and a time. */
+typedef struct MsgStep {
+    void *a;
+    void *b;
+    s32 time;
+} MsgStep;
+extern MsgStep D_800A0858[];
+extern MsgStep D_800A0870[];
+extern MsgStep D_800A0888[];
 
 s32 func_8008EF70(void);
 

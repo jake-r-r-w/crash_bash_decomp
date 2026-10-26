@@ -664,12 +664,12 @@ s32 func_80090008(void) {
 
 void func_80090048(void) {
     D_8009EB98 = 0;
-    func_80095BEC(0, D_8009E8B4);
+    func_80095BEC(0, (s32 *)D_8009E8B4);
     func_80095BEC(2, D_8009E7F4);
-    func_80095BEC(3, D_8009EB3C);
-    func_80095BEC(4, D_8009EB3C);
-    func_80095BEC(5, D_8009EB3C);
-    func_80095BEC(6, D_8009EB3C);
+    func_80095BEC(3, (s32 *)D_8009EB3C);
+    func_80095BEC(4, (s32 *)D_8009EB3C);
+    func_80095BEC(5, (s32 *)D_8009EB3C);
+    func_80095BEC(6, (s32 *)D_8009EB3C);
     D_8005A63C = 0;
 }
 

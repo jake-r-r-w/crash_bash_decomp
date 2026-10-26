@@ -4083,7 +4083,7 @@ void PlotWeatherNas(u8 *arg0) {
         s32 v = *(s32 *)(arg0 + 0x64);
         switch (v) {
         case 0:
-            func_80015D70(D_8009E200, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
+            func_80015D70((u8 *)&D_8009E200, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
             *(s32 *)(arg0 + 0x60) = 1;
             break;
         case 1:

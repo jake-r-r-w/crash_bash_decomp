@@ -235,8 +235,18 @@ extern s32 D_8009E5B0;
 extern s32 D_8009E5B4;
 extern s32 D_800AEC58;
 extern u8 D_8009E7F4[];
-extern u8 D_8009E8B4[];
-extern u8 D_8009EB3C[];
+/* A text-panel record func_80095BEC builds from (0x24 bytes): kind at 0, the text at 0x14. */
+typedef struct EngRec24 {
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ void *text;
+    /* 0x18 */ u8 pad18[6];
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ u8 pad20[4];
+} EngRec24;
+
+extern EngRec24 D_8009E8B4[];
+extern EngRec24 D_8009EB3C[];
+extern process_info TournamentSelect;   /* after D_8009EB3C's two records: the tournament select menu (TournamentChain) */
 extern s32 D_8009EB98;
 typedef struct { u16 a, b, c, flags; } EngEntry;
 typedef struct { s32 unk0; EngEntry *entries; s32 unk8, unkC, unk10; } EngTable;
@@ -378,7 +388,7 @@ typedef struct EngineHooks {
 } EngineHooks;
 extern EngineHooks HeroHooks;
 extern u8 D_8009D2E4[];
-extern u8 D_8009D2F8[];
+extern s32 D_8009D2F8[];   /* {name, id} pairs: the default victory sequences (HeroHooks.unk14) */
 extern u8 D_8009D318[];
 extern u8 D_8009D354[];
 extern u8 D_8009D894[];
@@ -428,7 +438,15 @@ void func_8007A8C4(void);
 /* N2O's star field (nox.c's NoxSparkFx; the engine's link takes it from the overlay's ELF) */
 extern u8 NoxSparkFxDef[];
 
-extern u8 D_8009E200[];
+/* The weather's Init/Plot pair after three words (InitWeatherNas; NoxSparkFx's shape). */
+typedef struct WeatherFx {
+    s32 unk0;
+    s32 unk4;
+    s32 id;
+    void (*Init)();
+    void (*Plot)();
+} WeatherFx;
+extern WeatherFx D_8009E200;
 
 extern s32 HitSfx[];
 extern u8 CrateObjectsModel[];

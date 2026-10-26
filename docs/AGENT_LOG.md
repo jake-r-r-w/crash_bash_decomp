@@ -474,6 +474,13 @@ Newest first, a few lines each. Details are in the commits.
   `IntroSteps[0].delay` are field accesses, each view of `HeroHooks` (Bonk, Chase, N2O,
   Polar, Race, Spin) given the typed field; every use matched unchanged. data2c reads the
   engine's data as 512 objects, 0 errors.
+  Then (2) done: the 32 pointer warnings, from seven objects: the ending's message steps
+  (`MsgStep`), the weather's definition (`WeatherFx`, `{3 words, Init, Plot}` as N2O's and
+  the hub's), the default victory list, and the text-panel records (`EngRec24` moved to
+  `engine.h` with its text pointer at +0x14; the hub's `HubDoorMenuRecs` initialiser
+  rewritten for it). `D_8009EB3C`'s last 0x14 bytes are the tournament select menu's
+  `process_info` (`TournamentSelect`, which the front end's `TournamentChain` runs). data2c
+  now gives 512 objects, 0 errors, 0 warnings.
 
 - **2026-10-26 (Phase 5: the engine's strings as C):** all 59 INCLUDE_RODATA blocks of
   `gameflow.c`, `heroes.c`, `panel.c` and `pause.c` (61 strings, the memory card and menu

@@ -110,12 +110,6 @@ s32 func_80097608(VECTOR *arg0, VECTOR *arg1, s32 arg2);
 
 void func_800984D4(void);
 
-/* 0x24-byte engine records handed to func_80095BEC (func_800976F8). */
-typedef struct EngRec24 {
-    /* 0x00 */ u8 pad0[0x1E];
-    /* 0x1E */ s16 unk1E;
-    /* 0x20 */ u8 pad20[4];
-} EngRec24;
 
 /* GameInfo as seen by func_800976F8. */
 typedef struct EngRecView {
