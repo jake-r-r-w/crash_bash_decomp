@@ -34,8 +34,8 @@ void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
         } while (v != 0);
     }
     x = a->x;
-    mx = sum * D_80068BD4[(a->ang - 0x400) & 0xFFF].unk2;
-    mz = sum * D_80068BD4[(u16)a->ang & 0xFFF].unk2;
+    mx = sum * TrigTable[(a->ang - 0x400) & 0xFFF].unk2;
+    mz = sum * TrigTable[(u16)a->ang & 0xFFF].unk2;
     z = a->z;
     x -= mx >> 12;
     z -= mz >> 12;
@@ -45,7 +45,7 @@ void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
     z += 0x80;
     b->unk16 = x;
     b->unk2A = z;
-    b->dir = D_80051244[((u16)a->ang >> 7) & 0x1C];
+    b->dir = DirPadBits[((u16)a->ang >> 7) & 0x1C];
     x -= a->x;
     z -= a->z;
     sum = csqrt(x * x + z * z) >> 6;
@@ -109,7 +109,7 @@ void BashCountObjects(void) {
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
             if (z < 0) z = 0;
-            D_8009D90C[z * 20 + x].unk0 = t;
+            ArenaGrid[z * 20 + x].unk0 = t;
             if ((u16)(f->type - 1) < 12) {
                 D_8009E46C[0]++;
                 D_8009E46C[f->type]++;
@@ -128,7 +128,7 @@ void BashCountObjects(void) {
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
             if (z < 0) z = 0;
-            D_8009D90C[z * 20 + x].unk0 = c;
+            ArenaGrid[z * 20 + x].unk0 = c;
         }
         }
         n = n->Object.Child;
@@ -216,7 +216,7 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 if (x < 0) x = 0;
                 if (z >= 20) z = 19;
                 if (z < 0) z = 0;
-                D_8009D90C[z * 20 + x].unk0 = t;
+                ArenaGrid[z * 20 + x].unk0 = t;
             }
         }
         if (nas->Failure != 0) {
@@ -242,7 +242,7 @@ void InitCrate(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             do {
                 again = 0;
-                nas = D_8005AA2C;
+                nas = HeadOfSolids;
                 eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
                 eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
                 while (nas != NULL) {
@@ -306,7 +306,7 @@ void InitCrate(NAS *arg0) {
             if (z < 0) {
                 z = 0;
             }
-            D_8009D90C[z * 20 + x].unk0 = obj->unk14;
+            ArenaGrid[z * 20 + x].unk0 = obj->unk14;
             AddMotion(arg0);
             func_80026AD8((u8 *)arg0);
             func_8002694C(arg0, 0x300);
@@ -386,7 +386,7 @@ void PlotCrate(NAS *arg0) {
                         eng->unk1E = get_angle(dx, dz) - 0x200;
                         ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
                         eng->unk1C = ang;
-                        eng->unk10.y = b.vy - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->unk10.y = b.vy - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
                         eng->unk20 = 0;
@@ -698,8 +698,8 @@ void PlotCrate(NAS *arg0) {
         if (ext->speed > ext->max) {
             ext->speed = ext->max;
         }
-        eng->unk10.x -= (ext->speed * D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (ext->speed * D_80068BD4[(u16)eng->unk1E & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (ext->speed * TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (ext->speed * TrigTable[(u16)eng->unk1E & 0xFFF].unk2) >> 12;
         switch (ext->dir & 0xF0) {
         case 0x10:
         case 0x30:
@@ -1175,7 +1175,7 @@ void InitCratePickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        D_8009D90C[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].unk0 = id;
     }
     if (arg0->Failure != 0) {
         KillNAS(arg0);
@@ -1226,7 +1226,7 @@ void InitShieldPickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        D_8009D90C[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].unk0 = id;
         PlaySfx(0x41F, NULL, pos, 0x1000, 0x1E00, 0);
     }
     if (arg0->Failure != 0) {
@@ -1278,7 +1278,7 @@ void InitBootsPickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        D_8009D90C[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].unk0 = id;
         PlaySfx(0x41F, NULL, pos, 0x1000, 0x1E00, 0);
     }
     if (arg0->Failure != 0) {
@@ -1330,7 +1330,7 @@ void InitAnvilPickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        D_8009D90C[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].unk0 = id;
         PlaySfx(0x41F, NULL, pos, 0x1000, 0x1E00, 0);
     }
     if (arg0->Failure != 0) {
@@ -1382,7 +1382,7 @@ void InitSlowmoPickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        D_8009D90C[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].unk0 = id;
         PlaySfx(0x41F, NULL, pos, 0x1000, 0x1E00, 0);
     }
     if (arg0->Failure != 0) {
@@ -1682,7 +1682,7 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
                 }
             }
         }
-        for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+        for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
             if (nas->Class & 0x200) {
                 e = nas->Engine;
                 if (e != NULL && e != eng) {
@@ -1745,7 +1745,7 @@ NAS *CrateHitSolids(EXTengine *eng, s32 who) {
         r = box->radius;
         top = eng->unk10.y + box->unk2;
         bot = eng->unk10.y + box->height;
-        for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+        for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
             if (nas->Class & 0x200) {
                 e = nas->Engine;
                 if (e != NULL && e != eng) {
@@ -1902,7 +1902,7 @@ void CrateFindFreeSpot(EXTengine *eng) {
 
     do {
         again = 0;
-        nas = D_8005AA2C;
+        nas = HeadOfSolids;
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
         while (nas != NULL) {

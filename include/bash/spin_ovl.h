@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 #include "bash/main.h"
 
-/* A scene object in the list at D_80058AD0 + 0x1C (SpinInitScene). */
+/* A scene object in the list at MapScene + 0x1C (SpinInitScene). */
 typedef struct SpinObj {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ u16 rx;
@@ -44,7 +44,7 @@ typedef struct SpinCell {
 
 extern SpinCell SpinDropPoints[4][16];
 
-/* D_8005A614 as seen by the ranking code (SpinRankHeroes). */
+/* GameInfo as seen by the ranking code (SpinRankHeroes). */
 typedef struct SpinGame {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ u32 flags10;
@@ -64,7 +64,7 @@ typedef struct SpinGame {
 
 void InitBigScore(void);
 
-#define SPIN_GAME ((SpinGame *)D_8005A614)
+#define SPIN_GAME ((SpinGame *)GameInfo)
 
 /* Sets the round's result to a draw: every hero still standing loses. */
 #define SPIN_DRAW(g, arg1, i)                          \
@@ -180,7 +180,7 @@ typedef struct {
     u8 unk0;
     u8 unk1;
 } SpinMapCell;
-extern SpinMapCell D_8009D90C[400];
+extern SpinMapCell ArenaGrid[400];
 extern u16 D_8009E25C[13];
 
 void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero);
@@ -202,7 +202,7 @@ void func_8008E27C(s32 *arg0, void *arg1, s32 arg2);
 void SpinHeroFlip(s32 arg0);
 extern void (*D_8009D73C)();
 
-extern s32 D_8005AA70[11];
+extern s32 LevelSpecs[11];
 extern u8 D_80052FCC[];
 extern u8 D_80052F94[];
 extern u8 D_80052F5C[];
@@ -234,11 +234,11 @@ static inline void SpinDropHazard(SpinFux *fux) {
         }
     }
 }
-extern s32 D_8005A680;
-extern s16 D_8009D87C[][3];
+extern s32 GameTeams;
+extern s16 AiPlayerSkill[][3];
 extern u16 *D_8009D6F4;
 extern u16 *D_8009D6EC;
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 
 void func_80025F44(EXTengine *eng);
@@ -250,7 +250,7 @@ void func_8008A810(void);
 
 s32 SpinAI_HazardAhead(s32 arg0);
 
-extern NAS *D_8005AA2C;
+extern NAS *HeadOfSolids;
 
 void SpinInitScene(void);
 
@@ -319,9 +319,9 @@ void SpinHeroFall(s32 arg0);
 void SetSpinHeroWinner(s32 arg0);
 
 void SetSpinHeroLose(s32 arg0);
-extern u8 D_8005A614[];
+extern u8 GameInfo[];
 
-/* Hero jump parameters, 8 bytes per hero (D_8009D6E8.unk10). */
+/* Hero jump parameters, 8 bytes per hero (HeroHooks.unk10). */
 typedef struct SpinJumpEnt {
     u16 vel, max, acc, dec;
 } SpinJumpEnt;
@@ -349,14 +349,14 @@ typedef struct SpinHooks {
     /* 0x64 */ void *unk64;
     /* 0x68 */ void *unk68;
 } SpinHooks;
-extern SpinHooks D_8009D6E8;
+extern SpinHooks HeroHooks;
 
 s32 SpinAI_NearestEnemy(s32 arg0);
-extern void *D_8009D8F4;
-extern void *D_8009D8F8;
-extern void *D_8009D8FC;
-extern void *D_8009D900;
-extern void *D_8009D904;
+extern void *AiBotTweakTable;
+extern void *AiHumanTweakTable;
+extern void *AiSkillTable;
+extern void *AiTeamSkillTable;
+extern void *AiHumanRoundTweakTable;
 extern s16 D_8009E0D8;
 extern s16 D_8009E0E2;
 extern s16 D_8009E0E4;
@@ -432,7 +432,7 @@ void PlotBalloon(NAS *nas);
 void SpinAI_ScanAhead(s32 arg0);
 
 /* Spin_HeroBot */
-extern u32 D_80051244[]; /* pad flags by angle octant */
+extern u32 DirPadBits[]; /* pad flags by angle octant */
 s32 csqrt(s32 x);
 s32 func_800864CC(s32 id, u32 flag);
 

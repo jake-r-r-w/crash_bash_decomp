@@ -90,7 +90,7 @@ typedef struct ArkenoidGin {
     s16 unk22;
 } ArkenoidGin;
 
-/* D_8005A614 as seen by Plot_N_Gin. */
+/* GameInfo as seen by Plot_N_Gin. */
 typedef struct {
     u8 pad0[0x32];
     u16 unk32;
@@ -381,7 +381,7 @@ s32 ArkBallComingAtHero(s32 arg0);
 void ArkSpawnBall(void);
 
 
-/* D_8005A614 as seen by ArkCrateMaster. */
+/* GameInfo as seen by ArkCrateMaster. */
 typedef struct ArkenoidGameView {
     u8 pad0[0x30];
     u16 flags;
@@ -390,7 +390,7 @@ typedef struct ArkenoidGameView {
     u8 pad36[0x6C - 0x36];
     s32 unk6C;
 } ArkenoidGameView;
-#define O61GV ((ArkenoidGameView *)D_8005A614)
+#define O61GV ((ArkenoidGameView *)GameInfo)
 
 extern u16 CrateMasterTimes[];
 extern u16 CrateMasterSpotsX[];
@@ -461,7 +461,7 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 void InitARKfloor(void);
 
 bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self);
-/* D_8005A614 as seen by PlotBall (unk34 is D_8005A648, the mode). */
+/* GameInfo as seen by PlotBall (unk34 is GameMode, the mode). */
 typedef struct {
     u8 pad0[4];
     u32 unk4;
@@ -541,7 +541,7 @@ typedef struct ArkenoidAiNode {
     ArkenoidAiFux *fux;
 } ArkenoidAiNode;
 
-extern u32 D_80051244[];
+extern u32 DirPadBits[];
 extern s16 ArkBotWaits[];
 
 #endif /* BASH_ARKENOID_OVL_H */

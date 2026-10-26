@@ -45,16 +45,16 @@ typedef struct PogoHooks {
     /* 0x64 */ void *unk64;
     /* 0x68 */ void *unk68;
 } PogoHooks;
-extern PogoHooks D_8009D6E8;
+extern PogoHooks HeroHooks;
 extern process_info PogoProcess;
 extern process_control_info D_8009F8A4;
 
 void psxpogo_render_tile();
 
 void func_80089FA4(s32 arg0);
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 
-/* D_80051640 as the camera PogoInit_Camera sets up. */
+/* MainCamera as the camera PogoInit_Camera sets up. */
 typedef struct PogoCam {
     /* 0x00 */ s32 eyeX, eyeY, eyeZ;
     /* 0x0C */ s32 atX, atY, atZ;
@@ -91,7 +91,7 @@ extern PogoCell PogoGrid[8][8];
 /* The position a board cell's unk4 points to, as PlaySfx takes it. */
 #define CELL_POS(cx, cz) ((SLONG_XYZ *)&((PogoCell *)((cx) * sizeof(PogoGrid[0]) + (cz) * sizeof(PogoCell) + (u32)PogoGrid))->unk4->x)
 
-/* A scene object in the list at D_80058AD0 + 0x1C (InitPogo_Tiles). */
+/* A scene object in the list at MapScene + 0x1C (InitPogo_Tiles). */
 typedef struct PogoObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ u8 pad4[0x5C - 0x4];
@@ -104,7 +104,7 @@ typedef struct PogoObj {
 extern PogoObj *PogoKerbObj;
 extern HeroInfo Heroes[4];
 
-/* PadState (D_80051338) as Fire_Rocket reads it: d-pad bits 0xF0 at 0x50. */
+/* PadState (Pads) as Fire_Rocket reads it: d-pad bits 0xF0 at 0x50. */
 typedef struct PogoPad {
     /* 0x00 */ u8 unk0[0x50];
     /* 0x50 */ s32 unk50;
@@ -205,8 +205,8 @@ static inline void Pogo_ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 extern u8 D_80053BD4[];
 extern ScriptInit RooScriptInit;
 extern s32 RooFrame;
-extern s32 D_8005A680[];
-extern u8 D_8005A614[];
+extern s32 GameTeams[];
+extern u8 GameInfo[];
 extern NAS *PogoPadlockNas;
 extern s32 BrioSmokeFrame;
 /* The padlock's moves at each level before it levels up (Plot_PogoPadlock;
@@ -240,13 +240,9 @@ static inline bool Pogo_FindFreeSquare(s32 *px, s32 *pz) {
     return 1;
 }
 extern s32 CortexSmokeFrame;
-extern s32 number_of_pickups;
-extern s16 pickup_spawn_time;
-extern s16 powerup_spawn_time; /* PogoPowerups_Poll's timer, right after pickup_spawn_time */
 extern s32 PickupsWanted[];
 extern s32 PickupsMax[];
 extern s32 PogoObjectTimes[];
-extern s32 number_of_powerups;
 extern s32 PowerupsWanted[];
 extern s32 PowerupsMax[];
 extern s32 PogoUnused0;
@@ -303,7 +299,7 @@ typedef struct {
 extern PogoMove PogoAIPlay[];
 extern PogoOffset EncloseStepsOdd[];
 extern PogoOffset EncloseStepsEven[];
-extern s32 D_80051244[]; /* pad flags by direction octant */
+extern s32 DirPadBits[]; /* pad flags by direction octant */
 s32 PogoAI_CountMyTiles(u32 arg0);
 
 
@@ -311,7 +307,7 @@ s32 PogoAI_CountMyTiles(u32 arg0);
 
 
 void HeroPogoTazingCancel(u32 arg0);
-extern s16 D_8009D87C[][3];
+extern s16 AiPlayerSkill[][3];
 
 
 
@@ -347,7 +343,6 @@ s32 PogoAI_CountMyTiles(u32 arg0);
 
 
 
-void PogoPowerups_Poll(void);
 extern s32 MushroomCount;
 extern u32 Clock_Time;
 extern s32 RooTileX;
@@ -357,7 +352,7 @@ extern s32 RooSpeedZ;
 extern s32 RooAngle;
 extern s32 RooDir;
 
-/* D_8005A614+0x34 as UpdatePOGO switches on it: an enum, so gcc's
+/* GameInfo+0x34 as UpdatePOGO switches on it: an enum, so gcc's
  * switch tree skips its text cost table. */
 typedef enum PogoMode {
     POGO_MODE_NONE = -1,
@@ -406,7 +401,7 @@ void PogoInit_Camera(void);
 
 
 
-/* D_8005A614 as seen by PogoInit_RelicChallenge. */
+/* GameInfo as seen by PogoInit_RelicChallenge. */
 typedef struct PogoScoreView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;
@@ -417,9 +412,9 @@ typedef struct PogoScoreView {
     /* 0x60 */ u8 unk60[0x6C - 0x60];
     /* 0x6C */ s32 teams;
 } PogoScoreView;
-#define SCORE60V ((PogoScoreView *)D_8005A614)
+#define SCORE60V ((PogoScoreView *)GameInfo)
 
-/* D_8005A614 as seen by PogoWinner_Normal (the final ranking). */
+/* GameInfo as seen by PogoWinner_Normal (the final ranking). */
 typedef struct PogoRankView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;
@@ -432,7 +427,7 @@ typedef struct PogoRankView {
     /* 0x70 */ u8 unk70[0xA7 - 0x70];
     /* 0xA7 */ u8 order[4];
 } PogoRankView;
-#define RANK60V ((PogoRankView *)D_8005A614)
+#define RANK60V ((PogoRankView *)GameInfo)
 
 /* PogoQuality_Init: per-mode entries picked by teams, with two values at 0xE/0x10. */
 typedef struct PogoModeEntry {
@@ -453,7 +448,7 @@ extern u16 PogoPainterAiQuality[];
 extern u16 PogoAgogoAiQuality[];
 extern u16 PogoLocoAiQuality[];
 extern u16 PogoBouncerAiQuality[];
-/* D_8005A614 as seen by PogoQuality_Init. */
+/* GameInfo as seen by PogoQuality_Init. */
 typedef struct PogoModeView {
     /* 0x00 */ u8 unk0[0x32];
     /* 0x32 */ u16 flags;
@@ -466,7 +461,7 @@ typedef struct PogoModeView {
     /* 0x6C */ s32 teams;
 } PogoModeView;
 extern u16 Clock_flags;
-/* D_8005A614 as seen by PogoWinner_Relic (team end of round). */
+/* GameInfo as seen by PogoWinner_Relic (team end of round). */
 typedef struct PogoTeamView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;
@@ -544,11 +539,11 @@ static inline s32 PogoTeamScore(s32 idx) {
     return h->hero_score + hb[h->hero_teammate].hero_score;
 }
 /* PogoInit_AIQuality: the engine's per-mode table pointers. */
-extern void *D_8009D8F4;
-extern void *D_8009D8F8;
-extern void *D_8009D8FC;
-extern void *D_8009D900;
-extern void *D_8009D904;
+extern void *AiBotTweakTable;
+extern void *AiHumanTweakTable;
+extern void *AiSkillTable;
+extern void *AiTeamSkillTable;
+extern void *AiHumanRoundTweakTable;
 extern PogoModeEntry PogoAiBotTweak;
 extern PogoModeEntry PogoPainterAiSkill;
 extern PogoModeEntry PogoPainterAiSkillTeams;
@@ -648,7 +643,7 @@ typedef struct {
 } PogoCellObj;
 extern u16 TileFrames[][4];
 extern u16 TileFramesAlt[][4];
-#define MV ((PogoModeView *)D_8005A614)
+#define MV ((PogoModeView *)GameInfo)
 /* Set a cell object's animation and its frame (fr: an s32 temp of the caller). */
 #define CELL_SET(o, a, f) \
     ((o)->anim = (a), fr = (f), (o)->frame = CELL_FRAME(o, fr & 0xFFF)->unk26)

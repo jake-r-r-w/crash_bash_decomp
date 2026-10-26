@@ -113,7 +113,7 @@ void func_80083708(void) {
         h->hero_attack_counter = 0;
         D_8009D524[i] = 0;
         h->hero_name = g->unk50[0];
-        c = (D_8009D87C_t *)((s16 *)D_8009D87C + k);
+        c = (D_8009D87C_t *)((s16 *)AiPlayerSkill + k);
         c->unk0 = 0x10;
         c->unk2 = 0x10;
         c->unk4 = 0x10;
@@ -134,22 +134,22 @@ void func_80083708(void) {
         h->hero_anim = func_800265DC(h->hero);
         name = h->hero_name;
         if ((u32)(name - 1) < 8) {
-            h->hero_sub->unk6C = D_80052A54 + ((u16 *)D_8009D6E8.unk4)[name] * 0x38;
+            h->hero_sub->unk6C = D_80052A54 + ((u16 *)HeroHooks.unk4)[name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }
         sub->unk74 = D_8009D3A4[name];
         FetchDefaultColBox(eng, 0x50);
-        if (D_8009D6E8.unk0 != 0) {
-            ((void (*)(s32))D_8009D6E8.unk0)(i);
+        if (HeroHooks.unk0 != 0) {
+            ((void (*)(s32))HeroHooks.unk0)(i);
         } else {
             SetHeroAction(i, 0);
         }
         e = AddExtEngine(h->hero, 2);
         if (e != NULL) {
             h->hero_shadow = e;
-            if (D_8009D6E8.unk18 != NULL) {
-                ((void (*)(s32))D_8009D6E8.unk18)(i);
+            if (HeroHooks.unk18 != NULL) {
+                ((void (*)(s32))HeroHooks.unk18)(i);
             } else {
                 e->sub->unk6C = D_80052F5C;
                 e->sub->unk74 = 0x2001;
@@ -181,7 +181,7 @@ void func_80083708(void) {
             sub = fx->sub;
             fxv = 0x2002;
             while (sub != NULL) {
-                idx = ((u16 *)D_8009D6E8.unk4)[name];
+                idx = ((u16 *)HeroHooks.unk4)[name];
                 fxmask = ~0x8000;
                 sub->flags &= fxmask;
                 sub->unk50 = 1;
@@ -467,25 +467,25 @@ void func_80083E8C(void) {
             sub->flags &= ~0x8000;
         }
         if (!(HLV->state & 0x100) && HLV->out[id] != 0) {
-            ((void (*)(s32))D_8009D6E8.unk38)(id);
+            ((void (*)(s32))HeroHooks.unk38)(id);
         }
         h = &Heroes[id];
-        if (h->hero_pu != 0x15 || (D_8004E0D8 & 1)) {
+        if (h->hero_pu != 0x15 || (GameFrameCount & 1)) {
             if (HLV->flags & 0x4000000) {
                 HPADS[id].unk50 = 0;
                 HPADS[id].unk54 = 0;
             }
-            ((void (*)(s32))D_8009D6E8.unk20)(id);
+            ((void (*)(s32))HeroHooks.unk20)(id);
             ((void (*)(s32))HeroActionTable[h->hero_mode].pad)(id);
-            ((void (*)(s32))D_8009D6E8.unk24)(id);
-            if (D_8009D6E8.unk28 != NULL) {
-                ((void (*)(s32))D_8009D6E8.unk28)(id);
+            ((void (*)(s32))HeroHooks.unk24)(id);
+            if (HeroHooks.unk28 != NULL) {
+                ((void (*)(s32))HeroHooks.unk28)(id);
             }
         }
-        ((void (*)(EXTengine *))D_8009D6E8.unk68)(Heroes[id].hero_eng);
+        ((void (*)(EXTengine *))HeroHooks.unk68)(Heroes[id].hero_eng);
         func_8008672C(id);
-        if (D_8009D6E8.unk5C != NULL) {
-            ((void (*)(s32))D_8009D6E8.unk5C)(id);
+        if (HeroHooks.unk5C != NULL) {
+            ((void (*)(s32))HeroHooks.unk5C)(id);
         }
     next:;
     }
@@ -508,7 +508,7 @@ void func_80083E8C(void) {
             bits = 0x201;
         }
         if (!(HLV->unk32 & 0x200)) {
-            ((void (*)(s32, s32))D_8009D6E8.unk64)(last, bits);
+            ((void (*)(s32, s32))HeroHooks.unk64)(last, bits);
         }
         if (HLV->unk32 & 0x400) {
             HLV->unk30 |= bits;
@@ -715,7 +715,7 @@ void func_80084788(s32 idx, u16 arg1) {
             WINV->flags |= 0x800;
         }
     }
-    if (D_8005A644 & 0x800) {
+    if (GameExitFlags & 0x800) {
         for (i = 0; i < 4; i++) {
             h = &Heroes[i];
             if (!(h->hero_status & 0xFA00)) {
@@ -723,16 +723,16 @@ void func_80084788(s32 idx, u16 arg1) {
             }
         }
     }
-    if (D_8009D908 == 0) {
-        D_8009D908 = 1;
+    if (HeroesAllOut == 0) {
+        HeroesAllOut = 1;
         for (i = 0; i < 4; i++) {
             h = &Heroes[i];
             if (!(h->hero_status & 0xFA00)) {
                 if (WINV->out[i] == 0) {
-                    D_8009D908 = 0;
+                    HeroesAllOut = 0;
                 }
                 if (WINV->teams != 0 && WINV->out[h->hero_teammate] == 0) {
-                    D_8009D908 = 0;
+                    HeroesAllOut = 0;
                 }
             }
         }
@@ -749,8 +749,8 @@ void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     if (Heroes[player].hero_status & 0xFF00) {
         return;
     }
-    dist = D_8009D87C[player].unk0;
-    base = D_8005A614;
+    dist = AiPlayerSkill[player].unk0;
+    base = GameInfo;
     g = base + player;
     v = 0x20 - (dist + g[0xCC]);
     if (v < 0) {
@@ -764,7 +764,7 @@ void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     } else {
         v = 0;
     }
-    if (D_8009D908 != 0) {
+    if (HeroesAllOut != 0) {
         v = 0;
     }
     if (v < 0) {
@@ -773,10 +773,10 @@ void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     if (v >= 4) {
         v = 3;
     }
-    if (((EngineGameView *)D_8005A614)->flags & 3) {
+    if (((EngineGameView *)GameInfo)->flags & 3) {
         v = 0;
     }
-    if (*(s32 *)(D_8005A614 + 4) & 1) {
+    if (*(s32 *)(GameInfo + 4) & 1) {
         return;
     }
     if (flags & 0x800) {
@@ -784,8 +784,8 @@ void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     } else {
         v = D_8009D3B8[flags & 0xF][v];
     }
-    if (!(((EngineGameView *)D_8005A614)->flags & 3)) {
-        if (D_8005A614[player + 0x5C] != 0 && (u32)(dist -= 0x18) < 9) {
+    if (!(((EngineGameView *)GameInfo)->flags & 3)) {
+        if (GameInfo[player + 0x5C] != 0 && (u32)(dist -= 0x18) < 9) {
             v = D_8009D400[v >> 8][dist];
         }
     }
@@ -1004,7 +1004,7 @@ static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, 
 void func_80085718(s32 arg0, u16 arg1) {
     if (D_8009D86C == 0) {
         HeroAnimSlotSet(&D_8009D864, &D_8009D866, &D_8009D868, &D_8009D86C, (volatile s32 *)((u8 *)&D_8009D878 - 12), arg0, arg1);
-    } else if (D_8004DDD0[D_8005A648 * 3] != 0x104) {
+    } else if (D_8004DDD0[GameMode * 3] != 0x104) {
         HeroAnimSlotSet(&D_8009D870, &D_8009D872, &D_8009D874, &D_8009D878, (volatile s32 *)((u8 *)&D_8009D868 + 16), arg0, arg1);
     }
 }
@@ -1056,10 +1056,10 @@ void func_800859D4(s32 arg0) {
     m = h->hero_move;
     m->forward_speed = 0;
     if (h->hero_frozen != 0) {
-        ((PadStick *)D_80051338)[arg0].dirHeld2 = 0;
-        ((PadStick *)D_80051338)[arg0].dirPressed = 0;
+        ((PadStick *)Pads)[arg0].dirHeld2 = 0;
+        ((PadStick *)Pads)[arg0].dirPressed = 0;
     }
-    pb = (PadStick *)D_80051338;
+    pb = (PadStick *)Pads;
     pad = pb + arg0;
     if ((pad->flags & 1) || h->hero_ai->AImode != 0) {
         if (pad->dirHeld2 & 0xF0) {
@@ -1082,15 +1082,15 @@ void func_800859D4(s32 arg0) {
                 if (vc != 1) {
                     if (vc != 0) {
                         if (vc < 4) {
-                            m->x_max = (speed * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                            m->z_max = (speed * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                            m->x_max = (speed * TrigTable[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                            m->z_max = (speed * TrigTable[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                         }
                     }
                 }
                 m->forward_speed = speed;
             }
         } else {
-            if (D_8005A614[arg0 + 0x5C] != 0) {
+            if (GameInfo[arg0 + 0x5C] != 0) {
                 if (pad->dirHeld2 & 0x100) {
                     m->forward_angle -= 0x100;
                 }
@@ -1133,7 +1133,7 @@ void func_80085D2C(s32 arg0) {
     h = base + arg0;
     e = h->hero_eng;
     m = h->hero_move;
-    ((void (*)(s32))D_8009D6E8.unk2C)(arg0);
+    ((void (*)(s32))HeroHooks.unk2C)(arg0);
     func_800860D4(arg0);
     switch (m->velocity_calc) {
     case 2:
@@ -1206,11 +1206,11 @@ void func_80085D2C(s32 arg0) {
         break;
     case 1:
     default:
-        e->unk10.x -= (m->forward_speed * D_80068BD4[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
-        e->unk10.z -= (m->forward_speed * D_80068BD4[m->forward_angle & 0xFFF].unk2) >> 12;
+        e->unk10.x -= (m->forward_speed * TrigTable[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
+        e->unk10.z -= (m->forward_speed * TrigTable[m->forward_angle & 0xFFF].unk2) >> 12;
         if (m->reactive_speed != 0) {
-            e->unk10.x -= (m->reactive_speed * D_80068BD4[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
-            e->unk10.z -= (m->reactive_speed * D_80068BD4[m->reactive_angle & 0xFFF].unk2) >> 12;
+            e->unk10.x -= (m->reactive_speed * TrigTable[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
+            e->unk10.z -= (m->reactive_speed * TrigTable[m->reactive_angle & 0xFFF].unk2) >> 12;
             m->reactive_speed -= 4;
             if (m->reactive_speed < 0) {
                 m->reactive_speed = 0;
@@ -1237,8 +1237,8 @@ void func_800860D4(s32 arg0) {
     }
     if (m->jump_dir != 0) {
         dec = m->jump_dec;
-        if ((m->jump_ctrl & 1) && D_8005A614[arg0 + 0x5C] == 0 &&
-            !(((PadButtons *)D_80051338)[arg0].unk50 & 0x4000) && m->jump_vel >= 0x41) {
+        if ((m->jump_ctrl & 1) && GameInfo[arg0 + 0x5C] == 0 &&
+            !(((PadButtons *)Pads)[arg0].unk50 & 0x4000) && m->jump_vel >= 0x41) {
             dec = 0x28;
         }
         base = Heroes;
@@ -1377,10 +1377,10 @@ s32 func_800864CC(s32 id, u32 flag) {
             y = rec->radius + r;
             if (d < y * y) {
                 if (me->hero_pu != 0) {
-                    ((void (*)(s32, s32))D_8009D6E8.unk60)(id, i);
+                    ((void (*)(s32, s32))HeroHooks.unk60)(id, i);
                 }
                 if (h[i].hero_pu != 0) {
-                    ((void (*)(s32, s32))D_8009D6E8.unk60)(i, id);
+                    ((void (*)(s32, s32))HeroHooks.unk60)(i, id);
                 }
                 return i;
             }
@@ -1460,7 +1460,7 @@ void func_80086868(void) {
 }
 
 void func_8008688C(void) {
-    D_800AD12C = D_8005A5E8[D_8005A61C].unkC;
+    CameraMode = D_8005A5E8[D_8005A61C].unkC;
 }
 
 void SetHeroAction(s32 player, s32 action) {
@@ -1483,73 +1483,73 @@ void SetTweakAi(void) {
     s32 n;
 
     ret = -1;
-    g = D_8005A614;
-    t = D_8009D87C;
+    g = GameInfo;
+    t = AiPlayerSkill;
     for (i = 0; i < 4; i++) {
         flags = *(u16 *)(g + 0x32);
         if (flags & 0x100) {
             c = g[*(s16 *)(g + 0x34) + 0xAB];
             g[i + 0x9B] = c;
-            t[i].unk0 = ((u16 *)D_8009D8FC)[c];
+            t[i].unk0 = ((u16 *)AiSkillTable)[c];
             t[i].unk4 = 0x10;
         } else if (flags & 1) {
-            t[i].unk0 = ((u16 *)D_8009D900)[*(s16 *)(g + 0x38)];
+            t[i].unk0 = ((u16 *)AiTeamSkillTable)[*(s16 *)(g + 0x38)];
             t[i].unk4 = 0x10;
         } else if (flags & 2) {
-            t[i].unk0 = ((u16 *)D_8009D900)[*(s16 *)(g + 0x38) + 3];
+            t[i].unk0 = ((u16 *)AiTeamSkillTable)[*(s16 *)(g + 0x38) + 3];
             t[i].unk4 = 0x10;
         } else if (flags & 0x40) {
-            t[i].unk0 = ((u16 *)D_8009D8FC)[4];
+            t[i].unk0 = ((u16 *)AiSkillTable)[4];
             if (g[i + 0x5C] != 0) {
-                ret = t[i].unk4 = ((u16 *)D_8009D8F4)[4];
+                ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[4];
             } else {
-                t[i].unk4 = ((u16 *)D_8009D8F8)[4];
+                t[i].unk4 = ((u16 *)AiHumanTweakTable)[4];
             }
         } else if (flags & 0x20) {
             if (flags & 8) {
-                t[i].unk0 = ((u16 *)D_8009D8FC)[9];
+                t[i].unk0 = ((u16 *)AiSkillTable)[9];
                 if (g[i + 0x5C] != 0) {
-                    ret = t[i].unk4 = ((u16 *)D_8009D8F4)[9];
+                    ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[9];
                 } else {
-                    t[i].unk4 = ((u16 *)D_8009D8F8)[9];
+                    t[i].unk4 = ((u16 *)AiHumanTweakTable)[9];
                 }
             } else {
-                t[i].unk0 = ((u16 *)D_8009D8FC)[5];
+                t[i].unk0 = ((u16 *)AiSkillTable)[5];
                 if (g[i + 0x5C] != 0) {
-                    ret = t[i].unk4 = ((u16 *)D_8009D8F4)[5];
+                    ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[5];
                 } else {
-                    t[i].unk4 = ((u16 *)D_8009D8F8)[5];
+                    t[i].unk4 = ((u16 *)AiHumanTweakTable)[5];
                 }
             }
         } else if (flags & 0x80) {
-            t[i].unk0 = ((u16 *)D_8009D8FC)[6];
+            t[i].unk0 = ((u16 *)AiSkillTable)[6];
             if (g[i + 0x5C] != 0) {
-                ret = t[i].unk4 = ((u16 *)D_8009D8F4)[6];
+                ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[6];
             } else {
-                t[i].unk4 = ((u16 *)D_8009D8F8)[6];
+                t[i].unk4 = ((u16 *)AiHumanTweakTable)[6];
             }
         } else if (flags & 0x10) {
             if (*(s32 *)(g + 0x70) != 0) {
                 c = g[*(s16 *)(g + 0x34) + 0xAB];
                 g[i + 0x9B] = c;
-                t[i].unk0 = ((u16 *)D_8009D8FC)[3];
+                t[i].unk0 = ((u16 *)AiSkillTable)[3];
                 if (g[i + 0x5C] != 0) {
-                    ret = t[i].unk4 = ((u16 *)D_8009D8F4)[3];
+                    ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[3];
                 } else {
-                    t[i].unk4 = ((u16 *)D_8009D904)[9];
+                    t[i].unk4 = ((u16 *)AiHumanRoundTweakTable)[9];
                 }
             } else {
                 c = g[*(s16 *)(g + 0x34) + 0xAB];
                 g[i + 0x9B] = c;
-                t[i].unk0 = ((u16 *)D_8009D8FC)[c];
+                t[i].unk0 = ((u16 *)AiSkillTable)[c];
                 if (g[i + 0x5C] != 0) {
-                    ret = t[i].unk4 = ((u16 *)D_8009D8F4)[g[0x9B]];
+                    ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[g[0x9B]];
                 } else {
                     n = g[i + 0xCC];
                     if (n >= 3) {
                         n = 2;
                     }
-                    t[i].unk4 = ((u16 (*)[3])D_8009D904)[c][n];
+                    t[i].unk4 = ((u16 (*)[3])AiHumanRoundTweakTable)[c][n];
                 }
             }
         }
@@ -1570,7 +1570,7 @@ s32 func_80086C94(s32 arg0) {
     if (arg0 < 0) {
         return -1;
     }
-    g = D_8005A614;
+    g = GameInfo;
     idx = *(s16 *)(g + 0x42);
     if (idx == 0 ||*(s32 *)(g + 0x6C) != 0 || !(*(u16 *)(g + 0x32) & 0x10)) {
         return -1;
@@ -1585,12 +1585,12 @@ s32 func_80086C94(s32 arg0) {
             v = arg0 * 3;
             arg0 = v / 4;
         }
-        if (D_8005A614[*(s16 *)(D_8005A614 + 0x34) + 0xAB] == 3) {
+        if (GameInfo[*(s16 *)(GameInfo + 0x34) + 0xAB] == 3) {
             arg0 *= 2;
         }
-        idx = *(s16 *)(D_8005A614 + 0x42);
+        idx = *(s16 *)(GameInfo + 0x42);
         if (idx != -1) {
-            D_8009D87C[idx].unk4 = arg0;
+            AiPlayerSkill[idx].unk4 = arg0;
         }
         if (arg0 <= 0) {
             arg0 = 1;
@@ -1647,15 +1647,15 @@ void func_80086D88(void) {
                 if (zhi < 19) {
                     zhi++;
                 }
-                D_8009D90C[z * 20 + x].unk0 |= flag;
-                D_8009D90C[zlo * 20 + x].unk0 |= flag;
-                D_8009D90C[zhi * 20 + x].unk0 |= flag;
-                D_8009D90C[z * 20 + xlo].unk0 |= flag;
-                D_8009D90C[zlo * 20 + xlo].unk0 |= flag;
-                D_8009D90C[zhi * 20 + xlo].unk0 |= flag;
-                D_8009D90C[z * 20 + xhi].unk0 |= flag;
-                D_8009D90C[zlo * 20 + xhi].unk0 |= flag;
-                D_8009D90C[zhi * 20 + xhi].unk0 |= flag;
+                ArenaGrid[z * 20 + x].unk0 |= flag;
+                ArenaGrid[zlo * 20 + x].unk0 |= flag;
+                ArenaGrid[zhi * 20 + x].unk0 |= flag;
+                ArenaGrid[z * 20 + xlo].unk0 |= flag;
+                ArenaGrid[zlo * 20 + xlo].unk0 |= flag;
+                ArenaGrid[zhi * 20 + xlo].unk0 |= flag;
+                ArenaGrid[z * 20 + xhi].unk0 |= flag;
+                ArenaGrid[zlo * 20 + xhi].unk0 |= flag;
+                ArenaGrid[zhi * 20 + xhi].unk0 |= flag;
             }
         }
     }
@@ -1681,7 +1681,7 @@ inner:
 
 void func_80086F78(void) {
     s32 i = 399;
-    D_8009D90C_t *p = D_8009D90C;
+    D_8009D90C_t *p = ArenaGrid;
 
     for (p += 399; i >= 0; i--) {
         p->unk0 = 0;
@@ -1693,7 +1693,7 @@ void func_80086FA0(void) {
     s32 i;
     D_8009D90C_t *p;
 
-    for (i = 0, p = D_8009D90C; i < 400; i++) {
+    for (i = 0, p = ArenaGrid; i < 400; i++) {
         p->unk1 = 0;
         p->unk0 = 0;
         p++;
@@ -1715,7 +1715,7 @@ s32 func_80086FCC(s32 arg0) {
     base = Heroes;
     h = base + arg0;
     if (!(h->hero_status & 0x10)) {
-        pads = (PadButtons *)D_80051338;
+        pads = (PadButtons *)Pads;
         pad = pads + arg0;
         if (pad->unk54 & 0x8000) {
             if (h->hero_attack_timer != 0) {
@@ -1741,8 +1741,8 @@ s32 func_80086FCC(s32 arg0) {
             }
         }
     }
-    if (D_8005A648 != 0x1E) {
-        pads2 = (PadButtons *)D_80051338;
+    if (GameMode != 0x1E) {
+        pads2 = (PadButtons *)Pads;
         pad2 = pads2 + arg0;
         if (pad2->unk54 & 0x2000) {
             if (D_8009D738(arg0, 0x280) != 0 || Heroes[arg0].hero_pick_delay == 0) {
@@ -1870,7 +1870,7 @@ void func_800874EC(s32 arg0) {
         func_80086FCC(arg0) == 0) {
         if (D_8009D72C != NULL) {
             ret2 = D_8009D72C(arg0);
-        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -1933,7 +1933,7 @@ void func_8008795C(s32 arg0) {
         func_80086FCC(arg0) == 0) {
         if (D_8009D72C != NULL) {
             ret2 = D_8009D72C(arg0);
-        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -1961,7 +1961,7 @@ void func_80087B8C(s32 arg0) {
         func_80086FCC(arg0) == 0) {
         if (D_8009D72C != NULL) {
             ret2 = D_8009D72C(arg0);
-        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2032,13 +2032,13 @@ void func_80087FC0(s32 arg0) {
     e->platform = NULL;
     SetHeroSeq(arg0, 6);
     idx = 0;
-    if (D_8005A614[arg0 + 0x5C] == 0) {
+    if (GameInfo[arg0 + 0x5C] == 0) {
         idx = h->hero_name;
     }
-    h->hero_move->jump_vel = ((HeroJumpEnt *)D_8009D6E8.unk10)[idx].vel;
-    h->hero_move->jump_max = ((HeroJumpEnt *)D_8009D6E8.unk10)[idx].max;
-    h->hero_move->jump_acc = ((HeroJumpEnt *)D_8009D6E8.unk10)[idx].acc;
-    h->hero_move->jump_dec = ((HeroJumpEnt *)D_8009D6E8.unk10)[idx].dec;
+    h->hero_move->jump_vel = ((HeroJumpEnt *)HeroHooks.unk10)[idx].vel;
+    h->hero_move->jump_max = ((HeroJumpEnt *)HeroHooks.unk10)[idx].max;
+    h->hero_move->jump_acc = ((HeroJumpEnt *)HeroHooks.unk10)[idx].acc;
+    h->hero_move->jump_dec = ((HeroJumpEnt *)HeroHooks.unk10)[idx].dec;
     h->hero_move->jump_dir = -1;
     h->hero->Camera.look_ahead = 0x400;
 }
@@ -2182,7 +2182,7 @@ void func_80088544(s32 arg0) {
         s32 ret2;
         if (D_8009D72C != NULL) {
             ret2 = D_8009D72C(arg0);
-        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2258,7 +2258,7 @@ void func_80088794(s32 arg0) {
     if (ret == 0) {
         if (D_8009D72C != NULL) {
             ret2 = D_8009D72C(arg0);
-        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2285,16 +2285,16 @@ void func_80088794(s32 arg0) {
                         m = o->hero_move;
                         vc = m->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
-                            m->x_vel -= (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                            o->hero_move->z_vel -= (D_80068BD4[angle & 0xFFF].unk2 * 3) >> 8;
+                            m->x_vel -= (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                            o->hero_move->z_vel -= (TrigTable[angle & 0xFFF].unk2 * 3) >> 8;
                         }
                         Heroes[id].hero_move->reactive_angle = angle;
                         Heroes[id].hero_move->reactive_speed = 0x30;
                         func_80084E04(id, NULL, arg0, 0x8001, 0x446);
                     }
                 }
-                ((void (*)(s32, s32, s32, s32))D_8009D6E8.unk4C)(arg0, 2, 0x400, 0);
-                ((void (*)(s32))D_8009D6E8.unk54)(arg0);
+                ((void (*)(s32, s32, s32, s32))HeroHooks.unk4C)(arg0, 2, 0x400, 0);
+                ((void (*)(s32))HeroHooks.unk54)(arg0);
                 func_8008502C(arg0);
                 func_800871E4(arg0);
             }
@@ -2341,7 +2341,7 @@ void func_80088C28(s32 arg0) {
     if (ret == 0) {
         if (D_8009D72C != NULL) {
             ret2 = D_8009D72C(arg0);
-        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2360,16 +2360,16 @@ void func_80088C28(s32 arg0) {
                         m = o->hero_move;
                         vc = m->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
-                            m->x_vel -= (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                            o->hero_move->z_vel -= (D_80068BD4[angle & 0xFFF].unk2 * 3) >> 8;
+                            m->x_vel -= (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                            o->hero_move->z_vel -= (TrigTable[angle & 0xFFF].unk2 * 3) >> 8;
                         }
                         Heroes[id].hero_move->reactive_angle = angle;
                         Heroes[id].hero_move->reactive_speed = 0x30;
                         func_80084E04(id, NULL, arg0, 0x8001, 0x446);
                     }
                 }
-                ((void (*)(s32, s32, s32, s32))D_8009D6E8.unk4C)(arg0, 2, 0x400, 0);
-                ((void (*)(s32))D_8009D6E8.unk54)(arg0);
+                ((void (*)(s32, s32, s32, s32))HeroHooks.unk4C)(arg0, 2, 0x400, 0);
+                ((void (*)(s32))HeroHooks.unk54)(arg0);
                 func_8008502C(arg0);
                 func_800871E4(arg0);
             }
@@ -2429,7 +2429,7 @@ void func_8008900C(s32 arg0) {
     if (ret == 0) {
         if (D_8009D72C != NULL) {
             ret2 = D_8009D72C(arg0);
-        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2440,7 +2440,7 @@ void func_8008900C(s32 arg0) {
                 ret3 = D_8009D730(arg0);
             } else if (Heroes[arg0].hero_status & 0xFA00) {
                 ret3 = 0;
-            } else if (((PadButtons *)D_80051338)[arg0].unk50 & 0x1000) {
+            } else if (((PadButtons *)Pads)[arg0].unk50 & 0x1000) {
                 SetHeroAction(arg0, 2);
                 ret3 = 1;
             } else {
@@ -2463,8 +2463,8 @@ void func_8008900C(s32 arg0) {
                             if (vc != 1) {
                                 if (vc != 0) {
                                     if (vc < 4) {
-                                        m->x_vel -= (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                                        h2->hero_move->z_vel -= (D_80068BD4[angle & 0xFFF].unk2 * 3) >> 8;
+                                        m->x_vel -= (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                                        h2->hero_move->z_vel -= (TrigTable[angle & 0xFFF].unk2 * 3) >> 8;
                                     }
                                 }
                             }
@@ -2474,8 +2474,8 @@ void func_8008900C(s32 arg0) {
                         }
                     }
                 }
-                ((void (*)(s32, s32, s32, s32))D_8009D6E8.unk4C)(arg0, 2, 0x400, 0x280);
-                ((void (*)(s32))D_8009D6E8.unk54)(arg0);
+                ((void (*)(s32, s32, s32, s32))HeroHooks.unk4C)(arg0, 2, 0x400, 0x280);
+                ((void (*)(s32))HeroHooks.unk54)(arg0);
                 func_8008502C(arg0);
                 base2 = Heroes;
                 self = &base2[arg0];
@@ -2549,7 +2549,7 @@ void func_8008955C(s32 arg0) {
     if (ret == 0) {
         if (D_8009D72C != NULL) {
             ret2 = D_8009D72C(arg0);
-        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2560,7 +2560,7 @@ void func_8008955C(s32 arg0) {
                 ret3 = D_8009D730(arg0);
             } else if (Heroes[arg0].hero_status & 0xFA00) {
                 ret3 = 0;
-            } else if (((PadButtons *)D_80051338)[arg0].unk50 & 0x1000) {
+            } else if (((PadButtons *)Pads)[arg0].unk50 & 0x1000) {
                 SetHeroAction(arg0, 2);
                 ret3 = 1;
             } else {
@@ -2583,8 +2583,8 @@ void func_8008955C(s32 arg0) {
                             if (vc != 1) {
                                 if (vc != 0) {
                                     if (vc < 4) {
-                                        m->x_vel -= (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                                        h2->hero_move->z_vel -= (D_80068BD4[angle & 0xFFF].unk2 * 3) >> 8;
+                                        m->x_vel -= (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                                        h2->hero_move->z_vel -= (TrigTable[angle & 0xFFF].unk2 * 3) >> 8;
                                     }
                                 }
                             }
@@ -2594,8 +2594,8 @@ void func_8008955C(s32 arg0) {
                         }
                     }
                 }
-                ((void (*)(s32, s32, s32, s32))D_8009D6E8.unk4C)(arg0, 2, 0x400, 0x280);
-                ((void (*)(s32))D_8009D6E8.unk54)(arg0);
+                ((void (*)(s32, s32, s32, s32))HeroHooks.unk4C)(arg0, 2, 0x400, 0x280);
+                ((void (*)(s32))HeroHooks.unk54)(arg0);
                 func_8008502C(arg0);
                 func_800871E4(arg0);
             }
@@ -2725,8 +2725,8 @@ s32 arg0;
             if (D_8009E0E8[i][arg0].unk6 < 0) {
                 D_8009E0E8[i][arg0].unk6 = 0;
             }
-            s->unk04 += D_8009E0E8[i][arg0].unk6 * D_80068BD4[(D_8009E0E8[i][arg0].unk4 - 0x400) & 0xFFF].unk2 >> 12;
-            s->unk0C += D_8009E0E8[i][arg0].unk6 * D_80068BD4[D_8009E0E8[i][arg0].unk4 & 0xFFF].unk2 >> 12;
+            s->unk04 += D_8009E0E8[i][arg0].unk6 * TrigTable[(D_8009E0E8[i][arg0].unk4 - 0x400) & 0xFFF].unk2 >> 12;
+            s->unk0C += D_8009E0E8[i][arg0].unk6 * TrigTable[D_8009E0E8[i][arg0].unk4 & 0xFFF].unk2 >> 12;
             y = D_8009E0E8[i][arg0].unk8;
             y += D_8009E0E8[i][arg0].unkA;
             if (y > 0x30) {
@@ -2762,9 +2762,9 @@ void func_80089FA4(s32 arg0) {
     mate = Heroes[arg0].hero_teammate;
     func_8002C1C0(100, 5);
     func_8002C29C();
-    g = (EngineGameView *)D_8005A614;
+    g = (EngineGameView *)GameInfo;
     if (g->mode == 0x20) {
-        if (D_8004E0A4[D_8005A614[0x60]] == 1) {
+        if (D_8004E0A4[GameInfo[0x60]] == 1) {
             D_8009E0D0 = 0xF;
             D_8009E0D2 = 0xF;
             D_8009E0D6 = 0x1E;
@@ -2932,7 +2932,7 @@ s32 func_8008A200(s32 arg0) {
         break;
     case 9:
         for (i = 0; i < 4; i++) {
-            if (Heroes[i].hero_name == D_8005A614[0x60]) {
+            if (Heroes[i].hero_name == GameInfo[0x60]) {
                 if (i & 2) {
                     PlaySfx(0x1AE, NULL, NULL, 0x1000, 0x1E00, 0);
                     D_8009E0D0 = 0xE;
@@ -2948,7 +2948,7 @@ s32 func_8008A200(s32 arg0) {
         D_8009E0D0 = 0;
         D_8009E0D2 = 0;
         for (i = 0; i < 4; i++) {
-            if (Heroes[i].hero_name == D_8005A614[0x60]) {
+            if (Heroes[i].hero_name == GameInfo[0x60]) {
                 if (i & 2) {
                     PlaySfx(0x1A5, NULL, NULL, 0x1000, 0x1E00, 0);
                     D_8009E0D0 = 0x16;
@@ -3015,7 +3015,7 @@ s32 func_8008A200(s32 arg0) {
 }
 
 void func_8008A810(void) {
-    u8 *p = D_8005A614;
+    u8 *p = GameInfo;
 
     if (*(s32 *)(p + 4) & 0x800) {
         *(u16 *)(p + 0x30) |= 0x201;
@@ -3086,7 +3086,7 @@ void func_8008AAB0(s32 arg0) {
 }
 
 s32 func_8008AB04(s32 arg0) {
-    PadState *base = D_80051338;
+    PadState *base = Pads;
     PadState *pad = &base[arg0];
 
     *(s32 *)((u8 *)pad + 0x50) &= ~0x4000;
@@ -3325,9 +3325,9 @@ void func_8008B29C(s32 idx) {
     EXTengine *s;
     EXTengine *e;
 
-    if (D_8005A614[idx + 0x50] != 9) {
+    if (GameInfo[idx + 0x50] != 9) {
         s = Heroes[idx].hero_shadow;
-        if (((EngineGameView *)D_8005A614)->mode != 0x1C) {
+        if (((EngineGameView *)GameInfo)->mode != 0x1C) {
             s->sub->unk6C = D_800546C4;
             s->sub->unk74 = 0x202F;
         } else {
@@ -3339,16 +3339,16 @@ void func_8008B29C(s32 idx) {
         s->flags |= 0x8041;
         s->sub->unk76 = 0x400;
         s->sub->flags |= 0x40000000;
-        if (((EngineGameView *)D_8005A614)->mode == 0x17) {
+        if (((EngineGameView *)GameInfo)->mode == 0x17) {
             s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
         }
-        if (((EngineGameView *)D_8005A614)->mode == 0x19) {
+        if (((EngineGameView *)GameInfo)->mode == 0x19) {
             s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
         }
-        if (((EngineGameView *)D_8005A614)->mode == 0x1A) {
+        if (((EngineGameView *)GameInfo)->mode == 0x1A) {
             s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
         }
-        if (((EngineGameView *)D_8005A614)->mode == 0x18) {
+        if (((EngineGameView *)GameInfo)->mode == 0x18) {
             s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
         }
     }
@@ -3359,22 +3359,22 @@ void func_8008B418(s32 idx) {
     EXTengine *s;
     EXTengine *e;
 
-    if (D_8005A614[idx + 0x50] != 9) {
+    if (GameInfo[idx + 0x50] != 9) {
         HeroInfo *base = Heroes;
         h = base + idx;
         s = h->hero_shadow;
         e = h->hero_eng;
         s->unk10 = e->unk10;
-        if (((EngineGameView *)D_8005A614)->mode == 0x17) {
+        if (((EngineGameView *)GameInfo)->mode == 0x17) {
             s->unk10.y = 0;
         }
-        if (((EngineGameView *)D_8005A614)->mode == 0x19) {
+        if (((EngineGameView *)GameInfo)->mode == 0x19) {
             s->unk10.y = 0;
         }
-        if (((EngineGameView *)D_8005A614)->mode == 0x1A) {
+        if (((EngineGameView *)GameInfo)->mode == 0x1A) {
             s->unk10.y = 0;
         }
-        if (((EngineGameView *)D_8005A614)->mode == 0x18) {
+        if (((EngineGameView *)GameInfo)->mode == 0x18) {
             s->unk10.y = 0;
         }
         s->unk1E = h->hero_eng->unk1E;
@@ -3449,7 +3449,7 @@ void InitScriptFX(NAS *nas)
   if (!(sd->flags & 4))
   {
 
-    new_var->Engine->sub->unk6C = *((void **) D_80058AD0);
+    new_var->Engine->sub->unk6C = *((void **) MapScene);
 
   }
 
@@ -3617,16 +3617,16 @@ void InitScriptFX(NAS *nas)
       {
         break;
       }
-        if (mal_first_free(((u32) ((*((s32 *) (k + 0x10))) * 0x28)) >> 2, D_8004E0F0.free) == 0)
+        if (mal_first_free(((u32) ((*((s32 *) (k + 0x10))) * 0x28)) >> 2, MainHeap.free) == 0)
       {
         goto kill;
       }
-        func_800115D8((*((s32 *) (k + 0x10))) * 0x28, &t->threadinfo, (s32) (&D_8004E0F0), 0);
-        if (mal_first_free(0xA, D_8004E0F0.free) == 0)
+        func_800115D8((*((s32 *) (k + 0x10))) * 0x28, &t->threadinfo, (s32) (&MainHeap), 0);
+        if (mal_first_free(0xA, MainHeap.free) == 0)
       {
         goto kill;
       }
-        func_800115D8(0x28, &t->threadcontrol, (s32) (&D_8004E0F0), 0);
+        func_800115D8(0x28, &t->threadcontrol, (s32) (&MainHeap), 0);
         t->particlesactive = *((s32 *) (k + 0x14));
         ((pcontrol *) t->threadcontrol)->freqcounter = 0;
         j = 1;
@@ -3703,7 +3703,7 @@ void PlotScriptFX(NAS *nas) {
     s32 first;
 
     t0 = VSync(1);
-    if (((EngineGameView *)D_8005A614)->mode == 0x2C && D_8009E194 != 0) {
+    if (((EngineGameView *)GameInfo)->mode == 0x2C && D_8009E194 != 0) {
         return;
     }
     sd = (EXTscriptdata *)nas->FUX;
@@ -3731,10 +3731,10 @@ void PlotScriptFX(NAS *nas) {
                         }
                         u = &sd->threads[j];
                         if (u->threadinfo != NULL) {
-                            mal_free(u->threadinfo, &D_8004E0F0);
+                            mal_free(u->threadinfo, &MainHeap);
                         }
                         if (u->threadcontrol != NULL) {
-                            mal_free(u->threadcontrol, &D_8004E0F0);
+                            mal_free(u->threadcontrol, &MainHeap);
                         }
                         j++;
                     }
@@ -3813,10 +3813,10 @@ void PlotScriptFX(NAS *nas) {
                                     }
                                     u = &sd->threads[k];
                                     if (u->threadinfo != NULL) {
-                                        mal_free(u->threadinfo, &D_8004E0F0);
+                                        mal_free(u->threadinfo, &MainHeap);
                                     }
                                     if (u->threadcontrol != NULL) {
-                                        mal_free(u->threadcontrol, &D_8004E0F0);
+                                        mal_free(u->threadcontrol, &MainHeap);
                                     }
                                     k++;
                                 }
@@ -3829,7 +3829,7 @@ void PlotScriptFX(NAS *nas) {
                         sub->unk20.y = 0x1000;
                         sub->unk76 = 0;
                         sub->unk52 = 1;
-                        if (((EngineGameView *)D_8005A614)->mode == 0x2C) {
+                        if (((EngineGameView *)GameInfo)->mode == 0x2C) {
                             sub->flags &= ~0x8000;
                         }
                         t->keyindex = 0;
@@ -3842,7 +3842,7 @@ void PlotScriptFX(NAS *nas) {
         }
         if (sd->timer >= sd->totalframes << 8) {
             sd->timer = 0;
-            if (((EngineGameView *)D_8005A614)->mode == 0x2C) {
+            if (((EngineGameView *)GameInfo)->mode == 0x2C) {
                 D_8009E194 = 1;
             }
         }
@@ -3861,7 +3861,7 @@ void PlotSmokePoof(NAS *m) {
 
     if (w != 0) {
         u = (EXTengine **)w;
-        if (D_8005A648 != 0x1C) {
+        if (GameMode != 0x1C) {
             m->Engine->unk10.x += (u[1]->unk10.x - m->Engine->unk10.x) >> 4;
             z = (u[1]->unk10.z - (e = m->Engine)->unk10.z) >> 4;
             x = e->unk10.z;
@@ -3892,13 +3892,13 @@ s32 func_8008C4C8(s32 *arg0, s32 arg1) {
     s32 i;
     s32 ang;
 
-    base = *(u8 **)((u8 *)D_80058AD0 + 0x10);
+    base = *(u8 **)((u8 *)MapScene + 0x10);
     off = *(s32 *)(base + 0x14);
     p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
     if (p != NULL) {
         i = 0;
         n = *(s32 *)(p + 0x38);
-        t = D_80068BD4;
+        t = TrigTable;
         a2 = p + 0x50;
         a3 = p;
         for (;;) {
@@ -3945,8 +3945,8 @@ s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos) {
         arc->vy = arc->vy0 = dy / n - (n >> 1) * arc->gravity;
         ang = get_angle(dx, dz) & 0xFFF;
         arc->angle = ang;
-        arc->vx = arc->speed * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        arc->vz = arc->speed * D_80068BD4[arc->angle & 0xFFF].unk2 >> 12;
+        arc->vx = arc->speed * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        arc->vz = arc->speed * TrigTable[arc->angle & 0xFFF].unk2 >> 12;
         arc->started = 1;
     }
     pos[1] += arc->vy;
@@ -3977,14 +3977,14 @@ void func_8008C824(SparkObj *obj) {
     p1 = ss->polys1;
     s = obj->set.sparks;
     tex = (SparkTex *)(D_80054944 + 0xAF0);
-    if (D_8005A648 == 0x22) {
-        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)D_80058AD0 + 0x18) + 0x2BF8);
+    if (GameMode == 0x22) {
+        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)MapScene + 0x18) + 0x2BF8);
     }
-    if (D_8005A648 == 0x13) {
-        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)D_80058AD0 + 0x18) + 0x6C8);
+    if (GameMode == 0x13) {
+        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)MapScene + 0x18) + 0x6C8);
     }
-    if (D_8005A648 == 0x1D) {
-        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)D_80058AD0 + 0x18) + 0xA10);
+    if (GameMode == 0x1D) {
+        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)MapScene + 0x18) + 0xA10);
     }
     for (; n != 0; n--) {
         do {
@@ -4004,7 +4004,7 @@ void func_8008C824(SparkObj *obj) {
         t = Random(0xFFF);
         s->ang = t;
         s->base_x = s->x;
-        s->x = s->base_x + ((D_80068BD4[(t - 0x400) & 0xFFF].unk2 * 512 >> 12));
+        s->x = s->base_x + ((TrigTable[(t - 0x400) & 0xFFF].unk2 * 512 >> 12));
         s->x2 = s->x + 0x40;
         s++;
         *(u32 *)&p0->r0 = 0xA0A0A0;
@@ -4034,7 +4034,7 @@ void func_8008CA90(u8 *arg0, MATRIX *m) {
     SVECTOR *v;
 
     p = fp->parts;
-    prim = fp->prims[D_8005B690 & 1];
+    prim = fp->prims[FrameCount & 1];
     gte_SetRotMatrix(m);
     gte_SetTransMatrix(m);
     n = fp->count;
@@ -4042,12 +4042,12 @@ void func_8008CA90(u8 *arg0, MATRIX *m) {
     tag = col | 0x2E000000;
     while (n != 0) {
         p->top.vy += 0x18;
-        p->top.vx = p->base + (D_80068BD4[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
+        p->top.vx = p->base + (TrigTable[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
         p->angle = (p->angle + 0x10) & 0xFFF;
         if (p->top.vy > 0x800) {
             p->angle = Random(0xFFF);
             p->base = Random(0x3000) - Random(0x3000);
-            p->top.vx = p->base + (D_80068BD4[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
+            p->top.vx = p->base + (TrigTable[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
             t = Random(0x4000) - Random(0x1000);
             p->top.vz = t;
             p->top.vy = -0xDAC;
@@ -4071,7 +4071,7 @@ void func_8008CA90(u8 *arg0, MATRIX *m) {
         gte_stsxy(&prim->x3);
         prim->x1 = prim->x3;
         prim->y2 = prim->y3;
-        addPrim(D_80056998.ot + 0x40, prim);
+        addPrim(RenderState.ot + 0x40, prim);
         prim++;
         p++;
         n--;
@@ -4097,7 +4097,7 @@ void InitWeatherNas(u8 *arg0) {
     *(s32 *)(arg0 + 0x60) = 0;
     *(s32 *)(arg0 + 0x64) = 0;
     **(s32 **)(*(u8 **)(arg0 + 0x54) + 0x6C) = 0x20008000;
-    if (D_8005A648 == 0x1F) {
+    if (GameMode == 0x1F) {
         func_80015D70(NoxSparkFxDef, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
     }
 }
@@ -4151,10 +4151,10 @@ void InitSmokePoof(NAS *nas) {
     nas->Engine->sub->unk6C = D_800546C4;
     nas->Engine->sub->flags |= 0x40000041;
     nas->UserInfo.user1 = 0;
-    if (((EngineGameView *)D_8005A614)->mode == 0x1C) {
+    if (((EngineGameView *)GameInfo)->mode == 0x1C) {
         nas->Engine->sub->flags = 0x40008021;
     }
-    if (((EngineGameView *)D_8005A614)->mode == 0x17) {
+    if (((EngineGameView *)GameInfo)->mode == 0x17) {
         nas->Engine->unk2C.x = 0x800;
         nas->Engine->unk2C.y = 0x800;
         nas->Engine->unk2C.z = 0x800;
@@ -4178,10 +4178,10 @@ void func_8008CFBC(EXTengine *eng) {
                 }
                 t = &sd->threads[i];
                 if (t->threadinfo != NULL) {
-                    mal_free(t->threadinfo, &D_8004E0F0);
+                    mal_free(t->threadinfo, &MainHeap);
                 }
                 if (t->threadcontrol != NULL) {
-                    mal_free(t->threadcontrol, &D_8004E0F0);
+                    mal_free(t->threadcontrol, &MainHeap);
                 }
                 i++;
             }
@@ -4275,7 +4275,7 @@ void PlotFloatyScore(NAS *nas) {
         case 2:
             ang = ++nas->UserInfo.user1;
             y = nas->UserInfo.user2;
-            ang = D_80068BD4[((ang << 7) & 0xFFF) - 0x400 & 0xFFF].unk2;
+            ang = TrigTable[((ang << 7) & 0xFFF) - 0x400 & 0xFFF].unk2;
             eng->unk5E = one;
             eng->unk10.y = y - (ang * 3 >> 7);
             s = eng->unk2C.x + 0x40;
@@ -4439,7 +4439,7 @@ void Init_HealthPU(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         eng->sub->unk6C = D_80052F5C;
-        nas->UserInfo.user2 = D_8004E0D8;
+        nas->UserInfo.user2 = GameFrameCount;
         eng->sub->unk74 = Random(0xE) + 0x2018;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
@@ -4486,7 +4486,7 @@ void Init_HealthPU(NAS *nas) {
             if (z < 0) {
                 z = 0;
             }
-            D_8009D90C[z * 20 + x].unk0 = 0x11;
+            ArenaGrid[z * 20 + x].unk0 = 0x11;
         }
     }
     if (nas->Failure != 0) {
@@ -4536,12 +4536,12 @@ plot:
     if (obj->will_do & 8) {
         p = obj->player;
         if (p != -1 && p < 5 && !(Heroes[p].hero_status & 0xFA00)) {
-            if (D_8005A614[p + 0x5C] != 0) {
-                n = 3 - D_8005A614[0x9B];
+            if (GameInfo[p + 0x5C] != 0) {
+                n = 3 - GameInfo[0x9B];
             } else {
                 n = 0;
             }
-            if (D_8009D908 != 0) {
+            if (HeroesAllOut != 0) {
                 n = 0;
             }
             Heroes[obj->player].hero_health += D_8009E224[n];
@@ -4619,7 +4619,7 @@ void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 ang;
     s32 vc;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         return;
     }
     eng = ((NAS *)arg0)->Engine;
@@ -4660,8 +4660,8 @@ void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                         dist = (arg1 - dist) >> 3;
                         vc = hero[i].hero_move->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
-                            hero[i].hero_move->x_vel = (dist * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                            hero[i].hero_move->z_vel = (dist * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                            hero[i].hero_move->x_vel = (dist * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                            hero[i].hero_move->z_vel = (dist * TrigTable[ang & 0xFFF].unk2) >> 12;
                             hero[i].hero_move->x_max = 0;
                             hero[i].hero_move->z_max = 0;
                         }

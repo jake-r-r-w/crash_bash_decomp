@@ -11,8 +11,8 @@ s32 func_8009317C(void) {
     s32 **tab = D_8009F954;
     s32 **rp;
 
-    g = (EngineGameView *)D_8005A614;
-    rp =&tab[*(s32 *)(D_8005A614 + 0x2C)];
+    g = (EngineGameView *)GameInfo;
+    rp =&tab[*(s32 *)(GameInfo + 0x2C)];
     p = (u8 *)(*rp)[D_8004DDD0[g->mode * 3] - 0x101];
     if (p != NULL) {
         func_800134FC(p, D_80098598);
@@ -32,10 +32,10 @@ void func_80093270(void) {
     s32 i;
 
     if (D_800A0158 >= 2 && (o = D_800A0290) != NULL) {
-        t = D_80068BD4;
+        t = TrigTable;
         o->unk51 = 0;
         o->unk12 += 0x20;
-        f = D_8005B690;
+        f = FrameCount;
         o->unk10 = *(s32 *)&t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF] >> 20;
         o->unk12 = *(s32 *)&t[(((f * 140) & 0xFFF) - 0x400) & 0xFFF] >> 21;
         o->unk14 = (t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF].unk2 +
@@ -86,23 +86,23 @@ void func_80093588(void) {
     u8 *p;
     s32 *q;
 
-    p = D_800A001C[D_8005A648];
+    p = D_800A001C[GameMode];
     if (p != NULL) {
         func_80012AC4(p);
         while (func_80012FFC() != 0) {
             func_8001231C();
-            func_80010AE8(&D_8004E0F0);
+            func_80010AE8(&MainHeap);
             func_8002BAE8();
         }
     }
     func_80017070();
-    if (D_8005A648 == 0x28 && D_800590CC == 0) {
+    if (GameMode == 0x28 && D_800590CC == 0) {
         func_80016CA0(D_800556F4);
     } else {
         func_80016CA0(D_800555A4);
     }
     D_8009F8B4 = func_80093038;
-    cam_init(D_80051640);
+    cam_init(MainCamera);
     cam_init(D_8009F734);
     cam_init((u8 *)&D_8009F7EC);
     *(s32 *)&D_8009F734[0x14] = 0x2000;
@@ -130,13 +130,13 @@ void func_800936C4(void) {
     func_8002AC70();
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
-    func_800936C4_heap(&D_8004E0F0, (s32)D_800D7144);
+    func_800936C4_heap(&MainHeap, (s32)D_800D7144);
     start = func_8009317C() + 7;
     start &= ~7;
-    func_800936C4_heap(&D_8004E0F0, start);
+    func_800936C4_heap(&MainHeap, start);
     func_800235BC(&D_80098F48);
     cfg = (EngineCfg *)D_8005A5E4;
     if (cfg == NULL) {
@@ -144,15 +144,15 @@ void func_800936C4(void) {
     }
     func_800274FC((s32 *)cfg);
     ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? D_8005B72C : D_8005B744);
-    D_8005A614[0x60] = 0;
-    D_8005A614[0x61] = 0;
+    GameInfo[0x60] = 0;
+    GameInfo[0x61] = 0;
     func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     func_80017164(cfg->pools);
     func_800170D4();
     func_800222FC();
     draw_init();
     D_800A0158 = 0;
-    if (((D5A614View *)D_8005A614)->mode == 0x28 && D_800590CC != 0) {
+    if (((D5A614View *)GameInfo)->mode == 0x28 && D_800590CC != 0) {
         D_8009F658.flags = 0x1D;
         D_8009F658.next_process = &RunGame;
     }
@@ -167,7 +167,7 @@ void func_80093854(void) {
     u8 *base;
     s32 j;
     s32 e;
-    View939FC *a = (View939FC *)D_8005A614;
+    View939FC *a = (View939FC *)GameInfo;
 
     i = 0;
     arg = D_8005A5E8[a->unk8].unk4;
@@ -180,7 +180,7 @@ void func_80093854(void) {
         ((Blk38 *)base)[28].head.w4 = t->head.w4;
     }
     g = a;
-    tbl = &D_8009D6E8;
+    tbl = &HeroHooks;
 loop:
     if (i < 4) {
         do {
@@ -231,13 +231,13 @@ void load_initial_dbases(void)
 
   new_var = D_800A00D0;
   i = 0;
-  tg = D_8005A614;
+  tg = GameInfo;
   idx = ((View939FC *) tg)->unk8;
   g = (View939FC *) tg;
   tg = (u8 *) D_8005A5E8;
   arg = *((s32 *) (((u8 *) (&((EngineRec32 *) tg)[idx])) + 4));
   t = D_80052A54;
-  h = &D_8009D6E8;
+  h = &HeroHooks;
   src = (s32 *) (&((Blk38 *) t)[new_var[g->unk2C]]);
   ((Blk38 *) t)[28].head.w0 = src[0];
   b = t;
@@ -295,13 +295,13 @@ void func_80093BE8(void) {
         func_8001E610(&D_800A015C, NULL);
     }
     func_8002BA44();
-    func_80011410(&D_8004E0F0);
-    if (func_80012FFC() != 0 || D_8004E0F0.deferred != NULL) {
+    func_80011410(&MainHeap);
+    if (func_80012FFC() != 0 || MainHeap.deferred != NULL) {
         return;
     }
     switch (D_800A0158) {
     case 0:
-        if (D_8005A648 == 0x28 && D_800590CC == 0) {
+        if (GameMode == 0x28 && D_800590CC == 0) {
             func_8001E934(&D_800A015C, &D_8009FA00);
         } else {
             func_8001E934(&D_800A015C, &D_8009F998);
@@ -309,7 +309,7 @@ void func_80093BE8(void) {
         func_8001E934(&D_8009F8A4, NULL);
         func_80095DBC();
         func_80093588();
-        g0 = (EngStateView *)D_8005A614;
+        g0 = (EngStateView *)GameInfo;
         g0->unk42 = -1;
         g0->unkCC[0] = 0;
         g0->unkCC[1] = 0;
@@ -320,7 +320,7 @@ void func_80093BE8(void) {
         break;
     case 1:
         SetNasDefaults();
-        g = (EngStateView *)D_8005A614;
+        g = (EngStateView *)GameInfo;
         g->unk30 = 0;
         g->unk10 = 0;
         func_80023158(D_8005AA50);
@@ -332,16 +332,16 @@ void func_80093BE8(void) {
         if (g->mode != 0x28 || D_800590CC == 0) {
             func_800229FC(g->mode);
         }
-        if (D_8005A648 == 0x28 && D_800590CC == 0) {
+        if (GameMode == 0x28 && D_800590CC == 0) {
             func_8002BBB4();
             func_8002BD0C((s32)D_8004E998);
         }
-        set_fade(&D_8009F644, -0x300, 0);
+        set_fade(&ScreenFade, -0x300, 0);
         D_800A0158 = 2;
         break;
     case 6:
-        if (D_8005A648 != 0x28 || D_800590CC == 0) {
-            func_80022140(D_8005A648, D_8004DDD0[D_8005A648 * 3]);
+        if (GameMode != 0x28 || D_800590CC == 0) {
+            func_80022140(GameMode, D_8004DDD0[GameMode * 3]);
         }
         load_initial_dbases();
         a = map;
@@ -354,7 +354,7 @@ void func_80093BE8(void) {
         D_800A0158 = 4;
         break;
     case 2:
-        if (D_8005A648 == 0x28) {
+        if (GameMode == 0x28) {
             func_8002C284(1);
         } else {
             func_8002C284(0);
@@ -364,7 +364,7 @@ void func_80093BE8(void) {
         D_800A0158 = 6;
         break;
     case 5:
-        func_80022140(D_8005A648, D_8004DDD0[D_8005A648 * 3]);
+        func_80022140(GameMode, D_8004DDD0[GameMode * 3]);
         D_800A0158 = 3;
         break;
     case 3:
@@ -379,8 +379,8 @@ void func_80093BE8(void) {
         D_800A0158 = 4;
         break;
     case 4:
-        ((EngColor *)D_8009F6F4)->code = ((EngColorSrc *)D_80058AD0)->col->code;
-        c = ((EngColorSrc *)D_80058AD0)->col;
+        ((EngColor *)D_8009F6F4)->code = ((EngColorSrc *)MapScene)->col->code;
+        c = ((EngColorSrc *)MapScene)->col;
         ((EngColor *)D_8009F6F4)->rgb = c->rgb;
         func_8007ABC4();
         func_8007A808();
@@ -388,7 +388,7 @@ void func_80093BE8(void) {
         break;
     case 7:
         func_80092AF4(&D_8009F720, 0x300);
-        if (D_8005A648 != 0x28) {
+        if (GameMode != 0x28) {
             func_8002C284(-1);
         }
         D_800A0158 = 9;
@@ -438,8 +438,8 @@ void func_80094120(void) {
 
 void func_8009414C(void) {
     if (D_800A0158 >= 2) {
-        D_8004E0D8 += 1;
-        func_80018B08(D_8009F9AC, D_80051640);
+        GameFrameCount += 1;
+        func_80018B08(D_8009F9AC, MainCamera);
         if (D_800A02C0 != 0) {
             func_8009440C();
         }
@@ -448,7 +448,7 @@ void func_8009414C(void) {
 }
 
 void func_800941BC(void) {
-    cam_init(D_80051640);
+    cam_init(MainCamera);
     D_800A02C0 = 0;
     D_800A02C4 = 0;
 }
@@ -461,7 +461,7 @@ void func_800941EC(void) {
 void func_8009421C(void) {
     if (D_800A0158 >= 2) {
         func_80018B08((GfxViewport *)D_8009F8BC, (GfxCamera *)D_800A016C);
-        D_800569AC = D_8009F644.amount;
+        D_800569AC = ScreenFade.amount;
         func_8001C298((EXTengine *)D_800A0224);
     }
 }
@@ -507,7 +507,7 @@ void level_load_map(void) {
 }
 
 void func_800943B8(void) {
-    if (D_8005A648 == 0x28 && D_800590CC == 0) {
+    if (GameMode == 0x28 && D_800590CC == 0) {
         func_80016CA0(D_800556F4);
     } else {
         func_80016CA0(D_800555A4);
@@ -515,7 +515,7 @@ void func_800943B8(void) {
 }
 
 void func_8009440C(void) {
-    s32 h = *(s32 *)(D_80056998.cam->unk18);
+    s32 h = *(s32 *)(RenderState.cam->unk18);
     subengine *e = &D_800A0C74;
     EngineMarker *m;
     EngineMarkerPos *p;
@@ -525,19 +525,19 @@ void func_8009440C(void) {
     for (i = 0; i < D_800A0C70; i++) {
         m = &D_800A0C10[i];
         p = &D_800A02D8[m->idx];
-        *e = D_8005A830;
+        *e = SubEngineTemplate;
         e->unk74 = m->unk0;
         e->unk6C = m->unk8;
         e->unk51 = 0;
-        s = D_8004E0D8;
+        s = GameFrameCount;
         e->unk10 = (s * p->x) >> 12;
         e->unk12 = (s * p->y) >> 12;
         e->unk14 = (s * p->z) >> 12;
         e->flags = 0x03008000;
         e->unk68 = p->unkC;
         gte_SetGeomScreen(h);
-        func_80019F1C((u8 *)e, (u8 *)&D_80056998.cam->view, 0x03008000);
-        gte_SetGeomScreen(*(s32 *)(D_80056998.cam->unk18));
+        func_80019F1C((u8 *)e, (u8 *)&RenderState.cam->view, 0x03008000);
+        gte_SetGeomScreen(*(s32 *)(RenderState.cam->unk18));
     }
 }
 
@@ -546,14 +546,14 @@ void func_800945C0(EngineStartArgs *arg0) {
 
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     rate = 3;
     D_8004E0E0 = rate;
     D_80058B64 = 0x1E0000 / (60 / rate);
     D_80058B64 = arg0->unk8 * rate / 60;
-    cam_init(D_80051640);
+    cam_init(MainCamera);
     D_800A0D30 = 0;
     D_800A0D38 = 1;
     D_800A0C70 = 0;
@@ -579,13 +579,13 @@ void func_80094754(void) {
     func_8002AC70();
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     D_800A0D3C = 0;
     func_8002232C();
     D_8009F968 = 0;
-    func_80011BF8(&D_8004E0F0, D_80098594, 0x801FF000 - (s32)D_80098594);
+    func_80011BF8(&MainHeap, D_80098594, 0x801FF000 - (s32)D_80098594);
     func_80012E54();
     cfg = &D_800A0314;
     func_800274FC((s32 *)cfg);
@@ -681,7 +681,7 @@ void func_80094B38(void) {
     MarkObj *obj;
     s32 ok;
 
-    D_8004E0D8 += 1;
+    GameFrameCount += 1;
     scripts_update();
     if (D_800A0D2C != NULL) {
         if (D_800A0D34 == NULL) {
@@ -716,7 +716,7 @@ void func_80094B38(void) {
                         D_800654B0 = 1;
                         D_800A0D38 = 0;
                         D_800A0D28 = 1;
-                        set_fade(&D_8009F644, -0x800, 0);
+                        set_fade(&ScreenFade, -0x800, 0);
                     }
                 }
             }
@@ -739,7 +739,7 @@ void func_80094B38(void) {
 void func_80094D88(s32 arg0, process_info *arg1) {
     D_800A0C08 = arg1;
     D_800A0C0C = arg0;
-    set_fade(&D_8009F644, 0x200, 0);
+    set_fade(&ScreenFade, 0x200, 0);
     D_8009F658.next_process = &D_800A0BF4;
 }
 
@@ -747,7 +747,7 @@ void func_80094DD0(void) {
     func_8002BA44();
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     func_80094F60();
@@ -768,10 +768,10 @@ void func_80094DD0(void) {
 }
 
 void func_80094EB8(void) {
-    func_80018B08(&D_800A0BCC, (GfxCamera *)D_80051640);
-    D_80056998.modelDp = D_8009F644.amount;
+    func_80018B08(&D_800A0BCC, (GfxCamera *)MainCamera);
+    RenderState.modelDp = ScreenFade.amount;
     scripts_render();
-    D_80056998.modelDp = 0x1000 - (((0x1000 - D_80058B60) * (0x1000 - D_80056998.modelDp)) >> 12);
+    RenderState.modelDp = 0x1000 - (((0x1000 - D_80058B60) * (0x1000 - RenderState.modelDp)) >> 12);
     func_8009440C();
 }
 
@@ -813,7 +813,7 @@ void func_80095020(void) {
     func_8002BA44();
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     func_80094F60();
@@ -863,7 +863,7 @@ s32 func_800951D0(s32 arg0) {
     EngineKeyed16 *e = D_800A0B60;
     u8 *g;
 
-    for (i = 0, g = D_8005A614; i < 4; e++, i++) {
+    for (i = 0, g = GameInfo; i < 4; e++, i++) {
         if (arg0 == e->key) {
             s16 m = *(s16 *)(g + 0x44);
             if (m == 1) {
@@ -933,35 +933,35 @@ void func_800952F8(subengine *sub, s32 *recs) {
                 skip = 0;
                 break;
             case 0x20:
-                skip = ((PlaceGameView *)D_8005A614)->unk6C == 0;
+                skip = ((PlaceGameView *)GameInfo)->unk6C == 0;
                 break;
             case 0x10:
-                skip = ((PlaceGameView *)D_8005A614)->unk6C;
+                skip = ((PlaceGameView *)GameInfo)->unk6C;
                 break;
             case 0x30:
-                skip = ((PlaceGameView *)D_8005A614)->unk10 ^ 1;
+                skip = ((PlaceGameView *)GameInfo)->unk10 ^ 1;
                 skip &= 1;
                 break;
             case 0x40:
-                skip = ((PlaceGameView *)D_8005A614)->unk10 & 1;
+                skip = ((PlaceGameView *)GameInfo)->unk10 & 1;
                 break;
             case 0x60:
                 skip = 0;
-                if (!(((PlaceGameView *)D_8005A614)->unk10 & 1) ||
-                    !(((PlaceGameView *)D_8005A614)->unk32 & 0x10)) {
+                if (!(((PlaceGameView *)GameInfo)->unk10 & 1) ||
+                    !(((PlaceGameView *)GameInfo)->unk32 & 0x10)) {
                     skip = 1;
                 }
                 break;
             case 0x50:
                 skip = 0;
-                if (((PlaceGameView *)D_8005A614)->unk10 & 1) {
-                    skip = (u32)skip < (((PlaceGameView *)D_8005A614)->unk32 & 0x10);
+                if (((PlaceGameView *)GameInfo)->unk10 & 1) {
+                    skip = (u32)skip < (((PlaceGameView *)GameInfo)->unk32 & 0x10);
                 }
                 break;
             case 0x70:
                 skip = 0;
-                if (!(((PlaceGameView *)D_8005A614)->unk10 & 1) ||
-                    !(((PlaceGameView *)D_8005A614)->unk32 & 0xE0)) {
+                if (!(((PlaceGameView *)GameInfo)->unk10 & 1) ||
+                    !(((PlaceGameView *)GameInfo)->unk32 & 0xE0)) {
                     skip = 1;
                 }
                 break;
@@ -973,7 +973,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
             if (skip == 0) {
                 if (rec->type == 14) {
                     PlaceSprite(s, rec->x, rec->y,
-                                ((s32 *)rec->unk14)[((PlaceGameView *)D_8005A614)->unk2C],
+                                ((s32 *)rec->unk14)[((PlaceGameView *)GameInfo)->unk2C],
                                 rec->unk18);
                 } else {
                     PlaceSprite(s, rec->x, rec->y, rec->unk14, rec->unk18);
@@ -991,7 +991,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
             if (skip == 0) {
                 if (rec->type == 18) {
                     PlaceTmpl(s, rec->x,
-                              ((s32 *)rec->unk14)[((PlaceGameView *)D_8005A614)->unk2C],
+                              ((s32 *)rec->unk14)[((PlaceGameView *)GameInfo)->unk2C],
                               rec->z, rec->scale, rec->unkC);
                 } else {
                     PlaceTmpl(s, rec->x, rec->y, rec->z, rec->scale, rec->unkC);
@@ -1207,7 +1207,7 @@ void func_80095E5C(u8 *arg0, u8 *arg1, s32 arg2) {
     if (flags & 8) {
         n = *(u32 *)(p + 0x18);
         if (n != 0) {
-            m = D_8005B690 % n + 1;
+            m = FrameCount % n + 1;
             *(u16 *)(arg0 + 0x74) = *(u16 *)(p + 0x1E) + (*(u16 *)(p + 0x18) - m);
         }
     }
@@ -1237,7 +1237,7 @@ s32 func_80095F88(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
     *(s32 *)p = t->f0 | 0x12008000;
     *(s32 *)(p + 0x54) = (s32)D_8001C690;
     if ((a1 & 0xC000) == 0x8000) {
-        a2 = a2 * 0x280 / D_8005B698->w;
+        a2 = a2 * 0x280 / ScreenRect->w;
     }
     *(s32 *)(p + 0x6C) = t->f0;
     *(s16 *)(p + 0x70) = a1;

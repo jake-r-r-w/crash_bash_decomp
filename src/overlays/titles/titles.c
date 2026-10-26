@@ -512,7 +512,7 @@ void TitlesInitLevel(void) {
     u8 *a1;
 
     func_8009029C();
-    g = D_8005A614;
+    g = GameInfo;
     g[0x62] = 0;
     cam_init((u8 *)&TitlesCamera);
     *(s32 *)((u8 *)&TitlesCamera + 8) = 0x400;
@@ -554,13 +554,13 @@ void TitlesCheckIdle(void) {
     s32 f;
     if (D_80051604 >= 0x385) {
         D_80051604 = 0;
-        set_fade(&D_8009F644, 0x200, 0);
+        set_fade(&ScreenFade, 0x200, 0);
         f = D_8009F654;
         if (f & 1) {
-            D_8005A648 = 0x28;
+            GameMode = 0x28;
             func_80094D88((s32)D_800A0840, &D_800A00DC);
         } else {
-            u8 *g = D_8005A614;
+            u8 *g = GameInfo;
             u8 *t = (u8 *)TitlesDemoModes;
             u16 v = *(u16 *)(t + ((f * 2) & 0xC));
             *(s32 *)(g + 0x68) = 1;
@@ -583,7 +583,7 @@ void AnimateTitlesBackdrop(void) {
     s32 d;
 
     sub = GetEngineSlot(1)->sub;
-    sub->unk14 = D_8005B690 * 0x14;
+    sub->unk14 = FrameCount * 0x14;
     sub->unk12 = 0x293;
     sub->unk50 = 1;
     sub->unk51 = 0;
@@ -591,9 +591,9 @@ void AnimateTitlesBackdrop(void) {
     sub->unk20.x = 0x2800;
     sub->unk52 = 1;
     eng = GetEngineSlot(1);
-    tbl = D_80068BD4;
+    tbl = TrigTable;
     pos = TitlesBackdropPos;
-    d = D_8004E0D8;
+    d = GameFrameCount;
     pos.x += (tbl[(((d * 0x14) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x8F) >> 0xF;
     pos.y += (tbl[(((d * 0x2F) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x17) >> 0xC;
     ang = (tbl[(((d * 0x13) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x333) >> 0x10;
@@ -636,7 +636,7 @@ void MainMenuUpdate(void) {
         MainMenuHintTimer = 0x5A;
     }
     if (D_80051380 & 0x4000) {
-        g = D_8005A614;
+        g = GameInfo;
         ((u16 *)g)[0x19] &= 0xFF00;
         switch (MainMenuCursor) {
         case 0:
@@ -819,18 +819,18 @@ void BattleOptionsUpdate(void) {
     subengine *p;
 
     sub = GetEngineSlot(1)->sub;
-    sub->unk14 = D_8005B690 * 0x14;
+    sub->unk14 = FrameCount * 0x14;
     sub->unk12 = 0x293;
     sub->unk50 = 1;
     sub->unk20.z = 0x2800;
     sub->unk20.x = 0x2800;
     sub->unk51 = 0;
     sub->unk52 = 1;
-    if (((PadButtons *)D_80051338)->pressed & 0x1000) {
+    if (((PadButtons *)Pads)->pressed & 0x1000) {
         MenuChainBack();
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if (((PadButtons *)D_80051338)->pressed & 0x80) {
+    if (((PadButtons *)Pads)->pressed & 0x80) {
         if (O69OV->unk3A >= 3) {
             PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
             O69OV->unk3A--;
@@ -857,7 +857,7 @@ void BattleOptionsUpdate(void) {
         p->unk6C = (void *)TextBattleKinds[O69OV->unk2C][1];
     }
     if (D_80051380 & 0x4000) {
-        D_8005A644 = 0x8008;
+        GameExitFlags = 0x8008;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
     }
 }
@@ -865,21 +865,21 @@ void BattleOptionsUpdate(void) {
 void BattleOptionsRender(void) {
     u8 *p;
 
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     p = (u8 *)GetEngineSlot(1)->sub;
     *(s32 *)(p + 0xA8) &= 0xFFFF7FFF;
     p = (u8 *)GetEngineSlot(1)->sub;
     *(s32 *)(p + 0x150) &= 0xFFFF7FFF;
     func_80018B08(&TitlesBackdropView, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
     func_80018B08(&TitlesMenuView, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
 
 void TitlesSetHeroMasks(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     s32 i;
     s32 k;
 
@@ -904,7 +904,7 @@ void OptionsUpdate(void) {
     subengine *cam;
 
     cam = GetEngineSlot(1)->sub;
-    cam->unk14 = D_8005B690 * 0x14;
+    cam->unk14 = FrameCount * 0x14;
     cam->unk12 = 0x293;
     cam->unk50 = 1;
     cam->unk20.z = 0x2800;
@@ -915,7 +915,7 @@ void OptionsUpdate(void) {
     switch (OptionsPage) {
     case 0:
         sub[OptionsCursor + 3].unk7C = 0;
-        if ((((PadButtons *)D_80051338)->pressed & 0x40) && OptionsCursor < 2) {
+        if ((((PadButtons *)Pads)->pressed & 0x40) && OptionsCursor < 2) {
             OptionsCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -924,7 +924,7 @@ void OptionsUpdate(void) {
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         sub[OptionsCursor + 3].unk7C = 2;
-        if (((PadButtons *)D_80051338)->pressed & 0x4000) {
+        if (((PadButtons *)Pads)->pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             switch (OptionsCursor) {
             case 0:
@@ -1013,7 +1013,7 @@ void OptionsUpdate(void) {
             n = 4;
         }
         for (i = 0; i < n; i++) {
-            if (((PadButtons *)D_80051338)[i].pressed & 0x8000) {
+            if (((PadButtons *)Pads)[i].pressed & 0x8000) {
                 ((TitlesOpt *)D_8005A604)->unkC[i] ^= 1;
                 func_80028018(i, 0xA);
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1037,7 +1037,7 @@ void OptionsRender(void) {
     s32 i;
 
     sub = GetEngineSlot(4)->sub;
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     switch (OptionsPage) {
     case 1:
         func_8008D488(sub[7].unk6C, *(s32 *)D_8005A604);
@@ -1056,7 +1056,7 @@ void OptionsRender(void) {
             n = 4;
         }
         for (i = 0; i < n; i++) {
-            if (D_80051338[i].unk0 & 8) {
+            if (Pads[i].unk0 & 8) {
                 sub[i * 3 + 5].unk7C = 0;
                 if (D_8005A604[i + 0xC] != 0) {
                     sub[i * 3 + 4].flags |= 0x8000;
@@ -1086,7 +1086,7 @@ void OptionsRender(void) {
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
     func_80018B08(&TitlesBackdropView, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
 
@@ -1115,10 +1115,10 @@ void RunGameInit(void) {
         D_8009E58C();
     }
     func_800222FC();
-    func_800229FC(D_8005A648);
+    func_800229FC(GameMode);
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     func_8008EC00(D_8004E568);
@@ -1126,7 +1126,7 @@ void RunGameInit(void) {
     func_8002BD0C((s32)(D_8004E568 + 0x438));
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
 }
@@ -1196,7 +1196,7 @@ void TitlesLeaveRender(void) {
 }
 
 void TitlesLeaveInit(void) {
-    set_fade(&D_8009F644, 0x200, 0);
+    set_fade(&ScreenFade, 0x200, 0);
     func_80094D88((s32)D_800A0840, &D_8009E5C8);
 }
 
@@ -1205,7 +1205,7 @@ void NewLoadMenuInit(void) {
     func_80095BEC(0, (s32 *)NewLoadMenuPlace);
     NewLoadMenuCursor = 0;
     MainMenuCursor = 0;
-    g = D_8005A614;
+    g = GameInfo;
     g[0x27] = 2;
     *(s32 *)(g + 0x6C) = 1;
     g[0x54] = 1;
@@ -1218,7 +1218,7 @@ void NewLoadMenuInit(void) {
 }
 
 void num_players_render(void) {
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     func_80018B08(&TitlesMenuView, &TitlesCamera);
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
@@ -1226,7 +1226,7 @@ void num_players_render(void) {
 extern u8 D_8005A63A;
 
 void PlayersMenuInit(void) {
-    if (D_8005A646 & 4) {
+    if (GameLevelFlags & 4) {
         func_80095BEC(0, (s32 *)PlayersMenuAdventurePlace);
     } else {
         func_80095BEC(0, (s32 *)PlayersMenuPlace);
@@ -1238,7 +1238,7 @@ void MainMenuInit(void) {
     u8 *g;
     MainMenuCursor = 0;
     func_80092C54();
-    g = D_8005A614;
+    g = GameInfo;
     *(s16 *)(g + 0x34) = 0x28;
     MainMenuHintTimer = 0;
     *(u16 *)(g + 0x32) |= 0x200;
@@ -1249,10 +1249,10 @@ void RenderTitlesBackdropAndMenu(void) {
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
     func_80018B08(&TitlesBackdropView, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
     func_80018B08(&TitlesMenuView, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
 
@@ -1260,7 +1260,7 @@ void RenderTitlesBackdrop(void) {
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
     func_80018B08(&TitlesBackdropView, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
 
@@ -1268,17 +1268,17 @@ void RenderTitlesMenu(void) {
     GetEngineSlot(1)->sub[1].flags |= 0x8000;
     GetEngineSlot(1)->sub[2].flags |= 0x8000;
     func_80018B08(&TitlesMenuView, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(0));
     func_80018B08(&TitlesBackdropView, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
 
 void SetupTitlesBackdrop(void) {
     PlaceSub *s = (PlaceSub *)GetEngineSlot(1)->sub;
 
-    s->unk14 = D_8005B690 * 20;
+    s->unk14 = FrameCount * 20;
     s->unk12 = 0x293;
     s->unk50 = 1;
     s->sz = 0x2800;
@@ -1288,11 +1288,11 @@ void SetupTitlesBackdrop(void) {
 }
 
 void MenuConfirmOrBack(void) {
-    if (((PadButtons *)D_80051338)->pressed & 0x4000) {
+    if (((PadButtons *)Pads)->pressed & 0x4000) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainNext();
     }
-    if (((PadButtons *)D_80051338)->pressed & 0x1000) {
+    if (((PadButtons *)Pads)->pressed & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
@@ -1336,7 +1336,7 @@ void TitlesUpdateLevel(void) {
 }
 
 void TitlesPreInitLevel(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     g[0x50] = 9;
     g[0x51] = 9;
@@ -1346,13 +1346,13 @@ void TitlesPreInitLevel(void) {
 }
 
 void TitlesSetUp(void) {
-    D_8005AA70[0] = (s32)TitlesPreInitLevel;
-    D_8005AA70[1] = (s32)TitlesInitLevel;
-    D_8005AA70[2] = (s32)TitlesInitLevel;
-    D_8005AA70[3] = (s32)TitlesUpdateLevel;
-    D_8005AA70[5] = 0;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
+    LevelSpecs[0] = (s32)TitlesPreInitLevel;
+    LevelSpecs[1] = (s32)TitlesInitLevel;
+    LevelSpecs[2] = (s32)TitlesInitLevel;
+    LevelSpecs[3] = (s32)TitlesUpdateLevel;
+    LevelSpecs[5] = 0;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
     D_8009F8B4 = TitlesEmptyHook;
 }
 
@@ -1420,7 +1420,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
     t->unk04 = func_80015210(t->unk04, x, 0x800);
     t->unk08 = func_80015210(t->unk08, y, 0x800);
     still = abs(t->unk04 - x) + abs(t->unk08 - y);
-    s->unk08 = s2->unk08 = ((TitlesTrig *)D_80068BD4)[(D_8005B690 * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
+    s->unk08 = s2->unk08 = ((TitlesTrig *)TrigTable)[(FrameCount * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
     still = still == 0;
     if (o->unk0 & 1) {
         tgt = CharCards[o->unk30].target;
@@ -1461,7 +1461,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
         }
     }
     o->unk30 &= 7;
-    if ((o->unk4 < ((TitlesModeView *)D_8005A614)->unk26 && (O69PAD[o->unk4].pressed & 0x4000) && still) || o->unk2C != 0) {
+    if ((o->unk4 < ((TitlesModeView *)GameInfo)->unk26 && (O69PAD[o->unk4].pressed & 0x4000) && still) || o->unk2C != 0) {
         GetEngineSlot(0)->sub[20].flags &= 0xFFFF7FFF;
         GetEngineSlot(0)->sub[21].flags &= 0xFFFF7FFF;
         card = CharCards;
@@ -1482,8 +1482,8 @@ void UpdateCharSelector(TitlesSlot *slot) {
             s->unk6C = D_80052A54 + card[o->unk30].model * 0x38;
             s->flags |= 0x8000;
         }
-        D_8005A614[o->unk4 + 0x50] = card[o->unk30].hero;
-        D_8005A614[o->unk4 + 0x4C] = card[o->unk30].hero;
+        GameInfo[o->unk4 + 0x50] = card[o->unk30].hero;
+        GameInfo[o->unk4 + 0x4C] = card[o->unk30].hero;
         PlaySfx(CharPickSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
         o->ext = D_8005A9A0;
         {
@@ -1542,12 +1542,12 @@ void ShuffleCharSelectors(void) {
             CharSelectors[i].dst->unk4 = CharCards[CharSelectors[i].idx].x + CharSelectorOffsets[i].x;
             CharSelectors[i].dst->unk8 = CharCards[CharSelectors[i].idx].y + CharSelectorOffsets[i].y;
             i++;
-        } while (i < ((TitlesModeView *)D_8005A614)->unk26);
+        } while (i < ((TitlesModeView *)GameInfo)->unk26);
     }
 }
 
 s32 CpuPickCharacter(s32 a0) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     s32 r;
     s32 i;
     s8 *t;
@@ -1603,17 +1603,17 @@ void CharSelectUpdate(void) {
     AnimateTitlesBackdrop();
     eng = GetEngineSlot(0);
     s = &eng->sub[24];
-    s->unk08 = ((D_80068BD4[(((D_8004E0D8 * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
-    s->unk12 = (D_80068BD4[(((D_8004E0D8 * 25) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
-    s->unk14 = (D_80068BD4[(((D_8004E0D8 * 36) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s->unk08 = ((TrigTable[(((GameFrameCount * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
+    s->unk12 = (TrigTable[(((GameFrameCount * 25) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s->unk14 = (TrigTable[(((GameFrameCount * 36) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
     s->unk52 = 1;
     s2 = &GetEngineSlot(0)->sub[25];
-    s2->unk08 = ((D_80068BD4[(((D_8004E0D8 * 41) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0xBE;
-    s2->unk12 = (D_80068BD4[(((D_8004E0D8 * 35) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
-    s2->unk14 = (D_80068BD4[(((D_8004E0D8 * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s2->unk08 = ((TrigTable[(((GameFrameCount * 41) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0xBE;
+    s2->unk12 = (TrigTable[(((GameFrameCount * 35) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s2->unk14 = (TrigTable[(((GameFrameCount * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
     s2->unk52 = 1;
     min = 0x7FFFFFFF;
-    for (i = 0; i < ((TitlesModeView *)D_8005A614)->unk26; i++) {
+    for (i = 0; i < ((TitlesModeView *)GameInfo)->unk26; i++) {
         if (CharSelectors[i].pad10[5] < min) {
             min = CharSelectors[i].pad10[5];
         }
@@ -1659,12 +1659,12 @@ void CharSelectRender(void) {
     eng->unk10.y = -0xF0;
     RenderTitlesBackdropAndMenu();
     func_80018B08(&TitlesMenuView, &CharSelectCamera);
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
 }
 
 s8 adventure_mode_head(s32 a0) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     if (g[0x26] == 1) {
         s8 *t = AdventureHeadsSolo;
@@ -1731,7 +1731,7 @@ outer:
         j = 0;
         p = (s32 *)e->unk0;
         q = p + 1;
-        g = D_8005A614;
+        g = GameInfo;
     inner:
         if (j < e->unk4) {
             if (p[0] == 2) {
@@ -1816,30 +1816,30 @@ void LevelSelectInput(void) {
     EXTengine *e;
     s32 c;
 
-    if ((D_80051380 & 0x80) && (s8)D_8005A614[0x36] > 0) {
+    if ((D_80051380 & 0x80) && (s8)GameInfo[0x36] > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         LevelSelectReload = 4;
-        D_8005A614[0x36]--;
+        GameInfo[0x36]--;
     }
-    if ((D_80051380 & 0x20) && (s8)D_8005A614[0x36] < 6) {
+    if ((D_80051380 & 0x20) && (s8)GameInfo[0x36] < 6) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         LevelSelectReload = 4;
-        D_8005A614[0x36]++;
+        GameInfo[0x36]++;
     }
-    if ((D_80051380 & 0x10) && (s8)D_8005A614[0x37] > 0) {
+    if ((D_80051380 & 0x10) && (s8)GameInfo[0x37] > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8005A614[0x37]--;
+        GameInfo[0x37]--;
     }
     if ((D_80051380 & 0x40)
-        && (s8)D_8005A614[0x37] < BattleArenas[(s8)D_8005A614[0x36]].unk4 - 1) {
+        && (s8)GameInfo[0x37] < BattleArenas[(s8)GameInfo[0x36]].unk4 - 1) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8005A614[0x37]++;
+        GameInfo[0x37]++;
     }
-    if (((PadButtons *)D_80051338)->pressed & 0x1000) {
+    if (((PadButtons *)Pads)->pressed & 0x1000) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
-    if (((PadButtons *)D_80051338)->pressed & 0x4000) {
+    if (((PadButtons *)Pads)->pressed & 0x4000) {
         if (TitlesSlotOn()) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             MenuChainNext();
@@ -1848,41 +1848,41 @@ void LevelSelectInput(void) {
         }
     }
     if (TitlesSlotOn()) {
-        GetEngineSlot(0)->sub->unk6C = (void *)TitlesSlotRowI((s8)D_8005A614[0x36], (s8)D_8005A614[0x37]);
+        GetEngineSlot(0)->sub->unk6C = (void *)TitlesSlotRowI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
         GetEngineSlot(0)->sub->unk08 = 8;
-        GetEngineSlot(2)->sub->unk6C = (void *)TitlesSlotModelI((s8)D_8005A614[0x36], (s8)D_8005A614[0x37]);
-        GetEngineSlot(2)->sub->unk74 = TitlesSlotCI((s8)D_8005A614[0x36], (s8)D_8005A614[0x37]);
+        GetEngineSlot(2)->sub->unk6C = (void *)TitlesSlotModelI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
+        GetEngineSlot(2)->sub->unk74 = TitlesSlotCI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
         GetEngineSlot(0)->sub[4].flags |= 0x8000;
         GetEngineSlot(0)->sub[9].flags &= ~0x8000;
         return;
     }
     e = GetEngineSlot(0);
     tbl = LangLocked;
-    g = D_8005A614;
+    g = GameInfo;
     e->sub->unk6C = (void *)tbl[*(s32 *)(g + 0x2C)];
     GetEngineSlot(2)->sub->unk74 = 0;
     GetEngineSlot(0)->sub[4].flags &= ~0x8000;
     GetEngineSlot(0)->sub->unk08 = 0x1C;
     GetEngineSlot(0)->sub[9].flags |= 0x8000;
-    if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)D_8005A614[0x36]].unk0 + ((s8)D_8005A614[0x37] << 4)))->type == 2)) {
+    if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + ((s8)GameInfo[0x37] << 4)))->type == 2)) {
         if (D_800655C0 & 2) {
             if (D_800655C0 & 0x40) {
-                GetEngineSlot(0)->sub[9].unk6C = (void *)LangCheckingCard[*(s32 *)(D_8005A614 + 0x2C)];
+                GetEngineSlot(0)->sub[9].unk6C = (void *)LangCheckingCard[*(s32 *)(GameInfo + 0x2C)];
             } else if (D_800655C0 & 0x10) {
                 if (UnlockCardLevels(0) != 0) {
-                    *(s32 *)&GetEngineSlot(0)->sub[9].unk6C = LangPressToUnlockLevels[*(s32 *)(D_8005A614 + 0x2C)];
+                    *(s32 *)&GetEngineSlot(0)->sub[9].unk6C = LangPressToUnlockLevels[*(s32 *)(GameInfo + 0x2C)];
                     if (D_80051380 & 0x2000) {
                         PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
                         UnlockCardLevels(1);
                     }
                 } else {
-                    GetEngineSlot(0)->sub[9].unk6C = (void *)LangNoMoreUnlocked[*(s32 *)(D_8005A614 + 0x2C)];
+                    GetEngineSlot(0)->sub[9].unk6C = (void *)LangNoMoreUnlocked[*(s32 *)(GameInfo + 0x2C)];
                 }
             } else {
-                GetEngineSlot(0)->sub[9].unk6C = (void *)LangInsertCard[*(s32 *)(D_8005A614 + 0x2C)];
+                GetEngineSlot(0)->sub[9].unk6C = (void *)LangInsertCard[*(s32 *)(GameInfo + 0x2C)];
             }
         } else {
-            GetEngineSlot(0)->sub[9].unk6C = (void *)LangInsertCard[*(s32 *)(D_8005A614 + 0x2C)];
+            GetEngineSlot(0)->sub[9].unk6C = (void *)LangInsertCard[*(s32 *)(GameInfo + 0x2C)];
         }
     } else {
         GetEngineSlot(0)->sub[9].unk6C = NULL;
@@ -1909,7 +1909,7 @@ void LevelSelectUpdate(void) {
 
     if (LevelSelectReload != 0) {
         func_80017640();
-        func_80011D28((u8 *)&D_8004E0F0);
+        func_80011D28((u8 *)&MainHeap);
         LevelSelectReload--;
     }
     AnimateTitlesBackdrop();
@@ -1921,13 +1921,13 @@ void LevelSelectUpdate(void) {
         LevelSelectInput();
     }
     e0 = GetEngineSlot(0);
-    boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)D_8005A614[0x36]].unk0 + ((s8)D_8005A614[0x37] << 4)))->idx;
+    boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + ((s8)GameInfo[0x37] << 4)))->idx;
     w = D_8004DDD0[boff * 3] - 0x101;
-    off = ((s32 **)D_8004DDBC)[*(s32 *)(D_8005A614 + 0x2C)][w];
+    off = ((s32 **)D_8004DDBC)[*(s32 *)(GameInfo + 0x2C)][w];
     e0->sub[6].unk6C = (void *)off;
     t = &GetEngineSlot(0)->sub[1];
     t->unk08 = func_80015284(t->unk08,
-        *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)D_8005A614[0x37] + 4] + 0x72) + 0x32, 0x800);
+        *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)GameInfo[0x37] + 4] + 0x72) + 0x32, 0x800);
     i = 0;
     off = 0;
     for (;;) {
@@ -1937,37 +1937,37 @@ void LevelSelectUpdate(void) {
         s32 fl;
         EXTengine *e;
 
-        if (i >= (BattleArenas + (s8)D_8005A614[0x36])->unk4) {
+        if (i >= (BattleArenas + (s8)GameInfo[0x36])->unk4) {
             break;
         }
         GetEngineSlot(1)->sub[off + 4].flags |= 0x8000;
         e = GetEngineSlot(i + 3);
-        fl = *(s32 *)(D_8005A614 + 4) & 0x2000;
-        slot = &((BattleLevel *)BattleArenas[(s8)D_8005A614[0x36]].unk0)[off];
+        fl = *(s32 *)(GameInfo + 4) & 0x2000;
+        slot = &((BattleLevel *)BattleArenas[(s8)GameInfo[0x36]].unk0)[off];
         idx = slot->idx;
         type = slot->type;
         s = e->sub;
         if (fl || type == 1
-            || (type == 2 && ((g = D_8005A614 + idx), g[0xE4] != 0 || g[0x168] != 0))) {
+            || (type == 2 && ((g = GameInfo + idx), g[0xE4] != 0 || g[0x168] != 0))) {
             on = 1;
         } else {
             on = 0;
         }
         if (on) {
-            s->unk6C = ((BattleLevel *)((u8 *)BattleArenas[(s8)D_8005A614[0x36]].unk0 + (off << 4)))->model;
-            c = ((BattleLevel *)((u8 *)BattleArenas[(s8)D_8005A614[0x36]].unk0 + (off << 4)))->unkC;
+            s->unk6C = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + (off << 4)))->model;
+            c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + (off << 4)))->unkC;
             s->unk74 = c;
             s->unk10 = 0x7D;
             s->unk12 = 0;
             s->unk14 = 0;
-            s->unk04 = D_80068BD4[(((D_8004E0D8 * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
-            s->unk08 = (D_80068BD4[(((D_8004E0D8 * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+            s->unk04 = TrigTable[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
+            s->unk08 = (TrigTable[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
         } else {
             s->unk6C = D_800555DC;
             s->unk74 = 0x2006;
             s->unk10 = 0;
-            s->unk12 = D_8005B690 * 50 + (i << 10);
-            val = D_80068BD4[(((D_8004E0D8 * 100 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2;
+            s->unk12 = FrameCount * 50 + (i << 10);
+            val = TrigTable[(((GameFrameCount * 100 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2;
             s->unk04 = 0;
             s->unk08 = 0;
             s->unk14 = (val * 25) >> 9;
@@ -1981,12 +1981,12 @@ void LevelSelectUpdate(void) {
         GetEngineSlot(1)->sub[i + 4].flags &= ~0x8000;
         GetEngineSlot(i + 3)->sub->unk74 = 0;
     }
-    h = D_8005A614;
+    h = GameInfo;
     D_8009E5DC = ((BattleLevel *)((u8 *)BattleArenas[(s8)h[0x36]].unk0 + ((s8)h[0x37] << 4)))->idx;
     q = GetEngineSlot(2)->sub;
     q->unk10 = 0x7D;
     q->unk51 = 0;
-    q->unk04 = D_80068BD4[(((D_8004E0D8 * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->unk08 = (D_80068BD4[(((D_8004E0D8 * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+    q->unk04 = TrigTable[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->unk08 = (TrigTable[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
     q->unk52 = 1;
 }
 
@@ -1995,25 +1995,25 @@ void LevelSelectRender(void) {
     s8 *m;
 
     func_80018B08(&LevelSelectView0, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
     RenderTitlesBackdropAndMenu();
-    m = (s8 *)D_8005A614;
+    m = (s8 *)GameInfo;
     cam[2] = (m[0x37] != 0) ? 0x400 : 0x578;
     func_80018B08(&LevelSelectView1, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(3));
     cam[2] = (m[0x37] != 1) ? 0x400 : 0x578;
     func_80018B08(&LevelSelectView2, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(4));
     cam[2] = (m[0x37] != 2) ? 0x400 : 0x578;
     func_80018B08(&LevelSelectView3, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(5));
     cam[2] = (m[0x37] != 3) ? 0x400 : 0x578;
     func_80018B08(&LevelSelectView4, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(6));
     cam[2] = 0x400;
 }
@@ -2038,7 +2038,7 @@ void LevelSelectCursor(s32 arg0) {
 }
 
 s32 IsLevelUnlocked(s32 arg0) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     u8 *e = (u8 *)BattleArenas[(s8)g[0x36]].unk0 + (arg0 << 4);
     s32 off = *(s32 *)(e + 4);
     s32 type = *(s32 *)e;

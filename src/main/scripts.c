@@ -8,7 +8,7 @@ void func_8001E984(s32 arg0, s32 arg1) {
     u8 *next;
 
     if (arg0 != 0) {
-        D_80058B6C = (s32)func_80011654(arg0 * 0x7C, &D_8004E0F0);
+        D_80058B6C = (s32)func_80011654(arg0 * 0x7C, &MainHeap);
         p = (u8 *)D_80058B6C;
         for (; arg0 >= 2; arg0--) {
             next = p + 0x7C;
@@ -22,7 +22,7 @@ void func_8001E984(s32 arg0, s32 arg1) {
     D_80058B78 = NULL;
     free_scripts = (void *)D_80058B6C;
     if (arg1 != 0) {
-        D_80058B68 = (s32)func_80011654(arg1 * 0xB8, &D_8004E0F0);
+        D_80058B68 = (s32)func_80011654(arg1 * 0xB8, &MainHeap);
         p = (u8 *)D_80058B68;
         for (; arg1 >= 2; arg1--) {
             next = p + 0xB8;
@@ -160,7 +160,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     track = res;
     if (track != NULL) {
         key = CamTrack_FindKey(track, ci->time.h.frame);
-        cam = (CamState *)D_80051640;
+        cam = (CamState *)MainCamera;
         cam->unk8 = 0x800;
         cam->unk0 = 0;
         cam->unk4 = 0;
@@ -343,12 +343,12 @@ void func_8001F604(u8 *obj, EmitPart *part, u8 *def) {
     if (r != 0) {
         pitch = (*(s32 *)(def + 0x38) + Random(r)) & 0xFFF;
     }
-    part->vel[0] = speed * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2 >> 4;
-    part->vel[2] = speed * D_80068BD4[yaw & 0xFFF].unk2 >> 4;
-    part->vel[1] = -(speed * D_80068BD4[pitch & 0xFFF].unk2 >> 4);
-    *(s32 *)(obj + 4) = (radius * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2 >> 12) + *(s32 *)(def + 4);
-    *(s32 *)(obj + 0xC) = (radius * D_80068BD4[yaw & 0xFFF].unk2 >> 12) + *(s32 *)(def + 0xC);
-    *(s32 *)(obj + 8) = *(s32 *)(def + 8) - (radius * D_80068BD4[pitch & 0xFFF].unk2 >> 12);
+    part->vel[0] = speed * TrigTable[(yaw - 0x400) & 0xFFF].unk2 >> 4;
+    part->vel[2] = speed * TrigTable[yaw & 0xFFF].unk2 >> 4;
+    part->vel[1] = -(speed * TrigTable[pitch & 0xFFF].unk2 >> 4);
+    *(s32 *)(obj + 4) = (radius * TrigTable[(yaw - 0x400) & 0xFFF].unk2 >> 12) + *(s32 *)(def + 4);
+    *(s32 *)(obj + 0xC) = (radius * TrigTable[yaw & 0xFFF].unk2 >> 12) + *(s32 *)(def + 0xC);
+    *(s32 *)(obj + 8) = *(s32 *)(def + 8) - (radius * TrigTable[pitch & 0xFFF].unk2 >> 12);
     *(s32 *)(obj + 0) |= 0x8000;
 }
 
@@ -647,9 +647,9 @@ void func_800201BC(u8 *arg0, GteSetup *arg1) {
     GfxState *gs;
     void (*fn)(u8 *, GteSetup *);
 
-    dp = D_80056998.modelDp;
+    dp = RenderState.modelDp;
     p = *(u8 **)(arg0 + 8);
-    D_80056998.modelDp =0x1000 - (((0x1000 - D_80058B60) * (0x1000 - dp)) >> 12);
+    RenderState.modelDp =0x1000 - (((0x1000 - D_80058B60) * (0x1000 - dp)) >> 12);
     m = *arg1->rot;
     m.t[0] = arg1->trans->vx;
     m.t[1] = arg1->trans->vy;
@@ -659,7 +659,7 @@ void func_800201BC(u8 *arg0, GteSetup *arg1) {
     out.ofx = arg1->ofx;
     out.ofy = arg1->ofy;
     for (; p != NULL;) {
-        gs = &D_80056998;
+        gs = &RenderState;
         ((GfxScreen *)gs->unk28)->x = arg1->ofx;
         ((GfxScreen *)gs->unk28)->y = arg1->ofy;
         fn = (void (*)(u8 *, GteSetup *))D_80058B00[*(s32 *)(p + 4)].unk8;
@@ -704,8 +704,8 @@ void func_80020344(Quat *a, Quat *b, s32 t, Quat *out) {
     }
     ang = get_angle(s, d);
     inv = 0x1000000 / s;
-    ka = (D_80068BD4[((((0x1000 - t) * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
-    kb = (D_80068BD4[(((t * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
+    ka = (TrigTable[((((0x1000 - t) * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
+    kb = (TrigTable[(((t * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
     out->v[0] = (ka * a->v[0] + kb * q.v[0]) >> 18;
     out->v[1] = (ka * a->v[1] + kb * q.v[1]) >> 18;
     out->v[2] = (ka * a->v[2] + kb * q.v[2]) >> 18;
@@ -715,9 +715,9 @@ void func_80020344(Quat *a, Quat *b, s32 t, Quat *out) {
 /* Cosine at angle x / 2, linearly interpolated for odd x. */
 static inline s32 Trig_HalfCos(s32 x) {
     if (x & 1) {
-        return (D_80068BD4[((x >> 1) - 0x400) & 0xFFF].unk2 + D_80068BD4[((x >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+        return (TrigTable[((x >> 1) - 0x400) & 0xFFF].unk2 + TrigTable[((x >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     }
-    return D_80068BD4[((x >> 1) - 0x400) & 0xFFF].unk2;
+    return TrigTable[((x >> 1) - 0x400) & 0xFFF].unk2;
 }
 
 void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
@@ -773,9 +773,9 @@ void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
     ia >>= 11;
     ka = Trig_HalfCos(ia) * inv;
     if (ib & 1) {
-        ang = (D_80068BD4[((ib >> 1) - 0x400) & 0xFFF].unk2 + D_80068BD4[((ib >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+        ang = (TrigTable[((ib >> 1) - 0x400) & 0xFFF].unk2 + TrigTable[((ib >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     } else {
-        ang = D_80068BD4[((ib >> 1) - 0x400) & 0xFFF].unk2;
+        ang = TrigTable[((ib >> 1) - 0x400) & 0xFFF].unk2;
     }
     ia = ang * inv;
     if (ka > 0) {
@@ -821,8 +821,8 @@ s32 func_80020C04(s32 arg0) {
     s32 b;
     s32 t;
 
-    a = D_80068BD4[((arg0 >> 16) - 0x400) & 0xFFF].unk2;
-    b = D_80068BD4[((arg0 >> 16) - 0x3FF) & 0xFFF].unk2;
+    a = TrigTable[((arg0 >> 16) - 0x400) & 0xFFF].unk2;
+    b = TrigTable[((arg0 >> 16) - 0x3FF) & 0xFFF].unk2;
     t = (b - a) * (arg0 & 0xFFFF);
     if (!((arg0 & 0x7FFF) >> 15)) {
         return a;
@@ -832,9 +832,9 @@ s32 func_80020C04(s32 arg0) {
 
 s16 func_80020C4C(s32 arg0) {
     if (arg0 & 1) {
-        return (D_80068BD4[((arg0 >> 1) - 0x400) & 0xFFF].unk2 + D_80068BD4[((arg0 >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+        return (TrigTable[((arg0 >> 1) - 0x400) & 0xFFF].unk2 + TrigTable[((arg0 >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     }
-    return D_80068BD4[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
+    return TrigTable[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
 }
 
 void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
@@ -922,10 +922,10 @@ void func_80020E9C(NAS *nas, u8 *arg1) {
             nas->NASid &= ~0x8000;
             return;
         }
-        saved = *(typeof(saved) *)D_80056998.unk28;
-        func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
+        saved = *(typeof(saved) *)RenderState.unk28;
+        func_8001965C(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
         func_800201BC(sub, &s);
-        *(typeof(saved) *)D_80056998.unk28 = saved;
+        *(typeof(saved) *)RenderState.unk28 = saved;
     }
 }
 
@@ -1093,7 +1093,7 @@ void func_8002128C(u8 *arg0, u8 *arg1, s32 arg2) {
         sub = (subengine *)(p + 8);
         *(s32 *)(p + 4) = 5;
         *(s32 *)p = arg2;
-        *sub = D_8005A830;
+        *sub = SubEngineTemplate;
         *(s32 *)sub = 0;
     }
 }
@@ -1148,7 +1148,7 @@ void func_8002141C(u8 *arg0) {
     }
     temp_a0_2 = (*(s32*)((u8*)(arg0) + 20));
     if (temp_a0_2 != 0) {
-        mal_free(temp_a0_2, &D_8004E0F0);
+        mal_free(temp_a0_2, &MainHeap);
         (*(s32*)((u8*)(arg0) + 20)) = 0;
     }
 }
@@ -1217,7 +1217,7 @@ void func_80021604(u8 *arg0, u8 *arg1, s32 arg2) {
             } while (q != NULL);
         }
         *(s32 *)(p + 0x14) = 0;
-        func_800115D8(*(s32 *)(e + 0x10) * 0x28, (void **)(p + 0x14), (s32)&D_8004E0F0, 0);
+        func_800115D8(*(s32 *)(e + 0x10) * 0x28, (void **)(p + 0x14), (s32)&MainHeap, 0);
     }
 }
 
@@ -1268,7 +1268,7 @@ void func_80021798(u8 *arg0, u8 *arg1, s32 arg2) {
     if (p != NULL) {
         sub = p + 8;
         *(s32 *)(p + 4) = 3;
-        *(subengine *)sub = D_8005A830;
+        *(subengine *)sub = SubEngineTemplate;
         v = *(s32 *)arg1;
         *(s16 *)(sub + 0x74) = 0;
         *(s32 *)sub = 0;
@@ -1371,7 +1371,7 @@ void func_80021A1C(u8 *arg0, u8 *arg1, s32 arg2) {
     if (p != NULL) {
         sub = p + 8;
         *(s32 *)(p + 4) = 0;
-        *(subengine *)sub = D_8005A830;
+        *(subengine *)sub = SubEngineTemplate;
         v = *(s32 *)arg1;
         *(s16 *)(sub + 0x74) = 0;
         *(s32 *)sub = 0;
@@ -1576,10 +1576,10 @@ void func_80021FB0(void) {
         } while (var_a0 != NULL);
     }
     if (D_80058B6C != 0) {
-        mal_free(D_80058B6C, &D_8004E0F0);
+        mal_free(D_80058B6C, &MainHeap);
     }
     if (D_80058B68 != 0) {
-        mal_free(D_80058B68, &D_8004E0F0);
+        mal_free(D_80058B68, &MainHeap);
     }
 }
 
@@ -1608,7 +1608,7 @@ void scripts_render(void) {
     GfxState *gs;
 
     var_s0 = D_80058B78;
-    gs = &D_80056998;
+    gs = &RenderState;
     for (;;) {
         /* block-scope declaration, as the implicit one was: keeps the loop unrotated */
         extern void func_800201BC(u8 *, GteSetup *);

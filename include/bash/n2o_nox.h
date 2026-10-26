@@ -54,7 +54,7 @@ typedef struct MixObj {
 } MixObj;
 
 extern SetupCam NoxCamera;
-extern fade_info D_8009F644;
+extern fade_info ScreenFade;
 extern u8 D_8009F6F4[];
 
 typedef struct MineSrc {
@@ -188,7 +188,7 @@ extern s32 NoxHeroTiltA;
 extern s32 NoxHeroTiltB;
 extern s32 NoxHeroTiltC;
 extern s32 NoxHeroTiltD;
-/* PadState (D_80051338) as seen by NoxPreMoveHero. */
+/* PadState (Pads) as seen by NoxPreMoveHero. */
 typedef struct BossPad {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u8 pad04[0x50 - 0x04];
@@ -211,7 +211,7 @@ typedef struct BossObj {
     /* 0x54 */ EXTengine *eng;
 } BossObj;
 
-/* D_8005A614 as seen by NoxBossFollowPath. */
+/* GameInfo as seen by NoxBossFollowPath. */
 typedef struct BossGameView {
     /* 0x00 */ u8 pad00[4];
     /* 0x04 */ s32 unk4;
@@ -688,7 +688,7 @@ void PlotMineSFX(NAS *nas);
 
 void PlotLaserShoot(NAS *nas);
 
-/* A scene object as NoxInitAsteroids walks the list at D_80058AD0 + 0x1C. */
+/* A scene object as NoxInitAsteroids walks the list at MapScene + 0x1C. */
 typedef struct AstKind {
     /* 0x0 */ u8 kind;
     /* 0x1 */ u8 mode;
@@ -737,7 +737,7 @@ extern AstMineSlot NoxMines[];
 
 void NoxInitAsteroids(void);
 
-#define BGV ((BossGameView *)D_8005A614)
+#define BGV ((BossGameView *)GameInfo)
 
 /* Squared distance from the asteroid's position (o + 1) to q. */
 static inline s32 AstDist(s32 *o, EXTengine *q) {
@@ -840,7 +840,7 @@ static inline void AstSpin(AstSceneObj *o, AstKind *k, u8 kind) {
 /* Runs body with e set to the engine of the hero NoxUpdateAsteroids tracks:
  * hero 0 in one-player games, else the first hero not out (status 0x2000). */
 #define AST_TRACKED_HERO(e, body)                          \
-    if (((BossGameView *)D_8005A614)->unk6C == 0) {        \
+    if (((BossGameView *)GameInfo)->unk6C == 0) {        \
         e = Heroes[0].hero_eng;                            \
         body                                               \
     } else if (!(Heroes[0].hero_status & 0x2000)) {        \

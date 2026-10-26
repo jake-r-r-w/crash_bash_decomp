@@ -102,7 +102,7 @@ void func_8002C18C(u8 *arg0) {
 
 void func_8002C1C0(s32 arg0, s32 arg1) {
     if (D_8006557C.seq >= 0) {
-        SsSeqSetAccelerando((s16)D_8006557C.seq, (D_80058B88[D_8005A648].tempo * arg0) / 100, arg1);
+        SsSeqSetAccelerando((s16)D_8006557C.seq, (D_80058B88[GameMode].tempo * arg0) / 100, arg1);
     }
 }
 
@@ -147,7 +147,7 @@ void func_8002C2C4(music_midi *slot) {
     slot->seq = SsVabOpenHead(head, -1);
     SsVabTransBody(body, (s16)slot->seq);
     SpuIsTransferCompleted(1);
-    slot->data = (s32)func_800112A4((void *)slot->data, ((s32 *)slot->data)[1], &D_8004E0F0);
+    slot->data = (s32)func_800112A4((void *)slot->data, ((s32 *)slot->data)[1], &MainHeap);
 }
 
 void music_dload_midi(s32 arg0, music_midi *slot, s32 type) {
@@ -172,7 +172,7 @@ void func_8002C428(void) {
 
 void func_8002C44C(void) {
     if (D_8006557C.data != 0) {
-        mal_free(D_8006557C.data, &D_8004E0F0);
+        mal_free(D_8006557C.data, &MainHeap);
         D_8006557C.data = 0;
     }
 }

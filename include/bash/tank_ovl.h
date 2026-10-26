@@ -250,7 +250,7 @@ extern u16 TankBossAiHumanTweak[];
 extern u16 TankBossAiHumanRoundTweak[];
 extern u16 TankBossAiSkillAlt[];
 extern u16 TankBossAiSkill[];
-/* D_8005A614 as seen by TA_PreInitLevel. */
+/* GameInfo as seen by TA_PreInitLevel. */
 typedef struct TankGameView {
     /* 0x00 */ u8 pad0[4];
     /* 0x04 */ u32 w4;
@@ -420,7 +420,7 @@ static inline s32 TankRocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -456,7 +456,7 @@ static inline void TankRocketKillCell(s32 arg0, s32 arg1) {
 }
 /* PlotRocketTA: the TankLevelsGridMapTank tile under (x, z), 0 off the map in mode 9. */
 static inline s32 TankRocketTile(s32 x, s32 z) {
-    if (D_8005A648 == 9) {
+    if (GameMode == 9) {
         if (z >= TankArenaMaxZ || z < 0 || x >= TankArenaMaxX || x < 0) {
             return 0;
         }
@@ -483,7 +483,7 @@ static inline s32 TankMoveFindHero(s32 player, s32 x, s32 z, s32 lim) {
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -619,7 +619,7 @@ static inline NAS *TankPeriscopePuff(SLONG_XYZ *pos, s32 kind) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    p = *(u8 **)D_80058AD0;
+    p = *(u8 **)MapScene;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -655,7 +655,7 @@ static inline void TankPuffSetAngle(NAS *puff, s32 angle) {
         s->flags |= 0x20000000;
     }
 }
-extern s32 D_80051244[]; /* flags by angle octant */
+extern s32 DirPadBits[]; /* flags by angle octant */
 void TankBotDodgeFrom(s32 player, s32 x, s32 z, EXTengine *eng, TA_Bot *ai);
 s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai);
 
@@ -685,7 +685,7 @@ static inline s32 PickupFindHero(s32 x, s32 z) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -785,7 +785,7 @@ typedef struct TankCam {
     /* 0x56 */ s16 h56;
     /* 0x58 */ s16 h58;
 } TankCam;
-#define CAM5F ((TankCam *)D_80051640)
+#define CAM5F ((TankCam *)MainCamera)
 typedef struct TankScreen {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 w10;

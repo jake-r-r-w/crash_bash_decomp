@@ -26,7 +26,7 @@ typedef struct { Blk16 a[0x18]; s32 b[3]; } Blk18C;
 typedef struct { s32 w[3]; } Blk12;
 typedef struct { Blk12 a; s32 b; } Blk12p4;
 
-/* game state block at D_8005A614, reset by func_800926CC */
+/* game state block at GameInfo, reset by func_800926CC */
 typedef struct {
     u8 pad0[8];
     s32 unk8;
@@ -109,7 +109,7 @@ static inline s32 EngineTable_AllDone(EngineTable12 *t) {
     n = t->unk8;
     p = t->unk4;
     for (i = 0; i < n; i++, p++) {
-        if (!LevelUnlockedIn(p->unk4, D_8005A614)) {
+        if (!LevelUnlockedIn(p->unk4, GameInfo)) {
             return 0;
         }
     }
@@ -129,7 +129,7 @@ static inline s32 EngineTable_Reachable(void *arg0, u8 *tab) {
             goto done;
         }
         obj = *(s32 *)((u8 *)(i * 16 + *(s32 *)((u8 *)arg0 + 4)) + 4);
-        if (LevelUnlockedIn(obj, D_8005A614) == 0) {
+        if (LevelUnlockedIn(obj, GameInfo) == 0) {
             cnt = 0;
             j = cnt;
             p = tab;
@@ -154,7 +154,7 @@ static inline void EngineTable_MarkDone(void *arg0) {
     s32 i;
 
     for (i = 0; i < ((EngineTable12 *)arg0)->unk8; i++) {
-        D_8005A614[((EngineTable12 *)arg0)->unk4[i].unk4 + 0xE4] = 1;
+        GameInfo[((EngineTable12 *)arg0)->unk4[i].unk4 + 0xE4] = 1;
     }
 }
 
@@ -170,7 +170,7 @@ void MenuChainNext(void);
 
 /* func_8008FD94's body, inlined by func_8008F554. */
 static inline void EngineWorldNext(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     s32 n;
 
     D_8009EB98 = 4;
@@ -184,7 +184,7 @@ static inline void EngineWorldNext(void) {
 
 /* func_8008FE00's body, inlined by func_8008F554. */
 static inline void EngineWorldPrev(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     s32 n;
 
     D_8009EB98 = 4;
@@ -214,7 +214,7 @@ static inline s32 EngineTable_Unlocked(s32 arg0) {
     n = t->unk8;
     p = t->unk4;
     for (i = 0; i < n; i++, p++) {
-        if (!LevelUnlockedIn(p->unk4, D_8005A614)) {
+        if (!LevelUnlockedIn(p->unk4, GameInfo)) {
             return 0;
         }
     }
@@ -225,7 +225,7 @@ static inline s32 EngineTable_Unlocked(s32 arg0) {
 static inline s32 EngineCurWorldName(void) {
     u16 *wt = D_8004DDD0;
     EngineTable12 *tab = D_8009E7A0;
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     EngineEntry16Head *e = tab[g[0x28]].unk4;
     s32 idx = e[g[0x29]].unk4;
     s32 **tbl;
@@ -371,7 +371,7 @@ void func_80090A10(void);
 void func_80090E20(void);
 
 void func_8008ECE4(void);
-/* D_8005A614 as seen by func_8008ECE4. */
+/* GameInfo as seen by func_8008ECE4. */
 typedef struct EngineModeView {
     /* 0x00 */ u8 pad0[0x30];
     /* 0x30 */ u16 unk30;
@@ -446,7 +446,7 @@ extern s32 HubSaveChoice;
         EXTengine *e_;                                                         \
         u8 *g_;                                                                \
         e_ = GetEngineSlot(1);                                                 \
-        e_->sub[1].unk6C = (tbl)[*(s32 *)((g_ = D_8005A614) + 0x2C)];          \
+        e_->sub[1].unk6C = (tbl)[*(s32 *)((g_ = GameInfo) + 0x2C)];          \
         GetEngineSlot(1)->sub->unk6C = D_8009EFE4[*(s32 *)(g_ + 0x2C)];        \
         func_8001C2C0((u8 *)GetEngineSlot(1));                                 \
     }

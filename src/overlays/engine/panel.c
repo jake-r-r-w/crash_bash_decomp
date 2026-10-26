@@ -11,7 +11,7 @@ void Setup_panel(void) {
     s32 i;
 
     PanelCtrl = (PanelCtrl | 0x80000000) & 0xFFFE2FFF;
-    v = (EngineSlotView *)D_8005A614;
+    v = (EngineSlotView *)GameInfo;
     if (v->unk6C != 0) {
         i = v->unk48;
         D_800991D8[0] = i;
@@ -34,8 +34,8 @@ void Setup_panel(void) {
         D_800991D8[3] = 3;
     }
     func_8007EAC0();
-    if (D_8004DDD0[D_8005A648 * 3] != 0x101 && D_8004DDD0[D_8005A648 * 3] != 0x102) {
-        switch (D_8005A648) {
+    if (D_8004DDD0[GameMode * 3] != 0x101 && D_8004DDD0[GameMode * 3] != 0x102) {
+        switch (GameMode) {
         case 14:
         case 15:
         case 16:
@@ -437,7 +437,7 @@ void Draw_Clock(void) {
     if (!(PanelCtrl & 1)) {
         return;
     }
-    if (D_8005A644 & 0x9800) {
+    if (GameExitFlags & 0x9800) {
         return;
     }
     time = (u32)Clock_Time >> 8;
@@ -477,7 +477,7 @@ void Draw_Clock(void) {
             Clock_flags = 0x8000;
         }
     }
-    v = (EngineClockView *)D_8005A614;
+    v = (EngineClockView *)GameInfo;
     if (!(v->unk4 & 0x40) && !(v->unk10 & 0x04000000)) {
         if (Clock_flags & 0x20) {
             u32 bf;
@@ -526,7 +526,7 @@ void Draw_Clock(void) {
             f -= 2;
             if (f < 0) {
                 sec--;
-                f += ((EngineClockView *)D_8005A614)->unk21;
+                f += ((EngineClockView *)GameInfo)->unk21;
             }
             if (sec < 0) {
                 min--;
@@ -1096,12 +1096,12 @@ void UpdateHealthIcons(void) {
     s32 c;
 
     e = IconParts;
-    c = D_8004E0D8;
+    c = GameFrameCount;
     for (i = 0; i < 4; i++) {
         t = c >> 1;
         BarLength = 0;
         if (pHeroHealth[i] != 0) {
-            switch (((EngineGameView *)D_8005A614)->mode) {
+            switch (((EngineGameView *)GameInfo)->mode) {
             case 5:
             case 6:
             case 7:
@@ -1253,11 +1253,11 @@ void UpdatePowerIcons(void) {
 loop:
     if (i < 4) {
         if (h->hero_name != 9) {
-            if (D_8005A648 < 0x12) {
+            if (GameMode < 0x12) {
                 BarLength = 0;
             } else {
-                if (D_8005A648 >= 0x17) {
-                    if (D_8005A648 >= 0x1B) {
+                if (GameMode >= 0x17) {
+                    if (GameMode >= 0x1B) {
                         BarLength = 0;
                     } else {
                         e = FindExtension(h->hero, 0x10000000);
@@ -1354,7 +1354,7 @@ void InitScore1Icons(void) {
 
 void InitSharedScoreIcons(void) {
     s32 i;
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     if (*(s32 *)(g + 0x6C) != 0) {
         i = *(s16 *)(g + 0x48);
@@ -1492,7 +1492,7 @@ void UpdateScoreIcons(void) {
         }
         if (!(PanelCtrl & 0x1000)) {
             if (h->hero_score != h->hero_score_displayed &&
-                (!(D_8004E0D8 & 3) || (Clock_flags & 0x200))) {
+                (!(GameFrameCount & 3) || (Clock_flags & 0x200))) {
                 if (h->hero_score_displayed < h->hero_score) {
                     h->hero_score_displayed++;
                 } else {
@@ -1511,11 +1511,11 @@ void UpdateScoreIcons(void) {
 }
 
 void func_8007D5EC(void) {
-    EngineGameView *g = (EngineGameView *)D_8005A614;
+    EngineGameView *g = (EngineGameView *)GameInfo;
     EXTengine *e;
     EXTengine *f;
 
-    if (!(g->unk30 & 0x8801) && *(s32 *)(D_8005A614 + 0x68) == 0 && D_8009D908 != 0) {
+    if (!(g->unk30 & 0x8801) && *(s32 *)(GameInfo + 0x68) == 0 && HeroesAllOut != 0) {
         if (D_8009AE78 != 0) {
             D_8009AE78 -= 1;
             return;
@@ -1535,7 +1535,7 @@ void func_8007D6D0(void) {
     s32 i;
     EngineGameView *g;
 
-    g =(EngineGameView *)D_8005A614;
+    g =(EngineGameView *)GameInfo;
     if (*(s32 *)((u8 *)g + 0x10) & 1) {
         return;
     }
@@ -1562,10 +1562,10 @@ void func_8007D6D0(void) {
         if (i >= 4) {
             return;
         }
-        if (D_8005A614[i + 0x5C] == 0 && (((PadStick *)D_80051338)[i].pressed & 0x4000)) {
+        if (GameInfo[i + 0x5C] == 0 && (((PadStick *)Pads)[i].pressed & 0x4000)) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
-            if (D_8005AA70[10] != 0) {
-                ((void (*)(void))D_8005AA70[10])();
+            if (LevelSpecs[10] != 0) {
+                ((void (*)(void))LevelSpecs[10])();
             }
             PanelCtrl |= 0x10000;
         }
@@ -1574,7 +1574,7 @@ void func_8007D6D0(void) {
 }
 
 s16 func_8007D850(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     s16 r = -1;
     s16 i;
     s16 t;
@@ -1632,10 +1632,10 @@ void Cups_Update(void) {
     if (CupTimer != 0) {
         CupTimer--;
     }
-    if (!(D_8005A646 & 0x100)) {
+    if (!(GameLevelFlags & 0x100)) {
         s32 j;
         j = 0;
-        key = D_8005A646 & 0xFF;
+        key = GameLevelFlags & 0xFF;
         p = D_8009AF38;
         do {
             if (key == *p) {
@@ -2047,7 +2047,7 @@ found:
 }
 
 void func_8007E7A4(void) {
-    func_80010000(D_8005A614);
+    func_80010000(GameInfo);
 }
 
 s32 CalcElapsedTime(void) {
@@ -2067,7 +2067,7 @@ void func_8007E7F4(void) {
     CupMode = 0;
     CupTimer = 0;
     Trophy_Cups = 3;
-    p = D_8005A614;
+    p = GameInfo;
     f = *(u16 *)(p + 0x32);
     if (f & 3) {
         Trophy_Cups = *(u16 *)(p + 0x3A);
@@ -2079,7 +2079,7 @@ void func_8007E7F4(void) {
             Trophy_Cups = 2;
         }
     }
-    if (D_8005A648 == 0x20) {
+    if (GameMode == 0x20) {
         Trophy_Cups = 3;
     }
 }
@@ -2147,7 +2147,7 @@ void func_8007E9FC(u16 arg0, s16 arg1) {
         Icon.b[4] = D_80099208[2];
         Icon.b[5] = D_80099208[3];
         Icon.b[6] = 0;
-        if (D_8005A680[0] == 0) {
+        if (GameTeams[0] == 0) {
             Icon.c[4] = D_80099208[0];
             Icon.c[5] = D_80099208[1];
             Icon.c[6] = 0;
@@ -2191,7 +2191,7 @@ void InitCountdown(void) {
     counter->unk6C = &counter_sub;
     sub = &counter_sub;
     if (sub != NULL) {
-        *sub = D_8005A830;
+        *sub = SubEngineTemplate;
         sub->unk6C = D_80053074;
         sub->unk74 = 0x2004;
         sub->flags = 0x11000000;

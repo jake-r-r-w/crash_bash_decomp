@@ -16,7 +16,7 @@ void InitialisePodiumFirst(void);
 void InitialisePodium(void);
 
 extern s32 D_80098714;
-/* D_80051640 as seen by HubEndCredits. */
+/* MainCamera as seen by HubEndCredits. */
 typedef struct {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 x;
@@ -76,7 +76,7 @@ extern OvlTextLine HubCreditsLines[];
         }                                     \
     }
 
-/* D_80051640 as HubCreditsScroll sets it up. */
+/* MainCamera as HubCreditsScroll sets it up. */
 typedef struct OvlTextView {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;

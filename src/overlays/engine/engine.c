@@ -12,20 +12,20 @@ void InitialiseNasSystem(void) {
     rec = ((EngineBootSrc *)D_8005A5E0)->unk4;
     D_8005A5E8 = rec;
     if (rec != NULL) {
-        EngineBootView *w = (EngineBootView *)D_8005A614;
+        EngineBootView *w = (EngineBootView *)GameInfo;
         w->unk3C = *(u16 *)&rec[w->unk8];
     }
-    v = (EngineBootView *)D_8005A614;
+    v = (EngineBootView *)GameInfo;
     if (v->unk0 != NULL) {
         v->unk0(rec);
     }
     SetNasDefaults();
     Init_Panel();
-    D_8005AA1C = (NAS *)func_80011654(D_8005AA14 * 0x70, &D_8004E0F0);
+    D_8005AA1C = (NAS *)func_80011654(D_8005AA14 * 0x70, &MainHeap);
     D_8005AA20 = (u8 *)D_8005AA1C + (D_8005AA14 * 0x70 - 0x70);
-    D_8005AA40 = (EngObj **)func_80011654(D_8005AA14 * 4, &D_8004E0F0);
+    D_8005AA40 = (EngObj **)func_80011654(D_8005AA14 * 4, &MainHeap);
     *D_8005AA40 = NULL;
-    p = func_80011654(D_8005AA14 * 4, &D_8004E0F0);
+    p = func_80011654(D_8005AA14 * 4, &MainHeap);
     D_8005AA44 = p;
     *(s32 *)p = 0;
     func_80026308();
@@ -47,7 +47,7 @@ void func_80078DD4(void) {
     nas = (NAS *)D_8005AA34;
     camera_frame_list_size = 0;
     if (nas != NULL) {
-        g = (EngineGameView *)D_8005A614;
+        g = (EngineGameView *)GameInfo;
         do {
             eng = nas->Engine;
             if (eng != NULL && (nas->Camera.flags & 0x8000)) {
@@ -55,8 +55,8 @@ void func_80078DD4(void) {
                 r = w;
                 if (!(g->unk30 & 0x801)) {
                     ang = eng->unk1E & 0xFFF;
-                    dx = -D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * nas->Camera.look_ahead >> 12;
-                    dz = -D_80068BD4[ang].unk2 * nas->Camera.look_ahead >> 12;
+                    dx = -TrigTable[(ang - 0x400) & 0xFFF].unk2 * nas->Camera.look_ahead >> 12;
+                    dz = -TrigTable[ang].unk2 * nas->Camera.look_ahead >> 12;
                     if (dx < 0) {
                         dx = -dx;
                         l = w;
@@ -94,14 +94,14 @@ void func_80078DD4(void) {
         } while (nas != NULL);
     }
     {
-        EngineGameView *g1 = (EngineGameView *)D_8005A614;
+        EngineGameView *g1 = (EngineGameView *)GameInfo;
         if ((g1->unk4 & 0x200) && !(g1->unk30 & 0x801)) {
             camera_add_frame_list((s32)D_8005B3A8, 0x80, 0x80, 0, 0, 0x80);
             camera_add_frame_list((s32)(D_8005B3A8 + 0x18), 0x80, 0x80, 0, 0, 0x80);
         }
     }
     {
-        EngineGameView *g2 = (EngineGameView *)D_8005A614;
+        EngineGameView *g2 = (EngineGameView *)GameInfo;
         if (g2->flags & 0x800) {
             if (!(g2->unk30 & 0x800)) {
                 camera_add_frame_list((s32)D_8005B3D8, 0x80, 0x80, 0, 0, 0x80);
@@ -152,7 +152,7 @@ void func_8007906C(void) {
 }
 
 void func_80079260(void) {
-    EngineGameView *g = (EngineGameView *)D_8005A614;
+    EngineGameView *g = (EngineGameView *)GameInfo;
     s32 r;
     s32 i;
     s32 want;
@@ -160,14 +160,14 @@ void func_80079260(void) {
 
     g->flags &= 0xF4FF;
     func_80024AD8();
-    func_8001D6B4((MapEnvHead *)D_80058AD0);
+    func_8001D6B4((MapEnvHead *)MapScene);
     func_80026ECC();
     func_8002321C();
     func_80026D9C();
     func_80083550();
     func_8008688C();
-    if (D_8005AA70[0] != 0) {
-        ((void (*)(void))D_8005AA70[0])();
+    if (LevelSpecs[0] != 0) {
+        ((void (*)(void))LevelSpecs[0])();
     }
     GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
@@ -252,7 +252,7 @@ void func_800793E8(void) {
     }
     n = 0;
     i = 0;
-    g = D_8005A614;
+    g = GameInfo;
     for (; i < 4; i++) {
         if (i != 0 && (*(s32 *)(g + 0x6C) == 0 || i != 1)) {
             found = 1;
@@ -278,7 +278,7 @@ void func_800793E8(void) {
 }
 
 void func_80079554(void) {
-    EngMenuGame *g = (EngMenuGame *)D_8005A614;
+    EngMenuGame *g = (EngMenuGame *)GameInfo;
     EngMenuItem *item;
     u16 *levels;
     s32 i;
@@ -302,7 +302,7 @@ void func_80079554(void) {
         i = 0;
         if (g->count != 0) {
             u16 *lv = levels;
-            EngMenuGame *g1 = (EngMenuGame *)D_8005A614;
+            EngMenuGame *g1 = (EngMenuGame *)GameInfo;
 
             do {
                 if (lv[g1->mode * 3] == 0x102) {
@@ -324,9 +324,9 @@ void func_80079554(void) {
             u16 *lv2;
             EngMenuGame *g2;
             lv2 = levels;
-            g2 = (EngMenuGame *)D_8005A614;
+            g2 = (EngMenuGame *)GameInfo;
             do {
-                if (!(D_80051338[i].unk0 & 1)) {
+                if (!(Pads[i].unk0 & 1)) {
                     if (lv2[g2->mode * 3] == 0x102) {
                         g2->flags |= 0x4009;
                     } else {
@@ -360,7 +360,7 @@ void func_8007976C(void) {
     s32 i;
     EngObj *o;
 
-    func_80011410(&D_8004E0F0);
+    func_80011410(&MainHeap);
     func_80079554();
     if (D_8005A618 & 0x10) {
         FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", D_8004E104, D_8004E10C);
@@ -404,7 +404,7 @@ void func_800798A4(void) {
         } else if (HUDGAME->flags & 0x0A007662) {
             show = 0;
         }
-        if (D_8005A646 & 3) {
+        if (GameLevelFlags & 3) {
             show = 0;
         }
         if (show && (PanelCtrl & 0x20000)) {
@@ -426,14 +426,14 @@ void func_800798A4(void) {
         return;
     }
     if ((PanelCtrl & 1) && (Clock_flags & 0x8000)) {
-        show = (u32)D_8005B690 >> 5;
+        show = (u32)FrameCount >> 5;
         show &= 1;
     } else {
         show = 1;
     }
-    if (!(D_8005A624 & 1)) {
+    if (!(GamePause & 1)) {
         show = 0;
-    } else if (D_8005A624 & 0x0A007662) {
+    } else if (GamePause & 0x0A007662) {
         show = 0;
     }
     if (HUDGAME->unk32 & 3) {
@@ -483,7 +483,7 @@ void func_800798A4(void) {
             subengine *s = (subengine *)((u8 *)&IconParts[0][1] + i * sizeof(IconParts[0]));
             u32 v = s->flags & ~0x8000;
             s->flags = v;
-            if (D_8009AEF4 == i && (D_8005B690 & 8)) {
+            if (D_8009AEF4 == i && (FrameCount & 8)) {
                 s->flags = v | 0x8000;
             }
             func_8001C298(HUDPLAYERS[i]);
@@ -536,7 +536,7 @@ void func_800798A4(void) {
         }
         i++;
     } while (i < 4);
-    if (!(D_8005A624 & 1) && (PanelCtrl & 0x4000)) {
+    if (!(GamePause & 1) && (PanelCtrl & 0x4000)) {
         func_80018B08(&D_8009F6A4, &D_8009F7EC);
         func_8001C2C0((u8 *)GetEngineSlot(5));
     }
@@ -599,8 +599,8 @@ s32 GravitateNas(NAS *nas) {
     if (m->Xvel > m->Xmax) {
         m->Xvel = m->Xmax;
     }
-    eng->unk10.x -= m->Xvel * D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12;
-    eng->unk10.z -= m->Xvel * D_80068BD4[eng->unk1E & 0xFFF].unk2 >> 12;
+    eng->unk10.x -= m->Xvel * TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12;
+    eng->unk10.z -= m->Xvel * TrigTable[eng->unk1E & 0xFFF].unk2 >> 12;
     m->Yvel += m->Yacc - m->Ydec;
     if (m->Yvel < 0) {
         m->Yvel = 0;
@@ -693,7 +693,7 @@ s32 func_8007A5E8(u8 *arg0) {
 }
 
 void func_8007A614(s32 arg0) {
-    u8 *p = D_8005A614;
+    u8 *p = GameInfo;
     func_8007A164(D_800986FC[arg0 & 0xFFFF], p);
 }
 
@@ -702,7 +702,7 @@ void func_8007A650(s32 arg0) {
 }
 
 void func_8007A688(s32 arg0) {
-    func_8007A164(arg0 & 0xFFFF, D_8005A614);
+    func_8007A164(arg0 & 0xFFFF, GameInfo);
 }
 
 void func_8007A6B0(s32 arg0) {
@@ -710,7 +710,7 @@ void func_8007A6B0(s32 arg0) {
 }
 
 void func_8007A6D0(s32 arg0) {
-    func_8007A164(arg0 & 0xFFFF, D_8005A614);
+    func_8007A164(arg0 & 0xFFFF, GameInfo);
 }
 
 void func_8007A6F8(void) {
@@ -736,7 +736,7 @@ void func_8007A718(void) {
 }
 
 void func_8007A7C0(void) {
-    func_80011410(&D_8004E0F0);
+    func_80011410(&MainHeap);
     func_80079554();
     GlobalNAStatus = 4;
     func_8007AF3C();
@@ -771,13 +771,13 @@ found:
 }
 
 void func_8007A8C4(void) {
-    EngineGameView *g = (EngineGameView *)D_8005A614;
+    EngineGameView *g = (EngineGameView *)GameInfo;
 
     g->flags &= 0xF4FF;
     func_80083550();
     func_8008688C();
-    if (D_8005AA70[0] != 0) {
-        ((void (*)(void))D_8005AA70[0])();
+    if (LevelSpecs[0] != 0) {
+        ((void (*)(void))LevelSpecs[0])();
     }
 }
 

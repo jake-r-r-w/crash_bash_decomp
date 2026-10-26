@@ -81,7 +81,7 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask);
 
 void SetBashHeroHit(s32 arg0);
 
-extern u8 D_80051244[];
+extern u8 DirPadBits[];
 
 typedef struct {
     u8 pad0[0x10];

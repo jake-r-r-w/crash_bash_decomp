@@ -21,9 +21,9 @@ void func_80017164(s32 *cfg) {
 
     cnt = cfg[0];
     D_8005683C = cfg;
-    D_8005685C = func_80011654((u32)(cnt * 0x2C0) >> 3, &D_8004E0F0);
-    D_80056840 = func_80011654((u32)(cfg[2] * 0x2A0) >> 3, &D_8004E0F0);
-    q = func_80011654((u32)(cfg[1] << 6) >> 3, &D_8004E0F0);
+    D_8005685C = func_80011654((u32)(cnt * 0x2C0) >> 3, &MainHeap);
+    D_80056840 = func_80011654((u32)(cfg[2] * 0x2A0) >> 3, &MainHeap);
+    q = func_80011654((u32)(cfg[1] << 6) >> 3, &MainHeap);
     D_80056854 = q;
     p = D_8005685C;
     next = D_80056840;
@@ -120,7 +120,7 @@ void func_80017388(void) {
     PrimSet *p;
     PrimSet *q;
 
-    off =(D_8005B690 & 1) * sizeof(PrimListPair);
+    off =(FrameCount & 1) * sizeof(PrimListPair);
     set = D_80056864;
     prev = NULL;
     while (1) {
@@ -181,7 +181,7 @@ void func_80017640(void) {
     s32 idx;
     u8 *node;
 
-    idx = (D_8005B690 & 1) ^ 1;
+    idx = (FrameCount & 1) ^ 1;
     DrawSync(0);
     node = D_80056864;
     for (;;) {
@@ -201,10 +201,10 @@ void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
     s32 semi = mode & 1;
     s32 abr = mode & 0x60;
 
-    gte_ldfcdir(D_80056998.farColor[0], D_80056998.farColor[1], D_80056998.farColor[2]);
-    gte_lddp(D_80056998.dp);
+    gte_ldfcdir(RenderState.farColor[0], RenderState.farColor[1], RenderState.farColor[2]);
+    gte_lddp(RenderState.dp);
     idx = (u16 *)((u8 *)&face->table + face->table);
-    colors = (u32 *)((u8 *)&D_80056998.unk0->colors->table + D_80056998.unk0->colors->table);
+    colors = (u32 *)((u8 *)&RenderState.unk0->colors->table + RenderState.unk0->colors->table);
     c = &colors[idx[0] & 0x1FFF];
     gte_ldrgb(c);
     gte_dpcs();
@@ -235,7 +235,7 @@ void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
 }
 
 void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
-    GfxModel *model = D_80056998.unk0;
+    GfxModel *model = RenderState.unk0;
     TexFaceRuns *face = (TexFaceRuns *)arg0;
     POLY_GT4 *poly = arg1;
     u16 *idx;
@@ -297,10 +297,10 @@ void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) {
     s32 abr = mode & 0x60;
 
     idx = (u16 *)((u8 *)&faces->table + faces->table);
-    gte_ldfcdir(D_80056998.farColor[0], D_80056998.farColor[1], D_80056998.farColor[2]);
-    gte_lddp(D_80056998.dp);
+    gte_ldfcdir(RenderState.farColor[0], RenderState.farColor[1], RenderState.farColor[2]);
+    gte_lddp(RenderState.dp);
     run = (u8 *)&faces->runs + faces->runs;
-    colors = (u32 *)((u8 *)&D_80056998.unk0->colors->table + D_80056998.unk0->colors->table);
+    colors = (u32 *)((u8 *)&RenderState.unk0->colors->table + RenderState.unk0->colors->table);
     count = run + 1;
     for (;; count += 2, run += 2) {
         if (*count == 0xFF) {
@@ -375,7 +375,7 @@ void func_80017D90(FaceRuns *faces, FacePrim *prim) {
 
     idx = (u16 *)((u8 *)&faces->table + faces->table);
     run = (u8 *)&faces->runs + faces->runs;
-    colors = (u32 *)((u8 *)&D_80056998.unk0->colors->table + D_80056998.unk0->colors->table);
+    colors = (u32 *)((u8 *)&RenderState.unk0->colors->table + RenderState.unk0->colors->table);
     count = run + 1;
     for (;; count += 2, run += 2) {
         if (*count == 0xFF) {
@@ -438,10 +438,10 @@ void prim_write_uvs(faces, prim)
     u16 base;
 
     left = 0;
-    ts = &D_80056998.unk0->texs;
+    ts = &RenderState.unk0->texs;
     uvIdx = (u16 *)((u8 *)&faces->uvIdx + faces->uvIdx);
     tex = (u16 *)((u8 *)&faces->texs + faces->texs);
-    ut = (UvTable *)D_80056998.unk0->colors;
+    ut = (UvTable *)RenderState.unk0->colors;
     blend = (u16 *)((u8 *)&faces->table + faces->table);
     run = (u8 *)&faces->runs + faces->runs;
     uvs = (u16 *)((u8 *)&ut->uvs + ut->uvs);
@@ -513,7 +513,7 @@ FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, Face
             func_80017D90(faces, (FacePrim *)node[1]);
         }
     } else {
-        if (mal_first_free(*(u16 *)((u8 *)faces + 8) * 10, D_8004E0F0.free) == NULL || (node = D_80056858) == NULL) {
+        if (mal_first_free(*(u16 *)((u8 *)faces + 8) * 10, MainHeap.free) == NULL || (node = D_80056858) == NULL) {
             return NULL;
         }
         D_80056858 = (s32 *)*node;
@@ -522,7 +522,7 @@ FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, Face
         }
         *node = list->f4;
         list->f4 = (s32)node;
-        func_800115D8(*(u16 *)((u8 *)faces + 8) * 0x28, (void **)(node + 1), (s32)&D_8004E0F0, ((D_8005B690 & 1)?3:2));
+        func_800115D8(*(u16 *)((u8 *)faces + 8) * 0x28, (void **)(node + 1), (s32)&MainHeap, ((FrameCount & 1)?3:2));
         prim = (FacePrim *)node[1];
         prim_write_uvs(faces, prim);
         func_80017D90(faces, prim);
@@ -616,7 +616,7 @@ void func_800183DC(void) {
     func_8001828C();
     pool = &D_80056844;
     if (pool->mem != NULL) {
-        mal_free(pool->mem, &D_8004E0F0);
+        mal_free(pool->mem, &MainHeap);
     }
     pool->mem = NULL;
 }
@@ -628,7 +628,7 @@ void func_80018430(s32 count) {
     s32 last;
 
     if (D_80056844.mem == NULL) {
-        D_80056844.mem = func_80011654(count * 0x64, &D_8004E0F0);
+        D_80056844.mem = func_80011654(count * 0x64, &MainHeap);
     }
     p = D_80056844.mem;
     last = count - 1;
@@ -774,7 +774,7 @@ void func_80018764(s32 *arg0) {
     var_a0 = NULL;
     if (arg0 != NULL) {
         do {
-            mal_free((*(s32*)((u8*)(var_s0) + 4)), &D_8004E0F0);
+            mal_free((*(s32*)((u8*)(var_s0) + 4)), &MainHeap);
             var_a0 = var_s0;
             var_s0 = (*(s32*)((u8*)(var_a0) + 0));
         } while (var_s0 != NULL);
@@ -815,7 +815,7 @@ void func_8001888C(void) {
 
     DrawSync(0);
     printf("empty prims\n");
-    if (D_8005B698 != 0) {
+    if (ScreenRect != 0) {
         func_8002775C(D_8005B790);
         func_8002775C(D_8005B790 + 0x400C);
     }
@@ -875,7 +875,7 @@ u8 *tga_convert(u8 *arg0, s32 w, s32 h) {
     if (*(s16 *)(arg0 + 0xE) < h) {
         h = pw;
     }
-    res = func_80011654(w * h * 2, &D_8004E0F0);
+    res = func_80011654(w * h * 2, &MainHeap);
     src = (u16 *)(arg0 + (*(s16 *)(arg0 + 0xC) * (*(s16 *)(arg0 + 0xE) - 9) * 2 + 0x12));
     dst = (u16 *)res;
     for (h--; h != -1; h--) {
@@ -892,17 +892,17 @@ void func_80018B08(GfxViewport *vp, GfxCamera *cam) {
     DR_ENV *dr;
     DRAWENV *env;
     RECT *disp;
-    GfxState *gs = &D_80056998;
+    GfxState *gs = &RenderState;
 
     gs->viewport = vp;
     GfxSetClip(gs, (RECT *)&vp->cx0, cam);
-    disp = D_8005B698;
+    disp = ScreenRect;
     if (cdb == D_8005B790) {
         disp += 1;
     }
     env = (*(DRAWENV **)(cdb + 0x4008))++;
-    SetDefDrawEnv(env, vp->x0 * D_8005B698->w / 640 + disp->x, vp->y0 / 2 + disp->y,
-                  (vp->x1 - vp->x0) * D_8005B698->w / 640, (vp->y1 - vp->y0) / 2);
+    SetDefDrawEnv(env, vp->x0 * ScreenRect->w / 640 + disp->x, vp->y0 / 2 + disp->y,
+                  (vp->x1 - vp->x0) * ScreenRect->w / 640, (vp->y1 - vp->y0) / 2);
     env->dfe = 1;
     env->dtd = 0;
     env->isbg = vp->isbg;
@@ -917,7 +917,7 @@ void func_80018B08(GfxViewport *vp, GfxCamera *cam) {
     *(GfxOffset *)&gs->ofx = *(GfxOffset *)&vp->ofx;
     ((GfxOffset *)gs->unk28)->x = gs->ofx;
     ((GfxOffset *)gs->unk28)->y = gs->ofy;
-    gte_SetGeomOffset(vp->ofx * D_8005B698->w / 640, vp->ofy / 2);
+    gte_SetGeomOffset(vp->ofx * ScreenRect->w / 640, vp->ofy / 2);
     gte_SetGeomScreen(*(s32 *)(cam->unk18));
     gte_SetRotMatrix(&cam->view);
     gte_SetTransMatrix(&cam->view);
@@ -945,9 +945,9 @@ s32 func_80018F3C(EXTengine *eng, s32 n) {
             prev = free;
             eng->sub = free;
             free->prev = NULL;
-            D_8005A830.next = free->next;
-            D_8005A830.prev = free->prev;
-            *sub = D_8005A830;
+            SubEngineTemplate.next = free->next;
+            SubEngineTemplate.prev = free->prev;
+            *sub = SubEngineTemplate;
             n--;
             count++;
             free = free->next;
@@ -959,9 +959,9 @@ s32 func_80018F3C(EXTengine *eng, s32 n) {
             prev->next = free;
             free->prev = prev;
             prev = free;
-            D_8005A830.next = free->next;
-            D_8005A830.prev = free->prev;
-            *free = D_8005A830;
+            SubEngineTemplate.next = free->next;
+            SubEngineTemplate.prev = free->prev;
+            *free = SubEngineTemplate;
             n--;
             free = free->next;
             count++;
@@ -989,12 +989,12 @@ void *func_80019094(void *arg0, s32 arg1) {
     if ((arg1 & 0x40000001) | D_800569AC | (D_80056878 != 0 && (u32)prim < D_80056AC4)) {
         set = *(PrimSet **)arg0;
         if (set != NULL || (set = (PrimSet *)func_80018694((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
-            off = (D_8005B690 & 1) * sizeof(PrimListPair);
+            off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 1, &p->pairs[0].b, arg0, 0);
         }
         if (prim != NULL) {
-            gs = &D_80056998;
+            gs = &RenderState;
             dp = gs->dp;
             fog = arg1 & 0x40000000;
             if (!fog) {
@@ -1015,15 +1015,15 @@ void *func_80019094(void *arg0, s32 arg1) {
                     gs->farColor = D_80056868;
                 }
             }
-            func_80017B08((FaceRuns *)arg0, prim, (s32)D_80056998.farColor, arg1);
-            D_80056998.dp = dp;
+            func_80017B08((FaceRuns *)arg0, prim, (s32)RenderState.farColor, arg1);
+            RenderState.dp = dp;
         } else {
             return NULL;
         }
     } else {
         set = *(PrimSet **)arg0;
         if (set != NULL || (set = (PrimSet *)func_80018694((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
-            off = (D_8005B690 & 1) * sizeof(PrimListPair);
+            off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 0, &p->pairs[0].a, arg0, set->mode);
         }
@@ -1050,7 +1050,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     register s32 z asm("$19");
     register s32 flags asm("$18");
 
-    gs = &D_80056998;
+    gs = &RenderState;
     xy = ((s32 *)v)[0];
     z = ((s32 *)v)[1];
     for (;;) {
@@ -1156,60 +1156,60 @@ void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg4)
         out->trans = NULL;
         D_8005688C.vz = pos->vz + obj->z;
         out->trans = &D_8005688C;
-        gs = &D_80056998;
+        gs = &RenderState;
         out->ofx = ((GfxScreen *)gs->unk28)->x + obj->x;
         out->ofy = ((GfxScreen *)gs->unk28)->y + obj->y;
     } else {
-        GfxState *gs = &D_80056998;
+        GfxState *gs = &RenderState;
         out->ofx = ((GfxScreen *)gs->unk28)->x;
         out->ofy = ((GfxScreen *)gs->unk28)->y;
     }
     if (!(flags & 0x10010000)) {
         if (flags & 0x80000) {
-            ApplyMatrixLV(&D_80056998.cam->view, (VECTOR *)&obj->x, (VECTOR *)D_80056998.unk88);
-            ((VECTOR *)D_80056998.unk88)->vx += ((VECTOR *)D_80056998.cam)->vx;
-            ((VECTOR *)D_80056998.unk88)->vy += ((VECTOR *)D_80056998.cam)->vy;
-            ((VECTOR *)D_80056998.unk88)->vz += ((VECTOR *)D_80056998.cam)->vz;
+            ApplyMatrixLV(&RenderState.cam->view, (VECTOR *)&obj->x, (VECTOR *)RenderState.unk88);
+            ((VECTOR *)RenderState.unk88)->vx += ((VECTOR *)RenderState.cam)->vx;
+            ((VECTOR *)RenderState.unk88)->vy += ((VECTOR *)RenderState.cam)->vy;
+            ((VECTOR *)RenderState.unk88)->vz += ((VECTOR *)RenderState.cam)->vz;
         } else {
-            ApplyMatrixLV(m, (VECTOR *)&obj->x, (VECTOR *)D_80056998.unk88);
+            ApplyMatrixLV(m, (VECTOR *)&obj->x, (VECTOR *)RenderState.unk88);
             GfxAddTrans(pos);
         }
-        out->trans = (VECTOR *)D_80056998.unk88;
+        out->trans = (VECTOR *)RenderState.unk88;
     }
     if (obj->unk51 != 4) {
         if (obj->unk52 != 0) {
             func_800142D4(obj->unk10);
         }
         if (flags & 0x40000) {
-            MulMatrix0(&D_80056998.cam->view, &obj->rot, (MATRIX *)D_80056998.unk84);
+            MulMatrix0(&RenderState.cam->view, &obj->rot, (MATRIX *)RenderState.unk84);
         } else if (flags & 0x20000000) {
             if (obj->unk50 != 0) {
-                D_80056998.unk84 = (u8 *)&D_80056998.unk8C;
-                D_80056998.unk8C.m[0][0] = (D_80056998.cam->rot.m[0][0] * obj->sx) >> 12;
-                D_80056998.unk8C.m[1][1] = (D_80056998.cam->rot.m[1][1] * obj->sy) >> 12;
-                D_80056998.unk8C.m[2][2] = (D_80056998.cam->rot.m[2][2] * obj->sz) >> 12;
+                RenderState.unk84 = (u8 *)&RenderState.unk8C;
+                RenderState.unk8C.m[0][0] = (RenderState.cam->rot.m[0][0] * obj->sx) >> 12;
+                RenderState.unk8C.m[1][1] = (RenderState.cam->rot.m[1][1] * obj->sy) >> 12;
+                RenderState.unk8C.m[2][2] = (RenderState.cam->rot.m[2][2] * obj->sz) >> 12;
             } else {
-                D_80056998.unk84 = (u8 *)&D_80056998.cam->rot;
+                RenderState.unk84 = (u8 *)&RenderState.cam->rot;
             }
         } else {
-            MulMatrix0(m, &obj->rot, (MATRIX *)D_80056998.unk84);
+            MulMatrix0(m, &obj->rot, (MATRIX *)RenderState.unk84);
         }
         if ((flags & 0x10010000) == 0x10000) {
-            ApplyMatrixLV((MATRIX *)D_80056998.unk84, (VECTOR *)&obj->x, (VECTOR *)D_80056998.unk88);
+            ApplyMatrixLV((MATRIX *)RenderState.unk84, (VECTOR *)&obj->x, (VECTOR *)RenderState.unk88);
             if (flags & 0x80000) {
-                ((VECTOR *)D_80056998.unk88)->vx += ((VECTOR *)D_80056998.cam)->vx;
-                ((VECTOR *)D_80056998.unk88)->vy += ((VECTOR *)D_80056998.cam)->vy;
-                ((VECTOR *)D_80056998.unk88)->vz += ((VECTOR *)D_80056998.cam)->vz;
+                ((VECTOR *)RenderState.unk88)->vx += ((VECTOR *)RenderState.cam)->vx;
+                ((VECTOR *)RenderState.unk88)->vy += ((VECTOR *)RenderState.cam)->vy;
+                ((VECTOR *)RenderState.unk88)->vz += ((VECTOR *)RenderState.cam)->vz;
             } else {
                 GfxAddTrans(pos);
             }
-            out->trans = (VECTOR *)D_80056998.unk88;
+            out->trans = (VECTOR *)RenderState.unk88;
         }
-        out->rot = (MATRIX *)D_80056998.unk84;
+        out->rot = (MATRIX *)RenderState.unk84;
     } else if (flags & 0x20000000) {
-        out->rot = &D_80056998.cam->rot;
+        out->rot = &RenderState.cam->rot;
     } else if (flags & 0x40000) {
-        out->rot = &D_80056998.cam->view;
+        out->rot = &RenderState.cam->view;
     } else {
         out->rot = m;
     }
@@ -1243,8 +1243,8 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
         D_80056AC4 = depth;
         if (on) {
             s32 dp = *(s16 *)((u8 *)d + 0x76);
-            D_80056998.farColor = (s32 *)((u8 *)d + 0x78);
-            D_80056998.dp = dp;
+            RenderState.farColor = (s32 *)((u8 *)d + 0x78);
+            RenderState.dp = dp;
         }
     }
     if (a == 0xFFFF) {
@@ -1346,7 +1346,7 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
         gte_rtps();
         q = xy;
         gte_stsxy(q);
-        x = xy[0] * 640 / D_8005B698->w;
+        x = xy[0] * 640 / ScreenRect->w;
         flags = *(u32 *)d;
         g = ((flags & 0x21) != 0) << 31;
         g |= (((s32)flags >> 5) & 3) << 24;
@@ -1364,8 +1364,8 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
         if (c & 0x2000000) {
             otz = *(s16 *)((u8 *)d + 0x68);
         }
-        if ((u32)otz < (u32)D_80056998.otLen) {
-            texture_draw((obj_texture *)(*(u8 **)((u8 *)D_80056998.unk0 + 0x18) + (a & 0xFFF) * 0x38),
+        if ((u32)otz < (u32)RenderState.otLen) {
+            texture_draw((obj_texture *)(*(u8 **)((u8 *)RenderState.unk0 + 0x18) + (a & 0xFFF) * 0x38),
                           (s32)e, otz, g);
         }
         return;
@@ -1385,22 +1385,22 @@ void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2) {
 
     n = *(u16 *)(arg0 + 0x74);
     if (*(s32 *)arg0 & 0x02000000) {
-        GfxState *g1 = &D_80056998;
+        GfxState *g1 = &RenderState;
         g1->otzAdd = ((GfxScreen *)g1->unk28)->otz + *(u16 *)(arg0 + 0x68);
     } else {
-        g = &D_80056998;
+        g = &RenderState;
         g->otzAdd = ((GfxScreen *)g->unk28)->otz;
     }
     if (n != 0 && (*(s32 *)arg0 & 0x8000)) {
         model = *(GfxModel **)(arg0 + 0x6C);
         if (model != NULL) {
-            D_80056998.unk0 = model;
+            RenderState.unk0 = model;
             colors = model->colors;
             if (colors != NULL) {
-                D_80056998.unk84 = D_80056998.unkCC;
-                D_80056998.unk88 = D_80056998.unk10C;
-                func_8001965C(arg0, p1, p1 + 0x14, D_80056998.unk28, &s);
-                gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+                RenderState.unk84 = RenderState.unkCC;
+                RenderState.unk88 = RenderState.unk10C;
+                func_8001965C(arg0, p1, p1 + 0x14, RenderState.unk28, &s);
+                gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
                 if (s.trans != NULL) {
                     gte_SetTransVector(s.trans);
                 }
@@ -1435,16 +1435,16 @@ s32 func_8001A0D8(void *arg0, u32 flags) {
         p->v[0].c |= 0x32000000;
     }
     if (flags & 0x10000000) {
-        GfxState *gs = &D_80056998;
+        GfxState *gs = &RenderState;
 #define s ((GfxScreen *)gs->unk28)
 
-        p->v[0].x = ((s->x + q->v[0].vx) * D_8005B698->w) / 640;
+        p->v[0].x = ((s->x + q->v[0].vx) * ScreenRect->w) / 640;
         p->v[0].y = (s->y + q->v[0].vy) / 2;
-        p->v[1].x = ((s->x + q->v[1].vx) * D_8005B698->w) / 640;
+        p->v[1].x = ((s->x + q->v[1].vx) * ScreenRect->w) / 640;
         p->v[1].y = (s->y + q->v[1].vy) / 2;
-        p->v[2].x = ((s->x + q->v[2].vx) * D_8005B698->w) / 640;
+        p->v[2].x = ((s->x + q->v[2].vx) * ScreenRect->w) / 640;
         p->v[2].y = (s->y + q->v[2].vy) / 2;
-        p->v[3].x = ((s->x + q->v[3].vx) * D_8005B698->w) / 640;
+        p->v[3].x = ((s->x + q->v[3].vx) * ScreenRect->w) / 640;
         p->v[3].y = (s->y + q->v[3].vy) / 2;
 #undef s
     } else {
@@ -1457,9 +1457,9 @@ s32 func_8001A0D8(void *arg0, u32 flags) {
         gte_rtps();
         gte_stsxy(&p->v[3].x);
     }
-    otz = (otz + D_80056998.otzAdd) >> 1;
-    if (otz < D_80056998.otLen) {
-        addPrim(D_80056998.ot + otz, p);
+    otz = (otz + RenderState.otzAdd) >> 1;
+    if (otz < RenderState.otLen) {
+        addPrim(RenderState.ot + otz, p);
     }
     return (s32)p;
 #undef q
@@ -1646,10 +1646,10 @@ void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
         func_800243A0(x, (s16)(D_800569C4 + t->y), t->str, t->c0, t->c1, 0);
         return;
     }
-    D_80056998.unk84 = D_80056998.unkCC;
-    D_80056998.unk88 = D_80056998.unk10C;
-    func_8001965C(t, (u8 *)arg1, (u8 *)arg1 + 0x14, D_80056998.unk28, &s);
-    gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+    RenderState.unk84 = RenderState.unkCC;
+    RenderState.unk88 = RenderState.unk10C;
+    func_8001965C(t, (u8 *)arg1, (u8 *)arg1 + 0x14, RenderState.unk28, &s);
+    gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
     if (s.trans != NULL) {
         gte_SetTransVector(s.trans);
     }
@@ -1679,20 +1679,20 @@ void func_8001AA48(ModelObj *obj, void *arg1, s32 flags) {
     if (colors == NULL) {
         return;
     }
-    prim = obj->slots[D_8005B690 & 1].prim;
+    prim = obj->slots[FrameCount & 1].prim;
     if (prim == NULL) {
         prim = new_sprim();
-        obj->slots[D_8005B690 & 1].prim = prim;
+        obj->slots[FrameCount & 1].prim = prim;
         if (prim == NULL) {
             return;
         }
-        D_80056998.unk0 = obj->model;
+        RenderState.unk0 = obj->model;
         prim_create_entity_single(entity_address(obj->index, (u8 *)colors), prim);
     }
     t = entity_address(obj->index, (u8 *)colors);
-    D_80056998.dp = D_80056998.modelDp;
-    D_80056998.unk0 = obj->model;
-    prim_colour_poly((RelTable *)t, prim, (s32)D_80056998.farColor, flags);
+    RenderState.dp = RenderState.modelDp;
+    RenderState.unk0 = obj->model;
+    prim_colour_poly((RelTable *)t, prim, (s32)RenderState.farColor, flags);
     colors = obj->model->colors;
     t = func_8001AA48_setup(obj, arg1, flags, colors, entity_address(obj->index, (u8 *)colors));
     t += *(s32 *)(t + 0x10) + 0x10;
@@ -1710,9 +1710,9 @@ void func_8001AA48(ModelObj *obj, void *arg1, s32 flags) {
     gte_stsxy2(&prim->x3);
     gte_avsz3();
     gte_stotz(&otz);
-    otz = (otz + D_80056998.otzAdd) >> 1;
-    if (otz < D_80056998.otLen) {
-        addPrim(D_80056998.ot + otz, prim);
+    otz = (otz + RenderState.otzAdd) >> 1;
+    if (otz < RenderState.otLen) {
+        addPrim(RenderState.ot + otz, prim);
     }
 }
 
@@ -1726,7 +1726,7 @@ MATRIX *func_8001ACC0(GfxXform *obj) {
     VECTOR v;
     s32 *pos;
 
-    gs = &D_80056998;
+    gs = &RenderState;
     flags = obj->flags;
     gs->unk84 = gs->unkCC;
     view = &gs->cam->view;
@@ -1763,7 +1763,7 @@ MATRIX *func_8001ACC0(GfxXform *obj) {
         } else {
             rot = &D_80058AD4;
         }
-        pos = &D_80056998.cam->x;
+        pos = &RenderState.cam->x;
         v.vx = obj->x - pos[0];
         v.vy = obj->y - pos[1];
         v.vz = obj->z - pos[2];
@@ -1788,7 +1788,7 @@ MATRIX *func_8001ACC0(GfxXform *obj) {
             MulMatrix0(rot, &obj->rot, out);
         }
     }
-    D_80056998.otzAdd = ((GfxScreen *)D_80056998.unk28)->otz;
+    RenderState.otzAdd = ((GfxScreen *)RenderState.unk28)->otz;
     return out;
 }
 
@@ -1840,7 +1840,7 @@ s32 func_8001AF2C(void *arg0) {
     gte_stsxy(&sxy[0]);
     gte_stsz(&sz);
     if (sz > 0) {
-        if ((u16)sxy[0].vx < (u16)D_80056998.clipX1 && (u16)sxy[0].vy < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[0].vx < (u16)RenderState.clipX1 && (u16)sxy[0].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1853,7 +1853,7 @@ s32 func_8001AF2C(void *arg0) {
     gte_stsxy(&sxy[1]);
     gte_stsz(&sz);
     if (sz > 0) {
-        if ((u16)sxy[1].vx < (u16)D_80056998.clipX1 && (u16)sxy[1].vy < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[1].vx < (u16)RenderState.clipX1 && (u16)sxy[1].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1865,7 +1865,7 @@ s32 func_8001AF2C(void *arg0) {
     gte_stsxy(&sxy[2]);
     gte_stsz(&sz);
     if (sz > 0) {
-        if ((u16)sxy[2].vx < (u16)D_80056998.clipX1 && (u16)sxy[2].vy < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[2].vx < (u16)RenderState.clipX1 && (u16)sxy[2].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1879,7 +1879,7 @@ s32 func_8001AF2C(void *arg0) {
     gte_stsxy(&sxy[3]);
     gte_stsz(&sz);
     if (sz > 0) {
-        if ((u16)sxy[3].vx < (u16)D_80056998.clipX1 && (u16)sxy[3].vy < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[3].vx < (u16)RenderState.clipX1 && (u16)sxy[3].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1891,7 +1891,7 @@ s32 func_8001AF2C(void *arg0) {
     gte_stsxy(&sxy[4]);
     gte_stsz(&sz);
     if (sz > 0) {
-        if ((u16)sxy[4].vx < (u16)D_80056998.clipX1 && (u16)sxy[4].vy < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[4].vx < (u16)RenderState.clipX1 && (u16)sxy[4].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1904,7 +1904,7 @@ s32 func_8001AF2C(void *arg0) {
     gte_stsxy(&sxy[5]);
     gte_stsz(&sz);
     if (sz > 0) {
-        if ((u16)sxy[5].vx < (u16)D_80056998.clipX1 && (u16)sxy[5].vy < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[5].vx < (u16)RenderState.clipX1 && (u16)sxy[5].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1916,7 +1916,7 @@ s32 func_8001AF2C(void *arg0) {
     gte_stsxy(&sxy[6]);
     gte_stsz(&sz);
     if (sz > 0) {
-        if ((u16)sxy[6].vx < (u16)D_80056998.clipX1 && (u16)sxy[6].vy < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[6].vx < (u16)RenderState.clipX1 && (u16)sxy[6].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1927,7 +1927,7 @@ s32 func_8001AF2C(void *arg0) {
     gte_stsxy(&sxy[7]);
     gte_stsz(&sz);
     if (sz > 0) {
-        if ((u16)sxy[7].vx < (u16)D_80056998.clipX1 && (u16)sxy[7].vy < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[7].vx < (u16)RenderState.clipX1 && (u16)sxy[7].vy < (u16)RenderState.clipY1) {
             return 1;
         }
     } else {
@@ -1936,20 +1936,20 @@ s32 func_8001AF2C(void *arg0) {
     if (flags == 0xFF) {
         goto culled;
     }
-    if (sxy[0].vx > D_80056998.clipX1 && sxy[1].vx > D_80056998.clipX1 &&
-        sxy[2].vx > D_80056998.clipX1 && sxy[3].vx > D_80056998.clipX1 &&
-        sxy[4].vx > D_80056998.clipX1 && sxy[5].vx > D_80056998.clipX1 &&
-        sxy[6].vx > D_80056998.clipX1 && sxy[7].vx > D_80056998.clipX1) {
+    if (sxy[0].vx > RenderState.clipX1 && sxy[1].vx > RenderState.clipX1 &&
+        sxy[2].vx > RenderState.clipX1 && sxy[3].vx > RenderState.clipX1 &&
+        sxy[4].vx > RenderState.clipX1 && sxy[5].vx > RenderState.clipX1 &&
+        sxy[6].vx > RenderState.clipX1 && sxy[7].vx > RenderState.clipX1) {
         goto culled;
     }
     if (sxy[0].vx < 0 && sxy[1].vx < 0 && sxy[2].vx < 0 && sxy[3].vx < 0 &&
         sxy[4].vx < 0 && sxy[5].vx < 0 && sxy[6].vx < 0 && sxy[7].vx < 0) {
         goto culled;
     }
-    if (sxy[0].vy > D_80056998.clipY1 && sxy[1].vy > D_80056998.clipY1 &&
-        sxy[2].vy > D_80056998.clipY1 && sxy[3].vy > D_80056998.clipY1 &&
-        sxy[4].vy > D_80056998.clipY1 && sxy[5].vy > D_80056998.clipY1 &&
-        sxy[6].vy > D_80056998.clipY1 && sxy[7].vy > D_80056998.clipY1) {
+    if (sxy[0].vy > RenderState.clipY1 && sxy[1].vy > RenderState.clipY1 &&
+        sxy[2].vy > RenderState.clipY1 && sxy[3].vy > RenderState.clipY1 &&
+        sxy[4].vy > RenderState.clipY1 && sxy[5].vy > RenderState.clipY1 &&
+        sxy[6].vy > RenderState.clipY1 && sxy[7].vy > RenderState.clipY1) {
         return 0;
     }
     return 1;
@@ -1970,7 +1970,7 @@ s32 func_8001B6D4(SVECTOR *v) {
     behind = 0;
     inside = 0;
     far = 0;
-    farZ = (D_80056998.otLen - D_80056998.otzAdd) * 8;
+    farZ = (RenderState.otLen - RenderState.otzAdd) * 8;
     gte_ldv3c(v);
     v += 3;
     gte_rtpt();
@@ -1984,7 +1984,7 @@ s32 func_8001B6D4(SVECTOR *v) {
     minY = sxy[0][1];
     maxY = minY;
     if (sz[0] != 0) {
-        if ((u16)sxy[0][0] < (u16)D_80056998.clipX1 && (u16)sxy[0][1] < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[0][0] < (u16)RenderState.clipX1 && (u16)sxy[0][1] < (u16)RenderState.clipY1) {
             if (behind) return 2;
             inside |= 1;
         }
@@ -1994,7 +1994,7 @@ s32 func_8001B6D4(SVECTOR *v) {
         if (inside) return 2;
     }
     if (sz[1] != 0) {
-        if ((u16)sxy[1][0] < (u16)D_80056998.clipX1 && (u16)sxy[1][1] < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[1][0] < (u16)RenderState.clipX1 && (u16)sxy[1][1] < (u16)RenderState.clipY1) {
             if (behind) return 2;
             inside |= 2;
         }
@@ -2008,7 +2008,7 @@ s32 func_8001B6D4(SVECTOR *v) {
     if (sxy[1][1] < minY) minY = sxy[1][1];
     if (maxY < sxy[1][1]) maxY = sxy[1][1];
     if (sz[2] != 0) {
-        if ((u16)sxy[2][0] < (u16)D_80056998.clipX1 && (u16)sxy[2][1] < (u16)D_80056998.clipY1) {
+        if ((u16)sxy[2][0] < (u16)RenderState.clipX1 && (u16)sxy[2][1] < (u16)RenderState.clipY1) {
             if (behind) return 2;
             inside |= 4;
         }
@@ -2026,7 +2026,7 @@ s32 func_8001B6D4(SVECTOR *v) {
     gte_rtpt();
 #define POINT(i)                                                                                      \
     if (sz[i] != 0) {                                                                                 \
-        if ((u16)sxy[i][0] < (u16)D_80056998.clipX1 && (u16)sxy[i][1] < (u16)D_80056998.clipY1) {    \
+        if ((u16)sxy[i][0] < (u16)RenderState.clipX1 && (u16)sxy[i][1] < (u16)RenderState.clipY1) {    \
             if (behind) return 2;                                                                     \
             inside |= 1 << i;                                                                         \
             if (farZ < sz[i]) far |= 1 << i;                                                          \
@@ -2057,12 +2057,12 @@ s32 func_8001B6D4(SVECTOR *v) {
         sxy[5][0] < 0 && sxy[6][0] < 0 && sxy[7][0] < 0) {
         return 0;
     }
-    clip = D_80056998.clipX1;
+    clip = RenderState.clipX1;
     if (sxy[0][0] > clip && sxy[1][0] > clip && sxy[2][0] > clip && sxy[3][0] > clip &&
         sxy[4][0] > clip && sxy[5][0] > clip && sxy[6][0] > clip && sxy[7][0] > clip) {
         return 0;
     }
-    clip = D_80056998.clipY1;
+    clip = RenderState.clipY1;
     if (clip < sxy[0][1] && clip < sxy[1][1] && clip < sxy[2][1] && clip < sxy[3][1] &&
         clip < sxy[4][1] && clip < sxy[5][1] && clip < sxy[6][1] && clip < sxy[7][1]) {
         return 0;
@@ -2264,7 +2264,7 @@ void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2) {
     e = &D_8005689C[arg0->idx];
     switch (e->mode) {
     case 1:
-        if (D_8005B690 & 4) {
+        if (FrameCount & 4) {
     case 0:
             arg0->x = e->a[0];
             arg0->y = e->a[1];
@@ -2295,7 +2295,7 @@ void func_8001C584(PosDst *arg0, s32 arg1) {
     e = &D_8005689C[arg1];
     switch (e->mode) {
     case 1:
-        if (D_8005B690 & 4) {
+        if (FrameCount & 4) {
     case 0:
             arg0->x = e->a[0];
             arg0->y = e->a[1];
@@ -2329,10 +2329,10 @@ void func_8001C690(NAS *nas, u8 *arg1) {
             D_800569DC = 0;
         }
         if (!(nas->NASid & 0x10000000)) {
-            D_80056998.unk84 = D_80056998.unkCC;
-            D_80056998.unk88 = D_80056998.unk10C;
-            func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
-            gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+            RenderState.unk84 = RenderState.unkCC;
+            RenderState.unk88 = RenderState.unk10C;
+            func_8001965C(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+            gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
                 gte_SetTransVector(s.trans);
             }
@@ -2354,10 +2354,10 @@ void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
             D_800569DC = 0;
         }
         if (!(nas->NASid & 0x10000000)) {
-            D_80056998.unk84 = D_80056998.unkCC;
-            D_80056998.unk88 = D_80056998.unk10C;
-            func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
-            gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+            RenderState.unk84 = RenderState.unkCC;
+            RenderState.unk88 = RenderState.unk10C;
+            func_8001965C(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+            gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
                 gte_SetTransVector(s.trans);
             }
@@ -2378,10 +2378,10 @@ u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags) {
         D_800569DC = 0;
     }
     if (!(nas->NASid & 0x10000000)) {
-        D_80056998.unk84 = D_80056998.unkCC;
-        D_80056998.unk88 = D_80056998.unk10C;
-        func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
-        gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+        RenderState.unk84 = RenderState.unkCC;
+        RenderState.unk88 = RenderState.unk10C;
+        func_8001965C(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+        gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
         if (s.trans != NULL) {
             gte_SetTransVector(s.trans);
         }
@@ -2439,15 +2439,15 @@ s32 func_8001CC10(void *arg0, s32 arg1) {
 
     s32 off;
 
-    off = (D_8005B690 & 1) * 12 + 0x90;
+    off = (FrameCount & 1) * 12 + 0x90;
     slot = (Func8001CC10Slot *)(arg1 + off);
     want = *(u16 *)((u8 *)arg0 + 8);
     if (want != slot->size) {
         if (slot->size < want) {
             if (slot->ptr != 0) {
-                mal_free(slot, &D_8004E0F0);
+                mal_free(slot, &MainHeap);
             }
-            func_800115D8(*(u16 *)((u8 *)arg0 + 8) * 0x28, slot, &D_8004E0F0, ((D_8005B690 & 1)?3:2));
+            func_800115D8(*(u16 *)((u8 *)arg0 + 8) * 0x28, slot, &MainHeap, ((FrameCount & 1)?3:2));
             if (slot->ptr == 0) {
                 slot->size = 0;
                 return 0;
@@ -2462,10 +2462,10 @@ s32 func_8001CC10(void *arg0, s32 arg1) {
 void func_8001CD04(void *arg0, void *arg1, void *arg2) {
     GteSetup s;
 
-    D_80056998.unk84 = D_80056998.unkCC;
-    D_80056998.unk88 = D_80056998.unk10C;
-    func_8001965C(arg0, arg1, arg2, D_80056998.unk28, &s);
-    gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+    RenderState.unk84 = RenderState.unkCC;
+    RenderState.unk88 = RenderState.unk10C;
+    func_8001965C(arg0, arg1, arg2, RenderState.unk28, &s);
+    gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
     if (s.trans != NULL) {
         gte_SetTransVector(s.trans);
     }
@@ -2564,9 +2564,9 @@ void func_8001D048(SVECTOR *v, POLY_GT4 *poly) {
     gte_stsxy(&poly->x3);
     gte_avsz3();
     gte_stotz(&otz);
-    otz = (otz + D_80056998.otzAdd) >> 1;
-    if (otz < D_80056998.otLen) {
-        addPrim(D_80056998.ot + otz, poly);
+    otz = (otz + RenderState.otzAdd) >> 1;
+    if (otz < RenderState.otLen) {
+        addPrim(RenderState.ot + otz, poly);
     }
 }
 
@@ -2692,13 +2692,13 @@ void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub) {
         eng->sub = sub;
         eng->num_subs = n;
     }
-    *sub = D_8005A830;
+    *sub = SubEngineTemplate;
     n--;
     sub->prev = NULL;
     while (n != 0) {
         sub->next = sub + 1;
         sub++;
-        *sub = D_8005A830;
+        *sub = SubEngineTemplate;
         n--;
         sub->prev = sub - 1;
     }
@@ -2718,9 +2718,9 @@ s32 func_8001D48C(subengine **out_first, subengine **last, s32 n) {
             prev = sub;
             *out_first = sub;
             sub->prev = NULL;
-            D_8005A830.next = sub->next;
-            D_8005A830.prev = sub->prev;
-            *sub = D_8005A830;
+            SubEngineTemplate.next = sub->next;
+            SubEngineTemplate.prev = sub->prev;
+            *sub = SubEngineTemplate;
             n--;
             count++;
             sub = sub->next;
@@ -2732,9 +2732,9 @@ s32 func_8001D48C(subengine **out_first, subengine **last, s32 n) {
             prev->next = sub;
             sub->prev = prev;
             prev = sub;
-            D_8005A830.next = sub->next;
-            D_8005A830.prev = sub->prev;
-            *sub = D_8005A830;
+            SubEngineTemplate.next = sub->next;
+            SubEngineTemplate.prev = sub->prev;
+            *sub = SubEngineTemplate;
             n--;
             sub = sub->next;
             count++;
@@ -2747,21 +2747,21 @@ s32 func_8001D48C(subengine **out_first, subengine **last, s32 n) {
 }
 
 void draw_init(void) {
-    D_80056998.unk8C.m[0][0] = 0x1000;
-    D_80056998.unk8C.m[0][1] = 0;
-    D_80056998.unk8C.m[0][2] = 0;
-    D_80056998.unk8C.m[1][0] = 0;
-    D_80056998.unk8C.m[1][1] = 0x1000;
-    D_80056998.unk8C.m[1][2] = 0;
-    D_80056998.unk8C.m[2][0] = 0;
-    D_80056998.unk8C.m[2][1] = 0;
-    D_80056998.unk8C.m[2][2] = 0x1000;
+    RenderState.unk8C.m[0][0] = 0x1000;
+    RenderState.unk8C.m[0][1] = 0;
+    RenderState.unk8C.m[0][2] = 0;
+    RenderState.unk8C.m[1][0] = 0;
+    RenderState.unk8C.m[1][1] = 0x1000;
+    RenderState.unk8C.m[1][2] = 0;
+    RenderState.unk8C.m[2][0] = 0;
+    RenderState.unk8C.m[2][1] = 0;
+    RenderState.unk8C.m[2][2] = 0x1000;
 }
 
 
 void func_8001D604(void) {
     if (D_80058AC8 != 0) {
-        mal_free(D_80058AC8, &D_8004E0F0);
+        mal_free(D_80058AC8, &MainHeap);
         D_80058AC8 = 0;
     }
 }
@@ -2771,7 +2771,7 @@ void func_8001D640(s32 n) {
     s32 i;
     u8 *p;
 
-    p = func_80011654(n * 0xA8, &D_8004E0F0);
+    p = func_80011654(n * 0xA8, &MainHeap);
     i = n - 1;
     sub = (subengine *)p;
     D_80058AC8 = (s32)sub;
@@ -2797,7 +2797,7 @@ void func_8001D6B4(MapEnvHead *env) {
     p = env->placements;
     env->subs = sub;
     while (--n != -1) {
-        *sub = D_8005A830;
+        *sub = SubEngineTemplate;
         sub->flags = p->flags;
         *(SLONG_XYZ *)&sub->unk04 = p->pos;
         *(PlacementBlk *)&sub->unk2C[4] = p->blk;
@@ -2826,23 +2826,23 @@ void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3) {
     MATRIX *rot;
     MATRIX *mp;
 
-    m = D_80056998.cam->view;
-    D_80056998.unk0 = ((subengine *)sub)->unk6C = *(GfxModel **)D_80058AD0;
-    v.vx = ((subengine *)sub)->unk04 - D_80056998.cam->x;
-    v.vy = ((subengine *)sub)->unk08 - D_80056998.cam->y;
-    v.vz = ((subengine *)sub)->unk0C - D_80056998.cam->z;
+    m = RenderState.cam->view;
+    RenderState.unk0 = ((subengine *)sub)->unk6C = *(GfxModel **)MapScene;
+    v.vx = ((subengine *)sub)->unk04 - RenderState.cam->x;
+    v.vy = ((subengine *)sub)->unk08 - RenderState.cam->y;
+    v.vz = ((subengine *)sub)->unk0C - RenderState.cam->z;
     mp = &m;
     if (!(flags & 0x200000)) {
-        rot = &D_80056998.cam->view;
+        rot = &RenderState.cam->view;
     } else {
         rot = &D_80058AD4;
     }
     ApplyMatrixLV(rot, &v, (VECTOR *)m.t);
-    m.t[0] += D_80056998.cam->view.t[0];
-    m.t[1] += D_80056998.cam->view.t[1];
-    m.t[2] += D_80056998.cam->view.t[2];
+    m.t[0] += RenderState.cam->view.t[0];
+    m.t[1] += RenderState.cam->view.t[1];
+    m.t[2] += RenderState.cam->view.t[2];
     if (((subengine *)sub)->flags & 0x20000000) {
-        gte_SetRotMatrix(&D_80056998.cam->rot);
+        gte_SetRotMatrix(&RenderState.cam->rot);
     } else {
         if (*(u16 *)&((subengine *)sub)->unk52 != 0) {
             func_800142D4(&((subengine *)sub)->unk10);
@@ -2851,8 +2851,8 @@ void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3) {
         gte_SetRotMatrix(mp);
     }
     gte_SetTransMatrix(mp);
-    D_80056998.otzAdd = *(u16 *)(D_80056998.unk28 + 8) + ((subengine *)sub)->unk68;
-    gte_SetGeomOffset(D_80056998.ofx * D_8005B698->w / 640, D_80056998.ofy / 2);
+    RenderState.otzAdd = *(u16 *)(RenderState.unk28 + 8) + ((subengine *)sub)->unk68;
+    gte_SetGeomOffset(RenderState.ofx * ScreenRect->w / 640, RenderState.ofy / 2);
 }
 
 void func_8001DAF8(GfxScene *scene) {
@@ -2862,11 +2862,11 @@ void func_8001DAF8(GfxScene *scene) {
     u8 *obj;
     void (*fn)(u8 *, MATRIX *, s32);
 
-    D_80058AD0 = scene;
+    MapScene = scene;
     RotMatrix(&D_80058AF4, &m);
-    MulMatrix0(&D_80056998.cam->view, &m, &D_80058AD4);
+    MulMatrix0(&RenderState.cam->view, &m, &D_80058AD4);
     pv = &view;
-    view = D_80056998.cam->view;
+    view = RenderState.cam->view;
     obj = scene->objs;
     while (1) {
         if (obj == NULL) {
@@ -2878,13 +2878,13 @@ void func_8001DAF8(GfxScene *scene) {
         }
         obj = *(u8 **)(obj + 0x5C);
     }
-    GfxSetSceneBg(&D_80056998, scene);
+    GfxSetSceneBg(&RenderState, scene);
 }
 
 subengine *func_8001DCD4(s32 i, s32 val) {
     subengine *sub;
 
-    for (sub = *(subengine **)((u8 *)D_80058AD0 + 0x1C); sub != NULL; sub = sub->next) {
+    for (sub = *(subengine **)((u8 *)MapScene + 0x1C); sub != NULL; sub = sub->next) {
         if (((u8 *)sub + i)[0x64] == val) {
             return sub;
         }
@@ -2922,7 +2922,7 @@ void map_update(s32 *arg0) {
 
 void func_8001DDD8(u8 *arg0) {
     func_80016F54((*(s32*)((u8*)(arg0) + 0)));
-    mal_free((*(s32*)((u8*)(arg0) + 28)), &D_8004E0F0);
+    mal_free((*(s32*)((u8*)(arg0) + 28)), &MainHeap);
     (*(s32*)((u8*)(arg0) + 28)) = 0;
 }
 
@@ -2966,7 +2966,7 @@ void func_8001DEF4(s32 *arg0, s32 *arg1) {
     arg0[0] = (s32)arg1;
     arg0[2] = 0;
     p = (u8 *)arg0[0] + 0x10;
-    D_80058AD0 = arg0;
+    MapScene = arg0;
     if (arg1 == NULL) {
         arg0[12] = 0;
         arg0[1] &= ~3;
@@ -2995,7 +2995,7 @@ void map_loaded_geo(s32 arg0, map_enviroment *env) {
     obj_dbase *t;
 
     t = env->dbase;
-    D_80058AD0 = env;
+    MapScene = env;
     t->data = (u8 *)arg0;
     db = env->dbase;
     env->map_num = 0;
@@ -3008,7 +3008,7 @@ void map_loaded_geo(s32 arg0, map_enviroment *env) {
 void func_8001E054(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 0)) = arg1;
     (*(s32*)((u8*)(arg0) + 8)) = 0;
-    D_80058AD0 = arg0;
+    MapScene = arg0;
     func_8001DE18();
     (*(s32*)((u8*)(arg0) + 28)) = 0;
     func_8001D6B4(arg0);
@@ -3026,7 +3026,7 @@ void func_8001E0A8(u8 *arg0) {
     n = *(s32 *)(arg0 + 0x18);
     n--;
     if (n != -1) do {
-        *(subengine *)dst = D_8005A830;
+        *(subengine *)dst = SubEngineTemplate;
         *(s32 *)(dst + 0) = *(s32 *)(src + 0);
         *(Words3 *)(dst + 4) = *(Words3 *)(src + 4);
         *(Words4 *)(dst + 0x30) = *(Words4 *)(src + 0x28);
@@ -3129,8 +3129,8 @@ s32 *path_get(u32 arg0) {
     s32 *q;
 
     p = NULL;
-    if (*(s32 *)D_80058AD0 != 0) {
-        p = *(s32 **)((u8 *)D_80058AD0 + 0x28);
+    if (*(s32 *)MapScene != 0) {
+        p = *(s32 **)((u8 *)MapScene + 0x28);
     }
     i = 0;
     n = *p;
@@ -3146,7 +3146,7 @@ loop:
     i = -1;
 found:
     if (i >= 0) {
-        q = (s32 *)(*(u8 **)((u8 *)D_80058AD0 + 0x2C) + (i << 2));
+        q = (s32 *)(*(u8 **)((u8 *)MapScene + 0x2C) + (i << 2));
         return (s32 *)((u8 *)q + *q);
     }
     return NULL;
@@ -3158,8 +3158,8 @@ s32 path_find(u32 arg0) {
     s32 i;
 
     p = NULL;
-    if (*(s32 *)D_80058AD0 != 0) {
-        p = *(s32 **)((u8 *)D_80058AD0 + 0x28);
+    if (*(s32 *)MapScene != 0) {
+        p = *(s32 **)((u8 *)MapScene + 0x28);
     }
     i = 0;
     n = *p;
@@ -3213,9 +3213,9 @@ void func_8001E610(process_control_info *pc, fade_info *fade) {
             }
             if (fade != NULL && fade->speed != 0 && fade->maxed >= 3) {
                 func_8001888C();
-                while (func_80011DB4(&D_8004E0F0) != NULL) {
+                while (func_80011DB4(&MainHeap) != NULL) {
                 }
-                func_80010AE8(&D_8004E0F0);
+                func_80010AE8(&MainHeap);
             }
         }
         pc->last_process = pc->process;
@@ -3225,13 +3225,13 @@ void func_8001E610(process_control_info *pc, fade_info *fade) {
             func_8002AC70();
             while (func_80012FFC() != 0) {
                 func_8001231C();
-                func_80010AE8(&D_8004E0F0);
+                func_80010AE8(&MainHeap);
                 func_8002BAE8();
             }
-            func_80011BF8(&D_8004E0F0, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
+            func_80011BF8(&MainHeap, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
             func_80012E54();
         }
-        ((D5A614View *)D_8005A614)->unk30 &= ~1;
+        ((D5A614View *)GameInfo)->unk30 &= ~1;
         if (!(pc->flags & 2)) {
             if (pc->flags & 0x10) {
                 pc->flags = 0;
@@ -3319,6 +3319,6 @@ void func_8001E948(void) {
     func_8001888C();
     do {
 
-    } while (func_80011DB4(&D_8004E0F0) != 0);
-    func_80010AE8(&D_8004E0F0);
+    } while (func_80011DB4(&MainHeap) != 0);
+    func_80010AE8(&MainHeap);
 }

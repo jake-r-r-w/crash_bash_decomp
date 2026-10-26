@@ -121,9 +121,9 @@ void func_8001E610(process_control_info *pc, fade_info *fade);
 
 /* Adds v to the translation GfxState.unk88 points at (func_8001965C). */
 static inline void GfxAddTrans(VECTOR *v) {
-    ((VECTOR *)D_80056998.unk88)->vx += v->vx;
-    ((VECTOR *)D_80056998.unk88)->vy += v->vy;
-    ((VECTOR *)D_80056998.unk88)->vz += v->vz;
+    ((VECTOR *)RenderState.unk88)->vx += v->vx;
+    ((VECTOR *)RenderState.unk88)->vy += v->vy;
+    ((VECTOR *)RenderState.unk88)->vz += v->vz;
 }
 
 /* Copies a scene's background into the current viewport, faded by modelDp
@@ -151,11 +151,11 @@ static inline void GfxSetSceneBg(GfxState *gs, GfxScene *scene) {
 static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
     RECT clip;
 
-    clip.x = c->x * D_8005B698->w / 640;
+    clip.x = c->x * ScreenRect->w / 640;
     clip.y = c->y / 2;
-    clip.w = (c->w - c->x) * D_8005B698->w / 640;
+    clip.w = (c->w - c->x) * ScreenRect->w / 640;
     clip.h = (c->h - c->y) / 2;
-    gs->clipX1 = c->w * D_8005B698->w / 640;
+    gs->clipX1 = c->w * ScreenRect->w / 640;
     gs->clipY1 = c->h / 2;
     gs->cam = cam;
     func_80014540((u8 *)cam, &clip);
@@ -239,7 +239,7 @@ static inline subengine *MapEnv_GetSubs(MapEnvHead *env) {
         sub = t;
         kill_subs(sub);
     } else {
-        sub = (subengine *)func_80011654(env->num_placements * 0xA8, &D_8004E0F0);
+        sub = (subengine *)func_80011654(env->num_placements * 0xA8, &MainHeap);
     }
     return sub;
 }

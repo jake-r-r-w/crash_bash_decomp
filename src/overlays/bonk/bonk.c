@@ -326,18 +326,18 @@ s32 BonkRoundState = 0;
 s32 BonkEntCur = 0;
 
 void InitialiseBONKFirst() {
-    D_8009D6E8.unk4 = BonkHeroModels;
-    D_8009D6E8.unk2C = BonkHeroFacing;
-    D_8009D6E8.unk68 = BONK_KeepInBounds;
-    D_8009D6E8.unk20 = BonkPreMoveHero;
-    D_8009D6E8.unk28 = BonkHeroPostMove;
-    D_8009D6E8.unk54 = BonkHeroKickCollision;
-    D_8009D6E8.unk3C = BonkHeroTestSwing;
-    D_8009D6E8.unk48 = D_8008AB48;
-    D_8009D6E8.unk44 = D_8008AB04;
-    D_8009D6E8.unk5C = BonkHero_ExtraEffects;
-    D_8009D6E8.unk64 = BonkChooseWinner;
-    D_8009D6E8.unk38 = Bonk_HeroBot;
+    HeroHooks.unk4 = BonkHeroModels;
+    HeroHooks.unk2C = BonkHeroFacing;
+    HeroHooks.unk68 = BONK_KeepInBounds;
+    HeroHooks.unk20 = BonkPreMoveHero;
+    HeroHooks.unk28 = BonkHeroPostMove;
+    HeroHooks.unk54 = BonkHeroKickCollision;
+    HeroHooks.unk3C = BonkHeroTestSwing;
+    HeroHooks.unk48 = D_8008AB48;
+    HeroHooks.unk44 = D_8008AB04;
+    HeroHooks.unk5C = BonkHero_ExtraEffects;
+    HeroHooks.unk64 = BonkChooseWinner;
+    HeroHooks.unk38 = Bonk_HeroBot;
     D_8009E0D8 = 0x42;
     D_8009E0E4 = 0x47;
     D_8009E0E6 = 0x48;
@@ -432,7 +432,7 @@ void PlotBonkStool(NAS *nas) {
         }
         break;
     case 2:
-        if (!(D_8005A624 & 0x4000000)) {
+        if (!(GamePause & 0x4000000)) {
             nas->UserInfo.user1--;
         }
         if (nas->UserInfo.user1 <= 0) {
@@ -481,7 +481,7 @@ void PlotBonkStool(NAS *nas) {
                 nas->UserInfo.status = 14;
                 nas->UserInfo.user1 = 40;
             } else {
-                nas->UserInfo.status = (D_8005A624 & 0x4000000) ? 4 : 5;
+                nas->UserInfo.status = (GamePause & 0x4000000) ? 4 : 5;
             }
             break;
         }
@@ -640,7 +640,7 @@ void PlotBonkCrate(NAS *nas) {
         nas->UserInfo.status = 2;
         break;
     case 2:
-        if (!(D_8005A624 & 0x4000000)) {
+        if (!(GamePause & 0x4000000)) {
             if (nas->UserInfo.user1 > 0) {
                 nas->UserInfo.user1--;
             } else {
@@ -833,7 +833,7 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
 
     x = pos->vx;
     z = pos->vz;
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         return;
     }
     i = 0;
@@ -856,8 +856,8 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         if (vc != 1) {
             if (vc != 0) {
                 if (vc < 4) {
-                    mv->x_vel -= (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 5) >> 8;
-                    h->hero_move->z_vel -= (D_80068BD4[ang & 0xFFF].unk2 * 5) >> 8;
+                    mv->x_vel -= (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 5) >> 8;
+                    h->hero_move->z_vel -= (TrigTable[ang & 0xFFF].unk2 * 5) >> 8;
                 }
             }
         }
@@ -906,10 +906,10 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            D_8005A614[j + 0xA7] = best;
+            GameInfo[j + 0xA7] = best;
             taken |= 1 << best;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 0x6C) == 0) {
             HeroInfo *hb;
             HeroInfo *a;
@@ -917,10 +917,10 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -928,10 +928,10 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             } else {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (D_8005A614[0xA7] == n) {
+                    if (GameInfo[0xA7] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -956,10 +956,10 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
             sa = a->hero_score + ta->hero_score;
             sb = b->hero_score + tb->hero_score;
             if (sa == sb) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -984,10 +984,10 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
                     ta->hero_status |= 0x400;
                 }
             } else {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1018,10 +1018,10 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            D_8005A614[j + 0xA7] = best;
+            GameInfo[j + 0xA7] = best;
             taken |= 1 << best;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 0x6C) == 0) {
             HeroInfo *hb;
             HeroInfo *a;
@@ -1029,10 +1029,10 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1040,10 +1040,10 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     }
                 }
             } else {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (D_8005A614[0xA7] == n) {
+                    if (GameInfo[0xA7] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1068,10 +1068,10 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
             sa = a->hero_score + ta->hero_score;
             sb = b->hero_score + tb->hero_score;
             if (sa == sb) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1096,10 +1096,10 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     ta->hero_status |= 0x400;
                 }
             } else {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1119,7 +1119,7 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
 
     found = -1;
     fail = 0;
-    g = D_8005A614;
+    g = GameInfo;
     if (*(s32 *)(g + 0x6C) != 0) {
         HeroInfo *hb = Heroes;
         HeroInfo *a;
@@ -1135,11 +1135,11 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
         sb = b->hero_score + hb[b->hero_teammate].hero_score;
         if (sa == 0) {
             if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (D_8005A614[i + 0x5C] != 0) {
+                    if (GameInfo[i + 0x5C] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -1150,11 +1150,11 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
             }
         } else if (sb == 0) {
             if (g[*(s16 *)(g + 0x4A) + 0x5C] == 0) {
-                D_8005A614[0x60] = b->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = b->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (D_8005A614[i + 0x5C] != 0) {
+                    if (GameInfo[i + 0x5C] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -1171,12 +1171,12 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
             }
         }
         if (found != -1) {
-            if (D_8005A614[found + 0x5C] == 0) {
-                D_8005A614[0x60] = Heroes[found].hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+            if (GameInfo[found + 0x5C] == 0) {
+                GameInfo[0x60] = Heroes[found].hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (D_8005A614[i + 0x5C] != 0) {
+                    if (GameInfo[i + 0x5C] != 0) {
                         Heroes[i].hero_status |= 0x400;
                     } else {
                         Heroes[i].hero_status |= 0x200;
@@ -1188,11 +1188,11 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
         }
     }
     if (fail || arg0 == -1) {
-        D_8005A614[0x60] = 0;
-        *(u16 *)(D_8005A614 + 0x30) |= arg1;
+        GameInfo[0x60] = 0;
+        *(u16 *)(GameInfo + 0x30) |= arg1;
         Clock_flags |= 0x200;
         for (i = 0; i < 4; i++) {
-            if (D_8005A614[i + 0x5C] != 0) {
+            if (GameInfo[i + 0x5C] != 0) {
                 Heroes[i].hero_status |= 0x400;
             } else {
                 Heroes[i].hero_status |= 0x100;
@@ -1294,7 +1294,7 @@ void BonkChooseWinnerRank(s32 arg0, u16 arg1) {
 
 void Bonk_HeroBot(s32 arg0)
 {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     HeroInfo *h;
     HeroInfo *heroes;
     EXTbotai *ai;
@@ -1330,7 +1330,7 @@ void Bonk_HeroBot(s32 arg0)
                     ai->AImode = 2;
                 } else {
                     mode = 3;
-                    if (D_8004E0D8 & 1) {
+                    if (GameFrameCount & 1) {
                         mode = 2;
                     }
                     ai->AImode = mode;
@@ -1341,7 +1341,7 @@ void Bonk_HeroBot(s32 arg0)
                     ai->AImode = 4;
                 } else {
                     mode = 5;
-                    if (D_8004E0D8 & 1) {
+                    if (GameFrameCount & 1) {
                         mode = 4;
                     }
                     ai->AImode = mode;
@@ -1370,7 +1370,7 @@ void Bonk_HeroBot(s32 arg0)
         if (sx != 0 || sz != 0) {
             ang = get_angle(sx, sz);
             ai->AIang = ang;
-            ai->AIpad |= D_80051244[(ang >> 9) & 7];
+            ai->AIpad |= DirPadBits[(ang >> 9) & 7];
             ai->AImode = 1;
         }
     }
@@ -1402,10 +1402,10 @@ void Bonk_HeroBot(s32 arg0)
         ang = get_angle(ai->pTargetNas->Engine->unk10.x - Heroes[arg0].hero_eng->unk10.x,
                         ai->pTargetNas->Engine->unk10.z - Heroes[arg0].hero_eng->unk10.z);
         ai->AIang = ang;
-        ai->AIpad |= D_80051244[(ang >> 9) & 7];
+        ai->AIpad |= DirPadBits[(ang >> 9) & 7];
         break;
     }
-    set_joypad((u8 *)&D_80051338[arg0], ai->AIpad);
+    set_joypad((u8 *)&Pads[arg0], ai->AIpad);
 }
 
 s32 BonkAI_NearestEnemy(s32 arg0)
@@ -1417,7 +1417,7 @@ s32 BonkAI_NearestEnemy(s32 arg0)
   s32 dz;
   s32 new_var;
   s32 r;
-  if ((*D_8005A680) != 0)
+  if ((*GameTeams) != 0)
   {
     HeroInfo *t = &Heroes[Heroes[arg0].hero_teammate];
     a = Heroes[arg0].hero_eng;
@@ -1456,7 +1456,7 @@ void BonkAI_Reset(s32 arg0) {
 }
 
 void BonkChooseWinner(s32 arg0, s32 arg1) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     if (!(*(u16 *)(g + 0x30) & 0x801)) {
         u16 f = *(u16 *)(g + 0x32);
@@ -1626,8 +1626,8 @@ void BonkUpdateSkill(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (D_8005A614[i + 0x5C] != 0) {
-            BonkSkill = D_8009D87C[i][0];
+        if (GameInfo[i + 0x5C] != 0) {
+            BonkSkill = AiPlayerSkill[i][0];
         }
     }
 }
@@ -1639,9 +1639,9 @@ void UpdateBONK(void) {
 }
 
 void BonkInitTweakAi(void) {
-    D_8009D904 = D_8005A680[0] != 0 ? BonkAiHumanRoundTweakAlt : BonkAiHumanRoundTweak;
-    D_8009D8FC = D_8005A680[0] != 0 ? BonkAiSkillAlt : BonkAiSkill;
-    D_8009D900 = BonkAiTeamSkill;
+    AiHumanRoundTweakTable = GameTeams[0] != 0 ? BonkAiHumanRoundTweakAlt : BonkAiHumanRoundTweak;
+    AiSkillTable = GameTeams[0] != 0 ? BonkAiSkillAlt : BonkAiSkill;
+    AiTeamSkillTable = BonkAiTeamSkill;
 }
 
 void BonkSetClock(s32 arg0) {
@@ -1649,13 +1649,13 @@ void BonkSetClock(s32 arg0) {
 }
 
 void BonkSetClockA(void) {
-    if (!(D_8005A646 & 0xE0)) {
+    if (!(GameLevelFlags & 0xE0)) {
         BonkSetClock(0x130);
     }
 }
 
 void BonkSetClockB(void) {
-    if (D_8005A646 & 0x20) {
+    if (GameLevelFlags & 0x20) {
         BonkSetClock(0x130);
     }
 }
@@ -1663,7 +1663,7 @@ void BonkSetClockB(void) {
 void BonkInitScores(void) {
     s32 i;
     s16 v;
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     u8 *h;
 
@@ -1683,20 +1683,20 @@ void BonkInitScores(void) {
         }
         BonkSetClock(0x130);
         InitSharedScoreIcons();
-        if (D_8005A680[0] != 0) {
+        if (GameTeams[0] != 0) {
             PanelCtrl |= 0x2000;
         }
     }
 }
 
 void BonkSetClockC(void) {
-    if (D_8005A646 & 0x80) {
+    if (GameLevelFlags & 0x80) {
         BonkSetClock(0x130);
     }
 }
 
 void BonkInitCamera(void) {
-    BonkCam *cam = (BonkCam *)D_80051640;
+    BonkCam *cam = (BonkCam *)MainCamera;
     cam->unk0 = 0;
     cam->unk8 = 0xE98;
     cam->unk54 = 0x192;
@@ -1726,13 +1726,13 @@ void InitialiseBONK(void) {
 }
 
 void BONKSetUp(void) {
-    D_8005AA70[0] = (s32)InitialiseBONKFirst;
-    D_8005AA70[1] = (s32)InitialiseBONK;
-    D_8005AA70[2] = (s32)InitialiseBONK;
-    D_8005AA70[3] = (s32)UpdateBONK;
-    D_8005AA70[5] = (s32)FirstTriggersBONK;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
+    LevelSpecs[0] = (s32)InitialiseBONKFirst;
+    LevelSpecs[1] = (s32)InitialiseBONK;
+    LevelSpecs[2] = (s32)InitialiseBONK;
+    LevelSpecs[3] = (s32)UpdateBONK;
+    LevelSpecs[5] = (s32)FirstTriggersBONK;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
 }
 
 void BonkRestartLevel(void) {
@@ -1766,7 +1766,7 @@ void BonkKnockBack(s32 arg0, EXTengine *p, s32 arg2) {
         z = Heroes[arg0].hero_eng->unk10.z;
     }
     func_8008D5D4(x, y, z, arg2, 0);
-    g = D_8005A614;
+    g = GameInfo;
     if (*(u16 *)(g + 0x32) & 0x40) {
         if (*(s32 *)(g + 0x6C) != 0) {
             base = Heroes;

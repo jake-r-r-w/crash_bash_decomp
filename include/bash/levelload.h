@@ -11,7 +11,7 @@
 extern u16 D_8009F994[];
 
 /* 0x38-byte records at D_80052A54 (load_initial_dbases). */
-/* D_8005A614 as seen by load_initial_dbases. */
+/* GameInfo as seen by load_initial_dbases. */
 typedef struct View939FC {
     /* 0x00 */ u8 pad0[8];
     /* 0x08 */ s32 unk8;
@@ -129,7 +129,7 @@ typedef struct PlaceSub {
     /* 0x88 */ s32 unk88;
 } PlaceSub;
 
-/* D_8005A614 as seen by func_800952F8. */
+/* GameInfo as seen by func_800952F8. */
 typedef struct PlaceGameView {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;
@@ -160,7 +160,7 @@ static inline void PlaceTmpl(PlaceSub *s, s32 x, s32 y, s32 z, s32 scale, s32 id
         s->flags = t->f0 | 0x12008000;
         s->hook = D_8001C690;
         if ((x & 0xC000) == 0x8000) {
-            y = y * 640 / D_8005B698->w;
+            y = y * 640 / ScreenRect->w;
         }
         s->unk6C = t->f0;
         s->unk70 = x;
@@ -262,7 +262,7 @@ extern CamVec3 D_800A0BC0;
 extern u8 D_800A0BF3;
 extern u8 *D_800A0D34;
 
-/* D_8005A614 as seen by func_80093BE8. */
+/* GameInfo as seen by func_80093BE8. */
 typedef struct EngStateView {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;

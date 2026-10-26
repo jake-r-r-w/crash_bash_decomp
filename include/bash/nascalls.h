@@ -126,7 +126,7 @@ s32 SysGetLen(char *s);
 Ext400 *func_800265DC(NAS *nas);
 Ext1000 *AddObject(NAS *nas);
 void func_80026E2C(void);
-s32 func_800274FC(s32 *arg0);  /* func_800276C4, then D_8005B698 = NULL; returns the second end */
+s32 func_800274FC(s32 *arg0);  /* func_800276C4, then ScreenRect = NULL; returns the second end */
 void func_800276C4(s32 *arg0);
 void func_800279A4(void);
 void func_80027F7C(s32 pad, s32 arg1, s8 arg2);

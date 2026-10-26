@@ -113,7 +113,7 @@ void func_8002ADD4(void *data, sfx_machine_bank_info *slot) {
     SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
     if ((D_800654C0 != NULL || D_800654C4 != NULL) && SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
         D_800654C4->id = D_800654C8;
-        func_800112A4(D_800654C0, D_800654C0->head, &D_8004E0F0);
+        func_800112A4(D_800654C0, D_800654C0->head, &MainHeap);
         func_8002ACA0(D_800654C4->id, 0);
         D_800654C0 = NULL;
         D_800654C4 = NULL;
@@ -135,19 +135,19 @@ void func_8002AEE0(void) {
     if (D_800654C0 != NULL || D_800654C4 != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
             D_800654C4->id = D_800654C8;
-            func_800112A4(D_800654C0, D_800654C0->head, &D_8004E0F0);
+            func_800112A4(D_800654C0, D_800654C0->head, &MainHeap);
             func_8002ACA0(D_800654C4->id, 0);
             D_800654C0 = NULL;
             D_800654C4 = NULL;
         }
     }
     SpuGetAllKeysStatus(D_800644A8);
-    func_80014540(D_80051640, D_8005B698);
-    m = (MATRIX *)(D_80051640 + 0x74);
+    func_80014540(MainCamera, ScreenRect);
+    m = (MATRIX *)(MainCamera + 0x74);
     gte_SetRotMatrix(m);
-    gte_SetGeomScreen(*(s32 *)(D_80051640 + 0x18));
+    gte_SetGeomScreen(*(s32 *)(MainCamera + 0x18));
     gte_SetTransMatrix(m);
-    gte_SetGeomOffset(D_8005B698->w / 2, 175);
+    gte_SetGeomOffset(ScreenRect->w / 2, 175);
 }
 
 s32 func_8002B020(VECTOR *v, s32 *range) {
@@ -195,7 +195,7 @@ S16Pair func_8002B210(VECTOR *pos) {
     s32 vol;
 
     ViewProject(pos, (s32 *)&sxy);
-    vol = ViewVolumeXY(pos, (View *)D_80051640, (s32 *)&ret);
+    vol = ViewVolumeXY(pos, (View *)MainCamera, (s32 *)&ret);
     if (D_8005A60C != 0) {
         vol *= 0x1450;
         vol /= 4096;
@@ -337,7 +337,7 @@ void func_8002BA44(void) {
     if (D_800654C0 != NULL || D_800654C4 != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
             D_800654C4->id = D_800654C8;
-            func_800112A4(D_800654C0, D_800654C0->head, &D_8004E0F0);
+            func_800112A4(D_800654C0, D_800654C0->head, &MainHeap);
             func_8002ACA0(D_800654C4->id, 0);
             D_800654C0 = NULL;
             D_800654C4 = NULL;
@@ -348,7 +348,7 @@ void func_8002BA44(void) {
 void func_8002BAE8(void) {
     if ((D_800654C0 != NULL || D_800654C4 != NULL) && SpuIsTransferCompleted(0) == 1) {
         D_800654C4->id = D_800654C8;
-        func_800112A4(D_800654C0, D_800654C0->head, &D_8004E0F0);
+        func_800112A4(D_800654C0, D_800654C0->head, &MainHeap);
         func_8002ACA0(D_800654C4->id, 0);
         D_800654C0 = NULL;
         D_800654C4 = NULL;
@@ -393,7 +393,7 @@ void func_8002BBEC(void) {
         SpuIsTransferCompleted(1);
         func_8002ACA0(slot->id, 1);
         SsVabClose(slot->id);
-        mal_free(slot->head, &D_8004E0F0);
+        mal_free(slot->head, &MainHeap);
         slot->head = NULL;
         slot->id = -1;
     }
@@ -409,7 +409,7 @@ void func_8002BCB0(s32 *arg0) {
     SpuIsTransferCompleted(1);
     func_8002ACA0(arg0[1], 1);
     SsVabClose((s16)arg0[1]);
-    mal_free((void *)arg0[0], &D_8004E0F0);
+    mal_free((void *)arg0[0], &MainHeap);
     arg0[0] = 0;
     arg0[1] = -1;
 }

@@ -317,11 +317,11 @@ s32 DinoAI_PickVictim(s32 arg0) {
         } else {
             for (k = 0; k < 4; k++) {
                 if (k != arg0 && !(Heroes[k].hero_status & 0x2000)) {
-                    total += D_8009D87C[k].unk4 << 7;
+                    total += AiPlayerSkill[k].unk4 << 7;
                 }
             }
             if (total != 0) {
-                result = (D_8009D87C[j].unk4 << 19) / total;
+                result = (AiPlayerSkill[j].unk4 << 19) / total;
             }
             v = result;
         }
@@ -373,7 +373,7 @@ s32 id;
         }
         h->hero_ai->AIpad |= dir;
         if (h->hero_frozen == 0) {
-            ((DinoPadAng *)D_80051338)[id].buttons = h->hero_ai->AIpad;
+            ((DinoPadAng *)Pads)[id].buttons = h->hero_ai->AIpad;
         }
         ai = h->hero_ai;
         t = ai->AItimer1--;
@@ -409,7 +409,7 @@ s32 id;
             h2->hero_ai->AItimer1 = 0;
         }
         if (Heroes[id].hero_frozen == 0) {
-            ((DinoPadAng *)D_80051338)[id].angle = Heroes[id].hero_ai->AIang;
+            ((DinoPadAng *)Pads)[id].angle = Heroes[id].hero_ai->AIang;
         }
     }
 }
@@ -591,7 +591,7 @@ void DinoAI_GuardGem(s32 id) {
         if (DinoAI_ShotBlocked(id) != 0) {
             h->hero_ai->AIpad |= 0x8000;
         }
-        ((PadButtons *)D_80051338)[id].unk50 = h->hero_ai->AIpad;
+        ((PadButtons *)Pads)[id].unk50 = h->hero_ai->AIpad;
         DinoAI_SteerToTarget(id);
     }
 }
@@ -633,8 +633,8 @@ void DinoAI_ShootGem(s32 id) {
         DinoAI_SteerToTarget(id);
         yaw = Heroes[id].hero_eng->unk1E;
         sc = DinoArenaRadius * 4;
-        v1[0] = (sc * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
-        v1[2] = (sc * D_80068BD4[yaw & 0xFFF].unk2) >> 12;
+        v1[0] = (sc * TrigTable[(yaw - 0x400) & 0xFFF].unk2) >> 12;
+        v1[2] = (sc * TrigTable[yaw & 0xFFF].unk2) >> 12;
         v2[0] = 0;
         v2[2] = 0;
         p = (DinoPosH *)DinoGoal;
@@ -647,7 +647,7 @@ void DinoAI_ShootGem(s32 id) {
         }
         if (hit != 0) {
             Heroes[id].hero_ai->AIpad |= 0x8000;
-            ((DinoPad *)D_80051338)[id].unk50 = Heroes[id].hero_ai->AIpad;
+            ((DinoPad *)Pads)[id].unk50 = Heroes[id].hero_ai->AIpad;
             c->unk28 = -1;
             c->unk30 = 8;
             c->fn = DinoUnusedStub;
@@ -699,8 +699,8 @@ void DinoAI_CarryGem(s32 id) {
         }
         yaw = Heroes[id].hero_eng->unk1E;
         sc = DinoArenaRadius * 4;
-        v1[0] = (sc * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
-        v1[2] = (sc * D_80068BD4[yaw & 0xFFF].unk2) >> 12;
+        v1[0] = (sc * TrigTable[(yaw - 0x400) & 0xFFF].unk2) >> 12;
+        v1[2] = (sc * TrigTable[yaw & 0xFFF].unk2) >> 12;
         v2[0] = 0;
         v2[2] = 0;
         p = (DinoPosH *)DinoGoal;
@@ -713,7 +713,7 @@ void DinoAI_CarryGem(s32 id) {
         }
         if (hit != 0) {
             Heroes[id].hero_ai->AIpad |= 0x8000;
-            ((DinoPad *)D_80051338)[id].unk50 = Heroes[id].hero_ai->AIpad;
+            ((DinoPad *)Pads)[id].unk50 = Heroes[id].hero_ai->AIpad;
             c->unk28 = -1;
             c->unk30 = 8;
             c->fn = DinoUnusedStub;
@@ -861,8 +861,8 @@ s32 DinoAI_RayToPlayer(s32 a, s32 b) {
     ea = Heroes[a].hero_eng;
     yaw = ea->unk1E;
     eb = Heroes[b].hero_eng;
-    v1[0] = (DinoArenaRadius * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
-    v1[2] = (DinoArenaRadius * D_80068BD4[yaw & 0xFFF].unk2) >> 12;
+    v1[0] = (DinoArenaRadius * TrigTable[(yaw - 0x400) & 0xFFF].unk2) >> 12;
+    v1[2] = (DinoArenaRadius * TrigTable[yaw & 0xFFF].unk2) >> 12;
     v2[0] = 0;
     v2[2] = 0;
     d[0] = *(u16 *)((u8 *)eb + 0x10) - *(u16 *)((u8 *)ea + 0x10);
@@ -873,7 +873,7 @@ s32 DinoAI_RayToPlayer(s32 a, s32 b) {
 }
 
 s32 DinoTestTeamMate(s32 arg0, s32 arg1) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     if (*(s32 *)(g + 0x6C) != 0) {
         if (Heroes[arg1].hero_status & 0x2000) {
@@ -1014,13 +1014,13 @@ s32 DinoGetLevelPoint(s32 *arg0, s32 arg1) {
     s32 i;
     s32 ang;
 
-    base = *(u8 **)((u8 *)D_80058AD0 + 0x10);
+    base = *(u8 **)((u8 *)MapScene + 0x10);
     off = *(s32 *)(base + 0x14);
     p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
     if (p != NULL) {
         i = 0;
         n = *(s32 *)(p + 0x38);
-        t = D_80068BD4;
+        t = TrigTable;
         a2 = p + 0x50;
         a3 = p;
         for (;;) {
@@ -1124,8 +1124,8 @@ void DinoAI_Wander(s32 arg0) {
         goto chase;
     }
     rnd = Random(8);
-    v1[0] = (DinoArenaRadius * D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2) >> 12;
-    v1[2] = (DinoArenaRadius * D_80068BD4[ext->angle & 0xFFF].unk2) >> 12;
+    v1[0] = (DinoArenaRadius * TrigTable[(ext->angle - 0x400) & 0xFFF].unk2) >> 12;
+    v1[2] = (DinoArenaRadius * TrigTable[ext->angle & 0xFFF].unk2) >> 12;
     best = 0;
     v2[0] = 0;
     v2[2] = 0;
@@ -1166,8 +1166,8 @@ void DinoAI_Wander(s32 arg0) {
                 goto end;
             }
             ang = DinoWanderAngles[j & 7];
-            v1[0] = (DinoArenaRadius * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            v1[2] = (DinoArenaRadius * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            v1[0] = (DinoArenaRadius * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            v1[2] = (DinoArenaRadius * TrigTable[ang & 0xFFF].unk2) >> 12;
             v2[0] = 0;
             v2[2] = 0;
             if (DinoRayHitB(v2, v1, d, sp20) != 0) {
@@ -1286,7 +1286,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
     s32 k;
     u8 *g;
 
-    if (!(D_8005A644 & 0x801) && arg0 == -1) {
+    if (!(GameExitFlags & 0x801) && arg0 == -1) {
         taken = 0;
         for (j = 0; j < 4; j++) {
             best = -1;
@@ -1297,10 +1297,10 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            D_8005A614[j + 0xA7] = best;
+            GameInfo[j + 0xA7] = best;
             taken |= 1 << best;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 0x6C) == 0) {
             HeroInfo *hb;
             HeroInfo *a;
@@ -1308,17 +1308,17 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     Heroes[k].hero_status |= 0x100;
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                     }
                 }
             } else {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 n = 0;
                 for (;; n++) {
                     s32 t_;
@@ -1326,7 +1326,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     if (n >= 4) {
                         break;
                     }
-                    if (D_8005A614[0xA7] == n) {
+                    if (GameInfo[0xA7] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x8400;
@@ -1347,7 +1347,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
 
             u8 *t;
 
-            t = D_8005A614;
+            t = GameInfo;
             ia = *(s16 *)(t + 0x48);
             ib = *(s16 *)(t + 0x4A);
             ita = Heroes[ia].hero_teammate;
@@ -1361,7 +1361,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     Heroes[p].hero_status |= 0x100;
                 }
             } else if ((sb < sa && t[ia + 0x5C] == 0) || (sa < sb && t[ib + 0x5C] == 0)) {
-                u8 *w = D_8005A614;
+                u8 *w = GameInfo;
 
                 *(u16 *)(w + 0x30) |= 0x800;
                 if (w[ia + 0x5C] == 0) {
@@ -1392,8 +1392,8 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     DINO_PUFF(&Heroes[ita]);
                 }
             } else {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (q = 0; q < 4; q++) {
                     Heroes[q].hero_status |= 0x100;
                 }
@@ -1410,7 +1410,7 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
     s32 k;
     u8 *g;
 
-    if (!(D_8005A644 & 0x801) && arg0 == -1) {
+    if (!(GameExitFlags & 0x801) && arg0 == -1) {
         taken = 0;
         for (j = 0; j < 4; j++) {
             best = -1;
@@ -1421,10 +1421,10 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            D_8005A614[j + 0xA7] = best;
+            GameInfo[j + 0xA7] = best;
             taken |= 1 << best;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 0x6C) == 0) {
             HeroInfo *hb;
             HeroInfo *a;
@@ -1432,20 +1432,20 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     Heroes[k].hero_status |= 0x100;
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                     }
                 }
-                D_800AD12C = 1;
+                CameraMode = 1;
             } else {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (D_8005A614[0xA7] == n) {
+                    if (GameInfo[0xA7] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1469,13 +1469,13 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
             sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
             sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
             if (sa == sb) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (p = 0; p < 4; p++) {
                     Heroes[p].hero_status |= 0x100;
                 }
             } else if ((sb < sa && g[ia + 0x5C] == 0) || (sa < sb && g[ib + 0x5C] == 0)) {
-                u8 *w = D_8005A614;
+                u8 *w = GameInfo;
 
                 *(u16 *)(w + 0x30) |= 0x800;
                 if (w[ia + 0x5C] == 0) {
@@ -1494,8 +1494,8 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
                     Heroes[ita].hero_status |= 0x400;
                 }
             } else {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (q = 0; q < 4; q++) {
                     Heroes[q].hero_status |= 0x100;
                 }
@@ -1514,7 +1514,7 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
   u8 *e;
   s32 k;
   u8 *g;
-  if ((!(D_8005A644 & 0x801)) && (arg0 == (-1)))
+  if ((!(GameExitFlags & 0x801)) && (arg0 == (-1)))
   {
     taken = 0;
 
@@ -1529,11 +1529,11 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
         }
       }
 
-      D_8005A614[0xA7 + j] = best;
+      GameInfo[0xA7 + j] = best;
       taken |= 1 << best;
     }
 
-    e = D_8005A614;
+    e = GameInfo;
     if ((*((s32 *) (e + 0x6C))) == 0)
     {
       HeroInfo *hb;
@@ -1557,7 +1557,7 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
         n = 0;
         ;
         e[0x60] = a->hero_name;
-        *((u16 *) (D_8005A614 + 0x30)) |= 0x800;
+        *((u16 *) (GameInfo + 0x30)) |= 0x800;
         for (;; n++)
         {
           s32 t_;
@@ -1565,7 +1565,7 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
           {
             break;
           }
-          if (D_8005A614[0xA7] == n)
+          if (GameInfo[0xA7] == n)
           {
             hb[n].hero_status |= 0x200;
           }
@@ -1612,7 +1612,7 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
       HeroInfo *ta;
       HeroInfo *tb;
       HeroInfo *hh;
-      g = D_8005A614;
+      g = GameInfo;
       hh = Heroes;
       ia = *((s16 *) (g + 0x48));
       ib = *((s16 *) (g + 0x4A));
@@ -1768,7 +1768,7 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
     s32 i;
     DinoTeamView *g;
 
-    g = (DinoTeamView *)D_8005A614;
+    g = (DinoTeamView *)GameInfo;
     found = -1;
     done = 0;
     if (g->teams != 0) {
@@ -1838,7 +1838,7 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
         }
         if (found != -1) {
             i = 0;
-            w = (DinoTeamView *)D_8005A614;
+            w = (DinoTeamView *)GameInfo;
             if (w->out[found] != 0) {
                 goto out;
             }
@@ -1872,7 +1872,7 @@ end:
         DinoTeamView *x;
 
         i = 0;
-        r = (DinoTeamView *)D_8005A614;
+        r = (DinoTeamView *)GameInfo;
         x = r;
         x->winner = 0;
         x->unk30 |= arg1;
@@ -1883,7 +1883,7 @@ end:
             if (i >= 4) {
                 break;
             }
-            if (D_8005A614[i + 0x5C] != 0) {
+            if (GameInfo[i + 0x5C] != 0) {
                 Heroes[i].hero_status |= 0x8400;
                 DINO_PUFF(&Heroes[i]);
                 Heroes[i].hero_shadow->sub->flags &= ~0x8000;
@@ -1900,32 +1900,32 @@ void InitialiseDINOFirst(void) {
     void *f;
     void **p;
     u8 *g;
-    D_8009D6E8.unk38 = Dino_HeroBot;
-    D_8009D6E8.unk4 = DinoHeroModels;
-    D_8009D6E8.unk0 = DinoInitHero;
-    D_8009D6E8.unk20 = DinoPreMoveHero;
-    D_8009D6E8.unk24 = DinoMoveHero;
-    D_8009D6E8.unk2C = DinoHeroFacing;
+    HeroHooks.unk38 = Dino_HeroBot;
+    HeroHooks.unk4 = DinoHeroModels;
+    HeroHooks.unk0 = DinoInitHero;
+    HeroHooks.unk20 = DinoPreMoveHero;
+    HeroHooks.unk24 = DinoMoveHero;
+    HeroHooks.unk2C = DinoHeroFacing;
     f = DinoChooseWinner;
-    D_8009D6E8.unk64 = f;
-    g = D_8005A614;
+    HeroHooks.unk64 = f;
+    g = GameInfo;
     if (*(u16 *)(g + 0x32) & 0x40) {
-        D_8009D6E8.unk64 = DinoChooseWinnerTeam;
+        HeroHooks.unk64 = DinoChooseWinnerTeam;
     }
-    D_8009D6E8.unk14 = DinoVictorySeqs;
-    D_8009D6E8.unk18 = D_8008B29C;
-    D_8009D6E8.unk1C = D_8008B418;
-    p = &D_8009D8FC;
+    HeroHooks.unk14 = DinoVictorySeqs;
+    HeroHooks.unk18 = D_8008B29C;
+    HeroHooks.unk1C = D_8008B418;
+    p = &AiSkillTable;
     if (*(s32 *)(g + 0x6C) != 0) {
         v = DinoAiSkillAlt;
     } else {
         v = DinoAiSkill;
     }
     *p = v;
-    D_8009D8F4 = DinoAiBotTweak;
-    D_8009D8F8 = DinoAiHumanTweak;
-    D_8009D904 = DinoAiHumanRoundTweak;
-    D_8009D900 = DinoAiTeamSkill;
+    AiBotTweakTable = DinoAiBotTweak;
+    AiHumanTweakTable = DinoAiHumanTweak;
+    AiHumanRoundTweakTable = DinoAiHumanRoundTweak;
+    AiTeamSkillTable = DinoAiTeamSkill;
     DinoTargetD = 0;
     DinoTargetE = 0;
     DinoTargetObjs[0] = 0;
@@ -1943,8 +1943,8 @@ void InitialiseDINOFirst(void) {
 void DinoFindTargets(void) {
     DinoObj *o;
 
-    for (o = *(DinoObj **)((u8 *)D_80058AD0 + 0x1C); o != NULL; o = o->next) {
-        if (((DinoGame *)D_8005A614)->flags & 0x80) {
+    for (o = *(DinoObj **)((u8 *)MapScene + 0x1C); o != NULL; o = o->next) {
+        if (((DinoGame *)GameInfo)->flags & 0x80) {
             if (o->index == 0x5002) {
                 DinoGoal = o;
                 printf("found target\n");
@@ -1990,7 +1990,7 @@ void DinoUpdateTargets(void) {
     s32 i;
     s32 j;
 
-    if (!(D_8005A646 & 0x80)) {
+    if (!(GameLevelFlags & 0x80)) {
         return;
     }
     if (DinoTargetDelay == 0xF) {
@@ -2033,7 +2033,7 @@ void DinoUpdateTargets(void) {
     }
     if (DinoTargetD != NULL) {
         DinoTargetD->flags |= 0x40000000;
-        DinoTargetD->scale = abs((D_80068BD4[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 3);
+        DinoTargetD->scale = abs((TrigTable[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 3);
         if (DinoTargetTimer == 2) {
             DinoTargetD->r = 0xFFF;
             DinoTargetD->g = 0;
@@ -2058,7 +2058,7 @@ void DinoUpdateTargets(void) {
     }
     if (DinoTargetE != NULL) {
         DinoTargetE->flags |= 0x40000000;
-        DinoTargetE->scale = abs(D_80068BD4[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2);
+        DinoTargetE->scale = abs(TrigTable[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2);
         cur = DinoTargetE;
         cur->r = 0;
         cur->g = 0;
@@ -2087,7 +2087,7 @@ void InitialiseDINO(void) {
 
     Init_Clock(0x140, 0x28, 0);
     InitSharedScoreIcons();
-    g = D_8005A614;
+    g = GameInfo;
     if (*(s32 *)(g + 0x6C) != 0) {
         PanelCtrl |= 0x2000;
     }
@@ -2164,8 +2164,8 @@ void InitialiseDINO(void) {
             x->unkC = 0x1E;
             x->timer = 0;
             h->hero_score = 0;
-            if (((DinoGame *)D_8005A614)->flags & 0x40) {
-                sc = D_8005A614[i + 0x5C];
+            if (((DinoGame *)GameInfo)->flags & 0x40) {
+                sc = GameInfo[i + 0x5C];
                 if (sc != 0) {
                     sc = 0xF;
                 } else {
@@ -2191,13 +2191,13 @@ void InitialiseDINO(void) {
         e->unkC = 7;
     }
     DinoGem1->Engine->sub->unk74 = 0x2002;
-    if (((DinoGame *)D_8005A614)->flags & 0x80) {
+    if (((DinoGame *)GameInfo)->flags & 0x80) {
         DinoGem1->Engine->sub->unk74 = 0x2002;
     }
     o = CreateNAS(0, -0x40, 0x200, 0x1901, 0x11);
     DinoGem2 = o;
     o->Engine->sub->unk74 = 0x2003;
-    if (((DinoGame *)D_8005A614)->flags & 0x80) {
+    if (((DinoGame *)GameInfo)->flags & 0x80) {
         o->Engine->sub->unk74 = 0x2003;
     }
     DinoGems[0] = (NAS *)DinoGem0;
@@ -2219,22 +2219,22 @@ void DinoScoreGems(void) {
     s32 out;
     s32 dot;
 
-    if (DinoGoal == NULL || (D_8005A644 & 0x801)) {
+    if (DinoGoal == NULL || (GameExitFlags & 0x801)) {
         return;
     }
     if (DinoScoreDelay-- < 0) {
         DinoScoreDelay = 0;
     }
     ((DinoTarget *)DinoGoal)->unk51 = 0;
-    ((DinoTarget *)DinoGoal)->x = (D_80068BD4[(DinoScoreB - 0x400) & 0xFFF].unk2 * 11) >> 4;
-    ((DinoTarget *)DinoGoal)->z = (D_80068BD4[DinoScoreB & 0xFFF].unk2 * 11) >> 4;
+    ((DinoTarget *)DinoGoal)->x = (TrigTable[(DinoScoreB - 0x400) & 0xFFF].unk2 * 11) >> 4;
+    ((DinoTarget *)DinoGoal)->z = (TrigTable[DinoScoreB & 0xFFF].unk2 * 11) >> 4;
     {
         s32 h = (u16)DinoScoreB;
 
         ((DinoTarget *)DinoGoal)->ang = h;
         ((DinoTarget *)DinoGoal)->ang2 = h * 2;
     }
-    DinoScoreB = ((D_80068BD4[(DinoScoreFlag - 0x400) & 0xFFF].unk2 * 3) >> 4) & 0xFFF;
+    DinoScoreB = ((TrigTable[(DinoScoreFlag - 0x400) & 0xFFF].unk2 * 3) >> 4) & 0xFFF;
     if (DinoScoreB >= 0x2F8 && DinoScoreDelay == 0 && DinoScoreB <= 0x400) {
         PlaySfx(0x6BF, NULL, NULL, 0x1000, 0x1E00, 0);
         DinoScoreDelay = 0x5A;
@@ -2276,25 +2276,25 @@ void DinoScoreGems(void) {
         spd = csqrt(ext->unkB4 * ext->unkB4 + ext->unkD4 * ext->unkD4) >> 6;
         a = (((DinoTarget *)DinoGoal)->ang + 0x800) & 0xFFF;
         ext->unk8C = 0x14;
-        n.vx = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
-        n.vz = D_80068BD4[a].unk2;
-        d.vx = -D_80068BD4[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2;
-        d.vz = -D_80068BD4[nas->Engine->unk1E & 0xFFF].unk2;
+        n.vx = TrigTable[(a - 0x400) & 0xFFF].unk2;
+        n.vz = TrigTable[a].unk2;
+        d.vx = -TrigTable[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2;
+        d.vz = -TrigTable[nas->Engine->unk1E & 0xFFF].unk2;
         dot = DinoDot(&d, &n);
         r.vx = d.vx - (dot * n.vx >> 11);
         r.vz = d.vz - (dot * n.vz >> 11);
         out = get_angle(r.vx, r.vz) + 0x800;
         nas->Engine->unk1E = out;
-        ext->unkB4 = -(spd * D_80068BD4[(out - 0x400) & 0xFFF].unk2 >> 12);
-        ext->unkD4 = -(spd * D_80068BD4[out & 0xFFF].unk2 >> 12);
+        ext->unkB4 = -(spd * TrigTable[(out - 0x400) & 0xFFF].unk2 >> 12);
+        ext->unkD4 = -(spd * TrigTable[out & 0xFFF].unk2 >> 12);
         nas->Engine->unk10.x += ext->unkB4;
         nas->Engine->unk10.z += ext->unkD4;
         sign = 1;
-        if (((DinoGame *)D_8005A614)->flags & 0x40) {
+        if (((DinoGame *)GameInfo)->flags & 0x40) {
             sign = -1;
         }
-        if (((DinoGame *)D_8005A614)->flags & 0x80) {
-            if (D_8005A614[ext->unk10 + 0x5C] == 0) {
+        if (((DinoGame *)GameInfo)->flags & 0x80) {
+            if (GameInfo[ext->unk10 + 0x5C] == 0) {
                 PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
                 if (ext->unk90 == 5 && (DinoTargetTimer == 2 || DinoScoreTimer == 2)) {
                     PlaySfx(0x6BE, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2347,7 +2347,7 @@ void DinoScoreGems(void) {
             if (Heroes[ext->unk10].hero_score < 0) {
                 Heroes[ext->unk10].hero_score = 0;
             }
-            if (((DinoTeamView *)D_8005A614)->teams != 0 && (((DinoGame *)D_8005A614)->flags & 0x40) &&
+            if (((DinoTeamView *)GameInfo)->teams != 0 && (((DinoGame *)GameInfo)->flags & 0x40) &&
                 Heroes[ext->unk10].hero_score == 0) {
                 Heroes[Heroes[ext->unk10].hero_teammate].hero_score += ext->unk90 * sign;
                 if (Heroes[Heroes[ext->unk10].hero_teammate].hero_score < 0) {
@@ -2391,7 +2391,7 @@ loop:
         i++;
         goto loop;
     }
-    if (D_8005A624 == 0) {
+    if (GamePause == 0) {
         DinoGemTimer++;
     }
     if (DinoGemTimer == 0x1C2) {
@@ -2418,8 +2418,8 @@ s32 DinoKeepInArena(s32 arg0) {
     }
     ang = get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z) & 0xFFF;
     d = dist - 0xAFE;
-    Heroes[arg0].hero_eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-    Heroes[arg0].hero_eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+    Heroes[arg0].hero_eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+    Heroes[arg0].hero_eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
     if (Heroes[arg0].hero_move->x_vel * Heroes[arg0].hero_move->x_vel +
             Heroes[arg0].hero_move->z_vel * Heroes[arg0].hero_move->z_vel > 0x1000 &&
         Heroes[arg0].hero_mode == 0x66) {
@@ -2451,7 +2451,7 @@ void PlotDinoSmoke(NAS *m) {
 
     if (w != 0) {
         u = (EXTengine **)w;
-        if (D_8005A648 != 0x1C) {
+        if (GameMode != 0x1C) {
             m->Engine->unk10.x += (u[1]->unk10.x - m->Engine->unk10.x) >> 4;
             z = (u[1]->unk10.z - (e = m->Engine)->unk10.z) >> 4;
             x = e->unk10.z;
@@ -2660,14 +2660,14 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
     found = 0;
     rad = radius;
     shift = 12;
-    bad = idx >= (((DinoScene *)D_80058AD0)->unk0 ?
-                  *(s32 *)(*(s32 *)(((DinoScene *)D_80058AD0)->data + 0x14) +
-                           (s32)((DinoScene *)D_80058AD0)->data + 0x14) :
+    bad = idx >= (((DinoScene *)MapScene)->unk0 ?
+                  *(s32 *)(*(s32 *)(((DinoScene *)MapScene)->data + 0x14) +
+                           (s32)((DinoScene *)MapScene)->data + 0x14) :
                   0);
     if (bad) {
         return 0;
     }
-    data = ((DinoScene *)D_80058AD0)->data;
+    data = ((DinoScene *)MapScene)->data;
     obj = (DinoSegObj *)((u8 *)&((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1] +
                           ((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1]);
     if (obj != NULL) {
@@ -2689,8 +2689,8 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
             }
             d.vx = pos->vx - w->segs[0].p0.vx;
             d.vz = pos->vz - w->segs[0].p0.vz;
-            if (((d.vx * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
-                    ((d.vz * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
+            if (((d.vx * TrigTable[-ang & 0xFFF].unk2) >> 12) -
+                    ((d.vz * TrigTable[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
                 continue;
             }
             d.vy = w->segs[0].p1.vy - w->segs[0].p0.vy;
@@ -2748,9 +2748,9 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
             out->vy = ang;
             a = -ang;
             v = rad - s + 2;
-            out->vx = (v * D_80068BD4[a & 0xFFF].unk2) >> 12;
+            out->vx = (v * TrigTable[a & 0xFFF].unk2) >> 12;
             ang = a + 0x400;
-            out->vz = (v * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            out->vz = (v * TrigTable[ang & 0xFFF].unk2) >> 12;
             pos->vx += out->vx;
             pos->vz += out->vz;
             found = 1;
@@ -2809,7 +2809,7 @@ void DinoMoveHero(s32 arg0) {
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
 
-    ((void (*)(s32))D_8009D6E8.unk2C)(arg0);
+    ((void (*)(s32))HeroHooks.unk2C)(arg0);
     if (m->x_vel != m->x_max) {
         if (m->x_max != 0) {
             step = m->x_acc;
@@ -2868,28 +2868,28 @@ void DinoPreMoveHero(s32 id) {
     h = &Heroes[id];
     if (ext != NULL) {
         if (h->hero_frozen != 0) {
-            ((PadButtons *)D_80051338)[id].unk50 = 0;
-            ((PadButtons *)D_80051338)[id].unk54 = 0;
+            ((PadButtons *)Pads)[id].unk50 = 0;
+            ((PadButtons *)Pads)[id].unk54 = 0;
         }
         m = h->hero_move;
         if (m != NULL) {
             m->x_max = 0;
             m->z_max = 0;
-            if ((D_80051338[id].unk0 & 1) || h->hero_ai->AImode != 0) {
-                if (h->hero_mode != 0x66 && (((PadButtons *)D_80051338)[id].unk50 & 0xF0)) {
+            if ((Pads[id].unk0 & 1) || h->hero_ai->AImode != 0) {
+                if (h->hero_mode != 0x66 && (((PadButtons *)Pads)[id].unk50 & 0xF0)) {
                     if (ext->unk14 == 0) {
-                        m->forward_angle = (((DinoPadAng *)D_80051338)[id].angle + 0x800) & 0xFFF;
+                        m->forward_angle = (((DinoPadAng *)Pads)[id].angle + 0x800) & 0xFFF;
                         sc = DinoSteerMin;
-                        if (D_8005A614[id + 0x5C] != 0) {
-                            sc = DinoSteerTable[(s16)(u16)D_8009D87C[id].unk0 >> 1];
+                        if (GameInfo[id + 0x5C] != 0) {
+                            sc = DinoSteerTable[(s16)(u16)AiPlayerSkill[id].unk0 >> 1];
                         }
-                        m->x_max = (sc * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                        m->z_max = (sc * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                        m->x_max = (sc * TrigTable[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                        m->z_max = (sc * TrigTable[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                     } else {
                         sc = DinoSteerMax;
-                        m->forward_angle = (((DinoPadAng *)D_80051338)[id].angle + 0x800) & 0xFFF;
-                        m->x_max = (sc * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                        m->z_max = (sc * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                        m->forward_angle = (((DinoPadAng *)Pads)[id].angle + 0x800) & 0xFFF;
+                        m->x_max = (sc * TrigTable[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                        m->z_max = (sc * TrigTable[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                     }
                 }
                 if (Heroes[id].hero_mode == 0x65) {
@@ -3016,8 +3016,8 @@ void DinoHeroDazed(s32 id) {
         Heroes[id].hero_eng->unk1E += 0x80;
         DinoHeroCollide(id);
         Heroes[id].hero_frozen = 2;
-        ((PadButtons *)D_80051338)[id].unk50 = 0;
-        ((PadButtons *)D_80051338)[id].unk54 = 0;
+        ((PadButtons *)Pads)[id].unk50 = 0;
+        ((PadButtons *)Pads)[id].unk54 = 0;
         if (ext->unkC-- < 0) {
             SetHeroAction(id, 0x63);
         }
@@ -3050,10 +3050,10 @@ void SetDinoHeroSlide(s32 id) {
     m->z_dec = 6;
     m->x_dec = 6;
     m->forward_angle = Heroes[id].hero_eng->unk1E;
-    v = (D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2 * 0x59) >> 0xB;
+    v = (TrigTable[(m->forward_angle + 0x400) & 0xFFF].unk2 * 0x59) >> 0xB;
     m->x_vel = v;
     m->x_max = v;
-    v = (D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2 * 0x59) >> 0xB;
+    v = (TrigTable[(m->forward_angle + 0x800) & 0xFFF].unk2 * 0x59) >> 0xB;
     m->z_vel = v;
     m->z_max = v;
     SetHeroSeq(id, 0x50);
@@ -3085,7 +3085,7 @@ s32 DinoHeroTestShoot(s32 arg0) {
         if (a->unk14 != 0) {
             b = FindExtension(a->unk18, 0x10000000);
             if (b != NULL && b->unk10 == arg0) {
-                if (((DinoPad *)D_80051338)[arg0].unk50 & 0x8000) {
+                if (((DinoPad *)Pads)[arg0].unk50 & 0x8000) {
                     SetHeroAction(arg0, 0x65);
                     b->unkC = 2;
                     a->unk14 = 0;
@@ -3095,7 +3095,7 @@ s32 DinoHeroTestShoot(s32 arg0) {
             return 0;
         }
         if (a->unk10 <= 0) {
-            if (((DinoPad *)D_80051338)[arg0].unk50 & 0x8000) {
+            if (((DinoPad *)Pads)[arg0].unk50 & 0x8000) {
                 a->unk10 = 0x1E;
                 SetHeroAction(arg0, 0x66);
                 return 1;
@@ -3194,8 +3194,8 @@ s32 DinoHeroCollide(s32 hero) {
                             SetHeroAction(hero, 0x63);
                         }
                         d = dist + 2;
-                        eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                        eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                        eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                        eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                     }
                 }
             }
@@ -3294,8 +3294,8 @@ void DinoGemPhysics(NAS *arg0) {
             }
             ang = get_angle(dx, dz) & 0xFFF;
             d = 0x200 - d;
-            arg0->Engine->unk10.x += ((d + 8) * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            arg0->Engine->unk10.z += ((d + 8) * D_80068BD4[ang].unk2) >> 12;
+            arg0->Engine->unk10.x += ((d + 8) * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            arg0->Engine->unk10.z += ((d + 8) * TrigTable[ang].unk2) >> 12;
             r = Random(4);
             if (r == 0) {
                 PlaySfx(0x6C0, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -3340,7 +3340,7 @@ void InitDinoGem(NAS *m) {
         do {
             m->Engine->sub->unk74 = 0x2001;
         } while (0);
-        if (D_8005A646 & 0x80) {
+        if (GameLevelFlags & 0x80) {
             m->Engine->sub->unk74 = 0x2001;
         }
         m->Engine->sub->unk6C = D_80055534;
@@ -3392,7 +3392,7 @@ void PlotDinoGem(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         KillNAS(m);
         return;
     }
@@ -3477,8 +3477,8 @@ void PlotDinoGem(NAS *m) {
         ext->unk14 = 0x800;
         ext->unk28 = 0;
         ext->unk2C = 0;
-        ext->unk48 = -(D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 0xD2) >> 12;
-        ext->unk4C = -(D_80068BD4[a & 0xFFF].unk2 * 0xD2) >> 12;
+        ext->unk48 = -(TrigTable[(a - 0x400) & 0xFFF].unk2 * 0xD2) >> 12;
+        ext->unk4C = -(TrigTable[a & 0xFFF].unk2 * 0xD2) >> 12;
         ext->unk80 = 0;
         ext->unkB4 = ext->unk48;
         ext->unkD4 = ext->unk4C;
@@ -3518,8 +3518,8 @@ void PlotDinoGem(NAS *m) {
         ext->unk28 = -0x60;
         ext->unk14 = 8;
         ext->unk2C = 0;
-        ext->unk48 = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 0x40) >> 12;
-        ext->unk4C = (D_80068BD4[a & 0xFFF].unk2 * 0x40) >> 12;
+        ext->unk48 = (TrigTable[(a - 0x400) & 0xFFF].unk2 * 0x40) >> 12;
+        ext->unk4C = (TrigTable[a & 0xFFF].unk2 * 0x40) >> 12;
         ext->unk80 = 0;
         ext->unkB4 = ext->unk48;
         ext->unkD4 = ext->unk4C;
@@ -3554,7 +3554,7 @@ void PlotDinoGem(NAS *m) {
     case 3:
         ext->unk84->sub->flags |= 0x8000;
         if (ext->unk88-- > 0
-            && (D_8005A614[ext->unk10 + 0x5C] != 0 || (((DinoPad *)D_80051338)[ext->unk10].unk50 & 0x8000))) {
+            && (GameInfo[ext->unk10 + 0x5C] != 0 || (((DinoPad *)Pads)[ext->unk10].unk50 & 0x8000))) {
             ext->unk28 -= 0x1800;
             if (ext->unk28 < -0x6000) {
                 ext->unk28 = -0x6000;
@@ -3605,8 +3605,8 @@ void PlotDinoGem(NAS *m) {
             s32 a;
 
             a = get_angle(e->unk10.x, p->z) & 0xFFF;
-            e->unk10.x -= ((dist - 0xAFC) * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
-            p->z -= ((dist - 0xAFC) * D_80068BD4[a].unk2) >> 12;
+            e->unk10.x -= ((dist - 0xAFC) * TrigTable[(a - 0x400) & 0xFFF].unk2) >> 12;
+            p->z -= ((dist - 0xAFC) * TrigTable[a].unk2) >> 12;
             ang = a;
         } else {
             ang = -1;
@@ -3618,17 +3618,17 @@ void PlotDinoGem(NAS *m) {
             PlaySfx(0x6CC, NULL, NULL, 0x1000, 0x1E00, 0);
             spd = csqrt(ext->unkB4 * ext->unkB4 + ext->unkD4 * ext->unkD4) >> 6;
             w = (ang + 0x800) & 0xFFF;
-            n[0] = D_80068BD4[(w - 0x400) & 0xFFF].unk2;
-            n[2] = D_80068BD4[w].unk2;
-            d[0] = -D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2;
-            d[2] = -D_80068BD4[m->Engine->unk1E & 0xFFF].unk2;
+            n[0] = TrigTable[(w - 0x400) & 0xFFF].unk2;
+            n[2] = TrigTable[w].unk2;
+            d[0] = -TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2;
+            d[2] = -TrigTable[m->Engine->unk1E & 0xFFF].unk2;
             dot = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);
             rv[0] = d[0] - (dot * n[0] >> 11);
             rv[2] = d[2] - (dot * n[2] >> 11);
             h = get_angle(rv[0], rv[2]) + 0x800;
             m->Engine->unk1E = h;
-            ext->unkB4 = -(spd * D_80068BD4[(h - 0x400) & 0xFFF].unk2 >> 12);
-            ext->unkD4 = -(spd * D_80068BD4[h & 0xFFF].unk2 >> 12);
+            ext->unkB4 = -(spd * TrigTable[(h - 0x400) & 0xFFF].unk2 >> 12);
+            ext->unkD4 = -(spd * TrigTable[h & 0xFFF].unk2 >> 12);
         }
     }
     ext->unk84->unk10 = m->Engine->unk10;
@@ -3725,7 +3725,7 @@ void InitDinoScratch(NAS *m) {
         m->UserInfo.user2 = 0;
         if (sub != NULL) do {
             sub->flags = 0x40000000;
-            sub->unk6C = *(void **)D_80058AD0;
+            sub->unk6C = *(void **)MapScene;
             sub->unk74 = 0x2003;
             sub->unk51 = 2;
             sub->unk14 = 0;
@@ -3747,8 +3747,8 @@ s32 DinoClampToArena(s32 *p, s32 arg1) {
         d += arg1;
         ang = get_angle(p[0], p[2]) & 0xFFF;
         d += 4;
-        p[0] -= d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        p[2] -= d * D_80068BD4[ang].unk2 >> 12;
+        p[0] -= d * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        p[2] -= d * TrigTable[ang].unk2 >> 12;
         return ang;
     }
     return -1;
@@ -3766,7 +3766,7 @@ s32 DinoHeroTestStop(s32 arg0) {
 }
 
 s32 DinoHeroTestIdle(s32 arg0) {
-    if (((PadButtons *)D_80051338)[arg0].unk50 & 0xF0) {
+    if (((PadButtons *)Pads)[arg0].unk50 & 0xF0) {
         return 0;
     }
     SetHeroAction(arg0, 0x63);
@@ -3774,7 +3774,7 @@ s32 DinoHeroTestIdle(s32 arg0) {
 }
 
 s32 DinoHeroTestRun(s32 arg0) {
-    if (!(((PadButtons *)D_80051338)[arg0].unk50 & 0xF0)) {
+    if (!(((PadButtons *)Pads)[arg0].unk50 & 0xF0)) {
         return 0;
     }
     SetHeroAction(arg0, 0x64);
@@ -3890,7 +3890,7 @@ void InitDinoSmoke(NAS *arg0) {
     func_80024E30(arg0, &DinoSmokeScriptInit);
     arg0->Engine->sub->unk6C = D_80055534;
     arg0->Engine->sub->flags |= 0x40000041;
-    p = &D_8005A648;
+    p = &GameMode;
     do {
         arg0->UserInfo.user1 = 0;
     } while (0);
@@ -3929,7 +3929,7 @@ void DinoRestartLevel(void) {
 }
 
 void DinoChooseWinner(s32 arg0, s32 arg1) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     if (!(*(u16 *)(g + 0x30) & 0x801)) {
         u16 f = *(u16 *)(g + 0x32);
@@ -3947,13 +3947,13 @@ void DinoChooseWinner(s32 arg0, s32 arg1) {
 }
 
 void DINOSetUp(void) {
-    D_8005AA70[0] = (s32)InitialiseDINOFirst;
-    D_8005AA70[1] = (s32)InitialiseDINO;
-    D_8005AA70[2] = (s32)InitialiseDINO;
-    D_8005AA70[3] = (s32)UpdateDINO;
-    D_8005AA70[5] = (s32)FirstTriggersDINO;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
+    LevelSpecs[0] = (s32)InitialiseDINOFirst;
+    LevelSpecs[1] = (s32)InitialiseDINO;
+    LevelSpecs[2] = (s32)InitialiseDINO;
+    LevelSpecs[3] = (s32)UpdateDINO;
+    LevelSpecs[5] = (s32)FirstTriggersDINO;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
 }
 
 void DinoHeroWinner(s32 arg0) {
@@ -4091,11 +4091,11 @@ s32 DinoAI_TargetShare(s32 arg0, s32 arg1) {
     }
     for (i = 0; i < 4; i++) {
         if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
-            total += D_8009D87C[i].unk4 << 7;
+            total += AiPlayerSkill[i].unk4 << 7;
         }
     }
     if (total != 0) {
-        result = (D_8009D87C[arg1].unk4 << 19) / total;
+        result = (AiPlayerSkill[arg1].unk4 << 19) / total;
     }
     return result;
 }

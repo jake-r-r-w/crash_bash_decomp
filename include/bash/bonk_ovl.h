@@ -47,7 +47,7 @@ typedef struct { s32 a, b, c; } BonkEnt;
 extern BonkEnt BonkEnts[];
 extern s32 BonkCrateFrames[];
 extern s32 BonkStoolSfx[];
-extern s32 D_8005A624;
+extern s32 GamePause;
 /* PlotBonkCrate's puff of smoke at pos (type 0x1605, flags 0x11). */
 static inline void Bonk_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
     NAS *obj;
@@ -76,17 +76,17 @@ extern ScriptInit BonkFlagScriptInit;
 extern u8 D_80053C0C[];
 extern u8 D_80053C7C[];
 extern u8 D_80052F5C[];
-extern s32 D_8005A680[];
+extern s32 GameTeams[];
 extern s32 PanelCtrl;
-extern void *D_8009D8FC;
-extern void *D_8009D900;
-extern void *D_8009D904;
+extern void *AiSkillTable;
+extern void *AiTeamSkillTable;
+extern void *AiHumanRoundTweakTable;
 extern u16 BonkAiSkill[];
 extern u16 BonkAiSkillAlt[];
 extern u16 BonkAiTeamSkill[];
 extern u16 BonkAiHumanRoundTweak[];
 extern u16 BonkAiHumanRoundTweakAlt[];
-extern s16 D_8009D87C[][3];
+extern s16 AiPlayerSkill[][3];
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/bonk_bohero.h"
@@ -113,7 +113,7 @@ extern s32 BonkStoolHeights[];
 extern s32 BonkStoolTable[];
 
 int BonkAI_Closest(int a0, int *out);
-/* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
+/* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct BonkHooks {
     /* 0x00 */ u8 pad0[4];
     /* 0x04 */ void *unk4;
@@ -136,7 +136,7 @@ typedef struct BonkHooks {
     /* 0x64 */ void *unk64;
     /* 0x68 */ void *unk68;
 } BonkHooks;
-extern BonkHooks D_8009D6E8;
+extern BonkHooks HeroHooks;
 extern s16 D_8009E0D8;
 extern s16 D_8009E0E4;
 extern s16 D_8009E0E6;
@@ -159,7 +159,7 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1);
 void BonkChooseWinnerTimed(s32 arg0, u16 arg1);
 void BonkChooseWinnerRank(s32 arg0, u16 arg1);
 
-/* D_8005A614 as seen by BonkChooseWinnerRank (the final ranking). */
+/* GameInfo as seen by BonkChooseWinnerRank (the final ranking). */
 typedef struct BonkRankView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;
@@ -172,7 +172,7 @@ typedef struct BonkRankView {
     /* 0x70 */ u8 unk70[0xA7 - 0x70];
     /* 0xA7 */ u8 order[4];
 } BonkRankView;
-#define RANK66V ((BonkRankView *)D_8005A614)
+#define RANK66V ((BonkRankView *)GameInfo)
 
 /* BonkAI_FindClosest: keep the closest target found so far (both search loops). */
 #define BONK_SET_CLOSEST(best, found, d, p) \
@@ -185,7 +185,7 @@ void PlotBonkShockwave(NAS *nas);
 
 void BONKSetUp(void);
 
-/* D_80051640 as BonkInitCamera sets it up. */
+/* MainCamera as BonkInitCamera sets it up. */
 typedef struct BonkCam {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -244,7 +244,7 @@ typedef struct BonkHit {
     /* 0x00 */ s32 kind;
     /* 0x04 */ NAS *nas;
 } BonkHit;
-extern u32 D_80051244[]; /* pad flags by angle octant */
+extern u32 DirPadBits[]; /* pad flags by angle octant */
 
 /* Squared ground distance from (x0,z0) to (x1,z1), as Bonk_HeroBot uses it. */
 static inline s32 bonk_sq(s32 x0, s32 z0, s32 x1, s32 z1)

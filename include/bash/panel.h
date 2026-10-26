@@ -161,7 +161,7 @@ void InitBigScore(void);
 
 void func_8007C830(s32 arg0, s32 arg1);
 
-/* D_8005A614 as seen by Setup_panel. */
+/* GameInfo as seen by Setup_panel. */
 typedef struct EngineSlotView {
     /* 0x00 */ u8 unk0[0x48];
     /* 0x48 */ s16 unk48;
@@ -173,7 +173,7 @@ typedef struct EngineSlotView {
 
 void Setup_panel(void);
 
-/* D_8005A614 as seen by Draw_Clock. */
+/* GameInfo as seen by Draw_Clock. */
 typedef struct EngineClockView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -186,7 +186,7 @@ typedef struct EngineClockView {
 extern void (*D_8009D74C)(s32, s32);
 void Draw_Clock(void);
 
-/* D_8005A614 as seen by Cups_Update. */
+/* GameInfo as seen by Cups_Update. */
 typedef struct EngModeD9DC {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -216,7 +216,7 @@ typedef struct EngModeD9DC {
     /* 0x147 */ u8 unk147[0x168 - 0x147];
     /* 0x168 */ u8 unk168[0x21];
 } EngModeD9DC;
-#define MODEV ((EngModeD9DC *)D_8005A614)
+#define MODEV ((EngModeD9DC *)GameInfo)
 
 extern s16 CupWinner;
 extern u16 D_8009AF38[7];

@@ -8,14 +8,14 @@
 #include "common.h"
 #include "bash/nas.h"
 
-/* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
+/* AiPlayerSkill (declared in bash/pause.h, which this unit does not include). */
 typedef struct N2OOdds {
     s16 unk0;
     s16 unk2;
     s16 unk4;
 } N2OOdds;
 
-extern N2OOdds D_8009D87C[];
+extern N2OOdds AiPlayerSkill[];
 
 s32 GetN2OContour(u8 *arg0);
 u8 *N2OFreeBallSlot(void);
@@ -27,7 +27,7 @@ extern u16 *D_8009D6EC;
 
 extern u8 D_80053EAC[];
 extern EXTengine *D_8009D530;
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 extern u16 N2OKickSfx[];
 extern s16 N2OExplodeScales[][3];
 extern u16 N2OBallPhase;
@@ -41,7 +41,7 @@ extern s16 N2OHeroSpeed[];
 extern u16 N2OUnusedRows[][5];
 extern s32 (*D_8009D750)(EXTengine *);
 
-/* PadState (D_80051338) as N2OPreMoveHero reads it: the buttons at 0x50. */
+/* PadState (Pads) as N2OPreMoveHero reads it: the buttons at 0x50. */
 typedef struct N2OPad {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u8 pad4[0x50 - 0x04];
@@ -98,7 +98,7 @@ typedef struct N2OPuck {
 extern u16 N2OBallHitSfx[];
 extern u16 N2OExplosionSfx[];
 extern s32 D_8005A618;
-extern s32 D_8005A680[];
+extern s32 GameTeams[];
 
 s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
 
@@ -127,7 +127,7 @@ typedef struct N2OOut {
 
 extern u16 N2OBallHitSfx[];
 extern s32 D_8005A618;
-extern s32 D_8005A680[];
+extern s32 GameTeams[];
 
 s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
 
@@ -226,7 +226,7 @@ typedef struct N2OSlotObj {
     /* 0x52 */ u16 unk52;
 } N2OSlotObj;
 
-/* D_8005A614 as seen by N2OUpdateSlots. */
+/* GameInfo as seen by N2OUpdateSlots. */
 typedef struct N2OAim {
     /* 0x00 */ u8 pad0[0x30];
     /* 0x30 */ u16 unk30;
@@ -435,11 +435,11 @@ void N2OBlendDirection(N2OBlend *p);
 s32 PickN2OPlayer(s32 arg0);
 
 /* N2O_HeroBot */
-extern s32 D_8005A624;
-extern s32 D_8009D908;
-extern u32 D_80051244[]; /* flags by angle octant */
+extern s32 GamePause;
+extern s32 HeroesAllOut;
+extern u32 DirPadBits[]; /* flags by angle octant */
 
-/* D_8005A614 as seen by InitialiseN2OFirst. */
+/* GameInfo as seen by InitialiseN2OFirst. */
 typedef struct N2OGame {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 unk32;
@@ -450,20 +450,20 @@ typedef struct N2OGame {
     /* 0x54 */ u8 pad54[0x18];
     /* 0x6C */ s32 unk6C;
 } N2OGame;
-#define OVG ((N2OGame *)D_8005A614)
+#define OVG ((N2OGame *)GameInfo)
 
-/* D_8005A614 as seen by PlotN2Omissile. */
+/* GameInfo as seen by PlotN2Omissile. */
 typedef struct N2OMissileView {
     /* 0x00 */ u8 pad0[4];
     /* 0x04 */ s32 unk4;
     /* 0x08 */ u8 pad8[0x64];
     /* 0x6C */ s32 unk6C;
 } N2OMissileView;
-#define OVM ((N2OMissileView *)D_8005A614)
+#define OVM ((N2OMissileView *)GameInfo)
 extern u16 N2OMissileSfx[];
 extern u16 N2OHitSfx[];
 
-/* D_8005A614 as seen by N2OInitBoss. */
+/* GameInfo as seen by N2OInitBoss. */
 typedef struct N2OTeams {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 unk32;
@@ -472,7 +472,7 @@ typedef struct N2OTeams {
     /* 0x9B */ u8 unk9B[0x10];
     /* 0xAB */ u8 unkAB[4];
 } N2OTeams;
-#define OVT ((N2OTeams *)D_8005A614)
+#define OVT ((N2OTeams *)GameInfo)
 extern u16 N2OBossAiSkill[];
 extern u16 N2OBossAiSkillAlt[];
 extern s16 N2OBossAnimTimer;
@@ -481,7 +481,7 @@ extern s16 D_8009D6E2;
 void InitBossHealthIcons(void);
 void func_80086868(void);
 
-/* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
+/* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct N2OHooks {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ void *unk4;
@@ -496,8 +496,8 @@ typedef struct N2OHooks {
     /* 0x30 */ u8 pad30[0x38];
     /* 0x68 */ void *unk68;
 } N2OHooks;
-extern N2OHooks D_8009D6E8;
-extern void *D_8009D8FC;
+extern N2OHooks HeroHooks;
+extern void *AiSkillTable;
 extern s16 D_8009E0D8;
 extern s16 D_8009E0E2;
 extern s32 NoxBossDead;
@@ -556,7 +556,7 @@ void N2OUpdateSlots(void);
 
 s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self);
 
-/* D_8005A614 as seen by PlotN2OBall. */
+/* GameInfo as seen by PlotN2OBall. */
 typedef struct N2OBallView {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;

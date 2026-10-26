@@ -238,37 +238,37 @@ void InitialiseSPINFirst() {
     void *p;
     void **q;
 
-    D_8009D6E8.unk20 = SpinPreMoveHero;
-    D_8009D6E8.unk68 = SPIN_KeepInBounds;
-    D_8009D6E8.unk44 = SpinHeroTestFlip;
-    D_8009D6E8.unk3C = SpinNoAttack;
-    D_8009D6E8.unkC = SpinRunSpeeds;
-    D_8009D6E8.unk38 = Spin_HeroBot;
-    D_8009D6E8.unk64 = SpinChooseWinner;
-    D_8009D6E8.unk4C = SpinHero2ObjectCollision;
-    D_8009D6E8.unk50 = SpinHeroGrabObject;
-    D_8009D6E8.unk54 = SpinHeroKickCollision;
-    D_8009D6E8.unk58 = SpinHeroCarryCollision;
-    D_8009D6E8.unk5C = SpinHero_ExtraEffects;
-    D_8009D6E8.unk60 = SpinTouched;
-    D_8009D6E8.unk18 = SpinCreateShadow;
-    D_8009D6E8.unk10 = (SpinJumpEnt *)SpinJumpEnts;
+    HeroHooks.unk20 = SpinPreMoveHero;
+    HeroHooks.unk68 = SPIN_KeepInBounds;
+    HeroHooks.unk44 = SpinHeroTestFlip;
+    HeroHooks.unk3C = SpinNoAttack;
+    HeroHooks.unkC = SpinRunSpeeds;
+    HeroHooks.unk38 = Spin_HeroBot;
+    HeroHooks.unk64 = SpinChooseWinner;
+    HeroHooks.unk4C = SpinHero2ObjectCollision;
+    HeroHooks.unk50 = SpinHeroGrabObject;
+    HeroHooks.unk54 = SpinHeroKickCollision;
+    HeroHooks.unk58 = SpinHeroCarryCollision;
+    HeroHooks.unk5C = SpinHero_ExtraEffects;
+    HeroHooks.unk60 = SpinTouched;
+    HeroHooks.unk18 = SpinCreateShadow;
+    HeroHooks.unk10 = (SpinJumpEnt *)SpinJumpEnts;
     D_8009E0E2 = 0x38;
     D_8009E0E4 = 0x36;
     D_8009E0E6 = 0x37;
     D_8009E0D8 = 0x33;
     SpinInitASTIndices();
-    D_8009D8F4 = SpinAiBotTweak;
-    D_8009D8F8 = SpinAiHumanTweak;
-    D_8009D904 = SpinAiHumanRoundTweak;
-    q = &D_8009D8FC;
-    if (D_8005A680 != 0) {
+    AiBotTweakTable = SpinAiBotTweak;
+    AiHumanTweakTable = SpinAiHumanTweak;
+    AiHumanRoundTweakTable = SpinAiHumanRoundTweak;
+    q = &AiSkillTable;
+    if (GameTeams != 0) {
         p = SpinAiSkillAlt;
     } else {
         p = SpinAiSkill;
     }
     *q = p;
-    D_8009D900 = SpinAiTeamSkill;
+    AiTeamSkillTable = SpinAiTeamSkill;
 }
 
 void InitialiseSPIN() {
@@ -276,7 +276,7 @@ void InitialiseSPIN() {
     EXTheromove *m;
     s16 a;
 
-    if (D_8005A646 & 0x40) {
+    if (GameLevelFlags & 0x40) {
         Init_Clock(0x140, 0x28, 0);
         Set_Clock(0x125, 0x81D0);
     } else {
@@ -303,15 +303,15 @@ void InitialiseSPIN() {
         m->forward_angle = a;
         Heroes[i].hero->Camera.width = 0;
         Heroes[i].hero->Camera.look_ahead = 0;
-        if (((SpinGame *)D_8005A614)->cpu[i] != 0) {
+        if (((SpinGame *)GameInfo)->cpu[i] != 0) {
             Heroes[i].hero_move->run_walk = 2;
         }
     }
-    if (((SpinGame *)D_8005A614)->flags & 0x80) {
+    if (((SpinGame *)GameInfo)->flags & 0x80) {
         func_8001682C(&D_80053004);
     }
-    if (((SpinGame *)D_8005A614)->flags & 0x40) {
-        if (((SpinGame *)D_8005A614)->teams != 0) {
+    if (((SpinGame *)GameInfo)->flags & 0x40) {
+        if (((SpinGame *)GameInfo)->teams != 0) {
             Heroes[0].hero_score = 0x28;
             Heroes[1].hero_score = 0;
             Heroes[2].hero_score = 0x1E;
@@ -383,7 +383,7 @@ void SpinInitScene(void) {
     SpinSpeed = 1;
     SpinAngle = 0;
     SpinAngle2 = 0;
-    obj = ((SpinScene *)D_80058AD0)->objs;
+    obj = ((SpinScene *)MapScene)->objs;
     for (i = 9; i >= 0; i--) {
         SpinArenaObjs[i] = NULL;
     }
@@ -415,7 +415,7 @@ void SpinTurnArena(void) {
     s32 d;
     s32 a;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         SpinSpeed = 0;
     }
     a = SpinAngle - SpinSpeed * 13;
@@ -481,8 +481,8 @@ void SpinTurnArena(void) {
         d = (csqrt(d) + 0x20) >> 6;
         a = get_angle(x, z) + SpinAngle;
         a &= 0xFFF;
-        h->hero_eng->unk10.x = d * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
-        h->hero_eng->unk10.z = d * D_80068BD4[a].unk2 >> 12;
+        h->hero_eng->unk10.x = d * TrigTable[(a - 0x400) & 0xFFF].unk2 >> 12;
+        h->hero_eng->unk10.z = d * TrigTable[a].unk2 >> 12;
         h->hero_move->forward_angle += SpinAngle;
         h->hero_move->forward_angle &= 0xFFF;
     }
@@ -502,8 +502,8 @@ void SpinTurnArena(void) {
         a += SpinAngle;
         a &= 0xFFF;
         f->angle = a;
-        e->unk10.x = d * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
-        e->unk10.z = d * D_80068BD4[a].unk2 >> 12;
+        e->unk10.x = d * TrigTable[(a - 0x400) & 0xFFF].unk2 >> 12;
+        e->unk10.z = d * TrigTable[a].unk2 >> 12;
         e->unk1E = (e->unk1E + SpinAngle) & 0xFFF;
         e->unk5E = 1;
     }
@@ -528,14 +528,14 @@ s32 SpinRankHeroes(void) {
     s32 m;
 
     j = 3;
-    p = D_8005A614 + j;
+    p = GameInfo + j;
     do {
         p[0xA7] = j;
         j--;
         p--;
     } while (j >= 0);
     i = 0;
-    g = (SpinGame *)D_8005A614;
+    g = (SpinGame *)GameInfo;
     h = Heroes;
     while (1) {
         if (!(i < 4)) break;
@@ -559,7 +559,7 @@ s32 SpinRankHeroes(void) {
         }
         i++;
     }
-    gt = (SpinGame *)D_8005A614;
+    gt = (SpinGame *)GameInfo;
     if (gt->teams != 0) {
         team0 = gt->team[0];
         mate = Heroes[team0].hero_teammate;
@@ -660,7 +660,7 @@ void SpinChooseWinner(s32 arg0, u16 arg1) {
         return;
     }
     found = SpinRankHeroes();
-    g = (SpinGame *)D_8005A614;
+    g = (SpinGame *)GameInfo;
     if ((g->flags & 0xE0) && found != 0) {
         if (g->teams != 0) {
             if (found == 1) {
@@ -672,7 +672,7 @@ void SpinChooseWinner(s32 arg0, u16 arg1) {
         return;
     }
 decide:
-    game = (SpinGame *)D_8005A614;
+    game = (SpinGame *)GameInfo;
     if (game->teams != 0) {
         InitBigScore();
         if (SpinBestScore == SpinBestHero) {
@@ -749,7 +749,7 @@ void SpinDropMaster(void) {
     s32 max;
     s32 d;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         return;
     }
     if (SpinBalloonTimer != 0) {
@@ -840,18 +840,18 @@ void SpinCountObjects(void) {
         z1 = 9 - ((e->unk10.z + 0x80) >> 8);
         if ((u32)x0 < 20) {
             if ((u32)z0 < 20) {
-                D_8009D90C[z0 * 20 + x0].unk0 |= t;
+                ArenaGrid[z0 * 20 + x0].unk0 |= t;
             }
             if ((u32)z1 < 20) {
-                D_8009D90C[z1 * 20 + x0].unk0 |= t;
+                ArenaGrid[z1 * 20 + x0].unk0 |= t;
             }
         }
         if ((u32)x1 < 20) {
             if ((u32)z0 < 20) {
-                D_8009D90C[z0 * 20 + x1].unk0 |= t;
+                ArenaGrid[z0 * 20 + x1].unk0 |= t;
             }
             if ((u32)z1 < 20) {
-                D_8009D90C[z1 * 20 + x1].unk0 |= t;
+                ArenaGrid[z1 * 20 + x1].unk0 |= t;
             }
         }
         if ((u16)(f->kind - 1) < 12) {
@@ -903,8 +903,8 @@ void SpinDropObjects(u16 count, s16 arg1) {
             if (kind >= 2) {
                 continue;
             }
-            if (((SpinGame *)D_8005A614)->cpu[idx] == 0
-                && (n = D_8009D87C[idx][0], n++, (u32)Clock_Time >> 8 < 0x120)) {
+            if (((SpinGame *)GameInfo)->cpu[idx] == 0
+                && (n = AiPlayerSkill[idx][0], n++, (u32)Clock_Time >> 8 < 0x120)) {
                 if (kind == 0) {
                     r = (u32)Random(n) < 9;
                 } else {
@@ -942,7 +942,7 @@ SpinPair *SpinFindDropPoint(u16 *head) {
     x = (p->x >> 8) + 10;
     z = 9 - (p->y >> 8);
     do {
-        while (D_8009D90C[z * 20 + x].unk0 != 0) {
+        while (ArenaGrid[z * 20 + x].unk0 != 0) {
             if (i == *head) {
                 goto fail;
             }
@@ -955,7 +955,7 @@ SpinPair *SpinFindDropPoint(u16 *head) {
         n = 0;
         for (a = x - 3; a < x + 3; a++) {
             for (b = z - 3; b < z + 3; b++) {
-                if ((u32)a < 20 && b >= 0 && b < 20 && D_8009D90C[b * 20 + a].unk0 != 0) {
+                if ((u32)a < 20 && b >= 0 && b < 20 && ArenaGrid[b * 20 + a].unk0 != 0) {
                     n++;
                 }
             }
@@ -992,8 +992,8 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
   SpinFux *new_var;
   s32 z;
   u16 mask;
-  x = (b * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
-  z = (b * D_80068BD4[a & 0xFFF].unk2) >> 12;
+  x = (b * TrigTable[(a - 0x400) & 0xFFF].unk2) >> 12;
+  z = (b * TrigTable[a & 0xFFF].unk2) >> 12;
   nas = CreateNAS(x, World_floor_level, z, 0x1801, 0x11);
   if (nas != 0)
   {
@@ -1206,9 +1206,9 @@ void PlotHazardType(NAS *nas) {
         eng->unk20 = 0;
         owner = fux->owner;
         if (owner != -1) {
-            a = D_8009D87C[owner][0];
+            a = AiPlayerSkill[owner][0];
             b = 0x20 - a;
-            if (D_8005A614[owner + 0x5C] != 0) {
+            if (GameInfo[owner + 0x5C] != 0) {
                 w = a;
                 o = b;
             } else {
@@ -1344,8 +1344,8 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
     s32 z;
     s32 r;
 
-    x = b * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
-    z = b * D_80068BD4[a & 0xFFF].unk2 >> 12;
+    x = b * TrigTable[(a - 0x400) & 0xFFF].unk2 >> 12;
+    z = b * TrigTable[a & 0xFFF].unk2 >> 12;
     r = Random(0x80);
     y = World_floor_level - 0x600;
     nas = CreateNAS(x, y - r, z, 0x1802, 0x11);
@@ -1463,7 +1463,7 @@ void PlotBalloon(NAS *nas) {
                     if (owner != -1 && owner < 4) {
                         if (SpinBalloonTimer != 0) {
                             if (SpinBalloonOwner == owner) {
-                                if (D_8005A646 & 0x40) {
+                                if (GameLevelFlags & 0x40) {
                                     Heroes[uo & 2].hero_score--;
                                 } else {
                                     Heroes[owner].hero_score++;
@@ -1482,7 +1482,7 @@ void PlotBalloon(NAS *nas) {
                             goto sfx;
                         }
                         if (fux->state == owner) {
-                            if (D_8005A646 & 0x40) {
+                            if (GameLevelFlags & 0x40) {
                                 Heroes[uo & 2].hero_score--;
                             } else {
                                 Heroes[owner].hero_score++;
@@ -1545,7 +1545,7 @@ void PlotBalloon(NAS *nas) {
                 SPIN_CHECK_POP(fux);
                 break;
             }
-            if (D_8005A644 & 0x801) {
+            if (GameExitFlags & 0x801) {
                 fux->owner = -1;
                 fux->hit |= 8;
             }
@@ -1553,12 +1553,12 @@ void PlotBalloon(NAS *nas) {
             mot->Zvel = 4;
             a &= 0xFFF;
             mot->Za = a;
-            eng->unk10.x -= (mot->Xvel * D_80068BD4[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
-            eng->unk10.z -= (mot->Xvel * D_80068BD4[mot->Xa & 0xFFF].unk2) >> 12;
+            eng->unk10.x -= (mot->Xvel * TrigTable[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+            eng->unk10.z -= (mot->Xvel * TrigTable[mot->Xa & 0xFFF].unk2) >> 12;
             SPIN_BOUNCE(eng, mot);
             SpinBalloonCollide(eng, mot, fux);
-            eng->unk10.x -= (mot->Zvel * D_80068BD4[(mot->Za - 0x400) & 0xFFF].unk2) >> 12;
-            eng->unk10.z -= (mot->Zvel * D_80068BD4[mot->Za & 0xFFF].unk2) >> 12;
+            eng->unk10.x -= (mot->Zvel * TrigTable[(mot->Za - 0x400) & 0xFFF].unk2) >> 12;
+            eng->unk10.z -= (mot->Zvel * TrigTable[mot->Za & 0xFFF].unk2) >> 12;
         }
         if ((u16)fux->state < 4) {
             t = SpinBalloonTimer;
@@ -1579,8 +1579,8 @@ void PlotBalloon(NAS *nas) {
                 eng->sub->unk74 = SpinBalloonModels[fux->state];
             }
         }
-        a = fux->angle + D_8004E0D8 * 16;
-        eng->sub->unk08 = (D_80068BD4[(a * 4 - 0x400) & 0xFFF].unk2 + D_80068BD4[a & 0xFFF].unk2) >> 6;
+        a = fux->angle + GameFrameCount * 16;
+        eng->sub->unk08 = (TrigTable[(a * 4 - 0x400) & 0xFFF].unk2 + TrigTable[a & 0xFFF].unk2) >> 6;
         SPIN_FLOAT(eng, g, y, s);
     }
     SPIN_SHADOW(eng, shadow);
@@ -1603,12 +1603,12 @@ void SpinScoreBalloon(SpinFux *arg0) {
     n = D_8005AA24;
     idx = arg0->owner;
     if (idx != -1) {
-        a = D_8009D87C[idx][0];
+        a = AiPlayerSkill[idx][0];
         p = SpinBalloonWeights;
         b = 0x20 - a;
         a = p[a];
         b = p[b];
-        if (D_8005A614[idx + 0x5C] != 0) {
+        if (GameInfo[idx + 0x5C] != 0) {
             w0 = a;
             w1 = a >> 1;
             w2 = b;
@@ -1777,8 +1777,8 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
                     r = csqrt(d);
                     ang = get_angle(dx, dz) & 0xFFF;
                     d = r >> 9;
-                    eng->unk10.x += (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                    eng->unk10.z += (d * D_80068BD4[ang].unk2) >> 12;
+                    eng->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->unk10.z += (d * TrigTable[ang].unk2) >> 12;
                     if (d < 0x280) {
                         t = eng->unk10.y - 0x200;
                         dy = t - h->hero_powerup->unk10.y;
@@ -1791,7 +1791,7 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
         next:
             i++;
         } while (i < 4);
-        it = D_8005AA2C;
+        it = HeadOfSolids;
         while (it != NULL) {
             if (it->Class & 0x200) {
                 other = it->Engine;
@@ -1809,9 +1809,9 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
                                 if (d < 0x100) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     d = 0xFF - d;
-                                    eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
                                     hit = 1;
-                                    eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                    eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                                 } else if (d < 0x400) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     mot->Zvel = (0x400 - d) >> 6;
@@ -1879,7 +1879,7 @@ s32 SpinHitTest(x, y, z, size, skip, mask)
             }
         }
     }
-    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+    for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
         if (!(nas->Class & 0x200)) {
             continue;
         }
@@ -1949,7 +1949,7 @@ void Spin_HeroBot(s32 arg0) {
     if (SPIN_GAME->flags10 & 0x04000000) {
         return;
     }
-    lvl = D_8009D87C[arg0][0];
+    lvl = AiPlayerSkill[arg0][0];
     inv = 0x21 - lvl;
     ai = Heroes[arg0].hero_ai;
     if (ai->AIinitial_delay != 0) {
@@ -2023,8 +2023,8 @@ void Spin_HeroBot(s32 arg0) {
 
             d = (csqrt(x * x + z * z) + 0x20) >> 6;
             b = (get_angle(x, z) - inv * SpinSpeed) & 0xFFF;
-            x = (d * D_80068BD4[(b - 0x400) & 0xFFF].unk2) >> 12;
-            z = (d * D_80068BD4[b].unk2) >> 12;
+            x = (d * TrigTable[(b - 0x400) & 0xFFF].unk2) >> 12;
+            z = (d * TrigTable[b].unk2) >> 12;
         }
         get_angle(x, z);
         x -= Heroes[arg0].hero_eng->unk10.x;
@@ -2080,7 +2080,7 @@ void Spin_HeroBot(s32 arg0) {
             }
         }
         ai->AIang = ang;
-        ai->AIpad |= D_80051244[(ang >> 9) & 7];
+        ai->AIpad |= DirPadBits[(ang >> 9) & 7];
         break;
     case 6:
         if (ai->AIsleep == 0 && Heroes[arg0].hero_mode == 0) {
@@ -2091,7 +2091,7 @@ void Spin_HeroBot(s32 arg0) {
     case 3:
         if (Heroes[arg0].hero_move->jump_max != 0) {
             ai->AIang = ang;
-            ai->AIpad |= D_80051244[(ang >> 9) & 7];
+            ai->AIpad |= DirPadBits[(ang >> 9) & 7];
             break;
         }
         if (nas != NULL) {
@@ -2113,8 +2113,8 @@ void Spin_HeroBot(s32 arg0) {
                     ai->AIpad |= 0x8000;
                 }
             } else if (p != -1 && (Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
-                if (D_8005A680 == 0 || p != mate) {
-                    if (D_8005A680 != 0 && Heroes[p].hero_object != NULL) {
+                if (GameTeams == 0 || p != mate) {
+                    if (GameTeams != 0 && Heroes[p].hero_object != NULL) {
                         ai->AIpad |= 0x8000;
                     } else if (!(r & 0x10)) {
                         ai->AIpad |= 0x8000;
@@ -2148,12 +2148,12 @@ void Spin_HeroBot(s32 arg0) {
             }
         }
         ai->AIang = ang;
-        ai->AIpad |= D_80051244[(ang >> 9) & 7];
+        ai->AIpad |= DirPadBits[(ang >> 9) & 7];
         break;
     case 2:
         if (Heroes[arg0].hero_move->jump_max != 0) {
             ai->AIang = ang;
-            ai->AIpad |= D_80051244[(ang >> 9) & 7];
+            ai->AIpad |= DirPadBits[(ang >> 9) & 7];
             break;
         }
         if (target != -1) {
@@ -2173,7 +2173,7 @@ void Spin_HeroBot(s32 arg0) {
         if (SpinAlwaysZero(arg0) == 0) {
             p = func_800864CC(arg0, 0x40);
             if (p != target && (Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
-                if (D_8005A680 == 0 || p != mate) {
+                if (GameTeams == 0 || p != mate) {
                     if (Random(3) == 0) {
                         ai->AImode = 1;
                         ai->AIsleep = inv;
@@ -2215,7 +2215,7 @@ void Spin_HeroBot(s32 arg0) {
             }
         }
         ai->AIang = ang2;
-        ai->AIpad |= D_80051244[(ang2 >> 9) & 7];
+        ai->AIpad |= DirPadBits[(ang2 >> 9) & 7];
         break;
     case 13:
         if (ai->AIsleep == 0 && (u32)(Heroes[arg0].hero_mode - 0x34) >= 2) {
@@ -2226,7 +2226,7 @@ void Spin_HeroBot(s32 arg0) {
         } else {
             ai->AIpad |= 0x4000;
             ai->AIang = ang;
-            ai->AIpad |= D_80051244[(ang >> 9) & 7];
+            ai->AIpad |= DirPadBits[(ang >> 9) & 7];
         }
         break;
     default:
@@ -2260,7 +2260,7 @@ void Spin_HeroBot(s32 arg0) {
         }
         break;
     }
-    pad = &D_80051338[arg0];
+    pad = &Pads[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
     *(s32 *)((u8 *)pad + 0x38) = ai->AIang;
 }
@@ -2287,10 +2287,10 @@ void SpinAI_ScanAhead(s32 arg0) {
     rx = eng->unk10.x;
     rz = eng->unk10.z;
     mv = Heroes[arg0].hero_move;
-    dx = D_80068BD4[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
+    dx = TrigTable[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
     ang = mv->forward_angle;
-    c = D_80068BD4[(ang + 0x400) & 0xFFF].unk2;
-    s = D_80068BD4[(ang + 0x800) & 0xFFF].unk2;
+    c = TrigTable[(ang + 0x400) & 0xFFF].unk2;
+    s = TrigTable[(ang + 0x800) & 0xFFF].unk2;
     dz = c * 15 >> 9;
     lx = rx + dx;
     rx = rx - dx;
@@ -2309,7 +2309,7 @@ void SpinAI_ScanAhead(s32 arg0) {
     while ((u32)(lx + 0x7FF) < 0xFFF && lz < 0x800 && lz >= -0x7FF && i < 8) {
         gx = (lx >> 8) + 10;
         gz = 9 - (lz >> 8);
-        v = D_8009D90C[gz * 20 + gx].unk0;
+        v = ArenaGrid[gz * 20 + gx].unk0;
         if ((v & 0xE0) == id) {
             v &= 0x1F;
         }
@@ -2325,7 +2325,7 @@ void SpinAI_ScanAhead(s32 arg0) {
     while ((u32)(rx + 0x7FF) < 0xFFF && rz < 0x800 && rz >= -0x7FF && i < 8) {
         gx = (rx >> 8) + 10;
         gz = 9 - (rz >> 8);
-        v = D_8009D90C[gz * 20 + gx].unk0;
+        v = ArenaGrid[gz * 20 + gx].unk0;
         if ((v & 0xE0) == id) {
             v &= 0x1F;
         }
@@ -2372,7 +2372,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
     bestNas = NULL;
     bestHero = -1;
     bestHeroScore = 0;
-    lvl = D_8009D87C[player][0];
+    lvl = AiPlayerSkill[player][0];
     inv = 0x21 - lvl;
     mate = Heroes[player].hero_teammate;
     he = Heroes[player].hero_eng;
@@ -2482,7 +2482,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
     }
     for (i = 0; i < 4; i++) {
         if (i == player) continue;
-        if (((SpinGame *)D_8005A614)->teams != 0 && i == mate) continue;
+        if (((SpinGame *)GameInfo)->teams != 0 && i == mate) continue;
         if (Heroes[i].hero_status & 0xFA00) continue;
         dx = px - Heroes[i].hero_eng->unk10.x;
         dz = pz - Heroes[i].hero_eng->unk10.z;
@@ -2520,13 +2520,13 @@ s32 SpinAI_PickPlayer(s32 arg0) {
     s32 r;
 
     other = -1;
-    if (D_8005A680 != 0) {
+    if (GameTeams != 0) {
         other = arg0 ^ 1;
     }
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != other && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += D_8009D87C[i][2];
+            sum += AiPlayerSkill[i][2];
         }
     }
     if (sum == 0) {
@@ -2536,7 +2536,7 @@ s32 SpinAI_PickPlayer(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != other && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += D_8009D87C[i][2];
+            sum += AiPlayerSkill[i][2];
             if (r < sum) {
                 return i;
             }
@@ -2549,7 +2549,7 @@ s32 SpinAI_NearestEnemy(s32 arg0) {
     s32 flip = arg0 ^ 1;
     s32 best = 0x7FFFFF;
     u16 i = 0;
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     HeroInfo *base = Heroes;
     HeroInfo *me = base + arg0;
     HeroInfo *h;
@@ -2675,8 +2675,8 @@ s32 SPIN_KeepInBounds(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->unk10.x = limit * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->unk10.z = limit * D_80068BD4[ang & 0xFFF].unk2 >> 12;
+        eng->unk10.x = limit * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->unk10.z = limit * TrigTable[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;
@@ -2697,13 +2697,13 @@ void UpdateSPIN(void) {
 }
 
 void SPINSetUp(void) {
-    D_8005AA70[0] = (s32)InitialiseSPINFirst;
-    D_8005AA70[1] = (s32)InitialiseSPIN;
-    D_8005AA70[2] = (s32)InitialiseSPIN;
-    D_8005AA70[3] = (s32)UpdateSPIN;
-    D_8005AA70[5] = (s32)FirstTriggersSPIN;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
+    LevelSpecs[0] = (s32)InitialiseSPINFirst;
+    LevelSpecs[1] = (s32)InitialiseSPIN;
+    LevelSpecs[2] = (s32)InitialiseSPIN;
+    LevelSpecs[3] = (s32)UpdateSPIN;
+    LevelSpecs[5] = (s32)FirstTriggersSPIN;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
 }
 
 void SpinPreMoveHero(s32 arg0) {
@@ -2722,13 +2722,13 @@ void SpinPreMoveHero(s32 arg0) {
     h = hb + arg0;
     m = h->hero_move;
     m->forward_speed = 0;
-    speed = (D_8009D6F4 + h->hero_name * 3)[1] + (D_8009D87C[arg0][0] >> 2);
+    speed = (D_8009D6F4 + h->hero_name * 3)[1] + (AiPlayerSkill[arg0][0] >> 2);
     (D_8009D6F4 + h->hero_name * 3)[2] = speed;
     if (h->hero_frozen != 0) {
-        ((PadStick *)D_80051338)[arg0].dirHeld2 = 0;
-        ((PadStick *)D_80051338)[arg0].dirPressed = 0;
+        ((PadStick *)Pads)[arg0].dirHeld2 = 0;
+        ((PadStick *)Pads)[arg0].dirPressed = 0;
     }
-    pb = (PadStick *)D_80051338;
+    pb = (PadStick *)Pads;
     pad = pb + arg0;
     if ((pad->flags & 1) || h->hero_ai->AImode != 0) {
         if (pad->dirHeld2 & 0xF0) {
@@ -2869,13 +2869,13 @@ void SetSpinHeroFlip(s32 arg0) {
     e->platform = NULL;
     SetHeroSeq(arg0, 0x2C);
     idx = 0;
-    if (D_8005A614[arg0 + 0x5C] == 0) {
+    if (GameInfo[arg0 + 0x5C] == 0) {
         idx = h->hero_name;
     }
-    h->hero_move->jump_vel = D_8009D6E8.unk10[idx].vel;
-    h->hero_move->jump_max = D_8009D6E8.unk10[idx].max;
-    h->hero_move->jump_acc = D_8009D6E8.unk10[idx].acc;
-    h->hero_move->jump_dec = D_8009D6E8.unk10[idx].dec;
+    h->hero_move->jump_vel = HeroHooks.unk10[idx].vel;
+    h->hero_move->jump_max = HeroHooks.unk10[idx].max;
+    h->hero_move->jump_acc = HeroHooks.unk10[idx].acc;
+    h->hero_move->jump_dec = HeroHooks.unk10[idx].dec;
     h->hero_move->jump_dir = -1;
 }
 
@@ -3006,7 +3006,7 @@ void SetSpinHeroWinner(s32 arg0) {
     func_80085718(arg0, 0);
     SetHeroSeq(arg0, 0xC);
     func_80089FA4(arg0);
-    D_800AD12C = 1;
+    CameraMode = 1;
 }
 
 void SpinHeroWinner(s32 arg0) {
@@ -3107,7 +3107,7 @@ void SpinHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    if (D_8005A644 & 0x800) {
+    if (GameExitFlags & 0x800) {
         EXTengine *e = h->hero_eng;
         s32 v = e->unk2C.x;
         v -= 0x60;
@@ -3122,7 +3122,7 @@ void SpinHeroLose(s32 arg0) {
     }
 }
 
-/* The D_8009D6E8.unk4C hook: claim the first object in reach of player's
+/* The HeroHooks.unk4C hook: claim the first object in reach of player's
  * cylinder that can take mask (within cone of the hero's heading, 0: any).
  * Each arm claims in its own do-while (0); jump2 merges the copies. */
 NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
@@ -3168,7 +3168,7 @@ NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
     top = me->unk10.y + rec->height;
     rad = rec->radius;
     func_80015758((SVECTOR *)rec, &pos);
-    nas = D_8005AA2C;
+    nas = HeadOfSolids;
     self = NULL;
     if (h->hero_object != NULL) {
         self = ((NAS **)h->hero_object)[-1];
@@ -3233,8 +3233,8 @@ NAS *SpinHeroGrabObject(s32 idx, s32 mask) {
     h = &hb[idx];
     he = h->hero_eng;
     ang = Heroes[idx].hero_move->facing_angle;
-    hx = he->unk10.x - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (D_80068BD4[ang & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (TrigTable[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = n->FUX;
         if (fux == NULL) continue;
@@ -3336,7 +3336,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = D_80068BD4;
+                tbl = TrigTable;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -3371,10 +3371,10 @@ s32 SpinHeroKickCollision(s32 arg0) {
                                             eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
                                             hit = 1;
                                             if (self->hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&D_8009D6E8.unk60)(arg0, i);
+                                                (*(void (**)(s32, s32))&HeroHooks.unk60)(arg0, i);
                                             }
                                             if (other[i].hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&D_8009D6E8.unk60)(i, arg0);
+                                                (*(void (**)(s32, s32))&HeroHooks.unk60)(i, arg0);
                                             }
                                         }
                                     }
@@ -3432,7 +3432,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                 i++;
             } while (i < 4);
             own = NULL;
-            n = D_8005AA2C;
+            n = HeadOfSolids;
             if (Heroes[arg0].hero_object != NULL) {
                 own = ((NAS **)Heroes[arg0].hero_object)[-1];
             }
@@ -3471,8 +3471,8 @@ s32 SpinHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * TrigTable[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->unk1C & 8)) {
@@ -3530,7 +3530,7 @@ s32 SpinHeroCarryCollision(s32 idx) {
                 }
                 func_80015758((SVECTOR *)box, &v);
             }
-            nas = D_8005AA2C;
+            nas = HeadOfSolids;
             self = NULL;
             if (Heroes[idx].hero_object != NULL) {
                 self = ((NAS **)Heroes[idx].hero_object)[-1];
@@ -3557,8 +3557,8 @@ s32 SpinHeroCarryCollision(s32 idx) {
                                             if (d < r) {
                                                 ang = get_angle(dx, dz) & 0xFFF;
                                                 d = r - d + 1;
-                                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                                                 hit = 1;
                                                 if (ext->unk1C & 8) {
                                                     ext->unk16 = idx;
@@ -3585,8 +3585,8 @@ SpinFux *SpinHeroObjectNear(s32 hero, u16 mask, s32 r) {
     EXTengine *eng = Heroes[hero].hero_eng;
     s32 cx = eng->unk10.x;
     s32 cz = eng->unk10.z;
-    s32 px = cx - (D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    s32 pz = cz - (D_80068BD4[eng->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    s32 px = cx - (TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    s32 pz = cz - (TrigTable[eng->unk1E & 0xFFF].unk2 * 1024 >> 14);
     s32 bestd;
     s32 lim, dx, dz, d;
     SpinFux *f;
@@ -3676,7 +3676,7 @@ void SpinCreateShadow(s32 arg0) {
 }
 
 s32 SpinHeroTestFlip(s32 arg0) {
-    if (!(D_80051338[arg0].unk54 & 0x4000)) {
+    if (!(Pads[arg0].unk54 & 0x4000)) {
         return 0;
     }
     SetHeroAction(arg0, 0x34);

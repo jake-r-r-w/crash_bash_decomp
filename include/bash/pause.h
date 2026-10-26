@@ -143,7 +143,7 @@ typedef struct {
     s16 unk4;
 } D_8009D87C_t;
 
-extern D_8009D87C_t D_8009D87C[];
+extern D_8009D87C_t AiPlayerSkill[];
 
 /* func_80084E04: harm tables. */
 extern u16 D_8009D3B8[][4];
@@ -159,7 +159,7 @@ extern s32 D_8009BD08;
 extern s32 D_8009BD40;
 extern s32 D_8009BD44;
 extern s32 D_8009BD48;
-/* D_8005A614 as seen by func_800826F8. */
+/* GameInfo as seen by func_800826F8. */
 typedef struct EngineHintView {
     /* 0x00 */ u8 unk0[0x10];
     /* 0x10 */ s32 flags;
@@ -275,12 +275,12 @@ typedef struct {
 
 typedef struct {
     FallParticle *parts; /* 0x0 */
-    POLY_FT4 *prims[2];  /* 0x4: indexed by D_8005B690 & 1 */
+    POLY_FT4 *prims[2];  /* 0x4: indexed by FrameCount & 1 */
     s32 count;           /* 0xC */
 } FallParticles;
 
 
-/* D_8005A614 as seen by func_80080FBC. */
+/* GameInfo as seen by func_80080FBC. */
 typedef struct EngineMsgView {
     /* 0x00 */ u8 unk0[0xC];
     /* 0x0C */ s32 unkC;
@@ -293,7 +293,7 @@ typedef struct EngineMsgView {
     /* 0x32 */ u16 unk32;
     /* 0x34 */ s16 mode;
 } EngineMsgView;
-#define MSGV ((EngineMsgView *)D_8005A614)
+#define MSGV ((EngineMsgView *)GameInfo)
 /* D_8005A604 as seen by func_80080FBC. */
 typedef struct EngineOptView {
     /* 0x00 */ s32 unk0;
@@ -355,7 +355,7 @@ extern s32 D_8009BD34;
 extern s32 D_8009BD38;
 extern s32 D_8009BD3C;
 void func_80081470(s32 arg0);
-/* D_8005A614 as seen by func_80081470. */
+/* GameInfo as seen by func_80081470. */
 typedef struct ScoreView {
     /* 0x00 */ u8 unk0[4];
     /* 0x04 */ s32 unk4;
@@ -374,7 +374,7 @@ typedef struct ScoreView {
     /* 0x126 */ u8 got1[0x21];
     /* 0x147 */ u8 got3[0x21];
 } ScoreView;
-#define SCV ((ScoreView *)D_8005A614)
+#define SCV ((ScoreView *)GameInfo)
 /* Two-digit text fields (tens, units) of the score panel. */
 extern char D_8009AF48[2];
 extern char D_8009AF4C[2];
@@ -400,7 +400,7 @@ typedef struct HudEntry {
     /* 0x10 */ s32 c;
     /* 0x14 */ s32 d;
 } HudEntry;
-/* D_8005A614 as seen by func_800809A0. */
+/* GameInfo as seen by func_800809A0. */
 typedef struct HudGameView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u32 state;
@@ -441,8 +441,8 @@ typedef struct HudEngView {
     /* 0x3C8 */ u8 pad3C8[0x406 - 0x3C8];
     /* 0x406 */ s16 on1;
 } HudEngView;
-#define HUDG ((HudGameView *)D_8005A614)
-/* D_8005A614 as seen by func_80084788. */
+#define HUDG ((HudGameView *)GameInfo)
+/* GameInfo as seen by func_80084788. */
 typedef struct WinnerView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 flags;
@@ -457,9 +457,9 @@ typedef struct WinnerView {
     /* 0x61 */ u8 unk61[0x6C - 0x61];
     /* 0x6C */ s32 teams;
 } WinnerView;
-#define WINV ((WinnerView *)D_8005A614)
+#define WINV ((WinnerView *)GameInfo)
 extern s32 D_8009D758;
-/* D_8005A614 as seen by func_80083E8C. */
+/* GameInfo as seen by func_80083E8C. */
 typedef struct HeroLoopView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 state;
@@ -472,13 +472,13 @@ typedef struct HeroLoopView {
     /* 0x36 */ u8 unk36[0x5C - 0x36];
     /* 0x5C */ u8 out[4];
 } HeroLoopView;
-#define HLV ((HeroLoopView *)D_8005A614)
-#define HPADS ((PadButtons *)D_80051338)
+#define HLV ((HeroLoopView *)GameInfo)
+#define HPADS ((PadButtons *)Pads)
 extern s32 D_8009D75C;
 extern u16 D_8009D760;
 extern u16 D_8009D6E0;
 extern u16 D_8009D524[4];
-/* D_8005A614 as seen by func_8007F314 (the pause menu). */
+/* GameInfo as seen by func_8007F314 (the pause menu). */
 typedef struct PauseView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 state;
@@ -496,7 +496,7 @@ typedef struct PauseView {
     /* 0x6C */ u8 unk6C[0x74 - 0x6C];
     /* 0x74 */ u8 unk74;
 } PauseView;
-#define PSV ((PauseView *)D_8005A614)
+#define PSV ((PauseView *)GameInfo)
 extern u16 D_8009AF38[];
 #define HUDBOX ((HudBox *)D_8009BCE0)
 #define HUDENG ((HudEngView *)PanelTab)
@@ -520,7 +520,7 @@ extern s32 D_8009D758;
 extern s32 D_8009D75C;
 extern u16 D_8009D3A4[];
 
-/* D_8005A614 as seen by func_80083708. */
+/* GameInfo as seen by func_80083708. */
 typedef struct HeroSetupView {
     /* 0x00 */ u8 unk0[0x10];
     /* 0x10 */ s32 unk10;
@@ -530,7 +530,7 @@ typedef struct HeroSetupView {
     /* 0x50 */ u8 unk50[8];
     /* 0x58 */ s8 unk58[8];
 } HeroSetupView;
-#define HSV ((HeroSetupView *)D_8005A614)
+#define HSV ((HeroSetupView *)GameInfo)
 
 
 /* A particle func_8008C824 scatters (0x18 bytes). */

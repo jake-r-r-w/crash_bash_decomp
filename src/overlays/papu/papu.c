@@ -381,21 +381,21 @@ void InitialisePAPUFirst(void) {
     u8 *v;
     void **p;
 
-    D_8009D6E8.unk68 = PAPU_KeepInBounds;
-    D_8009D6E8.unk4C = PapuHero2ObjectCollision;
-    D_8009D6E8.unk50 = PapuHeroGrabObject;
-    D_8009D6E8.unk54 = PapuHeroKickCollision;
-    D_8009D6E8.unk58 = PapuHeroCarryCollision;
+    HeroHooks.unk68 = PAPU_KeepInBounds;
+    HeroHooks.unk4C = PapuHero2ObjectCollision;
+    HeroHooks.unk50 = PapuHeroGrabObject;
+    HeroHooks.unk54 = PapuHeroKickCollision;
+    HeroHooks.unk58 = PapuHeroCarryCollision;
     PapuInitCrateHooks();
     D_8005AA94 = GetPapuContour;
-    D_8009D6E8.unk28 = PapuHeroCheckPit;
-    g = (EngineGameView *)D_8005A614;
+    HeroHooks.unk28 = PapuHeroCheckPit;
+    g = (EngineGameView *)GameInfo;
     g->flags |= 0x900;
-    if (*(s32 *)(D_8005A614 + 0x6C) == 0) {
-        D_8005A614[0x51] = 9;
+    if (*(s32 *)(GameInfo + 0x6C) == 0) {
+        GameInfo[0x51] = 9;
     }
-    D_8005A614[0x52] = 9;
-    D_8005A614[0x53] = 9;
+    GameInfo[0x52] = 9;
+    GameInfo[0x53] = 9;
     D_8009E0D8 = 0x15;
     D_8009E0DA = 0x16;
     D_8009E0DC = 0x17;
@@ -403,8 +403,8 @@ void InitialisePAPUFirst(void) {
     D_8009E0E0 = 0x19;
     D_8009E0E2 = 0x1A;
     D_8009E0E4 = 0x1B;
-    p = &D_8009D8FC;
-    if (*(s32 *)(D_8005A614 + 0x6C) != 0) {
+    p = &AiSkillTable;
+    if (*(s32 *)(GameInfo + 0x6C) != 0) {
         v = PapuAiSkillAlt;
     } else {
         v = PapuAiSkill;
@@ -439,7 +439,7 @@ void InitialisePAPU(void) {
         move->facing_angle = angle;
         move->forward_angle = angle;
         Heroes[i].hero_ctrl |= 8;
-        if (D_8005A614[0x51] == 9) {
+        if (GameInfo[0x51] == 9) {
             Heroes[i].hero_shadow->flags = 0;
         }
     }
@@ -532,7 +532,7 @@ void PapuCrateMaster(void) {
     s32 a1;
     s32 y;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         return;
     }
     if (PapuCrateTimer == 0) {
@@ -565,7 +565,7 @@ void PapuCrateMaster(void) {
         a1 >>= 8;
         a1 += 10;
         y = 9 - (p->y >> 8);
-        if (D_8009D90C[y * 20 + a1].unk0 < 16) {
+        if (ArenaGrid[y * 20 + a1].unk0 < 16) {
             CreateNAS(p->x, -0x800, p->y, 0x20C, 0x11);
             PapuPickupActive -= 1;
             PapuPickupDelay = Random(4) + 2;
@@ -643,7 +643,7 @@ PapuMsg *PapuFindDropPoint(u16 *arg0) {
     x = (cell->x >> 8) + 10;
     z = 9 - (cell->y >> 8);
     do {
-        while (D_8009D90C[z * 20 + x].unk0 != 0) {
+        while (ArenaGrid[z * 20 + x].unk0 != 0) {
             if (i == *arg0) {
                 return NULL;
             }
@@ -670,26 +670,26 @@ PapuMsg *PapuFindDropPoint(u16 *arg0) {
         if (z < 19) {
             zhi = z + 1;
         }
-        n = D_8009D90C[zlo * 20 + xlo].unk0 != 0;
-        if (D_8009D90C[zlo * 20 + x].unk0 != 0) {
+        n = ArenaGrid[zlo * 20 + xlo].unk0 != 0;
+        if (ArenaGrid[zlo * 20 + x].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[zlo * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[zlo * 20 + xhi].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[z * 20 + xlo].unk0 != 0) {
+        if (ArenaGrid[z * 20 + xlo].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[z * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[z * 20 + xhi].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[zhi * 20 + xlo].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + xlo].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[zhi * 20 + x].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + x].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[zhi * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + xhi].unk0 != 0) {
             n++;
         }
         if (n == 0) {
@@ -928,7 +928,7 @@ void PlotPapuBoss(NAS *nas) {
         PapuBossCount = 0;
         break;
     case 10:
-        if (!(D_8005A624 & 0x04000000)) {
+        if (!(GamePause & 0x04000000)) {
             PapuBossCount = 0;
         }
         break;
@@ -1438,7 +1438,7 @@ void PlotPapuMinion(NAS *nas)
           fux->unk20 = Random(level * 3 + 0x96) + 0xB4;
         }
         pick = 0;
-        if (*D_8005A680 != 0) {
+        if (*GameTeams != 0) {
           pick = Random(2);
           if (Heroes[pick].hero_status & 0xFA00) {
             pick = Heroes[pick].hero_teammate;
@@ -1574,11 +1574,11 @@ void PlotPapuMinion(NAS *nas)
       eng->unk1E = move->angle;
     }
   }
-  eng->unk10.x -= (move->speed * D_80068BD4[(move->angle - 0x400) & 0xFFF].unk2) >> 12;
-  eng->unk10.z -= (move->speed * D_80068BD4[(u16)move->angle & 0xFFF].unk2) >> 12;
+  eng->unk10.x -= (move->speed * TrigTable[(move->angle - 0x400) & 0xFFF].unk2) >> 12;
+  eng->unk10.z -= (move->speed * TrigTable[(u16)move->angle & 0xFFF].unk2) >> 12;
   if (move->push != 0) {
-    eng->unk10.x -= (move->push * D_80068BD4[(move->push_angle - 0x400) & 0xFFF].unk2) >> 12;
-    eng->unk10.z -= (move->push * D_80068BD4[(u16)move->push_angle & 0xFFF].unk2) >> 12;
+    eng->unk10.x -= (move->push * TrigTable[(move->push_angle - 0x400) & 0xFFF].unk2) >> 12;
+    eng->unk10.z -= (move->push * TrigTable[(u16)move->push_angle & 0xFFF].unk2) >> 12;
     move->push -= 4;
     if ((s16)move->push < 0) {
       move->push = 0;
@@ -1669,8 +1669,8 @@ void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
     Slot40 *s = &b[arg0];
     u8 *o = (u8*)s->pad4[0];
     u8 *a = (u8*)s->pad4[4];
-    s32 px = *(s32*)(o + 0x10) - (D_80068BD4[(*(s16*)(a + 0x16) - 0x400) & 0xFFF].unk2 * 256 >> 12);
-    s32 pz = *(s32*)(o + 0x18) - (D_80068BD4[*(u16*)(a + 0x16) & 0xFFF].unk2 * 256 >> 12);
+    s32 px = *(s32*)(o + 0x10) - (TrigTable[(*(s16*)(a + 0x16) - 0x400) & 0xFFF].unk2 * 256 >> 12);
+    s32 pz = *(s32*)(o + 0x18) - (TrigTable[*(u16*)(a + 0x16) & 0xFFF].unk2 * 256 >> 12);
     Slot40 *q;
 
     if (n != NULL) {
@@ -1831,7 +1831,7 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
         top = eng->unk10.y + new_var->unk2;
         bot = eng->unk10.y + new_var->height;
         func_80015758((SVECTOR *)new_var, &pos);
-        for (n = D_8005AA2C; n != NULL; n = n->Solid.Child) {
+        for (n = HeadOfSolids; n != NULL; n = n->Solid.Child) {
             if (!(n->Class & 0x200)) {
                 continue;
             }
@@ -1888,7 +1888,7 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
     top = eng->unk10.y + box->unk2;
     bot = eng->unk10.y + box->height;
     func_80015758((SVECTOR *)box, &pos);
-    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+    for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
         if (nas->Class & 0x200) {
             e = nas->Engine;
             if (e != NULL && e != eng) {
@@ -1979,9 +1979,9 @@ s32 PapuMinionKick(u32 idx) {
                                 if (d2 < rr) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     d2 = rr - d2 + 1;
-                                    eng->unk10.x -= d2 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    eng->unk10.x -= d2 * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
                                     hit = 1;
-                                    eng->unk10.z -= d2 * D_80068BD4[ang].unk2 >> 12;
+                                    eng->unk10.z -= d2 * TrigTable[ang].unk2 >> 12;
                                 }
                             }
                         }
@@ -1990,7 +1990,7 @@ s32 PapuMinionKick(u32 idx) {
             }
         }
     }
-    nas = D_8005AA2C;
+    nas = HeadOfSolids;
     p = (s32 *)PapuMinionSlots[idx].pad4[6];
     slot = &PapuMinionSlots[idx];
     self = NULL;
@@ -2024,8 +2024,8 @@ s32 PapuMinionKick(u32 idx) {
                                 }
                                 d2 = rr - d2 + 1;
                                 if (can) {
-                                    eng->unk10.x -= d2 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
-                                    eng->unk10.z -= d2 * D_80068BD4[ang & 0xFFF].unk2 >> 12;
+                                    eng->unk10.x -= d2 * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    eng->unk10.z -= d2 * TrigTable[ang & 0xFFF].unk2 >> 12;
                                 }
                                 obj = FindExtension(nas, 0x1000);
                                 if (obj != NULL && (obj->can_do & 8)) {
@@ -2052,7 +2052,7 @@ void PapuInitTiles(void) {
     s32 dx;
     s32 dz;
 
-    obj = *(PapuSceneObj **)((u8 *)D_80058AD0 + 0x1C);
+    obj = *(PapuSceneObj **)((u8 *)MapScene + 0x1C);
     func_80018430(0xC8);
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
@@ -2216,7 +2216,7 @@ void PapuUpdateFloor(void) {
                     w = PapuFloorState[a];
                     tile->unk8 = PapuTiles[j][i].unk12;
                     k = ((u & 0xFFF) - 0x400) & 0xFFF;
-                    tile->unk8 += (w * D_80068BD4[k].unk2) >> 12;
+                    tile->unk8 += (w * TrigTable[k].unk2) >> 12;
                     if (PapuTiles[j][i].unkE != 0) {
                         PapuTiles[j][i].unkA |= 0x100;
                         tile->unk74 = PapuTileModels[PapuTiles[j][i].unkE];
@@ -2366,7 +2366,7 @@ void PapuStopCrates(void) {
 s32 PapuPickTarget(void) {
     s32 a;
 
-    if (*D_8005A680 != 0) {
+    if (*GameTeams != 0) {
         a = Random(2);
         if (Heroes[a].hero_status & 0xFA00) {
             a = Heroes[a].hero_teammate;
@@ -2449,7 +2449,7 @@ void InitPapuColumn(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = *(GfxModel **)D_80058AD0;
+        e->sub->unk6C = *(GfxModel **)MapScene;
         e->sub->unk74 = 0x200C;
         e->unk5D = 0;
         e->unk5C = 1;
@@ -2480,7 +2480,7 @@ void PapuMarkHoles(void) {
     for (j = 2; j < 18; j++) {
         for (i = 2; i < 18; i++) {
             if (PapuTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
-                D_8009D90C[i * 20 + j].unk0 = 0xFF;
+                ArenaGrid[i * 20 + j].unk0 = 0xFF;
             }
         }
     }
@@ -2565,14 +2565,14 @@ void UpdatePAPU(void) {
 }
 
 void PAPUSetUp(void) {
-    D_8005AA70[0] = (s32)InitialisePAPUFirst;
-    D_8005AA70[1] = (s32)InitialisePAPU;
-    D_8005AA70[2] = (s32)InitialisePAPU;
-    D_8005AA70[3] = (s32)UpdatePAPU;
-    D_8005AA70[5] = (s32)FirstTriggersPAPU;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
-    D_8005AA70[9] = (s32)GetPapuContour;
+    LevelSpecs[0] = (s32)InitialisePAPUFirst;
+    LevelSpecs[1] = (s32)InitialisePAPU;
+    LevelSpecs[2] = (s32)InitialisePAPU;
+    LevelSpecs[3] = (s32)UpdatePAPU;
+    LevelSpecs[5] = (s32)FirstTriggersPAPU;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
+    LevelSpecs[9] = (s32)GetPapuContour;
 }
 
 void PapuInitCrateHooks(void) {
@@ -2602,8 +2602,8 @@ void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {
         } while (v != 0);
     }
     x = a->x;
-    mx = sum * D_80068BD4[(a->ang - 0x400) & 0xFFF].unk2;
-    mz = sum * D_80068BD4[(u16)a->ang & 0xFFF].unk2;
+    mx = sum * TrigTable[(a->ang - 0x400) & 0xFFF].unk2;
+    mz = sum * TrigTable[(u16)a->ang & 0xFFF].unk2;
     z = a->z;
     x -= mx >> 12;
     z -= mz >> 12;
@@ -2613,7 +2613,7 @@ void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {
     z += 0x80;
     b->unk16 = x;
     b->unk2A = z;
-    b->dir = D_80051244[((u16)a->ang >> 7) & 0x1C];
+    b->dir = DirPadBits[((u16)a->ang >> 7) & 0x1C];
     x -= a->x;
     z -= a->z;
     sum = csqrt(x * x + z * z) >> 6;
@@ -2677,7 +2677,7 @@ void PapuCountObjects(void) {
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
             if (z < 0) z = 0;
-            D_8009D90C[z * 20 + x].unk0 = t;
+            ArenaGrid[z * 20 + x].unk0 = t;
             if ((u16)(f->type - 1) < 12) {
                 D_8009E46C[0]++;
                 D_8009E46C[f->type]++;
@@ -2696,7 +2696,7 @@ void PapuCountObjects(void) {
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
             if (z < 0) z = 0;
-            D_8009D90C[z * 20 + x].unk0 = c;
+            ArenaGrid[z * 20 + x].unk0 = c;
         }
         }
         n = n->Object.Child;
@@ -2758,7 +2758,7 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 if (x < 0) x = 0;
                 if (z >= 20) z = 19;
                 if (z < 0) z = 0;
-                D_8009D90C[z * 20 + x].unk0 = t;
+                ArenaGrid[z * 20 + x].unk0 = t;
             }
         }
         if (nas->Failure != 0) {
@@ -2784,7 +2784,7 @@ void InitPACrate(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             do {
                 again = 0;
-                nas = D_8005AA2C;
+                nas = HeadOfSolids;
                 eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
                 eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
                 while (nas != NULL) {
@@ -2838,7 +2838,7 @@ void InitPACrate(NAS *arg0) {
             if (z < 0) {
                 z = 0;
             }
-            D_8009D90C[z * 20 + x].unk0 = obj->unk14;
+            ArenaGrid[z * 20 + x].unk0 = obj->unk14;
             AddMotion(arg0);
             func_80026AD8((u8 *)arg0);
             func_8002694C(arg0, 0x300);

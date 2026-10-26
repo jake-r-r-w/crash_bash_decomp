@@ -70,16 +70,16 @@ void BonkPreMoveHero(s32 arg0) {
     m = Heroes[arg0].hero_move;
     m->forward_speed = 0;
     if (Heroes[arg0].hero_frozen != 0) {
-        ((BonkPadButtons *)D_80051338)[arg0].unk50 &= 0x8000;
+        ((BonkPadButtons *)Pads)[arg0].unk50 &= 0x8000;
     }
-    if ((((BonkPadButtons *)D_80051338)[arg0].unk0 & 1) || D_8005A614[arg0 + 0x5C] != 0) {
-        if (((BonkPadButtons *)D_80051338)[arg0].unk50 & 0xF0) {
-            m->forward_angle = ((BonkPadButtons *)D_80051338)[arg0].unk38 + 0x800;
+    if ((((BonkPadButtons *)Pads)[arg0].unk0 & 1) || GameInfo[arg0 + 0x5C] != 0) {
+        if (((BonkPadButtons *)Pads)[arg0].unk50 & 0xF0) {
+            m->forward_angle = ((BonkPadButtons *)Pads)[arg0].unk38 + 0x800;
             if (m->velocity_enable != 0) {
                 if (BonkSlots[arg0].f8 == 0) {
-                    m->forward_speed = D_8005A614[arg0 + 0x5C] != 0 ? BonkSteerB[BonkSkill] : 0x50;
+                    m->forward_speed = GameInfo[arg0 + 0x5C] != 0 ? BonkSteerB[BonkSkill] : 0x50;
                 } else {
-                    m->forward_speed = D_8005A614[arg0 + 0x5C] != 0 ? BonkSteerA[BonkSkill] : 0x2D;
+                    m->forward_speed = GameInfo[arg0 + 0x5C] != 0 ? BonkSteerA[BonkSkill] : 0x2D;
                 }
             }
         } else {
@@ -123,7 +123,7 @@ void BonkHeroIdle(s32 arg0) {
                 h->hero_move->forward_angle = 0;
                 h->hero_move->facing_angle = 0;
             }
-            D_800AD12C = 1;
+            CameraMode = 1;
         }
         func_800871E4(arg0);
     }
@@ -202,7 +202,7 @@ void BonkHeroBackswing(s32 arg0) {
                 get_angle(h->hero_eng->unk10.x - p->x, h->hero_eng->unk10.z - p->z);
         }
         if (func_8008502C(arg0) == 8) {
-            if (((BonkPadButtons *)D_80051338)[arg0].unk50 & 0x8000) {
+            if (((BonkPadButtons *)Pads)[arg0].unk50 & 0x8000) {
                 SetHeroAction(arg0, 0x44);
             } else {
                 SetHeroAction(arg0, 0x45);
@@ -228,7 +228,7 @@ void BonkHeroExtBackswing(s32 arg0) {
                 return;
             }
         }
-        if (!(((BonkPadButtons *)D_80051338)[arg0].unk50 & 0x8000)) {
+        if (!(((BonkPadButtons *)Pads)[arg0].unk50 & 0x8000)) {
             SetHeroAction(arg0, 0x45);
             BonkSlots[arg0].f4 = 0;
         }
@@ -251,7 +251,7 @@ void BonkHeroSwing(s32 arg0) {
         }
         if (act == 8) {
             if (h->hero_last_mode == 0x44 || BonkSlots[arg0].f8 == 1 ||
-                (D_8005A614[arg0 + 0x5C] != 0 && (((D5A614View *)D_8005A614)->flags & 0x80))) {
+                (GameInfo[arg0 + 0x5C] != 0 && (((D5A614View *)GameInfo)->flags & 0x80))) {
                 BonkSpawnShockwave(arg0);
             }
             t = (BonkTgt2 *)BonkSlots[arg0].f0;
@@ -355,7 +355,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = D_80068BD4;
+                tbl = TrigTable;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -390,10 +390,10 @@ s32 BonkHeroKickCollision(s32 arg0) {
                                             eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
                                             hit = 1;
                                             if (self->hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&D_8009D6E8.pad60)(arg0, i);
+                                                (*(void (**)(s32, s32))&HeroHooks.pad60)(arg0, i);
                                             }
                                             if (other[i].hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&D_8009D6E8.pad60)(i, arg0);
+                                                (*(void (**)(s32, s32))&HeroHooks.pad60)(i, arg0);
                                             }
                                         }
                                     }
@@ -451,7 +451,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                 i++;
             } while (i < 4);
             own = NULL;
-            n = D_8005AA2C;
+            n = HeadOfSolids;
             if (Heroes[arg0].hero_object != NULL) {
                 own = ((NAS **)Heroes[arg0].hero_object)[-1];
             }
@@ -490,8 +490,8 @@ s32 BonkHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * TrigTable[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->unk1C & 8)) {
@@ -574,7 +574,7 @@ void BonkHeroWinner(s32 idx) {
     }
     func_8008502C(idx);
     if (func_8008A200(idx) != 0) {
-        g = (D5A614View *)D_8005A614;
+        g = (D5A614View *)GameInfo;
         if (g->unk4 & 0x800) {
             g->unk30 = g->unk30 | 0x201;
         } else {
@@ -600,7 +600,7 @@ void SetBonkHeroWinner(s32 arg0) {
     SetHeroSeq(arg0, 0x39);
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 2;
-    D_800AD12C = 1;
+    CameraMode = 1;
 }
 
 s32 BonkHeroTestWin(s32 arg0) {
@@ -695,7 +695,7 @@ s32 BonkHeroToIdle(s32 arg0) {
 }
 
 s32 BonkHeroTestSwing(s32 arg0) {
-    if ((((BonkPadButtons *)D_80051338)[arg0].unk50 & 0x8000) && Heroes[arg0].hero_mode != 0x43) {
+    if ((((BonkPadButtons *)Pads)[arg0].unk50 & 0x8000) && Heroes[arg0].hero_mode != 0x43) {
         SetHeroAction(arg0, 0x43);
         return 1;
     }
@@ -732,8 +732,8 @@ s32 BonkKeepInBoundsB(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->unk10.x = limit * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->unk10.z = limit * D_80068BD4[ang & 0xFFF].unk2 >> 12;
+        eng->unk10.x = limit * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->unk10.z = limit * TrigTable[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;
@@ -753,8 +753,8 @@ s32 BONK_KeepInBounds(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->unk10.x = limit * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->unk10.z = limit * D_80068BD4[ang & 0xFFF].unk2 >> 12;
+        eng->unk10.x = limit * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->unk10.z = limit * TrigTable[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;

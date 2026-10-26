@@ -245,7 +245,7 @@ void func_80023158(s32 arg0) {
 
     size = (arg0 + 3) & ~3;
     D_8006EA04 = size;
-    res = func_80011654(size, &D_8004E0F0);
+    res = func_80011654(size, &MainHeap);
     *pb = (s32)res;
     if (res != NULL) {
         base = (s32 *)res;
@@ -475,20 +475,20 @@ static inline ArenaDef *func_800235BC_find(ArenaDef *p, s32 id) {
 void func_800235BC(ArenaDef *arg0) {
     ArenaDef *e;
 
-    D_8005AA70[0] = 0;
-    D_8005AA70[1] = 0;
-    D_8005AA70[2] = 0;
-    D_8005AA70[3] = 0;
-    D_8005AA70[4] = 0;
-    D_8005AA70[5] = 0;
-    D_8005AA70[6] = 0;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
-    D_8005AA70[9] = 0;
-    D_8005AA70[10] = 0;
-    e = func_800235BC_find(arg0, D_8005A648);
+    LevelSpecs[0] = 0;
+    LevelSpecs[1] = 0;
+    LevelSpecs[2] = 0;
+    LevelSpecs[3] = 0;
+    LevelSpecs[4] = 0;
+    LevelSpecs[5] = 0;
+    LevelSpecs[6] = 0;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
+    LevelSpecs[9] = 0;
+    LevelSpecs[10] = 0;
+    e = func_800235BC_find(arg0, GameMode);
     if (e == NULL) {
-        e = func_800235BC_find(arg0, D_8004DDD0[D_8005A648 * 3]);
+        e = func_800235BC_find(arg0, D_8004DDD0[GameMode * 3]);
     }
     if (e != NULL) {
         FirstNas = e->unk4 + 4;
@@ -496,16 +496,16 @@ void func_800235BC(ArenaDef *arg0) {
         D_8005AA50 = e->unk6 << 10;
         D_8005AA54 = e->unk8;
         D_8005A5E4 = e->unk10;
-        ((D5A614View *)D_8005A614)->unk0 = e->unk14;
+        ((D5A614View *)GameInfo)->unk0 = e->unk14;
         D_8005A5E0 = e->unkC;
-        if (((D5A614View *)D_8005A614)->flags & 0x80) {
-            ((D5A614View *)D_8005A614)->unk8 = ((LevelInfo *)D_8004DDD0)[((D5A614View *)D_8005A614)->mode].unk4;
+        if (((D5A614View *)GameInfo)->flags & 0x80) {
+            ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)D_8004DDD0)[((D5A614View *)GameInfo)->mode].unk4;
         } else {
-            ((D5A614View *)D_8005A614)->unk8 = ((LevelInfo *)D_8004DDD0)[((D5A614View *)D_8005A614)->mode].unk2;
+            ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)D_8004DDD0)[((D5A614View *)GameInfo)->mode].unk2;
         }
     }
     if (e == NULL || D_8005A5E0 == NULL) {
-        printf(D_8004C8D0, D_8005A648, ((LevelInfo *)D_8004DDD0)[D_8005A648].world);
+        printf(D_8004C8D0, GameMode, ((LevelInfo *)D_8004DDD0)[GameMode].world);
     }
 }
 
@@ -542,34 +542,34 @@ void SetNasDefaults(void) {
     NASTemplate.UserInfo.flags = 0;
     NASTemplate.UserInfo.user2 = 0;
     NASTemplate.UserInfo.user1 = 0;
-    D_8005A830.flags = 0x01008000;
-    D_8005A830.unk0C = 0;
-    D_8005A830.unk08 = 0;
-    D_8005A830.unk04 = 0;
-    D_8005A830.unk52 = 1;
-    D_8005A830.unk14 = 0;
-    D_8005A830.unk12 = 0;
-    D_8005A830.unk10 = 0;
-    D_8005A830.unk16 = 0;
-    D_8005A830.unk20.z = 0x1000;
-    D_8005A830.unk20.y = 0x1000;
-    D_8005A830.unk20.x = 0x1000;
-    D_8005A830.unk51 = 4;
-    D_8005A830.hook = (void (*)(subengine *, s32, u32)) func_80019F1C;
-    D_8005A830.release = (void (*)(subengine *)) func_8001CC08;
-    D_8005A830.unk50 = 0;
-    D_8005A830.unk74 = 0;
-    D_8005A830.unk70 = 0;
-    D_8005A830.unk6C = NULL;
-    D_8005A830.unk76 = 0;
-    D_8005A830.unk90 = 0;
-    D_8005A830.unk9C = 0;
-    D_8005A830.unk94 = 0;
-    D_8005A830.unkA0 = 0;
-    D_8005A830.unk80 = 0;
-    D_8005A830.unk7C = 0;
-    D_8005A830.unk78 = 0;
-    D_8005A830.unk8A = 0;
+    SubEngineTemplate.flags = 0x01008000;
+    SubEngineTemplate.unk0C = 0;
+    SubEngineTemplate.unk08 = 0;
+    SubEngineTemplate.unk04 = 0;
+    SubEngineTemplate.unk52 = 1;
+    SubEngineTemplate.unk14 = 0;
+    SubEngineTemplate.unk12 = 0;
+    SubEngineTemplate.unk10 = 0;
+    SubEngineTemplate.unk16 = 0;
+    SubEngineTemplate.unk20.z = 0x1000;
+    SubEngineTemplate.unk20.y = 0x1000;
+    SubEngineTemplate.unk20.x = 0x1000;
+    SubEngineTemplate.unk51 = 4;
+    SubEngineTemplate.hook = (void (*)(subengine *, s32, u32)) func_80019F1C;
+    SubEngineTemplate.release = (void (*)(subengine *)) func_8001CC08;
+    SubEngineTemplate.unk50 = 0;
+    SubEngineTemplate.unk74 = 0;
+    SubEngineTemplate.unk70 = 0;
+    SubEngineTemplate.unk6C = NULL;
+    SubEngineTemplate.unk76 = 0;
+    SubEngineTemplate.unk90 = 0;
+    SubEngineTemplate.unk9C = 0;
+    SubEngineTemplate.unk94 = 0;
+    SubEngineTemplate.unkA0 = 0;
+    SubEngineTemplate.unk80 = 0;
+    SubEngineTemplate.unk7C = 0;
+    SubEngineTemplate.unk78 = 0;
+    SubEngineTemplate.unk8A = 0;
     EngineTemplate.EXTid = 0;
     EngineTemplate.flags = 0x8000;
     EngineTemplate.Extend.Child = NULL;
@@ -899,7 +899,7 @@ s16 func_80024008(s16 x, u8 *s) {
                     s++;
                 } while (*s != 0 && *s != 10);
             }
-            x = (x & 0x3FFF) - (n * 5 * 128) / D_8005B698->w / 2;
+            x = (x & 0x3FFF) - (n * 5 * 128) / ScreenRect->w / 2;
         } else {
             c = *s;
             d = c & 0xFF;
@@ -925,7 +925,7 @@ s16 func_80024008(s16 x, u8 *s) {
                     e = c & 0xFF;
                 } while (e != 0 && e != 10);
             }
-            x = 320 - (sum * 5 * 128) / D_8005B698->w / 2;
+            x = 320 - (sum * 5 * 128) / ScreenRect->w / 2;
         }
     }
     return x;
@@ -936,7 +936,7 @@ void func_80024214(u8 *a, u8 *b) {
     s32 bl, g, r;
 
     r = a[0];
-    t = (D_80068BD4[(((D_8005B690 << 7) & 0x7FF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+    t = (TrigTable[(((FrameCount << 7) & 0x7FF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
     g = a[1];
     bl = a[2];
     r += ((0xFF - r) * t) / 20;
@@ -1011,7 +1011,7 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
             g = ((s16 (*)[256])&SysFontLookUp[c])[D_8005B2B4][0];
             if (g != -1) {
                 xy &= 0xFFFF0000;
-                xy |= (u16)(x0 + col * 640 / D_8005B698->w);
+                xy |= (u16)(x0 + col * 640 / ScreenRect->w);
                 if (fl & 1) {
                     if (fl & 4) {
                         oy = xy >> 16;
@@ -1093,7 +1093,7 @@ void func_800248A0(x, y, c0, c1, n)
     SprPos pos;
 
     if ((x & 0xC000) == 0x8000) {
-        x = 0x140 - (0x1D880 / D_8005B698->w) / 2;
+        x = 0x140 - (0x1D880 / ScreenRect->w) / 2;
     }
     pos.f.y = y;
     pos.f.x = x;
@@ -1101,9 +1101,9 @@ void func_800248A0(x, y, c0, c1, n)
     ids = tbl[n];
     base = D_80053074;
     func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
-    pos.f.x = x + 0x9D80 / D_8005B698->w;
+    pos.f.x = x + 0x9D80 / ScreenRect->w;
     func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
-    pos.f.x = x + 0x13B00 / D_8005B698->w;
+    pos.f.x = x + 0x13B00 / ScreenRect->w;
     func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[2] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
 }
 
@@ -1124,11 +1124,11 @@ void func_80024AD8(void) {
     tbl = *(U16Table **)((u8 *)D_8005A5E0 + 8);
     types = tbl->data;
     ntypes = tbl->count;
-    if ((D_8005AA4C = (*(s32 *)D_80058AD0 != 0) ? **(s32 **)((u8 *)D_80058AD0 + 0x30) : 0) == 0) {
+    if ((D_8005AA4C = (*(s32 *)MapScene != 0) ? **(s32 **)((u8 *)MapScene + 0x30) : 0) == 0) {
         return;
     }
     if (D_8005AA48 == NULL) {
-        D_8005AA48 = (NASTrigger *)func_80011654(D_8005AA4C * sizeof(NASTrigger), &D_8004E0F0);
+        D_8005AA48 = (NASTrigger *)func_80011654(D_8005AA4C * sizeof(NASTrigger), &MainHeap);
     }
     t = D_8005AA48;
     if (t != NULL) {
@@ -1138,7 +1138,7 @@ void func_80024AD8(void) {
     }
     trig = D_8005AA48;
     for (i = 0; i < D_8005AA4C; i++, trig++) {
-        src = (MapTrigRec *)(*(u8 **)((u8 *)D_80058AD0 + 0x30) + 4) + i;
+        src = (MapTrigRec *)(*(u8 **)((u8 *)MapScene + 0x30) + 4) + i;
         info = (MapTrigInfo *)((u8 *)src + ((src->info & ~3) + 0xC));
         trig->InfoStruct = (MapTriggerInfo *)info;
         if (info->flags & 0x4000) {
@@ -1543,7 +1543,7 @@ s32 func_8002578C(NAS *nas) {
     s32 hi;
 
     eng = nas->Engine;
-    it = D_8005AA2C;
+    it = HeadOfSolids;
     hit = 0;
     if (eng != NULL && (box = func_80025A48_inline(eng, 0x50)) != NULL) {
         top = eng->unk10.y + box->unk2;
@@ -1572,8 +1572,8 @@ s32 func_8002578C(NAS *nas) {
                                 ang = get_angle(dx, dz) & 0xFFF;
                                 d = csqrt(d) >> 6;
                                 d = rec->radius - d;
-                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                             }
                         }
                     }
@@ -1716,7 +1716,7 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
     s32 top;
     s32 dy;
 
-    nas = D_8005AA2C;
+    nas = HeadOfSolids;
     D_8005AA9C = NULL;
     if (nas != NULL) {
         do {
@@ -1865,7 +1865,7 @@ s16 func_80026210(s32 x, u8 *s) {
             e = c & 0xFF;
         } while (e != 0 && e != 10);
     }
-    return x - (sum * 5 * 128) / D_8005B698->w / 2;
+    return x - (sum * 5 * 128) / ScreenRect->w / 2;
 }
 
 void func_80026308(void) {
@@ -1946,7 +1946,7 @@ void func_80026430(NAS *nas) {
 }
 
 void func_800264B4(void) {
-    mal_free(D_8006EA00, &D_8004E0F0);
+    mal_free(D_8006EA00, &MainHeap);
     D_8006EA00 = 0;
 }
 
@@ -2046,7 +2046,7 @@ void *AddExt(NAS *owner, s32 size, s32 id) {
 }
 
 void func_800268BC(NAS *nas) {
-    NAS **head = (NAS **)&D_8005AA2C;
+    NAS **head = (NAS **)&HeadOfSolids;
 
     if (nas->Solid.Parent != NULL || nas->Solid.Child != NULL) {
         if (nas->Solid.Parent != NULL) {
@@ -2067,11 +2067,11 @@ void func_800268BC(NAS *nas) {
 }
 
 void func_8002694C(NAS *nas, s32 bits) {
-    if (D_8005AA2C != NULL) {
-        nas->Solid.Child = D_8005AA2C;
-        D_8005AA2C->Solid.Parent = nas;
+    if (HeadOfSolids != NULL) {
+        nas->Solid.Child = HeadOfSolids;
+        HeadOfSolids->Solid.Parent = nas;
     }
-    D_8005AA2C = nas;
+    HeadOfSolids = nas;
     nas->Class = (nas->Class & ~0x300) | bits;
 }
 
@@ -2290,7 +2290,7 @@ void func_80026D9C(void) {
     s32 i;
 
     D_8005AA34 = NULL;
-    D_8005AA2C = NULL;
+    HeadOfSolids = NULL;
     D_8005AA30 = NULL;
     D_8005AA24 = NULL;
     HeadOfMissiles = NULL;
@@ -2423,13 +2423,13 @@ void func_8002726C(void) {
 
 void func_800272AC(s32 arg0) {
     DISPENV sp10;
-    RECT *r = D_8005B698;
+    RECT *r = ScreenRect;
     RECT *src;
     u8 *buf;
 
     FntFlush(D_800643E8);
     DrawSync(0);
-    mal_update(&D_8004E0F0);
+    mal_update(&MainHeap);
     if (r != NULL) {
         if (D_8005B790 == cdb) {
             if (D_8005B790) {
@@ -2456,7 +2456,7 @@ void func_800272AC(s32 arg0) {
             buf += 0x400C;
         }
         cdb = buf;
-        D_8005B690 += 1;
+        FrameCount += 1;
         ClearOTagR((u32 *)buf, 0x1000);
         *(s32 *)(buf + 0x4008) = *(s32 *)(buf + 0x4000);
     }
@@ -2501,20 +2501,20 @@ s32 func_800274FC(s32 *arg0) {
     OtBuf *b;
     u8 *t;
 
-    t = func_80011654(*arg0 + 0x1800, &D_8004E0F0);
+    t = func_80011654(*arg0 + 0x1800, &MainHeap);
     b = (OtBuf *)D_8005B790;
     b[0].prim = t;
     b[0].end = b[0].prim + *arg0 + 0x1800;
-    b[1].prim = func_80011654(*arg0 + 0x1800, &D_8004E0F0);
+    b[1].prim = func_80011654(*arg0 + 0x1800, &MainHeap);
     b[1].end = b[1].prim + *arg0 + 0x1800;
-    D_8005B698 = NULL;
+    ScreenRect = NULL;
     return (s32)b[1].end;
 }
 
 void func_8002759C(void) {
     RECT *temp_s0;
 
-    temp_s0 = D_8005B698;
+    temp_s0 = ScreenRect;
     if (temp_s0 != 0) {
         DrawSync(0);
         ClearImage(&temp_s0[1], 0, 0, 0);
@@ -2528,8 +2528,8 @@ RECT *arg0;
     DrawSync(0);
     D_8005B78C = 0;
     if (arg0 != NULL) {
-        D_8005B694 = D_8005B690 + 1;
-        if (D_8005B698 == NULL) {
+        D_8005B694 = FrameCount + 1;
+        if (ScreenRect == NULL) {
             u8 *g = D_8005B790;
             u8 *h;
 
@@ -2542,7 +2542,7 @@ RECT *arg0;
     } else {
         SetDispMask(0);
     }
-    D_8005B698 = arg0;
+    ScreenRect = arg0;
 }
 
 void func_800276A4(void) {
@@ -2553,11 +2553,11 @@ void func_800276C4(s32 *arg0) {
     u8 *g;
     u8 *t;
 
-    t = func_80011654(*arg0 + 0x1800, &D_8004E0F0);
+    t = func_80011654(*arg0 + 0x1800, &MainHeap);
     g = D_8005B790;
     *(u8 **)(g + 0x4000) = t;
     *(s32 *)(g + 0x4004) = *(s32 *)(g + 0x4000) + *arg0 + 0x1800;
-    *(u8 **)((g += 0x8000) + 0xC) = func_80011654(*arg0 + 0x1800, &D_8004E0F0);
+    *(u8 **)((g += 0x8000) + 0xC) = func_80011654(*arg0 + 0x1800, &MainHeap);
     *(s32 *)(g + 0x10) = *(s32 *)(g + 0xC) + *arg0 + 0x1800;
 }
 
@@ -2666,10 +2666,10 @@ void func_80027AD4(PadPacket *p, PadInput *in, s32 n) {
     if (p->status == 0) {
         in->flags |= 1;
         in->flags |= PadRumble_update(&in->rumble, n);
-        if (D_8005B690 > D_80063A8C + 10 &&(in->flags & 8) && in->unk18 != 0
+        if (FrameCount > D_80063A8C + 10 &&(in->flags & 8) && in->unk18 != 0
             && PadGetState(n) == 6 && PadSetMainMode(n, 1, 2) == 1) {
             in->unk18 = 0;
-            D_80063A8C = D_8005B690;
+            D_80063A8C = FrameCount;
         }
         in->flags &= ~6;
         switch (*(u16 *)p >> 12) {
@@ -2724,7 +2724,7 @@ void func_80027D90(void) {
     s32 count;
     PadState *pad;
 
-    pad = D_80051338;
+    pad = Pads;
     D_800515F8 = 0;
     D_800515F8 += func_80027D90_read(D_80063A90[0], (u8 *)pad, 0);
     D_800515F8 += func_80027D90_read(D_80063AC4, (u8 *)&pad[D_800515F8], 0x10);
@@ -2749,7 +2749,7 @@ void func_80027F00(void) {
     PadInitMtap(D_80063A90[0], D_80063A90[1]);
     i = 0;
     on = 1;
-    pad = D_80051338;
+    pad = Pads;
 loop:
     if (i < 8) {
         i++;
@@ -2769,9 +2769,9 @@ loop:
 void func_80027F7C(s32 pad, s32 arg1, s8 arg2) {
     u8 *p;
 
-    if (D_8005A614[pad + 0x5C] == 0 && !(*(s32 *)(D_8005A614 + 4) & 0x80) && D_8005A604[pad + 0xC] != 0 &&
-        (D_80051338[pad].unk0 & 8)) {
-        p = (u8 *)&D_80051338[pad] + 0x1C;
+    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && D_8005A604[pad + 0xC] != 0 &&
+        (Pads[pad].unk0 & 8)) {
+        p = (u8 *)&Pads[pad] + 0x1C;
         p[5] = arg2;
         *(s16 *)(p + 0xA) = arg1 + 1;
         *(u16 *)(p + 6) |= 1;
@@ -2781,9 +2781,9 @@ void func_80027F7C(s32 pad, s32 arg1, s8 arg2) {
 void func_80028018(s32 pad, s32 arg1) {
     u8 *p;
 
-    if (D_8005A614[pad + 0x5C] == 0 && !(*(s32 *)(D_8005A614 + 4) & 0x80) && pad < 4 && D_8005A604[pad + 0xC] != 0 &&
-        (D_80051338[pad].unk0 & 8)) {
-        p = (u8 *)&D_80051338[pad] + 0x1C;
+    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && pad < 4 && D_8005A604[pad + 0xC] != 0 &&
+        (Pads[pad].unk0 & 8)) {
+        p = (u8 *)&Pads[pad] + 0x1C;
         p[4] = 1;
         *(s16 *)(p + 8) = arg1 + 1;
         *(u16 *)(p + 6) |= 1;
@@ -2816,7 +2816,7 @@ void func_80028158(void) {
 
     v = 1;
     for (i = 7; i >= 0; i--) {
-        D_80051338[i].unk28 = v;
+        Pads[i].unk28 = v;
     }
 }
 
@@ -3076,7 +3076,7 @@ void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     BufNode *first;
     s32 i;
 
-    D_800643F4 = func_80011654(nbuf * 0x18, &D_8004E0F0);
+    D_800643F4 = func_80011654(nbuf * 0x18, &MainHeap);
     D_80063BB4 = pool;
     n = pool;
     i = npool - 2;
@@ -3118,7 +3118,7 @@ void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     }
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
-    D_800643E8 = FntOpen(0x10, 0x10, D_8005B698->w - 8, 0xE0, 0, 0x800);
+    D_800643E8 = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
 }
@@ -3239,7 +3239,7 @@ s32 func_80028BC8(u8 **arg0) {
 void func_80028BF0(void) {
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
-    D_800643E8 = FntOpen(0x10, 0x10, D_8005B698->w - 8, 0xE0, 0, 0x800);
+    D_800643E8 = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
 }
@@ -3247,7 +3247,7 @@ void func_80028BF0(void) {
 void func_80028C94(void) {
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
-    D_800643E8 = FntOpen(0x10, 0x10, D_8005B698->w - 8, 0xE0, 0, 0x800);
+    D_800643E8 = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
 }
@@ -3462,7 +3462,7 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         p = (s32 *)(b + (off + 0x1C));
         r = p + 1;
         cnt = *p;
-        a = func_80011654(cnt * 0x5A8, &D_8004E0F0);
+        a = func_80011654(cnt * 0x5A8, &MainHeap);
         arg0->nAnim = cnt;
         arg0->anim = a;
         while (--cnt != -1) {
@@ -3637,24 +3637,24 @@ void func_80029790(u8 *arg0) {
                 } while (--n != -1);
             }
         }
-        mal_free(*(void **)(arg0 + 0x18), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0x18), &MainHeap);
         *(s32 *)(arg0 + 0x18) = 0;
     }
     if (*(void **)(arg0 + 8) != NULL) {
-        mal_free(*(void **)(arg0 + 8), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 8), &MainHeap);
     }
     *(s32 *)(arg0 + 8) = 0;
     if (*(void **)(arg0 + 0xC) != NULL) {
-        mal_free(*(void **)(arg0 + 0xC), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0xC), &MainHeap);
     }
     *(s32 *)(arg0 + 0xC) = 0;
     if (*(void **)(arg0 + 0x20) != NULL) {
-        mal_free(*(void **)(arg0 + 0x20), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0x20), &MainHeap);
     }
     *(s32 *)(arg0 + 0x20) = 0;
     *(s32 *)(arg0 + 0x1C) = 0;
     if (*(void **)(arg0 + 0x10) != NULL) {
-        mal_free(*(void **)(arg0 + 0x10), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0x10), &MainHeap);
         *(s32 *)(arg0 + 0x10) = 0;
     }
 }
@@ -3664,14 +3664,14 @@ s32 func_8002992C(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c
     GfxState *gs;
     ScreenXY v;
 
-    if (D_8005B698 == NULL) {
+    if (ScreenRect == NULL) {
         return 0;
     }
-    v.s.x = (s16)xy * D_8005B698->w / 640;
+    v.s.x = (s16)xy * ScreenRect->w / 640;
     p = *(POLY_GT4 **)(cdb + 0x4008);
     *(POLY_GT4 **)(cdb + 0x4008) = p + 1;
     v.s.y = (s16)(xy >> 16) / 2;
-    gs = &D_80056998;
+    gs = &RenderState;
     *(u32 *)&p->r0 = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
     *(u32 *)&p->r1 = FadeColorGs(gs, (c1 >> 16) & 0xFF, (c1 >> 8) & 0xFF, c1 & 0xFF);
     *(u32 *)&p->r2 = FadeColorGs(gs, (c2 >> 16) & 0xFF, (c2 >> 8) & 0xFF, c2 & 0xFF);
@@ -3691,18 +3691,18 @@ s32 func_8002992C(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c
     *(s32 *)&p->x3 = v.w;
     v.s.x -= f->w - 1;
     *(s32 *)&p->x2 = v.w;
-    addPrim(D_80056998.ot + otz, p);
-    return f->advance * 640 / D_8005B698->w;
+    addPrim(RenderState.ot + otz, p);
+    return f->advance * 640 / ScreenRect->w;
 }
 
 s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color) {
     POLY_FT4 *p;
     ScreenXY v;
 
-    if (D_8005B698 == NULL) {
+    if (ScreenRect == NULL) {
         return 0;
     }
-    v.s.x = (s16)xy * D_8005B698->w / 640;
+    v.s.x = (s16)xy * ScreenRect->w / 640;
     p = *(POLY_FT4 **)(cdb + 0x4008);
     *(POLY_FT4 **)(cdb + 0x4008) = p + 1;
     v.s.y = (s16)(xy >> 16) / 2;
@@ -3722,8 +3722,8 @@ s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color) {
     *(s32 *)&p->x3 = v.w;
     v.s.x -= f->w - 1;
     *(s32 *)&p->x2 = v.w;
-    addPrim(D_80056998.ot + otz, p);
-    return f->advance * 640 / D_8005B698->w;
+    addPrim(RenderState.ot + otz, p);
+    return f->advance * 640 / ScreenRect->w;
 }
 
 s32 func_80029F9C(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
@@ -3732,12 +3732,12 @@ s32 func_80029F9C(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     volatile SVECTOR v;
     s32 t;
 
-    if (D_8005B698 == NULL) {
+    if (ScreenRect == NULL) {
         return 0;
     }
     p = *(POLY_GT4 **)(cdb + 0x4008);
     *(POLY_GT4 **)(cdb + 0x4008) = p + 1;
-    gs = &D_80056998;
+    gs = &RenderState;
     t = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
     *(u32 *)&p->r0 = t;
     *(u32 *)&p->r1 = t;
@@ -3772,7 +3772,7 @@ s32 func_80029F9C(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     gte_stsxy(&p->x3);
     setSemiTrans(p, (s32)c0 < 0);
     addPrim((u32 *)cdb + otz, p);
-    return f->advance * 640 / D_8005B698->w;
+    return f->advance * 640 / ScreenRect->w;
 }
 
 void func_8002A2DC(void) {
@@ -3807,13 +3807,13 @@ void texture_release_loading_mem(obj_textureset *set) {
 
     if (set->anims != NULL) {
         base = set->base;
-        anims = func_800112A4(base, *(s32 *)(base + 0x18), &D_8004E0F0);
+        anims = func_800112A4(base, *(s32 *)(base + 0x18), &MainHeap);
         set->base = anims;
         func_80011544(anims, (u8 **)&set->anims);
         set->base = NULL;
         return;
     }
-    func_80011578(set->base, &D_8004E0F0, 2);
+    func_80011578(set->base, &MainHeap, 2);
     set->base = NULL;
 }
 
@@ -3880,8 +3880,8 @@ loop:
 void func_8002A5A4(u8 *a0, u8 *arg1) {
     Func2A5A4Obj *arg0 = (Func2A5A4Obj *)a0;
     arg0->src = arg1;
-    func_800115D8(*(u16 *)(arg1 + 8) * 0x38, (void **)&arg0->f8, (s32)&D_8004E0F0, 0);
-    func_800115D8(*(u16 *)(arg0->src + 0xA) * 0xC, (void **)&arg0->fC, (s32)&D_8004E0F0, 0);
+    func_800115D8(*(u16 *)(arg1 + 8) * 0x38, (void **)&arg0->f8, (s32)&MainHeap, 0);
+    func_800115D8(*(u16 *)(arg0->src + 0xA) * 0xC, (void **)&arg0->fC, (s32)&MainHeap, 0);
     arg0->f0 = *(u16 *)(arg0->src + 8);
     arg0->f4 = *(u16 *)(arg0->src + 0xA);
     arg0->f14 = *(s32 *)(arg0->src + 0x14);
@@ -4006,7 +4006,7 @@ void func_8002A9AC(s32 *arg0, s32 arg1) {
             if (n == -1) {
                 return;
             }
-            if (p->handle != 0 && D_8005B690 - p->time >= arg1) {
+            if (p->handle != 0 && FrameCount - p->time >= arg1) {
                 func_80028AE4(p->handle);
                 p->handle = 0;
             }

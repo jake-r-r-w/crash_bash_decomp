@@ -442,8 +442,8 @@ void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1) {
         break;
     }
     a &= 0xFFF;
-    dx = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 256) >> 12;
-    dz = (D_80068BD4[a].unk2 * 256) >> 12;
+    dx = (TrigTable[(a - 0x400) & 0xFFF].unk2 * 256) >> 12;
+    dz = (TrigTable[a].unk2 * 256) >> 12;
     get_angle(arg1->unk10.x + dx - hx, arg1->unk10.z + dz - hz);
     p = (arg0 * 0x30) + ChaseHeroSlots;
     *(s32 *)(p + 0xC) = arg1->unk10.x + dx;
@@ -462,7 +462,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
     u32 r;
     ChaseCoalFux *fux;
 
-    if (Random(0x40) <= D_8009D87C[arg0].unk0 + 0x20) {
+    if (Random(0x40) <= AiPlayerSkill[arg0].unk0 + 0x20) {
         x = arg1->unk10.x;
         z = arg1->unk10.z;
         if ((arg2->pickup = ChaseNearPickup(x, z)) != NULL) {
@@ -553,7 +553,7 @@ void Chase_HeroBot(s32 arg0) {
     s32 x, z;
     ChaseCoalFux *fux;
 
-    if (D_8005A624 & 0x04000000) {
+    if (GamePause & 0x04000000) {
         return;
     }
     eng = Heroes[arg0].hero->Engine;
@@ -581,7 +581,7 @@ void Chase_HeroBot(s32 arg0) {
     }
     switch (ai->state) {
     case 4:
-        ai->unk8 |= D_80051244[((ai->angle + off) >> 9) & 7];
+        ai->unk8 |= DirPadBits[((ai->angle + off) >> 9) & 7];
         if (ai->timer < 5 || ((d = ai->x - eng->unk10.x, (u32)(d + 99) < 199) &&
                               (dz = ai->z - eng->unk10.z, (u32)(dz + 99) < 199))) {
             ai->state = 1;
@@ -594,7 +594,7 @@ void Chase_HeroBot(s32 arg0) {
             goto rethink;
         }
         ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, ai->pickup->Engine, 0);
-        ai->unk8 |= D_80051244[((ai->angle + off) >> 9) & 7];
+        ai->unk8 |= DirPadBits[((ai->angle + off) >> 9) & 7];
         break;
     case 6:
         if (ai->unk20 <= 0) {
@@ -604,7 +604,7 @@ void Chase_HeroBot(s32 arg0) {
         if (ai->target->Type != ChaseASTIndex(0x1D01) || ai->target->NASid == 0) {
             goto rethink;
         }
-        if (Random(0x20) < D_8009D87C[arg0].unk0) {
+        if (Random(0x20) < AiPlayerSkill[arg0].unk0) {
             nas = ai->target;
             fux = (ChaseCoalFux *)nas->FUX;
             x = eng->unk10.x;
@@ -648,7 +648,7 @@ void Chase_HeroBot(s32 arg0) {
             }
         }
         ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, ai->target->Engine, 0);
-        ai->unk8 |= D_80051244[((ai->angle + off) >> 9) & 7];
+        ai->unk8 |= DirPadBits[((ai->angle + off) >> 9) & 7];
         break;
     case 7:
         if (ai->unk20 > 0) {
@@ -663,7 +663,7 @@ void Chase_HeroBot(s32 arg0) {
             ai->timer = 0x3C;
             ai->angle -= 0x400;
         }
-        ai->unk8 |= D_80051244[(ai->angle >> 9) & 7];
+        ai->unk8 |= DirPadBits[(ai->angle >> 9) & 7];
         break;
     case 8:
         if (ai->unk20 > 0) {
@@ -671,7 +671,7 @@ void Chase_HeroBot(s32 arg0) {
             ChaseAI_ChooseTarget(arg0, eng, ai);
             break;
         }
-        ai->unk8 |= D_80051244[(ai->angle >> 9) & 7];
+        ai->unk8 |= DirPadBits[(ai->angle >> 9) & 7];
         break;
     }
     if (ai->timer & 7) {
@@ -704,33 +704,33 @@ void Chase_HeroBot(s32 arg0) {
         ai->unk8 |= 0x8000;
         break;
     }
-    set_joypad((u8 *)&D_80051338[arg0], ai->unk8);
+    set_joypad((u8 *)&Pads[arg0], ai->unk8);
 }
 
 void InitialiseCHASEFirst(void) {
-    D_8009D6E8.unk4 = ChaseHeroModels;
-    D_8009D6E8.unk38 = (void *)Chase_HeroBot;
-    D_8009D6E8.unk40 = (void *)ChaseHeroTestRun;
-    D_8009D6E8.unk0 = (void *)ChaseInitHero;
-    D_8009D6E8.unk68 = (void *)CHASE_KeepInBounds;
-    D_8009D6E8.unk14 = ChaseVictorySeqs;
-    D_8009D6E8.unk20 = (void *)ChasePreMoveHero;
-    D_8009D6E8.unk24 = (void *)ChaseMoveHero;
-    D_8009D6E8.unk54 = (void *)ChaseHeroKickCollision;
-    D_8009D6E8.unk44 = (void *)ChaseHeroTestJump;
-    D_8009D6E8.unk48 = (void *)ChaseNoKick;
-    D_8009D6E8.unk40 = (void *)ChaseHeroTestRun;
-    D_8009D6E8.unk5C = (void *)ChaseHero_ExtraEffects;
+    HeroHooks.unk4 = ChaseHeroModels;
+    HeroHooks.unk38 = (void *)Chase_HeroBot;
+    HeroHooks.unk40 = (void *)ChaseHeroTestRun;
+    HeroHooks.unk0 = (void *)ChaseInitHero;
+    HeroHooks.unk68 = (void *)CHASE_KeepInBounds;
+    HeroHooks.unk14 = ChaseVictorySeqs;
+    HeroHooks.unk20 = (void *)ChasePreMoveHero;
+    HeroHooks.unk24 = (void *)ChaseMoveHero;
+    HeroHooks.unk54 = (void *)ChaseHeroKickCollision;
+    HeroHooks.unk44 = (void *)ChaseHeroTestJump;
+    HeroHooks.unk48 = (void *)ChaseNoKick;
+    HeroHooks.unk40 = (void *)ChaseHeroTestRun;
+    HeroHooks.unk5C = (void *)ChaseHero_ExtraEffects;
     D_8009E0E2 = 0x77;
     D_8009E0E4 = 0x75;
     D_8009E0E6 = 0x74;
     D_8009E0D8 = 0x73;
-    D_8009D6E8.unk64 = (void *)ChaseChooseWinner;
-    D_8009D8F4 = ChaseAiBotTweak;
-    D_8009D8F8 = ChaseAiHumanTweak;
-    D_8009D904 = ChaseAiHumanRoundTweak;
-    D_8009D8FC = D_8005A680 != 0 ? ChaseAiSkillAlt : ChaseAiSkill;
-    D_8009D900 = ChaseAiTeamSkill;
+    HeroHooks.unk64 = (void *)ChaseChooseWinner;
+    AiBotTweakTable = ChaseAiBotTweak;
+    AiHumanTweakTable = ChaseAiHumanTweak;
+    AiHumanRoundTweakTable = ChaseAiHumanRoundTweak;
+    AiSkillTable = GameTeams != 0 ? ChaseAiSkillAlt : ChaseAiSkill;
+    AiTeamSkillTable = ChaseAiTeamSkill;
 }
 
 /* Steering in the tail: `t = v` survives cse2 and combine only because v is
@@ -755,9 +755,9 @@ void InitialiseCHASE(void) {
     ChaseRoundOver = 0;
     World_floor_level = 0;
     Init_Clock(0x140, 0x1E, 0);
-    if (((CoalChainGame *)D_8005A614)->flags & 0x40) {
+    if (((CoalChainGame *)GameInfo)->flags & 0x40) {
         a = 0x40;
-        if (((CoalChainGame *)D_8005A614)->unk6C == 0) {
+        if (((CoalChainGame *)GameInfo)->unk6C == 0) {
             a = 0x100;
         }
     } else {
@@ -766,11 +766,11 @@ void InitialiseCHASE(void) {
     Set_Clock(a, 0x81C0);
     func_8001682C((s32 *)D_80053F8C);
     func_8001682C((s32 *)(D_80053F8C - 0xF88));
-    func_8001682C((s32 *)*D_80058AD0);
+    func_8001682C((s32 *)*MapScene);
     scr = (ChaseScreen *)D_8009F6F4;
     scr->unk10 = 0x140;
     scr->unk14 = 0x15E;
-    cam = (ChaseCam *)D_80051640;
+    cam = (ChaseCam *)MainCamera;
     cam->unk0 = 0;
     cam->unk8 = 0xE98;
     cam->unk54 = 0x1A8;
@@ -798,13 +798,13 @@ void InitialiseCHASE(void) {
     ChaseGenerator = CreateNAS(i, 0, 0x700, 0x1D07, 0x11);
     ChaseGeneratorB = CreateNAS((i + 0x800) & 0xFFF, 0, 0x700, 0x1D07, 0x11);
     CreateNAS(0, 0, 0, 0x1D03, 0x11);
-    g = D_8005A614;
+    g = GameInfo;
     if (((CoalChainGame *)g)->flags & 0x80) {
         CreateNAS(0, 0, 0, 0x1D08, 0x11);
     }
     if (((CoalChainGame *)g)->flags & 0x40) {
         for (i = 0; i < 4; i++) {
-            p = D_8005A614;
+            p = GameInfo;
             h = &Heroes[i];
             v = 0x78;
             if (p[i + 0x5C] == 0) {
@@ -817,7 +817,7 @@ void InitialiseCHASE(void) {
             h->hero_score = v;
         }
         InitSharedScoreIcons();
-        if (D_8005A680 != 0) {
+        if (GameTeams != 0) {
             PanelCtrl |= 0x2000;
         }
     }
@@ -830,7 +830,7 @@ void InitialiseCHASE(void) {
     for (i = 0; i < 4; i++) {
         h = &((HeroInfo *)v)[i];
         y = t * 60 / 100 + ((t * 60) & 3);
-        q = D_8005A614;
+        q = GameInfo;
         if (q[i + 0x5C] == 0) {
             ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk0 = 0x23;
             ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk2 = 0x3C;
@@ -906,8 +906,8 @@ s32 CHASE_KeepInBounds(s32 *p) {
         d = (csqrt(p[4] * p[4] + p[6] * p[6]) >> 6) - ChaseArenaRadius;
         if (d > 0) {
             a = get_angle(p[4], p[6]);
-            p[4] -= (d * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
-            p[6] -= (d * D_80068BD4[a & 0xFFF].unk2) >> 12;
+            p[4] -= (d * TrigTable[(a - 0x400) & 0xFFF].unk2) >> 12;
+            p[6] -= (d * TrigTable[a & 0xFFF].unk2) >> 12;
             return 0;
         }
     }
@@ -924,14 +924,14 @@ void ChaseInitHero(s32 arg0) {
     u8 *p;
     NAS *nas;
 
-    D_80051338[arg0].unk50 = 0;
-    D_80051338[arg0].unk54 = 0;
+    Pads[arg0].unk50 = 0;
+    Pads[arg0].unk54 = 0;
     b = Heroes;
     h = b + arg0;
     if (h->hero_name == 9) {
         return;
     }
-    g = &D_8005A614[arg0];
+    g = &GameInfo[arg0];
     if (g[0x50] == 9) {
         return;
     }
@@ -988,10 +988,10 @@ void ChasePreMoveHero(s32 arg0) {
     m = h->hero_move;
     m->forward_speed = 0;
     if (h->hero_frozen != 0) {
-        D_80051338[arg0].unk50 = 0;
-        D_80051338[arg0].unk54 = 0;
+        Pads[arg0].unk50 = 0;
+        Pads[arg0].unk54 = 0;
     }
-    pb = D_80051338;
+    pb = Pads;
     pad = pb + arg0;
     if ((pad->unk0 & 1) || &D_8005A670 != NULL) {
         if (pad->unk50 & 0xF0) {
@@ -1014,8 +1014,8 @@ void ChasePreMoveHero(s32 arg0) {
                 if (vc != 1) {
                     if (vc != 0) {
                         if (vc < 4) {
-                            m->x_max = (speed * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                            m->z_max = (speed * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                            m->x_max = (speed * TrigTable[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                            m->z_max = (speed * TrigTable[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                         }
                     }
                 }
@@ -1056,12 +1056,12 @@ void ChaseMoveHero(s32 arg0) {
     h->hero_immunity = 0;
     m = h->hero_move;
     e = e0;
-    if (D_80051338[arg0].unk50 & 0x8000) {
+    if (Pads[arg0].unk50 & 0x8000) {
         m->run_walk = 0;
     } else {
         m->run_walk = 1;
     }
-    ((void (*)(s32))D_8009D6E8.unk2C)(arg0);
+    ((void (*)(s32))HeroHooks.unk2C)(arg0);
     func_800860D4(arg0);
     switch (m->velocity_calc) {
     case 2:
@@ -1134,11 +1134,11 @@ void ChaseMoveHero(s32 arg0) {
         break;
     case 1:
     default:
-        e->unk10.x -= (m->forward_speed * D_80068BD4[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
-        e->unk10.z -= (m->forward_speed * D_80068BD4[m->forward_angle & 0xFFF].unk2) >> 12;
+        e->unk10.x -= (m->forward_speed * TrigTable[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
+        e->unk10.z -= (m->forward_speed * TrigTable[m->forward_angle & 0xFFF].unk2) >> 12;
         if (m->reactive_speed != 0) {
-            e->unk10.x -= (m->reactive_speed * D_80068BD4[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
-            e->unk10.z -= (m->reactive_speed * D_80068BD4[m->reactive_angle & 0xFFF].unk2) >> 12;
+            e->unk10.x -= (m->reactive_speed * TrigTable[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
+            e->unk10.z -= (m->reactive_speed * TrigTable[m->reactive_angle & 0xFFF].unk2) >> 12;
             m->reactive_speed -= 4;
             if (m->reactive_speed < 0) {
                 m->reactive_speed = 0;
@@ -1146,7 +1146,7 @@ void ChaseMoveHero(s32 arg0) {
         }
         break;
     }
-    if ((D_80051338[arg0].unk50 & 0x8000) && e0->unk10.y >= -0x31) {
+    if ((Pads[arg0].unk50 & 0x8000) && e0->unk10.y >= -0x31) {
         ChaseHeroSpeed[arg0] = 0xF;
         e0 = Heroes[arg0].hero_eng;
         st = ChaseHeroState[arg0];
@@ -1164,7 +1164,7 @@ void ChaseMoveHero(s32 arg0) {
             ChaseFlameObj[arg0] = 0;
         }
     }
-    if ((D_80051338[arg0].unk50 & 0x2A00) && e0->unk10.y >= -0x31 && ChaseHeroState[arg0][0x14] != 0) {
+    if ((Pads[arg0].unk50 & 0x2A00) && e0->unk10.y >= -0x31 && ChaseHeroState[arg0][0x14] != 0) {
         v = &e0->unk10;
         PlaySfx(0x43A, NULL, v, 0x1000, 0x1E00, 0);
         ChaseHidePowerup(arg0);
@@ -1297,7 +1297,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = D_80068BD4;
+                tbl = TrigTable;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -1332,10 +1332,10 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                                             eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
                                             hit = 1;
                                             if (self->hero_pu != 0) {
-                                                (*(void (**)(s32, s32))D_8009D6E8.pad60)(arg0, i);
+                                                (*(void (**)(s32, s32))HeroHooks.pad60)(arg0, i);
                                             }
                                             if (other[i].hero_pu != 0) {
-                                                (*(void (**)(s32, s32))D_8009D6E8.pad60)(i, arg0);
+                                                (*(void (**)(s32, s32))HeroHooks.pad60)(i, arg0);
                                             }
                                         }
                                     }
@@ -1393,7 +1393,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                 i++;
             } while (i < 4);
             own = NULL;
-            n = D_8005AA2C;
+            n = HeadOfSolids;
             if (Heroes[arg0].hero_object != NULL) {
                 own = ((NAS **)Heroes[arg0].hero_object)[-1];
             }
@@ -1432,8 +1432,8 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * TrigTable[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->unk1C & 8)) {
@@ -1469,7 +1469,7 @@ static inline s32 Chk5CD0_A(s32 arg0) {
 static inline s32 Chk5CD0_B(s32 arg0) {
     s32 ret;
 
-    if (D_80051338[arg0].unk54 & 0x4000) {
+    if (Pads[arg0].unk54 & 0x4000) {
         SetHeroAction(arg0, 0x78);
         ret = 1;
     } else {
@@ -1587,13 +1587,13 @@ void SetChaseHeroJump(s32 arg0) {
     e->platform = NULL;
     SetHeroSeq(arg0, 0x65);
     idx = 0;
-    if (D_8005A614[arg0 + 0x5C] == 0) {
+    if (GameInfo[arg0 + 0x5C] == 0) {
         idx = h->hero_name;
     }
-    h->hero_move->jump_vel = D_8009D6E8.unk10[idx].vel;
-    h->hero_move->jump_max = D_8009D6E8.unk10[idx].max;
-    h->hero_move->jump_acc = D_8009D6E8.unk10[idx].acc;
-    h->hero_move->jump_dec = D_8009D6E8.unk10[idx].dec;
+    h->hero_move->jump_vel = HeroHooks.unk10[idx].vel;
+    h->hero_move->jump_max = HeroHooks.unk10[idx].max;
+    h->hero_move->jump_acc = HeroHooks.unk10[idx].acc;
+    h->hero_move->jump_dec = HeroHooks.unk10[idx].dec;
     h->hero_move->jump_dir = -1;
 }
 
@@ -1730,7 +1730,7 @@ static inline s32 Chk66A4_A(s32 arg0) {
 static inline s32 Chk66A4_B(s32 arg0) {
     s32 ret;
 
-    if (D_80051338[arg0].unk54 & 0x4000) {
+    if (Pads[arg0].unk54 & 0x4000) {
         SetHeroAction(arg0, 0x78);
         ret = 1;
     } else {
@@ -1782,7 +1782,7 @@ void SetChaseHeroHit(s32 arg0) {
 void ChaseHeroHit(s32 arg0) {
     u8 *g;
 
-    if (func_8008502C() == 8 && ((g = D_8005A614), (*(u16 *)(g + 0x32) & 0x80)) && g[arg0 + 0x5C] == 0 &&
+    if (func_8008502C() == 8 && ((g = GameInfo), (*(u16 *)(g + 0x32) & 0x80)) && g[arg0 + 0x5C] == 0 &&
         !(*(s32 *)(g + 4) & 2)) {
         HeroInfo *base = Heroes;
         HeroInfo *h = &base[arg0];
@@ -1918,7 +1918,7 @@ void SetChaseHeroWinner(s32 arg0) {
     func_80085718(arg0, 0);
     SetHeroSeq(arg0, 0x6B);
     func_80089FA4(arg0);
-    D_800AD12C = 1;
+    CameraMode = 1;
     ChaseRoundOver = 1;
 }
 
@@ -2194,8 +2194,8 @@ void PlotBarrelCH(NAS *nas) {
             d = (csqrt(dx * dx + dz * dz) >> 6) - 0x70;
             if (d < 0x70) {
                 a = get_angle(dx, dz);
-                he->unk10.x += (d * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
-                he->unk10.z += (d * D_80068BD4[a & 0xFFF].unk2) >> 12;
+                he->unk10.x += (d * TrigTable[(a - 0x400) & 0xFFF].unk2) >> 12;
+                he->unk10.z += (d * TrigTable[a & 0xFFF].unk2) >> 12;
             }
         }
         i++;
@@ -2243,14 +2243,14 @@ void PlotBarrelCH(NAS *nas) {
 }
 
 NAS *ChaseSpawnCoal(s32 arg0) {
-    u8 *g = D_8005A614 + arg0;
+    u8 *g = GameInfo + arg0;
     EXTengine *he = Heroes[arg0].hero_eng;
     s32 lv = g[0x50];
     ChaseSpawnOfs *o = &ChaseSpawnOffsets[--lv];
     s32 r = o->r;
     s32 a = (he->unk1E + o->ang) & 0xFFF;
-    s32 dx = (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
-    s32 dz = (r * D_80068BD4[a].unk2) >> 12;
+    s32 dx = (r * TrigTable[(a - 0x400) & 0xFFF].unk2) >> 12;
+    s32 dz = (r * TrigTable[a].unk2) >> 12;
     s32 x = he->unk10.x + dx;
     s32 y = -o->y;
     s32 z;
@@ -2291,7 +2291,7 @@ NAS *ChaseSpawnCoal(s32 arg0) {
             }
         }
         if (g[0x5C] != 0) {
-            nas->UserInfo.status = (nas->UserInfo.status * D_8009D87C[arg0].unk0) / 16;
+            nas->UserInfo.status = (nas->UserInfo.status * AiPlayerSkill[arg0].unk0) / 16;
         }
         e = nas->Engine;
         e->unk1E = he->unk1E;
@@ -2413,8 +2413,8 @@ s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
                     }
                     PlaySfx(ChaseChainSfx[id], NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
                 }
-                if (((CoalChainGame *)D_8005A614)->flags & 0x40) {
-                    if (((CoalChainGame *)D_8005A614)->unk6C != 0) {
+                if (((CoalChainGame *)GameInfo)->flags & 0x40) {
+                    if (((CoalChainGame *)GameInfo)->unk6C != 0) {
                         h = &ChaseHeroes()[id];
                         if (h->hero_score >= pts) {
                             h->hero_score -= pts;
@@ -2496,8 +2496,8 @@ void PlotCircleFire(NAS *nas) {
         sub->unk74 = 0x4000;
     }
     nas->UserInfo.status = (nas->UserInfo.status + 0xC) & 0xFFF;
-    eng->unk10.x = (D_80068BD4[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
-    eng->unk10.z = (D_80068BD4[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
+    eng->unk10.x = (TrigTable[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
+    eng->unk10.z = (TrigTable[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
     cx = eng->unk10.x;
     eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->unk5E = 1;
@@ -2557,10 +2557,10 @@ void PlotEgg(NAS *nas) {
     eng = nas->Engine;
     sub = eng->sub;
     fux = (EggExt *)nas->FUX;
-    if (Clock_Time == 0 || (D_8005A644 & 0x801)) {
+    if (Clock_Time == 0 || (GameExitFlags & 0x801)) {
         PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         pos = &eng->unk10;
-        p = *D_80058AD0;
+        p = *MapScene;
         n = CreateNAS(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
@@ -2601,8 +2601,8 @@ void PlotEgg(NAS *nas) {
         break;
     case 0x29:
         nas->UserInfo.status = (nas->UserInfo.status - 0xA) & 0xFFF;
-        eng->unk10.x = (D_80068BD4[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 0x53) >> 7;
-        eng->unk10.z = (D_80068BD4[nas->UserInfo.status & 0xFFF].unk2 * 0x53) >> 7;
+        eng->unk10.x = (TrigTable[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 0x53) >> 7;
+        eng->unk10.z = (TrigTable[nas->UserInfo.status & 0xFFF].unk2 * 0x53) >> 7;
         eng->unk1E = (nas->UserInfo.status + 0x400) & 0xFFF;
         eng->unk5E = 1;
         if (eng->unk10.z > 0) {
@@ -2619,7 +2619,7 @@ void PlotEgg(NAS *nas) {
         if (sub->unk74 == 0x4012) {
             sub->unk74 = 0x4000;
             i = BarrelNearHero(eng->unk10.x, eng->unk10.z, 0x600);
-            if (i >= 0 && D_8005A614[i + 0x5C] == 0) {
+            if (i >= 0 && GameInfo[i + 0x5C] == 0) {
                 PlaySfx(0x759, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 fux->unk1C = get_angle(Heroes[i].hero_eng->unk10.x - eng->unk10.x,
                                        Heroes[i].hero_eng->unk10.z - eng->unk10.z);
@@ -2636,8 +2636,8 @@ void PlotEgg(NAS *nas) {
         }
         fux->unk14 += 0xC;
         eng->unk10.y += fux->unk14;
-        eng->unk10.x += (D_80068BD4[(fux->unk1C - 0x400) & 0xFFF].unk2 * 5) >> 8;
-        eng->unk10.z += (D_80068BD4[fux->unk1C & 0xFFF].unk2 * 5) >> 8;
+        eng->unk10.x += (TrigTable[(fux->unk1C - 0x400) & 0xFFF].unk2 * 5) >> 8;
+        eng->unk10.z += (TrigTable[fux->unk1C & 0xFFF].unk2 * 5) >> 8;
         if (eng->unk10.y > 0) {
             PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             i = BarrelNearHero(eng->unk10.x, eng->unk10.z, 0x280);
@@ -2651,7 +2651,7 @@ void PlotEgg(NAS *nas) {
                         func_80027F7C(i, 0xA, 0xF0);
                     }
                 }
-                if (D_8005A614[i + 0x5C] == 0) {
+                if (GameInfo[i + 0x5C] == 0) {
                     ChaseHeroState[i][0] = 0;
                 }
             }
@@ -2680,7 +2680,7 @@ void PlotEgg(NAS *nas) {
                 i++;
             }
             at = &eng->unk10;
-            p = *D_80058AD0;
+            p = *MapScene;
             n = CreateNAS(eng->unk10.x, at->y, at->z, 0x1605, 0x11);
             if (n != NULL) {
                 ext = FindExtension(n, 0x10000000);
@@ -2911,17 +2911,17 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
         }
     }
     if (free != -1) {
-        D_8005A614[0x60] = 0;
-        *(u16 *)(D_8005A614 + 0x30) |= arg1;
+        GameInfo[0x60] = 0;
+        *(u16 *)(GameInfo + 0x30) |= arg1;
         for (i = 0; i < 4; i++) {
-            if (D_8005A614[i + 0x5C] != 0) {
+            if (GameInfo[i + 0x5C] != 0) {
                 func_80026980(Heroes[i].hero);
                 Heroes[i].hero_status |= 0x400;
             } else if (i != free) {
                 Heroes[i].hero_status |= 0x100;
             }
         }
-        D_800AD12C = 1;
+        CameraMode = 1;
     } else if (arg0 == -1) {
         taken = 0;
         for (j = 0; j < 4; j++) {
@@ -2933,10 +2933,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            D_8005A614[j + 0xA7] = best;
+            GameInfo[j + 0xA7] = best;
             taken |= 1 << best;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 0x6C) == 0) {
             HeroInfo *hb;
             HeroInfo *a;
@@ -2944,10 +2944,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -2955,10 +2955,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             } else {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (D_8005A614[0xA7] == n) {
+                    if (GameInfo[0xA7] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -2983,10 +2983,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
             sa = a->hero_score + ta->hero_score;
             sb = b->hero_score + tb->hero_score;
             if (sa == sb) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3011,10 +3011,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                     ta->hero_status |= 0x400;
                 }
             } else {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3045,10 +3045,10 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            D_8005A614[j + 0xA7] = best;
+            GameInfo[j + 0xA7] = best;
             taken |= 1 << best;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 0x6C) == 0) {
             HeroInfo *hb;
             HeroInfo *a;
@@ -3056,10 +3056,10 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3067,10 +3067,10 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     }
                 }
             } else {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (D_8005A614[0xA7] == n) {
+                    if (GameInfo[0xA7] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -3095,10 +3095,10 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
             sa = a->hero_score + ta->hero_score;
             sb = b->hero_score + tb->hero_score;
             if (sa == sb) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3123,10 +3123,10 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     ta->hero_status |= 0x400;
                 }
             } else {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3146,7 +3146,7 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
 
     found = -1;
     fail = 0;
-    g = D_8005A614;
+    g = GameInfo;
     if (*(s32 *)(g + 0x6C) != 0) {
         HeroInfo *hb = Heroes;
         HeroInfo *a;
@@ -3162,11 +3162,11 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
         sb = b->hero_score + hb[b->hero_teammate].hero_score;
         if (sa == 0) {
             if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (D_8005A614[i + 0x5C] != 0) {
+                    if (GameInfo[i + 0x5C] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -3177,11 +3177,11 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
             }
         } else if (sb == 0) {
             if (g[*(s16 *)(g + 0x4A) + 0x5C] == 0) {
-                D_8005A614[0x60] = b->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = b->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (D_8005A614[i + 0x5C] != 0) {
+                    if (GameInfo[i + 0x5C] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -3198,12 +3198,12 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
             }
         }
         if (found != -1) {
-            if (D_8005A614[found + 0x5C] == 0) {
-                D_8005A614[0x60] = Heroes[found].hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+            if (GameInfo[found + 0x5C] == 0) {
+                GameInfo[0x60] = Heroes[found].hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (D_8005A614[i + 0x5C] != 0) {
+                    if (GameInfo[i + 0x5C] != 0) {
                         Heroes[i].hero_status |= 0x400;
                     } else {
                         Heroes[i].hero_status |= 0x200;
@@ -3215,11 +3215,11 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
         }
     }
     if (fail || arg0 == -1) {
-        D_8005A614[0x60] = 0;
-        *(u16 *)(D_8005A614 + 0x30) |= arg1;
+        GameInfo[0x60] = 0;
+        *(u16 *)(GameInfo + 0x30) |= arg1;
         Clock_flags |= 0x200;
         for (i = 0; i < 4; i++) {
-            if (D_8005A614[i + 0x5C] != 0) {
+            if (GameInfo[i + 0x5C] != 0) {
                 Heroes[i].hero_status |= 0x400;
             } else {
                 Heroes[i].hero_status |= 0x100;
@@ -3320,7 +3320,7 @@ void ChaseChooseWinnerRank(s32 arg0, u16 arg1) {
 }
 
 void ChaseChooseWinner(s32 arg0, s32 arg1) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     if (!(*(u16 *)(g + 0x30) & 0x801)) {
         u16 f = *(u16 *)(g + 0x32);
@@ -3429,7 +3429,7 @@ void InitEgg(NAS *nas) {
     eng->unk10.z = 0xA60;
     eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->unk5E = 1;
-    scene = *D_80058AD0;
+    scene = *MapScene;
     sub->unk74 = 0x4080;
     sub->unk68 = 0x3E7;
     sub->unk6C = (void *)scene;
@@ -3449,8 +3449,8 @@ void InitCircleFire(NAS *nas) {
     ext->unk30 = 1;
     eng = nas->Engine;
     nas->UserInfo.status = eng->unk10.x;
-    eng->unk10.x = (D_80068BD4[((u16)nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
-    eng->unk10.z = (D_80068BD4[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
+    eng->unk10.x = (TrigTable[((u16)nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
+    eng->unk10.z = (TrigTable[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
     sub = eng->sub;
     eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->unk5E = 1;
@@ -3624,7 +3624,7 @@ s32 ChaseTestEnd(s32 arg0) {
 }
 
 s32 ChaseHeroTestJump(s32 arg0) {
-    if (!(D_80051338[arg0].unk54 & 0x4000)) {
+    if (!(Pads[arg0].unk54 & 0x4000)) {
         return 0;
     }
     SetHeroAction(arg0, 0x78);
@@ -3718,7 +3718,7 @@ s32 ChaseFindHero(s32 x, s32 z, s32 range) {
 }
 
 s32 ChasePadHook(s32 arg0) {
-    u32 m = D_80051338[arg0].unk54 & 0x2000;
+    u32 m = Pads[arg0].unk54 & 0x2000;
     return m != 0;
 }
 
@@ -3727,8 +3727,8 @@ void ChaseClampToArena(s32 *p, s32 arg1) {
     s32 a;
     if (d > 0) {
         a = get_angle(p[4], p[6]);
-        p[4] -= (d * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
-        p[6] -= (d * D_80068BD4[a & 0xFFF].unk2) >> 12;
+        p[4] -= (d * TrigTable[(a - 0x400) & 0xFFF].unk2) >> 12;
+        p[6] -= (d * TrigTable[a & 0xFFF].unk2) >> 12;
     }
 }
 
@@ -3742,16 +3742,16 @@ void ChaseStopHeroSfx(void) {
 }
 
 void CHASESetUp(void) {
-    D_8005AA70[0] = (s32)InitialiseCHASEFirst;
-    D_8005AA70[1] = (s32)InitialiseCHASE;
-    D_8005AA70[2] = (s32)InitialiseCHASE;
-    D_8005AA70[3] = (s32)UpdateCHASE;
-    D_8005AA70[4] = (s32)ChaseStopHeroSfx;
-    D_8005AA70[6] = (s32)ChaseTriggers;
-    D_8005AA70[5] = (s32)FirstTriggersCHASE;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
-    D_8005AA70[10] = (s32)FinishChaseLevel;
+    LevelSpecs[0] = (s32)InitialiseCHASEFirst;
+    LevelSpecs[1] = (s32)InitialiseCHASE;
+    LevelSpecs[2] = (s32)InitialiseCHASE;
+    LevelSpecs[3] = (s32)UpdateCHASE;
+    LevelSpecs[4] = (s32)ChaseStopHeroSfx;
+    LevelSpecs[6] = (s32)ChaseTriggers;
+    LevelSpecs[5] = (s32)FirstTriggersCHASE;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
+    LevelSpecs[10] = (s32)FinishChaseLevel;
 }
 
 void ChaseGridClear(s32 x, s32 y) {
@@ -3883,8 +3883,8 @@ void ChaseAimAt(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4) {
     arg4->unk0 = 2;
     n = ChaseHeroState[arg0][17];
     arg4->unk4 = (n / 2 + 0x400) / n;
-    arg4->unk8 = *(u32 *)((u8 *)D_80051244 + ((ang >> 7) & 0x1C));
-    if (D_8009D908 == 0) {
+    arg4->unk8 = *(u32 *)((u8 *)DirPadBits + ((ang >> 7) & 0x1C));
+    if (HeroesAllOut == 0) {
         Random(4);
     }
 }

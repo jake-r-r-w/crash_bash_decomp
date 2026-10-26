@@ -6,32 +6,32 @@
 #include "bash/shell.h"
 
 s32 func_8007EE2C(s32 pad) {
-    if ((((PadButtons *)D_80051338)[pad].pressed & 0x80) && D_8009AEEC != 0) {
+    if ((((PadButtons *)Pads)[pad].pressed & 0x80) && D_8009AEEC != 0) {
         D_8009AEEC = 0;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((((PadButtons *)D_80051338)[pad].pressed & 0x20) && D_8009AEEC == 0) {
+    if ((((PadButtons *)Pads)[pad].pressed & 0x20) && D_8009AEEC == 0) {
         D_8009AEEC = 1;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((((PadButtons *)D_80051338)[pad].held & 9) != 9 &&
-        (((PadButtons *)D_80051338)[pad].pressed & 8)) {
-        s32 *p = (s32 *)D_8005A614;
+    if ((((PadButtons *)Pads)[pad].held & 9) != 9 &&
+        (((PadButtons *)Pads)[pad].pressed & 8)) {
+        s32 *p = (s32 *)GameInfo;
         D_8009AEF0 = 0;
         D_8009AEEC = 0;
         p[4] &= 0x04000010;
         func_8002AC18();
         return 0;
     }
-    return ((PadButtons *)D_80051338)[pad].pressed & 0x4000;
+    return ((PadButtons *)Pads)[pad].pressed & 0x4000;
 }
 
 s32 func_8007EFC0(s32 pad, s32 max) {
-    if ((((PadButtons *)D_80051338)[pad].pressed & 0x10) && D_8009AEEC > 0) {
+    if ((((PadButtons *)Pads)[pad].pressed & 0x10) && D_8009AEEC > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         D_8009AEEC--;
     }
-    if ((((PadButtons *)D_80051338)[pad].pressed & 0x40) && D_8009AEEC < max) {
+    if ((((PadButtons *)Pads)[pad].pressed & 0x40) && D_8009AEEC < max) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         D_8009AEEC++;
     }
@@ -41,24 +41,24 @@ s32 func_8007EFC0(s32 pad, s32 max) {
     if (D_8009AEEC > max) {
         D_8009AEEC = max;
     }
-    if ((((PadButtons *)D_80051338)[pad].held & 9) != 9 &&
-        (((PadButtons *)D_80051338)[pad].pressed & 8)) {
-        s32 *p = (s32 *)D_8005A614;
+    if ((((PadButtons *)Pads)[pad].held & 9) != 9 &&
+        (((PadButtons *)Pads)[pad].pressed & 8)) {
+        s32 *p = (s32 *)GameInfo;
         D_8009AEF0 = 0;
         D_8009AEEC = 0;
         p[4] &= 0x04000010;
         func_8002AC18();
         return 0;
     }
-    return ((PadButtons *)D_80051338)[pad].pressed & 0x4000;
+    return ((PadButtons *)Pads)[pad].pressed & 0x4000;
 }
 
 s32 func_8007F1A8(s32 pad, s32 max) {
-    if ((((PadButtons *)D_80051338)[pad].pressed & 0x10) && D_8009AEEC > 0) {
+    if ((((PadButtons *)Pads)[pad].pressed & 0x10) && D_8009AEEC > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         D_8009AEEC--;
     }
-    if ((((PadButtons *)D_80051338)[pad].pressed & 0x40) && D_8009AEEC < max) {
+    if ((((PadButtons *)Pads)[pad].pressed & 0x40) && D_8009AEEC < max) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         D_8009AEEC++;
     }
@@ -68,7 +68,7 @@ s32 func_8007F1A8(s32 pad, s32 max) {
     if (D_8009AEEC > max) {
         D_8009AEEC = max;
     }
-    return ((PadButtons *)D_80051338)[pad].pressed & 0x4008;
+    return ((PadButtons *)Pads)[pad].pressed & 0x4008;
 }
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADDB0);
@@ -135,10 +135,10 @@ s32 func_8007F314(void) {
             PSV->flags &= ~0x02000000;
         }
     }
-    if (!(D_8005A646 & 0x100)) {
+    if (!(GameLevelFlags & 0x100)) {
         s32 j;
         j = 0;
-        key = D_8005A646 & 0xFF;
+        key = GameLevelFlags & 0xFF;
         tbl = D_8009AF38;
         do {
             if (key == *tbl) {
@@ -153,17 +153,17 @@ s32 func_8007F314(void) {
         kind = 7;
     }
 found:
-    if (!(D_8005A624 & 0x660)) {
-        s32 bit = D_8005A624 & 1;
+    if (!(GamePause & 0x660)) {
+        s32 bit = GamePause & 1;
         s32 toggle;
 
-        if (D_8005A624 & 0x01000000) {
+        if (GamePause & 0x01000000) {
             toggle = bit ^ 1;
         } else {
             toggle = bit != 0;
         }
         if (toggle) {
-            if (D_8005A624 & 1) {
+            if (GamePause & 1) {
                 func_80028158();
                 func_8002AC40();
                 PlaySfx(0x193, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -291,15 +291,15 @@ found:
                     hi = 0;
                     if (PSV->unk32 & 0x10) {
                         for (i = 0; i < 4; i++) {
-                            if (hi < D_8005A614[i + 0xCC]) {
-                                hi = D_8005A614[i + 0xCC];
+                            if (hi < GameInfo[i + 0xCC]) {
+                                hi = GameInfo[i + 0xCC];
                             }
                         }
                         if (hi >= 2) {
-                            g = &D_8005A614[PSV->mode];
+                            g = &GameInfo[PSV->mode];
                             if (g[0xE4] == 0) {
                                 g[0xAB]++;
-                                g = &D_8005A614[PSV->mode];
+                                g = &GameInfo[PSV->mode];
                                 if (g[0xAB] >= 4) {
                                     g[0xAB] = 3;
                                 }
@@ -470,7 +470,7 @@ found:
                 break;
             case 2:
                 for (i = 0; i < PSV->numPlayers; i++) {
-                    if ((HPADS[i].pressed & 0x8000) && (((PadStick *)D_80051338)[i].flags & 8)) {
+                    if ((HPADS[i].pressed & 0x8000) && (((PadStick *)Pads)[i].flags & 8)) {
                         OPTV->unkC[i] = OPTV->unkC[i] == 0;
                         func_80028018(i, 10);
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -601,7 +601,7 @@ found:
             break;
         }
         /* in both branches: when neither runs, the hook doesn't either */
-        if (D_8005A644 & 0x1000) {
+        if (GameExitFlags & 0x1000) {
             func_80082D90(ret);
         }
     } else if (!(PSV->flags & 0x04000000) || (PSV->unk30 & 0x1000)) {
@@ -628,7 +628,7 @@ found:
                 }
             }
         }
-        if (D_8005A644 & 0x1000) {
+        if (GameExitFlags & 0x1000) {
             func_80082D90(ret);
         }
     }
@@ -649,7 +649,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
     s32 sfx;
 
     for (n = 0; e->type != -1; e++) {
-        g = (HudGameView *)D_8005A614;
+        g = (HudGameView *)GameInfo;
         switch (e->type) {
         case 1:
             if ((g->state & 0x80010000) != 0x80010000) {
@@ -885,7 +885,7 @@ void func_80080FBC(void) {
             break;
         case 2:
             for (i = 0; i < MSGV->numPlayers; i++) {
-                if (D_80051338[i].unk0 & 8) {
+                if (Pads[i].unk0 & 8) {
                     D_8009BD1C[i] = OPTV->unkC[i] != 0;
                 } else {
                     D_8009BD1C[i] = 9;
@@ -955,7 +955,7 @@ void func_80081470(s32 arg0) {
             n[i] += SCV->bonus[i];
         }
     }
-    if (D_8005A646 & 0xC0) {
+    if (GameLevelFlags & 0xC0) {
         D_8009BD38 = 0;
     } else {
         D_8009BD38 = 1;
@@ -971,7 +971,7 @@ void func_80081470(s32 arg0) {
     } else {
         D_8009BD34 = 1;
     }
-    if (D_8005A646 & 2) {
+    if (GameLevelFlags & 2) {
         D_8009BD3C = 1;
     } else {
         D_8009BD3C = 0;
@@ -1034,7 +1034,7 @@ void func_80081470(s32 arg0) {
                 }
                 break;
             default:
-                if (D_8005A624 & 8) {
+                if (GamePause & 8) {
                     func_80095BEC(4, D_8009B0C8);
                 } else {
                     func_80095BEC(4, D_8009AF60);
@@ -1138,7 +1138,7 @@ void func_80081F64(s32 arg0) {
     PadButtons *pads;
 
     lim = 0x15E;
-    if (D_8004DDD0[D_8005A648 * 3] == 0x102) {
+    if (D_8004DDD0[GameMode * 3] == 0x102) {
         lim = 0x140;
     }
     e = GetEngineSlot(4);
@@ -1187,7 +1187,7 @@ void func_80081F64(s32 arg0) {
         if (e->unk10.y < lim) {
             e->unk10.y = lim;
         }
-        if (D_8009BD38 != 0 && (((PadButtons *)D_80051338)[D_8009AEF0].pressed & 0x1000)) {
+        if (D_8009BD38 != 0 && (((PadButtons *)Pads)[D_8009AEF0].pressed & 0x1000)) {
             D_8009BD00 = 3;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1202,9 +1202,9 @@ void func_80081F64(s32 arg0) {
         if (D_8009BD34 == 0 && D_8009BD3C == 0) {
             break;
         }
-        pads = (PadButtons *)D_80051338;
+        pads = (PadButtons *)Pads;
         if (HPADS[D_8009AEF0].pressed & 0x1000) {
-            if (D_8005A646 & 2) {
+            if (GameLevelFlags & 2) {
                 D_8009BD00 = 5;
             } else {
                 D_8009BD00 = 1;
@@ -1219,7 +1219,7 @@ void func_80081F64(s32 arg0) {
         if (e->unk10.y < lim) {
             e->unk10.y = lim;
         }
-        if (D_8009BD38 != 0 && (((PadButtons *)D_80051338)[D_8009AEF0].pressed & 0x1000)) {
+        if (D_8009BD38 != 0 && (((PadButtons *)Pads)[D_8009AEF0].pressed & 0x1000)) {
             D_8009BD00 = 3;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1232,7 +1232,7 @@ void func_80081F64(s32 arg0) {
             func_80081470(1);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
-        if (D_8009BD38 != 0 && (((PadButtons *)D_80051338)[D_8009AEF0].pressed & 0x1000)) {
+        if (D_8009BD38 != 0 && (((PadButtons *)Pads)[D_8009AEF0].pressed & 0x1000)) {
             D_8009BD00 = 3;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1248,9 +1248,9 @@ void func_80081F64(s32 arg0) {
         if (D_8009BD34 == 0 && D_8009BD3C == 0) {
             break;
         }
-        pads = (PadButtons *)D_80051338;
+        pads = (PadButtons *)Pads;
         if (HPADS[D_8009AEF0].pressed & 0x1000) {
-            if (D_8005A646 & 2) {
+            if (GameLevelFlags & 2) {
                 D_8009BD00 = 5;
             } else {
                 D_8009BD00 = 1;
@@ -1266,7 +1266,7 @@ void func_80081F64(s32 arg0) {
             func_80081470(5);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
-        if (D_8009BD38 != 0 && (((PadButtons *)D_80051338)[D_8009AEF0].pressed & 0x1000)) {
+        if (D_8009BD38 != 0 && (((PadButtons *)Pads)[D_8009AEF0].pressed & 0x1000)) {
             D_8009BD00 = 5;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1291,29 +1291,29 @@ void func_80082590(void) {
     GfxState *gs;
     u8 *e;
 
-    if (D_8005A624 & 0x7000) {
-        gs = &D_80056998;
+    if (GamePause & 0x7000) {
+        gs = &RenderState;
         *(s32 *)&gs->unk28[0] = 0;
         *(s32 *)&gs->unk28[4] = 0;
-        if (D_8005A624 & 0x4000) {
+        if (GamePause & 0x4000) {
             e = D_8009BCE0;
             if (*(s16 *)(e + 0xC) != -1) {
                 func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
                 gs->otzAdd = 0x200;
-                gs->modelDp = *(s32 *)&D_8009F644;   /* a scalar read: scheduled above the otzAdd store */
+                gs->modelDp = *(s32 *)&ScreenFade;   /* a scalar read: scheduled above the otzAdd store */
                 func_8001A6D4(e, 0x10000000);
             }
         }
-    } else if (D_8005A624 & 1) {
-        gs = &D_80056998;
+    } else if (GamePause & 1) {
+        gs = &RenderState;
         *(s32 *)&gs->unk28[0] = 0;
         *(s32 *)&gs->unk28[4] = 0;
-        if (!(D_8005A624 & 0x40)) {
+        if (!(GamePause & 0x40)) {
             e = D_8009BCE0;
             if (*(s16 *)(e + 0xC) != -1) {
                 func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
                 gs->otzAdd = 0x200;
-                gs->modelDp = *(s32 *)&D_8009F644;
+                gs->modelDp = *(s32 *)&ScreenFade;
                 func_8001A6D4(e, 0x10000000);
             }
         }
@@ -1338,7 +1338,7 @@ void func_800826F8(s32 arg0) {
     D_8009BD08 = 0x19;
     D_8009BD40 = 0;
     D_8009BD44 = 1;
-    g = (EngineHintView *)D_8005A614;
+    g = (EngineHintView *)GameInfo;
     g->flags &= 0xFDC07013;
     D_8009BD48 = 3;
     g->flags |= 0x04000000;
@@ -1422,7 +1422,7 @@ void func_800826F8(s32 arg0) {
         D_8009BD08 >>= 1;
         return;
     default:
-        g2 = (EngineHintView *)D_8005A614;
+        g2 = (EngineHintView *)GameInfo;
         if (g2->shown[g2->mode] & 0x10) {
             return;
         }
@@ -1450,7 +1450,7 @@ void func_80082AC4(void) {
     u8 *r;
 
     D_8009BD08 = 0x1E;
-    g = D_8005A614;
+    g = GameInfo;
     if (*(u16 *)(g + 0x32) & 0x100) {
         (g + *(s16 *)(g + 0x34))[0xAB] += 2;
         p = g + *(s16 *)(g + 0x34);
@@ -1458,7 +1458,7 @@ void func_80082AC4(void) {
             p[0xAB] = 0x1F;
         }
     }
-    q = D_8005A614;
+    q = GameInfo;
     if (*(u16 *)(q + 0x32) & 0x1E0) {
         i = 3;
         r = q + i;
@@ -1466,7 +1466,7 @@ void func_80082AC4(void) {
             r[0xCC] = 0;
             r--;
         }
-        if ((D_8005A646 & 0x40) && (PanelCtrl & 1) && Clock_Time == 0) {
+        if ((GameLevelFlags & 0x40) && (PanelCtrl & 1) && Clock_Time == 0) {
             D_8009BD40 = 6;
             D_8009BD44 = 3;
             D_8009E0D2 = 0x28;
@@ -1514,7 +1514,7 @@ void func_80082C34(void) {
             counter_sub.unk04 = 0x140;
             counter_sub.flags &= 0xFFFF7FFF;
             if (D_8009BD40 == 4) {
-                u8 *g = D_8005A614;
+                u8 *g = GameInfo;
                 D_8009BD44 = 0;
                 *(u16 *)(g + 0x30) &= 0xEFFF;
             }
@@ -1571,7 +1571,7 @@ void func_80082D90(s32 arg0) {
             counter_sub.unk74 = 0x2005;
             counter_sub.flags |= 0x8000;
             PlaySfx(0x1A7, NULL, NULL, 0x1000, 0x1E00, 0);
-            ((EngineHintView *)D_8005A614)->flags &= 0xFBFFFFFF;
+            ((EngineHintView *)GameInfo)->flags &= 0xFBFFFFFF;
             break;
         case 5:
             counter_sub.unk74 = 0x2006;
@@ -1614,7 +1614,7 @@ void func_80082D90(s32 arg0) {
         counter_sub.unk20.x += d >> 3;
         counter_sub.unk20.y = counter_sub.unk20.x;
         counter_sub.unk20.z = counter_sub.unk20.x;
-        counter_sub.unk12 = ((D_80068BD4[(((D_8004E0D8 << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.unk12 = ((TrigTable[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
         counter_sub.unk52 = 1;
         if (d < 0x100) {
             PlaySfx(0x1AF, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1626,7 +1626,7 @@ void func_80082D90(s32 arg0) {
         counter_sub.unk20.x = t;
         counter_sub.unk20.y = t;
         counter_sub.unk20.z = t;
-        counter_sub.unk12 = ((D_80068BD4[(((D_8004E0D8 << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.unk12 = ((TrigTable[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
         counter_sub.unk52 = 1;
     }
     if (D_8009BD08 <= 0) {
@@ -1697,7 +1697,7 @@ void func_80083334(s32 arg0, s32 kind, s32 flag) {
     EngineRec24 **set;
     EngineRec24 *rec;
 
-    t = ((EngineRec24 ****)D_8005AAB0)[D_8005A648];
+    t = ((EngineRec24 ****)D_8005AAB0)[GameMode];
     if (flag != 0) {
         switch (kind) {
         case 3:
@@ -1745,7 +1745,7 @@ void func_80083334(s32 arg0, s32 kind, s32 flag) {
 }
 
 s32 func_80083488(void) {
-    PadButtons *base = (PadButtons *)D_80051338;
+    PadButtons *base = (PadButtons *)Pads;
     PadButtons *pad = &base[D_8009AEF0];
     if ((pad->held & 9) != 9) {
         if (pad->pressed & 0x4008) {
@@ -1756,7 +1756,7 @@ s32 func_80083488(void) {
 }
 
 void func_800834E4(void) {
-    s32 *p = (s32 *)D_8005A614;
+    s32 *p = (s32 *)GameInfo;
     D_8009AEF0 = 0;
     D_8009AEEC = 0;
     p[4] &= 0x04000010;
@@ -1764,7 +1764,7 @@ void func_800834E4(void) {
 }
 
 void func_8008352C(void) {
-    u8 *p = D_8005A614;
+    u8 *p = GameInfo;
     s32 a = *(s32 *)(p + 0x10);
     u16 b = *(u16 *)(p + 0x30);
     *(s32 *)(p + 0x10) = a | 0x10;
@@ -1772,39 +1772,39 @@ void func_8008352C(void) {
 }
 
 void func_80083550(void) {
-    D_8009D6E8.unk0 = 0;
-    D_8009D6E8.unk4 = D_8009D2E4;
-    D_8009D6E8.unkC = D_8009D318;
-    D_8009D6E8.unk10 = D_8009D354;
-    D_8009D6E8.unk14 = D_8009D2F8;
-    D_8009D6E8.unk20 = func_800859D4;
-    D_8009D6E8.unk24 = func_80085D2C;
-    D_8009D6E8.unk2C = func_80085C84;
-    D_8009D6E8.unk30 = func_8008AA40;
-    D_8009D6E8.unk34 = func_8008A9F0;
-    D_8009D6E8.unk38 = func_8008680C;
-    D_8009D6E8.unk3C = func_8008AB48;
-    D_8009D6E8.unk40 = func_8008AB48;
-    D_8009D6E8.unk4C = DefHero2ObjectCollision;
-    D_8009D6E8.unk50 = func_8008671C;
-    D_8009D6E8.unk54 = func_80086714;
-    D_8009D6E8.unk64 = func_80084788;
-    D_8009D6E8.unk60 = DefaultTouched;
-    D_8009D6E8.unk8 = 0;
-    D_8009D6E8.unk18 = 0;
-    D_8009D6E8.unk1C = 0;
-    D_8009D6E8.unk28 = 0;
-    D_8009D6E8.unk44 = 0;
-    D_8009D6E8.unk48 = 0;
-    D_8009D6E8.unk5C = 0;
-    D_8009D6E8.unk58 = 0;
-    D_8009D6E8.unk68 = func_8008670C;
-    D_8009D8F4 = D_8009D894;
-    D_8009D8F8 = D_8009D8A8;
-    D_8009D8FC = D_8009D8BC;
-    D_8009D904 = D_8009D8DC;
-    D_8009D900 = D_8009D8D0;
-    D_8009D908 = 0;
+    HeroHooks.unk0 = 0;
+    HeroHooks.unk4 = D_8009D2E4;
+    HeroHooks.unkC = D_8009D318;
+    HeroHooks.unk10 = D_8009D354;
+    HeroHooks.unk14 = D_8009D2F8;
+    HeroHooks.unk20 = func_800859D4;
+    HeroHooks.unk24 = func_80085D2C;
+    HeroHooks.unk2C = func_80085C84;
+    HeroHooks.unk30 = func_8008AA40;
+    HeroHooks.unk34 = func_8008A9F0;
+    HeroHooks.unk38 = func_8008680C;
+    HeroHooks.unk3C = func_8008AB48;
+    HeroHooks.unk40 = func_8008AB48;
+    HeroHooks.unk4C = DefHero2ObjectCollision;
+    HeroHooks.unk50 = func_8008671C;
+    HeroHooks.unk54 = func_80086714;
+    HeroHooks.unk64 = func_80084788;
+    HeroHooks.unk60 = DefaultTouched;
+    HeroHooks.unk8 = 0;
+    HeroHooks.unk18 = 0;
+    HeroHooks.unk1C = 0;
+    HeroHooks.unk28 = 0;
+    HeroHooks.unk44 = 0;
+    HeroHooks.unk48 = 0;
+    HeroHooks.unk5C = 0;
+    HeroHooks.unk58 = 0;
+    HeroHooks.unk68 = func_8008670C;
+    AiBotTweakTable = D_8009D894;
+    AiHumanTweakTable = D_8009D8A8;
+    AiSkillTable = D_8009D8BC;
+    AiHumanRoundTweakTable = D_8009D8DC;
+    AiTeamSkillTable = D_8009D8D0;
+    HeroesAllOut = 0;
     D_8009E0D8 = 0xD;
     D_8009E0DA = 0xE;
     D_8009E0DC = 0xF;

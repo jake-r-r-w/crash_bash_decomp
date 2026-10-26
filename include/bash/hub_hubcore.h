@@ -98,7 +98,7 @@ typedef struct PodiumTrophy {
     /* 0x58 */ u8 pad58[4];
     /* 0x5C */ u16 state;
 } PodiumTrophy;
-#define PODIUM_SIN(k) D_80068BD4[((((D_8005B690 * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
+#define PODIUM_SIN(k) TrigTable[((((FrameCount * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
 extern u32 PodiumState;
 extern s32 PodiumCamState;
 extern s32 PodiumCamTimer;
@@ -118,7 +118,7 @@ extern u8 HubNameCursor[];
 extern GfxViewport HubSaveViewport;
 extern u8 HubSaveCamera[];
 
-/* D_8005A614 as this file sees it: per-player byte flags at 0xE4.. */
+/* GameInfo as this file sees it: per-player byte flags at 0xE4.. */
 typedef struct HubGameView {
     /* 0x000 */ u8 pad0[4];
     /* 0x004 */ s32 unk4;
@@ -235,7 +235,7 @@ extern EXTengine *D_8009D530;
 extern CamEase HubCamEase;
 extern EXTengine *D_8009D538[];
 extern s32 D_8009EEA4;
-/* PadState (D_80051338) as HubPreMoveHero reads it: held/pressed buttons at 0x50/0x54. */
+/* PadState (Pads) as HubPreMoveHero reads it: held/pressed buttons at 0x50/0x54. */
 typedef struct HubPad {
     /* 0x00 */ u8 pad0[0x50];
     /* 0x50 */ s32 unk50;
@@ -291,7 +291,7 @@ extern NAS *PodiumHeroNas[];
 extern u16 PodiumHeroAnims[];
 extern s32 PodiumHeroX[];
 
-#define G6A ((HubGameView *)D_8005A614)
+#define G6A ((HubGameView *)GameInfo)
 
 /* D_8009EE9C as seen by InitialiseHUB. */
 typedef struct {
@@ -573,7 +573,7 @@ extern ScriptInit PodiumScript6;
 extern ScriptInit PodiumScript7;
 
 void PodiumInitScript(s32 arg0, s32 arg1);
-/* D_8005A614 as seen by HubLevelSelect. */
+/* GameInfo as seen by HubLevelSelect. */
 typedef struct HubSelView {
     /* 0x00 */ u8 pad0[0x30];
     /* 0x30 */ u16 unk30;

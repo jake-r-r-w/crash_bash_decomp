@@ -142,10 +142,10 @@ void BashHeroHold(s32 arg0) {
         goto rest;
     }
     if (o->can_do & 4) {
-        if (D_8005A614[arg0 + 0x5C] != 0) {
-            m = ((PadButtons *)D_80051338)[arg0].unk50 & 0x2000;
+        if (GameInfo[arg0 + 0x5C] != 0) {
+            m = ((PadButtons *)Pads)[arg0].unk50 & 0x2000;
         } else {
-            m = ((PadButtons *)D_80051338)[arg0].unk54 & 0x2000;
+            m = ((PadButtons *)Pads)[arg0].unk54 & 0x2000;
         }
         if (m != 0) {
         action:
@@ -173,7 +173,7 @@ rest:
         s = self->hero_fx->sub;
         if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
             self->hero_fx->unk10 = self->hero_eng->unk10;
-            v = (D_80068BD4[(((D_8004E0D8 << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+            v = (TrigTable[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
             s->unk20.y = s->unk20.x = v;
             s->unk04 = pos.vx - self->hero_eng->unk10.x;
             s->unk08 = pos.vy - self->hero_eng->unk10.y;
@@ -213,7 +213,7 @@ void BashHeroCarry(s32 arg0) {
         }
         goto rest;
     }
-    if ((o->can_do & 4) && (((PadButtons *)D_80051338)[arg0].unk50 & 0x2000)) {
+    if ((o->can_do & 4) && (((PadButtons *)Pads)[arg0].unk50 & 0x2000)) {
     action:
         SetHeroAction(arg0, (u16)D_8009E0E0);
         return;
@@ -231,7 +231,7 @@ rest:
         s = self->hero_fx->sub;
         if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
             self->hero_fx->unk10 = self->hero_eng->unk10;
-            v = (D_80068BD4[(((D_8004E0D8 << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+            v = (TrigTable[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
             s->unk20.y = s->unk20.x = v;
             s->unk04 = pos.vx - self->hero_eng->unk10.x;
             s->unk08 = pos.vy - self->hero_eng->unk10.y;
@@ -610,7 +610,7 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
     top = me->unk10.y + rec->height;
     rad = rec->radius;
     func_80015758((SVECTOR *)rec, &pos);
-    nas = D_8005AA2C;
+    nas = HeadOfSolids;
     self = NULL;
     if (h->hero_object != NULL) {
         self = ((NAS **)h->hero_object)[-1];
@@ -677,8 +677,8 @@ NAS *BashHeroGrabObject(idx, cone)
     h = &heroes[idx];
     ang = h->hero_move->facing_angle;
     he = h->hero_eng;
-    hx = he->unk10.x - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (D_80068BD4[ang & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (TrigTable[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = (u8 *)n->FUX;
         if (fux == NULL) continue;
@@ -855,14 +855,14 @@ s32 BashHeroKickCollision(s32 arg0) {
                             if (d < r) {
                                 ang = get_angle(dx, dz) & 0xFFF;
                                 d = r - d + 1;
-                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                                 hit = 1;
                                 if (self->hero_pu != 0) {
-                                    (*(void (**)(s32, s32))&D_8009D6E8.unk60)(arg0, i);
+                                    (*(void (**)(s32, s32))&HeroHooks.unk60)(arg0, i);
                                 }
                                 if (Heroes[i].hero_pu != 0) {
-                                    (*(void (**)(s32, s32))&D_8009D6E8.unk60)(i, arg0);
+                                    (*(void (**)(s32, s32))&HeroHooks.unk60)(i, arg0);
                                 }
                                 if (D_8005A5DC < 4) {
                                     if (D_8005A5DC >= 2) {
@@ -887,11 +887,11 @@ s32 BashHeroKickCollision(s32 arg0) {
                             ang = get_angle(dx, dz) & 0xFFF;
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                             } else {
-                                e->unk10.x += (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                e->unk10.z += (d * D_80068BD4[ang].unk2) >> 12;
+                                e->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                e->unk10.z += (d * TrigTable[ang].unk2) >> 12;
                             }
                             if (D_8005A5DC < 4) {
                                 if (D_8005A5DC >= 2) {
@@ -915,11 +915,11 @@ s32 BashHeroKickCollision(s32 arg0) {
                             ang = get_angle(dx, dz) & 0xFFF;
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                             } else {
-                                e->unk10.x += (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                e->unk10.z += (d * D_80068BD4[ang].unk2) >> 12;
+                                e->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                e->unk10.z += (d * TrigTable[ang].unk2) >> 12;
                             }
                             if (D_8005A5DC < 4) {
                                 if (D_8005A5DC >= 2) {
@@ -931,7 +931,7 @@ s32 BashHeroKickCollision(s32 arg0) {
                 }
             }
             own = NULL;
-            n = D_8005AA2C;
+            n = HeadOfSolids;
             if (Heroes[arg0].hero_object != NULL) {
                 own = ((NAS **)Heroes[arg0].hero_object)[-1];
             }
@@ -970,8 +970,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * TrigTable[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->can_do & 8)) {
@@ -1029,7 +1029,7 @@ s32 BashHeroCarryCollision(s32 idx) {
                 }
                 func_80015758((SVECTOR *)box, &v);
             }
-            nas = D_8005AA2C;
+            nas = HeadOfSolids;
             self = NULL;
             if (Heroes[idx].hero_object != NULL) {
                 self = ((NAS **)Heroes[idx].hero_object)[-1];
@@ -1056,8 +1056,8 @@ s32 BashHeroCarryCollision(s32 idx) {
                                             if (d < r) {
                                                 ang = get_angle(dx, dz) & 0xFFF;
                                                 d = r - d + 1;
-                                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                                                 hit = 1;
                                                 if (ext->can_do & 8) {
                                                     ext->player = idx;
@@ -1089,8 +1089,8 @@ void *BashHeroObjectAhead(s32 idx, s32 mask) {
     m = mask;
     lim = 0x10000;
     he = Heroes[idx].hero_eng;
-    hx = he->unk10.x - (D_80068BD4[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (D_80068BD4[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (TrigTable[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (TrigTable[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = n->FUX;
         if (fux == NULL) continue;
@@ -1181,9 +1181,9 @@ void SetBashHeroPickup(s32 arg0) {
 s32 BashSpacePadHook(s32 arg0) {
     u32 m;
 
-    if (D_8005A614[arg0 + 0x5C] != 0) {
+    if (GameInfo[arg0 + 0x5C] != 0) {
         return 0;
     }
-    m = D_80051338[arg0].unk54 & 0x2000;
+    m = Pads[arg0].unk54 & 0x2000;
     return m != 0;
 }

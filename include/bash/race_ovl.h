@@ -227,7 +227,7 @@ s32 RaceBounceObject(RaceBounceObj *obj, RaceBouncer *b);
 s32 RaceDazeHeroNear(u8 *arg0);
 
 void RACESetUp(void);
-/* D_8005A614 as seen by UpdateRACE. */
+/* GameInfo as seen by UpdateRACE. */
 typedef struct RaceGameView {
     /* 0x00 */ u8 unk0[0x10];
     /* 0x10 */ s32 unk10;
@@ -236,8 +236,8 @@ typedef struct RaceGameView {
     /* 0x32 */ u16 unk32;
     /* 0x34 */ s16 unk34;
 } RaceGameView;
-#define G63 ((RaceGameView *)D_8005A614)
-/* D_8005A614 as seen by RaceMissileHitHeroes. */
+#define G63 ((RaceGameView *)GameInfo)
+/* GameInfo as seen by RaceMissileHitHeroes. */
 typedef struct RaceGameView2 {
     /* 0x00 */ u8 unk0[4];
     /* 0x04 */ s32 unk4;
@@ -249,7 +249,7 @@ typedef struct RaceGameView2 {
     /* 0x5C */ u8 unk5C[4];
     /* 0x60 */ u8 unk60;
 } RaceGameView2;
-#define G63B ((RaceGameView2 *)D_8005A614)
+#define G63B ((RaceGameView2 *)GameInfo)
 
 /* One of four random voice sfx (SetRaceHeroDazed; as SFX4 in dino.h). */
 #define RACE_SFX4(a, b, c, d)                              \
@@ -414,7 +414,7 @@ extern RaceObj74 *RaceGlowObj;
 extern s32 RaceGlowPhase;
 extern s32 RaceGlowMode;
 extern s32 RaceStartDelay;
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 
 /* Spinning object MaintainCentre updates: rotation at 0x10, its matrix at 0x30. */
 typedef struct RaceSpinObj {
@@ -460,7 +460,7 @@ void MaintainCentre(void);
 void RaceUpdateBarrels(void);
 void RacePickupMaster(void);
 void RacePickupRespawn(void);
-/* PadState (D_80051338) as RaceHeroTestIdle reads it: d-pad bits 0xF0 at 0x50. */
+/* PadState (Pads) as RaceHeroTestIdle reads it: d-pad bits 0xF0 at 0x50. */
 typedef struct RacePad {
     /* 0x00 */ u8 unk0[0x50];
     /* 0x50 */ s32 unk50;
@@ -515,7 +515,7 @@ typedef struct RaceSegObj {
     /* 0x48 */ RaceSeg segs[1];
 } RaceSegObj;
 
-/* D_80058AD0 as RaceTrackCollide reads it. */
+/* MapScene as RaceTrackCollide reads it. */
 typedef struct RaceSegScene {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u8 pad4[0xC];
@@ -531,10 +531,10 @@ static inline s32 RaceBounce(s32 a, s32 b) {
     s32 r[4];
     s32 dot;
 
-    n[0] = D_80068BD4[b & 0xFFF].unk2;
-    n[2] = D_80068BD4[(b - 0x400) & 0xFFF].unk2;
-    d[0] = -D_80068BD4[(a - 0x400) & 0xFFF].unk2;
-    d[2] = -D_80068BD4[a & 0xFFF].unk2;
+    n[0] = TrigTable[b & 0xFFF].unk2;
+    n[2] = TrigTable[(b - 0x400) & 0xFFF].unk2;
+    d[0] = -TrigTable[(a - 0x400) & 0xFFF].unk2;
+    d[2] = -TrigTable[a & 0xFFF].unk2;
     dot = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);
     r[0] = d[0] - (dot * n[0] >> 11);
     r[2] = d[2] - (dot * n[2] >> 11);
@@ -548,10 +548,10 @@ static inline s32 RaceBounce(s32 a, s32 b) {
         s32 a_ = (ang);                                         \
         s32 dot_;                                               \
                                                                 \
-        n[0] = D_80068BD4[b_ & 0xFFF].unk2;                     \
-        n[2] = D_80068BD4[(b_ - 0x400) & 0xFFF].unk2;           \
-        d[0] = -D_80068BD4[(a_ - 0x400) & 0xFFF].unk2;          \
-        d[2] = -D_80068BD4[a_ & 0xFFF].unk2;                    \
+        n[0] = TrigTable[b_ & 0xFFF].unk2;                     \
+        n[2] = TrigTable[(b_ - 0x400) & 0xFFF].unk2;           \
+        d[0] = -TrigTable[(a_ - 0x400) & 0xFFF].unk2;          \
+        d[2] = -TrigTable[a_ & 0xFFF].unk2;                    \
         dot_ = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);       \
         r[0] = d[0] - (dot_ * n[0] >> 11);                      \
         r[2] = d[2] - (dot_ * n[2] >> 11);                      \
@@ -779,14 +779,14 @@ void RaceSpawnBarrelRolls(void);
 void RaceCycleModel(void);
 
 NAS *RacePickupAhead(s32 arg0);
-/* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
+/* AiPlayerSkill (declared in bash/pause.h, which this unit does not include). */
 typedef struct RaceOdds {
     s16 unk0;
     s16 unk2;
     s16 unk4;
 } RaceOdds;
 
-extern RaceOdds D_8009D87C[];
+extern RaceOdds AiPlayerSkill[];
 
 s32 RaceOtherHeroNear(u8 *arg0, u32 arg1, s32 arg2);
 
@@ -807,7 +807,7 @@ void InitGlob(NAS *m);
 s32 RaceHeroTestRun(s32 arg0);
 
 s32 RaceJumpUp(s32 player);
-/* A scene object in the list at D_80058AD0 + 0x1C (RaceInitBarrels). */
+/* A scene object in the list at MapScene + 0x1C (RaceInitBarrels). */
 typedef struct RaceSceneObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ SLONG_XYZ pos;
@@ -837,7 +837,7 @@ typedef struct RaceNorm {
 
 s32 RaceTriHeight(SLONG_XYZ *pos, s16 *tri);
 
-/* D_80058AD0 as seen by RaceInitBarrels. */
+/* MapScene as seen by RaceInitBarrels. */
 typedef struct RaceScene {
     /* 0x00 */ u8 pad0[0x1C];
     /* 0x1C */ RaceSceneObj *objs;
@@ -883,7 +883,7 @@ void RaceInitBarrels(void);
 s32 RaceHeroTestOil(s32 arg0);
 
 void SetRaceHeroIdle(s32 player);
-/* D_8005A614 as seen by RaceExplodeHitHeroes. */
+/* GameInfo as seen by RaceExplodeHitHeroes. */
 typedef struct D5A614View63 {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -894,9 +894,9 @@ typedef struct D5A614View63 {
     /* 0x5C */ u8 unk5C[4];
     /* 0x60 */ u8 unk60;
 } D5A614View63;
-#define MODE63 ((D5A614View63 *)D_8005A614)
+#define MODE63 ((D5A614View63 *)GameInfo)
 
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 extern HeroInfo Heroes[4];
 
 void RaceHeroKick(s32 arg0);
@@ -1186,7 +1186,7 @@ typedef struct RaceShieldFxExt {
 
 void PlotRaceShield(NAS *nas);
 
-/* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
+/* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct RaceHooks {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ void *unk4;
@@ -1216,12 +1216,12 @@ typedef struct RaceHooks {
     /* 0x64 */ void *unk64;
     /* 0x68 */ void *unk68;
 } RaceHooks;
-extern RaceHooks D_8009D6E8;
-extern void *D_8009D8F4;
-extern void *D_8009D8F8;
-extern void *D_8009D8FC;
-extern void *D_8009D900;
-extern void *D_8009D904;
+extern RaceHooks HeroHooks;
+extern void *AiBotTweakTable;
+extern void *AiHumanTweakTable;
+extern void *AiSkillTable;
+extern void *AiTeamSkillTable;
+extern void *AiHumanRoundTweakTable;
 extern s32 D_80051658;
 
 /* Tables InitialiseRACEFirst hooks into the engine. */
@@ -1246,7 +1246,7 @@ typedef struct RaceResultFux {
     /* 0x148 */ s32 unk148;
 } RaceResultFux;
 
-/* D_8005A614 as seen by RaceChooseWinner (round result). */
+/* GameInfo as seen by RaceChooseWinner (round result). */
 typedef struct RaceResultView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;
@@ -1261,7 +1261,7 @@ typedef struct RaceResultView {
     /* 0x70 */ u8 unk70[0xA7 - 0x70];
     /* 0xA7 */ u8 unkA7[4];
 } RaceResultView;
-#define RV ((RaceResultView *)D_8005A614)
+#define RV ((RaceResultView *)GameInfo)
 
 /* RaceChooseWinner: a drawn round, counting with the caller's i. */
 #define RACE_DRAW_I(g, i, arg1)                                            \
@@ -1304,8 +1304,8 @@ static inline s32 RaceFacing(s32 p) {
 #define RACE_DRAW(k, arg1)                                 \
     {                                                       \
         s32 k;                                              \
-        D_8005A614[0x60] = 0;                               \
-        *(u16 *)(D_8005A614 + 0x30) |= (arg1);              \
+        GameInfo[0x60] = 0;                               \
+        *(u16 *)(GameInfo + 0x30) |= (arg1);              \
         for (k = 0; k < 4; k++) {                           \
             Heroes[k].hero_status |= 0x100;                 \
         }                                                   \
@@ -1313,8 +1313,8 @@ static inline s32 RaceFacing(s32 p) {
 
 /* RaceChooseWinnerTeam: team w/wt wins, l/lt lose and lose their shadows. */
 #define RACE_TEAM_WIN(w, wt, l, lt)                        \
-    D_8005A614[0x60] = Heroes[w].hero_name;                 \
-    D_8005A614[0x61] = Heroes[wt].hero_name;                \
+    GameInfo[0x60] = Heroes[w].hero_name;                 \
+    GameInfo[0x61] = Heroes[wt].hero_name;                \
     Heroes[w].hero_status |= 0x200;                         \
     Heroes[wt].hero_status |= 0x200;                        \
     Heroes[l].hero_status |= 0x400;                         \

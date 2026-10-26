@@ -63,7 +63,6 @@ void PolarEmptyStub1(void);
 void PolarEmptyStub2(void);
 
 extern NAS *PolarBomb;
-extern subengine *bossmapsub;
 
 /* InitBombGFX's extension (0x1C bytes). */
 typedef struct BombGFXExt {
@@ -72,7 +71,7 @@ typedef struct BombGFXExt {
     /* 0x10 */ u8 pad10[0x1C - 0x10];
 } BombGFXExt;
 
-/* A scene's model object as PolarInitDebug walks the list at D_80058AD0 + 0x1C. */
+/* A scene's model object as PolarInitDebug walks the list at MapScene + 0x1C. */
 typedef struct SceneObj {
     /* 0x00 */ u32 flags; /* 0x8000 visible */
     /* 0x04 */ s32 unk4;
@@ -103,20 +102,20 @@ extern SceneObj *PolarSceneB;
 extern s32 PolarSceneCount;
 extern s32 PolarSceneTimer;
 
-/* D_80058AD0 as seen by PolarInitScene. */
+/* MapScene as seen by PolarInitScene. */
 typedef struct PolarScene {
     /* 0x00 */ u8 pad0[0x1C];
     /* 0x1C */ SceneObj *objs;
 } PolarScene;
 
-/* D_8005A614 as seen by PolarInitScene. */
+/* GameInfo as seen by PolarInitScene. */
 typedef struct PolarModeView {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;
     /* 0x34 */ s16 mode;
 } PolarModeView;
 
-/* D_8005A614 as PolarAI_StartAttack reads it. */
+/* GameInfo as PolarAI_StartAttack reads it. */
 typedef struct PolarGameView {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;
@@ -124,7 +123,7 @@ typedef struct PolarGameView {
     /* 0x6C */ s32 unk6C;
 } PolarGameView;
 
-/* D_80051640 as the camera PolarCamReset sets up. */
+/* MainCamera as the camera PolarCamReset sets up. */
 typedef struct PolarCam {
     /* 0x00 */ CamXYZ eye;
     /* 0x0C */ CamXYZ at;
@@ -219,11 +218,11 @@ typedef struct PolarGameExt {
         s32 x_;                                                                    \
         s32 z_;                                                                    \
         s32 *p_;                                                                   \
-        x_ = (spd_ * D_80068BD4[((move)->forward_angle + 0x400) & 0xFFF].unk2) >> 12; \
+        x_ = (spd_ * TrigTable[((move)->forward_angle + 0x400) & 0xFFF].unk2) >> 12; \
         p_ = &(move)->x_vel;                                                       \
         p_[0] = x_;                                                                \
         p_[1] = x_;                                                                \
-        z_ = (spd_ * D_80068BD4[((move)->forward_angle + 0x800) & 0xFFF].unk2) >> 12; \
+        z_ = (spd_ * TrigTable[((move)->forward_angle + 0x800) & 0xFFF].unk2) >> 12; \
         p_ = &(move)->z_vel;                                                       \
         p_[0] = z_;                                                                \
         p_[1] = z_;                                                                \
@@ -242,7 +241,7 @@ typedef struct Ext20 {
     /* 0xAC */ s32 unkAC;
 } Ext20;
 
-/* PadState (D_80051338) as PolarHeroFootIdle and PolarHeroInBeam use it: the
+/* PadState (Pads) as PolarHeroFootIdle and PolarHeroInBeam use it: the
  * buttons at 0x50, a word at 0x54. */
 typedef struct PolarPad {
     /* 0x00 */ u8 pad0[0x50];
@@ -252,7 +251,7 @@ typedef struct PolarPad {
 
 void PolarHeroFootIdle(s32 player);
 
-/* PadState (D_80051338) as PolarAI_SteerToTarget writes it: stick angle at 0x38,
+/* PadState (Pads) as PolarAI_SteerToTarget writes it: stick angle at 0x38,
  * buttons at 0x50. */
 typedef struct PolarPadAng {
     /* 0x00 */ u8 pad0[0x38];
@@ -262,7 +261,7 @@ typedef struct PolarPadAng {
     /* 0x54 */ u8 pad54[0x58 - 0x54];
 } PolarPadAng;
 
-/* PadState (D_80051338) as PolarPreMoveHero reads it. */
+/* PadState (Pads) as PolarPreMoveHero reads it. */
 typedef struct PolarPadMove {
     /* 0x00 */ s32 flags;
     /* 0x04 */ u8 pad4[0x38 - 0x04];
@@ -322,7 +321,7 @@ typedef struct BrioOwner {
 /* Head of a list linked through +0x20 (counted by CountBears). */
 extern u8 *PolarBears;
 extern HeroInfo Heroes[4];
-extern s32 D_8005A680[];
+extern s32 GameTeams[];
 
 /* TestPolarHeroMelted's ending: put the hero into action 0x4E unless status bit
  * 0x200 is set. */
@@ -572,39 +571,39 @@ loop:
 void PolarAI_StartAttack(s32 player);
 void PolarAI_DoAttack(s32 player);
 
-/* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
+/* AiPlayerSkill (declared in bash/pause.h, which this unit does not include). */
 typedef struct PolarOdds {
     s16 unk0;
     s16 unk2;
     s16 unk4;
 } PolarOdds;
 
-extern PolarOdds D_8009D87C[];
+extern PolarOdds AiPlayerSkill[];
 extern s32 PolarAttackOdds[];
 extern s32 PolarRollOdds[];
-extern s32 D_8009D908;
+extern s32 HeroesAllOut;
 
 extern s32 PolarIceRadius;
 s32 PolarRayHit(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out);
 
 
-/* Roll the odds in PolarRollOdds (by D_8009D87C[player].unk0) and set ext->unk14. */
+/* Roll the odds in PolarRollOdds (by AiPlayerSkill[player].unk0) and set ext->unk14. */
 static inline void RollPolarOdds(s32 player, Ext20 *ext) {
     s32 r;
     s32 limit;
 
     r = Random(0x1000);
-    if (D_8009D87C[player].unk0 > 0x30) {
-        D_8009D87C[player].unk0 = 0x30;
+    if (AiPlayerSkill[player].unk0 > 0x30) {
+        AiPlayerSkill[player].unk0 = 0x30;
     }
-    limit = PolarRollOdds[D_8009D87C[player].unk0] << 7;
-    if (D_8005A648 == 0x12) {
+    limit = PolarRollOdds[AiPlayerSkill[player].unk0] << 7;
+    if (GameMode == 0x12) {
         limit += 0x400;
     }
     if (r < limit) {
         ext->unk14 = 8;
     }
-    if (D_8009D908 != 0) {
+    if (HeroesAllOut != 0) {
         ext->unk14 = 0;
     }
 }
@@ -615,7 +614,6 @@ s32 PolarAI_TeamChoice(s32 player);
 s32 PolarHeroAttackPower(s32 arg0);
 
 /* The NAS that owns the bomb maker. */
-extern NAS *BombMaster;
 
 s32 PolarBossDazeHero(u8 *arg0);
 
@@ -662,7 +660,7 @@ typedef struct PolarOwner {
 
 extern PolarOwner *PolarBeamOwner;
 extern s32 PolarBeamMode;
-extern s32 D_8009D908;
+extern s32 HeroesAllOut;
 bool EnsureMateNotObstructingMate(u32 self);
 
 /* Read by PolarAI_Proximity. */
@@ -876,7 +874,7 @@ typedef struct TransBeamExt {
     /* 0x1DC */ s32 unk1DC;
 } TransBeamExt;
 
-/* D_8005A614 as PlotTransmuterBeam reads it. */
+/* GameInfo as PlotTransmuterBeam reads it. */
 typedef struct TransBeamView {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;
@@ -889,7 +887,7 @@ typedef struct TransBeamView {
     /* 0x6C */ s32 unk6C;
 } TransBeamView;
 
-#define TBV ((TransBeamView *)D_8005A614)
+#define TBV ((TransBeamView *)GameInfo)
 #define TB_MODE13() ((TBV->flags & 0x80) && TBV->mode == 0x13)
 
 /* The beam kinds PlotTransmuterBeam picks from (Random(4)). */
@@ -1028,7 +1026,7 @@ void func_80086868(void);
 
 extern NAS *polarbossnas;
 
-/* D_8005A614 as PlotPolarBoss reads it. */
+/* GameInfo as PlotPolarBoss reads it. */
 typedef struct PolarBossGame {
     /* 0x00 */ u8 pad0[0x48];
     /* 0x48 */ s16 lead;
@@ -1054,7 +1052,7 @@ typedef struct PolarShardExt {
 
 /* PlotPolarBoss: r * sin(ang) in 12-bit fixed point. */
 static inline s32 PolarSinMul(s32 ang, s32 r) {
-    return (D_80068BD4[ang & 0xFFF].unk2 * r) >> 12;
+    return (TrigTable[ang & 0xFFF].unk2 * r) >> 12;
 }
 
 /* PlotPolarBoss: a random offset in (-n, n). */
@@ -1066,14 +1064,14 @@ static inline s32 PolarRandSpread(s32 n) {
 static inline s32 PolarShardChance(void) {
     s32 k;
 
-    if (((PolarBossGame *)D_8005A614)->level < 10) {
+    if (((PolarBossGame *)GameInfo)->level < 10) {
         return 0;
     }
-    if (((PolarBossGame *)D_8005A614)->level >= 30) {
+    if (((PolarBossGame *)GameInfo)->level >= 30) {
         return 0xE66;
     }
     k = 0xB8;
-    return (((PolarBossGame *)D_8005A614)->level - 9) * k;
+    return (((PolarBossGame *)GameInfo)->level - 9) * k;
 }
 
 s32 PolarAI_PickVictim(s32 arg0);
@@ -1148,7 +1146,7 @@ static inline s32 PolarMissileHitHero(SLONG_XYZ *pos) {
     u32 n;
 
     n = 1;
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         n = 2;
     }
     i = 0;
@@ -1279,10 +1277,10 @@ typedef struct SniperExt {
     /* 0x98 */ s32 unk98;
 } SniperExt;
 
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 
-#define SNIPER_CAM ((PolarCam *)D_80051640)
-#define SNIPER_PAD ((PolarPad *)D_80051338)
+#define SNIPER_CAM ((PolarCam *)MainCamera)
+#define SNIPER_PAD ((PolarPad *)Pads)
 
 /* Bear death extension (0x88 bytes, id 0x10000000). */
 typedef struct BearDeathExt {
@@ -1320,7 +1318,7 @@ s32 PolarOfficeBox(s32 i);
 s32 PolarAI_RandomPause(s32 player);
 
 void PolarInitHeroMove(s32 arg0);
-/* D_8005A614 as seen by PolarAI_TeamChoice: the two team leaders. */
+/* GameInfo as seen by PolarAI_TeamChoice: the two team leaders. */
 typedef struct PolarTeamView {
     /* 0x00 */ u8 pad0[0x48];
     /* 0x48 */ s16 team0;
@@ -1492,7 +1490,7 @@ typedef struct BearminatorExt {
 
 extern ScriptInit BearminatorScriptInit;
 
-/* D_8005A614 as PlotBearminator reads it. */
+/* GameInfo as PlotBearminator reads it. */
 typedef struct PolarBearView {
     /* 0x00 */ u8 pad0[0x48];
     /* 0x48 */ s16 lead;
@@ -1500,7 +1498,7 @@ typedef struct PolarBearView {
     /* 0x6C */ s32 unk6C;
 } PolarBearView;
 
-/* D_8005A614 as seen by InitialisePOLARFirst. */
+/* GameInfo as seen by InitialisePOLARFirst. */
 typedef struct PolarInitView {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;
@@ -1513,7 +1511,7 @@ typedef struct PolarInitView {
     /* 0x6C */ s32 w6C;
 } PolarInitView;
 
-/* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
+/* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct PolarHooks {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ void *unk4;
@@ -1543,12 +1541,12 @@ typedef struct PolarHooks {
     /* 0x64 */ void *unk64;
     /* 0x68 */ void *unk68;
 } PolarHooks;
-extern PolarHooks D_8009D6E8;
-extern void *D_8009D8F4;
-extern void *D_8009D8F8;
-extern void *D_8009D8FC;
-extern void *D_8009D900;
-extern void *D_8009D904;
+extern PolarHooks HeroHooks;
+extern void *AiBotTweakTable;
+extern void *AiHumanTweakTable;
+extern void *AiSkillTable;
+extern void *AiTeamSkillTable;
+extern void *AiHumanRoundTweakTable;
 extern s32 PolarFirstFlag;
 extern s32 PolarArenaRadius2;
 extern u8 D_8008B29C[], D_8008B418[];
@@ -1562,7 +1560,6 @@ extern u16 PolarShadowFrames0[][2], PolarShadowFrames1[][2], PolarShadowFrames2[
 extern u16 PolarShadowFrames4[][2], PolarShadowFrames5[][2], PolarShadowFrames6[][2], PolarShadowFrames7[][2];
 extern u16 PolarShadowFrames8[][2], PolarShadowFrames9[][2], PolarShadowFrames10[][2];
 /* the polar.h sequences the code names directly are declared there */
-extern hero_seq KON_seq_polarwin[], TIN_seq_polarwin[], BRO_seq_polarwin[];
 void PolarUpdateShadow(s32 player);
 void PolarPreMoveHero(s32 player);
 
@@ -1614,7 +1611,7 @@ static inline void PolarSpawnDrop(VECTOR *pos, s32 kind) {
 void SetPolarHeroDazed(s32 player);
 
 void SetPolarHeroChallenge(s32 player);
-/* D_8005A614 as InitialisePOLAR reads it. */
+/* GameInfo as InitialisePOLAR reads it. */
 typedef struct PolarView {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;
@@ -1678,7 +1675,7 @@ typedef struct PolarGame {
 extern u16 PolarHeroSfx[];
 extern s32 PolarInitWord;
 extern s32 PolarBeamTimer;
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 void func_8007E9FC(u16 arg0, s16 arg1);
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);

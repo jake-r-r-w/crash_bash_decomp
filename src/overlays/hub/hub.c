@@ -19,16 +19,16 @@ extern u8 D_80063EC8[];
 
 void HubRender(void) {
     func_80093110();
-    if (D_8005A648 == 0x25) {
+    if (GameMode == 0x25) {
         func_8007A718();
         if (D_80098714 == 0) {
-            func_8001DAF8((GfxScene *)D_80058AD0);
+            func_8001DAF8((GfxScene *)MapScene);
         }
     } else {
         func_8007A718();
-        func_8001DAF8((GfxScene *)D_80058AD0);
+        func_8001DAF8((GfxScene *)MapScene);
     }
-    if (D_8005A648 == 0x2B) {
+    if (GameMode == 0x2B) {
         PodiumRenderScene();
     } else {
         HubRenderScene();
@@ -38,28 +38,28 @@ void HubRender(void) {
         func_8001C2C0(GetEngineSlot(0));
     }
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     func_800798A4();
 }
 
 void HubStartCredits(void) {
     s32 one;
     D_80098714 = 0;
-    ((EngMenuGame *)D_8005A614)->flags &= 0xFDC07013;
-    *(s32 *)&HubSavedCamH = (s16)((HubCam *)D_80051640)->h;
-    *(s32 *)&HubSavedFov = D_800AD12C;
-    HubSavedCamX = ((HubCam *)D_80051640)->x;
-    HubSavedCamY = ((HubCam *)D_80051640)->y;
-    HubSavedCamZ = ((HubCam *)D_80051640)->z;
-    if (*(u16 *)&((EngMenuGame *)D_8005A614)->unk74 == 0) {
+    ((EngMenuGame *)GameInfo)->flags &= 0xFDC07013;
+    *(s32 *)&HubSavedCamH = (s16)((HubCam *)MainCamera)->h;
+    *(s32 *)&HubSavedFov = CameraMode;
+    HubSavedCamX = ((HubCam *)MainCamera)->x;
+    HubSavedCamY = ((HubCam *)MainCamera)->y;
+    HubSavedCamZ = ((HubCam *)MainCamera)->z;
+    if (*(u16 *)&((EngMenuGame *)GameInfo)->unk74 == 0) {
         func_8002C284(2);
-        ((EngMenuGame *)D_8005A614)->unk74 = 1;
+        ((EngMenuGame *)GameInfo)->unk74 = 1;
         one = 1;
         D_8009870E = one;
         D_80098710 = 0;
         HubCreditsY = 0;
         D_80098714 = one;
-        D_800AD12C = 0;
+        CameraMode = 0;
         HubCreditsStart = D_8005A608;
         func_80095A60(0, 0x1E);
         return;
@@ -85,7 +85,7 @@ s32 HubCreditsScroll(void) {
     s32 done;
     s32 ypos;
 
-    view = (OvlTextView *)D_80051640;
+    view = (OvlTextView *)MainCamera;
     view->unk54 = 0xF0;
     view->unk56 = 0;
     view->unkC = 0;
@@ -185,7 +185,7 @@ s32 HubCreditsScroll(void) {
         D_8009870E = 2;
         D_80098710 = 45;
         music_fade_out(45);
-        set_fade(&D_8009F644, 0x200, 0);
+        set_fade(&ScreenFade, 0x200, 0);
         return 0;
     case 2:
         if (D_80098710 == 0) {
@@ -211,11 +211,11 @@ void HubEndCredits(void)
   u8 *g;
   s32 i;
   func_8002C284(1);
-  g = D_8005A614;
+  g = GameInfo;
   ((EngMenuGame *) g)->unk74 = 0;
   HubShowShadow(0);
   D_80098714 = 0;
-  set_fade(&D_8009F644, -0x200, 0);
+  set_fade(&ScreenFade, -0x200, 0);
   new_var = 0x1628;
   *((u8 *) (g + 0x75)) = 1;
   for (i = 0; i < ASTCount; i++)
@@ -230,11 +230,11 @@ void HubEndCredits(void)
   found:
   DeleteNas_AllAST(i);
 
-  ((HubCam *) D_80051640)->h = HubSavedCamH;
-  D_800AD12C = HubSavedFov;
-  ((HubCam *) D_80051640)->x = HubSavedCamX;
-  ((HubCam *) D_80051640)->y = HubSavedCamY;
-  ((HubCam *) D_80051640)->z = HubSavedCamZ;
+  ((HubCam *) MainCamera)->h = HubSavedCamH;
+  CameraMode = HubSavedFov;
+  ((HubCam *) MainCamera)->x = HubSavedCamX;
+  ((HubCam *) MainCamera)->y = HubSavedCamY;
+  ((HubCam *) MainCamera)->z = HubSavedCamZ;
 }
 
 s32 *HubCreditsText(void) {
@@ -272,19 +272,19 @@ void UpdateHUB(void) {
 }
 
 void HUBSetUp(void) {
-    if (D_8005A648 == 0x2B) {
-        D_8005AA70[0] = (s32)InitialisePodiumFirst;
-        D_8005AA70[1] = (s32)InitialisePodium;
-        D_8005AA70[2] = (s32)InitialisePodium;
-        D_8005AA70[3] = (s32)UpdatePodium;
+    if (GameMode == 0x2B) {
+        LevelSpecs[0] = (s32)InitialisePodiumFirst;
+        LevelSpecs[1] = (s32)InitialisePodium;
+        LevelSpecs[2] = (s32)InitialisePodium;
+        LevelSpecs[3] = (s32)UpdatePodium;
     } else {
-        D_8005AA70[0] = (s32)InitialiseHUBFirst;
-        D_8005AA70[1] = (s32)InitialiseHUB;
-        D_8005AA70[2] = (s32)InitialiseHUB;
-        D_8005AA70[3] = (s32)UpdateHUB;
+        LevelSpecs[0] = (s32)InitialiseHUBFirst;
+        LevelSpecs[1] = (s32)InitialiseHUB;
+        LevelSpecs[2] = (s32)InitialiseHUB;
+        LevelSpecs[3] = (s32)UpdateHUB;
     }
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
     D_8009F8B4 = HubRender;
 }
 

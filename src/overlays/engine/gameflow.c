@@ -62,7 +62,7 @@ void func_8008E5BC(void) {
     u8 *a;
     u8 *b;
 
-    D_8004E0D8++;
+    GameFrameCount++;
     if ((D_8005137C & 0x8C08) == 0x8C08) {
         func_800101E0();
     }
@@ -105,12 +105,12 @@ void func_8008E5BC(void) {
     case 1:
         D_8009E5A8 = e->delay;
         a = (u8 *)load_file_permanent(e->pic);
-        b = tga_convert(a, D_8005B698->w, D_8005B698->h);
-        mal_free(a, &D_8004E0F0);
-        LoadImage(D_8005B698, (u32 *)b);
-        LoadImage(D_8005B698 + 1, (u32 *)b);
+        b = tga_convert(a, ScreenRect->w, ScreenRect->h);
+        mal_free(a, &MainHeap);
+        LoadImage(ScreenRect, (u32 *)b);
+        LoadImage(ScreenRect + 1, (u32 *)b);
         DrawSync(0);
-        mal_free(b, &D_8004E0F0);
+        mal_free(b, &MainHeap);
         if (D_8009E4C0[D_8009E5A4].sfx[0] != -1) {
             PlaySfx(D_8009E4C0[D_8009E5A4].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
             PlaySfx(D_8009E4C0[D_8009E5A4].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
@@ -158,14 +158,14 @@ void func_8008EAC8(void) {
     }
     func_80021FB0();
     func_8001D604();
-    f = D_8005B690;
-    a = &D_8005B698[f & 1];
-    r = &D_8005B698[(f + 1) & 1];
+    f = FrameCount;
+    a = &ScreenRect[f & 1];
+    r = &ScreenRect[(f + 1) & 1];
     MoveImage2(a, r->x, r->y);
 }
 
 void func_8008EB3C(void) {
-    func_80018B08(D_8009E498, D_80051640);
+    func_80018B08(D_8009E498, MainCamera);
     if (D_800AEC5C != 0) {
         func_8009440C();
     }
@@ -181,7 +181,7 @@ void func_8008EB8C(void) {
     D_8009E5B0 = -1;
     D_8009E5B4 = 0;
     func_8001D640(0x200);
-    cam_init(D_80051640);
+    cam_init(MainCamera);
     D_800590CC = 1;
 }
 
@@ -191,24 +191,24 @@ void func_8008EC00(void) {
     s32 load_file_permanent();
 
     a = (u8 *)load_file_permanent();
-    b = tga_convert(a, D_8005B698->w, D_8005B698->h);
-    mal_free(a, &D_8004E0F0);
-    LoadImage(D_8005B698, (u32 *)b);
-    LoadImage(D_8005B698 + 1, (u32 *)b);
+    b = tga_convert(a, ScreenRect->w, ScreenRect->h);
+    mal_free(a, &MainHeap);
+    LoadImage(ScreenRect, (u32 *)b);
+    LoadImage(ScreenRect + 1, (u32 *)b);
     DrawSync(0);
-    mal_free(b, &D_8004E0F0);
+    mal_free(b, &MainHeap);
 }
 
 void func_8008EC94(void) {
-    s32 f = D_8005B690;
-    RECT *a = &D_8005B698[f & 1];
-    RECT *r = &D_8005B698[(f + 1) & 1];
+    s32 f = FrameCount;
+    RECT *a = &ScreenRect[f & 1];
+    RECT *r = &ScreenRect[(f + 1) & 1];
 
     MoveImage2(a, r->x, r->y);
 }
 
 void func_8008ECE4(void) {
-    EngineModeView *g = (EngineModeView *)D_8005A614;
+    EngineModeView *g = (EngineModeView *)GameInfo;
     s32 msg;
     s32 res;
     u16 flags;
@@ -276,7 +276,7 @@ void func_8008ECE4(void) {
             }
             return;
         }
-        D_8005A648 = func_8008EF70();
+        GameMode = func_8008EF70();
         return;
     case 0x20:
         g->mode = 0x25;
@@ -288,7 +288,7 @@ void func_8008ECE4(void) {
         func_80094D88(msg, &D_800A00DC);
         return;
     }
-    g = (EngineModeView *)D_8005A614;
+    g = (EngineModeView *)GameInfo;
     switch (*(u8 *)&g->unk32) {
     case 2:
         if (g->unk30 & 1) {
@@ -308,17 +308,17 @@ void func_8008ECE4(void) {
 }
 
 s32 func_8008EF70(void) {
-    return D_8009EDD4[D_8005A676][0];
+    return D_8009EDD4[GameWarpRoom][0];
 }
 
 void func_8008EF9C(void) {
     D_8009E5DC = func_8008EF70();
-    D_8005A644 = 0x8008;
+    GameExitFlags = 0x8008;
     func_8008ECE4();
 }
 
 void func_8008EFD4(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     if (*(u16 *)(g + 0x30) & 0x8000) {
         if (D_8009F658.next_process == NULL) {
@@ -338,7 +338,7 @@ void func_8008EFD4(void) {
 
 void func_8008F068(void) {
     D_8009E5DC = 0x28;
-    D_8005A644 = 0x8008;
+    GameExitFlags = 0x8008;
 }
 
 void func_8008F084(void) {
@@ -352,7 +352,7 @@ void func_8008F084(void) {
     u32 mask;
 
     i = 0;
-    trig = D_80068BD4;
+    trig = TrigTable;
     base = D_8009E7A0;
     t = base + (u8)D_8005A63C;
     n = t->unk8;
@@ -362,7 +362,7 @@ loop:
         sub = GetEngineSlot(i + 3)->sub;
         sub->unk6C = (void *)p->unk8;
         sub->unk74 = p->unkC;
-        if (p->unk0 == 1 || (p->unk0 == 2 && LevelUnlockedIn(p->unk4, D_8005A614) != 0)) {
+        if (p->unk0 == 1 || (p->unk0 == 2 && LevelUnlockedIn(p->unk4, GameInfo) != 0)) {
             sub->flags |= 0x8000;
         } else {
             sub->flags &= ~0x8000;
@@ -371,8 +371,8 @@ loop:
         sub->unk10 = 0x7D;
         sub->unk12 = 0;
         sub->unk14 = 0;
-        sub->unk04 = trig[(((D_8004E0D8 * 20 + (i << 10)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
-        sub->unk08 = (trig[(((D_8004E0D8 * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+        sub->unk04 = trig[(((GameFrameCount * 20 + (i << 10)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
+        sub->unk08 = (trig[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
         i++;
         goto loop;
     }
@@ -458,7 +458,7 @@ void func_8008F554(void) {
     if (D_8009EB98 != 0) {
         D_8009EB98--;
         func_80017640();
-        func_80011D28((u8 *)&D_8004E0F0);
+        func_80011D28((u8 *)&MainHeap);
     }
     if (D_80051380 & 0x80) {
         EngineWorldPrev();
@@ -470,21 +470,21 @@ void func_8008F554(void) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
-    if (EngineTable_Unlocked(D_8005A614[0x28]) && (D_80051380 & 0x4000)) {
-        g = D_8005A614;
+    if (EngineTable_Unlocked(GameInfo[0x28]) && (D_80051380 & 0x4000)) {
+        g = GameInfo;
         ((EngineModeView *)g)->unk32 = (((EngineModeView *)g)->unk32 & 0xFF00) | 2;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         g[0x29] = 0;
         D_8009E5DC = D_8009E7A0[g[0x28]].unk4->unk4;
         MenuChainNext();
-        p = D_8005A614;
+        p = GameInfo;
         for (i = 0; i < 4; i++) {
             p[i + 0x9F] = 0;
             p[i + 0xA3] = 0;
         }
     }
     GetEngineSlot(0)->sub->unk6C = (void *)EngineCurWorldName();
-    if (D_8005A614[0x28] != 0) {
+    if (GameInfo[0x28] != 0) {
         GetEngineSlot(0)->sub[8].flags |= 0x8000;
     } else {
         GetEngineSlot(0)->sub[8].flags &= ~0x8000;
@@ -494,7 +494,7 @@ void func_8008F554(void) {
     } else {
         GetEngineSlot(0)->sub[9].flags &= ~0x8000;
     }
-    if (EngineTable_Unlocked(D_8005A614[0x28])) {
+    if (EngineTable_Unlocked(GameInfo[0x28])) {
         GetEngineSlot(0)->sub[7].flags |= 0x8000;
         GetEngineSlot(0)->sub[4].flags &= ~0x8000;
         GetEngineSlot(0)->sub[3].flags &= ~0x8000;
@@ -509,9 +509,9 @@ void func_8008F554(void) {
     sub->unk68 = -0x80;
     sub->unk6C = D_800555DC;
     sub->unk74 = 0x2006;
-    sub->unk12 = D_8005B690 * 50;
+    sub->unk12 = FrameCount * 50;
     sub->unk10 = 0;
-    sub->unk14 = D_80068BD4[(((D_8004E0D8 * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
+    sub->unk14 = TrigTable[(((GameFrameCount * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
     sub->unk52 = 1;
     GetEngineSlot(0)->sub[5].flags |= 0x8000;
     func_8008F41C();
@@ -519,20 +519,20 @@ void func_8008F554(void) {
 
 void func_8008FB48(void) {
     func_80018B08(&D_8009EA9C, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(3));
     func_80018B08(&D_8009EAC4, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(4));
     func_80018B08(&D_8009EAEC, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(5));
     func_80018B08(&D_8009EB14, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(6));
     RenderTitlesBackdropAndMenu();
     func_80018B08(&D_8009EA74, &TitlesCamera);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
 }
 
@@ -554,7 +554,7 @@ s32 func_8008FC60(void *arg0) {
             goto done;
         }
         obj = *(s32 *)((u8 *)(i * 16 + *(s32 *)((u8 *)arg0 + 4)) + 4);
-        if (LevelUnlockedIn(obj, D_8005A614) == 0) {
+        if (LevelUnlockedIn(obj, GameInfo) == 0) {
             cnt = 0;
             j = cnt;
             p = tab;
@@ -581,13 +581,13 @@ void func_8008FD40(void *arg0) {
 
     for (i = 0; i < n; i++) {
         u8 *e = *(u8 **)((u8 *)arg0 + 4);
-        D_8005A614[*(s32 *)(e + i * 16 + 4) + 0xE4] = 1;
+        GameInfo[*(s32 *)(e + i * 16 + 4) + 0xE4] = 1;
         n = *(s32 *)((u8 *)arg0 + 8);
     }
 }
 
 void func_8008FD94(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     s32 n;
 
     D_8009EB98 = 4;
@@ -600,7 +600,7 @@ void func_8008FD94(void) {
 }
 
 void func_8008FE00(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     s32 n;
 
     D_8009EB98 = 4;
@@ -629,7 +629,7 @@ s32 func_8008FE68(s32 arg0) {
     n = t->unk8;
     p = t->unk4;
     for (i = 0; i < n; i++, p++) {
-        if (!LevelUnlockedIn(p->unk4, D_8005A614)) {
+        if (!LevelUnlockedIn(p->unk4, GameInfo)) {
             return 0;
         }
     }
@@ -639,7 +639,7 @@ s32 func_8008FE68(s32 arg0) {
 s32 func_8008FF10(void) {
     u16 *wt = D_8004DDD0;
     EngineTable12 *tab = D_8009E7A0;
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     EngineEntry16Head *e = tab[g[0x28]].unk4;
     s32 idx = e[g[0x29]].unk4;
     s32 **tbl;
@@ -651,15 +651,15 @@ s32 func_8008FF10(void) {
 }
 
 s32 func_8008FF94(void) {
-    if (D_8005A614[0x29] < D_8009E7A0[D_8005A614[0x28]].unk8 - 1) {
-        D_8005A614[0x29] = D_8005A614[0x29] + 1;
-        return D_8009E7A0[D_8005A614[0x28]].unk4[D_8005A614[0x29]].unk4;
+    if (GameInfo[0x29] < D_8009E7A0[GameInfo[0x28]].unk8 - 1) {
+        GameInfo[0x29] = GameInfo[0x29] + 1;
+        return D_8009E7A0[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
     }
     return 0x2B;
 }
 
 s32 func_80090008(void) {
-    return D_8009E7A0[D_8005A614[0x28]].unk4[D_8005A614[0x29]].unk4;
+    return D_8009E7A0[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
 }
 
 void func_80090048(void) {
@@ -692,7 +692,7 @@ s32 func_800900CC(void) {
     s32 *t;
 
     best = -1;
-    i = func_800900CC_find(D_8005A648);
+    i = func_800900CC_find(GameMode);
     if (i < 0) {
         t = 0;
     } else {
@@ -745,7 +745,7 @@ s32 func_8009020C(s32 arg0) {
 s32 func_80090248(void) {
     EngSub90248 *p;
 
-    if (D_8005A677 < 0 || (p = HubGateways[D_8005A677].unk14, p->unk2 != 2)) {
+    if (GameGateway < 0 || (p = HubGateways[GameGateway].unk14, p->unk2 != 2)) {
         return -1;
     }
     return p->unk4;
@@ -854,23 +854,23 @@ void func_80090A10(void) {
     u8 *src;
     u8 *p;
 
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     switch (D_8009F638) {
     case 0:
-        pad = D_80051338;
+        pad = Pads;
         if (*(s32 *)((u8 *)pad + 0x48) & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
             D_8009F63C = 1;
             func_80092AF4(&D_8009F720, 0x200);
             {
-                u8 *q = D_8005A614;
+                u8 *q = GameInfo;
                 *(u16 *)(q + 0x30) |= 0x200;
             }
         }
         if (D_800655C0 & 2) {
             if (D_800655C0 & 0x40) {
                 e = GetEngineSlot(1);
-                e->sub[1].unk6C = D_8009EFCC[*(s32 *)((g = D_8005A614) + 0x2C)];
+                e->sub[1].unk6C = D_8009EFCC[*(s32 *)((g = GameInfo) + 0x2C)];
                 GetEngineSlot(1)->sub->unk6C = D_8009EFD8[*(s32 *)(g + 0x2C)];
                 func_8001C2C0((u8 *)GetEngineSlot(1));
                 return;
@@ -884,7 +884,7 @@ void func_80090A10(void) {
                     func_8002C284(-1);
                     src = D_8009F3B8 * 0x194 + p;
                     {
-                        u8 *q = D_8005A614;
+                        u8 *q = GameInfo;
                         q[0x4C] = src[0];
                         q[0x4D] = src[1];
                         q[0x4E] = src[2];
@@ -894,10 +894,10 @@ void func_80090A10(void) {
                         q[0x5E] = src[6];
                         q[0x5F] = src[7];
                     }
-                    *(Blk18C *)D_8005A614 = *(Blk18C *)(src + 8);
+                    *(Blk18C *)GameInfo = *(Blk18C *)(src + 8);
                     {
                         Blk12p4 *d = (Blk12p4 *)D_8005A604;
-                        u8 *s = D_8005A614;
+                        u8 *s = GameInfo;
                         *d = *(Blk12p4 *)(s + 0xD0);
                     }
                     func_80091E58();
@@ -919,14 +919,14 @@ void func_80090A10(void) {
         e = GetEngineSlot(1);
         {
             u8 *q;
-            e->sub[1].unk6C = D_8009EFDC[*(s32 *)((q = D_8005A614) + 0x2C)];
+            e->sub[1].unk6C = D_8009EFDC[*(s32 *)((q = GameInfo) + 0x2C)];
             GetEngineSlot(1)->sub->unk6C = D_8009EFD8[*(s32 *)(q + 0x2C)];
         }
         func_8001C2C0((u8 *)GetEngineSlot(1));
         break;
     case 1:
         if (func_80012FFC() == 0) {
-            u8 *q = D_8005A614;
+            u8 *q = GameInfo;
             D_8009F638 = 2;
             q[0x50] = q[0x4C];
         }
@@ -935,7 +935,7 @@ void func_80090A10(void) {
         if (func_80012FFC() == 0) {
             u8 *q;
             func_80092AF4(&D_8009F720, 0x200);
-            q = D_8005A614;
+            q = GameInfo;
             D_8009F638 = 3;
             *(u16 *)(q + 0x30) |= 0x200;
         }
@@ -1024,7 +1024,7 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB1C);
 void func_80090E20(void) {
     s32 f;
 
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     switch (D_8009F640) {
     case 0:
         f = D_800655C0;
@@ -1070,7 +1070,7 @@ void func_80090E20(void) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
             func_80092AF4(&D_8009F720, 0x200);
             {
-                u8 *q = D_8005A614;
+                u8 *q = GameInfo;
                 D_8009F640 = 4;
                 *(u16 *)(q + 0x30) |= 0x200;
             }
@@ -1108,7 +1108,7 @@ void func_80090E20(void) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             func_80092AF4(&D_8009F720, 0x200);
             D_8009F640 = 4;
-            *(u16 *)(D_8005A614 + 0x30) |= 0x200;
+            *(u16 *)(GameInfo + 0x30) |= 0x200;
         }
         break;
     case 2:
@@ -1138,7 +1138,7 @@ void func_80090E20(void) {
             switch (HubSaveChoice) {
             case 1: {
                 D_800657C8_Slot *dst = &D_800657C8[D_8009F3B8];
-                u8 *q = D_8005A614;
+                u8 *q = GameInfo;
                 dst->b[0] = q[0x4C];
                 dst->b[1] = q[0x4D];
                 dst->b[2] = q[0x4E];
@@ -1162,7 +1162,7 @@ void func_80090E20(void) {
                 func_80092AF4(&D_8009F720, 0x200);
                 D_8009F640 = 4;
                 {
-                    u8 *q = D_8005A614;
+                    u8 *q = GameInfo;
                     *(u16 *)(q + 0x30) |= 0x200;
                 }
                 if (HubSaveMenuHooks.unkC != NULL) {
@@ -1197,7 +1197,7 @@ void func_80090E20(void) {
         func_80092AF4(&D_8009F720, 0x200);
         D_8009F640 = 4;
         {
-            u8 *q = D_8005A614;
+            u8 *q = GameInfo;
             *(u16 *)(q + 0x30) |= 0x200;
         }
     }
@@ -1211,14 +1211,14 @@ void func_800917B4(void) {
     func_80018B08(&D_8009F3E4, &D_8009F578);
     e = GetEngineSlot(8);
     s = e->sub;
-    s->unk14 = D_8005B690 * 20;
+    s->unk14 = FrameCount * 20;
     s->unk12 = 0x293;
     s->unk50 = 1;
     s->unk20.z = 0x2800;
     s->unk20.x = 0x2800;
     s->unk52 = 1;
     s->unk51 = 0;
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     func_8001C2C0((u8 *)e);
     func_80018B08(&D_8009F3BC, &D_8009F4C0);
     switch (D_8009F630) {
@@ -1263,7 +1263,7 @@ void func_8009196C(void) {
             D_8009F4BC = *(s32 *)(c + 0x85C);
         }
     }
-    pad = D_80051338;
+    pad = Pads;
     if (*(s32 *)((u8 *)pad + 0x48) & 0x10) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         SELECT_SLOT(D_8009F3B8 - 2);
@@ -1285,7 +1285,7 @@ void func_8009196C(void) {
     e2 = GetEngineSlot(2);
     e2->unk10.y = e->unk10.y;
     e2->unk10.x = e->unk10.x;
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(4));
     func_8001C2C0((u8 *)GetEngineSlot(5));
     func_8001C2C0((u8 *)GetEngineSlot(6));
@@ -1305,7 +1305,7 @@ void func_8009196C(void) {
             } else {
                 GetEngineSlot(3)->sub[13].unk6C = D_8009EFB4[D_8005A640];
             }
-            GetEngineSlot(3)->sub[12].unk6C = D_8009EFC8[*(s32 *)((g = D_8005A614) + 0x2C)];
+            GetEngineSlot(3)->sub[12].unk6C = D_8009EFC8[*(s32 *)((g = GameInfo) + 0x2C)];
             GetEngineSlot(3)->sub[14].unk6C = D_8009F000[*(s32 *)(g + 0x2C)];
         }
         break;
@@ -1321,7 +1321,7 @@ void func_8009196C(void) {
             } else {
                 GetEngineSlot(3)->sub[13].unk6C = D_8009EFB0[D_8005A640];
             }
-            GetEngineSlot(3)->sub[12].unk6C = D_8009EFC0[*(s32 *)((g = D_8005A614) + 0x2C)];
+            GetEngineSlot(3)->sub[12].unk6C = D_8009EFC0[*(s32 *)((g = GameInfo) + 0x2C)];
             GetEngineSlot(3)->sub[14].unk6C = D_8009EFC4[*(s32 *)(g + 0x2C)];
         }
         break;
@@ -1351,7 +1351,7 @@ void func_80091F54(void) {
     D_8009F634 = 1;
     func_80095BEC(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
-    if (D_8005A648 == 0x28) {
+    if (GameMode == 0x28) {
         sub->unk74 = 0x2007;
         sub->unk6C = D_800555DC;
     } else {
@@ -1375,7 +1375,7 @@ void func_8009201C(void) {
     D_8009F634 = 1;
     func_80095BEC(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
-    if (D_8005A648 == 0x28) {
+    if (GameMode == 0x28) {
         sub->unk74 = 0x2007;
         sub->unk6C = D_800555DC;
     } else {
@@ -1401,7 +1401,7 @@ void func_800920DC(void) {
     cam_init((u8 *)&D_8009F578);
     *(s32 *)((u8 *)&D_8009F578 + 8) = 0x400;
     *(s32 *)((u8 *)&D_8009F578 + 0x18) = 0x190;
-    set_fade(&D_8009F644, -0x200, 0);
+    set_fade(&ScreenFade, -0x200, 0);
 }
 
 void func_80092198(void) {
@@ -1416,7 +1416,7 @@ void func_80092198(void) {
 }
 
 void func_80092200(u8 *src) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     g[0x4C] = src[0];
     g[0x4D] = src[1];
@@ -1426,17 +1426,17 @@ void func_80092200(u8 *src) {
     g[0x5D] = src[5];
     g[0x5E] = src[6];
     g[0x5F] = src[7];
-    *(Blk18C *)D_8005A614 = *(Blk18C *)(src + 8);
+    *(Blk18C *)GameInfo = *(Blk18C *)(src + 8);
     {
         Blk12p4 *d = (Blk12p4 *)D_8005A604;
-        u8 *s = D_8005A614;
+        u8 *s = GameInfo;
         *d = *(Blk12p4 *)(s + 0xD0);
     }
     func_80091E58();
 }
 
 void func_800922FC(u8 *dst) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     dst[0] = g[0x4C];
     dst[1] = g[0x4D];
@@ -1482,7 +1482,7 @@ void func_8009246C(void) {
     D_8009F634 = 1;
     func_80095BEC(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
-    if (D_8005A648 == 0x28) {
+    if (GameMode == 0x28) {
         sub->unk74 = 0x2007;
         sub->unk6C = D_800555DC;
     } else {
@@ -1685,7 +1685,7 @@ void func_800928E8(void) {
 
     func_800274FC((s32 *)cfg);
     ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? D_8005B72C : D_8005B744);
-    g = D_8005A614;
+    g = GameInfo;
     *(s32 *)(g + 4) = 0x80000000;
     func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     func_80017164(cfg->pools);
@@ -1709,14 +1709,14 @@ void func_800929D8(void) {
     D_8009F658.process = NULL;
     func_8001E934(&D_8009F658, NULL);
     func_800928E8();
-    D_8009F644.amount = 0x1000;
-    D_8009F644.maxed = 3;
-    D_8009F644.speed = 0x100;
+    ScreenFade.amount = 0x1000;
+    ScreenFade.maxed = 3;
+    ScreenFade.speed = 0x100;
     SetDispMask(1);
     D_800590CC = 1;
     func_80092AF4(&D_800A00DC, 0x200);
-    func_8001E598(&D_8009F644);
-    func_8001E610(&D_8009F658, &D_8009F644);
+    func_8001E598(&ScreenFade);
+    func_8001E610(&D_8009F658, &ScreenFade);
     func_8001E898(&D_8009F658);
     if (D_8009F658.process != NULL) {
         if (D_8009F658.process->quit != NULL) {
@@ -1727,7 +1727,7 @@ void func_800929D8(void) {
 
 void func_80092AA8(process_info *arg0) {
     if (D_8009F658.next_process != arg0) {
-        ((void (*)(fade_info *))set_fade)(&D_8009F644);
+        ((void (*)(fade_info *))set_fade)(&ScreenFade);
         D_8009F658.next_process = arg0;
     }
 }
@@ -1736,7 +1736,7 @@ void func_80092AF4(process_info *process, s32 speed) {
     process_control_info *p = &D_8009F658;
 
     if (p->next_process != process) {
-        set_fade(&D_8009F644, speed, 0);
+        set_fade(&ScreenFade, speed, 0);
         p->next_process = process;
     }
 }
@@ -1754,24 +1754,24 @@ void func_80092B7C(void) {
 }
 
 void func_80092BA0(void) {
-    func_8001E598(&D_8009F644);
-    func_8001E610(&D_8009F658, &D_8009F644);
+    func_8001E598(&ScreenFade);
+    func_8001E610(&D_8009F658, &ScreenFade);
 }
 
 void func_80092BDC(void) {
     D_8009F658.process = NULL;
     func_8001E934(&D_8009F658, NULL);
     func_800928E8();
-    D_8009F644.amount = 0x1000;
-    D_8009F644.maxed = 3;
-    D_8009F644.speed = 0x100;
+    ScreenFade.amount = 0x1000;
+    ScreenFade.maxed = 3;
+    ScreenFade.speed = 0x100;
     SetDispMask(1);
     D_800590CC = 1;
     func_80092AF4(&D_800A00DC, 0x200);
 }
 
 void func_80092C54(void) {
-    func_800926CC(D_8005A614);
+    func_800926CC(GameInfo);
 }
 
 void func_80092C78(void) {
@@ -1789,21 +1789,21 @@ void func_80092C78(void) {
 void func_80092CAC(void) {
     EngineGameView *g;
 
-    g = (EngineGameView *)D_8005A614;
+    g = (EngineGameView *)GameInfo;
     g->unk30 &= 0x7FF8;
-    set_fade(&D_8009F644, -0x300, 0);
+    set_fade(&ScreenFade, -0x300, 0);
     D_8009F8B8 = 0;
     if (g->mode == 0x24 && g->unkE0 <= 0) {
         g->unkE0 = 1;
     }
-    g = (EngineGameView *)D_8005A614;
+    g = (EngineGameView *)GameInfo;
     if (func_8007A5E8((u8 *)g) >= 0x19 && g->unkE0 < 2) {
         g->unkE0 = 2;
     }
     func_80017640();
-    func_80010AE8(&D_8004E0F0);
+    func_80010AE8(&MainHeap);
     D_800590CC = 0;
-    if (D_8005A644 & 0x200) {
+    if (GameExitFlags & 0x200) {
         func_80079260();
     } else {
         func_8002C284(1);
@@ -1823,7 +1823,7 @@ void func_80092E40(void) {
 
 void func_80092E94(void) {
     D_8009F8B4();
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     func_80082590();
     func_8001E898(&D_8009F8A4);
 }
@@ -1831,11 +1831,11 @@ void func_80092E94(void) {
 void func_80092EDC(void) {
     if (func_8007F314() != 0) {
         u8 *g;
-        D_8004E0D8++;
-        g = D_8005A614;
+        GameFrameCount++;
+        g = GameInfo;
         *(s32 *)(g + 0xC) += 1;
         func_8007976C();
-        ((void (*)(void *, u8 *))map_update)(D_80058AD0, D_8005164C);
+        ((void (*)(void *, u8 *))map_update)(MapScene, D_8005164C);
     } else {
         func_8007A7C0();
     }
@@ -1845,45 +1845,45 @@ void func_80092EDC(void) {
     *(s32 *)((u8 *)&D_8009F7EC + 8) = 0x40C;
     func_80097C28();
     scripts_update();
-    func_8001E610(&D_8009F8A4, &D_8009F644);
+    func_8001E610(&D_8009F8A4, &ScreenFade);
     func_8008EFD4();
 }
 
 void func_80092F9C(void) {
-    D_8005A614[0x63] = 0xA;
-    *(s32 *)(D_8005A614 + 0x64) = 1;
+    GameInfo[0x63] = 0xA;
+    *(s32 *)(GameInfo + 0x64) = 1;
 }
 
 void func_80092FB8(void) {
-    EngineGameView *a = (EngineGameView *)D_8005A614;
+    EngineGameView *a = (EngineGameView *)GameInfo;
     EngineGameView *g;
 
     if (a->mode == 0x24 && a->unkE0 <= 0) {
         a->unkE0 = 1;
     }
-    g = (EngineGameView *)D_8005A614;
+    g = (EngineGameView *)GameInfo;
     if (func_8007A5E8((u8 *)g) >= 0x19 && g->unkE0 < 2) {
         g->unkE0 = 2;
     }
 }
 
 void func_80093038(void) {
-    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)D_80051640);
-    D_80056998.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - D_8009F644.amount) / 4096);
+    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)MainCamera);
+    RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
     D_80056878 = 0;
     D_8005687C[0] = 0;
     D_8005687C[1] = 0;
     D_8005687C[2] = 0;
     scripts_render();
     func_8007A718();
-    func_8001DAF8((GfxScene *)D_80058AD0);
+    func_8001DAF8((GfxScene *)MapScene);
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_80056998.modelDp = D_8009F644.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_800798A4();
     func_800984D4();
 }
 
 void func_80093110(void) {
-    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)D_80051640);
-    D_80056998.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - D_8009F644.amount) / 4096);
+    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)MainCamera);
+    RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
 }

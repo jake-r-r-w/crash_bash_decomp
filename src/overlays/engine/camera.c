@@ -10,39 +10,39 @@ void func_8009608C(s32 arg0) {
     s32 *obj;
     EngCam *cam;
 
-    switch (D_800AD12C) {
+    switch (CameraMode) {
     case 0:
     case 5:
         break;
     case 1:
         if (arg0 != 0) {
-            func_80097158(D_80051640);
+            func_80097158(MainCamera);
         }
         func_80096F98(arg0);
         break;
     case 2:
         if (arg0 != 0) {
-            func_80097158(D_80051640);
+            func_80097158(MainCamera);
         }
         func_80096F98(arg0);
-        ((EngCam *)D_80051640)->rot.vx = -0x130;
-        ((EngCam *)D_80051640)->rot.vy = 0;
-        ((EngCam *)D_80051640)->rot.vz = 0x800;
+        ((EngCam *)MainCamera)->rot.vx = -0x130;
+        ((EngCam *)MainCamera)->rot.vy = 0;
+        ((EngCam *)MainCamera)->rot.vz = 0x800;
         break;
     case 3:
-        TitlesCameraHook(D_80051640, arg0);
+        TitlesCameraHook(MainCamera, arg0);
         break;
     case 6:
-        HubCameraFollow(D_80051640, arg0);
+        HubCameraFollow(MainCamera, arg0);
         break;
     case 4:
         PodiumCamera(view, arg0);
-        func_80013F44((CamView *)D_80051640, view, &D_800AD0F4);
+        func_80013F44((CamView *)MainCamera, view, &D_800AD0F4);
         break;
     case 7:
         obj = path_get(1);
         if (obj != NULL) {
-            cam = (EngCam *)D_80051640;
+            cam = (EngCam *)MainCamera;
             cam->eye.x = 0;
             cam->eye.y = 0;
             cam->eye.z = func_800153B4(obj + 0x13, obj + 0xC, &cam->rot.vx);
@@ -52,17 +52,17 @@ void func_8009608C(s32 arg0) {
         D_8009F708 = 0x15E;
         break;
     case 8:
-        N2OCameraFollow(D_80051640);
+        N2OCameraFollow(MainCamera);
         D_8009F708 = 0x15E;
         break;
     }
-    if (D_8005A624 == 0 && ((EngCam *)D_80051640)->shakeTime > 0) {
-        if (D_8004E0D8 & 1) {
-            ((EngCam *)D_80051640)->at.y = ((EngCam *)D_80051640)->at.y + ((EngCam *)D_80051640)->shakeAmp;
+    if (GamePause == 0 && ((EngCam *)MainCamera)->shakeTime > 0) {
+        if (GameFrameCount & 1) {
+            ((EngCam *)MainCamera)->at.y = ((EngCam *)MainCamera)->at.y + ((EngCam *)MainCamera)->shakeAmp;
         } else {
-            ((EngCam *)D_80051640)->at.y = ((EngCam *)D_80051640)->at.y - ((EngCam *)D_80051640)->shakeAmp;
+            ((EngCam *)MainCamera)->at.y = ((EngCam *)MainCamera)->at.y - ((EngCam *)MainCamera)->shakeAmp;
         }
-        ((EngCam *)D_80051640)->shakeTime--;
+        ((EngCam *)MainCamera)->shakeTime--;
     }
 }
 
@@ -251,7 +251,7 @@ void func_80096A08(void) {
     EngCam *cam;
     s32 z0;
 
-    cam = (EngCam *)D_80051640;
+    cam = (EngCam *)MainCamera;
     RotMatrix(&cam->rot, &m);
     n = camera_frame_list_size;
     D_800AD31C = 0x7FFFFFFF;
@@ -279,7 +279,7 @@ void func_80096A08(void) {
 
         z0 = out.vz - e->unk8;
         x = out.vx - e->unk4;
-        v = x + (z0 + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
+        v = x + (z0 + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
         if (v < D_800AD324) {
             D_800AD324 = v;
             D_800AD304.unk0 = x;
@@ -287,7 +287,7 @@ void func_80096A08(void) {
         }
         z = out.vz - e->unk8;
         xr =out.vx + e->unk6;
-        v = xr - (z + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
+        v = xr - (z + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
         if (v > D_800AD328) {
             D_800AD328 = v;
             camera_frame_right[0] = xr;
@@ -295,7 +295,7 @@ void func_80096A08(void) {
         }
         z = out.vz - e->unk8;
         xr = out.vy - e->unkC;
-        v = xr + (z + 0x3000) * 240 / ((EngCam *)D_80051640)->dist;
+        v = xr + (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
         if (v < D_800AD31C) {
             D_800AD31C = v;
             D_800AD2EC.unk4 = xr;
@@ -303,7 +303,7 @@ void func_80096A08(void) {
         }
         z = out.vz - e->unk8;
         w = out.vy + e->unkC;
-        v = w - (z + 0x3000) * 240 / ((EngCam *)D_80051640)->dist;
+        v = w - (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
         if (v > D_800AD320) {
             D_800AD320 = v;
             ((D_800AD2EC_t *)D_800AD2F8)->unk4 = w;
@@ -312,7 +312,7 @@ void func_80096A08(void) {
 
         z = out.vz + e->unkA;
         xr = out.vx - e->unk4;
-        v = xr + (z + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
+        v = xr + (z + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
         if (v < D_800AD324) {
             D_800AD324 = v;
             D_800AD304.unk0 = xr;
@@ -320,7 +320,7 @@ void func_80096A08(void) {
         }
         z = out.vz + e->unkA;
         w = out.vx + e->unk6;
-        v = w - (z + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
+        v = w - (z + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
         if (v > D_800AD328) {
             D_800AD328 = v;
             camera_frame_right[0] = w;
@@ -328,7 +328,7 @@ void func_80096A08(void) {
         }
         z = out.vz + e->unkA;
         w = out.vy - e->unkC;
-        v = w + (z + 0x3000) * 240 / ((EngCam *)D_80051640)->dist;
+        v = w + (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
         if (v < D_800AD31C) {
             D_800AD31C = v;
             D_800AD2EC.unk4 = w;
@@ -336,7 +336,7 @@ void func_80096A08(void) {
         }
         w = out.vy + e->unkC;
         z = out.vz + e->unkA;
-        v = w - (z + 0x3000) * 240 / ((EngCam *)D_80051640)->dist;
+        v = w - (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
         if (v > D_800AD320) {
             D_800AD320 = v;
             ((D_800AD2EC_t *)D_800AD2F8)->unk4 = w;
@@ -358,11 +358,11 @@ void func_80096F98(s32 arg0) {
     func_80078DD4();
     func_80096A08();
     if (func_800967E0(&D_800AD2EC, D_800AD2F8, &D_800AD304, camera_frame_right, pos) != 0) {
-        d[0] = ((View *)D_80051640)->pos.vx - pos[0];
+        d[0] = ((View *)MainCamera)->pos.vx - pos[0];
     }
-    d[1] = ((View *)D_80051640)->pos.vy - pos[1];
-    g = (EngineGameView *)D_8005A614;
-    d[2] = ((View *)D_80051640)->pos.vz - pos[2];
+    d[1] = ((View *)MainCamera)->pos.vy - pos[1];
+    g = (EngineGameView *)GameInfo;
+    d[2] = ((View *)MainCamera)->pos.vz - pos[2];
     if (!(g->unk30 & 0x801) && g->mode != 0x1F) {
         if (d[0] < -0x514) {
             d[0] = -0x514;
@@ -372,16 +372,16 @@ void func_80096F98(s32 arg0) {
         }
     }
     if (arg0 != 0) {
-        ((s32 *)D_80051640)[0] = d[0];
-        ((s32 *)D_80051640)[1] = d[1];
-        ((s32 *)D_80051640)[2] = d[2];
+        ((s32 *)MainCamera)[0] = d[0];
+        ((s32 *)MainCamera)[1] = d[1];
+        ((s32 *)MainCamera)[2] = d[2];
         return;
     }
-    view = (View *)D_80051640;
+    view = (View *)MainCamera;
     w = d[2];
     z = view->unk0[2];
     if (w < z) {
-        if (D_8005A648 != 0x1F) {
+        if (GameMode != 0x1F) {
             view->unk0[2] = z + ((w - z) >> 4);
             view->unk0[0] += (d[0] - view->unk0[0]) >> 4;
             view->unk0[1] += (d[1] - view->unk0[1]) >> 4;
@@ -404,7 +404,7 @@ void func_80097158(u8 *p) {
     if (t != NULL) {
         *(s16 *)(p + 0x54) = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;
         *(s32 *)(p + 0x18) = 0x200;
-        g = (EngineGameView *)D_8005A614;
+        g = (EngineGameView *)GameInfo;
         *(s16 *)(p + 0x56) = 0;
         *(s16 *)(p + 0x58) = 0;
         if (g->mode == 0x19) {
@@ -642,8 +642,8 @@ void func_80097AA4(subengine *s) {
     TrigEntry *e;
 
     s->unk51 = 0;
-    t = D_80068BD4;
-    f = D_8005B690;
+    t = TrigTable;
+    f = FrameCount;
     e = &t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF];
     s->unk10 = *(s32 *)e >> 20;
     s->unk12 = (t[(((f * 140) & 0xFFF) - 0x400) & 0xFFF].unk2 + 0x800) >> 5;
@@ -691,13 +691,13 @@ void func_80097C28(void) {
             s->unk51 = 0;
             s->unk50 = 1;
             s->flags |= 0x8000;
-            s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + D_8005B690 * 40;
+            s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + FrameCount * 40;
             s->unk52 = 1;
             s = s->next;
         }
         {
             subengine *e = GetEngineSlot(3)->sub;
-            u32 t = D_8005A646 & 0xF0;
+            u32 t = GameLevelFlags & 0xF0;
             if (t == 0x40 || t == 0x80) {
                 e->flags |= 0x8000;
                 func_80097AA4(e);
@@ -718,13 +718,13 @@ void func_80097C28(void) {
             s->unk51 = 0;
             s->unk50 = 1;
             s->flags |= 0x8000;
-            s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + D_8005B690 * 40;
+            s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + FrameCount * 40;
             s->unk52 = 1;
             s = s->next;
         }
         {
             subengine *e = GetEngineSlot(3)->sub;
-            u32 t = D_8005A646 & 0xF0;
+            u32 t = GameLevelFlags & 0xF0;
             if (t == 0x40 || t == 0x80) {
                 e->flags |= 0x8000;
                 func_80097AA4(e);
@@ -732,7 +732,7 @@ void func_80097C28(void) {
                 e->flags &= ~0x8000;
             }
         }
-        if (!(D_8005A646 & 0xC0)) {
+        if (!(GameLevelFlags & 0xC0)) {
             q = &D_800ADBC0;
             if (q[3] != 0) {
                 q[1] = 2;
@@ -749,13 +749,13 @@ void func_80097C28(void) {
                 s->unk51 = 0;
                 s->unk50 = 1;
                 s->flags |= 0x8000;
-                s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + D_8005B690 * 40;
+                s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + FrameCount * 40;
                 s->unk52 = 1;
                 s = s->next;
             }
             {
                 subengine *e = GetEngineSlot(3)->sub;
-                u32 t = D_8005A646 & 0xF0;
+                u32 t = GameLevelFlags & 0xF0;
                 if (t == 0x40 || t == 0x80) {
                     e->flags |= 0x8000;
                     func_80097AA4(e);
@@ -839,7 +839,7 @@ void func_80098344(void) {
         s->unk51 = 0;
         s->unk50 = 1;
         s->flags |= 0x8000;
-        s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + D_8005B690 * 40;
+        s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + FrameCount * 40;
         s->unk52 = 1;
         s = s->next;
     }
@@ -853,7 +853,7 @@ void anim_item(void) {
 
 void func_80098464(void) {
     subengine *s = GetEngineSlot(3)->sub;
-    u32 t = D_8005A646 & 0xF0;
+    u32 t = GameLevelFlags & 0xF0;
     if (t == 0x40 || t == 0x80) {
         s->flags |= 0x8000;
         func_80097AA4(s);
@@ -868,11 +868,11 @@ void func_800984D4(void) {
     int new_var;
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     if (D_800ADBC4 != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;
         s[new_var = 0xA8 / 4] &= 0xFFFF7FFF;
-        if ((D_8005A624 & 0x240) != 0x240) {
+        if ((GamePause & 0x240) != 0x240) {
             s[0xA8 / 4] |= 0x8000;
         }
         func_8001C2C0((u8 *)GetEngineSlot(3));

@@ -46,7 +46,7 @@ s32 func_80010000(u8 *arg0) {
 
 void func_80010158(void) {
     D_8004E0E0 = 2;
-    func_80011BF8(&D_8004E0F0, D_80078C90, 0x801FF000 - (s32)D_80078C90);
+    func_80011BF8(&MainHeap, D_80078C90, 0x801FF000 - (s32)D_80078C90);
     init_file();
     func_80013CA4();
     func_800138A4();
@@ -89,7 +89,7 @@ void shell_render_dcache(void) {
 
 void func_800102F8(void) {
     D_8004E0E0 = 2;
-    func_80011BF8(&D_8004E0F0, D_80078C90, 0x801FF000 - (s32)D_80078C90);
+    func_80011BF8(&MainHeap, D_80078C90, 0x801FF000 - (s32)D_80078C90);
     init_file();
     func_80013CA4();
     func_800138A4();
@@ -106,7 +106,7 @@ void func_80010394(void) {
     func_800155FC();
     func_80022838();
     func_8002BEA8();
-    if (!(D_8005B690 & 1)) {
+    if (!(FrameCount & 1)) {
         func_8002D274();
     }
     D_8004E0DC->unk4();
@@ -116,7 +116,7 @@ void func_80010410(void) {
     u8 *p = D_8004E0DC->unk10;
 
     if (p != NULL) {
-        func_80011BF8(&D_8004E0F0, p, 0x801FF000 - (s32)p);
+        func_80011BF8(&MainHeap, p, 0x801FF000 - (s32)p);
         func_80012E54();
     }
     func_800222FC();
@@ -236,7 +236,7 @@ void mal_update(_mal_area *heap) {
             } else {
                 heap->deferred = q->nextFree;
             }
-            mal_free(q + 1, &D_8004E0F0);
+            mal_free(q + 1, &MainHeap);
             if (qprev != NULL) {
                 q = qprev->nextFree;
             } else {
@@ -283,7 +283,7 @@ void mal_update(_mal_area *heap) {
     }
     p = ret;
     if (p != NULL) {
-        if ((p->unk0 & 2) && (p->unk0 & 1) == (D_8005B690 & 1)) {
+        if ((p->unk0 & 2) && (p->unk0 & 1) == (FrameCount & 1)) {
             p = NULL;
         }
     }
@@ -302,7 +302,7 @@ void mal_update(_mal_area *heap) {
         ret = Heap_NextLowest(heap, m1);
         p = ret;
         if (p != NULL) {
-            if ((p->unk0 & 2) && (p->unk0 & 1) == (D_8005B690 & 1)) {
+            if ((p->unk0 & 2) && (p->unk0 & 1) == (FrameCount & 1)) {
                 p = NULL;
             }
         }
@@ -317,7 +317,7 @@ void mal_update(_mal_area *heap) {
             } else {
                 heap->deferred = q->nextFree;
             }
-            mal_free(q + 1, &D_8004E0F0);
+            mal_free(q + 1, &MainHeap);
             if (qprev != NULL) {
                 q = qprev->nextFree;
             } else {
@@ -351,7 +351,7 @@ void func_800107C8(mal *arg0, _mal_area *arg1) {
         }
         p = ret;
         if (p != NULL) {
-            if ((p->unk0 & 2) && (p->unk0 & 1) == (D_8005B690 & 1)) {
+            if ((p->unk0 & 2) && (p->unk0 & 1) == (FrameCount & 1)) {
                 p = NULL;
             }
         }
@@ -855,7 +855,7 @@ s32 func_80011410(_mal_area *heap) {
 }
 
 void mal_print_free(void) {
-    func_80011410(&D_8004E0F0);
+    func_80011410(&MainHeap);
 }
 
 u8 *func_80011498(u8 *arg0, s32 arg1, _mal_area *arg2) {
@@ -1284,7 +1284,7 @@ mal *func_80011C98(mal *arg0) {
 }
 
 void func_80011D00(s32 arg0) {
-    func_800107C8(arg0 - 0x18, &D_8004E0F0);
+    func_800107C8(arg0 - 0x18, &MainHeap);
 }
 
 void func_80011D28(u8 *arg0) {
@@ -1321,7 +1321,7 @@ u8 *func_80011DB4(_mal_area *arg0) {
                 } else {
                     (*(s32*)((u8*)(arg0) + 16)) = (u8 *) (*(s32*)((u8*)(var_a0) + 20));
                 }
-                mal_free(var_a0 + 0x18, &D_8004E0F0);
+                mal_free(var_a0 + 0x18, &MainHeap);
                 var_a0 = NULL;
                 if (var_s0 != NULL) {
                     var_a0 = (*(s32*)((u8*)(var_s0) + 20));
@@ -1365,7 +1365,7 @@ mal *func_80011EF0(_mal_area *heap) {
         }
     }
     if (ret != NULL) {
-        if ((ret->unk0 & 2) && (ret->unk0 & 1) == (D_8005B690 & 1)) {
+        if ((ret->unk0 & 2) && (ret->unk0 & 1) == (FrameCount & 1)) {
             return NULL;
         }
     }
@@ -1470,10 +1470,10 @@ u8 *func_800121F8(u8 *arg0) {
 
     if (*(u8 **)(arg0 + 0x18) == NULL) {
         if (*(s32 *)(arg0 + 0xC) == 0) {
-            return func_80011654(((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 11, &D_8004E0F0);
+            return func_80011654(((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 11, &MainHeap);
         }
         words = ((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 9;
-        h = &D_8004E0F0;
+        h = &MainHeap;
         if (mal_first_free(words, h->free) == NULL) {
             func_80017640();
             if (mal_first_free(words, h->free) == NULL) {
@@ -1483,7 +1483,7 @@ u8 *func_800121F8(u8 *arg0) {
                 }
             }
         }
-        return func_80011748(((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 11, (u8 *)&D_8004E0F0);
+        return func_80011748(((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 11, (u8 *)&MainHeap);
     }
     return *(u8 **)(arg0 + 0x18);
 }
@@ -1532,7 +1532,7 @@ s32 func_8001231C(void) {
             ls->state = 3;
             if (node->file == NULL) {
             free:
-                mal_free(buf, &D_8004E0F0);
+                mal_free(buf, &MainHeap);
             } else if (node->fn != NULL) {
                 node->fn(buf, node->arg);
             } else {
@@ -1562,7 +1562,7 @@ s32 func_8001231C(void) {
         return 0;
     }
     if (func_80027790(node->file, node->offset / 2048, data, (node->size + 0x7FF) / 2048) < 0) {
-        mal_free((void *)ls->unk4, &D_8004E0F0);
+        mal_free((void *)ls->unk4, &MainHeap);
         ls->unk4 = 0;
     }
     return 0;
@@ -1689,7 +1689,7 @@ static inline void func_80012678_loop(u8 *arg0, s32 *arg1) {
             if (n == 0) {
                 return;
             }
-            func_80011498(func_80011828(arg0, (s0[0] - s2[0]) << 11), s0[1], &D_8004E0F0);
+            func_80011498(func_80011828(arg0, (s0[0] - s2[0]) << 11), s0[1], &MainHeap);
             n--;
             s0 -= 2;
         }
@@ -1773,7 +1773,7 @@ static inline void func_80012840_loop(u8 *arg0, s32 *arg1) {
             if (n == 0) {
                 return;
             }
-            func_80011498(func_80011828(arg0, (s0[0] - s2[0]) << 11), s0[1], &D_8004E0F0);
+            func_80011498(func_80011828(arg0, (s0[0] - s2[0]) << 11), s0[1], &MainHeap);
             n--;
             s0 -= 2;
         }
@@ -1947,7 +1947,7 @@ void func_80012CD4(void *arg0, s32 *arg1) {
             if (n == 0) {
                 return;
             }
-            func_80011498(func_80011828(arg0, (s0[0] - s2[0]) << 11), s0[1], &D_8004E0F0);
+            func_80011498(func_80011828(arg0, (s0[0] - s2[0]) << 11), s0[1], &MainHeap);
             n--;
             s0 -= 2;
         }
@@ -2201,7 +2201,7 @@ u8 *func_8001316C(u8 *arg0) {
 
 
 s32 func_800131B0(s32 arg0) {
-    _mal_area *h = &D_8004E0F0;
+    _mal_area *h = &MainHeap;
     s32 words;
     arg0 += 3;
     words = arg0 >> 2;
@@ -2246,7 +2246,7 @@ s32 func_80013290(s32 *arg0, u8 **arg1) {
     func_80013034((s32)arg0, 0, size, NULL, (u8 *)&D_8006E9FC, 1, 0);
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     func_80011544(D_8006E9FC, arg1);
@@ -2258,7 +2258,7 @@ s32 func_80013334(s32 arg0, s32 arg1, u8 **arg2, s32 arg3) {
     func_80013034(arg0, arg1, arg3, NULL, (u8 *)&D_8006E9FC, 1, 0);
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     func_80011544(D_8006E9FC, arg2);
@@ -2279,7 +2279,7 @@ s32 load_file_permanent(s32 *arg0) {
     func_80013034((s32)arg0, 0, a2, NULL, (u8 *)&D_8006E9F8, 0, 0);
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     return D_8006E9F8;
@@ -2290,7 +2290,7 @@ s32 func_80013488(s32 arg0, s32 arg1, s32 arg2) {
     func_80013034(arg0, arg1, arg2, NULL, (u8 *)&D_8006E9F8, 0, 0);
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     return D_8006E9F8;
@@ -2302,7 +2302,7 @@ s32 func_800134FC(u8 *a, u8 *b) {
     printf("load file start\n");
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
     D_800637B0 = 0;
@@ -2440,7 +2440,7 @@ void func_800138A4(void) {
     s32 i;
 
     func_80027D90();
-    pad = D_80051338;
+    pad = Pads;
     any = 0;
     D_80051600 = 0;
     D_800515FC = -1;
@@ -2477,24 +2477,24 @@ void func_800139A8(void) {
             goto done;
         }
         m = c->steps[c->step];
-        if (m != 0 && (((PadStick *)D_80051338)->pressed & 0xFFFF)) {
-            if ((((PadStick *)D_80051338)->pressed & m) == m) {
+        if (m != 0 && (((PadStick *)Pads)->pressed & 0xFFFF)) {
+            if ((((PadStick *)Pads)->pressed & m) == m) {
                 if (c->step == 0) {
-                    c->startTime = D_8005B690;
+                    c->startTime = FrameCount;
                 }
                 c->step++;
                 if (c->steps[c->step] == 0) {
                     c->step = 0;
-                    if (c->maxTime >= D_8005B690 - c->startTime) {
+                    if (c->maxTime >= FrameCount - c->startTime) {
                         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                         c->fn();
                     }
                 }
             } else {
                 m = c->steps[0];
-                if ((((PadStick *)D_80051338)->pressed & m) == m) {
+                if ((((PadStick *)Pads)->pressed & m) == m) {
                     c->step = 1;
-                    c->startTime = D_8005B690;
+                    c->startTime = FrameCount;
                 } else {
                     c->step = 0;
                 }
@@ -2512,12 +2512,12 @@ void func_80013B0C(ComboSeq *c) {
     if (m != 0 && (D_80051380 & 0xFFFF)) {
         if ((D_80051380 & m) == m) {
             if (c->step == 0) {
-                c->startTime = D_8005B690;
+                c->startTime = FrameCount;
             }
             c->step++;
             if (c->steps[c->step] == 0) {
                 c->step = 0;
-                if (c->maxTime >= D_8005B690 - c->startTime) {
+                if (c->maxTime >= FrameCount - c->startTime) {
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                     c->fn();
                 }
@@ -2526,7 +2526,7 @@ void func_80013B0C(ComboSeq *c) {
             m = c->steps[0];
             if ((D_80051380 & m) == m) {
                 c->step = 1;
-                c->startTime = D_8005B690;
+                c->startTime = FrameCount;
                 return;
             }
             c->step = 0;
@@ -2547,7 +2547,7 @@ void func_80013C24(void) {
 }
 
 void func_80013C78(void) {
-    u32 *p = (u32 *)D_8005A614;
+    u32 *p = (u32 *)GameInfo;
 
     p[1] |= 0x80010000;
 }
@@ -2561,7 +2561,7 @@ void func_80013CA4(void) {
     PadState *pad;
     s32 i;
 
-    pad = D_80051338;
+    pad = Pads;
     i = 7;
     do {
         pad->unk0 = 0;
@@ -3425,7 +3425,7 @@ void init_dots(subengine *arg0) {
 void func_80015C1C(PointSprites *ps, MATRIX *m) {
     PointSpriteSet *set = &ps->set;
     PointSpriteSrc *src = set->src;
-    TILE_1 *prim = set->prims[D_8005B690 & 1];
+    TILE_1 *prim = set->prims[FrameCount & 1];
     s32 n;
 
     gte_SetRotMatrix(m);
@@ -3440,7 +3440,7 @@ void func_80015C1C(PointSprites *ps, MATRIX *m) {
         gte_stsxy(&prim->x0);
         src++;
         n--;
-        addPrim(D_80056998.ot, prim);
+        addPrim(RenderState.ot, prim);
         prim++;
     }
 }
@@ -3448,9 +3448,9 @@ void func_80015D08(u8 *arg0) {
     u8 *temp_s2;
 
     temp_s2 = arg0 + 0x6C;
-    func_80011578((*(s32*)((u8*)(temp_s2) + 4)), &D_8004E0F0, 2);
-    func_80011578((*(s32*)((u8*)(temp_s2) + 8)), &D_8004E0F0, 2);
-    mal_free((*(s32*)((u8*)(arg0) + 108)), &D_8004E0F0);
+    func_80011578((*(s32*)((u8*)(temp_s2) + 4)), &MainHeap, 2);
+    func_80011578((*(s32*)((u8*)(temp_s2) + 8)), &MainHeap, 2);
+    mal_free((*(s32*)((u8*)(arg0) + 108)), &MainHeap);
 }
 
 s32 func_80015D70(u8 *arg0, u8 *arg1) {
@@ -3464,16 +3464,16 @@ s32 func_80015D70(u8 *arg0, u8 *arg1) {
     *(s32 *)(temp_s0 + 8) = 0;
     *(s32 *)(arg1 + 0x6C) = 0;
     *(s32 *)(temp_s0 + 0xC) = 0;
-    func_800115D8(*(s32 *)(arg0 + 4), (void **)temp_s4, (s32)&D_8004E0F0, 2);
+    func_800115D8(*(s32 *)(arg0 + 4), (void **)temp_s4, (s32)&MainHeap, 2);
     if (*(s32 *)(temp_s0 + 4) == 0) {
         var_v0 = 0;
     } else {
-        func_800115D8(*(s32 *)(arg0 + 4), (void **)(arg1 + 0x74), (s32)&D_8004E0F0, 3);
+        func_800115D8(*(s32 *)(arg0 + 4), (void **)(arg1 + 0x74), (s32)&MainHeap, 3);
         if (*(s32 *)(temp_s0 + 8) == 0) {
-            mal_free(temp_s4, &D_8004E0F0);
+            mal_free(temp_s4, &MainHeap);
             var_v0 = 0;
         } else {
-            func_800115D8(*(s32 *)(arg0 + 8), (void **)temp_s0, (s32)&D_8004E0F0, 3);
+            func_800115D8(*(s32 *)(arg0 + 8), (void **)temp_s0, (s32)&MainHeap, 3);
             *(s32 *)(temp_s0 + 0xC) = *(s32 *)arg0;
             var_v0 = *(s32 *)(arg1 + 0x6C);
         }
@@ -3498,15 +3498,15 @@ s32 func_80015E94(u8 *arg0, u8 *arg1) {
     (*(s32*)((u8*)(arg1) + 8)) = 0;
     (*(s32*)((u8*)(arg1) + 0)) = 0;
     (*(s32*)((u8*)(arg1) + 12)) = 0;
-    func_800115D8((*(s32*)((u8*)(arg0) + 4)), temp_s3, &D_8004E0F0, 2);
+    func_800115D8((*(s32*)((u8*)(arg0) + 4)), temp_s3, &MainHeap, 2);
     if ((*(s32*)((u8*)(arg1) + 4)) != 0) {
-        func_800115D8((*(s32*)((u8*)(arg0) + 4)), arg1 + 8, &D_8004E0F0, 3);
+        func_800115D8((*(s32*)((u8*)(arg0) + 4)), arg1 + 8, &MainHeap, 3);
         if ((*(s32*)((u8*)(arg1) + 8)) != 0) {
-            func_800115D8((*(s32*)((u8*)(arg0) + 8)), arg1, &D_8004E0F0, 3);
+            func_800115D8((*(s32*)((u8*)(arg0) + 8)), arg1, &MainHeap, 3);
             (*(s32*)((u8*)(arg1) + 12)) = (s32) (*(s32*)((u8*)(arg0) + 0));
             return (*(s32*)((u8*)(arg1) + 0));
         }
-        mal_free(temp_s3, &D_8004E0F0);
+        mal_free(temp_s3, &MainHeap);
         goto block_4;
     }
 block_4:

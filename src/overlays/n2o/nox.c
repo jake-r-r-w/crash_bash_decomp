@@ -243,12 +243,12 @@ void NoxInitAsteroids(void) {
         "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!\n"
         "\0\x0B\x80\x82";
 
-    o = (AstSceneObj *)((GfxScene *)D_80058AD0)->objs;
+    o = (AstSceneObj *)((GfxScene *)MapScene)->objs;
     printf(NoxMsgInitAsteroids);
     nAst = 0;
     nMine = 0;
     nBig = 0;
-    trig = D_80068BD4;
+    trig = TrigTable;
     a = NoxAsteroids;
     NoxAsteroidTimer = 0x3C;
 loop:
@@ -405,7 +405,7 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
             }
         }
     }
-    g = (BossGameView *)D_8005A614;
+    g = (BossGameView *)GameInfo;
     if (g->unk6C != 0 && (h = Heroes, !(*(s32 *)&h[1].hero_teammate & 0x22000000))) {
         d = AstDist(arg0, h[1].hero_eng);
         tb1 = NoxAsteroids;
@@ -511,7 +511,7 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
             if (r == 3) {
                 PlaySfx(0x28E, 0, 0, 0x1000, 0x1E00, 0);
             }
-            g = (BossGameView *)D_8005A614;
+            g = (BossGameView *)GameInfo;
             slot->unkC = 1;
             if ((g->unk4 & 0x80000001) != 0x80000001 && h->hero_mode != 0x31) {
                 dmg = MineDamage(g);
@@ -519,7 +519,7 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
                 SetHeroAction(0, 0x31);
             }
         }
-        g2 = (BossGameView *)D_8005A614;
+        g2 = (BossGameView *)GameInfo;
         if (g2->unk6C != 0) {
             h2 = Heroes;
             if (!(*(s32 *)&h2[1].hero_teammate & 0x22000000) &&
@@ -572,12 +572,12 @@ void NoxStartPhase1(void)
   N2OPlaceHero(0);
   N2OPlaceHero(1);
   N2OPlaceHero(3);
-  D_8009D6E8.unk20 = N2OPreMoveHero;
-  D_8009D6E8.unk68 = N2O_KeepInBounds;
+  HeroHooks.unk20 = N2OPreMoveHero;
+  HeroHooks.unk68 = N2O_KeepInBounds;
   new_var = (void (*)(s32))N2OMoveHero;
-  D_8009D6E8.unk24 = new_var;
-  D_8009D6E8.unk18 = N2OInitShadow;
-  D_8009D6E8.unk1C = N2OUpdateShadow;
+  HeroHooks.unk24 = new_var;
+  HeroHooks.unk18 = N2OInitShadow;
+  HeroHooks.unk1C = N2OUpdateShadow;
  ;
   D_8009F8B4 = func_80093038;
   N2OInitBoss();
@@ -594,9 +594,9 @@ void NoxUpdateAsteroids(void) {
     s32 nAst;
 
     nMine = 0;
-    o = (AstSceneObj *)((GfxScene *)D_80058AD0)->objs;
+    o = (AstSceneObj *)((GfxScene *)MapScene)->objs;
     nAst = 0;
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         if ((Heroes[0].hero_status & 0x2000) && (Heroes[1].hero_status & 0x2000)) {
             return;
         }
@@ -627,17 +627,17 @@ void NoxUpdateAsteroids(void) {
                 }
                 Heroes[0].hero_eng->unk2C.y = Heroes[0].hero_eng->unk2C.x;
                 Heroes[0].hero_eng->unk2C.z = Heroes[0].hero_eng->unk2C.x;
-                if (((BossGameView *)D_8005A614)->unk6C != 0) {
+                if (((BossGameView *)GameInfo)->unk6C != 0) {
                     Heroes[1].hero_eng->unk2C.x = Heroes[0].hero_eng->unk2C.x;
                     Heroes[1].hero_eng->unk2C.y = Heroes[0].hero_eng->unk2C.x;
                     Heroes[1].hero_eng->unk2C.z = Heroes[0].hero_eng->unk2C.x;
                 }
                 NoxAsteroidTimer--;
                 if (NoxAsteroidTimer == -1) {
-                    set_fade(&D_8009F644, 0x100, 0);
+                    set_fade(&ScreenFade, 0x100, 0);
                 }
                 if (NoxAsteroidTimer == -0x3C) {
-                    set_fade(&D_8009F644, -0x100, 0);
+                    set_fade(&ScreenFade, -0x100, 0);
                     NoxStartPhase1();
                     return;
                 }
@@ -669,8 +669,8 @@ void NoxUpdateAsteroids(void) {
                     o->pos.y = NoxAsteroids[nAst].pos.y;
                     o->pos.x = NoxAsteroids[nAst].pos.x;
                 } else {
-                    o->pos.y = NoxAsteroids[nAst].pos.y + (D_80068BD4[(NoxAsteroids[nAst].ang - 0x400) & 0xFFF].unk2 * 512 >> 12);
-                    o->pos.x = NoxAsteroids[nAst].pos.x + (D_80068BD4[NoxAsteroids[nAst].ang & 0xFFF].unk2 * 512 >> 12);
+                    o->pos.y = NoxAsteroids[nAst].pos.y + (TrigTable[(NoxAsteroids[nAst].ang - 0x400) & 0xFFF].unk2 * 512 >> 12);
+                    o->pos.x = NoxAsteroids[nAst].pos.x + (TrigTable[NoxAsteroids[nAst].ang & 0xFFF].unk2 * 512 >> 12);
                 }
                 NoxAsteroids[nAst].ang = (NoxAsteroids[nAst].ang + 0x20) & 0xFFF;
                 if (o->flags & 0x8000) {
@@ -696,7 +696,7 @@ void NoxUpdateAsteroids(void) {
                         o->flags &= ~0x8000;
                     } else {
                         o->flags |= 0x8000;
-                        if (k->kind == 8 && ((BossGameView *)D_8005A614)->unk6C != 0) {
+                        if (k->kind == 8 && ((BossGameView *)GameInfo)->unk6C != 0) {
                             o->flags &= ~0x8000;
                         }
                     }
@@ -733,7 +733,7 @@ void NoxUpdateAsteroids(void) {
                     })
             }
             if (o->flags & 0x8000) {
-                if (((BossGameView *)D_8005A614)->unk6C == 0) {
+                if (((BossGameView *)GameInfo)->unk6C == 0) {
                     if (!(Heroes[0].hero_status & 0x2000)) {
                         AST_NEAR(o, Heroes[0].hero_eng)
                     }
@@ -761,10 +761,10 @@ void NoxUpdate(void) {
     NAS *first;
     NAS *nas;
 
-    if (((BossGameView *)D_8005A614)->unk75 != 0 && (((BossGameView *)D_8005A614)->unk30 & 1)) {
-        ((BossGameView *)D_8005A614)->unk75 = 0;
+    if (((BossGameView *)GameInfo)->unk75 != 0 && (((BossGameView *)GameInfo)->unk30 & 1)) {
+        ((BossGameView *)GameInfo)->unk75 = 0;
     }
-    if (((BossGameView *)D_8005A614)->unk4 & 8) {
+    if (((BossGameView *)GameInfo)->unk4 & 8) {
         D_8009D6DC[2] |= 0x8000;
     }
     if (NoxStarted == 0) {
@@ -778,7 +778,7 @@ void NoxUpdate(void) {
             first->UserInfo.user1 = 0;
             func_80026A04((u8 *)first);
         }
-        if (((BossGameView *)D_8005A614)->unk6C != 0) {
+        if (((BossGameView *)GameInfo)->unk6C != 0) {
             nas = CreateNAS(0, 0, 0, 0x1C03, 0x11);
             NoxCameraNasB = nas;
             if (nas != NULL) {
@@ -790,7 +790,7 @@ void NoxUpdate(void) {
         func_80026980(Heroes[1].hero);
         NoxStarted = 1;
     }
-    if (D_8005A624 == 0) {
+    if (GamePause == 0) {
         NoxUpdateAsteroids();
     }
 }
@@ -817,7 +817,7 @@ void NoxHeroCollide(s32 arg0) {
     base = Heroes;
     i = 0;
     total = 0x200;
-    trig = D_80068BD4;
+    trig = TrigTable;
     while (1) {
         if (i >= 4) {
             break;
@@ -878,7 +878,7 @@ void NoxPreMoveHero(s32 arg0) {
     HeroInfo *hh;
 
     if (h->hero_frozen != 0) {
-        pb = (BossPad *)D_80051338;
+        pb = (BossPad *)Pads;
         pad = &pb[arg0];
         pad->unk50 = 0;
         pad->unk54 = 0;
@@ -891,7 +891,7 @@ void NoxPreMoveHero(s32 arg0) {
         m->jump_max = 0;
         NoxHeroBoost[arg0] = 0;
         turn = &NoxHeroSteer[arg0];
-        pb2 = (BossPad *)D_80051338;
+        pb2 = (BossPad *)Pads;
         pad2 = &pb2[arg0];
         *turn = 0;
         if ((pad2->unk0 & 1) || h->hero_ai->AImode != 0) {
@@ -912,12 +912,12 @@ void NoxPreMoveHero(s32 arg0) {
             }
         }
     }
-    if (((BossGameView *)D_8005A614)->unk10 == 0) {
+    if (((BossGameView *)GameInfo)->unk10 == 0) {
         spd = NoxSpeedScale;
         base2 = Heroes;
         hh = &base2[arg0];
-        m->x_max = (spd * D_80068BD4[(hh->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 11;
-        m->jump_max = (spd * D_80068BD4[(hh->hero_eng->unk1C + 0x400) & 0xFFF].unk2) >> 11;
+        m->x_max = (spd * TrigTable[(hh->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 11;
+        m->jump_max = (spd * TrigTable[(hh->hero_eng->unk1C + 0x400) & 0xFFF].unk2) >> 11;
         if (NoxBossHitTimer == 0) {
             m->z_max = spd;
         } else {
@@ -928,7 +928,7 @@ void NoxPreMoveHero(s32 arg0) {
             NoxHeroSteer[arg0] = 0;
             e = hh->hero_eng;
             e->unk10.y += (-0xAF0 - e->unk10.y) >> 5;
-            if (((BossGameView *)D_8005A614)->unk6C == 0) {
+            if (((BossGameView *)GameInfo)->unk6C == 0) {
                 e2 = hh->hero_eng;
                 e2->unk10.x -= e2->unk10.x >> 5;
             } else {
@@ -1017,7 +1017,7 @@ void NoxMoveHero(s32 arg0) {
         m->x_vel = 0;
     }
     N2OHeroSpeed[arg0] = m->x_vel;
-    if (NoxHeroesDown == 0 && (D_8005A680[0] & 1)) {
+    if (NoxHeroesDown == 0 && (GameTeams[0] & 1)) {
         NoxHeroCollide(arg0);
     }
 }
@@ -1042,10 +1042,10 @@ void NoxHeroFly(s32 arg0) {
         func_8008502C(arg0);
     }
     ang = h->hero_eng->unk1E;
-    x1 = (D_80068BD4[ang & 0xFFF].unk2 * 0x67) >> 10;
-    z1 = (D_80068BD4[(ang + 0x400) & 0xFFF].unk2 * 0x67) >> 10;
-    x2 = (D_80068BD4[(ang - 0x800) & 0xFFF].unk2 * 0x67) >> 10;
-    z2 = (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 0x67) >> 10;
+    x1 = (TrigTable[ang & 0xFFF].unk2 * 0x67) >> 10;
+    z1 = (TrigTable[(ang + 0x400) & 0xFFF].unk2 * 0x67) >> 10;
+    x2 = (TrigTable[(ang - 0x800) & 0xFFF].unk2 * 0x67) >> 10;
+    z2 = (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 0x67) >> 10;
     sub = h->hero_sub;
     if (sub->unk74 < 0x401D) {
         sub->unk74++;
@@ -1053,7 +1053,7 @@ void NoxHeroFly(s32 arg0) {
     if (sub->unk74 == 0x4007) {
         PlaySfx(0x2B7, 0, 0, 0x1000, 0x1E00, 0);
     }
-    if ((D_80051338[arg0].unk54 & 0x8000) && NoxBossDead == 0) {
+    if ((Pads[arg0].unk54 & 0x8000) && NoxBossDead == 0) {
         nas = CreateNAS(h->hero_eng->unk10.x + x1, h->hero_eng->unk10.y + 0x80,
                            h->hero_eng->unk10.z + z1, 0x1C07, 0x11);
         if (nas != NULL) {
@@ -1156,7 +1156,7 @@ void InitAsteroidRoll(NAS *m) {
 
     ext = AddExt(m, 0x80, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = *(void **)D_80058AD0;
+        m->Engine->sub->unk6C = *(void **)MapScene;
         m->Engine->unk5D = 1;
         ext->arc[0] = 0xC;
         ext->bounces = 0;
@@ -1164,7 +1164,7 @@ void InitAsteroidRoll(NAS *m) {
         ext->arc[1] = 0;
         ext->floor = 0;
         ext->to.x = Heroes->hero_eng->unk10.x;
-        ext->to.z = (D_80068BD4[0].unk2 * 9) >> 4;
+        ext->to.z = (TrigTable[0].unk2 * 9) >> 4;
         m->Engine->unk1E = 0;
         ext->to.y = 0;
         ext->from.x = Heroes->hero_eng->unk10.x;
@@ -1243,22 +1243,22 @@ void PlotNitroMine(NAS *nas) {
     }
     if (!(*(s32 *)&Heroes[0].hero_teammate & 0x22000000) && dx * dx + dy * dy + dz * dz < 0x90000) {
         MineBurst(nas);
-        if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
-            Heroes[0].hero_health -= MineDamage((BossGameView *)D_8005A614) >> 2;
+        if ((((BossGameView *)GameInfo)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
+            Heroes[0].hero_health -= MineDamage((BossGameView *)GameInfo) >> 2;
             SetHeroAction(0, 0x31);
         }
         MineSfxV();
         goto kill;
     }
-    if (*D_8005A680 != 0 && (h = Heroes, !(*(s32 *)&h[1].hero_teammate & 0x22000000))) {
+    if (*GameTeams != 0 && (h = Heroes, !(*(s32 *)&h[1].hero_teammate & 0x22000000))) {
         me = nas->Engine;
         if ((me->unk10.x - h[1].hero_eng->unk10.x) * (me->unk10.x - h[1].hero_eng->unk10.x)
             + (me->unk10.y - h[1].hero_eng->unk10.y) * (me->unk10.y - h[1].hero_eng->unk10.y)
             + (me->unk10.z - h[1].hero_eng->unk10.z) * (me->unk10.z - h[1].hero_eng->unk10.z) < 0x40000) {
             MineBurst(nas);
-            if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001
+            if ((((BossGameView *)GameInfo)->unk4 & 0x80000001) != 0x80000001
                 && !(Heroes[1].hero_status & 0x2000) && Heroes[1].hero_mode != 0x31) {
-                Heroes[1].hero_health -= MineDamage((BossGameView *)D_8005A614) >> 2;
+                Heroes[1].hero_health -= MineDamage((BossGameView *)GameInfo) >> 2;
                 SetHeroAction(1, 0x31);
             }
             MineSfxH();
@@ -1267,7 +1267,7 @@ void PlotNitroMine(NAS *nas) {
     }
     z = nas->Engine->unk10.z;
     if (z < Heroes[0].hero_eng->unk10.z - 0x11F4 ||
-        (*D_8005A680 != 0 && z < Heroes[1].hero_eng->unk10.z - 0x11F4)) {
+        (*GameTeams != 0 && z < Heroes[1].hero_eng->unk10.z - 0x11F4)) {
     kill:
         KillNAS(nas);
     }
@@ -1292,7 +1292,7 @@ void PlotNitroMissile(NAS *nas) {
     s32 b;
     s32 r;
 
-    if (*D_8005A680 != 0) {
+    if (*GameTeams != 0) {
         if ((Heroes[0].hero_status & 0x2000) && (Heroes[1].hero_status & 0x2000)) {
             ((void (*)(s32, s32, s32, u16, u16))CreateNAS)(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1C09, 0x11);
             goto kill;
@@ -1323,9 +1323,9 @@ void PlotNitroMissile(NAS *nas) {
         b = get_angle(-dy, d);
         nas->Engine->unk1E += ((a - nas->Engine->unk1E) << 20) >> 20;
         nas->Engine->unk1C += ((b - nas->Engine->unk1C) << 20) >> 20;
-        nas->Engine->unk10.x -= D_80068BD4[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.z -= D_80068BD4[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.y += D_80068BD4[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.x -= TrigTable[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.z -= TrigTable[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.y += TrigTable[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
         eng = nas->Engine;
         h = &Heroes[ext->unk14];
         if (eng->unk10.z < h->hero_eng->unk10.z) {
@@ -1366,7 +1366,7 @@ void PlotNitroMissile(NAS *nas) {
                 n->InitDelete(n);
             }
         }
-        g = (BossGameView *)D_8005A614;
+        g = (BossGameView *)GameInfo;
         if ((g->unk4 & 0x80000001) != 0x80000001) {
             r = Random(4);
             if (r == 0) {
@@ -1388,9 +1388,9 @@ void PlotNitroMissile(NAS *nas) {
         }
         goto kill;
     case 1:
-        nas->Engine->unk10.x -= D_80068BD4[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.z -= D_80068BD4[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.y += D_80068BD4[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.x -= TrigTable[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.z -= TrigTable[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.y += TrigTable[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
         if (nas->Engine->unk10.z < Heroes[ext->unk14].hero_eng->unk10.z - 0x1000) {
             goto kill;
         }
@@ -1403,7 +1403,7 @@ kill:
 
 void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
     BossObj *arg1 = obj;
-    BossGameView *g = (BossGameView *)D_8005A614;
+    BossGameView *g = (BossGameView *)GameInfo;
     s32 d;
     EXTengine *target;
     EXTengine *e;
@@ -1466,7 +1466,7 @@ void InitNitroBoss(NAS *nas) {
     u8 *p;
 
     if (ext != NULL) {
-        nas->Engine->sub->unk6C = *(void **)D_80058AD0;
+        nas->Engine->sub->unk6C = *(void **)MapScene;
         nas->Engine->unk2C.x = 0x1830;
         nas->Engine->unk2C.y = 0x1830;
         nas->Engine->unk2C.z = 0x1830;
@@ -1479,7 +1479,7 @@ void InitNitroBoss(NAS *nas) {
         func_800250B0(nas);
         nas->UserInfo.user1 = 0;
         ext->unk14 = 0x3200;
-        scene = D_80058AD0;
+        scene = MapScene;
         p = scene->unk2C;
         ext->keys = (KeyBlock *)(p + (*(s32 *)(p + 4) + 4));
         func_8001E21C(ext->keys, ext->unk14, &nas->Engine->unk10);
@@ -1566,7 +1566,7 @@ void PlotNitroBoss(NAS *nas) {
     case 1:
         NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
         if (ext->unk1C-- < 0) {
-            if (D_8005A680[0] == 0) {
+            if (GameTeams[0] == 0) {
                 if (!(Heroes[0].hero_status & 0x2000)) {
                     e = nas->Engine;
                     m = CreateNAS(e->unk10.x, e->unk10.y, e->unk10.z, 0x1C04, 0x11);
@@ -1657,10 +1657,10 @@ void InitSpiralSat(NAS *nas) {
                 ext->ang[i] = i << 10;
                 ext->eng[i] = e;
                 ext->radius = 0x800;
-                e->unk10.x = ext->c.x + ((ext->radius * D_80068BD4[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
-                e->unk10.y = ext->c.y + ((ext->radius * D_80068BD4[ext->ang[i] & 0xFFF].unk2) >> 12);
+                e->unk10.x = ext->c.x + ((ext->radius * TrigTable[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+                e->unk10.y = ext->c.y + ((ext->radius * TrigTable[ext->ang[i] & 0xFFF].unk2) >> 12);
                 e->unk10.z = ext->c.z;
-                e->sub->unk6C = *(s32 *)D_80058AD0;
+                e->sub->unk6C = *(s32 *)MapScene;
                 e->sub->unk74 = 0x201A;
                 e->sub->flags = 0x8000;
                 q =&e->unk10;
@@ -1710,7 +1710,7 @@ void PlotSpiralSat(NAS *nas) {
             if (f == NULL) {
                 continue;
             }
-            if (((BossGameView *)D_8005A614)->unk6C == 0) {
+            if (((BossGameView *)GameInfo)->unk6C == 0) {
                 if (Heroes[0].hero_eng->unk10.z + 0x6000 < f->unk10.z) {
                     f->sub->flags &= ~0x8000;
                     if (ext->sat[i] != NULL) {
@@ -1763,13 +1763,13 @@ void PlotSpiralSat(NAS *nas) {
                         s->InitDelete(s);
                     }
                 }
-                if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x30) {
+                if ((((BossGameView *)GameInfo)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x30) {
                     extern int SetHeroAction();
                     ((void (*)(s32, s32))SetHeroAction)(0, 0x30);
                 }
                 goto kill;
             }
-            if (((BossGameView *)D_8005A614)->unk6C != 0 && !(Heroes[1].hero_status & 0x2000)) {
+            if (((BossGameView *)GameInfo)->unk6C != 0 && !(Heroes[1].hero_status & 0x2000)) {
                 g = ext->eng[i];
                 if ((g->unk10.x - Heroes[1].hero_eng->unk10.x) * (g->unk10.x - Heroes[1].hero_eng->unk10.x)
                     + (g->unk10.y - Heroes[1].hero_eng->unk10.y) * (g->unk10.y - Heroes[1].hero_eng->unk10.y)
@@ -1787,7 +1787,7 @@ void PlotSpiralSat(NAS *nas) {
                             s->InitDelete(s);
                         }
                     }
-                    if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001
+                    if ((((BossGameView *)GameInfo)->unk4 & 0x80000001) != 0x80000001
                         && !(Heroes[1].hero_status & 0x2000) && Heroes[1].hero_mode != 0x30) {
                         SetHeroAction(1, 0x30);
                     }
@@ -1797,8 +1797,8 @@ void PlotSpiralSat(NAS *nas) {
             ext->eng[i]->unk1C += 0x40;
             ext->eng[i]->unk1E += 0x40;
             ext->eng[i]->unk5E = 1;
-            ext->eng[i]->unk10.x = ext->c.x + ((ext->radius * D_80068BD4[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
-            ext->eng[i]->unk10.y = ext->c.y + ((ext->radius * D_80068BD4[ext->ang[i] & 0xFFF].unk2) >> 12);
+            ext->eng[i]->unk10.x = ext->c.x + ((ext->radius * TrigTable[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+            ext->eng[i]->unk10.y = ext->c.y + ((ext->radius * TrigTable[ext->ang[i] & 0xFFF].unk2) >> 12);
             ext->eng[i]->unk10.z = ext->c.z;
             if (ext->sat[i] != NULL) {
                 ext->sat[i]->Engine->unk10 = ext->eng[i]->unk10;
@@ -1810,7 +1810,7 @@ void PlotSpiralSat(NAS *nas) {
             }
         }
     done:
-        ext->radius = abs((D_80068BD4[(ext->unk40 - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
+        ext->radius = abs((TrigTable[(ext->unk40 - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
         ext->unk40 = (ext->unk40 + 0x18) & 0xFFF;
     }
     z = nas->Engine->unk10.z;
@@ -1825,7 +1825,7 @@ void PlotSpiralSat(NAS *nas) {
         }
         goto kill;
     }
-    if (*D_8005A680 != 0 && z < Heroes[1].hero_eng->unk10.z - 0x800) {
+    if (*GameTeams != 0 && z < Heroes[1].hero_eng->unk10.z - 0x800) {
         p = ext;
         for (mode = 0; mode < 4; mode++) {
             if (p->sat[0] != NULL) {
@@ -1842,7 +1842,7 @@ void PlotMineSFX(NAS *nas) {
     s32 z;
 
     nas->Engine->unk10.z = nas->UserInfo.user1;
-    if (D_8005A680[0] == 0) {
+    if (GameTeams[0] == 0) {
         if (D_8009D530->unk10.z + 0x6000 < nas->Engine->unk10.z) {
             nas->Engine->sub->flags &= ~0x8000;
         } else {
@@ -1865,7 +1865,7 @@ void PlotMineSFX(NAS *nas) {
     if (nas->Engine->sub->flags & 0x8000) {
         z = nas->Engine->unk10.z;
         if (z < Heroes[0].hero_eng->unk10.z + 0xC00 ||
-            (D_8005A680[0] != 0 && z < Heroes[1].hero_eng->unk10.z + 0xC00)) {
+            (GameTeams[0] != 0 && z < Heroes[1].hero_eng->unk10.z + 0xC00)) {
             if (nas->UserInfo.status == 0) {
                 PlaySfx(0x29B, NULL, NULL, 0x1000, 0x1E00, 0);
             }
@@ -1894,9 +1894,9 @@ void PlotLaserShoot(NAS *nas) {
     s32 dz;
     s32 r;
 
-    nas->Engine->unk10.x += D_80068BD4[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 12;
-    nas->Engine->unk10.z += D_80068BD4[nas->Engine->unk1E & 0xFFF].unk2 * 1024 >> 12;
-    nas->Engine->unk10.y -= D_80068BD4[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->unk10.x += TrigTable[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->unk10.z += TrigTable[nas->Engine->unk1E & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->unk10.y -= TrigTable[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 1024 >> 12;
     if (nas->UserInfo.user2 == 0) {
         nas->Engine->sub->unk74 = 0x201D;
     }
@@ -1993,7 +1993,7 @@ void NoxInitSparks(SparkObj *arg0) {
 void NoxDrawSparks(SparkObj *arg0) {
     SparkSet *set = &arg0->set;
     Spark *s = set->sparks;
-    SparkLine *l = set->lines[D_8005B690 & 1];
+    SparkLine *l = set->lines[FrameCount & 1];
     Spark *v;
     s32 n;
 
@@ -2013,7 +2013,7 @@ void NoxDrawSparks(SparkObj *arg0) {
     }
     gte_SetRotMatrix(&NoxSparkMatrix);
     gte_SetTransMatrix(&NoxSparkMatrix);
-    gte_SetGeomOffset(D_8005B698->w / 2, 120);
+    gte_SetGeomOffset(ScreenRect->w / 2, 120);
     n = set->count;
     calc_rgbcode(0x10, 0x10, 0x10);
     if (n != 0) do {
@@ -2021,7 +2021,7 @@ void NoxDrawSparks(SparkObj *arg0) {
         gte_ldv0(v);
         gte_rtps();
         gte_stsxy(&l->x0);
-        if (D_8005A624 == 0) {
+        if (GamePause == 0) {
             s->z -= NoxSparkScale;
         }
         if (s->z < 0) {
@@ -2032,10 +2032,10 @@ void NoxDrawSparks(SparkObj *arg0) {
             s->y2 = s->y + 0x40;
         } else {
             s->z2 = s->z;
-            if (D_80056998.modelDp != 0) {
-                l->r1 = l->r1 * ((0x1000 - D_80056998.modelDp) >> 12);
-                l->g1 = l->g1 * ((0x1000 - D_80056998.modelDp) >> 12);
-                l->b1 = l->b1 * ((0x1000 - D_80056998.modelDp) >> 12);
+            if (RenderState.modelDp != 0) {
+                l->r1 = l->r1 * ((0x1000 - RenderState.modelDp) >> 12);
+                l->g1 = l->g1 * ((0x1000 - RenderState.modelDp) >> 12);
+                l->b1 = l->b1 * ((0x1000 - RenderState.modelDp) >> 12);
             } else {
                 l->r1 = -(s->z >> 6);
                 l->g1 = -(s->z >> 6);
@@ -2049,10 +2049,10 @@ void NoxDrawSparks(SparkObj *arg0) {
                 gte_rtps();
                 gte_stsxy(&l->x1);
             } else {
-                if (D_80056998.modelDp != 0) {
-                    l->r1 = l->r1 * ((0x1000 - D_80056998.modelDp) >> 12);
-                    l->g1 = l->g1 * ((0x1000 - D_80056998.modelDp) >> 12);
-                    l->b1 = l->b1 * ((0x1000 - D_80056998.modelDp) >> 12);
+                if (RenderState.modelDp != 0) {
+                    l->r1 = l->r1 * ((0x1000 - RenderState.modelDp) >> 12);
+                    l->g1 = l->g1 * ((0x1000 - RenderState.modelDp) >> 12);
+                    l->b1 = l->b1 * ((0x1000 - RenderState.modelDp) >> 12);
                 }
                 l->r0 = l->r1;
                 l->g0 = l->g1;
@@ -2062,7 +2062,7 @@ void NoxDrawSparks(SparkObj *arg0) {
             }
             l->len = 4;
             l->code = 0x50;
-            addPrim(D_80056998.ot + D_80056998.otLen - 4, l);
+            addPrim(RenderState.ot + RenderState.otLen - 4, l);
         }
         l++;
         s++;
@@ -2074,7 +2074,7 @@ void NoxCameraFollow(void) {
     EXTengine *e = Heroes->hero_eng;
     s32 y;
 
-    cam = (FollowCam *)D_80051640;
+    cam = (FollowCam *)MainCamera;
     cam->x += (((e->unk10.x + Heroes[1].hero_eng->unk10.x) >> 1) - cam->x) >> 3;
     cam->z = e->unk10.z;
     y = e->unk10.y;
@@ -2086,7 +2086,7 @@ void NoxCameraFollow(void) {
 }
 
 void InitLaserShoot(LaserShoot *arg0) {
-    arg0->obj->sub->unk6C = *(s32 *)D_80058AD0;
+    arg0->obj->sub->unk6C = *(s32 *)MapScene;
     arg0->obj->sub->unk74 = 0x201D;
     arg0->obj->unk1E = 0;
     arg0->obj->unk5D = 2;
@@ -2129,7 +2129,7 @@ void InitNitroMissile(MissileHolder *arg0) {
     s32 r;
 
     if (ext != NULL) {
-        arg0->obj->model->unk6C = *(s32 *)D_80058AD0;
+        arg0->obj->model->unk6C = *(s32 *)MapScene;
         arg0->obj->model->unk74 = 0x2019;
         arg0->obj->unk5D = 2;
         ext->unk10 = 0;
@@ -2153,7 +2153,7 @@ void InitNitroMissile(MissileHolder *arg0) {
 }
 
 void InitNitroMine(MineHolder *arg0) {
-    arg0->obj->model->unk6C = *(s32 *)D_80058AD0;
+    arg0->obj->model->unk6C = *(s32 *)MapScene;
     arg0->obj->model->unk74 = 0x2012;
     arg0->obj->unk1C = Random(0x1000);
     arg0->obj->unk1E = Random(0x1000);
@@ -2326,7 +2326,7 @@ void NoxInitCamera(s32 arg0) {
     NoxCamera.unk40 = 0;
     func_80093038();
     func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)&NoxCamera);
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     func_8009440C();
 }
 
@@ -2411,7 +2411,7 @@ void NoxInit(void) {
     NAS *nas;
     u8 *arg;
 
-    func_8001E0A8((u8 *)D_80058AD0);
+    func_8001E0A8((u8 *)MapScene);
     NoxInitAsteroids();
     NoxUpdateAsteroids();
     nas = CreateNAS(0, 0, 0, 0x1625, 0x11);
@@ -2422,7 +2422,7 @@ void NoxInit(void) {
     NoxBossDead = 0;
     NoxStarted = 0;
     D_8009F8B4 = (void (*)(void))NoxInitCamera;
-    arg = *(u8 **)D_80058AD0;
+    arg = *(u8 **)MapScene;
     NoxLasers = NULL;
     func_80095258(arg);
 }
@@ -2458,7 +2458,7 @@ s32 NoxPointInBox(s32 *arg0, s32 *arg1) {
 }
 
 s32 NoxFadeLevel(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     s32 r;
 
@@ -2486,11 +2486,11 @@ void InitNitroSmokeBoost(NAS *nas) {
     ScriptCursor *cur;
 
     cur = func_80024E30(nas, &NoxSmokeScriptInit);
-    if (D_8005A648 == 0x1F) {
+    if (GameMode == 0x1F) {
         if (cur != NULL) {
             cur->unk1E = 4;
         }
     }
-    nas->Engine->sub->unk6C = *(GfxModel **)D_80058AD0;
+    nas->Engine->sub->unk6C = *(GfxModel **)MapScene;
     nas->UserInfo.user1 = 0;
 }

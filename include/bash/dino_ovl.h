@@ -128,7 +128,7 @@ typedef struct DinoPad {
 
 extern NAS *DinoGems[];
 
-/* DinoPreMoveHero: move speeds (normal, carrying, by D_8009D87C[id].unk0 / 2). */
+/* DinoPreMoveHero: move speeds (normal, carrying, by AiPlayerSkill[id].unk0 / 2). */
 extern s32 DinoSteerMin;
 extern s32 DinoSteerMax;
 extern s32 DinoSteerTable[];
@@ -143,7 +143,7 @@ s32 DinoKeepInBounds(u8 *arg0);
 
 void FirstTriggersDINO(void);
 
-/* A scene object in the list at D_80058AD0 + 0x1C (DinoFindTargets). */
+/* A scene object in the list at MapScene + 0x1C (DinoFindTargets). */
 typedef struct DinoObj {
     u32 flags;             /* 0x00 */
     u8 pad4[0x58];
@@ -161,7 +161,7 @@ typedef struct DinoGame {
     u16 flags; /* 0x32 */
 } DinoGame;
 
-/* DinoChooseWinnerTeam: D_8005A614's team-game view. */
+/* DinoChooseWinnerTeam: GameInfo's team-game view. */
 typedef struct DinoTeamView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;

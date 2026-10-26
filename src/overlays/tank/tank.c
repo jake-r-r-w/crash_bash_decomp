@@ -617,7 +617,7 @@ s32 arg0;
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && TA_players[i].Energy > 0) {
-            sum += D_8009D87C[i].unk4;
+            sum += AiPlayerSkill[i].unk4;
         }
     }
     if (sum == 0) {
@@ -627,7 +627,7 @@ s32 arg0;
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && TA_players[i].Energy > 0) {
-            sum += D_8009D87C[i].unk4;
+            sum += AiPlayerSkill[i].unk4;
             if (r < sum) {
                 return i;
             }
@@ -656,8 +656,8 @@ s32 arg0;
     for (i = start; i < start + 4; i++) {
         j = TankBotTargetOrder[i];
         if (j != arg0 && j != mate && !((h = &Heroes[j])->hero_status & 0xFA00) && TA_players[j].Energy > 0) {
-            sum += D_8009D87C[j].unk4;
-            if (D_8005A614[j + 0x5C] != 0 && (u32)Random(0x100) < 0xD3) {
+            sum += AiPlayerSkill[j].unk4;
+            if (GameInfo[j + 0x5C] != 0 && (u32)Random(0x100) < 0xD3) {
                 continue;
             }
             me = Heroes[arg0].hero_eng;
@@ -675,7 +675,7 @@ s32 arg0;
     for (i = start; i < start + 4; i++) {
         j = TankBotTargetOrder[i];
         if (j != arg0 && j != mate && !(Heroes[j].hero_status & 0xFA00) && TA_players[j].Energy > 0) {
-            sum += D_8009D87C[j].unk4;
+            sum += AiPlayerSkill[j].unk4;
             if (r < sum) {
                 return j;
             }
@@ -700,7 +700,7 @@ s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai) {
     s32 i;
     s32 t;
 
-    if (D_8009D908 == 0) {
+    if (HeroesAllOut == 0) {
         i = Random(0x65);
         if (ai->FirePercentChance < (u32)i) {
             return 0;
@@ -712,7 +712,7 @@ s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai) {
         } while (0);
     } while (0);
     if (i >= 0) {
-    if (((TankModeView *)D_8005A614)->mode == 5) {
+    if (((TankModeView *)GameInfo)->mode == 5) {
         te = Heroes[ai->Victim].hero_eng;
         a = get_angle(eng->unk10.x - te->unk10.x, eng->unk10.z - te->unk10.z);
         if ((u32)(((eng->unk1E - a) & 0xFFF) - 100) < 0xF39) {
@@ -721,11 +721,11 @@ s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai) {
     } else {
     d = eng->unk1E;
     dir = (d + ((TA_players[player].TurretReqdDir - d) << 20 >> 22)) & 0xFFF;
-    if (GetSandbagValueTank(eng->unk10.x + (-(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
-                      eng->unk10.z + (-(D_80068BD4[dir].unk2 << 9) >> 12)) != 0) {
+    if (GetSandbagValueTank(eng->unk10.x + (-(TrigTable[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
+                      eng->unk10.z + (-(TrigTable[dir].unk2 << 9) >> 12)) != 0) {
         return 0;
     }
-    if (((TankGameView *)D_8005A614)->w6C != 0 || ((TankModeView *)D_8005A614)->mode == 9) {
+    if (((TankGameView *)GameInfo)->w6C != 0 || ((TankModeView *)GameInfo)->mode == 9) {
         hb = Heroes;
         me = hb[hb[player].hero_teammate].hero_eng;
         ex = eng->unk10.x;
@@ -792,8 +792,8 @@ void TankBotDodgeFrom(s32 player, s32 x, s32 z, EXTengine *eng, TA_Bot *ai) {
     ai->Doing = 2;
     speed = TA_players[player].Speed;
     ai->DoingTimer = (speed / 2 + 0x400) / speed;
-    ai->AIpad = D_80051244[(a >> 9) & 7];
-    if (D_8009D908 != 0) {
+    ai->AIpad = DirPadBits[(a >> 9) & 7];
+    if (HeroesAllOut != 0) {
         return;
     }
     r = Random(4);
@@ -870,10 +870,10 @@ s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai) {
     NAS *cur;
     s32 ex;
 
-    if (D_8009D908 != 0) {
+    if (HeroesAllOut != 0) {
         return 0;
     }
-    if ((u32)Random(D_8009D87C[player].unk0 + 1) < 8) {
+    if ((u32)Random(AiPlayerSkill[player].unk0 + 1) < 8) {
         return 0;
     }
     if (ai->Doing == 2) {
@@ -928,7 +928,7 @@ void TankBotPlanSteerMove(s32 player, EXTengine *eng, TA_Bot *ai) {
     s32 d;
     s32 r;
 
-    switch (D_8005A648) {
+    switch (GameMode) {
     case 6:
     case 8:
         r = TankBotPickLinedUpTarget(player);
@@ -949,7 +949,7 @@ void TankBotPlanSteerMove(s32 player, EXTengine *eng, TA_Bot *ai) {
         switch (Random(8)) {
         case 0:
         default:
-            if (D_8009D908 == 0 && (u32)Random(D_8009D87C[player].unk0 + 1) < 13) {
+            if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].unk0 + 1) < 13) {
                 ai->DoingTimer = Random(30) + 15;
                 ai->AIpad = 0;
                 ai->Doing = 0;
@@ -1061,7 +1061,7 @@ void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai) {
     s32 a;
     s32 r;
 
-    switch (D_8005A648) {
+    switch (GameMode) {
     case 6:
     case 8:
         r = TankBotPickLinedUpTarget(player);
@@ -1080,7 +1080,7 @@ void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai) {
     }
     switch (Random(8)) {
     case 0:
-        if (D_8009D908 == 0 && (u32)Random(D_8009D87C[player].unk0 + 1) < 13) {
+        if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].unk0 + 1) < 13) {
             ai->DoingTimer = Random(30) + 15;
             ai->AIpad = 0;
             ai->Doing = 0;
@@ -1185,10 +1185,10 @@ void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai) {
             ai->Doing = 4;
             aspeed = TA_players[player].Speed;
             ai->DoingTimer = (aspeed / 2 + 0x200) / aspeed;
-            ai->AIpad = D_80051244[(a >> 9) & 7];
+            ai->AIpad = DirPadBits[(a >> 9) & 7];
             return;
         }
-        if (D_8009D908 != 0) {
+        if (HeroesAllOut != 0) {
             if (delay != 0) {
                 ta->MainWeaponFireDelay = delay - 1;
             }
@@ -1223,7 +1223,7 @@ void TankBotSteer(s32 player) {
     eng = Heroes[player].hero_eng;
     ai = &TankBotAI[player];
     if (ai->FirePercentChance == 0) {
-        ai->FirePercentChance = D_8009D87C[player].unk0 * 0x55 / 32 + 5;
+        ai->FirePercentChance = AiPlayerSkill[player].unk0 * 0x55 / 32 + 5;
     }
     if (--ai->DoingTimer <= 0) {
         TankBotPlanSteerMove(player, eng, ai);
@@ -1266,7 +1266,7 @@ void TankBotSteer(s32 player) {
         buttons |= 0x4000;
         TankBotForceField[player] = 0;
     }
-    set_joypad((u8 *)&D_80051338[player], buttons);
+    set_joypad((u8 *)&Pads[player], buttons);
 }
 
 void TA_HeroBot(u32 player) {
@@ -1281,7 +1281,7 @@ void TA_HeroBot(u32 player) {
     s32 ez;
     u8 *g;
 
-    g = D_8005A614;
+    g = GameInfo;
     if (*(s32 *)(g + 0x10) & 0x04000000) {
         return;
     }
@@ -1292,9 +1292,9 @@ void TA_HeroBot(u32 player) {
     eng = Heroes[player].hero->Engine;
     ai = &TankBotAI[player];
     if (ai->FirePercentChance == 0) {
-        ai->FirePercentChance = D_8009D87C[player].unk0 * 0x55 / 32 + 5;
+        ai->FirePercentChance = AiPlayerSkill[player].unk0 * 0x55 / 32 + 5;
     }
-    if (D_8005A648 != 5 && ai->Victim >= 0) {
+    if (GameMode != 5 && ai->Victim >= 0) {
         tgt = Heroes[ai->Victim].hero_eng;
         TA_players[player].TurretReqdDir =
             (get_angle(tgt->unk10.x - eng->unk10.x, tgt->unk10.z - eng->unk10.z) + 0x800) & 0xFFF;
@@ -1308,7 +1308,7 @@ void TA_HeroBot(u32 player) {
         TankBotAvoidMines(player, eng, ai);
         TankBotTryFire(player, eng, ai);
     }
-    if (D_8009D908 == 0 && (u32)Random(D_8009D87C[player].unk0 + 1) >= 9) {
+    if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].unk0 + 1) >= 9) {
         ex = eng->unk10.x;
         ez = eng->unk10.z;
         for (i = 0; i < 8; i++) {
@@ -1334,7 +1334,7 @@ void TA_HeroBot(u32 player) {
             }
         }
     }
-    set_joypad((u8 *)&D_80051338[player], ai->AIpad);
+    set_joypad((u8 *)&Pads[player], ai->AIpad);
 }
 
 void TA_PreInitLevel(void) {
@@ -1346,83 +1346,83 @@ void TA_PreInitLevel(void) {
     void *t;
     TankGameView *g;
 
-    D_8009D6E8.unk4 = TankHeroModels;
-    D_8009D6E8.unk38 = TA_HeroBot;
-    D_8009D6E8.unk0 = (s32)TA_InitHero;
-    D_8009D6E8.unk68 = TA_KeepInBounds;
-    D_8009D6E8.unk14 = TankVictorySeqs;
-    D_8009D6E8.unk18 = TA_CreateShadow;
-    D_8009D6E8.unk20 = TA_PreMoveHero;
-    D_8009D6E8.unk24 = TA_MoveHero;
-    switch (D_8005A648) {
+    HeroHooks.unk4 = TankHeroModels;
+    HeroHooks.unk38 = TA_HeroBot;
+    HeroHooks.unk0 = (s32)TA_InitHero;
+    HeroHooks.unk68 = TA_KeepInBounds;
+    HeroHooks.unk14 = TankVictorySeqs;
+    HeroHooks.unk18 = TA_CreateShadow;
+    HeroHooks.unk20 = TA_PreMoveHero;
+    HeroHooks.unk24 = TA_MoveHero;
+    switch (GameMode) {
     case 6:
     default:
-        D_8009D8F4 = TankDesertAiBotTweak;
-        D_8009D8F8 = TankDesertAiHumanTweak;
-        D_8009D904 = TankDesertAiHumanRoundTweak;
-        p = &D_8009D8FC;
-        if (D_8005A680[0] != 0) {
+        AiBotTweakTable = TankDesertAiBotTweak;
+        AiHumanTweakTable = TankDesertAiHumanTweak;
+        AiHumanRoundTweakTable = TankDesertAiHumanRoundTweak;
+        p = &AiSkillTable;
+        if (GameTeams[0] != 0) {
             t = TankDesertAiSkillAlt;
         } else {
             t = TankDesertAiSkill;
         }
         *p = t;
-        D_8009D900 = TankDesertAiTeamSkill;
+        AiTeamSkillTable = TankDesertAiTeamSkill;
         return;
     case 8:
-        D_8009D8F4 = TankMetalAiBotTweak;
-        D_8009D8F8 = TankMetalAiHumanTweak;
-        D_8009D904 = TankMetalAiHumanRoundTweak;
-        p2 = &D_8009D8FC;
-        if (D_8005A680[0] != 0) {
+        AiBotTweakTable = TankMetalAiBotTweak;
+        AiHumanTweakTable = TankMetalAiHumanTweak;
+        AiHumanRoundTweakTable = TankMetalAiHumanRoundTweak;
+        p2 = &AiSkillTable;
+        if (GameTeams[0] != 0) {
             t = TankMetalAiSkillAlt;
         } else {
             t = TankMetalAiSkill;
         }
         *p2 = t;
-        D_8009D900 = TankMetalAiTeamSkill;
+        AiTeamSkillTable = TankMetalAiTeamSkill;
         return;
     case 7:
-        D_8009D8F4 = TankJungleAiBotTweak;
-        D_8009D8F8 = TankJungleAiHumanTweak;
-        D_8009D904 = TankJungleAiHumanRoundTweak;
-        p3 = &D_8009D8FC;
-        if (D_8005A680[0] != 0) {
+        AiBotTweakTable = TankJungleAiBotTweak;
+        AiHumanTweakTable = TankJungleAiHumanTweak;
+        AiHumanRoundTweakTable = TankJungleAiHumanRoundTweak;
+        p3 = &AiSkillTable;
+        if (GameTeams[0] != 0) {
             t = TankJungleAiSkillAlt;
         } else {
             t = TankJungleAiSkill;
         }
         *p3 = t;
-        D_8009D900 = TankJungleAiTeamSkill;
+        AiTeamSkillTable = TankJungleAiTeamSkill;
         return;
     case 5:
-        D_8009D8F4 = TankSwampAiBotTweak;
-        D_8009D8F8 = TankSwampAiHumanTweak;
-        D_8009D904 = TankSwampAiHumanRoundTweak;
-        p4 = &D_8009D8FC;
-        if (D_8005A680[0] != 0) {
+        AiBotTweakTable = TankSwampAiBotTweak;
+        AiHumanTweakTable = TankSwampAiHumanTweak;
+        AiHumanRoundTweakTable = TankSwampAiHumanRoundTweak;
+        p4 = &AiSkillTable;
+        if (GameTeams[0] != 0) {
             t = TankSwampAiSkillAlt;
         } else {
             t = TankSwampAiSkill;
         }
         *p4 = t;
-        D_8009D900 = TankSwampAiTeamSkill;
+        AiTeamSkillTable = TankSwampAiTeamSkill;
         return;
     case 9:
-        D_8009D8F4 = TankBossAiBotTweak;
-        D_8009D8F8 = TankBossAiHumanTweak;
-        D_8009D904 = TankBossAiHumanRoundTweak;
-        p5 = &D_8009D8FC;
-        if (D_8005A680[0] != 0) {
+        AiBotTweakTable = TankBossAiBotTweak;
+        AiHumanTweakTable = TankBossAiHumanTweak;
+        AiHumanRoundTweakTable = TankBossAiHumanRoundTweak;
+        p5 = &AiSkillTable;
+        if (GameTeams[0] != 0) {
             t = TankBossAiSkillAlt;
         } else {
             t = TankBossAiSkill;
         }
         *p5 = t;
-        D_8009D900 = TankSwampAiTeamSkill;
+        AiTeamSkillTable = TankSwampAiTeamSkill;
         Heroes[2].hero_name = 9;
         Heroes[3].hero_name = 9;
-        g = (TankGameView *)D_8005A614;
+        g = (TankGameView *)GameInfo;
         g->flags |= 0x100;
         if (g->w6C == 0) {
             Heroes[1].hero_name = 9;
@@ -1458,7 +1458,7 @@ void TA_InitLevel(void) {
     TankPillarSfxDelay = 0;
     World_floor_level = 0;
     Init_Clock(0x140, 0x1E, 0);
-    g = (TankSetupView *)D_8005A614;
+    g = (TankSetupView *)GameInfo;
     if (g->flags & 0x40) {
         if (g->w6C != 0) {
             switch (g->mode) {
@@ -1502,17 +1502,17 @@ void TA_InitLevel(void) {
     } else {
         Set_Clock(0x130, 0x81C0);
     }
-    if (D_8005A648 == 5) {
+    if (GameMode == 5) {
         func_8001682C((s32 *)D_80053774);
     } else {
         func_8001682C((s32 *)D_80053694);
     }
-    if (D_8005A648 == 7) {
+    if (GameMode == 7) {
         func_8001682C((s32 *)D_800537AC);
     }
     func_8001682C((s32 *)D_8005365C);
     func_8001682C((s32 *)(D_8005365C - 0x658));
-    func_8001682C(*(s32 **)D_80058AD0);
+    func_8001682C(*(s32 **)MapScene);
     ((TankScreen *)D_8009F6F4)->w10 = 0x140;
     ((TankScreen *)D_8009F6F4)->w14 = 0x15E;
     CAM5F->w0 = 0;
@@ -1532,7 +1532,7 @@ void TA_InitLevel(void) {
     for (i = 7; i >= 0; i--) {
         TankMines[i] = NULL;
     }
-    switch (D_8005A648) {
+    switch (GameMode) {
     default:
     case 5:
         src1 = src2 = TankSwampMap;
@@ -1552,7 +1552,7 @@ void TA_InitLevel(void) {
         CAM5F->w14 = 0x2A0;
         TankArenaMaxX = 0xF00;
         TankArenaMaxZ = 0xF00;
-        if (D_8005A646 & 0x80) {
+        if (GameLevelFlags & 0x80) {
             CreateNAS(0x800, -0x3C, 0x800, 0x1318, 0x11);
             src1 = TankDesertMapAlt;
         } else {
@@ -1585,7 +1585,7 @@ void TA_InitLevel(void) {
         TankArenaMaxZ = 0xD00;
         break;
     case 9:
-        g = (TankSetupView *)D_8005A614;
+        g = (TankSetupView *)GameInfo;
         if (g->w6C == 0) {
             g->b51 = 9;
         }
@@ -1638,7 +1638,7 @@ void TA_UpdateLevel(void) {
     s32 e;
     s32 j;
 
-    if (D_8005A648 == 8) {
+    if (GameMode == 8) {
         TankDropDelay--;
     }
     for (i = 0; i < 4; i++) {
@@ -1674,28 +1674,28 @@ void TA_UpdateLevel(void) {
     if (TANK_MODEL_ON(base, 56)) {
         func_80029100((obj_textureset *)(TANK_MODEL(56) + 0x10));
     }
-    if (D_8005A648 == 5 && TANK_MODEL_ON(base, 60)) {
+    if (GameMode == 5 && TANK_MODEL_ON(base, 60)) {
         func_80029100((obj_textureset *)(TANK_MODEL(60) + 0x10));
     }
-    if (D_8005A648 == 9 && TANK_MODEL_ON(b2 = D_80052A54, 57)) {
+    if (GameMode == 9 && TANK_MODEL_ON(b2 = D_80052A54, 57)) {
         func_80029100((obj_textureset *)(b2 + 57 * 0x38 + 0x10));
     }
-    if (D_8009D908 == 0) {
-        D_8009D908 = 1;
+    if (HeroesAllOut == 0) {
+        HeroesAllOut = 1;
         for (j = 0; j < 4; j++) {
             if (!(Heroes[j].hero_status & 0xFA00)) {
-                if (D_8005A614[j + 0x5C] == 0) {
-                    D_8009D908 = 0;
+                if (GameInfo[j + 0x5C] == 0) {
+                    HeroesAllOut = 0;
                 }
-                if (((TankGameView *)D_8005A614)->w6C != 0 && D_8005A614[Heroes[j].hero_teammate + 0x5C] == 0) {
-                    D_8009D908 = 0;
+                if (((TankGameView *)GameInfo)->w6C != 0 && GameInfo[Heroes[j].hero_teammate + 0x5C] == 0) {
+                    HeroesAllOut = 0;
                 }
             }
         }
-        if (D_8009D908 != 0) {
+        if (HeroesAllOut != 0) {
             for (j = 0; j < 4; j++) {
-                D_8009D87C[j].unk4 = 0x10;
-                D_8009D87C[j].unk0 = 0x1E;
+                AiPlayerSkill[j].unk4 = 0x10;
+                AiPlayerSkill[j].unk0 = 0x1E;
             }
         }
     }
@@ -1746,16 +1746,16 @@ void DamageTankHero(s32 player, s32 damage) {
     if (Heroes[player].hero_status & 0xFA00) {
         return;
     }
-    g = D_8005A614;
+    g = GameInfo;
     if (((TankModeView *)g)->mode == 9 && (D_8009D6E0 & 0x8000)) {
         return;
     }
     if (damage < 400) {
         ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xF0);
-        if (D_8009D908 != 0) {
+        if (HeroesAllOut != 0) {
             damage *= 3;
         } else if (g[player + 0x5C] != 0) {
-            t = (0x20 - D_8009D87C[player].unk0) * 150;
+            t = (0x20 - AiPlayerSkill[player].unk0) * 150;
             u = t / 32; /* dead: keeps t live for the divide's copy */
             t = t / 32 + 50;
             damage = damage * t / 100;
@@ -1769,12 +1769,12 @@ void DamageTankHero(s32 player, s32 damage) {
     }
     h->hero->UserInfo.status = 0x20;
     ta = &TA_players[player];
-    if (D_8005A648 == 9 && (u32)(player - 2) < 2) {
+    if (GameMode == 9 && (u32)(player - 2) < 2) {
         SetMoeJoeMode(player, 0x69);
     } else {
         SetHeroAction(player, 0x69);
     }
-    if (D_8005A614[player + 0x5C] != 0 || (((TankGameView *)D_8005A614)->w4 & 0x80000001) != 0x80000001) {
+    if (GameInfo[player + 0x5C] != 0 || (((TankGameView *)GameInfo)->w4 & 0x80000001) != 0x80000001) {
         ta->Energy -= damage;
     }
     if (ta->Energy <= 0) {
@@ -1782,7 +1782,7 @@ void DamageTankHero(s32 player, s32 damage) {
         SetTurretSFX(player, (s32)eng, 0);
         SetFireBreatherSFX(player, (s32)eng, 0);
         ta->Energy = 0;
-        if ((((TankGameView *)D_8005A614)->w4 & 0x80000002) == 0x80000002) {
+        if ((((TankGameView *)GameInfo)->w4 & 0x80000002) == 0x80000002) {
             ta->Energy = 2;
         } else {
             Heroes[player].hero_status |= 0x2000;
@@ -1808,14 +1808,14 @@ void TA_InitHero(u32 player) {
     u8 *g2;
     s32 n;
 
-    ((PadButtons *)D_80051338)[player].unk50 = 0;
-    ((PadButtons *)D_80051338)[player].unk54 = 0;
+    ((PadButtons *)Pads)[player].unk50 = 0;
+    ((PadButtons *)Pads)[player].unk54 = 0;
     hb = Heroes;
     h = &hb[player];
     if (h->hero_name == 9) {
         return;
     }
-    g = D_8005A614;
+    g = GameInfo;
     if (g[player + 0x50] == 9) {
         return;
     }
@@ -1843,7 +1843,7 @@ void TA_InitHero(u32 player) {
     }
     sub = sub->next;
     sub->unk51 = 1;
-    if (D_8005A648 == 5) {
+    if (GameMode == 5) {
         sub->unk6C = D_80053774;
         sub->unk74 = 0x2001;
     } else {
@@ -1882,12 +1882,12 @@ void TA_InitHero(u32 player) {
     hh = &Heroes[player];
     ta->SpeedX = 0;
     ta->SpeedZ = 0;
-    g1 = D_8005A614;
+    g1 = GameInfo;
     if (((TankModeView *)g1)->mode == 5) {
         ta->Speed = ta->Speed * 3 / 2;
     }
     if (g1[player + 0x5C] != 0) {
-        ta->Speed = ta->Speed * (D_8009D87C[player].unk0 + 0x54) / 100;
+        ta->Speed = ta->Speed * (AiPlayerSkill[player].unk0 + 0x54) / 100;
     }
     ta->Energy = 0x63;
     hh->hero_health = ta->Energy;
@@ -1909,7 +1909,7 @@ void TA_InitHero(u32 player) {
     ta->TauntDelay = 0;
     ta->ForceFieldDelay = 0;
     ResetToBasicWeapon(player);
-    if (D_8005A614[player + 0x5C] != 0) {
+    if (GameInfo[player + 0x5C] != 0) {
         ta->MainWeaponFireDelay = 0x96;
     } else {
         ta->MainWeaponFireDelay = 0;
@@ -1922,13 +1922,13 @@ void TA_InitHero(u32 player) {
         ta->MainWeaponNas[1] = (NAS *)0xFFEEEEFF;
         ta->MainWeaponNas[2] = (NAS *)0xFFEEEEFF;
     }
-    if (D_8005A648 == 5) {
+    if (GameMode == 5) {
         nas = CreateNAS(eng->unk10.x, 0, eng->unk10.z, 0x1320, 0x11);
         if (nas != NULL) {
             nas->UserInfo.user1 = player;
         }
     }
-    g2 = D_8005A614;
+    g2 = GameInfo;
     if (g2[player + 0x5C] != 0) {
         bot = &TankBotAI[player];
         bot->Doing = 0;
@@ -1972,7 +1972,7 @@ void TA_MoveHero(u32 player) {
     eng = hero->hero_eng;
     ta = &TA_players[player];
     AnimateTankTurret(player);
-    if (D_8005A648 != 5) {
+    if (GameMode != 5) {
         x = eng->unk10.x;
         dz = eng->unk10.z - eng->OldXYZ.z;
         if (x != eng->OldXYZ.x || dz != 0) {
@@ -1994,14 +1994,14 @@ void TA_MoveHero(u32 player) {
             }
         }
     } else {
-        if (((PadButtons *)D_80051338)[player].unk50 & 0x800) {
+        if (((PadButtons *)Pads)[player].unk50 & 0x800) {
             SetHullSFX(player, eng, TankHoverSfx[player]);
         } else {
             SetHullSFX(player, eng, 0);
         }
     }
-    if (((TankModeView *)D_8005A614)->mode == 8 && D_8005A614[player + 0x5C] == 0 &&
-        (((TankGameView *)D_8005A614)->flags & 0x80) && ta->HangaboutTime >= 30 && TankLevelOver == 0 &&
+    if (((TankModeView *)GameInfo)->mode == 8 && GameInfo[player + 0x5C] == 0 &&
+        (((TankGameView *)GameInfo)->flags & 0x80) && ta->HangaboutTime >= 30 && TankLevelOver == 0 &&
         TankDropDelay <= 0 && (eng->unk10.z > 0x400 || (u32)(eng->unk10.x - 0x301) < 0xDFF)) {
         nas = CreateNAS(eng->unk10.x, -0x8FC, eng->unk10.z, 0x1308, 0x11);
         if (nas != NULL) {
@@ -2014,7 +2014,7 @@ void TA_MoveHero(u32 player) {
 }
 
 void AnimateTank(u32 player) {
-    if (D_8005A614[player + 0x5C] != 0) {
+    if (GameInfo[player + 0x5C] != 0) {
         if (++TA_players[player].IdleAnimCt >= 0x50 && TankLevelOver == 0) {
             TA_players[player].IdleAnimCt = Random(0x1E);
             SetHeroSeq(player, 0x5A);
@@ -2039,7 +2039,7 @@ void ResetToBasicWeapon(s32 player) {
     case 1:
     case 2:
         ta->MainWeaponType = 9;
-        if (D_8005A648 == 5) {
+        if (GameMode == 5) {
             ta->TurretAnimPtr = TankSwampSwirlyTurret;
             sub->next->unk74 = 0x4300;
         } else {
@@ -2049,7 +2049,7 @@ void ResetToBasicWeapon(s32 player) {
     case 7:
     case 8:
         ta->MainWeaponType = 8;
-        if (D_8005A648 == 5) {
+        if (GameMode == 5) {
             ta->TurretAnimPtr = TankSwampFlamerTurret;
             sub->next->unk74 = 0x4100;
         } else {
@@ -2058,7 +2058,7 @@ void ResetToBasicWeapon(s32 player) {
         break;
     default:
         ta->MainWeaponType = 11;
-        if (D_8005A648 == 5) {
+        if (GameMode == 5) {
             ta->TurretAnimPtr = TankSwampLaserTurret;
             sub->next->unk74 = 0x4200;
         } else {
@@ -2068,7 +2068,7 @@ void ResetToBasicWeapon(s32 player) {
     case 5:
     case 6:
         ta->MainWeaponType = 10;
-        if (D_8005A648 == 5) {
+        if (GameMode == 5) {
             ta->TurretAnimPtr = TankSwampFlubberTurret;
             sub->next->unk74 = 0x4000;
         } else {
@@ -2076,12 +2076,12 @@ void ResetToBasicWeapon(s32 player) {
         }
         break;
     }
-    if (((TankModeView *)D_8005A614)->mode == 5) {
+    if (((TankModeView *)GameInfo)->mode == 5) {
         sub->unk74 = 0x2005;
     }
-    if (((TankModeView *)D_8005A614)->mode == 9) {
+    if (((TankModeView *)GameInfo)->mode == 9) {
         ta->MainWeaponRounds = 99999;
-        if (D_8005A614[player + 0x5C] != 0) {
+        if (GameInfo[player + 0x5C] != 0) {
             ta->MainWeaponType = 11;
             sub->unk74 = 0x2011;
             return;
@@ -2119,8 +2119,8 @@ void AnimateTankTurret(s32 player) {
     eng = Heroes[player].hero_eng;
     sub = Heroes[player].hero_sub->next;
     sub2 = sub->next;
-    if (D_8005A648 == 5) {
-        pad = ((PadButtons *)D_80051338)[player].unk50;
+    if (GameMode == 5) {
+        pad = ((PadButtons *)Pads)[player].unk50;
         if (pad & 0x800) {
             goto right;
         } else if (pad & 0x200) {
@@ -2136,13 +2136,13 @@ void AnimateTankTurret(s32 player) {
     if (ta->TurretFiring >= 0) {
         a = *ta->TurretAnimPtr++;
         if (a != 0) {
-            if (D_8005A648 == 5) {
+            if (GameMode == 5) {
                 sub2->unk74 = a;
             } else {
                 sub->unk74 = a;
             }
         } else {
-            if (D_8005A648 == 5) {
+            if (GameMode == 5) {
                 switch (ta->MainWeaponType) {
                 case 9:
                 default:
@@ -2209,9 +2209,9 @@ void AnimateTankTurret(s32 player) {
                     }
                     n->FUX = (EXT *)fux;
                     se = n->Engine;
-                    dx = -(D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
+                    dx = -(TrigTable[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
                     se->unk10.x += dx >> 12;
-                    dz = -(D_80068BD4[(u16)e->unk1E & 0xFFF].unk2 * 250);
+                    dz = -(TrigTable[(u16)e->unk1E & 0xFFF].unk2 * 250);
                     se->unk10.z += dz >> 12;
                     fux->SpeedX = dx >> 13;
                     fux->SpeedY = -0x5B;
@@ -2224,7 +2224,7 @@ void AnimateTankTurret(s32 player) {
                 }
             }
         }
-    } else if (D_8005A648 == 5) {
+    } else if (GameMode == 5) {
     loop:
         a = *ta->TurretAnimPtr++;
         if (a == 0) {
@@ -2247,7 +2247,7 @@ void AnimateTankTurret(s32 player) {
         }
         sub2->unk74 = a;
     }
-    if (D_8005A648 != 5) {
+    if (GameMode != 5) {
         if (++sub2->unk74 == 0x4306) {
             sub2->unk74 = 0x4300;
         }
@@ -2292,8 +2292,8 @@ void UpdateTankHeroWeapons(s32 player) {
         if ((u32)(d + 3) < 7) {
             ta->TurretReqdDir = -1;
         }
-    } else if (D_8005A648 != 5) {
-        pad = ((PadButtons *)D_80051338)[player].unk50;
+    } else if (GameMode != 5) {
+        pad = ((PadButtons *)Pads)[player].unk50;
         if (pad & 0xA00) {
             eng->unk5E = 1;
             eng->unk1E = (eng->unk1E + 0x40) & 0xFFF;
@@ -2315,7 +2315,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     break;
                 }
             }
-            if (i < 3 && (((PadButtons *)D_80051338)[player].unk54 & 0x8000)) {
+            if (i < 3 && (((PadButtons *)Pads)[player].unk54 & 0x8000)) {
                 switch (Random(4)) {
                 default:
                 case 0:
@@ -2347,7 +2347,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     }
                     ta->MainWeaponNas[i] = n;
                     ta->TurretFiring = 0xB;
-                    if (D_8005A648 == 5) {
+                    if (GameMode == 5) {
                         sub->unk74 = 0x427F;
                         ta->TurretAnimPtr = TankSwampLaserFireAnim;
                     } else {
@@ -2359,14 +2359,14 @@ void UpdateTankHeroWeapons(s32 player) {
                     } else {
                         PlaySfx(0x4CD, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
-                    n->Engine->unk10.x += (-(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk10.x += (-(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(TrigTable[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
                     n->Engine->unk1E = eng->unk1E;
                     fux = (EXTobject_TA *)n->FUX;
                     fux->Owner = player;
-                    fux->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x4A) >> 12;
-                    fux->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 0x4A) >> 12;
-                    if (D_8005A648 == 5) {
+                    fux->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x4A) >> 12;
+                    fux->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 0x4A) >> 12;
+                    if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
                     fux->Status = 1;
@@ -2392,7 +2392,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     }
                     ta->MainWeaponNas[i] = n;
                     ta->TurretFiring = 8;
-                    if (D_8005A648 == 5) {
+                    if (GameMode == 5) {
                         sub->unk74 = 0x417F;
                         ta->TurretAnimPtr = TankSwampFlamerFireAnim;
                     } else {
@@ -2405,12 +2405,12 @@ void UpdateTankHeroWeapons(s32 player) {
                         PlaySfx(0x4D0, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
                     fux = (EXTobject_TA *)n->FUX;
-                    n->Engine->unk10.x += (-(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk10.x += (-(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(TrigTable[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
                     n->Engine->unk1E = eng->unk1E;
-                    fux->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x36) >> 12;
-                    fux->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 0x36) >> 12;
-                    if (D_8005A648 == 5) {
+                    fux->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x36) >> 12;
+                    fux->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 0x36) >> 12;
+                    if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
                     fux->Status = 1;
@@ -2428,7 +2428,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     }
                     ta->MainWeaponNas[i] = n;
                     ta->TurretFiring = 9;
-                    if (D_8005A648 == 5) {
+                    if (GameMode == 5) {
                         sub->unk74 = 0x437F;
                         ta->TurretAnimPtr = TankSwampSwirlyFireAnim;
                     } else {
@@ -2441,12 +2441,12 @@ void UpdateTankHeroWeapons(s32 player) {
                         PlaySfx(0x4CB, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
                     fux = (EXTobject_TA *)n->FUX;
-                    n->Engine->unk10.x += (-(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk10.x += (-(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(TrigTable[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
                     n->Engine->unk1E = eng->unk1E;
-                    fux->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
-                    fux->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
-                    if (D_8005A648 == 5) {
+                    fux->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
+                    if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
                     fux->Status = 1;
@@ -2463,7 +2463,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     }
                     ta->MainWeaponNas[i] = n;
                     ta->TurretFiring = 0xA;
-                    if (D_8005A648 == 5) {
+                    if (GameMode == 5) {
                         sub->unk74 = 0x407F;
                         ta->TurretAnimPtr = TankSwampFlubberFireAnim;
                     } else {
@@ -2476,12 +2476,12 @@ void UpdateTankHeroWeapons(s32 player) {
                         PlaySfx(0x4CF, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
                     fux = (EXTobject_TA *)n->FUX;
-                    n->Engine->unk10.x += (-(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk10.x += (-(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(TrigTable[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
                     n->Engine->unk1E = eng->unk1E;
-                    fux->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
-                    fux->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
-                    if (D_8005A648 == 5) {
+                    fux->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
+                    if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
                     fux->Status = 1;
@@ -2499,12 +2499,12 @@ void UpdateTankHeroWeapons(s32 player) {
                             PlaySfx(0x522, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                             e = n->Engine;
                             a = dir - TankRocketAngles[i];
-                            e->unk10.x -= (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 0x19) >> 8;
-                            e->unk10.z -= (D_80068BD4[a & 0xFFF].unk2 * 0x19) >> 8;
+                            e->unk10.x -= (TrigTable[(a - 0x400) & 0xFFF].unk2 * 0x19) >> 8;
+                            e->unk10.z -= (TrigTable[a & 0xFFF].unk2 * 0x19) >> 8;
                             e->unk1E = eng->unk1E;
                             fux = (EXTobject_TA *)n->FUX;
-                            fux->SpeedX = -(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
-                            fux->SpeedZ = -(D_80068BD4[dir & 0xFFF].unk2 * 200) >> 12;
+                            fux->SpeedX = -(TrigTable[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
+                            fux->SpeedZ = -(TrigTable[dir & 0xFFF].unk2 * 200) >> 12;
                             fux->Status = 1;
                             fux->Owner = player;
                         }
@@ -2515,25 +2515,25 @@ void UpdateTankHeroWeapons(s32 player) {
                     ta->MainWeaponRounds--;
                     break;
                 }
-            } else if (D_8005A614[player + 0x5C] == 0 &&
-                       (((PadButtons *)D_80051338)[player].unk54 & 0x8000)) {
+            } else if (GameInfo[player + 0x5C] == 0 &&
+                       (((PadButtons *)Pads)[player].unk54 & 0x8000)) {
                 PlaySfx(0x4F1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
         }
     } else {
         ta->MainWeaponFireDelay--;
-        if (D_8009D908 != 0 && ta->MainWeaponFireDelay != 0) {
+        if (HeroesAllOut != 0 && ta->MainWeaponFireDelay != 0) {
             ta->MainWeaponFireDelay--;
         }
     }
     if (ta->SubWeaponFireDelay != 0) {
         ta->SubWeaponFireDelay--;
     }
-    if ((((PadButtons *)D_80051338)[player].unk54 & 0x2000) &&
-        ((TankModeView *)D_8005A614)->mode < 10 && ((TankModeView *)D_8005A614)->mode >= 5) {
+    if ((((PadButtons *)Pads)[player].unk54 & 0x2000) &&
+        ((TankModeView *)GameInfo)->mode < 10 && ((TankModeView *)GameInfo)->mode >= 5) {
         if (ta->SubWeaponRounds != 0) {
             if (ta->SubWeaponFireDelay == 0) {
-                if (((TankModeView *)D_8005A614)->mode == 5) {
+                if (((TankModeView *)GameInfo)->mode == 5) {
                     for (i = 0; i < 8; i++) {
                         if (TankMines[i] != NULL && TankMines[i]->UserInfo.user1 == player) {
                             goto subdone;
@@ -2563,33 +2563,33 @@ void UpdateTankHeroWeapons(s32 player) {
                     ta->SubWeaponRounds--;
                     SetHeroSeq(player, 0x5B);
                 }
-            } else if (D_8005A614[player + 0x5C] == 0) {
+            } else if (GameInfo[player + 0x5C] == 0) {
                 PlaySfx(0x4F1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
-        } else if (D_8005A614[player + 0x5C] == 0) {
+        } else if (GameInfo[player + 0x5C] == 0) {
             PlaySfx(0x4F2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
     }
 subdone:
-    if (((TankModeView *)D_8005A614)->mode == 5) {
+    if (((TankModeView *)GameInfo)->mode == 5) {
         if (ta->ForceFieldDelay != 0) {
             ta->ForceFieldDelay--;
-        } else if (((PadButtons *)D_80051338)[player].unk54 & 0x4000) {
+        } else if (((PadButtons *)Pads)[player].unk54 & 0x4000) {
             obj = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1321, 0x11);
             PlaySfx(TankForceFieldSfx[player], NULL, NULL, 0x1000, 0x1E00, 0);
             if (obj != NULL) {
                 obj->UserInfo.user1 = player;
             }
             Heroes[player].hero_immunity = 0xA;
-            if (D_8005A614[player + 0x5C] == 0) {
+            if (GameInfo[player + 0x5C] == 0) {
                 ta->ForceFieldDelay = 0x3C;
             } else {
-                ta->ForceFieldDelay = (0x20 - D_8009D87C[player].unk0) * 0x3C / 32 + 0xF;
+                ta->ForceFieldDelay = (0x20 - AiPlayerSkill[player].unk0) * 0x3C / 32 + 0xF;
             }
         }
     }
     if (ta->TauntDelay <= 0) {
-        if (((PadButtons *)D_80051338)[player].unk50 & 0x1000) {
+        if (((PadButtons *)Pads)[player].unk50 & 0x1000) {
             hb = Heroes;
             h = &hb[player];
             if (!(h->hero_status & 0xFA00)) {
@@ -2613,7 +2613,7 @@ void SetTankHeroIdle(u32 player) {
     s32 done;
     u8 unused[8];
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
@@ -2652,7 +2652,7 @@ void SetTankHeroIdle(u32 player) {
 void SetTankHeroTurn(u32 player) {
     s32 done;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
@@ -2671,7 +2671,7 @@ void SetTankHeroTurn(u32 player) {
 void TankHeroTurn(u32 player) {
     s32 done;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
@@ -2703,22 +2703,22 @@ void TankHeroTurn(u32 player) {
             SetHeroAction(player, 0x6E);
             switch (ta->MoveDir) {
             case 2:
-                if (((PadButtons *)D_80051338)[player].unk50 & 0x10) {
+                if (((PadButtons *)Pads)[player].unk50 & 0x10) {
                     eng->unk10.z += ta->Speed;
                 }
                 break;
             case 0:
-                if (((PadButtons *)D_80051338)[player].unk50 & 0x40) {
+                if (((PadButtons *)Pads)[player].unk50 & 0x40) {
                     eng->unk10.z -= ta->Speed;
                 }
                 break;
             case 3:
-                if (((PadButtons *)D_80051338)[player].unk50 & 0x20) {
+                if (((PadButtons *)Pads)[player].unk50 & 0x20) {
                     eng->unk10.x += ta->Speed;
                 }
                 break;
             case 1:
-                if (((PadButtons *)D_80051338)[player].unk50 & 0x80) {
+                if (((PadButtons *)Pads)[player].unk50 & 0x80) {
                     eng->unk10.x -= ta->Speed;
                 }
                 break;
@@ -2752,7 +2752,7 @@ void TankHeroSteerMove(s32 player) {
     ta = &TA_players[player];
     eng = Heroes[player].hero_eng;
     bank = ta->BankAngle;
-    pad = ((PadButtons *)D_80051338)[player].unk50 & 0xF0;
+    pad = ((PadButtons *)Pads)[player].unk50 & 0xF0;
     if (bank != 0) {
         eng->unk5E = 1;
         if (ta->BankAngle > 0) {
@@ -2786,15 +2786,15 @@ void TankHeroSteerMove(s32 player) {
         eng->unk1E &= 0xFFF;
     }
     eng->unk20 = ta->BankAngle & 0xFFF;
-    c = ((PadButtons *)D_80051338)[player].unk50;
+    c = ((PadButtons *)Pads)[player].unk50;
     if (c & 0x800) {
         goto thrust;
     }
     if (c & 0x200) {
     thrust:
         v = ta->Speed;
-        px = v * D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2;
-        pz = v * D_80068BD4[(u16)eng->unk1E & 0xFFF].unk2;
+        px = v * TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2;
+        pz = v * TrigTable[(u16)eng->unk1E & 0xFFF].unk2;
         ta->SpeedX += -(px >> 12) >> 2;
         ta->SpeedZ += -(pz >> 12) >> 2;
     }
@@ -2848,7 +2848,7 @@ void TankHeroSteerMove(s32 player) {
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -2918,7 +2918,7 @@ void TankHeroGridMove(s32 player) {
     s32 hit;
     s32 i;
 
-    pad = ((PadButtons *)D_80051338)[player].unk50;
+    pad = ((PadButtons *)Pads)[player].unk50;
     ta = &TA_players[player];
     eng = Heroes[player].hero_eng;
     speed = ta->Speed;
@@ -2927,7 +2927,7 @@ void TankHeroGridMove(s32 player) {
     if (dir == 0) {
         return;
     }
-    if (((TankModeView *)D_8005A614)->mode == 7 && !(((TankModeView *)D_8005A614)->flags & 0x80)) {
+    if (((TankModeView *)GameInfo)->mode == 7 && !(((TankModeView *)GameInfo)->flags & 0x80)) {
         dx = TotemTop->Engine->unk10.x - eng->unk10.x;
         dz = TotemTop->Engine->unk10.z - eng->unk10.z;
         if (dx >= -0x15D) {
@@ -3007,13 +3007,13 @@ loop:
     sub->unk12 = (a + df) & 0xFFF;
     sub->unk52 = 1;
     a = (eng->unk1E + sub->unk12) & 0xFFF;
-    sn = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
-    cs = D_80068BD4[a].unk2;
+    sn = TrigTable[(a - 0x400) & 0xFFF].unk2;
+    cs = TrigTable[a].unk2;
     x = eng->unk10.x + ((speed * sn) >> 12);
     fx = x + ((sn * 256) >> 12);
     z = eng->unk10.z + ((speed * cs) >> 12);
     fz = z + ((cs * 256) >> 12);
-    if (D_8005A648 == 7 && (u32)(x - 0x581) < 0x4FF && z >= 0x581 && z < 0xA80) {
+    if (GameMode == 7 && (u32)(x - 0x581) < 0x4FF && z >= 0x581 && z < 0xA80) {
         if (x < 0x800) {
             if (x < 0x5C0) {
                 x = 0x580;
@@ -3037,7 +3037,7 @@ loop:
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -3076,7 +3076,7 @@ found:
 void TankHeroMove(u32 player) {
     s32 done;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
@@ -3113,16 +3113,16 @@ void TankHeroMove(u32 player) {
             DamageTankHero(player, 9999);
             return;
         }
-        if (D_8005A648 == 5) {
+        if (GameMode == 5) {
             TankHeroSteerMove(player);
             return;
         }
-        if (D_8005A648 == 7 || D_8005A648 == 9 || D_8005A648 == 5) {
+        if (GameMode == 7 || GameMode == 9 || GameMode == 5) {
             TankHeroGridMove(player);
             return;
         }
         half = (speed = ta->Speed) / 2;
-        pad = ((PadButtons *)D_80051338)[player].unk50;
+        pad = ((PadButtons *)Pads)[player].unk50;
         x = eng->unk10.x;
         z = eng->unk10.z;
         dir = pad & 0xF0;
@@ -3324,7 +3324,7 @@ void TankHeroMove(u32 player) {
 void SetTankHeroRecoil(u32 player) {
     s32 done;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
@@ -3372,8 +3372,8 @@ void SetTankHeroVictory(u32 arg0) {
     u32 i;
     subengine *sub;
 
-    if (D_8005A680[0] == 0) {
-        D_800AD12C = 1;
+    if (GameTeams[0] == 0) {
+        CameraMode = 1;
         for (i = 0; i < 4; i++) {
             if (i != arg0 && !(Heroes[i].hero_status & 0x200)) {
                 func_80026980(Heroes[i].hero);
@@ -3422,7 +3422,7 @@ void TankHeroDie(u32 arg0) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
     }
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
@@ -3495,7 +3495,7 @@ retry:
     fux = (EXTobject_TA *)nas->FUX;
     owner = fux->Owner;
     ret = 0;
-    if (D_8005A648 == 8 &&
+    if (GameMode == 8 &&
         *(((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9) + TankLevelsGridMapTank) != 0 &&
         fux->Status != 1) {
         x = eng->unk10.x;
@@ -3589,9 +3589,9 @@ retry:
         }
         PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
     skip:
-        if (((TankModeView *)D_8005A614)->mode == 5 && D_8005A614[hit + 0x5C] != 0 &&
-            TA_players[hit].ForceFieldDelay == 0 && D_8009D908 == 0 &&
-            (u32)Random(0x20) < D_8009D87C[hit].unk0) {
+        if (((TankModeView *)GameInfo)->mode == 5 && GameInfo[hit + 0x5C] != 0 &&
+            TA_players[hit].ForceFieldDelay == 0 && HeroesAllOut == 0 &&
+            (u32)Random(0x20) < AiPlayerSkill[hit].unk0) {
             TankBotForceField[hit] = 1;
             goto hit2;
         }
@@ -3687,7 +3687,7 @@ void PlotFlamerBitTA(NAS *nas) {
     eng = nas->Engine;
     eng->unk5E = 1;
     eng->unk20 += 0x96;
-    if (!(D_8004E0D8 & 7)) {
+    if (!(GameFrameCount & 7)) {
         TankSpawnBit1605(&eng->unk10, 2);
     }
     if (MoveTankShot(nas, 0x14, 0x1306, 0xC) != 0) {
@@ -3739,8 +3739,8 @@ void PlotFlubberTA(NAS *nas) {
         eng->unk10.y = -0x64;
         fux->SpeedY = -0x3C;
         eng->unk10.y -= 0x3C;
-        if (((TankModeView *)D_8005A614)->mode == 5 ||
-            (((TankModeView *)D_8005A614)->mode == 6 && (((TankModeView *)D_8005A614)->flags & 0x80) &&
+        if (((TankModeView *)GameInfo)->mode == 5 ||
+            (((TankModeView *)GameInfo)->mode == 6 && (((TankModeView *)GameInfo)->flags & 0x80) &&
              TankLevelsGridMapMiss[((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9)] != 0)) {
             switch ((u32)Random(4)) {
             case 0:
@@ -3991,7 +3991,7 @@ void PlotLobber_TA(NAS *nas)
       continue;
     }
     name = (*(&Heroes[j])).hero_name;
-    if ((name == 9) && (((((TankModeView *) D_8005A614)->mode != name) || (TankBossStatus != 0)) || (((u32) (j - 2)) >= 2)))
+    if ((name == 9) && (((((TankModeView *) GameInfo)->mode != name) || (TankBossStatus != 0)) || (((u32) (j - 2)) >= 2)))
     {
       continue;
     }
@@ -4061,10 +4061,10 @@ void PlotLobber_TA(NAS *nas)
   }
 
 
-  if (((fux->SpeedY > 0) && (eng->unk10.y >= (-0x103))) || ((D_8005A648 == 9) && (eng->unk10.z > 0x1000)))
+  if (((fux->SpeedY > 0) && (eng->unk10.y >= (-0x103))) || ((GameMode == 9) && (eng->unk10.z > 0x1000)))
   {
     eng->unk10.y = -0x104;
-    if ((D_8005A648 == 9) && (fux->Owner != (-1)))
+    if ((GameMode == 9) && (fux->Owner != (-1)))
     {
       CheckMineToBoss(eng->unk10.x, eng->unk10.y, eng->unk10.z);
     }
@@ -4074,7 +4074,7 @@ void PlotLobber_TA(NAS *nas)
     for (hit = 0; hit < 4; hit++)
     {
       name = Heroes[hit].hero_name;
-      if ((name == 9) && (((((TankModeView *) D_8005A614)->mode != name) || (TankBossStatus != 0)) || (((u32) (hit - 2)) >= 2)))
+      if ((name == 9) && (((((TankModeView *) GameInfo)->mode != name) || (TankBossStatus != 0)) || (((u32) (hit - 2)) >= 2)))
       {
         continue;
       }
@@ -4205,7 +4205,7 @@ void PlotRocketTA(NAS *nas)
     if (TankRocketNear(x, z, 0xE0) != NULL) {
         goto boom;
     }
-    if (D_8005A648 == 9) {
+    if (GameMode == 9) {
         ok = (u32) z < 0x1280;
     } else {
         if (z < 0) {
@@ -4217,12 +4217,12 @@ void PlotRocketTA(NAS *nas)
         goto boom;
     }
     if (TankRocketTile(x, z) != 0) {
-        if (D_8005A648 == 7 || D_8005A648 == 9) {
+        if (GameMode == 7 || GameMode == 9) {
             if (z < TankArenaMaxZ) {
                 n = (NAS *) *(((z >> 9) * TankMapWidth) + (x >> 9) + TankMapNas);
                 if (n != NULL) {
                     pos = &n->Engine->unk10;
-                    p = *(void **) D_80058AD0;
+                    p = *(void **) MapScene;
                     puff = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
                     if (puff != NULL) {
                         ext = FindExtension(puff, 0x10000000);
@@ -4252,10 +4252,10 @@ void PlotRocketTA(NAS *nas)
     if (hit < 0 || hit == fux->Owner) {
         goto puff;
     }
-    if (((TankModeView *) D_8005A614)->mode != 9 || fux->Owner == -1) {
+    if (((TankModeView *) GameInfo)->mode != 9 || fux->Owner == -1) {
         dmg = 0x3C;
     } else {
-        dmg = (((D_8005A614[0xB4] * 190) / 32 + 10) * 60) / 100;
+        dmg = (((GameInfo[0xB4] * 190) / 32 + 10) * 60) / 100;
     }
     DamageTankHero(hit, dmg);
 boom:
@@ -4267,7 +4267,7 @@ boom:
     PlaySfx(0x43D, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
     return;
 puff:
-    if (!(D_8004E0D8 & 1)) {
+    if (!(GameFrameCount & 1)) {
         TankSpawnBit1605(&eng->unk10, 0x11);
     }
 }
@@ -4286,7 +4286,7 @@ void PlotMine(NAS *nas) {
     u16 name;
     u8 *g;
 
-    g = D_8005A614;
+    g = GameInfo;
     eng = nas->Engine;
     if ((((TankModeView *)g)->mode == 8 &&
          TankLevelsGridMapMiss[((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9)] != 0) ||
@@ -4305,7 +4305,7 @@ void PlotMine(NAS *nas) {
         for (i = 0; i < 4; i++) {
             name = Heroes[i].hero_name;
             if (name == 9 &&
-                (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+                (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
                  (u32)(i - 2) >= 2)) {
                 continue;
             }
@@ -4329,8 +4329,8 @@ void PlotMine(NAS *nas) {
         i = -1;
     found:
         if (i >= 0) {
-            if (((TankModeView *)D_8005A614)->mode == 8 && D_8005A614[i + 0x5C] == 0 &&
-                (((TankGameView *)D_8005A614)->flags & 0x80)) {
+            if (((TankModeView *)GameInfo)->mode == 8 && GameInfo[i + 0x5C] == 0 &&
+                (((TankGameView *)GameInfo)->flags & 0x80)) {
                 DamageTankHero(i, 0x4B0);
             } else {
                 DamageTankHero(i, 0x3C);
@@ -4374,8 +4374,8 @@ void PlotWaterMine(NAS *nas) {
     eng->unk10.y += TankWaterBob[t & 0xF];
     nas->UserInfo.user2 = t + 1;
     nas->UserInfo.status = (nas->UserInfo.status + 4) & 0xFFF;
-    eng->unk10.x += (D_80068BD4[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 7) >> 12;
-    eng->unk10.z += (D_80068BD4[nas->UserInfo.status & 0xFFF].unk2 * 7) >> 12;
+    eng->unk10.x += (TrigTable[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 7) >> 12;
+    eng->unk10.z += (TrigTable[nas->UserInfo.status & 0xFFF].unk2 * 7) >> 12;
     if (eng->unk10.x > TankArenaMaxX) {
         eng->unk10.x = TankArenaMaxX;
     }
@@ -4394,7 +4394,7 @@ void PlotWaterMine(NAS *nas) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -4430,8 +4430,8 @@ found:
                 break;
             }
         }
-        if (D_8005A614[hit + 0x5C] == 0) {
-            if (((TankGameView *)D_8005A614)->flags & 0x80) {
+        if (GameInfo[hit + 0x5C] == 0) {
+            if (((TankGameView *)GameInfo)->flags & 0x80) {
                 DamageTankHero(hit, 0x4B0);
             } else {
                 DamageTankHero(hit, 0x3C);
@@ -4478,8 +4478,8 @@ void PlotTorpedo(NAS *nas) {
         if (nas->UserInfo.status != 0) {
             nas->UserInfo.status--;
         } else {
-            eng->unk10.x += (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 9) >> 12;
-            eng->unk10.z += (D_80068BD4[angle & 0xFFF].unk2 * 9) >> 12;
+            eng->unk10.x += (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 9) >> 12;
+            eng->unk10.z += (TrigTable[angle & 0xFFF].unk2 * 9) >> 12;
         }
         hb = Heroes;
         h2 = &hb[player];
@@ -4539,7 +4539,7 @@ void CreateMineShrapnelBits(NAS *nas) {
     s32 z;
 
     eng = nas->Engine;
-    switch ((s16)(D_8005A648 - 5)) {
+    switch ((s16)(GameMode - 5)) {
     default:
     case 1:
     case 3:
@@ -4576,7 +4576,7 @@ void CreateMineShrapnelBits(NAS *nas) {
         }
         x = eng->unk10.x;
         z = eng->unk10.z;
-        if (D_8005A648 == 9) {
+        if (GameMode == 9) {
             CheckMineToBoss(x, eng->unk10.y, z);
         }
         for (i = 0; i < 4; i++) {
@@ -4603,7 +4603,7 @@ static inline s32 ShrapnelFindHero(s32 x, s32 z) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -4674,8 +4674,8 @@ found:
         PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         break;
     }
-    if (((TankModeView *)D_8005A614)->mode == 8 && D_8005A614[hit + 0x5C] == 0 &&
-        (((TankGameView *)D_8005A614)->flags & 0x80)) {
+    if (((TankModeView *)GameInfo)->mode == 8 && GameInfo[hit + 0x5C] == 0 &&
+        (((TankGameView *)GameInfo)->flags & 0x80)) {
         DamageTankHero(hit, 0x4B0);
     } else {
         DamageTankHero(hit, 0x3C);
@@ -4722,7 +4722,7 @@ void PlotPickupGenerator_TA(NAS *nas)
   if (nas->UserInfo.flags == 0)
   {
     nas->UserInfo.flags = Random(0x78) + 0xB4;
-    switch (D_8005A648)
+    switch (GameMode)
     {
       case 7:
 
@@ -4832,7 +4832,7 @@ void PlotPickupGenerator_TA(NAS *nas)
           return;
         }
         PU_TA_list[i] = p;
-        nas->UserInfo.flags = ((D_8009D87C[3].unk0 * 2) - D_8005A614[0xB4]) * 30;
+        nas->UserInfo.flags = ((AiPlayerSkill[3].unk0 * 2) - GameInfo[0xB4]) * 30;
         if (((u16) (nas->UserInfo.flags & 0xFFFE)) < 60)
         {
           nas->UserInfo.flags = 60;
@@ -4841,7 +4841,7 @@ void PlotPickupGenerator_TA(NAS *nas)
         {
           nas->UserInfo.flags = 1200;
         }
-        if (D_8005A614[0xB4] > 10)
+        if (GameInfo[0xB4] > 10)
         {
           nas->UserInfo.flags >>= 1;
         }
@@ -4897,7 +4897,7 @@ void InitHelicopterTA(NAS *nas) {
             ext->SpeedX = 0x40;
             eng->unk10.y = -0x400;
         }
-        switch ((s16)(D_8005A648 - 5)) {
+        switch ((s16)(GameMode - 5)) {
         case 0:
             eng->unk10.z = HelicopterZSwamp[Random(4)];
             break;
@@ -5009,7 +5009,7 @@ void PlotHelicopterTA(NAS *nas) {
         }
     }
     n = 0;
-    g = (TankModeView *)D_8005A614;
+    g = (TankModeView *)GameInfo;
     slot = PU_TA_list;
 loop:
     if (n < 3) {
@@ -5193,10 +5193,10 @@ void PlotPickupTA(NAS *nas) {
     case 5:
         eng->unk10.y += 0x14;
         nas->UserInfo.user2 = (nas->UserInfo.user2 + 0x78) & 0xFFF;
-        sn = D_80068BD4[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2;
+        sn = TrigTable[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2;
         eng->unk5E = 1;
         eng->unk20 = (sn * 25) >> 9;
-        dx = -(D_80068BD4[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2 * 120) >> 12;
+        dx = -(TrigTable[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2 * 120) >> 12;
         if (eng->unk10.y < -0x12B) {
             break;
         }
@@ -5225,7 +5225,7 @@ void PlotPickupTA(NAS *nas) {
             }
             n->UserInfo.status = 1;
         }
-        if ((u32)((u16)D_8005A648 - 8) >= 2) {
+        if ((u32)((u16)GameMode - 8) >= 2) {
             TankSpawnBit1605(&eng->unk10, 3);
             switch ((u32)Random(4)) {
             case 0:
@@ -5312,8 +5312,8 @@ void PlotPickupTA(NAS *nas) {
     }
     switch (nas->UserInfo.status) {
     case 6:
-        if (((TankModeView *)D_8005A614)->mode != 8 || D_8005A614[hit + 0x5C] != 0 ||
-            !(((TankModeView *)D_8005A614)->flags & 0x80)) {
+        if (((TankModeView *)GameInfo)->mode != 8 || GameInfo[hit + 0x5C] != 0 ||
+            !(((TankModeView *)GameInfo)->flags & 0x80)) {
             v = 0x1E;
         } else {
             v = 0x4B0;
@@ -5557,7 +5557,7 @@ void PlotPeriscope(NAS *nas) {
         }
         break;
     case 0:
-        if (!(D_8004E0D8 & 0x3F)) {
+        if (!(GameFrameCount & 0x3F)) {
             TankPeriscopePuff(&nas->Engine->unk10, 0);
         }
         sub = eng->sub;
@@ -5572,7 +5572,7 @@ void PlotPeriscope(NAS *nas) {
             break;
         }
         for (i = 0; i < 4; i++) {
-            if (Heroes[i].hero_name != 9 && !(Heroes[i].hero_status & 0xFA00) && D_8005A614[i + 0x5C] == 0) {
+            if (Heroes[i].hero_name != 9 && !(Heroes[i].hero_status & 0xFA00) && GameInfo[i + 0x5C] == 0) {
                 e = Heroes[i].hero_eng;
                 if ((u32)(((eng->unk1E - get_angle(eng->unk10.x - e->unk10.x, eng->unk10.z - e->unk10.z)) & 0xFFF) - 0x15) >= 0xFD7U) {
                     fux->Status = 10;
@@ -5583,7 +5583,7 @@ void PlotPeriscope(NAS *nas) {
         }
         break;
     case 10:
-        if (!(D_8004E0D8 & 0x1F)) {
+        if (!(GameFrameCount & 0x1F)) {
             TankPeriscopePuff(&nas->Engine->unk10, 0);
         }
         frame = PeriscopeFrames[fux->Counter];
@@ -5685,9 +5685,9 @@ void PlotPeriscopeGun(NAS *nas) {
         }
         shell->FUX = (EXT *)ext;
         se = shell->Engine;
-        dx = -(D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 620);
+        dx = -(TrigTable[(e->unk1E - 0x400) & 0xFFF].unk2 * 620);
         se->unk10.x += dx >> 12;
-        dz = -(D_80068BD4[(u16)e->unk1E & 0xFFF].unk2 * 620);
+        dz = -(TrigTable[(u16)e->unk1E & 0xFFF].unk2 * 620);
         se->unk10.z += dz >> 12;
         ext->SpeedY = -150;
         ext->Owner = -1;
@@ -5806,7 +5806,7 @@ void PlotPillar(NAS *nas) {
         for (i = 0; i < 4; i++) {
             name = Heroes[i].hero_name;
             if (name == 9 &&
-                (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+                (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
                  (u32)(i - 2) >= 2)) {
                 continue;
             }
@@ -5906,7 +5906,7 @@ static inline s32 TotemFindHero(s32 x, s32 z, s32 r) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -5942,7 +5942,7 @@ void PlotTotemPole(NAS *nas) {
         if (--fux->Counter > 0) {
             return;
         }
-        if (((TankGameView *)D_8005A614)->flags & 0x80) {
+        if (((TankGameView *)GameInfo)->flags & 0x80) {
             fux->Status = 0x24;
             PlaySfx(0x502, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
             nas->UserInfo.user2 = 0x1E;
@@ -5983,7 +5983,7 @@ void PlotTotemPole(NAS *nas) {
             if (Heroes[i].hero_status & 0xFA00) {
                 continue;
             }
-            if (D_8005A614[i + 0x5C] != 0) {
+            if (GameInfo[i + 0x5C] != 0) {
                 continue;
             }
             e = Heroes[i].hero_eng;
@@ -6163,11 +6163,11 @@ void PlotTotemBit(NAS *nas, s32 id) {
                 ne->sub->unk6C = D_800537AC;
                 ne->sub->unk74 = 0x2006;
                 nx->Owner = v;
-                ne->unk10.x += -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 300) >> 12;
-                ne->unk10.z += -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 300) >> 12;
+                ne->unk10.x += -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 300) >> 12;
+                ne->unk10.z += -(TrigTable[eng->unk1E & 0xFFF].unk2 * 300) >> 12;
                 ne->unk1E = eng->unk1E;
-                nx->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 60) >> 12;
-                nx->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 60) >> 12;
+                nx->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 60) >> 12;
+                nx->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 60) >> 12;
             }
             } else {
                 eng->sub->unk74 = v;
@@ -6643,7 +6643,7 @@ void PlotTankBoss(NAS *nas) {
             eng->flags &= ~0x8000;
             fux->Status = 0;
             ResetToBasicWeapon(0);
-            if (D_8005A680[0] != 0) {
+            if (GameTeams[0] != 0) {
                 ResetToBasicWeapon(1);
             }
         }
@@ -6677,7 +6677,7 @@ s32 TankBossTurretFindTarget(EXTengine *eng) {
         TankBossTargets[0].x = Heroes[0].hero_eng->unk10.x;
         TankBossTargets[0].z = Heroes[0].hero_eng->unk10.z;
     }
-    if (D_8005A680[0] == 0 || Heroes[1].hero_health <= 0 || (Heroes[1].hero_status & 0xFA00)) {
+    if (GameTeams[0] == 0 || Heroes[1].hero_health <= 0 || (Heroes[1].hero_status & 0xFA00)) {
         TankBossTargets[1].z = -1;
     } else {
         TankBossTargets[1].x = Heroes[1].hero_eng->unk10.x;
@@ -6756,12 +6756,12 @@ void TankBossCrashTurretFire(EXTengine *arg0) {
     se = shell->Engine;
     ext->Counter *= 2;
     PlaySfx(0x4CE, &se->sfx, NULL, 0x1000, 0x1E00, 0);
-    se->unk10.x += -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
-    se->unk10.z += -(D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
+    se->unk10.x += -(TrigTable[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
+    se->unk10.z += -(TrigTable[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
     se->unk1E = arg0->unk1E;
-    ext->SpeedX = -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 58) >> 12;
+    ext->SpeedX = -(TrigTable[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 58) >> 12;
     ext->SpeedY = -0x10;
-    dz = D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2;
+    dz = TrigTable[(u16)arg0->unk1E & 0xFFF].unk2;
     ext->Status = 1;
     ext->Owner = -1;
     ext->SpeedZ = -(dz * 58) >> 12;
@@ -6970,11 +6970,11 @@ void TankBossCortexTurretFire(EXTengine *arg0) {
     ext->Counter = ext->Counter * 5 / 3;
     se = shell->Engine;
     PlaySfx(0x4CC, &se->sfx, NULL, 0x1000, 0x1E00, 0);
-    se->unk10.x += -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
-    se->unk10.z += -(D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
+    se->unk10.x += -(TrigTable[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
+    se->unk10.z += -(TrigTable[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
     se->unk1E = arg0->unk1E;
-    ext->SpeedX = -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 74) >> 12;
-    dz = D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2;
+    ext->SpeedX = -(TrigTable[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 74) >> 12;
+    dz = TrigTable[(u16)arg0->unk1E & 0xFFF].unk2;
     ext->Status = 1;
     ext->Owner = -1;
     ext->SpeedZ = -(dz * 74) >> 12;
@@ -7145,11 +7145,11 @@ void TankBossRocketTurretFire(NAS *nas, EXTengine *eng) {
             PlaySfx(0x522, &n->Engine->sfx, (fux = (EXTobject_TA *)n->FUX, (SLONG_XYZ *)NULL), 0x1000, 0x1E00, 0);
             e = n->Engine;
             a = dir - TankShellAngleOffsets()[i];
-            e->unk10.x -= (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 245) >> 11;
-            e->unk10.z -= (D_80068BD4[a & 0xFFF].unk2 * 245) >> 11;
+            e->unk10.x -= (TrigTable[(a - 0x400) & 0xFFF].unk2 * 245) >> 11;
+            e->unk10.z -= (TrigTable[a & 0xFFF].unk2 * 245) >> 11;
             e->unk1E = eng->unk1E;
-            fux->SpeedX = -(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
-            fux->SpeedZ = -(D_80068BD4[dir & 0xFFF].unk2 * 200) >> 12;
+            fux->SpeedX = -(TrigTable[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
+            fux->SpeedZ = -(TrigTable[dir & 0xFFF].unk2 * 200) >> 12;
             fux->Status = 1;
             fux->Owner = -1;
         }
@@ -7356,7 +7356,7 @@ void AnimateMoeJoeTurret(s32 player) {
     if (ta->TurretFiring >= 0) {
         a = *ta->TurretAnimPtr++;
         if (a != 0) {
-            if (D_8005A648 == 5) {
+            if (GameMode == 5) {
                 sub2->unk74 = a;
             } else {
                 sub->unk74 = a;
@@ -7402,9 +7402,9 @@ void AnimateMoeJoeTurret(s32 player) {
                     fux = AddExt(n, 0x38, 0x10000000);
                     n->FUX = fux;
                     se = n->Engine;
-                    dx = -(D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
+                    dx = -(TrigTable[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
                     se->unk10.x += dx >> 12;
-                    dz = -(D_80068BD4[(u16)e->unk1E & 0xFFF].unk2 * 250);
+                    dz = -(TrigTable[(u16)e->unk1E & 0xFFF].unk2 * 250);
                     se->unk10.z += dz >> 12;
                     fux->SpeedX = dx >> 13;
                     fux->SpeedY = -0x5B;
@@ -7415,7 +7415,7 @@ void AnimateMoeJoeTurret(s32 player) {
                 }
             }
         }
-    } else if (D_8005A648 == 5) {
+    } else if (GameMode == 5) {
     loop:
         a = *ta->TurretAnimPtr++;
         if (a == 0) {
@@ -7438,7 +7438,7 @@ void AnimateMoeJoeTurret(s32 player) {
         }
         sub2->unk74 = a;
     }
-    if (D_8005A648 != 5) {
+    if (GameMode != 5) {
         if (++sub2->unk74 == 0x4306) {
             sub2->unk74 = 0x4300;
         }
@@ -7597,11 +7597,11 @@ void MoeJoeMove(s32 player) {
     eng = Heroes[player].hero_eng;
     speed = ta->Speed;
     sub = eng->sub->next->next;
-    saved = ((TankGameView *)D_8005A614)->w6C;
-    ((TankGameView *)D_8005A614)->w6C = 1;
+    saved = ((TankGameView *)GameInfo)->w6C;
+    ((TankGameView *)GameInfo)->w6C = 1;
     ai = &TankBotAI[player];
     TA_HeroBot(player);
-    ((TankGameView *)D_8005A614)->w6C = saved;
+    ((TankGameView *)GameInfo)->w6C = saved;
     pad = ai->AIpad;
     dir = pad & 0xF0;
     if (dir == 0) {
@@ -7674,8 +7674,8 @@ loop:
     sub->unk12 = (a + df) & 0xFFF;
     sub->unk52 = 1;
     a = (eng->unk1E + sub->unk12) & 0xFFF;
-    sn = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
-    cs = D_80068BD4[a].unk2;
+    sn = TrigTable[(a - 0x400) & 0xFFF].unk2;
+    cs = TrigTable[a].unk2;
     x = eng->unk10.x + ((speed * sn) >> 12);
     fx = x + ((sn * 256) >> 12);
     z = eng->unk10.z + ((speed * cs) >> 12);
@@ -7688,7 +7688,7 @@ loop:
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -7877,7 +7877,7 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
         D_8009D634 = 3;
         JoeState = 0x3B;
     }
-    g = D_8005A614 + p;
+    g = GameInfo + p;
     g[0x5C] = 1;
     hb = Heroes;
     h = &hb[p];
@@ -7915,9 +7915,9 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     h->hero_attack_counter = 0;
     h->hero_name = 9;
     g[0x50] = 9;
-    D_8009D87C[p].unk0 = 0x10;
-    D_8009D87C[p].unk2 = 0x10;
-    D_8009D87C[p].unk4 = 0x10;
+    AiPlayerSkill[p].unk0 = 0x10;
+    AiPlayerSkill[p].unk2 = 0x10;
+    AiPlayerSkill[p].unk4 = 0x10;
     if (h->hero_ai == NULL) {
         ai = AddExt(h->hero, 0x44, 0x400000F4);
         if (ai != NULL) {
@@ -7937,8 +7937,8 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
             ai->AIsleep = 8;
         }
     }
-    ((PadButtons *)D_80051338)[p].unk50 = 0;
-    ((PadButtons *)D_80051338)[p].unk54 = 0;
+    ((PadButtons *)Pads)[p].unk50 = 0;
+    ((PadButtons *)Pads)[p].unk54 = 0;
     eng = Heroes[p].hero_eng;
     eng->unk10.z = 0xF00;
     eng->unk10.x = (eng->unk10.x + 0x80) & ~0xFF;
@@ -7964,7 +7964,7 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     ta->RunnerFacing = 0;
     ta->SpeedX = 0;
     ta->SpeedZ = 0;
-    ta->Speed = ta->Speed * (D_8009D87C[p].unk0 + 0x54) / 100;
+    ta->Speed = ta->Speed * (AiPlayerSkill[p].unk0 + 0x54) / 100;
     ta->Energy = 0x63;
     Heroes[p].hero_health = ta->Energy;
     ta->PosX = eng->unk10.x;
@@ -8044,7 +8044,7 @@ void PlotMoeJoeHero(NAS *nas, s32 id) {
         eng->unk10.z = 0x100;
     }
     AnimateMoeJoeTurret(p);
-    if (D_8005A648 != 5) {
+    if (GameMode != 5) {
         x = eng->unk10.x;
         dz = eng->unk10.z - eng->OldXYZ.z;
         if (x != eng->OldXYZ.x || dz != 0) {
@@ -8066,7 +8066,7 @@ void PlotMoeJoeHero(NAS *nas, s32 id) {
             }
         }
     }
-    if (((PadButtons *)D_80051338)[p].unk50 & 0x4800) {
+    if (((PadButtons *)Pads)[p].unk50 & 0x4800) {
         TANK_SET_HULL_SFX(p, eng, TankHoverSfx[p]);
     } else {
         TANK_SET_HULL_SFX(p, eng, 0);
@@ -8130,7 +8130,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
                     Heroes[0].hero_eng->unk10.z = z;
                 }
             }
-            if (D_8005A680[0] != 0 &&
+            if (GameTeams[0] != 0 &&
                 (u32)(Heroes[1].hero_eng->unk10.x - eng->unk10.x + 0x1FF) < 0x3FF) {
                 z = eng->unk10.z - 0x200;
                 if (z < Heroes[1].hero_eng->unk10.z) {
@@ -8353,7 +8353,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         eng->unk10.y = TankBossEng->unk10.y - 0x528;
         p = fux->pAnimList;
         anim = *p;
-        if (D_8004E0D8 & 1) {
+        if (GameFrameCount & 1) {
             fux->pAnimList = p + 1;
         }
         if (anim == 0) {
@@ -8530,7 +8530,7 @@ s32 TankBossTurretCheckSight(s32 id, s32 x, s32 z, s32 angle) {
 /* The boss level's human target: the surviving one of heroes 0 and 1, else either at random;
  * hero 0 in a one-player game. */
 s32 TankBossPickHero(void) {
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         if (Heroes[0].hero_health == 0) {
             return 1;
         }
@@ -8590,7 +8590,7 @@ void InitTotemPole(NAS *nas) {
     ext = AddExt(nas, 0x38, 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
-        if (!(((u16 *)&D_8005A644)[1] & 0x80)) {
+        if (!(((u16 *)&GameExitFlags)[1] & 0x80)) {
             ext->Counter = 0x384;
         } else {
             ext->Counter = 0x96;
@@ -8630,7 +8630,7 @@ void PlotPillarCover(NAS *nas) {
 void InitPillarCover(NAS *nas) {
     EXTengine *e = nas->Engine;
     e->unk10.y = 0;
-    e->sub->unk6C = *(void **)D_80058AD0;
+    e->sub->unk6C = *(void **)MapScene;
 }
 
 void InitPillar(NAS *nas) {
@@ -8640,7 +8640,7 @@ void InitPillar(NAS *nas) {
     nas->UserInfo.status = 6;
     e->unk10.y = 0xB8;
     s = e->sub;
-    s->unk6C = *(void **)D_80058AD0;
+    s->unk6C = *(void **)MapScene;
     s->unk68 = 0x20;
     s->flags |= 0x02000000;
 }
@@ -8690,7 +8690,7 @@ void InitBoatWake(NAS *nas) {
 }
 
 void InitPeriscopeGun(NAS *nas) {
-    nas->Engine->sub->unk6C = *(void **)D_80058AD0;
+    nas->Engine->sub->unk6C = *(void **)MapScene;
     nas->Engine->sub->unk74 = 0x4080;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8710,14 +8710,14 @@ void InitPeriscope(NAS *nas) {
         ext->Status = one;
         eng = nas->Engine;
         eng->unk5D = 0;
-        p = *(void **)D_80058AD0;
+        p = *(void **)MapScene;
         s = eng->sub;
         s->flags = 0;
         s->unk6C = p;
         if (func_80018F3C(eng, one) != 0) {
             s = s->next;
             s->flags = 0;
-            s->unk6C = *(void **)D_80058AD0;
+            s->unk6C = *(void **)MapScene;
             s->unk74 = 0x2001;
         }
         if (nas->Failure != 0) {
@@ -8745,7 +8745,7 @@ void InitRock_TA(NAS *nas) {
     }
     nas->FUX = ext;
     sub = nas->Engine->sub;
-    sub->unk6C = *(void **)D_80058AD0;
+    sub->unk6C = *(void **)MapScene;
     sub->unk74 = RockFrames[info->val1].v;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8841,7 +8841,7 @@ void InitTorpedo(NAS *nas) {
     nas->UserInfo.user2 = 0;
     eng->unk10.y = -0x14;
     sub = eng->sub;
-    sub->unk6C = *(void **)D_80058AD0;
+    sub->unk6C = *(void **)MapScene;
     sub->unk74 = 0x2001;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8860,12 +8860,12 @@ void InitWaterMine(NAS *nas) {
     subengine *s;
     nas->UserInfo.flags = 1;
     nas->UserInfo.user1 = -1;
-    nas->UserInfo.status = D_8004E0D8;
+    nas->UserInfo.status = GameFrameCount;
     e = nas->Engine;
     nas->UserInfo.user2 = 0;
     e->unk10.y = -0x14;
     s = e->sub;
-    s->unk6C = *(void **)D_80058AD0;
+    s->unk6C = *(void **)MapScene;
     s->unk74 = 0x2001;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -9094,7 +9094,7 @@ void TankHeroMinelay(u32 player) {
 }
 
 void SetTankHeroMinelay(u32 arg0) {
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
     }
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
@@ -9129,7 +9129,7 @@ s32 TankBlockPadNear(s32 flags, NAS *nas, EXTengine *eng) {
 void SetTankHeroMove(u32 arg0) {
     s32 ok;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
     }
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
@@ -9215,7 +9215,7 @@ void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX) {
 /* The check every SetTankHero* starts with: a quit (pad 0x801) ends the level, and a hero
  * whose status has 0x200 (won) gets the victory action (0x70) and TankLevelOver. */
 s32 CheckTankHeroWon(s32 arg0) {
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         TankLevelOver = -1;
     }
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
@@ -9309,16 +9309,16 @@ void TA_RestartLevel(void) {
 }
 
 void TA_SetUp(void) {
-    D_8005AA70[0] = (s32)TA_PreInitLevel;
-    D_8005AA70[1] = (s32)TA_InitLevel;
-    D_8005AA70[2] = (s32)TA_InitLevel;
-    D_8005AA70[3] = (s32)TA_UpdateLevel;
-    D_8005AA70[4] = (s32)TA_StopHeroSfx;
-    D_8005AA70[6] = (s32)TA_Triggers;
-    D_8005AA70[5] = (s32)TA_EarliestTriggers;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
-    D_8005AA70[10] = (s32)FinishTankLevel;
+    LevelSpecs[0] = (s32)TA_PreInitLevel;
+    LevelSpecs[1] = (s32)TA_InitLevel;
+    LevelSpecs[2] = (s32)TA_InitLevel;
+    LevelSpecs[3] = (s32)TA_UpdateLevel;
+    LevelSpecs[4] = (s32)TA_StopHeroSfx;
+    LevelSpecs[6] = (s32)TA_Triggers;
+    LevelSpecs[5] = (s32)TA_EarliestTriggers;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
+    LevelSpecs[10] = (s32)FinishTankLevel;
     TankBossStartStatus = 1;
 }
 
@@ -9420,7 +9420,7 @@ s32 TankFindHeroNear(s32 x, s32 z, s32 r, s32 skip) {
 
     s32 nine;
 
-    for (i = 0, nine = 9, g = D_8005A614; i < 4; i++) {
+    for (i = 0, nine = 9, g = GameInfo; i < 4; i++) {
         if (i == skip) {
             continue;
         }
@@ -9455,7 +9455,7 @@ s32 RocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
+            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -9578,7 +9578,7 @@ void TankBotAimTurret(s32 player, EXTengine *eng, s32 *arg2) {
     s32 hero;
     EXTengine *target;
 
-    if (D_8005A648 != 5) {
+    if (GameMode != 5) {
         hero = arg2[2];
         if (hero >= 0) {
             target = Heroes[hero].hero_eng;
@@ -9589,7 +9589,7 @@ void TankBotAimTurret(s32 player, EXTengine *eng, s32 *arg2) {
 }
 
 void TankBotChooseTarget(void) {
-    switch ((s16)(D_8005A648 - 5)) {
+    switch ((s16)(GameMode - 5)) {
     case 1:
     case 3:
         TankBotPickLinedUpTarget();

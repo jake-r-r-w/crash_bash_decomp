@@ -107,7 +107,7 @@ void PlotPACrate(NAS *nas) {
                         eng->unk1E = get_angle(dx, dz) - 0x200;
                         ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
                         eng->unk1C = ang;
-                        eng->unk10.y = b.vy - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->unk10.y = b.vy - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
                         eng->unk20 = 0;
@@ -159,7 +159,7 @@ void PlotPACrate(NAS *nas) {
                         eng->unk1E = get_angle(dx, dz) - 0x200;
                         ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
                         eng->unk1C = ang;
-                        eng->unk10.y = b.vy - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->unk10.y = b.vy - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
                         eng->unk20 = 0;
@@ -331,8 +331,8 @@ void PlotPACrate(NAS *nas) {
         if (slide->unkE > slide->unk14) {
             slide->unkE = slide->unk14;
         }
-        eng->unk10.x -= (slide->unkE * D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (slide->unkE * D_80068BD4[eng->unk1E & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (slide->unkE * TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (slide->unkE * TrigTable[eng->unk1E & 0xFFF].unk2) >> 12;
         switch (slide->dir & 0xF0) {
         case 0x10:
         case 0x30:
@@ -601,7 +601,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
             }
         }
     }
-    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+    for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
         if (!(nas->Class & 0x200)) {
             continue;
         }
@@ -710,7 +710,7 @@ void PACrateFindFreeSpot(EXTengine *eng) {
 
     do {
         again = 0;
-        nas = D_8005AA2C;
+        nas = HeadOfSolids;
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
         while (nas != NULL) {
@@ -872,7 +872,7 @@ void PAHeroHold(s32 arg0) {
             }
             goto rest;
         }
-        if ((o->can_do & 4) && (((PadButtons *)D_80051338)[arg0].unk50 & 0x2000)) {
+        if ((o->can_do & 4) && (((PadButtons *)Pads)[arg0].unk50 & 0x2000)) {
             SetHeroAction(arg0, (u16)D_8009E0E0);
             return;
         }
@@ -890,7 +890,7 @@ void PAHeroHold(s32 arg0) {
             s = self->hero_fx->sub;
             if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->unk10 = self->hero_eng->unk10;
-                v = (D_80068BD4[(((D_8004E0D8 << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+                v = (TrigTable[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
                 s->unk20.y = s->unk20.x = v;
                 s->unk04 = pos.vx - self->hero_eng->unk10.x;
                 s->unk08 = pos.vy - self->hero_eng->unk10.y;
@@ -929,7 +929,7 @@ void PAHeroCarry(s32 arg0) {
             }
             goto rest;
         }
-        if ((o->can_do & 4) && (((PadButtons *)D_80051338)[arg0].unk50 & 0x2000)) {
+        if ((o->can_do & 4) && (((PadButtons *)Pads)[arg0].unk50 & 0x2000)) {
             SetHeroAction(arg0, (u16)D_8009E0E0);
             return;
         }
@@ -947,7 +947,7 @@ void PAHeroCarry(s32 arg0) {
             s = self->hero_fx->sub;
             if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->unk10 = self->hero_eng->unk10;
-                v = (D_80068BD4[(((D_8004E0D8 << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+                v = (TrigTable[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
                 s->unk20.y = s->unk20.x = v;
                 s->unk04 = pos.vx - self->hero_eng->unk10.x;
                 s->unk08 = pos.vy - self->hero_eng->unk10.y;
@@ -1116,7 +1116,7 @@ void PAHeroWinner(s32 arg0) {
     func_8008502C(arg0);
 }
 
-/* The D_8009D6E8.unk4C hook: claim the first object in reach of player's
+/* The HeroHooks.unk4C hook: claim the first object in reach of player's
  * cylinder that can take mask (within cone of the hero's heading, 0: any).
  * Each arm claims in its own do-while (0); jump2 merges the copies. */
 NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
@@ -1162,7 +1162,7 @@ NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
     top = me->unk10.y + rec->height;
     rad = rec->radius;
     func_80015758((SVECTOR *)rec, &pos);
-    nas = D_8005AA2C;
+    nas = HeadOfSolids;
     self = NULL;
     if (h->hero_object != NULL) {
         self = ((NAS **)h->hero_object)[-1];
@@ -1225,8 +1225,8 @@ NAS *PapuHeroGrabObject(idx, arg1)
     n = D_8005AA24;
     ang = Heroes[idx2].hero_move->facing_angle;
     he = Heroes[idx2].hero_eng;
-    hx = he->unk10.x - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (D_80068BD4[ang & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (TrigTable[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = (u8 *)n->FUX;
         if (fux == NULL) continue;
@@ -1330,7 +1330,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = D_80068BD4;
+                tbl = TrigTable;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -1365,10 +1365,10 @@ s32 PapuHeroKickCollision(s32 arg0) {
                                             eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
                                             hit = 1;
                                             if (self->hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&D_8009D6E8.unk60)(arg0, i);
+                                                (*(void (**)(s32, s32))&HeroHooks.unk60)(arg0, i);
                                             }
                                             if (other[i].hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&D_8009D6E8.unk60)(i, arg0);
+                                                (*(void (**)(s32, s32))&HeroHooks.unk60)(i, arg0);
                                             }
                                         }
                                     }
@@ -1426,7 +1426,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                 i++;
             } while (i < 4);
             own = NULL;
-            n = D_8005AA2C;
+            n = HeadOfSolids;
             if (Heroes[arg0].hero_object != NULL) {
                 own = ((NAS **)Heroes[arg0].hero_object)[-1];
             }
@@ -1465,8 +1465,8 @@ s32 PapuHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * TrigTable[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->unk1C & 8)) {
@@ -1524,7 +1524,7 @@ s32 PapuHeroCarryCollision(s32 idx) {
                 }
                 func_80015758((SVECTOR *)box, &v);
             }
-            nas = D_8005AA2C;
+            nas = HeadOfSolids;
             self = NULL;
             if (Heroes[idx].hero_object != NULL) {
                 self = ((NAS **)Heroes[idx].hero_object)[-1];
@@ -1551,8 +1551,8 @@ s32 PapuHeroCarryCollision(s32 idx) {
                                             if (d < r) {
                                                 ang = get_angle(dx, dz) & 0xFFF;
                                                 d = r - d + 1;
-                                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                                                 hit = 1;
                                                 if (ext->unk1C & 8) {
                                                     ext->unk16 = idx;
@@ -1584,8 +1584,8 @@ void *PapuHeroObjectAhead(s32 idx, s32 mask) {
     m = mask;
     lim = 0x10000;
     he = Heroes[idx].hero_eng;
-    hx = he->unk10.x - (D_80068BD4[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (D_80068BD4[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (TrigTable[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (TrigTable[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = n->FUX;
         if (fux == NULL) continue;

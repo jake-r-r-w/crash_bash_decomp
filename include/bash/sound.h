@@ -45,7 +45,7 @@ S16Pair func_8002B210(VECTOR *pos);
 static inline void ViewProject(VECTOR *pos, s32 *psxy) {
     VECTOR *out = &D_800569CC.out;
     SVECTOR *in = &D_800569CC.in;
-    View *view = (View *)D_80051640;
+    View *view = (View *)MainCamera;
 
     in->vx = pos->vx - view->pos.vx;
     in->vy = pos->vy - view->pos.vy;

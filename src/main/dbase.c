@@ -25,7 +25,7 @@ void func_80015F60(u8 *arg0, s32 *arg1) {
         blk->ptr = func_80011828(arg0, e->start);
         i--;
         func_80011544(blk->ptr, &blk->ptr);
-        func_80011498(blk->ptr, e->end - e->start, &D_8004E0F0);
+        func_80011498(blk->ptr, e->end - e->start, &MainHeap);
         next = e - 1;
     }
 second:
@@ -53,7 +53,7 @@ none:
 chk:
             if (found == 0) {
                 old = e->block;
-                mal_free(old->ptr, &D_8004E0F0);
+                mal_free(old->ptr, &MainHeap);
                 e->block = NULL;
                 func_80012E14((u8 *)old);
             }
@@ -99,7 +99,7 @@ void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db) {
     s32 n;
 
     n = func_8002A650(arg0);
-    heap = &D_8004E0F0;
+    heap = &MainHeap;
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         mal_free(arg0, heap);
         db->load = 0;
@@ -140,7 +140,7 @@ void func_800162E4(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 20)) = temp_v0;
     temp_s0 = (*(s32*)((u8*)(arg0) + 4)) - (*(s32*)((u8*)(arg0) + 0));
     func_800131B0(temp_s0);
-    func_800115D8(temp_s0, temp_v0, &D_8004E0F0, 0);
+    func_800115D8(temp_s0, temp_v0, &MainHeap, 0);
     memcpy(*temp_v0, arg1 + (*(s32*)((u8*)(arg0) + 0)), temp_s0);
 }
 
@@ -151,7 +151,7 @@ void func_8001636C(u8 *arg0, s32 arg1) {
     temp_v0 = (*(s32*)((u8*)(arg0) + 12));
     temp_s0 = temp_v0 + ((*(s32*)((u8*)(temp_v0) + 60)) + 0x3C) + ((arg1 * 0x10) + 4);
     if ((*(s32*)((u8*)(temp_s0) + 8)) != 0) {
-        mal_free((void *)(*(s32*)((u8*)(temp_s0) + 8)), &D_8004E0F0);
+        mal_free((void *)(*(s32*)((u8*)(temp_s0) + 8)), &MainHeap);
         (*(s32*)((u8*)(temp_s0) + 12)) = 0;
     } else if ((*(s32*)((u8*)(temp_s0) + 12)) != 0) {
         func_80012F04((void *)(*(s32*)((u8*)(temp_s0) + 12)));
@@ -212,7 +212,7 @@ found:
         blk = *(u8 **)(res + 0x14);
         if (blk != NULL) {
             if (*(void **)blk != NULL) {
-                mal_free(*(void **)blk, &D_8004E0F0);
+                mal_free(*(void **)blk, &MainHeap);
             } else {
                 func_80012F04(*(LoadNode **)(blk + 4));
             }
@@ -419,7 +419,7 @@ u8 *a;
                 e = slot[5];
                 if (e != NULL) {
                     if (*(void **)e != NULL) {
-                        mal_free(*(void **)e, &D_8004E0F0);
+                        mal_free(*(void **)e, &MainHeap);
                     } else {
                         func_80012F04(*(void **)(e + 4));
                     }
@@ -447,7 +447,7 @@ u8 *func_80016A20(u8 *arg0, s32 arg1) {
             item = *(void ***)(e + 0x14);
             if (item != NULL) {
                 if (item[0] != NULL) {
-                    mal_free(item[0], &D_8004E0F0);
+                    mal_free(item[0], &MainHeap);
                 } else {
                     func_80012F04(item[1]);
                 }
@@ -470,7 +470,7 @@ u8 *func_80016AD4(s32 *arg0, u8 *rec) {
         return NULL;
     }
     if (*(void **)node != NULL) {
-        mal_free(*(void **)node, &D_8004E0F0);
+        mal_free(*(void **)node, &MainHeap);
     } else {
         func_80012F04(*(void **)(node + 4));
     }
@@ -557,12 +557,12 @@ void func_80016CA0(u8 *rec) {
             goto done;
         }
         func_8001231C();
-        func_80010AE8(&D_8004E0F0);
+        func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
 done:
     DrawSync(0);
-    while (func_80011DB4(&D_8004E0F0) != NULL) {
+    while (func_80011DB4(&MainHeap) != NULL) {
     }
 }
 
@@ -577,7 +577,7 @@ void func_80016D98(u8 *data, u8 *rec) {
     s32 size;
 
     size = func_8002A650(data);
-    heap = &D_8004E0F0;
+    heap = &MainHeap;
     if (mal_first_free((size + 3) >> 2, heap->free) == NULL) {
         mal_free(data, heap);
         *(s32 *)(rec + 8) = 0;
@@ -595,7 +595,7 @@ void func_80016E5C(u8 *arg0, u8 *arg1) {
     s32 n;
 
     n = func_8002A650(arg0);
-    heap = &D_8004E0F0;
+    heap = &MainHeap;
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         mal_free(arg0, heap);
         *(s32 *)(arg1 + 8) = 0;
@@ -643,7 +643,7 @@ void func_80016F54(u8 *arg0) {
                 q += 0x34;
             } while (i != -1);
         }
-        mal_free(*(void **)(arg0 + 0xC), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0xC), &MainHeap);
         *(s32 *)(arg0 + 0xC) = 0;
         func_80029790(arg0 + 0x10);
         *(s32 *)(arg0 + 8) = 0;

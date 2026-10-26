@@ -23,14 +23,14 @@ typedef struct BashCell {
 } BashCell;
 
 extern BashCell BashSpaceTiles[8][8];
-extern u8 D_8005A614[];
+extern u8 GameInfo[];
 extern s32 World_floor_level;
 extern void (*D_8009D714)(void);
 
 extern HeroInfo Heroes[4];
-extern u8 D_8005A614[];
+extern u8 GameInfo[];
 
-/* D_8005A614 as seen by BashSnowInitHeroMove. */
+/* GameInfo as seen by BashSnowInitHeroMove. */
 typedef struct {
     /* 0x00 */ u8 pad0[0x30];
     /* 0x30 */ u16 pause;
@@ -39,7 +39,7 @@ typedef struct {
     /* 0x36 */ u8 pad36[0x6C - 0x36];
     /* 0x6C */ s32 p2_active;
 } BashGameView;
-#define OVLG ((BashGameView *)D_8005A614)
+#define OVLG ((BashGameView *)GameInfo)
 
 /* Index of the ASTTable entry with this id, or 0. */
 static inline s32 BashASTIndex(s32 id) {
@@ -99,7 +99,7 @@ extern u16 D_8009E46C[];
 extern s32 D_8009D758;
 BashPair *BashFindDropPoint(u16 *arg0);
 
-/* A scene object in the list at D_80058AD0 + 0x1C (BashSpaceInitTiles). */
+/* A scene object in the list at MapScene + 0x1C (BashSpaceInitTiles). */
 typedef struct BashObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ s32 x;
@@ -389,7 +389,7 @@ static inline u8 *BashSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
     col = (x >> 8) + 10;
     row = 9 - (z >> 8);
     do {
-        if (D_8009D90C[row * 20 + col].unk0 != 0) {
+        if (ArenaGrid[row * 20 + col].unk0 != 0) {
             col = (x >> 8) + 10;
             row = 9 - (z >> 8);
             col += d * dx;

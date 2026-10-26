@@ -350,62 +350,62 @@ void InitialiseBASHFirst(void) {
     void **p4;
     void *t;
 
-    D_8009D6E8.unk68 = BASH_KeepInBounds;
-    D_8009D6E8.unk38 = Bash_HeroBot;
-    D_8009D6E8.unk5C = BashHero_ExtraEffects;
-    D_8009D6E8.unk60 = BashHeroesTouched;
-    D_8009D6E8.unk4C = BashHero2ObjectCollision;
-    D_8009D6E8.unk50 = BashHeroGrabObject;
-    D_8009D6E8.unk54 = BashHeroKickCollision;
-    D_8009D6E8.unk58 = BashHeroCarryCollision;
+    HeroHooks.unk68 = BASH_KeepInBounds;
+    HeroHooks.unk38 = Bash_HeroBot;
+    HeroHooks.unk5C = BashHero_ExtraEffects;
+    HeroHooks.unk60 = BashHeroesTouched;
+    HeroHooks.unk4C = BashHero2ObjectCollision;
+    HeroHooks.unk50 = BashHeroGrabObject;
+    HeroHooks.unk54 = BashHeroKickCollision;
+    HeroHooks.unk58 = BashHeroCarryCollision;
     BashCrateList = NULL;
     BashInitCrateHooks();
     D_8009E298 = BashASTIndex(0x206);
     BashSfxEngine = EngineTemplate;
-    g = D_8005A614;
+    g = GameInfo;
     switch (*(s16 *)(g + 0x34)) {
     case 1:
-        D_8009D8F4 = BashSpaceAiBotTweak;
-        D_8009D8F8 = BashSpaceAiHumanTweak;
-        D_8009D904 = BashSpaceAiHumanRoundTweak;
-        p = &D_8009D8FC;
+        AiBotTweakTable = BashSpaceAiBotTweak;
+        AiHumanTweakTable = BashSpaceAiHumanTweak;
+        AiHumanRoundTweakTable = BashSpaceAiHumanRoundTweak;
+        p = &AiSkillTable;
         if (*(s32 *)(g + 0x6C) != 0) {
             t = BashSpaceAiSkillAlt;
         } else {
             t = BashSpaceAiSkill;
         }
         *p = t;
-        D_8009D900 = BashSpaceAiTeamSkill;
-        if (D_8005A646 & 0x80) {
+        AiTeamSkillTable = BashSpaceAiTeamSkill;
+        if (GameLevelFlags & 0x80) {
             D_8009D724 = BashSpacePadHook;
         }
         break;
     case 2:
-        D_8009D8F4 = BashSnowAiBotTweak;
-        D_8009D8F8 = BashSnowAiHumanTweak;
-        D_8009D904 = BashSnowAiHumanRoundTweak;
-        p2 = &D_8009D8FC;
+        AiBotTweakTable = BashSnowAiBotTweak;
+        AiHumanTweakTable = BashSnowAiHumanTweak;
+        AiHumanRoundTweakTable = BashSnowAiHumanRoundTweak;
+        p2 = &AiSkillTable;
         if (*(s32 *)(g + 0x6C) != 0) {
             t = BashSnowAiSkillAlt;
         } else {
             t = BashSnowAiSkill;
         }
         *p2 = t;
-        D_8009D900 = BashSnowAiTeamSkill;
+        AiTeamSkillTable = BashSnowAiTeamSkill;
         D_8009D70C = BashSnowMoveHero;
         break;
     case 3:
-        D_8009D8F4 = BashDrainsAiBotTweak;
-        D_8009D8F8 = BashDrainsAiHumanTweak;
-        D_8009D904 = BashDrainsAiHumanRoundTweak;
-        p3 = &D_8009D8FC;
+        AiBotTweakTable = BashDrainsAiBotTweak;
+        AiHumanTweakTable = BashDrainsAiHumanTweak;
+        AiHumanRoundTweakTable = BashDrainsAiHumanRoundTweak;
+        p3 = &AiSkillTable;
         if (*(s32 *)(g + 0x6C) != 0) {
             t = BashDrainsAiSkillAlt;
         } else {
             t = BashDrainsAiSkill;
         }
         *p3 = t;
-        D_8009D900 = BashDrainsAiTeamSkill;
+        AiTeamSkillTable = BashDrainsAiTeamSkill;
         D_8009D724 = BashFirePowerup;
         break;
     case 0x20:
@@ -414,17 +414,17 @@ void InitialiseBASHFirst(void) {
         g[0x53] = 9;
         break;
     default:
-        D_8009D8F4 = BashJungleAiBotTweak;
-        D_8009D8F8 = BashJungleAiHumanTweak;
-        D_8009D904 = BashJungleAiHumanRoundTweak;
-        p4 = &D_8009D8FC;
-        if (D_8005A680[0] != 0) {
+        AiBotTweakTable = BashJungleAiBotTweak;
+        AiHumanTweakTable = BashJungleAiHumanTweak;
+        AiHumanRoundTweakTable = BashJungleAiHumanRoundTweak;
+        p4 = &AiSkillTable;
+        if (GameTeams[0] != 0) {
             t = BashJungleAiSkillAlt;
         } else {
             t = BashJungleAiSkill;
         }
         *p4 = t;
-        D_8009D900 = BashJungleAiTeamSkill;
+        AiTeamSkillTable = BashJungleAiTeamSkill;
         break;
     }
 }
@@ -437,7 +437,7 @@ void InitialiseBASH(void) {
     EXTheromove *m;
 
     Init_Clock(0x140, 0x28, 0);
-    g = D_8005A614;
+    g = GameInfo;
     if (*(u16 *)(g + 0x32) & 0x40) {
         if (*(s32 *)(g + 0x6C) != 0) {
             switch (*(s16 *)(g + 0x34)) {
@@ -497,7 +497,7 @@ void InitialiseBASH(void) {
         m->forward_angle = a;
     }
     BashDrainsEdges[0] = BashDrainsEdges[1] = BashDrainsEdges[2] = BashDrainsEdges[3] = 0;
-    switch (D_8005A648) {
+    switch (GameMode) {
     case 0:
         World_floor_level = -0x10;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
@@ -509,7 +509,7 @@ void InitialiseBASH(void) {
         BashSpaceInitTiles();
         BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
         D_8009E488.unk8 = BashSpaceBreakTile;
-        if (D_8005A646 & 0x80) {
+        if (GameLevelFlags & 0x80) {
             BashSetCrateMix(6, 7, 8, 8, 0, 0xE, 2, 0, 0);
         } else {
             BashSetCrateMix(0xA, 0xA, 0xC, 0xE, 0xA, 4, 2, 0, 0);
@@ -544,7 +544,7 @@ void InitialiseBASH(void) {
         Heroes[3].hero_shadow->flags = 0;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         BashDropFirstCrates();
-        func_80095258(*(u8 **)D_80058AD0);
+        func_80095258(*(u8 **)MapScene);
         D_8009F8B4 = BashDrawView;
         World_floor_level = 0;
         break;
@@ -559,18 +559,18 @@ void UpdateBASH(void) {
     func_80086F78();
     BashCountObjects();
     func_80086D88();
-    if (D_8009D908 != 0) {
+    if (HeroesAllOut != 0) {
         if (BashAIVictim == -1) {
             for (i = 0; i < 4; i++) {
-                D_8009D87C[i].unk4 = 0x10;
-                D_8009D87C[i].unk0 = 0x1A;
+                AiPlayerSkill[i].unk4 = 0x10;
+                AiPlayerSkill[i].unk0 = 0x1A;
             }
             p = &BashAIVictim;
             *p = BashAI_PickVictim(0x63);
             id = *p;
             if (id != -1 && id < 4) {
-                D_8009D87C[id].unk4 = 0x30;
-                D_8009D87C[id].unk0 = 8;
+                AiPlayerSkill[id].unk4 = 0x30;
+                AiPlayerSkill[id].unk0 = 8;
             } else {
                 BashAIVictim = -1;
             }
@@ -578,7 +578,7 @@ void UpdateBASH(void) {
             BashAIVictim = -1;
         }
     }
-    switch (D_8005A648) {
+    switch (GameMode) {
     case 0:
     case 3:
         DoAmbience();
@@ -735,7 +735,7 @@ void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev) {
         ai->target = -1;
         ai->unk20 = 1;
         ai->flags |= 0x8000;
-    } else if (best != -1 && (D_8005A680[0] == 0 || best != arg1)) {
+    } else if (best != -1 && (GameTeams[0] == 0 || best != arg1)) {
         ai->target = -1;
         ai->unk20 = 1;
         ai->flags |= 0x8000;
@@ -771,7 +771,7 @@ void Bash_HeroBot(s32 arg0) {
     s32 tmp;
     s32 i;
 
-    if (D_8005A624 & 0x04000000) {
+    if (GamePause & 0x04000000) {
         return;
     }
     ai = Heroes[arg0].hero_ai;
@@ -864,7 +864,7 @@ void Bash_HeroBot(s32 arg0) {
 
             ang = tmp;
             ai->AImode = 4;
-            t = (u32 *)D_80051244;
+            t = (u32 *)DirPadBits;
             ai->AIang = ang;
             ai->AIpad |= t[(ang >> 9) & 7];
             break;
@@ -937,7 +937,7 @@ void Bash_HeroBot(s32 arg0) {
         if (BashAI_AvoidAhead(arg0) != 0) {
             u32 *t;
 
-            t = (u32 *)D_80051244;
+            t = (u32 *)DirPadBits;
             ai->AIang = ang;
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
@@ -948,7 +948,7 @@ void Bash_HeroBot(s32 arg0) {
             ai->TargetPlayer = -1;
             ai->AImode = 1;
             ai->AIpad |= 0x8000;
-        } else if (r != -1 && (D_8005A680[0] == 0 || r != mate) &&
+        } else if (r != -1 && (GameTeams[0] == 0 || r != mate) &&
                    (Heroes[r].hero_object != NULL || !(rnd & 0x10))) {
             ai->AIpad |= 0x8000;
         }
@@ -956,12 +956,12 @@ void Bash_HeroBot(s32 arg0) {
         if (fux == NULL) {
             u32 *t;
 
-            t = (u32 *)D_80051244;
+            t = (u32 *)DirPadBits;
             ai->AIang = ang;
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
         }
-        ((PadStick *)D_80051338)[arg0].held &= ~0x2000;
+        ((PadStick *)Pads)[arg0].held &= ~0x2000;
         switch (fux->whatami) {
         case 3:
         case 4:
@@ -1010,7 +1010,7 @@ void Bash_HeroBot(s32 arg0) {
         if (BashAI_AvoidAhead(arg0) != 0) {
             u32 *t;
 
-            t = (u32 *)D_80051244;
+            t = (u32 *)DirPadBits;
             ai->AIang = ang;
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
@@ -1027,12 +1027,12 @@ void Bash_HeroBot(s32 arg0) {
         if (fux == NULL) {
             u32 *t;
 
-            t = (u32 *)D_80051244;
+            t = (u32 *)DirPadBits;
             ai->AIang = ang;
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
         }
-        ((PadStick *)D_80051338)[arg0].held &= ~0x2000;
+        ((PadStick *)Pads)[arg0].held &= ~0x2000;
         if (((NAS **)fux)[-1] == nas) {
             switch (fux->whatami) {
             case 2:
@@ -1122,7 +1122,7 @@ void Bash_HeroBot(s32 arg0) {
         if (BashAI_AvoidAhead(arg0) != 0) {
             u32 *t;
 
-            t = (u32 *)D_80051244;
+            t = (u32 *)DirPadBits;
             ai->AIang = ang;
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
@@ -1143,7 +1143,7 @@ void Bash_HeroBot(s32 arg0) {
             ai->pTargetNas = NULL;
         }
         r = func_800864CC(arg0, 0x40);
-        if (r != -1 && (D_8005A680[0] == 0 || r != mate)) {
+        if (r != -1 && (GameTeams[0] == 0 || r != mate)) {
             ai->TargetPlayer = -1;
             ai->AImode = 1;
             ai->AIpad |= 0x8000;
@@ -1152,7 +1152,7 @@ void Bash_HeroBot(s32 arg0) {
         if (fux == NULL) {
             u32 *t;
 
-            t = (u32 *)D_80051244;
+            t = (u32 *)DirPadBits;
             ai->AIang = ang;
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
@@ -1185,7 +1185,7 @@ void Bash_HeroBot(s32 arg0) {
             }
             BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, -1);
             r = func_800864CC(arg0, 0x40);
-            if (r != -1 && (D_8005A680[0] == 0 || r != mate)) {
+            if (r != -1 && (GameTeams[0] == 0 || r != mate)) {
                 ai->TargetPlayer = -1;
                 ai->AImode = 1;
                 ai->AIpad |= 0x8000;
@@ -1209,7 +1209,7 @@ void Bash_HeroBot(s32 arg0) {
                     break;
                 }
             }
-            tbl = (u32 *)D_80051244;
+            tbl = (u32 *)DirPadBits;
             ang = Heroes[arg0].hero_move->forward_angle + 0x800;
             ang &= 0xFFF;
             ai->AIang = ang;
@@ -1238,13 +1238,13 @@ void Bash_HeroBot(s32 arg0) {
         if (BashAI_AvoidAhead(arg0) != 0) {
             u32 *t;
 
-            t = (u32 *)D_80051244;
+            t = (u32 *)DirPadBits;
             ai->AIang = ang;
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
         }
         r = func_800864CC(arg0, 0x40);
-        if (r != -1 && (D_8005A680[0] == 0 || r != mate)) {
+        if (r != -1 && (GameTeams[0] == 0 || r != mate)) {
             ai->AImode = 13;
             ai->AIsleep = 5;
         }
@@ -1260,7 +1260,7 @@ void Bash_HeroBot(s32 arg0) {
             ang += 0x800;
             ang &= 0xFFF;
         } else {
-            tmp = BashAIRange[arg0] + ((0x10 - D_8009D87C[arg0].unk0) << 5);
+            tmp = BashAIRange[arg0] + ((0x10 - AiPlayerSkill[arg0].unk0) << 5);
             if (tmp < d) {
                 if (d < tmp + 0x100) {
                     ai->AImode = 13;
@@ -1315,7 +1315,7 @@ void Bash_HeroBot(s32 arg0) {
             }
         }
     steer:
-        dirs = (u32 *)D_80051244;
+        dirs = (u32 *)DirPadBits;
         ai->AIang = ang;
         ai->AIpad |= dirs[(ang >> 9) & 7];
         break;
@@ -1339,7 +1339,7 @@ void Bash_HeroBot(s32 arg0) {
             break;
         }
         if (ai->AIinitial_delay == 0 && ai->AItimer2 == 0 &&
-            BashAI_NearestEnemy(arg0) > (D_8009D87C[arg0].unk0 << 5) + 0x400) {
+            BashAI_NearestEnemy(arg0) > (AiPlayerSkill[arg0].unk0 << 5) + 0x400) {
             r = BashAI_PickVictim(arg0);
             if (r != -1) {
                 ai->AImode = 0x15;
@@ -1350,7 +1350,7 @@ void Bash_HeroBot(s32 arg0) {
                 break;
             }
         }
-        if (D_8005A648 == 3) {
+        if (GameMode == 3) {
             BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, -1);
         }
         if (ai->AIsleep == 0 && BashAI_ChooseTarget(arg0) != 0) {
@@ -1364,7 +1364,7 @@ void Bash_HeroBot(s32 arg0) {
         break;
     }
 done:
-    pad = &((PadStick *)D_80051338)[arg0];
+    pad = &((PadStick *)Pads)[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
     pad->angle = ai->AIang;
 }
@@ -1391,10 +1391,10 @@ void BashAI_ScanAhead(s32 arg0) {
     rx = eng->unk10.x;
     rz = eng->unk10.z;
     mv = Heroes[arg0].hero_move;
-    dx = D_80068BD4[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
+    dx = TrigTable[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
     ang = mv->forward_angle;
-    c = D_80068BD4[(ang + 0x400) & 0xFFF].unk2;
-    s = D_80068BD4[(ang + 0x800) & 0xFFF].unk2;
+    c = TrigTable[(ang + 0x400) & 0xFFF].unk2;
+    s = TrigTable[(ang + 0x800) & 0xFFF].unk2;
     dz = c * 15 >> 9;
     lx = rx + dx;
     rx = rx - dx;
@@ -1413,7 +1413,7 @@ void BashAI_ScanAhead(s32 arg0) {
     while ((u32)(lx + 0x7FF) < 0xFFF && lz < 0x800 && lz >= -0x7FF && i < 8) {
         gx = (lx >> 8) + 10;
         gz = 9 - (lz >> 8);
-        v = D_8009D90C[gz * 20 + gx].unk0;
+        v = ArenaGrid[gz * 20 + gx].unk0;
         if ((v & 0xF0) == id) {
             v &= 0x1F;
         }
@@ -1429,7 +1429,7 @@ void BashAI_ScanAhead(s32 arg0) {
     while ((u32)(rx + 0x7FF) < 0xFFF && rz < 0x800 && rz >= -0x7FF && i < 8) {
         gx = (rx >> 8) + 10;
         gz = 9 - (rz >> 8);
-        v = D_8009D90C[gz * 20 + gx].unk0;
+        v = ArenaGrid[gz * 20 + gx].unk0;
         if ((v & 0xF0) == id) {
             v &= 0x1F;
         }
@@ -1591,7 +1591,7 @@ s32 BashAI_ChooseTarget(s32 player) {
         wHero = 0;
     }
     wNas = 0x20;
-    lvl = D_8009D87C[player].unk0;
+    lvl = AiPlayerSkill[player].unk0;
     i = Heroes[player].hero_health;
     w = ((lvl - 0x10) * 2) | 1;
     if (i < 0) {
@@ -1611,7 +1611,7 @@ s32 BashAI_ChooseTarget(s32 player) {
     }
     i = 0x180 - inv * 0x10;
     wRnd = i;
-    switch (D_8005A648) {
+    switch (GameMode) {
     case 1:
         if (Random(3) == 0) {
             rnd = (s16)i * wHealth + 0x2000;
@@ -1861,7 +1861,7 @@ s32 BashAI_PickVictim(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += D_8009D87C[i].unk4;
+            sum += AiPlayerSkill[i].unk4;
         }
     }
     if (BashPenguinObj != NULL && (u32)arg0 < 4 && BashPenguinObj->status == 1) {
@@ -1876,7 +1876,7 @@ s32 BashAI_PickVictim(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += D_8009D87C[i].unk4;
+            sum += AiPlayerSkill[i].unk4;
             if (r < sum) {
                 return i;
             }
@@ -1929,7 +1929,7 @@ s32 BashAI_NearestEnemy(s32 arg0) {
     mate = Heroes[arg0].hero_teammate;
     min = 0x7FFFFF;
     i = 0;
-    g = D_8005A614;
+    g = GameInfo;
     base = Heroes;
     h = &Heroes[arg0];
     for (i = 0; (u16)i < 4; i++) {
@@ -2053,7 +2053,7 @@ void BashCrateMaster(void) {
             BashPickupTimer = Random(30) + 10;
         }
     }
-    if (D_8005A648 != 3) {
+    if (GameMode != 3) {
         if (BashRainCount != 0) {
             if (BashRainDelay != 0) {
                 BashRainDelay--;
@@ -2062,7 +2062,7 @@ void BashCrateMaster(void) {
                 c += Random(256);
                 s = (c->x >> 8) + 10;
                 z = 9 - (c->z >> 8);
-                if (D_8009D90C[z * 20 + s].unk0 < 16) {
+                if (ArenaGrid[z * 20 + s].unk0 < 16) {
                     CreateNAS(c->x, -0x800, c->z, 0x20C, 0x11);
                     BashRainCount--;
                     BashRainDelay = Random(4) + 2;
@@ -2077,7 +2077,7 @@ void BashCrateMaster(void) {
             }
         }
     }
-    if (D_8005A648 == 1 || D_8005A648 == 2) {
+    if (GameMode == 1 || GameMode == 2) {
         if (BashPowerupTimer != 0) {
             BashPowerupTimer--;
         } else if (D_8009E25C[18] + D_8009E25C[19] + D_8009E25C[20] + D_8009E25C[21] == 0) {
@@ -2092,7 +2092,7 @@ void BashCrateMaster(void) {
                 c += Random(256);
                 s = (c->x >> 8) + 10;
                 z = 9 - (c->z >> 8);
-                if (D_8009D90C[z * 20 + s].unk0 == 0) {
+                if (ArenaGrid[z * 20 + s].unk0 == 0) {
                     switch (pu) {
                     case 18:
                         CreateNAS(c->x, -0x800, c->z, 0x208, 0x11);
@@ -2117,7 +2117,7 @@ void BashCrateMaster(void) {
             BashPowerupTimer = (Random(10) + 5) * 30;
         }
     }
-    if (D_8005A648 == 3) {
+    if (GameMode == 3) {
         if (BashPowerupTimer != 0) {
             BashPowerupTimer--;
         } else if (D_8009E46C[2] == 0) {
@@ -2199,7 +2199,7 @@ void BashShuffleDropPoints(void) {
     s32 tx;
     s32 tz;
 
-    if (D_8005A648 == 3) {
+    if (GameMode == 3) {
         for (i = 0; i < 16; i++) {
             z = i * 256 - 0x780;
             for (j = 0; j < 16; j++) {
@@ -2267,7 +2267,7 @@ BashPair *BashFindDropPoint(u16 *arg0) {
     x = (cell->x >> 8) + 10;
     z = 9 - (cell->z >> 8);
     do {
-        while (D_8009D90C[z * 20 + x].unk0 != 0) {
+        while (ArenaGrid[z * 20 + x].unk0 != 0) {
             if (i == *arg0) {
                 return NULL;
             }
@@ -2294,26 +2294,26 @@ BashPair *BashFindDropPoint(u16 *arg0) {
         if (z < 19) {
             zhi = z + 1;
         }
-        n = D_8009D90C[zlo * 20 + xlo].unk0 != 0;
-        if (D_8009D90C[zlo * 20 + x].unk0 != 0) {
+        n = ArenaGrid[zlo * 20 + xlo].unk0 != 0;
+        if (ArenaGrid[zlo * 20 + x].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[zlo * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[zlo * 20 + xhi].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[z * 20 + xlo].unk0 != 0) {
+        if (ArenaGrid[z * 20 + xlo].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[z * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[z * 20 + xhi].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[zhi * 20 + xlo].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + xlo].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[zhi * 20 + x].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + x].unk0 != 0) {
             n++;
         }
-        if (D_8009D90C[zhi * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + xhi].unk0 != 0) {
             n++;
         }
         if (n == 0) {
@@ -2358,7 +2358,7 @@ void BashSpaceInitTiles(void) {
 
     z = 0;
     x = 0;
-    obj = (BashObj *)((GfxScene *)D_80058AD0)->objs;
+    obj = (BashObj *)((GfxScene *)MapScene)->objs;
     func_80018430(200);
     if (obj != NULL) {
         base = BashSpaceTiles[0];
@@ -2381,7 +2381,7 @@ void BashSpaceInitTiles(void) {
         } while (obj != NULL);
     }
     if (x | z) {
-        obj = (BashObj *)((GfxScene *)D_80058AD0)->objs;
+        obj = (BashObj *)((GfxScene *)MapScene)->objs;
         if (obj != NULL) {
             do {
                 if (*(s16 *)func_80015870(obj->model, obj->index) == 5) {
@@ -2497,7 +2497,7 @@ void PlotBashPenguin(NAS *nas) {
         if (fux != NULL) {
             switch (fux->state) {
             case 0:
-                if (D_8005A644 & 0x801) {
+                if (GameExitFlags & 0x801) {
                     goto stop;
                 }
                 fux->state = 1;
@@ -2508,7 +2508,7 @@ void PlotBashPenguin(NAS *nas) {
                 func_800250B0(nas);
                 break;
             case 2:
-                if (D_8005A644 & 0x801) {
+                if (GameExitFlags & 0x801) {
                     GotoLinkAnim(anim, 0);
                     goto stop;
                 }
@@ -2519,14 +2519,14 @@ void PlotBashPenguin(NAS *nas) {
                 }
                 break;
             case 3:
-                if (D_8005A644 & 0x801) {
+                if (GameExitFlags & 0x801) {
                     /* a value-returning call: keeps it from being cross-jumped into case 2's */
                     ((s32 (*)(EXTanimator *, s16))GotoLinkAnim)(anim, 0);
                     goto stop;
                 }
                 t = nas->UserInfo.user1;
                 if (t > 0) {
-                    r = (D_80068BD4[(t - 0x400) & 0xFFF].unk2 * 3) >> 3;
+                    r = (TrigTable[(t - 0x400) & 0xFFF].unk2 * 3) >> 3;
                     if (r > 0x500) {
                         r = 0x500;
                     }
@@ -2534,8 +2534,8 @@ void PlotBashPenguin(NAS *nas) {
                     d = ((0x500 - abs(r)) >> 6) + 0x28;
                     ang = (nas->UserInfo.user2 + d) & 0xFFF;
                     nas->UserInfo.user2 = ang;
-                    eng->unk10.x = (r * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                    eng->unk10.z = (r * D_80068BD4[ang].unk2) >> 12;
+                    eng->unk10.x = (r * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->unk10.z = (r * TrigTable[ang].unk2) >> 12;
                     eng->sub->unk74 = 0x2002;
                 } else {
                     GotoLinkAnim(anim, 2);
@@ -2555,7 +2555,7 @@ void PlotBashPenguin(NAS *nas) {
                 break;
             case 1:
             default:
-                if (D_8005A644 & 0x801) {
+                if (GameExitFlags & 0x801) {
                 stop:
                     fux->state = 4;
                     if (eng->sfx != NULL) {
@@ -2588,7 +2588,7 @@ void BashSnowMarkPenguin(void) {
     hi = 12;
     for (x = lo; (s32)x < hi; x++) {
         for (z = lo; (s32)z < hi; z++) {
-            D_8009D90C[z * 20 + x].unk0 = 0xF0;
+            ArenaGrid[z * 20 + x].unk0 = 0xF0;
         }
     }
     x = ((BashPenguinEng->unk10.x - 0x80) >> 8) + 10;
@@ -2597,18 +2597,18 @@ void BashSnowMarkPenguin(void) {
     zhi = 9 - ((BashPenguinEng->unk10.z + 0x80) >> 8);
     if (x < 20) {
         if (z < 20) {
-            D_8009D90C[z * 20 + x].unk0 |= 0x40;
+            ArenaGrid[z * 20 + x].unk0 |= 0x40;
         }
         if (zhi < 20) {
-            D_8009D90C[zhi * 20 + x].unk0 |= 0x40;
+            ArenaGrid[zhi * 20 + x].unk0 |= 0x40;
         }
     }
     if (xhi < 20) {
         if (z < 20) {
-            D_8009D90C[z * 20 + xhi].unk0 |= 0x40;
+            ArenaGrid[z * 20 + xhi].unk0 |= 0x40;
         }
         if (zhi < 20) {
-            D_8009D90C[zhi * 20 + xhi].unk0 |= 0x40;
+            ArenaGrid[zhi * 20 + xhi].unk0 |= 0x40;
         }
     }
 }
@@ -2665,7 +2665,7 @@ void BashPenguinPush(EXTengine *self) {
             }
         }
     }
-    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+    for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
         if (!(nas->Class & 0x200)) {
             continue;
         }
@@ -2689,8 +2689,8 @@ void BashPenguinPush(EXTengine *self) {
                 ang = get_angle(-dx, -dz);
                 dist = csqrt(dist) >> 6;
                 dist = rr - dist;
-                eng->unk10.x -= (dist * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                eng->unk10.z -= (dist * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                eng->unk10.x -= (dist * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                eng->unk10.z -= (dist * TrigTable[ang & 0xFFF].unk2) >> 12;
                 obj = FindExtension(nas, 0x1000);
                 if (obj != NULL) {
                     if (obj->can_do & 8) {
@@ -2717,7 +2717,7 @@ void InitTumbler(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        sub->unk6C = *(void **)D_80058AD0;
+        sub->unk6C = *(void **)MapScene;
         eng->sub->unk74 = 0x200A;
         eng->flags &= 0xFFFF7FFF;
         eng->unk10 = D_8005B2B8[8].pos;
@@ -2726,7 +2726,7 @@ void InitTumbler(NAS *nas) {
         func_8001D390(eng, 1);
         sub = sub->next;
         if (sub != NULL) {
-            sub->unk6C = *(void **)D_80058AD0;
+            sub->unk6C = *(void **)MapScene;
             sub->unk74 = 0x2001;
             sub->flags |= 0x40008041;
             sub->unk50 = 1;
@@ -2786,7 +2786,7 @@ void PlotTumbler(NAS *nas) {
     switch (nas->UserInfo.status) {
     case 1:
         hero = 0;
-        if (D_8005A680[0] != 0) {
+        if (GameTeams[0] != 0) {
             hero = Random(2);
             if (Heroes[hero].hero_status & 0xFA00) {
                 hero = Heroes[hero].hero_teammate;
@@ -2902,7 +2902,7 @@ s32 BashFirePowerup(s32 arg0)
     ht = Heroes;
     h = &ht[arg0];
     if (h->hero_weapon_count != 0) {
-        pt = (PadButtons *)D_80051338;
+        pt = (PadButtons *)Pads;
         p = &pt[arg0];
         if (p->unk50 & 0x8000) {
             if (h->hero_attack_timer != 0) {
@@ -2999,7 +2999,7 @@ s32 BashMissileHitTest(x, y, z, size, skip, mask)
             }
         }
     }
-    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+    for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
         if (!(nas->Class & 0x200)) {
             continue;
         }
@@ -3104,8 +3104,8 @@ void PlotBash8way(NAS *nas) {
             for (; sub != NULL; ang += 0x200, sub = sub->next, ang &= 0xFFF) {
                 if (sub->flags != 0) {
                     a = (ang - 0x400) & 0xFFF;
-                    sub->unk04 -= (speed * D_80068BD4[a].unk2) >> 12;
-                    sub->unk0C -= (speed * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                    sub->unk04 -= (speed * TrigTable[a].unk2) >> 12;
+                    sub->unk0C -= (speed * TrigTable[ang & 0xFFF].unk2) >> 12;
                     t = sub->unk08 + mot->Yvel;
                     sub->unk08 = t;
                     x = eng->unk10.x + sub->unk04;
@@ -3242,8 +3242,8 @@ void PlotBashHomer(NAS *nas) {
                     eng->unk10.y -= (eng->unk10.y - (he->unk10.y - 0xA0)) >> 2;
                 }
             }
-            eng->unk10.x -= (mot->Xvel * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            eng->unk10.z -= (mot->Xvel * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            eng->unk10.x -= (mot->Xvel * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            eng->unk10.z -= (mot->Xvel * TrigTable[ang & 0xFFF].unk2) >> 12;
             x = eng->unk10.x;
             y = eng->unk10.y;
             z = eng->unk10.z;
@@ -3376,8 +3376,8 @@ void PlotBashShox(NAS *nas) {
                     if (vc == 1) {
                     } else if (vc == 0) {
                     } else if (vc < 4) {
-                        mv->x_vel -= (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                        h->hero_move->z_vel -= (D_80068BD4[ang & 0xFFF].unk2 * 3) >> 8;
+                        mv->x_vel -= (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                        h->hero_move->z_vel -= (TrigTable[ang & 0xFFF].unk2 * 3) >> 8;
                     }
                     Heroes[hit].hero_move->reactive_angle = ang;
                     Heroes[hit].hero_move->reactive_speed = 0x30;
@@ -3471,7 +3471,7 @@ void InitBoing(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         eng->unk10.y -= 0x100;
-        eng->sub->unk6C = *(void **)D_80058AD0;
+        eng->sub->unk6C = *(void **)MapScene;
         eng->unk5D = 1;
         eng->unk5C = 1;
         func_80024E30(nas, &BoingScriptInit);
@@ -3517,14 +3517,14 @@ void InitSnowGlint(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        eng->sub->unk6C = *(s32 *)D_80058AD0;
+        eng->sub->unk6C = *(s32 *)MapScene;
         func_8001D390(eng, 9);
         sub = nas->Engine->sub;
         g = AddExt(nas, 0x34, 0x20000002);
         if (g != NULL && sub != NULL) {
             i = 0;
             do {
-                s32 v = *(s32 *)D_80058AD0;
+                s32 v = *(s32 *)MapScene;
                 sub->unk74 = 0x2001;
                 sub->flags = (sub->flags | 0x21) & 0xFFFF7FFF;
                 sub->unk6C = v;
@@ -3543,8 +3543,8 @@ void InitSnowGlint(NAS *nas) {
 void BashDrawView(void) {
     u8 *vp = D_8009F6F4;
     func_80093038();
-    func_80018B08((GfxViewport *)vp, (GfxCamera *)D_80051640);
-    D_800569AC = D_8009F644.amount;
+    func_80018B08((GfxViewport *)vp, (GfxCamera *)MainCamera);
+    D_800569AC = ScreenFade.amount;
     func_8009440C();
 }
 
@@ -3581,7 +3581,7 @@ void BashSpaceMarkHoles(void) {
     for (j = 2; j < 18; j++) {
         for (i = 2; i < 18; i++) {
             if (BashSpaceTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
-                D_8009D90C[i * 20 + j].unk0 = 0xFF;
+                ArenaGrid[i * 20 + j].unk0 = 0xFF;
             }
         }
     }
@@ -3604,7 +3604,7 @@ void BashSpaceDropTile(s32 arg0) {
 void BashSpaceBreakTile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     BashCell *c;
     s32 x;
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     if (!(*(u16 *)(g + 0x30) & 0x801) && !(*(s32 *)(g + 4) & 0x1000) &&
         arg1 == World_floor_level && arg5 < 8 && arg5 >= 5) {
@@ -3650,7 +3650,7 @@ u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag) {
     zi = 9 - (z >> 8);
 
     do {
-        if (D_8009D90C[zi * 20 + xi].unk0 != 0) {
+        if (ArenaGrid[zi * 20 + xi].unk0 != 0) {
             xi = (x >> 8) + 10;
             zi = 9 - (z >> 8);
             if (flag != 0) {
@@ -3800,15 +3800,15 @@ void BashRestartLevel(void) {
 }
 
 void BASHSetUp(void) {
-    D_8005AA70[0] = (s32)InitialiseBASHFirst;
-    D_8005AA70[1] = (s32)InitialiseBASH;
-    D_8005AA70[2] = (s32)InitialiseBASH;
-    D_8005AA70[3] = (s32)UpdateBASH;
-    D_8005AA70[5] = (s32)FirstTriggersBASH;
-    D_8005AA70[9] = (s32)GetBashContour;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
-    D_8005AA70[10] = (s32)FinishBashLevel;
+    LevelSpecs[0] = (s32)InitialiseBASHFirst;
+    LevelSpecs[1] = (s32)InitialiseBASH;
+    LevelSpecs[2] = (s32)InitialiseBASH;
+    LevelSpecs[3] = (s32)UpdateBASH;
+    LevelSpecs[5] = (s32)FirstTriggersBASH;
+    LevelSpecs[9] = (s32)GetBashContour;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
+    LevelSpecs[10] = (s32)FinishBashLevel;
 }
 
 void BashInitCrateHooks(void) {

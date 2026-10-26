@@ -429,27 +429,27 @@ hero_seq KAN_seq_n2ofly[6] = {
 
 void InitialiseN2OFirst(void) {
     NoxStarted = 0;
-    if (!(D_8005A644 & 0x200)) {
+    if (!(GameExitFlags & 0x200)) {
         N2OBallPhase = 0;
     }
     if (N2OBallPhase == 1) {
-        D_8009D6E8.unk20 = (void *)N2OPreMoveHero;
-        D_8009D6E8.unk68 = (void *)N2O_KeepInBounds;
-        D_8009D6E8.unk24 = (void *)N2OMoveHero;
-        D_8009D6E8.unk18 = (void *)N2OInitShadow;
-        D_8009D6E8.unk1C = (void *)N2OUpdateShadow;
+        HeroHooks.unk20 = (void *)N2OPreMoveHero;
+        HeroHooks.unk68 = (void *)N2O_KeepInBounds;
+        HeroHooks.unk24 = (void *)N2OMoveHero;
+        HeroHooks.unk18 = (void *)N2OInitShadow;
+        HeroHooks.unk1C = (void *)N2OUpdateShadow;
     } else {
-        D_8009D6E8.unk20 = (void *)NoxPreMoveHero;
-        D_8009D6E8.unk24 = (void *)NoxMoveHero;
-        D_8009D6E8.unk68 = (void *)Nox_KeepInBounds;
-        D_8009D6E8.unk2C = (void *)NoxHeroFacing;
-        D_8009D6E8.unk18 = (void *)NoxInitShadow;
-        D_8009D6E8.unk1C = (void *)NoxUpdateShadow;
+        HeroHooks.unk20 = (void *)NoxPreMoveHero;
+        HeroHooks.unk24 = (void *)NoxMoveHero;
+        HeroHooks.unk68 = (void *)Nox_KeepInBounds;
+        HeroHooks.unk2C = (void *)NoxHeroFacing;
+        HeroHooks.unk18 = (void *)NoxInitShadow;
+        HeroHooks.unk1C = (void *)NoxUpdateShadow;
         NoxBossDead = 0;
     }
-    D_8009D6E8.unk0 = (s32)N2OInitHero;
-    D_8009D6E8.unk4 = N2OHeroModels;
-    D_8009D6E8.unk14 = N2OVictorySeqs;
+    HeroHooks.unk0 = (s32)N2OInitHero;
+    HeroHooks.unk4 = N2OHeroModels;
+    HeroHooks.unk14 = N2OVictorySeqs;
     D_8009E0D8 = 0x2A;
     D_8009E0E2 = 0x2E;
     D_8005AA94 = (void *)GetN2OContour;
@@ -459,7 +459,7 @@ void InitialiseN2OFirst(void) {
     }
     OVG->unk52 = 9;
     OVG->unk53 = 9;
-    D_8009D8FC = OVG->unk6C != 0 ? N2OAiSkillAlt : N2OAiSkill;
+    AiSkillTable = OVG->unk6C != 0 ? N2OAiSkillAlt : N2OAiSkill;
 }
 
 void InitialiseN2O(void) {
@@ -488,8 +488,8 @@ void InitialiseN2O(void) {
     N2OBossShooting = 0;
     N2OHeroPushTimer = 0;
     N2OBossAimDelay = 6;
-    ((N2OSceneRef *)D_80058AD0)->unk10->unk27 = 1;
-    ((N2OPuck *)D_8005A614)->unk32 &= ~0x800;
+    ((N2OSceneRef *)MapScene)->unk10->unk27 = 1;
+    ((N2OPuck *)GameInfo)->unk32 &= ~0x800;
     for (i = 0; i < 4; i++) {
         h = &Heroes[i];
         mv = h->hero_move;
@@ -554,7 +554,7 @@ s32 N2O_KeepInBounds(N2OObj *arg0) {
             r = c->r + 0x80;
         }
         if (dx * dx + dz * dz < r * r) {
-            arg0->x = N2OPillarList[i].x - ((r * D_80068BD4[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+            arg0->x = N2OPillarList[i].x - ((r * TrigTable[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
             return 1;
         }
     }
@@ -733,7 +733,7 @@ void N2OInitHero(s32 i) {
     Heroes[i].hero_health = 0xFF;
     switch (i) {
     case 0:
-        if (D_8005A680[0] != 0) {
+        if (GameTeams[0] != 0) {
             Heroes[0].hero_eng->unk10.x = N2OHeroStarts[1][0];
             Heroes[0].hero_eng->unk10.z = N2OHeroStarts[1][2];
         } else {
@@ -772,12 +772,12 @@ void N2OInitHero(s32 i) {
         return;
     }
     N2OHeroPlaced[i] = 0xF;
-    sub->unk6C = *(void **)D_80058AD0;
+    sub->unk6C = *(void **)MapScene;
     sub->unk74 = 0x4000;
     if ((u32)(i - 2) < 2) {
         sub->flags &= ~0x8000;
     }
-    if (D_8005A680[0] == 0 && i == k) {
+    if (GameTeams[0] == 0 && i == k) {
         sub->flags &= ~0x8000;
     }
     sub->unk50 = 1;
@@ -819,7 +819,7 @@ void N2OPlaceHero(s32 i) {
         return;
     }
     eng = h0->hero_eng;
-    mode = D_8005A680[0];
+    mode = GameTeams[0];
     if (i == 3) {
         h3 = &Heroes[3];
         h3->hero_status = (h3->hero_status & ~0x1000) | 0x40;
@@ -913,7 +913,7 @@ void N2OPreMoveHero(s32 arg0) {
     h = c + arg0;
     m = h->hero_move;
     h->hero_eng->flags |= 0x8000;
-    pads = (N2OPad *)D_80051338;
+    pads = (N2OPad *)Pads;
     p = pads + arg0;
     max = 0x68;
     acc = 0x22;
@@ -1006,15 +1006,15 @@ void N2OMoveHero(s32 arg0) {
     if (!(g->hero_status & 0xFA00)) {
         s32 y;
         s32 d;
-        t = ((D_8004E0D8 + arg0) << 6) & 0xFFF;
-        a1 = D_80068BD4[(t - 0x400) & 0xFFF].unk2 * 17 >> 10;
+        t = ((GameFrameCount + arg0) << 6) & 0xFFF;
+        a1 = TrigTable[(t - 0x400) & 0xFFF].unk2 * 17 >> 10;
         y = World_floor_level;
-        d = (D_80068BD4[(t * 2 - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
+        d = (TrigTable[(t * 2 - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         g->hero_eng->unk10.y = y + d;
     } else {
         g->hero_eng->unk10.y = World_floor_level - 0x80;
     }
-    ((void (*)(s32))D_8009D6E8.unk2C)(arg0);
+    ((void (*)(s32))HeroHooks.unk2C)(arg0);
     b = Heroes;
     f = b + arg0;
     sp = f->hero_move->forward_speed;
@@ -1203,7 +1203,7 @@ void N2OHeroIdle(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        N2OPadFlags *base = (N2OPadFlags *)D_80051338;
+        N2OPadFlags *base = (N2OPadFlags *)Pads;
         pad = &base[arg0];
         if (pad->unk54 & 0x8000) {
             if (Heroes[arg0].hero_attack_timer != 0) {
@@ -1258,7 +1258,7 @@ void N2OHeroHit(s32 arg0) {
         r = 0;
     }
     if (r == 0) {
-        N2OPadFlags *base = (N2OPadFlags *)D_80051338;
+        N2OPadFlags *base = (N2OPadFlags *)Pads;
         pad = &base[arg0];
         if (pad->unk54 & 0x8000) {
             if (Heroes[arg0].hero_attack_timer != 0) {
@@ -1290,7 +1290,7 @@ void N2OHeroTaunt(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        N2OPadFlags *base = (N2OPadFlags *)D_80051338;
+        N2OPadFlags *base = (N2OPadFlags *)Pads;
         pad = &base[arg0];
         if (pad->unk54 & 0x8000) {
             if (Heroes[arg0].hero_attack_timer != 0) {
@@ -1328,7 +1328,7 @@ void N2OHeroMove(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        N2OPadFlags *base = (N2OPadFlags *)D_80051338;
+        N2OPadFlags *base = (N2OPadFlags *)Pads;
         pad = &base[arg0];
         if (pad->unk54 & 0x8000) {
             if (Heroes[arg0].hero_attack_timer != 0) {
@@ -1388,7 +1388,7 @@ void N2OHeroWinner(s32 arg0) {
     } else {
         flag = 1;
     }
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         if (arg0 == 0) {
             e = D_8009D530;
             t = e->unk10.x;
@@ -1404,7 +1404,7 @@ void N2OHeroWinner(s32 arg0) {
         }
     }
     if (flag != 0) {
-        D_800AD12C = 1;
+        CameraMode = 1;
     }
     func_80085890(arg0, flag);
     if (func_8008A200(arg0) != 0) {
@@ -1577,7 +1577,7 @@ void N2OBallMaster(void) {
     s32 n;
     N2ONode *p;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         return;
     }
     if (N2OBallDelay != 0) {
@@ -1695,15 +1695,15 @@ void PlotN2OBall(NAS *nas) {
                 mot->Xvel = mot->Xmax;
             }
         }
-        eng->unk10.x -= (mot->Xvel * D_80068BD4[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (mot->Xvel * D_80068BD4[mot->Xa & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (mot->Xvel * TrigTable[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (mot->Xvel * TrigTable[mot->Xa & 0xFFF].unk2) >> 12;
         if (obj->timer != 0) {
             obj->timer--;
         }
         switch (obj->status) {
         case 0:
-            if ((((N2OBallView *)D_8005A614)->unk10 & 0x04000000) ||
-                (((N2OBallView *)D_8005A614)->unk30 & 0x1000)) {
+            if ((((N2OBallView *)GameInfo)->unk10 & 0x04000000) ||
+                (((N2OBallView *)GameInfo)->unk30 & 0x1000)) {
                 mot->Xvel = 0;
                 mot->Xacc = 0;
                 mot->Xdec = 0;
@@ -2034,10 +2034,10 @@ void N2OBlendDirection(N2OBlend *p) {
         u32 db = p->dir_b;
         s32 a, b, c, d;
         vel = p->speed_a;
-        a = vel * D_80068BD4[(da - 0x400) & 0xFFF].unk2;
-        b = vel * D_80068BD4[da & 0xFFF].unk2;
-        c = speed * D_80068BD4[(db - 0x400) & 0xFFF].unk2;
-        d = speed * D_80068BD4[db & 0xFFF].unk2;
+        a = vel * TrigTable[(da - 0x400) & 0xFFF].unk2;
+        b = vel * TrigTable[da & 0xFFF].unk2;
+        c = speed * TrigTable[(db - 0x400) & 0xFFF].unk2;
+        d = speed * TrigTable[db & 0xFFF].unk2;
         x1 = a >> 12;
         z1 = b >> 12;
         x1 += c >> 12;
@@ -2058,13 +2058,13 @@ void N2OInitBoss(void) {
     s32 t;
 
     InitBossHealthIcons();
-    D_8009D8FC = D_8005A680[0] != 0 ? N2OBossAiSkillAlt : N2OBossAiSkill;
+    AiSkillTable = GameTeams[0] != 0 ? N2OBossAiSkillAlt : N2OBossAiSkill;
     for (i = 0; i < 4; i++) {
         if (OVT->unk32 & 0x100) {
             t = OVT->unkAB[OVT->unk34];
             OVT->unk9B[i] = t;
-            D_8009D87C[i].unk0 = ((u16 *)D_8009D8FC)[t];
-            D_8009D87C[i].unk4 = 0x10;
+            AiPlayerSkill[i].unk0 = ((u16 *)AiSkillTable)[t];
+            AiPlayerSkill[i].unk4 = 0x10;
         }
     }
     func_80086868();
@@ -2132,7 +2132,7 @@ void N2OInitBoss(void) {
     D_8009D6E2 = 0xFF;
     CreateNAS(4, World_floor_level - 0x20, 0, 0x1B05, 0x11);
     CreateNAS(5, World_floor_level - 0x20, 0, 0x1B05, 0x11);
-    D_800AD12C = 8;
+    CameraMode = 8;
 }
 
 void N2OUpdateBoss(void) {
@@ -2202,7 +2202,7 @@ void N2OUpdateBoss(void) {
         }
     } else {
         N2O_HeroBot((u16 *)&N2OBossPad);
-        if (D_8005A644 & 0x801) {
+        if (GameExitFlags & 0x801) {
             N2OBossPad = 0;
         }
         lim = 0x68;
@@ -2292,7 +2292,7 @@ void N2OUpdateBoss(void) {
         N2O_KeepInBounds((N2OObj *)eng);
         tm = N2OBossClock;
         q = &World_floor_level;
-        v = (D_80068BD4[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
+        v = (TrigTable[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         eng->unk10.y = *q + v;
         dx = ((N2OPanRef *)&D_8009D688)->p->unkC;
         eng->unk10.x += dx;
@@ -2300,7 +2300,7 @@ void N2OUpdateBoss(void) {
         eng->unk5E = 1;
         eng->unk20 += v >> 2;
     }
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         return;
     }
     switch ((u16)N2OBossStepKind) {
@@ -2366,7 +2366,7 @@ s32 N2OBotAimA(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
     } else {
         i = 3;
     }
-    n = D_8009D87C[arg0].unk0 + (u16)N2OBallsLost;
+    n = AiPlayerSkill[arg0].unk0 + (u16)N2OBallsLost;
     x0 = N2OAimEdgesA[i].x0;
     z0 = N2OAimEdgesA[i].z0;
     x1 = N2OAimEdgesA[i].x1;
@@ -2390,8 +2390,8 @@ s32 N2OBotAimA(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - D_80068BD4[ang & 0xFFF].unk2;
+    to->x = from->x - TrigTable[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - TrigTable[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2466,7 +2466,7 @@ s32 N2OBotAimB(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
     } else {
         i = 3;
     }
-    n = D_8009D87C[arg0].unk0 + (u16)N2OBallsLost;
+    n = AiPlayerSkill[arg0].unk0 + (u16)N2OBallsLost;
     x0 = N2OAimEdgesB[i].x0;
     z0 = N2OAimEdgesB[i].z0;
     x1 = N2OAimEdgesB[i].x1;
@@ -2490,8 +2490,8 @@ s32 N2OBotAimB(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - D_80068BD4[ang & 0xFFF].unk2;
+    to->x = from->x - TrigTable[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - TrigTable[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2550,7 +2550,7 @@ s32 PickN2OPlayer(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += D_8009D87C[i].unk4;
+            sum += AiPlayerSkill[i].unk4;
         }
     }
     if (sum == 0) {
@@ -2560,7 +2560,7 @@ s32 PickN2OPlayer(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += D_8009D87C[i].unk4;
+            sum += AiPlayerSkill[i].unk4;
             if (r < sum) {
                 return i;
             }
@@ -2626,7 +2626,7 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
     if (arg5 == 0) {
         goto ret0;
     }
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         HeroInfo *base = Heroes;
 
         h2 = &base[arg0];
@@ -2663,7 +2663,7 @@ void N2O_HeroBot(u16 *arg0) {
     s32 tgt;
     s32 k;
 
-    if (D_8005A624 & 0x04000000) {
+    if (GamePause & 0x04000000) {
         return;
     }
     ai = Heroes[3].hero_ai;
@@ -2681,7 +2681,7 @@ void N2O_HeroBot(u16 *arg0) {
             ai->AItimer2--;
         }
         ai->AIpad = 0;
-        skill = D_8009D87C[3].unk0 + (u16)N2OBallsLost;
+        skill = AiPlayerSkill[3].unk0 + (u16)N2OBallsLost;
         if (skill > 0x20) {
             skill = 0x20;
         }
@@ -2747,7 +2747,7 @@ void N2O_HeroBot(u16 *arg0) {
                     n = (N2ONode *)1;
                 }
             }
-            if (D_8009D908 == 0) {
+            if (HeroesAllOut == 0) {
                 n = (N2ONode *)1;
             }
             if (((s32 (*)(s32, s32, s32, s32, s32, s32))N2OBotCanHit)(3, tgt, r, -0x200, 0x200, (s32)n) != 0) {
@@ -2758,7 +2758,7 @@ void N2O_HeroBot(u16 *arg0) {
             }
         }
         if (dist != 0) {
-            r = abs(Heroes[3].hero_eng->unk10.x - best.x) + ((D_8009D87C[3].unk0 + N2OSkillBias) << 5);
+            r = abs(Heroes[3].hero_eng->unk10.x - best.x) + ((AiPlayerSkill[3].unk0 + N2OSkillBias) << 5);
             if (abs(r) > 0x280) {
                 if (dist < r) {
                     ai->AIpad |= 0xF00;
@@ -2783,7 +2783,7 @@ void N2O_HeroBot(u16 *arg0) {
         }
     set_ang:
         ai->AIang = ang;
-        ai->AIpad |= D_80051244[(ang >> 9) & 7];
+        ai->AIpad |= DirPadBits[(ang >> 9) & 7];
         break;
     case 21:
         if (dist != 0) {
@@ -2909,8 +2909,8 @@ void PlotN2Omissile(NAS *nas) {
     }
     ang = nas->UserInfo.user2;
     if (sub->flags != 0) {
-        eng->unk10.x -= (vel * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (vel * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (vel * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (vel * TrigTable[ang & 0xFFF].unk2) >> 12;
         x = eng->unk10.x;
         y = eng->unk10.y += mot->Yvel;
         z = eng->unk10.z;
@@ -2996,8 +2996,8 @@ void PlotN2Ofirstmissile(NAS *nas) {
     }
     ang = nas->UserInfo.user2;
     if (vel != 0) {
-        eng->unk10.x -= (vel * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (vel * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (vel * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (vel * TrigTable[ang & 0xFFF].unk2) >> 12;
         x = eng->unk10.x;
         y = eng->unk10.y += mot->Yvel;
         z = eng->unk10.z;
@@ -3067,7 +3067,7 @@ void N2OInitSlots(void) {
         N2OSlots[i].f20 = 0;
         N2OSlots[i].f24 = 0;
     }
-    e = (N2OEnt *)((GfxScene *)D_80058AD0)->objs;
+    e = (N2OEnt *)((GfxScene *)MapScene)->objs;
     N2OPhaseObject = NULL;
     for (; e != NULL; e = e->next) {
         t = (s16 *)func_80015870(e->key, e->id);
@@ -3112,7 +3112,7 @@ void N2OUpdateSlots(void) {
     s32 z;
 
     i = 0;
-    pad = (N2OAim *)D_8005A614;
+    pad = (N2OAim *)GameInfo;
     heroes = Heroes;
     s = N2OSlots;
     r = N2OSlotRecs;
@@ -3209,7 +3209,7 @@ void InitN2ODeadWall(NAS *nas)
     u32 dir;
     s32 off;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         N2OWallsHit &= ~nas->UserInfo.flags;
         KillNAS(nas);
         return;
@@ -3289,8 +3289,8 @@ void N2OLineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
 
     arg1 = (arg1 + 0x800) & 0xFFF;
     start = *pos;
-    start.x -= (0x200 * D_80068BD4[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
-    start.z -= (0x200 * D_80068BD4[arg1].unk2) >> 12;
+    start.x -= (0x200 * TrigTable[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
+    start.z -= (0x200 * TrigTable[arg1].unk2) >> 12;
     dir.x = start.x - pos->x;
     dir.y = 0;
     dir.z = start.z - pos->z;
@@ -3347,7 +3347,7 @@ s32 N2OHeroPushTeammate(s32 arg0) {
 
     base = Heroes;
     h = &base[arg0];
-    if (!(h->hero_status & 0xFA00) && D_8005A680[0] != 0) {
+    if (!(h->hero_status & 0xFA00) && GameTeams[0] != 0) {
         mate = h->hero_teammate;
         t = &base[mate];
         if (!(t->hero_status & 0xFA00)) {
@@ -3364,7 +3364,7 @@ s32 N2OHeroPushTeammate(s32 arg0) {
                 r *= 2;
                 r += 0x90;
                 if (dx * dx + dz * dz < r * r) {
-                    eng->unk10.x = Heroes[mate].hero_eng->unk10.x - ((r * D_80068BD4[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+                    eng->unk10.x = Heroes[mate].hero_eng->unk10.x - ((r * TrigTable[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
                     return 1;
                 }
                 return 0;
@@ -3447,8 +3447,8 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
     farp.x = hero->hero_eng->unk10.x + box->x1;
     farp.y = hero->hero_eng->unk10.y + box->y1;
     farp.z = hero->hero_eng->unk10.z + box->z1;
-    tbl = D_80068BD4;
-    for (nas = D_8005AA2C;; nas = nas->Solid.Child) {
+    tbl = TrigTable;
+    for (nas = HeadOfSolids;; nas = nas->Solid.Child) {
         if (nas == NULL) {
             return 0;
         }
@@ -3513,7 +3513,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         rad += 0x800;
         rad &= 0xFFF;
         if (obj->whatami == 2 && !(hero->hero_status & 0xFA00) &&
-            (arg0 == 0 || (D_8005A680[0] != 0 && arg0 == 1))) {
+            (arg0 == 0 || (GameTeams[0] != 0 && arg0 == 1))) {
             if (!(D_8005A618 & 1)) {
                 hero->hero_score = 0;
                 hero->hero_health = 0;
@@ -3609,8 +3609,8 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                                     *(u16 *)(t + 0x1C) |= 8;
                                     ang = get_angle(-dx, -dz) & 0xFFF;
                                     d = r - d + 1;
-                                    o->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                    o->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                    o->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    o->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                                     *(u16 *)(t + 0x16) = arg0;
                                     e = FindExtension((NAS *)n, 0x800);
                                     if (e != NULL) {
@@ -3660,7 +3660,7 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
         bot = eng->unk10.y + box->height;
         rad = box->radius;
         mine = FindExtension(((NAS **)eng)[-1], 0x800);
-        it = D_8005AA2C;
+        it = HeadOfSolids;
         if (it != NULL) {
             do {
                 if (it->Class & 0x200) {
@@ -3686,8 +3686,8 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                             if (self->flags & 0x80) {
                                                 m = FindExtension(it, 0x800);
                                                 if (m != NULL) {
-                                                    other->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                    other->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                                    other->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                    other->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
                                                     ang += func_800154A0((m->dir + 0x800) & 0xFFF, ang);
@@ -3699,8 +3699,8 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                                 if (r / 2 < d) {
                                                     d = r;
                                                 }
-                                                eng->unk10.x += (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z += (d * D_80068BD4[ang].unk2) >> 12;
+                                                eng->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z += (d * TrigTable[ang].unk2) >> 12;
                                                 if (mine != NULL) {
                                                     m = FindExtension(it, 0x800);
                                                     if (m != NULL) {
@@ -3757,7 +3757,7 @@ NAS *N2OBossPushObjects(void) {
             func_8001CD04(me->sub, me->unk3C, &me->unk10);
             r0 = rec->radius;
             func_80015758((SVECTOR *)rec, (VECTOR *)&sp10);
-            for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+            for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
                 eng = nas->Engine;
                 if (eng != NULL && eng != me) {
                     FlagRecord *rec2;
@@ -3831,7 +3831,7 @@ s32 N2OMissileHitTest(x, y, z, size, mask)
             }
         }
     }
-    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+    for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
         if (!(nas->Class & 0x200)) {
             continue;
         }
@@ -3906,7 +3906,7 @@ void PlotN2ODeadWall(NAS *arg0) {
     EXTengine *eng;
     subengine *sub;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         N2OWallsHit &= ~arg0->UserInfo.flags;
         KillNAS(arg0);
         return;
@@ -3921,7 +3921,7 @@ void PlotN2ODeadWall(NAS *arg0) {
         sub = eng->sub;
         if (sub != NULL) {
             do {
-                sub->unk74 = (D_8004E0D8 & 7) + 0x2001;
+                sub->unk74 = (GameFrameCount & 7) + 0x2001;
                 sub = sub->next;
             } while (sub != NULL);
         }
@@ -3933,7 +3933,7 @@ s32 GetN2OContour(u8 *arg0) {
 }
 
 void N2OShowPhaseObjects(u16 arg0) {
-    N2OFlagNode *n = ((N2OSceneRef *)D_80058AD0)->unk1C;
+    N2OFlagNode *n = ((N2OSceneRef *)MapScene)->unk1C;
     s16 *p;
 
     if (arg0) {
@@ -3973,7 +3973,7 @@ void N2OCameraFollow(void) {
     t = path_get(0x63);
     eng = Heroes[0].hero_eng;
     z = eng->unk10.z;
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         if (Heroes[0].hero_status & 0xFA00) {
             z = Heroes[1].hero_eng->unk10.z;
         }
@@ -3982,7 +3982,7 @@ void N2OCameraFollow(void) {
         }
     }
     if ((!(Heroes[0].hero_status & 0xFA00) || !(Heroes[1].hero_status & 0xFA00)) && t != NULL) {
-        cam = (CamState *)D_80051640;
+        cam = (CamState *)MainCamera;
         cam->unk0 = 0;
         cam->unk4 = 0;
         cam->unk8 = func_800153B4(t + 0x13, t + 0xC, cam->rot);
@@ -4217,7 +4217,7 @@ s32 N2OHeroTestMove(s32 arg0) {
 }
 
 s32 N2OHeroTestKick(s32 arg0) {
-    PadStick *base = (PadStick *)D_80051338;
+    PadStick *base = (PadStick *)Pads;
     PadStick *pad = &base[arg0];
 
     if (pad->dirPressed & 0x8000) {
@@ -4260,10 +4260,10 @@ void N2OInitShadow(s32 arg0) {
 }
 
 s32 N2OAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
-    s32 a = arg1 * D_80068BD4[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 b = arg1 * D_80068BD4[arg0 & 0xFFF].unk2;
-    s32 c = arg3 * D_80068BD4[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 d = arg3 * D_80068BD4[arg2 & 0xFFF].unk2;
+    s32 a = arg1 * TrigTable[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 b = arg1 * TrigTable[arg0 & 0xFFF].unk2;
+    s32 c = arg3 * TrigTable[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 d = arg3 * TrigTable[arg2 & 0xFFF].unk2;
     s32 x = a >> 12;
     s32 z = b >> 12;
     x += c >> 12;
@@ -4321,13 +4321,13 @@ void UpdateN2O(void) {
 }
 
 void N2OSetUp(void) {
-    D_8005AA70[0] = (s32)InitialiseN2OFirst;
-    D_8005AA70[1] = (s32)InitialiseN2O;
-    D_8005AA70[2] = (s32)InitialiseN2O;
-    D_8005AA70[9] = (s32)GetN2OContour;
-    D_8005AA70[6] = 0;
-    D_8005AA70[5] = 0;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
-    D_8005AA70[3] = (s32)UpdateN2O;
+    LevelSpecs[0] = (s32)InitialiseN2OFirst;
+    LevelSpecs[1] = (s32)InitialiseN2O;
+    LevelSpecs[2] = (s32)InitialiseN2O;
+    LevelSpecs[9] = (s32)GetN2OContour;
+    LevelSpecs[6] = 0;
+    LevelSpecs[5] = 0;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
+    LevelSpecs[3] = (s32)UpdateN2O;
 }

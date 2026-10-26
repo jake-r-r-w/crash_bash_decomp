@@ -545,13 +545,13 @@ void AR_PreInitLevel(void) {
     void **p4;
     void *t;
 
-    D_8009D6E8.unk4 = ArkHeroModels;
-    D_8009D6E8.unk0 = (s32)AR_InitHero;
-    D_8009D6E8.unk18 = AR_InitShadow;
-    D_8009D6E8.unk1C = AR_UpdateShadow;
-    D_8009D6E8.unk38 = Ark_HeroBot;
-    D_8009D6E8.unk14 = ArkVictorySeqs;
-    if (D_8005A680[0] != 0) {
+    HeroHooks.unk4 = ArkHeroModels;
+    HeroHooks.unk0 = (s32)AR_InitHero;
+    HeroHooks.unk18 = AR_InitShadow;
+    HeroHooks.unk1C = AR_UpdateShadow;
+    HeroHooks.unk38 = Ark_HeroBot;
+    HeroHooks.unk14 = ArkVictorySeqs;
+    if (GameTeams[0] != 0) {
         ArkSidePlayer1 = 1;
         ArkSidePlayer2 = 3;
         ArkSidePlayer3 = 2;
@@ -561,88 +561,88 @@ void AR_PreInitLevel(void) {
         ArkSidePlayer3 = 1;
     }
     ArkSidePlayer0 = 0;
-    g = D_8005A614;
+    g = GameInfo;
     switch (*(s16 *)(g + 0x34)) {
     case 15:
-        D_8009D6E8.unk68 = AR_KeepInBounds;
-        D_8009D6E8.unk20 = AR_PreMoveHero;
-        D_8009D6E8.unk24 = AR_MoveHero;
+        HeroHooks.unk68 = AR_KeepInBounds;
+        HeroHooks.unk20 = AR_PreMoveHero;
+        HeroHooks.unk24 = AR_MoveHero;
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
-        D_8009D8F4 = ArkBeachAiBotTweak;
-        D_8009D8F8 = ArkBeachAiHumanTweak;
-        D_8009D904 = ArkBeachAiHumanRoundTweak;
-        p = &D_8009D8FC;
+        AiBotTweakTable = ArkBeachAiBotTweak;
+        AiHumanTweakTable = ArkBeachAiHumanTweak;
+        AiHumanRoundTweakTable = ArkBeachAiHumanRoundTweak;
+        p = &AiSkillTable;
         if (*(s32 *)(g + 0x6C) != 0) {
             t = ArkBeachAiSkillAlt;
         } else {
             t = ArkBeachAiSkill;
         }
         *p = t;
-        D_8009D900 = ArkBeachAiTeamSkill;
+        AiTeamSkillTable = ArkBeachAiTeamSkill;
         return;
     case 16:
-        D_8009D6E8.unk68 = AR_KeepInBounds;
-        D_8009D6E8.unk20 = AR_PreMoveHero;
-        D_8009D6E8.unk24 = AR_MoveHero;
+        HeroHooks.unk68 = AR_KeepInBounds;
+        HeroHooks.unk20 = AR_PreMoveHero;
+        HeroHooks.unk24 = AR_MoveHero;
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_NG_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
-        D_8009D8F4 = ArkNginAiBotTweak;
-        D_8009D8F8 = ArkNginAiHumanTweak;
-        D_8009D904 = ArkNginAiHumanRoundTweak;
-        p2 = &D_8009D8FC;
+        AiBotTweakTable = ArkNginAiBotTweak;
+        AiHumanTweakTable = ArkNginAiHumanTweak;
+        AiHumanRoundTweakTable = ArkNginAiHumanRoundTweak;
+        p2 = &AiSkillTable;
         if (*(s32 *)(g + 0x6C) != 0) {
             t = ArkNginAiSkillAlt;
         } else {
             t = ArkNginAiSkill;
         }
         *p2 = t;
-        D_8009D900 = ArkNginAiTeamSkill;
+        AiTeamSkillTable = ArkNginAiTeamSkill;
         return;
     case 17:
-        D_8009D6E8.unk68 = AR_PI_KeepInBounds;
-        D_8009D6E8.unk20 = AR_PI_PreMoveHero;
-        D_8009D6E8.unk24 = AR_PI_MoveHero;
+        HeroHooks.unk68 = AR_PI_KeepInBounds;
+        HeroHooks.unk20 = AR_PI_PreMoveHero;
+        HeroHooks.unk24 = AR_PI_MoveHero;
         ArkBounceOnBounds = AR_PI_BounceOnBounds;
         ArkTestOutOfBounds = AR_PI_TestOutOfBounds;
         ArkTestLaunchBounds = AR_PI_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkPIContour;
-        D_8009D8F4 = ArkSkyAiBotTweak;
-        D_8009D8F8 = ArkSkyAiHumanTweak;
-        D_8009D904 = ArkSkyAiHumanRoundTweak;
-        p3 = &D_8009D8FC;
+        AiBotTweakTable = ArkSkyAiBotTweak;
+        AiHumanTweakTable = ArkSkyAiHumanTweak;
+        AiHumanRoundTweakTable = ArkSkyAiHumanRoundTweak;
+        p3 = &AiSkillTable;
         if (*(s32 *)(g + 0x6C) != 0) {
             t = ArkSkyAiSkillAlt;
         } else {
             t = ArkSkyAiSkill;
         }
         *p3 = t;
-        D_8009D900 = ArkSkyAiTeamSkill;
+        AiTeamSkillTable = ArkSkyAiTeamSkill;
         return;
     case 0:
     default:
-        D_8009D6E8.unk68 = AR_KeepInBounds;
-        D_8009D6E8.unk20 = AR_PreMoveHero;
-        D_8009D6E8.unk24 = AR_MoveHero;
+        HeroHooks.unk68 = AR_KeepInBounds;
+        HeroHooks.unk20 = AR_PreMoveHero;
+        HeroHooks.unk24 = AR_MoveHero;
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
-        D_8009D8F4 = ArkBallsAiBotTweak;
-        D_8009D8F8 = ArkBallsAiHumanTweak;
-        D_8009D904 = ArkBallsAiHumanRoundTweak;
-        p4 = &D_8009D8FC;
-        if (D_8005A680[0] != 0) {
+        AiBotTweakTable = ArkBallsAiBotTweak;
+        AiHumanTweakTable = ArkBallsAiHumanTweak;
+        AiHumanRoundTweakTable = ArkBallsAiHumanRoundTweak;
+        p4 = &AiSkillTable;
+        if (GameTeams[0] != 0) {
             t = ArkBallsAiSkillAlt;
         } else {
             t = ArkBallsAiSkill;
         }
         *p4 = t;
-        D_8009D900 = ArkBallsAiTeamSkill;
+        AiTeamSkillTable = ArkBallsAiTeamSkill;
         return;
     }
 }
@@ -685,7 +685,7 @@ void AR_InitLevel(void) {
     ArkFloorState = 30;
     ArkPickupBounce = 0;
 
-    for (i = 0, m = (ArkenoidModeView *)D_8005A614; i < 4; i++) {
+    for (i = 0, m = (ArkenoidModeView *)GameInfo; i < 4; i++) {
         h = &Heroes[i];
         a = get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) + 0x7F;
         mv = h->hero_move;
@@ -789,11 +789,11 @@ void AR_InitLevel(void) {
         Heroes[3].hero_score_displayed = Heroes[3].hero_score;
         ArkHeroEngineUpdate(i);
     }
-    m2 = (ArkenoidModeView *)D_8005A614;
+    m2 = (ArkenoidModeView *)GameInfo;
     if ((m2->unk32 & 0x40) && m2->unk6C != 0) {
         InitSharedScoreIcons();
     }
-    switch (D_8005A648) {
+    switch (GameMode) {
     case 0x10:
         CreateNAS(0, World_floor_level, 0, 0x1507, 0x11);
         break;
@@ -815,24 +815,24 @@ void AR_UpdateLevel(void) {
     u16 *cnt;
 
     func_80086F78();
-    if ((D_8005A644 & 0x801) && ArkFloorState != 0) {
+    if ((GameExitFlags & 0x801) && ArkFloorState != 0) {
         ArkFloorState = ArkFloorState - 1;
     }
     i = 12;
-    if (D_8009D908 != 0) {
+    if (HeroesAllOut != 0) {
         if (ArkBallTimer == -1) {
             best = 99;
             for (i = 0; i < 4; i++) {
-                D_8009D87C[i].unk4 = 4;
-                D_8009D87C[i].unk0 = 32;
+                AiPlayerSkill[i].unk4 = 4;
+                AiPlayerSkill[i].unk0 = 32;
                 if (!(Heroes[i].hero_status & 0xFA00) && Heroes[i].hero_score < best) {
                     best = Heroes[i].hero_score;
                     ArkBallTimer = i;
                 }
             }
             if (ArkBallTimer != -1 && ArkBallTimer < 4) {
-                D_8009D87C[ArkBallTimer].unk4 = 32;
-                D_8009D87C[ArkBallTimer].unk0 = 0;
+                AiPlayerSkill[ArkBallTimer].unk4 = 32;
+                AiPlayerSkill[ArkBallTimer].unk0 = 0;
             }
             i = 12;
         }
@@ -861,9 +861,9 @@ void AR_UpdateLevel(void) {
     }
     ArkCrateMaster();
     UpdateArkFloor();
-    if (D_8005A648 != 0x10) {
-        if (D_8005A648 >= 0x11) {
-            if (D_8005A648 == 0x11) {
+    if (GameMode != 0x10) {
+        if (GameMode >= 0x11) {
+            if (GameMode == 0x11) {
                 HandleCornerFailure();
             }
         }
@@ -892,11 +892,11 @@ bool AR_KeepInBounds(EXTengine *arg0) {
             a = get_angle(-dx, -dz);
             if ((void *)arg0 != (void *)Heroes[ArkSidePlayer2].hero_eng &&
                 (void *)arg0 != (void *)Heroes[ArkSidePlayer1].hero_eng) {
-                arg0->unk10.x = ArkPosts[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
+                arg0->unk10.x = ArkPosts[i].x - (r * TrigTable[(a - 0x400) & 0xFFF].unk2 >> 12);
             }
             if ((void *)arg0 != (void *)Heroes[ArkSidePlayer3].hero_eng &&
                 (void *)arg0 != (void *)Heroes[ArkSidePlayer0].hero_eng) {
-                arg0->unk10.z = ArkPosts[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
+                arg0->unk10.z = ArkPosts[i].z - (r * TrigTable[a & 0xFFF].unk2 >> 12);
             }
             return 1;
         }
@@ -911,7 +911,7 @@ bool AR_PI_KeepInBounds(EXTengine *arg0) {
     s32 r;
     s32 a;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         return 0;
     }
     for (i = 0; i < 4; i++) {
@@ -920,8 +920,8 @@ bool AR_PI_KeepInBounds(EXTengine *arg0) {
         }
     }
     a = arg0->unk1E;
-    arg0->unk10.x = D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
-    arg0->unk10.z = D_80068BD4[a & 0xFFF].unk2 * 9 >> 4;
+    arg0->unk10.x = TrigTable[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
+    arg0->unk10.z = TrigTable[a & 0xFFF].unk2 * 9 >> 4;
     for (i = 0; i < 4; i++) {
         dx = arg0->unk10.x - ArkPosts[i].x;
         dz = arg0->unk10.z - ArkPosts[i].z;
@@ -934,16 +934,16 @@ bool AR_PI_KeepInBounds(EXTengine *arg0) {
             a = get_angle(-dx, -dz);
             if ((void *)arg0 != (void *)Heroes[ArkSidePlayer2].hero_eng &&
                 (void *)arg0 != (void *)Heroes[ArkSidePlayer1].hero_eng) {
-                arg0->unk10.x = ArkPosts[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
+                arg0->unk10.x = ArkPosts[i].x - (r * TrigTable[(a - 0x400) & 0xFFF].unk2 >> 12);
             }
             if ((void *)arg0 != (void *)Heroes[ArkSidePlayer3].hero_eng &&
                 (void *)arg0 != (void *)Heroes[ArkSidePlayer0].hero_eng) {
-                arg0->unk10.z = ArkPosts[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
+                arg0->unk10.z = ArkPosts[i].z - (r * TrigTable[a & 0xFFF].unk2 >> 12);
             }
             a = get_angle(arg0->unk10.x, arg0->unk10.z);
             arg0->unk1E = a;
-            arg0->unk10.x = D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
-            arg0->unk10.z = D_80068BD4[a & 0xFFF].unk2 * 9 >> 4;
+            arg0->unk10.x = TrigTable[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
+            arg0->unk10.z = TrigTable[a & 0xFFF].unk2 * 9 >> 4;
             return 1;
         }
     }
@@ -1326,9 +1326,9 @@ void AR_InitHero(u32 arg0) {
     SetHeroAction(arg0, 0x1C);
     b = Heroes;
     g = b + arg0;
-    a = D_8004E0D8;
+    a = GameFrameCount;
     g->hero_weapon_count = 1;
-    sp = ((((((a + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + D_80068BD4)->unk2;
+    sp = ((((((a + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + TrigTable)->unk2;
     y = World_floor_level;
     d = (sp * 15 >> 11) - 0x80;
     g->hero_eng->unk10.y = y + d;
@@ -1355,14 +1355,14 @@ void AR_PreMoveHero(u32 arg0) {
     m = h->hero_move;
     fast = 0;
     if (h->hero_frozen != 0) {
-        ((PadButtons *)D_80051338)[arg0].unk50 = 0;
-        ((PadButtons *)D_80051338)[arg0].unk54 = 0;
+        ((PadButtons *)Pads)[arg0].unk50 = 0;
+        ((PadButtons *)Pads)[arg0].unk54 = 0;
     }
-    if ((D_80051338[arg0].unk0 & 1) || h->hero_ai->AImode != 0) {
+    if ((Pads[arg0].unk0 & 1) || h->hero_ai->AImode != 0) {
         if (arg0 == ArkSidePlayer3) {
             acc = 0x2A;
         }
-        if (((PadButtons *)D_80051338)[arg0].unk50 & 0xF00) {
+        if (((PadButtons *)Pads)[arg0].unk50 & 0xF00) {
             max = 0xA0;
             acc = 0x38;
         }
@@ -1371,12 +1371,12 @@ void AR_PreMoveHero(u32 arg0) {
         } else {
             mask = 0x50;
         }
-        pads = (PadButtons *)D_80051338;
+        pads = (PadButtons *)Pads;
         p = pads + arg0;
         if (p->unk50 & mask) {
             if (m->velocity_enable != 0) {
                 d = 0;
-                if (((s32 (*)(EXTengine *))D_8009D6E8.unk68)(Heroes[arg0].hero_eng) != 0) {
+                if (((s32 (*)(EXTengine *))HeroHooks.unk68)(Heroes[arg0].hero_eng) != 0) {
                     fast = 1;
                 }
                 if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
@@ -1425,7 +1425,7 @@ void AR_PreMoveHero(u32 arg0) {
             ArkHeroSpeedDelta[arg0] = m->forward_speed;
         } else {
             ArkHeroSpeedDelta[arg0] = 0;
-            if (((s32 (*)(EXTengine *))D_8009D6E8.unk68)(Heroes[arg0].hero_eng) != 0) {
+            if (((s32 (*)(EXTengine *))HeroHooks.unk68)(Heroes[arg0].hero_eng) != 0) {
                 m->forward_speed = 0;
             }
             if (m->forward_speed > 0) {
@@ -1565,7 +1565,7 @@ void AR_MoveHero(u32 arg0) {
     if (!(g->hero_status & 0xFA00)) {
         s32 d;
         s32 y;
-        sp = ((((((D_8004E0D8 + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + D_80068BD4)->unk2;
+        sp = ((((((GameFrameCount + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + TrigTable)->unk2;
         a1 = sp * 17 >> 10;
         y = World_floor_level;
         d = (sp * 15 >> 11) - 0x80;
@@ -1573,7 +1573,7 @@ void AR_MoveHero(u32 arg0) {
     } else {
         g->hero_eng->unk10.y = -0x80;
     }
-    hooks = &D_8009D6E8;
+    hooks = &HeroHooks;
     ((void (*)(s32))hooks->unk2C)(arg0);
     f = Heroes;
     g = f + arg0;
@@ -1637,8 +1637,8 @@ void AR_PI_MoveHero(u32 arg0) {
     if (!(Heroes[arg0].hero_status & 0xFA00)) {
         s32 t;
         s32 d;
-        a0 = ((D_8004E0D8 + arg0) << 6) & 0xFFF;
-        t = D_80068BD4[(a0 - 0x400) & 0xFFF].unk2;
+        a0 = ((GameFrameCount + arg0) << 6) & 0xFFF;
+        t = TrigTable[(a0 - 0x400) & 0xFFF].unk2;
         a1 = t * 17 >> 10;
         d = (t * 15 >> 11) - 0x80;
         e->unk10.y = y + d;
@@ -1860,7 +1860,7 @@ static inline s32 HeroCheckPad54(s32 arg0) {
     if (Heroes[arg0].hero_status & 0xFA00) {
         return 0;
     }
-    if (((PadButtons *)D_80051338)[arg0].unk54 & 0x1000) {
+    if (((PadButtons *)Pads)[arg0].unk54 & 0x1000) {
         SetHeroAction(arg0, 0x1E);
         ret = 1;
     } else {
@@ -1931,7 +1931,7 @@ void SetArkHeroTaunt(u32 arg0) {
     HeroInfo *base;
 
     SetHeroSeq(arg0, 0x1C);
-    if (Random(3) == 0 || D_8005A614[arg0 + 0x5C] == 0) {
+    if (Random(3) == 0 || GameInfo[arg0 + 0x5C] == 0) {
         switch (Heroes[arg0].hero_name) {
         case 1:
             PlaySfx(7, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -2072,7 +2072,7 @@ void ArkHeroWinner(u32 arg0) {
         } else {
             done = 1;
         }
-        if (D_8005A680[0] != 0) {
+        if (GameTeams[0] != 0) {
             f = Heroes[arg0].hero_eng;
             if (f->unk10.x < 0) {
                 f->unk10.x += 0x20;
@@ -2087,7 +2087,7 @@ void ArkHeroWinner(u32 arg0) {
         } else {
             done = 1;
         }
-        if (D_8005A680[0] != 0) {
+        if (GameTeams[0] != 0) {
             f = Heroes[arg0].hero_eng;
             if (f->unk10.x > 0) {
                 f->unk10.x -= 0x20;
@@ -2102,7 +2102,7 @@ void ArkHeroWinner(u32 arg0) {
         } else {
             done = 1;
         }
-        if (D_8005A680[0] != 0) {
+        if (GameTeams[0] != 0) {
             f = Heroes[arg0].hero_eng;
             if (f->unk10.z < 0) {
                 f->unk10.z += 0x20;
@@ -2117,7 +2117,7 @@ void ArkHeroWinner(u32 arg0) {
         } else {
             done = 1;
         }
-        if (D_8005A680[0] != 0) {
+        if (GameTeams[0] != 0) {
             f = Heroes[arg0].hero_eng;
             if (f->unk10.z > 0) {
                 f->unk10.z -= 0x20;
@@ -2125,7 +2125,7 @@ void ArkHeroWinner(u32 arg0) {
         }
     }
     if (done != 0) {
-        D_800AD12C = 1;
+        CameraMode = 1;
     }
     func_80085890(arg0);
     if (func_8008A200(arg0) != 0) {
@@ -2200,7 +2200,7 @@ void SetArkHeroDie(u32 arg0) {
     if (ArkDoorsA[i].sub != NULL) {
         ArkDoorsA[i].sub->unk74 = ArkDoorsA[i].unkE;
     }
-    m = (ArkenoidModeView *)D_8005A614;
+    m = (ArkenoidModeView *)GameInfo;
     switch (m->unk34) {
     case 16:
         CreateNAS(arg0, World_floor_level - 0x50, -0x20, 0x1506, 0x11);
@@ -2368,7 +2368,7 @@ void ArkHeroGrab(u32 arg0) {
         if (s != NULL) {
             s->unk74 = 0x2003;
             s->flags |= 0x40008021;
-            t = D_80068BD4[(((D_8004E0D8 << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 13;
+            t = TrigTable[(((GameFrameCount << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 13;
             s->unk52 = 1;
             s->unk20.x = t + 0x1000;
             s->unk20.y = t + 0x1000;
@@ -2512,7 +2512,7 @@ s32 ArkBotAimA(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle) {
     } else {
         i = (arg0 == ArkSidePlayer1) * 2;
     }
-    n = 0x20 - D_8009D87C[arg0].unk0;
+    n = 0x20 - AiPlayerSkill[arg0].unk0;
     n -= ArkBotSkill;
     x0 = ArkBotEdgesA[i].x0;
     z0 = ArkBotEdgesA[i].z0;
@@ -2532,8 +2532,8 @@ s32 ArkBotAimA(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - D_80068BD4[ang & 0xFFF].unk2;
+    to->x = from->x - TrigTable[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - TrigTable[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2610,7 +2610,7 @@ s32 ArkBotAimB(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle) {
     } else {
         i = (arg0 == ArkSidePlayer1) * 2;
     }
-    n = 0x20 - D_8009D87C[arg0].unk0;
+    n = 0x20 - AiPlayerSkill[arg0].unk0;
     n -= ArkBotSkill;
     x0 = ArkBotEdgesB[i].x0;
     z0 = ArkBotEdgesB[i].z0;
@@ -2630,8 +2630,8 @@ s32 ArkBotAimB(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - D_80068BD4[ang & 0xFFF].unk2;
+    to->x = from->x - TrigTable[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - TrigTable[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2690,7 +2690,7 @@ s32 PickArkPlayer(u32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += D_8009D87C[i].unk4;
+            sum += AiPlayerSkill[i].unk4;
         }
     }
     if (sum == 0) {
@@ -2700,7 +2700,7 @@ s32 PickArkPlayer(u32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += D_8009D87C[i].unk4;
+            sum += AiPlayerSkill[i].unk4;
             if (r < sum) {
                 return i;
             }
@@ -2796,7 +2796,7 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
     if (arg5 == 0) {
         goto ret0;
     }
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         HeroInfo *base = Heroes;
 
         h2 = &base[arg0];
@@ -2829,7 +2829,7 @@ s32 ArkBallComingAtHero(s32 arg0) {
     s32 lim;
     HeroInfo *base;
 
-    if (D_8005A648 == 0xF) {
+    if (GameMode == 0xF) {
         lim = 0x64000;
         n = D_8005AA38;
         if (n != NULL) {
@@ -2889,7 +2889,7 @@ void Ark_HeroBot(u32 arg0) {
     PadState *pad;
     D_8009D87C_t *sk;
 
-    if (D_8005A624 & 0x04000000) {
+    if (GamePause & 0x04000000) {
         return;
     }
     ai = Heroes[arg0].hero_ai;
@@ -2920,7 +2920,7 @@ void Ark_HeroBot(u32 arg0) {
         ai->TargetPlayer = PickArkPlayer(arg0);
     }
     target = ai->TargetPlayer;
-    k = (0x20 - D_8009D87C[arg0].unk0) << 4;
+    k = (0x20 - AiPlayerSkill[arg0].unk0) << 4;
     for (; n != NULL; n = n->next) {
         e = n->eng;
         if (e != NULL && (ext = (ArkenoidAiExt *)n->fux) != NULL && ext->unk1A == 1) {
@@ -2968,8 +2968,8 @@ void Ark_HeroBot(u32 arg0) {
             best.x -= v;
         }
     }
-    if (D_8005A648 == 0x10) {
-        k = (0x20 - D_8009D87C[arg0].unk0) << 5;
+    if (GameMode == 0x10) {
+        k = (0x20 - AiPlayerSkill[arg0].unk0) << 5;
         if (k <= 0) {
             k = 1;
         }
@@ -3021,7 +3021,7 @@ void Ark_HeroBot(u32 arg0) {
                                     ai->AItimer2 = 0;
                                     ai->TargetPlayer = -1;
                                     ai->AIpad &= ~0x4000;
-                                } else if ((target = D_8004E0D8 & 3) != arg0 && target != mate &&
+                                } else if ((target = GameFrameCount & 3) != arg0 && target != mate &&
                                            ArkBotAimA(target, at, &pos, range) != 0) {
                                     ai->AItimer2 = 0;
                                     ai->TargetPlayer = -1;
@@ -3036,15 +3036,15 @@ void Ark_HeroBot(u32 arg0) {
     }
     switch (ai->AImode) {
     case 3:
-        k = D_8009D87C[arg0].unk0 * 0x10;
-        sk = &D_8009D87C[arg0];
+        k = AiPlayerSkill[arg0].unk0 * 0x10;
+        sk = &AiPlayerSkill[arg0];
         k -= ArkBotSkill;
         if (k <= 0) {
             k = 1;
         }
         spread = Random(k) + 0x100;
         k += spread;
-        if (D_8005A648 == 0xF) {
+        if (GameMode == 0xF) {
             if (ai->AItimer2 == 0) {
                 target = ai->TargetPlayer;
                 flag = 0;
@@ -3059,7 +3059,7 @@ void Ark_HeroBot(u32 arg0) {
                             flag = 1;
                         }
                     }
-                    if (D_8009D908 == 0) {
+                    if (HeroesAllOut == 0) {
                         flag = 1;
                     }
                     if (((s32 (*)(s32, s32, s32, s32, s32, s32))ArkBotCanHit)(arg0, target, k, -0x200, 0x200, 0) != 0) {
@@ -3101,11 +3101,11 @@ void Ark_HeroBot(u32 arg0) {
                         flag = 1;
                     }
                 }
-                if (D_8009D908 == 0) {
+                if (HeroesAllOut == 0) {
                     flag = 1;
                 }
                 if (((s32 (*)(s32, s32, s32, s32, s32, s32))ArkBotCanHit)(arg0, target, k, -0x200, 0x200, flag) != 0) {
-                    if ((D_8005A646 & 0x80) && (u16)ArkRedKickTimer == 0) {
+                    if ((GameLevelFlags & 0x80) && (u16)ArkRedKickTimer == 0) {
                         ai->AIpad |= 0x2000;
                     } else {
                         ai->TargetPlayer = -1;
@@ -3125,13 +3125,13 @@ void Ark_HeroBot(u32 arg0) {
             } else {
                 v = abs(r);
             }
-            v += (D_8009D87C[arg0].unk0 + ArkBotSkill) << 5;
+            v += (AiPlayerSkill[arg0].unk0 + ArkBotSkill) << 5;
             if (abs(v) > 0x280) {
                 if (dist < v) {
                     ai->AIpad |= 0xF00;
                 }
                 ai->AIang = ang;
-                ai->AIpad |= D_80051244[(ang >> 9) & 7];
+                ai->AIpad |= DirPadBits[(ang >> 9) & 7];
             }
         } else {
             ai->AImode = 1;
@@ -3150,7 +3150,7 @@ void Ark_HeroBot(u32 arg0) {
             ai->AImode = 5;
         } else {
             ai->AIang = ang;
-            ai->AIpad |= D_80051244[(ang >> 9) & 7];
+            ai->AIpad |= DirPadBits[(ang >> 9) & 7];
         }
         break;
     case 21:
@@ -3185,7 +3185,7 @@ void Ark_HeroBot(u32 arg0) {
         ai->AImode = 4;
         break;
     }
-    pad = &D_80051338[arg0];
+    pad = &Pads[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
     *(s32 *)((u8 *)pad + 0x38) = ai->AIang;
 }
@@ -3249,8 +3249,8 @@ NAS *CreateBall(NAS *arg0) {
                                 dst->lim = srcm->lim;
                                 dir = srcm->dir;
                                 srcm->dir = (dir + 0x2AA) & 0xFFF;
-                                src->x -= D_80068BD4[(srcm->dir - 0x400) & 0xFFF].unk2 * 128 >> 12;
-                                src->z -= D_80068BD4[srcm->dir & 0xFFF].unk2 * 128 >> 12;
+                                src->x -= TrigTable[(srcm->dir - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                                src->z -= TrigTable[srcm->dir & 0xFFF].unk2 * 128 >> 12;
                                 if (dst->lim < 0x50) {
                                     dst->lim = 0x50;
                                 }
@@ -3258,8 +3258,8 @@ NAS *CreateBall(NAS *arg0) {
                                     dst->a = dst->lim;
                                 }
                                 dst->dir = (dir - 0x2AA) & 0xFFF;
-                                eng->x -= D_80068BD4[(dst->dir - 0x400) & 0xFFF].unk2 * 128 >> 12;
-                                eng->z -= D_80068BD4[dst->dir & 0xFFF].unk2 * 128 >> 12;
+                                eng->x -= TrigTable[(dst->dir - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                                eng->z -= TrigTable[dst->dir & 0xFFF].unk2 * 128 >> 12;
                             }
                         }
                     }
@@ -3307,8 +3307,8 @@ void ArkSpawnBall(void) {
                         mot->Xmax = 0x80;
                         dir = ((ArkenoidSpawn *)ArkBallSpawner)->dir;
                         mot->Xa = dir;
-                        eng->unk10.x = D_80068BD4[(dir - 0x400) & 0xFFF].unk2 * 13 >> 7;
-                        eng->unk10.z = D_80068BD4[dir & 0xFFF].unk2 * 13 >> 7;
+                        eng->unk10.x = TrigTable[(dir - 0x400) & 0xFFF].unk2 * 13 >> 7;
+                        eng->unk10.z = TrigTable[dir & 0xFFF].unk2 * 13 >> 7;
                     }
                 }
                 PlaySfx(0x5C1, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -3354,7 +3354,7 @@ void InitBall(NAS *nas) {
     eng->unk10.y = World_floor_level - 0x80;
     eng->unk5D = 2;
     eng->sub->unk6C = D_80054504;
-    if (D_8005A648 == 0xF) {
+    if (GameMode == 0xF) {
         eng->sub->unk74 = 0x2017;
     } else {
         eng->sub->unk74 = 0x2009;
@@ -3364,7 +3364,7 @@ void InitBall(NAS *nas) {
     if (e1 != NULL) {
         sub = e1->sub;
         sub->unk6C = D_80054504;
-        if (D_8005A648 == 0xF) {
+        if (GameMode == 0xF) {
             sub->unk74 = 0x2016;
         } else {
             sub->unk74 = 0x200B;
@@ -3380,7 +3380,7 @@ void InitBall(NAS *nas) {
         e->unk5C = 0;
         e->flags &= 0xFFFF7FFF;
         sub->unk6C = D_80054504;
-        if (D_8005A648 == 0xE) {
+        if (GameMode == 0xE) {
             sub->unk74 = 0x200C;
             sub->unk76 = 0xB00;
             sub->flags |= 0x42000021;
@@ -3475,16 +3475,16 @@ void PlotBall(NAS *nas) {
                 mot->Xvel = mot->Xmax;
             }
         }
-        eng->unk10.x -= (mot->Xvel * D_80068BD4[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (mot->Xvel * D_80068BD4[mot->Xa & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (mot->Xvel * TrigTable[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (mot->Xvel * TrigTable[mot->Xa & 0xFFF].unk2) >> 12;
         if (obj->timer != 0) {
             obj->timer--;
         }
         switch (obj->status) {
         case 0:
             hide = 1;
-            if ((((ArkenoidBallView *)D_8005A614)->unk10 & 0x04000000) ||
-                (((ArkenoidBallView *)D_8005A614)->unk30 & 0x1000)) {
+            if ((((ArkenoidBallView *)GameInfo)->unk10 & 0x04000000) ||
+                (((ArkenoidBallView *)GameInfo)->unk30 & 0x1000)) {
                 mot->Xvel = 0;
                 mot->Xacc = 0;
                 mot->Xdec = 0;
@@ -3528,7 +3528,7 @@ void PlotBall(NAS *nas) {
             mot->Za = (mot->Za + ((u16)ang - 0xE3)) & 0xFFF;
             obj->timer = 0x14;
             PlaySfx(0x5A0, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
-            switch (((ArkenoidBallView *)D_8005A614)->unk34) {
+            switch (((ArkenoidBallView *)GameInfo)->unk34) {
             case 17:
                 mot->Yvel = 0x40;
                 mot->Ymax = 0x50;
@@ -3611,7 +3611,7 @@ void PlotBall(NAS *nas) {
                     PlaySfx(BallFramesA[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
                     nas->UserInfo.flags |= 1;
                 }
-                if (((ArkenoidBallView *)D_8005A614)->unk34 == 0x10) {
+                if (((ArkenoidBallView *)GameInfo)->unk34 == 0x10) {
                     mot->Yvel = mot->Yvel >> 2;
                 } else {
                     mot->Yvel = mot->Yvel >> 1;
@@ -3637,7 +3637,7 @@ void PlotBall(NAS *nas) {
                 }
                 if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 0) != 0) {
                     obj->countdown = 4;
-                    switch (((ArkenoidBallView *)D_8005A614)->unk34) {
+                    switch (((ArkenoidBallView *)GameInfo)->unk34) {
                     case 17:
                         obj->status = 0x63;
                         break;
@@ -3685,7 +3685,7 @@ void PlotBall(NAS *nas) {
             }
             if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 0) != 0) {
                 obj->countdown = 8;
-                switch (((ArkenoidBallView *)D_8005A614)->unk34) {
+                switch (((ArkenoidBallView *)GameInfo)->unk34) {
                 case 17:
                     obj->countdown = 0x10;
                     obj->status = 0x63;
@@ -3786,7 +3786,7 @@ void PlotBall(NAS *nas) {
                     }
                 }
             }
-            if (((ArkenoidBallView *)D_8005A614)->unk34 != 17) {
+            if (((ArkenoidBallView *)GameInfo)->unk34 != 17) {
                 mot->Xvel >>= 1;
                 mot->Xmax >>= 1;
             }
@@ -3824,13 +3824,13 @@ void PlotBall(NAS *nas) {
                     if (pl != -1) {
                         ArkBallCount = ArkPlayerSide(pl);
                     }
-                    if ((((ArkenoidBallView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001) {
-                        if ((((ArkenoidBallView *)D_8005A614)->unk32 & 0x40) &&
-                            ((ArkenoidBallView *)D_8005A614)->unk6C != 0) {
-                            if (((ArkenoidBallView *)D_8005A614)->unk5C[obj->player] != 0) {
-                                obj->player = ((ArkenoidBallView *)D_8005A614)->unk4A;
+                    if ((((ArkenoidBallView *)GameInfo)->unk4 & 0x80000001) != 0x80000001) {
+                        if ((((ArkenoidBallView *)GameInfo)->unk32 & 0x40) &&
+                            ((ArkenoidBallView *)GameInfo)->unk6C != 0) {
+                            if (((ArkenoidBallView *)GameInfo)->unk5C[obj->player] != 0) {
+                                obj->player = ((ArkenoidBallView *)GameInfo)->unk4A;
                             } else {
-                                obj->player = ((ArkenoidBallView *)D_8005A614)->unk48;
+                                obj->player = ((ArkenoidBallView *)GameInfo)->unk48;
                             }
                             if (Heroes[obj->player].hero_score != 0) {
                                 Heroes[obj->player].hero_score--;
@@ -3841,13 +3841,13 @@ void PlotBall(NAS *nas) {
                             Heroes[obj->player].hero_health--;
                             Heroes[obj->player].hero_score_displayed = Heroes[obj->player].hero_score;
                         }
-                        if ((((ArkenoidBallView *)D_8005A614)->unk4 & 0x80000002) != 0x80000002 &&
+                        if ((((ArkenoidBallView *)GameInfo)->unk4 & 0x80000002) != 0x80000002 &&
                             Heroes[obj->player].hero_score == 0) {
                             if (obj->player == ArkBallTimer) {
                                 ArkBallTimer = -1;
                             }
                             Heroes[obj->player].hero_status |= 0x2000;
-                            if (((ArkenoidBallView *)D_8005A614)->unk32 & 0x40) {
+                            if (((ArkenoidBallView *)GameInfo)->unk32 & 0x40) {
                                 pl = Heroes[obj->player].hero_teammate;
                                 if (pl != -1) {
                                     Heroes[pl].hero_status |= 0x2000;
@@ -3902,8 +3902,8 @@ void PlotBall(NAS *nas) {
     }
     e2->unk10 = eng->unk10;
     e2->sub->unk68 = shade;
-    /* D_8005AA70 is the level's LevSpec: [9] is GetContour */
-    y = eng->unk10.y - ((s32 (*)(EXTengine *))D_8005AA70[9])(eng);
+    /* LevelSpecs is the level's LevSpec: [9] is GetContour */
+    y = eng->unk10.y - ((s32 (*)(EXTengine *))LevelSpecs[9])(eng);
     e2 = e2->Engine;
     if (e2 == NULL) {
         return;
@@ -3970,9 +3970,9 @@ void CalcArkInfluence(EXTmotion *m) {
     s16 vel;
     s32 scale;
 
-    if (D_8005A648 == 0x11) {
-        sx = abs((D_80068BD4[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 * 5) >> 3);
-        sz = abs((D_80068BD4[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 * 5) >> 3);
+    if (GameMode == 0x11) {
+        sx = abs((TrigTable[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 * 5) >> 3);
+        sz = abs((TrigTable[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 * 5) >> 3);
         az = 0;
         ax = (ArkFloorTiltX < 0) ? 0x800 : 0;
         if (ArkFloorTiltX > 0) {
@@ -3985,12 +3985,12 @@ void CalcArkInfluence(EXTmotion *m) {
             az = 0xC00;
         }
         scale = (s16)sx;
-        x1 = (scale * D_80068BD4[(ax - 0x400) & 0xFFF].unk2) >> 12;
-        z1 = (scale * D_80068BD4[ax].unk2) >> 12;
+        x1 = (scale * TrigTable[(ax - 0x400) & 0xFFF].unk2) >> 12;
+        z1 = (scale * TrigTable[ax].unk2) >> 12;
         scale = (s16)sz;
-        t = (scale * D_80068BD4[(az - 0x400) & 0xFFF].unk2) >> 12;
+        t = (scale * TrigTable[(az - 0x400) & 0xFFF].unk2) >> 12;
         x1 += t;
-        t = (scale * D_80068BD4[az].unk2) >> 12;
+        t = (scale * TrigTable[az].unk2) >> 12;
         angle = get_angle(x1, z1 + t);
         m->Zvel = (sx + sz) >> 6;
         m->Za = angle;
@@ -3998,11 +3998,11 @@ void CalcArkInfluence(EXTmotion *m) {
     speed = m->Zvel;
     if (speed != 0) {
         vel = m->Xvel;
-        x1 = (vel * D_80068BD4[((u16)m->Xa - 0x400) & 0xFFF].unk2) >> 12;
-        z1 = (vel * D_80068BD4[(u16)m->Xa & 0xFFF].unk2) >> 12;
-        t = (speed * D_80068BD4[((u16)m->Za - 0x400) & 0xFFF].unk2) >> 12;
+        x1 = (vel * TrigTable[((u16)m->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        z1 = (vel * TrigTable[(u16)m->Xa & 0xFFF].unk2) >> 12;
+        t = (speed * TrigTable[((u16)m->Za - 0x400) & 0xFFF].unk2) >> 12;
         x1 += t;
-        t = (speed * D_80068BD4[(u16)m->Za & 0xFFF].unk2) >> 12;
+        t = (speed * TrigTable[(u16)m->Za & 0xFFF].unk2) >> 12;
         m->Xa = get_angle(x1, z1 + t) & 0xFFF;
     }
 }
@@ -4027,7 +4027,7 @@ void FreeGrabbedObject(u32 arg0, bool arg1) {
     }
     hero = h->hero_eng;
     if (hero != NULL) {
-        nas = D_8005AA2C;
+        nas = HeadOfSolids;
         if (nas != NULL) {
             do {
                 eng = nas->Engine;
@@ -4059,8 +4059,8 @@ void FreeGrabbedObject(u32 arg0, bool arg1) {
                                 a += hero->unk1E;
                                 a &= 0xFFF;
                                 *(volatile s16 *)&mot->Xa = a;
-                                eng->unk10.x -= mot->Xvel * D_80068BD4[(mot->Xa - 0x400) & 0xFFF].unk2 >> 12;
-                                eng->unk10.z -= mot->Xvel * D_80068BD4[(u16)mot->Xa & 0xFFF].unk2 >> 12;
+                                eng->unk10.x -= mot->Xvel * TrigTable[(mot->Xa - 0x400) & 0xFFF].unk2 >> 12;
+                                eng->unk10.z -= mot->Xvel * TrigTable[(u16)mot->Xa & 0xFFF].unk2 >> 12;
                                 obj->status = 1;
                             }
                         }
@@ -4118,7 +4118,7 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
     }
     r *= 2;
     rr = r * r;
-    for (n = D_8005AA2C; n != NULL; n = n->Solid.Child) {
+    for (n = HeadOfSolids; n != NULL; n = n->Solid.Child) {
         o = n->Engine;
         if (o != NULL && o != arg0) {
             t = FindExtension(n, 0x1000);
@@ -4159,7 +4159,7 @@ void Plot_N_Gin(NAS *arg0) {
         return;
     }
     if (FindExtension(arg0, 0x400) != NULL && (gin = ArkNGin) != NULL) {
-        if (D_8005A644 & 0x801) {
+        if (GameExitFlags & 0x801) {
             if ((u16)gin->unk1A != 0) {
                 gin->unk1A = 5;
                 if (eng->sfx != NULL) {
@@ -4206,22 +4206,22 @@ void Plot_N_Gin(NAS *arg0) {
             gin->unk1A = 4;
             gin->unk22 = 0x96;
             gin->unk20 = Random(0xA) + 0xA;
-            if (((ArkenoidGinView *)D_8005A614)->unk32 == 0) {
+            if (((ArkenoidGinView *)GameInfo)->unk32 == 0) {
                 eng->unk5E = 1;
                 return;
             }
-            if (((ArkenoidGinView *)D_8005A614)->unk6C != 0) {
+            if (((ArkenoidGinView *)GameInfo)->unk6C != 0) {
                 gin->unk22 = 0xD2;
             }
             break;
         case 4:
             eng->unk1E += 0x1C7;
-            if (((ArkenoidGinView *)D_8005A614)->unk32 & 0x80) {
+            if (((ArkenoidGinView *)GameInfo)->unk32 & 0x80) {
                 if (gin->unk20 != 0) {
                     gin->unk20--;
                 } else {
                     for (i = 0; i < 4; i++) {
-                        if ((i == 0 || (((ArkenoidGinView *)D_8005A614)->unk6C != 0 && i == 1)) && !(Heroes[i].hero_status & 0xFA00)) {
+                        if ((i == 0 || (((ArkenoidGinView *)GameInfo)->unk6C != 0 && i == 1)) && !(Heroes[i].hero_status & 0xFA00)) {
                             if (func_80015480(eng->unk1E, Heroes[i].hero_move->facing_angle & 0xFFF) < 0xE3) {
                                 ArkSpawnBall();
                                 gin->unk20 = Random(0xB) + 6;
@@ -4265,7 +4265,7 @@ void Plot_N_Gin(NAS *arg0) {
             eng->unk10.y = -0x1000;
             arg0->Class &= 0xFDFF;
             eng->flags &= 0xFFFF7FFF;
-            if (((ArkenoidModeView *)D_8005A614)->unk30 & 0x801) {
+            if (((ArkenoidModeView *)GameInfo)->unk30 & 0x801) {
                 eng->unk5E = 1;
                 return;
             }
@@ -4293,7 +4293,7 @@ void ArkCrateMaster(void) {
     s32 hero;
     s32 total;
 
-    g = (ArkenoidGameView *)D_8005A614;
+    g = (ArkenoidGameView *)GameInfo;
     if (g->flags & 0x801) {
         return;
     }
@@ -4316,7 +4316,7 @@ void ArkCrateMaster(void) {
             }
         }
     }
-    if (D_8005A648 == 0xE && Random(0xF) == 0) {
+    if (GameMode == 0xE && Random(0xF) == 0) {
         x = Random(0x1800) - 0xC00;
         y = -(Random(0x200) + 0x80);
         CreateNAS(x, y, Random(0x800) + 0x1000, 0x1504, 0x11);
@@ -4327,7 +4327,7 @@ void ArkCrateMaster(void) {
         CrateMasterWordA++;
         lim = (u16)(CrateMasterWordA / 300);
         lim++;
-        if (D_8005A648 == 0xF) {
+        if (GameMode == 0xF) {
             if (lim >= 5) {
                 lim = 4;
             }
@@ -4455,7 +4455,7 @@ void InitARKfloor(void) {
         ArkWalls[i].f18 = 0;
         ArkWalls[i].f1A = 0;
     }
-    for (obj = (ArkenoidScnObj *)((GfxScene *)D_80058AD0)->objs; obj != 0; obj = obj->next) {
+    for (obj = (ArkenoidScnObj *)((GfxScene *)MapScene)->objs; obj != 0; obj = obj->next) {
         p = (s16 *)func_80015870(obj->unk6C, obj->unk74);
         k = *p;
         if (k - 1 < 9) {
@@ -4472,7 +4472,7 @@ void InitARKfloor(void) {
         if (k < 4) {
             LINK(ArkGoals)[k].a = obj;
             LINK(ArkGoals)[k].unk8 = obj->unk74;
-            switch (((ArkenoidModeView *)D_8005A614)->unk34) {
+            switch (((ArkenoidModeView *)GameInfo)->unk34) {
             case 14:
                 LINK(ArkGoals)[k].unkA = FloorFramesA[k];
                 break;
@@ -4486,7 +4486,7 @@ void InitARKfloor(void) {
         if (k < 4) {
             LINK(ArkGoals)[k].b = obj;
             LINK(ArkGoals)[k].unkC = obj->unk74;
-            switch (((ArkenoidModeView *)D_8005A614)->unk34) {
+            switch (((ArkenoidModeView *)GameInfo)->unk34) {
             case 14:
                 LINK(ArkGoals)[k].unkE = FloorFramesA[t - 26];
                 break;
@@ -4537,11 +4537,11 @@ void UpdateArkFloor(void)
     ArkenoidSpr **sp;
     ArkenoidSpr *s;
 
-    a = (D_8004E0D8 << 5) & 0xFFF;
-    if (D_8005A648 == 0x11) {
-        ArkFloorTiltZ = ((D_80068BD4[(a * 2 - 0x400) & 0xFFF].unk2 + D_80068BD4[a].unk2) * 11) >> 12;
-        ArkFloorTiltX = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 5) >> 10;
-        World_floor_level = (D_80068BD4[a].unk2 * 3) >> 7;
+    a = (GameFrameCount << 5) & 0xFFF;
+    if (GameMode == 0x11) {
+        ArkFloorTiltZ = ((TrigTable[(a * 2 - 0x400) & 0xFFF].unk2 + TrigTable[a].unk2) * 11) >> 12;
+        ArkFloorTiltX = (TrigTable[(a - 0x400) & 0xFFF].unk2 * 5) >> 10;
+        World_floor_level = (TrigTable[a].unk2 * 3) >> 7;
     }
     i = 0;
     do {
@@ -4579,7 +4579,7 @@ void UpdateArkFloor(void)
         if (BLINK_D38[j].unk12 != 0) {
             BLINK_D38[j].unk12--;
         }
-        if ((p = FloorLinks[j].a) != NULL && ((ArkenoidModeView *)D_8005A614)->unk34 == 14) {
+        if ((p = FloorLinks[j].a) != NULL && ((ArkenoidModeView *)GameInfo)->unk34 == 14) {
             if (FloorLinks[j].unk12 != 0) {
                 FloorLinks[j].unk10++;
                 p->unk74 = FloorLinks[j].unkA + (u16)(((FloorLinks[j].unk10 >> 2) & 3) + 1);
@@ -4589,7 +4589,7 @@ void UpdateArkFloor(void)
             }
         }
         if ((p = BLINK_E28[j].a) != NULL) {
-            switch (((ArkenoidModeView *)D_8005A614)->unk34) {
+            switch (((ArkenoidModeView *)GameInfo)->unk34) {
             case 14:
                 if (BLINK_E28[j].unk12 != 0) {
                     p->unk74 = BLINK_E28[j].unkA;
@@ -4623,7 +4623,7 @@ void UpdateArkFloor(void)
         }
     }
 
-    if (D_8005A648 == 0x11) {
+    if (GameMode == 0x11) {
         if (ArkFloorState == 0) {
             ArkWallFlags = 0;
         }
@@ -4843,7 +4843,7 @@ void HandleCornerFailure(void) {
     base = ArkWalls;
     ob = ArkWallObjects;
     w = base;
-    phase = (D_8004E0D8 >> 1) & 7;
+    phase = (GameFrameCount >> 1) & 7;
     o = ob;
 loop:
     {
@@ -5063,7 +5063,7 @@ void Create_ArkPickup(void)
 
   pos = D_8005B2B8[s + 4].pos;
   ArkGoals[nas->UserInfo.user1].unk10 = 1;
-  tgt = func_8007A464(1, (s32 *) (&pos), *((s32 *) D_80058AD0));
+  tgt = func_8007A464(1, (s32 *) (&pos), *((s32 *) MapScene));
   if (tgt != 0)
   {
     func_80026C38((u8 *) nas, (u8 *) tgt);
@@ -5179,7 +5179,7 @@ void Plot_RepulseRing(NAS *arg0) {
     e->unk20 = base[arg0->UserInfo.user1].hero_eng->unk20;
     s = e->sub;
     s->flags |= 0x40008000;
-    t = D_80068BD4[(((D_8004E0D8 << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    t = TrigTable[(((GameFrameCount << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 12;
     s->unk52 = 1;
     s->unk20.x = t + 0x1200;
     s->unk20.y = t + 0x1200;
@@ -5204,7 +5204,7 @@ void Init_ArkLaserWall(NAS *nas)
     s32 dir;
     s32 off;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         ArkWallFlags &= ~nas->UserInfo.flags;
         KillNAS(nas);
         return;
@@ -5252,7 +5252,7 @@ void Init_ArkLaserWall(NAS *nas)
         off = 0;
         if (sub != 0) {
             do {
-                sub->unk6C = *(s32 *)D_80058AD0;
+                sub->unk6C = *(s32 *)MapScene;
                 sub->flags |= 0x21;
                 sub->unk74 = 0x2019;
                 sub->unk04 = off;
@@ -5279,8 +5279,8 @@ void LineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
 
     arg1 = (arg1 + 0x800) & 0xFFF;
     start = *pos;
-    start.x -= (0x200 * D_80068BD4[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
-    start.z -= (0x200 * D_80068BD4[arg1].unk2) >> 12;
+    start.x -= (0x200 * TrigTable[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
+    start.z -= (0x200 * TrigTable[arg1].unk2) >> 12;
     dir.x = start.x - pos->x;
     dir.y = 0;
     dir.z = start.z - pos->z;
@@ -5411,8 +5411,8 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
     hero = &Heroes[arg0];
     farp.y = hero->hero_eng->unk10.y + box->y1;
     farp.z = hero->hero_eng->unk10.z + box->z1;
-    tbl = D_80068BD4;
-    for (nas = D_8005AA2C;; nas = nas->Solid.Child) {
+    tbl = TrigTable;
+    for (nas = HeadOfSolids;; nas = nas->Solid.Child) {
         if (nas == NULL) {
             return 0;
         }
@@ -5517,7 +5517,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
         rad &= 0xFFF;
         if (obj->whatami == 2) {
             if (!(hero->hero_status & 0xFA00) &&
-                (arg0 == 0 || (D_8005A680[0] != 0 && arg0 == 1))) {
+                (arg0 == 0 || (GameTeams[0] != 0 && arg0 == 1))) {
                 hero->hero_score = 0;
                 if (arg0 == ArkSidePlayer0) {
                     idx = 0;
@@ -5641,8 +5641,8 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                                     && *(u16 *)(t + 0x14) == 1 && *(s16 *)(t + 0x20) == 0) {
                                     ang = get_angle(-dx, -dz) & 0xFFF;
                                     d = r - d + 1;
-                                    o->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                    o->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                    o->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    o->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                                     *(u16 *)(t + 0x16) = arg0;
                                     e = FindExtension((NAS *)n, 0x800);
                                     if (e != NULL) {
@@ -5650,7 +5650,7 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                                         PlaySfx(0x585, NULL, NULL, 0x1000, 0x1E00, 0);
                                         *(s16 *)(t + 0x20) = 4;
                                         *(s16 *)(e + 0x16) = ang;
-                                        switch (D_8005A648) {
+                                        switch (GameMode) {
                                         case 0xF:
                                             *(s16 *)(e + 0xE) = *(u16 *)(e + 0x14) + 0x40;
                                             *(u16 *)(e + 0x14) = 0x40;
@@ -5829,7 +5829,7 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
         bot = eng->unk10.y + box->height;
         rad = box->radius;
         mine = FindExtension(((NAS **)eng)[-1], 0x800);
-        it = D_8005AA2C;
+        it = HeadOfSolids;
         if (it != NULL) {
             do {
                 if (it->Class & 0x200) {
@@ -5855,8 +5855,8 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                                             if (self->can_do & 0x80) {
                                                 m = FindExtension(it, 0x800);
                                                 if (m != NULL) {
-                                                    other->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                    other->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                                    other->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                    other->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
                                                     ang += func_800154A0((m->dir + 0x800) & 0xFFF, ang);
@@ -5868,8 +5868,8 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                                                 if (r / 2 < d) {
                                                     d = r;
                                                 }
-                                                eng->unk10.x += (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z += (d * D_80068BD4[ang].unk2) >> 12;
+                                                eng->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z += (d * TrigTable[ang].unk2) >> 12;
                                                 if (mine != NULL) {
                                                     m = FindExtension(it, 0x800);
                                                     if (m != NULL) {
@@ -5943,7 +5943,7 @@ void Plot_ArkLaserWall(NAS *nas) {
     EXTengine *eng;
     subengine *sub;
 
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         ArkWallFlags &= ~nas->UserInfo.flags;
         KillNAS(nas);
         return;
@@ -5999,8 +5999,8 @@ void Init_RepulseRing(NAS *nas)
 }
 
 s32 GetArkPIContour(EXTengine *v) {
-    return v->unk10.y - ((World_floor_level - (v->unk10.z * D_80068BD4[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 >> 12)) +
-                       (v->unk10.x * D_80068BD4[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 >> 12));
+    return v->unk10.y - ((World_floor_level - (v->unk10.z * TrigTable[(ArkFloorTiltX - 0x400) & 0xFFF].unk2 >> 12)) +
+                       (v->unk10.x * TrigTable[(ArkFloorTiltZ - 0x400) & 0xFFF].unk2 >> 12));
 }
 
 s32 GetArkContour(EXTengine *arg0) {
@@ -6026,7 +6026,7 @@ void Plot_ArkDeadWall(NAS *arg0) {
         sub = eng->sub;
         if (sub != NULL) {
             do {
-                sub->unk74 = (D_8004E0D8 & 7) + 0x2001;
+                sub->unk74 = (GameFrameCount & 7) + 0x2001;
                 sub = sub->next;
             } while (sub != NULL);
         }
@@ -6065,7 +6065,7 @@ void Init_ArkCameraFlash(NAS *arg0) {
     if (eng != NULL) {
         s32 val;
         sub = (u8*)(*(s32*)(eng + 108));
-        val = *(s32*)D_80058AD0;
+        val = *(s32*)MapScene;
         (*(u16*)(sub + 116)) = 0x2017;
         (*(u8*)(sub + 80)) = 1;
         (*(u8*)(sub + 81)) = 0;
@@ -6087,7 +6087,7 @@ void Init_seaweed(NAS *arg0) {
     EXTengine *eng = arg0->Engine;
     if (eng != NULL) {
         ScriptCursor *cur;
-        eng->sub->unk6C = *(s32*)D_80058AD0;
+        eng->sub->unk6C = *(s32*)MapScene;
         cur = func_80024E30(arg0, &SeaweedScriptInit);
         if (cur != NULL) {
             u8 *trig = (u8*)arg0->trigger;
@@ -6317,10 +6317,10 @@ void AR_InitShadow(u32 arg0) {
 }
 
 s32 ArkAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
-    s32 a = arg1 * D_80068BD4[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 b = arg1 * D_80068BD4[arg0 & 0xFFF].unk2;
-    s32 c = arg3 * D_80068BD4[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 d = arg3 * D_80068BD4[arg2 & 0xFFF].unk2;
+    s32 a = arg1 * TrigTable[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 b = arg1 * TrigTable[arg0 & 0xFFF].unk2;
+    s32 c = arg3 * TrigTable[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 d = arg3 * TrigTable[arg2 & 0xFFF].unk2;
     s32 x = a >> 12;
     s32 z = b >> 12;
     x += c >> 12;
@@ -6460,14 +6460,14 @@ void AR_RestartLevel(void) {
 }
 
 void AR_SetUp(void) {
-    D_8005AA70[0] = (s32)AR_PreInitLevel;
-    D_8005AA70[1] = (s32)AR_InitLevel;
-    D_8005AA70[2] = (s32)AR_InitLevel;
-    D_8005AA70[3] = (s32)AR_UpdateLevel;
-    D_8005AA70[6] = (s32)AR_Triggers;
-    D_8005AA70[5] = (s32)AR_EarliestTriggers;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
-    D_8005AA70[9] = (s32)GetArkContour;
-    D_8005AA70[10] = (s32)FinishArkLevel;
+    LevelSpecs[0] = (s32)AR_PreInitLevel;
+    LevelSpecs[1] = (s32)AR_InitLevel;
+    LevelSpecs[2] = (s32)AR_InitLevel;
+    LevelSpecs[3] = (s32)AR_UpdateLevel;
+    LevelSpecs[6] = (s32)AR_Triggers;
+    LevelSpecs[5] = (s32)AR_EarliestTriggers;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
+    LevelSpecs[9] = (s32)GetArkContour;
+    LevelSpecs[10] = (s32)FinishArkLevel;
 }

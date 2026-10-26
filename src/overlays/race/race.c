@@ -501,18 +501,18 @@ s32 RaceAI_DodgeSpinners(s32 player) {
     SLONG_XYZ pos;
 
     i = 0;
-    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * D_80068BD4[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * TrigTable[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
     h = &Heroes[player];
     pos.y = 0;
     p = RaceSpinnerBoxes;
-    pos.z = h->hero_eng->unk10.z - (0x40 * D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
+    pos.z = h->hero_eng->unk10.z - (0x40 * TrigTable[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
 loop:
     if (i < 6) {
         if (XZBoxToSphere(*p, &pos, 1, &pos) != -1) {
             h->hero_ai->AIpad &= ~0x20;
             h->hero_ai->AIpad |= 0x2000;
             h->hero_ai->AIpad |= 0x80;
-            ((RacePad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+            ((RacePad *)Pads)[player].unk50 = h->hero_ai->AIpad;
             return 1;
         }
         h++;
@@ -556,11 +556,11 @@ s32 RaceAI_PickVictim(s32 arg0) {
         } else {
             for (k = 0; k < 4; k++) {
                 if (k != arg0 && !(Heroes[k].hero_status & 0x2000)) {
-                    total += D_8009D87C[k].unk4 << 7;
+                    total += AiPlayerSkill[k].unk4 << 7;
                 }
             }
             if (total != 0) {
-                result = (D_8009D87C[j].unk4 << 19) / total;
+                result = (AiPlayerSkill[j].unk4 << 19) / total;
             }
             v = result;
         }
@@ -580,9 +580,9 @@ void RaceAI_SpinnerBrake(s32 player) {
     s32 r;
     HeroInfo *h;
 
-    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * D_80068BD4[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * TrigTable[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
     pos.y = 0;
-    pos.z = Heroes[player].hero_eng->unk10.z - (0x40 * D_80068BD4[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
+    pos.z = Heroes[player].hero_eng->unk10.z - (0x40 * TrigTable[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
     i = 0;
     if (Heroes[player].hero->FUX != NULL) {
         do {
@@ -596,7 +596,7 @@ void RaceAI_SpinnerBrake(s32 player) {
                 p++;
                 if (!(r & 4)) {
                     h->hero_ai->AIpad |= 0x4000;
-                    ((RacePad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+                    ((RacePad *)Pads)[player].unk50 = h->hero_ai->AIpad;
                     return;
                 }
             } else {
@@ -661,9 +661,9 @@ loop:
         h = &base[player];
         a[0] = 0;
         a[2] = 0;
-        b[0] = D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
+        b[0] = TrigTable[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
         b[1] = 0;
-        b[2] = D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2;
+        b[2] = TrigTable[h->hero_eng->unk1E & 0xFFF].unk2;
         best = &RaceBarrels[besti];
         c[0] = best->obj->pos.x - h->hero_eng->unk10.x;
         c[2] = best->obj->pos.z - h->hero_eng->unk10.z;
@@ -680,7 +680,7 @@ loop:
                 h->hero_ai->AIpad |= 0x20;
             }
             h->hero_ai->AIpad &= ~0x8000;
-            ((RacePad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+            ((RacePad *)Pads)[player].unk50 = h->hero_ai->AIpad;
         }
     }
 }
@@ -727,9 +727,9 @@ void RaceAI_AvoidObjects(s32 player) {
         h = &base[player];
         a[0] = 0;
         a[2] = 0;
-        b[0] = D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
+        b[0] = TrigTable[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
         b[1] = 0;
-        b[2] = D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2;
+        b[2] = TrigTable[h->hero_eng->unk1E & 0xFFF].unk2;
         c[0] = best->Engine->unk10.x - h->hero_eng->unk10.x;
         c[2] = best->Engine->unk10.z - h->hero_eng->unk10.z;
         c[3] = 0x180;
@@ -747,7 +747,7 @@ void RaceAI_AvoidObjects(s32 player) {
                 h->hero_ai->AIpad |= 0x20;
             }
             h->hero_ai->AIpad &= ~0x8000;
-            ((RacePad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+            ((RacePad *)Pads)[player].unk50 = h->hero_ai->AIpad;
         }
     }
 }
@@ -847,7 +847,7 @@ s32 RaceAI_UseCloseWeapon(s32 player)
   }
   i = 0;
   h = t;
-  pad = (RacePad *) D_80051338;
+  pad = (RacePad *) Pads;
   o = base;
   loop:
   if (i < 4)
@@ -902,9 +902,9 @@ s32 RaceAI_UseAimedWeapon(s32 player)
         return 0;
     }
     i = 0;
-    trig = D_80068BD4;
+    trig = TrigTable;
     base = Heroes;
-    pad = (RacePad *) D_80051338;
+    pad = (RacePad *) Pads;
     o = base;
 loop:
     if (i < 4) {
@@ -960,8 +960,8 @@ s32 RaceAI_SteerAtVictim(s32 player)
 
     if (Heroes[player].hero->FUX != NULL) {
         i = 0;
-        trig = D_80068BD4;
-        pads = (RacePad *)D_80051338;
+        trig = TrigTable;
+        pads = (RacePad *)Pads;
         base = Heroes;
         pad = pads + player;
         o = base;
@@ -1055,7 +1055,7 @@ s32 arg0;
         } else {
             RaceAI_UseAimedWeapon(arg0);
         }
-        if (D_8005A648 == 0x18) {
+        if (GameMode == 0x18) {
             RaceAI_AvoidBarrels(arg0);
             RaceAI_AvoidObjects(arg0);
             RaceAI_UseCloseWeapon(arg0);
@@ -1072,7 +1072,7 @@ void RaceInitHeroAngle(s32 player) {
     if (h->hero_frozen == 0) {
         if (!(h->hero_ctrl & 1)) {
             h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
-            if (D_8005A614[player + 0x5C] != 0) {
+            if (GameInfo[player + 0x5C] != 0) {
                 h->hero_eng->unk20 += func_800154A0(h->hero_eng->unk20, RaceSteer[player]) >> 3;
             } else {
                 h->hero_eng->unk20 += func_800154A0(h->hero_eng->unk20, RaceSteer[player]) >> 2;
@@ -1092,11 +1092,11 @@ void InitialiseRACEFirst(void) {
     void *t;
 
     RaceOver = 0;
-    h = &D_8009D6E8;
+    h = &HeroHooks;
     h->unk38 = Race_HeroBot;
     h->unk4 = RaceHeroModels;
     do {} while (0);
-    g = D_8005A614;
+    g = GameInfo;
     if (*(s16 *)(g + 0x34) == 0x19) {
         h->unk4 = RaceHeroModelsWater;
     }
@@ -1120,60 +1120,60 @@ void InitialiseRACEFirst(void) {
     h->unk14 = RaceVictorySeqs;
     *(u16 *)(g + 0x32) = flags | 0x800;
     do {} while (0);
-    p = &D_8009D8FC;
+    p = &AiSkillTable;
     if (*(s32 *)(g + 0x6C) != 0) {
         t = RaceDashAiSkillAlt;
     } else {
         t = RaceDashAiSkill;
     }
     *p = t;
-    D_8009D8F4 = RaceDashAiBotTweak;
-    D_8009D8F8 = RaceDashAiHumanTweak;
-    D_8009D904 = RaceDashAiHumanRoundTweak;
-    D_8009D900 = RaceDashAiTeamSkill;
+    AiBotTweakTable = RaceDashAiBotTweak;
+    AiHumanTweakTable = RaceDashAiHumanTweak;
+    AiHumanRoundTweakTable = RaceDashAiHumanRoundTweak;
+    AiTeamSkillTable = RaceDashAiTeamSkill;
     D_80051658 = 0x22B;
     do {} while (0);
-    g2 = D_8005A614;
+    g2 = GameInfo;
     if (*(s16 *)(g2 + 0x34) == 0x18) {
-        p = &D_8009D8FC;
+        p = &AiSkillTable;
         if (*(s32 *)(g2 + 0x6C) != 0) {
             t = RaceToxicAiSkillAlt;
         } else {
             t = RaceToxicAiSkill;
         }
         *p = t;
-        D_8009D8F4 = RaceToxicAiBotTweak;
-        D_8009D8F8 = RaceToxicAiHumanTweak;
-        D_8009D904 = RaceToxicAiHumanRoundTweak;
-        D_8009D900 = RaceToxicAiTeamSkill;
+        AiBotTweakTable = RaceToxicAiBotTweak;
+        AiHumanTweakTable = RaceToxicAiHumanTweak;
+        AiHumanRoundTweakTable = RaceToxicAiHumanRoundTweak;
+        AiTeamSkillTable = RaceToxicAiTeamSkill;
     }
-    g2 = D_8005A614;
+    g2 = GameInfo;
     if (*(s16 *)(g2 + 0x34) == 0x1A) {
-        p = &D_8009D8FC;
+        p = &AiSkillTable;
         if (*(s32 *)(g2 + 0x6C) != 0) {
             t = RaceLavaAiSkillAlt;
         } else {
             t = RaceLavaAiSkill;
         }
         *p = t;
-        D_8009D8F4 = RaceLavaAiBotTweak;
-        D_8009D8F8 = RaceLavaAiHumanTweak;
-        D_8009D904 = RaceLavaAiHumanRoundTweak;
-        D_8009D900 = RaceLavaAiTeamSkill;
+        AiBotTweakTable = RaceLavaAiBotTweak;
+        AiHumanTweakTable = RaceLavaAiHumanTweak;
+        AiHumanRoundTweakTable = RaceLavaAiHumanRoundTweak;
+        AiTeamSkillTable = RaceLavaAiTeamSkill;
     }
-    g2 = D_8005A614;
+    g2 = GameInfo;
     if (*(s16 *)(g2 + 0x34) == 0x19) {
-        p = &D_8009D8FC;
+        p = &AiSkillTable;
         if (*(s32 *)(g2 + 0x6C) != 0) {
             t = RaceWaterAiSkillAlt;
         } else {
             t = RaceWaterAiSkill;
         }
         *p = t;
-        D_8009D8F4 = RaceWaterAiBotTweak;
-        D_8009D8F8 = RaceWaterAiHumanTweak;
-        D_8009D904 = RaceWaterAiHumanRoundTweak;
-        D_8009D900 = RaceWaterAiTeamSkill;
+        AiBotTweakTable = RaceWaterAiBotTweak;
+        AiHumanTweakTable = RaceWaterAiHumanTweak;
+        AiHumanRoundTweakTable = RaceWaterAiHumanRoundTweak;
+        AiTeamSkillTable = RaceWaterAiTeamSkill;
         D_80051658 = 0x252;
     }
     RacePickups = NULL;
@@ -1197,9 +1197,9 @@ s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
   s32 r;
   s32 c;
   found = -1;
-  if ((*((s32 *) D_80058AD0)) != 0)
+  if ((*((s32 *) MapScene)) != 0)
   {
-    u8 *q = *((u8 **) (((u8 *) D_80058AD0) + 0x10));
+    u8 *q = *((u8 **) (((u8 *) MapScene) + 0x10));
     c = arg1 >= (*((s32 *) (((*((s32 *) (q + 0x14))) + 0x14) + q)));
   }
   else
@@ -1213,7 +1213,7 @@ s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
   {
     return 0;
   }
-  base = *((u8 **) (((u8 *) D_80058AD0) + 0x10));
+  base = *((u8 **) (((u8 *) MapScene) + 0x10));
   off = *((s32 *) (base + 0x14));
   p = ((u8 *) (&((s32 *) ((base + 0x14) + off))[arg1 + 1])) + ((s32 *) ((base + 0x14) + off))[arg1 + 1];
   if ((new_var = p) != 0)
@@ -1253,39 +1253,39 @@ u32 RaceAI_FollowTrack(s32 player) {
                 d = 0;
             }
             d += 0x200;
-            pos.x = h->hero_eng->unk10.x - (d * D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+            pos.x = h->hero_eng->unk10.x - (d * TrigTable[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
             pos.y = 0;
-            pos.z = h->hero_eng->unk10.z - (d * D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
+            pos.z = h->hero_eng->unk10.z - (d * TrigTable[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
             if (func_8008C4C8(&pos.x, 0) != 0) {
                 h->hero_ai->AIpad |= 0x80;
                 h->hero_ai->AIpad &= ~0x8000;
             }
-            pos.x = h->hero_eng->unk10.x - (D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 0x79 >> 8);
+            pos.x = h->hero_eng->unk10.x - (TrigTable[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 0x79 >> 8);
             pos.y = 0;
-            pos.z = h->hero_eng->unk10.z - (D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 * 0x79 >> 8);
-            if (D_8005A648 == 0x17 && (d = func_8008C4C8(&pos.x, 3) != 1)) {
+            pos.z = h->hero_eng->unk10.z - (TrigTable[h->hero_eng->unk1E & 0xFFF].unk2 * 0x79 >> 8);
+            if (GameMode == 0x17 && (d = func_8008C4C8(&pos.x, 3) != 1)) {
                 h->hero_ai->AIpad |= 0x20;
                 h->hero_ai->AIpad &= ~0x8000;
             }
-            if (D_8005A648 == 0x19) {
+            if (GameMode == 0x19) {
                 if (pos.x * pos.x + pos.z * pos.z > 0x640000) {
                     Heroes[player].hero_ai->AIpad |= 0x20;
                     Heroes[player].hero_ai->AIpad &= ~0x8000;
                 }
             }
-            if (D_8005A648 == 0x18) {
+            if (GameMode == 0x18) {
                 if (pos.x * pos.x + pos.z * pos.z > 0x510000) {
                     Heroes[player].hero_ai->AIpad |= 0x20;
                     Heroes[player].hero_ai->AIpad &= ~0x8000;
                 }
             }
-            if (D_8005A648 == 0x1A) {
+            if (GameMode == 0x1A) {
                 if (pos.x * pos.x + pos.z * pos.z > 0x640000) {
                     Heroes[player].hero_ai->AIpad |= 0x20;
                     Heroes[player].hero_ai->AIpad &= ~0x8000;
                 }
             }
-            ext[7] = 0x20 - D_8009D87C[player].unk0;
+            ext[7] = 0x20 - AiPlayerSkill[player].unk0;
         }
     }
     return 0x8000;
@@ -1304,13 +1304,13 @@ void RaceAI_SteerAhead(s32 player) {
                 d = 0;
             }
             d += 0xBE8;
-            pos.x = Heroes[player].hero_eng->unk10.x - (d * D_80068BD4[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+            pos.x = Heroes[player].hero_eng->unk10.x - (d * TrigTable[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
             pos.y = 0;
-            pos.z = Heroes[player].hero_eng->unk10.z - (d * D_80068BD4[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
+            pos.z = Heroes[player].hero_eng->unk10.z - (d * TrigTable[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
             Heroes[player].hero_ai->AIpad |= 0x8000;
             Heroes[player].hero_ai->AIpad |= RaceAI_FollowTrack(player);
             Heroes[player].hero_ai->AIpad |= 0x800;
-            ((RacePad *)D_80051338)[player].unk50 = Heroes[player].hero_ai->AIpad;
+            ((RacePad *)Pads)[player].unk50 = Heroes[player].hero_ai->AIpad;
         }
     }
 }
@@ -1333,7 +1333,7 @@ void RaceAI_SteerTo(s32 player, SLONG_XYZ *pos) {
         hero->hero_ai->AIpad &= ~0x20;
     }
     hero->hero_ai->AIpad |= 0x800;
-    ((RacePad *)D_80051338)[player].unk50 = hero->hero_ai->AIpad;
+    ((RacePad *)Pads)[player].unk50 = hero->hero_ai->AIpad;
 }
 
 static inline NAS *RacePickupAheadInline(s32 arg0) {
@@ -1377,7 +1377,7 @@ void RaceInitSpinners(void) {
     RaceGlowObj = NULL;
     RaceGlowPhase = 0;
     RaceGlowMode = 0;
-    obj = ((RaceScene *)D_80058AD0)->objs;
+    obj = ((RaceScene *)MapScene)->objs;
     for (i = 0; i < 6; i++) {
         RaceSpinnerBoxes[i] = 0;
         RacePistons[i].unk8 = 1;
@@ -1464,7 +1464,7 @@ s32 RacePistonPattern(RacePattern *pats, s32 idx) {
     pat = (RacePattern *)(idx * 8 + (s32)pats);
     step = pat->steps;
     base = 0x4000;
-    if (D_8005A646 & 0x80) {
+    if (GameLevelFlags & 0x80) {
         speed = 4;
     }
     RacePatternTime++;
@@ -1491,7 +1491,7 @@ loop:
             p->state = one;
             PlaySfx(0x673, NULL, NULL, 0x1000, 0x1E00, 0);
         } else {
-            if (D_8005A646 & 0x80) {
+            if (GameLevelFlags & 0x80) {
                 v = p->timer + 4;
             } else {
                 v = p->timer + 1;
@@ -1561,7 +1561,7 @@ void MaintainCentre(void) {
     if ((u32)(RacePatternIdx - 1) < 2) {
         spd = -4;
     }
-    if (D_8005A646 & 0x80) {
+    if (GameLevelFlags & 0x80) {
         spd = -0x20;
     }
     if (RaceSpinner != NULL) {
@@ -1607,7 +1607,7 @@ void RaceInitBarrels(void) {
     s32 n;
 
     n = 0;
-    obj = ((RaceScene *)D_80058AD0)->objs;
+    obj = ((RaceScene *)MapScene)->objs;
     memset(RaceBarrels, 0x3600, 0);
     while (obj != NULL) {
         if (obj->index == 0x5006) {
@@ -1701,8 +1701,8 @@ s32 RaceBarrelHitHero(RaceBarrelView *b) {
             d = csqrt(d) >> 6;
             angle = get_angle(dx, dz) & 0xFFF;
             d = 0x180 - d;
-            e->unk10.x += d * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
-            e->unk10.z += d * D_80068BD4[angle].unk2 >> 12;
+            e->unk10.x += d * TrigTable[(angle - 0x400) & 0xFFF].unk2 >> 12;
+            e->unk10.z += d * TrigTable[angle].unk2 >> 12;
             RaceBarrelBump(i, b);
             if (Heroes[i].hero_mode != 0x61) {
                 r = Random(2);
@@ -1747,8 +1747,8 @@ s32 RaceBarrelSpaceFree(RaceBarrelView *self) {
                 d = csqrt(d) >> 6;
                 angle = get_angle(dx, dz) & 0xFFF;
                 d = 0x180 - d;
-                obj->pos.x += d * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
-                obj->pos.z += d * D_80068BD4[angle].unk2 >> 12;
+                obj->pos.x += d * TrigTable[(angle - 0x400) & 0xFFF].unk2 >> 12;
+                obj->pos.z += d * TrigTable[angle].unk2 >> 12;
             }
         }
     }
@@ -1943,7 +1943,7 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
 
     rad = 0xDC;
     found = 0;
-    obj = ((RaceScene *)D_80058AD0)->objs;
+    obj = ((RaceScene *)MapScene)->objs;
     hit = 0;
     for (;;) {
         u8 *r;
@@ -2062,14 +2062,14 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
     found = 0;
     rad = radius;
     shift = 12;
-    bad = idx >= (((RaceSegScene *)D_80058AD0)->unk0 ?
-                  *(s32 *)(*(s32 *)(((RaceSegScene *)D_80058AD0)->data + 0x14) +
-                           (s32)((RaceSegScene *)D_80058AD0)->data + 0x14) :
+    bad = idx >= (((RaceSegScene *)MapScene)->unk0 ?
+                  *(s32 *)(*(s32 *)(((RaceSegScene *)MapScene)->data + 0x14) +
+                           (s32)((RaceSegScene *)MapScene)->data + 0x14) :
                   0);
     if (bad) {
         return 0;
     }
-    data = ((RaceSegScene *)D_80058AD0)->data;
+    data = ((RaceSegScene *)MapScene)->data;
     obj = (RaceSegObj *)((u8 *)&((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1] +
                           ((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1]);
     if (obj != NULL) {
@@ -2091,8 +2091,8 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
             }
             d.x = pos->x - w->segs[0].p0.x;
             d.z = pos->z - w->segs[0].p0.z;
-            if (((d.x * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
-                    ((d.z * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
+            if (((d.x * TrigTable[-ang & 0xFFF].unk2) >> 12) -
+                    ((d.z * TrigTable[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
                 continue;
             }
             d.y = w->segs[0].p1.y - w->segs[0].p0.y;
@@ -2150,9 +2150,9 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
             out->y = ang;
             a = -ang;
             v = rad - s + 2;
-            out->x = (v * D_80068BD4[a & 0xFFF].unk2) >> 12;
+            out->x = (v * TrigTable[a & 0xFFF].unk2) >> 12;
             ang = a + 0x400;
-            out->z = (v * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            out->z = (v * TrigTable[ang & 0xFFF].unk2) >> 12;
             pos->x += out->x;
             pos->z += out->z;
             found = 1;
@@ -2200,14 +2200,14 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     found = 0;
     rad = radius;
     one = 0x1000;
-    bad = idx > (((RaceSegScene *)D_80058AD0)->unk0 ?
-                 *(s32 *)(*(s32 *)(((RaceSegScene *)D_80058AD0)->data + 0x14) +
-                          (s32)((RaceSegScene *)D_80058AD0)->data + 0x14) :
+    bad = idx > (((RaceSegScene *)MapScene)->unk0 ?
+                 *(s32 *)(*(s32 *)(((RaceSegScene *)MapScene)->data + 0x14) +
+                          (s32)((RaceSegScene *)MapScene)->data + 0x14) :
                  0);
     if (bad) {
         return 0;
     }
-    data = ((RaceSegScene *)D_80058AD0)->data;
+    data = ((RaceSegScene *)MapScene)->data;
     tbl = (RaceSegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
     w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
                         (tbl2 = (RaceSegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
@@ -2253,8 +2253,8 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             }
             d.vx = lp.vx - a.p0.vx;
             d.vz = lp.vz - a.p0.vz;
-            side = ((d.vx * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
-                ((d.vz * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12);
+            side = ((d.vx * TrigTable[-ang & 0xFFF].unk2) >> 12) -
+                ((d.vz * TrigTable[(-ang - 0x400) & 0xFFF].unk2) >> 12);
             if (side < 0 || side > rad) {
                 continue;
             }
@@ -2314,8 +2314,8 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             out->vy = ang + bl->rot->ang;
             ang = (-ang + 0x400) & 0xFFF;
             v = (rad << 6) - s + 2;
-            out->vx = (v * D_80068BD4[(((ang + bl->rot->ang) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
-            out->vz = (v * D_80068BD4[(ang + bl->rot->ang) & 0xFFF].unk2) >> 18;
+            out->vx = (v * TrigTable[(((ang + bl->rot->ang) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
+            out->vz = (v * TrigTable[(ang + bl->rot->ang) & 0xFFF].unk2) >> 18;
             pos->vx += out->vx;
             pos->vz += out->vz;
             found = 1;
@@ -2359,14 +2359,14 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     found = 0;
     rad = radius;
     one = 0x1000;
-    bad = idx > (((RaceSegScene *)D_80058AD0)->unk0 ?
-                 *(s32 *)(*(s32 *)(((RaceSegScene *)D_80058AD0)->data + 0x14) +
-                          (s32)((RaceSegScene *)D_80058AD0)->data + 0x14) :
+    bad = idx > (((RaceSegScene *)MapScene)->unk0 ?
+                 *(s32 *)(*(s32 *)(((RaceSegScene *)MapScene)->data + 0x14) +
+                          (s32)((RaceSegScene *)MapScene)->data + 0x14) :
                  0);
     if (bad) {
         return 0;
     }
-    data = ((RaceSegScene *)D_80058AD0)->data;
+    data = ((RaceSegScene *)MapScene)->data;
     tbl = (RaceSegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
     w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
                         ((RaceSegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
@@ -2394,8 +2394,8 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             }
             d.vx = lp.vx - w->segs[0].p0.x;
             d.vz = lp.vz - w->segs[0].p0.z;
-            side = ((d.vx * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
-                ((d.vz * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12);
+            side = ((d.vx * TrigTable[-ang & 0xFFF].unk2) >> 12) -
+                ((d.vz * TrigTable[(-ang - 0x400) & 0xFFF].unk2) >> 12);
             if (side < 0 || side > rad) {
                 continue;
             }
@@ -2457,8 +2457,8 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             pos->vz += out->vz;
             ang = (-ang + 0x400) & 0xFFF;
             v = (rad << 6) - s + 2;
-            out->vx = (v * D_80068BD4[(((ang + rot->vy) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
-            out->vz = (v * D_80068BD4[(ang + rot->vy) & 0xFFF].unk2) >> 18;
+            out->vx = (v * TrigTable[(((ang + rot->vy) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
+            out->vz = (v * TrigTable[(ang + rot->vy) & 0xFFF].unk2) >> 18;
             found = 1;
             hit.y = obj->segs[i].ang;
             if (flags & 2) {
@@ -2657,7 +2657,7 @@ void InitialiseRACE(void) {
     RaceObjects = NULL;
     World_floor_level = -0x10;
     RaceInitStub();
-    scene = *(s32 **)D_80058AD0;
+    scene = *(s32 **)MapScene;
     RaceTagTimer = 0;
     func_8001682C(scene);
     RaceInitSpinners();
@@ -2772,9 +2772,9 @@ void UpdateRACE(void) {
         RaceStartDelay--;
     }
     if (RaceOver == 0) {
-        D_800AD12C = 0;
+        CameraMode = 0;
     } else {
-        D_800AD12C = 1;
+        CameraMode = 1;
     }
     RacePickupMaster();
     if (G63->unk34 != 0x19) {
@@ -2809,7 +2809,7 @@ void RaceInitHeroMove(s32 arg0) {
 
     m = Heroes[arg0].hero_move;
     if (m != NULL) {
-        if (D_8005A648 == 0x19) {
+        if (GameMode == 0x19) {
             RaceAccel = 0x258;
             RaceMoveTune1 = 0x640;
             RaceMoveTune2 = 0xC80;
@@ -2852,7 +2852,7 @@ void RacePreMoveHero(s32 player) {
             m->x_max = 0;
             *steer = 0;
             if (h->hero_mode != 0x60 && (m = h->hero_move) != NULL && h->hero_frozen == 0) {
-                pads = D_80051338;
+                pads = Pads;
                 pad = pads + player;
                 if ((pad->unk0 & 1) || h->hero_ai->AImode != 0) {
                     if (((RacePad *)pad)->unk50 & 0xA0) {
@@ -2870,17 +2870,17 @@ void RacePreMoveHero(s32 player) {
                         }
                     }
                     boost = 0;
-                    if ((((RacePad *)D_80051338)[player].unk50 & 0x8000) && fux->unk58 > 0) {
+                    if ((((RacePad *)Pads)[player].unk50 & 0x8000) && fux->unk58 > 0) {
                         if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
                             fux->unk13C >>= 3;
                             fux->unk140 >>= 3;
                         }
                         m->x_acc = fux->unk158;
                         m->z_acc = fux->unk158;
-                        m->x_max = fux->unk154 * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max = fux->unk154 * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
-                        if (D_8009D87C[player].unk0 >= 0x17 && G63B->unk5C[player] != 0) {
-                            fux->unk58 -= 0x180 - RaceSteerAngles[D_8009D87C[player].unk0 - 0x16];
+                        m->x_max = fux->unk154 * TrigTable[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->unk154 * TrigTable[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
+                        if (AiPlayerSkill[player].unk0 >= 0x17 && G63B->unk5C[player] != 0) {
+                            fux->unk58 -= 0x180 - RaceSteerAngles[AiPlayerSkill[player].unk0 - 0x16];
                         } else if (Heroes[player].hero_mode != 0x61) {
                             fux->unk58 -= 0x180;
                         }
@@ -2890,13 +2890,13 @@ void RacePreMoveHero(s32 player) {
                             boost = 0;
                         }
                     }
-                    if (boost == 0 && (((RacePad *)D_80051338)[player].unk50 & 0x800)) {
+                    if (boost == 0 && (((RacePad *)Pads)[player].unk50 & 0x800)) {
                         m->x_acc = fux->unk15C;
                         m->z_acc = fux->unk15C;
                         if (G63B->unk5C[player] != 0) {
-                            if (D_8009D87C[player].unk0 < 0x16) {
-                                m->x_acc = RaceAccel - ((0x10 - D_8009D87C[player].unk0) << 6);
-                                m->z_acc = RaceAccel - ((0x10 - D_8009D87C[player].unk0) << 6);
+                            if (AiPlayerSkill[player].unk0 < 0x16) {
+                                m->x_acc = RaceAccel - ((0x10 - AiPlayerSkill[player].unk0) << 6);
+                                m->z_acc = RaceAccel - ((0x10 - AiPlayerSkill[player].unk0) << 6);
                                 if (m->x_acc < 0x200) {
                                     m->x_acc = 0x200;
                                 }
@@ -2904,16 +2904,16 @@ void RacePreMoveHero(s32 player) {
                                     m->z_acc = 0x200;
                                 }
                             } else {
-                                m->x_acc = RaceAccel + RaceSteerSpeeds[D_8009D87C[player].unk0 - 0x16];
-                                m->z_acc = RaceAccel + RaceSteerSpeeds[D_8009D87C[player].unk0 - 0x16];
+                                m->x_acc = RaceAccel + RaceSteerSpeeds[AiPlayerSkill[player].unk0 - 0x16];
+                                m->z_acc = RaceAccel + RaceSteerSpeeds[AiPlayerSkill[player].unk0 - 0x16];
                             }
                         }
                         if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
                             fux->unk13C >>= 3;
                             fux->unk140 >>= 3;
                         }
-                        m->x_max = fux->unk14C * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max = fux->unk14C * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
+                        m->x_max = fux->unk14C * TrigTable[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->unk14C * TrigTable[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
                     }
                 }
             }
@@ -2942,19 +2942,19 @@ s32 RaceKeepOnTrack(s32 arg0, s32 arg1) {
         if (arg1 == 0) {
             if (dist > 0xB00) {
                 s32 ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
-                s32 c = D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
+                s32 c = TrigTable[(ang - 0x400) & 0xFFF].unk2;
                 s32 d = dist - 0xAFC;
                 eng->unk10.x -= d * c >> 12;
-                eng->unk10.z -= d * D_80068BD4[ang].unk2 >> 12;
+                eng->unk10.z -= d * TrigTable[ang].unk2 >> 12;
                 return 1;
             }
         } else {
             if (dist < 0x464) {
                 s32 ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
-                s32 c = D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
+                s32 c = TrigTable[(ang - 0x400) & 0xFFF].unk2;
                 s32 d = dist - 0x460;
                 eng->unk10.x -= d * c >> 12;
-                eng->unk10.z -= d * D_80068BD4[ang].unk2 >> 12;
+                eng->unk10.z -= d * TrigTable[ang].unk2 >> 12;
                 return 1;
             }
         }
@@ -3055,8 +3055,8 @@ void RaceMoveHero(s32 player) {
                 if (XZBoxToSphere(RaceSpinnerBoxes[i], &Heroes[player].hero_eng->unk10, 0, &pos) == 4 &&
                     RacePistons[i].state == 1) {
                     ga = get_angle(eng->OldXYZ.x - pos.x, eng->OldXYZ.z - pos.z) & 0xFFF;
-                    vx = -(D_80068BD4[(ga - 0x400) & 0xFFF].unk2 * 6);
-                    vz = -(D_80068BD4[ga].unk2 * 6);
+                    vx = -(TrigTable[(ga - 0x400) & 0xFFF].unk2 * 6);
+                    vz = -(TrigTable[ga].unk2 * 6);
                 }
                 i++;
             }
@@ -3091,8 +3091,8 @@ void RaceMoveHero(s32 player) {
                 }
                 dist = csqrt(vx * vx + vz * vz) >> 6;
                 dist = dist * 200 >> 8;
-                fux->unk13C = dist * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
-                fux->unk140 = dist * D_80068BD4[a & 0xFFF].unk2 >> 12;
+                fux->unk13C = dist * TrigTable[(a - 0x400) & 0xFFF].unk2 >> 12;
+                fux->unk140 = dist * TrigTable[a & 0xFFF].unk2 >> 12;
                 Heroes[player].hero_move->forward_angle = a + 0x800;
                 a = Random(4);
                 if (fux->unk13C != 0 || fux->unk140 != 0) {
@@ -3180,12 +3180,12 @@ void RaceEulerToQuat(VECTOR *ang, Quat *q) {
     x = ang->vx >> 1;
     y = ang->vy >> 1;
     z = ang->vz >> 1;
-    sx = D_80068BD4[x & 0xFFF].unk2;
-    cx = D_80068BD4[(x - 0x400) & 0xFFF].unk2;
-    sy = D_80068BD4[y & 0xFFF].unk2;
-    cy = D_80068BD4[(y - 0x400) & 0xFFF].unk2;
-    sz = D_80068BD4[z & 0xFFF].unk2;
-    cz = D_80068BD4[(z - 0x400) & 0xFFF].unk2;
+    sx = TrigTable[x & 0xFFF].unk2;
+    cx = TrigTable[(x - 0x400) & 0xFFF].unk2;
+    sy = TrigTable[y & 0xFFF].unk2;
+    cy = TrigTable[(y - 0x400) & 0xFFF].unk2;
+    sz = TrigTable[z & 0xFFF].unk2;
+    cz = TrigTable[(z - 0x400) & 0xFFF].unk2;
     a = RaceFixMul(sx, sz);
     b = RaceFixMul(sx, cz);
     c = RaceFixMul(cx, sz);
@@ -3251,12 +3251,12 @@ void RaceHeroIdle(s32 player) {
     h2->hero_eng->unk5E = 1;
     spawned = 0;
     if (f->unk24 == 0) {
-        pb = (RacePad *)D_80051338;
+        pb = (RacePad *)Pads;
         pad = &pb[player];
         if (pad->unk50 & 0x8000) {
             if (f->unk58 > 0) {
                 if (f->unk8C == 0) {
-                    if (D_8005A648 == 0x19) {
+                    if (GameMode == 0x19) {
                         if (player == 0) {
                             PlaySfx(0x679, NULL, NULL, 0x1000, 0x1E00, 0);
                         }
@@ -3271,7 +3271,7 @@ void RaceHeroIdle(s32 player) {
                         }
                     }
                     SetHeroSeq(player, 0x49);
-                    if (D_8005A648 == 0x19) {
+                    if (GameMode == 0x19) {
                         SetHeroSeq(player, 0x53);
                         hn = Heroes;
                         h = &hn[player];
@@ -3309,9 +3309,9 @@ void RaceHeroIdle(s32 player) {
                     hb = Heroes;
                     h = &hb[player];
                     e = h->hero_eng;
-                    pos.x = e->unk10.x + (D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    pos.x = e->unk10.x + (TrigTable[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
                     e = h->hero_eng;
-                    pos.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 25 >> 9);
+                    pos.z = e->unk10.z + (TrigTable[e->unk1E & 0xFFF].unk2 * 25 >> 9);
                     pos.y = h->hero_eng->unk10.y;
                 }
                 if (--f->unk48 == -1) {
@@ -3321,7 +3321,7 @@ void RaceHeroIdle(s32 player) {
                         } else {
                             CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
                         }
-                    } else if (D_8005A648 != 0x19) {
+                    } else if (GameMode != 0x19) {
                         CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
                     } else {
                         CreateNAS(pos.x, pos.y, pos.z, 0x1711, 0x11);
@@ -3342,7 +3342,7 @@ void RaceHeroIdle(s32 player) {
             f->unk8C = 0;
         }
         if (spawned == 0) {
-            if (((RacePad *)D_80051338)[player].unk50 & 0x800) {
+            if (((RacePad *)Pads)[player].unk50 & 0x800) {
                 if (f->unk90 == 0) {
                     if (player == 0) {
                         PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -3365,9 +3365,9 @@ void RaceHeroIdle(s32 player) {
                     hb = Heroes;
                     h = &hb[player];
                     e = h->hero_eng;
-                    pos.x = e->unk10.x + (D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    pos.x = e->unk10.x + (TrigTable[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
                     e = h->hero_eng;
-                    pos.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 25 >> 9);
+                    pos.z = e->unk10.z + (TrigTable[e->unk1E & 0xFFF].unk2 * 25 >> 9);
                     pos.y = h->hero_eng->unk10.y;
                 }
                 if (--f->unk4C == -1) {
@@ -3377,7 +3377,7 @@ void RaceHeroIdle(s32 player) {
                         } else {
                             CreateNAS(pos.x, pos.y, pos.z, 0x1709, 0x11);
                         }
-                    } else if (D_8005A648 != 0x19) {
+                    } else if (GameMode != 0x19) {
                         CreateNAS(pos.x, pos.y, pos.z, 0x1709, 0x11);
                     } else {
                         CreateNAS(pos.x, pos.y, pos.z, 0x1711, 0x11);
@@ -3396,11 +3396,11 @@ void RaceHeroIdle(s32 player) {
             EXTengine *e2;
 
             e2 = h2->hero_eng;
-            pos.x = e2->unk10.x + (D_80068BD4[(e2->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            pos.x = e2->unk10.x + (TrigTable[(e2->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
             e2 = h2->hero_eng;
-            pos.z = e2->unk10.z + (D_80068BD4[e2->unk1E & 0xFFF].unk2 * 25 >> 9);
+            pos.z = e2->unk10.z + (TrigTable[e2->unk1E & 0xFFF].unk2 * 25 >> 9);
             pos.y = h2->hero_eng->unk10.y;
-            if (D_8005A648 != 0x19) {
+            if (GameMode != 0x19) {
                 CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
             } else {
                 CreateNAS(pos.x, pos.y, pos.z, 0x1711, 0x11);
@@ -3553,7 +3553,7 @@ void RaceHeroOffTrack(s32 player) {
             return;
         }
         if (f->unk88 > 0) {
-            if (((RacePad *)D_80051338)[player].unk50 & 0x8000) {
+            if (((RacePad *)Pads)[player].unk50 & 0x8000) {
                 if (f->unk90 == 0) {
                     if (player == 0) {
                         PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -3573,9 +3573,9 @@ void RaceHeroOffTrack(s32 player) {
                     hb = Heroes;
                     h2 = &hb[player];
                     e = h2->hero_eng;
-                    sp.x = e->unk10.x + (D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 256 >> 12);
+                    sp.x = e->unk10.x + (TrigTable[(e->unk1E - 0x400) & 0xFFF].unk2 * 256 >> 12);
                     e = h2->hero_eng;
-                    sp.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 256 >> 12);
+                    sp.z = e->unk10.z + (TrigTable[e->unk1E & 0xFFF].unk2 * 256 >> 12);
                     sp.y = h2->hero_eng->unk10.y;
                     CreateNAS(sp.x, sp.y, sp.z, 0x1709, 0x11);
                     f->unk48 = 4;
@@ -3603,20 +3603,20 @@ void RaceHeroOffTrack(s32 player) {
             if (G63->unk34 == 0x19) {
                 SetHeroSeq(player, 0x52);
             }
-            h->hero_eng->unk10.x -= D_80068BD4[(f->unk54 - 0x400) & 0xFFF].unk2 * 512 >> 12;
-            h->hero_eng->unk10.z -= D_80068BD4[f->unk54 & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->unk10.x -= TrigTable[(f->unk54 - 0x400) & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->unk10.z -= TrigTable[f->unk54 & 0xFFF].unk2 * 512 >> 12;
             h->hero_eng->unk10.y = -0x578;
             h->hero_eng->unk20 = 0;
             if (G63->unk34 == 0x17) {
                 RaceDiveSplash(&h->hero_eng->unk10, 9);
             }
-            if (D_8005A648 == 0x18) {
+            if (GameMode == 0x18) {
                 RaceDiveSplash(&Heroes[player].hero_eng->unk10, 9);
             }
-            if (D_8005A648 == 0x19) {
+            if (GameMode == 0x19) {
                 RaceDiveSplash(&Heroes[player].hero_eng->unk10, 5);
             }
-            if (D_8005A648 == 0x1A) {
+            if (GameMode == 0x1A) {
                 RaceDiveSplash(&Heroes[player].hero_eng->unk10, 9);
             }
             PlaySfx(0x655, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -3639,8 +3639,8 @@ void SetRaceHeroRun(s32 player) {
         m = h->hero_move;
         if (m != NULL) {
             spd = D_8009D6F4[h->hero_name * 3];
-            m->x_vel = (spd * D_80068BD4[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
-            m->z_vel = (spd * D_80068BD4[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
+            m->x_vel = (spd * TrigTable[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
+            m->z_vel = (spd * TrigTable[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
         }
         f->unk40 = 0;
     }
@@ -3666,16 +3666,16 @@ void RaceHeroRun(s32 player) {
     h->hero_eng->unk10.y = 0;
     if (++f->unk40 > 20) {
         SetHeroAction(player, 0x5B);
-        if (D_8005A648 == 0x19) {
+        if (GameMode == 0x19) {
             SetHeroSeq(player, 0x52);
         }
         return;
     }
-    if (((RacePad *)D_80051338)[player].unk50 & 0x8000) {
+    if (((RacePad *)Pads)[player].unk50 & 0x8000) {
         m->x_acc = 0xC;
         m->z_acc = 0xC;
-        m->x_max = (RaceJumpVel * D_80068BD4[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
-        m->z_max = (RaceJumpVel * D_80068BD4[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
+        m->x_max = (RaceJumpVel * TrigTable[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
+        m->z_max = (RaceJumpVel * TrigTable[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
     }
     func_8008502C(player);
     RaceHeroUsePickup(player);
@@ -3777,11 +3777,11 @@ void RaceHeroDazed(s32 arg0) {
     if (fux == NULL) {
         return;
     }
-    pb = (RacePad *)D_80051338;
+    pb = (RacePad *)Pads;
     pad = &pb[arg0];
     pad->unk50 = 0;
     pad->unk54 = 0;
-    if (D_8005A648 != 0x19) {
+    if (GameMode != 0x19) {
         func_8008502C(arg0);
     }
     hero->hero_frozen = 2;
@@ -3812,13 +3812,13 @@ void SetRaceHeroJump(s32 player) {
         f->unk138 = 0;
         m = h->hero_move;
         if (m != NULL) {
-            pos.x = h->hero_eng->unk10.x + (D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
-            pos.z = h->hero_eng->unk10.z + (D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 * 25 >> 9);
+            pos.x = h->hero_eng->unk10.x + (TrigTable[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            pos.z = h->hero_eng->unk10.z + (TrigTable[h->hero_eng->unk1E & 0xFFF].unk2 * 25 >> 9);
             pos.y = h->hero_eng->unk10.y;
             m->jump_acc = 5;
             m->jump_dec = 10;
             m->jump_vel = -0x44;
-            if (D_8005A648 == 0x19) {
+            if (GameMode == 0x19) {
                 if (player == 0) {
                     PlaySfx(0x68D, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
@@ -3942,8 +3942,8 @@ loop:
             eng2 = Heroes[found].hero_eng;
             angle = get_angle(eng->unk10.x - eng2->unk10.x, eng->unk10.z - eng2->unk10.z) & 0xFFF;
             if ((u32)(angle - 0x201) < 0xBFF) {
-                move->x_vel = -((D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 3) >> 7);
-                move->z_vel = -((D_80068BD4[angle].unk2 * 3) >> 7);
+                move->x_vel = -((TrigTable[(angle - 0x400) & 0xFFF].unk2 * 3) >> 7);
+                move->z_vel = -((TrigTable[angle].unk2 * 3) >> 7);
             }
         }
     }
@@ -3972,7 +3972,7 @@ s32 RaceHeroUsePickup(s32 player) {
     hero = &base[player];
     fux = (RaceSpawnFux *)hero->hero->FUX;
     if (fux != NULL) {
-        pb = (RacePad *)D_80051338;
+        pb = (RacePad *)Pads;
         pad = &pb[player];
         st = pad->unk50;
         eng = hero->hero_eng;
@@ -3996,8 +3996,8 @@ s32 RaceHeroUsePickup(s32 player) {
             } else if (t == 2) {
                 pp = &pos;
                 pos.y = 0;
-                pos.x = eng->unk10.x + ((D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11);
-                pos.z = eng->unk10.z + ((D_80068BD4[eng->unk1E & 0xFFF].unk2 * 75) >> 11);
+                pos.x = eng->unk10.x + ((TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11);
+                pos.z = eng->unk10.z + ((TrigTable[eng->unk1E & 0xFFF].unk2 * 75) >> 11);
                 i = 0;
                 lim = 0x1DE84;
                 other = base;
@@ -4044,8 +4044,8 @@ s32 RaceHeroTestJump(s32 arg0) {
     s32 st;
 
     if (Heroes[arg0].hero->FUX != NULL) {
-        if (D_8005A614[arg0 + 0x5C] != 0) {
-            b1 = (RacePad *)D_80051338;
+        if (GameInfo[arg0 + 0x5C] != 0) {
+            b1 = (RacePad *)Pads;
             p1 = &b1[arg0];
             st = p1->unk50;
             if (!(st & 0x4000)) {
@@ -4054,7 +4054,7 @@ s32 RaceHeroTestJump(s32 arg0) {
             }
             goto act;
         }
-        base = (RacePad *)D_80051338;
+        base = (RacePad *)Pads;
         pad = &base[arg0];
         if (pad->unk54 & 0x4000) {
 act:
@@ -4094,13 +4094,13 @@ void SetRaceHeroWinner(s32 player) {
     hero->hero_eng->unk1C = 0;
     hero->hero_eng->unk10.y = RaceFloorLevel;
     hero->hero_eng->unk5E = 1;
-    if (D_8005A648 != 0x19) {
+    if (GameMode != 0x19) {
         func_80085718(player, 0);
         return;
     }
     func_80085718(player, 1);
     func_80017640();
-    func_80011D28((u8 *)&D_8004E0F0);
+    func_80011D28((u8 *)&MainHeap);
 }
 
 void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
@@ -4111,7 +4111,7 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
     s32 k;
     u8 *g;
 
-    if (!(D_8005A644 & 0x801) && arg0 == -1) {
+    if (!(GameExitFlags & 0x801) && arg0 == -1) {
         taken = 0;
         for (j = 0; j < 4; j++) {
             best = -1;
@@ -4122,10 +4122,10 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
                     }
                 }
             }
-            D_8005A614[j + 0xA7] = best;
+            GameInfo[j + 0xA7] = best;
             taken |= 1 << best;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 0x6C) == 0) {
             HeroInfo *hb;
             HeroInfo *a;
@@ -4133,19 +4133,19 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     Heroes[k].hero_status |= 0x100;
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                     }
                 }
             } else {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (D_8005A614[0xA7] == n) {
+                    if (GameInfo[0xA7] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x8400;
@@ -4166,34 +4166,34 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
             ib = *(s16 *)(g + 0x4A);
             ita = Heroes[ia].hero_teammate;
             itb = Heroes[ib].hero_teammate;
-            if (Heroes[ia].hero_score == 0 && D_8005A614[ia + 0x5C] == 0) {
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+            if (Heroes[ia].hero_score == 0 && GameInfo[ia + 0x5C] == 0) {
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 RACE_TEAM_WIN(ia, ita, ib, itb);
-            } else if (Heroes[ita].hero_score == 0 && D_8005A614[ia + 0x5C] == 0) {
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+            } else if (Heroes[ita].hero_score == 0 && GameInfo[ia + 0x5C] == 0) {
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 RACE_TEAM_WIN(ia, ita, ib, itb);
-            } else if (Heroes[ib].hero_score == 0 && D_8005A614[ib + 0x5C] == 0) {
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+            } else if (Heroes[ib].hero_score == 0 && GameInfo[ib + 0x5C] == 0) {
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 RACE_TEAM_WIN(ib, itb, ia, ita);
-            } else if (Heroes[itb].hero_score == 0 && D_8005A614[ib + 0x5C] == 0) {
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+            } else if (Heroes[itb].hero_score == 0 && GameInfo[ib + 0x5C] == 0) {
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 RACE_TEAM_WIN(ib, itb, ia, ita);
-            } else if (Heroes[ia].hero_score == 0 && D_8005A614[ia + 0x5C] != 0) {
+            } else if (Heroes[ia].hero_score == 0 && GameInfo[ia + 0x5C] != 0) {
                 RACE_DRAW(p, arg1);
-            } else if (Heroes[ita].hero_score == 0 && D_8005A614[ia + 0x5C] != 0) {
+            } else if (Heroes[ita].hero_score == 0 && GameInfo[ia + 0x5C] != 0) {
                 RACE_DRAW(p, arg1);
-            } else if (Heroes[ib].hero_score == 0 && D_8005A614[ib + 0x5C] != 0) {
+            } else if (Heroes[ib].hero_score == 0 && GameInfo[ib + 0x5C] != 0) {
                 RACE_DRAW(p, arg1);
-            } else if (Heroes[itb].hero_score == 0 && D_8005A614[ib + 0x5C] != 0) {
+            } else if (Heroes[itb].hero_score == 0 && GameInfo[ib + 0x5C] != 0) {
                 RACE_DRAW(p, arg1);
             } else {
                 sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
                 sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
                 if (sa == sb) {
                     RACE_DRAW(p, arg1);
-                } else if ((sa < sb && D_8005A614[ia + 0x5C] == 0)
-                           || (sb < sa && D_8005A614[ib + 0x5C] == 0)) {
-                    u8 *w = D_8005A614;
+                } else if ((sa < sb && GameInfo[ia + 0x5C] == 0)
+                           || (sb < sa && GameInfo[ib + 0x5C] == 0)) {
+                    u8 *w = GameInfo;
 
                     *(u16 *)(w + 0x30) |= 0x800;
                     if (w[ia + 0x5C] == 0) {
@@ -4523,8 +4523,8 @@ s32 RaceHeroCollide(s32 player)
       r = Random(4);
       ang = get_angle(dx, dz) & 0xFFF;
       dist = (lim - dist) + 8;
-      eng->unk10.x -= (dist * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-      eng->unk10.z -= (dist * D_80068BD4[ang].unk2) >> 12;
+      eng->unk10.x -= (dist * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+      eng->unk10.z -= (dist * TrigTable[ang].unk2) >> 12;
       RaceHeroesBump(player, i);
       a = (RaceBumpFux *) Heroes[player].hero->FUX;
       hit = 1;
@@ -4538,7 +4538,7 @@ s32 RaceHeroCollide(s32 player)
         continue;
       }
       speed = ((a->vx * a->vx) >> 8) + ((a->vz * a->vz) >> 8);
-      if (D_8005A648 == 0x19)
+      if (GameMode == 0x19)
       {
         if (speed > 0x10D2A4)
         {
@@ -4653,7 +4653,7 @@ s32 RaceMissileHitHeroes(u8 *arg0, u32 arg1) {
                             func_80026980(Heroes[j].hero);
                         }
                     }
-                    D_800AD12C = 1;
+                    CameraMode = 1;
                 }
                 return i;
             }
@@ -4734,8 +4734,8 @@ void PlotRaceMissile(NAS *m) {
         }
         break;
     }
-    ext->pos.x -= (ext->unk64 * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-    ext->pos.z -= (ext->unk64 * D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+    ext->pos.x -= (ext->unk64 * TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->unk64 * TrigTable[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
     if (RaceMissileHitHeroes((u8 *)&ext->pos, ext->unkC) != -1) {
         RaceSpawnPuff(&m->Engine->unk10, 1, &D_80054F84);
         PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -4749,7 +4749,7 @@ void PlotRaceMissile(NAS *m) {
             goto kill;
         }
         count = 1;
-        if (D_8005A648 == 0x17) {
+        if (GameMode == 0x17) {
             count = 3;
         }
         for (i = 0; ; i++) {
@@ -4759,10 +4759,10 @@ void PlotRaceMissile(NAS *m) {
                 break;
             }
             if (i != 1 && RaceTrackCollide(&ext->pos, &hit, 0x96, i, 1) != 0) {
-                n.x = D_80068BD4[hit.y & 0xFFF].unk2;
-                n.z = D_80068BD4[(hit.y - 0x400) & 0xFFF].unk2;
-                d.x = -D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2;
-                d.z = -D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2;
+                n.x = TrigTable[hit.y & 0xFFF].unk2;
+                n.z = TrigTable[(hit.y - 0x400) & 0xFFF].unk2;
+                d.x = -TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2;
+                d.z = -TrigTable[(u16)m->Engine->unk1E & 0xFFF].unk2;
                 dot = (d.x * n.x >> 12) + (d.z * n.z >> 12);
                 r.x = d.x - (dot * n.x >> 11);
                 r.z = d.z - (dot * n.z >> 11);
@@ -4787,7 +4787,7 @@ void PlotRaceMissile(NAS *m) {
             ext->unk5C->unk2C.x = m->Engine->unk2C.x;
             ext->unk5C->unk2C.y = m->Engine->unk2C.y;
             ext->unk5C->unk2C.z = m->Engine->unk2C.z;
-            if (D_8005A648 == 0x1A) {
+            if (GameMode == 0x1A) {
                 ext->unk5C->unk1E = m->Engine->unk1E;
                 ext->unk5C->unk5E = 1;
                 ext->unk5C->unk10.y = -m->Engine->unk10.y;
@@ -4858,7 +4858,7 @@ void PlotRacePickUp(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    if (D_8005A648 != 0x19) {
+    if (GameMode != 0x19) {
         RaceBounceObject((RaceBounceObj *)m->Engine, (RaceBouncer *)&ext->pad0[0xC]);
     }
     m->Engine->unk1E += 0x80;
@@ -4977,7 +4977,7 @@ void RaceCountLaps(s32 player) {
     s32 flags;
     s32 unused[2];
 
-    if (!(D_8005A644 & 0x801)) {
+    if (!(GameExitFlags & 0x801)) {
         base = Heroes;
         hero = base + player;
         fux = (RaceLapFux *)hero->hero->FUX;
@@ -5164,8 +5164,8 @@ heroes_done:
             }
             s = &RacePickupSlots[slot];
             angle = s->angle;
-            spawned = CreateNAS(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
-                                   dist * D_80068BD4[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
+            spawned = CreateNAS(dist * TrigTable[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+                                   dist * TrigTable[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
             if (spawned != NULL) {
                 s->used = 1;
                 ext = FindExtension(spawned, 0x10000000);
@@ -5220,14 +5220,14 @@ held:
         if (fux->unk18 == 4) {
             eng->sub->flags |= 0x8000;
             eng->sub->unk74 = 0x2005;
-            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->sub->unk6C = *(void **)MapScene;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
         }
         if (fux->unk18 == 8) {
             eng->sub->unk74 = 0x2002;
-            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->sub->unk6C = *(void **)MapScene;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5236,7 +5236,7 @@ held:
             eng->sub->flags |= 0x8000;
             eng->sub->unk74 = 0x2011;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
-            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->sub->unk6C = *(void **)MapScene;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5254,7 +5254,7 @@ held:
             eng->sub->flags |= 0x8000;
             eng->sub->unk74 = 0x2011;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
-            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->sub->unk6C = *(void **)MapScene;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5357,8 +5357,8 @@ heroes_done:
             }
             RacePickupSlots[slot].used = 1;
             angle = RacePickupSlots[slot].angle;
-            spawned = CreateNAS(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
-                                   dist * D_80068BD4[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
+            spawned = CreateNAS(dist * TrigTable[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+                                   dist * TrigTable[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
             if (spawned != NULL) {
                 ext = FindExtension(spawned, 0x10000000);
                 if (ext != NULL) {
@@ -5485,7 +5485,7 @@ void InitDinoEgg(NAS *m) {
         m->Engine->unk5D = 0;
         m->Engine->unk5C = 1;
         m->Engine->sub->unk74 = 0x2005;
-        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->sub->unk6C = *(s32 *)MapScene;
         ext->NasStatus = 0;
         ext->angcounter = 0;
         ext->yang = 0;
@@ -5529,14 +5529,14 @@ void PlotDinoEgg(NAS *m) {
         ext->dec = 4;
         RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0);
         RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 0, 1);
-        m->Engine->unk10.x += (D_80068BD4[(h->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11;
-        m->Engine->unk10.z += (D_80068BD4[(u16)h->unk1E & 0xFFF].unk2 * 75) >> 11;
+        m->Engine->unk10.x += (TrigTable[(h->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11;
+        m->Engine->unk10.z += (TrigTable[(u16)h->unk1E & 0xFFF].unk2 * 75) >> 11;
         break;
     case 2:
         if (ext->vel > 0) {
             ext->vel -= ext->dec;
         }
-        m->Engine->unk20 = (D_80068BD4[(ext->angcounter - 0x400) & 0xFFF].unk2 * 3) >> 5;
+        m->Engine->unk20 = (TrigTable[(ext->angcounter - 0x400) & 0xFFF].unk2 * 3) >> 5;
         ext->angcounter += 0x80;
         if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0) {
             RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
@@ -5544,8 +5544,8 @@ void PlotDinoEgg(NAS *m) {
         if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
             RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
         }
-        m->Engine->unk10.x -= (ext->vel * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-        m->Engine->unk10.z -= (ext->vel * D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+        m->Engine->unk10.x -= (ext->vel * TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        m->Engine->unk10.z -= (ext->vel * TrigTable[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
         m->Engine->unk1E += ((ext->yang - m->Engine->unk1E) << 20) >> 21;
         if (RaceHitHero((u8 *)&m->Engine->unk10) != -1) {
             KillNAS(m);
@@ -5560,8 +5560,8 @@ void PlotDinoEgg(NAS *m) {
         }
         break;
     case 1:
-        m->Engine->unk10.x -= (D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x20) >> 12;
-        m->Engine->unk10.z -= (D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2 * 0x20) >> 12;
+        m->Engine->unk10.x -= (TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x20) >> 12;
+        m->Engine->unk10.z -= (TrigTable[(u16)m->Engine->unk1E & 0xFFF].unk2 * 0x20) >> 12;
         ext->angcounter += 0x80;
         func_800250B0(m);
         if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0)
@@ -5669,8 +5669,8 @@ void PlotRaceShield(NAS *nas) {
             eng = nas->Engine;
             eng2 = h->hero_eng;
             angle = get_angle(eng->unk10.x - eng2->unk10.x, eng->unk10.z - eng2->unk10.z);
-            c = D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 8;
-            s = D_80068BD4[angle & 0xFFF].unk2 * 8;
+            c = TrigTable[(angle - 0x400) & 0xFFF].unk2 * 8;
+            s = TrigTable[angle & 0xFFF].unk2 * 8;
             fux2 = (RaceShieldFux *)h->hero->FUX;
             if (fux2 != NULL) {
                 fux2->unk13C = -c;
@@ -5791,7 +5791,7 @@ void InitRaceVolcano(NAS *nas) {
                 eng->unk5C = 1;
                 eng->unk5D = 2;
                 eng->sub->unk74 = 0x2019;
-                eng->sub->unk6C = *(void **)D_80058AD0;
+                eng->sub->unk6C = *(void **)MapScene;
                 ext->eng[0]->unk1E = Random(0x1000);
                 ext->eng[0]->unk20 = 0;
                 ext->unk144[0] = 0;
@@ -5852,8 +5852,8 @@ void PlotRaceVolcano(NAS *nas) {
             if (rock >= 3) {
                 break;
             }
-            x = D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 75 >> 9;
-            z = D_80068BD4[ang & 0xFFF].unk2 * 75 >> 9;
+            x = TrigTable[(ang - 0x400) & 0xFFF].unk2 * 75 >> 9;
+            z = TrigTable[ang & 0xFFF].unk2 * 75 >> 9;
             if (ext->eng[rock] != NULL) {
                 ext->eng[rock]->unk1E = ang;
                 ext->vel[rock].x = x;
@@ -6107,7 +6107,7 @@ s32 RaceExplodeHitHeroes(SLONG_XYZ *pos) {
                             func_80026980(Heroes[j].hero);
                         }
                     }
-                    D_800AD12C = 1;
+                    CameraMode = 1;
                 }
             }
             hit = 1;
@@ -6122,7 +6122,7 @@ void InitBarrelRoll(NAS *m) {
 
     ext = AddExt(m, 0x80, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->sub->unk6C = *(s32 *)MapScene;
         m->Engine->sub->unk74 = 0x2037;
         m->Engine->unk5D = 1;
         ext->unkC = 0xC;
@@ -6131,9 +6131,9 @@ void InitBarrelRoll(NAS *m) {
         ext->unk10 = 0;
         ext->unk24 = 0;
         r = Random(0x400);
-        ext->vel.x = (D_80068BD4[(r + 0xA00) & 0xFFF].unk2 * 9) >> 4;
+        ext->vel.x = (TrigTable[(r + 0xA00) & 0xFFF].unk2 * 9) >> 4;
         r += 0xE00;
-        ext->vel.z = (D_80068BD4[r & 0xFFF].unk2 * 9) >> 4;
+        ext->vel.z = (TrigTable[r & 0xFFF].unk2 * 9) >> 4;
         m->Engine->unk1E = -r;
         ext->pos.z = 0x1B00;
         ext->vel.y = 0;
@@ -6203,7 +6203,7 @@ void InitTrackGlob(NAS *m) {
     if (ext != NULL) {
         ext->cursor = func_80024E30(m, &TrackGlobScriptInit);
         func_80026B70(&RaceObjects, (u8 *)m);
-        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->sub->unk6C = *(s32 *)MapScene;
         m->Engine->sub->unk74 = 0x4100;
         m->Engine->unk5D = 1;
         ext->unk10 = 0x10;
@@ -6215,8 +6215,8 @@ void InitTrackGlob(NAS *m) {
         if (++RaceTrackGlobCount == 3) {
             RaceTrackGlobCount = 0;
         }
-        ext->unk64 = (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 7) >> 4;
-        ext->unk6C = (D_80068BD4[angle & 0xFFF].unk2 * 7) >> 4;
+        ext->unk64 = (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 7) >> 4;
+        ext->unk6C = (TrigTable[angle & 0xFFF].unk2 * 7) >> 4;
         ext->unk68 = 0;
         ext->unk84 = 0x5A;
         m->Engine->unk1E = 0;
@@ -6296,9 +6296,9 @@ void PlotTrackGlob(NAS *nas) {
         angle &= 0xFFF;
         i = 0;
         ext->unk88 = angle;
-        nas->Engine->unk10.x -= 0x20 * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
+        nas->Engine->unk10.x -= 0x20 * TrigTable[(angle - 0x400) & 0xFFF].unk2 >> 12;
         h = Heroes;
-        nas->Engine->unk10.z -= 0x20 * D_80068BD4[ext->unk88 & 0xFFF].unk2 >> 12;
+        nas->Engine->unk10.z -= 0x20 * TrigTable[ext->unk88 & 0xFFF].unk2 >> 12;
     loop2:
         if (i < 4) {
             do {
@@ -6324,8 +6324,8 @@ void PlotTrackGlob(NAS *nas) {
     case 3:
         func_800250B0(nas);
         ext->unk88 = 0x800;
-        nas->Engine->unk10.x -= 0x20 * D_80068BD4[(ext->unk88 - 0x400) & 0xFFF].unk2 >> 12;
-        nas->Engine->unk10.z -= 0x20 * D_80068BD4[ext->unk88 & 0xFFF].unk2 >> 12;
+        nas->Engine->unk10.x -= 0x20 * TrigTable[(ext->unk88 - 0x400) & 0xFFF].unk2 >> 12;
+        nas->Engine->unk10.z -= 0x20 * TrigTable[ext->unk88 & 0xFFF].unk2 >> 12;
         e = nas->Engine;
         e->unk1E -= (s32)((e->unk1E - ext->unk88) << 20) >> 22;
         if (nas->Engine->unk10.x * nas->Engine->unk10.x + nas->Engine->unk10.z * nas->Engine->unk10.z > 0x790000) {
@@ -6345,14 +6345,14 @@ void InitDac(NAS *m) {
 
     ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->sub->unk6C = *(s32 *)MapScene;
         m->Engine->unk5C = 1;
         m->Engine->unk5D = 2;
         m->Engine->unk2C.x = 0x2000;
         m->Engine->unk2C.y = 0x2000;
         m->Engine->unk2C.z = 0x2000;
-        m->Engine->unk10.x = (D_80068BD4[0x800].unk2 * 7) >> 4;
-        m->Engine->unk10.z = (D_80068BD4[0xC00].unk2 * 7) >> 4;
+        m->Engine->unk10.x = (TrigTable[0x800].unk2 * 7) >> 4;
+        m->Engine->unk10.z = (TrigTable[0xC00].unk2 * 7) >> 4;
         m->Engine->sub->unk68 = -0x300;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk10 = (s32)func_80024E30(m, &DacScriptInit);
@@ -6407,8 +6407,8 @@ void PlotDac(NAS *nas) {
     case 0:
         nas->Engine->unk10.y -= (nas->Engine->unk10.y - ext->height) >> 4;
         ext->angle = ((get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) + 0x400) & 0xFFF;
-        nas->Engine->unk10.x += D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2 * 32 >> 12;
-        nas->Engine->unk10.z += D_80068BD4[ext->angle & 0xFFF].unk2 * 32 >> 12;
+        nas->Engine->unk10.x += TrigTable[(ext->angle - 0x400) & 0xFFF].unk2 * 32 >> 12;
+        nas->Engine->unk10.z += TrigTable[ext->angle & 0xFFF].unk2 * 32 >> 12;
         {
             s32 r;
             r = nas->Engine->unk1E - 0x800;
@@ -6419,7 +6419,7 @@ void PlotDac(NAS *nas) {
             i = 0;
             p = Random(4);
             ext->state = 1;
-            g = D_8005A614;
+            g = GameInfo;
         search:
             i++;
             if (g[p + 0x5C] == 0) {
@@ -6470,8 +6470,8 @@ void PlotDac(NAS *nas) {
         a = get_angle(dx, dz) & 0xFFF;
         b = get_angle(dy, csqrt(dd) >> 6);
         ext->angle = a;
-        nas->Engine->unk10.x -= (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 5) >> 9;
-        nas->Engine->unk10.z -= (D_80068BD4[ext->angle & 0xFFF].unk2 * 5) >> 9;
+        nas->Engine->unk10.x -= (TrigTable[(a - 0x400) & 0xFFF].unk2 * 5) >> 9;
+        nas->Engine->unk10.z -= (TrigTable[ext->angle & 0xFFF].unk2 * 5) >> 9;
         eng = nas->Engine;
         eng->unk1E -= ((eng->unk1E - ext->angle) << 20) >> 22;
         nas->Engine->unk1C -= ((nas->Engine->unk1C - (-b & 0xFFF)) << 20) >> 22;
@@ -6541,7 +6541,7 @@ void InitGlob(NAS *m) {
     ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         ext->unk10 = func_80024E30(m, &GlobScriptInit);
-        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->sub->unk6C = *(s32 *)MapScene;
         GotoLinkAnim((EXTanimator *)ext->unk10, 2);
         func_800250B0(m);
         ext->unkC = 3;
@@ -6723,10 +6723,10 @@ s32 RaceReflectAngle(s32 a, s32 b) {
     s32 r[4];
     s32 dot;
 
-    n[0] = D_80068BD4[b & 0xFFF].unk2;
-    n[2] = D_80068BD4[(b - 0x400) & 0xFFF].unk2;
-    d[0] = -D_80068BD4[(a - 0x400) & 0xFFF].unk2;
-    d[2] = -D_80068BD4[a & 0xFFF].unk2;
+    n[0] = TrigTable[b & 0xFFF].unk2;
+    n[2] = TrigTable[(b - 0x400) & 0xFFF].unk2;
+    d[0] = -TrigTable[(a - 0x400) & 0xFFF].unk2;
+    d[2] = -TrigTable[a & 0xFFF].unk2;
     dot = DotXZ(d, n);
     r[0] = d[0] - (dot * n[0] >> 11);
     r[2] = d[2] - (dot * n[2] >> 11);
@@ -6783,7 +6783,7 @@ void InitRaceSmokeBoost(NAS *nas) {
     ScriptCursor *cur;
 
     cur = func_80024E30(nas, &RaceSmokeBoostScriptInit);
-    if (D_8005A648 == 0x1F) {
+    if (GameMode == 0x1F) {
         if (cur != NULL) {
             cur->unk1E = 4;
         }
@@ -6898,7 +6898,7 @@ s32 RaceHeroBreatheFire(s32 arg0) {
     hero = &base[arg0];
     fux = (RaceFuxCount *)hero->hero->FUX;
     if (fux != NULL && fux->unk3C > 0 &&
-        (((RacePad *)D_80051338)[arg0].unk54 & 0x8000)) {
+        (((RacePad *)Pads)[arg0].unk54 & 0x8000)) {
         nas = CreateNAS(hero->hero_eng->unk10.x, hero->hero_eng->unk10.y,
                            hero->hero_eng->unk10.z, 0x1705, 0x11);
         if (nas != NULL) {
@@ -6913,7 +6913,7 @@ s32 RaceHeroBreatheFire(s32 arg0) {
 }
 
 s32 RaceHeroTestIdle(s32 arg0) {
-    if (((RacePad *)D_80051338)[arg0].unk50 & 0xF0) {
+    if (((RacePad *)Pads)[arg0].unk50 & 0xF0) {
         return 0;
     }
     SetHeroAction(arg0, 0x5B);
@@ -6921,7 +6921,7 @@ s32 RaceHeroTestIdle(s32 arg0) {
 }
 
 s32 RaceHeroTestRun(s32 arg0) {
-    if (!(((RacePad *)D_80051338)[arg0].unk54 & 0x8000)) {
+    if (!(((RacePad *)Pads)[arg0].unk54 & 0x8000)) {
         return 0;
     }
     SetHeroAction(arg0, 0x5C);
@@ -6985,7 +6985,7 @@ void SetRaceHeroIdle(s32 player) {
     RaceHeroFux *fux;
 
     SetHeroSeq(player, 0x48);
-    if (D_8005A648 == 0x19) {
+    if (GameMode == 0x19) {
         SetHeroSeq(player, 0x52);
     }
     move = Heroes[player].hero_move;
@@ -7007,8 +7007,8 @@ void RaceAxisAngleToQuat(s32 *arg0, s32 *arg1)
     s32 t;
 
     a = arg0[3] >> 1;
-    arg1[3] = D_80068BD4[a & 0xFFF].unk2;
-    c = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
+    arg1[3] = TrigTable[a & 0xFFF].unk2;
+    c = TrigTable[(a - 0x400) & 0xFFF].unk2;
     t = c * arg0[0];
     arg1[0] = (t >= 0 ? t + 0x800 : t - 0x800) >> 12;
     t = c * arg0[1];
@@ -7204,21 +7204,21 @@ s32 RaceAI_TargetShare(s32 arg0, s32 arg1) {
     }
     for (i = 0; i < 4; i++) {
         if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
-            total += D_8009D87C[i].unk4 << 7;
+            total += AiPlayerSkill[i].unk4 << 7;
         }
     }
     if (total != 0) {
-        result = (D_8009D87C[arg1].unk4 << 19) / total;
+        result = (AiPlayerSkill[arg1].unk4 << 19) / total;
     }
     return result;
 }
 
 void RACESetUp(void) {
-    D_8005AA70[0] = (s32)InitialiseRACEFirst;
-    D_8005AA70[1] = (s32)InitialiseRACE;
-    D_8005AA70[2] = (s32)InitialiseRACE;
-    D_8005AA70[3] = (s32)UpdateRACE;
-    D_8005AA70[5] = (s32)FirstTriggersRACE;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
+    LevelSpecs[0] = (s32)InitialiseRACEFirst;
+    LevelSpecs[1] = (s32)InitialiseRACE;
+    LevelSpecs[2] = (s32)InitialiseRACE;
+    LevelSpecs[3] = (s32)UpdateRACE;
+    LevelSpecs[5] = (s32)FirstTriggersRACE;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
 }

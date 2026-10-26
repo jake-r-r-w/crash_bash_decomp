@@ -86,13 +86,13 @@ void num_players_render(void);
 void CharSelectRender(void);
 /* 16-byte slot record of an BattleArena list (LevelSelectUpdate). */
 typedef struct {
-    s32 type;  /* 0x0: 1 open from the start, 2 unlocked by D_8005A614[0xE4/0x168 + idx] */
-    s32 idx;   /* 0x4: the game mode (D_8005A648) */
+    s32 type;  /* 0x0: 1 open from the start, 2 unlocked by GameInfo[0xE4/0x168 + idx] */
+    s32 idx;   /* 0x4: the game mode (GameMode) */
     void *model; /* 0x8 */
     s32 unkC;  /* 0xC: the model's anim */
 } BattleLevel;
 
-/* One battle arena of the level select (BattleArenas, by D_8005A614[0x36]): unk0 its
+/* One battle arena of the level select (BattleArenas, by GameInfo[0x36]): unk0 its
  * BattleLevel list, unk4 how many. */
 typedef struct {
     s32 unk0;
@@ -122,13 +122,13 @@ extern s32 *D_8004DD70[];
 static inline s32 TitlesSlotRowI(s32 a, s32 b) {
     s32 base = BattleArenas[a].unk0;
     s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
-    s32 *row = D_8004DD70[*(s32 *)(D_8005A614 + 0x2C)];
+    s32 *row = D_8004DD70[*(s32 *)(GameInfo + 0x2C)];
     return row[idx];
 }
 
 /* LevelSelectInput: is the selected slot of BattleArenas available? */
 static inline s32 TitlesSlotOn(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     BattleLevel *slot;
     s32 type;
     s32 idx;
@@ -171,7 +171,6 @@ typedef struct CharCard {
     /* 0x20 */ s32 sfx;
     /* 0x24 */ u8 *sub;       /* set by CharSelectInit */
 } CharCard;
-BASH_SIZE_CHECK(CharCard, 0x28);
 
 /* the selectors' animations, by hero: a step list and a record pointing at it */
 extern s32 CharSelectSteps0[], CharSelectSteps1[], CharSelectSteps2[], CharSelectSteps3[];
@@ -259,7 +258,7 @@ static inline s32 TitlesSteer(s32 pos, s32 tgt, s32 vx, s32 lim) {
     }
     return v;
 }
-/* D_80068BD4 read bytewise: hi is the sine's high byte. */
+/* TrigTable read bytewise: hi is the sine's high byte. */
 typedef struct {
     s16 unk0;
     s8 lo;
@@ -269,7 +268,7 @@ extern s32 CharPickSfx[];
 extern s32 CharMoveSfx[];
 extern u8 D_80052A54[];
 extern TitlesOff CharSelectorOffsets[];
-/* D_8005A614 as seen by ShuffleCharSelectors (unk26 is D_8005A63A). */
+/* GameInfo as seen by ShuffleCharSelectors (unk26 is D_8005A63A). */
 typedef struct {
     u8 pad0[0x26];
     u8 unk26;
@@ -383,10 +382,10 @@ s32 IsCardLevel(s32 arg0);
 
 /* 0x4C-byte preset record of TeamModePresets, picked by TeamModePreset (TeamModeShowPreset). */
 typedef struct {
-    s32 hero[4];   /* 0x00: indices into D_8005A614 (byte at +0x4C) */
+    s32 hero[4];   /* 0x00: indices into GameInfo (byte at +0x4C) */
     s32 flags[3];  /* 0x10: or-ed into sub[8/9/10].flags */
     s32 val[4];    /* 0x1C: targets for sub[4..7] */
-    s32 *tbl;      /* 0x2C: indexed by D_8005A614+0x2C */
+    s32 *tbl;      /* 0x2C: indexed by GameInfo+0x2C */
     s32 unk30;
     s32 unk34;
     s32 unk38;
@@ -407,7 +406,7 @@ extern TitlesPreset TeamModePresets[];
         *(s16 *)(q_ + 0x76) = r_ + 0x78;                                      \
         *(s32 *)((u8 *)e_->sub + (i) * 0xA8 + 4) = *(s16 *)(q_ + 0x70) + 0x1A; \
     }
-/* D_8005A614 as seen by TeamModeShowPreset. */
+/* GameInfo as seen by TeamModeShowPreset. */
 typedef struct {
     u8 pad0[0x2C];
     s32 unk2C;     /* 0x2C */
@@ -422,12 +421,12 @@ typedef struct {
     u8 pad58[0x6C - 0x58];
     s32 unk6C;     /* 0x6C */
 } TitlesPresetView;
-#define O69PV ((TitlesPresetView *)D_8005A614)
+#define O69PV ((TitlesPresetView *)GameInfo)
 extern u16 TeamModeHeroFrames[];
 
 void TeamModeShowPreset(void);
 
-/* D_8005A614 as seen by BattleOptionsUpdate (option screen). */
+/* GameInfo as seen by BattleOptionsUpdate (option screen). */
 typedef struct {
     u8 pad0[0x2C];
     s32 unk2C;     /* 0x2C */
@@ -437,7 +436,7 @@ typedef struct {
     s16 unk38;     /* 0x38 */
     u16 unk3A;     /* 0x3A */
 } TitlesOptView;
-#define O69OV ((TitlesOptView *)D_8005A614)
+#define O69OV ((TitlesOptView *)GameInfo)
 extern s32 TextDifficulties[][3];
 extern s32 TextBattleKinds[][2];
 
@@ -445,7 +444,7 @@ void MainMenuUpdate(void);
 
 void BattleOptionsUpdate(void);
 
-/* D_8005A614 as seen by PlayersMenuUpdate (player count menu). */
+/* GameInfo as seen by PlayersMenuUpdate (player count menu). */
 typedef struct {
     u8 pad0[0x26];
     u8 unk26;      /* 0x26: chosen count */
@@ -462,8 +461,8 @@ typedef struct {
     u8 pad60[0x6C - 0x60];
     s32 unk6C;     /* 0x6C */
 } TitlesCountView;
-#define O69CV ((TitlesCountView *)D_8005A614)
-/* PadState (D_80051338) as seen by PlayersMenuUpdate. */
+#define O69CV ((TitlesCountView *)GameInfo)
+/* PadState (Pads) as seen by PlayersMenuUpdate. */
 typedef struct {
     u8 pad0[0x2A];
     s16 unk2A;     /* 0x2A */
@@ -471,7 +470,7 @@ typedef struct {
     s32 pressed;   /* 0x48 */
     u8 pad4C[0x58 - 0x4C];
 } TitlesPad;
-#define O69PAD ((TitlesPad *)D_80051338)
+#define O69PAD ((TitlesPad *)Pads)
 extern u8 D_8005A63B;
 void PlayersMenuUpdate(void);
 

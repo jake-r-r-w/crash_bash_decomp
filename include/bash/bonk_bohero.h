@@ -47,7 +47,7 @@ typedef struct BonkTarget {
 } BonkTarget;
 
 extern BonkSlot BonkSlots[];
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 extern HeroInfo Heroes[4];
 
 extern s32 BonkBackswingSfx[];
@@ -62,7 +62,7 @@ void BonkHeroSwing(s32 arg0);
 
 extern void (*D_8009D73C)();
 extern s32 (*D_8009D728)(s32);
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 
 void SetBonkHeroIdle(s32 idx);
 

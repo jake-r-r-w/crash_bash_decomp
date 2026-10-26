@@ -24,7 +24,7 @@ void func_80078DD4(void);
 
 void func_8009608C(s32 arg0);
 
-/* D_80051640 as the engine camera (func_8009608C). */
+/* MainCamera as the engine camera (func_8009608C). */
 typedef struct EngCam {
     /* 0x00 */ CamXYZ eye;
     /* 0x0C */ CamXYZ at;
@@ -42,7 +42,7 @@ s32 func_80096280(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4);
 static inline s32 EngCam_HitY(VECTOR *arg0, VECTOR *arg1, VECTOR *arg2) {
     VECTOR sp18;
     VECTOR sp28;
-    s32 d = 0x2D0000 / ((EngCam *)D_80051640)->dist;
+    s32 d = 0x2D0000 / ((EngCam *)MainCamera)->dist;
     extern s32 line_intersect_zy(VECTOR *, VECTOR *, VECTOR *, VECTOR *, VECTOR *);
 
     sp18.vy = arg0->vy + d;
@@ -56,7 +56,7 @@ static inline s32 EngCam_HitY(VECTOR *arg0, VECTOR *arg1, VECTOR *arg2) {
 static inline s32 EngCam_HitX(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     s32 sp18[4];
     s32 sp28[4];
-    s32 d = 0x3C0000 / ((EngCam *)D_80051640)->dist;
+    s32 d = 0x3C0000 / ((EngCam *)MainCamera)->dist;
 
     sp18[0] = arg0->a + d;
     sp18[2] = arg0->c - 0x3000;
@@ -117,7 +117,7 @@ typedef struct EngRec24 {
     /* 0x20 */ u8 pad20[4];
 } EngRec24;
 
-/* D_8005A614 as seen by func_800976F8. */
+/* GameInfo as seen by func_800976F8. */
 typedef struct EngRecView {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;
@@ -135,7 +135,7 @@ typedef struct EngRecView {
 
 /* Read through a cast, not a local: sched then sees the base as the symbol and
  * moves these loads past the record stores, as the target does. */
-#define GV ((EngRecView *)D_8005A614)
+#define GV ((EngRecView *)GameInfo)
 
 extern u16 D_8009922C[];
 extern EngRec24 D_800AD32C[];

@@ -73,7 +73,7 @@ extern void (*D_8005AA7C)(void);
 extern subengine D_8009A04C[];
 extern struct { s32 *c; u8 pad[4]; s32 *a; s32 *b; } Icon;
 extern s16 D_80099208[];
-extern s32 D_8005A680[];
+extern s32 GameTeams[];
 extern subengine D_8009A4E4;
 extern u32 Clock_Time;
 extern u16 Clock_flags;
@@ -124,10 +124,10 @@ extern s8 D_80064C93;
 extern Blk32 D_8009F9D4;
 extern CamVec3 D_8009F9F4;
 extern ASTEntry EngineASTTable[];
-extern fade_info D_8009F644;
+extern fade_info ScreenFade;
 extern s32 D_800ADBC4;
 extern process_info D_800A00DC;
-extern s32 D_8005A624;
+extern s32 GamePause;
 extern u8 D_8009BCE0[];
 extern u8 D_80052F5C[];
 extern ScriptInit D_8009E250;
@@ -198,7 +198,7 @@ extern s32 D_800A0D24[];
 extern s32 D_800A0D28;
 extern s32 D_800A0D38;
 extern u8 D_8009E498[];
-/* D_8005A614 as seen by func_80092CAC. */
+/* GameInfo as seen by func_80092CAC. */
 typedef struct EngineGameView {
     /* 0x00 */ u8 unk0[4];
     /* 0x04 */ s32 unk4;
@@ -217,7 +217,7 @@ typedef struct { s32 unk0; s32 unk4; s32 unk8; s32 unkC; } EngineEntry16Head;
 typedef struct { s32 unk0; EngineEntry16Head *unk4; s32 unk8; } EngineTable12;
 extern EngineTable12 D_8009E7A0[];
 /* Also in main.h; repeated for overlays that include engine.h first. */
-extern u8 D_8005A614[];
+extern u8 GameInfo[];
 extern s32 LevelUnlockedIn(s32, u8 *);
 extern u8 D_800657D0[];
 extern u16 D_8004DDD0[];
@@ -246,13 +246,13 @@ typedef struct { s32 unk0; EngEntry *entries; s32 unk8, unkC, unk10; } EngTable;
 typedef struct { u16 unk0; s32 unk4; s32 unk8; s32 unkC; s32 unk10; } EngState;
 extern EngState D_8009EE9C;
 extern s32 D_8009E5DC;
-extern u8 D_8005A676;
+extern u8 GameWarpRoom;
 extern s32 D_8009EDD4[][5];
 extern u16 D_800986FC[];
 extern u16 D_800986BC[];
 typedef struct { u16 unk0; u16 unk2; u16 unk4; u16 unk6; } EngSub90248;
 typedef struct { s32 *unk0; s32 *unk4; s32 unk8; s32 unkC; s32 unk10; EngSub90248 *unk14; u8 *unk18; s32 unk1C; s32 unk20; s32 unk24; } EngRec90248;
-extern s8 D_8005A677;
+extern s8 GameGateway;
 extern EngRec90248 HubGateways[];
 
 void func_8007A650(s32 arg0);
@@ -261,7 +261,7 @@ typedef struct {
     u8 unk0;
     u8 unk1;
 } D_8009D90C_t;
-extern D_8009D90C_t D_8009D90C[400];
+extern D_8009D90C_t ArenaGrid[400];
 
 int func_8007AC00(void);
 
@@ -277,7 +277,7 @@ extern s32 D_800AD31C;
 extern D_800AD2EC_t D_800AD304;
 extern s32 D_800AD324;
 
-/* PadState (D_80051338) seen by func_8007EE2C: button flags at 0x44/0x48. */
+/* PadState (Pads) seen by func_8007EE2C: button flags at 0x44/0x48. */
 typedef struct PadButtons {
     /* 0x00 */ u8 unk0[0x44];
     /* 0x44 */ s32 held;
@@ -338,7 +338,7 @@ extern u8 *D_8005AA44;
 extern s32 D_8005AAB0;
 extern s32 D_800986A4[];
 extern s32 D_8005A61C;
-extern u16 D_800AD12C;
+extern u16 CameraMode;
 
 typedef struct EngineRec24 {
     s32 kind;
@@ -384,7 +384,7 @@ typedef struct EngineHooks {
     /* 0x64 */ void *unk64;
     /* 0x68 */ void *unk68;
 } EngineHooks;
-extern EngineHooks D_8009D6E8;
+extern EngineHooks HeroHooks;
 extern u8 D_8009D2E4[];
 extern u8 D_8009D2F8[];
 extern u8 D_8009D318[];
@@ -394,12 +394,12 @@ extern u8 D_8009D8A8[];
 extern u8 D_8009D8BC[];
 extern u8 D_8009D8D0[];
 extern u8 D_8009D8DC[];
-extern void *D_8009D8F4;
-extern void *D_8009D8F8;
-extern void *D_8009D8FC;
-extern void *D_8009D900;
-extern void *D_8009D904;
-extern s32 D_8009D908;
+extern void *AiBotTweakTable;
+extern void *AiHumanTweakTable;
+extern void *AiSkillTable;
+extern void *AiTeamSkillTable;
+extern void *AiHumanRoundTweakTable;
+extern s32 HeroesAllOut;
 extern s16 D_8009E0D8;
 extern s16 D_8009E0DA;
 extern s16 D_8009E0DC;
@@ -461,7 +461,7 @@ void DoAmbience(void);
 /* Needs prototypes from the unit headers above. */
 /* func_80092CAC's tail: resets state, then starts the mode by its D_8004DDD0 world. */
 static inline void EngineBeginMode(s32 arg) {
-    EngineGameView *g = (EngineGameView *)D_8005A614;
+    EngineGameView *g = (EngineGameView *)GameInfo;
     s32 mode;
     u16 world;
 
@@ -517,7 +517,7 @@ void func_800793E8(void);
 
 s32 GravitateNas(NAS *nas);
 
-/* D_8005A614 as seen by func_80079554. */
+/* GameInfo as seen by func_80079554. */
 typedef struct EngMenuGame {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 flags;
@@ -543,7 +543,7 @@ extern s16 D_8005A3A4[];
 
 void func_80079554(void);
 
-/* D_8005A614 as seen by func_800798A4. */
+/* GameInfo as seen by func_800798A4. */
 typedef struct EngHudGame {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 flags;
@@ -551,7 +551,7 @@ typedef struct EngHudGame {
     /* 0x32 */ u16 unk32;
     /* 0x34 */ s16 mode;
 } EngHudGame;
-#define HUDGAME ((EngHudGame *)D_8005A614)
+#define HUDGAME ((EngHudGame *)GameInfo)
 #define HUDPLAYERS ((EXTengine **)&Icon)
 extern s32 D_8009AEF4;
 void func_800798A4(void);

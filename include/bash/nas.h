@@ -226,7 +226,7 @@ struct NAStype {
     /* 0x14 */ NASnode Family;          /* ReAdoptChild appends, RemoveFamily unlinks */
     /* 0x1C */ GRPnode Group;
     /* 0x28 */ OBJnode Object;          /* list headed by D_8005AA24 (func_80026A54 unlinks) */
-    /* 0x30 */ OBJnode Solid;           /* list headed by D_8005AA2C (func_8002694C pushes) */
+    /* 0x30 */ OBJnode Solid;           /* list headed by HeadOfSolids (func_8002694C pushes) */
     /* 0x38 */ CAMnode Camera;          /* list headed by D_8005AA34 (func_80026980 unlinks) */
     /* 0x48 */ void (*InitDelete)(NAS *); /* AST Init: called once when spawned */
     /* 0x4C */ void (*Handler)(NAS *);  /* AST Plot */
@@ -301,7 +301,7 @@ BASH_SIZE_CHECK(EXTengine, 0x9C);
 /* A node of an engine's subengine chain (EXTengine.sub .. last, linked
  * through next/prev). They come from one pool: func_80018F3C moves n of them
  * from the free list (next_sub) onto an engine, copying the 0xA8-byte
- * template D_8005A830 over each; func_8001D174 returns them. Pogo's
+ * template SubEngineTemplate over each; func_8001D174 returns them. Pogo's
  * PogoSquare.sub (subengine * in the leak) points at these nodes. The
  * prototype fragment names the type but does not define it. */
 struct subengine {

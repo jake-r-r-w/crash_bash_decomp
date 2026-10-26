@@ -184,7 +184,7 @@ typedef struct TexAnimEntry {
     /* 0x00 */ u8 unk0[0x20];
     /* 0x20 */ s32 handle; /* freed with func_80028AE4 */
     /* 0x24 */ u8 unk24[0x10];
-    /* 0x34 */ s32 time;   /* frame stamp, compared to D_8005B690 */
+    /* 0x34 */ s32 time;   /* frame stamp, compared to FrameCount */
 } TexAnimEntry;
 
 /* Scratch for one GTE transform (0x800569CC, 0x50 bytes; the next symbol is
@@ -315,7 +315,7 @@ typedef struct {
     u8 unk76[0x16];
     u16 unk8C;               /* 0x8C: clut to set on the next draw */
     u16 unk8E;               /* 0x8E: texture index to set on the next draw */
-    ModelObjSlot slots[2];  /* 0x90: indexed by D_8005B690 & 1 */
+    ModelObjSlot slots[2];  /* 0x90: indexed by FrameCount & 1 */
 } ModelObj;
 
 /* At +0x54 of GfxCamera; func_8001ACC0 takes a pointer to it. */
@@ -462,7 +462,7 @@ typedef struct {
 
 typedef struct {
     PointSpriteSrc *src;
-    TILE_1 *prims[2]; /* one per frame buffer (D_8005B690 & 1) */
+    TILE_1 *prims[2]; /* one per frame buffer (FrameCount & 1) */
     s32 count;
 } PointSpriteSet;
 
@@ -550,7 +550,7 @@ typedef struct IdEntry {
     /* 0x02 */ u8 unk2[0x16];
 } IdEntry;
 
-/* Per-pad state, 8 of them at D_80051338 (func_80027F00 resets them). */
+/* Per-pad state, 8 of them at Pads (func_80027F00 resets them). */
 typedef struct PadState {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -678,7 +678,7 @@ typedef struct LoadNode {
     /* 0x20 */ struct LoadNode *prev;
 } LoadNode;
 
-/* A heap (D_8004E0F0 is the main one). Only these fields are known. */
+/* A heap (MainHeap is the main one). Only these fields are known. */
 typedef struct _mal_area {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ mal *free;           /* free list, smallest first */
@@ -702,14 +702,14 @@ static inline mal *Heap_AfterLowest(_mal_area *heap) {
 }
 
 
-extern s32 D_8005B690;
+extern s32 FrameCount;
 
 /* Heap_AfterLowest, unless it is flagged busy for this frame buffer. */
 static inline mal *Heap_NextToMove(_mal_area *heap) {
     mal *p;
 
     p = Heap_AfterLowest(heap);
-    if (p != NULL && (p->unk0 & 2) && (p->unk0 & 1) == (D_8005B690 & 1)) {
+    if (p != NULL && (p->unk0 & 2) && (p->unk0 & 1) == (FrameCount & 1)) {
         return NULL;
     }
     return p;
@@ -791,7 +791,7 @@ void func_800369FC(void);
 extern GteScratch D_800569CC;
 extern SVECTOR D_80056AC8[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
-extern TrigEntry D_80068BD4[];
+extern TrigEntry TrigTable[];
 /* A 4.12 fixed-point quaternion (func_80020344 slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
 extern s32 D_80064478[];
@@ -898,7 +898,7 @@ extern s32 D_80067830;
 /* Zeroes the 0x2000-byte save buffer. */
 
 /* Free bytes on the card (func_8002D178). */
-extern _mal_area D_8004E0F0;
+extern _mal_area MainHeap;
 extern s32 D_800637B0;
 extern u8 *D_8006E9FC;
 extern u8 D_80055684[];
@@ -912,10 +912,10 @@ extern void func_80012678(u8 *, u8 *);
 extern MusicEntry D_80058B88[];
 extern sfx_machine_bank_info D_800644C0[6];
 extern NodePool D_80056844;
-extern NAS *D_8005AA2C;
+extern NAS *HeadOfSolids;
 extern NAS *D_8005AA9C;
 extern void *HeadOfMissiles;            /* tail of the D_8005AA24 list */
-extern void *D_8005AA30;            /* tail of the D_8005AA2C list */
+extern void *D_8005AA30;            /* tail of the HeadOfSolids list */
 extern s32 D_8005A5DC;
 extern s32 D_8005B5BC[16][2];       /* entries 1..15 cleared by func_80026D9C */
 extern s32 D_800515F8;
@@ -924,7 +924,7 @@ extern s32 D_80051600;            /* pads 0..n-1 all have flag 1 */
 extern s32 D_80051604;            /* frames with no button down */
 extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
 extern u8 D_80063AC4[0x34];       /* D_80063A90[1] */
-extern PadState D_80051338[8];
+extern PadState Pads[8];
 typedef struct FreeHdr { u16 f0; u16 f2; } FreeHdr;
 typedef struct FreeNode {
     FreeHdr hdr;
@@ -970,8 +970,8 @@ extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
 extern s32 D_800654BC;            /* slots of D_800644C0 in use */
 extern char D_800654CC[];
 extern s32 D_8005A608;
-extern u8 D_8005A614[];
-/* D_8005A614 as seen by func_80022140. */
+extern u8 GameInfo[];
+/* GameInfo as seen by func_80022140. */
 typedef struct D5A614View {
     /* 0x00 */ s32 unk0;    /* func_800235BC: the arena's unk14 */
     /* 0x04 */ s32 unk4;
@@ -983,7 +983,7 @@ typedef struct D5A614View {
     /* 0x36 */ u8 unk36[0x50 - 0x36];
     /* 0x50 */ u8 unk50[4];
 } D5A614View;
-extern u16 D_8004DDD0[];          /* func_80022140: 6-byte entries indexed by D_8005A614+0x34 */
+extern u16 D_8004DDD0[];          /* func_80022140: 6-byte entries indexed by GameInfo+0x34 */
 /* D_8004DDD0 as 6-byte entries indexed by level (func_800235BC). */
 typedef struct LevelInfo {
     /* 0x00 */ u16 world;
@@ -1002,7 +1002,7 @@ typedef struct ArenaDef {
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
 } ArenaDef;
-extern s32 D_8005AA70[11];
+extern s32 LevelSpecs[11];
 extern s32 D_8005AA50;
 extern s32 D_8005AA54;
 extern s32 D_8005A5E4;
@@ -1014,10 +1014,10 @@ extern s32 card_command_delay;
 extern s32 D_8005A620;
 extern u8 D_800556F4[];
 extern s32 GlobalNAStatus;
-extern u8 D_80051640[];
+extern u8 MainCamera[];
 extern u8 D_800555A4[];
-extern s16 D_8005A648;
-extern u16 D_8005A646;
+extern s16 GameMode;
+extern u16 GameLevelFlags;
 extern s32 D_8005B2B4;
 extern s8 D_8005AEB4[];
 extern u8 D_8005B0B4[];
@@ -1062,7 +1062,7 @@ extern void (*D_8005AA84)(void);
 extern void *D_80058B78;
 extern RECT D_8005B640;
 extern void *free_scripts;
-extern void *D_80058AD0;
+extern void *MapScene;
 /* A map trigger record (func_80024AD8): position, then a word whose low 2
  * bits are the cast and the rest the offset from +0xC to its info. */
 typedef struct MapTrigRec {
@@ -1101,7 +1101,7 @@ extern s32 D_80051380;
 extern u8 D_800512A8[]; /* ComboSeq table, 0x90 bytes per entry */
 extern u8 D_800536CC[];
 extern CdlLOC D_8006EA14;
-extern RECT *D_8005B698;
+extern RECT *ScreenRect;
 extern s32 D_8005B694;
 extern s32 D_8005B78C;
 extern s32 D_800335BC;
@@ -1111,7 +1111,7 @@ extern s32 D_800643EC;
 extern s32 D_800643F0;
 void *func_800112A4(void *base, s32 offset, _mal_area *arg2);
 void func_80014540(u8 *arg0, RECT *rect);
-extern GfxState D_80056998;
+extern GfxState RenderState;
 extern VECTOR D_8005688C; /* screen-space translation (func_8001965C) */
 
 /* The current draw buffer: primitives are allocated from the pointer at
@@ -1139,7 +1139,7 @@ typedef struct {
     s8 r, g, b;
 } GfxRgb8;
 
-/* The scene func_8001DAF8 sets up (D_80058AD0 points at it). */
+/* The scene func_8001DAF8 sets up (MapScene points at it). */
 typedef struct {
     u8 unk0[0x10];
     GfxViewport *viewport; /* 0x10 */
@@ -1218,7 +1218,7 @@ typedef struct {
         s16 x, y;
     } v[4];    /* 0x0C */
 } ModePolyG4;
-extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
+extern s32 FrameCount; /* frame counter: its low bit picks the frame buffer */
 extern s32 D_8004E0E8; /* VSync ticks spent compacting the heap (mal_update) */
 extern s32 D_8004E0EC; /* words moved compacting the heap (mal_update) */
 typedef struct {
@@ -1268,7 +1268,7 @@ typedef struct Ext1000 {
     s32 w[11];
 } Ext1000;
 extern Ext1000 D_8005A974;
-extern subengine D_8005A830;
+extern subengine SubEngineTemplate;
 typedef struct Words4 {
     s32 w[4];
 } Words4;
@@ -1312,7 +1312,7 @@ extern NAS *NASActiveHead;
 extern s32 num_sfx_banks;
 extern s32 D_800654B0;
 extern s32 D_800654B4;
-extern s32 D_8004E0D8;
+extern s32 GameFrameCount;
 extern s32 D_8004E0D0; /* BCD of func_80010000's count */
 extern s32 D_800590CC;
 extern subengine *next_sub;
@@ -1357,7 +1357,7 @@ extern NAS *D_8005AA1C;           /* NAS pool */
 extern NAS NASTemplate;            /* copied over each spawned NAS */
 extern EXTengine EngineTemplate;   /* copied over each new engine */
 extern s16 AtanTable[];            /* get_angle */
-extern u16 D_8005A644;
+extern u16 GameExitFlags;
 extern s32 D_800512A4;
 extern s32 screen_aspect[2];
 

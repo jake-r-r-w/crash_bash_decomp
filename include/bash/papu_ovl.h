@@ -72,7 +72,7 @@ typedef struct PapuCell {
 
 extern PapuCell PapuTiles[8][8];
 
-/* A scene object in the list at D_80058AD0 + 0x1C (PapuInitTiles). */
+/* A scene object in the list at MapScene + 0x1C (PapuInitTiles). */
 typedef struct PapuSceneObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ s32 x;
@@ -362,7 +362,7 @@ extern u16 PapuAiSkill[];
 extern u16 PapuAiSkillAlt[];
 
 s32 PapuPickSpawnPoint(PapuPos *arg0);
-extern u8 D_80051244[];
+extern u8 DirPadBits[];
 
 typedef struct {
     u8 pad0[0x10];
@@ -465,7 +465,7 @@ typedef struct MinionMove {
     /* 0x2A */ s16 push_angle;
 } MinionMove;
 
-extern s32 D_8005A680[];
+extern s32 GameTeams[];
 extern u16 D_8009DC38[];
 extern u16 D_8009DC50[];
 

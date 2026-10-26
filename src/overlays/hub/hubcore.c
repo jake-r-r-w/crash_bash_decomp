@@ -33,10 +33,10 @@ void InitialiseHUB(void) {
     eng = hero->hero_eng;
     G6A->unk32 |= 0x200;
     eng->flags |= 0x8000;
-    D_8009D6E8.unk44 = HubHeroTestA;
-    D_8009D6E8.unk48 = HubHeroTestB;
-    D_8009D6E8.unk3C = HubHeroTestButton;
-    D_8009D6E8.unk30 = HubHeroSetIdle;
+    HeroHooks.unk44 = HubHeroTestA;
+    HeroHooks.unk48 = HubHeroTestB;
+    HeroHooks.unk3C = HubHeroTestButton;
+    HeroHooks.unk30 = HubHeroSetIdle;
     HubInitHero(0);
     if (G6A->unk34 == 0x22) {
         HubSpawnEffects();
@@ -48,7 +48,7 @@ void InitialiseHUB(void) {
     eng->unk2C.x = size;
     G6A->unk62 = func_8009020C(G6A->unk34);
     HubInitGateways();
-    func_80095258(*(u8 **)D_80058AD0);
+    func_80095258(*(u8 **)MapScene);
     HubInitLevelSelect();
     HubDoorFade = 0;
     if (G6A->unk34 == 0x25 && G6A->unk75 == 0) {
@@ -120,7 +120,7 @@ void HubInitGateways(void) {
         HubGateways[i].unk20 = 0;
         HubGateways[i].unk24 = 0;
     }
-    o = *(u8 **)((u8 *)D_80058AD0 + 0x1C);
+    o = *(u8 **)((u8 *)MapScene + 0x1C);
     for (;;) {
         s32 k;
         void *g;
@@ -146,7 +146,7 @@ void HubInitGateways(void) {
                 q = &HubGateways[i];
                 q->unk18 = o;
                 k = *(s32 *)o;
-                g = D_80058AD0;
+                g = MapScene;
                 *(void **)(o + 0x54) = HubDrawObj;
                 *(s32 *)o = k & ~0x8000;
                 q->unk24 = func_80015984(*(u16 *)(o + 0x74), *(EntryBlock **)(*(u8 **)g + 0xC));
@@ -155,7 +155,7 @@ void HubInitGateways(void) {
         }
         o = *(u8 **)(o + 0x5C);
     }
-    for (e = (EngSub90248 *)D_8009EDD4[D_8005A676][1]; e->unk0 != 0; e++) {
+    for (e = (EngSub90248 *)D_8009EDD4[GameWarpRoom][1]; e->unk0 != 0; e++) {
         i = e->unk0 - 1;
         p = &HubGateways[i];
         p->unk14 = e;
@@ -214,12 +214,12 @@ void HubUpdateGateways(void) {
         if (q[-4] != 0) {
             o = (s32 *)q[-3];
             if (o != NULL) {
-                s32 v = D_80068BD4[(((D_8004E0D8 * 0x50) & 0xFFF) - 0x400) & 0xFFF].unk2;
+                s32 v = TrigTable[(((GameFrameCount * 0x50) & 0xFFF) - 0x400) & 0xFFF].unk2;
                 o[2] = v * 0x20 >> 12;
             }
             if (q[-2] == one) {
-                if (q[0] == 0 || (func_800163E0(*(u8 **)D_80058AD0, q[0]), q[0] == 0) ||
-                    func_80016450(*(u8 **)D_80058AD0, q[0]) != 0) {
+                if (q[0] == 0 || (func_800163E0(*(u8 **)MapScene, q[0]), q[0] == 0) ||
+                    func_80016450(*(u8 **)MapScene, q[0]) != 0) {
                     if (q[-1] == one) {
                         if (o != NULL) {
                             o[0] |= 0x8000;
@@ -243,7 +243,7 @@ void HubUpdateGateways(void) {
                     o[0] &= ~0x8000;
                 }
                 if (q[0] != 0) {
-                    func_8001636C(*(u8 **)D_80058AD0, q[0]);
+                    func_8001636C(*(u8 **)MapScene, q[0]);
                 }
             }
         }
@@ -285,7 +285,7 @@ void HubPreMoveHero(s32 arg0) {
     }
     stop = 0;
     ang = eng->unk1E;
-    if (((HubGameView *)D_8005A614)->unk74 != 0) {
+    if (((HubGameView *)GameInfo)->unk74 != 0) {
         eng->flags &= ~0x8000;
         if (D_8009D538[0] != NULL) {
             D_8009D538[0]->flags &= ~0x8000;
@@ -294,14 +294,14 @@ void HubPreMoveHero(s32 arg0) {
     }
     mv->forward_speed = 0;
     HubHeroTouchCount = 0;
-    if (((HubGameView *)D_8005A614)->unk30 & 0x8008) {
+    if (((HubGameView *)GameInfo)->unk30 & 0x8008) {
         return;
     }
     if (Heroes[arg0].hero_frozen != 0) {
         return;
     }
-    if (((HubGameView *)D_8005A614)->unk63 == -1) {
-        if (((HubPad *)D_80051338)[arg0].unk50 & 0x10) {
+    if (((HubGameView *)GameInfo)->unk63 == -1) {
+        if (((HubPad *)Pads)[arg0].unk50 & 0x10) {
             mv->forward_speed = speed;
             ang = D_8009EE9C.unk4 + 0x800;
             D_8009EE9C.unk8 += speed;
@@ -321,7 +321,7 @@ void HubPreMoveHero(s32 arg0) {
                 }
                 if (best != -1) {
                     D_8009EE9C.unk4 = HubGateways[best].unk10;
-                    ((HubGameView *)D_8005A614)->unk63 = best;
+                    ((HubGameView *)GameInfo)->unk63 = best;
                     HubGateways[best].unk1C = 1;
                 } else {
                     D_8009EE9C.unk8 = D_8009EE9C.unk10;
@@ -330,7 +330,7 @@ void HubPreMoveHero(s32 arg0) {
                 }
             }
         }
-        if (((HubPad *)D_80051338)[arg0].unk50 & 0x40) {
+        if (((HubPad *)Pads)[arg0].unk50 & 0x40) {
             ang = D_8009EE9C.unk4;
             mv->forward_speed = speed;
             D_8009EE9C.unk8 -= speed;
@@ -341,48 +341,48 @@ void HubPreMoveHero(s32 arg0) {
             }
         }
         if (stop == 0) {
-            if (((HubPad *)D_80051338)[arg0].unk50 & 0x80) {
+            if (((HubPad *)Pads)[arg0].unk50 & 0x80) {
                 mv->forward_speed = speed;
                 ang = 0x400;
                 ang = (D_8009EE9C.unk4 -= step % 0x1000) + ang;
             }
-            if (((HubPad *)D_80051338)[arg0].unk50 & 0x20) {
+            if (((HubPad *)Pads)[arg0].unk50 & 0x20) {
                 mv->forward_speed = speed;
                 ang = (D_8009EE9C.unk4 += step) - 0x400;
             }
             D_8009EE9C.unk4 &= 0xFFF;
         }
     } else {
-        if (((HubPad *)D_80051338)[arg0].unk50 & 0x10) {
+        if (((HubPad *)Pads)[arg0].unk50 & 0x10) {
             mv->forward_speed = speed;
             t = D_8009EE9C.unk8 + speed;
             D_8009EE9C.unk8 = t;
-            lim = HubGateways[((HubGameView *)D_8005A614)->unk63].unkC;
+            lim = HubGateways[((HubGameView *)GameInfo)->unk63].unkC;
             ang = D_8009EE9C.unk4 + 0x800;
             if ((u32)lim < (u32)t) {
                 D_8009EE9C.unk8 = lim;
                 mv->forward_speed = 0;
             }
         }
-        if (((HubPad *)D_80051338)[arg0].unk50 & 0x40) {
+        if (((HubPad *)Pads)[arg0].unk50 & 0x40) {
             ang = D_8009EE9C.unk4;
             mv->forward_speed = speed;
             D_8009EE9C.unk8 -= speed;
             if ((u32)D_8009EE9C.unk8 < (u32)D_8009EE9C.unk10) {
-                D_8005A677 = -1;
+                GameGateway = -1;
             }
         }
-        if ((u8)D_8005A677 >= 12) {
+        if ((u8)GameGateway >= 12) {
             goto done;
         }
-        old = HubGateways[D_8005A677].unk20;
-        if ((u32)(HubGateways[D_8005A677].unkC - D_8009EEA4) < 0x100) {
-            HubGateways[D_8005A677].unk20 = 1;
+        old = HubGateways[GameGateway].unk20;
+        if ((u32)(HubGateways[GameGateway].unkC - D_8009EEA4) < 0x100) {
+            HubGateways[GameGateway].unk20 = 1;
         } else {
-            HubGateways[D_8005A677].unk20 = 0;
+            HubGateways[GameGateway].unk20 = 0;
         }
-        if (HubGateways[D_8005A677].unk20 != old) {
-            if (HubGateways[D_8005A677].unk20 != 0) {
+        if (HubGateways[GameGateway].unk20 != old) {
+            if (HubGateways[GameGateway].unk20 != 0) {
                 switch (((s32(*)(void))HubGatewayKind)()) {
                 case 2:
                     PlaySfx(0x399, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -408,11 +408,11 @@ void HubPreMoveHero(s32 arg0) {
                 }
             }
         }
-        if (!(((HubPad *)D_80051338)[arg0].unk54 & 0x4000)) {
+        if (!(((HubPad *)Pads)[arg0].unk54 & 0x4000)) {
             goto done;
         }
         p = HubGateways;
-        g = (HubGameView *)D_8005A614;
+        g = (HubGameView *)GameInfo;
         if ((u32)(p[g->unk63].unkC - D_8009EEA4) >= 0x100) {
             goto done;
         }
@@ -434,8 +434,8 @@ void HubPreMoveHero(s32 arg0) {
             sel = p[g->unk63].unk14->unk4;
             if ((g->unk4 & 0x2000) || ((g->unkE4[sel] != 0 || HubDoorChoice <= 0) && ((s32(*)(s32))func_8007A6D0)(sel) == 1)) {
             mode = HubDoorChoice;
-            if (mode != 4 || ((HubGameView *)D_8005A614)->unk105[sel] != 0) {
-            gv = (HubGameView *)D_8005A614;
+            if (mode != 4 || ((HubGameView *)GameInfo)->unk105[sel] != 0) {
+            gv = (HubGameView *)GameInfo;
             v = gv->unk32 & 0xFF07;
             gv->unk32 = v;
             switch (mode) {
@@ -453,11 +453,11 @@ void HubPreMoveHero(s32 arg0) {
                 gv->unk32 = v | 0x40;
                 break;
             default:
-                ((HubGameView *)D_8005A614)->unk32 |= 0x10;
+                ((HubGameView *)GameInfo)->unk32 |= 0x10;
                 break;
             }
             HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
-            HubGoToMode(HubGateways[D_8005A677].unk14->unk4);
+            HubGoToMode(HubGateways[GameGateway].unk14->unk4);
             SetHeroAction(0, 1);
             if (Heroes[0].hero_shadow != NULL) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
@@ -487,8 +487,8 @@ done:
     for (j = 11; j >= 0; j--) {
         HubGateways[j].unk1C = 0;
     }
-    if (D_8005A677 != -1) {
-        HubGateways[D_8005A677].unk1C = 1;
+    if (GameGateway != -1) {
+        HubGateways[GameGateway].unk1C = 1;
     }
     mv->forward_angle = ang;
     if (Heroes[arg0].hero_aseq != 10 && HubHeroPressed != 0) {
@@ -508,39 +508,39 @@ void HubOpenDoorMenu(s32 arg0) {
 
     HubDoorMenuRecs[5].unk1E = 4;
     HubDoorMenuRecs[6].unk1E = 4;
-    if (((HubGameView *)D_8005A614)->unk105[arg0] != 0) {
+    if (((HubGameView *)GameInfo)->unk105[arg0] != 0) {
         HubDoorMenuRecs[5].unk1E = 3;
-        if (((HubGameView *)D_8005A614)->unk105[arg0] >= 2) {
+        if (((HubGameView *)GameInfo)->unk105[arg0] >= 2) {
             HubDoorMenuRecs[6].unk1E = 2;
         }
     }
-    n = ((HubGameView *)D_8005A614)->unkE0;
-    if (n >= 2 && ((HubGameView *)D_8005A614)->unk105[arg0] == 0) {
+    n = ((HubGameView *)GameInfo)->unkE0;
+    if (n >= 2 && ((HubGameView *)GameInfo)->unk105[arg0] == 0) {
         HubDoorChoices = 4;
     } else {
         HubDoorChoices = n + 3;
     }
-    if (((HubGameView *)D_8005A614)->unk4 & 0x2000) {
-        HubDoorChoices = ((HubGameView *)D_8005A614)->unkE0 + 3;
+    if (((HubGameView *)GameInfo)->unk4 & 0x2000) {
+        HubDoorChoices = ((HubGameView *)GameInfo)->unkE0 + 3;
     }
-    HubDoorMenuRecs[4].unk1E = ((HubGameView *)D_8005A614)->unk147[arg0] ? 7 : 8;
-    HubDoorMenuRecs[3].unk1E = ((HubGameView *)D_8005A614)->unk126[arg0] ? 5 : 6;
+    HubDoorMenuRecs[4].unk1E = ((HubGameView *)GameInfo)->unk147[arg0] ? 7 : 8;
+    HubDoorMenuRecs[3].unk1E = ((HubGameView *)GameInfo)->unk126[arg0] ? 5 : 6;
     e = GetEngineSlot(1);
     func_80095BEC(1, (s32 *)HubDoorMenuRecs);
     e->unk10.y = 200;
     e->unk10.x = 0;
     HubDoorChoice = 0;
     e->flags = (e->flags & ~0x8000) | 0x10000000;
-    if (((HubGameView *)D_8005A614)->unkE4[arg0] != 0) {
+    if (((HubGameView *)GameInfo)->unkE4[arg0] != 0) {
         HubDoorChoice = 1;
     }
-    if (((HubGameView *)D_8005A614)->unk126[arg0] != 0) {
+    if (((HubGameView *)GameInfo)->unk126[arg0] != 0) {
         HubDoorChoice = 2;
     }
-    if (((HubGameView *)D_8005A614)->unk147[arg0] != 0 && ((HubGameView *)D_8005A614)->unkE0 > 0) {
+    if (((HubGameView *)GameInfo)->unk147[arg0] != 0 && ((HubGameView *)GameInfo)->unkE0 > 0) {
         HubDoorChoice = 3;
     }
-    if (((HubGameView *)D_8005A614)->unk105[arg0] != 0 && ((HubGameView *)D_8005A614)->unkE0 >= 2) {
+    if (((HubGameView *)GameInfo)->unk105[arg0] != 0 && ((HubGameView *)GameInfo)->unkE0 >= 2) {
         HubDoorChoice = 4;
         n = 1;
     } else {
@@ -566,7 +566,7 @@ void HubOpenDoorMenu(s32 arg0) {
 }
 
 void HubDoorMenuUpdate(void) {
-    HubGameView *g = (HubGameView *)D_8005A614;
+    HubGameView *g = (HubGameView *)GameInfo;
     HubGameView *g2;
     HubGameView *g3;
     EngSub90248 *rec;
@@ -588,14 +588,14 @@ void HubDoorMenuUpdate(void) {
         }
     } else {
         if (HubDoorChoice == -1) {
-            HubOpenDoorMenu(HubGateways[D_8005A677].unk14->unk4);
+            HubOpenDoorMenu(HubGateways[GameGateway].unk14->unk4);
         }
         sub = GetEngineSlot(1)->sub;
-        if ((D_80051380 & 0x80) && D_8005A644 != 0x8008 && HubDoorChoice > 0) {
+        if ((D_80051380 & 0x80) && GameExitFlags != 0x8008 && HubDoorChoice > 0) {
             PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
             HubDoorChoice--;
         }
-        if ((D_80051380 & 0x20) && D_8005A644 != 0x8008 && HubDoorChoice < HubDoorChoices - 1) {
+        if ((D_80051380 & 0x20) && GameExitFlags != 0x8008 && HubDoorChoice < HubDoorChoices - 1) {
             PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
             HubDoorChoice++;
         }
@@ -607,8 +607,8 @@ void HubDoorMenuUpdate(void) {
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 2:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
-                n = HubGateways[((HubGameView *)D_8005A614)->unk63].unk14->unk4;
-                g2 = (HubGameView *)D_8005A614;
+                n = HubGateways[((HubGameView *)GameInfo)->unk63].unk14->unk4;
+                g2 = (HubGameView *)GameInfo;
                 if (((s32(*)(s32))func_8007A6D0)(n) == 1) {
                     if (g2->unkE4[n] != 0) {
                         func_80095BEC(2, HubChallengePanels[g2->unk2C]);
@@ -634,7 +634,7 @@ void HubDoorMenuUpdate(void) {
             break;
         case 5:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
-                g3 = (HubGameView *)D_8005A614;
+                g3 = (HubGameView *)GameInfo;
                 if (g3->unk34 == 0x21 && ((s32(*)(s32))func_8007A6D0)(0x22) == 0) {
                     recs = HubPapuPanels[g3->unk2C];
                 } else {
@@ -662,12 +662,12 @@ s32 HubSelectedLevel(void) {
     s32 *t;
     s32 k = 5;
 
-    if (D_8005A677 >= 0) {
-        v = HubGateways[D_8005A677].unk14->unk2;
+    if (GameGateway >= 0) {
+        v = HubGateways[GameGateway].unk14->unk2;
     } else {
         v = 0;
     }
-    if (v == k && HubGateways[D_8005A677].unk20 != 0) {
+    if (v == k && HubGateways[GameGateway].unk20 != 0) {
         r = 1;
     }
     if (r != 0) {
@@ -677,7 +677,7 @@ s32 HubSelectedLevel(void) {
             return -1;
         }
         base = D_8009EDD4;
-        t = base[D_8005A676];
+        t = base[GameWarpRoom];
         if (r < t[2]) {
             return ((s32 *)(t[3] + r * 8))[1];
         }
@@ -688,7 +688,7 @@ s32 HubSelectedLevel(void) {
 
 void HubLevelSelect(void) {
     s32 (*base)[5] = D_8009EDD4;
-    HubSelView *g = (HubSelView *)D_8005A614;
+    HubSelView *g = (HubSelView *)GameInfo;
     HubSelEntry *ents = (HubSelEntry *)base[g->unk62][3];
     s32 r;
     s32 v;
@@ -705,12 +705,12 @@ void HubLevelSelect(void) {
         } else {
             v = 0;
         }
-        if (v == k && HubGateways[D_8005A677].unk20 != 0) {
+        if (v == k && HubGateways[GameGateway].unk20 != 0) {
             r = 1;
         }
-        if (r != 0 && ((HubSelView *)D_8005A614)->unk30 != 0x8008) {
+        if (r != 0 && ((HubSelView *)GameInfo)->unk30 != 0x8008) {
             if ((D_80051380 & 0x20)
-                && HubSelectedEntry < D_8009EDD4[((HubSelView *)D_8005A614)->unk62][2] - 1
+                && HubSelectedEntry < D_8009EDD4[((HubSelView *)GameInfo)->unk62][2] - 1
                 && ((s32(*)(s32))func_8007A6D0)(ents[HubSelectedEntry + 1].unk4)) {
                 PlaySfx(0x39F, NULL, NULL, 0x1000, 0x1E00, 0);
                 HubSelectedEntry++;
@@ -722,8 +722,8 @@ void HubLevelSelect(void) {
             if (HubSelectedEntry < 0) {
                 HubSelectedEntry = func_800900CC();
             }
-            if (HubSelectedEntry >= D_8009EDD4[D_8005A676][2]) {
-                n = D_8009EDD4[D_8005A676][2];
+            if (HubSelectedEntry >= D_8009EDD4[GameWarpRoom][2]) {
+                n = D_8009EDD4[GameWarpRoom][2];
                 HubSelectedEntry = n - 1;
             }
             if (HubSelectSub != NULL) {
@@ -731,23 +731,23 @@ void HubLevelSelect(void) {
                     HubSelectSub->unk74 = ents[HubSelectedEntry].unk0;
                     return;
                 }
-                HubSelectSub->unk74 = D_8009EDD4[D_8005A676][4];
+                HubSelectSub->unk74 = D_8009EDD4[GameWarpRoom][4];
             }
         } else if (HubSelectSub != NULL) {
-            HubSelectSub->unk74 = D_8009EDD4[D_8005A676][4];
+            HubSelectSub->unk74 = D_8009EDD4[GameWarpRoom][4];
         }
         break;
     case 1:
         if (func_80012FFC() == 0) {
-            set_fade(&D_8009F644, 0x200, 0);
+            set_fade(&ScreenFade, 0x200, 0);
             HubSelectState = 2;
         }
         break;
     case 2:
-        p = &D_8009F644;
+        p = &ScreenFade;
         if (p->maxed >= 3) {
-            func_8001DDD8(D_80058AD0);
-            func_8001E054(D_80058AD0, HubSelectTimer);
+            func_8001DDD8(MapScene);
+            func_8001E054(MapScene, HubSelectTimer);
             g->unk62 = HubSelectFlag;
             g->unk34 = base[g->unk62][0];
             InitialiseHUB();
@@ -768,8 +768,8 @@ void HubSpawnEffects(void) {
     HubSpawnExt *ext;
 
     tbl = NULL;
-    if (*(s32 *)D_80058AD0 != 0) {
-        tbl = *(s32 **)((u8 *)D_80058AD0 + 0x28);
+    if (*(s32 *)MapScene != 0) {
+        tbl = *(s32 **)((u8 *)MapScene + 0x28);
     }
     i = 0;
     n = tbl[0];
@@ -784,7 +784,7 @@ void HubSpawnEffects(void) {
             if (nas != NULL) {
                 ext = FindExtension(nas, 0x10000000);
                 if (ext != NULL) {
-                    s32 *q = (s32 *)(*(u8 **)((u8 *)D_80058AD0 + 0x2C) + i * 4);
+                    s32 *q = (s32 *)(*(u8 **)((u8 *)MapScene + 0x2C) + i * 4);
                     ext->unkC = (s32 *)((u8 *)q + *q);
                     if (e[3] == 0xC8) {
                         ext->unk34 = 0;
@@ -996,7 +996,7 @@ void InitPathEffect(NAS *nas) {
 
     if (ext != NULL) {
         ext->cursor = func_80024E30(nas, &HubPathScriptInit);
-        nas->Engine->sub->unk6C = *(void **)D_80058AD0;
+        nas->Engine->sub->unk6C = *(void **)MapScene;
         nas->Engine->sub->unk74 = 0x2018;
         nas->Engine->sub->flags &= 0xFEFFFFFF;
         nas->Engine->unk5D = 2;
@@ -1012,7 +1012,7 @@ void PlotCrystalFlash(void) {
 }
 
 void InitCrystalFlash(FxObj *arg0) {
-    arg0->mid->inner->unk6C = **(s32 **)&D_80058AD0;
+    arg0->mid->inner->unk6C = **(s32 **)&MapScene;
     arg0->mid->inner->unk74 = 0x200E;
     arg0->mid->inner->unk51 = 0;
     arg0->mid->inner->unk50 = 1;
@@ -1061,20 +1061,20 @@ s32 HubGatewayIsKind(s32 arg0) {
     s32 r = 0;
     s32 v;
 
-    if (D_8005A677 >= 0) {
-        v = HubGateways[D_8005A677].unk14->unk2;
+    if (GameGateway >= 0) {
+        v = HubGateways[GameGateway].unk14->unk2;
     } else {
         v = 0;
     }
-    if (v == arg0 && HubGateways[D_8005A677].unk20 != 0) {
+    if (v == arg0 && HubGateways[GameGateway].unk20 != 0) {
         r = 1;
     }
     return r;
 }
 
 u16 HubGatewayKind(void) {
-    if (D_8005A677 >= 0) {
-        return HubGateways[D_8005A677].unk14->unk2;
+    if (GameGateway >= 0) {
+        return HubGateways[GameGateway].unk14->unk2;
     }
     return 0;
 }
@@ -1088,16 +1088,16 @@ void HubDoorMenu2Render(void) {
     EXTengine *e;
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
-        if (!(D_8005A624 & 1)) {
+        if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
             e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
             func_8001C2C0((u8 *)GetEngineSlot(1));
         }
     }
-    if (HubDoorFade != 0 && !(D_8005A624 & 1)) {
+    if (HubDoorFade != 0 && !(GamePause & 1)) {
         func_8001C2C0((u8 *)GetEngineSlot(2));
     }
 }
@@ -1114,16 +1114,16 @@ void HubDoorMenuRender(void) {
     EXTengine *e;
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
-        if (!(D_8005A624 & 1)) {
+        if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
             e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
             func_8001C2C0((u8 *)GetEngineSlot(1));
         }
     }
-    if (HubDoorFade != 0 && !(D_8005A624 & 1)) {
+    if (HubDoorFade != 0 && !(GamePause & 1)) {
         func_8001C2C0((u8 *)GetEngineSlot(2));
     }
 }
@@ -1212,7 +1212,7 @@ s32 HubDistXZ(u8 *arg0, u8 *arg1) {
 void HubGoToMode(s32 arg0) {
     u8 *p;
     D_8009E5DC = arg0;
-    p = D_8005A614;
+    p = GameInfo;
     *(u16 *)(p + 0x30) = 0x8008;
     *(u16 *)(p + 0x24) = 0xA;
 }
@@ -1273,7 +1273,7 @@ s32 HubHeroTestButton(s32 arg0) {
     if (D_8005A688 != 0) {
         return 1;
     }
-    if (((PadButtons *)D_80051338)[arg0].unk54 & 0x8000) {
+    if (((PadButtons *)Pads)[arg0].unk54 & 0x8000) {
         if ((u32)(Heroes[arg0].hero_name - 1) >= 2U) {
             if (Heroes[arg0].hero_frozen == 0) {
                 Heroes[arg0].hero_frozen = 0xF;
@@ -1306,10 +1306,10 @@ void HubCamTarget(void) {
 
     s32 a, b;
 
-    a = D_80068BD4[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2 * D_8009EE9C.unk8;
-    v[0] = D_80068BD4[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2;
-    b = D_80068BD4[D_8009EE9C.unk4 & 0xFFF].unk2 * D_8009EE9C.unk8;
-    v[1] = D_80068BD4[D_8009EE9C.unk4 & 0xFFF].unk2;
+    a = TrigTable[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2 * D_8009EE9C.unk8;
+    v[0] = TrigTable[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2;
+    b = TrigTable[D_8009EE9C.unk4 & 0xFFF].unk2 * D_8009EE9C.unk8;
+    v[1] = TrigTable[D_8009EE9C.unk4 & 0xFFF].unk2;
     v[0] = a;
     a >>= 12;
     v[0] = a;
@@ -1414,8 +1414,8 @@ void HubCullObjects(void) {
     u8 *cam;
     s32 a;
 
-    o = *(u8 **)((u8 *)D_80058AD0 + 0x1C);
-    cam = D_80051640;
+    o = *(u8 **)((u8 *)MapScene + 0x1C);
+    cam = MainCamera;
     for (;;) {
         if (o == 0) {
             return;
@@ -1435,20 +1435,20 @@ void HubCullObjects(void) {
 }
 
 void InitialiseHUBFirst(void) {
-    ((HubGameView *)D_8005A614)->unk51 = 9;
-    ((HubGameView *)D_8005A614)->unk52 = 9;
-    ((HubGameView *)D_8005A614)->unk53 = 9;
-    D_8009D6E8.unk0 = (s32)HubInitHero;
-    D_8009D6E8.unk20 = (void *)HubPreMoveHero;
-    D_8009D6E8.unk34 = (void *)HubHeroTouched;
-    ((HubGameView *)D_8005A614)->unk50 = ((HubGameView *)D_8005A614)->unk4C;
-    ((HubGameView *)D_8005A614)->unk32 |= 0x200;
+    ((HubGameView *)GameInfo)->unk51 = 9;
+    ((HubGameView *)GameInfo)->unk52 = 9;
+    ((HubGameView *)GameInfo)->unk53 = 9;
+    HeroHooks.unk0 = (s32)HubInitHero;
+    HeroHooks.unk20 = (void *)HubPreMoveHero;
+    HeroHooks.unk34 = (void *)HubHeroTouched;
+    ((HubGameView *)GameInfo)->unk50 = ((HubGameView *)GameInfo)->unk4C;
+    ((HubGameView *)GameInfo)->unk32 |= 0x200;
 }
 
 s32 HubLookup(s32 arg0) {
     KeyedPair *p = HubLockPanels;
     s32 i = 10;
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     for (; i != -1; i--) {
         if (p->key == arg0) {
@@ -1471,7 +1471,7 @@ void InitialisePodiumFirst(void) {
     PodiumTrophyObj = NULL;
     for (i = 0; i < 4; i++) {
         PodiumHeroNas[i] = 0;
-        switch (D_8005A614[i + 0x4C]) {
+        switch (GameInfo[i + 0x4C]) {
         case 1: func_80016D44(D_80055924); break;
         case 2: func_80016D44(D_8005595C); break;
         case 3: func_80016D44(D_80055994); break;
@@ -1482,16 +1482,16 @@ void InitialisePodiumFirst(void) {
         case 8: func_80016D44(D_80055AAC); break;
         }
     }
-    ((HubGameView *)D_8005A614)->unk50 = 9;
-    ((HubGameView *)D_8005A614)->unk51 = 9;
-    ((HubGameView *)D_8005A614)->unk52 = 9;
-    ((HubGameView *)D_8005A614)->unk53 = 9;
+    ((HubGameView *)GameInfo)->unk50 = 9;
+    ((HubGameView *)GameInfo)->unk51 = 9;
+    ((HubGameView *)GameInfo)->unk52 = 9;
+    ((HubGameView *)GameInfo)->unk53 = 9;
     PodiumState = 0;
-    ((HubGameView *)D_8005A614)->unk32 |= 0x200;
+    ((HubGameView *)GameInfo)->unk32 |= 0x200;
     PodiumRankPlayers();
     PodiumFindTies();
-    *(s32 *)&D_8005A5E8[((HubGameView *)D_8005A614)->unk8] = 0xCD;
-    ((HubGameView *)D_8005A614)->unk3C = 0xCD;
+    *(s32 *)&D_8005A5E8[((HubGameView *)GameInfo)->unk8] = 0xCD;
+    ((HubGameView *)GameInfo)->unk3C = 0xCD;
 }
 
 void InitialisePodium(void) {
@@ -1502,12 +1502,12 @@ void InitialisePodium(void) {
     s32 h;
 
     World_floor_level = 0;
-    D_800AD12C = 4;
+    CameraMode = 4;
     PodiumReady = 0;
     PodiumCheerTimer = 0x5A;
     for (i = 0; i < 4; i++) {
-        h = D_8005A614[i + 0xA7];
-        name = D_8005A614[h + 0x4C];
+        h = GameInfo[i + 0xA7];
+        name = GameInfo[h + 0x4C];
         Heroes[h].hero_name = name;
         switch (name) {
         case 2: k = 0xD7; break;
@@ -1527,7 +1527,7 @@ void InitialisePodium(void) {
         PodiumInitScript(i, name);
     }
     PodiumShowScores();
-    func_80095258(*(u8 **)D_80058AD0);
+    func_80095258(*(u8 **)MapScene);
 }
 
 void PodiumRankPlayers(void) {
@@ -1542,22 +1542,22 @@ void PodiumRankPlayers(void) {
         best = -1;
         for (j = 0; j < 4; j++) {
             if (!((mask >> j) & 1)) {
-                if (D_8005A614[0x9F + j] > D_8005A614[0x9F + best] || best == -1) {
+                if (GameInfo[0x9F + j] > GameInfo[0x9F + best] || best == -1) {
                     best = j;
                 }
             }
         }
-        D_8005A614[0xA7 + i] = best;
+        GameInfo[0xA7 + i] = best;
         mask |= 1 << best;
     }
     for (i = 0; i < 4; i++) {
         s32 k;
         k = 4;
-        q = D_8005A614 + i;
+        q = GameInfo + i;
         if (i == 0) {
             PodiumRanks[0] = k;
         } else {
-            if (D_8005A614[q[0xA7] + 0x9F] == D_8005A614[(p = D_8005A614 + (j = i - 1))[0xA7] + 0x9F]) {
+            if (GameInfo[q[0xA7] + 0x9F] == GameInfo[(p = GameInfo + (j = i - 1))[0xA7] + 0x9F]) {
                 PodiumRanks[i] = PodiumRanks[i - 1];
             } else {
                 PodiumRanks[i] = PodiumRanks[j] - 1;
@@ -1567,7 +1567,7 @@ void PodiumRankPlayers(void) {
 }
 
 void PodiumFindTies(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     s32 a = g[g[0xA7] + 0x9F];
     s32 b = g[g[0xA8] + 0x9F];
     s32 c = g[g[0xA9] + 0x9F];
@@ -1607,7 +1607,7 @@ void HubCreditsEffects(void) {
     s32 r;
     s32 x;
 
-    if (D_8005A624 == 0 && PodiumCheerTimer-- < 0) {
+    if (GamePause == 0 && PodiumCheerTimer-- < 0) {
         PodiumCheerKind = Random(4);
         r = Random(6);
         if (r == 0) {
@@ -1657,18 +1657,18 @@ void PodiumCheer(void) {
     s32 r;
     s32 x;
 
-    switch (D_8005A614[D_8005A614[0xA7] + 0x4C]) {
+    switch (GameInfo[GameInfo[0xA7] + 0x4C]) {
     case 3:
     case 4:
     case 6:
     case 8:
-        if (D_8005A624 == 0 && PodiumCheerTimer-- < 0) {
+        if (GamePause == 0 && PodiumCheerTimer-- < 0) {
             PodiumCheerKind = Random(2) + 2;
             goto spawn;
         }
         break;
     default:
-        if (D_8005A624 == 0 && PodiumCheerTimer-- < 0) {
+        if (GamePause == 0 && PodiumCheerTimer-- < 0) {
             PodiumCheerKind = Random(2);
         spawn:
             r = Random(6);
@@ -1827,8 +1827,8 @@ void PlotPodiumTrophy(PodiumTrophy *arg0) {
         }
         fx = in->fx;
         if (fx != NULL) {
-            tb = D_80068BD4;
-            t = D_8005B690;
+            tb = TrigTable;
+            t = FrameCount;
 #define TSIN(k) tb[((((t * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
             fx->unk10 = *(s32 *)&tb[(((t * 0x46) & 0xFFF) - 0x400) & 0xFFF] >> 20;
             fx->unk12 = (TSIN(0x8C) + 0x800) >> 5;
@@ -1852,7 +1852,7 @@ void PodiumCamera(CamView *out, s32 arg1) {
 
     if (arg1 != 0) {
         PodiumState = 0;
-        switch (D_8005A614[D_8005A614[0xA7] + 0x4C]) {
+        switch (GameInfo[GameInfo[0xA7] + 0x4C]) {
         case 1:
         case 2:
             PlaySfx(0x352, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1960,16 +1960,16 @@ void PodiumShowScores(void) {
 
     e = GetEngineSlot(6);
     if (e != NULL) {
-        n = D_8005A614[0x9F];
+        n = GameInfo[0x9F];
         PodiumScore1[1] = n % 10 + 0x30;
         PodiumScore1[0] = n / 10 % 10 + 0x30;
-        n = D_8005A614[0xA0];
+        n = GameInfo[0xA0];
         PodiumScore2[1] = n % 10 + 0x30;
         PodiumScore2[0] = n / 10 % 10 + 0x30;
-        n = D_8005A614[0xA1];
+        n = GameInfo[0xA1];
         PodiumScore3[1] = n % 10 + 0x30;
         PodiumScore3[0] = n / 10 % 10 + 0x30;
-        n = D_8005A614[0xA2];
+        n = GameInfo[0xA2];
         PodiumScore4[1] = n % 10 + 0x30;
         PodiumScore4[0] = n / 10 % 10 + 0x30;
         func_80095BEC(6, &PodiumScoreCount);
@@ -2079,18 +2079,18 @@ void HubInitSparks(HubSparks *arg0) {
         }
         row->unk134 = 0;
         ang = n << 9;
-        a = &D_80068BD4[ang & 0xFFF];
+        a = &TrigTable[ang & 0xFFF];
         for (;;) {
             s32 r;
 
             if (i >= 8) {
                 break;
             }
-            row->rot[i].vx = D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12;
+            row->rot[i].vx = TrigTable[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12;
             row->rot[i].vy = (a->unk2 * 64 >> 12) - 0x400;
             row->rot[i].vz = 0x2000;
             row->unk120 = (a->unk2 * 256 >> 12) + Random(0x40) - Random(0x40);
-            row->unk12C = (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> k) + Random(0x40) - Random(0x40);
+            row->unk12C = (TrigTable[(ang - 0x400) & 0xFFF].unk2 >> k) + Random(0x40) - Random(0x40);
             row->unkE0[i].vz = 0;
             row->unkA0[i].vz = 0;
             row->unk40[i] = 0;
@@ -2166,7 +2166,7 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
 
     set = &arg0->set;
     row = set->rows;
-    set = (HubSparkSet *)((u8 *)set + (D_8005B690 & 1) * 4);
+    set = (HubSparkSet *)((u8 *)set + (FrameCount & 1) * 4);
     prim = set->src;
     gte_SetRotMatrix(m);
     gte_SetTransMatrix(m);
@@ -2175,7 +2175,7 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
         if (arg0 == NULL) {
             break;
         }
-        if (D_8005A624 == 0) {
+        if (GamePause == 0) {
             row->unk134++;
         }
         i = 0;
@@ -2225,15 +2225,15 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
                 prim->y2 = prim->y3;
             } else {
                 r = 0x80 - i * 16;
-                v.vx = row->rot[i].vx + (r * D_80068BD4[row->unkE0[i].vz & 0xFFF].unk2 >> 12);
-                v.vy = row->rot[i].vy + (r * D_80068BD4[(row->unkE0[i].vz + 0x400) & 0xFFF].unk2 >> 12);
+                v.vx = row->rot[i].vx + (r * TrigTable[row->unkE0[i].vz & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * TrigTable[(row->unkE0[i].vz + 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
                 gte_ldv0(p);
                 gte_rtps();
                 gte_stsxy(&prim->x3);
-                v.vx = row->rot[i].vx + (r * D_80068BD4[(((row->unkE0[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
-                v.vy = row->rot[i].vy + (r * D_80068BD4[(row->unkE0[i].vz - 0x400) & 0xFFF].unk2 >> 12);
+                v.vx = row->rot[i].vx + (r * TrigTable[(((row->unkE0[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * TrigTable[(row->unkE0[i].vz - 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
                 gte_ldv0(p);
@@ -2241,9 +2241,9 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
                 gte_stsxy(&prim->x1);
             }
             if (row->unk40[i] != 0) {
-                prim->tag = (prim->tag & 0xFF000000) | (D_80056998.ot[700] & 0xFFFFFF);
+                prim->tag = (prim->tag & 0xFF000000) | (RenderState.ot[700] & 0xFFFFFF);
                 p = (SVECTOR *)0xFF000000;
-                D_80056998.ot[700] = (D_80056998.ot[700] & (u32)p) | ((u32)prim & 0xFFFFFF);
+                RenderState.ot[700] = (RenderState.ot[700] & (u32)p) | ((u32)prim & 0xFFFFFF);
             }
             prim++;
             i++;
@@ -2254,7 +2254,7 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
 }
 
 void PlotSparkGFX(NAS *arg0) {
-    if (D_8005A624 == 0) {
+    if (GamePause == 0) {
         if (arg0->UserInfo.user1++ >= 0x1D) {
             KillNAS(arg0);
         }
@@ -2386,7 +2386,7 @@ void UpdatePodium(void) {
     s32 any = 0;
 
     for (i = 0; i < 4; i++) {
-        if (((PadButtons *)D_80051338)[i].unk54 & 0x4000) {
+        if (((PadButtons *)Pads)[i].unk54 & 0x4000) {
             any = 1;
         }
     }
@@ -2394,8 +2394,8 @@ void UpdatePodium(void) {
         PodiumState = 4;
     }
     if (PodiumState == 0x64) {
-        ((HubGameView *)D_8005A614)->unk24 = 0;
-        ((HubGameView *)D_8005A614)->unk30 = 0x8002;
+        ((HubGameView *)GameInfo)->unk24 = 0;
+        ((HubGameView *)GameInfo)->unk30 = 0x8002;
     }
     PodiumCheer();
 }
@@ -2450,7 +2450,7 @@ void HubSaveMenuInput(void) {
         j = HubNamePage * sizeof(HubEntry12);
         cur->unk7C = 0;
         k = (HubKey *)((HubEntry12 *)((u8 *)HubNamePages + j))->unk0 + i;
-        pad = (PadButtons *)D_80051338;
+        pad = (PadButtons *)Pads;
         if (pad->pressed & 0x80) {
             HubNameNext += k->unkA;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2472,7 +2472,7 @@ void HubSaveMenuInput(void) {
             case 4:
                 e4 = &HubNamePages[HubNamePage];
                 if (HubNameLen < 8) {
-                    D_8005A614[HubNameLen + 0x18] = 0x20;
+                    GameInfo[HubNameLen + 0x18] = 0x20;
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                     if (HubNameLen < 7) {
                         HubNameLen += 1;
@@ -2488,7 +2488,7 @@ void HubSaveMenuInput(void) {
                 e = &HubNamePages[HubNamePage];
                 c = *k->unk4;
                 if (HubNameLen < 8) {
-                    D_8005A614[HubNameLen + 0x18] = c;
+                    GameInfo[HubNameLen + 0x18] = c;
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                     if (HubNameLen < 7) {
                         HubNameLen += 1;
@@ -2501,7 +2501,7 @@ void HubSaveMenuInput(void) {
                 }
                 break;
             case 3:
-                if (D_8005A614[HubNameLen + 0x18] == 0x20) {
+                if (GameInfo[HubNameLen + 0x18] == 0x20) {
                     if (HubNameLen > 0) {
                         HubNameLen -= 1;
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2509,7 +2509,7 @@ void HubSaveMenuInput(void) {
                         PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                 }
-                D_8005A614[HubNameLen + 0x18] = 0x20;
+                GameInfo[HubNameLen + 0x18] = 0x20;
                 break;
             case 1:
                 PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2556,7 +2556,7 @@ void HubSaveMenuInit(void) {
     }
     HubSaveChoice = 0;
     for (HubNameLen = 7; HubNameLen > 0; HubNameLen--) {
-        if (D_8005A614[HubNameLen + 0x18] != 0x20) {
+        if (GameInfo[HubNameLen + 0x18] != 0x20) {
             break;
         }
     }
@@ -2564,7 +2564,7 @@ void HubSaveMenuInit(void) {
         new_var = &HubNamePages[HubNamePage];
         HubNameNext = (*new_var).unk8;
     }
-    set_fade(&D_8009F644, -0x300, 0);
+    set_fade(&ScreenFade, -0x300, 0);
     cam_init(HubSaveCamera);
     func_80095BEC(0, HubNameLetters);
     GetEngineSlot(0)->unk10.x = 0xC8;
@@ -2581,10 +2581,10 @@ void HubSaveMenuRender(void) {
     EXTengine *e;
 
     func_80018B08(&HubSaveViewport, (GfxCamera *)HubSaveCamera);
-    D_800569AC = D_8009F644.amount;
+    D_800569AC = ScreenFade.amount;
     e = GetEngineSlot(0);
     i = 0;
-    g = D_8005A614;
+    g = GameInfo;
     p = (s32 *)((u8 *)e->sub + 0x540);
     do {
         HubNameCursor[i * 2] = g[i + 0x18];
@@ -2618,7 +2618,7 @@ void HubNameEntryKey(s8 arg0) {
 
     e = &HubNamePages[HubNamePage];
     if (HubNameLen < 8) {
-        D_8005A614[HubNameLen + 0x18] = arg0;
+        GameInfo[HubNameLen + 0x18] = arg0;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         if (HubNameLen < 7) {
             HubNameLen += 1;
@@ -2734,25 +2734,25 @@ void HubSetDrawArea(s16 *a, void *b, s32 c, s32 d) {
     s32 off2;
     s32 off;
 
-    r = D_8005B698;
+    r = ScreenRect;
     if (cdb == D_8005B790) {
         r += 1;
     }
-    SetDrawArea((DRAWENV *)((u8 *)b + (D_8005B690 & 1) * 12), r);
+    SetDrawArea((DRAWENV *)((u8 *)b + (FrameCount & 1) * 12), r);
     rc = (RECT *)a;
     rc->x += r->x;
     rc->y += r->y;
-    SetDrawArea((DRAWENV *)((u8 *)b + ((D_8005B690 & 1) * 12 + 0x18)), rc);
-    off = (D_8005B690 & 1) * 12;
+    SetDrawArea((DRAWENV *)((u8 *)b + ((FrameCount & 1) * 12 + 0x18)), rc);
+    off = (FrameCount & 1) * 12;
     off2 = off + 0x18;
     p = (u32 *)(off + (s32)b);
-    ((HubPTag *)&p[6])->addr = ((HubPTag *)&D_80056998.ot[0x136])->addr;
-    ((HubPTag *)&D_80056998.ot[0x136])->addr = (u32)((u8 *)b + off2);
-    ((HubPTag *)&p[0])->addr = ((HubPTag *)&D_80056998.ot[2])->addr;
-    ((HubPTag *)&D_80056998.ot[2])->addr = (u32)p;
+    ((HubPTag *)&p[6])->addr = ((HubPTag *)&RenderState.ot[0x136])->addr;
+    ((HubPTag *)&RenderState.ot[0x136])->addr = (u32)((u8 *)b + off2);
+    ((HubPTag *)&p[0])->addr = ((HubPTag *)&RenderState.ot[2])->addr;
+    ((HubPTag *)&RenderState.ot[2])->addr = (u32)p;
     q = ((u32 *)cdb) - (-c);
-    ((HubPTag *)&D_80056998.ot[0])->addr = ((HubPTag *)q)->addr;
-    ((HubPTag *)q)->addr = (u32)(D_80056998.ot + 0x137);
+    ((HubPTag *)&RenderState.ot[0])->addr = ((HubPTag *)q)->addr;
+    ((HubPTag *)q)->addr = (u32)(RenderState.ot + 0x137);
 }
 
 void HubStub(void) {
@@ -2769,10 +2769,10 @@ void HubDrawObj(HubRenderObj *obj, void *arg1) {
 
     c = obj->sub->unkC;
     if ((obj->flags & 0x8000) && c != 0) {
-        saved = D_80056998.ot;
+        saved = RenderState.ot;
         func_8001D894(obj, arg1, obj->flags, c);
-        D_80056998.ot = (u32 *)(HubOtBuffer + ((D_8005B690 & 1) << 14));
-        ClearOTagR(D_80056998.ot, 0x138);
+        RenderState.ot = (u32 *)(HubOtBuffer + ((FrameCount & 1) << 14));
+        ClearOTagR(RenderState.ot, 0x138);
         obj->flags |= 0x2000000;
         obj->unk68 = -0x170;
         func_80019A60(obj->unk74, (u8 *)c, obj->flags, obj);
@@ -2785,7 +2785,7 @@ void HubDrawObj(HubRenderObj *obj, void *arg1) {
         sp18[1] = 0;
         sp18[3] = h + y;
         HubSetDrawArea(sp18, HubDrawEnv, 0x400, y);
-        D_80056998.ot = saved;
+        RenderState.ot = saved;
     }
 }
 

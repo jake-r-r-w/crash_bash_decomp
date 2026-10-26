@@ -589,31 +589,31 @@ s32 RooSteps = 0;
 s32 RooWait = 0;
 
 void PogoInit_AIQuality(void) {
-    D_8009D8F4 = &PogoAiBotTweak;
-    switch (((PogoModeView *)D_8005A614)->mode) {
+    AiBotTweakTable = &PogoAiBotTweak;
+    switch (((PogoModeView *)GameInfo)->mode) {
     case 10:
-        D_8009D8FC = ((PogoModeView *)D_8005A614)->teams != 0 ? &PogoPainterAiSkillTeams : &PogoPainterAiSkill;
-        D_8009D904 = D_8005A680[0] != 0 ? PogoPainterAiRoundAlt : PogoPainterAiRound;
-        D_8009D8F8 = D_8005A680[0] != 0 ? &PogoPainterAiHumanAlt : &PogoPainterAiHuman;
-        D_8009D900 = PogoPainterAiTeamSkill;
+        AiSkillTable = ((PogoModeView *)GameInfo)->teams != 0 ? &PogoPainterAiSkillTeams : &PogoPainterAiSkill;
+        AiHumanRoundTweakTable = GameTeams[0] != 0 ? PogoPainterAiRoundAlt : PogoPainterAiRound;
+        AiHumanTweakTable = GameTeams[0] != 0 ? &PogoPainterAiHumanAlt : &PogoPainterAiHuman;
+        AiTeamSkillTable = PogoPainterAiTeamSkill;
         break;
     case 11:
-        D_8009D8FC = ((PogoModeView *)D_8005A614)->teams != 0 ? &PogoAgogoAiSkillTeams : &PogoAgogoAiSkill;
-        D_8009D904 = D_8005A680[0] != 0 ? PogoAgogoAiRoundAlt : PogoAgogoAiRound;
-        D_8009D8F8 = D_8005A680[0] != 0 ? &PogoAgogoAiHumanAlt : &PogoAgogoAiHuman;
-        D_8009D900 = PogoAgogoAiTeamSkill;
+        AiSkillTable = ((PogoModeView *)GameInfo)->teams != 0 ? &PogoAgogoAiSkillTeams : &PogoAgogoAiSkill;
+        AiHumanRoundTweakTable = GameTeams[0] != 0 ? PogoAgogoAiRoundAlt : PogoAgogoAiRound;
+        AiHumanTweakTable = GameTeams[0] != 0 ? &PogoAgogoAiHumanAlt : &PogoAgogoAiHuman;
+        AiTeamSkillTable = PogoAgogoAiTeamSkill;
         break;
     case 12:
-        D_8009D8FC = ((PogoModeView *)D_8005A614)->teams != 0 ? &PogoLocoAiSkillTeams : &PogoLocoAiSkill;
-        D_8009D904 = D_8005A680[0] != 0 ? PogoLocoAiRoundAlt : PogoLocoAiRound;
-        D_8009D8F8 = D_8005A680[0] != 0 ? &PogoLocoAiHumanAlt : &PogoLocoAiHuman;
-        D_8009D900 = PogoLocoAiTeamSkill;
+        AiSkillTable = ((PogoModeView *)GameInfo)->teams != 0 ? &PogoLocoAiSkillTeams : &PogoLocoAiSkill;
+        AiHumanRoundTweakTable = GameTeams[0] != 0 ? PogoLocoAiRoundAlt : PogoLocoAiRound;
+        AiHumanTweakTable = GameTeams[0] != 0 ? &PogoLocoAiHumanAlt : &PogoLocoAiHuman;
+        AiTeamSkillTable = PogoLocoAiTeamSkill;
         break;
     case 13:
-        D_8009D8FC = ((PogoModeView *)D_8005A614)->teams != 0 ? &PogoBouncerAiSkillTeams : &PogoBouncerAiSkill;
-        D_8009D904 = D_8005A680[0] != 0 ? PogoBouncerAiRoundAlt : PogoBouncerAiRound;
-        D_8009D8F8 = D_8005A680[0] != 0 ? &PogoBouncerAiHumanAlt : &PogoBouncerAiHuman;
-        D_8009D900 = PogoBouncerAiTeamSkill;
+        AiSkillTable = ((PogoModeView *)GameInfo)->teams != 0 ? &PogoBouncerAiSkillTeams : &PogoBouncerAiSkill;
+        AiHumanRoundTweakTable = GameTeams[0] != 0 ? PogoBouncerAiRoundAlt : PogoBouncerAiRound;
+        AiHumanTweakTable = GameTeams[0] != 0 ? &PogoBouncerAiHumanAlt : &PogoBouncerAiHuman;
+        AiTeamSkillTable = PogoBouncerAiTeamSkill;
         break;
     }
 }
@@ -654,7 +654,7 @@ loop:
         mv->unk4 = 0;
         e = h->hero_eng;
         if (e != NULL) {
-            if (D_8005A680[0] != 0) {
+            if (GameTeams[0] != 0) {
                 switch (i) {
                 case 0:
                 case 1:
@@ -744,7 +744,7 @@ void PogoInit_RelicChallenge(void) {
                 Heroes[i].hero_score = v;
             }
             snd = 0x100;
-            if (D_8005A680[0] != 0) {
+            if (GameTeams[0] != 0) {
                 snd = 0x120;
             }
             break;
@@ -794,7 +794,7 @@ void PogoInit_RelicChallenge(void) {
         Set_Clock(snd, 0x81D0);
     skip:
         InitSharedScoreIcons();
-        if (D_8005A680[0] != 0) {
+        if (GameTeams[0] != 0) {
             PanelCtrl |= 0x2000;
         }
     }
@@ -834,11 +834,11 @@ void InitPogo_Tiles(void) {
         } while (++i < 8);
         rowOff += sizeof(PogoCell);
     }
-    obj = (PogoObj *)((GfxScene *)D_80058AD0)->objs;
+    obj = (PogoObj *)((GfxScene *)MapScene)->objs;
     PogoKerbObj = NULL;
     if (obj != NULL) {
     base2 = PogoGrid[0];
-    g = D_8005A614;
+    g = GameInfo;
     do {
         id = (u16 *)func_80015870(obj->model, obj->index);
         if ((u16)(*id - 10) < 78) {
@@ -872,7 +872,7 @@ void UpdatePOGO(void) {
     PogoQuality_Update();
     Update_Occupancy();
     Update_Tiles();
-    if (D_8005A644 & 0x801) {
+    if (GameExitFlags & 0x801) {
         return;
     }
     i = 0;
@@ -894,7 +894,7 @@ loop:
     }
     PogoPickups_Poll();
     PogoPowerups_Poll();
-    g = D_8005A614;
+    g = GameInfo;
     switch ((PogoMode)*(s16 *)(g + 0x34)) {
     case POGO_MODE_12:
         break;
@@ -937,30 +937,30 @@ void PogoQuality_Init(void) {
     s32 i;
 
     e = NULL;
-    switch (((PogoModeView *)D_8005A614)->mode) {
+    switch (((PogoModeView *)GameInfo)->mode) {
     case 10:
-        if (((PogoModeView *)D_8005A614)->teams != 0) {
+        if (((PogoModeView *)GameInfo)->teams != 0) {
             e = &PogoPainterAiHumanAlt;
         } else {
             e = &PogoPainterAiHuman;
         }
         break;
     case 11:
-        if (((PogoModeView *)D_8005A614)->teams != 0) {
+        if (((PogoModeView *)GameInfo)->teams != 0) {
             e = &PogoAgogoAiHumanAlt;
         } else {
             e = &PogoAgogoAiHuman;
         }
         break;
     case 12:
-        if (((PogoModeView *)D_8005A614)->teams != 0) {
+        if (((PogoModeView *)GameInfo)->teams != 0) {
             e = &PogoLocoAiHumanAlt;
         } else {
             e = &PogoLocoAiHuman;
         }
         break;
     case 13:
-        if (((PogoModeView *)D_8005A614)->teams != 0) {
+        if (((PogoModeView *)GameInfo)->teams != 0) {
             e = &PogoBouncerAiHumanAlt;
         } else {
             e = &PogoBouncerAiHuman;
@@ -968,7 +968,7 @@ void PogoQuality_Init(void) {
         break;
     }
     if (e != NULL) {
-        g = (PogoModeView *)D_8005A614;
+        g = (PogoModeView *)GameInfo;
         switch (g->mode) {
         case 10:
             e->unkE = PogoPainterAiQuality[g->unk38];
@@ -987,13 +987,13 @@ void PogoQuality_Init(void) {
             e->unk10 = PogoBouncerAiQuality[g->unk38 + 3];
             break;
         }
-        g = (PogoModeView *)D_8005A614;
+        g = (PogoModeView *)GameInfo;
         if ((g->flags & 1) || (g->flags & 2)) {
             i = 0;
             h = g;
             for (; i < 4; i++) {
                 if (((u8 *)h)[i + 0x5C] == 0) {
-                    D_8009D87C[i][2] = *((h->flags & 2) ? &e->unk10 : &e->unkE);
+                    AiPlayerSkill[i][2] = *((h->flags & 2) ? &e->unk10 : &e->unkE);
                 }
             }
         }
@@ -1040,7 +1040,7 @@ void PogoWinner_Crystal(s32 arg0, u16 arg1) {
     s32 i;
     s32 found;
 
-    switch (D_8005A648) {
+    switch (GameMode) {
     case 10:
     case 12:
         found = -1;
@@ -1052,10 +1052,10 @@ void PogoWinner_Crystal(s32 arg0, u16 arg1) {
         if (found == -1) {
             break;
         }
-        if (D_8005A614[found + 0x5C] != 0) {
+        if (GameInfo[found + 0x5C] != 0) {
             return;
         }
-        g = D_8005A614;
+        g = GameInfo;
         g[0x60] = 0;
         ((D5A614View *)g)->unk30 |= arg1;
         for (i = 0; i < 4; i++) {
@@ -1066,7 +1066,7 @@ void PogoWinner_Crystal(s32 arg0, u16 arg1) {
                 Heroes[i].hero_status |= 0x100;
             }
         }
-        D_800AD12C = 1;
+        CameraMode = 1;
         return;
     case 11:
     case 13:
@@ -1096,10 +1096,10 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            D_8005A614[j + 0xA7] = best;
+            GameInfo[j + 0xA7] = best;
             taken |= 1 << best;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 0x6C) == 0) {
             HeroInfo *hb;
             HeroInfo *a;
@@ -1107,22 +1107,22 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
                     }
                 }
-                D_800AD12C = 1;
+                CameraMode = 1;
             } else {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (D_8005A614[0xA7] == n) {
+                    if (GameInfo[0xA7] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1138,7 +1138,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
             s32 sb;
 
             InitBigScore();
-            D_800AD12C = 1;
+            CameraMode = 1;
             ia = *(s16 *)(g + 0x48);
             ib = *(s16 *)(g + 0x4A);
             ita = Heroes[ia].hero_teammate;
@@ -1146,10 +1146,10 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
             sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
             sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
             if (sa == sb) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1157,7 +1157,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                     }
                 }
             } else if ((sb < sa && g[ia + 0x5C] == 0) || (sa < sb && g[ib + 0x5C] == 0)) {
-                u8 *w = D_8005A614;
+                u8 *w = GameInfo;
 
                 *(u16 *)(w + 0x30) |= 0x800;
                 if (w[ia + 0x5C] == 0) {
@@ -1176,10 +1176,10 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                     Heroes[ita].hero_status |= 0x400;
                 }
             } else {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1203,7 +1203,7 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
 
     found = -1;
     done = 0;
-    g = (PogoTeamView *)D_8005A614;
+    g = (PogoTeamView *)GameInfo;
     if (g->teams != 0) {
         sa = PogoTeamScore(g->team0);
         sb = PogoTeamScore(g->team1);
@@ -1227,7 +1227,7 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
             }
         }
         if (found != -1) {
-            p = (PogoTeamView *)D_8005A614;
+            p = (PogoTeamView *)GameInfo;
             if (p->out[found] == 0) {
                 POGO_TEAM_LOST(p, found, i, 0);
             } else {
@@ -1237,20 +1237,20 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
     }
     if (done || arg0 == -1) {
         i = 0;
-        q = (PogoTeamView *)D_8005A614;
+        q = (PogoTeamView *)GameInfo;
         p = q;
         q->winner = 0;
         q->unk30 |= arg1;
         Clock_flags |= 0x200;
         for (; i < 4; i++) {
-            if (D_8005A614[i + 0x5C] != 0) {
+            if (GameInfo[i + 0x5C] != 0) {
                 Heroes[i].hero_status |= 0x400;
                 func_80026980(Heroes[i].hero);
             } else {
                 Heroes[i].hero_status |= 0x100;
             }
         }
-        D_800AD12C = 1;
+        CameraMode = 1;
     }
 }
 
@@ -1273,10 +1273,10 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            D_8005A614[j + 0xA7] = best;
+            GameInfo[j + 0xA7] = best;
             taken |= 1 << best;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 0x6C) == 0) {
             HeroInfo *hb;
             HeroInfo *a;
@@ -1284,22 +1284,22 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
                     }
                 }
-                D_800AD12C = 1;
+                CameraMode = 1;
             } else {
-                D_8005A614[0x60] = a->hero_name;
-                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                GameInfo[0x60] = a->hero_name;
+                *(u16 *)(GameInfo + 0x30) |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (D_8005A614[0xA7] == n) {
+                    if (GameInfo[0xA7] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1315,7 +1315,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
             s32 sb;
 
             InitBigScore();
-            D_800AD12C = 1;
+            CameraMode = 1;
             ia = *(s16 *)(g + 0x48);
             ib = *(s16 *)(g + 0x4A);
             ita = Heroes[ia].hero_teammate;
@@ -1323,10 +1323,10 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
             sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
             sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
             if (sa == sb) {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1334,7 +1334,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                     }
                 }
             } else if ((sb < sa && g[ia + 0x5C] == 0) || (sa < sb && g[ib + 0x5C] == 0)) {
-                u8 *w = D_8005A614;
+                u8 *w = GameInfo;
 
                 *(u16 *)(w + 0x30) |= 0x800;
                 if (w[ia + 0x5C] == 0) {
@@ -1353,10 +1353,10 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                     Heroes[ita].hero_status |= 0x400;
                 }
             } else {
-                D_8005A614[0x60] = 0;
-                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                GameInfo[0x60] = 0;
+                *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (D_8005A614[k + 0x5C] != 0) {
+                    if (GameInfo[k + 0x5C] != 0) {
                         func_80026980(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1480,9 +1480,9 @@ void PreMovePOGO(u32 arg0) {
     move = h->hero_move;
     move->forward_speed = 0;
     if (h->hero_frozen == 0) {
-    pb = D_80051338;
+    pb = Pads;
     pad = &pb[arg0];
-    if ((pad->unk0 & 1) || D_8005A614[arg0 + 0x5C] != 0) {
+    if ((pad->unk0 & 1) || GameInfo[arg0 + 0x5C] != 0) {
         bits = ((PogoPad *)pad)->unk50;
         if (PogoPlay[arg0].status == 5 && !(bits & 0xF0)) {
             switch ((u16)move->forward_angle >> 10) {
@@ -1614,8 +1614,8 @@ bool TestHeroPogo(u32 arg0) {
         if (m->forward_speed != 0) {
             angle = m->forward_angle;
             e = h->hero_eng;
-            sx = D_80068BD4[(angle - 0x400) & 0xFFF].unk2;
-            sz = D_80068BD4[angle & 0xFFF].unk2;
+            sx = TrigTable[(angle - 0x400) & 0xFFF].unk2;
+            sz = TrigTable[angle & 0xFFF].unk2;
             t = e->unk10.x;
             t -= sx * 512 >> 12;
             t += 0x800;
@@ -1899,7 +1899,7 @@ void HeroPogoWinner(u32 arg0) {
     Heroes[arg0].hero_frozen = 2;
     Pickup_Lose(arg0);
     if (func_8008A200(arg0) != 0) {
-        g = D_8005A614;
+        g = GameInfo;
         if (*(s32 *)(g + 4) & 0x800) {
             *(u16 *)(g + 0x30) |= 0x201;
         } else {
@@ -1992,7 +1992,7 @@ void HeroPogoLoser(u32 arg0) {
     if (eng != NULL) {
         eng->unk1E = (eng->unk1E + 0xE3) % 4096;
         eng->unk5E = 1;
-        if (((D_8004E0D8 + arg0) & 3) == 0) {
+        if (((GameFrameCount + arg0) & 3) == 0) {
             pos = (s32 *)&eng->unk10;
             p = D_80053B9C;
             nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
@@ -2322,7 +2322,7 @@ void PogoHero_ExtraEffects(s32 arg0) {
                 pu->unk10.y -= dy;
                 pu->unk1E += 0x71;
                 if ((u16)PogoPlay[arg0].status != 6 || PogoPlay[arg0].timer >= 0x5B ||
-                    !((D_8004E0D8 >> 2) & 1)) {
+                    !((GameFrameCount >> 2) & 1)) {
                     sub->flags |= 0x8000;
                     pu->flags |= 0x8000;
                     return;
@@ -2404,7 +2404,7 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2) {
     }
     p->unk12 = 1;
     p->unkA = arg2;
-    if (D_8005A648 == 0xB) {
+    if (GameMode == 0xB) {
         if (arg0 > 0) {
             Tile_Update(arg0 - 1, arg1);
         }
@@ -2424,7 +2424,7 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2) {
 void Tile_Update(s32 arg0, s32 arg1) {
     s32 rnd;
     s32 anim;
-    PogoModeView *g = (PogoModeView *)D_8005A614;
+    PogoModeView *g = (PogoModeView *)GameInfo;
     s32 row = g->mode - 10;
     u16 *tbl;
     PogoCell *c;
@@ -2464,7 +2464,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             base0 = PogoGrid[0];
             c = (PogoCell *)(arg1 * sizeof(PogoCell) + arg0 * sizeof(PogoGrid[0]) + (u32)base0);
             if (c->unk16 == -1) {
-                if (D_8004E0D8 & 1) {
+                if (GameFrameCount & 1) {
                     CELL_SET_T(o, rnd, rnd);
                 } else {
                     CELL_SET_T(o, anim, tbl[c->unkA]);
@@ -2472,7 +2472,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             } else {
                 o->anim = anim;
                 if (c->unk16 != c->unkA) {
-                    if (D_8004E0D8 & 1) {
+                    if (GameFrameCount & 1) {
                         o->frame = CELL_FRAME(o, tbl[c->unk16] & 0xFFF)->unk26;
                     } else {
                         o->frame = CELL_FRAME(o, tbl[c->unkA] & 0xFFF)->unk26;
@@ -2502,7 +2502,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             CELL_SET_T(o, anim, tbl[cell2->unk16]);
             break;
         case 3:
-            if (D_8004E0D8 & 1) {
+            if (GameFrameCount & 1) {
                 base3 = PogoGrid[0];
             cell3 = (PogoCell *)(arg1 * sizeof(PogoCell) + arg0 * sizeof(PogoGrid[0]) + (u32)base3);
                 CELL_SET_T(o, anim, tbl[cell3->unk16]);
@@ -2604,9 +2604,9 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
             near = abs((arg1 << 9) - (((h->hero_eng->unk10.z + 0x800) >> 9) << 9)) < 0x300;
         }
         if (near && !(h->hero_status & 0x800)) {
-            if (((PogoModeView *)D_8005A614)->mode == 0xC
-                && (((PogoModeView *)D_8005A614)->flags & 0x80)
-                && ((PogoModeView *)D_8005A614)->out[i] == 0) {
+            if (((PogoModeView *)GameInfo)->mode == 0xC
+                && (((PogoModeView *)GameInfo)->flags & 0x80)
+                && ((PogoModeView *)GameInfo)->out[i] == 0) {
                 Player_SetPoisoned(i);
                 PlaySfx(0x529, NULL, (SLONG_XYZ *)&h->hero_eng->unk10, 0x1000, 0x1E00, 0);
             } else {
@@ -2672,7 +2672,7 @@ void ZapInDir(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
             c->unk12 = 0;
             c->unkA = arg4;
             c->unk16 = old;
-            g = D_8005A614;
+            g = GameInfo;
             if (*(s16 *)(g + 0x34) == 0xB) {
                 if (x > 0) {
                     Tile_Update(x - 1, z);
@@ -2717,7 +2717,7 @@ loop_i:
         off = rowOff;
 loop_j:
         if (j < 8) {
-            if (D_8005A648 == 13) {
+            if (GameMode == 13) {
                 if ((*(u16 *)CELL_AT(off)->unkC & 0x10) && CELL_AT(off)->unkE == 0) {
                     *(u16 *)CELL_AT(off)->unkC &= ~0x10;
                 }
@@ -3058,7 +3058,7 @@ void PogoFour_UnfreezeMyTiles(s32 arg0) {
             if ((u16)c->unk12 == 10 && c->unkA == arg0) {
                 c->unk12 = 1;
                 c->unkA = arg0;
-                if (((D5A614View *)D_8005A614)->mode == 0xB) {
+                if (((D5A614View *)GameInfo)->mode == 0xB) {
                     if (i > 0) {
                         Tile_Update(i - 1, j);
                     }
@@ -3106,7 +3106,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
     if (nas == NULL) {
         return;
     }
-    if (D_8005A648 != 0xD) {
+    if (GameMode != 0xD) {
         Set_Tile_Under_Player(arg2, 1);
     }
     switch (nas->UserInfo.flags) {
@@ -3117,7 +3117,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         break;
     case 11:
         nas->UserInfo.status = 5;
-        if (D_8005A614[arg2 + 0x5C] == 0 && !(*(u16 *)(D_8005A614 + 0x30) & 0x801)) {
+        if (GameInfo[arg2 + 0x5C] == 0 && !(*(u16 *)(GameInfo + 0x30) & 0x801)) {
             Player_SetPoisoned(arg2);
             PlaySfx(0x529, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
         }
@@ -3155,7 +3155,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PowerupAnim(arg2, 0x200D);
         number_of_powerups--;
         PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
-        if (D_8005A614[arg2 + 0x5C] != 0) {
+        if (GameInfo[arg2 + 0x5C] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
         break;
@@ -3164,7 +3164,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PowerupAnim(arg2, 0x201B);
         number_of_powerups--;
         PlaySfx(0x438, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
-        if (D_8005A614[arg2 + 0x5C] != 0) {
+        if (GameInfo[arg2 + 0x5C] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
         break;
@@ -3172,7 +3172,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PickupSet(arg2, 4);
         Pogo_PowerupAnim(arg2, 0x2040);
         PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
-        if (D_8005A614[arg2 + 0x5C] != 0) {
+        if (GameInfo[arg2 + 0x5C] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
         number_of_powerups--;
@@ -3182,7 +3182,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PowerupAnim(arg2, 0x2002);
         number_of_powerups--;
         PlaySfx(0x51E, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
-        if (D_8005A614[arg2 + 0x5C] != 0) {
+        if (GameInfo[arg2 + 0x5C] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
         break;
@@ -3202,7 +3202,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void PogoPickups_Poll(void) {
-    D5A614View *g = (D5A614View *)D_8005A614;
+    D5A614View *g = (D5A614View *)GameInfo;
     s32 idx = g->mode - 10;
     s32 x, z;
 
@@ -3236,7 +3236,7 @@ void PogoPickups_Poll(void) {
 }
 
 void PogoPowerups_Poll(void) {
-    D5A614View *g = (D5A614View *)D_8005A614;
+    D5A614View *g = (D5A614View *)GameInfo;
     s32 idx = g->mode - 10;
     s32 x, z;
     u32 r;
@@ -3293,7 +3293,7 @@ void PogoPowerups_Poll(void) {
                     break;
                 }
             }
-            g2 = (D5A614View *)D_8005A614;
+            g2 = (D5A614View *)GameInfo;
             if (g2->mode == 13 && (g2->flags & 0x80)) {
                 if (number_of_powerups >= 7) {
                     powerup_spawn_time = -1;
@@ -3630,7 +3630,7 @@ next_sub:
     if (sub != NULL) {
         slot = slots;
         h = heroes;
-        sub->unk74 = ((D_8004E0D8 + n++) & 7) + 0x2003;
+        sub->unk74 = ((GameFrameCount + n++) & 7) + 0x2003;
         x = (eng->unk10.x + 0x800) >> 9;
         z = (eng->unk10.z + 0x800) >> 9;
     next_hero:
@@ -3966,7 +3966,7 @@ void Plot_PogoMushroom(NAS *nas) {
         if (--nas->UserInfo.user1 > 0) {
             break;
         }
-        if (D_8005A644 & 0x801) {
+        if (GameExitFlags & 0x801) {
             break;
         }
         if (FindFreeSquareForMushroom(&x, &z) == 0) {
@@ -4057,7 +4057,7 @@ void Tiles_PlayerIsStealing(s32 arg0, s32 arg1) {
                 c->unkA = arg0;
                 c->unk14 = k;
                 c->unk12 = 0;
-                if (D_8005A648 == 0xB) {
+                if (GameMode == 0xB) {
                     if (i > 0) {
                         Tile_Update(i - 1, j);
                     }
@@ -4081,7 +4081,7 @@ done:;
 void Tiles_FloodFillIslandMap(s32 *seen, s32 id) {
     s32 i;
 
-    if (D_8005A648 == 0xB) {
+    if (GameMode == 0xB) {
         for (i = 0; i < 8; i++) {
             if (TileScan0[i] != id) {
                 Island_FloodFill(0, i, id, seen);
@@ -4162,7 +4162,7 @@ s32 Tiles_CountUnflagged(s32 *arg0, const s32 arg1, s32 arg2) {
                 c->unk12 = 0;
                 c->unk16 = c->unkA;
                 c->unkA = arg1;
-                if (D_8005A648 == 0xB) {
+                if (GameMode == 0xB) {
                     if (i > 0) {
                         Tile_Update(i - 1, j);
                     }
@@ -4186,7 +4186,7 @@ done:
 }
 
 s32 LevelSpecific_ClaimedTile(s32 x, s32 z) {
-    D5A614View *g = (D5A614View *)D_8005A614;
+    D5A614View *g = (D5A614View *)GameInfo;
     s32 id;
     s32 mask;
     s32 n;
@@ -4224,7 +4224,7 @@ s32 LevelSpecific_ClaimedTile(s32 x, s32 z) {
                 mask |= 8;
             }
         }
-        if (D_8005A646 & 0x80) {
+        if (GameLevelFlags & 0x80) {
             return mask + 0x301B;
         }
         return mask + 0x3052;
@@ -4244,7 +4244,7 @@ s32 LevelSpecific_ClaimedTile(s32 x, s32 z) {
         return r;
     default:
         r = 0x303C;
-        if (D_8005A646 & 0x80) {
+        if (GameLevelFlags & 0x80) {
             r = 0x3033;
         }
         return r;
@@ -4310,7 +4310,7 @@ void Fire_Rocket(s32 arg0, s32 arg1) {
     PlayThrowNoise(arg0);
     move = Heroes[arg0].hero_move;
     if (move != NULL) {
-        buttons = ((PogoPad *)D_80051338)[arg0].unk50;
+        buttons = ((PogoPad *)Pads)[arg0].unk50;
         angle = move->facing_angle;
         if (buttons & 0xF0) {
             if (buttons & 0x80) {
@@ -4446,8 +4446,8 @@ void Plot_PogoProjectile(NAS *arg0) {
         return;
     }
     if (arg0->UserInfo.flags & 2) {
-        e->unk10.x -= (D_80068BD4[(arg0->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 8;
-        e->unk10.z -= (D_80068BD4[arg0->UserInfo.status & 0xFFF].unk2 * 9) >> 8;
+        e->unk10.x -= (TrigTable[(arg0->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 8;
+        e->unk10.z -= (TrigTable[arg0->UserInfo.status & 0xFFF].unk2 * 9) >> 8;
     }
     j = 0;
     n = 0;
@@ -4489,7 +4489,7 @@ void Plot_PogoProjectile(NAS *arg0) {
     if (arg0->UserInfo.flags & 2) {
         k = (arg0->UserInfo.flags >> 4) & 3;
         hit = 0;
-        if (D_8004E0D8 & 1) {
+        if (GameFrameCount & 1) {
             k++;
         }
         if (k & 2) {
@@ -4550,7 +4550,7 @@ void Plot_PogoProjectile(NAS *arg0) {
             i++;
             goto heroes;
         }
-        if (D_8005A648 == 0xA) {
+        if (GameMode == 0xA) {
             x = (e->unk10.x + 0x800) >> 9;
             z = (e->unk10.z + 0x800) >> 9;
             if ((u32)x < 8 && z >= 0 && z < 8) {
@@ -4654,7 +4654,7 @@ void PogoKerb_Poll(void) {
             KerbStep = 0;
         }
     }
-    if (D_8005A646 & 0x80) {
+    if (GameLevelFlags & 0x80) {
         PogoKerbObj->index = KerbIndexB[KerbStep];
     } else {
         PogoKerbObj->index = KerbIndexA[KerbStep];
@@ -4677,7 +4677,7 @@ void PogoKerb_Poll(void) {
     Tile_Update(KerbTiles[pos[2]][0], KerbTiles[pos[2]][1]);
     Tile_Update(KerbTiles[pos[3]][0], KerbTiles[pos[3]][1]);
     i = 0;
-    g = (PogoModeView *)D_8005A614;
+    g = (PogoModeView *)GameInfo;
     h = Heroes;
 loop:
     if (i < 4) {
@@ -4696,7 +4696,7 @@ loop:
         goto loop;
     }
     if (--KerbTimer <= 0) {
-        if (!(D_8005A646 & 0x80)) {
+        if (!(GameLevelFlags & 0x80)) {
             KerbDelay = Random(0xC8) + 0xC8;
         }
         KerbCount = 0;
@@ -4736,7 +4736,7 @@ void PogoKerb_SetMode(s32 arg0) {
     case 6:
         KerbPeriod = 0x18;
         KerbDelay = 0x18;
-        KerbMode = D_8004E0D8 & 1;
+        KerbMode = GameFrameCount & 1;
         KerbTimer = (Random(2) + 2) * 8;
         break;
     }
@@ -4746,7 +4746,7 @@ void PogoAI_Poll(u32 arg0) {
     EXTbotai *ai;
     s32 r;
 
-    D5A614View *g = (D5A614View *)D_8005A614;
+    D5A614View *g = (D5A614View *)GameInfo;
 
     if (!(*(s32 *)&g->unkC[4] & 0x04000000)) {
         ai = Heroes[arg0].hero_ai;
@@ -4788,7 +4788,7 @@ void PogoAI_Poll(u32 arg0) {
                 PogoAI_MoveTowardsTarget(arg0);
                 break;
             }
-            if (ai->AItimer1 == 0 || (D_8005A646 & 0x20)) {
+            if (ai->AItimer1 == 0 || (GameLevelFlags & 0x20)) {
                 switch (PogoPlay[arg0].status) {
                 case 1:
                 case 3:
@@ -4804,7 +4804,7 @@ void PogoAI_Poll(u32 arg0) {
                     break;
                 }
             }
-            set_joypad((u8 *)&D_80051338[arg0], ai->AIpad);
+            set_joypad((u8 *)&Pads[arg0], ai->AIpad);
         }
         PogoAIPlay[arg0].unk4 = 0;
     }
@@ -4820,14 +4820,14 @@ bool PogoAI_CanPlayerShootAnyone(u32 hero) {
     s32 dir;
     s32 hit;
 
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         mate = Heroes[hero].hero_teammate;
     } else {
         mate = 1000;
     }
     i = 0;
     eng = Heroes[hero].hero_eng;
-    g = D_8005A614;
+    g = GameInfo;
     x = (eng->unk10.x + 0x800) >> 9;
     z = (eng->unk10.z + 0x800) >> 9;
     dir = Heroes[hero].hero_move->facing_angle >> 10;
@@ -4886,7 +4886,7 @@ bool PogoAI_CanPlayerShootAnyoneFourWays(u32 hero) {
     u32 i;
     s32 x, z, ox, oz;
 
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         mate = Heroes[hero].hero_teammate;
         i = 0;
     } else {
@@ -4894,7 +4894,7 @@ bool PogoAI_CanPlayerShootAnyoneFourWays(u32 hero) {
         i = 0;
     }
     eng = Heroes[hero].hero_eng;
-    g = D_8005A614;
+    g = GameInfo;
     x = (eng->unk10.x + 0x800) >> 9;
     z = (eng->unk10.z + 0x800) >> 9;
     p = Heroes;
@@ -4941,7 +4941,7 @@ bool PogoAI_CanPlayerShockAnyone(u32 hero) {
     u32 i;
     s32 x, z;
 
-    if (D_8005A680[0] != 0) {
+    if (GameTeams[0] != 0) {
         mate = Heroes[hero].hero_teammate;
         i = 0;
     } else {
@@ -4949,7 +4949,7 @@ bool PogoAI_CanPlayerShockAnyone(u32 hero) {
         i = 0;
     }
     eng = Heroes[hero].hero_eng;
-    g = D_8005A614;
+    g = GameInfo;
     p = Heroes;
     x = (eng->unk10.x + 0x800) >> 9;
     z = (eng->unk10.z + 0x800) >> 9;
@@ -5099,16 +5099,16 @@ void PogoAI_MoveTowardsTarget(u32 hero) {
     } while (dir == -1 && i < 2);
     switch (dir) {
     case 2:
-        ai->AIpad |= D_80051244[0];
+        ai->AIpad |= DirPadBits[0];
         break;
     case 0:
-        ai->AIpad |= D_80051244[4];
+        ai->AIpad |= DirPadBits[4];
         break;
     case 3:
-        ai->AIpad |= D_80051244[2];
+        ai->AIpad |= DirPadBits[2];
         break;
     case 1:
-        ai->AIpad |= D_80051244[6];
+        ai->AIpad |= DirPadBits[6];
         break;
     }
     if (PogoAIPlay[hero].unk4 != 0 && dir != Heroes[hero].hero_move->facing_angle >> 10) {
@@ -5138,7 +5138,7 @@ bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flag
     if (p->unk10 != 0 && p->unk10 != arg0 + 1) {
         return 0;
     }
-    g = D_8005A614;
+    g = GameInfo;
     if (g[arg0 + 0x5C] == 0 && !(flags & 1)) {
         goto one;
     }
@@ -5162,7 +5162,7 @@ bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flag
             return 1;
         }
     }
-    if (D_8005A648 == 0xD && (flags & 2) && p->unkA == arg0 && PogoPlay[arg0].status != 6) {
+    if (GameMode == 0xD && (flags & 2) && p->unkA == arg0 && PogoPlay[arg0].status != 6) {
         return 0;
     }
 one:
@@ -5174,7 +5174,7 @@ bool PogoAI_PrimeDirective(u32 arg0) {
     s32 z;
     EXTbotai *ai;
 
-    if ((u16)D_8005A648 - 0xB < 2U) {
+    if ((u16)GameMode - 0xB < 2U) {
         ai = Heroes[arg0].hero_ai;
         if (ai != NULL && ai->AItimer2 == 0) {
             ai->AItimer2 = Random(3) + 3;
@@ -5339,7 +5339,7 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
                 if (f0 && PogoGrid[px][pz].unkA == i) {
                     goto found;
                 }
-            } else if (((PogoModeView *)D_8005A614)->mode == 11 && f0 &&
+            } else if (((PogoModeView *)GameInfo)->mode == 11 && f0 &&
                        PogoAI_RadialSearch_CheckKerbs(i, px, pz)) {
                 goto found;
             }
@@ -5356,7 +5356,7 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
                 if (f1 && PogoGrid[px][pz].unkA == i) {
                     goto found;
                 }
-            } else if (((PogoModeView *)D_8005A614)->mode == 11 && f1 &&
+            } else if (((PogoModeView *)GameInfo)->mode == 11 && f1 &&
                        PogoAI_RadialSearch_CheckKerbs(i, px, pz)) {
                 goto found;
             }
@@ -5373,7 +5373,7 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
                 if (f2 && PogoGrid[px][pz].unkA == i) {
                     goto found;
                 }
-            } else if (((PogoModeView *)D_8005A614)->mode == 11 && f2 &&
+            } else if (((PogoModeView *)GameInfo)->mode == 11 && f2 &&
                        PogoAI_RadialSearch_CheckKerbs(i, px, pz)) {
                 goto found;
             }
@@ -5419,7 +5419,7 @@ bool PogoAI_StartEnclosing(u32 arg0, EXTbotai *ai) {
     s32 odd;
     s32 dir;
 
-    if ((u16)D_8005A648 - 0xB >= 2U) {
+    if ((u16)GameMode - 0xB >= 2U) {
         return 0;
     }
     if (PogoAI_CountMyTiles(arg0) < 9) {
@@ -5432,7 +5432,7 @@ bool PogoAI_StartEnclosing(u32 arg0, EXTbotai *ai) {
             m = (PogoMove *)(arg0 * sizeof(PogoMove) + (u32)base);
             x = (eng->unk10.x + 0x800) >> 9;
             z = (eng->unk10.z + 0x800) >> 9;
-            odd = D_8004E0D8 & 1;
+            odd = GameFrameCount & 1;
             m->unkC = 0;
             m->unk10 = 8;
             m->unk0 = odd;
@@ -5487,7 +5487,7 @@ bool PogoAI_StartEncircling(u32 hero, EXTbotai *goal) {
     s32 dy;
     s32 d;
 
-    if (D_8005A648 == 0xC) {
+    if (GameMode == 0xC) {
         return 0;
     }
     eng = Heroes[hero].hero_eng;
@@ -5718,7 +5718,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
         break;
     case 1:
         if (--nas->UserInfo.user1 < 2) {
-            RooDir = (D_8004E0D8 & 1) ? 1 : 3;
+            RooDir = (GameFrameCount & 1) ? 1 : 3;
             nas->UserInfo.user1 = Random(0x3C) + 0x64;
             nas->UserInfo.status = 2;
             PlaySfx(0x542, NULL, &e->unk10, 0x1000, 0x1E00, 0);
@@ -5727,18 +5727,18 @@ void Plot_PogoRipperRoo(NAS *nas) {
         }
         break;
     case 2:
-        if (nas->UserInfo.user1 > 0 && !(D_8005A644 & 0x801)) {
+        if (nas->UserInfo.user1 > 0 && !(GameExitFlags & 0x801)) {
             nas->UserInfo.user1--;
         }
         Roo_UpdatePosition(e);
         if (!Roo_Bounce(nas)) {
             break;
         }
-        g = D_8005A614;
+        g = GameInfo;
         if ((*(s32 *)(g + 0x30) & 0x800801) == 0x800000) {
             for (i = 0; i < 4; i++) {
                 near = 0;
-                if (D_8005A614[i + 0x5C] == 0) {
+                if (GameInfo[i + 0x5C] == 0) {
                     if (abs(e->unk10.x - Heroes[i].hero_eng->unk10.x) < 0x580) {
                         near = abs(e->unk10.z - Heroes[i].hero_eng->unk10.z) < 0x580;
                     }
@@ -5778,14 +5778,14 @@ void Plot_PogoRipperRoo(NAS *nas) {
             } else if (RooTileZ == -1) {
                 RooDir = 2;
             }
-            if (D_8005A646 & 0x80) {
+            if (GameLevelFlags & 0x80) {
                 v = RooFrames[RooFrame];
             } else {
                 v = RooHopFrames[RooFrame];
             }
             if (v == 12) {
                 RooFrame = 0;
-                if (D_8005A646 & 0x80) {
+                if (GameLevelFlags & 0x80) {
                     v = RooFrames[0];
                 } else {
                     v = RooHopFrames[0];
@@ -5819,7 +5819,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
             }
             RooSteps = 0;
             sfx = 0x543;
-            if (D_8004E0D8 & 1) {
+            if (GameFrameCount & 1) {
                 sfx = 0x542;
             }
             PlaySfx(sfx, NULL, &e->unk10, 0x1000, 0x1E00, 0);
@@ -5870,7 +5870,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
                         break;
                     }
                     near = 0;
-                    if (D_8005A614[i + 0x5C] == 0) {
+                    if (GameInfo[i + 0x5C] == 0) {
                         if (abs(e->unk10.x - Heroes[i].hero_eng->unk10.x) < 0x480) {
                             near = abs(e->unk10.z - Heroes[i].hero_eng->unk10.z) < 0x480;
                         }
@@ -5913,7 +5913,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
             PlaySfx(0x522, NULL, &e->unk10, 0x1000, 0x1E00, 0);
             Roo_FireRocket(e);
         }
-        if (nas->UserInfo.user1 <= 0 || (D_8005A644 & 0x801)) {
+        if (nas->UserInfo.user1 <= 0 || (GameExitFlags & 0x801)) {
             nas->UserInfo.status = 4;
             RooSteps = 100;
             GotoLinkAnim(anim, 1);
@@ -6052,7 +6052,7 @@ bool Roo_FindNewSquare(EXTengine *eng) {
         }
         x = RooTileX;
         if ((u32)x >= 8) {
-            RooDir = (D_8004E0D8 & 1) ? 0 : 2;
+            RooDir = (GameFrameCount & 1) ? 0 : 2;
             if ((u32)(x + 1) >= 10) {
                 pz = &RooTileZ;
                 v = *pz;
@@ -6073,7 +6073,7 @@ bool Roo_FindNewSquare(EXTengine *eng) {
         }
         z = RooTileZ;
         if ((u32)z >= 8) {
-            RooDir = (D_8004E0D8 & 1) ? 1 : 3;
+            RooDir = (GameFrameCount & 1) ? 1 : 3;
             if ((u32)(z + 1) >= 10) {
                 if (x < 4) {
                     x++;
@@ -6178,7 +6178,7 @@ void Roo_ShootAtHumans(NAS *nas) {
     x = (eng->unk10.x + 0x800) >> 9;
     z = (eng->unk10.z + 0x800) >> 9;
     for (; i < 4; i++) {
-        if (D_8005A614[i + 0x5C] != 0 || Heroes[i].hero_mode == 0x3B) {
+        if (GameInfo[i + 0x5C] != 0 || Heroes[i].hero_mode == 0x3B) {
             continue;
         }
         he = Heroes[i].hero_eng;
@@ -6629,7 +6629,7 @@ void PogoKerb_Init(void) {
     KerbPeriod = 8;
     KerbClockSecond = 0;
     KerbMode = 0;
-    if (D_8005A646 & 0x80) {
+    if (GameLevelFlags & 0x80) {
         KerbDelay = 0x78;
     }
     PogoKerb_CopyData();
@@ -6806,7 +6806,7 @@ u32 PogoDistanceToDestination(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 s32 LevelSpecific_UnclaimedTile(s32 x, s32 z) {
-    D5A614View *g = (D5A614View *)D_8005A614;
+    D5A614View *g = (D5A614View *)GameInfo;
     s32 v;
 
     switch (g->mode) {
@@ -6867,12 +6867,12 @@ void Tiles_MakeUpIslandMap(s32 *arg0, s32 arg1) {
 void Tiles_CheckForIslands(s32 arg0) {
     s32 grid[64];
 
-    if (((D5A614View *)D_8005A614)->mode != 10 && ((D5A614View *)D_8005A614)->mode != 13) {
+    if (((D5A614View *)GameInfo)->mode != 10 && ((D5A614View *)GameInfo)->mode != 13) {
         Tiles_MakeUpIslandMap(grid, arg0);
         Tiles_FloodFillIslandMap(grid, arg0);
         if (Tiles_CountUnflagged(grid, arg0, 1) != 0) {
             PlaySfx(0x51D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
-            if (((D5A614View *)D_8005A614)->mode == 11) {
+            if (((D5A614View *)GameInfo)->mode == 11) {
                 Bank_Tiles(arg0);
             }
         }
@@ -6963,7 +6963,7 @@ s32 arg0;
 }
 
 bool SetTile_PogoFour(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     PogoCell *base;
     PogoCell *p;
 
@@ -6996,7 +6996,7 @@ bool SetTile_PogoThree(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
     PogoCell *base;
     PogoCell *c;
 
-    if (D_8005A648 == 0xC) {
+    if (GameMode == 0xC) {
         base = PogoGrid[0];
         c = (PogoCell *)(arg2 * sizeof(PogoCell) + arg1 * sizeof(PogoGrid[0]) + (u32)base);
         if ((u16)c->unk12 == 7) {
@@ -7139,7 +7139,7 @@ void Tile_DelayedSet(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     p->unk14 = arg3;
     p->unk12 = 0;
     p->unk16 = old;
-    if (D_8005A648 == 0xB) {
+    if (GameMode == 0xB) {
         if (arg0 > 0) {
             Tile_Update(arg0 - 1, arg1);
         }
@@ -7196,7 +7196,7 @@ void Tile_Set(s32 arg0, s32 arg1, s32 arg2) {
 
     p->unk12 = 1;
     p->unkA = arg2;
-    if (D_8005A648 == 0xB) {
+    if (GameMode == 0xB) {
         if (arg0 > 0) {
             Tile_Update(arg0 - 1, arg1);
         }
@@ -7349,7 +7349,7 @@ void SetHeroPogoWinner(u32 arg0) {
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 2;
-    D_800AD12C = 1;
+    CameraMode = 1;
 }
 
 bool TestHeroPogoWinner(u32 arg0) {
@@ -7404,7 +7404,7 @@ bool TestHeroPogoShootCancel(u32 arg0) {
 }
 
 bool TestHeroPogoShoot(u32 arg0) {
-    if (D_80051338[arg0].unk54 & 0x8000) {
+    if (Pads[arg0].unk54 & 0x8000) {
         switch (PogoPlay[arg0].status) {
         case 1:
             Fire_Rocket(arg0, 0);
@@ -7438,7 +7438,7 @@ void SetHeroPogo(u32 arg0) {
 }
 
 void PogoHeroChooseWinner(s32 arg0, u16 arg1) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
 
     if (!(*(u16 *)(g + 0x30) & 0x801)) {
         u16 f = *(u16 *)(g + 0x32);
@@ -7460,30 +7460,30 @@ void PogoQuality_Update(void) {
     u8 *p;
 
     for (i = 0; i < 4; i++) {
-        p = D_8005A614 + i;
+        p = GameInfo + i;
         if (p[0x5C] != 0) {
-            PogoLevelIndex = D_8009D87C[i][0];
+            PogoLevelIndex = AiPlayerSkill[i][0];
         }
         if (p[0x5C] == 0) {
-            PogoAiQualityIndex = D_8009D87C[i][2];
+            PogoAiQualityIndex = AiPlayerSkill[i][2];
         }
     }
 }
 
 void PogoInit_TrophyChallenge(void) {
-    if (!(D_8005A646 & 0xE0)) {
+    if (!(GameLevelFlags & 0xE0)) {
         Set_Clock(0x130, 0x81D0);
     }
 }
 
 void PogoInit_GemChallenge(void) {
-    if (D_8005A646 & 0x20) {
+    if (GameLevelFlags & 0x20) {
         Set_Clock(0x130, 0x81D0);
     }
 }
 
 void PogoInit_CrystalChallenge(void) {
-    u8 *g = D_8005A614;
+    u8 *g = GameInfo;
     s32 i;
 
     if (*(u16 *)(g + 0x32) & 0x80) {
@@ -7502,7 +7502,7 @@ void PogoInit_AllChallenges(void) {
     s32 n;
 
     n = 0;
-    switch (D_8005A648) {
+    switch (GameMode) {
     case 10:
         n = 2;
         break;
@@ -7526,16 +7526,16 @@ void PogoInit_AllChallenges(void) {
 }
 
 void PogoInit_Camera(void) {
-    ((PogoCam *)D_80051640)->eyeX = 0;
-    ((PogoCam *)D_80051640)->eyeZ = 0xE98;
-    ((PogoCam *)D_80051640)->rotX = 0x1BE;
-    ((PogoCam *)D_80051640)->dist = 0x200;
-    ((PogoCam *)D_80051640)->eyeY = 0;
-    ((PogoCam *)D_80051640)->rotY = 0;
-    ((PogoCam *)D_80051640)->rotZ = 0;
-    ((PogoCam *)D_80051640)->atX = 0;
-    ((PogoCam *)D_80051640)->atY = 0;
-    ((PogoCam *)D_80051640)->atZ = -0x650;
+    ((PogoCam *)MainCamera)->eyeX = 0;
+    ((PogoCam *)MainCamera)->eyeZ = 0xE98;
+    ((PogoCam *)MainCamera)->rotX = 0x1BE;
+    ((PogoCam *)MainCamera)->dist = 0x200;
+    ((PogoCam *)MainCamera)->eyeY = 0;
+    ((PogoCam *)MainCamera)->rotY = 0;
+    ((PogoCam *)MainCamera)->rotZ = 0;
+    ((PogoCam *)MainCamera)->atX = 0;
+    ((PogoCam *)MainCamera)->atY = 0;
+    ((PogoCam *)MainCamera)->atZ = -0x650;
 }
 
 void PogoInit_SetClock(u32 arg0) {
@@ -7600,28 +7600,28 @@ void POGOriggers(NASTrigger *trig, s32 arg1) {
 }
 
 void InitialisePOGOFirst(void) {
-    D_8009D6E8.unk0 = (s32)POGO_InitHero;
-    D_8009D6E8.unk44 = &D_8008AB04;
-    D_8009D6E8.unk4 = &PogoHeroModels;
-    D_8009D6E8.unkC = &PogoHookTableC;
-    D_8009D6E8.unk20 = PreMovePOGO;
-    D_8009D6E8.unk28 = PostMovePOGO;
-    D_8009D6E8.unk64 = PogoHeroChooseWinner;
-    D_8009D6E8.unk5C = PogoHero_ExtraEffects;
-    D_8009D6E8.unk18 = PogoCreateShadow;
-    D_8009D6E8.unk38 = PogoAI_Poll;
+    HeroHooks.unk0 = (s32)POGO_InitHero;
+    HeroHooks.unk44 = &D_8008AB04;
+    HeroHooks.unk4 = &PogoHeroModels;
+    HeroHooks.unkC = &PogoHookTableC;
+    HeroHooks.unk20 = PreMovePOGO;
+    HeroHooks.unk28 = PostMovePOGO;
+    HeroHooks.unk64 = PogoHeroChooseWinner;
+    HeroHooks.unk5C = PogoHero_ExtraEffects;
+    HeroHooks.unk18 = PogoCreateShadow;
+    HeroHooks.unk38 = PogoAI_Poll;
     PogoInit_AIQuality();
 }
 
 void POGOSetUp(void) {
-    D_8005AA70[0] = (s32)InitialisePOGOFirst;
-    D_8005AA70[1] = (s32)InitialisePOGO;
-    D_8005AA70[2] = (s32)InitialisePOGO;
-    D_8005AA70[3] = (s32)UpdatePOGO;
-    D_8005AA70[5] = (s32)FirstTriggersPOGO;
-    D_8005AA70[7] = 0;
-    D_8005AA70[8] = 0;
-    D_8005AA70[9] = (s32)GetPogoContour;
+    LevelSpecs[0] = (s32)InitialisePOGOFirst;
+    LevelSpecs[1] = (s32)InitialisePOGO;
+    LevelSpecs[2] = (s32)InitialisePOGO;
+    LevelSpecs[3] = (s32)UpdatePOGO;
+    LevelSpecs[5] = (s32)FirstTriggersPOGO;
+    LevelSpecs[7] = 0;
+    LevelSpecs[8] = 0;
+    LevelSpecs[9] = (s32)GetPogoContour;
     func_8001E934(&D_8009F8A4, &PogoProcess);
 }
 
