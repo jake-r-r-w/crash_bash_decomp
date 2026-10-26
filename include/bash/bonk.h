@@ -1,7 +1,7 @@
 #ifndef BASH_BONK_H
 #define BASH_BONK_H
 
-/* Bonk (overlay ovl66).
+/* Bonk (overlay bonk).
  * Names and layouts come from the Oct 9 2000 prototype's debug types; see
  * docs/ARCHITECTURE.md (Prototype debug types). Fields whose type the fragment
  * does not define are word (or byte) arrays of the recorded size. */

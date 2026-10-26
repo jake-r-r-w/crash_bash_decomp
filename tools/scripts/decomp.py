@@ -3703,7 +3703,7 @@ def ref_files(ovl):
 def asm_files_of(ovl, name):
     """asm/nonmatchings/.../NAME.s files of the unit a symbol belongs to. A slot overlay's are
     under its own directory only: the overlays share one address range, so another overlay
-    can have a function of the same placeholder name (func_800B4848 in ovl5d and ovl69)."""
+    can have a function of the same placeholder name (func_800B4848 in bash and titles)."""
     found = glob.glob(f"asm/nonmatchings/**/{name}.s", recursive=True)
     if ovl in ("", "engine"):
         slots = re.compile(r"asm/nonmatchings/overlays/(?!engine/)")

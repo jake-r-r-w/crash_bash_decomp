@@ -1387,7 +1387,7 @@ void func_8007D208(void) {
         D_8009AE40[i].a = NULL;
         D_8009AE40[i].b = NULL;
         if (Heroes[i].hero_name != 9) {
-            D_8009AE40[i].a = &TA_players[i].MainWeaponType;   /* Tank's, linked from ovl5f (slot_syms.py) */
+            D_8009AE40[i].a = &TA_players[i].MainWeaponType;   /* Tank's, linked from tank (slot_syms.py) */
             off = i * sizeof(D_80099A64[0]);
             p = (PanelPrim *)(off + (u8 *)&D_80099A64[0][0]);
             p->unk4 = 0x2E;

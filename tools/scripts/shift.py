@@ -1,6 +1,6 @@
 """The shiftable NON_MATCHING build: one slot overlay padded so every address in it moves.
 
-    tools/dk make shift OVL=ovl5f PAD=0x40     (after the matching build)
+    tools/dk make shift OVL=tank PAD=0x40     (after the matching build)
 
 From the matching build's objects (nothing is recompiled), into build/shift/:
 1. <ovl>.ovl.elf / <ovl>.bin: the overlay linked again with PAD bytes before its C rodata, its
@@ -177,7 +177,7 @@ def fixup(ovl, old_elf, new_elf, others):
             elif v in shared:
                 maybe.append((off, delta, shared[v], v))
     # an address another overlay also has is the overlay's when the words beside it are
-    # (TankHeroMove in Tank's hero mode table, which is also a data label of ovl66)
+    # (TankHeroMove in Tank's hero mode table, which is also a data label of bonk)
     fixed = {off for off, *_ in done}
     left = []
     for m in maybe:

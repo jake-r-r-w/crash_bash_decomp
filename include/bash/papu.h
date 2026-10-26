@@ -1,7 +1,7 @@
 #ifndef BASH_PAPU_H
 #define BASH_PAPU_H
 
-/* Papu Papu, the first boss (overlay ovl5e).
+/* Papu Papu, the first boss (overlay papu).
  * Names and layouts come from the Oct 9 2000 prototype's debug types; see
  * docs/ARCHITECTURE.md (Prototype debug types). Fields whose type the fragment
  * does not define are word (or byte) arrays of the recorded size. */

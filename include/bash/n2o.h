@@ -1,7 +1,7 @@
 #ifndef BASH_N2O_H
 #define BASH_N2O_H
 
-/* N2O and NOX, the N. Gin and Oxide boss games (overlay ovl67).
+/* N2O and NOX, the N. Gin and Oxide boss games (overlay n2o).
  * Names and layouts come from the Oct 9 2000 prototype's debug types; see
  * docs/ARCHITECTURE.md (Prototype debug types). Fields whose type the fragment
  * does not define are word (or byte) arrays of the recorded size. */

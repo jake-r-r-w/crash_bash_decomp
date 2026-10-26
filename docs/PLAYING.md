@@ -52,7 +52,7 @@ emulator works too; DuckStation needs a real BIOS dump.
 
 ## The shifted build (`make shift`)
 
-`tools/dk make shift OVL=ovl5f PAD=0x40` builds a disc in which one slot overlay's every
+`tools/dk make shift OVL=tank PAD=0x40` builds a disc in which one slot overlay's every
 address has moved: `build/shift/CrashBash.bin`/`.cue` (tools/scripts/shift.py). It reuses the
 matching build's objects and:
 
@@ -97,13 +97,13 @@ and Dingodile, idle in two of the AI's states, from about 3.5 s into a round;
 
 ### The shift test route (Arkenoid, 2026-10-26)
 
-`make shift OVL=ovl61 PAD=0x40`, with the same save: Battle Mode, Ballistix, and its four
+`make shift OVL=arkenoid PAD=0x40`, with the same save: Battle Mode, Ballistix, and its four
 levels (Ballistix, Beach Ball, N. Ballism with N. Gin, Sky Balls), watching each hero's
 sequences and the balls on the walls and posts. Passed 2026-10-26.
 
 ### The shift test route (Pogo, 2026-10-26)
 
-`make shift OVL=ovl60 PAD=0x40`, with the same save: Battle Mode, Pogo, and its levels
+`make shift OVL=pogo PAD=0x40`, with the same save: Battle Mode, Pogo, and its levels
 (Painter, a-Gogo with its moving kerbs, Loco with the Ripper Roo, Bouncer with the
 padlocks), watching each hero's idle, tazer, dazed and win sequences. Passed 2026-10-26.
 On a disc shifted this way, the crate games' world records point at a Pogo address by
@@ -111,7 +111,7 @@ coincidence and are rewritten too, so those games break; only the shifted game c
 
 ### The shift test route (Titles, the front end, 2026-10-26)
 
-`make shift OVL=ovl69 PAD=0x40`, with the same save. The front end is every menu, so walk
+`make shift OVL=titles PAD=0x40`, with the same save. The front end is every menu, so walk
 them all: the main menu, the number of players, new/load game, character select (each
 character's model and animation shows when picked), the battle level select (arenas and
 levels, the locked ones), team battle, the battle options, a battle and back to the level

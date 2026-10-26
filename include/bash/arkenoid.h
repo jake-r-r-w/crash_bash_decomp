@@ -1,7 +1,7 @@
 #ifndef BASH_ARKENOID_H
 #define BASH_ARKENOID_H
 
-/* Arkenoid (overlay ovl61): declarations recovered from the original headers
+/* Arkenoid (overlay arkenoid): declarations recovered from the original headers
  * (GameEng/Arkenoid/arkenoid.h).
  * Names and types only; see docs/ARCHITECTURE.md (Leaked source). */
 

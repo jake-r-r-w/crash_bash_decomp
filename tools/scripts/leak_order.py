@@ -4,7 +4,7 @@ functions in reverse, so against the header's order (definition order) one file 
 and then a fall. This finds the climb/fall split that explains the most functions, and how many
 more a second file (climb, fall, climb, fall) would explain.
 
-    tools/dk python3 tools/scripts/leak_order.py ovl60 include/bash/pogo.h [--seq]
+    tools/dk python3 tools/scripts/leak_order.py pogo include/bash/pogo.h [--seq]
 
 Only functions the header declares count; "explained" is the longest increasing run of header
 positions before the split plus the longest decreasing run after it (not necessarily

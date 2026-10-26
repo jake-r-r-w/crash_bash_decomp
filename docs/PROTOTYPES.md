@@ -274,7 +274,7 @@ links.
 |---|---|---|
 | `main.exe` | 116 / 124 | `mal_update`, `mal_free`, ... (the allocator), `init_file`, `load_file_permanent`, `set_joypad`, `cam_init`, `interp`, `BSwapEndian`, `map_entity_address`, `init_dots`, `dbase_asload_with_anims_texture_callback`, `get_script_header`, `texture_draw`, PsyQ functions |
 | engine | 22 / 27 | `InitialiseNasSystem` (`func_80078CA4`, the engine's first function), `GravitateNas`, `DoAmbience`, `CalcElapsedTime` (`func_8007E7C8`, in `PANEL.CPP`), `DefHero2ObjectCollision`, `HeroGhost`, `PrintNasPos` |
-| slot overlays | 11 / 12 | `UpdatePAPU`, `PAHeroHit`, `SetPAHeroCarry` (`ovl5e`), `DoGetBomb`, `TestBeamChance` (`polar`), `PlotTotemBit`, `TankBossCortexTurretFire` (`ovl5f`), `MaintainCentre` (`ovl63`), `team_mode_init`, `adventure_mode_head` (`ovl69`) |
+| slot overlays | 11 / 12 | `UpdatePAPU`, `PAHeroHit`, `SetPAHeroCarry` (`papu`), `DoGetBomb`, `TestBeamChance` (`polar`), `PlotTotemBit`, `TankBossCortexTurretFire` (`tank`), `MaintainCentre` (`race`), `team_mode_init`, `adventure_mode_head` (`titles`) |
 
 Checks: the `PANEL.CPP` names agree with the Jampack mapping
 (`InitBossHealthIcons` is `func_8007C6EC` in both), and names the repo got
@@ -291,7 +291,7 @@ matches of 0.9 and up (`renames_main.txt`; `mal_update`, `init_file`,
 by hand (`renames_main_checked.txt`: `mal_free`, `path_get`,
 `get_script_header`, `new_sprim`, `texture_draw`; each sits in link order
 between confirmed renames, and four are the same distance from the next
-one in both builds). One needed a source fix first: `ovl60` named
+one in both builds). One needed a source fix first: `pogo` named
 `0x8001C378` as data (`D_8001C378`), so it now uses the function's name.
 The 4 names the repo gave itself are replaced by the originals
 (`renames_main_replace.txt`: `CreateNAS`, `TriggerNas`, `AddExtEngine`,
@@ -463,8 +463,8 @@ Under 0.8 the closest function may be a different one. What the table shows:
   Diff patterns). None of them changes the spawn read at 0xc14, which
   only a dead test's hidden use of the base fixed (MATCHING.md, the
   unfolded-base row).
-- `func_800B5E28` and `func_800B8294` are exact opcode twins (ovl5d and
-  ovl64), unchanged in every build, and `CheckMineToBoss` is the same in
+- `func_800B5E28` and `func_800B8294` are exact opcode twins (bash and
+  spin), unchanged in every build, and `CheckMineToBoss` is the same in
   every build but Jampack's: their history adds nothing.
 
 ## Discs not scanned yet

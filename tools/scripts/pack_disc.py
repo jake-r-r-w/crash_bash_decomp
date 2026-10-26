@@ -187,7 +187,10 @@ def main():
         n = next(iter(big))
         die(f"{n}: built file is {len(big[n])} bytes, its retail slot smaller (pack with --grow)")
     meta = old = json.load(open(os.path.join(dat.ASSETS, dat.INDEX)))
-    entry = {e["overlay"]: i for i, e in enumerate(meta["entries"]) if e.get("overlay")}
+    # each overlay's entry by its retail sector (index.json's "overlay" names are the ones at
+    # extract time, and an overlay unit may have been renamed since)
+    at = {e["sector"]: i for i, e in enumerate(meta["entries"])}
+    entry = {o["name"]: at[o["offset"] // dat.SECTOR] for o in proj.get("overlays", [])}
     for p in set(dats.values()):
         os.remove(p)                 # a hard link into the cache: replace it, don't write through it
         meta = dat.build(p, grow={entry[n]: d for n, d in big.items()})

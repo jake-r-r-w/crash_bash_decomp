@@ -8,40 +8,40 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import dat  # noqa: E402
 import shift  # noqa: E402
 
-LD = """    .ovl5f 0x800B32B4 : AT(ovl5f_ROM_START) SUBALIGN(2)
+LD = """    .tank 0x800B32B4 : AT(tank_ROM_START) SUBALIGN(2)
     {
-        build/asm/data/overlays/ovl5f/ovl5f_id.rodata.s.o(.rodata);
-        build/src/overlays/ovl5f/ovl5f.c.o(.rodata);
-        build/src/overlays/ovl5f/ovl5f.c.o(.text);
-        build/asm/data/overlays/ovl5f/ovl5f_id.rodata.s.o(.data);
-        build/src/overlays/ovl5f/ovl5f.c.o(.data);
-        build/src/overlays/ovl5f/ovl5f.c.o(.bss);
+        build/asm/data/overlays/tank/tank_id.rodata.s.o(.rodata);
+        build/src/overlays/tank/tank.c.o(.rodata);
+        build/src/overlays/tank/tank.c.o(.text);
+        build/asm/data/overlays/tank/tank_id.rodata.s.o(.data);
+        build/src/overlays/tank/tank.c.o(.data);
+        build/src/overlays/tank/tank.c.o(.bss);
     }
 """
 
 
 class PadScript(unittest.TestCase):
     def test_pads_before_each_c_section_and_not_the_id(self):
-        t = shift.pad_script(LD, "ovl5f", 0x40)
+        t = shift.pad_script(LD, "tank", 0x40)
         lines = [l.strip() for l in t.splitlines()]
         for sect in (".rodata", ".text", ".data"):
-            i = lines.index(f"build/src/overlays/ovl5f/ovl5f.c.o({sect});")
+            i = lines.index(f"build/src/overlays/tank/tank.c.o({sect});")
             self.assertTrue(lines[i - 1].startswith(". += 0x40;"), sect)
-        i = lines.index("build/asm/data/overlays/ovl5f/ovl5f_id.rodata.s.o(.rodata);")
+        i = lines.index("build/asm/data/overlays/tank/tank_id.rodata.s.o(.rodata);")
         self.assertFalse(lines[i - 1].startswith(". +="))
         self.assertEqual(t.count(". += 0x40;"), 3)
 
     def test_the_id_unit_in_c_stays_first(self):
-        t = shift.pad_script(LD.replace("build/asm/data/overlays/ovl5f/ovl5f_id.rodata.s.o",
-                                        "build/src/overlays/ovl5f/ovl5f_id.c.o"), "ovl5f", 0x40)
+        t = shift.pad_script(LD.replace("build/asm/data/overlays/tank/tank_id.rodata.s.o",
+                                        "build/src/overlays/tank/tank_id.c.o"), "tank", 0x40)
         lines = [l.strip() for l in t.splitlines()]
-        i = lines.index("build/src/overlays/ovl5f/ovl5f_id.c.o(.rodata);")
+        i = lines.index("build/src/overlays/tank/tank_id.c.o(.rodata);")
         self.assertFalse(lines[i - 1].startswith(". +="))
         self.assertTrue(lines[i + 1].startswith(". += 0x40;"))
 
     def test_a_script_without_c_data_is_refused(self):
         with self.assertRaises(ValueError):
-            shift.pad_script(LD.replace("ovl5f.c.o(.data)", "ovl5f_data.data.s.o(.data)"), "ovl5f", 0x40)
+            shift.pad_script(LD.replace("tank.c.o(.data)", "tank_data.data.s.o(.data)"), "tank", 0x40)
 
 
 class Pointers(unittest.TestCase):

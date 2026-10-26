@@ -21,7 +21,7 @@ something new to do, add it to the phase it blocks, not to an earlier one.
 Every game function matches (2026-10-26), so what is left is what makes the
 source source-only: data as C, names and types, and the proof that the code
 works as code, a shifted build that still plays. Phase 3 did all of it for
-one overlay, Tank (`ovl5f`), end to end, and built the tooling on the way
+one overlay, Tank, end to end, and built the tooling on the way
 (finished 2026-10-26). Phase 4 now repeats it overlay by overlay with the
 recipe in [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md), the other leaked
 minigames first, and Phase 5 does the same for the engine and `main.exe`.
@@ -110,7 +110,7 @@ rebuilds the retail image.
 - [x] Recover the minigame-only types (`EXTbotai`, `EXTheromove`, `TA_player`,
   `EXTobject_TA`, `NASTrigger`, ...) from the Oct 9 prototype's debug types
   (ARCHITECTURE.md, Prototype debug types), and identify which minigame or
-  mode each slot overlay is (its AST enums; `ovl69`'s strings make it the
+  mode each slot overlay is (its AST enums; `titles`'s strings make it the
   front end).
 - [x] Name Tank's AST pairs: the Oct 9 prototype's `TANK_AST_types` gives
   every id, and all 68 names match the leak's `Init`/`Plot` prototypes.
@@ -128,7 +128,7 @@ rebuilds the retail image.
 
 ## Phase 3 - The Tank pilot
 
-Take one slot overlay, Tank (`ovl5f`), all the way to source-only and
+Take one slot overlay, Tank, all the way to source-only and
 shift-tested, and build the tools for it so the other overlays only repeat
 the recipe. A slot overlay is the first unit that can move: the only
 pointers into one from outside are the engine's AST table entries
@@ -136,10 +136,10 @@ pointers into one from outside are the engine's AST table entries
 moved overlay without moving itself. `main.exe` and the engine can't move
 until every overlay linking to them is source (Phase 6).
 
-**Done when** `ovl5f` has no `INCLUDE_RODATA` and no data asm, every
+**Done when** `tank` has no `INCLUDE_RODATA` and no data asm, every
 function and global in it is named and typed, every declaration in
 `include/bash/tank.h` is defined by matched code or noted in
-`docs/ARCHITECTURE.md` as not in this build, `build/ovl5f.bin` still
+`docs/ARCHITECTURE.md` as not in this build, `build/tank.bin` still
 matches, its asset files extract, and it passes its shift test: padded so
 everything in it moves, it boots and plays through to a win the same way
 retail does. The recipe is written up for Phase 4.
@@ -167,18 +167,18 @@ retail does. The recipe is written up for Phase 4.
   turn a splat rodata or data block into C
   initialisers (strings, tables, structs from the headers, pointers as
   symbols, never as numbers) that rebuild byte for byte, in the unit's
-  section order (`ovl5f`'s is rodata, text, data). Generic, so every
+  section order (`tank`'s is rodata, text, data). Generic, so every
   overlay can use it. Done 2026-10-26: `tools/scripts/data2c.py`
   (CONVENTIONS.md, Data as C).
-- [x] Tank's rodata as C: the id word (`ovl5f_id`) and the `INCLUDE_RODATA`
+- [x] Tank's rodata as C: the id word (`tank_id`) and the `INCLUDE_RODATA`
   of `D_800B32B8` (the animation name strings). Done 2026-10-26: the
-  strings are `const char` arrays in `ovl5f.c`, and the id word is
-  `src/overlays/ovl5f/ovl5f_id.c` (`TankOverlayId`, a rodata-only unit:
+  strings are `const char` arrays in `tank.c`, and the id word is
+  `src/overlays/tank/tank_id.c` (`TankOverlayId`, a rodata-only unit:
   splat takes a `.rodata` subsegment with no `c` one). No asm is left in
   Tank.
-- [x] Tank's data and bss as C (`asm/data/overlays/ovl5f/`): every pointer
+- [x] Tank's data and bss as C (`asm/data/overlays/tank/`): every pointer
   a symbol, every table typed with the struct the naming found. Done
-  2026-10-26: all 9.9 KB are C in `ovl5f.c`, the structured tables retyped
+  2026-10-26: all 9.9 KB are C in `tank.c`, the structured tables retyped
   with the naming (`PreMap`, `WWInf`, `hero_seq`, `file_group_load_info`,
   `shell_setup`, `u16` AI tables); lists of ids and frames stay `s32[]`.
 - [x] Tank's asset files extract: list the `CRASHBSH.DAT` entries its
@@ -195,13 +195,13 @@ retail does. The recipe is written up for Phase 4.
   `src/overlays/engine/asttable.c`, all 174 entries by name with the AST
   enums' ids; the engine's link takes the slot functions' addresses from
   the overlays' own links (`tools/scripts/slot_syms.py`, a Makefile step).
-- [x] A shiftable `NON_MATCHING` build: an option (say `make shift OVL=ovl5f
+- [x] A shiftable `NON_MATCHING` build: an option (say `make shift OVL=tank
   PAD=N`) that pads a source-only slot overlay's code and data so every
   address in it moves, relinks the engine's AST table against it and packs a
   disc. The packer rebuilds `CRASHBSH.DAT` and its index when an entry grows
   (today a file may shrink but not grow), and the padded overlay must stay
   inside the slot (`0x800B32B4` up to `0x800D7144`, the slot image's end;
-  Tank ends at `0x800CB294`). Done 2026-10-26: `make shift OVL=ovl5f
+  Tank ends at `0x800CB294`). Done 2026-10-26: `make shift OVL=tank
   PAD=0x40` (`tools/scripts/shift.py`, docs/PLAYING.md). It relinks from the
   matching objects with padding in the linker script, so the C needs no
   `NON_MATCHING` code. Until the engine's data is C (Phase 5), it rewrites
@@ -212,7 +212,7 @@ retail does. The recipe is written up for Phase 4.
 - [x] Tank's shift test: the padded build boots and Tank plays through to a
   win, the same way as on the retail disc. Write the route down in
   docs/PLAYING.md, so the test can be repeated and later automated.
-  Passed 2026-10-26: `make shift OVL=ovl5f PAD=0x40`, Desert Fox played
+  Passed 2026-10-26: `make shift OVL=tank PAD=0x40`, Desert Fox played
   through to a win, everything as on retail (route: PLAYING.md, The shift
   test route). It relies on `shift.py`'s stopgap for the engine's asm data
   (the per-character hero sequence tables, the hero mode table, the
@@ -255,44 +255,44 @@ build.
 - [x] Finish the slot overlays' file splits where the binary proves a start
   (ARCHITECTURE.md, Files inside the slot overlays), each before that
   overlay's data goes to C, since a file's local data moves with it. Done
-  2026-10-26: every start the binary proves was split already (`ovl5d`,
-  `ovl5e`, `ovl66`, `ovl67`, `ovl6a`, by jump-table parity); the leaked
+  2026-10-26: every start the binary proves was split already (`bash`,
+  `papu`, `bonk`, `n2o`, `hub`, by jump-table parity); the leaked
   headers' order (`tools/scripts/leak_order.py`) and `units --data` prove no
   other. Pogo and Arkenoid read as one file each like Tank. Polar's
   functions 155..216 can't be placed until they are named (Polar's box).
-- [x] Pogo (`ovl60`). Done 2026-10-26: every function named (11 from the
+- [x] Pogo. Done 2026-10-26: every function named (11 from the
   leak's order), rodata, data and id word as C and named, one file, its
-  shift test passed (`make shift OVL=ovl60 PAD=0x40`, PLAYING.md). `pogo.h`
+  shift test passed (`make shift OVL=pogo PAD=0x40`, PLAYING.md). `pogo.h`
   is settled but `POGOSpecifics` (not in this build) and `number_of_banks`
   (no object fits it). Left for Phase 5: its game-state views
-  (`Ovl60*View`) and the tile grid's and AI's stand-ins (`Ovl60Cell`,
-  `Ovl60Move`, the leak's `PogoSquare`/`PogoAIPlayer`).
-- [x] Arkenoid (`ovl61`). Done 2026-10-26: every function named (6 from
+  (`Pogo*View`) and the tile grid's and AI's stand-ins (`PogoCell`,
+  `PogoMove`, the leak's `PogoSquare`/`PogoAIPlayer`).
+- [x] Arkenoid. Done 2026-10-26: every function named (6 from
   the leak's order), rodata, data and id word as C and named, one file,
-  its shift test passed (`make shift OVL=ovl61 PAD=0x40`, PLAYING.md).
+  its shift test passed (`make shift OVL=arkenoid PAD=0x40`, PLAYING.md).
   `arkenoid.h`'s eight undefined names are not in this build
   (ARCHITECTURE.md, Arkenoid's data). Left for Phase 5: its game-state
-  views and stand-in structs (`Ovl61*`).
-- [x] Polar (`polar`). Done 2026-10-26: every function named (functions
+  views and stand-in structs (`Arkenoid*`).
+- [x] Polar. Done 2026-10-26: every function named (functions
   155..216 included: the hero actions 73..90 by the game's
   `HeroMode_nums`), rodata, data and id word as C and named, its shift
   test passed (`make shift OVL=polar PAD=0x40`, PLAYING.md). The leak
   can't place 155..216 (none of them is in `polar.h`), so it stays one
   unit; 26 of `polar.h`'s names are not identified (ARCHITECTURE.md,
   Polar's data). Left for Phase 5: its game-state views and stand-ins.
-- [ ] Bash (`ovl5d`, with the crates and pickups of `XTRAS_AST_types`)
-- [ ] Papu (`ovl5e`)
-- [ ] Race (`ovl63`)
-- [ ] Spin (`ovl64`)
-- [ ] Dino (`ovl65`)
-- [ ] Bonk (`ovl66`)
-- [ ] N2O and NOX (`ovl67`)
-- [ ] Chase (`ovl68`)
-- [ ] Hub (`ovl6a`)
-- [x] Titles, the front end (`ovl69`). Done 2026-10-26: named, typed,
+- [ ] Bash (`bash`, with the crates and pickups of `XTRAS_AST_types`)
+- [ ] Papu
+- [ ] Race
+- [ ] Spin
+- [ ] Dino
+- [ ] Bonk
+- [ ] N2O and NOX (`n2o`)
+- [ ] Chase
+- [ ] Hub
+- [x] Titles, the front end (`titles`). Done 2026-10-26: named, typed,
   rodata, data and id word as C, one file, and its shift test passed
-  (`make shift OVL=ovl69 PAD=0x40`, the route in PLAYING.md). Left for
-  Phase 5: its views of the game-state struct (`Ovl69*View`).
+  (`make shift OVL=titles PAD=0x40`, the route in PLAYING.md). Left for
+  Phase 5: its views of the game-state struct (`Titles*View`).
 
 ## Phase 5 - The engine and `main.exe` to source-only
 

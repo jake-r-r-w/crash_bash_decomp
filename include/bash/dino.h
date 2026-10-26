@@ -1,7 +1,7 @@
 #ifndef BASH_DINO_H
 #define BASH_DINO_H
 
-/* Dino (overlay ovl65).
+/* Dino (overlay dino).
  * Names and layouts come from the Oct 9 2000 prototype's debug types; see
  * docs/ARCHITECTURE.md (Prototype debug types). Fields whose type the fragment
  * does not define are word (or byte) arrays of the recorded size. */

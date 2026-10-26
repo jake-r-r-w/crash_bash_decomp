@@ -22,18 +22,18 @@ function back to the front of the queue with the permuter's diff
 ## Running
 
 ```
-node tools/swarm/swarm.mjs run --branch main --seg overlays/ovl5d --max-minutes 60 --max-run-usd 30 \
+node tools/swarm/swarm.mjs run --branch main --seg overlays/bash --max-minutes 60 --max-run-usd 30 \
   --max-functions 500 --model sonnet --escalate-model opus --big-budget-usd 8
 node tools/swarm/swarm.mjs status
 node tools/swarm/swarm.mjs stats      # outcomes and $ per match by size (--run ID: one run), permuter runs, checkpoints
 node tools/swarm/swarm.mjs stop       # graceful; --now kills (then `run --clear-stop` to start again)
 ```
 
-The run above is the low-cost recipe (sonnet first, about $0.20 a match on ovl5f; ovl5d $0.50,
-its 250-599 B functions cost more; ovl65 and ovl68 $0.25-0.33). Use it for fresh overlays. The
+The run above is the low-cost recipe (sonnet first, about $0.20 a match on tank; bash $0.50,
+its 250-599 B functions cost more; dino and chase $0.25-0.33). Use it for fresh overlays. The
 other two:
 
-- **Opus** (the `config.json` defaults, 5 normal + 1 big; polar, ovl60 and ovl63 matched 77-117
+- **Opus** (the `config.json` defaults, 5 normal + 1 big; polar, pogo and race matched 77-117
   an hour for $34-47): add `--big-workers 2` while big functions are queued. The normal workers
   finish the small functions first, then idle.
 - **Big-heavy**, for an overlay's leftovers, mostly >= 600 B: `--workers 1 --big-workers 4
@@ -95,7 +95,7 @@ MATCH -> the gate; "needs_permute" at the registers stage -> permuter pool -> se
 otherwise -> session n+1, until --big-sessions, or --big-stale sessions in a row without progress
 ```
 
-`checkpoints/` and `results/` are keyed by function key (`8002D4F4`, `ovl5d_800B3A38`): the 14 slot
+`checkpoints/` and `results/` are keyed by function key (`8002D4F4`, `bash_800B3A38`): the 14 slot
 overlays all load at `0x800B32B4`, so 35 names repeat across them. For those the workers and
 `decomp.py` get the key (the queue's `ref`); `--only`, `permute --only` and `forget --only` take names
 or keys. Checkpoints saved by name before 2026-10-16 still resume when the name is unique.

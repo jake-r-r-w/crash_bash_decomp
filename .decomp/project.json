@@ -28,7 +28,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl5d",
+   "name": "bash",
    "offset": 57643008,
    "phase": 4,
    "sha1": "d0d0387d0963759f9a52f91e7619f16de56f9032",
@@ -37,7 +37,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl5e",
+   "name": "papu",
    "offset": 57595904,
    "phase": 4,
    "sha1": "848cc443eb6608d2e46b79e1219a08c7106f2040",
@@ -46,7 +46,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl5f",
+   "name": "tank",
    "offset": 57495552,
    "phase": 3,
    "sha1": "c68fe73c256380452e952ecfafc782d47a6ee30f",
@@ -55,7 +55,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl60",
+   "name": "pogo",
    "offset": 57417728,
    "phase": 4,
    "sha1": "a099075f905097d520df86126aeb9544aaaf8f98",
@@ -64,7 +64,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl61",
+   "name": "arkenoid",
    "offset": 57354240,
    "phase": 4,
    "sha1": "20c8654da4038f6496047ec750201f22711f463f",
@@ -82,7 +82,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl63",
+   "name": "race",
    "offset": 57257984,
    "phase": 4,
    "sha1": "ea10dcc5124cf65bd67160da0c90afa28627b2b8",
@@ -91,7 +91,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl64",
+   "name": "spin",
    "offset": 57102336,
    "phase": 4,
    "sha1": "7d3e46040ad33ec59b1ccfc2f910e521fcab48ec",
@@ -100,7 +100,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl65",
+   "name": "dino",
    "offset": 57057280,
    "phase": 4,
    "sha1": "1d2cd8b029c9796641a0f271fc012c57da74017a",
@@ -109,7 +109,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl66",
+   "name": "bonk",
    "offset": 57028608,
    "phase": 4,
    "sha1": "f111975a08684066d50c9b4799e992271736f0af",
@@ -118,7 +118,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl67",
+   "name": "n2o",
    "offset": 56944640,
    "phase": 4,
    "sha1": "944e98e5e7e7019b78e1a657c94a32118fd74d13",
@@ -127,7 +127,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl68",
+   "name": "chase",
    "offset": 56899584,
    "phase": 4,
    "sha1": "b92bfadc46085aa0e00d115fd34cad28b42c9b9d",
@@ -136,7 +136,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl69",
+   "name": "titles",
    "offset": 57225216,
    "phase": 4,
    "sha1": "d14ad4700257897c4402b8dccd048263ce74dbe9",
@@ -145,7 +145,7 @@
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
-   "name": "ovl6a",
+   "name": "hub",
    "offset": 57139200,
    "phase": 4,
    "sha1": "3284b2f1f1426d216ada385a088f4477bd7da8a8",

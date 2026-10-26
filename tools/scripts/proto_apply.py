@@ -115,7 +115,7 @@ def declared(renames):
 
 
 def split_overlay(retail):
-    """'func_800B7DA4 (ovl5e)' -> ('func_800B7DA4', 'ovl5e'); others keep None."""
+    """'func_800B7DA4 (papu)' -> ('func_800B7DA4', 'papu'); others keep None."""
     m = re.fullmatch(r"(\S+) \((\w+)\)", retail)
     return (m.group(1), m.group(2)) if m else (retail, None)
 

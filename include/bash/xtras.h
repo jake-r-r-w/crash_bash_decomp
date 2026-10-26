@@ -1,7 +1,7 @@
 #ifndef BASH_XTRAS_H
 #define BASH_XTRAS_H
 
-/* Crates and pickups shared by the games (XTRAS_AST_types: ovl5d and the
+/* Crates and pickups shared by the games (XTRAS_AST_types: bash and the
  * engine).
  * Names and layouts come from the Oct 9 2000 prototype's debug types; see
  * docs/ARCHITECTURE.md (Prototype debug types). Fields whose type the fragment

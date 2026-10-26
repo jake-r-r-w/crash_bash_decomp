@@ -26,9 +26,14 @@ import subprocess
 import sys
 
 
+SELF = {"tools/scripts/rename_unit.py", "tools/scripts/tests/test_rename_unit.py"}
+
+
 def tracked():
+    """Tracked files (stage a rename before the next one) but this tool's own, whose examples
+    keep the old names."""
     out = subprocess.run(["git", "ls-files", "-z"], capture_output=True, check=True).stdout
-    return [p for p in out.decode().split("\0") if p]
+    return [p for p in out.decode().split("\0") if p and p not in SELF and os.path.exists(p)]
 
 
 def word(old):

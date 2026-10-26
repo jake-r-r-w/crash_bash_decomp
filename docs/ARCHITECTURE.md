@@ -128,8 +128,8 @@ How the boundaries were found:
     194..199 or 226..354; two of them turned out to be file starts
     (`80017164` at `0x8004C8A8` and `80022a3c` at `0x8004C8D0`). The engine
     has five (after 4/by 33,
-    59/77, 154/208, 244/289, 320/330), and `ovl5d` two, `ovl5e`, `ovl66`,
-    `ovl67`, `ovl6a` one each (`decomp.py units overlays/<ovl>/<ovl>`).
+    59/77, 154/208, 244/289, 320/330), and `bash` two, `papu`, `bonk`,
+    `n2o`, `hub` one each (`decomp.py units overlays/<ovl>/<ovl>`).
   - Calls: 84 functions are called only by code within 40 functions and
     by nothing else (no other unit, no data table), so probably `static`
     and in their callers' file; 217 are called from outside. Together with
@@ -144,7 +144,7 @@ How the boundaries were found:
     overlays included, and the pointers in each table): the first game data
     (`0x8004DCBC..0x8004DDD0`) is tables of pointers into the first rodata
     strings (`0x8004C56C..0x8004C7D0`) and the `D_8004DDD0` level table, used
-    by the engine, `ovl69` and functions 101/332-358, so the first object is a
+    by the engine, `titles` and functions 101/332-358, so the first object is a
     shared tables file. The 2.7.2 units' data (`0x8006783C..0x80067898` for
     `8002d488`, `0x8006789C..` for `8002e0f0`) follows `main/main`'s last data
     directly, as their code follows it. Pointer tables tie functions to their
@@ -206,7 +206,7 @@ How the boundaries were found:
       `D_80056AC8` at `0x80058AC8`, where the map's block starts with
       `D_80058AC8` (only 244 and 245 use it). The subengine code (236-242,
       244-246: `next_sub`, `kill_subs`) and `draw_init` (243) lie between,
-      and `next_sub` is a global (198 and `ovl60` use it), so it does not
+      and `next_sub` is a global (198 and `pogo` use it), so it does not
       say which side they are on.
     - map/path/fade/process: the map's data (`0x80058AC8..0x80058AFF`) is
       used through 263 (`path_get`, `path_find`), but `D_80058AD0` is a
@@ -259,13 +259,13 @@ code finds 15 code files; nothing else on the disc holds code.
 | Overlay | DAT entry | Sector | Size | Loads at | Contents |
 |---|---|---|---|---|---|
 | `engine` | `0x3DF` | `0x8AEB` | `0x5E4B8` | `0x80078C90` | engine module, then the reserved slot image |
-| `ovl5d`..`ovl6a` | `0x1E7`, `0x2CC`..`0x2D8` | | `0x6CD8`..`0x23690` | `0x800B32B4` | slot overlays, one at a time |
+| `bash`..`hub` | `0x1E7`, `0x2CC`..`0x2D8` | | `0x6CD8`..`0x23690` | `0x800B32B4` | slot overlays, one at a time |
 
 - **File names** (`configs/USA/dat_names.txt`, from CTR-tools): the engine is
   `overlays/gameeng.bin`, the slot overlays `overlays/modes/<mode>.bin`: crate
-  (ovl5d), papu, tank, pogo, ball (ovl61), dash (ovl63), ring (ovl64), dino,
-  mallet (ovl66), oxide (ovl67), kegs (ovl68), menu (ovl69), warp (ovl6a),
-  polar (polar).
+  (bash), papu, tank, pogo, ball (arkenoid), dash (race), ring (spin), dino,
+  mallet (bonk), oxide (n2o), kegs (chase), menu (titles), warp (hub),
+  polar.
 - **Load addresses** from `jal` targets: at `0x80078C90` 308 of the engine's
   internal calls land on prologues (next best 150); every slot overlay's calls
   into itself fit `0x800B32B4`. The engine's own `.data` stores
@@ -318,25 +318,25 @@ code finds 15 code files; nothing else on the disc holds code.
   overlay's `.rodata` comes first (from `0x800B32B4`, 4 mod 8), then `.text`,
   `.data`; each later file has its own `.rodata` range in the yaml and an
   owned header `bash/<ovl>_<unit>.h` (slot overlays share one address range,
-  so the overlay name keeps header names unique), which `bash/<ovl>.h`
+  so the overlay name keeps header names unique), which `bash/<ovl>_ovl.h`
   includes. Most of their functions are declared in the recovered original
   headers (`bash.h`, `papu.h`, ...), which stay as they are.
 
   | Overlay | Later files start at (function number, name) | Proven range | Rodata from |
   |---|---|---|---|
-  | `ovl5d` | 59 `func_800BB64C`; 80 `func_800BFF1C` | 22..62 (fewest call ties at 59); 73..80 (none from 77) | `0x800B3734`; `0x800B3A18` |
-  | `ovl5e` | 50 `func_800B87A0` | 15..50 (fewest call ties at 44..50) | `0x800B33FC` |
-  | `ovl66` | 45 `func_800B6EFC` | 15..50 (fewest call ties at 44, 45) | `0x800B3364` |
-  | `ovl67` | 75 `func_800BBDB8` | 36..75 | `0x800B336C` (`D_800B336C`, used by 75, 78, 129) |
-  | `ovl6a` | 8 `func_800B4EAC` | 3..9 (fewest call ties at 8) | `0x800B330C` |
+  | `bash` | 59 `func_800BB64C`; 80 `func_800BFF1C` | 22..62 (fewest call ties at 59); 73..80 (none from 77) | `0x800B3734`; `0x800B3A18` |
+  | `papu` | 50 `func_800B87A0` | 15..50 (fewest call ties at 44..50) | `0x800B33FC` |
+  | `bonk` | 45 `func_800B6EFC` | 15..50 (fewest call ties at 44, 45) | `0x800B3364` |
+  | `n2o` | 75 `func_800BBDB8` | 36..75 | `0x800B336C` (`D_800B336C`, used by 75, 78, 129) |
+  | `hub` | 8 `func_800B4EAC` | 3..9 (fewest call ties at 8) | `0x800B330C` |
 
-  `ovl5f`..`ovl65`, `ovl68` have tables but no parity change; `ovl69` has
+  `tank`..`dino`, `chase` have tables but no parity change; `titles` has
   none. The other positive signs are absent everywhere too (checked
   2026-10-15): no overlay or engine string is stored twice, and no overlay
   function has the gcc 2.7.2 `lui $at` stores. So the remaining files inside
   each unit can't be placed yet.
 
-  **`ovl5f` (Tank) is one file** (2026-10-26). The game was C++, and
+  **`tank` is one file** (2026-10-26). The game was C++, and
   `cc1plus` emits a file's inline functions that need an out-of-line copy
   (address taken, or called before their definition) at the end of the
   file, as local symbols, in reverse definition order (tested with
@@ -348,18 +348,18 @@ code finds 15 code files; nothing else on the disc holds code.
   (`PlotJoe`) to the end (`GetSandbagValueMiss`, then the helpers the
   header defines first): one climb and one fall, so one file. A second file
   would show a second climb with its own falling tail. `decomp.py units
-  overlays/ovl5f/ovl5f --data` agrees: 33 jump tables with no parity change,
+  overlays/tank/tank --data` agrees: 33 jump tables with no parity change,
   and the initialised data's order (its zero tail, the `.bss`, left out)
   ties functions 1..123 into one file. So functions 87..180 (the `Init*`
   functions, the hero mode setters, the SFX helpers, `TA_PreMoveHero`,
   `TA_Triggers`, the helpers' copies) were `inline` in the source.
-  `polar` (Polar) shows the same data tie (1..107).
+  `polar` shows the same data tie (1..107).
 
   **The other leaked games, checked 2026-10-26** with
   `tools/scripts/leak_order.py OVL HEADER`, which scores the best "one
   climb, one fall" against the best two-file fit. Tank, known to be one
   file, sets the noise: a second file explains 7 more of its 104 declared
-  functions. Pogo (`ovl60`, +10 of 167), Arkenoid (`ovl61`, +5 of 78) and
+  functions. Pogo (`pogo`, +10 of 167), Arkenoid (`arkenoid`, +5 of 78) and
   Polar (`polar`, +5 of 78) gain no more, and the best two-file cut lies
   inside a range the data ties into one file for Tank (109, in 1..123),
   Arkenoid (12, in 2..76) and Polar (15, in 1..107); Pogo's (117) is in a
@@ -378,10 +378,10 @@ code finds 15 code files; nothing else on the disc holds code.
   are 8-aligned (`.align 3` from an 8-aligned rodata start) while the id sits
   at `0x800B32B4`, 4 mod 8, so it can't be in their object; the first C
   file's `.rodata` starts at `0x800B32B8`. Every slot overlay is split this
-  way (`<ovl>_id`, 2026-10-19; `ovl69` has no tables and follows the same
+  way (`<ovl>_id`, 2026-10-19; `titles` has no tables and follows the same
   layout), so a real `switch` in a first file links at the retail table
   address; before the split it landed 4 bytes off, and the two matched ones
-  (ovl61) had been `&&label` tables.
+  (arkenoid) had been `&&label` tables.
 - **The AST table is C** (2026-10-26): `src/overlays/engine/asttable.c`, a data-only unit
   in the engine's `.data`. Its entries name the slot overlays' functions, and since the
   overlays share one address range and link on their own, the engine's link gets those
@@ -389,16 +389,16 @@ code finds 15 code files; nothing else on the disc holds code.
   a build that moves an overlay moves its table entries with it.
 - **Which game is which**: the engine's AST table at `0x80098720`
   (`{id, Init, Plot}` x 0xAE) points into the slot. Groups by id high byte:
-  `0x13` -> `ovl5f`, `0x14` -> `ovl60` (Pogo), `0x15` -> `ovl61` (Arkenoid),
-  `0x16` -> `polar` (Polar), `0x17` -> `ovl63`, `0x11`/`0x02` -> `ovl5d`,
-  `0x12` -> `ovl5e`, `0x18`..`0x1D` -> `ovl64`..`ovl68` (`0x1B`, `0x1C` both
-  `ovl67`), `0x1F` -> `ovl6a`. The Pogo/Arkenoid/Polar ids match the leaked
-  enums (`POGO_AST_zero = 0x1400`, ...); `ovl5f` is Tank (`TANK_AST_zero = 0x1300` in
+  `0x13` -> `tank`, `0x14` -> `pogo`, `0x15` -> `arkenoid`,
+  `0x16` -> `polar`, `0x17` -> `race`, `0x11`/`0x02` -> `bash`,
+  `0x12` -> `papu`, `0x18`..`0x1D` -> `spin`..`chase` (`0x1B`, `0x1C` both
+  `n2o`), `0x1F` -> `hub`. The Pogo/Arkenoid/Polar ids match the leaked
+  enums (`POGO_AST_zero = 0x1400`, ...); `tank` is Tank (`TANK_AST_zero = 0x1300` in
   the Oct 9 prototype). The id group does not always name the overlay: five
   Polar ids point elsewhere, and splitting `polar` at them cut real functions
   mid-code (fixed 2026-10-19). `Rippled` and `InnerRipple` (0x161D, 0x161E)
-  are in `ovl63`; `PathEffect`, `CrystalFlash` and `SparkGFX` (0x1626-0x1628)
-  are in `ovl6a`, which spawns them. Before naming from the table, check that
+  are in `race`; `PathEffect`, `CrystalFlash` and `SparkGFX` (0x1626-0x1628)
+  are in `hub`, which spawns them. Before naming from the table, check that
   the address starts a function in the overlay (the one before it ends in
   `jr $ra`). Leaf functions reached only through this table are
   declared in `configs/USA/sym.<ovl>.txt` so splat splits them.
@@ -417,12 +417,12 @@ code finds 15 code files; nothing else on the disc holds code.
   `SmokePoof`, `WeatherNas`). Every other id is named the same way from the
   Oct 9 prototype's enums (see Prototype debug types): Tank's 68 names come
   out exactly as the leaked Tank header spells its `Init`/`Plot` prototypes.
-  Left unnamed because one function serves several ids: `ovl5d`'s
+  Left unnamed because one function serves several ids: `bash`'s
   `func_800BBD48` (Init of `Crate` and `PACrate`), `func_800BC038` (Plot of
   `Crate`, `CrateType`) and `func_800BE9D0` (Plot of five pickups); the
   engine's `InitScriptFX`/`PlotScriptFX` also serve `AST_SpecialFX`. The
   Plot of `PACrate`/`PACrateType` (`0x800B87A0`) is not a function start in
-  `ovl5d`. The crate breaks through `func_800BFAC0(eng, fux)` (four paths
+  `bash`. The crate breaks through `func_800BFAC0(eng, fux)` (four paths
   in `func_800BC038`): a random crate sfx, a type-2 effect at its position
   (`func_8007A524`), then an `AST_CratePickup` (`0x206`) there unless the
   hook `D_8009D750` returns 1.
@@ -467,7 +467,7 @@ in the exe or the overlays.
 
 The declarations are in `include/bash/`: `tank.h`, `pogo.h` (with
 `psx_pogo.h`), `arkenoid.h` and `polar.h`. Each overlay's source includes its
-own header (`ovl5f`, `ovl60`, `ovl61`, `polar`). Differences from the leak:
+own header (`tank`, `pogo`, `arkenoid`, `polar`). Differences from the leak:
 - Types are written as `s32`/`u16`/... and the layout is the repo's. The
   leak's comments, preprocessor residue and the inline helper bodies
   (`CalcCurrentSector`, `KeepWithinZone2`) are not kept. Those helpers appear
@@ -530,26 +530,26 @@ The Oct 9 enums name every id in the retail AST table (`0x0001` is
 | Ids | Enum | Overlay |
 |---|---|---|
 | `0x00xx` | `HERO_AST_types` | none: Init and Plot are the stub `0x80026D00` |
-| `0x02xx` | `XTRAS_AST_types` (crates, pickups) | `ovl5d` and the engine (`0x0205`, `0x0207`, `0x020C`, `0x020D`) |
-| `0x10xx` | `TITLES_AST_types` | `ovl69` (the entries are the stub `0x80026D00`; see below) |
-| `0x11xx` | `BASH_AST_types` | `ovl5d` |
-| `0x12xx` | `PAPU_AST_types` | `ovl5e` |
-| `0x13xx` | `TANK_AST_types` | `ovl5f` |
-| `0x14xx` | `POGO_AST_types` | `ovl60` |
-| `0x15xx` | `ARKENOID_AST_types` | `ovl61` |
+| `0x02xx` | `XTRAS_AST_types` (crates, pickups) | `bash` and the engine (`0x0205`, `0x0207`, `0x020C`, `0x020D`) |
+| `0x10xx` | `TITLES_AST_types` | `titles` (the entries are the stub `0x80026D00`; see below) |
+| `0x11xx` | `BASH_AST_types` | `bash` |
+| `0x12xx` | `PAPU_AST_types` | `papu` |
+| `0x13xx` | `TANK_AST_types` | `tank` |
+| `0x14xx` | `POGO_AST_types` | `pogo` |
+| `0x15xx` | `ARKENOID_AST_types` | `arkenoid` |
 | `0x16xx` | `POLAR_AST_types` | `polar` |
-| `0x17xx` | `RACE_AST_types` | `ovl63` |
-| `0x18xx` | `SPIN_AST_types` | `ovl64` |
-| `0x19xx` | `DINO_AST_types` | `ovl65` |
-| `0x1Axx` | `BONK_AST_types` | `ovl66` |
-| `0x1Bxx`, `0x1Cxx` | `N2O_AST_types`, `NOX_AST_types` | `ovl67` |
-| `0x1Dxx` | `CHASE_AST_types` | `ovl68` |
-| `0x1Fxx` | `HUB_AST_types` | `ovl6a` |
+| `0x17xx` | `RACE_AST_types` | `race` |
+| `0x18xx` | `SPIN_AST_types` | `spin` |
+| `0x19xx` | `DINO_AST_types` | `dino` |
+| `0x1Axx` | `BONK_AST_types` | `bonk` |
+| `0x1Bxx`, `0x1Cxx` | `N2O_AST_types`, `NOX_AST_types` | `n2o` |
+| `0x1Dxx` | `CHASE_AST_types` | `chase` |
+| `0x1Fxx` | `HUB_AST_types` | `hub` |
 
 Tank's ids are `TANK_AST_zero = 0x1300` + position, like the other three
 leaked games (`AST_Shell` is `0x1301`, ..., `AST_Torpedo` `0x1322`).
 
-`ovl69` is the front end (Titles). It has no entries in the AST table (the
+`titles` is the front end (Titles). It has no entries in the AST table (the
 `TITLES_AST_types` ids `0x1001`/`0x1002` point at the stub), but its strings
 are the title menus: game type (`ADVENTURE MODE`, `BATTLE MODE`, `TOURNAMENT`,
 `OPTIONS`), player count, `NEW GAME`/`LOAD GAME`, the sound and controller
@@ -666,7 +666,7 @@ signature alone is not enough.
     `hero_hit` down, then 0x25), 0x25 Dead (health 0, explosion, sound 0x586).
     The anim ids fit `HeroAnim_seqs`' Arkenoid order from 0x19 (breathe,
     move, idle, taunt, kick, ...). They take `u32 player` as the leak does.
-- **Tank hero states** (ovl5f, the same table, actions 0x69-0x70; anim ids
+- **Tank hero states** (tank, the same table, actions 0x69-0x70; anim ids
   are `HeroAnim_seqs` values): 0x69 Recoil (`tankrecoil` anim, 60 frames of
   `hero_immunity`), 0x6A Die (`tankdie`; the Do spawns the explosion, then
   0x6B), 0x6B Dead (health 0, the same engine calls as `SetArkHeroDead` /
@@ -693,7 +693,7 @@ signature alone is not enough.
   `HeadPolarObject`, the two smoke packs and `barrierdata`. The leak's
   header declares none of Polar's hero states, as Tank's, Arkenoid's
   and Pogo's do theirs: they were likely a file of their own, not proven.
-- **Arkenoid's data** (ovl61, Ballistix; named 2026-10-26). Modes 14..17
+- **Arkenoid's data** (arkenoid, Ballistix; named 2026-10-26). Modes 14..17
   are Balls, Beach Ball, N. Gin and Sky Ball (`file_group_BALLS` ..
   `SKYBALL`); the world record (`0x80098FF0`) is `{..., &ARKENOID_PREMAP,
   &arkenoid_shell_info, AR_SetUp}`. The 64 `*_seq_ark*` sequences
@@ -707,7 +707,7 @@ signature alone is not enough.
   `DangerBalls`, `HeroChooseARScoreWinner`, and `ARKENOIDSpecifics`
   (`AR_SetUp` fills the exe's `LevSpec`). The two `BounceOnBounds` return
   a word here where the leak says `s16`.
-- **Pogo's data** (ovl60, named 2026-10-26). Modes 10..13 are Painter,
+- **Pogo's data** (pogo, named 2026-10-26). Modes 10..13 are Painter,
   a-Gogo, Loco and Bouncer (`file_group_POGOPAINTER` .. `BOUNCER`, the
   `levnumbers` order); the world record (`0x80098FD8`) is `{...,
   &POGO_PREMAP, &POGO_shell_info, POGOSetUp}` and `POGOSetUp` starts the
@@ -715,7 +715,7 @@ signature alone is not enough.
   hero's `HeroPogo` frame table runs straight into its five
   `*_seq_pogo_*` sequences (`HeroSeqTables[hero][46..50]`). The players
   are the leak's `PogoPlay[4]` (`PogoPlayer`).
-- **The front end** (ovl69, Titles; named 2026-10-26). Modes 0x28..0x2A
+- **The front end** (Titles; named 2026-10-26). Modes 0x28..0x2A
   (the engine's per-mode table gives each `file_group_TITLES`); its world
   record (`0x800990B0`, world 0x0101) is `{..., &TITLES_PREMAP,
   &titles_shell_info, TitlesSetUp}`, the same shape as Tank's, and
@@ -739,7 +739,7 @@ signature alone is not enough.
   `TITLES` and names `num_players_render`, `adventure_mode_head`,
   `team_mode_init` and data (`Crash_Titles_Table`, `sub_setup_players`)
   not placed in retail yet.
-- **Tank's arenas and data** (ovl5f, named 2026-10-26). The game mode
+- **Tank's arenas and data** (tank, named 2026-10-26). The game mode
   (`D_8005A648`, the game-state struct's `+0x34`) is the arena: 5 swamp
   (`LEV_TANKLAST`: hover tanks, `BumpSpeedsForSwamp`, force fields, its own
   turrets and file list with `tank_swamp/vehicle`), 6 desert, 7 jungle (its
@@ -762,7 +762,7 @@ signature alone is not enough.
   a computer player). The leak's `TANKSpecifics` (a `LevSpec`) is not in
   this build: `TA_SetUp` writes the hooks into the exe's `LevSpec` at
   `0x8005AA70` one field at a time.
-- **Pogo hero states** (ovl60, actions 0x39-0x3F): 0x39 Idle (`pogo_idle` /
+- **Pogo hero states** (pogo, actions 0x39-0x3F): 0x39 Idle (`pogo_idle` /
   `pogo_quick_idle`), 0x3A Pogo (the bounce; back to Idle), 0x3B Dazed
   (`pogo_dazed`, `hero_frozen` 10), 0x3C Winner (the engine's winner calls),
   0x3D Loser, 0x3E Tied, 0x3F Tazing (`pogo_tazing`). The end states are
@@ -770,7 +770,7 @@ signature alone is not enough.
   (0x200, `pogo_winner` anim), `TestHeroPogoLoser` (0x400) and
   `TestHeroPogoTied` (0x100): Arkenoid's Dead state uses the same 0x200/0x400
   bits for Winner/Lose.
-- **Pogo helpers** (ovl60), each from its code: `TestHeroPogo` (moving onto a
+- **Pogo helpers** (pogo), each from its code: `TestHeroPogo` (moving onto a
   free square enters 0x3A), `TestHeroPogoDazed` (status 0x800 enters 0x3B),
   `TestHeroPogoShoot` (fire button: the held pickup picks `Fire_Rocket(p, 0)`,
   `Fire_Rocket(p, 1)`, `Fire_RocketFourWays` or `Fire_Tazer`, which enters
@@ -787,7 +787,7 @@ signature alone is not enough.
   (`D_800C535C[p].unk4`), leaving the quick-idle state for pickup 5 and
   unfreezing the tiles for pickup 6; three end states called it with no
   argument (K&R), now `Pickup_Lose(arg0)` with the same code.
-- **Pogo tiles** (ovl60). `PogoSquare.state` (`+0x12`): 0 a pending claim
+- **Pogo tiles** (pogo). `PogoSquare.state` (`+0x12`): 0 a pending claim
   (owner after `+0x14` frames, old owner in `+0x16`), 1 normal (owner `+0xA`,
   -1 free), 5 TNT (120-frame fuse), 6 Nitro, 7 four-way arrow, 10 locked
   (240 frames). The setters are named by the state they write: `Tile_Set`
@@ -868,7 +868,7 @@ signature alone is not enough.
     (`func_800B3F44`), the second on the AI's lines of fire; they follow
     `TA_CreateShadow` in code as in the leak. With the leak's `u32` return
     the callers' `s32 (*)(s32, s32)` casts went.
-  - Polar (polar): `InitialisePOLARFirst`, `InitialisePOLAR`, `UpdatePOLAR`;
+  - Polar: `InitialisePOLARFirst`, `InitialisePOLAR`, `UpdatePOLAR`;
     hooks `Polar_HeroBot` and `DoNowt` (the `CheckBounds` hook, which only
     returns 0). From the AI: `PlayerActionCount(action, player)` counts the
     bots in a state (player unused; its caller had cast it to the two-arg
@@ -902,14 +902,14 @@ signature alone is not enough.
     point-against-every-edge test of a zone polygon, says the point is on a
     safe piece; the two are adjacent in code and in the leak.
     `XZBoxToSphere` (box of one subengine against another's sphere) is named
-    by its own debug message; ovl63 and ovl65 have their own copies.
+    by its own debug message; race and dino have their own copies.
   `LevSpec.PostTriggers` (`D_8005AA88`, typed `void (*)(NASTrigger *, s32)`
   in main.h) holds the leak's per-game triggers function: `TA_Triggers`,
   `AR_Triggers` and `POLARtriggers` are all empty stubs (Pogo leaves the
   slot unset, so `POGOriggers` has no code).
   The `CheckBounds` functions take the leak's `EXTengine *`; their old local
   stand-in structs were `unk10.x/z`, `collision_box.radius/flags` and `unk1E`.
-- **Pogo challenges** (ovl60). The challenge flags at `D_8005A614+0x32` are
+- **Pogo challenges** (pogo). The challenge flags at `D_8005A614+0x32` are
   0x80 crystal, 0x40 relic, 0x20 gem, none trophy/normal. Evidence:
   `PogoInit_CrystalChallenge` (flag 0x80) spawns the crystals, and
   `PogoWinner_Crystal` (0x80) is the only winner that hands off, to
@@ -925,7 +925,7 @@ signature alone is not enough.
   and the Roo) and `Update_Tiles` (tile timers: TNT fuse, Nitro, locks).
   `func_800B3FF0` (per-mode table, ends with `PogoQuality_Update`) is
   `PogoInit_AIQuality` or `PogoQuality_Init`: left unnamed.
-- **Pogo pickups** (ovl60): `UpdatePOGO` runs `PogoPickups_Poll` and
+- **Pogo pickups** (pogo): `UpdatePOGO` runs `PogoPickups_Poll` and
   `PogoPowerups_Poll`, which drop `AST_PogoPickup` (0x1401) through
   `CreatePickupOnTile` and `AST_PogoPowerup` (0x1402) through
   `CreatePowerupOnTile` on a square from `FindFreeSquare` (10 random tries).
@@ -937,7 +937,7 @@ signature alone is not enough.
   of heroes, reservations, TNT/Nitro and the padlock) is the only free-square
   test, so it takes the leak's name although `FindFreeSquare` and the padlock
   use it too.
-- **Pogo kerbs** (ovl60, mode 11): the board's edges are four 8-entry owner
+- **Pogo kerbs** (pogo, mode 11): the board's edges are four 8-entry owner
   arrays (`D_800C5B2C`, `B4C`, `B6C`, `B8C`). `PogoKerb_Init` (from the mode
   11 setup) sets the kerb timers and calls `PogoKerb_CopyData`, which copies
   pattern `D_800C5BC0` of `D_800C3C14` into them; `PogoKerb_Poll` (every
@@ -953,7 +953,7 @@ signature alone is not enough.
   delay; `Tile_Update`'s mode helpers are `LevelSpecific_UnclaimedTile` (the
   free-square graphic id per mode) and `LevelSpecific_ClaimedTile` (mode
   11's owned-tile neighbour mask, kerbs included).
-- **Pogo AI** (ovl60). `PogoAI_Poll(p)` runs the bot (`EXTbotai`: `AIpad`,
+- **Pogo AI** (pogo). `PogoAI_Poll(p)` runs the bot (`EXTbotai`: `AIpad`,
   timers, `AImode` 1/3/4-7). Tests: `PogoAI_CanPlayerShootAnyone` (an
   opponent in the facing row or column), `...FourWays` (any row or column),
   `PogoAI_CanPlayerShockAnyone` (an opponent within
@@ -974,7 +974,7 @@ signature alone is not enough.
   which tries the planners and the pickup scan in order and says whether one
   set a target.
   Of the three `(p, EXTbotai *)` planners, `PogoAI_StartEncircling` decides
-  through `PogoAI_ClaimingThisTileWillEncircle` (its old `Ovl60Goal` was
+  through `PogoAI_ClaimingThisTileWillEncircle` (its old `PogoGoal` was
   `EXTbotai`: `TargetXYZ.x/z`, `AImode`); `func_800C0F08` (radial search)
   and `func_800BE6C4` (needs 9+ own tiles) are GoForMyOwn / StartEnclosing
   in some order: left unnamed.
@@ -1239,4 +1239,8 @@ from the retail executable; it never overwrites existing `src/` files.
 Overlays (registered with `decomp.py add-overlay`) get their own
 `configs/USA/overlays/<ovl>.yaml`, are cut from their archive to
 `disc/<ovl>.bin`, link from `linkers/<ovl>.ld` into `build/<ovl>.bin` against
-the executable's symbols, and are checked by the same `checksum.sha`.
+the executable's symbols, and are checked by the same `checksum.sha`. The slot overlays'
+units are named after the games' own overlay names in the Euro Demo 65 link map
+(`_POLAR_` is `polar`, `AR_` `arkenoid`, `CH_` `chase`; renamed from `ovl5d`..`ovl6a`, their
+DAT ids, on 2026-10-26 with `tools/scripts/rename_unit.py`); their C stand-in types carry the
+same prefix (`PolarCam`).

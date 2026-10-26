@@ -38,7 +38,7 @@ class StrayEdits(unittest.TestCase):
         self.assertEqual(decomp.stray_edits(OLD, match_c(OLD), {"func_C"}), [])
 
     def test_edit_to_another_function_is_flagged(self):
-        # the ovl60 case: `goto done` -> `return 1` in a matched neighbour
+        # the pogo case: `goto done` -> `return 1` in a matched neighbour
         new = match_c(OLD).replace("    goto done;\n", "    return 1;\n")
         self.assertEqual(decomp.stray_edits(OLD, new, {"func_C"}), ["func_A"])
 

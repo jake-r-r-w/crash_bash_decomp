@@ -55,7 +55,9 @@ A file is finished when every function in it reaches level 4.
   prototype is declared in exactly one header, included where needed.
 - Every source file has an **owned header** that declares the functions and data
   it defines: `bash/main.h` (`src/main/main.c`), `bash/engine.h` (the engine
-  overlay's first file, which includes the others' `bash/panel.h` ...), `bash/ovl5d.h`..`bash/ovl6a.h` (each including its later files' `bash/<ovl>_<unit>.h`), and one per split unit
+  overlay's first file, which includes the others' `bash/panel.h` ...), `bash/bash_ovl.h`..`bash/hub_ovl.h` for the slot overlays (`_ovl`, since the leak's
+  `bash/polar.h` and the rest are the original headers; each includes its later files'
+  `bash/<ovl>_<unit>.h`), and one per split unit
   (`bash/8002d488.h`, created by `decomp.py done` when it first needs one). Each is marked
   `owner: <source path>`, and that marker is how `decomp.py` finds it. When a
   file is split, its declarations move with its functions to the new file's
@@ -112,7 +114,7 @@ A file is finished when every function in it reaches level 4.
 
 A unit's data becomes C with `tools/scripts/data2c.py OVL [--rodata SYM]`, which prints
 definitions for the overlay's asm data (and an `INCLUDE_RODATA` block of strings). The
-recipe, as done for Tank (`ovl5f`, 2026-10-26):
+recipe, as done for Tank (`tank`, 2026-10-26):
 
 1. Name and type first: an object is written with the type its `extern` declaration gives
    it, so a placeholder type (`u8 D_X[]` over a table of pointers) should be fixed before;

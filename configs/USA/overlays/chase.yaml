@@ -1,0 +1,59 @@
+# Minigame slot overlay id 0x68 (first word): CRASHBSH.DAT index entry 0x2CC (sector 0x6C87),
+# loaded at the shared slot 0x800B32B4. Layout: .rodata (id, strings, jump tables), .text, .data.
+name: chase
+sha1: b92bfadc46085aa0e00d115fd34cad28b42c9b9d
+options:
+  basename: chase
+  target_path: disc/chase.bin
+  elf_path: build/chase.ovl.elf
+  base_path: ../../..
+  platform: psx
+  compiler: PSYQ
+
+  asm_path: asm
+  src_path: src
+  build_path: build
+  asset_path: asm/bin
+
+  ld_script_path: linkers/chase.ld
+  ld_dependencies: True
+
+  find_file_boundaries: True
+  migrate_rodata_to_functions: True
+  ld_align_section_vram_end: False
+  ld_align_segment_vram_end: False
+  gp_value: 0x8006E9EC
+
+  o_as_suffix: False
+  use_legacy_include_asm: False
+
+  section_order: [".rodata", ".text", ".data", ".bss"]
+
+  symbol_addrs_path:
+    - configs/USA/sym.main.txt
+    - configs/USA/sym.engine.txt
+    - configs/USA/sym.chase.txt
+
+  undefined_funcs_auto_path: linkers/chase_undefined_funcs_auto.txt
+  undefined_syms_auto_path: linkers/chase_undefined_syms_auto.txt
+
+  subalign: 2
+
+  string_encoding: ASCII
+  data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+
+segments:
+  - name: chase
+    type: code
+    start: 0x0
+    vram: 0x800B32B4
+    subsegments:
+      # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
+      # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
+      - [0x0, rodata, overlays/chase/chase_id]
+      - [0x4, .rodata, overlays/chase/chase]
+      - [0x7C, c, overlays/chase/chase]
+      - [0x8580, data, overlays/chase/chase_data]
+  - [0xAB34]

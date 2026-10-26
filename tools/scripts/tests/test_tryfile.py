@@ -13,15 +13,15 @@ CFG = {"CC_VER": "2.8.1-psx", "OPT_FLAGS": "-O2", "EXTRA_CC1FLAGS": "-fno-builti
 
 class UnitPipeline(unittest.TestCase):
     def test_c_path_is_the_input(self):
-        cmd = decomp.unit_pipeline("src/overlays/ovl63/ovl63.c", "build/t.o", dict(CFG),
+        cmd = decomp.unit_pipeline("src/overlays/race/race.c", "build/t.o", dict(CFG),
                                    c_path="scratch/t.c")
         cpp = cmd.split("|")[0]
         self.assertTrue(cpp.rstrip().endswith("scratch/t.c"), cpp)
-        self.assertNotIn("ovl63.c", cmd)
+        self.assertNotIn("race.c", cmd)
 
     def test_without_c_path_the_unit_is_the_input(self):
-        cmd = decomp.unit_pipeline("src/overlays/ovl63/ovl63.c", "build/t.o", dict(CFG))
-        self.assertTrue(cmd.split("|")[0].rstrip().endswith("src/overlays/ovl63/ovl63.c"))
+        cmd = decomp.unit_pipeline("src/overlays/race/race.c", "build/t.o", dict(CFG))
+        self.assertTrue(cmd.split("|")[0].rstrip().endswith("src/overlays/race/race.c"))
 
     @unittest.skipUnless(os.path.exists("Makefile"), "needs the repo's Makefile (run from the root)")
     def test_the_units_overrides_apply(self):

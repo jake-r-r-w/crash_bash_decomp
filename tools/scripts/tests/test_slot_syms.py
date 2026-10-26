@@ -9,9 +9,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import slot_syms  # noqa: E402
 
 ELFS = {
-    "ovl5f.elf": {"InitShell": 0x800C7A00, "PlotShell": 0x800BB5C8, "Local": 0x800B4000},
-    "ovl60.elf": {"InitPogo": 0x800B5000, "Shared": 0x800B6000},
-    "ovl61.elf": {"Shared": 0x800B6000},
+    "tank.elf": {"InitShell": 0x800C7A00, "PlotShell": 0x800BB5C8, "Local": 0x800B4000},
+    "pogo.elf": {"InitPogo": 0x800B5000, "Shared": 0x800B6000},
+    "arkenoid.elf": {"Shared": 0x800B6000},
 }
 
 
@@ -28,7 +28,7 @@ class Resolve(unittest.TestCase):
         self.assertEqual(self.run_resolve({"Shared"}), [("Shared", 0x800B6000)])
 
     def test_one_name_at_two_addresses_is_an_error(self):
-        clash = dict(ELFS, **{"ovl61.elf": {"Shared": 0x800B7000}})
+        clash = dict(ELFS, **{"arkenoid.elf": {"Shared": 0x800B7000}})
         with self.assertRaises(SystemExit):
             self.run_resolve({"Shared"}, clash)
 

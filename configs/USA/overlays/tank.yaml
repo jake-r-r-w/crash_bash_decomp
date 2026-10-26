@@ -1,0 +1,59 @@
+# Minigame slot overlay id 0x5F (first word): CRASHBSH.DAT index entry 0x2D6 (sector 0x6DAA),
+# loaded at the shared slot 0x800B32B4. Layout: .rodata (id, strings, jump tables), .text, .data.
+name: tank
+sha1: c68fe73c256380452e952ecfafc782d47a6ee30f
+options:
+  basename: tank
+  target_path: disc/tank.bin
+  elf_path: build/tank.ovl.elf
+  base_path: ../../..
+  platform: psx
+  compiler: PSYQ
+
+  asm_path: asm
+  src_path: src
+  build_path: build
+  asset_path: asm/bin
+
+  ld_script_path: linkers/tank.ld
+  ld_dependencies: True
+
+  find_file_boundaries: True
+  migrate_rodata_to_functions: True
+  ld_align_section_vram_end: False
+  ld_align_segment_vram_end: False
+  gp_value: 0x8006E9EC
+
+  o_as_suffix: False
+  use_legacy_include_asm: False
+
+  section_order: [".rodata", ".text", ".data", ".bss"]
+
+  symbol_addrs_path:
+    - configs/USA/sym.main.txt
+    - configs/USA/sym.engine.txt
+    - configs/USA/sym.tank.txt
+
+  undefined_funcs_auto_path: linkers/tank_undefined_funcs_auto.txt
+  undefined_syms_auto_path: linkers/tank_undefined_syms_auto.txt
+
+  subalign: 2
+
+  string_encoding: ASCII
+  data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+
+segments:
+  - name: tank
+    type: code
+    start: 0x0
+    vram: 0x800B32B4
+    subsegments:
+      # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
+      # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
+      - [0x0, .rodata, overlays/tank/tank_id]   # src/overlays/tank/tank_id.c
+      - [0x4, .rodata, overlays/tank/tank]
+      - [0x870, c, overlays/tank/tank]
+      - [0x15958, .data, overlays/tank/tank]   # tank.c's data (tools/scripts/data2c.py)
+  - [0x17FE0]

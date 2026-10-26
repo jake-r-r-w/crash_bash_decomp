@@ -51,11 +51,11 @@ class Plan(unittest.TestCase):
 
 class Slot(unittest.TestCase):
     def test_overlay_functions_rename_by_key(self):
-        found = [row("UpdatePAPU__Fv", "func_800B7DA4 (ovl5e)", 1.0, "slot 17F"),
-                 row("TA_HeroBot__FUi", "TA_HeroBot (ovl5f)", 0.95, "slot 17E"),     # already this name
-                 row("Other__Fv", "Named (ovl5f)", 0.95, "slot 17E")]                # named otherwise
+        found = [row("UpdatePAPU__Fv", "func_800B7DA4 (papu)", 1.0, "slot 17F"),
+                 row("TA_HeroBot__FUi", "TA_HeroBot (tank)", 0.95, "slot 17E"),     # already this name
+                 row("Other__Fv", "Named (tank)", 0.95, "slot 17E")]                # named otherwise
         renames, _, left = proto_apply.plan(found, "slot", 0.9, False, set())
-        self.assertEqual(renames, [("ovl5e:800B7DA4", "UpdatePAPU", "UpdatePAPU__Fv", 1.0)])
+        self.assertEqual(renames, [("papu:800B7DA4", "UpdatePAPU", "UpdatePAPU__Fv", 1.0)])
         self.assertEqual([r[0] for r, _ in left], ["Other__Fv"])
 
 

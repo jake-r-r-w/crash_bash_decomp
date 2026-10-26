@@ -184,7 +184,7 @@ disc: build
 
 # The shiftable NON_MATCHING build: OVL padded by PAD bytes before its rodata, text and data,
 # the engine relinked against it, packed into build/shift/CrashBash.bin (tools/scripts/shift.py)
-OVL ?= ovl5f
+OVL ?= tank
 PAD ?= 0x40
 shift: build
 	@$(PYTHON) tools/scripts/shift.py $(OVL) --pad $(PAD)

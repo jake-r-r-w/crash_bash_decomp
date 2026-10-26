@@ -45,20 +45,20 @@ class DataMap(unittest.TestCase):
             "jtbl_800B3690": "PlotMine switch table"})
 
     def test_the_linked_names_by_rom_offset(self):
-        nm = ("800b32b4 T ovl69_VRAM\n800b3494 T TitlesBackdropPos\n800b34a0 T D_800B34A0\n"
+        nm = ("800b32b4 T titles_VRAM\n800b3494 T TitlesBackdropPos\n800b34a0 T D_800B34A0\n"
               "800b3650 t jtbl_800B3650\n")
-        yml = "segments:\n  - name: ovl69\n    type: code\n    start: 0x0\n    vram: 0x800B32B4\n"
+        yml = "segments:\n  - name: titles\n    type: code\n    start: 0x0\n    vram: 0x800B32B4\n"
         with mock.patch.object(decomp.os.path, "exists", return_value=True), \
                 mock.patch.object(decomp, "read", return_value=yml), \
                 mock.patch.object(decomp, "run", return_value=mock.Mock(stdout=nm)):
-            names = decomp.elf_rom_names("ovl69", {})
+            names = decomp.elf_rom_names("titles", {})
         self.assertEqual(names, {0x1E0: "TitlesBackdropPos"})
 
     def test_an_objects_bytes_before_its_first_symbol_keep_the_file_name(self):
         with mock.patch.object(decomp, "object_data_syms", return_value={".rodata": [(8, "TankAnimHit")]}), \
                 mock.patch.object(decomp.os.path, "exists", return_value=True):
-            parts = decomp.split_c_block("overlays/ovl5f/ovl5f", ".rodata", 12, {})
-        self.assertEqual(parts, [("ovl5f", 8), ("TankAnimHit", 4)])
+            parts = decomp.split_c_block("overlays/tank/tank", ".rodata", 12, {})
+        self.assertEqual(parts, [("tank", 8), ("TankAnimHit", 4)])
 
 
 if __name__ == "__main__":

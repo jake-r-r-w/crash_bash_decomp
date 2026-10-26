@@ -1,10 +1,10 @@
 /* Symbols an overlay's C names but its code reaches only at an offset, so
- * splat's undefined_syms lists the offset's label instead: ovl69 writes
+ * splat's undefined_syms lists the offset's label instead: titles writes
  * D_8009F658.next_process (splat's D_8009F65C). PROVIDE defines it only for
  * links that do not (the engine's data defines it). */
 PROVIDE(D_8009F658 = 0x8009F658);
 
-/* The exe's data that ovl5f's C data points at (tools/scripts/data2c.py) */
+/* The exe's data that tank's C data points at (tools/scripts/data2c.py) */
 PROVIDE(D_8004F1D0 = 0x8004F1D0);
 PROVIDE(D_8004F1D8 = 0x8004F1D8);
 PROVIDE(D_8004F1E0 = 0x8004F1E0);

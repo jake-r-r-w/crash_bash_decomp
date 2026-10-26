@@ -1,7 +1,7 @@
 # Taking an overlay to source-only
 
 The recipe Phase 4 follows for each slot overlay, written from the Tank pilot
-(`ovl5f`, Phase 3, finished 2026-10-26). An overlay is done when it has no
+(`tank`, Phase 3, finished 2026-10-26). An overlay is done when it has no
 `INCLUDE_ASM`, no `INCLUDE_RODATA` and no data asm, every function and global
 in it is named and typed, every declaration of its leaked header (if it has
 one) is defined or noted as not in this build, `build/<ovl>.bin` still
@@ -28,7 +28,7 @@ the data has to be C (pointers as symbols) before anything can move.
   unknown (CONVENTIONS.md, Naming). `decomp.py similar NAME` finds the same
   code matched elsewhere, `protos NAME` the function on the prototype and demo
   discs, which may still use something retail dropped.
-- **Types.** Replace each `Ovl..` stand-in struct with the real type: most are
+- **Types.** Replace each stand-in struct (`PolarCam`, ...) with the real type: most are
   views of `NAS`, `EXTengine`, `subengine`, the hero structs or the overlay's
   own player struct. Every object extension Tank adds is one type
   (`EXTobject_TA`, all `AddExt(nas, 0x38, ...)`): look for that.

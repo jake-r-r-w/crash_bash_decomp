@@ -29,7 +29,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   workers; `swarm.mjs stats` shows match rates by size to tune that. `--seg`
   is a prefix (`main/` covers every main.exe unit).
 - Playing/testing a build: `tools/dk make disc` (bootable `build/CrashBash.cue`),
-  `make disc-check` (byte-identical to retail), `make shift OVL=ovl5f PAD=0x40`
+  `make disc-check` (byte-identical to retail), `make shift OVL=tank PAD=0x40`
   (a disc with that overlay's addresses all moved, `build/shift/CrashBash.cue`). To show the user, launch it on the host: `C:/RetroArch-Win64/retroarch.exe -L
   C:/RetroArch-Win64/cores/pcsx_rearmed_libretro.dll build/CrashBash.cue`.
   See [docs/PLAYING.md](docs/PLAYING.md).
@@ -82,7 +82,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   exe or slot overlay unit, `--why` the symbol pairs behind each inversion;
   `tools/scripts/leak_order.py OVL HEADER` the climb/fall fit against a
   leaked header's order).
-  `tools/scripts/data2c.py OVL [--rodata SYM]` writes an overlay's asm data as C
+  `tools/scripts/rename_unit.py OLD NEW PREFIX` renames an overlay unit everywhere (no byte
+  changes). `tools/scripts/data2c.py OVL [--rodata SYM]` writes an overlay's asm data as C
   definitions (docs/CONVENTIONS.md, Data as C). The engine's link gets the slot
   overlays' symbols its AST table names from their ELFs (`slot_syms.py`, run by
   the Makefile), so the overlays link before the engine.

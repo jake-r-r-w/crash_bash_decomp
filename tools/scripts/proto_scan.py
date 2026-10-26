@@ -389,7 +389,7 @@ def place(funcs, mods, sure):
 
 
 def overlay_of(name):
-    """The retail overlay a slot function's name carries: 'func_X (ovl5f)' -> 'ovl5f'."""
+    """The retail overlay a slot function's name carries: 'func_X (tank)' -> 'tank'."""
     m = re.search(r" \((\w+)\)$", name)
     return m.group(1) if m else None
 

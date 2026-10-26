@@ -1593,7 +1593,7 @@ extern s32 D_8005138C;
 extern s32 D_8009E194;
 void PolarUpdateScene(void);
 
-/* One drop of UpdatePOLAR's shower (like ovl5f's Ovl5fSpawnBit1605). */
+/* One drop of UpdatePOLAR's shower (like tank's TankSpawnBit1605). */
 static inline void PolarSpawnDrop(VECTOR *pos, s32 kind) {
     NAS *nas;
     PolarDropExt *ext;

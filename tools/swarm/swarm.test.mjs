@@ -270,15 +270,15 @@ const slot = ovl => fn('func_800B3A38', { key: `${ovl}:800B3A38`, ref: `${ovl}:8
 
 test('shared names: tools get the key, checkpoints and results are kept apart', () => {
   const s = swarm('--big-workers', '1');
-  const a = slot('ovl5d'), b = slot('ovl60');
+  const a = slot('bash'), b = slot('pogo');
   assert.notEqual(s.cpDir(a), s.cpDir(b));
-  assert.equal(path.basename(s.cpDir(a)), 'ovl5d_800B3A38');
+  assert.equal(path.basename(s.cpDir(a)), 'bash_800B3A38');
   const p = s.prompt({ f: a, model: 'sonnet', attempt: 1, notes: [] });
-  assert.match(p, /next --func ovl5d:800B3A38/);
-  assert.match(p, /make diff FUNC=ovl5d:800B3A38/);
+  assert.match(p, /next --func bash:800B3A38/);
+  assert.match(p, /make diff FUNC=bash:800B3A38/);
   assert.match(p, /Work only on func_800B3A38\./);
   const pb = s.prompt(s.bigJob(a, 1, []));
-  assert.match(pb, /regions ovl5d:800B3A38/);
+  assert.match(pb, /regions bash:800B3A38/);
   assert.doesNotMatch(pb, /(FUNC=|regions |vars |similar )func_800B3A38/);
 });
 
@@ -288,13 +288,13 @@ test('checkpoints saved by name still resume, for unique names only', () => {
   fs.mkdirSync(d, { recursive: true });
   fs.writeFileSync(path.join(d, 'best.json'), JSON.stringify({ stage: 'registers', diffs: 3, total: 30 }));
   fs.writeFileSync(path.join(d, 'best.diff'), PATCH('func_800B3A38'));
-  assert.equal(s.checkpoint(slot('ovl5d')), null);
-  const unique = fn('func_800B3A38', { key: 'ovl5d:800B3A38' });
+  assert.equal(s.checkpoint(slot('bash')), null);
+  const unique = fn('func_800B3A38', { key: 'bash:800B3A38' });
   assert.equal(s.checkpoint(unique).diffs, 3);
-  s.saveCheckpoint({ f: slot('ovl60'), model: 'opus', base: 'x' }, path.join(d, 'best.diff'),
+  s.saveCheckpoint({ f: slot('pogo'), model: 'opus', base: 'x' }, path.join(d, 'best.diff'),
                    { stage: 'instructions', diffs: 9, total: 30 }, 'n');
-  assert.equal(s.checkpoint(slot('ovl60')).diffs, 9);
-  assert.equal(s.checkpoint(slot('ovl60')).key, 'ovl60:800B3A38');
+  assert.equal(s.checkpoint(slot('pogo')).diffs, 9);
+  assert.equal(s.checkpoint(slot('pogo')).key, 'pogo:800B3A38');
   assert.equal(s.checkpoint(unique).diffs, 3);
 });
 
@@ -557,8 +557,8 @@ const ovlFn = (ovl, addr, extra = {}) => fn(`func_${addr}`, { key: `${ovl}:${add
 
 test('families: the lead of a cross-overlay group goes first; its twins wait while it is tried', () => {
   const s = swarm();
-  const single = ovlFn('ovl5d', '800B4000', { line: 10 });
-  const a = ovlFn('ovl5d', '800B5000', { fp: 'g', line: 100 }), b = ovlFn('ovl60', '800B5000', { fp: 'g', line: 100 });
+  const single = ovlFn('bash', '800B4000', { line: 10 });
+  const a = ovlFn('bash', '800B5000', { fp: 'g', line: 100 }), b = ovlFn('pogo', '800B5000', { fp: 'g', line: 100 });
   s.queue = [single, a, b];
   assert.equal(s.nextJob().f, a);                       // the group's lead before the single
   s.history[a.key] = { name: a.name, attempts: 1, notes: [] };
@@ -571,7 +571,7 @@ test('families: the lead of a cross-overlay group goes first; its twins wait whi
 
 test('families: --retry-failed leases one member per group per run', () => {
   const s = swarm('--retry-failed');
-  const a = ovlFn('ovl5d', '800B5000', { fp: 'g' }), b = ovlFn('ovl60', '800B5000', { fp: 'g' });
+  const a = ovlFn('bash', '800B5000', { fp: 'g' }), b = ovlFn('pogo', '800B5000', { fp: 'g' });
   s.queue = [a, b];
   s.slots[0].job = s.nextJob();
   s.slots[0].job = null;
@@ -744,9 +744,9 @@ test('page: the runs before this one from swarm.log and ledger.jsonl, newest fir
     '2026-10-17 11:26:45 run 20261017101444 finished: 23 matched, 1 parked, 0 failed, 0 conflicts. Commits are on main; notes in x',
     '2026-10-18 05:32:34 run 20261018053219: 3 workers, 1 big, 0 permuters, 1 candidates (1 big: >= 600 B or escalated) (--only func_800939FC)',
     '2026-10-18 05:33:11 run 20261018053219 finished: 1 matched, 0 parked, 0 failed, 0 conflicts. Commits are on main; notes in x',
-    '2026-10-18 10:37:48 run 20261018103739: 3 workers, 1 big, 2 permuters, 90 candidates (32 big: >= 600 B or escalated) in overlays/ovl61, DRY RUN',
+    '2026-10-18 10:37:48 run 20261018103739: 3 workers, 1 big, 2 permuters, 90 candidates (32 big: >= 600 B or escalated) in overlays/arkenoid, DRY RUN',
     '2026-10-18 10:42:16 run 20261018103739 finished: 0 matched, 89 parked, 0 failed, 0 conflicts. Commits are on main; notes in x',
-    '2026-10-18 10:43:16 run 20261018104310: 3 workers, 1 big, 2 permuters, 90 candidates (32 big: >= 600 B or escalated) in overlays/ovl61',
+    '2026-10-18 10:43:16 run 20261018104310: 3 workers, 1 big, 2 permuters, 90 candidates (32 big: >= 600 B or escalated) in overlays/arkenoid',
   ].join('\n') + '\n');
   fs.writeFileSync(path.join(dir, 'ledger.jsonl'), [{ run: '20261017101444', usd: 2.5 }, { run: '20261017101444', usd: 1.25 },
                                                     { run: '20261018104310', usd: 9 }].map(r => JSON.stringify(r)).join('\n') + '\nnot json\n');
@@ -767,8 +767,8 @@ test('gate: a refusal reports cc1\'s error lines, not the warnings after them, a
     'stdin:6428: conflicting types for `D_800BA324\'',
     'stdin:6411: previous declaration of `D_800BA324\'',
     ...Array.from({ length: 12 }, (_, i) => `stdin:${8000 + i}: warning: assignment makes pointer from integer without a cast`),
-    'make: *** [Makefile:94: build/src/overlays/ovl67/ovl67.c.o] Error 33',
-    '  line 6754 of preprocessed src/overlays/ovl67/ovl67.c: D_800C418C = D_800C37DC;',
+    'make: *** [Makefile:94: build/src/overlays/n2o/n2o.c.o] Error 33',
+    '  line 6754 of preprocessed src/overlays/n2o/n2o.c: D_800C418C = D_800C37DC;',
     'func_800BA43C does not match: nothing recorded or committed',
   ].join('\n');
   const why = gateReasonFn(out);

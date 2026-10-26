@@ -1,7 +1,7 @@
 #ifndef BASH_POGO_H
 #define BASH_POGO_H
 
-/* Pogo (overlay ovl60): declarations recovered from the original headers
+/* Pogo (overlay pogo): declarations recovered from the original headers
  * (GameEng/Pogo/pogo.h and psx_pogo.h).
  * Names and types only; see docs/ARCHITECTURE.md (Leaked source). */
 
@@ -301,7 +301,7 @@ void Roo_UpdatePosition(EXTengine *);
 void Roo_UpdateVelocities(EXTengine *);
 void Roo_FireRocket(EXTengine *);
 void Roo_ShootAtHumans(NAS *);
-/* the leak also declares void Roo_FireRocket(EXTengine *, s32): func_800C02AC (ovl60) */
+/* the leak also declares void Roo_FireRocket(EXTengine *, s32): func_800C02AC (pogo) */
 bool SquareIsFreeForRoo(s32, s32);
 void Create_PogoProjectile(s32, s32, s32, s32, s32, s32);
 void Init_PogoProjectile(NAS *);

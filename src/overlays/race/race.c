@@ -1,0 +1,6732 @@
+#include "common.h"
+#include "bash/main.h"
+#include "bash/race_ovl.h"
+#include "bash/race.h"
+#include "bash/polar.h"
+#include "bash/hero.h"
+#include "bash/shell.h"
+
+s32 func_800B345C(s32 player) {
+    s32 i;
+    HeroInfo *h;
+    s32 *p;
+    SLONG_XYZ pos;
+
+    i = 0;
+    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * D_80068BD4[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    h = &Heroes[player];
+    pos.y = 0;
+    p = D_800CA544;
+    pos.z = h->hero_eng->unk10.z - (0x40 * D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
+loop:
+    if (i < 6) {
+        if (XZBoxToSphere(*p, &pos, 1, &pos) != -1) {
+            h->hero_ai->AIpad &= ~0x20;
+            h->hero_ai->AIpad |= 0x2000;
+            h->hero_ai->AIpad |= 0x80;
+            ((RacePad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+            return 1;
+        }
+        h++;
+        h--;
+        p++;
+        p++;
+        p--;
+        i++;
+        goto loop;
+    }
+    return 0;
+}
+
+s32 func_800B35CC(s32 arg0) {
+    s32 start;
+    s32 r;
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 total;
+    s32 result;
+    s32 v;
+    s32 neg;
+
+    start = Random(4);
+    r = Random(0x1000);
+    neg = -1;
+    i = start;
+    while (1) {
+        if (i >= start + 4) {
+            break;
+        }
+        if ((i & 3) == arg0) {
+            goto next;
+        }
+        j = i & 3;
+        result = 0;
+        total = 0;
+        if (Heroes[j].hero_status & 0x2000) {
+            v = -1;
+        } else {
+            for (k = 0; k < 4; k++) {
+                if (k != arg0 && !(Heroes[k].hero_status & 0x2000)) {
+                    total += D_8009D87C[k].unk4 << 7;
+                }
+            }
+            if (total != 0) {
+                result = (D_8009D87C[j].unk4 << 19) / total;
+            }
+            v = result;
+        }
+        if (r < v) {
+            return neg = i & 3;
+        }
+    next:
+        i++;
+    }
+    return neg;
+}
+
+void func_800B372C(s32 player) {
+    SLONG_XYZ pos;
+    s32 *p;
+    s32 i;
+    s32 r;
+    HeroInfo *h;
+
+    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * D_80068BD4[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    pos.y = 0;
+    pos.z = Heroes[player].hero_eng->unk10.z - (0x40 * D_80068BD4[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
+    i = 0;
+    if (Heroes[player].hero->FUX != NULL) {
+        do {
+            h = &Heroes[player];
+        } while (0);
+        p = D_800CA544;
+    loop:
+        if (i < 6) {
+            r = XZBoxToSphere(*p, &pos, 1, &pos);
+            if (r != -1) {
+                p++;
+                if (!(r & 4)) {
+                    h->hero_ai->AIpad |= 0x4000;
+                    ((RacePad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+                    return;
+                }
+            } else {
+                p++;
+            }
+            i++;
+            goto loop;
+        }
+    }
+}
+
+void func_800B3890(s32 player) {
+    s32 b[3];
+    s32 a[3];
+    s16 c[8];
+    RaceBarrelView *p;
+    RaceSceneObj *o;
+    RaceBarrelView *best;
+    HeroInfo *hp;
+    HeroInfo *h;
+    HeroInfo *base;
+    s32 x;
+    s32 z;
+    s32 d;
+    s32 i;
+    s32 ang;
+    s32 bestd;
+    s32 besti;
+
+    bestd = 0x7FFFFFFF;
+    besti = -1;
+    i = 0;
+    p = D_800C6F34;
+    ang = get_angle(Heroes[player].hero_eng->unk10.x, Heroes[player].hero_eng->unk10.z) & 0xFFF;
+    ang -= 0x400;
+    ang &= 0xFFF;
+    hp = &Heroes[player];
+    do {
+loop:
+    if (i < D_800C66F0) {
+        o = p->obj;
+        if (p->unk58 == 1) {
+            x = o->pos.x;
+            z = o->pos.z;
+            if ((((get_angle(x, z) & 0xFFF) - 0x400) & 0xFFF) >= ang) {
+                x -= hp->hero_eng->unk10.x;
+                z -= hp->hero_eng->unk10.z;
+                d = x * x + z * z;
+                if (d < bestd) {
+                    bestd = d;
+                    besti = i;
+                }
+            }
+        }
+        i++;
+        p++;
+        goto loop;
+    }
+    } while (0);
+    if (besti != -1) {
+        base = Heroes;
+        h = &base[player];
+        a[0] = 0;
+        a[2] = 0;
+        b[0] = D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
+        b[1] = 0;
+        b[2] = D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2;
+        best = &D_800C6F34[besti];
+        c[0] = best->obj->pos.x - h->hero_eng->unk10.x;
+        c[2] = best->obj->pos.z - h->hero_eng->unk10.z;
+        c[3] = 0x180;
+        if (func_800B3E60(a, b, c) != 0) {
+            x = best->obj->pos.x;
+            z = best->obj->pos.z;
+            d = x * x + z * z;
+            if (d < 0x400000) {
+                h->hero_ai->AIpad &= ~0x20;
+                h->hero_ai->AIpad |= 0x80;
+            } else {
+                h->hero_ai->AIpad &= ~0x80;
+                h->hero_ai->AIpad |= 0x20;
+            }
+            h->hero_ai->AIpad &= ~0x8000;
+            ((RacePad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+        }
+    }
+}
+
+void func_800B3BC0(s32 player) {
+    s32 b[3];
+    s32 a[3];
+    s16 c[8];
+    NAS *n;
+    NAS *best;
+    EXTengine *e;
+    EXTengine *he;
+    s32 dx;
+    s32 dz;
+    s32 x;
+    s32 z;
+    s32 d;
+    s32 bestd;
+    HeroInfo *h;
+    HeroInfo *base;
+
+    n = (NAS *)D_800C66EC;
+    best = NULL;
+    bestd = 0x7FFFFFFF;
+    while (1) {
+        if (n == NULL) {
+            break;
+        }
+        e = n->Engine;
+        if (e != NULL) {
+            he = Heroes[player].hero_eng;
+            dx = he->unk10.x - e->unk10.x;
+            dz = he->unk10.z - e->unk10.z;
+            d = dx * dx + dz * dz;
+            if (d < bestd) {
+                best = n;
+                bestd = d;
+            }
+        }
+        n = n->Group.Child;
+    }
+    if (best != NULL) {
+        base = Heroes;
+        h = &base[player];
+        a[0] = 0;
+        a[2] = 0;
+        b[0] = D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
+        b[1] = 0;
+        b[2] = D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2;
+        c[0] = best->Engine->unk10.x - h->hero_eng->unk10.x;
+        c[2] = best->Engine->unk10.z - h->hero_eng->unk10.z;
+        c[3] = 0x180;
+        if (func_800B3E60(a, b, c) != 0) {
+            d = best->Engine->unk10.x;
+            z = best->Engine->unk10.z;
+            x = d * d + z * z;
+            d = h->hero_eng->unk10.x;
+            z = h->hero_eng->unk10.z;
+            if (x < d * d + z * z) {
+                h->hero_ai->AIpad &= ~0x20;
+                h->hero_ai->AIpad |= 0x80;
+            } else {
+                h->hero_ai->AIpad &= ~0x80;
+                h->hero_ai->AIpad |= 0x20;
+            }
+            h->hero_ai->AIpad &= ~0x8000;
+            ((RacePad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+        }
+    }
+}
+
+INCLUDE_RODATA("asm/nonmatchings/overlays/race/race", D_800B32B8);
+
+s32 func_800B3E60(a, b, c, unused)
+    s32 *a;
+    s32 *b;
+    s16 *c;
+    void *unused;
+{
+    s32 q[3];
+    s32 p[3];
+    s32 *qp;
+    s32 A;
+    s32 B;
+    s32 C;
+    s32 disc;
+    s32 s;
+    s32 t1;
+    s32 nc;
+    s32 den;
+    s32 r1;
+    s32 r2;
+    s32 t0;
+
+    p[0] = b[0] - a[0];
+    p[1] = 0;
+    p[2] = b[2] - a[2];
+    A = (p[0] * p[0] + p[2] * p[2]) >> 12;
+    q[0] = c[0] - a[0];
+    q[1] = 0;
+    q[2] = c[2] - a[2];
+    qp = q;
+    t0 = p[0] * q[0];
+    B = (q[0] * q[0] + qp[1] * qp[1] + qp[2] * qp[2] - c[3] * c[3]) >> 12;
+    C = ((t0 + p[2] * qp[2]) * 2) >> 12;
+    s = C * C - A * B * 4;
+    if (C * C < 0) {
+        printf("error in b\n");
+    }
+    if (s < 0) {
+        return 0;
+    }
+    s = csqrt(s) >> 6;
+    nc = -C;
+    t1 = (nc + s) << 8;
+    den = A * 2;
+    r1 = t1 / den;
+    r2 = ((nc - s) << 8) / den;
+    if (r1 < 0) {
+        if (r2 < 0) {
+            return 0;
+        }
+    }
+    if (r1 < r2) {
+        if (r1 < 0) {
+            if (r2 < 0x100) {
+                return 1;
+            }
+        }
+    } else if (r2 > 0) {
+        if (r2 < 0x100) {
+            return 1;
+        }
+    }
+    r2 = r1 < 0x100;
+    if (r2) {
+        goto one;
+    }
+    t0 = 0;
+    return t0;
+one:
+    return 1;
+}
+
+s32 func_800B406C(s32 player)
+{
+  HeroInfo *h;
+  HeroInfo *o;
+  int new_var;
+  s32 i;
+  s32 dx;
+  s32 dz;
+  RacePad *pad;
+  HeroInfo *t;
+  HeroInfo *base;
+  base = Heroes;
+  t = &base[player];
+  if (t->hero->FUX == 0)
+  {
+    return 0;
+  }
+  if (((RaceFux18 *) t->hero->FUX)->mode != 0x20)
+  {
+    return 0;
+  }
+  i = 0;
+  h = t;
+  pad = (RacePad *) D_80051338;
+  o = base;
+  loop:
+  if (i < 4)
+  {
+    if (((i == player) || (i == h->hero_teammate)) || (func_800B35CC(player) != i))
+    {
+      goto next;
+    }
+    do
+    {
+      dx = h->hero_eng->unk10.x - o->hero_eng->unk10.x;
+      dz = h->hero_eng->unk10.z - o->hero_eng->unk10.z;
+      new_var = (dx * dx) + (dz * dz);
+      if (new_var < 0x90000)
+      {
+        do
+        {
+          h->hero_ai->AIpad |= 0x2000;
+          pad[player].unk50 = h->hero_ai->AIpad;
+          return 1;
+        }
+        while (0);
+      }
+      next:
+      o++;
+      i++;
+    }
+    while (0);
+    goto loop;
+  }
+
+  return 0;
+}
+
+s32 func_800B41DC(s32 player)
+{
+    TrigEntry *trig;
+    RacePad *pad;
+    HeroInfo *o;
+    HeroInfo *h;
+    HeroInfo *base;
+    s32 i;
+    s32 a;
+    s32 to[4];
+    s32 from[4];
+    s16 rel[8];
+
+    if (Heroes[player].hero->FUX == 0) {
+        return 0;
+    }
+    if (((RaceFux18 *) Heroes[player].hero->FUX)->mode != 1) {
+        return 0;
+    }
+    i = 0;
+    trig = D_80068BD4;
+    base = Heroes;
+    pad = (RacePad *) D_80051338;
+    o = base;
+loop:
+    if (i < 4) {
+        if (i == player) {
+            goto next;
+        }
+        h = (HeroInfo *)(player * sizeof(HeroInfo) + (u32)base);
+        if (i == h->hero_teammate) {
+            goto next;
+        }
+        if (func_800B35CC(player) != i) {
+            goto next;
+        }
+        a = get_angle(o->hero_eng->unk10.x, o->hero_eng->unk10.z) & 0xFFF;
+        if ((((a - (get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF)) << 20) >> 20) < 100) {
+            goto next;
+        }
+        from[0] = 0;
+        from[2] = 0;
+        to[0] = trig[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 2048 >> 12;
+        to[1] = 0;
+        do { to[2] = trig[h->hero_eng->unk1E & 0xFFF].unk2 * 2048 >> 12; } while (0);
+        rel[0] = o->hero_eng->unk10.x - h->hero_eng->unk10.x;
+        rel[2] = o->hero_eng->unk10.z - h->hero_eng->unk10.z;
+        rel[3] = 0x180;
+        if (func_800B3E60(from, to, rel) != 0) {
+            h->hero_ai->AIpad |= 0x2000;
+            pad[player].unk50 = h->hero_ai->AIpad;
+            return 1;
+        }
+    next:
+        do { o++; i++; } while (0);
+        goto loop;
+    }
+    return 0;
+}
+
+s32 func_800B442C(s32 player)
+{
+    s32 i;
+    s32 b[4];
+    s32 a[4];
+    s16 c[8];
+    TrigEntry *trig;
+    HeroInfo *o;
+    HeroInfo *base;
+    HeroInfo *h;
+    RacePad *pad;
+    RacePad *pads;
+    s32 ang;
+    s32 x;
+    s32 z;
+
+    if (Heroes[player].hero->FUX != NULL) {
+        i = 0;
+        trig = D_80068BD4;
+        pads = (RacePad *)D_80051338;
+        base = Heroes;
+        pad = pads + player;
+        o = base;
+    loop:
+        if (i < 4) {
+            do {
+                if (i == player) {
+                    goto next;
+                }
+            } while (0);
+            ang = get_angle(o->hero_eng->unk10.x, o->hero_eng->unk10.z) & 0xFFF;
+            h = (HeroInfo *)(player * (s32)sizeof(HeroInfo) + (s32)base);
+            if ((((ang - (get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF)) << 20) >> 20) < 100) {
+                goto next;
+            }
+            a[0] = 0;
+            a[2] = 0;
+            b[0] = trig[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 0x17D >> 10;
+            b[1] = 0;
+            do {
+                b[2] = trig[h->hero_eng->unk1E & 0xFFF].unk2 * 0x17D >> 10;
+            } while (0);
+            c[0] = o->hero_eng->unk10.x - h->hero_eng->unk10.x;
+            c[2] = o->hero_eng->unk10.z - h->hero_eng->unk10.z;
+            c[3] = 0x180;
+            if (func_800B3E60(a, b, c) != 0 && o->hero->FUX != NULL) {
+                x = o->hero_eng->unk10.x;
+                z = o->hero_eng->unk10.z;
+                if (x * x + z * z > 0x310000) {
+                    h->hero_ai->AIpad |= 0x20;
+                    h->hero_ai->AIpad &= ~0x80;
+                } else {
+                    h->hero_ai->AIpad |= 0x80;
+                    h->hero_ai->AIpad &= ~0x20;
+                }
+                do {
+                    do {
+                        pad->unk50 = h->hero_ai->AIpad;
+                    } while (0);
+                } while (0);
+            }
+        next:
+            o++;
+            do { i++; } while (0);
+            goto loop;
+        }
+    }
+    return 0;
+}
+
+void func_800B4708(arg0)
+s32 arg0;
+{
+    HeroInfo *hero;
+    EXTraceai *ext;
+    NAS *nas;
+    NAS *found;
+    s32 angle;
+    HeroInfo *base;
+
+    base = Heroes;
+    hero = base + arg0;
+    ext = FindExtension(hero->hero, 0x20000000);
+    if (ext != NULL) {
+        hero->hero_ai->AIpad = 0;
+        hero->hero_ai->AImode = 1;
+        ext->unk18 = func_800B5360;
+        nas = func_800C5C64(arg0);
+        found = NULL;
+        if (nas != NULL) {
+            if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+                angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
+                if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
+                    found = nas;
+                    goto done;
+                }
+            }
+            found = NULL;
+        }
+    done:
+        if (found != NULL) {
+            ext->unk18 = func_800B5660;
+            ext->unk14 = D_800C6980[Heroes[arg0].hero_name];
+        }
+        if (G63->unk34 != 0x17) {
+            func_800B442C(arg0);
+        }
+        ext->unk18(arg0);
+        if (G63->unk34 == 0x19) {
+            func_800B372C(arg0);
+        } else {
+            func_800B41DC(arg0);
+        }
+        if (D_8005A648 == 0x18) {
+            func_800B3890(arg0);
+            func_800B3BC0(arg0);
+            func_800B406C(arg0);
+        }
+    }
+}
+
+void func_800B48EC(s32 player) {
+    HeroInfo *base;
+    HeroInfo *h;
+
+    base = Heroes;
+    h = &base[player];
+    if (h->hero_frozen == 0) {
+        if (!(h->hero_ctrl & 1)) {
+            h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+            if (D_8005A614[player + 0x5C] != 0) {
+                h->hero_eng->unk20 += func_800154A0(h->hero_eng->unk20, D_800CA534[player]) >> 3;
+            } else {
+                h->hero_eng->unk20 += func_800154A0(h->hero_eng->unk20, D_800CA534[player]) >> 2;
+            }
+        }
+        Heroes[player].hero_ctrl &= ~1;
+        Heroes[player].hero_eng->unk5E = 1;
+    }
+}
+
+void func_800B4A4C(void) {
+    RaceHooks *h;
+    u8 *g;
+    u8 *g2;
+    u16 flags;
+    void **p;
+    void *t;
+
+    D_800C695C = 0;
+    h = &D_8009D6E8;
+    h->unk38 = func_800C5D8C;
+    h->unk4 = D_800C68F8;
+    do {} while (0);
+    g = D_8005A614;
+    if (*(s16 *)(g + 0x34) == 0x19) {
+        h->unk4 = D_800C690C;
+    }
+    h->unk0 = (s32)func_800C5918;
+    h->unk20 = func_800B8FD8;
+    h->unk24 = func_800B980C;
+    h->unkC = D_800C6BB4;
+    h->unk18 = D_8008B29C;
+    h->unk1C = D_8008B418;
+    flags = *(u16 *)(g + 0x32);
+    h->unk64 = func_800BD99C;
+    if (flags & 0x40) {
+        h->unk64 = func_800BCE88;
+    }
+    if (flags & 0x20) {
+        h->unk64 = func_800BCE88;
+    }
+    if (flags & 0x80) {
+        h->unk64 = func_800BCE88;
+    }
+    h->unk14 = D_800C6960;
+    *(u16 *)(g + 0x32) = flags | 0x800;
+    do {} while (0);
+    p = &D_8009D8FC;
+    if (*(s32 *)(g + 0x6C) != 0) {
+        t = D_800C6410;
+    } else {
+        t = D_800C63FC;
+    }
+    *p = t;
+    D_8009D8F4 = D_800C6448;
+    D_8009D8F8 = D_800C645C;
+    D_8009D904 = D_800C6430;
+    D_8009D900 = D_800C6424;
+    D_80051658 = 0x22B;
+    do {} while (0);
+    g2 = D_8005A614;
+    if (*(s16 *)(g2 + 0x34) == 0x18) {
+        p = &D_8009D8FC;
+        if (*(s32 *)(g2 + 0x6C) != 0) {
+            t = D_800C64C4;
+        } else {
+            t = D_800C64B0;
+        }
+        *p = t;
+        D_8009D8F4 = D_800C64FC;
+        D_8009D8F8 = D_800C6510;
+        D_8009D904 = D_800C64E4;
+        D_8009D900 = D_800C64D8;
+    }
+    g2 = D_8005A614;
+    if (*(s16 *)(g2 + 0x34) == 0x1A) {
+        p = &D_8009D8FC;
+        if (*(s32 *)(g2 + 0x6C) != 0) {
+            t = D_800C6578;
+        } else {
+            t = D_800C6564;
+        }
+        *p = t;
+        D_8009D8F4 = D_800C65B0;
+        D_8009D8F8 = D_800C65C4;
+        D_8009D904 = D_800C6598;
+        D_8009D900 = D_800C658C;
+    }
+    g2 = D_8005A614;
+    if (*(s16 *)(g2 + 0x34) == 0x19) {
+        p = &D_8009D8FC;
+        if (*(s32 *)(g2 + 0x6C) != 0) {
+            t = D_800C662C;
+        } else {
+            t = D_800C6618;
+        }
+        *p = t;
+        D_8009D8F4 = D_800C6664;
+        D_8009D8F8 = D_800C6678;
+        D_8009D904 = D_800C664C;
+        D_8009D900 = D_800C6640;
+        D_80051658 = 0x252;
+    }
+    D_800C6920 = NULL;
+    D_800C6924 = 0;
+}
+
+s32 func_800B4D64(s32 *arg0, s32 arg1, s32 *arg2)
+{
+  u8 *base;
+  s32 off;
+  u8 *p;
+  u8 *a2;
+  u8 *a3;
+  s32 found;
+  u8 *new_var;
+  s32 n;
+  s32 i;
+  s32 ang;
+  s32 a;
+  s32 b;
+  s32 r;
+  s32 c;
+  found = -1;
+  if ((*((s32 *) D_80058AD0)) != 0)
+  {
+    u8 *q = *((u8 **) (((u8 *) D_80058AD0) + 0x10));
+    c = arg1 >= (*((s32 *) (((*((s32 *) (q + 0x14))) + 0x14) + q)));
+  }
+  else
+  {
+    if (1)
+    {
+    }
+    c = arg1 >= 0;
+  }
+  if (c)
+  {
+    return 0;
+  }
+  base = *((u8 **) (((u8 *) D_80058AD0) + 0x10));
+  off = *((s32 *) (base + 0x14));
+  p = ((u8 *) (&((s32 *) ((base + 0x14) + off))[arg1 + 1])) + ((s32 *) ((base + 0x14) + off))[arg1 + 1];
+  if ((new_var = p) != 0)
+  {
+    i = 0;
+    a2 = p + 0x5C;
+    a3 = p;
+    ang = get_angle(arg0[0], arg0[2]) & 0xFFF;
+    n = *((s32 *) (a3 + 0x38));
+    loop:
+    if (i < n)
+    {
+ do { r = *((s32 *) (a3 + 0x64)); a = get_angle(*((s32 *) (a2 - 0x14)), *((s32 *) (a2 - 0xC))) & 0xFFF; b = get_angle(*((s32 *) (a2 - 8)), *((s32 *) a2)) & 0xFFF; if ((a < ang) && (ang < b)) { *arg2 = -r; found = i; } a3 += 0x38; i++; a2 += 0x38; } while (0);
+      goto loop;
+    }
+
+  }
+  return found;
+}
+
+u32 func_800B4EDC(s32 player) {
+    HeroInfo *h;
+    s32 *ext;
+    RaceVelFux *fux;
+    s32 d;
+    SLONG_XYZ pos;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = base + player;
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext != NULL) {
+        fux = (RaceVelFux *)h->hero->FUX;
+        if (fux != NULL) {
+            d = (((csqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) * 0x180) / 80;
+            if (d < 0) {
+                d = 0;
+            }
+            d += 0x200;
+            pos.x = h->hero_eng->unk10.x - (d * D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+            pos.y = 0;
+            pos.z = h->hero_eng->unk10.z - (d * D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
+            if (func_8008C4C8(&pos.x, 0) != 0) {
+                h->hero_ai->AIpad |= 0x80;
+                h->hero_ai->AIpad &= ~0x8000;
+            }
+            pos.x = h->hero_eng->unk10.x - (D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 0x79 >> 8);
+            pos.y = 0;
+            pos.z = h->hero_eng->unk10.z - (D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 * 0x79 >> 8);
+            if (D_8005A648 == 0x17 && (d = func_8008C4C8(&pos.x, 3) != 1)) {
+                h->hero_ai->AIpad |= 0x20;
+                h->hero_ai->AIpad &= ~0x8000;
+            }
+            if (D_8005A648 == 0x19) {
+                if (pos.x * pos.x + pos.z * pos.z > 0x640000) {
+                    Heroes[player].hero_ai->AIpad |= 0x20;
+                    Heroes[player].hero_ai->AIpad &= ~0x8000;
+                }
+            }
+            if (D_8005A648 == 0x18) {
+                if (pos.x * pos.x + pos.z * pos.z > 0x510000) {
+                    Heroes[player].hero_ai->AIpad |= 0x20;
+                    Heroes[player].hero_ai->AIpad &= ~0x8000;
+                }
+            }
+            if (D_8005A648 == 0x1A) {
+                if (pos.x * pos.x + pos.z * pos.z > 0x640000) {
+                    Heroes[player].hero_ai->AIpad |= 0x20;
+                    Heroes[player].hero_ai->AIpad &= ~0x8000;
+                }
+            }
+            ext[7] = 0x20 - D_8009D87C[player].unk0;
+        }
+    }
+    return 0x8000;
+}
+
+void func_800B5360(s32 player) {
+    RaceVelFux *fux;
+    SLONG_XYZ pos;
+    s32 d;
+
+    if (FindExtension(Heroes[player].hero, 0x20000000) != NULL) {
+        fux = (RaceVelFux *)Heroes[player].hero->FUX;
+        if (fux != NULL) {
+            d = (((csqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) << 10) / 80;
+            if (d < 0) {
+                d = 0;
+            }
+            d += 0xBE8;
+            pos.x = Heroes[player].hero_eng->unk10.x - (d * D_80068BD4[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+            pos.y = 0;
+            pos.z = Heroes[player].hero_eng->unk10.z - (d * D_80068BD4[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
+            Heroes[player].hero_ai->AIpad |= 0x8000;
+            Heroes[player].hero_ai->AIpad |= func_800B4EDC(player);
+            Heroes[player].hero_ai->AIpad |= 0x800;
+            ((RacePad *)D_80051338)[player].unk50 = Heroes[player].hero_ai->AIpad;
+        }
+    }
+}
+
+void func_800B5528(s32 player, SLONG_XYZ *pos) {
+    HeroInfo *base;
+    HeroInfo *hero;
+    s32 d;
+
+    base = Heroes;
+    hero = base + player;
+    d = (((get_angle(hero->hero_eng->unk10.x - pos->x, hero->hero_eng->unk10.z - pos->z) & 0xFFF) -
+          hero->hero_eng->unk1E) << 20) >> 20;
+    if (d > 500) {
+        hero->hero_ai->AIpad |= 0x20;
+        hero->hero_ai->AIpad &= ~0x80;
+    }
+    if (d < -500) {
+        hero->hero_ai->AIpad |= 0x80;
+        hero->hero_ai->AIpad &= ~0x20;
+    }
+    hero->hero_ai->AIpad |= 0x800;
+    ((RacePad *)D_80051338)[player].unk50 = hero->hero_ai->AIpad;
+}
+
+static inline NAS *func_800B5660_near(s32 arg0) {
+    NAS *nas;
+    HeroInfo *hero;
+    s32 angle;
+
+    nas = func_800C5C64(arg0);
+    if (nas != NULL) {
+        hero = &Heroes[arg0];
+        if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+            angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
+            if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
+                return nas;
+            }
+        }
+    }
+    return NULL;
+}
+
+void func_800B5660(s32 arg0) {
+    s32 *ext;
+    NAS *nas;
+
+    ext = FindExtension(Heroes[arg0].hero, 0x20000000);
+    if (ext != NULL) {
+        nas = func_800B5660_near(arg0);
+        if (nas != NULL) {
+            func_800B5528(arg0, &nas->Engine->unk10);
+            return;
+        }
+        ext[6] = (s32)func_800B5360;
+    }
+}
+
+void func_800B5778(void) {
+    RaceSceneObj *obj;
+    s32 i;
+    u8 *r;
+
+    D_800C69B4 = NULL;
+    D_800C69B8 = 0;
+    D_800C69BC = 0;
+    obj = ((RaceScene *)D_80058AD0)->objs;
+    for (i = 0; i < 6; i++) {
+        D_800CA544[i] = 0;
+        D_800CA55C[i].unk8 = 1;
+        D_800CA55C[i].pos = 0;
+        D_800CA55C[i].timer = 0;
+        D_800CA55C[i].hold = 0;
+        D_800CA55C[i].state = 0;
+        D_800CA55C[i].active = 0;
+        D_800C69A8 = 0;
+        D_800C69AC = Random(5) + 0;
+        D_800CA604 = 150;
+        D_800CA608 = 180;
+    }
+    i = 0;
+    for (;;) {
+        if (obj == NULL) {
+            return;
+        }
+        if (G63->unk34 == 0x17) {
+            if (!(G63->unk32 & 0x80)) {
+                if (obj->index == 0x5001) {
+                    obj->flags &= ~0x8000;
+                }
+                if (obj->index == 0x5003) {
+                    obj->flags &= ~0x8000;
+                }
+            } else {
+                if (obj->index == 0x5001) {
+                    obj->flags &= ~0x8000;
+                }
+                if (obj->index == 0x5002) {
+                    obj->flags &= ~0x8000;
+                }
+            }
+        }
+        if (G63->unk34 == 0x19 && obj->index == 0x5003) {
+            obj->flags &= ~0x8000;
+        }
+        if (G63->unk34 == 0x1A) {
+            if (obj->index == 0x5003) {
+                obj->flags &= ~0x8000;
+            }
+            if (obj->index == 0x4000) {
+                printf("found lava\n");
+                D_800C69B4 = (RaceObj74 *)obj;
+            }
+        }
+        if (G63->unk34 == 0x18 && obj->model->unkC != NULL) {
+            r = entity_address(obj->index, obj->model->unkC);
+            if (r != NULL && *(s32 *)(r + 0x28) != 0) {
+                obj->flags &= ~0x8000;
+            }
+        }
+        if (G63->unk34 == 0x19) {
+            if (obj->index == 0x5005) {
+                D_800C69A4 = (RaceSpinObj *)obj;
+            }
+            if (obj->index == 0x4000) {
+                D_800CA544[i] = (s32)obj;
+                D_800CA55C[i].unkC = (s32)obj;
+                obj->angle = i * 0x2AA;
+                i++;
+            }
+        }
+        obj = obj->next;
+    }
+}
+
+s32 func_800B5A70(RacePattern *pats, s32 idx) {
+    RacePattern *pat;
+    RacePatStep *step;
+    RacePiston *p;
+    s32 i;
+    s32 j;
+    s32 speed;
+    s32 base;
+    s32 one;
+    s32 two;
+    s32 st;
+    s32 act;
+    s32 v;
+
+    speed = 2;
+    pat = (RacePattern *)(idx * 8 + (s32)pats);
+    step = pat->steps;
+    base = 0x4000;
+    if (D_8005A646 & 0x80) {
+        speed = 4;
+    }
+    D_800C69A8++;
+    if (D_800C695C != 0) {
+        D_800C69A8 = 0;
+    }
+    if (D_800C69A8 > pat->length) {
+        D_800C69A8 = 0;
+        D_800C6BA0 = Random(0xC) + 0x11;
+        for (j = 0; j < 6; j++) {
+            D_800CA55C[j].active = 0;
+            D_800CA55C[j].timer = 0;
+        }
+        return 1;
+    }
+    i = 0;
+    one = 1;
+    two = 2;
+    p = D_800CA55C;
+loop:
+    if (p->active == 0 && step->delay != -1) {
+        if (p->timer >= step->delay) {
+            p->active = one;
+            p->state = one;
+            PlaySfx(0x673, NULL, NULL, 0x1000, 0x1E00, 0);
+        } else {
+            if (D_8005A646 & 0x80) {
+                v = p->timer + 4;
+            } else {
+                v = p->timer + 1;
+            }
+            p->timer = v;
+        }
+    }
+    act = p->active;
+    if (act == one) {
+        if (D_800C695C != 0) {
+            p->state = two;
+        }
+        st = p->state;
+        if (st == two) {
+            goto down;
+        }
+        if (st < 3) {
+            if (st == act) {
+                goto up;
+            }
+            goto next;
+        }
+        if (st == 3) {
+            goto hold;
+        }
+        goto next;
+    up:
+        p->pos += speed;
+        if (D_800C6BA0 < p->pos) {
+            p->pos = D_800C6BA0;
+            p->state = 3;
+        }
+        goto next;
+    hold:
+        if (step->hold < p->hold++) {
+            p->hold = 0;
+            p->state = two;
+            PlaySfx(0x674, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        goto next;
+    down:
+        p->pos -= speed;
+        if (p->pos < 0) {
+            p->pos = 0;
+            p->state = 0;
+        }
+    }
+next:
+    step++;
+    ((RaceObj74 *)D_800CA544[i])->unk74 = p->pos + base;
+    p++;
+    if (++i < 6) {
+        goto loop;
+    }
+    return 0;
+}
+
+void MaintainCentre(void) {
+    MATRIX m;
+    SVECTOR v;
+    RaceSpinObj **pp;
+    RaceSpinObj *o;
+    s32 i;
+    s32 spd;
+
+    spd = 4;
+    if ((u32)(D_800C69AC - 1) < 2) {
+        spd = -4;
+    }
+    if (D_8005A646 & 0x80) {
+        spd = -0x20;
+    }
+    if (D_800C69A4 != NULL) {
+        D_800C69A4->rot.vy -= spd;
+        v.vx = D_800C69A4->rot.vx;
+        v.vy = D_800C69A4->rot.vy;
+        v.vz = D_800C69A4->rot.vz;
+        RotMatrix(&v, &m);
+        D_800C69A4->mat = m;
+    }
+    i = 0;
+    pp = (RaceSpinObj **)D_800CA544;
+loop:
+    if (i < 6) {
+        o = *pp;
+        if (o != NULL) {
+            o->rot.vy -= spd;
+            v.vx = o->rot.vx;
+            v.vy = o->rot.vy;
+            v.vz = o->rot.vz;
+            RotMatrix(&v, &m);
+            o->mat = m;
+        }
+        pp++;
+        i++;
+        goto loop;
+    }
+    if (D_800CA608 < 0) {
+        if (D_800C695C != 0) {
+            D_800C69AC = 5;
+        }
+        if (func_800B5A70(D_800C6B70, D_800C69AC) != 0) {
+            D_800C69AC = Random(5);
+        }
+    } else {
+        D_800CA608--;
+    }
+}
+
+void func_800B5F04(void) {
+    RaceBarrelView *b;
+    RaceSceneObj *obj;
+    s32 n;
+
+    n = 0;
+    obj = ((RaceScene *)D_80058AD0)->objs;
+    memset(D_800C6F34, 0x3600, 0);
+    while (obj != NULL) {
+        if (obj->index == 0x5006) {
+            b = &D_800C6F34[n];
+            b->obj = obj;
+            obj->unk51 = 2;
+            b->unk4E = 0x80;
+            b->unk20 = 0;
+            b->unk40 = 0;
+            b->unk48 = 0x500;
+            b->unk28 = 0x500;
+            b->unk4A = 0x500;
+            b->unk2A = 0x500;
+            b->unk24 = 0;
+            b->unk44 = 0;
+            b->pos = obj->pos;
+            b->unk58 = 1;
+            n++;
+        }
+        obj = obj->next;
+    }
+    D_800C66F0 = n;
+    printf("%d  barrels found\n", n);
+}
+
+void func_800B5FFC(RaceEaseCam *c, s32 *pos) {
+    s32 step;
+
+    if (c->x.cur != c->x.target) {
+        if (c->x.target != 0) {
+            step = c->x.step;
+        } else {
+            step = c->x.stepZero;
+        }
+        if (c->x.cur < c->x.target) {
+            c->x.cur += step;
+            if (c->x.cur > c->x.target) {
+                c->x.cur = c->x.target;
+            }
+        } else {
+            c->x.cur -= step;
+            if (c->x.cur < c->x.target) {
+                c->x.cur = c->x.target;
+            }
+        }
+    }
+    if (c->z.cur != c->z.target) {
+        if (c->z.target != 0) {
+            step = c->z.step;
+        } else {
+            step = c->z.stepZero;
+        }
+        if (c->z.cur < c->z.target) {
+            c->z.cur += step;
+            if (c->z.cur > c->z.target) {
+                c->z.cur = c->z.target;
+            }
+        } else {
+            c->z.cur -= step;
+            if (c->z.cur < c->z.target) {
+                c->z.cur = c->z.target;
+            }
+        }
+    }
+    pos[1] += c->x.cur >> 8;
+    pos[3] += c->z.cur >> 8;
+}
+
+s32 func_800B6108(RaceBarrelView *b) {
+    EXTengine *e;
+    RaceSceneObj *obj;
+    s32 hit;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 angle;
+    s32 r;
+
+    hit = 0;
+    obj = b->obj;
+    for (i = 0;; i++) {
+        if (i >= 4) {
+            return hit;
+        }
+        e = Heroes[i].hero_eng;
+        dx = e->unk10.x - obj->pos.x;
+        dz = e->unk10.z - obj->pos.z;
+        d = dx * dx + dz * dz;
+        if (d < 0x24000) {
+            d = csqrt(d) >> 6;
+            angle = get_angle(dx, dz) & 0xFFF;
+            d = 0x180 - d;
+            e->unk10.x += d * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
+            e->unk10.z += d * D_80068BD4[angle].unk2 >> 12;
+            func_800BE7B4(i, b);
+            if (Heroes[i].hero_mode != 0x61) {
+                r = Random(2);
+                if (r == 0) {
+                    PlaySfx(0x663, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (r == 1) {
+                    PlaySfx(0x664, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (Heroes[i].hero_mode != 0x5D) {
+                    SetHeroAction(i, 0x5D);
+                }
+            }
+            hit = 1;
+        }
+    }
+}
+
+s32 func_800B62F4(RaceBarrelView *self) {
+    RaceBarrelView *b;
+    RaceSceneObj *obj;
+    RaceSceneObj *o;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 angle;
+
+    b = D_800C6F34;
+    i = 0;
+    obj = self->obj;
+    for (;; i++, b++) {
+        if (i >= D_800C66F0) {
+            return 1;
+        }
+        o = b->obj;
+        if (b != self && b->unk58 == 1) {
+            dx = obj->pos.x - o->pos.x;
+            dz = obj->pos.z - o->pos.z;
+            d = dx * dx + dz * dz;
+            if (d < 0x24000) {
+                d = csqrt(d) >> 6;
+                angle = get_angle(dx, dz) & 0xFFF;
+                d = 0x180 - d;
+                obj->pos.x += d * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
+                obj->pos.z += d * D_80068BD4[angle].unk2 >> 12;
+            }
+        }
+    }
+}
+
+void func_800B6474(void) {
+    RaceBarrelView *b;
+    SLONG_XYZ pos;
+    s32 i;
+
+    b = D_800C6F34;
+    for (i = 0;; b++, i++) {
+        RaceSceneObj *obj;
+
+        if (i >= D_800C66F0) {
+            break;
+        }
+        obj = b->obj;
+        switch (b->unk58) {
+        case 1:
+            b->unk24 = 0;
+            b->unk44 = 0;
+            if (func_800B6108(b) != 0) {
+                pos = obj->pos;
+                pos.y = -0xD2;
+                b->unk58 = 0;
+                b->unk68 = Random(0x3C) + 0xB4;
+                obj->flags &= ~0x8000;
+                RaceSpawnPuff(&pos, 1, &D_80054F84);
+            }
+            break;
+        case 2:
+            pos = obj->pos;
+            pos.y = 0;
+            if (b->unk68 == 4) {
+                RaceSpawnPuff(&pos, 9, NULL);
+            }
+            if (b->unk68-- < 0) {
+                obj->flags |= 0x8000;
+                b->unk58 = 1;
+            }
+            break;
+        }
+    }
+}
+
+s32 func_800B66C4(SLONG_XYZ *pos, s16 *tri) {
+    s32 d[3];
+    s32 base[3];
+    s32 e0[3];
+    s32 e1[3];
+    s32 a, b, c, dd, e, f, det, n;
+    s32 t;
+    s32 s;
+    s32 *p;
+
+    base[0] = tri[0];
+    base[1] = tri[1];
+    base[2] = tri[2];
+    e1[0] = tri[4] - tri[0];
+    e1[1] = tri[5] - tri[1];
+    e1[2] = tri[6] - tri[2];
+    e0[0] = tri[8] - tri[0];
+    e0[1] = tri[9] - tri[1];
+    e0[2] = tri[10] - tri[2];
+    a = (e0[0] * e0[0] >> 8) + (e0[1] * e0[1] >> 8) + (e0[2] * e0[2] >> 8);
+    b = (e0[0] * e1[0] >> 8) + (e0[1] * e1[1] >> 8) + (e0[2] * e1[2] >> 8);
+    c = (e1[0] * e1[0] >> 8) + (e1[1] * e1[1] >> 8) + (e1[2] * e1[2] >> 8);
+    d[0] = base[0] - pos->x;
+    d[1] = base[1] - pos->y;
+    d[2] = base[2] - pos->z;
+    p = d;
+    dd = (e0[0] * p[0] >> 8) + (e0[1] * p[1] >> 8) + (e0[2] * p[2] >> 8);
+    e = (e1[0] * p[0] >> 8) + (e1[1] * p[1] >> 8) + (e1[2] * p[2] >> 8);
+    det = (a * c >> 8) - (b * b >> 8);
+    s = (b * e - c * dd) / det;
+    t = (b * dd - a * e) / det;
+    f = (p[0] * p[0] >> 8) + (p[1] * p[1] >> 8) + (p[2] * p[2] >> 8);
+    if (s + t < 0x100) {
+        if (s < 0) {
+            if (t < 0) {
+                if (dd < 0) {
+                    s = -(dd << 8) / a;
+                    t = 0;
+                    if (s >= 0x100) {
+                        s = 0xFF;
+                    }
+                } else {
+                    s = 0;
+                    if (e < 0) {
+                        do {
+                            t = -(e << 8) / c;
+                        } while (0);
+                        if (t >= 0x100) {
+                            t = 0xFF;
+                        }
+                    } else {
+                    t_zero:
+                        t = 0;
+                    }
+                }
+            } else {
+                goto region3;
+            }
+        } else if (t < 0) {
+            s = -(dd << 8) / a;
+            t = 0;
+            if (s < 0) {
+                s = 0;
+            } else if (s >= 0x100) {
+                s = 0xFF;
+            }
+        }
+    } else if (s < 0) {
+        n = b - c + dd - e;
+        if (n < 0) {
+            s = -(n << 8) / (a - b * 2 + c);
+            if (s < 0) {
+                s = 0;
+            } else if (s >= 0x100) {
+                s = 0xFF;
+            }
+            t = 0xFF - s;
+        } else if (c + e > 0) {
+        region3:
+            s = 0;
+            t = -(e << 8) / c;
+            if (t < 0) {
+                goto t_zero;
+            } else if (t >= 0x100) {
+                t = 0xFF;
+            }
+        } else {
+            s = 0;
+            t = 0xFF;
+        }
+    } else if (t < 0) {
+        n = a - b + dd - e;
+        if (n > 0) {
+            t = (n << 8) / (a - b * 2 + c);
+            if (t < 0) {
+                t = 0;
+            } else if (t >= 0x100) {
+                t = 0xFF;
+            }
+            s = 0xFF - t;
+        } else if (a + dd > 0) {
+            s = -(dd << 8) / a;
+            t = 0;
+            if (s < 0) {
+                s = 0;
+            } else if (s >= 0x100) {
+                s = 0xFF;
+            }
+        } else {
+            s = 0xFF;
+            goto t_zero;
+        }
+    } else {
+        s = -((b - c + dd - e) << 8) / (a - b * 2 + c);
+        if (s < 0) {
+            s = 0;
+        } else if (s >= 0x100) {
+            s = 0xFF;
+        }
+        t = 0xFF - s;
+    }
+    {
+        s32 g;
+
+        g = f << 8;
+        return abs(s * ((a * s >> 8) + (b * t >> 8) + dd * 2)
+                   + t * ((b * s >> 8) + (c * t >> 8) + e * 2) + g);
+    }
+}
+
+s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1) {
+    RaceNorm out;
+    SLONG_XYZ pos;
+    RaceNorm n;
+    s32 hit;
+    RaceSceneObj *obj;
+    u8 *grp;
+    s16 *tri;
+    RaceNorm *nrm;
+    s32 rad;
+    s32 found;
+    s32 d;
+    s32 k;
+    s32 dx;
+    s32 dz;
+
+    rad = 0xDC;
+    found = 0;
+    obj = ((RaceScene *)D_80058AD0)->objs;
+    hit = 0;
+    for (;;) {
+        u8 *r;
+
+        if (obj == NULL) {
+            break;
+        }
+        if (!(obj->flags & 0x8000) && obj->model->unkC != NULL) {
+            r = entity_address(obj->index, obj->model->unkC);
+            if (r != NULL && *(s32 *)(r + 0x28) != 0) {
+                pos = *arg0;
+                grp = r + (*(s32 *)(r + 0x14) + 0x14);
+                tri = (s16 *)(*(s32 *)(r + 0x10) + (s32)r + 0x24);
+                nrm = (RaceNorm *)(r + (*(s32 *)(r + 0x28) + 0x28));
+                for (;;) {
+                    s32 count;
+
+                    count = grp[1];
+                    if (count == 0xFF) {
+                        break;
+                    }
+                    for (;;) {
+                        s32 lim;
+
+                        count--;
+                        if (count == -1) {
+                            break;
+                        }
+                        lim = pos.z + rad;
+                        if (lim < tri[2] && lim < tri[6] && lim < tri[10]) {
+                            goto next;
+                        }
+                        lim = pos.x - rad;
+                        if (tri[0] < lim && tri[4] < lim && tri[8] < lim) {
+                            goto next;
+                        }
+                        lim = pos.z - rad;
+                        if (tri[2] < lim && tri[6] < lim && tri[10] < lim) {
+                            goto next;
+                        }
+                        lim = pos.x + rad;
+                        if (lim < tri[0] && lim < tri[4] && lim < tri[8]) {
+                            goto next;
+                        }
+                        d = func_800B66C4(&pos, tri);
+                        if (rad * rad < d) {
+                            goto next;
+                        }
+                        n = nrm[2];
+                        k = (rad << 6) - csqrt(d) + 2;
+                        dx = (k * n.x) >> 18;
+                        dz = (k * n.z) >> 18;
+                        arg0->x += dx;
+                        arg0->z += dz;
+                        hit = 1;
+                        pos.x += dx;
+                        pos.z += dz;
+                        out = n;
+                        if (!(G63->unk32 & 0x80)) {
+                            if (G63->unk34 == 0x17 && obj->index == 0x5003) {
+                                found = 1;
+                            }
+                        } else {
+                            if (G63->unk34 == 0x17 && obj->index == 0x5002) {
+                                found = 1;
+                            }
+                        }
+                    next:
+                        tri += 4;
+                        nrm++;
+                    }
+                    tri += 8;
+                    nrm += 2;
+                    grp += 2;
+                }
+            }
+        }
+        obj = obj->next;
+    }
+    if (found) {
+        *arg1 = get_angle(out.x, out.z) & 0xFFF;
+    } else {
+        *arg1 = -1;
+    }
+    return hit;
+}
+
+s32 func_800B7190(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 flags) {
+    SLONG_XYZ p;
+    SLONG_XYZ hit;
+    SLONG_XYZ d;
+    SLONG_XYZ e;
+    RaceSegObj *obj;
+    RaceSegObj *w;
+    u8 *data;
+    s32 *ent;
+    s32 best;
+    s32 found;
+    s32 shift;
+    s32 i;
+    s32 dist;
+    s32 t;
+    s32 ang;
+    s32 r2;
+    s32 len;
+    s32 bad;
+    s32 a;
+    s32 dx;
+    s32 dz;
+    s32 s;
+    s32 v;
+    s32 n;
+    s32 rad;
+
+    best = 0x7FFFFFFF;
+    found = 0;
+    rad = radius;
+    shift = 12;
+    bad = idx >= (((RaceSegScene *)D_80058AD0)->unk0 ?
+                  *(s32 *)(*(s32 *)(((RaceSegScene *)D_80058AD0)->data + 0x14) +
+                           (s32)((RaceSegScene *)D_80058AD0)->data + 0x14) :
+                  0);
+    if (bad) {
+        return 0;
+    }
+    data = ((RaceSegScene *)D_80058AD0)->data;
+    obj = (RaceSegObj *)((u8 *)&((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1] +
+                          ((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1]);
+    if (obj != NULL) {
+        i = 0;
+        dist = 0;
+        t = 0;
+        w = obj;
+        n = obj->count;
+        r2 = rad * rad;
+        for (;; i++, w = (RaceSegObj *)((u8 *)w + sizeof(RaceSeg))) {
+            s32 lt;
+
+            if (i >= n) {
+                break;
+            }
+            ang = obj->segs[i].ang;
+            if (flags & 1) {
+                ang += 0x800;
+            }
+            d.x = pos->x - w->segs[0].p0.x;
+            d.z = pos->z - w->segs[0].p0.z;
+            if (((d.x * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
+                    ((d.z * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
+                continue;
+            }
+            d.y = w->segs[0].p1.y - w->segs[0].p0.y;
+            e.x = w->segs[0].p1.x - w->segs[0].p0.x;
+            e.y = w->segs[0].p1.y - w->segs[0].p0.y;
+            e.z = w->segs[0].p1.z - w->segs[0].p0.z;
+            len = (w->segs[0].len * w->segs[0].len) >> shift;
+            if (len != 0) {
+                t = (e.x * d.x + e.y * d.y + e.z * d.z) / len;
+            }
+            lt = t < 0x1000;
+            if (t <= 0) {
+                p = w->segs[0].p0;
+                dx = p.x - pos->x;
+                dz = p.z - pos->z;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (!lt) {
+                p = w->segs[0].p1;
+                dx = p.x - pos->x;
+                dz = p.z - pos->z;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (t > 0 && lt) {
+                p.x = ((t * e.x) >> shift) + w->segs[0].p0.x;
+                p.y = ((t * e.y) >> shift) + w->segs[0].p0.y;
+                p.z = ((t * e.z) >> shift) + w->segs[0].p0.z;
+                dx = p.x - pos->x;
+                dz = p.z - pos->z;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (dist < 0) {
+                dist = 0x7FFFFFFF;
+            }
+            if (dist > best) {
+                continue;
+            }
+            best = dist;
+            hit.x = p.x;
+            hit.y = p.y;
+            hit.z = p.z;
+            if (best > r2) {
+                continue;
+            }
+            s = csqrt(best) >> 6;
+            out->y = ang;
+            a = -ang;
+            v = rad - s + 2;
+            out->x = (v * D_80068BD4[a & 0xFFF].unk2) >> 12;
+            ang = a + 0x400;
+            out->z = (v * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            pos->x += out->x;
+            pos->z += out->z;
+            found = 1;
+            hit.y = obj->segs[i].ang;
+        }
+    }
+    return found;
+}
+
+s32 func_800B76A4(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, RaceSegBlend *bl) {
+    RaceVec p;
+    RaceVec hit;
+    RaceVec d;
+    RaceVec e;
+    SVECTOR rv;
+    MATRIX m;
+    VECTOR lp;
+    RaceSegEnds a;
+    RaceSegEnds b;
+    RaceSegObj *w;
+    RaceSegObj *w2;
+    RaceSegObj *obj;
+    u8 *data;
+    RaceSegTable *tbl;
+    RaceSegTable *tbl2;
+    s32 rad;
+    s32 best;
+    s32 found;
+    s32 n;
+    s32 i;
+    s32 one;
+    s32 t;
+    s32 dist;
+    s32 ang;
+    s32 r2;
+    s32 len;
+    s32 dx;
+    s32 dz;
+    s32 s;
+    s32 v;
+    s32 side;
+    s32 bad;
+
+    best = 0x7FFFFFFF;
+    found = 0;
+    rad = radius;
+    one = 0x1000;
+    bad = idx > (((RaceSegScene *)D_80058AD0)->unk0 ?
+                 *(s32 *)(*(s32 *)(((RaceSegScene *)D_80058AD0)->data + 0x14) +
+                          (s32)((RaceSegScene *)D_80058AD0)->data + 0x14) :
+                 0);
+    if (bad) {
+        return 0;
+    }
+    data = ((RaceSegScene *)D_80058AD0)->data;
+    tbl = (RaceSegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
+    w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
+                        (tbl2 = (RaceSegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
+    if (w != NULL) {
+        dist = 0;
+        t = 0;
+        w2 = (RaceSegObj *)((u8 *)&tbl->offs[bl->idx] + tbl2->offs[bl->idx]);
+        obj = w;
+        i = 0;
+        n = w->count;
+        r2 = rad * rad;
+        rv.vx = 0;
+        rv.vy = -bl->rot->ang;
+        rv.vz = 0;
+        RotMatrix(&rv, &m);
+        ApplyMatrixLV(&m, pos, &lp);
+        for (;; i++, w = (RaceSegObj *)((u8 *)w + sizeof(RaceSeg)),
+                w2 = (RaceSegObj *)((u8 *)w2 + sizeof(RaceSeg))) {
+            s32 gt;
+
+            if (i >= n) {
+                break;
+            }
+            a.p0.vx = w->segs[0].p0.x;
+            a.p0.vz = w->segs[0].p0.z;
+            a.p1.vx = w->segs[0].p1.x;
+            a.p1.vz = w->segs[0].p1.z;
+            b.p0.vx = w2->segs[0].p0.x;
+            b.p0.vz = w2->segs[0].p0.z;
+            b.p1.vx = w2->segs[0].p1.x;
+            b.p1.vz = w2->segs[0].p1.z;
+            dx = b.p0.vx - a.p0.vx;
+            a.p0.vx += (dx * (bl->t << 8)) / 30 >> 8;
+            dz = b.p0.vz - a.p0.vz;
+            a.p0.vz += (dz * (bl->t << 8)) / 30 >> 8;
+            dx = b.p1.vx - a.p1.vx;
+            a.p1.vx += (dx * (bl->t << 8)) / 30 >> 8;
+            dz = b.p1.vz - a.p1.vz;
+            a.p1.vz += (dz * (bl->t << 8)) / 30 >> 8;
+            ang = obj->segs[i].ang;
+            if (flags & 1) {
+                ang += 0x800;
+            }
+            d.vx = lp.vx - a.p0.vx;
+            d.vz = lp.vz - a.p0.vz;
+            side = ((d.vx * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
+                ((d.vz * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12);
+            if (side < 0 || side > rad) {
+                continue;
+            }
+            d.vy = 0;
+            e.vx = a.p1.vx - a.p0.vx;
+            e.vy = 0;
+            e.vz = a.p1.vz - a.p0.vz;
+            len = (e.vx * e.vx + e.vz * e.vz) >> 12;
+            if (len != 0) {
+                t = (e.vx * d.vx + e.vz * d.vz) / len;
+            }
+            if (t < 0) {
+                p = a.p0;
+                dx = p.vx - lp.vx;
+                dz = p.vz - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            gt = one < t;
+            if (gt) {
+                p = a.p1;
+                dx = p.vx - lp.vx;
+                dz = p.vz - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (t >= 0 && !gt) {
+                p.vx = ((t * e.vx) >> 12) + a.p0.vx;
+                p.vy = ((t * e.vy) >> 12) + a.p0.vy;
+                p.vz = ((t * e.vz) >> 12) + a.p0.vz;
+                dx = p.vx - lp.vx;
+                dz = p.vz - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (dist < 0) {
+                dist = 0x7FFFFFFF;
+                printf(D_800B3310);
+            }
+            if (dist > best) {
+                continue;
+            }
+            best = dist;
+            hit.vx = p.vx;
+            hit.vy = p.vy;
+            hit.vz = p.vz;
+            if (best > r2) {
+                continue;
+            }
+            s = csqrt(best);
+            out->vy = ang + bl->rot->ang;
+            ang = (-ang + 0x400) & 0xFFF;
+            v = (rad << 6) - s + 2;
+            out->vx = (v * D_80068BD4[(((ang + bl->rot->ang) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
+            out->vz = (v * D_80068BD4[(ang + bl->rot->ang) & 0xFFF].unk2) >> 18;
+            pos->vx += out->vx;
+            pos->vz += out->vz;
+            found = 1;
+            hit.vy = obj->segs[i].ang;
+        }
+    }
+    return found;
+}
+
+s32 func_800B7D94(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags, SVECTOR *rot) {
+    SLONG_XYZ p;
+    SLONG_XYZ hit;
+    RaceVec d;
+    RaceVec e;
+    SVECTOR rv;
+    MATRIX m;
+    VECTOR lp;
+    RaceSegObj *w;
+    RaceSegObj *obj;
+    u8 *data;
+    RaceSegTable *tbl;
+    s32 rad;
+    s32 best;
+    s32 found;
+    s32 n;
+    s32 i;
+    s32 one;
+    s32 t;
+    s32 dist;
+    s32 ang;
+    s32 r2;
+    s32 len;
+    s32 dx;
+    s32 dz;
+    s32 s;
+    s32 v;
+    s32 side;
+    s32 bad;
+
+    best = 0x7FFFFFFF;
+    found = 0;
+    rad = radius;
+    one = 0x1000;
+    bad = idx > (((RaceSegScene *)D_80058AD0)->unk0 ?
+                 *(s32 *)(*(s32 *)(((RaceSegScene *)D_80058AD0)->data + 0x14) +
+                          (s32)((RaceSegScene *)D_80058AD0)->data + 0x14) :
+                 0);
+    if (bad) {
+        return 0;
+    }
+    data = ((RaceSegScene *)D_80058AD0)->data;
+    tbl = (RaceSegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
+    w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
+                        ((RaceSegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
+    if (w != NULL) {
+        i = 0;
+        dist = 0;
+        t = 0;
+        obj = w;
+        n = w->count;
+        r2 = rad * rad;
+        rv.vx = -rot->vx;
+        rv.vy = -rot->vy;
+        rv.vz = -rot->vz;
+        RotMatrix(&rv, &m);
+        ApplyMatrixLV(&m, pos, &lp);
+        for (;; i++, w = (RaceSegObj *)((u8 *)w + sizeof(RaceSeg))) {
+            s32 gt;
+
+            if (i >= n) {
+                break;
+            }
+            ang = obj->segs[i].ang;
+            if (flags & 1) {
+                ang += 0x800;
+            }
+            d.vx = lp.vx - w->segs[0].p0.x;
+            d.vz = lp.vz - w->segs[0].p0.z;
+            side = ((d.vx * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
+                ((d.vz * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12);
+            if (side < 0 || side > rad) {
+                continue;
+            }
+            d.vy = 0;
+            e.vx = w->segs[0].p1.x - w->segs[0].p0.x;
+            e.vy = 0;
+            e.vz = w->segs[0].p1.z - w->segs[0].p0.z;
+            len = (w->segs[0].len * w->segs[0].len) >> 12;
+            if (len != 0) {
+                t = (e.vx * d.vx + e.vz * d.vz) / len;
+            }
+            if (t < 0) {
+                p = w->segs[0].p0;
+                dx = p.x - lp.vx;
+                dz = p.z - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            gt = one < t;
+            if (gt) {
+                p = w->segs[0].p1;
+                dx = p.x - lp.vx;
+                dz = p.z - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (t >= 0 && !gt) {
+                p.x = ((t * e.vx) >> 12) + w->segs[0].p0.x;
+                p.y = ((t * e.vy) >> 12) + w->segs[0].p0.y;
+                p.z = ((t * e.vz) >> 12) + w->segs[0].p0.z;
+                dx = p.x - lp.vx;
+                dz = p.z - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (dist < 0) {
+                dist = 0x7FFFFFFF;
+                printf(D_800B3310);
+            }
+            if (dist > best) {
+                continue;
+            }
+            best = dist;
+            hit.x = p.x;
+            hit.y = p.y;
+            hit.z = p.z;
+            if (best > r2) {
+                continue;
+            }
+            s = csqrt(best);
+            out->vy = ang;
+            pos->vx += out->vx;
+            pos->vz += out->vz;
+            ang = (-ang + 0x400) & 0xFFF;
+            v = (rad << 6) - s + 2;
+            out->vx = (v * D_80068BD4[(((ang + rot->vy) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
+            out->vz = (v * D_80068BD4[(ang + rot->vy) & 0xFFF].unk2) >> 18;
+            found = 1;
+            hit.y = obj->segs[i].ang;
+            if (flags & 2) {
+                return 1;
+            }
+        }
+    }
+    return found;
+}
+
+INCLUDE_RODATA("asm/nonmatchings/overlays/race/race", D_800B3310);
+
+s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
+    VECTOR d;
+    VECTOR n;
+    MATRIX m;
+    SVECTOR ang;
+    SVECTOR sv[2];
+    RaceBoxHalf lo;
+    RaceBoxHalf hi;
+    RaceBox *src;
+    SVECTOR *p;
+    s32 dist;
+    s32 side;
+    s32 *ap;
+
+    ap = (s32 *)arg0;
+    dist = 0x7FFFFFF;
+    side = 0;
+    src = (RaceBox *)func_8008CE20((subengine *)arg0, side, side);
+    p = sv;
+    if (src == NULL) {
+        printf("No Coll box on subengine in XZBoxToSphere\n");
+        return side;
+    }
+    p->pad = 0x100;
+    if (arg2 == 2) {
+        p->pad = 0x200;
+    }
+    sv[0].vx = 0;
+    p->vy = 0;
+    p->vz = 0;
+    lo = src->lo;
+    hi = src->hi;
+    d.vx = arg1->x - ap[1];
+    d.vy = arg1->y - ap[2];
+    d.vz = arg1->z - ap[3];
+    ang.vx = -((u16 *)arg0)[8];
+    ang.vy = -((u16 *)arg0)[9];
+    ang.vz = -((u16 *)arg0)[10];
+    RotMatrixZYX(&ang, &m);
+    ApplyMatrixLV(&m, &d, &d);
+    if (d.vx < lo.v[0]) {
+        side = 2;
+    }
+    if (d.vy < hi.v[1]) {
+        side |= 0x10;
+    }
+    if (d.vz < lo.v[2]) {
+        side |= 4;
+    }
+    if (hi.v[0] < d.vx) {
+        side |= 1;
+    }
+    if (hi.v[2] < d.vz) {
+        side |= 8;
+    }
+    n.vy = 0;
+    switch (side) {
+    case 20:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 22:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 21:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 4:
+        dist = abs(d.vz - lo.v[2]);
+        n.vx = 0;
+        n.vz = -0x1000;
+        break;
+    case 6:
+        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        n.vx = -0x1000;
+        n.vz = -0x1000;
+        break;
+    case 5:
+        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        n.vx = 0x1000;
+        n.vz = -0x1000;
+        break;
+    case 24:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 26:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 25:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 8:
+        dist = abs(d.vz - hi.v[2]);
+        n.vx = 0;
+        n.vz = 0x1000;
+        break;
+    case 10:
+        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        n.vx = -0x1000;
+        n.vz = 0x1000;
+        break;
+    case 9:
+        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        n.vx = 0x1000;
+        n.vz = 0x1000;
+        break;
+    case 2:
+        dist = abs(d.vx - lo.v[0]);
+        n.vx = -0x1000;
+        n.vz = 0;
+        break;
+    case 16:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 1:
+        dist = abs(d.vx - hi.v[0]);
+        n.vx = 0x1000;
+        n.vz = 0;
+        break;
+    }
+    if (dist < p->pad) {
+        if (arg2 == 0) {
+            s32 push;
+
+            push = p->pad - dist;
+            push = RaceBoxPushRot(&ang, (u16 *)arg0, abs(push));
+            RotMatrix(&ang, &m);
+            ApplyMatrixLV(&m, &n, &n);
+            arg3->x += (push * n.vx) >> 12;
+            arg3->y += (push * n.vy) >> 12;
+            arg3->z += (push * n.vz) >> 12;
+        }
+        return side;
+    }
+    return -1;
+}
+
+void func_800B8890(void) {
+    s32 i;
+    RaceAiExt *ai;
+    EXTengine *eng;
+    subengine *sub;
+    RaceGameView2 *g;
+    EXTheromove *move;
+    EXTengine *he;
+    s32 *scene;
+
+    D_800C6BB0 = 0x3C;
+    Init_Clock(0x140, 0x28, 0);
+    if (G63->unk34 == 0x18) {
+        Set_Clock((G63->unk32 & 0x40) ? 0x115 : 0x130, 0x81C0);
+    }
+    if (G63->unk34 == 0x17) {
+        Set_Clock((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+    }
+    if (G63->unk34 == 0x19) {
+        Set_Clock((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+    }
+    if (G63->unk34 == 0x1A) {
+        Set_Clock((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+    }
+    D_800C66EC = NULL;
+    World_floor_level = -0x10;
+    func_800C0F5C();
+    scene = *(s32 **)D_80058AD0;
+    D_800C6928 = 0;
+    func_8001682C(scene);
+    func_800B5778();
+    D_800C695C = 0;
+    g = G63B;
+    if (g->unk34 == 0x18) {
+        func_800B5F04();
+        CreateNAS(0, 0xC4, 0, 0x170B, 0x11);
+        PlaySfx(0x42E, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if (g->unk34 == 0x19) {
+        PlaySfx(0x672, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    D_800C6BAC = 0xB4;
+    i = 0;
+    for (;; i++) {
+        RaceFux *fux;
+
+        if (i >= 4) {
+            break;
+        }
+        printf("hero status %d\n", Heroes[i].hero_status);
+        func_800B8F04(i);
+        Heroes[i].hero_eng->unk5D = 1;
+        fux = AddExt(Heroes[i].hero, 0x174, 0x10000000);
+        if (fux == NULL) {
+            continue;
+        }
+        he = Heroes[i].hero_eng;
+        move = Heroes[i].hero_move;
+        he->unk1E = 0;
+        move->forward_angle = 0;
+        Heroes[i].hero_eng->unk5E = 1;
+        sub = Heroes[i].hero_eng->sub;
+        sub->flags |= 0x8000;
+        ai = AddExt(Heroes[i].hero, 0x20, 0x20000000);
+        if (ai != NULL) {
+            ai->unkC = 0;
+            ai->unk10 = Heroes[i].hero_move->forward_angle;
+            ai->unk18 = func_800B5360;
+            ai->unk1C = 0;
+            ai->unk14 = D_800C6980[Heroes[i].hero_name];
+        }
+        Heroes[i].hero->FUX = (EXT *)fux;
+        fux->unkC = 0;
+        fux->unk14 = 0;
+        fux->unk18 = 0;
+        fux->unk1C = NULL;
+        fux->unk20 = 0;
+        fux->unk24 = 0;
+        fux->unk2C = 0;
+        fux->unk30 = 0;
+        fux->unk38 = 0;
+        fux->unk34 = 0;
+        fux->unk168 = 0;
+        if ((G63B->unk32 & 0x40) && G63B->unk5C[i] != 0) {
+            fux->unk34 = 2;
+        }
+        fux->unk170 = -1;
+        D_800C6BA4 = 0;
+        fux->unk3C = 1;
+        fux->unk40 = 0;
+        fux->unk44 = 0;
+        fux->unk48 = 0;
+        fux->unk4C = 0;
+        fux->unk50 = 0;
+        fux->unk58 = 0;
+        fux->unk130 = 0;
+        fux->unk134 = 0;
+        fux->unk13C = 0;
+        fux->unk140 = 0;
+        fux->unk148 = 0;
+        D_800C6BA8 = 0;
+        Heroes[i].hero_eng->unk10.y = D_800C6930;
+        fux->unk150 = D_800C66D8;
+        fux->unk154 = D_800C66E8;
+        fux->unk14C = D_800C66E4;
+        fux->unk158 = D_800C66D0;
+        fux->unk15C = D_800C66CC;
+        fux->unk160 = D_800C66E0;
+        fux->unk164 = 0x100;
+        D_800C692C = 0;
+        eng = AddExtEngine(Heroes[i].hero, 8);
+        if (eng != NULL) {
+            fux->unk1C = eng;
+            eng->sub->flags &= ~0x8000;
+            eng->unk5C = 1;
+            eng->unk5D = 0;
+            eng->unk2C.x = 0x800;
+            eng->unk2C.y = 0x800;
+            eng->unk2C.z = 0x800;
+        }
+    }
+    if (G63->unk34 == 0x1A) {
+        if (G63->unk32 & 0x80) {
+            CreateNAS(0, -0x400, 0, 0x170E, 0x11);
+        } else {
+            CreateNAS(0, 0, 0, 0x1707, 0x11);
+        }
+    }
+}
+
+void func_800B8D68(void) {
+    D_800C692C++;
+    if (G63->unk30 & 0x800) {
+        D_800C695C = 1;
+    }
+    if (G63->unk30 & 1) {
+        D_800C695C = 1;
+    }
+    if (G63->unk10 == 0) {
+        D_800C6BB0--;
+    }
+    if (D_800C695C == 0) {
+        D_800AD12C = 0;
+    } else {
+        D_800AD12C = 1;
+    }
+    func_800C04EC();
+    if (G63->unk34 != 0x19) {
+        func_800C0CB4();
+    }
+    if (G63->unk34 == 0x18) {
+        func_800B6474();
+    }
+    if (G63->unk34 == 0x19) {
+        MaintainCentre();
+    }
+    if (G63->unk34 == 0x1A && !(G63->unk32 & 0x80)) {
+        D_800C69B4->unk74 = (D_800C69B8 >> 8) + 0x4000;
+        if (D_800C69BC == 0) {
+            D_800C69B8 += 0x80;
+            if (D_800C69B8 >= 0x6000) {
+                D_800C69B8 = 0;
+            }
+        }
+        if (D_800C69BC == 1) {
+            D_800C69B8 -= 0x19C;
+            if (D_800C69B8 <= 0) {
+                D_800C69B8 = 0;
+                D_800C69BC = 0;
+            }
+        }
+    }
+}
+
+void func_800B8F04(s32 arg0) {
+    EXTheromove *m;
+
+    m = Heroes[arg0].hero_move;
+    if (m != NULL) {
+        if (D_8005A648 == 0x19) {
+            D_800C66CC = 0x258;
+            D_800C66D0 = 0x640;
+            D_800C66D4 = 0xC80;
+            D_800C66D8 = 0x7D;
+            D_800C66DC = 0x190;
+            D_800C66E0 = 0x64;
+            D_800C66E4 = 0x3E;
+            D_800C66E8 = 0x7D;
+        }
+        m->mass = 0x100;
+        m->x_acc = D_800C66CC;
+        m->z_acc = D_800C66CC;
+        m->z_dec = D_800C66D8;
+        m->x_dec = D_800C66D8;
+        m->velocity_calc = 3;
+    }
+}
+
+void func_800B8FD8(s32 player) {
+    HeroInfo *heroes;
+    HeroInfo *h;
+    RaceFux *fux;
+    EXTheromove *m;
+    s32 *steers;
+    s32 *steer;
+    PadState *pad;
+    PadState *pads;
+    s32 speed;
+    s32 boost;
+
+    heroes = Heroes;
+    h = heroes + player;
+    fux = (RaceFux *)h->hero->FUX;
+    if (fux != NULL) {
+        m = h->hero_move;
+        if (m != NULL) {
+            steers = D_800CA534;
+            steer = steers + player;
+            m->z_max = 0;
+            m->x_max = 0;
+            *steer = 0;
+            if (h->hero_mode != 0x60 && (m = h->hero_move) != NULL && h->hero_frozen == 0) {
+                pads = D_80051338;
+                pad = pads + player;
+                if ((pad->unk0 & 1) || h->hero_ai->AImode != 0) {
+                    if (((RacePad *)pad)->unk50 & 0xA0) {
+                        speed = ((csqrt(fux->unk13C * fux->unk13C + fux->unk140 * fux->unk140) * 4 >> 8) * 0x3C8) / 100 >> 8;
+                        if (speed > 0x3C8) {
+                            speed = 0x3C8;
+                        }
+                        if (((RacePad *)pad)->unk50 & 0x80) {
+                            m->forward_angle -= fux->unk160;
+                            *steer = speed;
+                        }
+                        if (((RacePad *)pad)->unk50 & 0x20) {
+                            m->forward_angle += fux->unk160;
+                            *steer = -speed;
+                        }
+                    }
+                    boost = 0;
+                    if ((((RacePad *)D_80051338)[player].unk50 & 0x8000) && fux->unk58 > 0) {
+                        if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
+                            fux->unk13C >>= 3;
+                            fux->unk140 >>= 3;
+                        }
+                        m->x_acc = fux->unk158;
+                        m->z_acc = fux->unk158;
+                        m->x_max = fux->unk154 * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->unk154 * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
+                        if (D_8009D87C[player].unk0 >= 0x17 && G63B->unk5C[player] != 0) {
+                            fux->unk58 -= 0x180 - D_800C6C10[D_8009D87C[player].unk0 - 0x16];
+                        } else if (Heroes[player].hero_mode != 0x61) {
+                            fux->unk58 -= 0x180;
+                        }
+                        boost = 1;
+                        if (fux->unk58 < 0) {
+                            fux->unk58 = 0;
+                            boost = 0;
+                        }
+                    }
+                    if (boost == 0 && (((RacePad *)D_80051338)[player].unk50 & 0x800)) {
+                        m->x_acc = fux->unk15C;
+                        m->z_acc = fux->unk15C;
+                        if (G63B->unk5C[player] != 0) {
+                            if (D_8009D87C[player].unk0 < 0x16) {
+                                m->x_acc = D_800C66CC - ((0x10 - D_8009D87C[player].unk0) << 6);
+                                m->z_acc = D_800C66CC - ((0x10 - D_8009D87C[player].unk0) << 6);
+                                if (m->x_acc < 0x200) {
+                                    m->x_acc = 0x200;
+                                }
+                                if (m->z_acc < 0x200) {
+                                    m->z_acc = 0x200;
+                                }
+                            } else {
+                                m->x_acc = D_800C66CC + D_800C6BE4[D_8009D87C[player].unk0 - 0x16];
+                                m->z_acc = D_800C66CC + D_800C6BE4[D_8009D87C[player].unk0 - 0x16];
+                            }
+                        }
+                        if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
+                            fux->unk13C >>= 3;
+                            fux->unk140 >>= 3;
+                        }
+                        m->x_max = fux->unk14C * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->unk14C * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
+                    }
+                }
+            }
+            func_800BEBC0(player);
+            if (Heroes[player].hero_status & 0x200) {
+                m->z_dir = 0;
+                m->x_max = 0;
+                m->z_max = 0;
+                fux->unk13C = 0;
+                fux->unk140 = 0;
+            }
+            func_800154A0(m->forward_angle, m->facing_angle);
+            m->facing_angle = m->forward_angle;
+        }
+    }
+    func_800B48EC(player);
+}
+
+s32 func_800B96B0(s32 arg0, s32 arg1) {
+    EXTengine *eng;
+    s32 dist;
+
+    eng = Heroes[arg0].hero_eng;
+    if (eng != NULL) {
+        dist = csqrt(eng->unk10.x * eng->unk10.x + eng->unk10.z * eng->unk10.z) >> 6;
+        if (arg1 == 0) {
+            if (dist > 0xB00) {
+                s32 ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+                s32 c = D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
+                s32 d = dist - 0xAFC;
+                eng->unk10.x -= d * c >> 12;
+                eng->unk10.z -= d * D_80068BD4[ang].unk2 >> 12;
+                return 1;
+            }
+        } else {
+            if (dist < 0x464) {
+                s32 ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+                s32 c = D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
+                s32 d = dist - 0x460;
+                eng->unk10.x -= d * c >> 12;
+                eng->unk10.z -= d * D_80068BD4[ang].unk2 >> 12;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void func_800B980C(s32 player) {
+    SLONG_XYZ pos;
+    RaceVec4 out;
+    s32 ang0;
+    s32 ang;
+    s32 zacc;
+    s32 step;
+    RaceFux *fux;
+    EXTheromove *move;
+    EXTengine *eng;
+    EXTengine *e;
+    HeroInfo *h;
+    HeroInfo *h2;
+    HeroInfo *hb;
+    HeroInfo *hb2;
+    s32 pz;
+    s32 vx;
+    s32 vz;
+    s32 a; /* x target speed, then the bounce angle, then the sfx pick */
+    s32 b; /* z target speed, then the hit angle, then the pass counter */
+    s32 xacc;
+    s32 i;
+    s32 d;
+    s32 dist;
+    s32 dx;
+    s32 dz;
+    s32 ga;
+    s32 lim;
+    s32 hit;
+
+    hb = Heroes;
+    h = hb + player;
+    fux = (RaceFux *)h->hero->FUX;
+    if (fux != NULL) {
+        pos = h->hero_eng->unk10;
+        vx = fux->unk13C;
+        vz = fux->unk140;
+        eng = h->hero_eng;
+        move = h->hero_move;
+        a = move->x_max << 8;
+        b = move->z_max << 8;
+        xacc = move->x_acc;
+        zacc = move->z_acc;
+        step = fux->unk150;
+        pos.y = D_800C6930;
+        func_800B6DBC(&pos, &ang0);
+        if (move->velocity_calc != 3) {
+            return;
+        }
+        if (vx != a) {
+            d = step;
+            if (a != 0) {
+                d = xacc;
+            }
+            if (vx < a) {
+                vx += d;
+                if (vx > a) {
+                    vx = a;
+                }
+            } else {
+                vx -= d;
+                if (vx < a) {
+                    vx = a;
+                }
+            }
+        }
+        if (vz != b) {
+            d = step;
+            if (b != 0) {
+                d = zacc;
+            }
+            if (vz < b) {
+                vz += d;
+                if (vz > b) {
+                    vz = b;
+                }
+            } else {
+                vz -= d;
+                if (vz < b) {
+                    vz = b;
+                }
+            }
+        }
+        eng->OldXYZ = eng->unk10;
+        if (G63->unk34 == 0x19) {
+            i = 0;
+            while (1) {
+                if (i >= 6) {
+                    break;
+                }
+                if (XZBoxToSphere(D_800CA544[i], &Heroes[player].hero_eng->unk10, 0, &pos) == 4 &&
+                    D_800CA55C[i].state == 1) {
+                    ga = get_angle(eng->OldXYZ.x - pos.x, eng->OldXYZ.z - pos.z) & 0xFFF;
+                    vx = -(D_80068BD4[(ga - 0x400) & 0xFFF].unk2 * 6);
+                    vz = -(D_80068BD4[ga].unk2 * 6);
+                }
+                i++;
+            }
+        }
+        if (vx < -0xC800) {
+            vx = -0xC800;
+        }
+        if (vx > 0xC800) {
+            vx = 0xC800;
+        }
+        if (vz < -0xC800) {
+            vz = -0xC800;
+        }
+        if (vz > 0xC800) {
+            vz = 0xC800;
+        }
+        fux->unk13C = vx;
+        fux->unk140 = vz;
+        dx = vx >> 8;
+        pos.x += dx;
+        dz = vz >> 8;
+        pos.z += dz;
+        if (func_800B6DBC(&pos, &ang) != 0) {
+            move->x_max = 0;
+            move->z_max = 0;
+            if (ang != -1) {
+                b = ((get_angle(dx, dz) & 0xFFF) - ang) & 0xFFF;
+                if (b > 0x800) {
+                    a = ang - 0x338;
+                } else {
+                    a = ang + 0x338;
+                }
+                dist = csqrt(vx * vx + vz * vz) >> 6;
+                dist = dist * 200 >> 8;
+                fux->unk13C = dist * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
+                fux->unk140 = dist * D_80068BD4[a & 0xFFF].unk2 >> 12;
+                Heroes[player].hero_move->forward_angle = a + 0x800;
+                a = Random(4);
+                if (fux->unk13C != 0 || fux->unk140 != 0) {
+                    lim = 0x600;
+                    if (b > lim) {
+                        if (b < 0xA00) {
+                            if (a == 0) {
+                                PlaySfx(0x64C, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (a == 1) {
+                                PlaySfx(0x64D, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (a == 2) {
+                                PlaySfx(0x64E, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (a == 3) {
+                                PlaySfx(0x64F, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        do {
+            hb2 = Heroes;
+            h2 = hb2 + player;
+        } while (0);
+        e = h2->hero_eng;
+        pz = pos.z;
+        h2->hero_eng->unk10.x += pos.x - e->unk10.x;
+        h2->hero_eng->unk10.z += pz - e->unk10.z;
+        if (!(h2->hero_status & 0x200)) {
+            b = 0;
+            while (1) {
+                if (b >= 2) {
+                    break;
+                }
+                if (b == 1) {
+                    if (G63->unk34 != 0x18 && G63->unk34 != 0x1A) {
+                        hit = func_800B7190(&pos, &out, 200, 1, 0);
+                    } else {
+                        hit = Heroes[player].hero_eng->unk10.x * Heroes[player].hero_eng->unk10.x +
+                                  Heroes[player].hero_eng->unk10.z * Heroes[player].hero_eng->unk10.z >
+                            (G63->unk34 == 0x1A ? 0xA90000 : 0x900000);
+                    }
+                    if (hit && Heroes[player].hero_mode != 0x61) {
+                        SetHeroAction(player, 0x61);
+                    }
+                }
+                b++;
+            }
+        }
+        func_800C0218(player);
+    }
+}
+
+void func_800B9E50(Quat *q) {
+    s32 n;
+    s32 sw;
+    s32 sz;
+    s32 sx;
+    s32 sy;
+
+    sw = q->v[3] * q->v[3];
+    sz = q->v[2] * q->v[2];
+    sx = q->v[0] * q->v[0];
+    sy = q->v[1] * q->v[1];
+    n = ((sx >= 0 ? sx + 0x800 : sx - 0x800) >> 12)
+      + ((q->v[1] * q->v[1] >= 0 ? sy + 0x800 : sy - 0x800) >> 12)
+      + ((q->v[2] * q->v[2] >= 0 ? sz + 0x800 : sz - 0x800) >> 12)
+      + ((q->v[3] * q->v[3] >= 0 ? sw + 0x800 : sw - 0x800) >> 12);
+    q->v[0] = (q->v[0] << 12) / n;
+    q->v[1] = (q->v[1] << 12) / n;
+    q->v[2] = (q->v[2] << 12) / n;
+    q->v[3] = (q->v[3] << 12) / n;
+}
+
+void func_800BA004(VECTOR *ang, Quat *q) {
+    s32 x, y, z;
+    s32 sx, cx, sy, cy, sz, cz;
+    s32 p, a, b, c, d;
+    s32 m0, m1, m2, m3;
+    s32 t;
+
+    x = ang->vx >> 1;
+    y = ang->vy >> 1;
+    z = ang->vz >> 1;
+    sx = D_80068BD4[x & 0xFFF].unk2;
+    cx = D_80068BD4[(x - 0x400) & 0xFFF].unk2;
+    sy = D_80068BD4[y & 0xFFF].unk2;
+    cy = D_80068BD4[(y - 0x400) & 0xFFF].unk2;
+    sz = D_80068BD4[z & 0xFFF].unk2;
+    cz = D_80068BD4[(z - 0x400) & 0xFFF].unk2;
+    a = RaceFixMul(sx, sz);
+    b = RaceFixMul(sx, cz);
+    c = RaceFixMul(cx, sz);
+    d = RaceFixMul(cx, cz);
+    p = sy * c;
+    m0 = cy * b;
+    t = (p >= 0 ? p + 0x800 : p - 0x800) >> 12;
+    t -= (cy * b >= 0 ? m0 + 0x800 : m0 - 0x800) >> 12;
+    q->v[0] = t;
+    p = sy * d;
+    m1 = cy * a;
+    t = (p >= 0 ? p + 0x800 : p - 0x800) >> 12;
+    t += (cy * a >= 0 ? m1 + 0x800 : m1 - 0x800) >> 12;
+    q->v[1] = t;
+    p = sy * b;
+    m2 = cy * c;
+    t = (p >= 0 ? p + 0x800 : p - 0x800) >> 12;
+    t -= (cy * c >= 0 ? m2 + 0x800 : m2 - 0x800) >> 12;
+    q->v[2] = t;
+    p = sy * a;
+    m3 = cy * d;
+    p = ((p >= 0 ? p + 0x800 : p - 0x800) >> 12) + ((cy * d >= 0 ? m3 + 0x800 : m3 - 0x800) >> 12);
+    q->v[3] = p;
+    func_800B9E50(q);
+}
+
+void func_800BA278(s32 player) {
+    HeroInfo *h;
+    RaceSwimFux *f;
+    RacePad *pad;
+    RacePad *pb;
+    EXTengine *e;
+    SLONG_XYZ pos;
+    HeroInfo *base;
+    HeroInfo *h1;
+    HeroInfo *hb;
+    HeroInfo *hn;
+    HeroInfo *h2;
+    s32 spawned;
+
+    base = Heroes;
+    h1 = &base[player];
+    h1->hero_eng->unk1C -= h1->hero_eng->unk1C >> 1;
+    f = (RaceSwimFux *)h1->hero->FUX;
+    if (f == NULL) {
+        return;
+    }
+    if (G63B->unk34 == 0x18) {
+        if (f->unk168 > 0) {
+            f->unk168--;
+        }
+        if ((G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
+            if (f->unk16C-- < 0) {
+                f->unk16C = (150 - f->unk168) / 5;
+            }
+        }
+    }
+    hb = Heroes;
+    h2 = &hb[player];
+    if (h2->hero_move == NULL) {
+        return;
+    }
+    h2->hero_eng->unk5E = 1;
+    spawned = 0;
+    if (f->unk24 == 0) {
+        pb = (RacePad *)D_80051338;
+        pad = &pb[player];
+        if (pad->unk50 & 0x8000) {
+            if (f->unk58 > 0) {
+                if (f->unk8C == 0) {
+                    if (D_8005A648 == 0x19) {
+                        if (player == 0) {
+                            PlaySfx(0x679, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (player == 1) {
+                            PlaySfx(0x67A, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (player == 2) {
+                            PlaySfx(0x67B, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (player == 3) {
+                            PlaySfx(0x67C, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                    }
+                    SetHeroSeq(player, 0x49);
+                    if (D_8005A648 == 0x19) {
+                        SetHeroSeq(player, 0x53);
+                        hn = Heroes;
+                        h = &hn[player];
+                        if (h->hero_name == 1) {
+                            PlaySfx(0x67D, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (h->hero_name == 3) {
+                            PlaySfx(0x67F, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (h->hero_name == 5) {
+                            PlaySfx(0x681, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (h->hero_name == 7) {
+                            PlaySfx(0x684, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                    }
+                    if (player == 0) {
+                        PlaySfx(0x648, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 1) {
+                        PlaySfx(0x649, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 2) {
+                        PlaySfx(0x64A, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 3) {
+                        PlaySfx(0x64B, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                    }
+                    f->unk8C = 1;
+                }
+                {
+                    HeroInfo *hb;
+                    HeroInfo *h;
+
+                    hb = Heroes;
+                    h = &hb[player];
+                    e = h->hero_eng;
+                    pos.x = e->unk10.x + (D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    e = h->hero_eng;
+                    pos.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 25 >> 9);
+                    pos.y = h->hero_eng->unk10.y;
+                }
+                if (--f->unk48 == -1) {
+                    if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
+                        if (f->unk168 > 0) {
+                            CreateNAS(pos.x, pos.y, pos.z, 0x1710, 0x11);
+                        } else {
+                            CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
+                        }
+                    } else if (D_8005A648 != 0x19) {
+                        CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
+                    } else {
+                        CreateNAS(pos.x, pos.y, pos.z, 0x1711, 0x11);
+                    }
+                    spawned = 1;
+                    f->unk48 = 4;
+                }
+            } else {
+                if (f->unk128 != NULL) {
+                    StopSfx(f->unk128);
+                }
+                pad->unk54 &= ~0x8000;
+            }
+        } else {
+            if (f->unk128 != NULL) {
+                StopSfx(f->unk128);
+            }
+            f->unk8C = 0;
+        }
+        if (spawned == 0) {
+            if (((RacePad *)D_80051338)[player].unk50 & 0x800) {
+                if (f->unk90 == 0) {
+                    if (player == 0) {
+                        PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 1) {
+                        PlaySfx(0x645, &Heroes[1].hero_eng->sfx, &Heroes[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 2) {
+                        PlaySfx(0x646, &Heroes[2].hero_eng->sfx, &Heroes[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 3) {
+                        PlaySfx(0x647, &Heroes[3].hero_eng->sfx, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    f->unk90 = 1;
+                }
+                {
+                    HeroInfo *hb;
+                    HeroInfo *h;
+
+                    hb = Heroes;
+                    h = &hb[player];
+                    e = h->hero_eng;
+                    pos.x = e->unk10.x + (D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    e = h->hero_eng;
+                    pos.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 25 >> 9);
+                    pos.y = h->hero_eng->unk10.y;
+                }
+                if (--f->unk4C == -1) {
+                    if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
+                        if (f->unk168 > 0) {
+                            CreateNAS(pos.x, pos.y, pos.z, 0x170F, 0x11);
+                        } else {
+                            CreateNAS(pos.x, pos.y, pos.z, 0x1709, 0x11);
+                        }
+                    } else if (D_8005A648 != 0x19) {
+                        CreateNAS(pos.x, pos.y, pos.z, 0x1709, 0x11);
+                    } else {
+                        CreateNAS(pos.x, pos.y, pos.z, 0x1711, 0x11);
+                    }
+                    f->unk4C = 6;
+                }
+            } else {
+                if (Heroes[player].hero_eng->sfx != NULL) {
+                    StopSfx(Heroes[player].hero_eng->sfx);
+                }
+                f->unk90 = 0;
+            }
+        }
+    } else {
+        if (--f->unk4C == -1) {
+            EXTengine *e2;
+
+            e2 = h2->hero_eng;
+            pos.x = e2->unk10.x + (D_80068BD4[(e2->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            e2 = h2->hero_eng;
+            pos.z = e2->unk10.z + (D_80068BD4[e2->unk1E & 0xFFF].unk2 * 25 >> 9);
+            pos.y = h2->hero_eng->unk10.y;
+            if (D_8005A648 != 0x19) {
+                CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
+            } else {
+                CreateNAS(pos.x, pos.y, pos.z, 0x1711, 0x11);
+            }
+            f->unk4C = 3;
+        }
+    }
+    if (G63B->unk34 == 0x1A) {
+        D_800C6930 = -0xB4;
+    }
+    Heroes[player].hero_eng->unk10.y = D_800C6930;
+    func_800BC984(player);
+    if (G63B->unk34 == 0x19) {
+        func_800BCC20(player);
+    }
+    func_800C5400(player);
+    if (G63B->unk34 != 0x19) {
+        if (func_8008502C(player) != 0) {
+            SetHeroSeq(player, 0x48);
+        }
+    } else {
+        func_8008502C(player);
+    }
+}
+
+void func_800BAD54(s32 player) {
+    HeroInfo *h;
+    RaceResetFux *f;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = &base[player];
+    h->hero_eng->unk1C = 0;
+    h->hero_eng->unk5E = 1;
+    func_800C5400(player);
+    f = (RaceResetFux *)h->hero->FUX;
+    if (f != NULL) {
+        f->unk54 = get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF;
+        f->unk6C = 0x300;
+        f->unk60 = 0;
+        f->unk80 = 2;
+        f->unk7C = 100;
+        f->unk88 = 0;
+        f->unk24 = 0;
+        f->unk90 = 0;
+        f->unk144 = 0;
+        f->unk78 = D_800C6930;
+        if (h->hero_eng->sfx != NULL) {
+            StopSfx(h->hero_eng->sfx);
+        }
+        if (f->unk128 != NULL) {
+            StopSfx(f->unk128);
+        }
+        f->unk18 = 0;
+        if (player == 0) {
+            PlaySfx(0x650, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (player == 1) {
+            PlaySfx(0x651, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (player == 2) {
+            PlaySfx(0x652, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (player == 3) {
+            PlaySfx(0x653, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        h->hero_eng->unk5E = 1;
+        SetHeroSeq(player, 0x4B);
+        if (G63->unk34 == 0x19) {
+            SetHeroSeq(player, 0x54);
+        }
+        h->hero_shadow->sub->flags &= ~0x8000;
+        h->hero_eng->sub->unk68 = 0x200;
+        h->hero_eng->sub->flags |= 0x02000000;
+        if (G63->unk34 == 0x18 && (G63->unk32 & 0x80)) {
+            f->unk168 = 150;
+        }
+    }
+}
+
+/* The splash a dive leaves in the water (func_800BAFC8). */
+static inline void RaceDiveSplash(SLONG_XYZ *pos, s32 kind) {
+    NAS *fx;
+    RaceFux *x;
+
+    fx = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (fx != NULL) {
+        x = FindExtension(fx, 0x10000000);
+        if (x != NULL) {
+            x->unkC = kind;
+            x->unk18 = 0x100;
+            x->unk20 = 1;
+            x->unk28 = 0;
+            fx->InitDelete(fx);
+        }
+    }
+}
+
+void func_800BAFC8(s32 player) {
+    HeroInfo *h;
+    RaceDiveFux *f;
+    EXTheromove *m;
+    EXTengine *e;
+    SLONG_XYZ sp;
+    HeroInfo *base;
+    HeroInfo *hb;
+    HeroInfo *h2;
+
+    if (func_800C5400(player) != 0) {
+        return;
+    }
+    base = Heroes;
+    h = &base[player];
+    f = (RaceDiveFux *)h->hero->FUX;
+    if (f == NULL) {
+        return;
+    }
+    m = h->hero_move;
+    if (m != NULL) {
+        m->x_max = 0;
+        m->z_max = 0;
+        m->x_vel = 0;
+        m->z_vel = 0;
+        f->unk13C = 0;
+        f->unk140 = 0;
+    }
+    if (f->unk144 != 0) {
+        h->hero_shadow->sub->flags |= 0x8000;
+        h->hero_eng->sub->unk68 = 0;
+        func_8008502C(player);
+        h->hero_move->forward_angle = ((f->unk54 - 0x200) << 20) >> 20;
+        h->hero_eng->unk1E = ((f->unk54 - 0x200) << 20) >> 20;
+        h->hero_eng->unk20 = 0;
+        h->hero_frozen = 2;
+        h->hero_eng->unk1C -= h->hero_eng->unk1C >> 1;
+        m = h->hero_move;
+        if (m != NULL) {
+            m->x_max = 0;
+            m->z_max = 0;
+            m->x_vel = 0;
+            m->z_vel = 0;
+            f->unk13C = 0;
+            f->unk140 = 0;
+        }
+        if (func_800C467C((RaceBounceObj *)h->hero_eng, &f->bounce) != 0 && ++f->unk88 >= 2) {
+            SetHeroAction(player, 0x5B);
+            if (G63B->unk34 == 0x18 && G63B->unk5C[player] == 0 && (G63B->unk32 & 0x80)) {
+                PlaySfx(0x66A, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            return;
+        }
+        if (f->unk88 > 0) {
+            if (((RacePad *)D_80051338)[player].unk50 & 0x8000) {
+                if (f->unk90 == 0) {
+                    if (player == 0) {
+                        PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 1) {
+                        PlaySfx(0x645, &Heroes[1].hero_eng->sfx, &Heroes[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 2) {
+                        PlaySfx(0x646, &Heroes[2].hero_eng->sfx, &Heroes[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 3) {
+                        PlaySfx(0x647, &Heroes[3].hero_eng->sfx, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    f->unk90 = 1;
+                }
+                if (--f->unk48 == -1) {
+                    hb = Heroes;
+                    h2 = &hb[player];
+                    e = h2->hero_eng;
+                    sp.x = e->unk10.x + (D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 256 >> 12);
+                    e = h2->hero_eng;
+                    sp.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 256 >> 12);
+                    sp.y = h2->hero_eng->unk10.y;
+                    CreateNAS(sp.x, sp.y, sp.z, 0x1709, 0x11);
+                    f->unk48 = 4;
+                }
+            } else {
+                if (Heroes[player].hero_eng->sfx != NULL) {
+                    StopSfx(Heroes[player].hero_eng->sfx);
+                }
+                f->unk90 = 0;
+            }
+        }
+    } else {
+        m = h->hero_move;
+        if (m != NULL) {
+            m->x_max = 0;
+            m->z_max = 0;
+            m->x_vel = 0;
+            m->z_vel = 0;
+            f->unk13C = 0;
+            f->unk140 = 0;
+        }
+        if (func_8008502C(player) != 0) {
+            f->unk144 = 1;
+            SetHeroSeq(player, 0x48);
+            if (G63->unk34 == 0x19) {
+                SetHeroSeq(player, 0x52);
+            }
+            h->hero_eng->unk10.x -= D_80068BD4[(f->unk54 - 0x400) & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->unk10.z -= D_80068BD4[f->unk54 & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->unk10.y = -0x578;
+            h->hero_eng->unk20 = 0;
+            if (G63->unk34 == 0x17) {
+                RaceDiveSplash(&h->hero_eng->unk10, 9);
+            }
+            if (D_8005A648 == 0x18) {
+                RaceDiveSplash(&Heroes[player].hero_eng->unk10, 9);
+            }
+            if (D_8005A648 == 0x19) {
+                RaceDiveSplash(&Heroes[player].hero_eng->unk10, 5);
+            }
+            if (D_8005A648 == 0x1A) {
+                RaceDiveSplash(&Heroes[player].hero_eng->unk10, 9);
+            }
+            PlaySfx(0x655, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+    }
+    Heroes[player].hero_eng->unk5E = 1;
+}
+
+void func_800BB794(s32 player) {
+    HeroInfo *h;
+    RaceFux40 *f;
+    EXTheromove *m;
+    HeroInfo *base;
+    u16 spd;
+
+    base = Heroes;
+    h = &base[player];
+    f = (RaceFux40 *)h->hero->FUX;
+    if (f != NULL) {
+        m = h->hero_move;
+        if (m != NULL) {
+            spd = D_8009D6F4[h->hero_name * 3];
+            m->x_vel = (spd * D_80068BD4[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
+            m->z_vel = (spd * D_80068BD4[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
+        }
+        f->unk40 = 0;
+    }
+}
+
+void func_800BB878(s32 player) {
+    HeroInfo *h;
+    RaceFux40 *f;
+    EXTheromove *m;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = &base[player];
+    h->hero_eng->unk10.y = 0;
+    f = (RaceFux40 *)h->hero->FUX;
+    if (f == NULL) {
+        return;
+    }
+    m = h->hero_move;
+    if (m == NULL) {
+        return;
+    }
+    h->hero_eng->unk10.y = 0;
+    if (++f->unk40 > 20) {
+        SetHeroAction(player, 0x5B);
+        if (D_8005A648 == 0x19) {
+            SetHeroSeq(player, 0x52);
+        }
+        return;
+    }
+    if (((RacePad *)D_80051338)[player].unk50 & 0x8000) {
+        m->x_acc = 0xC;
+        m->z_acc = 0xC;
+        m->x_max = (D_800C66E4 * D_80068BD4[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
+        m->z_max = (D_800C66E4 * D_80068BD4[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
+    }
+    func_8008502C(player);
+    func_800BC984(player);
+}
+
+void func_800BBA04(s32 player) {
+    HeroInfo *h;
+    RaceSpawnExt *f;
+    EXTheromove *m;
+    HeroInfo *base;
+    s32 r;
+
+    func_800C5400(player);
+    if (G63->unk34 != 0x19) {
+        SetHeroSeq(player, 0x4A);
+    }
+    func_80028018(player, 0xA);
+    ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xFF);
+    base = Heroes;
+    h = &base[player];
+    f = (RaceSpawnExt *)h->hero->FUX;
+    if (f != NULL) {
+        f->unkC = 0x3C;
+        m = h->hero_move;
+        if (m != NULL) {
+            m->jump_acc = 0xA;
+            m->jump_dec = 0x14;
+            m->jump_vel = -0xA0;
+        }
+        if (G63->unk34 != 0x19) {
+            switch (h->hero_name) {
+            case 1:
+                RACE_SFX4(3, 4, 5, 6);
+                break;
+            case 2:
+                RACE_SFX4(0x35, 0x36, 0x37, 0x38);
+                break;
+            case 3:
+                RACE_SFX4(0x67, 0x68, 0x69, 0x6A);
+                break;
+            case 4:
+                RACE_SFX4(0x99, 0x9A, 0x9B, 0x9C);
+                break;
+            case 5:
+                RACE_SFX4(0x12F, 0x130, 0x131, 0x132);
+                break;
+            case 7:
+                RACE_SFX4(0xFD, 0xFE, 0xFF, 0x100);
+                break;
+            case 8:
+                RACE_SFX4(0xCB, 0xCC, 0xCD, 0xCE);
+                break;
+            case 6:
+                RACE_SFX4(0x161, 0x162, 0x163, 0x164);
+                break;
+            }
+        } else {
+            switch (h->hero_name) {
+            case 1:
+                PlaySfx(0x687, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 2:
+                PlaySfx(0x686, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 3:
+                PlaySfx(0x688, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 4:
+                PlaySfx(0x685, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 5:
+                PlaySfx(0x68C, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 7:
+                PlaySfx(0x68B, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 8:
+                PlaySfx(0x689, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 6:
+                PlaySfx(0x68A, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            }
+        }
+    }
+}
+
+void func_800BC0A4(s32 arg0) {
+    HeroInfo *hero;
+    EXTraceshield *fux;
+    RacePad *pad;
+    RacePad *pb;
+    HeroInfo *base;
+
+    func_800C5400(arg0);
+    base = Heroes;
+    hero = &base[arg0];
+    fux = (EXTraceshield *)hero->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    pb = (RacePad *)D_80051338;
+    pad = &pb[arg0];
+    pad->unk50 = 0;
+    pad->unk54 = 0;
+    if (D_8005A648 != 0x19) {
+        func_8008502C(arg0);
+    }
+    hero->hero_frozen = 2;
+    hero->hero_eng->unk5E = 1;
+    if (RaceJumpAbove(arg0)) {
+        Heroes[arg0].hero_eng->unk10.y -= abs(D_800C6930 - Heroes[arg0].hero_eng->unk10.y);
+        Heroes[arg0].hero_eng->unk1C -= Heroes[arg0].hero_eng->unk1C >> 1;
+        Heroes[arg0].hero_eng->unk1E += 0x100;
+    } else {
+        Heroes[arg0].hero_eng->unk1C += 0x80;
+    }
+    if (fux->unkC-- < 0) {
+        SetHeroAction(arg0, 0x5B);
+    }
+}
+
+void func_800BC2D0(s32 player) {
+    HeroInfo *h;
+    RaceFux138 *f;
+    EXTheromove *m;
+    SLONG_XYZ pos;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = &base[player];
+    f = (RaceFux138 *)h->hero->FUX;
+    if (f != NULL) {
+        f->unk138 = 0;
+        m = h->hero_move;
+        if (m != NULL) {
+            pos.x = h->hero_eng->unk10.x + (D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            pos.z = h->hero_eng->unk10.z + (D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 * 25 >> 9);
+            pos.y = h->hero_eng->unk10.y;
+            m->jump_acc = 5;
+            m->jump_dec = 10;
+            m->jump_vel = -0x44;
+            if (D_8005A648 == 0x19) {
+                if (player == 0) {
+                    PlaySfx(0x68D, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (player == 1) {
+                    PlaySfx(0x68E, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (player == 2) {
+                    PlaySfx(0x68F, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (player == 3) {
+                    PlaySfx(0x690, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+            }
+        }
+    }
+}
+
+void func_800BC4B0(s32 player) {
+    RaceJumpFux *fux;
+    EXTheromove *move;
+
+    func_8008502C();
+    move = Heroes[player].hero_move;
+    if (move == NULL) {
+        return;
+    }
+    fux = (RaceJumpFux *)Heroes[player].hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    if (fux->phase == 0 && RaceJumpAbove(player)) {
+        move->jump_vel = -0x20;
+        fux->phase = 1;
+    }
+    if (fux->phase == 1 && RaceJumpAbove(player)) {
+        Heroes[player].hero_eng->unk10.y -= abs(D_800C6930 - Heroes[player].hero_eng->unk10.y);
+        SetHeroAction(player, 0x5B);
+    }
+}
+
+void func_800BC6C8(s32 arg0) {
+    RaceFuxTimer *fux;
+    HeroInfo *hero;
+    EXTheromove *move;
+    HeroInfo *base;
+
+    base = Heroes;
+    hero = &base[arg0];
+    fux = (RaceFuxTimer *)hero->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    func_8008502C();
+    func_800BC984(arg0);
+    move = hero->hero_move;
+    if (move == NULL) {
+        return;
+    }
+    hero->hero_frozen = 1000;
+    hero->hero_eng->unk5E = 1;
+    if (fux->unk24-- < 0) {
+        move->x_max = 0;
+        move->z_max = 0;
+        move->x_vel = 0;
+        move->z_vel = 0;
+        if (fux->unk24 < -0xF) {
+            SetHeroAction(arg0, 0x5B);
+            hero->hero_frozen = 0;
+        }
+    } else {
+        do {
+            hero->hero_eng->unk1E += 0x100;
+        } while (0);
+    }
+}
+
+void func_800BC7C4(s32 arg0) {
+    HeroInfo *hero;
+    EXTraceshield *ext;
+    s32 lim;
+    EXTengine *eng;
+    EXTengine *eng2;
+    EXTheromove *move;
+    HeroInfo *other;
+    u32 i;
+    s32 found;
+    s32 t;
+    s32 angle;
+    HeroInfo *base;
+    SLONG_XYZ *pos;
+
+    base = Heroes;
+    hero = &base[arg0];
+    ext = (EXTraceshield *)hero->hero->FUX;
+    if (ext == NULL) {
+        return;
+    }
+    eng = hero->hero_eng;
+    t = ext->unk14[0]--;
+    if (t < 0) {
+        SetHeroAction(arg0, 0x5B);
+        return;
+    }
+    pos = &eng->unk10;
+    i = 0;
+    lim = 0x27100;
+    other = base;
+loop:
+    found = -1;
+    if (i < 4) {
+        if (i == arg0 || func_8008CEB0((u8 *)pos, (u8 *)&other->hero_eng->unk10) >= lim) {
+            other++;
+            i++;
+            goto loop;
+        }
+        found = i;
+    }
+    if (found != -1) {
+        move = Heroes[found].hero_move;
+        if (move != NULL) {
+            eng2 = Heroes[found].hero_eng;
+            angle = get_angle(eng->unk10.x - eng2->unk10.x, eng->unk10.z - eng2->unk10.z) & 0xFFF;
+            if ((u32)(angle - 0x201) < 0xBFF) {
+                move->x_vel = -((D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 3) >> 7);
+                move->z_vel = -((D_80068BD4[angle].unk2 * 3) >> 7);
+            }
+        }
+    }
+    func_8008502C(arg0);
+}
+
+s32 func_800BC984(s32 player) {
+    HeroInfo *base;
+    HeroInfo *hero;
+    HeroInfo *other;
+    RaceSpawnFux *fux;
+    RacePad *pb;
+    RacePad *pad;
+    EXTengine *eng;
+    NAS *nas;
+    RaceSpawnExt *ext;
+    SLONG_XYZ pos;
+    SLONG_XYZ *pp;
+    s32 st;
+    s32 lim;
+    u32 i;
+    s32 found;
+    s32 t;
+
+    base = Heroes;
+    hero = &base[player];
+    fux = (RaceSpawnFux *)hero->hero->FUX;
+    if (fux != NULL) {
+        pb = (RacePad *)D_80051338;
+        pad = &pb[player];
+        st = pad->unk50;
+        eng = hero->hero_eng;
+        if (st & 0x2200) {
+            t = fux->unk18;
+            if (t == 1) {
+                func_800C5154(player);
+                fux->unk18 &= ~1;
+                return 1;
+            } else if (t == 0x20) {
+                nas = CreateNAS(eng->unk10.x, eng->unk10.y + 0x60, eng->unk10.z, 0x1708, 0x11);
+                if (nas != NULL) {
+                    ext = FindExtension(nas, 0x10000000);
+                    if (ext != NULL) {
+                        fux->unk130 = 1;
+                        ext->unk14 = player;
+                    }
+                }
+                fux->unk18 &= ~0x20;
+                return 1;
+            } else if (t == 2) {
+                pp = &pos;
+                pos.y = 0;
+                pos.x = eng->unk10.x + ((D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11);
+                pos.z = eng->unk10.z + ((D_80068BD4[eng->unk1E & 0xFFF].unk2 * 75) >> 11);
+                i = 0;
+                lim = 0x1DE84;
+                other = base;
+            loop:
+                found = -1;
+                if (i < 4) {
+                    if (i == player || func_8008CEB0((u8 *)pp, (u8 *)&other->hero_eng->unk10) >= lim) {
+                        other++;
+                        i++;
+                        goto loop;
+                    }
+                    do {
+                        found = i;
+                    } while (0);
+                }
+                if (found == -1) {
+                    CreateNAS(pos.x, 0, pos.z, 0x1703, 0x11);
+                    fux->unk18 &= ~2;
+                    return 1;
+                }
+            } else if (t == 4) {
+                nas = CreateNAS(eng->unk10.x, -0x20, eng->unk10.z, 0x1704, 0x11);
+                if (nas != NULL) {
+                    ext = FindExtension(nas, 0x10000000);
+                    if (ext != NULL) {
+                        ext->unkC = player;
+                    }
+                }
+                fux->unk18 &= ~4;
+                return 1;
+            }
+        } else {
+            pad->unk50 = st & ~0x2000;
+        }
+    }
+    return 0;
+}
+
+s32 func_800BCC20(s32 arg0) {
+    RacePad *base;
+    RacePad *pad;
+    RacePad *b1;
+    RacePad *p1;
+    s32 st;
+
+    if (Heroes[arg0].hero->FUX != NULL) {
+        if (D_8005A614[arg0 + 0x5C] != 0) {
+            b1 = (RacePad *)D_80051338;
+            p1 = &b1[arg0];
+            st = p1->unk50;
+            if (!(st & 0x4000)) {
+                p1->unk50 = st & ~0x4000;
+                return 0;
+            }
+            goto act;
+        }
+        base = (RacePad *)D_80051338;
+        pad = &base[arg0];
+        if (pad->unk54 & 0x4000) {
+act:
+            SetHeroAction(arg0, 0x5E);
+            return 1;
+        }
+        pad->unk50 &= ~0x4000;
+        return 0;
+    }
+    return 0;
+}
+
+s32 func_800BCD1C(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = base + arg0;
+
+    if (func_8008C4C8((s32 *)&hero->hero_eng->unk10, 2) == 0 &&
+        func_8008C4C8((s32 *)&hero->hero_eng->unk10, 3) == 0) {
+        return 0;
+    }
+    if (hero->hero_mode != 0x60) {
+        SetHeroAction(arg0, 0x60);
+    }
+    return 1;
+}
+
+void func_800BCDAC(s32 player) {
+    HeroInfo *hero;
+    HeroInfo *base;
+
+    D_800C695C = 1;
+    func_80089FA4(player);
+    SetHeroSeq(player, 0x48);
+    base = Heroes;
+    hero = base + player;
+    hero->hero_eng->unk20 = 0;
+    hero->hero_eng->unk1C = 0;
+    hero->hero_eng->unk10.y = D_800C6930;
+    hero->hero_eng->unk5E = 1;
+    if (D_8005A648 != 0x19) {
+        func_80085718(player, 0);
+        return;
+    }
+    func_80085718(player, 1);
+    func_80017640();
+    func_80011D28((u8 *)&D_8004E0F0);
+}
+
+void func_800BCE88(s32 arg0, s32 arg1) {
+    s32 taken;
+    s32 j;
+    s32 i;
+    s32 best;
+    s32 k;
+    u8 *g;
+
+    if (!(D_8005A644 & 0x801) && arg0 == -1) {
+        taken = 0;
+        for (j = 0; j < 4; j++) {
+            best = -1;
+            for (i = 0; i < 4; i++) {
+                if (!((taken >> i) & 1)) {
+                    if (Heroes[i].hero_score < Heroes[best].hero_score || best == -1) {
+                        best = i;
+                    }
+                }
+            }
+            D_8005A614[j + 0xA7] = best;
+            taken |= 1 << best;
+        }
+        g = D_8005A614;
+        if (*(s32 *)(g + 0x6C) == 0) {
+            HeroInfo *hb;
+            HeroInfo *a;
+            s32 n;
+
+            if (g[g[0xA7] + 0x5C] != 0
+                || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
+                D_8005A614[0x60] = 0;
+                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                for (k = 0; k < 4; k++) {
+                    Heroes[k].hero_status |= 0x100;
+                    if (D_8005A614[k + 0x5C] != 0) {
+                        func_80026980(Heroes[k].hero);
+                    }
+                }
+            } else {
+                D_8005A614[0x60] = a->hero_name;
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                for (n = 0; n < 4; n++) {
+                    if (D_8005A614[0xA7] == n) {
+                        hb[n].hero_status |= 0x200;
+                    } else {
+                        hb[n].hero_status |= 0x8400;
+                        hb[n].hero_shadow->sub->flags &= ~0x8000;
+                    }
+                }
+            }
+        } else {
+            s32 ia;
+            s32 ib;
+            s32 ita;
+            s32 itb;
+            s32 sa;
+            s32 sb;
+            s32 p;
+
+            ia = *(s16 *)(g + 0x48);
+            ib = *(s16 *)(g + 0x4A);
+            ita = Heroes[ia].hero_teammate;
+            itb = Heroes[ib].hero_teammate;
+            if (Heroes[ia].hero_score == 0 && D_8005A614[ia + 0x5C] == 0) {
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                RACE_TEAM_WIN(ia, ita, ib, itb);
+            } else if (Heroes[ita].hero_score == 0 && D_8005A614[ia + 0x5C] == 0) {
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                RACE_TEAM_WIN(ia, ita, ib, itb);
+            } else if (Heroes[ib].hero_score == 0 && D_8005A614[ib + 0x5C] == 0) {
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                RACE_TEAM_WIN(ib, itb, ia, ita);
+            } else if (Heroes[itb].hero_score == 0 && D_8005A614[ib + 0x5C] == 0) {
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                RACE_TEAM_WIN(ib, itb, ia, ita);
+            } else if (Heroes[ia].hero_score == 0 && D_8005A614[ia + 0x5C] != 0) {
+                RACE_DRAW(p, arg1);
+            } else if (Heroes[ita].hero_score == 0 && D_8005A614[ia + 0x5C] != 0) {
+                RACE_DRAW(p, arg1);
+            } else if (Heroes[ib].hero_score == 0 && D_8005A614[ib + 0x5C] != 0) {
+                RACE_DRAW(p, arg1);
+            } else if (Heroes[itb].hero_score == 0 && D_8005A614[ib + 0x5C] != 0) {
+                RACE_DRAW(p, arg1);
+            } else {
+                sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
+                sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
+                if (sa == sb) {
+                    RACE_DRAW(p, arg1);
+                } else if ((sa < sb && D_8005A614[ia + 0x5C] == 0)
+                           || (sb < sa && D_8005A614[ib + 0x5C] == 0)) {
+                    u8 *w = D_8005A614;
+
+                    *(u16 *)(w + 0x30) |= 0x800;
+                    if (w[ia + 0x5C] == 0) {
+                        RACE_TEAM_WIN(ia, ita, ib, itb);
+                    } else {
+                        RACE_TEAM_WIN(ib, itb, ia, ita);
+                    }
+                } else {
+                    RACE_DRAW(p, arg1);
+                }
+            }
+        }
+    }
+}
+
+void func_800BD99C(s32 arg0, u16 arg1) {
+    s32 i;
+    RaceResultView *g;
+    HeroInfo *hb;
+    RaceResultView *g0;
+
+    g0 = RV;
+    if (!(g0->unk30 & 0x801) && arg0 == -1) {
+        for (i = 0; ; i++) {
+            RaceResultFux *f;
+
+            if (i >= 4) {
+                break;
+            }
+            RV->unkA7[i] = i;
+            f = (RaceResultFux *)Heroes[i].hero->FUX;
+            if (f != NULL) {
+                if (f->unk128 != NULL) {
+                    StopSfx(f->unk128);
+                }
+                if (Heroes[i].hero_eng->sfx != NULL) {
+                    StopSfx(Heroes[i].hero_eng->sfx);
+                }
+            }
+        }
+        {
+        HeroInfo *hp;
+
+        i = 0;
+        hp = Heroes;
+        for (; ; i++) {
+            s32 j;
+
+            if (i >= 4) {
+                break;
+            }
+            for (j = 1; ; j++) {
+                s32 a;
+                s32 b;
+
+                if (j >= 4) {
+                    break;
+                }
+                a = RV->unkA7[j - 1];
+                b = RV->unkA7[j];
+                if (hp[a].hero_score > hp[b].hero_score) {
+                    RV->unkA7[j - 1] = b;
+                    RV->unkA7[j] = a;
+                }
+            }
+        }
+        }
+        g = RV;
+        if (g->unk6C == 0) {
+            HeroInfo *a;
+
+            hb = Heroes;
+            a = &hb[g->unkA7[0]];
+            if (a->hero_score == hb[g->unkA7[1]].hero_score) {
+                RACE_DRAW_I(g, i, arg1);
+            } else {
+                RV->unk60 = a->hero_name;
+                RV->unk30 |= 0x800;
+                for (i = 0; i < 4; i++) {
+                    if (RV->unkA7[0] == i) {
+                        hb[i].hero_status |= 0x200;
+                    } else {
+                        hb[i].hero_status |= 0x8400;
+                        hb[i].hero_shadow->sub->flags &= ~0x8000;
+                    }
+                }
+            }
+        } else {
+            s32 ia;
+            s32 ib;
+            s32 ita;
+            s32 itb;
+            s32 sa;
+            s32 sta;
+            s32 sb;
+            s32 stb;
+            s32 mb;
+            s32 ma;
+            s32 n;
+
+            ia = g->unk48;
+            ib = g->unk4A;
+            ita = Heroes[ia].hero_teammate;
+            itb = Heroes[ib].hero_teammate;
+            if (Heroes[ia].hero_score == 0) {
+                g->unk30 |= 0x800;
+                RACE_TEAM_WIN(ia, ita, ib, itb);
+            } else if (Heroes[ita].hero_score == 0) {
+                g->unk30 |= 0x800;
+                RACE_TEAM_WIN(ia, ita, ib, itb);
+            } else if (Heroes[ib].hero_score == 0) {
+                g->unk30 |= 0x800;
+                RACE_TEAM_WIN(ib, itb, ia, ita);
+            } else if (Heroes[itb].hero_score == 0) {
+                g->unk30 |= 0x800;
+                RACE_TEAM_WIN(ib, itb, ia, ita);
+            } else {
+                sa = (Heroes[g->unk48].hero_score << 12) + RaceFacing(ia);
+                sta = (Heroes[Heroes[g->unk48].hero_teammate].hero_score << 12)
+                    + RaceFacing(Heroes[g->unk48].hero_teammate);
+                sb = (Heroes[g->unk4A].hero_score << 12) + RaceFacing(g->unk4A);
+                stb = (Heroes[Heroes[g->unk4A].hero_teammate].hero_score << 12)
+                    + RaceFacing(Heroes[g->unk4A].hero_teammate);
+                for (n = 0; ; n++) {
+                    RaceResultFux *f;
+
+                    if (n >= 4) {
+                        break;
+                    }
+                    f = (RaceResultFux *)Heroes[n].hero->FUX;
+                    if (f != NULL) {
+                        if (n == 0) {
+                            sa -= f->unk148 << 12;
+                        }
+                        if (n == 1) {
+                            sta -= f->unk148 << 12;
+                        }
+                        if (n == 2) {
+                            sb -= f->unk148 << 12;
+                        }
+                        if (n == 3) {
+                            stb -= f->unk148 << 12;
+                        }
+                    }
+                }
+                ma = (sa < sta) ? sa : sta;
+                mb = (sb < stb) ? sb : stb;
+                if (ma == mb) {
+                    RACE_DRAW_I(RV, i, arg1);
+                } else if (ma < mb) {
+                    RACE_TEAM_WIN_BY(RV, Heroes, RV->unk48, RV->unk4A);
+                } else {
+                    RACE_TEAM_WIN_BY(RV, Heroes, RV->unk4A, RV->unk48);
+                }
+            }
+        }
+    }
+}
+
+void func_800BE7B4(s32 player, RaceBarrelView *b) {
+    RaceFuxView *f;
+    s32 ma;
+    s32 mb;
+    s32 xa;
+    s32 xb;
+    s32 d;
+    s32 q;
+    s32 r;
+    s32 total;
+
+    ma = Heroes[player].hero_move->mass;
+    mb = b->unk4E;
+    if (ma > 0 && mb > 0) {
+        f = (RaceFuxView *)Heroes[player].hero->FUX;
+        if (f != NULL) {
+            xa = f->unk13C >> 8;
+            xb = b->unk20 >> 8;
+            d = -((xa - xb) << 8);
+            xb = (ma * xa + mb * xb) << 8;
+            q = (d * mb + xb) / (total = mb + ma);
+            xa = f->unk140 >> 8;
+            xb = b->unk40 >> 8;
+            d = -((xa - xb) << 8);
+            r = (d * mb + ((ma * xa + mb * xb) << 8)) / total;
+            f->unk13C = q;
+            b->unk20 = q;
+            f->unk140 = r;
+            b->unk40 = r - d;
+        }
+    }
+}
+
+/* Steering for the register copy the target makes before each >> 8 (move v0,X; sra Y,v0,8).
+   The first survives because pa is set again before its shift. The others read t, which the
+   dead c += t at the end makes cse's canonical register (mentioned after every source's last
+   use), and which each always-zero ((t << 8) & 0xFF) keeps live past its shift until combine
+   folds the term away, too late to fold the copy. */
+#define RACE_CLAMP_SPEED(v, lim)                                           \
+    if ((v) < 0) {                                                          \
+        if ((v) < ((lim) = -(D_800C66E8 << 8))) {                           \
+            (v) = (lim);                                                    \
+        }                                                                   \
+    } else if (((lim) = D_800C66E8 << 8) < (v)) {                           \
+        (v) = (lim);                                                        \
+    }
+
+void func_800BE914(s32 pa, s32 pb) {
+    RaceFuxView *fa;
+    RaceFuxView *fb;
+    s32 ma;
+    s32 mb;
+    s32 e;
+    s32 az;
+    s32 bz;
+    s32 x;
+    s32 d;
+    s32 q;
+    s32 r;
+    s32 lim;
+    s32 t;
+    s32 k;
+    s16 c;
+
+    ma = Heroes[pa].hero_move->mass;
+    mb = Heroes[pb].hero_move->mass;
+    if (ma > 0 && mb > 0) {
+        fa = (RaceFuxView *)Heroes[pa].hero->FUX;
+        if (fa != NULL) {
+            fb = (RaceFuxView *)Heroes[pb].hero->FUX;
+            e = fa->unk164;
+            if (fb != NULL) {
+                pa = fa->unk13C;
+                az = fa->unk140;
+                pb = fb->unk13C;
+                bz = fb->unk140;
+                RACE_CLAMP_SPEED(pa, lim);
+                RACE_CLAMP_SPEED(az, lim);
+                RACE_CLAMP_SPEED(pb, lim);
+                RACE_CLAMP_SPEED(bz, lim);
+                t = pa;
+                pa = mb + ma;
+                x = t >> 8;
+                t = pb;
+                pb = t >> 8;
+                d = -(e * (x - pb + ((t << 8) & 0xFF)));
+                r = (ma * x + mb * pb) << 8;
+                q = (d * mb + r) / pa;
+                t = az;
+                x = t >> 8;
+                k = (t << 8) & 0xFF;
+                t = bz;
+                pb = t >> 8;
+                az = e * (x - pb + k + ((t << 8) & 0xFF));
+                r = (ma * x + mb * pb) << 8;
+                pb = q - d;
+                d = -az;
+                r = (d * mb + r) / pa;
+                fa->unk13C = q;
+                fb->unk13C = pb;
+                pb = r - d;
+                fa->unk140 = r;
+                fb->unk140 = pb;
+            }
+        }
+    }
+    c += t;
+}
+
+s32 func_800BEBC0(s32 player)
+{
+  s32 other;
+  EXTengine *eng;
+  RaceBumpFux *a;
+  RaceBumpFux *b;
+  s32 dist;
+  s32 dz;
+  s32 dx;
+  s32 r;
+  s32 ang;
+  u32 i;
+  s32 hit;
+  s32 speed;
+  s32 done;
+  s32 lim;
+  s32 dy;
+  lim = 0x180;
+  eng = Heroes[player].hero_eng;
+  hit = 0;
+  if (eng != 0)
+  {
+    for (i = 0;; i++)
+    {
+      EXTengine *oeng;
+      if (i >= 4)
+      {
+        break;
+      }
+      if (player == i)
+      {
+        continue;
+      }
+      if (Heroes[i].hero_status & 0x2000)
+      {
+        continue;
+      }
+      oeng = Heroes[i].hero_eng;
+      if (oeng == 0)
+      {
+        continue;
+      }
+      dy = abs(oeng->unk10.y - eng->unk10.y);
+      if (dy > lim)
+      {
+        continue;
+      }
+      if (Heroes[player].hero_move == 0)
+      {
+        continue;
+      }
+      dx = oeng->unk10.x - eng->unk10.x;
+      dz = oeng->unk10.z - eng->unk10.z;
+      dist = csqrt((dx * dx) + (dz * dz)) >> 6;
+      if (dist >= 0x180)
+      {
+        continue;
+      }
+      r = Random(4);
+      ang = get_angle(dx, dz) & 0xFFF;
+      dist = (lim - dist) + 8;
+      eng->unk10.x -= (dist * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+      eng->unk10.z -= (dist * D_80068BD4[ang].unk2) >> 12;
+      func_800BE914(player, i);
+      a = (RaceBumpFux *) Heroes[player].hero->FUX;
+      hit = 1;
+      if (a == 0)
+      {
+        continue;
+      }
+      b = (RaceBumpFux *) Heroes[i].hero->FUX;
+      if (b == 0)
+      {
+        continue;
+      }
+      speed = ((a->vx * a->vx) >> 8) + ((a->vz * a->vz) >> 8);
+      if (D_8005A648 == 0x19)
+      {
+        if (speed > 0x10D2A4)
+        {
+          if (r == 0)
+          {
+            PlaySfx(0x675, 0, 0, 0x1000, 0x1E00, 0);
+          }
+          if (r == 1)
+          {
+            PlaySfx(0x676, 0, 0, 0x1000, 0x1E00, 0);
+          }
+          if (r == 2)
+          {
+            PlaySfx(0x677, 0, 0, 0x1000, 0x1E00, 0);
+          }
+          if (r == 3)
+          {
+            PlaySfx(0x678, 0, 0, 0x1000, 0x1E00, 0);
+          }
+        }
+      }
+      else
+        if (speed > 0x62E08)
+      {
+        if (r == 0)
+        {
+          PlaySfx(0x640, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        if (r == 1)
+        {
+          PlaySfx(0x641, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        if (r == 2)
+        {
+          PlaySfx(0x642, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        if (r == 3)
+        {
+          PlaySfx(0x643, 0, 0, 0x1000, 0x1E00, 0);
+        }
+      }
+
+      speed = a->vx * a->vx;
+      speed >>= 8;
+      speed += (a->vz * a->vz) >> 8;
+      other = (b->vx * b->vx) >> 8;
+      other += (b->vz * b->vz) >> 8;
+      speed >>= 1;
+      if ((other < speed) && (speed > 0xC5C10))
+      {
+        u16 mode = Heroes[i].hero_mode;
+        if (((mode != 0x61) && (mode != 0x5D)) && (Heroes[player].hero_mode != 0x5D))
+        {
+          PlaySfx(0x654, 0, 0, 0x1000, 0x1E00, 0);
+          SetHeroAction(player, 0x5D);
+        }
+      }
+
+      done = 0;
+      if (((a->item == 0x10) && (D_800C6D20 > 0)) && (b->timer == 0))
+      {
+        b->item = a->item;
+        a->item = 0;
+        a->timer = 0xF;
+        b->timer = 0;
+        PlaySfx(0x454, 0, 0, 0x1000, 0x1E00, 0);
+        done = 1;
+      }
+      if ((((done == 0) && (b->item == 0x10)) && (D_800C6D20 > 0)) && (a->timer == 0))
+      {
+        a->item = b->item;
+        b->item = 0;
+        b->timer = 0xF;
+        PlaySfx(0x454, 0, 0, 0x1000, 0x1E00, 0);
+        a->timer = 0;
+      }
+    }
+
+  }
+  return hit;
+}
+
+s32 func_800BF0F8(u8 *arg0, u32 arg1) {
+    u32 i;
+    s32 d;
+    s32 j;
+    u16 f;
+
+    for (i = 0; ; i++) {
+        if (i >= 4) {
+            return -1;
+        }
+        if (i != arg1 && Heroes[i].hero_mode != 0x61) {
+            d = func_8008CEB0(arg0, (u8 *)Heroes[i].hero_eng + 0x10);
+            if (abs(*(s32 *)(arg0 + 4) - *(s32 *)((u8 *)Heroes[i].hero_eng + 0x14)) > 0x180) {
+                break;
+            }
+            if (d < 0x24000) {
+                if (Heroes[i].hero_mode != 0x5D) {
+                    SetHeroAction(i, 0x5D);
+                }
+                if (G63B->unk34 == 0x17 && (G63B->unk32 & 0x80) && G63B->unk5C[i] == 0 && !(G63B->unk30 & 0x801)) {
+                    f = 1;
+                    if (G63B->unk4 & 0x800) {
+                        f = 0x201;
+                    }
+                    G63B->unk30 |= f;
+                    G63B->unk60 = 0;
+                    for (j = 0; j < 4; j++) {
+                        Heroes[j].hero_status |= 0x100;
+                        if (G63B->unk5C[j] != 0) {
+                            func_80026980(Heroes[j].hero);
+                        }
+                    }
+                    D_800AD12C = 1;
+                }
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+void InitRaceMissile(NAS *m) {
+    RaceMissileExt *ext;
+    EXTengine *e;
+
+    ext = AddExt(m, 0x78, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk74 = 0x2011;
+        m->Engine->sub->unk6C = D_80052F5C + 0x2028;
+        m->Engine->unk5D = 2;
+        m->Engine->unk5C = 1;
+        m->Engine->sub->unk51 = 2;
+        m->Engine->sub->flags |= 0x02000000;
+        ext->unk64 = 0x8C;
+        ext->unk34 = 0x3000;
+        ext->unk40 = 0x700;
+        ext->unk54 = 4;
+        ext->unk10 = 0;
+        ext->unk20 = 0;
+        ext->unk60 = 0;
+        ext->unk4C = 0;
+        ext->unk50 = 0x100;
+        ext->unk5C = NULL;
+        ext->unk68 = 0;
+        ext->unk58 = ext->unk34;
+        e = AddExtEngine(m, 2);
+        if (e != NULL) {
+            ext->unk5C = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+        }
+        PlaySfx(0x522, &m->Engine->sfx, &m->Engine->unk10, 0x1000, 0x1E00, 0);
+    }
+}
+
+void PlotRaceMissile(NAS *m) {
+    RaceMissileExt *ext;
+    RaceVec4 hit;
+    RaceVec4 n;
+    RaceVec4 d;
+    RaceVec4 r;
+    s32 dot;
+    s32 i;
+    s32 count;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    switch (ext->unk10) {
+    case 0:
+        RaceToPolar(&m->Engine->unk10, &ext->unk14);
+        if ((Heroes[ext->unkC].hero_eng->unk1E - ext->unk18) << 20 > 0) {
+            ext->unk1C = -(ext->unk64 << 8) / ext->unk14;
+        } else {
+            ext->unk1C = (ext->unk64 << 8) / ext->unk14;
+        }
+        m->Engine->unk1E = Heroes[ext->unkC].hero_eng->unk1E;
+        ext->pos = Heroes[ext->unkC].hero_eng->unk10;
+        ext->unk10 = 1;
+        break;
+    case 1:
+        if (--ext->unk68 == -1) {
+            RaceSpawnPuff(&m->Engine->unk10, 0, &D_80054F84);
+            ext->unk68 = 2;
+        }
+        break;
+    }
+    ext->pos.x -= (ext->unk64 * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->unk64 * D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+    if (func_800BF0F8((u8 *)&ext->pos, ext->unkC) != -1) {
+        RaceSpawnPuff(&m->Engine->unk10, 1, &D_80054F84);
+        PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
+        if (m->Engine->sfx != NULL) {
+            StopSfx(m->Engine->sfx);
+        }
+    } else {
+        m->Engine->unk5E = 1;
+        if (csqrt(m->Engine->unk10.x * m->Engine->unk10.x
+                  + m->Engine->unk10.z * m->Engine->unk10.z) >> 6 > 0xF00) {
+            goto kill;
+        }
+        count = 1;
+        if (D_8005A648 == 0x17) {
+            count = 3;
+        }
+        for (i = 0; ; i++) {
+            s32 snd;
+
+            if (i >= count) {
+                break;
+            }
+            if (i != 1 && func_800B7190(&ext->pos, &hit, 0x96, i, 1) != 0) {
+                n.x = D_80068BD4[hit.y & 0xFFF].unk2;
+                n.z = D_80068BD4[(hit.y - 0x400) & 0xFFF].unk2;
+                d.x = -D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2;
+                d.z = -D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2;
+                dot = (d.x * n.x >> 12) + (d.z * n.z >> 12);
+                r.x = d.x - (dot * n.x >> 11);
+                r.z = d.z - (dot * n.z >> 11);
+                m->Engine->unk1E = get_angle(r.x, r.z) + 0x800;
+                ext->unk60++;
+                snd = Random(3);
+                if (snd == 0) {
+                    PlaySfx(0x65E, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (snd == 1) {
+                    PlaySfx(0x65F, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (snd == 2) {
+                    PlaySfx(0x660, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+            }
+        }
+        m->Engine->unk10 = ext->pos;
+        if (ext->unk5C != NULL) {
+            ext->unk5C->unk10 = m->Engine->unk10;
+            ext->unk5C->unk10.y = 0;
+            ext->unk5C->unk2C.x = m->Engine->unk2C.x;
+            ext->unk5C->unk2C.y = m->Engine->unk2C.y;
+            ext->unk5C->unk2C.z = m->Engine->unk2C.z;
+            if (D_8005A648 == 0x1A) {
+                ext->unk5C->unk1E = m->Engine->unk1E;
+                ext->unk5C->unk5E = 1;
+                ext->unk5C->unk10.y = -m->Engine->unk10.y;
+            }
+        }
+        if (ext->unk60 < 3) {
+            return;
+        }
+        RaceSpawnPuff(&m->Engine->unk10, 1, &D_80054F84);
+        PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+kill:
+    KillNAS(m);
+}
+
+void InitRacePickUp(NAS *m) {
+    RacePickUpExt *ext;
+    EXTengine *e;
+
+    ext = AddExt(m, 0x50, 0x10000000);
+    if (ext != NULL) {
+        func_80026B70((u8 **)&D_800C6920, (u8 *)m);
+        m->Engine->sub->unk74 = 0x2006;
+        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->unk5D = 2;
+        m->Engine->unk5C = 1;
+        ext->unk10 = -0x2000;
+        ext->unk1C = 0x200;
+        ext->unk40 = 0;
+        ext->unk48 = 0;
+        ext->unk4C = 0;
+        ext->unk30 = 1;
+        ext->unk28 = 0;
+        ext->unk2C = 0x100;
+        ext->unk3C = NULL;
+        e = AddExtEngine(m, 2);
+        if (e != NULL) {
+            ext->unk3C = e;
+            e->sub->unk6C = (u8 *)&D_80054F84 - 0x2028;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+        }
+    }
+}
+
+INCLUDE_RODATA("asm/nonmatchings/overlays/race/race", D_800B3400);
+
+void PlotRacePickUp(NAS *m) {
+    RacePickUpExt *ext;
+    RaceFuxState *fux;
+    HeroInfo *h;
+    SLONG_XYZ *pos;
+    EXTengine *e;
+    u32 i;
+    s32 found;
+    s32 lim;
+    s32 d;
+    s32 s;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (D_8005A648 != 0x19) {
+        func_800C467C((RaceBounceObj *)m->Engine, (RaceBouncer *)&ext->pad0[0xC]);
+    }
+    m->Engine->unk1E += 0x80;
+    m->Engine->unk5E = 1;
+    switch (ext->unk38) {
+    case 1:
+        s = 0xC00;
+        m->Engine->unk2C.x = s;
+        m->Engine->unk2C.y = s;
+        m->Engine->unk2C.z = s;
+        m->Engine->sub->unk74 = 0x2009;
+        m->Engine->sub->unk6C = D_80052F94;
+        break;
+    case 2:
+        m->Engine->sub->unk74 = 0x2005;
+        break;
+    case 3:
+        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->sub->flags |= 0x20000000;
+        m->Engine->sub->unk74 = ext->unk48 + 0x2049;
+        if (++ext->unk48 >= 0xE) {
+            ext->unk48 = 0;
+        }
+        break;
+    case 5:
+        m->Engine->sub->unk74 = 0x2017;
+        break;
+    case 0:
+    case 4:
+    case 6:
+        m->Engine->sub->unk74 = 0x2011;
+        break;
+    }
+    if (ext->unk40 == 0) {
+        pos = &m->Engine->unk10;
+        i = 0;
+        h = Heroes;
+    loop:
+        if (i < 4) {
+            do {
+                d = func_8008CEB0((u8 *)pos, (u8 *)&h->hero_eng->unk10);
+                lim = 0x24000;
+                if (d < lim) {
+                    if (abs(pos->y - h->hero_eng->unk10.y) < 0x200) {
+                        found = i;
+                        goto done;
+                    }
+                }
+                h++;
+                i++;
+            } while (0);
+            goto loop;
+        }
+        found = -1;
+    done:
+        if (found != -1) {
+            fux = (RaceFuxState *)Heroes[found].hero->FUX;
+            if (fux != NULL && fux->unk130 == 0 && fux->unk18 != 0x10) {
+                switch (ext->unk38) {
+                case 0:
+                    fux->unk18 = 1;
+                    PlaySfx(0x51F, NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_800CA64C[ext->unk44].used = 0;
+                    break;
+                case 1:
+                    fux->unk18 = 2;
+                    break;
+                case 2:
+                    fux->unk18 = 4;
+                    break;
+                case 5:
+                    fux->unk18 = 0x20;
+                    PlaySfx(0x439, NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_800CA64C[ext->unk44].used = 0;
+                    break;
+                case 6:
+                    fux->unk18 = 0;
+                    fux->unk24 = 0x5A;
+                    D_800CA64C[ext->unk44].used = 0;
+                    break;
+                case 3:
+                    fux->unk58 += 0x2000;
+                    if (fux->unk58 > 0x10000) {
+                        fux->unk58 = 0x10000;
+                    }
+                    D_800CA64C[ext->unk44].used = 0;
+                    PlaySfx(0x1C2, NULL, NULL, 0x1000, 0x1E00, 0);
+                    break;
+                case 4:
+                    fux->unk18 = 0x10;
+                    CreateNAS(Heroes[found].hero_eng->unk10.x, Heroes[found].hero_eng->unk10.y,
+                                 Heroes[found].hero_eng->unk10.z, 0x1706, 0x11);
+                    break;
+                }
+            }
+            KillNAS(m);
+            return;
+        }
+    }
+    e = ext->unk3C;
+    if (e != NULL) {
+        e->unk10 = m->Engine->unk10;
+        ext->unk3C->unk10.y = 0;
+        ext->unk3C->unk2C.x = m->Engine->unk2C.x;
+        ext->unk3C->unk2C.y = m->Engine->unk2C.y;
+        ext->unk3C->unk2C.z = m->Engine->unk2C.z;
+    }
+}
+
+void func_800C0218(s32 player) {
+    HeroInfo *base;
+    HeroInfo *hero;
+    RaceLapFux *fux;
+    EXTengine *e;
+    s32 one;
+    s32 flags;
+    s32 unused[2];
+
+    if (!(D_8005A644 & 0x801)) {
+        base = Heroes;
+        hero = base + player;
+        fux = (RaceLapFux *)hero->hero->FUX;
+        if (fux != NULL) {
+            get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z);
+            e = hero->hero_eng;
+            if (e->unk10.x > 0) {
+                if (e->OldXYZ.z >= -0x1ED) {
+                    if (e->unk10.z < -0x1ED) {
+                        fux->cross++;
+                        fux->side = 1;
+                        if (fux->cross >= 2) {
+                            fux->cross = 1;
+                        }
+                    }
+                    if (Heroes[player].hero_eng->OldXYZ.z >= -0x1ED) {
+                        goto check;
+                    }
+                }
+                if (Heroes[player].hero_eng->unk10.z >= -0x1ED) {
+                    fux->side = 0;
+                    if (--fux->cross < -1) {
+                        fux->cross = -1;
+                    }
+                }
+            }
+check:
+            one = fux->cross;
+            if (one == 1) {
+                if (fux->started == 0) {
+                    fux->started = one;
+                } else {
+                    if (player == 0) {
+                        PlaySfx(0x656, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == one) {
+                        PlaySfx(0x657, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 2) {
+                        PlaySfx(0x658, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 3) {
+                        PlaySfx(0x659, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    fux->laps++;
+                }
+                fux->cross = 0;
+            }
+            Heroes[player].hero_score_displayed = Heroes[player].hero_score = 10 - fux->laps;
+            if (Heroes[player].hero_score == 0) {
+                flags = 1;
+                if (D_8005A618 & 0x800) {
+                    flags = 0x201;
+                }
+                D_8009D74C(-1, flags);
+            }
+        }
+    }
+}
+
+void func_800C04EC(void) {
+    NAS *nas;
+    NAS *spawned;
+    RacePickUpExt *pick;
+    RacePickUpExt *ext;
+    RacePickUpSlot *s;
+    s32 k;
+    RaceFuxHeld *fux;
+    RaceFuxHeld *hfux;
+    EXTengine *eng;
+    RaceGameView *g;
+    s32 n;
+    s32 big;
+    s32 count;
+    s32 extra;
+    s32 state;
+    s32 i;
+    s32 j;
+    s32 p;
+    s32 slot;
+    s32 dist;
+    s32 angle;
+    s32 r;
+
+    if (D_800C6BB0 >= 0) {
+        return;
+    }
+    big = 0;
+    nas = D_800C6920;
+    count = 0;
+    if (D_800C6928 != 0) {
+        D_800C6928--;
+        big = 1;
+    }
+    if (D_800C6BA4 == 0) {
+        big = 1;
+        D_800C6BA4 = big;
+        D_800C6CB0 = 30;
+        for (k = 0; k < 16; k++) {
+            D_800CA64C[k].used = 0;
+            if (k == 2) {
+                D_800CA64C[k].used = 1;
+            }
+            D_800CA64C[k].angle = k << 8;
+        }
+    }
+    for (;; nas = nas->Group.Child) {
+        if (nas == NULL) {
+            goto heroes_loop;
+        }
+        pick = FindExtension(nas, 0x10000000);
+        if (pick != NULL) {
+            state = pick->unk38;
+            if (state == 4) {
+                big = 1;
+            }
+            if (state == 2 && D_800C6924 == 0) {
+                D_800C6924 = 1;
+            }
+            if (pick->unk38 == 3) {
+                count++;
+            }
+        }
+    }
+heroes_loop:
+    for (p = 0;; p++) {
+        if (p >= 4) {
+            goto heroes_done;
+        }
+        hfux = (RaceFuxHeld *)Heroes[p].hero->FUX;
+        if (hfux != NULL) {
+            state = hfux->unk18;
+            if (state != 0) {
+                if (state == 0x10) {
+                    big = 1;
+                }
+                if (state == 4 && D_800C6924 == 0) {
+                    D_800C6924 = 1;
+                }
+            }
+        }
+    }
+heroes_done:
+    extra = 0;
+    if (D_800C692C > 0) {
+        extra = 3;
+    }
+    if (D_800C692C >= 0x385) {
+        extra = 2;
+    }
+    if (D_800C692C >= 0x709) {
+        extra = 1;
+    }
+    n = 6 - (count + extra);
+    if (n != 0) {
+        if (--D_800C6CB0 < 0) {
+            D_800C6CB0 = 0;
+        }
+    }
+    i = 0;
+    g = G63;
+    for (;; i++) {
+        dist = 0x898;
+        if (i > 0) {
+            goto held;
+        }
+        slot = Random(16);
+        j = 0;
+        if (g->unk34 == 0x19) {
+            dist = 0x5DC;
+        }
+        if (D_800C6CB0 == 0) {
+            D_800C6CB0 = 30;
+            for (; j < 16;) {
+                j++;
+                if (D_800CA64C[slot].used == 0) {
+                    break;
+                }
+                slot++;
+                slot &= 0xF;
+            }
+            if (j == 16) {
+                return;
+            }
+            s = &D_800CA64C[slot];
+            angle = s->angle;
+            spawned = CreateNAS(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+                                   dist * D_80068BD4[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
+            if (spawned != NULL) {
+                s->used = 1;
+                ext = FindExtension(spawned, 0x10000000);
+                if (ext != NULL) {
+                    ext->unk44 = slot;
+                    Random(big ? 4 : 5);
+                    r = Random(0x1000);
+                    if (r < 0x800) {
+                        ext->unk38 = 3;
+                    }
+                    if (r > 0x800) {
+                        ext->unk38 = 5;
+                    }
+                    if (r > 0xC00) {
+                        ext->unk38 = 0;
+                    }
+                    ext->unk38 = 3;
+                }
+            }
+        }
+    }
+held:
+    for (p = 0;; p++) {
+        if (p >= 4) {
+            return;
+        }
+        fux = (RaceFuxHeld *)Heroes[p].hero->FUX;
+        if (fux == NULL) {
+            continue;
+        }
+        eng = fux->unk1C;
+        if (eng == NULL) {
+            continue;
+        }
+        eng->sub->flags &= ~0x8000;
+        if (fux->unk18 == 1) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2011;
+            eng->sub->unk6C = &D_80054F84;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 2) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2009;
+            eng->sub->unk6C = D_80052F94;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 4) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2005;
+            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 8) {
+            eng->sub->unk74 = 0x2002;
+            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 0x10) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2011;
+            eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
+            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 0x20) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2017;
+            eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
+            eng->sub->unk6C = &D_80054F84;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 0x40) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2011;
+            eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
+            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (eng->sub->flags & 0x8000) {
+            eng->unk10.y -= 0x200;
+        }
+    }
+}
+
+void func_800C0CB4(void) {
+    NAS *nas;
+    NAS *spawned;
+    RacePickUpExt *ext;
+    RacePickUpExt *pick;
+    RaceFuxState *fux;
+    s32 count;
+    s32 heroes;
+    s32 extra;
+    s32 n;
+    s32 p;
+    s32 i;
+    s32 j;
+    s32 slot;
+    s32 dist;
+    s32 angle;
+    s32 state;
+
+    if (D_800C6BB0 >= 0) {
+        return;
+    }
+    heroes = 0;
+    count = 0;
+    for (nas = D_800C6920;; nas = nas->Group.Child) {
+        if (nas == NULL) {
+            goto heroes_loop;
+        }
+        pick = FindExtension(nas, 0x10000000);
+        if (pick != NULL) {
+            state = pick->unk38;
+            if (state == 0) {
+                count++;
+            }
+            if (state == 5) {
+                count++;
+            }
+        }
+    }
+heroes_loop:
+    for (p = 0;; p++) {
+        if (p >= 4) {
+            goto heroes_done;
+        }
+        fux = (RaceFuxState *)Heroes[p].hero->FUX;
+        if (fux != NULL) {
+            state = fux->unk18;
+            if (state != 0) {
+                if (state == 1) {
+                    heroes++;
+                }
+                if (state == 0x20) {
+                    heroes++;
+                }
+            }
+        }
+    }
+heroes_done:
+    extra = D_800C692C > 0;
+    if (D_800C692C >= 0x385) {
+        extra = 1;
+    }
+    if (D_800C692C >= 0x709) {
+        extra = 0;
+    }
+    n = 3 - (count + extra + heroes);
+    if (n != 0) {
+        if (--D_800C6CB4 < 0) {
+            D_800C6CB4 = 0;
+        }
+    }
+    for (i = 0;; i++) {
+        if (i >= n) {
+            return;
+        }
+        dist = Random(100) + 0x898;
+        slot = Random(16);
+        j = 0;
+        if (D_800C6CB4 == 0) {
+            D_800C6CB4 = 30;
+            for (; j < 16;) {
+                j++;
+                if (D_800CA64C[slot].used == 0) {
+                    break;
+                }
+                slot++;
+                slot &= 0xF;
+            }
+            if (j == 16) {
+                return;
+            }
+            D_800CA64C[slot].used = 1;
+            angle = D_800CA64C[slot].angle;
+            spawned = CreateNAS(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+                                   dist * D_80068BD4[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
+            if (spawned != NULL) {
+                ext = FindExtension(spawned, 0x10000000);
+                if (ext != NULL) {
+                    ext->unk44 = slot;
+                    if (G63->unk34 != 0x18) {
+                        ext->unk38 = 0;
+                    } else {
+                        ext->unk38 = 5;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void func_800C0F5C(void) {
+    u8 unused[24];
+}
+
+void PlotTNTCrate(NAS *nas) {
+    s32 status;
+    s32 next;
+    s32 i;
+    s32 *pos;
+    u8 *p;
+    NAS *spawned;
+    s32 *ext;
+    HeroInfo *h;
+    subengine *sub;
+
+    status = nas->UserInfo.status;
+    switch (status) {
+    case 0:
+        next = 1;
+        nas->UserInfo.status = next;
+        break;
+    case 1:
+        i = 0;
+        if (nas->UserInfo.user1 < 90) {
+            if (nas->UserInfo.user1 == 0) {
+                nas->Engine->sub->unk74 = 0x2012;
+            }
+            if (nas->UserInfo.user1 == 30) {
+                nas->Engine->sub->unk74 = 0x2011;
+            }
+            if (nas->UserInfo.user1 == 60) {
+                nas->Engine->sub->unk74 = 0x2010;
+            }
+            for (; i < 4; i++) {
+            }
+            if (nas->UserInfo.user2 == 0) {
+                nas->UserInfo.flags++;
+                PlaySfx(0x3F0, NULL, NULL, 0x1000, 0x1E00, 0);
+                nas->UserInfo.user2 = 30 / nas->UserInfo.flags;
+                if (nas->UserInfo.user2 < 4) {
+                    nas->UserInfo.user2 = 4;
+                }
+            }
+            nas->UserInfo.user2--;
+        } else {
+            if (nas->UserInfo.user1 == 90) {
+                i = Random(4);
+                if (i == 0) {
+                    PlaySfx(0x3EC, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (i == 1) {
+                    PlaySfx(0x3ED, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (i == 2) {
+                    PlaySfx(0x3EE, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (i == 3) {
+                    PlaySfx(0x3EF, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                pos = (s32 *)&nas->Engine->unk10;
+                p = D_80052F94;
+                spawned = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
+                if (spawned != NULL) {
+                    ext = FindExtension(spawned, 0x10000000);
+                    if (ext != NULL) {
+                        ext[3] = status;
+                        ext[6] = 0x100;
+                        if (p != NULL) {
+                            ext[8] = 5;
+                            spawned->Engine->sub->unk6C = p;
+                        } else {
+                            ext[8] = status;
+                        }
+                        ext[10] = 0;
+                        spawned->InitDelete(spawned);
+                    }
+                }
+                nas->Engine->sub->flags &= ~0x8000;
+            }
+            i = 0;
+            h = Heroes;
+        loop:
+            if (i < 4) {
+                if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&h->hero_eng->unk10) < 0x40000 &&
+                    h->hero_mode != 0x5D) {
+                    SetHeroAction(i, 0x5D);
+                }
+                h++;
+                i++;
+                goto loop;
+            }
+            if (nas->UserInfo.user1 == 100) {
+                KillNAS(nas);
+                return;
+            }
+        }
+        nas->UserInfo.user1++;
+        break;
+    }
+}
+
+void InitDinoEgg(NAS *m) {
+    EXTdinoegg *ext;
+    EXTengine *e;
+
+    ext = AddExt(m, 0x34, 0x10000000);
+    if (ext != NULL) {
+        ext->anim = (EXTanimator *)func_80024E30(m, &D_800C6D14);
+        m->Engine->unk5D = 0;
+        m->Engine->unk5C = 1;
+        m->Engine->sub->unk74 = 0x2005;
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        ext->NasStatus = 0;
+        ext->angcounter = 0;
+        ext->yang = 0;
+        ext->shadow = NULL;
+        e = AddExtEngine(m, 2);
+        if (e != NULL) {
+            ext->shadow = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+        }
+        D_800C6924++;
+    }
+}
+
+void PlotDinoEgg(NAS *m) {
+    EXTdinoegg *ext;
+    EXTengine *h;
+    RaceVec4 hit;
+    s32 n[4];
+    s32 d[4];
+    s32 r[4];
+    s32 status;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    m->Engine->unk5E = 1;
+    status = ext->NasStatus;
+    switch (status) {
+    case 0:
+        h = Heroes[ext->owner].hero_eng;
+        ext->NasStatus = 2;
+        ext->yang = m->Engine->unk1E = h->unk1E + 0x800;
+        ext->vel = 0x80;
+        ext->dec = 4;
+        func_800B7190(&m->Engine->unk10, &hit, 0x9E, 1, 0);
+        func_800B7190(&m->Engine->unk10, &hit, 0x9E, 0, 1);
+        m->Engine->unk10.x += (D_80068BD4[(h->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11;
+        m->Engine->unk10.z += (D_80068BD4[(u16)h->unk1E & 0xFFF].unk2 * 75) >> 11;
+        break;
+    case 2:
+        if (ext->vel > 0) {
+            ext->vel -= ext->dec;
+        }
+        m->Engine->unk20 = (D_80068BD4[(ext->angcounter - 0x400) & 0xFFF].unk2 * 3) >> 5;
+        ext->angcounter += 0x80;
+        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0) {
+            RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
+        }
+        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
+            RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
+        }
+        m->Engine->unk10.x -= (ext->vel * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        m->Engine->unk10.z -= (ext->vel * D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+        m->Engine->unk1E += ((ext->yang - m->Engine->unk1E) << 20) >> 21;
+        if (RaceHitHero((u8 *)&m->Engine->unk10) != -1) {
+            KillNAS(m);
+            D_800C6924 = 0;
+            return;
+        }
+        if (ext->vel <= 0) {
+            ext->vel = 0;
+            ext->NasStatus = 1;
+            GotoLinkAnim(ext->anim, 0);
+            func_800250B0(m);
+        }
+        break;
+    case 1:
+        m->Engine->unk10.x -= (D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x20) >> 12;
+        m->Engine->unk10.z -= (D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2 * 0x20) >> 12;
+        ext->angcounter += 0x80;
+        func_800250B0(m);
+        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0)
+            ext->yang = RaceBounce(m->Engine->unk1E, hit.y);
+        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
+            RACE_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
+        }
+        m->Engine->unk1E += ((ext->yang - m->Engine->unk1E) << 20) >> 21;
+        if (RaceHitHero((u8 *)&m->Engine->unk10) != -1) {
+            D_800C6924 = 0;
+            KillNAS(m);
+            return;
+        }
+        break;
+    }
+    if (ext->shadow != NULL) {
+        ext->shadow->unk10 = m->Engine->unk10;
+        ext->shadow->unk10.y = 0;
+        ext->shadow->unk2C.x = m->Engine->unk2C.x;
+        ext->shadow->unk2C.y = m->Engine->unk2C.y;
+        ext->shadow->unk2C.z = m->Engine->unk2C.z;
+    }
+}
+
+static inline NAS *SpawnShieldFx(SLONG_XYZ *pos) {
+    NAS *fx;
+    RaceShieldFxExt *fxe;
+
+    fx = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (fx != NULL) {
+        fxe = FindExtension(fx, 0x10000000);
+        if (fxe != NULL) {
+            fxe->unkC = 8;
+            fxe->unk18 = 0x100;
+            fxe->unk20 = 1;
+            fxe->unk28 = 0;
+            fx->InitDelete(fx);
+        }
+        return fx;
+    }
+    return NULL;
+}
+
+void PlotRaceShield(NAS *nas) {
+    EXTraceshield *ext;
+    HeroInfo *hero;
+    RaceShieldFux *fux;
+    RaceShieldFux *fux2;
+    SLONG_XYZ *pos;
+    HeroInfo *other;
+    HeroInfo *h;
+    HeroInfo *base;
+    HeroInfo *hb;
+    EXTengine *eng;
+    EXTengine *eng2;
+    u32 i;
+    s32 found;
+    s32 me;
+    s32 lim;
+    s32 angle;
+    s32 c;
+    s32 s;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    base = Heroes;
+    hero = &base[ext->unk14[0]];
+    fux = (RaceShieldFux *)hero->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    switch (ext->unkC) {
+    case 0:
+        fux->shield = SpawnShieldFx(&nas->Engine->unk10);
+        PlaySfx(0x43A, NULL, NULL, 0x1000, 0x1E00, 0);
+        ext->unkC = 1;
+        break;
+    case 1:
+        i = 0;
+        if (fux->shield != NULL) {
+            fux->shield->Engine->unk10 = hero->hero_eng->unk10;
+        }
+        lim = 0xC5C10;
+        ext->unk1C = 0x384;
+        other = base;
+        me = ext->unk14[0];
+        pos = &fux->shield->Engine->unk10;
+        while (1) {
+            if (i >= 4) {
+                found = -1;
+                break;
+            }
+            if (i != me && func_8008CEB0((u8 *)pos, (u8 *)&other->hero_eng->unk10) < lim) {
+                found = i;
+                break;
+            }
+            other++;
+            i++;
+        }
+        if (found != -1) {
+            hb = Heroes;
+            h = &hb[found];
+            eng = nas->Engine;
+            eng2 = h->hero_eng;
+            angle = get_angle(eng->unk10.x - eng2->unk10.x, eng->unk10.z - eng2->unk10.z);
+            c = D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 8;
+            s = D_80068BD4[angle & 0xFFF].unk2 * 8;
+            fux2 = (RaceShieldFux *)h->hero->FUX;
+            if (fux2 != NULL) {
+                fux2->unk13C = -c;
+                fux2->unk140 = -s;
+                h->hero_move->x_max = 0;
+                h->hero_move->z_max = 0;
+                h->hero_move->x_max = 0;
+                h->hero_move->z_max = 0;
+            }
+        }
+        if (--ext->unk10 < 0) {
+            fux->unk130 &= ~1;
+            KillNAS(fux->shield);
+            KillNAS(nas);
+        }
+        break;
+    }
+}
+
+void PlotRaceTag(NAS *m) {
+    s32 i;
+    HeroInfo *h1;
+    HeroInfo *h;
+    RaceTagFux *fux1;
+    RaceTagFux *fux;
+    SLONG_XYZ pos;
+    u8 *tex;
+    SLONG_XYZ *pp;
+    NAS *tag;
+    RaceTagExt *ext;
+
+    D_800C6D20--;
+    i = 0;
+    h1 = Heroes;
+loop1:
+    if (i < 4) {
+        fux1 = (RaceTagFux *)h1->hero->FUX;
+        if (fux1 != NULL && fux1->unk2C > 0) {
+            fux1->unk2C--;
+        }
+        h1++;
+        i++;
+        goto loop1;
+    }
+    if (m->Engine->sfx != NULL) {
+        func_800228A4(m->Engine->sfx, (0x12C - D_800C6D20) * 0xF00 / 300 + 0x1E00);
+    }
+    i = 0;
+    if (D_800C6D20 == 0) {
+        pp = &pos;
+        h = Heroes;
+loop2:
+        if (i < 4) {
+            fux = (RaceTagFux *)h->hero->FUX;
+            if (fux == NULL) {
+                goto next;
+            }
+            if (fux->unk18 == 0x10) {
+                goto clear;
+            }
+            pos = h->hero_eng->unk10;
+            tex = D_800546C4;
+            tag = CreateNAS(pos.x, pp->y, pp->z, 0x1605, 0x11);
+            if (tag != NULL) {
+                ext = FindExtension(tag, 0x10000000);
+                if (ext != NULL) {
+                    ext->unkC = 0;
+                    ext->unk18 = 0x100;
+                    if (tex != NULL) {
+                        ext->unk20 = 5;
+                        tag->Engine->sub->unk6C = tex;
+                    } else {
+                        ext->unk20 = 1;
+                    }
+                    ext->unk28 = 0;
+                    tag->InitDelete(tag);
+                }
+            }
+            if (h->hero_mode != 0x5D) {
+                SetHeroAction(i, 0x5D);
+            }
+            fux->unkC = 0x78;
+            PlaySfx(0x466, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (m->Engine->sfx != NULL) {
+                StopSfx(m->Engine->sfx);
+            }
+            goto next;
+        clear:
+            fux->unk18 = 0;
+        next:
+            h++;
+            i++;
+            goto loop2;
+        }
+        D_800C6928 = 0x12C;
+        KillNAS(m);
+    }
+}
+
+void InitRaceVolcano(NAS *nas) {
+    s32 i;
+    RaceVolcanoExt *v;
+    RaceVolcanoExt *ext;
+    EXTengine *eng;
+
+    v = AddExt(nas, 0x15C, 0x10000000);
+    i = 0;
+    if (v != NULL) {
+        ext = v;
+        ext->unk10 = 0x1C2;
+        ext->unkC = 0;
+    loop:
+        if (i < 3) {
+            eng = AddExtEngine(nas, i + 2);
+            if (eng != NULL) {
+                ext->eng[0] = eng;
+                eng->sub->flags &= ~0x8000;
+                eng->unk5C = 1;
+                eng->unk5D = 2;
+                eng->sub->unk74 = 0x2019;
+                eng->sub->unk6C = *(void **)D_80058AD0;
+                ext->eng[0]->unk1E = Random(0x1000);
+                ext->eng[0]->unk20 = 0;
+                ext->unk144[0] = 0;
+                ext->unk150[0] = 0;
+            }
+            ext = (RaceVolcanoExt *)((s32 *)ext + 1);
+            i++;
+            goto loop;
+        }
+        i = 2;
+    loop2:
+        i--;
+        if (i >= 0) goto loop2;
+    }
+}
+
+void PlotRaceVolcano(NAS *nas) {
+    RaceVolcanoExt *ext;
+    SLONG_XYZ zero;
+    s32 count;
+    s32 i;
+    s32 rock;
+    s32 n;
+    s32 j;
+    s32 ang;
+    s32 d;
+    s32 r;
+    NAS *fx;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    memset(&zero, 0, sizeof(zero));
+    if (D_800C695C != 0) {
+        for (i = 0; i < 3; i++) {
+            if (ext->eng[i]->sub->flags & 0x8000) {
+                ext->eng[i]->sub->flags &= ~0x8000;
+            }
+        }
+        return;
+    }
+    switch (ext->unkC) {
+    case 0:
+        if (--ext->unk10 == 0x3C) {
+            PlaySfx(0x69A, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (ext->unk10 < 0) {
+            ext->unkC = 1;
+        }
+        break;
+    case 1:
+        ang = Random(0x1000);
+        for (rock = 0; ; rock++) {
+            s32 x;
+            s32 z;
+
+            if (rock >= 3) {
+                break;
+            }
+            x = D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 75 >> 9;
+            z = D_80068BD4[ang & 0xFFF].unk2 * 75 >> 9;
+            if (ext->eng[rock] != NULL) {
+                ext->eng[rock]->unk1E = ang;
+                ext->vel[rock].x = x;
+                ext->vel[rock].y = 0;
+                ext->vel[rock].z = z;
+                ext->arc[rock].unk0 = 4;
+                ext->arc[rock].unk44 = 0xC - Random(3);
+                ext->arc[rock].unk4 = 0;
+                ext->arc[rock].unk18 = 0x100;
+                ext->eng[rock]->sub->flags |= 0x8000;
+                ext->eng[rock]->unk10 = zero;
+                ang += 0x555 + Random(0x200);
+                fx = RaceSpawnPuffRet(&ext->eng[rock]->unk10, 0xA, 0);
+                ext->unk144[rock] = fx;
+                if (fx != NULL) {
+                    if (z < 0) {
+                        fx->Engine->sub->flags |= 0x02000000;
+                        ext->unk144[rock]->Engine->sub->unk68 = -0x400;
+                    } else {
+                        fx->Engine->sub->flags |= 0x02000000;
+                        ext->unk144[rock]->Engine->sub->unk68 = 0x200;
+                    }
+                }
+            }
+        }
+        PlaySfx(0x69B, NULL, NULL, 0x1000, 0x1E00, 0);
+        RaceSpawnPuff(&nas->Engine->unk10, 4, NULL);
+        ext->unk10 = 0x14;
+        ext->unk14 = -0x80;
+        ext->unkC = 2;
+        break;
+    case 2:
+        count = 0;
+        for (n = 0; ; n++) {
+            EXTengine *cur;
+            EXTengine *eng;
+
+            if (n >= 3) {
+                break;
+            }
+            ext->eng[n]->unk5E = 1;
+            cur = ext->eng[n];
+            if (cur->sub->flags & 0x8000) {
+                cur->unk1C -= 0x80;
+                eng = ext->eng[n];
+                d = eng->unk10.x * eng->unk10.x + eng->unk10.z * eng->unk10.z;
+                func_8008C5C4(&zero.x, &ext->vel[n].x, &ext->arc[n], &eng->unk10.x);
+                if (d < 0x90000) {
+                    if (ext->unk144[n] != NULL) {
+                        ext->unk144[n]->Engine->unk10.y = 0;
+                    }
+                    if (ext->eng[n]->unk10.y >= -0xFF && ext->arc[n].unk14 > 0) {
+                        ext->arc[n].unk14 = -(ext->arc[n].unk14 * 0x94 >> 8);
+                        if (ext->arc[n].unk34 < 0) {
+                            ext->arc[n].unk34 = -0x14;
+                        }
+                        if (ext->arc[n].unk34 > 0) {
+                            ext->arc[n].unk34 = 0x14;
+                        }
+                        if (ext->arc[n].unk38 < 0) {
+                            ext->arc[n].unk38 = -0x14;
+                        }
+                        if (ext->arc[n].unk38 > 0) {
+                            ext->arc[n].unk38 = 0x14;
+                        }
+                    }
+                } else {
+                    if (ext->unk144[n] != NULL) {
+                        ext->unk144[n]->Engine->unk10.y = 0;
+                    }
+                    if (ext->unk14 == -0x80 && ext->unk14 < ext->eng[n]->unk10.y
+                        && ext->arc[n].unk14 > 0) {
+                        ext->arc[n].unk14 = -(ext->arc[n].unk14 * 0x94 >> 8);
+                        ext->eng[n]->unk10.y = ext->unk14;
+                    }
+                }
+                if (ext->unk144[n] != NULL) {
+                    ext->unk144[n]->Engine->unk10.x = ext->eng[n]->unk10.x;
+                    ext->unk144[n]->Engine->unk10.z = ext->eng[n]->unk10.z;
+                }
+                if (d > 0x900000) {
+                    if (ext->eng[n] != NULL) {
+                        RaceSpawnPuff(&ext->eng[n]->unk10, 1, NULL);
+                        RACE_SFX4(0x69C, 0x69D, 0x69E, 0x69F);
+                        ext->eng[n]->sub->flags &= ~0x8000;
+                        ext->arc[n].unk4 = 0;
+                        ext->eng[n]->unk10.y = 0;
+                        KillNAS(ext->unk144[n]);
+                        ext->unk144[n] = NULL;
+                    }
+                } else if (ext->unk150[n]-- < 0) {
+                    RaceSpawnPuff(&ext->eng[n]->unk10, 3, NULL);
+                    ext->unk150[n] = Random(3) + 8;
+                }
+            }
+        }
+        for (n = 0; ; n++) {
+            s32 dummy;
+
+            if (n >= 3) {
+                break;
+            }
+            j = 0;
+            if (!(ext->eng[n]->sub->flags & 0x8000)) {
+                count++;
+            } else {
+                for (; ; j++) {
+                    s32 dummy;
+
+                    if (j >= 4) {
+                        break;
+                    }
+                    if (RaceDistSq(&ext->eng[n]->unk10, &Heroes[j].hero_eng->unk10) < 0x27100) {
+                        if (Heroes[j].hero_mode != 0x5D) {
+                            SetHeroAction(j, 0x5D);
+                        }
+                        RaceSpawnPuff(&ext->eng[n]->unk10, 1, NULL);
+                        ext->eng[n]->sub->flags &= ~0x8000;
+                        ext->arc[n].unk4 = 0;
+                        ext->eng[n]->unk10.y = 0;
+                        if (ext->unk144[n] != NULL) {
+                            KillNAS(ext->unk144[n]);
+                            ext->unk144[n] = NULL;
+                        }
+                    }
+                }
+            }
+        }
+        if (count == 3 && ext->unk10-- < 0) {
+            ext->unk10 = 0x12C;
+            ext->unkC = 0;
+        }
+        break;
+    }
+}
+
+void PlotGlob(NAS *m) {
+    EXTglob *ext;
+    s32 state;
+    s32 i;
+    NAS *tag;
+    RaceTagExt *text;
+    SLONG_XYZ pos;
+    SLONG_XYZ *pp;
+    s32 x;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext != NULL) {
+        state = ext->unkC;
+        switch (state) {
+        case 0:
+            if (++ext->unk18 == 0x3C) {
+                PlaySfx(0x666, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (func_800250B0(m) != 0) {
+                GotoLinkAnim((EXTanimator *)ext->unk10, 1);
+                ext->unkC = 1;
+                PlaySfx(0x667, NULL, NULL, 0x1000, 0x1E00, 0);
+                ext->unk18 = 0;
+                func_800250B0(m);
+            }
+            break;
+        case 1:
+            x = 0x16;
+            if (++ext->unk18 == x) {
+                PlaySfx(0x668, NULL, NULL, 0x1000, 0x1E00, 0);
+                pp = &pos;
+                x = -0x200;
+                pos.y = -0x29C;
+                pos.x = x;
+                pos.z = x;
+                tag = CreateNAS(pp->x, pp->y, pp->z, 0x1605, 0x11);
+                if (tag != NULL) {
+                    text = FindExtension(tag, 0x10000000);
+                    if (text != NULL) {
+                        text->unkC = 0xA;
+                        text->unk18 = 0x100;
+                        text->unk20 = state;
+                        text->unk28 = 0;
+                        tag->InitDelete(tag);
+                    }
+                }
+                for (i = 0; i < 3; i++) {
+                    CreateNAS(pos.x, pos.y, pos.z, 0x170D, 0x11);
+                }
+            }
+            if (func_800250B0(m) != 0) {
+                GotoLinkAnim((EXTanimator *)ext->unk10, 3);
+                func_800250B0(m);
+                ext->unkC = 2;
+                PlaySfx(0x669, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            break;
+        case 2:
+            if (func_800250B0(m) != 0) {
+                GotoLinkAnim((EXTanimator *)ext->unk10, 2);
+                func_800250B0(m);
+                ext->unkC = 3;
+            }
+            break;
+        case 3:
+            if (ext->unk14-- < 0 && D_800C695C == 0) {
+                ext->unk14 = Random(0x96) + 0x1C2;
+                GotoLinkAnim((EXTanimator *)ext->unk10, 0);
+                func_800250B0(m);
+                PlaySfx(0x665, NULL, NULL, 0x1000, 0x1E00, 0);
+                ext->unkC = 0;
+                ext->unk18 = 0;
+            }
+            break;
+        }
+    }
+}
+
+s32 func_800C310C(SLONG_XYZ *pos) {
+    s32 hit;
+    s32 i;
+    s32 j;
+    s32 dx;
+    s32 dy;
+    s32 dz;
+    u16 bits;
+
+    hit = 0;
+    for (i = 0;; i++) {
+        if (i >= 4) {
+            return hit;
+        }
+        dx = Heroes[i].hero_eng->unk10.x - pos->x;
+        dz = Heroes[i].hero_eng->unk10.z - pos->z;
+        dy = Heroes[i].hero_eng->unk10.y - pos->y;
+        if (dx * dx + dz * dz + dy * dy < 0x90000) {
+            if (Heroes[i].hero_mode != 0x61) {
+                if (Heroes[i].hero_mode != 0x5D) {
+                    SetHeroAction(i, 0x5D);
+                }
+                if (MODE63->flags & 0x80) {
+                    if (MODE63->unk5C[i] != 0) {
+                        hit = 1;
+                        continue;
+                    }
+                    bits = 1;
+                    if (MODE63->unk4 & 0x800) {
+                        bits = 0x201;
+                    }
+                    MODE63->unk60 = 0;
+                    MODE63->unk30 |= bits;
+                    for (j = 0; j < 4; j++) {
+                        Heroes[j].hero_status |= 0x100;
+                        if (MODE63->unk5C[j] != 0) {
+                            func_80026980(Heroes[j].hero);
+                        }
+                    }
+                    D_800AD12C = 1;
+                }
+            }
+            hit = 1;
+        }
+    }
+}
+
+void InitBarrelRoll(NAS *m) {
+    BarrelRollExt *ext;
+    EXTengine *e;
+    s32 r;
+
+    ext = AddExt(m, 0x80, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->sub->unk74 = 0x2037;
+        m->Engine->unk5D = 1;
+        ext->unkC = 0xC;
+        ext->unk78 = 0;
+        ext->unk50 = 0xA0;
+        ext->unk10 = 0;
+        ext->unk24 = 0;
+        r = Random(0x400);
+        ext->vel.x = (D_80068BD4[(r + 0xA00) & 0xFFF].unk2 * 9) >> 4;
+        r += 0xE00;
+        ext->vel.z = (D_80068BD4[r & 0xFFF].unk2 * 9) >> 4;
+        m->Engine->unk1E = -r;
+        ext->pos.z = 0x1B00;
+        ext->vel.y = 0;
+        ext->pos.x = 0;
+        ext->pos.y = -0x100;
+        m->Engine->unk10 = ext->pos;
+        m->Engine->unk5E = 1;
+        e = AddExtEngine(m, 2);
+        if (e != NULL) {
+            ext->shadow = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+            e->unk2C.z = 0x4000;
+            e->unk2C.y = 0x4000;
+            e->unk2C.x = 0x4000;
+            ext->shadow->unk5E = 1;
+        }
+    }
+}
+
+void PlotBarrelRoll(NAS *nas) {
+    BarrelRollExt *ext;
+    s32 n;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext != NULL) {
+        if (func_800C310C(&nas->Engine->unk10) != 0) {
+            RaceSpawnPuff(&nas->Engine->unk10, 1, &D_80054F84);
+            KillNAS(nas);
+            return;
+        }
+        nas->Engine->unk1C += 0x200;
+        if (func_8008C5C4(&ext->pos.x, &ext->vel.x, &ext->unkC,&nas->Engine->unk10.x) != 0) {
+            ext->unk20 = -((ext->unk20 * 200) >> 8);
+            nas->Engine->unk10.y = ext->unk24;
+            n = ext->unk78 + 1;
+            ext->unk40 *= 200;
+            ext->unk44 *= 200;
+            ext->unk78 = n;
+            ext->unk40 >>= 8;
+            ext->unk44 >>= 8;
+            if (nas->Engine->unk10.x * nas->Engine->unk10.x +
+                    nas->Engine->unk10.z * nas->Engine->unk10.z > 0x900000) {
+                RaceSpawnPuff(&nas->Engine->unk10, 1, &D_80054F84);
+                KillNAS(nas);
+                return;
+            }
+        }
+        ext->shadow->unk10 = nas->Engine->unk10;
+        ext->shadow->unk10.y = 0x100;
+    }
+    nas->Engine->unk5E = 1;
+    ext->shadow->unk5E = 1;
+}
+
+void InitTrackGlob(NAS *m) {
+    EXTtrackglob *ext;
+    EXTengine *e;
+    s32 angle;
+
+    ext = AddExt(m, 0x8C, 0x10000000);
+    if (ext != NULL) {
+        ext->cursor = func_80024E30(m, &D_800C6EA4);
+        func_80026B70(&D_800C66EC, (u8 *)m);
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->sub->unk74 = 0x4100;
+        m->Engine->unk5D = 1;
+        ext->unk10 = 0x10;
+        ext->unk54 = 0x40;
+        ext->unkC = 0;
+        ext->unk14 = 0;
+        ext->unk28 = 0;
+        angle = 0xA00 - (D_800C6EB0 << 9);
+        if (++D_800C6EB0 == 3) {
+            D_800C6EB0 = 0;
+        }
+        ext->unk64 = (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 7) >> 4;
+        ext->unk6C = (D_80068BD4[angle & 0xFFF].unk2 * 7) >> 4;
+        ext->unk68 = 0;
+        ext->unk84 = 0x5A;
+        m->Engine->unk1E = 0;
+        ext->pos = m->Engine->unk10;
+        m->Engine->unk5E = 1;
+        e = AddExtEngine(m, 2);
+        if (e != NULL) {
+            ext->eng = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+            ext->eng->unk5E = 1;
+        }
+    }
+}
+
+void PlotTrackGlob(NAS *nas) {
+    EXTtrackglob *ext;
+    EXTengine *e;
+    s32 angle;
+    HeroInfo *h;
+    s32 i;
+    s32 dx;
+    s32 dz;
+
+    if (D_800C695C != 0) {
+        KillNAS(nas);
+        return;
+    }
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    switch (ext->unkC) {
+    case 0:
+        if (func_8008C5C4(&ext->pos.x, &ext->unk64, &ext->unk10, &nas->Engine->unk10.x) != 0) {
+            ext->unkC = 1;
+            GotoLinkAnim((EXTanimator *)ext->cursor, 0);
+            func_800250B0(nas);
+            nas->Engine->unk10.y = 0;
+        }
+        break;
+    case 1:
+        i = 0;
+        h = Heroes;
+    loop1:
+        if (i < 4) {
+            do {
+                dx = nas->Engine->unk10.x - h->hero_eng->unk10.x;
+                dz = nas->Engine->unk10.z - h->hero_eng->unk10.z;
+                if (dx * dx + dz * dz < 0x10000) {
+                    if (h->hero_mode != 0x5D) {
+                        SetHeroAction(i, 0x5D);
+                    }
+                    KillNAS(nas);
+                    return;
+                }
+            } while (0);
+            h++;
+            i++;
+            goto loop1;
+        }
+        func_800250B0(nas);
+        if (ext->unk84-- < 0) {
+            ext->unkC = 2;
+            ext->unk88 = Random(0x1000);
+        }
+        break;
+    case 2:
+        func_800250B0(nas);
+        angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
+        angle += 0x400;
+        angle &= 0xFFF;
+        i = 0;
+        ext->unk88 = angle;
+        nas->Engine->unk10.x -= 0x20 * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
+        h = Heroes;
+        nas->Engine->unk10.z -= 0x20 * D_80068BD4[ext->unk88 & 0xFFF].unk2 >> 12;
+    loop2:
+        if (i < 4) {
+            do {
+                if ((nas->Engine->unk10.x - h->hero_eng->unk10.x) * (nas->Engine->unk10.x - h->hero_eng->unk10.x) +
+                        (nas->Engine->unk10.z - h->hero_eng->unk10.z) * (nas->Engine->unk10.z - h->hero_eng->unk10.z) < 0x10000) {
+                    if (h->hero_mode != 0x5D) {
+                        SetHeroAction(i, 0x5D);
+                    }
+                    KillNAS(nas);
+                    return;
+                }
+            } while (0);
+            h++;
+            i++;
+            goto loop2;
+        }
+        e = nas->Engine;
+        e->unk1E -= (s32)((e->unk1E - ext->unk88) << 20) >> 22;
+        if (angle < 0x400) {
+            ext->unkC = 3;
+        }
+        break;
+    case 3:
+        func_800250B0(nas);
+        ext->unk88 = 0x800;
+        nas->Engine->unk10.x -= 0x20 * D_80068BD4[(ext->unk88 - 0x400) & 0xFFF].unk2 >> 12;
+        nas->Engine->unk10.z -= 0x20 * D_80068BD4[ext->unk88 & 0xFFF].unk2 >> 12;
+        e = nas->Engine;
+        e->unk1E -= (s32)((e->unk1E - ext->unk88) << 20) >> 22;
+        if (nas->Engine->unk10.x * nas->Engine->unk10.x + nas->Engine->unk10.z * nas->Engine->unk10.z > 0x790000) {
+            KillNAS(nas);
+            return;
+        }
+        break;
+    }
+    ext->eng->unk10 = nas->Engine->unk10;
+    ext->eng->unk10.y = 0x40;
+    nas->Engine->unk5E = 1;
+}
+
+void InitDac(NAS *m) {
+    DacExt *ext;
+    EXTengine *e;
+
+    ext = AddExt(m, 0x28, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->unk5C = 1;
+        m->Engine->unk5D = 2;
+        m->Engine->unk2C.x = 0x2000;
+        m->Engine->unk2C.y = 0x2000;
+        m->Engine->unk2C.z = 0x2000;
+        m->Engine->unk10.x = (D_80068BD4[0x800].unk2 * 7) >> 4;
+        m->Engine->unk10.z = (D_80068BD4[0xC00].unk2 * 7) >> 4;
+        m->Engine->sub->unk68 = -0x300;
+        m->Engine->sub->flags |= 0x02000000;
+        ext->unk10 = (s32)func_80024E30(m, &D_800C6ECC);
+        func_800250B0(m);
+        m->Engine->unk1E = 0x800;
+        m->Engine->unk5E = 1;
+        ext->unkC = 0;
+        ext->unk18 = 0xF0;
+        m->Engine->unk10.y = -0x600;
+        ext->unk1C = -0x600;
+        ext->unk24 = 0;
+        ext->shadow = NULL;
+        e = AddExtEngine(m, 2);
+        if (e != NULL) {
+            ext->shadow = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk2C.x = 0x2000;
+            e->unk2C.y = 0x2000;
+            e->unk2C.z = 0x2000;
+            e->sub->unk68 = -0x300;
+            e->sub->flags |= 0x02000000;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+            ext->shadow->unk5E = 1;
+        }
+    }
+}
+
+void PlotDac(NAS *nas) {
+    EXTracedac *ext;
+    EXTengine *eng;
+    HeroInfo *h;
+    HeroInfo *base;
+    s32 dx, dz, dy, dd;
+    s32 a, b, i, p;
+    u8 *g;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    func_800250B0(nas);
+    nas->Engine->unk5E = 1;
+    switch (ext->state) {
+    found:
+        ext->player = p;
+        goto sfx;
+    case 0:
+        nas->Engine->unk10.y -= (nas->Engine->unk10.y - ext->height) >> 4;
+        ext->angle = ((get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) + 0x400) & 0xFFF;
+        nas->Engine->unk10.x += D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2 * 32 >> 12;
+        nas->Engine->unk10.z += D_80068BD4[ext->angle & 0xFFF].unk2 * 32 >> 12;
+        {
+            s32 r;
+            r = nas->Engine->unk1E - 0x800;
+            nas->Engine->unk1E -= ((r - ext->angle) << 20) >> 22;
+        }
+        nas->Engine->unk1C -= (nas->Engine->unk1C << 20) >> 22;
+        if (ext->timer-- < 0) {
+            i = 0;
+            p = Random(4);
+            ext->state = 1;
+            g = D_8005A614;
+        search:
+            i++;
+            if (g[p + 0x5C] == 0) {
+                goto found;
+            }
+            p++;
+            p &= 3;
+            if (i < 4) {
+                goto search;
+            }
+        sfx:
+            PlaySfx(0x6A0, NULL, NULL, 0x1000, 0x1E00, 0);
+            ext->height = -0x200;
+            ext->timer = 0x78;
+        }
+        break;
+    case 1:
+        if (D_800C695C != 0) {
+            ext->height = -0x600;
+            ext->state = 0;
+            ext->timer = 0xF3C;
+            return;
+        }
+        dy = nas->Engine->unk10.y - ext->height;
+        nas->Engine->unk10.y -= dy >> 4;
+        base = Heroes;
+        h = &base[ext->player];
+        dx = nas->Engine->unk10.x - h->hero_eng->unk10.x;
+        dz = nas->Engine->unk10.z - h->hero_eng->unk10.z;
+        dy = nas->Engine->unk10.y - h->hero_eng->unk10.y;
+        dd = dx * dx + dz * dz;
+        if (dd + dy * dy < 0x40000) {
+            PlaySfx(0x6A1, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (base[ext->player].hero_mode != 0x5D) {
+                SetHeroAction(ext->player, 0x5D);
+            }
+            ext->height = -0x600;
+            ext->state = 0;
+            ext->timer = 0x168;
+            return;
+        }
+        if (h->hero_mode == 0x61) {
+            ext->height = -0x600;
+            ext->state = 0;
+            ext->timer = 0xF0;
+            return;
+        }
+        a = get_angle(dx, dz) & 0xFFF;
+        b = get_angle(dy, csqrt(dd) >> 6);
+        ext->angle = a;
+        nas->Engine->unk10.x -= (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 5) >> 9;
+        nas->Engine->unk10.z -= (D_80068BD4[ext->angle & 0xFFF].unk2 * 5) >> 9;
+        eng = nas->Engine;
+        eng->unk1E -= ((eng->unk1E - ext->angle) << 20) >> 22;
+        nas->Engine->unk1C -= ((nas->Engine->unk1C - (-b & 0xFFF)) << 20) >> 22;
+        if (nas->Engine->unk1C > 0x200) {
+            nas->Engine->unk1C = 0x200;
+        }
+        if (ext->timer-- < 0) {
+            ext->height = -0x600;
+            ext->state = 0;
+            ext->timer = 0x168;
+        }
+        break;
+    }
+    ext->shadow->unk2C.x = (nas->Engine->unk10.y + 0x600) * 5 + 0x3000;
+    ext->shadow->unk2C.y = (nas->Engine->unk10.y + 0x600) * 5 + 0x3000;
+    ext->shadow->unk2C.z = (nas->Engine->unk10.y + 0x600) * 5 + 0x3000;
+    ext->shadow->unk5E = 1;
+    ext->shadow->unk10 = nas->Engine->unk10;
+    ext->shadow->unk10.y = 0x40;
+}
+
+void func_800C44B0(void) {
+    D_800C6BB4[0] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[1] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[2] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[3] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[4] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[5] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[6] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[7] = (RaceShort3){ D_800C66E4, 0x28, 0x38 };
+}
+
+void PlotRaceSmokeBoostWater(NAS *nas) {
+    func_800250B0(nas);
+}
+
+void InitRaceSmokeBoostWater(NAS *nas) {
+    func_80024E30(nas, &D_800C6F28);
+    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->UserInfo.user1 = 0;
+}
+
+s32 func_800C467C(RaceBounceObj *obj, RaceBouncer *b) {
+    s32 pos;
+
+    b->vel += b->accel;
+    pos = obj->pos += b->vel >> 8;
+    if (b->limit < pos) {
+        obj->pos -= abs(pos - b->limit);
+        if (b->flags & 1) {
+            b->vel = -b->vel;
+        }
+        if (b->flags & 2) {
+            b->vel = -((b->vel * b->damp) >> 8);
+        }
+        if (b->flags & 4) {
+            b->vel = -b->rebound;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+void InitGlob(NAS *m) {
+    EXTglob *ext;
+
+    ext = AddExt(m, 0x1C, 0x10000000);
+    if (ext != NULL) {
+        ext->unk10 = func_80024E30(m, &D_800C6E80);
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        GotoLinkAnim((EXTanimator *)ext->unk10, 2);
+        func_800250B0(m);
+        ext->unkC = 3;
+        ext->unk14 = Random(0x5A) + 0xF0;
+        ext->unk18 = 0;
+    }
+}
+
+void PlotInnerRipple(NAS *m) {
+    EXTinnerripple *ext;
+    subengine *sub;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext != NULL) {
+        ext->scale += ext->speed;
+        if (ext->max < ext->scale) {
+            ext->scale = ext->max;
+        }
+        m->Engine->unk2C.x = ext->scale + 0x400;
+        m->Engine->unk2C.y = ext->scale + 0x400;
+        m->Engine->unk2C.z = ext->scale + 0x400;
+        m->Engine->unk5E = 1;
+        sub = m->Engine->sub;
+        if ((s16)sub->unk76 >= 0xFFF) {
+            func_800270B0(m);
+            return;
+        }
+        sub->unk76 += ext->unk18;
+    }
+}
+
+void InitInnerRipple(NAS *m) {
+    EXTinnerripple *ext;
+
+    ext = AddExt(m, 0x1C, 0x10000000);
+    if (ext != NULL) {
+        ext->speed = 0x240;
+        ext->max = 0x4000;
+        ext->scale = 0;
+        *(s32 *)&ext->unk18 = 0xC8;
+        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->sub->unk74 = 0x2018;
+        m->Engine->sub->flags |= 0x40000000;
+        m->Engine->unk5C = 1;
+        m->Engine->unk5D = 0;
+        m->Engine->sub->unk76 = 0;
+        m->Engine->unk2C.x = 0x400;
+        m->Engine->unk2C.y = 0x400;
+        m->Engine->unk2C.z = 0x400;
+        m->Engine->unk5E = 1;
+    }
+}
+
+void PlotRippled(NAS *m) {
+    EXTripple *ext;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext != NULL) {
+        ext->scale += ext->step;
+        if (ext->max < ext->scale) {
+            ext->scale = ext->max;
+        }
+        m->Engine->unk2C.x = ext->scale + 0x400;
+        m->Engine->unk2C.y = ext->scale + 0x400;
+        m->Engine->unk2C.z = ext->scale + 0x400;
+        m->Engine->sub->unk76 += ext->fade;
+        m->Engine->unk5E = 1;
+        if ((s16)m->Engine->sub->unk76 >= 0xFFF) {
+            func_800270B0(m);
+        }
+    }
+}
+
+void InitRippled(NAS *m) {
+    EXTrippled *ext;
+
+    ext = AddExt(m, 0x1C, 0x10000000);
+    if (ext != NULL) {
+        ext->speed = 0x480;
+        ext->max = 0x4000;
+        ext->scale = 0;
+        ext->unk18 = 0x190;
+        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->unk5C = 1;
+        m->Engine->unk2C.x = 0x400;
+        m->Engine->unk2C.y = 0x400;
+        m->Engine->unk2C.z = 0x400;
+        m->Engine->sub->unk74 = 0x2018;
+        m->Engine->sub->flags = 0x40008000;
+        m->Engine->unk5D = 0;
+        m->Engine->unk5C = 1;
+        m->Engine->unk5E = 1;
+        m->Engine->sub->unk76 = 0;
+    }
+}
+
+void PlotRaceGreenSmokeBoost(NAS *nas) {
+    func_800250B0(nas);
+}
+
+void InitRaceGreenSmokeBoost(NAS *nas) {
+    func_80024E30(nas, &D_800C6E2C);
+    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->UserInfo.user1 = 0;
+}
+
+void PlotRaceGreenSmokePoof(NAS *nas) {
+    func_800250B0(nas);
+}
+
+void InitRaceGreenSmokePoof(NAS *nas) {
+    func_80024E30(nas, &D_800C6DD0);
+    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->Engine->sub->flags |= 0x21;
+    nas->UserInfo.user1 = 0;
+}
+
+void PlotRaceSmokePoof(NAS *nas) {
+    func_800250B0(nas);
+}
+
+void InitRaceSmokePoof(NAS *nas) {
+    func_80024E30(nas, &D_800C6D74);
+    nas->Engine->sub->unk6C = D_800546C4;
+    nas->Engine->sub->flags |= 0x21;
+    nas->UserInfo.user1 = 0;
+}
+
+s32 func_800C4D1C(u8 *arg0, u8 *arg1) {
+    s32 temp_v0;
+    s32 temp_v0_2;
+    s32 temp_v0_3;
+
+    temp_v0 = (*(s32*)((u8*)(arg0) + 0)) - (*(s32*)((u8*)(arg1) + 0));
+    temp_v0_2 = (*(s32*)((u8*)(arg0) + 8)) - (*(s32*)((u8*)(arg1) + 8));
+    temp_v0_3 = (*(s32*)((u8*)(arg0) + 4)) - (*(s32*)((u8*)(arg1) + 4));
+    return (temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2) + (temp_v0_3 * temp_v0_3);
+}
+
+void InitRaceTag(u8 *arg0) {
+    D_800C6D20 = 0x12C;
+    PlaySfx(0x452, (*(s32*)((u8*)(arg0) + 84)) + 0x94, 0, 0x1000, 0x1E00, 0);
+}
+
+void InitRaceShield(NAS *nas) {
+    EXTraceshield *ext;
+
+    ext = AddExt(nas, 0x20, 0x10000000);
+    if (ext != NULL) {
+        ext->unk10 = 0xE;
+        ext->unkC = 0;
+        ext->unk1C = 0x100;
+    }
+}
+
+void PlotRaceFire(NAS *nas) {
+    FindExtension(nas, 0x10000000);
+}
+
+void InitRaceFire(NAS *nas) {
+    EXTracefire *ext;
+
+    ext = AddExt(nas, 0x20, 0x10000000);
+    if (ext != NULL) {
+        ext->unk10 = 0;
+        ext->unk18 = 0;
+        ext->unk1C = 0;
+        ext->unk14 = 0;
+    }
+}
+
+static inline s32 DotXZ(s32 *u, s32 *v) {
+    return (u[0] * v[0] >> 12) + (u[2] * v[2] >> 12);
+}
+
+s32 func_800C4E54(s32 a, s32 b) {
+    s32 n[4];
+    s32 d[4];
+    s32 r[4];
+    s32 dot;
+
+    n[0] = D_80068BD4[b & 0xFFF].unk2;
+    n[2] = D_80068BD4[(b - 0x400) & 0xFFF].unk2;
+    d[0] = -D_80068BD4[(a - 0x400) & 0xFFF].unk2;
+    d[2] = -D_80068BD4[a & 0xFFF].unk2;
+    dot = DotXZ(d, n);
+    r[0] = d[0] - (dot * n[0] >> 11);
+    r[2] = d[2] - (dot * n[2] >> 11);
+    return get_angle(r[0], r[2]) + 0x800;
+}
+
+s32 func_800C4F30(u8 *arg0) {
+    HeroInfo *hero;
+    u32 i;
+
+    i = 0;
+    hero = Heroes;
+loop:
+    if (i < 4) {
+        if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < 0x6184) {
+            if (hero->hero_mode != 0x5D) {
+                SetHeroAction(i, 0x5D);
+            }
+            return i;
+        }
+        hero++;
+        i++;
+        goto loop;
+    }
+    return -1;
+}
+
+void InitTNTCrate(NAS *m) {
+    m->Engine->unk5D = 2;
+    m->Engine->unk5C = 1;
+    m->Engine->sub->unk74 = 0x2009;
+    m->Engine->sub->unk6C = (s32)D_80052F94;
+    m->UserInfo.status = 0;
+    m->UserInfo.user1 = 0;
+    m->UserInfo.user2 = 0;
+    m->UserInfo.flags = 0;
+}
+
+s32 func_800C5014(s32 arg0) {
+    s32 var_a0;
+
+    var_a0 = arg0;
+    if (var_a0 < 0) {
+        var_a0 += 0x1FF;
+    }
+    return var_a0 >> 9;
+}
+
+void PlotRaceSmokeBoost(NAS *nas) {
+    func_800250B0(nas);
+}
+
+void InitRaceSmokeBoost(NAS *nas) {
+    ScriptCursor *cur;
+
+    cur = func_80024E30(nas, &D_800C6C8C);
+    if (D_8005A648 == 0x1F) {
+        if (cur != NULL) {
+            cur->unk1E = 4;
+        }
+    }
+    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->UserInfo.user1 = 0;
+}
+
+s32 func_800C50B0(u8 *arg0, s32 arg1) {
+    HeroInfo *hero;
+    u32 i;
+
+    i = 0;
+    hero = Heroes;
+loop:
+    if (i < 4) {
+        if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < arg1 * arg1) {
+            if (abs(((s32 *)arg0)[1] - hero->hero_eng->unk10.y) < 0x200) {
+                return i;
+            }
+        }
+        hero++;
+        i++;
+        goto loop;
+    }
+    return -1;
+}
+
+void func_800C5154(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = base + player;
+    SLONG_XYZ pos;
+    NAS *nas;
+    s32 *ext;
+
+    pos = hero->hero_eng->unk10;
+    nas = CreateNAS(pos.x, pos.y - 0x80, pos.z, 0x1701, 0x11);
+    if (nas != NULL) {
+        nas->Engine->unk1E = hero->hero_eng->unk1E;
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = player;
+        }
+    }
+}
+
+void func_800C5204(EXTheromove *a, EXTheromove *b) {
+    s32 ma;
+    s32 mb;
+    s32 d;
+    s32 q;
+    s32 r;
+    s32 total;
+
+    ma = a->mass;
+    mb = b->mass;
+    if (ma > 0 && mb > 0) {
+        d = -((a->x_vel - b->x_vel) << 8);
+        q = (d * mb + ((ma * a->x_vel + mb * b->x_vel) << 8)) / (total = mb + ma);
+        r = q - d;
+        a->x_vel = q >> 8;
+        b->x_vel = r >> 8;
+        d = -((a->z_vel - b->z_vel) << 8);
+        q = (d * mb + ((ma * a->z_vel + mb * b->z_vel) << 8)) / total;
+        r = q - d;
+        a->z_vel = q >> 8;
+        b->z_vel = r >> 8;
+    }
+}
+
+s32 func_800C5334(s32 arg0) {
+    EXTengine *eng;
+    s32 angle;
+
+    eng = Heroes[arg0].hero_eng;
+    angle = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+    angle = 0x152C - angle;
+    angle &= 0xFFF;
+    printf(D_800B3400, arg0, angle);
+    return angle;
+}
+
+void func_800C53BC(s32 arg0) {
+    func_80085890(arg0);
+    if (func_8008A200(arg0) != 0) {
+        func_8008A810();
+    }
+    func_8008502C(arg0);
+}
+
+s32 func_800C5400(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = &base[arg0];
+
+    if (hero->hero_status & 0x200) {
+        if (hero->hero_mode != 0x62) {
+            SetHeroAction(arg0, 0x62);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_800C5470(s32 arg0) {
+    HeroInfo *hero;
+    RaceFuxCount *fux;
+    EXTraceshield *ext;
+    NAS *nas;
+    HeroInfo *base;
+
+    base = Heroes;
+    hero = &base[arg0];
+    fux = (RaceFuxCount *)hero->hero->FUX;
+    if (fux != NULL && fux->unk3C > 0 &&
+        (((RacePad *)D_80051338)[arg0].unk54 & 0x8000)) {
+        nas = CreateNAS(hero->hero_eng->unk10.x, hero->hero_eng->unk10.y,
+                           hero->hero_eng->unk10.z, 0x1705, 0x11);
+        if (nas != NULL) {
+            ext = FindExtension(nas, 0x10000000);
+            if (ext != NULL) {
+                ext->unkC = arg0;
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_800C554C(s32 arg0) {
+    if (((RacePad *)D_80051338)[arg0].unk50 & 0xF0) {
+        return 0;
+    }
+    SetHeroAction(arg0, 0x5B);
+    return 1;
+}
+
+s32 func_800C55A4(s32 arg0) {
+    if (!(((RacePad *)D_80051338)[arg0].unk54 & 0x8000)) {
+        return 0;
+    }
+    SetHeroAction(arg0, 0x5C);
+    return 1;
+}
+
+void func_800C55FC(s32 player) {
+    EXTraceshield *ext;
+
+    ext = (EXTraceshield *)Heroes[player].hero->FUX;
+    if (ext != NULL) {
+        ext->unk14[0] = 8;
+    }
+}
+
+s32 func_800C5640(u8 *arg0, u32 arg1, s32 arg2) {
+    HeroInfo *hero;
+    u32 i;
+
+    i = 0;
+    hero = Heroes;
+loop:
+    if (i < 4) {
+        if (i != arg1) {
+            if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < arg2 * arg2) {
+                return i;
+            }
+        }
+        hero++;
+        i++;
+        goto loop;
+    }
+    return -1;
+}
+
+void func_800C56D4(s32 player) {
+    HeroInfo *hero;
+    RaceSpinFux *fux;
+    EXTheromove *move;
+    s32 a;
+    s32 b;
+    HeroInfo *base = Heroes;
+
+    hero = &base[player];
+    fux = (RaceSpinFux *)hero->hero->FUX;
+    if (fux != NULL) {
+        move = hero->hero_move;
+        if (move != NULL) {
+            a = Random(0x300);
+            b = Random(0x300);
+            b = hero->hero_eng->unk1E + a - b;
+            fux->unk24 = 0x2D;
+            fux->unk20 = b;
+            fux->unk28 = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
+        }
+    }
+}
+
+void func_800C57B4(s32 player) {
+    EXTheromove *move;
+    RaceHeroFux *fux;
+
+    SetHeroSeq(player, 0x48);
+    if (D_8005A648 == 0x19) {
+        SetHeroSeq(player, 0x52);
+    }
+    move = Heroes[player].hero_move;
+    if (move != NULL) {
+        move->z_max = 0;
+        move->x_max = 0;
+    }
+    fux = (RaceHeroFux *)Heroes[player].hero->FUX;
+    if (fux != NULL) {
+        fux->unk8C = 0;
+        fux->unk90 = 0;
+    }
+}
+
+void func_800C5854(s32 *arg0, s32 *arg1)
+{
+    s32 a;
+    s32 c;
+    s32 t;
+
+    a = arg0[3] >> 1;
+    arg1[3] = D_80068BD4[a & 0xFFF].unk2;
+    c = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
+    t = c * arg0[0];
+    arg1[0] = (t >= 0 ? t + 0x800 : t - 0x800) >> 12;
+    t = c * arg0[1];
+    arg1[1] = (t >= 0 ? t + 0x800 : t - 0x800) >> 12;
+    t = c * arg0[2];
+    arg1[2] = (t >= 0 ? t + 0x800 : t - 0x800) >> 12;
+}
+
+void func_800C5918(s32 arg0) {
+    SetHeroAction(arg0, 0x5B);
+    Heroes[arg0].hero_eng->unk1E = 0;
+    Heroes[arg0].hero_eng->unk5E = 1;
+}
+
+s32 func_800C5978(s32 player) {
+    EXTheromove *move;
+    EXTengine *eng;
+    s32 y;
+
+    move = Heroes[player].hero_move;
+    eng = Heroes[player].hero_eng;
+    if (move != NULL && eng != NULL) {
+        if (move->jump_vel < 0) {
+            move->jump_vel += move->jump_acc;
+        } else {
+            move->jump_vel += move->jump_dec;
+        }
+        y = eng->unk10.y += move->jump_vel;
+        if (move->jump_vel < 0 && y < D_800C6930) {
+            eng->unk10.y += abs(D_800C6930 - y);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+s32 func_800C5A50(s32 player) {
+    EXTheromove *move;
+    EXTengine *eng;
+    s32 y;
+
+    move = Heroes[player].hero_move;
+    eng = Heroes[player].hero_eng;
+    if (move != NULL && eng != NULL) {
+        if (move->jump_vel < 0) {
+            move->jump_vel += move->jump_acc;
+        } else {
+            move->jump_vel += move->jump_dec;
+        }
+        y = eng->unk10.y += move->jump_vel;
+        if (move->jump_vel > 0 && y > D_800C6930) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+s32 func_800C5AF8(void) {
+    return D_800C6930;
+}
+
+void func_800C5B08(s32 *pos, s32 *polar) {
+    polar[0] = csqrt(pos[0] * pos[0] + pos[2] * pos[2]) >> 6;
+    polar[1] = get_angle(pos[0], pos[2]) & 0xFFF;
+}
+
+s32 func_800C5B7C(void) {
+    return 0;
+}
+
+void func_800C5B84(void) {
+}
+
+void func_800C5B8C(void) {
+}
+
+void func_800C5B94(void) {
+    if (D_800C6BAC-- < 0) {
+        CreateNAS(0, 0, 0, 0x170C, 0x11);
+        D_800C6BAC = 0xB4;
+    }
+}
+
+void func_800C5BEC(void) {
+    D_800C69B4->unk74 = (D_800C69B8 >> 8) + 0x4000;
+    if (D_800C69BC == 0) {
+        D_800C69B8 += 0x80;
+        if (D_800C69B8 >= 0x6000) {
+            D_800C69B8 = 0;
+        }
+    }
+    if (D_800C69BC == 1) {
+        D_800C69B8 -= 0x19C;
+        if (D_800C69B8 <= 0) {
+            D_800C69B8 = 0;
+            D_800C69BC = 0;
+        }
+    }
+}
+
+NAS *func_800C5C64(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *hero;
+    NAS *nas;
+    NAS *best;
+    s32 dist;
+    s32 min;
+
+    best = NULL;
+    min = 0x7FFFFFFF;
+    nas = D_800C6920;
+    base = Heroes;
+    hero = base + arg0;
+loop:
+    if (nas != NULL) {
+        dist = func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10);
+        do {
+            if (dist < min) {
+                min = dist;
+                best = nas;
+            }
+        } while (0);
+        nas = nas->Group.Child;
+        goto loop;
+    }
+    return best;
+}
+
+s32 func_800C5D0C(s32 arg0) {
+    s32 var_a1;
+
+    var_a1 = 0;
+    if (arg0 & 0x80) {
+        var_a1 = 0xC00;
+    }
+    if (arg0 & 0x20) {
+        var_a1 = 0x400;
+    }
+    if (arg0 & 0x10) {
+        var_a1 = 0;
+    }
+    if (arg0 & 0x40) {
+        var_a1 = 0x800;
+    }
+    if ((arg0 & 0x90) == 0x90) {
+        var_a1 = 0xE00;
+    }
+    if ((arg0 & 0xC0) == 0xC0) {
+        var_a1 = 0xA00;
+    }
+    if ((arg0 & 0x30) == 0x30) {
+        var_a1 = 0x200;
+    }
+    if ((arg0 & 0x60) == 0x60) {
+        var_a1 = 0x600;
+    }
+    return var_a1;
+}
+
+void func_800C5D8C(void) {
+    func_800B4708();
+}
+
+NAS *func_800C5DAC(s32 arg0) {
+    NAS *nas;
+    HeroInfo *base;
+    HeroInfo *hero;
+    s32 angle;
+
+    nas = func_800C5C64(arg0);
+    if (nas != NULL) {
+        base = Heroes;
+        hero = base + arg0;
+        if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+            angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
+            if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
+                return nas;
+            }
+        }
+    }
+    return NULL;
+}
+
+s32 func_800C5E6C(s32 arg0, s32 arg1) {
+    s32 total;
+    s32 result;
+    s32 i;
+
+    result = 0;
+    total = 0;
+    if (Heroes[arg1].hero_status & 0x2000) {
+        return -1;
+    }
+    for (i = 0; i < 4; i++) {
+        if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
+            total += D_8009D87C[i].unk4 << 7;
+        }
+    }
+    if (total != 0) {
+        result = (D_8009D87C[arg1].unk4 << 19) / total;
+    }
+    return result;
+}
+
+void func_800C5F54(void) {
+    D_8005AA70[0] = (s32)func_800B4A4C;
+    D_8005AA70[1] = (s32)func_800B8890;
+    D_8005AA70[2] = (s32)func_800B8890;
+    D_8005AA70[3] = (s32)func_800B8D68;
+    D_8005AA70[5] = (s32)func_800C5B84;
+    D_8005AA70[7] = 0;
+    D_8005AA70[8] = 0;
+}

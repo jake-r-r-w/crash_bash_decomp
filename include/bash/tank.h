@@ -1,7 +1,7 @@
 #ifndef BASH_TANK_H
 #define BASH_TANK_H
 
-/* Tank (overlay ovl5f): declarations recovered from the original headers
+/* Tank (overlay tank): declarations recovered from the original headers
  * (GameEng/Tank: the leak starts part-way through it). The enums and structs
  * before the prototypes come from the Oct 9 2000 prototype's debug types,
  * which the retail AST table confirms for TANK_AST_types.

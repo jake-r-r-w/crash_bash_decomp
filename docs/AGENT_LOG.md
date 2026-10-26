@@ -19,7 +19,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `make check` and `make disc-check` OK. Live figures: `decomp.py progress`
   / `docs/index.html`.
 - [ROADMAP.md](ROADMAP.md) (restructured 2026-10-26): Phase 1 (types and
-  names), Phase 2 (matching) and Phase 3 (the **Tank pilot**: `ovl5f`
+  names), Phase 2 (matching) and Phase 3 (the **Tank pilot**: `tank`
   source-only, named, typed and shift-tested) are done. Phase 4 repeats
   the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
   Phase 5 does the engine and `main.exe`. Figures (`progress`,
@@ -36,7 +36,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `80017164`, `scripts`, `sfx`, `80022a3c`, `sound`, `music`, `card`;
   ARCHITECTURE.md, Files inside `main/main`); the main segment links with
   `SUBALIGN(4)`. The engine is seven files (`panel` and `pause` named from
-  Jampack's records), `ovl5d` three, and `ovl5e`, `ovl66`, `ovl67`, `ovl6a`
+  Jampack's records), `bash` three, and `papu`, `bonk`, `n2o`, `hub`
   two each (ARCHITECTURE.md, Files inside the engine / the slot overlays).
   Every slot overlay's id word is its own rodata unit.
 - Compiler: gcc 2.8.1-psx `-O2 -G0 -fno-builtin`, maspsx
@@ -58,7 +58,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 Phase 4 (ROADMAP.md): each slot overlay to source-only with
-[OVERLAY_RECIPE.md](OVERLAY_RECIPE.md), Pogo (`ovl60`) first, then
+[OVERLAY_RECIPE.md](OVERLAY_RECIPE.md), Pogo first, then
 Arkenoid and Polar (their headers leaked), then the rest. Phase 3, the Tank
 pilot, finished 2026-10-26; its steps are in the Session log and the
 recipe.
@@ -99,8 +99,8 @@ recipe.
   other views of `obj_texture` (AnimEntry, TexDst2A84C) and of the camera,
   `ProcessPauseUD` (very likely `func_8007F1A8`). The link groups place no
   file inside the engine. Full reports: `protos/<disc>/scan.md`.
-- **Typing pass for the overlays with no struct coverage** (ovl64, ovl65,
-  ovl67: enums only), with `field_survey.py`.
+- **Typing pass for the overlays with no struct coverage** (spin, dino,
+  n2o: enums only), with `field_survey.py`.
 - The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`): their toolchain
   differences are all in the Makefile and `aspsx_fill.py` (ASPSX's slot
   filling and load expansion; `8002d488` built with
@@ -165,7 +165,7 @@ recipe.
   script's `SUBALIGN(2)`, so after a file whose rodata ends at 2 mod 4 the
   next one lands 2 bytes early (the whole exe shifts). psylink 4-aligned
   objects: the main segment now links with `SUBALIGN(4)` (`subalign: 4` in
-  main.yaml); the overlays still use 2 (ovl5d 1), so check a split there.
+  main.yaml); the overlays still use 2 (bash 1), so check a split there.
 - **Splitting C: K&R definitions and temporary macros.** `split_unit.py`
   takes the moved functions from `decomp.py`'s definition finder (a K&R
   definition, whose parameter lines have `;`, was missed once and its stale
@@ -210,7 +210,7 @@ recipe.
   copies; one that fails is marked `copy_failed` (and `copy_failed_stage`)
   in `.decomp/state.json`, and differing prototypes (`VECTOR *` against
   `s32 *`) are enough to fail it. `func_800BFEE0` and `func_800B7190` stayed
-  unmatched for one to two days after their ovl65 twins matched. `decomp.py similar
+  unmatched for one to two days after their dino twins matched. `decomp.py similar
   NAME` shows a twin as similarity 1.00: port its C by hand with the local
   types.
 - **A matched function's `.s` exists only from before it was matched.**
@@ -252,7 +252,7 @@ recipe.
   script. Write the script to a file in `scratch/` and run that.
 - **`open(p, "w").write(f(open(p).read()))` empties the file:** the
   `open(p, "w")` truncates before the argument is read. Read into a
-  variable first, then write (it wiped `ovl5f.c` once; `git checkout`
+  variable first, then write (it wiped `tank.c` once; `git checkout`
   restored it).
 - **Write files that hold backslash escapes with the Write tool**, not a
   heredoc through the Bash tool: twice on 2026-10-25 a doubled backslash
@@ -277,7 +277,7 @@ recipe.
 - **A new prototype can break callers in other files.** The gate adds the
   matched function's prototype to the owned header; an already matched
   caller elsewhere that calls it with other arguments then fails to compile
-  (`func_80085890`: two `func_80085890()` calls in ovl63/ovl65). Fix the
+  (`func_80085890`: two `func_80085890()` calls in race/dino). Fix the
   calls (`grep -rn NAME src`), not the prototype; the full build proves the
   callers' bytes. The gate's message shows cc1's error since 2026-10-16.
 - **Don't use `swarm.mjs run --dry-run` to preview a queue.** It records its
@@ -452,20 +452,31 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-26 (Polar, polar, with the recipe):** all 134 unnamed
+- **2026-10-26 (unit renames):** the 14 slot overlays are named after the
+  games' own overlay names (`ovl62` -> `polar`, ... `ovl6a` -> `hub`; table
+  in ARCHITECTURE.md) by `tools/scripts/rename_unit.py`: paths, yaml, sym
+  files, `.decomp` keys, owned headers (`bash/polar_ovl.h`, since
+  `bash/polar.h` is the leak's) and the stand-in types (`Ovl62Cam` ->
+  `PolarCam`). No byte changes: `make check`, `make disc-check` OK.
+  `pack_disc.py` now finds each overlay's DAT entry by sector, not the
+  name `assets/CRASHBSH/index.json` stored at extract time. Gotcha: splat
+  writes a function's `asm/nonmatchings` file only while its C includes it,
+  so a matched overlay's asm can't be split again; the tool moves it.
+
+- **2026-10-26 (Polar, with the recipe):** all 134 unnamed
   functions named (the hero actions from `HeroMode_nums`, three leak
   names where the code proves them), data, rodata and id word C and
   named (`POLAR_PREMAP`, two shell settings, nine file groups, 80
   sequences), shift test passed. data2c now reads comma declarators,
   function-pointer arrays and names used only in header code.
 
-- **2026-10-26 (Arkenoid, ovl61, with the recipe):** the last 19
+- **2026-10-26 (Arkenoid, with the recipe):** the last 19
   functions named (6 from arkenoid.h by its order), data, rodata and id
   word C and named (`ARKENOID_PREMAP`, the file groups, 64
   `*_seq_ark*`), shift test passed. data2c fix: a short object at 2 mod 4
   put its rest 2 bytes late.
 
-- **2026-10-26 (Pogo, ovl60, with the recipe):** the last 13 functions
+- **2026-10-26 (Pogo, with the recipe):** the last 13 functions
   named (11 from pogo.h by its order, with the leak's signatures), the
   data, rodata and id word C, the 40 `*_seq_pogo_*` cut out of the
   frame tables, `POGO_PREMAP` and the file groups as Tank's, `PogoPlay`
@@ -475,7 +486,7 @@ Newest first, a few lines each. Details are in the commits.
   relocation. Gotcha: an undeclared global in a header macro compiles as
   an implicit `int` with only a warning (it changed `HeroPogoDazed`).
 
-- **2026-10-26 (Titles, ovl69, with the recipe):** all 74 functions named
+- **2026-10-26 (Titles, with the recipe):** all 74 functions named
   from the process tables and the engine's world record; its data, rodata
   (68 texts, the backdrop's position) and id word are C and named
   (`TITLES_PREMAP`, the menu chains, the battle arenas' level lists). The
@@ -512,7 +523,7 @@ Newest first, a few lines each. Details are in the commits.
   compiler's (named). Tested in `test_data_map.py`.
 
 - **2026-10-26 (Tank's data named and typed):** 156 of Tank's `D_` data
-  names replaced (`scratch/tank_names.py`; names in `sym.ovl5f.txt`), from
+  names replaced (`scratch/tank_names.py`; names in `sym.tank.txt`), from
   the code that reads each table and the leak: `TANK_PREMAP` +
   `TankLUP`/`TankWorldInfo` (was `D_800C8E7C`/`D_800C8C64`),
   `tank_shell_info` (`D_800C8EEC`), `file_group_TANKLAST..BOSS` (five
@@ -523,8 +534,8 @@ Newest first, a few lines each. Details are in the commits.
   those. Left in the pilot: the recipe write-up.
 
 - **2026-10-26 (Tank's id word is C; its assets checked):**
-  `src/overlays/ovl5f/ovl5f_id.c` (`const s32 TankOverlayId = 0x5F;`) owns
-  the yaml's `[0x0, .rodata, overlays/ovl5f/ovl5f_id]`, so Tank has no asm
+  `src/overlays/tank/tank_id.c` (`const s32 TankOverlayId = 0x5F;`) owns
+  the yaml's `[0x0, .rodata, overlays/tank/tank_id]`, so Tank has no asm
   left; `shift.py` pads after the `<ovl>_id` unit (tested). Every DAT entry
   but the code overlays decodes, Tank's 66 named ones included (16 file
   groups). Two roadmap items ticked; left in the pilot: Tank's data names
@@ -581,7 +592,7 @@ Newest first, a few lines each. Details are in the commits.
   includes tank.h; `EngA4` gone), and slot_syms.py reads every engine object,
   so `TA_players` comes from Tank's link. `make check` unchanged.
 
-- **2026-10-26 (the shiftable build):** `make shift OVL=ovl5f PAD=0x40`
+- **2026-10-26 (the shiftable build):** `make shift OVL=tank PAD=0x40`
   (`tools/scripts/shift.py`, tested): Tank relinked padded, the engine
   relinked against it with the slot image as id + zeros, a stopgap rewrite
   of 19 engine data words that point at Tank, and `pack_disc.py --grow`
@@ -593,8 +604,8 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-26 (the engine's AST table is C):** `src/overlays/engine/asttable.c`
   (generated from the retail table): 174 `{id, Init, Plot}` entries by name,
   every id an Oct 9 AST enum constant; the 7 entries whose id group doesn't
-  match their overlay (the Polar ids in `ovl63`/`ovl6a`, `0x0203`/`0x0204` in
-  `ovl5e`) resolved by the one overlay with a function there. New
+  match their overlay (the Polar ids in `race`/`hub`, `0x0203`/`0x0204` in
+  `papu`) resolved by the one overlay with a function there. New
   `tools/scripts/slot_syms.py` (tested) and a Makefile step give the
   engine's link the slot functions' addresses from the overlays' ELFs, so a
   moved overlay moves its entries. `make verify` and `disc-check` OK; data
@@ -603,7 +614,7 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-26 (Tank's data is C):** `tools/scripts/data2c.py` (tested)
   writes an overlay's asm data as typed C definitions from the retail
   bytes; Tank's 9.9 KB of data and its animation-name strings are C in
-  `ovl5f.c` (`make check`, `disc-check` OK). Learned: cc1 emits an
+  `tank.c` (`make check`, `disc-check` OK). Learned: cc1 emits an
   initialiser's string literals in reverse first-use order (cc1plus in
   order), so strings are `const char` arrays; a declared type shorter than
   its slot hides another object (`TankBotAI` + 20 bytes); data pointing at
@@ -619,7 +630,7 @@ Newest first, a few lines each. Details are in the commits.
 
 - **2026-10-26 (Tank typing pass):** 24 stand-in structs replaced by the
   Oct 9 and engine types (14 object extensions are all `EXTobject_TA`;
-  `Ovl5fExt1605` is `EXTscriptdata`, the `AST_ScriptFX` puff's); the busy
+  `TankExt1605` is `EXTscriptdata`, the `AST_ScriptFX` puff's); the busy
   Tank globals named, two from the leak (`TankLevelsGridMapTank`/`Miss`,
   read by the leaked sandbag functions). Writing `D_8009D60C` as
   `Heroes[2].hero_sub` moved code (one `Heroes` base got shared), so it
@@ -630,7 +641,7 @@ Newest first, a few lines each. Details are in the commits.
   bot AI, hero damage and movement, weapons, boss turrets, totems, Moe and
   Joe, and the inline helpers' out-of-line copies; globals `TankMines`,
   `TankBotAI` (typed `TA_Bot[4]`: the Oct 9 type replaces the
-  `Ovl5fAITarget` stand-in), the leak's `PU_TA_list` and `TA_players`
+  `TankAITarget` stand-in), the leak's `PU_TA_list` and `TA_players`
   (adjacent in memory, as the leak declares them), the boss turret lists.
   `make check` OK after each batch. Named functions 731 -> 797.
 
@@ -734,7 +745,7 @@ Newest first, a few lines each. Details are in the commits.
   counted ref (flow counts it, combine then drops it), 8333 against the x
   chain's 7500, and the shipped cc1 byte-matches. Inside the divide the
   count is lost (combine's three-insn fold replaces the pseudo). Steering C,
-  noted in the commit. ovl68 is complete; 2 parks left. A Diff patterns row,
+  noted in the commit. chase is complete; 2 parks left. A Diff patterns row,
   tools/cc1/README.md.
 
 - **2026-10-25 (pathway 2: `func_800B4048`'s missing decision proved):**
@@ -781,7 +792,7 @@ Newest first, a few lines each. Details are in the commits.
   the copy, but changes local-alloc's choices so that `v` loses v1 and the
   copy becomes a no-op. Park note, Open lead and a Diff patterns row.
 
-- **2026-10-25 (hand: ovl5f `CheckMineToBoss` matched, ovl5f complete):**
+- **2026-10-25 (hand: tank `CheckMineToBoss` matched, tank complete):**
   the parked shape's loop-counter lead, worked from loop.c's `-dL` numbers.
   One counter `i` for all three loops with one increment each gives the
   target's register order, but leaves the index giv worth reducing (2 x 31 x
@@ -800,7 +811,7 @@ Newest first, a few lines each. Details are in the commits.
   checks. Park note and Open lead updated.
 
 - **2026-10-25 (`SetHeroSeq` retyped):** it takes `s32 player` like
-  `SetHeroAction`; its 135 casts are gone, and ovl65's `func_800BC948` and
+  `SetHeroAction`; its 135 casts are gone, and dino's `func_800BC948` and
   `func_800BCA18` take the index too (`make check` OK, the four parks score
   as before). The hero-index rule is a Gotcha now (Matching and types).
 
@@ -825,7 +836,7 @@ Newest first, a few lines each. Details are in the commits.
   its declarations, no `goto`s, `i & 3` for the copies, named `UkaBitExt`
   fields. Five Diff patterns rows; the 4 left are all parked.
 
-- **2026-10-25 (hand: ovl5d `func_800BC038` matched, 8600 bytes, ovl5d
+- **2026-10-25 (hand: bash `func_800BC038` matched, 8600 bytes, bash
   complete):** from the swarm's checkpoint (structure 1793/2152), first in
   the matched sibling `func_800B87A0`'s idioms (`* 128 >> 12`, flags
   cleared before hit, `v = x; v += k;` updates, if/else state stores), then
@@ -835,7 +846,7 @@ Newest first, a few lines each. Details are in the commits.
   its jump-table entry. Then `func_800BFAC0` took `fux` as an unused second
   parameter, so its four calls lost their casts. Four Diff patterns rows.
 
-- **2026-10-25 (hand: ovl5f `func_800B77E8` matched, 5852 bytes):** from the
+- **2026-10-25 (hand: tank `func_800B77E8` matched, 5852 bytes):** from the
   swarm's checkpoint (structure 1410/1463, 1401 exact). `regions` block by
   block: the turret test reading its field directly (sched1 birthing), the
   fire delay and the four weapons' sfx as `if`/`else` arms (jump2 merges the
@@ -852,14 +863,14 @@ Newest first, a few lines each. Details are in the commits.
   luid tie that puts q's `lui` inside `t`'s life, and no pre-loop C can
   break it. Park note, Open lead and the copy's Diff patterns row updated.
 
-- **2026-10-25 (hand: ovl60 `Plot_PogoPadlock` matched, ovl60 complete):**
+- **2026-10-25 (hand: pogo `Plot_PogoPadlock` matched, pogo complete):**
   case 3's stuck reload went once its block had a note: schedule_block
   moves inner notes to the block front and makes the first one
   `basic_block_head`, so reload's `lw` stays in the block. Probes (a scope,
   a dead store) matched; the natural source is an inline call,
-  `count = Ovl60_PadlockMoves(++level)` on the s32 table. Case 0 and case 6
-  then became the file's inlines too (`Ovl60_FindFreeSquare`,
-  `Ovl60_SpawnPuff`), and case 4/5's swarm shapes took natural forms. Two
+  `count = Pogo_PadlockMoves(++level)` on the s32 table. Case 0 and case 6
+  then became the file's inlines too (`Pogo_FindFreeSquare`,
+  `Pogo_SpawnPuff`), and case 4/5's swarm shapes took natural forms. Two
   Diff patterns rows rewritten; an Open lead on inlines for the other parks.
   Then `FindFreeSquareForMushroom` calls the inline and `FindFreeSquare`
   has the same C written out (calling the inline there swaps its if/else
@@ -873,7 +884,7 @@ Newest first, a few lines each. Details are in the commits.
   before the shift). The prototype and PAL/JP compiles and an idiom search
   of the whole game added nothing. Park note and Open leads updated.
 
-- **2026-10-24 (hand: ovl63 `func_800B980C` matched):** from the swarm's
+- **2026-10-24 (hand: race `func_800B980C` matched):** from the swarm's
   checkpoint (structure 305/402), with `func_800B8FD8`'s entry idiom. The
   allocation list showed `player` (16 refs) taking `s5` ahead of
   move/fux/eng. Indexing inside the piston loop fixed the structure; the
@@ -884,7 +895,7 @@ Newest first, a few lines each. Details are in the commits.
   run, whose find (a reused local for `pos.x`) pointed at the merging.
   Four Diff patterns rows.
 
-- **2026-10-24 (hand: ovl63 `func_800B7D94` matched):** the swarm's
+- **2026-10-24 (hand: race `func_800B7D94` matched):** the swarm's
   checkpoint (structure 216/346) was raw pointer math, so I wrote it fresh
   in `func_800B76A4`'s idioms (the same walk, rotation and push-out, no
   blend). That was 279/346 but all one swap: `sched`'s allocation list had
@@ -892,7 +903,7 @@ Newest first, a few lines each. Details are in the commits.
   `i = 0;` first in its block, as in `func_800B7190`, matched. One Diff
   patterns row.
 
-- **2026-10-24 (hand: ovl5e `func_800B87A0` matched, ovl5e complete):**
+- **2026-10-24 (hand: papu `func_800B87A0` matched, papu complete):**
   from the swarm's checkpoint (structure 30/1461, 5844 bytes, header merged
   by hand). Natural forms through batch `try`: a two-store status tail and
   per-case slide tests (18), then case 9's inner switch, whose body layout
@@ -902,7 +913,7 @@ Newest first, a few lines each. Details are in the commits.
   (`drop`, `clear`, `plat`, `scale`, `tail`) written out as repeated tails.
   That put the inner switch back in plain order. Two Diff patterns rows.
 
-- **2026-10-24 (hand: ovl63 `func_800B76A4` matched):** from the swarm's
+- **2026-10-24 (hand: race `func_800B76A4` matched):** from the swarm's
   checkpoint (registers 87/444, header merged by hand onto
   `func_800B7190`'s segment structs). The dumps and the siblings decided
   each step: an integer sum for the second table pointer (79), the blend
@@ -927,9 +938,9 @@ Newest first, a few lines each. Details are in the commits.
   dist/best above loop.c's hoisted bases. The Diff patterns row for unrotated loops now names
   stmt.c `expand_end_loop` (it was put on jump.c for RipperRoo).
 
-- **2026-10-24 (hand: `func_800B7508` matched, ovl64 complete):** from the
+- **2026-10-24 (hand: `func_800B7508` matched, spin complete):** from the
   swarm's checkpoint (registers 17/867, header merged by hand: `flags10` in
-  `Ovl64Game`). Batch `try` on natural forms: `inv = 0x21 - lvl;` before
+  `SpinGame`). Batch `try` on natural forms: `inv = 0x21 - lvl;` before
   `ai` fixed the entry (12/867), and a plain `for` loop over `Heroes[n]`
   matched case 21. `sched`'s allocation list showed why: loop-depth refs
   reorder global.c, and loop.c makes the pointer copies the swarm wrote by
@@ -971,7 +982,7 @@ Newest first, a few lines each. Details are in the commits.
   dump), `idiom` (an asm pattern in matched functions, with their C lines),
   batch `try --file A.c B.c` (parallel, ranked by regions) and `orders`
   (random dependency-keeping statement orders, ranked). With them the
-  ovl64/ovl5d twins matched in natural C: one `dx` and one `dz` for each
+  spin/bash twins matched in natural C: one `dx` and one `dz` for each
   side's three values, both offsets before the start points (found by
   `orders`-style search, 280 orders), `Heroes[arg0].hero_eng` read
   directly. Three Diff patterns rows (global.c preferences, the
@@ -1124,7 +1135,7 @@ Newest first, a few lines each. Details are in the commits.
   out. Check demo types against the Oct 9 headers before adding them.
 
 - **2026-10-23 (4 more names, approved):** `SetTweakAi`, `HeroGhost`,
-  `line_intersect_zy` (engine) and `TankBossCortexTurretFire` (ovl5f):
+  `line_intersect_zy` (engine) and `TankBossCortexTurretFire` (tank):
   0.78..0.88 and in link order, no gap to confirm them; the user approved.
 
 - **2026-10-23 (unit `8007ac20` is `panel`):** `PANEL.CPP` by Jampack's
@@ -1137,9 +1148,9 @@ Newest first, a few lines each. Details are in the commits.
   (`engine:ADDRESS` specs, so they go in `sym.engine.txt`).
 
 - **2026-10-23 (10 slot overlay names from Euro Demo 65):** `UpdatePAPU`,
-  `PAHeroHit`, `SetPAHeroCarry` (ovl5e), `PlotTotemBit` (ovl5f), `DoGetBomb`,
-  `TestBeamChance` (polar), `MaintainCentre` (ovl63), `num_players_render`,
-  `adventure_mode_head`, `team_mode_init` (ovl69). `polar.h` (the leak)
+  `PAHeroHit`, `SetPAHeroCarry` (papu), `PlotTotemBit` (tank), `DoGetBomb`,
+  `TestBeamChance` (polar), `MaintainCentre` (race), `num_players_render`,
+  `adventure_mode_head`, `team_mode_init` (titles). `polar.h` (the leak)
   declares `TestBeamChance(u32)`, so its definition took `u32` first (see
   Gotchas).
 
@@ -1176,7 +1187,7 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-23 (73 `main.exe` names from Euro Demo 65):** new
   `proto_apply.py` turns a scan's matches into a checked rename list for
   `decomp.py rename --file`; the 0.9+ placeholder matches in `main.exe` are
-  renamed (88/575 game functions named now). `ovl60` used `D_8001C378` for
+  renamed (88/575 game functions named now). `pogo` used `D_8001C378` for
   `func_8001C378`'s address and stopped linking (see Gotchas); fixed in the
   same commit.
 
@@ -1229,16 +1240,16 @@ Newest first, a few lines each. Details are in the commits.
   gives that, and `try`'s structure count rose while regions fell, so the
   park keeps its C (block note).
 
-- **2026-10-23 (hand: `func_800BFEE0` and `func_800B7190` from their ovl65
+- **2026-10-23 (hand: `func_800BFEE0` and `func_800B7190` from their dino
   twins, 35308bcd, 402f835a):** `func_800BFEE0`'s park (4 lines off) had an
-  identical twin, `func_800B4474` (ovl65), matched 26 minutes after it
+  identical twin, `func_800B4474` (dino), matched 26 minutes after it
   was parked; the gate's copy failed on the differing prototypes.
   Its control flow fixed it:
   the body nested in `if (disc >= 0)`, with `return 0;` in place for the
   `t0 < 0 && t1 < 0` early-out (MATCHING.md has the jump2 rule; 35308bcd's
   note credits a cross-jump, which the jump2 dump doesn't show). `similar`
   on all 21 unmatched functions found one more twin: `func_800B7190`
-  (ovl63) is ovl65's `func_800B9020`, ported with new `Ovl63Seg` types.
+  (race) is dino's `func_800B9020`, ported with new `RaceSeg` types.
 
 - **2026-10-23 (hand: the `func_800BC274` triplet matched, ce174819,
   b3a8cd4c, 52ce83eb):** the a1/a0 swap before `jal func_8001CD04`, parked
@@ -1249,7 +1260,7 @@ Newest first, a few lines each. Details are in the commits.
   loses birthing priority and fills that slot in place of `addiu a1`, and the
   load then wins on potential hazard. reload_cse deletes the store and copy,
   and jump2 cross-jumps the arms back into one. The same C matched
-  `func_800BAF1C` (ovl64) and `func_800C284C` (ovl5d, with `EXTobject`
+  `func_800BAF1C` (spin) and `func_800C284C` (bash, with `EXTobject`
   names). Found by tracing the ready lists in `-dS` dumps of variants
   compiled with cc1 directly (`scratch/bct/h.sh`); MATCHING.md has the rule.
 
@@ -1296,7 +1307,7 @@ Newest first, a few lines each. Details are in the commits.
   Writing the test as `if (out == 0) lose; else done = 1;` (as the
   function's other two arms already were) matches plainly.
 
-- **2026-10-22 (hand: ovl66's two hacks):** `func_800B6CD8` without its
+- **2026-10-22 (hand: bonk's two hacks):** `func_800B6CD8` without its
   identical if/else arms (c585c406): one PlaySfx per case and the store
   after the switch. `func_800B4454` left flagged: plain C allocates by
   global.c priority `best` 10/124 below `z`/`x` (9/109, 9/110) and
@@ -1313,7 +1324,7 @@ Newest first, a few lines each. Details are in the commits.
   matches; around the whole body it doesn't. A second `found != 0` test
   (`return found != 0`, `?:`, two ifs) gives `found` its 8th ref and `fp`
   but becomes an `sltu` where the target branches on constants. The user
-  accepted it as a macro: `OVL66_SET_CLOSEST` in both loops (093716cd,
+  accepted it as a macro: `BONK_SET_CLOSEST` in both loops (093716cd,
   `hacks --accept`).
 
 - **2026-10-22 (hand: hack reworks, no permuter):** `func_800115D8`
@@ -1373,7 +1384,7 @@ Newest first, a few lines each. Details are in the commits.
   83.10%. By request the 79 stay flagged except macro-shaped ones: 6
   accepted (`hacks --accept`), each wrapper a self-contained idiom (the
   `obj->player = ...; obj->will_do |= mask; return nas;` block in five
-  functions of ovl5d/5e/64, and `PlotFlubberTA`'s restart-sound and
+  functions of bash/5e/64, and `PlotFlubberTA`'s restart-sound and
   child-engine copy); single assignments wrapped 2-3 deep were not. 82
   hacks remain, to rework when a natural form turns up. Next: rerun swarm
   C (`scratch/swarmC_only.txt`).
@@ -1384,8 +1395,8 @@ Newest first, a few lines each. Details are in the commits.
   sandbag/swamp/mine-to-boss/triggers; Polar AI chooser, team-mate check,
   bombs, CheckMelted/IsPtInALLZone), `LevSpec.PostTriggers` (`D_8005AA88`)
   for the `*Triggers` stubs, and a debug string for `XZBoxToSphere` (one
-  copy each in polar, ovl63, ovl65). More stand-ins became real types
-  (`Ovl60Goal` = `EXTbotai`, `Ovl61FuxF` = `EXTobject.can_do`, raw offsets
+  copy each in polar, race, dino). More stand-ins became real types
+  (`PogoGoal` = `EXTbotai`, `ArkenoidFuxF` = `EXTobject.can_do`, raw offsets
   = `EXTobject_TA` fields), all byte-identical. Found the data-% drift on
   renames: `rename` deleted matched functions' `.s` files (fixed; 300+
   restored, data 1.27% -> 1.39%; Gotchas). What is left of the leak is
@@ -1406,7 +1417,7 @@ Newest first, a few lines each. Details are in the commits.
   the definition and owned prototype to the leak's types
   (`scratch/leak_sig.py OVL LEAKHDR ADDR=NAME...`), `make check`, then
   `decomp.py rename` (it fails on conflicting types otherwise). Local
-  stand-in structs (`Ovl61Obj`, `OvlClampPos`, `Ovl61Vel`) were
+  stand-in structs (`ArkenoidObj`, `OvlClampPos`, `ArkenoidVel`) were
   `EXTengine` fields; unsigned params became `s32` with `(u32)` casts in
   the bounds tests (same code). Fixed two `rename` bugs (`dedupe_owned`
   dropped struct members and declarations its header's inline functions
@@ -1416,7 +1427,7 @@ Newest first, a few lines each. Details are in the commits.
   `AR_PI_BounceOnBounds` (the `s16` return adds a sign extension); Polar's
   `Test*Chance` family (AI states unnamed). Next: make `leak_sig.py` and
   `scratch/fninfo.js` (callers/callees/arg count per function) proper
-  tools; the table's other games (ovl5d, 5e, 63-68) have no leaked names.
+  tools; the table's other games (bash, 5e, 63-68) have no leaked names.
 
 - **2026-10-22 (hand: `func_800BE158`, parked):** worked the 2/347
   checkpoint under the updated `/match-function` rules (no hacks, permuter
@@ -1515,9 +1526,9 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-21 (hand: MATCHING.md cleanup, three swarm parks):** merged
   21 duplicate Diff patterns rows from the last two folds (e8ba0e20).
   `func_800B4240` was already matched by the retry run. From the swarm's
-  checkpoints: `func_800B3CA8` (ovl69, e33213ca) matched with its +0x32
+  checkpoints: `func_800B3CA8` (titles, e33213ca) matched with its +0x32
   store as an array element (in-struct, so sched moves it past the scalar
-  load into the delay slot); `func_800B9E74` (ovl5e, cecd6837) with
+  load into the delay slot); `func_800B9E74` (papu, cecd6837) with
   `lo *= lo; if (dx * dx + dz * dz < lo)` (it also drops the checkpoint's
   `(dx = dz * dz)` trick); `func_800BFEE0` (polar) parked by hand at
   183/187 with C under NON_MATCHING (`decomp.py block` note has the tries).
@@ -1526,8 +1537,8 @@ Newest first, a few lines each. Details are in the commits.
   20261021072703, `--seg overlays/ --retry-failed --big-bytes 1 --model opus
   --workers 1 --big-workers 6 --big-budget-usd 20 --max-run-usd 250`
   (default 27 min big sessions), stopped gracefully by request: 85 matched
-  in 2 h 9 min for $160.71 (ovl5f 18, polar 14, ovl63 12, ovl64 9, ovl68 7,
-  ovl67 7, ovl60 6, ovl5d 6, ovl69 2, ovl5e 2, ovl66 1, ovl65 1), 5 parked,
+  in 2 h 9 min for $160.71 (tank 18, polar 14, race 12, spin 9, chase 7,
+  n2o 7, pogo 6, bash 6, titles 2, papu 2, bonk 1, dino 1), 5 parked,
   0 failed; game code 65.75% (2332/2537). The gate sent back a no-op
   `++/--` match (`func_800B406C`) and one that didn't match; the workers
   redid them. `fold`: 76 rows from matches folded unreviewed (dedup pass
@@ -1537,8 +1548,8 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-21 (swarm all overlays, Opus):** run 20261021061703, `--seg
   overlays/ --model opus --workers 5 --big-workers 3 --big-budget-usd 20
   --big-minutes 15 --max-run-usd 250`: 77 matched in 67 min for $77.86
-  (ovl60 24, ovl5d 12, ovl68 11, polar 9, ovl67 7, ovl66 5, ovl64 3,
-  ovl63 3, ovl5e 2, ovl5f 1); game code 59.7% (2247/2537). It ran out of
+  (pogo 24, bash 12, chase 11, polar 9, n2o 7, bonk 5, spin 3,
+  race 3, papu 2, tank 1); game code 59.7% (2247/2537). It ran out of
   takeable work before its 3 h cap (attempts and big-mode staleness
   limits). Failed: 2 OAuth clashes at start; `func_800B4240` refused at
   the gate (its C uses a struct field, `unk1C`, the header lacks). Before
@@ -1552,8 +1563,8 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-20 (swarm all overlays):** run 20261020211358, `--seg overlays/
   --model sonnet --escalate-model opus --workers 5 --big-workers 2
   --big-budget-usd 8 --big-minutes 12 --max-run-usd 40`, stopped
-  gracefully by request after 18 min: 10 matched for $10.26 (ovl68 5,
-  polar 2, ovl66 2 incl. the morning's park `func_800B34F8`, ovl64 1), 2
+  gracefully by request after 18 min: 10 matched for $10.26 (chase 5,
+  polar 2, bonk 2 incl. the morning's park `func_800B34F8`, spin 1), 2
   failed (an OAuth refresh clash at start; `func_800B4268` refused at the
   gate, Open leads). 85 functions under 600 B had never been tried (runs
   ended on budget before them); most are still queued. `fold`: 12 rows, 4
@@ -1565,7 +1576,7 @@ Newest first, a few lines each. Details are in the commits.
   session's scratch kept in `scratch/bb3f0/`). BC274's third pass (flags,
   810 inserted reads, prototypes, do-while(0) copies) is in its block note.
 
-- **2026-10-20 (hand: `func_800BB3F0`, ovl5e, 684 B):** matched with no hack
+- **2026-10-20 (hand: `func_800BB3F0`, papu, 684 B):** matched with no hack
   (08aa8ff7; its copies too: `func_800C159C` in it, `func_800BA098`
   8e6f2255). From the swarm's 26/171: `-dL` showed the `player*108` chain
   moving at 85 insns (29*2*2 >= insn_count). Reading `Heroes[player]`
@@ -1592,7 +1603,7 @@ Newest first, a few lines each. Details are in the commits.
   store in a loop body is dead (63b06bf4); no other matched function hits
   it. `decomp.py hacks` now finds `func_800B345C` too.
 
-- **2026-10-20 (hand: ovl5e parks `func_800BC274`, `func_800B7134`):** both
+- **2026-10-20 (hand: papu parks `func_800BC274`, `func_800B7134`):** both
   parked, C under `NON_MATCHING`. BC274 (2/197): the a0/a1 order before
   `jal func_8001CD04` is a sched1 tie that `schedule_select`'s potential
   hazard or luid decides; the target's order needs a 2nd memory insn in that
@@ -1605,7 +1616,7 @@ Newest first, a few lines each. Details are in the commits.
   (sha256 in its README.decomp.md); the passes used here have the same rules
   as 2.7.2.3. Four Diff patterns rows.
 
-- **2026-10-20 (swarm ovl5e, run 3, 30 min big-heavy):** run
+- **2026-10-20 (swarm papu, run 3, 30 min big-heavy):** run
   20261020123536, `--workers 1 --big-workers 4 --big-bytes 400
   --max-minutes 20 --big-minutes 12 --worker-minutes 12 --permute-minutes 8
   --big-permute-minutes 8 --max-run-usd 30`: 3 big matched (`func_800B6D14`
@@ -1615,7 +1626,7 @@ Newest first, a few lines each. Details are in the commits.
   5/198, `func_800BB3F0`, `func_800B38FC`). 9 left. `fold`: 8 rows, 1 new,
   2 into the pointer-local row, 5 on unmatched functions to Open leads.
 
-- **2026-10-20 (swarm ovl5e, run 2):** run 20261020112410, `--model sonnet
+- **2026-10-20 (swarm papu, run 2):** run 20261020112410, `--model sonnet
   --escalate-model opus --workers 5 --big-workers 2 --big-budget-usd 8
   --max-run-usd 40`: 34 matched in 63 min for $41.68 (stopped at the
   budget), no parks; 12 left (3 with checkpoints, 9 big ones not reached).
@@ -1626,31 +1637,31 @@ Newest first, a few lines each. Details are in the commits.
   `fold`: 29 rows -> 15 new, 4 into existing rows, 3 rows on unmatched
   functions kept as leads (Open leads), duplicates merged.
 
-- **2026-10-20 (swarm ovl64):** run 20261020083954, `--model sonnet
+- **2026-10-20 (swarm spin):** run 20261020083954, `--model sonnet
   --escalate-model opus --workers 4 --big-workers 2 --big-budget-usd 8
   --max-run-usd 40`: 22 matched in 22 min for $8.26 (~$0.38 a match), no
   parks; stopped with `--now` (network going down), which killed 2 big
   sessions and 2 permuter runs in flight. 24 left, mostly big. `fold`: 16
   rows, the six `Heroes[arg0]` lookup rows merged into one.
 
-- **2026-10-20 (two parks, permuter then hand):** `func_800B5710` (ovl6a,
-  2836 B, c1cb924c; ovl6a complete) matched with the permuter's change
+- **2026-10-20 (two parks, permuter then hand):** `func_800B5710` (hub,
+  2836 B, c1cb924c; hub complete) matched with the permuter's change
   alone: `ang = 0x400; ang = (... % 0x1000) + ang;`. The permuter scored
   that C 20, not 0: the target names fields by their own address
   (`D_8005A677`), ours `D_8005A614+0x63`, and its scorer compared names, so
   it never reported the match. Fixed (a5ac14a0: relocations compared by
-  address). `func_800B7458` (ovl69, 1360 B, 2cb2b9c4): the permuter's `off`
+  address). `func_800B7458` (titles, 1360 B, 2cb2b9c4): the permuter's `off`
   temp fixed the row block; the test then needed `val`, another variable
   the target keeps in v1 (global.c's a1 preference, Diff patterns).
 
-- **2026-10-20 (swarm ovl5e, then a permuter pass):** low-cost recipe, run
+- **2026-10-20 (swarm papu, then a permuter pass):** low-cost recipe, run
   20261020073721: 16 matched in 10 min for $1.43, stopped by request (47
   left). `fold`: 6 rows down to 2 new, 3 merged into existing rows.
   Then 4 permuter runs (stopped at ~15 of 30 min), all gains in the first
   2 min but one: `func_800B5710` 300 -> 20 and `func_800B7458` 20 -> 10
-  with real C (their leads); `func_800B34F8` (ovl66) -> 15 only with a
+  with real C (their leads); `func_800B34F8` (bonk) -> 15 only with a
   no-op `D_800B9EF8++; D_800B9EF8--;` (that global's reference count is
-  the lever); `func_800C159C` (ovl5d, registers 45/171) 295 -> 235 at
+  the lever); `func_800C159C` (bash, registers 45/171) 295 -> 235 at
   13 min with `(*(new_var = &h))->hero_object`, a hack that says `h`'s
   allocation is the lever.
 
@@ -1665,7 +1676,7 @@ Newest first, a few lines each. Details are in the commits.
   (`permstats`, the swarm's `permuter.jsonl` and `stats`). MATCHING.md, Big
   functions.
 
-- **2026-10-20 (swarm ovl66):** low-cost recipe, run 20261020061838,
+- **2026-10-20 (swarm bonk):** low-cost recipe, run 20261020061838,
   49 matched, 1 parked (`func_800B34F8`, registers 8/92, checkpoint kept)
   in 39 min for $7.10 (~$0.15 a match); stopped early by request (`stop`,
   then `--now`, so the big session on `func_800B7B48` and two permuters were
@@ -1674,7 +1685,7 @@ Newest first, a few lines each. Details are in the commits.
   `fold`: 14 rows down to 8 (merged duplicates, dropped two hacky ones).
 
 - **2026-10-19 (PlotBall by hand):** matched (f0a4117d, 5576 B), from the
-  swarm checkpoint at structure 777/1394; ovl61 is complete. No hacks, no
+  swarm checkpoint at structure 777/1394; arkenoid is complete. No hacks, no
   permuter: each step came from the cc1 dumps (CSE's canonical register,
   local-alloc ties, global priorities) and small test files compiled with
   cc1. The keys were `s16` locals (gcc 2.8 extends a short when it's
@@ -1684,7 +1695,7 @@ Newest first, a few lines each. Details are in the commits.
   (that removed the checkpoint's pointer temps and gotos). Eight Diff
   patterns rows; `D_8005AA70` is the level's `LevSpec` (ARCHITECTURE.md).
 - **2026-10-19 (permuter + hand, near misses):** `swarm.mjs permute --only
-  ovl67:800B39C0,ovl69:800B7458`, stopped by hand after 32 of 60 min.
+  n2o:800B39C0,titles:800B7458`, stopped by hand after 32 of 60 min.
   `func_800B39C0` went from registers 29/145 to 3/145 (a `do { } while
   (0)` around one assignment, found in the first minute), then matched
   by hand (ca3a674c): `D_800C418C[i]` indexed in place in the tail, not
@@ -1692,36 +1703,36 @@ Newest first, a few lines each. Details are in the commits.
   clone because the main checkout had another session's edits.
   `func_800B7458` was skipped: its checkpoint no longer applies (Open
   leads).
-- **2026-10-19 (ovl68, low cost):** run 20261019171842, stopped by hand
+- **2026-10-19 (chase, low cost):** run 20261019171842, stopped by hand
   after 26 min: 46 matched for $11.71, no gate failures; game code passes
   50% of bytes (2024/2537 functions). Four left unmatched: two cut off by
   the stop before their C built (`func_800B5CD0`, `func_800B65B0`, retry
   next run), `func_800B6C84` (instructions 12/128, checkpoint kept) and
   `func_800B4444` (cc1 deletes its empty first loop). Fold: 19 rows, 3
   repeats dropped.
-- **2026-10-19 (hand, ovl5d):** `func_800BB64C` (364 B) matched by hand
+- **2026-10-19 (hand, bash):** `func_800BB64C` (364 B) matched by hand
   from the swarm park (registers 2/91), no permuter: `z` masked in place
   (one death, so local) and `x` its own local loaded before the two
   multiplies (its longer life drops its local-alloc priority). Two Diff
   patterns rows.
-- **2026-10-19 (hand, ovl69):** `func_800B7458` from its checkpoint
+- **2026-10-19 (hand, titles):** `func_800B7458` from its checkpoint
   (registers 4/340), parked at the same score: the last swap is a global.c
   register preference (Open leads). The checkpoint's header retype of
-  `Ovl69Entry.unk0` broke four integer users; it stays `s32` with a cast.
-- **2026-10-19 (hand, ovl65):** `func_800B4D6C` (1720 B) matched by hand
+  `TitlesEntry.unk0` broke four integer users; it stays `s32` with a cast.
+- **2026-10-19 (hand, dino):** `func_800B4D6C` (1720 B) matched by hand
   from the swarm's checkpoint (structure 314/430), no permuter: loop 3
   as a real loop, `Heroes[i]` indexing, separate loop variables, and
   `best` reused as the done flag (four Diff patterns rows). `decomp.py
   sched` misread hex ready-list priorities (>= 0x10); fixed.
-- **2026-10-19 (ovl65, low cost):** run 20261019154152, stopped by hand
+- **2026-10-19 (dino, low cost):** run 20261019154152, stopped by hand
   after 38 min: 50 matched for $16.70, 0 parked. The first start failed on
   "Docker is not reachable" (Docker Desktop had quit; start it and rerun).
   Both gate failures matched by hand from the workers' C: `func_800BC820`
   (prototype said void, it returns s32), `func_800B85DC` (the tree's
-  `Ovl65Ext`; `D_800BDA00`/`04` retyped `NAS *`). `func_800B4D6C` (1720 B)
+  `DinoExt`; `D_800BDA00`/`04` retyped `NAS *`). `func_800B4D6C` (1720 B)
   keeps its big-mode checkpoint (structure 314/430). Fold: 29 rows, 5
   repeats dropped.
-- **2026-10-19 (ovl5d, low cost):** run 20261019133956, 64 matched in 67
+- **2026-10-19 (bash, low cost):** run 20261019133956, 64 matched in 67
   min for $31.79 (the $30 cap stops leasing, sessions finish). Gate
   failure `func_800B6DA4` matched by hand (the tree's `EXTobject.status`,
   an s32 return: a caller's s16 prototype was wrong). Parked
@@ -1737,13 +1748,13 @@ Newest first, a few lines each. Details are in the commits.
   declaration over a patch's only when every C file including the patched
   header also sees the other header (`headers.visible`); before, any header
   counted, which broke `func_800C8A80` once.
-- **2026-10-19 (ovl5f split):** `func_800B5588`'s four switch cases had
+- **2026-10-19 (tank split):** `func_800B5588`'s four switch cases had
   been split off (and swarm-matched) as functions; a `size:` in
-  sym.ovl5f.txt rejoins them and the whole function matches by hand (a
-  pointer per case, like ovl61's sibling).
-- **2026-10-19 (ovl5f, low cost):** 78 matched for $15.96 with Sonnet
+  sym.tank.txt rejoins them and the whole function matches by hand (a
+  pointer per case, like arkenoid's sibling).
+- **2026-10-19 (tank, low cost):** 78 matched for $15.96 with Sonnet
   workers; survived an internet drop via --resume; 33 pattern rows folded
-  (7 repeats dropped); one park points at a bad split in ovl5f.
+  (7 repeats dropped); one park points at a bad split in tank.
 - **2026-10-19 (tools):** three matching aids. (1) `decomp.py reconcile`
   (headers.py): on a declaration-clash gate refusal the swarm keeps the
   tree's declarations and gates again before paying a worker. (2)
@@ -1764,24 +1775,24 @@ Newest first, a few lines each. Details are in the commits.
   the frame-only epilogue gets filled; `make check` OK). Gate failures
   matched from the workers' C: `InitRaceSmokeBoost`, `func_800C5620`,
   `func_800C6B9C`.
-- **2026-10-19 (ovl63 swarm):** 77 matched in 51 min ($34.41) with 5+2
+- **2026-10-19 (race swarm):** 77 matched in 51 min ($34.41) with 5+2
   workers (now the default); 1 park, 1 gate failure, 1 hack to redo
   (`func_800B345C`); 28 pattern rows folded (3 repeats and the hack
   dropped).
-- **2026-10-19 (ovl5f swarm):** 9 matched in a 9-min run, stopped for the
-  ovl63 7-worker trial; 6 pattern rows folded.
-- **2026-10-19 (hand):** `func_800C8BA0` (ovl5f, 567ce2fb): its "+4 bytes
+- **2026-10-19 (tank swarm):** 9 matched in a 9-min run, stopped for the
+  race 7-worker trial; 6 pattern rows folded.
+- **2026-10-19 (hand):** `func_800C8BA0` (tank, 567ce2fb): its "+4 bytes
   of rodata" lead is gone (the id-word split fixed it); it needed all five
   cases listed so gcc builds the 0..4 table.
 - **2026-10-19 (gate):** `done` now refuses other functions' C edited on
-  lines that don't call the match (`stray_edits`; caught the ovl60 case,
+  lines that don't call the match (`stray_edits`; caught the pogo case,
   0 hits over the last 150 match commits), and `extract_function(top=True)`
   skips an indented call line it used to take for the definition.
-- **2026-10-19 (hand):** ovl60's two gate failures matched from the
+- **2026-10-19 (hand):** pogo's two gate failures matched from the
   workers' C: `func_800BC184` (6ff3b7da; the header already had the slot
   field, plus a pad view) and `Roo_ChangeDirOnEdge` (b0e170e0; without its
   patch's stray edit to `func_800BE864`).
-- **2026-10-19 (ovl60 swarm):** 113 matched in 60 min ($46.61, 0 parked,
+- **2026-10-19 (pogo swarm):** 113 matched in 60 min ($46.61, 0 parked,
   2 gate failures to retry); 40 Diff pattern rows folded.
 - **2026-10-19 (polar swarm):** 117 matched in 60 min ($46.59, 0 parked) on
   opus workers after the resplit; fold added 39 Diff pattern rows (10
@@ -1789,15 +1800,15 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-19 (polar splits):** the first polar swarm run stopped after a
   minute (5 workers hit an OAuth refresh race at once), but its one park
   found ten AST names that `5bf518f2` put in `polar`, each cutting a real
-  function mid-code. They belong in `ovl63` (Rippled, InnerRipple) and
-  `ovl6a` (PathEffect, CrystalFlash, SparkGFX); moved, polar resplit (now
+  function mid-code. They belong in `race` (Rippled, InnerRipple) and
+  `hub` (PathEffect, CrystalFlash, SparkGFX); moved, polar resplit (now
   186 functions), `make check` OK (ARCHITECTURE.md, Which game is which). A
   sweep for any function whose predecessor doesn't end in a jump finds no
   others.
 - **2026-10-19 (log):** the three gate failures listed under Next
   (`func_800BA43C`, `func_800B3E74`, `func_800B7CE8`) were already matched
   on 2026-10-18; Next now says so.
-- **2026-10-19 (hand):** `func_800B8A68` (ovl61, 3264 B) matched (fc3176ef)
+- **2026-10-19 (hand):** `func_800B8A68` (arkenoid, 3264 B) matched (fc3176ef)
   from the swarm checkpoint (144/150 blocks), without its `min + k - k`: the
   dead skill value needs a use that combine cancels after flow, now
   `(e->unk10.x + k) - (pos.x + k)` (user's choice; still a no-op term). The
@@ -1805,60 +1816,60 @@ Newest first, a few lines each. Details are in the commits.
   gotos, `abs()` in both arms, and single-set locals. Five Diff patterns
   rows added, one extended.
 - **2026-10-19 (hand):** the id word is its own rodata unit in the other 13
-  slot overlays too (95e2fa09, byte-identical), and ovl61's two `&&label`
+  slot overlays too (95e2fa09, byte-identical), and arkenoid's two `&&label`
   tables are `switch` statements again through the gate: `func_800B68C8`
   (2d811ef3), `Plot_N_Gin` (1b763319). No other first file had any.
-- **2026-10-19 (hand):** `func_800B488C` (ovl6a, 1032 B) matched (ee24f281)
+- **2026-10-19 (hand):** `func_800B488C` (hub, 1032 B) matched (ee24f281)
   with the swarm's real-switch C. The +4-byte link failure was the overlay id
-  word sharing `ovl6a.c`'s rodata: split into its own unit (815cad97),
+  word sharing `hub.c`'s rodata: split into its own unit (815cad97),
   byte-identical. ARCHITECTURE.md's slot-overlay layout says why; one Diff
   patterns row extended, one added.
-- **2026-10-18 (hand):** `func_800B5710` (ovl6a, 2836 B) taken from the
+- **2026-10-18 (hand):** `func_800B5710` (hub, 2836 B) taken from the
   swarm checkpoint (529/721 differing) to 120/121 blocks and parked on one
   delay-slot fill in the 0x80 block (Open leads). Four Diff patterns rows
   (constant held across two calls, a spill decided by live length, base-first
   `ARR[i].field`, a switch on a global read once) and three examples added.
 - **2026-10-18 (hand):** the swarm's three other gate refusals fixed and
-  committed: `func_800BA43C` (ovl67, 067bc83b: a third, unused bool parameter
-  like ovl61's ArkHeroRad2ObjectCollision), `func_800B3E74` (ovl67, c079de93:
+  committed: `func_800BA43C` (n2o, 067bc83b: a third, unused bool parameter
+  like arkenoid's ArkHeroRad2ObjectCollision), `func_800B3E74` (n2o, c079de93:
   conflicting prototypes merged; `func_800B4138` takes one argument but this
-  caller passes two, so a cast call), `func_800B7CE8` (ovl69, 3ba0a413: its own
-  types dropped for the header's `Ovl69Entry`). New gotcha on the recipe.
-- **2026-10-18 (hand):** `func_800B4EAC` (ovl6a) matched (36eb852e) from the
+  caller passes two, so a cast call), `func_800B7CE8` (titles, 3ba0a413: its own
+  types dropped for the header's `TitlesEntry`). New gotcha on the recipe.
+- **2026-10-18 (hand):** `func_800B4EAC` (hub) matched (36eb852e) from the
   swarm's big-mode C, which matched but failed the gate on compile errors: its
-  D_8005A614 view (a second `Ovl6aGameView`) merged into the file's own, stale
+  D_8005A614 view (a second `HubGameView`) merged into the file's own, stale
   prototypes dropped, and `func_800B7B38` (u16 return) called through an s32
   cast as the file's other caller does. `func_800B551C` turned out matched by
-  the swarm (9c5b1dd8). The swarm's other gate failures (ovl67
-  `func_800BA43C`, `func_800B3E74`; ovl69 `func_800B7CE8`) are likely the
+  the swarm (9c5b1dd8). The swarm's other gate failures (n2o
+  `func_800BA43C`, `func_800B3E74`; titles `func_800B7CE8`) are likely the
   same: apply results/<key>/*gatefix*/patch.diff and fix the headers.
-- **2026-10-18 (swarm):** ovl6a run 20261018184703, `--workers 3 --big-workers 2
+- **2026-10-18 (swarm):** hub run 20261018184703, `--workers 3 --big-workers 2
   --permuters 2`, 87 min, $47.98: 64 matched ($0.75 each), 2 failed at the
   gate. Fold: 37 rows (a volatile and a frame-padding workaround dropped).
-- **2026-10-18 (swarm):** ovl69 run 20261018173050, `--workers 3 --big-workers 1
+- **2026-10-18 (swarm):** titles run 20261018173050, `--workers 3 --big-workers 1
   --permuters 2`, 75 min, $33.21: 48 matched ($0.69 each), 1 failed at the gate
-  (compile error against the run's newer headers). Fold: 20 rows. Then ovl6a.
-- **2026-10-18 (swarm):** ovl67 run 20261018163029, `--workers 3 --big-workers 2
+  (compile error against the run's newer headers). Fold: 20 rows. Then hub.
+- **2026-10-18 (swarm):** n2o run 20261018163029, `--workers 3 --big-workers 2
   --permuters 2`, 58 min, $39.26: 82 matched, 1 parked, 2 failed at the gate
   (compile errors against the run's newer headers; see Next). Fold: 32 rows,
   3 more examples on existing rows; a volatile workaround and a shared
   prototype change dropped.
-- **2026-10-18 (hand):** `func_800B9CB8` (ovl67, 1924 B) matched (e4529709) by
-  porting ovl61's `func_800BE4D4`: no grab path, its own reach boxes
+- **2026-10-18 (hand):** `func_800B9CB8` (n2o, 1924 B) matched (e4529709) by
+  porting arkenoid's `func_800BE4D4`: no grab path, its own reach boxes
   (`D_800C4190`; the hero's y read once into a separate `hy` for top/bot) and
   one combined whatami-2 test ending in `KillNAS`. Three fixes after the first
   compile: `hero` assigned after the near point, `hy` apart from the loop's
-  `y`, and ovl61's `-b + a` get_angle arguments kept (the plain `a - b` I
+  `y`, and arkenoid's `-b + a` get_angle arguments kept (the plain `a - b` I
   wrote while porting loads the operands the other way).
 - **2026-10-18 (hand):** `func_800BE4D4` (2816 B) matched (9fd67e11), no hack
   or permuter, from the swarm's 699/704 paired. The sin indexes' register copies
-  (only here and in ovl67's `func_800B9CB8` in the whole game) are `u16` copies
+  (only here and in n2o's `func_800B9CB8` in the whole game) are `u16` copies
   of the angles made before `abs()`, one pair per block: combine.c refuses to
   merge across the call and sched.c moves block-local copies after it. Then the
   second sin/cos copy's roles filled with the variables global.c had already
   put in the target's registers, and dz/x1 for the height test. Takes a second,
   unused parameter (its matched callers pass two). MATCHING.md: two rows.
-  ovl67's `func_800B9CB8` (the same code) was ported from it the same day.
+  n2o's `func_800B9CB8` (the same code) was ported from it the same day.
 - **2026-10-18 (hand):** `func_800B85DC` matched (5b63fbe1), no register pin
   or permuter, from the swarm's 182/226 (s-reg rotation only). Worked through
   global.c's priority (floor_log2(refs) * refs / live) per pseudo from -dl:
@@ -1876,7 +1887,7 @@ Newest first, a few lines each. Details are in the commits.
   `x1 += t` fixed the order; an `s32 scale` assigned `(s16)sx` then
   `(s16)sz` (dies twice: global, so no inherited preference) put t in v0.
   MATCHING.md: two rows.
-- **2026-10-18 (swarm):** ovl61 run 20261018125240, `--workers 1
+- **2026-10-18 (swarm):** arkenoid run 20261018125240, `--workers 1
   --big-workers 4 --permuters 2` (31 of the 34 left were >= 600 B), 128 min,
   $88.97 (in-flight sessions run past the $80 cap): 28 matched ($3.18 each),
   0 parked; ended by the spend cap. Before it, `func_800B7518` by hand from
@@ -1893,7 +1904,7 @@ Newest first, a few lines each. Details are in the commits.
   recent and parked lists. The swarm writes `docs/swarm.js` (`--page`), and
   the page polls it as a script (works from `file://`). Smoke run (scripted
   worker, bare remote) showed the card follow a run live; 2 new swarm tests.
-- **2026-10-18 (swarm):** ovl61 run 20261018104310, 80 min, $35.51: 55
+- **2026-10-18 (swarm):** arkenoid run 20261018104310, 80 min, $35.51: 55
   matched (about $0.65 each), 1 parked, stopped by hand with 35 left (see
   Next). Gotcha: `run --dry-run` writes its fake "parked: dry run" results
   to `history.json` and charges attempts; I deleted its 89 entries before
@@ -2124,7 +2135,7 @@ Newest first, a few lines each. Details are in the commits.
   not started.
 
 - **2026-10-16 (supervised engine run):** 60 min, $41.11, 28 matched
-  (`func_80085890` by hand: callers in ovl63/ovl65 passed no argument).
+  (`func_80085890` by hand: callers in race/dino passed no argument).
   Fixed: `checkPatch` read an added blank line before a context
   INCLUDE_ASM as an add (`s*` spanned lines) and refused
   `func_800939FC`'s best session; `verify_build` hid cc1's errors.
@@ -2172,13 +2183,13 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-16 (tooling plan Part 1):** all nine items, one commit each,
   with `tools/swarm/swarm.test.mjs` (node:test, 32 cases) and new
   `test_queue.py`/`test_lint.py`. Slot-overlay names go to tools as keys
-  (`ovl5d:800B3A38`), checkpoints/results keyed by key; `reapply` keeps
+  (`bash:800B3A38`), checkpoints/results keyed by key; `reapply` keeps
   whole declarations; environment errors stop runs uncharged; unapplicable
   checkpoints get ported; escalation and notes carry across runs; asm-only
   matches go to report.md for a human `--hack`; gate lint covers every asm
   spelling and K&R definitions; workers are sandboxed from the host.
   propagate: `decl_name` misread function-pointer externs, which hid
-  `D_8009D73C` from `ovl64:800BB52C`'s copy; fixed, and it matched
+  `D_8009D73C` from `spin:800BB52C`'s copy; fixed, and it matched
   (1021). Checked with a scripted `--worker-cmd` run on a local bare remote.
 
 - **2026-10-16 (review, no code):** compared decomp.wtf's tools with ours;

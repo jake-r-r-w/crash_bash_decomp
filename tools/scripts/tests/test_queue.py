@@ -21,7 +21,7 @@ class PickTargets(unittest.TestCase):
             "80010000": fn("main/main", "func_80010000", 400),
             "80020000": fn("main/main", "func_80020000", 40),
             "80030000": fn("main/main", "func_80030000", 200, fp="t"),
-            "ovl5d:800B3A38": fn("overlays/ovl5d/ovl5d", "func_800B3A38", 200, fp="t"),
+            "bash:800B3A38": fn("overlays/bash/bash", "func_800B3A38", 200, fp="t"),
             "80040000": fn("main/main", "func_80040000", 8),
             "80050000": fn("psyq/libgte", "func_80050000", 12),
         }
@@ -33,16 +33,16 @@ class PickTargets(unittest.TestCase):
 
     def test_order_and_scope(self):
         # matched and library code are left out; cost = size / unmatched identical copies
-        self.assertEqual(self.keys(), ["80020000", "80030000", "ovl5d:800B3A38", "80010000"])
+        self.assertEqual(self.keys(), ["80020000", "80030000", "bash:800B3A38", "80010000"])
 
     def test_seg_prefix(self):
-        self.assertEqual(self.keys(seg="overlays/"), ["ovl5d:800B3A38"])
+        self.assertEqual(self.keys(seg="overlays/"), ["bash:800B3A38"])
         self.assertEqual(self.keys(seg="psyq/"), ["80050000"])
 
     def test_in_progress_first_and_tried_last(self):
         st = {"80010000": {"status": "in_progress"}, "80020000": {"tries": 3}}
         self.stat["80010000"] = "in_progress"
-        self.assertEqual(self.keys(st), ["80010000", "80030000", "ovl5d:800B3A38", "80020000"])
+        self.assertEqual(self.keys(st), ["80010000", "80030000", "bash:800B3A38", "80020000"])
 
     def test_auto_diff_is_the_work(self):
         self.assertEqual(self.keys({"80010000": {"auto_diff": 2}})[0], "80010000")
@@ -57,8 +57,8 @@ class FindFunc(unittest.TestCase):
     def setUp(self):
         self.funcs = {
             "8002D4F4": dict(fn("main/main", "func_8002D4F4", 40), src="src/main/main.c"),
-            "ovl5d:800B3A38": dict(fn("overlays/ovl5d/ovl5d", "func_800B3A38", 40), src="src/overlays/ovl5d/ovl5d.c"),
-            "ovl60:800B3A38": dict(fn("overlays/ovl60/ovl60", "func_800B3A38", 40), src="src/overlays/ovl60/ovl60.c"),
+            "bash:800B3A38": dict(fn("overlays/bash/bash", "func_800B3A38", 40), src="src/overlays/bash/bash.c"),
+            "pogo:800B3A38": dict(fn("overlays/pogo/pogo", "func_800B3A38", 40), src="src/overlays/pogo/pogo.c"),
         }
         self.removed = {}
         self.saved = decomp.sym_names, decomp.matched_in_worktree, decomp.die
@@ -78,18 +78,18 @@ class FindFunc(unittest.TestCase):
     def test_name_key_and_address(self):
         self.assertEqual(self.find("func_8002D4F4"), "8002D4F4")
         self.assertEqual(self.find("0x8002D4F4"), "8002D4F4")
-        self.assertEqual(self.find("ovl60:800B3A38"), "ovl60:800B3A38")
-        self.assertEqual(self.find("overlays/ovl5d/ovl5d/func_800B3A38"), "ovl5d:800B3A38")
+        self.assertEqual(self.find("pogo:800B3A38"), "pogo:800B3A38")
+        self.assertEqual(self.find("overlays/bash/bash/func_800B3A38"), "bash:800B3A38")
 
     def test_shared_name_is_ambiguous(self):
-        with self.assertRaisesRegex(SystemExit, "ambiguous.*ovl5d:800B3A38"):
+        with self.assertRaisesRegex(SystemExit, "ambiguous.*bash:800B3A38"):
             self.find("func_800B3A38")
         with self.assertRaisesRegex(SystemExit, "ambiguous"):
             self.find("0x800B3A38")
 
     def test_shared_name_being_worked_on(self):
-        self.removed["src/overlays/ovl60/ovl60.c"] = {"func_800B3A38"}
-        self.assertEqual(self.find("func_800B3A38"), "ovl60:800B3A38")
+        self.removed["src/overlays/pogo/pogo.c"] = {"func_800B3A38"}
+        self.assertEqual(self.find("func_800B3A38"), "pogo:800B3A38")
 
     def test_did_you_mean(self):
         with self.assertRaisesRegex(SystemExit, "did you mean func_8002D4F4"):
@@ -105,7 +105,7 @@ class Declarations(unittest.TestCase):
 
     def test_struct_members_are_not_top_level(self):
         """A rename to SetArkHeroIdle (2026-10-22) made dedupe_owned drop every `s32 x;` member
-        of ovl61.h because arkenoid.h declares something named x."""
+        of arkenoid.h because arkenoid.h declares something named x."""
         text = ["typedef struct {\n", "    s32 x; /* { */\n", "    struct { s32 z; } in;\n",
                 "} Pt;\n", "void f(s32 x);\n", "extern s32 x;\n"]
         self.assertEqual([top for _, top in decomp.top_level(text)], [True, False, False, False, True, True])
@@ -127,8 +127,8 @@ class Declarations(unittest.TestCase):
         self.assertIn("func_800C92300", moved)  # a longer name is left alone
 
     def test_dedupe_keeps_names_the_header_uses(self):
-        """Tank renames (2026-10-22): ovl5f.h's inline functions use Heroes, which engine.h
-        (included after it) also declares; dropping ovl5f.h's copy broke them."""
+        """Tank renames (2026-10-22): tank.h's inline functions use Heroes, which engine.h
+        (included after it) also declares; dropping tank.h's copy broke them."""
         d = tempfile.mkdtemp()
         os.makedirs(f"{d}/bash")
         own, other, src = f"{d}/bash/own.h", f"{d}/bash/other.h", f"{d}/x.c"
@@ -152,7 +152,7 @@ class Declarations(unittest.TestCase):
 
     def test_copy_decls(self):
         """A copy gets the declarations its original's file sees and its own file doesn't (the
-        ovl64:800BB52C case: an implicit call to a function pointer)."""
+        spin:800BB52C case: an implicit call to a function pointer)."""
         cwd = os.getcwd()
         with tempfile.TemporaryDirectory() as d:
             os.chdir(d)

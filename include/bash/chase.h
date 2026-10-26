@@ -1,7 +1,7 @@
 #ifndef BASH_CHASE_H
 #define BASH_CHASE_H
 
-/* Chase (overlay ovl68).
+/* Chase (overlay chase).
  * Names and layouts come from the Oct 9 2000 prototype's debug types; see
  * docs/ARCHITECTURE.md (Prototype debug types). Fields whose type the fragment
  * does not define are word (or byte) arrays of the recorded size. */

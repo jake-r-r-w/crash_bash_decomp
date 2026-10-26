@@ -118,7 +118,7 @@ Spyro 3 demo) come from the disc as they are. As data is turned into C it moves 
   what they hold where that is known (`dbase.c`, `scripts.c`, `sound.c`,
   `card.c`, ...), by their first function's address until then (`80017164.c`).
 - `src/overlays/<overlay>/` - one directory per overlay (`engine`,
-  `ovl5d`..`ovl6a`), split the same way where the binary or a leak proves a
+  `bash`..`hub`), split the same way where the binary or a leak proves a
   file starts (`panel.c` is `PANEL.CPP`, `pause.c` `PAUSE.CPP`).
 - `include/bash/` - game headers, one owner per declaration.
 - `configs/USA/` - splat config, symbols, relocations, checksums, compiler
