@@ -87,6 +87,16 @@ DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 390
 `sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
 Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
 
+### The shift test route (Hub, 2026-10-26)
+
+`make shift OVL=hub PAD=0x40`, with the same save: load it into the warp rooms, walk through
+the gateways, open the door menus (choosing a level, the locked doors' messages), warp
+between rooms, and save with the name entry. Loading the save gave a black screen until the
+engine's `camera.c` called the hub's camera (`HubCameraFollow`, and `PodiumCamera`,
+`HubStartCredits`) by name: their old `func_` names were pinned to retail addresses by
+splat's undefined-functions list. Passed 2026-10-26 (the credits and the tournament podium,
+mode 0x2B, weren't played).
+
 ### The shift test route (N2O, 2026-10-26)
 
 `make shift OVL=n2o PAD=0x40`, with the same save: the Nitros Oxide boss in Adventure, and

@@ -156,7 +156,11 @@ an object, a fixed address in engine C (the HUD's `TA_players`), and the
 per-character sequence tables. N2O's Retry crash (2026-10-26) was the same kind as the HUD's:
 the engine's `InitWeatherNas` used N2O's star field by its `D_` address (a `PROVIDE`, mode
 0x1F only). `make shift` now prints a warning for each such engine name; give the engine's C
-the overlay's name and its link takes the address from the overlay's ELF.
+the overlay's name and its link takes the address from the overlay's ELF. The same goes
+for functions: the hub's black screen on loading a save (2026-10-26) was `camera.c` calling
+`func_800B8098` (`HubCameraFollow`), which `linkers/engine_undefined_funcs_auto.txt` pins
+to its retail address; the warning covers that list too. Before the shift test, `nm -u` the
+engine's objects: no `func_800B`/`func_800C` or `D_800B`/`D_800C` name should be left.
 
 ## Gotchas from the pilot
 

@@ -329,7 +329,13 @@ build.
   OVL=chase PAD=0x40`, PLAYING.md) with shift.py's mode-table rule. Left for
   Phase 5: its stand-ins (`CoalChainGame`, `ChaseAiState`, `ChasePad`, the
   coal and flame views).
-- [ ] Hub
+- [x] Hub (`hub`: the warp rooms, the credits and the tournament podium).
+  Done 2026-10-26: every function named, its six string blocks, data and id
+  word as C (hub.c's data, then hubcore.c's from `0x800BC2D0`), all 207
+  data objects named, the DAT entries it loads all decode, its shift test
+  passed (`make shift OVL=hub PAD=0x40`, PLAYING.md) once the engine named
+  the hub's functions and data it uses. Left for Phase 5: its stand-ins
+  (`EngRec90248` for the gateways, the text-panel records, `HubGameView`).
 - [x] Titles, the front end (`titles`). Done 2026-10-26: named, typed,
   rodata, data and id word as C, one file, and its shift test passed
   (`make shift OVL=titles PAD=0x40`, the route in PLAYING.md). Left for

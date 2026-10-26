@@ -57,11 +57,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-Phase 4 (ROADMAP.md): each slot overlay to source-only with
-[OVERLAY_RECIPE.md](OVERLAY_RECIPE.md). Thirteen of the 14 are done; the hub
-(`hub`, two files: `hub.c`, `hubcore.c`, six INCLUDE_RODATA blocks) is
-last. Its file groups (mode table 0x21..0x27, `0x800BC050`) need
-`file_group_*` names for shift.py's mode-table rule. Phase 3, the Tank
+Phase 4 (ROADMAP.md) is done: all 14 slot overlays are source-only (no
+INCLUDE_RODATA or data asm left in `src/overlays/` outside the engine), named
+and shift-tested. Next is Phase 5, the engine and `main.exe` with the same
+recipe; the engine's `gameflow.c`, `heroes.c`, `panel.c` and `pause.c` still
+have INCLUDE_RODATA blocks (data2c's `--rodata` now takes them all at once and
+reads strings from the binary). Open from Phase 4: the overlays' stand-in
+types (each ROADMAP box lists them). Phase 3, the Tank
 pilot, finished 2026-10-26; its steps are in the Session log and the
 recipe.
 
@@ -453,6 +455,18 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Hub, with the recipe; Phase 4 done):** all 82 unnamed
+  functions named (the warp rooms, the credits in hub.c, the tournament
+  podium in mode 0x2B), the six string blocks, data and id word as C
+  (hubcore.c's data from `0x800BC2D0`), all 207 data objects named
+  (strings from their text; 211 credit lines). data2c reads strings from the
+  binary (splat stops at the 0xFC button glyph) and takes every
+  `--rodata` block in one run. Gotcha: the engine's C called hub functions by
+  `func_` names that splat's undefined-functions list pins to retail
+  addresses (`camera.c`'s `HubCameraFollow`), so loading a save gave a black
+  screen on the shifted disc; shift.py's warning covers that list now. Shift
+  test passed (user playtest; credits and podium not played).
 
 - **2026-10-26 (N2O, with the recipe):** all 107 unnamed functions named,
   data, rodata and id word as C (nox.c's data from `0x800C4454`), all 205
