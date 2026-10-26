@@ -352,7 +352,7 @@ void func_80083E8C(void) {
             goto reset;
         }
         if (HLV->state < 0 && (HLV->state & 4) &&
-            (pad = D_800515F8 - 1, HPADS[pad].held & 0x400)) {
+            (pad = PadCount - 1, HPADS[pad].held & 0x400)) {
             a->hero_status = status | 0x2000;
             SetHeroAction(id, (u16)HeroActDead);
             goto reset;
@@ -2765,56 +2765,56 @@ void func_80089FA4(s32 arg0) {
     g = (EngineGameView *)GameInfo;
     if (g->mode == 0x20) {
         if (D_8004E0A4[GameInfo[0x60]] == 1) {
-            D_8009E0D0 = 0xF;
-            D_8009E0D2 = 0xF;
-            D_8009E0D6 = 0x1E;
-            D_8009E0D4 = arg0;
+            WinSeqTimer = 0xF;
+            WinSeqStep = 0xF;
+            WinSeqDelay = 0x1E;
+            WinSeqHero = arg0;
         } else {
-            D_8009E0D0 = 0xF;
-            D_8009E0D2 = 0x10;
-            D_8009E0D6 = 0x1E;
-            D_8009E0D4 = arg0;
+            WinSeqTimer = 0xF;
+            WinSeqStep = 0x10;
+            WinSeqDelay = 0x1E;
+            WinSeqHero = arg0;
         }
     } else if (g->flags & 0x1E0) {
         if ((s16)mate != -1) {
             if (Heroes[(s16)mate].hero_status & 0x200) {
                 if (!(arg0 & 1)) {
-                    D_8009E0D0 = 0x23;
-                    D_8009E0D2 = 0x14;
-                    D_8009E0D6 = 0x1E;
-                    D_8009E0D4 = arg0;
+                    WinSeqTimer = 0x23;
+                    WinSeqStep = 0x14;
+                    WinSeqDelay = 0x1E;
+                    WinSeqHero = arg0;
                 }
             } else {
-                D_8009E0D0 = 0x23;
-                D_8009E0D6 = 0x1E;
-                D_8009E0D2 = 0x14;
-                D_8009E0D4 = arg0;
+                WinSeqTimer = 0x23;
+                WinSeqDelay = 0x1E;
+                WinSeqStep = 0x14;
+                WinSeqHero = arg0;
             }
         } else {
-            D_8009E0D0 = 0x23;
-            D_8009E0D2 = 0x14;
-            D_8009E0D6 = 0x1E;
-            D_8009E0D4 = arg0;
+            WinSeqTimer = 0x23;
+            WinSeqStep = 0x14;
+            WinSeqDelay = 0x1E;
+            WinSeqHero = arg0;
         }
     } else if ((s16)mate != -1) {
         if (Heroes[(s16)mate].hero_status & 0x200) {
             if (!(arg0 & 1)) {
-                D_8009E0D0 = 0x23;
-                D_8009E0D2 = 9;
-                D_8009E0D6 = 0x1E;
-                D_8009E0D4 = arg0;
+                WinSeqTimer = 0x23;
+                WinSeqStep = 9;
+                WinSeqDelay = 0x1E;
+                WinSeqHero = arg0;
             }
         } else {
-            D_8009E0D0 = 0x23;
-            D_8009E0D2 = 9;
-            D_8009E0D6 = 0x1E;
-            D_8009E0D4 = arg0;
+            WinSeqTimer = 0x23;
+            WinSeqStep = 9;
+            WinSeqDelay = 0x1E;
+            WinSeqHero = arg0;
         }
     } else {
-        D_8009E0D0 = 0x1E;
-        D_8009E0D2 = 0;
-        D_8009E0D6 = 0x1E;
-        D_8009E0D4 = arg0;
+        WinSeqTimer = 0x1E;
+        WinSeqStep = 0;
+        WinSeqDelay = 0x1E;
+        WinSeqHero = arg0;
     }
 }
 
@@ -2834,99 +2834,99 @@ s32 func_8008A200(s32 arg0) {
         }
         h->hero_ctrl |= 1;
         h->hero_eng->unk5E = 1;
-    } else if ((u16)D_8009E0D2 < 9) {
+    } else if ((u16)WinSeqStep < 9) {
         return 1;
     }
-    if (D_8009E0D4 != arg0) {
+    if (WinSeqHero != arg0) {
         return ret;
     }
-    t = D_8009E0D0;
+    t = WinSeqTimer;
     if (t != 0) {
-        D_8009E0D0 = t - 1;
+        WinSeqTimer = t - 1;
     } else {
-    switch ((u16)D_8009E0D2) {
+    switch ((u16)WinSeqStep) {
     case 0:
         switch (Heroes[arg0].hero_name) {
         case 1:
             PlaySfx(1,NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x18;
+            WinSeqTimer = 0x18;
             break;
         case 2:
             PlaySfx(0x33, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x17;
+            WinSeqTimer = 0x17;
             break;
         case 3:
             PlaySfx(0x65, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x1A;
+            WinSeqTimer = 0x1A;
             break;
         case 4:
             PlaySfx(0x97, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x17;
+            WinSeqTimer = 0x17;
             break;
         case 7:
             PlaySfx(0xFB, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x1A;
+            WinSeqTimer = 0x1A;
             break;
         case 8:
             PlaySfx(0xC9, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x1A;
+            WinSeqTimer = 0x1A;
             break;
         case 5:
             PlaySfx(0x12D, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x17;
+            WinSeqTimer = 0x17;
             break;
         case 6:
             PlaySfx(0x15F, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x17;
+            WinSeqTimer = 0x17;
             break;
         default:
-            D_8009E0D0 = 0x5A;
-            D_8009E0D2 = 3;
+            WinSeqTimer = 0x5A;
+            WinSeqStep = 3;
             break;
         }
         break;
     case 1:
         PlaySfx(0x1B0, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8009E0D0 = 0x1E;
+        WinSeqTimer = 0x1E;
         break;
     case 2:
         ret = 1;
         switch (Heroes[arg0].hero_name) {
         case 1:
             PlaySfx(7, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x12;
+            WinSeqTimer = 0x12;
             break;
         case 2:
             PlaySfx(0x39, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x12;
+            WinSeqTimer = 0x12;
             break;
         case 3:
             PlaySfx(0x6B, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x12;
+            WinSeqTimer = 0x12;
             break;
         case 4:
             PlaySfx(0x9D, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x12;
+            WinSeqTimer = 0x12;
             break;
         case 7:
             PlaySfx(0x101, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x12;
+            WinSeqTimer = 0x12;
             break;
         case 8:
             PlaySfx(0xCF, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x12;
+            WinSeqTimer = 0x12;
             break;
         case 5:
             PlaySfx(0x133, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x12;
+            WinSeqTimer = 0x12;
             break;
         case 6:
             PlaySfx(0x165, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009E0D0 = 0x12;
+            WinSeqTimer = 0x12;
             break;
         default:
-            D_8009E0D0 = 0x12;
-            D_8009E0D2 = 3;
+            WinSeqTimer = 0x12;
+            WinSeqStep = 3;
             break;
         }
         break;
@@ -2935,28 +2935,28 @@ s32 func_8008A200(s32 arg0) {
             if (Heroes[i].hero_name == GameInfo[0x60]) {
                 if (i & 2) {
                     PlaySfx(0x1AE, NULL, NULL, 0x1000, 0x1E00, 0);
-                    D_8009E0D0 = 0xE;
+                    WinSeqTimer = 0xE;
                 } else {
                     PlaySfx(0x1AE, NULL, NULL, 0x1000, 0x1E00, 0);
-                    D_8009E0D0 = 0xB;
+                    WinSeqTimer = 0xB;
                 }
                 break;
             }
         }
         break;
     case 10:
-        D_8009E0D0 = 0;
-        D_8009E0D2 = 0;
+        WinSeqTimer = 0;
+        WinSeqStep = 0;
         for (i = 0; i < 4; i++) {
             if (Heroes[i].hero_name == GameInfo[0x60]) {
                 if (i & 2) {
                     PlaySfx(0x1A5, NULL, NULL, 0x1000, 0x1E00, 0);
-                    D_8009E0D0 = 0x16;
-                    D_8009E0D2 = 0;
+                    WinSeqTimer = 0x16;
+                    WinSeqStep = 0;
                 } else {
                     PlaySfx(0x1A4, NULL, NULL, 0x1000, 0x1E00, 0);
-                    D_8009E0D0 = 0x1B;
-                    D_8009E0D2 = 0;
+                    WinSeqTimer = 0x1B;
+                    WinSeqStep = 0;
                 }
                 break;
             }
@@ -2964,52 +2964,52 @@ s32 func_8008A200(s32 arg0) {
         break;
     case 15:
         PlaySfx(0x1B1, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8009E0D0 = 0x10;
-        D_8009E0D2 = 0;
+        WinSeqTimer = 0x10;
+        WinSeqStep = 0;
         break;
     case 16:
         PlaySfx(0x1B2, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8009E0D0 = 0x14;
-        D_8009E0D2 = 0;
+        WinSeqTimer = 0x14;
+        WinSeqStep = 0;
         break;
     case 21:
         PlaySfx(0x1B9, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8009E0D0 = 0x1B;
+        WinSeqTimer = 0x1B;
         break;
     case 22:
         ret = 1;
-        D_8009E0D2 = 1;
-        D_8009E0D0 = 0x1B;
+        WinSeqStep = 1;
+        WinSeqTimer = 0x1B;
         break;
     case 20:
     case 30:
         PlaySfx(0x1B8, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8009E0D0 = 0xC;
+        WinSeqTimer = 0xC;
         break;
     case 31:
         PlaySfx(0x1BA, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8009E0D0 = 0x27;
+        WinSeqTimer = 0x27;
         break;
     case 32:
         ret = 1;
-        D_8009E0D2 = 3;
-        D_8009E0D0 = 2;
+        WinSeqStep = 3;
+        WinSeqTimer = 2;
         break;
     case 40:
         PlaySfx(0x1BB, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8009E0D0 = 0x1E;
+        WinSeqTimer = 0x1E;
         break;
     case 41:
         ret = 1;
-        D_8009E0D2 = 3;
-        D_8009E0D0 = 0x1B;
+        WinSeqStep = 3;
+        WinSeqTimer = 0x1B;
         break;
     default:
-        D_8009E0D0 = 0xB4;
-        D_8009E0D2 = 3;
+        WinSeqTimer = 0xB4;
+        WinSeqStep = 3;
         break;
     }
-    D_8009E0D2++;
+    WinSeqStep++;
     }
     return ret;
 }

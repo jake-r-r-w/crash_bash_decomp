@@ -469,7 +469,10 @@ Newest first, a few lines each. Details are in the commits.
   the exe's 29 model slots from the files each game loads into them
   (`FontModel`, `PowerupsModel`, `AngelModel`, `PapuModel`, ...;
   `tools/scripts/model_slots.py`); then 15 more (`GameCheats`, `GameLanguage`,
-  `HeroKeepInBoundsHook`, `WarpRooms`, `MapPoints`, ...), 4071 uses of 955 names left. Gotchas: `decomp.py rename` writes every exe or
+  `HeroKeepInBoundsHook`, `WarpRooms`, `MapPoints`, ...), the pads' fields (`PadState.held` / `pressed`: `D_80051380` was `Pads[0].pressed`), the
+  victory sequence (`WinSeqTimer` ..) and the clear pause words; 3822 uses of 939 names
+  left. The hero action ids, the victory sequence and the pause words are separate
+  globals, not structs: nothing takes their run's address or indexes across it. Gotchas: `decomp.py rename` writes every exe or
   engine data name to `sym.main.txt`; move the engine's (from `0x80078C90`)
   to `sym.engine.txt`. A renamed global's PROVIDE in
   `undefined_syms_manual.txt` needs the new name too. `GameState` is already

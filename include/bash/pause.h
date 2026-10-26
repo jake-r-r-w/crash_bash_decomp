@@ -150,15 +150,15 @@ extern u16 D_8009D3B8[][4];
 extern u16 D_8009D400[][9];
 extern u16 D_8009D4A4[];
 
-extern s16 D_8009E0D0;
-extern s16 D_8009E0D2;
-extern s16 D_8009E0D4;
-extern s16 D_8009E0D6;
+extern s16 WinSeqTimer;
+extern s16 WinSeqStep;
+extern s16 WinSeqHero;
+extern s16 WinSeqDelay;
 extern s8 D_8004E0A4[];
 extern s32 D_8009BD08;
 extern s32 D_8009BD40;
 extern s32 D_8009BD44;
-extern s32 D_8009BD48;
+extern s32 PauseDelay;
 /* GameInfo as seen by func_800826F8. */
 typedef struct EngineHintView {
     /* 0x00 */ u8 unk0[0x10];
@@ -345,7 +345,7 @@ extern s16 D_8005A4DC[];
 extern s16 D_8005A524[];
 extern s16 D_8009AC78;
 extern s16 D_8009AD20;
-extern s32 D_8009AEE8;
+extern s32 PauseLastChoice;
 extern s16 D_8009BD18;
 extern s16 D_8009BD1C[4];
 extern s32 D_8009BD30;
@@ -376,7 +376,7 @@ typedef struct ScoreView {
 } ScoreView;
 #define SCV ((ScoreView *)GameInfo)
 /* Two-digit text fields (tens, units) of the score panel. */
-extern char D_8009AF48[2];
+extern char PauseDigits[2];
 extern char D_8009AF4C[2];
 extern char D_8009AF50[2];
 extern char D_8009AF54[2];

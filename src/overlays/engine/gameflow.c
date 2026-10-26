@@ -63,7 +63,7 @@ void func_8008E5BC(void) {
     u8 *b;
 
     GameFrameCount++;
-    if ((D_8005137C & 0x8C08) == 0x8C08) {
+    if ((Pads[0].held & 0x8C08) == 0x8C08) {
         func_800101E0();
     }
     scripts_update();
@@ -427,7 +427,7 @@ void func_8008F41C(void) {
             if (func_8008F248(0) != 0) {
                 s1->f6C = D_8009EA64[GameLanguage];
                 *(s32 *)(s0 + 0x3F0) |= 0x8000;
-                if (D_80051380 & 0x2000) {
+                if (Pads[0].pressed & 0x2000) {
                     PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
                     func_8008F248(1);
                 }
@@ -460,17 +460,17 @@ void func_8008F554(void) {
         func_80017640();
         func_80011D28((u8 *)&MainHeap);
     }
-    if (D_80051380 & 0x80) {
+    if (Pads[0].pressed & 0x80) {
         EngineWorldPrev();
     }
-    if (D_80051380 & 0x20) {
+    if (Pads[0].pressed & 0x20) {
         EngineWorldNext();
     }
-    if (D_80051380 & 0x1000) {
+    if (Pads[0].pressed & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
-    if (EngineTable_Unlocked(GameInfo[0x28]) && (D_80051380 & 0x4000)) {
+    if (EngineTable_Unlocked(GameInfo[0x28]) && (Pads[0].pressed & 0x4000)) {
         g = GameInfo;
         ((EngineModeView *)g)->unk32 = (((EngineModeView *)g)->unk32 & 0xFF00) | 2;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1032,7 +1032,7 @@ void func_80090E20(void) {
             if (f & 0xC) {
                 if (f & 4) {
                     SAVEMENU_SET_ANIM(D_8009EFE0);
-                    if (D_80051380 & 0x8000) {
+                    if (Pads[0].pressed & 0x8000) {
                         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                         func_8002D108();
                         SaveMenuState = 6;
@@ -1047,7 +1047,7 @@ void func_80090E20(void) {
                     func_8002D294();
                 }
                 func_8009196C();
-                if (D_80051380 & 0x4000) {
+                if (Pads[0].pressed & 0x4000) {
                     s32 idx = CardSlotIndex * 0x194;
                     u8 *p = (u8 *)CardSlots;
                     if (*(s32 *)(idx + p) == 0) {
@@ -1066,7 +1066,7 @@ void func_80090E20(void) {
         } else {
             SAVEMENU_SET_ANIM(D_8009EFEC);
         }
-        if (D_80051380 & 0x1000) {
+        if (Pads[0].pressed & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
             func_80092AF4(&D_8009F720, 0x200);
             {
@@ -1079,7 +1079,7 @@ void func_80090E20(void) {
     case 7:
         if (CardStatus & 2) {
             SAVEMENU_SET_ANIM(D_8009EFAC);
-            f = D_80051380;
+            f = Pads[0].pressed;
             if (f & 0x8000) {
                 PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                 if (HubSaveMenuHooks.unk0 != NULL) {
@@ -1104,7 +1104,7 @@ void func_80090E20(void) {
         break;
     case 5:
         SAVEMENU_SET_ANIM(D_8009EFF4);
-        if (D_80051380 & 0x4000) {
+        if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             func_80092AF4(&D_8009F720, 0x200);
             SaveMenuState = 4;
@@ -1113,7 +1113,7 @@ void func_80090E20(void) {
         break;
     case 2:
         SAVEMENU_SET_ANIM(D_8009EFF8);
-        if (D_80051380 & 0x4000) {
+        if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             func_8002D15C();
             func_80092198();
@@ -1189,7 +1189,7 @@ void func_80090E20(void) {
         SAVEMENU_SET_ANIM(D_8009F454);
         break;
     }
-    if ((SaveMenuState == 2 || SaveMenuState == 8) && (D_80051380 & 0x1000)) {
+    if ((SaveMenuState == 2 || SaveMenuState == 8) && (Pads[0].pressed & 0x1000)) {
         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
         if (SaveMenuState == 2) {
             func_8002D15C();
@@ -1223,7 +1223,7 @@ void func_800917B4(void) {
     func_80018B08(&D_8009F3BC, &D_8009F4C0);
     switch (D_8009F630) {
     case 0:
-        if (D_80051380 & 0xF0) {
+        if (Pads[0].pressed & 0xF0) {
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
             v = 1;
             if (D_8009F634 == 1) {
@@ -1231,7 +1231,7 @@ void func_800917B4(void) {
             }
             D_8009F634 = v;
         }
-        if (D_80051380 & 0x4000) {
+        if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             if (D_8009F634 == 1) {
                 SaveMenuState = 0;

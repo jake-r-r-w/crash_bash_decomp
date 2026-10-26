@@ -584,7 +584,6 @@ typedef struct {
 } IntroStep;
 extern IntroStep IntroSteps[];
 extern s32 D_8009E4E4;
-extern s32 D_8005137C;
 extern Blk32 D_8009E560;
 extern CamVec3 D_8009E580;
 extern u8 *D_8009E5AC;

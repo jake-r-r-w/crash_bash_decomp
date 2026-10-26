@@ -2725,11 +2725,11 @@ void func_80027D90(void) {
     PadState *pad;
 
     pad = Pads;
-    D_800515F8 = 0;
-    D_800515F8 += func_80027D90_read(D_80063A90[0], (u8 *)pad, 0);
-    D_800515F8 += func_80027D90_read(D_80063AC4, (u8 *)&pad[D_800515F8], 0x10);
-    count = 8 - D_800515F8;
-    pad += D_800515F8;
+    PadCount = 0;
+    PadCount += func_80027D90_read(D_80063A90[0], (u8 *)pad, 0);
+    PadCount += func_80027D90_read(D_80063AC4, (u8 *)&pad[PadCount], 0x10);
+    count = 8 - PadCount;
+    pad += PadCount;
     if (count > 0) {
         do {
             pad->unk4 = 0;
@@ -2745,7 +2745,7 @@ void func_80027F00(void) {
     s32 i;
     s32 on;
 
-    D_800515F8 = 0;
+    PadCount = 0;
     PadInitMtap(D_80063A90[0], D_80063A90[1]);
     i = 0;
     on = 1;

@@ -2442,16 +2442,16 @@ void func_800138A4(void) {
     func_80027D90();
     pad = Pads;
     any = 0;
-    D_80051600 = 0;
-    D_800515FC = -1;
+    PadRunEnd = 0;
+    FirstPad = -1;
     for (i = 0; i < 8; pad++, i++) {
         func_800136BC(pad);
         if (pad->unk0 & 1) {
-            if (D_800515FC < 0) {
-                D_800515FC = i;
+            if (FirstPad < 0) {
+                FirstPad = i;
             }
-            if (D_80051600 == i) {
-                D_80051600 = i + 1;
+            if (PadRunEnd == i) {
+                PadRunEnd = i + 1;
             }
             any |= pad->unk4;
         } else {
@@ -2509,8 +2509,8 @@ void func_80013B0C(ComboSeq *c) {
     s32 m;
 
     m = c->steps[c->step];
-    if (m != 0 && (D_80051380 & 0xFFFF)) {
-        if ((D_80051380 & m) == m) {
+    if (m != 0 && (Pads[0].pressed & 0xFFFF)) {
+        if ((Pads[0].pressed & m) == m) {
             if (c->step == 0) {
                 c->startTime = FrameCount;
             }
@@ -2524,7 +2524,7 @@ void func_80013B0C(ComboSeq *c) {
             }
         } else {
             m = c->steps[0];
-            if ((D_80051380 & m) == m) {
+            if ((Pads[0].pressed & m) == m) {
                 c->step = 1;
                 c->startTime = FrameCount;
                 return;
@@ -2566,14 +2566,14 @@ void func_80013CA4(void) {
     do {
         pad->unk0 = 0;
         pad->unk4 = 0;
-        *(s32 *)&pad->unk2A[0x30 - 0x2A + 0x14] = 0;
-        *(s32 *)&pad->unk2A[0x30 - 0x2A + 0x18] = 0;
-        *(s32 *)&pad->unk2A[0x30 - 0x2A + 0x8] = 0;
+        pad->held = 0;
+        pad->pressed = 0;
+        *(s32 *)&pad->unk2A[0x38 - 0x2A] = 0;
         *(s32 *)&pad->unk2A[0x30 - 0x2A + 0xC] = 0;
         *(s32 *)&pad->unk2A[0x30 - 0x2A] = 0;
         pad++;
     } while (--i != -1);
-    D_800515FC = -1;
+    FirstPad = -1;
     D_80051604 = 0;
 }
 

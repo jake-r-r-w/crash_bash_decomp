@@ -298,7 +298,7 @@ void func_80079554(void) {
     item[3].unk0 = -1;
     item[4].unk0 = -1;
     y = 0x72;
-    if (D_800515F8 < g->count) {
+    if (PadCount < g->count) {
         i = 0;
         if (g->count != 0) {
             u16 *lv = levels;
@@ -335,7 +335,7 @@ void func_80079554(void) {
                     item->unk0 = 5;
                     PausePad = 0;
                     if (g2->count < 3) {
-                        if (D_800515F8 < 3) {
+                        if (PadCount < 3) {
                             item->unk6 = i + 0x1A;
                         } else {
                             item->unk6 = i + 0x1C;

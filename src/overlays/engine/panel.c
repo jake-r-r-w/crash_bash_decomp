@@ -148,9 +148,9 @@ void Setup_panel(void) {
         }
     }
     func_8007E7F4();
-    D_8009BD10 = 0;
-    D_8009BD0C = 0;
-    D_8009BD14 = 0;
+    PauseRecSet = 0;
+    PauseRec = 0;
+    PauseRecIndex = 0;
 }
 
 void func_8007AF3C(void) {

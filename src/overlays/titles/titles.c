@@ -621,21 +621,21 @@ void MainMenuUpdate(void) {
     AnimateTitlesBackdrop();
     TitlesCheckIdle();
     s = GetEngineSlot(0)->sub;
-    if (D_80051380 & 0x40) {
+    if (Pads[0].pressed & 0x40) {
         if (MainMenuCursor < 3) {
             MainMenuCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         MainMenuHintTimer = 0x5A;
     }
-    if (D_80051380 & 0x10) {
+    if (Pads[0].pressed & 0x10) {
         if (MainMenuCursor > 0) {
             MainMenuCursor--;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         MainMenuHintTimer = 0x5A;
     }
-    if (D_80051380 & 0x4000) {
+    if (Pads[0].pressed & 0x4000) {
         g = GameInfo;
         ((u16 *)g)[0x19] &= 0xFF00;
         switch (MainMenuCursor) {
@@ -715,7 +715,7 @@ void PlayersMenuUpdate(void) {
         s[2].flags &= ~0x8000;
         s[3].flags &= ~0x8000;
     }
-    n = D_80051600;
+    n = PadRunEnd;
     if (n > 4) {
         n = 4;
     }
@@ -733,13 +733,13 @@ void PlayersMenuUpdate(void) {
     } else {
         O69CV->unk26 = n;
     }
-    if (D_80051380 & 0x10) {
+    if (Pads[0].pressed & 0x10) {
         if (O69CV->unk26 >= 2) {
             O69CV->unk26--;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
     }
-    if ((D_80051380 & 0x40) && O69CV->unk26 < n) {
+    if ((Pads[0].pressed & 0x40) && O69CV->unk26 < n) {
         O69CV->unk26++;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
@@ -786,17 +786,17 @@ void NewLoadMenuUpdate(void) {
         s = (TitlesSub *)GetEngineSlot(0)->sub;
         s->a = (NewLoadMenuCursor == 0) * 2;
         s->b = (NewLoadMenuCursor == 1) * 2;
-        g = &D_80051380;
+        g = &Pads[0].pressed;
     } while (0);
     if ((*g & 0x10) && (NewLoadMenuCursor > 0)) {
         NewLoadMenuCursor -= 1;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((D_80051380 & 0x40) && (NewLoadMenuCursor <= 0)) {
+    if ((Pads[0].pressed & 0x40) && (NewLoadMenuCursor <= 0)) {
         NewLoadMenuCursor += 1;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if (D_80051380 & 0x4000) {
+    if (Pads[0].pressed & 0x4000) {
         switch (NewLoadMenuCursor) {
         case 0:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -808,7 +808,7 @@ void NewLoadMenuUpdate(void) {
             break;
         }
     }
-    if (D_80051380 & 0x1000) {
+    if (Pads[0].pressed & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
@@ -836,15 +836,15 @@ void BattleOptionsUpdate(void) {
             O69OV->unk3A--;
         }
     }
-    if ((D_80051380 & 0x20) && O69OV->unk3A < 7) {
+    if ((Pads[0].pressed & 0x20) && O69OV->unk3A < 7) {
         O69OV->unk3A++;
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((D_80051380 & 0x40) && O69OV->unk38 > 0) {
+    if ((Pads[0].pressed & 0x40) && O69OV->unk38 > 0) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         O69OV->unk38--;
     }
-    if ((D_80051380 & 0x10) && O69OV->unk38 < 2) {
+    if ((Pads[0].pressed & 0x10) && O69OV->unk38 < 2) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         O69OV->unk38++;
     }
@@ -856,7 +856,7 @@ void BattleOptionsUpdate(void) {
     } else {
         p->unk6C = (void *)TextBattleKinds[O69OV->unk2C][1];
     }
-    if (D_80051380 & 0x4000) {
+    if (Pads[0].pressed & 0x4000) {
         GameExitFlags = 0x8008;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
     }
@@ -919,7 +919,7 @@ void OptionsUpdate(void) {
             OptionsCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        if ((D_80051380 & 0x10) && OptionsCursor > 0) {
+        if ((Pads[0].pressed & 0x10) && OptionsCursor > 0) {
             OptionsCursor--;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -941,17 +941,17 @@ void OptionsUpdate(void) {
             }
             OptionsCursor = 0;
         }
-        if (D_80051380 & 0x1000) {
+        if (Pads[0].pressed & 0x1000) {
             PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
             func_8001E824(&MenuProcessControl);
         }
         return;
     case 1:
-        if ((D_80051380 & 0x40) && OptionsCursor < 2) {
+        if ((Pads[0].pressed & 0x40) && OptionsCursor < 2) {
             OptionsCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        if ((D_80051380 & 0x10) && OptionsCursor > 0) {
+        if ((Pads[0].pressed & 0x10) && OptionsCursor > 0) {
             OptionsCursor--;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -964,7 +964,7 @@ void OptionsUpdate(void) {
         sub[7].unk7C = 0;
         switch (OptionsCursor) {
         case 0:
-            if (D_80051380 & 0xA0) {
+            if (Pads[0].pressed & 0xA0) {
                 s32 *opt = (s32 *)GameOptions;
 
                 opt[2] ^= 1;
@@ -981,10 +981,10 @@ void OptionsUpdate(void) {
             break;
         case 1:
             v = *(s32 *)GameOptions;
-            if (v > 0 && (D_80051380 & 0x80)) {
+            if (v > 0 && (Pads[0].pressed & 0x80)) {
                 v -= 5;
             }
-            if (v < 100 && (D_80051380 & 0x20)) {
+            if (v < 100 && (Pads[0].pressed & 0x20)) {
                 v += 5;
             }
             *(s32 *)GameOptions = v;
@@ -993,11 +993,11 @@ void OptionsUpdate(void) {
             break;
         case 2:
             v = D_8005A608;
-            if (v > 0 && (D_80051380 & 0x80)) {
+            if (v > 0 && (Pads[0].pressed & 0x80)) {
                 v -= 5;
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
             }
-            if (v < 100 && (D_80051380 & 0x20)) {
+            if (v < 100 && (Pads[0].pressed & 0x20)) {
                 v += 5;
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
             }
@@ -1008,7 +1008,7 @@ void OptionsUpdate(void) {
         }
         break;
     case 2:
-        n = D_800515F8;
+        n = PadCount;
         if (n >= 5) {
             n = 4;
         }
@@ -1023,7 +1023,7 @@ void OptionsUpdate(void) {
     default:
         return;
     }
-    if (D_80051380 & 0x5000) {
+    if (Pads[0].pressed & 0x5000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         OptionsPage = 0;
         OptionsCursor = 0;
@@ -1051,7 +1051,7 @@ void OptionsRender(void) {
         func_8008D488(sub[9].unk6C, D_8005A608);
         break;
     case 2:
-        n = D_800515F8;
+        n = PadCount;
         if (n >= 5) {
             n = 4;
         }
@@ -1231,7 +1231,7 @@ void PlayersMenuInit(void) {
     } else {
         func_80095BEC(0, (s32 *)PlayersMenuPlace);
     }
-    D_8005A63A = D_80051600 != 0;
+    D_8005A63A = PadRunEnd != 0;
 }
 
 void MainMenuInit(void) {
@@ -1642,7 +1642,7 @@ void CharSelectUpdate(void) {
             MenuChainNext();
         }
     }
-    if (D_80051380 & 0x1000) {
+    if (Pads[0].pressed & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
@@ -1816,21 +1816,21 @@ void LevelSelectInput(void) {
     EXTengine *e;
     s32 c;
 
-    if ((D_80051380 & 0x80) && (s8)GameInfo[0x36] > 0) {
+    if ((Pads[0].pressed & 0x80) && (s8)GameInfo[0x36] > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         LevelSelectReload = 4;
         GameInfo[0x36]--;
     }
-    if ((D_80051380 & 0x20) && (s8)GameInfo[0x36] < 6) {
+    if ((Pads[0].pressed & 0x20) && (s8)GameInfo[0x36] < 6) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         LevelSelectReload = 4;
         GameInfo[0x36]++;
     }
-    if ((D_80051380 & 0x10) && (s8)GameInfo[0x37] > 0) {
+    if ((Pads[0].pressed & 0x10) && (s8)GameInfo[0x37] > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         GameInfo[0x37]--;
     }
-    if ((D_80051380 & 0x40)
+    if ((Pads[0].pressed & 0x40)
         && (s8)GameInfo[0x37] < BattleArenas[(s8)GameInfo[0x36]].unk4 - 1) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         GameInfo[0x37]++;
@@ -1871,7 +1871,7 @@ void LevelSelectInput(void) {
             } else if (CardStatus & 0x10) {
                 if (UnlockCardLevels(0) != 0) {
                     *(s32 *)&GetEngineSlot(0)->sub[9].unk6C = LangPressToUnlockLevels[*(s32 *)(GameInfo + 0x2C)];
-                    if (D_80051380 & 0x2000) {
+                    if (Pads[0].pressed & 0x2000) {
                         PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
                         UnlockCardLevels(1);
                     }
@@ -2155,7 +2155,7 @@ void TeamModeUpdate(void) {
 
     SetupTitlesBackdrop();
     if (TeamModeRow == 0) {
-        if (D_80051380 & 0x80) {
+        if (Pads[0].pressed & 0x80) {
             temp_v0 = TeamModePreset - 1;
             TeamModePreset = temp_v0;
             if (temp_v0 < 0) {
@@ -2163,7 +2163,7 @@ void TeamModeUpdate(void) {
             }
             PlaySfx(0x385, 0, 0, 0x1000, 0x1E00, 0);
         }
-        if (D_80051380 & 0x20) {
+        if (Pads[0].pressed & 0x20) {
             temp_v0_2 = TeamModePreset + 1;
             TeamModePreset = temp_v0_2;
             if (temp_v0_2 >= 2) {
@@ -2172,18 +2172,18 @@ void TeamModeUpdate(void) {
             PlaySfx(0x385, 0, 0, 0x1000, 0x1E00, 0);
         }
         TeamModeShowPreset();
-        if (D_80051380 & 0x4000) {
+        if (Pads[0].pressed & 0x4000) {
             MenuChainNext();
             PlaySfx(0x192, 0, 0, 0x1000, 0x1E00, 0);
         }
     }
-    if ((D_80051380 & 0x10) && (TeamModeRow > 0)) {
+    if ((Pads[0].pressed & 0x10) && (TeamModeRow > 0)) {
         TeamModeRow -= 1;
     }
-    if ((D_80051380 & 0x40) && (TeamModeRow < 0)) {
+    if ((Pads[0].pressed & 0x40) && (TeamModeRow < 0)) {
         TeamModeRow += 1;
     }
-    if (D_80051380 & 0x1000) {
+    if (Pads[0].pressed & 0x1000) {
         PlaySfx(0x384, 0, 0, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }

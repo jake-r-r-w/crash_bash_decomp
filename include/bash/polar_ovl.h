@@ -1586,7 +1586,6 @@ typedef struct PolarDropExt {
 } PolarDropExt;
 
 extern s32 PolarUpdateWord;
-extern s32 D_8005138C;
 extern s32 D_8009E194;
 void PolarUpdateScene(void);
 

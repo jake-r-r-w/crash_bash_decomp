@@ -4356,7 +4356,7 @@ void UpdatePOLAR(void) {
             }
         }
     }
-    if (GameMode == 0x2C && (D_8005138C & 0x2000)) {
+    if (GameMode == 0x2C && (Pads[0].unk54 & 0x2000)) {
         D_8009E194 ^= 1;
     }
     if (PolarBeamOwner != NULL) {

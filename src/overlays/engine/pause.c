@@ -210,7 +210,7 @@ found:
                     case 2:
                         PSV->flags |= 0x100;
                         PauseChoice = 0;
-                        D_8009AEE8 = 0;
+                        PauseLastChoice = 0;
                         break;
                     case 3:
                         if (PSV->mode == 0x20) {
@@ -236,7 +236,7 @@ found:
                         break;
                     case 2:
                         PauseChoice = 0;
-                        D_8009AEE8 = 0;
+                        PauseLastChoice = 0;
                         PSV->flags |= 0x100;
                         break;
                     case 3:
@@ -267,7 +267,7 @@ found:
                     func_8002AC18();
                     break;
                 case 1:
-                    D_8009AEE8 = 0;
+                    PauseLastChoice = 0;
                     PauseChoice = 0;
                     PSV->flags |= 0x100;
                     break;
@@ -417,7 +417,7 @@ found:
             break;
         case 0x100:
         case 0x108:
-            s = D_8009AEE8;
+            s = PauseLastChoice;
             switch (s) {
             case 1:
                 {
@@ -463,7 +463,7 @@ found:
                 }
                 if (func_8007EFC0(PausePad, 3) != 0 || (ActivePad()->pressed & 0x1000)) {
                     PauseChoice = 0;
-                    D_8009AEE8 = 0;
+                    PauseLastChoice = 0;
                     func_8002C11C();
                     PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
@@ -478,17 +478,17 @@ found:
                 }
                 if (func_8007EFC0(PausePad, 0) != 0 || (ActivePad()->pressed & 0x1000)) {
                     PauseChoice = 1;
-                    D_8009AEE8 = 0;
+                    PauseLastChoice = 0;
                     PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
                 break;
             default:
                 if (func_8007EFC0(PausePad, 2) != 0) {
                     if (PauseChoice == 2) {
-                        D_8009AEE8 = 0;
+                        PauseLastChoice = 0;
                         PSV->flags &= ~0x100;
                     } else {
-                        D_8009AEE8 = PauseChoice + 1;
+                        PauseLastChoice = PauseChoice + 1;
                     }
                     if (PauseChoice == 0) {
                         continue_music();
@@ -873,7 +873,7 @@ void func_80080FBC(void) {
         break;
     case 0x100:
     case 0x108:
-        sel = D_8009AEE8;
+        sel = PauseLastChoice;
         switch (sel) {
         case 1:
             D_8009BD1C[1] = sel;
@@ -992,9 +992,9 @@ void func_80081470(s32 arg0) {
     switch (mode) {
     case 1:
         i = c0;
-        D_8009AF48[1] = i % 10 + '0';
+        PauseDigits[1] = i % 10 + '0';
         i /= 10;
-        D_8009AF48[0] = i % 10 + '0';
+        PauseDigits[0] = i % 10 + '0';
         i = c1;
         D_8009AF4C[1] = i % 10 + '0';
         i /= 10;
@@ -1069,9 +1069,9 @@ void func_80081470(s32 arg0) {
         break;
     case 3:
         i = n[0];
-        D_8009AF48[1] = i % 10 + '0';
+        PauseDigits[1] = i % 10 + '0';
         i /= 10;
-        D_8009AF48[0] = i % 10 + '0';
+        PauseDigits[0] = i % 10 + '0';
         i = n[1];
         D_8009AF4C[1] = i % 10 + '0';
         i /= 10;
@@ -1100,9 +1100,9 @@ void func_80081470(s32 arg0) {
         break;
     case 5:
         i = n[0];
-        D_8009AF48[1] = i % 10 + '0';
+        PauseDigits[1] = i % 10 + '0';
         i /= 10;
-        D_8009AF48[0] = i % 10 + '0';
+        PauseDigits[0] = i % 10 + '0';
         i = n[1];
         D_8009AF4C[1] = i % 10 + '0';
         i /= 10;
@@ -1332,15 +1332,15 @@ void func_800826F8(s32 arg0) {
     EngineRec24 **set;
     EngineRec24 *rec;
 
-    D_8009E0D0 = 0x4B;
-    D_8009E0D2 = 4;
-    D_8009E0D4 = 0x63;
+    WinSeqTimer = 0x4B;
+    WinSeqStep = 4;
+    WinSeqHero = 0x63;
     D_8009BD08 = 0x19;
     D_8009BD40 = 0;
     D_8009BD44 = 1;
     g = (EngineHintView *)GameInfo;
     g->flags &= 0xFDC07013;
-    D_8009BD48 = 3;
+    PauseDelay = 3;
     g->flags |= 0x04000000;
     if (g->unk68 != 0) {
         g->flags |= 0x02000000;
@@ -1358,10 +1358,10 @@ void func_800826F8(s32 arg0) {
         }
         set = ((EngineRec24 ****)D_8005AAB0)[g->mode][2];
         if (set != NULL) {
-            D_8009BD10 = set;
+            PauseRecSet = set;
             rec = *set;
-            D_8009BD14 = 0;
-            D_8009BD0C = rec;
+            PauseRecIndex = 0;
+            PauseRec = rec;
             func_80095BEC(0, &rec->kind);
         }
         g->shown[g->mode] |= 0x80;
@@ -1376,10 +1376,10 @@ void func_800826F8(s32 arg0) {
             }
             set = ((EngineRec24 ****)D_8005AAB0)[g->mode][8];
             if (set != NULL) {
-                D_8009BD10 = set;
+                PauseRecSet = set;
                 rec = *set;
-                D_8009BD14 = 0;
-                D_8009BD0C = rec;
+                PauseRecIndex = 0;
+                PauseRec = rec;
                 func_80095BEC(0, &rec->kind);
             }
             g->shown[g->mode] |= 8;
@@ -1392,10 +1392,10 @@ void func_800826F8(s32 arg0) {
             }
             set = ((EngineRec24 ****)D_8005AAB0)[g->mode][6];
             if (set != NULL) {
-                D_8009BD10 = set;
+                PauseRecSet = set;
                 rec = *set;
-                D_8009BD14 = 0;
-                D_8009BD0C = rec;
+                PauseRecIndex = 0;
+                PauseRec = rec;
                 func_80095BEC(0, &rec->kind);
             }
             g->shown[g->mode] |= 0x20;
@@ -1410,10 +1410,10 @@ void func_800826F8(s32 arg0) {
         }
         set = ((EngineRec24 ****)D_8005AAB0)[g->mode][4];
         if (set != NULL) {
-            D_8009BD10 = set;
+            PauseRecSet = set;
             rec = *set;
-            D_8009BD14 = 0;
-            D_8009BD0C = rec;
+            PauseRecIndex = 0;
+            PauseRec = rec;
             func_80095BEC(0, &rec->kind);
         }
         g->shown[g->mode] |= 0x40;
@@ -1428,10 +1428,10 @@ void func_800826F8(s32 arg0) {
         }
         set = ((EngineRec24 ****)D_8005AAB0)[g2->mode][0];
         if (set != NULL) {
-            D_8009BD10 = set;
+            PauseRecSet = set;
             rec = *set;
-            D_8009BD14 = 0;
-            D_8009BD0C = rec;
+            PauseRecIndex = 0;
+            PauseRec = rec;
             func_80095BEC(0, &rec->kind);
         }
         g2->shown[g2->mode] |= 0x10;
@@ -1469,18 +1469,18 @@ void func_80082AC4(void) {
         if ((GameLevelFlags & 0x40) && (PanelCtrl & 1) && Clock_Time == 0) {
             D_8009BD40 = 6;
             D_8009BD44 = 3;
-            D_8009E0D2 = 0x28;
-            D_8009E0D4 = -1;
-            D_8009E0D0 = 0xF;
-            D_8009E0D6 = 0x1E;
+            WinSeqStep = 0x28;
+            WinSeqHero = -1;
+            WinSeqTimer = 0xF;
+            WinSeqDelay = 0x1E;
             return;
         }
         D_8009BD40 = 6;
         D_8009BD44 = 3;
-        D_8009E0D2 = 0x1E;
-        D_8009E0D4 = -1;
-        D_8009E0D0 = 0xF;
-        D_8009E0D6 = 0x1E;
+        WinSeqStep = 0x1E;
+        WinSeqHero = -1;
+        WinSeqTimer = 0xF;
+        WinSeqDelay = 0x1E;
         return;
     }
     D_8009BD40 = 5;
@@ -1538,7 +1538,7 @@ void func_80082D90(s32 arg0) {
         switch (D_8009BD40) {
         case 1:
             counter_sub.unk74 = 0x2004;
-            D_8009BD48 = 3;
+            PauseDelay = 3;
             D_8009BD44 = 1;
             counter_sub.flags |= 0x8000;
             pos = *(SLONG_XYZ *)&counter_sub.unk04;
@@ -1548,7 +1548,7 @@ void func_80082D90(s32 arg0) {
             break;
         case 2:
             counter_sub.unk74 = 0x2003;
-            D_8009BD48 = 3;
+            PauseDelay = 3;
             D_8009BD44 = 1;
             counter_sub.flags |= 0x8000;
             pos = *(SLONG_XYZ *)&counter_sub.unk04;
@@ -1558,7 +1558,7 @@ void func_80082D90(s32 arg0) {
             break;
         case 3:
             counter_sub.unk74 = 0x2002;
-            D_8009BD48 = 3;
+            PauseDelay = 3;
             D_8009BD44 = 1;
             counter_sub.flags |= 0x8000;
             pos = *(SLONG_XYZ *)&counter_sub.unk04;
@@ -1567,7 +1567,7 @@ void func_80082D90(s32 arg0) {
             PlaySfx(0x1A4, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 4:
-            D_8009BD48 = 3;
+            PauseDelay = 3;
             counter_sub.unk74 = 0x2005;
             counter_sub.flags |= 0x8000;
             PlaySfx(0x1A7, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1602,8 +1602,8 @@ void func_80082D90(s32 arg0) {
         counter_sub.flags &= 0xFFFF7FFF;
     }
     if (arg0 != 0) {
-        if (D_8009BD48 > 0) {
-            D_8009BD48--;
+        if (PauseDelay > 0) {
+            PauseDelay--;
         } else {
             func_80082C34();
             D_8009BD08--;
@@ -1642,7 +1642,7 @@ void func_800831C4(s32 arg0) {
 }
 
 s16 func_800831F0(void) {
-    EngineRec24 *p = D_8009BD0C;
+    EngineRec24 *p = PauseRec;
 
     if (p != NULL) {
         do {
@@ -1663,12 +1663,12 @@ void func_80083244(void) {
     EngineRec24 *rec;
     s32 n;
 
-    if (D_8009BD10 != NULL) {
-        if (D_8009BD14 != 0) {
-            n = D_8009BD14 - 1;
-            rec = D_8009BD10[n];
-            D_8009BD14 = n;
-            D_8009BD0C = rec;
+    if (PauseRecSet != NULL) {
+        if (PauseRecIndex != 0) {
+            n = PauseRecIndex - 1;
+            rec = PauseRecSet[n];
+            PauseRecIndex = n;
+            PauseRec = rec;
             func_80095BEC(0, &rec->kind);
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -1678,17 +1678,17 @@ void func_80083244(void) {
 s32 func_800832BC(void) {
     EngineRec24 *rec;
 
-    if (D_8009BD10 != NULL) {
-        rec = D_8009BD10[D_8009BD14 + 1];
+    if (PauseRecSet != NULL) {
+        rec = PauseRecSet[PauseRecIndex + 1];
         if (rec != NULL) {
-            D_8009BD14 = D_8009BD14 + 1;
-            D_8009BD0C = rec;
+            PauseRecIndex = PauseRecIndex + 1;
+            PauseRec = rec;
             func_80095BEC(0, &rec->kind);
             return 1;
         }
     }
-    D_8009BD10 = NULL;
-    D_8009BD0C = NULL;
+    PauseRecSet = NULL;
+    PauseRec = NULL;
     return 0;
 }
 
@@ -1736,10 +1736,10 @@ void func_80083334(s32 arg0, s32 kind, s32 flag) {
         }
     }
     if (set != NULL) {
-        D_8009BD10 = set;
+        PauseRecSet = set;
         rec = *set;
-        D_8009BD14 = 0;
-        D_8009BD0C = rec;
+        PauseRecIndex = 0;
+        PauseRec = rec;
         func_80095BEC(0, &rec->kind);
     }
 }

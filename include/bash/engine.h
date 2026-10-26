@@ -345,9 +345,9 @@ typedef struct EngineRec24 {
     s16 val;
     char pad[0x1E];
 } EngineRec24;
-extern EngineRec24 *D_8009BD0C;
-extern EngineRec24 **D_8009BD10;
-extern s32 D_8009BD14;
+extern EngineRec24 *PauseRec;
+extern EngineRec24 **PauseRecSet;
+extern s32 PauseRecIndex;
 
 /* Hero jump parameters, 8 bytes per hero (EngineHooks.unk10). */
 typedef struct HeroJumpEnt {

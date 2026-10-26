@@ -892,3 +892,6 @@ CurrentMusic = 0x8006557C;
 PrimPool = 0x80056844;
 MapPoints = 0x8005B2B8;
 ScriptList = 0x80058B70;
+PadCount = 0x800515F8;
+FirstPad = 0x800515FC;
+PadRunEnd = 0x80051600;

@@ -591,11 +591,11 @@ void HubDoorMenuUpdate(void) {
             HubOpenDoorMenu(HubGateways[GameGateway].unk14->unk4);
         }
         sub = GetEngineSlot(1)->sub;
-        if ((D_80051380 & 0x80) && GameExitFlags != 0x8008 && HubDoorChoice > 0) {
+        if ((Pads[0].pressed & 0x80) && GameExitFlags != 0x8008 && HubDoorChoice > 0) {
             PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
             HubDoorChoice--;
         }
-        if ((D_80051380 & 0x20) && GameExitFlags != 0x8008 && HubDoorChoice < HubDoorChoices - 1) {
+        if ((Pads[0].pressed & 0x20) && GameExitFlags != 0x8008 && HubDoorChoice < HubDoorChoices - 1) {
             PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
             HubDoorChoice++;
         }
@@ -709,13 +709,13 @@ void HubLevelSelect(void) {
             r = 1;
         }
         if (r != 0 && ((HubSelView *)GameInfo)->unk30 != 0x8008) {
-            if ((D_80051380 & 0x20)
+            if ((Pads[0].pressed & 0x20)
                 && HubSelectedEntry < WarpRooms[((HubSelView *)GameInfo)->unk62][2] - 1
                 && ((s32(*)(s32))func_8007A6D0)(ents[HubSelectedEntry + 1].unk4)) {
                 PlaySfx(0x39F, NULL, NULL, 0x1000, 0x1E00, 0);
                 HubSelectedEntry++;
             }
-            if ((D_80051380 & 0x80) && HubSelectedEntry > 0) {
+            if ((Pads[0].pressed & 0x80) && HubSelectedEntry > 0) {
                 PlaySfx(0x39F, NULL, NULL, 0x1000, 0x1E00, 0);
                 HubSelectedEntry--;
             }
@@ -2608,7 +2608,7 @@ void HubSaveMenuQuit(void) {
 
 void HubSaveMenuUpdate(void) {
     HubSaveMenuInput();
-    if (D_80051380 & 9) {
+    if (Pads[0].pressed & 9) {
         ProcessControl.next_process = &D_8009F46C;
     }
 }

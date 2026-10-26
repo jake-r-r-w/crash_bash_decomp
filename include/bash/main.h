@@ -561,7 +561,11 @@ typedef struct PadState {
     /* 0x22 */ s16 unk22;
     /* 0x24 */ u8 unk24[4];
     /* 0x28 */ s16 unk28;
-    /* 0x2A */ u8 unk2A[0x54 - 0x2A];
+    /* 0x2A */ u8 unk2A[0x44 - 0x2A];
+    /* 0x44 */ s32 held;      /* buttons down */
+    /* 0x48 */ s32 pressed;   /* buttons down this frame and not the last */
+    /* 0x4C */ s32 unk4C;
+    /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
 } PadState;
 
@@ -918,9 +922,9 @@ extern void *HeadOfMissiles;            /* tail of the HeadOfObjects list */
 extern void *D_8005AA30;            /* tail of the HeadOfSolids list */
 extern s32 VelocityCalc;
 extern s32 D_8005B5BC[16][2];       /* entries 1..15 cleared by func_80026D9C */
-extern s32 D_800515F8;
-extern s32 D_800515FC;            /* first pad with flag 1 set, or -1 */
-extern s32 D_80051600;            /* pads 0..n-1 all have flag 1 */
+extern s32 PadCount;
+extern s32 FirstPad;            /* first pad with flag 1 set, or -1 */
+extern s32 PadRunEnd;            /* pads 0..n-1 all have flag 1 */
 extern s32 D_80051604;            /* frames with no button down */
 extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
 extern u8 D_80063AC4[0x34];       /* D_80063A90[1] */
@@ -1097,7 +1101,6 @@ typedef struct ComboSeq {
 
 extern MATRIX D_80058AD4;
 extern SVECTOR D_80058AF4;
-extern s32 D_80051380;
 extern u8 D_800512A8[]; /* ComboSeq table, 0x90 bytes per entry */
 extern u8 D_800536CC[];
 extern CdlLOC D_8006EA14;
