@@ -224,7 +224,7 @@ extern u16 D_8004DDD0[];
 void process_init(process_control_info *pc);
 void func_80079260(void);
 s32 func_8007A5E8(u8 *arg0);
-void func_800B478C(void);
+void HubStartCredits(void);
 
 extern s32 D_800AEC5C;
 extern s32 D_8009D868;
@@ -478,7 +478,7 @@ static inline void EngineBeginMode(s32 arg) {
     if (world != 0x101) {
         if (world == 0x102) {
             if (mode == 0x25) {
-                func_800B478C();
+                HubStartCredits();
             }
         } else {
             g->unk30 |= 0x1000;

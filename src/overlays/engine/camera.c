@@ -33,10 +33,10 @@ void func_8009608C(s32 arg0) {
         TitlesCameraHook(D_80051640, arg0);
         break;
     case 6:
-        func_800B8098(D_80051640, arg0);
+        HubCameraFollow(D_80051640, arg0);
         break;
     case 4:
-        func_800B96F4(view, arg0);
+        PodiumCamera(view, arg0);
         func_80013F44((CamView *)D_80051640, view, &D_800AD0F4);
         break;
     case 7:
