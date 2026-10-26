@@ -154,7 +154,7 @@ typedef struct {
     /* 0x2A */ s16 tz;
 } T_BC038Ext;
 
-/* PlotCrate: entries of D_8009E488.unk0/unk4, by hero_name. */
+/* PlotCrate: entries of HitHooks.unk0/unk4, by hero_name. */
 typedef struct {
     /* 0x00 */ s16 speed;
     /* 0x02 */ s16 max;
@@ -195,7 +195,7 @@ static inline void BC038Release(T_BC038Fux *fux) {
     (ext)->max = 0;                                         \
     (ext)->speed = 0
 
-#define BC038_STATB(base, tbl, w) (((T_BC038Stats **)D_8009E488.tbl)[(base)[w].hero_name])
+#define BC038_STATB(base, tbl, w) (((T_BC038Stats **)HitHooks.tbl)[(base)[w].hero_name])
 #define BC038_STAT(tbl, w) BC038_STATB(Heroes, tbl, w)
 
 /* The crate breaks (PlotCrate passes eng and fux). fux goes unused: a1 is

@@ -276,7 +276,7 @@ void HubPreMoveHero(s32 arg0) {
 
     eng = Heroes[arg0].hero_eng;
     mv = Heroes[arg0].hero_move;
-    speed = D_8009D6F4[Heroes[arg0].hero_name * 3 + 1];
+    speed = HeroRunSpeeds[Heroes[arg0].hero_name * 3 + 1];
     rate = (u32)(D_8009EEA4 * 0x648) >> 8;
     if (rate != 0) {
         step = (s32)(speed << 12) / (s32)rate;
@@ -1521,7 +1521,7 @@ void InitialisePodium(void) {
         default: k = 0xD6; break;
         }
         for (j = 0; (&PodiumAnimName)[j] != NULL;) {
-            func_800165F8(D_80052A54 + k * 0x38, (&PodiumAnimName)[j++]);
+            func_800165F8(HeroModelBank + k * 0x38, (&PodiumAnimName)[j++]);
         }
         PodiumSpawnHero(i, &((HubSpawnEnt (*)[4])PodiumSpawns)[PodiumTies][i]);
         PodiumInitScript(i, name);

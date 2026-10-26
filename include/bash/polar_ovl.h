@@ -1308,7 +1308,7 @@ void PolarAI_SetTarget(s32 player, s32 target);
 void SetPolarHeroSquashed(s32 arg0);
 
 /* Per-hero speed table (declared in bash/pause.h, not included here). */
-extern u16 *D_8009D6F4;
+extern u16 *HeroRunSpeeds;
 extern s32 PolarHeroMass[];
 extern s32 PolarShadowState[];
 extern u8 D_80054654[];

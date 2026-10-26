@@ -21,7 +21,7 @@ void BashHeroHit(s32 arg0) {
     s32 sfx;
 
     if (h->hero_move->reactive_speed != 0) {
-        D_8009D73C();
+        HeroCollideHook();
     }
     switch (func_8008502C(arg0)) {
     case 8:
@@ -110,7 +110,7 @@ clear:
     }
 done:
     func_800871E4(arg0);
-    D_8009D73C(arg0);
+    HeroCollideHook(arg0);
 }
 
 void BashHeroHold(s32 arg0) {
@@ -149,7 +149,7 @@ void BashHeroHold(s32 arg0) {
         }
         if (m != 0) {
         action:
-            SetHeroAction(arg0, (u16)D_8009E0E0);
+            SetHeroAction(arg0, (u16)HeroActThrow);
             return;
         }
     }
@@ -166,7 +166,7 @@ none:
     return;
 rest:
     if (func_8008ACF0(arg0) == 0) {
-        D_8009D73C(arg0);
+        HeroCollideHook(arg0);
         func_8008502C(arg0);
         base2 = Heroes;
         self = &base2[arg0];
@@ -215,7 +215,7 @@ void BashHeroCarry(s32 arg0) {
     }
     if ((o->can_do & 4) && (((PadButtons *)Pads)[arg0].unk50 & 0x2000)) {
     action:
-        SetHeroAction(arg0, (u16)D_8009E0E0);
+        SetHeroAction(arg0, (u16)HeroActThrow);
         return;
     }
     goto rest;
@@ -224,7 +224,7 @@ none:
     return;
 rest:
     if (func_8008AC74(arg0) == 0) {
-        D_8009D73C(arg0);
+        HeroCollideHook(arg0);
         func_8008502C(arg0);
         base2 = Heroes;
         self = &base2[arg0];
@@ -296,7 +296,7 @@ clear:
     }
 done:
     func_800871E4(arg0);
-    D_8009D73C(arg0);
+    HeroCollideHook(arg0);
 }
 
 void SetBashHeroBigWeight(s32 arg0) {
@@ -370,7 +370,7 @@ void BashHeroBigWeight(s32 arg0) {
                 Heroes[arg0].hero_eng->unk10.y = World_floor_level;
             }
         } else {
-            SetHeroAction(arg0, (u16)D_8009E0E2);
+            SetHeroAction(arg0, (u16)HeroActDead);
             if (h->hero_powerup->sfx != NULL) {
                 StopSfx(h->hero_powerup->sfx);
             }
@@ -454,7 +454,7 @@ void SetBashHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -530,7 +530,7 @@ void SetBashHeroLoser(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1138,7 +1138,7 @@ void BashHeroDead(s32 arg0) {
         base = Heroes;
         h = base + arg0;
         if ((u16)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+            h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }

@@ -696,7 +696,7 @@ void func_800170D4(void) {
 
     i = 0x11B;
     end = -1;
-    base = D_80052A54;
+    base = HeroModelBank;
     p = base + 0x10;
 loop:
     i--;

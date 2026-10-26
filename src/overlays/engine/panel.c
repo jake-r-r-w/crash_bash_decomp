@@ -2124,7 +2124,7 @@ void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b) {
 
 void func_8007E93C(u16 arg0, s16 arg1, s16 arg2) {
     if (PanelCtrl & 2) {
-        void *p = &D_80052A54[arg0 * 0x38];
+        void *p = &HeroModelBank[arg0 * 0x38];
         subengine *s = D_8009A04C;
         s->unk6C = p;
         s->unk74 = arg1;
@@ -2142,7 +2142,7 @@ void func_8007E93C(u16 arg0, s16 arg1, s16 arg2) {
 
 void func_8007E9FC(u16 arg0, s16 arg1) {
     if (PanelCtrl & 2) {
-        D_8009A4E4.unk6C = &D_80052A54[arg0 * 0x38];
+        D_8009A4E4.unk6C = &HeroModelBank[arg0 * 0x38];
         D_8009A4E4.unk74 = arg1;
         Icon.b[4] = D_80099208[2];
         Icon.b[5] = D_80099208[3];

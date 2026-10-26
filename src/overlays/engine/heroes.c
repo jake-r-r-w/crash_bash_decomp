@@ -134,7 +134,7 @@ void func_80083708(void) {
         h->hero_anim = func_800265DC(h->hero);
         name = h->hero_name;
         if ((u32)(name - 1) < 8) {
-            h->hero_sub->unk6C = D_80052A54 + ((u16 *)HeroHooks.unk4)[name] * 0x38;
+            h->hero_sub->unk6C = HeroModelBank + ((u16 *)HeroHooks.unk4)[name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }
@@ -186,7 +186,7 @@ void func_80083708(void) {
                 sub->flags &= fxmask;
                 sub->unk50 = 1;
                 sub->unk51 = 0;
-                sub->unk6C = D_80052A54 + idx * 0x38;
+                sub->unk6C = HeroModelBank + idx * 0x38;
                 if (name == 3) {
                     sub->unk74 = fxv;
                 } else if (name == 4) {
@@ -354,7 +354,7 @@ void func_80083E8C(void) {
         if (HLV->state < 0 && (HLV->state & 4) &&
             (pad = D_800515F8 - 1, HPADS[pad].held & 0x400)) {
             a->hero_status = status | 0x2000;
-            SetHeroAction(id, (u16)D_8009E0E2);
+            SetHeroAction(id, (u16)HeroActDead);
             goto reset;
         }
         b = &Heroes[id];
@@ -376,7 +376,7 @@ void func_80083E8C(void) {
         harm = h->hero_harm_flags;
         if (harm & 0x1000) {
             h->hero_status |= 0x2000;
-            SetHeroAction(id, (u16)D_8009E0E2);
+            SetHeroAction(id, (u16)HeroActDead);
             h->hero_immunity = 0;
             h->hero_health = 0;
             goto reset;
@@ -388,14 +388,14 @@ void func_80083E8C(void) {
             }
             if (h->hero_pu == 0x12) {
                 h->hero_pu_timer = 0;
-                SetHeroAction(id, (u16)D_8009E0D8);
+                SetHeroAction(id, (u16)HeroActHit);
             } else {
                 D_8009D524[id] = h->hero_harm_value;
                 h->hero_health -= h->hero_harm_value >> 8;
                 h->hero_health -= h->hero_harm_fraction >> 8;
                 h->hero_harm_fraction = (u8)h->hero_harm_fraction;
                 h->hero_harm_fraction += (u8)h->hero_harm_value;
-                SetHeroAction(id, (u16)D_8009E0D8);
+                SetHeroAction(id, (u16)HeroActHit);
                 h->hero_immunity = 0;
                 if (h->hero_harm_flags & 0x8000) {
                     ((void (*)(s32, s32, s32))func_80027F7C)(id, 4, 0xFF);
@@ -414,7 +414,7 @@ void func_80083E8C(void) {
                 if (h->hero_health <= 0) {
                     if (!(HLV->state & 2)) {
                         h->hero_status |= 0x2000;
-                        SetHeroAction(id, (u16)D_8009E0E2);
+                        SetHeroAction(id, (u16)HeroActDead);
                         h->hero_immunity = 0;
                     }
                 } else {
@@ -855,7 +855,7 @@ s32 player;
                 } while (0);
                 break;
             case 0x8006:
-                h->hero_sub->unk6C = &D_80052A54[((s16 *)anim->Atable)[++anim->Aindex] * 0x38];
+                h->hero_sub->unk6C = &HeroModelBank[((s16 *)anim->Atable)[++anim->Aindex] * 0x38];
                 break;
             case 0x8007:
                 anim->Seq_count = ((s16 *)anim->Atable)[++anim->Aindex] - 1;
@@ -1071,7 +1071,7 @@ void func_800859D4(s32 arg0) {
                         rw--;
                     }
                 }
-                row = D_8009D6F4;
+                row = HeroRunSpeeds;
                 hb2 = Heroes;
                 h2 = hb2 + arg0;
                 speed = (row + h2->hero_name * 3)[rw];
@@ -1746,7 +1746,7 @@ s32 func_80086FCC(s32 arg0) {
         pad2 = pads2 + arg0;
         if (pad2->unk54 & 0x2000) {
             if (D_8009D738(arg0, 0x280) != 0 || Heroes[arg0].hero_pick_delay == 0) {
-                SetHeroAction(arg0, (u16)D_8009E0DA);
+                SetHeroAction(arg0, (u16)HeroActPickup);
                 return 1;
             }
             pad2->unk4C &= ~0x2000;
@@ -1914,7 +1914,7 @@ void func_800874EC(s32 arg0) {
             func_8008502C(arg0);
             if (VelocityCalc < 4) {
                 if (VelocityCalc >= 2) {
-                    D_8009D73C(arg0);
+                    HeroCollideHook(arg0);
                 } else if (D_8009D740 != NULL) {
                     D_8009D740(arg0);
                 }
@@ -1943,7 +1943,7 @@ void func_8008795C(s32 arg0) {
             func_8008502C(arg0);
             if (VelocityCalc < 4) {
                 if (VelocityCalc >= 2) {
-                    D_8009D73C(arg0);
+                    HeroCollideHook(arg0);
                 }
             }
             func_800871E4(arg0);
@@ -1971,7 +1971,7 @@ void func_80087B8C(s32 arg0) {
             base = Heroes;
             h = base + arg0;
             h->hero_move->velocity_enable = 1;
-            D_8009D73C(arg0);
+            HeroCollideHook(arg0);
             switch (func_8008502C(arg0)) {
             case 8:
                 if (h->hero_pu != 0x15) {
@@ -2093,7 +2093,7 @@ void func_800881E0(s32 arg0) {
             }
         }
     }
-    D_8009D73C(arg0);
+    HeroCollideHook(arg0);
     func_8008502C(arg0);
 }
 
@@ -2170,10 +2170,10 @@ void func_80088544(s32 arg0) {
 
     status = Heroes[arg0].hero_status;
     if (status & 0x200) {
-        SetHeroAction(arg0, (u16)D_8009E0E4);
+        SetHeroAction(arg0, (u16)HeroActWinner);
         ret = 1;
     } else if (status & 0x400) {
-        SetHeroAction(arg0, (u16)D_8009E0E6);
+        SetHeroAction(arg0, (u16)HeroActLoser);
         ret = 1;
     } else {
         ret = 0;
@@ -2196,7 +2196,7 @@ void func_80088544(s32 arg0) {
                 HeroInfo *hero = &base[arg0];
                 if (hero->hero_move->forward_speed != 0) {
                     if (hero->hero_mode == 0xF || hero->hero_mode == 0x17) {
-                        SetHeroAction(arg0, (u16)D_8009E0DE);
+                        SetHeroAction(arg0, (u16)HeroActCarry);
                     } else {
                         SetHeroAction(arg0, 3);
                     }
@@ -2206,7 +2206,7 @@ void func_80088544(s32 arg0) {
                 }
             }
             if (ret == 0) {
-                D_8009D73C(arg0);
+                HeroCollideHook(arg0);
                 func_8008502C(arg0);
                 func_800871E4(arg0);
             }
@@ -2247,10 +2247,10 @@ void func_80088794(s32 arg0) {
 
     status = Heroes[arg0].hero_status;
     if (status & 0x200) {
-        SetHeroAction(arg0, (u16)D_8009E0E4);
+        SetHeroAction(arg0, (u16)HeroActWinner);
         ret = 1;
     } else if (status & 0x400) {
-        SetHeroAction(arg0, (u16)D_8009E0E6);
+        SetHeroAction(arg0, (u16)HeroActLoser);
         ret = 1;
     } else {
         ret = 0;
@@ -2330,10 +2330,10 @@ void func_80088C28(s32 arg0) {
 
     status = Heroes[arg0].hero_status;
     if (status & 0x200) {
-        SetHeroAction(arg0, (u16)D_8009E0E4);
+        SetHeroAction(arg0, (u16)HeroActWinner);
         ret = 1;
     } else if (status & 0x400) {
-        SetHeroAction(arg0, (u16)D_8009E0E6);
+        SetHeroAction(arg0, (u16)HeroActLoser);
         ret = 1;
     } else {
         ret = 0;
@@ -2418,10 +2418,10 @@ void func_8008900C(s32 arg0) {
 
     status = Heroes[arg0].hero_status;
     if (status & 0x200) {
-        SetHeroAction(arg0, (u16)D_8009E0E4);
+        SetHeroAction(arg0, (u16)HeroActWinner);
         ret = 1;
     } else if (status & 0x400) {
-        SetHeroAction(arg0, (u16)D_8009E0E6);
+        SetHeroAction(arg0, (u16)HeroActLoser);
         ret = 1;
     } else {
         ret = 0;
@@ -2538,10 +2538,10 @@ void func_8008955C(s32 arg0) {
 
     status = Heroes[arg0].hero_status;
     if (status & 0x200) {
-        SetHeroAction(arg0, (u16)D_8009E0E4);
+        SetHeroAction(arg0, (u16)HeroActWinner);
         ret = 1;
     } else if (status & 0x400) {
-        SetHeroAction(arg0, (u16)D_8009E0E6);
+        SetHeroAction(arg0, (u16)HeroActLoser);
         ret = 1;
     } else {
         ret = 0;
@@ -3033,14 +3033,14 @@ void func_8008A854(s32 arg0) {
     h->hero_frozen = 2;
     sum = *(s32 *)((u8 *)h->hero_eng + 0x14) + *(s32 *)((u8 *)h->hero_sub + 8);
     if (World_floor_level + 0x180 < sum) {
-        SetHeroAction(arg0, (u16)D_8009E0E2);
+        SetHeroAction(arg0, (u16)HeroActDead);
     }
-    D_8009D73C(arg0);
+    HeroCollideHook(arg0);
     func_8008502C(arg0);
 }
 
 void func_8008A8F0(s32 arg0) {
-    D_8009D73C(arg0);
+    HeroCollideHook(arg0);
     func_8008502C(arg0);
 }
 
@@ -3053,7 +3053,7 @@ void func_8008A924(s32 arg0) {
     } while (0);
     Heroes[arg0].hero_move->run_walk = rw;
     SetHeroSeq(arg0, 5);
-    D_8009D73C(arg0);
+    HeroCollideHook(arg0);
 }
 
 void func_8008A99C(s32 arg0) {
@@ -3117,7 +3117,7 @@ s32 func_8008AB94(s32 arg0) {
     if (!(Heroes[arg0].hero_status & 0x2000)) {
         ret = 0;
     } else {
-        SetHeroAction(arg0, (u16)D_8009E0E2);
+        SetHeroAction(arg0, (u16)HeroActDead);
         ret = 1;
     }
     return ret;
@@ -3129,9 +3129,9 @@ s32 func_8008ABF8(s32 arg0) {
 
     temp_v1 = Heroes[arg0].hero_status;
     if (temp_v1 & 0x200) {
-        act = D_8009E0E4;
+        act = HeroActWinner;
     } else if (temp_v1 & 0x400) {
-        act = D_8009E0E6;
+        act = HeroActLoser;
     } else {
         return 0;
     }
@@ -3151,7 +3151,7 @@ s32 func_8008AC74(s32 arg0) {
     }
     mode = h->hero_mode;
     if (mode == 0x10 || mode == 0x18) {
-        a1 = (u16)D_8009E0DC;
+        a1 = (u16)HeroActHold;
     } else {
         a1 = 0;
     }
@@ -3171,7 +3171,7 @@ s32 func_8008ACF0(s32 arg0) {
         if (h->hero_move->forward_speed != 0) {
             mode = h->hero_mode;
             if (mode == 0xF || mode == 0x17) {
-                SetHeroAction(arg0, (u16)D_8009E0DE);
+                SetHeroAction(arg0, (u16)HeroActCarry);
             } else {
                 SetHeroAction(arg0, 3);
             }

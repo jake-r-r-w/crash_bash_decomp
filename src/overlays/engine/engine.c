@@ -310,7 +310,7 @@ void func_80079554(void) {
                 } else {
                     g1->flags |= 0x4001;
                 }
-                D_8009AEF0 = 0;
+                PausePad = 0;
                 item->unk0 = 5;
                 item->unk6 = i + 0x1C;
                 item++;
@@ -333,7 +333,7 @@ void func_80079554(void) {
                         g2->flags |= 0x4001;
                     }
                     item->unk0 = 5;
-                    D_8009AEF0 = 0;
+                    PausePad = 0;
                     if (g2->count < 3) {
                         if (D_800515F8 < 3) {
                             item->unk6 = i + 0x1A;

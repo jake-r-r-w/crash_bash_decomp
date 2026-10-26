@@ -15,7 +15,7 @@ void BashHeroWinner(s32 arg0);
 
 s32 SetHeroSeq(s32 player, s32 seq);
 
-extern u16 *D_8009D6EC;
+extern u16 *HeroModelTable;
 void BashHeroDead(s32 arg0);
 void BashHeroBigWeight(s32 arg0);
 

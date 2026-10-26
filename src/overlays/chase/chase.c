@@ -721,10 +721,10 @@ void InitialiseCHASEFirst(void) {
     HeroHooks.unk48 = (void *)ChaseNoKick;
     HeroHooks.unk40 = (void *)ChaseHeroTestRun;
     HeroHooks.unk5C = (void *)ChaseHero_ExtraEffects;
-    D_8009E0E2 = 0x77;
-    D_8009E0E4 = 0x75;
-    D_8009E0E6 = 0x74;
-    D_8009E0D8 = 0x73;
+    HeroActDead = 0x77;
+    HeroActWinner = 0x75;
+    HeroActLoser = 0x74;
+    HeroActHit = 0x73;
     HeroHooks.unk64 = (void *)ChaseChooseWinner;
     AiBotTweakTable = ChaseAiBotTweak;
     AiHumanTweakTable = ChaseAiHumanTweak;
@@ -826,7 +826,7 @@ void InitialiseCHASE(void) {
     x = v * 35 / 100;
     t = v;
     v = (s32)Heroes;
-    D_8009D6F4 = ChaseRunSpeeds;
+    HeroRunSpeeds = ChaseRunSpeeds;
     for (i = 0; i < 4; i++) {
         h = &((HeroInfo *)v)[i];
         y = t * 60 / 100 + ((t * 60) & 3);
@@ -861,7 +861,7 @@ loop:
         i++;
         goto loop;
     }
-    g = D_80052A54;
+    g = HeroModelBank;
     if (*(s32 *)(g + 0x1544) != 0) {
         func_80029100(g + 0x1548);
     }
@@ -1003,7 +1003,7 @@ void ChasePreMoveHero(s32 arg0) {
                         rw--;
                     }
                 }
-                row = D_8009D6F4;
+                row = HeroRunSpeeds;
                 hb2 = Heroes;
                 h2 = hb2 + arg0;
                 speed = (row + h2->hero_name * 3)[rw];
@@ -1866,7 +1866,7 @@ void ChaseHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = (s32)(D_80052A54 + D_8009D6EC[*(volatile u16 *)&h->hero_name] * 0x38);
+            h->hero_sub->unk6C = (s32)(HeroModelBank + HeroModelTable[*(volatile u16 *)&h->hero_name] * 0x38);
         } else {
             h->hero_sub->unk6C = 0;
         }
@@ -1900,7 +1900,7 @@ void SetChaseHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1971,7 +1971,7 @@ void SetChaseHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -2647,7 +2647,7 @@ void PlotEgg(NAS *nas) {
 
                     h = &hb[i];
                     if (h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
-                        SetHeroAction(i, (u16)D_8009E0D8);
+                        SetHeroAction(i, (u16)HeroActHit);
                         func_80027F7C(i, 0xA, 0xF0);
                     }
                 }
@@ -2672,7 +2672,7 @@ void PlotEgg(NAS *nas) {
                         d = z - Heroes[i].hero_eng->unk10.z;
                         if (d >= -0x280 && d <= lim && ChaseRoundOver == 0 && Heroes[i].hero_immunity == 0 &&
                             !(Heroes[i].hero_status & 0xFA00)) {
-                            SetHeroAction(i, (u16)D_8009E0D8);
+                            SetHeroAction(i, (u16)HeroActHit);
                             func_80027F7C(i, 0xA, 0xF0);
                         }
                     }
@@ -3671,7 +3671,7 @@ loop:
                 d = z - h->hero_eng->unk10.z;
                 if (d >= neg && d <= range && ChaseRoundOver == 0 &&
                     h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
-                    SetHeroAction(i, (u16)D_8009E0D8);
+                    SetHeroAction(i, (u16)HeroActHit);
                     func_80027F7C(i, 0xA, 0xF0);
                 }
             }
@@ -3694,7 +3694,7 @@ void ChaseHitHero(s32 arg0)
     h += arg0;
     if ((h->hero_immunity == 0) && (!(h->hero_status & 0xFA00)))
     {
-      SetHeroAction(arg0, (u16) D_8009E0D8);
+      SetHeroAction(arg0, (u16) HeroActHit);
       func_80027F7C(arg0, 0xA, 0xF0);
     }
   }

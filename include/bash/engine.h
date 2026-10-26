@@ -144,7 +144,7 @@ extern GfxCamera D_8009F578;
 extern s32 D_8009F630;
 extern s32 D_8009F634;
 extern s32 D_8009F638;
-extern s32 D_8009F640;
+extern s32 SaveMenuState;
 
 /* func_800936C4's level setup config (D_8005A5E4, or D_8009F96C if unset). */
 typedef struct EngineCfg {
@@ -288,11 +288,11 @@ typedef struct PadButtons {
 } PadButtons;
 
 extern s32 PauseChoice;
-extern s32 D_8009AEF0;
+extern s32 PausePad;
 void func_8007A614(s32 arg0);
 
 extern void (*D_8009D718)();
-extern void (*D_8009D73C)();
+extern void (*HeroCollideHook)();
 extern s32 (*D_8009D728)(s32);
 extern s32 (*D_8009D72C)(s32);
 
@@ -354,7 +354,7 @@ typedef struct HeroJumpEnt {
     u16 vel, max, acc, dec;
 } HeroJumpEnt;
 
-/* Engine callback table filled by func_80083550 (0x54 is D_8009D73C). */
+/* Engine callback table filled by func_80083550 (0x54 is HeroCollideHook). */
 typedef struct EngineHooks {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ void *unk4;
@@ -400,14 +400,14 @@ extern void *AiSkillTable;
 extern void *AiTeamSkillTable;
 extern void *AiHumanRoundTweakTable;
 extern s32 HeroesAllOut;
-extern s16 D_8009E0D8;
-extern s16 D_8009E0DA;
-extern s16 D_8009E0DC;
-extern s16 D_8009E0DE;
-extern s16 D_8009E0E0;
-extern s16 D_8009E0E2;
-extern s16 D_8009E0E4;
-extern s16 D_8009E0E6;
+extern s16 HeroActHit;
+extern s16 HeroActPickup;
+extern s16 HeroActHold;
+extern s16 HeroActCarry;
+extern s16 HeroActThrow;
+extern s16 HeroActDead;
+extern s16 HeroActWinner;
+extern s16 HeroActLoser;
 void func_8007AB28(void);
 
 /* Object wobbled by func_80093270 (D_800A0290); unk5C is a linked one. */

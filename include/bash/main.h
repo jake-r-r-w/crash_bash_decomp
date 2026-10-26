@@ -624,7 +624,7 @@ typedef struct MusicEntry {
     /* 0x12 */ u8 unk12[0x14 - 0x12];
 } MusicEntry;
 
-/* D_80050628: file loader state (func_80013238 resets it). Only these fields are known. */
+/* Loader: file loader state (func_80013238 resets it). Only these fields are known. */
 typedef struct LoaderState {
     /* 0x00 */ s32 state;                /* 3 after a reset */
     /* 0x04 */ s32 unk4;
@@ -797,7 +797,7 @@ typedef struct { s32 v[4]; } Quat;
 extern s32 D_80064478[];
 extern s32 D_8006E9F8;
 extern u8 D_800527C4[];
-extern u8 D_80052A54[];
+extern u8 HeroModelBank[];
 extern u8 D_8004DDBC[];
 extern u8 D_80050010[];
 void func_8002D488(void);
@@ -852,8 +852,8 @@ extern s32 World_floor_level;
 extern s32 D_800655A8;
 extern s32 D_800655B8;
 extern s32 CardStatus;
-extern u8 D_800655C8[];
-/* The memory card save file header at D_800655C8 (PsyQ _CARD layout). */
+extern u8 CardBuffer[];
+/* The memory card save file header at CardBuffer (PsyQ _CARD layout). */
 typedef struct {
     u32 magic : 16;  /* 0x00 "SC" */
     u32 frames : 4;  /* 0x02 icon frames */
@@ -862,7 +862,7 @@ typedef struct {
     s16 title[32];   /* 0x04 Shift-JIS */
 } McHeader;
 extern char *D_800655BC;
-extern u8 D_80065648[]; /* the header's icon frames (D_800655C8 + 0x80) */
+extern u8 D_80065648[]; /* the header's icon frames (CardBuffer + 0x80) */
 extern u8 D_8004CD8C[];
 s32 func_80010000(u8 *arg0);
 
@@ -875,7 +875,7 @@ typedef struct {
 extern D_800657C8_Slot CardSlots[];
 extern s32 D_80065E24;
 extern s32 D_800655C4;
-extern s32 D_800675CC;
+extern s32 CardCommand;
 extern s32 D_800675D0;
 
 /* 0x28-byte entries starting at 0x800675D4; D_800675D0 is the count. */
@@ -905,7 +905,7 @@ extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *HeadOfObjects;
 extern music_midi D_8006557C;
-extern LoaderState D_80050628;
+extern LoaderState Loader;
 extern char D_8004C83C[];
 extern void func_80012840(u8 *, u8 *);
 extern void func_80012678(u8 *, u8 *);
@@ -957,7 +957,7 @@ typedef struct FreePool {
     u16 h;
     u16 padA;
 } FreePool;
-extern FreeNode *D_80063B18;
+extern FreeNode *FreeBufNodes;
 extern u8 D_80063B58[];
 extern u8 D_80063BA0[];
 extern FreeNode *D_80063BAC;
@@ -1037,8 +1037,8 @@ struct ExtBlk {
     EXT ext;
 };
 extern ExtBlk *D_8005A7AC;
-extern VabFile *D_800654C0;  /* VAB being transferred to the SPU, or NULL */
-extern sfx_machine_bank_info *D_800654C4;  /* where its id goes */
+extern VabFile *VabLoading;  /* VAB being transferred to the SPU, or NULL */
+extern sfx_machine_bank_info *SfxBankLoading;  /* where its id goes */
 extern s32 D_800654C8;       /* the id from SsVabOpenHead */
 extern u8 D_800644A8[];
 extern u8 D_8005A688;
@@ -1259,15 +1259,15 @@ typedef struct SortList {
     SortNode *tail;    /* 0x10 */
 } SortList;
 
-extern EXTmotion D_8005A9CC;
+extern EXTmotion ExtMotionTemplate;
 typedef struct Ext400 {
     s32 w[11];
 } Ext400;
-extern Ext400 D_8005A9A0;
+extern Ext400 ExtTemplate400;
 typedef struct Ext1000 {
     s32 w[11];
 } Ext1000;
-extern Ext1000 D_8005A974;
+extern Ext1000 ExtTemplate1000;
 extern subengine SubEngineTemplate;
 typedef struct Words4 {
     s32 w[4];
@@ -1322,7 +1322,7 @@ extern s32 D_80058B68;
 extern s32 D_80058B6C;
 extern s8 D_8005A63C;
 extern void *D_8005699C;
-extern void *D_8005AA38;
+extern void *HeadOfBalls;
 extern void *D_80056864;
 extern s32 *D_80056860;
 /* An ordering table and the primitive area drawn through it (0x400C bytes;
@@ -1964,7 +1964,7 @@ typedef struct obj_textureset {
     /* 0x20 */ u8 *anim;
 } obj_textureset;
 
-/* A dbase: one of the 0x38-byte records at D_80052A54 (load_initial_dbases'
+/* A dbase: one of the 0x38-byte records at HeroModelBank (load_initial_dbases'
  * pool), a loaded file and its textures (func_8001612C loads it, the callbacks
  * below fill it). The name is the C++ symbols'
  * (dbase_mesh_anim_name_loaded__FP10_obj_dbasePc; the Oct 9 records' tag is

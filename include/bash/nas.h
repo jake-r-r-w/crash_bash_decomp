@@ -348,7 +348,7 @@ struct subengine {
 BASH_SIZE_CHECK(subengine, 0xA8);
 
 /* Extension id 0x800, 0x34 bytes, made by AddMotion(nas) from the template
- * D_8005A9CC (it also sets 0x800 in NAS.NASid). The leak's
+ * ExtMotionTemplate (it also sets 0x800 in NAS.NASid). The leak's
  * CalcArkInfluence(EXTmotion *) is passed FindExtension(nas, 0x800). */
 typedef struct EXTmotion {
     /* 0x00 */ s32 EXTid;
@@ -406,7 +406,7 @@ typedef struct PCoord {
 BASH_SIZE_CHECK(PCoord, 0x4);
 
 /* Extension id 0x1000, 0x2C bytes, made by AddObject(nas) from the template
- * D_8005A974 (it also sets 0x1000 in NAS.NASid). InitBall stores it in
+ * ExtTemplate1000 (it also sets 0x1000 in NAS.NASid). InitBall stores it in
  * NAS.FUX, and PlotBall passes that to the leak's AR_*_TestOutOfBounds and
  * AlignGrabBall as their EXTobject *. */
 typedef struct EXTobject {

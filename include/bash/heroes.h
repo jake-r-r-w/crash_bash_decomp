@@ -136,7 +136,7 @@ static inline s32 HeroCheckStatus2000(s32 arg0) {
     s32 ret;
 
     if (Heroes[arg0].hero_status & 0x2000) {
-        SetHeroAction(arg0, (u16)D_8009E0E2);
+        SetHeroAction(arg0, (u16)HeroActDead);
         ret = 1;
     } else {
         ret = 0;
@@ -151,11 +151,11 @@ static inline s32 HeroCheckStatus600(s32 arg0) {
 
     temp_v1 = Heroes[arg0].hero_status;
     if (temp_v1 & 0x200) {
-        act = D_8009E0E4;
+        act = HeroActWinner;
         goto call;
     }
     if (temp_v1 & 0x400) {
-        act = D_8009E0E6;
+        act = HeroActLoser;
     call:
         SetHeroAction(arg0, act);
         ret = 1;
@@ -176,7 +176,7 @@ static inline s32 HeroCheckMoving(s32 arg0) {
         if (h->hero_move->forward_speed != 0) {
             mode = h->hero_mode;
             if (mode == 0xF || mode == 0x17) {
-                SetHeroAction(arg0, (u16)D_8009E0DE);
+                SetHeroAction(arg0, (u16)HeroActCarry);
             } else {
                 SetHeroAction(arg0, 3);
             }
@@ -216,7 +216,7 @@ static inline s32 HeroCheckStopped(s32 arg0) {
     if (h->hero_move->forward_speed == 0) {
         mode = h->hero_mode;
         if (mode == 0x10 || mode == 0x18) {
-            SetHeroAction(arg0, (u16)D_8009E0DC);
+            SetHeroAction(arg0, (u16)HeroActHold);
         } else {
             SetHeroAction(arg0, 0);
         }

@@ -508,7 +508,7 @@ void InitialiseBASH(void) {
         World_floor_level = -0x10;
         BashSpaceInitTiles();
         BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
-        D_8009E488.unk8 = BashSpaceBreakTile;
+        HitHooks.unk8 = BashSpaceBreakTile;
         if (GameLevelFlags & 0x80) {
             BashSetCrateMix(6, 7, 8, 8, 0, 0xE, 2, 0, 0);
         } else {
@@ -518,8 +518,8 @@ void InitialiseBASH(void) {
         break;
     case 2:
         World_floor_level = -0x10;
-        D_8009E488.unk0 = BashSnowKickVels;
-        D_8009D6F4 = BashSnowRunSpeeds;
+        HitHooks.unk0 = BashSnowKickVels;
+        HeroRunSpeeds = BashSnowRunSpeeds;
         BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         VelocityCalc = 3;
@@ -789,7 +789,7 @@ void Bash_HeroBot(s32 arg0) {
     }
     ai->AIpad = 0;
     mate = Heroes[arg0].hero_teammate;
-    if (Heroes[arg0].hero_mode == (u16)D_8009E0D8 || Heroes[arg0].hero_mode == (u16)D_8009E0E2) {
+    if (Heroes[arg0].hero_mode == (u16)HeroActHit || Heroes[arg0].hero_mode == (u16)HeroActDead) {
         ai->TargetPlayer = -1;
         ai->AIsleep = 5;
         ai->pTargetNas = NULL;
@@ -1309,7 +1309,7 @@ void Bash_HeroBot(s32 arg0) {
             break;
         }
         if (ai->AIsleep == 0) {
-            if ((Heroes[arg0].hero_mode == (u16)D_8009E0DC || Heroes[arg0].hero_mode == (u16)D_8009E0DE) &&
+            if ((Heroes[arg0].hero_mode == (u16)HeroActHold || Heroes[arg0].hero_mode == (u16)HeroActCarry) &&
                 func_80015480(Heroes[arg0].hero_move->facing_angle + 0x800, ang) < 0x155) {
                 ai->AIpad |= 0x2000;
             }
@@ -3814,10 +3814,10 @@ void BASHSetUp(void) {
 void BashInitCrateHooks(void) {
     D_8009E464 = BashASTIndex(0x201);
     D_8009E468 = BashASTIndex(0x202);
-    D_8009E488.unk4 = D_8009E3B4;
-    D_8009E488.unk8 = NULL;
-    D_8009E488.unkC = 0;
-    D_8009E488.unk0 = D_8009E3DC;
+    HitHooks.unk4 = D_8009E3B4;
+    HitHooks.unk8 = NULL;
+    HitHooks.unkC = 0;
+    HitHooks.unk0 = D_8009E3DC;
 }
 
 void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2) {

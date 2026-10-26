@@ -253,10 +253,10 @@ void InitialiseSPINFirst() {
     HeroHooks.unk60 = SpinTouched;
     HeroHooks.unk18 = SpinCreateShadow;
     HeroHooks.unk10 = (SpinJumpEnt *)SpinJumpEnts;
-    D_8009E0E2 = 0x38;
-    D_8009E0E4 = 0x36;
-    D_8009E0E6 = 0x37;
-    D_8009E0D8 = 0x33;
+    HeroActDead = 0x38;
+    HeroActWinner = 0x36;
+    HeroActLoser = 0x37;
+    HeroActHit = 0x33;
     SpinInitASTIndices();
     AiBotTweakTable = SpinAiBotTweak;
     AiHumanTweakTable = SpinAiHumanTweak;
@@ -1469,7 +1469,7 @@ void PlotBalloon(NAS *nas) {
                                     Heroes[owner].hero_score++;
                                 }
                             } else {
-                                SetHeroAction(owner, (u16)D_8009E0D8);
+                                SetHeroAction(owner, (u16)HeroActHit);
                                 if (SPIN_GAME->flags & 0x80) {
                                     owner = fux->owner;
                                     if (owner == 0 || (SPIN_GAME->teams != 0 && owner == 1)) {
@@ -1488,7 +1488,7 @@ void PlotBalloon(NAS *nas) {
                                 Heroes[owner].hero_score++;
                             }
                         } else {
-                            SetHeroAction(owner, (u16)D_8009E0D8);
+                            SetHeroAction(owner, (u16)HeroActHit);
                             if (SPIN_GAME->flags & 0x80) {
                                 owner = fux->owner;
                                 if (owner == 0 || (SPIN_GAME->teams != 0 && owner == 1)) {
@@ -1969,7 +1969,7 @@ void Spin_HeroBot(s32 arg0) {
     if (SPIN_GAME->teams != 0) {
         mate = arg0 ^ 1;
     }
-    if (Heroes[arg0].hero_mode == (u16)D_8009E0D8 || Heroes[arg0].hero_mode == (u16)D_8009E0E2) {
+    if (Heroes[arg0].hero_mode == (u16)HeroActHit || Heroes[arg0].hero_mode == (u16)HeroActDead) {
         ai->TargetPlayer = -1;
         ai->AIsleep = 5;
         ai->pTargetNas = NULL;
@@ -2657,8 +2657,8 @@ void SpinInitASTIndices(void) {
     r = 0;
 found:
     SpinASTBase = r;
-    D_8009E488[2] = 0;
-    D_8009E488[3] = 0;
+    HitHooks[2] = 0;
+    HitHooks[3] = 0;
 }
 
 s32 SPIN_KeepInBounds(EXTengine *eng) {
@@ -2722,8 +2722,8 @@ void SpinPreMoveHero(s32 arg0) {
     h = hb + arg0;
     m = h->hero_move;
     m->forward_speed = 0;
-    speed = (D_8009D6F4 + h->hero_name * 3)[1] + (AiPlayerSkill[arg0][0] >> 2);
-    (D_8009D6F4 + h->hero_name * 3)[2] = speed;
+    speed = (HeroRunSpeeds + h->hero_name * 3)[1] + (AiPlayerSkill[arg0][0] >> 2);
+    (HeroRunSpeeds + h->hero_name * 3)[2] = speed;
     if (h->hero_frozen != 0) {
         ((PadStick *)Pads)[arg0].dirHeld2 = 0;
         ((PadStick *)Pads)[arg0].dirPressed = 0;
@@ -2740,7 +2740,7 @@ void SpinPreMoveHero(s32 arg0) {
                         rw--;
                     }
                 }
-                row = D_8009D6F4;
+                row = HeroRunSpeeds;
                 hb2 = Heroes;
                 h2 = hb2 + arg0;
                 speed = (row + h2->hero_name * 3)[rw];
@@ -2794,7 +2794,7 @@ void SpinHeroHit(s32 arg0) {
 
     h = base + arg0;
     if (h->hero_move->reactive_speed != 0) {
-        D_8009D73C();
+        HeroCollideHook();
     }
     r = func_8008502C(arg0);
     if (r != 8) {
@@ -2897,7 +2897,7 @@ void SpinHeroFall(s32 arg0) {
             }
         }
     }
-    D_8009D73C(arg0);
+    HeroCollideHook(arg0);
     func_8008502C(arg0);
 }
 
@@ -2953,7 +2953,7 @@ void SpinHeroDead(s32 arg0) {
         base2 = Heroes;
         h2 = &base2[arg0];
         if ((u32)(h2->hero_name - 1) < 8) {
-            h2->hero_sub->unk6C = D_80052A54 + D_8009D6EC[*(volatile u16 *)&h2->hero_name] * 0x38;
+            h2->hero_sub->unk6C = HeroModelBank + HeroModelTable[*(volatile u16 *)&h2->hero_name] * 0x38;
         } else {
             h2->hero_sub->unk6C = 0;
         }
@@ -2987,7 +2987,7 @@ void SetSpinHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -3059,7 +3059,7 @@ void SetSpinHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = (s32)D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = (s32)HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -3657,7 +3657,7 @@ void SetSpinHeroFall(s32 arg0) {
 }
 
 void SpinHeroFlip(s32 arg0) {
-    D_8009D73C(arg0);
+    HeroCollideHook(arg0);
     func_8008502C(arg0);
 }
 

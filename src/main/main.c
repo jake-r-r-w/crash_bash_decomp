@@ -1496,7 +1496,7 @@ s32 func_8001231C(void) {
     u8 *head;
     s32 r;
 
-    ls = &D_80050628;
+    ls = &Loader;
     if (ls->state != 0) {
         if (--ls->state == 0) {
             if (func_80012FFC() != 0) {
@@ -1811,7 +1811,7 @@ u8 *func_800129D0(u8 *arg0, s32 arg1) {
     a = (s32)D_8004E110 + **(s32 **)arg0 * 8;
     *(s32 *)(*(u8 **)(arg0 + 4) + 0x34) = arg1;
     fn = func_80012840;
-    ls = &D_80050628;
+    ls = &Loader;
     b = *(s32 *)(*(u8 **)arg0 + 8);
     p = D_80050F3C;
     if (p != NULL) {
@@ -1859,7 +1859,7 @@ u8 *func_80012AC4(u8 *arg0) {
     }
     a = (s32)D_8004E110 + **(s32 **)arg0 * 8;
     fn = func_80012678;
-    ls = &D_80050628;
+    ls = &Loader;
     b = *(s32 *)(*(u8 **)arg0 + 8);
     p = D_80050F3C;
     if (p != NULL) {
@@ -2040,11 +2040,11 @@ void init_file(void) {
     func_800279A4();
     node = (LoadNode *)D_8005063C;
     i = 0x3E;
-    D_80050628.state = 3;
-    D_80050628.unk4 = 0;
-    D_80050628.unk8 = 0;
-    D_80050628.unkC = 0;
-    D_80050628.unk10 = 0;
+    Loader.state = 3;
+    Loader.unk4 = 0;
+    Loader.unk8 = 0;
+    Loader.unkC = 0;
+    Loader.unk10 = 0;
     D_80050F3C = D_8005063C;
     do {
         LoadNode *next = (LoadNode *)((u8 *)node + 0x24);
@@ -2061,11 +2061,11 @@ void func_80012F04(LoadNode *arg0) {
     LoadNode *prev;
     void *temp_v1;
 
-    if ((s32)arg0 == D_80050628.unkC && D_80050628.unk4 != 0) {
+    if ((s32)arg0 == Loader.unkC && Loader.unk4 != 0) {
         *(s32 *)arg0 = 0;
         return;
     }
-    ls = &D_80050628;
+    ls = &Loader;
     prev = arg0->prev;
     if (prev != NULL) {
         prev->next = arg0->next;
@@ -2090,7 +2090,7 @@ void func_80012F90(u8 *arg0) {
 }
 
 void func_80012FA4(LoadNode *arg0) {
-    LoaderState *ls = &D_80050628;
+    LoaderState *ls = &Loader;
     LoadNode *prev = arg0->prev;
 
     if (prev != NULL) {
@@ -2105,7 +2105,7 @@ void func_80012FA4(LoadNode *arg0) {
 }
 
 s32 func_80012FFC(void) {
-    LoaderState *p = &D_80050628;
+    LoaderState *p = &Loader;
     s32 a = p->unkC != 0;
     s32 b = p->unk4;
     s32 s = p->state;
@@ -2122,7 +2122,7 @@ s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *ar
     LoadNode *next;
     LoadNode *tail;
     u8 *q;
-    LoaderState *ls = &D_80050628;
+    LoaderState *ls = &Loader;
 
     p = D_80050F3C;
     if (p != NULL) {
@@ -2218,11 +2218,11 @@ s32 func_800131B0(s32 arg0) {
 }
 
 void func_80013238(void) {
-    D_80050628.state = 3;
-    D_80050628.unk4 = 0;
-    D_80050628.unk8 = 0;
-    D_80050628.unkC = 0;
-    D_80050628.unk10 = 0;
+    Loader.state = 3;
+    Loader.unk4 = 0;
+    Loader.unk8 = 0;
+    Loader.unkC = 0;
+    Loader.unk10 = 0;
 }
 
 void func_8001325C(void) {
@@ -2900,7 +2900,7 @@ void func_8001492C(void) {
     t[0x124 / 4] = func_80017138;
     t[0x128 / 4] = func_80016CA0;
     t[0x12C / 4] = func_800170D4;
-    t[0x130 / 4] = D_80052A54;
+    t[0x130 / 4] = HeroModelBank;
     t[0x134 / 4] = MulMatrix;
     t[0x138 / 4] = func_80028018;
     t[0x13C / 4] = func_80027F7C;

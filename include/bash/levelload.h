@@ -10,7 +10,7 @@
 
 extern u16 D_8009F994[];
 
-/* 0x38-byte records at D_80052A54 (load_initial_dbases). */
+/* 0x38-byte records at HeroModelBank (load_initial_dbases). */
 /* GameInfo as seen by load_initial_dbases. */
 typedef struct View939FC {
     /* 0x00 */ u8 pad0[8];

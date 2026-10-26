@@ -1670,14 +1670,14 @@ void TA_UpdateLevel(void) {
         PlaySfx(TankPendingSfx, NULL, NULL, 0x1000, 0x1E00, 0);
         TankPendingSfx = 0;
     }
-    base = D_80052A54;
+    base = HeroModelBank;
     if (TANK_MODEL_ON(base, 56)) {
         func_80029100((obj_textureset *)(TANK_MODEL(56) + 0x10));
     }
     if (GameMode == 5 && TANK_MODEL_ON(base, 60)) {
         func_80029100((obj_textureset *)(TANK_MODEL(60) + 0x10));
     }
-    if (GameMode == 9 && TANK_MODEL_ON(b2 = D_80052A54, 57)) {
+    if (GameMode == 9 && TANK_MODEL_ON(b2 = HeroModelBank, 57)) {
         func_80029100((obj_textureset *)(b2 + 57 * 0x38 + 0x10));
     }
     if (HeroesAllOut == 0) {
@@ -6446,7 +6446,7 @@ void InitTankBoss(NAS *nas) {
     TankBossStatus = TankBossStartStatus;
     switch (TankBossStartStatus) {
     case 1:
-        base = D_80052A54;
+        base = HeroModelBank;
         if (TANK_MODEL_ON(base, 59)) {
             func_80016F54(TANK_MODEL(59));
         }
@@ -6461,7 +6461,7 @@ void InitTankBoss(NAS *nas) {
         SpawnTankBossTurrets();
         break;
     case 0x2C:
-        base = D_80052A54;
+        base = HeroModelBank;
         if (TANK_MODEL_ON(base, 59)) {
             func_80016F54(TANK_MODEL(59));
         }
@@ -6475,7 +6475,7 @@ void InitTankBoss(NAS *nas) {
         SpawnTankBossTurrets();
         break;
     case 0x3A:
-        base = D_80052A54;
+        base = HeroModelBank;
         if (TANK_MODEL_ON(base, 58)) {
             func_80016F54(TANK_MODEL(58));
         }

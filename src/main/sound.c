@@ -111,12 +111,12 @@ void func_8002ADD4(void *data, sfx_machine_bank_info *slot) {
     s16 id;
 
     SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
-    if ((D_800654C0 != NULL || D_800654C4 != NULL) && SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
-        D_800654C4->id = D_800654C8;
-        func_800112A4(D_800654C0, D_800654C0->head, &MainHeap);
-        func_8002ACA0(D_800654C4->id, 0);
-        D_800654C0 = NULL;
-        D_800654C4 = NULL;
+    if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
+        SfxBankLoading->id = D_800654C8;
+        func_800112A4(VabLoading, VabLoading->head, &MainHeap);
+        func_8002ACA0(SfxBankLoading->id, 0);
+        VabLoading = NULL;
+        SfxBankLoading = NULL;
     }
     head = (u8 *)data + ((VabFile *)data)->head;
     slot->head = head;
@@ -125,20 +125,20 @@ void func_8002ADD4(void *data, sfx_machine_bank_info *slot) {
     id = SsVabOpenHead(slot->head, -1);
     SsVabTransBody(body, id);
     D_800654C8 = id;
-    D_800654C0 = data;
-    D_800654C4 = slot;
+    VabLoading = data;
+    SfxBankLoading = slot;
 }
 
 void func_8002AEE0(void) {
     MATRIX *m;
 
-    if (D_800654C0 != NULL || D_800654C4 != NULL) {
+    if (VabLoading != NULL || SfxBankLoading != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
-            D_800654C4->id = D_800654C8;
-            func_800112A4(D_800654C0, D_800654C0->head, &MainHeap);
-            func_8002ACA0(D_800654C4->id, 0);
-            D_800654C0 = NULL;
-            D_800654C4 = NULL;
+            SfxBankLoading->id = D_800654C8;
+            func_800112A4(VabLoading, VabLoading->head, &MainHeap);
+            func_8002ACA0(SfxBankLoading->id, 0);
+            VabLoading = NULL;
+            SfxBankLoading = NULL;
         }
     }
     SpuGetAllKeysStatus(D_800644A8);
@@ -322,8 +322,8 @@ void func_8002B9A4(void) {
         p += 2;
     }
     D_800654BC = 0;
-    D_800654C0 = NULL;
-    D_800654C4 = NULL;
+    VabLoading = NULL;
+    SfxBankLoading = NULL;
     D_800654B8 = 0;
     func_8002B96C();
 }
@@ -334,29 +334,29 @@ void machine_load_sfx(s32 arg0, sfx_machine_bank_info *slot) {
 
 void func_8002BA44(void) {
     SpuIsTransferCompleted(1);
-    if (D_800654C0 != NULL || D_800654C4 != NULL) {
+    if (VabLoading != NULL || SfxBankLoading != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
-            D_800654C4->id = D_800654C8;
-            func_800112A4(D_800654C0, D_800654C0->head, &MainHeap);
-            func_8002ACA0(D_800654C4->id, 0);
-            D_800654C0 = NULL;
-            D_800654C4 = NULL;
+            SfxBankLoading->id = D_800654C8;
+            func_800112A4(VabLoading, VabLoading->head, &MainHeap);
+            func_8002ACA0(SfxBankLoading->id, 0);
+            VabLoading = NULL;
+            SfxBankLoading = NULL;
         }
     }
 }
 
 void func_8002BAE8(void) {
-    if ((D_800654C0 != NULL || D_800654C4 != NULL) && SpuIsTransferCompleted(0) == 1) {
-        D_800654C4->id = D_800654C8;
-        func_800112A4(D_800654C0, D_800654C0->head, &MainHeap);
-        func_8002ACA0(D_800654C4->id, 0);
-        D_800654C0 = NULL;
-        D_800654C4 = NULL;
+    if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(0) == 1) {
+        SfxBankLoading->id = D_800654C8;
+        func_800112A4(VabLoading, VabLoading->head, &MainHeap);
+        func_8002ACA0(SfxBankLoading->id, 0);
+        VabLoading = NULL;
+        SfxBankLoading = NULL;
     }
 }
 
 s32 func_8002BB80(void) {
-    if ((D_800654C0 != 0) || (D_800654C4 != 0)) {
+    if ((VabLoading != 0) || (SfxBankLoading != 0)) {
         return 1;
     }
     return 0;

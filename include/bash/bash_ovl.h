@@ -422,13 +422,13 @@ static inline u8 *BashSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
     }
     return p;
 }
-/* Snow's crate velocities by hero_name (D_8009E488.unk0, the hooks' KickVels) */
+/* Snow's crate velocities by hero_name (HitHooks.unk0, the hooks' KickVels) */
 extern CrateVelocity BashSnowKickVelMid, BashSnowKickVelFast, BashSnowKickVelSlow;
 extern CrateVelocity *BashSnowKickVels[];
 extern u16 BashSnowRunSpeeds[];
 extern Ambient_data BashJungleAmbience;
 extern Ambient_data BashDrainsAmbience;
-extern u16 *D_8009D6F4;
+extern u16 *HeroRunSpeeds;
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
 void func_80095258(u8 *arg0);

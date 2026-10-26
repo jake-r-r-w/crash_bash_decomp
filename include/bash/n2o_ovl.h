@@ -23,7 +23,7 @@ void UpdateN2O(void);
 void InitialiseN2OFirst(void);
 void InitialiseN2O(void);
 
-extern u16 *D_8009D6EC;
+extern u16 *HeroModelTable;
 
 extern u8 D_80053EAC[];
 extern EXTengine *D_8009D530;
@@ -327,7 +327,7 @@ void NoxInit(void);
 s32 N2OHeroTestIdle(s32 arg0);
 
 void N2OSetUp(void);
-/* A ball in the D_8005AA38 list (N2OBotCanHit), as in arkenoid's ArkenoidNode. */
+/* A ball in the HeadOfBalls list (N2OBotCanHit), as in arkenoid's ArkenoidNode. */
 typedef struct N2ONode {
     u8 pad0[0x10];
     s32 x;
@@ -498,8 +498,8 @@ typedef struct N2OHooks {
 } N2OHooks;
 extern N2OHooks HeroHooks;
 extern void *AiSkillTable;
-extern s16 D_8009E0D8;
-extern s16 D_8009E0E2;
+extern s16 HeroActHit;
+extern s16 HeroActDead;
 extern s32 NoxBossDead;
 extern s32 NoxStarted;
 extern u16 N2OHeroModels[];

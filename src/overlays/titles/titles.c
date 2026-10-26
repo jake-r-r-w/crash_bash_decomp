@@ -546,7 +546,7 @@ void TitlesInitLevel(void) {
         func_8001E934(&D_8009F8A4, (process_info *)a1);
         break;
     }
-    TitlesBackdropAnimator = D_8005A9A0;
+    TitlesBackdropAnimator = ExtTemplate400;
     TitlesBackdropAnimator.w[3] = (s32)&TitlesBackdropAtable;
 }
 
@@ -1372,7 +1372,7 @@ void InitCharSelector(s32 arg0) {
     t = e0->sub + arg0;
     o->unkC = t;
     o->unk10 = e2->sub + (arg0 + 4);
-    o->ext = D_8005A9A0;
+    o->ext = ExtTemplate400;
     o->unk0 = 0;
     o->unk4 = arg0;
     o->unk2C = 0;
@@ -1479,13 +1479,13 @@ void UpdateCharSelector(TitlesSlot *slot) {
         o->unk18 = 0;
         o->unk0 |= 1;
         {
-            s->unk6C = D_80052A54 + card[o->unk30].model * 0x38;
+            s->unk6C = HeroModelBank + card[o->unk30].model * 0x38;
             s->flags |= 0x8000;
         }
         GameInfo[o->unk4 + 0x50] = card[o->unk30].hero;
         GameInfo[o->unk4 + 0x4C] = card[o->unk30].hero;
         PlaySfx(CharPickSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
-        o->ext = D_8005A9A0;
+        o->ext = ExtTemplate400;
         {
             s32 w = CharCards[o->unk30].anim;
             o->unk24++;

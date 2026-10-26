@@ -183,8 +183,8 @@ extern s32 TankBossRocketDelay;
 s32 TankBossTurretFindTarget(EXTengine *eng);
 void TankBossCortexTurretFire(EXTengine *eng);
 void TankBossRocketTurretFire(NAS *nas, EXTengine *eng);
-/* Field 0xC of the 0x38-byte model record N at D_80052A54 (D_800536CC is record 57). */
-#define TANK_MODEL(n) (&D_80052A54[(n) * 0x38])
+/* Field 0xC of the 0x38-byte model record N at HeroModelBank (D_800536CC is record 57). */
+#define TANK_MODEL(n) (&HeroModelBank[(n) * 0x38])
 #define TANK_MODEL_ON(b, n) (*(s32 *)((b) + (n) * 0x38 + 0xC))
 extern s32 TankBossBob[16]; /* PlotTankBoss: per-frame height wobble */
 extern s8 D_8005A6C8;
@@ -812,7 +812,7 @@ void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
 
 
-/* A 0x38-byte model record of D_80052A54 (see TANK_MODEL). */
+/* A 0x38-byte model record of HeroModelBank (see TANK_MODEL). */
 typedef struct ModelRec {
     /* 0x00 */ u8 unk0[0xC];
     /* 0x0C */ s32 on;

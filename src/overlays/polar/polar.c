@@ -4049,7 +4049,7 @@ void InitialisePOLAR(void) {
     PolarInitScene();
     PolarUpdateWord = 0;
     PolarRoundState = 0;
-    D_8009D6F4 = PolarHeroSfx;
+    HeroRunSpeeds = PolarHeroSfx;
     PolarIceRadius = 0x658;
     obj = ((PolarScene *)MapScene)->objs;
     PolarInitWord = 0x800;
@@ -4873,7 +4873,7 @@ void PolarBeamRelease(s32 arg0, s32 arg1, s32 arg2) {
                 shadow->unk2C.y = 0x1000;
                 shadow->unk2C.z = 0x1000;
                 ResetMass(arg0);
-                PolarHeroMass[arg0] = D_8009D6F4[h->hero_name * 3];
+                PolarHeroMass[arg0] = HeroRunSpeeds[h->hero_name * 3];
             }
         }
         break;
@@ -5650,7 +5650,7 @@ void PlotTransmuterBeam(NAS *m) {
                     hs->unk2C.z += 0x100;
                 } else {
                     ext->unk28[ext->unk10] = -1;
-                    PolarHeroMass[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                    PolarHeroMass[ext->unk10] = HeroRunSpeeds[Heroes[ext->unk10].hero_name * 3];
                     ext->unk58 = 0;
                     ResetMass(ext->unk10);
                     ext->unk10 = -1;
@@ -5668,7 +5668,7 @@ void PlotTransmuterBeam(NAS *m) {
                 } else {
                     ext->unk28[ext->unk10] = -1;
                     ResetMass(ext->unk10);
-                    PolarHeroMass[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                    PolarHeroMass[ext->unk10] = HeroRunSpeeds[Heroes[ext->unk10].hero_name * 3];
                     ext->unk58 = 0;
                     ext->unk10 = -1;
                     he->unk2C.x = 0x1000;
@@ -6233,7 +6233,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
                             mv->x_vel = -(sp * t[(-ang + 0x400) & 0xFFF].unk2 >> 13);
                             mv->z_vel = -(sp * t[-ang & 0xFFF].unk2 >> 13);
                             sp *= Heroes[player].hero_move->mass;
-                            if ((D_8009D6F4[Heroes[player].hero_name * 3] * 0xC000 >> 8) < sp) {
+                            if ((HeroRunSpeeds[Heroes[player].hero_name * 3] * 0xC000 >> 8) < sp) {
                                 nas = CreateNAS(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
                                 if (nas != NULL) {
                                     m = (EXTmotion *)nas->FUX;
@@ -6899,7 +6899,7 @@ void PlotUkaPolarMask(NAS *m) {
                     sh->unk2C.z += 0x100;
                 } else {
                     ext->unk28[ext->unk10] = -1;
-                    PolarHeroMass[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                    PolarHeroMass[ext->unk10] = HeroRunSpeeds[Heroes[ext->unk10].hero_name * 3];
                     ResetMass(ext->unk10);
                     ext->unk10 = -1;
                     ext->unk14 = 0;
@@ -6952,7 +6952,7 @@ void PlotUkaPolarMask(NAS *m) {
             if (ext->unk64-- < 0) {
                 ResetMass(ext->unk10);
                 ext->unk14 = 0;
-                PolarHeroMass[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                PolarHeroMass[ext->unk10] = HeroRunSpeeds[Heroes[ext->unk10].hero_name * 3];
                 ext->unk28[ext->unk10] = -1;
                 if (Heroes[ext->unk10].hero_mode != 0x49) {
                     SetHeroAction(ext->unk10, 0x49);
@@ -13258,7 +13258,7 @@ void PolarInitHeroMove(s32 arg0) {
         m->x_acc = two;
         m->z_acc = two;
         m->velocity_calc = 3;
-        PolarHeroMass[arg0] = D_8009D6F4[h->hero_name * 3];
+        PolarHeroMass[arg0] = HeroRunSpeeds[h->hero_name * 3];
     }
 }
 

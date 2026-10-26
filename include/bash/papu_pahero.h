@@ -43,7 +43,7 @@ void PACrateFindFreeSpot(EXTengine *eng);
 extern _sfx_handler *PapuStraySfx;
 void func_800898EC(s32 arg0);
 void PAHeroDead(s32 arg0);
-extern u16 *D_8009D6EC;
+extern u16 *HeroModelTable;
 s32 func_8008ABF8(s32 arg0);
 
 s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask);
@@ -81,7 +81,7 @@ void SetPAHeroPickup(s32 arg0);
 
 extern u16 PACrateTickModels[];
 
-/* A hero's sliding/throw stats, by hero_name (D_8009E488 tables). */
+/* A hero's sliding/throw stats, by hero_name (HitHooks tables). */
 typedef struct PapuStats {
     /* 0x00 */ u16 a;
     /* 0x02 */ u16 b;
@@ -94,8 +94,8 @@ typedef struct PapuStats {
     /* 0x10 */ u8 i;
 } PapuStats;
 
-/* D_8009E488.unk0 / .unk4: PapuStats *[] by hero_name. */
-#define PAPU_STATS(t, n) (((PapuStats **)D_8009E488.t)[n])
+/* HitHooks.unk0 / .unk4: PapuStats *[] by hero_name. */
+#define PAPU_STATS(t, n) (((PapuStats **)HitHooks.t)[n])
 
 /* Extension 0x800 of the carried objects (PlotPACrate). */
 typedef struct PapuSlide {

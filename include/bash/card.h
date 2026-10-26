@@ -104,16 +104,16 @@ static inline void McResetSave(void) {
         }
     }
     new_var = 0x850;
-    *(s32 *)(D_800655C8 + new_var) = 1;
+    *(s32 *)(CardBuffer + new_var) = 1;
     i = 7;
-    p = D_800655C8 + i;
+    p = CardBuffer + i;
     do {
         p[0x854] = 0;
         i--;
         p--;
     } while (i >= 0);
-    end = (s32 *)(D_800655C8 + new_var);
-    q = (s32 *)(D_800655C8 + 0x200);
+    end = (s32 *)(CardBuffer + new_var);
+    q = (s32 *)(CardBuffer + 0x200);
     i = 0;
     while (q < end) {
         i += *q++;
@@ -145,16 +145,16 @@ static inline void McResetSaveSum(void) {
         }
     }
     new_var = 0x850;
-    *(s32 *)(D_800655C8 + new_var) = 1;
+    *(s32 *)(CardBuffer + new_var) = 1;
     i = 7;
-    p = D_800655C8 + i;
+    p = CardBuffer + i;
     do {
         p[0x854] = 0;
         i--;
         p--;
     } while (i >= 0);
-    end = (s32 *)(D_800655C8 + new_var);
-    q = (s32 *)(D_800655C8 + 0x200);
+    end = (s32 *)(CardBuffer + new_var);
+    q = (s32 *)(CardBuffer + 0x200);
     sum = 0;
     while (q < end) {
         sum += *q++;
@@ -165,7 +165,7 @@ static inline void McClearSave(void) {
     s32 *q;
     s32 i;
 
-    q = (s32 *)D_800655C8;
+    q = (s32 *)CardBuffer;
     i = 0x7FF;
     do {
         *q = 0;

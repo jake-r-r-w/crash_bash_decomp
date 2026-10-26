@@ -450,8 +450,8 @@ void InitialiseN2OFirst(void) {
     HeroHooks.unk0 = (s32)N2OInitHero;
     HeroHooks.unk4 = N2OHeroModels;
     HeroHooks.unk14 = N2OVictorySeqs;
-    D_8009E0D8 = 0x2A;
-    D_8009E0E2 = 0x2E;
+    HeroActHit = 0x2A;
+    HeroActDead = 0x2E;
     D_8005AA94 = (void *)GetN2OContour;
     OVG->unk32 |= 0x100;
     if (OVG->unk6C == 0) {
@@ -469,7 +469,7 @@ void InitialiseN2O(void) {
 
     i = 0;
     World_floor_level = 0x2800;
-    D_8005AA38 = NULL;
+    HeadOfBalls = NULL;
     D_8005AA3C = 0;
     N2OBallClock = 0;
     N2OBallCount = 0;
@@ -861,11 +861,11 @@ void N2OPlaceHero(s32 i) {
         n->unk0C = 0;
         n->unk08 = 0;
         n->unk04 = 0;
-        n->unk6C = D_80052A54 + z * 0x38;
+        n->unk6C = HeroModelBank + z * 0x38;
         h->hero_anim->sub = n;
         n = n->next;
         if (n != NULL) {
-            n->unk6C = D_80052A54 + 0x1490;
+            n->unk6C = HeroModelBank + 0x1490;
             n->unk74 = 0x2005;
             n->unk50 = 1;
             n->unk51 = 0;
@@ -1564,7 +1564,7 @@ void N2OHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[*(volatile u16 *)&h->hero_name] * 0x38;
+            h->hero_sub->unk6C = HeroModelBank + HeroModelTable[*(volatile u16 *)&h->hero_name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }
@@ -1590,7 +1590,7 @@ void N2OBallMaster(void) {
     if (n >= 5) {
         n = 4;
     }
-    p = D_8005AA38;
+    p = HeadOfBalls;
     N2OBallCount = 0;
     if (p != NULL) {
         do {
@@ -1636,7 +1636,7 @@ void InitN2OBall(NAS *nas) {
         eng->unk5D = 2;
         eng->sub->unk6C = D_80054504;
         eng->sub->unk74 = 0x2009;
-        func_80026B70((u8 **)&D_8005AA38, (u8 *)nas);
+        func_80026B70((u8 **)&HeadOfBalls, (u8 *)nas);
         e1 = AddExtEngine(nas, 1);
         if (e1 != NULL) {
             sub = e1->sub;
@@ -2587,7 +2587,7 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         goto ret0;
     }
     best = NULL;
-    n = D_8005AA38;
+    n = HeadOfBalls;
     if (n != NULL) {
         h = &Heroes[arg0];
     loop:
@@ -2686,11 +2686,11 @@ void N2O_HeroBot(u16 *arg0) {
             skill = 0x20;
         }
     } while (0);
-    if (Heroes[3].hero_mode == (u16)D_8009E0D8 || Heroes[3].hero_mode == (u16)D_8009E0E2) {
+    if (Heroes[3].hero_mode == (u16)HeroActHit || Heroes[3].hero_mode == (u16)HeroActDead) {
         ai->AIsleep = 5;
         ai->AImode = 0x14;
     }
-    n = D_8005AA38;
+    n = HeadOfBalls;
     dist = 0x7FFFFF;
     if (ai->TargetPlayer == -1) {
         ai->TargetPlayer = PickN2OPlayer(3);
@@ -3587,7 +3587,7 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
     hero = Heroes[arg0].hero_eng;
     hit = 0;
     if (hero != NULL) {
-        n = D_8005AA38;
+        n = HeadOfBalls;
         if (n != NULL) {
             do {
                 o = *(EXTengine **)(n + 0x54);
@@ -4123,7 +4123,7 @@ u8 *N2OFreeBallSlot(void) {
     u8 *temp_v0_2;
     u8 *var_v1;
 
-    var_v1 = D_8005AA38;
+    var_v1 = HeadOfBalls;
     var_v0 = 0;
     if (var_v1 != NULL) {
         do {

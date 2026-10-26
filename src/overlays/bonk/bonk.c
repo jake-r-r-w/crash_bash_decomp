@@ -338,9 +338,9 @@ void InitialiseBONKFirst() {
     HeroHooks.unk5C = BonkHero_ExtraEffects;
     HeroHooks.unk64 = BonkChooseWinner;
     HeroHooks.unk38 = Bonk_HeroBot;
-    D_8009E0D8 = 0x42;
-    D_8009E0E4 = 0x47;
-    D_8009E0E6 = 0x48;
+    HeroActHit = 0x42;
+    HeroActWinner = 0x47;
+    HeroActLoser = 0x48;
     BonkInitTweakAi();
 }
 

@@ -3638,7 +3638,7 @@ void SetRaceHeroRun(s32 player) {
     if (f != NULL) {
         m = h->hero_move;
         if (m != NULL) {
-            spd = D_8009D6F4[h->hero_name * 3];
+            spd = HeroRunSpeeds[h->hero_name * 3];
             m->x_vel = (spd * TrigTable[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
             m->z_vel = (spd * TrigTable[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
         }

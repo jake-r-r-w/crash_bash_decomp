@@ -137,9 +137,9 @@ typedef struct BonkHooks {
     /* 0x68 */ void *unk68;
 } BonkHooks;
 extern BonkHooks HeroHooks;
-extern s16 D_8009E0D8;
-extern s16 D_8009E0E4;
-extern s16 D_8009E0E6;
+extern s16 HeroActHit;
+extern s16 HeroActWinner;
+extern s16 HeroActLoser;
 extern u8 D_8008AB48[];
 extern u16 BonkHeroModels[];
 extern u8 D_8008AB04[];

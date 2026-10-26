@@ -657,7 +657,7 @@ void AR_InitLevel(void) {
     s32 a;
 
     World_floor_level = 0;
-    D_8005AA38 = 0;
+    HeadOfBalls = 0;
     D_8005AA3C = 0;
     ArkInitWord0 = 0;
     ArkInitWord1 = 0;
@@ -2475,7 +2475,7 @@ void ArkHeroDead(u32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[*(volatile u16 *)&h->hero_name] * 0x38;
+            h->hero_sub->unk6C = HeroModelBank + HeroModelTable[*(volatile u16 *)&h->hero_name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }
@@ -2732,7 +2732,7 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
             return 0;
         }
         if (MODEV->unk32 & 0x80) {
-            n = D_8005AA38;
+            n = HeadOfBalls;
             if (n != NULL) {
                 HeroInfo *base = Heroes;
 
@@ -2755,7 +2755,7 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         return 0;
     }
     best = NULL;
-    n = D_8005AA38;
+    n = HeadOfBalls;
     if (n != NULL) {
         h = &Heroes[arg0];
     loop:
@@ -2831,7 +2831,7 @@ s32 ArkBallComingAtHero(s32 arg0) {
 
     if (GameMode == 0xF) {
         lim = 0x64000;
-        n = D_8005AA38;
+        n = HeadOfBalls;
         if (n != NULL) {
             base = Heroes;
             h = &base[arg0];
@@ -2910,12 +2910,12 @@ void Ark_HeroBot(u32 arg0) {
     }
     ai->AIpad = 0;
     mate = Heroes[arg0].hero_teammate;
-    if (Heroes[arg0].hero_mode == (u16)D_8009E0D8 || Heroes[arg0].hero_mode == (u16)D_8009E0E2) {
+    if (Heroes[arg0].hero_mode == (u16)HeroActHit || Heroes[arg0].hero_mode == (u16)HeroActDead) {
         ai->AIsleep = 5;
         ai->AImode = 0x14;
     }
     min = 0x7FFFFF;
-    n = D_8005AA38;
+    n = HeadOfBalls;
     if (ai->TargetPlayer == -1) {
         ai->TargetPlayer = PickArkPlayer(arg0);
     }
@@ -3006,7 +3006,7 @@ void Ark_HeroBot(u32 arg0) {
             ai->AItimer2 = 0;
         }
         if (ai->AItimer2 < 0x1E) {
-            for (node = D_8005AA38; node != NULL; node = node->next) {
+            for (node = HeadOfBalls; node != NULL; node = node->next) {
                 ext = FindExtension((NAS *)node, 0x1000);
                 if (ext != NULL && ext->unk1A == 2 && arg0 == (s16)ext->unk16) {
                     target = ai->TargetPlayer;
@@ -3278,7 +3278,7 @@ void ArkSpawnBall(void) {
     s32 dir;
     s32 n;
 
-    nas = D_8005AA38;
+    nas = HeadOfBalls;
     n = 0;
     if (nas != NULL) {
         do {
@@ -3359,7 +3359,7 @@ void InitBall(NAS *nas) {
     } else {
         eng->sub->unk74 = 0x2009;
     }
-    func_80026B70((u8 **)&D_8005AA38, (u8 *)nas);
+    func_80026B70((u8 **)&HeadOfBalls, (u8 *)nas);
     e1 = AddExtEngine(nas, 1);
     if (e1 != NULL) {
         sub = e1->sub;
@@ -4337,7 +4337,7 @@ void ArkCrateMaster(void) {
         if (gin) {
             lim = 0;
         }
-        n = D_8005AA38;
+        n = HeadOfBalls;
         CrateMasterWordB = 0;
         while (n != NULL) {
             n = n->next;
@@ -4345,7 +4345,7 @@ void ArkCrateMaster(void) {
         }
         if (CrateMasterWordB < lim) {
             total = 0;
-            for (n = D_8005AA38; n != NULL; n = n->next) {
+            for (n = HeadOfBalls; n != NULL; n = n->next) {
                 total++;
             }
             if (total < 9) {
@@ -5620,7 +5620,7 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
     hero = Heroes[arg0].hero_eng;
     hit = 0;
     if (hero != NULL) {
-        n = D_8005AA38;
+        n = HeadOfBalls;
         if (n != NULL) {
             do {
                 o = *(EXTengine **)(n + 0x54);
@@ -5714,7 +5714,7 @@ void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
         }
         r = arg1 + 0x59;
         lim = r * r;
-        n = D_8005AA38;
+        n = HeadOfBalls;
         if (n != NULL) {
             do {
                 t = *(u8 **)(n + 0x58);
@@ -5770,7 +5770,7 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
         }
         r = arg1 + 0x59;
         lim = r * r;
-        n = D_8005AA38;
+        n = HeadOfBalls;
         if (n != NULL) {
             do {
                 o = *(u8 **)(n + 0x54);
@@ -6146,7 +6146,7 @@ u8 *ArkFreeBallSlot(void) {
     u8 *temp_v0_2;
     u8 *var_v1;
 
-    var_v1 = D_8005AA38;
+    var_v1 = HeadOfBalls;
     var_v0 = 0;
     if (var_v1 != NULL) {
         do {

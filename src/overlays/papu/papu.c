@@ -396,13 +396,13 @@ void InitialisePAPUFirst(void) {
     }
     GameInfo[0x52] = 9;
     GameInfo[0x53] = 9;
-    D_8009E0D8 = 0x15;
-    D_8009E0DA = 0x16;
-    D_8009E0DC = 0x17;
-    D_8009E0DE = 0x18;
-    D_8009E0E0 = 0x19;
-    D_8009E0E2 = 0x1A;
-    D_8009E0E4 = 0x1B;
+    HeroActHit = 0x15;
+    HeroActPickup = 0x16;
+    HeroActHold = 0x17;
+    HeroActCarry = 0x18;
+    HeroActThrow = 0x19;
+    HeroActDead = 0x1A;
+    HeroActWinner = 0x1B;
     p = &AiSkillTable;
     if (*(s32 *)(GameInfo + 0x6C) != 0) {
         v = PapuAiSkillAlt;
@@ -2578,10 +2578,10 @@ void PAPUSetUp(void) {
 void PapuInitCrateHooks(void) {
     D_8009E464 = PapuASTIndex(0x203);
     D_8009E468 = PapuASTIndex(0x204);
-    D_8009E488.unk4 = D_8009E3B4;
-    D_8009E488.unk8 = NULL;
-    D_8009E488.unkC = 0;
-    D_8009E488.unk0 = D_8009E3DC;
+    HitHooks.unk4 = D_8009E3B4;
+    HitHooks.unk8 = NULL;
+    HitHooks.unkC = 0;
+    HitHooks.unk0 = D_8009E3DC;
 }
 
 void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {

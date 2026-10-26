@@ -133,7 +133,7 @@ typedef struct RaceFux138 {
 } RaceFux138;
 
 /* Per-hero run speed rows: 3 u16 per hero_name. */
-extern u16 *D_8009D6F4;
+extern u16 *HeroRunSpeeds;
 
 /* A hero's FUX as RaceHeroBreatheFire reads it: a count at 0x3C. */
 typedef struct RaceFuxCount {

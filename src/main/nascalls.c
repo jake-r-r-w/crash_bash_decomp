@@ -605,59 +605,59 @@ void SetNasDefaults(void) {
     EngineTemplate.boomshanka = 0;
     EngineTemplate.direction = 0;
     EngineTemplate.sfx = NULL;
-    ((EXTobject *)&D_8005A974)->EXTid = 0;
-    ((EXTobject *)&D_8005A974)->Extend.Child = NULL;
-    ((EXTobject *)&D_8005A974)->Extend.Parent = NULL;
-    ((EXTobject *)&D_8005A974)->whatami = 0;
-    ((EXTobject *)&D_8005A974)->player = -1;
-    ((EXTobject *)&D_8005A974)->owner = -1;
-    ((EXTobject *)&D_8005A974)->status = 0;
-    ((EXTobject *)&D_8005A974)->can_do = 0;
-    ((EXTobject *)&D_8005A974)->will_do = 0;
-    ((EXTobject *)&D_8005A974)->timer = 0;
-    ((EXTobject *)&D_8005A974)->countdown = 0;
-    ((EXTobject *)&D_8005A974)->target = NULL;
-    ((EXTobject *)&D_8005A974)->who = NULL;
-    ((EXTobject *)&D_8005A974)->contains = 0;
-    ((EXTanimator *)&D_8005A9A0)->EXTid = 0;
-    ((EXTanimator *)&D_8005A9A0)->Extend.Child = NULL;
-    ((EXTanimator *)&D_8005A9A0)->Extend.Parent = NULL;
-    ((EXTanimator *)&D_8005A9A0)->Engine = NULL;
-    ((EXTanimator *)&D_8005A9A0)->sub = NULL;
-    ((EXTanimator *)&D_8005A9A0)->Atable = NULL;
-    ((EXTanimator *)&D_8005A9A0)->Alist = NULL;
-    ((EXTanimator *)&D_8005A9A0)->Aspeed = -1;
-    ((EXTanimator *)&D_8005A9A0)->Aindex = -1;
-    ((EXTanimator *)&D_8005A9A0)->Acount = 0;
-    ((EXTanimator *)&D_8005A9A0)->ALindex = -1;
-    ((EXTanimator *)&D_8005A9A0)->Masterspeed = 0;
-    ((EXTanimator *)&D_8005A9A0)->Currentframe = 0;
-    ((EXTanimator *)&D_8005A9A0)->Seq_count = 0;
-    ((EXTanimator *)&D_8005A9A0)->Seq_count_down = 0;
-    D_8005A9CC.EXTid = 0;
-    D_8005A9CC.Extend.Child = NULL;
-    D_8005A9CC.Extend.Parent = NULL;
-    D_8005A9CC.flags = 0;
-    D_8005A9CC.Ydir = 0;
-    D_8005A9CC.Xmax = 0;
-    D_8005A9CC.Xdec = 0;
-    D_8005A9CC.Xacc = 0;
-    D_8005A9CC.Xvel = 0;
-    D_8005A9CC.Ymax = 0;
-    D_8005A9CC.Ydec = 0;
-    D_8005A9CC.Yacc = 0;
-    D_8005A9CC.Yvel = 0;
-    D_8005A9CC.Zmax = 0;
-    D_8005A9CC.Zdec = 0;
-    D_8005A9CC.Zacc = 0;
-    D_8005A9CC.Zvel = 0;
-    D_8005A9CC.Za = 0;
-    D_8005A9CC.Ya = 0;
-    D_8005A9CC.Xa = 0;
-    D_8005A9CC.Mass = 0;
-    D_8005A9CC.floorheight = 0;
-    D_8005A9CC.Ftime = 0;
-    D_8005A9CC.Fdist = 0;
+    ((EXTobject *)&ExtTemplate1000)->EXTid = 0;
+    ((EXTobject *)&ExtTemplate1000)->Extend.Child = NULL;
+    ((EXTobject *)&ExtTemplate1000)->Extend.Parent = NULL;
+    ((EXTobject *)&ExtTemplate1000)->whatami = 0;
+    ((EXTobject *)&ExtTemplate1000)->player = -1;
+    ((EXTobject *)&ExtTemplate1000)->owner = -1;
+    ((EXTobject *)&ExtTemplate1000)->status = 0;
+    ((EXTobject *)&ExtTemplate1000)->can_do = 0;
+    ((EXTobject *)&ExtTemplate1000)->will_do = 0;
+    ((EXTobject *)&ExtTemplate1000)->timer = 0;
+    ((EXTobject *)&ExtTemplate1000)->countdown = 0;
+    ((EXTobject *)&ExtTemplate1000)->target = NULL;
+    ((EXTobject *)&ExtTemplate1000)->who = NULL;
+    ((EXTobject *)&ExtTemplate1000)->contains = 0;
+    ((EXTanimator *)&ExtTemplate400)->EXTid = 0;
+    ((EXTanimator *)&ExtTemplate400)->Extend.Child = NULL;
+    ((EXTanimator *)&ExtTemplate400)->Extend.Parent = NULL;
+    ((EXTanimator *)&ExtTemplate400)->Engine = NULL;
+    ((EXTanimator *)&ExtTemplate400)->sub = NULL;
+    ((EXTanimator *)&ExtTemplate400)->Atable = NULL;
+    ((EXTanimator *)&ExtTemplate400)->Alist = NULL;
+    ((EXTanimator *)&ExtTemplate400)->Aspeed = -1;
+    ((EXTanimator *)&ExtTemplate400)->Aindex = -1;
+    ((EXTanimator *)&ExtTemplate400)->Acount = 0;
+    ((EXTanimator *)&ExtTemplate400)->ALindex = -1;
+    ((EXTanimator *)&ExtTemplate400)->Masterspeed = 0;
+    ((EXTanimator *)&ExtTemplate400)->Currentframe = 0;
+    ((EXTanimator *)&ExtTemplate400)->Seq_count = 0;
+    ((EXTanimator *)&ExtTemplate400)->Seq_count_down = 0;
+    ExtMotionTemplate.EXTid = 0;
+    ExtMotionTemplate.Extend.Child = NULL;
+    ExtMotionTemplate.Extend.Parent = NULL;
+    ExtMotionTemplate.flags = 0;
+    ExtMotionTemplate.Ydir = 0;
+    ExtMotionTemplate.Xmax = 0;
+    ExtMotionTemplate.Xdec = 0;
+    ExtMotionTemplate.Xacc = 0;
+    ExtMotionTemplate.Xvel = 0;
+    ExtMotionTemplate.Ymax = 0;
+    ExtMotionTemplate.Ydec = 0;
+    ExtMotionTemplate.Yacc = 0;
+    ExtMotionTemplate.Yvel = 0;
+    ExtMotionTemplate.Zmax = 0;
+    ExtMotionTemplate.Zdec = 0;
+    ExtMotionTemplate.Zacc = 0;
+    ExtMotionTemplate.Zvel = 0;
+    ExtMotionTemplate.Za = 0;
+    ExtMotionTemplate.Ya = 0;
+    ExtMotionTemplate.Xa = 0;
+    ExtMotionTemplate.Mass = 0;
+    ExtMotionTemplate.floorheight = 0;
+    ExtMotionTemplate.Ftime = 0;
+    ExtMotionTemplate.Fdist = 0;
 }
 
 void func_80023A90(void) {
@@ -1198,10 +1198,10 @@ ScriptCursor *func_80024E30(NAS *nas, ScriptInit *init) {
     c = NULL;
 done:
     if (c == NULL) {
-        ext = AllocExtension(nas, 0x2C, 0x400, &D_8005A9A0);
+        ext = AllocExtension(nas, 0x2C, 0x400, &ExtTemplate400);
         if (ext != NULL) {
             nas->NASid |= 0x400;
-            *ext = D_8005A9A0;
+            *ext = ExtTemplate400;
         }
         c = (ScriptCursor *)ext;
         if (c == NULL) {
@@ -1403,7 +1403,7 @@ s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                     anim->Aspeed = ((s16 *)anim->Atable)[++anim->Aindex];
                     goto lnext;
                 l8010:
-                    sub->unk6C = &D_80052A54[((s16 *)anim->Atable)[++anim->Aindex] * 0x38];
+                    sub->unk6C = &HeroModelBank[((s16 *)anim->Atable)[++anim->Aindex] * 0x38];
                     goto lnext;
                 ldef:
                     i = frame >> 8;
@@ -1490,7 +1490,7 @@ s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                 PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, NULL, NULL, 0x1000, vol, 0);
                 goto next;
             l8010:
-                sub->unk6C = &D_80052A54[((AnimStep *)anim->Atable)[anim->Aindex].arg * 0x38];
+                sub->unk6C = &HeroModelBank[((AnimStep *)anim->Atable)[anim->Aindex].arg * 0x38];
                 goto next;
             ldef:
                 fn = (void (*)(NAS *, EXTanimator *, s16))hooks[((s16)cmd >> 8) & 0xF][1];
@@ -1800,10 +1800,10 @@ ScriptCursor *func_80026048(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init) {
 
     flags = init->flags;
     if (flags & 0x400) {
-        ext = AllocExtension(nas, 0x2C, 0x400, &D_8005A9A0);
+        ext = AllocExtension(nas, 0x2C, 0x400, &ExtTemplate400);
         if (ext != NULL) {
             nas->NASid |= 0x400;
-            *ext = D_8005A9A0;
+            *ext = ExtTemplate400;
         }
         c = (ScriptCursor *)ext;
         flags &= 0xFF;
@@ -1973,10 +1973,10 @@ void *FindExtension(NAS *nas, s32 id) {
 EXTmotion *AddMotion(NAS *nas) {
     EXTmotion *mot;
 
-    mot = AllocExtension(nas, 0x34, 0x800, &D_8005A9CC);
+    mot = AllocExtension(nas, 0x34, 0x800, &ExtMotionTemplate);
     if (mot != NULL) {
         nas->NASid |= 0x800;
-        *mot = D_8005A9CC;
+        *mot = ExtMotionTemplate;
     }
     return mot;
 }
@@ -1984,10 +1984,10 @@ EXTmotion *AddMotion(NAS *nas) {
 Ext400 *func_800265DC(NAS *nas) {
     Ext400 *ext;
 
-    ext = AllocExtension(nas, 0x2C, 0x400, &D_8005A9A0);
+    ext = AllocExtension(nas, 0x2C, 0x400, &ExtTemplate400);
     if (ext != NULL) {
         nas->NASid |= 0x400;
-        *ext = D_8005A9A0;
+        *ext = ExtTemplate400;
     }
     return ext;
 }
@@ -1995,10 +1995,10 @@ Ext400 *func_800265DC(NAS *nas) {
 Ext1000 *AddObject(NAS *nas) {
     Ext1000 *ext;
 
-    ext = AllocExtension(nas, 0x2C, 0x1000, &D_8005A974);
+    ext = AllocExtension(nas, 0x2C, 0x1000, &ExtTemplate1000);
     if (ext != NULL) {
         nas->NASid |= 0x1000;
-        *ext = D_8005A974;
+        *ext = ExtTemplate1000;
     }
     return ext;
 }
@@ -2900,11 +2900,11 @@ FreeHdr *func_800282F8(u8 *arg0) {
     }
     if ((u8 *)pool < D_80063BA0) {
         p = func_800282F8((u8 *)(pool + 1));
-        a2 = D_80063B18;
-        D_80063B18 = a2->next;
-        a3 = D_80063B18;
-        D_80063B18 = a3->next;
-        a1 = D_80063B18;
+        a2 = FreeBufNodes;
+        FreeBufNodes = a2->next;
+        a3 = FreeBufNodes;
+        FreeBufNodes = a3->next;
+        a1 = FreeBufNodes;
         a2->next = pool->head;
         pool->head = a2;
         v1 = a2->next;
@@ -2943,21 +2943,21 @@ ClutPos *func_80028420(void) {
 
     a =D_80063BAC;
     if (a == NULL) {
-        head = D_80063B18;
-        D_80063B18 = head->next;
+        head = FreeBufNodes;
+        FreeBufNodes = head->next;
         src = func_800282F8(D_80063B58);
         prev = NULL;
         h = *src;
         i = 0x1F;
         do {
-            n = D_80063B18;
+            n = FreeBufNodes;
             nx = n->next;
             i--;
             n->next = prev;
             n->fC = head;
             n->hdr = h;
             prev = n;
-            D_80063B18 = nx;
+            FreeBufNodes = nx;
             h.f2++;
         } while (i != -1);
         a = head;
@@ -3005,8 +3005,8 @@ static inline void BufNode_Release(BufNode *arg0) {
             p->next->prev = p->prev;
         }
         func_80028AE4(arg0->child);
-        old = (BufNode *)D_80063B18;
-        D_80063B18 = (FreeNode *)arg0;
+        old = (BufNode *)FreeBufNodes;
+        FreeBufNodes = (FreeNode *)arg0;
         p->next = old;
         arg0->next = p;
         return;
@@ -3054,8 +3054,8 @@ void func_8002854C(FreeNode *n) {
         while (p->next != NULL) {
             p = p->next;
         }
-        p->next = D_80063B18;
-        D_80063B18 = a->f10;
+        p->next = FreeBufNodes;
+        FreeBufNodes = a->f10;
         if ((FreeNode *)a->f8 != NULL) {
             ((FreeNode *)a->f8)->next = a->next;
         } else {
@@ -3064,8 +3064,8 @@ void func_8002854C(FreeNode *n) {
         if (a->next != NULL) {
             a->next->f8 = a->f8;
         }
-        a->next = D_80063B18;
-        D_80063B18 = a;
+        a->next = FreeBufNodes;
+        FreeBufNodes = a;
         BufNode_Release((BufNode *)a->fC);
     }
 }
@@ -3089,7 +3089,7 @@ void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     n->next = NULL;
     D_80063BAC = NULL;
     D_80063BB0 = NULL;
-    D_80063B18 = (FreeNode *)(b = (BufNode *)D_800643F4);
+    FreeBufNodes = (FreeNode *)(b = (BufNode *)D_800643F4);
     i = nbuf - 2;
     while (i != -1) {
         b->next = b + 1;
@@ -3101,12 +3101,12 @@ void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
         *(s32 *)&D_80063B1C[i] = 0;
     }
     while ((s16)areas->hdr.f0 != -1) {
-        b = (BufNode *)D_80063B18;
+        b = (BufNode *)FreeBufNodes;
         b->parent = NULL;
         b->child = NULL;
         b->head = areas->head;
         first = *areas->head;
-        D_80063B18 = (FreeNode *)b->next;
+        FreeBufNodes = (FreeNode *)b->next;
         b->next = first;
         if (first != NULL) {
             first->prev = b;
@@ -3172,21 +3172,21 @@ FreeNode *func_80028A28(void) {
     FreeHdr h;
     s32 i;
 
-    head = D_80063B18;
-    D_80063B18 = head->next;
+    head = FreeBufNodes;
+    FreeBufNodes = head->next;
     src = func_800282F8(D_80063B58);
     prev = NULL;
     h = *src;
     i = 0x1F;
     do {
-        n = D_80063B18;
+        n = FreeBufNodes;
         nx = n->next;
         i--;
         n->next = prev;
         n->fC = head;
         n->hdr = h;
         prev = n;
-        D_80063B18 = nx;
+        FreeBufNodes = nx;
         h.f2++;
     } while (i != -1);
     head->f10 = n;
@@ -3210,8 +3210,8 @@ void func_80028AE4(BufNode *arg0) {
             p->next->prev = p->prev;
         }
         func_80028AE4(arg0->child);
-        old = (BufNode *)D_80063B18;
-        D_80063B18 = (FreeNode *)arg0;
+        old = (BufNode *)FreeBufNodes;
+        FreeBufNodes = (FreeNode *)arg0;
         p->next = old;
         arg0->next = p;
         return;

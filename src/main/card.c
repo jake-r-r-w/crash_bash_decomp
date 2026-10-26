@@ -57,22 +57,22 @@ void func_8002C5BC(void) {
     s32 *end;
     s32 sum;
 
-    ((McHeader *)D_800655C8)->magic = 0x4353;
-    ((McHeader *)D_800655C8)->frames = 2;
-    ((McHeader *)D_800655C8)->type = 1;
-    ((McHeader *)D_800655C8)->blocks = 1;
+    ((McHeader *)CardBuffer)->magic = 0x4353;
+    ((McHeader *)CardBuffer)->frames = 2;
+    ((McHeader *)CardBuffer)->type = 1;
+    ((McHeader *)CardBuffer)->blocks = 1;
     k = 0x1B;
-    p = D_800655C8 + k;
+    p = CardBuffer + k;
     do {
         p[0x44] = 0;
         k--;
         p--;
     } while (k >= 0);
-    func_8001517C(D_800655BC + 0xC, func_80010000(D_800655C8 + 0x208), 100);
-    func_8001517C(D_800655BC + 0x11, func_80010000(D_800655C8 + 0x208 + 0x194), 100);
-    func_8001517C(D_800655BC + 0x16, func_80010000(D_800655C8 + 0x208 + 0x194 * 2), 100);
-    func_8001517C(D_800655BC + 0x1B, func_80010000(D_800655C8 + 0x208 + 0x194 * 3), 100);
-    McSetTitle(D_8004CD8C, ((McHeader *)D_800655C8)->title);
+    func_8001517C(D_800655BC + 0xC, func_80010000(CardBuffer + 0x208), 100);
+    func_8001517C(D_800655BC + 0x11, func_80010000(CardBuffer + 0x208 + 0x194), 100);
+    func_8001517C(D_800655BC + 0x16, func_80010000(CardBuffer + 0x208 + 0x194 * 2), 100);
+    func_8001517C(D_800655BC + 0x1B, func_80010000(CardBuffer + 0x208 + 0x194 * 3), 100);
+    McSetTitle(D_8004CD8C, ((McHeader *)CardBuffer)->title);
     rect = (RECT *)(func_800160F8(D_80055684, 0x306B) + 0x18);
     if (rect->w == 4) {
         h = rect->h;
@@ -91,7 +91,7 @@ void func_8002C5BC(void) {
             }
         }
     }
-    base = D_800655C8;
+    base = CardBuffer;
     q = (s32 *)(base + 0x200);
     end = (s32 *)(base + 0x850);
     sum = 0;
@@ -114,7 +114,7 @@ void func_8002C894(void) {
     i = 0;
     D_800655B8 = 0;
     CardStatus = 0;
-    D_800675CC = 0;
+    CardCommand = 0;
     D_800655C4 = 0;
     for (;;) {
         if (i < 4) {
@@ -132,16 +132,16 @@ void func_8002C894(void) {
         }
     }
     new_var = 0x850;
-    *(s32 *)(D_800655C8 + new_var) = 1;
+    *(s32 *)(CardBuffer + new_var) = 1;
     i = 7;
-    p = D_800655C8 + i;
+    p = CardBuffer + i;
     do {
         p[0x854] = 0;
         i--;
         p--;
     } while (i >= 0);
-    end = (s32 *)(D_800655C8 + new_var);
-    q = (s32 *)(D_800655C8 + 0x200);
+    end = (s32 *)(CardBuffer + new_var);
+    q = (s32 *)(CardBuffer + 0x200);
     sum = 0;
     while (q < end) {
         sum += *q++;
@@ -174,7 +174,7 @@ void func_8002C97C(void) {
     if (MemCardSync(1, &D_8006782C, &D_80067830) == 0) {
         return;
     }
-    s = D_800675CC;
+    s = CardCommand;
     if (s < 8) {
         goto *tbl[s];
     }
@@ -183,12 +183,12 @@ l0:
     MemCardExist(D_800655B8);
     i = 1;
     CardStatus = 0;
-    D_800675CC = i;
+    CardCommand = i;
     return;
 l1:
     switch (D_80067830) {
     case 1:
-        D_800675CC = 0;
+        CardCommand = 0;
         CardStatus = 0;
         return;
     case 0:
@@ -197,7 +197,7 @@ l1:
     case 4:
         MemCardAccept(D_800655B8);
         CardStatus = 0x42;
-        D_800675CC = 2;
+        CardCommand = 2;
         break;
     }
     goto lend;
@@ -209,21 +209,21 @@ l2:
     }
     goto lend;
 l2_1:
-    D_800675CC = 0;
+    CardCommand = 0;
     CardStatus = 0;
     return;
 l2_4:
     CardStatus = 6;
-    D_800675CC = 3;
+    CardCommand = 3;
     goto lend;
 l2_03:
     if (MemCardGetDirentry(D_800655B8, (char *)all,(struct DIRENTRY *)D_800675D4, &D_800675D0, 0, 0xF) != 0) {
-        D_800675CC = 0;
+        CardCommand = 0;
     }
     if (McFindSave() != NULL) {
         McClearSave();
-        MemCardReadFile(D_800655B8, D_8004CDAC, (u32 *)D_800655C8, 0, 0x2000);
-        D_800675CC = 7;
+        MemCardReadFile(D_800655B8, D_8004CDAC, (u32 *)CardBuffer, 0, 0x2000);
+        CardCommand = 7;
         goto lend;
     }
     McResetSave();
@@ -232,13 +232,13 @@ l2_03:
         CardStatus |= 0x20;
     }
     CardStatus |= 2;
-    D_800675CC = 3;
+    CardCommand = 3;
     return;
 l3:
     if (D_800655C4 == 0 || card_command_delay != 0) {
         card_command_delay--;
         MemCardExist(D_800655B8);
-        D_800675CC = 4;
+        CardCommand = 4;
         goto lend;
     }
     switch (D_800655C4) {
@@ -246,22 +246,22 @@ l3:
         McResetSaveSum();
         if (MemCardFormat(D_800655B8) == 0) {
             CardStatus = 0x22;
-            D_800675CC = 3;
+            CardCommand = 3;
             D_800655C4 = 0;
             return;
         }
         CardStatus |= 0x100;
-        D_800675CC = 6;
+        CardCommand = 6;
         return;
     case 1:
         if (!(CardStatus & 0x10) && MemCardCreateFile(D_800655B8, D_8004CDAC, 1) != 0) {
-            D_800675CC = 6;
+            CardCommand = 6;
             CardStatus |= 0x100;
         }
-        if (D_800675CC != 6) {
+        if (CardCommand != 6) {
             func_8002C5BC();
-            MemCardWriteFile(D_800655B8, D_8004CDAC, (u32 *)D_800655C8, 0, 0x2000);
-            D_800675CC = 5;
+            MemCardWriteFile(D_800655B8, D_8004CDAC, (u32 *)CardBuffer, 0, 0x2000);
+            CardCommand = 5;
             return;
         }
         break;
@@ -275,24 +275,24 @@ l4:
     goto lend;
 l4_13:
     CardStatus = 0;
-    D_800675CC = 0;
+    CardCommand = 0;
     return;
 l5:
     if (D_800655C4 == 1) {
         if (D_80067830 == 0) {
             CardStatus = 0x12;
-            D_800675CC = 3;
+            CardCommand = 3;
             D_800655C4 = 0;
             return;
         }
         CardStatus |= 0x100;
-        D_800675CC = 6;
+        CardCommand = 6;
         return;
     }
     goto lend;
 l7:
     if (D_80067830 == 0) {
-        p = D_800655C8;
+        p = CardBuffer;
         q = (s32 *)(p + 0x200);
         end = (s32 *)(p + 0x850);
         sum = 0;
@@ -300,7 +300,7 @@ l7:
             sum += *q++;
         }
         if (*(s32 *)(p + 0x85C) == sum) {
-            D_800675CC = 3;
+            CardCommand = 3;
             CardStatus = 0x12;
             return;
         }
@@ -308,7 +308,7 @@ l7:
 l2_2:
     CardStatus = 0xA;
 l4_024:
-    D_800675CC = 3;
+    CardCommand = 3;
 lend:;
 }
 
@@ -348,7 +348,7 @@ void func_8002D134(s32 arg0) {
 
 void func_8002D15C(void) {
     D_800655C4 = 0;
-    D_800675CC = 0;
+    CardCommand = 0;
     CardStatus = 0;
 }
 
@@ -427,16 +427,16 @@ void func_8002D294(void) {
         }
     }
     new_var = 0x850;
-    *(s32 *)(D_800655C8 + new_var) = 1;
+    *(s32 *)(CardBuffer + new_var) = 1;
     i = 7;
-    p = D_800655C8 + i;
+    p = CardBuffer + i;
     do {
         p[0x854] = 0;
         i--;
         p--;
     } while (i >= 0);
-    end = (s32 *)(D_800655C8 + new_var);
-    q = (s32 *)(D_800655C8 + 0x200);
+    end = (s32 *)(CardBuffer + new_var);
+    q = (s32 *)(CardBuffer + 0x200);
     sum = 0;
     while (q < end) {
         sum += *q++;

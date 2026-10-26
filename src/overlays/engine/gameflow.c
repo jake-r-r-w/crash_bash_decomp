@@ -38,8 +38,8 @@ void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2) {
         func_8008DEC8(obj, 0x280, id, 0x205, 0xA0);
         break;
     }
-    if (D_8009E488.unk8 != NULL) {
-        D_8009E488.unk8(arg0[0], arg0[1], arg0[2], 0, id, arg1->unk14);
+    if (HitHooks.unk8 != NULL) {
+        HitHooks.unk8(arg0[0], arg0[1], arg0[2], 0, id, arg1->unk14);
     }
 }
 
@@ -1025,7 +1025,7 @@ void func_80090E20(void) {
     s32 f;
 
     D_800569AC = ScreenFade.amount;
-    switch (D_8009F640) {
+    switch (SaveMenuState) {
     case 0:
         f = CardStatus;
         if (f & 2) {
@@ -1035,10 +1035,10 @@ void func_80090E20(void) {
                     if (D_80051380 & 0x8000) {
                         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                         func_8002D108();
-                        D_8009F640 = 6;
+                        SaveMenuState = 6;
                     }
                 } else {
-                    D_8009F640 = 8;
+                    SaveMenuState = 8;
                 }
             } else if (f & 0x40) {
                 SAVEMENU_SET_ANIM(D_8009EFCC);
@@ -1055,9 +1055,9 @@ void func_80090E20(void) {
                         if (HubSaveMenuHooks.unk0 != NULL) {
                             HubSaveMenuHooks.unk0();
                         }
-                        D_8009F640 = 3;
+                        SaveMenuState = 3;
                     } else {
-                        D_8009F640 = 7;
+                        SaveMenuState = 7;
                     }
                 }
             } else {
@@ -1071,7 +1071,7 @@ void func_80090E20(void) {
             func_80092AF4(&D_8009F720, 0x200);
             {
                 u8 *q = GameInfo;
-                D_8009F640 = 4;
+                SaveMenuState = 4;
                 *(u16 *)(q + 0x30) |= 0x200;
             }
         }
@@ -1085,20 +1085,20 @@ void func_80090E20(void) {
                 if (HubSaveMenuHooks.unk0 != NULL) {
                     HubSaveMenuHooks.unk0();
                 }
-                D_8009F640 = 3;
+                SaveMenuState = 3;
             } else if (f & 0x1000) {
-                D_8009F640 = 0;
+                SaveMenuState = 0;
             }
             break;
         }
-        D_8009F640 = 0;
+        SaveMenuState = 0;
         break;
     case 1:
         f = CardStatus;
         if (f & 0x100) {
-            D_8009F640 = 2;
+            SaveMenuState = 2;
         } else if (!(f & 0x80)) {
-            D_8009F640 = 5;
+            SaveMenuState = 5;
         }
         SAVEMENU_SET_ANIM(D_8009EFF0);
         break;
@@ -1107,7 +1107,7 @@ void func_80090E20(void) {
         if (D_80051380 & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             func_80092AF4(&D_8009F720, 0x200);
-            D_8009F640 = 4;
+            SaveMenuState = 4;
             *(u16 *)(GameInfo + 0x30) |= 0x200;
         }
         break;
@@ -1117,13 +1117,13 @@ void func_80090E20(void) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             func_8002D15C();
             func_80092198();
-            D_8009F640 = 0;
+            SaveMenuState = 0;
         }
         break;
     case 3:
         f = CardStatus;
         if (!(f & 2) || !(f & 0x30)) {
-            D_8009F640 = 0;
+            SaveMenuState = 0;
             if (HubSaveMenuHooks.unkC != NULL) {
                 HubSaveMenuHooks.unkC();
             }
@@ -1151,7 +1151,7 @@ void func_80090E20(void) {
                 *(Blk18C *)dst->pad = *(Blk18C *)q;
                 func_80091E58();
                 card_save();
-                D_8009F640 = 1;
+                SaveMenuState = 1;
                 if (HubSaveMenuHooks.unkC != NULL) {
                     HubSaveMenuHooks.unkC();
                 }
@@ -1160,7 +1160,7 @@ void func_80090E20(void) {
             }
             case 2:
                 func_80092AF4(&D_8009F720, 0x200);
-                D_8009F640 = 4;
+                SaveMenuState = 4;
                 {
                     u8 *q = GameInfo;
                     *(u16 *)(q + 0x30) |= 0x200;
@@ -1175,27 +1175,27 @@ void func_80090E20(void) {
     case 6:
         f = CardStatus;
         if (f & 0x100) {
-            D_8009F640 = 2;
+            SaveMenuState = 2;
         } else if (f & 0x80) {
             SAVEMENU_SET_ANIM(D_8009EFFC);
         } else {
-            D_8009F640 = 0;
+            SaveMenuState = 0;
         }
         break;
     case 8:
         if (!(CardStatus & 0xE)) {
-            D_8009F640 = 0;
+            SaveMenuState = 0;
         }
         SAVEMENU_SET_ANIM(D_8009F454);
         break;
     }
-    if ((D_8009F640 == 2 || D_8009F640 == 8) && (D_80051380 & 0x1000)) {
+    if ((SaveMenuState == 2 || SaveMenuState == 8) && (D_80051380 & 0x1000)) {
         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
-        if (D_8009F640 == 2) {
+        if (SaveMenuState == 2) {
             func_8002D15C();
         }
         func_80092AF4(&D_8009F720, 0x200);
-        D_8009F640 = 4;
+        SaveMenuState = 4;
         {
             u8 *q = GameInfo;
             *(u16 *)(q + 0x30) |= 0x200;
@@ -1234,7 +1234,7 @@ void func_800917B4(void) {
         if (D_80051380 & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             if (D_8009F634 == 1) {
-                D_8009F640 = 0;
+                SaveMenuState = 0;
                 D_8009F630 = D_8009F634;
             } else {
                 D_8009F638 = 0;
@@ -1257,7 +1257,7 @@ void func_8009196C(void) {
     EXTengine *e2;
 
     if (CardStatus & 2) {
-        u8 *c = D_800655C8;
+        u8 *c = CardBuffer;
         if (*(s32 *)(c + 0x85C) != D_8009F4BC) {
             func_80092198();
             D_8009F4BC = *(s32 *)(c + 0x85C);
@@ -1360,7 +1360,7 @@ void func_80091F54(void) {
     }
     func_80095BEC(1, &D_8009EEB0);
     D_8009F494 = 0;
-    D_8009F640 = 0;
+    SaveMenuState = 0;
     D_8009F630 = 1;
 }
 

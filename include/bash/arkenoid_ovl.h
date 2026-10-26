@@ -32,7 +32,7 @@ typedef struct ArkenoidSpawn {
 } ArkenoidSpawn;
 
 extern s32 *ArkWallTargets[][3];
-extern u16 *D_8009D6EC;
+extern u16 *HeroModelTable;
 extern s32 ArkFloorTiltX;
 extern s32 ArkFloorTiltZ;
 extern u16 ArkGrabTimes[];
@@ -516,7 +516,7 @@ extern u16 ArkGrabFrames[];
 
 NAS *ArkHero2ObjectCollision(u32 arg0);
 
-/* Ark_HeroBot: the object lists (D_8005AA38 by next, HeadOfObjects by child). */
+/* Ark_HeroBot: the object lists (HeadOfBalls by next, HeadOfObjects by child). */
 typedef struct ArkenoidAiFux {
     u8 pad0[0x1A];
     u16 unk1A;

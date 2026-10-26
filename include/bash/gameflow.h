@@ -558,7 +558,7 @@ typedef struct {
     void (*unk8)(s32, s32, s32, s32, s32, s32);
     s32 unkC;
 } HitCallbacks;
-extern HitCallbacks D_8009E488;
+extern HitCallbacks HitHooks;
 
 typedef struct {
     u8 pad0[0x14];

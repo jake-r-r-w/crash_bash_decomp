@@ -60,7 +60,7 @@ void func_8009342C(void) {
     u8 *b;
 
     if (D_800A0158 >= 2) {
-        if (D_800A02C0 == 0 && *(s32 *)((b = D_80052A54) + 0x2CAC) != 0) {
+        if (D_800A02C0 == 0 && *(s32 *)((b = HeroModelBank) + 0x2CAC) != 0) {
             if (D_80064C93 != -1) {
                 PlaySfx(0x3C5, NULL, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x3C6, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -173,7 +173,7 @@ void func_80093854(void) {
     arg = D_8005A5E8[a->unk8].unk4;
     {
         s32 n = D_800A00D0[a->unk2C];
-        u8 *b = D_80052A54;
+        u8 *b = HeroModelBank;
         Blk38 *t = &((Blk38 *)b)[n];
         ((Blk38 *)b)[28].head.w0 = t->head.w0;
         base = b;
@@ -236,7 +236,7 @@ void load_initial_dbases(void)
   g = (View939FC *) tg;
   tg = (u8 *) D_8005A5E8;
   arg = *((s32 *) (((u8 *) (&((EngineRec32 *) tg)[idx])) + 4));
-  t = D_80052A54;
+  t = HeroModelBank;
   h = &HeroHooks;
   src = (s32 *) (&((Blk38 *) t)[new_var[g->unk2C]]);
   ((Blk38 *) t)[28].head.w0 = src[0];
@@ -263,7 +263,7 @@ void load_initial_dbases(void)
   {
     do
     {
-      func_8001612C(D_80052A54 + (v * 0x38), 0);
+      func_8001612C(HeroModelBank + (v * 0x38), 0);
       p++;
       v = *p;
     }
@@ -275,7 +275,7 @@ void load_initial_dbases(void)
   {
     do
     {
-      func_8001612C(D_80052A54 + (v * 0x38), 0);
+      func_8001612C(HeroModelBank + (v * 0x38), 0);
       p++;
       v = *p;
     }
@@ -346,7 +346,7 @@ void func_80093BE8(void) {
         load_initial_dbases();
         a = map;
         if (D_8005A650 >= 0) {
-            p = (s32 *)(D_80052A54 + D_8005A650 * 0x38);
+            p = (s32 *)(HeroModelBank + D_8005A650 * 0x38);
         } else {
             p = NULL;
         }
@@ -370,7 +370,7 @@ void func_80093BE8(void) {
     case 3:
         a = map;
         if (D_8005A650 >= 0) {
-            p = (s32 *)(D_80052A54 + D_8005A650 * 0x38);
+            p = (s32 *)(HeroModelBank + D_8005A650 * 0x38);
         } else {
             p = NULL;
         }
@@ -403,7 +403,7 @@ void realign_panel_dbase(void) {
     struct G { struct E e[0x1C]; s32 x, y; } *g;
     struct E *e;
     u16 i = D_800A00D0[D_8005A640];
-    g = (void *)D_80052A54;
+    g = (void *)HeroModelBank;
     e = &g->e[i];
     g->x = e->a;
     g->y = e->b;
@@ -499,7 +499,7 @@ void level_load_map(void) {
     s32 *p;
 
     if (D_8005A650 >= 0) {
-        p = (s32 *)(D_80052A54 + D_8005A650 * 0x38);
+        p = (s32 *)(HeroModelBank + D_8005A650 * 0x38);
     } else {
         p = NULL;
     }
@@ -1034,7 +1034,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                s->unk6C = (s32)(D_80052A54 + rec->unk1C * 0x38);
+                s->unk6C = (s32)(HeroModelBank + rec->unk1C * 0x38);
                 s->unk74 = rec->unk1E;
             }
             break;
@@ -1076,7 +1076,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
                 s->unk10 = rec->unkC;
                 s->unk12 = rec->unkE;
                 s->unk14 = rec->unk10;
-                s->unk6C = (s32)(D_80052A54 + rec->unk1C * 0x38);
+                s->unk6C = (s32)(HeroModelBank + rec->unk1C * 0x38);
                 s->unk74 = rec->unk1E;
             }
             break;
@@ -1086,7 +1086,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                sub_play_script((obj_dbase *)(D_80052A54 + rec->unk1C * 0x38), rec->unk1E, (subengine *)s, rec->unk20);
+                sub_play_script((obj_dbase *)(HeroModelBank + rec->unk1C * 0x38), rec->unk1E, (subengine *)s, rec->unk20);
             }
             break;
         case 2:

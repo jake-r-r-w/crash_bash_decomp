@@ -131,7 +131,7 @@ extern SpinSlot SpinSlots[10];
 #include "bash/main.h"
 
 extern s32 SpinASTBase;
-extern s32 D_8009E488[];
+extern s32 HitHooks[];
 
 void InitialiseSPINFirst();
 
@@ -200,7 +200,7 @@ s32 GravitateNas(NAS *nas);
 void func_8008E27C(s32 *arg0, void *arg1, s32 arg2);
 
 void SpinHeroFlip(s32 arg0);
-extern void (*D_8009D73C)();
+extern void (*HeroCollideHook)();
 
 extern s32 LevelSpecs[11];
 extern u8 D_80052FCC[];
@@ -236,8 +236,8 @@ static inline void SpinDropHazard(SpinFux *fux) {
 }
 extern s32 GameTeams;
 extern s16 AiPlayerSkill[][3];
-extern u16 *D_8009D6F4;
-extern u16 *D_8009D6EC;
+extern u16 *HeroRunSpeeds;
+extern u16 *HeroModelTable;
 extern u16 CameraMode;
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 
@@ -357,10 +357,10 @@ extern void *AiHumanTweakTable;
 extern void *AiSkillTable;
 extern void *AiTeamSkillTable;
 extern void *AiHumanRoundTweakTable;
-extern s16 D_8009E0D8;
-extern s16 D_8009E0E2;
-extern s16 D_8009E0E4;
-extern s16 D_8009E0E6;
+extern s16 HeroActHit;
+extern s16 HeroActDead;
+extern s16 HeroActWinner;
+extern s16 HeroActLoser;
 extern u16 SpinAiSkill[];
 extern u16 SpinAiSkillAlt[];
 extern u16 SpinAiTeamSkill[];

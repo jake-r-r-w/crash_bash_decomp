@@ -38,8 +38,8 @@ typedef struct CircleFireExt {
     u8 pad34[0x10];
 } CircleFireExt;
 
-extern u16 *D_8009D6EC;
-extern u8 D_80052A54[];
+extern u16 *HeroModelTable;
+extern u8 HeroModelBank[];
 extern u8 D_80053F8C[];
 extern s32 *MapScene;
 
@@ -84,7 +84,7 @@ extern u16 ChaseHeroShadowSizes[];
 extern s32 ChaseFlameTimer[];
 extern ChasePad Pads[];
 extern s32 D_8005A670;
-extern u16 *D_8009D6F4;
+extern u16 *HeroRunSpeeds;
 
 typedef struct CoalPosInner {
     s32 pad0[4];
@@ -224,9 +224,9 @@ extern s32 ChaseArenaRadius;
 extern s32 ChaseArenaShrink;
 extern s32 ChaseHitSfx[][4];
 void ChaseHidePowerup(s32 arg0);
-extern s16 D_8009E0D8;
-extern u16 *D_8009D6EC;
-extern u8 D_80052A54[];
+extern s16 HeroActHit;
+extern u16 *HeroModelTable;
+extern u8 HeroModelBank[];
 extern u16 CameraMode;
 
 void ChaseChooseWinner(s32 arg0, s32 arg1);
@@ -288,9 +288,9 @@ extern void *AiHumanTweakTable;
 extern void *AiSkillTable;
 extern void *AiTeamSkillTable;
 extern void *AiHumanRoundTweakTable;
-extern s16 D_8009E0E2;
-extern s16 D_8009E0E4;
-extern s16 D_8009E0E6;
+extern s16 HeroActDead;
+extern s16 HeroActWinner;
+extern s16 HeroActLoser;
 extern s32 GameTeams;
 extern u16 ChaseHeroModels[];
 extern s32 ChaseVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */

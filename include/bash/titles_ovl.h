@@ -165,7 +165,7 @@ typedef struct CharCard {
     /* 0x08 */ s32 x;
     /* 0x0C */ s32 y;
     /* 0x10 */ s32 target;
-    /* 0x14 */ s32 model;     /* index into D_80052A54 */
+    /* 0x14 */ s32 model;     /* index into HeroModelBank */
     /* 0x18 */ s32 unk18;
     /* 0x1C */ s32 anim;      /* the selector's Atable when picked: a CharSelectAnim* */
     /* 0x20 */ s32 sfx;
@@ -266,7 +266,7 @@ typedef struct {
 } TitlesTrig;
 extern s32 CharPickSfx[];
 extern s32 CharMoveSfx[];
-extern u8 D_80052A54[];
+extern u8 HeroModelBank[];
 extern TitlesOff CharSelectorOffsets[];
 /* GameInfo as seen by ShuffleCharSelectors (unk26 is D_8005A63A). */
 typedef struct {
