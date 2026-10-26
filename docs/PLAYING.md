@@ -93,7 +93,10 @@ Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it throu
 dying and picking Retry. Retry crashed until the engine's `InitWeatherNas` named N2O's star
 field (`NoxSparkFxDef`) instead of its retail address; shift.py now warns about such
 references. Passed 2026-10-26 (the first phase and Retry; the playtest didn't reach the
-second phase, `N2OBallPhase`'s other half).
+second phase, `N2OBallPhase`'s other half). With the 200% save, the pause menu's "return to
+warp room" plays the ending and the credits: retail does the same (the engine's mode 0x1F exit,
+`gameflow.c`, takes the ending when the save's game-state byte 0x187 is set), so it isn't a
+shift bug.
 
 ### The shift test route (Chase, 2026-10-26)
 

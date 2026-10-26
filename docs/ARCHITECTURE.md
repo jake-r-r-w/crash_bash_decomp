@@ -705,7 +705,11 @@ signature alone is not enough.
   `NOFly`, `N2ODead`, `N2OHit`, `N2OWinner` in nox.c, actions 0x26..0x32);
   the 80 sequence slots are each character's `hero_seq_n2o*` (the `n2ofly`
   ones after n2o.c's state). nox.c's first string names `NoxBoxToSphere`'s
-  original: `XZBoxToSphere`, as Dino's.
+  original: `XZBoxToSphere`, as Dino's. Leaving mode 0x1F, the engine plays
+  the ending (mode 0x20 or 0x25 with an end message) when the game state's
+  byte 0x187 is set and the exit flags' bit 1 is, else it goes back to the
+  warp room; with a completed save even the pause menu's "return to warp
+  room" plays the credits (retail, 2026-10-26).
 - **Chase** (chase, the kegs and coal game; named 2026-10-26). Mode 0x1E;
   one engine world record (0x010D) points at `CHASE_PREMAP`,
   `chase_shell_info` and `CHASESetUp`, the per-mode table at
