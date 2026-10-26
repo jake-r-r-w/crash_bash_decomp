@@ -5183,7 +5183,9 @@ def data_items(funcs, stat, proj, images=False):
             if typ == ".rodata":
                 rs = [s for s in rodata_syms(name, inputs, cache) if start <= s[0] < end]
                 if not rs or rs[0][0] > start:
-                    out.append([unit, name, name, (rs[0][0] if rs else end) - start, False])
+                    # a C file's rodata with no asm piece left in it is all the compiler's
+                    out.append([unit, name, name, (rs[0][0] if rs else end) - start,
+                                not glob.glob(f"asm/nonmatchings/{name}/D_*.s")])
                 for i, (rom, sym, owners) in enumerate(rs):
                     nxt = rs[i + 1][0] if i + 1 < len(rs) else end
                     out.append([unit, name, sym, nxt - rom, len(owners) == 1 and owners[0] in matched

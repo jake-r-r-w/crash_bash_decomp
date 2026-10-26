@@ -55,5 +55,5 @@ segments:
       - [0x0, rodata, overlays/ovl5f/ovl5f_id]
       - [0x4, .rodata, overlays/ovl5f/ovl5f]
       - [0x870, c, overlays/ovl5f/ovl5f]
-      - [0x15958, data, overlays/ovl5f/ovl5f_data]
+      - [0x15958, .data, overlays/ovl5f/ovl5f]   # ovl5f.c's data (tools/scripts/data2c.py)
   - [0x17FE0]

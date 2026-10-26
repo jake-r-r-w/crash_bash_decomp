@@ -57,7 +57,7 @@ extern s16 D_8009D634;
 extern s16 D_8009D6A0;
 extern s32 D_800CB210;
 extern u8 D_800C8EA0[];
-extern u8 D_800C8EB4[];
+extern s32 D_800C8EB4[];   /* {name, 0x5C} pairs: four "WIN" entries */
 extern u8 D_800C9E74[];
 extern u8 D_800C9E88[];
 extern u8 D_800C9E5C[];
@@ -93,7 +93,7 @@ extern s32 D_800C9DD0[];
 
 extern s32 D_800CA160[];
 extern s32 TankMapNas[];
-extern struct { u16 v, pad; } D_800CA4AC[];
+extern RockTblEnt D_800CA4AC[];
 extern s32 TankMapWidth;
 extern TA_Bot TankBotAI[4];
 
@@ -820,7 +820,6 @@ typedef struct ModelRec {
 } ModelRec;
 
 extern u8 D_8005373C[];
-extern NAS *D_800CB228;
 /* PlotMoeJoe: anim scripts, Moe (0x131E) and Joe */
 extern s32 D_800C8F54[];
 extern s32 D_800C8F68[];

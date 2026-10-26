@@ -160,16 +160,21 @@ retail does. The recipe is written up for Phase 4.
   the out-of-line inline functions close a file in reverse definition
   order, and against the leak's order Tank has one such tail, 87..180
   (ARCHITECTURE.md, Files inside the slot overlays).
-- [ ] Data to C tooling, once the names and types say what the tables are:
+- [x] Data to C tooling, once the names and types say what the tables are:
   turn a splat rodata or data block into C
   initialisers (strings, tables, structs from the headers, pointers as
   symbols, never as numbers) that rebuild byte for byte, in the unit's
   section order (`ovl5f`'s is rodata, text, data). Generic, so every
-  overlay can use it.
+  overlay can use it. Done 2026-10-26: `tools/scripts/data2c.py`
+  (CONVENTIONS.md, Data as C).
 - [ ] Tank's rodata as C: the id word (`ovl5f_id`) and the `INCLUDE_RODATA`
-  of `D_800B32B8` (the animation name strings).
-- [ ] Tank's data and bss as C (`asm/data/overlays/ovl5f/`): every pointer
-  a symbol, every table typed with the struct the naming found.
+  of `D_800B32B8` (the animation name strings). The strings are C
+  (2026-10-26); the id word is left, a unit of its own with no code.
+- [x] Tank's data and bss as C (`asm/data/overlays/ovl5f/`): every pointer
+  a symbol, every table typed with the struct the naming found. Done
+  2026-10-26: all 9.9 KB are C in `ovl5f.c`; most tables are still typed by
+  their placeholder declarations (`s32[]`, `u8[]`), retyped as they're
+  understood.
 - [ ] Tank's asset files extract: list the `CRASHBSH.DAT` entries its
   `file_group_TANK*` groups load and check each decodes (docs/ASSETS.md); a
   format still kept as bytes gets decoded here.

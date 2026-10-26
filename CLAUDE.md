@@ -79,6 +79,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   for file boundaries: switch-table parity proves a file start in any
   segment; `--data` adds data blocks, inversions and call ties for any
   exe or slot overlay unit, `--why` the symbol pairs behind each inversion).
+  `tools/scripts/data2c.py OVL [--rodata SYM]` writes an overlay's asm data as C
+  definitions (docs/CONVENTIONS.md, Data as C).
   `sched`, `jtrace`, `trace`, `regions` and `vars` read a parked function's C under
   `#ifdef NON_MATCHING` (built apart, with `-DNON_MATCHING`).
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,

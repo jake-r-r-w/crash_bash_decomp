@@ -108,8 +108,15 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    together that sit far apart in `ovl5f` (`TA_PreMoveHero` and
    `TA_Triggers` near the end), so the header joins several files. Cut with
    `split_unit.py` only where a start is settled.
-3. **Data to C tooling and Tank's rodata/data**, with the types step 1
-   found. `ovl5f`'s sections run
+3. **Data to C: done for Tank's data and strings** (2026-10-26;
+   CONVENTIONS.md, Data as C, has the recipe). `tools/scripts/data2c.py`
+   wrote all 174 objects; `ovl5f.c` now owns the data subsegment, and 40
+   `PROVIDE` lines name the exe data it points at. Left: the id word
+   `ovl5f_id` (its own rodata unit with no code: a C file with only
+   `const` data and no text subsegment may need a splat trick), and
+   retyping the tables (most are still `s32[]`/`u8[]`; the hero sequence
+   records `D_800C8C64`, 32 bytes each, are the leak's `*_seq_tank*` kind).
+   What follows was written before that. `ovl5f`'s sections run
    rodata, text, data: the id word (`ovl5f_id`), one `INCLUDE_RODATA`
    (`D_800B32B8`, the animation name strings `"DIE"`, `"FIRE1"`, ...), and
    `asm/data/overlays/ovl5f/ovl5f_data.data.s` (0x15958..0x17FE0, about
@@ -525,6 +532,16 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Tank's data is C):** `tools/scripts/data2c.py` (tested)
+  writes an overlay's asm data as typed C definitions from the retail
+  bytes; Tank's 9.9 KB of data and its animation-name strings are C in
+  `ovl5f.c` (`make check`, `disc-check` OK). Learned: cc1 emits an
+  initialiser's string literals in reverse first-use order (cc1plus in
+  order), so strings are `const char` arrays; a declared type shorter than
+  its slot hides another object (`TankBotAI` + 20 bytes); data pointing at
+  the exe needs `PROVIDE`s once splat no longer sees it. `D_800CB228` was
+  `TankBossCrashTurrets[1]`. Data in C: 2.60% -> 4.79%.
 
 - **2026-10-26 (Tank is one file):** `decomp.py units --data` extended to
   the slot overlays (overlay yaml and binary, the zero tail as `.bss`,

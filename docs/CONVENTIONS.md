@@ -108,6 +108,44 @@ A file is finished when every function in it reaches level 4.
   `#ifdef NON_MATCHING`, with the `INCLUDE_ASM` line under `#else`, so the
   build still matches.
 
+## Data as C
+
+A unit's data becomes C with `tools/scripts/data2c.py OVL [--rodata SYM]`, which prints
+definitions for the overlay's asm data (and an `INCLUDE_RODATA` block of strings). The
+recipe, as done for Tank (`ovl5f`, 2026-10-26):
+
+1. Name and type first: an object is written with the type its `extern` declaration gives
+   it, so a placeholder type (`u8 D_X[]` over a table of pointers) should be fixed before;
+   the tool warns where a byte or halfword array holds an address in the overlay. A
+   declaration nobody can match (an anonymous `struct { ... }`) needs a named type.
+2. Split the unit first (a file's local data moves with it).
+3. Run the tool against the sources as they are (it reads `src/` to decide which splat
+   labels are objects: one no C names and no data points at is folded into the object
+   before it), and paste its output at the top of the C file, after the includes: rodata
+   strings first (they must precede the functions' jump tables), then the data in address
+   order (cc1 emits `.data` in definition order). Remove the `INCLUDE_RODATA`.
+4. In the overlay's yaml, give the data subsegment to the C file (`[ROM, .data, <the c
+   file>]`), add the tool's `PROVIDE` lines to `configs/USA/undefined_syms_manual.txt`
+   (splat lists an overlay's outside symbols from its asm, and C data is no longer asm),
+   `make split`, and move splat's now-stale `asm/data/...data.s` and the block's `D_*.s`
+   out of `asm/` (they would keep the dashboard counting the data as asm).
+5. `make check` is the test; a short build means an object came out smaller than its slot.
+
+How the tool writes things, and why:
+- Bytes come from the retail binary, not splat's directives (splat reads small words as
+  strings). A 4-byte value that points into the overlay is written as its symbol (name +
+  offset), and one into the exe or the engine when a symbol file names it, splat wrote it
+  as a symbol, or it is word-aligned off a 64 KB boundary (a round `0x80070000` among sound
+  ids is a flag). Pointers stay pointers so a shifted build moves them.
+- Strings in an initialiser are `const char` arrays: cc1 emits an initialiser's string
+  literals in reverse order of first use, cc1plus (which built the game) in order, so only
+  named arrays reproduce retail.
+- Zero objects are `= 0` / `= {0}`: the overlay's link has no `*(COMMON)`, and gcc 2.8 keeps
+  explicitly zero-initialised data in `.data` (the original's were `.bss`, which the overlay
+  image holds as zeros right after its data; the order and bytes come out the same).
+- When a declared type is shorter than its slot, the rest is an object of its own,
+  `D_<address>` (cc1 pads only to the next object's alignment).
+
 ## Code style
 
 C89 as GCC 2.8.1 accepts it: declarations at the top of blocks, `/* */`
