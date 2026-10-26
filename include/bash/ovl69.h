@@ -157,13 +157,26 @@ extern process_info **TournamentChainResume;
 extern Ext400 TitlesBackdropAnimator;
 extern Ext400 TitlesBackdropAtable;
 
-typedef struct {
-    s32 unk0;
-    u8 unk4[0x20];
-    u8 *unk24;
-} Ovl69Rec;
+/* A character select card (CharCards, one per hero, 0x28 bytes). */
+typedef struct CharCard {
+    /* 0x00 */ s32 flags;     /* bit 0: taken */
+    /* 0x04 */ u8 hero;       /* hero_name; CpuPickCharacter reads the word */
+    /* 0x05 */ u8 pad5[3];
+    /* 0x08 */ s32 x;
+    /* 0x0C */ s32 y;
+    /* 0x10 */ s32 target;
+    /* 0x14 */ s32 model;     /* index into D_80052A54 */
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 anim;      /* the selector's Atable when picked: a CharSelectAnim* */
+    /* 0x20 */ s32 sfx;
+    /* 0x24 */ u8 *sub;       /* set by CharSelectInit */
+} CharCard;
+BASH_SIZE_CHECK(CharCard, 0x28);
 
-extern Ovl69Rec CharCards[];
+/* the selectors' animations, by hero: a step list and a record pointing at it */
+extern s32 CharSelectSteps0[], CharSelectSteps1[], CharSelectSteps2[], CharSelectSteps3[];
+extern s32 CharSelectSteps4[], CharSelectSteps5[], CharSelectSteps6[], CharSelectAnim7[];
+extern CharCard CharCards[];
 extern PlaceRec CharSelectPlace[];
 extern PlaceRec CharSelectModelsPlace[];
 extern PlaceRec LevelSelectPlace0[];
@@ -194,12 +207,6 @@ typedef struct Ovl69Obj {
 void InitCharSelector(s32 arg0);
 void ShuffleCharSelectors(void);
 typedef struct {
-    s32 pad0[2];
-    s32 x;
-    s32 y;
-    s32 pad10[6];
-} Ovl69Pt;
-typedef struct {
     s32 pad0[1];
     s32 unk4;
     s32 unk8;
@@ -216,21 +223,6 @@ typedef struct {
     s32 y;
 } Ovl69Off;
 extern Ovl69Slot CharSelectors[];
-/* CharCards as UpdateCharSelector reads it: 8 cards of 0x28 bytes. */
-typedef struct {
-    s32 flags;     /* 0x00: bit 0 taken */
-    u8 unk4;
-    u8 pad5[3];
-    s32 x;         /* 0x08 */
-    s32 y;         /* 0x0C */
-    s32 target;    /* 0x10 */
-    s32 unk14;     /* 0x14: index into D_80052A54 */
-    s32 pad18;
-    s32 unk1C;     /* 0x1C */
-    s32 sfx;       /* 0x20 */
-    s32 pad24;
-} Ovl69Card;
-#define O69CARD ((Ovl69Card *)CharCards)
 /* UpdateCharSelector: speed toward tgt, +-lim (+-lim+900 when reversing), 0 when near. */
 static inline s32 Ovl69Steer(s32 pos, s32 tgt, s32 vx, s32 lim) {
     s32 v;

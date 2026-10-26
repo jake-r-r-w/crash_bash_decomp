@@ -328,71 +328,15 @@ PlaceRec CharSelectModelsPlace[9] = {
     { 7, 0x1FE, 0x1A4, 0, 0x800, 0, 0, 0, 0, 0, 0, 0xC7, 0x2005, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
-Ovl69Rec CharCards[8] = {
-    {
-        0,
-        {
-            1, 0, 0, 0, 0x8E, 0, 0, 0, 0x20, 0, 0, 0, 0xCC, 0xCC, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
-            0, 0x50, 0x9E, 0xB, 0x80, 0x8E, 3, 0, 0,
-        },
-        0,
-    },
-    {
-        0,
-        {
-            2, 0, 0, 0, 0xE8, 0, 0, 0, 0x20, 0, 0, 0, 0xCC, 0xCC, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
-            0, 0x2C, 0x9E, 0xB, 0x80, 0x8F, 3, 0, 0,
-        },
-        0,
-    },
-    {
-        0,
-        {
-            5, 0, 0, 0, 0x42, 1, 0, 0, 0x20, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
-            0, 0xE0, 0x9E, 0xB, 0x80, 0x94, 3, 0, 0,
-        },
-        0,
-    },
-    {
-        0,
-        {
-            7, 0, 0, 0, 0x9C, 1, 0, 0, 0x20, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
-            0, 0x98, 0x9E, 0xB, 0x80, 0x92, 3, 0, 0,
-        },
-        0,
-    },
-    {
-        0,
-        {
-            3, 0, 0, 0, 0x8E, 0, 0, 0, 0x84, 0, 0, 0, 0xCC, 0xCC, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
-            0, 0x74, 0x9E, 0xB, 0x80, 0x91, 3, 0, 0,
-        },
-        0,
-    },
-    {
-        0,
-        {
-            4, 0, 0, 0, 0xE8, 0, 0, 0, 0x84, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
-            0, 8, 0x9E, 0xB, 0x80, 0x90, 3, 0, 0,
-        },
-        0,
-    },
-    {
-        0,
-        {
-            6, 0, 0, 0, 0x42, 1, 0, 0, 0x84, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
-            0, 4, 0x9F, 0xB, 0x80, 0x95, 3, 0, 0,
-        },
-        0,
-    },
-    {
-        0,
-        {
-            8, 0, 0, 0, 0x9C, 1, 0, 0, 0x84, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
-            0, 0xBC, 0x9E, 0xB, 0x80, 0x93, 3, 0, 0,
-        },
-        0,
-    },
+CharCard CharCards[8] = {
+    { 0, 1, { 0 }, 0x8E, 0x20, 0xCCCC, 0xC7, 0, (s32)&CharSelectSteps2, 0x38E, 0 },
+    { 0, 2, { 0 }, 0xE8, 0x20, 0xCCCC, 0xC7, 0, (s32)&CharSelectSteps1, 0x38F, 0 },
+    { 0, 5, { 0 }, 0x142, 0x20, 0x9999, 0xC7, 0, (s32)&CharSelectSteps6, 0x394, 0 },
+    { 0, 7, { 0 }, 0x19C, 0x20, 0x9999, 0xC7, 0, (s32)&CharSelectSteps4, 0x392, 0 },
+    { 0, 3, { 0 }, 0x8E, 0x84, 0xCCCC, 0xC7, 0, (s32)&CharSelectSteps3, 0x391, 0 },
+    { 0, 4, { 0 }, 0xE8, 0x84, 0x9999, 0xC7, 0, (s32)&CharSelectSteps0, 0x390, 0 },
+    { 0, 6, { 0 }, 0x142, 0x84, 0x9999, 0xC7, 0, (s32)&CharSelectAnim7, 0x395, 0 },
+    { 0, 8, { 0 }, 0x19C, 0x84, 0x9999, 0xC7, 0, (s32)&CharSelectSteps5, 0x393, 0 },
 };
 Ovl69Off CharSelectorOffsets[4] = { { 7, 4 }, { 0x2D, 4 }, { 7, 0x30 }, { 0x2D, 0x30 } };
 s32 CharPickSfx[4] = { 0x389, 0x38A, 0x38B, 0x38C };
@@ -1458,7 +1402,7 @@ void UpdateCharSelector(Ovl69Slot *slot) {
     subengine *t;
     subengine *s;
     subengine *s2;
-    Ovl69Card *card;
+    CharCard *card;
     Ovl69Off *off;
     s32 y;
     s32 x;
@@ -1471,15 +1415,15 @@ void UpdateCharSelector(Ovl69Slot *slot) {
     s = o->unk8;
     t = o->unkC;
     s2 = o->unk10;
-    x = O69CARD[o->unk30].x + CharSelectorOffsets[o->unk4].x;
-    y = O69CARD[o->unk30].y + CharSelectorOffsets[o->unk4].y;
+    x = CharCards[o->unk30].x + CharSelectorOffsets[o->unk4].x;
+    y = CharCards[o->unk30].y + CharSelectorOffsets[o->unk4].y;
     t->unk04 = func_80015210(t->unk04, x, 0x800);
     t->unk08 = func_80015210(t->unk08, y, 0x800);
     still = abs(t->unk04 - x) + abs(t->unk08 - y);
     s->unk08 = s2->unk08 = ((Ovl69Trig *)D_80068BD4)[(D_8005B690 * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
     still = still == 0;
     if (o->unk0 & 1) {
-        tgt = O69CARD[o->unk30].target;
+        tgt = CharCards[o->unk30].target;
         v = o->unk14;
         v = Ovl69Steer(o->unk1C, tgt, v, 0x2BC);
         o->unk14 = v;
@@ -1520,7 +1464,7 @@ void UpdateCharSelector(Ovl69Slot *slot) {
     if ((o->unk4 < ((Ovl69ModeView *)D_8005A614)->unk26 && (O69PAD[o->unk4].pressed & 0x4000) && still) || o->unk2C != 0) {
         GetEngineSlot(0)->sub[20].flags &= 0xFFFF7FFF;
         GetEngineSlot(0)->sub[21].flags &= 0xFFFF7FFF;
-        card = O69CARD;
+        card = CharCards;
         if (card[o->unk30].flags & 1) {
             PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
             return;
@@ -1535,15 +1479,15 @@ void UpdateCharSelector(Ovl69Slot *slot) {
         o->unk18 = 0;
         o->unk0 |= 1;
         {
-            s->unk6C = D_80052A54 + card[o->unk30].unk14 * 0x38;
+            s->unk6C = D_80052A54 + card[o->unk30].model * 0x38;
             s->flags |= 0x8000;
         }
-        D_8005A614[o->unk4 + 0x50] = card[o->unk30].unk4;
-        D_8005A614[o->unk4 + 0x4C] = card[o->unk30].unk4;
+        D_8005A614[o->unk4 + 0x50] = card[o->unk30].hero;
+        D_8005A614[o->unk4 + 0x4C] = card[o->unk30].hero;
         PlaySfx(CharPickSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
         o->ext = D_8005A9A0;
         {
-            s32 w = O69CARD[o->unk30].unk1C;
+            s32 w = CharCards[o->unk30].anim;
             o->unk24++;
             o->ext.w[3] = w;
         }
@@ -1552,7 +1496,7 @@ void UpdateCharSelector(Ovl69Slot *slot) {
 
 void CharSelectInit(void) {
     EXTengine *eng;
-    Ovl69Rec *rec;
+    CharCard *rec;
     s32 i;
     s32 off;
 
@@ -1572,8 +1516,8 @@ void CharSelectInit(void) {
     off = 0x7E0;
     do {
         i++;
-        rec->unk24 = (u8 *)eng->sub + off;
-        rec->unk0 = 0;
+        rec->sub = (u8 *)eng->sub + off;
+        rec->flags = 0;
         rec++;
         off += 0xA8;
     } while (i < 8);
@@ -1595,8 +1539,8 @@ void ShuffleCharSelectors(void) {
                     }
                 }
             } while (j != i);
-            CharSelectors[i].dst->unk4 = ((Ovl69Pt *)CharCards)[CharSelectors[i].idx].x + CharSelectorOffsets[i].x;
-            CharSelectors[i].dst->unk8 = ((Ovl69Pt *)CharCards)[CharSelectors[i].idx].y + CharSelectorOffsets[i].y;
+            CharSelectors[i].dst->unk4 = CharCards[CharSelectors[i].idx].x + CharSelectorOffsets[i].x;
+            CharSelectors[i].dst->unk8 = CharCards[CharSelectors[i].idx].y + CharSelectorOffsets[i].y;
             i++;
         } while (i < ((Ovl69ModeView *)D_8005A614)->unk26);
     }
@@ -1609,7 +1553,7 @@ s32 CpuPickCharacter(s32 a0) {
     s8 *t;
     s32 v;
     s32 w;
-    Ovl69Rec *rec;
+    CharCard *rec;
 
     if (*(u16 *)(g + 0x32) & 4) {
         if (g[0x26] == 1) {
@@ -1626,7 +1570,7 @@ s32 CpuPickCharacter(s32 a0) {
         i = 0;
         rec = CharCards;
         do {
-            if (*(s32 *)rec->unk4 == r) {
+            if (*(s32 *)&rec->hero == r) {
                 return i;
             }
             i++;
@@ -1635,16 +1579,16 @@ s32 CpuPickCharacter(s32 a0) {
         return -1;
     }
     {
-        Ovl69Rec *p = CharCards;
+        CharCard *p = CharCards;
         s32 k;
         s32 j;
         do {
             k = Random(4) * 2;
-            if (p[k].unk0 & 1) {
+            if (p[k].flags & 1) {
                 continue;
             }
             j = k + 1;
-        } while ((p[k].unk0 & 1) || (p[j].unk0 & 1));
+        } while ((p[k].flags & 1) || (p[j].flags & 1));
         return k + Random(2);
     }
 }
