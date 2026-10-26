@@ -11,8 +11,8 @@
 
 void UpdatePOGO(void);
 extern u8 D_8008AB04[];
-extern u8 D_800C52CC[];
-extern u8 D_800C44A8[];
+extern u16 PogoHeroModels[];
+extern u8 PogoHookTableC[];
 void PogoInit_AIQuality();
 
 /* The engine callback table (EngineHooks in bash/engine.h). */
@@ -46,7 +46,7 @@ typedef struct Ovl60Hooks {
     /* 0x68 */ void *unk68;
 } Ovl60Hooks;
 extern Ovl60Hooks D_8009D6E8;
-extern process_info D_800C52B8;
+extern process_info PogoProcess;
 extern process_control_info D_8009F8A4;
 
 void psxpogo_render_tile();
@@ -85,11 +85,11 @@ typedef struct {
     u8 unk18[4];
 } Ovl60Cell; /* size 0x1C */
 
-extern Ovl60Cell D_800C53DC[8][8];
-/* The board cell at byte offset off from base (D_800C53DC). */
+extern Ovl60Cell PogoGrid[8][8];
+/* The board cell at byte offset off from base (PogoGrid). */
 #define CELL_AT(off) ((Ovl60Cell *)((off) + (u32)base))
 /* The position a board cell's unk4 points to, as PlaySfx takes it. */
-#define CELL_POS(cx, cz) ((SLONG_XYZ *)&((Ovl60Cell *)((cx) * sizeof(D_800C53DC[0]) + (cz) * sizeof(Ovl60Cell) + (u32)D_800C53DC))->unk4->x)
+#define CELL_POS(cx, cz) ((SLONG_XYZ *)&((Ovl60Cell *)((cx) * sizeof(PogoGrid[0]) + (cz) * sizeof(Ovl60Cell) + (u32)PogoGrid))->unk4->x)
 
 /* A scene object in the list at D_80058AD0 + 0x1C (InitPogo_Tiles). */
 typedef struct Ovl60Obj {
@@ -101,7 +101,7 @@ typedef struct Ovl60Obj {
     /* 0x70 */ u8 pad70[0x74 - 0x70];
     /* 0x74 */ u16 index;
 } Ovl60Obj;
-extern Ovl60Obj *D_800C5BB4;
+extern Ovl60Obj *PogoKerbObj;
 extern HeroInfo Heroes[4];
 
 /* PadState (D_80051338) as Fire_Rocket reads it: d-pad bits 0xF0 at 0x50. */
@@ -111,14 +111,14 @@ typedef struct Ovl60Pad {
     /* 0x54 */ s32 unk54;
 } Ovl60Pad;
 void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
-extern s32 D_800C53CC[];
-extern s16 D_800C44D8[];
-extern s32 D_800C4484[];
+extern s32 PogoBounceCount[];
+extern s16 PogoBounceHeights[];
+extern s32 PogoHeroHeights[];
 void Roo_FireProjectile(EXTengine *eng, s32 angle);
 extern u8 D_80053B9C[];
 extern u8 D_80053ABC[];
 /* Plot_PogoMushroom's 16-step y scale bounce. */
-extern s32 D_800C45FC[16];
+extern s32 MushroomScales[16];
 /* Plot_PogoMushroom's puff of smoke at pos (type 0x1605, flags 0x11). */
 static inline void Ovl60_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
     NAS *obj;
@@ -163,7 +163,7 @@ static inline void Ovl60_PowerupAnim(s32 i, s32 anim) {
 void ZapInDir(s32, s32, s32, s32, s32);
 /* ZapArrow, inlined into Pickup_Claim. */
 static inline void Ovl60_ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    NAS *nas = (NAS *)D_800C53DC[arg0][arg1].hero;
+    NAS *nas = (NAS *)PogoGrid[arg0][arg1].hero;
     s32 dir;
     s32 i;
     s32 dx;
@@ -203,18 +203,18 @@ static inline void Ovl60_ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
 }
 extern u8 D_80053BD4[];
-extern ScriptInit D_800C4680;
-extern s32 D_800C5308;
+extern ScriptInit RooScriptInit;
+extern s32 RooFrame;
 extern s32 D_8005A680[];
 extern u8 D_8005A614[];
-extern NAS *D_800C5BB0;
-extern s32 D_800C52E0;
+extern NAS *PogoPadlockNas;
+extern s32 BrioSmokeFrame;
 /* The padlock's moves at each level before it levels up (Plot_PogoPadlock;
  * entry 0 is also its first UserInfo.flags, level 0 in the high byte). */
-extern s32 D_800C530C[];
-/* D_800C530C's entry for a level, inlined into Plot_PogoPadlock. */
+extern s32 PadlockFlags[];
+/* PadlockFlags's entry for a level, inlined into Plot_PogoPadlock. */
 static inline s32 Ovl60_PadlockMoves(s32 level) {
-    return D_800C530C[level];
+    return PadlockFlags[level];
 }
 bool SquareIsFreeForMushroom(s32 arg0, s32 arg1);
 /* FindFreeSquare (the same C), inlined into FindFreeSquareForMushroom and
@@ -239,53 +239,53 @@ static inline bool Ovl60_FindFreeSquare(s32 *px, s32 *pz) {
     *pz = z;
     return 1;
 }
-extern s32 D_800C52E4;
-extern s32 D_800C52EC;
-extern s16 D_800C52E8;
-extern s16 D_800C52EA; /* PogoPowerups_Poll's timer, right after D_800C52E8 */
-extern s32 D_800C38D8[];
-extern s32 D_800C38E8[];
-extern s32 D_800C38F8[];
-extern s32 D_800C52F0;
-extern s32 D_800C38B8[];
-extern s32 D_800C38C8[];
-extern s32 D_800C52F8;
-extern s32 D_800C52FC;
-extern s32 D_800C5304;
-extern s32 D_800C5BAC;
-extern s32 D_800C5BB8;
-extern u16 D_800C3998[][2];
-extern s32 D_800C5BBC;
-extern u16 D_800C3A38[][2];
-extern s32 D_800C5074[];
-extern s32 D_800C5050[];
-extern s32 D_800C502C[];
+extern s32 CortexSmokeFrame;
+extern s32 number_of_pickups;
+extern s16 pickup_spawn_time;
+extern s16 powerup_spawn_time; /* PogoPowerups_Poll's timer, right after pickup_spawn_time */
+extern s32 PickupsWanted[];
+extern s32 PickupsMax[];
+extern s32 PogoObjectTimes[];
+extern s32 number_of_powerups;
+extern s32 PowerupsWanted[];
+extern s32 PowerupsMax[];
+extern s32 PogoUnused0;
+extern s32 PogoUnused1;
+extern s32 RooBounce;
+extern s32 PogoRooNas;
+extern s32 PogoLevelIndex;
+extern u16 TileLockTimes[][2];
+extern s32 PogoAiQualityIndex;
+extern u16 PogoAiTimers[][2];
+extern s32 PogoTilesMid[];
+extern s32 PogoTilesHigh[];
+extern s32 PogoTilesLow[];
 /* HeroPogo's per-hero frame tables */
-extern s32 D_800C4758[];
-extern s32 D_800C4878[];
-extern s32 D_800C49DC[];
-extern s32 D_800C4AB0[];
-extern s32 D_800C4BA0[];
-extern s32 D_800C4CF4[];
-extern s32 D_800C4E40[];
-extern s32 D_800C4F3C[];
-extern s32 D_800C5300;
-extern s32 D_800C5BC0;
-extern s32 D_800C5BC4;
-extern s32 D_800C5BC8;
-extern s32 D_800C5BCC;
-extern s32 D_800C5BD0;
-extern s32 D_800C5BD4;
-extern s32 D_800C5B2C[8];
-extern s32 D_800C5B4C[8];
-extern s32 D_800C5B6C[8];
-extern s32 D_800C5B8C[8];
-extern u8 D_800C3C14[][4][8];
-extern s32 D_800C3B14[];
-extern s32 D_800C3B94[];
-extern s16 D_800C4014[][2];
-extern s32 D_800C4084[][4];
-extern s32 D_800C4284[][4];
+extern s32 PogoFramesCrash[];
+extern s32 PogoFramesCoco[];
+extern s32 PogoFramesBrio[];
+extern s32 PogoFramesCortex[];
+extern s32 PogoFramesDingo[];
+extern s32 PogoFramesKangaroo[];
+extern s32 PogoFramesTiny[];
+extern s32 PogoFramesKong[];
+extern s32 KerbMode;
+extern s32 KerbStep;
+extern s32 KerbDelay;
+extern s32 KerbTimer;
+extern s32 KerbPeriod;
+extern s32 KerbCount;
+extern s32 KerbClockSecond;
+extern s32 TileScan0[8];
+extern s32 TileScan1[8];
+extern s32 TileScan2[8];
+extern s32 TileScan3[8];
+extern u8 KerbData[][4][8];
+extern s32 KerbIndexA[];
+extern s32 KerbIndexB[];
+extern s16 KerbTiles[][2];
+extern s32 KerbPathA[][4];
+extern s32 KerbPathB[][4];
 
 typedef struct {
     s32 unk0;
@@ -300,9 +300,9 @@ typedef struct {
     s32 z;
 } Ovl60Offset;
 
-extern Ovl60Move D_800C5ADC[];
-extern Ovl60Offset D_800C457C[];
-extern Ovl60Offset D_800C45BC[];
+extern Ovl60Move PogoAIPlay[];
+extern Ovl60Offset EncloseStepsOdd[];
+extern Ovl60Offset EncloseStepsEven[];
 extern s32 D_80051244[]; /* pad flags by direction octant */
 s32 PogoAI_CountMyTiles(u32 arg0);
 
@@ -348,14 +348,14 @@ s32 PogoAI_CountMyTiles(u32 arg0);
 
 
 void PogoPowerups_Poll(void);
-extern s32 D_800C52F4;
+extern s32 MushroomCount;
 extern u32 Clock_Time;
-extern s32 D_800C5BD8;
-extern s32 D_800C5BDC;
-extern s32 D_800C5BE0;
-extern s32 D_800C5BE4;
-extern s32 D_800C5BE8;
-extern s32 D_800C5BEC;
+extern s32 RooTileX;
+extern s32 RooTileZ;
+extern s32 RooSpeedX;
+extern s32 RooSpeedZ;
+extern s32 RooAngle;
+extern s32 RooDir;
 
 /* D_8005A614+0x34 as UpdatePOGO switches on it: an enum, so gcc's
  * switch tree skips its text cost table. */
@@ -441,18 +441,18 @@ typedef struct Ovl60ModeEntry {
     /* 0x10 */ u16 unk10;
     /* 0x12 */ u8 unk12[2];
 } Ovl60ModeEntry;
-extern Ovl60ModeEntry D_800C36B4;
-extern Ovl60ModeEntry D_800C36C8;
-extern Ovl60ModeEntry D_800C3760;
-extern Ovl60ModeEntry D_800C3774;
-extern Ovl60ModeEntry D_800C37F8;
-extern Ovl60ModeEntry D_800C380C;
-extern Ovl60ModeEntry D_800C3890;
-extern Ovl60ModeEntry D_800C38A4;
-extern u16 D_800C3678[];
-extern u16 D_800C3724[];
-extern u16 D_800C37BC[];
-extern u16 D_800C3854[];
+extern Ovl60ModeEntry PogoPainterAiHuman;
+extern Ovl60ModeEntry PogoPainterAiHumanAlt;
+extern Ovl60ModeEntry PogoAgogoAiHuman;
+extern Ovl60ModeEntry PogoAgogoAiHumanAlt;
+extern Ovl60ModeEntry PogoLocoAiHuman;
+extern Ovl60ModeEntry PogoLocoAiHumanAlt;
+extern Ovl60ModeEntry PogoBouncerAiHuman;
+extern Ovl60ModeEntry PogoBouncerAiHumanAlt;
+extern u16 PogoPainterAiQuality[];
+extern u16 PogoAgogoAiQuality[];
+extern u16 PogoLocoAiQuality[];
+extern u16 PogoBouncerAiQuality[];
 /* D_8005A614 as seen by PogoQuality_Init. */
 typedef struct Ovl60ModeView {
     /* 0x00 */ u8 unk0[0x32];
@@ -549,27 +549,27 @@ extern void *D_8009D8F8;
 extern void *D_8009D8FC;
 extern void *D_8009D900;
 extern void *D_8009D904;
-extern Ovl60ModeEntry D_800C36DC;
-extern Ovl60ModeEntry D_800C3644;
-extern Ovl60ModeEntry D_800C3658;
-extern u16 D_800C366C[6];
-extern Ovl60ModeEntry D_800C3684;
-extern Ovl60ModeEntry D_800C369C;
-extern Ovl60ModeEntry D_800C36F0;
-extern Ovl60ModeEntry D_800C3704;
-extern u16 D_800C3718[6];
-extern Ovl60ModeEntry D_800C3730;
-extern Ovl60ModeEntry D_800C3748;
-extern Ovl60ModeEntry D_800C3788;
-extern Ovl60ModeEntry D_800C379C;
-extern u16 D_800C37B0[6];
-extern Ovl60ModeEntry D_800C37C8;
-extern Ovl60ModeEntry D_800C37E0;
-extern Ovl60ModeEntry D_800C3820;
-extern Ovl60ModeEntry D_800C3834;
-extern u16 D_800C3848[6];
-extern Ovl60ModeEntry D_800C3860;
-extern Ovl60ModeEntry D_800C3878;
+extern Ovl60ModeEntry PogoAiBotTweak;
+extern Ovl60ModeEntry PogoPainterAiSkill;
+extern Ovl60ModeEntry PogoPainterAiSkillTeams;
+extern u16 PogoPainterAiTeamSkill[6];
+extern u16 PogoPainterAiRound[12];
+extern u16 PogoPainterAiRoundAlt[12];
+extern Ovl60ModeEntry PogoAgogoAiSkill;
+extern Ovl60ModeEntry PogoAgogoAiSkillTeams;
+extern u16 PogoAgogoAiTeamSkill[6];
+extern u16 PogoAgogoAiRound[12];
+extern u16 PogoAgogoAiRoundAlt[12];
+extern Ovl60ModeEntry PogoLocoAiSkill;
+extern Ovl60ModeEntry PogoLocoAiSkillTeams;
+extern u16 PogoLocoAiTeamSkill[6];
+extern u16 PogoLocoAiRound[12];
+extern u16 PogoLocoAiRoundAlt[12];
+extern Ovl60ModeEntry PogoBouncerAiSkill;
+extern Ovl60ModeEntry PogoBouncerAiSkillTeams;
+extern u16 PogoBouncerAiTeamSkill[6];
+extern u16 PogoBouncerAiRound[12];
+extern u16 PogoBouncerAiRoundAlt[12];
 void Set_Clock(u16 time, u16 flags);
 void InitSharedScoreIcons(void);
 extern s32 PanelCtrl;
@@ -623,8 +623,8 @@ void HeroPogo(u32 arg0);
 void HeroPogoDazed(u32 arg0);
 
 
-extern s32 D_800C4544[];
-extern s32 D_800C4560[];
+extern s32 TileStepFrames[];
+extern s32 TileStepFramesAlt[];
 
 /* A 0x38-byte frame of a cell object's model (Tile_Update reads unk26). */
 typedef struct {
@@ -646,8 +646,8 @@ typedef struct {
     /* 0x8C */ u16 frame;
     /* 0x8E */ s16 anim;
 } Ovl60CellObj;
-extern u16 D_800C4504[][4];
-extern u16 D_800C4524[][4];
+extern u16 TileFrames[][4];
+extern u16 TileFramesAlt[][4];
 #define MV ((Ovl60ModeView *)D_8005A614)
 /* Set a cell object's animation and its frame (fr: an s32 temp of the caller). */
 #define CELL_SET(o, a, f) \
@@ -657,12 +657,12 @@ extern u16 D_800C4524[][4];
 /* &(o)->model->frames[i], as (i * 7) << 3 bytes (sizeof(Ovl60Frame) is 0x38) */
 #define CELL_FRAME(o, i) ((Ovl60Frame *)((u32)(o)->model->frames + (((i) * 7) << 3)))
 
-extern s32 D_800C5334[];
+extern s32 PadlockTimes[];
 
 /* Plot_PogoRipperRoo: the move-pattern tables (normal, alt), the tile counter and its target */
-extern s32 D_800C468C[];
-extern s32 D_800C46C8[];
-extern s32 D_800C5BF0;
-extern s32 D_800C5BF4;
+extern s32 RooHopFrames[];
+extern s32 RooFrames[];
+extern s32 RooSteps;
+extern s32 RooWait;
 
 #endif /* BASH_OVL60_H */

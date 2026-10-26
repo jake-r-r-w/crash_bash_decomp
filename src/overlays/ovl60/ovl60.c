@@ -32,65 +32,57 @@ extern u8 D_80070568[];
 extern u8 D_80074180[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "BREATHE";
-const char D_800B32C0[] = "JUMP";
-const char D_800B32C8[] = "DAZED";
-const char D_800B32D0[] = "WIN";
-const char D_800B32D4[] = "TAZING";
-const char D_800B32DC[] = "";
+const char PogoAnimBreathe[] = "BREATHE";
+const char PogoAnimJump[] = "JUMP";
+const char PogoAnimDazed[] = "DAZED";
+const char PogoAnimWin[] = "WIN";
+const char PogoAnimTazing[] = "TAZING";
+const char PogoEmptyString[] = "";
 
 /* data, in address order */
-Ovl60ModeEntry D_800C3644 = { { 9, 0, 6, 0, 3, 0, 1, 0, 8, 0, 0x1A, 0, 0xC, 0 }, 0x10, 0x10, { 0x1C, 0 } };
-Ovl60ModeEntry D_800C3658 = { { 5, 0, 2, 0, 1, 0, 1, 0, 8, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
-u16 D_800C366C[6] = { 1, 0xC, 0x14, 1, 0xC, 0x14 };
-u16 D_800C3678[6] = { 1, 0xC, 0x14, 1, 0xC, 0x14 };
-Ovl60ModeEntry D_800C3684 = { { 9, 0, 9, 0, 9, 0, 6, 0, 6, 0, 6, 0, 3, 0 }, 3, 3, { 1, 0 } };
-s32 D_800C3698[1] = { 0x10001 };
-Ovl60ModeEntry D_800C369C = { { 5, 0, 5, 0, 5, 0, 2, 0, 2, 0, 2, 0, 1, 0 }, 1, 1, { 1, 0 } };
-s32 D_800C36B0[1] = { 0x10001 };
-Ovl60ModeEntry D_800C36B4 = { { 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0x1A, 0, 0xC, 0 }, 0x10, 0x10, { 0x1C, 0 } };
-Ovl60ModeEntry D_800C36C8 = { { 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
-Ovl60ModeEntry D_800C36DC = { { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 }, 0x10, 0x10, { 2, 0 } };
-Ovl60ModeEntry D_800C36F0 = { { 9, 0, 6, 0, 3, 0, 1, 0, 5, 0, 0x20, 0, 0x14, 0 }, 0x10, 0x10, { 0x20, 0 } };
-Ovl60ModeEntry D_800C3704 = { { 0xD, 0, 9, 0, 5, 0, 1, 0, 9, 0, 0x20, 0, 0x18, 0 }, 0x10, 0x10, { 0x20, 0 } };
-u16 D_800C3718[6] = { 1, 0x10, 0x18, 1, 0x10, 0x18 };
-u16 D_800C3724[6] = { 1, 0x10, 0x18, 1, 0x10, 0x18 };
-Ovl60ModeEntry D_800C3730 = { { 9, 0, 9, 0, 9, 0, 6, 0, 6, 0, 6, 0, 3, 0 }, 3, 3, { 1, 0 } };
-s32 D_800C3744[1] = { 0x10001 };
-Ovl60ModeEntry D_800C3748 = { { 0xD, 0, 0xD, 0, 0xD, 0, 9, 0, 9, 0, 9, 0, 5, 0 }, 5, 5, { 1, 0 } };
-s32 D_800C375C[1] = { 0x10001 };
-Ovl60ModeEntry D_800C3760 = { { 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0x20, 0, 0x14, 0 }, 0x10, 0x10, { 0x20, 0 } };
-Ovl60ModeEntry D_800C3774 = { { 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0x20, 0, 0x18, 0 }, 0x10, 0x10, { 0x20, 0 } };
-Ovl60ModeEntry D_800C3788 = { { 0x1B, 0, 0x18, 0, 0x15, 0, 0x12, 0, 0x10, 0, 0x1C, 0, 1, 0 }, 0x10, 0x10, { 0x20, 0 } };
-Ovl60ModeEntry D_800C379C = { { 0x1C, 0, 0x18, 0, 0x14, 0, 0x10, 0, 0x14, 0, 0x1C, 0, 1, 0 }, 0x10, 0x10, { 0x20, 0 } };
-u16 D_800C37B0[6] = { 1, 0x10, 0x1C, 1, 0x10, 0x1C };
-u16 D_800C37BC[6] = { 1, 0x10, 0x1C, 1, 0x10, 0x1C };
-Ovl60ModeEntry D_800C37C8 = { { 0x1B, 0, 0x1B, 0, 0x1B, 0, 0x18, 0, 0x18, 0, 0x18, 0, 0x15, 0 }, 0x15, 0x15, { 0x12, 0 } };
-s32 D_800C37DC[1] = { 0x120012 };
-Ovl60ModeEntry D_800C37E0 = { { 0x1C, 0, 0x1C, 0, 0x1C, 0, 0x18, 0, 0x18, 0, 0x18, 0, 0x14, 0 }, 0x14, 0x14, { 0x10, 0 } };
-s32 D_800C37F4[1] = { 0x100010 };
-Ovl60ModeEntry D_800C37F8 = { { 0, 0, 0, 0, 0, 0, 0, 0, 0x10, 0, 0x1C, 0, 1, 0 }, 0x10, 0x10, { 0x20, 0 } };
-Ovl60ModeEntry D_800C380C = { { 0, 0, 0, 0, 0, 0, 0, 0, 0x14, 0, 0x1C, 0, 1, 0 }, 0x10, 0x10, { 0x20, 0 } };
-Ovl60ModeEntry D_800C3820 = { { 0x14, 0, 0x11, 0, 0xE, 0, 0xB, 0, 0xA, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
-Ovl60ModeEntry D_800C3834 = { { 0x17, 0, 0x14, 0, 0x11, 0, 0xE, 0, 0xA, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
-u16 D_800C3848[6] = { 1, 0x10, 0x18, 1, 0x10, 0x18 };
-u16 D_800C3854[6] = { 1, 0x10, 0x18, 1, 0x10, 0x18 };
-Ovl60ModeEntry D_800C3860 = { { 0x14, 0, 0x14, 0, 0x14, 0, 0x11, 0, 0x11, 0, 0x11, 0, 0xE, 0 }, 0xE, 0xE, { 0xB, 0 } };
-s32 D_800C3874[1] = { 0xB000B };
-Ovl60ModeEntry D_800C3878 = { { 0x17, 0, 0x17, 0, 0x17, 0, 0x14, 0, 0x14, 0, 0x14, 0, 0x11, 0 }, 0x11, 0x11, { 0xE, 0 } };
-s32 D_800C388C[1] = { 0xE000E };
-Ovl60ModeEntry D_800C3890 = { { 0, 0, 0, 0, 0, 0, 0, 0, 0xA, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
-Ovl60ModeEntry D_800C38A4 = { { 0, 0, 0, 0, 0, 0, 0, 0, 0xA, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
-s32 D_800C38B8[4] = { 2, 2, 1, 1 };
-s32 D_800C38C8[4] = { 3, 3, 1, 2 };
-s32 D_800C38D8[4] = { 2, 2, 2, 0 };
-s32 D_800C38E8[4] = { 2, 2, 2, 0 };
-s32 D_800C38F8[40] = {
+Ovl60ModeEntry PogoPainterAiSkill = { { 9, 0, 6, 0, 3, 0, 1, 0, 8, 0, 0x1A, 0, 0xC, 0 }, 0x10, 0x10, { 0x1C, 0 } };
+Ovl60ModeEntry PogoPainterAiSkillTeams = { { 5, 0, 2, 0, 1, 0, 1, 0, 8, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
+u16 PogoPainterAiTeamSkill[6] = { 1, 0xC, 0x14, 1, 0xC, 0x14 };
+u16 PogoPainterAiQuality[6] = { 1, 0xC, 0x14, 1, 0xC, 0x14 };
+u16 PogoPainterAiRound[12] = { 9, 9, 9, 6, 6, 6, 3, 3, 3, 1, 1, 1 };
+u16 PogoPainterAiRoundAlt[12] = { 5, 5, 5, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
+Ovl60ModeEntry PogoPainterAiHuman = { { 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0x1A, 0, 0xC, 0 }, 0x10, 0x10, { 0x1C, 0 } };
+Ovl60ModeEntry PogoPainterAiHumanAlt = { { 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
+Ovl60ModeEntry PogoAiBotTweak = { { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 }, 0x10, 0x10, { 2, 0 } };
+Ovl60ModeEntry PogoAgogoAiSkill = { { 9, 0, 6, 0, 3, 0, 1, 0, 5, 0, 0x20, 0, 0x14, 0 }, 0x10, 0x10, { 0x20, 0 } };
+Ovl60ModeEntry PogoAgogoAiSkillTeams = { { 0xD, 0, 9, 0, 5, 0, 1, 0, 9, 0, 0x20, 0, 0x18, 0 }, 0x10, 0x10, { 0x20, 0 } };
+u16 PogoAgogoAiTeamSkill[6] = { 1, 0x10, 0x18, 1, 0x10, 0x18 };
+u16 PogoAgogoAiQuality[6] = { 1, 0x10, 0x18, 1, 0x10, 0x18 };
+u16 PogoAgogoAiRound[12] = { 9, 9, 9, 6, 6, 6, 3, 3, 3, 1, 1, 1 };
+u16 PogoAgogoAiRoundAlt[12] = { 0xD, 0xD, 0xD, 9, 9, 9, 5, 5, 5, 1, 1, 1 };
+Ovl60ModeEntry PogoAgogoAiHuman = { { 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0x20, 0, 0x14, 0 }, 0x10, 0x10, { 0x20, 0 } };
+Ovl60ModeEntry PogoAgogoAiHumanAlt = { { 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0x20, 0, 0x18, 0 }, 0x10, 0x10, { 0x20, 0 } };
+Ovl60ModeEntry PogoLocoAiSkill = { { 0x1B, 0, 0x18, 0, 0x15, 0, 0x12, 0, 0x10, 0, 0x1C, 0, 1, 0 }, 0x10, 0x10, { 0x20, 0 } };
+Ovl60ModeEntry PogoLocoAiSkillTeams = { { 0x1C, 0, 0x18, 0, 0x14, 0, 0x10, 0, 0x14, 0, 0x1C, 0, 1, 0 }, 0x10, 0x10, { 0x20, 0 } };
+u16 PogoLocoAiTeamSkill[6] = { 1, 0x10, 0x1C, 1, 0x10, 0x1C };
+u16 PogoLocoAiQuality[6] = { 1, 0x10, 0x1C, 1, 0x10, 0x1C };
+u16 PogoLocoAiRound[12] = { 0x1B, 0x1B, 0x1B, 0x18, 0x18, 0x18, 0x15, 0x15, 0x15, 0x12, 0x12, 0x12 };
+u16 PogoLocoAiRoundAlt[12] = { 0x1C, 0x1C, 0x1C, 0x18, 0x18, 0x18, 0x14, 0x14, 0x14, 0x10, 0x10, 0x10 };
+Ovl60ModeEntry PogoLocoAiHuman = { { 0, 0, 0, 0, 0, 0, 0, 0, 0x10, 0, 0x1C, 0, 1, 0 }, 0x10, 0x10, { 0x20, 0 } };
+Ovl60ModeEntry PogoLocoAiHumanAlt = { { 0, 0, 0, 0, 0, 0, 0, 0, 0x14, 0, 0x1C, 0, 1, 0 }, 0x10, 0x10, { 0x20, 0 } };
+Ovl60ModeEntry PogoBouncerAiSkill = { { 0x14, 0, 0x11, 0, 0xE, 0, 0xB, 0, 0xA, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
+Ovl60ModeEntry PogoBouncerAiSkillTeams = { { 0x17, 0, 0x14, 0, 0x11, 0, 0xE, 0, 0xA, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
+u16 PogoBouncerAiTeamSkill[6] = { 1, 0x10, 0x18, 1, 0x10, 0x18 };
+u16 PogoBouncerAiQuality[6] = { 1, 0x10, 0x18, 1, 0x10, 0x18 };
+u16 PogoBouncerAiRound[12] = { 0x14, 0x14, 0x14, 0x11, 0x11, 0x11, 0xE, 0xE, 0xE, 0xB, 0xB, 0xB };
+u16 PogoBouncerAiRoundAlt[12] = { 0x17, 0x17, 0x17, 0x14, 0x14, 0x14, 0x11, 0x11, 0x11, 0xE, 0xE, 0xE };
+Ovl60ModeEntry PogoBouncerAiHuman = { { 0, 0, 0, 0, 0, 0, 0, 0, 0xA, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
+Ovl60ModeEntry PogoBouncerAiHumanAlt = { { 0, 0, 0, 0, 0, 0, 0, 0, 0xA, 0, 0x1C, 0, 0xA, 0 }, 0x10, 0x10, { 0x20, 0 } };
+s32 PowerupsWanted[4] = { 2, 2, 1, 1 };
+s32 PowerupsMax[4] = { 3, 3, 1, 2 };
+s32 PickupsWanted[4] = { 2, 2, 2, 0 };
+s32 PickupsMax[4] = { 2, 2, 2, 0 };
+s32 PogoObjectTimes[40] = {
     0x60, 0x5D, 0x5A, 0x57, 0x54, 0x51, 0x4E, 0x4B, 0x48, 0x45, 0x42, 0x3F, 0x3C, 0x39, 0x36,
     0x33, 0x30, 0x2D, 0x2A, 0x27, 0x24, 0x21, 0x1E, 0x1B, 0x18, 0x15, 0x12, 0xF, 0xC, 9, 6, 3,
     0, 0, 0, 0, 0, 0, 0, 0,
 };
-u16 D_800C3998[40][2] = {
+u16 TileLockTimes[40][2] = {
     { 0x28, 0 }, { 0x27, 0 }, { 0x26, 0 }, { 0x25, 0 }, { 0x24, 0 }, { 0x23, 0 }, { 0x22, 0 },
     { 0x21, 0 }, { 0x20, 0 }, { 0x1F, 0 }, { 0x1E, 0 }, { 0x1D, 0 }, { 0x1C, 0 }, { 0x1B, 0 },
     { 0x1A, 0 }, { 0x19, 0 }, { 0x18, 0 }, { 0x17, 0 }, { 0x16, 0 }, { 0x14, 0 }, { 0x13, 0 },
@@ -98,7 +90,7 @@ u16 D_800C3998[40][2] = {
     { 0xF, 0 }, { 0xF, 0 }, { 0xF, 0 }, { 0xF, 0 }, { 0xF, 0 }, { 0xF, 0 }, { 0xF, 0 },
     { 0xF, 0 }, { 0xF, 0 }, { 0xF, 0 }, { 0xF, 0 }, { 0xF, 0 },
 };
-u16 D_800C3A38[55][2] = {
+u16 PogoAiTimers[55][2] = {
     { 0x60, 0 }, { 0x5D, 0 }, { 0x5A, 0 }, { 0x57, 0 }, { 0x54, 0 }, { 0x51, 0 }, { 0x4E, 0 },
     { 0x4B, 0 }, { 0x48, 0 }, { 0x45, 0 }, { 0x42, 0 }, { 0x3F, 0 }, { 0x3C, 0 }, { 0x39, 0 },
     { 0x36, 0 }, { 0x33, 0 }, { 0x30, 0 }, { 0x2D, 0 }, { 0x2A, 0 }, { 0x27, 0 }, { 0x24, 0 },
@@ -108,17 +100,17 @@ u16 D_800C3A38[55][2] = {
     { 0, 0 }, { 0x800, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0x800, 0 }, { 0, 0 },
     { 0x800, 0 }, { 0, 0 },
 };
-s32 D_800C3B14[32] = {
+s32 KerbIndexA[32] = {
     0x5056, 0x200C, 0x200D, 0x200E, 0x200F, 0x2010, 0x2011, 0x2012, 0x2013, 0x2014, 0x2015,
     0x2016, 0x2017, 0x2018, 0x2019, 0x201A, 0x201B, 0x201C, 0x201D, 0x201E, 0x201F, 0x2020,
     0x2021, 0x2022, 0x2023, 0x2024, 0x2025, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A,
 };
-s32 D_800C3B94[32] = {
+s32 KerbIndexB[32] = {
     0x5041, 0x200C, 0x200D, 0x200E, 0x200F, 0x2010, 0x2011, 0x2012, 0x2013, 0x2014, 0x2015,
     0x2016, 0x2017, 0x2018, 0x2019, 0x201A, 0x201B, 0x201C, 0x201D, 0x201E, 0x201F, 0x2020,
     0x2021, 0x2022, 0x2023, 0x2024, 0x2025, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A,
 };
-u8 D_800C3C14[32][4][8] = {
+u8 KerbData[32][4][8] = {
     {
         { 0, 0, 0, 0, 1, 1, 1, 1 }, { 1, 1, 1, 1, 2, 2, 2, 2 }, { 2, 2, 2, 2, 3, 3, 3, 3 },
         { 3, 3, 3, 3, 0, 0, 0, 0 },
@@ -248,13 +240,13 @@ u8 D_800C3C14[32][4][8] = {
         { 3, 3, 3, 0, 0, 0, 0, 0 },
     },
 };
-s16 D_800C4014[28][2] = {
+s16 KerbTiles[28][2] = {
     { 0, 0 }, { 0, 1 }, { 0, 2 }, { 0, 3 }, { 0, 4 }, { 0, 5 }, { 0, 6 }, { 0, 7 }, { 1, 7 },
     { 2, 7 }, { 3, 7 }, { 4, 7 }, { 5, 7 }, { 6, 7 }, { 7, 7 }, { 7, 6 }, { 7, 5 }, { 7, 4 },
     { 7, 3 }, { 7, 2 }, { 7, 1 }, { 7, 0 }, { 6, 0 }, { 5, 0 }, { 4, 0 }, { 3, 0 }, { 2, 0 },
     { 1, 0 },
 };
-s32 D_800C4084[32][4] = {
+s32 KerbPathA[32][4] = {
     { 3, 0xA, 0x11, 0x18 }, { 4, 0xB, 0x12, 0x19 }, { 5, 0xC, 0x13, 0x1A },
     { 6, 0xD, 0x14, 0x1B }, { 7, 0xE, 0x15, 0 }, { 7, 0xE, 0x15, 0 }, { 8, 0xF, 0x16, 1 },
     { 9, 0x10, 0x17, 2 }, { 0xA, 0x11, 0x18, 3 }, { 0xB, 0x12, 0x19, 4 },
@@ -265,7 +257,7 @@ s32 D_800C4084[32][4] = {
     { 0x1A, 5, 0xC, 0x13 }, { 0x1B, 6, 0xD, 0x14 }, { 0, 7, 0xE, 0x15 }, { 0, 7, 0xE, 0x15 },
     { 1, 8, 0xF, 0x16 }, { 2, 9, 0x10, 0x17 },
 };
-s32 D_800C4284[32][4] = {
+s32 KerbPathB[32][4] = {
     { 4, 0xB, 0x12, 0x19 }, { 5, 0xC, 0x13, 0x1A }, { 6, 0xD, 0x14, 0x1B },
     { 7, 0xE, 0x15, 0 }, { 7, 0xE, 0x15, 0 }, { 8, 0xF, 0x16, 1 }, { 9, 0x10, 0x17, 2 },
     { 0xA, 0x11, 0x18, 3 }, { 0xB, 0x12, 0x19, 4 }, { 0xC, 0x13, 0x1A, 5 },
@@ -276,40 +268,40 @@ s32 D_800C4284[32][4] = {
     { 0x1A, 5, 0xC, 0x13 }, { 0x1B, 6, 0xD, 0x14 }, { 0, 7, 0xE, 0x15 }, { 0, 7, 0xE, 0x15 },
     { 1, 8, 0xF, 0x16 }, { 2, 9, 0x10, 0x17 }, { 3, 0xA, 0x11, 0x18 },
 };
-s32 D_800C4484[9] = { 0, 0x50, 0x50, 0x70, 0x60, 0x70, 0x70, 0x70, 0x70 };
-u8 D_800C44A8[48] = {
+s32 PogoHeroHeights[9] = { 0, 0x50, 0x50, 0x70, 0x60, 0x70, 0x70, 0x70, 0x70 };
+u8 PogoHookTableC[48] = {
     0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0,
     0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0,
     0x38, 0, 0x38, 0, 0x38, 0, 0x38, 0,
 };
-s16 D_800C44D8[22] = {
+s16 PogoBounceHeights[22] = {
     0x1000, 0x1100, 0x1200, 0x1400, 0x1600, 0x1800, 0x1E00, 0x2000, 0x1F00, 0x1E00, 0x1F00,
     0x2000, 0x1A00, 0x1200, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x800, 0,
 };
-u16 D_800C4504[4][4] = {
+u16 TileFrames[4][4] = {
     { 0x3038, 0x3035, 0x3036, 0x3037 }, { 0x304D, 0x304A, 0x304B, 0x304C },
     { 0x3044, 0x3043, 0x3041, 0x3042 }, { 0x3029, 0x3026, 0x3027, 0x3028 },
 };
-u16 D_800C4524[4][4] = {
+u16 TileFramesAlt[4][4] = {
     { 0x302B, 0x3028, 0x3029, 0x302A }, { 0x3016, 0x3013, 0x3014, 0x3015 },
     { 0x304E, 0x304D, 0x304B, 0x304C }, { 0x303C, 0x3039, 0x303A, 0x303B },
 };
-s32 D_800C4544[7] = { 0x303D, 0x303E, 0x303F, 0x3036, 0x3036, 0x3036, 0x3036 };
-s32 D_800C4560[7] = { 0x3047, 0x3048, 0x3049, 0x3040, 0x3040, 0x3040, 0x3040 };
-Ovl60Offset D_800C457C[8] = { { 1, 0 }, { 1, 0 }, { 0, -1 }, { 0, -1 }, { -1, 0 }, { -1, 0 }, { 0, 1 }, { 0, 1 } };
-Ovl60Offset D_800C45BC[8] = { { -1, 0 }, { -1, 0 }, { 0, -1 }, { 0, -1 }, { 1, 0 }, { 1, 0 }, { 0, 1 }, { 0, 1 } };
-s32 D_800C45FC[16] = {
+s32 TileStepFrames[7] = { 0x303D, 0x303E, 0x303F, 0x3036, 0x3036, 0x3036, 0x3036 };
+s32 TileStepFramesAlt[7] = { 0x3047, 0x3048, 0x3049, 0x3040, 0x3040, 0x3040, 0x3040 };
+Ovl60Offset EncloseStepsOdd[8] = { { 1, 0 }, { 1, 0 }, { 0, -1 }, { 0, -1 }, { -1, 0 }, { -1, 0 }, { 0, 1 }, { 0, 1 } };
+Ovl60Offset EncloseStepsEven[8] = { { -1, 0 }, { -1, 0 }, { 0, -1 }, { 0, -1 }, { 1, 0 }, { 1, 0 }, { 0, 1 }, { 0, 1 } };
+s32 MushroomScales[16] = {
     0, 0x80, 0x100, 0x200, 0x380, 0x500, 0x600, 0x700, 0x900, 0x1100, 0x1100, 0x900, 0x880,
     0x980, 0x1080, 0x980,
 };
-s32 D_800C463C[3] = { 0x1000, 0x1000, 0x1000 };
-s32 D_800C4648[3] = { (s32)0x80110000, 0x4080001A, 0x8000 };
-s32 D_800C4654[3] = { (s32)0x80110000, 0x4100000E, 0x8000 };
-s32 D_800C4660[3] = { (s32)0x80110000, 0x40000015, 0x8000 };
-s32 D_800C466C[5] = { (s32)&D_800C4648, (s32)&D_800C4654, (s32)&D_800C4660, 0, 0 };
-ScriptInit D_800C4680 = { 0, (void *)&D_800C466C, 0x401 };
-s32 D_800C468C[15] = { 6, 6, 6, 7, 6, 7, 6, 7, 6, 6, 8, 8, 6, 8, 0xC };
-s32 D_800C46C8[4] = {
+s32 RooScale[3] = { 0x1000, 0x1000, 0x1000 };
+s32 RooSteps0[3] = { (s32)0x80110000, 0x4080001A, 0x8000 };
+s32 RooSteps1[3] = { (s32)0x80110000, 0x4100000E, 0x8000 };
+s32 RooSteps2[3] = { (s32)0x80110000, 0x40000015, 0x8000 };
+s32 RooAnimList[5] = { (s32)&RooSteps0, (s32)&RooSteps1, (s32)&RooSteps2, 0, 0 };
+ScriptInit RooScriptInit = { 0, (void *)&RooAnimList, 0x401 };
+s32 RooHopFrames[15] = { 6, 6, 6, 7, 6, 7, 6, 7, 6, 6, 8, 8, 6, 8, 0xC };
+s32 RooFrames[4] = {
     0xA, 0xA, 0xA, 0xC,
 };
 hero_seq CRA_seq_pogo_tazing[24] = {
@@ -324,7 +316,7 @@ hero_seq CRA_seq_pogo_quick_idle[16] = {
     0, 0x4004, 0x4006, 0x4008, 0x400A, 0x8003, 0x12, 0x400C, 0x8003, 0x14, 0x400E, 0x4010, 0x4000,
     0x4002, 0x8000, 0,
 };
-s32 D_800C4758[19] = {
+s32 PogoFramesCrash[19] = {
     0x4107, 0x4108, 0x4109, 0x410A, 0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112,
     0x4113, 0x4114, 0x4115, 0x4116, 0x4117, 0x4117, 0x4117,
 };
@@ -348,7 +340,7 @@ hero_seq COC_seq_pogo_quick_idle[16] = {
     0, 0x4000, 0x4002, 0x4004, 0x4006, 0x4008, 0x400A, 0x400C, 0x8003, 0x14, 0x400E, 0x8003, 0x12,
     0x8000, 0, 0,
 };
-s32 D_800C4878[22] = {
+s32 PogoFramesCoco[22] = {
     0x4080, 0x4081, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A, 0x408B,
     0x408C, 0x408D, 0x408E, 0x408F, 0x4090, 0x4091, 0x4091, 0x4091, 0x4091, 0x4091,
 };
@@ -375,7 +367,7 @@ hero_seq BRO_seq_pogo_quick_idle[16] = {
     0, 0x4080, 0x8003, 0x13, 0x4082, 0x4084, 0x4086, 0x4088, 0x408A, 0x408C, 0x408E, 0x8003, 0x12,
     0x8000, 0, 0,
 };
-s32 D_800C49DC[19] = {
+s32 PogoFramesBrio[19] = {
     0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A, 0x410B, 0x410C, 0x410D, 0x410E,
     0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115,
 };
@@ -396,7 +388,7 @@ hero_seq CTX_seq_pogo_quick_idle[16] = {
     0, 0x4000, 0x8003, 0x13, 0x4002, 0x4004, 0x4006, 0x4008, 0x400A, 0x400C, 0x400E, 0x8003, 0x12,
     0x8000, 0, 0,
 };
-s32 D_800C4AB0[19] = {
+s32 PogoFramesCortex[19] = {
     0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A, 0x408B, 0x408C, 0x408D, 0x408E,
     0x408F, 0x4090, 0x4091, 0x4092, 0x4093, 0x4094, 0x4095,
 };
@@ -418,7 +410,7 @@ hero_seq DNG_seq_pogo_quick_idle[16] = {
     0, 0x4100, 0x4102, 0x8003, 0x11, 0x4104, 0x4106, 0x4108, 0x410A, 0x410C, 0x410E, 0x8003, 0x12,
     0x4110, 0x8000, 0,
 };
-s32 D_800C4BA0[22] = {
+s32 PogoFramesDingo[22] = {
     0x4080, 0x4081, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A, 0x408B,
     0x408C, 0x408D, 0x408E, 0x408F, 0x408F, 0x4090, 0x4090, 0x4090, 0x4090, 0x4090,
 };
@@ -445,7 +437,7 @@ hero_seq KAN_seq_pogo_quick_idle[16] = {
     0, 0x4080, 0x4082, 0x8003, 0x11, 0x4084, 0x4086, 0x4088, 0x408A, 0x408C, 0x408E, 0x8003, 0x12,
     0x408E, 0x8000, 0,
 };
-s32 D_800C4CF4[23] = {
+s32 PogoFramesKangaroo[23] = {
     0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A, 0x410B,
     0x410C, 0x410D, 0x410E, 0x410F, 0x410F, 0x410F, 0x410F, 0x410F, 0x410F, 0x410F, 0x410F,
 };
@@ -470,7 +462,7 @@ hero_seq TIN_seq_pogo_quick_idle[16] = {
     0, 0x4000, 0x4002, 0x4004, 0x4006, 0x4008, 0x400A, 0x400C, 0x8003, 0x14, 0x400E, 0x400E, 0x8003,
     0x12, 0x8000, 0,
 };
-s32 D_800C4E40[22] = {
+s32 PogoFramesTiny[22] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A, 0x418B,
     0x418C, 0x418D, 0x418E, 0x418F, 0x4190, 0x4191, 0x4192, 0x4192, 0x4192, 0x4192,
 };
@@ -493,7 +485,7 @@ hero_seq KON_seq_pogo_quick_idle[16] = {
     0, 0x4080, 0x4082, 0x4084, 0x4086, 0x4088, 0x408A, 0x408C, 0x8003, 0x14, 0x408E, 0x408E, 0x8003,
     0x12, 0x8000, 0,
 };
-s32 D_800C4F3C[18] = {
+s32 PogoFramesKong[18] = {
     0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A, 0x410B,
     0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111,
 };
@@ -509,108 +501,119 @@ hero_seq KON_seq_pogo_winner[78] = {
     0x4087, 0x4088, 0x4089, 0x408A, 0x408B, 0x408C, 0x408D, 0x8003, 0x14, 0x408E, 0x8003, 0x12,
     0x408F, 0x4090, 0x4091, 0x8000, 0, 0,
 };
-s32 D_800C502C[9] = { 0, 1, 1, 3, 3, 3, 2, 1, 1 };
-s32 D_800C5050[9] = { 0, 7, 7, 1, 1, 3, 3, 7, 2 };
-s32 D_800C5074[9] = { 0, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x10 };
-s32 D_800C5098[2] = { 0x4F001C, 0xFFFF };
-s32 D_800C50A0[6] = { (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32D0, (s32)&D_800B32D4, 0 };
-s32 D_800C50B8[1] = { 0xFFFF };
-s32 D_800C50BC[1] = { -0xFFB0 };
-s32 D_800C50C0[64] = {
-    0x47, (s32)&D_800C50A0, (s32)&D_800C50B8, 0, 0, 0, 0, 0, 0x48, (s32)&D_800C50A0,
-    (s32)&D_800C50B8, 0, 0, 0, 0, 0, 0x49, (s32)&D_800C50A0, (s32)&D_800C50BC, 0, 0, 0, 0, 0,
-    0x4A, (s32)&D_800C50A0, (s32)&D_800C50B8, 0, 0, 0, 0, 0, 0x4B, (s32)&D_800C50A0,
-    (s32)&D_800C50B8, 0, 0, 0, 0, 0, 0x4C, (s32)&D_800C50A0, (s32)&D_800C50B8, 0, 0, 0, 0, 0,
-    0x4D, (s32)&D_800C50A0, (s32)&D_800C50BC, 0, 0, 0, 0, 0, 0x4E, (s32)&D_800C50A0,
-    (s32)&D_800C50B8, 0, 0, 0, 0, 0,
+s32 PogoTilesLow[9] = { 0, 1, 1, 3, 3, 3, 2, 1, 1 };
+s32 PogoTilesHigh[9] = { 0, 7, 7, 1, 1, 3, 3, 7, 2 };
+s32 PogoTilesMid[9] = { 0, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x10 };
+s16 PogoPreLoadDB[4] = { 0x1C, 0x4F, -1, 0 };
+char *PogoAnims[6] = {
+    (char *)PogoAnimBreathe, (char *)PogoAnimJump, (char *)PogoAnimDazed, (char *)PogoAnimWin,
+    (char *)PogoAnimTazing, NULL,
 };
-s32 D_800C51C0[15] = {
+s16 PogoLevelDB0[2] = { -1, 0 };
+s16 PogoLevelDB1[2] = { 0x50, -1 };
+WWInf PogoWorldInfo[8] = {
+    { 0x47, PogoAnims, PogoLevelDB0 },
+    { 0x48, PogoAnims, PogoLevelDB0 },
+    { 0x49, PogoAnims, PogoLevelDB1 },
+    { 0x4A, PogoAnims, PogoLevelDB0 },
+    { 0x4B, PogoAnims, PogoLevelDB0 },
+    { 0x4C, PogoAnims, PogoLevelDB0 },
+    { 0x4D, PogoAnims, PogoLevelDB1 },
+    { 0x4E, PogoAnims, PogoLevelDB0 },
+};
+s32 PogoFiles[15] = {
     (s32)&D_80055684, (s32)&D_8004F1C8, (s32)&D_8004F1C0, (s32)&D_800555A4, (s32)&D_8004F1A8,
     (s32)&D_8004F1A0, (s32)&D_80053074, (s32)&D_8004F1B8, (s32)&D_8004F1B0, (s32)&D_80053B9C,
     (s32)&D_8004F198, (s32)&D_8004F190, 0, 0, 0,
 };
-s32 D_800C51FC[26] = {
+s32 PogoLocoFiles[18] = {
     (s32)&D_80055684, (s32)&D_8004F188, (s32)&D_8004F180, (s32)&D_800555A4, (s32)&D_8004F168,
     (s32)&D_8004F160, (s32)&D_80053074, (s32)&D_8004F178, (s32)&D_8004F170, (s32)&D_80053B9C,
     (s32)&D_8004F158, (s32)&D_8004F150, (s32)&D_80053BD4, (s32)&D_8004F148, (s32)&D_8004F140,
-    0, 0, 0, (s32)&D_80050124, (s32)&D_800C51C0, (s32)&D_80050124, (s32)&D_800C51C0,
-    (s32)&D_80050118, (s32)&D_800C51FC, (s32)&D_80050124, (s32)&D_800C51C0,
+    0, 0, 0,
 };
-s32 D_800C5264[2] = { 0x20D0003, 0x201 };
-s32 D_800C526C[19] = {
-    (s32)&D_800C5264, 3, (s32)&D_800C5098, (s32)&D_800C50C0, (s32)&D_800C526C, 0, 0, 0, 0,
-    0x2100, 0x10, 0x1000, 0x100, 0x200, 0x4B0, (s32)&D_80063EC8, (s32)&D_80063BB8, 0x20, 0x400,
+/* the four levels' files (modes 10..13; the engine's table at 0x800A0030): the exe's file group
+ * and the model list; Loco's has one more model */
+file_group_load_info file_group_POGOPAINTER = { D_80050124, PogoFiles };
+file_group_load_info file_group_POGOAGOGO = { D_80050124, PogoFiles };
+file_group_load_info file_group_POGOLOCO = { D_80050118, PogoLocoFiles };
+file_group_load_info file_group_POGOBOUNCER = { D_80050124, PogoFiles };
+u16 PogoLUPtab[4] = { 3, 0x20D, 0x201, 0 };
+TrigLookUp PogoLUP = { PogoLUPtab, 3 };
+PreMap POGO_PREMAP = { PogoPreLoadDB, PogoWorldInfo, &PogoLUP };
+shell_setup POGO_shell_info = {
+    0x2100, 0x10, 0x1000, 0x100, 0x200, 0x4B0, D_80063EC8, D_80063BB8, 0x20, 0x400,
 };
-process_info D_800C52B8 = { pogo_init, 0, 0, pogo_kill, 0 };
-u8 D_800C52CC[20] = { 0, 0, 9, 0, 0xA, 0, 0xB, 0, 0xC, 0, 0xD, 0, 0xF, 0, 0xE, 0, 0x10, 0, 0, 0 };
-s32 D_800C52E0 = 0;
-s32 D_800C52E4 = 0;
-s16 D_800C52E8 = -1;
-s16 D_800C52EA = -1;
-s32 D_800C52EC = 0;
-s32 D_800C52F0 = 0;
-s32 D_800C52F4 = 0;
-s32 D_800C52F8 = 0;
-s32 D_800C52FC = 0;
-s32 D_800C5300 = 0;
-s32 D_800C5304 = 0;
-s32 D_800C5308 = 0;
-s32 D_800C530C[10] = { 0x12, 0x10, 0xE, 0xD, 0xC, 0xA, 8, 7, 7, 7 };
-s32 D_800C5334[10] = { 1, 4, 7, 0xA, 0xE, 0x13, 0x17, 0x1C, 0x1C, 0x1C };
+process_info PogoProcess = { pogo_init, 0, 0, pogo_kill, 0 };
+u16 PogoHeroModels[10] = { 0, 9, 0xA, 0xB, 0xC, 0xD, 0xF, 0xE, 0x10, 0 };
+s32 BrioSmokeFrame = 0;
+s32 CortexSmokeFrame = 0;
+s16 pickup_spawn_time = -1;
+s16 powerup_spawn_time = -1;
+s32 number_of_pickups = 0;
+s32 number_of_powerups = 0;
+s32 MushroomCount = 0;
+s32 PogoUnused0 = 0;
+s32 PogoUnused1 = 0;
+s32 KerbMode = 0;
+s32 RooBounce = 0;
+s32 RooFrame = 0;
+s32 PadlockFlags[10] = { 0x12, 0x10, 0xE, 0xD, 0xC, 0xA, 8, 7, 7, 7 };
+s32 PadlockTimes[10] = { 1, 4, 7, 0xA, 0xE, 0x13, 0x17, 0x1C, 0x1C, 0x1C };
 PogoPlayer PogoPlay[4] = {0};
-s32 D_800C53CC[4] = {0};
-Ovl60Cell D_800C53DC[8][8] = {0};
-Ovl60Move D_800C5ADC[4] = {0};
-s32 D_800C5B2C[8] = {0};
-s32 D_800C5B4C[8] = {0};
-s32 D_800C5B6C[8] = {0};
-s32 D_800C5B8C[8] = {0};
-s32 D_800C5BAC = 0;
-NAS *D_800C5BB0 = 0;
-Ovl60Obj *D_800C5BB4 = 0;
-s32 D_800C5BB8 = 0;
-s32 D_800C5BBC = 0;
-s32 D_800C5BC0 = 0;
-s32 D_800C5BC4 = 0;
-s32 D_800C5BC8 = 0;
-s32 D_800C5BCC = 0;
-s32 D_800C5BD0 = 0;
-s32 D_800C5BD4 = 0;
-s32 D_800C5BD8 = 0;
-s32 D_800C5BDC = 0;
-s32 D_800C5BE0 = 0;
-s32 D_800C5BE4 = 0;
-s32 D_800C5BE8 = 0;
-s32 D_800C5BEC = 0;
-s32 D_800C5BF0 = 0;
-s32 D_800C5BF4 = 0;
+s32 PogoBounceCount[4] = {0};
+Ovl60Cell PogoGrid[8][8] = {0};
+Ovl60Move PogoAIPlay[4] = {0};
+s32 TileScan0[8] = {0};
+s32 TileScan1[8] = {0};
+s32 TileScan2[8] = {0};
+s32 TileScan3[8] = {0};
+s32 PogoRooNas = 0;
+NAS *PogoPadlockNas = 0;
+Ovl60Obj *PogoKerbObj = 0;
+s32 PogoLevelIndex = 0;
+s32 PogoAiQualityIndex = 0;
+s32 KerbStep = 0;
+s32 KerbDelay = 0;
+s32 KerbTimer = 0;
+s32 KerbPeriod = 0;
+s32 KerbCount = 0;
+s32 KerbClockSecond = 0;
+s32 RooTileX = 0;
+s32 RooTileZ = 0;
+s32 RooSpeedX = 0;
+s32 RooSpeedZ = 0;
+s32 RooAngle = 0;
+s32 RooDir = 0;
+s32 RooSteps = 0;
+s32 RooWait = 0;
 
 void PogoInit_AIQuality(void) {
-    D_8009D8F4 = &D_800C36DC;
+    D_8009D8F4 = &PogoAiBotTweak;
     switch (((Ovl60ModeView *)D_8005A614)->mode) {
     case 10:
-        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &D_800C3658 : &D_800C3644;
-        D_8009D904 = D_8005A680[0] != 0 ? &D_800C369C : &D_800C3684;
-        D_8009D8F8 = D_8005A680[0] != 0 ? &D_800C36C8 : &D_800C36B4;
-        D_8009D900 = D_800C366C;
+        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &PogoPainterAiSkillTeams : &PogoPainterAiSkill;
+        D_8009D904 = D_8005A680[0] != 0 ? PogoPainterAiRoundAlt : PogoPainterAiRound;
+        D_8009D8F8 = D_8005A680[0] != 0 ? &PogoPainterAiHumanAlt : &PogoPainterAiHuman;
+        D_8009D900 = PogoPainterAiTeamSkill;
         break;
     case 11:
-        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &D_800C3704 : &D_800C36F0;
-        D_8009D904 = D_8005A680[0] != 0 ? &D_800C3748 : &D_800C3730;
-        D_8009D8F8 = D_8005A680[0] != 0 ? &D_800C3774 : &D_800C3760;
-        D_8009D900 = D_800C3718;
+        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &PogoAgogoAiSkillTeams : &PogoAgogoAiSkill;
+        D_8009D904 = D_8005A680[0] != 0 ? PogoAgogoAiRoundAlt : PogoAgogoAiRound;
+        D_8009D8F8 = D_8005A680[0] != 0 ? &PogoAgogoAiHumanAlt : &PogoAgogoAiHuman;
+        D_8009D900 = PogoAgogoAiTeamSkill;
         break;
     case 12:
-        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &D_800C379C : &D_800C3788;
-        D_8009D904 = D_8005A680[0] != 0 ? &D_800C37E0 : &D_800C37C8;
-        D_8009D8F8 = D_8005A680[0] != 0 ? &D_800C380C : &D_800C37F8;
-        D_8009D900 = D_800C37B0;
+        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &PogoLocoAiSkillTeams : &PogoLocoAiSkill;
+        D_8009D904 = D_8005A680[0] != 0 ? PogoLocoAiRoundAlt : PogoLocoAiRound;
+        D_8009D8F8 = D_8005A680[0] != 0 ? &PogoLocoAiHumanAlt : &PogoLocoAiHuman;
+        D_8009D900 = PogoLocoAiTeamSkill;
         break;
     case 13:
-        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &D_800C3834 : &D_800C3820;
-        D_8009D904 = D_8005A680[0] != 0 ? &D_800C3878 : &D_800C3860;
-        D_8009D8F8 = D_8005A680[0] != 0 ? &D_800C38A4 : &D_800C3890;
-        D_8009D900 = D_800C3848;
+        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &PogoBouncerAiSkillTeams : &PogoBouncerAiSkill;
+        D_8009D904 = D_8005A680[0] != 0 ? PogoBouncerAiRoundAlt : PogoBouncerAiRound;
+        D_8009D8F8 = D_8005A680[0] != 0 ? &PogoBouncerAiHumanAlt : &PogoBouncerAiHuman;
+        D_8009D900 = PogoBouncerAiTeamSkill;
         break;
     }
 }
@@ -627,7 +630,7 @@ void PogoInit_AllHeros(void) {
 
     i = 0;
     h = Heroes;
-    mv = D_800C5ADC;
+    mv = PogoAIPlay;
     slot = PogoPlay;
 loop:
     if (i < 4) {
@@ -811,7 +814,7 @@ void InitPogo_Tiles(void) {
     s32 off;
 
     j = 0;
-    base = D_800C53DC[0];
+    base = PogoGrid[0];
     for (rowOff = 0; j < 8; j++) {
         i = 0;
         off = rowOff;
@@ -827,14 +830,14 @@ void InitPogo_Tiles(void) {
             c->unkE = 0;
             c->unk10 = 0;
             c->unk18[0] = 0;
-            off += sizeof(D_800C53DC[0]);
+            off += sizeof(PogoGrid[0]);
         } while (++i < 8);
         rowOff += sizeof(Ovl60Cell);
     }
     obj = (Ovl60Obj *)((GfxScene *)D_80058AD0)->objs;
-    D_800C5BB4 = NULL;
+    PogoKerbObj = NULL;
     if (obj != NULL) {
-    base2 = D_800C53DC[0];
+    base2 = PogoGrid[0];
     g = D_8005A614;
     do {
         id = (u16 *)func_80015870(obj->model, obj->index);
@@ -842,13 +845,13 @@ void InitPogo_Tiles(void) {
             v = *id;
             j = 7 - (s16)(v % 10);
             i = (s16)(v / 10) - 1;
-            p = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(D_800C53DC[0]) + (u32)base2);
+            p = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(PogoGrid[0]) + (u32)base2);
             p->unk4 = (Ovl60CellPos *)obj;
             obj->flags |= 0x20000;
             psxpogo_init_tile((subengine *)obj);
         }
         if (*(s16 *)(g + 0x34) == 11 && *(s16 *)id == 100) {
-            D_800C5BB4 = obj;
+            PogoKerbObj = obj;
         }
         obj = obj->next;
     } while (obj != NULL);
@@ -899,19 +902,19 @@ loop:
         if (*(u16 *)(g + 0x32) & 0x80) {
             switch ((u32)Clock_Time >> 8) {
             case 0x115:
-                ok = D_800C52F4 < 3;
+                ok = MushroomCount < 3;
                 break;
             case 0x50:
-                ok = D_800C52F4 < 4;
+                ok = MushroomCount < 4;
                 break;
             case 0x30:
-                ok = D_800C52F4 < 5;
+                ok = MushroomCount < 5;
                 break;
             case 0x20:
-                ok = D_800C52F4 < 6;
+                ok = MushroomCount < 6;
                 break;
             case 0x10:
-                ok = D_800C52F4 < 7;
+                ok = MushroomCount < 7;
                 break;
             default:
                 return;
@@ -937,30 +940,30 @@ void PogoQuality_Init(void) {
     switch (((Ovl60ModeView *)D_8005A614)->mode) {
     case 10:
         if (((Ovl60ModeView *)D_8005A614)->teams != 0) {
-            e = &D_800C36C8;
+            e = &PogoPainterAiHumanAlt;
         } else {
-            e = &D_800C36B4;
+            e = &PogoPainterAiHuman;
         }
         break;
     case 11:
         if (((Ovl60ModeView *)D_8005A614)->teams != 0) {
-            e = &D_800C3774;
+            e = &PogoAgogoAiHumanAlt;
         } else {
-            e = &D_800C3760;
+            e = &PogoAgogoAiHuman;
         }
         break;
     case 12:
         if (((Ovl60ModeView *)D_8005A614)->teams != 0) {
-            e = &D_800C380C;
+            e = &PogoLocoAiHumanAlt;
         } else {
-            e = &D_800C37F8;
+            e = &PogoLocoAiHuman;
         }
         break;
     case 13:
         if (((Ovl60ModeView *)D_8005A614)->teams != 0) {
-            e = &D_800C38A4;
+            e = &PogoBouncerAiHumanAlt;
         } else {
-            e = &D_800C3890;
+            e = &PogoBouncerAiHuman;
         }
         break;
     }
@@ -968,20 +971,20 @@ void PogoQuality_Init(void) {
         g = (Ovl60ModeView *)D_8005A614;
         switch (g->mode) {
         case 10:
-            e->unkE = D_800C3678[g->unk38];
-            e->unk10 = D_800C3678[g->unk38 + 3];
+            e->unkE = PogoPainterAiQuality[g->unk38];
+            e->unk10 = PogoPainterAiQuality[g->unk38 + 3];
             break;
         case 11:
-            e->unkE = D_800C3724[g->unk38];
-            e->unk10 = D_800C3724[g->unk38 + 3];
+            e->unkE = PogoAgogoAiQuality[g->unk38];
+            e->unk10 = PogoAgogoAiQuality[g->unk38 + 3];
             break;
         case 12:
-            e->unkE = D_800C37BC[g->unk38];
-            e->unk10 = D_800C37BC[g->unk38 + 3];
+            e->unkE = PogoLocoAiQuality[g->unk38];
+            e->unk10 = PogoLocoAiQuality[g->unk38 + 3];
             break;
         case 13:
-            e->unkE = D_800C3854[g->unk38];
-            e->unk10 = D_800C3854[g->unk38 + 3];
+            e->unkE = PogoBouncerAiQuality[g->unk38];
+            e->unk10 = PogoBouncerAiQuality[g->unk38 + 3];
             break;
         }
         g = (Ovl60ModeView *)D_8005A614;
@@ -1009,7 +1012,7 @@ void Update_Occupancy(void) {
 
     for (hx = 0; hx < 8; hx++) {
         for (hz = 0; hz < 8; hz++) {
-            D_800C53DC[hx][hz].unkE = 0;
+            PogoGrid[hx][hz].unkE = 0;
         }
     }
     for (k = 0; k < 4; k++) {
@@ -1017,16 +1020,16 @@ void Update_Occupancy(void) {
         hx = (he->unk10.x + 0x800) >> 9;
         hz = (he->unk10.z + 0x800) >> 9;
         if ((u32)hx < 8 && (u32)hz < 8) {
-            D_800C53DC[hx][hz].unkE = k + 1;
+            PogoGrid[hx][hz].unkE = k + 1;
         }
     }
-    if (D_800C5BAC != 0) {
-        eng = *(EXTengine **)(D_800C5BAC + 0x54);
+    if (PogoRooNas != 0) {
+        eng = *(EXTengine **)(PogoRooNas + 0x54);
         if (eng != NULL) {
             x = (eng->unk10.x + 0x800) >> 9;
             z = (eng->unk10.z + 0x800) >> 9;
             if ((u32)x < 8 && z >= 0 && z < 8) {
-                D_800C53DC[x][z].unkE = 5;
+                PogoGrid[x][z].unkE = 5;
             }
         }
     }
@@ -1553,24 +1556,24 @@ void PostMovePOGO(u32 i) {
             Heroes[i].hero_fx->unk1E = Heroes[i].hero_eng->unk1E;
             Heroes[i].hero_fx->unk5E = 1;
             if (Heroes[i].hero_mode == 0x3A) {
-                D_800C53CC[i] += 5;
-                if (D_800C53CC[i] > 45) {
-                    D_800C53CC[i] = 45;
+                PogoBounceCount[i] += 5;
+                if (PogoBounceCount[i] > 45) {
+                    PogoBounceCount[i] = 45;
                 }
             } else {
-                D_800C53CC[i] -= 2;
-                if (D_800C53CC[i] < 5) {
-                    D_800C53CC[i] = 5;
+                PogoBounceCount[i] -= 2;
+                if (PogoBounceCount[i] < 5) {
+                    PogoBounceCount[i] = 5;
                 }
             }
-            Heroes[i].hero_fx->unk1C = (D_800C53CC[i] << 12) / 360;
+            Heroes[i].hero_fx->unk1C = (PogoBounceCount[i] << 12) / 360;
             switch (name) {
             case 3:
-                n = D_800C52E4;
+                n = CortexSmokeFrame;
                 sub->unk74 = 0x2021;
                 break;
             case 4:
-                n = D_800C52E0;
+                n = BrioSmokeFrame;
                 sub->unk74 = 0x2021;
                 break;
             default:
@@ -1588,7 +1591,7 @@ void PostMovePOGO(u32 i) {
             sub->unk20.x = 0x1000;
             sub->unk20.z = 0x1000;
             sub->unk51 = 0;
-            sub->unk20.y = D_800C44D8[n];
+            sub->unk20.y = PogoBounceHeights[n];
             sub->unk52 = 1;
         }
     }
@@ -1652,10 +1655,10 @@ void HeroPogo(u32 arg0) {
     hb = Heroes;
     h = &hb[arg0];
     if (h->hero_name == 4) {
-        D_800C52E0 = 0;
+        BrioSmokeFrame = 0;
     }
     if (h->hero_name == 3) {
-        D_800C52E4 = 0;
+        CortexSmokeFrame = 0;
     }
     if (TestHeroPogoDazed(arg0) != 0) {
         return;
@@ -1673,7 +1676,7 @@ void HeroPogo(u32 arg0) {
     if (slot->forward_quick != 0) {
         slot->forward_frame++;
     }
-    tbl = D_800C5074;
+    tbl = PogoTilesMid;
     slot->forward_frame++;
     n = (u16)slot->forward_frame;
     hb2 = Heroes;
@@ -1690,7 +1693,7 @@ void HeroPogo(u32 arg0) {
         shadow->unk2C.x = shadow->unk2C.y = shadow->unk2C.z = (abs(max / 2 - n) << 8) + 0xC00;
         shadow->unk5E = 1;
     }
-    if (n <= D_800C502C[hero->hero_name] || max - D_800C5050[hero->hero_name] < n) {
+    if (n <= PogoTilesLow[hero->hero_name] || max - PogoTilesHigh[hero->hero_name] < n) {
         hero->hero_move->jump_ctrl &= 0xBF;
     } else {
         hero->hero_move->jump_ctrl |= 0x40;
@@ -1715,51 +1718,51 @@ void HeroPogo(u32 arg0) {
     }
     switch (Heroes[arg0].hero_name) {
     case 1:
-        n = D_800C4758[n];
+        n = PogoFramesCrash[n];
         if (n == 0x4111) {
             AddSomeDust(arg0);
         }
         break;
     case 2:
-        n = D_800C4878[n];
+        n = PogoFramesCoco[n];
         if (n == 0x408E) {
             AddSomeDust(arg0);
         }
         break;
     case 5:
-        n = D_800C4E40[n];
+        n = PogoFramesTiny[n];
         if (n == 0x418E) {
             AddSomeDust(arg0);
         }
         break;
     case 6:
-        n = D_800C4F3C[n];
+        n = PogoFramesKong[n];
         if (n == 0x410E) {
             AddSomeDust(arg0);
         }
         break;
     case 8:
-        n = D_800C4CF4[n];
+        n = PogoFramesKangaroo[n];
         if (n == 0x4102) {
             AddDingoSmoke(arg0);
         }
         break;
     case 7:
-        n = D_800C4BA0[n];
+        n = PogoFramesDingo[n];
         if (n == 0x4082) {
             AddDingoSmoke(arg0);
         }
         break;
     case 4:
-        D_800C52E0 = n;
-        n = D_800C49DC[n];
+        BrioSmokeFrame = n;
+        n = PogoFramesBrio[n];
         if (n == 0x4105) {
             AddBrioSmoke(arg0);
         }
         break;
     case 3:
-        D_800C52E4 = n;
-        n = D_800C4AB0[n];
+        CortexSmokeFrame = n;
+        n = PogoFramesCortex[n];
         if (n == 0x4085) {
             AddBrioSmoke(arg0);
         }
@@ -1830,16 +1833,16 @@ void HeroPogoIdle(u32 arg0) {
     switch (h->hero_name) {
     case 4:
         v = h->hero_sub->unk74 - 0x4080;
-        D_800C52E0 = v;
+        BrioSmokeFrame = v;
         if (v > 0x10) {
-            D_800C52E0 = 0;
+            BrioSmokeFrame = 0;
         }
         break;
     case 3:
         v = h->hero_sub->unk74 - 0x4000;
-        D_800C52E4 = v;
+        CortexSmokeFrame = v;
         if (v > 0x10) {
-            D_800C52E4 = 0;
+            CortexSmokeFrame = 0;
         }
         break;
     }
@@ -1920,10 +1923,10 @@ void HeroPogoWinner(u32 arg0) {
     }
     switch (Heroes[arg0].hero_name) {
     case 4:
-        D_800C52E0 = Random(0x10);
+        BrioSmokeFrame = Random(0x10);
         break;
     case 3:
-        D_800C52E4 = Random(0x10);
+        CortexSmokeFrame = Random(0x10);
         break;
     }
     eng = Heroes[arg0].hero_eng;
@@ -2055,8 +2058,8 @@ bool TestHeroPogoDazed(u32 arg0) {
     }
     SetHeroAction(arg0, 0x3B);
     if ((u32)x < 8 && z >= 0 && z < 8) {
-        Ovl60Cell *cb = D_800C53DC[0];
-        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+        Ovl60Cell *cb = PogoGrid[0];
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(PogoGrid[0]) + (u32)cb);
         c->unkE = arg0 + 1;
         c->unk10 = arg0 + 1;
     }
@@ -2080,8 +2083,8 @@ void SetHeroPogoDazed(u32 arg0) {
     x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
     z = (Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9;
     if ((u32)x < 8 && z >= 0 && z < 8) {
-        Ovl60Cell *cb = D_800C53DC[0];
-        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+        Ovl60Cell *cb = PogoGrid[0];
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(PogoGrid[0]) + (u32)cb);
         c->unkE = arg0 + 1;
         c->unk10 = arg0 + 1;
     }
@@ -2105,8 +2108,8 @@ void HeroPogoDazed(u32 arg0) {
     x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
     z = (Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9;
     if ((u32)x < 8 && z >= 0 && z < 8) {
-        Ovl60Cell *cb = D_800C53DC[0];
-        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+        Ovl60Cell *cb = PogoGrid[0];
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(PogoGrid[0]) + (u32)cb);
         c->unkE = arg0 + 1;
         c->unk10 = arg0 + 1;
     }
@@ -2142,17 +2145,17 @@ void HeroPogoDazed(u32 arg0) {
     func_8008502C(arg0);
     switch (Heroes[arg0].hero_name) {
     case 4:
-        if (D_800C52E0 == 0) {
-            D_800C52E0 = 0x14;
+        if (BrioSmokeFrame == 0) {
+            BrioSmokeFrame = 0x14;
         } else {
-            D_800C52E0 = 0;
+            BrioSmokeFrame = 0;
         }
         break;
     case 3:
-        if (D_800C52E4 == 0) {
-            D_800C52E4 = 0x14;
+        if (CortexSmokeFrame == 0) {
+            CortexSmokeFrame = 0x14;
         } else {
-            D_800C52E4 = 0;
+            CortexSmokeFrame = 0;
         }
         break;
     }
@@ -2310,7 +2313,7 @@ void PogoHero_ExtraEffects(s32 arg0) {
             if (state != 0) {
                 if (func_80015780(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
                     pu->unk10 = *(SLONG_XYZ *)&pos;
-                    dy = D_800C4484[h->hero_name];
+                    dy = PogoHeroHeights[h->hero_name];
                 } else {
                     dy = 0x280;
                     pu->unk10 = h->hero_eng->unk10;
@@ -2341,8 +2344,8 @@ s32 Bank_Tiles(s32 arg0) {
     count = 0;
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            if (D_800C53DC[i][j].unkA == arg0) {
-                Tile_FizzleOut(i, j, D_800C53DC[i][j].unkA, 10);
+            if (PogoGrid[i][j].unkA == arg0) {
+                Tile_FizzleOut(i, j, PogoGrid[i][j].unkA, 10);
                 count++;
             }
         }
@@ -2388,16 +2391,16 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *base;
 
     if (PogoPlay[arg2].status == 6) {
-        base = D_800C53DC[0];
-        p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+        base = PogoGrid[0];
+        p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
         p->unk12 = 10;
         p->unkA = arg2;
         p->unk14 = 0xF0;
         return;
     }
     {
-        Ovl60Cell *b2 = D_800C53DC[0];
-        p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)b2);
+        Ovl60Cell *b2 = PogoGrid[0];
+        p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)b2);
     }
     p->unk12 = 1;
     p->unkA = arg2;
@@ -2446,20 +2449,20 @@ void Tile_Update(s32 arg0, s32 arg1) {
         rnd = LevelSpecific_UnclaimedTile(arg0, arg1);
         anim = LevelSpecific_ClaimedTile(arg0, arg1);
         if (g->flags & 0x80) {
-            tbl = D_800C4524[row];
+            tbl = TileFramesAlt[row];
         } else {
-            tbl = D_800C4504[row];
+            tbl = TileFrames[row];
         }
-        base = D_800C53DC[0];
-        c0 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+        base = PogoGrid[0];
+        c0 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
         o = (Ovl60CellObj *)c0->unk4;
         if (o == NULL) {
             return;
         }
         switch ((u16)c0->unk12) {
         case 0:
-            base0 = D_800C53DC[0];
-            c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base0);
+            base0 = PogoGrid[0];
+            c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base0);
             if (c->unk16 == -1) {
                 if (D_8004E0D8 & 1) {
                     CELL_SET_T(o, rnd, rnd);
@@ -2478,8 +2481,8 @@ void Tile_Update(s32 arg0, s32 arg1) {
             }
             break;
         case 1:
-            base1 = D_800C53DC[0];
-            c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base1);
+            base1 = PogoGrid[0];
+            c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base1);
             if (c->unkA == -1) {
                 CELL_SET_T(o, rnd, rnd);
             } else {
@@ -2487,36 +2490,36 @@ void Tile_Update(s32 arg0, s32 arg1) {
             }
             break;
         case 10:
-            base10 = D_800C53DC[0];
-            cell = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base10);
+            base10 = PogoGrid[0];
+            cell = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base10);
             if (cell->unkA != -1) {
                 CELL_SET_T(o, (MV->flags & 0x80) ? 0x3045 : 0x3031, tbl[cell->unkA]);
             }
             break;
         case 2:
-            base2 = D_800C53DC[0];
-            cell2 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base2);
+            base2 = PogoGrid[0];
+            cell2 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base2);
             CELL_SET_T(o, anim, tbl[cell2->unk16]);
             break;
         case 3:
             if (D_8004E0D8 & 1) {
-                base3 = D_800C53DC[0];
-            cell3 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base3);
+                base3 = PogoGrid[0];
+            cell3 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base3);
                 CELL_SET_T(o, anim, tbl[cell3->unk16]);
             } else {
                 CELL_SET_T(o, rnd, rnd);
             }
             break;
         case 5:
-            base5 = D_800C53DC[0];
-            cell5 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base5);
+            base5 = PogoGrid[0];
+            cell5 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base5);
             n = (s16)(cell5->unk14 / 30);
             if (n >= 4) {
                 n = 3;
             }
-            fr5 = (MV->flags & 0x80) ? D_800C4560[n] : D_800C4544[n];
+            fr5 = (MV->flags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
             o->anim = fr5;
-            fr5 = (MV->flags & 0x80) ? D_800C4560[n] : D_800C4544[n];
+            fr5 = (MV->flags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
             o->frame = CELL_FRAME(o, fr5 & 0xFFF)->unk26;
             break;
         case 7:
@@ -2550,8 +2553,8 @@ void Tile_FireTnt(s32 arg0, s32 arg1) {
             Player_SetDazed(i);
         }
     }
-    base = D_800C53DC[0];
-    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    base = PogoGrid[0];
+    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
     c->unk12 = 1;
     c->unkA = -1;
     c->unk14 = 0;
@@ -2611,8 +2614,8 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
             }
         }
     }
-    base = D_800C53DC[0];
-    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    base = PogoGrid[0];
+    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
     c->unk12 = 1;
     c->unkA = -1;
     c->unk14 = 0;
@@ -2662,7 +2665,7 @@ void ZapInDir(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
         if ((u32)x >= 8 || (u32)z >= 8) {
             goto end;
         }
-        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)D_800C53DC);
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(PogoGrid[0]) + (u32)PogoGrid);
         if ((u16)c->unk12 - 5 >= 3u) {
             old = c->unkA;
             c->unk14 = t;
@@ -2684,7 +2687,7 @@ void ZapInDir(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
                     Tile_Update(x, z + 1);
                 }
             }
-            ((Ovl60Cell *)(x * sizeof(D_800C53DC[0]) + z * sizeof(Ovl60Cell) + (u32)D_800C53DC))->unk18[0] = n;
+            ((Ovl60Cell *)(x * sizeof(PogoGrid[0]) + z * sizeof(Ovl60Cell) + (u32)PogoGrid))->unk18[0] = n;
             n++;
             t += 4;
         }
@@ -2705,7 +2708,7 @@ void Update_Tiles(void) {
     s16 t;
 
     i = 0;
-    base = D_800C53DC[0];
+    base = PogoGrid[0];
     vol = 0x1E00;
     rowOff = 0;
 loop_i:
@@ -2816,7 +2819,7 @@ loop_j:
             j++;
             goto loop_j;
         }
-        rowOff += sizeof(D_800C53DC[0]);
+        rowOff += sizeof(PogoGrid[0]);
         i++;
         goto loop_i;
     }
@@ -2869,12 +2872,12 @@ void Set_Tile_Under_Player(u32 arg0, bool arg1) {
         return;
     }
     {
-        Ovl60Cell *cb = D_800C53DC[0];
-        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+        Ovl60Cell *cb = PogoGrid[0];
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(PogoGrid[0]) + (u32)cb);
     }
     c->unk10 = 0;
     if (arg1 != 0) {
-        D_800C5ADC[arg0].unk4 = 1;
+        PogoAIPlay[arg0].unk4 = 1;
     }
     if (c->unkA != arg0) {
         if (arg1 != 0) {
@@ -2889,8 +2892,8 @@ void Set_Tile_Under_Player(u32 arg0, bool arg1) {
         return;
     }
     {
-        Ovl60Cell *cb = D_800C53DC[0];
-        p = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+        Ovl60Cell *cb = PogoGrid[0];
+        p = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(PogoGrid[0]) + (u32)cb);
     }
     owner = p->unkA;
     if (owner == -1) {
@@ -2965,7 +2968,7 @@ void PogoFour_PlayerHasStoodOnOwnTile(s32 arg0) {
         if (i >= 8) goto done;
         for (j = 0;; j++) {
             if (j >= 8) goto next;
-            c = (Ovl60Cell *)(i * sizeof(D_800C53DC[0]) + j * sizeof(Ovl60Cell) + (u32)D_800C53DC);
+            c = (Ovl60Cell *)(i * sizeof(PogoGrid[0]) + j * sizeof(Ovl60Cell) + (u32)PogoGrid);
             if (c->unkA == arg0) {
                 c->unk12 = 1;
                 c->unkA = -1;
@@ -2990,7 +2993,7 @@ void PogoFour_FreezeMyTiles(s32 arg0) {
     u16 st;
     Ovl60Cell *c;
 
-    nas = D_800C5BB0;
+    nas = PogoPadlockNas;
     if (nas == NULL) {
         return;
     }
@@ -3009,7 +3012,7 @@ void PogoFour_FreezeMyTiles(s32 arg0) {
             if (j >= 8) {
                 goto next;
             }
-            c = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(D_800C53DC[0]) + (u32)D_800C53DC);
+            c = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(PogoGrid[0]) + (u32)PogoGrid);
             st = c->unk12;
             if (st == 1 && c->unkA == arg0) {
                 c->unk12 = 10;
@@ -3051,7 +3054,7 @@ void PogoFour_UnfreezeMyTiles(s32 arg0) {
             if (j >= 8) {
                 goto next;
             }
-            c = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(D_800C53DC[0]) + (u32)D_800C53DC);
+            c = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(PogoGrid[0]) + (u32)PogoGrid);
             if ((u16)c->unk12 == 10 && c->unkA == arg0) {
                 c->unk12 = 1;
                 c->unkA = arg0;
@@ -3099,7 +3102,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         PogoFour_FreezeMyTiles(arg2);
         return;
     }
-    nas = (NAS *)D_800C53DC[arg0][arg1].hero;
+    nas = (NAS *)PogoGrid[arg0][arg1].hero;
     if (nas == NULL) {
         return;
     }
@@ -3136,21 +3139,21 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         slot->status = 5;
         slot->timer = 0xF0;
         Ovl60_PowerupAnim(arg2, 0x200C);
-        D_800C52F0--;
+        number_of_powerups--;
         break;
     case 7:
         Ovl60_ZapArrow(arg0, arg1, arg2, 1);
-        D_800C52EC--;
+        number_of_pickups--;
         break;
     case 8:
         Ovl60_ZapArrow(arg0, arg1, arg2, 2);
         Tiles_CheckForIslands(arg2);
-        D_800C52EC--;
+        number_of_pickups--;
         break;
     case 1:
         Ovl60_PickupSet(arg2, 1);
         Ovl60_PowerupAnim(arg2, 0x200D);
-        D_800C52F0--;
+        number_of_powerups--;
         PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
         if (D_8005A614[arg2 + 0x5C] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
@@ -3159,7 +3162,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
     case 2:
         Ovl60_PickupSet(arg2, 2);
         Ovl60_PowerupAnim(arg2, 0x201B);
-        D_800C52F0--;
+        number_of_powerups--;
         PlaySfx(0x438, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
         if (D_8005A614[arg2 + 0x5C] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
@@ -3172,12 +3175,12 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         if (D_8005A614[arg2 + 0x5C] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
-        D_800C52F0--;
+        number_of_powerups--;
         break;
     case 3:
         Ovl60_PickupSet(arg2, 3);
         Ovl60_PowerupAnim(arg2, 0x2002);
-        D_800C52F0--;
+        number_of_powerups--;
         PlaySfx(0x51E, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
         if (D_8005A614[arg2 + 0x5C] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
@@ -3195,7 +3198,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
     if (nas->UserInfo.flags < 10) {
         KillNAS(nas);
     }
-    D_800C53DC[arg0][arg1].hero = NULL;
+    PogoGrid[arg0][arg1].hero = NULL;
 }
 
 void PogoPickups_Poll(void) {
@@ -3203,13 +3206,13 @@ void PogoPickups_Poll(void) {
     s32 idx = g->mode - 10;
     s32 x, z;
 
-    if (D_800C52E8 == -1) {
-        if (D_800C52EC < D_800C38D8[idx]) {
-            D_800C52E8 = Random(70) + 40;
+    if (pickup_spawn_time == -1) {
+        if (number_of_pickups < PickupsWanted[idx]) {
+            pickup_spawn_time = Random(70) + 40;
         }
     } else {
-        D_800C52E8--;
-        if (D_800C52E8 < 5) {
+        pickup_spawn_time--;
+        if (pickup_spawn_time < 5) {
             if (FindFreeSquare(&x, &z) != 0) {
                 if (g->mode == 10) {
                     goto seven;
@@ -3223,10 +3226,10 @@ void PogoPickups_Poll(void) {
                     }
                 }
             }
-            if (D_800C52EC > D_800C38E8[idx]) {
-                D_800C52E8 = -1;
+            if (number_of_pickups > PickupsMax[idx]) {
+                pickup_spawn_time = -1;
             } else {
-                D_800C52E8 = Random(70) + 40;
+                pickup_spawn_time = Random(70) + 40;
             }
         }
     }
@@ -3239,17 +3242,17 @@ void PogoPowerups_Poll(void) {
     u32 r;
     D5A614View *g2;
 
-    if (D_800C52EA == -1) {
+    if (powerup_spawn_time == -1) {
         if (g->mode == 13 && (g->flags & 0x80)) {
-            if (D_800C52F0 < 4) {
-                D_800C52EA = Random(60) + 60;
+            if (number_of_powerups < 4) {
+                powerup_spawn_time = Random(60) + 60;
             }
-        } else if (D_800C52F0 < D_800C38B8[idx]) {
+        } else if (number_of_powerups < PowerupsWanted[idx]) {
             goto rearm;
         }
     } else {
-        D_800C52EA--;
-        if (D_800C52EA < 2) {
+        powerup_spawn_time--;
+        if (powerup_spawn_time < 2) {
             if (FindFreeSquare(&x, &z) != 0) {
                 switch (g->mode) {
                 case 10:
@@ -3292,16 +3295,16 @@ void PogoPowerups_Poll(void) {
             }
             g2 = (D5A614View *)D_8005A614;
             if (g2->mode == 13 && (g2->flags & 0x80)) {
-                if (D_800C52F0 >= 7) {
-                    D_800C52EA = -1;
+                if (number_of_powerups >= 7) {
+                    powerup_spawn_time = -1;
                 } else {
                     goto rearm;
                 }
-            } else if (D_800C52F0 > D_800C38C8[idx]) {
-                D_800C52EA = -1;
+            } else if (number_of_powerups > PowerupsMax[idx]) {
+                powerup_spawn_time = -1;
             } else {
             rearm:
-                D_800C52EA = Random(60) + 60;
+                powerup_spawn_time = Random(60) + 60;
             }
         }
     }
@@ -3317,8 +3320,8 @@ bool Pickup_IsClaimable(s32 arg0, s32 arg1, s32 arg2) {
         if (PogoPadlock_IsHere(arg1, arg2) != 0) {
             return 1;
         }
-        base = D_800C53DC[0];
-        c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
+        base = PogoGrid[0];
+        c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(PogoGrid[0]) + (u32)base);
         h = c->hero;
         if (h == NULL) {
             return 0;
@@ -3331,7 +3334,7 @@ bool Pickup_IsClaimable(s32 arg0, s32 arg1, s32 arg2) {
         } else if (lock < 3) {
             return 0;
         }
-        if (D_800C53DC[arg1][arg2].unk10 == 0 || D_800C53DC[arg1][arg2].unk10 == arg0 + 1) {
+        if (PogoGrid[arg1][arg2].unk10 == 0 || PogoGrid[arg1][arg2].unk10 == arg0 + 1) {
             goto ok;
         }
     }
@@ -3354,8 +3357,8 @@ bool Pickup_IsClaimableByAI(s32 arg0, s32 arg1, s32 arg2) {
     if (PogoPadlock_IsHere(arg1, arg2) != 0) {
         return 1;
     }
-    base = D_800C53DC[0];
-    c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
+    base = PogoGrid[0];
+    c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(PogoGrid[0]) + (u32)base);
     if (c->unkE != 0) {
         return 0;
     }
@@ -3363,8 +3366,8 @@ bool Pickup_IsClaimableByAI(s32 arg0, s32 arg1, s32 arg2) {
         return 0;
     }
     {
-        Ovl60Cell *b2 = D_800C53DC[0];
-        c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)b2);
+        Ovl60Cell *b2 = PogoGrid[0];
+        c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(PogoGrid[0]) + (u32)b2);
     }
     h = c->hero;
     if (h != NULL) {
@@ -3396,8 +3399,8 @@ void CreatePowerupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     EXTengine *e;
     Ovl60Cell *base;
 
-    base = D_800C53DC[0];
-    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    base = PogoGrid[0];
+    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
     if (c->hero != NULL || PogoPadlock_IsHere(arg0, arg1) != 0) {
         return;
     }
@@ -3436,7 +3439,7 @@ void CreatePowerupOnTile(s32 arg0, s32 arg1, s32 arg2) {
             break;
         }
     }
-    D_800C52F0++;
+    number_of_powerups++;
 }
 
 void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
@@ -3446,8 +3449,8 @@ void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     EXTengine *e;
     Ovl60Cell *base;
 
-    base = D_800C53DC[0];
-    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    base = PogoGrid[0];
+    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
     if (c->hero != NULL || PogoPadlock_IsHere(arg0, arg1) != 0) {
         return;
     }
@@ -3478,7 +3481,7 @@ void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
             break;
         }
     }
-    D_800C52EC++;
+    number_of_pickups++;
 }
 
 s32 Fire_Tazer(s32 arg0, s32 arg1) {
@@ -3724,7 +3727,7 @@ void Plot_PogoPickup(NAS *nas) {
         if (scale >= 0x1000) {
             nas->UserInfo.status = 3;
             scale = 0x1000;
-            nas->UserInfo.user2 = D_800C38F8[D_800C5BB8];
+            nas->UserInfo.user2 = PogoObjectTimes[PogoLevelIndex];
             eng->flags &= ~0x21;
         }
         eng->unk2C.x = scale;
@@ -3746,7 +3749,7 @@ void Plot_PogoPickup(NAS *nas) {
         break;
     case 6:
         KillNAS(nas);
-        D_800C52EC--;
+        number_of_pickups--;
         break;
     }
 }
@@ -3858,7 +3861,7 @@ void Plot_PogoPowerup(NAS *nas) {
             break;
         }
         if (nas->UserInfo.status == 0) {
-            nas->UserInfo.user2 = D_800C38F8[D_800C5BB8];
+            nas->UserInfo.user2 = PogoObjectTimes[PogoLevelIndex];
             nas->UserInfo.status = 3;
             PlaySfx(0x420, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
@@ -3873,7 +3876,7 @@ void Plot_PogoPowerup(NAS *nas) {
         break;
     case 6:
         KillNAS(nas);
-        D_800C52F0--;
+        number_of_powerups--;
         break;
     }
 }
@@ -3898,8 +3901,8 @@ void Plot_PogoBanker(NAS *nas) {
         break;
     case 1:
         if (FindFreeSquare(&x, &z) != 0) {
-            Ovl60Cell *cb = D_800C53DC[0];
-            c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+            Ovl60Cell *cb = PogoGrid[0];
+            c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(PogoGrid[0]) + (u32)cb);
             pos = c->unk4;
             c->hero = (HeroInfo *)nas;
             if (pos != NULL) {
@@ -3912,7 +3915,7 @@ void Plot_PogoBanker(NAS *nas) {
                 eng->flags |= 0x8021;
                 eng->unk5E = 1;
                 nas->UserInfo.status = 2;
-                nas->UserInfo.user2 = D_800C38F8[D_800C5BB8];
+                nas->UserInfo.user2 = PogoObjectTimes[PogoLevelIndex];
                 PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
         }
@@ -3969,7 +3972,7 @@ void Plot_PogoMushroom(NAS *nas) {
         if (FindFreeSquareForMushroom(&x, &z) == 0) {
             break;
         }
-        pos = D_800C53DC[x][z].unk4;
+        pos = PogoGrid[x][z].unk4;
         if (pos == NULL) {
             break;
         }
@@ -3990,8 +3993,8 @@ void Plot_PogoMushroom(NAS *nas) {
         cz = (eng->unk10.z + 0x800) >> 9;
         nas->UserInfo.status = 0;
         if (SquareIsFreeForMushroom(cx, cz) != 0) {
-            Ovl60Cell *cb = D_800C53DC[0];
-            c = (Ovl60Cell *)(cz * sizeof(Ovl60Cell) + cx * sizeof(D_800C53DC[0]) + (u32)cb);
+            Ovl60Cell *cb = PogoGrid[0];
+            c = (Ovl60Cell *)(cz * sizeof(Ovl60Cell) + cx * sizeof(PogoGrid[0]) + (u32)cb);
             c->hero = (HeroInfo *)nas;
             if (c->unk4 != NULL) {
                 eng->unk2C.x = 0x1000;
@@ -4006,7 +4009,7 @@ void Plot_PogoMushroom(NAS *nas) {
         }
         break;
     case 2:
-        scale = D_800C45FC[nas->UserInfo.user1];
+        scale = MushroomScales[nas->UserInfo.user1];
         if (++nas->UserInfo.user1 >= 0x10) {
             scale = 0x1000;
             nas->UserInfo.user1 = Random(0x28) + 0x28;
@@ -4023,8 +4026,8 @@ void Plot_PogoMushroom(NAS *nas) {
     case 5:
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                if (D_800C53DC[i][j].hero == (HeroInfo *)nas) {
-                    D_800C53DC[i][j].hero = NULL;
+                if (PogoGrid[i][j].hero == (HeroInfo *)nas) {
+                    PogoGrid[i][j].hero = NULL;
                 }
             }
         }
@@ -4047,7 +4050,7 @@ void Tiles_PlayerIsStealing(s32 arg0, s32 arg1) {
         if (i >= 8) goto done;
         for (j = 0, k = 10;; j++) {
             if (j >= 8) goto next;
-            c = (Ovl60Cell *)(i * sizeof(D_800C53DC[0]) + j * sizeof(Ovl60Cell) + (u32)D_800C53DC);
+            c = (Ovl60Cell *)(i * sizeof(PogoGrid[0]) + j * sizeof(Ovl60Cell) + (u32)PogoGrid);
             if (c->unkA == arg1) {
                 old = c->unkA;
                 c->unk16 = old;
@@ -4080,43 +4083,43 @@ void Tiles_FloodFillIslandMap(s32 *seen, s32 id) {
 
     if (D_8005A648 == 0xB) {
         for (i = 0; i < 8; i++) {
-            if (D_800C5B2C[i] != id) {
+            if (TileScan0[i] != id) {
                 Island_FloodFill(0, i, id, seen);
             } else {
-                if (i > 0 && D_800C5B2C[i - 1] != id) {
+                if (i > 0 && TileScan0[i - 1] != id) {
                     Island_FloodFill(0, i, id, seen);
                 }
-                if (i < 7 && D_800C5B2C[i + 1] != id) {
+                if (i < 7 && TileScan0[i + 1] != id) {
                     Island_FloodFill(0, i, id, seen);
                 }
             }
-            if (D_800C5B4C[i] != id) {
+            if (TileScan1[i] != id) {
                 Island_FloodFill(7, i, id, seen);
             } else {
-                if (i > 0 && D_800C5B4C[i - 1] != id) {
+                if (i > 0 && TileScan1[i - 1] != id) {
                     Island_FloodFill(7, i, id, seen);
                 }
-                if (i < 7 && D_800C5B4C[i + 1] != id) {
+                if (i < 7 && TileScan1[i + 1] != id) {
                     Island_FloodFill(7, i, id, seen);
                 }
             }
-            if (D_800C5B6C[i] != id) {
+            if (TileScan2[i] != id) {
                 Island_FloodFill(i, 7, id, seen);
             } else {
-                if (i > 0 && D_800C5B6C[i - 1] != id) {
+                if (i > 0 && TileScan2[i - 1] != id) {
                     Island_FloodFill(i, 7, id, seen);
                 }
-                if (i < 7 && D_800C5B6C[i + 1] != id) {
+                if (i < 7 && TileScan2[i + 1] != id) {
                     Island_FloodFill(i, 7, id, seen);
                 }
             }
-            if (D_800C5B8C[i] != id) {
+            if (TileScan3[i] != id) {
                 Island_FloodFill(i, 0, id, seen);
             } else {
-                if (i > 0 && D_800C5B8C[i - 1] != id) {
+                if (i > 0 && TileScan3[i - 1] != id) {
                     Island_FloodFill(i, 0, id, seen);
                 }
-                if (i < 7 && D_800C5B8C[i + 1] != id) {
+                if (i < 7 && TileScan3[i + 1] != id) {
                     Island_FloodFill(i, 0, id, seen);
                 }
             }
@@ -4148,7 +4151,7 @@ s32 Tiles_CountUnflagged(s32 *arg0, const s32 arg1, s32 arg2) {
             k = 10;
             if (i >= 8) goto next;
             if (arg0[r + i] != 0) continue;
-            c = (Ovl60Cell *)(i * sizeof(D_800C53DC[0]) + j * sizeof(Ovl60Cell) + (u32)D_800C53DC);
+            c = (Ovl60Cell *)(i * sizeof(PogoGrid[0]) + j * sizeof(Ovl60Cell) + (u32)PogoGrid);
             if (c->unkE != 0) continue;
             t = c->unk12;
             if (t == 6) continue;
@@ -4190,34 +4193,34 @@ s32 LevelSpecific_ClaimedTile(s32 x, s32 z) {
     s32 r;
 
     if (g->mode == 11) {
-        id = D_800C53DC[x][z].unkA;
+        id = PogoGrid[x][z].unkA;
         mask = 0;
         if (id != -1) {
             if (x > 0) {
-                n = D_800C53DC[x - 1][z].unkA;
+                n = PogoGrid[x - 1][z].unkA;
                 mask = n == id;
-            } else if (D_800C5B2C[z] == id) {
+            } else if (TileScan0[z] == id) {
                 mask = 1;
             }
             if (x < 7) {
-                if (D_800C53DC[x + 1][z].unkA == id) {
+                if (PogoGrid[x + 1][z].unkA == id) {
                     mask |= 4;
                 }
-            } else if (D_800C5B4C[z] == id) {
+            } else if (TileScan1[z] == id) {
                 mask |= 4;
             }
             if (z > 0) {
-                if (D_800C53DC[x][z - 1].unkA == id) {
+                if (PogoGrid[x][z - 1].unkA == id) {
                     mask |= 2;
                 }
-            } else if (D_800C5B8C[x] == id) {
+            } else if (TileScan3[x] == id) {
                 mask |= 2;
             }
             if (z < 7) {
-                if (D_800C53DC[x][z + 1].unkA == id) {
+                if (PogoGrid[x][z + 1].unkA == id) {
                     mask |= 8;
                 }
-            } else if (D_800C5B6C[x] == id) {
+            } else if (TileScan2[x] == id) {
                 mask |= 8;
             }
         }
@@ -4271,8 +4274,8 @@ bool FindFreeSquareForMushroom(s32 *arg0, s32 *arg1) {
 }
 
 bool SquareIsFreeForMushroom(s32 arg0, s32 arg1) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
     s32 s;
 
     if (p->unkE != 0 || p->unk10 != 0 || p->hero != NULL) {
@@ -4551,7 +4554,7 @@ void Plot_PogoProjectile(NAS *arg0) {
             x = (e->unk10.x + 0x800) >> 9;
             z = (e->unk10.z + 0x800) >> 9;
             if ((u32)x < 8 && z >= 0 && z < 8) {
-                cell = (NAS *)D_800C53DC[x][z].hero;
+                cell = (NAS *)PogoGrid[x][z].hero;
                 if (cell != NULL && cell->UserInfo.flags == 0xB) {
                     cell->UserInfo.status = 5;
                     hit = 1;
@@ -4604,13 +4607,13 @@ void PogoKerb_Poll(void) {
     HeroInfo *h;
     Ovl60ModeView *g;
 
-    if (D_800C5BB4 == NULL) {
+    if (PogoKerbObj == NULL) {
         return;
     }
-    if (D_800C5BC4 != 0) {
-        D_800C5BC4--;
+    if (KerbDelay != 0) {
+        KerbDelay--;
     }
-    if (D_800C5BD0 == 0) {
+    if (KerbCount == 0) {
         switch ((u32)Clock_Time >> 8) {
         case 0x16:
         case 0x17:
@@ -4622,9 +4625,9 @@ void PogoKerb_Poll(void) {
         case 0x102:
         case 0x116:
         case 0x117:
-            if (((u32)Clock_Time >> 8) != D_800C5BD4) {
+            if (((u32)Clock_Time >> 8) != KerbClockSecond) {
                 PlaySfx(0x532, NULL, NULL, 0x1000, 0x1E00, 0);
-                D_800C5BD4 = (u32)Clock_Time >> 8;
+                KerbClockSecond = (u32)Clock_Time >> 8;
             }
             break;
         case 0x15:
@@ -4632,47 +4635,47 @@ void PogoKerb_Poll(void) {
         case 0x45:
         case 0x100:
         case 0x115:
-            D_800C5BD0 = Random(4) + 1;
+            KerbCount = Random(4) + 1;
             PlaySfx(0x534, NULL, NULL, 0x1000, 0x1E00, 0);
-            PogoKerb_SetMode(D_800C5BD0);
+            PogoKerb_SetMode(KerbCount);
             break;
         }
         return;
     }
-    if (D_800C5BC4 != 0) {
+    if (KerbDelay != 0) {
         return;
     }
-    if (D_800C5300 != 0) {
-        if (--D_800C5BC0 < 0) {
-            D_800C5BC0 = 0x1F;
+    if (KerbMode != 0) {
+        if (--KerbStep < 0) {
+            KerbStep = 0x1F;
         }
     } else {
-        if (++D_800C5BC0 >= 0x20) {
-            D_800C5BC0 = 0;
+        if (++KerbStep >= 0x20) {
+            KerbStep = 0;
         }
     }
     if (D_8005A646 & 0x80) {
-        D_800C5BB4->index = D_800C3B94[D_800C5BC0];
+        PogoKerbObj->index = KerbIndexB[KerbStep];
     } else {
-        D_800C5BB4->index = D_800C3B14[D_800C5BC0];
+        PogoKerbObj->index = KerbIndexA[KerbStep];
     }
     j = 0;
-    row = D_800C3C14[D_800C5BC0][0];
+    row = KerbData[KerbStep][0];
     for (; j < 8; j++) {
-        D_800C5B2C[j] = row[j];
-        D_800C5B6C[j] = row[j + 8];
-        D_800C5B4C[7 - j] = row[j + 0x10];
-        D_800C5B8C[7 - j] = row[j + 0x18];
+        TileScan0[j] = row[j];
+        TileScan2[j] = row[j + 8];
+        TileScan1[7 - j] = row[j + 0x10];
+        TileScan3[7 - j] = row[j + 0x18];
     }
-    if (D_800C5300 != 0) {
-        pos = D_800C4284[D_800C5BC0];
+    if (KerbMode != 0) {
+        pos = KerbPathB[KerbStep];
     } else {
-        pos = D_800C4084[D_800C5BC0];
+        pos = KerbPathA[KerbStep];
     }
-    Tile_Update(D_800C4014[pos[0]][0], D_800C4014[pos[0]][1]);
-    Tile_Update(D_800C4014[pos[1]][0], D_800C4014[pos[1]][1]);
-    Tile_Update(D_800C4014[pos[2]][0], D_800C4014[pos[2]][1]);
-    Tile_Update(D_800C4014[pos[3]][0], D_800C4014[pos[3]][1]);
+    Tile_Update(KerbTiles[pos[0]][0], KerbTiles[pos[0]][1]);
+    Tile_Update(KerbTiles[pos[1]][0], KerbTiles[pos[1]][1]);
+    Tile_Update(KerbTiles[pos[2]][0], KerbTiles[pos[2]][1]);
+    Tile_Update(KerbTiles[pos[3]][0], KerbTiles[pos[3]][1]);
     i = 0;
     g = (Ovl60ModeView *)D_8005A614;
     h = Heroes;
@@ -4692,49 +4695,49 @@ loop:
         i++;
         goto loop;
     }
-    if (--D_800C5BC8 <= 0) {
+    if (--KerbTimer <= 0) {
         if (!(D_8005A646 & 0x80)) {
-            D_800C5BC4 = Random(0xC8) + 0xC8;
+            KerbDelay = Random(0xC8) + 0xC8;
         }
-        D_800C5BD0 = 0;
+        KerbCount = 0;
     } else {
-        D_800C5BC4 = D_800C5BCC;
+        KerbDelay = KerbPeriod;
     }
     PlaySfx(0x533, NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
 void PogoKerb_SetMode(s32 arg0) {
-    D_800C5BD0 = arg0;
+    KerbCount = arg0;
     switch (arg0) {
     case 1:
-        D_800C5300 = 0;
-        D_800C5BCC = 8;
-        D_800C5BC4 = 8;
-        D_800C5BC8 = 8;
+        KerbMode = 0;
+        KerbPeriod = 8;
+        KerbDelay = 8;
+        KerbTimer = 8;
         break;
     case 2:
-        D_800C5300 = 0;
-        D_800C5BCC = 8;
-        D_800C5BC4 = 8;
-        D_800C5BC8 = 0x10;
+        KerbMode = 0;
+        KerbPeriod = 8;
+        KerbDelay = 8;
+        KerbTimer = 0x10;
         break;
     case 3:
-        D_800C5300 = 1;
-        D_800C5BCC = 8;
-        D_800C5BC4 = 8;
-        D_800C5BC8 = 8;
+        KerbMode = 1;
+        KerbPeriod = 8;
+        KerbDelay = 8;
+        KerbTimer = 8;
         break;
     case 4:
-        D_800C5300 = 1;
-        D_800C5BCC = 8;
-        D_800C5BC4 = 8;
-        D_800C5BC8 = 0x10;
+        KerbMode = 1;
+        KerbPeriod = 8;
+        KerbDelay = 8;
+        KerbTimer = 0x10;
         break;
     case 6:
-        D_800C5BCC = 0x18;
-        D_800C5BC4 = 0x18;
-        D_800C5300 = D_8004E0D8 & 1;
-        D_800C5BC8 = (Random(2) + 2) * 8;
+        KerbPeriod = 0x18;
+        KerbDelay = 0x18;
+        KerbMode = D_8004E0D8 & 1;
+        KerbTimer = (Random(2) + 2) * 8;
         break;
     }
 }
@@ -4752,7 +4755,7 @@ void PogoAI_Poll(u32 arg0) {
             if (ai->AItimer1 != 0) {
                 ai->AItimer1--;
             }
-            if (D_800C5ADC[arg0].unk4 != 0 &&
+            if (PogoAIPlay[arg0].unk4 != 0 &&
                 (u16)(g->mode - 0xB) < 2U) {
                 if (ai->AItimer2 != 0) {
                     ai->AItimer2--;
@@ -4803,7 +4806,7 @@ void PogoAI_Poll(u32 arg0) {
             }
             set_joypad((u8 *)&D_80051338[arg0], ai->AIpad);
         }
-        D_800C5ADC[arg0].unk4 = 0;
+        PogoAIPlay[arg0].unk4 = 0;
     }
 }
 
@@ -5014,15 +5017,15 @@ void PogoAI_MoveTowardsTarget(u32 hero) {
             return;
         }
         if (ai->AImode == 5) {
-            mb = D_800C5ADC;
+            mb = PogoAIPlay;
             m = &mb[hero];
             n = ++m->unkC;
             if (n < (u32)m->unk10) {
                 k = (n + m->unk8) & 7;
                 if (m->unk0 != 0) {
-                    tbl = D_800C457C;
+                    tbl = EncloseStepsOdd;
                 } else {
-                    tbl = D_800C45BC;
+                    tbl = EncloseStepsEven;
                 }
                 ai->TargetXYZ.x = x + tbl[k].x;
                 r = z + tbl[k].z;
@@ -5108,7 +5111,7 @@ void PogoAI_MoveTowardsTarget(u32 hero) {
         ai->AIpad |= D_80051244[6];
         break;
     }
-    if (D_800C5ADC[hero].unk4 != 0 && dir != Heroes[hero].hero_move->facing_angle >> 10) {
+    if (PogoAIPlay[hero].unk4 != 0 && dir != Heroes[hero].hero_move->facing_angle >> 10) {
         ai->AItimer2 = Random(2) + 2;
     }
 }
@@ -5125,7 +5128,7 @@ bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flag
     if ((u32)x >= 8 || (u32)z >= 8) {
         return 0;
     }
-    p = &D_800C53DC[x][z];
+    p = &PogoGrid[x][z];
     if (p == NULL) {
         return 0;
     }
@@ -5234,7 +5237,7 @@ void PogoAI_ScanForClosestPickup(u32 arg0, s32 *arg1, s32 *arg2) {
             }
             if (Pickup_IsClaimableByAI(arg0, i, j) != 0) {
                 HeroInfo *h;
-                c = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(D_800C53DC[0]) + (u32)D_800C53DC);
+                c = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(PogoGrid[0]) + (u32)PogoGrid);
                 h = c->hero;
                 ok = 0;
                 if (h != NULL) {
@@ -5330,10 +5333,10 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
         pz = z + off4;
         if (px >= -1 && px < 9 && pz >= -1 && pz < 9) {
             if (px >= 0 && px < 8 && pz >= 0 && pz < 8) {
-                if (!f0 && D_800C53DC[px][pz].unkA != i) {
+                if (!f0 && PogoGrid[px][pz].unkA != i) {
                     f0 = 1;
                 }
-                if (f0 && D_800C53DC[px][pz].unkA == i) {
+                if (f0 && PogoGrid[px][pz].unkA == i) {
                     goto found;
                 }
             } else if (((Ovl60ModeView *)D_8005A614)->mode == 11 && f0 &&
@@ -5347,10 +5350,10 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
         pz = z + off2;
         if (px >= -1 && px < 9 && pz >= -1 && pz < 9) {
             if (px >= 0 && px < 8 && pz >= 0 && pz < 8) {
-                if (!f1 && D_800C53DC[px][pz].unkA != i) {
+                if (!f1 && PogoGrid[px][pz].unkA != i) {
                     f1 = 1;
                 }
-                if (f1 && D_800C53DC[px][pz].unkA == i) {
+                if (f1 && PogoGrid[px][pz].unkA == i) {
                     goto found;
                 }
             } else if (((Ovl60ModeView *)D_8005A614)->mode == 11 && f1 &&
@@ -5364,10 +5367,10 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
         pz = z + off0;
         if (px >= -1 && px < 9 && pz >= -1 && pz < 9) {
             if (px >= 0 && px < 8 && pz >= 0 && pz < 8) {
-                if (!f2 && D_800C53DC[px][pz].unkA != i) {
+                if (!f2 && PogoGrid[px][pz].unkA != i) {
                     f2 = 1;
                 }
-                if (f2 && D_800C53DC[px][pz].unkA == i) {
+                if (f2 && PogoGrid[px][pz].unkA == i) {
                     goto found;
                 }
             } else if (((Ovl60ModeView *)D_8005A614)->mode == 11 && f2 &&
@@ -5402,7 +5405,7 @@ found:
     }
     *outX = px;
     *outZ = pz;
-    return D_800C53DC[px][pz].unkE == 0;
+    return PogoGrid[px][pz].unkE == 0;
 }
 
 bool PogoAI_StartEnclosing(u32 arg0, EXTbotai *ai) {
@@ -5425,7 +5428,7 @@ bool PogoAI_StartEnclosing(u32 arg0, EXTbotai *ai) {
     {
         eng = Heroes[arg0].hero_eng;
         if (eng != NULL) {
-            base = D_800C5ADC;
+            base = PogoAIPlay;
             m = (Ovl60Move *)(arg0 * sizeof(Ovl60Move) + (u32)base);
             x = (eng->unk10.x + 0x800) >> 9;
             z = (eng->unk10.z + 0x800) >> 9;
@@ -5449,14 +5452,14 @@ bool PogoAI_StartEnclosing(u32 arg0, EXTbotai *ai) {
                 dir = 4;
             }
             m->unk8 = dir;
-            base2 = D_800C5ADC;
+            base2 = PogoAIPlay;
             m2 = (Ovl60Move *)(arg0 * sizeof(Ovl60Move) + (u32)base2);
             if (m2->unk0 != 0) {
-                ai->TargetXYZ.x = x + D_800C457C[m2->unk8].x;
-                ai->TargetXYZ.z = z + D_800C457C[m2->unk8].z;
+                ai->TargetXYZ.x = x + EncloseStepsOdd[m2->unk8].x;
+                ai->TargetXYZ.z = z + EncloseStepsOdd[m2->unk8].z;
             } else {
-                ai->TargetXYZ.x = x + D_800C45BC[m2->unk8].x;
-                ai->TargetXYZ.z = z + D_800C45BC[m2->unk8].z;
+                ai->TargetXYZ.x = x + EncloseStepsEven[m2->unk8].x;
+                ai->TargetXYZ.z = z + EncloseStepsEven[m2->unk8].z;
             }
             ai->AImode = 5;
             return 1;
@@ -5544,8 +5547,8 @@ bool PogoAI_ClaimingThisTileWillEncircle(s32 x, s32 z, s32 hero) {
     if (PogoAI_CountNeighbours(x, z, hero) < 2) {
         return 0;
     }
-    base = D_800C53DC[0];
-    c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)base);
+    base = PogoGrid[0];
+    c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(PogoGrid[0]) + (u32)base);
     if (c->unkE != 0) {
         return 0;
     }
@@ -5557,7 +5560,7 @@ bool PogoAI_ClaimingThisTileWillEncircle(s32 x, s32 z, s32 hero) {
         for (i = 0; i < 8; i++) {
             s32 *p = (s32 *)((j * 8 + i) * 4 + (u32)g);
             *p = 0;
-            if (D_800C53DC[i][j].unkA == hero) {
+            if (PogoGrid[i][j].unkA == hero) {
                 *p = 1;
             }
         }
@@ -5572,28 +5575,28 @@ s32 PogoAI_CountNeighbours(s32 arg0, s32 arg1, s32 arg2) {
 
     n = 0;
     if (arg0 > 0) {
-        s32 v = D_800C53DC[arg0 - 1][arg1].unkA;
+        s32 v = PogoGrid[arg0 - 1][arg1].unkA;
         n = v == arg2;
     }
-    if (arg0 < 7 && D_800C53DC[arg0 + 1][arg1].unkA == arg2) {
+    if (arg0 < 7 && PogoGrid[arg0 + 1][arg1].unkA == arg2) {
         n++;
     }
-    if (arg1 > 0 && D_800C53DC[arg0][arg1 - 1].unkA == arg2) {
+    if (arg1 > 0 && PogoGrid[arg0][arg1 - 1].unkA == arg2) {
         n++;
     }
-    if (arg1 < 7 && D_800C53DC[arg0][arg1 + 1].unkA == arg2) {
+    if (arg1 < 7 && PogoGrid[arg0][arg1 + 1].unkA == arg2) {
         n++;
     }
-    if (arg0 == 0 && D_800C5B2C[arg1] == arg2) {
+    if (arg0 == 0 && TileScan0[arg1] == arg2) {
         n++;
     }
-    if (arg0 == 7 && D_800C5B4C[arg1] == arg2) {
+    if (arg0 == 7 && TileScan1[arg1] == arg2) {
         n++;
     }
-    if (arg1 == 0 && D_800C5B8C[arg0] == arg2) {
+    if (arg1 == 0 && TileScan3[arg0] == arg2) {
         n++;
     }
-    if (arg1 == 7 && D_800C5B6C[arg0] == arg2) {
+    if (arg1 == 7 && TileScan2[arg0] == arg2) {
         n++;
     }
     return n;
@@ -5607,7 +5610,7 @@ void Init_PogoRipperRoo(NAS *nas) {
 
     e = nas->Engine;
     if (e != NULL) {
-        func_80024E30(nas, &D_800C4680);
+        func_80024E30(nas, &RooScriptInit);
         func_8001682C((s32 *)D_80053BD4);
         e->sub->unk6C = D_80053BD4;
         e->sub->unk74 = 0x2001;
@@ -5641,12 +5644,12 @@ void Init_PogoRipperRoo(NAS *nas) {
             }
         }
     }
-    D_800C5308 = 0;
+    RooFrame = 0;
     if (nas->Failure != 0) {
         KillNAS(nas);
-        D_800C5BAC = 0;
+        PogoRooNas = 0;
     } else {
-        D_800C5BAC = (s32)nas;
+        PogoRooNas = (s32)nas;
     }
 }
 
@@ -5697,30 +5700,30 @@ void Plot_PogoRipperRoo(NAS *nas) {
         x = (e->unk10.x + 0x800) >> 9;
         z = (e->unk10.z + 0x800) >> 9;
         if ((u32)x < 8 && z >= 0 && z < 8) {
-            D_800C53DC[x][z].unkE = 5;
+            PogoGrid[x][z].unkE = 5;
         }
     }
     switch (nas->UserInfo.status) {
     case 0:
-        D_800C5BD8 = -1;
+        RooTileX = -1;
         e->unk10.x = -0x100;
         e->unk10.z = 0x900;
-        D_800C5BD8 = -1; /* set twice in the original: its registers need this store */
-        D_800C5BE0 = 0;
-        D_800C5BE4 = 0;
-        D_800C5BE8 = 0;
+        RooTileX = -1; /* set twice in the original: its registers need this store */
+        RooSpeedX = 0;
+        RooSpeedZ = 0;
+        RooAngle = 0;
         nas->UserInfo.user1 = 0xA0;
         nas->UserInfo.status = 1;
         GotoLinkAnim(anim, 0);
         break;
     case 1:
         if (--nas->UserInfo.user1 < 2) {
-            D_800C5BEC = (D_8004E0D8 & 1) ? 1 : 3;
+            RooDir = (D_8004E0D8 & 1) ? 1 : 3;
             nas->UserInfo.user1 = Random(0x3C) + 0x64;
             nas->UserInfo.status = 2;
             PlaySfx(0x542, NULL, &e->unk10, 0x1000, 0x1E00, 0);
             GotoLinkAnim(anim, 1);
-            D_800C5304 = 0;
+            RooBounce = 0;
         }
         break;
     case 2:
@@ -5746,75 +5749,75 @@ void Plot_PogoRipperRoo(NAS *nas) {
             }
         }
         if (nas->UserInfo.user1 > 0) {
-            D_800C5BD8 = (e->unk10.x + 0x800) >> 9;
-            D_800C5BDC = (e->unk10.z + 0x800) >> 9;
-            switch (D_800C5BEC) {
+            RooTileX = (e->unk10.x + 0x800) >> 9;
+            RooTileZ = (e->unk10.z + 0x800) >> 9;
+            switch (RooDir) {
             case 0:
-                D_800C5BDC -= 2;
+                RooTileZ -= 2;
                 break;
             case 2:
-                D_800C5BDC += 2;
+                RooTileZ += 2;
                 break;
             case 3:
-                D_800C5BD8 += 2;
+                RooTileX += 2;
                 break;
             case 1:
-                D_800C5BD8 -= 2;
+                RooTileX -= 2;
                 break;
             }
             Roo_ChangeDirOnEdge();
         } else {
-            D_800C5BD8 = (e->unk10.x + 0x800) >> 9;
-            D_800C5BDC = (e->unk10.z + 0x800) >> 9;
-            if (D_800C5BD8 == 8) {
-                D_800C5BEC = 1;
-            } else if (D_800C5BD8 == -1) {
-                D_800C5BEC = 3;
-            } else if (D_800C5BDC == 8) {
-                D_800C5BEC = 0;
-            } else if (D_800C5BDC == -1) {
-                D_800C5BEC = 2;
+            RooTileX = (e->unk10.x + 0x800) >> 9;
+            RooTileZ = (e->unk10.z + 0x800) >> 9;
+            if (RooTileX == 8) {
+                RooDir = 1;
+            } else if (RooTileX == -1) {
+                RooDir = 3;
+            } else if (RooTileZ == 8) {
+                RooDir = 0;
+            } else if (RooTileZ == -1) {
+                RooDir = 2;
             }
             if (D_8005A646 & 0x80) {
-                v = D_800C46C8[D_800C5308];
+                v = RooFrames[RooFrame];
             } else {
-                v = D_800C468C[D_800C5308];
+                v = RooHopFrames[RooFrame];
             }
             if (v == 12) {
-                D_800C5308 = 0;
+                RooFrame = 0;
                 if (D_8005A646 & 0x80) {
-                    v = D_800C46C8[0];
+                    v = RooFrames[0];
                 } else {
-                    v = D_800C468C[0];
+                    v = RooHopFrames[0];
                 }
             } else {
-                D_800C5308++;
+                RooFrame++;
             }
             switch (v - 6) {
             case 1:
                 nas->UserInfo.status = 3;
                 Roo_FindNewSquare(e);
-                D_800C5BF4 = Random(3) + 1;
+                RooWait = Random(3) + 1;
                 break;
             case 0:
                 nas->UserInfo.status = 3;
                 Roo_FindNewSquare(e);
-                D_800C5BF4 = 0x32;
+                RooWait = 0x32;
                 break;
             case 2:
                 nas->UserInfo.status = 4;
                 nas->UserInfo.user2 = 0x19;
                 Roo_FindNewSquare(e);
-                D_800C5BF4 = Random(3) + 1;
+                RooWait = Random(3) + 1;
                 break;
             case 3:
             case 4:
                 nas->UserInfo.status = v;
                 Roo_FindNewSquare(e);
-                D_800C5BF4 = 0x32;
+                RooWait = 0x32;
                 break;
             }
-            D_800C5BF0 = 0;
+            RooSteps = 0;
             sfx = 0x543;
             if (D_8004E0D8 & 1) {
                 sfx = 0x542;
@@ -5833,24 +5836,24 @@ void Plot_PogoRipperRoo(NAS *nas) {
         }
         tx = (e->unk10.x + 0x800) >> 9;
         tz = (e->unk10.z + 0x800) >> 9;
-        if ((u32)tx < 8 && tz >= 0 && tz < 8 && D_800C5BF0 < 100) {
+        if ((u32)tx < 8 && tz >= 0 && tz < 8 && RooSteps < 100) {
             if (nas->UserInfo.status == 3) {
-                if (D_800C5BF0 == D_800C5BF4) {
-                    D_800C53DC[tx][tz].unkA = 5;
-                    D_800C53DC[tx][tz].unk12 = 7;
+                if (RooSteps == RooWait) {
+                    PogoGrid[tx][tz].unkA = 5;
+                    PogoGrid[tx][tz].unk12 = 7;
                 } else {
-                    D_800C53DC[tx][tz].unkA = 5;
-                    D_800C53DC[tx][tz].unk12 = 5;
-                    D_800C53DC[tx][tz].unk14 = 0x78;
+                    PogoGrid[tx][tz].unkA = 5;
+                    PogoGrid[tx][tz].unk12 = 5;
+                    PogoGrid[tx][tz].unk14 = 0x78;
                 }
                 Tile_Update(tx, tz);
-                if (D_800C5BF0 == 0) {
-                    D_800C53DC[tx][tz].unk18[0] = 1;
+                if (RooSteps == 0) {
+                    PogoGrid[tx][tz].unk18[0] = 1;
                 } else {
-                    D_800C53DC[tx][tz].unk18[0] = 0;
+                    PogoGrid[tx][tz].unk18[0] = 0;
                 }
             } else if (nas->UserInfo.status == 4) {
-                if (D_800C5BF0 == D_800C5BF4) {
+                if (RooSteps == RooWait) {
                     nas->UserInfo.status = 5;
                     nas->UserInfo.user1 = 0x8C;
                     GotoLinkAnim(anim, 2);
@@ -5874,29 +5877,29 @@ void Plot_PogoRipperRoo(NAS *nas) {
                         if (near && !(Heroes[i].hero_status & 0x800)) {
                             cx = (e->unk10.x + 0x800) >> 9;
                             cz = (e->unk10.z + 0x800) >> 9;
-                            D_800C53DC[cx][cz].unkA = 5;
-                            D_800C53DC[cx][cz].unk12 = 6;
-                            D_800C53DC[cx][cz].unk14 = D_800C3998[D_800C5BB8][0];
+                            PogoGrid[cx][cz].unkA = 5;
+                            PogoGrid[cx][cz].unk12 = 6;
+                            PogoGrid[cx][cz].unk14 = TileLockTimes[PogoLevelIndex][0];
                             Tile_Update((e->unk10.x + 0x800) >> 9, (e->unk10.z + 0x800) >> 9);
                         }
                     }
                     i++;
                 }
             }
-            D_800C5BF0++;
+            RooSteps++;
         }
         if (Roo_FindNewSquare(e)) {
             nas->UserInfo.status = 2;
             for (k = 0; k < 8; k++) {
                 for (j = 0; j < 8; j++) {
-                    if (D_800C53DC[k][j].unk10 == 5) {
-                        D_800C53DC[k][j].unk10 = 0;
+                    if (PogoGrid[k][j].unk10 == 5) {
+                        PogoGrid[k][j].unk10 = 0;
                     }
                 }
             }
             nas->UserInfo.user1 = Random(0x50) + 0x64;
             GotoLinkAnim(anim, 1);
-            D_800C5304 = 0;
+            RooBounce = 0;
         }
         Roo_UpdateVelocities(e);
         break;
@@ -5912,9 +5915,9 @@ void Plot_PogoRipperRoo(NAS *nas) {
         }
         if (nas->UserInfo.user1 <= 0 || (D_8005A644 & 0x801)) {
             nas->UserInfo.status = 4;
-            D_800C5BF0 = 100;
+            RooSteps = 100;
             GotoLinkAnim(anim, 1);
-            D_800C5304 = 0;
+            RooBounce = 0;
         }
         break;
     }
@@ -5927,81 +5930,81 @@ void Roo_UpdatePosition(EXTengine *eng) {
     s32 j;
     s32 a;
 
-    x = D_800C5BD8;
-    z = D_800C5BDC;
+    x = RooTileX;
+    z = RooTileZ;
     if (x < 8 && z < 8) {
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                if (D_800C53DC[i][j].unk10 == 5) {
-                    D_800C53DC[i][j].unk10 = 0;
+                if (PogoGrid[i][j].unk10 == 5) {
+                    PogoGrid[i][j].unk10 = 0;
                 }
             }
         }
-        D_800C53DC[x][z].unk10 = 5;
+        PogoGrid[x][z].unk10 = 5;
     }
-    if ((u32)(D_800C5304 - 2) < 10) {
-        eng->unk10.x += D_800C5BE0;
-        eng->unk10.z += D_800C5BE4;
+    if ((u32)(RooBounce - 2) < 10) {
+        eng->unk10.x += RooSpeedX;
+        eng->unk10.z += RooSpeedZ;
     }
-    a = func_800154A0(D_800C5BE8, eng->unk1E);
+    a = func_800154A0(RooAngle, eng->unk1E);
     eng->unk5E = 1;
     eng->unk1E -= a >> 1;
 }
 
 bool Roo_ChangeDirOnEdge(void) {
-    if ((u32)(D_800C5BDC + 1) >= 10) {
-        if (D_800C5BDC < -1) {
-            D_800C5BDC = -1;
+    if ((u32)(RooTileZ + 1) >= 10) {
+        if (RooTileZ < -1) {
+            RooTileZ = -1;
         }
-        if (D_800C5BDC > 8) {
-            D_800C5BDC = 8;
+        if (RooTileZ > 8) {
+            RooTileZ = 8;
         }
-        if (D_800C5BD8 == 8) {
-            D_800C5BD8 = 7;
-            D_800C5BEC = 1;
-        } else if (D_800C5BD8 == -1) {
-            D_800C5BD8 = 0;
-            D_800C5BEC = 3;
-        }
-        return 1;
-    }
-    if (D_800C5BDC == 8 || D_800C5BDC == -1) {
-        if (D_800C5BD8 == 8) {
-            D_800C5BEC = (D_800C5BDC == 8) ? (D_800C5BEC == 2)
-                                           : (D_800C5BEC == 0 ? 1 : 2);
-            return 1;
-        }
-        if (D_800C5BD8 == -1) {
-            D_800C5BEC = (D_800C5BDC == 8) ? (D_800C5BEC == 2 ? 3 : 0)
-                                           : (D_800C5BEC == 0 ? 3 : 2);
-            return 1;
-        }
-    }
-    if ((u32)(D_800C5BD8 + 1) >= 10) {
-        if (D_800C5BD8 < -1) {
-            D_800C5BD8 = -1;
-        }
-        if (D_800C5BD8 > 8) {
-            D_800C5BD8 = 8;
-        }
-        if (D_800C5BDC == 8) {
-            D_800C5BDC = 7;
-            D_800C5BEC = 0;
-        } else if (D_800C5BDC == -1) {
-            D_800C5BDC = 0;
-            D_800C5BEC = 2;
+        if (RooTileX == 8) {
+            RooTileX = 7;
+            RooDir = 1;
+        } else if (RooTileX == -1) {
+            RooTileX = 0;
+            RooDir = 3;
         }
         return 1;
     }
-    if (D_800C5BD8 == -1 || D_800C5BD8 == 8) {
-        if (D_800C5BDC == 8) {
-            D_800C5BEC = (D_800C5BD8 == 8) ? (D_800C5BEC == 2 ? 3 : 0)
-                                           : (D_800C5BEC != 3);
+    if (RooTileZ == 8 || RooTileZ == -1) {
+        if (RooTileX == 8) {
+            RooDir = (RooTileZ == 8) ? (RooDir == 2)
+                                           : (RooDir == 0 ? 1 : 2);
             return 1;
         }
-        if (D_800C5BDC == -1) {
-            D_800C5BEC = (D_800C5BD8 == 8) ? ((D_800C5BEC == 1) * 2)
-                                           : (D_800C5BEC == 3 ? 2 : 1);
+        if (RooTileX == -1) {
+            RooDir = (RooTileZ == 8) ? (RooDir == 2 ? 3 : 0)
+                                           : (RooDir == 0 ? 3 : 2);
+            return 1;
+        }
+    }
+    if ((u32)(RooTileX + 1) >= 10) {
+        if (RooTileX < -1) {
+            RooTileX = -1;
+        }
+        if (RooTileX > 8) {
+            RooTileX = 8;
+        }
+        if (RooTileZ == 8) {
+            RooTileZ = 7;
+            RooDir = 0;
+        } else if (RooTileZ == -1) {
+            RooTileZ = 0;
+            RooDir = 2;
+        }
+        return 1;
+    }
+    if (RooTileX == -1 || RooTileX == 8) {
+        if (RooTileZ == 8) {
+            RooDir = (RooTileX == 8) ? (RooDir == 2 ? 3 : 0)
+                                           : (RooDir != 3);
+            return 1;
+        }
+        if (RooTileZ == -1) {
+            RooDir = (RooTileX == 8) ? ((RooDir == 1) * 2)
+                                           : (RooDir == 3 ? 2 : 1);
             return 1;
         }
     }
@@ -6021,37 +6024,37 @@ bool Roo_FindNewSquare(EXTengine *eng) {
     do {
         ok = 1;
         count++;
-        D_800C5BD8 = (eng->unk10.x + 0x800) >> 9;
-        D_800C5BDC = (eng->unk10.z + 0x800) >> 9;
-        z = D_800C5BEC;
-        px = &D_800C5BD8;
+        RooTileX = (eng->unk10.x + 0x800) >> 9;
+        RooTileZ = (eng->unk10.z + 0x800) >> 9;
+        z = RooDir;
+        px = &RooTileX;
         if (count > 5) {
-            D_800C5BEC = Random(4);
+            RooDir = Random(4);
             count = 0;
         }
-        switch (D_800C5BEC) {
+        switch (RooDir) {
         case 0:
-            D_800C5BDC -= 2;
-            D_800C5BD8 -= 1 - Random(3);
+            RooTileZ -= 2;
+            RooTileX -= 1 - Random(3);
             break;
         case 2:
-            D_800C5BDC += 2;
-            D_800C5BD8 -= 1 - Random(3);
+            RooTileZ += 2;
+            RooTileX -= 1 - Random(3);
             break;
         case 3:
-            D_800C5BD8 += 2;
-            D_800C5BDC -= 1 - Random(3);
+            RooTileX += 2;
+            RooTileZ -= 1 - Random(3);
             break;
         case 1:
-            D_800C5BD8 -= 2;
-            D_800C5BDC -= 1 - Random(3);
+            RooTileX -= 2;
+            RooTileZ -= 1 - Random(3);
             break;
         }
-        x = D_800C5BD8;
+        x = RooTileX;
         if ((u32)x >= 8) {
-            D_800C5BEC = (D_8004E0D8 & 1) ? 0 : 2;
+            RooDir = (D_8004E0D8 & 1) ? 0 : 2;
             if ((u32)(x + 1) >= 10) {
-                pz = &D_800C5BDC;
+                pz = &RooTileZ;
                 v = *pz;
                 if (v < 4) {
                     v++;
@@ -6059,18 +6062,18 @@ bool Roo_FindNewSquare(EXTengine *eng) {
                     v--;
                 }
                 *pz = v;
-                if (D_800C5BD8 < -1) {
-                    D_800C5BD8 = -1;
+                if (RooTileX < -1) {
+                    RooTileX = -1;
                 }
-                if (D_800C5BD8 > 8) {
-                    D_800C5BD8 = 8;
+                if (RooTileX > 8) {
+                    RooTileX = 8;
                 }
             }
             return 1;
         }
-        z = D_800C5BDC;
+        z = RooTileZ;
         if ((u32)z >= 8) {
-            D_800C5BEC = (D_8004E0D8 & 1) ? 1 : 3;
+            RooDir = (D_8004E0D8 & 1) ? 1 : 3;
             if ((u32)(z + 1) >= 10) {
                 if (x < 4) {
                     x++;
@@ -6078,11 +6081,11 @@ bool Roo_FindNewSquare(EXTengine *eng) {
                     x--;
                 }
                 *px = x;
-                if (D_800C5BDC < -1) {
-                    D_800C5BDC = -1;
+                if (RooTileZ < -1) {
+                    RooTileZ = -1;
                 }
-                if (D_800C5BDC > 8) {
-                    D_800C5BDC = 8;
+                if (RooTileZ > 8) {
+                    RooTileZ = 8;
                 }
             }
             return 1;
@@ -6090,7 +6093,7 @@ bool Roo_FindNewSquare(EXTengine *eng) {
         if ((SquareIsFreeForRoo(x, z) ^ 1) != 0) {
             ok = 0;
         }
-        if (D_800C53DC[D_800C5BD8][D_800C5BDC].hero != NULL) {
+        if (PogoGrid[RooTileX][RooTileZ].hero != NULL) {
             ok = 0;
         }
     } while (!ok);
@@ -6280,7 +6283,7 @@ void Init_PogoPadlock(NAS *nas) {
     }
     nas->UserInfo.user1 = 0xF0;
     nas->UserInfo.status = 0;
-    nas->UserInfo.flags = D_800C530C[0];
+    nas->UserInfo.flags = PadlockFlags[0];
     if (nas->Failure != 0) {
         KillNAS(nas);
     }
@@ -6328,7 +6331,7 @@ void Plot_PogoPadlock(NAS *nas) {
         }
         nas->UserInfo.status = 1;
         nas->UserInfo.user1 = 0xA;
-        init = D_800C530C[0];
+        init = PadlockFlags[0];
         count = init & 0xFF;
         nas->UserInfo.flags = init;
         level = init >> 8;
@@ -6347,7 +6350,7 @@ void Plot_PogoPadlock(NAS *nas) {
         if (eng->unk2C.y > 0x1000) {
             eng->unk2C.y = 0x1000;
             nas->UserInfo.status = 3;
-            nas->UserInfo.user1 = D_800C5334[level];
+            nas->UserInfo.user1 = PadlockTimes[level];
         }
         eng->unk5E = 1;
         break;
@@ -6424,7 +6427,7 @@ void Plot_PogoPadlock(NAS *nas) {
             eng->unk10.x = tx;
             eng->unk10.z = tz;
             nas->UserInfo.status = 3;
-            nas->UserInfo.user1 = D_800C5334[level];
+            nas->UserInfo.user1 = PadlockTimes[level];
         }
         if (eng2 == NULL) {
             break;
@@ -6449,10 +6452,10 @@ void Plot_PogoPadlock(NAS *nas) {
 bool PogoPadlock_IsHere(s32 arg0, s32 arg1) {
     EXTengine *e;
 
-    if (D_800C5BB0 != NULL) {
-        e = D_800C5BB0->Engine;
+    if (PogoPadlockNas != NULL) {
+        e = PogoPadlockNas->Engine;
         if (e != NULL) {
-            if ((u16)D_800C5BB0->UserInfo.status >= 3 && (e->unk10.x + 0x800) >> 9 == arg0
+            if ((u16)PogoPadlockNas->UserInfo.status >= 3 && (e->unk10.x + 0x800) >> 9 == arg0
                 && (e->unk10.z + 0x800) >> 9 == arg1) {
                 return 1;
             }
@@ -6467,10 +6470,10 @@ bool PadlockAI_IsTileOKForPadlock(NAS *arg0, s32 arg1, s32 arg2) {
     if ((u32)arg1 >= 8 || (u32)arg2 >= 8) {
         return 0;
     }
-    if (D_800C53DC[arg1][arg2].hero != NULL) {
+    if (PogoGrid[arg1][arg2].hero != NULL) {
         return 0;
     }
-    p = &D_800C53DC[arg1][arg2];
+    p = &PogoGrid[arg1][arg2];
     if (p == NULL) {
         return 0;
     }
@@ -6481,7 +6484,7 @@ bool PadlockAI_IsTileOKForPadlock(NAS *arg0, s32 arg1, s32 arg2) {
 }
 
 void Create_PogoPadlock(s32 arg0, s32 arg1) {
-    D_800C5BB0 = CreateNAS((arg0 << 9) - 0x700, World_floor_level, (arg1 << 9) - 0x700, 0x1408, 0x11);
+    PogoPadlockNas = CreateNAS((arg0 << 9) - 0x700, World_floor_level, (arg1 << 9) - 0x700, 0x1408, 0x11);
 }
 
 void CreateFloatyPogoScore(u32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -6495,7 +6498,7 @@ bool SquareIsFreeForRoo(s32 arg0, s32 arg1) {
     if ((u32)arg0 >= 8 || (u32)arg1 >= 8) {
         return 1;
     }
-    p = &D_800C53DC[arg0][arg1];
+    p = &PogoGrid[arg0][arg1];
     if (p == NULL) {
         return 0;
     }
@@ -6510,10 +6513,10 @@ bool SquareIsFreeForRoo(s32 arg0, s32 arg1) {
 }
 
 bool Roo_Bounce(NAS *nas) {
-    if (++D_800C5304 < 14) {
+    if (++RooBounce < 14) {
         return 0;
     }
-    D_800C5304 = 0;
+    RooBounce = 0;
     if (nas->Engine != NULL) {
         Roo_GoBoing(nas->Engine);
     }
@@ -6524,11 +6527,11 @@ void Roo_UpdateVelocities(EXTengine *eng) {
     s32 dx;
     s32 dz;
 
-    dx = (D_800C5BD8 << 9) - eng->unk10.x - 0x700;
-    dz = (D_800C5BDC << 9) - eng->unk10.z - 0x700;
-    D_800C5BE0 = dx / 10;
-    D_800C5BE4 = dz / 10;
-    D_800C5BE8 = get_angle(dx, dz) + 0x800;
+    dx = (RooTileX << 9) - eng->unk10.x - 0x700;
+    dz = (RooTileZ << 9) - eng->unk10.z - 0x700;
+    RooSpeedX = dx / 10;
+    RooSpeedZ = dz / 10;
+    RooAngle = get_angle(dx, dz) + 0x800;
 }
 
 s32 PogoAI_CountMyTiles(u32 arg0) {
@@ -6539,7 +6542,7 @@ s32 PogoAI_CountMyTiles(u32 arg0) {
     count = 0;
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            if (D_800C53DC[i][j].unkA == arg0) {
+            if (PogoGrid[i][j].unkA == arg0) {
                 count++;
             }
         }
@@ -6549,18 +6552,18 @@ s32 PogoAI_CountMyTiles(u32 arg0) {
 
 bool PogoAI_RadialSearch_CheckKerbs(s32 arg0, s32 arg1, s32 arg2) {
     if ((u32)arg2 < 8) {
-        if (arg1 == -1 && D_800C5B2C[arg2] == arg0) {
+        if (arg1 == -1 && TileScan0[arg2] == arg0) {
             return 1;
         }
-        if (arg1 == 8 && D_800C5B4C[arg2] == arg0) {
+        if (arg1 == 8 && TileScan1[arg2] == arg0) {
             return 1;
         }
     }
     if ((u32)arg1 < 8) {
-        if (arg2 == -1 && D_800C5B8C[arg1] == arg0) {
+        if (arg2 == -1 && TileScan3[arg1] == arg0) {
             return 1;
         }
-        if (arg2 == 8 && D_800C5B6C[arg1] == arg0) {
+        if (arg2 == 8 && TileScan2[arg1] == arg0) {
             return 1;
         }
     }
@@ -6591,7 +6594,7 @@ void PogoAI_HeroClaimedPickup(u32 i)
 
     ai = Heroes[i].hero_ai;
     if (ai != NULL) {
-        ai->AItimer1 = D_800C3A38[D_800C5BBC][0];
+        ai->AItimer1 = PogoAiTimers[PogoAiQualityIndex][0];
     }
 }
 
@@ -6609,25 +6612,25 @@ void PogoAI_InitHero(u32 i)
 
 void PogoKerb_CopyData(void) {
     s32 i;
-    u8 (*p)[8] = D_800C3C14[D_800C5BC0];
+    u8 (*p)[8] = KerbData[KerbStep];
 
     for (i = 0; i < 8; i++) {
-        D_800C5B2C[i] = p[0][i];
-        D_800C5B6C[i] = p[1][i];
-        D_800C5B4C[7 - i] = p[2][i];
-        D_800C5B8C[7 - i] = p[3][i];
+        TileScan0[i] = p[0][i];
+        TileScan2[i] = p[1][i];
+        TileScan1[7 - i] = p[2][i];
+        TileScan3[7 - i] = p[3][i];
     }
 }
 
 void PogoKerb_Init(void) {
-    D_800C5BC0 = 0;
-    D_800C5BC4 = Random(0xC8) + 0xC8;
-    D_800C5BD0 = 0;
-    D_800C5BCC = 8;
-    D_800C5BD4 = 0;
-    D_800C5300 = 0;
+    KerbStep = 0;
+    KerbDelay = Random(0xC8) + 0xC8;
+    KerbCount = 0;
+    KerbPeriod = 8;
+    KerbClockSecond = 0;
+    KerbMode = 0;
     if (D_8005A646 & 0x80) {
-        D_800C5BC4 = 0x78;
+        KerbDelay = 0x78;
     }
     PogoKerb_CopyData();
 }
@@ -6716,7 +6719,7 @@ s32 Player_CountTiles(u32 arg0) {
     count = 0;
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            if (D_800C53DC[i][j].unkA == arg0) {
+            if (PogoGrid[i][j].unkA == arg0) {
                 count++;
             }
         }
@@ -6729,10 +6732,10 @@ s32 Player_CalcForwardSpeed(u32 arg0, s32 arg1)
     s32 h;
     s32 n;
     s32 r;
-    s32 *a = D_800C5074;
+    s32 *a = PogoTilesMid;
 
     h = Heroes[arg0].hero_name;
-    n = a[h] - D_800C5050[h] - D_800C502C[h];
+    n = a[h] - PogoTilesHigh[h] - PogoTilesLow[h];
     r = 0x200 / n;
     if (arg1 != 0) {
         if (n & 1) {
@@ -6750,8 +6753,8 @@ void Player_SnapToTile(u32 arg0) {
 }
 
 bool SquareContainsMushroom(s32 arg0, s32 arg1) {
-    Ovl60Cell *base = D_800C53DC[0];
-    HeroInfo *hero = ((Ovl60Cell *)(arg0 * sizeof(D_800C53DC[0]) + arg1 * sizeof(Ovl60Cell) + (u32)base))->hero;
+    Ovl60Cell *base = PogoGrid[0];
+    HeroInfo *hero = ((Ovl60Cell *)(arg0 * sizeof(PogoGrid[0]) + arg1 * sizeof(Ovl60Cell) + (u32)base))->hero;
 
     if (hero != NULL && hero->hero_pu_action == 0xB) {
         return 1;
@@ -6832,7 +6835,7 @@ s32 LevelSpecific_UnclaimedTile(s32 x, s32 z) {
 }
 
 void Island_FloodFill(s32 x, s32 z, u32 id, s32 *seen) {
-    if ((u32)x < 8 && (u32)z < 8 && D_800C53DC[x][z].unkA != id && seen[z * 8 + x] == 0) {
+    if ((u32)x < 8 && (u32)z < 8 && PogoGrid[x][z].unkA != id && seen[z * 8 + x] == 0) {
         seen[z * 8 + x] = 1;
         Island_FloodFill(x - 1, z - 1, id, seen);
         Island_FloodFill(x, z - 1, id, seen);
@@ -6854,7 +6857,7 @@ void Tiles_MakeUpIslandMap(s32 *arg0, s32 arg1) {
         for (j = 0; j < 8; j++) {
             p = (s32 *)((i * 8 + j) * sizeof(s32) + (u32)arg0);
             *p = 0;
-            if (D_800C53DC[j][i].unkA == arg1) {
+            if (PogoGrid[j][i].unkA == arg1) {
                 *p = 1;
             }
         }
@@ -6890,7 +6893,7 @@ void Init_PogoMushroom(NAS *nas) {
     if (nas->Failure != 0) {
         KillNAS(nas);
     } else {
-        D_800C52F4++;
+        MushroomCount++;
     }
 }
 
@@ -6970,8 +6973,8 @@ bool SetTile_PogoFour(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
     if ((((D5A614View *)g)->flags & 0x80) && g[arg0 + 0x5C] == 0) {
         return 1;
     }
-    base = D_800C53DC[0];
-    p = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
+    base = PogoGrid[0];
+    p = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(PogoGrid[0]) + (u32)base);
     if ((u16)p->unk12 == 10) {
         if (arg3 != 0) {
             PlaySquareLockedNoise(arg0);
@@ -6994,8 +6997,8 @@ bool SetTile_PogoThree(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
     Ovl60Cell *c;
 
     if (D_8005A648 == 0xC) {
-        base = D_800C53DC[0];
-        c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
+        base = PogoGrid[0];
+        c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(PogoGrid[0]) + (u32)base);
         if ((u16)c->unk12 == 7) {
             Tile_Claim(arg1, arg2, arg0);
             if (arg1 > 0) {
@@ -7037,7 +7040,7 @@ void ZapFourWays(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    NAS *nas = (NAS *)D_800C53DC[arg0][arg1].hero;
+    NAS *nas = (NAS *)PogoGrid[arg0][arg1].hero;
     s32 dir;
     s32 i;
     s32 dx;
@@ -7083,7 +7086,7 @@ void Tile_FireAllNitros(void) {
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            if ((u16)D_800C53DC[i][j].unk12 == 6) {
+            if ((u16)PogoGrid[i][j].unk12 == 6) {
                 Tile_FireNitro(i, j);
             }
         }
@@ -7091,8 +7094,8 @@ void Tile_FireAllNitros(void) {
 }
 
 void Tile_OnFire(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
 
     p->unk12 = 1;
     p->unkA = -1;
@@ -7104,8 +7107,8 @@ void Tile_OnFire(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void Tile_DelayedFizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
 
     p->unk12 = 1;
     p->unkA = -1;
@@ -7116,8 +7119,8 @@ void Tile_DelayedFizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void Tile_FizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
 
     p->unk12 = 1;
     p->unkA = -1;
@@ -7128,8 +7131,8 @@ void Tile_FizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void Tile_DelayedSet(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
     s16 old = p->unkA;
 
     p->unkA = arg2;
@@ -7153,25 +7156,25 @@ void Tile_DelayedSet(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void Tile_SetFourWay(s32 arg0, s32 arg1) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
 
     p->unkA = 5;
     p->unk12 = 7;
 }
 
 void Tile_SetNitro(s32 arg0, s32 arg1) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
 
     p->unkA = 5;
     p->unk12 = 6;
-    p->unk14 = D_800C3998[D_800C5BB8][0];
+    p->unk14 = TileLockTimes[PogoLevelIndex][0];
 }
 
 void Tile_SetTnt(s32 arg0, s32 arg1) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
 
     p->unkA = 5;
     p->unk12 = 5;
@@ -7179,8 +7182,8 @@ void Tile_SetTnt(s32 arg0, s32 arg1) {
 }
 
 void Tile_SetLocked(s32 arg0, s32 arg1, s32 arg2) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
 
     p->unk12 = 10;
     p->unkA = arg2;
@@ -7188,8 +7191,8 @@ void Tile_SetLocked(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Tile_Set(s32 arg0, s32 arg1, s32 arg2) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
 
     p->unk12 = 1;
     p->unkA = arg2;
@@ -7210,8 +7213,8 @@ void Tile_Set(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void Tile_Clear(s32 arg0, s32 arg1) {
-    Ovl60Cell *base = D_800C53DC[0];
-    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    Ovl60Cell *base = PogoGrid[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(PogoGrid[0]) + (u32)base);
 
     p->unk12 = 1;
     p->unkA = -1;
@@ -7260,12 +7263,12 @@ void Player_SetReserve(u32 arg0, s32 arg1, s32 arg2) {
     if ((u32)arg1 < 8 && (u32)arg2 < 8) {
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                if (D_800C53DC[i][j].unk10 == arg0 + 1) {
-                    D_800C53DC[i][j].unk10 = 0;
+                if (PogoGrid[i][j].unk10 == arg0 + 1) {
+                    PogoGrid[i][j].unk10 = 0;
                 }
             }
         }
-        D_800C53DC[arg1][arg2].unk10 = arg0 + 1;
+        PogoGrid[arg1][arg2].unk10 = arg0 + 1;
     }
 }
 
@@ -7275,8 +7278,8 @@ void Player_RemoveReserve(u32 arg0) {
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            if (D_800C53DC[i][j].unk10 == arg0 + 1) {
-                D_800C53DC[i][j].unk10 = 0;
+            if (PogoGrid[i][j].unk10 == arg0 + 1) {
+                PogoGrid[i][j].unk10 = 0;
             }
         }
     }
@@ -7459,10 +7462,10 @@ void PogoQuality_Update(void) {
     for (i = 0; i < 4; i++) {
         p = D_8005A614 + i;
         if (p[0x5C] != 0) {
-            D_800C5BB8 = D_8009D87C[i][0];
+            PogoLevelIndex = D_8009D87C[i][0];
         }
         if (p[0x5C] == 0) {
-            D_800C5BBC = D_8009D87C[i][2];
+            PogoAiQualityIndex = D_8009D87C[i][2];
         }
     }
 }
@@ -7485,7 +7488,7 @@ void PogoInit_CrystalChallenge(void) {
 
     if (*(u16 *)(g + 0x32) & 0x80) {
         if (*(s16 *)(g + 0x34) == 10) {
-            D_800C52F4 = 0;
+            MushroomCount = 0;
             for (i = 0; i < 2; i++) {
                 CreateNAS(0, 0, 0, 0x1407, 0x11);
             }
@@ -7541,17 +7544,17 @@ void PogoInit_SetClock(u32 arg0) {
 
 void InitialisePOGO(void) {
     Init_Clock(0x140, 0x28, 0);
-    D_800C5BB0 = 0;
-    D_800C5BAC = 0;
-    D_800C52FC = 0;
-    D_800C52E0 = 0;
-    D_800C52E4 = 0;
+    PogoPadlockNas = 0;
+    PogoRooNas = 0;
+    PogoUnused1 = 0;
+    BrioSmokeFrame = 0;
+    CortexSmokeFrame = 0;
     World_floor_level = -0x10;
-    D_800C52EC = 0;
-    D_800C52F0 = 0;
-    D_800C52F8 = 0;
-    D_800C5BB8 = 0x10;
-    D_800C5BBC = 0x10;
+    number_of_pickups = 0;
+    number_of_powerups = 0;
+    PogoUnused0 = 0;
+    PogoLevelIndex = 0x10;
+    PogoAiQualityIndex = 0x10;
     PogoQuality_Init();
     PogoInit_Camera();
     InitPogo_Tiles();
@@ -7570,7 +7573,7 @@ void POGO_InitHero(u32 arg0) {
     p->flags = 0;
     p->status = 0;
     p->tazer = NULL;
-    D_800C53CC[arg0] = 5;
+    PogoBounceCount[arg0] = 5;
     SetHeroAction(arg0, 0x39);
     PogoAI_InitHero(arg0);
 }
@@ -7599,8 +7602,8 @@ void POGOriggers(NASTrigger *trig, s32 arg1) {
 void InitialisePOGOFirst(void) {
     D_8009D6E8.unk0 = (s32)POGO_InitHero;
     D_8009D6E8.unk44 = &D_8008AB04;
-    D_8009D6E8.unk4 = &D_800C52CC;
-    D_8009D6E8.unkC = &D_800C44A8;
+    D_8009D6E8.unk4 = &PogoHeroModels;
+    D_8009D6E8.unkC = &PogoHookTableC;
     D_8009D6E8.unk20 = PreMovePOGO;
     D_8009D6E8.unk28 = PostMovePOGO;
     D_8009D6E8.unk64 = PogoHeroChooseWinner;
@@ -7619,7 +7622,7 @@ void POGOSetUp(void) {
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
     D_8005AA70[9] = (s32)GetPogoContour;
-    func_8001E934(&D_8009F8A4, &D_800C52B8);
+    func_8001E934(&D_8009F8A4, &PogoProcess);
 }
 
 void pogo_kill(void) {
