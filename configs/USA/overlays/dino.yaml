@@ -52,8 +52,8 @@ segments:
     subsegments:
       # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
-      - [0x0, rodata, overlays/dino/dino_id]
+      - [0x0, .rodata, overlays/dino/dino_id]   # src/overlays/dino/dino_id.c
       - [0x4, .rodata, overlays/dino/dino]
       - [0x124, c, overlays/dino/dino]
-      - [0xA228, data, overlays/dino/dino_data]
+      - [0xA228, .data, overlays/dino/dino]   # dino.c's data (tools/scripts/data2c.py)
   - [0xA9D4]

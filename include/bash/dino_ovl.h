@@ -395,7 +395,8 @@ void PlotDinoGem(NAS *m);
 
 #endif /* BASH_DINO_OVL_H */
 
-extern u8 D_800BDA7C[], D_800BDA5C[], D_8008B29C[], D_8008B418[];
+extern u8 D_800BDA7C[], D_8008B29C[], D_8008B418[];
+extern s32 D_800BDA5C[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern u8 D_800BD948[], D_800BD95C[], D_800BD970[], D_800BD97C[], D_800BD994[], D_800BD9A8[];
 extern DinoObj *D_800BDB88, *D_800BDB8C;
 extern s32 D_800BDB90, D_800BDB94, D_800BDB98, D_800BDB9C, D_800BDBA0;
