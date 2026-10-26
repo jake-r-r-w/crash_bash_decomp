@@ -175,8 +175,7 @@ const MODES={
    "The compiler's own strings and jump tables count as named.",
   left:"Largest data blocks still unnamed",none:"Every data block here is named."}};
 let mode=store.get("decomp-mapmode");if(!MODES[mode])mode="code";
-const TITLE=Object.fromEntries((S.units||[]).map(u=>[u.unit,u.title||""]));
-const uname=u=>u+(TITLE[u]&&TITLE[u]!=u?` (${TITLE[u]})`:"");
+const uname=u=>u;   // the units carry the games' own overlay names, so no title in brackets
 
 // ---------------------------------------------------------------- tiles
 (function(){
