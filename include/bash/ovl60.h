@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/pogo.h" /* PogoPlayer, PogoPlay */
 
 void UpdatePOGO(void);
 extern u8 D_8008AB04[];
@@ -103,19 +104,6 @@ typedef struct Ovl60Obj {
 extern Ovl60Obj *D_800C5BB4;
 extern HeroInfo Heroes[4];
 
-/* 0x1C-byte entries of D_800C535C */
-typedef struct {
-    /* 0x00 */ s32 flags;
-    /* 0x04 */ u16 unk4; /* state */
-    /* 0x06 */ s16 unk6; /* timer */
-    /* 0x08 */ s32 unk8[2];
-    /* 0x10 */ NAS *nas;
-    /* 0x14 */ s16 unk14;
-    /* 0x16 */ s16 unk16;
-    /* 0x18 */ s32 unk18;
-} Ovl60Slot;
-
-extern Ovl60Slot D_800C535C[];
 /* PadState (D_80051338) as Fire_Rocket reads it: d-pad bits 0xF0 at 0x50. */
 typedef struct Ovl60Pad {
     /* 0x00 */ u8 unk0[0x50];
@@ -157,11 +145,11 @@ void Pickup_Lose(s32);
 /* Drops hero i's pickup and sets its slot state (Pickup_Claim). */
 #define Ovl60_PickupSet(i, state) \
     {                             \
-        Ovl60Slot *s_;            \
+        PogoPlayer *s_;            \
                                   \
         Pickup_Lose(i);           \
-        s_ = D_800C535C;          \
-        s_[i].unk4 = (state);     \
+        s_ = PogoPlay;          \
+        s_[i].status = (state);     \
     }
 /* Plays anim on a hero's powerup sub-engine (Pickup_Claim). */
 static inline void Ovl60_PowerupAnim(s32 i, s32 anim) {
@@ -620,7 +608,7 @@ bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flag
 static inline s32 Ovl60_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
 {
     if (Heroes[arg0].hero_status & bit) {
-        if (D_800C535C[arg0].nas != NULL) {
+        if (PogoPlay[arg0].tazer != NULL) {
             HeroPogoTazingCancel(arg0);
         }
         SetHeroAction(arg0, action);

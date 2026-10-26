@@ -557,7 +557,7 @@ s32 D_800C5304 = 0;
 s32 D_800C5308 = 0;
 s32 D_800C530C[10] = { 0x12, 0x10, 0xE, 0xD, 0xC, 0xA, 8, 7, 7, 7 };
 s32 D_800C5334[10] = { 1, 4, 7, 0xA, 0xE, 0x13, 0x17, 0x1C, 0x1C, 0x1C };
-Ovl60Slot D_800C535C[4] = {0};
+PogoPlayer PogoPlay[4] = {0};
 s32 D_800C53CC[4] = {0};
 Ovl60Cell D_800C53DC[8][8] = {0};
 Ovl60Move D_800C5ADC[4] = {0};
@@ -621,14 +621,14 @@ void PogoInit_AllHeros(void) {
     HeroInfo *h;
     EXTengine *e;
     subengine *sub;
-    Ovl60Slot *slot;
+    PogoPlayer *slot;
     Ovl60Move *mv;
     EXTheromove *m;
 
     i = 0;
     h = Heroes;
     mv = D_800C5ADC;
-    slot = D_800C535C;
+    slot = PogoPlay;
 loop:
     if (i < 4) {
         h->hero->Camera.width = 0x500;
@@ -647,7 +647,7 @@ loop:
         }
         Player_SnapToTile(i);
         Set_Tile_Under_Player(i, 0);
-        slot->unk14 = Player_CalcForwardSpeed(i, 0);
+        slot->forward_speed = Player_CalcForwardSpeed(i, 0);
         mv->unk4 = 0;
         e = h->hero_eng;
         if (e != NULL) {
@@ -861,7 +861,7 @@ void InitPogo_Tiles(void) {
 }
 
 void UpdatePOGO(void) {
-    Ovl60Slot *slot;
+    PogoPlayer *slot;
     s32 i;
     s32 ok;
     u8 *g;
@@ -873,14 +873,14 @@ void UpdatePOGO(void) {
         return;
     }
     i = 0;
-    slot = D_800C535C;
+    slot = PogoPlay;
 loop:
-    if (slot->unk4 == 5) {
+    if (slot->status == 5) {
         goto tick;
     }
-    if (slot->unk4 == 6) {
+    if (slot->status == 6) {
     tick:
-        if (--slot->unk6 < 2) {
+        if (--slot->timer < 2) {
             Pickup_Lose(i);
         }
     }
@@ -1042,7 +1042,7 @@ void PogoWinner_Crystal(s32 arg0, u16 arg1) {
     case 12:
         found = -1;
         for (i = 0; i < 4; i++) {
-            if (Heroes[i].hero_mode == 0x3B && (D_800C535C[i].flags & 1)) {
+            if (Heroes[i].hero_mode == 0x3B && (PogoPlay[i].flags & 1)) {
                 found = i;
             }
         }
@@ -1481,7 +1481,7 @@ void PreMovePOGO(u32 arg0) {
     pad = &pb[arg0];
     if ((pad->unk0 & 1) || D_8005A614[arg0 + 0x5C] != 0) {
         bits = ((Ovl60Pad *)pad)->unk50;
-        if (D_800C535C[arg0].unk4 == 5 && !(bits & 0xF0)) {
+        if (PogoPlay[arg0].status == 5 && !(bits & 0xF0)) {
             switch ((u16)move->forward_angle >> 10) {
             case 0:
                 bits |= 0x40;
@@ -1498,7 +1498,7 @@ void PreMovePOGO(u32 arg0) {
             }
         }
         if ((bits & 0xF0) && move->velocity_enable != 0) {
-            speed = Player_CalcForwardSpeed(arg0, D_800C535C[arg0].unk4 == 5);
+            speed = Player_CalcForwardSpeed(arg0, PogoPlay[arg0].status == 5);
             Player_RemoveReserve(arg0);
             if (((bits & 0x80) && x > 0) || ((bits & 0x20) && x < 7)
                 || ((bits & 0x10) && z < 7) || ((bits & 0x40) && z > 0)) {
@@ -1506,25 +1506,25 @@ void PreMovePOGO(u32 arg0) {
                     Player_SetReserve(arg0, x - 1, z);
                     move->forward_angle = 0x400;
                     move->forward_speed = speed;
-                    D_800C535C[arg0].unk8[1] = 0;
+                    PogoPlay[arg0].spin = 0;
                 }
                 if ((bits & 0x20) && PogoAI_IsSquareOKForPlayer(arg0, x, z, 1, 0, 0) != 0) {
                     Player_SetReserve(arg0, x + 1, z);
                     move->forward_angle = 0xC00;
                     move->forward_speed = speed;
-                    D_800C535C[arg0].unk8[1] = 0;
+                    PogoPlay[arg0].spin = 0;
                 }
                 if ((bits & 0x10) && PogoAI_IsSquareOKForPlayer(arg0, x, z, 0, 1, 0) != 0) {
                     Player_SetReserve(arg0, x, z + 1);
                     move->forward_angle = 0x800;
                     move->forward_speed = speed;
-                    D_800C535C[arg0].unk8[1] = 0;
+                    PogoPlay[arg0].spin = 0;
                 }
                 if ((bits & 0x40) && PogoAI_IsSquareOKForPlayer(arg0, x, z, 0, -1, 0) != 0) {
                     Player_SetReserve(arg0, x, z - 1);
                     move->forward_angle = 0;
                     move->forward_speed = speed;
-                    D_800C535C[arg0].unk8[1] = 0;
+                    PogoPlay[arg0].spin = 0;
                 }
             }
         }
@@ -1642,8 +1642,8 @@ void HeroPogo(u32 arg0) {
     HeroInfo *hb;
     HeroInfo *hb2;
     s32 *tbl;
-    Ovl60Slot *slot;
-    Ovl60Slot *sb;
+    PogoPlayer *slot;
+    PogoPlayer *sb;
     EXTengine *shadow;
     s32 n;
     s32 max;
@@ -1664,18 +1664,18 @@ void HeroPogo(u32 arg0) {
         return;
     }
     if (h->hero_move->jump_ctrl & 0x40) {
-        h->hero_move->forward_speed = Player_CalcForwardSpeed(arg0, D_800C535C[arg0].unk18);
+        h->hero_move->forward_speed = Player_CalcForwardSpeed(arg0, PogoPlay[arg0].forward_quick);
     } else {
         h->hero_move->forward_speed = 0;
     }
-    sb = D_800C535C;
+    sb = PogoPlay;
     slot = &sb[arg0];
-    if (slot->unk18 != 0) {
-        slot->unk16++;
+    if (slot->forward_quick != 0) {
+        slot->forward_frame++;
     }
     tbl = D_800C5074;
-    slot->unk16++;
-    n = (u16)slot->unk16;
+    slot->forward_frame++;
+    n = (u16)slot->forward_frame;
     hb2 = Heroes;
     hero = &hb2[arg0];
     max = tbl[hero->hero_name];
@@ -1695,7 +1695,7 @@ void HeroPogo(u32 arg0) {
     } else {
         hero->hero_move->jump_ctrl |= 0x40;
     }
-    if ((u16)D_800C535C[arg0].unk16 >= max) {
+    if ((u16)PogoPlay[arg0].forward_frame >= max) {
         Player_SnapToTile(arg0);
         PlayBoingNoise(arg0);
         Set_Tile_Under_Player(arg0, 1);
@@ -1777,7 +1777,7 @@ void SetHeroPogoIdle(u32 arg0) {
     Heroes[arg0].hero_move->jump_ctrl |= 0x22;
     Heroes[arg0].hero_move->jump_ctrl &= 0xEF;
     Player_SnapToTile(arg0);
-    if (D_800C535C[arg0].unk4 == 5) {
+    if (PogoPlay[arg0].status == 5) {
         SetHeroSeq(arg0, 0x2F);
     } else {
         SetHeroSeq(arg0, 0x2E);
@@ -1811,7 +1811,7 @@ void HeroPogoIdle(u32 arg0) {
     case 0x12:
         PlayBoingNoise(arg0);
         Set_Tile_Under_Player(arg0, 1);
-        if (D_800C535C[arg0].unk4 != 5 && Heroes[arg0].hero_aseq == 0x2F) {
+        if (PogoPlay[arg0].status != 5 && Heroes[arg0].hero_aseq == 0x2F) {
             SetHeroSeq(arg0, 0x2E);
         }
         break;
@@ -1881,7 +1881,7 @@ void HeroPogoTazing(u32 arg0) {
             eng->unk1E += d >> 3;
         }
     }
-    if (--D_800C535C[arg0].unk6 <= 0) {
+    if (--PogoPlay[arg0].timer <= 0) {
         Heroes[arg0].hero_frozen = 0;
         HeroPogoTazingCancel(arg0);
         SetHeroAction(arg0, 0x39);
@@ -2020,7 +2020,7 @@ bool TestHeroPogoDazed(u32 arg0) {
     HeroInfo *base = Heroes;
 
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
-    if (!(h->hero_status & 0x800) && !(D_800C535C[arg0].flags & 1)) {
+    if (!(h->hero_status & 0x800) && !(PogoPlay[arg0].flags & 1)) {
         return 0;
     }
     x = (h->hero_eng->unk10.x + 0x800) >> 9;
@@ -2071,7 +2071,7 @@ void SetHeroPogoDazed(u32 arg0) {
     HeroInfo *base;
 
     Player_RemoveReserve(arg0);
-    if (D_800C535C[arg0].nas != NULL) {
+    if (PogoPlay[arg0].tazer != NULL) {
         HeroPogoTazingCancel(arg0);
     }
     Pickup_Lose(arg0);
@@ -2089,7 +2089,7 @@ void SetHeroPogoDazed(u32 arg0) {
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 10;
-    D_800C535C[arg0].unk8[1] = 0;
+    PogoPlay[arg0].spin = 0;
     SetHeroSeq(arg0, 0x31);
 }
 
@@ -2099,7 +2099,7 @@ void HeroPogoDazed(u32 arg0) {
     Ovl60Cell *c;
     HeroInfo *h;
     HeroInfo *base;
-    Ovl60Slot *s;
+    PogoPlayer *s;
     EXTengine *eng;
 
     x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
@@ -2122,11 +2122,11 @@ void HeroPogoDazed(u32 arg0) {
     base = Heroes;
     h = &base[arg0];
     h->hero_frozen = 10;
-    s = &D_800C535C[arg0];
+    s = &PogoPlay[arg0];
     if (!(s->flags & 1)) {
-        s->unk8[1]++;
+        s->spin++;
     }
-    if ((u32)s->unk8[1] > 0x32) {
+    if ((u32)s->spin > 0x32) {
         h->hero_status &= ~0x800;
         SetHeroAction(arg0, 0x39);
     }
@@ -2303,7 +2303,7 @@ void PogoHero_ExtraEffects(s32 arg0) {
     if (pu != NULL) {
         sub = pu->sub;
         if (sub != NULL) {
-            state = (u16)D_800C535C[arg0].unk4;
+            state = (u16)PogoPlay[arg0].status;
             if (state >= 7) {
                 goto clear;
             }
@@ -2318,7 +2318,7 @@ void PogoHero_ExtraEffects(s32 arg0) {
                 pu->unk5E = 1;
                 pu->unk10.y -= dy;
                 pu->unk1E += 0x71;
-                if ((u16)D_800C535C[arg0].unk4 != 6 || D_800C535C[arg0].unk6 >= 0x5B ||
+                if ((u16)PogoPlay[arg0].status != 6 || PogoPlay[arg0].timer >= 0x5B ||
                     !((D_8004E0D8 >> 2) & 1)) {
                     sub->flags |= 0x8000;
                     pu->flags |= 0x8000;
@@ -2387,7 +2387,7 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *p;
     Ovl60Cell *base;
 
-    if (D_800C535C[arg2].unk4 == 6) {
+    if (PogoPlay[arg2].status == 6) {
         base = D_800C53DC[0];
         p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
         p->unk12 = 10;
@@ -3086,15 +3086,15 @@ done:
 void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
     NAS *nas;
     HeroInfo *h;
-    Ovl60Slot *slot;
+    PogoPlayer *slot;
 
     if (PogoPadlock_IsHere(arg0, arg1)) {
-        Ovl60Slot *s;
+        PogoPlayer *s;
 
         Pickup_Lose(arg2);
-        s = D_800C535C;
-        s[arg2].unk4 = 6;
-        s[arg2].unk6 = 0xF0;
+        s = PogoPlay;
+        s[arg2].status = 6;
+        s[arg2].timer = 0xF0;
         Ovl60_PowerupAnim(arg2, 0x2042);
         PogoFour_FreezeMyTiles(arg2);
         return;
@@ -3120,11 +3120,11 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         }
         break;
     case 5: {
-        Ovl60Slot *b = D_800C535C;
+        PogoPlayer *b = PogoPlay;
 
         slot = &b[arg2];
     }
-        if (slot->unk4 != 5) {
+        if (slot->status != 5) {
             Pickup_Lose(arg2);
         }
         {
@@ -3133,8 +3133,8 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
             h = &hb[arg2];
         }
         PlaySfx(0x41C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
-        slot->unk4 = 5;
-        slot->unk6 = 0xF0;
+        slot->status = 5;
+        slot->timer = 0xF0;
         Ovl60_PowerupAnim(arg2, 0x200C);
         D_800C52F0--;
         break;
@@ -3549,7 +3549,7 @@ spawn:
         pos[0] += 0x100;
         break;
     }
-    if (D_800C535C[arg0].nas != NULL) {
+    if (PogoPlay[arg0].tazer != NULL) {
         return n;
     }
     nas = CreateNAS(x, World_floor_level - 0x40, z, 0x1405, 0x11);
@@ -3583,17 +3583,17 @@ spawn:
     Ovl60_SpawnPuff(pos, 8, D_80053B9C);
     do {
         do {
-            D_800C535C[arg0].nas = nas;
+            PogoPlay[arg0].tazer = nas;
             PlaySfx(0x520, NULL, (SLONG_XYZ *)&Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
         } while (0);
     } while (0);
-    if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
+    if (PogoPlay[arg0].status == 5 && Heroes[arg0].hero_aseq == 0x2F) {
         SetHeroAction(arg0, 0x39);
     }
-    if (D_800C535C[arg0].unk4 == 6) {
+    if (PogoPlay[arg0].status == 6) {
         PogoFour_UnfreezeMyTiles(arg0);
     }
-    D_800C535C[arg0].unk4 = 0;
+    PogoPlay[arg0].status = 0;
     return n;
 }
 
@@ -3601,7 +3601,7 @@ void Plot_PogoTazer(NAS *nas) {
     EXTengine *eng;
     EXTengine *he;
     subengine *sub;
-    Ovl60Slot *slot;
+    PogoPlayer *slot;
     HeroInfo *h;
     s32 n;
     s32 i;
@@ -3611,7 +3611,7 @@ void Plot_PogoTazer(NAS *nas) {
     s32 hz;
     s32 dir;
     s32 hit;
-    Ovl60Slot *slots;
+    PogoPlayer *slots;
     HeroInfo *heroes;
 
     eng = nas->Engine;
@@ -3619,7 +3619,7 @@ void Plot_PogoTazer(NAS *nas) {
     if (eng == NULL) {
         return;
     }
-    slots = D_800C535C;
+    slots = PogoPlay;
     heroes = Heroes;
     sub = eng->sub;
 next_sub:
@@ -3632,7 +3632,7 @@ next_sub:
         z = (eng->unk10.z + 0x800) >> 9;
     next_hero:
         if (i < 4) {
-            if (slot->nas == nas) {
+            if (slot->tazer == nas) {
                 goto skip;
             }
             hit = 0;
@@ -3667,13 +3667,13 @@ next_sub:
             }
             if (hit) {
                 Player_SetDazed(i);
-                if (slot->unk4 == 5 && h->hero_aseq == 0x2F) {
+                if (slot->status == 5 && h->hero_aseq == 0x2F) {
                     SetHeroAction(i, 0x39);
                 }
-                if (slot->unk4 == 6) {
+                if (slot->status == 6) {
                     PogoFour_UnfreezeMyTiles(i);
                 }
-                slot->unk4 = 0;
+                slot->status = 0;
             }
         skip:
             slot++;
@@ -4330,13 +4330,13 @@ void Fire_Rocket(s32 arg0, s32 arg1) {
         Fire_RocketInDir(arg0, mode, angle, 0x180);
         eng = Heroes[arg0].hero_eng;
         PlaySfx(0x522, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
-        if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
+        if (PogoPlay[arg0].status == 5 && Heroes[arg0].hero_aseq == 0x2F) {
             SetHeroAction(arg0, 0x39);
         }
-        if (D_800C535C[arg0].unk4 == 6) {
+        if (PogoPlay[arg0].status == 6) {
             PogoFour_UnfreezeMyTiles(arg0);
         }
-        D_800C535C[arg0].unk4 = 0;
+        PogoPlay[arg0].status = 0;
     }
 }
 
@@ -4345,8 +4345,8 @@ void Fire_RocketFourWays(s32 arg0, s32 arg1) {
     EXTengine *eng;
     s32 x;
     s32 z;
-    Ovl60Slot *base;
-    Ovl60Slot *slot;
+    PogoPlayer *base;
+    PogoPlayer *slot;
     HeroInfo *heroes;
 
     heroes = Heroes;
@@ -4368,15 +4368,15 @@ void Fire_RocketFourWays(s32 arg0, s32 arg1) {
         Fire_RocketInDir(arg0, 2, 0x800, 0x180);
     }
     PlaySfx(0x43C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
-    if (D_800C535C[arg0].unk4 == 5 && h->hero_aseq == 0x2F) {
+    if (PogoPlay[arg0].status == 5 && h->hero_aseq == 0x2F) {
         SetHeroAction(arg0, 0x39);
     }
-    base = D_800C535C;
+    base = PogoPlay;
     slot = &base[arg0];
-    if (slot->unk4 == 6) {
+    if (slot->status == 6) {
         PogoFour_UnfreezeMyTiles(arg0);
     }
-    slot->unk4 = 0;
+    slot->status = 0;
 }
 
 void PlayThrowNoise(u32 arg0) {
@@ -4413,8 +4413,8 @@ void Plot_PogoProjectile(NAS *arg0) {
     subengine *first;
     subengine *sub;
     HeroInfo *h;
-    Ovl60Slot *base;
-    Ovl60Slot *slot;
+    PogoPlayer *base;
+    PogoPlayer *slot;
     EXTengine *he;
     NAS *cell;
     NAS *nas;
@@ -4498,7 +4498,7 @@ void Plot_PogoProjectile(NAS *arg0) {
             k = 0;
         }
         i = 0;
-        base = D_800C535C;
+        base = PogoPlay;
         h = Heroes;
         slot = base;
         off = i;
@@ -4523,17 +4523,17 @@ void Plot_PogoProjectile(NAS *arg0) {
                             }
                             do {
                                 do {
-                                    if (((Ovl60Slot *)(off + (u32)base))->unk4 == 5 && h->hero_aseq == 0x2F) {
+                                    if (((PogoPlayer *)(off + (u32)base))->status == 5 && h->hero_aseq == 0x2F) {
                                         SetHeroAction(i, 0x39);
                                     }
                                 } while (0);
                             } while (0);
                             do {
-                                if (slot->unk4 == 6) {
+                                if (slot->status == 6) {
                                     PogoFour_UnfreezeMyTiles(i);
                                 }
                             } while (0);
-                            slot->unk4 = 0;
+                            slot->status = 0;
                             h->hero_status |= 0x800;
                         }
                     }
@@ -4543,7 +4543,7 @@ void Plot_PogoProjectile(NAS *arg0) {
             do {
                 slot++;
             } while (0);
-            off += sizeof(Ovl60Slot);
+            off += sizeof(PogoPlayer);
             i++;
             goto heroes;
         }
@@ -4786,7 +4786,7 @@ void PogoAI_Poll(u32 arg0) {
                 break;
             }
             if (ai->AItimer1 == 0 || (D_8005A646 & 0x20)) {
-                switch (D_800C535C[arg0].unk4) {
+                switch (PogoPlay[arg0].status) {
                 case 1:
                 case 3:
                 case 4:
@@ -5159,7 +5159,7 @@ bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flag
             return 1;
         }
     }
-    if (D_8005A648 == 0xD && (flags & 2) && p->unkA == arg0 && D_800C535C[arg0].unk4 != 6) {
+    if (D_8005A648 == 0xD && (flags & 2) && p->unkA == arg0 && PogoPlay[arg0].status != 6) {
         return 0;
     }
 one:
@@ -5239,9 +5239,9 @@ void PogoAI_ScanForClosestPickup(u32 arg0, s32 *arg1, s32 *arg2) {
                 ok = 0;
                 if (h != NULL) {
                     do {
-                        ok = D_800C535C[arg0].unk4 < h->hero_pu_action;
+                        ok = PogoPlay[arg0].status < h->hero_pu_action;
                     } while (0);
-                } else if ((u16)c->unk12 != 7 || D_800C535C[arg0].unk4 < 9) {
+                } else if ((u16)c->unk12 != 7 || PogoPlay[arg0].status < 9) {
                     ok = 1;
                 }
                 if (ok) {
@@ -6701,7 +6701,7 @@ void Fire_RocketInDir(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void Player_SetPoisoned(u32 arg0) {
-    D_800C535C[arg0].flags |= 1;
+    PogoPlay[arg0].flags |= 1;
 }
 
 void Player_SetDazed(u32 arg0) {
@@ -6945,18 +6945,18 @@ void Init_PogoTazer(NAS *nas) {
 void Pickup_Lose(arg0)
 s32 arg0;
 {
-    Ovl60Slot *base;
-    Ovl60Slot *slot;
+    PogoPlayer *base;
+    PogoPlayer *slot;
 
-    if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
+    if (PogoPlay[arg0].status == 5 && Heroes[arg0].hero_aseq == 0x2F) {
         SetHeroAction(arg0, 0x39);
     }
-    base = D_800C535C;
+    base = PogoPlay;
     slot = &base[arg0];
-    if (slot->unk4 == 6) {
+    if (slot->status == 6) {
         PogoFour_UnfreezeMyTiles(arg0);
     }
-    slot->unk4 = 0;
+    slot->status = 0;
 }
 
 bool SetTile_PogoFour(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
@@ -7313,7 +7313,7 @@ void SetHeroPogoTied(u32 arg0) {
 
 bool TestHeroPogoTied(u32 arg0) {
     if (Heroes[arg0].hero_status & 0x100) {
-        if (D_800C535C[arg0].nas != NULL) {
+        if (PogoPlay[arg0].tazer != NULL) {
             HeroPogoTazingCancel(arg0);
         }
         SetHeroAction(arg0, 0x3E);
@@ -7325,7 +7325,7 @@ bool TestHeroPogoTied(u32 arg0) {
 
 bool TestHeroPogoLoser(u32 arg0) {
     if (Heroes[arg0].hero_status & 0x400) {
-        if (D_800C535C[arg0].nas != NULL) {
+        if (PogoPlay[arg0].tazer != NULL) {
             HeroPogoTazingCancel(arg0);
         }
         SetHeroAction(arg0, 0x3D);
@@ -7351,7 +7351,7 @@ void SetHeroPogoWinner(u32 arg0) {
 
 bool TestHeroPogoWinner(u32 arg0) {
     if (Heroes[arg0].hero_status & 0x200) {
-        if (D_800C535C[arg0].nas != NULL) {
+        if (PogoPlay[arg0].tazer != NULL) {
             HeroPogoTazingCancel(arg0);
         }
         SetHeroAction(arg0, 0x3C);
@@ -7362,12 +7362,12 @@ bool TestHeroPogoWinner(u32 arg0) {
 }
 
 void HeroPogoTazingCancel(u32 arg0) {
-    Ovl60Slot *base = D_800C535C;
-    Ovl60Slot *slot = (Ovl60Slot *)(arg0 * sizeof(Ovl60Slot) + (u32)base);
+    PogoPlayer *base = PogoPlay;
+    PogoPlayer *slot = (PogoPlayer *)(arg0 * sizeof(PogoPlayer) + (u32)base);
 
-    if (slot->nas != NULL) {
-        KillNAS(slot->nas);
-        slot->nas = NULL;
+    if (slot->tazer != NULL) {
+        KillNAS(slot->tazer);
+        slot->tazer = NULL;
     }
 }
 
@@ -7386,14 +7386,14 @@ void SetHeroPogoTazing(u32 arg0) {
         move->forward_angle = move->facing_angle;
     }
     h->hero_frozen = 0xA;
-    D_800C535C[arg0].unk6 = 0x14;
+    PogoPlay[arg0].timer = 0x14;
 }
 
 bool TestHeroPogoShootCancel(u32 arg0) {
-    Ovl60Slot *base = D_800C535C;
-    Ovl60Slot *slot = (Ovl60Slot *)(arg0 * sizeof(Ovl60Slot) + (u32)base);
+    PogoPlayer *base = PogoPlay;
+    PogoPlayer *slot = (PogoPlayer *)(arg0 * sizeof(PogoPlayer) + (u32)base);
 
-    if (slot->nas != NULL) {
+    if (slot->tazer != NULL) {
         HeroPogoTazingCancel(arg0);
         return 1;
     }
@@ -7402,7 +7402,7 @@ bool TestHeroPogoShootCancel(u32 arg0) {
 
 bool TestHeroPogoShoot(u32 arg0) {
     if (D_80051338[arg0].unk54 & 0x8000) {
-        switch (D_800C535C[arg0].unk4) {
+        switch (PogoPlay[arg0].status) {
         case 1:
             Fire_Rocket(arg0, 0);
             break;
@@ -7424,13 +7424,13 @@ bool TestHeroPogoShoot(u32 arg0) {
 }
 
 void SetHeroPogo(u32 arg0) {
-    Ovl60Slot *slot;
+    PogoPlayer *slot;
 
     Heroes[arg0].hero_move->velocity_enable = 0;
     Heroes[arg0].hero_move->jump_ctrl &= 0xFE;
-    slot = &D_800C535C[arg0];
+    slot = &PogoPlay[arg0];
     *(s16 *)((u8 *)slot + 0x16) = 0;
-    slot->unk18 = (u16)slot->unk4 == 5;
+    slot->forward_quick = (u16)slot->status == 5;
     Set_Tile_Under_Player(arg0, 0);
 }
 
@@ -7564,12 +7564,12 @@ void InitialisePOGO(void) {
 }
 
 void POGO_InitHero(u32 arg0) {
-    Ovl60Slot *base = D_800C535C;
-    Ovl60Slot *p = (Ovl60Slot *)(arg0 * sizeof(Ovl60Slot) + (u32)base);
+    PogoPlayer *base = PogoPlay;
+    PogoPlayer *p = (PogoPlayer *)(arg0 * sizeof(PogoPlayer) + (u32)base);
 
     p->flags = 0;
-    p->unk4 = 0;
-    p->nas = NULL;
+    p->status = 0;
+    p->tazer = NULL;
     D_800C53CC[arg0] = 5;
     SetHeroAction(arg0, 0x39);
     PogoAI_InitHero(arg0);
