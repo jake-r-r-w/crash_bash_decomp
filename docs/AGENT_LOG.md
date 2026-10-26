@@ -458,8 +458,13 @@ Newest first, a few lines each. Details are in the commits.
   objects named (40 `*_PA_seq_*` split out). New rules: the 2 bytes of
   padding before a later file's `.data` must be written out (the slot
   overlays link with `SUBALIGN(2)`; OVERLAY_RECIPE.md gotchas), and data2c
-  leaves out another overlay's `<overlay>_<name>.h`. Shift test waiting on
-  the playtest.
+  leaves out another overlay's `<overlay>_<name>.h`. Shift test: it crashed
+  after the boss's slam; `ONLY=.data` (new) showed a data fault, and the
+  cause was splat's `<ovl>_undefined_syms_auto.txt` pinning the overlay's own
+  2-mod-4 halfword labels to retail addresses (now linked as `PROVIDE`s;
+  `shift.py` refuses absolute overlay symbols). Passed after that. Bash,
+  Arkenoid and Pogo had 7, 6 and 1 such labels: worth a replay of each on a
+  shifted disc.
 
 - **2026-10-26 (file names):** every address-named game file renamed for
   what it holds (`tools/scripts/rename_file.py SEG NEW`): bash `xtras`,

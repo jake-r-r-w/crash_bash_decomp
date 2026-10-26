@@ -288,7 +288,13 @@ build.
   PLAYING.md). Mode 0x20's level is not identified. Left for Phase 5: its
   stand-in structs (`BashCell`, `T_BC038*`, the crate stats as the leak's
   `CrateVelocity`).
-- [ ] Papu
+- [x] Papu. Done 2026-10-26: every function named (most from their Bash
+  twins), rodata, data, id word and tail as C (`pahero.c`'s data in its own
+  file), all 166 data objects named, the DAT entries it loads all decode, its
+  shift test passed (`make shift OVL=papu PAD=0x40`, PLAYING.md) after the
+  link fix for an overlay's own halfword labels (OVERLAY_RECIPE.md, The shift
+  test). Left for Phase 5: its stand-ins (`PapuTile`, `PapuKey`, `Slot40`, the
+  leak's `PapuFloor_info`/`PapuMinion_info`/`PapuSquare`).
 - [ ] Race
 - [ ] Spin
 - [ ] Dino

@@ -87,6 +87,14 @@ DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 390
 `sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
 Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
 
+### The shift test route (Papu, 2026-10-26)
+
+`make shift OVL=papu PAD=0x40`, with the same save: the Papu Papu boss fight in Adventure to a
+win: crates and TNT at the boss, his ground slam, the floor waves, the columns and the minions.
+It crashed after the first TNT hit and slam until the overlay links took splat's undefined
+symbols as `PROVIDE`s (ten of Papu's own halfword variables had stayed at their retail
+addresses); passed 2026-10-26 after that.
+
 ### The shift test route (Bash, 2026-10-26)
 
 `make shift OVL=bash PAD=0x40`, with the same save: Battle Mode's crate games (Jungle,
