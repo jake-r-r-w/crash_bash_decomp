@@ -5186,14 +5186,30 @@ def data_items(funcs, stat, proj, images=False):
                     # a C file's rodata with no asm piece left in it is all the compiler's
                     out.append([unit, name, name, (rs[0][0] if rs else end) - start,
                                 not glob.glob(f"asm/nonmatchings/{name}/D_*.s"), typ])
+                tables = jump_table_labels(rs)
                 for i, (rom, sym, owners) in enumerate(rs):
                     nxt = rs[i + 1][0] if i + 1 < len(rs) else end
-                    out.append([unit, name, sym, nxt - rom, len(owners) == 1 and owners[0] in matched
+                    out.append([unit, name, tables.get(sym, sym), nxt - rom, len(owners) == 1 and owners[0] in matched
                                 and not os.path.exists(f"asm/nonmatchings/{name}/{sym}.s"), typ])
             elif typ.startswith("."):
                 out.append([unit, name, name, end - start, not glob.glob(f"asm/nonmatchings/{name}/D_*.s"), typ])
             else:
                 out += [[unit, name, sym, size, False, typ] for sym, size in asm_data_labels(name, typ, start, end)]
+    return out
+
+
+def jump_table_labels(rs):
+    """{jtbl_ label: what the dashboard calls it} for rodata_syms() rows: a switch's jump table has
+    no name in C (cc1 emits it under a local label), so it is shown by the one function it
+    belongs to, "PlotTotemBit switch table", numbered in address order when there are several."""
+    own = defaultdict(list)
+    for rom, sym, owners in sorted(rs):
+        if sym.startswith("jtbl_") and len(owners) == 1:
+            own[owners[0]].append(sym)
+    out = {}
+    for fn, syms in own.items():
+        for i, sym in enumerate(syms):
+            out[sym] = f"{fn} switch table" + (f" {i + 1}" if len(syms) > 1 else "")
     return out
 
 

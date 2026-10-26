@@ -36,6 +36,14 @@ class DataMap(unittest.TestCase):
             m = decomp.page_data_map(items)
         self.assertEqual(m["nm"], "10")
 
+    def test_jump_tables_are_shown_by_their_function(self):
+        rs = [(0x30, "jtbl_800B3670", ["PlotTotemBit"]), (0x10, "jtbl_800B3650", ["PlotTotemBit"]),
+              (0x50, "jtbl_800B3690", ["PlotMine"]), (0x60, "jtbl_800B36A0", ["A", "B"]),
+              (0x70, "D_800B36B0", ["PlotMine"])]
+        self.assertEqual(decomp.jump_table_labels(rs), {
+            "jtbl_800B3650": "PlotTotemBit switch table 1", "jtbl_800B3670": "PlotTotemBit switch table 2",
+            "jtbl_800B3690": "PlotMine switch table"})
+
     def test_an_objects_bytes_before_its_first_symbol_keep_the_file_name(self):
         with mock.patch.object(decomp, "object_data_syms", return_value={".rodata": [(8, "TankAnimHit")]}), \
                 mock.patch.object(decomp.os.path, "exists", return_value=True):
