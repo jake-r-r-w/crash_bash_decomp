@@ -5473,6 +5473,12 @@ def page_data_map(items):
     function's rodata (its string literals and jump tables, under splat's labels)."""
     out = {"segs": [], "n": [], "s": [], "t": "", "nm": ""}
     cache = {}
+    # a file's blocks together (its .rodata and its .data are apart in address order), files in
+    # the order they first appear, so each file is listed once
+    first = {}
+    for i, it in enumerate(items):
+        first.setdefault((it[0], it[1]), i)
+    items = sorted(items, key=lambda it: first[(it[0], it[1])])
     for un, seg, sym, size, done, typ in items:
         if size <= 0:
             continue

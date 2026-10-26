@@ -36,6 +36,16 @@ class DataMap(unittest.TestCase):
             m = decomp.page_data_map(items)
         self.assertEqual(m["nm"], "10")
 
+    def test_each_file_is_listed_once(self):
+        # a file's .rodata and .data are apart in address order: its blocks are put together
+        items = [["bash", "overlays/bash/bash", "BashAnimHit", 4, False, ".rodata"],
+                 ["bash", "overlays/bash/xtras", "D_800B3734", 4, False, ".rodata"],
+                 ["bash", "overlays/bash/bash", "BashFiles", 8, False, ".data"],
+                 ["bash", "overlays/bash/xtras", "BashSfxEngine", 8, False, ".data"]]
+        m = decomp.page_data_map(items)
+        self.assertEqual(m["segs"], [["overlays/bash/bash", "bash", 2], ["overlays/bash/xtras", "bash", 2]])
+        self.assertEqual(m["n"], ["BashAnimHit", "BashFiles", "D_800B3734", "BashSfxEngine"])
+
     def test_jump_tables_are_shown_by_their_function(self):
         rs = [(0x30, "jtbl_800B3670", ["PlotTotemBit"]), (0x10, "jtbl_800B3650", ["PlotTotemBit"]),
               (0x50, "jtbl_800B3690", ["PlotMine"]), (0x60, "jtbl_800B36A0", ["A", "B"]),
