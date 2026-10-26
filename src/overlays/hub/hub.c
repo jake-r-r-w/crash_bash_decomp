@@ -4,7 +4,7 @@
 #include "bash/hub_ovl.h"
 #include "bash/hub.h"
 
-void func_800B4694(void) {
+void HubRender(void) {
     func_80093110();
     if (D_8005A648 == 0x25) {
         func_8007A718();
@@ -16,9 +16,9 @@ void func_800B4694(void) {
         func_8001DAF8((GfxScene *)D_80058AD0);
     }
     if (D_8005A648 == 0x2B) {
-        func_800BAAFC();
+        PodiumRenderScene();
     } else {
-        func_800B8588();
+        HubRenderScene();
     }
     if (D_8005A688 != 0) {
         func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
@@ -29,7 +29,7 @@ void func_800B4694(void) {
     func_800798A4();
 }
 
-void func_800B478C(void) {
+void HubStartCredits(void) {
     s32 one;
     D_80098714 = 0;
     ((EngMenuGame *)D_8005A614)->flags &= 0xFDC07013;
@@ -51,12 +51,12 @@ void func_800B478C(void) {
         func_80095A60(0, 0x1E);
         return;
     }
-    func_800B4C94();
+    HubEndCredits();
 }
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hub", D_800B32B8);
 
-s32 func_800B488C(void) {
+s32 HubCreditsScroll(void) {
     OvlTextView *view;
     OvlTextLine *line;
     OvlTextLine *lines;
@@ -73,7 +73,7 @@ s32 func_800B488C(void) {
     view->unkC = 0;
     view->unk10 = 0;
     view->unk14 = 0x3AE;
-    func_800B8CA0();
+    HubCreditsEffects();
     switch (D_8009870E) {
     case 1:
         i = 0;
@@ -172,7 +172,7 @@ s32 func_800B488C(void) {
     case 2:
         if (D_80098710 == 0) {
             D_8005A608 = D_800BC2B8;
-            func_800B4C94();
+            HubEndCredits();
             return 1;
         }
         D_80098710--;
@@ -187,7 +187,7 @@ s32 func_800B488C(void) {
     return 0;
 }
 
-void func_800B4C94(void)
+void HubEndCredits(void)
 {
   int new_var;
   u8 *g;
@@ -195,7 +195,7 @@ void func_800B4C94(void)
   func_8002C284(1);
   g = D_8005A614;
   ((EngMenuGame *) g)->unk74 = 0;
-  func_800B8324(0);
+  HubShowShadow(0);
   D_80098714 = 0;
   set_fade(&D_8009F644, -0x200, 0);
   new_var = 0x1628;
@@ -219,11 +219,11 @@ void func_800B4C94(void)
   ((HubCam *) D_80051640)->z = D_800BC2CC;
 }
 
-s32 *func_800B4D8C(void) {
+s32 *HubCreditsText(void) {
     return D_800C7294;
 }
 
-int func_800B4D98(unsigned char *s) {
+int HubCountLines(unsigned char *s) {
     int n = 1;
 
     if (s == 0) {
@@ -246,26 +246,26 @@ int func_800B4D98(unsigned char *s) {
     return n;
 }
 
-void func_800B4DE8(void) {
+void UpdateHUB(void) {
     if (D_8005A688 != 0) {
-        func_800B488C();
+        HubCreditsScroll();
     }
-    func_800B85A8();
+    HubUpdateRoom();
 }
 
-void func_800B4E1C(void) {
+void HUBSetUp(void) {
     if (D_8005A648 == 0x2B) {
-        D_8005AA70[0] = (s32)func_800B875C;
-        D_8005AA70[1] = (s32)func_800B88B8;
-        D_8005AA70[2] = (s32)func_800B88B8;
-        D_8005AA70[3] = (s32)func_800BAB40;
+        D_8005AA70[0] = (s32)InitialisePodiumFirst;
+        D_8005AA70[1] = (s32)InitialisePodium;
+        D_8005AA70[2] = (s32)InitialisePodium;
+        D_8005AA70[3] = (s32)UpdatePodium;
     } else {
-        D_8005AA70[0] = (s32)func_800B86AC;
-        D_8005AA70[1] = (s32)func_800B4EAC;
-        D_8005AA70[2] = (s32)func_800B4EAC;
-        D_8005AA70[3] = (s32)func_800B4DE8;
+        D_8005AA70[0] = (s32)InitialiseHUBFirst;
+        D_8005AA70[1] = (s32)InitialiseHUB;
+        D_8005AA70[2] = (s32)InitialiseHUB;
+        D_8005AA70[3] = (s32)UpdateHUB;
     }
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
-    D_8009F8B4 = func_800B4694;
+    D_8009F8B4 = HubRender;
 }

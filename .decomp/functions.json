@@ -31509,7 +31509,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "hub:800B4694": {
-  "asm": "asm/nonmatchings/overlays/hub/hub/func_800B4694.s",
+  "asm": "asm/nonmatchings/overlays/hub/hub/HubRender.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80018B08",
@@ -31525,7 +31525,7 @@
   "fp": "40f20b982d16d96a",
   "fpn": "6f338ba0565628ff",
   "leaf": false,
-  "name": "func_800B4694",
+  "name": "HubRender",
   "orig": "func_800B4694",
   "rom": 5088,
   "seg": "overlays/hub/hub",
@@ -31533,7 +31533,7 @@
   "src": "src/overlays/hub/hub.c"
  },
  "hub:800B478C": {
-  "asm": "asm/nonmatchings/overlays/hub/hub/func_800B478C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hub/HubStartCredits.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8002C284",
@@ -31543,7 +31543,7 @@
   "fp": "e6b50decf4fad2a5",
   "fpn": "f59b5bebafd6ec9f",
   "leaf": false,
-  "name": "func_800B478C",
+  "name": "HubStartCredits",
   "orig": "func_800B478C",
   "rom": 5336,
   "seg": "overlays/hub/hub",
@@ -31551,7 +31551,7 @@
   "src": "src/overlays/hub/hub.c"
  },
  "hub:800B488C": {
-  "asm": "asm/nonmatchings/overlays/hub/hub/func_800B488C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hub/HubCreditsScroll.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001E588",
@@ -31565,7 +31565,7 @@
   "fp": "7abfc8e1850fc2db",
   "fpn": "b5e855f5d09604a3",
   "leaf": false,
-  "name": "func_800B488C",
+  "name": "HubCreditsScroll",
   "orig": "func_800B488C",
   "rom": 5592,
   "seg": "overlays/hub/hub",
@@ -31573,7 +31573,7 @@
   "src": "src/overlays/hub/hub.c"
  },
  "hub:800B4C94": {
-  "asm": "asm/nonmatchings/overlays/hub/hub/func_800B4C94.s",
+  "asm": "asm/nonmatchings/overlays/hub/hub/HubEndCredits.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001E588",
@@ -31584,7 +31584,7 @@
   "fp": "0deaa08d6be0db67",
   "fpn": "285abfb34e5b0e7c",
   "leaf": false,
-  "name": "func_800B4C94",
+  "name": "HubEndCredits",
   "orig": "func_800B4C94",
   "rom": 6624,
   "seg": "overlays/hub/hub",
@@ -31592,13 +31592,13 @@
   "src": "src/overlays/hub/hub.c"
  },
  "hub:800B4D8C": {
-  "asm": "asm/nonmatchings/overlays/hub/hub/func_800B4D8C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hub/HubCreditsText.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "2a51c093207f3b65",
   "fpn": "2a51c093207f3b65",
   "leaf": true,
-  "name": "func_800B4D8C",
+  "name": "HubCreditsText",
   "orig": "func_800B4D8C",
   "rom": 6872,
   "seg": "overlays/hub/hub",
@@ -31606,13 +31606,13 @@
   "src": "src/overlays/hub/hub.c"
  },
  "hub:800B4D98": {
-  "asm": "asm/nonmatchings/overlays/hub/hub/func_800B4D98.s",
+  "asm": "asm/nonmatchings/overlays/hub/hub/HubCountLines.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "6d89617588f536f3",
   "fpn": "378f79b486d0703d",
   "leaf": true,
-  "name": "func_800B4D98",
+  "name": "HubCountLines",
   "orig": "func_800B4D98",
   "rom": 6884,
   "seg": "overlays/hub/hub",
@@ -31620,7 +31620,7 @@
   "src": "src/overlays/hub/hub.c"
  },
  "hub:800B4DE8": {
-  "asm": "asm/nonmatchings/overlays/hub/hub/func_800B4DE8.s",
+  "asm": "asm/nonmatchings/overlays/hub/hub/UpdateHUB.s",
   "bin": "disc/hub.bin",
   "calls": [
    "800B488C",
@@ -31629,7 +31629,7 @@
   "fp": "b8069384d7c281ea",
   "fpn": "d071ea6dcce91c94",
   "leaf": false,
-  "name": "func_800B4DE8",
+  "name": "UpdateHUB",
   "orig": "func_800B4DE8",
   "rom": 6964,
   "seg": "overlays/hub/hub",
@@ -31637,13 +31637,13 @@
   "src": "src/overlays/hub/hub.c"
  },
  "hub:800B4E1C": {
-  "asm": "asm/nonmatchings/overlays/hub/hub/func_800B4E1C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hub/HUBSetUp.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "83259f615be8910c",
   "fpn": "9d1de852b43eec68",
   "leaf": true,
-  "name": "func_800B4E1C",
+  "name": "HUBSetUp",
   "orig": "func_800B4E1C",
   "rom": 7016,
   "seg": "overlays/hub/hub",
@@ -31651,7 +31651,7 @@
   "src": "src/overlays/hub/hub.c"
  },
  "hub:800B4EAC": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B4EAC.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/InitialiseHUB.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001E934",
@@ -31668,7 +31668,7 @@
   "fp": "827ab9e9844943c8",
   "fpn": "5b49bfc3e2bc784b",
   "leaf": false,
-  "name": "func_800B4EAC",
+  "name": "InitialiseHUB",
   "orig": "func_800B4EAC",
   "rom": 7160,
   "seg": "overlays/hub/hubcore",
@@ -31676,7 +31676,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B5158": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B5158.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubInitGateways.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001463C",
@@ -31687,7 +31687,7 @@
   "fp": "4180cc55a93cebf6",
   "fpn": "d6b042123a78ea51",
   "leaf": false,
-  "name": "func_800B5158",
+  "name": "HubInitGateways",
   "orig": "func_800B5158",
   "rom": 7844,
   "seg": "overlays/hub/hubcore",
@@ -31695,7 +31695,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B551C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B551C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubUpdateGateways.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001636C",
@@ -31705,7 +31705,7 @@
   "fp": "fdabd13359a57b42",
   "fpn": "c6903245602dac44",
   "leaf": false,
-  "name": "func_800B551C",
+  "name": "HubUpdateGateways",
   "orig": "func_800B551C",
   "rom": 8808,
   "seg": "overlays/hub/hubcore",
@@ -31713,7 +31713,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B5710": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B5710.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubPreMoveHero.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80015480",
@@ -31732,7 +31732,7 @@
   "fp": "575b4d2696bfaf21",
   "fpn": "bb2ee9dd6a5e3b84",
   "leaf": false,
-  "name": "func_800B5710",
+  "name": "HubPreMoveHero",
   "orig": "func_800B5710",
   "rom": 9308,
   "seg": "overlays/hub/hubcore",
@@ -31740,7 +31740,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B6224": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B6224.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubOpenDoorMenu.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80095BEC",
@@ -31749,7 +31749,7 @@
   "fp": "39d5eb53fd969ac9",
   "fpn": "1ca149719339c4f2",
   "leaf": false,
-  "name": "func_800B6224",
+  "name": "HubOpenDoorMenu",
   "orig": "func_800B6224",
   "rom": 12144,
   "seg": "overlays/hub/hubcore",
@@ -31757,7 +31757,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B64C8": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B64C8.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDoorMenuUpdate.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80015284",
@@ -31773,7 +31773,7 @@
   "fp": "35739af7b3917be6",
   "fpn": "08ad341e3ae92de5",
   "leaf": false,
-  "name": "func_800B64C8",
+  "name": "HubDoorMenuUpdate",
   "orig": "func_800B64C8",
   "rom": 12820,
   "seg": "overlays/hub/hubcore",
@@ -31781,13 +31781,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B694C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B694C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSelectedLevel.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "269e90c88a3dfd70",
   "fpn": "4691ad80ad168f4f",
   "leaf": true,
-  "name": "func_800B694C",
+  "name": "HubSelectedLevel",
   "orig": "func_800B694C",
   "rom": 13976,
   "seg": "overlays/hub/hubcore",
@@ -31795,7 +31795,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B6A3C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B6A3C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubLevelSelect.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80012FFC",
@@ -31810,7 +31810,7 @@
   "fp": "a655be49142f8ecc",
   "fpn": "340d099895c24cc4",
   "leaf": false,
-  "name": "func_800B6A3C",
+  "name": "HubLevelSelect",
   "orig": "func_800B6A3C",
   "rom": 14216,
   "seg": "overlays/hub/hubcore",
@@ -31818,7 +31818,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B6E20": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B6E20.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSpawnEffects.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80022A3C",
@@ -31827,7 +31827,7 @@
   "fp": "b8ce47d2b84531ce",
   "fpn": "dae1a433b40f7665",
   "leaf": false,
-  "name": "func_800B6E20",
+  "name": "HubSpawnEffects",
   "orig": "func_800B6E20",
   "rom": 15212,
   "seg": "overlays/hub/hubcore",
@@ -31905,7 +31905,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7988": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7988.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubPathAngles.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001463C",
@@ -31914,7 +31914,7 @@
   "fp": "51c693537e216ad6",
   "fpn": "871d904c3d9fa802",
   "leaf": false,
-  "name": "func_800B7988",
+  "name": "HubPathAngles",
   "orig": "func_800B7988",
   "rom": 18132,
   "seg": "overlays/hub/hubcore",
@@ -31922,7 +31922,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7A78": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7A78.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubInitLevelSelect.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001DCD4"
@@ -31930,7 +31930,7 @@
   "fp": "5a836e3313ea5dde",
   "fpn": "c24808de480a49c2",
   "leaf": false,
-  "name": "func_800B7A78",
+  "name": "HubInitLevelSelect",
   "orig": "func_800B7A78",
   "rom": 18372,
   "seg": "overlays/hub/hubcore",
@@ -31938,13 +31938,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7AB4": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7AB4.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubGatewayIsKind.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "1539159b4b7746cd",
   "fpn": "7f316f5a86b016bf",
   "leaf": true,
-  "name": "func_800B7AB4",
+  "name": "HubGatewayIsKind",
   "orig": "func_800B7AB4",
   "rom": 18432,
   "seg": "overlays/hub/hubcore",
@@ -31952,13 +31952,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7B38": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7B38.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubGatewayKind.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "0b996459525b0ac5",
   "fpn": "63b2c55ebea7a301",
   "leaf": true,
-  "name": "func_800B7B38",
+  "name": "HubGatewayKind",
   "orig": "func_800B7B38",
   "rom": 18564,
   "seg": "overlays/hub/hubcore",
@@ -31966,7 +31966,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7B7C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7B7C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDoorMenu2Quit.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80095A04"
@@ -31974,7 +31974,7 @@
   "fp": "058e5b09a18ebb69",
   "fpn": "cf17789800ddf4e4",
   "leaf": false,
-  "name": "func_800B7B7C",
+  "name": "HubDoorMenu2Quit",
   "orig": "func_800B7B7C",
   "rom": 18632,
   "seg": "overlays/hub/hubcore",
@@ -31982,7 +31982,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7BA4": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7BA4.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDoorMenu2Render.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80018B08",
@@ -31992,7 +31992,7 @@
   "fp": "2668e74177ba82c9",
   "fpn": "1367e5ed06849b6e",
   "leaf": false,
-  "name": "func_800B7BA4",
+  "name": "HubDoorMenu2Render",
   "orig": "func_800B7BA4",
   "rom": 18672,
   "seg": "overlays/hub/hubcore",
@@ -32000,7 +32000,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7C78": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7C78.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDoorMenu2Update.s",
   "bin": "disc/hub.bin",
   "calls": [
    "800B64C8"
@@ -32008,7 +32008,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_800B7C78",
+  "name": "HubDoorMenu2Update",
   "orig": "func_800B7C78",
   "rom": 18884,
   "seg": "overlays/hub/hubcore",
@@ -32016,13 +32016,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7C98": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7C98.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDoorMenu2Init.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "22cc78bdaf8171fd",
   "fpn": "3bdb41083303167b",
   "leaf": true,
-  "name": "func_800B7C98",
+  "name": "HubDoorMenu2Init",
   "orig": "func_800B7C98",
   "rom": 18916,
   "seg": "overlays/hub/hubcore",
@@ -32030,7 +32030,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7CA8": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7CA8.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDoorMenuRender.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80018B08",
@@ -32040,7 +32040,7 @@
   "fp": "2668e74177ba82c9",
   "fpn": "1367e5ed06849b6e",
   "leaf": false,
-  "name": "func_800B7CA8",
+  "name": "HubDoorMenuRender",
   "orig": "func_800B7CA8",
   "rom": 18932,
   "seg": "overlays/hub/hubcore",
@@ -32048,13 +32048,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7D7C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7D7C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDoorMenuInit.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "22cc78bdaf8171fd",
   "fpn": "3bdb41083303167b",
   "leaf": true,
-  "name": "func_800B7D7C",
+  "name": "HubDoorMenuInit",
   "orig": "func_800B7D7C",
   "rom": 19144,
   "seg": "overlays/hub/hubcore",
@@ -32062,7 +32062,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7D8C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7D8C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDoorMenuQuit.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80095A04"
@@ -32070,7 +32070,7 @@
   "fp": "058e5b09a18ebb69",
   "fpn": "cf17789800ddf4e4",
   "leaf": false,
-  "name": "func_800B7D8C",
+  "name": "HubDoorMenuQuit",
   "orig": "func_800B7D8C",
   "rom": 19160,
   "seg": "overlays/hub/hubcore",
@@ -32078,13 +32078,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7DB4": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7DB4.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubShowSub.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "9dd9727daa998e95",
   "fpn": "6a9e23012d35fb63",
   "leaf": true,
-  "name": "func_800B7DB4",
+  "name": "HubShowSub",
   "orig": "func_800B7DB4",
   "rom": 19200,
   "seg": "overlays/hub/hubcore",
@@ -32120,7 +32120,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7E14": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7E14.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSpawnFlash.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80022660",
@@ -32130,7 +32130,7 @@
   "fp": "bc66035bcaf5a02c",
   "fpn": "61fc01965b976a5c",
   "leaf": false,
-  "name": "func_800B7E14",
+  "name": "HubSpawnFlash",
   "orig": "func_800B7E14",
   "rom": 19296,
   "seg": "overlays/hub/hubcore",
@@ -32138,7 +32138,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7F24": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7F24.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDist.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80032490"
@@ -32146,7 +32146,7 @@
   "fp": "cf3c7c21ede6482f",
   "fpn": "4b79cbc1aae3483c",
   "leaf": false,
-  "name": "func_800B7F24",
+  "name": "HubDist",
   "orig": "func_800B7F24",
   "rom": 19568,
   "seg": "overlays/hub/hubcore",
@@ -32154,13 +32154,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7F74": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7F74.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDistXZ.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "9d80a494e85795ec",
   "fpn": "c21b0431bbbc7346",
   "leaf": true,
-  "name": "func_800B7F74",
+  "name": "HubDistXZ",
   "orig": "func_800B7F74",
   "rom": 19648,
   "seg": "overlays/hub/hubcore",
@@ -32168,13 +32168,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7FAC": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7FAC.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubGoToMode.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "696307244770e622",
   "fpn": "8ccd32781afdb808",
   "leaf": true,
-  "name": "func_800B7FAC",
+  "name": "HubGoToMode",
   "orig": "func_800B7FAC",
   "rom": 19704,
   "seg": "overlays/hub/hubcore",
@@ -32182,7 +32182,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B7FD0": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B7FD0.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubCamFromPath.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001463C",
@@ -32191,7 +32191,7 @@
   "fp": "080265d6a54be2f6",
   "fpn": "1618b600129febcb",
   "leaf": false,
-  "name": "func_800B7FD0",
+  "name": "HubCamFromPath",
   "orig": "func_800B7FD0",
   "rom": 19740,
   "seg": "overlays/hub/hubcore",
@@ -32199,7 +32199,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8098": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8098.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubCameraFollow.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80013F44",
@@ -32208,7 +32208,7 @@
   "fp": "bce7db3bce8abad8",
   "fpn": "2ae99df45141a8d9",
   "leaf": false,
-  "name": "func_800B8098",
+  "name": "HubCameraFollow",
   "orig": "func_800B8098",
   "rom": 19940,
   "seg": "overlays/hub/hubcore",
@@ -32216,13 +32216,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8148": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8148.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHeroSetIdle.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "2c8bf4f98905bc39",
   "fpn": "4b70df9d1d05774b",
   "leaf": true,
-  "name": "func_800B8148",
+  "name": "HubHeroSetIdle",
   "orig": "func_800B8148",
   "rom": 20116,
   "seg": "overlays/hub/hubcore",
@@ -32230,13 +32230,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8174": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8174.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHeroTestButton.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "a497b14f79721a01",
   "fpn": "94afa7839694a020",
   "leaf": true,
-  "name": "func_800B8174",
+  "name": "HubHeroTestButton",
   "orig": "func_800B8174",
   "rom": 20160,
   "seg": "overlays/hub/hubcore",
@@ -32244,13 +32244,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B821C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B821C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHeroTestA.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_800B821C",
+  "name": "HubHeroTestA",
   "orig": "func_800B821C",
   "rom": 20328,
   "seg": "overlays/hub/hubcore",
@@ -32258,13 +32258,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8224": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8224.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHeroTestB.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_800B8224",
+  "name": "HubHeroTestB",
   "orig": "func_800B8224",
   "rom": 20336,
   "seg": "overlays/hub/hubcore",
@@ -32272,13 +32272,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B822C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B822C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHeroTouched.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "623e029c6ed2e4fe",
   "fpn": "a0b68b8ea8dfa185",
   "leaf": true,
-  "name": "func_800B822C",
+  "name": "HubHeroTouched",
   "orig": "func_800B822C",
   "rom": 20344,
   "seg": "overlays/hub/hubcore",
@@ -32286,13 +32286,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8284": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8284.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubCamTarget.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "38652016a5c5b0f4",
   "fpn": "130fd57df6c9bd4c",
   "leaf": true,
-  "name": "func_800B8284",
+  "name": "HubCamTarget",
   "orig": "func_800B8284",
   "rom": 20432,
   "seg": "overlays/hub/hubcore",
@@ -32300,13 +32300,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8324": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8324.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubShowShadow.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "57054a9ebc50f061",
   "fpn": "d1827520fc88de96",
   "leaf": true,
-  "name": "func_800B8324",
+  "name": "HubShowShadow",
   "orig": "func_800B8324",
   "rom": 20592,
   "seg": "overlays/hub/hubcore",
@@ -32314,13 +32314,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B838C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B838C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHideShadow.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "9717c059a5bf933a",
   "fpn": "3b2bd2181a8ed167",
   "leaf": true,
-  "name": "func_800B838C",
+  "name": "HubHideShadow",
   "orig": "func_800B838C",
   "rom": 20696,
   "seg": "overlays/hub/hubcore",
@@ -32328,13 +32328,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B83D4": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B83D4.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubCreateShadow.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "cf2c52553266ece0",
   "fpn": "efbc18e7b9deeb89",
   "leaf": true,
-  "name": "func_800B83D4",
+  "name": "HubCreateShadow",
   "orig": "func_800B83D4",
   "rom": 20768,
   "seg": "overlays/hub/hubcore",
@@ -32342,7 +32342,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8474": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8474.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubInitHero.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001E48C",
@@ -32352,7 +32352,7 @@
   "fp": "f305afe769a9559a",
   "fpn": "1e1895dbc49539ec",
   "leaf": false,
-  "name": "func_800B8474",
+  "name": "HubInitHero",
   "orig": "func_800B8474",
   "rom": 20928,
   "seg": "overlays/hub/hubcore",
@@ -32360,7 +32360,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B84CC": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B84CC.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubNearestGateway.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80015480"
@@ -32368,7 +32368,7 @@
   "fp": "cfb62968baca690e",
   "fpn": "7fb7e61b25e423bc",
   "leaf": false,
-  "name": "func_800B84CC",
+  "name": "HubNearestGateway",
   "orig": "func_800B84CC",
   "rom": 21016,
   "seg": "overlays/hub/hubcore",
@@ -32376,7 +32376,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8588": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8588.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubRenderScene.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8009440C"
@@ -32384,7 +32384,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_800B8588",
+  "name": "HubRenderScene",
   "orig": "func_800B8588",
   "rom": 21204,
   "seg": "overlays/hub/hubcore",
@@ -32392,7 +32392,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B85A8": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B85A8.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubUpdateRoom.s",
   "bin": "disc/hub.bin",
   "calls": [
    "800139A8",
@@ -32402,7 +32402,7 @@
   "fp": "af6f7ec954dbfaf5",
   "fpn": "f562ea74d9c40cad",
   "leaf": false,
-  "name": "func_800B85A8",
+  "name": "HubUpdateRoom",
   "orig": "func_800B85A8",
   "rom": 21236,
   "seg": "overlays/hub/hubcore",
@@ -32410,7 +32410,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B85E4": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B85E4.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubCullObjects.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001463C"
@@ -32418,7 +32418,7 @@
   "fp": "1d58ff5927a98003",
   "fpn": "8ddf60f9cd53aee4",
   "leaf": false,
-  "name": "func_800B85E4",
+  "name": "HubCullObjects",
   "orig": "func_800B85E4",
   "rom": 21296,
   "seg": "overlays/hub/hubcore",
@@ -32426,13 +32426,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B86AC": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B86AC.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/InitialiseHUBFirst.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "91c7d9567c8e0890",
   "fpn": "c4c961840219a5ec",
   "leaf": true,
-  "name": "func_800B86AC",
+  "name": "InitialiseHUBFirst",
   "orig": "func_800B86AC",
   "rom": 21496,
   "seg": "overlays/hub/hubcore",
@@ -32440,13 +32440,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8708": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8708.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubLookup.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "57b019ee22e73e9e",
   "fpn": "78ec7ecc7ce1625b",
   "leaf": true,
-  "name": "func_800B8708",
+  "name": "HubLookup",
   "orig": "func_800B8708",
   "rom": 21588,
   "seg": "overlays/hub/hubcore",
@@ -32454,7 +32454,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B875C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B875C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/InitialisePodiumFirst.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80016D44",
@@ -32464,7 +32464,7 @@
   "fp": "8bfc4d76e6b52860",
   "fpn": "baa77ecc0cb62a60",
   "leaf": false,
-  "name": "func_800B875C",
+  "name": "InitialisePodiumFirst",
   "orig": "func_800B875C",
   "rom": 21672,
   "seg": "overlays/hub/hubcore",
@@ -32472,7 +32472,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B88B8": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B88B8.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/InitialisePodium.s",
   "bin": "disc/hub.bin",
   "calls": [
    "800165F8",
@@ -32484,7 +32484,7 @@
   "fp": "d0db7dcaa084c32c",
   "fpn": "4997892b5bfdf8fe",
   "leaf": false,
-  "name": "func_800B88B8",
+  "name": "InitialisePodium",
   "orig": "func_800B88B8",
   "rom": 22020,
   "seg": "overlays/hub/hubcore",
@@ -32492,13 +32492,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8AA4": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8AA4.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumRankPlayers.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "fb4636f75d96100c",
   "fpn": "18c68d757c444582",
   "leaf": true,
-  "name": "func_800B8AA4",
+  "name": "PodiumRankPlayers",
   "orig": "func_800B8AA4",
   "rom": 22512,
   "seg": "overlays/hub/hubcore",
@@ -32506,13 +32506,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8BC8": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8BC8.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumFindTies.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "8f707dd29a37726b",
   "fpn": "3688e9f0ef7e3e44",
   "leaf": true,
-  "name": "func_800B8BC8",
+  "name": "PodiumFindTies",
   "orig": "func_800B8BC8",
   "rom": 22804,
   "seg": "overlays/hub/hubcore",
@@ -32520,7 +32520,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8CA0": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8CA0.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubCreditsEffects.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80015590",
@@ -32530,7 +32530,7 @@
   "fp": "2cb03e4e5ef8928e",
   "fpn": "d5c74be381f659c1",
   "leaf": false,
-  "name": "func_800B8CA0",
+  "name": "HubCreditsEffects",
   "orig": "func_800B8CA0",
   "rom": 23020,
   "seg": "overlays/hub/hubcore",
@@ -32538,7 +32538,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8F50": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B8F50.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumCheer.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80015590",
@@ -32548,7 +32548,7 @@
   "fp": "77b954506911160a",
   "fpn": "49aff2fdc6fc0fd5",
   "leaf": false,
-  "name": "func_800B8F50",
+  "name": "PodiumCheer",
   "orig": "func_800B8F50",
   "rom": 23708,
   "seg": "overlays/hub/hubcore",
@@ -32575,7 +32575,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B93B4": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B93B4.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumInitScript.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80024E30",
@@ -32584,7 +32584,7 @@
   "fp": "eda1c11f38613dc7",
   "fpn": "368c5929abf7c42d",
   "leaf": false,
-  "name": "func_800B93B4",
+  "name": "PodiumInitScript",
   "orig": "func_800B93B4",
   "rom": 24832,
   "seg": "overlays/hub/hubcore",
@@ -32606,7 +32606,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B96F4": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B96F4.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumCamera.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001463C",
@@ -32620,7 +32620,7 @@
   "fp": "9c2743fe64505818",
   "fpn": "f54e2a7e378ca39b",
   "leaf": false,
-  "name": "func_800B96F4",
+  "name": "PodiumCamera",
   "orig": "func_800B96F4",
   "rom": 25664,
   "seg": "overlays/hub/hubcore",
@@ -32628,7 +32628,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B9B0C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B9B0C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumShowScores.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80095BEC",
@@ -32637,7 +32637,7 @@
   "fp": "22a38a8cbe68c015",
   "fpn": "811c796b16eda241",
   "leaf": false,
-  "name": "func_800B9B0C",
+  "name": "PodiumShowScores",
   "orig": "func_800B9B0C",
   "rom": 26712,
   "seg": "overlays/hub/hubcore",
@@ -32663,7 +32663,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B9E90": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800B9E90.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubInitSparks.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80015590"
@@ -32671,7 +32671,7 @@
   "fp": "0403744c9fd73c92",
   "fpn": "cbac985131eb4b85",
   "leaf": false,
-  "name": "func_800B9E90",
+  "name": "HubInitSparks",
   "orig": "func_800B9E90",
   "rom": 27612,
   "seg": "overlays/hub/hubcore",
@@ -32679,7 +32679,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BA1B4": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BA1B4.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubTrailPoint.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001463C"
@@ -32687,7 +32687,7 @@
   "fp": "bd6e6f080ef0de76",
   "fpn": "4c37cbbf4a88a8ac",
   "leaf": false,
-  "name": "func_800BA1B4",
+  "name": "HubTrailPoint",
   "orig": "func_800BA1B4",
   "rom": 28416,
   "seg": "overlays/hub/hubcore",
@@ -32695,7 +32695,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BA374": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BA374.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDrawSparks.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8002A2EC",
@@ -32704,7 +32704,7 @@
   "fp": "f09d6675b67c5b84",
   "fpn": "b9a20e44fb32a930",
   "leaf": false,
-  "name": "func_800BA374",
+  "name": "HubDrawSparks",
   "orig": "func_800BA374",
   "rom": 28864,
   "seg": "overlays/hub/hubcore",
@@ -32728,7 +32728,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BA804": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BA804.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumScoresUp.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80095E38"
@@ -32736,7 +32736,7 @@
   "fp": "dcb0f46cb36700ed",
   "fpn": "cc420d75735a734b",
   "leaf": false,
-  "name": "func_800BA804",
+  "name": "PodiumScoresUp",
   "orig": "func_800BA804",
   "rom": 30032,
   "seg": "overlays/hub/hubcore",
@@ -32744,7 +32744,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BA848": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BA848.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumScoresDown.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80095E38"
@@ -32752,7 +32752,7 @@
   "fp": "276891246d03f52e",
   "fpn": "5f706366de8fe88a",
   "leaf": false,
-  "name": "func_800BA848",
+  "name": "PodiumScoresDown",
   "orig": "func_800BA848",
   "rom": 30100,
   "seg": "overlays/hub/hubcore",
@@ -32760,13 +32760,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BA88C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BA88C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumReleaseTrophy.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "b554b3809705b058",
   "fpn": "5085c5684ea93084",
   "leaf": true,
-  "name": "func_800BA88C",
+  "name": "PodiumReleaseTrophy",
   "orig": "func_800BA88C",
   "rom": 30168,
   "seg": "overlays/hub/hubcore",
@@ -32806,7 +32806,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BA9C8": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BA9C8.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumSpawnHero.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80018F3C",
@@ -32815,7 +32815,7 @@
   "fp": "321972356d973652",
   "fpn": "c550ef28ec2035a7",
   "leaf": false,
-  "name": "func_800BA9C8",
+  "name": "PodiumSpawnHero",
   "orig": "func_800BA9C8",
   "rom": 30484,
   "seg": "overlays/hub/hubcore",
@@ -32823,7 +32823,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BAAFC": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BAAFC.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/PodiumRenderScene.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80018B08",
@@ -32834,7 +32834,7 @@
   "fp": "6226442609f27653",
   "fpn": "cb66b3a00523f4cb",
   "leaf": false,
-  "name": "func_800BAAFC",
+  "name": "PodiumRenderScene",
   "orig": "func_800BAAFC",
   "rom": 30792,
   "seg": "overlays/hub/hubcore",
@@ -32842,7 +32842,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BAB40": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BAB40.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/UpdatePodium.s",
   "bin": "disc/hub.bin",
   "calls": [
    "800B8F50"
@@ -32850,7 +32850,7 @@
   "fp": "761aea8bf210ae45",
   "fpn": "60e53c5dd76ab8ab",
   "leaf": false,
-  "name": "func_800BAB40",
+  "name": "UpdatePodium",
   "orig": "func_800BAB40",
   "rom": 30860,
   "seg": "overlays/hub/hubcore",
@@ -32858,7 +32858,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BABEC": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BABEC.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSaveMenuInput.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80022660"
@@ -32866,7 +32866,7 @@
   "fp": "d50e2c4f0f47a081",
   "fpn": "37fcea7b1c601cbb",
   "leaf": false,
-  "name": "func_800BABEC",
+  "name": "HubSaveMenuInput",
   "orig": "func_800BABEC",
   "rom": 31032,
   "seg": "overlays/hub/hubcore",
@@ -32874,7 +32874,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BB038": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BB038.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSaveMenuInit.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80014388",
@@ -32888,7 +32888,7 @@
   "fp": "43d46ed35052c3c8",
   "fpn": "6fbe30fdebc414da",
   "leaf": false,
-  "name": "func_800BB038",
+  "name": "HubSaveMenuInit",
   "orig": "func_800BB038",
   "rom": 32132,
   "seg": "overlays/hub/hubcore",
@@ -32896,7 +32896,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BB280": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BB280.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSaveMenuRender.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80018B08",
@@ -32906,7 +32906,7 @@
   "fp": "b4a046e8925b6870",
   "fpn": "69195f2c56cf01fe",
   "leaf": false,
-  "name": "func_800BB280",
+  "name": "HubSaveMenuRender",
   "orig": "func_800BB280",
   "rom": 32716,
   "seg": "overlays/hub/hubcore",
@@ -32914,7 +32914,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BB364": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BB364.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSaveMenuQuit.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80095A04"
@@ -32922,7 +32922,7 @@
   "fp": "30a8a5ed7557c158",
   "fpn": "b25ea8b03b1e1844",
   "leaf": false,
-  "name": "func_800BB364",
+  "name": "HubSaveMenuQuit",
   "orig": "func_800BB364",
   "rom": 32944,
   "seg": "overlays/hub/hubcore",
@@ -32930,7 +32930,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BB38C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BB38C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSaveMenuUpdate.s",
   "bin": "disc/hub.bin",
   "calls": [
    "800BABEC"
@@ -32938,7 +32938,7 @@
   "fp": "9df31f317d9324e1",
   "fpn": "df491a8183d4e49b",
   "leaf": false,
-  "name": "func_800BB38C",
+  "name": "HubSaveMenuUpdate",
   "orig": "func_800BB38C",
   "rom": 32984,
   "seg": "overlays/hub/hubcore",
@@ -32946,7 +32946,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BB3D0": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BB3D0.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubNameEntryKey.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80022660"
@@ -32954,7 +32954,7 @@
   "fp": "174e7b46404a8548",
   "fpn": "a1a35e6ccce6a90a",
   "leaf": false,
-  "name": "func_800BB3D0",
+  "name": "HubNameEntryKey",
   "orig": "func_800BB3D0",
   "rom": 33052,
   "seg": "overlays/hub/hubcore",
@@ -32962,7 +32962,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BB4AC": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BB4AC.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSaveMenuSubs.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8001D334",
@@ -32972,7 +32972,7 @@
   "fp": "af6f82cd832e1871",
   "fpn": "2ed29c9cbad88167",
   "leaf": false,
-  "name": "func_800BB4AC",
+  "name": "HubSaveMenuSubs",
   "orig": "func_800BB4AC",
   "rom": 33272,
   "seg": "overlays/hub/hubcore",
@@ -32980,13 +32980,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BB584": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BB584.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSaveMenuReset.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "cc0b7fa51709ecd5",
   "fpn": "1553cb207540b382",
   "leaf": true,
-  "name": "func_800BB584",
+  "name": "HubSaveMenuReset",
   "orig": "func_800BB584",
   "rom": 33488,
   "seg": "overlays/hub/hubcore",
@@ -32994,7 +32994,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BB5F0": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BB5F0.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubProjectObj.s",
   "bin": "disc/hub.bin",
   "calls": [
    "800159C4"
@@ -33002,7 +33002,7 @@
   "fp": "e4b244b7f35fe2bd",
   "fpn": "5db270ee0dbfee71",
   "leaf": false,
-  "name": "func_800BB5F0",
+  "name": "HubProjectObj",
   "orig": "func_800BB5F0",
   "rom": 33596,
   "seg": "overlays/hub/hubcore",
@@ -33010,7 +33010,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BBC64": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BBC64.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubSetDrawArea.s",
   "bin": "disc/hub.bin",
   "calls": [
    "8002FAF4"
@@ -33018,7 +33018,7 @@
   "fp": "016dcda0be8d642c",
   "fpn": "cb9f016f17e1cc02",
   "leaf": false,
-  "name": "func_800BBC64",
+  "name": "HubSetDrawArea",
   "orig": "func_800BBC64",
   "rom": 35248,
   "seg": "overlays/hub/hubcore",
@@ -33026,13 +33026,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BBE1C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BBE1C.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubStub.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800BBE1C",
+  "name": "HubStub",
   "orig": "func_800BBE1C",
   "rom": 35688,
   "seg": "overlays/hub/hubcore",
@@ -33040,7 +33040,7 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BBE24": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BBE24.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubDrawObj.s",
   "bin": "disc/hub.bin",
   "calls": [
    "80019A60",
@@ -33052,7 +33052,7 @@
   "fp": "d21bea1b3b443dfd",
   "fpn": "43a8a8283bab7218",
   "leaf": false,
-  "name": "func_800BBE24",
+  "name": "HubDrawObj",
   "orig": "func_800BBE24",
   "rom": 35696,
   "seg": "overlays/hub/hubcore",
@@ -33060,13 +33060,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800BBF44": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/func_800BBF44.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubProject.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "51544c3a20847432",
   "fpn": "50c97f6f8ff30abd",
   "leaf": true,
-  "name": "func_800BBF44",
+  "name": "HubProject",
   "orig": "func_800BBF44",
   "rom": 35984,
   "seg": "overlays/hub/hubcore",

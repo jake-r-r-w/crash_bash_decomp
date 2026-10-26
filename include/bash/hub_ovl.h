@@ -8,16 +8,16 @@
 #include "common.h"
 #include "bash/nas.h"
 
-s32 *func_800B4D8C(void);
-void func_800B4DE8(void);
-void func_800B4EAC(void);
-void func_800B86AC(void);
-void func_800B875C(void);
-void func_800B88B8(void);
+s32 *HubCreditsText(void);
+void UpdateHUB(void);
+void InitialiseHUB(void);
+void InitialiseHUBFirst(void);
+void InitialisePodiumFirst(void);
+void InitialisePodium(void);
 
 extern u8 D_800C7294[];
 extern s32 D_80098714;
-/* D_80051640 as seen by func_800B4C94. */
+/* D_80051640 as seen by HubEndCredits. */
 typedef struct {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 x;
@@ -43,15 +43,15 @@ extern subengine *D_800BCEE8;
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/hub_hubcore.h"
 
-void func_800B4694(void);
+void HubRender(void);
 
-void func_800B4C94(void);
+void HubEndCredits(void);
 
-int func_800B4D98(unsigned char *s);
+int HubCountLines(unsigned char *s);
 
-void func_800B4E1C(void);
+void HUBSetUp(void);
 
-/* One line of the scrolling text table at D_800C7294 (func_800B488C). */
+/* One line of the scrolling text table at D_800C7294 (HubCreditsScroll). */
 typedef struct OvlTextLine {
     /* 0x00 */ u32 kind;   /* 0,1: big; 2: small; 3: gap; 4: end */
     /* 0x04 */ u8 *text;   /* '\r' separates lines */
@@ -76,7 +76,7 @@ typedef struct OvlTextLine {
         }                                     \
     }
 
-/* D_80051640 as func_800B488C sets it up. */
+/* D_80051640 as HubCreditsScroll sets it up. */
 typedef struct OvlTextView {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
@@ -87,6 +87,6 @@ typedef struct OvlTextView {
     /* 0x56 */ s16 unk56;
 } OvlTextView;
 
-s32 func_800B488C(void);
+s32 HubCreditsScroll(void);
 
 #endif /* BASH_HUB_OVL_H */

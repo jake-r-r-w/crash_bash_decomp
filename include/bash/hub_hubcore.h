@@ -17,7 +17,7 @@ typedef struct HubSpawnExt {
 extern s32 D_800BD5A8;
 extern u8 *D_800BD398;
 extern u8 D_800BD210[];
-void func_800BBE24();
+void HubDrawObj();
 
 typedef struct HubPt {
     /* 0x0 */ u16 x;
@@ -111,7 +111,7 @@ extern u8 D_80055A04[];
 extern u8 D_80055A3C[];
 extern u8 D_80055A74[];
 extern u8 D_80055AAC[];
-void func_800B8AA4(void);
+void PodiumRankPlayers(void);
 extern s32 D_800BD5B4;
 extern s32 D_800BD598[];
 extern u8 D_800BD5B8[];
@@ -165,7 +165,7 @@ extern s32 *D_800BC918[];
 extern s32 *D_800BC9AC[];
 extern s32 *D_800BCA1C[];
 extern s32 D_800BCB40[];
-/* A POLY_FT4 as func_800B9E90 fills it. */
+/* A POLY_FT4 as HubInitSparks fills it. */
 typedef struct HubFt4 {
     /* 0x00 */ u32 tag;
     /* 0x04 */ u8 r0, g0, b0, code;
@@ -183,7 +183,7 @@ typedef struct HubFt4 {
     /* 0x26 */ u16 pad3;
 } HubFt4;
 
-/* One row of 8 particles func_800B9E90 sets up (0x140 bytes). */
+/* One row of 8 particles HubInitSparks sets up (0x140 bytes). */
 typedef struct HubSparkRow {
     /* 0x000 */ SVECTOR rot[8];
     /* 0x040 */ s32 unk40[8];
@@ -214,7 +214,7 @@ typedef struct HubSparks {
     /* 0x6C */ HubSparkSet set;
 } HubSparks;
 
-/* A texture entry: the POLY_FT4 fields func_800B9E90 copies. */
+/* A texture entry: the POLY_FT4 fields HubInitSparks copies. */
 typedef struct HubTex {
     /* 0x00 */ u8 pad0[0x24];
     /* 0x24 */ u16 tpage;
@@ -225,7 +225,7 @@ typedef struct HubTex {
     /* 0x2E */ u16 uv3;
 } HubTex;
 
-void func_800B9E90(HubSparks *arg0);
+void HubInitSparks(HubSparks *arg0);
 
 extern s32 D_800BD390;
 extern s32 D_800BD394;
@@ -236,7 +236,7 @@ extern EXTengine *D_8009D530;
 extern CamEase D_800BCBAC;
 extern EXTengine *D_8009D538[];
 extern s32 D_8009EEA4;
-/* PadState (D_80051338) as func_800B5710 reads it: held/pressed buttons at 0x50/0x54. */
+/* PadState (D_80051338) as HubPreMoveHero reads it: held/pressed buttons at 0x50/0x54. */
 typedef struct HubPad {
     /* 0x00 */ u8 pad0[0x50];
     /* 0x50 */ s32 unk50;
@@ -257,7 +257,7 @@ extern u8 D_800BD3B4[];
 extern u8 D_800BD3B8[];
 extern s32 D_800BD3C4;
 
-void func_800B6224(s32 arg0);
+void HubOpenDoorMenu(s32 arg0);
 
 typedef struct PodiumChild {
     u8 pad0[0xC];
@@ -294,7 +294,7 @@ extern s32 D_800BD200[];
 
 #define G6A ((HubGameView *)D_8005A614)
 
-/* D_8009EE9C as seen by func_800B4EAC. */
+/* D_8009EE9C as seen by InitialiseHUB. */
 typedef struct {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -304,7 +304,7 @@ typedef struct {
 } HubCamState;
 #define CAM6A ((HubCamState *)&D_8009EE9C)
 
-/* D_800BCCF4 entries (0x28 bytes) as seen by func_800B4EAC. */
+/* D_800BCCF4 entries (0x28 bytes) as seen by InitialiseHUB. */
 typedef struct {
     /* 0x00 */ u8 pad0[8];
     /* 0x08 */ u32 unk8;
@@ -353,84 +353,84 @@ typedef struct FxObj {
     s32 unk60;
 } FxObj;
 
-void func_800B7988(s32 *arg0, s32 flag, s32 *out);
+void HubPathAngles(s32 *arg0, s32 flag, s32 *out);
 
-void func_800B7A78(void);
+void HubInitLevelSelect(void);
 
-s32 func_800B7AB4(s32 arg0);
+s32 HubGatewayIsKind(s32 arg0);
 
-u16 func_800B7B38(void);
+u16 HubGatewayKind(void);
 
-void func_800B7B7C(void);
+void HubDoorMenu2Quit(void);
 
-void func_800B7BA4(void);
+void HubDoorMenu2Render(void);
 
-void func_800B7C78(void);
+void HubDoorMenu2Update(void);
 
-void func_800B7C98(void);
+void HubDoorMenu2Init(void);
 
-void func_800B7CA8(void);
+void HubDoorMenuRender(void);
 
-void func_800B7D7C(void);
+void HubDoorMenuInit(void);
 
-void func_800B7D8C(void);
+void HubDoorMenuQuit(void);
 
-void func_800B7DB4(u8 *arg0, s32 arg1);
+void HubShowSub(u8 *arg0, s32 arg1);
 
 void PlotGatewayTrophy(void);
 
 void InitGatewayTrophy(void);
 
-s32 func_800B7F24(DistPos *a, DistPos *b);
+s32 HubDist(DistPos *a, DistPos *b);
 
-s32 func_800B7F74(u8 *arg0, u8 *arg1);
+s32 HubDistXZ(u8 *arg0, u8 *arg1);
 
-void func_800B7FAC(s32 arg0);
+void HubGoToMode(s32 arg0);
 
-void func_800B7FD0(u8 *cam, s32 arg1);
+void HubCamFromPath(u8 *cam, s32 arg1);
 
-void func_800B8148(s32 arg0);
+void HubHeroSetIdle(s32 arg0);
 
-s32 func_800B821C(void);
+s32 HubHeroTestA(void);
 
-s32 func_800B8224(void);
+s32 HubHeroTestB(void);
 
-void func_800B822C(s32 arg0);
-void func_800B5710(s32 arg0);
+void HubHeroTouched(s32 arg0);
+void HubPreMoveHero(s32 arg0);
 
-void func_800B8284(void);
+void HubCamTarget(void);
 
-void func_800B8324(s32 arg0);
+void HubShowShadow(s32 arg0);
 
-void func_800B838C(s32 arg0);
+void HubHideShadow(s32 arg0);
 
-void func_800B83D4(s32 arg0);
+void HubCreateShadow(s32 arg0);
 
-void func_800B8474(s32 arg0);
+void HubInitHero(s32 arg0);
 
-s32 func_800B84CC(void);
+s32 HubNearestGateway(void);
 
-void func_800B8588(void);
+void HubRenderScene(void);
 
-void func_800B85A8(void);
+void HubUpdateRoom(void);
 
-void func_800B85E4(void);
+void HubCullObjects(void);
 
-s32 func_800B8708(s32 arg0);
+s32 HubLookup(s32 arg0);
 
-void func_800B8CA0(void);
+void HubCreditsEffects(void);
 
-void func_800B8F50(void);
+void PodiumCheer(void);
 
 void PlotPodiumOdo(NAS *arg0);
 
 void PlotSparkGFX(NAS *arg0);
 
-void func_800BA804(void);
+void PodiumScoresUp(void);
 
-void func_800BA848(void);
+void PodiumScoresDown(void);
 
-void func_800BA88C(void);
+void PodiumReleaseTrophy(void);
 
 void InitPodiumTrophy(NAS *arg0);
 
@@ -451,29 +451,29 @@ typedef struct ScriptExt40 {
 
 extern ScriptInit D_800BCCE8;
 
-s32 func_800B694C(void);
+s32 HubSelectedLevel(void);
 
 void InitPathEffect(NAS *nas);
 
 void InitCrystalFlash(FxObj *arg0);
 
-void func_800B7E14(s32 *arg0, s32 arg1);
+void HubSpawnFlash(s32 *arg0, s32 arg1);
 
-s32 func_800B8174(s32 arg0);
+s32 HubHeroTestButton(s32 arg0);
 
-void func_800B8BC8(void);
+void PodiumFindTies(void);
 
-void func_800BAAFC(void);
+void PodiumRenderScene(void);
 
-void func_800BAB40(void);
+void UpdatePodium(void);
 
-void func_800BB280(void);
+void HubSaveMenuRender(void);
 
-void func_800BB364(void);
+void HubSaveMenuQuit(void);
 
-void func_800BB38C(void);
+void HubSaveMenuUpdate(void);
 
-void func_800BB3D0(s8 arg0);
+void HubNameEntryKey(s8 arg0);
 typedef struct SubInit {
     s16 a;
     s16 b;
@@ -488,14 +488,14 @@ typedef struct SubInitList {
 
 extern subengine D_800BDB58[];
 
-void func_800BB4AC(SubInitList *list);
+void HubSaveMenuSubs(SubInitList *list);
 
 extern s32 D_800BD8B0[];
 extern s32 D_800BD7FC[];
 
-void func_800BB584(void);
+void HubSaveMenuReset(void);
 
-void func_800BBE1C(void);
+void HubStub(void);
 
 typedef struct HubRenderSub {
     u8 padC[0xC];
@@ -514,11 +514,11 @@ typedef struct HubRenderObj {
 
 extern u8 D_800BF264[];
 extern u8 D_800C7264[];
-void func_800B5158(void);
+void HubInitGateways(void);
 
-void func_800BB5F0(HubRenderObj *obj, s16 *out);
+void HubProjectObj(HubRenderObj *obj, s16 *out);
 
-/* func_800BBF44's body, inlined into func_800BB5F0 */
+/* HubProject's body, inlined into HubProjectObj */
 #define HUB_BOUND_XY(v, b, p, xy)     \
     {                                   \
         s16 *q_ = (p);                  \
@@ -538,10 +538,10 @@ void func_800BB5F0(HubRenderObj *obj, s16 *out);
             (b)[3] = (xy)[1];           \
         }                               \
     }
-void func_800BBC64(s16 *a, void *b, s32 c, s32 d);
-void func_800BBE24(HubRenderObj *obj, void *arg1);
+void HubSetDrawArea(s16 *a, void *b, s32 c, s32 d);
+void HubDrawObj(HubRenderObj *obj, void *arg1);
 
-void func_800BBF44(SVECTOR *v, s16 *b);
+void HubProject(SVECTOR *v, s16 *b);
 
 typedef struct PodiumInner {
     u8 pad0[0x6C];
@@ -571,8 +571,8 @@ extern ScriptInit D_800BD134;
 extern ScriptInit D_800BD18C;
 extern ScriptInit D_800BD1E4;
 
-void func_800B93B4(s32 arg0, s32 arg1);
-/* D_8005A614 as seen by func_800B6A3C. */
+void PodiumInitScript(s32 arg0, s32 arg1);
+/* D_8005A614 as seen by HubLevelSelect. */
 typedef struct HubSelView {
     /* 0x00 */ u8 pad0[0x30];
     /* 0x30 */ u16 unk30;
@@ -596,28 +596,28 @@ typedef struct {
     unsigned len : 8;
 } HubPTag;
 
-void func_800B64C8(void);
+void HubDoorMenuUpdate(void);
 
-void func_800B6A3C(void);
+void HubLevelSelect(void);
 
-void func_800B6E20(void);
+void HubSpawnEffects(void);
 
 void PlotPodiumTrophy(PodiumTrophy *arg0);
 
-void func_800B9B0C(void);
+void PodiumShowScores(void);
 
 void InitSparkGFX(NAS *arg0);
 
-void func_800BA1B4(HubTrailDst *d, HubTrail *t, s32 idx);
+void HubTrailPoint(HubTrailDst *d, HubTrail *t, s32 idx);
 
-void func_800BA374(HubSparks *arg0, MATRIX *m);
+void HubDrawSparks(HubSparks *arg0, MATRIX *m);
 
-void func_800BA9C8(s32 arg0, HubSpawnEnt *arg1);
+void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1);
 
-void func_800BABEC(void);
+void HubSaveMenuInput(void);
 
-void func_800BB038(void);
-/* Extension 0x10000000 of the path-following objects func_800B6E20 spawns
+void HubSaveMenuInit(void);
+/* Extension 0x10000000 of the path-following objects HubSpawnEffects spawns
  * (0x1626); PlotPathEffect is their Plot. */
 typedef struct PathExt {
     /* 0x00 */ u8 pad00[0xC];
@@ -643,7 +643,7 @@ typedef struct PathRot {
 
 extern s16 D_80051696;
 
-void func_800B551C(void);
+void HubUpdateGateways(void);
 
 void PlotPathEffect(NAS *nas);
 
