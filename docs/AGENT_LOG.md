@@ -66,13 +66,13 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    three empty stubs (`func_800C69BC`, `func_800C831C`, `func_800C83D0`)
    and four unclear ones (`func_800C6C30`, `func_800C7E68`/`func_800C7EB0`,
    hero action `0x6F`; `func_800C8120`, action `0x70` and `D_800CB0F0`).
-   Types (2026-10-26): 22 of `ovl5f.h`'s 30 stand-in structs are gone.
+   Types (2026-10-26): 24 of `ovl5f.h`'s 33 stand-in structs are gone.
    Every object extension is `EXTobject_TA` (all are `AddExt(nas, 0x38,
    ...)`), the bot state `TA_Bot`, the puffs' `EXTscriptdata`, and the
    rest were views of `NAS`, `EXTengine`, `subengine` and `TA_player`.
    Left: `Ovl5fModeView`/`GameView`/`SetupView`, Tank's views of the
    game-state struct `D_8005A614` (declared `u8[]` everywhere; type it
-   project-wide, Phase 5), `Ovl5fCam` (merge with the other camera views,
+   project-wide, Phase 5), `Ovl5fCam` and `Ovl5fScreen` (engine globals' views: merge with the other camera views,
    PROTOTYPES.md Left), and the Tank-only table shapes `Ovl5fPoint`,
    `Ovl5fU16Pad`, `MineOffset`, `ModelRec`. Globals: the busy state ones
    are named (`TankLevelOver`, `TankMapWidth`, the leak's
