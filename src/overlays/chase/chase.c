@@ -10,10 +10,10 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-void func_800B3330(s32 *arg0) {
+void ChaseUpdateStub(s32 *arg0) {
 }
 
-void func_800B3338(s32 arg0, EXTengine *arg1) {
+void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1) {
     HeroInfo *h;
     s32 hx, hz;
     s32 a;
@@ -43,7 +43,7 @@ void func_800B3338(s32 arg0, EXTengine *arg1) {
     *(s32 *)(p + 0x14) = get_angle(*(s32 *)(p + 0xC) - hx, *(s32 *)(p + 0x10) - hz);
 }
 
-void func_800B3488(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
+void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
     NAS *nas;
     NAS *best;
     EXTengine *eng;
@@ -60,7 +60,7 @@ void func_800B3488(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
         if ((arg2->pickup = ChaseNearPickup(x, z)) != NULL) {
             arg2->state = 5;
             arg2->timer = 0x96;
-            ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, arg2->pickup->Engine, 0);
+            ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, arg2->pickup->Engine, 0);
             return;
         }
         bestd = 0x8000;
@@ -99,7 +99,7 @@ void func_800B3488(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
             arg2->state = 6;
             arg2->target = best;
             arg2->timer = 0x3C;
-            ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, best->Engine, 0x100);
+            ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, best->Engine, 0x100);
             fux = (ChaseCoalFux *)best->FUX;
             fux->owner = arg0;
             return;
@@ -131,7 +131,7 @@ void func_800B3488(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/chase/chase", D_800B32B8);
 
-void func_800B37C8(s32 arg0) {
+void Chase_HeroBot(s32 arg0) {
     u32 off;
     ChaseAiState *ai;
     EXTengine *eng;
@@ -168,7 +168,7 @@ void func_800B37C8(s32 arg0) {
         ai->unk20--;
     }
     if (--ai->timer <= 0) {
-        func_800B3488(arg0, eng, ai);
+        ChaseAI_ChooseTarget(arg0, eng, ai);
     } else {
         ChaseNearPickup(eng->unk10.x, eng->unk10.z);
     }
@@ -186,12 +186,12 @@ void func_800B37C8(s32 arg0) {
         if (ai->pickup->Type != ChaseASTIndex(0x1D04) || ai->pickup->NASid == 0 || ai->unk24 != 0) {
             goto rethink;
         }
-        ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, ai->pickup->Engine, 0);
+        ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, ai->pickup->Engine, 0);
         ai->unk8 |= D_80051244[((ai->angle + off) >> 9) & 7];
         break;
     case 6:
         if (ai->unk20 <= 0) {
-            func_800B3488(arg0, eng, ai);
+            ChaseAI_ChooseTarget(arg0, eng, ai);
             break;
         }
         if (ai->target->Type != ChaseASTIndex(0x1D01) || ai->target->NASid == 0) {
@@ -235,12 +235,12 @@ void func_800B37C8(s32 arg0) {
                 ai->state = 6;
                 ai->target = best;
                 ai->timer = 0x3C;
-                ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, best->Engine, 0x100);
+                ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, best->Engine, 0x100);
                 fux = (ChaseCoalFux *)best->FUX;
                 fux->owner = arg0;
             }
         }
-        ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, ai->target->Engine, 0);
+        ((void (*)(s32, EXTengine *, s32))ChaseAI_AngleTo)(arg0, ai->target->Engine, 0);
         ai->unk8 |= D_80051244[((ai->angle + off) >> 9) & 7];
         break;
     case 7:
@@ -261,7 +261,7 @@ void func_800B37C8(s32 arg0) {
     case 8:
         if (ai->unk20 > 0) {
         rethink:
-            func_800B3488(arg0, eng, ai);
+            ChaseAI_ChooseTarget(arg0, eng, ai);
             break;
         }
         ai->unk8 |= D_80051244[(ai->angle >> 9) & 7];
@@ -300,25 +300,25 @@ void func_800B37C8(s32 arg0) {
     set_joypad((u8 *)&D_80051338[arg0], ai->unk8);
 }
 
-void func_800B3EFC(void) {
+void InitialiseCHASEFirst(void) {
     D_8009D6E8.unk4 = D_800BB928;
-    D_8009D6E8.unk38 = (void *)func_800B37C8;
-    D_8009D6E8.unk40 = (void *)func_800BAFB4;
-    D_8009D6E8.unk0 = (void *)func_800B46BC;
-    D_8009D6E8.unk68 = (void *)func_800B459C;
+    D_8009D6E8.unk38 = (void *)Chase_HeroBot;
+    D_8009D6E8.unk40 = (void *)ChaseHeroTestRun;
+    D_8009D6E8.unk0 = (void *)ChaseInitHero;
+    D_8009D6E8.unk68 = (void *)CHASE_KeepInBounds;
     D_8009D6E8.unk14 = D_800BB93C;
-    D_8009D6E8.unk20 = (void *)func_800B48E4;
-    D_8009D6E8.unk24 = (void *)func_800B4B34;
-    D_8009D6E8.unk54 = (void *)func_800B52C8;
-    D_8009D6E8.unk44 = (void *)func_800BAF00;
-    D_8009D6E8.unk48 = (void *)func_800BAE84;
-    D_8009D6E8.unk40 = (void *)func_800BAFB4;
-    D_8009D6E8.unk5C = (void *)func_800BA70C;
+    D_8009D6E8.unk20 = (void *)ChasePreMoveHero;
+    D_8009D6E8.unk24 = (void *)ChaseMoveHero;
+    D_8009D6E8.unk54 = (void *)ChaseHeroKickCollision;
+    D_8009D6E8.unk44 = (void *)ChaseHeroTestJump;
+    D_8009D6E8.unk48 = (void *)ChaseNoKick;
+    D_8009D6E8.unk40 = (void *)ChaseHeroTestRun;
+    D_8009D6E8.unk5C = (void *)ChaseHero_ExtraEffects;
     D_8009E0E2 = 0x77;
     D_8009E0E4 = 0x75;
     D_8009E0E6 = 0x74;
     D_8009E0D8 = 0x73;
-    D_8009D6E8.unk64 = (void *)func_800BA5A0;
+    D_8009D6E8.unk64 = (void *)ChaseChooseWinner;
     D_8009D8F4 = D_800BC0E4;
     D_8009D8F8 = D_800BC0F8;
     D_8009D904 = D_800BC0CC;
@@ -331,7 +331,7 @@ void func_800B3EFC(void) {
    flow counts before combine drops it. That lifts the *60 chain's local-alloc
    priority above the x chain's (they tie otherwise), so it takes v1 as in
    retail. */
-void func_800B4048(void) {
+void InitialiseCHASE(void) {
     s32 i;
     s32 a;
     s32 x;
@@ -434,7 +434,7 @@ void func_800B4048(void) {
     }
 }
 
-void func_800B4444(void) {
+void UpdateCHASE(void) {
     s32 i;
     s16 c;
     s32 n;
@@ -464,10 +464,10 @@ loop:
     } while (n >= 0);
     h = D_80053F8C;
     func_80029100(h + 0x10);
-    func_800B3330(D_800BC240);
+    ChaseUpdateStub(D_800BC240);
 }
 
-void func_800B44C8(void) {
+void FinishChaseLevel(void) {
     HeroInfo *h;
     s32 i;
     s32 best;
@@ -492,7 +492,7 @@ void func_800B44C8(void) {
     }
 }
 
-s32 func_800B459C(s32 *p) {
+s32 CHASE_KeepInBounds(s32 *p) {
     s32 d;
     s32 a;
     if (p[4] < -D_800BC44C || D_800BC44C < p[4] || p[6] < -D_800BC44C || D_800BC44C < p[6]) {
@@ -507,7 +507,7 @@ s32 func_800B459C(s32 *p) {
     return 1;
 }
 
-void func_800B46BC(s32 arg0) {
+void ChaseInitHero(s32 arg0) {
     HeroInfo *b;
     HeroInfo *h;
     EXTengine *eng;
@@ -563,7 +563,7 @@ void func_800B46BC(s32 arg0) {
     }
 }
 
-void func_800B48E4(s32 arg0) {
+void ChasePreMoveHero(s32 arg0) {
     HeroInfo *hb;
     HeroInfo *hb2;
     ChasePad *pb;
@@ -626,7 +626,7 @@ void func_800B48E4(s32 arg0) {
     }
 }
 
-void func_800B4B34(s32 arg0) {
+void ChaseMoveHero(s32 arg0) {
     HeroInfo *h;
     EXTengine *e;
     EXTengine *e0;
@@ -747,7 +747,7 @@ void func_800B4B34(s32 arg0) {
         if ((NAS *)st[0x12] == NULL
             || (ne = ((NAS *)st[0x12])->Engine, dx = e0->unk10.x - ne->unk10.x, dx = dx * dx,
                 dz = e0->unk10.z - ne->unk10.z, dz = dz * dz, dx + dz >= 0x400)) {
-            t = func_800B7948(arg0);
+            t = ChaseSpawnCoal(arg0);
         }
         if (t != NULL) {
             st[0x12] = (s32)t;
@@ -760,9 +760,9 @@ void func_800B4B34(s32 arg0) {
     if ((D_80051338[arg0].unk50 & 0x2A00) && e0->unk10.y >= -0x31 && D_800BC2D0[arg0][0x14] != 0) {
         v = &e0->unk10;
         PlaySfx(0x43A, NULL, v, 0x1000, 0x1E00, 0);
-        func_800BA694(arg0);
-        func_800B7DF0(e0->unk10.x, e0->unk10.z, arg0, 0, 0x380, 0);
-        func_800BB010(e0->unk10.x, e0->unk10.z, arg0, 0x380);
+        ChaseHidePowerup(arg0);
+        CoalChainHit(e0->unk10.x, e0->unk10.z, arg0, 0, 0x380, 0);
+        ChaseHitHeroesNear(e0->unk10.x, e0->unk10.z, arg0, 0x380);
         anim = D_80053F8C;
         nas = CreateNAS(e0->unk10.x, v->y, v->z, 0x1605, 0x11);
         if (nas != NULL) {
@@ -783,7 +783,7 @@ void func_800B4B34(s32 arg0) {
     }
 }
 
-s32 func_800B51C8(s32 arg0) {
+s32 ChaseHeroTestDrop(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -810,7 +810,7 @@ s32 func_800B51C8(s32 arg0) {
     return 0;
 }
 
-s32 func_800B52C8(s32 arg0) {
+s32 ChaseHeroKickCollision(s32 arg0) {
     ChaseTrig *tbl;
     VECTOR pos;
     NAS *own;
@@ -1083,7 +1083,7 @@ static inline s32 Chk5CD0_C(s32 arg0) {
     return ret;
 }
 
-void func_800B5CD0(s32 arg0) {
+void ChaseHeroIdle(s32 arg0) {
     if (!Chk5CD0_A(arg0)) {
         if (!Chk5CD0_B(arg0)) {
             if (!Chk5CD0_C(arg0)) {
@@ -1093,10 +1093,10 @@ void func_800B5CD0(s32 arg0) {
                 func_8008502C(arg0);
                 if (D_8005A5DC < 4) {
                     if (D_8005A5DC >= 2) {
-                        func_800B52C8(arg0);
+                        ChaseHeroKickCollision(arg0);
                     }
                 }
-                func_800B51C8(arg0);
+                ChaseHeroTestDrop(arg0);
                 Heroes[arg0].hero_hit = 0;
             }
         }
@@ -1111,7 +1111,7 @@ static inline s32 Chk5E84_C(s32 arg0) {
     return 0;
 }
 
-void func_800B5E84(s32 arg0) {
+void ChaseHeroRun(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
     EXTengine *e;
@@ -1122,7 +1122,7 @@ void func_800B5E84(s32 arg0) {
                 base = Heroes;
                 h = base + arg0;
                 h->hero_move->velocity_enable = 1;
-                func_800B52C8(arg0);
+                ChaseHeroKickCollision(arg0);
                 switch (func_8008502C(arg0)) {
                 case 8:
                     e = h->hero_eng;
@@ -1157,13 +1157,13 @@ void func_800B5E84(s32 arg0) {
                     }
                     break;
                 }
-                func_800B51C8(arg0);
+                ChaseHeroTestDrop(arg0);
             }
         }
     }
 }
 
-void func_800B6168(s32 arg0) {
+void SetChaseHeroJump(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *e;
@@ -1190,7 +1190,7 @@ void func_800B6168(s32 arg0) {
     h->hero_move->jump_dir = -1;
 }
 
-void func_800B627C(s32 arg0) {
+void SetChaseHeroFall(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTengine *e;
@@ -1214,7 +1214,7 @@ void func_800B627C(s32 arg0) {
     SetHeroSeq(arg0, 0x66);
 }
 
-void func_800B6350(s32 arg0) {
+void ChaseHeroFall(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTengine *e;
@@ -1232,11 +1232,11 @@ void func_800B6350(s32 arg0) {
             }
         }
     }
-    func_800B52C8(arg0);
+    ChaseHeroKickCollision(arg0);
     func_8008502C(arg0);
 }
 
-void func_800B643C(s32 arg0) {
+void SetChaseHeroDrop(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *p;
@@ -1268,7 +1268,7 @@ void func_800B643C(s32 arg0) {
     PlaySfx(0x410, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
-void func_800B65B0(s32 arg0) {
+void SetChaseHeroLand(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *e;
@@ -1344,24 +1344,24 @@ static inline s32 Chk66A4_C(s32 arg0) {
     return ret;
 }
 
-void func_800B66A4(s32 arg0) {
+void ChaseHeroLand(s32 arg0) {
     if (!Chk66A4_A(arg0)) {
         if (!Chk66A4_B(arg0)) {
             if (!Chk66A4_C(arg0)) {
-                func_800B52C8(arg0);
+                ChaseHeroKickCollision(arg0);
                 func_8008502C(arg0);
-                func_800B51C8(arg0);
+                ChaseHeroTestDrop(arg0);
             }
         }
     }
 }
 
-void func_800B67D8(s32 arg0) {
+void SetChaseHeroHit(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
     func_80027F7C(arg0, 0xA, 0xF0);
-    func_800BA694(arg0);
+    ChaseHidePowerup(arg0);
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 0;
@@ -1372,7 +1372,7 @@ void func_800B67D8(s32 arg0) {
     PlaySfx(D_800BB95C[h->hero_name - 1][Random(4)], 0, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
-void func_800B68B8(s32 arg0) {
+void ChaseHeroHit(s32 arg0) {
     u8 *g;
 
     if (func_8008502C() == 8 && ((g = D_8005A614), (*(u16 *)(g + 0x32) & 0x80)) && g[arg0 + 0x5C] == 0 &&
@@ -1389,10 +1389,10 @@ void func_800B68B8(s32 arg0) {
             SetHeroAction(arg0, 0x71);
         }
     }
-    func_800B51C8(arg0);
+    ChaseHeroTestDrop(arg0);
 }
 
-void func_800B69AC(s32 arg0) {
+void SetChaseHeroDie(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -1416,7 +1416,7 @@ void func_800B69AC(s32 arg0) {
     h->hero_status |= 0x2000;
 }
 
-void func_800B6AAC(s32 arg0) {
+void SetChaseHeroDead(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base = Heroes;
 
@@ -1439,7 +1439,7 @@ void func_800B6AAC(s32 arg0) {
     func_800898EC(arg0);
 }
 
-void func_800B6B84(s32 arg0) {
+void ChaseHeroDead(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     u16 st;
@@ -1468,7 +1468,7 @@ void func_800B6B84(s32 arg0) {
     }
 }
 
-void func_800B6C84(s32 arg0) {
+void SetChaseHeroWinner(s32 arg0) {
     HeroInfo *h;
     s32 dy;
 
@@ -1515,7 +1515,7 @@ void func_800B6C84(s32 arg0) {
     D_800BC444 = 1;
 }
 
-void func_800B6E84(s32 arg0) {
+void ChaseHeroWinner(s32 arg0) {
     HeroInfo *h;
     s32 dy;
 
@@ -1539,7 +1539,7 @@ void func_800B6E84(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800B6F6C(s32 arg0) {
+void SetChaseHeroLose(s32 arg0) {
     HeroInfo *h;
     s32 dy;
 
@@ -1617,7 +1617,7 @@ void func_800B6F6C(s32 arg0) {
     }
 }
 
-void func_800B722C(s32 arg0) {
+void ChaseHeroLose(s32 arg0) {
     HeroInfo *h;
     EXTengine *eng;
     s32 dy;
@@ -1835,7 +1835,7 @@ void PlotBarrelCH(NAS *nas) {
     }
 }
 
-NAS *func_800B7948(s32 arg0) {
+NAS *ChaseSpawnCoal(s32 arg0) {
     u8 *g = D_8005A614 + arg0;
     EXTengine *he = Heroes[arg0].hero_eng;
     s32 lv = g[0x50];
@@ -1895,7 +1895,7 @@ NAS *func_800B7948(s32 arg0) {
     return nas;
 }
 
-void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
+void CoalFlameSpread(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
     s32 *grid;
     s32 cx;
     s32 cz;
@@ -1969,7 +1969,7 @@ void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
     }
 }
 
-s32 func_800B7DF0(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
+s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
     CoalChainNAS *nas;
     CoalEng *eng;
     HeroInfo *h;
@@ -2023,7 +2023,7 @@ s32 func_800B7DF0(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
                 }
                 func_8008D5D4(eng->x, -300, eng->z, pts, delay);
                 delay += 10;
-                total += func_800B7DF0(eng->x, eng->z, id, pts, 0x120, delay);
+                total += CoalChainHit(eng->x, eng->z, id, pts, 0x120, delay);
             }
         }
     }
@@ -2063,9 +2063,9 @@ void PlotCoalFlame(NAS *nas) {
         return;
     }
     if (fux->unk1C < 0) {
-        func_800B7B80(eng, fux, fux->unk2C);
+        CoalFlameSpread(eng, fux, fux->unk2C);
     }
-    D_800BC48C[fux->unk2C] += func_800B7DF0(eng->x, eng->z, fux->unk2C,
+    D_800BC48C[fux->unk2C] += CoalChainHit(eng->x, eng->z, fux->unk2C,
                                             D_800BC48C[fux->unk2C], 0x12C, 0);
     if (D_800BC48C[fux->unk2C] > 10) {
         D_800BC48C[fux->unk2C] = 10;
@@ -2461,7 +2461,7 @@ found:
         PlaySfx(0x439, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         status = nas->UserInfo.status;
         sub = NULL;
-        func_800BA694(hero);
+        ChaseHidePowerup(hero);
         p = Heroes[hero].hero_powerup;
         if (p != NULL) {
             sub = p->sub;
@@ -2487,7 +2487,7 @@ found:
     KillNAS(nas);
 }
 
-void func_800B94FC(s32 arg0, u16 arg1) {
+void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
     s32 taken;
     s32 j;
     s32 i;
@@ -2619,7 +2619,7 @@ void func_800B94FC(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B9A50(s32 arg0, u16 arg1) {
+void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
     s32 taken;
     s32 j;
     s32 i;
@@ -2731,7 +2731,7 @@ void func_800B9A50(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B9ED8(s32 arg0, u16 arg1) {
+void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
     s32 found;
     s32 fail;
     u8 *g;
@@ -2821,7 +2821,7 @@ void func_800B9ED8(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800BA220(s32 arg0, u16 arg1) {
+void ChaseChooseWinnerRank(s32 arg0, u16 arg1) {
     ChaseRankView *g;
     ChaseRankView *p;
     HeroInfo *hb;
@@ -2912,25 +2912,25 @@ void func_800BA220(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800BA5A0(s32 arg0, s32 arg1) {
+void ChaseChooseWinner(s32 arg0, s32 arg1) {
     u8 *g = D_8005A614;
 
     if (!(*(u16 *)(g + 0x30) & 0x801)) {
         u16 f = *(u16 *)(g + 0x32);
 
         if (f & 0x80) {
-            func_800B94FC(arg0, (u16)arg1);
+            ChaseChooseWinnerScore(arg0, (u16)arg1);
         } else if (f & 0x20) {
-            func_800B9A50(arg0, (u16)arg1);
+            ChaseChooseWinnerScoreB(arg0, (u16)arg1);
         } else if (f & 0x40) {
-            func_800B9ED8(arg0, (u16)arg1);
+            ChaseChooseWinnerTimed(arg0, (u16)arg1);
         } else {
-            func_800BA220(arg0, (u16)arg1);
+            ChaseChooseWinnerRank(arg0, (u16)arg1);
         }
     }
 }
 
-void func_800BA630(NAS *nas) {
+void KillPickupCH(NAS *nas) {
     s32 i;
 
     for (i = 0; i < 1; i++) {
@@ -2947,7 +2947,7 @@ void InitPUGenerator_CH(NAS *nas) {
     nas->UserInfo.flags = 0x258;
 }
 
-void func_800BA694(s32 arg0) {
+void ChaseHidePowerup(s32 arg0) {
     EXTengine *p = Heroes[arg0].hero_powerup;
     subengine *s = NULL;
 
@@ -2960,7 +2960,7 @@ void func_800BA694(s32 arg0) {
     D_800BC2D0[arg0][0x14] = 0;
 }
 
-void func_800BA70C(s32 arg0) {
+void ChaseHero_ExtraEffects(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTengine *p = h->hero_powerup;
@@ -2975,12 +2975,12 @@ void func_800BA70C(s32 arg0) {
     }
 }
 
-void func_800BA784(s32 arg0, s32 arg1) {
+void ChaseHeroHitFlash(s32 arg0, s32 arg1) {
     EXTengine *p;
     subengine *sub;
 
     sub = NULL;
-    func_800BA694(arg0);
+    ChaseHidePowerup(arg0);
     p = Heroes[arg0].hero_powerup;
     if (p != NULL) {
         sub = p->sub;
@@ -3122,7 +3122,7 @@ void InitCoal(NAS *nas) {
     }
 }
 
-void func_800BAC30(NAS *nas) {
+void KillPickupCHB(NAS *nas) {
     s32 i;
 
     for (i = 0; i < 8; i++) {
@@ -3139,7 +3139,7 @@ void InitBarrelGenerator(NAS *nas) {
     nas->UserInfo.flags = 0x3C;
 }
 
-void func_800BAC98(s32 arg0) {
+void ChaseHeroDie(s32 arg0) {
     HeroInfo *hero;
     HeroInfo *base;
 
@@ -3155,7 +3155,7 @@ void func_800BAC98(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800BAD1C(s32 arg0) {
+void ChaseHeroDrop(s32 arg0) {
     HeroInfo *hero;
     HeroInfo *base;
     s32 y;
@@ -3167,41 +3167,41 @@ void func_800BAD1C(s32 arg0) {
     if (World_floor_level + 0x180 < y) {
         SetHeroAction(arg0, 0x77);
     }
-    func_800B52C8(arg0);
+    ChaseHeroKickCollision(arg0);
     func_8008502C(arg0);
 }
 
-void func_800BADA8(s32 arg0) {
-    func_800B52C8(arg0);
+void ChaseHeroJump(s32 arg0) {
+    ChaseHeroKickCollision(arg0);
     func_8008502C(arg0);
 }
 
-void func_800BADD4(s32 arg0) {
+void SetChaseHeroRun(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     SetHeroSeq(arg0, 0x64);
 }
 
-void func_800BAE20(void) {
+void ChaseUnusedStub0(void) {
 }
 
-void func_800BAE28(void) {
+void ChaseUnusedStub1(void) {
 }
 
-void func_800BAE30(s32 arg0) {
+void SetChaseHeroIdle(s32 arg0) {
     Heroes[arg0].hero_move->jump_max = 0;
     Heroes[arg0].hero_move->velocity_enable = 1;
     SetHeroSeq(arg0, 0x61);
 }
 
-s32 func_800BAE84(void) {
+s32 ChaseNoKick(void) {
     return 0;
 }
 
-s32 func_800BAE8C(void) {
+s32 ChaseAlwaysOne(void) {
     return 1;
 }
 
-s32 func_800BAE94(s32 arg0) {
+s32 ChaseTestEnd(s32 arg0) {
     s32 act;
     u16 st = Heroes[arg0].hero_status;
 
@@ -3216,7 +3216,7 @@ s32 func_800BAE94(s32 arg0) {
     return 1;
 }
 
-s32 func_800BAF00(s32 arg0) {
+s32 ChaseHeroTestJump(s32 arg0) {
     if (!(D_80051338[arg0].unk54 & 0x4000)) {
         return 0;
     }
@@ -3224,7 +3224,7 @@ s32 func_800BAF00(s32 arg0) {
     return 1;
 }
 
-s32 func_800BAF58(s32 arg0) {
+s32 ChaseHeroToIdle(s32 arg0) {
     if (Heroes[arg0].hero_move->forward_speed == 0) {
         SetHeroAction(arg0, 0x71);
         return 1;
@@ -3232,7 +3232,7 @@ s32 func_800BAF58(s32 arg0) {
     return 0;
 }
 
-s32 func_800BAFB4(s32 arg0)
+s32 ChaseHeroTestRun(s32 arg0)
 {
   if (Heroes[arg0].hero_move->forward_speed != 0)
   {
@@ -3242,7 +3242,7 @@ s32 func_800BAFB4(s32 arg0)
   return 0;
 }
 
-void func_800BB010(s32 x, s32 z, s32 skip, s32 range) {
+void ChaseHitHeroesNear(s32 x, s32 z, s32 skip, s32 range) {
     HeroInfo *h;
     s32 d;
     s32 i;
@@ -3276,7 +3276,7 @@ loop:
     }
 }
 
-void func_800BB134(s32 arg0)
+void ChaseHitHero(s32 arg0)
 {
   HeroInfo *h;
   HeroInfo *new_var;
@@ -3293,7 +3293,7 @@ void func_800BB134(s32 arg0)
   }
 }
 
-s32 func_800BB1C0(s32 x, s32 z, s32 range) {
+s32 ChaseFindHero(s32 x, s32 z, s32 range) {
     s32 i;
     s32 d;
     HeroInfo *h;
@@ -3310,12 +3310,12 @@ s32 func_800BB1C0(s32 x, s32 z, s32 range) {
     return -1;
 }
 
-s32 func_800BB260(s32 arg0) {
+s32 ChasePadHook(s32 arg0) {
     u32 m = D_80051338[arg0].unk54 & 0x2000;
     return m != 0;
 }
 
-void func_800BB294(s32 *p, s32 arg1) {
+void ChaseClampToArena(s32 *p, s32 arg1) {
     s32 d = (csqrt(p[4] * p[4] + p[6] * p[6]) >> 6) - arg1;
     s32 a;
     if (d > 0) {
@@ -3325,36 +3325,36 @@ void func_800BB294(s32 *p, s32 arg1) {
     }
 }
 
-void func_800BB36C(void) {
+void FirstTriggersCHASE(void) {
 }
 
-void func_800BB374(void) {
+void ChaseTriggers(void) {
 }
 
-void func_800BB37C(void) {
+void ChaseStopHeroSfx(void) {
 }
 
-void func_800BB384(void) {
-    D_8005AA70[0] = (s32)func_800B3EFC;
-    D_8005AA70[1] = (s32)func_800B4048;
-    D_8005AA70[2] = (s32)func_800B4048;
-    D_8005AA70[3] = (s32)func_800B4444;
-    D_8005AA70[4] = (s32)func_800BB37C;
-    D_8005AA70[6] = (s32)func_800BB374;
-    D_8005AA70[5] = (s32)func_800BB36C;
+void CHASESetUp(void) {
+    D_8005AA70[0] = (s32)InitialiseCHASEFirst;
+    D_8005AA70[1] = (s32)InitialiseCHASE;
+    D_8005AA70[2] = (s32)InitialiseCHASE;
+    D_8005AA70[3] = (s32)UpdateCHASE;
+    D_8005AA70[4] = (s32)ChaseStopHeroSfx;
+    D_8005AA70[6] = (s32)ChaseTriggers;
+    D_8005AA70[5] = (s32)FirstTriggersCHASE;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
-    D_8005AA70[10] = (s32)func_800B44C8;
+    D_8005AA70[10] = (s32)FinishChaseLevel;
 }
 
-void func_800BB3F0(s32 x, s32 y) {
+void ChaseGridClear(s32 x, s32 y) {
     s32 xi = (x + 0xA00) >> 7;
     s32 yi = (y + 0xA00) >> 7;
     s32 idx = yi * 40 + xi;
     D_800BC4E8[idx] = 0;
 }
 
-s32 func_800BB428(s32 x, s32 z) {
+s32 ChaseGridAt(s32 x, s32 z) {
     s32 xi;
     s32 zi;
     s32 idx;
@@ -3368,7 +3368,7 @@ s32 func_800BB428(s32 x, s32 z) {
     return D_800BC4E8[idx];
 }
 
-void func_800BB488(CoalGridObj *obj) {
+void ChaseKillGridObj(CoalGridObj *obj) {
     CoalPosInner *p = obj->pos;
     s32 x = p->x;
     s32 z = p->z;
@@ -3388,7 +3388,7 @@ void func_800BB488(CoalGridObj *obj) {
     }
 }
 
-s32 func_800BB4F8(s32 x, s32 z, s32 range, s32 skip) {
+s32 ChaseFindHeroNear(s32 x, s32 z, s32 range, s32 skip) {
     s32 i;
     s32 neg;
     s32 dx;
@@ -3414,7 +3414,7 @@ s32 func_800BB4F8(s32 x, s32 z, s32 range, s32 skip) {
     return -1;
 }
 
-s32 func_800BB5A0(s32 x, s32 z, s32 range) {
+s32 ChaseFindHeroAt(s32 x, s32 z, s32 range) {
     s32 i;
     s32 d;
     HeroInfo *h;
@@ -3431,7 +3431,7 @@ s32 func_800BB5A0(s32 x, s32 z, s32 range) {
     return -1;
 }
 
-void func_800BB640(s32 arg0) {
+void ChaseResetSlot(s32 arg0) {
     u8 *temp_v0;
 
     temp_v0 = (arg0 * 0x30) + D_800BC210;
@@ -3446,7 +3446,7 @@ void func_800BB640(s32 arg0) {
     (*(s32*)((u8*)(temp_v0) + 44)) = 0x8000;
 }
 
-NAS *func_800BB688(s32 x, s32 z, s32 range) {
+NAS *ChaseFindPickupNear(s32 x, s32 z, s32 range) {
     s32 i;
     s32 d;
     NAS *nas;
@@ -3468,7 +3468,7 @@ NAS *func_800BB688(s32 x, s32 z, s32 range) {
     return NULL;
 }
 
-void func_800BB6FC(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4) {
+void ChaseAimAt(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4) {
     s32 ang;
     s32 n;
 
@@ -3482,7 +3482,7 @@ void func_800BB6FC(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4
     }
 }
 
-s32 func_800BB7E0(ChaseObj *a, ChasePos *b) {
+s32 ChaseDist(ChaseObj *a, ChasePos *b) {
     ChasePos *p = a->pos;
     s32 dx = b->x - p->x;
     s32 dz;

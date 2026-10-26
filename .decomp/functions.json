@@ -22570,13 +22570,13 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "chase:800B3330": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B3330.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseUpdateStub.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B3330",
+  "name": "ChaseUpdateStub",
   "orig": "func_800B3330",
   "rom": 124,
   "seg": "overlays/chase/chase",
@@ -22584,7 +22584,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B3338": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B3338.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseAI_AngleTo.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8001463C"
@@ -22592,7 +22592,7 @@
   "fp": "93c36ec4b12b23b5",
   "fpn": "8c587ceb5c8d86e3",
   "leaf": false,
-  "name": "func_800B3338",
+  "name": "ChaseAI_AngleTo",
   "orig": "func_800B3338",
   "rom": 132,
   "seg": "overlays/chase/chase",
@@ -22600,7 +22600,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B3488": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B3488.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseAI_ChooseTarget.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8001463C",
@@ -22611,7 +22611,7 @@
   "fp": "8dda69d7a4765880",
   "fpn": "1c82425bfac45c09",
   "leaf": false,
-  "name": "func_800B3488",
+  "name": "ChaseAI_ChooseTarget",
   "orig": "func_800B3488",
   "rom": 468,
   "seg": "overlays/chase/chase",
@@ -22619,7 +22619,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B37C8": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B37C8.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/Chase_HeroBot.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80013C94",
@@ -22631,7 +22631,7 @@
   "fp": "e26caf395b8dcde2",
   "fpn": "747632cad072f879",
   "leaf": false,
-  "name": "func_800B37C8",
+  "name": "Chase_HeroBot",
   "orig": "func_800B37C8",
   "rom": 1300,
   "seg": "overlays/chase/chase",
@@ -22639,13 +22639,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B3EFC": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B3EFC.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/InitialiseCHASEFirst.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "a1a94ea45bde2982",
   "fpn": "8380bf7767316ced",
   "leaf": true,
-  "name": "func_800B3EFC",
+  "name": "InitialiseCHASEFirst",
   "orig": "func_800B3EFC",
   "rom": 3144,
   "seg": "overlays/chase/chase",
@@ -22653,7 +22653,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B4048": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B4048.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/InitialiseCHASE.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80015590",
@@ -22666,7 +22666,7 @@
   "fp": "e823eb3434df6862",
   "fpn": "d993d86e98e53ccb",
   "leaf": false,
-  "name": "func_800B4048",
+  "name": "InitialiseCHASE",
   "orig": "func_800B4048",
   "rom": 3476,
   "seg": "overlays/chase/chase",
@@ -22674,7 +22674,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B4444": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B4444.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/UpdateCHASE.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80029100",
@@ -22683,7 +22683,7 @@
   "fp": "b01e6ec6cc57189a",
   "fpn": "117797e02e843e5f",
   "leaf": false,
-  "name": "func_800B4444",
+  "name": "UpdateCHASE",
   "orig": "func_800B4444",
   "rom": 4496,
   "seg": "overlays/chase/chase",
@@ -22691,7 +22691,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B44C8": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B44C8.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/FinishChaseLevel.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80084E04"
@@ -22699,7 +22699,7 @@
   "fp": "a4644cb6973eef03",
   "fpn": "81e9c1773d18377b",
   "leaf": false,
-  "name": "func_800B44C8",
+  "name": "FinishChaseLevel",
   "orig": "func_800B44C8",
   "rom": 4628,
   "seg": "overlays/chase/chase",
@@ -22707,7 +22707,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B459C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B459C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/CHASE_KeepInBounds.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8001463C",
@@ -22716,7 +22716,7 @@
   "fp": "c58cd08af59bef07",
   "fpn": "763bd76bea333933",
   "leaf": false,
-  "name": "func_800B459C",
+  "name": "CHASE_KeepInBounds",
   "orig": "func_800B459C",
   "rom": 4840,
   "seg": "overlays/chase/chase",
@@ -22724,7 +22724,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B46BC": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B46BC.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseInitHero.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80018F3C",
@@ -22735,7 +22735,7 @@
   "fp": "f4eb140d30dc52e9",
   "fpn": "3aef1e281cbdd657",
   "leaf": false,
-  "name": "func_800B46BC",
+  "name": "ChaseInitHero",
   "orig": "func_800B46BC",
   "rom": 5128,
   "seg": "overlays/chase/chase",
@@ -22743,7 +22743,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B48E4": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B48E4.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChasePreMoveHero.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800154A0",
@@ -22752,7 +22752,7 @@
   "fp": "9dc9a121afde011f",
   "fpn": "30bad4f0e26ebfe2",
   "leaf": false,
-  "name": "func_800B48E4",
+  "name": "ChasePreMoveHero",
   "orig": "func_800B48E4",
   "rom": 5680,
   "seg": "overlays/chase/chase",
@@ -22760,7 +22760,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B4B34": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B4B34.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseMoveHero.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80022660",
@@ -22775,7 +22775,7 @@
   "fp": "f7e6c7ee78d1c81d",
   "fpn": "340b6fbbb9609aab",
   "leaf": false,
-  "name": "func_800B4B34",
+  "name": "ChaseMoveHero",
   "orig": "func_800B4B34",
   "rom": 6272,
   "seg": "overlays/chase/chase",
@@ -22783,7 +22783,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B51C8": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B51C8.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroTestDrop.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80025BBC",
@@ -22793,7 +22793,7 @@
   "fp": "752cc16b842e9685",
   "fpn": "a5654687679a6188",
   "leaf": false,
-  "name": "func_800B51C8",
+  "name": "ChaseHeroTestDrop",
   "orig": "func_800B51C8",
   "rom": 7956,
   "seg": "overlays/chase/chase",
@@ -22801,7 +22801,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B52C8": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B52C8.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroKickCollision.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800142D4",
@@ -22816,7 +22816,7 @@
   "fp": "0e25b23960117ee7",
   "fpn": "de2ff0e0df6dbf94",
   "leaf": false,
-  "name": "func_800B52C8",
+  "name": "ChaseHeroKickCollision",
   "orig": "func_800B52C8",
   "rom": 8212,
   "seg": "overlays/chase/chase",
@@ -22824,7 +22824,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B5CD0": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B5CD0.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroIdle.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8008502C",
@@ -22836,7 +22836,7 @@
   "fp": "90f68270b29d6ec2",
   "fpn": "cc6b7581a26fe071",
   "leaf": false,
-  "name": "func_800B5CD0",
+  "name": "ChaseHeroIdle",
   "orig": "func_800B5CD0",
   "rom": 10780,
   "seg": "overlays/chase/chase",
@@ -22844,7 +22844,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B5E84": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B5E84.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroRun.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80022660",
@@ -22856,7 +22856,7 @@
   "fp": "98152d79d28863ca",
   "fpn": "0eb21ecf0ef196bc",
   "leaf": false,
-  "name": "func_800B5E84",
+  "name": "ChaseHeroRun",
   "orig": "func_800B5E84",
   "rom": 11216,
   "seg": "overlays/chase/chase",
@@ -22864,7 +22864,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B6168": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B6168.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroJump.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800854C0"
@@ -22872,7 +22872,7 @@
   "fp": "7ad8ec1b8f87d732",
   "fpn": "e21a4515502bd9e6",
   "leaf": false,
-  "name": "func_800B6168",
+  "name": "SetChaseHeroJump",
   "orig": "func_800B6168",
   "rom": 11956,
   "seg": "overlays/chase/chase",
@@ -22880,7 +22880,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B627C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B627C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroFall.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800225C4",
@@ -22889,7 +22889,7 @@
   "fp": "010980b9076b09ab",
   "fpn": "abbb3c578922233b",
   "leaf": false,
-  "name": "func_800B627C",
+  "name": "SetChaseHeroFall",
   "orig": "func_800B627C",
   "rom": 12232,
   "seg": "overlays/chase/chase",
@@ -22897,7 +22897,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B6350": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B6350.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroFall.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80025BBC",
@@ -22908,7 +22908,7 @@
   "fp": "456641ed04ba1cef",
   "fpn": "0a23b707a8ead066",
   "leaf": false,
-  "name": "func_800B6350",
+  "name": "ChaseHeroFall",
   "orig": "func_800B6350",
   "rom": 12444,
   "seg": "overlays/chase/chase",
@@ -22916,7 +22916,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B643C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B643C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroDrop.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80022660",
@@ -22925,7 +22925,7 @@
   "fp": "d6d35673ede4cf2c",
   "fpn": "1559155774a5019b",
   "leaf": false,
-  "name": "func_800B643C",
+  "name": "SetChaseHeroDrop",
   "orig": "func_800B643C",
   "rom": 12680,
   "seg": "overlays/chase/chase",
@@ -22933,7 +22933,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B65B0": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B65B0.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroLand.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800264E8",
@@ -22942,7 +22942,7 @@
   "fp": "6d1456e3c6976d39",
   "fpn": "dd72cea2aa504457",
   "leaf": false,
-  "name": "func_800B65B0",
+  "name": "SetChaseHeroLand",
   "orig": "func_800B65B0",
   "rom": 13052,
   "seg": "overlays/chase/chase",
@@ -22950,7 +22950,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B66A4": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B66A4.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroLand.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8008502C",
@@ -22961,7 +22961,7 @@
   "fp": "9c3da0ef58ec6428",
   "fpn": "1318199391f14978",
   "leaf": false,
-  "name": "func_800B66A4",
+  "name": "ChaseHeroLand",
   "orig": "func_800B66A4",
   "rom": 13296,
   "seg": "overlays/chase/chase",
@@ -22969,7 +22969,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B67D8": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B67D8.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroHit.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80015590",
@@ -22982,7 +22982,7 @@
   "fp": "32efc9a194625295",
   "fpn": "981b1d07ff2a384d",
   "leaf": false,
-  "name": "func_800B67D8",
+  "name": "SetChaseHeroHit",
   "orig": "func_800B67D8",
   "rom": 13604,
   "seg": "overlays/chase/chase",
@@ -22990,7 +22990,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B68B8": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B68B8.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroHit.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8008502C",
@@ -23001,7 +23001,7 @@
   "fp": "d2a6eac88103ff09",
   "fpn": "0fdf9ee1b526f7fc",
   "leaf": false,
-  "name": "func_800B68B8",
+  "name": "ChaseHeroHit",
   "orig": "func_800B68B8",
   "rom": 13828,
   "seg": "overlays/chase/chase",
@@ -23009,7 +23009,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B69AC": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B69AC.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroDie.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800225C4",
@@ -23018,7 +23018,7 @@
   "fp": "edc675aefe60fb60",
   "fpn": "d00d3aa3862a267e",
   "leaf": false,
-  "name": "func_800B69AC",
+  "name": "SetChaseHeroDie",
   "orig": "func_800B69AC",
   "rom": 14072,
   "seg": "overlays/chase/chase",
@@ -23026,7 +23026,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B6AAC": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B6AAC.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroDead.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800225C4",
@@ -23035,7 +23035,7 @@
   "fp": "12312103bc683d4d",
   "fpn": "1e0f0a049b753211",
   "leaf": false,
-  "name": "func_800B6AAC",
+  "name": "SetChaseHeroDead",
   "orig": "func_800B6AAC",
   "rom": 14328,
   "seg": "overlays/chase/chase",
@@ -23043,7 +23043,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B6B84": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B6B84.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroDead.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800868B4",
@@ -23052,7 +23052,7 @@
   "fp": "f9cca4d91ab09a65",
   "fpn": "e5b3d5dcdb98e1b7",
   "leaf": false,
-  "name": "func_800B6B84",
+  "name": "ChaseHeroDead",
   "orig": "func_800B6B84",
   "rom": 14544,
   "seg": "overlays/chase/chase",
@@ -23060,7 +23060,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B6C84": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B6C84.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroWinner.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800225C4",
@@ -23072,7 +23072,7 @@
   "fp": "120e6afedff1aab6",
   "fpn": "926b4386f4ea5186",
   "leaf": false,
-  "name": "func_800B6C84",
+  "name": "SetChaseHeroWinner",
   "orig": "func_800B6C84",
   "rom": 14800,
   "seg": "overlays/chase/chase",
@@ -23080,7 +23080,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B6E84": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B6E84.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroWinner.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80025F44",
@@ -23092,7 +23092,7 @@
   "fp": "543fef0f1acb3cc0",
   "fpn": "f3974f4eacd9eaa9",
   "leaf": false,
-  "name": "func_800B6E84",
+  "name": "ChaseHeroWinner",
   "orig": "func_800B6E84",
   "rom": 15312,
   "seg": "overlays/chase/chase",
@@ -23100,7 +23100,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B6F6C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B6F6C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroLose.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800225C4",
@@ -23113,7 +23113,7 @@
   "fp": "4e6465e5a572fb53",
   "fpn": "2b41576c90c93674",
   "leaf": false,
-  "name": "func_800B6F6C",
+  "name": "SetChaseHeroLose",
   "orig": "func_800B6F6C",
   "rom": 15544,
   "seg": "overlays/chase/chase",
@@ -23121,7 +23121,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B722C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B722C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroLose.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80025F44",
@@ -23130,7 +23130,7 @@
   "fp": "8ef19ec5acc7d3c2",
   "fpn": "233a9300e1ff721b",
   "leaf": false,
-  "name": "func_800B722C",
+  "name": "ChaseHeroLose",
   "orig": "func_800B722C",
   "rom": 16248,
   "seg": "overlays/chase/chase",
@@ -23196,7 +23196,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B7948": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B7948.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseSpawnCoal.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80022A3C",
@@ -23205,7 +23205,7 @@
   "fp": "f4ab07f4186ec04c",
   "fpn": "a7de8fcb85deb58e",
   "leaf": false,
-  "name": "func_800B7948",
+  "name": "ChaseSpawnCoal",
   "orig": "func_800B7948",
   "rom": 18068,
   "seg": "overlays/chase/chase",
@@ -23213,7 +23213,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B7B80": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B7B80.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/CoalFlameSpread.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80022A3C",
@@ -23222,7 +23222,7 @@
   "fp": "0c1bd99455775e40",
   "fpn": "a0a3c56d78a9bc43",
   "leaf": false,
-  "name": "func_800B7B80",
+  "name": "CoalFlameSpread",
   "orig": "func_800B7B80",
   "rom": 18636,
   "seg": "overlays/chase/chase",
@@ -23230,7 +23230,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B7DF0": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B7DF0.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/CoalChainHit.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80022660",
@@ -23240,7 +23240,7 @@
   "fp": "115b44d08c298746",
   "fpn": "3ea9b01a06982fe2",
   "leaf": false,
-  "name": "func_800B7DF0",
+  "name": "CoalChainHit",
   "orig": "func_800B7DF0",
   "rom": 19260,
   "seg": "overlays/chase/chase",
@@ -23379,7 +23379,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B94FC": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B94FC.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseChooseWinnerScore.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80026980",
@@ -23388,7 +23388,7 @@
   "fp": "d72515a672c367b7",
   "fpn": "ead935a009c19def",
   "leaf": false,
-  "name": "func_800B94FC",
+  "name": "ChaseChooseWinnerScore",
   "orig": "func_800B94FC",
   "rom": 25160,
   "seg": "overlays/chase/chase",
@@ -23396,7 +23396,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B9A50": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B9A50.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseChooseWinnerScoreB.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80026980",
@@ -23405,7 +23405,7 @@
   "fp": "7c4ed11ff353bfd0",
   "fpn": "0f09935cf22115ad",
   "leaf": false,
-  "name": "func_800B9A50",
+  "name": "ChaseChooseWinnerScoreB",
   "orig": "func_800B9A50",
   "rom": 26524,
   "seg": "overlays/chase/chase",
@@ -23413,13 +23413,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800B9ED8": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800B9ED8.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseChooseWinnerTimed.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "1a5d9ac2cb442db8",
   "fpn": "102745ff8af44a1b",
   "leaf": true,
-  "name": "func_800B9ED8",
+  "name": "ChaseChooseWinnerTimed",
   "orig": "func_800B9ED8",
   "rom": 27684,
   "seg": "overlays/chase/chase",
@@ -23427,7 +23427,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BA220": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BA220.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseChooseWinnerRank.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8007B120"
@@ -23435,7 +23435,7 @@
   "fp": "f32db13da16075fb",
   "fpn": "dc0ce13ad9363ade",
   "leaf": false,
-  "name": "func_800BA220",
+  "name": "ChaseChooseWinnerRank",
   "orig": "func_800BA220",
   "rom": 28524,
   "seg": "overlays/chase/chase",
@@ -23443,7 +23443,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BA5A0": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BA5A0.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseChooseWinner.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800B94FC",
@@ -23454,7 +23454,7 @@
   "fp": "62572b581824bac6",
   "fpn": "9b85b1e3843993b6",
   "leaf": false,
-  "name": "func_800BA5A0",
+  "name": "ChaseChooseWinner",
   "orig": "func_800BA5A0",
   "rom": 29420,
   "seg": "overlays/chase/chase",
@@ -23462,7 +23462,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BA630": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BA630.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/KillPickupCH.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80022FD4"
@@ -23470,7 +23470,7 @@
   "fp": "32c525eddd9992cb",
   "fpn": "1682ddd6f3e39135",
   "leaf": false,
-  "name": "func_800BA630",
+  "name": "KillPickupCH",
   "orig": "func_800BA630",
   "rom": 29564,
   "seg": "overlays/chase/chase",
@@ -23492,13 +23492,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BA694": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BA694.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHidePowerup.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "0ac632c3ef34632e",
   "fpn": "62709fd1c86f64f2",
   "leaf": true,
-  "name": "func_800BA694",
+  "name": "ChaseHidePowerup",
   "orig": "func_800BA694",
   "rom": 29664,
   "seg": "overlays/chase/chase",
@@ -23506,13 +23506,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BA70C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BA70C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHero_ExtraEffects.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "0fba18f412294e6e",
   "fpn": "c555b6c3b33ef389",
   "leaf": true,
-  "name": "func_800BA70C",
+  "name": "ChaseHero_ExtraEffects",
   "orig": "func_800BA70C",
   "rom": 29784,
   "seg": "overlays/chase/chase",
@@ -23520,7 +23520,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BA784": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BA784.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroHitFlash.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800BA694"
@@ -23528,7 +23528,7 @@
   "fp": "6984136e0956119e",
   "fpn": "4c0a28404c44f043",
   "leaf": false,
-  "name": "func_800BA784",
+  "name": "ChaseHeroHitFlash",
   "orig": "func_800BA784",
   "rom": 29904,
   "seg": "overlays/chase/chase",
@@ -23634,7 +23634,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAC30": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAC30.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/KillPickupCHB.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80022FD4"
@@ -23642,7 +23642,7 @@
   "fp": "8870e4f4c7ed7583",
   "fpn": "c9e51a083c68b229",
   "leaf": false,
-  "name": "func_800BAC30",
+  "name": "KillPickupCHB",
   "orig": "func_800BAC30",
   "rom": 31100,
   "seg": "overlays/chase/chase",
@@ -23664,7 +23664,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAC98": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAC98.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroDie.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8008502C",
@@ -23673,7 +23673,7 @@
   "fp": "61624c309664e8b6",
   "fpn": "7b01767e5cf51bbb",
   "leaf": false,
-  "name": "func_800BAC98",
+  "name": "ChaseHeroDie",
   "orig": "func_800BAC98",
   "rom": 31204,
   "seg": "overlays/chase/chase",
@@ -23681,7 +23681,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAD1C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAD1C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroDrop.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8008502C",
@@ -23691,7 +23691,7 @@
   "fp": "3ed07ecbaf8b6477",
   "fpn": "161fb3dc69c929a2",
   "leaf": false,
-  "name": "func_800BAD1C",
+  "name": "ChaseHeroDrop",
   "orig": "func_800BAD1C",
   "rom": 31336,
   "seg": "overlays/chase/chase",
@@ -23699,7 +23699,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BADA8": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BADA8.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroJump.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8008502C",
@@ -23708,7 +23708,7 @@
   "fp": "ee72e949e43887a0",
   "fpn": "14eee01727c59519",
   "leaf": false,
-  "name": "func_800BADA8",
+  "name": "ChaseHeroJump",
   "orig": "func_800BADA8",
   "rom": 31476,
   "seg": "overlays/chase/chase",
@@ -23716,7 +23716,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BADD4": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BADD4.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroRun.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800854C0"
@@ -23724,7 +23724,7 @@
   "fp": "88aa2cad082f79e2",
   "fpn": "efcc9da72fd17a0f",
   "leaf": false,
-  "name": "func_800BADD4",
+  "name": "SetChaseHeroRun",
   "orig": "func_800BADD4",
   "rom": 31520,
   "seg": "overlays/chase/chase",
@@ -23732,13 +23732,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAE20": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAE20.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseUnusedStub0.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800BAE20",
+  "name": "ChaseUnusedStub0",
   "orig": "func_800BAE20",
   "rom": 31596,
   "seg": "overlays/chase/chase",
@@ -23746,13 +23746,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAE28": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAE28.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseUnusedStub1.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800BAE28",
+  "name": "ChaseUnusedStub1",
   "orig": "func_800BAE28",
   "rom": 31604,
   "seg": "overlays/chase/chase",
@@ -23760,7 +23760,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAE30": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAE30.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/SetChaseHeroIdle.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800854C0"
@@ -23768,7 +23768,7 @@
   "fp": "212bbd49cdea68b2",
   "fpn": "cd376f7ccd57c6d3",
   "leaf": false,
-  "name": "func_800BAE30",
+  "name": "SetChaseHeroIdle",
   "orig": "func_800BAE30",
   "rom": 31612,
   "seg": "overlays/chase/chase",
@@ -23776,13 +23776,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAE84": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAE84.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseNoKick.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_800BAE84",
+  "name": "ChaseNoKick",
   "orig": "func_800BAE84",
   "rom": 31696,
   "seg": "overlays/chase/chase",
@@ -23790,13 +23790,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAE8C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAE8C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseAlwaysOne.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "98ab17e54d84a098",
   "fpn": "a4a8cdc2599d57d4",
   "leaf": true,
-  "name": "func_800BAE8C",
+  "name": "ChaseAlwaysOne",
   "orig": "func_800BAE8C",
   "rom": 31704,
   "seg": "overlays/chase/chase",
@@ -23804,7 +23804,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAE94": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAE94.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseTestEnd.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800868B4"
@@ -23812,7 +23812,7 @@
   "fp": "80ecc8eca759b780",
   "fpn": "42afe1b1ac400ab7",
   "leaf": false,
-  "name": "func_800BAE94",
+  "name": "ChaseTestEnd",
   "orig": "func_800BAE94",
   "rom": 31712,
   "seg": "overlays/chase/chase",
@@ -23820,7 +23820,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAF00": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAF00.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroTestJump.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800868B4"
@@ -23828,7 +23828,7 @@
   "fp": "aa27ec33fcc6a1aa",
   "fpn": "8c80524866bb558c",
   "leaf": false,
-  "name": "func_800BAF00",
+  "name": "ChaseHeroTestJump",
   "orig": "func_800BAF00",
   "rom": 31820,
   "seg": "overlays/chase/chase",
@@ -23836,7 +23836,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAF58": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAF58.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroToIdle.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800868B4"
@@ -23844,7 +23844,7 @@
   "fp": "303808eebe14fe5a",
   "fpn": "58593734ea716c81",
   "leaf": false,
-  "name": "func_800BAF58",
+  "name": "ChaseHeroToIdle",
   "orig": "func_800BAF58",
   "rom": 31908,
   "seg": "overlays/chase/chase",
@@ -23852,7 +23852,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BAFB4": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BAFB4.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHeroTestRun.s",
   "bin": "disc/chase.bin",
   "calls": [
    "800868B4"
@@ -23860,7 +23860,7 @@
   "fp": "3ebad8deb05c0553",
   "fpn": "7742877579f6c90e",
   "leaf": false,
-  "name": "func_800BAFB4",
+  "name": "ChaseHeroTestRun",
   "orig": "func_800BAFB4",
   "rom": 32000,
   "seg": "overlays/chase/chase",
@@ -23868,7 +23868,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB010": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB010.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHitHeroesNear.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80027F7C",
@@ -23877,7 +23877,7 @@
   "fp": "9ad7c2dbfc46a2fe",
   "fpn": "8187e079f3138fbf",
   "leaf": false,
-  "name": "func_800BB010",
+  "name": "ChaseHitHeroesNear",
   "orig": "func_800BB010",
   "rom": 32092,
   "seg": "overlays/chase/chase",
@@ -23885,7 +23885,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB134": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB134.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseHitHero.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80027F7C",
@@ -23894,7 +23894,7 @@
   "fp": "51fa903806c91970",
   "fpn": "783d6e507e5cc91e",
   "leaf": false,
-  "name": "func_800BB134",
+  "name": "ChaseHitHero",
   "orig": "func_800BB134",
   "rom": 32384,
   "seg": "overlays/chase/chase",
@@ -23902,13 +23902,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB1C0": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB1C0.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseFindHero.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "4d2ad83d00623ff5",
   "fpn": "8cc2972ad95553ad",
   "leaf": true,
-  "name": "func_800BB1C0",
+  "name": "ChaseFindHero",
   "orig": "func_800BB1C0",
   "rom": 32524,
   "seg": "overlays/chase/chase",
@@ -23916,13 +23916,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB260": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB260.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChasePadHook.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "8da2ca6044051078",
   "fpn": "345b0b81e49986a5",
   "leaf": true,
-  "name": "func_800BB260",
+  "name": "ChasePadHook",
   "orig": "func_800BB260",
   "rom": 32684,
   "seg": "overlays/chase/chase",
@@ -23930,7 +23930,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB294": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB294.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseClampToArena.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8001463C",
@@ -23939,7 +23939,7 @@
   "fp": "4d783b2a825d67e6",
   "fpn": "6064e01765396368",
   "leaf": false,
-  "name": "func_800BB294",
+  "name": "ChaseClampToArena",
   "orig": "func_800BB294",
   "rom": 32736,
   "seg": "overlays/chase/chase",
@@ -23947,13 +23947,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB36C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB36C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/FirstTriggersCHASE.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800BB36C",
+  "name": "FirstTriggersCHASE",
   "orig": "func_800BB36C",
   "rom": 32952,
   "seg": "overlays/chase/chase",
@@ -23961,13 +23961,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB374": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB374.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseTriggers.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800BB374",
+  "name": "ChaseTriggers",
   "orig": "func_800BB374",
   "rom": 32960,
   "seg": "overlays/chase/chase",
@@ -23975,13 +23975,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB37C": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB37C.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseStopHeroSfx.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800BB37C",
+  "name": "ChaseStopHeroSfx",
   "orig": "func_800BB37C",
   "rom": 32968,
   "seg": "overlays/chase/chase",
@@ -23989,13 +23989,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB384": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB384.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/CHASESetUp.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "a268bf864f8c0278",
   "fpn": "dfc3b69165bd2ae7",
   "leaf": true,
-  "name": "func_800BB384",
+  "name": "CHASESetUp",
   "orig": "func_800BB384",
   "rom": 32976,
   "seg": "overlays/chase/chase",
@@ -24003,13 +24003,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB3F0": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB3F0.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseGridClear.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "8a7e83674ebe6d90",
   "fpn": "e3ba0d92f75bab76",
   "leaf": true,
-  "name": "func_800BB3F0",
+  "name": "ChaseGridClear",
   "orig": "func_800BB3F0",
   "rom": 33084,
   "seg": "overlays/chase/chase",
@@ -24017,13 +24017,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB428": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB428.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseGridAt.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "be8b032f6efecf1c",
   "fpn": "5cbd592cd288c54c",
   "leaf": true,
-  "name": "func_800BB428",
+  "name": "ChaseGridAt",
   "orig": "func_800BB428",
   "rom": 33140,
   "seg": "overlays/chase/chase",
@@ -24031,7 +24031,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB488": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB488.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseKillGridObj.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80022FD4"
@@ -24039,7 +24039,7 @@
   "fp": "cee97f25304ea59b",
   "fpn": "defb90d5dc4fa47d",
   "leaf": false,
-  "name": "func_800BB488",
+  "name": "ChaseKillGridObj",
   "orig": "func_800BB488",
   "rom": 33236,
   "seg": "overlays/chase/chase",
@@ -24047,13 +24047,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB4F8": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB4F8.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseFindHeroNear.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "60fae400f021733a",
   "fpn": "4542cef5ed6cf38c",
   "leaf": true,
-  "name": "func_800BB4F8",
+  "name": "ChaseFindHeroNear",
   "orig": "func_800BB4F8",
   "rom": 33348,
   "seg": "overlays/chase/chase",
@@ -24061,13 +24061,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB5A0": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB5A0.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseFindHeroAt.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "4d2ad83d00623ff5",
   "fpn": "8cc2972ad95553ad",
   "leaf": true,
-  "name": "func_800BB5A0",
+  "name": "ChaseFindHeroAt",
   "orig": "func_800BB5A0",
   "rom": 33516,
   "seg": "overlays/chase/chase",
@@ -24075,13 +24075,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB640": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB640.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseResetSlot.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "708c820537251934",
   "fpn": "12ee0fac106e7d38",
   "leaf": true,
-  "name": "func_800BB640",
+  "name": "ChaseResetSlot",
   "orig": "func_800BB640",
   "rom": 33676,
   "seg": "overlays/chase/chase",
@@ -24089,13 +24089,13 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB688": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB688.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseFindPickupNear.s",
   "bin": "disc/chase.bin",
   "calls": [],
   "fp": "b45d09dcabf45fbb",
   "fpn": "e206d4a020920d9a",
   "leaf": true,
-  "name": "func_800BB688",
+  "name": "ChaseFindPickupNear",
   "orig": "func_800BB688",
   "rom": 33748,
   "seg": "overlays/chase/chase",
@@ -24103,7 +24103,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB6FC": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB6FC.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseAimAt.s",
   "bin": "disc/chase.bin",
   "calls": [
    "8001463C",
@@ -24112,7 +24112,7 @@
   "fp": "9f605d0cd5120fad",
   "fpn": "af0aa03e9848c5db",
   "leaf": false,
-  "name": "func_800BB6FC",
+  "name": "ChaseAimAt",
   "orig": "func_800BB6FC",
   "rom": 33864,
   "seg": "overlays/chase/chase",
@@ -24120,7 +24120,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "chase:800BB7E0": {
-  "asm": "asm/nonmatchings/overlays/chase/chase/func_800BB7E0.s",
+  "asm": "asm/nonmatchings/overlays/chase/chase/ChaseDist.s",
   "bin": "disc/chase.bin",
   "calls": [
    "80032490"
@@ -24128,7 +24128,7 @@
   "fp": "3540c23c4266feec",
   "fpn": "74d1871ce843c6ce",
   "leaf": false,
-  "name": "func_800BB7E0",
+  "name": "ChaseDist",
   "orig": "func_800BB7E0",
   "rom": 34092,
   "seg": "overlays/chase/chase",
