@@ -452,6 +452,21 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Bash, with the recipe):** all 83 unnamed functions named
+  from their code (no leak header; the `LevSpec` slots, the engine hooks,
+  `HEROFunc` pairs 12..20, the AI, the crate master, Space's tiles, Snow's
+  penguin), its data, rodata, id word and last byte as C, each later
+  file's `.data` in its own file (cut where its users change), 172 of 172
+  data objects named (48 `*_BA_seq_*` sequences split out of one table).
+  data2c: a gap the next object's alignment doesn't explain is a rest, and
+  arrays/structs are word-aligned (mips.h `DATA_ALIGNMENT`); shift.py's
+  neighbour rule chains (Drains' file group). Shift test waiting on the
+  playtest. Gotcha: 384 matched functions' `asm/nonmatchings` files were
+  missing across the overlays (renames and splits over time): restored
+  from a throwaway split per overlay with its own `asm_path`/`src_path`
+  (scratch/restore_asm.sh), copying only missing function files; never a
+  named rodata `.s` (the data map then counts that piece as asm).
+
 - **2026-10-26 (unit renames):** the 14 slot overlays are named after the
   games' own overlay names (`ovl62` -> `polar`, ... `ovl6a` -> `hub`; table
   in ARCHITECTURE.md) by `tools/scripts/rename_unit.py`: paths, yaml, sym
