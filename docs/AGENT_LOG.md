@@ -456,6 +456,18 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Phase 5 start: the most-used globals):** the overlays' last
+  own `D_` names (debug strings, `PapuStraySfx` past every overlay's end),
+  then 42 engine and exe globals named from their uses: `GameInfo` (the game
+  state; its fields the code reaches by label: `GameMode`, `GameTeams`,
+  `GameExitFlags` ..), `TrigTable`, `Pads`, `MainCamera`, `HeroHooks`,
+  `LevelSpecs`, the AI tweak table pointers, `ProcessControl`, ... (5384 `D_`
+  uses of 1024 names left). Gotchas: `decomp.py rename` writes every exe or
+  engine data name to `sym.main.txt`; move the engine's (from `0x80078C90`)
+  to `sym.engine.txt`. A renamed global's PROVIDE in
+  `undefined_syms_manual.txt` needs the new name too. `GameState` is already
+  a type (gameflow's view), hence `GameInfo`.
+
 - **2026-10-26 (Hub, with the recipe; Phase 4 done):** all 82 unnamed
   functions named (the warp rooms, the credits in hub.c, the tournament
   podium in mode 0x2B), the six string blocks, data and id word as C
