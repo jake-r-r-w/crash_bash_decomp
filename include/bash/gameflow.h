@@ -587,7 +587,7 @@ extern s32 D_8009E4E4;
 extern Blk32 D_8009E560;
 extern CamVec3 D_8009E580;
 extern u8 *D_8009E5AC;
-extern _sfx_handler *D_8009E5B8[3];
+extern _sfx_handler *IntroSfx[3];
 extern _sfx_handler *D_8009E5C4;
 void func_8008E5BC(void);
 void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);

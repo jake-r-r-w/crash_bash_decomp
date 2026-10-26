@@ -112,9 +112,9 @@ void func_8008E5BC(void) {
         DrawSync(0);
         mal_free(b, &MainHeap);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
-            PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
-            PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
-            PlaySfx(IntroSteps[IntroStepIndex].sfx[2], &D_8009E5B8[2], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &IntroSfx[1], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[2], &IntroSfx[2], NULL, 0x1000, 0x1E00, 0);
             D_8009E5B4 = 6;
             D_8009E5B0 = IntroSteps[IntroStepIndex].sfxNext;
         }
@@ -127,9 +127,9 @@ void func_8008E5BC(void) {
         D_8009E5AC = func_8001FE80(IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
                                    &D_8009E560, &D_8009E580, 4, (u8 **)&D_800AEC58);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
-            PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
-            PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
-            PlaySfx(IntroSteps[IntroStepIndex].sfx[2], &D_8009E5B8[2], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &IntroSfx[1], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroSteps[IntroStepIndex].sfx[2], &IntroSfx[2], NULL, 0x1000, 0x1E00, 0);
             D_8009E5B4 = 0x16;
             D_8009E5B0 = IntroSteps[IntroStepIndex].sfxNext;
         }

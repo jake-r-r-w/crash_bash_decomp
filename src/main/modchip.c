@@ -206,7 +206,7 @@ loop:
                 ret = -1;
                 break;
             case 1:
-                D_8006EA18 = VSync(-1);
+                ModchipVSync = VSync(-1);
                 ModchipState = 9;
             case 0:
             default:
@@ -215,7 +215,7 @@ loop:
             }
             break;
         case 9:
-            if (VSync(-1) > D_8006EA18 + 3) {
+            if (VSync(-1) > ModchipVSync + 3) {
                 func_8002E000(4);
                 ModchipState = 0xA;
             }
@@ -294,7 +294,7 @@ loop:
                 ret = -1;
                 break;
             case 1:
-                D_8006EA18 = VSync(-1);
+                ModchipVSync = VSync(-1);
                 ModchipState = 0xE;
             case 0:
             default:
@@ -303,7 +303,7 @@ loop:
             }
             break;
         case 14:
-            if (VSync(-1) > D_8006EA18 + 200) {
+            if (VSync(-1) > ModchipVSync + 200) {
                 CdParams[0] = 5;
                 func_8002E000(0xA);
                 ModchipState = 0xF;
@@ -326,7 +326,7 @@ loop:
                     func_8002E000(0);
                     ModchipState = 0x10;
                 } else {
-                    D_8006EA18 = VSync(-1);
+                    ModchipVSync = VSync(-1);
                     ModchipState = 0x13;
                 }
             case 0:
@@ -394,7 +394,7 @@ loop:
             }
             break;
         case 19:
-            if (VSync(-1) > D_8006EA18 + 10) {
+            if (VSync(-1) > ModchipVSync + 10) {
                 func_8002E000(0xB);
                 ModchipState = 0x12;
             }

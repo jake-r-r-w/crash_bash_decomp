@@ -26,7 +26,7 @@ s32 func_8002DE2C(s32 arg0);
 void func_8002E0F0(void);
 s32 func_8002D4F4(s32 arg0);
 
-extern s32 D_8006EA18; /* VSync count at the last step */
+extern s32 ModchipVSync; /* VSync count at the last step */
 extern s32 D_8006EA1C;
 typedef struct {
     u8 min;

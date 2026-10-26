@@ -377,9 +377,9 @@ typedef struct ScoreView {
 #define SCV ((ScoreView *)GameInfo)
 /* Two-digit text fields (tens, units) of the score panel. */
 extern char PauseDigits[2];
-extern char D_8009AF4C[2];
-extern char D_8009AF50[2];
-extern char D_8009AF54[2];
+extern char PauseDigits2[2];
+extern char PauseDigits3[2];
+extern char PauseDigits4[2];
 extern char D_8009AF58[2];
 extern s32 D_8009AF60[];
 extern s32 D_8009B0C8[];

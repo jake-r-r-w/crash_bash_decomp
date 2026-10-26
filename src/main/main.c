@@ -46,12 +46,12 @@ s32 func_80010000(u8 *arg0) {
 
 void func_80010158(void) {
     D_8004E0E0 = 2;
-    func_80011BF8(&MainHeap, D_80078C90, 0x801FF000 - (s32)D_80078C90);
+    func_80011BF8(&MainHeap, HeapStart, 0x801FF000 - (s32)HeapStart);
     init_file();
     func_80013CA4();
     func_800138A4();
-    func_800134FC(D_80050008, D_80078C90);
-    D_8004E0DC = (VTable8 *)D_80078C90;
+    func_800134FC(D_80050008, HeapStart);
+    D_8004E0DC = (VTable8 *)HeapStart;
     func_800270F0(D_8004E0B8);
 }
 
@@ -89,7 +89,7 @@ void shell_render_dcache(void) {
 
 void func_800102F8(void) {
     D_8004E0E0 = 2;
-    func_80011BF8(&MainHeap, D_80078C90, 0x801FF000 - (s32)D_80078C90);
+    func_80011BF8(&MainHeap, HeapStart, 0x801FF000 - (s32)HeapStart);
     init_file();
     func_80013CA4();
     func_800138A4();

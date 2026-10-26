@@ -1124,11 +1124,11 @@ void func_80024AD8(void) {
     tbl = *(U16Table **)((u8 *)D_8005A5E0 + 8);
     types = tbl->data;
     ntypes = tbl->count;
-    if ((D_8005AA4C = (*(s32 *)MapScene != 0) ? **(s32 **)((u8 *)MapScene + 0x30) : 0) == 0) {
+    if ((TriggerCount = (*(s32 *)MapScene != 0) ? **(s32 **)((u8 *)MapScene + 0x30) : 0) == 0) {
         return;
     }
     if (HeadOfTriggers == NULL) {
-        HeadOfTriggers = (NASTrigger *)func_80011654(D_8005AA4C * sizeof(NASTrigger), &MainHeap);
+        HeadOfTriggers = (NASTrigger *)func_80011654(TriggerCount * sizeof(NASTrigger), &MainHeap);
     }
     t = HeadOfTriggers;
     if (t != NULL) {
@@ -1137,7 +1137,7 @@ void func_80024AD8(void) {
         MapPoints[i].rot.x = MapPoints[i].rot.y = MapPoints[i].rot.z = 0;
     }
     trig = HeadOfTriggers;
-    for (i = 0; i < D_8005AA4C; i++, trig++) {
+    for (i = 0; i < TriggerCount; i++, trig++) {
         src = (MapTrigRec *)(*(u8 **)((u8 *)MapScene + 0x30) + 4) + i;
         info = (MapTrigInfo *)((u8 *)src + ((src->info & ~3) + 0xC));
         trig->InfoStruct = (MapTriggerInfo *)info;
@@ -1166,10 +1166,10 @@ void func_80024AD8(void) {
         }
     }
     if (D_8005AA88 != NULL) {
-        D_8005AA88(HeadOfTriggers, D_8005AA4C);
+        D_8005AA88(HeadOfTriggers, TriggerCount);
     }
     } else {
-        D_8005AA4C = 0;
+        TriggerCount = 0;
     }
 }
 
@@ -1828,7 +1828,7 @@ void func_8002617C(void) {
     if (D_8005AA84 != NULL) {
         D_8005AA84();
     }
-    for (i = 0; i < D_8005AA4C; i++, trig++) {
+    for (i = 0; i < TriggerCount; i++, trig++) {
         if (!(trig->Status & 0x8001)) {
             TriggerNas(trig);
         }

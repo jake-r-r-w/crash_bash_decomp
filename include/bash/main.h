@@ -617,7 +617,7 @@ typedef struct {
     s32 o18;
 } SeqHdr;
 
-/* D_80058B88: what func_800229FC passes to func_8002C488 for an index. */
+/* MusicTable: what func_800229FC passes to func_8002C488 for an index. */
 typedef struct MusicEntry {
     /* 0x00 */ s32 file;
     /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
@@ -827,7 +827,7 @@ extern VTable8 *D_8005B648;
 extern s32 D_8004E0E0;
 extern s32 D_8004E0E4;
 void mal_update(_mal_area *heap);
-extern u8 D_80078C90[];
+extern u8 HeapStart[];
 mal *func_80011BF8(_mal_area *heap, u8 *start, s32 size);
 extern u8 D_80050008[];
 extern u8 D_8004E0B8[];
@@ -913,7 +913,7 @@ extern LoaderState Loader;
 extern char D_8004C83C[];
 extern void func_80012840(u8 *, u8 *);
 extern void func_80012678(u8 *, u8 *);
-extern MusicEntry D_80058B88[];
+extern MusicEntry MusicTable[];
 extern sfx_machine_bank_info SfxBanks[6];
 extern NodePool PrimPool;
 extern NAS *HeadOfSolids;
@@ -1061,7 +1061,7 @@ extern u8 D_8006EA08;
 extern CdlLOC D_8006EA10;
 void func_80034AEC(void);
 extern NASTrigger *HeadOfTriggers;
-extern s32 D_8005AA4C;
+extern s32 TriggerCount;
 extern void (*D_8005AA84)(void);
 extern void *D_80058B78;
 extern RECT D_8005B640;

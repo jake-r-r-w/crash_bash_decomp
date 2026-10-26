@@ -161,3 +161,7 @@ HeroTestJumpHook = 0x8009D72C;
 HeroTestKickHook = 0x8009D730;
 HeroCarryCollisionHook = 0x8009D740;
 RetryProcess = 0x8009F720;
+IntroSfx = 0x8009E5B8;
+PauseDigits2 = 0x8009AF4C;
+PauseDigits3 = 0x8009AF50;
+PauseDigits4 = 0x8009AF54;

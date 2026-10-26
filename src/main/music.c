@@ -102,7 +102,7 @@ void func_8002C18C(u8 *arg0) {
 
 void func_8002C1C0(s32 arg0, s32 arg1) {
     if (CurrentMusic.seq >= 0) {
-        SsSeqSetAccelerando((s16)CurrentMusic.seq, (D_80058B88[GameMode].tempo * arg0) / 100, arg1);
+        SsSeqSetAccelerando((s16)CurrentMusic.seq, (MusicTable[GameMode].tempo * arg0) / 100, arg1);
     }
 }
 

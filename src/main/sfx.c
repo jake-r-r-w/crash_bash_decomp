@@ -17,9 +17,9 @@ void func_80022140(s32 arg0, s32 arg1) {
     if (p->mode != 0x28) {
         func_8002BBB4();
         if (p->flags & 0x80) {
-            f = D_80058B88[arg0].unkC;
+            f = MusicTable[arg0].unkC;
         } else {
-            f = D_80058B88[arg0].unk8;
+            f = MusicTable[arg0].unk8;
         }
         func_8002BD0C(f);
     }
@@ -325,7 +325,7 @@ void func_800229D4(void) {
 }
 
 void func_800229FC(s32 i) {
-    func_8002C488(D_80058B88[i].file, D_80058B88[i].reverb);
+    func_8002C488(MusicTable[i].file, MusicTable[i].reverb);
 }
 
 static inline NAS *AllocNAS(void) {

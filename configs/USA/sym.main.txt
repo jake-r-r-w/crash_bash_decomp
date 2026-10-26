@@ -914,3 +914,7 @@ CdRegIndex = 0x80067874;
 CardFileName = 0x8004CDAC;
 ScriptCommands = 0x80058B00;
 FirstBootDone = 0x800590CC;
+HeapStart = 0x80078C90;
+ModchipVSync = 0x8006EA18;
+MusicTable = 0x80058B88;
+TriggerCount = 0x8005AA4C;
