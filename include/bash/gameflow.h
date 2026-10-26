@@ -438,8 +438,8 @@ typedef struct {
     /* 0x8 */ void (*unk8)(void);
     /* 0xC */ void (*unkC)(void);
 } SaveMenuHooks;
-extern SaveMenuHooks D_800BDB3C;
-extern s32 D_800BDB50;
+extern SaveMenuHooks HubSaveMenuHooks;
+extern s32 HubSaveChoice;
 /* func_80090E20: show slot 1's menu frames from tbl for the current mode. */
 #define SAVEMENU_SET_ANIM(tbl)                                                 \
     {                                                                          \

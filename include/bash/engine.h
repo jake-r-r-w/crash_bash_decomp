@@ -253,7 +253,7 @@ extern u16 D_800986BC[];
 typedef struct { u16 unk0; u16 unk2; u16 unk4; u16 unk6; } EngSub90248;
 typedef struct { s32 *unk0; s32 *unk4; s32 unk8; s32 unkC; s32 unk10; EngSub90248 *unk14; u8 *unk18; s32 unk1C; s32 unk20; s32 unk24; } EngRec90248;
 extern s8 D_8005A677;
-extern EngRec90248 D_800BCCF4[];
+extern EngRec90248 HubGateways[];
 
 void func_8007A650(s32 arg0);
 

@@ -692,6 +692,21 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Hub** (hub, the warp rooms, the credits and the tournament podium:
+  hub.c and hubcore.c; named 2026-10-26). One engine world record (0x0102)
+  points at `HUB_PREMAP`, `hub_shell_info` and `HUBSetUp`; the per-mode
+  table's modes 0x21..0x27 at `file_group_HUB` (`HubFiles` with the exe's
+  file group 12). `HUBSetUp` fills the warp room's `LevSpec` slots
+  (`InitialiseHUBFirst`, `InitialiseHUB`, `UpdateHUB`), or in mode 0x2B the
+  podium's (`InitialisePodiumFirst` .., the tournament's final ranking and
+  its eight hero scripts `PodiumScript0..7`). hub.c is the scrolling credits
+  (`HubCreditsScroll` over `HubCreditsLines`, 264 `OvlTextLine`s) with the
+  world record's pieces; hubcore.c the 12 gateways (`HubGateways`), the
+  locked doors' messages (`HubLockPanels`, keyed by level), the two door
+  menus and the save menu with its name entry, whose `process_info`-like
+  hooks the engine's gameflow calls (`HubSaveMenuHooks`, `HubSaveChoice`).
+  Its strings hold the pad's button glyph as byte 0xFC ("PRESS \374 BUTTON TO
+  SAVE").
 - **N2O** (n2o, the Nitros Oxide boss: n2o.c and nox.c; named
   2026-10-26). Mode 0x1F; one engine world record (0x010C) points at
   `N2O_PREMAP`, `n2o_shell_info` and `N2OSetUp`, the per-mode table at

@@ -14,9 +14,9 @@ typedef struct HubSpawnExt {
     u8 unk10[0x34 - 0x10];
     s32 unk34;
 } HubSpawnExt;
-extern s32 D_800BD5A8;
-extern u8 *D_800BD398;
-extern u8 D_800BD210[];
+extern s32 PodiumTies;
+extern u8 *PodiumAnimName;
+extern u8 PodiumSpawns[];
 void HubDrawObj();
 
 typedef struct HubPt {
@@ -48,19 +48,19 @@ typedef struct HubTrailDst {
     /* 0x76 */ u16 unk76;
 } HubTrailDst;
 
-extern s32 D_800BF260;
-extern s32 D_800BCEF0;
-extern EXTengine D_800BF100;
-extern s32 D_800BF19C;
-extern s32 D_800BF1A0;
-extern s32 D_800BF1A4;
+extern s32 HubDoorFade;
+extern s32 HubHeroPressed;
+extern EXTengine HubNameEngine;
+extern s32 HubNameNext;
+extern s32 HubNamePage;
+extern s32 HubNameLen;
 typedef struct HubEntry12 {
     s32 unk0;
     s32 unk4;
     s32 unk8;
 } HubEntry12;
-extern HubEntry12 D_800BD7E0[];
-/* name-entry key, 0x10 bytes, at D_800BD7E0[].unk0 */
+extern HubEntry12 HubNamePages[];
+/* name-entry key, 0x10 bytes, at HubNamePages[].unk0 */
 typedef struct HubKey {
     /* 0x0 */ s32 unk0;
     /* 0x4 */ u8 *unk4;
@@ -99,10 +99,10 @@ typedef struct PodiumTrophy {
     /* 0x5C */ u16 state;
 } PodiumTrophy;
 #define PODIUM_SIN(k) D_80068BD4[((((D_8005B690 * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
-extern u32 D_800BD5B0;
-extern s32 D_800BD5AC;
-extern s32 D_800C7EF4;
-extern CamXYZ D_800C7F04;
+extern u32 PodiumState;
+extern s32 PodiumCamState;
+extern s32 PodiumCamTimer;
+extern CamXYZ PodiumCamAt;
 extern u8 D_80055924[];
 extern u8 D_8005595C[];
 extern u8 D_80055994[];
@@ -112,11 +112,11 @@ extern u8 D_80055A3C[];
 extern u8 D_80055A74[];
 extern u8 D_80055AAC[];
 void PodiumRankPlayers(void);
-extern s32 D_800BD5B4;
-extern s32 D_800BD598[];
-extern u8 D_800BD5B8[];
-extern GfxViewport D_800BDB14;
-extern u8 D_800BF1A8[];
+extern s32 PodiumReady;
+extern s32 PodiumRanks[];
+extern u8 HubNameCursor[];
+extern GfxViewport HubSaveViewport;
+extern u8 HubSaveCamera[];
 
 /* D_8005A614 as this file sees it: per-player byte flags at 0xE4.. */
 typedef struct HubGameView {
@@ -157,14 +157,14 @@ typedef struct KeyedPair {
     s32 key;
     s32 val[1];
 } KeyedPair;
-extern KeyedPair D_800BCB54[];
+extern KeyedPair HubLockPanels[];
 /* Per-mode record tables for func_80095BEC, indexed by language/player. */
-extern s32 *D_800BC810[];
-extern s32 *D_800BC884[];
-extern s32 *D_800BC918[];
-extern s32 *D_800BC9AC[];
-extern s32 *D_800BCA1C[];
-extern s32 D_800BCB40[];
+extern s32 *HubSavePanels[];
+extern s32 *HubStartPanels[];
+extern s32 *HubChallengePanels[];
+extern s32 *HubWarpPanels[];
+extern s32 *HubPapuPanels[];
+extern s32 HubDoorAngles[];
 /* A POLY_FT4 as HubInitSparks fills it. */
 typedef struct HubFt4 {
     /* 0x00 */ u32 tag;
@@ -227,12 +227,12 @@ typedef struct HubTex {
 
 void HubInitSparks(HubSparks *arg0);
 
-extern s32 D_800BD390;
-extern s32 D_800BD394;
-extern s32 D_800BCEF4;
+extern s32 PodiumCheerTimer;
+extern s32 PodiumCheerKind;
+extern s32 HubHeroTouchCount;
 extern u16 D_8009EEA0;
 extern EXTengine *D_8009D530;
-extern CamEase D_800BCBAC;
+extern CamEase HubCamEase;
 extern EXTengine *D_8009D538[];
 extern s32 D_8009EEA4;
 /* PadState (D_80051338) as HubPreMoveHero reads it: held/pressed buttons at 0x50/0x54. */
@@ -248,13 +248,13 @@ typedef struct DistPos {
     u8 pad14[4];
     s32 z;
 } DistPos;
-extern EngRec24 D_800BCA20[];
-extern s32 D_800BCEFC;
-extern u8 D_800BD3AC[];
-extern u8 D_800BD3B0[];
-extern u8 D_800BD3B4[];
-extern u8 D_800BD3B8[];
-extern s32 D_800BD3C4;
+extern EngRec24 HubDoorMenuRecs[];
+extern s32 HubDoorChoices;
+extern u8 PodiumScore1[];
+extern u8 PodiumScore2[];
+extern u8 PodiumScore3[];
+extern u8 PodiumScore4[];
+extern s32 PodiumScoreCount;
 
 void HubOpenDoorMenu(s32 arg0);
 
@@ -278,7 +278,7 @@ typedef struct PodiumObj {
     u16 f5C;
 } PodiumObj;
 
-extern PodiumObj *D_800BD594;
+extern PodiumObj *PodiumTrophyObj;
 extern char D_8005572C;
 
 typedef struct HubSpawnEnt {
@@ -287,9 +287,9 @@ typedef struct HubSpawnEnt {
     /* 0x8 */ u8 kind;
     /* 0x9 */ u8 flags;
 } HubSpawnEnt;
-extern NAS *D_800BD584[];
-extern u16 D_800BD1F0[];
-extern s32 D_800BD200[];
+extern NAS *PodiumHeroNas[];
+extern u16 PodiumHeroAnims[];
+extern s32 PodiumHeroX[];
 
 #define G6A ((HubGameView *)D_8005A614)
 
@@ -303,7 +303,7 @@ typedef struct {
 } HubCamState;
 #define CAM6A ((HubCamState *)&D_8009EE9C)
 
-/* D_800BCCF4 entries (0x28 bytes) as seen by InitialiseHUB. */
+/* HubGateways entries (0x28 bytes) as seen by InitialiseHUB. */
 typedef struct {
     /* 0x00 */ u8 pad0[8];
     /* 0x08 */ u32 unk8;
@@ -311,14 +311,14 @@ typedef struct {
     /* 0x10 */ s32 unk10;
     /* 0x14 */ u8 pad14[0x14];
 } HubCamEntry;
-#define CAMTBL6A ((HubCamEntry *)D_800BCCF4)
+#define CAMTBL6A ((HubCamEntry *)HubGateways)
 
 extern s32 D_8009F71C;
-extern _sfx_handler *D_800BCEEC;
-extern u16 D_800BCBDC[10];
-extern char *D_800BCBF0[]; /* the "you already have" messages */
-extern process_info D_800BCC04;
-extern process_info D_800BCC18;
+extern _sfx_handler *HubSelectSfx;
+extern u16 HubHeroSizes[10];
+extern char *HubHaveTexts[]; /* the "you already have" messages */
+extern process_info HubDoorMenu;
+extern process_info HubDoorMenu2;
 
 void PlotCrystalFlash(void);
 
@@ -450,7 +450,7 @@ typedef struct ScriptExt40 {
     /* 0x3C */ s32 unk3C;
 } ScriptExt40;
 
-extern ScriptInit D_800BCCE8;
+extern ScriptInit HubPathScriptInit;
 
 s32 HubSelectedLevel(void);
 
@@ -487,12 +487,12 @@ typedef struct SubInitList {
     s32 count;
 } SubInitList;
 
-extern subengine D_800BDB58[];
+extern subengine HubNameSubs[];
 
 void HubSaveMenuSubs(SubInitList *list);
 
-extern s32 D_800BD8B0[];
-extern s32 D_800BD7FC[];
+extern s32 HubNameLetters[];
+extern s32 HubNamePanel[];
 
 void HubSaveMenuReset(void);
 
@@ -513,8 +513,8 @@ typedef struct HubRenderObj {
     /* 0x74 */ u16 unk74;
 } HubRenderObj;
 
-extern u8 D_800BF264[];
-extern u8 D_800C7264[];
+extern u8 HubOtBuffer[];
+extern u8 HubDrawEnv[];
 void HubInitGateways(void);
 
 void HubProjectObj(HubRenderObj *obj, s16 *out);
@@ -563,14 +563,14 @@ typedef struct PodiumScriptObj {
     s32 unk64;
 } PodiumScriptObj;
 
-extern ScriptInit D_800BCF68;
-extern ScriptInit D_800BCFB8;
-extern ScriptInit D_800BD008;
-extern ScriptInit D_800BD070;
-extern ScriptInit D_800BD0D8;
-extern ScriptInit D_800BD134;
-extern ScriptInit D_800BD18C;
-extern ScriptInit D_800BD1E4;
+extern ScriptInit PodiumScript0;
+extern ScriptInit PodiumScript1;
+extern ScriptInit PodiumScript2;
+extern ScriptInit PodiumScript3;
+extern ScriptInit PodiumScript4;
+extern ScriptInit PodiumScript5;
+extern ScriptInit PodiumScript6;
+extern ScriptInit PodiumScript7;
 
 void PodiumInitScript(s32 arg0, s32 arg1);
 /* D_8005A614 as seen by HubLevelSelect. */
@@ -590,8 +590,8 @@ typedef struct HubSelEntry {
     /* 0x4 */ u16 unk4;
     /* 0x6 */ u16 unk6;
 } HubSelEntry;
-extern u8 D_800BCEDC;
-extern s32 D_800BCEE4;
+extern u8 HubSelectFlag;
+extern s32 HubSelectTimer;
 typedef struct {
     unsigned addr : 24;
     unsigned len : 8;
@@ -621,7 +621,7 @@ typedef struct HubSparkFx {
     void (*Init)(HubSparks *);
     void (*Plot)(HubSparks *, MATRIX *);
 } HubSparkFx;
-extern HubSparkFx D_800BD570;
+extern HubSparkFx HubSparkFxDef;
 
 void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1);
 

@@ -25,9 +25,9 @@ void InitialiseHUB(void) {
     EXTengine *eng;
     u16 size;
 
-    D_800BCEF0 = 0;
+    HubHeroPressed = 0;
     D_8009F71C = 0;
-    D_800BCEF4 = 0;
+    HubHeroTouchCount = 0;
     hero = Heroes;
     World_floor_level = 0;
     eng = hero->hero_eng;
@@ -42,7 +42,7 @@ void InitialiseHUB(void) {
         HubSpawnEffects();
     }
     SetHeroAction(0, 0);
-    size = D_800BCBDC[hero->hero_name];
+    size = HubHeroSizes[hero->hero_name];
     eng->unk2C.z = size;
     eng->unk2C.y = size;
     eng->unk2C.x = size;
@@ -50,7 +50,7 @@ void InitialiseHUB(void) {
     HubInitGateways();
     func_80095258(*(u8 **)D_80058AD0);
     HubInitLevelSelect();
-    D_800BF260 = 0;
+    HubDoorFade = 0;
     if (G6A->unk34 == 0x25 && G6A->unk75 == 0) {
         CAM6A->unk4 = 0xEBC;
         G6A->unk63 = -1;
@@ -76,28 +76,28 @@ void InitialiseHUB(void) {
         }
     }
     HubCamTarget();
-    D_800BCEEC = 0;
-    func_8001E934(&D_8009F8A4, &D_800BCC04);
+    HubSelectSfx = 0;
+    func_8001E934(&D_8009F8A4, &HubDoorMenu);
 }
 
 /* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
-const char D_800B330C[] = "COMPLETE ALL CHALLENGES\nTO UNLOCK THIS LEVEL";
-const char D_800B333C[] = "YOU NEED 4 TROPHIES\nTO FACE PAPU PAPU";
-const char D_800B3364[] = "YOU NEED 9 TROPHIES, 6 GEMS\nAND 3 CRYSTALS TO FACE THE BEARMINATOR";
-const char D_800B33A8[] = "YOU NEED 15 TROPHIES, 10 GEMS\nAND 7 CRYSTALS TO FACE THE TANK BOSS";
-const char D_800B33EC[] = "YOU NEED 22 TROPHIES, 15 GEMS\nAND 12 CRYSTALS TO FACE N. OXIDE";
-const char D_800B342C[] = "YOU NEED 19 CRYSTALS\nTO OPEN DRAGON DROP";
-const char D_800B3458[] = "YOU NEED 21 GOLD RELICS\nTO OPEN MALLET MASH";
-const char D_800B3484[] = "YOU NEED 25 GEMS\nTO OPEN KEG KABOOM";
-const char D_800B34A8[] = "YOU NEED 27 TROPHIES\nTO OPEN DANTE'S DASH";
-const char D_800B34D4[] = "YOU NEED 17 GOLD RELICS\nTO OPEN SPLASH DASH";
-const char D_800B3500[] = "YOU NEED 23 CRYSTALS\nTO OPEN SWAMP FOX";
-const char D_800B3528[] = "PRESS \374 BUTTON TO SAVE";
-const char D_800B3540[] = "PRESS \374 BUTTON TO START";
-const char D_800B3558[] = "PRESS LEFT - RIGHT TO SELECT CHALLENGE";
-const char D_800B3580[] = "PRESS LEFT - RIGHT TO SELECT WARP ROOM";
-const char D_800B35A8[] = "PRESS \374 BUTTON TO ENTER";
-const char D_800B35C0[] = "YOU MUST DEFEAT PAPU PAPU BEFORE\nYOU CAN GO TO THE NEXT WARP ROOM";
+const char HubLockMsg00[] = "COMPLETE ALL CHALLENGES\nTO UNLOCK THIS LEVEL";
+const char HubLockMsg01[] = "YOU NEED 4 TROPHIES\nTO FACE PAPU PAPU";
+const char HubLockMsg02[] = "YOU NEED 9 TROPHIES, 6 GEMS\nAND 3 CRYSTALS TO FACE THE BEARMINATOR";
+const char HubLockMsg03[] = "YOU NEED 15 TROPHIES, 10 GEMS\nAND 7 CRYSTALS TO FACE THE TANK BOSS";
+const char HubLockMsg04[] = "YOU NEED 22 TROPHIES, 15 GEMS\nAND 12 CRYSTALS TO FACE N. OXIDE";
+const char HubLockMsg05[] = "YOU NEED 19 CRYSTALS\nTO OPEN DRAGON DROP";
+const char HubLockMsg06[] = "YOU NEED 21 GOLD RELICS\nTO OPEN MALLET MASH";
+const char HubLockMsg07[] = "YOU NEED 25 GEMS\nTO OPEN KEG KABOOM";
+const char HubLockMsg08[] = "YOU NEED 27 TROPHIES\nTO OPEN DANTE'S DASH";
+const char HubLockMsg09[] = "YOU NEED 17 GOLD RELICS\nTO OPEN SPLASH DASH";
+const char HubLockMsg10[] = "YOU NEED 23 CRYSTALS\nTO OPEN SWAMP FOX";
+const char HubTextPressSave[] = "PRESS \374 BUTTON TO SAVE";
+const char HubTextPressStart[] = "PRESS \374 BUTTON TO START";
+const char HubTextSelectChallenge[] = "PRESS LEFT - RIGHT TO SELECT CHALLENGE";
+const char HubTextSelectWarpRoom[] = "PRESS LEFT - RIGHT TO SELECT WARP ROOM";
+const char HubTextPressEnter[] = "PRESS \374 BUTTON TO ENTER";
+const char HubTextDefeatPapu[] = "YOU MUST DEFEAT PAPU PAPU BEFORE\nYOU CAN GO TO THE NEXT WARP ROOM";
 
 void HubInitGateways(void) {
     s32 i;
@@ -109,16 +109,16 @@ void HubInitGateways(void) {
     Vec3W d;
 
     for (i = 0; i < 12; i++) {
-        D_800BCCF4[i].unk0 = NULL;
-        D_800BCCF4[i].unk4 = NULL;
-        D_800BCCF4[i].unk18 = NULL;
-        D_800BCCF4[i].unk8 = 0;
-        D_800BCCF4[i].unkC = 0;
-        D_800BCCF4[i].unk10 = 0;
-        D_800BCCF4[i].unk14 = NULL;
-        D_800BCCF4[i].unk1C = 0;
-        D_800BCCF4[i].unk20 = 0;
-        D_800BCCF4[i].unk24 = 0;
+        HubGateways[i].unk0 = NULL;
+        HubGateways[i].unk4 = NULL;
+        HubGateways[i].unk18 = NULL;
+        HubGateways[i].unk8 = 0;
+        HubGateways[i].unkC = 0;
+        HubGateways[i].unk10 = 0;
+        HubGateways[i].unk14 = NULL;
+        HubGateways[i].unk1C = 0;
+        HubGateways[i].unk20 = 0;
+        HubGateways[i].unk24 = 0;
     }
     o = *(u8 **)((u8 *)D_80058AD0 + 0x1C);
     for (;;) {
@@ -133,17 +133,17 @@ void HubInitGateways(void) {
         if ((u32)i < 12) {
             switch (o[0x64]) {
             case 1:
-                D_800BCCF4[i].unk0 = (s32 *)o;
+                HubGateways[i].unk0 = (s32 *)o;
                 break;
             case 2:
-                D_800BCCF4[i].unk4 = (s32 *)o;
+                HubGateways[i].unk4 = (s32 *)o;
                 break;
             case 3:
                 break;
             case 5:
                 break;
             case 4:
-                q = &D_800BCCF4[i];
+                q = &HubGateways[i];
                 q->unk18 = o;
                 k = *(s32 *)o;
                 g = D_80058AD0;
@@ -157,7 +157,7 @@ void HubInitGateways(void) {
     }
     for (e = (EngSub90248 *)D_8009EDD4[D_8005A676][1]; e->unk0 != 0; e++) {
         i = e->unk0 - 1;
-        p = &D_800BCCF4[i];
+        p = &HubGateways[i];
         p->unk14 = e;
         if (e->unk6 & 1) {
             if (p->unk0 != NULL) {
@@ -183,7 +183,7 @@ void HubInitGateways(void) {
         if (i >= 12) {
             break;
         }
-        p = &D_800BCCF4[i];
+        p = &HubGateways[i];
         if (p->unk14 != NULL) {
             obj = (u8 *)path_get(i + 0x65);
             if (obj != NULL) {
@@ -209,7 +209,7 @@ void HubUpdateGateways(void) {
     char one;
     EngRec90248 *p;
 
-    for (i = 0, one = 1, p = D_800BCCF4; i < 12; i++, p++) {
+    for (i = 0, one = 1, p = HubGateways; i < 12; i++, p++) {
         q = &p->unk24;
         if (q[-4] != 0) {
             o = (s32 *)q[-3];
@@ -224,14 +224,14 @@ void HubUpdateGateways(void) {
                         if (o != NULL) {
                             o[0] |= 0x8000;
                         }
-                        D_800BF260 += 0x100;
-                        if (D_800BF260 >= 0x1000) {
-                            D_800BF260 = 0x1000;
+                        HubDoorFade += 0x100;
+                        if (HubDoorFade >= 0x1000) {
+                            HubDoorFade = 0x1000;
                         }
                     } else {
-                        D_800BF260 -= 0x100;
-                        if (D_800BF260 < 0) {
-                            D_800BF260 = 0;
+                        HubDoorFade -= 0x100;
+                        if (HubDoorFade < 0) {
+                            HubDoorFade = 0;
                             if (o != NULL) {
                                 o[0] &= ~0x8000;
                             }
@@ -293,7 +293,7 @@ void HubPreMoveHero(s32 arg0) {
         return;
     }
     mv->forward_speed = 0;
-    D_800BCEF4 = 0;
+    HubHeroTouchCount = 0;
     if (((HubGameView *)D_8005A614)->unk30 & 0x8008) {
         return;
     }
@@ -309,8 +309,8 @@ void HubPreMoveHero(s32 arg0) {
                 best = -1;
                 bestd = 0x1000;
                 for (i = 0; i < 12; i++) {
-                    if (D_800BCCF4[i].unk14 != NULL && (D_800BCCF4[i].unk14->unk6 & 2)) {
-                        d = func_80015480(D_800BCCF4[i].unk10, D_8009EE9C.unk4);
+                    if (HubGateways[i].unk14 != NULL && (HubGateways[i].unk14->unk6 & 2)) {
+                        d = func_80015480(HubGateways[i].unk10, D_8009EE9C.unk4);
                         if (d < bestd) {
                             bestd = d;
                             if ((u32)d < 0x81) {
@@ -320,9 +320,9 @@ void HubPreMoveHero(s32 arg0) {
                     }
                 }
                 if (best != -1) {
-                    D_8009EE9C.unk4 = D_800BCCF4[best].unk10;
+                    D_8009EE9C.unk4 = HubGateways[best].unk10;
                     ((HubGameView *)D_8005A614)->unk63 = best;
-                    D_800BCCF4[best].unk1C = 1;
+                    HubGateways[best].unk1C = 1;
                 } else {
                     D_8009EE9C.unk8 = D_8009EE9C.unk10;
                     stop++;
@@ -357,7 +357,7 @@ void HubPreMoveHero(s32 arg0) {
             mv->forward_speed = speed;
             t = D_8009EE9C.unk8 + speed;
             D_8009EE9C.unk8 = t;
-            lim = D_800BCCF4[((HubGameView *)D_8005A614)->unk63].unkC;
+            lim = HubGateways[((HubGameView *)D_8005A614)->unk63].unkC;
             ang = D_8009EE9C.unk4 + 0x800;
             if ((u32)lim < (u32)t) {
                 D_8009EE9C.unk8 = lim;
@@ -375,20 +375,20 @@ void HubPreMoveHero(s32 arg0) {
         if ((u8)D_8005A677 >= 12) {
             goto done;
         }
-        old = D_800BCCF4[D_8005A677].unk20;
-        if ((u32)(D_800BCCF4[D_8005A677].unkC - D_8009EEA4) < 0x100) {
-            D_800BCCF4[D_8005A677].unk20 = 1;
+        old = HubGateways[D_8005A677].unk20;
+        if ((u32)(HubGateways[D_8005A677].unkC - D_8009EEA4) < 0x100) {
+            HubGateways[D_8005A677].unk20 = 1;
         } else {
-            D_800BCCF4[D_8005A677].unk20 = 0;
+            HubGateways[D_8005A677].unk20 = 0;
         }
-        if (D_800BCCF4[D_8005A677].unk20 != old) {
-            if (D_800BCCF4[D_8005A677].unk20 != 0) {
+        if (HubGateways[D_8005A677].unk20 != old) {
+            if (HubGateways[D_8005A677].unk20 != 0) {
                 switch (((s32(*)(void))HubGatewayKind)()) {
                 case 2:
                     PlaySfx(0x399, NULL, NULL, 0x1000, 0x1E00, 0);
                     break;
                 case 5:
-                    PlaySfx(((s32(*)(void))func_800900CC)() >= 0 ? 0x39E : 0x39D, &D_800BCEEC, NULL, 0x1000, 0x1E00, 0);
+                    PlaySfx(((s32(*)(void))func_800900CC)() >= 0 ? 0x39E : 0x39D, &HubSelectSfx, NULL, 0x1000, 0x1E00, 0);
                 case 4:
                     PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
                     break;
@@ -399,8 +399,8 @@ void HubPreMoveHero(s32 arg0) {
                     PlaySfx(0x39A, NULL, NULL, 0x1000, 0x1E00, 0);
                     break;
                 case 5:
-                    if (D_800BCEEC != NULL) {
-                        StopSfx(D_800BCEEC);
+                    if (HubSelectSfx != NULL) {
+                        StopSfx(HubSelectSfx);
                     }
                 case 4:
                     PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -411,7 +411,7 @@ void HubPreMoveHero(s32 arg0) {
         if (!(((HubPad *)D_80051338)[arg0].unk54 & 0x4000)) {
             goto done;
         }
-        p = D_800BCCF4;
+        p = HubGateways;
         g = (HubGameView *)D_8005A614;
         if ((u32)(p[g->unk63].unkC - D_8009EEA4) >= 0x100) {
             goto done;
@@ -432,8 +432,8 @@ void HubPreMoveHero(s32 arg0) {
             break;
         case 2:
             sel = p[g->unk63].unk14->unk4;
-            if ((g->unk4 & 0x2000) || ((g->unkE4[sel] != 0 || D_800BCED4 <= 0) && ((s32(*)(s32))func_8007A6D0)(sel) == 1)) {
-            mode = D_800BCED4;
+            if ((g->unk4 & 0x2000) || ((g->unkE4[sel] != 0 || HubDoorChoice <= 0) && ((s32(*)(s32))func_8007A6D0)(sel) == 1)) {
+            mode = HubDoorChoice;
             if (mode != 4 || ((HubGameView *)D_8005A614)->unk105[sel] != 0) {
             gv = (HubGameView *)D_8005A614;
             v = gv->unk32 & 0xFF07;
@@ -457,7 +457,7 @@ void HubPreMoveHero(s32 arg0) {
                 break;
             }
             HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
-            HubGoToMode(D_800BCCF4[D_8005A677].unk14->unk4);
+            HubGoToMode(HubGateways[D_8005A677].unk14->unk4);
             SetHeroAction(0, 1);
             if (Heroes[0].hero_shadow != NULL) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
@@ -485,14 +485,14 @@ void HubPreMoveHero(s32 arg0) {
     }
 done:
     for (j = 11; j >= 0; j--) {
-        D_800BCCF4[j].unk1C = 0;
+        HubGateways[j].unk1C = 0;
     }
     if (D_8005A677 != -1) {
-        D_800BCCF4[D_8005A677].unk1C = 1;
+        HubGateways[D_8005A677].unk1C = 1;
     }
     mv->forward_angle = ang;
-    if (Heroes[arg0].hero_aseq != 10 && D_800BCEF0 != 0) {
-        D_800BCEF0 = 0;
+    if (Heroes[arg0].hero_aseq != 10 && HubHeroPressed != 0) {
+        HubHeroPressed = 0;
         Heroes[arg0].hero_eng->unk1E = ang;
         mv->facing_angle = ang;
     }
@@ -506,53 +506,53 @@ void HubOpenDoorMenu(s32 arg0) {
     s32 w;
     s32 n;
 
-    D_800BCA20[5].unk1E = 4;
-    D_800BCA20[6].unk1E = 4;
+    HubDoorMenuRecs[5].unk1E = 4;
+    HubDoorMenuRecs[6].unk1E = 4;
     if (((HubGameView *)D_8005A614)->unk105[arg0] != 0) {
-        D_800BCA20[5].unk1E = 3;
+        HubDoorMenuRecs[5].unk1E = 3;
         if (((HubGameView *)D_8005A614)->unk105[arg0] >= 2) {
-            D_800BCA20[6].unk1E = 2;
+            HubDoorMenuRecs[6].unk1E = 2;
         }
     }
     n = ((HubGameView *)D_8005A614)->unkE0;
     if (n >= 2 && ((HubGameView *)D_8005A614)->unk105[arg0] == 0) {
-        D_800BCEFC = 4;
+        HubDoorChoices = 4;
     } else {
-        D_800BCEFC = n + 3;
+        HubDoorChoices = n + 3;
     }
     if (((HubGameView *)D_8005A614)->unk4 & 0x2000) {
-        D_800BCEFC = ((HubGameView *)D_8005A614)->unkE0 + 3;
+        HubDoorChoices = ((HubGameView *)D_8005A614)->unkE0 + 3;
     }
-    D_800BCA20[4].unk1E = ((HubGameView *)D_8005A614)->unk147[arg0] ? 7 : 8;
-    D_800BCA20[3].unk1E = ((HubGameView *)D_8005A614)->unk126[arg0] ? 5 : 6;
+    HubDoorMenuRecs[4].unk1E = ((HubGameView *)D_8005A614)->unk147[arg0] ? 7 : 8;
+    HubDoorMenuRecs[3].unk1E = ((HubGameView *)D_8005A614)->unk126[arg0] ? 5 : 6;
     e = GetEngineSlot(1);
-    func_80095BEC(1, (s32 *)D_800BCA20);
+    func_80095BEC(1, (s32 *)HubDoorMenuRecs);
     e->unk10.y = 200;
     e->unk10.x = 0;
-    D_800BCED4 = 0;
+    HubDoorChoice = 0;
     e->flags = (e->flags & ~0x8000) | 0x10000000;
     if (((HubGameView *)D_8005A614)->unkE4[arg0] != 0) {
-        D_800BCED4 = 1;
+        HubDoorChoice = 1;
     }
     if (((HubGameView *)D_8005A614)->unk126[arg0] != 0) {
-        D_800BCED4 = 2;
+        HubDoorChoice = 2;
     }
     if (((HubGameView *)D_8005A614)->unk147[arg0] != 0 && ((HubGameView *)D_8005A614)->unkE0 > 0) {
-        D_800BCED4 = 3;
+        HubDoorChoice = 3;
     }
     if (((HubGameView *)D_8005A614)->unk105[arg0] != 0 && ((HubGameView *)D_8005A614)->unkE0 >= 2) {
-        D_800BCED4 = 4;
+        HubDoorChoice = 4;
         n = 1;
     } else {
         n = 1;
     }
     p = e->sub;
-    w = (((D_800BCEFC << n) + D_800BCEFC) * 15) << n;
+    w = (((HubDoorChoices << n) + HubDoorChoices) * 15) << n;
     p[1].unk76 = w;
     e->unk10.x = 320 - (w >> n);
     sub = GetEngineSlot(n)->sub;
     p = &sub[5];
-    switch (D_800BCEFC - 3) {
+    switch (HubDoorChoices - 3) {
     case 0:
         sub[5].flags &= ~0x8000;
         p[1].flags &= ~0x8000;
@@ -578,46 +578,46 @@ void HubDoorMenuUpdate(void) {
     s16 v;
     u16 n;
 
-    if (g->unk63 < 0 || D_800BF260 <= 0
-        || (rec = D_800BCCF4[g->unk63].unk14, rec->unk2 != 2)
+    if (g->unk63 < 0 || HubDoorFade <= 0
+        || (rec = HubGateways[g->unk63].unk14, rec->unk2 != 2)
         || (!(g->unk4 & 0x2000) && g->unkE4[rec->unk4] == 0)) {
-        if (D_800BCED4 >= 0) {
-            D_800BCED4 = -1;
+        if (HubDoorChoice >= 0) {
+            HubDoorChoice = -1;
             func_80095A04(1);
             func_80095A04(2);
         }
     } else {
-        if (D_800BCED4 == -1) {
-            HubOpenDoorMenu(D_800BCCF4[D_8005A677].unk14->unk4);
+        if (HubDoorChoice == -1) {
+            HubOpenDoorMenu(HubGateways[D_8005A677].unk14->unk4);
         }
         sub = GetEngineSlot(1)->sub;
-        if ((D_80051380 & 0x80) && D_8005A644 != 0x8008 && D_800BCED4 > 0) {
+        if ((D_80051380 & 0x80) && D_8005A644 != 0x8008 && HubDoorChoice > 0) {
             PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_800BCED4--;
+            HubDoorChoice--;
         }
-        if ((D_80051380 & 0x20) && D_8005A644 != 0x8008 && D_800BCED4 < D_800BCEFC - 1) {
+        if ((D_80051380 & 0x20) && D_8005A644 != 0x8008 && HubDoorChoice < HubDoorChoices - 1) {
             PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_800BCED4++;
+            HubDoorChoice++;
         }
-        v = func_80015284(*(s16 *)&sub->unk70, D_800BCB40[D_800BCED4], 2000);
+        v = func_80015284(*(s16 *)&sub->unk70, HubDoorAngles[HubDoorChoice], 2000);
         *(s16 *)&sub->unk70 = v;
         sub->unk76 = v + 90;
     }
-    if (D_800BF260 != 0) {
+    if (HubDoorFade != 0) {
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 2:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
-                n = D_800BCCF4[((HubGameView *)D_8005A614)->unk63].unk14->unk4;
+                n = HubGateways[((HubGameView *)D_8005A614)->unk63].unk14->unk4;
                 g2 = (HubGameView *)D_8005A614;
                 if (((s32(*)(s32))func_8007A6D0)(n) == 1) {
                     if (g2->unkE4[n] != 0) {
-                        func_80095BEC(2, D_800BC918[g2->unk2C]);
+                        func_80095BEC(2, HubChallengePanels[g2->unk2C]);
                     } else {
-                        func_80095BEC(2, D_800BC884[g2->unk2C]);
+                        func_80095BEC(2, HubStartPanels[g2->unk2C]);
                     }
                 } else {
                     key = func_80090248();
-                    p = D_800BCB54;
+                    p = HubLockPanels;
                     for (i = 10; i != -1; i--) {
                         if (p->key == key) {
                             recs = (s32 *)p->val[D_8005A640];
@@ -630,25 +630,25 @@ void HubDoorMenuUpdate(void) {
                     func_80095BEC(2, recs);
                 }
             }
-            GetEngineSlot(2)->unk10.y = (D_800BF260 >> 4) - 200;
+            GetEngineSlot(2)->unk10.y = (HubDoorFade >> 4) - 200;
             break;
         case 5:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
                 g3 = (HubGameView *)D_8005A614;
                 if (g3->unk34 == 0x21 && ((s32(*)(s32))func_8007A6D0)(0x22) == 0) {
-                    recs = D_800BCA1C[g3->unk2C];
+                    recs = HubPapuPanels[g3->unk2C];
                 } else {
-                    recs = D_800BC9AC[g3->unk2C];
+                    recs = HubWarpPanels[g3->unk2C];
                 }
                 func_80095BEC(2, recs);
             }
-            GetEngineSlot(2)->unk10.y = 0x280 - (D_800BF260 >> 4);
+            GetEngineSlot(2)->unk10.y = 0x280 - (HubDoorFade >> 4);
             break;
         case 4:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
-                func_80095BEC(2, D_800BC810[D_8005A640]);
+                func_80095BEC(2, HubSavePanels[D_8005A640]);
             }
-            GetEngineSlot(2)->unk10.y = (D_800BF260 >> 4) - 200;
+            GetEngineSlot(2)->unk10.y = (HubDoorFade >> 4) - 200;
             break;
         }
     } else {
@@ -663,16 +663,16 @@ s32 HubSelectedLevel(void) {
     s32 k = 5;
 
     if (D_8005A677 >= 0) {
-        v = D_800BCCF4[D_8005A677].unk14->unk2;
+        v = HubGateways[D_8005A677].unk14->unk2;
     } else {
         v = 0;
     }
-    if (v == k && D_800BCCF4[D_8005A677].unk20 != 0) {
+    if (v == k && HubGateways[D_8005A677].unk20 != 0) {
         r = 1;
     }
     if (r != 0) {
         s32 (*base)[5];
-        r = D_800BCEE0;
+        r = HubSelectedEntry;
         if (r < 0) {
             return -1;
         }
@@ -696,62 +696,62 @@ void HubLevelSelect(void) {
     s32 n;
     fade_info *p;
 
-    switch (D_800BCED8) {
+    switch (HubSelectState) {
     case 0:
         r = 0;
         k = 5;
         if (g->unk63 >= 0) {
-            v = D_800BCCF4[g->unk63].unk14->unk2;
+            v = HubGateways[g->unk63].unk14->unk2;
         } else {
             v = 0;
         }
-        if (v == k && D_800BCCF4[D_8005A677].unk20 != 0) {
+        if (v == k && HubGateways[D_8005A677].unk20 != 0) {
             r = 1;
         }
         if (r != 0 && ((HubSelView *)D_8005A614)->unk30 != 0x8008) {
             if ((D_80051380 & 0x20)
-                && D_800BCEE0 < D_8009EDD4[((HubSelView *)D_8005A614)->unk62][2] - 1
-                && ((s32(*)(s32))func_8007A6D0)(ents[D_800BCEE0 + 1].unk4)) {
+                && HubSelectedEntry < D_8009EDD4[((HubSelView *)D_8005A614)->unk62][2] - 1
+                && ((s32(*)(s32))func_8007A6D0)(ents[HubSelectedEntry + 1].unk4)) {
                 PlaySfx(0x39F, NULL, NULL, 0x1000, 0x1E00, 0);
-                D_800BCEE0++;
+                HubSelectedEntry++;
             }
-            if ((D_80051380 & 0x80) && D_800BCEE0 > 0) {
+            if ((D_80051380 & 0x80) && HubSelectedEntry > 0) {
                 PlaySfx(0x39F, NULL, NULL, 0x1000, 0x1E00, 0);
-                D_800BCEE0--;
+                HubSelectedEntry--;
             }
-            if (D_800BCEE0 < 0) {
-                D_800BCEE0 = func_800900CC();
+            if (HubSelectedEntry < 0) {
+                HubSelectedEntry = func_800900CC();
             }
-            if (D_800BCEE0 >= D_8009EDD4[D_8005A676][2]) {
+            if (HubSelectedEntry >= D_8009EDD4[D_8005A676][2]) {
                 n = D_8009EDD4[D_8005A676][2];
-                D_800BCEE0 = n - 1;
+                HubSelectedEntry = n - 1;
             }
-            if (D_800BCEE8 != NULL) {
-                if (D_800BCEE0 >= 0 && ((s32(*)(s32))func_8007A6D0)(ents[D_800BCEE0].unk4)) {
-                    D_800BCEE8->unk74 = ents[D_800BCEE0].unk0;
+            if (HubSelectSub != NULL) {
+                if (HubSelectedEntry >= 0 && ((s32(*)(s32))func_8007A6D0)(ents[HubSelectedEntry].unk4)) {
+                    HubSelectSub->unk74 = ents[HubSelectedEntry].unk0;
                     return;
                 }
-                D_800BCEE8->unk74 = D_8009EDD4[D_8005A676][4];
+                HubSelectSub->unk74 = D_8009EDD4[D_8005A676][4];
             }
-        } else if (D_800BCEE8 != NULL) {
-            D_800BCEE8->unk74 = D_8009EDD4[D_8005A676][4];
+        } else if (HubSelectSub != NULL) {
+            HubSelectSub->unk74 = D_8009EDD4[D_8005A676][4];
         }
         break;
     case 1:
         if (func_80012FFC() == 0) {
             set_fade(&D_8009F644, 0x200, 0);
-            D_800BCED8 = 2;
+            HubSelectState = 2;
         }
         break;
     case 2:
         p = &D_8009F644;
         if (p->maxed >= 3) {
             func_8001DDD8(D_80058AD0);
-            func_8001E054(D_80058AD0, D_800BCEE4);
-            g->unk62 = D_800BCEDC;
+            func_8001E054(D_80058AD0, HubSelectTimer);
+            g->unk62 = HubSelectFlag;
             g->unk34 = base[g->unk62][0];
             InitialiseHUB();
-            D_800BCED8 = 0;
+            HubSelectState = 0;
             set_fade(p, -0x200, 0);
         }
         break;
@@ -812,12 +812,12 @@ void HubSpawnEffects(void) {
 }
 
 /* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
-const char D_800B3618[] = "YOU ALREADY HAVE A TROPHY\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
-const char D_800B3670[] = "YOU ALREADY HAVE A GEM\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
-const char D_800B36C4[] = "YOU ALREADY HAVE A CRYSTAL\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
-const char D_800B371C[] = "YOU ALREADY HAVE ARELIC\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
-const char D_800B3770[] = "YOU ALREADY HAVE A PLATINUM RELIC\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
-const char D_800B37D0[] = "";
+const char HubTextHaveTrophy[] = "YOU ALREADY HAVE A TROPHY\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char HubTextHaveGem[] = "YOU ALREADY HAVE A GEM\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char HubTextHaveCrystal[] = "YOU ALREADY HAVE A CRYSTAL\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char HubTextHaveRelic[] = "YOU ALREADY HAVE ARELIC\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char HubTextHavePlatinum[] = "YOU ALREADY HAVE A PLATINUM RELIC\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char HubTextEmpty[] = "";
 
 static inline void PathFace(KeyEntry *k, s32 dir, PathRot *ang) {
     s32 dx;
@@ -995,7 +995,7 @@ void InitPathEffect(NAS *nas) {
     ScriptExt40 *ext = AddExt(nas, 0x40, 0x10000000);
 
     if (ext != NULL) {
-        ext->cursor = func_80024E30(nas, &D_800BCCE8);
+        ext->cursor = func_80024E30(nas, &HubPathScriptInit);
         nas->Engine->sub->unk6C = *(void **)D_80058AD0;
         nas->Engine->sub->unk74 = 0x2018;
         nas->Engine->sub->flags &= 0xFEFFFFFF;
@@ -1052,9 +1052,9 @@ void HubPathAngles(s32 *arg0, s32 flag, s32 *out) {
 }
 
 void HubInitLevelSelect(void) {
-    D_800BCEE8 = func_8001DCD4(1, 0x14);
-    D_800BCED8 = 0;
-    D_800BCEE0 = -1;
+    HubSelectSub = func_8001DCD4(1, 0x14);
+    HubSelectState = 0;
+    HubSelectedEntry = -1;
 }
 
 s32 HubGatewayIsKind(s32 arg0) {
@@ -1062,11 +1062,11 @@ s32 HubGatewayIsKind(s32 arg0) {
     s32 v;
 
     if (D_8005A677 >= 0) {
-        v = D_800BCCF4[D_8005A677].unk14->unk2;
+        v = HubGateways[D_8005A677].unk14->unk2;
     } else {
         v = 0;
     }
-    if (v == arg0 && D_800BCCF4[D_8005A677].unk20 != 0) {
+    if (v == arg0 && HubGateways[D_8005A677].unk20 != 0) {
         r = 1;
     }
     return r;
@@ -1074,7 +1074,7 @@ s32 HubGatewayIsKind(s32 arg0) {
 
 u16 HubGatewayKind(void) {
     if (D_8005A677 >= 0) {
-        return D_800BCCF4[D_8005A677].unk14->unk2;
+        return HubGateways[D_8005A677].unk14->unk2;
     }
     return 0;
 }
@@ -1089,15 +1089,15 @@ void HubDoorMenu2Render(void) {
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
     D_800569AC = D_8009F644.amount;
-    if (D_800BCED4 >= 0) {
+    if (HubDoorChoice >= 0) {
         if (!(D_8005A624 & 1)) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
-            e->unk10.y = 0x1D6 - (D_800BF260 >> 5);
+            e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
             func_8001C2C0((u8 *)GetEngineSlot(1));
         }
     }
-    if (D_800BF260 != 0 && !(D_8005A624 & 1)) {
+    if (HubDoorFade != 0 && !(D_8005A624 & 1)) {
         func_8001C2C0((u8 *)GetEngineSlot(2));
     }
 }
@@ -1107,7 +1107,7 @@ void HubDoorMenu2Update(void) {
 }
 
 void HubDoorMenu2Init(void) {
-    D_800BCED4 = -1;
+    HubDoorChoice = -1;
 }
 
 void HubDoorMenuRender(void) {
@@ -1115,21 +1115,21 @@ void HubDoorMenuRender(void) {
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
     D_800569AC = D_8009F644.amount;
-    if (D_800BCED4 >= 0) {
+    if (HubDoorChoice >= 0) {
         if (!(D_8005A624 & 1)) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
-            e->unk10.y = 0x1D6 - (D_800BF260 >> 5);
+            e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
             func_8001C2C0((u8 *)GetEngineSlot(1));
         }
     }
-    if (D_800BF260 != 0 && !(D_8005A624 & 1)) {
+    if (HubDoorFade != 0 && !(D_8005A624 & 1)) {
         func_8001C2C0((u8 *)GetEngineSlot(2));
     }
 }
 
 void HubDoorMenuInit(void) {
-    D_800BCED4 = -1;
+    HubDoorChoice = -1;
 }
 
 void HubDoorMenuQuit(void) {
@@ -1251,7 +1251,7 @@ void HubCameraFollow(u8 *arg0, s32 arg1) {
 
     n = 1;
     cam->dist = 0x200;
-    if (D_800BCEF4 != 0) {
+    if (HubHeroTouchCount != 0) {
         n = 3;
     }
     HubCamFromPath((u8 *)&v, n);
@@ -1260,7 +1260,7 @@ void HubCameraFollow(u8 *arg0, s32 arg1) {
     if (arg1 != 0) {
         func_80013F44(cam, &v, NULL);
     } else {
-        func_80013F44(cam, &v, &D_800BCBAC);
+        func_80013F44(cam, &v, &HubCamEase);
     }
 }
 #undef v
@@ -1279,7 +1279,7 @@ s32 HubHeroTestButton(s32 arg0) {
                 Heroes[arg0].hero_frozen = 0xF;
             }
         } else {
-            D_800BCEF0 = 1;
+            HubHeroPressed = 1;
         }
     }
     return 0;
@@ -1295,10 +1295,10 @@ s32 HubHeroTestB(void) {
 
 void HubHeroTouched(s32 arg0) {
     if (Heroes[arg0].hero->UserInfo.user1 != 0) {
-        D_800BCEF4 += 1;
+        HubHeroTouchCount += 1;
         return;
     }
-    D_800BCEF4 = 0;
+    HubHeroTouchCount = 0;
 }
 
 void HubCamTarget(void) {
@@ -1383,7 +1383,7 @@ s32 HubNearestGateway(void) {
     best = -1;
     bestDist = 0x1000;
     for (i = 0; i < 12; i++) {
-        p = &D_800BCCF4[i];
+        p = &HubGateways[i];
         if (p->unk14 != NULL && (p->unk14->unk6 & 2)) {
             d = func_80015480(p->unk10, D_8009EE9C.unk4);
             if (d < bestDist) {
@@ -1446,7 +1446,7 @@ void InitialiseHUBFirst(void) {
 }
 
 s32 HubLookup(s32 arg0) {
-    KeyedPair *p = D_800BCB54;
+    KeyedPair *p = HubLockPanels;
     s32 i = 10;
     u8 *g = D_8005A614;
 
@@ -1460,17 +1460,17 @@ s32 HubLookup(s32 arg0) {
 }
 
 /* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
-const char D_800B37EC[] = "WIN_BREATHE";
-const char D_800B37F8[] = "WIN";
-const char D_800B37FC[] = "LOSE_BREATHE";
-const char D_800B380C[] = "LOSE";
+const char PodiumAnimWinBreathe[] = "WIN_BREATHE";
+const char PodiumAnimWin[] = "WIN";
+const char PodiumAnimLoseBreathe[] = "LOSE_BREATHE";
+const char PodiumAnimLose[] = "LOSE";
 
 void InitialisePodiumFirst(void) {
     s32 i;
 
-    D_800BD594 = NULL;
+    PodiumTrophyObj = NULL;
     for (i = 0; i < 4; i++) {
-        D_800BD584[i] = 0;
+        PodiumHeroNas[i] = 0;
         switch (D_8005A614[i + 0x4C]) {
         case 1: func_80016D44(D_80055924); break;
         case 2: func_80016D44(D_8005595C); break;
@@ -1486,7 +1486,7 @@ void InitialisePodiumFirst(void) {
     ((HubGameView *)D_8005A614)->unk51 = 9;
     ((HubGameView *)D_8005A614)->unk52 = 9;
     ((HubGameView *)D_8005A614)->unk53 = 9;
-    D_800BD5B0 = 0;
+    PodiumState = 0;
     ((HubGameView *)D_8005A614)->unk32 |= 0x200;
     PodiumRankPlayers();
     PodiumFindTies();
@@ -1503,8 +1503,8 @@ void InitialisePodium(void) {
 
     World_floor_level = 0;
     D_800AD12C = 4;
-    D_800BD5B4 = 0;
-    D_800BD390 = 0x5A;
+    PodiumReady = 0;
+    PodiumCheerTimer = 0x5A;
     for (i = 0; i < 4; i++) {
         h = D_8005A614[i + 0xA7];
         name = D_8005A614[h + 0x4C];
@@ -1520,10 +1520,10 @@ void InitialisePodium(void) {
         case 1:
         default: k = 0xD6; break;
         }
-        for (j = 0; (&D_800BD398)[j] != NULL;) {
-            func_800165F8(D_80052A54 + k * 0x38, (&D_800BD398)[j++]);
+        for (j = 0; (&PodiumAnimName)[j] != NULL;) {
+            func_800165F8(D_80052A54 + k * 0x38, (&PodiumAnimName)[j++]);
         }
-        PodiumSpawnHero(i, &((HubSpawnEnt (*)[4])D_800BD210)[D_800BD5A8][i]);
+        PodiumSpawnHero(i, &((HubSpawnEnt (*)[4])PodiumSpawns)[PodiumTies][i]);
         PodiumInitScript(i, name);
     }
     PodiumShowScores();
@@ -1555,12 +1555,12 @@ void PodiumRankPlayers(void) {
         k = 4;
         q = D_8005A614 + i;
         if (i == 0) {
-            D_800BD598[0] = k;
+            PodiumRanks[0] = k;
         } else {
             if (D_8005A614[q[0xA7] + 0x9F] == D_8005A614[(p = D_8005A614 + (j = i - 1))[0xA7] + 0x9F]) {
-                D_800BD598[i] = D_800BD598[i - 1];
+                PodiumRanks[i] = PodiumRanks[i - 1];
             } else {
-                D_800BD598[i] = D_800BD598[j] - 1;
+                PodiumRanks[i] = PodiumRanks[j] - 1;
             }
         }
     }
@@ -1573,33 +1573,33 @@ void PodiumFindTies(void) {
     s32 c = g[g[0xA9] + 0x9F];
     s32 d = g[g[0xAA] + 0x9F];
 
-    D_800BD5A8 = 0;
+    PodiumTies = 0;
     if (a == d) {
-        D_800BD5A8 = 7;
+        PodiumTies = 7;
         return;
     }
     if (b == d) {
-        D_800BD5A8 = 5;
+        PodiumTies = 5;
         return;
     }
     if (a == c) {
-        D_800BD5A8 = 6;
+        PodiumTies = 6;
         return;
     }
     if (c == d && a != b) {
-        D_800BD5A8 = 1;
+        PodiumTies = 1;
         return;
     }
     if (b == c) {
-        D_800BD5A8 = 2;
+        PodiumTies = 2;
         return;
     }
     if (a == b) {
         if (c != d) {
-            D_800BD5A8 = 3;
+            PodiumTies = 3;
             return;
         }
-        D_800BD5A8 = 4;
+        PodiumTies = 4;
     }
 }
 
@@ -1607,8 +1607,8 @@ void HubCreditsEffects(void) {
     s32 r;
     s32 x;
 
-    if (D_8005A624 == 0 && D_800BD390-- < 0) {
-        D_800BD394 = Random(4);
+    if (D_8005A624 == 0 && PodiumCheerTimer-- < 0) {
+        PodiumCheerKind = Random(4);
         r = Random(6);
         if (r == 0) {
             PlaySfx(0x355, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1649,7 +1649,7 @@ void HubCreditsEffects(void) {
         }
         x = Random(10000) - 5000;
         CreateNAS(x, Random(10000) - 5000, 0xE10, 0x1628, 0x11);
-        D_800BD390 = Random(10) + 5;
+        PodiumCheerTimer = Random(10) + 5;
     }
 }
 
@@ -1662,14 +1662,14 @@ void PodiumCheer(void) {
     case 4:
     case 6:
     case 8:
-        if (D_8005A624 == 0 && D_800BD390-- < 0) {
-            D_800BD394 = Random(2) + 2;
+        if (D_8005A624 == 0 && PodiumCheerTimer-- < 0) {
+            PodiumCheerKind = Random(2) + 2;
             goto spawn;
         }
         break;
     default:
-        if (D_8005A624 == 0 && D_800BD390-- < 0) {
-            D_800BD394 = Random(2);
+        if (D_8005A624 == 0 && PodiumCheerTimer-- < 0) {
+            PodiumCheerKind = Random(2);
         spawn:
             r = Random(6);
             if (r == 0) {
@@ -1711,7 +1711,7 @@ void PodiumCheer(void) {
             }
             x = -Random(0x2000) + Random(0x2000);
             CreateNAS(x, Random(0x400) - 0xC00, 0x1000, 0x1628, 0x11);
-            D_800BD390 = Random(0x14) + 0xA;
+            PodiumCheerTimer = Random(0x14) + 0xA;
         }
         break;
     }
@@ -1758,42 +1758,42 @@ void PodiumInitScript(s32 arg0, s32 arg1) {
     PodiumScriptObj *obj;
     PodiumMid *mid;
 
-    obj = (PodiumScriptObj *)D_800BD584[arg0];
+    obj = (PodiumScriptObj *)PodiumHeroNas[arg0];
     if (obj != NULL) {
         mid = obj->mid;
         if (mid != NULL) {
             switch (arg1) {
             case 1:
                 mid->inner->script = D_80055924;
-                func_80024E30((NAS *)obj, &D_800BD008);
+                func_80024E30((NAS *)obj, &PodiumScript2);
                 break;
             case 2:
                 mid->inner->script = D_8005595C;
-                func_80024E30((NAS *)obj, &D_800BCFB8);
+                func_80024E30((NAS *)obj, &PodiumScript1);
                 break;
             case 3:
                 mid->inner->script = D_80055994;
-                func_80024E30((NAS *)obj, &D_800BD070);
+                func_80024E30((NAS *)obj, &PodiumScript3);
                 break;
             case 4:
                 mid->inner->script = D_800559CC;
-                func_80024E30((NAS *)obj, &D_800BCF68);
+                func_80024E30((NAS *)obj, &PodiumScript0);
                 break;
             case 5:
                 mid->inner->script = D_80055A04;
-                func_80024E30((NAS *)obj, &D_800BD18C);
+                func_80024E30((NAS *)obj, &PodiumScript6);
                 break;
             case 6:
                 mid->inner->script = D_80055A3C;
-                func_80024E30((NAS *)obj, &D_800BD1E4);
+                func_80024E30((NAS *)obj, &PodiumScript7);
                 break;
             case 7:
                 mid->inner->script = D_80055A74;
-                func_80024E30((NAS *)obj, &D_800BD0D8);
+                func_80024E30((NAS *)obj, &PodiumScript4);
                 break;
             case 8:
                 mid->inner->script = D_80055AAC;
-                func_80024E30((NAS *)obj, &D_800BD134);
+                func_80024E30((NAS *)obj, &PodiumScript5);
                 break;
             }
             obj->unk64 = arg1;
@@ -1851,7 +1851,7 @@ void PodiumCamera(CamView *out, s32 arg1) {
     s32 t;
 
     if (arg1 != 0) {
-        D_800BD5B0 = 0;
+        PodiumState = 0;
         switch (D_8005A614[D_8005A614[0xA7] + 0x4C]) {
         case 1:
         case 2:
@@ -1870,47 +1870,47 @@ void PodiumCamera(CamView *out, s32 arg1) {
         }
     }
     id = 2;
-    if (D_800BD5B0 < 2) {
+    if (PodiumState < 2) {
         id = 1;
     }
     o = (u8 *)path_get(id);
     if (arg1 != 0) {
         t = *(s32 *)(o + 0x58);
-        D_800C7F04 = *(CamXYZ *)(o + 0x30);
-        D_800C7EF4 = t;
+        PodiumCamAt = *(CamXYZ *)(o + 0x30);
+        PodiumCamTimer = t;
     }
-    func_8001E21C((KeyBlock *)o, D_800C7EF4, &key);
-    D_800C7F04.x += (*(s32 *)(o + 0x30) - D_800C7F04.x) >> 4;
-    D_800C7F04.y += (*(s32 *)(o + 0x34) - D_800C7F04.y) >> 4;
-    D_800C7F04.z += (*(s32 *)(o + 0x38) - D_800C7F04.z) >> 4;
-    out->at = D_800C7F04;
-    d.x = D_800C7F04.x - key.x;
-    d.y = D_800C7F04.y - key.y;
-    d.z = D_800C7F04.z - key.z;
+    func_8001E21C((KeyBlock *)o, PodiumCamTimer, &key);
+    PodiumCamAt.x += (*(s32 *)(o + 0x30) - PodiumCamAt.x) >> 4;
+    PodiumCamAt.y += (*(s32 *)(o + 0x34) - PodiumCamAt.y) >> 4;
+    PodiumCamAt.z += (*(s32 *)(o + 0x38) - PodiumCamAt.z) >> 4;
+    out->at = PodiumCamAt;
+    d.x = PodiumCamAt.x - key.x;
+    d.y = PodiumCamAt.y - key.y;
+    d.z = PodiumCamAt.z - key.z;
     out->eye.z = csqrt(d.x * d.x + d.y * d.y + d.z * d.z) >> 6;
     out->eye.x = 0;
     out->eye.y = 0;
     out->rot.vy = get_angle(-d.x, d.z);
     out->rot.vx = get_angle(d.y, csqrt(d.x * d.x + d.z * d.z) >> 6);
     out->rot.vz = 0;
-    switch (D_800BD5B0) {
+    switch (PodiumState) {
     case 0:
         end = *(s32 *)(o + 4);
-        D_800C7EF4 += 0x20;
-        if (D_800C7EF4 >= end) {
-            D_800C7EF4 = end;
-            D_800BD5AC = 0x3C;
-            D_800BD5B0 = 1;
+        PodiumCamTimer += 0x20;
+        if (PodiumCamTimer >= end) {
+            PodiumCamTimer = end;
+            PodiumCamState = 0x3C;
+            PodiumState = 1;
         }
         break;
     case 1:
-        if (--D_800BD5AC <= 0) {
-            D_800BD5B0 = 2;
-            D_800C7EF4 = *(s32 *)((u8 *)path_get(2) + 0x58);
-            if (D_800BD594 != NULL) {
-                c = D_800BD594->child;
-                if (c != NULL && D_800BD594->f5C == 0) {
-                    D_800BD594->f5C = 1;
+        if (--PodiumCamState <= 0) {
+            PodiumState = 2;
+            PodiumCamTimer = *(s32 *)((u8 *)path_get(2) + 0x58);
+            if (PodiumTrophyObj != NULL) {
+                c = PodiumTrophyObj->child;
+                if (c != NULL && PodiumTrophyObj->f5C == 0) {
+                    PodiumTrophyObj->f5C = 1;
                     c->f5C = 1;
                     c->f34 = 0;
                     c->f30 = 0;
@@ -1923,28 +1923,28 @@ void PodiumCamera(CamView *out, s32 arg1) {
         break;
     case 2:
         end = *(s32 *)(o + 4);
-        D_800C7EF4 += 0x20;
-        if (D_800C7EF4 >= end) {
-            D_800BD5AC = 0xF0;
-            D_800C7EF4 = end;
-            D_800BD5B0 = 3;
-            D_800BD5B4 = 1;
+        PodiumCamTimer += 0x20;
+        if (PodiumCamTimer >= end) {
+            PodiumCamState = 0xF0;
+            PodiumCamTimer = end;
+            PodiumState = 3;
+            PodiumReady = 1;
         }
         break;
     case 3:
         PodiumScoresDown();
-        if (--D_800BD5AC <= 0) {
-            D_800BD5B0 = 4;
+        if (--PodiumCamState <= 0) {
+            PodiumState = 4;
         }
         break;
     case 4:
-        D_800BD5B0 = 5;
-        D_800BD5AC = 0x3C;
+        PodiumState = 5;
+        PodiumCamState = 0x3C;
         break;
     case 5:
         PodiumScoresUp();
-        if (--D_800BD5AC <= 0) {
-            D_800BD5B0 = 0x64;
+        if (--PodiumCamState <= 0) {
+            PodiumState = 0x64;
         }
         break;
     case 0x64:
@@ -1961,18 +1961,18 @@ void PodiumShowScores(void) {
     e = GetEngineSlot(6);
     if (e != NULL) {
         n = D_8005A614[0x9F];
-        D_800BD3AC[1] = n % 10 + 0x30;
-        D_800BD3AC[0] = n / 10 % 10 + 0x30;
+        PodiumScore1[1] = n % 10 + 0x30;
+        PodiumScore1[0] = n / 10 % 10 + 0x30;
         n = D_8005A614[0xA0];
-        D_800BD3B0[1] = n % 10 + 0x30;
-        D_800BD3B0[0] = n / 10 % 10 + 0x30;
+        PodiumScore2[1] = n % 10 + 0x30;
+        PodiumScore2[0] = n / 10 % 10 + 0x30;
         n = D_8005A614[0xA1];
-        D_800BD3B4[1] = n % 10 + 0x30;
-        D_800BD3B4[0] = n / 10 % 10 + 0x30;
+        PodiumScore3[1] = n % 10 + 0x30;
+        PodiumScore3[0] = n / 10 % 10 + 0x30;
         n = D_8005A614[0xA2];
-        D_800BD3B8[1] = n % 10 + 0x30;
-        D_800BD3B8[0] = n / 10 % 10 + 0x30;
-        func_80095BEC(6, &D_800BD3C4);
+        PodiumScore4[1] = n % 10 + 0x30;
+        PodiumScore4[0] = n / 10 % 10 + 0x30;
+        func_80095BEC(6, &PodiumScoreCount);
         e->unk10.x = 0x28;
         e->unk10.y = 0x21C;
         e->flags |= 0x10008000;
@@ -1987,7 +1987,7 @@ void InitSparkGFX(NAS *arg0) {
     arg0->UserInfo.user1 = 0;
     arg0->Engine->unk5D = 0;
     arg0->Engine->unk5C = 1;
-    if (func_80018F3C(arg0->Engine, 12) != 12 || func_80015D70((u8 *)&D_800BD570, (u8 *)arg0->Engine->sub) == 0) {
+    if (func_80018F3C(arg0->Engine, 12) != 12 || func_80015D70((u8 *)&HubSparkFxDef, (u8 *)arg0->Engine->sub) == 0) {
         KillNAS(arg0);
         return;
     }
@@ -2000,22 +2000,22 @@ void InitSparkGFX(NAS *arg0) {
             nv = D_800558EC;
             s->unk50 = 1;
             s->unk6C = nv;
-            if (D_800BD394 == 0) {
+            if (PodiumCheerKind == 0) {
                 s->unk74 = 0x2021;
             }
-            if (D_800BD394 == 1) {
+            if (PodiumCheerKind == 1) {
                 s->unk74 = 0x2025;
             }
-            if (D_800BD394 == 2) {
+            if (PodiumCheerKind == 2) {
                 s->unk74 = 0x2022;
             }
-            if (D_800BD394 == 3) {
+            if (PodiumCheerKind == 3) {
                 s->unk74 = 0x2024;
             }
-            if (D_800BD394 == 4) {
+            if (PodiumCheerKind == 4) {
                 s->unk74 = 0x2027;
             }
-            if (D_800BD394 == 5) {
+            if (PodiumCheerKind == 5) {
                 s->unk74 = 0x2026;
             }
             s->unk20.x = 0x1000;
@@ -2050,7 +2050,7 @@ void HubInitSparks(HubSparks *arg0) {
     dst = set->dst;
     row = arg0->set.rows;
     g = D_800558EC;
-    sel = D_800BD394;
+    sel = PodiumCheerKind;
     if (sel == 0) {
         tex = (HubTex *)(*(u8 **)(g + 0x18) + 0x188);
     }
@@ -2290,10 +2290,10 @@ void PodiumScoresDown(void) {
 void PodiumReleaseTrophy(void) {
     PodiumChild *c;
 
-    if (D_800BD594 != NULL) {
-        c = D_800BD594->child;
-        if (c != NULL && D_800BD594->f5C == 0) {
-            D_800BD594->f5C = 1;
+    if (PodiumTrophyObj != NULL) {
+        c = PodiumTrophyObj->child;
+        if (c != NULL && PodiumTrophyObj->f5C == 0) {
+            PodiumTrophyObj->f5C = 1;
             c->f5C = 1;
             c->f34 = 0;
             c->f30 = 0;
@@ -2321,7 +2321,7 @@ void InitPodiumTrophy(NAS *arg0) {
         KillNAS(arg0);
         return;
     }
-    D_800BD594 = (PodiumObj *)arg0;
+    PodiumTrophyObj = (PodiumObj *)arg0;
 }
 
 void InitPodiumOdo(u8 *arg0) {
@@ -2346,7 +2346,7 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
 
     nas = CreateNAS(arg1->x, World_floor_level, arg1->z, 0x1F01, 0x11);
     if (nas != NULL) {
-        D_800BD584[arg0] = nas;
+        PodiumHeroNas[arg0] = nas;
         nas->UserInfo.user1 = arg0 + 1;
         nas->UserInfo.flags = arg1->flags;
         k = arg1->kind;
@@ -2363,12 +2363,12 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
                 s = e->sub;
                 if (s != NULL && (s = s->next, s != NULL)) {
                     s->unk6C = &D_8005572C;
-                    p = (u8 *)D_800BD1F0;
+                    p = (u8 *)PodiumHeroAnims;
                     t = (k - 1) * 4;
                     s->unk74 = *(u16 *)(p + t);
                     s->flags |= 0x8000;
                     s = e->sub;
-                    s->unk08 = -*(s32 *)((u8 *)D_800BD200 + t);
+                    s->unk08 = -*(s32 *)((u8 *)PodiumHeroX + t);
                 }
             }
         }
@@ -2390,10 +2390,10 @@ void UpdatePodium(void) {
             any = 1;
         }
     }
-    if (any != 0 && D_800BD5B4 != 0 && D_800BD5B0 < 4U) {
-        D_800BD5B0 = 4;
+    if (any != 0 && PodiumReady != 0 && PodiumState < 4U) {
+        PodiumState = 4;
     }
-    if (D_800BD5B0 == 0x64) {
+    if (PodiumState == 0x64) {
         ((HubGameView *)D_8005A614)->unk24 = 0;
         ((HubGameView *)D_8005A614)->unk30 = 0x8002;
     }
@@ -2401,36 +2401,36 @@ void UpdatePodium(void) {
 }
 
 /* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
-const char D_800B3894[] = "DONE";
-const char D_800B389C[] = "CANCEL";
-const char D_800B38A4[] = "A";
-const char D_800B38A8[] = "B";
-const char D_800B38AC[] = "C";
-const char D_800B38B0[] = "D";
-const char D_800B38B4[] = "E";
-const char D_800B38B8[] = "F";
-const char D_800B38BC[] = "G";
-const char D_800B38C0[] = "H";
-const char D_800B38C4[] = "I";
-const char D_800B38C8[] = "J";
-const char D_800B38CC[] = "K";
-const char D_800B38D0[] = "L";
-const char D_800B38D4[] = "M";
-const char D_800B38D8[] = "N";
-const char D_800B38DC[] = "O";
-const char D_800B38E0[] = "P";
-const char D_800B38E4[] = "Q";
-const char D_800B38E8[] = "R";
-const char D_800B38EC[] = "S";
-const char D_800B38F0[] = "T";
-const char D_800B38F4[] = "U";
-const char D_800B38F8[] = "V";
-const char D_800B38FC[] = "W";
-const char D_800B3900[] = "X";
-const char D_800B3904[] = "Y";
-const char D_800B3908[] = "Z";
-const char D_800B390C[] = "@";
-const char D_800B3910[] = "<";
+const char HubTextDone[] = "DONE";
+const char HubTextCancel[] = "CANCEL";
+const char HubKeyA[] = "A";
+const char HubKeyB[] = "B";
+const char HubKeyC[] = "C";
+const char HubKeyD[] = "D";
+const char HubKeyE[] = "E";
+const char HubKeyF[] = "F";
+const char HubKeyG[] = "G";
+const char HubKeyH[] = "H";
+const char HubKeyI[] = "I";
+const char HubKeyJ[] = "J";
+const char HubKeyK[] = "K";
+const char HubKeyL[] = "L";
+const char HubKeyM[] = "M";
+const char HubKeyN[] = "N";
+const char HubKeyO[] = "O";
+const char HubKeyP[] = "P";
+const char HubKeyQ[] = "Q";
+const char HubKeyR[] = "R";
+const char HubKeyS[] = "S";
+const char HubKeyT[] = "T";
+const char HubKeyU[] = "U";
+const char HubKeyV[] = "V";
+const char HubKeyW[] = "W";
+const char HubKeyX[] = "X";
+const char HubKeyY[] = "Y";
+const char HubKeyZ[] = "Z";
+const char HubKeyAt[] = "@";
+const char HubKeyBack[] = "<";
 
 void HubSaveMenuInput(void) {
     HubKey *k;
@@ -2443,85 +2443,85 @@ void HubSaveMenuInput(void) {
     s32 j;
     u8 c;
 
-    if ((u32)(D_800BDB50 - 1) >= 2U) {
-        s = D_800BDB58;
-        i = D_800BF19C;
+    if ((u32)(HubSaveChoice - 1) >= 2U) {
+        s = HubNameSubs;
+        i = HubNameNext;
         cur = s + i;
-        j = D_800BF1A0 * sizeof(HubEntry12);
+        j = HubNamePage * sizeof(HubEntry12);
         cur->unk7C = 0;
-        k = (HubKey *)((HubEntry12 *)((u8 *)D_800BD7E0 + j))->unk0 + i;
+        k = (HubKey *)((HubEntry12 *)((u8 *)HubNamePages + j))->unk0 + i;
         pad = (PadButtons *)D_80051338;
         if (pad->pressed & 0x80) {
-            D_800BF19C += k->unkA;
+            HubNameNext += k->unkA;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (pad->pressed & 0x20) {
-            D_800BF19C += k->unkB;
+            HubNameNext += k->unkB;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (pad->pressed & 0x10) {
-            D_800BF19C += k->unkC;
+            HubNameNext += k->unkC;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (pad->pressed & 0x40) {
-            D_800BF19C += k->unkD;
+            HubNameNext += k->unkD;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         if (pad->pressed & 0x4000) {
             switch (k->unk8) {
             case 4:
-                e4 = &D_800BD7E0[D_800BF1A0];
-                if (D_800BF1A4 < 8) {
-                    D_8005A614[D_800BF1A4 + 0x18] = 0x20;
+                e4 = &HubNamePages[HubNamePage];
+                if (HubNameLen < 8) {
+                    D_8005A614[HubNameLen + 0x18] = 0x20;
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                    if (D_800BF1A4 < 7) {
-                        D_800BF1A4 += 1;
+                    if (HubNameLen < 7) {
+                        HubNameLen += 1;
                     }
-                    if (D_800BF1A4 == 8) {
-                        D_800BF19C = e4->unk8;
+                    if (HubNameLen == 8) {
+                        HubNameNext = e4->unk8;
                     }
                 } else {
                     PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
                 break;
             case 0:
-                e = &D_800BD7E0[D_800BF1A0];
+                e = &HubNamePages[HubNamePage];
                 c = *k->unk4;
-                if (D_800BF1A4 < 8) {
-                    D_8005A614[D_800BF1A4 + 0x18] = c;
+                if (HubNameLen < 8) {
+                    D_8005A614[HubNameLen + 0x18] = c;
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                    if (D_800BF1A4 < 7) {
-                        D_800BF1A4 += 1;
+                    if (HubNameLen < 7) {
+                        HubNameLen += 1;
                     }
-                    if (D_800BF1A4 == 8) {
-                        D_800BF19C = e->unk8;
+                    if (HubNameLen == 8) {
+                        HubNameNext = e->unk8;
                     }
                 } else {
                     PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
                 break;
             case 3:
-                if (D_8005A614[D_800BF1A4 + 0x18] == 0x20) {
-                    if (D_800BF1A4 > 0) {
-                        D_800BF1A4 -= 1;
+                if (D_8005A614[HubNameLen + 0x18] == 0x20) {
+                    if (HubNameLen > 0) {
+                        HubNameLen -= 1;
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     } else {
                         PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                 }
-                D_8005A614[D_800BF1A4 + 0x18] = 0x20;
+                D_8005A614[HubNameLen + 0x18] = 0x20;
                 break;
             case 1:
                 PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                D_800BDB50 = 1;
+                HubSaveChoice = 1;
                 break;
             case 2:
                 PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
-                D_800BDB50 = 2;
+                HubSaveChoice = 2;
                 break;
             }
         }
-        D_800BDB58[D_800BF19C].unk7C = 2;
+        HubNameSubs[HubNameNext].unk7C = 2;
     }
 }
 
@@ -2532,20 +2532,20 @@ void HubSaveMenuInit(void) {
     SubInitList *list;
     HubEntry12 *new_var;
 
-    D_800BF100 = EngineTemplate;
-    D_800BF19C = 0;
-    D_800BF1A0 = 0;
-    D_800BF19C = 0;
-    D_800BF1A0 = 0;
+    HubNameEngine = EngineTemplate;
+    HubNameNext = 0;
+    HubNamePage = 0;
+    HubNameNext = 0;
+    HubNamePage = 0;
     i = 0;
-    kill_subs(D_800BF100.sub);
-    func_8001D3B0(&D_800BF100, 0x21, D_800BDB58);
-    s = D_800BDB58;
-    list = (SubInitList *)D_800BD7E0;
+    kill_subs(HubNameEngine.sub);
+    func_8001D3B0(&HubNameEngine, 0x21, HubNameSubs);
+    s = HubNameSubs;
+    list = (SubInitList *)HubNamePages;
     p = list->items;
-    D_800BF100.unk10.x = 0xC4;
-    D_800BF100.unk10.y = 0xBE;
-    D_800BF100.flags |= 0x10000000;
+    HubNameEngine.unk10.x = 0xC4;
+    HubNameEngine.unk10.y = 0xBE;
+    HubNameEngine.flags |= 0x10000000;
     if (i < list->count) {
         do {
             func_80095F48((s32 *)s, p->a, p->b, p->c, 0);
@@ -2554,22 +2554,22 @@ void HubSaveMenuInit(void) {
             i++;
         } while (i < list->count);
     }
-    D_800BDB50 = 0;
-    for (D_800BF1A4 = 7; D_800BF1A4 > 0; D_800BF1A4--) {
-        if (D_8005A614[D_800BF1A4 + 0x18] != 0x20) {
+    HubSaveChoice = 0;
+    for (HubNameLen = 7; HubNameLen > 0; HubNameLen--) {
+        if (D_8005A614[HubNameLen + 0x18] != 0x20) {
             break;
         }
     }
-    if (D_800BF1A4 > 0) {
-        new_var = &D_800BD7E0[D_800BF1A0];
-        D_800BF19C = (*new_var).unk8;
+    if (HubNameLen > 0) {
+        new_var = &HubNamePages[HubNamePage];
+        HubNameNext = (*new_var).unk8;
     }
     set_fade(&D_8009F644, -0x300, 0);
-    cam_init(D_800BF1A8);
-    func_80095BEC(0, D_800BD8B0);
+    cam_init(HubSaveCamera);
+    func_80095BEC(0, HubNameLetters);
     GetEngineSlot(0)->unk10.x = 0xC8;
     GetEngineSlot(0)->unk10.y = 0x6E;
-    func_80095BEC(1, D_800BD7FC);
+    func_80095BEC(1, HubNamePanel);
     GetEngineSlot(1)->unk10.x = 0;
     GetEngineSlot(1)->unk10.y = 0;
 }
@@ -2580,15 +2580,15 @@ void HubSaveMenuRender(void) {
     s32 *p;
     EXTengine *e;
 
-    func_80018B08(&D_800BDB14, (GfxCamera *)D_800BF1A8);
+    func_80018B08(&HubSaveViewport, (GfxCamera *)HubSaveCamera);
     D_800569AC = D_8009F644.amount;
     e = GetEngineSlot(0);
     i = 0;
     g = D_8005A614;
     p = (s32 *)((u8 *)e->sub + 0x540);
     do {
-        D_800BD5B8[i * 2] = g[i + 0x18];
-        if (D_800BD5B8[i * 2] == 0x20) {
+        HubNameCursor[i * 2] = g[i + 0x18];
+        if (HubNameCursor[i * 2] == 0x20) {
             *p |= 0x8000;
         } else {
             *p &= ~0x8000;
@@ -2598,7 +2598,7 @@ void HubSaveMenuRender(void) {
     } while (i < 8);
     func_8001C2C0((u8 *)GetEngineSlot(0));
     func_8001C2C0((u8 *)GetEngineSlot(1));
-    func_8001C2C0((u8 *)&D_800BF100);
+    func_8001C2C0((u8 *)&HubNameEngine);
 }
 
 void HubSaveMenuQuit(void) {
@@ -2616,15 +2616,15 @@ void HubSaveMenuUpdate(void) {
 void HubNameEntryKey(s8 arg0) {
     HubEntry12 *e;
 
-    e = &D_800BD7E0[D_800BF1A0];
-    if (D_800BF1A4 < 8) {
-        D_8005A614[D_800BF1A4 + 0x18] = arg0;
+    e = &HubNamePages[HubNamePage];
+    if (HubNameLen < 8) {
+        D_8005A614[HubNameLen + 0x18] = arg0;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-        if (D_800BF1A4 < 7) {
-            D_800BF1A4 += 1;
+        if (HubNameLen < 7) {
+            HubNameLen += 1;
         }
-        if (D_800BF1A4 == 8) {
-            D_800BF19C = e->unk8;
+        if (HubNameLen == 8) {
+            HubNameNext = e->unk8;
         }
     } else {
         PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2636,15 +2636,15 @@ void HubSaveMenuSubs(SubInitList *list) {
     subengine *s;
     SubInit *p;
 
-    kill_subs(D_800BF100.sub);
+    kill_subs(HubNameEngine.sub);
     do {
         i = 0;
-        func_8001D3B0(&D_800BF100, 0x21, D_800BDB58);
+        func_8001D3B0(&HubNameEngine, 0x21, HubNameSubs);
     } while (0);
-    s = D_800BDB58;
-    D_800BF100.unk10.x = 0xC4;
-    D_800BF100.unk10.y = 0xBE;
-    D_800BF100.flags |= 0x10000000;
+    s = HubNameSubs;
+    HubNameEngine.unk10.x = 0xC4;
+    HubNameEngine.unk10.y = 0xBE;
+    HubNameEngine.flags |= 0x10000000;
     p = list->items;
     if (list->count > 0) {
         do {
@@ -2657,9 +2657,9 @@ void HubSaveMenuSubs(SubInitList *list) {
 }
 
 void HubSaveMenuReset(void) {
-    D_800BF100 = EngineTemplate;
-    D_800BF19C = 0;
-    D_800BF1A0 = 0;
+    HubNameEngine = EngineTemplate;
+    HubNameNext = 0;
+    HubNamePage = 0;
 }
 
 void HubProjectObj(HubRenderObj *obj, s16 *out) {
@@ -2771,7 +2771,7 @@ void HubDrawObj(HubRenderObj *obj, void *arg1) {
     if ((obj->flags & 0x8000) && c != 0) {
         saved = D_80056998.ot;
         func_8001D894(obj, arg1, obj->flags, c);
-        D_80056998.ot = (u32 *)(D_800BF264 + ((D_8005B690 & 1) << 14));
+        D_80056998.ot = (u32 *)(HubOtBuffer + ((D_8005B690 & 1) << 14));
         ClearOTagR(D_80056998.ot, 0x138);
         obj->flags |= 0x2000000;
         obj->unk68 = -0x170;
@@ -2779,12 +2779,12 @@ void HubDrawObj(HubRenderObj *obj, void *arg1) {
         HubProjectObj(obj, sp10);
         d = sp10[3];
         y = sp10[1];
-        h = (D_800BF260 * (d - y)) / 4096;
+        h = (HubDoorFade * (d - y)) / 4096;
         sp18[2] = 0x200;
         sp18[0] = 0;
         sp18[1] = 0;
         sp18[3] = h + y;
-        HubSetDrawArea(sp18, D_800C7264, 0x400, y);
+        HubSetDrawArea(sp18, HubDrawEnv, 0x400, y);
         D_80056998.ot = saved;
     }
 }
@@ -2810,304 +2810,304 @@ void HubProject(SVECTOR *v, s16 *b) {
 }
 
 /* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
-const char D_800B3928[] = "ENTER NAME";
-const char D_800B3934[4] = ".\000\"\226";
-const char D_800B3938[] = "DEVELOPED BY";
-const char D_800B3948[] = "EUROCOM ENTERTAINMENT";
-const char D_800B3960[] = "SOFTWARE";
-const char D_800B396C[] = "IN ASSOCATION WITH";
-const char D_800B3980[] = "CERNY GAMES";
-const char D_800B398C[] = "PRODUCERS";
-const char D_800B3998[] = "JON WILLIAMS";
-const char D_800B39A8[] = "MARK CERNY";
-const char D_800B39B4[] = "PROGRAMMING";
-const char D_800B39C0[] = "DAVE PRIDMORE";
-const char D_800B39D0[] = "STUART JOHNSON";
-const char D_800B39E0[] = "JULIAN WALSHAW-VAUGHAN";
-const char D_800B39F8[] = "STEVE BAK";
-const char D_800B3A04[] = "KRIS ADCOCK";
-const char D_800B3A10[] = "GRAPHICS";
-const char D_800B3A1C[] = "MATT DIXON";
-const char D_800B3A28[] = "STEVE BAMFORD";
-const char D_800B3A38[] = "CLIVE STEVENSON";
-const char D_800B3A48[] = "JON PARR";
-const char D_800B3A54[] = "ANIMATION";
-const char D_800B3A60[] = "MARK POVEY";
-const char D_800B3A6C[] = "BRYAN ROGERS";
-const char D_800B3A7C[] = "BRIAN MALONE-WEST";
-const char D_800B3A90[] = "MUSIC AND SOUND EFFECTS";
-const char D_800B3AA8[] = "STEVE DUCKWORTH";
-const char D_800B3AB8[] = "ASSISTANT PRODUCER";
-const char D_800B3ACC[] = "PHIL BENNETT";
-const char D_800B3ADC[] = "TOOLS SUPPORT";
-const char D_800B3AEC[] = "ANDY MITCHELL";
-const char D_800B3AFC[] = "CHRIS JACKSON";
-const char D_800B3B0C[] = "KEVIN MARKS";
-const char D_800B3B18[] = "QUALITY ASSURANCE MANAGER";
-const char D_800B3B34[] = "MICHAEL ROBINSON";
-const char D_800B3B48[] = "QUALITY ASSURANCE";
-const char D_800B3B5C[] = "ANDY DILKS";
-const char D_800B3B68[] = "RICH HIGGINS";
-const char D_800B3B78[] = "ANDY LALLY";
-const char D_800B3B84[] = "JOHN LEE BARKER";
-const char D_800B3B94[] = "CHRIS J. JACKSON";
-const char D_800B3BA8[] = "RICHARD NICHOLLS";
-const char D_800B3BBC[] = "MARK SHAW";
-const char D_800B3BC8[] = "RICHARD CHARLES";
-const char D_800B3BD8[] = "SPECIAL THANKS";
-const char D_800B3BE8[] = "MICHAEL JOHN";
-const char D_800B3BF8[] = "HUGH BINNS";
-const char D_800B3C04[] = "MAT SNEAP";
-const char D_800B3C10[] = "JIM WILSON";
-const char D_800B3C1C[] = "RACHEL HALL";
-const char D_800B3C28[] = "MIKE BOTHAM";
-const char D_800B3C34[] = "CARL CROPLEY";
-const char D_800B3C44[] = "CORNELL JOHN";
-const char D_800B3C54[] = "PRODUCED BY";
-const char D_800B3C60[] = "UNIVERSAL INTERACTIVE";
-const char D_800B3C78[] = "STUDIOS";
-const char D_800B3C80[] = "SENIOR PRODUCER";
-const char D_800B3C90[] = "VIJAY LAKSHMAN";
-const char D_800B3CA0[] = "PRODUCTION COORDINATORS";
-const char D_800B3CB8[] = "MELISSA MILLER";
-const char D_800B3CC8[] = "BRIAN STEPHENS";
-const char D_800B3CD8[] = "ADDITIONAL MINIGAME DESIGN";
-const char D_800B3CF4[] = "SEAN KRANKEL";
-const char D_800B3D04[] = "RICCI RUKAVINA";
-const char D_800B3D14[] = "ANTHONY AHN";
-const char D_800B3D20[] = "SEAN MOUNTAIN";
-const char D_800B3D30[] = "NOEL GALLAN";
-const char D_800B3D3C[] = "JOSH GOTTSEGEN";
-const char D_800B3D4C[] = "DIRECTOR OF MARKETING";
-const char D_800B3D64[] = "PRITY PATEL";
-const char D_800B3D70[] = "MARKETING COORDINATOR";
-const char D_800B3D88[] = "MARCUS SAVINO";
-const char D_800B3D98[] = "PUBLISHED AND PRODUCED BY";
-const char D_800B3DB4[] = "SONY COMPUTER";
-const char D_800B3DC4[] = "ENTERTAINMENT";
-const char D_800B3DD4[] = "AMERICA";
-const char D_800B3DDC[] = "DONOVAN SOTO";
-const char D_800B3DEC[] = "PRODUCER";
-const char D_800B3DF8[] = "GRADY HUNT";
-const char D_800B3E04[] = "SAM THOMPSON";
-const char D_800B3E14[] = "DIRECTOR OF\01516PRODUCT DEVELOPMENT";
-const char D_800B3E38[] = "CONNIE BOOTH";
-const char D_800B3E48[] = "VICE PRESIDENT OF\01516PRODUCT DEVELOPMENT";
-const char D_800B3E70[] = "SHUHEI YOSHIDA";
-const char D_800B3E80[] = "AMI MATSUMURA-BLAIRE";
-const char D_800B3E98[] = "ASSOCIATE PRODUCT MANAGER";
-const char D_800B3EB4[] = "RON EAGLE";
-const char D_800B3EC0[] = "LEGAL AND INTELLECTUAL\01516PROPERTY";
-const char D_800B3EE4[] = "KIRSTEN COSTELLO";
-const char D_800B3EF8[] = "KERRY HOPKINS";
-const char D_800B3F08[] = "LISA LUNGER";
-const char D_800B3F14[] = "RILEY RUSSELL";
-const char D_800B3F24[] = "MARKET RESEARCH";
-const char D_800B3F34[] = "JOHN CROMPTON";
-const char D_800B3F44[] = "PROMOTIONS";
-const char D_800B3F50[] = "SHARON SHAPIRO";
-const char D_800B3F60[] = "JANEEN ANDERSON";
-const char D_800B3F70[] = "DONNA ARMENTOR";
-const char D_800B3F80[] = "AIMEE DUELL";
-const char D_800B3F8C[] = "PUBLIC RELATIONS";
-const char D_800B3FA0[] = "MOLLY SMITH";
-const char D_800B3FAC[] = "RYAN BOWLING";
-const char D_800B3FBC[] = "STEPHANIE IWAMASA";
-const char D_800B3FD0[] = "CHARLOTTE PANTHER";
-const char D_800B3FE4[] = "EILEEN RODRIQUEZ";
-const char D_800B3FF8[] = "CREATIVE SERVICES";
-const char D_800B400C[] = "MARILYN WEYANT";
-const char D_800B401C[] = "JOSH BINGHAM";
-const char D_800B402C[] = "JOHN DIAMONON";
-const char D_800B403C[] = "PEGGY GALLAGHER";
-const char D_800B404C[] = "TED JALBERT";
-const char D_800B4058[] = "QUINN LEE";
-const char D_800B4064[] = "MARIE MACASPAC";
-const char D_800B4074[] = "RUTH SATO";
-const char D_800B4080[] = "JACK SILVER";
-const char D_800B408C[] = "QA MANAGER";
-const char D_800B4098[] = "CHRIS CAPRIO";
-const char D_800B40A8[] = "SUPERVISORS";
-const char D_800B40B4[] = "BRUCE COCHRANE";
-const char D_800B40C4[] = "TIM DUZMAL";
-const char D_800B40D0[] = "CONNER MORLANG";
-const char D_800B40E0[] = "TECHNICAL COORDINATORS";
-const char D_800B40F8[] = "BEN BRIONES";
-const char D_800B4104[] = "DATABASE COORDINATOR";
-const char D_800B411C[] = "CHRISTIAN DAVIES";
-const char D_800B4130[] = "LEAD TESTERS";
-const char D_800B4140[] = "ANDREW BYRNE";
-const char D_800B4150[] = "DEREK RAYLA";
-const char D_800B415C[] = "ASSISTANT LEAD TESTERS";
-const char D_800B4174[] = "MICHAEL CHANG";
-const char D_800B4184[] = "STEVEN GONZALEZ";
-const char D_800B4194[] = "TERESA KOSSOB";
-const char D_800B41A4[] = "TESTERS";
-const char D_800B41AC[] = "ANGELICA BERNARBE";
-const char D_800B41C0[] = "ERIC BODINE";
-const char D_800B41CC[] = "COBALT DENA";
-const char D_800B41D8[] = "JENNYFER HAMILTON";
-const char D_800B41EC[] = "BURR HILSABECK";
-const char D_800B41FC[] = "RICH KRINOK";
-const char D_800B4208[] = "JOEL MANZANO";
-const char D_800B4218[] = "ROSS MONTGOMERY";
-const char D_800B4228[] = "ERIC ROSSI";
-const char D_800B4234[] = "AARON WHITMORE";
-const char D_800B4244[] = "ANDREW WOODWORTH";
-const char D_800B4258[] = "CHRIS ARENDS";
-const char D_800B4268[] = "ERIC FRANKLIN";
-const char D_800B4278[] = "GREG PHILLIPS";
-const char D_800B4288[] = "GRETEL PEREZ";
-const char D_800B4298[] = "HENRY MACAIRAN";
-const char D_800B42A8[] = "JACOB SLIPAK";
-const char D_800B42B8[] = "JASON GREEN";
-const char D_800B42C4[] = "JO ANNE LARSEN";
-const char D_800B42D4[] = "JOE RAPOSO";
-const char D_800B42E0[] = "LEONARD KO";
-const char D_800B42EC[] = "MIKAL DACE";
-const char D_800B42F8[] = "NATHAN FRANTZ";
-const char D_800B4308[] = "RAMON CONCEPCION";
-const char D_800B431C[] = "RUSSELL YOUNG";
-const char D_800B432C[] = "SEAN PHELPS";
-const char D_800B4338[] = "SEANN PARKER";
-const char D_800B4348[] = "SHANNON LYNAS";
-const char D_800B4358[] = "SHAWN REFOUA";
-const char D_800B4368[] = "STEPHANIE BEIN";
-const char D_800B4378[] = "STERLING HAYWOOD";
-const char D_800B438C[] = "TONY FELICE";
-const char D_800B4398[] = "WILL SHEPARD";
-const char D_800B43A8[] = "SETH EVANS";
-const char D_800B43B4[] = "BRUCE ADAMS";
-const char D_800B43C0[] = "GARY BARTH";
-const char D_800B43CC[] = "CLAUDETTE CASTILLO";
-const char D_800B43E0[] = "LORI CHASE";
-const char D_800B43EC[] = "SARA CHENOWETH";
-const char D_800B43FC[] = "EDDY CHU";
-const char D_800B4408[] = "MIKE CZAKO";
-const char D_800B4414[] = "BRIAN DIMICK";
-const char D_800B4424[] = "ALBERTO ESCOBEDO";
-const char D_800B4438[] = "BOB FREMGEN";
-const char D_800B4444[] = "GERRY GENTILE";
-const char D_800B4454[] = "BRIAN HALE";
-const char D_800B4460[] = "KARA HARRIS";
-const char D_800B446C[] = "PHIL HARRISON";
-const char D_800B447C[] = "KAZ HIRAI";
-const char D_800B4488[] = "BETSEY HOROWITZ";
-const char D_800B4498[] = "ANDREW HOUSE";
-const char D_800B44A8[] = "JEFF HUTCHINSON";
-const char D_800B44B8[] = "GRACE KAO";
-const char D_800B44C4[] = "LORAINE KRAUS";
-const char D_800B44D4[] = "CHUCK LACSON";
-const char D_800B44E4[] = "COLIN MACLEAN";
-const char D_800B44F4[] = "KRIS MATHUR";
-const char D_800B4500[] = "FRANK O'MALLEY";
-const char D_800B4510[] = "JOEL PAMBID";
-const char D_800B451C[] = "GARY PASCOE";
-const char D_800B4528[] = "JOHN PAYNE";
-const char D_800B4534[] = "RICH LAROCCA";
-const char D_800B4544[] = "MAGGIE ROJAS";
-const char D_800B4554[] = "RICK ROONEY";
-const char D_800B4560[] = "STEVE ROSS";
-const char D_800B456C[] = "PETER STEINZEIG";
-const char D_800B457C[] = "JONI TONEY";
-const char D_800B4588[] = "JACK TRETTON";
-const char D_800B4598[] = "MARK VALLEDOR";
-const char D_800B45A8[] = "TONEY WONG";
-const char D_800B45B4[] = "FLEISHMAN-HILLARD";
-const char D_800B45C8[] = "TBWA - CHIAT DAY";
-const char D_800B45DC[] = "AXIOM DESIGNS";
-const char D_800B45EC[] = "SONY COMPUTER ENTERTAINMENT JAPAN";
-const char D_800B4610[] = "RYOICHI HASEGAWA";
-const char D_800B4624[] = "ATSUSHI MATSUSHITA";
-const char D_800B4638[] = "SONY COMPUTER ENTERTAINMENT EUROPE";
-const char D_800B465C[] = "ELIZABETH ASHFORD";
-const char D_800B4670[] = "KENNY MATHERS";
-const char D_800B4680[20] = "ISABELLE TOMATIS\000\000\004\225";
+const char HubTextEnterName[] = "ENTER NAME";
+const char HubTextDot[4] = ".\000\"\226";
+const char HubCredit000[] = "DEVELOPED BY";
+const char HubCredit001[] = "EUROCOM ENTERTAINMENT";
+const char HubCredit002[] = "SOFTWARE";
+const char HubCredit003[] = "IN ASSOCATION WITH";
+const char HubCredit004[] = "CERNY GAMES";
+const char HubCredit005[] = "PRODUCERS";
+const char HubCredit006[] = "JON WILLIAMS";
+const char HubCredit007[] = "MARK CERNY";
+const char HubCredit008[] = "PROGRAMMING";
+const char HubCredit009[] = "DAVE PRIDMORE";
+const char HubCredit010[] = "STUART JOHNSON";
+const char HubCredit011[] = "JULIAN WALSHAW-VAUGHAN";
+const char HubCredit012[] = "STEVE BAK";
+const char HubCredit013[] = "KRIS ADCOCK";
+const char HubCredit014[] = "GRAPHICS";
+const char HubCredit015[] = "MATT DIXON";
+const char HubCredit016[] = "STEVE BAMFORD";
+const char HubCredit017[] = "CLIVE STEVENSON";
+const char HubCredit018[] = "JON PARR";
+const char HubCredit019[] = "ANIMATION";
+const char HubCredit020[] = "MARK POVEY";
+const char HubCredit021[] = "BRYAN ROGERS";
+const char HubCredit022[] = "BRIAN MALONE-WEST";
+const char HubCredit023[] = "MUSIC AND SOUND EFFECTS";
+const char HubCredit024[] = "STEVE DUCKWORTH";
+const char HubCredit025[] = "ASSISTANT PRODUCER";
+const char HubCredit026[] = "PHIL BENNETT";
+const char HubCredit027[] = "TOOLS SUPPORT";
+const char HubCredit028[] = "ANDY MITCHELL";
+const char HubCredit029[] = "CHRIS JACKSON";
+const char HubCredit030[] = "KEVIN MARKS";
+const char HubCredit031[] = "QUALITY ASSURANCE MANAGER";
+const char HubCredit032[] = "MICHAEL ROBINSON";
+const char HubCredit033[] = "QUALITY ASSURANCE";
+const char HubCredit034[] = "ANDY DILKS";
+const char HubCredit035[] = "RICH HIGGINS";
+const char HubCredit036[] = "ANDY LALLY";
+const char HubCredit037[] = "JOHN LEE BARKER";
+const char HubCredit038[] = "CHRIS J. JACKSON";
+const char HubCredit039[] = "RICHARD NICHOLLS";
+const char HubCredit040[] = "MARK SHAW";
+const char HubCredit041[] = "RICHARD CHARLES";
+const char HubCredit042[] = "SPECIAL THANKS";
+const char HubCredit043[] = "MICHAEL JOHN";
+const char HubCredit044[] = "HUGH BINNS";
+const char HubCredit045[] = "MAT SNEAP";
+const char HubCredit046[] = "JIM WILSON";
+const char HubCredit047[] = "RACHEL HALL";
+const char HubCredit048[] = "MIKE BOTHAM";
+const char HubCredit049[] = "CARL CROPLEY";
+const char HubCredit050[] = "CORNELL JOHN";
+const char HubCredit051[] = "PRODUCED BY";
+const char HubCredit052[] = "UNIVERSAL INTERACTIVE";
+const char HubCredit053[] = "STUDIOS";
+const char HubCredit054[] = "SENIOR PRODUCER";
+const char HubCredit055[] = "VIJAY LAKSHMAN";
+const char HubCredit056[] = "PRODUCTION COORDINATORS";
+const char HubCredit057[] = "MELISSA MILLER";
+const char HubCredit058[] = "BRIAN STEPHENS";
+const char HubCredit059[] = "ADDITIONAL MINIGAME DESIGN";
+const char HubCredit060[] = "SEAN KRANKEL";
+const char HubCredit061[] = "RICCI RUKAVINA";
+const char HubCredit062[] = "ANTHONY AHN";
+const char HubCredit063[] = "SEAN MOUNTAIN";
+const char HubCredit064[] = "NOEL GALLAN";
+const char HubCredit065[] = "JOSH GOTTSEGEN";
+const char HubCredit066[] = "DIRECTOR OF MARKETING";
+const char HubCredit067[] = "PRITY PATEL";
+const char HubCredit068[] = "MARKETING COORDINATOR";
+const char HubCredit069[] = "MARCUS SAVINO";
+const char HubCredit070[] = "PUBLISHED AND PRODUCED BY";
+const char HubCredit071[] = "SONY COMPUTER";
+const char HubCredit072[] = "ENTERTAINMENT";
+const char HubCredit073[] = "AMERICA";
+const char HubCredit074[] = "DONOVAN SOTO";
+const char HubCredit075[] = "PRODUCER";
+const char HubCredit076[] = "GRADY HUNT";
+const char HubCredit077[] = "SAM THOMPSON";
+const char HubCredit078[] = "DIRECTOR OF\01516PRODUCT DEVELOPMENT";
+const char HubCredit079[] = "CONNIE BOOTH";
+const char HubCredit080[] = "VICE PRESIDENT OF\01516PRODUCT DEVELOPMENT";
+const char HubCredit081[] = "SHUHEI YOSHIDA";
+const char HubCredit082[] = "AMI MATSUMURA-BLAIRE";
+const char HubCredit083[] = "ASSOCIATE PRODUCT MANAGER";
+const char HubCredit084[] = "RON EAGLE";
+const char HubCredit085[] = "LEGAL AND INTELLECTUAL\01516PROPERTY";
+const char HubCredit086[] = "KIRSTEN COSTELLO";
+const char HubCredit087[] = "KERRY HOPKINS";
+const char HubCredit088[] = "LISA LUNGER";
+const char HubCredit089[] = "RILEY RUSSELL";
+const char HubCredit090[] = "MARKET RESEARCH";
+const char HubCredit091[] = "JOHN CROMPTON";
+const char HubCredit092[] = "PROMOTIONS";
+const char HubCredit093[] = "SHARON SHAPIRO";
+const char HubCredit094[] = "JANEEN ANDERSON";
+const char HubCredit095[] = "DONNA ARMENTOR";
+const char HubCredit096[] = "AIMEE DUELL";
+const char HubCredit097[] = "PUBLIC RELATIONS";
+const char HubCredit098[] = "MOLLY SMITH";
+const char HubCredit099[] = "RYAN BOWLING";
+const char HubCredit100[] = "STEPHANIE IWAMASA";
+const char HubCredit101[] = "CHARLOTTE PANTHER";
+const char HubCredit102[] = "EILEEN RODRIQUEZ";
+const char HubCredit103[] = "CREATIVE SERVICES";
+const char HubCredit104[] = "MARILYN WEYANT";
+const char HubCredit105[] = "JOSH BINGHAM";
+const char HubCredit106[] = "JOHN DIAMONON";
+const char HubCredit107[] = "PEGGY GALLAGHER";
+const char HubCredit108[] = "TED JALBERT";
+const char HubCredit109[] = "QUINN LEE";
+const char HubCredit110[] = "MARIE MACASPAC";
+const char HubCredit111[] = "RUTH SATO";
+const char HubCredit112[] = "JACK SILVER";
+const char HubCredit113[] = "QA MANAGER";
+const char HubCredit114[] = "CHRIS CAPRIO";
+const char HubCredit115[] = "SUPERVISORS";
+const char HubCredit116[] = "BRUCE COCHRANE";
+const char HubCredit117[] = "TIM DUZMAL";
+const char HubCredit118[] = "CONNER MORLANG";
+const char HubCredit119[] = "TECHNICAL COORDINATORS";
+const char HubCredit120[] = "BEN BRIONES";
+const char HubCredit121[] = "DATABASE COORDINATOR";
+const char HubCredit122[] = "CHRISTIAN DAVIES";
+const char HubCredit123[] = "LEAD TESTERS";
+const char HubCredit124[] = "ANDREW BYRNE";
+const char HubCredit125[] = "DEREK RAYLA";
+const char HubCredit126[] = "ASSISTANT LEAD TESTERS";
+const char HubCredit127[] = "MICHAEL CHANG";
+const char HubCredit128[] = "STEVEN GONZALEZ";
+const char HubCredit129[] = "TERESA KOSSOB";
+const char HubCredit130[] = "TESTERS";
+const char HubCredit131[] = "ANGELICA BERNARBE";
+const char HubCredit132[] = "ERIC BODINE";
+const char HubCredit133[] = "COBALT DENA";
+const char HubCredit134[] = "JENNYFER HAMILTON";
+const char HubCredit135[] = "BURR HILSABECK";
+const char HubCredit136[] = "RICH KRINOK";
+const char HubCredit137[] = "JOEL MANZANO";
+const char HubCredit138[] = "ROSS MONTGOMERY";
+const char HubCredit139[] = "ERIC ROSSI";
+const char HubCredit140[] = "AARON WHITMORE";
+const char HubCredit141[] = "ANDREW WOODWORTH";
+const char HubCredit142[] = "CHRIS ARENDS";
+const char HubCredit143[] = "ERIC FRANKLIN";
+const char HubCredit144[] = "GREG PHILLIPS";
+const char HubCredit145[] = "GRETEL PEREZ";
+const char HubCredit146[] = "HENRY MACAIRAN";
+const char HubCredit147[] = "JACOB SLIPAK";
+const char HubCredit148[] = "JASON GREEN";
+const char HubCredit149[] = "JO ANNE LARSEN";
+const char HubCredit150[] = "JOE RAPOSO";
+const char HubCredit151[] = "LEONARD KO";
+const char HubCredit152[] = "MIKAL DACE";
+const char HubCredit153[] = "NATHAN FRANTZ";
+const char HubCredit154[] = "RAMON CONCEPCION";
+const char HubCredit155[] = "RUSSELL YOUNG";
+const char HubCredit156[] = "SEAN PHELPS";
+const char HubCredit157[] = "SEANN PARKER";
+const char HubCredit158[] = "SHANNON LYNAS";
+const char HubCredit159[] = "SHAWN REFOUA";
+const char HubCredit160[] = "STEPHANIE BEIN";
+const char HubCredit161[] = "STERLING HAYWOOD";
+const char HubCredit162[] = "TONY FELICE";
+const char HubCredit163[] = "WILL SHEPARD";
+const char HubCredit164[] = "SETH EVANS";
+const char HubCredit165[] = "BRUCE ADAMS";
+const char HubCredit166[] = "GARY BARTH";
+const char HubCredit167[] = "CLAUDETTE CASTILLO";
+const char HubCredit168[] = "LORI CHASE";
+const char HubCredit169[] = "SARA CHENOWETH";
+const char HubCredit170[] = "EDDY CHU";
+const char HubCredit171[] = "MIKE CZAKO";
+const char HubCredit172[] = "BRIAN DIMICK";
+const char HubCredit173[] = "ALBERTO ESCOBEDO";
+const char HubCredit174[] = "BOB FREMGEN";
+const char HubCredit175[] = "GERRY GENTILE";
+const char HubCredit176[] = "BRIAN HALE";
+const char HubCredit177[] = "KARA HARRIS";
+const char HubCredit178[] = "PHIL HARRISON";
+const char HubCredit179[] = "KAZ HIRAI";
+const char HubCredit180[] = "BETSEY HOROWITZ";
+const char HubCredit181[] = "ANDREW HOUSE";
+const char HubCredit182[] = "JEFF HUTCHINSON";
+const char HubCredit183[] = "GRACE KAO";
+const char HubCredit184[] = "LORAINE KRAUS";
+const char HubCredit185[] = "CHUCK LACSON";
+const char HubCredit186[] = "COLIN MACLEAN";
+const char HubCredit187[] = "KRIS MATHUR";
+const char HubCredit188[] = "FRANK O'MALLEY";
+const char HubCredit189[] = "JOEL PAMBID";
+const char HubCredit190[] = "GARY PASCOE";
+const char HubCredit191[] = "JOHN PAYNE";
+const char HubCredit192[] = "RICH LAROCCA";
+const char HubCredit193[] = "MAGGIE ROJAS";
+const char HubCredit194[] = "RICK ROONEY";
+const char HubCredit195[] = "STEVE ROSS";
+const char HubCredit196[] = "PETER STEINZEIG";
+const char HubCredit197[] = "JONI TONEY";
+const char HubCredit198[] = "JACK TRETTON";
+const char HubCredit199[] = "MARK VALLEDOR";
+const char HubCredit200[] = "TONEY WONG";
+const char HubCredit201[] = "FLEISHMAN-HILLARD";
+const char HubCredit202[] = "TBWA - CHIAT DAY";
+const char HubCredit203[] = "AXIOM DESIGNS";
+const char HubCredit204[] = "SONY COMPUTER ENTERTAINMENT JAPAN";
+const char HubCredit205[] = "RYOICHI HASEGAWA";
+const char HubCredit206[] = "ATSUSHI MATSUSHITA";
+const char HubCredit207[] = "SONY COMPUTER ENTERTAINMENT EUROPE";
+const char HubCredit208[] = "ELIZABETH ASHFORD";
+const char HubCredit209[] = "KENNY MATHERS";
+const char HubCredit210[20] = "ISABELLE TOMATIS\000\000\004\225";
 
 /* data, in address order */
-s32 D_800BC2D0[1] = { (s32)&D_800B330C };
-s32 D_800BC2D4[1] = { (s32)&D_800B333C };
-s32 D_800BC2D8[1] = { (s32)&D_800B3364 };
-s32 D_800BC2DC[1] = { (s32)&D_800B33A8 };
-s32 D_800BC2E0[1] = { (s32)&D_800B33EC };
-s32 D_800BC2E4[1] = { (s32)&D_800B342C };
-s32 D_800BC2E8[1] = { (s32)&D_800B3458 };
-s32 D_800BC2EC[1] = { (s32)&D_800B3484 };
-s32 D_800BC2F0[1] = { (s32)&D_800B34A8 };
-s32 D_800BC2F4[1] = { (s32)&D_800B34D4 };
-s32 D_800BC2F8[1] = { (s32)&D_800B3500 };
-s32 D_800BC2FC[27] = {
-    4, 0x12C8000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2D0, 4, 0, 0,
+s32 HubLockText00[1] = { (s32)&HubLockMsg00 };
+s32 HubLockText01[1] = { (s32)&HubLockMsg01 };
+s32 HubLockText02[1] = { (s32)&HubLockMsg02 };
+s32 HubLockText03[1] = { (s32)&HubLockMsg03 };
+s32 HubLockText04[1] = { (s32)&HubLockMsg04 };
+s32 HubLockText05[1] = { (s32)&HubLockMsg05 };
+s32 HubLockText06[1] = { (s32)&HubLockMsg06 };
+s32 HubLockText07[1] = { (s32)&HubLockMsg07 };
+s32 HubLockText08[1] = { (s32)&HubLockMsg08 };
+s32 HubLockText09[1] = { (s32)&HubLockMsg09 };
+s32 HubLockText10[1] = { (s32)&HubLockMsg10 };
+s32 HubLockPanel00[27] = {
+    4, 0x12C8000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText00, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC368[27] = {
-    4, 0x12C8000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2D4, 4, 0, 0,
+s32 HubLockPanel01[27] = {
+    4, 0x12C8000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText01, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC3D4[27] = {
-    4, 0x1908000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2D8, 4, 0, 0,
+s32 HubLockPanel02[27] = {
+    4, 0x1908000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText02, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC440[27] = {
-    4, 0x1868000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2DC, 4, 0, 0,
+s32 HubLockPanel03[27] = {
+    4, 0x1868000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText03, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC4AC[27] = {
-    4, 0x1728000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2E0, 4, 0, 0,
+s32 HubLockPanel04[27] = {
+    4, 0x1728000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&HubLockText04, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC518[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2E4, 4, 0, 0,
+s32 HubLockPanel05[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText05, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC584[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2E8, 4, 0, 0,
+s32 HubLockPanel06[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText06, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC5F0[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2EC, 4, 0, 0,
+s32 HubLockPanel07[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText07, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC65C[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2F0, 4, 0, 0,
+s32 HubLockPanel08[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText08, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC6C8[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2F4, 4, 0, 0,
+s32 HubLockPanel09[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText09, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC734[27] = {
-    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2F8, 4, 0, 0,
+s32 HubLockPanel10[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&HubLockText10, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BC7A0[1] = { (s32)&D_800B3528 };
-s32 D_800BC7A4[27] = {
-    4, 0x12C8000, 0x2C0000, 0, 0, 0, 0, 0, 0, 0xE, 0xE00AA, 0, 0, 0, (s32)&D_800BC7A0, 4, 0, 0,
+s32 HubSaveText[1] = { (s32)&HubTextPressSave };
+s32 HubSavePanel[27] = {
+    4, 0x12C8000, 0x2C0000, 0, 0, 0, 0, 0, 0, 0xE, 0xE00AA, 0, 0, 0, (s32)&HubSaveText, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 *D_800BC810[1] = { (void *)&D_800BC7A4 };
-s32 D_800BC814[1] = { (s32)&D_800B3540 };
-s32 D_800BC818[27] = {
-    4, 0x12C8000, 0x2C0000, 0, 0, 0, 0, 0, 0, 0xE, 0xE00AA, 0, 0, 0, (s32)&D_800BC814, 4, 0, 0,
+s32 *HubSavePanels[1] = { (void *)&HubSavePanel };
+s32 HubStartText[1] = { (s32)&HubTextPressStart };
+s32 HubStartPanel[27] = {
+    4, 0x12C8000, 0x2C0000, 0, 0, 0, 0, 0, 0, 0xE, 0xE00AA, 0, 0, 0, (s32)&HubStartText, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 *D_800BC884[1] = { (void *)&D_800BC818 };
-s32 D_800BC888[36] = {
-    4, 0x1A48000, 0x370000, 0, 0, 0, 0, 0, 0, 3, 0x48000, 0, 0, 0, (s32)&D_800B3558, 4, 0, 0,
-    3, 0x1E8000, 0, 0, 0, (s32)&D_800B3540, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+s32 *HubStartPanels[1] = { (void *)&HubStartPanel };
+s32 HubChallengePanel[36] = {
+    4, 0x1A48000, 0x370000, 0, 0, 0, 0, 0, 0, 3, 0x48000, 0, 0, 0, (s32)&HubTextSelectChallenge, 4, 0, 0,
+    3, 0x1E8000, 0, 0, 0, (s32)&HubTextPressStart, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 *D_800BC918[1] = { (void *)&D_800BC888 };
-s32 D_800BC91C[36] = {
-    4, 0x18B8000, 0x3C0000, 0, 0, 0, 0, 0, 0, 3, 0x68000, 0, 0, 0, (s32)&D_800B3580, 4, 0, 0,
-    3, 0x268000, 0, 0, 0, (s32)&D_800B35A8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+s32 *HubChallengePanels[1] = { (void *)&HubChallengePanel };
+s32 HubWarpPanel[36] = {
+    4, 0x18B8000, 0x3C0000, 0, 0, 0, 0, 0, 0, 3, 0x68000, 0, 0, 0, (s32)&HubTextSelectWarpRoom, 4, 0, 0,
+    3, 0x268000, 0, 0, 0, (s32)&HubTextPressEnter, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 *D_800BC9AC[1] = { (void *)&D_800BC91C };
-s32 D_800BC9B0[27] = {
-    4, 0x1908000, 0x3A0000, 0, 0, 0, 0, 0, 0, 3, 0xA8000, 0, 0, 0, (s32)&D_800B35C0, 4, 0, 0,
+s32 *HubWarpPanels[1] = { (void *)&HubWarpPanel };
+s32 HubPapuPanel[27] = {
+    4, 0x1908000, 0x3A0000, 0, 0, 0, 0, 0, 0, 3, 0xA8000, 0, 0, 0, (s32)&HubTextDefeatPapu, 4, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 *D_800BCA1C[1] = { (void *)&D_800BC9B0 };
-EngRec24 D_800BCA20[8] = {
+s32 *HubPapuPanels[1] = { (void *)&HubPapuPanel };
+EngRec24 HubDoorMenuRecs[8] = {
     {
         {
             4, 0, 0, 0, 0x5A, 0, 0xBE, 0, 0, 0, 0x56, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -3165,95 +3165,95 @@ EngRec24 D_800BCA20[8] = {
         0, { 0, 0, 0, 0 },
     },
 };
-s32 D_800BCB40[5] = { 0, 0x5A, 0xB4, 0x10E, 0x168 };
-KeyedPair D_800BCB54[11] = {
-    { 0xB, { (s32)&D_800BC2FC } }, { 4, { (s32)&D_800BC368 } }, { 0x16, { (s32)&D_800BC3D4 } },
-    { 9, { (s32)&D_800BC440 } }, { 0x1F, { (s32)&D_800BC4AC } },
-    { 0x1C, { (s32)&D_800BC518 } }, { 0x1D, { (s32)&D_800BC584 } },
-    { 0x1E, { (s32)&D_800BC5F0 } }, { 0x1A, { (s32)&D_800BC65C } },
-    { 0x19, { (s32)&D_800BC6C8 } }, { 5, { (s32)&D_800BC734 } },
+s32 HubDoorAngles[5] = { 0, 0x5A, 0xB4, 0x10E, 0x168 };
+KeyedPair HubLockPanels[11] = {
+    { 0xB, { (s32)&HubLockPanel00 } }, { 4, { (s32)&HubLockPanel01 } }, { 0x16, { (s32)&HubLockPanel02 } },
+    { 9, { (s32)&HubLockPanel03 } }, { 0x1F, { (s32)&HubLockPanel04 } },
+    { 0x1C, { (s32)&HubLockPanel05 } }, { 0x1D, { (s32)&HubLockPanel06 } },
+    { 0x1E, { (s32)&HubLockPanel07 } }, { 0x1A, { (s32)&HubLockPanel08 } },
+    { 0x19, { (s32)&HubLockPanel09 } }, { 5, { (s32)&HubLockPanel10 } },
 };
-CamEase D_800BCBAC = { { 4, 4, 4 }, { 0x10, 4, 1 }, { 1, 0x10, 0x10 } };
-s32 D_800BCBD0[3] = { 1, 1, 1 };
-u16 D_800BCBDC[10] = { 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0xC00, 0xC00, 0xC00, 0xC00, 0x1000 };
-char *D_800BCBF0[5] = {
-    (void *)&D_800B3618, (void *)&D_800B3670, (void *)&D_800B36C4, (void *)&D_800B371C,
-    (void *)&D_800B3770,
+CamEase HubCamEase = { { 4, 4, 4 }, { 0x10, 4, 1 }, { 1, 0x10, 0x10 } };
+s32 HubUnused0[3] = { 1, 1, 1 };
+u16 HubHeroSizes[10] = { 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0xC00, 0xC00, 0xC00, 0xC00, 0x1000 };
+char *HubHaveTexts[5] = {
+    (void *)&HubTextHaveTrophy, (void *)&HubTextHaveGem, (void *)&HubTextHaveCrystal, (void *)&HubTextHaveRelic,
+    (void *)&HubTextHavePlatinum,
 };
-process_info D_800BCC04 = { HubDoorMenuInit, HubDoorMenuUpdate, HubDoorMenuRender, HubDoorMenuQuit, 0 };
-process_info D_800BCC18 = { HubDoorMenu2Init, HubDoorMenu2Update, HubDoorMenu2Render, HubDoorMenu2Quit, 0 };
-s32 D_800BCC2C[11] = { 0x2019, 0x201A, 0x201B, 0x201C, 0x201D, 0x201E, 0x201D, 0x201C, 0x201B, 0x201A, 0x8000 };
-s32 D_800BCC58[2] = { 0x22019, 0x8000 };
-s32 D_800BCC60[11] = { 0x201F, 0x2020, 0x2021, 0x2022, 0x2023, 0x2024, 0x2023, 0x2022, 0x2021, 0x2020, 0x8000 };
-s32 D_800BCC8C[2] = { 0x22019, 0x8000 };
-s32 D_800BCC94[11] = { 0x2025, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x2029, 0x2028, 0x2027, 0x2026, 0x8000 };
-s32 D_800BCCC0[2] = { 0x22025, 0x8000 };
-s32 D_800BCCC8[8] = {
-    (s32)&D_800BCC2C, (s32)&D_800BCC58, (s32)&D_800BCC60, (s32)&D_800BCC8C, (s32)&D_800BCC94,
-    (s32)&D_800BCCC0, 0, 0,
+process_info HubDoorMenu = { HubDoorMenuInit, HubDoorMenuUpdate, HubDoorMenuRender, HubDoorMenuQuit, 0 };
+process_info HubDoorMenu2 = { HubDoorMenu2Init, HubDoorMenu2Update, HubDoorMenu2Render, HubDoorMenu2Quit, 0 };
+s32 HubPathSteps0[11] = { 0x2019, 0x201A, 0x201B, 0x201C, 0x201D, 0x201E, 0x201D, 0x201C, 0x201B, 0x201A, 0x8000 };
+s32 HubPathSteps1[2] = { 0x22019, 0x8000 };
+s32 HubPathSteps2[11] = { 0x201F, 0x2020, 0x2021, 0x2022, 0x2023, 0x2024, 0x2023, 0x2022, 0x2021, 0x2020, 0x8000 };
+s32 HubPathSteps3[2] = { 0x22019, 0x8000 };
+s32 HubPathSteps4[11] = { 0x2025, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x2029, 0x2028, 0x2027, 0x2026, 0x8000 };
+s32 HubPathSteps5[2] = { 0x22025, 0x8000 };
+s32 HubPathAnimList[8] = {
+    (s32)&HubPathSteps0, (s32)&HubPathSteps1, (s32)&HubPathSteps2, (s32)&HubPathSteps3, (s32)&HubPathSteps4,
+    (s32)&HubPathSteps5, 0, 0,
 };
-ScriptInit D_800BCCE8 = { 0, (void *)&D_800BCCC8, 0x402 };
-EngRec90248 D_800BCCF4[12] = {0};
-s32 D_800BCED4 = 0;
-s32 D_800BCED8 = 0;
-u8 D_800BCEDC = 0;
-s32 D_800BCEE0 = 0;
-s32 D_800BCEE4 = 0;
-subengine *D_800BCEE8 = 0;
-_sfx_handler *D_800BCEEC = 0;
-s32 D_800BCEF0 = 0;
-s32 D_800BCEF4 = 0;
-s32 D_800BCEF8[1] = {0};
-s32 D_800BCEFC = 0;
-s32 D_800BCF00[3] = { (s32)0x80110000, 0x41000019, 0x8000 };
-s32 D_800BCF0C[3] = { (s32)0x80110000, 0x41190017, 0x8001 };
-s32 D_800BCF18[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
-s32 D_800BCF24[9] = {
+ScriptInit HubPathScriptInit = { 0, (void *)&HubPathAnimList, 0x402 };
+EngRec90248 HubGateways[12] = {0};
+s32 HubDoorChoice = 0;
+s32 HubSelectState = 0;
+u8 HubSelectFlag = 0;
+s32 HubSelectedEntry = 0;
+s32 HubSelectTimer = 0;
+subengine *HubSelectSub = 0;
+_sfx_handler *HubSelectSfx = 0;
+s32 HubHeroPressed = 0;
+s32 HubHeroTouchCount = 0;
+s32 HubUnused1[1] = {0};
+s32 HubDoorChoices = 0;
+s32 PodiumSteps0A[3] = { (s32)0x80110000, 0x41000019, 0x8000 };
+s32 PodiumSteps0B[3] = { (s32)0x80110000, 0x41190017, 0x8001 };
+s32 PodiumSteps0C[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
+s32 PodiumSteps0D[9] = {
     (s32)0x80120000, 0x40A5000B, 0xB8011, (s32)0x8011408E, 0x408E000B, 0xB8011,
     (s32)0x8011408E, 0x408E0017, 0x8001,
 };
-s32 D_800BCF48[8] = { (s32)&D_800BCF00, (s32)&D_800BCF0C, 0, 0, (s32)&D_800BCF18, (s32)&D_800BCF24, 0, 4 };
-ScriptInit D_800BCF68 = { 0, (void *)&D_800BCF48, 0x401 };
-s32 D_800BCF74[3] = { (s32)0x80110000, 0x4000001C, 0x8000 };
-s32 D_800BCF80[3] = { (s32)0x80110000, 0x41000064, 0x8001 };
-s32 D_800BCF8C[3] = { (s32)0x80110000, 0x40800038, 0x8001 };
-s32 D_800BCF98[8] = { (s32)&D_800BCF74, (s32)&D_800BCF80, 0, 0, (s32)&D_800BCF74, (s32)&D_800BCF8C, 0, 4 };
-ScriptInit D_800BCFB8 = { 0, (void *)&D_800BCF98, 0x401 };
-s32 D_800BCFC4[3] = { (s32)0x80110000, 0x40000016, 0x8000 };
-s32 D_800BCFD0[3] = { (s32)0x80110000, 0x40800022, 0x8001 };
-s32 D_800BCFDC[3] = { (s32)0x80110000, 0x4100005A, 0x8001 };
-s32 D_800BCFE8[8] = { (s32)&D_800BCFC4, (s32)&D_800BCFD0, 0, 0, (s32)&D_800BCFC4, (s32)&D_800BCFDC, 0, 4 };
-ScriptInit D_800BD008 = { 0, (void *)&D_800BCFE8, 0x401 };
-s32 D_800BD014[3] = { (s32)0x80110000, 0x41000020, 0x8000 };
-s32 D_800BD020[6] = { (s32)0x80110000, 0x40000020, 0x168011, (s32)0x80124009, 0x4009000A, 0x8001 };
-s32 D_800BD038[6] = { (s32)0x80110000, 0x4080002F, 0x1F8011, (s32)0x8011408F, 0x40AF0007, 0x8001 };
-s32 D_800BD050[8] = { (s32)&D_800BD014, (s32)&D_800BD020, 0, 0, (s32)&D_800BD014, (s32)&D_800BD038, 0, 4 };
-ScriptInit D_800BD070 = { 0, (void *)&D_800BD050, 0x401 };
-s32 D_800BD07C[3] = { (s32)0x80110000, 0x40000016, 0x8000 };
-s32 D_800BD088[3] = { (s32)0x80110000, 0x40800060, 0x8001 };
-s32 D_800BD094[3] = { (s32)0x80110000, 0x4180001E, 0x8000 };
-s32 D_800BD0A0[6] = { (s32)0x80110000, 0x41000020, 0x148011, (s32)0x8011410B, 0x410B001C, 0x8001 };
-s32 D_800BD0B8[8] = { (s32)&D_800BD07C, (s32)&D_800BD088, 0, 0, (s32)&D_800BD094, (s32)&D_800BD0A0, 0, 4 };
-ScriptInit D_800BD0D8 = { 0, (void *)&D_800BD0B8, 0x401 };
-s32 D_800BD0E4[3] = { (s32)0x80110000, 0x41000014, 0x8000 };
-s32 D_800BD0F0[3] = { (s32)0x80110000, 0x4180000D, 0x8001 };
-s32 D_800BD0FC[3] = { (s32)0x80110000, 0x40000014, 0x8000 };
-s32 D_800BD108[3] = { (s32)0x80110000, 0x40800043, 0x8000 };
-s32 D_800BD114[8] = { (s32)&D_800BD0E4, (s32)&D_800BD0F0, 0, 0, (s32)&D_800BD0FC, (s32)&D_800BD108, 0, 4 };
-ScriptInit D_800BD134 = { 0, (void *)&D_800BD114, 0x401 };
-s32 D_800BD140[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
-s32 D_800BD14C[5] = { (s32)0x80110000, 0x4080004F, 0x218012, (s32)0x800140A1, 0 };
-s32 D_800BD160[3] = { (s32)0x80110000, 0x4100003C, 0x8001 };
-s32 D_800BD16C[8] = { (s32)&D_800BD140, (s32)&D_800BD14C, 0, 0, (s32)&D_800BD140, (s32)&D_800BD160, 0, 4 };
-ScriptInit D_800BD18C = { 0, (void *)&D_800BD16C, 0x401 };
-s32 D_800BD198[3] = { (s32)0x80110000, 0x41000020, 0x8000 };
-s32 D_800BD1A4[3] = { (s32)0x80110000, 0x40800066, 0x8001 };
-s32 D_800BD1B0[5] = { (s32)0x80110000, 0x40000040, 0x1E8012, (s32)0x8001401E, 0 };
-s32 D_800BD1C4[8] = { (s32)&D_800BD198, (s32)&D_800BD1A4, 0, 0, (s32)&D_800BD198, (s32)&D_800BD1B0, 0, 4 };
-ScriptInit D_800BD1E4 = { 0, (void *)&D_800BD1C4, 0x401 };
-u16 D_800BD1F0[8] = { 0x200C, 0, 0x200C, 0, 0x200B, 0, 0x2009, 0 };
-s32 D_800BD200[4] = { 0, 0x140, 0x180, 0x200 };
-u8 D_800BD210[384] = {
+s32 PodiumAnimList0[8] = { (s32)&PodiumSteps0A, (s32)&PodiumSteps0B, 0, 0, (s32)&PodiumSteps0C, (s32)&PodiumSteps0D, 0, 4 };
+ScriptInit PodiumScript0 = { 0, (void *)&PodiumAnimList0, 0x401 };
+s32 PodiumSteps1A[3] = { (s32)0x80110000, 0x4000001C, 0x8000 };
+s32 PodiumSteps1B[3] = { (s32)0x80110000, 0x41000064, 0x8001 };
+s32 PodiumSteps1C[3] = { (s32)0x80110000, 0x40800038, 0x8001 };
+s32 PodiumAnimList1[8] = { (s32)&PodiumSteps1A, (s32)&PodiumSteps1B, 0, 0, (s32)&PodiumSteps1A, (s32)&PodiumSteps1C, 0, 4 };
+ScriptInit PodiumScript1 = { 0, (void *)&PodiumAnimList1, 0x401 };
+s32 PodiumSteps2A[3] = { (s32)0x80110000, 0x40000016, 0x8000 };
+s32 PodiumSteps2B[3] = { (s32)0x80110000, 0x40800022, 0x8001 };
+s32 PodiumSteps2C[3] = { (s32)0x80110000, 0x4100005A, 0x8001 };
+s32 PodiumAnimList2[8] = { (s32)&PodiumSteps2A, (s32)&PodiumSteps2B, 0, 0, (s32)&PodiumSteps2A, (s32)&PodiumSteps2C, 0, 4 };
+ScriptInit PodiumScript2 = { 0, (void *)&PodiumAnimList2, 0x401 };
+s32 PodiumSteps3A[3] = { (s32)0x80110000, 0x41000020, 0x8000 };
+s32 PodiumSteps3B[6] = { (s32)0x80110000, 0x40000020, 0x168011, (s32)0x80124009, 0x4009000A, 0x8001 };
+s32 PodiumSteps3C[6] = { (s32)0x80110000, 0x4080002F, 0x1F8011, (s32)0x8011408F, 0x40AF0007, 0x8001 };
+s32 PodiumAnimList3[8] = { (s32)&PodiumSteps3A, (s32)&PodiumSteps3B, 0, 0, (s32)&PodiumSteps3A, (s32)&PodiumSteps3C, 0, 4 };
+ScriptInit PodiumScript3 = { 0, (void *)&PodiumAnimList3, 0x401 };
+s32 PodiumSteps4A[3] = { (s32)0x80110000, 0x40000016, 0x8000 };
+s32 PodiumSteps4B[3] = { (s32)0x80110000, 0x40800060, 0x8001 };
+s32 PodiumSteps4C[3] = { (s32)0x80110000, 0x4180001E, 0x8000 };
+s32 PodiumSteps4D[6] = { (s32)0x80110000, 0x41000020, 0x148011, (s32)0x8011410B, 0x410B001C, 0x8001 };
+s32 PodiumAnimList4[8] = { (s32)&PodiumSteps4A, (s32)&PodiumSteps4B, 0, 0, (s32)&PodiumSteps4C, (s32)&PodiumSteps4D, 0, 4 };
+ScriptInit PodiumScript4 = { 0, (void *)&PodiumAnimList4, 0x401 };
+s32 PodiumSteps5A[3] = { (s32)0x80110000, 0x41000014, 0x8000 };
+s32 PodiumSteps5B[3] = { (s32)0x80110000, 0x4180000D, 0x8001 };
+s32 PodiumSteps5C[3] = { (s32)0x80110000, 0x40000014, 0x8000 };
+s32 PodiumSteps5D[3] = { (s32)0x80110000, 0x40800043, 0x8000 };
+s32 PodiumAnimList5[8] = { (s32)&PodiumSteps5A, (s32)&PodiumSteps5B, 0, 0, (s32)&PodiumSteps5C, (s32)&PodiumSteps5D, 0, 4 };
+ScriptInit PodiumScript5 = { 0, (void *)&PodiumAnimList5, 0x401 };
+s32 PodiumSteps6A[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
+s32 PodiumSteps6B[5] = { (s32)0x80110000, 0x4080004F, 0x218012, (s32)0x800140A1, 0 };
+s32 PodiumSteps6C[3] = { (s32)0x80110000, 0x4100003C, 0x8001 };
+s32 PodiumAnimList6[8] = { (s32)&PodiumSteps6A, (s32)&PodiumSteps6B, 0, 0, (s32)&PodiumSteps6A, (s32)&PodiumSteps6C, 0, 4 };
+ScriptInit PodiumScript6 = { 0, (void *)&PodiumAnimList6, 0x401 };
+s32 PodiumSteps7A[3] = { (s32)0x80110000, 0x41000020, 0x8000 };
+s32 PodiumSteps7B[3] = { (s32)0x80110000, 0x40800066, 0x8001 };
+s32 PodiumSteps7C[5] = { (s32)0x80110000, 0x40000040, 0x1E8012, (s32)0x8001401E, 0 };
+s32 PodiumAnimList7[8] = { (s32)&PodiumSteps7A, (s32)&PodiumSteps7B, 0, 0, (s32)&PodiumSteps7A, (s32)&PodiumSteps7C, 0, 4 };
+ScriptInit PodiumScript7 = { 0, (void *)&PodiumAnimList7, 0x401 };
+u16 PodiumHeroAnims[8] = { 0x200C, 0, 0x200C, 0, 0x200B, 0, 0x2009, 0 };
+s32 PodiumHeroX[4] = { 0, 0x140, 0x180, 0x200 };
+u8 PodiumSpawns[384] = {
     0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0xFD, 0xFF, 0xFF, 0, 0, 0, 0, 3, 1, 0, 0, 0, 3, 0,
     0, 0, 0, 0, 0, 2, 1, 0, 0, 0x80, 2, 0, 0, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 4, 0, 0, 0, 0, 0xFD, 0xFF, 0xFF, 0, 0, 0, 0, 3, 1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0,
@@ -3271,203 +3271,203 @@ u8 D_800BD210[384] = {
     0xFE, 0xFF, 0xFF, 0, 0xFE, 0xFF, 0xFF, 1, 0, 0, 0, 0x80, 1, 0, 0, 0, 0xFE, 0xFF, 0xFF, 1,
     0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
 };
-s32 D_800BD390 = 0;
-s32 D_800BD394 = 0;
-u8 *D_800BD398 = (void *)&D_800B37EC;
-s32 D_800BD39C[4] = { (s32)&D_800B37F8, (s32)&D_800B37FC, (s32)&D_800B380C, 0 };
-u8 D_800BD3AC[4] = { 0x31, 0x30, 0, 0 };
-u8 D_800BD3B0[4] = { 0x32, 0x30, 0, 0 };
-u8 D_800BD3B4[4] = { 0x33, 0x30, 0, 0 };
-u8 D_800BD3B8[12] = { 0x34, 0x30, 0, 0, 0x35, 0x30, 0, 0, 0x36, 0x30, 0, 0 };
-s32 D_800BD3C4 = 4;
-s32 D_800BD3C8[106] = {
+s32 PodiumCheerTimer = 0;
+s32 PodiumCheerKind = 0;
+u8 *PodiumAnimName = (void *)&PodiumAnimWinBreathe;
+s32 PodiumAnims[4] = { (s32)&PodiumAnimWin, (s32)&PodiumAnimLoseBreathe, (s32)&PodiumAnimLose, 0 };
+u8 PodiumScore1[4] = { 0x31, 0x30, 0, 0 };
+u8 PodiumScore2[4] = { 0x32, 0x30, 0, 0 };
+u8 PodiumScore3[4] = { 0x33, 0x30, 0, 0 };
+u8 PodiumScore4[12] = { 0x34, 0x30, 0, 0, 0x35, 0x30, 0, 0, 0x36, 0x30, 0, 0 };
+s32 PodiumScoreCount = 4;
+s32 PodiumUnused[106] = {
     0x2300000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x400118, 0x18000000, (s32)0xFF800100, 0, 0, 0,
     0x2001001C, 2, 8, 0x100000, 0x7000000, 0, 0, 0, 0, 0, 0, 3, 0x40003D, 0, 0, 0,
-    (s32)&D_800BD3AC, 4, 0, 0, 8, 0x100070, 0x7000000, 0, 0, 0, 0, 0x10000, 0, 3, 0x4000AD, 0,
-    0, 0, (s32)&D_800BD3B0, 4, 0, 0, 8, 0x100150, 0x7000000, 0, 0, 0, 0, 0x20000, 0, 3,
-    0x40018D, 0, 0, 0, (s32)&D_800BD3B4, 4, 0, 0, 8, 0x1001C0, 0x7000000, 0, 0, 0, 0, 0x30000,
-    0, 3, 0x4001FD, 0, 0, 0, (s32)&D_800BD3B8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1000, 0,
+    (s32)&PodiumScore1, 4, 0, 0, 8, 0x100070, 0x7000000, 0, 0, 0, 0, 0x10000, 0, 3, 0x4000AD, 0,
+    0, 0, (s32)&PodiumScore2, 4, 0, 0, 8, 0x100150, 0x7000000, 0, 0, 0, 0, 0x20000, 0, 3,
+    0x40018D, 0, 0, 0, (s32)&PodiumScore3, 4, 0, 0, 8, 0x1001C0, 0x7000000, 0, 0, 0, 0, 0x30000,
+    0, 3, 0x4001FD, 0, 0, 0, (s32)&PodiumScore4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1000, 0,
     0x1000, 0, 0x1000, 0, 0, 0,
 };
-HubSparkFx D_800BD570 = { 0xC, 0xF00, 0xF00, HubInitSparks, HubDrawSparks };
-NAS *D_800BD584[4] = {0};
-PodiumObj *D_800BD594 = 0;
-s32 D_800BD598[4] = {0};
-s32 D_800BD5A8 = 0;
-s32 D_800BD5AC = 0;
-u32 D_800BD5B0 = 0;
-s32 D_800BD5B4 = 0;
-u8 D_800BD5B8[4] = { 0x20, 0, 0x20, 0 };
-s32 D_800BD5BC[1] = { 0x200020 };
-s32 D_800BD5C0[1] = { 0x200020 };
-s32 D_800BD5C4[3] = { 0x200020, (s32)&D_800B3894, (s32)&D_800B389C };
-s32 D_800BD5D0[120] = {
-    0, (s32)&D_800B38A4, 0x1060000, 0x715, 0x28, (s32)&D_800B38A8, 0x1FF0000, 0x715, 0x50,
-    (s32)&D_800B38AC, 0x1FF0000, 0x715, 0x78, (s32)&D_800B38B0, 0x1FF0000, 0x715, 0xA0,
-    (s32)&D_800B38B4, 0x1FF0000, 0x715, 0xC8, (s32)&D_800B38B8, 0x1FF0000, 0x715, 0xF0,
-    (s32)&D_800B38BC, (s32)0xFAFF0000, 0x715, 0x280000, (s32)&D_800B38C0, 0x1060000, 0x7F9,
-    0x280028, (s32)&D_800B38C4, 0x1FF0000, 0x7F9, 0x280050, (s32)&D_800B38C8, 0x1FF0000, 0x7F9,
-    0x280078, (s32)&D_800B38CC, 0x1FF0000, 0x7F9, 0x2800A0, (s32)&D_800B38D0, 0x1FF0000, 0x7F9,
-    0x2800C8, (s32)&D_800B38D4, 0x1FF0000, 0x7F9, 0x2800F0, (s32)&D_800B38D8, (s32)0xFAFF0000,
-    0x7F9, 0x500000, (s32)&D_800B38DC, 0x1060000, 0x7F9, 0x500028, (s32)&D_800B38E0, 0x1FF0000,
-    0x7F9, 0x500050, (s32)&D_800B38E4, 0x1FF0000, 0x7F9, 0x500078, (s32)&D_800B38E8, 0x1FF0000,
-    0x7F9, 0x5000A0, (s32)&D_800B38EC, 0x1FF0000, 0x7F9, 0x5000C8, (s32)&D_800B38F0, 0x1FF0000,
-    0x7F9, 0x5000F0, (s32)&D_800B38F4, (s32)0xFAFF0000, 0x7F9, 0x780000, (s32)&D_800B38F8,
-    0x1060000, 0x7F9, 0x780028, (s32)&D_800B38FC, 0x1FF0000, 0x6F9, 0x780050, (s32)&D_800B3900,
-    0x1FF0000, 0x5F9, 0x780078, (s32)&D_800B3904, 0x1FF0000, 0x4F9, 0x7800A0, (s32)&D_800B3908,
-    0x1FF0000, 0x3F9, 0x7800C8, (s32)&D_800B390C, 0x1FF0004, 0x2F9, 0x7800F0, (s32)&D_800B3910,
-    (s32)0xFAFF0003, 0x1F9, 0xA0808C, (s32)&D_800B3894, 1, 0x1FB, 0xC8808C, (s32)&D_800B389C,
+HubSparkFx HubSparkFxDef = { 0xC, 0xF00, 0xF00, HubInitSparks, HubDrawSparks };
+NAS *PodiumHeroNas[4] = {0};
+PodiumObj *PodiumTrophyObj = 0;
+s32 PodiumRanks[4] = {0};
+s32 PodiumTies = 0;
+s32 PodiumCamState = 0;
+u32 PodiumState = 0;
+s32 PodiumReady = 0;
+u8 HubNameCursor[4] = { 0x20, 0, 0x20, 0 };
+s32 HubNameCursor2[1] = { 0x200020 };
+s32 HubNameCursor3[1] = { 0x200020 };
+s32 HubNameButtons[3] = { 0x200020, (s32)&HubTextDone, (s32)&HubTextCancel };
+s32 HubNameKeys[120] = {
+    0, (s32)&HubKeyA, 0x1060000, 0x715, 0x28, (s32)&HubKeyB, 0x1FF0000, 0x715, 0x50,
+    (s32)&HubKeyC, 0x1FF0000, 0x715, 0x78, (s32)&HubKeyD, 0x1FF0000, 0x715, 0xA0,
+    (s32)&HubKeyE, 0x1FF0000, 0x715, 0xC8, (s32)&HubKeyF, 0x1FF0000, 0x715, 0xF0,
+    (s32)&HubKeyG, (s32)0xFAFF0000, 0x715, 0x280000, (s32)&HubKeyH, 0x1060000, 0x7F9,
+    0x280028, (s32)&HubKeyI, 0x1FF0000, 0x7F9, 0x280050, (s32)&HubKeyJ, 0x1FF0000, 0x7F9,
+    0x280078, (s32)&HubKeyK, 0x1FF0000, 0x7F9, 0x2800A0, (s32)&HubKeyL, 0x1FF0000, 0x7F9,
+    0x2800C8, (s32)&HubKeyM, 0x1FF0000, 0x7F9, 0x2800F0, (s32)&HubKeyN, (s32)0xFAFF0000,
+    0x7F9, 0x500000, (s32)&HubKeyO, 0x1060000, 0x7F9, 0x500028, (s32)&HubKeyP, 0x1FF0000,
+    0x7F9, 0x500050, (s32)&HubKeyQ, 0x1FF0000, 0x7F9, 0x500078, (s32)&HubKeyR, 0x1FF0000,
+    0x7F9, 0x5000A0, (s32)&HubKeyS, 0x1FF0000, 0x7F9, 0x5000C8, (s32)&HubKeyT, 0x1FF0000,
+    0x7F9, 0x5000F0, (s32)&HubKeyU, (s32)0xFAFF0000, 0x7F9, 0x780000, (s32)&HubKeyV,
+    0x1060000, 0x7F9, 0x780028, (s32)&HubKeyW, 0x1FF0000, 0x6F9, 0x780050, (s32)&HubKeyX,
+    0x1FF0000, 0x5F9, 0x780078, (s32)&HubKeyY, 0x1FF0000, 0x4F9, 0x7800A0, (s32)&HubKeyZ,
+    0x1FF0000, 0x3F9, 0x7800C8, (s32)&HubKeyAt, 0x1FF0004, 0x2F9, 0x7800F0, (s32)&HubKeyBack,
+    (s32)0xFAFF0003, 0x1F9, 0xA0808C, (s32)&HubTextDone, 1, 0x1FB, 0xC8808C, (s32)&HubTextCancel,
     2, 0xFF,
 };
-s32 D_800BD7B0[12] = {
-    0, (s32)&D_800B38A4, 0x7F90000, 0x1FF, 0xC88000, (s32)&D_800B3894, 1, 0, 0xE68000,
-    (s32)&D_800B389C, 2, 0,
+s32 HubNameKeys2[12] = {
+    0, (s32)&HubKeyA, 0x7F90000, 0x1FF, 0xC88000, (s32)&HubTextDone, 1, 0, 0xE68000,
+    (s32)&HubTextCancel, 2, 0,
 };
-HubEntry12 D_800BD7E0[2] = { { (s32)&D_800BD5D0, 0x1E, 0x1C }, { (s32)&D_800BD7B0, 3, 1 } };
-s32 D_800BD7F8[1] = { (s32)&D_800B3928 };
-s32 D_800BD7FC[45] = {
-    0xE, 0x2C8000, 0, 0, 0, (s32)&D_800BD7F8, 0, 0, 0, 4, 0x2808000, 0x500022, 0, 0, 0, 0, 0,
+HubEntry12 HubNamePages[2] = { { (s32)&HubNameKeys, 0x1E, 0x1C }, { (s32)&HubNameKeys2, 3, 1 } };
+s32 HubEnterNameText[1] = { (s32)&HubTextEnterName };
+s32 HubNamePanel[45] = {
+    0xE, 0x2C8000, 0, 0, 0, (s32)&HubEnterNameText, 0, 0, 0, 4, 0x2808000, 0x500022, 0, 0, 0, 0, 0,
     0, 4, 0x12C8000, 0x960064, 0, 0, 0, 0, 0, 0, 4, 0x12C8000, 0x1AE00AA, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BD8B0[153] = {
-    3, 0, 0, 0, 0, (s32)&D_800BD5B8, 0, 0, 0, 3, 0x22, 0, 0, 0, (s32)(u8 *)&D_800BD5B8 + 0x2,
-    0, 0, 0, 3, 0x44, 0, 0, 0, (s32)&D_800BD5BC, 0, 0, 0, 3, 0x66, 0, 0, 0,
-    (s32)(u8 *)&D_800BD5BC + 0x2, 0, 0, 0, 3, 0x88, 0, 0, 0, (s32)&D_800BD5C0, 0, 0, 0, 3,
-    0xAA, 0, 0, 0, (s32)(u8 *)&D_800BD5C0 + 0x2, 0, 0, 0, 3, 0xCC, 0, 0, 0, (s32)&D_800BD5C4,
-    0, 0, 0, 3, 0xEE, 0, 0, 0, (s32)(u8 *)&D_800BD5C4 + 0x2, 0, 0, 0, 3, 0, 0, 0, 0,
-    (s32)&D_800B3934, 0, 0, 0, 3, 0x22, 0, 0, 0, (s32)&D_800B3934, 0, 0, 0, 3, 0x44, 0, 0, 0,
-    (s32)&D_800B3934, 0, 0, 0, 3, 0x66, 0, 0, 0, (s32)&D_800B3934, 0, 0, 0, 3, 0x88, 0, 0, 0,
-    (s32)&D_800B3934, 0, 0, 0, 3, 0xAA, 0, 0, 0, (s32)&D_800B3934, 0, 0, 0, 3, 0xCC, 0, 0, 0,
-    (s32)&D_800B3934, 0, 0, 0, 3, 0xEE, 0, 0, 0, (s32)&D_800B3934, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+s32 HubNameLetters[153] = {
+    3, 0, 0, 0, 0, (s32)&HubNameCursor, 0, 0, 0, 3, 0x22, 0, 0, 0, (s32)(u8 *)&HubNameCursor + 0x2,
+    0, 0, 0, 3, 0x44, 0, 0, 0, (s32)&HubNameCursor2, 0, 0, 0, 3, 0x66, 0, 0, 0,
+    (s32)(u8 *)&HubNameCursor2 + 0x2, 0, 0, 0, 3, 0x88, 0, 0, 0, (s32)&HubNameCursor3, 0, 0, 0, 3,
+    0xAA, 0, 0, 0, (s32)(u8 *)&HubNameCursor3 + 0x2, 0, 0, 0, 3, 0xCC, 0, 0, 0, (s32)&HubNameButtons,
+    0, 0, 0, 3, 0xEE, 0, 0, 0, (s32)(u8 *)&HubNameButtons + 0x2, 0, 0, 0, 3, 0, 0, 0, 0,
+    (s32)&HubTextDot, 0, 0, 0, 3, 0x22, 0, 0, 0, (s32)&HubTextDot, 0, 0, 0, 3, 0x44, 0, 0, 0,
+    (s32)&HubTextDot, 0, 0, 0, 3, 0x66, 0, 0, 0, (s32)&HubTextDot, 0, 0, 0, 3, 0x88, 0, 0, 0,
+    (s32)&HubTextDot, 0, 0, 0, 3, 0xAA, 0, 0, 0, (s32)&HubTextDot, 0, 0, 0, 3, 0xCC, 0, 0, 0,
+    (s32)&HubTextDot, 0, 0, 0, 3, 0xEE, 0, 0, 0, (s32)&HubTextDot, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0,
 };
-GfxViewport D_800BDB14 = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xFF0, 0, 0, 0, 0, 1 };
-SaveMenuHooks D_800BDB3C = { HubSaveMenuInit, HubSaveMenuUpdate, HubSaveMenuRender, HubSaveMenuQuit };
-s32 D_800BDB4C[1] = {0};
-s32 D_800BDB50 = 0;
-s32 D_800BDB54[1] = {0};
-subengine D_800BDB58[33] = {0};
-EXTengine D_800BF100 = {0};
-s32 D_800BF19C = 0;
-s32 D_800BF1A0 = 0;
-s32 D_800BF1A4 = 0;
-u8 D_800BF1A8[184] = {0};
-s32 D_800BF260 = 0;
-u8 D_800BF264[32768] = {0};
-u8 D_800C7264[48] = {0};
-OvlTextLine D_800C7294[264] = {
-    { 3, 0, 0x1F4 }, { 0, (void *)&D_800B3938, 0 }, { 1, (void *)&D_800B3948, 0 },
-    { 1, (void *)&D_800B3960, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B396C, 0 },
-    { 1, (void *)&D_800B3980, 0 }, { 3, 0, 0x96 }, { 0, (void *)&D_800B398C, 0 },
-    { 2, (void *)&D_800B3998, 0 }, { 2, (void *)&D_800B39A8, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B39B4, 0 }, { 2, (void *)&D_800B39C0, 0 },
-    { 2, (void *)&D_800B39D0, 0 }, { 2, (void *)&D_800B39E0, 0 },
-    { 2, (void *)&D_800B39F8, 0 }, { 2, (void *)&D_800B3A04, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3A10, 0 }, { 2, (void *)&D_800B3A1C, 0 },
-    { 2, (void *)&D_800B3A28, 0 }, { 2, (void *)&D_800B3A38, 0 },
-    { 2, (void *)&D_800B3A48, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3A54, 0 },
-    { 2, (void *)&D_800B3A60, 0 }, { 2, (void *)&D_800B3A6C, 0 },
-    { 2, (void *)&D_800B3A7C, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3A90, 0 },
-    { 2, (void *)&D_800B3AA8, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3AB8, 0 },
-    { 2, (void *)&D_800B3ACC, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3ADC, 0 },
-    { 2, (void *)&D_800B3AEC, 0 }, { 2, (void *)&D_800B3AFC, 0 },
-    { 2, (void *)&D_800B3B0C, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3B18, 0 },
-    { 2, (void *)&D_800B3B34, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3B48, 0 },
-    { 2, (void *)&D_800B3B5C, 0 }, { 2, (void *)&D_800B3B68, 0 },
-    { 2, (void *)&D_800B3B78, 0 }, { 2, (void *)&D_800B3B84, 0 },
-    { 2, (void *)&D_800B3B94, 0 }, { 2, (void *)&D_800B3BA8, 0 },
-    { 2, (void *)&D_800B3BBC, 0 }, { 2, (void *)&D_800B3BC8, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3BD8, 0 }, { 2, (void *)&D_800B3BE8, 0 },
-    { 2, (void *)&D_800B3BF8, 0 }, { 2, (void *)&D_800B3C04, 0 },
-    { 2, (void *)&D_800B3C10, 0 }, { 2, (void *)&D_800B3C1C, 0 },
-    { 2, (void *)&D_800B3C28, 0 }, { 2, (void *)&D_800B3C34, 0 },
-    { 2, (void *)&D_800B3C44, 0 }, { 3, 0, 0x32 }, { 3, 0, 0x96 },
-    { 0, (void *)&D_800B3C54, 0 }, { 1, (void *)&D_800B3C60, 0 },
-    { 1, (void *)&D_800B3C78, 0 }, { 3, 0, 0x96 }, { 0, (void *)&D_800B3C80, 0 },
-    { 2, (void *)&D_800B3C90, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3CA0, 0 },
-    { 2, (void *)&D_800B3CB8, 0 }, { 2, (void *)&D_800B3CC8, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3CD8, 0 }, { 2, (void *)&D_800B3CF4, 0 },
-    { 2, (void *)&D_800B3D04, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3B48, 0 },
-    { 2, (void *)&D_800B3D14, 0 }, { 2, (void *)&D_800B3D20, 0 },
-    { 2, (void *)&D_800B3D30, 0 }, { 2, (void *)&D_800B3D3C, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3D4C, 0 }, { 2, (void *)&D_800B3D64, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3D70, 0 }, { 2, (void *)&D_800B3D88, 0 }, { 3, 0, 0x32 },
-    { 3, 0, 0x96 }, { 0, (void *)&D_800B3D98, 0 }, { 1, (void *)&D_800B3DB4, 0 },
-    { 1, (void *)&D_800B3DC4, 0 }, { 1, (void *)&D_800B3DD4, 0 }, { 3, 0, 0x96 },
-    { 0, (void *)&D_800B3AB8, 0 }, { 2, (void *)&D_800B3DDC, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3DEC, 0 }, { 2, (void *)&D_800B3DF8, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3AB8, 0 }, { 2, (void *)&D_800B3E04, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3E14, 0 }, { 2, (void *)&D_800B3E38, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3E48, 0 }, { 2, (void *)&D_800B3E70, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3D4C, 0 }, { 2, (void *)&D_800B3E80, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3E98, 0 }, { 2, (void *)&D_800B3EB4, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3EC0, 0 }, { 2, (void *)&D_800B3EE4, 0 },
-    { 2, (void *)&D_800B3EF8, 0 }, { 2, (void *)&D_800B3F08, 0 },
-    { 2, (void *)&D_800B3F14, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3F24, 0 },
-    { 2, (void *)&D_800B3F34, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3F44, 0 },
-    { 2, (void *)&D_800B3F50, 0 }, { 2, (void *)&D_800B3F60, 0 },
-    { 2, (void *)&D_800B3F70, 0 }, { 2, (void *)&D_800B3F80, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3F8C, 0 }, { 2, (void *)&D_800B3FA0, 0 },
-    { 2, (void *)&D_800B3FAC, 0 }, { 2, (void *)&D_800B3FBC, 0 },
-    { 2, (void *)&D_800B3FD0, 0 }, { 2, (void *)&D_800B3FE4, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3FF8, 0 }, { 2, (void *)&D_800B400C, 0 },
-    { 2, (void *)&D_800B401C, 0 }, { 2, (void *)&D_800B402C, 0 },
-    { 2, (void *)&D_800B403C, 0 }, { 2, (void *)&D_800B404C, 0 },
-    { 2, (void *)&D_800B4058, 0 }, { 2, (void *)&D_800B4064, 0 },
-    { 2, (void *)&D_800B4074, 0 }, { 2, (void *)&D_800B4080, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3B48, 0 }, { 0, (void *)&D_800B408C, 0 },
-    { 2, (void *)&D_800B4098, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B40A8, 0 },
-    { 2, (void *)&D_800B40B4, 0 }, { 2, (void *)&D_800B40C4, 0 },
-    { 2, (void *)&D_800B40D0, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B40E0, 0 },
-    { 2, (void *)&D_800B40F8, 0 }, { 2, (void *)&D_800B3E04, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B4104, 0 }, { 2, (void *)&D_800B411C, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B4130, 0 }, { 2, (void *)&D_800B4140, 0 },
-    { 2, (void *)&D_800B4150, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B415C, 0 },
-    { 2, (void *)&D_800B4174, 0 }, { 2, (void *)&D_800B4184, 0 },
-    { 2, (void *)&D_800B4194, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B41A4, 0 },
-    { 2, (void *)&D_800B41AC, 0 }, { 2, (void *)&D_800B41C0, 0 },
-    { 2, (void *)&D_800B41CC, 0 }, { 2, (void *)&D_800B41D8, 0 },
-    { 2, (void *)&D_800B41EC, 0 }, { 2, (void *)&D_800B41FC, 0 },
-    { 2, (void *)&D_800B4208, 0 }, { 2, (void *)&D_800B4218, 0 },
-    { 2, (void *)&D_800B4228, 0 }, { 2, (void *)&D_800B4234, 0 },
-    { 2, (void *)&D_800B4244, 0 }, { 2, (void *)&D_800B4258, 0 },
-    { 2, (void *)&D_800B4268, 0 }, { 2, (void *)&D_800B4278, 0 },
-    { 2, (void *)&D_800B4288, 0 }, { 2, (void *)&D_800B4298, 0 },
-    { 2, (void *)&D_800B42A8, 0 }, { 2, (void *)&D_800B42B8, 0 },
-    { 2, (void *)&D_800B42C4, 0 }, { 2, (void *)&D_800B42D4, 0 },
-    { 2, (void *)&D_800B42E0, 0 }, { 2, (void *)&D_800B42EC, 0 },
-    { 2, (void *)&D_800B42F8, 0 }, { 2, (void *)&D_800B4308, 0 },
-    { 2, (void *)&D_800B431C, 0 }, { 2, (void *)&D_800B432C, 0 },
-    { 2, (void *)&D_800B4338, 0 }, { 2, (void *)&D_800B4348, 0 },
-    { 2, (void *)&D_800B4358, 0 }, { 2, (void *)&D_800B4368, 0 },
-    { 2, (void *)&D_800B4378, 0 }, { 2, (void *)&D_800B438C, 0 },
-    { 2, (void *)&D_800B4398, 0 }, { 2, (void *)&D_800B43A8, 0 }, { 3, 0, 0x32 },
-    { 0, (void *)&D_800B3BD8, 0 }, { 2, (void *)&D_800B43B4, 0 },
-    { 2, (void *)&D_800B43C0, 0 }, { 2, (void *)&D_800B43CC, 0 },
-    { 2, (void *)&D_800B43E0, 0 }, { 2, (void *)&D_800B43EC, 0 },
-    { 2, (void *)&D_800B43FC, 0 }, { 2, (void *)&D_800B4408, 0 },
-    { 2, (void *)&D_800B4414, 0 }, { 2, (void *)&D_800B4424, 0 },
-    { 2, (void *)&D_800B4438, 0 }, { 2, (void *)&D_800B4444, 0 },
-    { 2, (void *)&D_800B4454, 0 }, { 2, (void *)&D_800B4460, 0 },
-    { 2, (void *)&D_800B446C, 0 }, { 2, (void *)&D_800B447C, 0 },
-    { 2, (void *)&D_800B4488, 0 }, { 2, (void *)&D_800B4498, 0 },
-    { 2, (void *)&D_800B44A8, 0 }, { 2, (void *)&D_800B44B8, 0 },
-    { 2, (void *)&D_800B44C4, 0 }, { 2, (void *)&D_800B44D4, 0 },
-    { 2, (void *)&D_800B44E4, 0 }, { 2, (void *)&D_800B44F4, 0 },
-    { 2, (void *)&D_800B4500, 0 }, { 2, (void *)&D_800B4510, 0 },
-    { 2, (void *)&D_800B451C, 0 }, { 2, (void *)&D_800B4528, 0 },
-    { 2, (void *)&D_800B4534, 0 }, { 2, (void *)&D_800B4544, 0 },
-    { 2, (void *)&D_800B4554, 0 }, { 2, (void *)&D_800B4560, 0 },
-    { 2, (void *)&D_800B456C, 0 }, { 2, (void *)&D_800B457C, 0 },
-    { 2, (void *)&D_800B4588, 0 }, { 2, (void *)&D_800B4598, 0 },
-    { 2, (void *)&D_800B45A8, 0 }, { 2, (void *)&D_800B45B4, 0 },
-    { 2, (void *)&D_800B45C8, 0 }, { 2, (void *)&D_800B45DC, 0 }, { 3, 0, 0x14 },
-    { 2, (void *)&D_800B45EC, 0 }, { 2, (void *)&D_800B4610, 0 },
-    { 2, (void *)&D_800B4624, 0 }, { 3, 0, 0x14 }, { 2, (void *)&D_800B4638, 0 },
-    { 2, (void *)&D_800B465C, 0 }, { 2, (void *)&D_800B4670, 0 },
-    { 2, (void *)&D_800B4680, 0 }, { 3, 0, 0x32 }, { 4, 0, 0 },
+GfxViewport HubSaveViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xFF0, 0, 0, 0, 0, 1 };
+SaveMenuHooks HubSaveMenuHooks = { HubSaveMenuInit, HubSaveMenuUpdate, HubSaveMenuRender, HubSaveMenuQuit };
+s32 HubUnused2[1] = {0};
+s32 HubSaveChoice = 0;
+s32 HubUnused3[1] = {0};
+subengine HubNameSubs[33] = {0};
+EXTengine HubNameEngine = {0};
+s32 HubNameNext = 0;
+s32 HubNamePage = 0;
+s32 HubNameLen = 0;
+u8 HubSaveCamera[184] = {0};
+s32 HubDoorFade = 0;
+u8 HubOtBuffer[32768] = {0};
+u8 HubDrawEnv[48] = {0};
+OvlTextLine HubCreditsLines[264] = {
+    { 3, 0, 0x1F4 }, { 0, (void *)&HubCredit000, 0 }, { 1, (void *)&HubCredit001, 0 },
+    { 1, (void *)&HubCredit002, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit003, 0 },
+    { 1, (void *)&HubCredit004, 0 }, { 3, 0, 0x96 }, { 0, (void *)&HubCredit005, 0 },
+    { 2, (void *)&HubCredit006, 0 }, { 2, (void *)&HubCredit007, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit008, 0 }, { 2, (void *)&HubCredit009, 0 },
+    { 2, (void *)&HubCredit010, 0 }, { 2, (void *)&HubCredit011, 0 },
+    { 2, (void *)&HubCredit012, 0 }, { 2, (void *)&HubCredit013, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit014, 0 }, { 2, (void *)&HubCredit015, 0 },
+    { 2, (void *)&HubCredit016, 0 }, { 2, (void *)&HubCredit017, 0 },
+    { 2, (void *)&HubCredit018, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit019, 0 },
+    { 2, (void *)&HubCredit020, 0 }, { 2, (void *)&HubCredit021, 0 },
+    { 2, (void *)&HubCredit022, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit023, 0 },
+    { 2, (void *)&HubCredit024, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit025, 0 },
+    { 2, (void *)&HubCredit026, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit027, 0 },
+    { 2, (void *)&HubCredit028, 0 }, { 2, (void *)&HubCredit029, 0 },
+    { 2, (void *)&HubCredit030, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit031, 0 },
+    { 2, (void *)&HubCredit032, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit033, 0 },
+    { 2, (void *)&HubCredit034, 0 }, { 2, (void *)&HubCredit035, 0 },
+    { 2, (void *)&HubCredit036, 0 }, { 2, (void *)&HubCredit037, 0 },
+    { 2, (void *)&HubCredit038, 0 }, { 2, (void *)&HubCredit039, 0 },
+    { 2, (void *)&HubCredit040, 0 }, { 2, (void *)&HubCredit041, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit042, 0 }, { 2, (void *)&HubCredit043, 0 },
+    { 2, (void *)&HubCredit044, 0 }, { 2, (void *)&HubCredit045, 0 },
+    { 2, (void *)&HubCredit046, 0 }, { 2, (void *)&HubCredit047, 0 },
+    { 2, (void *)&HubCredit048, 0 }, { 2, (void *)&HubCredit049, 0 },
+    { 2, (void *)&HubCredit050, 0 }, { 3, 0, 0x32 }, { 3, 0, 0x96 },
+    { 0, (void *)&HubCredit051, 0 }, { 1, (void *)&HubCredit052, 0 },
+    { 1, (void *)&HubCredit053, 0 }, { 3, 0, 0x96 }, { 0, (void *)&HubCredit054, 0 },
+    { 2, (void *)&HubCredit055, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit056, 0 },
+    { 2, (void *)&HubCredit057, 0 }, { 2, (void *)&HubCredit058, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit059, 0 }, { 2, (void *)&HubCredit060, 0 },
+    { 2, (void *)&HubCredit061, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit033, 0 },
+    { 2, (void *)&HubCredit062, 0 }, { 2, (void *)&HubCredit063, 0 },
+    { 2, (void *)&HubCredit064, 0 }, { 2, (void *)&HubCredit065, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit066, 0 }, { 2, (void *)&HubCredit067, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit068, 0 }, { 2, (void *)&HubCredit069, 0 }, { 3, 0, 0x32 },
+    { 3, 0, 0x96 }, { 0, (void *)&HubCredit070, 0 }, { 1, (void *)&HubCredit071, 0 },
+    { 1, (void *)&HubCredit072, 0 }, { 1, (void *)&HubCredit073, 0 }, { 3, 0, 0x96 },
+    { 0, (void *)&HubCredit025, 0 }, { 2, (void *)&HubCredit074, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit075, 0 }, { 2, (void *)&HubCredit076, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit025, 0 }, { 2, (void *)&HubCredit077, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit078, 0 }, { 2, (void *)&HubCredit079, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit080, 0 }, { 2, (void *)&HubCredit081, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit066, 0 }, { 2, (void *)&HubCredit082, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit083, 0 }, { 2, (void *)&HubCredit084, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit085, 0 }, { 2, (void *)&HubCredit086, 0 },
+    { 2, (void *)&HubCredit087, 0 }, { 2, (void *)&HubCredit088, 0 },
+    { 2, (void *)&HubCredit089, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit090, 0 },
+    { 2, (void *)&HubCredit091, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit092, 0 },
+    { 2, (void *)&HubCredit093, 0 }, { 2, (void *)&HubCredit094, 0 },
+    { 2, (void *)&HubCredit095, 0 }, { 2, (void *)&HubCredit096, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit097, 0 }, { 2, (void *)&HubCredit098, 0 },
+    { 2, (void *)&HubCredit099, 0 }, { 2, (void *)&HubCredit100, 0 },
+    { 2, (void *)&HubCredit101, 0 }, { 2, (void *)&HubCredit102, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit103, 0 }, { 2, (void *)&HubCredit104, 0 },
+    { 2, (void *)&HubCredit105, 0 }, { 2, (void *)&HubCredit106, 0 },
+    { 2, (void *)&HubCredit107, 0 }, { 2, (void *)&HubCredit108, 0 },
+    { 2, (void *)&HubCredit109, 0 }, { 2, (void *)&HubCredit110, 0 },
+    { 2, (void *)&HubCredit111, 0 }, { 2, (void *)&HubCredit112, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit033, 0 }, { 0, (void *)&HubCredit113, 0 },
+    { 2, (void *)&HubCredit114, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit115, 0 },
+    { 2, (void *)&HubCredit116, 0 }, { 2, (void *)&HubCredit117, 0 },
+    { 2, (void *)&HubCredit118, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit119, 0 },
+    { 2, (void *)&HubCredit120, 0 }, { 2, (void *)&HubCredit077, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit121, 0 }, { 2, (void *)&HubCredit122, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit123, 0 }, { 2, (void *)&HubCredit124, 0 },
+    { 2, (void *)&HubCredit125, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit126, 0 },
+    { 2, (void *)&HubCredit127, 0 }, { 2, (void *)&HubCredit128, 0 },
+    { 2, (void *)&HubCredit129, 0 }, { 3, 0, 0x32 }, { 0, (void *)&HubCredit130, 0 },
+    { 2, (void *)&HubCredit131, 0 }, { 2, (void *)&HubCredit132, 0 },
+    { 2, (void *)&HubCredit133, 0 }, { 2, (void *)&HubCredit134, 0 },
+    { 2, (void *)&HubCredit135, 0 }, { 2, (void *)&HubCredit136, 0 },
+    { 2, (void *)&HubCredit137, 0 }, { 2, (void *)&HubCredit138, 0 },
+    { 2, (void *)&HubCredit139, 0 }, { 2, (void *)&HubCredit140, 0 },
+    { 2, (void *)&HubCredit141, 0 }, { 2, (void *)&HubCredit142, 0 },
+    { 2, (void *)&HubCredit143, 0 }, { 2, (void *)&HubCredit144, 0 },
+    { 2, (void *)&HubCredit145, 0 }, { 2, (void *)&HubCredit146, 0 },
+    { 2, (void *)&HubCredit147, 0 }, { 2, (void *)&HubCredit148, 0 },
+    { 2, (void *)&HubCredit149, 0 }, { 2, (void *)&HubCredit150, 0 },
+    { 2, (void *)&HubCredit151, 0 }, { 2, (void *)&HubCredit152, 0 },
+    { 2, (void *)&HubCredit153, 0 }, { 2, (void *)&HubCredit154, 0 },
+    { 2, (void *)&HubCredit155, 0 }, { 2, (void *)&HubCredit156, 0 },
+    { 2, (void *)&HubCredit157, 0 }, { 2, (void *)&HubCredit158, 0 },
+    { 2, (void *)&HubCredit159, 0 }, { 2, (void *)&HubCredit160, 0 },
+    { 2, (void *)&HubCredit161, 0 }, { 2, (void *)&HubCredit162, 0 },
+    { 2, (void *)&HubCredit163, 0 }, { 2, (void *)&HubCredit164, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&HubCredit042, 0 }, { 2, (void *)&HubCredit165, 0 },
+    { 2, (void *)&HubCredit166, 0 }, { 2, (void *)&HubCredit167, 0 },
+    { 2, (void *)&HubCredit168, 0 }, { 2, (void *)&HubCredit169, 0 },
+    { 2, (void *)&HubCredit170, 0 }, { 2, (void *)&HubCredit171, 0 },
+    { 2, (void *)&HubCredit172, 0 }, { 2, (void *)&HubCredit173, 0 },
+    { 2, (void *)&HubCredit174, 0 }, { 2, (void *)&HubCredit175, 0 },
+    { 2, (void *)&HubCredit176, 0 }, { 2, (void *)&HubCredit177, 0 },
+    { 2, (void *)&HubCredit178, 0 }, { 2, (void *)&HubCredit179, 0 },
+    { 2, (void *)&HubCredit180, 0 }, { 2, (void *)&HubCredit181, 0 },
+    { 2, (void *)&HubCredit182, 0 }, { 2, (void *)&HubCredit183, 0 },
+    { 2, (void *)&HubCredit184, 0 }, { 2, (void *)&HubCredit185, 0 },
+    { 2, (void *)&HubCredit186, 0 }, { 2, (void *)&HubCredit187, 0 },
+    { 2, (void *)&HubCredit188, 0 }, { 2, (void *)&HubCredit189, 0 },
+    { 2, (void *)&HubCredit190, 0 }, { 2, (void *)&HubCredit191, 0 },
+    { 2, (void *)&HubCredit192, 0 }, { 2, (void *)&HubCredit193, 0 },
+    { 2, (void *)&HubCredit194, 0 }, { 2, (void *)&HubCredit195, 0 },
+    { 2, (void *)&HubCredit196, 0 }, { 2, (void *)&HubCredit197, 0 },
+    { 2, (void *)&HubCredit198, 0 }, { 2, (void *)&HubCredit199, 0 },
+    { 2, (void *)&HubCredit200, 0 }, { 2, (void *)&HubCredit201, 0 },
+    { 2, (void *)&HubCredit202, 0 }, { 2, (void *)&HubCredit203, 0 }, { 3, 0, 0x14 },
+    { 2, (void *)&HubCredit204, 0 }, { 2, (void *)&HubCredit205, 0 },
+    { 2, (void *)&HubCredit206, 0 }, { 3, 0, 0x14 }, { 2, (void *)&HubCredit207, 0 },
+    { 2, (void *)&HubCredit208, 0 }, { 2, (void *)&HubCredit209, 0 },
+    { 2, (void *)&HubCredit210, 0 }, { 3, 0, 0x32 }, { 4, 0, 0 },
 };
-s32 D_800C7EF4 = 0;
-s32 D_800C7EF8[3] = {0};
-CamXYZ D_800C7F04 = {0};
+s32 PodiumCamTimer = 0;
+s32 PodiumUnused2[3] = {0};
+CamXYZ PodiumCamAt = {0};

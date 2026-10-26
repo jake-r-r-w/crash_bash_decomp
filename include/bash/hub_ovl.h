@@ -27,17 +27,17 @@ typedef struct {
 } HubCam;
 extern u16 D_8009870E;
 extern u16 D_80098710;
-extern s32 D_800BC2B4;
-extern s32 D_800BC2B8;
-extern u16 D_800BC2BC;
-extern u16 D_800BC2C0;
-extern s32 D_800BC2C4;
-extern s32 D_800BC2C8;
-extern s32 D_800BC2CC;
-extern s32 D_800BCED4;
-extern s32 D_800BCED8;
-extern s32 D_800BCEE0;
-extern subengine *D_800BCEE8;
+extern s32 HubCreditsY;
+extern s32 HubCreditsStart;
+extern u16 HubSavedCamH;
+extern u16 HubSavedFov;
+extern s32 HubSavedCamX;
+extern s32 HubSavedCamY;
+extern s32 HubSavedCamZ;
+extern s32 HubDoorChoice;
+extern s32 HubSelectState;
+extern s32 HubSelectedEntry;
+extern subengine *HubSelectSub;
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/hub_hubcore.h"
@@ -50,13 +50,13 @@ int HubCountLines(unsigned char *s);
 
 void HUBSetUp(void);
 
-/* One line of the scrolling text table at D_800C7294 (HubCreditsScroll). */
+/* One line of the scrolling text table at HubCreditsLines (HubCreditsScroll). */
 typedef struct OvlTextLine {
     /* 0x00 */ u32 kind;   /* 0,1: big; 2: small; 3: gap; 4: end */
     /* 0x04 */ u8 *text;   /* '\r' separates lines */
     /* 0x08 */ s32 height; /* kind 3 */
 } OvlTextLine;
-extern OvlTextLine D_800C7294[];
+extern OvlTextLine HubCreditsLines[];
 
 /* n = the number of '\r'-separated lines in text, 0 for none. */
 #define OVL_TEXT_LINE_COUNT(n, text)          \

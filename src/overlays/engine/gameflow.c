@@ -745,7 +745,7 @@ s32 func_8009020C(s32 arg0) {
 s32 func_80090248(void) {
     EngSub90248 *p;
 
-    if (D_8005A677 < 0 || (p = D_800BCCF4[D_8005A677].unk14, p->unk2 != 2)) {
+    if (D_8005A677 < 0 || (p = HubGateways[D_8005A677].unk14, p->unk2 != 2)) {
         return -1;
     }
     return p->unk4;
@@ -1052,8 +1052,8 @@ void func_80090E20(void) {
                     u8 *p = (u8 *)D_800657C8;
                     if (*(s32 *)(idx + p) == 0) {
                         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                        if (D_800BDB3C.unk0 != NULL) {
-                            D_800BDB3C.unk0();
+                        if (HubSaveMenuHooks.unk0 != NULL) {
+                            HubSaveMenuHooks.unk0();
                         }
                         D_8009F640 = 3;
                     } else {
@@ -1082,8 +1082,8 @@ void func_80090E20(void) {
             f = D_80051380;
             if (f & 0x8000) {
                 PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                if (D_800BDB3C.unk0 != NULL) {
-                    D_800BDB3C.unk0();
+                if (HubSaveMenuHooks.unk0 != NULL) {
+                    HubSaveMenuHooks.unk0();
                 }
                 D_8009F640 = 3;
             } else if (f & 0x1000) {
@@ -1124,18 +1124,18 @@ void func_80090E20(void) {
         f = D_800655C0;
         if (!(f & 2) || !(f & 0x30)) {
             D_8009F640 = 0;
-            if (D_800BDB3C.unkC != NULL) {
-                D_800BDB3C.unkC();
+            if (HubSaveMenuHooks.unkC != NULL) {
+                HubSaveMenuHooks.unkC();
             }
             func_80095BEC(1, &D_8009EEB0);
         } else {
-            if (D_800BDB3C.unk4 != NULL) {
-                D_800BDB3C.unk4();
+            if (HubSaveMenuHooks.unk4 != NULL) {
+                HubSaveMenuHooks.unk4();
             }
-            if (D_800BDB3C.unk8 != NULL) {
-                D_800BDB3C.unk8();
+            if (HubSaveMenuHooks.unk8 != NULL) {
+                HubSaveMenuHooks.unk8();
             }
-            switch (D_800BDB50) {
+            switch (HubSaveChoice) {
             case 1: {
                 D_800657C8_Slot *dst = &D_800657C8[D_8009F3B8];
                 u8 *q = D_8005A614;
@@ -1152,8 +1152,8 @@ void func_80090E20(void) {
                 func_80091E58();
                 card_save();
                 D_8009F640 = 1;
-                if (D_800BDB3C.unkC != NULL) {
-                    D_800BDB3C.unkC();
+                if (HubSaveMenuHooks.unkC != NULL) {
+                    HubSaveMenuHooks.unkC();
                 }
                 func_80095BEC(1, &D_8009EEB0);
                 break;
@@ -1165,8 +1165,8 @@ void func_80090E20(void) {
                     u8 *q = D_8005A614;
                     *(u16 *)(q + 0x30) |= 0x200;
                 }
-                if (D_800BDB3C.unkC != NULL) {
-                    D_800BDB3C.unkC();
+                if (HubSaveMenuHooks.unkC != NULL) {
+                    HubSaveMenuHooks.unkC();
                 }
                 break;
             }
