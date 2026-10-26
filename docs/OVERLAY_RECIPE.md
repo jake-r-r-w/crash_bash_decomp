@@ -157,6 +157,10 @@ per-character sequence tables.
   (`<<'EOF'`).
 - cc1 emits an initialiser's string literals in reverse first-use order, so
   strings in data are named `const char` arrays.
+- The slot overlays link with `SUBALIGN(2)`, so where one file's `.data`
+  ends and the next one's starts, retail's alignment padding is gone from
+  the link: write it out as the first file's last object (`s16 D_<addr> = 0;`,
+  Papu's `D_800BE896`). Inside a file cc1 pads by itself.
 - Explicit zero data stays in `.data` with gcc 2.8, and the overlay link has
   no `*(COMMON)`, so zero objects are `= 0` / `= {0}`.
 - Read the game mode as the game-state struct's field when the schedule

@@ -3,6 +3,272 @@
 #include "bash/papu_ovl.h"
 #include "bash/papu.h"
 
+/* the exe's data the tables point at, not declared in the headers yet */
+extern u8 D_80010008[];
+extern u8 D_8004F2B0[];
+extern u8 D_8004F2B8[];
+extern u8 D_8004F2C0[];
+extern u8 D_8004F2C8[];
+extern u8 D_8004F2D0[];
+extern u8 D_8004F2D8[];
+extern u8 D_8004F2E0[];
+extern u8 D_8004F2E8[];
+extern u8 D_8004F2F0[];
+extern u8 D_8004F2F8[];
+extern u8 D_8004F300[];
+extern u8 D_8004F308[];
+extern u8 D_8004F310[];
+extern u8 D_8004F318[];
+extern u8 D_8004F320[];
+extern u8 D_8004F328[];
+extern u8 D_80050148[];
+extern u8 D_8005408C[];
+
+/* rodata: the strings (const arrays keep their retail order; see data2c.py) */
+const char D_800B32B8[] = "BREATHE";
+const char D_800B32C0[] = "MEDIUM";
+const char D_800B32C8[] = "HIT";
+const char D_800B32CC[] = "DIE";
+const char D_800B32D0[] = "JUMP";
+const char D_800B32D8[] = "ATTACK";
+const char D_800B32E0[] = "PICKUP";
+const char D_800B32E8[] = "HOLD";
+const char D_800B32F0[] = "HOLD_SLOW";
+const char D_800B32FC[] = "HOLD_THROW";
+const char D_800B3308[] = "TAUNT_A";
+
+/* data, in address order */
+u8 D_800BC89C[64] = {
+    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
+    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
+    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
+    0x10, 0, 0x10, 0,
+};
+u8 D_800BC8DC[64] = {
+    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
+    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
+    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
+    0x10, 0, 0x10, 0,
+};
+s16 D_800BC91C[32] = {
+    0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0x12C, 0x14A, 0x168, 0x186, 0x1A4,
+    0x1C2, 0x1E0, 0x1FE, 0x21C, 0x23A, 0x258, 0x276, 0x294, 0x2B2, 0x2D0, 0x2EE, 0x30C, 0x32A,
+    0x348, 0x366, 0x384, 0x384, 0x384,
+};
+s16 D_800BC95C[554] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4,
+    4, 4, 0, -0x7FF9, 0x17, 0x4500, -0x8000, 0, 0, -0x7FF9, 0x20, 0x4400, -0x7FE8, 0xC, 0x441F,
+    -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0xF, -0x7FF9, 0xB, 0x4202, -0x7FFC, 0x17, 0, -0x7FF9, 0x14,
+    0x4280, -0x8000, 0, 0, -0x7FF9, 7, 0x4380, -0x7FF8, 0xA, -0x7FF9, 0xC, 0x4387, -0x7FF8,
+    0xB, -0x7FF9, 5, 0x4393, -0x8000, 0, 0, -0x7FF9, 2, 0x4300, -0x7FFD, 0x12, -0x7FF9, 6,
+    0x4301, -0x7FF8, 0x10, -0x7FFD, 0x13, -0x7FF9, 7, 0x4310, -0x7FFC, 7, 0, -0x7FF9, 0x20,
+    0x4400, -0x8000, 0, 0, -0x7FF9, 0x15, 0x4580, -0x7FE8, 0x14, 0x4594, -0x7FFC, 0x1A, 0, 0,
+    -0x7FF6, 0x41, -0x7FF9, 0xC, 0x4201, -0x7FFC, 0x17, 0, -0x7FF9, 0x14, 0x4380, -0x8000, 0,
+    0, -0x7FF9, 9, 0x4300, -0x7FF8, 0x3C, -0x7FF9, 0xB, 0x4309, -0x7FF8, 0x3D, 0x4314, 0x4315,
+    -0x8000, 0, 0, 0, -0x7FF9, 2, 0x4280, -0x7FFD, 0x12, -0x7FF9, 6, 0x4281, -0x7FF8, 0x42,
+    -0x7FFD, 0x13, -0x7FF9, 8, 0x4296, -0x7FFC, 7, 0, -0x7FF9, 0x20, 0x4500, -0x8000, 0, 0,
+    -0x7FF9, 0x23, 0x4400, -0x7FE8, 5, 0x4422, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0xA5, -0x7FF9,
+    0xD, 0x4201, -0x7FFC, 0x17, 0, -0x7FF9, 0x18, 0x4280, -0x8000, 0, 0, -0x7FF8, 0xA0,
+    -0x7FF9, 0xC, 0x4300, -0x7FF8, 0xA1, -0x7FF9, 0xC, 0x430B, -0x8000, 0, 0, 0, 0x4380,
+    -0x7FFD, 0x12, 0x4381, -0x7FF5, -0x7FF8, 0xA6, -0x7FFD, 0x13, 0x4382, -0x7FF9, 0xA, 0x4383,
+    -0x7FFC, 0, 0, -0x7FF9, 0x20, 0x4080, -0x8000, 0, 0, -0x7FF9, 0x15, 0x4580, -0x7FE8, 0xF,
+    0x4594, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0x73, -0x7FF9, 8, 0x4300, -0x7FFC, 0x17, 0, -0x7FF9,
+    0x18, 0x4280, -0x8000, 0, 0, -0x7FF8, 0x6E, -0x7FF9, 0xC, 0x4400, -0x7FF8, 0x6F, -0x7FF9,
+    0xC, 0x440B, -0x8000, 0, 0, 0, 0x4380, -0x7FFD, 0x12, 0x4381, -0x7FF5, -0x7FF8, 0x74,
+    -0x7FFD, 0x13, 0x4382, -0x7FF9, 0xA, 0x4383, -0x7FFC, 0, 0, -0x7FF9, 0x1F, 0x4500, -0x8000,
+    0, 0, -0x7FF9, 0x1F, 0x4480, -0x7FE8, 0xD, 0x449E, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0x109,
+    -0x7FF9, 0x10, 0x4401, -0x7FFC, 0x17, 0, -0x7FF9, 0x16, 0x4280, -0x8000, 0, 0, -0x7FF8,
+    0x104, -0x7FF9, 0xC, 0x430B, -0x7FF8, 0x105, -0x7FF9, 0xC, 0x4300, -0x8000, 0, 0, 0,
+    -0x7FF9, 2, 0x4380, -0x7FFD, 0x12, -0x7FF9, 6, 0x4381, -0x7FF8, 0x10A, -0x7FFD, 0x13,
+    -0x7FF9, 0x14, 0x4388, -0x7FFC, 0, 0, -0x7FF9, 0x20, 0x4480, -0x8000, 0, 0, -0x7FF9, 0x15,
+    0x4600, -0x7FE8, 0xF, 0x4614, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0x13B, -0x7FF9, 9, 0x4401,
+    -0x7FFC, 0x17, 0, -0x7FF9, 0x21, 0x4300, -0x8000, 0, 0, -0x7FF8, 0x136, -0x7FF9, 0xA,
+    0x4280, -0x7FF8, 0x137, -0x7FF9, 0xA, 0x4289, -0x8000, 0, 0, 0, 0x4382, -0x7FF8, 0x13C,
+    -0x7FFD, 0x12, 0x4383, 0x4384, 0x4385, 0x4386, -0x7FFD, 0x13, 0x4387, 0x4387, 0x4388,
+    0x4389, 0x438A, 0x4394, 0x4395, 0x4396, 0x4397, 0x4398, 0x4399, 0x439A, -0x7FFC, 0, 0,
+    -0x7FF9, 0x20, 0x4500, -0x8000, 0, 0, -0x7FF9, 0x17, 0x4280, -0x7FE8, 0x17, 0x4296,
+    -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0xD7, -0x7FF9, 0x10, 0x4301, -0x7FFC, 0x17, 0, -0x7FF9, 0x15,
+    0x4380, -0x8000, 0, 0, -0x7FF8, 0xD2, -0x7FF9, 0xA, 0x4409, -0x7FF8, 0xD3, -0x7FF9, 0xA,
+    0x4400, -0x8000, 0, 0, 0, -0x7FFD, 0x12, -0x7FF9, 6, 0x4481, -0x7FF8, 0xD8, -0x7FFD, 0x13,
+    -0x7FF9, 0x14, 0x4487, -0x7FFC, 0, 0, 0, -0x7FF9, 0x17, 0x4500, -0x8000, 0, 0, -0x7FF9,
+    0x19, 0x4200, -0x7FE8, 0xB, 0x4218, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0x16D, -0x7FF9, 0xB,
+    0x430A, -0x7FFC, 0x17, 0, -0x7FF9, 0x18, 0x4380, -0x8000, 0, 0, -0x7FF8, 0x168, -0x7FF9,
+    0xA, 0x4400, -0x7FF8, 0x169, -0x7FF9, 0xA, 0x4409, -0x8000, 0, 0, 0, 0x4482, -0x7FFD, 0x12,
+    0x4483, 0x4484, 0x4485, 0x4486, -0x7FF8, 0x16E, -0x7FFD, 0x13, 0x4487, -0x7FF9, 0xE,
+    0x4488, -0x7FFC, 0, 0x2000, 0, 0x10, 0, 0x1000, 0, 0xC8, 0, 0x2BC, 0, 0x200, 0, 0x3EC8,
+    -0x7FFA, 0x3BB8, -0x7FFA, 0x20, 0, 0x400, 0,
+};
+s32 D_800BCDB0[20] = {
+    0x70001, 0x80006, -0x10000, 0, 0, 0x70003, 6, -0x10000, 0, 0, 0x70005, 0x80006, -0x10000,
+    0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BCE00[40] = {
+    0x70000, 0x60006, -0x10000, 0, 0, 0x70003, 0xA0006, -0x10000, 0, 0, 0x70006, 0x60006,
+    -0x10000, 0, 0, 0x70001, 0x2C0006, -0x10000, 0, 0, 0x70002, 0x260006, -0x10000, 0, 0,
+    0x70004, 0x260006, -0x10000, 0, 0, 0x70005, 0x2C0006, -0x10000, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BCEA0[55] = {
+    0x70001, 0x60006, -0x10000, 0, 0, 0x70003, 6, -0x10000, 0, 0, 0x70005, 0x60006, -0x10000,
+    0, 0, 0x70000, 0x280006, -0x10000, 0, 0, 0x70002, 0x220006, -0x10000, 0, 0, 0x70004,
+    0x220006, -0x10000, 0, 0, 0x70006, 0x280006, -0x10000, 0, 0, 0x70001, 0x560006, -0x10000,
+    0, 0, 0x70003, 0x500006, -0x10000, 0, 0, 0x70005, 0x560006, -0x10000, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BCF7C[35] = {
+    0x20000, 0xC0006, -0xFFFF, 0, 0, 0x40000, 0x60006, -0xFFFF, 0, 0, 0x60000, 6, -0xFFFF, 0,
+    0, 0x70001, 6, -0xFFFF, 0, 0, 0x70003, 0x60006, -0xFFFF, 0, 0, 0x70005, 0xC0006, -0xFFFF,
+    0, 0, 0, 0, 0, 0, 0,
+};
+PapuKey *D_800BD008[4] = { (void *)&D_800BCDB0, (void *)&D_800BCE00, (void *)&D_800BCEA0, (void *)&D_800BCF7C };
+s32 D_800BD018[8] = { -0x600, -0x300, 0x300, 0, 0, 0, 0, 0xFFFF };
+s32 D_800BD038[8] = { 0x600, -0x300, 0x200, 0, 0, 0, 0, 0xFFFF };
+s32 D_800BD058[12] = { -0x600, -0x300, 0x400, 0, 0x600, -0x300, 0x200, 0x14, 0, 0, 0, 0xFFFF };
+s32 D_800BD088[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x200, 0x14, 0, 0, 0, 0xFFFF };
+s32 D_800BD0B8[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x400, 0x14, 0, 0, 0, 0xFFFF };
+s32 D_800BD0E8[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x400, 0x1E, 0, 0, 0, 0xFFFF };
+PapuStep *D_800BD118[6] = {
+    (void *)&D_800BD018, (void *)&D_800BD038, (void *)&D_800BD058, (void *)&D_800BD088,
+    (void *)&D_800BD0B8, (void *)&D_800BD0E8,
+};
+u16 D_800BD130[64] = {
+    1, 0, 2, 0, 3, 0, 5, 0, 6, 0, 8, 0, 7, 1, 8, 0, 9, 0, 4, 1, 2, 1, 3, 1, 5, 0, 6, 2, 8, 0,
+    7, 3, 8, 0, 9, 0, 4, 0xA, 2, 2, 3, 2, 5, 0, 6, 4, 8, 0, 7, 5, 8, 0, 7, 4, 8, 0, 9, 0, 4,
+    0x13, 2, 3, 0xA, 0,
+};
+u16 D_800BD1B0[28] = {
+    0, 0x2006, 0x2007, 0x2008, 0x2009, 0x200A, 0x2005, 0x2005, 0x2005, 0x2005, 0x2004, 0x2004,
+    0x2004, 0x2004, 0x2003, 0x2003, 0x2003, 0x2003, 0x2002, 0x2002, 0x2002, 0x2002, 0x2001,
+    0x2001, 0x2001, 0x2001, 0, 0,
+};
+s32 D_800BD1E8[10] = {
+    (s32)0x80110000, 0x40000009, 0x88005, 0x98011, (s32)0x80054009, (s32)0x80110008,
+    0x40130009, 0x88005, (s32)0x8001401D, 0,
+};
+s32 D_800BD210[7] = { (s32)0x80110000, 0x42000042, 0xC8005, 0x58011, (s32)0x800F4241, 0x42460063, 0x8001 };
+s32 D_800BD22C[3] = { (s32)0x80110000, 0x4180001E, 0x8001 };
+s32 D_800BD238[2] = { (s32)0x80010000, 0 };
+s32 D_800BD240[6] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80014109, 0 };
+s32 D_800BD258[7] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80054109, (s32)&D_80010008, 0 };
+s32 D_800BD274[9] = {
+    (s32)0x80110000, 0x4080000D, 0x1F4800D, 0xA8011, (s32)&D_8005408C, (s32)0x8011000C,
+    0x4097001A, 0x88005, 0x8001,
+};
+s32 D_800BD298[2] = { (s32)0x80010000, 0 };
+s32 D_800BD2A0[9] = {
+    (s32)0x80110000, 0x4280000A, 0x1F7800D, 0xD8011, (s32)0x80054289, (s32)0x8011000D,
+    0x42960035, 0x88005, 0x8001,
+};
+s32 D_800BD2C4[3] = { (s32)0x80110000, 0x4180001E, 0x8001 };
+s32 D_800BD2D0[3] = { (s32)0x80110000, 0x4180001E, 0x8000 };
+s32 D_800BD2DC[4] = { 0x43000000, 0x1FE800D, 0x268011, (s32)0x80014301 };
+s32 D_800BD2EC[2] = { 0x42460064, 0x8000 };
+u16 D_800BD2F4[8] = { 0xE, 0, 0xE, 0xE, 0, 0x13, 0, 0 };
+s32 D_800BD304[42] = {
+    (s32)&D_800BD1E8, 0, 0, (s32)&D_800BD274, (s32)&D_800BD240, 0, 0, (s32)&D_800BD298, 0, 0,
+    (s32)&D_800BD258, (s32)&D_800BD258, 0, 0, (s32)&D_800BD22C, (s32)&D_800BD22C,
+    (s32)&D_800BD22C, 0, 0, (s32)&D_800BD238, 0, 0, (s32)&D_800BD2A0, 0, 0, (s32)&D_800BD210,
+    0, 0x29, (s32)&D_800BD2C4, (s32)&D_800BD2D0, (s32)&D_800BD2DC, 0, 0, (s32)&D_800BD240,
+    (s32)&D_800BD240, (s32)&D_800BD22C, (s32)&D_800BD22C, (s32)&D_800BD238, (s32)&D_800BD240,
+    0, 0x21, (s32)&D_800BD2EC,
+};
+ScriptInit D_800BD3AC = { 0, (void *)&D_800BD304, 0x401 };
+s32 D_800BD3B8[4] = { (s32)0x80110000, 0x40000016, 0x88005, 0x8000 };
+s32 D_800BD3C8[7] = {
+    (s32)0x80110000, 0x40800009, 0x205800C, 0xB8011, (s32)0x800C4089, 0x40940206,
+    (s32)0x80004095,
+};
+s32 D_800BD3E4[1] = { (s32)0x80010000 };
+s32 D_800BD3E8[7] = { 0x41000002, 0x4800F, 0x41024101, 0x28800F, 0x41034103, 0x41034103, 0x8001 };
+s32 D_800BD404[4] = { (s32)0x800C0000, (s32)0x80110208, 0x4104001B, 0x8001 };
+s32 D_800BD414[4] = { (s32)0x800C0000, (s32)0x8011020A, 0x4202000B, 0x8001 };
+s32 D_800BD424[4] = { (s32)0x80110000, 0x42800014, 0x88005, 0x8000 };
+s32 D_800BD434[9] = {
+    (s32)0x80110000, 0x43800007, 0x205800C, 0xC8011, (s32)0x80054387, (s32)0x800C0008,
+    (s32)0x80110206, 0x43930005, 0x8000,
+};
+s32 D_800BD458[8] = {
+    (s32)0x80110000, 0x43000002, 0x68011, (s32)0x800C4301, (s32)0x8005020B, (s32)0x80110010,
+    0x43100007, 0x8001,
+};
+s32 D_800BD478[8] = {
+    (s32)0x80110000, 0x4180000B, 0x88011, (s32)0x8005418B, (s32)0x800F0008, 0x41920014,
+    0x98005, 0x8001,
+};
+s32 D_800BD498[4] = { (s32)0x800C000E, 0x20060209, 0x88005, 0x8001 };
+s32 D_800BD4A8[19] = {
+    (s32)&D_800BD3B8, (s32)&D_800BD3C8, (s32)&D_800BD3E4, (s32)&D_800BD3E8, (s32)&D_800BD404,
+    0, 0, (s32)&D_800BD414, (s32)&D_800BD424, (s32)&D_800BD434, (s32)&D_800BD458, 0, 0,
+    (s32)&D_800BD478, 0, 0, (s32)&D_800BD498, 0, 0,
+};
+ScriptInit D_800BD4F4 = { 0, (void *)&D_800BD4A8, 0x401 };
+PapuSpot D_800BD500[5] = {
+    { -0x500, 0, 0x500 }, { -0x500, 0, 0 }, { 0x500, 0, 0x500 }, { 0x500, 0, 0 },
+    { 0, 0, 0x500 },
+};
+s32 D_800BD53C[4] = { 0x17001C, 0x18001A, 0x2D002C, 0xFFFF };
+s32 D_800BD54C[12] = {
+    (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32CC, (s32)&D_800B32D0,
+    (s32)&D_800B32D8, (s32)&D_800B32E0, (s32)&D_800B32E8, (s32)&D_800B32F0, (s32)&D_800B32FC,
+    (s32)&D_800B3308, 0,
+};
+s32 D_800BD57C[1] = { 0xFFFF };
+s32 D_800BD580[29] = {
+    (s32)&D_80055684, (s32)&D_8004F328, (s32)&D_8004F320, (s32)&D_800555A4, (s32)&D_8004F308,
+    (s32)&D_8004F300, (s32)&D_80053074, (s32)&D_8004F318, (s32)&D_8004F310, (s32)&D_80052F5C,
+    (s32)&D_8004F2F8, (s32)&D_8004F2F0, (s32)&D_80053004, (s32)&D_8004F2E8, (s32)&D_8004F2E0,
+    (s32)&D_80052F94, (s32)&D_8004F2D8, (s32)&D_8004F2D0, (s32)&D_800533F4, (s32)&D_8004F2C8,
+    (s32)&D_8004F2C0, (s32)&D_8005342C, (s32)&D_8004F2B8, (s32)&D_8004F2B0, 0, 0, 0,
+    (s32)&D_80050148, (s32)&D_800BD580,
+};
+s32 D_800BD5F4[8] = { 0x2B, (s32)&D_800BD54C, (s32)&D_800BD57C, 1, 0, 0, 0, 0 };
+s32 D_800BD614[2] = { 0x2010003, 0x201020D };
+s32 D_800BD61C[9] = { (s32)&D_800BD614, 4, (s32)&D_800BD53C, (s32)&D_800BD5F4, (s32)&D_800BD61C, 0, 0, 0, 0 };
+s32 D_800BD640[11] = { (s32)0xFFE5FFEB, 0xFFDA, 0, 0, 0, (s32)0xFFED0000, (s32)0xFFDDFFE6, 0, 0, 0, 0 };
+s32 D_800BD66C[11] = { (s32)0xFFD7FFE3, 0xFFD1, 0, 0, 0, (s32)0xFFE80000, (s32)0xFFC6FFDC, 0, 0, 0, 0 };
+s32 D_800BD698[11] = { (s32)0xFFCEFFDC, 0xFFC3, 0, 0, 0, (s32)0xFFE20000, (s32)0xFFBEFFCC, 0, 0, 0, 0 };
+s32 D_800BD6C4[11] = { (s32)0xFFC2FFCE, 0xFFBC, 0, 0, 0, (s32)0xFFCC0000, (s32)0xFF90FFAE, 0, 0, 0, 0 };
+s16 *D_800BD6F0[4] = { (void *)&D_800BD640, (void *)&D_800BD66C, (void *)&D_800BD698, (void *)&D_800BD6C4 };
+u16 D_800BD700[4] = { 0x201, 0x202, 0x203, 0x204 };
+s32 D_800BD708 = 0;
+Slot40 D_800BD70C[6] = {0};
+PapuBossState D_800BD88C = {0};
+u16 D_800BD8CC = 0;
+u16 D_800BD8CE = 0;
+u16 D_800BD8D0 = 0;
+s32 D_800BD8D4 = 0;
+s32 D_800BD8D8 = 0;
+u16 D_800BD8DC = 0;
+s16 D_800BD8DE = 0;
+u16 D_800BD8E0 = 0;
+u16 D_800BD8E2 = 0;
+u16 D_800BD8E4 = 0;
+s16 D_800BD8E6 = 0;
+u16 D_800BD8E8 = 0;
+s16 D_800BD8EC[2] = {0};
+u16 D_800BD8F0[4] = {0};
+s16 D_800BD8F8[8] = {0};
+u8 D_800BD908[64] = {0};
+PapuCell D_800BD948[8][8] = {0};
+PapuGridPos D_800BDE48[16][16] = {0};
+PapuEntry D_800BE648[20] = {0};
+EXTengine D_800BE788 = {0};
+PapuSceneObj *D_800BE824 = 0;
+s16 D_800BE828 = 0;
+s16 D_800BE82A = 0;
+PapuKey *D_800BE82C = 0;
+u16 D_800BE830 = 0;
+u16 D_800BE832 = 0;
+u16 D_800BE834 = 0;
+u16 D_800BE838[40] = {0};
+u16 D_800BE888 = 0;
+s16 D_800BE88A = 0;
+s16 D_800BE88C = 0;
+s16 D_800BE88E = 0;
+s16 D_800BE890 = 0;
+s16 D_800BE892 = 0;
+s16 D_800BE894 = 0;
+/* two zero bytes before pahero.c's data: the link packs to 2 (SUBALIGN), so the padding is written out */
+s16 D_800BE896 = 0;
+
 void InitialisePAPUFirst(void) {
     EngineGameView *g;
     u8 *v;
@@ -47,7 +313,7 @@ void InitialisePAPU(void) {
     World_floor_level = 0;
     D_800BD8DC = 0;
     D_800BD8DE = 0;
-    *(s16 *)D_800BD8E2 = 0;
+    D_800BD8E2 = 0;
     D_800BD708 = 0;
     D_800BD8D4 = 0;
     D_800BD8D8 = 0;
@@ -244,7 +510,7 @@ void PapuShuffleDropPoints(void) {
     }
 }
 
-PapuMsg *PapuFindDropPoint(char *arg0) {
+PapuMsg *PapuFindDropPoint(u16 *arg0) {
     PapuGridPos *best;
     PapuGridPos *cell;
     u16 bestn;
@@ -262,7 +528,7 @@ PapuMsg *PapuFindDropPoint(char *arg0) {
     cell = D_800BDE48[0];
     bestn = 9;
     tries = 9;
-    i = *(u16 *)arg0;
+    i = *arg0;
     best = cell = &cell[i];
     besti = i;
     i++;
@@ -271,7 +537,7 @@ PapuMsg *PapuFindDropPoint(char *arg0) {
     z = 9 - (cell->y >> 8);
     do {
         while (D_8009D90C[z * 20 + x].unk0 != 0) {
-            if (i == *(u16 *)arg0) {
+            if (i == *arg0) {
                 return NULL;
             }
             cell = D_800BDE48[0];
@@ -320,7 +586,7 @@ PapuMsg *PapuFindDropPoint(char *arg0) {
             n++;
         }
         if (n == 0) {
-            *(u16 *)arg0 = i;
+            *arg0 = i;
             return (PapuMsg *)cell;
         }
         if (n < bestn) {
@@ -328,7 +594,7 @@ PapuMsg *PapuFindDropPoint(char *arg0) {
             best = cell;
             besti = i;
         }
-        if (i == *(u16 *)arg0) {
+        if (i == *arg0) {
             return NULL;
         }
         cell = D_800BDE48[0];
@@ -341,7 +607,7 @@ PapuMsg *PapuFindDropPoint(char *arg0) {
             break;
         }
     } while (1);
-    *(u16 *)arg0 = besti;
+    *arg0 = besti;
     return (PapuMsg *)best;
 }
 
@@ -432,7 +698,6 @@ void PapuInitMinionSlots(void) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/papu/papu", D_800B32B8);
 
 void InitPapuBoss(NAS *nas) {
     EXTengine *eng;
@@ -561,7 +826,7 @@ void PlotPapuBoss(NAS *nas) {
         }
         break;
     case 12:
-        if (D_800BD8B4 != 0) {
+        if (D_800BD88C.unk28 != 0) {
             D_800BE890 = D_800BE88E;
             if (D_800BD708 != 0) {
                 D_800BE88E = 9;
@@ -700,7 +965,7 @@ void PlotPapuBoss(NAS *nas) {
         break;
     }
     eng->unk5E = 1;
-    D_800BD8B4 = 0;
+    D_800BD88C.unk28 = 0;
 }
 
 NAS *PapuMinionFindCrate(s32 arg0) {
@@ -1798,8 +2063,8 @@ void PapuUpdateFloor(void) {
                 if (D_800BE828 < 0) {
                     D_800BE828 = 0;
                 }
-                if (D_800BE828 < 0x200 && D_800BE81C != NULL) {
-                    StopSfx(D_800BE81C);
+                if (D_800BE828 < 0x200 && D_800BE788.sfx != NULL) {
+                    StopSfx(D_800BE788.sfx);
                 }
                 D_800BE824->unk24 = D_800BE828;
             } else {
@@ -1807,7 +2072,7 @@ void PapuUpdateFloor(void) {
             }
         } else {
             if (D_800BE828 == 0) {
-                PlaySfx(0x20D, &D_800BE81C, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(0x20D, &D_800BE788.sfx, NULL, 0x1000, 0x1E00, 0);
             }
             if (D_800BE828 < 0x1000) {
                 D_800BE828 += 0x80;
@@ -2130,7 +2395,7 @@ void PapuDropFirstCrates(void)
     {
       goto done;
     }
-    p = (s32 *) PapuFindDropPoint(D_800BD8E2);
+    p = (s32 *) PapuFindDropPoint(&D_800BD8E2);
     if (p != 0)
     {
       a = p[0];
@@ -2164,7 +2429,7 @@ void PapuDropCrates(u16 arg0) {
         if (i >= (arg0 & 0xFFFF)) {
             return;
         }
-        m = PapuFindDropPoint(D_800BD8E2);
+        m = PapuFindDropPoint(&D_800BD8E2);
         if (m != NULL) {
             a = m->unk0;
             b = m->unk4;

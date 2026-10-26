@@ -244,12 +244,12 @@ def slot_names():
 
 def slot_of(path, slots):
     """The slot overlay a source or header belongs to: src/overlays/NAME/..., its owned header
-    include/bash/NAME_ovl.h or a file's include/bash/NAME_<address>.h (the leak's NAME.h is
+    include/bash/NAME_ovl.h or a later file's include/bash/NAME_<file>.h (the leak's NAME.h is
     shared, not the overlay's)."""
     p = path.replace("\\", "/")
     for s in slots:
         if (re.search(r"(?:^|/)src/overlays/" + s + "/", p)
-                or re.search(r"(?:^|/)include/bash/" + s + r"(?:_ovl|_[0-9a-f]{8})\.h$", p)):
+                or re.search(r"(?:^|/)include/bash/" + s + r"_\w+\.h$", p)):
             return s
     return None
 

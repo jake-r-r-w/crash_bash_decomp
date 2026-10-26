@@ -149,6 +149,7 @@ class OtherSlots(unittest.TestCase):
         self.assertTrue(other("include/bash/bonk_ovl.h"))
         self.assertTrue(other("src/overlays/n2o/800bbdb8.c"))
         self.assertTrue(other("include/bash/n2o_800bbdb8.h"))
+        self.assertTrue(other("include/bash/n2o_nox.h"))
         self.assertTrue(other("src/overlays/bash/bash.c"))
         self.assertFalse(other("include/bash/titles_ovl.h"))
         self.assertFalse(other("src/overlays/titles/titles.c"))

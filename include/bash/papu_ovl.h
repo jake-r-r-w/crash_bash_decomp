@@ -216,7 +216,7 @@ typedef struct PapuBossState {
     /* 0x22 */ s16 unk22;
     /* 0x24 */ s16 unk24;
     /* 0x26 */ s16 unk26;
-    /* 0x28 */ s16 unk28;
+    /* 0x28 */ u16 unk28;
     /* 0x2A */ s16 unk2A;
     /* 0x2C */ s16 unk2C;
     /* 0x2E */ s16 unk2E;
@@ -238,7 +238,6 @@ extern s16 D_800BC91C[];
 extern s16 D_800BE82A;
 extern u16 D_800BE834;
 extern s32 D_800BD708;
-extern u16 D_800BD8B4;
 extern s32 D_800BD8D4;
 extern s32 D_800BD8D8;
 
@@ -249,7 +248,7 @@ typedef struct PapuMsg {
     s32 unk4;
 } PapuMsg;
 
-PapuMsg *PapuFindDropPoint(char *arg0);
+PapuMsg *PapuFindDropPoint(u16 *arg0);
 NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e);
 void PapuDropCrates(u16 arg0);
 typedef struct PapuStep {
@@ -347,7 +346,7 @@ typedef struct {
 extern u16 D_8009E46C[];
 extern u16 D_800BD8E0;
 extern u16 D_800BD8E4;
-extern char D_800BD8E2[];
+extern u16 D_800BD8E2;
 extern u8 D_800BD908[];
 extern u16 D_800BD8F0[4];
 
@@ -428,7 +427,6 @@ void PapuSetCrateMix(u16 a0, s32 a1, s32 a2, s32 a3, u16 a4, u16 a5, u16 a6,
 
 s32 PapuMinionKick(u32 idx);
 
-extern _sfx_handler *D_800BE81C;
 extern u16 D_800BD1B0[];
 
 void PlotPapuBoss(NAS *nas);
