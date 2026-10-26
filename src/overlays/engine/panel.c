@@ -4,6 +4,7 @@
 #include "bash/panel.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
+#include "bash/tank.h"   /* TA_players: the Tank HUD reads its weapon and rounds */
 
 void Setup_panel(void) {
     EngineSlotView *v;
@@ -1386,7 +1387,7 @@ void func_8007D208(void) {
         D_8009AE40[i].a = NULL;
         D_8009AE40[i].b = NULL;
         if (Heroes[i].hero_name != 9) {
-            D_8009AE40[i].a = &D_800CAD5C[i];
+            D_8009AE40[i].a = &TA_players[i].MainWeaponType;   /* Tank's, linked from ovl5f (slot_syms.py) */
             off = i * sizeof(D_80099A64[0]);
             p = (PanelPrim *)(off + (u8 *)&D_80099A64[0][0]);
             p->unk4 = 0x2E;
@@ -1396,7 +1397,7 @@ void func_8007D208(void) {
             p->unkC = 0;
             p->unk74 = 0x3029;
             p = (PanelPrim *)(off + (u8 *)&D_80099A64[0][1]);
-            D_8009AE40[i].b = &D_800CAD5C[i].unk4;
+            D_8009AE40[i].b = &TA_players[i].MainWeaponRounds;
             p->unk4 = 0xA;
             p->unk8 = 0x39;
             p->u6C.ptr = D_8005365C;

@@ -547,6 +547,17 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (shift build: the first boot crashed in Tank):** two Tank
+  references weren't moving. The engine's per-world record for Tank
+  (`0x80098FC0`, `WORLD_TANK` 0x0106) points 8 bytes into `D_800C8E7C`, which
+  the fix-up skipped (no symbol there); it now maps a word inside one of the
+  overlay's data objects through the containing symbol when the words beside
+  it were fixed (not into code: function pointers point at starts). And the
+  engine's panel code pointed the Tank HUD at `D_800CAD5C`, a fixed address:
+  it is `&TA_players[i].MainWeaponType` and `.MainWeaponRounds` now (panel.c
+  includes tank.h; `EngA4` gone), and slot_syms.py reads every engine object,
+  so `TA_players` comes from Tank's link. `make check` unchanged.
+
 - **2026-10-26 (the shiftable build):** `make shift OVL=ovl5f PAD=0x40`
   (`tools/scripts/shift.py`, tested): Tank relinked padded, the engine
   relinked against it with the slot image as id + zeros, a stopgap rewrite

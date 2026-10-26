@@ -162,8 +162,9 @@ build/%.ovl.elf: linkers/%.ld $(O_FILES)
 # not its ELF, so they can link first.
 SLOT_OVLS := $(filter-out engine,$(OVLS))
 SLOT_SYMS := build/engine_slot_syms.ld
-$(SLOT_SYMS): build/src/overlays/engine/asttable.c.o $(SLOT_OVLS:%=build/%.ovl.elf) tools/scripts/slot_syms.py
-	python3 tools/scripts/slot_syms.py $@ build/src/overlays/engine/asttable.c.o -- $(SLOT_OVLS:%=build/%.ovl.elf)
+ENGINE_C_OBJS := $(filter build/src/overlays/engine/%,$(O_FILES))
+$(SLOT_SYMS): $(ENGINE_C_OBJS) $(SLOT_OVLS:%=build/%.ovl.elf) tools/scripts/slot_syms.py
+	python3 tools/scripts/slot_syms.py $@ $(ENGINE_C_OBJS) -- $(SLOT_OVLS:%=build/%.ovl.elf)
 build/engine.ovl.elf: $(SLOT_SYMS)
 
 build/%.bin: build/%.ovl.elf

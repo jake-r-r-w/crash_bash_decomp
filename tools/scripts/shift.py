@@ -18,6 +18,7 @@ From the matching build's objects (nothing is recompiled), into build/shift/:
 Then the shift test: play the overlay's game on it (docs/PLAYING.md).
 """
 import argparse
+import glob
 import os
 import re
 import subprocess
@@ -106,6 +107,11 @@ def fixup(ovl, old_elf, new_elf, others):
     """Rewrite the engine's asm-data words that point at a place only ovl has (stopgap)."""
     old = slot_syms.defined(old_elf)
     new = slot_syms.defined(new_elf)
+    old_all = {}
+    for l in slot_syms.nm(old_elf):
+        parts = l.split()
+        if len(parts) == 3:
+            old_all[parts[2]] = int(parts[0], 16)
     taken = set()
     for e in others:
         taken |= set(slot_syms.defined(e).values())
@@ -130,14 +136,35 @@ def fixup(ovl, old_elf, new_elf, others):
     left = []
     for m in maybe:
         (done if m[0] - 4 in fixed or m[0] + 4 in fixed else left).append(m)
+    # so is a word beside them that points inside one of its objects (the per-world record's
+    # first pointer, 8 bytes into D_800C8E7C): mapped through the symbol that contains it
+    # Only into its data or rodata: a function pointer points at a function's start, so a word
+    # into the middle of its code is some other overlay's (the neighbouring games' tables)
+    fixed = {off for off, *_ in done}
+    lo, hi = min(old.values()), max(old.values())
+    text = (old_all.get(f"{ovl}_TEXT_START"), old_all.get(f"{ovl}_TEXT_END"))
+    ordered = sorted((a, n) for n, a in old.items() if n in new and not (text[0] <= a < text[1]))
+    inner = []
+    for rlo, rhi, delta in data_ranges("engine"):
+        for off in range(rlo, rhi - 3, 4):
+            if off in fixed or not ({off - 4, off + 4, off - 8, off + 8} & fixed):
+                continue
+            v = int.from_bytes(data[off:off + 4], "little")
+            if lo <= v <= hi and v not in by_addr and v not in shared and not (text[0] <= v < text[1]):
+                a, n = max(x for x in ordered if x[0] <= v)
+                inner.append((off, delta, n, v, new[n] + (v - a)))
     for off, delta, n, v in done:
         data[off:off + 4] = new[n].to_bytes(4, "little")
+    for off, delta, n, v, w in inner:
+        data[off:off + 4] = w.to_bytes(4, "little")
     open(path, "wb").write(data)
     for off, delta, n, v in sorted(done):
         print(f"shift: engine data {off + delta:08X}: {n} {v:08X} -> {new[n]:08X}")
+    for off, delta, n, v, w in inner:
+        print(f"shift: engine data {off + delta:08X}: {v:08X} ({n} + 0x{v - old[n]:X}) -> {w:08X}")
     for off, delta, n, v in left:
         print(f"shift: engine data {off + delta:08X}: {v:08X} is {n} here and a place in another overlay: left")
-    return done
+    return done + [(off, delta, n, v) for off, delta, n, v, w in inner]
 
 
 def main():
@@ -155,7 +182,7 @@ def main():
     old_elf = f"build/{a.ovl}.ovl.elf"
     sym = f"{OUT}/engine_slot_syms.ld"
     elfs = [new_elf if o == a.ovl else f"build/{o}.ovl.elf" for o in slots]
-    names = slot_syms.undefined(["build/src/overlays/engine/asttable.c.o"])
+    names = slot_syms.undefined(sorted(glob.glob("build/src/overlays/engine/*.c.o")))
     syms = slot_syms.resolve(names, elfs)
     with open(sym, "w", encoding="utf-8", newline="\n") as f:
         for n, v in syms:
