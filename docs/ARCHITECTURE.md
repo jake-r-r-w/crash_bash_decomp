@@ -676,6 +676,30 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **The front end** (ovl69, Titles; named 2026-10-26). Modes 0x28..0x2A
+  (the engine's per-mode table gives each `file_group_TITLES`); its world
+  record (`0x800990B0`, world 0x0101) is `{..., &TITLES_PREMAP,
+  &titles_shell_info, TitlesSetUp}`, the same shape as Tank's, and
+  `TitlesSetUp` fills the exe's `LevSpec`. Each screen is a `process_info`
+  (main menu, number of players, new/load game, character select, level
+  select, team battle, battle options, options, `RunGame` around the game's
+  own hooks at `0x8009E58C..98`); a screen places its sprites, texts and
+  models from a list of the engine's 0x24-byte `PlaceRec`s
+  (`func_80095BEC(slot, list)`). The menus run along chains of process
+  pointers (`AdventureChain`, `BattleChain`, `TournamentChain`):
+  `MenuChainNext`/`Back` step `MenuChainPos`, and backing out of a chain's
+  first screen lands on the main menu stored before it. Mode 0x28 starts at
+  the main menu; 0x29 and 0x2A resume a battle or tournament at its level
+  select (`BattleChainResume`, `TournamentChainResume`). Battle mode's
+  seven arenas (`BattleArenas`) list their levels as game modes: the crate
+  games 0..3, Polar 0x12..0x15, Pogo 0xA..0xD, Ballistix 0xE..0x11, Tank
+  5..8, Race 0x17..0x1A, Dino 0x1B..0x1E; the last three are type 2,
+  unlocked from a memory card's save. The engine calls six front-end
+  functions and names two of its objects (`TitlesCamera`, `RunGame`), so
+  it links them by name. The Euro Demo 65 symbol table calls this overlay
+  `TITLES` and names `num_players_render`, `adventure_mode_head`,
+  `team_mode_init` and data (`Crash_Titles_Table`, `sub_setup_players`)
+  not placed in retail yet.
 - **Tank's arenas and data** (ovl5f, named 2026-10-26). The game mode
   (`D_8005A648`, the game-state struct's `+0x34`) is the arena: 5 swamp
   (`LEV_TANKLAST`: hover tanks, `BumpSpeedsForSwamp`, force fields, its own

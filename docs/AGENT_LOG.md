@@ -452,6 +452,18 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Titles, ovl69, with the recipe):** all 74 functions named
+  from the process tables and the engine's world record; its data, rodata
+  (68 texts, the backdrop's position) and id word are C and named
+  (`TITLES_PREMAP`, the menu chains, the battle arenas' level lists). The
+  pass found four tool bugs, all fixed and tested: `decomp.py rename`
+  renamed other overlays' asm of the same placeholder name; `data2c.py`
+  took other overlays' declarations and had no function-pointer fields;
+  `.decomp/history.json` passed the 2 MB hook (now one row per point);
+  `shift.py`'s inner-pointer passes rewrote other games' words (gone; Tank
+  rewrites the same 99 without them). The shift build rewrites 6 engine
+  words; the shift test (play the menus to a battle and back) is next.
+
 - **2026-10-26 (slot overlay file splits: nothing more proven):** new
   `tools/scripts/leak_order.py` (tested) fits the cc1plus climb/fall
   shape against a leaked header. Pogo, Arkenoid and Polar gain no more

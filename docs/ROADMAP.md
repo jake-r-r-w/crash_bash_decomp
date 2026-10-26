@@ -273,7 +273,8 @@ build.
 - [ ] N2O and NOX (`ovl67`)
 - [ ] Chase (`ovl68`)
 - [ ] Hub (`ovl6a`)
-- [ ] Titles, the front end (`ovl69`)
+- [ ] Titles, the front end (`ovl69`): named, typed, rodata and data as C
+  and its shift build made (2026-10-26); left: the shift test.
 
 ## Phase 5 - The engine and `main.exe` to source-only
 
