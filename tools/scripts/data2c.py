@@ -496,7 +496,11 @@ class Converter:
             # the rest is another object (cc1 pads only to the next object's alignment), even if
             # it is zero: written as D_<address> so the layout holds
             rva = va + ((total + 3) & ~3)
-            rest = "\n" + self.define(f"D_{rva:08X}", rva, size - (rva - va), kinds - {"asciz"} or {"word"}, local)
+            rkinds = kinds - {"asciz"} or {"word"}
+            if rva - va >= size and total % 2 == 0:
+                # less than a word is left: a halfword right after (the s16 pair D_800C52E8)
+                rva, rkinds = va + total, {"short"}
+            rest = "\n" + self.define(f"D_{rva:08X}", rva, size - (rva - va), rkinds, local)
             size = rva - va
             self.base_rom = self.rom(va)
         ctype = ("const " if False else "") + tname + " " + "*" * ptr
