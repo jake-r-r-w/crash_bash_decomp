@@ -31,6 +31,18 @@ class Neighbours(unittest.TestCase):
         self.assertEqual([m[1] for m in done], ["jungle", "space", "snow", "drains"])
 
 
+class Columns(unittest.TestCase):
+    def test_a_shared_address_in_a_taken_sequence_column_is_taken(self):
+        # two characters' tables at 0x1000 and 0x2000; id 86 is taken for the first, so the
+        # second's id-86 slot is the overlay's too; an id nothing took stays left
+        tables = [0x1000, 0x2000]
+        done = [(0x1000 + 4 * 86, 0, "CRA_seq_dinowin")]
+        maybe = [(0x2000 + 4 * 86, 0, "COC_seq_dinowin"), (0x2000 + 4 * 87, 0, "other"), (0x3000, 0, "outside")]
+        left = shift.take_columns(done, maybe, tables)
+        self.assertEqual([m[2] for m in left], ["other", "outside"])
+        self.assertIn((0x2000 + 4 * 86, 0, "COC_seq_dinowin"), done)
+
+
 class PadScript(unittest.TestCase):
     def test_pads_before_each_c_section_and_not_the_id(self):
         t = shift.pad_script(LD, "tank", 0x40)

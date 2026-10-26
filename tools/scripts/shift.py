@@ -178,6 +178,37 @@ def take_neighbours(done, maybe):
         left = [m for m in left if m not in took]
 
 
+SEQ_IDS = 130   # more than HeroAnim_seqs has: a slot index past the table never matches
+
+
+def hero_seq_tables(data):
+    """The vram of each character's sequence table (HeroSeqTables[1..8]) in the engine image."""
+    nm = run(["mipsel-linux-gnu-nm", "build/engine.ovl.elf"]).splitlines()
+    at = [int(l.split()[0], 16) for l in nm if l.endswith(" HeroSeqTables")]
+    if not at:
+        return []
+    base = 0x80078C90   # the engine's load address (its image starts there)
+    return [int.from_bytes(data[at[0] - base + 4 * i:at[0] - base + 4 * i + 4], "little") for i in range(1, 9)]
+
+
+def take_columns(done, maybe, tables):
+    """Move the words of maybe that sit in a character's sequence table at an id whose slot in
+    another character's table is in done, and return the rest: a game's sequence ids are its
+    own in every character's table (Coco's dinowin slot shares its address with another
+    overlay's data while the other seven are Dino's alone). Entries are (offset, delta, ...)
+    with vram offset + delta."""
+    def column(m):
+        a = m[0] + m[1]
+        for t in tables:
+            if t <= a < t + 4 * SEQ_IDS:
+                return (a - t) // 4
+        return None
+    cols = {column(m) for m in done} - {None}
+    took = [m for m in maybe if column(m) in cols]
+    done += took
+    return [m for m in maybe if m not in took]
+
+
 def fixup(ovl, old_elf, new_elf, others):
     """Rewrite the engine's asm-data words that point at a place only ovl has (stopgap)."""
     old = slot_syms.defined(old_elf)
@@ -201,6 +232,7 @@ def fixup(ovl, old_elf, new_elf, others):
             elif v in shared:
                 maybe.append((off, delta, shared[v], v))
     left = take_neighbours(done, maybe)
+    left = take_columns(done, left, hero_seq_tables(data))
     for off, delta, n, v in done:
         data[off:off + 4] = new[n].to_bytes(4, "little")
     open(path, "wb").write(data)
