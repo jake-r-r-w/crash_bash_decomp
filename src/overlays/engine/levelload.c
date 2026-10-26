@@ -673,7 +673,7 @@ void func_80094A28(void) {
             }
         }
     }
-    D_800A0BF3 = ((MarkCtx *)D_800A0D2C)->unkC;
+    D_800A0BCC.isbg = ((MarkCtx *)D_800A0D2C)->unkC;
 }
 
 void func_80094B38(void) {

@@ -38,7 +38,6 @@ typedef struct CircleFireExt {
     u8 pad34[0x10];
 } CircleFireExt;
 
-extern u16 *HeroModelTable;
 extern u8 HeroModelBank[];
 extern u8 KegObjectsModel[];
 extern s32 *MapScene;
@@ -84,7 +83,6 @@ extern u16 ChaseHeroShadowSizes[];
 extern s32 ChaseFlameTimer[];
 extern ChasePad Pads[];
 extern s32 D_8005A670;
-extern u16 *HeroRunSpeeds;
 
 typedef struct CoalPosInner {
     s32 pad0[4];
@@ -225,7 +223,6 @@ extern s32 ChaseArenaShrink;
 extern s32 ChaseHitSfx[][4];
 void ChaseHidePowerup(s32 arg0);
 extern s16 HeroActHit;
-extern u16 *HeroModelTable;
 extern u8 HeroModelBank[];
 extern u16 CameraMode;
 
@@ -259,8 +256,9 @@ typedef struct ChaseJumpEnt {
 /* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct ChaseHooks {
     /* 0x00 */ void *unk0;
-    /* 0x04 */ void *unk4;
-    /* 0x08 */ u8 pad8[8];
+    /* 0x04 */ u16 *unk4;
+    /* 0x08 */ u8 pad8[0x4];
+    /* 0x0C */ u16 *unkC;
     /* 0x10 */ ChaseJumpEnt *unk10;
     /* 0x14 */ void *unk14;
     /* 0x18 */ u8 pad18[8];

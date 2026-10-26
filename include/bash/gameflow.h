@@ -556,7 +556,7 @@ typedef struct {
     void *unk0;
     void *unk4;
     void (*unk8)(s32, s32, s32, s32, s32, s32);
-    s32 unkC;
+    void (*unkC)(s32, s32, s32, s32);   /* Papu: PapuExploRange */
 } HitCallbacks;
 extern HitCallbacks HitHooks;
 
@@ -583,7 +583,6 @@ typedef struct {
     /* 0x24 */ s32 delay;
 } IntroStep;
 extern IntroStep IntroSteps[];
-extern s32 D_8009E4E4;
 extern Blk32 D_8009E560;
 extern CamVec3 D_8009E580;
 extern u8 *D_8009E5AC;

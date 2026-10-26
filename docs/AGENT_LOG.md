@@ -468,6 +468,12 @@ Newest first, a few lines each. Details are in the commits.
   checked per use as Tank's needed); (2) the 32 pointer fields to type; (3) read
   `engine_sdata.sdata.s` too (18 values still come out off `MenuEmpty2`); (4) cut the 85 KB
   by file as the overlays were, then splice and drop shift.py's engine-data rewrite.
+  Then (1) done: the labels inside `HeroHooks` (16: `HeroModelTable` was `unk4`,
+  `HeroTestJumpHook` `unk44`, `HeroKeepInBoundsHook` `unk68`, ...), `HitHooks` (`unkC`, a
+  four-argument hook), two subengines' `unk74`, `counter_sub.unk52`, a viewport's `isbg` and
+  `IntroSteps[0].delay` are field accesses, each view of `HeroHooks` (Bonk, Chase, N2O,
+  Polar, Race, Spin) given the typed field; every use matched unchanged. data2c reads the
+  engine's data as 512 objects, 0 errors.
 
 - **2026-10-26 (Phase 5: the engine's strings as C):** all 59 INCLUDE_RODATA blocks of
   `gameflow.c`, `heroes.c`, `panel.c` and `pause.c` (61 strings, the memory card and menu

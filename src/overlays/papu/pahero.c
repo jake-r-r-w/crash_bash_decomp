@@ -756,7 +756,7 @@ void PAHeroHit(u32 arg0) {
     s32 sfx;
 
     if (h->hero_move->reactive_speed != 0) {
-        HeroCollideHook();
+        HeroHooks.unk54();
     }
     switch (func_8008502C(arg0)) {
     case 8:
@@ -802,7 +802,7 @@ void PAHeroHit(u32 arg0) {
         break;
     }
 done:
-    HeroCollideHook(arg0);
+    HeroHooks.unk54(arg0);
     func_800871E4(arg0);
 }
 
@@ -883,7 +883,7 @@ void PAHeroHold(s32 arg0) {
     rest:
         {
         if (func_8008ACF0(arg0) == 0) {
-            HeroCollideHook(arg0);
+            HeroHooks.unk54(arg0);
             func_8008502C(arg0);
             base2 = Heroes;
             self = &base2[arg0];
@@ -940,7 +940,7 @@ void PAHeroCarry(s32 arg0) {
     rest:
         {
         if (func_8008AC74(arg0) == 0) {
-            HeroCollideHook(arg0);
+            HeroHooks.unk54(arg0);
             func_8008502C(arg0);
             base2 = Heroes;
             self = &base2[arg0];
@@ -1074,7 +1074,7 @@ void SetPAHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1607,7 +1607,7 @@ void PAHeroDead(s32 arg0) {
         base = Heroes;
         h = base + arg0;
         if ((u16)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
+            h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }

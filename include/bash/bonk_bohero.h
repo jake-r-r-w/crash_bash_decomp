@@ -60,8 +60,6 @@ void BonkHitTarget(s32 arg0, s32 arg1, BonkTgt2 *t);
 void BonkSpawnShockwave();
 void BonkHeroSwing(s32 arg0);
 
-extern void (*HeroCollideHook)();
-extern s32 (*D_8009D728)(s32);
 extern u16 CameraMode;
 
 void SetBonkHeroIdle(s32 idx);

@@ -28,7 +28,6 @@ typedef struct {
 extern s32 camera_frame_list_size;
 extern D_800AD1EC_entry D_800AD1EC[];
 extern void (*D_8005AA80)(void);
-extern void (*D_8009D704)(void);
 extern void (*D_8005AA74)(void);
 extern s32 D_8009E29C;
 extern s32 D_8009E298;
@@ -288,10 +287,6 @@ extern s32 PauseChoice;
 extern s32 PausePad;
 void func_8007A614(s32 arg0);
 
-extern void (*D_8009D718)();
-extern void (*HeroCollideHook)();
-extern s32 (*D_8009D728)(s32);
-extern s32 (*HeroTestJumpHook)(s32);
 
 /* An entry of the list D_800A0D1C walks (func_80094860), 12 bytes. */
 typedef struct {
@@ -351,35 +346,35 @@ typedef struct HeroJumpEnt {
     u16 vel, max, acc, dec;
 } HeroJumpEnt;
 
-/* Engine callback table filled by func_80083550 (0x54 is HeroCollideHook). */
+/* Engine callback table filled by func_80083550 (0x54 is HeroHooks.unk54). */
 typedef struct EngineHooks {
     /* 0x00 */ s32 unk0;
-    /* 0x04 */ void *unk4;
+    /* 0x04 */ u16 *unk4;
     /* 0x08 */ void *unk8;
-    /* 0x0C */ void *unkC;
+    /* 0x0C */ u16 *unkC;
     /* 0x10 */ void *unk10;
-    /* 0x14 */ void *unk14;
+    /* 0x14 */ void *unk14;     /* the victory sequences (D_8009D6FC_t, pause.h) */
     /* 0x18 */ void *unk18;
-    /* 0x1C */ void *unk1C;
+    /* 0x1C */ void (*unk1C)(void);
     /* 0x20 */ void *unk20;
     /* 0x24 */ void *unk24;
     /* 0x28 */ void *unk28;
-    /* 0x2C */ void *unk2C;
-    /* 0x30 */ void *unk30;
-    /* 0x34 */ void *unk34;
+    /* 0x2C */ void (*unk2C)(void);
+    /* 0x30 */ void (*unk30)();
+    /* 0x34 */ void (*unk34)(s32);
     /* 0x38 */ void *unk38;
-    /* 0x3C */ void *unk3C;
-    /* 0x40 */ void *unk40;
-    /* 0x44 */ void *unk44;
-    /* 0x48 */ void *unk48;
+    /* 0x3C */ s32 (*unk3C)(s32);
+    /* 0x40 */ s32 (*unk40)(s32);
+    /* 0x44 */ s32 (*unk44)(s32);
+    /* 0x48 */ s32 (*unk48)(s32);
     /* 0x4C */ void *unk4C;
-    /* 0x50 */ void *unk50;
-    /* 0x54 */ void *unk54;
-    /* 0x58 */ void *unk58;
+    /* 0x50 */ s32 (*unk50)(s32, s32);
+    /* 0x54 */ void (*unk54)();
+    /* 0x58 */ void (*unk58)(s32);
     /* 0x5C */ void *unk5C;
     /* 0x60 */ void *unk60;
-    /* 0x64 */ void *unk64;
-    /* 0x68 */ void *unk68;
+    /* 0x64 */ void (*unk64)(s32, s32);
+    /* 0x68 */ s32 (*unk68)(EXTengine *);
 } EngineHooks;
 extern EngineHooks HeroHooks;
 extern u8 D_8009D2E4[];

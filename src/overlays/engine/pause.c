@@ -729,12 +729,12 @@ void func_800809A0(HudEntry *e, s32 arg1) {
             if (ModeTypes[g->mode * 3] == 0x102) {
                 sfx = 0;
             }
-            D_8009AC78 = sfx;
-            D_8009AD20 = sfx;
+            D_8009AC04.unk74 = sfx;
+            D_8009ACAC.unk74 = sfx;
             break;
         clear:
-            D_8009AC78 = 0;
-            D_8009AD20 = 0;
+            D_8009AC04.unk74 = 0;
+            D_8009ACAC.unk74 = 0;
             break;
         case 5:
             if (D_8009AF00 != 0) {
@@ -812,8 +812,8 @@ void func_80080FBC(void) {
     if (MSGV->flags == 0) {
         return;
     }
-    D_8009AC78 = 0;
-    D_8009AD20 = 0;
+    D_8009AC04.unk74 = 0;
+    D_8009ACAC.unk74 = 0;
     func_8007E7A4();
     func_8007BE84();
     D_8009BD18 = 0x70;
@@ -1520,7 +1520,7 @@ void func_80082C34(void) {
                 *(u16 *)(g + 0x30) &= 0xEFFF;
             }
         }
-        D_8009ADE6 = 1;
+        counter_sub.unk52 = 1;
         return;
     case 3:
         D_8009BD40 = 6;

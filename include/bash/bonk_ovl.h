@@ -125,11 +125,11 @@ typedef struct BonkHooks {
     /* 0x30 */ u8 pad30[8];
     /* 0x38 */ void *unk38;
     /* 0x3C */ void *unk3C;
-    /* 0x40 */ u8 pad40[4];
+    /* 0x40 */ s32 (*unk40)(s32);
     /* 0x44 */ void *unk44;
     /* 0x48 */ void *unk48;
     /* 0x4C */ u8 pad4C[8];
-    /* 0x54 */ void *unk54;
+    /* 0x54 */ void (*unk54)();
     /* 0x58 */ u8 pad58[4];
     /* 0x5C */ void *unk5C;
     /* 0x60 */ u8 pad60[4];

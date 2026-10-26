@@ -43,7 +43,6 @@ void PACrateFindFreeSpot(EXTengine *eng);
 extern _sfx_handler *PapuStraySfx;
 void func_800898EC(s32 arg0);
 void PAHeroDead(s32 arg0);
-extern u16 *HeroModelTable;
 s32 func_8008ABF8(s32 arg0);
 
 s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask);

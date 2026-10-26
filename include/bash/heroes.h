@@ -170,7 +170,7 @@ static inline s32 HeroCheckMoving(s32 arg0) {
     HeroInfo *h;
     u16 mode;
 
-    if (D_8009D728(arg0) == 0) {
+    if (HeroHooks.unk40(arg0) == 0) {
         base = Heroes;
         h = base + arg0;
         if (h->hero_move->forward_speed != 0) {
@@ -190,8 +190,8 @@ static inline s32 HeroCheckMoving(s32 arg0) {
 static inline s32 HeroCheckPad1000(s32 arg0) {
     s32 ret;
 
-    if (HeroTestKickHook != NULL) {
-        return HeroTestKickHook(arg0);
+    if (HeroHooks.unk48 != NULL) {
+        return HeroHooks.unk48(arg0);
     }
     if (Heroes[arg0].hero_status & 0xFA00) {
         return 0;

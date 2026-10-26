@@ -826,7 +826,7 @@ void InitialiseCHASE(void) {
     x = v * 35 / 100;
     t = v;
     v = (s32)Heroes;
-    HeroRunSpeeds = ChaseRunSpeeds;
+    HeroHooks.unkC = ChaseRunSpeeds;
     for (i = 0; i < 4; i++) {
         h = &((HeroInfo *)v)[i];
         y = t * 60 / 100 + ((t * 60) & 3);
@@ -1003,7 +1003,7 @@ void ChasePreMoveHero(s32 arg0) {
                         rw--;
                     }
                 }
-                row = HeroRunSpeeds;
+                row = HeroHooks.unkC;
                 hb2 = Heroes;
                 h2 = hb2 + arg0;
                 speed = (row + h2->hero_name * 3)[rw];
@@ -1866,7 +1866,7 @@ void ChaseHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = (s32)(HeroModelBank + HeroModelTable[*(volatile u16 *)&h->hero_name] * 0x38);
+            h->hero_sub->unk6C = (s32)(HeroModelBank + HeroHooks.unk4[*(volatile u16 *)&h->hero_name] * 0x38);
         } else {
             h->hero_sub->unk6C = 0;
         }
@@ -1900,7 +1900,7 @@ void SetChaseHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1971,7 +1971,7 @@ void SetChaseHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {

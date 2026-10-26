@@ -11,7 +11,6 @@
 /* defined later in polar.c than the data that points at it */
 extern const char PolarAnimWin[];
 
-extern void (*D_8009D714)(void);
 extern u8 PolarObjectsModel[];
 extern u8 D_80052EEC[];
 extern s16 D_8005A65C[2];
@@ -1306,7 +1305,6 @@ void PolarAI_SetTarget(s32 player, s32 target);
 void SetPolarHeroSquashed(s32 arg0);
 
 /* Per-hero speed table (declared in bash/pause.h, not included here). */
-extern u16 *HeroRunSpeeds;
 extern s32 PolarHeroMass[];
 extern s32 PolarShadowState[];
 extern u8 PolarModel[];
@@ -1514,7 +1512,7 @@ typedef struct PolarHooks {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ void *unk4;
     /* 0x08 */ void *unk8;
-    /* 0x0C */ void *unkC;
+    /* 0x0C */ u16 *unkC;
     /* 0x10 */ void *unk10;
     /* 0x14 */ void *unk14;
     /* 0x18 */ void *unk18;
@@ -1522,7 +1520,7 @@ typedef struct PolarHooks {
     /* 0x20 */ void *unk20;
     /* 0x24 */ void *unk24;
     /* 0x28 */ void *unk28;
-    /* 0x2C */ void *unk2C;
+    /* 0x2C */ void (*unk2C)(void);
     /* 0x30 */ void *unk30;
     /* 0x34 */ void *unk34;
     /* 0x38 */ void *unk38;

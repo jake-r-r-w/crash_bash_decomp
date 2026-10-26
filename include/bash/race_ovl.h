@@ -133,7 +133,6 @@ typedef struct RaceFux138 {
 } RaceFux138;
 
 /* Per-hero run speed rows: 3 u16 per hero_name. */
-extern u16 *HeroRunSpeeds;
 
 /* A hero's FUX as RaceHeroBreatheFire reads it: a count at 0x3C. */
 typedef struct RaceFuxCount {
@@ -1153,7 +1152,6 @@ typedef struct RaceLapFux {
 } RaceLapFux;
 
 extern s32 GameCheats;
-extern void (*D_8009D74C)(s32, s32);
 
 void RaceInitSpinners(void);
 
@@ -1191,7 +1189,7 @@ typedef struct RaceHooks {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ void *unk4;
     /* 0x08 */ void *unk8;
-    /* 0x0C */ void *unkC;
+    /* 0x0C */ u16 *unkC;
     /* 0x10 */ void *unk10;
     /* 0x14 */ void *unk14;
     /* 0x18 */ void *unk18;
@@ -1213,7 +1211,7 @@ typedef struct RaceHooks {
     /* 0x58 */ void *unk58;
     /* 0x5C */ void *unk5C;
     /* 0x60 */ void *unk60;
-    /* 0x64 */ void *unk64;
+    /* 0x64 */ void (*unk64)(s32, s32);
     /* 0x68 */ void *unk68;
 } RaceHooks;
 extern RaceHooks HeroHooks;

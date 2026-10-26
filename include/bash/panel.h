@@ -183,7 +183,6 @@ typedef struct EngineClockView {
     /* 0x21 */ s8 unk21;
 } EngineClockView;
 
-extern void (*D_8009D74C)(s32, s32);
 void Draw_Clock(void);
 
 /* GameInfo as seen by Cups_Update. */

@@ -3638,7 +3638,7 @@ void SetRaceHeroRun(s32 player) {
     if (f != NULL) {
         m = h->hero_move;
         if (m != NULL) {
-            spd = HeroRunSpeeds[h->hero_name * 3];
+            spd = HeroHooks.unkC[h->hero_name * 3];
             m->x_vel = (spd * TrigTable[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
             m->z_vel = (spd * TrigTable[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
         }
@@ -5032,7 +5032,7 @@ check:
                 if (GameCheats & 0x800) {
                     flags = 0x201;
                 }
-                D_8009D74C(-1, flags);
+                HeroHooks.unk64(-1, flags);
             }
         }
     }

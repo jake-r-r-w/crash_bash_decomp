@@ -79,7 +79,7 @@ void func_8008E5BC(void) {
         func_80016F54((u8 *)D_800AEC5C);
         D_800AEC5C = 0;
     }
-    if (IntroStepIndex == 1 && D_8009E5A8 == D_8009E4E4) {
+    if (IntroStepIndex == 1 && D_8009E5A8 == IntroSteps[0].delay) {
         func_8002D4F4(0);
     }
     if (D_8009E5A8 < 0) {

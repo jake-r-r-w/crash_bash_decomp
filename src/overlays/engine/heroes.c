@@ -994,7 +994,7 @@ static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, 
     } while (0);
     q = *p2;
     *id = hero;
-    t = (volatile D_8009D6FC_t *)(n * sizeof(D_8009D6FC_t) + (u32)*(D_8009D6FC_t * volatile *)&D_8009D6FC);
+    t = (volatile D_8009D6FC_t *)(n * sizeof(D_8009D6FC_t) + (u32)*(D_8009D6FC_t * volatile *)&HeroHooks.unk14);
     v = ((D_8009D6FC_t *)t)->a;
     *a = v;
     *seq = t->b;
@@ -1071,7 +1071,7 @@ void func_800859D4(s32 arg0) {
                         rw--;
                     }
                 }
-                row = HeroRunSpeeds;
+                row = HeroHooks.unkC;
                 hb2 = Heroes;
                 h2 = hb2 + arg0;
                 speed = (row + h2->hero_name * 3)[rw];
@@ -1420,8 +1420,8 @@ void func_8008672C(s32 idx) {
     EXTengine *s;
     EXTengine *e;
 
-    if (D_8009D704 != NULL) {
-        D_8009D704();
+    if (HeroHooks.unk1C != NULL) {
+        HeroHooks.unk1C();
     } else {
         HeroInfo *base = Heroes;
         h = base + idx;
@@ -1709,7 +1709,7 @@ s32 func_80086FCC(s32 arg0) {
     PadButtons *pad2;
     s32 action;
 
-    if (D_8009D724(arg0) != 0) {
+    if (HeroHooks.unk3C(arg0) != 0) {
         return 1;
     }
     base = Heroes;
@@ -1745,7 +1745,7 @@ s32 func_80086FCC(s32 arg0) {
         pads2 = (PadButtons *)Pads;
         pad2 = pads2 + arg0;
         if (pad2->unk54 & 0x2000) {
-            if (D_8009D738(arg0, 0x280) != 0 || Heroes[arg0].hero_pick_delay == 0) {
+            if (HeroHooks.unk50(arg0, 0x280) != 0 || Heroes[arg0].hero_pick_delay == 0) {
                 SetHeroAction(arg0, (u16)HeroActPickup);
                 return 1;
             }
@@ -1845,7 +1845,7 @@ void func_80087428(s32 arg0) {
 
     h->hero_move->jump_max = 0;
     h->hero_move->velocity_enable = 1;
-    D_8009D718();
+    HeroHooks.unk30();
     SetHeroSeq(arg0, 1);
     h->hero->Camera.look_ahead = 0x400;
     if (h->hero_ctrl & 4) {
@@ -1868,8 +1868,8 @@ void func_800874EC(s32 arg0) {
 
     if (HeroCheckStatus2000(arg0) == 0 && HeroCheckStatus600(arg0) == 0 &&
         func_80086FCC(arg0) == 0) {
-        if (HeroTestJumpHook != NULL) {
-            ret2 = HeroTestJumpHook(arg0);
+        if (HeroHooks.unk44 != NULL) {
+            ret2 = HeroHooks.unk44(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
@@ -1907,19 +1907,19 @@ void func_800874EC(s32 arg0) {
                 if (h2->hero_idle_count != 0) {
                     h2->hero_idle_count--;
                 } else {
-                    D_8009D71C(arg0);
+                    HeroHooks.unk34(arg0);
                 }
             }
         idle_done:
             func_8008502C(arg0);
             if (VelocityCalc < 4) {
                 if (VelocityCalc >= 2) {
-                    HeroCollideHook(arg0);
-                } else if (HeroCarryCollisionHook != NULL) {
-                    HeroCarryCollisionHook(arg0);
+                    HeroHooks.unk54(arg0);
+                } else if (HeroHooks.unk58 != NULL) {
+                    HeroHooks.unk58(arg0);
                 }
-            } else if (HeroCarryCollisionHook != NULL) {
-                HeroCarryCollisionHook(arg0);
+            } else if (HeroHooks.unk58 != NULL) {
+                HeroHooks.unk58(arg0);
             }
             func_800871E4(arg0);
         }
@@ -1931,8 +1931,8 @@ void func_8008795C(s32 arg0) {
 
     if (HeroCheckStatus2000(arg0) == 0 && HeroCheckStatus600(arg0) == 0 &&
         func_80086FCC(arg0) == 0) {
-        if (HeroTestJumpHook != NULL) {
-            ret2 = HeroTestJumpHook(arg0);
+        if (HeroHooks.unk44 != NULL) {
+            ret2 = HeroHooks.unk44(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
@@ -1943,7 +1943,7 @@ void func_8008795C(s32 arg0) {
             func_8008502C(arg0);
             if (VelocityCalc < 4) {
                 if (VelocityCalc >= 2) {
-                    HeroCollideHook(arg0);
+                    HeroHooks.unk54(arg0);
                 }
             }
             func_800871E4(arg0);
@@ -1959,8 +1959,8 @@ void func_80087B8C(s32 arg0) {
 
     if (HeroCheckStatus2000(arg0) == 0 && HeroCheckStatus600(arg0) == 0 &&
         func_80086FCC(arg0) == 0) {
-        if (HeroTestJumpHook != NULL) {
-            ret2 = HeroTestJumpHook(arg0);
+        if (HeroHooks.unk44 != NULL) {
+            ret2 = HeroHooks.unk44(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
@@ -1971,7 +1971,7 @@ void func_80087B8C(s32 arg0) {
             base = Heroes;
             h = base + arg0;
             h->hero_move->velocity_enable = 1;
-            HeroCollideHook(arg0);
+            HeroHooks.unk54(arg0);
             switch (func_8008502C(arg0)) {
             case 8:
                 if (h->hero_pu != 0x15) {
@@ -2093,7 +2093,7 @@ void func_800881E0(s32 arg0) {
             }
         }
     }
-    HeroCollideHook(arg0);
+    HeroHooks.unk54(arg0);
     func_8008502C(arg0);
 }
 
@@ -2180,8 +2180,8 @@ void func_80088544(s32 arg0) {
     }
     if (ret == 0 && func_80086FCC(arg0) == 0) {
         s32 ret2;
-        if (HeroTestJumpHook != NULL) {
-            ret2 = HeroTestJumpHook(arg0);
+        if (HeroHooks.unk44 != NULL) {
+            ret2 = HeroHooks.unk44(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
@@ -2189,7 +2189,7 @@ void func_80088544(s32 arg0) {
             ret2 = 0;
         }
         if (ret2 == 0) {
-            if (D_8009D728(arg0) != 0) {
+            if (HeroHooks.unk40(arg0) != 0) {
                 ret = 1;
             } else {
                 HeroInfo *base = Heroes;
@@ -2206,7 +2206,7 @@ void func_80088544(s32 arg0) {
                 }
             }
             if (ret == 0) {
-                HeroCollideHook(arg0);
+                HeroHooks.unk54(arg0);
                 func_8008502C(arg0);
                 func_800871E4(arg0);
             }
@@ -2256,8 +2256,8 @@ void func_80088794(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        if (HeroTestJumpHook != NULL) {
-            ret2 = HeroTestJumpHook(arg0);
+        if (HeroHooks.unk44 != NULL) {
+            ret2 = HeroHooks.unk44(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
@@ -2339,8 +2339,8 @@ void func_80088C28(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        if (HeroTestJumpHook != NULL) {
-            ret2 = HeroTestJumpHook(arg0);
+        if (HeroHooks.unk44 != NULL) {
+            ret2 = HeroHooks.unk44(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
@@ -2427,8 +2427,8 @@ void func_8008900C(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        if (HeroTestJumpHook != NULL) {
-            ret2 = HeroTestJumpHook(arg0);
+        if (HeroHooks.unk44 != NULL) {
+            ret2 = HeroHooks.unk44(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
@@ -2436,8 +2436,8 @@ void func_8008900C(s32 arg0) {
             ret2 = 0;
         }
         if (ret2 == 0) {
-            if (HeroTestKickHook != NULL) {
-                ret3 = HeroTestKickHook(arg0);
+            if (HeroHooks.unk48 != NULL) {
+                ret3 = HeroHooks.unk48(arg0);
             } else if (Heroes[arg0].hero_status & 0xFA00) {
                 ret3 = 0;
             } else if (((PadButtons *)Pads)[arg0].unk50 & 0x1000) {
@@ -2547,8 +2547,8 @@ void func_8008955C(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        if (HeroTestJumpHook != NULL) {
-            ret2 = HeroTestJumpHook(arg0);
+        if (HeroHooks.unk44 != NULL) {
+            ret2 = HeroHooks.unk44(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
@@ -2556,8 +2556,8 @@ void func_8008955C(s32 arg0) {
             ret2 = 0;
         }
         if (ret2 == 0) {
-            if (HeroTestKickHook != NULL) {
-                ret3 = HeroTestKickHook(arg0);
+            if (HeroHooks.unk48 != NULL) {
+                ret3 = HeroHooks.unk48(arg0);
             } else if (Heroes[arg0].hero_status & 0xFA00) {
                 ret3 = 0;
             } else if (((PadButtons *)Pads)[arg0].unk50 & 0x1000) {
@@ -3035,12 +3035,12 @@ void func_8008A854(s32 arg0) {
     if (World_floor_level + 0x180 < sum) {
         SetHeroAction(arg0, (u16)HeroActDead);
     }
-    HeroCollideHook(arg0);
+    HeroHooks.unk54(arg0);
     func_8008502C(arg0);
 }
 
 void func_8008A8F0(s32 arg0) {
-    HeroCollideHook(arg0);
+    HeroHooks.unk54(arg0);
     func_8008502C(arg0);
 }
 
@@ -3053,7 +3053,7 @@ void func_8008A924(s32 arg0) {
     } while (0);
     Heroes[arg0].hero_move->run_walk = rw;
     SetHeroSeq(arg0, 5);
-    HeroCollideHook(arg0);
+    HeroHooks.unk54(arg0);
 }
 
 void func_8008A99C(s32 arg0) {
@@ -3165,7 +3165,7 @@ s32 func_8008ACF0(s32 arg0) {
     u16 mode;
     s32 a1;
 
-    if (D_8009D728(arg0) == 0) {
+    if (HeroHooks.unk40(arg0) == 0) {
         base = Heroes;
         h = base + arg0;
         if (h->hero_move->forward_speed != 0) {
@@ -4675,8 +4675,8 @@ void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             }
         }
     } while (++i < 4);
-    if (D_8009E494 != NULL) {
-        D_8009E494(arg0, arg1, arg2, arg3);
+    if (HitHooks.unkC != NULL) {
+        HitHooks.unkC(arg0, arg1, arg2, arg3);
     }
     if (abs(eng->unk10.y - World_floor_level) < 0x80) {
         arg1 = arg1 * arg1;

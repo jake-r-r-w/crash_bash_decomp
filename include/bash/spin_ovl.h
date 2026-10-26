@@ -91,7 +91,7 @@ void InitBigScore(void);
 /* Turns the heading half a quadrant when the engine collides. */
 #define SPIN_BOUNCE(eng, mot)                                          \
     do {                                                                \
-        if (HeroKeepInBoundsHook(eng) != 0) {                                     \
+        if (HeroHooks.unk68(eng) != 0) {                                     \
             (mot)->Xa = ((mot)->Xa - SpinSpeed * 0x200) & 0xFFF;       \
         }                                                               \
     } while (0)
@@ -195,12 +195,10 @@ typedef struct SpinGlow {
     /* 0x1C */ s16 unk1C;
     /* 0x1E */ s16 unk1E;
 } SpinGlow;
-extern s32 (*HeroKeepInBoundsHook)(EXTengine *);
 s32 GravitateNas(NAS *nas);
 void func_8008E27C(s32 *arg0, void *arg1, s32 arg2);
 
 void SpinHeroFlip(s32 arg0);
-extern void (*HeroCollideHook)();
 
 extern s32 LevelSpecs[11];
 extern u8 RingObjectsModel[];
@@ -236,8 +234,6 @@ static inline void SpinDropHazard(SpinFux *fux) {
 }
 extern s32 GameTeams;
 extern s16 AiPlayerSkill[][3];
-extern u16 *HeroRunSpeeds;
-extern u16 *HeroModelTable;
 extern u16 CameraMode;
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 
@@ -301,7 +297,6 @@ void SpinHeroLose(s32 arg0);
 extern u16 SpinHitSfx[];
 extern u16 SpinHitDone[];
 extern s32 GameCheats;
-extern void (*HeroCarryCollisionHook)(s32);
 s32 func_8008502C();
 s32 func_800871E4(s32 arg0);
 s32 SetHeroSeq(s32 player, s32 seq);
@@ -327,8 +322,10 @@ typedef struct SpinJumpEnt {
 } SpinJumpEnt;
 
 typedef struct SpinHooks {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ void *unkC;
+    /* 0x00 */ u8 pad0[0x4];
+    /* 0x04 */ u16 *unk4;
+    /* 0x08 */ u8 pad8[0x4];
+    /* 0x0C */ u16 *unkC;
     /* 0x10 */ SpinJumpEnt *unk10;
     /* 0x14 */ u8 pad14[4];
     /* 0x18 */ void *unk18;
@@ -342,12 +339,12 @@ typedef struct SpinHooks {
     /* 0x48 */ u8 pad48[4];
     /* 0x4C */ void *unk4C;
     /* 0x50 */ void *unk50;
-    /* 0x54 */ void *unk54;
-    /* 0x58 */ void *unk58;
+    /* 0x54 */ void (*unk54)();
+    /* 0x58 */ void (*unk58)(s32);
     /* 0x5C */ void *unk5C;
     /* 0x60 */ void *unk60;
     /* 0x64 */ void *unk64;
-    /* 0x68 */ void *unk68;
+    /* 0x68 */ s32 (*unk68)(EXTengine *);
 } SpinHooks;
 extern SpinHooks HeroHooks;
 
@@ -423,7 +420,6 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux);
 s32 SpinAI_ChooseTarget(s32 player);
 
 /* PlotBalloon */
-extern s32 (*HeroKeepInBoundsHook)(EXTengine *);
 extern u16 SpinBalloonModels[];
 extern s32 *SpinBalloonSfx[];
 

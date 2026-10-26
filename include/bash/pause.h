@@ -10,7 +10,6 @@
 #include "bash/engine.h"
 
 /* Hook func_8008DEC8 calls with its own arguments after the hero loop. */
-extern void (*D_8009E494)(s32, s32, s32, s32);
 /* The part of a NAS's FUX extension func_8008DEC8 flags. */
 typedef struct {
     /* 0x00 */ u8 pad0[0x16];
@@ -19,9 +18,6 @@ typedef struct {
     /* 0x1C */ u16 unk1C;
     /* 0x1E */ u16 unk1E;
 } FuxFlags;
-extern s32 (*D_8009D724)(s32);
-extern s32 (*D_8009D738)(s32, s32);
-extern s32 (*HeroTestKickHook)(s32);
 /* Hero engine scale tables, 12 steps (func_80088794). */
 extern u16 D_8009DC38[];
 extern u16 D_8009DC50[];
@@ -30,9 +26,7 @@ typedef struct {
     u16 b;
     u16 pad;
 } D_8009D6FC_t;
-extern D_8009D6FC_t *D_8009D6FC;
 /* Per-hero run speed rows: 3 u16 per hero_name (func_800859D4). */
-extern u16 *HeroRunSpeeds;
 extern s16 D_8009D864;
 extern u16 D_8009D866;
 extern s16 D_8009D870;
@@ -174,7 +168,6 @@ typedef struct EngineHintView {
     /* 0x6C */ u8 unk6C[0x76 - 0x6C];
     /* 0x76 */ u8 shown[1];
 } EngineHintView;
-extern s16 D_8009ADE6;
 
 s32 func_8007EFC0(s32 pad, s32 max);
 
@@ -206,11 +199,8 @@ void func_80082AC4(void);
 
 
 
-extern s32 (*HeroTestKickHook)(s32);
 
 
-extern void (*D_8009D71C)(s32);
-extern void (*HeroCarryCollisionHook)(s32);
 extern u16 D_8009DC2C[];
 
 
@@ -343,8 +333,6 @@ extern s16 D_8005A20C[];
 extern s16 D_8005A494[];
 extern s16 D_8005A4DC[];
 extern s16 D_8005A524[];
-extern s16 D_8009AC78;
-extern s16 D_8009AD20;
 extern s32 PauseLastChoice;
 extern s16 D_8009BD18;
 extern s16 D_8009BD1C[4];

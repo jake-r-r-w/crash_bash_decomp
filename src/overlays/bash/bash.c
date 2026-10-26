@@ -377,7 +377,7 @@ void InitialiseBASHFirst(void) {
         *p = t;
         AiTeamSkillTable = BashSpaceAiTeamSkill;
         if (GameLevelFlags & 0x80) {
-            D_8009D724 = BashSpacePadHook;
+            HeroHooks.unk3C = BashSpacePadHook;
         }
         break;
     case 2:
@@ -406,10 +406,10 @@ void InitialiseBASHFirst(void) {
         }
         *p3 = t;
         AiTeamSkillTable = BashDrainsAiTeamSkill;
-        D_8009D724 = BashFirePowerup;
+        HeroHooks.unk3C = BashFirePowerup;
         break;
     case 0x20:
-        D_8009D724 = BashFirePowerup;
+        HeroHooks.unk3C = BashFirePowerup;
         g[0x52] = 9;
         g[0x53] = 9;
         break;
@@ -519,7 +519,7 @@ void InitialiseBASH(void) {
     case 2:
         World_floor_level = -0x10;
         HitHooks.unk0 = BashSnowKickVels;
-        HeroRunSpeeds = BashSnowRunSpeeds;
+        HeroHooks.unkC = BashSnowRunSpeeds;
         BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         VelocityCalc = 3;
@@ -604,7 +604,7 @@ void BashSnowMoveHero(s32 arg0) {
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
 
-    D_8009D714();
+    HeroHooks.unk2C();
     func_800860D4(arg0);
     if (m->velocity_calc == 3) {
         if (m->x_vel != m->x_max) {

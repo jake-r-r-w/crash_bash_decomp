@@ -67,7 +67,6 @@ typedef struct {
 
 
 void BashHeroesTouched(s32 arg0, s32 arg1);
-extern s32 (*HeroKeepInBoundsHook)(EXTengine *);
 
 void CrateFindFreeSpot(EXTengine *eng);
 

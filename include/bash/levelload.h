@@ -259,7 +259,6 @@ typedef struct MarkCtx {
 } MarkCtx;
 extern Blk32 D_800A0BA0;
 extern CamVec3 D_800A0BC0;
-extern u8 D_800A0BF3;
 extern u8 *D_800A0D34;
 
 /* GameInfo as seen by func_80093BE8. */

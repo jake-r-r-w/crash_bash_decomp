@@ -452,7 +452,7 @@ void InitialisePAPU(void) {
                  0x1201, 0x11);
     PapuSetCrateMix(0, 0, 0, 0, 0xC, 4, 0, 0, 0);
     PapuDropFirstCrates();
-    D_8009E494 = (void (*)(s32, s32, s32, s32))PapuExploRange;
+    HitHooks.unkC = (void (*)(s32, s32, s32, s32))PapuExploRange;
     PapuAttackPos = 0;
     PapuAttackDelay = 0;
 }

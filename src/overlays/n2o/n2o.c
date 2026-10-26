@@ -926,7 +926,7 @@ void N2OPreMoveHero(s32 arg0) {
         if (p->unk50 & 0xA0) {
             if (m->velocity_enable != 0) {
                 d = 0;
-                if (HeroKeepInBoundsHook(h->hero_eng) != 0) {
+                if (HeroHooks.unk68(h->hero_eng) != 0) {
                     fast = 1;
                 }
                 b = p->unk50;
@@ -964,7 +964,7 @@ void N2OPreMoveHero(s32 arg0) {
             N2OHeroSpeed[arg0] = m->forward_speed;
         } else {
             N2OHeroSpeed[arg0] = 0;
-            if (HeroKeepInBoundsHook(h->hero_eng) != 0) {
+            if (HeroHooks.unk68(h->hero_eng) != 0) {
                 m->forward_speed = 0;
             }
             if (m->forward_speed > 0) {
@@ -1564,7 +1564,7 @@ void N2OHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = HeroModelBank + HeroModelTable[*(volatile u16 *)&h->hero_name] * 0x38;
+            h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[*(volatile u16 *)&h->hero_name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }

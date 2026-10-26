@@ -1125,7 +1125,7 @@ void PlotHazardType(NAS *nas) {
     if (eng == NULL) {
         return;
     }
-    HeroKeepInBoundsHook(eng);
+    HeroHooks.unk68(eng);
     fux = (SpinFux *)nas->FUX;
     if (fux == NULL) {
         return;
@@ -1238,7 +1238,7 @@ void PlotHazardType(NAS *nas) {
         }
         break;
     case 13:
-        if (HeroKeepInBoundsHook(eng) != 0) {
+        if (HeroHooks.unk68(eng) != 0) {
             func_800270B0(nas);
             break;
         }
@@ -1436,7 +1436,7 @@ void PlotBalloon(NAS *nas) {
     if (eng == NULL) {
         return;
     }
-    HeroKeepInBoundsHook(eng);
+    HeroHooks.unk68(eng);
     fux = (SpinFux *)nas->FUX;
     if (fux != NULL) {
         kind = fux->kind;
@@ -2722,8 +2722,8 @@ void SpinPreMoveHero(s32 arg0) {
     h = hb + arg0;
     m = h->hero_move;
     m->forward_speed = 0;
-    speed = (HeroRunSpeeds + h->hero_name * 3)[1] + (AiPlayerSkill[arg0][0] >> 2);
-    (HeroRunSpeeds + h->hero_name * 3)[2] = speed;
+    speed = (HeroHooks.unkC + h->hero_name * 3)[1] + (AiPlayerSkill[arg0][0] >> 2);
+    (HeroHooks.unkC + h->hero_name * 3)[2] = speed;
     if (h->hero_frozen != 0) {
         ((PadStick *)Pads)[arg0].dirHeld2 = 0;
         ((PadStick *)Pads)[arg0].dirPressed = 0;
@@ -2740,7 +2740,7 @@ void SpinPreMoveHero(s32 arg0) {
                         rw--;
                     }
                 }
-                row = HeroRunSpeeds;
+                row = HeroHooks.unkC;
                 hb2 = Heroes;
                 h2 = hb2 + arg0;
                 speed = (row + h2->hero_name * 3)[rw];
@@ -2794,7 +2794,7 @@ void SpinHeroHit(s32 arg0) {
 
     h = base + arg0;
     if (h->hero_move->reactive_speed != 0) {
-        HeroCollideHook();
+        HeroHooks.unk54();
     }
     r = func_8008502C(arg0);
     if (r != 8) {
@@ -2846,8 +2846,8 @@ void SpinHeroHit(s32 arg0) {
             }
         }
     }
-    if (HeroCarryCollisionHook != NULL) {
-        HeroCarryCollisionHook(arg0);
+    if (HeroHooks.unk58 != NULL) {
+        HeroHooks.unk58(arg0);
     }
     func_800871E4(arg0);
 }
@@ -2897,7 +2897,7 @@ void SpinHeroFall(s32 arg0) {
             }
         }
     }
-    HeroCollideHook(arg0);
+    HeroHooks.unk54(arg0);
     func_8008502C(arg0);
 }
 
@@ -2953,7 +2953,7 @@ void SpinHeroDead(s32 arg0) {
         base2 = Heroes;
         h2 = &base2[arg0];
         if ((u32)(h2->hero_name - 1) < 8) {
-            h2->hero_sub->unk6C = HeroModelBank + HeroModelTable[*(volatile u16 *)&h2->hero_name] * 0x38;
+            h2->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[*(volatile u16 *)&h2->hero_name] * 0x38;
         } else {
             h2->hero_sub->unk6C = 0;
         }
@@ -2987,7 +2987,7 @@ void SetSpinHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -3059,7 +3059,7 @@ void SetSpinHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = (s32)HeroModelBank + HeroModelTable[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = (s32)HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -3657,7 +3657,7 @@ void SetSpinHeroFall(s32 arg0) {
 }
 
 void SpinHeroFlip(s32 arg0) {
-    HeroCollideHook(arg0);
+    HeroHooks.unk54(arg0);
     func_8008502C(arg0);
 }
 

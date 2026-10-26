@@ -32,7 +32,6 @@ typedef struct ArkenoidSpawn {
 } ArkenoidSpawn;
 
 extern s32 *ArkWallTargets[][3];
-extern u16 *HeroModelTable;
 extern s32 ArkFloorTiltX;
 extern s32 ArkFloorTiltZ;
 extern u16 ArkGrabTimes[];
@@ -101,7 +100,6 @@ typedef struct {
 extern char NginModel[];
 extern ScriptInit NGinScriptInit;
 extern EXTengine *ArkBallSpawner;
-extern s32 (*HeroKeepInBoundsHook)(EXTengine *);
 extern ArkenoidGin *ArkNGin;
 typedef struct ArkenoidNode {
     u8 pad0[0x10];

@@ -23,7 +23,6 @@ void UpdateN2O(void);
 void InitialiseN2OFirst(void);
 void InitialiseN2O(void);
 
-extern u16 *HeroModelTable;
 
 extern u8 OxideModel[];
 extern u16 CameraMode;
@@ -37,7 +36,6 @@ void NoxResetHeroes(void);
 extern u16 N2OWallsHit;
 extern s16 N2OHeroSpeed[];
 extern u16 N2OUnusedRows[][5];
-extern s32 (*HeroKeepInBoundsHook)(EXTengine *);
 
 /* PadState (Pads) as N2OPreMoveHero reads it: the buttons at 0x50. */
 typedef struct N2OPad {
@@ -480,7 +478,7 @@ void func_80086868(void);
 /* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct N2OHooks {
     /* 0x00 */ s32 unk0;
-    /* 0x04 */ void *unk4;
+    /* 0x04 */ u16 *unk4;
     /* 0x08 */ u8 pad8[0xC];
     /* 0x14 */ void *unk14;
     /* 0x18 */ void *unk18;
@@ -490,7 +488,7 @@ typedef struct N2OHooks {
     /* 0x28 */ u8 pad28[4];
     /* 0x2C */ void *unk2C;
     /* 0x30 */ u8 pad30[0x38];
-    /* 0x68 */ void *unk68;
+    /* 0x68 */ s32 (*unk68)(EXTengine *);
 } N2OHooks;
 extern N2OHooks HeroHooks;
 extern void *AiSkillTable;

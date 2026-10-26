@@ -573,7 +573,7 @@ void PlotCrate(NAS *arg0) {
                 return;
             case 2:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                if (HeroKeepInBoundsHook(eng) != 0) {
+                if (HeroHooks.unk68(eng) != 0) {
                     func_800270B0(arg0);
                     return;
                 }
@@ -759,7 +759,7 @@ void PlotCrate(NAS *arg0) {
                 }
             }
         }
-        if (HeroKeepInBoundsHook(eng) != 0) {
+        if (HeroHooks.unk68(eng) != 0) {
             switch (type) {
             case 3:
             case 4:
@@ -829,7 +829,7 @@ void PlotCrate(NAS *arg0) {
         }
         break;
     case 0xD:
-        if (HeroKeepInBoundsHook(eng) != 0) {
+        if (HeroHooks.unk68(eng) != 0) {
             func_800270B0(arg0);
             return;
         }
@@ -946,7 +946,7 @@ void PlotCrate(NAS *arg0) {
         }
         break;
     case 0xF:
-        if (HeroKeepInBoundsHook(eng) != 0) {
+        if (HeroHooks.unk68(eng) != 0) {
             func_800270B0(arg0);
             return;
         }
@@ -1845,7 +1845,7 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
 void CrateBreak(EXTengine *eng, T_BC038Fux *fux) {
     PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
     func_8007A524(2, (s32 *)((u8 *)eng + 0x10), (s32)CrateObjectsModel);
-    if ((HeroKeepInBoundsHook(eng) ^ 1) != 0) {
+    if ((HeroHooks.unk68(eng) ^ 1) != 0) {
         CreateNAS(((s32 *)eng)[4], ((s32 *)eng)[5], ((s32 *)eng)[6], 0x206, 0x11);
     }
 }

@@ -25,7 +25,6 @@ typedef struct BashCell {
 extern BashCell BashSpaceTiles[8][8];
 extern u8 GameInfo[];
 extern s32 World_floor_level;
-extern void (*D_8009D714)(void);
 
 extern HeroInfo Heroes[4];
 extern u8 GameInfo[];
@@ -428,7 +427,6 @@ extern CrateVelocity *BashSnowKickVels[];
 extern u16 BashSnowRunSpeeds[];
 extern Ambient_data BashJungleAmbience;
 extern Ambient_data BashDrainsAmbience;
-extern u16 *HeroRunSpeeds;
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
 void func_80095258(u8 *arg0);

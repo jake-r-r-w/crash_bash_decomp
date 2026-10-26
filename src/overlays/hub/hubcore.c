@@ -276,7 +276,7 @@ void HubPreMoveHero(s32 arg0) {
 
     eng = Heroes[arg0].hero_eng;
     mv = Heroes[arg0].hero_move;
-    speed = HeroRunSpeeds[Heroes[arg0].hero_name * 3 + 1];
+    speed = HeroHooks.unkC[Heroes[arg0].hero_name * 3 + 1];
     rate = (u32)(D_8009EEA4 * 0x648) >> 8;
     if (rate != 0) {
         step = (s32)(speed << 12) / (s32)rate;
