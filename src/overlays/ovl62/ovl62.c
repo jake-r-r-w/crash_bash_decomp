@@ -59,94 +59,35 @@ const char D_800B32EC[] = "HIT";
 const char D_800B32F0[] = "BARGE";
 
 /* data, in address order */
-u8 D_800D3510[20] = { 5, 0, 2, 0, 1, 0, 1, 0, 0x14, 0, 0x1C, 0, 0xB, 0, 0x10, 0, 0x10, 0, 0x1C, 0 };
-u8 D_800D3524[20] = { 7, 0, 4, 0, 1, 0, 1, 0, 0x18, 0, 0x1C, 0, 0x12, 0, 0xC, 0, 0xC, 0, 0x1C, 0 };
-u8 D_800D3538[12] = { 1, 0, 8, 0, 0x18, 0, 1, 0, 8, 0, 0x18, 0 };
-u8 D_800D3544[24] = { 8, 0, 0x10, 0, 0x18, 0, 7, 0, 0xE, 0, 0x15, 0, 6, 0, 0xC, 0, 0x13, 0, 5, 0, 0xA, 0, 0x10, 0 };
-u8 D_800D355C[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800D3570[84] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x20, 0, 0x10, 0, 0x20, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x18, 0, 0x10, 0, 0x18, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    8, 0, 0x10, 0, 0x18, 0, 7, 0, 0xE, 0, 0x15, 0, 6, 0, 0xC, 0, 0x13, 0, 5, 0, 0xA, 0, 0x10,
-    0,
-};
-u8 D_800D35C4[20] = { 0x13, 0, 0xF, 0, 0xB, 0, 7, 0, 0x1A, 0, 0x1C, 0, 0x1C, 0, 0x16, 0, 0x16, 0, 0x1C, 0 };
-u8 D_800D35D8[20] = { 0x14, 0, 0x10, 0, 0xC, 0, 8, 0, 0x1A, 0, 0x1C, 0, 0x1C, 0, 0x15, 0, 0x15, 0, 0x1C, 0 };
-u8 D_800D35EC[12] = { 4, 0, 0x12, 0, 0x1C, 0, 4, 0, 0x12, 0, 0x1C, 0 };
-u8 D_800D35F8[24] = {
-    0xE, 0, 0x15, 0, 0x1C, 0, 0xC, 0, 0x13, 0, 0x19, 0, 0xA, 0, 0xF, 0, 0x15, 0, 8, 0, 0xD, 0,
-    0x12, 0,
-};
-u8 D_800D3610[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800D3624[84] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x20, 0, 0x10, 0, 0x20, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x18, 0, 0x10, 0, 0x18, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0xE, 0, 0x15, 0, 0x1C, 0, 0xC, 0, 0x13, 0, 0x19, 0, 0xA, 0, 0xF, 0, 0x15, 0, 8, 0, 0xD, 0,
-    0x12, 0,
-};
-u8 D_800D3678[20] = { 0x18, 0, 0x15, 0, 0x12, 0, 0xF, 0, 0x1A, 0, 0x1C, 0, 0x1C, 0, 0x18, 0, 0x18, 0, 0x1C, 0 };
-u8 D_800D368C[20] = { 0x19, 0, 0x16, 0, 0x13, 0, 0x10, 0, 0x1A, 0, 0x1C, 0, 0x1C, 0, 0x15, 0, 0x15, 0, 0x1C, 0 };
-u8 D_800D36A0[12] = { 6, 0, 0x12, 0, 0x1C, 0, 6, 0, 0x12, 0, 0x1C, 0 };
-u8 D_800D36AC[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
-};
-u8 D_800D36C4[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800D36D8[84] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x20, 0, 0x10, 0, 0x20, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x20, 0, 0x10, 0, 0x10, 0, 2, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x18, 0, 0x10, 0, 0x18, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
-};
-u8 D_800D372C[20] = { 0x18, 0, 0x16, 0, 0x14, 0, 0x12, 0, 0x20, 0, 0x1C, 0, 0x1C, 0, 0x20, 0, 0x20, 0, 0x1C, 0 };
-u8 D_800D3740[20] = { 0x18, 0, 0x16, 0, 0x14, 0, 0x12, 0, 0x20, 0, 0x1C, 0, 0x1C, 0, 0x10, 0, 0x10, 0, 0x1C, 0 };
-u8 D_800D3754[12] = { 6, 0, 0x14, 0, 0x20, 0, 6, 0, 0x14, 0, 0x20, 0 };
-u8 D_800D3760[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
-};
-u8 D_800D3778[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0, 0x10, 0, 2, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800D378C[84] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x20, 0, 0x10, 0, 0x20, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x18, 0, 0x10, 0, 0x18, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
-};
-u8 D_800D37E0[80] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-};
-u8 D_800D3830[68] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-};
-u8 D_800D3874[24] = {
-    0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0,
-    0x20, 0, 0, 0,
-};
-u8 D_800D388C[24] = {
-    0x10, 0, 0x18, 0, 0x20, 0, 0x10, 0, 0x16, 0, 0x1C, 0, 0x10, 0, 0x14, 0, 0x18, 0, 0x10, 0,
-    0x12, 0, 0x14, 0,
-};
-u8 D_800D38A4[164] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x20, 0, 0x20, 0, 0, 0, 0x10, 0, 0x18, 0,
-    0x20, 0, 0x10, 0, 0x16, 0, 0x1C, 0, 0x10, 0, 0x14, 0, 0x18, 0, 0x10, 0, 0x12, 0, 0x14, 0,
-    0, 0, 7, 0x80, 0x14, 0, 0, 0x40, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 0x22, 0, 0, 0x42, 0, 0x80,
-    0, 0,
-};
+u16 PolarDefaultAiSkill[10] = { 5, 2, 1, 1, 0x14, 0x1C, 0xB, 0x10, 0x10, 0x1C };
+u16 PolarDefaultAiSkillAlt[10] = { 7, 4, 1, 1, 0x18, 0x1C, 0x12, 0xC, 0xC, 0x1C };
+u16 PolarDefaultAiTeamSkill[6] = { 1, 8, 0x18, 1, 8, 0x18 };
+u16 PolarDefaultAiHumanRoundTweak[12] = { 8, 0x10, 0x18, 7, 0xE, 0x15, 6, 0xC, 0x13, 5, 0xA, 0x10 };
+u16 PolarDefaultAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 2 };
+u16 PolarDefaultAiHumanTweak[42] = { 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x20, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 0x10, 0x18, 0x10, 0x18, 0x10, 0x10, 0x20, 8, 0x10, 0x18, 7, 0xE, 0x15, 6, 0xC, 0x13, 5, 0xA, 0x10 };
+u16 PolarDayAiSkill[10] = { 0x13, 0xF, 0xB, 7, 0x1A, 0x1C, 0x1C, 0x16, 0x16, 0x1C };
+u16 PolarDayAiSkillAlt[10] = { 0x14, 0x10, 0xC, 8, 0x1A, 0x1C, 0x1C, 0x15, 0x15, 0x1C };
+u16 PolarDayAiTeamSkill[6] = { 4, 0x12, 0x1C, 4, 0x12, 0x1C };
+u16 PolarDayAiHumanRoundTweak[12] = { 0xE, 0x15, 0x1C, 0xC, 0x13, 0x19, 0xA, 0xF, 0x15, 8, 0xD, 0x12 };
+u16 PolarDayAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 2 };
+u16 PolarDayAiHumanTweak[42] = { 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x20, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 0x10, 0x18, 0x10, 0x18, 0x10, 0x10, 0x20, 0xE, 0x15, 0x1C, 0xC, 0x13, 0x19, 0xA, 0xF, 0x15, 8, 0xD, 0x12 };
+u16 PolarCutAiSkill[10] = { 0x18, 0x15, 0x12, 0xF, 0x1A, 0x1C, 0x1C, 0x18, 0x18, 0x1C };
+u16 PolarCutAiSkillAlt[10] = { 0x19, 0x16, 0x13, 0x10, 0x1A, 0x1C, 0x1C, 0x15, 0x15, 0x1C };
+u16 PolarCutAiTeamSkill[6] = { 6, 0x12, 0x1C, 6, 0x12, 0x1C };
+u16 PolarCutAiHumanRoundTweak[12] = { 0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14 };
+u16 PolarCutAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 2 };
+u16 PolarCutAiHumanTweak[42] = { 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x20, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 0x10, 0x18, 0x10, 0x18, 0x10, 0x10, 0x20, 0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14 };
+u16 PolarEndAiSkill[10] = { 0x18, 0x16, 0x14, 0x12, 0x20, 0x1C, 0x1C, 0x20, 0x20, 0x1C };
+u16 PolarEndAiSkillAlt[10] = { 0x18, 0x16, 0x14, 0x12, 0x20, 0x1C, 0x1C, 0x10, 0x10, 0x1C };
+u16 PolarEndAiTeamSkill[6] = { 6, 0x14, 0x20, 6, 0x14, 0x20 };
+u16 PolarEndAiHumanRoundTweak[12] = { 0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14 };
+u16 PolarEndAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 2, 0x10, 2, 0x10, 0x10, 2 };
+u16 PolarEndAiHumanTweak[42] = { 0x10, 0x10, 0x10, 0x10, 0x20, 0x10, 0x20, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 0x10, 0x18, 0x10, 0x18, 0x10, 0x10, 0x20, 0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14 };
+u16 PolarBossAiSkill[40] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+u16 PolarBossAiBotTweak[34] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 };
+u16 PolarBossAiHumanTweak[12] = { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0 };
+u16 PolarBossAiHumanRoundTweak[12] = { 0x10, 0x18, 0x20, 0x10, 0x16, 0x1C, 0x10, 0x14, 0x18, 0x10, 0x12, 0x14 };
+u16 PolarBossAiSkillAlt[82] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x20, 0x20, 0, 0x10, 0x18, 0x20, 0x10, 0x16, 0x1C, 0x10, 0x14, 0x18, 0x10, 0x12, 0x14, 0, 0x8007, 0x14, 0x4000, 0x8000, 0, 0, 0x8007, 0x22, 0x4200, 0x8000, 0 };
 hero_seq CRA_seq_polarwin[86] = {
     0, 0x4300, 0x4301, 0x4302, 0x4303, 0x4304, 0x4305, 0x4306, 0x4307, 0x8008, 0x19, 0x4308, 0x4309,
     0x430A, 0x430B, 0x430C, 0x430D, 0x430E, 0x430F, 0x4310, 0x4311, 0x4312, 0x4313, 0x4314, 0x4315,
@@ -538,23 +479,26 @@ hero_seq KAN_seq_polarfall[46] = {
     0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x411C, 0x411D, 0x411E, 0x411F, 0x4120, 0x4121, 0x4122,
     0x4123, 0x4124, 0x4125, 0x4126, 0x4127, 0x4128, 0x4129, 0x8004, 0x50, 0,
 };
-s32 D_800D4D08 = 0;
-s32 D_800D4D0C = 0;
-s32 D_800D4D10[48] = {
-    0x1000, 0x10, 0x2000, 0xA0, 0x104, 0x92, (s32)&D_80063EC8, (s32)&D_80063BB8, 0x20, 0x4B0,
-    0xC18, 0x10, 0x2000, 0x78, 0x104, 0x6A, (s32)&D_80063EC8, (s32)&D_80063BB8, 0x20, 0x4B0,
-    0x1000, 0x1800, 0x2000, 0x1000, 0x1600, 0x1C00, 0x1000, 0x1400, 0x1800, 0x1000, 0x1200,
-    0x1400, 0x19A, 0x19A, 0x666, 0x999, 0xC8, 0x19A, 0x666, 0x999, 0x20, 0x24, 0x28, 0x2C, 0,
-    4, 8, 0x10,
+s32 PolarRoundState = 0;
+s32 PolarFirstFlag = 0;
+shell_setup polar_shell_info = {
+    0x1000, 0x10, 0x2000, 0xA0, 0x104, 0x92, D_80063EC8, D_80063BB8, 0x20, 0x4B0,
 };
-s32 D_800D4DD0 = 0x400000;
-VECTOR D_800D4DD4 = {0};
-s32 D_800D4DE4[2] = { 0, 0x800 };
-s32 D_800D4DEC = 0;
-s32 (*D_800D4DF0[5])(s32 player) = { TestAttackChance, TestHuntChance, TestWanderChance, TestChaseChance, TestBombChance };
-s32 D_800D4E04 = 0x658;
-s32 D_800D4E08 = 0;
-s32 D_800D4E0C[72] = {
+/* the other worlds' (0x0012, 0x0014..0x0016; the engine's records at 0x80099020..68) */
+shell_setup polar_shell_info_b = {
+    0xC18, 0x10, 0x2000, 0x78, 0x104, 0x6A, D_80063EC8, D_80063BB8, 0x20, 0x4B0,
+};
+s32 PolarAIParams[28] = {
+    0x1000, 0x1800, 0x2000, 0x1000, 0x1600, 0x1C00, 0x1000, 0x1400, 0x1800, 0x1000, 0x1200, 0x1400, 0x19A, 0x19A, 0x666, 0x999, 0xC8, 0x19A, 0x666, 0x999, 0x20, 0x24, 0x28, 0x2C, 0, 4, 8, 0x10,
+};
+s32 PolarArenaRadius2 = 0x400000;
+VECTOR PolarCentre = {0};
+s32 PolarUnused0[2] = { 0, 0x800 };
+s32 PolarClock = 0;
+s32 (*PolarAITests[5])(s32 player) = { TestAttackChance, TestHuntChance, TestWanderChance, TestChaseChance, TestBombChance };
+s32 PolarIceRadius = 0x658;
+s32 PolarAnimFlag = 0;
+s32 PolarAIChances[72] = {
     0xC00, 0xC00, 0xC00, 0xC00, 0xC00, 0xC00, 0xC00, 0xC00, 0x800, 0xC00, 0x800, 0x800, 0x800,
     0x800, 0x800, 0x800, 0, 0, 0, 0, 0, 0, 0, 0, 0x800, 0x1000, 0x1000, 0x800, 0, 0, 0x200,
     0x200, 0x800, 0, 0, 0, 0, 0, 0x800, 0x800, 0x800, 0x800, 0x400, 0x400, 0x400, 0x400, 0x400,
@@ -562,246 +506,259 @@ s32 D_800D4E0C[72] = {
     0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0x800, 0x1000, 0x1000, 0x1000, 0x200, 0x200, 0x200,
     0x200,
 };
-s32 D_800D4F2C[4] = { 0x82001C, 0xFFFF, 0, 0 };
-s32 D_800D4F3C[7] = {
-    (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C4, (s32)&D_800B32CC, (s32)&D_800B32D4,
-    (s32)&D_800B32DC, 0,
+s16 PolarPreLoadDB[8] = { 0x1C, 0x82, -1, 0, 0, 0, 0, 0 };
+char *PolarAnims[7] = {
+    (char *)D_800B32B8, (char *)D_800B32C0, (char *)D_800B32C4, (char *)D_800B32CC, (char *)D_800B32D4, (char *)D_800B32DC, NULL,
 };
-s32 D_800D4F58[6] = { (s32)&D_800B32C0, (s32)&D_800B32C4, (s32)&D_800B32CC, (s32)&D_800B32D4, (s32)&D_800B32DC, 0 };
-s32 D_800D4F70[10] = {
-    (s32)&D_800B32E4, (s32)&D_800B32EC, (s32)&D_800B32F0, (s32)&D_800B32B8, (s32)&D_800B32C0,
-    (s32)&D_800B32C4, (s32)&D_800B32CC, (s32)&D_800B32D4, (s32)&D_800B32DC, 0,
+char *PolarAnimsB[6] = {
+    (char *)D_800B32C0, (char *)D_800B32C4, (char *)D_800B32CC, (char *)D_800B32D4, (char *)D_800B32DC, NULL,
 };
-s32 D_800D4F98[2] = { 0x850080, 0xFFFF };
-s32 D_800D4FA0[1] = { -0xFF80 };
-s32 D_800D4FA4[1] = { -0xFF80 };
-s32 D_800D4FA8[1] = { 0xFFFF };
-s32 D_800D4FAC[2] = { 0x910080, -0xFFE9 };
-s32 D_800D4FB4[80] = {
-    0x7F, (s32)&D_800D4F3C, (s32)&D_800D4F98, 1, 0, 0, 0, 0, 0x83, (s32)&D_800D4F3C,
-    (s32)&D_800D4FA0, 1, 0, 0, 0, 0, 0x84, (s32)&D_800D4F58, (s32)&D_800D4FA4, 1, 0, 0, 0, 0,
-    0x86, (s32)&D_800D4F70, (s32)&D_800D4FA8, 1, 0, 0, 0, 0, 0x8D, (s32)&D_800D4F3C,
-    (s32)&D_800D4FAC, 1, 0, 0, 0, 0, 0x8F, (s32)&D_800D4F3C, (s32)&D_800D4FA4, 1, 0, 0, 0, 0,
-    0x93, (s32)&D_800D4F3C, (s32)&D_800D4FA0, 1, 0, 0, 0, 0, 0x96, (s32)&D_800D4F70,
-    (s32)&D_800D4FA8, 1, 0, 0, 0, 0, 0x97, (s32)&D_800D4F3C, (s32)&D_800D4FA4, 1, 0, 0, 0, 0,
-    0x98, (s32)&D_800D4F3C, (s32)&D_800D4FA0, 1, 0, 0, 0, 0,
+char *PolarAnimsC[10] = {
+    (char *)D_800B32E4, (char *)D_800B32EC, (char *)D_800B32F0, (char *)D_800B32B8, (char *)D_800B32C0, (char *)D_800B32C4, (char *)D_800B32CC, (char *)D_800B32D4, (char *)D_800B32DC, NULL,
 };
-s32 D_800D50F4[15] = {
+s16 PolarLevelDB0[4] = { 0x80, 0x85, -1, 0 };
+s16 PolarLevelDB1[2] = { 0x80, -1 };
+s16 PolarLevelDB2[2] = { 0x80, -1 };
+s16 PolarLevelDB3[2] = { -1, 0 };
+s16 PolarLevelDB4[4] = { 0x80, 0x91, 0x17, -1 };
+WWInf PolarWorldInfo[10] = {
+    { 0x7F, PolarAnims, PolarLevelDB0, 1 },
+    { 0x83, PolarAnims, PolarLevelDB1, 1 },
+    { 0x84, PolarAnimsB, PolarLevelDB2, 1 },
+    { 0x86, PolarAnimsC, PolarLevelDB3, 1 },
+    { 0x8D, PolarAnims, PolarLevelDB4, 1 },
+    { 0x8F, PolarAnims, PolarLevelDB2, 1 },
+    { 0x93, PolarAnims, PolarLevelDB1, 1 },
+    { 0x96, PolarAnimsC, PolarLevelDB3, 1 },
+    { 0x97, PolarAnims, PolarLevelDB2, 1 },
+    { 0x98, PolarAnims, PolarLevelDB1, 1 },
+};
+s32 PolarEndFiles[15] = {
     (s32)&D_80055684, (s32)&D_8004EEF8, (s32)&D_8004EEF0, (s32)&D_800555A4, (s32)&D_8004EED8,
     (s32)&D_8004EED0, (s32)&D_80053074, (s32)&D_8004EEE8, (s32)&D_8004EEE0, (s32)&D_800546C4,
     (s32)&D_8004EEC8, (s32)&D_8004EEC0, 0, 0, 0,
 };
-s32 D_800D5130[18] = {
+s32 PolarFiles[18] = {
     (s32)&D_80055684, (s32)&D_8004EEB8, (s32)&D_8004EEB0, (s32)&D_800555A4, (s32)&D_8004EE98,
     (s32)&D_8004EE90, (s32)&D_80053074, (s32)&D_8004EEA8, (s32)&D_8004EEA0, (s32)&D_800546C4,
     (s32)&D_8004EE88, (s32)&D_8004EE80, (s32)&D_80054654, (s32)&D_8004EE78, (s32)&D_8004EE70,
     0, 0, 0,
 };
-s32 D_800D5178[42] = {
+s32 PolarBossFiles[24] = {
     (s32)&D_80055684, (s32)&D_8004EE68, (s32)&D_8004EE60, (s32)&D_800555A4, (s32)&D_8004EE48,
     (s32)&D_8004EE40, (s32)&D_80053074, (s32)&D_8004EE58, (s32)&D_8004EE50, (s32)&D_800546C4,
     (s32)&D_8004EE38, (s32)&D_8004EE30, (s32)&D_80054654, (s32)&D_8004EE28, (s32)&D_8004EE20,
     (s32)&D_80054A0C, (s32)&D_8004EE18, (s32)&D_8004EE10, (s32)&D_80052F5C, (s32)&D_8004EE08,
-    (s32)&D_8004EE00, 0, 0, 0, (s32)&D_800500DC, (s32)&D_800D5130, (s32)&D_800500DC,
-    (s32)&D_800D5130, (s32)&D_800500DC, (s32)&D_800D5130, (s32)&D_800500DC, (s32)&D_800D5130,
-    (s32)&D_800500DC, (s32)&D_800D5130, (s32)&D_800500DC, (s32)&D_800D5130, (s32)&D_800500E8,
-    (s32)&D_800D50F4, (s32)&D_800500E8, (s32)&D_800D50F4, (s32)&D_800500D0, (s32)&D_800D5178,
+    (s32)&D_8004EE00, 0, 0,
 };
-s32 D_800D5220[4] = { 0x20D0003, 0x16031601, 0x16071605, 0x1619160A };
-s32 D_800D5230[9] = { (s32)&D_800D5220, 8, (s32)&D_800D4F2C, (s32)&D_800D4FB4, (s32)&D_800D5230, 0, 0, 0, 0 };
-Ovl62Owner *D_800D5254 = 0;
-u8 D_800D5258[20] = { 0, 0, 0x87, 0, 0x88, 0, 0x89, 0, 0x8C, 0, 0x8A, 0, 0x95, 0, 0x8B, 0, 0x94, 0, 0, 0 };
-u8 D_800D526C[20] = { 0, 0, 0x11, 0, 0x12, 0, 0x13, 0, 0x16, 0, 0x14, 0, 0x90, 0, 0x15, 0, 0x92, 0, 0, 0 };
-u8 D_800D5280[20] = { 0, 0, 0x99, 0, 0x9A, 0, 0x9B, 0, 0x9E, 0, 0x9C, 0, 0xA0, 0, 0x9D, 0, 0x9F, 0, 0, 0 };
-NAS *D_800D5294 = 0;
-subengine *D_800D5298 = 0;
-SceneObj *D_800D529C = 0;
-SceneObj *D_800D52A0 = 0;
-s32 D_800D52A4 = 0;
-s32 D_800D52A8 = 0;
-s32 D_800D52AC = 0x100;
-s32 D_800D52B0 = 0x10;
-NAS *D_800D52B4 = 0;
-s32 D_800D52B8[10] = {
+/* the levels' files, in the leak's order (Day, Night, Cut, their challenges, End and its challenge,
+ * the boss): the exe's file group and the model list; the engine's table at 0x800A0030 points at
+ * modes 0x12..0x16's */
+file_group_load_info file_group_POLARDAY = { D_800500DC, PolarFiles };
+file_group_load_info file_group_POLARNGT = { D_800500DC, PolarFiles };
+file_group_load_info file_group_POLARCUT = { D_800500DC, PolarFiles };
+file_group_load_info file_group_POLARCHA = { D_800500DC, PolarFiles };
+file_group_load_info file_group_POLARCUC = { D_800500DC, PolarFiles };
+file_group_load_info file_group_POLARNGC = { D_800500DC, PolarFiles };
+file_group_load_info file_group_POLAREND = { D_800500E8, PolarEndFiles };
+file_group_load_info file_group_POLARENC = { D_800500E8, PolarEndFiles };
+file_group_load_info file_group_POLARBSS = { D_800500D0, PolarBossFiles };
+u16 PolarLUPtab[8] = { 3, 0x20D, 0x1601, 0x1603, 0x1605, 0x1607, 0x160A, 0x1619 };
+TrigLookUp PolarLUP = { PolarLUPtab, 8 };
+PreMap POLAR_PREMAP = { PolarPreLoadDB, PolarWorldInfo, &PolarLUP };
+Ovl62Owner *PolarBeamOwner = 0;
+u16 PolarHeroModels[10] = { 0, 0x87, 0x88, 0x89, 0x8C, 0x8A, 0x95, 0x8B, 0x94, 0 };
+u16 PolarHeroModelsB[10] = { 0, 0x11, 0x12, 0x13, 0x16, 0x14, 0x90, 0x15, 0x92, 0 };
+u16 PolarHeroModelsCut[10] = { 0, 0x99, 0x9A, 0x9B, 0x9E, 0x9C, 0xA0, 0x9D, 0x9F, 0 };
+NAS *PolarBomb = 0;
+subengine *bossmapsub = 0;
+SceneObj *PolarSceneA = 0;
+SceneObj *PolarSceneB = 0;
+s32 PolarSceneWord0 = 0;
+s32 PolarSceneWord1 = 0;
+s32 PolarSceneWord2 = 0x100;
+s32 PolarSceneWord3 = 0x10;
+NAS *BombMaster = 0;
+s32 PolarVictorySeqs[10] = {
     (s32)&D_800B3358, 0x46, (s32)&D_800B3358, 0x47,
     (s32)&D_800B3358, 0xD, (s32)&D_800B3358, 0xD, 1, 2,
 };
-s32 D_800D52E0[33] = {
+s32 PolarAttackOdds[33] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 0xC, 0x10, 0x14, 0x18, 0x1C, 0x20, 0x24, 0x28, 0x2C, 0x30,
     0x34, 0x38, 0x3C, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40,
 };
-s32 D_800D5364[33] = {
+s32 PolarRollOdds[33] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 6, 8, 0xA, 0xC, 0xE, 0x10, 0x12, 0x14, 0x16, 0x18, 0x1A,
     0x1C, 0x1E, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
 };
-s32 D_800D53E8[8] = { 0, 0x400, 0x800, 0xC00, 0x600, 0xA00, 0xE00, 0x200 };
-u16 D_800D5408[32] = {
+s32 PolarMeltOffsets[8] = { 0, 0x400, 0x800, 0xC00, 0x600, 0xA00, 0xE00, 0x200 };
+u16 PolarHeroSfx[32] = {
     0x37, 0x28, 0x38, 0x37, 0x28, 0x38, 0x37, 0x28, 0x38, 0x37, 0x28, 0x38, 0x37, 0x20, 0x2C,
     0x28, 0x20, 0x2C, 0x28, 0x20, 0x2C, 0x28, 0x20, 0x2C, 0x28, 0x20, 0x2C, 0, 0, 0, 0, 0,
 };
-NAS *D_800D5448 = 0;
-s32 D_800D544C = 0;
-s32 D_800D5450 = 0;
-u8 *D_800D5454 = 0;
-u32 D_800D5458[4] = { 0, 1, 6, 5 };
-s32 D_800D5468[3] = {0};
-s32 D_800D5474 = 0;
-s32 D_800D5478 = 0;
-s32 D_800D547C = 0;
-s32 D_800D5480[4] = { 0, 8, 2, 5 };
-s32 D_800D5490 = 0;
-Ovl62Prox *D_800D5494 = 0;
-s32 D_800D5498[26] = {
+NAS *polarbossnas = 0;
+s32 PolarBeamTimer = 0;
+s32 PolarUpdateWord = 0;
+u8 *PolarBears = 0;
+u32 BeamFrames[4] = { 0, 1, 6, 5 };
+s32 PolarUnused1[3] = {0};
+s32 BeamState = 0;
+s32 BeamTimer = 0;
+s32 BeamTarget = 0;
+s32 UkaMaskFrames[4] = { 0, 8, 2, 5 };
+s32 UkaMaskTimer = 0;
+Ovl62Prox *PolarProximity = 0;
+s32 WalrusFrames[26] = {
     0x4000, 0x4000, 0x4000, 0x4000, 0x4000, 0x4000, 0x4000, 0x4001, 0x4002, 0x4003, 0x4004,
     0x4005, 0x4006, 0x4007, 0x4008, 0x4009, 0x400A, 0x400B, 0x400C, 0x400D, 0x400E, 0x400F,
     0x4010, 0x4011, 0x4012, 0x8000,
 };
-s32 D_800D5500[2] = { 0x3E74013, 0x8000 };
-s32 D_800D5508[14] = {
+s32 WalrusSteps0[2] = { 0x3E74013, 0x8000 };
+s32 WalrusSteps1[14] = {
     0x4014, 0x4015, 0x4016, 0x4017, 0x4018, 0x4019, 0x401A, 0x401B, 0x401C, 0x401D, 0x401E,
     0x401F, 0x18005, 0x4020,
 };
-s32 D_800D5540[17] = {
+s32 WalrusSteps2[17] = {
     0x4080, 0x4081, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A,
     0x408B, 0x408C, 0x408D, 0x408E, 0x408F, 0x8000,
 };
-s32 D_800D5584[40] = {
+s32 WalrusSteps3[40] = {
     0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
     0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115,
     0x4116, 0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x411C, 0x411D, 0x411E, 0x411F, 0x4120,
     0x4121, 0x4122, 0x4123, 0x4124, 0x4125, 0x18005, 0x4126,
 };
-s32 D_800D5624[3] = { (s32)&D_800D5498, 0, 0 };
-ScriptInit D_800D5630 = { 0, (void *)&D_800D5624, 0x402 };
-s32 D_800D563C = 0x240;
-s32 D_800D5640[17] = {
+s32 WalrusAnimList[3] = { (s32)&WalrusFrames, 0, 0 };
+ScriptInit WalrusScriptInit = { 0, (void *)&WalrusAnimList, 0x402 };
+s32 WalrusState = 0x240;
+s32 WalrusFishSteps[17] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A,
     0x418B, 0x418C, 0x418D, 0x418E, 0x418F, 0x8001,
 };
-s32 D_800D5684[3] = { (s32)&D_800D5640, 0, 0 };
-ScriptInit D_800D5690 = { 0, (void *)&D_800D5684, 0x402 };
-s32 D_800D569C[8] = { 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x8001 };
-s32 D_800D56BC[2] = { 0x4006, 0x8000 };
-s32 D_800D56C4[4] = { (s32)&D_800D569C, (s32)&D_800D56BC, 0, 0 };
-ScriptInit D_800D56D4 = { 0, (void *)&D_800D56C4, 0x402 };
-s32 D_800D56E0[7] = { 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x8000 };
-s32 D_800D56FC[43] = {
+s32 WalrusFishAnimList[3] = { (s32)&WalrusFishSteps, 0, 0 };
+ScriptInit WalrusFishScriptInit = { 0, (void *)&WalrusFishAnimList, 0x402 };
+s32 BearDeathSteps0[8] = { 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x8001 };
+s32 BearDeathSteps1[2] = { 0x4006, 0x8000 };
+s32 BearDeathAnimList[4] = { (s32)&BearDeathSteps0, (s32)&BearDeathSteps1, 0, 0 };
+ScriptInit BearDeathScriptInit = { 0, (void *)&BearDeathAnimList, 0x402 };
+s32 PolarBossSteps0[7] = { 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x8000 };
+s32 PolarBossSteps1[43] = {
     0x4080, 0x4081, 0x4082, 0x4083, 0x18005, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089,
     0x408A, 0x408B, 0x408C, 0x408D, 0x408E, 0x408F, 0x4090, 0x4091, 0x4092, 0x4093, 0x4094,
     0x4095, 0x4096, 0x4097, 0x4098, 0x4099, 0x409A, 0x409B, 0x409C, 0x409D, 0x409E, 0x409F,
     0x40A0, 0x40A1, 0x40A2, 0x40A3, 0x40A4, 0x40A5, 0x40A6, 0x40A7, 0x40A8, 0x8001,
 };
-s32 D_800D57A8[22] = {
+s32 PolarBossSteps2[22] = {
     0x4400, 0x4401, 0x4402, 0x4403, 0x4404, 0x4405, 0x4406, 0x4407, 0x4408, 0x4409, 0x440A,
     0x440B, 0x440C, 0x440D, 0x440E, 0x440F, 0x4410, 0x4411, 0x4412, 0x4413, 0x4414, 0x8001,
 };
-s32 D_800D5800[43] = {
+s32 PolarBossSteps3[43] = {
     0x4100, 0x4101, 0x4102, 0x4103, 0x18005, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109,
     0x410A, 0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114,
     0x4115, 0x4116, 0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x411C, 0x411D, 0x411E, 0x411F,
     0x4120, 0x4121, 0x4122, 0x4123, 0x4124, 0x4125, 0x4126, 0x4127, 0x4128, 0x8001,
 };
-s32 D_800D58AC[43] = {
+s32 PolarBossSteps4[43] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x18005, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189,
     0x418A, 0x418B, 0x418C, 0x418D, 0x418E, 0x418F, 0x4190, 0x4191, 0x4192, 0x4193, 0x4194,
     0x4195, 0x4196, 0x4197, 0x4198, 0x4199, 0x419A, 0x419B, 0x419C, 0x419D, 0x419E, 0x419F,
     0x41A0, 0x41A1, 0x41A2, 0x41A3, 0x41A4, 0x41A5, 0x41A6, 0x41A7, 0x41A8, 0x8001,
 };
-s32 D_800D5958[42] = {
+s32 PolarBossSteps5[42] = {
     0x4200, 0x4201, 0x4202, 0x4203, 0x4204, 0x4205, 0x4206, 0x4207, 0x4208, 0x4209, 0x420A,
     0x420B, 0x420C, 0x420D, 0x420E, 0x420F, 0x4210, 0x4211, 0x4212, 0x4213, 0x4214, 0x4215,
     0x4216, 0x4217, 0x4218, 0x4219, 0x421A, 0x421B, 0x421C, 0x421D, 0x421E, 0x421F, 0x4220,
     0x4221, 0x4222, 0x4223, 0x4224, 0x4225, 0x4226, 0x4227, 0x4228, 0x8001,
 };
-s32 D_800D5A00[13] = {
-    (s32)&D_800D56E0, (s32)&D_800D56FC, (s32)&D_800D56E0, (s32)&D_800D5800, (s32)&D_800D56E0,
-    (s32)&D_800D58AC, (s32)&D_800D56E0, (s32)&D_800D5958, (s32)&D_800D56E0, (s32)&D_800D57A8,
-    (s32)&D_800D56E0, 0, 0,
+s32 PolarBossAnimList[13] = {
+    (s32)&PolarBossSteps0, (s32)&PolarBossSteps1, (s32)&PolarBossSteps0, (s32)&PolarBossSteps3, (s32)&PolarBossSteps0,
+    (s32)&PolarBossSteps4, (s32)&PolarBossSteps0, (s32)&PolarBossSteps5, (s32)&PolarBossSteps0, (s32)&PolarBossSteps2,
+    (s32)&PolarBossSteps0, 0, 0,
 };
-ScriptInit D_800D5A34 = { 0, (void *)&D_800D5A00, 0x402 };
-s32 D_800D5A40[21] = {
+ScriptInit PolarBossScriptInit = { 0, (void *)&PolarBossAnimList, 0x402 };
+s32 BearBossSteps0[21] = {
     0x4280, 0x4281, 0x4282, 0x4283, 0x4284, 0x4285, 0x4286, 0x4287, 0x4288, 0x4289, 0x428A,
     0x428B, 0x428C, 0x428D, 0x428E, 0x428F, 0x4290, 0x4291, 0x4292, 0x4293, 0x8000,
 };
-s32 D_800D5A94[42] = {
+s32 BearBossSteps1[42] = {
     0x4300, 0x4301, 0x4302, 0x4303, 0x4304, 0x4305, 0x4306, 0x4307, 0x4308, 0x4309, 0x430A,
     0x430B, 0x430C, 0x430D, 0x430E, 0x430F, 0x4310, 0x4311, 0x4312, 0x4313, 0x4314, 0x4315,
     0x4316, 0x4317, 0x4318, 0x4319, 0x431A, 0x431B, 0x431C, 0x431D, 0x431E, 0x431F, 0x4320,
     0x4321, 0x4322, 0x4323, 0x4324, 0x4325, 0x4326, 0x4327, 0x4328, 0x8001,
 };
-s32 D_800D5B3C[22] = {
+s32 BearBossSteps2[22] = {
     0x4380, 0x4381, 0x4382, 0x4383, 0x4384, 0x4385, 0x4386, 0x4387, 0x4388, 0x4389, 0x438A,
     0x438B, 0x438C, 0x438D, 0x438E, 0x438F, 0x4390, 0x4391, 0x4392, 0x4393, 0x4394, 0x8001,
 };
-s32 D_800D5B94[31] = {
+s32 BearBossSteps3[31] = {
     0x4480, 0x4481, 0x4482, 0x4483, 0x4484, 0x4485, 0x4486, 0x4487, 0x4488, 0x4489, 0x448A,
     0x448B, 0x448C, 0x448D, 0x448E, 0x448F, 0x4490, 0x4491, 0x4492, 0x4493, 0x4494, 0x4495,
     0x4496, 0x4497, 0x4498, 0x4499, 0x449A, 0x449B, 0x449C, 0x449D, 0x8001,
 };
-s32 D_800D5C10[2] = { 0x449D, 0x8000 };
-s32 D_800D5C18[46] = {
+s32 BearBossSteps4[2] = { 0x449D, 0x8000 };
+s32 BearBossSteps5[46] = {
     0x4500, 0x4501, 0x4502, 0x4503, 0x4504, 0x4505, 0x4506, 0x4507, 0x4508, 0x4509, 0x450A,
     0x450B, 0x450C, 0x450D, 0x450E, 0x450F, 0x4510, 0x4511, 0x4512, 0x4513, 0x4514, 0x4515,
     0x4516, 0x4517, 0x4518, 0x4519, 0x451A, 0x451B, 0x451C, 0x451D, 0x451E, 0x451F, 0x4520,
     0x4521, 0x4522, 0x4523, 0x4524, 0x4525, 0x4526, 0x4527, 0x4528, 0x4529, 0x452A, 0x452B,
     0x452C, 0x8000,
 };
-s32 D_800D5CD0[46] = {
+s32 BearBossSteps6[46] = {
     0x4500, 0x4501, 0x4502, 0x4503, 0x4504, 0x4505, 0x4506, 0x4507, 0x4508, 0x4509, 0x450A,
     0x450B, 0x450C, 0x450D, 0x450E, 0x450F, 0x4510, 0x4511, 0x4512, 0x4513, 0x4514, 0x4515,
     0x4516, 0x4517, 0x4518, 0x4519, 0x451A, 0x451B, 0x451C, 0x451D, 0x451E, 0x451F, 0x4520,
     0x4521, 0x4522, 0x4523, 0x4524, 0x4525, 0x4526, 0x4527, 0x4528, 0x4529, 0x452A, 0x452B,
     0x452C, 0x8001,
 };
-s32 D_800D5D88[12] = {
-    (s32)&D_800D5A40, (s32)&D_800D5A94, (s32)&D_800D5A40, (s32)&D_800D5B3C, (s32)&D_800D5A40,
-    (s32)&D_800D5B94, (s32)&D_800D5C10, (s32)&D_800D5C18, (s32)&D_800D5CD0, (s32)&D_800D5A40,
+s32 BearBossAnimList[12] = {
+    (s32)&BearBossSteps0, (s32)&BearBossSteps1, (s32)&BearBossSteps0, (s32)&BearBossSteps2, (s32)&BearBossSteps0,
+    (s32)&BearBossSteps3, (s32)&BearBossSteps4, (s32)&BearBossSteps5, (s32)&BearBossSteps6, (s32)&BearBossSteps0,
     0, 0,
 };
-ScriptInit D_800D5DB8 = { 0, (void *)&D_800D5D88, 0x402 };
-NAS *D_800D5DC4 = 0;
-s32 D_800D5DC8[17] = {
+ScriptInit BearBossScriptInit = { 0, (void *)&BearBossAnimList, 0x402 };
+NAS *BearminatorNas = 0;
+s32 BearminatorSteps0[17] = {
     0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x4007, 0x4008, 0x4009, 0x400A,
     0x400B, 0x400C, 0x400D, 0x400E, 0x400F, 0x8000,
 };
-s32 D_800D5E0C[26] = {
+s32 BearminatorSteps1[26] = {
     0x4080, 0x4081, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A,
     0x408B, 0x408C, 0x408D, 0x408E, 0x408F, 0x4090, 0x4091, 0x4092, 0x4093, 0x4094, 0x4095,
     0x4096, 0x18005, 0x4097, 0x8000,
 };
-s32 D_800D5E74[35] = {
+s32 BearminatorSteps2[35] = {
     0x4200, 0x4201, 0x4202, 0x4203, 0x4204, 0x4205, 0x4206, 0x4207, 0x4208, 0x4209, 0x420A,
     0x420B, 0x420C, 0x420D, 0x420E, 0x420F, 0x4210, 0x4211, 0x4212, 0x4213, 0x4214, 0x4215,
     0x4216, 0x4217, 0x4218, 0x4219, 0x421A, 0x421B, 0x421C, 0x421D, 0x421E, 0x421F, 0x18005,
     0x4220, 0x8000,
 };
-s32 D_800D5F00[17] = {
+s32 BearminatorSteps3[17] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4183, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A,
     0x418B, 0x418C, 0x418D, 0x418E, 0x418F, 0x8000,
 };
-s32 D_800D5F44[17] = {
+s32 BearminatorSteps4[17] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A,
     0x418B, 0x418C, 0x418D, 0x418E, 0x418F, 0x8001,
 };
-s32 D_800D5F88[7] = {
-    (s32)&D_800D5DC8, (s32)&D_800D5E0C, (s32)&D_800D5F44, (s32)&D_800D5F00, (s32)&D_800D5E74,
+s32 BearminatorAnimList[7] = {
+    (s32)&BearminatorSteps0, (s32)&BearminatorSteps1, (s32)&BearminatorSteps4, (s32)&BearminatorSteps3, (s32)&BearminatorSteps2,
     0, 0,
 };
-ScriptInit D_800D5FA4 = { 0, (void *)&D_800D5F88, 0x402 };
-s32 D_800D5FB0[4] = {0};
-s32 D_800D5FC0 = 0;
-s32 D_800D5FC4 = 0;
-s32 D_800D5FC8 = 0;
-MATRIX D_800D5FCC = {0};
-s32 D_800D5FEC[4] = {0};
-s32 D_800D5FFC = 0;
-s32 D_800D6000[2] = {0};
-s32 D_800D6008 = 0;
-s32 D_800D600C = 0;
-SceneObj *D_800D6010[80] = {0};
-Ovl62RiserObj *D_800D6150[16] = {0};
-SceneObj *D_800D6190[16] = {0};
-u16 D_800D61D0[31][2] = {
+ScriptInit BearminatorScriptInit = { 0, (void *)&BearminatorAnimList, 0x402 };
+s32 PolarAIPace[4] = {0};
+s32 PolarInitWord = 0;
+s32 PolarSceneCount = 0;
+s32 PolarSceneTimer = 0;
+MATRIX PolarSceneMatrix = {0};
+s32 PolarAIFlags[4] = {0};
+s32 PolarBeamMode = 0;
+s32 PolarUnused2[2] = {0};
+s32 BeamCount = 0;
+s32 BeamDelay = 0;
+SceneObj *PolarIceObjects[80] = {0};
+Ovl62RiserObj *UkaMaskRisers[16] = {0};
+SceneObj *UkaMaskObjects[16] = {0};
+u16 PolarShadowFrames0[31][2] = {
     { 0x4180, 0 }, { 0x4181, 0 }, { 0x4182, 0 }, { 0x4183, 0 }, { 0x4184, 0 }, { 0x4185, 0 },
     { 0x4186, 0 }, { 0x4187, 0 }, { 0x4188, 0 }, { 0x4189, 0 }, { 0x418A, 0 }, { 0x418B, 0 },
     { 0x418C, 0 }, { 0x418D, 0 }, { 0x4188, 0 }, { 0x4189, 0 }, { 0x418A, 0 }, { 0x418B, 0 },
@@ -809,14 +766,14 @@ u16 D_800D61D0[31][2] = {
     { 0x4192, 0 }, { 0x4193, 0 }, { 0x4194, 0 }, { 0x4195, 0 }, { 0x4196, 0 }, { 0x4197, 0 },
     { 0x4198, 0 },
 };
-u16 D_800D624C[26][2] = {
+u16 PolarShadowFrames1[26][2] = {
     { 0x4080, 0 }, { 0x4081, 0 }, { 0x4082, 0 }, { 0x4083, 0 }, { 0x4084, 0 }, { 0x4085, 0 },
     { 0x4086, 0 }, { 0x4087, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 },
     { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4089, 0 }, { 0x408A, 0 }, { 0x408B, 0 },
     { 0x408C, 0 }, { 0x408D, 0 }, { 0x408E, 0 }, { 0x408F, 0 }, { 0x4090, 0 }, { 0x4091, 0 },
     { 0x4092, 0 }, { 0x4093, 0 },
 };
-u16 D_800D62B4[63][2] = {
+u16 PolarShadowFrames2[63][2] = {
     { 0x4080, 0 }, { 0x4081, 0 }, { 0x4082, 0 }, { 0x4083, 0 }, { 0x4084, 0 }, { 0x4085, 0 },
     { 0x4086, 0 }, { 0x4087, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 },
     { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 }, { 0x4088, 0 },
@@ -829,14 +786,14 @@ u16 D_800D62B4[63][2] = {
     { 0x408B, 0 }, { 0x408C, 0 }, { 0x408D, 0 }, { 0x408E, 0 }, { 0x408F, 0 }, { 0x4090, 0 },
     { 0x4091, 0 }, { 0x4092, 0 }, { 0x4093, 0 },
 };
-u16 D_800D63B0[26][2] = {
+u16 PolarShadowFrames3[26][2] = {
     { 0x4080, 0 }, { 0x4081, 0 }, { 0x4082, 0 }, { 0x4083, 0 }, { 0x4084, 0 }, { 0x4085, 0 },
     { 0x4086, 0 }, { 0x4087, 0 }, { 0x4088, 0 }, { 0x4089, 0 }, { 0x408A, 0 }, { 0x408B, 0 },
     { 0x408C, 0 }, { 0x408D, 0 }, { 0x408E, 0 }, { 0x408F, 0 }, { 0x4090, 0 }, { 0x4091, 0 },
     { 0x4092, 0 }, { 0x4093, 0 }, { 0x4080, 0 }, { 0x4081, 0 }, { 0x4082, 0 }, { 0x4083, 0 },
     { 0x4084, 0 }, { 0x4085, 0 },
 };
-u16 D_800D6418[41][2] = {
+u16 PolarShadowFrames4[41][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4186, 0 },
     { 0x4187, 0 }, { 0x4188, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 },
@@ -845,7 +802,7 @@ u16 D_800D6418[41][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
 };
-u16 D_800D64BC[35][2] = {
+u16 PolarShadowFrames5[35][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4186, 0 },
     { 0x4187, 0 }, { 0x4188, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 },
@@ -853,7 +810,7 @@ u16 D_800D64BC[35][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
 };
-u16 D_800D6548[42][2] = {
+u16 PolarShadowFrames6[42][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4186, 0 }, { 0x4187, 0 }, { 0x4188, 0 },
     { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 }, { 0x4189, 0 },
@@ -862,7 +819,7 @@ u16 D_800D6548[42][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
 };
-u16 D_800D65F0[46][2] = {
+u16 PolarShadowFrames7[46][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4200, 0 }, { 0x4201, 0 },
     { 0x4202, 0 }, { 0x4203, 0 }, { 0x4204, 0 }, { 0x4203, 0 }, { 0x4202, 0 }, { 0x4201, 0 },
@@ -872,7 +829,7 @@ u16 D_800D65F0[46][2] = {
     { 0x4200, 0 }, { 0x4200, 0 }, { 0x4201, 0 }, { 0x4202, 0 }, { 0x4203, 0 }, { 0x4204, 0 },
     { 0x4203, 0 }, { 0x4202, 0 }, { 0x4201, 0 }, { 0x4200, 0 },
 };
-u16 D_800D66A8[46][2] = {
+u16 PolarShadowFrames8[46][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4200, 0 }, { 0x4200, 0 },
     { 0x4201, 0 }, { 0x4201, 0 }, { 0x4202, 0 }, { 0x4202, 0 }, { 0x4203, 0 }, { 0x4203, 0 },
@@ -882,7 +839,7 @@ u16 D_800D66A8[46][2] = {
     { 0x4204, 0 }, { 0x4204, 0 }, { 0x4203, 0 }, { 0x4203, 0 }, { 0x4202, 0 }, { 0x4202, 0 },
     { 0x4201, 0 }, { 0x4201, 0 }, { 0x4200, 0 }, { 0x4200, 0 },
 };
-u16 D_800D6760[50][2] = {
+u16 PolarShadowFrames9[50][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4200, 0 }, { 0x4201, 0 }, { 0x4202, 0 },
     { 0x4203, 0 }, { 0x4204, 0 }, { 0x4203, 0 }, { 0x4202, 0 }, { 0x4201, 0 }, { 0x4200, 0 },
@@ -893,7 +850,7 @@ u16 D_800D6760[50][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 },
 };
-u16 D_800D6828[63][2] = {
+u16 PolarShadowFrames10[63][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 },
     { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 }, { 0x4200, 0 },
@@ -906,8 +863,8 @@ u16 D_800D6828[63][2] = {
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
     { 0x4180, 0 }, { 0x4180, 0 }, { 0x4180, 0 },
 };
-s32 D_800D6924[4] = {0};
-s32 D_800D6934[4] = {0};
+s32 PolarHeroMass[4] = {0};
+s32 PolarShadowState[4] = {0};
 
 s32 PolarAI_PickVictim(s32 arg0) {
     s32 start;
@@ -963,12 +920,12 @@ void PolarInitScene(void) {
     i = 0;
     D_8009E1F8 = 0;
     D_8009E1F4 = 0;
-    D_800D5298 = NULL;
-    D_800D529C = NULL;
-    D_800D5FC8 = 0;
+    bossmapsub = NULL;
+    PolarSceneA = NULL;
+    PolarSceneTimer = 0;
     obj =((const Ovl62Scene *)D_80058AD0)->objs;
-    D_800D529C = NULL;
-    D_800D52A0 = NULL;
+    PolarSceneA = NULL;
+    PolarSceneB = NULL;
     D_80058AF4.vx = 0;
     D_80058AF4.vz = 0;
     do {
@@ -992,16 +949,16 @@ void PolarInitScene(void) {
                             obj->flags |= 0x200000;
                         }
                         if (obj->index == 0x5005) {
-                            D_800D529C = obj;
+                            PolarSceneA = obj;
                         }
                         if (obj->index == 0x5003) {
-                            D_800D52A0 = obj;
-                            D_800D5FC4 = obj->unk8;
+                            PolarSceneB = obj;
+                            PolarSceneCount = obj->unk8;
                         }
                     }
                 }
                 if (((Ovl62ModeView *)D_8005A614)->mode == 0x16 &&obj->index == 0x5003) {
-                    D_800D5298 = (subengine *)obj;
+                    bossmapsub = (subengine *)obj;
                     obj->flags |= 0x200000;
                 }
             }
@@ -1028,16 +985,16 @@ void PolarUpdateScene(void)
   EXTengine *eng;
   PolarMissileExt *ext;
   SceneObj *o;
-  o = D_800D529C;
+  o = PolarSceneA;
   if (o != 0)
   {
     o->unk52 = 1;
     o->unk51 = 0;
     o->unk12 += 6;
   }
-  if (D_800D52A0 != 0)
+  if (PolarSceneB != 0)
   {
-    D_800D5FC8 = (D_800D5FC8 + 0x20) & 0xFFF;
+    PolarSceneTimer = (PolarSceneTimer + 0x20) & 0xFFF;
   }
   if (((Ovl62GameView *) D_8005A614)->unk10 != 0)
   {
@@ -1064,12 +1021,12 @@ void PolarUpdateScene(void)
         }
 
 
-        if ((D_800D5494 != 0) && (D_800D5494->unk58 != 0))
+        if ((PolarProximity != 0) && (PolarProximity->unk58 != 0))
         {
-          r = D_800D5494->unk58->mode;
+          r = PolarProximity->unk58->mode;
           if (((r == 1) || (r == 5)) || (r == 7))
           {
-            eng = D_800D5494->eng;
+            eng = PolarProximity->eng;
             sx += eng->unk10.x << 10;
             sx >>= 8;
             sx /= 5;
@@ -1102,7 +1059,7 @@ void PolarUpdateScene(void)
         }
       }
 
-      p = D_800D5454;
+      p = PolarBears;
       loop:
       if (p != 0)
       {
@@ -1154,11 +1111,11 @@ void PolarUpdateScene(void)
     D_80058AF4.vz = D_8009E1F8;
     if ((((Ovl62ModeView *) D_8005A614)->flags & 0x80) && (((Ovl62ModeView *) D_8005A614)->mode == 0x12))
     {
-      a = (D_800D52AC * D_80068BD4[(D_800D52A4 - 0x400) & 0xFFF].unk2) >> 12;
-      b = (D_800D52AC * D_80068BD4[D_800D52A4 & 0xFFF].unk2) >> 12;
-      D_800D52A4 = (D_80068BD4[(D_800D52A8 - 0x400) & 0xFFF].unk2 * 3) >> 2;
-      D_800D52A8 = (D_800D52A8 + D_800D52B0) & 0xFFF;
-      if (D_800D52A8 == 0)
+      a = (PolarSceneWord2 * D_80068BD4[(PolarSceneWord0 - 0x400) & 0xFFF].unk2) >> 12;
+      b = (PolarSceneWord2 * D_80068BD4[PolarSceneWord0 & 0xFFF].unk2) >> 12;
+      PolarSceneWord0 = (D_80068BD4[(PolarSceneWord1 - 0x400) & 0xFFF].unk2 * 3) >> 2;
+      PolarSceneWord1 = (PolarSceneWord1 + PolarSceneWord3) & 0xFFF;
+      if (PolarSceneWord1 == 0)
       {
         r = Random(4);
         step = (r == 0) * 0x10;
@@ -1174,22 +1131,22 @@ void PolarUpdateScene(void)
         {
           step = 0x20;
         }
-        D_800D52AC = 0x100;
+        PolarSceneWord2 = 0x100;
         sign = Random(2);
         if (sign == 0)
         {
-          D_800D52B0 = step;
+          PolarSceneWord3 = step;
         }
         if (sign == 1)
         {
-          D_800D52B0 = -step;
+          PolarSceneWord3 = -step;
         }
       }
-      D_800D52A4 &= 0xFFF;
+      PolarSceneWord0 &= 0xFFF;
       D_80058AF4.vx -= ((a - D_80058AF4.vx) << 20) >> 22;
       D_80058AF4.vz -= ((b - D_80058AF4.vz) << 20) >> 22;
     }
-    RotMatrix(&D_80058AF4, &D_800D5FCC);
+    RotMatrix(&D_80058AF4, &PolarSceneMatrix);
   }
   else
   {
@@ -1273,8 +1230,8 @@ bool CheckMelted(SLONG_XYZ *arg0, s32 arg1) {
     s32 i;
     s32 ang;
 
-    if (D_8005A648 == 0x14 && D_800D5254 != NULL) {
-        l = D_800D5254->unk58;
+    if (D_8005A648 == 0x14 && PolarBeamOwner != NULL) {
+        l = PolarBeamOwner->unk58;
         if (l != NULL) {
             sec = (u32)((get_angle(arg0->x, arg0->z) - 0x7D) & 0xFFF) >> 8;
             if (l->sectors[sec].state == 1) {
@@ -1645,7 +1602,7 @@ void PlotBombGFX(NAS *m) {
             return;
         }
         ok = 1;
-        gx = FindExtension((NAS *)D_800D5254, 0x40000000);
+        gx = FindExtension((NAS *)PolarBeamOwner, 0x40000000);
         if (gx != NULL) {
             v = gx[3];
             if (v == 5) {
@@ -1662,7 +1619,7 @@ void PlotBombGFX(NAS *m) {
             hx[40] = (s32)m;
             return;
         }
-        n = D_800D52B4;
+        n = BombMaster;
         if (n == NULL) {
             return;
         }
@@ -1675,12 +1632,12 @@ void PlotBombGFX(NAS *m) {
         if (m->FUX != NULL) {
             ((EXTengine *)m->FUX)->sub->flags &= ~0x8000;
         }
-        game = FindExtension((NAS *)D_800D5254, 0x40000000);
+        game = FindExtension((NAS *)PolarBeamOwner, 0x40000000);
         if (game != NULL) {
             p = ext[5];
             st = Heroes[p].hero_status;
             if (st & 0x2000) {
-                n = D_800D52B4;
+                n = BombMaster;
                 if (n != NULL) {
                 dec:
                     bx = FindExtension(n, 0x10000000);
@@ -1691,14 +1648,14 @@ void PlotBombGFX(NAS *m) {
                 goto kill;
             }
             if (st & 0x200) {
-                n = D_800D52B4;
+                n = BombMaster;
                 if (n == NULL) {
                     goto kill;
                 }
                 goto dec2;
             }
-            if ((game[3] == 5 && game[27] == p && (n = D_800D52B4) != NULL)
-                || (game[3] == 6 && game[27] < 4 && game[27] == ext[5] && (n = D_800D52B4) != NULL)) {
+            if ((game[3] == 5 && game[27] == p && (n = BombMaster) != NULL)
+                || (game[3] == 6 && game[27] < 4 && game[27] == ext[5] && (n = BombMaster) != NULL)) {
             dec2:
                 bx = FindExtension(n, 0x10000000);
                 if (bx != NULL) {
@@ -1728,10 +1685,10 @@ void PlotBombGFX(NAS *m) {
         if (hero[10] != 0) {
             return;
         }
-        if (D_800D52B4 == NULL) {
+        if (BombMaster == NULL) {
             return;
         }
-        bx = FindExtension(D_800D52B4, 0x10000000);
+        bx = FindExtension(BombMaster, 0x10000000);
         if (bx != NULL) {
             bx[6]--;
         }
@@ -1871,7 +1828,7 @@ void PolarSpawnObjects(void) {
         if (status & 0x200) {
             goto next;
         }
-        if (D_800D4D08 != 0) {
+        if (PolarRoundState != 0) {
             hero->hero_status = status | 0x2000;
             pos.x = hero->hero_eng->unk10.x;
             pos.y = hero->hero_eng->unk10.y - 0x80;
@@ -1899,7 +1856,7 @@ void PolarSpawnObjects(void) {
                 SetHeroAction(i & 3, 0x50);
             } while (0);
         } else {
-            D_800D4D08 = 1;
+            PolarRoundState = 1;
             do {
                 SetHeroAction(i & 3, 0x58);
             } while (0);
@@ -1929,23 +1886,23 @@ void InitialisePOLARFirst(void) {
 
     h = &D_8009D6E8;
     h->unk8 = NULL;
-    h->unk4 = D_800D526C;
-    D_800D5254 = NULL;
-    D_800D52B4 = NULL;
-    D_800D4D0C = 0;
-    D_800D4DD0 = 0x400000;
+    h->unk4 = PolarHeroModelsB;
+    PolarBeamOwner = NULL;
+    BombMaster = NULL;
+    PolarFirstFlag = 0;
+    PolarArenaRadius2 = 0x400000;
     if (((Ovl62InitView *)D_8005A614)->mode != 0x15) {
         h->unk18 = PolarInitShadow;
         h->unk1C = PolarUpdateShadow;
     } else {
         h->unk18 = D_8008B29C;
         h->unk1C = D_8008B418;
-        h->unk8 = D_800D526C;
-        h->unk4 = D_800D5258;
+        h->unk8 = PolarHeroModelsB;
+        h->unk4 = PolarHeroModels;
     }
     g = (Ovl62InitView *)D_8005A614;
     if (g->mode == 0x14) {
-        D_8009D6E8.unk4 = D_800D5280;
+        D_8009D6E8.unk4 = PolarHeroModelsCut;
     }
     D_8009D6E8.unk68 = DoNowt;
     D_8009D6E8.unk0 = (s32)PolarInitHero;
@@ -1954,58 +1911,58 @@ void InitialisePOLARFirst(void) {
     D_8009D6E8.unk38 = Polar_HeroBot;
     D_8009D6E8.unk3C = PolarTestAttack;
     D_8009D6E8.unk2C = PolarInitHeroAngle;
-    D_8009D6E8.unk14 = D_800D52B8;
+    D_8009D6E8.unk14 = PolarVictorySeqs;
     D_8005AA70[10] = (s32)PolarSpawnObjects;
     D_8009D908 = 0;
     switch (g->mode) {
     case 0x12:
-        D_8009D8F4 = D_800D3610;
-        D_8009D8F8 = D_800D3624;
-        D_8009D904 = D_800D35F8;
+        D_8009D8F4 = PolarDayAiBotTweak;
+        D_8009D8F8 = PolarDayAiHumanTweak;
+        D_8009D904 = PolarDayAiHumanRoundTweak;
         p = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800D35D8;
+            t = PolarDayAiSkillAlt;
         } else {
-            t = D_800D35C4;
+            t = PolarDayAiSkill;
         }
         *p = t;
-        D_8009D900 = D_800D35EC;
+        D_8009D900 = PolarDayAiTeamSkill;
         return;
     case 0x14:
-        D_8009D8F4 = D_800D36C4;
-        D_8009D8F8 = D_800D36D8;
-        D_8009D904 = D_800D36AC;
+        D_8009D8F4 = PolarCutAiBotTweak;
+        D_8009D8F8 = PolarCutAiHumanTweak;
+        D_8009D904 = PolarCutAiHumanRoundTweak;
         p2 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800D368C;
+            t = PolarCutAiSkillAlt;
         } else {
-            t = D_800D3678;
+            t = PolarCutAiSkill;
         }
         *p2 = t;
-        D_8009D900 = D_800D36A0;
+        D_8009D900 = PolarCutAiTeamSkill;
         return;
     case 0x15:
-        D_8009D8F4 = D_800D3778;
-        D_8009D8F8 = D_800D378C;
-        D_8009D904 = D_800D3760;
+        D_8009D8F4 = PolarEndAiBotTweak;
+        D_8009D8F8 = PolarEndAiHumanTweak;
+        D_8009D904 = PolarEndAiHumanRoundTweak;
         p3 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800D3740;
+            t = PolarEndAiSkillAlt;
         } else {
-            t = D_800D372C;
+            t = PolarEndAiSkill;
         }
         *p3 = t;
-        D_8009D900 = D_800D3754;
+        D_8009D900 = PolarEndAiTeamSkill;
         return;
     case 0x16:
-        D_8009D8F4 = D_800D3830;
-        D_8009D8F8 = D_800D3874;
-        D_8009D904 = D_800D388C;
+        D_8009D8F4 = PolarBossAiBotTweak;
+        D_8009D8F8 = PolarBossAiHumanTweak;
+        D_8009D904 = PolarBossAiHumanRoundTweak;
         p4 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t4 = D_800D38A4;
+            t4 = PolarBossAiSkillAlt;
         } else {
-            t4 = D_800D37E0;
+            t4 = PolarBossAiSkill;
         }
         *p4 = t4;
         g2 = (Ovl62InitView *)D_8005A614;
@@ -2024,17 +1981,17 @@ void InitialisePOLARFirst(void) {
         g3->b53 = 9;
         return;
     default:
-        D_8009D8F4 = D_800D355C;
-        D_8009D8F8 = D_800D3570;
-        D_8009D904 = D_800D3544;
+        D_8009D8F4 = PolarDefaultAiBotTweak;
+        D_8009D8F8 = PolarDefaultAiHumanTweak;
+        D_8009D904 = PolarDefaultAiHumanRoundTweak;
         p5 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800D3524;
+            t = PolarDefaultAiSkillAlt;
         } else {
-            t = D_800D3510;
+            t = PolarDefaultAiSkill;
         }
         *p5 = t;
-        D_8009D900 = D_800D3538;
+        D_8009D900 = PolarDefaultAiTeamSkill;
         return;
     }
 }
@@ -2140,7 +2097,7 @@ void PolarAI_TryAttack(s32 player) {
     if (D_8009D87C[player].unk0 > 0x20) {
         D_8009D87C[player].unk0 = 0x20;
     }
-    t = D_800D52E0[D_8009D87C[player].unk0];
+    t = PolarAttackOdds[D_8009D87C[player].unk0];
     h->hero_ai->AIpad |= 0x8000;
     fux->timer = 0x40 - t;
 }
@@ -2307,7 +2264,7 @@ void PolarAI_DoAttack(s32 player) {
     if (abs(D_80058AF4.vx) > 0x40 || abs(D_80058AF4.vx) > 0x40) {
         tilted = 1;
     }
-    if (tilted && (D_800D5FEC[player] & 4)) {
+    if (tilted && (PolarAIFlags[player] & 4)) {
         fux->state = 0xB;
         PolarAI_ClearState(player);
         fux->func = PolarAI_DoChaseBomber;
@@ -2402,8 +2359,8 @@ void PolarAI_DoHunt(s32 player) {
     fux = (Ovl62Fux *)h->hero->FUX;
     if (fux != NULL) {
         fux->unk3C = 1;
-        if (D_800D5254 != NULL) {
-            fux->vel = D_800D5254->unk54->unk10;
+        if (PolarBeamOwner != NULL) {
+            fux->vel = PolarBeamOwner->unk54->unk10;
         }
         fux->pos = h->hero_eng->unk10;
         if (fux->unk24-- < 0) {
@@ -2565,7 +2522,7 @@ loop:
         fux->func = PolarEmptyStub6;
         fux->unk34 &= ~1;
     }
-    if (D_800D5FEC[player] & 1) {
+    if (PolarAIFlags[player] & 1) {
         fux->state = 0xB;
         PolarAI_ClearState(player);
         fux->func = PolarAI_DoChaseBomber;
@@ -2597,7 +2554,7 @@ void PolarAI_DoWander(s32 player) {
             fux->func = PolarAI_AvoidBomber;
         }
     }
-    if (D_8005A648 == 0x12 && (D_800D5FEC[player] & 1)) {
+    if (D_8005A648 == 0x12 && (PolarAIFlags[player] & 1)) {
         fux->state = 0xB;
         PolarAI_ClearState(player);
         fux->func = PolarAI_DoChaseBomber;
@@ -2676,18 +2633,18 @@ void PolarAI_DoBeam(s32 player) {
         }
     }
     fux->unk3C = 1;
-    if (D_800D5254 != NULL) {
-        fux->vel = D_800D5254->unk54->unk10;
+    if (PolarBeamOwner != NULL) {
+        fux->vel = PolarBeamOwner->unk54->unk10;
     }
     fux->pos = Heroes[player].hero_eng->unk10;
-    e = D_800D5254->unk54;
+    e = PolarBeamOwner->unk54;
     dx = eng->unk10.x - e->unk10.x;
     dz = eng->unk10.z - e->unk10.z;
     if (dx * dx + dz * dz < 0x19000) {
         fux->state = 5;
         fux->func = PolarEmptyStub6;
     }
-    if (D_800D5FFC == 1) {
+    if (PolarBeamMode == 1) {
         fux->state = 5;
         fux->func = PolarEmptyStub6;
     }
@@ -2715,8 +2672,8 @@ bool Player2PlayerRayTest(u32 player, u32 target) {
     a = h->hero_eng;
     ang = a->unk1E;
     b = base[target].hero_eng;
-    vel.vx = D_800D4E04 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
-    vel.vz = D_800D4E04 * D_80068BD4[ang & 0xFFF].unk2 >> 12;
+    vel.vx = PolarIceRadius * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
+    vel.vz = PolarIceRadius * D_80068BD4[ang & 0xFFF].unk2 >> 12;
     pos.vx = 0;
     pos.vz = 0;
     d.vx = b->unk10.x - a->unk10.x;
@@ -2889,7 +2846,7 @@ void PolarAI_AvoidMelt(s32 player)
   best = 0;
   if (((Ovl62ModeView *) D_8005A614)->mode == 0x12)
   {
-    D_800D4E04 = 0x9F4;
+    PolarIceRadius = 0x9F4;
   }
   hb = Heroes;
   h = &hb[player];
@@ -2959,11 +2916,11 @@ void PolarAI_AvoidMelt(s32 player)
           idle = 0;
           goto chk;
         }
-        if (D_800D5FEC[n] & 4)
+        if (PolarAIFlags[n] & 4)
         {
           goto zero;
         }
-        if (D_800D5FEC[n] & 2)
+        if (PolarAIFlags[n] & 2)
         {
           goto zero;
         }
@@ -3032,8 +2989,8 @@ void PolarAI_AvoidMelt(s32 player)
     goto end;
   }
   rnd = Random(8);
-  v1.vx = (D_800D4E04 * D_80068BD4[(fux->angle - 0x400) & 0xFFF].unk2) >> 12;
-  v1.vz = (D_800D4E04 * D_80068BD4[fux->angle & 0xFFF].unk2) >> 12;
+  v1.vx = (PolarIceRadius * D_80068BD4[(fux->angle - 0x400) & 0xFFF].unk2) >> 12;
+  v1.vz = (PolarIceRadius * D_80068BD4[fux->angle & 0xFFF].unk2) >> 12;
   done = 0;
   v2.vx = 0;
   v2.vz = 0;
@@ -3109,9 +3066,9 @@ void PolarAI_AvoidMelt(s32 player)
       {
         goto end;
       }
-      ang = D_800D53E8[j & 7];
-      v1.vx = (D_800D4E04 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-      v1.vz = (D_800D4E04 * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+      ang = PolarMeltOffsets[j & 7];
+      v1.vx = (PolarIceRadius * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+      v1.vz = (PolarIceRadius * D_80068BD4[ang & 0xFFF].unk2) >> 12;
       v2.vx = 0;
       v2.vz = 0;
       if (PolarRayHit(&v2, &v1, d, &out) != 0)
@@ -3169,7 +3126,7 @@ void PolarAI_AvoidMelt(s32 player)
 
   }
   end:
-  if (D_800D5FEC[player] & 1)
+  if (PolarAIFlags[player] & 1)
   {
     fux->state = 0xB;
     PolarAI_ClearState(player);
@@ -3232,7 +3189,7 @@ void PolarAI_DoIceWalk(s32 player) {
     ve = NULL;
     mv = h->hero_move;
     if (D_8005A648 == 0x12) {
-        D_800D4E04 = 0x9F4;
+        PolarIceRadius = 0x9F4;
     }
     fux->unk24--;
     if (fux->unk34 & 1) {
@@ -3261,8 +3218,8 @@ void PolarAI_DoIceWalk(s32 player) {
             goto loop;
         }
         fux->unk2C = best;
-        if (((Ovl62ModeView *)D_8005A614)->mode == 0x12 && D_800D5494 != NULL) {
-            a = D_800D5494->eng;
+        if (((Ovl62ModeView *)D_8005A614)->mode == 0x12 && PolarProximity != NULL) {
+            a = PolarProximity->eng;
             b = Heroes[player].hero_eng;
             dx = a->unk10.x - b->unk10.x;
             dz = a->unk10.z - b->unk10.z;
@@ -3278,8 +3235,8 @@ void PolarAI_DoIceWalk(s32 player) {
             ax = Heroes[player].hero_eng->unk10.x - Heroes[fux->unk2C].hero_eng->unk10.x;
             az = Heroes[player].hero_eng->unk10.z - Heroes[fux->unk2C].hero_eng->unk10.z;
         } else {
-            ax = Heroes[player].hero_eng->unk10.x - D_800D5494->eng->unk10.x;
-            az = Heroes[player].hero_eng->unk10.z - D_800D5494->eng->unk10.z;
+            ax = Heroes[player].hero_eng->unk10.x - PolarProximity->eng->unk10.x;
+            az = Heroes[player].hero_eng->unk10.z - PolarProximity->eng->unk10.z;
         }
         mv->forward_angle = get_angle(ax, az) & 0xFFF;
     }
@@ -3293,8 +3250,8 @@ escape:
         PolarAI_SteerToTarget(player);
         fux->angle = ang;
         goto end;
-    } else if (D_800D5494 != NULL) {
-        ve = D_800D5494->eng;
+    } else if (PolarProximity != NULL) {
+        ve = PolarProximity->eng;
     }
 aim:
     d[0].vx = *(u16 *)&ve->unk10.x - *(u16 *)&my->unk10.x;
@@ -3308,8 +3265,8 @@ aim:
         goto end;
     }
     rnd = Random(8);
-    v1.vx = (D_800D4E04 * D_80068BD4[(fux->angle - 0x400) & 0xFFF].unk2) >> 12;
-    v1.vz = (D_800D4E04 * D_80068BD4[fux->angle & 0xFFF].unk2) >> 12;
+    v1.vx = (PolarIceRadius * D_80068BD4[(fux->angle - 0x400) & 0xFFF].unk2) >> 12;
+    v1.vz = (PolarIceRadius * D_80068BD4[fux->angle & 0xFFF].unk2) >> 12;
     bestd = 0;
     v2.vx = 0;
     v2.vz = 0;
@@ -3357,9 +3314,9 @@ aim:
             if (j >= rnd + 8) {
                 goto end;
             }
-            ang = D_800D53E8[j & 7];
-            v1.vx = (D_800D4E04 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            v1.vz = (D_800D4E04 * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            ang = PolarMeltOffsets[j & 7];
+            v1.vx = (PolarIceRadius * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            v1.vz = (PolarIceRadius * D_80068BD4[ang & 0xFFF].unk2) >> 12;
             v2.vx = 0;
             v2.vz = 0;
             if (PolarRayHit(&v2, &v1, d, &out) != 0) {
@@ -3395,7 +3352,7 @@ aim:
         }
     }
 end:
-    if (D_800D5FEC[player] & 1) {
+    if (PolarAIFlags[player] & 1) {
         fux->state = 0xB;
         PolarAI_ClearState(player);
         fux->func = PolarAI_DoChaseBomber;
@@ -3441,10 +3398,10 @@ s32 player;
         return;
     }
     fux->unk3C = 1;
-    fux->vel = *(SLONG_XYZ *)&D_800D4DD4;
+    fux->vel = *(SLONG_XYZ *)&PolarCentre;
     fux->pos = h->hero_eng->unk10;
-    dx = eng->unk10.x - D_800D4DD4.vx;
-    dz = eng->unk10.z - D_800D4DD4.vz;
+    dx = eng->unk10.x - PolarCentre.vx;
+    dz = eng->unk10.z - PolarCentre.vz;
     if (dx * dx + dz * dz < 0x19000) {
         fux->state = 5;
         fux->func = PolarEmptyStub6;
@@ -3465,19 +3422,19 @@ s32 TestBeamChance(u32 player) {
     HeroInfo *base;
 
     if (D_8005A648 != 0x14) {
-        if ((mode = D_800D5FFC) != 2) {
+        if ((mode = PolarBeamMode) != 2) {
             return 0;
         }
         base = Heroes;
         h = &base[player];
         fux = (Ovl62Fux *)h->hero->FUX;
-        if (fux != NULL && D_800D5254 != NULL) {
+        if (fux != NULL && PolarBeamOwner != NULL) {
             if (D_8009D908 != 0) {
                 fux->state = mode;
                 fux->func = PolarAI_DoBeam;
                 return 1;
             }
-            l = D_800D5254->unk58;
+            l = PolarBeamOwner->unk58;
             if (l == NULL) {
                 goto fail;
             }
@@ -3486,7 +3443,7 @@ s32 TestBeamChance(u32 player) {
             }
             r = Random(0x1000);
             fux->flags |= 1;
-            if (r < D_800D4E0C[h->hero_name + 0x17]) {
+            if (r < PolarAIChances[h->hero_name + 0x17]) {
                 fux->state = mode;
                 fux->func = PolarAI_DoBeam;
                 return 1;
@@ -3516,7 +3473,7 @@ s32 TestAttackChance(s32 player) {
     if (ext != NULL && ext->unk24 == 1) {
         return 0;
     }
-    if (r >= D_800D4E0C[Heroes[player].hero_name - 1]) {
+    if (r >= PolarAIChances[Heroes[player].hero_name - 1]) {
         return 0;
     }
     PolarAI_StartAttack(player);
@@ -3549,7 +3506,7 @@ s32 TestHuntChance(s32 player) {
             if (PlayerActionCount(8, player) != 0) {
                 r = 0x7FFF;
             }
-            if (r < D_800D4E0C[h->hero_name + 0x27]) {
+            if (r < PolarAIChances[h->hero_name + 0x27]) {
                 f = (Ovl62Fux *)h->hero->FUX;
                 if (f != NULL) {
                     f->unk24 = Random(0x168) + 0x5A;
@@ -3582,7 +3539,7 @@ s32 TestWanderChance(s32 player) {
     if (ext != NULL && ext->unk24 == 1) {
         return 0;
     }
-    if (Random(0x1000) >= D_800D4E0C[Heroes[player].hero_name + 0x2F]) {
+    if (Random(0x1000) >= PolarAIChances[Heroes[player].hero_name + 0x2F]) {
         return 0;
     }
     h = &Heroes[player];
@@ -3611,7 +3568,7 @@ bool TestBombChance(u32 player) {
         base = Heroes;
         h = &base[player];
         fux = (Ovl62Fux *)h->hero->FUX;
-        if (fux != NULL && Random(0x1000) < D_800D4E0C[h->hero_name + 0x3F]) {
+        if (fux != NULL && Random(0x1000) < PolarAIChances[h->hero_name + 0x3F]) {
             f = (Ovl62Fux *)h->hero->FUX;
             if (f != NULL) {
                 f->unk24 = Random(0x168) + 0x5A;
@@ -3639,7 +3596,7 @@ bool TestChaseChance(u32 player) {
         return 0;
     }
     start = Random(3);
-    if (Random(0x1000) < D_800D4E0C[h->hero_name + 0x1F]) {
+    if (Random(0x1000) < PolarAIChances[h->hero_name + 0x1F]) {
         for (i = start; ; i++) {
             s32 t;
 
@@ -3647,7 +3604,7 @@ bool TestChaseChance(u32 player) {
                 break;
             }
             t = i & 3;
-            if (t != player && !(Heroes[t].hero_status & 0x2000) && (D_800D5FEC[t] & 1)) {
+            if (t != player && !(Heroes[t].hero_status & 0x2000) && (PolarAIFlags[t] & 1)) {
                 fux->target = t;
                 Ovl62StartChase(player);
                 fux->state = 7;
@@ -3740,7 +3697,7 @@ void DoChooseNewAction(u32 player) {
     ext = FindExtension(h->hero, 0x20000000);
     if (ext != NULL) {
         if (((Ovl62ModeView *)D_8005A614)->mode == 0x12) {
-            D_800D4DD0 = 1000000;
+            PolarArenaRadius2 = 1000000;
         }
         h->hero_ai->AImode = 1;
         eng = h->hero_eng;
@@ -3764,15 +3721,15 @@ void DoChooseNewAction(u32 player) {
             if (o == NULL) {
                 continue;
             }
-            D_800D5FEC[i] = 0;
+            PolarAIFlags[i] = 0;
             if (Heroes[i].hero_mode == 0x4B || Heroes[i].hero_mode == 0x5A) {
-                D_800D5FEC[i] = 0x80;
+                PolarAIFlags[i] = 0x80;
             }
             if (Heroes[i].hero_mode == 0x56) {
-                D_800D5FEC[i] |= 0x800;
+                PolarAIFlags[i] |= 0x800;
             }
             if (g->mode == 0x12) {
-                Ovl62Prox *p = D_800D5494;
+                Ovl62Prox *p = PolarProximity;
                 Ovl62Mode *m;
                 s32 dx;
                 s32 dz;
@@ -3781,15 +3738,15 @@ void DoChooseNewAction(u32 player) {
                     dx = p->eng->unk10.x - Heroes[player].hero_eng->unk10.x;
                     dz = p->eng->unk10.z - Heroes[player].hero_eng->unk10.z;
                     if (dx * dx + dz * dz <= 0xB0643 && (m->mode == one || m->mode == 5)) {
-                        D_800D5FEC[i] |= 0x100;
+                        PolarAIFlags[i] |= 0x100;
                     }
                 }
             }
             if (g->mode == 0x14 && Heroes[i].hero_mode == 0x52) {
-                D_800D5FEC[i] |= 0x200;
+                PolarAIFlags[i] |= 0x200;
             }
             if (g->mode == 0x15) {
-                nas = D_800D5294;
+                nas = PolarBomb;
             loop:
                 if (nas != NULL) {
                     b = FindExtension(nas, 0x10000000);
@@ -3803,7 +3760,7 @@ void DoChooseNewAction(u32 player) {
                 found = 0;
             done:
                 if (found) {
-                    D_800D5FEC[i] |= 0x400;
+                    PolarAIFlags[i] |= 0x400;
                     o->unk54++;
                 } else {
                     o->unk54 = 0;
@@ -3825,34 +3782,34 @@ void DoChooseNewAction(u32 player) {
             goto stop;
         }
         if (eng != NULL) {
-            if (D_800D4DD0 < func_8008CEB0((u8 *)&D_800D4DD4, (u8 *)&eng->unk10)) {
-                D_800D5FEC[player] |= 1;
+            if (PolarArenaRadius2 < func_8008CEB0((u8 *)&PolarCentre, (u8 *)&eng->unk10)) {
+                PolarAIFlags[player] |= 1;
             }
-            if (D_800D5254 != NULL && (l = D_800D5254->unk58) != NULL) {
+            if (PolarBeamOwner != NULL && (l = PolarBeamOwner->unk58) != NULL) {
                 if (l->unk14 == 2) {
-                    D_800D5FFC = l->unk14;
+                    PolarBeamMode = l->unk14;
                 } else {
-                    D_800D5FFC = 1;
+                    PolarBeamMode = 1;
                     fux->flags &= ~1;
                 }
                 if (l->unk6C != 5) {
                     if (l->unkC == 5) {
-                        D_800D5FEC[l->unk6C] |= 2;
+                        PolarAIFlags[l->unk6C] |= 2;
                     }
                     if (l->unkC == 6) {
-                        D_800D5FEC[l->unk6C] |= 0x40;
+                        PolarAIFlags[l->unk6C] |= 0x40;
                     }
                 }
                 if (l->unk10 != -1) {
                     switch (l->unk28[l->unk10]) {
                     case 1:
-                        D_800D5FEC[l->unk10] |= 4;
+                        PolarAIFlags[l->unk10] |= 4;
                         break;
                     case 0:
-                        D_800D5FEC[l->unk10] |= 8;
+                        PolarAIFlags[l->unk10] |= 8;
                         break;
                     case 2:
-                        D_800D5FEC[l->unk10] |= 0x20;
+                        PolarAIFlags[l->unk10] |= 0x20;
                         break;
                     }
                 }
@@ -3864,7 +3821,7 @@ void DoChooseNewAction(u32 player) {
         if (fux->state == 5) {
             r = Random(5);
             for (n = 0; n < 5; n++) {
-                if (D_800D4DF0[r](player) != 0) {
+                if (PolarAITests[r](player) != 0) {
                     break;
                 }
                 if (++r >= 5) {
@@ -3874,7 +3831,7 @@ void DoChooseNewAction(u32 player) {
         }
         i = 0;
         hb = Heroes;
-        all = D_800D5FEC;
+        all = PolarAIFlags;
         hp = &hb[player];
         fl = all;
         me = hb;
@@ -3955,7 +3912,7 @@ void DoChooseNewAction(u32 player) {
             goto loop2;
         }
         i = 0;
-        if (D_800D5FEC[player] & 4) {
+        if (PolarAIFlags[player] & 4) {
             fux->unk3C = 2;
             if (fux->state != 1 || fux->unk24 == 0) {
                 fux->unk24 = 0xD2;
@@ -3977,7 +3934,7 @@ void DoChooseNewAction(u32 player) {
                 }
             }
         }
-        if (D_800D5FEC[player] & 8) {
+        if (PolarAIFlags[player] & 8) {
             fux->unk34 |= 1;
             if (fux->state != 6 || fux->unk24 == 0) {
                 fux->unk24 = 0xD2;
@@ -3987,7 +3944,7 @@ void DoChooseNewAction(u32 player) {
             fux->unk2C = i;
             fux->func = PolarAI_AvoidMelt;
         }
-        if (D_800D5FEC[player] & 2) {
+        if (PolarAIFlags[player] & 2) {
             fux->unk3C = 0;
             if (fux->state != 1 || fux->unk24 == 0) {
                 fux->unk24 = 0x168;
@@ -4009,7 +3966,7 @@ void DoChooseNewAction(u32 player) {
                 }
             }
         }
-        if (D_800D5FEC[player] & 0x40) {
+        if (PolarAIFlags[player] & 0x40) {
             fux->unk34 |= 1;
             if (fux->state != 6 || fux->unk24 == 0) {
                 fux->unk24 = 0xD2;
@@ -4019,7 +3976,7 @@ void DoChooseNewAction(u32 player) {
             fux->unk2C = i;
             fux->func = PolarAI_AvoidMelt;
         }
-        if (D_800D5FEC[player] & 0x100) {
+        if (PolarAIFlags[player] & 0x100) {
             fux->unk34 |= 1;
             if (fux->state != 6 || fux->unk24 == 0) {
                 fux->unk24 = 0xD2;
@@ -4029,7 +3986,7 @@ void DoChooseNewAction(u32 player) {
             fux->unk2C = i;
             fux->func = PolarAI_DoIceWalk;
         }
-        if (D_800D5FEC[player] & 0x200) {
+        if (PolarAIFlags[player] & 0x200) {
             fux->unk34 |= 1;
             if (fux->state != 6 || fux->unk24 == 0) {
                 fux->unk24 = 0xD2;
@@ -4039,7 +3996,7 @@ void DoChooseNewAction(u32 player) {
             fux->unk2C = i;
             fux->func = PolarAI_AvoidMelt;
         }
-        if (D_800D5FEC[player] & 0x800) {
+        if (PolarAIFlags[player] & 0x800) {
             fux->unk34 |= 1;
             if (fux->state != 6 || fux->unk24 == 0) {
                 fux->unk24 = 0xD2;
@@ -4087,20 +4044,20 @@ void InitialisePOLAR(void) {
     s32 j;
     void (*fn)(void);
 
-    D_800D5454 = NULL;
+    PolarBears = NULL;
     Init_Clock(0x140, 0x28, 0);
     PolarInitScene();
-    D_800D5450 = 0;
-    D_800D4D08 = 0;
-    D_8009D6F4 = D_800D5408;
-    D_800D4E04 = 0x658;
+    PolarUpdateWord = 0;
+    PolarRoundState = 0;
+    D_8009D6F4 = PolarHeroSfx;
+    PolarIceRadius = 0x658;
     obj = ((Ovl62Scene *)D_80058AD0)->objs;
-    D_800D5FC0 = 0x800;
+    PolarInitWord = 0x800;
     while (obj != NULL) {
         obj->flags |= 0x1000000;
         obj = obj->next;
     }
-    D_800D4D08 = 0;
+    PolarRoundState = 0;
     cam = (Ovl62Cam *)D_80051640;
     cam->at.x = 0;
     cam->at.y = 0;
@@ -4164,17 +4121,17 @@ void InitialisePOLAR(void) {
     j = 0;
     fast = 0x1000;
     slow = 0x2000;
-    speed = D_800D5FB0;
+    speed = PolarAIPace;
     hp = Heroes;
-    D_800D544C = 0;
-    D_800D4DEC = 0;
+    PolarBeamTimer = 0;
+    PolarClock = 0;
     D_80058AF4.vx = 0;
     D_80058AF4.vz = 0;
     D_80058AF4.vy = 0;
     D_8009E1F8 = 0;
     D_8009E1F4 = 0;
-    D_800D5448 = NULL;
-    D_800D4E08 = 0;
+    polarbossnas = NULL;
+    PolarAnimFlag = 0;
     D_800AD12C = 1;
     do {
         if (hp->hero_ai->AImode != 0) {
@@ -4222,7 +4179,7 @@ loop:
             }
             ResetMass(i);
             eng2 = h->hero_eng;
-            ang = ((get_angle(eng2->unk10.x - D_800D4DD4.vx, eng2->unk10.z - D_800D4DD4.vz) + 0x800) & 0xFFF) + 0x800;
+            ang = ((get_angle(eng2->unk10.x - PolarCentre.vx, eng2->unk10.z - PolarCentre.vz) + 0x800) & 0xFFF) + 0x800;
             move->forward_angle = ang;
             h->hero_eng->unk1E = ang;
             h->hero_eng->unk5E = 1;
@@ -4285,8 +4242,8 @@ loop:
                 ai->unkB0 = AddExtEngine(h->hero, 0x14);
                 ai->unkB4 = 0;
             }
-            D_800D5FEC[i] = 0;
-            D_800D5FEC[6] = 0;
+            PolarAIFlags[i] = 0;
+            PolarAIFlags[6] = 0;
         }
         h++;
         g++;
@@ -4345,8 +4302,8 @@ void UpdatePOLAR(void) {
     dead = 0;
     if (((Ovl62ModeView *)D_8005A614)->mode == 0x12
         && (((Ovl62ModeView *)D_8005A614)->flags & 0x80)
-        && D_800D4DEC == 0) {
-        if (D_800D5450-- < 0) {
+        && PolarClock == 0) {
+        if (PolarUpdateWord-- < 0) {
             n = Random(3);
             if (n == 0) {
                 n = 1;
@@ -4381,7 +4338,7 @@ void UpdatePOLAR(void) {
                 if (kind == 5) {
                     Ovl62SpawnDrop(&pos, 6);
                 }
-                D_800D5450 = (Random(2) + 1) * 30;
+                PolarUpdateWord = (Random(2) + 1) * 30;
                 snd = Random(4);
                 if (snd == 0) {
                     PlaySfx(0x47F, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -4402,27 +4359,27 @@ void UpdatePOLAR(void) {
     if (D_8005A648 == 0x2C && (D_8005138C & 0x2000)) {
         D_8009E194 ^= 1;
     }
-    if (D_800D5254 != NULL) {
-        l = D_800D5254->unk58;
+    if (PolarBeamOwner != NULL) {
+        l = PolarBeamOwner->unk58;
         if (l != NULL) {
-            if (D_800D5FEC[6] == 0 && l->unk10 != -1) {
-                D_800D5FEC[6] = 1;
+            if (PolarAIFlags[6] == 0 && l->unk10 != -1) {
+                PolarAIFlags[6] = 1;
             }
-            if (D_800D5FEC[6] == -1 && l->unk10 == D_800D5FEC[6]) {
-                D_800D5FEC[6] = 0;
+            if (PolarAIFlags[6] == -1 && l->unk10 == PolarAIFlags[6]) {
+                PolarAIFlags[6] = 0;
             }
         }
     }
     PolarUpdateScene();
     for (j = 0; j < 4; j++) {
         if (Heroes[j].hero_ai->AImode != 0) {
-            D_800D5FB0[j] = 0x1000;
+            PolarAIPace[j] = 0x1000;
         } else {
-            D_800D5FB0[j] = 0x2000;
+            PolarAIPace[j] = 0x2000;
         }
     }
-    if (D_800D52B4 != NULL) {
-        FindExtension(D_800D52B4, 0x10000000);
+    if (BombMaster != NULL) {
+        FindExtension(BombMaster, 0x10000000);
     }
     if (D_8009D908 == 0) {
         D_8009D908 = 1;
@@ -4441,7 +4398,7 @@ void UpdatePOLAR(void) {
         } while (i < 4);
     }
     i = 0;
-    D_800D4E08++;
+    PolarAnimFlag++;
     while (1) {
         if (i >= 4) {
             break;
@@ -4453,11 +4410,11 @@ void UpdatePOLAR(void) {
             dead++;
         }
         if (dead == 3) {
-            D_800D4DEC = 1;
+            PolarClock = 1;
         }
         if (Heroes[i].hero_status & 0x200) {
             mv = Heroes[i].hero_move;
-            D_800D4DEC = 1;
+            PolarClock = 1;
             if (mv != NULL) {
                 mv->z_dir = 0;
                 mv->x_max = 0;
@@ -4469,10 +4426,10 @@ void UpdatePOLAR(void) {
         i++;
     }
     if (D_8005A644 & 0x800) {
-        D_800D4DEC = 1;
+        PolarClock = 1;
     }
     if (D_8005A644 & 1) {
-        D_800D4DEC = 1;
+        PolarClock = 1;
     }
 }
 
@@ -4693,8 +4650,8 @@ s32 PolarHeroCollisions(s32 player) {
                         PlaySfx(0x48B, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                 done:
-                    if (D_800D5254 != NULL) {
-                        e = FindExtension((NAS *)D_800D5254, 0x40000000);
+                    if (PolarBeamOwner != NULL) {
+                        e = FindExtension((NAS *)PolarBeamOwner, 0x40000000);
                         if (e != NULL) {
                             swapped = 0;
                             if (player == ((Ovl62PolarGame *)e)->unk6C && ((Ovl62PolarGame *)e)->unk68 > 0) {
@@ -4724,7 +4681,7 @@ s32 PolarHeroCollisions(s32 player) {
         i++;
     }
     if (D_8005A648 != 0x16) {
-        p = D_800D5454;
+        p = PolarBears;
         o = Heroes;
         hq = &o[player];
         while (1) {
@@ -4745,7 +4702,7 @@ s32 PolarHeroCollisions(s32 player) {
         }
     } else {
         range = 0x1F4;
-        p = D_800D5454;
+        p = PolarBears;
         t = D_80068BD4;
         while (1) {
             if (p == NULL) {
@@ -4798,7 +4755,7 @@ s32 PolarHeroAnimState(s32 player) {
     HeroInfo *base;
     s32 state;
 
-    if (D_800D4E08 < 0xD2) {
+    if (PolarAnimFlag < 0xD2) {
         goto fail;
     }
     name = Heroes[player].hero_name;
@@ -4916,7 +4873,7 @@ void PolarBeamRelease(s32 arg0, s32 arg1, s32 arg2) {
                 shadow->unk2C.y = 0x1000;
                 shadow->unk2C.z = 0x1000;
                 ResetMass(arg0);
-                D_800D6924[arg0] = D_8009D6F4[h->hero_name * 3];
+                PolarHeroMass[arg0] = D_8009D6F4[h->hero_name * 3];
             }
         }
         break;
@@ -4941,13 +4898,13 @@ void InitTransmuterBeam(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    D_800D6008 = 0;
-    D_800D600C = 0;
-    D_800D5474 = 0;
-    D_800D547C = 0;
-    D_800D5478 = 0;
+    BeamCount = 0;
+    BeamDelay = 0;
+    BeamState = 0;
+    BeamTarget = 0;
+    BeamTimer = 0;
     ext->unkC = 5;
-    D_800D5254 = (Ovl62Owner *)m;
+    PolarBeamOwner = (Ovl62Owner *)m;
     m->FUX = (EXT *)ext;
     for (i = 0; i < 4; i++) {
         ext->unk18[i] = -1;
@@ -5138,8 +5095,8 @@ void PlotTransmuterBeam(NAS *m) {
     }
     best = 0x7FFFFFFF;
     closest = 0;
-    if (D_800D4DEC != 0) {
-        D_800D544C = 1;
+    if (PolarClock != 0) {
+        PolarBeamTimer = 1;
         if (ext->unkAC != NULL) {
             KillNAS(ext->unkAC);
             ext->unkAC = NULL;
@@ -5148,22 +5105,22 @@ void PlotTransmuterBeam(NAS *m) {
     }
     if (TB_MODE13()) {
         if (TBV->unk6C != 0 && ext->unk1DC == 0) {
-            t = D_800D547C;
-            D_800D547C = t ^ 1;
+            t = BeamTarget;
+            BeamTarget = t ^ 1;
             if (Heroes[t ^ 1].hero_status & 0x2000) {
-                D_800D547C = t;
+                BeamTarget = t;
             }
         }
         if (ext->unk1DC < 0) {
-            mode = Heroes[D_800D547C].hero_mode;
+            mode = Heroes[BeamTarget].hero_mode;
             if (mode != 0x4B && mode != 0x5A) {
-                D_800D6008 = 1;
+                BeamCount = 1;
             }
         } else {
             ext->unk1DC--;
         }
     }
-    if (TB_MODE13() && TBV->unk10 == 0 && D_800D4DEC == 0 && ext->unk14 == 1) {
+    if (TB_MODE13() && TBV->unk10 == 0 && PolarClock == 0 && ext->unk14 == 1) {
         if (++m->UserInfo.user1 == 0x3C) {
             e1 = m->Engine;
             n = CreateNAS(e1->unk10.x, 0x80, e1->unk10.z, 0x1605, 0x11);
@@ -5240,7 +5197,7 @@ void PlotTransmuterBeam(NAS *m) {
                 Heroes[i].hero_move->x_vel = D_80068BD4[(t - 0x400) & 0xFFF].unk2 * 128 >> 12;
                 Heroes[i].hero_move->z_vel = D_80068BD4[t & 0xFFF].unk2 * 128 >> 12;
                 SetHeroAction(i, 0x5A);
-                D_800D5478 = 1;
+                BeamTimer = 1;
             next1:;
             }
             ((NAS *)m->UserInfo.user2)->Engine->unk10.x = m->Engine->unk10.x;
@@ -5269,13 +5226,13 @@ void PlotTransmuterBeam(NAS *m) {
         }
     }
     if (ext->unk14 == 1) {
-        if (D_800D6008 != 0) {
+        if (BeamCount != 0) {
             h3 = Heroes;
-            h3 = &h3[D_800D547C];
+            h3 = &h3[BeamTarget];
             if (h3->hero_mode == 0x4B) {
-                D_800D5478 = 1;
+                BeamTimer = 1;
             }
-            if (D_800D600C == 0x13B || D_800D5478 != 0) {
+            if (BeamDelay == 0x13B || BeamTimer != 0) {
                 s32 a;
                 s32 sa;
                 s32 ox;
@@ -5284,7 +5241,7 @@ void PlotTransmuterBeam(NAS *m) {
                 TrigEntry *tr;
 
                 tr = D_80068BD4;
-                a = D_800D5474 >> 1;
+                a = BeamState >> 1;
                 me = m->Engine;
                 ox = me->unk10.x - (ext->pos.x + (((ext->unk98 << 8) >> 8) * tr[(tr[(a - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12));
                 sa = tr[a & 0xFFF].unk2;
@@ -5292,9 +5249,9 @@ void PlotTransmuterBeam(NAS *m) {
                 me->unk10.x -= ox >> 4;
                 m->Engine->unk10.z -= oz >> 4;
                 if (ox * ox + oz * oz < 0x1000) {
-                    D_800D6008 = 0;
-                    D_800D600C = 0;
-                    D_800D5478 = 0;
+                    BeamCount = 0;
+                    BeamDelay = 0;
+                    BeamTimer = 0;
                     ext->unk1DC = (Random(4) + 0x12) * 0x1E;
                 }
             } else {
@@ -5305,7 +5262,7 @@ void PlotTransmuterBeam(NAS *m) {
 
                 me = m->Engine;
                 te = h3->hero_eng;
-                D_800D600C++;
+                BeamDelay++;
                 ddx = me->unk10.x - te->unk10.x;
                 ddz = me->unk10.z - te->unk10.z;
                 me->unk10.x -= ddx >> 5;
@@ -5315,20 +5272,20 @@ void PlotTransmuterBeam(NAS *m) {
             TrigEntry *tr;
 
             tr = D_80068BD4;
-            t2 = D_800D5474 >> 1;
+            t2 = BeamState >> 1;
             m->Engine->unk10.x = ext->pos.x + (((ext->unk98 << 8) >> 8) * tr[(tr[(t2 - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12);
-            D_800D5478 = 0;
+            BeamTimer = 0;
             t5 = tr[t2 & 0xFFF].unk2;
             m->Engine->unk10.z = ext->pos.z + (ext->unk98 * tr[t5 & 0xFFF].unk2 >> 12);
         }
-        if (D_800D4DEC == 0) {
+        if (PolarClock == 0) {
             m->Engine->unk10.y = ext->pos.y + (D_80068BD4[((ext->unk9C << 4) - 0x400) & 0xFFF].unk2 * 64 >> 12);
         } else {
             m->Engine->unk10.y -= 0x10;
         }
         ext->unk9C += ext->unkA0;
-        if (D_800D6008 == 0) {
-            D_800D5474 += ext->unkA0;
+        if (BeamCount == 0) {
+            BeamState += ext->unkA0;
         }
         if (ext->bit1 != NULL) {
             ext->bit1->Engine->unk10 = m->Engine->unk10;
@@ -5354,7 +5311,7 @@ void PlotTransmuterBeam(NAS *m) {
     d = csqrt(dx * dx + dz * dz) >> 6;
     yaw = get_angle(dx, dz) & 0xFFF;
     pitch = get_angle(-dy, d);
-    if (ext->unk14 == 1 && D_800D6008 == 0 && D_800D544C == 0) {
+    if (ext->unk14 == 1 && BeamCount == 0 && PolarBeamTimer == 0) {
         ext->unk58++;
         if (!TB_MODE13() || m->UserInfo.user1 >= 0x1F) {
             if (abs(ext->unk58 - ext->unk64) == 0xF) {
@@ -5363,7 +5320,7 @@ void PlotTransmuterBeam(NAS *m) {
             if (ext->unk58 >= ext->unk64) {
                 ext->unk5C = Random(4);
                 ext->unk58 = 0;
-                ext->unkC = D_800D5458[ext->unk5C];
+                ext->unkC = BeamFrames[ext->unk5C];
                 if (D_8009D908 != 0) {
                     if (ext->unkC == 0) {
                         ext->unkC = 6;
@@ -5402,7 +5359,7 @@ void PlotTransmuterBeam(NAS *m) {
         }
     }
     if (ext->unk14 == 2) {
-        if (D_800D4DEC != 0) {
+        if (PolarClock != 0) {
             ext->unk14 = 1;
             if (m->Engine->sfx != NULL) {
                 StopSfx(m->Engine->sfx);
@@ -5491,7 +5448,7 @@ void PlotTransmuterBeam(NAS *m) {
                 ext->unk64 = Random(0x3C) + 0xD2;
                 TBSetHeroEffect(ext, i, 0);
                 Heroes[i].hero_move->mass = 0x50;
-                D_800D6924[i] = 0x40;
+                PolarHeroMass[i] = 0x40;
                 ext->unk70 = 0;
                 PlaySfx(0x44E, NULL, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i, 0x4F);
@@ -5502,7 +5459,7 @@ void PlotTransmuterBeam(NAS *m) {
                 ext->unk64 = Random(0x3C) + 0xD2;
                 TBSetHeroEffect(ext, i, 1);
                 Heroes[i].hero_move->mass = 0x258;
-                D_800D6924[i] = 0x20;
+                PolarHeroMass[i] = 0x20;
                 ext->unk70 = 0;
                 PlaySfx(0x44F, NULL, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i, 0x4F);
@@ -5558,7 +5515,7 @@ void PlotTransmuterBeam(NAS *m) {
         h5 = &hb1[ext->unk10];
         he = h5->hero_eng;
         hs = h5->hero_shadow;
-        if (D_800D4D08 != 0) {
+        if (PolarRoundState != 0) {
             if (m->Engine->sfx != NULL) {
                 StopSfx(m->Engine->sfx);
             }
@@ -5693,7 +5650,7 @@ void PlotTransmuterBeam(NAS *m) {
                     hs->unk2C.z += 0x100;
                 } else {
                     ext->unk28[ext->unk10] = -1;
-                    D_800D6924[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                    PolarHeroMass[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
                     ext->unk58 = 0;
                     ResetMass(ext->unk10);
                     ext->unk10 = -1;
@@ -5711,7 +5668,7 @@ void PlotTransmuterBeam(NAS *m) {
                 } else {
                     ext->unk28[ext->unk10] = -1;
                     ResetMass(ext->unk10);
-                    D_800D6924[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                    PolarHeroMass[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
                     ext->unk58 = 0;
                     ext->unk10 = -1;
                     he->unk2C.x = 0x1000;
@@ -5749,7 +5706,7 @@ void PlotTransmuterBeam(NAS *m) {
                         }
                         if (ext->eng != NULL) {
                             ext->eng->unk10 = Heroes[ext->unk6C].hero_eng->unk10;
-                            if (D_800D4D08 == 0) {
+                            if (PolarRoundState == 0) {
                                 ext->eng->sub->flags |= 0x8000;
                             } else {
                                 ext->eng->sub->flags &= ~0x8000;
@@ -5817,7 +5774,7 @@ void PlotTransmuterBeam(NAS *m) {
                             ext->unk6C = 5;
                         }
                     }
-                    if (D_800D4DEC != 0 || (hb3 = Heroes, h = &hb3[ext->unk6C], h->hero_mode == 0x50) || (h->hero_status & 0x2000)) {
+                    if (PolarClock != 0 || (hb3 = Heroes, h = &hb3[ext->unk6C], h->hero_mode == 0x50) || (h->hero_status & 0x2000)) {
                         if (ext->eng->sfx != NULL) {
                             StopSfx(ext->eng->sfx);
                         }
@@ -5846,7 +5803,7 @@ void PlotTransmuterBeam(NAS *m) {
                                     ext->engs[k]->sub->flags &= ~0x8000;
                                 } else if (ext->engs[k] != NULL) {
                                     ext->engs[k]->unk10 = Heroes[k].hero_eng->unk10;
-                                    if (D_800D4D08 == 0) {
+                                    if (PolarRoundState == 0) {
                                         ext->engs[k]->sub->flags |= 0x8000;
                                     } else {
                                         ext->engs[k]->sub->flags &= ~0x8000;
@@ -5915,7 +5872,7 @@ void PlotTransmuterBeam(NAS *m) {
                     hb4 = Heroes;
                     h = &hb4[ext->unk6C];
                     mode = h->hero_mode;
-                    if (mode == 0x56 || mode == 0x50 || (h->hero_status & 0x2000) || D_800D4DEC != 0) {
+                    if (mode == 0x56 || mode == 0x50 || (h->hero_status & 0x2000) || PolarClock != 0) {
                         k3 = 0;
                         do {
                             if (k3 == ext->unk6C) {
@@ -5940,7 +5897,7 @@ void PlotTransmuterBeam(NAS *m) {
             }
         }
     }
-    if (D_800D4D08 != 0) {
+    if (PolarRoundState != 0) {
         s32 n2;
 
         for (n2 = 0; n2 < 4; n2++) {
@@ -6249,7 +6206,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
     s32 sp;
 
     i = 0;
-    o = D_800D6010[0];
+    o = PolarIceObjects[0];
     if (D_8005A648 == 0x13) {
         t0 = VSync(1);
         t = D_80068BD4;
@@ -6346,7 +6303,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
                     }
                 }
             }
-            o = D_800D6010[i];
+            o = PolarIceObjects[i];
             i++;
             continue;
             }
@@ -6370,12 +6327,12 @@ void UkaMaskInitRisers(void) {
 
     scan = *(SceneObj **)((u8 *)D_80058AD0 + 0x1C);
     for (i = 15; i >= 0; i--) {
-        D_800D6190[i] = NULL;
+        UkaMaskObjects[i] = NULL;
     }
     n = 0;
     while (scan != NULL) {
         if ((scan->flags & 0x8000) && scan->index == 0x4000) {
-            D_800D6190[n++] = scan;
+            UkaMaskObjects[n++] = scan;
         }
         scan = scan->next;
     }
@@ -6388,10 +6345,10 @@ void UkaMaskInitRisers(void) {
         }
         v = up;
         vp = &v;
-        obj = D_800D6190[i];
+        obj = UkaMaskObjects[i];
         ApplyMatrixLV((MATRIX *)((u8 *)obj + 0x30), vp, vp);
         i++;
-        D_800D6150[(((get_angle(v.vx, vp->vz) + 1) & 0xFFF) >> 8) - 1 & 0xF] = (Ovl62RiserObj *)obj;
+        UkaMaskRisers[(((get_angle(v.vx, vp->vz) + 1) & 0xFFF) >> 8) - 1 & 0xF] = (Ovl62RiserObj *)obj;
     }
 }
 
@@ -6476,7 +6433,7 @@ void InitUkaPolarMask(NAS *m) {
     m->FUX = (EXT *)ext;
     m->Engine->sub->unk6C = *(void **)D_80058AD0;
     *(u16 *)((u8 *)m->Engine->sub + 0x74) = 0x200C;
-    D_800D5254 = (Ovl62Owner *)m;
+    PolarBeamOwner = (Ovl62Owner *)m;
     if (D_8005A646 & 0x80) {
         m->Engine->sub->unk74 = 0x200C;
     }
@@ -6573,16 +6530,16 @@ void PlotUkaPolarMask(NAS *m) {
         return;
     }
     r = Random(4);
-    if (D_800D4DEC != 0) {
+    if (PolarClock != 0) {
         func_80026980(ext->mask);
     }
-    if (D_800D4DEC != 0) {
+    if (PolarClock != 0) {
         if (ext->unkAC != NULL) {
             KillNAS(ext->unkAC);
             ext->unkAC = NULL;
         }
     }
-    if (D_800D4DEC != 0) {
+    if (PolarClock != 0) {
         if (m->Engine->sfx != NULL) {
             StopSfx(m->Engine->sfx);
         }
@@ -6608,7 +6565,7 @@ void PlotUkaPolarMask(NAS *m) {
     for (j = 0; j < 16; j++) {
         if (ext->seg[j].count != 0 && ext->seg[j].t < 0x74) {
             ext->seg[j].t += 4;
-            D_800D6150[j]->y = ext->seg[j].angle + ext->seg[j].t;
+            UkaMaskRisers[j]->y = ext->seg[j].angle + ext->seg[j].t;
         }
     }
     for (i = 0; i < 4; i++) {
@@ -6625,7 +6582,7 @@ void PlotUkaPolarMask(NAS *m) {
             if (i >= r + 4) {
                 break;
             }
-            if (ext->unk14 == 1 || D_800D4DEC != 0 || ext->unk10 != -1) {
+            if (ext->unk14 == 1 || PolarClock != 0 || ext->unk10 != -1) {
                 continue;
             }
             s = i & 3;
@@ -6645,7 +6602,7 @@ void PlotUkaPolarMask(NAS *m) {
                 hm->z_max = 0;
             }
             ext->unk5C = Random(4);
-            kind = D_800D5480[ext->unk5C];
+            kind = UkaMaskFrames[ext->unk5C];
             ext->unk10 = s;
             ext->unk14 = 3;
             ext->unkC = kind;
@@ -6689,7 +6646,7 @@ void PlotUkaPolarMask(NAS *m) {
                 ext->unk18[i & 3] = 0;
                 ext->unk28[i & 3] = 0;
                 Heroes[i & 3].hero_move->mass = 0x50;
-                D_800D6924[i & 3] = 0x40;
+                PolarHeroMass[i & 3] = 0x40;
                 ext->unk70 = 0xF;
                 PlaySfx(0x44E, NULL, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i & 3, 0x4F);
@@ -6702,7 +6659,7 @@ void PlotUkaPolarMask(NAS *m) {
                 ext->unk28[i & 3] = kind;
                 Heroes[i & 3].hero_move->mass = 0x190;
                 ext->unk70 = 0xF;
-                D_800D6924[i & 3] = 0x10;
+                PolarHeroMass[i & 3] = 0x10;
                 PlaySfx(0x48A, NULL, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i & 3, 0x4F);
                 ext->unkB4 = 0x3C;
@@ -6721,7 +6678,7 @@ void PlotUkaPolarMask(NAS *m) {
         }
         break;
     case 0:
-        if (D_800D4DEC != 0) {
+        if (PolarClock != 0) {
             ext->unk14 = 2;
             if (m->Engine->sfx != NULL) {
                 StopSfx(m->Engine->sfx);
@@ -6805,7 +6762,7 @@ void PlotUkaPolarMask(NAS *m) {
             ext->angle = ((v << 8) - 0x40) & 0xFFF;
             ext->unk1D0 = (D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2 * 0x115) >> 9;
             ext->unk1D8 = (D_80068BD4[ext->angle & 0xFFF].unk2 * 0x115) >> 9;
-            D_800D5490++;
+            UkaMaskTimer++;
             ext->unk1B8 = 0;
             if (((ga - ext->angle) << 20) < 0) {
                 ext->unk1CC = 0xC;
@@ -6942,7 +6899,7 @@ void PlotUkaPolarMask(NAS *m) {
                     sh->unk2C.z += 0x100;
                 } else {
                     ext->unk28[ext->unk10] = -1;
-                    D_800D6924[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                    PolarHeroMass[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
                     ResetMass(ext->unk10);
                     ext->unk10 = -1;
                     ext->unk14 = 0;
@@ -6995,7 +6952,7 @@ void PlotUkaPolarMask(NAS *m) {
             if (ext->unk64-- < 0) {
                 ResetMass(ext->unk10);
                 ext->unk14 = 0;
-                D_800D6924[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                PolarHeroMass[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
                 ext->unk28[ext->unk10] = -1;
                 if (Heroes[ext->unk10].hero_mode != 0x49) {
                     SetHeroAction(ext->unk10, 0x49);
@@ -7090,7 +7047,7 @@ void PlotUkaPolarMask(NAS *m) {
                     return;
                 }
             }
-            if (D_800D4DEC != 0 || Heroes[ext->unk6C].hero_mode == 0x50
+            if (PolarClock != 0 || Heroes[ext->unk6C].hero_mode == 0x50
                 || (Heroes[ext->unk6C].hero_status & 0x2000)) {
                 ext->eng->sub->flags &= ~0x8000;
                 ext->unk64 = 0xD2;
@@ -7257,18 +7214,18 @@ void InitPolarWalrus(NAS *m) {
     PolarWalrusExt *ext;
     PolarWalrusExt2 *e2;
 
-    D_800D5494 = (Ovl62Prox *)m;
+    PolarProximity = (Ovl62Prox *)m;
     m->Engine->flags |= 0x200000;
     ext = AddExt(m, 0x94, 0x10000000);
     if (ext != NULL) {
-        ext->cursor = func_80024E30(m, &D_800D5630);
+        ext->cursor = func_80024E30(m, &WalrusScriptInit);
         m->FUX = (EXT *)ext;
         m->Engine->sub->unk6C = D_8005476C;
         m->Engine->sub->unk74 = 0x4000;
         m->UserInfo.status = 0;
-        func_80026B70(&D_800D5454, (u8 *)m);
-        m->Engine->unk10.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x307) >> 10;
+        func_80026B70(&PolarBears, (u8 *)m);
+        m->Engine->unk10.x = (D_80068BD4[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.z = (D_80068BD4[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.y = 0x400;
         m->Engine->unk1E = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
         m->Engine->sub->flags &= ~0x8000;
@@ -7285,9 +7242,9 @@ void InitPolarWalrus(NAS *m) {
         ext->arc[1] = 0;
         ext->arc[6] = 0;
         ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
-        ext->to.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.x = (D_80068BD4[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
         ext->to.y = 0;
-        ext->to.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.z = (D_80068BD4[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
         m->Engine->sub->flags |= 0x02000000;
         ext->timer = Random(8) * 0x1E + 0x10E;
         ext->unk90 = 0;
@@ -7316,7 +7273,7 @@ void PlotPolarWalrus(NAS *m) {
         return;
     }
     m->Engine->unk5E = 1;
-    if (D_800D4DEC != 0) {
+    if (PolarClock != 0) {
         func_80026980(m);
     }
     e2 = FindExtension(m, 0x20000000);
@@ -7327,21 +7284,21 @@ void PlotPolarWalrus(NAS *m) {
     e2->unk40 = ext->unk4C;
     switch (ext->state) {
     case 0:
-        if (ext->timer-- < 0 && D_800D5254 != NULL) {
-            gx = FindExtension((NAS *)D_800D5254, 0x40000000);
-            if (gx != NULL && D_800D4DEC == 0) {
+        if (ext->timer-- < 0 && PolarBeamOwner != NULL) {
+            gx = FindExtension((NAS *)PolarBeamOwner, 0x40000000);
+            if (gx != NULL && PolarClock == 0) {
                 v = gx[5];
                 if (v == 1 && gx[4] == -1) {
                     ext->unk84 = CreateNAS(0, 0, 0, 0x1610, 0x11);
                     ext->state = 2;
                     ext->timer = 0x5A;
-                    D_800D544C = v;
+                    PolarBeamTimer = v;
                 }
             }
         }
         break;
     case 2:
-        if (D_800D4DEC == 0 && ext->timer-- < 0) {
+        if (PolarClock == 0 && ext->timer-- < 0) {
             ext->state = 3;
             PlaySfx(0x473, NULL, NULL, 0x1000, 0x1E00, 0);
             m->Engine->sub->flags |= 0x8000;
@@ -7363,7 +7320,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->state = 4;
             ext->cursor->unk1E = 0;
             ext->cursor->unk1C = 0;
-            ext->cursor->cur = (s32)D_800D5500;
+            ext->cursor->cur = (s32)WalrusSteps0;
         }
         break;
     case 4:
@@ -7377,7 +7334,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->timer = 0x96;
             ext->cursor->unk1E = 0;
             ext->cursor->unk1C = 0;
-            ext->cursor->cur = (s32)D_800D5508;
+            ext->cursor->cur = (s32)WalrusSteps1;
             PlaySfx(0x475, NULL, NULL, 0x1000, 0x1E00, 0);
             if (r == 0) {
                 PlaySfx(0x46F, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -7400,7 +7357,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->state = 5;
             ext->cursor->unk1E = 0;
             ext->cursor->unk1C = 0;
-            ext->cursor->cur = (s32)D_800D5540;
+            ext->cursor->cur = (s32)WalrusSteps2;
             ext->timer = 0;
             ext->maxSpeed = 0x10;
             ext->speed = 0;
@@ -7445,7 +7402,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->state = 7;
             ext->cursor->unk1E = 0;
             ext->cursor->unk1C = 0;
-            ext->cursor->cur = (s32)D_800D5584;
+            ext->cursor->cur = (s32)WalrusSteps3;
             m->Engine->sub->unk68 = 0x19C;
             PlaySfx(0x474, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -7453,7 +7410,7 @@ void PlotPolarWalrus(NAS *m) {
     case 7:
         if (func_800250B0(m)) {
             ext->state = 6;
-            D_800D544C = 0;
+            PolarBeamTimer = 0;
         }
         break;
     case 6:
@@ -7462,19 +7419,19 @@ void PlotPolarWalrus(NAS *m) {
         m->UserInfo.status = 0;
         m->Engine->sub->flags &= ~0x8000;
         m->Engine->sub->unk68 = 0x200;
-        ang = D_800D563C;
+        ang = WalrusState;
         m->Engine->unk10.x = (D_80068BD4[(ang + 0x400) & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.z = (D_80068BD4[(ang + 0x800) & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.y = 0x400;
-        D_800D563C += 0x800;
+        WalrusState += 0x800;
         ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
-        ext->to.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.x = (D_80068BD4[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
         ext->to.y = 0;
-        ext->to.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.z = (D_80068BD4[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
         m->Engine->unk1E = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
         ext->cursor->unk1E = 0;
         ext->cursor->unk1C = 0;
-        ext->cursor->cur = (s32)D_800D5498;
+        ext->cursor->cur = (s32)WalrusFrames;
         ext->arc[0] = 0x10;
         ext->unk58 = 0x28;
         ext->arc[1] = 0;
@@ -7488,10 +7445,10 @@ void InitWalrusFish(NAS *m) {
 
     ext = AddExt(m, 0x88, 0x10000000);
     if (ext != NULL) {
-        ext->cursor = func_80024E30(m, &D_800D5690);
+        ext->cursor = func_80024E30(m, &WalrusFishScriptInit);
         m->Engine->flags |= 0x200000;
-        m->Engine->unk10.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.x = (D_80068BD4[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.z = (D_80068BD4[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.y = 0x400;
         m->Engine->sub->unk6C = D_8005476C;
         m->Engine->sub->unk74 = 0x2002;
@@ -7507,9 +7464,9 @@ void InitWalrusFish(NAS *m) {
         ext->arc[1] = 0;
         ext->arc[6] = 0;
         ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
-        ext->to.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.x = (D_80068BD4[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
         ext->to.y = 0;
-        ext->to.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.z = (D_80068BD4[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
         m->Engine->sub->flags |= 0x02000000;
         ext->spin = 0x80;
         ext->timer = 0;
@@ -7747,8 +7704,8 @@ void InitPolarBoss(NAS *nas) {
     if (ext != NULL) {
         func_80026A04((u8 *)nas);
         func_80086868();
-        D_800D5DC4 = nas;
-        ext->cursor = func_80024E30(nas, &D_800D5A34);
+        BearminatorNas = nas;
+        ext->cursor = func_80024E30(nas, &PolarBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->cursor, 0);
         func_800250B0(nas);
         ext->unk84 = CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1622, 0x11);
@@ -7822,7 +7779,7 @@ void PlotPolarBoss(NAS *m) {
     } else if (Heroes[0].hero_status & 0x2000) {
         D_800AD12C = 0;
     }
-    D_800D5448 = m;
+    polarbossnas = m;
     m->UserInfo.user1 = func_800250B0(m);
     if (!(Heroes[0].hero_mode & 0x2000)) {
         ang = get_angle(m->Engine->unk10.x - Heroes[0].hero_eng->unk10.x,
@@ -8175,7 +8132,7 @@ s32 BearminatorFindPoint(s32 *arg0, s32 arg1) {
 }
 
 s32 BearminatorTarget(NAS *m) {
-    if (D_800D5298->unk74 == 0x2008) {
+    if (bossmapsub->unk74 == 0x2008) {
         if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 1)) {
             return 1;
         }
@@ -8183,7 +8140,7 @@ s32 BearminatorTarget(NAS *m) {
             return 0;
         }
     }
-    if (D_800D5298->unk74 == 0x2009) {
+    if (bossmapsub->unk74 == 0x2009) {
         if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 2)) {
             return 1;
         }
@@ -8191,12 +8148,12 @@ s32 BearminatorTarget(NAS *m) {
             return 0;
         }
     }
-    if (D_800D5298->unk74 == 0x200A) {
+    if (bossmapsub->unk74 == 0x200A) {
         if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 3)) {
             return 0;
         }
     }
-    if (D_800D5298->unk74 == 0x5003) {
+    if (bossmapsub->unk74 == 0x5003) {
         if (BearminatorFindPoint((s32 *)&m->Engine->unk10, 0)) {
             return 0;
         }
@@ -8282,8 +8239,8 @@ void InitBearminator(NAS *m) {
             m->Engine->unk2C.z = 0x1F40;
             m->Engine->unk5E = 1;
             m->Engine->flags |= 0x200000;
-            func_80026B70(&D_800D5454, (u8 *)m);
-            ext->cursor = func_80024E30(m, &D_800D5FA4);
+            func_80026B70(&PolarBears, (u8 *)m);
+            ext->cursor = func_80024E30(m, &BearminatorScriptInit);
             ext->unkC = 3;
             e2->unk20 = 0;
             e2->unk4E = v = ((u16)D_8009D87C[0].unk0 * 8) - 0x30;
@@ -8362,7 +8319,7 @@ void PlotBearminator(NAS *m) {
         return;
     }
     done = func_800250B0(m);
-    p = D_800D5454;
+    p = PolarBears;
     for (;;) {
         EXTengine *n;
         EXTengine *e;
@@ -8398,7 +8355,7 @@ void PlotBearminator(NAS *m) {
         break;
     case 3:
         m->Engine->sub->flags &= ~0x8000;
-        if (D_800D5DC4->UserInfo.user1 != 0) {
+        if (BearminatorNas->UserInfo.user1 != 0) {
             s32 r;
 
             r = Random(0x29C) + 0x400;
@@ -8829,20 +8786,20 @@ void PlotBigMissile(NAS *m) {
     if (res != NULL) {
         res->Engine->flags |= 0x200000;
     }
-    boss = FindExtension(D_800D5448, 0x10000000);
+    boss = FindExtension(polarbossnas, 0x10000000);
     if (boss != NULL) {
         boss->unk70 = 1;
-        if (boss->phase == 2 && D_800D5298 != NULL) {
-            D_800D5298->unk74 = 0x2008;
+        if (boss->phase == 2 && bossmapsub != NULL) {
+            bossmapsub->unk74 = 0x2008;
         }
-        if (boss->phase == 4 && D_800D5298 != NULL) {
-            D_800D5298->unk74 = 0x2009;
+        if (boss->phase == 4 && bossmapsub != NULL) {
+            bossmapsub->unk74 = 0x2009;
         }
-        if (boss->phase == 6 && D_800D5298 != NULL) {
-            D_800D5298->unk74 = 0x200A;
+        if (boss->phase == 6 && bossmapsub != NULL) {
+            bossmapsub->unk74 = 0x200A;
         }
-        if (boss->phase == 8 && D_800D5298 != NULL) {
-            D_800D5298->flags &= ~0x8000;
+        if (boss->phase == 8 && bossmapsub != NULL) {
+            bossmapsub->flags &= ~0x8000;
             if (!(Heroes[0].hero_mode & 0x2000)) {
                 SetHeroAction(0, 0x4E);
             }
@@ -9000,7 +8957,7 @@ void PlotSniper(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    boss = FindExtension(D_800D5448, 0x10000000);
+    boss = FindExtension(polarbossnas, 0x10000000);
     if (boss != NULL) {
         m->Engine->unk5E = 1;
         switch (ext->unkC) {
@@ -9035,9 +8992,9 @@ void PlotSniper(NAS *m) {
                     he = Heroes[i].hero_eng;
                     if ((he->unk10.x - e->unk10.x) * (he->unk10.x - e->unk10.x)
                         + (he->unk10.z - e->unk10.z) * (he->unk10.z - e->unk10.z) <= 0x23FFF) {
-                        SNIPER_CAM->at.x = D_800D5448->Engine->unk10.x;
-                        SNIPER_CAM->at.y = D_800D5448->Engine->unk10.y + 0x100;
-                        SNIPER_CAM->at.z = D_800D5448->Engine->unk10.z;
+                        SNIPER_CAM->at.x = polarbossnas->Engine->unk10.x;
+                        SNIPER_CAM->at.y = polarbossnas->Engine->unk10.y + 0x100;
+                        SNIPER_CAM->at.z = polarbossnas->Engine->unk10.z;
                         SNIPER_CAM->eye.x = 0;
                         SNIPER_CAM->eye.y = 0;
                         ext->unk14 = SNIPER_CAM->eye.z;
@@ -9193,7 +9150,7 @@ void PlotSniperMissile(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    boss = FindExtension(D_800D5448, 0x10000000);
+    boss = FindExtension(polarbossnas, 0x10000000);
     if (boss == NULL) {
         return;
     }
@@ -9219,7 +9176,7 @@ void PlotSniperMissile(NAS *m) {
             PolarMissileBlast(m, 0);
             ext->unk30 = 1;
         }
-        if (XZBoxToSphere(D_800D5448->Engine, m->Engine, 0) != 0 || ext->unk34 == 0x3C) {
+        if (XZBoxToSphere(polarbossnas->Engine, m->Engine, 0) != 0 || ext->unk34 == 0x3C) {
             PolarMissileBlast(m, 1);
             PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
             boss->unk8C = 0xC;
@@ -9495,7 +9452,7 @@ s32 CountBears(void) {
     s32 n;
 
     n = 0;
-    for (p = D_800D5454; p != NULL; p = *(u8 **)(p + 0x20)) {
+    for (p = PolarBears; p != NULL; p = *(u8 **)(p + 0x20)) {
         n++;
     }
     return n;
@@ -9565,7 +9522,7 @@ void PolarBossFace(NAS *m) {
     s32 ang;
     TrigEntry *t;
 
-    p = D_800D5454;
+    p = PolarBears;
     t = D_80068BD4;
 loop:
     if (p != NULL) {
@@ -9647,7 +9604,7 @@ void InitBearBoss(NAS *m) {
         m->Engine->sub->unk68 = 0x300;
         m->Engine->sub->flags |= 0x02000000;
         m->Engine->sub->unk6C = *(void **)D_80058AD0;
-        ext->unkC = (s32)func_80024E30(m, &D_800D5DB8);
+        ext->unkC = (s32)func_80024E30(m, &BearBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->unkC, 0);
         func_800250B0(m);
     }
@@ -9796,7 +9753,7 @@ void InitBearDeath(NAS *m) {
 
     ext = AddExt(m, 0x88, 0x10000000);
     if (ext != NULL) {
-        func_80024E30(m, &D_800D56D4);
+        func_80024E30(m, &BearDeathScriptInit);
         m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
         m->Engine->unk5D = 2;
         m->Engine->sub->flags |= 0x02000000;
@@ -9816,7 +9773,7 @@ void RiserSetReset(Ovl62RiserSet *arg0) {
     for (i = 0; i < 16; i++) {
         if (arg0->slot[i].active != 0 && arg0->slot[i].height < 0x74) {
             arg0->slot[i].height += 4;
-            D_800D6150[i]->y = arg0->slot[i].base + arg0->slot[i].height;
+            UkaMaskRisers[i]->y = arg0->slot[i].base + arg0->slot[i].height;
         }
     }
 }
@@ -9840,10 +9797,10 @@ void PolarInitDebug(void) {
 
     obj = *(SceneObj **)((u8 *)D_80058AD0 + 0x1C);
     for (i = 79; i >= 0; i--) {
-        D_800D6010[i] = NULL;
+        PolarIceObjects[i] = NULL;
     }
     i = 0;
-    out = D_800D6010;
+    out = PolarIceObjects;
     while (1) {
         if (obj == NULL) {
             break;
@@ -9974,7 +9931,7 @@ s32 PolarOfficeBox(s32 i) {
     EXTengine *e;
     HeroInfo *base;
 
-    p = D_800D5454;
+    p = PolarBears;
     base = Heroes;
     eng = base[i].hero_eng;
     for (; p != NULL; p = *(u8 **)(p + 0x20)) {
@@ -10065,7 +10022,7 @@ void PolarAI_Proximity(s32 player, s32 idx) {
     s32 mode;
 
     if (D_8005A648 == 0x12) {
-        p = D_800D5494;
+        p = PolarProximity;
         if (p != NULL) {
             m = p->unk58;
             if (m != NULL) {
@@ -10076,7 +10033,7 @@ void PolarAI_Proximity(s32 player, s32 idx) {
                 if (dx * dx + dz * dz <= 0xB0643) {
                     mode = m->mode;
                     if (mode == 1 || mode == 5) {
-                        D_800D5FEC[idx] |= 0x100;
+                        PolarAIFlags[idx] |= 0x100;
                     }
                 }
             }
@@ -10122,7 +10079,7 @@ s32 PolarAI_RandomPause(s32 player) {
     if (fux == NULL) {
         return 0;
     }
-    if (Random(0x1000) >= D_800D4E0C[h->hero_name + 7]) {
+    if (Random(0x1000) >= PolarAIChances[h->hero_name + 7]) {
         return 0;
     }
     fux->state = 6;
@@ -10133,14 +10090,14 @@ s32 PolarAI_RandomPause(s32 player) {
 void PolarBeamLinkState(void) {
     Ovl62Link *l;
 
-    if (D_800D5254 != NULL) {
-        l = D_800D5254->unk58;
+    if (PolarBeamOwner != NULL) {
+        l = PolarBeamOwner->unk58;
         if (l != NULL) {
-            if (D_800D5FEC[6] == 0 && l->unk10 != -1) {
-                D_800D5FEC[6] = 1;
+            if (PolarAIFlags[6] == 0 && l->unk10 != -1) {
+                PolarAIFlags[6] = 1;
             }
-            if (D_800D5FEC[6] == -1 && l->unk10 == D_800D5FEC[6]) {
-                D_800D5FEC[6] = 0;
+            if (PolarAIFlags[6] == -1 && l->unk10 == PolarAIFlags[6]) {
+                PolarAIFlags[6] = 0;
             }
         }
     }
@@ -10204,10 +10161,10 @@ s32 PolarAI_AnyBusy(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (D_800D5FEC[i] & 8) {
+        if (PolarAIFlags[i] & 8) {
             return 1;
         }
-        if (D_800D5FEC[i] & 0x20) {
+        if (PolarAIFlags[i] & 0x20) {
             return 1;
         }
     }
@@ -10218,10 +10175,10 @@ s32 PolarAI_NoneBusy(s32 arg0) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (i == arg0 || (D_800D5FEC[i] & 4)) {
+        if (i == arg0 || (PolarAIFlags[i] & 4)) {
             return 0;
         }
-        if (D_800D5FEC[i] & 2) {
+        if (PolarAIFlags[i] & 2) {
             return 0;
         }
     }
@@ -10297,7 +10254,7 @@ bool DoesPlayerHaveBomb(u32 arg0) {
     BombMakerExt *ext;
     s32 one;
 
-    nas = D_800D5294;
+    nas = PolarBomb;
     one = 1;
 loop:
     if (nas != NULL) {
@@ -10315,7 +10272,7 @@ NAS *IsBombAvailable(void) {
     NAS *nas;
     Ext10000000 *ext;
 
-    nas = D_800D5294;
+    nas = PolarBomb;
 loop:
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -10408,7 +10365,7 @@ void InitBombGFX(NAS *m) {
         m->Engine->sub->unk6C = D_800546C4;
         ext->unkC = 0;
         m->Engine->unk5C = 1;
-        func_80026B70((u8 **)&D_800D5294, (u8 *)m);
+        func_80026B70((u8 **)&PolarBomb, (u8 *)m);
         m->FUX = NULL;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
@@ -10437,7 +10394,7 @@ void PlotBombMaker(NAS *m) {
         switch (ext->unkC) {
         case 0:
             if (ext->unk18 <= 0) {
-                if (ext->timer-- < 0 && D_800D4DEC == 0) {
+                if (ext->timer-- < 0 && PolarClock == 0) {
                     ext->unkC = 2;
                     ext->timer = 0x5A;
                     ext->unk18++;
@@ -10463,7 +10420,7 @@ void InitBombMaker(NAS *m) {
         ext->timer = 0xB4;
         ext->unkC = 0;
         ext->unk18 = 0;
-        D_800D52B4 = m;
+        BombMaster = m;
     }
 }
 
@@ -10509,9 +10466,9 @@ void PolarAI_ResetPace(void) {
 
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_ai->AImode != 0) {
-            D_800D5FB0[i] = 0x1000;
+            PolarAIPace[i] = 0x1000;
         } else {
-            D_800D5FB0[i] = 0x2000;
+            PolarAIPace[i] = 0x2000;
         }
     }
 }
@@ -10687,7 +10644,7 @@ void PolarInitShadow(s32 player) {
             shadow->unk5C = 1;
             if (eng != NULL) {
                 shadow->sub->unk6C = D_80054654;
-                tbl = D_800D6934;
+                tbl = PolarShadowState;
                 p = &tbl[player];
                 *p = 0x4000;
                 shadow->sub->unk74 = *p;
@@ -10779,7 +10736,7 @@ void PolarUpdateShadow(s32 player) {
         if (h2->hero_mode != 0x58) {
             shadow->sub->unk6C = D_80054654;
             shadow->sub->flags = 0x8000;
-            p = &D_800D6934[player];
+            p = &PolarShadowState[player];
             shadow->sub->unk74 = *p + (anim->Aindex - 1);
             if (h2->hero_mode == 0x4B || h2->hero_mode == 0x4C) {
                 shadow->sub->unk6C = D_80054654;
@@ -10806,25 +10763,25 @@ void PolarUpdateShadow(s32 player) {
         shadow->sub->flags = 0x8000;
         switch (Heroes[player].hero_name) {
         case 4:
-            shadow->sub->unk74 = D_800D61D0[anim->Aindex - 1][0];
+            shadow->sub->unk74 = PolarShadowFrames0[anim->Aindex - 1][0];
             break;
         case 3:
-            shadow->sub->unk74 = D_800D61D0[anim->Aindex - 1][0];
+            shadow->sub->unk74 = PolarShadowFrames0[anim->Aindex - 1][0];
             break;
         case 7:
-            shadow->sub->unk74 = D_800D624C[anim->Aindex - 1][0];
+            shadow->sub->unk74 = PolarShadowFrames1[anim->Aindex - 1][0];
             break;
         case 8:
-            shadow->sub->unk74 = D_800D62B4[anim->Aindex - 1][0];
+            shadow->sub->unk74 = PolarShadowFrames2[anim->Aindex - 1][0];
             break;
         case 5:
-            shadow->sub->unk74 = D_800D624C[anim->Aindex - 1][0];
+            shadow->sub->unk74 = PolarShadowFrames1[anim->Aindex - 1][0];
             break;
         case 6:
-            shadow->sub->unk74 = D_800D624C[anim->Aindex - 1][0];
+            shadow->sub->unk74 = PolarShadowFrames1[anim->Aindex - 1][0];
             break;
         default:
-            shadow->sub->unk74 = D_800D63B0[anim->Aindex - 1][0];
+            shadow->sub->unk74 = PolarShadowFrames3[anim->Aindex - 1][0];
             break;
         }
         shadow->unk1E = eng->unk1E;
@@ -10840,23 +10797,23 @@ mode58:
         switch (h3->hero_name) {
         case 1:
             if (Heroes[player].hero_anim->Atable == CRA_seq_polarwin) {
-                shadow->sub->unk74 = D_800D6418[anim->Aindex - 1][0];
+                shadow->sub->unk74 = PolarShadowFrames4[anim->Aindex - 1][0];
             } else {
-                shadow->sub->unk74 = D_800D6418[0][0];
+                shadow->sub->unk74 = PolarShadowFrames4[0][0];
             }
             break;
         case 7:
             if (Heroes[player].hero_anim->Atable == DNG_seq_polarwin) {
-                shadow->sub->unk74 = D_800D64BC[anim->Aindex - 1][0];
+                shadow->sub->unk74 = PolarShadowFrames5[anim->Aindex - 1][0];
             } else {
-                shadow->sub->unk74 = D_800D64BC[0][0];
+                shadow->sub->unk74 = PolarShadowFrames5[0][0];
             }
             break;
         case 8:
             if (Heroes[player].hero_anim->Atable == KAN_seq_polarwin) {
-                shadow->sub->unk74 = D_800D6548[anim->Aindex - 1][0];
+                shadow->sub->unk74 = PolarShadowFrames6[anim->Aindex - 1][0];
             } else {
-                shadow->sub->unk74 = D_800D6548[0][0];
+                shadow->sub->unk74 = PolarShadowFrames6[0][0];
             }
             break;
         case 2:
@@ -10868,9 +10825,9 @@ mode58:
                     i = 0;
                 }
                 ext[45] = 1;
-                shadow->sub->unk74 = D_800D65F0[i][0];
+                shadow->sub->unk74 = PolarShadowFrames7[i][0];
             } else {
-                shadow->sub->unk74 = D_800D65F0[0][0];
+                shadow->sub->unk74 = PolarShadowFrames7[0][0];
             }
             break;
         case 6:
@@ -10882,9 +10839,9 @@ mode58:
                     i = 0;
                 }
                 ext[45] = 1;
-                shadow->sub->unk74 = D_800D6760[i][0];
+                shadow->sub->unk74 = PolarShadowFrames9[i][0];
             } else {
-                shadow->sub->unk74 = D_800D6760[0][0];
+                shadow->sub->unk74 = PolarShadowFrames9[0][0];
             }
             break;
         case 5:
@@ -10896,9 +10853,9 @@ mode58:
                     i = 0;
                 }
                 ext[45] = 1;
-                shadow->sub->unk74 = D_800D6828[i][0];
+                shadow->sub->unk74 = PolarShadowFrames10[i][0];
             } else {
-                shadow->sub->unk74 = D_800D6828[0][0];
+                shadow->sub->unk74 = PolarShadowFrames10[0][0];
             }
             break;
         case 4:
@@ -10910,9 +10867,9 @@ mode58:
                     i = 0;
                 }
                 ext[45] = 1;
-                shadow->sub->unk74 = D_800D66A8[i][0];
+                shadow->sub->unk74 = PolarShadowFrames8[i][0];
             } else {
-                shadow->sub->unk74 = D_800D66A8[0][0];
+                shadow->sub->unk74 = PolarShadowFrames8[0][0];
             }
             break;
         }
@@ -10949,7 +10906,7 @@ void PolarPreMoveHero(s32 player) {
         if ((p2->flags & 1) || h->hero_ai->AImode != 0) {
             if (p2->buttons & 0xF0) {
                 m->forward_angle = (p2->angle + 0x800) & 0xFFF;
-                spd = &D_800D6924[player];
+                spd = &PolarHeroMass[player];
                 m->x_max = (*spd * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
                 m->z_max = (*spd * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
             }
@@ -11063,8 +11020,8 @@ s32 TestPolarHeroMelted(s32 player) {
             }
         }
         return 0;
-    } else if (D_800D5298 != NULL) {
-        if (D_800D5298->unk74 == 0x2008
+    } else if (bossmapsub != NULL) {
+        if (bossmapsub->unk74 == 0x2008
             && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 1, player)
             && !(h->hero_status & 0x200)) {
             ext->unkA8 = 1;
@@ -11072,7 +11029,7 @@ s32 TestPolarHeroMelted(s32 player) {
                 SetHeroAction(player, 0x4E);
             }
         }
-        if (D_800D5298->unk74 == 0x2009
+        if (bossmapsub->unk74 == 0x2009
             && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 2, player)
             && !(Heroes[player].hero_status & 0x200)) {
             ext->unkA8 = 1;
@@ -11080,7 +11037,7 @@ s32 TestPolarHeroMelted(s32 player) {
                 SetHeroAction(player, 0x4E);
             }
         }
-        if (D_800D5298->unk74 == 0x200A) {
+        if (bossmapsub->unk74 == 0x200A) {
             out = ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 3, player) != 1;
             if (out && !(Heroes[player].hero_status & 0x200)) {
                 ext->unkA8 = 1;
@@ -11089,7 +11046,7 @@ s32 TestPolarHeroMelted(s32 player) {
                 }
             }
         }
-        if (D_800D5298->flags & 0x8000) {
+        if (bossmapsub->flags & 0x8000) {
             if (eng != NULL && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 0, player)) {
                 ext->unkA8 = 0;
                 return 1;
@@ -11201,7 +11158,7 @@ void SetPolarHeroIdle(s32 player) {
         }
     }
     SetHeroSeq(player, 0x3A);
-    D_800D6934[player] = 0x4000;
+    PolarShadowState[player] = 0x4000;
     if (rnd == 0) {
         sfx = 0x456;
     }
@@ -11553,7 +11510,7 @@ void PolarHeroDazed(s32 player) {
                 Heroes[player].hero_frozen = 2;
                 if (ext[0x24 / 4] == 0 && ext[0x1C / 4] >= 0x1F) {
                     Heroes[player].hero_eng->unk1E += 0x10;
-                    if (D_800D4D08 != 0 && !(Heroes[player].hero_status & 0x200)) {
+                    if (PolarRoundState != 0 && !(Heroes[player].hero_status & 0x200)) {
                         Heroes[player].hero_eng->sub->flags &= 0xFFFF7FFF;
                         Heroes[player].hero_shadow->sub->flags &= 0xFFFF7FFF;
                         SetHeroAction(player, 0x50);
@@ -11609,7 +11566,7 @@ void SetPolarHeroChallenge(s32 player) {
 
     if (TestPolarHeroWon() == 0) {
         PlaySfx(0x467, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_800D6934[player] = 0x4000;
+        PolarShadowState[player] = 0x4000;
         switch (Heroes[player].hero_name) {
         case 1:
             sfx = 3;
@@ -11961,8 +11918,8 @@ void PolarHeroSlideFromCentre(s32 player) {
     hero = &base[player];
     move = hero->hero_move;
     if (move != NULL) {
-        angle = (get_angle(hero->hero_eng->unk10.x - D_800D4DD4.vx,
-                           hero->hero_eng->unk10.z - D_800D4DD4.vz) + 0x800) & 0xFFF;
+        angle = (get_angle(hero->hero_eng->unk10.x - PolarCentre.vx,
+                           hero->hero_eng->unk10.z - PolarCentre.vz) + 0x800) & 0xFFF;
         move->forward_angle = angle + 0x800;
         move->x_max = 0;
         move->z_max = 0;
@@ -12019,7 +11976,7 @@ void PolarHeroOffice(s32 player) {
         return;
     }
     eng = h->hero_eng;
-    angle = (get_angle(eng->unk10.x - D_800D4DD4.vx, eng->unk10.z - D_800D4DD4.vz) + 0x800) & 0xFFF;
+    angle = (get_angle(eng->unk10.x - PolarCentre.vx, eng->unk10.z - PolarCentre.vz) + 0x800) & 0xFFF;
     if (ext->unk18 == 0) {
         ext->unk18 = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
     }
@@ -12063,7 +12020,7 @@ void SetPolarHeroInBeam(s32 player) {
             SetHeroAction(player, 0x54);
         }
     }
-    D_800D6934[player] = 0x4000;
+    PolarShadowState[player] = 0x4000;
     Heroes[player].hero_eng->sub->unk68 = 0;
     m = Heroes[player].hero_move;
     if (m != NULL) {
@@ -12084,7 +12041,7 @@ void SetPolarHeroPoll(s32 player) {
     if (h->hero_shadow != NULL) {
         h->hero_shadow->sub->flags &= ~0x8000;
     }
-    if (D_800D4D08 == 0) {
+    if (PolarRoundState == 0) {
         PlaySfx(0x45D, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     func_80026980(h->hero);
@@ -12258,7 +12215,7 @@ void SetPolarHeroAttack(s32 player) {
             if (ext->state == 1) {
                 SetHeroSeq(player, 0x45);
             }
-            D_800D6934[player] = 0x4080;
+            PolarShadowState[player] = 0x4080;
             h2->hero_eng->sub->unk68 = 0;
             ext->val -= PolarHeroAttackPower(player);
             move->x_vel = 0;
@@ -12517,7 +12474,7 @@ void SetPolarHeroSnowball(s32 player) {
     if (TestPolarHeroWon(player) != 0) {
         return;
     }
-    D_800D6934[player] = 0x4100;
+    PolarShadowState[player] = 0x4100;
     h->hero_eng->sub->unk68 = 0;
     switch (h->hero_name) {
     case 1:
@@ -12921,8 +12878,8 @@ void SetPolarHeroWinner(s32 player) {
         shadow->unk5E = 1;
     }
     first->hero_eng->sub->flags &= 0xFFBFFFFF;
-    if (D_800D4D08 != 0 && D_800D5254 != NULL) {
-        game = FindExtension((NAS *)D_800D5254, 0x40000000);
+    if (PolarRoundState != 0 && PolarBeamOwner != NULL) {
+        game = FindExtension((NAS *)PolarBeamOwner, 0x40000000);
         i = 0;
         if (game != NULL) {
             for (; i < 4; i++) {
@@ -13126,7 +13083,7 @@ void SetPolarHeroFootRun(s32 player) {
         hero->hero_move->z_dir = 0;
     }
     SetHeroSeq(player, 0x43);
-    D_800D6934[player] = 0x4100;
+    PolarShadowState[player] = 0x4100;
     hero->hero_eng->sub->unk68 = 0;
 }
 
@@ -13231,7 +13188,7 @@ void SetPolarHeroRun(s32 player) {
             StopSfx(hero->hero_eng->sfx);
         }
         SetHeroSeq(player, 0x3B);
-        D_800D6934[player] = 0x4100;
+        PolarShadowState[player] = 0x4100;
         hero->hero_eng->sub->unk68 = 0;
     }
 }
@@ -13301,7 +13258,7 @@ void PolarInitHeroMove(s32 arg0) {
         m->x_acc = two;
         m->z_acc = two;
         m->velocity_calc = 3;
-        D_800D6924[arg0] = D_8009D6F4[h->hero_name * 3];
+        PolarHeroMass[arg0] = D_8009D6F4[h->hero_name * 3];
     }
 }
 

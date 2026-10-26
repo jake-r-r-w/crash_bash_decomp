@@ -62,8 +62,8 @@ void PolarEmptyStub0(void);
 void PolarEmptyStub1(void);
 void PolarEmptyStub2(void);
 
-extern NAS *D_800D5294;
-extern subengine *D_800D5298;
+extern NAS *PolarBomb;
+extern subengine *bossmapsub;
 
 /* InitBombGFX's extension (0x1C bytes). */
 typedef struct BombGFXExt {
@@ -92,16 +92,16 @@ typedef struct SceneObj {
 } SceneObj;
 
 /* Visible scene objects PolarInitDebug collects. */
-extern SceneObj *D_800D6010[80];
+extern SceneObj *PolarIceObjects[80];
 extern const char D_800B3498[];
 
 /* Scene objects PolarInitScene picks out by index. */
 extern s32 D_8009E1F4;
 extern s32 D_8009E1F8;
-extern SceneObj *D_800D529C;
-extern SceneObj *D_800D52A0;
-extern s32 D_800D5FC4;
-extern s32 D_800D5FC8;
+extern SceneObj *PolarSceneA;
+extern SceneObj *PolarSceneB;
+extern s32 PolarSceneCount;
+extern s32 PolarSceneTimer;
 
 /* D_80058AD0 as seen by PolarInitScene. */
 typedef struct Ovl62Scene {
@@ -200,9 +200,9 @@ typedef struct ExtSmokeTrail {
     /* 0x2C */ s32 angle;
 } ExtSmokeTrail;
 
-extern s32 D_800D4D08;
+extern s32 PolarRoundState;
 
-/* D_800D5254's 0x40000000 extension as SetPolarHeroWinner uses it: engines at
+/* PolarBeamOwner's 0x40000000 extension as SetPolarHeroWinner uses it: engines at
  * 0x74 and four at 0x78. */
 typedef struct Ovl62GameExt {
     /* 0x00 */ u8 pad[0x74];
@@ -320,7 +320,7 @@ typedef struct BrioOwner {
 } BrioOwner;
 
 /* Head of a list linked through +0x20 (counted by CountBears). */
-extern u8 *D_800D5454;
+extern u8 *PolarBears;
 extern HeroInfo Heroes[4];
 extern s32 D_8005A680[];
 
@@ -397,14 +397,14 @@ typedef struct Ovl62Fux {
     /* 0x5C */ s32 timer;
 } Ovl62Fux;
 
-extern s32 D_800D4E0C[];
-extern s32 D_800D4E08;
+extern s32 PolarAIChances[];
+extern s32 PolarAnimFlag;
 void PolarAI_DoWander();
 void PolarAI_DoChase();
 void PolarAI_AvoidMelt();
 void DoGetBomb(u32 player);
 void PolarAI_DoHunt();
-extern s32 D_800D5FEC[];
+extern s32 PolarAIFlags[];
 
 /* Inlined into TestChaseChance. */
 static inline void Ovl62StartChase(s32 player) {
@@ -465,8 +465,8 @@ typedef struct BombMakerExt {
     /* 0x18 */ s32 unk18;
 } BombMakerExt;
 
-extern s32 D_800D4DEC;
-extern VECTOR D_800D4DD4;
+extern s32 PolarClock;
+extern VECTOR PolarCentre;
 /* DoesPlayerHaveBomb, inlined into PolarAI_DoBeam. */
 static inline s32 Ovl62HasBomb(s32 player) {
     NAS *nas;
@@ -474,7 +474,7 @@ static inline s32 Ovl62HasBomb(s32 player) {
     s32 one;
     s32 found;
 
-    nas = D_800D5294;
+    nas = PolarBomb;
     one = 1;
     found = 1;
 loop:
@@ -537,7 +537,7 @@ static inline s32 Ovl62HasBomb2(s32 player) {
     BombMakerExt *ext;
     s32 one;
 
-    nas = D_800D5294;
+    nas = PolarBomb;
     one = 1;
 loop:
     if (nas != NULL) {
@@ -556,7 +556,7 @@ static inline NAS *Ovl62FreeBomb(void) {
     NAS *nas;
     BombMakerExt *ext;
 
-    nas = D_800D5294;
+    nas = PolarBomb;
 loop:
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -580,15 +580,15 @@ typedef struct Ovl62Odds {
 } Ovl62Odds;
 
 extern Ovl62Odds D_8009D87C[];
-extern s32 D_800D52E0[];
-extern s32 D_800D5364[];
+extern s32 PolarAttackOdds[];
+extern s32 PolarRollOdds[];
 extern s32 D_8009D908;
 
-extern s32 D_800D4E04;
+extern s32 PolarIceRadius;
 s32 PolarRayHit(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out);
 
 
-/* Roll the odds in D_800D5364 (by D_8009D87C[player].unk0) and set ext->unk14. */
+/* Roll the odds in PolarRollOdds (by D_8009D87C[player].unk0) and set ext->unk14. */
 static inline void Ovl62RollOdds(s32 player, Ext20 *ext) {
     s32 r;
     s32 limit;
@@ -597,7 +597,7 @@ static inline void Ovl62RollOdds(s32 player, Ext20 *ext) {
     if (D_8009D87C[player].unk0 > 0x30) {
         D_8009D87C[player].unk0 = 0x30;
     }
-    limit = D_800D5364[D_8009D87C[player].unk0] << 7;
+    limit = PolarRollOdds[D_8009D87C[player].unk0] << 7;
     if (D_8005A648 == 0x12) {
         limit += 0x400;
     }
@@ -615,7 +615,7 @@ s32 PolarAI_TeamChoice(s32 player);
 s32 PolarHeroAttackPower(s32 arg0);
 
 /* The NAS that owns the bomb maker. */
-extern NAS *D_800D52B4;
+extern NAS *BombMaster;
 
 s32 PolarBossDazeHero(u8 *arg0);
 
@@ -627,8 +627,8 @@ void PolarHeroAttack(s32 player);
 
 void PolarHeroPoll(s32 player);
 
-extern s32 D_800D5FEC[4];
-extern s32 D_800D5FB0[4];
+extern s32 PolarAIFlags[4];
+extern s32 PolarAIPace[4];
 
 s32 PolarBombOwnerEngine(NAS *nas);
 
@@ -660,8 +660,8 @@ typedef struct Ovl62Owner {
     /* 0x58 */ Ovl62Link *unk58;
 } Ovl62Owner;
 
-extern Ovl62Owner *D_800D5254;
-extern s32 D_800D5FFC;
+extern Ovl62Owner *PolarBeamOwner;
+extern s32 PolarBeamMode;
 extern s32 D_8009D908;
 bool EnsureMateNotObstructingMate(u32 self);
 
@@ -677,10 +677,10 @@ typedef struct Ovl62Prox {
     /* 0x58 */ Ovl62Mode *unk58;
 } Ovl62Prox;
 
-extern Ovl62Prox *D_800D5494;
+extern Ovl62Prox *PolarProximity;
 
 /* Action choosers DoChooseNewAction tries in turn from a random start. */
-extern s32 (*D_800D4DF0[5])(s32 player);
+extern s32 (*PolarAITests[5])(s32 player);
 
 /* DoChooseNewAction's "attack target t" step: chase t, and send a team mate
    after one of the other team. */
@@ -707,14 +707,14 @@ extern s32 (*D_800D4DF0[5])(s32 player);
     }
 
 /* Escape headings tried by PolarAI_DoIceWalk. */
-extern s32 D_800D53E8[8];
+extern s32 PolarMeltOffsets[8];
 
 /* PolarUpdateScene's swaying-ground state. */
-extern s32 D_800D52A4;
-extern s32 D_800D52A8;
-extern s32 D_800D52AC;
-extern s32 D_800D52B0;
-extern MATRIX D_800D5FCC;
+extern s32 PolarSceneWord0;
+extern s32 PolarSceneWord1;
+extern s32 PolarSceneWord2;
+extern s32 PolarSceneWord3;
+extern MATRIX PolarSceneMatrix;
 
 void PolarAI_TryAttack(s32 player);
 
@@ -893,25 +893,25 @@ typedef struct TransBeamView {
 #define TB_MODE13() ((TBV->flags & 0x80) && TBV->mode == 0x13)
 
 /* The beam kinds PlotTransmuterBeam picks from (Random(4)). */
-extern u32 D_800D5458[4];
+extern u32 BeamFrames[4];
 
-extern s32 D_800D5474;
-extern s32 D_800D5478;
-extern s32 D_800D547C;
-extern s32 D_800D5480[4];
-extern s32 D_800D5490;
-extern s32 D_800D6008;
-extern s32 D_800D600C;
+extern s32 BeamState;
+extern s32 BeamTimer;
+extern s32 BeamTarget;
+extern s32 UkaMaskFrames[4];
+extern s32 UkaMaskTimer;
+extern s32 BeamCount;
+extern s32 BeamDelay;
 
 typedef struct Ovl62RiserObj {
     /* 0x00 */ u8 pad0[0x74];
     /* 0x74 */ s16 y;
 } Ovl62RiserObj;
 
-extern Ovl62RiserObj *D_800D6150[16];
+extern Ovl62RiserObj *UkaMaskRisers[16];
 
 /* Scene objects with index 0x4000, UkaMaskInitRisers collects. */
-extern SceneObj *D_800D6190[16];
+extern SceneObj *UkaMaskObjects[16];
 
 void RiserSetReset(Ovl62RiserSet *arg0);
 
@@ -955,12 +955,12 @@ typedef struct PolarWalrusExt {
     /* 0x90 */ s32 unk90;
 } PolarWalrusExt;
 
-extern s32 D_800D544C;
-extern s32 D_800D5498[];
-extern s32 D_800D5500[];
-extern s32 D_800D5508[];
-extern s32 D_800D5540[];
-extern s32 D_800D5584[];
+extern s32 PolarBeamTimer;
+extern s32 WalrusFrames[];
+extern s32 WalrusSteps0[];
+extern s32 WalrusSteps1[];
+extern s32 WalrusSteps2[];
+extern s32 WalrusSteps3[];
 
 /* Polar walrus second extension (0x54 bytes, id 0x20000000). */
 typedef struct PolarWalrusExt2 {
@@ -974,9 +974,9 @@ typedef struct PolarWalrusExt2 {
     /* 0x50 */ u8 pad50[4];
 } PolarWalrusExt2;
 
-extern ScriptInit D_800D5630;
-extern ScriptInit D_800D5690;
-extern s32 D_800D563C;
+extern ScriptInit WalrusScriptInit;
+extern ScriptInit WalrusFishScriptInit;
+extern s32 WalrusState;
 extern u8 D_8005476C[];
 
 s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
@@ -1020,13 +1020,13 @@ typedef struct PolarBossExt {
     /* 0x90 */ s32 unk90;
 } PolarBossExt;
 
-extern NAS *D_800D5DC4;
-extern ScriptInit D_800D5A34;
+extern NAS *BearminatorNas;
+extern ScriptInit PolarBossScriptInit;
 extern NAS *D_8009D670;
 extern s16 D_8009D6E2;
 void func_80086868(void);
 
-extern NAS *D_800D5448;
+extern NAS *polarbossnas;
 
 /* D_8005A614 as PlotPolarBoss reads it. */
 typedef struct PolarBossGame {
@@ -1301,7 +1301,7 @@ typedef struct BearDeathExt {
     /* 0x84 */ s32 unk84;
 } BearDeathExt;
 
-extern ScriptInit D_800D56D4;
+extern ScriptInit BearDeathScriptInit;
 
 void PolarMovesSwap(EXTheromove *a, EXTheromove *b);
 
@@ -1311,8 +1311,8 @@ void SetPolarHeroSquashed(s32 arg0);
 
 /* Per-hero speed table (declared in bash/pause.h, not included here). */
 extern u16 *D_8009D6F4;
-extern s32 D_800D6924[];
-extern s32 D_800D6934[];
+extern s32 PolarHeroMass[];
+extern s32 PolarShadowState[];
 extern u8 D_80054654[];
 
 s32 PolarOfficeBox(s32 i);
@@ -1334,7 +1334,7 @@ void PolarAI_CountDead(s32 player);
 
 void SetPolarHeroFootRun(s32 player);
 
-extern ScriptInit D_800D5DB8;
+extern ScriptInit BearBossScriptInit;
 
 void PolarInitScene(void);
 
@@ -1490,7 +1490,7 @@ typedef struct BearminatorExt {
     /* 0xB4 */ s32 unkB4;
 } BearminatorExt;
 
-extern ScriptInit D_800D5FA4;
+extern ScriptInit BearminatorScriptInit;
 
 /* D_8005A614 as PlotBearminator reads it. */
 typedef struct Ovl62BearView {
@@ -1549,24 +1549,18 @@ extern void *D_8009D8F8;
 extern void *D_8009D8FC;
 extern void *D_8009D900;
 extern void *D_8009D904;
-extern s32 D_800D4D0C;
-extern s32 D_800D4DD0;
+extern s32 PolarFirstFlag;
+extern s32 PolarArenaRadius2;
 extern u8 D_8008B29C[], D_8008B418[];
-extern u8 D_800D5258[], D_800D526C[], D_800D5280[];
-extern s32 D_800D52B8[]; /* {name, 0x5C} x4: the victory sequences (the engine's hook 0x14) */
-extern u8 D_800D3510[], D_800D3524[], D_800D3538[], D_800D3544[], D_800D355C[], D_800D3570[];
-extern u8 D_800D35C4[], D_800D35D8[], D_800D35EC[], D_800D35F8[], D_800D3610[], D_800D3624[];
-extern u8 D_800D3678[], D_800D368C[], D_800D36A0[], D_800D36AC[], D_800D36C4[], D_800D36D8[];
-extern u8 D_800D372C[], D_800D3740[], D_800D3754[], D_800D3760[], D_800D3778[], D_800D378C[];
-extern u8 D_800D37E0[], D_800D3830[], D_800D3874[], D_800D388C[], D_800D38A4[];
+extern s32 PolarVictorySeqs[]; /* {name, 0x5C} x4: the victory sequences (the engine's hook 0x14) */
 s32 PolarIceHit(SLONG_XYZ *pos, s32 player);
 
 void PolarHeroesCollide(s32 p1, s32 p2);
 
 /* PolarUpdateShadow: shadow frame tables, indexed by the hero's Aindex - 1. */
-extern u16 D_800D61D0[][2], D_800D624C[][2], D_800D62B4[][2], D_800D63B0[][2];
-extern u16 D_800D6418[][2], D_800D64BC[][2], D_800D6548[][2], D_800D65F0[][2];
-extern u16 D_800D66A8[][2], D_800D6760[][2], D_800D6828[][2];
+extern u16 PolarShadowFrames0[][2], PolarShadowFrames1[][2], PolarShadowFrames2[][2], PolarShadowFrames3[][2];
+extern u16 PolarShadowFrames4[][2], PolarShadowFrames5[][2], PolarShadowFrames6[][2], PolarShadowFrames7[][2];
+extern u16 PolarShadowFrames8[][2], PolarShadowFrames9[][2], PolarShadowFrames10[][2];
 /* the polar.h sequences the code names directly are declared there */
 extern hero_seq KON_seq_polarwin[], TIN_seq_polarwin[], BRO_seq_polarwin[];
 void PolarUpdateShadow(s32 player);
@@ -1594,7 +1588,7 @@ typedef struct Ovl62DropExt {
     /* 0x28 */ s32 unk28;
 } Ovl62DropExt;
 
-extern s32 D_800D5450;
+extern s32 PolarUpdateWord;
 extern s32 D_8005138C;
 extern s32 D_8009E194;
 void PolarUpdateScene(void);
@@ -1673,7 +1667,7 @@ typedef struct Ovl62PolarAi {
     /* 0xB4 */ s32 unkB4;
 } Ovl62PolarAi;
 
-/* D_800D5254's 0x40000000 extension as PolarHeroCollisions reads it. */
+/* PolarBeamOwner's 0x40000000 extension as PolarHeroCollisions reads it. */
 typedef struct Ovl62PolarGame {
     /* 0x00 */ u8 pad0[0x48];
     /* 0x48 */ s32 unk48[8];
@@ -1681,9 +1675,9 @@ typedef struct Ovl62PolarGame {
     /* 0x6C */ s32 unk6C;
 } Ovl62PolarGame;
 
-extern u16 D_800D5408[];
-extern s32 D_800D5FC0;
-extern s32 D_800D544C;
+extern u16 PolarHeroSfx[];
+extern s32 PolarInitWord;
+extern s32 PolarBeamTimer;
 extern u16 D_800AD12C;
 void func_8007E9FC(u16 arg0, s16 arg1);
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
@@ -1693,5 +1687,39 @@ void InitBossHealthIcons(void);
 void PolarAI_DoIceWalk(s32 player);
 
 s32 PolarHeroCollisions(s32 player);
+
+/* Polar's AI tweak tables and hero models (halfwords) */
+extern u16 PolarDefaultAiSkill[];
+extern u16 PolarDefaultAiSkillAlt[];
+extern u16 PolarDefaultAiTeamSkill[];
+extern u16 PolarDefaultAiHumanRoundTweak[];
+extern u16 PolarDefaultAiBotTweak[];
+extern u16 PolarDefaultAiHumanTweak[];
+extern u16 PolarDayAiSkill[];
+extern u16 PolarDayAiSkillAlt[];
+extern u16 PolarDayAiTeamSkill[];
+extern u16 PolarDayAiHumanRoundTweak[];
+extern u16 PolarDayAiBotTweak[];
+extern u16 PolarDayAiHumanTweak[];
+extern u16 PolarCutAiSkill[];
+extern u16 PolarCutAiSkillAlt[];
+extern u16 PolarCutAiTeamSkill[];
+extern u16 PolarCutAiHumanRoundTweak[];
+extern u16 PolarCutAiBotTweak[];
+extern u16 PolarCutAiHumanTweak[];
+extern u16 PolarEndAiSkill[];
+extern u16 PolarEndAiSkillAlt[];
+extern u16 PolarEndAiTeamSkill[];
+extern u16 PolarEndAiHumanRoundTweak[];
+extern u16 PolarEndAiBotTweak[];
+extern u16 PolarEndAiHumanTweak[];
+extern u16 PolarBossAiSkill[];
+extern u16 PolarBossAiBotTweak[];
+extern u16 PolarBossAiHumanTweak[];
+extern u16 PolarBossAiHumanRoundTweak[];
+extern u16 PolarBossAiSkillAlt[];
+extern u16 PolarHeroModels[];
+extern u16 PolarHeroModelsB[];
+extern u16 PolarHeroModelsCut[];
 
 #endif /* BASH_OVL62_H */
