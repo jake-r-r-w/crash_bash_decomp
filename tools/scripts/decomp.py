@@ -5193,6 +5193,7 @@ def data_items(funcs, stat, proj, images=False):
     matched = {cur_name(k, e, syms) for k, e in funcs.items() if stat.get(k) == "matched"}
     out = []
     inputs, cache = split_inputs(), jload(RODATA_CACHE, {})
+    elves = {}
     units = [(proj['name'], "main exe")] + [(o['name'], o['name']) for o in proj.get("overlays", [])]
     for yname, unit in units:
         y = yaml_of(yname)
@@ -5208,14 +5209,48 @@ def data_items(funcs, stat, proj, images=False):
                     out.append([unit, name, name, (rs[0][0] if rs else end) - start,
                                 not glob.glob(f"asm/nonmatchings/{name}/D_*.s"), typ])
                 tables = jump_table_labels(rs)
+                linked = elf_rom_names(yname, elves)
                 for i, (rom, sym, owners) in enumerate(rs):
                     nxt = rs[i + 1][0] if i + 1 < len(rs) else end
-                    out.append([unit, name, tables.get(sym, sym), nxt - rom, len(owners) == 1 and owners[0] in matched
-                                and not os.path.exists(f"asm/nonmatchings/{name}/{sym}.s"), typ])
+                    done = len(owners) == 1 and owners[0] in matched and not os.path.exists(f"asm/nonmatchings/{name}/{sym}.s")
+                    # splat's label predates the C: a piece the C defines goes by the C's name
+                    shown = tables.get(sym, sym)
+                    if done and DATA_PLACEHOLDER.match(shown):
+                        # else it is a function's own literal, nameless in C like a jump table
+                        shown = linked.get(rom) or f"{owners[0]} literal"
+                    out.append([unit, name, shown, nxt - rom, done, typ])
             elif typ.startswith("."):
                 out.append([unit, name, name, end - start, not glob.glob(f"asm/nonmatchings/{name}/D_*.s"), typ])
             else:
                 out += [[unit, name, sym, size, False, typ] for sym, size in asm_data_labels(name, typ, start, end)]
+    return out
+
+
+def elf_rom_names(yname, cache):
+    """{ROM offset: name} of a build target's linked symbols (build/main.elf or build/<ovl>.ovl.elf),
+    through its yaml's segment addresses; empty when it isn't built. Placeholders and the
+    linker's section markers are left out."""
+    if yname in cache:
+        return cache[yname]
+    import yaml
+    elf = "build/main.elf" if yname == "main" else f"build/{yname}.ovl.elf"
+    out = {}
+    if os.path.exists(elf):
+        segs = [s for s in yaml.safe_load(read(yaml_of(yname))).get("segments", [])
+                if isinstance(s, dict) and "vram" in s]
+        for line in run(["mipsel-linux-gnu-nm", "-n", "--defined-only", elf]).stdout.splitlines():
+            p = line.split()
+            if len(p) != 3 or p[1] in "aA" or DATA_PLACEHOLDER.match(p[2]) or PLACEHOLDER_NAME.match(p[2]) \
+                    or p[2].endswith(("_START", "_END", "_SIZE", "_VRAM")) or p[2].startswith(("gcc2", "__gnu", "jtbl_")):
+                continue
+            a = int(p[0], 16)
+            rom = None
+            for s in segs:
+                if s["vram"] <= a:
+                    rom = a - s["vram"] + s["start"]
+            if rom is not None:
+                out.setdefault(rom, p[2])
+    cache[yname] = out
     return out
 
 
