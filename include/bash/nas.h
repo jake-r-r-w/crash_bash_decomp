@@ -587,9 +587,27 @@ typedef struct LevSpec {
 } LevSpec;
 BASH_SIZE_CHECK(LevSpec, 0x2C);
 
-/* Not recovered yet: incomplete, usable through pointers only. These are used
- * by the minigame overlays only. */
-typedef struct shell_setup shell_setup;
-typedef struct file_group_load_info file_group_load_info;
+/* Each minigame's shell settings (tank_shell_info, POGO_shell_info, ...): the
+ * second pointer of the engine's per-world record, after the PreMap. Its size
+ * is from Tank's data (the next object starts 0x28 bytes on); the fields are
+ * not known yet. */
+typedef struct shell_setup {
+    /* 0x00 */ s32 unk0[6];
+    /* 0x18 */ void *unk18;
+    /* 0x1C */ void *unk1C;
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+} shell_setup;
+BASH_SIZE_CHECK(shell_setup, 0x28);
+
+/* A level's files (file_group_TANKDESERT, ...): the engine's table at
+ * 0x800A0030 points at one per mode. group is an entry of the exe's file
+ * groups table (0x80050010); files a list of {model slot, mdl entry, tex
+ * entry} words ending in zeros (Tank's), loaded after the group. */
+typedef struct file_group_load_info {
+    /* 0x00 */ void *group;
+    /* 0x04 */ void *files;
+} file_group_load_info;
+BASH_SIZE_CHECK(file_group_load_info, 0x8);
 
 #endif /* BASH_NAS_H */

@@ -659,6 +659,27 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Tank's arenas and data** (ovl5f, named 2026-10-26). The game mode
+  (`D_8005A648`, the game-state struct's `+0x34`) is the arena: 5 swamp
+  (`LEV_TANKLAST`: hover tanks, `BumpSpeedsForSwamp`, force fields, its own
+  turrets and file list with `tank_swamp/vehicle`), 6 desert, 7 jungle (its
+  ambience, the totem pole), 8 metal (the pillar waves), 9 the Komodo boss
+  (Moe and Joe). The order is `levnumbers` from `LEV_TANKLAST` and the
+  leak's `file_group_TANK*` order, which the engine's per-mode table at
+  `0x800A0030` follows. The engine's per-world record for Tank
+  (`0x80098FC0`) is `{0x0106, ..., &TANK_PREMAP, &tank_shell_info,
+  TA_SetUp}`. `TANK_PREMAP` is a `PreMap`: `TankPreLoadDB` (an `s16` list
+  ending in -1), `TankWorldInfo` (nine `WWInf`, map databases 0x2E..0x36,
+  each with `TankAnims`, the animation names, and a level database list)
+  and `TankLUP` (a `TrigLookUp` of 8 ids) just before it. Each character's
+  nine `*_seq_tank*` sequences (`HeroSeqTables[hero_name][0x57..0x5F]`,
+  hero_name 1..8 = Crash, Coco, Cortex, Brio, Tiny, Kong, Dingodile,
+  Kangaroo) are 6 halfwords each, defined in the leak's prefix order; Crash
+  has three more nothing points at. The engine's `SetTweakAi` reads five
+  tables per arena that `TA_PreInitLevel` sets (`Tank<Arena>AiSkill`, its
+  `Alt` when `D_8005A680[0]` is set, `AiTeamSkill`, and `AiBotTweak` /
+  `AiHumanTweak` / `AiHumanRoundTweak` by the player byte `+0x5C`, set for
+  a computer player).
 - **Pogo hero states** (ovl60, actions 0x39-0x3F): 0x39 Idle (`pogo_idle` /
   `pogo_quick_idle`), 0x3A Pogo (the bounce; back to Idle), 0x3B Dazed
   (`pogo_dazed`, `hero_frozen` 10), 0x3C Winner (the engine's winner calls),

@@ -23,8 +23,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   is the **Tank pilot**: `ovl5f` all the way to source-only (data and
   rodata as C, named, typed) and shift-tested, building the tools and the
   recipe; Phase 4 repeats it per slot overlay, Phase 5 does the engine and
-  `main.exe`. Figures (`progress`): 731 of 2537 functions named, 2316
-  typed, 92 `INCLUDE_RODATA`, 1.97% of the data is C.
+  `main.exe`. Figures (`progress`, 2026-10-26): 804 of 2537 functions
+  named (all of Tank's), 2317 typed, 5.25% of the data is C; Tank's pilot
+  is at 10 of 11 (the recipe write-up is left).
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
   steering C counts as matched, inline asm is refused by the gate. One
   recorded exception (2026-10-26): `draw_verts` (`func_800193A8`,
@@ -60,7 +61,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 The Tank pilot (ROADMAP.md, Phase 3), in this order:
 
 1. **Names and types** (first: the data's types come from the code that
-   reads it). Names: all 71 of Tank's `func_` functions named on 2026-10-26
+   reads it). **Done 2026-10-26**: every function, and every
+   global something reads (Session log). What follows was written before. Names: all 71 of Tank's `func_` functions named on 2026-10-26
    (level callbacks, bot AI, hero damage and movement, weapons, boss
    turrets, totems, Moe and Joe, the map grid and object lists); left are
    three empty stubs (`func_800C69BC`, `func_800C831C`, `func_800C83D0`)
@@ -547,6 +549,17 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Tank's data named and typed):** 156 of Tank's `D_` data
+  names replaced (`scratch/tank_names.py`; names in `sym.ovl5f.txt`), from
+  the code that reads each table and the leak: `TANK_PREMAP` +
+  `TankLUP`/`TankWorldInfo` (was `D_800C8E7C`/`D_800C8C64`),
+  `tank_shell_info` (`D_800C8EEC`), `file_group_TANKLAST..BOSS` (five
+  8-byte objects the engine's `0x800A0030` table points at), and the 72
+  `*_seq_tank*` sequences split out of `D_800C94E8` (mapped through
+  `HeroSeqTables`). `shell_setup` and `file_group_load_info` are complete
+  in `nas.h`. The shift build's engine fix-ups now hit exact symbols for
+  those. Left in the pilot: the recipe write-up.
 
 - **2026-10-26 (Tank's id word is C; its assets checked):**
   `src/overlays/ovl5f/ovl5f_id.c` (`const s32 TankOverlayId = 0x5F;`) owns

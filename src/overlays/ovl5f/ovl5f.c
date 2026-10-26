@@ -39,345 +39,435 @@ extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "BREATHE";
-const char D_800B32C0[] = "IDLE0";
-const char D_800B32C8[] = "IDLE1";
-const char D_800B32D0[] = "HIT";
-const char D_800B32D4[] = "DIE";
-const char D_800B32D8[] = "FIRE1";
-const char D_800B32E0[] = "FIRE2";
-const char D_800B32E8[] = "FIRE3";
-const char D_800B32F0[] = "MINE";
-const char D_800B32F8[] = "WIN";
-const char D_800B32FC[] = "";
+const char TankAnimBreathe[] = "BREATHE";
+const char TankAnimIdle0[] = "IDLE0";
+const char TankAnimIdle1[] = "IDLE1";
+const char TankAnimHit[] = "HIT";
+const char TankAnimDie[] = "DIE";
+const char TankAnimFire1[] = "FIRE1";
+const char TankAnimFire2[] = "FIRE2";
+const char TankAnimFire3[] = "FIRE3";
+const char TankAnimMine[] = "MINE";
+const char TankAnimWin[] = "WIN";
+const char TankEmptyString[] = "";
 
 /* data, in address order */
-s32 D_800C8C0C[2] = { 0x1A001C, -0xFFE9 };
-s32 D_800C8C14[10] = {
-    (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32D0, (s32)&D_800B32D4,
-    (s32)&D_800B32D8, (s32)&D_800B32E0, (s32)&D_800B32E8, (s32)&D_800B32F0, 0,
+s16 TankPreLoadDB[4] = { 0x1C, 0x1A, 0x17, -1 };
+char *TankAnims[10] = {
+    (char *)TankAnimBreathe, (char *)TankAnimIdle0, (char *)TankAnimIdle1, (char *)TankAnimHit,
+    (char *)TankAnimDie, (char *)TankAnimFire1, (char *)TankAnimFire2, (char *)TankAnimFire3,
+    (char *)TankAnimMine, NULL,
 };
-s32 D_800C8C3C[2] = { 0x3C0037, 0xFFFF };
-s32 D_800C8C44[2] = { 0x380037, 0xFFFF };
-s32 D_800C8C4C[2] = { 0x380037, -0xFFC3 };
-s32 D_800C8C54[2] = { 0x380037, 0xFFFF };
-s32 D_800C8C5C[2] = { 0x380037, 0xFFFF };
-s32 D_800C8C64[72] = {
-    0x2E, (s32)&D_800C8C14, (s32)&D_800C8C3C, 0, 0, 0, 0, 0, 0x2F, (s32)&D_800C8C14,
-    (s32)&D_800C8C44, 0, 0, 0, 0, 0, 0x30, (s32)&D_800C8C14, (s32)&D_800C8C4C, 0, 0, 0, 0, 0,
-    0x31, (s32)&D_800C8C14, (s32)&D_800C8C54, 0, 0, 0, 0, 0, 0x32, (s32)&D_800C8C14,
-    (s32)&D_800C8C5C, 0, 0, 0, 0, 0, 0x33, (s32)&D_800C8C14, (s32)&D_800C8C3C, 0, 0, 0, 0, 0,
-    0x34, (s32)&D_800C8C14, (s32)&D_800C8C44, 0, 0, 0, 0, 0, 0x35, (s32)&D_800C8C14,
-    (s32)&D_800C8C4C, 0, 0, 0, 0, 0, 0x36, (s32)&D_800C8C14, (s32)&D_800C8C54, 0, 0, 0, 0, 0,
+s16 TankLevelDB0[4] = { 0x37, 0x3C, -1, 0 };
+s16 TankLevelDB1[4] = { 0x37, 0x38, -1, 0 };
+s16 TankLevelDB2[4] = { 0x37, 0x38, 0x3D, -1 };
+s16 TankLevelDB3[4] = { 0x37, 0x38, -1, 0 };
+s16 TankLevelDB4[4] = { 0x37, 0x38, -1, 0 };
+WWInf TankWorldInfo[9] = {
+    { 0x2E, TankAnims, TankLevelDB0 },
+    { 0x2F, TankAnims, TankLevelDB1 },
+    { 0x30, TankAnims, TankLevelDB2 },
+    { 0x31, TankAnims, TankLevelDB3 },
+    { 0x32, TankAnims, TankLevelDB4 },
+    { 0x33, TankAnims, TankLevelDB0 },
+    { 0x34, TankAnims, TankLevelDB1 },
+    { 0x35, TankAnims, TankLevelDB2 },
+    { 0x36, TankAnims, TankLevelDB3 },
 };
-s32 D_800C8D84[24] = {
+s32 TankFiles[24] = {
     (s32)&D_80055684, (s32)&D_8004F2A8, (s32)&D_8004F2A0, (s32)&D_800555A4, (s32)&D_8004F288,
     (s32)&D_8004F280, (s32)&D_80053074, (s32)&D_8004F298, (s32)&D_8004F290, (s32)&D_80052F5C,
     (s32)&D_8004F278, (s32)&D_8004F270, (s32)&D_80053004, (s32)&D_8004F268, (s32)&D_8004F260,
     (s32)&D_8005365C, (s32)&D_8004F258, (s32)&D_8004F250, (s32)&D_80053694, (s32)&D_8004F248,
     (s32)&D_8004F240, 0, 0, 0,
 };
-s32 D_800C8DE4[34] = {
+s32 TankSwampFiles[24] = {
     (s32)&D_80055684, (s32)&D_8004F238, (s32)&D_8004F230, (s32)&D_800555A4, (s32)&D_8004F218,
     (s32)&D_8004F210, (s32)&D_80053074, (s32)&D_8004F228, (s32)&D_8004F220, (s32)&D_80052F5C,
     (s32)&D_8004F208, (s32)&D_8004F200, (s32)&D_80053004, (s32)&D_8004F1F8, (s32)&D_8004F1F0,
     (s32)&D_8005365C, (s32)&D_8004F1E8, (s32)&D_8004F1E0, (s32)&D_80053774, (s32)&D_8004F1D8,
-    (s32)&D_8004F1D0, 0, 0, 0, (s32)&D_80050130, (s32)&D_800C8DE4, (s32)&D_8005013C,
-    (s32)&D_800C8D84, (s32)&D_8005013C, (s32)&D_800C8D84, (s32)&D_8005013C, (s32)&D_800C8D84,
-    (s32)&D_8005013C, (s32)&D_800C8D84,
+    (s32)&D_8004F1D0, 0, 0, 0,
 };
-s32 D_800C8E6C[4] = { 0x20D0003, 0x20D0201, 0x13061301, 0x130A1309 };
-s32 D_800C8E7C[9] = { (s32)&D_800C8E6C, 8, (s32)&D_800C8C0C, (s32)&D_800C8C64, (s32)&D_800C8E7C, 0, 0, 0, 0 };
-u8 D_800C8EA0[20] = { 0, 0, 0x3E, 0, 0x3F, 0, 0x40, 0, 0x42, 0, 0x41, 0, 0x44, 0, 0x43, 0, 0x45, 0, 0, 0 };
-s32 D_800C8EB4[8] = {
-    (s32)&D_800B32F8, 0x5C, (s32)&D_800B32F8, 0x5C, (s32)&D_800B32F8, 0x5C, (s32)&D_800B32F8,
+/* The five arenas' files (modes 5..9; the engine's table at 0x800A0030): the exe's file group
+ * (24 or 25) and the model list; the swamp's has the hover vehicle. */
+file_group_load_info file_group_TANKLAST = { D_80050130, TankSwampFiles };
+file_group_load_info file_group_TANKDESERT = { D_8005013C, TankFiles };
+file_group_load_info file_group_TANKJUNGLE = { D_8005013C, TankFiles };
+file_group_load_info file_group_TANKMETAL = { D_8005013C, TankFiles };
+file_group_load_info file_group_TANKBOSS = { D_8005013C, TankFiles };
+u16 TankLUPtab[8] = { 3, 0x20D, 0x201, 0x20D, 0x1301, 0x1306, 0x1309, 0x130A };
+TrigLookUp TankLUP = { TankLUPtab, 8 };
+PreMap TANK_PREMAP = { TankPreLoadDB, TankWorldInfo, &TankLUP };
+u16 TankHeroModels[10] = {
+    0, 0x3E, 0x3F, 0x40, 0x42, 0x41, 0x44, 0x43, 0x45, 0,
+};
+s32 TankVictorySeqs[8] = {
+    (s32)&TankAnimWin, 0x5C, (s32)&TankAnimWin, 0x5C, (s32)&TankAnimWin, 0x5C, (s32)&TankAnimWin,
     0x5C,
 };
-Ambient_data D_800C8ED4 = { 2, 6, 0x3FC, 0, { 0x3FD, 0x3FE, 0x3FF, 0x400, 0x401, 0x402, 0x403, 0x3FD } };
-s32 D_800C8EEC[10] = { 0x4000, 0x20, 0x1800, 0xB0, 0x200, 0x100, (s32)&D_80063EC8, (s32)&D_80063BB8, 0x20, 0x5DC };
-s32 D_800C8F14[16] = {
+Ambient_data TankJungleAmbience = { 2, 6, 0x3FC, 0, { 0x3FD, 0x3FE, 0x3FF, 0x400, 0x401, 0x402, 0x403, 0x3FD } };
+shell_setup tank_shell_info = {
+    0x4000, 0x20, 0x1800, 0xB0, 0x200, 0x100, D_80063EC8, D_80063BB8, 0x20, 0x5DC,
+};
+s32 TankHeroSpeeds[16] = {
     0x1C, 0x1C, 0x18, 0x18, 0x1A, 0x1A, 0x18, 0x18, 0x2028, 0x2037, 0x2038, 0x2039, 0x2029,
     0x202A, 0x202B, 0x202C,
 };
-s32 D_800C8F54[5] = { 0x2028, 0x2037, 0x2038, 0x2039, 0 };
-s32 D_800C8F68[16] = {
+s32 MoeScript0[5] = { 0x2028, 0x2037, 0x2038, 0x2039, 0 };
+s32 MoeScript1[16] = {
     0x2028, 0x2037, 0x2038, 0x2039, 0x203A, 0x203B, 0x203C, 0x203D, 0x203E, 0x203F, 0x2040,
     0x2041, 0x2042, 0x2043, 0x2044, 0,
 };
-s32 D_800C8FA8[16] = {
+s32 MoeScript2[16] = {
     0x2028, 0x2037, 0x2038, 0x2039, 0x203A, 0x203B, 0x203A, 0x2039, 0x2038, 0x2039, 0x203A,
     0x2039, 0x2038, 0x2037, 0x2028, 0,
 };
-s32 D_800C8FE8[24] = {
+s32 MoeScript3[24] = {
     0x2028, 0x2037, 0x2038, 0x2039, 0x203A, 0x203B, 0x203C, 0x203D, 0x203C, 0x203B, 0x203A,
     0x203B, 0x203C, 0x203B, 0x203A, 0x2039, 0x2038, 0x2039, 0x203A, 0x2039, 0x2038, 0x2037,
     0x2028, 0,
 };
-s32 D_800C9048[14] = {
+s32 MoeScript4[14] = {
     0x2028, 0x2037, 0x2038, 0x2039, 0x2038, 0x2037, 0x2038, 0x2039, 0x203A, 0x2039, 0x2038,
     0x2037, 0x2028, 0,
 };
-s32 D_800C9080[14] = {
+s32 MoeScript5[14] = {
     0x2028, 0x2037, 0x2038, 0x2037, 0x2028, 0x2037, 0x2038, 0x2037, 0x2028, 0x2037, 0x2038,
     0x2037, 0x2028, 0,
 };
-s32 D_800C90B8[25] = {
+s32 MoeScript6[25] = {
     0x2028, 0x2038, 0x203A, 0x203C, 0x203D, 0x203E, 0x203D, 0x203C, 0x203B, 0x203E, 0x203B,
     0x203C, 0x203C, 0x203C, 0x203C, 0x203D, 0x203D, 0x203C, 0x203B, 0x203A, 0x2039, 0x2038,
     0x2037, 0x2028, 0,
 };
-s32 D_800C911C[9] = { 0x2028, 0x2038, 0x203A, 0x203C, 0x203E, 0x2040, 0x2042, 0x2044, 0 };
-s32 D_800C9140[9] = { 0x2027, 0x2029, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x202F, 0 };
-s32 D_800C9164[16] = {
+s32 MoeScript7[9] = { 0x2028, 0x2038, 0x203A, 0x203C, 0x203E, 0x2040, 0x2042, 0x2044, 0 };
+s32 JoeScript0[9] = { 0x2027, 0x2029, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x202F, 0 };
+s32 JoeScript1[16] = {
     0x2027, 0x2029, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x202F, 0x2030, 0x2031, 0x2032,
     0x2033, 0x2034, 0x2035, 0x2036, 0,
 };
-s32 D_800C91A4[16] = {
+s32 JoeScript2[16] = {
     0x2027, 0x2029, 0x202A, 0x202B, 0x202C, 0x202D, 0x202C, 0x202B, 0x202A, 0x202B, 0x202C,
     0x202B, 0x202A, 0x2029, 0x2027, 0,
 };
-s32 D_800C91E4[24] = {
+s32 JoeScript3[24] = {
     0x2027, 0x2029, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x202F, 0x202E, 0x202D, 0x202C,
     0x202D, 0x202E, 0x202D, 0x202C, 0x202B, 0x202A, 0x202B, 0x202C, 0x202B, 0x202A, 0x2029,
     0x2027, 0,
 };
-s32 D_800C9244[14] = {
+s32 JoeScript4[14] = {
     0x2027, 0x2029, 0x202A, 0x202B, 0x202A, 0x2029, 0x202A, 0x202B, 0x202C, 0x202B, 0x202A,
     0x2029, 0x2027, 0,
 };
-s32 D_800C927C[14] = {
+s32 JoeScript5[14] = {
     0x2027, 0x2029, 0x202A, 0x2029, 0x2027, 0x2029, 0x202A, 0x2029, 0x2027, 0x2029, 0x202A,
     0x2029, 0x2027, 0,
 };
-s32 D_800C92B4[25] = {
+s32 JoeScript6[25] = {
     0x2027, 0x202A, 0x202C, 0x202E, 0x202F, 0x2030, 0x202F, 0x202E, 0x202D, 0x2030, 0x202D,
     0x202E, 0x202E, 0x202E, 0x202E, 0x202F, 0x202F, 0x202E, 0x202D, 0x202C, 0x202B, 0x202A,
     0x2029, 0x2027, 0,
 };
-s32 D_800C9318[17] = { 0x2027, 0x202A, 0x202C, 0x202E, 0x2030, 0x2032, 0x2034, 0x2036, 0, 8, 8, 8, 8, 8, 8, 8, 8 };
-MineOffset D_800C935C[4] = { { 0xFA, 0, 0x2021 }, { -0xFA, 0, 0x201F }, { 0, 0xFA, 0x201E }, { 0, -0xFA, 0x201B } };
-RockTblEnt D_800C938C[4] = { { 0x2002, 0 }, { 0x2003, 0 }, { 0x2004, 0 }, { 0x2005, 0 } };
-RockTblEnt D_800C939C[4] = { { 0x2017, 0 }, { 0x2016, 0 }, { 0x2015, 0 }, { 0x2014, 0 } };
-s32 D_800C93AC[19] = {
+s32 JoeScript7[17] = { 0x2027, 0x202A, 0x202C, 0x202E, 0x2030, 0x2032, 0x2034, 0x2036, 0, 8, 8, 8, 8, 8, 8, 8, 8 };
+MineOffset MineShrapnelOffsets[4] = { { 0xFA, 0, 0x2021 }, { -0xFA, 0, 0x201F }, { 0, 0xFA, 0x201E }, { 0, -0xFA, 0x201B } };
+RockTblEnt MineFrames[4] = { { 0x2002, 0 }, { 0x2003, 0 }, { 0x2004, 0 }, { 0x2005, 0 } };
+RockTblEnt MineFramesBig[4] = { { 0x2017, 0 }, { 0x2016, 0 }, { 0x2015, 0 }, { 0x2014, 0 } };
+s32 TankRocketAngles[19] = {
     -0x104, 0x104, 0x2044, 0x2043, 0x2042, 0x2041, 0x2040, 0x203F, 0x203E, 0x203D, 0x203C,
     0x203D, 0x203E, 0x203F, 0x2040, 0x2041, 0x2042, 0x2043, 0x2044,
 };
-s32 D_800C93F8[4] = { 0x510, 0x511, 0x512, 0x513 };
-s32 D_800C9408[4] = { 0x50B, 0x50C, 0x50D, 0x50E };
-s32 D_800C9418[4] = { 0x4EC, 0x4ED, 0x4EE, 0x4EF };
-s32 D_800C9428[8][4] = {
+s32 TankForceFieldSfx[4] = { 0x510, 0x511, 0x512, 0x513 };
+s32 TankHoverSfx[4] = { 0x50B, 0x50C, 0x50D, 0x50E };
+s32 TankMineSfx[4] = { 0x4EC, 0x4ED, 0x4EE, 0x4EF };
+s32 TankRecoilSfx[8][4] = {
     { 3, 4, 5, 6 }, { 0x35, 0x36, 0x37, 0x38 }, { 0x67, 0x68, 0x69, 0x6A },
     { 0x99, 0x9A, 0x9B, 0x9C }, { 0x12F, 0x130, 0x131, 0x132 }, { 0x161, 0x162, 0x163, 0x164 },
     { 0xFD, 0xFE, 0xFF, 0x100 }, { 0xCB, 0xCC, 0xCD, 0xCE },
 };
-s32 D_800C94A8[8] = { 2, 0x34, 0x66, 0x98, 0x12E, 0x160, 0xFC, 0xCA };
-s32 D_800C94C8[4] = { 0x4C2, 0x4C3, 0x4C4, 0x4C5 };
-s32 D_800C94D8[4] = { 0x4BE, 0x4BF, 0x4C0, 0x4C1 };
-s32 D_800C94E8[229] = {
-    0x4FD, 0x4FE, 0x4FF, 0x500, (s32)0x80070000, 0x40000013, 0x8000, (s32)0x80070000,
-    0x42000050, 0x8000, (s32)0x80070000, 0x4280001B, 0x8000, (s32)0x80070000, 0x41800028,
-    0x41A741A7, 0x41A741A7, 0x41A741A7, 0x41A741A7, 0x41A741A7, 0x41A741A7, 0x41A741A7,
-    0x41A741A7, 0x41A741A7, 0x8000, (s32)0x80070000, 0x41000029, 0x8000, (s32)0x80070000,
-    0x40800032, 0x8000, (s32)0x80070000, 0x40000013, 0x8000, (s32)0x80070000, 0x40000013,
-    0x8000, (s32)0x80070000, 0x40000013, 0x8000, (s32)0x80070000, 0x42800014, 0x8000,
-    (s32)0x80070000, 0x40000040, 0x8000, (s32)0x80070000, 0x41800016, 0x8000, (s32)0x80070000,
-    0x42000032, 0x8000, (s32)0x80070000, 0x41000028, 0x8000, (s32)0x80070000, 0x4080002C,
-    0x8000, (s32)0x80070000, 0x42800014, 0x8000, (s32)0x80070000, 0x42800014, 0x8000,
-    (s32)0x80070000, 0x42800014, 0x8000, (s32)0x80070000, 0x42800014, 0x8000, (s32)0x80070000,
-    0x40000050, 0x8000, (s32)0x80070000, 0x4180001E, 0x8000, (s32)0x80070000, 0x42000029,
-    0x8000, (s32)0x80070000, 0x40800029, 0x8000, (s32)0x80070000, 0x41000028, 0x8000,
-    (s32)0x80070000, 0x42800014, 0x8000, (s32)0x80070000, 0x42800014, 0x8000, (s32)0x80070000,
-    0x42800014, 0x8000, (s32)0x80070000, 0x42000014, 0x8000, (s32)0x80070000, 0x40000052,
-    0x8000, (s32)0x80070000, 0x4100001E, 0x8000, (s32)0x80070000, 0x41800029, 0x8000,
-    (s32)0x80070000, 0x42800028, 0x8000, (s32)0x80070000, 0x40800027, 0x8000, (s32)0x80070000,
-    0x42000014, 0x8000, (s32)0x80070000, 0x42000014, 0x8000, (s32)0x80070000, 0x42000014,
-    0x8000, (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x42800039, 0x8000,
-    (s32)0x80070000, 0x4100001E, 0x8000, (s32)0x80070000, 0x40800029, 0x8000, (s32)0x80070000,
-    0x4200003C, 0x8000, (s32)0x80070000, 0x41800039, 0x8000, (s32)0x80070000, 0x40000014,
-    0x8000, (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x4080001E, 0x8000, (s32)0x80070000,
-    0x4180001C, 0x8000, (s32)0x80070000, 0x42000033, 0x8000, (s32)0x80070000, 0x4280001F,
-    0x8000, (s32)0x80070000, 0x4100003E, 0x8000, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000,
-    0x40800014, 0x8000, (s32)0x80070000, 0x41000040, 0x8000, (s32)0x80070000, 0x4000001E,
-    0x8000, (s32)0x80070000, 0x42800029, 0x8000, (s32)0x80070000, 0x4180002D, 0x8000,
-    (s32)0x80070000, 0x42000032, 0x8000, (s32)0x80070000, 0x40800014, 0x8000, (s32)0x80070000,
-    0x40800014, 0x8000, (s32)0x80070000, 0x40800014, 0x8000, (s32)0x80070000, 0x42000014,
-    0x8000, (s32)0x80070000, 0x40000050, 0x8000, (s32)0x80070000, 0x4100001E, 0x8000,
-    (s32)0x80070000, 0x41800029, 0x8000, (s32)0x80070000, 0x4280002D, 0x8000, (s32)0x80070000,
-    0x40800032, 0x8000, (s32)0x80070000, 0x42000014, 0x8000, (s32)0x80070000, 0x42000014,
-    0x8000, (s32)0x80070000, 0x42000014, 0x8000,
+s32 TankTauntSfx[8] = { 2, 0x34, 0x66, 0x98, 0x12E, 0x160, 0xFC, 0xCA };
+s32 TankHullSfx[4] = { 0x4C2, 0x4C3, 0x4C4, 0x4C5 };
+s32 TankTurretSfx[4] = { 0x4BE, 0x4BF, 0x4C0, 0x4C1 };
+s32 TankTurnSfx[4] = { 0x4FD, 0x4FE, 0x4FF, 0x500 };
+hero_seq CRA_seq_tankidle[6] = { 0, 0x8007, 0x13, 0x4000, 0x8000, 0 };
+hero_seq CRA_seq_tankvictory[6] = { 0, 0x8007, 0x50, 0x4200, 0x8000, 0 };
+hero_seq CRA_seq_tankrecoil[6] = { 0, 0x8007, 0x1B, 0x4280, 0x8000, 0 };
+hero_seq CRA_seq_tankdie[6] = { 0, 0x8007, 0x28, 0x4180, 0x41A7, 0x41A7 };
+/* three sequences no table points at */
+hero_seq CRA_seq_tankunused[18] = {
+    0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x41A7,
+    0x41A7, 0x41A7, 0x41A7, 0x41A7, 0x8000, 0,
 };
-s32 D_800C987C[13] = {
+hero_seq CRA_seq_tankidle1[6] = { 0, 0x8007, 0x29, 0x4100, 0x8000, 0 };
+hero_seq CRA_seq_tankminelay[6] = { 0, 0x8007, 0x32, 0x4080, 0x8000, 0 };
+hero_seq CRA_seq_tankfire1[6] = { 0, 0x8007, 0x13, 0x4000, 0x8000, 0 };
+hero_seq CRA_seq_tankfire2[6] = { 0, 0x8007, 0x13, 0x4000, 0x8000, 0 };
+hero_seq CRA_seq_tankfire3[6] = { 0, 0x8007, 0x13, 0x4000, 0x8000, 0 };
+hero_seq COC_seq_tankidle[6] = { 0, 0x8007, 0x14, 0x4280, 0x8000, 0 };
+hero_seq COC_seq_tankvictory[6] = { 0, 0x8007, 0x40, 0x4000, 0x8000, 0 };
+hero_seq COC_seq_tankrecoil[6] = { 0, 0x8007, 0x16, 0x4180, 0x8000, 0 };
+hero_seq COC_seq_tankdie[6] = { 0, 0x8007, 0x32, 0x4200, 0x8000, 0 };
+hero_seq COC_seq_tankidle1[6] = { 0, 0x8007, 0x28, 0x4100, 0x8000, 0 };
+hero_seq COC_seq_tankminelay[6] = { 0, 0x8007, 0x2C, 0x4080, 0x8000, 0 };
+hero_seq COC_seq_tankfire1[6] = { 0, 0x8007, 0x14, 0x4280, 0x8000, 0 };
+hero_seq COC_seq_tankfire2[6] = { 0, 0x8007, 0x14, 0x4280, 0x8000, 0 };
+hero_seq COC_seq_tankfire3[6] = { 0, 0x8007, 0x14, 0x4280, 0x8000, 0 };
+hero_seq TIN_seq_tankidle[6] = { 0, 0x8007, 0x14, 0x4280, 0x8000, 0 };
+hero_seq TIN_seq_tankvictory[6] = { 0, 0x8007, 0x50, 0x4000, 0x8000, 0 };
+hero_seq TIN_seq_tankrecoil[6] = { 0, 0x8007, 0x1E, 0x4180, 0x8000, 0 };
+hero_seq TIN_seq_tankdie[6] = { 0, 0x8007, 0x29, 0x4200, 0x8000, 0 };
+hero_seq TIN_seq_tankidle1[6] = { 0, 0x8007, 0x29, 0x4080, 0x8000, 0 };
+hero_seq TIN_seq_tankminelay[6] = { 0, 0x8007, 0x28, 0x4100, 0x8000, 0 };
+hero_seq TIN_seq_tankfire1[6] = { 0, 0x8007, 0x14, 0x4280, 0x8000, 0 };
+hero_seq TIN_seq_tankfire2[6] = { 0, 0x8007, 0x14, 0x4280, 0x8000, 0 };
+hero_seq TIN_seq_tankfire3[6] = { 0, 0x8007, 0x14, 0x4280, 0x8000, 0 };
+hero_seq CTX_seq_tankidle[6] = { 0, 0x8007, 0x14, 0x4200, 0x8000, 0 };
+hero_seq CTX_seq_tankvictory[6] = { 0, 0x8007, 0x52, 0x4000, 0x8000, 0 };
+hero_seq CTX_seq_tankrecoil[6] = { 0, 0x8007, 0x1E, 0x4100, 0x8000, 0 };
+hero_seq CTX_seq_tankdie[6] = { 0, 0x8007, 0x29, 0x4180, 0x8000, 0 };
+hero_seq CTX_seq_tankidle1[6] = { 0, 0x8007, 0x28, 0x4280, 0x8000, 0 };
+hero_seq CTX_seq_tankminelay[6] = { 0, 0x8007, 0x27, 0x4080, 0x8000, 0 };
+hero_seq CTX_seq_tankfire1[6] = { 0, 0x8007, 0x14, 0x4200, 0x8000, 0 };
+hero_seq CTX_seq_tankfire2[6] = { 0, 0x8007, 0x14, 0x4200, 0x8000, 0 };
+hero_seq CTX_seq_tankfire3[6] = { 0, 0x8007, 0x14, 0x4200, 0x8000, 0 };
+hero_seq BRO_seq_tankidle[6] = { 0, 0x8007, 0x14, 0x4000, 0x8000, 0 };
+hero_seq BRO_seq_tankvictory[6] = { 0, 0x8007, 0x39, 0x4280, 0x8000, 0 };
+hero_seq BRO_seq_tankrecoil[6] = { 0, 0x8007, 0x1E, 0x4100, 0x8000, 0 };
+hero_seq BRO_seq_tankdie[6] = { 0, 0x8007, 0x29, 0x4080, 0x8000, 0 };
+hero_seq BRO_seq_tankidle1[6] = { 0, 0x8007, 0x3C, 0x4200, 0x8000, 0 };
+hero_seq BRO_seq_tankminelay[6] = { 0, 0x8007, 0x39, 0x4180, 0x8000, 0 };
+hero_seq BRO_seq_tankfire1[6] = { 0, 0x8007, 0x14, 0x4000, 0x8000, 0 };
+hero_seq BRO_seq_tankfire2[6] = { 0, 0x8007, 0x14, 0x4000, 0x8000, 0 };
+hero_seq BRO_seq_tankfire3[6] = { 0, 0x8007, 0x14, 0x4000, 0x8000, 0 };
+hero_seq DNG_seq_tankidle[6] = { 0, 0x8007, 0x14, 0x4000, 0x8000, 0 };
+hero_seq DNG_seq_tankvictory[6] = { 0, 0x8007, 0x1E, 0x4080, 0x8000, 0 };
+hero_seq DNG_seq_tankrecoil[6] = { 0, 0x8007, 0x1C, 0x4180, 0x8000, 0 };
+hero_seq DNG_seq_tankdie[6] = { 0, 0x8007, 0x33, 0x4200, 0x8000, 0 };
+hero_seq DNG_seq_tankidle1[6] = { 0, 0x8007, 0x1F, 0x4280, 0x8000, 0 };
+hero_seq DNG_seq_tankminelay[6] = { 0, 0x8007, 0x3E, 0x4100, 0x8000, 0 };
+hero_seq DNG_seq_tankfire1[6] = { 0, 0x8007, 0x14, 0x4000, 0x8000, 0 };
+hero_seq DNG_seq_tankfire2[6] = { 0, 0x8007, 0x14, 0x4000, 0x8000, 0 };
+hero_seq DNG_seq_tankfire3[6] = { 0, 0x8007, 0x14, 0x4000, 0x8000, 0 };
+hero_seq KON_seq_tankidle[6] = { 0, 0x8007, 0x14, 0x4080, 0x8000, 0 };
+hero_seq KON_seq_tankvictory[6] = { 0, 0x8007, 0x40, 0x4100, 0x8000, 0 };
+hero_seq KON_seq_tankrecoil[6] = { 0, 0x8007, 0x1E, 0x4000, 0x8000, 0 };
+hero_seq KON_seq_tankdie[6] = { 0, 0x8007, 0x29, 0x4280, 0x8000, 0 };
+hero_seq KON_seq_tankidle1[6] = { 0, 0x8007, 0x2D, 0x4180, 0x8000, 0 };
+hero_seq KON_seq_tankminelay[6] = { 0, 0x8007, 0x32, 0x4200, 0x8000, 0 };
+hero_seq KON_seq_tankfire1[6] = { 0, 0x8007, 0x14, 0x4080, 0x8000, 0 };
+hero_seq KON_seq_tankfire2[6] = { 0, 0x8007, 0x14, 0x4080, 0x8000, 0 };
+hero_seq KON_seq_tankfire3[6] = { 0, 0x8007, 0x14, 0x4080, 0x8000, 0 };
+hero_seq KAN_seq_tankidle[6] = { 0, 0x8007, 0x14, 0x4200, 0x8000, 0 };
+hero_seq KAN_seq_tankvictory[6] = { 0, 0x8007, 0x50, 0x4000, 0x8000, 0 };
+hero_seq KAN_seq_tankrecoil[6] = { 0, 0x8007, 0x1E, 0x4100, 0x8000, 0 };
+hero_seq KAN_seq_tankdie[6] = { 0, 0x8007, 0x29, 0x4180, 0x8000, 0 };
+hero_seq KAN_seq_tankidle1[6] = { 0, 0x8007, 0x2D, 0x4280, 0x8000, 0 };
+hero_seq KAN_seq_tankminelay[6] = { 0, 0x8007, 0x32, 0x4080, 0x8000, 0 };
+hero_seq KAN_seq_tankfire1[6] = { 0, 0x8007, 0x14, 0x4200, 0x8000, 0 };
+hero_seq KAN_seq_tankfire2[6] = { 0, 0x8007, 0x14, 0x4200, 0x8000, 0 };
+hero_seq KAN_seq_tankfire3[6] = { 0, 0x8007, 0x14, 0x4200, 0x8000, 0 };
+s32 TankSwirlyFireAnim[13] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A,
     0x418B, 0,
 };
-s32 D_800C98B0[13] = {
+s32 TankLaserFireAnim[13] = {
     0x4280, 0x4281, 0x4282, 0x4283, 0x4284, 0x4285, 0x4286, 0x4287, 0x4288, 0x4289, 0x428A,
     0x428B, 0,
 };
-s32 D_800C98E4[13] = {
+s32 TankFlubberFireAnim[13] = {
     0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
     0x410B, 0,
 };
-s32 D_800C9918[26] = {
+s32 TankFlamerFireAnim[26] = {
     0x4200, 0x4201, 0x4202, 0x4203, 0x4204, 0x4205, 0x4206, 0x4207, 0x4208, 0x4209, 0x420A,
     0x420B, 0, 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x4007, 0x4008, 0x4009,
     0x400A, 0x400B, 0,
 };
-s32 D_800C9980[13] = {
+s32 TankShellFireAnim[13] = {
     0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x4007, 0x4008, 0x4009, 0x400A,
     0x400B, 0,
 };
-s32 D_800C99B4[40] = {
+s32 TankRocketFireAnim[40] = {
     0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C,
     0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C,
     0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C,
     0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0x200C, 0,
 };
-s32 D_800C9A54[7] = { 0x4300, 0x4301, 0x4302, 0x4303, 0x4304, 0x4305, 0 };
-s32 D_800C9A70[13] = {
+s32 TankSwampSwirlyTurret[7] = { 0x4300, 0x4301, 0x4302, 0x4303, 0x4304, 0x4305, 0 };
+s32 TankSwampSwirlyFireAnim[13] = {
     0x4380, 0x4381, 0x4382, 0x4383, 0x4384, 0x4385, 0x4386, 0x4387, 0x4388, 0x4389, 0x438A,
     0x438B, 0,
 };
-s32 D_800C9AA4[7] = { 0x4200, 0x4201, 0x4202, 0x4203, 0x4204, 0x4205, 0 };
-s32 D_800C9AC0[13] = {
+s32 TankSwampLaserTurret[7] = { 0x4200, 0x4201, 0x4202, 0x4203, 0x4204, 0x4205, 0 };
+s32 TankSwampLaserFireAnim[13] = {
     0x4280, 0x4281, 0x4282, 0x4283, 0x4284, 0x4285, 0x4286, 0x4287, 0x4288, 0x4289, 0x428A,
     0x428B, 0,
 };
-s32 D_800C9AF4[7] = { 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0 };
-s32 D_800C9B10[13] = {
+s32 TankSwampFlubberTurret[7] = { 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0 };
+s32 TankSwampFlubberFireAnim[13] = {
     0x4080, 0x4081, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A,
     0x408B, 0,
 };
-s32 D_800C9B44[7] = { 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0 };
-s32 D_800C9B60[13] = {
+s32 TankSwampFlamerTurret[7] = { 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0 };
+s32 TankSwampFlamerFireAnim[13] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A,
     0x418B, 0,
 };
-s32 D_800C9B94[16][2] = {
+s32 TotemTargets[16][2] = {
     { 0x400, 0x400 }, { 0x180, 0x700 }, { 0x500, 0xB00 }, { 0x300, 0xE00 }, { 0x200, 0xA00 },
     { 0x900, 0xE00 }, { 0xD00, 0x900 }, { 0xE00, 0xD00 }, { 0xB00, 0x700 }, { 0xB00, 0x200 },
     { 0xF00, 0x700 }, { 0x900, 0x400 }, { 0xC00, 0x180 }, { 0xD00, 0x700 }, { 0x800, 0x200 },
     { 0x300, 0x800 },
 };
-s32 D_800C9C14[32] = {
+s32 TotemAnim0D[32] = {
     0x4280, 0x4281, 0x4282, 0x4283, 0x4284, 0x4285, 0x4286, 0x4287, 0x4288, 0x4289, 0x428A,
     0x428B, 0x428C, 0x428D, 0x428D, -1, 0x428D, 0x428D, 0x428C, 0x428B, 0x428A, 0x4289, 0x4288,
     0x4287, 0x4286, 0x4285, 0x4284, 0x4283, 0x4282, 0x4281, 0x4280, 0,
 };
-s32 D_800C9C94[20] = {
+s32 TotemAnim29[20] = {
     0x4080, 0x4081, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A,
     0x408B, 0x408C, 0x408D, 0x408E, 0x408F, 0x4090, 0x4091, 0x4092, 0,
 };
-s32 D_800C9CE4[29] = {
+s32 TotemAnim25[29] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A,
     0x418B, 0x418C, 0x418D, 0x418E, 0x418F, 0x4190, 0x4191, 0x4192, 0x4193, 0x4194, 0x4195,
     0x4196, 0x4197, 0x4198, 0x4199, 0x419A, 0x419B, 0,
 };
-s32 D_800C9D58[30] = {
+s32 TotemAnim27[30] = {
     0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x4007, 0x4008, 0x4009, 0x400A,
     0x400B, 0x400C, 0x400D, 0x400E, 0x400F, 0x4010, -1, 0x4011, 0x4012, 0x4013, 0x4014, 0x4015,
     0x4016, 0x4017, 0x4018, 0x4019, 0x401A, 0x401B, 0,
 };
-s32 D_800C9DD0[22] = {
+s32 TotemAnim26[22] = {
     0x4200, 0x4201, 0x4202, 0x4203, 0x4204, 0x4205, 0x4206, 0x4207, 0x4208, 0x4209, 0x420A,
     0x420B, 0x420C, 0x420D, 0x420D, 0x420D, 0x420D, 0x420D, 0x420D, 0x420D, 0x420D, 0,
 };
-u8 D_800C9E28[20] = { 0x12, 0, 0xF, 0, 0xC, 0, 9, 0, 0x15, 0, 0x19, 0, 0x1A, 0, 0x10, 0, 0x10, 0, 0x1B, 0 };
-u8 D_800C9E3C[20] = { 0x15, 0, 0x12, 0, 0xF, 0, 0xD, 0, 0x1C, 0, 0x1E, 0, 0x1E, 0, 0x10, 0, 0x10, 0, 0x20, 0 };
-u8 D_800C9E50[12] = { 0x10, 0, 0x18, 0, 0x20, 0, 0x10, 0, 0x18, 0, 0x20, 0 };
-u8 D_800C9E5C[24] = {
-    0xE, 0, 0x15, 0, 0x1C, 0, 0xC, 0, 0x13, 0, 0x19, 0, 0xA, 0, 0xF, 0, 0x15, 0, 8, 0, 0xD, 0,
-    0x12, 0,
+u16 TankDesertAiSkill[10] = {
+    0x12, 0xF, 0xC, 9, 0x15, 0x19, 0x1A, 0x10, 0x10, 0x1B,
 };
-u8 D_800C9E74[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800C9E88[20] = { 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800C9E9C[20] = { 0x16, 0, 0x13, 0, 0x10, 0, 0xD, 0, 0x1A, 0, 0x1C, 0, 0x1E, 0, 0x10, 0, 0x10, 0, 0x1C, 0 };
-u8 D_800C9EB0[20] = { 0x19, 0, 0x16, 0, 0x13, 0, 0x10, 0, 0x1C, 0, 0x1E, 0, 0x20, 0, 0x10, 0, 0x10, 0, 0x20, 0 };
-u8 D_800C9EC4[12] = { 0x10, 0, 0x18, 0, 0x20, 0, 0x10, 0, 0x18, 0, 0x20, 0 };
-u8 D_800C9ED0[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+u16 TankDesertAiSkillAlt[10] = {
+    0x15, 0x12, 0xF, 0xD, 0x1C, 0x1E, 0x1E, 0x10, 0x10, 0x20,
 };
-u8 D_800C9EE8[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800C9EFC[20] = { 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800C9F10[20] = { 0x18, 0, 0x15, 0, 0x12, 0, 0xF, 0, 0x15, 0, 0x16, 0, 0x1A, 0, 0x10, 0, 0x10, 0, 0x16, 0 };
-u8 D_800C9F24[20] = { 0x1A, 0, 0x17, 0, 0x14, 0, 0x11, 0, 0x1C, 0, 0x1D, 0, 0x1C, 0, 0x10, 0, 0x10, 0, 0x20, 0 };
-u8 D_800C9F38[12] = { 0x10, 0, 0x18, 0, 0x20, 0, 0x10, 0, 0x18, 0, 0x20, 0 };
-u8 D_800C9F44[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+u16 TankDesertAiTeamSkill[6] = {
+    0x10, 0x18, 0x20, 0x10, 0x18, 0x20,
 };
-u8 D_800C9F5C[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800C9F70[20] = { 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800C9F84[20] = { 0x15, 0, 0x12, 0, 0xF, 0, 0xC, 0, 0x15, 0, 0x18, 0, 0x14, 0, 0x10, 0, 0x10, 0, 0x18, 0 };
-u8 D_800C9F98[20] = { 0x15, 0, 0x12, 0, 0xF, 0, 0xD, 0, 0x15, 0, 0x18, 0, 0x18, 0, 0x10, 0, 0x10, 0, 0x1C, 0 };
-u8 D_800C9FAC[12] = { 1, 0, 0x10, 0, 0x1A, 0, 1, 0, 0x10, 0, 0x1A, 0 };
-u8 D_800C9FB8[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+u16 TankDesertAiHumanRoundTweak[12] = {
+    0xE, 0x15, 0x1C, 0xC, 0x13, 0x19, 0xA, 0xF, 0x15, 8, 0xD, 0x12,
 };
-u8 D_800C9FD0[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800C9FE4[20] = { 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800C9FF8[148] = {
-    0x12, 0, 0xF, 0, 0xC, 0, 9, 0, 0x15, 0, 0x15, 0, 0x14, 0, 0x10, 0, 0x10, 0, 0x20, 0, 0x10,
-    0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10,
-    0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10,
-    0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10,
-    0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10,
-    0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10,
-    0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10,
-    0, 0x10, 0, 0x10, 0, 0x10, 0,
+u16 TankDesertAiBotTweak[10] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 2,
 };
-u8 D_800CA08C[148] = {
-    0x15, 0, 0x12, 0, 0xF, 0, 0xD, 0, 0x1C, 0, 0x1C, 0, 0x1C, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
+u16 TankDesertAiHumanTweak[10] = {
+    0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
 };
-u8 D_800CA120[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800CA134[20] = { 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800CA148[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+u16 TankMetalAiSkill[10] = {
+    0x16, 0x13, 0x10, 0xD, 0x1A, 0x1C, 0x1E, 0x10, 0x10, 0x1C,
 };
-s32 D_800CA160[7] = { 0, 1, 2, 3, 0, 1, 2 };
-s32 D_800CA17C[9][2] = {
+u16 TankMetalAiSkillAlt[10] = {
+    0x19, 0x16, 0x13, 0x10, 0x1C, 0x1E, 0x20, 0x10, 0x10, 0x20,
+};
+u16 TankMetalAiTeamSkill[6] = {
+    0x10, 0x18, 0x20, 0x10, 0x18, 0x20,
+};
+u16 TankMetalAiHumanRoundTweak[12] = {
+    0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14,
+};
+u16 TankMetalAiBotTweak[10] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 2,
+};
+u16 TankMetalAiHumanTweak[10] = {
+    0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+};
+u16 TankJungleAiSkill[10] = {
+    0x18, 0x15, 0x12, 0xF, 0x15, 0x16, 0x1A, 0x10, 0x10, 0x16,
+};
+u16 TankJungleAiSkillAlt[10] = {
+    0x1A, 0x17, 0x14, 0x11, 0x1C, 0x1D, 0x1C, 0x10, 0x10, 0x20,
+};
+u16 TankJungleAiTeamSkill[6] = {
+    0x10, 0x18, 0x20, 0x10, 0x18, 0x20,
+};
+u16 TankJungleAiHumanRoundTweak[12] = {
+    0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14,
+};
+u16 TankJungleAiBotTweak[10] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 2,
+};
+u16 TankJungleAiHumanTweak[10] = {
+    0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+};
+u16 TankSwampAiSkill[10] = {
+    0x15, 0x12, 0xF, 0xC, 0x15, 0x18, 0x14, 0x10, 0x10, 0x18,
+};
+u16 TankSwampAiSkillAlt[10] = {
+    0x15, 0x12, 0xF, 0xD, 0x15, 0x18, 0x18, 0x10, 0x10, 0x1C,
+};
+u16 TankSwampAiTeamSkill[6] = {
+    1, 0x10, 0x1A, 1, 0x10, 0x1A,
+};
+u16 TankSwampAiHumanRoundTweak[12] = {
+    0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14,
+};
+u16 TankSwampAiBotTweak[10] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+};
+u16 TankSwampAiHumanTweak[10] = {
+    0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+};
+u16 TankBossAiSkill[74] = {
+    0x12, 0xF, 0xC, 9, 0x15, 0x15, 0x14, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+};
+u16 TankBossAiSkillAlt[74] = {
+    0x15, 0x12, 0xF, 0xD, 0x1C, 0x1C, 0x1C, 0x10, 0x10, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+};
+u16 TankBossAiBotTweak[10] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+};
+u16 TankBossAiHumanTweak[10] = {
+    0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+};
+u16 TankBossAiHumanRoundTweak[12] = {
+    0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14,
+};
+s32 TankBotTargetOrder[7] = { 0, 1, 2, 3, 0, 1, 2 };
+s32 TankBotWanderPoints[9][2] = {
     { 0x200, 0x200 }, { 0x800, 0x200 }, { 0xE00, 0x200 }, { 0x200, 0x800 }, { 0x800, 0x800 },
     { 0xE00, 0x800 }, { 0x200, 0xE00 }, { 0x800, 0xE00 }, { 0xE00, 0xE00 },
 };
-u8 D_800CA1C4[64] = {
+u8 TankDesertMap[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0x33, 0, 0x73, 0x93, 0, 0xD3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0x37, 0, 0x77, 0x97, 0, 0xD7, 0, 0, 0x39, 0, 0x79, 0x99, 0, 0xD9, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0x3D, 0, 0x7D, 0x9D, 0, 0xDD, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u8 D_800CA204[64] = {
+u8 TankDesertMapAlt[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0x33, 0, 0x73, 0x93, 0, 0xD3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0x37, 0, 0, 0, 0, 0xD7, 0, 0, 0x39, 0, 0, 0, 0, 0xD9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x3D,
     0, 0x7D, 0x9D, 0, 0xDD, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u8 D_800CA244[64] = {
+u8 TankJungleMap[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x77,
     0x97, 0, 0, 0, 0, 0, 0, 0x79, 0x99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u8 D_800CA284[64] = {
+u8 TankMetalMap[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x33, 0, 0x73, 0, 0xB3, 0, 0xF3, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0x37, 0, 0x77, 0, 0xB7, 0, 0xF7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x3B, 0, 0x7B, 0,
     0xBB, 0, 0xFB, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u8 D_800CA2C4[72] = {0};
-u8 D_800CA30C[64] = {0};
+u8 TankBossMap[72] = {0};
+u8 TankSwampMap[64] = {0};
 s32 TankMapNas[64] = {0};
-s32 D_800CA44C[16] = { -3, -2, -1, 0, 0, 1, 2, 3, 3, 2, 1, 0, 0, -1, -2, -3 };
-u32 D_800CA48C[8] = { 0x201A, 0x201B, 0x201C, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021 };
-RockTblEnt D_800CA4AC[3] = { { 0x2001, 0 }, { 0x2002, 0 }, { 0x2003, 0 } };
-s32 D_800CA4B8[82] = {
+s32 TankWaterBob[16] = { -3, -2, -1, 0, 0, 1, 2, 3, 3, 2, 1, 0, 0, -1, -2, -3 };
+u32 MineBallFrames[8] = { 0x201A, 0x201B, 0x201C, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021 };
+RockTblEnt ShrapnelFrames[3] = { { 0x2001, 0 }, { 0x2002, 0 }, { 0x2003, 0 } };
+s32 PickupSpots[82] = {
     0x100, 0x100, 0x100, 0x300, 0x100, 0x500, 0x100, 0x700, 0x100, 0x900, 0x100, 0xB00, 0x100,
     0xD00, 0x500, 0x100, 0x500, 0x300, 0x500, 0x500, 0x500, 0x700, 0x500, 0x900, 0x500, 0xB00,
     0x500, 0xD00, 0x900, 0x100, 0x900, 0x300, 0x900, 0x500, 0x900, 0x700, 0x900, 0x900, 0x900,
@@ -386,82 +476,82 @@ s32 D_800CA4B8[82] = {
     0x100, 0x900, 0x100, 0xB00, 0x100, 0xD00, 0x100, 0x300, 0x100, 0x700, 0x100, 0xB00, 0x1100,
     0x300, 0x1100, 0x700, 0x1100, 0xB00,
 };
-s32 D_800CA600[4] = { 0x100, 0x500, 0xB00, 0xF00 };
-s32 D_800CA610[4] = { 0x100, 0x500, 0xB00, 0xF00 };
-s32 D_800CA620[4] = { 0x100, 0x500, 0xB00, 0xF00 };
-s32 D_800CA630[4] = { 0x100, 0x500, 0x900, 0xD00 };
-s32 D_800CA640[4] = { 0x300, 0x500, 0x900, 0xD00 };
-Ovl5fU16Pad D_800CA650[33] = {
+s32 HelicopterZSwamp[4] = { 0x100, 0x500, 0xB00, 0xF00 };
+s32 HelicopterZDesert[4] = { 0x100, 0x500, 0xB00, 0xF00 };
+s32 HelicopterZJungle[4] = { 0x100, 0x500, 0xB00, 0xF00 };
+s32 HelicopterZMetal[4] = { 0x100, 0x500, 0x900, 0xD00 };
+s32 HelicopterZBoss[4] = { 0x300, 0x500, 0x900, 0xD00 };
+Ovl5fU16Pad HelicopterFrames[33] = {
     { 0x4080, 0 }, { 0x4081, 0 }, { 0x4082, 0 }, { 0x4083, 0 }, { 0x4084, 0 }, { 0x4085, 0 },
     { 0x4086, 0 }, { 0x4087, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
     { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
     { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
     { 0, 0 },
 };
-RockTblEnt D_800CA6D4[6] = { { 0x2015, 0 }, { 0x2010, 0 }, { 0x2011, 0 }, { 0x2012, 0 }, { 0x2013, 0 }, { 0x2014, 0 } };
-s32 D_800CA6EC[17] = {
+RockTblEnt RockFrames[6] = { { 0x2015, 0 }, { 0x2010, 0 }, { 0x2011, 0 }, { 0x2012, 0 }, { 0x2013, 0 }, { 0x2014, 0 } };
+s32 PeriscopeFrames[17] = {
     0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x4007, 0x4008, 0x4009, 0x400A,
     0x400B, 0x400C, 0x400D, 0x400E, 0x400F, 0,
 };
-s32 D_800CA730[29] = {
+s32 PillarPattern0[29] = {
     0xB4, 2, 1, 0x2014, 1, 2, 0x2012, 2, 5, 0x2016, 1, 4, 0x2013, 6, 1, 0x201E, 7, 2, 0x2021,
     6, 5, 0x2020, 7, 4, 0x2022, 4, 3, 0x201A, -1,
 };
-s32 D_800CA7A4[17] = { 0xB4, 3, 2, 0x2017, 3, 4, 0x2018, 5, 2, 0x201C, 5, 4, 0x201D, 4, 3, 0x201A, -1 };
-s32 D_800CA7E8[26] = {
+s32 PillarPattern1[17] = { 0xB4, 3, 2, 0x2017, 3, 4, 0x2018, 5, 2, 0x201C, 5, 4, 0x201D, 4, 3, 0x201A, -1 };
+s32 PillarPattern2[26] = {
     0xB4, 1, 2, 0x2012, 1, 4, 0x2013, 3, 2, 0x2017, 3, 4, 0x2018, 5, 2, 0x201C, 5, 4, 0x201D,
     7, 2, 0x2021, 7, 4, 0x2022, -1,
 };
-s32 D_800CA850[29] = {
+s32 PillarPattern3[29] = {
     0xB4, 2, 1, 0x2014, 4, 1, 0x2019, 6, 1, 0x201E, 2, 3, 0x2015, 4, 3, 0x201A, 6, 3, 0x201F,
     2, 5, 0x2016, 4, 5, 0x201B, 6, 5, 0x2020, -1,
 };
-s32 *D_800CA8C4[32] = {
-    (void *)&D_800CA7E8, (void *)&D_800CA850, (void *)&D_800CA730, (void *)&D_800CA7A4,
-    (void *)&D_800CA7E8, (void *)&D_800CA850, (void *)&D_800CA730, (void *)&D_800CA7A4,
-    (void *)&D_800CA7E8, (void *)&D_800CA850, (void *)&D_800CA730, (void *)&D_800CA7A4,
-    (void *)&D_800CA7E8, (void *)&D_800CA850, (void *)&D_800CA730, (void *)&D_800CA7A4,
-    (void *)&D_800CA7E8, (void *)&D_800CA850, (void *)&D_800CA730, (void *)&D_800CA7A4,
-    (void *)&D_800CA7E8, (void *)&D_800CA850, (void *)&D_800CA730, (void *)&D_800CA7A4,
-    (void *)&D_800CA7E8, (void *)&D_800CA850, (void *)&D_800CA730, (void *)&D_800CA7A4,
-    (void *)&D_800CA7E8, (void *)&D_800CA850, (void *)&D_800CA730, (void *)&D_800CA7A4,
+s32 *PillarWaves[32] = {
+    (void *)&PillarPattern2, (void *)&PillarPattern3, (void *)&PillarPattern0, (void *)&PillarPattern1,
+    (void *)&PillarPattern2, (void *)&PillarPattern3, (void *)&PillarPattern0, (void *)&PillarPattern1,
+    (void *)&PillarPattern2, (void *)&PillarPattern3, (void *)&PillarPattern0, (void *)&PillarPattern1,
+    (void *)&PillarPattern2, (void *)&PillarPattern3, (void *)&PillarPattern0, (void *)&PillarPattern1,
+    (void *)&PillarPattern2, (void *)&PillarPattern3, (void *)&PillarPattern0, (void *)&PillarPattern1,
+    (void *)&PillarPattern2, (void *)&PillarPattern3, (void *)&PillarPattern0, (void *)&PillarPattern1,
+    (void *)&PillarPattern2, (void *)&PillarPattern3, (void *)&PillarPattern0, (void *)&PillarPattern1,
+    (void *)&PillarPattern2, (void *)&PillarPattern3, (void *)&PillarPattern0, (void *)&PillarPattern1,
 };
-Ovl5fU16Pad D_800CA944[4] = { { 0x4003, 0 }, { 0x4007, 0 }, { 0x400B, 0 }, { 0x400F, 0 } };
-s32 D_800CA954[16] = { 0xA, -0x14, 0xA, -0x14, 0xA, 0, 0x14, -0xA, 0x14, -0x14, 0x1E, 0, -0x14, 0x14, -0xA, 0 };
-u16 D_800CA994[20] = {
+Ovl5fU16Pad PillarCoverFrames[4] = { { 0x4003, 0 }, { 0x4007, 0 }, { 0x400B, 0 }, { 0x400F, 0 } };
+s32 TankBossBob[16] = { 0xA, -0x14, 0xA, -0x14, 0xA, 0, 0x14, -0xA, 0x14, -0x14, 0x1E, 0, -0x14, 0x14, -0xA, 0 };
+u16 CrashTurretFrames[20] = {
     0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x4007, 0x4008, 0x4009, 0x400A,
     0x400B, 0x400C, 0x400D, 0x400E, 0x400F, 0x4010, 0x4011, 0, 0,
 };
-u16 D_800CA9BC[20] = {
+u16 CrashTurretFramesAlt[20] = {
     0x4080, 0x4081, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A,
     0x408B, 0x408C, 0x408D, 0x408E, 0x408F, 0x4090, 0x4091, 0, 0,
 };
 Ovl5fPoint TankBossTargets[5] = { { 0x700, 0 }, { 0x700, 0 }, { 0, 0x700 }, { 0, 0x700 }, { 0x1200, 0x700 } };
-s32 D_800CAA0C[21] = {
+s32 MoeMoveAnim[21] = {
     0x4180, 0x4181, 0x4182, 0x4183, 0x4184, 0x4185, 0x4186, 0x4187, 0x4188, 0x4189, 0x418A,
     0x418B, 0x418C, 0x418D, 0x418E, 0x418F, 0x4190, 0x4191, 0x4192, 0x4193, 0,
 };
-s32 D_800CAA60[31] = {
+s32 MoeDieAnim[31] = {
     0x4280, 0x4281, 0x4282, 0x4283, 0x4284, 0x4285, 0x4286, 0x4287, 0x4288, 0x4289, 0x428A,
     0x428B, 0x428C, 0x428D, 0x428E, 0x428F, 0x4290, 0x4291, 0x4292, 0x4293, 0x4294, 0x4295,
     0x4296, 0x4297, 0x4298, 0x4299, 0x429A, 0x429B, 0x429C, 0x429D, 0,
 };
-s32 D_800CAADC[31] = {
+s32 MoeRecoilAnim[31] = {
     0x4200, 0x4201, 0x4202, 0x4203, 0x4204, 0x4205, 0x4206, 0x4207, 0x4208, 0x4209, 0x420A,
     0x420B, 0x420C, 0x420D, 0x420E, 0x420F, 0x4210, 0x4211, 0x4212, 0x4213, 0x4214, 0x4215,
     0x4216, 0x4217, 0x4218, 0x4219, 0x421A, 0x421B, 0x421C, 0x421D, 0,
 };
-s32 D_800CAB58[21] = {
+s32 JoeMoveAnim[21] = {
     0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x4007, 0x4008, 0x4009, 0x400A,
     0x400B, 0x400C, 0x400D, 0x400E, 0x400F, 0x4010, 0x4011, 0x4012, 0x4013, 0,
 };
-s32 D_800CABAC[35] = {
+s32 JoeDieAnim[35] = {
     0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
     0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115,
     0x4116, 0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x411C, 0x411D, 0x411E, 0x411F, 0x4120,
     0x4121, 0,
 };
-s32 D_800CAC38[31] = {
+s32 JoeRecoilAnim[31] = {
     0x4080, 0x4081, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089, 0x408A,
     0x408B, 0x408C, 0x408D, 0x408E, 0x408F, 0x4090, 0x4091, 0x4092, 0x4093, 0x4094, 0x4095,
     0x4096, 0x4097, 0x4098, 0x4099, 0x409A, 0x409B, 0x409C, 0x409D, 0,
@@ -482,35 +572,35 @@ s32 D_800CB0AC[5] = {0};
 NAS *TankMines[8] = {0};
 s32 TankCountdown = 0;
 s32 TankPendingSfx = 0;
-EXTengine *D_800CB0E8 = 0;
-s32 D_800CB0EC = 0;
+EXTengine *TankCountdownEng = 0;
+s32 TankPillarSfxDelay = 0;
 s32 TankLevelOver = 0;
-s32 D_800CB0F4 = 0;
-s32 D_800CB0F8 = 0;
-s32 D_800CB0FC = 0;
+s32 HelicopterCount = 0;
+s32 TankDropDelay = 0;
+s32 TankShotBounce = 0;
 s32 TankArenaMaxX = 0;
 s32 TankArenaMaxZ = 0;
 s32 D_800CB108[9][7] = {0};
-s32 D_800CB204 = 0;
-NAS *D_800CB208 = 0;
-EXTengine *D_800CB20C = 0;
-s32 D_800CB210 = 0;
-NAS *D_800CB214 = 0;
-NAS *D_800CB218 = 0;
-NAS *D_800CB21C = 0;
-NAS *D_800CB220 = 0;
+s32 PillarWave = 0;
+NAS *TankBossNas = 0;
+EXTengine *TankBossEng = 0;
+s32 TankBossStatus = 0;
+NAS *PeriscopePuff = 0;
+NAS *TotemPole = 0;
+NAS *TotemTop = 0;
+NAS *TotemBot = 0;
 NAS *TankBossCrashTurrets[3] = {0};
 NAS *TankBossCortexTurrets[4] = {0};
 NAS *TankBossRocketTurrets[2] = {0};
-s32 D_800CB248 = 0;
+s32 TankBossRocketDelay = 0;
 s32 *MoeAnimPtr = 0;
 s32 *JoeAnimPtr = 0;
 s32 MoeState = 0;
 s32 JoeState = 0;
-s32 D_800CB25C = 0;
+s32 TankBossStartStatus = 0;
 s32 TankBossSightedHero = 0;
 NAS *TankObjects[8] = {0};
-s32 D_800CB284[4] = {0};
+s32 TankBotForceField[4] = {0};
 
 s32 TankBotPickTarget(arg0)
 s32 arg0;
@@ -561,7 +651,7 @@ s32 arg0;
     start = Random(4);
     sum = 0;
     for (i = start; i < start + 4; i++) {
-        j = D_800CA160[i];
+        j = TankBotTargetOrder[i];
         if (j != arg0 && j != mate && !((h = &Heroes[j])->hero_status & 0xFA00) && TA_players[j].Energy > 0) {
             sum += D_8009D87C[j].unk4;
             if (D_8005A614[j + 0x5C] != 0 && (u32)Random(0x100) < 0xD3) {
@@ -580,7 +670,7 @@ s32 arg0;
     r = Random(sum);
     sum = 0;
     for (i = start; i < start + 4; i++) {
-        j = D_800CA160[i];
+        j = TankBotTargetOrder[i];
         if (j != arg0 && j != mate && !(Heroes[j].hero_status & 0xFA00) && TA_players[j].Energy > 0) {
             sum += D_8009D87C[j].unk4;
             if (r < sum) {
@@ -902,8 +992,8 @@ found:
         ai->TargetZ = e->unk10.z;
     } else {
         r = Random(9);
-        ai->TargetX = D_800CA17C[r][0];
-        ai->TargetZ = D_800CA17C[r][1];
+        ai->TargetX = TankBotWanderPoints[r][0];
+        ai->TargetZ = TankBotWanderPoints[r][1];
     }
     ai->Doing = 4;
     ai->DoingTimer = 0x5A;
@@ -1169,9 +1259,9 @@ void TankBotSteer(s32 player) {
     if (ai->AIpad & 0x8000) {
         buttons |= 0x8000;
     }
-    if (D_800CB284[player] != 0) {
+    if (TankBotForceField[player] != 0) {
         buttons |= 0x4000;
-        D_800CB284[player] = 0;
+        TankBotForceField[player] = 0;
     }
     set_joypad((u8 *)&D_80051338[player], buttons);
 }
@@ -1253,80 +1343,80 @@ void TA_PreInitLevel(void) {
     void *t;
     Ovl5fGameView *g;
 
-    D_8009D6E8.unk4 = D_800C8EA0;
+    D_8009D6E8.unk4 = TankHeroModels;
     D_8009D6E8.unk38 = TA_HeroBot;
     D_8009D6E8.unk0 = (s32)TA_InitHero;
     D_8009D6E8.unk68 = TA_KeepInBounds;
-    D_8009D6E8.unk14 = D_800C8EB4;
+    D_8009D6E8.unk14 = TankVictorySeqs;
     D_8009D6E8.unk18 = TA_CreateShadow;
     D_8009D6E8.unk20 = TA_PreMoveHero;
     D_8009D6E8.unk24 = TA_MoveHero;
     switch (D_8005A648) {
     case 6:
     default:
-        D_8009D8F4 = D_800C9E74;
-        D_8009D8F8 = D_800C9E88;
-        D_8009D904 = D_800C9E5C;
+        D_8009D8F4 = TankDesertAiBotTweak;
+        D_8009D8F8 = TankDesertAiHumanTweak;
+        D_8009D904 = TankDesertAiHumanRoundTweak;
         p = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800C9E3C;
+            t = TankDesertAiSkillAlt;
         } else {
-            t = D_800C9E28;
+            t = TankDesertAiSkill;
         }
         *p = t;
-        D_8009D900 = D_800C9E50;
+        D_8009D900 = TankDesertAiTeamSkill;
         return;
     case 8:
-        D_8009D8F4 = D_800C9EE8;
-        D_8009D8F8 = D_800C9EFC;
-        D_8009D904 = D_800C9ED0;
+        D_8009D8F4 = TankMetalAiBotTweak;
+        D_8009D8F8 = TankMetalAiHumanTweak;
+        D_8009D904 = TankMetalAiHumanRoundTweak;
         p2 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800C9EB0;
+            t = TankMetalAiSkillAlt;
         } else {
-            t = D_800C9E9C;
+            t = TankMetalAiSkill;
         }
         *p2 = t;
-        D_8009D900 = D_800C9EC4;
+        D_8009D900 = TankMetalAiTeamSkill;
         return;
     case 7:
-        D_8009D8F4 = D_800C9F5C;
-        D_8009D8F8 = D_800C9F70;
-        D_8009D904 = D_800C9F44;
+        D_8009D8F4 = TankJungleAiBotTweak;
+        D_8009D8F8 = TankJungleAiHumanTweak;
+        D_8009D904 = TankJungleAiHumanRoundTweak;
         p3 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800C9F24;
+            t = TankJungleAiSkillAlt;
         } else {
-            t = D_800C9F10;
+            t = TankJungleAiSkill;
         }
         *p3 = t;
-        D_8009D900 = D_800C9F38;
+        D_8009D900 = TankJungleAiTeamSkill;
         return;
     case 5:
-        D_8009D8F4 = D_800C9FD0;
-        D_8009D8F8 = D_800C9FE4;
-        D_8009D904 = D_800C9FB8;
+        D_8009D8F4 = TankSwampAiBotTweak;
+        D_8009D8F8 = TankSwampAiHumanTweak;
+        D_8009D904 = TankSwampAiHumanRoundTweak;
         p4 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800C9F98;
+            t = TankSwampAiSkillAlt;
         } else {
-            t = D_800C9F84;
+            t = TankSwampAiSkill;
         }
         *p4 = t;
-        D_8009D900 = D_800C9FAC;
+        D_8009D900 = TankSwampAiTeamSkill;
         return;
     case 9:
-        D_8009D8F4 = D_800CA120;
-        D_8009D8F8 = D_800CA134;
-        D_8009D904 = D_800CA148;
+        D_8009D8F4 = TankBossAiBotTweak;
+        D_8009D8F8 = TankBossAiHumanTweak;
+        D_8009D904 = TankBossAiHumanRoundTweak;
         p5 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800CA08C;
+            t = TankBossAiSkillAlt;
         } else {
-            t = D_800C9FF8;
+            t = TankBossAiSkill;
         }
         *p5 = t;
-        D_8009D900 = D_800C9FAC;
+        D_8009D900 = TankSwampAiTeamSkill;
         Heroes[2].hero_name = 9;
         Heroes[3].hero_name = 9;
         g = (Ovl5fGameView *)D_8005A614;
@@ -1362,7 +1452,7 @@ void TA_InitLevel(void) {
     TankLevelOver = 0;
     TankBossSightedHero = -1;
     TankCountdown = 0;
-    D_800CB0EC = 0;
+    TankPillarSfxDelay = 0;
     World_floor_level = 0;
     Init_Clock(0x140, 0x1E, 0);
     g = (Ovl5fSetupView *)D_8005A614;
@@ -1442,7 +1532,7 @@ void TA_InitLevel(void) {
     switch (D_8005A648) {
     default:
     case 5:
-        src1 = src2 = D_800CA30C;
+        src1 = src2 = TankSwampMap;
         TankMapWidth = 9;
         TankMapHeight = 8;
         CAM5F->wC = 0x930;
@@ -1452,7 +1542,7 @@ void TA_InitLevel(void) {
         PlaySfx(0x50F, NULL, NULL, 0x1000, 0x1E00, 0);
         break;
     case 6:
-        src2 = D_800CA1C4;
+        src2 = TankDesertMap;
         TankMapWidth = 8;
         TankMapHeight = 8;
         CAM5F->wC = 0x800;
@@ -1461,15 +1551,15 @@ void TA_InitLevel(void) {
         TankArenaMaxZ = 0xF00;
         if (D_8005A646 & 0x80) {
             CreateNAS(0x800, -0x3C, 0x800, 0x1318, 0x11);
-            src1 = D_800CA204;
+            src1 = TankDesertMapAlt;
         } else {
             src1 = src2;
         }
         break;
     case 7:
-        InitAmbience(&D_800C8ED4);
+        InitAmbience(&TankJungleAmbience);
         CreateNAS(0x800, 0, 0x800, 0x131A, 0x11);
-        src1 = src2 = D_800CA244;
+        src1 = src2 = TankJungleMap;
         TankMapWidth = 8;
         TankMapHeight = 8;
         CAM5F->wC = 0x800;
@@ -1484,10 +1574,10 @@ void TA_InitLevel(void) {
         TankMapHeight = 7;
         CAM5F->wC = 0x930;
         CAM5F->w14 = 0x1C0;
-        D_800CB204 = 0;
+        PillarWave = 0;
         CreateNAS(0, 0, 0, 0x1310, 0x11);
         CreateNAS(0, 0, 0, 0x1309, 0x11);
-        src1 = src2 = D_800CA284;
+        src1 = src2 = TankMetalMap;
         TankArenaMaxX = 0x1100;
         TankArenaMaxZ = 0xD00;
         break;
@@ -1514,7 +1604,7 @@ void TA_InitLevel(void) {
         CreateNAS(0x600, 0, 0x900, 0x131F, 0x11);
         CreateNAS(0xC00, 0, 0x900, 0x131E, 0x11);
         CreateNAS(0x900, 0x7D0, 0x10E0, 0x1313, 0x11);
-        src1 = src2 = D_800CA2C4;
+        src1 = src2 = TankBossMap;
         MoeState = 0;
         JoeState = 0;
         break;
@@ -1531,8 +1621,8 @@ void TA_InitLevel(void) {
         }
     }
     TankPendingSfx = 0;
-    D_800CB0F8 = 0x50;
-    D_800CB248 = 0x1E0 / (D_8009D88E + 1);
+    TankDropDelay = 0x50;
+    TankBossRocketDelay = 0x1E0 / (D_8009D88E + 1);
 }
 
 void TA_UpdateLevel(void) {
@@ -1546,7 +1636,7 @@ void TA_UpdateLevel(void) {
     s32 j;
 
     if (D_8005A648 == 8) {
-        D_800CB0F8--;
+        TankDropDelay--;
     }
     for (i = 0; i < 4; i++) {
         ta = &TA_players[i];
@@ -1562,14 +1652,14 @@ void TA_UpdateLevel(void) {
     }
     if (TankCountdown <= 0) {
         if (TankCountdown != 0) {
-            PlaySfx(0x4B9, NULL, &D_800CB0E8->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(0x4B9, NULL, &TankCountdownEng->unk10, 0x1000, 0x1E00, 0);
             TankCountdown = 60;
         }
     } else {
         TankCountdown--;
     }
-    if (D_800CB0EC > 0) {
-        if (--D_800CB0EC == 0) {
+    if (TankPillarSfxDelay > 0) {
+        if (--TankPillarSfxDelay == 0) {
             PlaySfx(0x501, NULL, NULL, 0x1000, 0x1E00, 0);
         }
     }
@@ -1785,7 +1875,7 @@ void TA_InitHero(u32 player) {
         break;
     }
     ta = &TA_players[player];
-    ta->Speed = D_800C8F14[Heroes[player].hero_name - 1];
+    ta->Speed = TankHeroSpeeds[Heroes[player].hero_name - 1];
     hh = &Heroes[player];
     ta->SpeedX = 0;
     ta->SpeedZ = 0;
@@ -1886,7 +1976,7 @@ void TA_MoveHero(u32 player) {
             if (ta->HangaboutTime != 0) {
                 ta->HangaboutTime--;
             }
-            SetHullSFX(player, eng, D_800C94C8[player]);
+            SetHullSFX(player, eng, TankHullSfx[player]);
         } else {
             if (!(hero->hero_status & 0xFA00)) {
                 ta->HangaboutTime++;
@@ -1897,23 +1987,23 @@ void TA_MoveHero(u32 player) {
             if (--ta->TurretSFXDuration == 0) {
                 SetTurretSFX(player, (s32)eng, 0);
             } else {
-                SetTurretSFX(player, (s32)eng, D_800C94D8[player]);
+                SetTurretSFX(player, (s32)eng, TankTurretSfx[player]);
             }
         }
     } else {
         if (((PadButtons *)D_80051338)[player].unk50 & 0x800) {
-            SetHullSFX(player, eng, D_800C9408[player]);
+            SetHullSFX(player, eng, TankHoverSfx[player]);
         } else {
             SetHullSFX(player, eng, 0);
         }
     }
     if (((Ovl5fModeView *)D_8005A614)->mode == 8 && D_8005A614[player + 0x5C] == 0 &&
         (((Ovl5fGameView *)D_8005A614)->flags & 0x80) && ta->HangaboutTime >= 30 && TankLevelOver == 0 &&
-        D_800CB0F8 <= 0 && (eng->unk10.z > 0x400 || (u32)(eng->unk10.x - 0x301) < 0xDFF)) {
+        TankDropDelay <= 0 && (eng->unk10.z > 0x400 || (u32)(eng->unk10.x - 0x301) < 0xDFF)) {
         nas = CreateNAS(eng->unk10.x, -0x8FC, eng->unk10.z, 0x1308, 0x11);
         if (nas != NULL) {
             nas->UserInfo.status = 6;
-            D_800CB0F8 = 60;
+            TankDropDelay = 60;
             nas->Engine->sub->unk74 = 0x202B;
             ta->HangaboutTime = 0;
         }
@@ -1926,7 +2016,7 @@ void AnimateTank(u32 player) {
             TA_players[player].IdleAnimCt = Random(0x1E);
             SetHeroSeq(player, 0x5A);
             TA_players[player].IdleAnimCt = 0;
-            PlaySfx(D_800C94A8[Heroes[player].hero_name - 1], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00,
+            PlaySfx(TankTauntSfx[Heroes[player].hero_name - 1], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00,
                     0);
             return;
         }
@@ -1947,7 +2037,7 @@ void ResetToBasicWeapon(s32 player) {
     case 2:
         ta->MainWeaponType = 9;
         if (D_8005A648 == 5) {
-            ta->TurretAnimPtr = D_800C9A54;
+            ta->TurretAnimPtr = TankSwampSwirlyTurret;
             sub->next->unk74 = 0x4300;
         } else {
             sub->unk74 = 0x2010;
@@ -1957,7 +2047,7 @@ void ResetToBasicWeapon(s32 player) {
     case 8:
         ta->MainWeaponType = 8;
         if (D_8005A648 == 5) {
-            ta->TurretAnimPtr = D_800C9B44;
+            ta->TurretAnimPtr = TankSwampFlamerTurret;
             sub->next->unk74 = 0x4100;
         } else {
             sub->unk74 = 0x2009;
@@ -1966,7 +2056,7 @@ void ResetToBasicWeapon(s32 player) {
     default:
         ta->MainWeaponType = 11;
         if (D_8005A648 == 5) {
-            ta->TurretAnimPtr = D_800C9AA4;
+            ta->TurretAnimPtr = TankSwampLaserTurret;
             sub->next->unk74 = 0x4200;
         } else {
             sub->unk74 = 0x2011;
@@ -1976,7 +2066,7 @@ void ResetToBasicWeapon(s32 player) {
     case 6:
         ta->MainWeaponType = 10;
         if (D_8005A648 == 5) {
-            ta->TurretAnimPtr = D_800C9AF4;
+            ta->TurretAnimPtr = TankSwampFlubberTurret;
             sub->next->unk74 = 0x4000;
         } else {
             sub->unk74 = 0x2012;
@@ -1993,7 +2083,7 @@ void ResetToBasicWeapon(s32 player) {
             sub->unk74 = 0x2011;
             return;
         }
-        if (D_800CB25C == 0x3A) {
+        if (TankBossStartStatus == 0x3A) {
             ta->MainWeaponType = 2;
             sub->unk74 = 0x200B;
             return;
@@ -2054,19 +2144,19 @@ void AnimateTankTurret(s32 player) {
                 case 9:
                 default:
                     sub2->unk74 = 0x4300;
-                    ta->TurretAnimPtr = D_800C9A54;
+                    ta->TurretAnimPtr = TankSwampSwirlyTurret;
                     break;
                 case 11:
                     sub2->unk74 = 0x4200;
-                    ta->TurretAnimPtr = D_800C9AA4;
+                    ta->TurretAnimPtr = TankSwampLaserTurret;
                     break;
                 case 10:
                     sub2->unk74 = 0x4000;
-                    ta->TurretAnimPtr = D_800C9AF4;
+                    ta->TurretAnimPtr = TankSwampFlubberTurret;
                     break;
                 case 8:
                     sub2->unk74 = 0x4100;
-                    ta->TurretAnimPtr = D_800C9B44;
+                    ta->TurretAnimPtr = TankSwampFlamerTurret;
                     break;
                 }
             } else {
@@ -2138,16 +2228,16 @@ void AnimateTankTurret(s32 player) {
             switch (ta->MainWeaponType) {
             case 9:
             default:
-                ta->TurretAnimPtr = D_800C9A54;
+                ta->TurretAnimPtr = TankSwampSwirlyTurret;
                 break;
             case 11:
-                ta->TurretAnimPtr = D_800C9AA4;
+                ta->TurretAnimPtr = TankSwampLaserTurret;
                 break;
             case 10:
-                ta->TurretAnimPtr = D_800C9AF4;
+                ta->TurretAnimPtr = TankSwampFlubberTurret;
                 break;
             case 8:
-                ta->TurretAnimPtr = D_800C9B44;
+                ta->TurretAnimPtr = TankSwampFlamerTurret;
                 break;
             }
             goto loop;
@@ -2256,10 +2346,10 @@ void UpdateTankHeroWeapons(s32 player) {
                     ta->TurretFiring = 0xB;
                     if (D_8005A648 == 5) {
                         sub->unk74 = 0x427F;
-                        ta->TurretAnimPtr = D_800C9AC0;
+                        ta->TurretAnimPtr = TankSwampLaserFireAnim;
                     } else {
                         sub->unk74 = 0x427F;
-                        ta->TurretAnimPtr = D_800C98B0;
+                        ta->TurretAnimPtr = TankLaserFireAnim;
                     }
                     if (Heroes[player].hero_name == 3) {
                         PlaySfx(0x4CC, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -2285,12 +2375,12 @@ void UpdateTankHeroWeapons(s32 player) {
                 case 0:
                     sub->unk74 = 0x3FFF;
                     ta->TurretFiring = 0;
-                    ta->TurretAnimPtr = D_800C9980;
+                    ta->TurretAnimPtr = TankShellFireAnim;
                     break;
                 case 3:
                     sub->unk74 = 0x3FFF;
                     ta->TurretFiring = 3;
-                    ta->TurretAnimPtr = D_800C9980;
+                    ta->TurretAnimPtr = TankShellFireAnim;
                     break;
                 case 8:
                     n = CreateNAS(eng->unk10.x, eng->unk10.y - 0xFA, eng->unk10.z, 0x130D, 0x11);
@@ -2301,10 +2391,10 @@ void UpdateTankHeroWeapons(s32 player) {
                     ta->TurretFiring = 8;
                     if (D_8005A648 == 5) {
                         sub->unk74 = 0x417F;
-                        ta->TurretAnimPtr = D_800C9B60;
+                        ta->TurretAnimPtr = TankSwampFlamerFireAnim;
                     } else {
                         sub->unk74 = 0x41FF;
-                        ta->TurretAnimPtr = D_800C9918;
+                        ta->TurretAnimPtr = TankFlamerFireAnim;
                     }
                     if (Heroes[player].hero_name == 2) {
                         PlaySfx(0x4CB, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -2337,9 +2427,9 @@ void UpdateTankHeroWeapons(s32 player) {
                     ta->TurretFiring = 9;
                     if (D_8005A648 == 5) {
                         sub->unk74 = 0x437F;
-                        ta->TurretAnimPtr = D_800C9A70;
+                        ta->TurretAnimPtr = TankSwampSwirlyFireAnim;
                     } else {
-                        ta->TurretAnimPtr = D_800C987C;
+                        ta->TurretAnimPtr = TankSwirlyFireAnim;
                         sub->unk74 = 0x417F;
                     }
                     if (Heroes[player].hero_name == 1) {
@@ -2372,10 +2462,10 @@ void UpdateTankHeroWeapons(s32 player) {
                     ta->TurretFiring = 0xA;
                     if (D_8005A648 == 5) {
                         sub->unk74 = 0x407F;
-                        ta->TurretAnimPtr = D_800C9B10;
+                        ta->TurretAnimPtr = TankSwampFlubberFireAnim;
                     } else {
                         sub->unk74 = 0x40FF;
-                        ta->TurretAnimPtr = D_800C98E4;
+                        ta->TurretAnimPtr = TankFlubberFireAnim;
                     }
                     if (Heroes[player].hero_name == 5) {
                         PlaySfx(0x4CE, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -2405,7 +2495,7 @@ void UpdateTankHeroWeapons(s32 player) {
                         if (n != NULL) {
                             PlaySfx(0x522, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                             e = n->Engine;
-                            a = dir - D_800C93AC[i];
+                            a = dir - TankRocketAngles[i];
                             e->unk10.x -= (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 0x19) >> 8;
                             e->unk10.z -= (D_80068BD4[a & 0xFFF].unk2 * 0x19) >> 8;
                             e->unk1E = eng->unk1E;
@@ -2418,7 +2508,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     }
                     sub->unk74 = 0x200C;
                     ta->TurretFiring = 2;
-                    ta->TurretAnimPtr = D_800C99B4;
+                    ta->TurretAnimPtr = TankRocketFireAnim;
                     ta->MainWeaponRounds--;
                     break;
                 }
@@ -2458,7 +2548,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     }
                     ta->SubWeaponFireDelay = 0x1E;
                     PlaySfx(0x50A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-                    PlaySfx(D_800C9418[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(TankMineSfx[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     ta->SubWeaponRounds--;
                     SetHeroSeq(player, 0x5B);
                 } else {
@@ -2466,7 +2556,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     CreateNAS(eng->unk10.x, eng->unk10.y + 0x14, eng->unk10.z, 0x1303, 0x11);
                     ta->SubWeaponFireDelay = 0x78;
                     PlaySfx(0x4E9, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-                    PlaySfx(D_800C9418[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(TankMineSfx[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     ta->SubWeaponRounds--;
                     SetHeroSeq(player, 0x5B);
                 }
@@ -2483,7 +2573,7 @@ subdone:
             ta->ForceFieldDelay--;
         } else if (((PadButtons *)D_80051338)[player].unk54 & 0x4000) {
             obj = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1321, 0x11);
-            PlaySfx(D_800C93F8[player], NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(TankForceFieldSfx[player], NULL, NULL, 0x1000, 0x1E00, 0);
             if (obj != NULL) {
                 obj->UserInfo.user1 = player;
             }
@@ -2506,7 +2596,7 @@ subdone:
                 case 0x6F:
                     ta->TauntDelay = 0x5A;
                     SetHeroSeq(player, 0x5A);
-                    PlaySfx(D_800C94A8[h->hero_name - 1], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(TankTauntSfx[h->hero_name - 1], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     break;
                 }
             }
@@ -2571,7 +2661,7 @@ void SetTankHeroTurn(u32 player) {
     }
     if (done == 0) {
         SetHeroSeq(player, 0x59);
-        PlaySfx(D_800C94E8[player], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(TankTurnSfx[player], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -2755,7 +2845,7 @@ void TankHeroSteerMove(s32 player) {
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -2785,7 +2875,7 @@ found:
         return;
     }
     if (TankCountdown == 0) {
-        D_800CB0E8 = eng;
+        TankCountdownEng = eng;
         TankCountdown = -1;
     }
     o = &TA_players[hit];
@@ -2835,8 +2925,8 @@ void TankHeroGridMove(s32 player) {
         return;
     }
     if (((Ovl5fModeView *)D_8005A614)->mode == 7 && !(((Ovl5fModeView *)D_8005A614)->flags & 0x80)) {
-        dx = D_800CB21C->Engine->unk10.x - eng->unk10.x;
-        dz = D_800CB21C->Engine->unk10.z - eng->unk10.z;
+        dx = TotemTop->Engine->unk10.x - eng->unk10.x;
+        dz = TotemTop->Engine->unk10.z - eng->unk10.z;
         if (dx >= -0x15D) {
             if (dx < 0x15E) {
                 if (dz >= -0x15D) {
@@ -2856,8 +2946,8 @@ void TankHeroGridMove(s32 player) {
                 }
             }
         }
-        dx = D_800CB220->Engine->unk10.x - eng->unk10.x;
-        dz = D_800CB220->Engine->unk10.z - eng->unk10.z;
+        dx = TotemBot->Engine->unk10.x - eng->unk10.x;
+        dz = TotemBot->Engine->unk10.z - eng->unk10.z;
         if (dx >= -0x15D) if (dx < 0x15E) if (dz >= -0x15D) if (dz < 0x15E) {
             if (dx < 0) {
                 m = dir & ~0x80;
@@ -2944,7 +3034,7 @@ loop:
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -2975,7 +3065,7 @@ found:
             eng->unk10.z = z;
         }
     } else if (TankCountdown == 0) {
-        D_800CB0E8 = eng;
+        TankCountdownEng = eng;
         TankCountdown = -1;
     }
 }
@@ -3161,7 +3251,7 @@ void TankHeroMove(u32 player) {
                     }
                 }
             } else if (TankCountdown == 0) {
-                D_800CB0E8 = eng;
+                TankCountdownEng = eng;
                 TankCountdown = -1;
             }
             break;
@@ -3181,7 +3271,7 @@ void TankHeroMove(u32 player) {
                     }
                 }
             } else if (TankCountdown == 0) {
-                D_800CB0E8 = eng;
+                TankCountdownEng = eng;
                 TankCountdown = -1;
             }
             break;
@@ -3200,7 +3290,7 @@ void TankHeroMove(u32 player) {
                     }
                 }
             } else if (TankCountdown == 0) {
-                D_800CB0E8 = eng;
+                TankCountdownEng = eng;
                 TankCountdown = -1;
             }
             break;
@@ -3220,7 +3310,7 @@ void TankHeroMove(u32 player) {
                     }
                 }
             } else if (TankCountdown == 0) {
-                D_800CB0E8 = eng;
+                TankCountdownEng = eng;
                 TankCountdown = -1;
             }
             break;
@@ -3245,7 +3335,7 @@ void SetTankHeroRecoil(u32 player) {
         TA_players[player].SpeedY = -0x64;
         SetHeroSeq(player, 0x57);
         Heroes[player].hero_immunity = 0x3C;
-        PlaySfx(D_800C9428[Heroes[player].hero_name - 1][Random(4)], NULL, &Heroes[player].hero_eng->unk10, 0x1000,
+        PlaySfx(TankRecoilSfx[Heroes[player].hero_name - 1][Random(4)], NULL, &Heroes[player].hero_eng->unk10, 0x1000,
                 0x1E00, 0);
     }
 }
@@ -3397,7 +3487,7 @@ s32 MoveTankShot(NAS *nas, s32 arg1, s32 arg2, s32 arg3) {
     s32 sfx;
 
 retry:
-    D_800CB0FC = 0;
+    TankShotBounce = 0;
     eng = nas->Engine;
     fux = (EXTobject_TA *)nas->FUX;
     owner = fux->Owner;
@@ -3420,7 +3510,7 @@ retry:
         }
         x += fux->SpeedX = -fux->SpeedX;
         eng->unk5E = 1;
-        D_800CB0FC = x;
+        TankShotBounce = x;
         eng->unk1E = 0x1000 - eng->unk1E;
     } else
     if (z < 0 || TankArenaMaxZ + 0x100 < z) {
@@ -3429,13 +3519,13 @@ retry:
         }
         z += fux->SpeedZ = -fux->SpeedZ;
         eng->unk5E = 1;
-        D_800CB0FC = z;
+        TankShotBounce = z;
         eng->unk1E = 0x800 - eng->unk1E;
     } else if (eng->unk10.y >= -400) {
         v = ((z >> 9) * TankMapWidth) + (x >> 9);
         tile = *(v + TankLevelsGridMapTank);
         if (tile != 0) {
-            D_800CB0FC = tile;
+            TankShotBounce = tile;
             if (fux->Status == 1) {
                 goto back;
             }
@@ -3499,7 +3589,7 @@ retry:
         if (((Ovl5fModeView *)D_8005A614)->mode == 5 && D_8005A614[hit + 0x5C] != 0 &&
             TA_players[hit].ForceFieldDelay == 0 && D_8009D908 == 0 &&
             (u32)Random(0x20) < D_8009D87C[hit].unk0) {
-            D_800CB284[hit] = 1;
+            TankBotForceField[hit] = 1;
             goto hit2;
         }
         if (owner == hit) {
@@ -3549,7 +3639,7 @@ void PlotLaserBitTA(NAS *nas) {
     sub->unk52 = 1;
     sub->unk12 = rot;
     hit = MoveTankShot(nas, 0x14, 0, 0xA);
-    if (D_800CB0FC != 0) {
+    if (TankShotBounce != 0) {
         switch ((u32)Random(3)) {
         case 0:
             sfx = 0x4D8;
@@ -3611,7 +3701,7 @@ void PlotFlamerBitTA(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    if (D_800CB0FC != 0) {
+    if (TankShotBounce != 0) {
         switch ((u32)Random(3)) {
         case 0:
             PlaySfx(0x4E1, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -3712,7 +3802,7 @@ void PlotFlubberTA(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    if (D_800CB0FC != 0) {
+    if (TankShotBounce != 0) {
         switch ((u32)Random(3)) {
         case 0:
             sfx = 0x4DE;
@@ -3774,7 +3864,7 @@ void PlotSwirlyTA(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    if (D_800CB0FC != 0) {
+    if (TankShotBounce != 0) {
         switch ((u32)Random(3)) {
         case 0:
             sfx = 0x4DB;
@@ -3898,7 +3988,7 @@ void PlotLobber_TA(NAS *nas)
       continue;
     }
     name = (*(&Heroes[j])).hero_name;
-    if ((name == 9) && (((((Ovl5fModeView *) D_8005A614)->mode != name) || (D_800CB210 != 0)) || (((u32) (j - 2)) >= 2)))
+    if ((name == 9) && (((((Ovl5fModeView *) D_8005A614)->mode != name) || (TankBossStatus != 0)) || (((u32) (j - 2)) >= 2)))
     {
       continue;
     }
@@ -3981,7 +4071,7 @@ void PlotLobber_TA(NAS *nas)
     for (hit = 0; hit < 4; hit++)
     {
       name = Heroes[hit].hero_name;
-      if ((name == 9) && (((((Ovl5fModeView *) D_8005A614)->mode != name) || (D_800CB210 != 0)) || (((u32) (hit - 2)) >= 2)))
+      if ((name == 9) && (((((Ovl5fModeView *) D_8005A614)->mode != name) || (TankBossStatus != 0)) || (((u32) (hit - 2)) >= 2)))
       {
         continue;
       }
@@ -4212,7 +4302,7 @@ void PlotMine(NAS *nas) {
         for (i = 0; i < 4; i++) {
             name = Heroes[i].hero_name;
             if (name == 9 &&
-                (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+                (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
                  (u32)(i - 2) >= 2)) {
                 continue;
             }
@@ -4252,9 +4342,9 @@ void PlotMine(NAS *nas) {
     }
     mode = ((Ovl5fModeView *)g)->mode;
     if ((mode == 8 && (((Ovl5fGameView *)g)->flags & 0x80)) || mode == 9) {
-        nas->Engine->sub->unk74 = D_800C939C[t].v;
+        nas->Engine->sub->unk74 = MineFramesBig[t].v;
     } else {
-        nas->Engine->sub->unk74 = D_800C938C[t].v;
+        nas->Engine->sub->unk74 = MineFrames[t].v;
     }
     if ((u16)(nas->UserInfo.status % 30) == 0) {
         PlaySfx(0x4EB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -4278,7 +4368,7 @@ void PlotWaterMine(NAS *nas) {
 
     t = nas->UserInfo.user2;
     eng = nas->Engine;
-    eng->unk10.y += D_800CA44C[t & 0xF];
+    eng->unk10.y += TankWaterBob[t & 0xF];
     nas->UserInfo.user2 = t + 1;
     nas->UserInfo.status = (nas->UserInfo.status + 4) & 0xFFF;
     eng->unk10.x += (D_80068BD4[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 7) >> 12;
@@ -4301,7 +4391,7 @@ void PlotWaterMine(NAS *nas) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -4376,7 +4466,7 @@ void PlotTorpedo(NAS *nas) {
     eng = nas->Engine;
     if (!(hero->hero_status & 0xA400) && hero->hero_health > 0) {
         t = nas->UserInfo.user2;
-        eng->unk10.y += D_800CA44C[t & 0xF];
+        eng->unk10.y += TankWaterBob[t & 0xF];
         nas->UserInfo.user2 = t + 1;
         he = hero->hero_eng;
         angle = get_angle(he->unk10.x - eng->unk10.x, he->unk10.z - eng->unk10.z);
@@ -4451,8 +4541,8 @@ void CreateMineShrapnelBits(NAS *nas) {
     case 1:
     case 3:
         for (i = 0; i < 4; i++) {
-            dx = D_800C935C[i].x;
-            dz = D_800C935C[i].z;
+            dx = MineShrapnelOffsets[i].x;
+            dz = MineShrapnelOffsets[i].z;
             m = CreateNAS(eng->unk10.x + dx, eng->unk10.y, eng->unk10.z + dz, 0x1304, 0x11);
             if (m != NULL) {
                 m->UserInfo.user1 = dx;
@@ -4510,7 +4600,7 @@ static inline s32 ShrapnelFindHero(s32 x, s32 z) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -4651,9 +4741,9 @@ void PlotPickupGenerator_TA(NAS *nas)
         }
 
         n = Random(0x29);
-        x = D_800CA4B8[n * 2];
+        x = PickupSpots[n * 2];
         new_var = x;
-        z = D_800CA4B8[(n * 2) | 1];
+        z = PickupSpots[(n * 2) | 1];
         if (PickupFindHero(new_var, z) >= 0)
         {
           return;
@@ -4793,7 +4883,7 @@ void InitHelicopterTA(NAS *nas) {
         nas->FUX = (EXT *)ext;
         ext->Status = 3;
         eng = nas->Engine;
-        if (++D_800CB0F4 & 1) {
+        if (++HelicopterCount & 1) {
             eng->unk1E = 0x400;
             eng->unk10.x = 0x1800;
             ext->SpeedX = -0x40;
@@ -4806,19 +4896,19 @@ void InitHelicopterTA(NAS *nas) {
         }
         switch ((s16)(D_8005A648 - 5)) {
         case 0:
-            eng->unk10.z = D_800CA600[Random(4)];
+            eng->unk10.z = HelicopterZSwamp[Random(4)];
             break;
         case 1:
-            eng->unk10.z = D_800CA610[Random(4)];
+            eng->unk10.z = HelicopterZDesert[Random(4)];
             break;
         case 2:
-            eng->unk10.z = D_800CA620[Random(4)];
+            eng->unk10.z = HelicopterZJungle[Random(4)];
             break;
         case 3:
-            eng->unk10.z = D_800CA630[Random(4)];
+            eng->unk10.z = HelicopterZMetal[Random(4)];
             break;
         case 4:
-            eng->unk10.z = D_800CA640[Random(4)];
+            eng->unk10.z = HelicopterZBoss[Random(4)];
             break;
         }
         p = D_80053694;
@@ -4873,7 +4963,7 @@ void PlotHelicopterTA(NAS *nas) {
     if (--nas->UserInfo.user2 < 0) {
         nas->UserInfo.user2 = 7;
     }
-    sub->unk74 = D_800CA650[nas->UserInfo.user2].v;
+    sub->unk74 = HelicopterFrames[nas->UserInfo.user2].v;
     e2 = eng->Engine;
     if (e2 != NULL) {
         e2->unk1E = eng->unk1E;
@@ -5428,7 +5518,7 @@ void PlotPeriscope(NAS *nas) {
     switch (fux->Status) {
     case 1:
         if (--fux->Counter == 30) {
-            D_800CB214 = Ovl5fPeriscopePuff(&nas->Engine->unk10, 1);
+            PeriscopePuff = Ovl5fPeriscopePuff(&nas->Engine->unk10, 1);
             PlaySfx(0x4FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
         if (fux->Counter <= 0) {
@@ -5493,7 +5583,7 @@ void PlotPeriscope(NAS *nas) {
         if (!(D_8004E0D8 & 0x1F)) {
             Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
         }
-        frame = D_800CA6EC[fux->Counter];
+        frame = PeriscopeFrames[fux->Counter];
         if (++fux->Counter == 9) {
             n = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1319, 0x11);
             if (n != NULL) {
@@ -5663,7 +5753,7 @@ void PlotPillarControl(NAS *nas) {
 
     if (TankLevelOver == 0 && --nas->UserInfo.flags == 0) {
         PlaySfx(0x501, NULL, NULL, 0x1000, 0x1E00, 0);
-        p = D_800CA8C4[D_800CB204++];
+        p = PillarWaves[PillarWave++];
         delay = *p++;
         while ((v = *p++) >= 0) {
             x = (v << 9) + 0x100;
@@ -5680,7 +5770,7 @@ void PlotPillarControl(NAS *nas) {
                 }
             }
         }
-        if (D_800CB204 < 0x20) {
+        if (PillarWave < 0x20) {
             nas->UserInfo.flags = delay + 0x46;
         } else {
             KillNAS(nas);
@@ -5713,7 +5803,7 @@ void PlotPillar(NAS *nas) {
         for (i = 0; i < 4; i++) {
             name = Heroes[i].hero_name;
             if (name == 9 &&
-                (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+                (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
                  (u32)(i - 2) >= 2)) {
                 continue;
             }
@@ -5773,7 +5863,7 @@ void PlotPillar(NAS *nas) {
         if (TankLevelOver == 0 && --nas->UserInfo.user2 <= 0) {
             nas->UserInfo.user1 = 5;
             eng->sub->unk68 = 0x20;
-            D_800CB0EC = 2;
+            TankPillarSfxDelay = 2;
             eng->sub->flags |= 0x02000000;
         }
         return;
@@ -5813,7 +5903,7 @@ static inline s32 TotemFindHero(s32 x, s32 z, s32 r) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -5934,8 +6024,8 @@ void InitTotemBit(NAS *nas, s32 id) {
         sub->unk74 = 0x4180;
         ext->TargetIndex = 0xD;
     }
-    ext->TargetX = D_800C9B94[ext->TargetIndex][0];
-    ext->TargetZ = *(s32 *)((u8 *)D_800C9B94 + ((ext->TargetIndex * 8) | 4));
+    ext->TargetX = TotemTargets[ext->TargetIndex][0];
+    ext->TargetZ = *(s32 *)((u8 *)TotemTargets + ((ext->TargetIndex * 8) | 4));
     if (nas->Failure != 0) {
         KillNAS(nas);
         return;
@@ -6024,13 +6114,13 @@ void PlotTotemBit(NAS *nas, s32 id) {
     z = eng->unk10.z;
     switch ((u32)ext->Status) {
     case 1:
-        pole = D_800CB218;
+        pole = TotemPole;
         pf = (EXTobject_TA *)pole->FUX;
         switch (pf->Status) {
         case 0xD:
             if (id == 0x131B) {
                 ext->Status = 0xD;
-                ext->pAnimList = D_800C9C14;
+                ext->pAnimList = TotemAnim0D;
             }
             break;
         case 0x24:
@@ -6080,7 +6170,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
                 eng->sub->unk74 = v;
             }
         } else {
-            pole = D_800CB218;
+            pole = TotemPole;
             ext->Status = 1;
             eng->sub->unk74 = 0x2005;
             pf = (EXTobject_TA *)pole->FUX;
@@ -6117,11 +6207,11 @@ void PlotTotemBit(NAS *nas, s32 id) {
             break;
         }
         ext->Status = 0x25;
-        ext->pAnimList = D_800C9CE4;
+        ext->pAnimList = TotemAnim25;
         nas->UserInfo.status = 0;
         ext->TargetIndex = (ext->TargetIndex + 1) & 0xF;
-        ext->TargetX = D_800C9B94[ext->TargetIndex][0];
-        ext->TargetZ = *(s32 *)((u8 *)D_800C9B94 + ((ext->TargetIndex * 8) | 4));
+        ext->TargetX = TotemTargets[ext->TargetIndex][0];
+        ext->TargetZ = *(s32 *)((u8 *)TotemTargets + ((ext->TargetIndex * 8) | 4));
         ext->SpeedX = (ext->TargetX - eng->unk10.x) / 31;
         ext->SpeedZ = (ext->TargetZ - eng->unk10.z) / 31;
         a = get_angle(ext->SpeedX, ext->SpeedZ) + 0x800;
@@ -6144,7 +6234,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
                 z = eng->unk10.z + ext->SpeedZ * k / 12;
             }
         } else {
-            ext->pAnimList = D_800C9C94;
+            ext->pAnimList = TotemAnim29;
             ext->Status = 0x29;
         }
         break;
@@ -6152,7 +6242,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
         v = *ext->pAnimList++;
         if (v == 0) {
             ext->Status = 0x26;
-            ext->pAnimList = D_800C9DD0;
+            ext->pAnimList = TotemAnim26;
             nas->UserInfo.status = 0;
             a = -eng->unk1E;
             a = (a << 20) >> 20;
@@ -6181,7 +6271,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
             eng->sub->unk74 = 0x2004;
             ext->Counter = 0xB9A;
         } else {
-            ext->pAnimList = D_800C9D58;
+            ext->pAnimList = TotemAnim27;
             ext->Status = 0x27;
             PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
@@ -6224,7 +6314,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
 void CheckMineToBoss(s32 x, s32 y, s32 z) {
     s32 i;
 
-    switch (D_800CB210) {
+    switch (TankBossStatus) {
     case 0x2F:
         for (i = 0;; i++) {
             NAS *nas;
@@ -6332,9 +6422,9 @@ void InitTankBoss(NAS *nas) {
     u8 *model;
 
     func_80086868();
-    D_800CB208 = nas;
+    TankBossNas = nas;
     eng = nas->Engine;
-    D_800CB20C = eng;
+    TankBossEng = eng;
     ext = AddExt(nas, 0x38, 0x10000000);
     if (ext == NULL) {
         KillNAS(nas);
@@ -6349,9 +6439,9 @@ void InitTankBoss(NAS *nas) {
     sub->flags |= 0x02000000;
     eng->unk5D = 0;
     eng->unk10.y = 0x7D0;
-    ext->Status = D_800CB25C;
-    D_800CB210 = D_800CB25C;
-    switch (D_800CB25C) {
+    ext->Status = TankBossStartStatus;
+    TankBossStatus = TankBossStartStatus;
+    switch (TankBossStartStatus) {
     case 1:
         base = D_80052A54;
         if (TANK_MODEL_ON(base, 59)) {
@@ -6364,7 +6454,7 @@ void InitTankBoss(NAS *nas) {
             func_8001612C(TANK_MODEL(57), 0);
         }
         ext->Counter = 0x5A;
-        D_800CB25C = 0x2C;
+        TankBossStartStatus = 0x2C;
         SpawnTankBossTurrets();
         break;
     case 0x2C:
@@ -6453,7 +6543,7 @@ void PlotTankBoss(NAS *nas) {
         }
         break;
     case 0x30:
-        eng->unk10.y += D_800CA954[fux->Counter & 0xF];
+        eng->unk10.y += TankBossBob[fux->Counter & 0xF];
         if (--fux->Counter <= 0) {
             fux->Status = 0x31;
         }
@@ -6490,7 +6580,7 @@ void PlotTankBoss(NAS *nas) {
         }
         break;
     case 0x34:
-        eng->unk10.y += D_800CA954[fux->Counter & 0xF];
+        eng->unk10.y += TankBossBob[fux->Counter & 0xF];
         if (--fux->Counter <= 0) {
             fux->Status = 0x35;
         }
@@ -6526,7 +6616,7 @@ void PlotTankBoss(NAS *nas) {
         }
         break;
     case 0x38:
-        eng->unk10.y += D_800CA954[fux->Counter & 0xF];
+        eng->unk10.y += TankBossBob[fux->Counter & 0xF];
         if (--fux->Counter <= 0) {
             fux->Status = 0x39;
             fux->Counter = 0x5A;
@@ -6536,7 +6626,7 @@ void PlotTankBoss(NAS *nas) {
         if ((eng->unk10.y += 10) >= 0x7D0) {
             KillNAS(TankBossRocketTurrets[0]);
             KillNAS(TankBossRocketTurrets[1]);
-            D_800CB25C = 0x3A;
+            TankBossStartStatus = 0x3A;
             D_8005A6C8 = 0;
             fux->Counter = 0x5A;
             fux->Status = 0x3A;
@@ -6561,7 +6651,7 @@ void PlotTankBoss(NAS *nas) {
         }
         break;
     }
-    D_800CB210 = fux->Status;
+    TankBossStatus = fux->Status;
 }
 
 s32 TankBossTurretFindTarget(EXTengine *eng) {
@@ -6590,7 +6680,7 @@ s32 TankBossTurretFindTarget(EXTengine *eng) {
         TankBossTargets[1].x = Heroes[1].hero_eng->unk10.x;
         TankBossTargets[1].z = Heroes[1].hero_eng->unk10.z;
     }
-    if (D_800CB210 == 0x37) {
+    if (TankBossStatus == 0x37) {
         if (Ovl5fTurretSees(0, 0, x, z, ang)) {
             return 0;
         }
@@ -6699,11 +6789,11 @@ void PlotTankBossCrashTurret(NAS *nas) {
     u16 *tbl;
 
     eng = nas->Engine;
-    eng->unk10.y = D_800CB20C->unk10.y - 0x46;
+    eng->unk10.y = TankBossEng->unk10.y - 0x46;
     switch (nas->UserInfo.status) {
     case 4:
         nas->UserInfo.user2--;
-        if (D_800CB210 == 0x2E) {
+        if (TankBossStatus == 0x2E) {
             nas->UserInfo.status = 1;
         }
         break;
@@ -6755,9 +6845,9 @@ void PlotTankBossCrashTurret(NAS *nas) {
         u = k + 1;
         nas->UserInfo.user2 = u;
         if (nas->UserInfo.flags != 0) {
-            tbl = D_800CA9BC;
+            tbl = CrashTurretFramesAlt;
         } else {
-            tbl = D_800CA994;
+            tbl = CrashTurretFrames;
         }
         u *= 2;
         u += (s32)tbl;
@@ -6908,13 +6998,13 @@ void PlotTankBossCortexTurret(NAS *nas) {
     s32 u;
 
     eng = nas->Engine;
-    eng->unk10.y = D_800CB20C->unk10.y - 0x2B6;
+    eng->unk10.y = TankBossEng->unk10.y - 0x2B6;
     switch (nas->UserInfo.status) {
     case 17:
-        if (D_800CB210 == 0x32) {
+        if (TankBossStatus == 0x32) {
             eng->unk5E = 1;
             eng->unk1C += 20;
-        } else if (D_800CB210 == 0x33) {
+        } else if (TankBossStatus == 0x33) {
             nas->UserInfo.flags = 0;
             nas->UserInfo.status = 39;
             nas->UserInfo.user1 = 0;
@@ -7079,11 +7169,11 @@ void PlotTankBossRocketTurret(NAS *nas) {
     s32 t;
 
     eng = nas->Engine;
-    eng->unk10.y = D_800CB20C->unk10.y - 0x4BF;
-    if (D_800CB210 < 0x36) {
+    eng->unk10.y = TankBossEng->unk10.y - 0x4BF;
+    if (TankBossStatus < 0x36) {
         return;
     }
-    if (D_800CB210 >= 0x38) {
+    if (TankBossStatus >= 0x38) {
         return;
     }
     ((void (*)(char *, s32))func_8008AD9C)("RocketTurret", nas->UserInfo.status);
@@ -7092,13 +7182,13 @@ void PlotTankBossRocketTurret(NAS *nas) {
     }
     switch (nas->UserInfo.status) {
     case 17:
-        if (D_800CB210 == 0x36) {
+        if (TankBossStatus == 0x36) {
             eng->flags = 0x8000;
             eng->unk5E = 1;
             eng->unk10.z -= 10;
             eng->unk10.y -= 3;
             nas->UserInfo.user2 = 30;
-        } else if (D_800CB210 == 0x37) {
+        } else if (TankBossStatus == 0x37) {
             if (--nas->UserInfo.user2 <= 0) {
                 nas->UserInfo.flags = 0;
                 nas->UserInfo.status = 19;
@@ -7122,11 +7212,11 @@ void PlotTankBossRocketTurret(NAS *nas) {
         eng->unk5E = 1;
         if (nas->UserInfo.user2 > 30 && TankBossTurretFindTarget(eng) >= 0) {
             nas->UserInfo.status = 10;
-            nas->UserInfo.user2 = D_800CB248;
+            nas->UserInfo.user2 = TankBossRocketDelay;
         }
         break;
     case 10:
-        if (--nas->UserInfo.user2 == D_800CB248 / 2) {
+        if (--nas->UserInfo.user2 == TankBossRocketDelay / 2) {
             if (nas->UserInfo.flags != 0) {
                 eng->sub->unk74 = 0x2022;
             } else {
@@ -7206,9 +7296,9 @@ void InitMoeJoe(NAS *nas, s32 id) {
     s2->unk74 = 0x4300;
     s2->unk68 = 0x100;
     s2->flags = (s2->flags & 0xFFFF7FFF) | 0x02000000;
-    switch (D_800CB25C) {
+    switch (TankBossStartStatus) {
     case 1:
-        ext->Status = D_800CB25C;
+        ext->Status = TankBossStartStatus;
         break;
     case 0x2C:
         eng->unk10.y = 0x1001;
@@ -7218,7 +7308,7 @@ void InitMoeJoe(NAS *nas, s32 id) {
         ext->Status = 5;
         break;
     case 0x3A:
-        ext->Status = D_800CB25C;
+        ext->Status = TankBossStartStatus;
         eng->unk10.y = 0x480;
         eng->unk10.z = 0x1001;
         sub->unk68 = 0x100;
@@ -7230,12 +7320,12 @@ void InitMoeJoe(NAS *nas, s32 id) {
 void LoopMoeJoeMoveAnim(s32 arg0) {
     if (arg0 == 3) {
         s32 val;
-        MoeAnimPtr = D_800CAA0C;
+        MoeAnimPtr = MoeMoveAnim;
         val = *MoeAnimPtr++;
         D_8009D678->unk74 = val;
     } else {
         s32 val;
-        JoeAnimPtr = D_800CAB58;
+        JoeAnimPtr = JoeMoveAnim;
         val = *JoeAnimPtr++;
         D_8009D60C->unk74 = val;
     }
@@ -7329,16 +7419,16 @@ void AnimateMoeJoeTurret(s32 player) {
             switch (ta->MainWeaponType) {
             case 9:
             default:
-                ta->TurretAnimPtr = D_800C9A54;
+                ta->TurretAnimPtr = TankSwampSwirlyTurret;
                 break;
             case 11:
-                ta->TurretAnimPtr = D_800C9AA4;
+                ta->TurretAnimPtr = TankSwampLaserTurret;
                 break;
             case 10:
-                ta->TurretAnimPtr = D_800C9AF4;
+                ta->TurretAnimPtr = TankSwampFlubberTurret;
                 break;
             case 8:
-                ta->TurretAnimPtr = D_800C9B44;
+                ta->TurretAnimPtr = TankSwampFlamerTurret;
                 break;
             }
             goto loop;
@@ -7376,12 +7466,12 @@ void SetMoeJoeIdle(s32 arg0) {
     }
     if (arg0 == 3) {
         s32 v;
-        MoeAnimPtr = D_800CAA0C;
+        MoeAnimPtr = MoeMoveAnim;
         v = *MoeAnimPtr++;
         D_8009D678->unk74 = v;
     } else {
         s32 v;
-        JoeAnimPtr = D_800CAB58;
+        JoeAnimPtr = JoeMoveAnim;
         v = *JoeAnimPtr++;
         D_8009D60C->unk74 = v;
     }
@@ -7390,12 +7480,12 @@ void SetMoeJoeIdle(s32 arg0) {
 void SetMoeJoeMove(s32 arg0) {
     if (arg0 == 3) {
         s32 val;
-        MoeAnimPtr = D_800CAA0C;
+        MoeAnimPtr = MoeMoveAnim;
         val = *MoeAnimPtr++;
         D_8009D678->unk74 = val;
     } else {
         s32 val;
-        JoeAnimPtr = D_800CAB58;
+        JoeAnimPtr = JoeMoveAnim;
         val = *JoeAnimPtr++;
         D_8009D60C->unk74 = val;
     }
@@ -7411,13 +7501,13 @@ void SetMoeJoeRecoil(s32 arg0) {
     if (TankLevelOver == 0) {
         if (arg0 == 3) {
         again:
-            p = D_800CAADC;
+            p = MoeRecoilAnim;
             MoeAnimPtr = p;
             val = *MoeAnimPtr++;
             D_8009D678->unk74 = val;
             PlaySfx(0x261, 0, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
         } else {
-            p2 = D_800CAC38;
+            p2 = JoeRecoilAnim;
             JoeAnimPtr = p2;
             val2 = *JoeAnimPtr++;
             Heroes[2].hero_sub->unk74 = val2;
@@ -7595,7 +7685,7 @@ loop:
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -7626,7 +7716,7 @@ found:
             eng->unk10.z = z;
         }
     } else if (TankCountdown == 0) {
-        D_800CB0E8 = eng;
+        TankCountdownEng = eng;
         TankCountdown = -1;
     }
 }
@@ -7667,16 +7757,16 @@ void MoeJoeRecoil(s32 arg0) {
             if (arg0 == 3) {
                 subengine *s;
                 s32 v;
-                v = D_800CAA60[0];
-                MoeAnimPtr = D_800CAA60;
+                v = MoeDieAnim[0];
+                MoeAnimPtr = MoeDieAnim;
                 s = Heroes[3].hero_sub;
                 MoeAnimPtr++;
                 s->unk74 = v;
             } else {
                 subengine *s;
                 s32 v;
-                v = D_800CABAC[0];
-                JoeAnimPtr = D_800CABAC;
+                v = JoeDieAnim[0];
+                JoeAnimPtr = JoeDieAnim;
                 s = Heroes[2].hero_sub;
                 JoeAnimPtr++;
                 s->unk74 = v;
@@ -7706,12 +7796,12 @@ void MoeJoeRecoil(s32 arg0) {
         }
         if (arg0 == 3) {
             s32 v;
-            MoeAnimPtr = D_800CAA0C;
+            MoeAnimPtr = MoeMoveAnim;
             v = *MoeAnimPtr++;
             D_8009D678->unk74 = v;
         } else {
             s32 v;
-            JoeAnimPtr = D_800CAB58;
+            JoeAnimPtr = JoeMoveAnim;
             v = *JoeAnimPtr++;
             D_8009D60C->unk74 = v;
         }
@@ -7958,7 +8048,7 @@ void PlotMoeJoeHero(NAS *nas, s32 id) {
             if (ta->HangaboutTime != 0) {
                 ta->HangaboutTime--;
             }
-            OVL5F_SET_HULL_SFX(p, eng, D_800C94C8[p]);
+            OVL5F_SET_HULL_SFX(p, eng, TankHullSfx[p]);
         } else {
             if (!(Heroes[p].hero_status & 0xFA00)) {
                 ta->HangaboutTime++;
@@ -7969,12 +8059,12 @@ void PlotMoeJoeHero(NAS *nas, s32 id) {
             if (--ta->TurretSFXDuration == 0) {
                 OVL5F_SET_TURRET_SFX(p, 0);
             } else {
-                OVL5F_SET_TURRET_SFX(p, D_800C94D8[p]);
+                OVL5F_SET_TURRET_SFX(p, TankTurretSfx[p]);
             }
         }
     }
     if (((PadButtons *)D_80051338)[p].unk50 & 0x4800) {
-        OVL5F_SET_HULL_SFX(p, eng, D_800C9408[p]);
+        OVL5F_SET_HULL_SFX(p, eng, TankHoverSfx[p]);
     } else {
         OVL5F_SET_HULL_SFX(p, eng, 0);
     }
@@ -8004,7 +8094,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
     if (TankLevelOver != 0) {
         return;
     }
-    if (D_800CB210 == 0) {
+    if (TankBossStatus == 0) {
         sub->unk6C = D_8005373C;
         eng->unk2C.x = 0x1266;
         eng->unk2C.y = 0x1266;
@@ -8052,7 +8142,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         }
         return;
     }
-    if (D_800CB210 == 0x3A) {
+    if (TankBossStatus == 0x3A) {
         fux->Status = 4;
         sub->unk6C = D_8005373C;
         eng->unk10.y = 0x480;
@@ -8148,7 +8238,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         if (eng->unk10.y > 0x1000) {
             eng->unk1E = 0;
             eng->unk5E = 1;
-            eng->unk10.z = D_800CB20C->unk10.z + 0x100;
+            eng->unk10.z = TankBossEng->unk10.z + 0x100;
             fux->Status = 0;
             fux->Counter = Random(0x5A) + 0x1E;
             eng->unk2C.x = 0x14CC;
@@ -8157,11 +8247,11 @@ void PlotMoeJoe(NAS *nas, s32 id) {
             eng->unk5C = 1;
             if (id == 0x131E) {
                 anim = 0x2028;
-                fux->pAnimList = D_800C8F54;
+                fux->pAnimList = MoeScript0;
                 eng->unk10.x = 0xA00;
             } else {
                 anim = 0x2027;
-                fux->pAnimList = D_800C9140;
+                fux->pAnimList = JoeScript0;
                 eng->unk10.x = 0x810;
             }
             m = (ModelRec *)D_800536CC;
@@ -8174,80 +8264,80 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         }
         break;
     case 0:
-        eng->unk10.y = D_800CB20C->unk10.y - 0x528;
+        eng->unk10.y = TankBossEng->unk10.y - 0x528;
         if (--fux->Counter <= 0) {
             fux->Status = 0x27;
             switch (Random(8)) {
             default:
             case 0:
                 if (id == 0x131E) {
-                    fux->pAnimList = D_800C8F54;
+                    fux->pAnimList = MoeScript0;
                     anim = 0x2028;
                 } else {
-                    fux->pAnimList = D_800C9140;
+                    fux->pAnimList = JoeScript0;
                     anim = 0x2027;
                 }
                 break;
             case 1:
                 if (id == 0x131E) {
-                    fux->pAnimList = D_800C8F68;
+                    fux->pAnimList = MoeScript1;
                     anim = 0x2028;
                 } else {
-                    fux->pAnimList = D_800C9164;
+                    fux->pAnimList = JoeScript1;
                     anim = 0x2027;
                 }
                 break;
             case 2:
                 if (id == 0x131E) {
-                    fux->pAnimList = D_800C8FA8;
+                    fux->pAnimList = MoeScript2;
                     anim = 0x2028;
                 } else {
-                    fux->pAnimList = D_800C91A4;
+                    fux->pAnimList = JoeScript2;
                     anim = 0x2027;
                 }
                 break;
             case 3:
                 if (id == 0x131E) {
-                    fux->pAnimList = D_800C8FE8;
+                    fux->pAnimList = MoeScript3;
                     anim = 0x2028;
                 } else {
-                    fux->pAnimList = D_800C91E4;
+                    fux->pAnimList = JoeScript3;
                     anim = 0x2027;
                 }
                 break;
             case 4:
                 if (id == 0x131E) {
-                    fux->pAnimList = D_800C9048;
+                    fux->pAnimList = MoeScript4;
                     anim = 0x2028;
                 } else {
-                    fux->pAnimList = D_800C9244;
+                    fux->pAnimList = JoeScript4;
                     anim = 0x2027;
                 }
                 break;
             case 5:
                 if (id == 0x131E) {
-                    fux->pAnimList = D_800C9080;
+                    fux->pAnimList = MoeScript5;
                     anim = 0x2028;
                 } else {
-                    fux->pAnimList = D_800C927C;
+                    fux->pAnimList = JoeScript5;
                     anim = 0x2027;
                 }
                 break;
             case 6:
                 if (id == 0x131E) {
-                    fux->pAnimList = D_800C90B8;
+                    fux->pAnimList = MoeScript6;
                     anim = 0x2028;
                 } else {
-                    fux->pAnimList = D_800C92B4;
+                    fux->pAnimList = JoeScript6;
                     anim = 0x2027;
                 }
                 break;
             case 7:
                 if (id == 0x131E) {
-                    fux->pAnimList = D_800C911C;
+                    fux->pAnimList = MoeScript7;
                     anim = 0x2028;
                 } else {
-                    fux->pAnimList = D_800C9318;
+                    fux->pAnimList = JoeScript7;
                     anim = 0x2027;
                 }
                 break;
@@ -8257,7 +8347,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         }
         break;
     case 0x27:
-        eng->unk10.y = D_800CB20C->unk10.y - 0x528;
+        eng->unk10.y = TankBossEng->unk10.y - 0x528;
         p = fux->pAnimList;
         anim = *p;
         if (D_8004E0D8 & 1) {
@@ -8493,7 +8583,7 @@ void InitTotemPole(NAS *nas) {
     EXTobject_TA *ext;
     EXTengine *e;
 
-    D_800CB218 = nas;
+    TotemPole = nas;
     ext = AddExt(nas, 0x38, 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
@@ -8505,8 +8595,8 @@ void InitTotemPole(NAS *nas) {
         ext->Status = 1;
         e = nas->Engine;
         e->flags = 0;
-        D_800CB21C = CreateNAS(e->unk10.x, e->unk10.y - 0x294, e->unk10.z, 0x131B, 0x11);
-        D_800CB220 = CreateNAS(e->unk10.x, e->unk10.y - 0x14A, e->unk10.z, 0x131C, 0x11);
+        TotemTop = CreateNAS(e->unk10.x, e->unk10.y - 0x294, e->unk10.z, 0x131B, 0x11);
+        TotemBot = CreateNAS(e->unk10.x, e->unk10.y - 0x14A, e->unk10.z, 0x131C, 0x11);
         if (nas->Failure == 0) {
             return;
         }
@@ -8531,7 +8621,7 @@ void PlotPillarCover(NAS *nas) {
         nas->UserInfo.status--;
         break;
     }
-    nas->Engine->sub->unk74 = D_800CA944[nas->UserInfo.status].v;
+    nas->Engine->sub->unk74 = PillarCoverFrames[nas->UserInfo.status].v;
 }
 
 void InitPillarCover(NAS *nas) {
@@ -8653,7 +8743,7 @@ void InitRock_TA(NAS *nas) {
     nas->FUX = ext;
     sub = nas->Engine->sub;
     sub->unk6C = *(void **)D_80058AD0;
-    sub->unk74 = D_800CA6D4[info->val1].v;
+    sub->unk74 = RockFrames[info->val1].v;
     if (nas->Failure != 0) {
         KillNAS(nas);
     }
@@ -8708,7 +8798,7 @@ void InitShellExplosion(NAS *nas) {
 void InitShrapnelBit(NAS *nas) {
     subengine *sub = nas->Engine->sub;
     sub->unk6C = D_8005365C;
-    sub->unk74 = D_800CA4AC[Random(3)].v;
+    sub->unk74 = ShrapnelFrames[Random(3)].v;
     if (nas->Failure != 0) {
         KillNAS(nas);
     }
@@ -8719,7 +8809,7 @@ void PlotMineBall(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    nas->Engine->sub->unk74 = D_800CA48C[nas->UserInfo.status];
+    nas->Engine->sub->unk74 = MineBallFrames[nas->UserInfo.status];
 }
 
 void InitMineBall(NAS *nas) {
@@ -9226,7 +9316,7 @@ void TA_SetUp(void) {
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
     D_8005AA70[10] = (s32)FinishTankLevel;
-    D_800CB25C = 1;
+    TankBossStartStatus = 1;
 }
 
 void TriggerTankMinesNear(s32 x, s32 z, s32 dist) {
@@ -9333,7 +9423,7 @@ s32 TankFindHeroNear(s32 x, s32 z, s32 r, s32 skip) {
         }
         name = Heroes[i].hero_name;
         if (name == nine &&
-            (((Ovl5fModeView *)g)->mode != name ||D_800CB210 != 0 || (u32)(i - 2) >= 2U)) {
+            (((Ovl5fModeView *)g)->mode != name ||TankBossStatus != 0 || (u32)(i - 2) >= 2U)) {
             continue;
         }
         if (Heroes[i].hero_status & 0xC000) {
@@ -9362,7 +9452,7 @@ s32 RocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }

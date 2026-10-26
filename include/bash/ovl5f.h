@@ -17,26 +17,26 @@ typedef struct Ovl5fModeView {
     /* 0x34 */ s16 mode;
 } Ovl5fModeView;
 
-extern s32 D_800CB210;
+extern s32 TankBossStatus;
 extern NAS *TankBossCrashTurrets[3];
 
 extern NAS *TankBossCortexTurrets[4];
 extern NAS *TankBossRocketTurrets[2];
-extern u32 D_800CA48C[];
-extern s32 D_800CA44C[];
+extern u32 MineBallFrames[];
+extern s32 TankWaterBob[];
 typedef struct { u16 v, pad; } RockTblEnt;
-extern RockTblEnt D_800CA6D4[];
-extern RockTblEnt D_800C938C[]; /* PlotMine: frame by countdown */
-extern RockTblEnt D_800C939C[]; /* PlotMine: frame by countdown, modes 8/9 */
+extern RockTblEnt RockFrames[];
+extern RockTblEnt MineFrames[]; /* PlotMine: frame by countdown */
+extern RockTblEnt MineFramesBig[]; /* PlotMine: frame by countdown, modes 8/9 */
 
 extern u8 D_80053774[];
-extern s32 D_800C8F14[]; /* TA_InitHero: tank speed by hero_name - 1 */
-extern u8 D_800C9EE8[];
-extern u8 D_800C9EFC[];
-extern u8 D_800C9ED0[];
-extern u8 D_800C9EB0[];
-extern u8 D_800C9E9C[];
-extern u8 D_800C9EC4[];
+extern s32 TankHeroSpeeds[]; /* TA_InitHero: tank speed by hero_name - 1 */
+extern u16 TankMetalAiBotTweak[];
+extern u16 TankMetalAiHumanTweak[];
+extern u16 TankMetalAiHumanRoundTweak[];
+extern u16 TankMetalAiSkillAlt[];
+extern u16 TankMetalAiSkill[];
+extern u16 TankMetalAiTeamSkill[];
 
 void InitTotemBit(NAS *nas, s32 id);
 void PlotTotemBit(NAS *nas, s32 id);
@@ -45,25 +45,25 @@ void MoeJoeDead(void);
 void MoeJoeMinelay(void);
 void TankEmptyStub(void);
 void TA_RestartLevel(void);
-extern s32 D_800CB25C;
-extern s32 D_800C93AC[];
-extern s32 D_800C9A54[];
-extern s32 D_800C9AA4[];
-extern s32 D_800C9AF4[];
-extern s32 D_800C9B44[];
+extern s32 TankBossStartStatus;
+extern s32 TankRocketAngles[];
+extern s32 TankSwampSwirlyTurret[];
+extern s32 TankSwampLaserTurret[];
+extern s32 TankSwampFlubberTurret[];
+extern s32 TankSwampFlamerTurret[];
 extern s32 MoeState;
 extern s32 JoeState;
 extern s16 D_8009D634;
 extern s16 D_8009D6A0;
-extern s32 D_800CB210;
-extern u8 D_800C8EA0[];
-extern s32 D_800C8EB4[];   /* {name, 0x5C} pairs: four "WIN" entries */
-extern u8 D_800C9E74[];
-extern u8 D_800C9E88[];
-extern u8 D_800C9E5C[];
-extern u8 D_800C9E3C[];
-extern u8 D_800C9E28[];
-extern u8 D_800C9E50[];
+extern s32 TankBossStatus;
+extern u16 TankHeroModels[];
+extern s32 TankVictorySeqs[];   /* {name, 0x5C} pairs: four "WIN" entries */
+extern u16 TankDesertAiBotTweak[];
+extern u16 TankDesertAiHumanTweak[];
+extern u16 TankDesertAiHumanRoundTweak[];
+extern u16 TankDesertAiSkillAlt[];
+extern u16 TankDesertAiSkill[];
+extern u16 TankDesertAiTeamSkill[];
 void TA_InitHero(u32 player);
 void TA_MoveHero(u32 player);
 void TA_PreInitLevel(void);
@@ -76,24 +76,24 @@ void TankBotReset(s32 arg0);
 NAS *FindTankPickupNear(s32 x, s32 z, s32 range);
 
 
-extern NAS *D_800CB218;
-extern NAS *D_800CB21C;
-extern NAS *D_800CB220;
+extern NAS *TotemPole;
+extern NAS *TotemTop;
+extern NAS *TotemBot;
 
 extern u8 D_8005365C[];
 extern u8 D_800537AC[];
-extern s32 D_800C9B94[][2];
+extern s32 TotemTargets[][2];
 
-extern s32 D_800C9C14[];
-extern s32 D_800C9C94[];
-extern s32 D_800C9CE4[];
-extern s32 D_800C9D58[];
-extern s32 D_800C9DD0[];
+extern s32 TotemAnim0D[];
+extern s32 TotemAnim29[];
+extern s32 TotemAnim25[];
+extern s32 TotemAnim27[];
+extern s32 TotemAnim26[];
 
 
-extern s32 D_800CA160[];
+extern s32 TankBotTargetOrder[];
 extern s32 TankMapNas[];
-extern RockTblEnt D_800CA4AC[];
+extern RockTblEnt ShrapnelFrames[];
 extern s32 TankMapWidth;
 extern TA_Bot TankBotAI[4];
 
@@ -105,18 +105,18 @@ typedef struct MineOffset {
     /* 0x04 */ s32 z;
     /* 0x08 */ s32 unk8;
 } MineOffset;
-extern MineOffset D_800C935C[4];
+extern MineOffset MineShrapnelOffsets[4];
 void SetMoeJoeDead(s32 hero, s32 last_mode);
 s32 func_8008502C();
 extern s32 *MoeAnimPtr;
 extern s32 *JoeAnimPtr;
-extern s32 D_800CAA0C[];
-extern s32 D_800CAB58[];
-extern s32 D_800CAA60[];
-extern s32 D_800CABAC[];
-extern s32 D_800CAADC[];
-extern s32 D_800CAC38[];
-extern s32 D_800CB0FC;
+extern s32 MoeMoveAnim[];
+extern s32 JoeMoveAnim[];
+extern s32 MoeDieAnim[];
+extern s32 JoeDieAnim[];
+extern s32 MoeRecoilAnim[];
+extern s32 JoeRecoilAnim[];
+extern s32 TankShotBounce;
 
 
 
@@ -159,34 +159,34 @@ extern Ovl5fPoint TankBossTargets[];
 typedef struct {
     u16 v, pad;
 } Ovl5fU16Pad;
-extern Ovl5fU16Pad D_800CA944[];
-extern u16 D_800CA994[]; /* crash turret anim frames (flags == 0) */
-extern u16 D_800CA9BC[]; /* crash turret anim frames (flags != 0) */
+extern Ovl5fU16Pad PillarCoverFrames[];
+extern u16 CrashTurretFrames[]; /* crash turret anim frames (flags == 0) */
+extern u16 CrashTurretFramesAlt[]; /* crash turret anim frames (flags != 0) */
 typedef void (*Ovl5fTurretFireFn)(EXTengine *eng, s32 a, s32 b);
 extern s32 TankLevelOver;
-extern s32 D_800C94E8[];
-extern s32 D_800C9428[][4];
+extern s32 TankTurnSfx[];
+extern s32 TankRecoilSfx[][4];
 /* TankBotPlanSteerMove's fallback roam points: {x, z}. */
-extern s32 D_800CA17C[][2];
-extern Ovl5fU16Pad D_800CA650[];    /* PlotHelicopterTA's rotor frames, by UserInfo.user2 */
+extern s32 TankBotWanderPoints[][2];
+extern Ovl5fU16Pad HelicopterFrames[];    /* PlotHelicopterTA's rotor frames, by UserInfo.user2 */
 /* PlotPillarControl's waves: delay, then {x, z, angle} until x < 0. */
-extern s32 *D_800CA8C4[];
-extern s32 D_800CB204;      /* next wave */
+extern s32 *PillarWaves[];
+extern s32 PillarWave;      /* next wave */
 extern s32 TankBossSightedHero;
 extern NAS *TankObjects[8];    /* objects AddTankObject adds and RemoveTankObject removes; FindTankObjectNear tests their distance */
 extern NAS *TankMines[8];
 
 extern u8 D_80053704[];
-extern NAS *D_800CB208;       /* InitTankBoss's NAS */
-extern EXTengine *D_800CB20C; /* and its engine */
-extern s32 D_800CB248;
+extern NAS *TankBossNas;       /* InitTankBoss's NAS */
+extern EXTengine *TankBossEng; /* and its engine */
+extern s32 TankBossRocketDelay;
 s32 TankBossTurretFindTarget(EXTengine *eng);
 void TankBossCortexTurretFire(EXTengine *eng);
 void TankBossRocketTurretFire(NAS *nas, EXTengine *eng);
 /* Field 0xC of the 0x38-byte model record N at D_80052A54 (D_800536CC is record 57). */
 #define TANK_MODEL(n) (&D_80052A54[(n) * 0x38])
 #define TANK_MODEL_ON(b, n) (*(s32 *)((b) + (n) * 0x38 + 0xC))
-extern s32 D_800CA954[16]; /* PlotTankBoss: per-frame height wobble */
+extern s32 TankBossBob[16]; /* PlotTankBoss: per-frame height wobble */
 extern s8 D_8005A6C8;
 
 
@@ -232,24 +232,24 @@ void SetTankMapCellNas(NAS *nas);
 
 void TankBotChooseTarget(void);
 
-extern u8 D_800C9F5C[];
-extern u8 D_800C9F70[];
-extern u8 D_800C9F44[];
-extern u8 D_800C9F24[];
-extern u8 D_800C9F10[];
-extern u8 D_800C9F38[];
+extern u16 TankJungleAiBotTweak[];
+extern u16 TankJungleAiHumanTweak[];
+extern u16 TankJungleAiHumanRoundTweak[];
+extern u16 TankJungleAiSkillAlt[];
+extern u16 TankJungleAiSkill[];
+extern u16 TankJungleAiTeamSkill[];
 
-extern u8 D_800C9FD0[];
-extern u8 D_800C9FE4[];
-extern u8 D_800C9FB8[];
-extern u8 D_800C9F98[];
-extern u8 D_800C9F84[];
-extern u8 D_800C9FAC[];
-extern u8 D_800CA120[];
-extern u8 D_800CA134[];
-extern u8 D_800CA148[];
-extern u8 D_800CA08C[];
-extern u8 D_800C9FF8[];
+extern u16 TankSwampAiBotTweak[];
+extern u16 TankSwampAiHumanTweak[];
+extern u16 TankSwampAiHumanRoundTweak[];
+extern u16 TankSwampAiSkillAlt[];
+extern u16 TankSwampAiSkill[];
+extern u16 TankSwampAiTeamSkill[];
+extern u16 TankBossAiBotTweak[];
+extern u16 TankBossAiHumanTweak[];
+extern u16 TankBossAiHumanRoundTweak[];
+extern u16 TankBossAiSkillAlt[];
+extern u16 TankBossAiSkill[];
 /* D_8005A614 as seen by TA_PreInitLevel. */
 typedef struct Ovl5fGameView {
     /* 0x00 */ u8 pad0[4];
@@ -264,29 +264,29 @@ typedef struct Ovl5fGameView {
     /* 0x6C */ s32 w6C;
 } Ovl5fGameView;
 
-extern s32 D_800C94A8[];
-extern s32 D_800C94C8[]; /* TA_MoveHero: hull sfx while moving, by player */
-extern s32 D_800C94D8[]; /* turret sfx, by player */
-extern s32 D_800C9408[]; /* hull sfx in mode 5, by player */
-extern s32 D_800CB0F8;    /* delay before the next hangabout spawn */
+extern s32 TankTauntSfx[];
+extern s32 TankHullSfx[]; /* TA_MoveHero: hull sfx while moving, by player */
+extern s32 TankTurretSfx[]; /* turret sfx, by player */
+extern s32 TankHoverSfx[]; /* hull sfx in mode 5, by player */
+extern s32 TankDropDelay;    /* delay before the next hangabout spawn */
 extern s32 TankCountdown;    /* TA_UpdateLevel: countdown, plays sfx 0x4B9 when negative */
 extern s32 TankPendingSfx;    /* TA_UpdateLevel: sfx id to play once */
-extern EXTengine *D_800CB0E8;
-extern s32 D_800CB0EC;    /* TA_UpdateLevel: countdown to sfx 0x501 */
+extern EXTengine *TankCountdownEng;
+extern s32 TankPillarSfxDelay;    /* TA_UpdateLevel: countdown to sfx 0x501 */
 void AnimateTankTurret(s32 player);
 /* UpdateTankHeroWeapons: turret anim scripts by weapon (swamp / other levels). */
-extern s32 D_800C987C[];
-extern s32 D_800C98B0[];
-extern s32 D_800C98E4[];
-extern s32 D_800C9918[];
-extern s32 D_800C9980[];
-extern s32 D_800C99B4[];
-extern s32 D_800C9A70[];
-extern s32 D_800C9AC0[];
-extern s32 D_800C9B10[];
-extern s32 D_800C9B60[];
-extern s32 D_800C93F8[]; /* force field sfx, by player */
-extern s32 D_800C9418[]; /* sub weapon sfx, by player */
+extern s32 TankSwirlyFireAnim[];
+extern s32 TankLaserFireAnim[];
+extern s32 TankFlubberFireAnim[];
+extern s32 TankFlamerFireAnim[];
+extern s32 TankShellFireAnim[];
+extern s32 TankRocketFireAnim[];
+extern s32 TankSwampSwirlyFireAnim[];
+extern s32 TankSwampLaserFireAnim[];
+extern s32 TankSwampFlubberFireAnim[];
+extern s32 TankSwampFlamerFireAnim[];
+extern s32 TankForceFieldSfx[]; /* force field sfx, by player */
+extern s32 TankMineSfx[]; /* sub weapon sfx, by player */
 /* TriggerTankMinesNear, inlined into UpdateTankHeroWeapons: sets status 1 on the TankMines
  * mines within dist of (x, z). */
 static inline void Ovl5fTriggerNear(s32 x, s32 z, s32 dist) {
@@ -373,7 +373,7 @@ void TankBotAimTurret(s32 player, EXTengine *eng, s32 *arg2);
 s32 TankBotPickTarget();
 
 /* AI target state TankBotAvoidMines fills (target NAS, scan cursor). */
-extern s32 D_800CB284[];
+extern s32 TankBotForceField[];
 s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai);
 void TankBotPlanSteerMove(s32 player, EXTengine *eng, TA_Bot *ai);
 void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai);
@@ -420,7 +420,7 @@ static inline s32 Ovl5fRocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -483,7 +483,7 @@ static inline s32 TankMoveFindHero(s32 player, s32 x, s32 z, s32 lim) {
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -639,11 +639,11 @@ static inline NAS *Ovl5fPeriscopePuff(SLONG_XYZ *pos, s32 kind) {
     }
     return NULL;
 }
-extern NAS *D_800CB214;  /* PlotPeriscope's last puff */
-extern s32 D_800CA6EC[]; /* PlotPeriscope: frame by timer in state 10, 0 ends */
+extern NAS *PeriscopePuff;  /* PlotPeriscope's last puff */
+extern s32 PeriscopeFrames[]; /* PlotPeriscope: frame by timer in state 10, 0 ends */
 /* TankBossRocketTurretFire: per-shell angle offsets. */
 static inline s32 *Ovl5fShellAngleOffsets(void) {
-    return D_800C93AC;
+    return TankRocketAngles;
 }
 /* TankBossRocketTurretFire: face a spawned puff along `angle` and flag its subengines. */
 static inline void Ovl5fPuffSetAngle(NAS *puff, s32 angle) {
@@ -665,13 +665,13 @@ void SetMoeJoeRecoil(s32 arg0);
 
 void MoeJoeRecoil(s32 arg0);
 
-extern s32 D_800CB0F4;
-extern s32 D_800CA600[4];
-extern s32 D_800CA610[4];
-extern s32 D_800CA620[4];
-extern s32 D_800CA630[4];
-extern s32 D_800CA640[4];
-extern s32 D_800CA4B8[]; /* (x, z) pairs */
+extern s32 HelicopterCount;
+extern s32 HelicopterZSwamp[4];
+extern s32 HelicopterZDesert[4];
+extern s32 HelicopterZJungle[4];
+extern s32 HelicopterZMetal[4];
+extern s32 HelicopterZBoss[4];
+extern s32 PickupSpots[]; /* (x, z) pairs */
 /* PlotPickupGenerator_TA: hero within 0x200 of (x, z). */
 static inline s32 PickupFindHero(s32 x, s32 z) {
     s32 i;
@@ -685,7 +685,7 @@ static inline s32 PickupFindHero(s32 x, s32 z) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+            (((Ovl5fModeView *)D_8005A614)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -799,13 +799,13 @@ extern s32 D_800CAFF0;
 extern s32 TankMapHeight;
 extern s32 D_800CB108[9][7];
 extern s16 D_8009D88E;
-extern Ambient_data D_800C8ED4;
-extern u8 D_800CA1C4[];
-extern u8 D_800CA204[];
-extern u8 D_800CA244[];
-extern u8 D_800CA284[];
-extern u8 D_800CA2C4[];
-extern u8 D_800CA30C[];
+extern Ambient_data TankJungleAmbience;
+extern u8 TankDesertMap[];
+extern u8 TankDesertMapAlt[];
+extern u8 TankJungleMap[];
+extern u8 TankMetalMap[];
+extern u8 TankBossMap[];
+extern u8 TankSwampMap[];
 extern u8 D_8005365C[];
 void Clock_Off(void);
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
@@ -821,22 +821,22 @@ typedef struct ModelRec {
 
 extern u8 D_8005373C[];
 /* PlotMoeJoe: anim scripts, Moe (0x131E) and Joe */
-extern s32 D_800C8F54[];
-extern s32 D_800C8F68[];
-extern s32 D_800C8FA8[];
-extern s32 D_800C8FE8[];
-extern s32 D_800C9048[];
-extern s32 D_800C9080[];
-extern s32 D_800C90B8[];
-extern s32 D_800C911C[];
-extern s32 D_800C9140[];
-extern s32 D_800C9164[];
-extern s32 D_800C91A4[];
-extern s32 D_800C91E4[];
-extern s32 D_800C9244[];
-extern s32 D_800C927C[];
-extern s32 D_800C92B4[];
-extern s32 D_800C9318[];
+extern s32 MoeScript0[];
+extern s32 MoeScript1[];
+extern s32 MoeScript2[];
+extern s32 MoeScript3[];
+extern s32 MoeScript4[];
+extern s32 MoeScript5[];
+extern s32 MoeScript6[];
+extern s32 MoeScript7[];
+extern s32 JoeScript0[];
+extern s32 JoeScript1[];
+extern s32 JoeScript2[];
+extern s32 JoeScript3[];
+extern s32 JoeScript4[];
+extern s32 JoeScript5[];
+extern s32 JoeScript6[];
+extern s32 JoeScript7[];
 
 void UpdateTankHeroWeapons(s32 player);
 

@@ -146,13 +146,18 @@ matches, its asset files extract, and it passes its shift test: padded so
 everything in it moves, it boots and plays through to a win the same way
 retail does. The recipe is written up for Phase 4.
 
-- [ ] Name and type every Tank function and global (a descriptive name
+- [x] Name and type every Tank function and global (a descriptive name
   where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)),
   from the leaked `tank.h`, the Oct 9 debug types and code evidence. Settle
   each `tank.h` declaration: defined by matched code, or noted as not in
   this build. First, because the data's types come from the code that reads
   it: naming a function shows what each table it reads is, and names those
-  globals too.
+  globals too. Done 2026-10-26: every function, and every global something
+  reads (the seven bss words nothing reads keep `D_` names). The leak's
+  data is defined: `TANK_PREMAP` (with its `WWInf`/`TrigLookUp` pieces),
+  `tank_shell_info`, the five `file_group_TANK*` and the 72
+  `*_seq_tank*` hero sequences; `shell_setup` and `file_group_load_info`
+  are complete types now. `TANKSpecifics` is not in Tank's data.
 - [x] Split Tank into its files where the evidence settles it, after the
   naming and before its data goes to C. Done 2026-10-26: Tank is one file.
   `decomp.py units --data` now reads the slot overlays (its initialised data

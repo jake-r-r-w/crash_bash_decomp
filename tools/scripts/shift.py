@@ -140,7 +140,7 @@ def fixup(ovl, old_elf, new_elf, others):
     for m in maybe:
         (done if m[0] - 4 in fixed or m[0] + 4 in fixed else left).append(m)
     # so is a word beside them that points inside one of its objects (the per-world record's
-    # first pointer, 8 bytes into D_800C8E7C): mapped through the symbol that contains it
+    # first pointer, before TANK_PREMAP was a symbol of its own): mapped through the symbol that contains it
     # Only into its data or rodata: a function pointer points at a function's start, so a word
     # into the middle of its code is some other overlay's (the neighbouring games' tables)
     fixed = {off for off, *_ in done}
@@ -157,7 +157,7 @@ def fixup(ovl, old_elf, new_elf, others):
                 a, n = max(x for x in ordered if x[0] <= v)
                 inner.append((off, delta, n, v, new[n] + (v - a)))
     # and any word into its .data: the engine's eight per-character hero sequence tables hold
-    # each game's sequences, Tank's nine at +0x124..+0x144 of each, pointing inside D_800C94E8.
+    # each game's sequences, Tank's nine at +0x124..+0x144 of each (the `*_seq_tank*` arrays, once inside one object).
     # A value in that range could be another overlay's instead, so that game breaks on a disc
     # shifted this way; for this overlay's test it is right, and the engine's data as C ends it.
     dlo = old_all.get(f"{ovl}_DATA_START")

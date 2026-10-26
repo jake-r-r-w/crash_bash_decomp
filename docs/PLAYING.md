@@ -65,7 +65,7 @@ matching build's objects and:
   it has (for Tank: `TA_SetUp` in the per-world record, the 16-entry hero mode table), a
   word inside one of its data objects beside those, and any word into its `.data`. The last
   covers the engine's eight per-character hero sequence tables, whose entries +0x124..+0x144
-  are Tank's nine sequences per character (inside `D_800C94E8`; missing them crashed the
+  are Tank's nine sequences per character (the `*_seq_tank*` arrays; missing them crashed the
   game as Desert Fox started). A value in that range can be another game's, so other games
   may break on a disc shifted this way;
 - packs a disc with `pack_disc.py --grow`: the overlay, now bigger than its retail size, stays
