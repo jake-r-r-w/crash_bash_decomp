@@ -468,8 +468,8 @@ Newest first, a few lines each. Details are in the commits.
   data objects named (48 `*_BA_seq_*` sequences split out of one table).
   data2c: a gap the next object's alignment doesn't explain is a rest, and
   arrays/structs are word-aligned (mips.h `DATA_ALIGNMENT`); shift.py's
-  neighbour rule chains (Drains' file group). Shift test waiting on the
-  playtest. Gotcha: 384 matched functions' `asm/nonmatchings` files were
+  neighbour rule chains (Drains' file group). Shift test passed (user
+  playtest). Gotcha: 384 matched functions' `asm/nonmatchings` files were
   missing across the overlays (renames and splits over time): restored
   from a throwaway split per overlay with its own `asm_path`/`src_path`
   (scratch/restore_asm.sh), copying only missing function files; never a

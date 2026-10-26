@@ -280,7 +280,14 @@ build.
   can't place 155..216 (none of them is in `polar.h`), so it stays one
   unit; 26 of `polar.h`'s names are not identified (ARCHITECTURE.md,
   Polar's data). Left for Phase 5: its game-state views and stand-ins.
-- [ ] Bash (`bash`, with the crates and pickups of `XTRAS_AST_types`)
+- [x] Bash (`bash`, with the crates and pickups of `XTRAS_AST_types`). Done
+  2026-10-26: every function named from its code (no leaked header), rodata,
+  data, id word and last byte as C, each later file's data in its own file
+  (`xtras.c`, `bahero.c`), all 172 data objects named, the DAT entries it
+  loads all decode, its shift test passed (`make shift OVL=bash PAD=0x40`,
+  PLAYING.md). Mode 0x20's level is not identified. Left for Phase 5: its
+  stand-in structs (`BashCell`, `T_BC038*`, the crate stats as the leak's
+  `CrateVelocity`).
 - [ ] Papu
 - [ ] Race
 - [ ] Spin

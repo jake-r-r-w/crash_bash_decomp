@@ -87,6 +87,12 @@ DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 390
 `sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
 Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
 
+### The shift test route (Bash, 2026-10-26)
+
+`make shift OVL=bash PAD=0x40`, with the same save: Battle Mode's crate games (Jungle,
+Space, Snow and Drains), throwing and kicking crates, the pickups and powerups, Space's
+falling tiles, Snow's penguin and sliding, Drains' edge crates. Passed 2026-10-26.
+
 ### The shift test route (Polar, 2026-10-26)
 
 `make shift OVL=polar PAD=0x40`, with the same save: Battle Mode, Polar, and its arenas,
