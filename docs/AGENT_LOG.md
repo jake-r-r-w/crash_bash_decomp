@@ -522,7 +522,7 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-26 (Tank typing pass):** 22 stand-in structs replaced by the
+- **2026-10-26 (Tank typing pass):** 24 stand-in structs replaced by the
   Oct 9 and engine types (14 object extensions are all `EXTobject_TA`;
   `Ovl5fExt1605` is `EXTscriptdata`, the `AST_ScriptFX` puff's); the busy
   Tank globals named, two from the leak (`TankLevelsGridMapTank`/`Miss`,
