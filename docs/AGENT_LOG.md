@@ -452,6 +452,14 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Dino, with the recipe):** all 73 unnamed functions named
+  (many from Polar/Race twins), data, rodata and id word as C (one file),
+  all 113 data objects named (48 `*_seq_dino*` split out; the gems and
+  shell settings split apart). shift.py: a HeroSeqTables slot is the
+  overlay's when the same id's slot of another character is (Coco's
+  dinowin was left by the neighbour rule). Shift test waiting on the
+  playtest.
+
 - **2026-10-26 (Spin, with the recipe):** all 56 unnamed functions named
   (many from their Bash/Papu twins), data, rodata and id word as C (one
   file), all 95 data objects named (24 sequences split out of the balloon
