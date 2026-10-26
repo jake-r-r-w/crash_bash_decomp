@@ -33,8 +33,8 @@ void InitialiseHUB(void) {
     eng = hero->hero_eng;
     G6A->unk32 |= 0x200;
     eng->flags |= 0x8000;
-    HeroHooks.unk44 = HubHeroTestA;
-    HeroHooks.unk48 = HubHeroTestB;
+    HeroHooks.unk44 = HubHeroTestJump;
+    HeroHooks.unk48 = HubHeroTestKick;
     HeroHooks.unk3C = HubHeroTestButton;
     HeroHooks.unk30 = HubHeroSetIdle;
     HubInitHero(0);
@@ -1285,11 +1285,11 @@ s32 HubHeroTestButton(s32 arg0) {
     return 0;
 }
 
-s32 HubHeroTestA(void) {
+s32 HubHeroTestJump(void) {
     return 0;
 }
 
-s32 HubHeroTestB(void) {
+s32 HubHeroTestKick(void) {
     return 0;
 }
 

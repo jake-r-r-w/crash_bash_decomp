@@ -912,3 +912,5 @@ SfxBankCount = 0x800654BC;
 HeadOfTriggers = 0x8005AA48;
 CdRegIndex = 0x80067874;
 CardFileName = 0x8004CDAC;
+ScriptCommands = 0x80058B00;
+FirstBootDone = 0x800590CC;

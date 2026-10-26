@@ -182,7 +182,7 @@ void func_8008EB8C(void) {
     D_8009E5B4 = 0;
     func_8001D640(0x200);
     cam_init(MainCamera);
-    D_800590CC = 1;
+    FirstBootDone = 1;
 }
 
 void func_8008EC00(void) {
@@ -258,7 +258,7 @@ void func_8008ECE4(void) {
         return;
     }
     if (flags & 0x200) {
-        ProcessControl.next_process = &D_8009F720;
+        ProcessControl.next_process = &RetryProcess;
         return;
     }
     switch (g->mode) {
@@ -861,7 +861,7 @@ void func_80090A10(void) {
         if (*(s32 *)((u8 *)pad + 0x48) & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
             D_8009F63C = 1;
-            func_80092AF4(&D_8009F720, 0x200);
+            func_80092AF4(&RetryProcess, 0x200);
             {
                 u8 *q = GameInfo;
                 *(u16 *)(q + 0x30) |= 0x200;
@@ -934,7 +934,7 @@ void func_80090A10(void) {
     case 2:
         if (func_80012FFC() == 0) {
             u8 *q;
-            func_80092AF4(&D_8009F720, 0x200);
+            func_80092AF4(&RetryProcess, 0x200);
             q = GameInfo;
             D_8009F638 = 3;
             *(u16 *)(q + 0x30) |= 0x200;
@@ -1068,7 +1068,7 @@ void func_80090E20(void) {
         }
         if (Pads[0].pressed & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_80092AF4(&D_8009F720, 0x200);
+            func_80092AF4(&RetryProcess, 0x200);
             {
                 u8 *q = GameInfo;
                 SaveMenuState = 4;
@@ -1106,7 +1106,7 @@ void func_80090E20(void) {
         SAVEMENU_SET_ANIM(D_8009EFF4);
         if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_80092AF4(&D_8009F720, 0x200);
+            func_80092AF4(&RetryProcess, 0x200);
             SaveMenuState = 4;
             *(u16 *)(GameInfo + 0x30) |= 0x200;
         }
@@ -1159,7 +1159,7 @@ void func_80090E20(void) {
                 break;
             }
             case 2:
-                func_80092AF4(&D_8009F720, 0x200);
+                func_80092AF4(&RetryProcess, 0x200);
                 SaveMenuState = 4;
                 {
                     u8 *q = GameInfo;
@@ -1194,7 +1194,7 @@ void func_80090E20(void) {
         if (SaveMenuState == 2) {
             func_8002D15C();
         }
-        func_80092AF4(&D_8009F720, 0x200);
+        func_80092AF4(&RetryProcess, 0x200);
         SaveMenuState = 4;
         {
             u8 *q = GameInfo;
@@ -1713,7 +1713,7 @@ void func_800929D8(void) {
     ScreenFade.maxed = 3;
     ScreenFade.speed = 0x100;
     SetDispMask(1);
-    D_800590CC = 1;
+    FirstBootDone = 1;
     func_80092AF4(&D_800A00DC, 0x200);
     func_8001E598(&ScreenFade);
     func_8001E610(&ProcessControl, &ScreenFade);
@@ -1766,7 +1766,7 @@ void func_80092BDC(void) {
     ScreenFade.maxed = 3;
     ScreenFade.speed = 0x100;
     SetDispMask(1);
-    D_800590CC = 1;
+    FirstBootDone = 1;
     func_80092AF4(&D_800A00DC, 0x200);
 }
 
@@ -1802,7 +1802,7 @@ void func_80092CAC(void) {
     }
     func_80017640();
     func_80010AE8(&MainHeap);
-    D_800590CC = 0;
+    FirstBootDone = 0;
     if (GameExitFlags & 0x200) {
         func_80079260();
     } else {

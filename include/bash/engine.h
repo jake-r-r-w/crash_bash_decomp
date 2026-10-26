@@ -11,12 +11,11 @@
 #include "bash/nas.h"
 #include "bash/shell.h"   /* ClockInfo, ScoreInfo */
 
-extern s32 D_80051658;
 extern s32 D_800AD2F8[];
 extern u16 D_800A00D0[];
-extern s32 D_800AD320;
+extern s32 CamBoundTop;
 extern s32 camera_frame_right[];
-extern s32 D_800AD328;
+extern s32 CamBoundRight;
 typedef struct {
     s32 unk0;
     s16 unk4;
@@ -271,11 +270,10 @@ typedef struct {
     s32 unk8;
 } D_800AD2EC_t;
 
-extern s32 D_80051658;
 extern D_800AD2EC_t D_800AD2EC;
-extern s32 D_800AD31C;
+extern s32 CamBoundBottom;
 extern D_800AD2EC_t D_800AD304;
-extern s32 D_800AD324;
+extern s32 CamBoundLeft;
 
 /* PadState (Pads) seen by func_8007EE2C: button flags at 0x44/0x48. */
 typedef struct PadButtons {
@@ -294,7 +292,7 @@ void func_8007A614(s32 arg0);
 extern void (*D_8009D718)();
 extern void (*HeroCollideHook)();
 extern s32 (*D_8009D728)(s32);
-extern s32 (*D_8009D72C)(s32);
+extern s32 (*HeroTestJumpHook)(s32);
 
 /* An entry of the list D_800A0D1C walks (func_80094860), 12 bytes. */
 typedef struct {

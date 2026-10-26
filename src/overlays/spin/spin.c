@@ -2846,8 +2846,8 @@ void SpinHeroHit(s32 arg0) {
             }
         }
     }
-    if (D_8009D740 != NULL) {
-        D_8009D740(arg0);
+    if (HeroCarryCollisionHook != NULL) {
+        HeroCarryCollisionHook(arg0);
     }
     func_800871E4(arg0);
 }

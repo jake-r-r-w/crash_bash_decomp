@@ -290,7 +290,7 @@ typedef struct EngColorSrc {
 extern process_info D_8009F998;
 extern process_info D_8009FA00;
 extern u8 D_8004E998[];
-extern process_info D_8009F720;
+extern process_info RetryProcess;
 void func_80093854(void);
 void load_initial_dbases(void);
 void func_80092AF4(process_info *process, s32 speed);

@@ -587,7 +587,7 @@ u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 *
         t = (s32 *)(hdr + 0x1C);
         for (i = 0; i < *(s32 *)hdr; i++) {
             q = (s32 *)((u8 *)t + *t);
-            fn = (void (*)(s32 *, u8 *, s32))D_80058B00[*q].unk0;
+            fn = (void (*)(s32 *, u8 *, s32))ScriptCommands[*q].unk0;
             if (fn != NULL) {
                 fn(q, p, i);
             }
@@ -608,7 +608,7 @@ s32 func_80020064(u8 *arg0) {
     s = *(u8 **)(arg0 + 8);
     D_80058B60 = 0;
     while (s != NULL) {
-        fn = (void (*)(u8 *, u8 *))D_80058B00[*(s32 *)(s + 4)].unk4;
+        fn = (void (*)(u8 *, u8 *))ScriptCommands[*(s32 *)(s + 4)].unk4;
         if (fn != NULL) {
             fn(s, arg0);
         }
@@ -662,7 +662,7 @@ void func_800201BC(u8 *arg0, GteSetup *arg1) {
         gs = &RenderState;
         ((GfxScreen *)gs->unk28)->x = arg1->ofx;
         ((GfxScreen *)gs->unk28)->y = arg1->ofy;
-        fn = (void (*)(u8 *, GteSetup *))D_80058B00[*(s32 *)(p + 4)].unk8;
+        fn = (void (*)(u8 *, GteSetup *))ScriptCommands[*(s32 *)(p + 4)].unk8;
         if (fn != NULL) {
             fn(p, &out);
         }
@@ -867,7 +867,7 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
     if (*(s32 *)e > 0) {
         do {
             u8 *a = (u8 *)q + *q;
-            fn = (void (*)(u8 *, u8 *, s32))D_80058B00[*(s32 *)a].unk0;
+            fn = (void (*)(u8 *, u8 *, s32))ScriptCommands[*(s32 *)a].unk0;
             if (fn != NULL) {
                 fn(a, p, i);
             }
@@ -894,7 +894,7 @@ void func_80020DF8(u8 *arg0) {
     if (flag != NULL) {
         *flag = 0;
     }
-    tab = D_80058B00;
+    tab = ScriptCommands;
     for (;;) {
         if (cur == NULL) {
             return;
@@ -948,7 +948,7 @@ void func_80020F5C(u8 *arg0) {
         if (cur == NULL) {
             goto unlink;
         }
-        fn = D_80058B00[*(s32 *)(cur + 4)].unkC;
+        fn = ScriptCommands[*(s32 *)(cur + 4)].unkC;
         next = *(u8 **)(cur + 0xB4);
         if (fn != NULL) {
             fn(cur, arg0);
@@ -990,7 +990,7 @@ void func_80021054(u8 *arg0) {
         if (cur == NULL) {
             return;
         }
-        fn = D_80058B00[*(s32 *)(cur + 4)].unkC;
+        fn = ScriptCommands[*(s32 *)(cur + 4)].unkC;
         next = *(u8 **)(cur + 0xB4);
         if (fn != NULL) {
             fn(cur, arg0);
@@ -1031,7 +1031,7 @@ void func_800210F8(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3, u8 **arg4) {
     t = (s32 *)(hdr + 0x1C);
     for (i = 0; i < *(s32 *)hdr; i++) {
         q = (s32 *)((u8 *)t + *t);
-        fn = (void (*)(s32 *, u8 *, s32))D_80058B00[*q].unk0;
+        fn = (void (*)(s32 *, u8 *, s32))ScriptCommands[*q].unk0;
         if (fn != NULL) {
             fn(q, arg2, i);
         }

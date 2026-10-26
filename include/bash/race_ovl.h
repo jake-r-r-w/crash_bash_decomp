@@ -1222,7 +1222,6 @@ extern void *AiHumanTweakTable;
 extern void *AiSkillTable;
 extern void *AiTeamSkillTable;
 extern void *AiHumanRoundTweakTable;
-extern s32 D_80051658;
 
 /* Tables InitialiseRACEFirst hooks into the engine. */
 extern u8 D_8008B29C[], D_8008B418[];

@@ -390,7 +390,7 @@ typedef struct EngineModeView {
     /* 0x187 */ u8 unk187;
 } EngineModeView;
 extern s8 D_8004E0A4[];
-extern process_info D_8009F720;
+extern process_info RetryProcess;
 extern void *D_8009EFCC[];
 extern void *D_8009EFD0[];
 extern void *D_8009EFD4[];

@@ -390,9 +390,9 @@ void HubCamFromPath(u8 *cam, s32 arg1);
 
 void HubHeroSetIdle(s32 arg0);
 
-s32 HubHeroTestA(void);
+s32 HubHeroTestJump(void);
 
-s32 HubHeroTestB(void);
+s32 HubHeroTestKick(void);
 
 void HubHeroTouched(s32 arg0);
 void HubPreMoveHero(s32 arg0);

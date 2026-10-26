@@ -190,8 +190,8 @@ static inline s32 HeroCheckMoving(s32 arg0) {
 static inline s32 HeroCheckPad1000(s32 arg0) {
     s32 ret;
 
-    if (D_8009D730 != NULL) {
-        return D_8009D730(arg0);
+    if (HeroTestKickHook != NULL) {
+        return HeroTestKickHook(arg0);
     }
     if (Heroes[arg0].hero_status & 0xFA00) {
         return 0;

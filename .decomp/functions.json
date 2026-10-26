@@ -32244,13 +32244,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B821C": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHeroTestA.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHeroTestJump.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "HubHeroTestA",
+  "name": "HubHeroTestJump",
   "orig": "func_800B821C",
   "rom": 20328,
   "seg": "overlays/hub/hubcore",
@@ -32258,13 +32258,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "hub:800B8224": {
-  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHeroTestB.s",
+  "asm": "asm/nonmatchings/overlays/hub/hubcore/HubHeroTestKick.s",
   "bin": "disc/hub.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "HubHeroTestB",
+  "name": "HubHeroTestKick",
   "orig": "func_800B8224",
   "rom": 20336,
   "seg": "overlays/hub/hubcore",

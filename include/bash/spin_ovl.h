@@ -301,7 +301,7 @@ void SpinHeroLose(s32 arg0);
 extern u16 SpinHitSfx[];
 extern u16 SpinHitDone[];
 extern s32 GameCheats;
-extern void (*D_8009D740)(s32);
+extern void (*HeroCarryCollisionHook)(s32);
 s32 func_8008502C();
 s32 func_800871E4(s32 arg0);
 s32 SetHeroSeq(s32 player, s32 seq);

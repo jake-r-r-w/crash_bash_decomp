@@ -21,7 +21,7 @@ typedef struct {
 } FuxFlags;
 extern s32 (*D_8009D724)(s32);
 extern s32 (*D_8009D738)(s32, s32);
-extern s32 (*D_8009D730)(s32);
+extern s32 (*HeroTestKickHook)(s32);
 /* Hero engine scale tables, 12 steps (func_80088794). */
 extern u16 D_8009DC38[];
 extern u16 D_8009DC50[];
@@ -206,11 +206,11 @@ void func_80082AC4(void);
 
 
 
-extern s32 (*D_8009D730)(s32);
+extern s32 (*HeroTestKickHook)(s32);
 
 
 extern void (*D_8009D71C)(s32);
-extern void (*D_8009D740)(s32);
+extern void (*HeroCarryCollisionHook)(s32);
 extern u16 D_8009DC2C[];
 
 

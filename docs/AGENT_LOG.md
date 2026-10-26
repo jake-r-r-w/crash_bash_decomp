@@ -470,8 +470,11 @@ Newest first, a few lines each. Details are in the commits.
   (`FontModel`, `PowerupsModel`, `AngelModel`, `PapuModel`, ...;
   `tools/scripts/model_slots.py`); then 15 more (`GameCheats`, `GameLanguage`,
   `HeroKeepInBoundsHook`, `WarpRooms`, `MapPoints`, ...), the pads' fields (`PadState.held` / `pressed`: `D_80051380` was `Pads[0].pressed`), the
-  victory sequence (`WinSeqTimer` ..) and the clear pause words; 3584 uses of 914 names
-  left (after a sixth batch: the Euro demo's unplaced globals placed by their distance from a
+  victory sequence (`WinSeqTimer` ..) and the clear pause words; 3398 uses of 893 names
+  left (after a seventh batch: the camera's bounds `CamBoundBottom` .., the hero hooks'
+  `HeroTestJumpHook`, `HeroTestKickHook`, `HeroCarryCollisionHook` (and the hub's
+  `HubHeroTestJump`/`Kick`), `ScriptCommands`, `RetryProcess` (exit flag 0x200 is Retry),
+  and `D_80051658` as `MainCamera`'s `dist`; before it a sixth batch: the Euro demo's unplaced globals placed by their distance from a
   placed neighbour, PROTOTYPES.md: `first_joypad`, `joypad_idle_count`, `ACMD`, `IconImage`,
   `vmode_512_ntsc`; and `NasPoolUsed`, `SfxBankCount`, `RenderHook`, `HeadOfTriggers` ..;
   before it a fifth batch: `DatIndex`, `NasPool`, `NextGameMode`, the viewports, `CupTable`,

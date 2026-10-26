@@ -96,7 +96,7 @@ void func_80093588(void) {
         }
     }
     func_80017070();
-    if (GameMode == 0x28 && D_800590CC == 0) {
+    if (GameMode == 0x28 && FirstBootDone == 0) {
         func_80016CA0(D_800556F4);
     } else {
         func_80016CA0(LoadingModel);
@@ -152,7 +152,7 @@ void func_800936C4(void) {
     func_800222FC();
     draw_init();
     D_800A0158 = 0;
-    if (((D5A614View *)GameInfo)->mode == 0x28 && D_800590CC != 0) {
+    if (((D5A614View *)GameInfo)->mode == 0x28 && FirstBootDone != 0) {
         ProcessControl.flags = 0x1D;
         ProcessControl.next_process = &RunGame;
     }
@@ -301,7 +301,7 @@ void func_80093BE8(void) {
     }
     switch (D_800A0158) {
     case 0:
-        if (GameMode == 0x28 && D_800590CC == 0) {
+        if (GameMode == 0x28 && FirstBootDone == 0) {
             func_8001E934(&D_800A015C, &D_8009FA00);
         } else {
             func_8001E934(&D_800A015C, &D_8009F998);
@@ -329,10 +329,10 @@ void func_80093BE8(void) {
         process_init(&D_800A015C);
         InitialiseNasSystem();
         func_8007A8C4();
-        if (g->mode != 0x28 || D_800590CC == 0) {
+        if (g->mode != 0x28 || FirstBootDone == 0) {
             func_800229FC(g->mode);
         }
-        if (GameMode == 0x28 && D_800590CC == 0) {
+        if (GameMode == 0x28 && FirstBootDone == 0) {
             func_8002BBB4();
             func_8002BD0C((s32)D_8004E998);
         }
@@ -340,7 +340,7 @@ void func_80093BE8(void) {
         D_800A0158 = 2;
         break;
     case 6:
-        if (GameMode != 0x28 || D_800590CC == 0) {
+        if (GameMode != 0x28 || FirstBootDone == 0) {
             func_80022140(GameMode, ModeTypes[GameMode * 3]);
         }
         load_initial_dbases();
@@ -387,7 +387,7 @@ void func_80093BE8(void) {
         D_800A0158 = 7;
         break;
     case 7:
-        func_80092AF4(&D_8009F720, 0x300);
+        func_80092AF4(&RetryProcess, 0x300);
         if (GameMode != 0x28) {
             func_8002C284(-1);
         }
@@ -507,7 +507,7 @@ void level_load_map(void) {
 }
 
 void func_800943B8(void) {
-    if (GameMode == 0x28 && D_800590CC == 0) {
+    if (GameMode == 0x28 && FirstBootDone == 0) {
         func_80016CA0(D_800556F4);
     } else {
         func_80016CA0(LoadingModel);

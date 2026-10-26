@@ -254,10 +254,10 @@ void func_80096A08(void) {
     cam = (EngCam *)MainCamera;
     RotMatrix(&cam->rot, &m);
     n = camera_frame_list_size;
-    D_800AD31C = 0x7FFFFFFF;
-    D_800AD320 = 0x80000000;
-    D_800AD324 = 0x7FFFFFFF;
-    D_800AD328 = 0x80000000;
+    CamBoundBottom = 0x7FFFFFFF;
+    CamBoundTop = 0x80000000;
+    CamBoundLeft = 0x7FFFFFFF;
+    CamBoundRight = 0x80000000;
     e = D_800AD1EC;
     for (;;) {
         s32 z;
@@ -280,32 +280,32 @@ void func_80096A08(void) {
         z0 = out.vz - e->unk8;
         x = out.vx - e->unk4;
         v = x + (z0 + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
-        if (v < D_800AD324) {
-            D_800AD324 = v;
+        if (v < CamBoundLeft) {
+            CamBoundLeft = v;
             D_800AD304.unk0 = x;
             D_800AD304.unk8 = z0;
         }
         z = out.vz - e->unk8;
         xr =out.vx + e->unk6;
         v = xr - (z + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
-        if (v > D_800AD328) {
-            D_800AD328 = v;
+        if (v > CamBoundRight) {
+            CamBoundRight = v;
             camera_frame_right[0] = xr;
             camera_frame_right[2] = z;
         }
         z = out.vz - e->unk8;
         xr = out.vy - e->unkC;
         v = xr + (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
-        if (v < D_800AD31C) {
-            D_800AD31C = v;
+        if (v < CamBoundBottom) {
+            CamBoundBottom = v;
             D_800AD2EC.unk4 = xr;
             D_800AD2EC.unk8 = z;
         }
         z = out.vz - e->unk8;
         w = out.vy + e->unkC;
         v = w - (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
-        if (v > D_800AD320) {
-            D_800AD320 = v;
+        if (v > CamBoundTop) {
+            CamBoundTop = v;
             ((D_800AD2EC_t *)D_800AD2F8)->unk4 = w;
             ((D_800AD2EC_t *)D_800AD2F8)->unk8 = z;
         }
@@ -313,32 +313,32 @@ void func_80096A08(void) {
         z = out.vz + e->unkA;
         xr = out.vx - e->unk4;
         v = xr + (z + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
-        if (v < D_800AD324) {
-            D_800AD324 = v;
+        if (v < CamBoundLeft) {
+            CamBoundLeft = v;
             D_800AD304.unk0 = xr;
             D_800AD304.unk8 = z;
         }
         z = out.vz + e->unkA;
         w = out.vx + e->unk6;
         v = w - (z + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
-        if (v > D_800AD328) {
-            D_800AD328 = v;
+        if (v > CamBoundRight) {
+            CamBoundRight = v;
             camera_frame_right[0] = w;
             camera_frame_right[2] = z;
         }
         z = out.vz + e->unkA;
         w = out.vy - e->unkC;
         v = w + (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
-        if (v < D_800AD31C) {
-            D_800AD31C = v;
+        if (v < CamBoundBottom) {
+            CamBoundBottom = v;
             D_800AD2EC.unk4 = w;
             D_800AD2EC.unk8 = z;
         }
         w = out.vy + e->unkC;
         z = out.vz + e->unkA;
         v = w - (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
-        if (v > D_800AD320) {
-            D_800AD320 = v;
+        if (v > CamBoundTop) {
+            CamBoundTop = v;
             ((D_800AD2EC_t *)D_800AD2F8)->unk4 = w;
             ((D_800AD2EC_t *)D_800AD2F8)->unk8 = z;
         }
@@ -439,40 +439,40 @@ void func_80097244(u8 *p) {
 }
 
 void camera_count_bottom(s32 arg0, s32 arg1) {
-    s32 temp = arg0 - ((arg1 + 0x3000) * 0xF0) / D_80051658;
+    s32 temp = arg0 - ((arg1 + 0x3000) * 0xF0) / ((EngCam *)MainCamera)->dist;
 
-    if (D_800AD320 < temp) {
-        D_800AD320 = temp;
+    if (CamBoundTop < temp) {
+        CamBoundTop = temp;
         D_800AD2F8[1] = arg0;
         D_800AD2F8[2] = arg1;
     }
 }
 
 void func_80097334(s32 arg0, s32 arg1) {
-    s32 v = arg0 + ((arg1 + 0x3000) * 0xF0) / D_80051658;
+    s32 v = arg0 + ((arg1 + 0x3000) * 0xF0) / ((EngCam *)MainCamera)->dist;
 
-    if (v < D_800AD31C) {
-        D_800AD31C = v;
+    if (v < CamBoundBottom) {
+        CamBoundBottom = v;
         D_800AD2EC.unk4 = arg0;
         D_800AD2EC.unk8 = arg1;
     }
 }
 
 void func_800973AC(s32 arg0, s32 arg1) {
-    s32 temp = arg0 - ((arg1 + 0x3000) * 0x140) / D_80051658;
+    s32 temp = arg0 - ((arg1 + 0x3000) * 0x140) / ((EngCam *)MainCamera)->dist;
 
-    if (D_800AD328 < temp) {
-        D_800AD328 = temp;
+    if (CamBoundRight < temp) {
+        CamBoundRight = temp;
         camera_frame_right[0] = arg0;
         camera_frame_right[2] = arg1;
     }
 }
 
 void func_80097424(s32 arg0, s32 arg1) {
-    s32 v = arg0 + ((arg1 + 0x3000) * 0x140) / D_80051658;
+    s32 v = arg0 + ((arg1 + 0x3000) * 0x140) / ((EngCam *)MainCamera)->dist;
 
-    if (v < D_800AD324) {
-        D_800AD324 = v;
+    if (v < CamBoundLeft) {
+        CamBoundLeft = v;
         D_800AD304.unk0 = arg0;
         D_800AD304.unk8 = arg1;
     }
@@ -498,7 +498,7 @@ s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     s32 sp28[3];
     s32 d;
 
-    d = 0x3C0000 / D_80051658;
+    d = 0x3C0000 / ((EngCam *)MainCamera)->dist;
     sp18[0] = arg0->a + d;
     sp18[2] = arg0->c - 0x3000;
     sp28[0] = arg1->a - d;
@@ -518,7 +518,7 @@ s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
 s32 func_80097608(VECTOR *arg0, VECTOR *arg1, s32 arg2) {
     VECTOR sp18;
     VECTOR sp28;
-    s32 d = 0x2D0000 / D_80051658;
+    s32 d = 0x2D0000 / ((EngCam *)MainCamera)->dist;
     extern s32 line_intersect_zy(VECTOR *, VECTOR *, VECTOR *, VECTOR *, VECTOR *);
 
     sp18.vy = arg0->vy + d;

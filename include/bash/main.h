@@ -851,7 +851,7 @@ typedef struct {
     s32 unk8;
     void (*unkC)(u8 *, u8 *);
 } D_80058B00_Entry;
-extern D_80058B00_Entry D_80058B00[];
+extern D_80058B00_Entry ScriptCommands[];
 extern s32 World_floor_level;
 extern s32 D_800655A8;
 extern s32 CardChannel;
@@ -1317,7 +1317,7 @@ extern s32 D_800654B0;
 extern s32 D_800654B4;
 extern s32 GameFrameCount;
 extern s32 D_8004E0D0; /* BCD of func_80010000's count */
-extern s32 D_800590CC;
+extern s32 FirstBootDone;
 extern subengine *next_sub;
 extern s32 D_80058B60;
 extern s32 D_80058B64;
