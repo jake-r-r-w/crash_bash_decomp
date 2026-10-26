@@ -4,6 +4,13 @@
 #include "bash/bonk_bohero.h"
 #include "bash/bonk.h"
 
+/* data, in address order */
+s32 D_800B9F0C[4] = { 0x72F, 0x730, 0x731, 0x732 };
+s32 D_800B9F1C[4] = { 0x719, 0x71A, 0x71B, 0x71C };
+s32 D_800B9F2C[4] = { 0x721, 0x722, 0x723, 0x724 };
+s32 D_800B9F3C[4] = { 0x710, 0x711, 0x712, 0x713 };
+BonkSlot D_800B9F4C[4] = {0};
+
 void BonkSpawnShockwave(s32 arg0) {
     VECTOR sp18;
     HeroInfo *h;
