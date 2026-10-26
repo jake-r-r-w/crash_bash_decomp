@@ -674,7 +674,7 @@ typedef struct AsteroidExt {
     /* 0x7C */ EXTengine *shadow;
 } AsteroidExt;
 
-extern u8 D_80052F5C[];
+extern u8 PowerupsModel[];
 
 s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
 

@@ -1099,7 +1099,7 @@ void func_800248A0(x, y, c0, c1, n)
     pos.f.x = x;
     tbl = D_8005A5C0;
     ids = tbl[n];
-    base = D_80053074;
+    base = InterfaceModel;
     func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
     pos.f.x = x + 0x9D80 / ScreenRect->w;
     func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
@@ -1871,7 +1871,7 @@ s16 func_80026210(s32 x, u8 *s) {
 void func_80026308(void) {
     func_80023A90();
     D_8005B2B4 = 0;
-    sysfont_dbase = D_80055684;
+    sysfont_dbase = FontModel;
 }
 
 s32 SysGetLen(char *s) {

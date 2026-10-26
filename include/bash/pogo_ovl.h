@@ -115,7 +115,7 @@ extern s32 PogoBounceCount[];
 extern s16 PogoBounceHeights[];
 extern s32 PogoHeroHeights[];
 void Roo_FireProjectile(EXTengine *eng, s32 angle);
-extern u8 D_80053B9C[];
+extern u8 PogoObjectsModel[];
 extern u8 D_80053ABC[];
 /* Plot_PogoMushroom's 16-step y scale bounce. */
 extern s32 MushroomScales[16];
@@ -156,7 +156,7 @@ static inline void Pogo_PowerupAnim(s32 i, s32 anim) {
     subengine *sub = Heroes[i].hero_powerup->sub;
 
     if (sub != NULL) {
-        sub->unk6C = D_80053B9C;
+        sub->unk6C = PogoObjectsModel;
         sub->unk74 = anim;
     }
 }
@@ -202,7 +202,7 @@ static inline void Pogo_ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         }
     }
 }
-extern u8 D_80053BD4[];
+extern u8 RooModel[];
 extern ScriptInit RooScriptInit;
 extern s32 RooFrame;
 extern s32 GameTeams[];

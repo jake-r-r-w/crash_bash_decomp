@@ -144,7 +144,7 @@ PlaceRec BattleOptionsPlace[12] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 s32 TitlesFiles[9] = {
-    (s32)&D_80055684, (s32)&D_8004ED78, (s32)&D_8004ED70, (s32)&D_80053074, (s32)&D_8004ED68,
+    (s32)&FontModel, (s32)&D_8004ED78, (s32)&D_8004ED70, (s32)&InterfaceModel, (s32)&D_8004ED68,
     (s32)&D_8004ED60, 0, 0, 0,
 };
 /* the engine's table at 0x800A0030 points at it for the front end's modes */

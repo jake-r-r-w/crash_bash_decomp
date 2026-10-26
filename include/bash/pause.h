@@ -194,7 +194,7 @@ void func_80083334(s32 arg0, s32 kind, s32 flag);
 
 
 
-extern u8 D_80055534[];
+extern u8 DragonObjectsModel[];
 
 void func_80082AC4(void);
 
@@ -254,7 +254,7 @@ typedef struct {
     s16 unkC;
 } D_8009E0E8_t;
 extern D_8009E0E8_t D_8009E0E8[3][4];
-extern u8 D_80053004[];
+extern u8 AngelModel[];
 
 void func_80082D90(s32 arg0);
 

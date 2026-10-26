@@ -307,11 +307,11 @@ char *PapuAnims[12] = {
 };
 s16 PapuLevelDB[2] = { -1, 0 };
 s32 PapuFiles[27] = {
-    (s32)&D_80055684, (s32)&D_8004F328, (s32)&D_8004F320, (s32)&D_800555A4, (s32)&D_8004F308,
-    (s32)&D_8004F300, (s32)&D_80053074, (s32)&D_8004F318, (s32)&D_8004F310, (s32)&D_80052F5C,
-    (s32)&D_8004F2F8, (s32)&D_8004F2F0, (s32)&D_80053004, (s32)&D_8004F2E8, (s32)&D_8004F2E0,
-    (s32)&D_80052F94, (s32)&D_8004F2D8, (s32)&D_8004F2D0, (s32)&D_800533F4, (s32)&D_8004F2C8,
-    (s32)&D_8004F2C0, (s32)&D_8005342C, (s32)&D_8004F2B8, (s32)&D_8004F2B0, 0, 0,
+    (s32)&FontModel, (s32)&D_8004F328, (s32)&D_8004F320, (s32)&LoadingModel, (s32)&D_8004F308,
+    (s32)&D_8004F300, (s32)&InterfaceModel, (s32)&D_8004F318, (s32)&D_8004F310, (s32)&PowerupsModel,
+    (s32)&D_8004F2F8, (s32)&D_8004F2F0, (s32)&AngelModel, (s32)&D_8004F2E8, (s32)&D_8004F2E0,
+    (s32)&CrateObjectsModel, (s32)&D_8004F2D8, (s32)&D_8004F2D0, (s32)&PapuModel, (s32)&D_8004F2C8,
+    (s32)&D_8004F2C0, (s32)&MinionModel, (s32)&D_8004F2B8, (s32)&D_8004F2B0, 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 4's) */
 file_group_load_info file_group_PAPU = { D_80050148, PapuFiles };
@@ -813,7 +813,7 @@ void InitPapuBoss(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         func_80086868();
-        eng->sub->unk6C = D_800533F4;
+        eng->sub->unk6C = PapuModel;
         eng->sub->unk74 = 0x2001;
         eng->unk5C = 1;
         eng->unk5E = 1;
@@ -1185,7 +1185,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
     eng = nas->Engine;
     if (eng != 0)
     {
-      eng->sub->unk6C = &D_8005342C;
+      eng->sub->unk6C = &MinionModel;
       eng->unk5D = 0;
       eng->sub->unk74 = 0x2001;
       eng->flags &= 0xFFFF7FFF;
@@ -1324,7 +1324,7 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0;
     if (fux->unk22 == 0) {
       PlaySfx(0x1FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-      func_8007A524(0, &eng->unk10.x, (s32)D_8005342C);
+      func_8007A524(0, &eng->unk10.x, (s32)MinionModel);
       fux->unk22 = 5;
       fux->state = 2;
     } else {
@@ -1547,7 +1547,7 @@ void PlotPapuMinion(NAS *nas)
     }
     PapuMinionSlots[slot].unk0 = 0;
     PlaySfx(0x1FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-    func_8007A524(0, &eng->unk10.x, (s32)D_8005342C);
+    func_8007A524(0, &eng->unk10.x, (s32)MinionModel);
     KillNAS(nas);
     return;
   default:
@@ -2723,7 +2723,7 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 func_80026AD8((u8 *)nas);
                 func_8002694C(nas, 0x300);
                 nas->FUX = (EXT *)obj;
-                eng->sub->unk6C = D_80052F94;
+                eng->sub->unk6C = CrateObjectsModel;
                 eng->unk5D = 1;
                 obj->unk14 = d;
                 D_8009E46C[obj->unk14]++;
@@ -2803,7 +2803,7 @@ void InitPACrate(NAS *arg0) {
                 }
             } while (again);
             eng->unk10.y = World_floor_level;
-            eng->sub->unk6C = D_80052F94;
+            eng->sub->unk6C = CrateObjectsModel;
             eng->unk5D = 1;
             eng->unk5C = 1;
             obj->unk1A = 3;

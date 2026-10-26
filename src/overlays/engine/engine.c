@@ -408,7 +408,7 @@ void func_800798A4(void) {
             show = 0;
         }
         if (show && (PanelCtrl & 0x20000)) {
-            tim = D_80053074;
+            tim = InterfaceModel;
             c0 = 0xFFFFFF;
             c1 = 0xFFFF;
             pos.f.y = D_80099700[1];
@@ -441,7 +441,7 @@ void func_800798A4(void) {
     }
     if (show) {
         if (PanelCtrl & 0x20000) {
-            tim = D_80053074;
+            tim = InterfaceModel;
             c0 = 0xFFFFFF;
             c1 = 0xFFFF;
             pos.f.y = D_80099700[1];
@@ -454,7 +454,7 @@ void func_800798A4(void) {
             }
         }
     } else if ((PanelCtrl & 1) && (Clock_flags & 0x8000)) {
-        tim = D_80053074;
+        tim = InterfaceModel;
         c0 = 0xD0FF;
         c1 = 0xFF;
         pos.f.y = Clock_XYZ[1];
@@ -490,7 +490,7 @@ void func_800798A4(void) {
         }
         if (PanelCtrl & 0x400) {
             if (Score[i].Ctrl != 0) {
-                tim = D_80053074;
+                tim = InterfaceModel;
                 c0 = 0xD0FF;
                 c1 = 0xFF;
                 pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
@@ -510,7 +510,7 @@ void func_800798A4(void) {
         }
         if (PanelCtrl & 0x200) {
             if (Score[i].Ctrl != 0) {
-                tim = D_80053074;
+                tim = InterfaceModel;
                 c0 = 0xD0FF;
                 c1 = 0xFF;
                 pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
@@ -525,7 +525,7 @@ void func_800798A4(void) {
             }
         }
         if ((PanelCtrl & 0x100) && Score[i].Ctrl != 0) {
-            tim = D_80053074;
+            tim = InterfaceModel;
             c0 = 0xD0FF;
             c1 = 0xFF;
             n = Score[i].score;

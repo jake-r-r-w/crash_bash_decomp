@@ -1165,7 +1165,7 @@ void HubSpawnFlash(s32 *arg0, s32 arg1) {
     EXTengine *eng;
     u8 *p;
 
-    p = D_800558EC;
+    p = AdventureItemsModel;
     nas = CreateNAS(arg0[0], arg0[1], arg0[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -1352,7 +1352,7 @@ void HubCreateShadow(s32 arg0) {
     EXTengine *s = h->hero_shadow;
 
     if (s != NULL) {
-        s->sub->unk6C = D_800558EC;
+        s->sub->unk6C = AdventureItemsModel;
         s->sub->unk74 = 0x2020;
         s->unk10 = h->hero_eng->unk10;
         s->flags |= 0x8041;
@@ -1997,7 +1997,7 @@ void InitSparkGFX(NAS *arg0) {
         u32 fl;
         do {
             s->unk51 = 0;
-            nv = D_800558EC;
+            nv = AdventureItemsModel;
             s->unk50 = 1;
             s->unk6C = nv;
             if (PodiumCheerKind == 0) {
@@ -2049,7 +2049,7 @@ void HubInitSparks(HubSparks *arg0) {
     src = set->src;
     dst = set->dst;
     row = arg0->set.rows;
-    g = D_800558EC;
+    g = AdventureItemsModel;
     sel = PodiumCheerKind;
     if (sel == 0) {
         tex = (HubTex *)(*(u8 **)(g + 0x18) + 0x188);

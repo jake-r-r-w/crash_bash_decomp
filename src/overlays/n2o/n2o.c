@@ -22,7 +22,7 @@ extern u8 D_8004EB58[];
 extern u8 D_8004EB60[];
 extern u8 D_8004EB68[];
 extern u8 D_80050058[];
-extern u8 D_80053004[];
+extern u8 AngelModel[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
 extern u8 D_80070098[];
@@ -331,11 +331,11 @@ WWInf N2OWorldInfo[1] = {
     { 0x5C, N2OAnims, N2OLevelDB, 1 },
 };
 s32 N2OFiles[27] = {
-    (s32)&D_80055684, (s32)&D_8004EB68, (s32)&D_8004EB60, (s32)&D_800555A4, (s32)&D_8004EB48,
-    (s32)&D_8004EB40, (s32)&D_80053074, (s32)&D_8004EB58, (s32)&D_8004EB50, (s32)&D_80052F5C,
-    (s32)&D_8004EB38, (s32)&D_8004EB30, (s32)&D_80053004, (s32)&D_8004EB28, (s32)&D_8004EB20,
-    (s32)&D_80053EE4, (s32)&D_8004EB08, (s32)&D_8004EB00, (s32)&D_80054504, (s32)&D_8004EB18,
-    (s32)&D_8004EB10, (s32)&D_80053EAC, (s32)&D_8004EAF8, (s32)&D_8004EAF0, 0, 0,
+    (s32)&FontModel, (s32)&D_8004EB68, (s32)&D_8004EB60, (s32)&LoadingModel, (s32)&D_8004EB48,
+    (s32)&D_8004EB40, (s32)&InterfaceModel, (s32)&D_8004EB58, (s32)&D_8004EB50, (s32)&PowerupsModel,
+    (s32)&D_8004EB38, (s32)&D_8004EB30, (s32)&AngelModel, (s32)&D_8004EB28, (s32)&D_8004EB20,
+    (s32)&PlayerVehicleModel, (s32)&D_8004EB08, (s32)&D_8004EB00, (s32)&BallsEffectsModel, (s32)&D_8004EB18,
+    (s32)&D_8004EB10, (s32)&OxideModel, (s32)&D_8004EAF8, (s32)&D_8004EAF0, 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1F's) */
 file_group_load_info file_group_N2O = { D_80050058, N2OFiles };
@@ -501,10 +501,10 @@ void InitialiseN2O(void) {
         }
         N2OPillarList = N2OPillars;
     }
-    func_8001682C((s32 *)D_80054504);
-    func_8001682C((s32 *)(D_80054504 - 0x1500));
-    func_8001682C((s32 *)(D_80054504 - 0x658));
-    func_8001682C((s32 *)(D_80054504 - 0x620));
+    func_8001682C((s32 *)BallsEffectsModel);
+    func_8001682C((s32 *)(BallsEffectsModel - 0x1500));
+    func_8001682C((s32 *)(BallsEffectsModel - 0x658));
+    func_8001682C((s32 *)(BallsEffectsModel - 0x620));
     func_8007E9FC(0x5C, 0x3088);
     N2OBossRound.unk0 = 0;
     N2OBossRound.unk22 = i + 10;
@@ -759,7 +759,7 @@ void N2OInitHero(s32 i) {
         h->hero_anim->sub = n;
         n = n->next;
         if (n != NULL) {
-            n->unk6C = D_80053EE4;
+            n->unk6C = PlayerVehicleModel;
             n->unk74 = 0x2005;
             n->unk50 = 1;
             n->unk51 = 0;
@@ -875,7 +875,7 @@ void N2OPlaceHero(s32 i) {
             n->flags &= ~0x8000;
         }
     }
-    sub->unk6C = D_80053EE4;
+    sub->unk6C = PlayerVehicleModel;
     N2OHeroPlaced[i] = 0xF;
     sub->unk74 = 0x2003;
     sub->unk20.x = 0x1000;
@@ -1542,7 +1542,7 @@ void SetN2OHeroDead(s32 arg0) {
     temp_s0_2 = &base2[arg0];
     temp_v0 = temp_s0_2->hero_eng;
     sp18 = temp_v0->unk10;
-    func_8007A524(0, (s32 *)&sp18, (s32) &D_80053EE4);
+    func_8007A524(0, (s32 *)&sp18, (s32) &PlayerVehicleModel);
     PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->unk10, 0x1000, 0x1E00, 0);
     func_800898EC(arg0);
 }
@@ -1634,13 +1634,13 @@ void InitN2OBall(NAS *nas) {
             }
         }
         eng->unk5D = 2;
-        eng->sub->unk6C = D_80054504;
+        eng->sub->unk6C = BallsEffectsModel;
         eng->sub->unk74 = 0x2009;
         func_80026B70((u8 **)&HeadOfBalls, (u8 *)nas);
         e1 = AddExtEngine(nas, 1);
         if (e1 != NULL) {
             sub = e1->sub;
-            sub->unk6C = D_80054504;
+            sub->unk6C = BallsEffectsModel;
             sub->unk74 = 0x200B;
             e1->flags |= 0x22000021;
             sub->flags |= 0x22000021;
@@ -2081,7 +2081,7 @@ void N2OInitBoss(void) {
     mv->facing_angle = ang;
     mv->forward_angle = ang;
     eng->unk5D = 0;
-    anim = D_80053EAC;
+    anim = OxideModel;
     *(u8 **)&sub->unk6C = anim;
     N2OBossAnimTimer = 0xF;
     sub->unk74 = 0x2006;
@@ -2197,7 +2197,7 @@ void N2OUpdateBoss(void) {
         if (Heroes[3].hero_attack_timer == 0) {
             Heroes[3].hero_eng->flags = 0;
             PlaySfx(0x586, NULL, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
-            func_8007A524(0, &eng->unk10.x, (s32)D_80054504);
+            func_8007A524(0, &eng->unk10.x, (s32)BallsEffectsModel);
             D_8009D6DC[2] |= 0x8000;
         }
     } else {
@@ -3261,7 +3261,7 @@ void InitN2ODeadWall(NAS *nas)
         off = 0;
         if (sub != 0) {
             do {
-                sub->unk6C = D_80054504;
+                sub->unk6C = BallsEffectsModel;
                 sub->unk74 = 0;
                 sub->unk04 = off;
                 sub->flags |= 0x21;
@@ -4023,7 +4023,7 @@ void InitN2OmissileExplode(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        sub->unk6C = &D_80053EAC;
+        sub->unk6C = &OxideModel;
         sub->unk74 = 0x2005;
         sub->unk50 = 1;
         sub->unk51 = 0;
@@ -4056,7 +4056,7 @@ void InitN2Ofirstmissile(NAS *nas) {
     if (eng != NULL) {
         sub = eng->sub;
         eng->unk5D = 0;
-        sub->unk6C = &D_80053EAC;
+        sub->unk6C = &OxideModel;
         sub->unk74 = 0x2004;
         sub->unk51 = 0;
         sub->unk68 = 0x100;
@@ -4090,7 +4090,7 @@ void InitN2Omissile(NAS *nas) {
     if (eng != NULL) {
         sub = eng->sub;
         eng->unk5D = 0;
-        sub->unk6C = &D_80053EAC;
+        sub->unk6C = &OxideModel;
         sub->unk74 = 0x2004;
         sub->unk51 = 0;
         sub->flags |= 0x02000000;
@@ -4249,7 +4249,7 @@ void N2OInitShadow(s32 arg0) {
     HeroInfo *h = &base[arg0];
     EXTengine *s = h->hero_shadow;
 
-    s->sub->unk6C = D_80053EE4;
+    s->sub->unk6C = PlayerVehicleModel;
     s->sub->unk74 = 0x2006;
     s->unk10 = h->hero_eng->unk10;
     s->unk5D = 0;

@@ -53,7 +53,7 @@ extern s32 D_8009F494;
 extern s32 D_8009F40C;
 extern s32 D_8009EEB0;
 extern u8 D_800555DC[];
-extern u8 D_800558EC[];
+extern u8 AdventureItemsModel[];
 extern subengine D_800A13F4[][32]; /* 32 subengines per EnginePool slot */
 
 typedef struct { u16 a, b; } U16Pair;
@@ -129,10 +129,10 @@ extern s32 D_800ADBC4;
 extern process_info D_800A00DC;
 extern s32 GamePause;
 extern u8 D_8009BCE0[];
-extern u8 D_80052F5C[];
+extern u8 PowerupsModel[];
 extern ScriptInit D_8009E250;
 extern ScriptInit D_8009E1E8;
-extern u8 D_800546C4[];
+extern u8 PolarObjectsModel[];
 extern GfxViewport D_8009F6A4;
 extern GfxViewport D_800A0BCC;
 extern GfxCamera D_8009F7EC;
@@ -439,7 +439,7 @@ extern u8 NoxSparkFxDef[];
 extern u8 D_8009E200[];
 
 extern s32 D_8009E424[];
-extern u8 D_80052F94[];
+extern u8 CrateObjectsModel[];
 NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2);
 
 void func_8007A718(void);

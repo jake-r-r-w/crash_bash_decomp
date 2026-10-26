@@ -151,7 +151,7 @@ void func_80083708(void) {
             if (HeroHooks.unk18 != NULL) {
                 ((void (*)(s32))HeroHooks.unk18)(i);
             } else {
-                e->sub->unk6C = D_80052F5C;
+                e->sub->unk6C = PowerupsModel;
                 e->sub->unk74 = 0x2001;
                 e->unk10 = eng->unk10;
                 e->flags |= 0x8041;
@@ -166,7 +166,7 @@ void func_80083708(void) {
             sub = fx->sub;
             fx->unk5D = 0;
             if (sub != NULL) {
-                sub->unk6C = D_80052F5C;
+                sub->unk6C = PowerupsModel;
                 sub->unk74 = 0;
                 mask = ~0x8000;
                 sub->flags &= mask;
@@ -2610,7 +2610,7 @@ void func_800898EC(s32 arg0) {
     subengine *s;
     s32 i;
 
-    h->hero_sub->unk6C = D_80053004;
+    h->hero_sub->unk6C = AngelModel;
     e = h->hero_eng;
     s = h->hero_sub;
     e->flags |= 0x8021;
@@ -2647,7 +2647,7 @@ void func_800898EC(s32 arg0) {
     h->hero_move->z_vel = 0;
     h->hero_move->z_max = 0;
     h->hero_move->jump_ctrl = 0;
-    s->unk6C = D_80053004;
+    s->unk6C = AngelModel;
     s->unk74 = 0x2002;
     e->unk2C.x = 0x1000;
     e->unk2C.y = 0x1000;
@@ -2663,7 +2663,7 @@ void func_800898EC(s32 arg0) {
         s->unk04 = 0;
         s->unk08 = 0;
         s->unk0C = 0;
-        s->unk6C = D_80053004;
+        s->unk6C = AngelModel;
         s->unk74 = 0x2003;
         s->flags = (s->flags | 0x60000021) & ~0x8000;
     }
@@ -3328,10 +3328,10 @@ void func_8008B29C(s32 idx) {
     if (GameInfo[idx + 0x50] != 9) {
         s = Heroes[idx].hero_shadow;
         if (((EngineGameView *)GameInfo)->mode != 0x1C) {
-            s->sub->unk6C = D_800546C4;
+            s->sub->unk6C = PolarObjectsModel;
             s->sub->unk74 = 0x202F;
         } else {
-            s->sub->unk6C = D_80055534;
+            s->sub->unk6C = DragonObjectsModel;
             s->sub->unk74 = 0x2014;
         }
         e = Heroes[idx].hero_eng;
@@ -4148,7 +4148,7 @@ void InitParticleEffect(void) {
 
 void InitSmokePoof(NAS *nas) {
     func_80024E30(nas, &D_8009E1E8);
-    nas->Engine->sub->unk6C = D_800546C4;
+    nas->Engine->sub->unk6C = PolarObjectsModel;
     nas->Engine->sub->flags |= 0x40000041;
     nas->UserInfo.user1 = 0;
     if (((EngineGameView *)GameInfo)->mode == 0x1C) {
@@ -4366,7 +4366,7 @@ void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             sub = eng->sub;
             if (sub != NULL) {
                 while (sub != NULL) {
-                    sub->unk6C = D_80053074;
+                    sub->unk6C = InterfaceModel;
                     sub->unk04 = off;
                     sub->unk74 = arg3 % 10 + 0x200E;
                     sub = sub->next;
@@ -4438,7 +4438,7 @@ void Init_HealthPU(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        eng->sub->unk6C = D_80052F5C;
+        eng->sub->unk6C = PowerupsModel;
         nas->UserInfo.user2 = GameFrameCount;
         eng->sub->unk74 = Random(0xE) + 0x2018;
         obj = (EXTobject *)AddObject(nas);
@@ -4464,7 +4464,7 @@ void Init_HealthPU(NAS *nas) {
             }
             e2 = AddExtEngine(nas, 1);
             if (e2 != NULL) {
-                e2->sub->unk6C = D_80052F5C;
+                e2->sub->unk6C = PowerupsModel;
                 e2->sub->unk74 = 0x2001;
                 e2->unk10 = nas->Engine->unk10;
                 e2->flags |= 0x8041;
@@ -4562,7 +4562,7 @@ void InitBigPoof(NAS *nas) {
     EXTengine *eng = nas->Engine;
 
     if (eng != NULL) {
-        eng->sub->unk6C = D_80052F5C;
+        eng->sub->unk6C = PowerupsModel;
         eng->sub->unk74 = 0;
         func_80024E30(nas, &D_8009E250);
         eng->flags |= 0x21;
@@ -4587,7 +4587,7 @@ void func_8008DDC0(NAS *nas) {
     }
     eng = AddExtEngine(nas, 1);
     if (eng != NULL) {
-        eng->sub->unk6C = D_80052F5C;
+        eng->sub->unk6C = PowerupsModel;
         eng->sub->unk74 = 0x2001;
         src = nas->Engine;
         eng->unk10 = src->unk10;

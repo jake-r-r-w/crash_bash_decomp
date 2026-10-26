@@ -12,7 +12,7 @@
 #include "bash/heroes.h"
 
 extern HeroInfo Heroes[4];
-extern char D_80054504[];
+extern char BallsEffectsModel[];
 
 typedef struct ArkenoidHeroBox {
     s32 a, b, c, d;
@@ -52,7 +52,7 @@ extern u16 ArkHeroSpeeds[][5];
 extern u16 ArkHeroSpeed[];
 extern s16 ArkHeroSpeedDelta[];
 extern s32 ArkHeroStarts[4][3];
-extern char D_8005453C[];
+extern char BallsVehicleModel[];
 extern u16 ArkWallFlags;
 
 extern u16 D_8009D754;
@@ -98,7 +98,7 @@ typedef struct {
     s32 unk6C;
 } ArkenoidGinView;
 
-extern char D_80054574[];
+extern char NginModel[];
 extern ScriptInit NGinScriptInit;
 extern EXTengine *ArkBallSpawner;
 extern s32 (*D_8009D750)(EXTengine *);

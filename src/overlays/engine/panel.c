@@ -629,12 +629,12 @@ void func_8007BFA8(void) {
         sub = IconParts[i];
         func_8001D3B0(((EXTengine **)&Icon)[i], 7, sub);
         for (j = 0; j < 7; j++) {
-            sub->unk6C = D_80053074;
+            sub->unk6C = InterfaceModel;
             sub->flags = 0x10000000;
             sub++;
         }
         sub = IconParts[i];
-        sub->unk6C = D_80053074;
+        sub->unk6C = InterfaceModel;
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
         ((EXTengine **)&Icon)[i]->unk10.x = D_800991E0[D_800991D8[i]][0];
@@ -642,7 +642,7 @@ void func_8007BFA8(void) {
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->unk74 = D_80099218[Heroes[i].hero_name];
         sub = &IconParts[i][1];
-        sub->unk6C = D_80053074;
+        sub->unk6C = InterfaceModel;
         sub->flags = 0;
         sub->unk04 = D_80099240[i].x;
         sub->unk08 = D_80099240[i].y;
@@ -662,12 +662,12 @@ void func_8007C170(void) {
         sub = IconParts[i];
         func_8001D3B0(((EXTengine **)&Icon)[i], 7, sub);
         for (j = 0; j < 7; j++) {
-            sub->unk6C = D_80053074;
+            sub->unk6C = InterfaceModel;
             sub->flags = 0x10000000;
             sub++;
         }
         sub = IconParts[i];
-        sub->unk6C = D_80053074;
+        sub->unk6C = InterfaceModel;
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
         ((EXTengine **)&Icon)[i]->unk10.x = D_800991F0[D_800991D8[i]][0];
@@ -675,7 +675,7 @@ void func_8007C170(void) {
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->unk74 = D_80099218[Heroes[i].hero_name];
         sub = &IconParts[i][1];
-        sub->unk6C = D_80053074;
+        sub->unk6C = InterfaceModel;
         sub->flags = 0;
         sub->unk04 = D_80099240[i].x;
         sub->unk08 = D_80099240[i].y;
@@ -705,7 +705,7 @@ void InitHealthIcons(void) {
     s16 n;
 
     i = 0;
-    tim = D_80052F5C;
+    tim = PowerupsModel;
     y0 = 0x37;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
@@ -801,7 +801,7 @@ void ClearHealthIcons(void) {
     s16 n;
 
     i = 0;
-    tim = D_80052F5C;
+    tim = PowerupsModel;
     y0 = 0x37;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
@@ -896,7 +896,7 @@ void InitBossHealthIcons(void) {
     pHeroHealth[3] = (s32)&D_8009D6DC[3];
     sub = D_8009986C[3];
     b = sub + 1;
-    sub->u6C.ptr = D_80052F5C;
+    sub->u6C.ptr = PowerupsModel;
     sub->unk0 = 0x10008000;
     sub->unk74 = 0x2018;
     c0 = 0x3FFF7F;
@@ -967,7 +967,7 @@ void func_8007C830(s32 arg0, s32 arg1) {
     s32 code;
     s16 n;
 
-    tim = D_80052F5C;
+    tim = PowerupsModel;
 
     pHeroHealth[2] = arg0;
     p = D_8009986C[2];
@@ -1163,7 +1163,7 @@ void InitPowerIcons(void) {
     s16 n;
 
     i = 0;
-    tim = D_80053074;
+    tim = InterfaceModel;
     y0 = 0x37;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
@@ -1392,7 +1392,7 @@ void func_8007D208(void) {
             p = (PanelPrim *)(off + (u8 *)&D_80099A64[0][0]);
             p->unk4 = 0x2E;
             p->unk8 = 0x38;
-            p->u6C.ptr = D_8005365C;
+            p->u6C.ptr = TankObjectsModel;
             p->unk0 = 0x10000000;
             p->unkC = 0;
             p->unk74 = 0x3029;
@@ -1400,7 +1400,7 @@ void func_8007D208(void) {
             D_8009AE40[i].b = &TA_players[i].MainWeaponRounds;
             p->unk4 = 0xA;
             p->unk8 = 0x39;
-            p->u6C.ptr = D_8005365C;
+            p->u6C.ptr = TankObjectsModel;
             p->unk0 = 0x10000000;
             p->unkC = 0;
             p->unk74 = 0x302B;
@@ -2192,7 +2192,7 @@ void InitCountdown(void) {
     sub = &counter_sub;
     if (sub != NULL) {
         *sub = SubEngineTemplate;
-        sub->unk6C = D_80053074;
+        sub->unk6C = InterfaceModel;
         sub->unk74 = 0x2004;
         sub->flags = 0x11000000;
         sub->unk04 = 0x140;
@@ -2233,7 +2233,7 @@ void func_8007ED0C(void) {
     func_8001D3B0(e, 1, &D_8009AC04);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;
-    e->sub->unk6C = D_80053074;
+    e->sub->unk6C = InterfaceModel;
     e->sub->unk74 = 0x2022;
     e->unk5D = 0;
     e->unk5C = 1;
@@ -2244,7 +2244,7 @@ void func_8007ED0C(void) {
     func_8001D3B0(e, 1, &D_8009ACAC);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;
-    e->sub->unk6C = D_80053074;
+    e->sub->unk6C = InterfaceModel;
     e->sub->unk74 = 0x2022;
     e->unk5D = 0;
     e->unk5C = 1;

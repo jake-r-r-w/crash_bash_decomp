@@ -522,14 +522,14 @@ WWInf PogoWorldInfo[8] = {
     { 0x4E, PogoAnims, PogoLevelDB0 },
 };
 s32 PogoFiles[15] = {
-    (s32)&D_80055684, (s32)&D_8004F1C8, (s32)&D_8004F1C0, (s32)&D_800555A4, (s32)&D_8004F1A8,
-    (s32)&D_8004F1A0, (s32)&D_80053074, (s32)&D_8004F1B8, (s32)&D_8004F1B0, (s32)&D_80053B9C,
+    (s32)&FontModel, (s32)&D_8004F1C8, (s32)&D_8004F1C0, (s32)&LoadingModel, (s32)&D_8004F1A8,
+    (s32)&D_8004F1A0, (s32)&InterfaceModel, (s32)&D_8004F1B8, (s32)&D_8004F1B0, (s32)&PogoObjectsModel,
     (s32)&D_8004F198, (s32)&D_8004F190, 0, 0, 0,
 };
 s32 PogoLocoFiles[18] = {
-    (s32)&D_80055684, (s32)&D_8004F188, (s32)&D_8004F180, (s32)&D_800555A4, (s32)&D_8004F168,
-    (s32)&D_8004F160, (s32)&D_80053074, (s32)&D_8004F178, (s32)&D_8004F170, (s32)&D_80053B9C,
-    (s32)&D_8004F158, (s32)&D_8004F150, (s32)&D_80053BD4, (s32)&D_8004F148, (s32)&D_8004F140,
+    (s32)&FontModel, (s32)&D_8004F188, (s32)&D_8004F180, (s32)&LoadingModel, (s32)&D_8004F168,
+    (s32)&D_8004F160, (s32)&InterfaceModel, (s32)&D_8004F178, (s32)&D_8004F170, (s32)&PogoObjectsModel,
+    (s32)&D_8004F158, (s32)&D_8004F150, (s32)&RooModel, (s32)&D_8004F148, (s32)&D_8004F140,
     0, 0, 0,
 };
 /* the four levels' files (modes 10..13; the engine's table at 0x800A0030): the exe's file group
@@ -702,7 +702,7 @@ loop:
                 u32 f = sub->flags;
 
                 f &= ~0x8000;
-                sub->unk6C = D_80053B9C;
+                sub->unk6C = PogoObjectsModel;
                 sub->unk74 = 0x200D;
                 sub->flags = f;
                 e->flags &= ~0x8000;
@@ -1548,7 +1548,7 @@ void PostMovePOGO(u32 i) {
     if ((u32)(name - 3) < 2) {
         sub = Heroes[i].hero_fx->sub;
         if (sub != NULL && func_80015780(Heroes[i].hero_eng, Heroes[i].hero_sub, 0x200, &v) != NULL) {
-            sub->unk6C = D_80053B9C;
+            sub->unk6C = PogoObjectsModel;
             sub->unk50 = 1;
             sub->flags |= 0x8000;
             Heroes[i].hero_fx->unk5D = 1;
@@ -1954,7 +1954,7 @@ void SetHeroPogoLoser(u32 arg0) {
     Heroes[arg0].hero_move->jump_dec = 0;
     Heroes[arg0].hero_move->jump_dir = -1;
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
-    p = D_80053B9C;
+    p = PogoObjectsModel;
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -1994,7 +1994,7 @@ void HeroPogoLoser(u32 arg0) {
         eng->unk5E = 1;
         if (((GameFrameCount + arg0) & 3) == 0) {
             pos = (s32 *)&eng->unk10;
-            p = D_80053B9C;
+            p = PogoObjectsModel;
             nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
             if (nas != NULL) {
                 ext = FindExtension(nas, 0x10000000);
@@ -2171,7 +2171,7 @@ void AddDingoSmoke(u32 arg0) {
     u8 *p;
 
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
-    p = D_80053B9C;
+    p = PogoObjectsModel;
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -2216,7 +2216,7 @@ void AddSomeDust(u32 arg0) {
     u8 *p;
 
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
-    p = D_80053B9C;
+    p = PogoObjectsModel;
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -2259,7 +2259,7 @@ void AddBrioSmoke(u32 arg0) {
     u8 *p;
 
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
-    p = D_80053B9C;
+    p = PogoObjectsModel;
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -3190,9 +3190,9 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
     Tiles_CheckForIslands(arg2);
     if (nas->Engine != NULL) {
         if (nas->UserInfo.flags == 10) {
-            Pogo_SpawnPuff(&nas->Engine->unk10.x, 3, D_80053B9C);
+            Pogo_SpawnPuff(&nas->Engine->unk10.x, 3, PogoObjectsModel);
         } else {
-            Pogo_SpawnPuff(&nas->Engine->unk10.x, 1, D_80053B9C);
+            Pogo_SpawnPuff(&nas->Engine->unk10.x, 1, PogoObjectsModel);
         }
     }
     if (nas->UserInfo.flags < 10) {
@@ -3418,23 +3418,23 @@ void CreatePowerupOnTile(s32 arg0, s32 arg1, s32 arg2) {
         nas->UserInfo.flags = arg2;
         switch (arg2) {
         case 1:
-            e->sub->unk6C = D_80053B9C;
+            e->sub->unk6C = PogoObjectsModel;
             e->sub->unk74 = 0x200D;
             break;
         case 2:
-            e->sub->unk6C = D_80053B9C;
+            e->sub->unk6C = PogoObjectsModel;
             e->sub->unk74 = 0x201B;
             break;
         case 4:
-            e->sub->unk6C = D_80053B9C;
+            e->sub->unk6C = PogoObjectsModel;
             e->sub->unk74 = 0x2040;
             break;
         case 5:
-            e->sub->unk6C = D_80053B9C;
+            e->sub->unk6C = PogoObjectsModel;
             e->sub->unk74 = 0x200C;
             break;
         case 3:
-            e->sub->unk6C = D_80053B9C;
+            e->sub->unk6C = PogoObjectsModel;
             e->sub->unk74 = 0x2002;
             break;
         }
@@ -3468,13 +3468,13 @@ void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     if (e != NULL) {
         switch (arg2) {
         case 7:
-            e->sub->unk6C = D_80053B9C;
+            e->sub->unk6C = PogoObjectsModel;
             e->sub->unk74 = 0x2001;
             nas->UserInfo.user1 = Random(4);
             nas->UserInfo.user2 = 0;
             break;
         case 8:
-            e->sub->unk6C = D_80053B9C;
+            e->sub->unk6C = PogoObjectsModel;
             e->sub->unk74 = 0x200E;
             nas->UserInfo.user1 = Random(4);
             nas->UserInfo.user2 = 0;
@@ -3576,14 +3576,14 @@ spawn:
     while (sub != NULL) {
         pos[0] += dx;
         pos[2] += dz;
-        sub->unk6C = D_80053B9C;
+        sub->unk6C = PogoObjectsModel;
         sub->unk74 = 0x2005;
         sub->unk04 = t;
         sub->flags |= 0x21;
         sub = sub->next;
         t += 0x200;
     }
-    Pogo_SpawnPuff(pos, 8, D_80053B9C);
+    Pogo_SpawnPuff(pos, 8, PogoObjectsModel);
     do {
         do {
             PogoPlay[arg0].tazer = nas;
@@ -3762,7 +3762,7 @@ void Init_PogoPowerup(NAS *nas) {
 
     e = nas->Engine;
     if (e != NULL) {
-        e->sub->unk6C = D_80053B9C;
+        e->sub->unk6C = PogoObjectsModel;
         e->sub->unk74 = 0x200B;
         e->sub->unk68 = -0x10;
         e->sub->flags |= 0x02000000;
@@ -3784,7 +3784,7 @@ void Init_PogoPowerup(NAS *nas) {
             e2->unk10.y = e->unk10.y;
             e2->unk10.z = e->unk10.z;
             if (sub != NULL) {
-                sub->unk6C = D_80053B9C;
+                sub->unk6C = PogoObjectsModel;
                 sub->unk74 = 0x2029;
                 sub->unk51 = 2;
                 sub->unk50 = 1;
@@ -4031,7 +4031,7 @@ void Plot_PogoMushroom(NAS *nas) {
                 }
             }
         }
-        Pogo_SpawnPuff((s32 *)&eng->unk10, 1, D_80053B9C);
+        Pogo_SpawnPuff((s32 *)&eng->unk10, 1, PogoObjectsModel);
         eng->flags &= ~0x8000;
         nas->UserInfo.status = 0;
         nas->UserInfo.user1 = Random(0x14) + 0x1E;
@@ -4573,7 +4573,7 @@ void Plot_PogoProjectile(NAS *arg0) {
             }
         }
         pos = (s32 *)&e->unk10;
-        p = D_80053B9C;
+        p = PogoObjectsModel;
         nas = CreateNAS(e->unk10.x, pos[1], pos[2], 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -5611,8 +5611,8 @@ void Init_PogoRipperRoo(NAS *nas) {
     e = nas->Engine;
     if (e != NULL) {
         func_80024E30(nas, &RooScriptInit);
-        func_8001682C((s32 *)D_80053BD4);
-        e->sub->unk6C = D_80053BD4;
+        func_8001682C((s32 *)RooModel);
+        e->sub->unk6C = RooModel;
         e->sub->unk74 = 0x2001;
         e->unk5D = 0;
         nas->UserInfo.status = 0;
@@ -5635,7 +5635,7 @@ void Init_PogoRipperRoo(NAS *nas) {
             e2->unk10.y = e->unk10.y;
             e2->unk10.z = e->unk10.z;
             if (sub != NULL) {
-                sub->unk6C = D_80053B9C;
+                sub->unk6C = PogoObjectsModel;
                 sub->unk74 = 0x2029;
                 sub->unk51 = 2;
                 sub->unk50 = 1;
@@ -6142,11 +6142,11 @@ void Roo_FireRocket(EXTengine *eng) {
                 nas->UserInfo.flags = 0x502;
                 nas->UserInfo.user1 = 0;
                 nas->UserInfo.status = angle;
-                sub->unk6C = D_80053B9C;
+                sub->unk6C = PogoObjectsModel;
                 sub->unk74 = 0x200D;
                 func_80018F3C(e, 8);
                 for (s = sub->next; s != NULL; s = s->next) {
-                    s->unk6C = D_80053B9C;
+                    s->unk6C = PogoObjectsModel;
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
                     s->unk20.z = 0x1000;
                     s->unk20.y = 0x1000;
@@ -6225,11 +6225,11 @@ void Roo_FireProjectile(EXTengine *eng, s32 angle) {
                 nas->UserInfo.flags = 0x502;
                 nas->UserInfo.user1 = 0;
                 nas->UserInfo.status = angle;
-                sub->unk6C = D_80053B9C;
+                sub->unk6C = PogoObjectsModel;
                 sub->unk74 = 0x200D;
                 func_80018F3C(e, 8);
                 for (s = sub->next; s != NULL; s = s->next) {
-                    s->unk6C = D_80053B9C;
+                    s->unk6C = PogoObjectsModel;
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
                     s->unk20.z = 0x1000;
                     s->unk20.y = 0x1000;
@@ -6255,7 +6255,7 @@ void Init_PogoPadlock(NAS *nas) {
 
     e = nas->Engine;
     if (e != NULL) {
-        e->sub->unk6C = D_80053B9C;
+        e->sub->unk6C = PogoObjectsModel;
         e->sub->unk74 = 0x2041;
         e->unk2C.z = 0x1000;
         e->unk2C.y = 0x1000;
@@ -6272,7 +6272,7 @@ void Init_PogoPadlock(NAS *nas) {
             if (sub != NULL) {
                 sub->unk74 = 0x2029;
                 sub->unk51 = 2;
-                sub->unk6C = D_80053B9C;
+                sub->unk6C = PogoObjectsModel;
                 sub->unk50 = 1;
                 sub->unk76 = 0x800;
                 sub->flags |= 0x40008041;
@@ -6443,7 +6443,7 @@ void Plot_PogoPadlock(NAS *nas) {
         }
         nas->UserInfo.user1 = 0x78;
         nas->UserInfo.status = 0;
-        Pogo_SpawnPuff((s32 *)&eng->unk10, 1, D_80053B9C);
+        Pogo_SpawnPuff((s32 *)&eng->unk10, 1, PogoObjectsModel);
         break;
     }
     nas->UserInfo.flags = ((level & 0xFF) << 8) | (count & 0xFF);
@@ -6663,11 +6663,11 @@ void Create_PogoProjectile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
                 nas->UserInfo.user2 = arg0;
                 nas->UserInfo.status = arg5;
                 nas->UserInfo.flags = ((arg4 & 7) << 8) | 2;
-                sub->unk6C = D_80053B9C;
+                sub->unk6C = PogoObjectsModel;
                 sub->unk74 = 0x200D;
                 func_80018F3C(e, 8);
                 for (s = sub->next; s != NULL; s = s->next) {
-                    s->unk6C = D_80053B9C;
+                    s->unk6C = PogoObjectsModel;
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
                     s->unk20.z = 0x1000;
                     s->unk20.y = 0x1000;
@@ -6901,7 +6901,7 @@ void Init_PogoBanker(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = D_80053B9C;
+        e->sub->unk6C = PogoObjectsModel;
         e->sub->unk74 = 0x200B;
         e->flags &= ~0x8000;
     }
@@ -6918,7 +6918,7 @@ void Init_PogoPickup(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = D_80053B9C;
+        e->sub->unk6C = PogoObjectsModel;
         e->sub->unk74 = 0x200B;
         e->sub->unk68 = -0x10;
         e->sub->flags |= 0x02000000;
@@ -6935,7 +6935,7 @@ void Init_PogoTazer(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = D_80053B9C;
+        e->sub->unk6C = PogoObjectsModel;
         e->sub->unk74 = 0x2005;
         e->unk5D = 2;
     }
@@ -7233,7 +7233,7 @@ void AddTazerRing(u32 arg0) {
     u8 *p;
 
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
-    p = D_80053B9C;
+    p = PogoObjectsModel;
     nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -7584,7 +7584,7 @@ void PogoCreateShadow(u32 arg0) {
     EXTengine *s = h->hero_shadow;
 
     if (s != NULL) {
-        s->sub->unk6C = D_80053B9C;
+        s->sub->unk6C = PogoObjectsModel;
         s->sub->unk74 = 0x2029;
         s->unk10 = h->hero_eng->unk10;
         s->flags |= 0x8041;

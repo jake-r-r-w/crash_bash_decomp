@@ -268,16 +268,16 @@ WWInf BashWorldInfo[9] = {
     { 0x2A, BashAnims, BashLevelDB0, 1 },
 };
 s32 BashFiles[21] = {
-    (s32)&D_80055684, (s32)&D_8004F3F8, (s32)&D_8004F3F0, (s32)&D_800555A4, (s32)&D_8004F3D8,
-    (s32)&D_8004F3D0, (s32)&D_80053074, (s32)&D_8004F3E8, (s32)&D_8004F3E0, (s32)&D_80052F5C,
-    (s32)&D_8004F3C8, (s32)&D_8004F3C0, (s32)&D_80053004, (s32)&D_8004F3B8, (s32)&D_8004F3B0,
-    (s32)&D_80052F94, (s32)&D_8004F3A8, (s32)&D_8004F3A0, 0, 0, 0,
+    (s32)&FontModel, (s32)&D_8004F3F8, (s32)&D_8004F3F0, (s32)&LoadingModel, (s32)&D_8004F3D8,
+    (s32)&D_8004F3D0, (s32)&InterfaceModel, (s32)&D_8004F3E8, (s32)&D_8004F3E0, (s32)&PowerupsModel,
+    (s32)&D_8004F3C8, (s32)&D_8004F3C0, (s32)&AngelModel, (s32)&D_8004F3B8, (s32)&D_8004F3B0,
+    (s32)&CrateObjectsModel, (s32)&D_8004F3A8, (s32)&D_8004F3A0, 0, 0, 0,
 };
 s32 BashSnowFiles[24] = {
-    (s32)&D_80055684, (s32)&D_8004F398, (s32)&D_8004F390, (s32)&D_800555A4, (s32)&D_8004F378,
-    (s32)&D_8004F370, (s32)&D_80053074, (s32)&D_8004F388, (s32)&D_8004F380, (s32)&D_80052F5C,
-    (s32)&D_8004F368, (s32)&D_8004F360, (s32)&D_80053004, (s32)&D_8004F358, (s32)&D_8004F350,
-    (s32)&D_80052F94, (s32)&D_8004F348, (s32)&D_8004F340, (s32)&D_8005303C, (s32)&D_8004F338,
+    (s32)&FontModel, (s32)&D_8004F398, (s32)&D_8004F390, (s32)&LoadingModel, (s32)&D_8004F378,
+    (s32)&D_8004F370, (s32)&InterfaceModel, (s32)&D_8004F388, (s32)&D_8004F380, (s32)&PowerupsModel,
+    (s32)&D_8004F368, (s32)&D_8004F360, (s32)&AngelModel, (s32)&D_8004F358, (s32)&D_8004F350,
+    (s32)&CrateObjectsModel, (s32)&D_8004F348, (s32)&D_8004F340, (s32)&PenguinModel, (s32)&D_8004F338,
     (s32)&D_8004F330, 0, 0,
 };
 /* the levels' files: the exe's file group and the model list (the engine's table at 0x800A001C
@@ -3049,7 +3049,7 @@ void InitBash8way(NAS *nas) {
         eng->unk5D = 0;
         for (; sub != NULL; sub = sub->next) {
             sub->unk51 = 0;
-            sub->unk6C = D_80052F5C;
+            sub->unk6C = PowerupsModel;
             sub->unk74 = 0x200E;
         }
         mot = AddMotion(nas);
@@ -3143,7 +3143,7 @@ void InitBashHomer(NAS *nas) {
         h = Heroes;
         nas->UserInfo.user1 = D_8009D754;
         nas->UserInfo.user2 = Heroes[D_8009D754].hero_move->facing_angle;
-        eng->sub->unk6C = D_80052F5C;
+        eng->sub->unk6C = PowerupsModel;
         eng->sub->unk74 = 0x200F;
         func_8001D390(eng, 1);
         eng->unk5D = 0;
@@ -3157,7 +3157,7 @@ void InitBashHomer(NAS *nas) {
             sub->unk20.z = 0x4000;
             sub->unk50 = 1;
             sub->unk51 = 0;
-            sub->unk6C = D_80052F5C;
+            sub->unk6C = PowerupsModel;
             sub->unk74 = 0x2010;
             sub->flags |= 0x21;
             sub = sub->next;
@@ -3293,7 +3293,7 @@ void InitBashShox(NAS *nas) {
                 do {
                     sub->unk51 = 0;
                     sub->unk50 = 1;
-                    sub->unk6C = D_80052F94;
+                    sub->unk6C = CrateObjectsModel;
                     sub->unk74 = 0x2015;
                     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x21;
                     sub->unk08 = -0x100;
@@ -3428,7 +3428,7 @@ void InitMissileExplode(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        sub->unk6C = &D_80052F5C;
+        sub->unk6C = &PowerupsModel;
         sub->unk74 = 0x2010;
         sub->unk50 = 1;
         sub->unk51 = 0;
@@ -3489,7 +3489,7 @@ void InitBashPenguin(NAS *nas) {
     if (eng != NULL) {
         BashPenguinEng = eng;
         func_80024E30(nas, &PenguinScriptInit);
-        eng->sub->unk6C = (s32)D_8005303C;
+        eng->sub->unk6C = (s32)PenguinModel;
         eng->sub->unk74 = 0x2001;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {

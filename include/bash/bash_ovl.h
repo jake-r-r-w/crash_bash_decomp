@@ -80,7 +80,7 @@ extern ScriptInit BoingScriptInit;
 extern ScriptInit PenguinScriptInit;
 extern EXTengine *BashPenguinEng;
 extern EXTobject *BashPenguinObj;
-extern u8 D_8005303C[];
+extern u8 PenguinModel[];
 void BashSnowMarkPenguin(void);
 
 void BashDropCrates(u16 arg0);
@@ -168,7 +168,7 @@ s32 GetBashContour(EXTengine *eng);
 
 void BashRestartLevel(void);
 
-extern u8 D_80052F5C[];
+extern u8 PowerupsModel[];
 extern s16 BashExplodeScales[][3];
 extern u16 D_8009D754;
 extern s32 D_8009E464;

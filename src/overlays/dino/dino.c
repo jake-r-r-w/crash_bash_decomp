@@ -243,8 +243,8 @@ WWInf DinoWorldInfo[2] = {
     { 0xBA, DinoAnims, DinoLevelDB, 1 },
 };
 s32 DinoFiles[15] = {
-    (s32)&D_80055684, (s32)&D_8004EC08, (s32)&D_8004EC00, (s32)&D_800555A4, (s32)&D_8004EBE8,
-    (s32)&D_8004EBE0, (s32)&D_80053074, (s32)&D_8004EBF8, (s32)&D_8004EBF0, (s32)&D_80055534,
+    (s32)&FontModel, (s32)&D_8004EC08, (s32)&D_8004EC00, (s32)&LoadingModel, (s32)&D_8004EBE8,
+    (s32)&D_8004EBE0, (s32)&InterfaceModel, (s32)&D_8004EBF8, (s32)&D_8004EBF0, (s32)&DragonObjectsModel,
     (s32)&D_8004EBD8, (s32)&D_8004EBD0, 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1C's) */
@@ -3343,7 +3343,7 @@ void InitDinoGem(NAS *m) {
         if (GameLevelFlags & 0x80) {
             m->Engine->sub->unk74 = 0x2001;
         }
-        m->Engine->sub->unk6C = D_80055534;
+        m->Engine->sub->unk6C = DragonObjectsModel;
         ext->unkC = 6;
         ext->unk10 = 5;
         ext->unk80 = 0;
@@ -3358,7 +3358,7 @@ void InitDinoGem(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk84 = e;
-            e->sub->unk6C = D_80055534;
+            e->sub->unk6C = DragonObjectsModel;
             e->sub->unk74 = 0x2014;
             e->unk5C = 1;
             e->unk2C.x = 0x23E8;
@@ -3888,7 +3888,7 @@ void InitDinoSmoke(NAS *arg0) {
     s16 *p;
 
     func_80024E30(arg0, &DinoSmokeScriptInit);
-    arg0->Engine->sub->unk6C = D_80055534;
+    arg0->Engine->sub->unk6C = DragonObjectsModel;
     arg0->Engine->sub->flags |= 0x40000041;
     p = &GameMode;
     do {

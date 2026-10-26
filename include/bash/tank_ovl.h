@@ -29,7 +29,7 @@ extern RockTblEnt RockFrames[];
 extern RockTblEnt MineFrames[]; /* PlotMine: frame by countdown */
 extern RockTblEnt MineFramesBig[]; /* PlotMine: frame by countdown, modes 8/9 */
 
-extern u8 D_80053774[];
+extern u8 TankVehicleModel[];
 extern s32 TankHeroSpeeds[]; /* TA_InitHero: tank speed by hero_name - 1 */
 extern u16 TankMetalAiBotTweak[];
 extern u16 TankMetalAiHumanTweak[];
@@ -80,7 +80,7 @@ extern NAS *TotemPole;
 extern NAS *TotemTop;
 extern NAS *TotemBot;
 
-extern u8 D_8005365C[];
+extern u8 TankObjectsModel[];
 extern u8 D_800537AC[];
 extern s32 TotemTargets[][2];
 
@@ -517,7 +517,7 @@ static inline void TankSpawnBit1605(SLONG_XYZ *pos, s32 kind) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    p = D_8005365C;
+    p = TankObjectsModel;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -540,7 +540,7 @@ static inline NAS *TankSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    p = D_8005365C;
+    p = TankObjectsModel;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -806,7 +806,7 @@ extern u8 TankJungleMap[];
 extern u8 TankMetalMap[];
 extern u8 TankBossMap[];
 extern u8 TankSwampMap[];
-extern u8 D_8005365C[];
+extern u8 TankObjectsModel[];
 void Clock_Off(void);
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);

@@ -675,7 +675,7 @@ void func_8001702C(SlotList *arg0) {
 }
 
 void func_80017070(void) {
-    func_80016CA0(D_80055684);
+    func_80016CA0(FontModel);
 }
 
 void func_80017094(u8 *arg0, s32 arg1, s32 arg2) {

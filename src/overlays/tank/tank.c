@@ -75,17 +75,17 @@ WWInf TankWorldInfo[9] = {
     { 0x36, TankAnims, TankLevelDB3 },
 };
 s32 TankFiles[24] = {
-    (s32)&D_80055684, (s32)&D_8004F2A8, (s32)&D_8004F2A0, (s32)&D_800555A4, (s32)&D_8004F288,
-    (s32)&D_8004F280, (s32)&D_80053074, (s32)&D_8004F298, (s32)&D_8004F290, (s32)&D_80052F5C,
-    (s32)&D_8004F278, (s32)&D_8004F270, (s32)&D_80053004, (s32)&D_8004F268, (s32)&D_8004F260,
-    (s32)&D_8005365C, (s32)&D_8004F258, (s32)&D_8004F250, (s32)&D_80053694, (s32)&D_8004F248,
+    (s32)&FontModel, (s32)&D_8004F2A8, (s32)&D_8004F2A0, (s32)&LoadingModel, (s32)&D_8004F288,
+    (s32)&D_8004F280, (s32)&InterfaceModel, (s32)&D_8004F298, (s32)&D_8004F290, (s32)&PowerupsModel,
+    (s32)&D_8004F278, (s32)&D_8004F270, (s32)&AngelModel, (s32)&D_8004F268, (s32)&D_8004F260,
+    (s32)&TankObjectsModel, (s32)&D_8004F258, (s32)&D_8004F250, (s32)&TankObjects2Model, (s32)&D_8004F248,
     (s32)&D_8004F240, 0, 0, 0,
 };
 s32 TankSwampFiles[24] = {
-    (s32)&D_80055684, (s32)&D_8004F238, (s32)&D_8004F230, (s32)&D_800555A4, (s32)&D_8004F218,
-    (s32)&D_8004F210, (s32)&D_80053074, (s32)&D_8004F228, (s32)&D_8004F220, (s32)&D_80052F5C,
-    (s32)&D_8004F208, (s32)&D_8004F200, (s32)&D_80053004, (s32)&D_8004F1F8, (s32)&D_8004F1F0,
-    (s32)&D_8005365C, (s32)&D_8004F1E8, (s32)&D_8004F1E0, (s32)&D_80053774, (s32)&D_8004F1D8,
+    (s32)&FontModel, (s32)&D_8004F238, (s32)&D_8004F230, (s32)&LoadingModel, (s32)&D_8004F218,
+    (s32)&D_8004F210, (s32)&InterfaceModel, (s32)&D_8004F228, (s32)&D_8004F220, (s32)&PowerupsModel,
+    (s32)&D_8004F208, (s32)&D_8004F200, (s32)&AngelModel, (s32)&D_8004F1F8, (s32)&D_8004F1F0,
+    (s32)&TankObjectsModel, (s32)&D_8004F1E8, (s32)&D_8004F1E0, (s32)&TankVehicleModel, (s32)&D_8004F1D8,
     (s32)&D_8004F1D0, 0, 0, 0,
 };
 /* The five arenas' files (modes 5..9; the engine's table at 0x800A0030): the exe's file group
@@ -1503,15 +1503,15 @@ void TA_InitLevel(void) {
         Set_Clock(0x130, 0x81C0);
     }
     if (GameMode == 5) {
-        func_8001682C((s32 *)D_80053774);
+        func_8001682C((s32 *)TankVehicleModel);
     } else {
-        func_8001682C((s32 *)D_80053694);
+        func_8001682C((s32 *)TankObjects2Model);
     }
     if (GameMode == 7) {
         func_8001682C((s32 *)D_800537AC);
     }
-    func_8001682C((s32 *)D_8005365C);
-    func_8001682C((s32 *)(D_8005365C - 0x658));
+    func_8001682C((s32 *)TankObjectsModel);
+    func_8001682C((s32 *)(TankObjectsModel - 0x658));
     func_8001682C(*(s32 **)MapScene);
     ((TankScreen *)D_8009F6F4)->w10 = 0x140;
     ((TankScreen *)D_8009F6F4)->w14 = 0x15E;
@@ -1834,20 +1834,20 @@ void TA_InitHero(u32 player) {
     sub = sub->next;
     sub->unk51 = 1;
     if (((TankModeView *)g)->mode == 5) {
-        sub->unk6C = D_80053774;
+        sub->unk6C = TankVehicleModel;
         sub->unk74 = 0x2005;
         sub->unk08 = -0x100;
     } else {
-        sub->unk6C = D_80053694;
+        sub->unk6C = TankObjects2Model;
         sub->unk74 = 0x2009;
     }
     sub = sub->next;
     sub->unk51 = 1;
     if (GameMode == 5) {
-        sub->unk6C = D_80053774;
+        sub->unk6C = TankVehicleModel;
         sub->unk74 = 0x2001;
     } else {
-        sub->unk6C = D_80053694;
+        sub->unk6C = TankObjects2Model;
         sub->unk74 = 0x4300;
     }
     SetTankHeroIdle(player);
@@ -3435,7 +3435,7 @@ void TankHeroDie(u32 arg0) {
     if (ok == 0 && func_8008502C(arg0) != 0) {
         eng = Heroes[arg0].hero_eng;
         pos = (s32 *)&eng->unk10;
-        p = D_8005365C;
+        p = TankObjectsModel;
         nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -3908,7 +3908,7 @@ void PlotShell(NAS *nas) {
         fux->SpeedY = -0x54;
         eng->unk10.y -= 0x54;
         pos = &eng->unk10;
-        p = D_8005365C;
+        p = TankObjectsModel;
         puff = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
         if (puff != NULL) {
             ext = FindExtension(puff, 0x10000000);
@@ -4504,7 +4504,7 @@ void PlotTorpedo(NAS *nas) {
     }
     pos = &eng->unk10;
     PlaySfx(0x4EA, NULL, pos, 0x1000, 0x1E00, 0);
-    p = D_8005365C;
+    p = TankObjectsModel;
     n = CreateNAS(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
     if (n != NULL) {
         ext = FindExtension(n, 0x10000000);
@@ -4557,7 +4557,7 @@ void CreateMineShrapnelBits(NAS *nas) {
     case 2:
     case 4:
         pos = &eng->unk10;
-        p = D_8005365C;
+        p = TankObjectsModel;
         n = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
@@ -4776,13 +4776,13 @@ void PlotPickupGenerator_TA(NAS *nas)
         switch (r)
         {
           case 0:
-            p->Engine->sub->unk6C = D_80053694;
+            p->Engine->sub->unk6C = TankObjects2Model;
             p->Engine->sub->unk74 = 0x2013;
             r = 5;
             break;
 
           case 1:
-            eng->sub->unk6C = D_80052F5C;
+            eng->sub->unk6C = PowerupsModel;
             eng->sub->unk74 = 0x2018;
             r = 4;
             break;
@@ -4849,16 +4849,16 @@ void PlotPickupGenerator_TA(NAS *nas)
         {
           eng = p->Engine;
           p->UserInfo.status = 4;
-          eng->sub->unk6C = D_80052F5C;
+          eng->sub->unk6C = PowerupsModel;
           eng->sub->unk74 = 0x2018;
           eng->sub->flags |= 0x20000000;
           eng = eng->Engine;
-          eng->sub->unk6C = D_80052F5C;
+          eng->sub->unk6C = PowerupsModel;
           eng->sub->unk74 = 0x2001;
           return;
         }
         p->UserInfo.status = 5;
-        p->Engine->sub->unk6C = D_80053694;
+        p->Engine->sub->unk6C = TankObjects2Model;
         p->Engine->sub->unk74 = 0x2013;
         return;
       }
@@ -4914,7 +4914,7 @@ void InitHelicopterTA(NAS *nas) {
             eng->unk10.z = HelicopterZBoss[Random(4)];
             break;
         }
-        p = D_80053694;
+        p = TankObjects2Model;
         sub = eng->sub;
         sub->unk6C = p;
         sub->unk74 = 0x4080;
@@ -5111,7 +5111,7 @@ void InitPickupTA(NAS *nas) {
     if (ext != NULL) {
         ext->SpeedY = 0;
         nas->FUX = ext;
-        p = D_8005365C;
+        p = TankObjectsModel;
         eng = nas->Engine;
         sub = eng->sub;
         sub->unk6C = p;
@@ -5248,9 +5248,9 @@ void PlotPickupTA(NAS *nas) {
         eng->unk20 = 0;
         switch (nas->UserInfo.status) {
         case 2:
-            eng->sub->unk6C = D_80053694;
+            eng->sub->unk6C = TankObjects2Model;
             eng->sub->unk74 = 0x2007;
-            eng->Engine->sub->unk6C = D_80053694;
+            eng->Engine->sub->unk6C = TankObjects2Model;
             eng->Engine->sub->unk74 = 0x200F;
             eng->Engine->unk1E = eng->unk1E + 0x400;
             eng->Engine->sub->unk20.x = 0x20;
@@ -5269,21 +5269,21 @@ void PlotPickupTA(NAS *nas) {
             return;
         case 5:
         default:
-            eng->sub->unk6C = D_80053694;
+            eng->sub->unk6C = TankObjects2Model;
             eng->sub->unk74 = 0x2013;
-            eng->Engine->sub->unk6C = D_80053694 - 0x738;
+            eng->Engine->sub->unk6C = TankObjects2Model - 0x738;
             eng->Engine->sub->unk74 = 0x2001;
             break;
         case 3:
             eng->sub->unk74 = 0x200C;
-            eng->Engine->sub->unk6C = D_80052F5C;
+            eng->Engine->sub->unk6C = PowerupsModel;
             eng->Engine->sub->unk74 = 0x2001;
             break;
         case 4:
-            eng->sub->unk6C = D_80052F5C;
+            eng->sub->unk6C = PowerupsModel;
             eng->sub->unk74 = 0x2018;
             eng->sub->flags |= 0x20000000;
-            eng->Engine->sub->unk6C = D_80052F5C;
+            eng->Engine->sub->unk6C = PowerupsModel;
             eng->Engine->sub->unk74 = 0x2001;
             break;
         }
@@ -5418,7 +5418,7 @@ static inline void SpawnPuff1605(SLONG_XYZ *pos, s32 kind) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    p = D_8005365C;
+    p = TankObjectsModel;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -5722,7 +5722,7 @@ void PlotBoatField(NAS *nas) {
     case 9:
     case 14:
         pos = (s32 *)&dst->unk10;
-        p = D_80053774;
+        p = TankVehicleModel;
         n = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
@@ -7290,12 +7290,12 @@ void InitMoeJoe(NAS *nas, s32 id) {
     sub->unk51 = 1;
     s2 = s->next;
     s->unk51 = 1;
-    s->unk6C = D_80053694;
+    s->unk6C = TankObjects2Model;
     s->unk74 = 0x2011;
     s->unk68 = 0x100;
     s->flags = (s->flags & 0xFFFF7FFF) | 0x02000000;
     s2->unk51 = 1;
-    s2->unk6C = D_80053694;
+    s2->unk6C = TankObjects2Model;
     s2->unk74 = 0x4300;
     s2->unk68 = 0x100;
     s2->flags = (s2->flags & 0xFFFF7FFF) | 0x02000000;
@@ -7828,7 +7828,7 @@ void MoeJoeDie(s32 arg0) {
     if (val == 0) {
         eng = Heroes[arg0].hero_eng;
         pos = (s32 *)&eng->unk10;
-        p = D_8005365C;
+        p = TankObjectsModel;
         nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -8682,7 +8682,7 @@ void InitBoatWake(NAS *nas) {
 
     nas->UserInfo.status = 0;
     sub = nas->Engine->sub;
-    sub->unk6C = D_80053774;
+    sub->unk6C = TankVehicleModel;
     sub->unk74 = 0x2007;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8791,7 +8791,7 @@ void InitShellExplosion(NAS *nas) {
     eng = nas->Engine;
     eng->flags |= 0x21;
     sub = eng->sub;
-    sub->unk6C = D_80053694;
+    sub->unk6C = TankObjects2Model;
     sub->unk74 = 0x2019;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8800,7 +8800,7 @@ void InitShellExplosion(NAS *nas) {
 
 void InitShrapnelBit(NAS *nas) {
     subengine *sub = nas->Engine->sub;
-    sub->unk6C = D_8005365C;
+    sub->unk6C = TankObjectsModel;
     sub->unk74 = ShrapnelFrames[Random(3)].v;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8822,7 +8822,7 @@ void InitMineBall(NAS *nas) {
     eng = nas->Engine;
     eng->flags |= 0x21;
     sub = eng->sub;
-    sub->unk6C = D_80053694;
+    sub->unk6C = TankObjects2Model;
     sub->unk74 = 0x2019;
     nas->UserInfo.status = 0;
     if (nas->Failure != 0) {
@@ -8880,7 +8880,7 @@ void InitMine(NAS *nas) {
     eng = nas->Engine;
     eng->unk10.y = -0x14;
     sub = eng->sub;
-    sub->unk6C = D_80053694;
+    sub->unk6C = TankObjects2Model;
     sub->unk74 = 0x2005;
     nas->UserInfo.status = 0x78;
     nas->UserInfo.user1 = -1;
@@ -8907,7 +8907,7 @@ void InitRocketTA(NAS *nas) {
     }
     nas->FUX = (EXT *)ext;
     sub = nas->Engine->sub;
-    sub->unk6C = D_80053694;
+    sub->unk6C = TankObjects2Model;
     sub->unk74 = 0x2007;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8923,7 +8923,7 @@ void InitLobber_TA(NAS *nas) {
         return;
     }
     eng = nas->Engine;
-    eng->sub->unk6C = D_8005365C;
+    eng->sub->unk6C = TankObjectsModel;
     eng->sub->unk74 = 0x200C;
     eng->unk5D = 1;
     e2 = AddExtEngine(nas, 1);
@@ -8931,7 +8931,7 @@ void InitLobber_TA(NAS *nas) {
         e2->unk10.x = eng->unk10.x;
         e2->unk10.y = 0;
         e2->unk10.z = eng->unk10.z;
-        e2->sub->unk6C = D_8005365C - 0x700;
+        e2->sub->unk6C = TankObjectsModel - 0x700;
         e2->sub->unk74 = 0x2001;
         e2->sub->flags |= 0x40000041;
         e2->sub->unk76 = 0x800;
@@ -8947,7 +8947,7 @@ void InitShell(NAS *nas) {
         return;
     }
     eng = nas->Engine;
-    eng->sub->unk6C = D_8005365C;
+    eng->sub->unk6C = TankObjectsModel;
     eng->sub->unk74 = 0x200C;
     eng->unk5D = 1;
     e2 = AddExtEngine(nas, 1);
@@ -8955,7 +8955,7 @@ void InitShell(NAS *nas) {
         e2->unk10.x = eng->unk10.x;
         e2->unk10.y = 0;
         e2->unk10.z = eng->unk10.z;
-        e2->sub->unk6C = D_8005365C - 0x700;
+        e2->sub->unk6C = TankObjectsModel - 0x700;
         e2->sub->unk74 = 0x2001;
         e2->sub->flags |= 0x40000041;
         e2->sub->unk76 = 0x800;
@@ -8971,7 +8971,7 @@ void InitSwirlyTA(NAS *nas) {
     ext = AddExt(nas, 0x38, 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
-        p = D_8005365C;
+        p = TankObjectsModel;
         ext->maxloops = 0x87;
         eng = nas->Engine;
         sub = eng->sub;
@@ -8982,10 +8982,10 @@ void InitSwirlyTA(NAS *nas) {
         eng->flags |= 0x21;
         if (func_80018F3C(eng, 2) == 2) {
             sub = sub->next;
-            sub->unk6C = D_8005365C;
+            sub->unk6C = TankObjectsModel;
             sub->unk74 = 0x2030;
             sub = sub->next;
-            sub->unk6C = D_8005365C;
+            sub->unk6C = TankObjectsModel;
             sub->unk74 = 0x2030;
         }
         if (nas->Failure == 0) {
@@ -9007,7 +9007,7 @@ void InitFlubberTA(NAS *nas) {
         nas->FUX = (EXT *)ext;
         ext->maxloops = 0x4B;
         ext->timer = -0x1E;
-        p = D_8005365C;
+        p = TankObjectsModel;
         eng = nas->Engine;
         sub = eng->sub;
         sub->unk6C = p;
@@ -9019,7 +9019,7 @@ void InitFlubberTA(NAS *nas) {
             e2->unk10.y = 0;
             e2->unk10.z = eng->unk10.z;
             e2->sub->unk51 = 2;
-            e2->sub->unk6C = D_8005365C - 0x700;
+            e2->sub->unk6C = TankObjectsModel - 0x700;
             e2->sub->unk74 = 0x2001;
             e2->sub->flags |= 0x40000041;
             e2->sub->unk76 = 0x800;
@@ -9048,7 +9048,7 @@ void InitFlamerBitTA(NAS *nas) {
     eng->unk5D = 1;
     sub = eng->sub;
     eng->flags |= 0x21;
-    sub->unk6C = D_8005365C;
+    sub->unk6C = TankObjectsModel;
     sub->unk74 = 0x202F;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -9070,12 +9070,12 @@ void InitLaserBitTA(NAS *nas) {
     eng = nas->Engine;
     sub = eng->sub;
     eng->unk5D = 0;
-    sub->unk6C = D_8005365C;
+    sub->unk6C = TankObjectsModel;
     sub->unk74 = 0x2021;
     eng->flags |= 0x21;
     if (func_80018F3C(eng, 1) != 0) {
         sub = sub->next;
-        sub->unk6C = D_8005365C;
+        sub->unk6C = TankObjectsModel;
         sub->unk74 = 0x2023;
         eng->flags |= 0x21;
     }

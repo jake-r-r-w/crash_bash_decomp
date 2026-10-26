@@ -190,10 +190,10 @@ WWInf SpinWorldInfo[2] = {
     { 0x7E, SpinAnims, SpinLevelDB1, 7 },
 };
 s32 SpinFiles[21] = {
-    (s32)&D_80055684, (s32)&D_8004EC68, (s32)&D_8004EC60, (s32)&D_800555A4, (s32)&D_8004EC48,
-    (s32)&D_8004EC40, (s32)&D_80053074, (s32)&D_8004EC58, (s32)&D_8004EC50, (s32)&D_80052F5C,
-    (s32)&D_8004EC38, (s32)&D_8004EC30, (s32)&D_80052F94, (s32)&D_8004EC28, (s32)&D_8004EC20,
-    (s32)&D_80052FCC, (s32)&D_8004EC18, (s32)&D_8004EC10, 0, 0,
+    (s32)&FontModel, (s32)&D_8004EC68, (s32)&D_8004EC60, (s32)&LoadingModel, (s32)&D_8004EC48,
+    (s32)&D_8004EC40, (s32)&InterfaceModel, (s32)&D_8004EC58, (s32)&D_8004EC50, (s32)&PowerupsModel,
+    (s32)&D_8004EC38, (s32)&D_8004EC30, (s32)&CrateObjectsModel, (s32)&D_8004EC28, (s32)&D_8004EC20,
+    (s32)&RingObjectsModel, (s32)&D_8004EC18, (s32)&D_8004EC10, 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1B's) */
 file_group_load_info file_group_RING = { D_80050088, SpinFiles };
@@ -308,7 +308,7 @@ void InitialiseSPIN() {
         }
     }
     if (((SpinGame *)GameInfo)->flags & 0x80) {
-        func_8001682C(&D_80053004);
+        func_8001682C(&AngelModel);
     }
     if (((SpinGame *)GameInfo)->flags & 0x40) {
         if (((SpinGame *)GameInfo)->teams != 0) {
@@ -1010,7 +1010,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
           func_80026AD8((u8 *) nas);
           func_8002694C(nas, 0x300);
           nas->FUX = (EXT *) fux;
-          eng->sub->unk6C = D_80052F94;
+          eng->sub->unk6C = CrateObjectsModel;
           eng->unk5D = 1;
           fux->kind = c;
           D_8009E46C[fux->kind]++;
@@ -1196,7 +1196,7 @@ void PlotHazardType(NAS *nas) {
     case 12:
         fux->timer = 0x78;
         fux->mask &= 0xFFF4;
-        eng->sub->unk6C = D_80052FCC;
+        eng->sub->unk6C = RingObjectsModel;
         glow->unk18 = 0x60;
         glow->unk1E = 0xF0;
         glow->unk1C = 4;
@@ -1298,14 +1298,14 @@ void PlotHazardType(NAS *nas) {
                     PlaySfx(0x5F2, &he->sfx, &he->unk10, 0x1000, 0x1E00, 0);
                     Heroes[fux->owner].hero_pu_timer = 0x12C;
                     Heroes[fux->owner].hero_powerup->sub->unk74 = 0x2015;
-                    Heroes[fux->owner].hero_powerup->sub->unk6C = D_80052FCC;
+                    Heroes[fux->owner].hero_powerup->sub->unk6C = RingObjectsModel;
                     break;
                 case 0x13:
                     he = Heroes[fux->owner].hero_powerup;
                     PlaySfx(0x5F3, &he->sfx, &he->unk10, 0x1000, 0x1E00, 0);
                     Heroes[fux->owner].hero_pu_timer = 0xF0;
                     Heroes[fux->owner].hero_powerup->sub->unk74 = 0x2014;
-                    Heroes[fux->owner].hero_powerup->sub->unk6C = D_80052FCC;
+                    Heroes[fux->owner].hero_powerup->sub->unk6C = RingObjectsModel;
                     PlaySfx(0x41C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     break;
                 }
@@ -1362,7 +1362,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                     func_80026AD8((u8 *)nas);
                     func_8002694C(nas, 0x300);
                     nas->FUX = (EXT *)fux;
-                    eng->sub->unk6C = D_80052FCC;
+                    eng->sub->unk6C = RingObjectsModel;
                     eng->unk5D = 1;
                     fux->kind = c;
                     D_8009E46C[fux->kind]++;
@@ -1401,7 +1401,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
             }
             shadow = AddExtEngine(nas, 2);
             if (shadow != NULL) {
-                shadow->sub->unk6C = D_80052F5C;
+                shadow->sub->unk6C = PowerupsModel;
                 shadow->sub->unk74 = 0x2001;
                 shadow->unk10 = eng->unk10;
                 shadow->flags |= 0x41;
@@ -1478,7 +1478,7 @@ void PlotBalloon(NAS *nas) {
                                     }
                                 }
                             }
-                            func_8007A524(SpinBalloonAnims[SpinBalloonOwner], &eng->unk10.x, (s32)D_80052FCC);
+                            func_8007A524(SpinBalloonAnims[SpinBalloonOwner], &eng->unk10.x, (s32)RingObjectsModel);
                             goto sfx;
                         }
                         if (fux->state == owner) {
@@ -1498,7 +1498,7 @@ void PlotBalloon(NAS *nas) {
                             }
                         }
                     }
-                    func_8007A524(SpinBalloonAnims[fux->state], &eng->unk10.x, (s32)D_80052FCC);
+                    func_8007A524(SpinBalloonAnims[fux->state], &eng->unk10.x, (s32)RingObjectsModel);
                 sfx:
                     PlaySfx(SpinBalloonSfx[kind - 8][Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     o = fux->owner;
@@ -1518,7 +1518,7 @@ void PlotBalloon(NAS *nas) {
                             StopSfx(Heroes[fux->owner].hero_eng->sfx);
                         }
                     }
-                    func_8007A524(4, &eng->unk10.x, (s32)D_80052FCC);
+                    func_8007A524(4, &eng->unk10.x, (s32)RingObjectsModel);
                     goto kill;
                 }
             case 3:
@@ -3116,7 +3116,7 @@ void SpinHeroLose(s32 arg0) {
             h->hero_eng->unk2C.y = v;
             h->hero_eng->unk2C.z = v;
         } else {
-            func_8007A524(SpinBalloonAnims[arg0], &e->unk10.x, (s32)&D_80052FCC);
+            func_8007A524(SpinBalloonAnims[arg0], &e->unk10.x, (s32)&RingObjectsModel);
             h->hero_status |= 0x8000;
         }
     }
@@ -3667,7 +3667,7 @@ void SpinCreateShadow(s32 arg0) {
     EXTengine *shadow = h->hero_shadow;
     EXTengine *eng;
 
-    shadow->sub->unk6C = &D_80052FCC;
+    shadow->sub->unk6C = &RingObjectsModel;
     shadow->sub->unk74 = SpinShadowModels[arg0];
     eng = h->hero_eng;
     shadow->unk10 = eng->unk10;

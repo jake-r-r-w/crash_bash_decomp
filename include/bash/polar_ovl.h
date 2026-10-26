@@ -12,7 +12,7 @@
 extern const char PolarAnimWin[];
 
 extern void (*D_8009D714)(void);
-extern u8 D_800546C4[];
+extern u8 PolarObjectsModel[];
 extern u8 D_80052EEC[];
 extern s16 D_8005A65C[2];
 
@@ -300,7 +300,7 @@ typedef struct ExtSimpleExplosion {
     /* 0x104 */ s32 unk104;
 } ExtSimpleExplosion;
 
-extern u8 D_800546C4[];
+extern u8 PolarObjectsModel[];
 
 /* The object PlotBrioPack follows (its NAS.UserInfo.user1). */
 typedef struct BrioAnim {
@@ -1136,7 +1136,7 @@ typedef struct PolarMissileExt {
     /* 0x64 */ SLONG_XYZ pos;
 } PolarMissileExt;
 
-extern u8 D_80054A0C[];
+extern u8 RoboPolarModel[];
 
 /* Index of the first live hero within 0x7BC4 of pos (knocked back and a
  * sound played), or -1 (PlotPolarMissile). */
@@ -1175,7 +1175,7 @@ static inline void PolarMissileBlast(NAS *m, s32 kind) {
     ExtSpawn5910 *x;
 
     pos = &m->Engine->unk10;
-    anim = D_80054A0C;
+    anim = RoboPolarModel;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         x = FindExtension(nas, 0x10000000);
@@ -1213,7 +1213,7 @@ typedef struct PolarBombExt {
 
 s32 PolarBombHitHeroes(NAS *nas, s32 dist);
 
-extern u8 D_80054A0C[];
+extern u8 RoboPolarModel[];
 
 /* Big missile extension (0x7C bytes, id 0x10000000). */
 typedef struct BigMissileExt {
@@ -1311,7 +1311,7 @@ void SetPolarHeroSquashed(s32 arg0);
 extern u16 *HeroRunSpeeds;
 extern s32 PolarHeroMass[];
 extern s32 PolarShadowState[];
-extern u8 D_80054654[];
+extern u8 PolarModel[];
 
 s32 PolarOfficeBox(s32 i);
 

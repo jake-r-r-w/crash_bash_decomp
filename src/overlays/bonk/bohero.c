@@ -517,7 +517,7 @@ void BonkHeroLoser(s32 arg0) {
         h->hero_eng->unk2C.z -= 0x80;
         h->hero_eng->unk5E = 1;
         if (h->hero_eng->unk2C.x <= 0) {
-            BonkSpawnPuff(&h->hero_eng->unk10, 1, D_80053C7C);
+            BonkSpawnPuff(&h->hero_eng->unk10, 1, MalletObjectsModel);
             if (Heroes[arg0].hero_shadow != NULL) {
                 Heroes[arg0].hero_shadow->flags &= 0xFFFF7FFF;
             }

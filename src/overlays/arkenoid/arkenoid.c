@@ -66,18 +66,18 @@ WWInf ArkWorldInfo[8] = {
     { 0x71, ArkAnims, ArkLevelDB0, 7 },
 };
 s32 ArkFiles[24] = {
-    (s32)&D_80055684, (s32)&D_8004F138, (s32)&D_8004F130, (s32)&D_800555A4, (s32)&D_8004F118,
-    (s32)&D_8004F110, (s32)&D_80053074, (s32)&D_8004F128, (s32)&D_8004F120, (s32)&D_80052F5C,
-    (s32)&D_8004F108, (s32)&D_8004F100, (s32)&D_80053004, (s32)&D_8004F0F8, (s32)&D_8004F0F0,
-    (s32)&D_8005453C, (s32)&D_8004F0D8, (s32)&D_8004F0D0, (s32)&D_80054504, (s32)&D_8004F0E8,
+    (s32)&FontModel, (s32)&D_8004F138, (s32)&D_8004F130, (s32)&LoadingModel, (s32)&D_8004F118,
+    (s32)&D_8004F110, (s32)&InterfaceModel, (s32)&D_8004F128, (s32)&D_8004F120, (s32)&PowerupsModel,
+    (s32)&D_8004F108, (s32)&D_8004F100, (s32)&AngelModel, (s32)&D_8004F0F8, (s32)&D_8004F0F0,
+    (s32)&BallsVehicleModel, (s32)&D_8004F0D8, (s32)&D_8004F0D0, (s32)&BallsEffectsModel, (s32)&D_8004F0E8,
     (s32)&D_8004F0E0, 0, 0, 0,
 };
 s32 ArkNginFiles[27] = {
-    (s32)&D_80055684, (s32)&D_8004F0C8, (s32)&D_8004F0C0, (s32)&D_800555A4, (s32)&D_8004F0A8,
-    (s32)&D_8004F0A0, (s32)&D_80053074, (s32)&D_8004F0B8, (s32)&D_8004F0B0, (s32)&D_80052F5C,
-    (s32)&D_8004F098, (s32)&D_8004F090, (s32)&D_80053004, (s32)&D_8004F088, (s32)&D_8004F080,
-    (s32)&D_8005453C, (s32)&D_8004F078, (s32)&D_8004F070, (s32)&D_80054504, (s32)&D_8004F068,
-    (s32)&D_8004F060, (s32)&D_80054574, (s32)&D_8004F058, (s32)&D_8004F050, 0, 0,
+    (s32)&FontModel, (s32)&D_8004F0C8, (s32)&D_8004F0C0, (s32)&LoadingModel, (s32)&D_8004F0A8,
+    (s32)&D_8004F0A0, (s32)&InterfaceModel, (s32)&D_8004F0B8, (s32)&D_8004F0B0, (s32)&PowerupsModel,
+    (s32)&D_8004F098, (s32)&D_8004F090, (s32)&AngelModel, (s32)&D_8004F088, (s32)&D_8004F080,
+    (s32)&BallsVehicleModel, (s32)&D_8004F078, (s32)&D_8004F070, (s32)&BallsEffectsModel, (s32)&D_8004F068,
+    (s32)&D_8004F060, (s32)&NginModel, (s32)&D_8004F058, (s32)&D_8004F050, 0, 0,
 };
 /* the four levels' files (modes 14..17; the engine's table at 0x800A0030): the exe's file group
  * and the model list; N. Gin's has more models */
@@ -868,7 +868,7 @@ void AR_UpdateLevel(void) {
             }
         }
     }
-    ao = (u8 *)D_80054504;
+    ao = (u8 *)BallsEffectsModel;
     ao += 0x10;
     func_80029100((obj_textureset *)ao);
 }
@@ -1290,14 +1290,14 @@ void AR_InitHero(u32 arg0) {
         h->hero_anim->sub = n;
         n = n->next;
         if (n != NULL) {
-            n->unk6C = D_8005453C;
+            n->unk6C = BallsVehicleModel;
             n->unk74 = 0x2001;
             n->unk50 = 1;
             n->unk51 = 0;
             n->flags &= ~0x8000;
         }
     }
-    s->unk6C = D_8005453C;
+    s->unk6C = BallsVehicleModel;
     if (arg0 == ArkSidePlayer0) {
         switch (Heroes[arg0].hero_name) {
         case 5:
@@ -2450,7 +2450,7 @@ void SetArkHeroDead(u32 arg0) {
     temp_s0_2 = &base2[arg0];
     temp_v0 = temp_s0_2->hero_eng;
     sp18 = temp_v0->unk10;
-    func_8007A524(0, (s32 *)&sp18, (s32) &D_80054504);
+    func_8007A524(0, (s32 *)&sp18, (s32) &BallsEffectsModel);
     PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->unk10, 0x1000, 0x1E00, 0);
     func_800898EC(arg0);
 }
@@ -3353,7 +3353,7 @@ void InitBall(NAS *nas) {
     }
     eng->unk10.y = World_floor_level - 0x80;
     eng->unk5D = 2;
-    eng->sub->unk6C = D_80054504;
+    eng->sub->unk6C = BallsEffectsModel;
     if (GameMode == 0xF) {
         eng->sub->unk74 = 0x2017;
     } else {
@@ -3363,7 +3363,7 @@ void InitBall(NAS *nas) {
     e1 = AddExtEngine(nas, 1);
     if (e1 != NULL) {
         sub = e1->sub;
-        sub->unk6C = D_80054504;
+        sub->unk6C = BallsEffectsModel;
         if (GameMode == 0xF) {
             sub->unk74 = 0x2016;
         } else {
@@ -3379,7 +3379,7 @@ void InitBall(NAS *nas) {
         e->unk5D = 0;
         e->unk5C = 0;
         e->flags &= 0xFFFF7FFF;
-        sub->unk6C = D_80054504;
+        sub->unk6C = BallsEffectsModel;
         if (GameMode == 0xE) {
             sub->unk74 = 0x200C;
             sub->unk76 = 0xB00;
@@ -3397,7 +3397,7 @@ void InitBall(NAS *nas) {
                 for (sub = sub->next; sub != NULL; sub = sub->next) {
                     sub->unk51 = 0;
                     sub->unk50 = 1;
-                    sub->unk6C = D_80054504;
+                    sub->unk6C = BallsEffectsModel;
                     sub->unk74 = 0x200D;
                     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x42000021;
                     sub->unk76 = 0xC00;
@@ -4176,7 +4176,7 @@ void Plot_N_Gin(NAS *arg0) {
             gin->unk22 = 0xA;
             gin->unk1C |= 0x90;
             PlaySfx(0x5BE, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_8007A524(0, &eng->unk10.x, (s32)D_80054574);
+            func_8007A524(0, &eng->unk10.x, (s32)NginModel);
             eng->sub->unk74 = 0x2001;
             break;
         case 2:
@@ -4250,7 +4250,7 @@ void Plot_N_Gin(NAS *arg0) {
                 StopSfx(eng->sfx);
             }
             PlaySfx(0x5C0, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_8007A524(0, &eng->unk10.x, (s32)D_80054574);
+            func_8007A524(0, &eng->unk10.x, (s32)NginModel);
             gin->unk1C = 0;
             eng->unk10.y = -0x1000;
             eng->flags &= 0xFFFF7FFF;
@@ -4722,7 +4722,7 @@ void Init_ArkDeadWall(NAS *nas)
         off = 0;
         if (sub != 0) {
             do {
-                sub->unk6C = D_80054504;
+                sub->unk6C = BallsEffectsModel;
                 sub->unk74 = 0;
                 sub->unk04 = off;
                 sub->flags |= 0x21;
@@ -4791,7 +4791,7 @@ void Init_NGArkDeadWall(NAS *arg0) {
         off = 0;
         if (sub != NULL) {
             do {
-                sub->unk6C = D_80054504;
+                sub->unk6C = BallsEffectsModel;
                 sub->unk74 = 0;
                 sub->unk04 = off;
                 sub->flags |= 0x21;
@@ -5982,7 +5982,7 @@ void Init_RepulseRing(NAS *nas)
     sub = eng->sub;
     eng->flags |= 0x21;
     sub->unk51 = (new_var = 0);
-    sub->unk6C = &D_80054504;
+    sub->unk6C = &BallsEffectsModel;
     sub->unk74 = 0x2014;
     sub->unk50 = 1;
     sub->unk08 = 0x80;
@@ -6117,7 +6117,7 @@ void Init_N_Gin(NAS *nas) {
     if (eng != NULL) {
         func_80024E30(nas, &NGinScriptInit);
         ArkBallSpawner = eng;
-        eng->sub->unk6C = D_80054574;
+        eng->sub->unk6C = NginModel;
         eng->sub->unk74 = 0x2001;
         ArkNGin = obj = (ArkenoidGin *)AddObject(nas);
         if (obj != NULL) {
@@ -6299,14 +6299,14 @@ void AR_UpdateShadow(u32 arg0) {
     }
 }
 
-extern char D_8005453C[];
+extern char BallsVehicleModel[];
 
 void AR_InitShadow(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTengine *s = h->hero_shadow;
 
-    s->sub->unk6C = D_8005453C;
+    s->sub->unk6C = BallsVehicleModel;
     s->sub->unk74 = 0x2002;
     s->unk10 = h->hero_eng->unk10;
     s->unk5D = 0;

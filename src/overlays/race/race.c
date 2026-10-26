@@ -24,7 +24,7 @@ extern u8 D_8004EDE8[];
 extern u8 D_8004EDF0[];
 extern u8 D_8004EDF8[];
 extern u8 D_800500C4[];
-extern u8 D_8005468C[];
+extern u8 MasksModel[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
 
@@ -365,11 +365,11 @@ WWInf RaceWorldInfo[8] = {
     { 0xB9, RaceAnimsB, RaceLevelDB, 1 },
 };
 s32 RaceFiles[27] = {
-    (s32)&D_80055684, (s32)&D_8004EDF8, (s32)&D_8004EDF0, (s32)&D_800555A4, (s32)&D_8004EDD8,
-    (s32)&D_8004EDD0, (s32)&D_80053074, (s32)&D_8004EDE8, (s32)&D_8004EDE0, (s32)&D_80052F5C,
-    (s32)&D_8004EDC8, (s32)&D_8004EDC0, (s32)&D_800546C4, (s32)&D_8004EDA8, (s32)&D_8004EDA0,
-    (s32)&D_80054F84, (s32)&D_8004EDB8, (s32)&D_8004EDB0, (s32)&D_80052F94, (s32)&D_8004ED98,
-    (s32)&D_8004ED90, (s32)&D_8005468C, (s32)&D_8004ED88, (s32)&D_8004ED80, 0, 0,
+    (s32)&FontModel, (s32)&D_8004EDF8, (s32)&D_8004EDF0, (s32)&LoadingModel, (s32)&D_8004EDD8,
+    (s32)&D_8004EDD0, (s32)&InterfaceModel, (s32)&D_8004EDE8, (s32)&D_8004EDE0, (s32)&PowerupsModel,
+    (s32)&D_8004EDC8, (s32)&D_8004EDC0, (s32)&PolarObjectsModel, (s32)&D_8004EDA8, (s32)&D_8004EDA0,
+    (s32)&CrateEffectsModel, (s32)&D_8004EDB8, (s32)&D_8004EDB0, (s32)&CrateObjectsModel, (s32)&D_8004ED98,
+    (s32)&D_8004ED90, (s32)&MasksModel, (s32)&D_8004ED88, (s32)&D_8004ED80, 0, 0,
 };
 /* the levels' files (the engine's per-mode table points at modes 0x17..0x1A's) */
 file_group_load_info file_group_DASH = { D_800500C4, RaceFiles };
@@ -1777,7 +1777,7 @@ void RaceUpdateBarrels(void) {
                 b->unk58 = 0;
                 b->unk68 = Random(0x3C) + 0xB4;
                 obj->flags &= ~0x8000;
-                RaceSpawnPuff(&pos, 1, &D_80054F84);
+                RaceSpawnPuff(&pos, 1, &CrateEffectsModel);
             }
             break;
         case 2:
@@ -4669,7 +4669,7 @@ void InitRaceMissile(NAS *m) {
     ext = AddExt(m, 0x78, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2011;
-        m->Engine->sub->unk6C = D_80052F5C + 0x2028;
+        m->Engine->sub->unk6C = PowerupsModel + 0x2028;
         m->Engine->unk5D = 2;
         m->Engine->unk5C = 1;
         m->Engine->sub->unk51 = 2;
@@ -4689,7 +4689,7 @@ void InitRaceMissile(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk5C = e;
-            e->sub->unk6C = D_80052F5C;
+            e->sub->unk6C = PowerupsModel;
             e->sub->unk74 = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
@@ -4729,7 +4729,7 @@ void PlotRaceMissile(NAS *m) {
         break;
     case 1:
         if (--ext->unk68 == -1) {
-            RaceSpawnPuff(&m->Engine->unk10, 0, &D_80054F84);
+            RaceSpawnPuff(&m->Engine->unk10, 0, &CrateEffectsModel);
             ext->unk68 = 2;
         }
         break;
@@ -4737,7 +4737,7 @@ void PlotRaceMissile(NAS *m) {
     ext->pos.x -= (ext->unk64 * TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
     ext->pos.z -= (ext->unk64 * TrigTable[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
     if (RaceMissileHitHeroes((u8 *)&ext->pos, ext->unkC) != -1) {
-        RaceSpawnPuff(&m->Engine->unk10, 1, &D_80054F84);
+        RaceSpawnPuff(&m->Engine->unk10, 1, &CrateEffectsModel);
         PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
         if (m->Engine->sfx != NULL) {
             StopSfx(m->Engine->sfx);
@@ -4796,7 +4796,7 @@ void PlotRaceMissile(NAS *m) {
         if (ext->unk60 < 3) {
             return;
         }
-        RaceSpawnPuff(&m->Engine->unk10, 1, &D_80054F84);
+        RaceSpawnPuff(&m->Engine->unk10, 1, &CrateEffectsModel);
         PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
     }
 kill:
@@ -4811,7 +4811,7 @@ void InitRacePickUp(NAS *m) {
     if (ext != NULL) {
         func_80026B70((u8 **)&RacePickups, (u8 *)m);
         m->Engine->sub->unk74 = 0x2006;
-        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->sub->unk6C = &CrateEffectsModel;
         m->Engine->unk5D = 2;
         m->Engine->unk5C = 1;
         ext->unk10 = -0x2000;
@@ -4826,7 +4826,7 @@ void InitRacePickUp(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk3C = e;
-            e->sub->unk6C = (u8 *)&D_80054F84 - 0x2028;
+            e->sub->unk6C = (u8 *)&CrateEffectsModel - 0x2028;
             e->sub->unk74 = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
@@ -4870,13 +4870,13 @@ void PlotRacePickUp(NAS *m) {
         m->Engine->unk2C.y = s;
         m->Engine->unk2C.z = s;
         m->Engine->sub->unk74 = 0x2009;
-        m->Engine->sub->unk6C = D_80052F94;
+        m->Engine->sub->unk6C = CrateObjectsModel;
         break;
     case 2:
         m->Engine->sub->unk74 = 0x2005;
         break;
     case 3:
-        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->sub->unk6C = &CrateEffectsModel;
         m->Engine->sub->flags |= 0x20000000;
         m->Engine->sub->unk74 = ext->unk48 + 0x2049;
         if (++ext->unk48 >= 0xE) {
@@ -5204,7 +5204,7 @@ held:
         if (fux->unk18 == 1) {
             eng->sub->flags |= 0x8000;
             eng->sub->unk74 = 0x2011;
-            eng->sub->unk6C = &D_80054F84;
+            eng->sub->unk6C = &CrateEffectsModel;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5212,7 +5212,7 @@ held:
         if (fux->unk18 == 2) {
             eng->sub->flags |= 0x8000;
             eng->sub->unk74 = 0x2009;
-            eng->sub->unk6C = D_80052F94;
+            eng->sub->unk6C = CrateObjectsModel;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5245,7 +5245,7 @@ held:
             eng->sub->flags |= 0x8000;
             eng->sub->unk74 = 0x2017;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
-            eng->sub->unk6C = &D_80054F84;
+            eng->sub->unk6C = &CrateEffectsModel;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5434,7 +5434,7 @@ void PlotTNTCrate(NAS *nas) {
                     PlaySfx(0x3EF, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
                 pos = (s32 *)&nas->Engine->unk10;
-                p = D_80052F94;
+                p = CrateObjectsModel;
                 spawned = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
                 if (spawned != NULL) {
                     ext = FindExtension(spawned, 0x10000000);
@@ -5493,7 +5493,7 @@ void InitDinoEgg(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
-            e->sub->unk6C = D_80052F5C;
+            e->sub->unk6C = PowerupsModel;
             e->sub->unk74 = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
@@ -5732,7 +5732,7 @@ loop2:
                 goto clear;
             }
             pos = h->hero_eng->unk10;
-            tex = D_800546C4;
+            tex = PolarObjectsModel;
             tag = CreateNAS(pos.x, pp->y, pp->z, 0x1605, 0x11);
             if (tag != NULL) {
                 ext = FindExtension(tag, 0x10000000);
@@ -6144,7 +6144,7 @@ void InitBarrelRoll(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
-            e->sub->unk6C = D_80052F5C;
+            e->sub->unk6C = PowerupsModel;
             e->sub->unk74 = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
@@ -6166,7 +6166,7 @@ void PlotBarrelRoll(NAS *nas) {
     ext = FindExtension(nas, 0x10000000);
     if (ext != NULL) {
         if (RaceExplodeHitHeroes(&nas->Engine->unk10) != 0) {
-            RaceSpawnPuff(&nas->Engine->unk10, 1, &D_80054F84);
+            RaceSpawnPuff(&nas->Engine->unk10, 1, &CrateEffectsModel);
             KillNAS(nas);
             return;
         }
@@ -6182,7 +6182,7 @@ void PlotBarrelRoll(NAS *nas) {
             ext->unk44 >>= 8;
             if (nas->Engine->unk10.x * nas->Engine->unk10.x +
                     nas->Engine->unk10.z * nas->Engine->unk10.z > 0x900000) {
-                RaceSpawnPuff(&nas->Engine->unk10, 1, &D_80054F84);
+                RaceSpawnPuff(&nas->Engine->unk10, 1, &CrateEffectsModel);
                 KillNAS(nas);
                 return;
             }
@@ -6225,7 +6225,7 @@ void InitTrackGlob(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->eng = e;
-            e->sub->unk6C = D_80052F5C;
+            e->sub->unk6C = PowerupsModel;
             e->sub->unk74 = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
@@ -6368,7 +6368,7 @@ void InitDac(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
-            e->sub->unk6C = D_80052F5C;
+            e->sub->unk6C = PowerupsModel;
             e->sub->unk74 = 0x2001;
             e->unk5C = 1;
             e->unk2C.x = 0x2000;
@@ -6510,7 +6510,7 @@ void PlotRaceSmokeBoostWater(NAS *nas) {
 
 void InitRaceSmokeBoostWater(NAS *nas) {
     func_80024E30(nas, &RaceSmokeBoostWaterScriptInit);
-    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->Engine->sub->unk6C = &CrateEffectsModel;
     nas->UserInfo.user1 = 0;
 }
 
@@ -6582,7 +6582,7 @@ void InitInnerRipple(NAS *m) {
         ext->max = 0x4000;
         ext->scale = 0;
         *(s32 *)&ext->unk18 = 0xC8;
-        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->sub->unk6C = &CrateEffectsModel;
         m->Engine->sub->unk74 = 0x2018;
         m->Engine->sub->flags |= 0x40000000;
         m->Engine->unk5C = 1;
@@ -6624,7 +6624,7 @@ void InitRippled(NAS *m) {
         ext->max = 0x4000;
         ext->scale = 0;
         ext->unk18 = 0x190;
-        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->sub->unk6C = &CrateEffectsModel;
         m->Engine->unk5C = 1;
         m->Engine->unk2C.x = 0x400;
         m->Engine->unk2C.y = 0x400;
@@ -6644,7 +6644,7 @@ void PlotRaceGreenSmokeBoost(NAS *nas) {
 
 void InitRaceGreenSmokeBoost(NAS *nas) {
     func_80024E30(nas, &RaceGreenSmokeBoostScriptInit);
-    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->Engine->sub->unk6C = &CrateEffectsModel;
     nas->UserInfo.user1 = 0;
 }
 
@@ -6654,7 +6654,7 @@ void PlotRaceGreenSmokePoof(NAS *nas) {
 
 void InitRaceGreenSmokePoof(NAS *nas) {
     func_80024E30(nas, &RaceGreenSmokePoofScriptInit);
-    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->Engine->sub->unk6C = &CrateEffectsModel;
     nas->Engine->sub->flags |= 0x21;
     nas->UserInfo.user1 = 0;
 }
@@ -6665,7 +6665,7 @@ void PlotRaceSmokePoof(NAS *nas) {
 
 void InitRaceSmokePoof(NAS *nas) {
     func_80024E30(nas, &RaceSmokePoofScriptInit);
-    nas->Engine->sub->unk6C = D_800546C4;
+    nas->Engine->sub->unk6C = PolarObjectsModel;
     nas->Engine->sub->flags |= 0x21;
     nas->UserInfo.user1 = 0;
 }
@@ -6758,7 +6758,7 @@ void InitTNTCrate(NAS *m) {
     m->Engine->unk5D = 2;
     m->Engine->unk5C = 1;
     m->Engine->sub->unk74 = 0x2009;
-    m->Engine->sub->unk6C = (s32)D_80052F94;
+    m->Engine->sub->unk6C = (s32)CrateObjectsModel;
     m->UserInfo.status = 0;
     m->UserInfo.user1 = 0;
     m->UserInfo.user2 = 0;
@@ -6788,7 +6788,7 @@ void InitRaceSmokeBoost(NAS *nas) {
             cur->unk1E = 4;
         }
     }
-    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->Engine->sub->unk6C = &CrateEffectsModel;
     nas->UserInfo.user1 = 0;
 }
 

@@ -901,7 +901,7 @@ extern s32 D_80067830;
 extern _mal_area MainHeap;
 extern s32 D_800637B0;
 extern u8 *D_8006E9FC;
-extern u8 D_80055684[];
+extern u8 FontModel[];
 extern void *D_8005AA34;
 extern void *HeadOfObjects;
 extern music_midi D_8006557C;
@@ -1015,7 +1015,7 @@ extern s32 D_8005A620;
 extern u8 D_800556F4[];
 extern s32 GlobalNAStatus;
 extern u8 MainCamera[];
-extern u8 D_800555A4[];
+extern u8 LoadingModel[];
 extern s16 GameMode;
 extern u16 GameLevelFlags;
 extern s32 D_8005B2B4;
@@ -1236,7 +1236,7 @@ extern s32 D_80056AC4; /* func_80019A60: the object's +0x8A */
 extern s32 D_80056878;    /* func_80019094: with D_80056AC4, forces the depth-cued path */
 extern s32 D_80056868[3]; /* func_80019094: default far colour */
 
-extern u8 D_80053694[];
+extern u8 TankObjects2Model[];
 typedef struct Words3 {
     s32 w0;
     s32 w4;
@@ -2062,7 +2062,7 @@ typedef struct MapEnvHead {
 
 
 /* func_800248A0: three 0x38-byte sprite records drawn side by side */
-extern u8 D_80053074[];
+extern u8 InterfaceModel[];
 extern u16 D_8005A5C0[][3];
 
 mal *func_80011E80(_mal_area *heap);

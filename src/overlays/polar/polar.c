@@ -6,7 +6,7 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_80052F5C[]; /* engine.h declares it, but polar.c does not include that */
+extern u8 PowerupsModel[]; /* engine.h declares it, but polar.c does not include that */
 extern u8 D_80044188[];
 extern u8 D_8004EE00[];
 extern u8 D_8004EE08[];
@@ -534,21 +534,21 @@ WWInf PolarWorldInfo[10] = {
     { 0x98, PolarAnims, PolarLevelDB1, 1 },
 };
 s32 PolarEndFiles[15] = {
-    (s32)&D_80055684, (s32)&D_8004EEF8, (s32)&D_8004EEF0, (s32)&D_800555A4, (s32)&D_8004EED8,
-    (s32)&D_8004EED0, (s32)&D_80053074, (s32)&D_8004EEE8, (s32)&D_8004EEE0, (s32)&D_800546C4,
+    (s32)&FontModel, (s32)&D_8004EEF8, (s32)&D_8004EEF0, (s32)&LoadingModel, (s32)&D_8004EED8,
+    (s32)&D_8004EED0, (s32)&InterfaceModel, (s32)&D_8004EEE8, (s32)&D_8004EEE0, (s32)&PolarObjectsModel,
     (s32)&D_8004EEC8, (s32)&D_8004EEC0, 0, 0, 0,
 };
 s32 PolarFiles[18] = {
-    (s32)&D_80055684, (s32)&D_8004EEB8, (s32)&D_8004EEB0, (s32)&D_800555A4, (s32)&D_8004EE98,
-    (s32)&D_8004EE90, (s32)&D_80053074, (s32)&D_8004EEA8, (s32)&D_8004EEA0, (s32)&D_800546C4,
-    (s32)&D_8004EE88, (s32)&D_8004EE80, (s32)&D_80054654, (s32)&D_8004EE78, (s32)&D_8004EE70,
+    (s32)&FontModel, (s32)&D_8004EEB8, (s32)&D_8004EEB0, (s32)&LoadingModel, (s32)&D_8004EE98,
+    (s32)&D_8004EE90, (s32)&InterfaceModel, (s32)&D_8004EEA8, (s32)&D_8004EEA0, (s32)&PolarObjectsModel,
+    (s32)&D_8004EE88, (s32)&D_8004EE80, (s32)&PolarModel, (s32)&D_8004EE78, (s32)&D_8004EE70,
     0, 0, 0,
 };
 s32 PolarBossFiles[24] = {
-    (s32)&D_80055684, (s32)&D_8004EE68, (s32)&D_8004EE60, (s32)&D_800555A4, (s32)&D_8004EE48,
-    (s32)&D_8004EE40, (s32)&D_80053074, (s32)&D_8004EE58, (s32)&D_8004EE50, (s32)&D_800546C4,
-    (s32)&D_8004EE38, (s32)&D_8004EE30, (s32)&D_80054654, (s32)&D_8004EE28, (s32)&D_8004EE20,
-    (s32)&D_80054A0C, (s32)&D_8004EE18, (s32)&D_8004EE10, (s32)&D_80052F5C, (s32)&D_8004EE08,
+    (s32)&FontModel, (s32)&D_8004EE68, (s32)&D_8004EE60, (s32)&LoadingModel, (s32)&D_8004EE48,
+    (s32)&D_8004EE40, (s32)&InterfaceModel, (s32)&D_8004EE58, (s32)&D_8004EE50, (s32)&PolarObjectsModel,
+    (s32)&D_8004EE38, (s32)&D_8004EE30, (s32)&PolarModel, (s32)&D_8004EE28, (s32)&D_8004EE20,
+    (s32)&RoboPolarModel, (s32)&D_8004EE18, (s32)&D_8004EE10, (s32)&PowerupsModel, (s32)&D_8004EE08,
     (s32)&D_8004EE00, 0, 0,
 };
 /* the levels' files, in the leak's order (Day, Night, Cut, their challenges, End and its challenge,
@@ -1456,7 +1456,7 @@ void InitPolarBomb(NAS *m) {
     ext = AddExt(m, 0x84, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x201A;
-        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->unk6C = PolarObjectsModel;
         m->Engine->unk5D = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk30 = 2;
@@ -1468,7 +1468,7 @@ void InitPolarBomb(NAS *m) {
         m->FUX = NULL;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
-            e->sub->unk6C = D_800546C4;
+            e->sub->unk6C = PolarObjectsModel;
             e->sub->unk74 = 0x202F;
             e->Engine->unk5C = 1;
             e->Engine->unk5D = 0;
@@ -1833,7 +1833,7 @@ void PolarSpawnObjects(void) {
             pos.x = hero->hero_eng->unk10.x;
             pos.y = hero->hero_eng->unk10.y - 0x80;
             pos.z = hero->hero_eng->unk10.z;
-            tex = D_800546C4;
+            tex = PolarObjectsModel;
             p = &pos;
             nas = CreateNAS(pos.x, p->y, p->z, 0x1605, 0x11);
             n = 5;
@@ -4117,7 +4117,7 @@ void InitialisePOLAR(void) {
         }
     }
     PolarInitDebug();
-    func_8001682C((s32 *)D_80054654);
+    func_8001682C((s32 *)PolarModel);
     j = 0;
     fast = 0x1000;
     slow = 0x2000;
@@ -4175,7 +4175,7 @@ loop:
                 func_8001682C((s32 *)D_8005476C);
             }
             if (v->mode == 0x15) {
-                func_8001682C((s32 *)D_800546C4);
+                func_8001682C((s32 *)PolarObjectsModel);
             }
             ResetMass(i);
             eng2 = h->hero_eng;
@@ -4273,7 +4273,7 @@ loop:
         CreateNAS(0, 0, 0, 0x160E, 0x11);
     }
     if (w->mode == 0x16) {
-        func_8001682C((s32 *)D_80054A0C);
+        func_8001682C((s32 *)RoboPolarModel);
         func_8007E9FC(0x82, 0x3031);
         InitBossHealthIcons();
         CreateNAS(0, 0, 0, 0x1625, 0x11);
@@ -4949,7 +4949,7 @@ void InitTransmuterBeam(NAS *m) {
             bx->unk20 = 4;
             bx->unkC = 4;
         tex1:
-            ext->bit1->Engine->sub->unk6C = D_800546C4;
+            ext->bit1->Engine->sub->unk6C = PolarObjectsModel;
         skip1:
             bx->unk18 = 0x100;
             bx->unk20 |= 8;
@@ -4978,14 +4978,14 @@ void InitTransmuterBeam(NAS *m) {
             bx->unk20 = 4;
             bx->unkC = 3;
         tex2:
-            ext->bit2->Engine->sub->unk6C = D_800546C4;
+            ext->bit2->Engine->sub->unk6C = PolarObjectsModel;
         skip2:
             bx->unk18 = 0x100;
             ext->bit2->InitDelete(ext->bit2);
             ext->unkAC = 0;
         }
     }
-    m->Engine->sub->unk6C = D_800546C4;
+    m->Engine->sub->unk6C = PolarObjectsModel;
     m->Engine->sub->unk74 = 0x2013;
     m->Engine->unk5D = 2;
     m->Engine->flags |= 0x200000;
@@ -4993,7 +4993,7 @@ void InitTransmuterBeam(NAS *m) {
     e = AddExtEngine(m, 2);
     if (e != NULL) {
         ext->eng = e;
-        e->sub->unk6C = D_800546C4;
+        e->sub->unk6C = PolarObjectsModel;
         e->sub->unk74 = 0x2003;
         e->sub->unk51 = 0;
         s2 = e->sub;
@@ -5012,7 +5012,7 @@ void InitTransmuterBeam(NAS *m) {
         e = AddExtEngine(m, i + 3);
         if (e != NULL) {
             ext->engs[i] = e;
-            e->sub->unk6C = D_800546C4;
+            e->sub->unk6C = PolarObjectsModel;
             e->sub->unk74 = 0x2019;
             e->sub->unk51 = 0;
             s2 = e->sub;
@@ -5131,7 +5131,7 @@ void PlotTransmuterBeam(NAS *m) {
                     bx->unk18 = 0x200;
                     bx->unkC = 0;
                     bx->unk20 = 5;
-                    n->Engine->sub->unk6C = D_800546C4;
+                    n->Engine->sub->unk6C = PolarObjectsModel;
                     n->Engine->flags |= 0x200000;
                     bx->unk28 = 6;
                 }
@@ -6154,7 +6154,7 @@ void InitIceBerg(NAS *m) {
         info = m->trigger->InfoStruct;
         m->UserInfo.user1 = info->val1;
         m->UserInfo.user2 = info->val2;
-        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->unk6C = PolarObjectsModel;
         if (GameMode == 0x12) {
             if (m->UserInfo.user1 == 0) {
                 m->Engine->sub->unk74 = 0x200D;
@@ -6480,7 +6480,7 @@ void InitUkaPolarMask(NAS *m) {
             bx->unkC = 3;
             bx->unk18 = 0x100;
             bx->unk20 = 4;
-            ext->bit->Engine->sub->unk6C = D_800546C4;
+            ext->bit->Engine->sub->unk6C = PolarObjectsModel;
             ext->bit->InitDelete(ext->bit);
             ext->unkAC = 0;
         }
@@ -6488,7 +6488,7 @@ void InitUkaPolarMask(NAS *m) {
     e = AddExtEngine(m, 2);
     if (e != NULL) {
         ext->eng = e;
-        e->sub->unk6C = D_800546C4;
+        e->sub->unk6C = PolarObjectsModel;
         e->sub->unk74 = 0x2003;
         e->sub->unk51 = 0;
         s2 = e->sub;
@@ -7581,7 +7581,7 @@ void InitSimpleExplosion(NAS *m) {
             i = 0;
             do {
                 sub->unk74 = 0x2034;
-                sub->unk6C = D_800546C4;
+                sub->unk6C = PolarObjectsModel;
                 ext->vel[i].x = Random(0x4C) - Random(0x4C);
                 ext->vel[i].z = Random(0x4C) - Random(0x4C);
                 ext->vel[i].y = Random(0x4C) - Random(0x4C);
@@ -7677,7 +7677,7 @@ void InitPackEffect(NAS *m) {
             i = 0;
             do {
                 sub->unk74 = 0x2033;
-                sub->unk6C = D_800546C4;
+                sub->unk6C = PolarObjectsModel;
                 ext->vel[i].x = Random(0x38) - Random(0x38);
                 ext->vel[i].z = Random(0x38) - Random(0x38);
                 ext->vel[i].y = Random(0x38) - Random(0x38);
@@ -8056,7 +8056,7 @@ void PlotPolarBoss(NAS *m) {
                 pos.x = 0;
                 pos.z = 0;
                 p = &pos;
-                tex = D_800546C4;
+                tex = PolarObjectsModel;
                 nas = CreateNAS(p->x, p->y, p->z, 0x1605, 0x11);
                 if (nas != NULL) {
                     ExtSpawn5910 *sp = FindExtension(nas, 0x10000000);
@@ -8225,7 +8225,7 @@ void InitBearminator(NAS *m) {
         PlaySfx(0x22E, NULL, NULL, 0x1000, 0x1E00, 0);
         e2 = AddExt(m, 0x54, 0x20000000);
         if (e2 != NULL) {
-            m->Engine->sub->unk6C = D_80054A0C;
+            m->Engine->sub->unk6C = RoboPolarModel;
             n = CreateNAS(m->Engine->unk10.x, 0, m->Engine->unk10.z, 0x1620, 0x11);
             if (n != NULL) {
                 ext->unk98 = n;
@@ -8267,7 +8267,7 @@ void InitBearminator(NAS *m) {
             m->FUX = NULL;
             e = AddExtEngine(m, 2);
             if (e != NULL) {
-                e->sub->unk6C = D_80054A0C;
+                e->sub->unk6C = RoboPolarModel;
                 e->sub->unk74 = 0x4000;
                 e->sub->unk68 = 0x80;
                 e->sub->flags |= 0x02000000;
@@ -8288,7 +8288,7 @@ void InitBearminator(NAS *m) {
             ext->unk9C = NULL;
             f = AddExtEngine(m, 3);
             if (f != NULL) {
-                f->sub->unk6C = D_80054A0C;
+                f->sub->unk6C = RoboPolarModel;
                 f->sub->unk74 = 0x2006;
                 f->unk10 = m->Engine->unk10;
                 f->unk5D = 0;
@@ -8864,7 +8864,7 @@ void InitSniper(NAS *m) {
     ext = AddExt(m, 0x9C, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2006;
-        m->Engine->sub->unk6C = D_80054A0C;
+        m->Engine->sub->unk6C = RoboPolarModel;
         ext->unk8C = 8;
         ext->unk90 = 0;
         ext->unk98 = 0;
@@ -8923,7 +8923,7 @@ void InitSniper(NAS *m) {
         f = AddExtEngine(m, 4);
         if (f != NULL) {
             ext->unk94 = f;
-            f->sub->unk6C = D_80054A0C;
+            f->sub->unk6C = RoboPolarModel;
             f->sub->unk74 = 0x2006;
             f->sub->flags |= 0x02000000;
             f->unk10 = m->Engine->unk10;
@@ -9404,7 +9404,7 @@ void InitSniperMissile(NAS *m) {
     ext = AddExt(m, 0x38, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2006;
-        m->Engine->sub->unk6C = D_80054A0C;
+        m->Engine->sub->unk6C = RoboPolarModel;
         ext->unkC = 0;
         m->Engine->unk5C = 1;
         m->Engine->unk2C.x = 0x2AF8;
@@ -9425,7 +9425,7 @@ void InitBigMissile(NAS *m) {
         m->Engine->unk5D = 2;
         m->Engine->unk5C = 1;
         m->Engine->sub->unk74 = 0x201A;
-        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->unk6C = PolarObjectsModel;
         m->Engine->unk2C.x = 0x2000;
         m->Engine->unk2C.y = 0x2000;
         m->Engine->unk2C.z = 0x2000;
@@ -9464,7 +9464,7 @@ void InitPolarMissile(NAS *m) {
     ext = AddExt(m, 0x70, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2006;
-        m->Engine->sub->unk6C = D_80054A0C;
+        m->Engine->sub->unk6C = RoboPolarModel;
         m->Engine->unk5D = 2;
         m->Engine->unk5C = 1;
         m->Engine->sub->unk51 = 2;
@@ -9654,7 +9654,7 @@ void InitCortexPack(NAS *m) {
 
 void InitBrioPack(NAS *m) {
     m->Engine->flags |= 0x200000;
-    m->Engine->sub->unk6C = D_800546C4;
+    m->Engine->sub->unk6C = PolarObjectsModel;
     m->Engine->sub->unk74 = 0x2031;
     m->Engine->unk5D = 2;
     m->Engine->unk5C = 1;
@@ -9708,7 +9708,7 @@ void InitSmokeTrail(NAS *m) {
 
     ext = AddExt(m, 0x30, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->unk6C = PolarObjectsModel;
         m->Engine->sub->unk74 = 0x2020;
         m->Engine->sub->flags |= 0x40000041;
         m->Engine->sub->unk76 = 0x1000;
@@ -9843,7 +9843,7 @@ void InitScratchMaster(NAS *m) {
         m->UserInfo.user2 = 0;
         while (sub != NULL) {
             sub->flags = 0x40000000;
-            sub->unk6C = D_800546C4;
+            sub->unk6C = PolarObjectsModel;
             sub->unk74 = 0x2002;
             sub->unk51 = 2;
             sub->unk14 = 0;
@@ -9894,7 +9894,7 @@ void InitGravityObject(NAS *m) {
     g = AddExt(m, 0x34, 0x10000000);
     if (g != NULL) {
         m->Engine->sub->unk74 = 0x200C;
-        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->unk6C = PolarObjectsModel;
         m->Engine->sub->flags |= 0x02000000;
         g->vx = (TrigTable[0xE00].unk2 * 27) >> 11;
         t = TrigTable[0x200].unk2;
@@ -9914,7 +9914,7 @@ void InitWeightDeath(NAS *m) {
 
     ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->unk6C = PolarObjectsModel;
         m->Engine->sub->unk74 = 0x2003;
         ext->unk10 = 0x40;
         ext->unk14 = 8;
@@ -10362,14 +10362,14 @@ void InitBombGFX(NAS *m) {
     ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2018;
-        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->unk6C = PolarObjectsModel;
         ext->unkC = 0;
         m->Engine->unk5C = 1;
         func_80026B70((u8 **)&PolarBomb, (u8 *)m);
         m->FUX = NULL;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
-            e->sub->unk6C = D_800546C4;
+            e->sub->unk6C = PolarObjectsModel;
             e->sub->unk74 = 0x202F;
             e->unk5D = 0;
             e->unk10 = m->Engine->unk10;
@@ -10643,7 +10643,7 @@ void PolarInitShadow(s32 player) {
             shadow->flags = 0x8000;
             shadow->unk5C = 1;
             if (eng != NULL) {
-                shadow->sub->unk6C = D_80054654;
+                shadow->sub->unk6C = PolarModel;
                 tbl = PolarShadowState;
                 p = &tbl[player];
                 *p = 0x4000;
@@ -10734,12 +10734,12 @@ void PolarUpdateShadow(s32 player) {
     }
     if (h2->hero_mode != 0x51) {
         if (h2->hero_mode != 0x58) {
-            shadow->sub->unk6C = D_80054654;
+            shadow->sub->unk6C = PolarModel;
             shadow->sub->flags = 0x8000;
             p = &PolarShadowState[player];
             shadow->sub->unk74 = *p + (anim->Aindex - 1);
             if (h2->hero_mode == 0x4B || h2->hero_mode == 0x4C) {
-                shadow->sub->unk6C = D_80054654;
+                shadow->sub->unk6C = PolarModel;
                 shadow->sub->unk74 = 0x4000;
                 *p = 0x4000;
             }
@@ -10758,7 +10758,7 @@ void PolarUpdateShadow(s32 player) {
         }
     }
     {
-        shadow->sub->unk6C = D_80054654;
+        shadow->sub->unk6C = PolarModel;
         shadow->unk10 = eng->unk10;
         shadow->sub->flags = 0x8000;
         switch (Heroes[player].hero_name) {
@@ -10791,7 +10791,7 @@ mode58:
     base3 = Heroes;
     h3 = &base3[player];
     if (h3->hero_mode == 0x58) {
-        shadow->sub->unk6C = D_80054654;
+        shadow->sub->unk6C = PolarModel;
         shadow->unk10 = eng->unk10;
         shadow->sub->flags = 0x8000;
         switch (h3->hero_name) {
@@ -11319,7 +11319,7 @@ void SetPolarHeroDazed(s32 player) {
                         fux[0x18 / 4] = 0x200;
                         fux[0xC / 4] = 0;
                         fux[0x20 / 4] = 5;
-                        nas->Engine->sub->unk6C = D_800546C4;
+                        nas->Engine->sub->unk6C = PolarObjectsModel;
                         nas->Engine->flags |= 0x200000;
                         fux[0x28 / 4] = 6;
                     }
@@ -12775,7 +12775,7 @@ void SetPolarHeroDead(s32 arg0) {
             h->hero_status = status | 0x2000;
         }
         h->hero_eng->sub->flags |= 0x8000;
-        h->hero_eng->sub->unk6C = D_800546C4;
+        h->hero_eng->sub->unk6C = PolarObjectsModel;
         h->hero_eng->sub->unk74 = 0x202D;
         eng = h->hero_eng;
         CreateNAS(eng->unk10.x + 0x80, eng->unk10.y - 0x200, eng->unk10.z, 0x1613, 0x11);

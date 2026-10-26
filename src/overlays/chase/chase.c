@@ -29,10 +29,10 @@ extern u8 D_8004EAD8[];
 extern u8 D_8004EAE0[];
 extern u8 D_8004EAE8[];
 extern u8 D_8005004C[];
-extern u8 D_80053004[];
-extern u8 D_80053074[];
-extern u8 D_800555A4[];
-extern u8 D_80055684[];
+extern u8 AngelModel[];
+extern u8 InterfaceModel[];
+extern u8 LoadingModel[];
+extern u8 FontModel[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
 extern u8 D_8007000C[];
@@ -58,10 +58,10 @@ WWInf ChaseWorldInfo[2] = {
     { 0x60, ChaseAnims, ChaseLevelDB, 0 },
 };
 s32 ChaseFiles[21] = {
-    (s32)&D_80055684, (s32)&D_8004EAE8, (s32)&D_8004EAE0, (s32)&D_800555A4, (s32)&D_8004EAC8,
-    (s32)&D_8004EAC0, (s32)&D_80053074, (s32)&D_8004EAD8, (s32)&D_8004EAD0, (s32)&D_80052F5C,
-    (s32)&D_8004EAB8, (s32)&D_8004EAB0, (s32)&D_80053004, (s32)&D_8004EAA8, (s32)&D_8004EAA0,
-    (s32)&D_80053F8C, (s32)&D_8004EA98, (s32)&D_8004EA90, 0, 0,
+    (s32)&FontModel, (s32)&D_8004EAE8, (s32)&D_8004EAE0, (s32)&LoadingModel, (s32)&D_8004EAC8,
+    (s32)&D_8004EAC0, (s32)&InterfaceModel, (s32)&D_8004EAD8, (s32)&D_8004EAD0, (s32)&PowerupsModel,
+    (s32)&D_8004EAB8, (s32)&D_8004EAB0, (s32)&AngelModel, (s32)&D_8004EAA8, (s32)&D_8004EAA0,
+    (s32)&KegObjectsModel, (s32)&D_8004EA98, (s32)&D_8004EA90, 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1E's) */
 file_group_load_info file_group_CHASE = { D_8005004C, ChaseFiles };
@@ -764,8 +764,8 @@ void InitialiseCHASE(void) {
         a = 0x130;
     }
     Set_Clock(a, 0x81C0);
-    func_8001682C((s32 *)D_80053F8C);
-    func_8001682C((s32 *)(D_80053F8C - 0xF88));
+    func_8001682C((s32 *)KegObjectsModel);
+    func_8001682C((s32 *)(KegObjectsModel - 0xF88));
     func_8001682C((s32 *)*MapScene);
     scr = (ChaseScreen *)D_8009F6F4;
     scr->unk10 = 0x140;
@@ -869,7 +869,7 @@ loop:
     do {
         n--;
     } while (n >= 0);
-    h = D_80053F8C;
+    h = KegObjectsModel;
     func_80029100(h + 0x10);
     ChaseUpdateStub(ChaseUpdateState);
 }
@@ -1170,7 +1170,7 @@ void ChaseMoveHero(s32 arg0) {
         ChaseHidePowerup(arg0);
         CoalChainHit(e0->unk10.x, e0->unk10.z, arg0, 0, 0x380, 0);
         ChaseHitHeroesNear(e0->unk10.x, e0->unk10.z, arg0, 0x380);
-        anim = D_80053F8C;
+        anim = KegObjectsModel;
         nas = CreateNAS(e0->unk10.x, v->y, v->z, 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -1992,7 +1992,7 @@ void SetChaseHeroLose(s32 arg0) {
         g->hero_pu_timer = 0;
         SetHeroSeq(arg0, 0x61);
         v = &g->hero_eng->unk10;
-        anim = D_80053F8C;
+        anim = KegObjectsModel;
         nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -2144,7 +2144,7 @@ void InitBarrelCH(NAS *nas) {
     eng->unk2C.z = 0x3E8;
     eng->unk5C = 1;
     eng->unk10.y = 0;
-    sub->unk6C = D_80053F8C;
+    sub->unk6C = KegObjectsModel;
     n = ++ChaseBarrelCount;
     if ((n & 0x1F) == 0) {
         sub->unk74 = 0x2016;
@@ -2215,7 +2215,7 @@ void PlotBarrelCH(NAS *nas) {
     if (nas->UserInfo.status != 0) {
         v = &eng->unk10;
         PlaySfx(ChaseBarrelSfx[Random(4)], 0, v, 0x1000, 0x1E00, 0);
-        anim = D_80053F8C;
+        anim = KegObjectsModel;
         n = CreateNAS(eng->unk10.x, v->y, v->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
@@ -2762,7 +2762,7 @@ void PlotPUGenerator_CH(NAS *nas) {
         if (pu != NULL) {
             ChasePickup[i] = pu;
             sub = pu->Engine->sub;
-            sub->unk6C = D_80052F5C;
+            sub->unk6C = PowerupsModel;
             sub->unk74 = 0x200C;
             pu->UserInfo.status = Random(2) + 1;
             return;
@@ -2792,7 +2792,7 @@ void InitPickupCH(NAS *nas) {
         e->unk10.y = 0;
         e->unk10.z = eng->unk10.z;
         e->sub->unk51 = 2;
-        e->sub->unk6C = D_80052F5C;
+        e->sub->unk6C = PowerupsModel;
         e->sub->unk74 = 0x2001;
         e->sub->flags |= 0x40000041;
         e->sub->unk76 = 0x800;
@@ -2876,7 +2876,7 @@ found:
         if (status < 3) {
             if (status != 0) {
                 if (sub != NULL) {
-                    sub->unk6C = D_80052F5C;
+                    sub->unk6C = PowerupsModel;
                     sub->unk74 = 0x200C;
                     sub->flags |= 0x8000;
                     p->flags |= 0x8000;
@@ -3395,7 +3395,7 @@ void ChaseHeroHitFlash(s32 arg0, s32 arg1) {
     if (arg1 < 3) {
         if (arg1 > 0) {
             if (sub != NULL) {
-                sub->unk6C = D_80052F5C;
+                sub->unk6C = PowerupsModel;
                 sub->unk74 = 0x200C;
                 sub->flags |= 0x8000;
                 p->flags |= 0x8000;
@@ -3455,7 +3455,7 @@ void InitCircleFire(NAS *nas) {
     eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->unk5E = 1;
     eng->unk10.y = 0;
-    sub->unk6C = D_80053F8C;
+    sub->unk6C = KegObjectsModel;
     sub->unk74 = 0x4000;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -3473,7 +3473,7 @@ void InitCoalFlame(NAS *nas) {
     nas->FUX = &ext->ext;
     ext->unk1C = -0xD;
     sub = eng->sub;
-    sub->unk6C = D_80053F8C;
+    sub->unk6C = KegObjectsModel;
     sub->unk74 = 0x200E;
     eng->unk5C = 1;
     eng->unk2C.x = 0x1000;
@@ -3521,7 +3521,7 @@ void InitCoal(NAS *nas) {
     nas->UserInfo.flags = 5;
     nas->UserInfo.user1 = 0;
     sub = eng->sub;
-    sub->unk6C = D_80053F8C;
+    sub->unk6C = KegObjectsModel;
     sub->unk74 = 0x200F;
     nas->UserInfo.status = 0x3C;
     if (nas->Failure != 0) {

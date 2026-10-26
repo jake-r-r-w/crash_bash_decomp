@@ -15,26 +15,26 @@ void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2) {
     case 5:
     case 7:
         PlaySfx(D_8009E424[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(1, arg0, (s32)D_80052F94);
+        func_8007A524(1, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x208, 0xA0);
         break;
     case 6:
         PlaySfx(((HitSfxTable *)D_8009E424)->hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(0, arg0, (s32)D_80052F94);
+        func_8007A524(0, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x208, 0);
         break;
     case 2:
         PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(2, arg0, (s32)D_80052F94);
+        func_8007A524(2, arg0, (s32)CrateObjectsModel);
         break;
     case 3:
         PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(4, arg0, (s32)D_80052F94);
+        func_8007A524(4, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x203, 0xA0);
         break;
     default:
         PlaySfx(((HitSfxTable *)D_8009E424)->other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(3, arg0, (s32)D_80052F94);
+        func_8007A524(3, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x205, 0xA0);
         break;
     }
@@ -50,7 +50,7 @@ void InitCrateExplode(NAS *arg0) {
     if (e != NULL) {
         t = (u8 *)D_8009E424;
         PlaySfx(*(s32 *)(t + Random(4) * 4 + 0x30), NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(2, (u8 *)e + 0x10, D_80052F94);
+        func_8007A524(2, (u8 *)e + 0x10, CrateObjectsModel);
     }
     KillNAS(arg0);
 }
@@ -1356,7 +1356,7 @@ void func_80091F54(void) {
         sub->unk6C = D_800555DC;
     } else {
         sub->unk74 = 0x201F;
-        sub->unk6C = D_800558EC;
+        sub->unk6C = AdventureItemsModel;
     }
     func_80095BEC(1, &D_8009EEB0);
     D_8009F494 = 0;
@@ -1380,7 +1380,7 @@ void func_8009201C(void) {
         sub->unk6C = D_800555DC;
     } else {
         sub->unk74 = 0x201F;
-        sub->unk6C = D_800558EC;
+        sub->unk6C = AdventureItemsModel;
     }
     func_80095BEC(1, &D_8009EEB0);
     D_8009F638 = 0;
@@ -1487,7 +1487,7 @@ void func_8009246C(void) {
         sub->unk6C = D_800555DC;
     } else {
         sub->unk74 = 0x201F;
-        sub->unk6C = D_800558EC;
+        sub->unk6C = AdventureItemsModel;
     }
     func_80095BEC(1, &D_8009EEB0);
 }

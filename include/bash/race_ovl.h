@@ -30,13 +30,13 @@ extern s32 RaceFloorLevel;
 extern s32 RaceTagTime;
 extern ScriptInit RaceGreenSmokeBoostScriptInit;
 extern ScriptInit RaceSmokeBoostScriptInit;
-extern s32 D_80054F84;
+extern s32 CrateEffectsModel;
 extern HeroInfo Heroes[4];
 extern ScriptInit RaceSmokePoofScriptInit;
 extern ScriptInit RaceGreenSmokePoofScriptInit;
-extern u8 D_800546C4[];
+extern u8 PolarObjectsModel[];
 extern s32 RaceBarrelRollTimer;
-extern u8 D_80052F94[];
+extern u8 CrateObjectsModel[];
 extern const char RaceMsgPlayerAngle[];
 
 void RaceAI_SteerAhead(s32 player);
@@ -698,7 +698,7 @@ static inline NAS *RaceSpawnPuffRet(SLONG_XYZ *v, s32 kind, s32 mode) {
 }
 
 
-extern u8 D_80052F5C[];
+extern u8 PowerupsModel[];
 
 /* Barrel roll extension (0x80 bytes, id 0x10000000). */
 typedef struct BarrelRollExt {

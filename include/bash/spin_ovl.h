@@ -203,9 +203,9 @@ void SpinHeroFlip(s32 arg0);
 extern void (*HeroCollideHook)();
 
 extern s32 LevelSpecs[11];
-extern u8 D_80052FCC[];
-extern u8 D_80052F94[];
-extern u8 D_80052F5C[];
+extern u8 RingObjectsModel[];
+extern u8 CrateObjectsModel[];
+extern u8 PowerupsModel[];
 extern u16 SpinShadowModels[];
 
 void SpinHeroWinner(s32 arg0);
@@ -410,7 +410,7 @@ extern u16 SpinUnused1;
 extern u16 SpinBalloonOwner;
 extern s32 SpinBalloonFlag;
 extern EXTengine SpinSfxEngine;
-extern s32 D_80053004;
+extern s32 AngelModel;
 
 void SpinTurnArena(void);
 

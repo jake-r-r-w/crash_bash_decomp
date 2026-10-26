@@ -99,7 +99,7 @@ void func_80093588(void) {
     if (GameMode == 0x28 && D_800590CC == 0) {
         func_80016CA0(D_800556F4);
     } else {
-        func_80016CA0(D_800555A4);
+        func_80016CA0(LoadingModel);
     }
     D_8009F8B4 = func_80093038;
     cam_init(MainCamera);
@@ -455,7 +455,7 @@ void func_800941BC(void) {
 
 void func_800941EC(void) {
     func_8001D174(D_800A0224);
-    func_80016F54(D_800555A4);
+    func_80016F54(LoadingModel);
 }
 
 void func_8009421C(void) {
@@ -481,7 +481,7 @@ void func_80094274(void) {
     p = D_8009F994;
     if (sub != NULL) {
         do {
-            sub->unk6C = D_800555A4;
+            sub->unk6C = LoadingModel;
             sub->flags = 0x01008000;
             sub->unk74 = *p;
             sub->unk04 = 0;
@@ -510,7 +510,7 @@ void func_800943B8(void) {
     if (GameMode == 0x28 && D_800590CC == 0) {
         func_80016CA0(D_800556F4);
     } else {
-        func_80016CA0(D_800555A4);
+        func_80016CA0(LoadingModel);
     }
 }
 
@@ -1054,7 +1054,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                s->unk6C = (s32)D_80053074;
+                s->unk6C = (s32)InterfaceModel;
                 {
                     u16 *tbl = D_80099218;
                     s32 name = Heroes[rec->unk1E].hero_name;

@@ -292,9 +292,9 @@ WWInf BonkWorldInfo[2] = {
     { 0x52, BonkAnims, BonkLevelDB, 0 },
 };
 s32 BonkFiles[18] = {
-    (s32)&D_80055684, (s32)&D_8004EBB8, (s32)&D_8004EBB0, (s32)&D_800555A4, (s32)&D_8004EB98,
-    (s32)&D_8004EB90, (s32)&D_80053074, (s32)&D_8004EBA8, (s32)&D_8004EBA0, (s32)&D_80052F5C,
-    (s32)&D_8004EB88, (s32)&D_8004EB80, (s32)&D_80053C7C, (s32)&D_8004EB78, (s32)&D_8004EB70,
+    (s32)&FontModel, (s32)&D_8004EBB8, (s32)&D_8004EBB0, (s32)&LoadingModel, (s32)&D_8004EB98,
+    (s32)&D_8004EB90, (s32)&InterfaceModel, (s32)&D_8004EBA8, (s32)&D_8004EBA0, (s32)&PowerupsModel,
+    (s32)&D_8004EB88, (s32)&D_8004EB80, (s32)&MalletObjectsModel, (s32)&D_8004EB78, (s32)&D_8004EB70,
     0, 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1D's) */
@@ -457,7 +457,7 @@ void PlotBonkStool(NAS *nas) {
             if (e->sub->unk74 == 0x2015) {
                 pos = e->unk10;
                 pos.y -= 0x100;
-                Bonk_SpawnPuff((s32 *)&pos, 3, D_80053C7C);
+                Bonk_SpawnPuff((s32 *)&pos, 3, MalletObjectsModel);
             }
         }
         e->unk5E = 1;
@@ -493,7 +493,7 @@ void PlotBonkStool(NAS *nas) {
         e->unk5E = 1;
         break;
     case 5:
-        Bonk_SpawnPuff((s32 *)&e->unk10, 0, D_80053C7C);
+        Bonk_SpawnPuff((s32 *)&e->unk10, 0, MalletObjectsModel);
         v = &e->unk10;
         BonkMalletHit((VECTOR *)v, 0x380, -1, 0);
         e->flags &= 0xFFFF7FFF;
@@ -501,7 +501,7 @@ void PlotBonkStool(NAS *nas) {
         PlaySfx(BonkStoolSfx[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
         break;
     case 4:
-        Bonk_SpawnPuff((s32 *)&e->unk10, 1, D_80053C7C);
+        Bonk_SpawnPuff((s32 *)&e->unk10, 1, MalletObjectsModel);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
         break;
@@ -593,7 +593,7 @@ void InitBonkCrate(NAS *nas) {
         s = e->sub;
         e->flags &= 0xFFFF7FFF;
         if (s != NULL) {
-            s->unk6C = D_80053C7C;
+            s->unk6C = MalletObjectsModel;
             s->unk74 = 0x200F;
         } else {
             nas->Failure = 1;
@@ -682,7 +682,7 @@ void PlotBonkCrate(NAS *nas) {
         }
         break;
     case 5:
-        Bonk_SpawnPuff((s32 *)&e->unk10, 0, D_80053C7C);
+        Bonk_SpawnPuff((s32 *)&e->unk10, 0, MalletObjectsModel);
         v = &e->unk10;
         BonkMalletHit((VECTOR *)v, 0x380, -1, 0);
         e->flags &= 0xFFFF7FFF;
@@ -690,7 +690,7 @@ void PlotBonkCrate(NAS *nas) {
         PlaySfx(BonkStoolSfx[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
         break;
     case 4:
-        Bonk_SpawnPuff((s32 *)&e->unk10, 2, D_80053C7C);
+        Bonk_SpawnPuff((s32 *)&e->unk10, 2, MalletObjectsModel);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
         break;
@@ -1527,7 +1527,7 @@ void InitBonkShockwave(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = D_80053C7C;
+        e->sub->unk6C = MalletObjectsModel;
         e->sub->unk74 = 0x2014;
         e->unk5C = 1;
         e->unk2C.y = 0x1000;
@@ -1589,7 +1589,7 @@ void InitBonkStool(NAS *nas) {
         s = e->sub;
         e->flags &= 0xFFFF7FFF;
         if (s != NULL) {
-            s->unk6C = D_80053C7C;
+            s->unk6C = MalletObjectsModel;
             s->unk74 = 0x2002;
         } else {
             nas->Failure = 1;
@@ -1808,7 +1808,7 @@ void BonkHeroHitFlash(s32 arg0, s32 arg1) {
     case 0:
         BonkSlots[arg0].fC = 0xB4;
         if (s != NULL) {
-            s->unk6C = D_80053C7C;
+            s->unk6C = MalletObjectsModel;
             s->unk74 = 0x2013;
             s->flags |= 0x8000;
             e->flags |= 0x8000;
@@ -1817,7 +1817,7 @@ void BonkHeroHitFlash(s32 arg0, s32 arg1) {
         break;
     case 1:
         if (s != NULL) {
-            s->unk6C = D_80052F5C;
+            s->unk6C = PowerupsModel;
             s->unk74 = 0x200C;
             s->flags |= 0x8000;
             e->flags |= 0x8000;
