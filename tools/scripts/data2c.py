@@ -1,6 +1,6 @@
 """Turn an overlay's asm data (splat's asm/data/overlays/<ovl>/*.data.s) into C definitions.
 
-    tools/dk python3 tools/scripts/data2c.py OVL [--rodata SYM] [--out FILE]
+    tools/dk python3 tools/scripts/data2c.py OVL [--rodata SYM ...] [--out FILE]
 
 Each object's bytes come from the retail binary (disc/<ovl>.bin), not from splat's directives
 (splat reads words of small values as strings). Objects start at splat's labels; a label nothing
@@ -17,7 +17,9 @@ PROVIDE lines for configs/USA/undefined_syms_manual.txt.
 string literals of an initialiser in reverse order of first use (cc1plus, which built the game,
 in order), so named arrays are what reproduces the retail order. Paste the output where the
 data and the INCLUDE_RODATA were (rodata first, so it precedes the functions' jump tables), and
-build: `make check` is the test.
+build: `make check` is the test. Give every block of the overlay at once (`--rodata A --rodata B`):
+the data's pointers to a block's strings are written by name only for the blocks it knows. Each
+block is printed under its own `/* rodata block SYM */` line, to paste where its INCLUDE_RODATA was.
 """
 import argparse
 import glob
@@ -599,17 +601,71 @@ class Converter:
         return f"{decl_txt} = {init};{note}{rest}"
 
     def strings(self, sym):
-        """const char arrays for an INCLUDE_RODATA block of strings."""
+        """const char arrays for an INCLUDE_RODATA block of strings, read from the binary: splat
+        writes a string with a byte outside ASCII (the pad's button glyphs) as words."""
         path = next(p for p in glob.glob(f"asm/nonmatchings/overlays/{self.ovl}/**/{sym}.s", recursive=True))
+        lo, hi = block_range(open(path, encoding="utf-8").read())
+        data = self.bin[lo - self.vram + self.start:hi - self.vram + self.start]
         out, local = [], []
-        for l in open(path, encoding="utf-8"):
-            m = re.match(r'\s*/\*\s*([0-9A-Fa-f]+)\s+([0-9A-Fa-f]+)\s*\*/\s*\.asciz\s+"(.*)"\s*$', l)
-            if m:
-                va = int(m.group(2), 16)
-                name = sym if not out else f"D_{va:08X}"
-                local.append((va, name))
-                out.append(f'const char {name}[] = "{m.group(3)}";')
+        for off, text, size in split_strings(data):
+            va = lo + off
+            name = sym if not out else f"D_{va:08X}"
+            local.append((va, name))
+            out.append(f'const char {name}[{size}] = "{text}";' if size else f'const char {name}[] = "{text}";')
         return out, local
+
+
+def block_range(asm):
+    """(start, end) vram of an INCLUDE_RODATA block's asm: each directive's address plus its size
+    (an .asciz's from the hex comment splat writes after it, padding included)."""
+    lines = asm.splitlines()
+    lo, hi = None, 0
+    for i, l in enumerate(lines):
+        m = re.match(r"\s*/\*\s*[0-9A-Fa-f]+\s+([0-9A-Fa-f]{8})\b[^*]*\*/\s*\.(word|short|byte|asciz)\b", l)
+        if not m:
+            continue
+        va = int(m.group(1), 16)
+        if m.group(2) == "asciz":
+            h = re.match(r"\s*/\*\s*([0-9A-Fa-f]+)\s*\*/", lines[i + 1])
+            n = len(h.group(1)) // 2
+        else:
+            n = {"word": 4, "short": 2, "byte": 1}[m.group(2)]
+        lo = va if lo is None else min(lo, va)
+        hi = max(hi, va + n)
+    return lo, hi
+
+
+def c_string(bs):
+    """A C string literal's body for bytes: octal escapes outside printable ASCII (an escape can't
+    run into the next character, as a hex one would)."""
+    out = []
+    for b in bs:
+        if b == 0x0A:
+            out.append("\\n")
+        elif b in (0x22, 0x5C):
+            out.append("\\" + chr(b))
+        elif 0x20 <= b < 0x7F:
+            out.append(chr(b))
+        else:
+            out.append(f"\\{b:03o}")
+    return "".join(out)
+
+
+def split_strings(data):
+    """[(offset, literal body, size or 0)] for a block of word-aligned strings. A string's padding
+    to the next word is zeros, except where the retail bytes carry leftovers: then the array is
+    sized to hold them and they are written out after its NUL."""
+    out, p = [], 0
+    while p < len(data):
+        e = data.index(0, p)
+        nxt = min(len(data), (e + 1 + 3) & ~3)
+        pad = data[e + 1:nxt]
+        if any(pad):
+            out.append((p, c_string(data[p:e]) + "\\000" + c_string(pad.rstrip(b"\0")), nxt - p))
+        else:
+            out.append((p, c_string(data[p:e]), 0))
+        p = nxt
+    return out
 
 
 def _prod(xs):
@@ -622,14 +678,17 @@ def _prod(xs):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("ovl")
-    ap.add_argument("--rodata", help="an INCLUDE_RODATA block of strings to write as const char arrays")
+    ap.add_argument("--rodata", action="append", default=[],
+                    help="an INCLUDE_RODATA block of strings to write as const char arrays (repeatable)")
     ap.add_argument("--out")
     a = ap.parse_args()
     c = Converter(a.ovl)
     lines, local = [], []
-    if a.rodata:
-        rl, local = c.strings(a.rodata)
-        lines += ["/* rodata: the strings (const arrays keep their retail order; see data2c.py) */"] + rl + [""]
+    for i, sym in enumerate(a.rodata):
+        rl, loc = c.strings(sym)
+        local += loc
+        head = "/* rodata: the strings (const arrays keep their retail order; see data2c.py) */"
+        lines += ([head] if len(a.rodata) == 1 else [f"/* rodata block {sym} */"]) + rl + [""]
     files = sorted(glob.glob(f"asm/data/overlays/{a.ovl}/*.data.s"))
     objs = []
     for p in files:

@@ -173,5 +173,23 @@ class OtherSlots(unittest.TestCase):
                           "include/bash/engine.h"])
 
 
+class Strings(unittest.TestCase):
+    def test_strings_split_at_word_padding(self):
+        data = b"WIN\0BREATHE\0BANK\0\0\0\0"
+        self.assertEqual(data2c.split_strings(data), [(0, "WIN", 0), (4, "BREATHE", 0), (12, "BANK", 0)])
+
+    def test_a_glyph_byte_is_an_octal_escape(self):
+        self.assertEqual(data2c.split_strings(b"PRESS \xfc B\0\0\0"), [(0, "PRESS \\374 B", 0)])
+
+    def test_leftover_padding_bytes_are_written_out(self):
+        # "." then its NUL and two retail leftovers before the next word
+        self.assertEqual(data2c.split_strings(b".\0\x22\x96OK\0\0"), [(0, '.\\000\\"\\226', 4), (4, "OK", 0)])
+
+    def test_the_range_comes_from_the_asm(self):
+        asm = ('    /* 4 800B32B8 */ .asciz "WIN"\n    /* 57494E00 */\n'
+               '    /* 8 800B32BC 2E002296 */ .word 0x9622002E\n')
+        self.assertEqual(data2c.block_range(asm), (0x800B32B8, 0x800B32C0))
+
+
 if __name__ == "__main__":
     unittest.main()
