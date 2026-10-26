@@ -548,6 +548,14 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Tank's id word is C; its assets checked):**
+  `src/overlays/ovl5f/ovl5f_id.c` (`const s32 TankOverlayId = 0x5F;`) owns
+  the yaml's `[0x0, .rodata, overlays/ovl5f/ovl5f_id]`, so Tank has no asm
+  left; `shift.py` pads after the `<ovl>_id` unit (tested). Every DAT entry
+  but the code overlays decodes, Tank's 66 named ones included (16 file
+  groups). Two roadmap items ticked; left in the pilot: Tank's data names
+  and types, and the recipe write-up.
+
 - **2026-10-26 (Tank's last seven names):** every Tank function is named.
   The engine's hero mode table gives Tank's modes 0x69..0x70 (recoil, die,
   dead, idle, minelay, move, turn, victory), so `TankHeroTurnClockwise` /

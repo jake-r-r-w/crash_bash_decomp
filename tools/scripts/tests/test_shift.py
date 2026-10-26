@@ -31,6 +31,14 @@ class PadScript(unittest.TestCase):
         self.assertFalse(lines[i - 1].startswith(". +="))
         self.assertEqual(t.count(". += 0x40;"), 3)
 
+    def test_the_id_unit_in_c_stays_first(self):
+        t = shift.pad_script(LD.replace("build/asm/data/overlays/ovl5f/ovl5f_id.rodata.s.o",
+                                        "build/src/overlays/ovl5f/ovl5f_id.c.o"), "ovl5f", 0x40)
+        lines = [l.strip() for l in t.splitlines()]
+        i = lines.index("build/src/overlays/ovl5f/ovl5f_id.c.o(.rodata);")
+        self.assertFalse(lines[i - 1].startswith(". +="))
+        self.assertTrue(lines[i + 1].startswith(". += 0x40;"))
+
     def test_a_script_without_c_data_is_refused(self):
         with self.assertRaises(ValueError):
             shift.pad_script(LD.replace("ovl5f.c.o(.data)", "ovl5f_data.data.s.o(.data)"), "ovl5f", 0x40)

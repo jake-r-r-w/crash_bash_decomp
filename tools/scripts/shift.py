@@ -53,10 +53,12 @@ def link(name, script, extra=()):
 
 
 def pad_script(t, ovl, pad):
-    """A linker script with pad bytes before the overlay's first C .rodata, .text and .data input."""
+    """A linker script with pad bytes before the overlay's first C .rodata, .text and .data input
+    (not its id unit, <ovl>_id, which has to stay the slot's first word)."""
     n = 0
     for sect in (".rodata", ".text", ".data"):
-        m = re.search(r"^(\s*)(build/src/overlays/" + ovl + r"/\w+\.c\.o\(" + re.escape(sect) + r"\);)", t, re.M)
+        m = re.search(r"^(\s*)(build/src/overlays/" + ovl + r"/(?!" + ovl + r"_id\.)\w+\.c\.o\("
+                      + re.escape(sect) + r"\);)", t, re.M)
         if m:
             t = t[:m.start()] + f"{m.group(1)}. += 0x{pad:X};   /* shift.py */\n" + t[m.start():]
             n += 1

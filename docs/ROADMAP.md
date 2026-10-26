@@ -167,17 +167,25 @@ retail does. The recipe is written up for Phase 4.
   section order (`ovl5f`'s is rodata, text, data). Generic, so every
   overlay can use it. Done 2026-10-26: `tools/scripts/data2c.py`
   (CONVENTIONS.md, Data as C).
-- [ ] Tank's rodata as C: the id word (`ovl5f_id`) and the `INCLUDE_RODATA`
-  of `D_800B32B8` (the animation name strings). The strings are C
-  (2026-10-26); the id word is left, a unit of its own with no code.
+- [x] Tank's rodata as C: the id word (`ovl5f_id`) and the `INCLUDE_RODATA`
+  of `D_800B32B8` (the animation name strings). Done 2026-10-26: the
+  strings are `const char` arrays in `ovl5f.c`, and the id word is
+  `src/overlays/ovl5f/ovl5f_id.c` (`TankOverlayId`, a rodata-only unit:
+  splat takes a `.rodata` subsegment with no `c` one). No asm is left in
+  Tank.
 - [x] Tank's data and bss as C (`asm/data/overlays/ovl5f/`): every pointer
   a symbol, every table typed with the struct the naming found. Done
   2026-10-26: all 9.9 KB are C in `ovl5f.c`; most tables are still typed by
   their placeholder declarations (`s32[]`, `u8[]`), retyped as they're
   understood.
-- [ ] Tank's asset files extract: list the `CRASHBSH.DAT` entries its
+- [x] Tank's asset files extract: list the `CRASHBSH.DAT` entries its
   `file_group_TANK*` groups load and check each decodes (docs/ASSETS.md); a
-  format still kept as bytes gets decoded here.
+  format still kept as bytes gets decoded here. Done 2026-10-26: every DAT
+  entry but the 15 code overlays decodes (400 texture sets, 400 models,
+  160 sound banks, 12 texts, 5 screens), so all Tank loads does; its 66
+  named entries sit in 16 of the exe's file groups (the mode texts, the
+  arena sounds and music, the arena and object models, the eight
+  characters' tanks).
 - [x] The engine's AST table (`EngineASTTable`, `0x80098720`) as C with
   symbols: its slot entries were numbers (`.word 0x800B...`), so a moved
   overlay would still be called at its old addresses. Done 2026-10-26:
