@@ -1,11 +1,11 @@
 # Minigame slot overlay id 0x62 (first word): CRASHBSH.DAT index entry 0x1E7 (sector 0x5702),
 # loaded at the shared slot 0x800B32B4. Layout: .rodata (id, strings, jump tables), .text, .data.
-name: ovl62
+name: polar
 sha1: d03047f5530c133721744b99dc71b09c83679934
 options:
-  basename: ovl62
-  target_path: disc/ovl62.bin
-  elf_path: build/ovl62.ovl.elf
+  basename: polar
+  target_path: disc/polar.bin
+  elf_path: build/polar.ovl.elf
   base_path: ../../..
   platform: psx
   compiler: PSYQ
@@ -15,7 +15,7 @@ options:
   build_path: build
   asset_path: asm/bin
 
-  ld_script_path: linkers/ovl62.ld
+  ld_script_path: linkers/polar.ld
   ld_dependencies: True
 
   find_file_boundaries: True
@@ -32,10 +32,10 @@ options:
   symbol_addrs_path:
     - configs/USA/sym.main.txt
     - configs/USA/sym.engine.txt
-    - configs/USA/sym.ovl62.txt
+    - configs/USA/sym.polar.txt
 
-  undefined_funcs_auto_path: linkers/ovl62_undefined_funcs_auto.txt
-  undefined_syms_auto_path: linkers/ovl62_undefined_syms_auto.txt
+  undefined_funcs_auto_path: linkers/polar_undefined_funcs_auto.txt
+  undefined_syms_auto_path: linkers/polar_undefined_syms_auto.txt
 
   subalign: 2
 
@@ -45,15 +45,15 @@ options:
   data_string_guesser_level: 2
 
 segments:
-  - name: ovl62
+  - name: polar
     type: code
     start: 0x0
     vram: 0x800B32B4
     subsegments:
       # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
-      - [0x0, .rodata, overlays/ovl62/ovl62_id]   # src/overlays/ovl62/ovl62_id.c
-      - [0x4, .rodata, overlays/ovl62/ovl62]
-      - [0x48C, c, overlays/ovl62/ovl62]
-      - [0x2025C, .data, overlays/ovl62/ovl62]   # ovl62.c's data (tools/scripts/data2c.py)
+      - [0x0, .rodata, overlays/polar/polar_id]   # src/overlays/polar/polar_id.c
+      - [0x4, .rodata, overlays/polar/polar]
+      - [0x48C, c, overlays/polar/polar]
+      - [0x2025C, .data, overlays/polar/polar]   # polar.c's data (tools/scripts/data2c.py)
   - [0x23690]

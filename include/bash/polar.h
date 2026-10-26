@@ -1,7 +1,7 @@
 #ifndef BASH_POLAR_H
 #define BASH_POLAR_H
 
-/* Polar (overlay ovl62): declarations recovered from the original headers
+/* Polar (overlay polar): declarations recovered from the original headers
  * (GameEng/Polar/polar.h: the leak ends part-way through it).
  * Names and types only; see docs/ARCHITECTURE.md (Leaked source). */
 

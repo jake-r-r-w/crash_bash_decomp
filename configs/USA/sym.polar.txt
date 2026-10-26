@@ -215,7 +215,7 @@ PolarAI_Timer1 = 0x800CB41C; // type:func
 PolarAI_Timer2 = 0x800CB508; // type:func
 PolarAI_Timer3 = 0x800CB650; // type:func
 
-// data (src/overlays/ovl62/ovl62.c)
+// data (src/overlays/polar/polar.c)
 PolarOverlayId = 0x800B32B4;
 up.202 = 0x800B34AC;
 PolarDefaultAiSkill = 0x800D3510;

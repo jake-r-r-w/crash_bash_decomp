@@ -274,7 +274,7 @@ links.
 |---|---|---|
 | `main.exe` | 116 / 124 | `mal_update`, `mal_free`, ... (the allocator), `init_file`, `load_file_permanent`, `set_joypad`, `cam_init`, `interp`, `BSwapEndian`, `map_entity_address`, `init_dots`, `dbase_asload_with_anims_texture_callback`, `get_script_header`, `texture_draw`, PsyQ functions |
 | engine | 22 / 27 | `InitialiseNasSystem` (`func_80078CA4`, the engine's first function), `GravitateNas`, `DoAmbience`, `CalcElapsedTime` (`func_8007E7C8`, in `PANEL.CPP`), `DefHero2ObjectCollision`, `HeroGhost`, `PrintNasPos` |
-| slot overlays | 11 / 12 | `UpdatePAPU`, `PAHeroHit`, `SetPAHeroCarry` (`ovl5e`), `DoGetBomb`, `TestBeamChance` (`ovl62`), `PlotTotemBit`, `TankBossCortexTurretFire` (`ovl5f`), `MaintainCentre` (`ovl63`), `team_mode_init`, `adventure_mode_head` (`ovl69`) |
+| slot overlays | 11 / 12 | `UpdatePAPU`, `PAHeroHit`, `SetPAHeroCarry` (`ovl5e`), `DoGetBomb`, `TestBeamChance` (`polar`), `PlotTotemBit`, `TankBossCortexTurretFire` (`ovl5f`), `MaintainCentre` (`ovl63`), `team_mode_init`, `adventure_mode_head` (`ovl69`) |
 
 Checks: the `PANEL.CPP` names agree with the Jampack mapping
 (`InitBossHealthIcons` is `func_8007C6EC` in both), and names the repo got

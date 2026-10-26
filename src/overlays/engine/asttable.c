@@ -54,8 +54,8 @@ void PlotPapuBoss(NAS *nas);  /* ovl5e */
 void PlotPapuColumn(NAS *nas);  /* ovl5e */
 void PlotPapuMinion(NAS *nas);  /* ovl5e */
 void func_800B87A0(NAS *nas);  /* ovl5e */
-void InitGravityObject(NAS *nas);  /* ovl62 */
-void PlotGravityObject(NAS *nas);  /* ovl62 */
+void InitGravityObject(NAS *nas);  /* polar */
+void PlotGravityObject(NAS *nas);  /* polar */
 void InitBarrelRoll(NAS *nas);  /* ovl63 */
 void InitDac(NAS *nas);  /* ovl63 */
 void InitDinoEgg(NAS *nas);  /* ovl63 */

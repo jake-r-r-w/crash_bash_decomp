@@ -265,7 +265,7 @@ code finds 15 code files; nothing else on the disc holds code.
   `overlays/gameeng.bin`, the slot overlays `overlays/modes/<mode>.bin`: crate
   (ovl5d), papu, tank, pogo, ball (ovl61), dash (ovl63), ring (ovl64), dino,
   mallet (ovl66), oxide (ovl67), kegs (ovl68), menu (ovl69), warp (ovl6a),
-  polar (ovl62).
+  polar (polar).
 - **Load addresses** from `jal` targets: at `0x80078C90` 308 of the engine's
   internal calls land on prologues (next best 150); every slot overlay's calls
   into itself fit `0x800B32B4`. The engine's own `.data` stores
@@ -353,14 +353,14 @@ code finds 15 code files; nothing else on the disc holds code.
   ties functions 1..123 into one file. So functions 87..180 (the `Init*`
   functions, the hero mode setters, the SFX helpers, `TA_PreMoveHero`,
   `TA_Triggers`, the helpers' copies) were `inline` in the source.
-  `ovl62` (Polar) shows the same data tie (1..107).
+  `polar` (Polar) shows the same data tie (1..107).
 
   **The other leaked games, checked 2026-10-26** with
   `tools/scripts/leak_order.py OVL HEADER`, which scores the best "one
   climb, one fall" against the best two-file fit. Tank, known to be one
   file, sets the noise: a second file explains 7 more of its 104 declared
   functions. Pogo (`ovl60`, +10 of 167), Arkenoid (`ovl61`, +5 of 78) and
-  Polar (`ovl62`, +5 of 78) gain no more, and the best two-file cut lies
+  Polar (`polar`, +5 of 78) gain no more, and the best two-file cut lies
   inside a range the data ties into one file for Tank (109, in 1..123),
   Arkenoid (12, in 2..76) and Polar (15, in 1..107); Pogo's (117) is in a
   possible cut zone, unproven. So no new file start is proven: Pogo and
@@ -390,12 +390,12 @@ code finds 15 code files; nothing else on the disc holds code.
 - **Which game is which**: the engine's AST table at `0x80098720`
   (`{id, Init, Plot}` x 0xAE) points into the slot. Groups by id high byte:
   `0x13` -> `ovl5f`, `0x14` -> `ovl60` (Pogo), `0x15` -> `ovl61` (Arkenoid),
-  `0x16` -> `ovl62` (Polar), `0x17` -> `ovl63`, `0x11`/`0x02` -> `ovl5d`,
+  `0x16` -> `polar` (Polar), `0x17` -> `ovl63`, `0x11`/`0x02` -> `ovl5d`,
   `0x12` -> `ovl5e`, `0x18`..`0x1D` -> `ovl64`..`ovl68` (`0x1B`, `0x1C` both
   `ovl67`), `0x1F` -> `ovl6a`. The Pogo/Arkenoid/Polar ids match the leaked
   enums (`POGO_AST_zero = 0x1400`, ...); `ovl5f` is Tank (`TANK_AST_zero = 0x1300` in
   the Oct 9 prototype). The id group does not always name the overlay: five
-  Polar ids point elsewhere, and splitting `ovl62` at them cut real functions
+  Polar ids point elsewhere, and splitting `polar` at them cut real functions
   mid-code (fixed 2026-10-19). `Rippled` and `InnerRipple` (0x161D, 0x161E)
   are in `ovl63`; `PathEffect`, `CrystalFlash` and `SparkGFX` (0x1626-0x1628)
   are in `ovl6a`, which spawns them. Before naming from the table, check that
@@ -467,7 +467,7 @@ in the exe or the overlays.
 
 The declarations are in `include/bash/`: `tank.h`, `pogo.h` (with
 `psx_pogo.h`), `arkenoid.h` and `polar.h`. Each overlay's source includes its
-own header (`ovl5f`, `ovl60`, `ovl61`, `ovl62`). Differences from the leak:
+own header (`ovl5f`, `ovl60`, `ovl61`, `polar`). Differences from the leak:
 - Types are written as `s32`/`u16`/... and the layout is the repo's. The
   leak's comments, preprocessor residue and the inline helper bodies
   (`CalcCurrentSector`, `KeepWithinZone2`) are not kept. Those helpers appear
@@ -537,7 +537,7 @@ The Oct 9 enums name every id in the retail AST table (`0x0001` is
 | `0x13xx` | `TANK_AST_types` | `ovl5f` |
 | `0x14xx` | `POGO_AST_types` | `ovl60` |
 | `0x15xx` | `ARKENOID_AST_types` | `ovl61` |
-| `0x16xx` | `POLAR_AST_types` | `ovl62` |
+| `0x16xx` | `POLAR_AST_types` | `polar` |
 | `0x17xx` | `RACE_AST_types` | `ovl63` |
 | `0x18xx` | `SPIN_AST_types` | `ovl64` |
 | `0x19xx` | `DINO_AST_types` | `ovl65` |
@@ -676,7 +676,7 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
-- **Polar's data** (ovl62, named 2026-10-26). Modes 0x12..0x16 are Day,
+- **Polar's data** (polar, named 2026-10-26). Modes 0x12..0x16 are Day,
   Night, Cut, End and the boss; five engine world records point at it,
   0x0109 with `polar_shell_info` and 0x0012, 0x0014..0x0016 with
   `polar_shell_info_b`, all with `POLAR_PREMAP` and `POLARSetUp`. The
@@ -868,7 +868,7 @@ signature alone is not enough.
     (`func_800B3F44`), the second on the AI's lines of fire; they follow
     `TA_CreateShadow` in code as in the leak. With the leak's `u32` return
     the callers' `s32 (*)(s32, s32)` casts went.
-  - Polar (ovl62): `InitialisePOLARFirst`, `InitialisePOLAR`, `UpdatePOLAR`;
+  - Polar (polar): `InitialisePOLARFirst`, `InitialisePOLAR`, `UpdatePOLAR`;
     hooks `Polar_HeroBot` and `DoNowt` (the `CheckBounds` hook, which only
     returns 0). From the AI: `PlayerActionCount(action, player)` counts the
     bots in a state (player unused; its caller had cast it to the two-arg
@@ -895,7 +895,7 @@ signature alone is not enough.
     a close team-mate and the two face each other, it separates them and
     returns 1); its callers called it with no argument (old-style prototype),
     now with `player`, same code. `DoesPlayerHaveBomb(p)`: a bomb in
-    `D_800D5294`'s list held by p (also inlined as `Ovl62HasBomb`).
+    `D_800D5294`'s list held by p (also inlined as `PolarHasBomb`).
     `CheckMelted(pos, zone)` (resolved from the old ambiguity note) looks up
     the ice sector under pos (angle from the centre) and returns 0 when it
     has melted (`val >= 0x72`) unless `IsPtInALLZone(pos, zone 2 or 3)`, a
@@ -1076,7 +1076,7 @@ keep code-derived names (`unkXX` where only offset and width are known).
   `InitTransmuterBeam` 0x1E0 (`EXTtransmuter`). The stores land on the leak's
   fields: `fadeuprate` at `+0xC`, `angle` at `+0x2C`, and `EXTbombmaker.timer`
   is set to 180.
-- **The transmuter beam's extension.** The repo's `TransBeamExt` (`ovl62.h`)
+- **The transmuter beam's extension.** The repo's `TransBeamExt` (`polar.h`)
   is the leak's `EXTtransmuter` (`polar.h`): `beamtype` 0xC (picked from
   `D_800D5458[Random(4)]`), `effect_player` 0x10 (the hit hero, -1 for none),
   `NasStatus` 0x14 (1 idle, 2 firing), `hero_action[4]` 0x18,

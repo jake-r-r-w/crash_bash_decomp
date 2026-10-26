@@ -273,10 +273,10 @@ build.
   `arkenoid.h`'s eight undefined names are not in this build
   (ARCHITECTURE.md, Arkenoid's data). Left for Phase 5: its game-state
   views and stand-in structs (`Ovl61*`).
-- [x] Polar (`ovl62`). Done 2026-10-26: every function named (functions
+- [x] Polar (`polar`). Done 2026-10-26: every function named (functions
   155..216 included: the hero actions 73..90 by the game's
   `HeroMode_nums`), rodata, data and id word as C and named, its shift
-  test passed (`make shift OVL=ovl62 PAD=0x40`, PLAYING.md). The leak
+  test passed (`make shift OVL=polar PAD=0x40`, PLAYING.md). The leak
   can't place 155..216 (none of them is in `polar.h`), so it stays one
   unit; 26 of `polar.h`'s names are not identified (ARCHITECTURE.md,
   Polar's data). Left for Phase 5: its game-state views and stand-ins.

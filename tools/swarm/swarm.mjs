@@ -1221,7 +1221,7 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
   }
 
   // --start-gap-seconds between worker starts: sessions that start together all refresh the
-  // OAuth token at once and fail (2026-10-19: 6 of 7 at the start of an ovl62 run). Not for
+  // OAuth token at once and fail (2026-10-19: 6 of 7 at the start of an polar run). Not for
   // --worker-cmd, which starts no Claude.
   startGapWait() {
     return !this.o.workerCmd && Date.now() - (this.lastStart || 0) < (this.o.startGapSeconds || 0) * 1000;

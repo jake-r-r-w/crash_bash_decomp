@@ -236,14 +236,29 @@ def asm_kinds(path):
     return out
 
 
-SLOT_FILE = re.compile(r"(?:^|/)(ovl[0-9a-f]{2})(?=[_./]|$)")
+def slot_names():
+    """The slot overlays' unit names (configs/USA/overlays/*.yaml but the engine)."""
+    return sorted(os.path.splitext(f)[0] for f in os.listdir("configs/USA/overlays")
+                  if f.endswith(".yaml") and f != "engine.yaml")
 
 
-def other_slot(path, ovl):
+def slot_of(path, slots):
+    """The slot overlay a source or header belongs to: src/overlays/NAME/..., its owned header
+    include/bash/NAME_ovl.h or a file's include/bash/NAME_<address>.h (the leak's NAME.h is
+    shared, not the overlay's)."""
+    p = path.replace("\\", "/")
+    for s in slots:
+        if (re.search(r"(?:^|/)src/overlays/" + s + "/", p)
+                or re.search(r"(?:^|/)include/bash/" + s + r"(?:_ovl|_[0-9a-f]{8})\.h$", p)):
+            return s
+    return None
+
+
+def other_slot(path, ovl, slots=None):
     """Whether a source or header belongs to another slot overlay: the slot overlays share one
     address range, so another one's D_ name at the same address is a different object."""
-    m = SLOT_FILE.search(path.replace("\\", "/"))
-    return bool(m) and m.group(1) != ovl
+    s = slot_of(path, slot_names() if slots is None else slots)
+    return s is not None and s != ovl
 
 
 def declarations(texts):

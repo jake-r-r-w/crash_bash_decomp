@@ -112,13 +112,21 @@ class WordFields(unittest.TestCase):
 
 class OtherSlots(unittest.TestCase):
     def test_only_another_slot_overlays_files_are_left_out(self):
-        self.assertTrue(data2c.other_slot("include/bash/ovl66.h", "ovl69"))
-        self.assertTrue(data2c.other_slot("src/overlays/ovl67/800bbdb8.c", "ovl69"))
-        self.assertTrue(data2c.other_slot("include/bash/ovl67_800bbdb8.h", "ovl69"))
-        self.assertFalse(data2c.other_slot("include/bash/ovl69.h", "ovl69"))
-        self.assertFalse(data2c.other_slot("include/bash/8008e27c.h", "ovl69"))
-        self.assertFalse(data2c.other_slot("src/overlays/engine/asttable.c", "ovl69"))
-        self.assertFalse(data2c.other_slot("include/bash/tank.h", "ovl69"))
+        slots = ["bash", "bonk", "n2o", "tank", "titles"]
+
+        def other(p):
+            return data2c.other_slot(p, "titles", slots)
+        self.assertTrue(other("include/bash/bonk_ovl.h"))
+        self.assertTrue(other("src/overlays/n2o/800bbdb8.c"))
+        self.assertTrue(other("include/bash/n2o_800bbdb8.h"))
+        self.assertTrue(other("src/overlays/bash/bash.c"))
+        self.assertFalse(other("include/bash/titles_ovl.h"))
+        self.assertFalse(other("src/overlays/titles/titles.c"))
+        self.assertFalse(other("include/bash/8008e27c.h"))
+        self.assertFalse(other("src/overlays/engine/asttable.c"))
+        # the leak's headers are shared, not an overlay's own
+        self.assertFalse(other("include/bash/tank.h"))
+        self.assertFalse(other("include/bash/bash.h"))
 
 
 if __name__ == "__main__":

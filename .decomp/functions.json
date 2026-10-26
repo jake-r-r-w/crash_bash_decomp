@@ -34622,9 +34622,9 @@
   "size": 108,
   "src": "src/overlays/ovl61/ovl61.c"
  },
- "ovl62:800B3740": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_PickVictim.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B3740": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_PickVictim.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -34634,13 +34634,13 @@
   "name": "PolarAI_PickVictim",
   "orig": "func_800B3740",
   "rom": 1164,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 352,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B38A0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitScene.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B38A0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarInitScene.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015A18"
   ],
@@ -34650,13 +34650,13 @@
   "name": "PolarInitScene",
   "orig": "func_800B38A0",
   "rom": 1516,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 512,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B3AA0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarUpdateScene.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B3AA0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarUpdateScene.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800264E8",
@@ -34668,13 +34668,13 @@
   "name": "PolarUpdateScene",
   "orig": "func_800B3AA0",
   "rom": 2028,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1524,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B4094": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/IsPtInALLZone.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B4094": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/IsPtInALLZone.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "8003278C",
@@ -34686,13 +34686,13 @@
   "name": "IsPtInALLZone",
   "orig": "func_800B4094",
   "rom": 3552,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 460,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B4260": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/CheckMelted.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B4260": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/CheckMelted.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "800B4094"
@@ -34703,13 +34703,13 @@
   "name": "CheckMelted",
   "orig": "func_800B4260",
   "rom": 4012,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 596,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B44B4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBombHitHeroes.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B44B4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarBombHitHeroes.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022660",
@@ -34723,13 +34723,13 @@
   "name": "PolarBombHitHeroes",
   "orig": "func_800B44B4",
   "rom": 4608,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1384,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B4A1C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBombOwnerEngine.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B4A1C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarBombOwnerEngine.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -34739,13 +34739,13 @@
   "name": "PolarBombOwnerEngine",
   "orig": "func_800B4A1C",
   "rom": 5992,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 232,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B4B04": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPolarBomb.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B4B04": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitPolarBomb.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8002672C",
    "8002689C"
@@ -34756,13 +34756,13 @@
   "name": "InitPolarBomb",
   "orig": "func_800B4B04",
   "rom": 6224,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 368,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B4C74": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPolarBomb.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B4C74": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotPolarBomb.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022660",
@@ -34780,13 +34780,13 @@
   "name": "PlotPolarBomb",
   "orig": "func_800B4C74",
   "rom": 6592,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1024,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B5074": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBombGFX.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B5074": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBombGFX.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "80022FD4",
@@ -34799,13 +34799,13 @@
   "name": "PlotBombGFX",
   "orig": "func_800B5074",
   "rom": 7616,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1276,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B5570": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitHeroAngle.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B5570": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarInitHeroAngle.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800154A0"
   ],
@@ -34815,13 +34815,13 @@
   "name": "PolarInitHeroAngle",
   "orig": "func_800B5570",
   "rom": 8892,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 276,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B5684": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/ResetMass.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B5684": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/ResetMass.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -34831,13 +34831,13 @@
   "name": "ResetMass",
   "orig": "func_800B5684",
   "rom": 9168,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 260,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B5788": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitHeroEngine.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B5788": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarInitHeroEngine.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800860D4"
   ],
@@ -34847,13 +34847,13 @@
   "name": "PolarInitHeroEngine",
   "orig": "func_800B5788",
   "rom": 9428,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 392,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B5910": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarSpawnObjects.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B5910": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarSpawnObjects.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022A3C",
@@ -34866,13 +34866,13 @@
   "name": "PolarSpawnObjects",
   "orig": "func_800B5910",
   "rom": 9820,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 436,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B5AC4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitialisePOLARFirst.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B5AC4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitialisePOLARFirst.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "134a27727585430e",
   "fpn": "a3308713a68445fa",
@@ -34880,13 +34880,13 @@
   "name": "InitialisePOLARFirst",
   "orig": "func_800B5AC4",
   "rom": 10256,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1016,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B5EBC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_SteerToTarget.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B5EBC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_SteerToTarget.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "368e2e2a10631c5f",
   "fpn": "3ec8e07f14409a43",
@@ -34894,13 +34894,13 @@
   "name": "PolarAI_SteerToTarget",
   "orig": "func_800B5EBC",
   "rom": 11272,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 508,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B60B8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_TryAttack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B60B8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_TryAttack.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "8008CEB0",
@@ -34914,13 +34914,13 @@
   "name": "PolarAI_TryAttack",
   "orig": "func_800B60B8",
   "rom": 11780,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 416,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B6258": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_PickTarget.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B6258": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_PickTarget.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800264E8",
@@ -34933,13 +34933,13 @@
   "name": "PolarAI_PickTarget",
   "orig": "func_800B6258",
   "rom": 12196,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 580,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B649C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_StartAttack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B649C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_StartAttack.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "8008CEB0",
@@ -34951,13 +34951,13 @@
   "name": "PolarAI_StartAttack",
   "orig": "func_800B649C",
   "rom": 12776,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 620,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B6708": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoAttack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B6708": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_DoAttack.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "80032F3C",
@@ -34976,13 +34976,13 @@
   "name": "PolarAI_DoAttack",
   "orig": "func_800B6708",
   "rom": 13396,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1644,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B6D74": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoHunt.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B6D74": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_DoHunt.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800B5EBC",
    "800B60B8",
@@ -34997,13 +34997,13 @@
   "name": "PolarAI_DoHunt",
   "orig": "func_800B6D74",
   "rom": 15040,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 320,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B6EB4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/IsPlayerInRange.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B6EB4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/IsPlayerInRange.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800B7A58",
    "800BCF08"
@@ -35014,13 +35014,13 @@
   "name": "IsPlayerInRange",
   "orig": "func_800B6EB4",
   "rom": 15360,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 312,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B6FEC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/DoGetBomb.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B6FEC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/DoGetBomb.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800264E8",
@@ -35036,13 +35036,13 @@
   "name": "DoGetBomb",
   "orig": "func_800B6FEC",
   "rom": 15672,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 568,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B7224": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_AvoidBomber.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B7224": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_AvoidBomber.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "800264E8",
@@ -35058,13 +35058,13 @@
   "name": "PolarAI_AvoidBomber",
   "orig": "func_800B7224",
   "rom": 16240,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 764,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B7520": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoWander.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B7520": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_DoWander.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800B5EBC",
@@ -35077,13 +35077,13 @@
   "name": "PolarAI_DoWander",
   "orig": "func_800B7520",
   "rom": 17004,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 348,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B767C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoChase.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B767C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_DoChase.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800B5EBC"
   ],
@@ -35093,13 +35093,13 @@
   "name": "PolarAI_DoChase",
   "orig": "func_800B767C",
   "rom": 17352,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 432,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B782C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoBeam.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B782C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_DoBeam.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "800B5EBC",
@@ -35113,13 +35113,13 @@
   "name": "PolarAI_DoBeam",
   "orig": "func_800B782C",
   "rom": 17784,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 556,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B7A58": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/Player2PlayerRayTest.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B7A58": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/Player2PlayerRayTest.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800BFEE0"
   ],
@@ -35129,13 +35129,13 @@
   "name": "Player2PlayerRayTest",
   "orig": "func_800B7A58",
   "rom": 18340,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 304,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B7B88": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_ShotBlocked.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B7B88": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_ShotBlocked.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8008CEB0",
    "800B7A58",
@@ -35147,13 +35147,13 @@
   "name": "PolarAI_ShotBlocked",
   "orig": "func_800B7B88",
   "rom": 18644,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 340,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B7CDC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/EnsureMateNotObstructingMate.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B7CDC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/EnsureMateNotObstructingMate.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8008CEB0",
    "800B7A58",
@@ -35165,13 +35165,13 @@
   "name": "EnsureMateNotObstructingMate",
   "orig": "func_800B7CDC",
   "rom": 18984,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 660,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B7F70": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_AvoidMelt.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B7F70": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_AvoidMelt.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -35191,13 +35191,13 @@
   "name": "PolarAI_AvoidMelt",
   "orig": "func_800B7F70",
   "rom": 19644,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 2348,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B889C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoIceWalk.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B889C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_DoIceWalk.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -35213,13 +35213,13 @@
   "name": "PolarAI_DoIceWalk",
   "orig": "func_800B889C",
   "rom": 21992,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 2084,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B90C0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoChaseBomber.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B90C0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_DoChaseBomber.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "8008CEB0",
@@ -35233,13 +35233,13 @@
   "name": "PolarAI_DoChaseBomber",
   "orig": "func_800B90C0",
   "rom": 24076,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 728,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B9398": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestBeamChance.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B9398": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestBeamChance.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -35249,13 +35249,13 @@
   "name": "TestBeamChance",
   "orig": "func_800B9398",
   "rom": 24804,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 288,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B94B8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestAttackChance.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B94B8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestAttackChance.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800264E8",
@@ -35268,13 +35268,13 @@
   "name": "TestAttackChance",
   "orig": "func_800B94B8",
   "rom": 25092,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 328,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B9600": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestHuntChance.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B9600": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestHuntChance.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800CAF94"
@@ -35285,13 +35285,13 @@
   "name": "TestHuntChance",
   "orig": "func_800B9600",
   "rom": 25420,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 276,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B9714": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestWanderChance.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B9714": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestWanderChance.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800264E8"
@@ -35302,13 +35302,13 @@
   "name": "TestWanderChance",
   "orig": "func_800B9714",
   "rom": 25696,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 408,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B98AC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestBombChance.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B98AC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestBombChance.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -35318,13 +35318,13 @@
   "name": "TestBombChance",
   "orig": "func_800B98AC",
   "rom": 26104,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 232,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B9994": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestChaseChance.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B9994": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestChaseChance.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -35334,13 +35334,13 @@
   "name": "TestChaseChance",
   "orig": "func_800B9994",
   "rom": 26336,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 472,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B9B6C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_TeamChoice.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B9B6C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_TeamChoice.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -35350,13 +35350,13 @@
   "name": "PolarAI_TeamChoice",
   "orig": "func_800B9B6C",
   "rom": 26808,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 476,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800B9D48": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/DoChooseNewAction.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800B9D48": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/DoChooseNewAction.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800264E8",
@@ -35375,13 +35375,13 @@
   "name": "DoChooseNewAction",
   "orig": "func_800B9D48",
   "rom": 27284,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 4696,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BAFA0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitialisePOLAR.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BAFA0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitialisePOLAR.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "8001682C",
@@ -35406,13 +35406,13 @@
   "name": "InitialisePOLAR",
   "orig": "func_800BAFA0",
   "rom": 31980,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 2160,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BB810": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/UpdatePOLAR.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BB810": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/UpdatePOLAR.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022660",
@@ -35427,13 +35427,13 @@
   "name": "UpdatePOLAR",
   "orig": "func_800BB810",
   "rom": 34140,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1820,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BBF2C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroCollisions.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BBF2C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroCollisions.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -35455,13 +35455,13 @@
   "name": "PolarHeroCollisions",
   "orig": "func_800BBF2C",
   "rom": 35960,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 3440,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BCC9C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAnimState.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BCC9C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroAnimState.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -35471,13 +35471,13 @@
   "name": "PolarHeroAnimState",
   "orig": "func_800BCC9C",
   "rom": 39400,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 620,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BCF08": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestForTeamMate.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BCF08": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestForTeamMate.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "497ed1dc3ec8d80e",
   "fpn": "c884f0c1a4b15067",
@@ -35485,13 +35485,13 @@
   "name": "TestForTeamMate",
   "orig": "func_800BCF08",
   "rom": 40020,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 336,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BD058": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBeamRelease.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BD058": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarBeamRelease.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800868B4",
    "800B5684"
@@ -35502,13 +35502,13 @@
   "name": "PolarBeamRelease",
   "orig": "func_800BD058",
   "rom": 40356,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 320,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BD198": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitTransmuterBeam.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BD198": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitTransmuterBeam.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022A3C",
@@ -35522,13 +35522,13 @@
   "name": "InitTransmuterBeam",
   "orig": "func_800BD198",
   "rom": 40676,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1252,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BD67C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotTransmuterBeam.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BD67C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotTransmuterBeam.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -35551,13 +35551,13 @@
   "name": "PlotTransmuterBeam",
   "orig": "func_800BD67C",
   "rom": 41928,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 9244,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BFA98": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotWeightDeath.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BFA98": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotWeightDeath.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "800264E8",
@@ -35569,13 +35569,13 @@
   "name": "PlotWeightDeath",
   "orig": "func_800BFA98",
   "rom": 51172,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 672,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BFD38": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/GravityMotionUpdate.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BFD38": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/GravityMotionUpdate.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800270B0",
    "80032F3C"
@@ -35586,13 +35586,13 @@
   "name": "GravityMotionUpdate",
   "orig": "func_800BFD38",
   "rom": 51844,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 424,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800BFEE0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarRayHit.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800BFEE0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarRayHit.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80032490"
   ],
@@ -35602,13 +35602,13 @@
   "name": "PolarRayHit",
   "orig": "func_800BFEE0",
   "rom": 52268,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 744,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C01C8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotScratchMaster.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C01C8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotScratchMaster.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "664ed6c11f93d85b",
   "fpn": "d70b5174630480b4",
@@ -35616,13 +35616,13 @@
   "name": "PlotScratchMaster",
   "orig": "func_800C01C8",
   "rom": 53012,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1288,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C06D0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitIceBerg.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C06D0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitIceBerg.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "6562adb0f4799c78",
   "fpn": "a18d78a2e1b0148f",
@@ -35630,13 +35630,13 @@
   "name": "InitIceBerg",
   "orig": "func_800C06D0",
   "rom": 54300,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 440,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C0888": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarIceHit.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C0888": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarIceHit.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -35652,13 +35652,13 @@
   "name": "PolarIceHit",
   "orig": "func_800C0888",
   "rom": 54740,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1548,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C0E94": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/UkaMaskInitRisers.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C0E94": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/UkaMaskInitRisers.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "800330CC"
@@ -35669,13 +35669,13 @@
   "name": "UkaMaskInitRisers",
   "orig": "func_800C0E94",
   "rom": 56288,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 340,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C0FE8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/UkaMaskSetSegments.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C0FE8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/UkaMaskSetSegments.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "6f16589c6fe7ca1d",
   "fpn": "49dbd56be7a463d5",
@@ -35683,13 +35683,13 @@
   "name": "UkaMaskSetSegments",
   "orig": "func_800C0FE8",
   "rom": 56628,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 564,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C121C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitUkaPolarMask.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C121C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitUkaPolarMask.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022A3C",
@@ -35705,13 +35705,13 @@
   "name": "InitUkaPolarMask",
   "orig": "func_800C121C",
   "rom": 57192,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 872,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C1584": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotUkaPolarMask.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C1584": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotUkaPolarMask.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -35734,13 +35734,13 @@
   "name": "PlotUkaPolarMask",
   "orig": "func_800C1584",
   "rom": 58064,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 6472,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C2ECC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBoxOverlap.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C2ECC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarBoxOverlap.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80032490",
    "8003278C",
@@ -35754,13 +35754,13 @@
   "name": "PolarBoxOverlap",
   "orig": "func_800C2ECC",
   "rom": 64536,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 984,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C32A4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPolarWalrus.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C32A4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitPolarWalrus.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -35774,13 +35774,13 @@
   "name": "InitPolarWalrus",
   "orig": "func_800C32A4",
   "rom": 65520,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 744,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C358C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPolarWalrus.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C358C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotPolarWalrus.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -35800,13 +35800,13 @@
   "name": "PlotPolarWalrus",
   "orig": "func_800C358C",
   "rom": 66264,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 2272,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C3E6C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitWalrusFish.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C3E6C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitWalrusFish.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "80024E30",
@@ -35818,13 +35818,13 @@
   "name": "InitWalrusFish",
   "orig": "func_800C3E6C",
   "rom": 68536,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 588,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C40B8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotWalrusFish.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C40B8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotWalrusFish.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "800250B0",
@@ -35837,13 +35837,13 @@
   "name": "PlotWalrusFish",
   "orig": "func_800C40B8",
   "rom": 69124,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 488,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C42A0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSmokeTrail.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C42A0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotSmokeTrail.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022FD4",
    "800264E8"
@@ -35854,13 +35854,13 @@
   "name": "PlotSmokeTrail",
   "orig": "func_800C42A0",
   "rom": 69612,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 504,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C4498": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSimpleExplosion.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C4498": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitSimpleExplosion.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80018F3C",
@@ -35872,13 +35872,13 @@
   "name": "InitSimpleExplosion",
   "orig": "func_800C4498",
   "rom": 70116,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 292,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C45BC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotDingoTail.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C45BC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotDingoTail.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022FD4"
   ],
@@ -35888,13 +35888,13 @@
   "name": "PlotDingoTail",
   "orig": "func_800C45BC",
   "rom": 70408,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 396,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C4748": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBrioPack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C4748": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBrioPack.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022A3C",
    "80022FD4"
@@ -35905,13 +35905,13 @@
   "name": "PlotBrioPack",
   "orig": "func_800C4748",
   "rom": 70804,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 464,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C4918": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPackEffect.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C4918": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitPackEffect.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80018F3C",
@@ -35923,13 +35923,13 @@
   "name": "InitPackEffect",
   "orig": "func_800C4918",
   "rom": 71268,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 292,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C4A3C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPolarBoss.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C4A3C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitPolarBoss.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80022660",
@@ -35948,13 +35948,13 @@
   "name": "InitPolarBoss",
   "orig": "func_800C4A3C",
   "rom": 71560,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 636,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C4CB8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPolarBoss.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C4CB8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotPolarBoss.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -35972,13 +35972,13 @@
   "name": "PlotPolarBoss",
   "orig": "func_800C4CB8",
   "rom": 72196,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 4120,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C5CD0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/BearminatorFindPoint.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C5CD0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/BearminatorFindPoint.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "e78f2f4a972622cb",
   "fpn": "ad5f3dead4f66d6e",
@@ -35986,13 +35986,13 @@
   "name": "BearminatorFindPoint",
   "orig": "func_800C5CD0",
   "rom": 76316,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 252,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C5DCC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/BearminatorTarget.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C5DCC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/BearminatorTarget.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800C5CD0"
   ],
@@ -36002,13 +36002,13 @@
   "name": "BearminatorTarget",
   "orig": "func_800C5DCC",
   "rom": 76568,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 288,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C5EEC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/BearminatorEaseCam.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C5EEC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/BearminatorEaseCam.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "fb5888198c32aa9e",
   "fpn": "0a207b0c2d7866e7",
@@ -36016,13 +36016,13 @@
   "name": "BearminatorEaseCam",
   "orig": "func_800C5EEC",
   "rom": 76856,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 268,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C5FF8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBearminator.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C5FF8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBearminator.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022660",
@@ -36039,13 +36039,13 @@
   "name": "InitBearminator",
   "orig": "func_800C5FF8",
   "rom": 77124,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 984,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C63D0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBearminator.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C63D0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBearminator.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80015590",
@@ -36067,13 +36067,13 @@
   "name": "PlotBearminator",
   "orig": "func_800C63D0",
   "rom": 78108,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 5280,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C7870": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPolarMissile.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C7870": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotPolarMissile.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "80022A3C",
@@ -36089,13 +36089,13 @@
   "name": "PlotPolarMissile",
   "orig": "func_800C7870",
   "rom": 83388,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1028,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C7C74": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBigMissile.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C7C74": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBigMissile.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "80022A3C",
@@ -36110,13 +36110,13 @@
   "name": "PlotBigMissile",
   "orig": "func_800C7C74",
   "rom": 84416,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 608,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C7ED4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SniperAimUpdate.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C7ED4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SniperAimUpdate.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "51c1b024374976e8",
   "fpn": "0a207b0c2d7866e7",
@@ -36124,13 +36124,13 @@
   "name": "SniperAimUpdate",
   "orig": "func_800C7ED4",
   "rom": 85024,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 268,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C7FE0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSniper.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C7FE0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitSniper.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8002672C",
    "8002689C"
@@ -36141,13 +36141,13 @@
   "name": "InitSniper",
   "orig": "func_800C7FE0",
   "rom": 85292,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 748,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C82CC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSniper.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C82CC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotSniper.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800225C4",
    "80022660",
@@ -36164,13 +36164,13 @@
   "name": "PlotSniper",
   "orig": "func_800C82CC",
   "rom": 86040,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 2552,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C8CC4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSniperMissile.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C8CC4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotSniperMissile.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80022660",
@@ -36187,13 +36187,13 @@
   "name": "PlotSniperMissile",
   "orig": "func_800C8CC4",
   "rom": 88592,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1388,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9230": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/XZBoxToSphere.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9230": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/XZBoxToSphere.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800322FC",
    "80032490",
@@ -36209,13 +36209,13 @@
   "name": "XZBoxToSphere",
   "orig": "func_800C9230",
   "rom": 89980,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1852,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C996C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSniperMissile.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C996C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitSniperMissile.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "8002689C"
@@ -36226,13 +36226,13 @@
   "name": "InitSniperMissile",
   "orig": "func_800C996C",
   "rom": 91832,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 192,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9A2C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBigMissile.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9A2C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBigMissile.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "8002689C"
@@ -36243,13 +36243,13 @@
   "name": "InitBigMissile",
   "orig": "func_800C9A2C",
   "rom": 92024,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 288,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9B4C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBossTransmuter.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9B4C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBossTransmuter.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36257,13 +36257,13 @@
   "name": "PlotBossTransmuter",
   "orig": "func_800C9B4C",
   "rom": 92312,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9B54": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBossTransmuter.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9B54": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBossTransmuter.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36271,13 +36271,13 @@
   "name": "InitBossTransmuter",
   "orig": "func_800C9B54",
   "rom": 92320,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9B5C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C9B5C.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9B5C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800C9B5C.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc54a594922c3076",
   "fpn": "7fc5e21059f7536d",
@@ -36285,13 +36285,13 @@
   "name": "CountBears",
   "orig": "func_800C9B5C",
   "rom": 92328,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 44,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9B88": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPolarMissile.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9B88": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitPolarMissile.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "8002689C"
@@ -36302,13 +36302,13 @@
   "name": "InitPolarMissile",
   "orig": "func_800C9B88",
   "rom": 92372,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 272,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9C98": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBossDazeHero.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9C98": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarBossDazeHero.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "800868B4",
@@ -36320,13 +36320,13 @@
   "name": "PolarBossDazeHero",
   "orig": "func_800C9C98",
   "rom": 92644,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 220,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9D74": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBossFace.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9D74": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarBossFace.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "80032490"
@@ -36337,13 +36337,13 @@
   "name": "PolarBossFace",
   "orig": "func_800C9D74",
   "rom": 92864,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 336,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9EC4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBossNear.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9EC4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarBossNear.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "1c4b659be3736de9",
   "fpn": "a3c5ccea774e3c37",
@@ -36351,13 +36351,13 @@
   "name": "PolarBossNear",
   "orig": "func_800C9EC4",
   "rom": 93200,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 140,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9F50": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBearCam.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9F50": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBearCam.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36365,13 +36365,13 @@
   "name": "PlotBearCam",
   "orig": "func_800C9F50",
   "rom": 93340,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9F58": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBearCam.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9F58": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBearCam.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36379,13 +36379,13 @@
   "name": "InitBearCam",
   "orig": "func_800C9F58",
   "rom": 93348,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9F60": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotRockProjectile.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9F60": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotRockProjectile.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36393,13 +36393,13 @@
   "name": "PlotRockProjectile",
   "orig": "func_800C9F60",
   "rom": 93356,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9F68": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitRockProjectile.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9F68": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitRockProjectile.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36407,13 +36407,13 @@
   "name": "InitRockProjectile",
   "orig": "func_800C9F68",
   "rom": 93364,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9F70": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBossSpeedUp.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9F70": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarBossSpeedUp.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "ef4aef71ab1ab47d",
   "fpn": "48306a0ddd0a5b33",
@@ -36421,13 +36421,13 @@
   "name": "PolarBossSpeedUp",
   "orig": "func_800C9F70",
   "rom": 93372,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 80,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800C9FC0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBearBoss.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800C9FC0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBearBoss.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800250B0",
    "800264E8"
@@ -36438,13 +36438,13 @@
   "name": "PlotBearBoss",
   "orig": "func_800C9FC0",
   "rom": 93452,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 64,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA000": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBearBoss.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA000": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBearBoss.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80024E30",
    "800250B0",
@@ -36457,13 +36457,13 @@
   "name": "InitBearBoss",
   "orig": "func_800CA000",
   "rom": 93516,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 188,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA0BC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPackEffect.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA0BC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotPackEffect.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022FD4",
    "800264E8"
@@ -36474,13 +36474,13 @@
   "name": "PlotPackEffect",
   "orig": "func_800CA0BC",
   "rom": 93704,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 224,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA19C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotCortexPack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA19C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotCortexPack.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "b8801769a2403065",
   "fpn": "a1d2e15b029fd1b7",
@@ -36488,13 +36488,13 @@
   "name": "PlotCortexPack",
   "orig": "func_800CA19C",
   "rom": 93928,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 16,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA1AC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitCortexPack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA1AC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitCortexPack.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "f7764293667b35ed",
   "fpn": "ccda2eb80397b45f",
@@ -36502,13 +36502,13 @@
   "name": "InitCortexPack",
   "orig": "func_800CA1AC",
   "rom": 93944,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 116,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA220": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBrioPack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA220": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBrioPack.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "c8ce50bc8e121421",
   "fpn": "1e16d1e5c7a6e2c0",
@@ -36516,13 +36516,13 @@
   "name": "InitBrioPack",
   "orig": "func_800CA220",
   "rom": 94060,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 152,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA2B8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitDingoTail.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA2B8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitDingoTail.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "65dd383ddfeec61b",
   "fpn": "d82652b9c7a49a6f",
@@ -36530,13 +36530,13 @@
   "name": "InitDingoTail",
   "orig": "func_800CA2B8",
   "rom": 94212,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 140,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA344": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSimpleExplosion.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA344": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotSimpleExplosion.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022FD4",
    "800264E8"
@@ -36547,13 +36547,13 @@
   "name": "PlotSimpleExplosion",
   "orig": "func_800CA344",
   "rom": 94352,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 224,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA424": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSmokeTrail.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA424": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitSmokeTrail.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "8002689C"
@@ -36564,13 +36564,13 @@
   "name": "InitSmokeTrail",
   "orig": "func_800CA424",
   "rom": 94576,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 240,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA514": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBearDeath.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA514": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBearDeath.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022A3C",
@@ -36586,13 +36586,13 @@
   "name": "PlotBearDeath",
   "orig": "func_800CA514",
   "rom": 94816,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 276,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA628": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBearDeath.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA628": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBearDeath.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80024E30",
    "8002689C",
@@ -36604,13 +36604,13 @@
   "name": "InitBearDeath",
   "orig": "func_800CA628",
   "rom": 95092,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 192,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA6E8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/RiserSetReset.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA6E8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/RiserSetReset.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "fb0e98a40b82fed5",
   "fpn": "879eeceeb5d6fc81",
@@ -36618,13 +36618,13 @@
   "name": "RiserSetReset",
   "orig": "func_800CA6E8",
   "rom": 95284,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 104,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA750": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBreathMaster.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA750": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBreathMaster.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36632,13 +36632,13 @@
   "name": "PlotBreathMaster",
   "orig": "func_800CA750",
   "rom": 95388,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA758": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBreathMaster.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA758": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBreathMaster.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36646,13 +36646,13 @@
   "name": "InitBreathMaster",
   "orig": "func_800CA758",
   "rom": 95396,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA760": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSnowMaster.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA760": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotSnowMaster.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36660,13 +36660,13 @@
   "name": "PlotSnowMaster",
   "orig": "func_800CA760",
   "rom": 95404,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA768": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSnowMaster.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA768": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitSnowMaster.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36674,13 +36674,13 @@
   "name": "InitSnowMaster",
   "orig": "func_800CA768",
   "rom": 95412,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA770": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitDebug.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA770": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarInitDebug.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015A18",
    "800322FC"
@@ -36691,13 +36691,13 @@
   "name": "PolarInitDebug",
   "orig": "func_800CA770",
   "rom": 95420,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 224,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA850": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotIceBerg.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA850": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotIceBerg.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "40536b639952d987",
   "fpn": "649c69f2d5d23487",
@@ -36705,13 +36705,13 @@
   "name": "PlotIceBerg",
   "orig": "func_800CA850",
   "rom": 95644,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 64,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA890": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitScratchMaster.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA890": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitScratchMaster.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80018F3C"
   ],
@@ -36721,13 +36721,13 @@
   "name": "InitScratchMaster",
   "orig": "func_800CA890",
   "rom": 95708,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 160,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CA930": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarMovesSwap.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CA930": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarMovesSwap.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bf6df49d48deda3a",
   "fpn": "6fd4fe9ff774a71a",
@@ -36735,13 +36735,13 @@
   "name": "PolarMovesSwap",
   "orig": "func_800CA930",
   "rom": 95868,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 304,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAA60": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotGravityObject.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAA60": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotGravityObject.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800BFD38"
   ],
@@ -36751,13 +36751,13 @@
   "name": "PlotGravityObject",
   "orig": "func_800CAA60",
   "rom": 96172,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 48,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAA90": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitGravityObject.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAA90": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitGravityObject.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8002689C"
   ],
@@ -36767,13 +36767,13 @@
   "name": "InitGravityObject",
   "orig": "func_800CAA90",
   "rom": 96220,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 252,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAB8C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitWeightDeath.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAB8C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitWeightDeath.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "8002689C"
@@ -36784,13 +36784,13 @@
   "name": "InitWeightDeath",
   "orig": "func_800CAB8C",
   "rom": 96472,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 148,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAC20": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarOfficeBox.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAC20": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarOfficeBox.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800C2ECC"
   ],
@@ -36800,13 +36800,13 @@
   "name": "PolarOfficeBox",
   "orig": "func_800CAC20",
   "rom": 96620,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 160,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CACC0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarCamReset.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CACC0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarCamReset.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "de923e09f295c768",
   "fpn": "0c0c497f37285b88",
@@ -36814,13 +36814,13 @@
   "name": "PolarCamReset",
   "orig": "func_800CACC0",
   "rom": 96780,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 76,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAD0C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAD0C.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAD0C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CAD0C.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36828,13 +36828,13 @@
   "name": "PolarEmptyStub3",
   "orig": "func_800CAD0C",
   "rom": 96856,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAD14": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/POLARtriggers.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAD14": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/POLARtriggers.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36842,13 +36842,13 @@
   "name": "POLARtriggers",
   "orig": "func_800CAD14",
   "rom": 96864,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAD1C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAD1C.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAD1C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CAD1C.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "9fa6fe340aeaa6f0",
   "fpn": "b3ca557d763bb79c",
@@ -36856,13 +36856,13 @@
   "name": "FirstTriggersPOLAR",
   "orig": "func_800CAD1C",
   "rom": 96872,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 68,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAD60": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/Polar_HeroBot.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAD60": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/Polar_HeroBot.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80013C94",
    "800B9D48"
@@ -36873,13 +36873,13 @@
   "name": "Polar_HeroBot",
   "orig": "func_800CAD60",
   "rom": 96940,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 176,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAE10": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_SetTarget.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAE10": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_SetTarget.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800B9B6C",
    "800BCF08"
@@ -36890,13 +36890,13 @@
   "name": "PolarAI_SetTarget",
   "orig": "func_800CAE10",
   "rom": 97116,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 160,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAEB0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Proximity.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAEB0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_Proximity.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "a91c2ae13ec85542",
   "fpn": "e11b056a7b2a91b9",
@@ -36904,13 +36904,13 @@
   "name": "PolarAI_Proximity",
   "orig": "func_800CAEB0",
   "rom": 97276,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 228,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAF94": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlayerActionCount.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAF94": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlayerActionCount.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "0bd6850b27dffbef",
   "fpn": "456c70cea7c17d73",
@@ -36918,13 +36918,13 @@
   "name": "PlayerActionCount",
   "orig": "func_800CAF94",
   "rom": 97504,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 92,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAFF0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAFF0.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAFF0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CAFF0.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
@@ -36932,13 +36932,13 @@
   "name": "PolarAI_Never",
   "orig": "func_800CAFF0",
   "rom": 97596,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CAFF8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_RandomPause.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CAFF8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_RandomPause.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -36948,13 +36948,13 @@
   "name": "PolarAI_RandomPause",
   "orig": "func_800CAFF8",
   "rom": 97604,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 172,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB0A4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBeamLinkState.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB0A4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarBeamLinkState.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "d8c3b92f170c0bbd",
   "fpn": "af9307b448b1eb26",
@@ -36962,13 +36962,13 @@
   "name": "PolarBeamLinkState",
   "orig": "func_800CB0A4",
   "rom": 97776,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 128,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB124": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB124.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB124": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CB124.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36976,13 +36976,13 @@
   "name": "PolarEmptyStub4",
   "orig": "func_800CB124",
   "rom": 97904,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB12C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB12C.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB12C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CB12C.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -36990,13 +36990,13 @@
   "name": "PolarEmptyStub5",
   "orig": "func_800CB12C",
   "rom": 97912,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB134": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_ClearState.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB134": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_ClearState.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "b9d5d4005c522e63",
   "fpn": "2f5767c0b6d5601a",
@@ -37004,13 +37004,13 @@
   "name": "PolarAI_ClearState",
   "orig": "func_800CB134",
   "rom": 97920,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 68,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB178": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/FindClosetPlayer.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB178": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/FindClosetPlayer.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8008CEB0"
   ],
@@ -37020,13 +37020,13 @@
   "name": "FindClosetPlayer",
   "orig": "func_800CB178",
   "rom": 97988,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 268,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB284": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_AnyBusy.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB284": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_AnyBusy.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "477b42f649e88823",
   "fpn": "4e289c2d945f7448",
@@ -37034,13 +37034,13 @@
   "name": "PolarAI_AnyBusy",
   "orig": "func_800CB284",
   "rom": 98256,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 68,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB2C8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_NoneBusy.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB2C8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_NoneBusy.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "c6a3733136efbdf7",
   "fpn": "ac13c4a229beeb92",
@@ -37048,13 +37048,13 @@
   "name": "PolarAI_NoneBusy",
   "orig": "func_800CB2C8",
   "rom": 98324,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 76,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB314": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Reset.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB314": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_Reset.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "d87db82a0896429f",
   "fpn": "d0ec15ff6e673ac0",
@@ -37062,13 +37062,13 @@
   "name": "PolarAI_Reset",
   "orig": "func_800CB314",
   "rom": 98400,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 84,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB368": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_CountDead.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB368": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_CountDead.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -37078,13 +37078,13 @@
   "name": "PolarAI_CountDead",
   "orig": "func_800CB368",
   "rom": 98484,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 180,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB41C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Timer1.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB41C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_Timer1.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -37094,13 +37094,13 @@
   "name": "PolarAI_Timer1",
   "orig": "func_800CB41C",
   "rom": 98664,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 236,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB508": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Timer2.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB508": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_Timer2.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -37110,13 +37110,13 @@
   "name": "PolarAI_Timer2",
   "orig": "func_800CB508",
   "rom": 98900,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 100,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB56C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/DoesPlayerHaveBomb.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB56C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/DoesPlayerHaveBomb.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -37126,13 +37126,13 @@
   "name": "DoesPlayerHaveBomb",
   "orig": "func_800CB56C",
   "rom": 99000,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 136,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB5F4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/IsBombAvailable.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB5F4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/IsBombAvailable.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -37142,13 +37142,13 @@
   "name": "IsBombAvailable",
   "orig": "func_800CB5F4",
   "rom": 99136,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 92,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB650": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Timer3.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB650": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_Timer3.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590"
   ],
@@ -37158,13 +37158,13 @@
   "name": "PolarAI_Timer3",
   "orig": "func_800CB650",
   "rom": 99228,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 100,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB6B4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB6B4.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB6B4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CB6B4.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -37172,13 +37172,13 @@
   "name": "PolarEmptyStub6",
   "orig": "func_800CB6B4",
   "rom": 99328,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB6BC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB6BC.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB6BC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CB6BC.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -37186,13 +37186,13 @@
   "name": "PolarEmptyStub7",
   "orig": "func_800CB6BC",
   "rom": 99336,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB6C4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB6C4.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB6C4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CB6C4.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "180b3cab27e9edcd",
   "fpn": "20dd9205a2fddb6d",
@@ -37200,13 +37200,13 @@
   "name": "PolarPadAngle",
   "orig": "func_800CB6C4",
   "rom": 99344,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 128,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB744": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB744.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB744": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CB744.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "587391f3e0d2ec8d",
   "fpn": "10356576e1c4c715",
@@ -37214,13 +37214,13 @@
   "name": "PolarCompareXZ",
   "orig": "func_800CB744",
   "rom": 99472,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 84,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB798": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBombGFX.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB798": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBombGFX.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8002672C",
    "8002689C",
@@ -37232,13 +37232,13 @@
   "name": "InitBombGFX",
   "orig": "func_800CB798",
   "rom": 99556,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 268,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB8A4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBombMaker.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB8A4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PlotBombMaker.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022660",
@@ -37251,13 +37251,13 @@
   "name": "PlotBombMaker",
   "orig": "func_800CB8A4",
   "rom": 99824,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 312,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CB9DC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBombMaker.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CB9DC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/InitBombMaker.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8002689C"
   ],
@@ -37267,13 +37267,13 @@
   "name": "InitBombMaker",
   "orig": "func_800CB9DC",
   "rom": 100136,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 76,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CBA28": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CBA28.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CBA28": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CBA28.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C"
   ],
@@ -37283,13 +37283,13 @@
   "name": "PolarAngleOf",
   "orig": "func_800CBA28",
   "rom": 100212,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 52,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CBA5C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/DoNowt.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CBA5C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/DoNowt.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
@@ -37297,13 +37297,13 @@
   "name": "DoNowt",
   "orig": "func_800CBA5C",
   "rom": 100264,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CBA64": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/POLARSetUp.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CBA64": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/POLARSetUp.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "1f360899dc28e163",
   "fpn": "0f6983742df2f6bb",
@@ -37311,13 +37311,13 @@
   "name": "POLARSetUp",
   "orig": "func_800CBA64",
   "rom": 100272,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 64,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CBAA4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_TargetShare.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CBAA4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_TargetShare.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "b3e6c6ef755735e4",
   "fpn": "13fff2e2d401907e",
@@ -37325,13 +37325,13 @@
   "name": "PolarAI_TargetShare",
   "orig": "func_800CBAA4",
   "rom": 100336,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 232,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CBB8C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_ResetPace.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CBB8C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarAI_ResetPace.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "c67e0d6640f6bac9",
   "fpn": "a2949c0ca74aa062",
@@ -37339,13 +37339,13 @@
   "name": "PolarAI_ResetPace",
   "orig": "func_800CBB8C",
   "rom": 100568,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 92,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CBBE8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroesCollide.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CBBE8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroesCollide.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "abee58248fd4d3a6",
   "fpn": "41e59f08f33aa486",
@@ -37353,13 +37353,13 @@
   "name": "PolarHeroesCollide",
   "orig": "func_800CBBE8",
   "rom": 100660,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1084,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CC024": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroBounceOff.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CC024": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroBounceOff.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "1462efdd48c3b514",
   "fpn": "c8f78ab2e2d8c229",
@@ -37367,13 +37367,13 @@
   "name": "PolarHeroBounceOff",
   "orig": "func_800CC024",
   "rom": 101744,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 664,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CC2BC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitShadow.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CC2BC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarInitShadow.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "b1a8ad2600e29f78",
   "fpn": "420f1e2737f718a8",
@@ -37381,13 +37381,13 @@
   "name": "PolarInitShadow",
   "orig": "func_800CC2BC",
   "rom": 102408,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 248,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CC3B4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarUpdateShadow.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CC3B4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarUpdateShadow.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -37397,13 +37397,13 @@
   "name": "PolarUpdateShadow",
   "orig": "func_800CC3B4",
   "rom": 102656,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 2308,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CCCB8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarPreMoveHero.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CCCB8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarPreMoveHero.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800154A0",
    "80032F3C"
@@ -37414,13 +37414,13 @@
   "name": "PolarPreMoveHero",
   "orig": "func_800CCCB8",
   "rom": 104964,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1120,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CD118": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CD118.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CD118": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800CD118.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "29e1b03832b375f6",
   "fpn": "c458a003197ddc42",
@@ -37428,13 +37428,13 @@
   "name": "PolarGetLevelPoint",
   "orig": "func_800CD118",
   "rom": 106084,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 252,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CD214": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestPolarHeroMelted.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CD214": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestPolarHeroMelted.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "800868B4",
@@ -37447,13 +37447,13 @@
   "name": "TestPolarHeroMelted",
   "orig": "func_800CD214",
   "rom": 106336,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 844,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CD560": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarClearHitBy.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CD560": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarClearHitBy.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "9f370abb491b8629",
   "fpn": "5907d2fec015d0de",
@@ -37461,13 +37461,13 @@
   "name": "PolarClearHitBy",
   "orig": "func_800CD560",
   "rom": 107180,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 52,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CD594": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroIdle.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CD594": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroIdle.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800225C4",
@@ -37483,13 +37483,13 @@
   "name": "SetPolarHeroIdle",
   "orig": "func_800CD594",
   "rom": 107232,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1216,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CDA54": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroIdle.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CDA54": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroIdle.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "8008502C",
@@ -37507,13 +37507,13 @@
   "name": "PolarHeroIdle",
   "orig": "func_800CDA54",
   "rom": 108448,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 380,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CDBD0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroRun.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CDBD0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroRun.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800225C4",
    "80022660",
@@ -37533,13 +37533,13 @@
   "name": "PolarHeroRun",
   "orig": "func_800CDBD0",
   "rom": 108828,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 700,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CDE8C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroDazed.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CDE8C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroDazed.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "80022A3C",
@@ -37553,13 +37553,13 @@
   "name": "SetPolarHeroDazed",
   "orig": "func_800CDE8C",
   "rom": 109528,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 2008,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CE664": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroDazed.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CE664": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroDazed.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022A3C",
@@ -37578,13 +37578,13 @@
   "name": "PolarHeroDazed",
   "orig": "func_800CE664",
   "rom": 111536,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1780,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CED58": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroChallenge.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CED58": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroChallenge.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "800264E8",
@@ -37597,13 +37597,13 @@
   "name": "SetPolarHeroChallenge",
   "orig": "func_800CED58",
   "rom": 113316,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 2464,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CF6F8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroChallenge.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CF6F8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroChallenge.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022A3C",
@@ -37621,13 +37621,13 @@
   "name": "PolarHeroChallenge",
   "orig": "func_800CF6F8",
   "rom": 115780,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 756,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CF9EC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroTransmute.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CF9EC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroTransmute.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800D2D2C"
   ],
@@ -37637,13 +37637,13 @@
   "name": "SetPolarHeroTransmute",
   "orig": "func_800CF9EC",
   "rom": 116536,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 400,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CFB7C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroTransmute.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CFB7C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroTransmute.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800BBF2C",
    "800C0888",
@@ -37656,13 +37656,13 @@
   "name": "PolarHeroTransmute",
   "orig": "func_800CFB7C",
   "rom": 116936,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 220,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CFC58": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroOffice.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CFC58": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroOffice.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "800264E8",
@@ -37677,13 +37677,13 @@
   "name": "SetPolarHeroOffice",
   "orig": "func_800CFC58",
   "rom": 117156,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 748,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800CFF44": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroSlideFromCentre.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800CFF44": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroSlideFromCentre.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C"
   ],
@@ -37693,13 +37693,13 @@
   "name": "PolarHeroSlideFromCentre",
   "orig": "func_800CFF44",
   "rom": 117904,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 284,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D0060": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroOffice.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D0060": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroOffice.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8001463C",
    "800225C4",
@@ -37718,13 +37718,13 @@
   "name": "PolarHeroOffice",
   "orig": "func_800D0060",
   "rom": 118188,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 748,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D034C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroInBeam.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D034C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroInBeam.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "800868B4"
@@ -37735,13 +37735,13 @@
   "name": "SetPolarHeroInBeam",
   "orig": "func_800D034C",
   "rom": 118936,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 292,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D0470": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroPoll.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D0470": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroPoll.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "800264E8",
@@ -37753,13 +37753,13 @@
   "name": "SetPolarHeroPoll",
   "orig": "func_800D0470",
   "rom": 119228,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 312,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D05A8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAttackPower.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D05A8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroAttackPower.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -37769,13 +37769,13 @@
   "name": "PolarHeroAttackPower",
   "orig": "func_800D05A8",
   "rom": 119540,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 168,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D0650": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarTestAttack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D0650": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarTestAttack.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "800868B4",
@@ -37787,13 +37787,13 @@
   "name": "PolarTestAttack",
   "orig": "func_800D0650",
   "rom": 119708,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 256,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D0750": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroThrowPower.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D0750": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroThrowPower.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -37803,13 +37803,13 @@
   "name": "PolarHeroThrowPower",
   "orig": "func_800D0750",
   "rom": 119964,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 184,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D0808": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroAttack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D0808": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroAttack.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800225C4",
    "80022660",
@@ -37824,13 +37824,13 @@
   "name": "SetPolarHeroAttack",
   "orig": "func_800D0808",
   "rom": 120148,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 612,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D0A6C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAttackThrow.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D0A6C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroAttackThrow.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022A3C",
    "800264E8",
@@ -37842,13 +37842,13 @@
   "name": "PolarHeroAttackThrow",
   "orig": "func_800D0A6C",
   "rom": 120760,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1588,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D10A0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarTestSnowball.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D10A0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarTestSnowball.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "800868B4"
@@ -37859,13 +37859,13 @@
   "name": "PolarTestSnowball",
   "orig": "func_800D10A0",
   "rom": 122348,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 232,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D1188": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroThrowBomb.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D1188": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroThrowBomb.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "80022A3C",
@@ -37877,13 +37877,13 @@
   "name": "SetPolarHeroThrowBomb",
   "orig": "func_800D1188",
   "rom": 122580,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 836,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D14CC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroSnowball.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D14CC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroSnowball.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800D2D2C"
   ],
@@ -37893,13 +37893,13 @@
   "name": "SetPolarHeroSnowball",
   "orig": "func_800D14CC",
   "rom": 123416,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 796,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D17E8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroSnowball.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D17E8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroSnowball.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "80032490",
@@ -37914,13 +37914,13 @@
   "name": "PolarHeroSnowball",
   "orig": "func_800D17E8",
   "rom": 124212,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 308,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D191C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroFootIdle.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D191C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroFootIdle.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "800225C4",
@@ -37935,13 +37935,13 @@
   "name": "SetPolarHeroFootIdle",
   "orig": "func_800D191C",
   "rom": 124520,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 760,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D1C14": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroFootIdle.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D1C14": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroFootIdle.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "8008502C",
@@ -37959,13 +37959,13 @@
   "name": "PolarHeroFootIdle",
   "orig": "func_800D1C14",
   "rom": 125280,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 416,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D1DB4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroFootRun.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D1DB4": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroFootRun.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022660",
    "800264E8",
@@ -37984,13 +37984,13 @@
   "name": "PolarHeroFootRun",
   "orig": "func_800D1DB4",
   "rom": 125696,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 656,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2044": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroHit.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2044": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroHit.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "80027F7C",
@@ -38003,13 +38003,13 @@
   "name": "SetPolarHeroHit",
   "orig": "func_800D2044",
   "rom": 126352,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 516,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2248": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroDead.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2248": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroDead.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80022A3C",
    "800264E8"
@@ -38020,13 +38020,13 @@
   "name": "SetPolarHeroDead",
   "orig": "func_800D2248",
   "rom": 126868,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 236,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2334": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroDead.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2334": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroDead.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "80015590",
    "80022A3C",
@@ -38039,13 +38039,13 @@
   "name": "PolarHeroDead",
   "orig": "func_800D2334",
   "rom": 127104,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 584,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D257C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroWinner.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D257C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroWinner.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "80026980",
@@ -38060,13 +38060,13 @@
   "name": "SetPolarHeroWinner",
   "orig": "func_800D257C",
   "rom": 127688,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 1500,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2B58": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroWinner.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2B58": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroWinner.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8008502C",
    "80085890",
@@ -38079,13 +38079,13 @@
   "name": "PolarHeroWinner",
   "orig": "func_800D2B58",
   "rom": 129188,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 224,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2C38": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroSquashed.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2C38": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroSquashed.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "800868B4"
@@ -38096,13 +38096,13 @@
   "name": "PolarHeroSquashed",
   "orig": "func_800D2C38",
   "rom": 129412,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 128,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2CB8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroSquashed.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2CB8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroSquashed.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -38112,13 +38112,13 @@
   "name": "SetPolarHeroSquashed",
   "orig": "func_800D2CB8",
   "rom": 129540,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 116,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2D2C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestPolarHeroWon.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2D2C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestPolarHeroWon.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800868B4"
   ],
@@ -38128,13 +38128,13 @@
   "name": "TestPolarHeroWon",
   "orig": "func_800D2D2C",
   "rom": 129656,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 112,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2D9C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroHit.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2D9C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroHit.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8008502C",
    "800BBF2C",
@@ -38147,13 +38147,13 @@
   "name": "PolarHeroHit",
   "orig": "func_800D2D9C",
   "rom": 129768,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 100,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2E00": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroFootRun.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2E00": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroFootRun.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800225C4",
    "800854C0"
@@ -38164,13 +38164,13 @@
   "name": "SetPolarHeroFootRun",
   "orig": "func_800D2E00",
   "rom": 129868,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 176,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2EB0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroThrowBomb.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2EB0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroThrowBomb.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "8008502C",
@@ -38182,13 +38182,13 @@
   "name": "PolarHeroThrowBomb",
   "orig": "func_800D2EB0",
   "rom": 130044,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 152,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D2F48": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAttack.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D2F48": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroAttack.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "8008502C",
@@ -38204,13 +38204,13 @@
   "name": "PolarHeroAttack",
   "orig": "func_800D2F48",
   "rom": 130196,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 208,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D3018": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroPoll.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D3018": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroPoll.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800D2D2C"
   ],
@@ -38220,13 +38220,13 @@
   "name": "PolarHeroPoll",
   "orig": "func_800D3018",
   "rom": 130404,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 100,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D307C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroInBeam.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D307C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroInBeam.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "8008502C"
   ],
@@ -38236,13 +38236,13 @@
   "name": "PolarHeroInBeam",
   "orig": "func_800D307C",
   "rom": 130504,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 68,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D30C0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroWeight.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D30C0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroWeight.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800D2D2C"
   ],
@@ -38252,13 +38252,13 @@
   "name": "PolarHeroWeight",
   "orig": "func_800D30C0",
   "rom": 130572,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 176,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D3170": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D3170.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D3170": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800D3170.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800D2D2C"
   ],
@@ -38268,13 +38268,13 @@
   "name": "SetPolarHeroWeight",
   "orig": "func_800D3170",
   "rom": 130748,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 48,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D31A0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroRun.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D31A0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/SetPolarHeroRun.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800225C4",
    "800854C0",
@@ -38286,13 +38286,13 @@
   "name": "SetPolarHeroRun",
   "orig": "func_800D31A0",
   "rom": 130796,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 188,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D325C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAddWeight.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D325C": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarHeroAddWeight.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8"
   ],
@@ -38302,13 +38302,13 @@
   "name": "PolarHeroAddWeight",
   "orig": "func_800D325C",
   "rom": 130984,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 112,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D32CC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestPolarHeroStop.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D32CC": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestPolarHeroStop.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "800868B4"
@@ -38319,13 +38319,13 @@
   "name": "TestPolarHeroStop",
   "orig": "func_800D32CC",
   "rom": 131096,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 200,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D3394": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestPolarHeroRun.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D3394": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/TestPolarHeroRun.s",
+  "bin": "disc/polar.bin",
   "calls": [
    "800264E8",
    "800868B4"
@@ -38336,13 +38336,13 @@
   "name": "TestPolarHeroRun",
   "orig": "func_800D3394",
   "rom": 131296,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 204,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D3460": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitHeroMove.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D3460": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/PolarInitHeroMove.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "01090e93128bec5d",
   "fpn": "47e88025fdc7ea31",
@@ -38350,13 +38350,13 @@
   "name": "PolarInitHeroMove",
   "orig": "func_800D3460",
   "rom": 131500,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 144,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D34F0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D34F0.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D34F0": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800D34F0.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -38364,13 +38364,13 @@
   "name": "PolarInitHero",
   "orig": "func_800D34F0",
   "rom": 131644,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D34F8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D34F8.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D34F8": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800D34F8.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -38378,13 +38378,13 @@
   "name": "PolarEmptyStub0",
   "orig": "func_800D34F8",
   "rom": 131652,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D3500": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D3500.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D3500": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800D3500.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -38392,13 +38392,13 @@
   "name": "PolarEmptyStub1",
   "orig": "func_800D3500",
   "rom": 131660,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
- "ovl62:800D3508": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D3508.s",
-  "bin": "disc/ovl62.bin",
+ "polar:800D3508": {
+  "asm": "asm/nonmatchings/overlays/polar/polar/func_800D3508.s",
+  "bin": "disc/polar.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -38406,9 +38406,9 @@
   "name": "PolarEmptyStub2",
   "orig": "func_800D3508",
   "rom": 131668,
-  "seg": "overlays/ovl62/ovl62",
+  "seg": "overlays/polar/polar",
   "size": 8,
-  "src": "src/overlays/ovl62/ovl62.c"
+  "src": "src/overlays/polar/polar.c"
  },
  "ovl63:800B345C": {
   "asm": "asm/nonmatchings/overlays/ovl63/ovl63/func_800B345C.s",

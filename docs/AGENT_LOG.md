@@ -452,7 +452,7 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-26 (Polar, ovl62, with the recipe):** all 134 unnamed
+- **2026-10-26 (Polar, polar, with the recipe):** all 134 unnamed
   functions named (the hero actions from `HeroMode_nums`, three leak
   names where the code proves them), data, rodata and id word C and
   named (`POLAR_PREMAP`, two shell settings, nine file groups, 80
@@ -725,7 +725,7 @@ Newest first, a few lines each. Details are in the commits.
   to the `InitDelete` call. Unset, the variant builds the game identically.
   The C: a dead test in the else arm, `if (TB_MODE13()) c++;` (`c` never
   read), whose load jump2 deletes; any read through the view in either arm,
-  after the store, matches. ovl62 is complete; 1 park left. Diff patterns
+  after the store, matches. polar is complete; 1 park left. Diff patterns
   row, tools/cc1/README.md.
 
 - **2026-10-25 (`func_800B4048` matched, from the local-alloc log):** with
@@ -814,7 +814,7 @@ Newest first, a few lines each. Details are in the commits.
   that, `SetHeroAction` took `s32 player` and its 335 casts went (`make
   check` OK; the commit message's 349 counts changed lines).
 
-- **2026-10-25 (hand: ovl62 `PlotUkaPolarMask` matched, 6472 bytes):** from
+- **2026-10-25 (hand: polar `PlotUkaPolarMask` matched, 6472 bytes):** from
   the swarm's checkpoint (structure 800/1618, 1575 exact, four blocks left).
   Case 3's tails written out (the target's `stop` label is one jump2 made,
   and jumps to such a label are never merged with each other), the speed
@@ -1138,7 +1138,7 @@ Newest first, a few lines each. Details are in the commits.
 
 - **2026-10-23 (10 slot overlay names from Euro Demo 65):** `UpdatePAPU`,
   `PAHeroHit`, `SetPAHeroCarry` (ovl5e), `PlotTotemBit` (ovl5f), `DoGetBomb`,
-  `TestBeamChance` (ovl62), `MaintainCentre` (ovl63), `num_players_render`,
+  `TestBeamChance` (polar), `MaintainCentre` (ovl63), `num_players_render`,
   `adventure_mode_head`, `team_mode_init` (ovl69). `polar.h` (the leak)
   declares `TestBeamChance(u32)`, so its definition took `u32` first (see
   Gotchas).
@@ -1384,7 +1384,7 @@ Newest first, a few lines each. Details are in the commits.
   sandbag/swamp/mine-to-boss/triggers; Polar AI chooser, team-mate check,
   bombs, CheckMelted/IsPtInALLZone), `LevSpec.PostTriggers` (`D_8005AA88`)
   for the `*Triggers` stubs, and a debug string for `XZBoxToSphere` (one
-  copy each in ovl62, ovl63, ovl65). More stand-ins became real types
+  copy each in polar, ovl63, ovl65). More stand-ins became real types
   (`Ovl60Goal` = `EXTbotai`, `Ovl61FuxF` = `EXTobject.can_do`, raw offsets
   = `EXTobject_TA` fields), all byte-identical. Found the data-% drift on
   renames: `rename` deleted matched functions' `.s` files (fixed; 300+
@@ -1519,14 +1519,14 @@ Newest first, a few lines each. Details are in the commits.
   store as an array element (in-struct, so sched moves it past the scalar
   load into the delay slot); `func_800B9E74` (ovl5e, cecd6837) with
   `lo *= lo; if (dx * dx + dz * dz < lo)` (it also drops the checkpoint's
-  `(dx = dz * dz)` trick); `func_800BFEE0` (ovl62) parked by hand at
+  `(dx = dz * dz)` trick); `func_800BFEE0` (polar) parked by hand at
   183/187 with C under NON_MATCHING (`decomp.py block` note has the tries).
 
 - **2026-10-21 (swarm all overlays, retry in big mode):** run
   20261021072703, `--seg overlays/ --retry-failed --big-bytes 1 --model opus
   --workers 1 --big-workers 6 --big-budget-usd 20 --max-run-usd 250`
   (default 27 min big sessions), stopped gracefully by request: 85 matched
-  in 2 h 9 min for $160.71 (ovl5f 18, ovl62 14, ovl63 12, ovl64 9, ovl68 7,
+  in 2 h 9 min for $160.71 (ovl5f 18, polar 14, ovl63 12, ovl64 9, ovl68 7,
   ovl67 7, ovl60 6, ovl5d 6, ovl69 2, ovl5e 2, ovl66 1, ovl65 1), 5 parked,
   0 failed; game code 65.75% (2332/2537). The gate sent back a no-op
   `++/--` match (`func_800B406C`) and one that didn't match; the workers
@@ -1537,7 +1537,7 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-21 (swarm all overlays, Opus):** run 20261021061703, `--seg
   overlays/ --model opus --workers 5 --big-workers 3 --big-budget-usd 20
   --big-minutes 15 --max-run-usd 250`: 77 matched in 67 min for $77.86
-  (ovl60 24, ovl5d 12, ovl68 11, ovl62 9, ovl67 7, ovl66 5, ovl64 3,
+  (ovl60 24, ovl5d 12, ovl68 11, polar 9, ovl67 7, ovl66 5, ovl64 3,
   ovl63 3, ovl5e 2, ovl5f 1); game code 59.7% (2247/2537). It ran out of
   takeable work before its 3 h cap (attempts and big-mode staleness
   limits). Failed: 2 OAuth clashes at start; `func_800B4240` refused at
@@ -1553,7 +1553,7 @@ Newest first, a few lines each. Details are in the commits.
   --model sonnet --escalate-model opus --workers 5 --big-workers 2
   --big-budget-usd 8 --big-minutes 12 --max-run-usd 40`, stopped
   gracefully by request after 18 min: 10 matched for $10.26 (ovl68 5,
-  ovl62 2, ovl66 2 incl. the morning's park `func_800B34F8`, ovl64 1), 2
+  polar 2, ovl66 2 incl. the morning's park `func_800B34F8`, ovl64 1), 2
   failed (an OAuth refresh clash at start; `func_800B4268` refused at the
   gate, Open leads). 85 functions under 600 B had never been tried (runs
   ended on budget before them); most are still queued. `fold`: 12 rows, 4
@@ -1783,14 +1783,14 @@ Newest first, a few lines each. Details are in the commits.
   patch's stray edit to `func_800BE864`).
 - **2026-10-19 (ovl60 swarm):** 113 matched in 60 min ($46.61, 0 parked,
   2 gate failures to retry); 40 Diff pattern rows folded.
-- **2026-10-19 (ovl62 swarm):** 117 matched in 60 min ($46.59, 0 parked) on
+- **2026-10-19 (polar swarm):** 117 matched in 60 min ($46.59, 0 parked) on
   opus workers after the resplit; fold added 39 Diff pattern rows (10
   repeats of existing rows dropped).
-- **2026-10-19 (ovl62 splits):** the first ovl62 swarm run stopped after a
+- **2026-10-19 (polar splits):** the first polar swarm run stopped after a
   minute (5 workers hit an OAuth refresh race at once), but its one park
-  found ten AST names that `5bf518f2` put in `ovl62`, each cutting a real
+  found ten AST names that `5bf518f2` put in `polar`, each cutting a real
   function mid-code. They belong in `ovl63` (Rippled, InnerRipple) and
-  `ovl6a` (PathEffect, CrystalFlash, SparkGFX); moved, ovl62 resplit (now
+  `ovl6a` (PathEffect, CrystalFlash, SparkGFX); moved, polar resplit (now
   186 functions), `make check` OK (ARCHITECTURE.md, Which game is which). A
   sweep for any function whose predecessor doesn't end in a jump finds no
   others.

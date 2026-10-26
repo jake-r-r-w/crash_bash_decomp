@@ -33,7 +33,7 @@ The run above is the low-cost recipe (sonnet first, about $0.20 a match on ovl5f
 its 250-599 B functions cost more; ovl65 and ovl68 $0.25-0.33). Use it for fresh overlays. The
 other two:
 
-- **Opus** (the `config.json` defaults, 5 normal + 1 big; ovl62, ovl60 and ovl63 matched 77-117
+- **Opus** (the `config.json` defaults, 5 normal + 1 big; polar, ovl60 and ovl63 matched 77-117
   an hour for $34-47): add `--big-workers 2` while big functions are queued. The normal workers
   finish the small functions first, then idle.
 - **Big-heavy**, for an overlay's leftovers, mostly >= 600 B: `--workers 1 --big-workers 4
