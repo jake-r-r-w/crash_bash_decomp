@@ -260,7 +260,13 @@ build.
   headers' order (`tools/scripts/leak_order.py`) and `units --data` prove no
   other. Pogo and Arkenoid read as one file each like Tank. Polar's
   functions 155..216 can't be placed until they are named (Polar's box).
-- [ ] Pogo (`ovl60`)
+- [x] Pogo (`ovl60`). Done 2026-10-26: every function named (11 from the
+  leak's order), rodata, data and id word as C and named, one file, its
+  shift test passed (`make shift OVL=ovl60 PAD=0x40`, PLAYING.md). `pogo.h`
+  is settled but `POGOSpecifics` (not in this build) and `number_of_banks`
+  (no object fits it). Left for Phase 5: its game-state views
+  (`Ovl60*View`) and the tile grid's and AI's stand-ins (`Ovl60Cell`,
+  `Ovl60Move`, the leak's `PogoSquare`/`PogoAIPlayer`).
 - [ ] Arkenoid (`ovl61`)
 - [ ] Polar (`ovl62`): name functions 155..216 first, then run
   `leak_order.py` again to place them (one file or a second).

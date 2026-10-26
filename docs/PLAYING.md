@@ -87,6 +87,14 @@ DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 390
 `sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
 Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
 
+### The shift test route (Pogo, 2026-10-26)
+
+`make shift OVL=ovl60 PAD=0x40`, with the same save: Battle Mode, Pogo, and its levels
+(Painter, a-Gogo with its moving kerbs, Loco with the Ripper Roo, Bouncer with the
+padlocks), watching each hero's idle, tazer, dazed and win sequences. Passed 2026-10-26.
+On a disc shifted this way, the crate games' world records point at a Pogo address by
+coincidence and are rewritten too, so those games break; only the shifted game counts.
+
 ### The shift test route (Titles, the front end, 2026-10-26)
 
 `make shift OVL=ovl69 PAD=0x40`, with the same save. The front end is every menu, so walk

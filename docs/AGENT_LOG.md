@@ -452,6 +452,16 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Pogo, ovl60, with the recipe):** the last 13 functions
+  named (11 from pogo.h by its order, with the leak's signatures), the
+  data, rodata and id word C, the 40 `*_seq_pogo_*` cut out of the
+  frame tables, `POGO_PREMAP` and the file groups as Tank's, `PogoPlay`
+  retyped to the leak's `PogoPlayer`; shift test passed. Tool fixes:
+  data2c's halfword rest and its false exe-function pointers; `make
+  shift` now warns about any overlay address in C data with no
+  relocation. Gotcha: an undeclared global in a header macro compiles as
+  an implicit `int` with only a warning (it changed `HeroPogoDazed`).
+
 - **2026-10-26 (Titles, ovl69, with the recipe):** all 74 functions named
   from the process tables and the engine's world record; its data, rodata
   (68 texts, the backdrop's position) and id word are C and named

@@ -676,6 +676,14 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Pogo's data** (ovl60, named 2026-10-26). Modes 10..13 are Painter,
+  a-Gogo, Loco and Bouncer (`file_group_POGOPAINTER` .. `BOUNCER`, the
+  `levnumbers` order); the world record (`0x80098FD8`) is `{...,
+  &POGO_PREMAP, &POGO_shell_info, POGOSetUp}` and `POGOSetUp` starts the
+  `PogoProcess` (`pogo_init`/`pogo_kill`, the tile prims' heap). Each
+  hero's `HeroPogo` frame table runs straight into its five
+  `*_seq_pogo_*` sequences (`HeroSeqTables[hero][46..50]`). The players
+  are the leak's `PogoPlay[4]` (`PogoPlayer`).
 - **The front end** (ovl69, Titles; named 2026-10-26). Modes 0x28..0x2A
   (the engine's per-mode table gives each `file_group_TITLES`); its world
   record (`0x800990B0`, world 0x0101) is `{..., &TITLES_PREMAP,
