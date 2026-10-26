@@ -7,11 +7,12 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/8009317c.h" /* PlaceRec: the engine's screen placement records */
 
 extern u8 D_8004E568[];
 extern void (*D_8009E58C)(void);
-extern s32 D_800B865C[];
-extern s32 D_800B877C[];
+extern PlaceRec D_800B865C[];
+extern PlaceRec D_800B877C[];
 void OptionsQuit(void);
 void OptionsInit(void);
 void MenuChainStart(s32 *arg0);
@@ -41,22 +42,22 @@ extern process_info D_8009F480;
 extern GfxViewport D_800B8DD8;
 extern s32 D_800B95F0;
 extern s32 D_800B9628;
-extern s32 D_800B889C[];
+extern PlaceRec D_800B889C[];
 extern s32 D_800B9624;
 extern s8 D_800B9CC4[];
 extern s8 D_800B9CF4[];
-extern s32 D_800B8518[];
+extern PlaceRec D_800B8518[];
 extern u8 D_800A0840[];
 extern process_info D_8009E5C8;
 extern u16 D_800B8DC8[];
 void func_80094D88(s32 arg0, process_info *arg1);
-extern u8 D_800BAAD0[];
+extern PlaceRec D_800BAAD0[];
 extern GfxViewport D_800B8DD8;
 extern GfxCamera D_800B9F1C;
 extern s32 *D_800B9620;
-extern u8 D_800B8974[];
+extern PlaceRec D_800B8974[];
 extern s32 D_800B962C;
-extern u8 D_800B8F20[];
+extern PlaceRec D_800B8F20[];
 extern s32 D_800B9508;
 extern s32 D_800B950C;
 /* D_8005A604 as OptionsUpdate edits it (options menu). */
@@ -66,12 +67,19 @@ typedef struct Ovl69Opt {
     /* 0x08 */ s32 unk8;
     /* 0x0C */ u8 unkC[4];
 } Ovl69Opt;
-extern s32 D_800B901C[];
-extern s32 D_800B91CC[];
-extern u8 D_800BA754[];
+extern PlaceRec D_800B901C[];
+extern PlaceRec D_800B91CC[];
+extern PlaceRec D_800BA754[];
 extern s32 D_800BAAC8;
 extern s32 D_800BAACC;
-extern void (*D_800B9DFC)(void);
+/* each screen of the front end is a process (process_info); the menu chains list them */
+extern process_info D_800B8E3C;
+extern process_info D_800B8E50;
+extern process_info D_800B8E64;
+extern process_info D_800B8E8C;
+extern process_info D_800B9DF4;
+extern process_info D_800BA72C;
+extern process_info D_800BAAB4;
 
 void num_players_render(void);
 
@@ -143,12 +151,11 @@ extern s32 D_800B8EC0[];
 extern s32 D_800B8ED4[];
 extern process_info D_800B9510;
 
-extern s32 D_800B8C84;
+extern PlaceRec D_800B8C84[];
 extern process_info D_800B8E28;
 extern s32 *D_800B8EB8;
 extern s32 *D_800B8EE4;
 extern Ext400 D_800B95F4;
-extern Ext400 *D_800B9600;
 extern Ext400 D_800B8C2C;
 
 typedef struct {
@@ -158,14 +165,14 @@ typedef struct {
 } Ovl69Rec;
 
 extern Ovl69Rec D_800B9B44[];
-extern s32 D_800B9634;
-extern s32 D_800B9A00;
-extern s32 D_800BA35C;
-extern s32 D_800BA3A4;
-extern s32 D_800BA3EC;
-extern s32 D_800BA434;
-extern s32 D_800BA47C;
-extern s32 D_800BA4D4;
+extern PlaceRec D_800B9634[];
+extern PlaceRec D_800B9A00[];
+extern PlaceRec D_800BA35C[];
+extern PlaceRec D_800BA3A4[];
+extern PlaceRec D_800BA3EC[];
+extern PlaceRec D_800BA434[];
+extern PlaceRec D_800BA47C[];
+extern PlaceRec D_800BA4D4[];
 extern s32 D_800BA740;
 extern s32 D_800BA744;
 typedef struct Ovl69Obj {

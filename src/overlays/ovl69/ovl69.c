@@ -4,6 +4,554 @@
 #include "bash/ovl69.h"
 #include "bash/titles.h"
 
+/* the exe's data the tables point at, not declared in the headers yet */
+extern u8 D_8004ED60[];
+extern u8 D_8004ED68[];
+extern u8 D_8004ED70[];
+extern u8 D_8004ED78[];
+extern u8 D_800500B8[];
+extern u8 D_80055614[];
+extern u8 D_8005564C[];
+extern u8 D_80063BB8[];
+extern u8 D_80063EC8[];
+extern u8 D_8009EB84[];
+
+/* rodata: the strings (const arrays keep their retail order; see data2c.py) */
+const char D_800B32B8[] = "complete each warp room to\nunlock further levels";
+const char D_800B32EC[] = "select a battle\nfrom unlocked levels";
+const char D_800B3314[] = "play a tournament";
+const char D_800B3328[] = "change the options";
+const char D_800B333C[] = "ADVENTURE MODE";
+const char D_800B334C[] = "BATTLE MODE";
+const char D_800B3358[] = "TOURNAMENT";
+const char D_800B3364[] = "OPTIONS";
+const char D_800B336C[] = "";
+const char D_800B3370[] = "SELECT GAME TYPE";
+const char D_800B3384[] = "1 PLAYER";
+const char D_800B3390[] = "2 PLAYER";
+const char D_800B339C[] = "3 PLAYER";
+const char D_800B33A8[] = "4 PLAYER";
+const char D_800B33B4[] = "SELECT NUMBER OF PLAYERS";
+const char D_800B33D0[] = "NEW GAME";
+const char D_800B33DC[] = "LOAD GAME";
+const char D_800B33E8[] = "5  X";
+const char D_800B33F0[] = "PRESS LEFT - RIGHT TO\nSELECT CUPS NEEDED\nTO WIN ROUND";
+const char D_800B3428[] = "PRESS UP - DOWN TO\nSELECT DIFFICULTY";
+const char D_800B3450[] = "BEGIN BATTLE";
+const char D_800B3460[] = "GAME OPTIONS";
+const char D_800B3470[] = "BREATHE";
+const char D_800B3478[] = "TAUNT_A";
+const char D_800B3480[] = "SLIDE";
+const char D_800B3488[] = "WIN";
+const char D_800B348C[] = "WIN2";
+/* the backdrop's position (AnimateTitlesBackdrop), then the menus' texts */
+const SLONG_XYZ D_800B3494 = { -0x17C, 0x190, -0x64 };
+const char D_800B34A0[] = "EASY";
+const char D_800B34A8[] = "MEDIUM";
+const char D_800B34B0[] = "HARD";
+const char D_800B34B8[] = "PRESS \xFC BUTTON TO START";
+const char D_800B34D0[] = "EXIT";
+const char D_800B34D8[] = "SOUND";
+const char D_800B34E0[] = "AUDIO MODE";
+const char D_800B34EC[] = "<STEREO>";
+const char D_800B34F8[] = "< MONO >";
+const char D_800B3504[] = "MUSIC VOLUME";
+const char D_800B3514[] = "FX VOLUME";
+const char D_800B3520[] = "CONTROLLER";
+const char D_800B352C[] = "VIBRATION";
+const char D_800B3538[] = "ON";
+const char D_800B353C[] = "OFF";
+const char D_800B3540[] = "PRESS \xFF BUTTON TO CHANGE";
+const char D_800B355C[] = "PRESS \xFC BUTTON TO ACCEPT";
+const char D_800B3578[] = "<100%>";
+const char D_800B3580[] = "<090%>";
+const char D_800B3588[] = "P1";
+const char D_800B358C[] = "P2";
+const char D_800B3590[] = "P3";
+const char D_800B3594[] = "P4";
+const char D_800B3598[20] = "CHARACTER SELECT\x00\x14";
+const char D_800B35AC[] = "PRESS \xFD BUTTON\r14TO UNLOCK LEVELS";
+const char D_800B35D0[] = "THERE ARE NO MORE\nUNLOCKED LEVELS\nON THIS MEMORY CARD\n";
+const char D_800B3608[] = "INSERT MEMORY CARD\nWITH CRASH BASH DATA\nTO CHECK FOR\nUNLOCKED LEVELS";
+const char D_800B3650[] = "LOCKED";
+const char D_800B3658[] = "PRESS LEFT - RIGHT TO CHANGE ARENA";
+const char D_800B367C[] = "PRESS UP - DOWN TO CHANGE LEVEL";
+const char D_800B369C[] = "PRESS \xFC BUTTON TO SELECT";
+const char D_800B36B8[] = "CHOOSE LEVEL";
+const char D_800B36C8[] = "PRESS \xFF TO\nCHECK MEMORY CARD\nFOR SAVED GAME";
+const char D_800B36F4[64] = "CHECKING MEMORY CARD\nIN MEMORY CARD SLOT 1\nFOR UNLOCKED\nLEVELS\x00\x14";
+const char D_800B3734[] = "SELECT BATTLE TYPE";
+const char D_800B3748[] = "PRESS LEFT - RIGHT TO CHANGE BATTLE TYPE";
+const char D_800B3774[] = "PRESS \xFC BUTTON TO START BATTLE";
+const char D_800B3794[] = "VS";
+const char D_800B3798[] = "VS BATTLE";
+const char D_800B37A4[] = "TEAM BATTLE";
+const char D_800B37B0[] = "SELECT SLOT";
+
+/* data, in address order */
+s32 D_800B8508[4] = { (s32)&D_800B32B8, (s32)&D_800B32EC, (s32)&D_800B3314, (s32)&D_800B3328 };
+PlaceRec D_800B8518[9] = {
+    { 4, -0x20, 0x12C, -0x46, 0x72, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x2C, 0, 0, 0, 0, 0, 0, (s32)&D_800B333C, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0xA, 0, 0, 0, 0, 0, 0, (s32)&D_800B334C, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x18, 0, 0, 0, 0, 0, 0, (s32)&D_800B3358, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x3A, 0, 0, 0, 0, 0, 0, (s32)&D_800B3364, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x82, 0, 0, 0, 0, 0, 0, (s32)&D_800B336C, 4, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B3370, 0, 0, 0, 0 },
+    { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800B865C[8] = {
+    { 4, -0x20, 0x12C, -0x46, 0x50, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x42, 0, 0, 0, 0, 0, 0, (s32)&D_800B3384, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x1C, 0, 0, 0, 0, 0, 0, (s32)&D_800B3390, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 8, 0, 0, 0, 0, 0, 0, (s32)&D_800B339C, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0x2C, 0, 0, 0, 0, 0, 0, (s32)&D_800B33A8, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B33B4, 0, 0, 0, 0 },
+    { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800B877C[8] = {
+    { 4, -0x20, 0x12C, -0x46, 0x50, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, (s32)&D_800B3384, 0, 0, 0, 0 },
+    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B3390, 0, 0, 0, 0 },
+    { 3, 0x3A, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, 0x3A, 0x26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B33B4, 0, 0, 0, 0 },
+    { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800B889C[6] = {
+    { 3, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B333C, 0, 0, 0, 0 },
+    { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, -0x20, 0x12C, -0x46, 0x50, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, -0x7F7A, -0x22, 0, 0, 0, 0, 0, 0, (s32)&D_800B33D0, 2, 0, 0, 0 },
+    { 3, -0x7F7A, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B33DC, 3, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800B8974[12] = {
+    { 4, -0x8000, 0x190, -0x68, -0xA, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0xA, 0xB4, -0x14, 0, 0xCCC, 0, 0x28, 0, 0, 0, 0, 0xC7, 0x2009, 2 },
+    { 3, 0x3C, -0x46, 0, 0, 0, 0, 0, 0, (s32)&D_800B33E8, 0, 0, 0, 0 },
+    { 3, -0xDC, -0x55, 0, 0, 0, 0, 0, 0, (s32)&D_800B33F0, 4, 0, 0, 0 },
+    { 4, -0x8000, 0x190, 0x28, 0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, 0x46, 0x37, 0, 0, 0, 0, 0, 0, (s32)&D_800B336C, 0, 0, 0, 0 },
+    { 3, -0xDC, 0x32, 0, 0, 0, 0, 0, 0, (s32)&D_800B3428, 4, 0, 0, 0 },
+    { 4, -0x8000, 0x258, 0x9A, 0xC0, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, -0x8000, 0xA5, 0, 0, 0, 0, 0, 0, (s32)&D_800B3450, 4, 0, 0, 0 },
+    { 4, -0x15E, 0x258, -0xD0, -0xA6, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, -0x8000, -0xCA, 0, 0, 0, 0, 0, 0, (s32)&D_800B3460, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+s32 D_800B8B24[11] = {
+    (s32)&D_80055684, (s32)&D_8004ED78, (s32)&D_8004ED70, (s32)&D_80053074, (s32)&D_8004ED68,
+    (s32)&D_8004ED60, 0, 0, 0, (s32)&D_800500B8, (s32)&D_800B8B24,
+};
+s32 D_800B8B50[1] = { 0xFFFF };
+s32 D_800B8B54[6] = { (s32)&D_800B3470, (s32)&D_800B3478, (s32)&D_800B3480, (s32)&D_800B3488, (s32)&D_800B348C, 0 };
+s32 D_800B8B6C[3] = { 0xC800C7, 0x1C00C9, 0xFFFF };
+s32 D_800B8B78[34] = {
+    0xC5, (s32)&D_800B8B54, (s32)&D_800B8B6C, 3, 0, 0, 0, 0, 0xC5, (s32)&D_800B8B54,
+    (s32)&D_800B8B6C, 3, 0, 0, 0, 0, 0xC5, (s32)&D_800B8B54, (s32)&D_800B8B6C, 3, 0, 0, 0, 0,
+    0x1800, 0x10, 0x100, 0x40, 0x100, 0x40, (s32)&D_80063EC8, (s32)&D_80063BB8, 0x20, 0x76C,
+};
+s32 D_800B8C00[2] = { 0x20D0003, 0x10021001 };
+s32 D_800B8C08[9] = { (s32)&D_800B8C00, 4, (s32)&D_800B8B50, (s32)&D_800B8B78, (s32)&D_800B8C08, 0, 0, 0, 0 };
+Ext400 D_800B8C2C = {
+    {
+        (s32)0x80110000, 0x40000016, 0x168011, (s32)0x80114000, 0x40000016, 0x168011,
+        (s32)0x80114000, 0x40800038, 0x168011, (s32)0x80114000, 0x40000016,
+    },
+};
+s32 D_800B8C58[11] = {
+    0x388011, (s32)0x80114100, 0x41800054, 0x168011, (s32)0x80114000, 0x40000016, 0x388011,
+    (s32)0x80004100, 0, (s32)&D_800B3470, 0,
+};
+PlaceRec D_800B8C84[9] = {
+    { 6, -0x64, 0, 0x4C8, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x2007, 0 },
+    { 7, -0x17C, 0x190, -0x64, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
+    { 7, -0x17C, 0x190, -0x64, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x2001, 0 },
+    { 4, -0x118, 0x5A, -2, 0xC0, 4, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, 0x8C, 0x11C, -0xCC, -0x6C, 4, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, 0x8C, 0x11C, -0x68, -8, 4, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, 0x8C, 0x11C, -4, 0x5C, 4, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, 0x8C, 0x11C, 0x60, 0xC0, 4, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+u16 D_800B8DC8[8] = { 0xA, 0, 0xE, 0, 0xA, 0, 0xE, 0 };
+GfxViewport D_800B8DD8 = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x10, 0x1EF, 0, 0, 0, 0, 0 };
+GfxViewport D_800B8E00 = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x800, 0x7FF, -0x80, 0, 0, 0, 1 };
+process_info D_800B8E28 = { MainMenuInit, MainMenuUpdate, RenderTitlesMenu, 0, 0 };
+process_info D_800B8E3C = { PlayersMenuInit, PlayersMenuUpdate, RenderTitlesMenu, 0, 0 };
+process_info D_800B8E50 = { NewLoadMenuInit, NewLoadMenuUpdate, RenderTitlesMenu, 0, 0 };
+process_info D_800B8E64 = { TitlesLeaveInit, 0, TitlesLeaveRender, 0, 0 };
+s32 D_800B8E78[1][3] = {
+    {
+        (s32)&D_800B34A0, (s32)&D_800B34A8,
+        (s32)&D_800B34B0,
+    },
+};
+s32 D_800B8E84[1][2] = { { (s32)&D_800B34B8, (s32)&D_800B34B8 } };
+process_info D_800B8E8C = { BattleOptionsInit, BattleOptionsUpdate, BattleOptionsRender, BattleOptionsQuit, 0 };
+s32 D_800B8EA0[1] = { (s32)&D_800B8E28 };
+s32 D_800B8EA4[2] = { (s32)&D_800B8E3C, (s32)&D_800B9DF4 };
+s32 D_800B8EAC[3] = { (s32)&D_800BA72C, (s32)&D_800BAAB4, (s32)&D_800B8E8C };
+s32 *D_800B8EB8 = (void *)&D_800B8EAC;
+s32 D_800B8EBC[1] = { (s32)&D_800B8E28 };
+s32 D_800B8EC0[5] = { (s32)&D_800B8E50, (s32)&D_800B8E3C, (s32)&D_800B9DF4, (s32)&D_800B8E64, (s32)&D_800B8E28 };
+s32 D_800B8ED4[2] = { (s32)&D_800B8E3C, (s32)&D_800B9DF4 };
+s32 D_800B8EDC[2] = { (s32)&D_8009EB84, (s32)&D_800B8E8C };
+s32 *D_800B8EE4 = (void *)&D_800B8EDC;
+s32 D_800B8EE8[1] = { (s32)&D_800B3364 };
+s32 D_800B8EEC[1] = { (s32)&D_800B34D0 };
+s32 D_800B8EF0[1] = { (s32)&D_800B34D8 };
+s32 D_800B8EF4[1] = { (s32)&D_800B34E0 };
+s32 D_800B8EF8[1] = { (s32)&D_800B34EC };
+s32 D_800B8EFC[1] = { (s32)&D_800B34F8 };
+s32 D_800B8F00[1] = { (s32)&D_800B3504 };
+s32 D_800B8F04[1] = { (s32)&D_800B3514 };
+s32 D_800B8F08[1] = { (s32)&D_800B3520 };
+s32 D_800B8F0C[1] = { (s32)&D_800B352C };
+s32 D_800B8F10[1] = { (s32)&D_800B3538 };
+s32 D_800B8F14[1] = { (s32)&D_800B353C };
+s32 D_800B8F18[1] = { (s32)&D_800B3540 };
+s32 D_800B8F1C[1] = { (s32)&D_800B355C };
+PlaceRec D_800B8F20[7] = {
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EE8, 0, 0, 0, 0 },
+    { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, -0xBE, 0xBE, -0x4A, 0x5A, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0x32, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EF0, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0xA, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F08, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x1E, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EEC, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800B901C[12] = {
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EF0, 0, 0, 0, 0 },
+    { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, -0xFA, 0xFA, -0x40, 0x8C, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0xE, -0xD2, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EF4, 0, 0, 0, 0 },
+    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EF8, 0, 0, 0, 0 },
+    { 0xE, 0x46, -0x1E, 0, 0, 0, 0, 0, 0, (s32)&D_800B8EFC, 0, 0, 0, 0 },
+    { 0xE, -0xD2, 0xA, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F00, 0, 0, 0, 0 },
+    { 3, 0x46, 0xA, 0, 0, 0, 0, 0, 0, (s32)&D_800B3578, 0, 0, 0, 0 },
+    { 0xE, -0xD2, 0x32, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F04, 0, 0, 0, 0 },
+    { 3, 0x46, 0x32, 0, 0, 0, 0, 0, 0, (s32)&D_800B3580, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F1C, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800B91CC[23] = {
+    { 0xE, -0x8000, -0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F08, 0, 0, 0, 0 },
+    { 4, -0x15E, 0x15E, -0x94, -0x64, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, -0xBE, 0xBE, -0x4A, 0x82, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0x3C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F0C, 0, 0, 0, 0 },
+    { 0xE, -0x8F, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F10, 7, 0, 0, 0 },
+    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 0, 0, 0, 0 },
+    { 0xE, -0x96, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 1, 0, 0, 0 },
+    { 0xE, -0x35, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F10, 7, 0, 0, 0 },
+    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 0, 0, 0, 0 },
+    { 0xE, -0x3C, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 1, 0, 0, 0 },
+    { 0xE, 0x25, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F10, 7, 0, 0, 0 },
+    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 0, 0, 0, 0 },
+    { 0xE, 0x1E, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 1, 0, 0, 0 },
+    { 0xE, 0x75, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F10, 7, 0, 0, 0 },
+    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 0, 0, 0, 0 },
+    { 0xE, 0x6E, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F14, 1, 0, 0, 0 },
+    { 3, -0x87, -0xF, 0, 0, 0, 0, 0, 0, (s32)&D_800B3588, 4, 0, 0, 0 },
+    { 3, -0x2D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&D_800B358C, 4, 0, 0, 0 },
+    { 3, 0x2D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&D_800B3590, 4, 0, 0, 0 },
+    { 3, 0x7D, -0xF, 0, 0, 0, 0, 0, 0, (s32)&D_800B3594, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0x3C, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F18, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0x64, 0, 0, 0, 0, 0, 0, (s32)&D_800B8F1C, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+s32 D_800B9508 = 0;
+s32 D_800B950C = 0;
+process_info D_800B9510 = { OptionsInit, OptionsUpdate, OptionsRender, OptionsQuit, 0 };
+process_info D_800B9524 = { RunGameInit, RunGameUpdate, RunGameRender, RunGameQuit, 0 };
+GfxCamera D_800B9538 = {0};
+s32 D_800B95F0 = 0;
+Ext400 D_800B95F4 = {0};
+s32 *D_800B9620 = 0;
+s32 D_800B9624 = 0;
+s32 D_800B9628 = 0;
+s32 D_800B962C = 0;
+s32 D_800B9630[1] = { (s32)&D_800B3598 };
+PlaceRec D_800B9634[27] = {
+    { 0x11, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3075, 0 },
+    { 0x11, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3077, 0 },
+    { 0x11, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3079, 0 },
+    { 0x11, 0, 0, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3065, 0 },
+    { 0xF, 0x96, 0x26, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x306B, 0 },
+    { 0xF, 0xF0, 0x26, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3067, 0 },
+    { 0xF, 0x14A, 0x26, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3073, 0 },
+    { 0xF, 0x1A4, 0x26, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x306D, 0 },
+    { 0xF, 0x96, 0x8A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3069, 0 },
+    { 0xF, 0xF0, 0x8A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x307B, 0 },
+    { 0xF, 0x14A, 0x8A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x3071, 0 },
+    { 0xF, 0x1A4, 0x8A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0x306F, 0 },
+    { 0x10, 0x8E, 0xE4, 0x20, 0x76, 9, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0x10, 0xE8, 0x13E, 0x20, 0x76, 9, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0x10, 0x142, 0x198, 0x20, 0x76, 9, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0x10, 0x19C, 0x1F2, 0x20, 0x76, 9, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0x10, 0x8E, 0xE4, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0x10, 0xE8, 0x13E, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0x10, 0x142, 0x198, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0x10, 0x19C, 0x1F2, 0x84, 0xDA, 0xA, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x116, 0, 0, 0, 0, 0, 0, (s32)&D_800B9630, 0, 0, 0, 0 },
+    { 4, -0xA, 0x28A, 0x112, 0x136, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, 0, 0x2BC, 0x28, 0x6E, 7, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, 0, 0x2BC, 0x8C, 0xD2, 8, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 6, 0x50, 0x6E, 0, 0x4CC, 0, 0, 0, 0, 0, 0, 0xC7, 0x200B, 0 },
+    { 6, 0x230, 0xBE, 0, 0x4CC, 0, 0, 0, 0, 0, 0, 0xC7, 0x200C, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800B9A00[9] = {
+    { 7, -0x1FE, 0x1A4, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 7, -0xAA, 0x1A4, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 7, 0xAA, 0x1A4, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 7, 0x1FE, 0x1A4, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 7, -0x1FE, 0x1A4, 0, 0x800, 0, 0, 0, 0, 0, 0, 0xC7, 0x2002, 0 },
+    { 7, -0xAA, 0x1A4, 0, 0x800, 0, 0, 0, 0, 0, 0, 0xC7, 0x2003, 0 },
+    { 7, 0xAA, 0x1A4, 0, 0x800, 0, 0, 0, 0, 0, 0, 0xC7, 0x2004, 0 },
+    { 7, 0x1FE, 0x1A4, 0, 0x800, 0, 0, 0, 0, 0, 0, 0xC7, 0x2005, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+Ovl69Rec D_800B9B44[8] = {
+    {
+        0,
+        {
+            1, 0, 0, 0, 0x8E, 0, 0, 0, 0x20, 0, 0, 0, 0xCC, 0xCC, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
+            0, 0x50, 0x9E, 0xB, 0x80, 0x8E, 3, 0, 0,
+        },
+        0,
+    },
+    {
+        0,
+        {
+            2, 0, 0, 0, 0xE8, 0, 0, 0, 0x20, 0, 0, 0, 0xCC, 0xCC, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
+            0, 0x2C, 0x9E, 0xB, 0x80, 0x8F, 3, 0, 0,
+        },
+        0,
+    },
+    {
+        0,
+        {
+            5, 0, 0, 0, 0x42, 1, 0, 0, 0x20, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
+            0, 0xE0, 0x9E, 0xB, 0x80, 0x94, 3, 0, 0,
+        },
+        0,
+    },
+    {
+        0,
+        {
+            7, 0, 0, 0, 0x9C, 1, 0, 0, 0x20, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
+            0, 0x98, 0x9E, 0xB, 0x80, 0x92, 3, 0, 0,
+        },
+        0,
+    },
+    {
+        0,
+        {
+            3, 0, 0, 0, 0x8E, 0, 0, 0, 0x84, 0, 0, 0, 0xCC, 0xCC, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
+            0, 0x74, 0x9E, 0xB, 0x80, 0x91, 3, 0, 0,
+        },
+        0,
+    },
+    {
+        0,
+        {
+            4, 0, 0, 0, 0xE8, 0, 0, 0, 0x84, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
+            0, 8, 0x9E, 0xB, 0x80, 0x90, 3, 0, 0,
+        },
+        0,
+    },
+    {
+        0,
+        {
+            6, 0, 0, 0, 0x42, 1, 0, 0, 0x84, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
+            0, 4, 0x9F, 0xB, 0x80, 0x95, 3, 0, 0,
+        },
+        0,
+    },
+    {
+        0,
+        {
+            8, 0, 0, 0, 0x9C, 1, 0, 0, 0x84, 0, 0, 0, 0x99, 0x99, 0, 0, 0xC7, 0, 0, 0, 0, 0, 0,
+            0, 0xBC, 0x9E, 0xB, 0x80, 0x93, 3, 0, 0,
+        },
+        0,
+    },
+};
+Ovl69Off D_800B9C84[4] = { { 7, 4 }, { 0x2D, 4 }, { 7, 0x30 }, { 0x2D, 0x30 } };
+s32 D_800B9CA4[4] = { 0x389, 0x38A, 0x38B, 0x38C };
+s32 D_800B9CB4[4] = { 0x385, 0x386, 0x387, 0x388 };
+s8 D_800B9CC4[48] = {
+    3, 4, 6, 6, 8, 8, 3, 4, 6, 6, 8, 8, 1, 2, 5, 5, 7, 7, 1, 2, 5, 5, 7, 7, 3, 4, 6, 6, 8, 8,
+    1, 2, 5, 5, 7, 7, 3, 4, 6, 6, 8, 8, 1, 2, 5, 5, 7, 7,
+};
+s8 D_800B9CF4[256] = {
+    0, 0, 0, 0, 3, 4, 6, 8, 7, 7, 6, 6, 7, 7, 6, 6, 3, 4, 8, 8, 7, 7, 3, 4, 3, 4, 6, 6, 5, 5,
+    3, 4, 3, 4, 6, 8, 0, 0, 0, 0, 7, 7, 6, 6, 7, 7, 6, 6, 3, 4, 8, 8, 7, 7, 3, 4, 3, 4, 6, 6,
+    5, 5, 3, 4, 7, 7, 6, 6, 7, 7, 6, 6, 0, 0, 0, 0, 1, 2, 5, 7, 1, 2, 8, 8, 1, 2, 7, 7, 1, 2,
+    6, 6, 1, 2, 5, 5, 7, 7, 6, 6, 7, 7, 6, 6, 1, 2, 5, 7, 0, 0, 0, 0, 1, 2, 8, 8, 1, 2, 7, 7,
+    1, 2, 6, 6, 1, 2, 5, 5, 3, 4, 8, 8, 3, 4, 8, 8, 1, 2, 8, 8, 1, 2, 8, 8, 0, 0, 0, 0, 1, 2,
+    3, 4, 3, 4, 6, 8, 1, 2, 3, 4, 7, 7, 3, 4, 7, 7, 3, 4, 1, 2, 7, 7, 1, 2, 7, 7, 1, 2, 3, 4,
+    0, 0, 0, 0, 1, 2, 3, 4, 1, 2, 5, 7, 3, 4, 6, 6, 3, 4, 6, 6, 1, 2, 6, 6, 1, 2, 6, 6, 3, 4,
+    6, 8, 1, 2, 3, 4, 0, 0, 0, 0, 1, 2, 3, 4, 5, 5, 3, 4, 5, 5, 3, 4, 1, 2, 5, 5, 1, 2, 5, 5,
+    1, 2, 3, 4, 1, 2, 5, 7, 1, 2, 3, 4, 0, 0, 0, 0,
+};
+process_info D_800B9DF4 = { CharSelectInit, CharSelectUpdate, CharSelectRender, 0, 0 };
+s32 D_800B9E08[3] = { (s32)0x80110000, 0x43800020, 0x8000 };
+s32 D_800B9E14[6] = { (s32)&D_800B9E08, 0, 0, 0, (s32)&D_800B9E14, 0x401 };
+s32 D_800B9E2C[3] = { (s32)0x80110000, 0x42000014, 0x8000 };
+s32 D_800B9E38[6] = { (s32)&D_800B9E2C, 0, 0, 0, (s32)&D_800B9E38, 0x401 };
+s32 D_800B9E50[3] = { (s32)0x80110000, 0x42800016, 0x8000 };
+s32 D_800B9E5C[6] = { (s32)&D_800B9E50, 0, 0, 0, (s32)&D_800B9E5C, 0x401 };
+s32 D_800B9E74[3] = { (s32)0x80110000, 0x43000020, 0x8000 };
+s32 D_800B9E80[6] = { (s32)&D_800B9E74, 0, 0, 0, (s32)&D_800B9E80, 0x401 };
+s32 D_800B9E98[3] = { (s32)0x80110000, 0x44000016, 0x8000 };
+s32 D_800B9EA4[6] = { (s32)&D_800B9E98, 0, 0, 0, (s32)&D_800B9EA4, 0x401 };
+s32 D_800B9EBC[3] = { (s32)0x80110000, 0x44800014, 0x8000 };
+s32 D_800B9EC8[6] = { (s32)&D_800B9EBC, 0, 0, 0, (s32)&D_800B9EC8, 0x401 };
+s32 D_800B9EE0[3] = { (s32)0x80110000, 0x45000020, 0x8000 };
+s32 D_800B9EEC[6] = { (s32)&D_800B9EE0, 0, 0, 0, (s32)&D_800B9EEC, 0x401 };
+s32 D_800B9F04[6] = { (s32)0x80110000, 0x45800020, 0x8000, (s32)&D_800B9F04, 0, 0 };
+GfxCamera D_800B9F1C = {0};
+Ovl69Slot D_800B9FD4[4] = {0};
+s32 D_800BA154[1] = { (s32)&D_800B35AC };
+s32 D_800BA158[1] = { (s32)&D_800B35D0 };
+s32 D_800BA15C[1] = { (s32)&D_800B3608 };
+s32 D_800BA160[1] = { (s32)&D_800B3650 };
+s32 D_800BA164[16] = {
+    1, 0, (s32)&D_80055614, 0x2005, 1, 1, (s32)&D_80055614, 0x2006, 1, 2, (s32)&D_80055614,
+    0x2007, 1, 3, (s32)&D_80055614, 0x2008,
+};
+s32 D_800BA1A4[16] = {
+    1, 0x13, (s32)&D_8005564C, 0x2005, 1, 0x12, (s32)&D_8005564C, 0x2006, 1, 0x14,
+    (s32)&D_8005564C, 0x2007, 1, 0x15, (s32)&D_8005564C, 0x2008,
+};
+s32 D_800BA1E4[16] = {
+    1, 0xA, (s32)&D_8005564C, 0x2001, 1, 0xB, (s32)&D_8005564C, 0x2002, 1, 0xC,
+    (s32)&D_8005564C, 0x2003, 1, 0xD, (s32)&D_8005564C, 0x2004,
+};
+s32 D_800BA224[16] = {
+    1, 0xE, (s32)&D_80055614, 0x2001, 1, 0xF, (s32)&D_80055614, 0x2002, 1, 0x10,
+    (s32)&D_80055614, 0x2003, 1, 0x11, (s32)&D_80055614, 0x2004,
+};
+s32 D_800BA264[16] = {
+    2, 6, (s32)&D_8005564C, 0x2009, 2, 8, (s32)&D_8005564C, 0x200A, 2, 7, (s32)&D_8005564C,
+    0x200B, 2, 5, (s32)&D_8005564C, 0x200C,
+};
+s32 D_800BA2A4[16] = {
+    2, 0x17, (s32)&D_80055614, 0x2009, 2, 0x18, (s32)&D_80055614, 0x200A, 2, 0x1A,
+    (s32)&D_80055614, 0x200B, 2, 0x19, (s32)&D_80055614, 0x200C,
+};
+s32 D_800BA2E4[16] = {
+    2, 0x1B, (s32)&D_80055614, 0x200D, 2, 0x1C, (s32)&D_80055614, 0x200E, 2, 0x1D,
+    (s32)&D_80055614, 0x200F, 2, 0x1E, (s32)&D_80055614, 0x2010,
+};
+Ovl69Entry D_800BA324[7] = {
+    { (s32)&D_800BA164, 4 }, { (s32)&D_800BA1A4, 4 }, { (s32)&D_800BA1E4, 4 },
+    { (s32)&D_800BA224, 4 }, { (s32)&D_800BA264, 4 }, { (s32)&D_800BA2A4, 4 },
+    { (s32)&D_800BA2E4, 4 },
+};
+PlaceRec D_800BA35C[2] = {
+    { 7, 0, 0, 0, 0xB33, 0, 0, 0, 0, 0, 0, 0xC8, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800BA3A4[2] = {
+    { 7, 0, 0, 0, 0x666, 0, 0, 0, 0, 0, 0, 0xC8, 0x2005, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800BA3EC[2] = {
+    { 7, 0, 0, 0, 0x666, 0, 0, 0, 0, 0, 0, 0xC8, 0x2006, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800BA434[2] = {
+    { 7, 0, 0, 0, 0x666, 0, 0, 0, 0, 0, 0, 0xC8, 0x2007, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+PlaceRec D_800BA47C[2] = {
+    { 7, 0, 0, 0, 0x666, 0, 0, 0, 0, 0, 0, 0xC8, 0x2008, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+s32 D_800BA4C4[1] = { (s32)&D_800B3658 };
+s32 D_800BA4C8[1] = { (s32)&D_800B367C };
+s32 D_800BA4CC[1] = { (s32)&D_800B369C };
+s32 D_800BA4D0[1] = { (s32)&D_800B36B8 };
+PlaceRec D_800BA4D4[11] = {
+    { 3, 0x7FA1, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 6, 0xD4, 0, 0, 0x266, 0, 0, 0, 0, 0, 0, 0xC7, 0x2008, 0 },
+    { 0xE, 0x7FA1, -0x96, 0, 0, 0, 0, 0, 0, (s32)&D_800BA4C4, 4, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0x42, 0, 0, 0, 0, 0, 0, (s32)&D_800BA4C8, 4, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0x28, 0, 0, 0, 0, 0, 0, (s32)&D_800BA4CC, 4, 0, 0, 0 },
+    { 0xE, 0x7FA1, -0xC8, 0, 0, 0, 0, 0, 0, (s32)&D_800BA4D0, 0, 0, 0, 0 },
+    { 3, 0x7FA1, -0x6E, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, -0x14A, 0x88, -0xCA, -0xA6, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, 0x120, 0x28A, -0xCC, -0xA6, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, 0x7FA1, 0x4E, 0, 0, 0, 0, 0, 0, (s32)&D_800B36C8, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+s32 D_800BA660[1] = { (s32)&D_800B36F4 };
+GfxViewport D_800BA664 = { 0x28, 0xEE, 0x19A, 0x1B0, 0, 0, 0x280, 0x1E0, 0xE1, 0x198, 0x200, 0x1FF, 0, 0, 0, 0, 0 };
+GfxViewport D_800BA68C = { 0x1CC, 0x24, 0x25C, 0x84, 0, 0, 0x280, 0x1E0, 0x214, 0x88, 0x400, 0xFF, 0, 0, 0, 0, 0 };
+GfxViewport D_800BA6B4 = { 0x1CC, 0x88, 0x25C, 0xE8, 0, 0, 0x280, 0x1E0, 0x214, 0xEC, 0x4CC, 0xFF, 0, 0, 0, 0, 0 };
+GfxViewport D_800BA6DC = { 0x1CC, 0xEC, 0x25C, 0x14C, 0, 0, 0x280, 0x1E0, 0x214, 0x150, 0x600, 0xFF, 0, 0, 0, 0, 0 };
+GfxViewport D_800BA704 = { 0x1CC, 0x150, 0x25C, 0x1B0, 0, 0, 0x280, 0x1E0, 0x214, 0x1B4, 0x700, 0xFF, 0, 0, 0, 0, 0 };
+process_info D_800BA72C = { LevelSelectInit, LevelSelectUpdate, LevelSelectRender, LevelSelectQuit, 0 };
+s32 D_800BA740 = 0;
+s32 D_800BA744 = 0;
+s32 D_800BA748[1] = { (s32)&D_800B3734 };
+s32 D_800BA74C[1] = { (s32)&D_800B3748 };
+s32 D_800BA750[1] = { (s32)&D_800B3774 };
+PlaceRec D_800BA754[19] = {
+    { 6, -0xFA, -0x5A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
+    { 6, -0x6A, -0x5A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
+    { 6, 0x38, -0x5A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
+    { 6, 0xDC, -0x5A, 0, 0x1000, 0, 0, 0, 0, 0, 0, 0xC7, 0, 0 },
+    { 4, -0x122, -0xAA, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, -0x88, -0x10, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, 0x10, 0x88, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 4, 0xAA, 0x122, -0x6E, 0xA, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, -0xAA, -0x46, 0, 0, 0, 0, 0, 0, (s32)&D_800B3794, 0, 0, 0, 0 },
+    { 3, -0x8000, -0x46, 0, 0, 0, 0, 0, 0, (s32)&D_800B3794, 0, 0, 0, 0 },
+    { 3, 0x88, -0x46, 0, 0, 0, 0, 0, 0, (s32)&D_800B3794, 0, 0, 0, 0 },
+    { 0xE, -0x8000, -0xC8, 0, 0, 0, 0, 0, 0, (s32)&D_800BA748, 0, 0, 0, 0 },
+    { 4, -0x8000, 0x258, -0xCA, -0xA6, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, -0x8000, 0x42, 0, 0, 0, 0, 0, 0, (s32)&D_800B3798, 2, 0, 0, 0 },
+    { 4, -0x78, 0x78, 0x3A, 0x6C, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0xE, -0x8000, 0x8C, 0, 0, 0, 0, 0, 0, (s32)&D_800BA74C, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0xA6, 0, 0, 0, 0, 0, 0, (s32)&D_800BA750, 4, 0, 0, 0 },
+    { 4, -0x10E, 0x10E, 0x87, 0xBE, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+};
+s32 D_800BAA00[1] = { (s32)&D_800B3798 };
+s32 D_800BAA04[1] = { (s32)&D_800B37A4 };
+Ovl69Preset D_800BAA08[2] = {
+    {
+        { 0, 1, 2, 3 }, { 0x8000, 0x8000, 0x8000 }, { -0x122, -0x88, 0x10, 0xAA },
+        (void *)&D_800BAA00, 0, 0, 2, -1, -1, -1, -1,
+    },
+    {
+        { 0, 1, 2, 3 }, { 0, 0x8000, 0 }, { -0x116, -0x96, 0x1F, 0x9E }, (void *)&D_800BAA04,
+        1, 0, 2, 1, 0, 3, 2,
+    },
+};
+u16 D_800BAAA0[10] = { 0, 0x306B, 0x3067, 0x3069, 0x307B, 0x3073, 0x3071, 0x306D, 0x306F, 0 };
+process_info D_800BAAB4 = { team_mode_init, TeamModeUpdate, RenderTitlesBackdropAndMenu, 0, 0 };
+s32 D_800BAAC8 = 0;
+s32 D_800BAACC = 0;
+PlaceRec D_800BAAD0[4] = {
+    { 4, 0, 0x64, 0, 0x64, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 3, 0, 0, 0, 0, 0, 0, 0, 0, (s32)&D_800B37B0, 2, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    {
+        (s32)TitlesExtraScreenInit, 0, 0, -0x7B48, -0x7FF5, 0, 0, 0, 0,
+        (s32)TitlesShellScreenInit, (s32)TitlesShellScreenUpdate, -0x7B90, -0x7FF5, 0,
+    },
+};
+s32 D_800BAB60[1] = {0};
+
 void TitlesInitLevel(void) {
     u8 *g;
     s32 *p;
@@ -15,7 +563,7 @@ void TitlesInitLevel(void) {
     cam_init((u8 *)&D_800B9538);
     *(s32 *)((u8 *)&D_800B9538 + 8) = 0x400;
     *(s32 *)((u8 *)&D_800B9538 + 0x18) = 0x190;
-    func_80095BEC(1, &D_800B8C84);
+    func_80095BEC(1, (s32 *)D_800B8C84);
     GetEngineSlot(1)->sub[4].flags &= ~0x8000;
     GetEngineSlot(1)->sub[5].flags &= ~0x8000;
     GetEngineSlot(1)->sub[6].flags &= ~0x8000;
@@ -45,7 +593,7 @@ void TitlesInitLevel(void) {
         break;
     }
     D_800B95F4 = D_8005A9A0;
-    D_800B9600 = &D_800B8C2C;
+    D_800B95F4.w[3] = (s32)&D_800B8C2C;
 }
 
 void TitlesCheckIdle(void) {
@@ -70,56 +618,8 @@ void TitlesCheckIdle(void) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/ovl69/ovl69", D_800B32B8);
 
 void AnimateTitlesBackdrop(void) {
-    static const struct {
-        SLONG_XYZ pos;
-        char text[796];
-    } D_800B3494 = {
-        { -0x17C, 0x190, -0x64 },
-        "EASY\0\0\0\0"
-        "MEDIUM\0\0"
-        "HARD\0\0\0\0"
-        "PRESS \xFC BUTTON TO START\0"
-        "EXIT\0\0\0\0"
-        "SOUND\0\0\0"
-        "AUDIO MODE\0\0"
-        "<STEREO>\0\0\0\0"
-        "< MONO >\0\0\0\0"
-        "MUSIC VOLUME\0\0\0\0"
-        "FX VOLUME\0\0\0"
-        "CONTROLLER\0\0"
-        "VIBRATION\0\0\0"
-        "ON\0\0"
-        "OFF\0"
-        "PRESS \xFF BUTTON TO CHANGE\0\0\0\0"
-        "PRESS \xFC BUTTON TO ACCEPT\0\0\0\0"
-        "<100%>\0\0"
-        "<090%>\0\0"
-        "P1\0\0"
-        "P2\0\0"
-        "P3\0\0"
-        "P4\0\0"
-        "CHARACTER SELECT\0\x14\0\0"
-        "PRESS \xFD BUTTON\r14TO UNLOCK LEVELS\0\0\0"
-        "THERE ARE NO MORE\nUNLOCKED LEVELS\nON THIS MEMORY CARD\n\0\0"
-        "INSERT MEMORY CARD\nWITH CRASH BASH DATA\nTO CHECK FOR\nUNLOCKED LEVELS\0\0\0\0"
-        "LOCKED\0\0"
-        "PRESS LEFT - RIGHT TO CHANGE ARENA\0\0"
-        "PRESS UP - DOWN TO CHANGE LEVEL\0"
-        "PRESS \xFC BUTTON TO SELECT\0\0\0\0"
-        "CHOOSE LEVEL\0\0\0\0"
-        "PRESS \xFF TO\nCHECK MEMORY CARD\nFOR SAVED GAME\0"
-        "CHECKING MEMORY CARD\nIN MEMORY CARD SLOT 1\nFOR UNLOCKED\nLEVELS\0\x14"
-        "SELECT BATTLE TYPE\0\0"
-        "PRESS LEFT - RIGHT TO CHANGE BATTLE TYPE\0\0\0\0"
-        "PRESS \xFC BUTTON TO START BATTLE\0\0"
-        "VS\0\0"
-        "VS BATTLE\0\0\0"
-        "TEAM BATTLE\0"
-        "SELECT SLOT\0"
-    };
     SLONG_XYZ pos;
     subengine *sub;
     subengine *p2;
@@ -138,7 +638,7 @@ void AnimateTitlesBackdrop(void) {
     sub->unk52 = 1;
     eng = GetEngineSlot(1);
     tbl = D_80068BD4;
-    pos = D_800B3494.pos;
+    pos = D_800B3494;
     d = D_8004E0D8;
     pos.x += (tbl[(((d * 0x14) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x8F) >> 0xF;
     pos.y += (tbl[(((d * 0x2F) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x17) >> 0xC;
@@ -475,11 +975,11 @@ void OptionsUpdate(void) {
             switch (D_800B9508) {
             case 0:
                 D_800B950C = 1;
-                func_80095BEC(4, D_800B901C);
+                func_80095BEC(4, (s32 *)D_800B901C);
                 break;
             case 1:
                 D_800B950C = 2;
-                func_80095BEC(4, D_800B91CC);
+                func_80095BEC(4, (s32 *)D_800B91CC);
                 break;
             case 2:
                 func_8001E824(&D_8009F8A4);
@@ -681,7 +1181,7 @@ void OptionsQuit(void) {
 }
 
 void OptionsInit(void) {
-    func_80095BEC(4, D_800B8F20);
+    func_80095BEC(4, (s32 *)D_800B8F20);
     D_800B9508 = 0;
     D_800B950C = 0;
 }
@@ -731,13 +1231,13 @@ void BattleOptionsQuit(void) {
 }
 
 void BattleOptionsInit(void) {
-    func_80095BEC(0, D_800B8974);
+    func_80095BEC(0, (s32 *)D_800B8974);
     D_800B962C = 2;
 }
 
 void TitlesLeaveRender(void) {
-    if (D_800B9DFC != NULL) {
-        D_800B9DFC();
+    if (D_800B9DF4.render != NULL) {
+        D_800B9DF4.render();
     }
 }
 
@@ -748,7 +1248,7 @@ void TitlesLeaveInit(void) {
 
 void NewLoadMenuInit(void) {
     u8 *g;
-    func_80095BEC(0, D_800B889C);
+    func_80095BEC(0, (s32 *)D_800B889C);
     D_800B9628 = 0;
     D_800B95F0 = 0;
     g = D_8005A614;
@@ -773,9 +1273,9 @@ extern u8 D_8005A63A;
 
 void PlayersMenuInit(void) {
     if (D_8005A646 & 4) {
-        func_80095BEC(0, D_800B877C);
+        func_80095BEC(0, (s32 *)D_800B877C);
     } else {
-        func_80095BEC(0, D_800B865C);
+        func_80095BEC(0, (s32 *)D_800B865C);
     }
     D_8005A63A = D_80051600 != 0;
 }
@@ -788,7 +1288,7 @@ void MainMenuInit(void) {
     *(s16 *)(g + 0x34) = 0x28;
     D_800B9624 = 0;
     *(u16 *)(g + 0x32) |= 0x200;
-    func_80095BEC(0, D_800B8518);
+    func_80095BEC(0, (s32 *)D_800B8518);
 }
 
 void RenderTitlesBackdropAndMenu(void) {
@@ -1050,8 +1550,8 @@ void CharSelectInit(void) {
     *(s32 *)((u8 *)&D_800B9F1C + 8) = 0x400;
     *(s32 *)((u8 *)&D_800B9F1C + 0x18) = 0x190;
     eng = GetEngineSlot(0);
-    func_80095BEC(0, &D_800B9634);
-    func_80095BEC(2, &D_800B9A00);
+    func_80095BEC(0, (s32 *)D_800B9634);
+    func_80095BEC(2, (s32 *)D_800B9A00);
     i = 0;
     do {
         InitCharSelector(i);
@@ -1340,12 +1840,12 @@ void LevelSelectInit(void) {
     subengine *sub;
 
     D_800BA744 = 0;
-    func_80095BEC(0, &D_800BA4D4);
-    func_80095BEC(2, &D_800BA35C);
-    func_80095BEC(3, &D_800BA3A4);
-    func_80095BEC(4, &D_800BA3EC);
-    func_80095BEC(5, &D_800BA434);
-    func_80095BEC(6, &D_800BA47C);
+    func_80095BEC(0, (s32 *)D_800BA4D4);
+    func_80095BEC(2, (s32 *)D_800BA35C);
+    func_80095BEC(3, (s32 *)D_800BA3A4);
+    func_80095BEC(4, (s32 *)D_800BA3EC);
+    func_80095BEC(5, (s32 *)D_800BA434);
+    func_80095BEC(6, (s32 *)D_800BA47C);
     GetEngineSlot(1)->sub[4].flags |= 0x8000;
     GetEngineSlot(1)->sub[5].flags |= 0x8000;
     GetEngineSlot(1)->sub[6].flags |= 0x8000;
@@ -1736,7 +2236,7 @@ void TeamModeUpdate(void) {
 }
 
 void team_mode_init(void) {
-    func_80095BEC(0, D_800BA754);
+    func_80095BEC(0, (s32 *)D_800BA754);
     D_800BAAC8 = 0;
     D_800BAACC = 0;
 }
