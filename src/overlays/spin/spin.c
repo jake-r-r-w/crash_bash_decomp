@@ -26,6 +26,8 @@ extern u8 D_8004EC58[];
 extern u8 D_8004EC60[];
 extern u8 D_8004EC68[];
 extern u8 D_80050088[];
+extern u8 D_80063BB8[];
+extern u8 D_80063EC8[];
 extern u8 D_80070008[];
 extern u8 D_8007000C[];
 extern u8 D_80070070[];
@@ -33,131 +35,204 @@ extern u8 D_800700D4[];
 extern u8 D_80070138[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "BREATHE";
-const char D_800B32C0[] = "MEDIUM";
-const char D_800B32C8[] = "HIT";
-const char D_800B32CC[] = "DIE";
-const char D_800B32D0[] = "JUMP";
-const char D_800B32D8[] = "ATTACK";
-const char D_800B32E0[] = "FLIP";
-const char D_800B32E8[] = "TAUNT_A";
+const char SpinAnimBreathe[] = "BREATHE";
+const char SpinAnimMedium[] = "MEDIUM";
+const char SpinAnimHit[] = "HIT";
+const char SpinAnimDie[] = "DIE";
+const char SpinAnimJump[] = "JUMP";
+const char SpinAnimAttack[] = "ATTACK";
+const char SpinAnimFlip[] = "FLIP";
+const char SpinAnimTauntA[] = "TAUNT_A";
 
 /* data, in address order */
-u8 D_800BB720[20] = { 0x16, 0, 0x13, 0, 0x10, 0, 0xD, 0, 0x13, 0, 0x16, 0, 0x13, 0, 0x10, 0, 0x10, 0, 0x17, 0 };
-u8 D_800BB734[20] = { 0x17, 0, 0x14, 0, 0x11, 0, 0xE, 0, 0x14, 0, 0x16, 0, 0x15, 0, 0x10, 0, 0x10, 0, 0x17, 0 };
-u8 D_800BB748[12] = { 0xC, 0, 0x14, 0, 0x18, 0, 0xC, 0, 0x14, 0, 0x18, 0 };
-u8 D_800BB754[24] = {
-    0x14, 0, 0x19, 0, 0x1D, 0, 0x12, 0, 0x17, 0, 0x1B, 0, 0x10, 0, 0x15, 0, 0x19, 0, 0xE, 0,
-    0x12, 0, 0x16, 0,
+u16 SpinAiSkill[10] = {
+    0x16, 0x13, 0x10, 0xD, 0x13, 0x16, 0x13, 0x10, 0x10, 0x17,
 };
-u8 D_800BB76C[20] = { 0xD, 0, 0xD, 0, 0xD, 0, 0xD, 0, 0x10, 0, 3, 0, 0xE, 0, 0x10, 0, 0x10, 0, 3, 0 };
-u8 D_800BB780[60] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x20, 0, 0x13, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0, 0x20, 0, 0, 0x10, 0, 0, 0, 0, 0x10, 0, 0, 0xC8, 0, 0, 0, 0xBC, 2, 0, 0, 0, 2, 0, 0,
-    0xC8, 0x3E, 6, 0x80, 0xB8, 0x3B, 6, 0x80, 0x20, 0, 0, 0, 0, 4, 0, 0,
+u16 SpinAiSkillAlt[10] = {
+    0x17, 0x14, 0x11, 0xE, 0x14, 0x16, 0x15, 0x10, 0x10, 0x17,
 };
-u8 D_800BB7BC[80] = {
-    0x88, 0, 0x88, 0, 9, 0, 0xB, 0, 0x80, 0, 0x80, 0, 6, 0, 0xB, 0, 0x80, 0, 0x80, 0, 6, 0,
-    0xB, 0, 0x80, 0, 0x80, 0, 6, 0, 0xB, 0, 0x80, 0, 0x80, 0, 6, 0, 0xB, 0, 0x80, 0, 0x80, 0,
-    8, 0, 0xD, 0, 0x80, 0, 0x80, 0, 8, 0, 0xD, 0, 0x80, 0, 0x80, 0, 8, 0, 0xD, 0, 0x80, 0,
-    0x80, 0, 8, 0, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+u16 SpinAiTeamSkill[6] = {
+    0xC, 0x14, 0x18, 0xC, 0x14, 0x18,
 };
-u8 D_800BB80C[60] = {
-    0, 0, 0, 0, 0, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0,
-    0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0,
-    0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0, 0, 0, 0, 0, 0,
+u16 SpinAiHumanRoundTweak[12] = {
+    0x14, 0x19, 0x1D, 0x12, 0x17, 0x1B, 0x10, 0x15, 0x19, 0xE, 0x12, 0x16,
 };
-u16 D_800BB848[32] = {
+u16 SpinAiBotTweak[10] = {
+    0xD, 0xD, 0xD, 0xD, 0x10, 3, 0xE, 0x10, 0x10, 3,
+};
+u16 SpinAiHumanTweak[10] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x20, 0x13, 0x10, 0x10, 0x20,
+};
+/* the shell settings (engine world record 0x0103) */
+shell_setup spin_shell_info = {
+    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, D_80063EC8, D_80063BB8, 0x20, 0x400,
+};
+SpinJumpEnt SpinJumpEnts[10] = {
+    { 0x88, 0x88, 9, 0xB },
+    { 0x80, 0x80, 6, 0xB },
+    { 0x80, 0x80, 6, 0xB },
+    { 0x80, 0x80, 6, 0xB },
+    { 0x80, 0x80, 6, 0xB },
+    { 0x80, 0x80, 8, 0xD },
+    { 0x80, 0x80, 8, 0xD },
+    { 0x80, 0x80, 8, 0xD },
+    { 0x80, 0x80, 8, 0xD },
+    { 0, 0, 0, 0 },
+};
+u16 SpinRunSpeeds[30] = {
+    0, 0, 0, 0x32, 0x32, 0x37, 0x32, 0x32, 0x37, 0x32, 0x32, 0x37, 0x32, 0x32, 0x37, 0x32, 0x32,
+    0x37, 0x32, 0x32, 0x37, 0x32, 0x32, 0x37, 0x32, 0x32, 0x37, 0, 0, 0,
+};
+u16 SpinBalloonWeights[32] = {
     0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0xF, 0xE, 0xD, 0xC, 0xB, 0xA, 9, 8, 7, 6,
     5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u16 D_800BB888[2] = { 0x17, 0x13 };
-s16 D_800BB88C[4] = { 0xB, 8, 9, 0xA };
-u16 D_800BB894[4] = { 0x2004, 0x2003, 0x2001, 0x2002 };
-u16 D_800BB89C[6] = { 3, 2, 0, 1, 4, 0 };
-s32 D_800BB8A8[4] = { 0x5DC, 0x5DD, 0x5DE, 0x5DF };
-s32 D_800BB8B8[4] = { 0x5E0, 0x5E1, 0x5E2, 0x5E3 };
-s32 D_800BB8C8[4] = { 0x5E4, 0x5E5, 0x5E6, 0x5E7 };
-s32 D_800BB8D8[4] = { 0x5E8, 0x5E9, 0x5EA, 0x5EB };
-s32 *D_800BB8E8[178] = {
-    (void *)&D_800BB8A8, (void *)&D_800BB8B8, (void *)&D_800BB8C8, (void *)&D_800BB8D8,
-    0x80090000, 0x41800003, 0x98003, 0xA8007, 0x80034181, (void *)&D_80070008, 0x418B0004,
-    0x168018, 0x8004418F, 0, 0x80070000, 0x44000020, 0xC8018, 0x8004441F, 0x38, 0x800A0000,
-    (void *)&D_8007000C, 0x46040013, 0x28018, 0x80184617, 0x46180004, 0x288018, 0x80044619, 7,
-    0x80090000, 0x40800035, 0x98003, 0xD8007, 0x80034081, 0x408E0008, 0x58007, 0x8018408F,
-    0x40930011, 0x8004, 0x80070000, 0x45800015, 0x148018, (void *)&D_80044594, 0x38,
-    0x800A0000, 0x8007003E, 0x4605001C, 0x288018, 0x80044621, 7, 0x80090000, 0x41000099,
-    0x98003, 0xE8007, 0x80034101, (void *)&D_80070008, 0x410F0005, 0x118018, 0x80044113, 0,
-    0x80070000, 0x44000023, 0x58018, 0x80044422, 0x38, 0x800A0000, 0x800700A2, 0x46840017,
-    0x288018, 0x8004469B, 7, 0x80090000, 0x40000067, 0x98003, 0x128007, 0x80034001,
-    (void *)&D_80070008, 0x40130007, 0xB8018, 0x80044019, 0, 0x80070000, 0x45800015, 0xF8018,
-    (void *)&D_80044594, 0x38, 0x800A0000, (void *)&D_80070070, 0x46040017, 0x288018,
-    0x8004461B, 7, 0x80090000, 0x420000FD, 0x98003, 0xA8007, 0x80034201, (void *)&D_80070008,
-    0x420B0013, 0x78018, 0x8004421D, 0, 0x80070000, 0x4480001F, 0xD8018, 0x8004449E, 0x38,
-    0x800A0000, 0x80070106, 0x46840012, 0x288018, 0x80044696, 7, 0x80090000, 0x4080012F,
-    0x98003, 0x128007, 0x80034081, (void *)&D_80070008, 0x4093000B, 0x78018, 0x8004409D, 0,
-    0x80070000, 0x46000015, 0xF8018, (void *)&D_80044614, 0x38, 0x800A0000,
-    (void *)&D_80070138, 0x46840013, 0x28018, 0x8018469A, 0x469B0028, 0x78004, 0x80090000,
-    0x420000CB, 0x98003, 0x128007, 0x80034201, (void *)&D_80070008, 0x42120008, 0x98018,
-    0x8004421A, 0, 0x80070000, 0x42800017, 0x178018, 0x80044296, 0x38, 0x800A0000,
-    (void *)&D_800700D4, 0x46840016, 0x28018, 0x8018469A, 0x469B0028, 0x78004, 0x80090000,
-    0x41800161, 0x98003, 0x128007, 0x80034181, (void *)&D_80070008, 0x41930009, 0x98018,
-    (void *)&D_8004419C, 0, 0x80070000, 0x42000019, 0xB8018, (void *)&D_80044218, 0x38,
-    0x800A0000, 0x8007016A, 0x46840018, 0x28018, 0x8018469C, 0x469D0028, 0x78004,
+u16 SpinHazardKinds[2] = { 0x17, 0x13 };
+s16 SpinDropKinds[4] = { 0xB, 8, 9, 0xA };
+u16 SpinBalloonModels[4] = { 0x2004, 0x2003, 0x2001, 0x2002 };
+u16 SpinBalloonAnims[6] = { 3, 2, 0, 1, 4, 0 };
+s32 SpinBalloonSfx0[4] = { 0x5DC, 0x5DD, 0x5DE, 0x5DF };
+s32 SpinBalloonSfx1[4] = { 0x5E0, 0x5E1, 0x5E2, 0x5E3 };
+s32 SpinBalloonSfx2[4] = { 0x5E4, 0x5E5, 0x5E6, 0x5E7 };
+s32 SpinBalloonSfx3[4] = { 0x5E8, 0x5E9, 0x5EA, 0x5EB };
+s32 *SpinBalloonSfx[4] = { SpinBalloonSfx0, SpinBalloonSfx1, SpinBalloonSfx2, SpinBalloonSfx3 };
+hero_seq CRA_seq_long_hit[20] = {
+    0, 0x8009, 3, 0x4180, 0x8003, 9, 0x8007, 0xA, 0x4181, 0x8003, 8, 0x8007, 4, 0x418B, 0x8018,
+    0x16, 0x418F, 0x8004, 0, 0,
 };
-s32 D_800BBBB0[3] = { 0x17001C, 0x190018, 0xFFFF };
-s32 D_800BBBBC[9] = {
-    (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32CC, (s32)&D_800B32D0,
-    (s32)&D_800B32D8, (s32)&D_800B32E0, (s32)&D_800B32E8, 0,
+hero_seq CRA_SP_seq_die[10] = {
+    0, 0x8007, 0x20, 0x4400, 0x8018, 0xC, 0x441F, 0x8004, 0x38, 0,
 };
-s32 D_800BBBE0[1] = { 0xFFFF };
-s32 D_800BBBE4[1] = { -0xFFE6 };
-s32 D_800BBBE8[16] = {
-    0x7D, (s32)&D_800BBBBC, (s32)&D_800BBBE0, 7, 0, 0, 0, 0, 0x7E, (s32)&D_800BBBBC,
-    (s32)&D_800BBBE4, 7, 0, 0, 0, 0,
+hero_seq CRA_seq_flip_jump[18] = {
+    0, 0x800A, 0xC, 0x8007, 0x13, 0x4604, 0x8018, 2, 0x4617, 0x8018, 4, 0x4618, 0x8018, 0x28,
+    0x4619, 0x8004, 7, 0,
 };
-s32 D_800BBC28[23] = {
+hero_seq COC_seq_long_hit[20] = {
+    0, 0x8009, 0x35, 0x4080, 0x8003, 9, 0x8007, 0xD, 0x4081, 0x8003, 8, 0x408E, 0x8007, 5, 0x408F,
+    0x8018, 0x11, 0x4093, 0x8004, 0,
+};
+hero_seq COC_SP_seq_die[10] = {
+    0, 0x8007, 0x15, 0x4580, 0x8018, 0x14, 0x4594, 0x8004, 0x38, 0,
+};
+hero_seq COC_seq_flip_jump[12] = {
+    0, 0x800A, 0x3E, 0x8007, 0x1C, 0x4605, 0x8018, 0x28, 0x4621, 0x8004, 7, 0,
+};
+hero_seq BRO_seq_long_hit[20] = {
+    0, 0x8009, 0x99, 0x4100, 0x8003, 9, 0x8007, 0xE, 0x4101, 0x8003, 8, 0x8007, 5, 0x410F, 0x8018,
+    0x11, 0x4113, 0x8004, 0, 0,
+};
+hero_seq BRO_SP_seq_die[10] = {
+    0, 0x8007, 0x23, 0x4400, 0x8018, 5, 0x4422, 0x8004, 0x38, 0,
+};
+hero_seq BRO_seq_flip_jump[12] = {
+    0, 0x800A, 0xA2, 0x8007, 0x17, 0x4684, 0x8018, 0x28, 0x469B, 0x8004, 7, 0,
+};
+hero_seq CTX_seq_long_hit[20] = {
+    0, 0x8009, 0x67, 0x4000, 0x8003, 9, 0x8007, 0x12, 0x4001, 0x8003, 8, 0x8007, 7, 0x4013, 0x8018,
+    0xB, 0x4019, 0x8004, 0, 0,
+};
+hero_seq CTX_SP_seq_die[10] = {
+    0, 0x8007, 0x15, 0x4580, 0x8018, 0xF, 0x4594, 0x8004, 0x38, 0,
+};
+hero_seq CTX_seq_flip_jump[12] = {
+    0, 0x800A, 0x70, 0x8007, 0x17, 0x4604, 0x8018, 0x28, 0x461B, 0x8004, 7, 0,
+};
+hero_seq DNG_seq_long_hit[20] = {
+    0, 0x8009, 0xFD, 0x4200, 0x8003, 9, 0x8007, 0xA, 0x4201, 0x8003, 8, 0x8007, 0x13, 0x420B,
+    0x8018, 7, 0x421D, 0x8004, 0, 0,
+};
+hero_seq DNG_SP_seq_die[10] = {
+    0, 0x8007, 0x1F, 0x4480, 0x8018, 0xD, 0x449E, 0x8004, 0x38, 0,
+};
+hero_seq DNG_seq_flip_jump[12] = {
+    0, 0x800A, 0x106, 0x8007, 0x12, 0x4684, 0x8018, 0x28, 0x4696, 0x8004, 7, 0,
+};
+hero_seq TIN_seq_long_hit[20] = {
+    0, 0x8009, 0x12F, 0x4080, 0x8003, 9, 0x8007, 0x12, 0x4081, 0x8003, 8, 0x8007, 0xB, 0x4093,
+    0x8018, 7, 0x409D, 0x8004, 0, 0,
+};
+hero_seq TIN_SP_seq_die[10] = {
+    0, 0x8007, 0x15, 0x4600, 0x8018, 0xF, 0x4614, 0x8004, 0x38, 0,
+};
+hero_seq TIN_seq_flip_jump[14] = {
+    0, 0x800A, 0x138, 0x8007, 0x13, 0x4684, 0x8018, 2, 0x469A, 0x8018, 0x28, 0x469B, 0x8004, 7,
+};
+hero_seq KAN_seq_long_hit[20] = {
+    0, 0x8009, 0xCB, 0x4200, 0x8003, 9, 0x8007, 0x12, 0x4201, 0x8003, 8, 0x8007, 8, 0x4212, 0x8018,
+    9, 0x421A, 0x8004, 0, 0,
+};
+hero_seq KAN_SP_seq_die[10] = {
+    0, 0x8007, 0x17, 0x4280, 0x8018, 0x17, 0x4296, 0x8004, 0x38, 0,
+};
+hero_seq KAN_seq_flip_jump[14] = {
+    0, 0x800A, 0xD4, 0x8007, 0x16, 0x4684, 0x8018, 2, 0x469A, 0x8018, 0x28, 0x469B, 0x8004, 7,
+};
+hero_seq KON_seq_long_hit[20] = {
+    0, 0x8009, 0x161, 0x4180, 0x8003, 9, 0x8007, 0x12, 0x4181, 0x8003, 8, 0x8007, 9, 0x4193, 0x8018,
+    9, 0x419C, 0x8004, 0, 0,
+};
+hero_seq KON_SP_seq_die[10] = {
+    0, 0x8007, 0x19, 0x4200, 0x8018, 0xB, 0x4218, 0x8004, 0x38, 0,
+};
+hero_seq KON_seq_flip_jump[14] = {
+    0, 0x800A, 0x16A, 0x8007, 0x18, 0x4684, 0x8018, 2, 0x469C, 0x8018, 0x28, 0x469D, 0x8004, 7,
+};
+s16 SpinPreLoadDB[6] = { 0x1C, 0x17, 0x18, 0x19, -1, 0 };
+char *SpinAnims[9] = {
+    (char *)SpinAnimBreathe, (char *)SpinAnimMedium, (char *)SpinAnimHit, (char *)SpinAnimDie,
+    (char *)SpinAnimJump, (char *)SpinAnimAttack, (char *)SpinAnimFlip, (char *)SpinAnimTauntA,
+    NULL,
+};
+s16 SpinLevelDB0[2] = { -1, 0 };
+s16 SpinLevelDB1[2] = { 0x1A, -1 };
+WWInf SpinWorldInfo[2] = {
+    { 0x7D, SpinAnims, SpinLevelDB0, 7 },
+    { 0x7E, SpinAnims, SpinLevelDB1, 7 },
+};
+s32 SpinFiles[21] = {
     (s32)&D_80055684, (s32)&D_8004EC68, (s32)&D_8004EC60, (s32)&D_800555A4, (s32)&D_8004EC48,
     (s32)&D_8004EC40, (s32)&D_80053074, (s32)&D_8004EC58, (s32)&D_8004EC50, (s32)&D_80052F5C,
     (s32)&D_8004EC38, (s32)&D_8004EC30, (s32)&D_80052F94, (s32)&D_8004EC28, (s32)&D_8004EC20,
-    (s32)&D_80052FCC, (s32)&D_8004EC18, (s32)&D_8004EC10, 0, 0, 0, (s32)&D_80050088,
-    (s32)&D_800BBC28,
+    (s32)&D_80052FCC, (s32)&D_8004EC18, (s32)&D_8004EC10, 0, 0,
 };
-s32 D_800BBC84[2] = { 0x2010003, 0x201020D };
-s32 D_800BBC8C[9] = { (s32)&D_800BBC84, 4, (s32)&D_800BBBB0, (s32)&D_800BBBE8, (s32)&D_800BBC8C, 0, 0, 0, 0 };
-SpinSlot D_800BBCB0[10] = {
+/* the level's files (the engine's per-mode table points at mode 0x1B's) */
+file_group_load_info file_group_RING = { D_80050088, SpinFiles };
+u16 SpinLUPtab[4] = { 3, 0x201, 0x20D, 0x201 };
+TrigLookUp SpinLUP = { SpinLUPtab, 4 };
+PreMap SPIN_PREMAP = { SpinPreLoadDB, SpinWorldInfo, &SpinLUP };
+SpinSlot SpinSlots[10] = {
     { 0, { 0, 0, 0 }, { 0, 0x14, 0 } }, { 0, { 0, 0, 0 }, { 0, 0x14, 0 } },
     { 0, { 0, 0x300, 0 }, { 0, 0, 5 } }, { 0, { 0, 0, 0 }, { 0, 0, 0xA } },
     { 0, { 0, 0, 0 }, { 0, 0, -0xF } }, { 0, { 0, 0, 0 }, { 0, 0, 0 } },
     { 0, { 0, 0, 0 }, { 0, 0, 0 } }, { 0, { 0, 0, 0 }, { 0, 0, 0 } },
     { 0, { 0, 0, 0 }, { 0, 0, 0 } }, { 0, { 0, 0, 0 }, { 0, 0, 0 } },
 };
-s16 D_800BBD50[1] = {0};
-u16 D_800BBD52 = 0;
-u16 D_800BBD54 = 0;
-u16 D_800BBD56 = 0;
-u16 D_800BBD58 = 0;
-u16 D_800BBD5A = 0;
-u16 D_800BBD5C = 0;
-u16 D_800BBD5E = 0;
-s16 D_800BBD60[1] = {0};
-u16 D_800BBD62 = 0;
-u16 D_800BBD64 = 0;
-s32 D_800BBD68 = 0;
-EXTengine D_800BBD6C = {0};
-s32 D_800BBE08 = 0;
-s32 D_800BBE0C = 0;
-SpinCell D_800BBE10[4][16] = {0};
-s32 D_800BC010 = 0;
-s32 D_800BC014 = 0;
-s16 D_800BC018 = 0;
-s16 D_800BC01A = 0;
-s16 D_800BC01C = 0;
-SpinObj *D_800BC020[10] = {0};
-s32 D_800BC048 = 0;
-u16 D_800BC04C[4] = { 0x2013, 0x2012, 0x2010, 0x2011 };
-u16 D_800BC054[4] = { 0x446, 0x447, 0x448, 0x449 };
-u16 D_800BC05C[4] = {0};
+s16 SpinUnused0[1] = {0};
+u16 SpinUnused1 = 0;
+u16 SpinDropTimer = 0;
+u16 SpinDropDelay = 0;
+u16 SpinBigDrop = 0;
+u16 SpinSlotPos = 0;
+u16 SpinDropCount = 0;
+u16 SpinDropPos = 0;
+s16 SpinUnused2[1] = {0};
+u16 SpinBalloonOwner = 0;
+u16 SpinBalloonTimer = 0;
+s32 SpinBalloonFlag = 0;
+EXTengine SpinSfxEngine = {0};
+s32 SpinBestScore = 0;
+s32 SpinBestHero = 0;
+SpinCell SpinDropPoints[4][16] = {0};
+s32 SpinTurn = 0;
+s32 SpinTurnTarget = 0;
+s16 SpinAngle = 0;
+s16 SpinAngle2 = 0;
+s16 SpinSpeed = 0;
+SpinObj *SpinArenaObjs[10] = {0};
+s32 SpinASTBase = 0;
+u16 SpinShadowModels[4] = { 0x2013, 0x2012, 0x2010, 0x2011 };
+u16 SpinHitSfx[4] = { 0x446, 0x447, 0x448, 0x449 };
+u16 SpinHitDone[4] = {0};
 
 void InitialiseSPINFirst() {
     void *p;
@@ -167,7 +242,7 @@ void InitialiseSPINFirst() {
     D_8009D6E8.unk68 = SPIN_KeepInBounds;
     D_8009D6E8.unk44 = SpinHeroTestFlip;
     D_8009D6E8.unk3C = SpinNoAttack;
-    D_8009D6E8.unkC = D_800BB80C;
+    D_8009D6E8.unkC = SpinRunSpeeds;
     D_8009D6E8.unk38 = Spin_HeroBot;
     D_8009D6E8.unk64 = SpinChooseWinner;
     D_8009D6E8.unk4C = SpinHero2ObjectCollision;
@@ -177,23 +252,23 @@ void InitialiseSPINFirst() {
     D_8009D6E8.unk5C = SpinHero_ExtraEffects;
     D_8009D6E8.unk60 = SpinTouched;
     D_8009D6E8.unk18 = SpinCreateShadow;
-    D_8009D6E8.unk10 = (SpinJumpEnt *)D_800BB7BC;
+    D_8009D6E8.unk10 = (SpinJumpEnt *)SpinJumpEnts;
     D_8009E0E2 = 0x38;
     D_8009E0E4 = 0x36;
     D_8009E0E6 = 0x37;
     D_8009E0D8 = 0x33;
     SpinInitASTIndices();
-    D_8009D8F4 = D_800BB76C;
-    D_8009D8F8 = D_800BB780;
-    D_8009D904 = D_800BB754;
+    D_8009D8F4 = SpinAiBotTweak;
+    D_8009D8F8 = SpinAiHumanTweak;
+    D_8009D904 = SpinAiHumanRoundTweak;
     q = &D_8009D8FC;
     if (D_8005A680 != 0) {
-        p = D_800BB734;
+        p = SpinAiSkillAlt;
     } else {
-        p = D_800BB720;
+        p = SpinAiSkill;
     }
     *q = p;
-    D_8009D900 = D_800BB748;
+    D_8009D900 = SpinAiTeamSkill;
 }
 
 void InitialiseSPIN() {
@@ -209,17 +284,17 @@ void InitialiseSPIN() {
         Set_Clock(0x130, 0x81D0);
     }
     World_floor_level = -0x10;
-    D_800BBD52 = 0x1F4;
-    D_800BBD54 = 0x12C;
-    D_800BBD56 = 0x190;
-    D_800BBD58 = 0x1E;
-    D_800BBD5A = 0;
-    D_800BBD5C = 0;
-    D_800BBD5E = 0;
-    D_800BBD62 = 0;
-    D_800BBD64 = 0;
-    D_800BBD68 = 0;
-    D_800BBD6C = EngineTemplate;
+    SpinUnused1 = 0x1F4;
+    SpinDropTimer = 0x12C;
+    SpinDropDelay = 0x190;
+    SpinBigDrop = 0x1E;
+    SpinSlotPos = 0;
+    SpinDropCount = 0;
+    SpinDropPos = 0;
+    SpinBalloonOwner = 0;
+    SpinBalloonTimer = 0;
+    SpinBalloonFlag = 0;
+    SpinSfxEngine = EngineTemplate;
     for (i = 0; i < 4; i++) {
         a = (get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z) + 0x800) & 0xFFF;
         m = Heroes[i].hero_move;
@@ -252,7 +327,7 @@ void InitialiseSPIN() {
     SpinShuffleDropPoints();
     func_80086D88();
     SpinInitScene();
-    PlaySfx(0x5EC, &D_800BBD6C.sfx, NULL, 0x1000, 0x1E00, 0);
+    PlaySfx(0x5EC, &SpinSfxEngine.sfx, NULL, 0x1000, 0x1E00, 0);
 }
 
 void SpinShuffleDropPoints(void) {
@@ -270,7 +345,7 @@ void SpinShuffleDropPoints(void) {
     s32 t1;
 
     i = 0;
-    base = D_800BBE10[0];
+    base = SpinDropPoints[0];
     y = 0x500;
     for (; i < 4; i++) {
         j = 0;
@@ -289,12 +364,12 @@ void SpinShuffleDropPoints(void) {
         j = Random(16);
         c = Random(4);
         d = Random(16);
-        t0 = D_800BBE10[i][j].x;
-        t1 = D_800BBE10[i][j].y;
-        D_800BBE10[i][j].x = D_800BBE10[c][d].x;
-        D_800BBE10[i][j].y = D_800BBE10[c][d].y;
-        D_800BBE10[c][d].x = t0;
-        D_800BBE10[c][d].y = t1;
+        t0 = SpinDropPoints[i][j].x;
+        t1 = SpinDropPoints[i][j].y;
+        SpinDropPoints[i][j].x = SpinDropPoints[c][d].x;
+        SpinDropPoints[i][j].y = SpinDropPoints[c][d].y;
+        SpinDropPoints[c][d].x = t0;
+        SpinDropPoints[c][d].y = t1;
     }
 }
 
@@ -303,25 +378,25 @@ void SpinInitScene(void) {
     SpinObj *obj;
     s16 *p;
 
-    D_800BC010 = 0;
-    D_800BC014 = 0;
-    D_800BC01C = 1;
-    D_800BC018 = 0;
-    D_800BC01A = 0;
+    SpinTurn = 0;
+    SpinTurnTarget = 0;
+    SpinSpeed = 1;
+    SpinAngle = 0;
+    SpinAngle2 = 0;
     obj = ((SpinScene *)D_80058AD0)->objs;
     for (i = 9; i >= 0; i--) {
-        D_800BC020[i] = NULL;
+        SpinArenaObjs[i] = NULL;
     }
     for (; obj != NULL; obj = obj->next) {
         p = (s16 *)func_80015870(obj->model, obj->index);
         i = *p - 10;
         if ((u32)i < 10) {
-            D_800BC020[i] = obj;
+            SpinArenaObjs[i] = obj;
             obj->unk51 = 0;
         }
         i = *p - 20;
         if ((u32)i < 10) {
-            D_800BBCB0[i].obj = obj;
+            SpinSlots[i].obj = obj;
             obj->unk51 = 0;
         }
     }
@@ -341,53 +416,53 @@ void SpinTurnArena(void) {
     s32 a;
 
     if (D_8005A644 & 0x801) {
-        D_800BC01C = 0;
+        SpinSpeed = 0;
     }
-    a = D_800BC018 - D_800BC01C * 13;
+    a = SpinAngle - SpinSpeed * 13;
     if (a != 0) {
         if (a < 0) {
-            D_800BC018++;
+            SpinAngle++;
         } else {
-            D_800BC018--;
+            SpinAngle--;
         }
     }
-    a = D_800BC01A - D_800BC01C * 24;
+    a = SpinAngle2 - SpinSpeed * 24;
     if (a != 0) {
         if (a < 0) {
-            D_800BC01A++;
+            SpinAngle2++;
         } else {
-            D_800BC01A--;
+            SpinAngle2--;
         }
     }
-    D_800BC010 += D_800BC018;
-    D_800BC014 -= D_800BC01A;
-    obj = D_800BC020[0];
+    SpinTurn += SpinAngle;
+    SpinTurnTarget -= SpinAngle2;
+    obj = SpinArenaObjs[0];
     if (obj != NULL) {
         obj->dirty = 1;
-        obj->ry = D_800BC010;
+        obj->ry = SpinTurn;
     }
-    obj = D_800BC020[1];
+    obj = SpinArenaObjs[1];
     if (obj != NULL) {
         obj->dirty = 1;
-        obj->ry = D_800BC010;
+        obj->ry = SpinTurn;
     }
     for (i = 0; i < 10; i++) {
-        obj = D_800BBCB0[i].obj;
+        obj = SpinSlots[i].obj;
         if (obj != NULL) {
-            if (D_800BBCB0[i].fixed[0] != 0) {
-                obj->rx = D_800BBCB0[i].fixed[0];
+            if (SpinSlots[i].fixed[0] != 0) {
+                obj->rx = SpinSlots[i].fixed[0];
             } else {
-                obj->rx = (u32)(D_800BC010 * D_800BBCB0[i].rate[0]) >> 4;
+                obj->rx = (u32)(SpinTurn * SpinSlots[i].rate[0]) >> 4;
             }
-            if (D_800BBCB0[i].fixed[1] != 0) {
-                obj->ry = D_800BBCB0[i].fixed[1];
+            if (SpinSlots[i].fixed[1] != 0) {
+                obj->ry = SpinSlots[i].fixed[1];
             } else {
-                obj->ry = (u32)(D_800BC010 * D_800BBCB0[i].rate[1]) >> 4;
+                obj->ry = (u32)(SpinTurn * SpinSlots[i].rate[1]) >> 4;
             }
-            if (D_800BBCB0[i].fixed[2] != 0) {
-                obj->rz = D_800BBCB0[i].fixed[2];
+            if (SpinSlots[i].fixed[2] != 0) {
+                obj->rz = SpinSlots[i].fixed[2];
             } else {
-                obj->rz = (u32)(D_800BC010 * D_800BBCB0[i].rate[2]) >> 4;
+                obj->rz = (u32)(SpinTurn * SpinSlots[i].rate[2]) >> 4;
             }
             obj->dirty = 1;
         }
@@ -404,11 +479,11 @@ void SpinTurnArena(void) {
         if (d > 0x640000) continue;
         if (d <= 0xC3FFF) continue;
         d = (csqrt(d) + 0x20) >> 6;
-        a = get_angle(x, z) + D_800BC018;
+        a = get_angle(x, z) + SpinAngle;
         a &= 0xFFF;
         h->hero_eng->unk10.x = d * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
         h->hero_eng->unk10.z = d * D_80068BD4[a].unk2 >> 12;
-        h->hero_move->forward_angle += D_800BC018;
+        h->hero_move->forward_angle += SpinAngle;
         h->hero_move->forward_angle &= 0xFFF;
     }
     for (n = D_8005AA24; n != NULL; n = n->Object.Child) {
@@ -424,12 +499,12 @@ void SpinTurnArena(void) {
         if (d <= 0xC3FFF) continue;
         d = f->dist;
         a = f->angle;
-        a += D_800BC018;
+        a += SpinAngle;
         a &= 0xFFF;
         f->angle = a;
         e->unk10.x = d * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
         e->unk10.z = d * D_80068BD4[a].unk2 >> 12;
-        e->unk1E = (e->unk1E + D_800BC018) & 0xFFF;
+        e->unk1E = (e->unk1E + SpinAngle) & 0xFFF;
         e->unk5E = 1;
     }
 }
@@ -489,26 +564,26 @@ s32 SpinRankHeroes(void) {
         team0 = gt->team[0];
         mate = Heroes[team0].hero_teammate;
         score = Heroes[team0].hero_score;
-        D_800BBE08 = score;
+        SpinBestScore = score;
         if (mate != 0) {
-            D_800BBE08 = score + Heroes[mate].hero_score;
+            SpinBestScore = score + Heroes[mate].hero_score;
         }
         team1 = gt->team[1];
         mate1 = Heroes[team1].hero_teammate;
         score1 = Heroes[team1].hero_score;
-        D_800BBE0C = score1;
+        SpinBestHero = score1;
         if (mate1 != 0) {
-            D_800BBE0C = score1 + Heroes[mate1].hero_score;
+            SpinBestHero = score1 + Heroes[mate1].hero_score;
         }
         if (gt->flags & 0x40) {
-            if (D_800BBE08 < D_800BBE0C) {
+            if (SpinBestScore < SpinBestHero) {
             ra:
                 return team0;
             }
         rb:
             return team1;
         }
-        if (D_800BBE08 > D_800BBE0C) {
+        if (SpinBestScore > SpinBestHero) {
             goto ra;
         }
         goto rb;
@@ -600,7 +675,7 @@ decide:
     game = (SpinGame *)D_8005A614;
     if (game->teams != 0) {
         InitBigScore();
-        if (D_800BBE08 == D_800BBE0C) {
+        if (SpinBestScore == SpinBestHero) {
             game->winner[0] = 0;
             game->state |= arg1;
             for (i = 0; i < 4; i++) {
@@ -677,8 +752,8 @@ void SpinDropMaster(void) {
     if (D_8005A644 & 0x801) {
         return;
     }
-    if (D_800BBD64 != 0) {
-        D_800BBD64--;
+    if (SpinBalloonTimer != 0) {
+        SpinBalloonTimer--;
     }
     hero = -1;
     max = 8;
@@ -686,48 +761,48 @@ void SpinDropMaster(void) {
     do {
         if (Heroes[i].hero_pu == 0x17) {
             hero = i;
-            if (D_800BBD58 >= 0x1F) {
-                D_800BBD58 = 0x1E;
+            if (SpinBigDrop >= 0x1F) {
+                SpinBigDrop = 0x1E;
             }
             max = 10;
         }
         i++;
     } while (i < 4);
     if (D_8009E46C[2] == 0 && hero == -1) {
-        if (D_800BBD54 != 0) {
-            D_800BBD54--;
+        if (SpinDropTimer != 0) {
+            SpinDropTimer--;
         } else {
             SpinDropObject(1, 2);
-            D_800BBD54 = Random(0x3C) + 0x5A;
+            SpinDropTimer = Random(0x3C) + 0x5A;
         }
     }
     if (D_8009E46C[12] == 0) {
-        if (D_800BBD56 != 0) {
-            D_800BBD56--;
+        if (SpinDropDelay != 0) {
+            SpinDropDelay--;
         } else {
             SpinDropObjects(1, 0xC);
-            D_800BBD54 = Random(0x3C) + 0x5A;
+            SpinDropTimer = Random(0x3C) + 0x5A;
         }
     }
-    D_800BBD5C = D_8009E46C[8] + D_8009E46C[9] + D_8009E46C[10] + D_8009E46C[11];
-    if (D_800BBD58 != 0) {
-        D_800BBD58--;
-    } else if (D_800BBD5C < max) {
-        d = max - D_800BBD5C;
+    SpinDropCount = D_8009E46C[8] + D_8009E46C[9] + D_8009E46C[10] + D_8009E46C[11];
+    if (SpinBigDrop != 0) {
+        SpinBigDrop--;
+    } else if (SpinDropCount < max) {
+        d = max - SpinDropCount;
         if (d < 4) {
             i = Random(d) + 1;
-            D_800BBD58 = Random(0x14) + 0x1E;
+            SpinBigDrop = Random(0x14) + 0x1E;
         } else {
             i = 4;
-            D_800BBD58 = Random(0xA) + 0x14;
+            SpinBigDrop = Random(0xA) + 0x14;
         }
         if (hero != -1) {
-            SpinDropObjects(i, D_800BB88C[hero]);
+            SpinDropObjects(i, SpinDropKinds[hero]);
         } else {
             SpinDropObjects(i, -1);
         }
     } else {
-        D_800BBD58 = Random(0x1E) + 0x3C;
+        SpinBigDrop = Random(0x1E) + 0x3C;
     }
 }
 
@@ -808,20 +883,20 @@ void SpinDropObjects(u16 count, s16 arg1) {
 
     id = arg1;
     if (arg1 > 0) {
-        p = SpinFindDropPoint(&D_800BBD5E);
+        p = SpinFindDropPoint(&SpinDropPos);
         if (p != NULL) {
             CreateBalloon(p->a, p->b, id, -1);
         }
     } else if (count != 0) {
         i = 0;
         do {
-            p = SpinFindDropPoint(&D_800BBD5E);
+            p = SpinFindDropPoint(&SpinDropPos);
             if (p == NULL) {
                 continue;
             }
             a = p->a;
             idx = SpinNextSlot();
-            t = D_800BB88C[idx];
+            t = SpinDropKinds[idx];
             b = p->b;
             kind = D_8009E46C[t];
             id = t;
@@ -857,7 +932,7 @@ SpinPair *SpinFindDropPoint(u16 *head) {
     s32 a;
     s32 b;
 
-    p = D_800BBE10[0];
+    p = SpinDropPoints[0];
     best = 27;
     tries = 9;
     i = *head;
@@ -871,7 +946,7 @@ SpinPair *SpinFindDropPoint(u16 *head) {
             if (i == *head) {
                 goto fail;
             }
-            p = D_800BBE10[0];
+            p = SpinDropPoints[0];
             p += i++;
             x = (p->x >> 8) + 10;
             z = 9 - (p->y >> 8);
@@ -898,7 +973,7 @@ SpinPair *SpinFindDropPoint(u16 *head) {
         fail:
             return NULL;
         }
-        p = D_800BBE10[0];
+        p = SpinDropPoints[0];
         p += i++;
         i &= 63;
         x = (p->x >> 8) + 10;
@@ -951,7 +1026,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
           {
             case 2:
               eng->sub->unk74 = 0x2014;
-              fux->state = D_800BB888[Random(2)];
+              fux->state = SpinHazardKinds[Random(2)];
               break;
 
             case 5:
@@ -1321,7 +1396,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                     }
                     mot->Xvel = Random(8) + 4;
                     mot->Xa = a + 0x800;
-                    mot->Xa = (mot->Xa - D_800BC01C * 0x200) & 0xFFF;
+                    mot->Xa = (mot->Xa - SpinSpeed * 0x200) & 0xFFF;
                 }
             }
             shadow = AddExtEngine(nas, 2);
@@ -1386,8 +1461,8 @@ void PlotBalloon(NAS *nas) {
                     uo = fux->owner;
                     owner = (s16)uo;
                     if (owner != -1 && owner < 4) {
-                        if (D_800BBD64 != 0) {
-                            if (D_800BBD62 == owner) {
+                        if (SpinBalloonTimer != 0) {
+                            if (SpinBalloonOwner == owner) {
                                 if (D_8005A646 & 0x40) {
                                     Heroes[uo & 2].hero_score--;
                                 } else {
@@ -1403,7 +1478,7 @@ void PlotBalloon(NAS *nas) {
                                     }
                                 }
                             }
-                            func_8007A524(D_800BB89C[D_800BBD62], &eng->unk10.x, (s32)D_80052FCC);
+                            func_8007A524(SpinBalloonAnims[SpinBalloonOwner], &eng->unk10.x, (s32)D_80052FCC);
                             goto sfx;
                         }
                         if (fux->state == owner) {
@@ -1423,9 +1498,9 @@ void PlotBalloon(NAS *nas) {
                             }
                         }
                     }
-                    func_8007A524(D_800BB89C[fux->state], &eng->unk10.x, (s32)D_80052FCC);
+                    func_8007A524(SpinBalloonAnims[fux->state], &eng->unk10.x, (s32)D_80052FCC);
                 sfx:
-                    PlaySfx(D_800BB8E8[kind - 8][Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(SpinBalloonSfx[kind - 8][Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     o = fux->owner;
                     if (o != -1 && o < 5 && Heroes[o].hero_object == (EXTobject *)fux) {
                         Heroes[o].hero_object = NULL;
@@ -1474,7 +1549,7 @@ void PlotBalloon(NAS *nas) {
                 fux->owner = -1;
                 fux->hit |= 8;
             }
-            a = get_angle(-eng->unk10.x, -eng->unk10.z) + D_800BC018;
+            a = get_angle(-eng->unk10.x, -eng->unk10.z) + SpinAngle;
             mot->Zvel = 4;
             a &= 0xFFF;
             mot->Za = a;
@@ -1486,22 +1561,22 @@ void PlotBalloon(NAS *nas) {
             eng->unk10.z -= (mot->Zvel * D_80068BD4[mot->Za & 0xFFF].unk2) >> 12;
         }
         if ((u16)fux->state < 4) {
-            t = D_800BBD64;
+            t = SpinBalloonTimer;
             if (t != 0) {
-                eng->sub->unk74 = D_800BB894[D_800BBD62];
+                eng->sub->unk74 = SpinBalloonModels[SpinBalloonOwner];
                 if (t < 0x1E) {
                     if (t & 2) {
-                        eng->sub->unk74 = D_800BB894[fux->state];
-                        if (D_800BBD68 == 0) {
+                        eng->sub->unk74 = SpinBalloonModels[fux->state];
+                        if (SpinBalloonFlag == 0) {
                             PlaySfx(0x5EF, NULL, NULL, 0x1000, 0x1E00, 0);
                         }
-                        D_800BBD68 = 1;
+                        SpinBalloonFlag = 1;
                     } else {
-                        D_800BBD68 = 0;
+                        SpinBalloonFlag = 0;
                     }
                 }
             } else {
-                eng->sub->unk74 = D_800BB894[fux->state];
+                eng->sub->unk74 = SpinBalloonModels[fux->state];
             }
         }
         a = fux->angle + D_8004E0D8 * 16;
@@ -1529,7 +1604,7 @@ void SpinScoreBalloon(SpinFux *arg0) {
     idx = arg0->owner;
     if (idx != -1) {
         a = D_8009D87C[idx][0];
-        p = D_800BB848;
+        p = SpinBalloonWeights;
         b = 0x20 - a;
         a = p[a];
         b = p[b];
@@ -1570,18 +1645,18 @@ void SpinScoreBalloon(SpinFux *arg0) {
         break;
     case 6:
         PlaySfx(0x5ED, NULL, NULL, 0x1000, 0x1E00, 0);
-        if (D_800BBD6C.sfx != NULL) {
-            StopSfx(D_800BBD6C.sfx);
+        if (SpinSfxEngine.sfx != NULL) {
+            StopSfx(SpinSfxEngine.sfx);
         }
-        PlaySfx(0x5EC, &D_800BBD6C.sfx, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(0x5EC, &SpinSfxEngine.sfx, NULL, 0x1000, 0x1E00, 0);
         PlaySfx(0x5F0, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_800BC01C = ~D_800BC01C + 1;
+        SpinSpeed = ~SpinSpeed + 1;
         break;
     default:
         PlaySfx(0x5ED, NULL, NULL, 0x1000, 0x1E00, 0);
         PlaySfx(0x5EE, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_800BBD64 = 0x96;
-        D_800BBD62 = arg0->owner;
+        SpinBalloonTimer = 0x96;
+        SpinBalloonOwner = arg0->owner;
         break;
     }
 }
@@ -1630,8 +1705,8 @@ void SpinHero_ExtraEffects(s32 arg0) {
         pu->unk10 = Heroes[arg0].hero_eng->unk10;
         sub->unk08 = y;
         if (Heroes[arg0].hero_pu != 0x13) {
-            if (Heroes[arg0].hero_pu == 0x17 && D_800BBD58 > 30) {
-                D_800BBD58 = 30;
+            if (Heroes[arg0].hero_pu == 0x17 && SpinBigDrop > 30) {
+                SpinBigDrop = 30;
             }
         }
         if (Heroes[arg0].hero_weapon_count == 0) {
@@ -1681,8 +1756,8 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
         do {
             h = &Heroes[i];
             if (!(h->hero_status & 0xF800) && h->hero_pu == 0x17) {
-                if (D_800BBD64 != 0 && D_800BBD62 == i) {
-                    if (D_800BBD64 < 0x1E) {
+                if (SpinBalloonTimer != 0 && SpinBalloonOwner == i) {
+                    if (SpinBalloonTimer < 0x1E) {
                         goto next;
                     }
                 } else {
@@ -1942,12 +2017,12 @@ void Spin_HeroBot(s32 arg0) {
     }
     if (found) {
         a = get_angle(x, z);
-        turn = func_800154A0(a, get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) * D_800BC01C;
+        turn = func_800154A0(a, get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) * SpinSpeed;
         if (Heroes[arg0].hero_pu != 0x13 && turn >= 0x29 && Heroes[arg0].hero_move->jump_max == 0) {
             s32 b;
 
             d = (csqrt(x * x + z * z) + 0x20) >> 6;
-            b = (get_angle(x, z) - inv * D_800BC01C) & 0xFFF;
+            b = (get_angle(x, z) - inv * SpinSpeed) & 0xFFF;
             x = (d * D_80068BD4[(b - 0x400) & 0xFFF].unk2) >> 12;
             z = (d * D_80068BD4[b].unk2) >> 12;
         }
@@ -2311,15 +2386,15 @@ s32 SpinAI_ChooseTarget(s32 player) {
     r = Random(0x1000);
     w0 = (lvl + 0x14) * 4;
     heroW = lvl * 8;
-    if (D_800BBD64 != 0 && D_800BBD62 != player) {
+    if (SpinBalloonTimer != 0 && SpinBalloonOwner != player) {
         w0 = 0;
         heroW = lvl << 5;
         w1 = lvl * 0x10;
     }
     if (Heroes[player].hero_pu != 0) {
         if (Heroes[player].hero_pu == 0x17) {
-            if (D_800BBD64 != 0) {
-                if (D_800BBD62 == player) {
+            if (SpinBalloonTimer != 0) {
+                if (SpinBalloonOwner == player) {
                     w0 = lvl << 5;
                     w1 = inv * 2;
                     w2 = inv * 4;
@@ -2334,8 +2409,8 @@ s32 SpinAI_ChooseTarget(s32 player) {
                 w1 = inv * 4;
                 w2 = inv * 2;
             }
-        } else if (D_800BBD64 != 0) {
-            if (D_800BBD62 == player) {
+        } else if (SpinBalloonTimer != 0) {
+            if (SpinBalloonOwner == player) {
                 w0 = lvl << 5;
                 w1 = inv * 4;
                 w2 = lvl << 6;
@@ -2360,7 +2435,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
         if (f == NULL) continue;
         switch (f->kind) {
         case 8: case 9: case 10: case 11:
-            if (D_800BBD64 != 0 && D_800BBD62 != player) continue;
+            if (SpinBalloonTimer != 0 && SpinBalloonOwner != player) continue;
             if (f->state != player) continue;
             dx = px - e->unk10.x;
             dz = pz - e->unk10.z;
@@ -2560,7 +2635,7 @@ void SpinDropObject(u16 arg0, u16 arg1) {
     SpinPair *p;
 
     for (i = 0; i < arg0; i++) {
-        p = SpinFindDropPoint(&D_800BBD5E);
+        p = SpinFindDropPoint(&SpinDropPos);
         if (p != NULL) {
             CreateHazard(p->a, p->b, arg1, -1);
         }
@@ -2581,7 +2656,7 @@ void SpinInitASTIndices(void) {
     }
     r = 0;
 found:
-    D_800BC048 = r;
+    SpinASTBase = r;
     D_8009E488[2] = 0;
     D_8009E488[3] = 0;
 }
@@ -2692,7 +2767,7 @@ void SetSpinHeroHit(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
-    D_800BC05C[arg0] = 0;
+    SpinHitDone[arg0] = 0;
     base = Heroes;
     h = base + arg0;
     h->hero_hit = 0x1E;
@@ -2724,10 +2799,10 @@ void SpinHeroHit(s32 arg0) {
     r = func_8008502C(arg0);
     if (r != 8) {
         if (r == 9) {
-            PlaySfx(D_800BC054[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(SpinHitSfx[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
         }
     } else {
-        D_800BC05C[arg0] = 1;
+        SpinHitDone[arg0] = 1;
         if (h->hero_health <= 0 && !(D_8005A618 & 2)) {
             h->hero_immunity = 0;
             h->hero_hit += 0x28;
@@ -2735,7 +2810,7 @@ void SpinHeroHit(s32 arg0) {
         }
         Heroes[arg0].hero_health = 0x14;
     }
-    fbase = D_800BC05C;
+    fbase = SpinHitDone;
     flag = fbase + arg0;
     if (*flag != 0) {
         HeroInfo *base2 = Heroes;
@@ -3041,7 +3116,7 @@ void SpinHeroLose(s32 arg0) {
             h->hero_eng->unk2C.y = v;
             h->hero_eng->unk2C.z = v;
         } else {
-            func_8007A524(D_800BB89C[arg0], &e->unk10.x, (s32)&D_80052FCC);
+            func_8007A524(SpinBalloonAnims[arg0], &e->unk10.x, (s32)&D_80052FCC);
             h->hero_status |= 0x8000;
         }
     }
@@ -3593,7 +3668,7 @@ void SpinCreateShadow(s32 arg0) {
     EXTengine *eng;
 
     shadow->sub->unk6C = &D_80052FCC;
-    shadow->sub->unk74 = D_800BC04C[arg0];
+    shadow->sub->unk74 = SpinShadowModels[arg0];
     eng = h->hero_eng;
     shadow->unk10 = eng->unk10;
     shadow->flags |= 0x8021;

@@ -692,6 +692,17 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Spin** (spin, the turning ring arena; named 2026-10-26). Mode 0x1B
+  (`LEV_RING`); one engine world record (0x0103) points at `SPIN_PREMAP`,
+  `spin_shell_info` and `SPINSetUp`, the per-mode table at `file_group_RING`
+  (`SpinFiles` with the exe's file group 10: 12 DAT entries, all decoded).
+  The arena turns (`SpinTurnArena`), hazards and balloons drop on it
+  (`SpinDropMaster`, `CreateHazard`, `CreateBalloon`; `AST_HazardType`,
+  `AST_Balloon`), and a hero who reaches a balloon scores (`SpinScoreBalloon`).
+  The hero states are `HEROFunc` pairs 51..56 (`HEROmode_SPhit` .. `SPDead`,
+  actions 0x33..0x38); its 24 sequences are each character's `long_hit`,
+  `flip_jump` and `SP_seq_die`. Much of its crate and collision code is
+  Bash's and Papu's again (`SpinHitTest`, `SpinHero2ObjectCollision`, ...).
 - **Race** (race, the hover-board races; functions named 2026-10-26). Modes
   0x17..0x1A (`LEV_DASH`, `TOXIC`, `WATER`, `LAVA`; Water sets its own hero
   models and moves). `RACESetUp` fills `InitialiseRACEFirst`, `InitialiseRACE`,
