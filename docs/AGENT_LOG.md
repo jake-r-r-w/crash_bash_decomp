@@ -456,6 +456,19 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-27 (Phase 5: the engine's data, groundwork):** `slot_refs.py` names the slot
+  overlay symbol behind each of the 1086 words of the engine's asm data that point into the
+  slot (shift.py's rules over all fourteen overlays at once; none left), and data2c uses it
+  for `engine` (its own range ends at the slot; the id word is `SlotOverlayId`). On the way,
+  Polar's skating sequences (`CRA_seq_breathe_ft` .., ids 66/67/69/71, the leaked polar.h's
+  names) were split out of the arrays they hid in. Gotcha: a test command that only prints
+  its result doesn't stop an `&&` chain; check the result before committing. **Next** for
+  the engine's data: (1) the 7 struct errors (labels inside `HeroHooks`, `HitHooks`,
+  `IntroSteps`, three subengines and a viewport: merging them turns those names into fields,
+  checked per use as Tank's needed); (2) the 32 pointer fields to type; (3) read
+  `engine_sdata.sdata.s` too (18 values still come out off `MenuEmpty2`); (4) cut the 85 KB
+  by file as the overlays were, then splice and drop shift.py's engine-data rewrite.
+
 - **2026-10-26 (Phase 5: the engine's strings as C):** all 59 INCLUDE_RODATA blocks of
   `gameflow.c`, `heroes.c`, `panel.c` and `pause.c` (61 strings, the memory card and menu
   messages with the pad's glyph bytes 0xFC/0xFD and `

@@ -53,10 +53,22 @@ class Values(unittest.TestCase):
         c.vram, c.end, c.syms, c.funcs, c.decls = 0x800B32B4, 0x800CB294, {}, {}, {}
         c.symbolic, c.provide, c.externs, c.base_rom = set(), {}, set(), 0
         c.srcs = c.hdrs = ""
+        c.ovl, c.start, c.slot_names, c.slot_used = "tank", 0, {}, set()
         self.c = c
 
     def word(self, v, signed=True, ptr_ok=True, local=()):
         return self.c.scalar(4, signed, 0, v.to_bytes(4, "little"), ptr_ok, "s32", list(local))
+
+    def test_the_engines_slot_words_take_slot_refs_names(self):
+        c = self.c
+        c.ovl, c.vram, c.end, c.base_rom = "engine", 0x80078C90, data2c.SLOT_LO, 0x2042C4
+        c.slot_names = {0x80078C90 + 0x2042C4: "BASHSetUp"}
+        self.assertEqual(self.word(0x800B7DE4), "(s32)&BASHSetUp")
+        c.base_rom = 0
+        self.assertEqual(self.word(data2c.SLOT_LO), "(s32)&SlotOverlayId")
+        c.base_rom = 4
+        with self.assertRaises(ValueError):
+            self.word(0x800C0000)
 
     def test_small_and_negative(self):
         self.assertEqual(self.word(5), "5")
