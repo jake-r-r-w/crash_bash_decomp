@@ -51,8 +51,8 @@ extern s32 D_800C9A54[];
 extern s32 D_800C9AA4[];
 extern s32 D_800C9AF4[];
 extern s32 D_800C9B44[];
-extern s32 D_800CB254;
-extern s32 D_800CB258;
+extern s32 MoeState;
+extern s32 JoeState;
 extern s16 D_8009D634;
 extern s16 D_8009D6A0;
 extern s32 D_800CB210;
@@ -92,11 +92,9 @@ extern s32 D_800C9DD0[];
 
 
 extern s32 D_800CA160[];
-extern s32 D_800CA34C[];
+extern s32 TankMapNas[];
 extern struct { u16 v, pad; } D_800CA4AC[];
-extern u8 D_800CACFC[];
-extern s32 D_800CAFF4;
-extern u8 D_800CACB4[];
+extern s32 TankMapWidth;
 extern TA_Bot TankBotAI[4];
 
 extern subengine *D_8009D60C;  /* Heroes[2].hero_sub (Moe or Joe), addressed directly */
@@ -110,8 +108,8 @@ typedef struct MineOffset {
 extern MineOffset D_800C935C[4];
 void SetMoeJoeDead(s32 hero, s32 last_mode);
 s32 func_8008502C();
-extern s32 *D_800CB24C;
-extern s32 *D_800CB250;
+extern s32 *MoeAnimPtr;
+extern s32 *JoeAnimPtr;
 extern s32 D_800CAA0C[];
 extern s32 D_800CAB58[];
 extern s32 D_800CAA60[];
@@ -137,27 +135,27 @@ typedef struct {
     s32 z;  /* negative: unused */
 } Ovl5fPoint;
 
-extern Ovl5fPoint D_800CA9E4[];
-extern s32 D_800CB0F0;
-extern s32 D_800CB260;
+extern Ovl5fPoint TankBossTargets[];
+extern s32 TankLevelOver;
+extern s32 TankBossSightedHero;
 s32 get_angle(s32 x, s32 z);
 
 /* TankBossTurretFindTarget: can the turret at (x, z) facing ang see target i? Records state. */
 static inline s32 Ovl5fTurretSees(s32 i, s32 state, s32 x, s32 z, s32 ang) {
-    if (D_800CB0F0 != 0) {
+    if (TankLevelOver != 0) {
         return 0;
     }
-    if (D_800CA9E4[i].z < 0) {
+    if (TankBossTargets[i].z < 0) {
         return 0;
     }
-    if ((u32)(((ang - get_angle(x - D_800CA9E4[i].x, z - D_800CA9E4[i].z)) & 0xFFF) - 0x15) < 0xFD7U) {
+    if ((u32)(((ang - get_angle(x - TankBossTargets[i].x, z - TankBossTargets[i].z)) & 0xFFF) - 0x15) < 0xFD7U) {
         return 0;
     }
-    D_800CB260 = state;
+    TankBossSightedHero = state;
     return 1;
 }
 
-extern Ovl5fPoint D_800CA9E4[];
+extern Ovl5fPoint TankBossTargets[];
 typedef struct {
     u16 v, pad;
 } Ovl5fU16Pad;
@@ -165,7 +163,7 @@ extern Ovl5fU16Pad D_800CA944[];
 extern u16 D_800CA994[]; /* crash turret anim frames (flags == 0) */
 extern u16 D_800CA9BC[]; /* crash turret anim frames (flags != 0) */
 typedef void (*Ovl5fTurretFireFn)(EXTengine *eng, s32 a, s32 b);
-extern s32 D_800CB0F0;
+extern s32 TankLevelOver;
 extern s32 D_800C94E8[];
 extern s32 D_800C9428[][4];
 /* TankBotPlanSteerMove's fallback roam points: {x, z}. */
@@ -174,8 +172,8 @@ extern Ovl5fU16Pad D_800CA650[];    /* PlotHelicopterTA's rotor frames, by UserI
 /* PlotPillarControl's waves: delay, then {x, z, angle} until x < 0. */
 extern s32 *D_800CA8C4[];
 extern s32 D_800CB204;      /* next wave */
-extern s32 D_800CB260;
-extern NAS *D_800CB264[8];    /* objects AddTankObject adds and RemoveTankObject removes; FindTankObjectNear tests their distance */
+extern s32 TankBossSightedHero;
+extern NAS *TankObjects[8];    /* objects AddTankObject adds and RemoveTankObject removes; FindTankObjectNear tests their distance */
 extern NAS *TankMines[8];
 
 extern u8 D_80053704[];
@@ -271,8 +269,8 @@ extern s32 D_800C94C8[]; /* TA_MoveHero: hull sfx while moving, by player */
 extern s32 D_800C94D8[]; /* turret sfx, by player */
 extern s32 D_800C9408[]; /* hull sfx in mode 5, by player */
 extern s32 D_800CB0F8;    /* delay before the next hangabout spawn */
-extern s32 D_800CB0E0;    /* TA_UpdateLevel: countdown, plays sfx 0x4B9 when negative */
-extern s32 D_800CB0E4;    /* TA_UpdateLevel: sfx id to play once */
+extern s32 TankCountdown;    /* TA_UpdateLevel: countdown, plays sfx 0x4B9 when negative */
+extern s32 TankPendingSfx;    /* TA_UpdateLevel: sfx id to play once */
 extern EXTengine *D_800CB0E8;
 extern s32 D_800CB0EC;    /* TA_UpdateLevel: countdown to sfx 0x501 */
 void AnimateTankTurret(s32 player);
@@ -312,15 +310,9 @@ static inline void Ovl5fTriggerNear(s32 x, s32 z, s32 dist) {
     }
 }
 
-typedef struct OvlClampPos {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 x;
-    /* 0x14 */ s32 pad14;
-    /* 0x18 */ s32 z;
-} OvlClampPos;
 
-extern s32 D_800CB100;
-extern s32 D_800CB104;
+extern s32 TankArenaMaxX;
+extern s32 TankArenaMaxZ;
 
 
 
@@ -351,7 +343,7 @@ s32 StepMoeJoeAnim(s32 arg0);
 
 s32 func_800C6C30(void);
 
-s32 TankWithinBox(OvlClampPos *p, s32 x, s32 y, s32 z);
+s32 TankWithinBox(EXTengine *eng, s32 x, s32 y, s32 z);
 
 void KillPickupTA(NAS *nas);
 
@@ -403,7 +395,7 @@ static inline NAS *Ovl5fRocketNear(s32 x, s32 z, s32 dist) {
     NAS *nas;
 
     for (i = 0; i < 8; i++) {
-        nas = D_800CB264[i];
+        nas = TankObjects[i];
         if (nas != NULL) {
             eng = nas->Engine;
             d = x - eng->unk10.x;
@@ -455,25 +447,25 @@ static inline void Ovl5fRocketKillCell(s32 arg0, s32 arg1) {
     s32 idx;
     NAS *nas;
 
-    idx = ((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9);
-    nas = (NAS *)D_800CA34C[idx];
-    D_800CA34C[idx] = 0;
-    D_800CACB4[idx] = 0;
-    D_800CACFC[idx] = 0;
+    idx = ((arg1 >> 9) * TankMapWidth) + (arg0 >> 9);
+    nas = (NAS *)TankMapNas[idx];
+    TankMapNas[idx] = 0;
+    TankLevelsGridMapMiss[idx] = 0;
+    TankLevelsGridMapTank[idx] = 0;
     KillNAS(nas);
 }
-/* PlotRocketTA: the D_800CACFC tile under (x, z), 0 off the map in mode 9. */
+/* PlotRocketTA: the TankLevelsGridMapTank tile under (x, z), 0 off the map in mode 9. */
 static inline s32 Ovl5fRocketTile(s32 x, s32 z) {
     if (D_8005A648 == 9) {
-        if (z >= D_800CB104 || z < 0 || x >= D_800CB100 || x < 0) {
+        if (z >= TankArenaMaxZ || z < 0 || x >= TankArenaMaxX || x < 0) {
             return 0;
         }
     }
-    return *(((z >> 9) * D_800CAFF4) + (x >> 9) + D_800CACFC);
+    return *(((z >> 9) * TankMapWidth) + (x >> 9) + TankLevelsGridMapTank);
 }
-/* MoeJoeMove: the D_800CACB4 cell under (x, z). */
+/* MoeJoeMove: the TankLevelsGridMapMiss cell under (x, z). */
 static inline s32 Ovl5fMapCell(s32 x, s32 z) {
-    return *(((z >> 9) * D_800CAFF4) + (x >> 9) + D_800CACB4);
+    return *(((z >> 9) * TankMapWidth) + (x >> 9) + TankLevelsGridMapMiss);
 }
 /* TankHeroMove: the other hero within lim of (x, z), or -1. */
 static inline s32 TankMoveFindHero(s32 player, s32 x, s32 z, s32 lim) {
@@ -804,7 +796,7 @@ extern s32 D_800CAFE4;
 extern s32 D_800CAFE8;
 extern s32 D_800CAFEC;
 extern s32 D_800CAFF0;
-extern s32 D_800CAFF8;
+extern s32 TankMapHeight;
 extern s32 D_800CB108[9][7];
 extern s16 D_8009D88E;
 extern Ambient_data D_800C8ED4;
