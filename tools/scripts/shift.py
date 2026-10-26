@@ -45,32 +45,38 @@ def run(cmd):
 def link(name, script, extra=()):
     elf = f"{OUT}/{name}.ovl.elf"
     run(["mipsel-linux-gnu-ld", "-nostdlib", "--no-check-sections", "-Map", f"{OUT}/{name}.map",
-         "-T", script, "-T", f"linkers/{name}_undefined_syms_auto.txt",
+         # the Makefile's PROVIDE copy: an overlay's own halfword labels that splat lists there
+         # must follow the C definitions, or they stay at their retail address
+         "-T", script, "-T", f"build/{name}_undefined_syms.ld",
          "-T", f"linkers/{name}_undefined_funcs_auto.txt", "-T", f"{CFG}/undefined_syms_manual.txt",
          *extra, "-o", elf])
     run(["mipsel-linux-gnu-objcopy", "-O", "binary", elf, f"{OUT}/{name}.bin"])
     return elf
 
 
-def pad_script(t, ovl, pad):
+SECTIONS = (".rodata", ".text", ".data")
+
+
+def pad_script(t, ovl, pad, sections=SECTIONS):
     """A linker script with pad bytes before the overlay's first C .rodata, .text and .data input
-    (not its id unit, <ovl>_id, which has to stay the slot's first word)."""
+    (not its id unit, <ovl>_id, which has to stay the slot's first word); `sections` pads only
+    those (to bisect a crash: which section's move breaks the game)."""
     n = 0
-    for sect in (".rodata", ".text", ".data"):
+    for sect in sections:
         m = re.search(r"^(\s*)(build/src/overlays/" + ovl + r"/(?!" + ovl + r"_id\.)\w+\.c\.o\("
                       + re.escape(sect) + r"\);)", t, re.M)
         if m:
             t = t[:m.start()] + f"{m.group(1)}. += 0x{pad:X};   /* shift.py */\n" + t[m.start():]
             n += 1
-    if n != 3:
-        raise ValueError(f"found {n} of {ovl}'s .rodata/.text/.data inputs (3 needed)")
+    if n != len(sections):
+        raise ValueError(f"found {n} of {ovl}'s {'/'.join(sections)} inputs ({len(sections)} needed)")
     return t
 
 
-def padded_script(ovl, pad):
+def padded_script(ovl, pad, sections=SECTIONS):
     """The overlay's linker script with pad bytes before its C rodata, text and data."""
     try:
-        t = pad_script(open(f"linkers/{ovl}.ld", encoding="utf-8").read(), ovl, pad)
+        t = pad_script(open(f"linkers/{ovl}.ld", encoding="utf-8").read(), ovl, pad, sections)
     except ValueError as e:
         sys.exit(f"shift: linkers/{ovl}.ld: {e}")
     path = f"{OUT}/{ovl}.ld"
@@ -209,7 +215,12 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("ovl")
     ap.add_argument("--pad", default="0x40", help="bytes before each of the rodata, text and data (multiple of 8)")
+    ap.add_argument("--only", default=",".join(SECTIONS),
+                    help="pad only these sections (comma-separated, e.g. .data), to bisect a crash")
     a = ap.parse_args()
+    sections = tuple(s.strip() for s in a.only.split(",") if s.strip())
+    if not sections or any(s not in SECTIONS for s in sections):
+        sys.exit(f"shift: --only takes {', '.join(SECTIONS)}")
     pad = int(a.pad, 0)
     if pad % 8:
         sys.exit("shift: --pad must keep 8-byte alignment (jump tables)")
@@ -217,7 +228,15 @@ def main():
     ovls = sorted(os.path.splitext(os.path.basename(p))[0] for p in os.listdir(f"{CFG}/overlays"))
     slots = [o for o in ovls if o != "engine"]
     check_pointers(a.ovl)
-    new_elf = link(a.ovl, padded_script(a.ovl, pad))
+    new_elf = link(a.ovl, padded_script(a.ovl, pad, sections))
+    # a name that links as an absolute address inside the overlay's own range stays put when the
+    # overlay moves (a linker-script assignment overriding the C definition): refuse it
+    fixed_names = [l.split()[2] for l in run(["mipsel-linux-gnu-nm", new_elf]).splitlines()
+                   if len(l.split()) == 3 and l.split()[1] == "A"
+                   and SLOT_LO <= int(l.split()[0], 16) < SLOT_LO + os.path.getsize(f"build/{a.ovl}.bin")]
+    if fixed_names:
+        sys.exit("shift: these link at fixed addresses inside the overlay and would not move: "
+                 + ", ".join(sorted(fixed_names)))
     old_elf = f"build/{a.ovl}.ovl.elf"
     sym = f"{OUT}/engine_slot_syms.ld"
     elfs = [new_elf if o == a.ovl else f"build/{o}.ovl.elf" for o in slots]
@@ -230,7 +249,7 @@ def main():
     fixed = fixup(a.ovl, old_elf, new_elf, [f"build/{o}.ovl.elf" for o in slots if o != a.ovl])
     moved = sum(1 for n, v in syms if v != dict(slot_syms.resolve(names, [old_elf] + [e for e in elfs if e != new_elf])).get(n))
     old_size, new_size = os.path.getsize(f"build/{a.ovl}.bin"), os.path.getsize(f"{OUT}/{a.ovl}.bin")
-    print(f"shift: {a.ovl} {old_size} -> {new_size} bytes (pad 0x{pad:X} x3); {moved} AST entries moved; "
+    print(f"shift: {a.ovl} {old_size} -> {new_size} bytes (pad 0x{pad:X} x{len(sections)}); {moved} AST entries moved; "
           f"{len(fixed)} engine data words rewritten")
     r = subprocess.run([sys.executable, "tools/scripts/pack_disc.py", "--out", OUT, "--grow",
                         "--use", f"{a.ovl}={OUT}/{a.ovl}.bin", "--use", f"engine={OUT}/engine.bin"])

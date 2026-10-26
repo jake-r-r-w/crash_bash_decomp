@@ -150,10 +150,18 @@ $(TARGET): $(ELF)
 	$(OBJCOPY) -O binary $< $@
 
 # Overlays call into the exe (and each other) at fixed addresses: splat lists those as undefined
-# symbols with absolute values, so each overlay links on its own.
-build/%.ovl.elf: linkers/%.ld $(O_FILES)
+# symbols with absolute values, so each overlay links on its own. splat also lists some of the
+# overlay's own symbols there (its halfword labels at 2 mod 4), and a script assignment overrides
+# the C definition: they would stay at their retail address when the overlay moves (make shift).
+# So the list is linked as PROVIDEs, which define only the names nothing else does.
+.PRECIOUS: build/%_undefined_syms.ld
+build/%_undefined_syms.ld: linkers/%_undefined_syms_auto.txt
+	@mkdir -p $(@D)
+	sed -E 's/^([A-Za-z_][A-Za-z0-9_.]*) = (0x[0-9A-Fa-f]+);/PROVIDE(\1 = \2);/' $< > $@
+
+build/%.ovl.elf: linkers/%.ld build/%_undefined_syms.ld $(O_FILES)
 	$(LD) -nostdlib --no-check-sections -Map build/$*.map \
-	  -T $< -T linkers/$*_undefined_syms_auto.txt -T linkers/$*_undefined_funcs_auto.txt \
+	  -T $< -T build/$*_undefined_syms.ld -T linkers/$*_undefined_funcs_auto.txt \
 	  -T $(CFG)/undefined_syms_manual.txt $(if $(filter engine,$*),-T $(SLOT_SYMS)) -o $@
 
 # The engine's AST table (src/overlays/engine/asttable.c) names the slot overlays' Init/Plot
@@ -187,7 +195,7 @@ disc: build
 OVL ?= tank
 PAD ?= 0x40
 shift: build
-	@$(PYTHON) tools/scripts/shift.py $(OVL) --pad $(PAD)
+	@$(PYTHON) tools/scripts/shift.py $(OVL) --pad $(PAD) $(if $(ONLY),--only $(ONLY))
 
 disc-check: disc
 	@sha1sum -c $(CFG)/disc.sha

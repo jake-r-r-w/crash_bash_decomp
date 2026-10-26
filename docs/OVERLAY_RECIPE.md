@@ -144,6 +144,13 @@ better than the cheat word (PLAYING.md). If it crashes:
    and the BIOS's saved registers (the TCB at `0x8000E29C`: EPC at `+0x88`,
    cause at `+0x98`) say where it died. PLAYING.md has the setup.
 
+`make shift ... ONLY=.data` (or `.rodata`, `.text`) pads one section only, which halves the
+search. Papu's crash (2026-10-26) was its own halfword variables at 2 mod 4: splat lists them in
+`linkers/<ovl>_undefined_syms_auto.txt`, and a script assignment there overrode the C
+definition, so they stayed at their retail address. The link now takes that list as
+`PROVIDE`s (`build/<ovl>_undefined_syms.ld`), and `shift.py` refuses an overlay symbol that
+still links as absolute.
+
 Tank's three crashes were all unmoved pointers: a pointer into the middle of
 an object, a fixed address in engine C (the HUD's `TA_players`), and the
 per-character sequence tables.
