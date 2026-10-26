@@ -5,6 +5,16 @@
 #include "bash/xtras.h"
 #include "bash/papu.h"
 
+/* data, in address order */
+u8 D_800C4790[68] = {
+    0x50, 0x30, 0x50, 0x38, 0x30, 0x38, 0x18, 0x20, 0x18, 0x10, 0x10, 0x10, 8, 0xA, 8, 0xA,
+    0xA, 0xA, 0x10, 8, 0x10, 0xA, 0xA, 0xA, 8, 0x10, 8, 0xA, 0xA, 0xA, 0x10, 8, 0x10, 0xA, 0xA,
+    0xA, 8, 0x10, 8, 0xA, 0xA, 0xA, 0x10, 8, 0x10, 0xA, 0xA, 0xA, 8, 0x10, 8, 0xA, 0xA, 0xA,
+    0x10, 8, 0x10, 0xA, 0xA, 0xA, 8, 0x10, 8, 0xA, 0xA, 0xA, 0, 0,
+};
+/* one zero byte nothing reads, the overlay file's last (retail's is 0x11521 bytes long) */
+u8 BashUnusedTail = 0;
+
 void BashHeroHit(s32 arg0) {
     HeroInfo *b = Heroes;
     HeroInfo *h = &b[arg0];
@@ -323,8 +333,8 @@ void SetBashHeroBigWeight(s32 arg0) {
     if (h->hero_powerup->sfx != NULL) {
         StopSfx(h->hero_powerup->sfx);
     }
-    if (D_800C4780 != NULL) {
-        StopSfx(D_800C4780);
+    if (D_800C46EC.sfx != NULL) {
+        StopSfx(D_800C46EC.sfx);
     }
     PlaySfx(0x453, NULL, NULL, 0x1000, 0x1E00, 0);
 }
@@ -348,8 +358,8 @@ void BashHeroBigWeight(s32 arg0) {
                     if (h->hero_powerup->sfx != NULL) {
                         StopSfx(h->hero_powerup->sfx);
                     }
-                    if (D_800C4780 != NULL) {
-                        StopSfx(D_800C4780);
+                    if (D_800C46EC.sfx != NULL) {
+                        StopSfx(D_800C46EC.sfx);
                     }
                     PlaySfx(0x455, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
@@ -364,8 +374,8 @@ void BashHeroBigWeight(s32 arg0) {
             if (h->hero_powerup->sfx != NULL) {
                 StopSfx(h->hero_powerup->sfx);
             }
-            if (D_800C4780 != NULL) {
-                StopSfx(D_800C4780);
+            if (D_800C46EC.sfx != NULL) {
+                StopSfx(D_800C46EC.sfx);
             }
             pu->flags &= 0xFFFF7FFF;
             h->hero_eng->unk2C.y = 0x1000;
@@ -382,8 +392,8 @@ void SetBashHeroDead(s32 arg0) {
     HeroInfo *base2;
 
     if (Heroes[arg0].hero_pu == 0x14) {
-        if (D_800C4780 != NULL) {
-            StopSfx(D_800C4780);
+        if (D_800C46EC.sfx != NULL) {
+            StopSfx(D_800C46EC.sfx);
         }
     }
     base2 = Heroes;
@@ -416,8 +426,8 @@ void SetBashHeroWinner(s32 arg0) {
     HeroInfo *h2;
     s32 dy;
 
-    if (Heroes[arg0].hero_pu == 0x14 && D_800C4780 != NULL) {
-        StopSfx(D_800C4780);
+    if (Heroes[arg0].hero_pu == 0x14 && D_800C46EC.sfx != NULL) {
+        StopSfx(D_800C46EC.sfx);
     }
     base = Heroes;
     h = base + arg0;
@@ -493,8 +503,8 @@ void SetBashHeroLoser(s32 arg0) {
     HeroInfo *h2;
     s32 dy;
 
-    if (Heroes[arg0].hero_pu == 0x14 && D_800C4780 != NULL) {
-        StopSfx(D_800C4780);
+    if (Heroes[arg0].hero_pu == 0x14 && D_800C46EC.sfx != NULL) {
+        StopSfx(D_800C46EC.sfx);
     }
     base = Heroes;
     h = base + arg0;

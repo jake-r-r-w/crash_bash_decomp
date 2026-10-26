@@ -52,7 +52,7 @@ segments:
     subsegments:
       # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
-      - [0x0, rodata, overlays/bash/bash_id]
+      - [0x0, .rodata, overlays/bash/bash_id]   # src/overlays/bash/bash_id.c
       - [0x4, .rodata, overlays/bash/bash]
       - [0x480, .rodata, overlays/bash/800bb64c]
       - [0x764, .rodata, overlays/bash/800bff1c]
@@ -60,6 +60,8 @@ segments:
       # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)
       - [0x8398, c, overlays/bash/800bb64c]   # proven after 21 PlotBashPenguin, by 62; fewest call ties at 59
       - [0xCC68, c, overlays/bash/800bff1c]   # proven after 72, by 80; no call ties 77..80
-      - [0xFD50, data, overlays/bash/bash_data]
-      - [0x11520, bin, overlays/bash/bash_tail]
+      - [0xFD50, .data, overlays/bash/bash]          # bash.c's data (tools/scripts/data2c.py)
+      # the later files' data, cut where their own objects start (the code that uses them)
+      - [0x11404, .data, overlays/bash/800bb64c]
+      - [0x114DC, .data, overlays/bash/800bff1c]
   - [0x11521]

@@ -4,6 +4,18 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
+/* data, in address order */
+u16 D_800C46B8[4] = { 0x2010, 0x2011, 0x2012, 0 };
+u16 D_800C46C0[18] = {
+    0x19, 0x1B, 0x1C, 0x19, 0x1C, 0x1B, 0x1C, 0x19, 0x1B, 0x1C, 0x1B, 0x19, 0x1B, 0x1C, 0x19,
+    0x1B, 0x19, 0x1C,
+};
+u16 D_800C46E4[4] = { 0x200D, 0x200A, 0x2011, 0x2009 };
+EXTengine D_800C46EC = {0};
+u16 D_800C4788 = 0;
+u16 D_800C478A = 0;
+u8 *D_800C478C = 0;
+
 void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
     s32 z;
     s32 x;
@@ -1431,7 +1443,7 @@ void PlotPickup(NAS *arg0) {
             case 0x14:
                 Heroes[obj->player].hero_pu_timer = 0xF0;
                 Heroes[obj->player].hero_powerup->sub->unk74 = 0x2011;
-                PlaySfx(0x452, &D_800C4780, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(0x452, &D_800C46EC.sfx, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x41A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 break;
             default:
@@ -1565,16 +1577,16 @@ void BashHero_ExtraEffects(s32 arg0) {
                 do {
                     pu->unk1E += 0xAA;
                 } while (0);
-                if (D_800C4780 != NULL) {
+                if (D_800C46EC.sfx != NULL) {
                     t = h4->hero_pu_timer;
                     if (t >= 0x12C) {
                         t = 0x12B;
                     }
-                    func_800228A4(D_800C4780, (0x12C - t) * 0xF00 / 300 + 0x1E00);
+                    func_800228A4(D_800C46EC.sfx, (0x12C - t) * 0xF00 / 300 + 0x1E00);
                 }
             } else {
-                if (D_800C4780 != NULL) {
-                    StopSfx(D_800C4780);
+                if (D_800C46EC.sfx != NULL) {
+                    StopSfx(D_800C46EC.sfx);
                 }
                 h4->hero_pu = 0;
                 SetHeroAction(arg0, 0x12);

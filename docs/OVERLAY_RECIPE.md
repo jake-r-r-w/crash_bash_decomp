@@ -21,9 +21,9 @@ the data has to be C (pointers as symbols) before anything can move.
   and the engine's AST table (`src/overlays/engine/asttable.c`), and gives
   prototypes. The level callbacks are what the overlay's setup function
   (`TA_SetUp` for Tank) writes into the exe's `LevSpec` at `0x8005AA70`. The
-  hero states are the overlay's entries in the engine's hero mode table
-  (`0x8009DFE8`, a Set/Do pair per action; ARCHITECTURE.md, Tank hero
-  states).
+  hero states are the overlay's entries in the engine's `HEROFunc` table
+  (from `0x8009DCA0`, a Set/Do pair per `HeroMode_nums` action; Tank's start
+  at `0x8009DFE8`; ARCHITECTURE.md, Tank hero states).
 - **Name the rest from their code**, a descriptive name where the original is
   unknown (CONVENTIONS.md, Naming). `decomp.py similar NAME` finds the same
   code matched elsewhere, `protos NAME` the function on the prototype and demo
@@ -100,9 +100,11 @@ the code that reads it, and from what points at it:
   sounds + 72 sequences.
 - **Retype keeping the bytes.** A one-shot script that rewrites the
   initialisers is the reliable way (Tank's: `s32` words to `s16`/`u16`
-  pairs, `u8` bytes to `u16`, words to `WWInf`/`PreMap` records). gcc aligns
-  a byte array to 4 and a halfword array to 2, so a retype from `u8` is safe
-  only when the object's size is a multiple of 4.
+  pairs, `u8` bytes to `u16`, words to `WWInf`/`PreMap` records). cc1
+  word-aligns every array, struct and union in data (`DATA_ALIGNMENT` in
+  mips.h); only a scalar keeps its own alignment. So an object at 2 mod 4 is
+  a scalar (`u16`, not `u8[2]`), and a retype from `u8` is safe only when
+  the object's size is a multiple of 4.
 - **Words nothing reads.** Check them on the prototype discs too: map the
   word through a function that touches it (its absolute references, in
   order) and look for other references in that disc's copy of the overlay.

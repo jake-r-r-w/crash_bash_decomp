@@ -510,16 +510,29 @@ class Converter:
         for _, ft, fp, fd, fo in (ms[:1] if kind == "union" else ms):
             self.covered(ft, fp, fd, off + fo, out)
 
-    def define(self, name, va, size, kinds, local):
+    def align_of(self, name):
+        """The alignment cc1 gives an object: mips.h DATA_ALIGNMENT word-aligns arrays, structs and
+        unions; a declared scalar keeps its own (an undeclared object is written as an array)."""
+        decl = self.decls.get(name)
+        if decl is None:
+            return 4
+        tname, ptr, dims = decl
+        if ptr or dims or tname not in SCALARS:
+            return 4
+        return SCALARS[tname][0]
+
+    def define(self, name, va, size, kinds, local, next_align=4):
         """One definition, or two when the declared type is shorter than the object: the rest
-        is written as an object of its own, D_<address>."""
+        is written as an object of its own, D_<address>. next_align is the alignment of the
+        object after this one: a gap it doesn't explain as padding is a rest."""
         self.base_rom = self.rom(va)
         data = self.bin[self.rom(va):self.rom(va) + size]
         decl = self.decls.get(name)
         if decl is None:
             el = "s32" if "word" in kinds or not kinds else "s16" if "short" in kinds else "u8"
             esz = SCALARS[el][0]
-            decl = (el, 0, [None])
+            # an array is word-aligned (mips.h DATA_ALIGNMENT), so one element off a word is a scalar
+            decl = (el, 0, [] if va % 4 and size == esz else [None])
         tname, ptr, dims = decl
         lo = self.types.layout(tname, ptr)
         if lo is None:
@@ -531,7 +544,8 @@ class Converter:
         if total > size:
             raise ValueError(f"{name}: type {tname}{''.join(f'[{d}]' for d in dims)} is {total} bytes, the object {size}")
         rest = ""
-        if any(data[total:]) or (va + size) - ((va + total + 3) & ~3) >= 4:
+        padded = (va + total + next_align - 1) & ~(next_align - 1)
+        if any(data[total:]) or (va + size) - ((va + total + 3) & ~3) >= 4 or padded < va + size:
             # the rest is another object (cc1 pads only to the next object's alignment), even if
             # it is zero: written as D_<address> so the layout holds
             # the next word address after the object (not va + an aligned size: an s16 at 2 mod 4,
@@ -541,7 +555,7 @@ class Converter:
             if rva - va >= size and (va + total) % 2 == 0:
                 # less than a word is left: a halfword right after (the s16 pair D_800C52E8)
                 rva, rkinds = va + total, {"short"}
-            rest = "\n" + self.define(f"D_{rva:08X}", rva, size - (rva - va), rkinds, local)
+            rest = "\n" + self.define(f"D_{rva:08X}", rva, size - (rva - va), rkinds, local, next_align)
             size = rva - va
             self.base_rom = self.rom(va)
         ctype = ("const " if False else "") + tname + " " + "*" * ptr
@@ -610,9 +624,10 @@ def main():
     local += [(va, n) for n, va, _, _ in objs]
     errors = 0
     lines.append("/* data, in address order */")
-    for name, va, size, kinds in objs:
+    for i, (name, va, size, kinds) in enumerate(objs):
         try:
-            lines.append(c.define(name, va, size, kinds, local))
+            nxt = c.align_of(objs[i + 1][0]) if i + 1 < len(objs) else 4
+            lines.append(c.define(name, va, size, kinds, local, nxt))
         except ValueError as e:
             errors += 1
             lines.append(f"#error {e}")

@@ -110,6 +110,36 @@ class WordFields(unittest.TestCase):
         self.assertEqual(out, {0, 12, 20, 32})
 
 
+class Alignment(unittest.TestCase):
+    def setUp(self):
+        c = data2c.Converter.__new__(data2c.Converter)
+        c.decls = {"D_A": ("u16", 0, []), "D_B": ("u16", 0, [None]), "D_C": ("Ambient_data", 0, []),
+                   "D_P": ("u8", 1, [])}
+        self.c = c
+
+    def test_arrays_and_structs_are_word_aligned(self):
+        # mips.h DATA_ALIGNMENT: an array, struct or union is word-aligned; a scalar keeps its own
+        self.assertEqual(self.c.align_of("D_A"), 2)
+        self.assertEqual(self.c.align_of("D_B"), 4)
+        self.assertEqual(self.c.align_of("D_C"), 4)
+        self.assertEqual(self.c.align_of("D_P"), 4)
+        self.assertEqual(self.c.align_of("D_undeclared"), 4)
+
+    def test_a_gap_before_a_halfword_is_a_rest(self):
+        # Bash's u16 D_800C3B34, then 2 zero bytes, then u16 D_800C3B38: the gap can't be padding
+        c = data2c.Converter.__new__(data2c.Converter)
+        c.vram, c.end, c.syms, c.funcs, c.symbolic, c.provide, c.externs = 0x800B32B4, 0x800CB294, {}, {}, set(), {}, set()
+        c.srcs = c.hdrs = ""
+        c.decls = {"D_800C3B34": ("u16", 0, [])}
+        c.types = data2c.Types([HDR])
+        c.bin = bytes(0x10)
+        c.rom = lambda va: 0
+        out = c.define("D_800C3B34", 0x800C3B34, 4, {"short"}, [], next_align=2)
+        self.assertEqual(out, "u16 D_800C3B34 = 0;\ns16 D_800C3B36 = 0;")
+        # before a word-aligned object the same 2 bytes are padding
+        self.assertEqual(c.define("D_800C3B34", 0x800C3B34, 4, {"short"}, [], next_align=4), "u16 D_800C3B34 = 0;")
+
+
 class OtherSlots(unittest.TestCase):
     def test_only_another_slot_overlays_files_are_left_out(self):
         slots = ["bash", "bonk", "n2o", "tank", "titles"]

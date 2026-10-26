@@ -206,4 +206,11 @@ extern u16 D_800C46B8[];
 extern s32 D_8009E2B4[];
 void PlotCrate(NAS *arg0);
 
+/* data defined in 800bb64c.c */
+extern u16 D_800C46C0[];
+extern EXTengine D_800C46EC;
+extern u16 D_800C4788;
+extern u16 D_800C478A;
+extern u8 *D_800C478C;
+
 #endif /* BASH_BASH_800BB64C_H */

@@ -10,6 +10,7 @@
 #include "bash/main.h"
 #include "bash/engine.h"
 #include "bash/8008e27c.h"
+#include "bash/xtras.h"
 
 struct BashObj;
 
@@ -91,12 +92,12 @@ typedef struct {
 
 extern u8 D_800C3B44[];
 extern u16 D_800C3B84;
-extern u8 D_800C3B86[];
+extern u16 D_800C3B86;
 extern u16 D_800C3B94[];
 extern u16 D_800C3B8C[];
 extern u16 D_8009E46C[];
 extern s32 D_8009D758;
-BashPair *BashFindDropPoint(u8 *arg0);
+BashPair *BashFindDropPoint(u16 *arg0);
 
 /* A scene object in the list at D_80058AD0 + 0x1C (BashSpaceInitTiles). */
 typedef struct BashObj {
@@ -234,7 +235,6 @@ s32 BashAI_HazardAhead(s32 arg0);
 void BashSnowInitHeroMove(void);
 
 u8 *CreateCrate(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-extern u8 *D_800C478C;
 
 void BASHSetUp(void);
 
@@ -328,7 +328,6 @@ void BashPenguinPush(EXTengine *eng);
 void PlotBashPenguin(NAS *nas);
 
 /* InitialiseBASHFirst: the overlay's init hook. */
-extern EXTengine D_800C46EC;
 extern void (*D_8009D70C)(s32);
 void Bash_HeroBot(s32 arg0);
 void BashHero_ExtraEffects();
@@ -363,13 +362,10 @@ extern u8 D_800C31C0[];
 /* InitialiseBASH */
 extern u16 D_800C3B32;
 extern u16 D_800C3B34;
-extern u16 D_800C478A;
 extern u16 D_800C3B3A;
 extern s16 D_800C3B3E;
-extern u16 D_800C4788;
 extern s32 D_800C46AC;
 extern u8 *D_800C3B9C[4];
-extern u16 D_800C46C0[];
 
 /* The object CreateCrate returns, as BashCrateMaster sees it. */
 typedef struct {
@@ -426,7 +422,9 @@ static inline u8 *BashSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
     }
     return p;
 }
-extern u8 D_800C395C[];
+/* Snow's crate velocities by hero_name (D_8009E488.unk0, the hooks' KickVels) */
+extern CrateVelocity D_800C3914, D_800C392C, D_800C3944;
+extern CrateVelocity *D_800C395C[];
 extern u16 D_800C3984[];
 extern Ambient_data D_800C39C0;
 extern Ambient_data D_800C39D8;

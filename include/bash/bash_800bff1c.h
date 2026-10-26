@@ -17,7 +17,6 @@ s32 SetHeroSeq(s32 player, s32 seq);
 
 extern u16 *D_8009D6EC;
 void BashHeroDead(s32 arg0);
-extern _sfx_handler *D_800C4780;
 void BashHeroBigWeight(s32 arg0);
 
 void SetBashHeroDead(s32 arg0);
