@@ -66,10 +66,19 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    three empty stubs (`func_800C69BC`, `func_800C831C`, `func_800C83D0`)
    and four unclear ones (`func_800C6C30`, `func_800C7E68`/`func_800C7EB0`,
    hero action `0x6F`; `func_800C8120`, action `0x70` and `D_800CB0F0`).
-   Next: types. `ovl5f.h` has 26 `Ovl5f*` stand-in structs; check each
-   against the Oct 9 types first, as `Ovl5fAITarget` turned out to be
-   `TA_Bot`, then the `unkXX` fields and the `D_` globals. Tools for
-   both: `tank.h` (leaked prototypes, in code order inside a file, so a
+   Types (2026-10-26): 22 of `ovl5f.h`'s 30 stand-in structs are gone.
+   Every object extension is `EXTobject_TA` (all are `AddExt(nas, 0x38,
+   ...)`), the bot state `TA_Bot`, the puffs' `EXTscriptdata`, and the
+   rest were views of `NAS`, `EXTengine`, `subengine` and `TA_player`.
+   Left: `Ovl5fModeView`/`GameView`/`SetupView`, Tank's views of the
+   game-state struct `D_8005A614` (declared `u8[]` everywhere; type it
+   project-wide, Phase 5), `Ovl5fCam` (merge with the other camera views,
+   PROTOTYPES.md Left), and the Tank-only table shapes `Ovl5fPoint`,
+   `Ovl5fU16Pad`, `MineOffset`, `ModelRec`. Globals: the busy state ones
+   are named (`TankLevelOver`, `TankMapWidth`, the leak's
+   `TankLevelsGridMapTank`/`Miss`, ...); about 135 `D_800C9xxx`/`D_800CAxxx`
+   data tables (anim scripts, level tables) are left for the data step,
+   where each is read anyway. Tools for both: `tank.h` (leaked prototypes, in code order inside a file, so a
    named function's neighbours are candidates), the Oct 9 debug types,
    `decomp.py similar`, `tools/scripts/field_survey.py` (loads and stores
    per struct offset), and the scripts in `scratch/naming/` (not
@@ -311,6 +320,10 @@ search for C that makes it, with the variant's log as the check.
 - **`tools/dk python3 - <<'EOF' </dev/null` runs nothing:** the `</dev/null`
   replaces the heredoc as stdin, and Python exits quietly on an empty
   script. Write the script to a file in `scratch/` and run that.
+- **`open(p, "w").write(f(open(p).read()))` empties the file:** the
+  `open(p, "w")` truncates before the argument is read. Read into a
+  variable first, then write (it wiped `ovl5f.c` once; `git checkout`
+  restored it).
 - **Write files that hold backslash escapes with the Write tool**, not a
   heredoc through the Bash tool: twice on 2026-10-25 a doubled backslash
   came out single, which broke a generated patch's `\n` strings and joined a
@@ -508,6 +521,14 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Tank typing pass):** 22 stand-in structs replaced by the
+  Oct 9 and engine types (14 object extensions are all `EXTobject_TA`;
+  `Ovl5fExt1605` is `EXTscriptdata`, the `AST_ScriptFX` puff's); the busy
+  Tank globals named, two from the leak (`TankLevelsGridMapTank`/`Miss`,
+  read by the leaked sandbag functions). Writing `D_8009D60C` as
+  `Heroes[2].hero_sub` moved code (one `Heroes` base got shared), so it
+  stays a global, typed. `make check` OK after each step.
 
 - **2026-10-26 (Tank pilot started: 64 functions named):** Tank's level
   callbacks (the `D_8005AA70` slots, named after Arkenoid's `AR_SetUp`),
