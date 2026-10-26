@@ -77,7 +77,7 @@ static inline s32 EngCam_HitX(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
 extern CamEase D_800AD0F4;
 void func_80097AA4(subengine *s);
 
-void func_800B5A40(u8 *cam, s32 arg1);
+void TitlesCameraHook(u8 *cam, s32 arg1);
 void func_800B8098(u8 *cam, s32 arg1);
 void func_800B96F4(CamView *out, s32 arg1);
 void func_800BB184(u8 *cam);

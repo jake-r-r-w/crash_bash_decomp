@@ -4,7 +4,7 @@
 #include "bash/ovl69.h"
 #include "bash/titles.h"
 
-void func_800B37BC(void) {
+void TitlesInitLevel(void) {
     u8 *g;
     s32 *p;
     u8 *a1;
@@ -48,7 +48,7 @@ void func_800B37BC(void) {
     D_800B9600 = &D_800B8C2C;
 }
 
-void func_800B39C8(void) {
+void TitlesCheckIdle(void) {
     s32 f;
     if (D_80051604 >= 0x385) {
         D_80051604 = 0;
@@ -72,7 +72,7 @@ void func_800B39C8(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl69/ovl69", D_800B32B8);
 
-void func_800B3A9C(void) {
+void AnimateTitlesBackdrop(void) {
     static const struct {
         SLONG_XYZ pos;
         char text[796];
@@ -160,12 +160,12 @@ void func_800B3A9C(void) {
     p2->unk52 = 1;
 }
 
-void func_800B3CA8(void) {
+void MainMenuUpdate(void) {
     subengine *s;
     u8 *g;
 
-    func_800B3A9C();
-    func_800B39C8();
+    AnimateTitlesBackdrop();
+    TitlesCheckIdle();
     s = GetEngineSlot(0)->sub;
     if (D_80051380 & 0x40) {
         if (D_800B95F0 < 3) {
@@ -195,7 +195,7 @@ void func_800B3CA8(void) {
             g[0x56] = 3;
             g[0x57] = 2;
             *(u16 *)(g + 0x32) |= 4;
-            func_800B5360(D_800B8EC0);
+            MenuChainStart(D_800B8EC0);
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 1:
@@ -208,13 +208,13 @@ void func_800B3CA8(void) {
             *(s32 *)(g + 0x6C) = 0;
             *(s16 *)(g + 0x48) = 0;
             *(u16 *)(g + 0x32) |= 1;
-            func_800B5360(D_800B8EA4);
+            MenuChainStart(D_800B8EA4);
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 2:
             g[0x27] = 4;
             *(u16 *)(g + 0x32) |= 2;
-            func_800B5360(D_800B8ED4);
+            MenuChainStart(D_800B8ED4);
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 3:
@@ -237,7 +237,7 @@ void func_800B3CA8(void) {
     s[D_800B95F0 + 1].unk7C = 2;
 }
 
-void func_800B3F7C(void) {
+void PlayersMenuUpdate(void) {
     subengine *s;
     s32 n;
     s32 i;
@@ -245,7 +245,7 @@ void func_800B3F7C(void) {
 
     s = GetEngineSlot(0)->sub;
     s++;
-    func_800B3A9C();
+    AnimateTitlesBackdrop();
     s[0].unk7C = 3;
     s[1].unk7C = 3;
     s[2].unk7C = 3;
@@ -314,20 +314,20 @@ void func_800B3F7C(void) {
     if (c != 0) {
         if (O69PAD->pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_800B5410();
+            MenuChainNext();
         }
         if (O69PAD->pressed & 0x1000) {
             PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_800B53D4();
+            MenuChainBack();
         }
     }
 }
 
-void func_800B42B0(void) {
+void NewLoadMenuUpdate(void) {
     Ovl69Sub *s;
     s32 *g;
 
-    func_800B3A9C();
+    AnimateTitlesBackdrop();
     do {
         s = (Ovl69Sub *)GetEngineSlot(0)->sub;
         s->a = (D_800B9628 == 0) * 2;
@@ -346,7 +346,7 @@ void func_800B42B0(void) {
         switch (D_800B9628) {
         case 0:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_800B5410();
+            MenuChainNext();
             break;
         case 1:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -356,11 +356,11 @@ void func_800B42B0(void) {
     }
     if (D_80051380 & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-        func_800B53D4();
+        MenuChainBack();
     }
 }
 
-void func_800B4464(void) {
+void BattleOptionsUpdate(void) {
     subengine *sub;
     subengine *p;
 
@@ -373,7 +373,7 @@ void func_800B4464(void) {
     sub->unk51 = 0;
     sub->unk52 = 1;
     if (((PadButtons *)D_80051338)->pressed & 0x1000) {
-        func_800B53D4();
+        MenuChainBack();
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if (((PadButtons *)D_80051338)->pressed & 0x80) {
@@ -408,7 +408,7 @@ void func_800B4464(void) {
     }
 }
 
-void func_800B4770(void) {
+void BattleOptionsRender(void) {
     u8 *p;
 
     D_80056998.modelDp = D_8009F644.amount;
@@ -424,7 +424,7 @@ void func_800B4770(void) {
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
 
-void func_800B4848(void) {
+void TitlesSetHeroMasks(void) {
     u8 *g = D_8005A614;
     s32 i;
     s32 k;
@@ -442,7 +442,7 @@ void func_800B4848(void) {
     *(s16 *)(g + 0x44) = (s8)D_8004E0A4[g[i + 0x4C]];
 }
 
-void func_800B4910(void) {
+void OptionsUpdate(void) {
     subengine *sub;
     s32 v;
     s32 n;
@@ -577,7 +577,7 @@ void func_800B4910(void) {
     }
 }
 
-void func_800B4F1C(void) {
+void OptionsRender(void) {
     subengine *sub;
     s32 n;
     s32 i;
@@ -636,25 +636,25 @@ void func_800B4F1C(void) {
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
 
-void func_800B51C0(void) {
+void RunGameQuit(void) {
     if (D_8009E598 != NULL) {
         D_8009E598();
     }
 }
 
-void func_800B51EC(void) {
+void RunGameRender(void) {
     if (D_8009E594 != NULL) {
         D_8009E594();
     }
 }
 
-void func_800B5218(void) {
+void RunGameUpdate(void) {
     if (D_8009E590 != NULL) {
         D_8009E590();
     }
 }
 
-void func_800B5244(void) {
+void RunGameInit(void) {
     void func_8008EC00();
     func_8001E984(0x20, 0x20);
     if (D_8009E58C != NULL) {
@@ -677,21 +677,21 @@ void func_800B5244(void) {
     }
 }
 
-void func_800B5324(void) {
+void OptionsQuit(void) {
 }
 
-void func_800B532C(void) {
+void OptionsInit(void) {
     func_80095BEC(4, D_800B8F20);
     D_800B9508 = 0;
     D_800B950C = 0;
 }
 
-void func_800B5360(s32 *arg0) {
+void MenuChainStart(s32 *arg0) {
     D_800B9620 = arg0;
     func_8001E848(&D_8009F8A4, (process_info *)*arg0);
 }
 
-void func_800B5390(s32 arg0) {
+void MenuChainStep(s32 arg0) {
     s32 *temp_v1;
     s32 temp_a1;
 
@@ -703,7 +703,7 @@ void func_800B5390(s32 arg0) {
     }
 }
 
-void func_800B53D4(void) {
+void MenuChainBack(void) {
     s32 *temp_v0;
     s32 temp_a1;
 
@@ -715,7 +715,7 @@ void func_800B53D4(void) {
     }
 }
 
-void func_800B5410(void) {
+void MenuChainNext(void) {
     s32 *temp_v0;
     s32 temp_a1;
 
@@ -727,26 +727,26 @@ void func_800B5410(void) {
     }
 }
 
-void func_800B544C(void) {
+void BattleOptionsQuit(void) {
 }
 
-void func_800B5454(void) {
+void BattleOptionsInit(void) {
     func_80095BEC(0, D_800B8974);
     D_800B962C = 2;
 }
 
-void func_800B5484(void) {
+void TitlesLeaveRender(void) {
     if (D_800B9DFC != NULL) {
         D_800B9DFC();
     }
 }
 
-void func_800B54B0(void) {
+void TitlesLeaveInit(void) {
     set_fade(&D_8009F644, 0x200, 0);
     func_80094D88((s32)D_800A0840, &D_8009E5C8);
 }
 
-void func_800B54F0(void) {
+void NewLoadMenuInit(void) {
     u8 *g;
     func_80095BEC(0, D_800B889C);
     D_800B9628 = 0;
@@ -771,7 +771,7 @@ void num_players_render(void) {
 
 extern u8 D_8005A63A;
 
-void func_800B55B8(void) {
+void PlayersMenuInit(void) {
     if (D_8005A646 & 4) {
         func_80095BEC(0, D_800B877C);
     } else {
@@ -780,7 +780,7 @@ void func_800B55B8(void) {
     D_8005A63A = D_80051600 != 0;
 }
 
-void func_800B5614(void) {
+void MainMenuInit(void) {
     u8 *g;
     D_800B95F0 = 0;
     func_80092C54();
@@ -791,7 +791,7 @@ void func_800B5614(void) {
     func_80095BEC(0, D_800B8518);
 }
 
-void func_800B566C(void) {
+void RenderTitlesBackdropAndMenu(void) {
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
     func_80018B08(&D_800B8E00, &D_800B9538);
@@ -802,7 +802,7 @@ void func_800B566C(void) {
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
 
-void func_800B5734(void) {
+void RenderTitlesBackdrop(void) {
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
     func_80018B08(&D_800B8E00, &D_800B9538);
@@ -810,7 +810,7 @@ void func_800B5734(void) {
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
 
-void func_800B57BC(void) {
+void RenderTitlesMenu(void) {
     GetEngineSlot(1)->sub[1].flags |= 0x8000;
     GetEngineSlot(1)->sub[2].flags |= 0x8000;
     func_80018B08(&D_800B8DD8, &D_800B9538);
@@ -821,7 +821,7 @@ void func_800B57BC(void) {
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
 
-void func_800B5880(void) {
+void SetupTitlesBackdrop(void) {
     PlaceSub *s = (PlaceSub *)GetEngineSlot(1)->sub;
 
     s->unk14 = D_8005B690 * 20;
@@ -833,18 +833,18 @@ void func_800B5880(void) {
     s->unk52 = 1;
 }
 
-void func_800B58E4(void) {
+void MenuConfirmOrBack(void) {
     if (((PadButtons *)D_80051338)->pressed & 0x4000) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-        func_800B5410();
+        MenuChainNext();
     }
     if (((PadButtons *)D_80051338)->pressed & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-        func_800B53D4();
+        MenuChainBack();
     }
 }
 
-void func_800B5978(u8 *cam, s32 arg1) {
+void TitlesCamFromPath(u8 *cam, s32 arg1) {
     u8 *o = (u8 *)path_get(arg1);
     s32 *p;
     s32 t;
@@ -867,21 +867,21 @@ void func_800B5978(u8 *cam, s32 arg1) {
     }
 }
 
-void func_800B5A40(u8 *cam, s32 arg1) {
+void TitlesCameraHook(u8 *cam, s32 arg1) {
     if (arg1 != 0) {
-        func_800B5978(cam, 1);
+        TitlesCamFromPath(cam, 1);
     }
     D_8009F708 = 0xF0;
 }
 
-void func_800B5A6C(void) {
+void TitlesEmptyHook(void) {
 }
 
-void func_800B5A74(void) {
+void TitlesUpdateLevel(void) {
     func_800139A8();
 }
 
-void func_800B5A94(void) {
+void TitlesPreInitLevel(void) {
     u8 *g = D_8005A614;
 
     g[0x50] = 9;
@@ -891,18 +891,18 @@ void func_800B5A94(void) {
     *(u16 *)(g + 0x32) |= 0x200;
 }
 
-void func_800B5AC0(void) {
-    D_8005AA70[0] = (s32)func_800B5A94;
-    D_8005AA70[1] = (s32)func_800B37BC;
-    D_8005AA70[2] = (s32)func_800B37BC;
-    D_8005AA70[3] = (s32)func_800B5A74;
+void TitlesSetUp(void) {
+    D_8005AA70[0] = (s32)TitlesPreInitLevel;
+    D_8005AA70[1] = (s32)TitlesInitLevel;
+    D_8005AA70[2] = (s32)TitlesInitLevel;
+    D_8005AA70[3] = (s32)TitlesUpdateLevel;
     D_8005AA70[5] = 0;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
-    D_8009F8B4 = func_800B5A6C;
+    D_8009F8B4 = TitlesEmptyHook;
 }
 
-void func_800B5B10(s32 arg0) {
+void InitCharSelector(s32 arg0) {
     EXTengine *e0;
     EXTengine *e2;
     Ovl69Obj *o;
@@ -943,7 +943,7 @@ void func_800B5B10(s32 arg0) {
     }
 }
 
-void func_800B5CA8(Ovl69Slot *slot) {
+void UpdateCharSelector(Ovl69Slot *slot) {
     Ovl69Obj *o = (Ovl69Obj *)slot;
     subengine *t;
     subengine *s;
@@ -1040,7 +1040,7 @@ void func_800B5CA8(Ovl69Slot *slot) {
     }
 }
 
-void func_800B63F4(void) {
+void CharSelectInit(void) {
     EXTengine *eng;
     Ovl69Rec *rec;
     s32 i;
@@ -1054,7 +1054,7 @@ void func_800B63F4(void) {
     func_80095BEC(2, &D_800B9A00);
     i = 0;
     do {
-        func_800B5B10(i);
+        InitCharSelector(i);
         i++;
     } while (i < 4);
     i = 0;
@@ -1067,10 +1067,10 @@ void func_800B63F4(void) {
         rec++;
         off += 0xA8;
     } while (i < 8);
-    func_800B64B8();
+    ShuffleCharSelectors();
 }
 
-void func_800B64B8(void) {
+void ShuffleCharSelectors(void) {
     s32 i;
     s32 j;
 
@@ -1092,7 +1092,7 @@ void func_800B64B8(void) {
     }
 }
 
-s32 func_800B65D0(s32 a0) {
+s32 CpuPickCharacter(s32 a0) {
     u8 *g = D_8005A614;
     s32 r;
     s32 i;
@@ -1139,14 +1139,14 @@ s32 func_800B65D0(s32 a0) {
     }
 }
 
-void func_800B6734(void) {
+void CharSelectUpdate(void) {
     EXTengine *eng;
     subengine *s;
     subengine *s2;
     s32 min;
     s32 i;
 
-    func_800B3A9C();
+    AnimateTitlesBackdrop();
     eng = GetEngineSlot(0);
     s = &eng->sub[24];
     s->unk08 = ((D_80068BD4[(((D_8004E0D8 * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
@@ -1177,33 +1177,33 @@ void func_800B6734(void) {
                 break;
             }
             if (w == 0) {
-                D_800B9FD4[i].idx = func_800B65D0(i);
+                D_800B9FD4[i].idx = CpuPickCharacter(i);
                 D_800B9FD4[i].pad10[7]++;
                 min = 0;
                 break;
             }
         }
         if (min >= 0x79) {
-            func_800B4848();
-            func_800B5410();
+            TitlesSetHeroMasks();
+            MenuChainNext();
         }
     }
     if (D_80051380 & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-        func_800B53D4();
+        MenuChainBack();
     }
     for (i = 0; i < 4; i++) {
-        func_800B5CA8(&D_800B9FD4[i]);
+        UpdateCharSelector(&D_800B9FD4[i]);
     }
 }
 
-void func_800B6A64(void) {
+void CharSelectRender(void) {
     EXTengine *eng;
 
     eng = GetEngineSlot(0);
     eng->unk10.x = -0x140;
     eng->unk10.y = -0xF0;
-    func_800B566C();
+    RenderTitlesBackdropAndMenu();
     func_80018B08(&D_800B8DD8, &D_800B9F1C);
     D_800569AC = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
@@ -1225,7 +1225,7 @@ s8 adventure_mode_head(s32 a0) {
     }
 }
 
-int func_800B6B88(int a0, int a1, int a2, int a3, int a4) {
+int ApproachSpeed(int a0, int a1, int a2, int a3, int a4) {
     int v;
 
     if (a0 != a1) {
@@ -1257,7 +1257,7 @@ int func_800B6B88(int a0, int a1, int a2, int a3, int a4) {
     return a2;
 }
 
-s32 func_800B6C04(s32 arg0) {
+s32 UnlockCardLevels(s32 arg0) {
     s32 *p;
     s32 *q;
     s32 j;
@@ -1336,7 +1336,7 @@ outer:
     return count;
 }
 
-void func_800B6CF4(void) {
+void LevelSelectInit(void) {
     subengine *sub;
 
     D_800BA744 = 0;
@@ -1353,10 +1353,10 @@ void func_800B6CF4(void) {
     sub = GetEngineSlot(1)->sub;
     D_800BA740 = 0;
     sub[3].flags |= 0x8000;
-    func_800B7BE0(0);
+    LevelSelectCursor(0);
 }
 
-void func_800B6E0C(void) {
+void LevelSelectInput(void) {
     s32 *tbl;
     u8 *g;
     EXTengine *e;
@@ -1383,12 +1383,12 @@ void func_800B6E0C(void) {
     }
     if (((PadButtons *)D_80051338)->pressed & 0x1000) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-        func_800B53D4();
+        MenuChainBack();
     }
     if (((PadButtons *)D_80051338)->pressed & 0x4000) {
         if (Ovl69SlotOn()) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_800B5410();
+            MenuChainNext();
         } else {
             PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -1415,11 +1415,11 @@ void func_800B6E0C(void) {
             if (D_800655C0 & 0x40) {
                 GetEngineSlot(0)->sub[9].unk6C = (void *)D_800BA660[*(s32 *)(D_8005A614 + 0x2C)];
             } else if (D_800655C0 & 0x10) {
-                if (func_800B6C04(0) != 0) {
+                if (UnlockCardLevels(0) != 0) {
                     *(s32 *)&GetEngineSlot(0)->sub[9].unk6C = D_800BA154[*(s32 *)(D_8005A614 + 0x2C)];
                     if (D_80051380 & 0x2000) {
                         PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
-                        func_800B6C04(1);
+                        UnlockCardLevels(1);
                     }
                 } else {
                     GetEngineSlot(0)->sub[9].unk6C = (void *)D_800BA158[*(s32 *)(D_8005A614 + 0x2C)];
@@ -1435,7 +1435,7 @@ void func_800B6E0C(void) {
     }
 }
 
-void func_800B7458(void) {
+void LevelSelectUpdate(void) {
     Ovl69ListSlot *slot;
     subengine *q;
     s32 val;
@@ -1458,13 +1458,13 @@ void func_800B7458(void) {
         func_80011D28((u8 *)&D_8004E0F0);
         D_800BA744--;
     }
-    func_800B3A9C();
+    AnimateTitlesBackdrop();
     a = D_800555DC;
     func_80029100((obj_textureset *)(a + 0x10));
     func_80029100((obj_textureset *)(a + 0x48));
     val = D_800BA740;
     if (val == 0) {
-        func_800B6E0C();
+        LevelSelectInput();
     }
     e0 = GetEngineSlot(0);
     boff = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)D_8005A614[0x36]].unk0 + ((s8)D_8005A614[0x37] << 4)))->idx;
@@ -1536,14 +1536,14 @@ void func_800B7458(void) {
     q->unk52 = 1;
 }
 
-void func_800B79A8(void) {
+void LevelSelectRender(void) {
     s32 *cam = (s32 *)&D_800B9538;
     s8 *m;
 
     func_80018B08(&D_800BA664, &D_800B9538);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
-    func_800B566C();
+    RenderTitlesBackdropAndMenu();
     m = (s8 *)D_8005A614;
     cam[2] = (m[0x37] != 0) ? 0x400 : 0x578;
     func_80018B08(&D_800BA68C, &D_800B9538);
@@ -1564,7 +1564,7 @@ void func_800B79A8(void) {
     cam[2] = 0x400;
 }
 
-void func_800B7B30(void) {
+void LevelSelectQuit(void) {
     GetEngineSlot(1)->sub[4].flags &= ~0x8000;
     GetEngineSlot(1)->sub[5].flags &= ~0x8000;
     GetEngineSlot(1)->sub[6].flags &= ~0x8000;
@@ -1572,7 +1572,7 @@ void func_800B7B30(void) {
     GetEngineSlot(1)->sub[3].flags &= ~0x8000;
 }
 
-void func_800B7BE0(s32 arg0) {
+void LevelSelectCursor(s32 arg0) {
     u8 *p = (u8 *)GetEngineSlot(0)->sub + 0xA8;
     s32 v = *(s16 *)((u8 *)GetEngineSlot(1)->sub + D_8005A64B * 0xA8 + 0x312) + 0x32;
 
@@ -1583,7 +1583,7 @@ void func_800B7BE0(s32 arg0) {
     }
 }
 
-s32 func_800B7C68(s32 arg0) {
+s32 IsLevelUnlocked(s32 arg0) {
     u8 *g = D_8005A614;
     u8 *e = (u8 *)D_800BA324[(s8)g[0x36]].unk0 + (arg0 << 4);
     s32 off = *(s32 *)(e + 4);
@@ -1598,50 +1598,50 @@ s32 func_800B7C68(s32 arg0) {
     return 0;
 }
 
-s32 func_800B7CE8(s32 arg0) {
+s32 IsCardLevel(s32 arg0) {
     s32 i = D_8005A64A;
     u8 *s = (u8 *)D_800BA324[i].unk0;
     return *(s32 *)(s + (arg0 << 4)) == 2;
 }
 
-void func_800B7D20(void) {
+void TitlesEmptyStub(void) {
 }
 
-s32 func_800B7D28(s32 arg0, s32 arg1) {
+s32 LevelListName(s32 arg0, s32 arg1) {
     s32 idx = *(s32 *)(D_800BA324[arg0].unk0 + (arg1 << 4) + 4);
     s32 w = D_8004DDD0[idx * 3] - 0x101;
     s32 **tbl = (s32 **)D_8004DDBC;
     return tbl[D_8005A640][w];
 }
 
-s32 func_800B7D98(s32 arg0, s32 arg1) {
+s32 LevelListModel(s32 arg0, s32 arg1) {
     return *(s32 *)(D_800BA324[arg0].unk0 + (arg1 << 4) + 8);
 }
 
-s32 func_800B7DC0(s32 a, s32 b) {
+s32 LevelListAnim(s32 a, s32 b) {
     return *(s32 *)(D_800BA324[a].unk0 + (b << 4) + 0xC);
 }
 
-s32 func_800B7DE8(s32 arg0) {
+s32 LevelListCount(s32 arg0) {
     return D_800BA324[arg0].unk4;
 }
 
-s32 func_800B7E04(s32 a, s32 b) {
+s32 LevelListText(s32 a, s32 b) {
     s32 base = D_800BA324[a].unk0;
     s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
     s32 *row = D_8004DD70[D_8005A640];
     return row[idx];
 }
 
-s32 func_800B7E54(s32 a, s32 b) {
+s32 LevelListType(s32 a, s32 b) {
     return *(s32 *)((u8 *)D_800BA324[a].unk0 + (b << 4));
 }
 
-s32 func_800B7E7C(s32 a, s32 b) {
+s32 LevelListLevel(s32 a, s32 b) {
     return *(s32 *)((u8 *)D_800BA324[a].unk0 + (b << 4) + 4);
 }
 
-s32 func_800B7EA4(s32 idx) {
+s32 AnyCardHasLevel(s32 idx) {
     u8 *p;
     s32 i;
 
@@ -1659,11 +1659,11 @@ loop:
     return 0;
 }
 
-s32 func_800B7EE4(s32 idx, u8 *base) {
+s32 LevelUnlockedIn(s32 idx, u8 *base) {
     return (base + idx)[0xE4] != 0;
 }
 
-void func_800B7EF4(void) {
+void TeamModeShowPreset(void) {
     Ovl69Preset *p;
     u8 *s;
 
@@ -1695,11 +1695,11 @@ void func_800B7EF4(void) {
     O69PV->unk57 = p->unk48;
 }
 
-void func_800B81F0(void) {
+void TeamModeUpdate(void) {
     s32 temp_v0;
     s32 temp_v0_2;
 
-    func_800B5880();
+    SetupTitlesBackdrop();
     if (D_800BAAC8 == 0) {
         if (D_80051380 & 0x80) {
             temp_v0 = D_800BAACC - 1;
@@ -1717,9 +1717,9 @@ void func_800B81F0(void) {
             }
             PlaySfx(0x385, 0, 0, 0x1000, 0x1E00, 0);
         }
-        func_800B7EF4();
+        TeamModeShowPreset();
         if (D_80051380 & 0x4000) {
-            func_800B5410();
+            MenuChainNext();
             PlaySfx(0x192, 0, 0, 0x1000, 0x1E00, 0);
         }
     }
@@ -1731,7 +1731,7 @@ void func_800B81F0(void) {
     }
     if (D_80051380 & 0x1000) {
         PlaySfx(0x384, 0, 0, 0x1000, 0x1E00, 0);
-        func_800B53D4();
+        MenuChainBack();
     }
 }
 
@@ -1741,7 +1741,7 @@ void team_mode_init(void) {
     D_800BAACC = 0;
 }
 
-void func_800B83D8(s32 arg0, s32 arg1) {
+void MoveTeamBar(s32 arg0, s32 arg1) {
     EXTengine *eng = GetEngineSlot(0);
     s32 off = arg0 * 0xA8;
     u8 *p = (u8 *)eng->sub + (off + 0x2A0);
@@ -1753,21 +1753,21 @@ void func_800B83D8(s32 arg0, s32 arg1) {
     *(s32 *)((u8 *)eng->sub + off + 4) = *(s16 *)(p + 0x70) + 0x1A;
 }
 
-void func_800B8470(void) {
+void TitlesShellScreenRender(void) {
     func_800917B4();
 }
 
-void func_800B8490(void) {
+void TitlesShellScreenUpdate(void) {
 }
 
-void func_800B8498(void) {
+void TitlesShellScreenInit(void) {
     func_8009246C();
 }
 
-void func_800B84B8(void) {
+void TitlesExtraScreenRender(void) {
     func_8001C2C0((u8 *)GetEngineSlot(2));
 }
 
-void func_800B84E0(void) {
+void TitlesExtraScreenInit(void) {
     func_80095BEC(2, (s32 *)D_800BAAD0);
 }

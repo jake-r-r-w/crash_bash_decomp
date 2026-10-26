@@ -362,7 +362,7 @@ loop:
         sub = GetEngineSlot(i + 3)->sub;
         sub->unk6C = (void *)p->unk8;
         sub->unk74 = p->unkC;
-        if (p->unk0 == 1 || (p->unk0 == 2 && func_800B7EE4(p->unk4, D_8005A614) != 0)) {
+        if (p->unk0 == 1 || (p->unk0 == 2 && LevelUnlockedIn(p->unk4, D_8005A614) != 0)) {
             sub->flags |= 0x8000;
         } else {
             sub->flags &= ~0x8000;
@@ -453,7 +453,7 @@ void func_8008F554(void) {
     subengine *sub;
     s32 i;
 
-    func_800B3A9C();
+    AnimateTitlesBackdrop();
     func_8008F084();
     if (D_8009EB98 != 0) {
         D_8009EB98--;
@@ -468,7 +468,7 @@ void func_8008F554(void) {
     }
     if (D_80051380 & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-        func_800B53D4();
+        MenuChainBack();
     }
     if (EngineTable_Unlocked(D_8005A614[0x28]) && (D_80051380 & 0x4000)) {
         g = D_8005A614;
@@ -476,7 +476,7 @@ void func_8008F554(void) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         g[0x29] = 0;
         D_8009E5DC = D_8009E7A0[g[0x28]].unk4->unk4;
-        func_800B5410();
+        MenuChainNext();
         p = D_8005A614;
         for (i = 0; i < 4; i++) {
             p[i + 0x9F] = 0;
@@ -530,7 +530,7 @@ void func_8008FB48(void) {
     func_80018B08(&D_8009EB14, &D_800B9538);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(6));
-    func_800B566C();
+    RenderTitlesBackdropAndMenu();
     func_80018B08(&D_8009EA74, &D_800B9538);
     D_80056998.modelDp = D_8009F644.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
@@ -554,12 +554,12 @@ s32 func_8008FC60(void *arg0) {
             goto done;
         }
         obj = *(s32 *)((u8 *)(i * 16 + *(s32 *)((u8 *)arg0 + 4)) + 4);
-        if (func_800B7EE4(obj, D_8005A614) == 0) {
+        if (LevelUnlockedIn(obj, D_8005A614) == 0) {
             cnt = 0;
             j = cnt;
             p = tab;
             do {
-                if (func_800B7EE4(obj, p) != 0) {
+                if (LevelUnlockedIn(obj, p) != 0) {
                     cnt++;
                 }
                 j++;
@@ -629,7 +629,7 @@ s32 func_8008FE68(s32 arg0) {
     n = t->unk8;
     p = t->unk4;
     for (i = 0; i < n; i++, p++) {
-        if (!func_800B7EE4(p->unk4, D_8005A614)) {
+        if (!LevelUnlockedIn(p->unk4, D_8005A614)) {
             return 0;
         }
     }

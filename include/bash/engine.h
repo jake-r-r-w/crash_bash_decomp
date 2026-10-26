@@ -218,7 +218,7 @@ typedef struct { s32 unk0; EngineEntry16Head *unk4; s32 unk8; } EngineTable12;
 extern EngineTable12 D_8009E7A0[];
 /* Also in main.h; repeated for overlays that include engine.h first. */
 extern u8 D_8005A614[];
-extern s32 func_800B7EE4(s32, u8 *);
+extern s32 LevelUnlockedIn(s32, u8 *);
 extern u8 D_800657D0[];
 extern u16 D_8004DDD0[];
 void process_init(process_control_info *pc);

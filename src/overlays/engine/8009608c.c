@@ -30,7 +30,7 @@ void func_8009608C(s32 arg0) {
         ((EngCam *)D_80051640)->rot.vz = 0x800;
         break;
     case 3:
-        func_800B5A40(D_80051640, arg0);
+        TitlesCameraHook(D_80051640, arg0);
         break;
     case 6:
         func_800B8098(D_80051640, arg0);

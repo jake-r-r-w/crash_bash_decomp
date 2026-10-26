@@ -19,7 +19,7 @@ extern GfxViewport D_8009EAC4;
 extern GfxViewport D_8009EAEC;
 extern GfxViewport D_8009EB14;
 extern GfxCamera D_800B9538;
-void func_800B566C(void);
+void RenderTitlesBackdropAndMenu(void);
 
 typedef struct { s32 w[4]; } Blk16;
 typedef struct { Blk16 a[0x18]; s32 b[3]; } Blk18C;
@@ -109,7 +109,7 @@ static inline s32 EngineTable_AllDone(EngineTable12 *t) {
     n = t->unk8;
     p = t->unk4;
     for (i = 0; i < n; i++, p++) {
-        if (!func_800B7EE4(p->unk4, D_8005A614)) {
+        if (!LevelUnlockedIn(p->unk4, D_8005A614)) {
             return 0;
         }
     }
@@ -129,12 +129,12 @@ static inline s32 EngineTable_Reachable(void *arg0, u8 *tab) {
             goto done;
         }
         obj = *(s32 *)((u8 *)(i * 16 + *(s32 *)((u8 *)arg0 + 4)) + 4);
-        if (func_800B7EE4(obj, D_8005A614) == 0) {
+        if (LevelUnlockedIn(obj, D_8005A614) == 0) {
             cnt = 0;
             j = cnt;
             p = tab;
             do {
-                if (func_800B7EE4(obj, p) != 0) {
+                if (LevelUnlockedIn(obj, p) != 0) {
                     cnt++;
                 }
                 j++;
@@ -164,9 +164,9 @@ void func_8008EB8C(void);
 
 void func_8008F084(void);
 
-void func_800B3A9C(void);
-void func_800B53D4(void);
-void func_800B5410(void);
+void AnimateTitlesBackdrop(void);
+void MenuChainBack(void);
+void MenuChainNext(void);
 
 /* func_8008FD94's body, inlined by func_8008F554. */
 static inline void EngineWorldNext(void) {
@@ -214,7 +214,7 @@ static inline s32 EngineTable_Unlocked(s32 arg0) {
     n = t->unk8;
     p = t->unk4;
     for (i = 0; i < n; i++, p++) {
-        if (!func_800B7EE4(p->unk4, D_8005A614)) {
+        if (!LevelUnlockedIn(p->unk4, D_8005A614)) {
             return 0;
         }
     }

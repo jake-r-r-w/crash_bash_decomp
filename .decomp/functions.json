@@ -48535,7 +48535,7 @@
   "src": "src/overlays/ovl68/ovl68.c"
  },
  "ovl69:800B37BC": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B37BC.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TitlesInitLevel.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80014388",
@@ -48548,7 +48548,7 @@
   "fp": "a748d5e1e0fac69e",
   "fpn": "649dd2644c6ea561",
   "leaf": false,
-  "name": "func_800B37BC",
+  "name": "TitlesInitLevel",
   "orig": "func_800B37BC",
   "rom": 1288,
   "seg": "overlays/ovl69/ovl69",
@@ -48556,7 +48556,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B39C8": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B39C8.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TitlesCheckIdle.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "8001E588",
@@ -48565,7 +48565,7 @@
   "fp": "e723676f087ea938",
   "fpn": "7ba4b41430be6530",
   "leaf": false,
-  "name": "func_800B39C8",
+  "name": "TitlesCheckIdle",
   "orig": "func_800B39C8",
   "rom": 1812,
   "seg": "overlays/ovl69/ovl69",
@@ -48573,7 +48573,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B3A9C": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B3A9C.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/AnimateTitlesBackdrop.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "800251A8",
@@ -48582,7 +48582,7 @@
   "fp": "03bf335a49ab6ad2",
   "fpn": "16b87dc6145e918e",
   "leaf": false,
-  "name": "func_800B3A9C",
+  "name": "AnimateTitlesBackdrop",
   "orig": "func_800B3A9C",
   "rom": 2024,
   "seg": "overlays/ovl69/ovl69",
@@ -48590,7 +48590,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B3CA8": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B3CA8.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/MainMenuUpdate.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "8001E838",
@@ -48603,7 +48603,7 @@
   "fp": "aa46bdc69c991004",
   "fpn": "117f320b39692316",
   "leaf": false,
-  "name": "func_800B3CA8",
+  "name": "MainMenuUpdate",
   "orig": "func_800B3CA8",
   "rom": 2548,
   "seg": "overlays/ovl69/ovl69",
@@ -48611,7 +48611,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B3F7C": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B3F7C.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/PlayersMenuUpdate.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80022660",
@@ -48623,7 +48623,7 @@
   "fp": "e10343b7225b4683",
   "fpn": "604676dd389997e4",
   "leaf": false,
-  "name": "func_800B3F7C",
+  "name": "PlayersMenuUpdate",
   "orig": "func_800B3F7C",
   "rom": 3272,
   "seg": "overlays/ovl69/ovl69",
@@ -48631,7 +48631,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B42B0": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B42B0.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/NewLoadMenuUpdate.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80022660",
@@ -48644,7 +48644,7 @@
   "fp": "c934ad0ba735b4f6",
   "fpn": "d503bb533210f78b",
   "leaf": false,
-  "name": "func_800B42B0",
+  "name": "NewLoadMenuUpdate",
   "orig": "func_800B42B0",
   "rom": 4092,
   "seg": "overlays/ovl69/ovl69",
@@ -48652,7 +48652,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B4464": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B4464.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/BattleOptionsUpdate.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80022660",
@@ -48662,7 +48662,7 @@
   "fp": "cac9df1a91289490",
   "fpn": "6cdb4ff96246d387",
   "leaf": false,
-  "name": "func_800B4464",
+  "name": "BattleOptionsUpdate",
   "orig": "func_800B4464",
   "rom": 4528,
   "seg": "overlays/ovl69/ovl69",
@@ -48670,7 +48670,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B4770": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B4770.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/BattleOptionsRender.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80018B08",
@@ -48680,7 +48680,7 @@
   "fp": "f997e70e8c6f1550",
   "fpn": "86a1975cbcdb11e1",
   "leaf": false,
-  "name": "func_800B4770",
+  "name": "BattleOptionsRender",
   "orig": "func_800B4770",
   "rom": 5308,
   "seg": "overlays/ovl69/ovl69",
@@ -48688,13 +48688,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B4848": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B4848.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TitlesSetHeroMasks.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "d8142ba3d878aef1",
   "fpn": "95d0d8127562518b",
   "leaf": true,
-  "name": "func_800B4848",
+  "name": "TitlesSetHeroMasks",
   "orig": "func_800B4848",
   "rom": 5524,
   "seg": "overlays/ovl69/ovl69",
@@ -48702,7 +48702,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B4910": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B4910.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/OptionsUpdate.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "8001E824",
@@ -48716,7 +48716,7 @@
   "fp": "941b4c28a430b46d",
   "fpn": "20a0f893a05ef4b5",
   "leaf": false,
-  "name": "func_800B4910",
+  "name": "OptionsUpdate",
   "orig": "func_800B4910",
   "rom": 5724,
   "seg": "overlays/ovl69/ovl69",
@@ -48724,7 +48724,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B4F1C": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B4F1C.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/OptionsRender.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80018B08",
@@ -48735,7 +48735,7 @@
   "fp": "5b1b8fa7025a4348",
   "fpn": "3aadfcbfe2266fd3",
   "leaf": false,
-  "name": "func_800B4F1C",
+  "name": "OptionsRender",
   "orig": "func_800B4F1C",
   "rom": 7272,
   "seg": "overlays/ovl69/ovl69",
@@ -48743,13 +48743,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B51C0": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B51C0.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/RunGameQuit.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "194fa448491e9126",
   "fpn": "1ea0c1b765ae4f30",
   "leaf": true,
-  "name": "func_800B51C0",
+  "name": "RunGameQuit",
   "orig": "func_800B51C0",
   "rom": 7948,
   "seg": "overlays/ovl69/ovl69",
@@ -48757,13 +48757,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B51EC": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B51EC.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/RunGameRender.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "194fa448491e9126",
   "fpn": "1ea0c1b765ae4f30",
   "leaf": true,
-  "name": "func_800B51EC",
+  "name": "RunGameRender",
   "orig": "func_800B51EC",
   "rom": 7992,
   "seg": "overlays/ovl69/ovl69",
@@ -48771,13 +48771,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5218": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5218.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/RunGameUpdate.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "194fa448491e9126",
   "fpn": "1ea0c1b765ae4f30",
   "leaf": true,
-  "name": "func_800B5218",
+  "name": "RunGameUpdate",
   "orig": "func_800B5218",
   "rom": 8036,
   "seg": "overlays/ovl69/ovl69",
@@ -48785,7 +48785,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5244": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5244.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/RunGameInit.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80010AE8",
@@ -48802,7 +48802,7 @@
   "fp": "8b4e68372b3bf64a",
   "fpn": "39dbb404fbb9966b",
   "leaf": false,
-  "name": "func_800B5244",
+  "name": "RunGameInit",
   "orig": "func_800B5244",
   "rom": 8080,
   "seg": "overlays/ovl69/ovl69",
@@ -48816,7 +48816,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B5324",
+  "name": "OptionsQuit",
   "orig": "func_800B5324",
   "rom": 8304,
   "seg": "overlays/ovl69/ovl69",
@@ -48832,7 +48832,7 @@
   "fp": "5abdea04e66d2ac0",
   "fpn": "833df2e795d3ad00",
   "leaf": false,
-  "name": "func_800B532C",
+  "name": "OptionsInit",
   "orig": "func_800B532C",
   "rom": 8312,
   "seg": "overlays/ovl69/ovl69",
@@ -48848,7 +48848,7 @@
   "fp": "cbfbf499c282c2df",
   "fpn": "35b4e55675b885a4",
   "leaf": false,
-  "name": "func_800B5360",
+  "name": "MenuChainStart",
   "orig": "func_800B5360",
   "rom": 8364,
   "seg": "overlays/ovl69/ovl69",
@@ -48864,7 +48864,7 @@
   "fp": "918dd1fee6f7fc3e",
   "fpn": "ae13ff252646d0e1",
   "leaf": false,
-  "name": "func_800B5390",
+  "name": "MenuChainStep",
   "orig": "func_800B5390",
   "rom": 8412,
   "seg": "overlays/ovl69/ovl69",
@@ -48872,7 +48872,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B53D4": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B53D4.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/MenuChainBack.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "8001E848"
@@ -48880,7 +48880,7 @@
   "fp": "2301989848ffea2f",
   "fpn": "fe93045bba83a80d",
   "leaf": false,
-  "name": "func_800B53D4",
+  "name": "MenuChainBack",
   "orig": "func_800B53D4",
   "rom": 8480,
   "seg": "overlays/ovl69/ovl69",
@@ -48888,7 +48888,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5410": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5410.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/MenuChainNext.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "8001E848"
@@ -48896,7 +48896,7 @@
   "fp": "6a48bf17d72a5bb3",
   "fpn": "fe93045bba83a80d",
   "leaf": false,
-  "name": "func_800B5410",
+  "name": "MenuChainNext",
   "orig": "func_800B5410",
   "rom": 8540,
   "seg": "overlays/ovl69/ovl69",
@@ -48910,7 +48910,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B544C",
+  "name": "BattleOptionsQuit",
   "orig": "func_800B544C",
   "rom": 8600,
   "seg": "overlays/ovl69/ovl69",
@@ -48926,7 +48926,7 @@
   "fp": "4030865e69407e8a",
   "fpn": "9b38c82773b262f5",
   "leaf": false,
-  "name": "func_800B5454",
+  "name": "BattleOptionsInit",
   "orig": "func_800B5454",
   "rom": 8608,
   "seg": "overlays/ovl69/ovl69",
@@ -48934,13 +48934,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5484": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5484.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TitlesLeaveRender.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "194fa448491e9126",
   "fpn": "1ea0c1b765ae4f30",
   "leaf": true,
-  "name": "func_800B5484",
+  "name": "TitlesLeaveRender",
   "orig": "func_800B5484",
   "rom": 8656,
   "seg": "overlays/ovl69/ovl69",
@@ -48948,7 +48948,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B54B0": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B54B0.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TitlesLeaveInit.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "8001E588",
@@ -48957,7 +48957,7 @@
   "fp": "01490964236d03c4",
   "fpn": "17d4a8530f822248",
   "leaf": false,
-  "name": "func_800B54B0",
+  "name": "TitlesLeaveInit",
   "orig": "func_800B54B0",
   "rom": 8700,
   "seg": "overlays/ovl69/ovl69",
@@ -48965,7 +48965,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B54F0": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B54F0.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/NewLoadMenuInit.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80095BEC"
@@ -48973,7 +48973,7 @@
   "fp": "f4284dd3d154674f",
   "fpn": "0f41f8af45a10783",
   "leaf": false,
-  "name": "func_800B54F0",
+  "name": "NewLoadMenuInit",
   "orig": "func_800B54F0",
   "rom": 8764,
   "seg": "overlays/ovl69/ovl69",
@@ -48999,7 +48999,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B55B8": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B55B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/PlayersMenuInit.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80095BEC"
@@ -49007,7 +49007,7 @@
   "fp": "845a333b6867ee7b",
   "fpn": "8f3d1088fe075827",
   "leaf": false,
-  "name": "func_800B55B8",
+  "name": "PlayersMenuInit",
   "orig": "func_800B55B8",
   "rom": 8964,
   "seg": "overlays/ovl69/ovl69",
@@ -49015,7 +49015,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5614": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5614.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/MainMenuInit.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80092C54",
@@ -49024,7 +49024,7 @@
   "fp": "5590e7e382db80d6",
   "fpn": "c253c96ea218018b",
   "leaf": false,
-  "name": "func_800B5614",
+  "name": "MainMenuInit",
   "orig": "func_800B5614",
   "rom": 9056,
   "seg": "overlays/ovl69/ovl69",
@@ -49032,7 +49032,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B566C": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B566C.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/RenderTitlesBackdropAndMenu.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80018B08",
@@ -49042,7 +49042,7 @@
   "fp": "fb4c14278b0780d5",
   "fpn": "836bc2a7e1a29392",
   "leaf": false,
-  "name": "func_800B566C",
+  "name": "RenderTitlesBackdropAndMenu",
   "orig": "func_800B566C",
   "rom": 9144,
   "seg": "overlays/ovl69/ovl69",
@@ -49050,7 +49050,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5734": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5734.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/RenderTitlesBackdrop.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80018B08",
@@ -49060,7 +49060,7 @@
   "fp": "9256c7202e71357d",
   "fpn": "97570f8794c4ef70",
   "leaf": false,
-  "name": "func_800B5734",
+  "name": "RenderTitlesBackdrop",
   "orig": "func_800B5734",
   "rom": 9344,
   "seg": "overlays/ovl69/ovl69",
@@ -49068,7 +49068,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B57BC": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B57BC.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/RenderTitlesMenu.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80018B08",
@@ -49078,7 +49078,7 @@
   "fp": "36978af08876ab3c",
   "fpn": "8e525ff977ae28a1",
   "leaf": false,
-  "name": "func_800B57BC",
+  "name": "RenderTitlesMenu",
   "orig": "func_800B57BC",
   "rom": 9480,
   "seg": "overlays/ovl69/ovl69",
@@ -49086,7 +49086,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5880": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5880.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/SetupTitlesBackdrop.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80095E38"
@@ -49094,7 +49094,7 @@
   "fp": "8280a75d8094bc46",
   "fpn": "f8f1c6c853c69a63",
   "leaf": false,
-  "name": "func_800B5880",
+  "name": "SetupTitlesBackdrop",
   "orig": "func_800B5880",
   "rom": 9676,
   "seg": "overlays/ovl69/ovl69",
@@ -49102,7 +49102,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B58E4": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B58E4.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/MenuConfirmOrBack.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80022660",
@@ -49112,7 +49112,7 @@
   "fp": "521a9d992b5d5eae",
   "fpn": "e181ba34c93365c8",
   "leaf": false,
-  "name": "func_800B58E4",
+  "name": "MenuConfirmOrBack",
   "orig": "func_800B58E4",
   "rom": 9776,
   "seg": "overlays/ovl69/ovl69",
@@ -49120,7 +49120,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5978": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5978.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TitlesCamFromPath.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "8001463C",
@@ -49129,7 +49129,7 @@
   "fp": "080265d6a54be2f6",
   "fpn": "1618b600129febcb",
   "leaf": false,
-  "name": "func_800B5978",
+  "name": "TitlesCamFromPath",
   "orig": "func_800B5978",
   "rom": 9924,
   "seg": "overlays/ovl69/ovl69",
@@ -49137,7 +49137,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5A40": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5A40.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TitlesCameraHook.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "800B5978"
@@ -49145,7 +49145,7 @@
   "fp": "22f47d38b6c88f9c",
   "fpn": "e79bdff8068a43fa",
   "leaf": false,
-  "name": "func_800B5A40",
+  "name": "TitlesCameraHook",
   "orig": "func_800B5A40",
   "rom": 10124,
   "seg": "overlays/ovl69/ovl69",
@@ -49159,7 +49159,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B5A6C",
+  "name": "TitlesEmptyHook",
   "orig": "func_800B5A6C",
   "rom": 10168,
   "seg": "overlays/ovl69/ovl69",
@@ -49175,7 +49175,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_800B5A74",
+  "name": "TitlesUpdateLevel",
   "orig": "func_800B5A74",
   "rom": 10176,
   "seg": "overlays/ovl69/ovl69",
@@ -49183,13 +49183,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5A94": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5A94.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TitlesPreInitLevel.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "1a6f99357bf8e858",
   "fpn": "b6d5155a7eedac88",
   "leaf": true,
-  "name": "func_800B5A94",
+  "name": "TitlesPreInitLevel",
   "orig": "func_800B5A94",
   "rom": 10208,
   "seg": "overlays/ovl69/ovl69",
@@ -49197,13 +49197,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5AC0": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5AC0.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TitlesSetUp.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "9c8829b0fc9953f1",
   "fpn": "7e2465a66ece14ad",
   "leaf": true,
-  "name": "func_800B5AC0",
+  "name": "TitlesSetUp",
   "orig": "func_800B5AC0",
   "rom": 10252,
   "seg": "overlays/ovl69/ovl69",
@@ -49211,7 +49211,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5B10": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5B10.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/InitCharSelector.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80015590",
@@ -49220,7 +49220,7 @@
   "fp": "c1c84d8e3465d93a",
   "fpn": "e8e83c9560aa67de",
   "leaf": false,
-  "name": "func_800B5B10",
+  "name": "InitCharSelector",
   "orig": "func_800B5B10",
   "rom": 10332,
   "seg": "overlays/ovl69/ovl69",
@@ -49228,7 +49228,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B5CA8": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B5CA8.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/UpdateCharSelector.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80015210",
@@ -49240,7 +49240,7 @@
   "fp": "1a262f1eeb8e7c9b",
   "fpn": "b259d03b40d8ded9",
   "leaf": false,
-  "name": "func_800B5CA8",
+  "name": "UpdateCharSelector",
   "orig": "func_800B5CA8",
   "rom": 10740,
   "seg": "overlays/ovl69/ovl69",
@@ -49248,7 +49248,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B63F4": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B63F4.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/CharSelectInit.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80014388",
@@ -49260,7 +49260,7 @@
   "fp": "3202ce90419d27ac",
   "fpn": "d20043421d25c396",
   "leaf": false,
-  "name": "func_800B63F4",
+  "name": "CharSelectInit",
   "orig": "func_800B63F4",
   "rom": 12608,
   "seg": "overlays/ovl69/ovl69",
@@ -49268,7 +49268,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B64B8": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B64B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/ShuffleCharSelectors.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80015590"
@@ -49276,7 +49276,7 @@
   "fp": "f0e1ee847c893ed3",
   "fpn": "23989fef94252bfc",
   "leaf": false,
-  "name": "func_800B64B8",
+  "name": "ShuffleCharSelectors",
   "orig": "func_800B64B8",
   "rom": 12804,
   "seg": "overlays/ovl69/ovl69",
@@ -49284,7 +49284,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B65D0": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B65D0.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/CpuPickCharacter.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80015590"
@@ -49292,7 +49292,7 @@
   "fp": "1c1b8b02e3481d40",
   "fpn": "28a385fd0423cb5c",
   "leaf": false,
-  "name": "func_800B65D0",
+  "name": "CpuPickCharacter",
   "orig": "func_800B65D0",
   "rom": 13084,
   "seg": "overlays/ovl69/ovl69",
@@ -49300,7 +49300,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B6734": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B6734.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/CharSelectUpdate.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80022660",
@@ -49315,7 +49315,7 @@
   "fp": "0107b5e56d0a0e1f",
   "fpn": "ff1951fea3caf62c",
   "leaf": false,
-  "name": "func_800B6734",
+  "name": "CharSelectUpdate",
   "orig": "func_800B6734",
   "rom": 13440,
   "seg": "overlays/ovl69/ovl69",
@@ -49323,7 +49323,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B6A64": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B6A64.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/CharSelectRender.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80018B08",
@@ -49334,7 +49334,7 @@
   "fp": "c0d061be78b2ab3a",
   "fpn": "d397b415de0fbf85",
   "leaf": false,
-  "name": "func_800B6A64",
+  "name": "CharSelectRender",
   "orig": "func_800B6A64",
   "rom": 14256,
   "seg": "overlays/ovl69/ovl69",
@@ -49358,13 +49358,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B6B88": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B6B88.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/ApproachSpeed.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "d46ef4a39b26fa5c",
   "fpn": "bca4051bc2191192",
   "leaf": true,
-  "name": "func_800B6B88",
+  "name": "ApproachSpeed",
   "orig": "func_800B6B88",
   "rom": 14548,
   "seg": "overlays/ovl69/ovl69",
@@ -49372,13 +49372,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B6C04": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B6C04.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/UnlockCardLevels.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "e49cb793c01c6600",
   "fpn": "69670af05f4cf719",
   "leaf": true,
-  "name": "func_800B6C04",
+  "name": "UnlockCardLevels",
   "orig": "func_800B6C04",
   "rom": 14672,
   "seg": "overlays/ovl69/ovl69",
@@ -49386,7 +49386,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B6CF4": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B6CF4.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelSelectInit.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80095BEC",
@@ -49396,7 +49396,7 @@
   "fp": "355d2e3fe868df16",
   "fpn": "f6f75d5f8bc54d64",
   "leaf": false,
-  "name": "func_800B6CF4",
+  "name": "LevelSelectInit",
   "orig": "func_800B6CF4",
   "rom": 14912,
   "seg": "overlays/ovl69/ovl69",
@@ -49404,7 +49404,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B6E0C": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B6E0C.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelSelectInput.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80022660",
@@ -49416,7 +49416,7 @@
   "fp": "125ae8dfe70dfecf",
   "fpn": "9bb7adc8c0fcebf5",
   "leaf": false,
-  "name": "func_800B6E0C",
+  "name": "LevelSelectInput",
   "orig": "func_800B6E0C",
   "rom": 15192,
   "seg": "overlays/ovl69/ovl69",
@@ -49424,7 +49424,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7458": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7458.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelSelectUpdate.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80011D28",
@@ -49438,7 +49438,7 @@
   "fp": "1cc6ffcdd410e24b",
   "fpn": "c94c8a75fd1f72ad",
   "leaf": false,
-  "name": "func_800B7458",
+  "name": "LevelSelectUpdate",
   "orig": "func_800B7458",
   "rom": 16804,
   "seg": "overlays/ovl69/ovl69",
@@ -49446,7 +49446,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B79A8": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B79A8.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelSelectRender.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80018B08",
@@ -49457,7 +49457,7 @@
   "fp": "4955b0b0f4062235",
   "fpn": "5f80c36a554a08a2",
   "leaf": false,
-  "name": "func_800B79A8",
+  "name": "LevelSelectRender",
   "orig": "func_800B79A8",
   "rom": 18164,
   "seg": "overlays/ovl69/ovl69",
@@ -49465,7 +49465,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7B30": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7B30.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelSelectQuit.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80095E38"
@@ -49473,7 +49473,7 @@
   "fp": "22c84241f1fd91b1",
   "fpn": "75b2bc75a7c738c6",
   "leaf": false,
-  "name": "func_800B7B30",
+  "name": "LevelSelectQuit",
   "orig": "func_800B7B30",
   "rom": 18556,
   "seg": "overlays/ovl69/ovl69",
@@ -49481,7 +49481,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7BE0": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7BE0.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelSelectCursor.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80015284",
@@ -49490,7 +49490,7 @@
   "fp": "5f12f00e450ab7f0",
   "fpn": "f863f5c0fd7fbdf4",
   "leaf": false,
-  "name": "func_800B7BE0",
+  "name": "LevelSelectCursor",
   "orig": "func_800B7BE0",
   "rom": 18732,
   "seg": "overlays/ovl69/ovl69",
@@ -49498,13 +49498,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7C68": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7C68.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/IsLevelUnlocked.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "ecbe261f2f4781cd",
   "fpn": "4f70634839fa417d",
   "leaf": true,
-  "name": "func_800B7C68",
+  "name": "IsLevelUnlocked",
   "orig": "func_800B7C68",
   "rom": 18868,
   "seg": "overlays/ovl69/ovl69",
@@ -49512,13 +49512,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7CE8": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7CE8.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/IsCardLevel.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "2f148ef188978332",
   "fpn": "c09066e2b355b9c5",
   "leaf": true,
-  "name": "func_800B7CE8",
+  "name": "IsCardLevel",
   "orig": "func_800B7CE8",
   "rom": 18996,
   "seg": "overlays/ovl69/ovl69",
@@ -49532,7 +49532,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B7D20",
+  "name": "TitlesEmptyStub",
   "orig": "func_800B7D20",
   "rom": 19052,
   "seg": "overlays/ovl69/ovl69",
@@ -49540,13 +49540,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7D28": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7D28.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelListName.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "adcb92a6e1e3b1e0",
   "fpn": "698dc98cd7ca71d3",
   "leaf": true,
-  "name": "func_800B7D28",
+  "name": "LevelListName",
   "orig": "func_800B7D28",
   "rom": 19060,
   "seg": "overlays/ovl69/ovl69",
@@ -49554,13 +49554,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7D98": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7D98.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelListModel.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "46e1732b5d981cab",
   "fpn": "2ffd66139e84767d",
   "leaf": true,
-  "name": "func_800B7D98",
+  "name": "LevelListModel",
   "orig": "func_800B7D98",
   "rom": 19172,
   "seg": "overlays/ovl69/ovl69",
@@ -49568,13 +49568,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7DC0": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7DC0.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelListAnim.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "4768f64690cdc8c9",
   "fpn": "2ffd66139e84767d",
   "leaf": true,
-  "name": "func_800B7DC0",
+  "name": "LevelListAnim",
   "orig": "func_800B7DC0",
   "rom": 19212,
   "seg": "overlays/ovl69/ovl69",
@@ -49582,13 +49582,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7DE8": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7DE8.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelListCount.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "510aec61f8dfd140",
   "fpn": "bc1876dcef01e931",
   "leaf": true,
-  "name": "func_800B7DE8",
+  "name": "LevelListCount",
   "orig": "func_800B7DE8",
   "rom": 19252,
   "seg": "overlays/ovl69/ovl69",
@@ -49596,13 +49596,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7E04": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7E04.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelListText.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "61ba7a636919e390",
   "fpn": "e77484864b74e78d",
   "leaf": true,
-  "name": "func_800B7E04",
+  "name": "LevelListText",
   "orig": "func_800B7E04",
   "rom": 19280,
   "seg": "overlays/ovl69/ovl69",
@@ -49610,13 +49610,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7E54": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7E54.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelListType.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "2ffd66139e84767d",
   "fpn": "2ffd66139e84767d",
   "leaf": true,
-  "name": "func_800B7E54",
+  "name": "LevelListType",
   "orig": "func_800B7E54",
   "rom": 19360,
   "seg": "overlays/ovl69/ovl69",
@@ -49624,13 +49624,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7E7C": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7E7C.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelListLevel.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "4347f7bc46ffc7ba",
   "fpn": "2ffd66139e84767d",
   "leaf": true,
-  "name": "func_800B7E7C",
+  "name": "LevelListLevel",
   "orig": "func_800B7E7C",
   "rom": 19400,
   "seg": "overlays/ovl69/ovl69",
@@ -49638,13 +49638,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7EA4": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7EA4.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/AnyCardHasLevel.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "2a864e39ed9ef28e",
   "fpn": "0b5b7fb0509c53f8",
   "leaf": true,
-  "name": "func_800B7EA4",
+  "name": "AnyCardHasLevel",
   "orig": "func_800B7EA4",
   "rom": 19440,
   "seg": "overlays/ovl69/ovl69",
@@ -49652,13 +49652,13 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7EE4": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7EE4.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/LevelUnlockedIn.s",
   "bin": "disc/ovl69.bin",
   "calls": [],
   "fp": "e041db2f339d2665",
   "fpn": "6622ff71af12dcaf",
   "leaf": true,
-  "name": "func_800B7EE4",
+  "name": "LevelUnlockedIn",
   "orig": "func_800B7EE4",
   "rom": 19504,
   "seg": "overlays/ovl69/ovl69",
@@ -49666,7 +49666,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B7EF4": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B7EF4.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/TeamModeShowPreset.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80015284",
@@ -49675,7 +49675,7 @@
   "fp": "2f498389f4e7a1fe",
   "fpn": "4ef18d69bf172c1a",
   "leaf": false,
-  "name": "func_800B7EF4",
+  "name": "TeamModeShowPreset",
   "orig": "func_800B7EF4",
   "rom": 19520,
   "seg": "overlays/ovl69/ovl69",
@@ -49695,7 +49695,7 @@
   "fp": "b6e2561f0c73bdf5",
   "fpn": "214f952efcaf4286",
   "leaf": false,
-  "name": "func_800B81F0",
+  "name": "TeamModeUpdate",
   "orig": "func_800B81F0",
   "rom": 20284,
   "seg": "overlays/ovl69/ovl69",
@@ -49719,7 +49719,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B83D8": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B83D8.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/MoveTeamBar.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80015284",
@@ -49728,7 +49728,7 @@
   "fp": "d8455e3c51f0b443",
   "fpn": "0e039b978043bf0b",
   "leaf": false,
-  "name": "func_800B83D8",
+  "name": "MoveTeamBar",
   "orig": "func_800B83D8",
   "rom": 20772,
   "seg": "overlays/ovl69/ovl69",
@@ -49744,7 +49744,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_800B8470",
+  "name": "TitlesShellScreenRender",
   "orig": "func_800B8470",
   "rom": 20924,
   "seg": "overlays/ovl69/ovl69",
@@ -49758,7 +49758,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B8490",
+  "name": "TitlesShellScreenUpdate",
   "orig": "func_800B8490",
   "rom": 20956,
   "seg": "overlays/ovl69/ovl69",
@@ -49774,7 +49774,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_800B8498",
+  "name": "TitlesShellScreenInit",
   "orig": "func_800B8498",
   "rom": 20964,
   "seg": "overlays/ovl69/ovl69",
@@ -49791,7 +49791,7 @@
   "fp": "8282d80d7eb77b27",
   "fpn": "a9ce77dc6356f6bd",
   "leaf": false,
-  "name": "func_800B84B8",
+  "name": "TitlesExtraScreenRender",
   "orig": "func_800B84B8",
   "rom": 20996,
   "seg": "overlays/ovl69/ovl69",
@@ -49807,7 +49807,7 @@
   "fp": "1e070133a6848ddd",
   "fpn": "5a3d2a1b0d1b1cc3",
   "leaf": false,
-  "name": "func_800B84E0",
+  "name": "TitlesExtraScreenInit",
   "orig": "func_800B84E0",
   "rom": 21036,
   "seg": "overlays/ovl69/ovl69",
