@@ -72,7 +72,7 @@ void func_8002C5BC(void) {
     func_8001517C(D_800655BC + 0x11, func_80010000(CardBuffer + 0x208 + 0x194), 100);
     func_8001517C(D_800655BC + 0x16, func_80010000(CardBuffer + 0x208 + 0x194 * 2), 100);
     func_8001517C(D_800655BC + 0x1B, func_80010000(CardBuffer + 0x208 + 0x194 * 3), 100);
-    McSetTitle(D_8004CD8C, ((McHeader *)CardBuffer)->title);
+    McSetTitle(CardSaveTitleFormat, ((McHeader *)CardBuffer)->title);
     rect = (RECT *)(func_800160F8(FontModel, 0x306B) + 0x18);
     if (rect->w == 4) {
         h = rect->h;
@@ -149,7 +149,7 @@ void func_8002C894(void) {
     D_80065E24 = sum;
 }
 
-const char D_8004CD8C[] = "CRASH BASH %000 %000 %000 %000";
+const char CardSaveTitleFormat[] = "CRASH BASH %000 %000 %000 %000";
 
 const char CardFileName[] = "BASCUS-94570";
 

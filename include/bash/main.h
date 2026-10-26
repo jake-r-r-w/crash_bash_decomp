@@ -867,7 +867,7 @@ typedef struct {
 } McHeader;
 extern char *D_800655BC;
 extern u8 D_80065648[]; /* the header's icon frames (CardBuffer + 0x80) */
-extern const char D_8004CD8C[];
+extern const char CardSaveTitleFormat[];
 s32 func_80010000(u8 *arg0);
 
 /* Writes up to 32 Shift-JIS characters of src (ASCII) to dst, padding with
@@ -910,7 +910,7 @@ extern void *D_8005AA34;
 extern void *HeadOfObjects;
 extern music_midi CurrentMusic;
 extern LoaderState Loader;
-extern const char D_8004C83C[];
+extern const char MsgTooManyLoadsInQueue[];
 extern void func_80012840(u8 *, u8 *);
 extern void func_80012678(u8 *, u8 *);
 extern MusicEntry MusicTable[];
@@ -1010,7 +1010,7 @@ extern s32 LevelSpecs[11];
 extern s32 D_8005AA50;
 extern s32 D_8005AA54;
 extern s32 D_8005A5E4;
-extern const char D_8004C8D0[];         /* "FATAL METRICS ERROR ..." */
+extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
 extern u8 D_8004E9C0[];           /* func_80022140: passed (-0x10/-8/+0) to func_8002BD0C */
 extern s32 D_80058F0C[][8];       /* func_80022140 */
 extern s8 GameOptions[];

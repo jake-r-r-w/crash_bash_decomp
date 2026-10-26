@@ -71,22 +71,22 @@ s32 func_8007F1A8(s32 pad, s32 max) {
     return ((PadButtons *)Pads)[pad].pressed & 0x4008;
 }
 
-const char D_800ADDB0[] = "Battle Mode";
+const char ModeNameBattleMode[] = "Battle Mode";
 
-const char D_800ADDBC[] = "Tournament Mode";
+const char ModeNameTournamentMode[] = "Tournament Mode";
 
-const char D_800ADDCC[] = "Adventure - Trophy";
+const char ModeNameAdventureTrophy[] = "Adventure - Trophy";
 
-const char D_800ADDE0[] = "Adventure - Gold Relic";
+const char ModeNameAdventureGoldRelic[] = "Adventure - Gold Relic";
 
-const char D_800ADDF8[] = "Adventure - Plat Relic";
+const char ModeNameAdventurePlatRelic[] = "Adventure - Plat Relic";
 
-const char D_800ADE10[] = "Adventure - Gem";
+const char ModeNameAdventureGem[] = "Adventure - Gem";
 
-const char D_800ADE20[] = "Adventure - Challenge";
+const char ModeNameAdventureChallenge[] = "Adventure - Challenge";
 
-const char D_800ADE38[] = "Adventure - Boss";
-const char D_800ADE4C[] = "";
+const char ModeNameAdventureBoss[] = "Adventure - Boss";
+const char ModeNameEmpty[] = "";
 
 static inline PadButtons *ActivePad(void) {
     PadButtons *base = HPADS;

@@ -463,7 +463,11 @@ Newest first, a few lines each. Details are in the commits.
   where the blocks were, from one `data2c.py engine --rodata ...` run; built and matched
   first time. Then `main.exe`'s six (`data2c.py main --strings-only`: the level names, the
   pause and cheat menus, the card file name, the modchip warning in English and Shift-JIS):
-  no INCLUDE_RODATA is left anywhere in `src/`. The strings keep their `D_` names.
+  no INCLUDE_RODATA is left anywhere in `src/`. Then all 176 strings named from their
+  text, by where they are used: `LevNameJungleBash` .., `PauseTextCheatMenu` ..,
+  `MenuSaveCompleted` .. (the card messages by what they report), `HeroNameCrash` ..,
+  `ModeNameAdventureTrophy` .., `ModchipMsg` / `ModchipMsgJapanese` (3218 `D_` uses of 807 names
+  left).
 
 - **2026-10-26 (Phase 5 start: the most-used globals):** the overlays' last
   own `D_` names (debug strings, `PapuStraySfx` past every overlay's end),

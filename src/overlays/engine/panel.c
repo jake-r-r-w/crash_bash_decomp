@@ -1612,9 +1612,9 @@ s16 func_8007D850(void) {
     return r;
 }
 
-const char D_800ADD3C[] = "123";
+const char PanelDigits123[] = "123";
 
-const char D_800ADD40[] = "456";
+const char PanelDigits456[] = "456";
 
 void Cups_Update(void) {
     s32 key;

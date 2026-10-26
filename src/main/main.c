@@ -55,56 +55,56 @@ void func_80010158(void) {
     func_800270F0(D_8004E0B8);
 }
 
-const char D_8004C56C[] = "JUNGLE BASH";
-const char D_8004C578[] = "SPACE BASH";
-const char D_8004C584[] = "SNOW BASH";
-const char D_8004C590[] = "DRAIN BASH";
-const char D_8004C59C[] = "PAPU PUMMEL";
-const char D_8004C5A8[] = "SWAMP FOX";
-const char D_8004C5B4[] = "DESERT FOX";
-const char D_8004C5C0[] = "JUNGLE FOX";
-const char D_8004C5CC[] = "METAL FOX";
-const char D_8004C5D8[] = "BIG BAD FOX";
-const char D_8004C5E4[] = "POGO PAINTER";
-const char D_8004C5F4[] = "POGO-A-GOGO";
-const char D_8004C600[] = "EL POGO LOCO";
-const char D_8004C610[] = "POGO PADLOCK";
-const char D_8004C620[] = "CRASHBALL";
-const char D_8004C62C[] = "BEACH BALL";
-const char D_8004C638[] = "N.BALLISM";
-const char D_8004C644[] = "SKY BALLS";
-const char D_8004C650[] = "TILT PANIC";
-const char D_8004C65C[] = "POLAR PANIC";
-const char D_8004C668[] = "MELT PANIC";
-const char D_8004C674[] = "MANIC PANIC";
-const char D_8004C680[] = "BEARMINATOR";
-const char D_8004C68C[] = "DOT DASH";
-const char D_8004C698[] = "TOXIC DASH";
-const char D_8004C6A4[] = "SPLASH DASH";
-const char D_8004C6B0[] = "DANTE'S DASH";
-const char D_8004C6C0[] = "RING DING";
-const char D_8004C6CC[] = "DRAGON DROP";
-const char D_8004C6D8[] = "MALLET MASH";
-const char D_8004C6E4[] = "KEG KABOOM";
-const char D_8004C6F0[] = "OXIDE RIDE";
-const char D_8004C6FC[] = "TIE-BREAKER";
-const char D_8004C708[] = "WARP ROOM 1";
-const char D_8004C714[] = "WARP ROOM 2";
-const char D_8004C720[] = "WARP ROOM 3";
-const char D_8004C72C[] = "WARP ROOM 4";
-const char D_8004C738[] = "SECRET WARP ROOM";
-const char D_8004C74C[] = "DEMO HUB";
-const char D_8004C758[] = "TITLES";
-const char D_8004C760[] = "";
-const char D_8004C764[] = "PODIUM";
-const char D_8004C76C[] = "SCRIPT STUFF";
-const char D_8004C77C[] = "MEDIEVAL MAYHEM";
-const char D_8004C78C[] = "CRATE CRUSH";
-const char D_8004C798[] = "TANK WARS";
-const char D_8004C7A4[] = "POGO PANDEMONIUM";
-const char D_8004C7B8[] = "BALLISTIX";
-const char D_8004C7C4[] = "POLAR PUSH";
-const char D_8004C7D0[] = "CRASH DASH";
+const char LevNameJungleBash[] = "JUNGLE BASH";
+const char LevNameSpaceBash[] = "SPACE BASH";
+const char LevNameSnowBash[] = "SNOW BASH";
+const char LevNameDrainBash[] = "DRAIN BASH";
+const char LevNamePapuPummel[] = "PAPU PUMMEL";
+const char LevNameSwampFox[] = "SWAMP FOX";
+const char LevNameDesertFox[] = "DESERT FOX";
+const char LevNameJungleFox[] = "JUNGLE FOX";
+const char LevNameMetalFox[] = "METAL FOX";
+const char LevNameBigBadFox[] = "BIG BAD FOX";
+const char LevNamePogoPainter[] = "POGO PAINTER";
+const char LevNamePogoAGogo[] = "POGO-A-GOGO";
+const char LevNameElPogoLoco[] = "EL POGO LOCO";
+const char LevNamePogoPadlock[] = "POGO PADLOCK";
+const char LevNameCrashball[] = "CRASHBALL";
+const char LevNameBeachBall[] = "BEACH BALL";
+const char LevNameNBallism[] = "N.BALLISM";
+const char LevNameSkyBalls[] = "SKY BALLS";
+const char LevNameTiltPanic[] = "TILT PANIC";
+const char LevNamePolarPanic[] = "POLAR PANIC";
+const char LevNameMeltPanic[] = "MELT PANIC";
+const char LevNameManicPanic[] = "MANIC PANIC";
+const char LevNameBearminator[] = "BEARMINATOR";
+const char LevNameDotDash[] = "DOT DASH";
+const char LevNameToxicDash[] = "TOXIC DASH";
+const char LevNameSplashDash[] = "SPLASH DASH";
+const char LevNameDantesDash[] = "DANTE'S DASH";
+const char LevNameRingDing[] = "RING DING";
+const char LevNameDragonDrop[] = "DRAGON DROP";
+const char LevNameMalletMash[] = "MALLET MASH";
+const char LevNameKegKaboom[] = "KEG KABOOM";
+const char LevNameOxideRide[] = "OXIDE RIDE";
+const char LevNameTieBreaker[] = "TIE-BREAKER";
+const char LevNameWarpRoom1[] = "WARP ROOM 1";
+const char LevNameWarpRoom2[] = "WARP ROOM 2";
+const char LevNameWarpRoom3[] = "WARP ROOM 3";
+const char LevNameWarpRoom4[] = "WARP ROOM 4";
+const char LevNameSecretWarpRoom[] = "SECRET WARP ROOM";
+const char LevNameDemoHub[] = "DEMO HUB";
+const char LevNameTitles[] = "TITLES";
+const char LevNameEmpty[] = "";
+const char LevNamePodium[] = "PODIUM";
+const char LevNameScriptStuff[] = "SCRIPT STUFF";
+const char LevNameMedievalMayhem[] = "MEDIEVAL MAYHEM";
+const char LevNameCrateCrush[] = "CRATE CRUSH";
+const char LevNameTankWars[] = "TANK WARS";
+const char LevNamePogoPandemonium[] = "POGO PANDEMONIUM";
+const char LevNameBallistix[] = "BALLISTIX";
+const char LevNamePolarPush[] = "POLAR PUSH";
+const char LevNameCrashDash[] = "CRASH DASH";
 
 /* Shuts the system down and runs the Spyro 3 demo from the disc. */
 void func_800101E0(void) {
@@ -1878,7 +1878,7 @@ u8 *func_800129D0(u8 *arg0, s32 arg1) {
     }
     q = (u8 *)p;
     if (q == NULL) {
-        printf(D_8004C83C);
+        printf(MsgTooManyLoadsInQueue);
     }
     *(s32 *)(q + 0) = a;
     *(s32 *)(q + 4) = 0;
@@ -1926,7 +1926,7 @@ u8 *func_80012AC4(u8 *arg0) {
     }
     q = (u8 *)p;
     if (q == NULL) {
-        printf(D_8004C83C);
+        printf(MsgTooManyLoadsInQueue);
     }
     *(s32 *)(q + 0) = a;
     *(s32 *)(q + 4) = 0;
@@ -2189,7 +2189,7 @@ s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *ar
     }
     q = (u8 *)p;
     if (q == NULL) {
-        printf(D_8004C83C);
+        printf(MsgTooManyLoadsInQueue);
     }
     *(s32 *)(q + 0) = arg0;
     *(s32 *)(q + 4) = arg1;
@@ -2716,10 +2716,10 @@ void func_80013F44(CamView *cam, CamView *dst, CamEase *ease) {
     }
 }
 
-const char D_8004C83C[] = "too many loads in queue\n";
-const char D_8004C858[] = "SORT SCAN";
-const char D_8004C864[] = "SORT SCAN SWAPPED ENTRY";
-const char D_8004C87C[] = "SORT SCAN SWAPPED NEXT";
+const char MsgTooManyLoadsInQueue[] = "too many loads in queue\n";
+const char MsgSortScan[] = "SORT SCAN";
+const char MsgSortScanSwappedEntry[] = "SORT SCAN SWAPPED ENTRY";
+const char MsgSortScanSwappedNext[] = "SORT SCAN SWAPPED NEXT";
 
 void func_800142D4(void *arg0) {
     RotScale *p = arg0;

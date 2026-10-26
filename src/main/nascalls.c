@@ -457,64 +457,64 @@ void FreeExtension(void *ext) {
     }
 }
 
-const char D_8004C8D0[] = "FATAL METRICS ERROR !!!!\nUNABLE TO CONTINUE..!!\nLEV %d WORLD %d";
-const char D_8004C910[] = "CONTINUE";
-const char D_8004C91C[] = "SHOW RULES";
-const char D_8004C928[] = "OPTIONS";
-const char D_8004C930[] = "CHANGE ARENA";
-const char D_8004C940[] = "CHANGE ARENA?";
-const char D_8004C950[] = "QUIT GAME";
-const char D_8004C95C[] = "EXIT ARENA";
-const char D_8004C968[] = "EXIT ARENA?";
-const char D_8004C974[] = "RETURN TO WARP ROOM";
-const char D_8004C988[] = "RETURN TO WARP ROOM?";
-const char D_8004C9A0[] = "NEW GAME";
-const char D_8004C9AC[] = "REPLAY THIS ARENA";
-const char D_8004C9C0[] = "CHEAT MENU";
-const char D_8004C9CC[] = "LEVEL SELECTOR";
-const char D_8004C9DC[] = "QUIT GAME?";
-const char D_8004C9E8[] = "YES       NO";
-const char D_8004C9F8[] = "YES         ";
-const char D_8004CA08[] = "          NO";
-const char D_8004CA18[] = "VIBRATION";
-const char D_8004CA24[] = "ON";
-const char D_8004CA28[] = "OFF";
-const char D_8004CA2C[] = "CHEAT FLAGS";
-const char D_8004CA38[] = "TWEAK SETTINGS";
-const char D_8004CA48[] = "TWEAK AWARDS";
-const char D_8004CA58[] = "VIEW STATS";
-const char D_8004CA64[] = "ADJUST LEVEL";
-const char D_8004CA74[] = "CONTROLLER 1 IS UNPLUGGED!";
-const char D_8004CA90[] = "CONTROLLER 2 IS UNPLUGGED!";
-const char D_8004CAAC[] = "CONTROLLER 1-A IS UNPLUGGED!";
-const char D_8004CACC[] = "CONTROLLER 1-B IS UNPLUGGED!";
-const char D_8004CAEC[] = "CONTROLLER 1-C IS UNPLUGGED!";
-const char D_8004CB0C[] = "CONTROLLER 1-D IS UNPLUGGED!";
-const char D_8004CB2C[] = "PLEASE INSERT A CONTROLLER";
-const char D_8004CB48[] = "";
-const char D_8004CB4C[] = "DEMO";
-const char D_8004CB54[] = "01";
-const char D_8004CB58[] = "02";
-const char D_8004CB5C[] = "03";
-const char D_8004CB60[] = "SOUND";
-const char D_8004CB68[] = "SOUND OPTIONS";
-const char D_8004CB78[] = "AUDIO MODE";
-const char D_8004CB84[] = "MUSIC VOLUME";
-const char D_8004CB94[] = "FX VOLUME";
-const char D_8004CBA0[] = "CONTROLLER";
-const char D_8004CBAC[] = "<STEREO>";
-const char D_8004CBB8[] = "< MONO >";
-const char D_8004CBC4[] = "<100%>";
-const char D_8004CBCC[] = "<090%>";
-const char D_8004CBD4[] = "EXIT";
-const char D_8004CBDC[] = "PRESS \374 BUTTON TO ACCEPT";
-const char D_8004CBF8[] = "PRESS \377 BUTTON TO CHANGE";
-const char D_8004CC14[] = "P1";
-const char D_8004CC18[] = "P2";
-const char D_8004CC1C[] = "P3";
-const char D_8004CC20[] = "P4";
-const char D_8004CC24[] = "PRESS \374 BUTTON TO FORCE VICTORY";
-const char D_8004CC44[] = "";
+const char MsgFatalMetricsError[] = "FATAL METRICS ERROR !!!!\nUNABLE TO CONTINUE..!!\nLEV %d WORLD %d";
+const char PauseTextContinue[] = "CONTINUE";
+const char PauseTextShowRules[] = "SHOW RULES";
+const char PauseTextOptions[] = "OPTIONS";
+const char PauseTextChangeArena[] = "CHANGE ARENA";
+const char PauseTextChangeArena2[] = "CHANGE ARENA?";
+const char PauseTextQuitGame[] = "QUIT GAME";
+const char PauseTextExitArena[] = "EXIT ARENA";
+const char PauseTextExitArena2[] = "EXIT ARENA?";
+const char PauseTextReturnToWarpRoom[] = "RETURN TO WARP ROOM";
+const char PauseTextReturnToWarpRoom2[] = "RETURN TO WARP ROOM?";
+const char PauseTextNewGame[] = "NEW GAME";
+const char PauseTextReplayThisArena[] = "REPLAY THIS ARENA";
+const char PauseTextCheatMenu[] = "CHEAT MENU";
+const char PauseTextLevelSelector[] = "LEVEL SELECTOR";
+const char PauseTextQuitGame2[] = "QUIT GAME?";
+const char PauseTextYesNo[] = "YES       NO";
+const char PauseTextYes[] = "YES         ";
+const char PauseTextNo[] = "          NO";
+const char PauseTextVibration[] = "VIBRATION";
+const char PauseTextOn[] = "ON";
+const char PauseTextOff[] = "OFF";
+const char PauseTextCheatFlags[] = "CHEAT FLAGS";
+const char PauseTextTweakSettings[] = "TWEAK SETTINGS";
+const char PauseTextTweakAwards[] = "TWEAK AWARDS";
+const char PauseTextViewStats[] = "VIEW STATS";
+const char PauseTextAdjustLevel[] = "ADJUST LEVEL";
+const char PauseTextController1IsUnplugged[] = "CONTROLLER 1 IS UNPLUGGED!";
+const char PauseTextController2IsUnplugged[] = "CONTROLLER 2 IS UNPLUGGED!";
+const char PauseTextController1AIsUnplugged[] = "CONTROLLER 1-A IS UNPLUGGED!";
+const char PauseTextController1BIsUnplugged[] = "CONTROLLER 1-B IS UNPLUGGED!";
+const char PauseTextController1CIsUnplugged[] = "CONTROLLER 1-C IS UNPLUGGED!";
+const char PauseTextController1DIsUnplugged[] = "CONTROLLER 1-D IS UNPLUGGED!";
+const char PauseTextPleaseInsertAController[] = "PLEASE INSERT A CONTROLLER";
+const char PauseTextEmpty[] = "";
+const char PauseTextDemo[] = "DEMO";
+const char PauseText01[] = "01";
+const char PauseText02[] = "02";
+const char PauseText03[] = "03";
+const char PauseTextSound[] = "SOUND";
+const char PauseTextSoundOptions[] = "SOUND OPTIONS";
+const char PauseTextAudioMode[] = "AUDIO MODE";
+const char PauseTextMusicVolume[] = "MUSIC VOLUME";
+const char PauseTextFxVolume[] = "FX VOLUME";
+const char PauseTextController[] = "CONTROLLER";
+const char PauseTextStereo[] = "<STEREO>";
+const char PauseTextMono[] = "< MONO >";
+const char PauseText100Percent[] = "<100%>";
+const char PauseText090Percent[] = "<090%>";
+const char PauseTextExit[] = "EXIT";
+const char PauseTextPressButtonToAccept[] = "PRESS \374 BUTTON TO ACCEPT";
+const char PauseTextPressButtonToChange[] = "PRESS \377 BUTTON TO CHANGE";
+const char PauseTextP1[] = "P1";
+const char PauseTextP2[] = "P2";
+const char PauseTextP3[] = "P3";
+const char PauseTextP4[] = "P4";
+const char PauseTextPressButtonToForceVictory[] = "PRESS \374 BUTTON TO FORCE VICTORY";
+const char PauseTextEmpty2[] = "";
 
 static inline ArenaDef *func_800235BC_find(ArenaDef *p, s32 id) {
     while (p != NULL) {
@@ -562,7 +562,7 @@ void func_800235BC(ArenaDef *arg0) {
         }
     }
     if (e == NULL || D_8005A5E0 == NULL) {
-        printf(D_8004C8D0, GameMode, ((LevelInfo *)ModeTypes)[GameMode].world);
+        printf(MsgFatalMetricsError, GameMode, ((LevelInfo *)ModeTypes)[GameMode].world);
     }
 }
 

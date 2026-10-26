@@ -282,25 +282,25 @@ void func_80083708(void) {
     func_80086FA0();
 }
 
-const char D_800ADF60[] = "nobody";
+const char HeroNameNobody[] = "nobody";
 
-const char D_800ADF68[] = "Crash";
+const char HeroNameCrash[] = "Crash";
 
-const char D_800ADF70[] = "Coco";
+const char HeroNameCoco[] = "Coco";
 
-const char D_800ADF78[] = "Cortex";
+const char HeroNameCortex[] = "Cortex";
 
-const char D_800ADF80[] = "Brio";
+const char HeroNameBrio[] = "Brio";
 
-const char D_800ADF88[] = "Tiny";
+const char HeroNameTiny[] = "Tiny";
 
-const char D_800ADF90[] = "Kong";
+const char HeroNameKong[] = "Kong";
 
-const char D_800ADF98[] = "Dingodile";
+const char HeroNameDingodile[] = "Dingodile";
 
-const char D_800ADFA4[] = "Kanga";
+const char HeroNameKanga[] = "Kanga";
 
-const char D_800ADFAC[] = "WIN";
+const char HeroAnimWin[] = "WIN";
 
 void func_80083E8C(void) {
     HeroInfo *h;
