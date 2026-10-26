@@ -24,131 +24,268 @@ extern u8 D_80080024[];
 extern u8 D_8008418C[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "RUN";
-const char D_800B32BC[] = "BREATHE";
-const char D_800B32C4[] = "RECOIL";
-const char D_800B32CC[] = "BARGE";
-const char D_800B32D4[] = "WIN";
+const char DinoAnimRun[] = "RUN";
+const char DinoAnimBreathe[] = "BREATHE";
+const char DinoAnimRecoil[] = "RECOIL";
+const char DinoAnimBarge[] = "BARGE";
+const char DinoAnimWin[] = "WIN";
 
 /* data, in address order */
-s32 D_800BD4DC[283] = {
-    (s32)0x80070000, (s32)&D_8008000C, 0x418006C5, 0x6A68008, 0x8001, 0x6C58008,
-    (s32)&D_8007418C, 0x418C0012, 0x8000, (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000,
-    0x4080001A, 0x8000, 0x41000000, 0x41024101, 0x41044103, 0x41064105, 0x41084107, 0x410A4109,
-    0x410C410B, 0x410E410D, 0x4110410F, 0x41124111, 0x41144113, 0x41164115, 0x41184117,
-    0x411A4119, (s32)0x8004411B, 0x63, (s32)0x80070000, 0x40000014, 0x638004, (s32)0x80070000,
-    0x42000010, 0x638004, (s32)0x80070000, (s32)&D_80080024, 0x420006C5, 0x8000,
-    (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x4080001A, 0x8000, 0x41000000,
-    0x41024101, 0x41044103, 0x41064105, 0x41084107, 0x410A4109, 0x410C410B, 0x410E410D,
-    0x4110410F, 0x41124111, 0x41144113, 0x41164115, 0x41184117, 0x411A4119, (s32)0x8004411B,
-    0x63, (s32)0x80070000, 0x41800010, 0x638004, (s32)0x80070000, 0x40000014, 0x638004,
-    (s32)0x80070000, (s32)&D_8008000C, 0x418006C4, 0x8001, (s32)&D_8008418C, (s32)&D_800706C4,
-    0x418C0012, 0x8000, (s32)0x80070000, 0x40800014, 0x8000, (s32)0x80070000, 0x4000001A,
-    0x8000, 0x41000000, 0x41024101, 0x41044103, 0x41064105, 0x41084107, 0x410A4109, 0x410C410B,
-    0x410E410D, 0x4110410F, 0x41124111, 0x41144113, 0x41164115, 0x41184117, 0x411A4119,
-    (s32)0x8004411B, 0x63, (s32)0x80070000, 0x42000010, 0x638004, (s32)0x80070000, 0x40800014,
-    0x638004, (s32)0x80080000, (s32)0x800706C7, 0x4175000C, 0x6A78008, 0x8001, 0x6C78008,
-    (s32)0x80074181, 0x41810012, 0x6A78008, 0x8000, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x4080001A, 0x8000, 0x41000000, 0x41024101, 0x41044103, 0x41064105,
-    0x41084107, 0x410A4109, 0x410C410B, 0x410E410D, 0x4110410F, 0x41124111, 0x41144113,
-    0x41164115, 0x41184117, 0x411A4119, (s32)0x8004411B, 0x63, (s32)0x80070000, 0x42000010,
-    0x638004, (s32)0x80070000, 0x40000014, 0x638004, (s32)0x80070000, (s32)&D_8008000C,
-    0x418006C7, 0x8001, (s32)&D_8008418C, (s32)0x800706C7, 0x418C0012, 0x8000, (s32)0x80070000,
-    0x40000014, 0x8000, (s32)0x80070000, 0x4080001A, 0x8000, 0x41000000, 0x41024101,
-    0x41044103, 0x41064105, 0x41084107, 0x410A4109, 0x410C410B, 0x410E410D, 0x4110410F,
-    0x41124111, 0x41144113, 0x41164115, 0x41184117, 0x411A4119, (s32)0x8004411B, 0x63,
-    (s32)0x80070000, 0x42000010, 0x638004, (s32)0x80070000, 0x40000014, 0x638004,
-    (s32)0x80070000, (s32)&D_8008000C, 0x418006C4, 0x8001, (s32)&D_8008418C, (s32)&D_800706C4,
-    0x418C0012, 0x8000, (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x4080001A,
-    0x8000, 0x41000000, 0x41024101, 0x41044103, 0x41064105, 0x41084107, 0x410A4109, 0x410C410B,
-    0x410E410D, 0x4110410F, 0x41124111, 0x41144113, 0x41164115, 0x41184117, 0x411A4119,
-    (s32)0x8004411B, 0x63, (s32)0x80070000, 0x42000010, 0x638004, (s32)0x80070000, 0x40000014,
-    0x638004, (s32)0x80070000, 0x4180000A, 0x6C78008, 0x8001, (s32)0x8008418A, (s32)0x800706C7,
-    0x418B0024, 0x8000, (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x4080001A,
-    0x8000, 0x41000000, 0x41024101, 0x41044103, 0x41064105, 0x41084107, 0x410A4109, 0x410C410B,
-    0x410E410D, 0x4110410F, 0x41124111, 0x41144113, 0x41164115, 0x41184117, 0x411A4119,
-    (s32)0x8004411B, 0x63, (s32)0x80070000, 0x42000010, 0x638004, (s32)0x80070000, 0x40000014,
-    0x638004, (s32)0x80070000, 0x40000014, 0x8000, (s32)0x80070000, 0x4080001A, 0x8000,
-    0x41000000, 0x41024101, 0x41044103, 0x41064105, 0x41084107, 0x410A4109, 0x410C410B,
-    0x410E410D, 0x4110410F, 0x41124111, 0x41144113, 0x41164115, 0x41184117, 0x411A4119,
-    (s32)0x8004411B, 0x63, (s32)0x80070000, 0x42000010, 0x638004, (s32)0x80070000, 0x40000014,
-    0x638004, (s32)0x80070000, (s32)&D_80080024, 0x418006C6, 0x8000,
+hero_seq CRA_seq_dinowin[18] = {
+    0, 0x8007, 0xC, 0x8008, 0x6C5, 0x4180, 0x8008, 0x6A6, 0x8001, 0, 0x8008, 0x6C5, 0x418C, 0x8007,
+    0x12, 0x418C, 0x8000, 0,
 };
-u8 D_800BD948[20] = { 0x13, 0, 0x10, 0, 0xE, 0, 0xC, 0, 0x1C, 0, 0x1E, 0, 0x1E, 0, 0x10, 0, 0x10, 0, 0x20, 0 };
-u8 D_800BD95C[20] = { 0x1A, 0, 0x17, 0, 0x14, 0, 0x11, 0, 0x1C, 0, 0x1E, 0, 0x1E, 0, 0x10, 0, 0x10, 0, 0x20, 0 };
-u8 D_800BD970[12] = { 8, 0, 0x10, 0, 0x14, 0, 8, 0, 0x10, 0, 0x14, 0 };
-u8 D_800BD97C[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+hero_seq CRA_seq_dinoidle[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
 };
-u8 D_800BD994[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 8, 0, 7, 0, 8, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800BD9A8[84] = {
-    0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0,
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 8, 0, 7, 0, 8, 0, 0x10, 0, 0x10, 0,
-    2, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0,
-    0x20, 0,
+hero_seq CRA_seq_dinorun[6] = {
+    0, 0x8007, 0x1A, 0x4080, 0x8000, 0,
 };
-s32 D_800BD9FC = 0;
-NAS *D_800BDA00 = 0;
-NAS *D_800BDA04 = 0;
-NAS *D_800BDA08[13] = {
-    0, 0, 0, 0x1000, 0x10, 0x2000, 0xB4, 0xCE, 0x9C, (void *)&D_80063EC8, (void *)&D_80063BB8,
-    0x20, 0x514,
+hero_seq CRA_seq_dinoslide[32] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
+    0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115, 0x4116,
+    0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x8004, 0x63, 0,
 };
-s32 D_800BDA3C[2] = { 0xC4001C, 0xFFFF };
-s32 D_800BDA44[6] = { (s32)&D_800B32B8, (s32)&D_800B32BC, (s32)&D_800B32C4, (s32)&D_800B32CC, (s32)&D_800B32D4, 0 };
-s32 D_800BDA5C[8] = {
-    (s32)&D_800B32D4, 0x56, (s32)&D_800B32D4, 0x56, (s32)&D_800B32D4, 0x56, (s32)&D_800B32D4,
+hero_seq CRA_seq_dinodazed[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8004, 0x63,
+};
+hero_seq CRA_seq_dinoshoot[6] = {
+    0, 0x8007, 0x10, 0x4200, 0x8004, 0x63,
+};
+hero_seq COC_seq_dinowin[8] = {
+    0, 0x8007, 0x24, 0x8008, 0x6C5, 0x4200, 0x8000, 0,
+};
+hero_seq COC_seq_dinoidle[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq COC_seq_dinorun[6] = {
+    0, 0x8007, 0x1A, 0x4080, 0x8000, 0,
+};
+hero_seq COC_seq_dinoslide[32] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
+    0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115, 0x4116,
+    0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x8004, 0x63, 0,
+};
+hero_seq COC_seq_dinoshoot[6] = {
+    0, 0x8007, 0x10, 0x4180, 0x8004, 0x63,
+};
+hero_seq COC_seq_dinodazed[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8004, 0x63,
+};
+hero_seq CTX_seq_dinowin[16] = {
+    0, 0x8007, 0xC, 0x8008, 0x6C4, 0x4180, 0x8001, 0, 0x418C, 0x8008, 0x6C4, 0x8007, 0x12, 0x418C,
+    0x8000, 0,
+};
+hero_seq CTX_seq_dinoidle[6] = {
+    0, 0x8007, 0x14, 0x4080, 0x8000, 0,
+};
+hero_seq CTX_seq_dinorun[6] = {
+    0, 0x8007, 0x1A, 0x4000, 0x8000, 0,
+};
+hero_seq CTX_seq_dinoslide[32] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
+    0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115, 0x4116,
+    0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x8004, 0x63, 0,
+};
+hero_seq CTX_seq_dinoshoot[6] = {
+    0, 0x8007, 0x10, 0x4200, 0x8004, 0x63,
+};
+hero_seq CTX_seq_dinodazed[6] = {
+    0, 0x8007, 0x14, 0x4080, 0x8004, 0x63,
+};
+hero_seq BRO_seq_dinowin[20] = {
+    0, 0x8008, 0x6C7, 0x8007, 0xC, 0x4175, 0x8008, 0x6A7, 0x8001, 0, 0x8008, 0x6C7, 0x4181, 0x8007,
+    0x12, 0x4181, 0x8008, 0x6A7, 0x8000, 0,
+};
+hero_seq BRO_seq_dinoidle[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq BRO_seq_dinorun[6] = {
+    0, 0x8007, 0x1A, 0x4080, 0x8000, 0,
+};
+hero_seq BRO_seq_dinoslide[32] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
+    0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115, 0x4116,
+    0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x8004, 0x63, 0,
+};
+hero_seq BRO_seq_dinoshoot[6] = {
+    0, 0x8007, 0x10, 0x4200, 0x8004, 0x63,
+};
+hero_seq BRO_seq_dinodazed[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8004, 0x63,
+};
+hero_seq KAN_seq_dinowin[16] = {
+    0, 0x8007, 0xC, 0x8008, 0x6C7, 0x4180, 0x8001, 0, 0x418C, 0x8008, 0x6C7, 0x8007, 0x12, 0x418C,
+    0x8000, 0,
+};
+hero_seq KAN_seq_dinoidle[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq KAN_seq_dinorun[6] = {
+    0, 0x8007, 0x1A, 0x4080, 0x8000, 0,
+};
+hero_seq KAN_seq_dinoslide[32] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
+    0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115, 0x4116,
+    0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x8004, 0x63, 0,
+};
+hero_seq KAN_seq_dinoshoot[6] = {
+    0, 0x8007, 0x10, 0x4200, 0x8004, 0x63,
+};
+hero_seq KAN_seq_dinodazed[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8004, 0x63,
+};
+hero_seq DNG_seq_dinowin[16] = {
+    0, 0x8007, 0xC, 0x8008, 0x6C4, 0x4180, 0x8001, 0, 0x418C, 0x8008, 0x6C4, 0x8007, 0x12, 0x418C,
+    0x8000, 0,
+};
+hero_seq DNG_seq_dinoidle[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq DNG_seq_dinorun[6] = {
+    0, 0x8007, 0x1A, 0x4080, 0x8000, 0,
+};
+hero_seq DNG_seq_dinoslide[32] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
+    0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115, 0x4116,
+    0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x8004, 0x63, 0,
+};
+hero_seq DNG_seq_dinoshoot[6] = {
+    0, 0x8007, 0x10, 0x4200, 0x8004, 0x63,
+};
+hero_seq DNG_seq_dinodazed[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8004, 0x63,
+};
+hero_seq TIN_seq_dinowin[16] = {
+    0, 0x8007, 0xA, 0x4180, 0x8008, 0x6C7, 0x8001, 0, 0x418A, 0x8008, 0x6C7, 0x8007, 0x24, 0x418B,
+    0x8000, 0,
+};
+hero_seq TIN_seq_dinoidle[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq TIN_seq_dinorun[6] = {
+    0, 0x8007, 0x1A, 0x4080, 0x8000, 0,
+};
+hero_seq TIN_seq_dinoslide[32] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
+    0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115, 0x4116,
+    0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x8004, 0x63, 0,
+};
+hero_seq TIN_seq_dinoshoot[6] = {
+    0, 0x8007, 0x10, 0x4200, 0x8004, 0x63,
+};
+hero_seq TIN_seq_dinodazed[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8004, 0x63,
+};
+hero_seq KON_seq_dinoidle[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq KON_seq_dinorun[6] = {
+    0, 0x8007, 0x1A, 0x4080, 0x8000, 0,
+};
+hero_seq KON_seq_dinoslide[32] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109, 0x410A,
+    0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113, 0x4114, 0x4115, 0x4116,
+    0x4117, 0x4118, 0x4119, 0x411A, 0x411B, 0x8004, 0x63, 0,
+};
+hero_seq KON_seq_dinoshoot[6] = {
+    0, 0x8007, 0x10, 0x4200, 0x8004, 0x63,
+};
+hero_seq KON_seq_dinodazed[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8004, 0x63,
+};
+hero_seq KON_seq_dinowin[8] = {
+    0, 0x8007, 0x24, 0x8008, 0x6C6, 0x4180, 0x8000, 0,
+};
+u16 DinoAiSkill[10] = {
+    0x13, 0x10, 0xE, 0xC, 0x1C, 0x1E, 0x1E, 0x10, 0x10, 0x20,
+};
+u16 DinoAiSkillAlt[10] = {
+    0x1A, 0x17, 0x14, 0x11, 0x1C, 0x1E, 0x1E, 0x10, 0x10, 0x20,
+};
+u16 DinoAiTeamSkill[6] = {
+    8, 0x10, 0x14, 8, 0x10, 0x14,
+};
+u16 DinoAiHumanRoundTweak[12] = {
+    0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14,
+};
+u16 DinoAiBotTweak[10] = {
+    0x10, 0x10, 0x10, 0x10, 8, 7, 8, 0x10, 0x10, 2,
+};
+u16 DinoAiHumanTweak[42] = {
+    0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C,
+    0xE, 0x13, 0x18, 0xC, 0x10, 0x14, 0x10, 0x10, 0x10, 0x10, 8, 7, 8, 0x10, 0x10, 2, 0x20, 0x20,
+    0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+};
+s32 DinoGem0 = 0;
+NAS *DinoGem1 = 0;
+NAS *DinoGem2 = 0;
+NAS *DinoGems[3] = { NULL, NULL, NULL };
+/* the shell settings (engine world record 0x010B) */
+shell_setup dino_shell_info = {
+    0x1000, 0x10, 0x2000, 0xB4, 0xCE, 0x9C, D_80063EC8, D_80063BB8, 0x20, 0x514,
+};
+s16 DinoPreLoadDB[4] = { 0x1C, 0xC4, -1, 0 };
+char *DinoAnims[6] = {
+    (char *)DinoAnimRun, (char *)DinoAnimBreathe, (char *)DinoAnimRecoil, (char *)DinoAnimBarge,
+    (char *)DinoAnimWin, NULL,
+};
+s32 DinoVictorySeqs[8] = {
+    (s32)&DinoAnimWin, 0x56, (s32)&DinoAnimWin, 0x56, (s32)&DinoAnimWin, 0x56, (s32)&DinoAnimWin,
     0x56,
 };
-u8 D_800BDA7C[20] = { 0, 0, 0xBB, 0, 0xBF, 0, 0xBC, 0, 0xC1, 0, 0xBD, 0, 0xC2, 0, 0xBE, 0, 0xC0, 0, 0, 0 };
-s32 D_800BDA90[1] = { 0xFFFF };
-s32 D_800BDA94[16] = {
-    0xC3, (s32)&D_800BDA44, (s32)&D_800BDA90, 1, 0, 0, 0, 0, 0xBA, (s32)&D_800BDA44,
-    (s32)&D_800BDA90, 1, 0, 0, 0, 0,
+u16 DinoHeroModels[10] = {
+    0, 0xBB, 0xBF, 0xBC, 0xC1, 0xBD, 0xC2, 0xBE, 0xC0, 0,
 };
-s32 D_800BDAD4[17] = {
+s16 DinoLevelDB[2] = { -1, 0 };
+WWInf DinoWorldInfo[2] = {
+    { 0xC3, DinoAnims, DinoLevelDB, 1 },
+    { 0xBA, DinoAnims, DinoLevelDB, 1 },
+};
+s32 DinoFiles[15] = {
     (s32)&D_80055684, (s32)&D_8004EC08, (s32)&D_8004EC00, (s32)&D_800555A4, (s32)&D_8004EBE8,
     (s32)&D_8004EBE0, (s32)&D_80053074, (s32)&D_8004EBF8, (s32)&D_8004EBF0, (s32)&D_80055534,
-    (s32)&D_8004EBD8, (s32)&D_8004EBD0, 0, 0, 0, (s32)&D_8005007C, (s32)&D_800BDAD4,
+    (s32)&D_8004EBD8, (s32)&D_8004EBD0, 0, 0,
 };
-s32 D_800BDB18[5] = { 0x20D0003, 0x16031601, 0x16071605, 0x1619160A, 0x1703 };
-s32 D_800BDB2C[9] = { (s32)&D_800BDB18, 9, (s32)&D_800BDA3C, (s32)&D_800BDA94, (s32)&D_800BDB2C, 0, 0, 0, 0 };
-s32 D_800BDB50 = 0x658;
-DinoObj *D_800BDB54 = 0;
-s32 D_800BDB58[8] = { 0, 0x400, 0x800, 0xC00, 0x600, 0xA00, 0xE00, 0x200 };
-u16 D_800BDB78 = 0xFA;
-DinoObj *D_800BDB7C = 0;
-DinoObj *D_800BDB80 = 0;
-DinoObj *D_800BDB84 = 0;
-DinoObj *D_800BDB88 = 0;
-DinoObj *D_800BDB8C = 0;
-s32 D_800BDB90 = 0;
-s32 D_800BDB94 = 0;
-s32 D_800BDB98 = 0;
-s32 D_800BDB9C = 0;
-s32 D_800BDBA0 = 0;
-s32 D_800BDBA4 = 0;
-s32 D_800BDBA8 = 0;
-s32 D_800BDBAC = 0;
-s32 D_800BDBB0 = 0;
-s32 D_800BDBB4 = 0;
-s32 D_800BDBB8[17] = {
+/* the level's files (the engine's per-mode table points at mode 0x1C's) */
+file_group_load_info file_group_DINO = { D_8005007C, DinoFiles };
+u16 DinoLUPtab[10] = { 3, 0x20D, 0x1601, 0x1603, 0x1605, 0x1607, 0x160A, 0x1619, 0x1703, 0 };
+TrigLookUp DinoLUP = { DinoLUPtab, 9 };
+PreMap DINO_PREMAP = { DinoPreLoadDB, DinoWorldInfo, &DinoLUP };
+s32 DinoArenaRadius = 0x658;
+DinoObj *DinoGoal = 0;
+s32 DinoWanderAngles[8] = { 0, 0x400, 0x800, 0xC00, 0x600, 0xA00, 0xE00, 0x200 };
+u16 DinoWanderTime = 0xFA;
+DinoObj *DinoTargetA = 0;
+DinoObj *DinoTargetB = 0;
+DinoObj *DinoTargetC = 0;
+DinoObj *DinoTargetD = 0;
+DinoObj *DinoTargetE = 0;
+s32 DinoTargetTimer = 0;
+s32 DinoTargetDelay = 0;
+s32 DinoTargetStep = 0;
+s32 DinoScoreTimer = 0;
+s32 DinoTargetFlag = 0;
+s32 DinoScoreFlag = 0;
+s32 DinoGemTimer = 0;
+s32 DinoScoreDelay = 0;
+s32 DinoScoreA = 0;
+s32 DinoScoreB = 0;
+s32 DinoSmokeSteps[17] = {
     0x2004, 0x12004, 0x2006, 0x2007, 0x2008, 0x2009, 0x200A, 0x200B, 0x200C, 0x200D, 0x200E,
     0x200F, 0x2010, 0x2011, 0x2012, 0x2013, 0x8003,
 };
-s32 D_800BDBFC[3] = { (s32)&D_800BDBB8, 0, 0 };
-ScriptInit D_800BDC08 = { 0, (void *)&D_800BDBFC, 0x402 };
-s32 D_800BDC14 = 0x54;
-s32 D_800BDC18 = 0x6A;
-s32 D_800BDC1C[20] = {
+s32 DinoSmokeAnimList[3] = { (s32)&DinoSmokeSteps, 0, 0 };
+ScriptInit DinoSmokeScriptInit = { 0, (void *)&DinoSmokeAnimList, 0x402 };
+s32 DinoSteerMin = 0x54;
+s32 DinoSteerMax = 0x6A;
+s32 DinoSteerTable[20] = {
     0x30, 0x32, 0x34, 0x36, 0x38, 0x3A, 0x3C, 0x3E, 0x40, 0x4E, 0x52, 0x56, 0x5A, 0x5E, 0x62,
     0x66, 0x6A, 0, 0, 0,
 };
-DinoObj *D_800BDC6C[3] = {0};
-DinoObj *D_800BDC78[3] = {0};
-s32 D_800BDC84[1] = { (s32)DinoInitGems };
+DinoObj *DinoTargetObjs[3] = {0};
+DinoObj *DinoTargetObjsB[3] = {0};
+s32 DinoGemHooks[1] = { (s32)DinoInitGems };
 
 s32 DinoAI_PickVictim(s32 arg0) {
     s32 start;
@@ -299,13 +436,13 @@ s32 DinoAI_NearestGem(s32 arg0) {
         if (i >= 3) {
             off = 3;
         }
-        ext = FindExtension(D_800BDA08[i - off], 0x10000000);
+        ext = FindExtension(DinoGems[i - off], 0x10000000);
         if (ext != NULL) {
             s32 v = ext->unkC;
             if (v == 0 || v == 3 || v == 4) {
                 idx = i - off;
                 b = Heroes[arg0].hero_eng;
-                a = D_800BDA08[idx]->Engine;
+                a = DinoGems[idx]->Engine;
                 dx = a->unk10.x - b->unk10.x;
                 dz = a->unk10.z - b->unk10.z;
                 d = dx * dx + dz * dz;
@@ -345,12 +482,12 @@ s32 DinoAI_PickGem(s32 arg0) {
             off = 3;
         }
         idx = i - off;
-        ext = FindExtension(D_800BDA08[idx], 0x10000000);
+        ext = FindExtension(DinoGems[idx], 0x10000000);
         if (ext != NULL && ext->unkC == 1) {
             t = DinoAI_PickVictim(arg0);
             if (t == ext->unk10 && DinoTestTeamMate(arg0, t) == 0) {
                 b = Heroes[arg0].hero_eng;
-                a = D_800BDA08[idx]->Engine;
+                a = DinoGems[idx]->Engine;
                 dx = a->unk10.x - b->unk10.x;
                 dz = a->unk10.z - b->unk10.z;
                 d = dx * dx + dz * dz;
@@ -386,7 +523,7 @@ void DinoAI_ChaseGem(s32 id) {
         if (t != -1) {
             c->unk28 = t;
         }
-        e = FindExtension(D_800BDA08[c->unk28], 0x10000000);
+        e = FindExtension(DinoGems[c->unk28], 0x10000000);
         if (e != NULL) {
             t = e->unkC;
             if (t == 0 || t == 3 || t == 4) {
@@ -416,7 +553,7 @@ void DinoAI_ChaseGem(s32 id) {
         }
         b = Heroes[id].hero_eng;
         c->pos = b->unk10;
-        a = D_800BDA08[c->unk28]->Engine;
+        a = DinoGems[c->unk28]->Engine;
         c->tgt = a->unk10;
         DinoAI_SteerToTarget(id);
     }
@@ -436,7 +573,7 @@ void DinoAI_GuardGem(s32 id) {
     h = &hb[id];
     c = FindExtension(h->hero, 0x20000000);
     if (c != NULL) {
-        e = FindExtension(D_800BDA08[c->unk28], 0x10000000);
+        e = FindExtension(DinoGems[c->unk28], 0x10000000);
         near = 0;
         if (e != NULL) {
             near = e->unkC == 1;
@@ -449,7 +586,7 @@ void DinoAI_GuardGem(s32 id) {
         }
         b = h->hero_eng;
         c->pos = b->unk10;
-        a = D_800BDA08[c->unk28]->Engine;
+        a = DinoGems[c->unk28]->Engine;
         c->tgt = a->unk10;
         if (DinoAI_ShotBlocked(id) != 0) {
             h->hero_ai->AIpad |= 0x8000;
@@ -492,15 +629,15 @@ void DinoAI_ShootGem(s32 id) {
             return;
         }
         c->pos = Heroes[id].hero_eng->unk10;
-        c->tgt = ((DinoPos *)D_800BDB54)->pos;
+        c->tgt = ((DinoPos *)DinoGoal)->pos;
         DinoAI_SteerToTarget(id);
         yaw = Heroes[id].hero_eng->unk1E;
-        sc = D_800BDB50 * 4;
+        sc = DinoArenaRadius * 4;
         v1[0] = (sc * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
         v1[2] = (sc * D_80068BD4[yaw & 0xFFF].unk2) >> 12;
         v2[0] = 0;
         v2[2] = 0;
-        p = (DinoPosH *)D_800BDB54;
+        p = (DinoPosH *)DinoGoal;
         d[0] = p->x - ((DinoEngH *)Heroes[id].hero_eng)->x;
         d[2] = p->z - ((DinoEngH *)Heroes[id].hero_eng)->z;
         d[1] = 0;
@@ -553,7 +690,7 @@ void DinoAI_CarryGem(s32 id) {
             return;
         }
         c->pos = Heroes[id].hero_eng->unk10;
-        c->tgt = ((DinoPos *)D_800BDB54)->pos;
+        c->tgt = ((DinoPos *)DinoGoal)->pos;
         if (c->unk30-- > 0) {
             DinoAI_SteerToTarget(id);
         }
@@ -561,12 +698,12 @@ void DinoAI_CarryGem(s32 id) {
             c->unk30 = 8;
         }
         yaw = Heroes[id].hero_eng->unk1E;
-        sc = D_800BDB50 * 4;
+        sc = DinoArenaRadius * 4;
         v1[0] = (sc * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
         v1[2] = (sc * D_80068BD4[yaw & 0xFFF].unk2) >> 12;
         v2[0] = 0;
         v2[2] = 0;
-        p = (DinoPosH *)D_800BDB54;
+        p = (DinoPosH *)DinoGoal;
         d[0] = p->x - ((DinoEngH *)Heroes[id].hero_eng)->x;
         d[2] = p->z - ((DinoEngH *)Heroes[id].hero_eng)->z;
         d[1] = 0;
@@ -724,8 +861,8 @@ s32 DinoAI_RayToPlayer(s32 a, s32 b) {
     ea = Heroes[a].hero_eng;
     yaw = ea->unk1E;
     eb = Heroes[b].hero_eng;
-    v1[0] = (D_800BDB50 * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
-    v1[2] = (D_800BDB50 * D_80068BD4[yaw & 0xFFF].unk2) >> 12;
+    v1[0] = (DinoArenaRadius * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
+    v1[2] = (DinoArenaRadius * D_80068BD4[yaw & 0xFFF].unk2) >> 12;
     v2[0] = 0;
     v2[2] = 0;
     d[0] = *(u16 *)((u8 *)eb + 0x10) - *(u16 *)((u8 *)ea + 0x10);
@@ -980,15 +1117,15 @@ void DinoAI_Wander(s32 arg0) {
     d[0] = *(u16 *)&ve->unk10.x - *(u16 *)&my->unk10.x;
     d[2] = *(u16 *)&ve->unk10.z - *(u16 *)&my->unk10.z;
     d[1] = 0;
-    d[3] = D_800BDB78;
+    d[3] = DinoWanderTime;
     dx = ve->unk10.x - my->unk10.x;
     dz = ve->unk10.z - my->unk10.z;
     if (dx * dx + dz * dz > 0x283E3F) {
         goto chase;
     }
     rnd = Random(8);
-    v1[0] = (D_800BDB50 * D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2) >> 12;
-    v1[2] = (D_800BDB50 * D_80068BD4[ext->angle & 0xFFF].unk2) >> 12;
+    v1[0] = (DinoArenaRadius * D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2) >> 12;
+    v1[2] = (DinoArenaRadius * D_80068BD4[ext->angle & 0xFFF].unk2) >> 12;
     best = 0;
     v2[0] = 0;
     v2[2] = 0;
@@ -1005,7 +1142,7 @@ void DinoAI_Wander(s32 arg0) {
                 d2[0] = *(u16 *)&e2->unk10.x - *(u16 *)&my->unk10.x;
                 d2[2] = *(u16 *)&e2->unk10.z - *(u16 *)&my->unk10.z;
                 d2[1] = 0;
-                d2[3] = D_800BDB78;
+                d2[3] = DinoWanderTime;
                 if (DinoRayHitB(v2, v1, d2, sp20) == 1) {
                     found2 = 1;
                 }
@@ -1028,9 +1165,9 @@ void DinoAI_Wander(s32 arg0) {
             if (j >= rnd + 8) {
                 goto end;
             }
-            ang = D_800BDB58[j & 7];
-            v1[0] = (D_800BDB50 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            v1[2] = (D_800BDB50 * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            ang = DinoWanderAngles[j & 7];
+            v1[0] = (DinoArenaRadius * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            v1[2] = (DinoArenaRadius * D_80068BD4[ang & 0xFFF].unk2) >> 12;
             v2[0] = 0;
             v2[2] = 0;
             if (DinoRayHitB(v2, v1, d, sp20) != 0) {
@@ -1051,7 +1188,7 @@ void DinoAI_Wander(s32 arg0) {
                     d3[0] = *(u16 *)&e3->unk10.x - *(u16 *)&my->unk10.x;
                     d3[2] = *(u16 *)&e3->unk10.z - *(u16 *)&my->unk10.z;
                     d3[1] = 0;
-                    d3[3] = D_800BDB78;
+                    d3[3] = DinoWanderTime;
                     if (DinoRayHitB(v2, v1, d3, sp20) == 1) {
                         found = 1;
                     }
@@ -1764,7 +1901,7 @@ void InitialiseDINOFirst(void) {
     void **p;
     u8 *g;
     D_8009D6E8.unk38 = Dino_HeroBot;
-    D_8009D6E8.unk4 = D_800BDA7C;
+    D_8009D6E8.unk4 = DinoHeroModels;
     D_8009D6E8.unk0 = DinoInitHero;
     D_8009D6E8.unk20 = DinoPreMoveHero;
     D_8009D6E8.unk24 = DinoMoveHero;
@@ -1775,32 +1912,32 @@ void InitialiseDINOFirst(void) {
     if (*(u16 *)(g + 0x32) & 0x40) {
         D_8009D6E8.unk64 = DinoChooseWinnerTeam;
     }
-    D_8009D6E8.unk14 = D_800BDA5C;
+    D_8009D6E8.unk14 = DinoVictorySeqs;
     D_8009D6E8.unk18 = D_8008B29C;
     D_8009D6E8.unk1C = D_8008B418;
     p = &D_8009D8FC;
     if (*(s32 *)(g + 0x6C) != 0) {
-        v = D_800BD95C;
+        v = DinoAiSkillAlt;
     } else {
-        v = D_800BD948;
+        v = DinoAiSkill;
     }
     *p = v;
-    D_8009D8F4 = D_800BD994;
-    D_8009D8F8 = D_800BD9A8;
-    D_8009D904 = D_800BD97C;
-    D_8009D900 = D_800BD970;
-    D_800BDB88 = 0;
-    D_800BDB8C = 0;
-    D_800BDC6C[0] = 0;
-    D_800BDC6C[1] = 0;
-    D_800BDC6C[2] = 0;
-    D_800BDC78[0] = 0;
-    D_800BDC78[1] = 0;
-    D_800BDC78[2] = 0;
-    D_800BDB7C = 0;
-    D_800BDB80 = 0;
-    D_800BDB84 = 0;
-    D_800BDB54 = 0;
+    D_8009D8F4 = DinoAiBotTweak;
+    D_8009D8F8 = DinoAiHumanTweak;
+    D_8009D904 = DinoAiHumanRoundTweak;
+    D_8009D900 = DinoAiTeamSkill;
+    DinoTargetD = 0;
+    DinoTargetE = 0;
+    DinoTargetObjs[0] = 0;
+    DinoTargetObjs[1] = 0;
+    DinoTargetObjs[2] = 0;
+    DinoTargetObjsB[0] = 0;
+    DinoTargetObjsB[1] = 0;
+    DinoTargetObjsB[2] = 0;
+    DinoTargetA = 0;
+    DinoTargetB = 0;
+    DinoTargetC = 0;
+    DinoGoal = 0;
 }
 
 void DinoFindTargets(void) {
@@ -1809,41 +1946,41 @@ void DinoFindTargets(void) {
     for (o = *(DinoObj **)((u8 *)D_80058AD0 + 0x1C); o != NULL; o = o->next) {
         if (((DinoGame *)D_8005A614)->flags & 0x80) {
             if (o->index == 0x5002) {
-                D_800BDB54 = o;
+                DinoGoal = o;
                 printf("found target\n");
             }
             if (o->index == 0x5009) {
-                D_800BDB7C = o;
+                DinoTargetA = o;
                 printf("found target\n");
             }
             if (o->index == 0x500B) {
-                D_800BDB80 = o;
+                DinoTargetB = o;
                 printf("found target\n");
             }
             if (o->index == 0x500A) {
-                D_800BDB84 = o;
+                DinoTargetC = o;
                 printf("found target\n");
             }
             if (o->index == 0x500C) {
-                D_800BDC78[0] = o;
+                DinoTargetObjsB[0] = o;
                 printf("1\n");
             }
             if (o->index == 0x500D) {
-                D_800BDC78[1] = o;
+                DinoTargetObjsB[1] = o;
                 printf("2\n");
             }
             if (o->index == 0x500E) {
-                D_800BDC78[2] = o;
+                DinoTargetObjsB[2] = o;
                 printf("3\n");
             }
         } else if (o->index == 0x5002) {
-            D_800BDB54 = o;
+            DinoGoal = o;
             printf("found target\n");
         }
     }
-    D_800BDC6C[0] = D_800BDB7C;
-    D_800BDC6C[1] = D_800BDB80;
-    D_800BDC6C[2] = D_800BDB84;
+    DinoTargetObjs[0] = DinoTargetA;
+    DinoTargetObjs[1] = DinoTargetB;
+    DinoTargetObjs[2] = DinoTargetC;
 }
 
 void DinoUpdateTargets(void) {
@@ -1856,77 +1993,77 @@ void DinoUpdateTargets(void) {
     if (!(D_8005A646 & 0x80)) {
         return;
     }
-    if (D_800BDB94 == 0xF) {
+    if (DinoTargetDelay == 0xF) {
         PlaySfx(0x6CF, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if (D_800BDB94-- < 0) {
-        D_800BDB94 = 0xB4;
-        D_800BDBA0 = 0x1E;
-        D_800BDB9C = D_800BDB90;
-        D_800BDB90 = Random(3);
-        if (D_800BDB90 == D_800BDB9C) {
-            D_800BDB90++;
+    if (DinoTargetDelay-- < 0) {
+        DinoTargetDelay = 0xB4;
+        DinoTargetFlag = 0x1E;
+        DinoScoreTimer = DinoTargetTimer;
+        DinoTargetTimer = Random(3);
+        if (DinoTargetTimer == DinoScoreTimer) {
+            DinoTargetTimer++;
         }
-        if (D_800BDB90 >= 3) {
-            D_800BDB90 = 0;
+        if (DinoTargetTimer >= 3) {
+            DinoTargetTimer = 0;
         }
-        if (D_800BDB90 == 0) {
-            D_800BDB88 = D_800BDB7C;
+        if (DinoTargetTimer == 0) {
+            DinoTargetD = DinoTargetA;
         }
-        if (D_800BDB90 == 1) {
-            D_800BDB88 = D_800BDB80;
+        if (DinoTargetTimer == 1) {
+            DinoTargetD = DinoTargetB;
         }
-        if (D_800BDB90 == 2) {
-            D_800BDB88 = D_800BDB84;
+        if (DinoTargetTimer == 2) {
+            DinoTargetD = DinoTargetC;
         }
-        if (D_800BDB90 == 0) {
-            D_800BDB8C = D_800BDC78[0];
+        if (DinoTargetTimer == 0) {
+            DinoTargetE = DinoTargetObjsB[0];
         }
-        if (D_800BDB90 == 1) {
-            D_800BDB8C = D_800BDC78[1];
+        if (DinoTargetTimer == 1) {
+            DinoTargetE = DinoTargetObjsB[1];
         }
-        if (D_800BDB90 == 2) {
-            D_800BDB8C = D_800BDC78[2];
+        if (DinoTargetTimer == 2) {
+            DinoTargetE = DinoTargetObjsB[2];
         }
-        D_800BDB98 = 0;
+        DinoTargetStep = 0;
         return;
     }
-    if (D_800BDBA0-- < 0) {
-        D_800BDB9C = D_800BDB90;
+    if (DinoTargetFlag-- < 0) {
+        DinoScoreTimer = DinoTargetTimer;
     }
-    if (D_800BDB88 != NULL) {
-        D_800BDB88->flags |= 0x40000000;
-        D_800BDB88->scale = abs((D_80068BD4[((D_800BDB98 & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 3);
-        if (D_800BDB90 == 2) {
-            D_800BDB88->r = 0xFFF;
-            D_800BDB88->g = 0;
-            D_800BDB88->b = 0;
+    if (DinoTargetD != NULL) {
+        DinoTargetD->flags |= 0x40000000;
+        DinoTargetD->scale = abs((D_80068BD4[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 3);
+        if (DinoTargetTimer == 2) {
+            DinoTargetD->r = 0xFFF;
+            DinoTargetD->g = 0;
+            DinoTargetD->b = 0;
         }
-        if (D_800BDB90 == 1) {
-            D_800BDB88->r = 0xFFF;
-            D_800BDB88->g = 0xFFF;
-            D_800BDB88->b = 0;
+        if (DinoTargetTimer == 1) {
+            DinoTargetD->r = 0xFFF;
+            DinoTargetD->g = 0xFFF;
+            DinoTargetD->b = 0;
         }
-        if (D_800BDB90 == 0) {
-            D_800BDB88->r = 0;
-            D_800BDB88->g = 0xFFF;
-            D_800BDB88->b = 0;
+        if (DinoTargetTimer == 0) {
+            DinoTargetD->r = 0;
+            DinoTargetD->g = 0xFFF;
+            DinoTargetD->b = 0;
         }
-        D_800BDB98 += 0x30;
-        for (i = 0, p = D_800BDC6C; i < 3; i++, p++) {
-            if (D_800BDB88 != *p) {
+        DinoTargetStep += 0x30;
+        for (i = 0, p = DinoTargetObjs; i < 3; i++, p++) {
+            if (DinoTargetD != *p) {
                 (*p)->scale -= (*p)->scale >> 1;
             }
         }
     }
-    if (D_800BDB8C != NULL) {
-        D_800BDB8C->flags |= 0x40000000;
-        D_800BDB8C->scale = abs(D_80068BD4[((D_800BDB98 & 0xFFF) - 0x400) & 0xFFF].unk2);
-        cur = D_800BDB8C;
+    if (DinoTargetE != NULL) {
+        DinoTargetE->flags |= 0x40000000;
+        DinoTargetE->scale = abs(D_80068BD4[((DinoTargetStep & 0xFFF) - 0x400) & 0xFFF].unk2);
+        cur = DinoTargetE;
         cur->r = 0;
         cur->g = 0;
         cur->b = 0;
-        for (j = 0, q = D_800BDC78; j < 3; j++, q++) {
+        for (j = 0, q = DinoTargetObjsB; j < 3; j++, q++) {
             if (cur != *q) {
                 (*q)->scale -= (*q)->scale >> 1;
             }
@@ -1971,14 +2108,14 @@ void InitialiseDINO(void) {
     Set_Clock(a, 0x81C0);
     World_floor_level = -0x10;
     DinoFindTargets();
-    D_800BDBA4 = 0;
-    D_800BDBA8 = 0;
-    D_800BDB90 = 0;
-    D_800BDB94 = 0;
-    D_800BDB88 = NULL;
-    D_800BDB9C = 0;
-    D_800BDBA0 = 0;
-    D_800BDBAC = 0;
+    DinoScoreFlag = 0;
+    DinoGemTimer = 0;
+    DinoTargetTimer = 0;
+    DinoTargetDelay = 0;
+    DinoTargetD = NULL;
+    DinoScoreTimer = 0;
+    DinoTargetFlag = 0;
+    DinoScoreDelay = 0;
     o = CreateNAS(0, 0, 0, 0x1902, 0x11);
     if (o != NULL) {
         o->UserInfo.user1 = 0;
@@ -2042,30 +2179,30 @@ void InitialiseDINO(void) {
         i++;
     }
     nas = CreateNAS(0x400, -0x40, 0, 0x1901, 0x11);
-    D_800BD9FC = (s32)nas;
+    DinoGem0 = (s32)nas;
     e = FindExtension(nas, 0x10000000);
     if (e != NULL) {
         e->unkC = 7;
     }
     nas = CreateNAS(-0x400, -0x40, 0, 0x1901, 0x11);
-    D_800BDA00 = nas;
+    DinoGem1 = nas;
     e = FindExtension(nas, 0x10000000);
     if (e != NULL) {
         e->unkC = 7;
     }
-    D_800BDA00->Engine->sub->unk74 = 0x2002;
+    DinoGem1->Engine->sub->unk74 = 0x2002;
     if (((DinoGame *)D_8005A614)->flags & 0x80) {
-        D_800BDA00->Engine->sub->unk74 = 0x2002;
+        DinoGem1->Engine->sub->unk74 = 0x2002;
     }
     o = CreateNAS(0, -0x40, 0x200, 0x1901, 0x11);
-    D_800BDA04 = o;
+    DinoGem2 = o;
     o->Engine->sub->unk74 = 0x2003;
     if (((DinoGame *)D_8005A614)->flags & 0x80) {
         o->Engine->sub->unk74 = 0x2003;
     }
-    D_800BDA08[0] = (NAS *)D_800BD9FC;
-    D_800BDA08[1] = D_800BDA00;
-    D_800BDA08[2] = D_800BDA04;
+    DinoGems[0] = (NAS *)DinoGem0;
+    DinoGems[1] = DinoGem1;
+    DinoGems[2] = DinoGem2;
 }
 
 void DinoScoreGems(void) {
@@ -2082,32 +2219,32 @@ void DinoScoreGems(void) {
     s32 out;
     s32 dot;
 
-    if (D_800BDB54 == NULL || (D_8005A644 & 0x801)) {
+    if (DinoGoal == NULL || (D_8005A644 & 0x801)) {
         return;
     }
-    if (D_800BDBAC-- < 0) {
-        D_800BDBAC = 0;
+    if (DinoScoreDelay-- < 0) {
+        DinoScoreDelay = 0;
     }
-    ((DinoTarget *)D_800BDB54)->unk51 = 0;
-    ((DinoTarget *)D_800BDB54)->x = (D_80068BD4[(D_800BDBB4 - 0x400) & 0xFFF].unk2 * 11) >> 4;
-    ((DinoTarget *)D_800BDB54)->z = (D_80068BD4[D_800BDBB4 & 0xFFF].unk2 * 11) >> 4;
+    ((DinoTarget *)DinoGoal)->unk51 = 0;
+    ((DinoTarget *)DinoGoal)->x = (D_80068BD4[(DinoScoreB - 0x400) & 0xFFF].unk2 * 11) >> 4;
+    ((DinoTarget *)DinoGoal)->z = (D_80068BD4[DinoScoreB & 0xFFF].unk2 * 11) >> 4;
     {
-        s32 h = (u16)D_800BDBB4;
+        s32 h = (u16)DinoScoreB;
 
-        ((DinoTarget *)D_800BDB54)->ang = h;
-        ((DinoTarget *)D_800BDB54)->ang2 = h * 2;
+        ((DinoTarget *)DinoGoal)->ang = h;
+        ((DinoTarget *)DinoGoal)->ang2 = h * 2;
     }
-    D_800BDBB4 = ((D_80068BD4[(D_800BDBA4 - 0x400) & 0xFFF].unk2 * 3) >> 4) & 0xFFF;
-    if (D_800BDBB4 >= 0x2F8 && D_800BDBAC == 0 && D_800BDBB4 <= 0x400) {
+    DinoScoreB = ((D_80068BD4[(DinoScoreFlag - 0x400) & 0xFFF].unk2 * 3) >> 4) & 0xFFF;
+    if (DinoScoreB >= 0x2F8 && DinoScoreDelay == 0 && DinoScoreB <= 0x400) {
         PlaySfx(0x6BF, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_800BDBAC = 0x5A;
+        DinoScoreDelay = 0x5A;
     }
-    if (D_800BDBB4 <= 0xD08 && D_800BDBAC == 0 && D_800BDBB4 >= 0x400) {
+    if (DinoScoreB <= 0xD08 && DinoScoreDelay == 0 && DinoScoreB >= 0x400) {
         PlaySfx(0x6BF, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_800BDBAC = 0x5A;
+        DinoScoreDelay = 0x5A;
     }
-    D_800BDBA4 = (D_800BDBA4 + 0xC) & 0xFFF;
-    ((DinoTarget *)D_800BDB54)->unk52 = 1;
+    DinoScoreFlag = (DinoScoreFlag + 0xC) & 0xFFF;
+    ((DinoTarget *)DinoGoal)->unk52 = 1;
     for (i = 0;; i++) {
         s32 t_;
 
@@ -2116,13 +2253,13 @@ void DinoScoreGems(void) {
         }
         nas = NULL;
         if (i == 0) {
-            nas = (NAS *)D_800BD9FC;
+            nas = (NAS *)DinoGem0;
         }
         if (i == 1) {
-            nas = D_800BDA00;
+            nas = DinoGem1;
         }
         if (i == 2) {
-            nas = D_800BDA04;
+            nas = DinoGem2;
         }
         ext = FindExtension(nas, 0x10000000);
         if (ext == NULL) {
@@ -2132,12 +2269,12 @@ void DinoScoreGems(void) {
         if (kind != 3 || ext->unk80 >= 2 || ext->unk8C > 0) {
             continue;
         }
-        if (XZBoxToSphere((SLONG_XYZ *)D_800BDB54, &nas->Engine->unk10, 0, &nas->Engine->unk10) == -1) {
+        if (XZBoxToSphere((SLONG_XYZ *)DinoGoal, &nas->Engine->unk10, 0, &nas->Engine->unk10) == -1) {
             continue;
         }
-        D_800BDBB0++;
+        DinoScoreA++;
         spd = csqrt(ext->unkB4 * ext->unkB4 + ext->unkD4 * ext->unkD4) >> 6;
-        a = (((DinoTarget *)D_800BDB54)->ang + 0x800) & 0xFFF;
+        a = (((DinoTarget *)DinoGoal)->ang + 0x800) & 0xFFF;
         ext->unk8C = 0x14;
         n.vx = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
         n.vz = D_80068BD4[a].unk2;
@@ -2159,7 +2296,7 @@ void DinoScoreGems(void) {
         if (((DinoGame *)D_8005A614)->flags & 0x80) {
             if (D_8005A614[ext->unk10 + 0x5C] == 0) {
                 PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
-                if (ext->unk90 == 5 && (D_800BDB90 == 2 || D_800BDB9C == 2)) {
+                if (ext->unk90 == 5 && (DinoTargetTimer == 2 || DinoScoreTimer == 2)) {
                     PlaySfx(0x6BE, NULL, NULL, 0x1000, 0x1E00, 0);
                     Heroes[ext->unk10].hero_score += ext->unk90 * sign;
                     if (Heroes[ext->unk10].hero_score <= 0) {
@@ -2167,7 +2304,7 @@ void DinoScoreGems(void) {
                     }
                     Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
                 }
-                if (ext->unk90 == 3 && (D_800BDB90 == 1 || D_800BDB9C == 1)) {
+                if (ext->unk90 == 3 && (DinoTargetTimer == 1 || DinoScoreTimer == 1)) {
                     PlaySfx(0x6BD, NULL, NULL, 0x1000, 0x1E00, 0);
                     Heroes[ext->unk10].hero_score += ext->unk90 * sign;
                     if (Heroes[ext->unk10].hero_score <= 0) {
@@ -2175,7 +2312,7 @@ void DinoScoreGems(void) {
                     }
                     Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
                 }
-                if (ext->unk90 == 2 && (D_800BDB90 == 0 || D_800BDB9C == 0)) {
+                if (ext->unk90 == 2 && (DinoTargetTimer == 0 || DinoScoreTimer == 0)) {
                     PlaySfx(0x6BC, NULL, NULL, 0x1000, 0x1E00, 0);
                     Heroes[ext->unk10].hero_score += ext->unk90 * sign;
                     if (Heroes[ext->unk10].hero_score <= 0) {
@@ -2255,13 +2392,13 @@ loop:
         goto loop;
     }
     if (D_8005A624 == 0) {
-        D_800BDBA8++;
+        DinoGemTimer++;
     }
-    if (D_800BDBA8 == 0x1C2) {
-        FindExtension(D_800BDA00, 0x10000000);
+    if (DinoGemTimer == 0x1C2) {
+        FindExtension(DinoGem1, 0x10000000);
     }
-    if (D_800BDBA8 == 0x546) {
-        ext = FindExtension(D_800BDA04, 0x10000000);
+    if (DinoGemTimer == 0x546) {
+        ext = FindExtension(DinoGem2, 0x10000000);
         if (ext != NULL) {
             ext->unkC = 7;
         }
@@ -2742,14 +2879,14 @@ void DinoPreMoveHero(s32 id) {
                 if (h->hero_mode != 0x66 && (((PadButtons *)D_80051338)[id].unk50 & 0xF0)) {
                     if (ext->unk14 == 0) {
                         m->forward_angle = (((DinoPadAng *)D_80051338)[id].angle + 0x800) & 0xFFF;
-                        sc = D_800BDC14;
+                        sc = DinoSteerMin;
                         if (D_8005A614[id + 0x5C] != 0) {
-                            sc = D_800BDC1C[(s16)(u16)D_8009D87C[id].unk0 >> 1];
+                            sc = DinoSteerTable[(s16)(u16)D_8009D87C[id].unk0 >> 1];
                         }
                         m->x_max = (sc * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
                         m->z_max = (sc * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                     } else {
-                        sc = D_800BDC18;
+                        sc = DinoSteerMax;
                         m->forward_angle = (((DinoPadAng *)D_80051338)[id].angle + 0x800) & 0xFFF;
                         m->x_max = (sc * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
                         m->z_max = (sc * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
@@ -3137,15 +3274,15 @@ void DinoGemPhysics(NAS *arg0) {
             if (i >= 3) {
                 break;
             }
-            if (arg0 == D_800BDA08[i] || D_800BDA08[i] == NULL) {
+            if (arg0 == DinoGems[i] || DinoGems[i] == NULL) {
                 goto next;
             }
-            o = FindExtension(D_800BDA08[i], 0x10000000);
+            o = FindExtension(DinoGems[i], 0x10000000);
             if (o == NULL || o->unkC == 6 || e->unkC == 6) {
                 goto next;
             }
             a = arg0->Engine;
-            b = D_800BDA08[i]->Engine;
+            b = DinoGems[i]->Engine;
             dx = a->unk10.x - b->unk10.x;
             dz = a->unk10.z - b->unk10.z;
             if (abs(a->unk10.y - b->unk10.y) >= 0x200) {
@@ -3571,9 +3708,9 @@ void PlotDinoScratch(NAS *m) {
 }
 
 void DinoInitGems(void) {
-    D_800BDA08[0] = D_800BD9FC;
-    D_800BDA08[1] = D_800BDA00;
-    D_800BDA08[2] = D_800BDA04;
+    DinoGems[0] = DinoGem0;
+    DinoGems[1] = DinoGem1;
+    DinoGems[2] = DinoGem2;
 }
 
 void InitDinoScratch(NAS *m) {
@@ -3750,7 +3887,7 @@ s32 DinoFloorKind(s32 arg0) {
 void InitDinoSmoke(NAS *arg0) {
     s16 *p;
 
-    func_80024E30(arg0, &D_800BDC08);
+    func_80024E30(arg0, &DinoSmokeScriptInit);
     arg0->Engine->sub->unk6C = D_80055534;
     arg0->Engine->sub->flags |= 0x40000041;
     p = &D_8005A648;
@@ -3908,7 +4045,7 @@ s32 DinoGemFree(s32 arg0) {
     DinoExt *ext;
     s32 ret;
 
-    ext = FindExtension(D_800BDA08[arg0], 0x10000000);
+    ext = FindExtension(DinoGems[arg0], 0x10000000);
     if (ext != NULL) {
         ret = 1;
         if (ext->unkC == ret) {
@@ -3931,7 +4068,7 @@ s32 DinoHeroHasGem(s32 arg0) {
 s32 DinoGemLoose(s32 arg0) {
     DinoExt *ext;
 
-    ext = FindExtension(D_800BDA08[arg0], 0x10000000);
+    ext = FindExtension(DinoGems[arg0], 0x10000000);
     if (ext != NULL) {
         s32 v = ext->unkC;
         if (v == 0 || v == 3 || v == 4) {

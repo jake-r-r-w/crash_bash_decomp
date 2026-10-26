@@ -126,12 +126,12 @@ typedef struct DinoPad {
     u8 pad2[4];
 } DinoPad;
 
-extern NAS *D_800BDA08[];
+extern NAS *DinoGems[];
 
 /* DinoPreMoveHero: move speeds (normal, carrying, by D_8009D87C[id].unk0 / 2). */
-extern s32 D_800BDC14;
-extern s32 D_800BDC18;
-extern s32 D_800BDC1C[];
+extern s32 DinoSteerMin;
+extern s32 DinoSteerMax;
+extern s32 DinoSteerTable[];
 
 void PlotDinoSmoke(NAS *m);
 
@@ -208,12 +208,12 @@ typedef struct DinoPuff {
         }                                                                   \
     }
 
-extern DinoObj *D_800BDB54;
-extern DinoObj *D_800BDB7C;
-extern DinoObj *D_800BDB80;
-extern DinoObj *D_800BDB84;
-extern DinoObj *D_800BDC6C[3];
-extern DinoObj *D_800BDC78[3];
+extern DinoObj *DinoGoal;
+extern DinoObj *DinoTargetA;
+extern DinoObj *DinoTargetB;
+extern DinoObj *DinoTargetC;
+extern DinoObj *DinoTargetObjs[3];
+extern DinoObj *DinoTargetObjsB[3];
 
 void DinoAI_Think();
 void InitialiseDINOFirst();
@@ -236,12 +236,12 @@ s32 DinoPadAngle(s32 arg0);
 
 s32 DinoCompareXZ(u8 *arg0, u8 *arg1);
 
-extern s32 D_800BD9FC;
-extern NAS *D_800BDA00;
-extern NAS *D_800BDA04;
-extern s32 D_800BDBA8;
-extern s32 D_800BDBA4;
-extern s32 D_800BDBAC;
+extern s32 DinoGem0;
+extern NAS *DinoGem1;
+extern NAS *DinoGem2;
+extern s32 DinoGemTimer;
+extern s32 DinoScoreFlag;
+extern s32 DinoScoreDelay;
 
 void DinoUpdateTargets(void);
 void DinoScoreGems(void);
@@ -271,7 +271,7 @@ s32 TestDinoHeroWon(s32 id);
 s32 DinoHeroHasGem(s32 arg0);
 
 s32 DinoAI_TargetShare(s32 arg0, s32 arg1);
-extern ScriptInit D_800BDC08;
+extern ScriptInit DinoSmokeScriptInit;
 
 s32 DinoAI_PickVictim(s32 arg0);
 
@@ -326,8 +326,8 @@ s32 DinoFindClosestPlayer(s32 self, s32 *dist);
 
 s32 DinoGemFree(s32 arg0);
 
-extern s32 D_800BDB58[];
-extern u16 D_800BDB78;
+extern s32 DinoWanderAngles[];
+extern u16 DinoWanderTime;
 
 typedef struct DinoBoxHalf {
     s16 v[3];
@@ -395,11 +395,10 @@ void PlotDinoGem(NAS *m);
 
 #endif /* BASH_DINO_OVL_H */
 
-extern u8 D_800BDA7C[], D_8008B29C[], D_8008B418[];
-extern s32 D_800BDA5C[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
-extern u8 D_800BD948[], D_800BD95C[], D_800BD970[], D_800BD97C[], D_800BD994[], D_800BD9A8[];
-extern DinoObj *D_800BDB88, *D_800BDB8C;
-extern s32 D_800BDB90, D_800BDB94, D_800BDB98, D_800BDB9C, D_800BDBA0;
+extern u8 D_8008B29C[], D_8008B418[];
+extern s32 DinoVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
+extern DinoObj *DinoTargetD, *DinoTargetE;
+extern s32 DinoTargetTimer, DinoTargetDelay, DinoTargetStep, DinoScoreTimer, DinoTargetFlag;
 void DinoChooseWinnerTeam(s32 arg0, u16 arg1);
 void DinoPreMoveHero();
 void DinoMoveHero();
@@ -438,7 +437,7 @@ typedef struct DinoScene {
 
 s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags);
 
-/* DinoScoreGems: D_800BDB54 (the swinging target) as it moves. */
+/* DinoScoreGems: DinoGoal (the swinging target) as it moves. */
 typedef struct DinoTarget {
     u8 pad0[4];
     s32 x;      /* 0x04 */
@@ -452,9 +451,17 @@ typedef struct DinoTarget {
     s16 unk52;  /* 0x52 */
 } DinoTarget;
 
-extern s32 D_800BDBB0;
-extern s32 D_800BDBB4;
+extern s32 DinoScoreA;
+extern s32 DinoScoreB;
 
 static inline s32 DinoDot(VECTOR *a, VECTOR *b) {
     return (a->vx * b->vx >> 12) + (a->vz * b->vz >> 12);
 }
+/* Dino's AI tweak tables and hero models (halfwords) */
+extern u16 DinoAiSkill[];
+extern u16 DinoAiSkillAlt[];
+extern u16 DinoAiTeamSkill[];
+extern u16 DinoAiHumanRoundTweak[];
+extern u16 DinoAiBotTweak[];
+extern u16 DinoAiHumanTweak[];
+extern u16 DinoHeroModels[];

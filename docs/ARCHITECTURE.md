@@ -692,6 +692,17 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Dino** (dino, the gem game; named 2026-10-26). Mode 0x1C (`LEV_DINO`);
+  one engine world record (0x010B) points at `DINO_PREMAP`, `dino_shell_info`
+  and `DINOSetUp`, the per-mode table at `file_group_DINO` (`DinoFiles` with the
+  exe's file group 9: 8 DAT entries, all decoded). Three gems (`DinoGems`,
+  `AST_DinoGem`) are picked up, carried, shot and scored at targets
+  (`DinoScoreGems`, `DinoUpdateTargets`); the winner is chosen four ways by
+  game flags (`DinoChooseWinner`). The hero states are `HEROFunc` pairs 99..104
+  (`HEROmode_dinoidle` .. `dinowinner`, actions 0x63..0x68); its 48 sequences
+  are each character's `hero_seq_dino*` (`CRA_seq_dinowin` ..). Its AI and
+  movement code is Polar's and Race's again (`DinoAI_ShotBlocked`,
+  `DinoRayHit`, `DinoTrackCollide`, ...).
 - **Spin** (spin, the turning ring arena; named 2026-10-26). Mode 0x1B
   (`LEV_RING`); one engine world record (0x0103) points at `SPIN_PREMAP`,
   `spin_shell_info` and `SPINSetUp`, the per-mode table at `file_group_RING`
