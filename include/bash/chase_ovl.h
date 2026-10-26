@@ -293,7 +293,7 @@ extern s16 D_8009E0E4;
 extern s16 D_8009E0E6;
 extern s32 D_8005A680;
 extern u8 D_800BB928[];
-extern u8 D_800BB93C[];
+extern s32 D_800BB93C[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern u8 D_800BC098[];
 extern u8 D_800BC0AC[];
 extern u8 D_800BC0C0[];
