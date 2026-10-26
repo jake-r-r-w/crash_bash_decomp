@@ -70,7 +70,14 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    through `decomp.py rename` (it checks the build; Gotchas: a name an
    original header declares must take its types). Promote `callsites.py`
    to a `decomp.py` subcommand when it is first needed.
-2. **Data to C tooling and Tank's rodata/data**, with the types step 1
+2. **Split Tank into its files** where the evidence settles it: extend
+   `decomp.py units --data` (data blocks in code order, call ties; today it
+   reads only `main.yaml`'s c segments) to the slot overlays, and read it
+   with the new names. Tank has no jump tables (`units overlays/ovl5f`: 0),
+   so the parity check can't help, and the leak (preprocessed, Tank's
+   header start cut off) and the demo discs name no Tank file. Cut with
+   `split_unit.py` only where a start is settled.
+3. **Data to C tooling and Tank's rodata/data**, with the types step 1
    found. `ovl5f`'s sections run
    rodata, text, data: the id word (`ovl5f_id`), one `INCLUDE_RODATA`
    (`D_800B32B8`, the animation name strings `"DIE"`, `"FIRE1"`, ...), and
@@ -80,16 +87,16 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    typed with their structs from `tank.h` and the Oct 9 types) and check
    each step with `make check`. Data order inside a section follows
    definition order in the file, so keep the blocks in address order.
-3. **The engine's AST table as C** (`EngineASTTable`, `0x80098720`, `{id,
+4. **The engine's AST table as C** (`EngineASTTable`, `0x80098720`, `{id,
    Init, Plot}` x 0xAE in `asm/data/overlays/engine/engine_data.data.s`): its
    slot entries are raw `.word 0x800B...` numbers. As C with symbols, the
    engine has to link against every overlay's symbol names (14 overlays
    share the slot's addresses, so splat can't name them by address).
-4. **The shiftable build**: pad, relink the engine, rebuild
+5. **The shiftable build**: pad, relink the engine, rebuild
    `CRASHBSH.DAT` and its index for a grown entry (`pack_disc.py` and
    `dat.py` today only allow shrinking), stay inside the slot (up to
    `0x800D7144`; Tank ends at `0x800CB294`).
-5. **The shift test**: boot it (RetroArch, CLAUDE.md) and play Tank to a
+6. **The shift test**: boot it (RetroArch, CLAUDE.md) and play Tank to a
    win; write the route in docs/PLAYING.md.
 
 The Tank pilot starts next session.

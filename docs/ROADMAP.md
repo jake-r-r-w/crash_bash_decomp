@@ -153,6 +153,15 @@ retail does. The recipe is written up for Phase 4.
   this build. First, because the data's types come from the code that reads
   it: naming a function shows what each table it reads is, and names those
   globals too.
+- [ ] Split Tank into its files where the evidence settles it, after the
+  naming and before its data goes to C (a file's local data moves with it).
+  Tank has no jump tables, so the switch-table parity can't place a file,
+  and neither the leak nor any demo disc names its files. Extend `decomp.py
+  units --data` (each file's data is one block in code order; call ties) to
+  the slot overlays, read it with the new names, and cut only where that
+  settles a start (`split_unit.py`); leave the rest one file rather than
+  guess. Every cut keeps `make check` OK, but a match alone doesn't prove a
+  cut: between two real starts any point with no rodata or data matches.
 - [ ] Data to C tooling, once the names and types say what the tables are:
   turn a splat rodata or data block into C
   initialisers (strings, tables, structs from the headers, pointers as
