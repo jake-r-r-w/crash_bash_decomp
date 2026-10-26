@@ -164,7 +164,7 @@ u8 *ArkFreeBallSlot(void);
 
 void Ark_HeroBot(u32 arg0);
 extern u8 D_800C0E70[];
-extern u8 D_800C1054[];
+extern s32 D_800C1054[];
 extern void *D_800C1C8C;
 extern void *D_800C1C90;
 extern void *D_800C1C94;
@@ -245,7 +245,6 @@ typedef struct {
 
 extern Ovl61Door D_800C1D38[];
 extern Ovl61Door D_800C1D88[];
-extern _sfx_handler *D_800C1C60;
 
 typedef struct {
     u8 pad0[0x30];
@@ -319,7 +318,6 @@ typedef struct {
 } Ovl61RiseCfg;
 
 extern Ovl61RiseCfg D_800C1348[];
-extern _sfx_handler *D_800C1BC4;
 
 typedef struct Ovl61Eng {
     u8 pad0[0xC];
