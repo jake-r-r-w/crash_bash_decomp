@@ -317,7 +317,12 @@ build.
   PAD=0x40`, PLAYING.md). Left for Phase 5: its stand-ins (`BonkEntry`,
   `BonkEnt`, `BonkSlot`, `BonkPad`).
 - [ ] N2O and NOX (`n2o`)
-- [ ] Chase
+- [x] Chase. Done 2026-10-26: every function named (many from their twins),
+  rodata, data and id word as C (one file), all 143 data objects named, the
+  DAT entries it loads all decode, its shift test passed (`make shift
+  OVL=chase PAD=0x40`, PLAYING.md) with shift.py's mode-table rule. Left for
+  Phase 5: its stand-ins (`CoalChainGame`, `ChaseAiState`, `ChasePad`, the
+  coal and flame views).
 - [ ] Hub
 - [x] Titles, the front end (`titles`). Done 2026-10-26: named, typed,
   rodata, data and id word as C, one file, and its shift test passed

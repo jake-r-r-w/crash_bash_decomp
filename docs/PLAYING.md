@@ -87,6 +87,12 @@ DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 390
 `sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
 Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
 
+### The shift test route (Chase, 2026-10-26)
+
+`make shift OVL=chase PAD=0x40`, with the same save: a Chase match to the end, with the
+barrels and their generators, the burning coal and its spreading fire, pickups, jumps, falls
+and landings, hits, and the winner's and loser's animations. Passed 2026-10-26.
+
 ### The shift test route (Bonk, 2026-10-26)
 
 `make shift OVL=bonk PAD=0x40`, with the same save: a Bonk match to the end, with the mallet's

@@ -459,7 +459,7 @@ Newest first, a few lines each. Details are in the commits.
   `file_group_*` is its own (Chase's mode 0x1E was left). Gotcha: data2c
   counts a declaration in any header, so an exe object only main.h
   declares needs an extern in a file that doesn't include it. Shift test
-  waiting on the playtest.
+  passed (user playtest).
 
 - **2026-10-26 (Bonk, with the recipe):** all 72 unnamed functions named,
   data, rodata and id word as C (`bohero.c`'s data from `0x800B9F0C`), all
