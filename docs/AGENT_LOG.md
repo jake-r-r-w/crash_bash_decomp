@@ -461,8 +461,11 @@ Newest first, a few lines each. Details are in the commits.
   then 42 engine and exe globals named from their uses: `GameInfo` (the game
   state; its fields the code reaches by label: `GameMode`, `GameTeams`,
   `GameExitFlags` ..), `TrigTable`, `Pads`, `MainCamera`, `HeroHooks`,
-  `LevelSpecs`, the AI tweak table pointers, `ProcessControl`, ... (5384 `D_`
-  uses of 1024 names left). Gotchas: `decomp.py rename` writes every exe or
+  `LevelSpecs`, the AI tweak table pointers, `ProcessControl`, ...; then 25
+  more: each game's hero action ids `HeroActHit` .. `HeroActLoser` (Papu sets
+  them all), the hero hooks' fields, the NAS extension templates (4837 `D_`
+  uses of 999 names left; the top ones now are the exe's file buffers models
+  load into, and labels inside structs that typing will turn into fields). Gotchas: `decomp.py rename` writes every exe or
   engine data name to `sym.main.txt`; move the engine's (from `0x80078C90`)
   to `sym.engine.txt`. A renamed global's PROVIDE in
   `undefined_syms_manual.txt` needs the new name too. `GameState` is already
