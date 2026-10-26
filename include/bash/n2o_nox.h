@@ -188,7 +188,7 @@ extern s32 D_800C44FC;
 extern s32 D_800C4500;
 extern s32 D_800C4504;
 extern s32 D_800C4508;
-/* PadState (D_80051338) as seen by func_800BEB68. */
+/* PadState (D_80051338) as seen by NoxPreMoveHero. */
 typedef struct BossPad {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u8 pad04[0x50 - 0x04];
@@ -199,7 +199,7 @@ extern s32 D_800C45F4[];
 extern s32 D_800C4604[];
 extern ScriptInit D_800C44F0;
 
-/* Path follower of func_800C0C28: a key table and a position along it. */
+/* Path follower of NoxBossFollowPath: a key table and a position along it. */
 typedef struct BossPath {
     /* 0x00 */ u8 pad00[0x10];
     /* 0x10 */ KeyBlock *keys;
@@ -211,7 +211,7 @@ typedef struct BossObj {
     /* 0x54 */ EXTengine *eng;
 } BossObj;
 
-/* D_8005A614 as seen by func_800C0C28. */
+/* D_8005A614 as seen by NoxBossFollowPath. */
 typedef struct BossGameView {
     /* 0x00 */ u8 pad00[4];
     /* 0x04 */ s32 unk4;
@@ -227,9 +227,9 @@ typedef struct BossGameView {
     /* 0xCA */ u8 unkCA;
 } BossGameView;
 
-s32 func_800BBDB8(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *d);
+s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *d);
 
-/* Mine damage by game-view level, as func_800C365C. */
+/* Mine damage by game-view level, as NoxFadeLevel. */
 static inline s32 MineDamage(BossGameView *g) {
     s32 r;
 
@@ -249,63 +249,63 @@ extern s16 D_8009D6DC[];
 
 extern s32 D_800C4478;
 
-void func_800C0C28(BossPath *arg0, BossObj *arg1);void func_800BC6B8(void);
+void NoxBossFollowPath(BossPath *arg0, BossObj *arg1);void NoxAsteroidSfx(void);
 
 void InitMineSFX(MineSFX *arg0);
 
 void InitLaserShoot(LaserShoot *arg0);
 
-void func_800C2904(s32 *arg0, s32 flag, s32 *out);
+void NoxPathAngles(s32 *arg0, s32 flag, s32 *out);
 
-s32 func_800C2D10(s32 arg0);
+s32 TestNoxHeroWon(s32 arg0);
 
-void func_800C2D80(s32 arg0);
+void NoxHeroHit(s32 arg0);
 
-void func_800C2E58(void);
+void NoxHeroDead(void);
 
-s32 func_800C2F70(void);
+s32 Nox_KeepInBounds(void);
 
 void InitDummyCamera(NAS *nas);
 
-void func_800C3184(void);
+void NoxStubA(void);
 
-void func_800C3234(void);
+void NoxStubB(void);
 
-void func_800C3370(void);
+void NoxMineSfx(void);
 
 
-void func_800C36D4(void);
+void NoxUpdateShadow(void);
 
-void func_800C36DC(void);
+void NoxInitShadow(void);
 
 void PlotNitroSmokeBoost(NAS *nas);
 
-void func_800C318C(s32 arg0);
+void NoxInitCamera(s32 arg0);
 
 void InitNitroSmokeBoost(NAS *nas);
 extern s32 D_800C447C;
 
-void func_800C27D4(void);
+void NoxCameraFollow(void);
 
 void InitNitroMine(MineHolder *arg0);
 
-void func_800C2BB0(void);
+void NoxSpawnSmokeBoost(void);
 
-void func_800C2C08(s32 arg0);
+void NoxHeroWinner(s32 arg0);
 
-void func_800C2C8C(s32 arg0);
+void SetNoxHeroWinner(s32 arg0);
 
-void func_800C2DD8(s32 arg0);
+void SetNoxHeroHit(s32 arg0);
 
-void func_800C2E60(s32 arg0);
+void SetNoxHeroFly(s32 arg0);
 
-void func_800C2EF8(s32 arg0);
+void NoxHeroFacing(s32 arg0);
 
-void func_800C2F78(MixObj *arg0, MixObj *arg1);
+void NoxMixVelocities(MixObj *arg0, MixObj *arg1);
 
 void PlotDummyCamera(NAS *nas);
 
-s32 func_800C365C(void);
+s32 NoxFadeLevel(void);
 
 typedef struct BoxHalf {
     s16 v[3];
@@ -329,13 +329,13 @@ typedef struct AngObj {
 
 extern char D_800B336C[];
 
-void func_800BD584(AngObj *o);
+void NoxTurnAsteroid(AngObj *o);
 
 void InitNitroMissile(MissileHolder *arg0);
 
-s32 func_800C323C(LaserPos p, s32 r);
+s32 NoxLaserHitSphere(LaserPos p, s32 r);
 
-s32 func_800BC7E0(s32 *arg0, LaserPos p);
+s32 NoxLaserHitBox(s32 *arg0, LaserPos p);
 
 /* Bursts a laser target: spawns 0x1605 at its position, kills the node. */
 static inline void LaserBurst(LaserNode *n) {
@@ -364,7 +364,7 @@ static inline void LaserBurst(LaserNode *n) {
     KillNAS((NAS *)n);
 }
 
-/* Inline copy of func_800C323C (defined after PlotNitroMine): bursts the
+/* Inline copy of NoxLaserHitSphere (defined after PlotNitroMine): bursts the
  * first laser target whose squared distance to p is under r. */
 static inline s32 MineHitLaser(LaserPos p, s32 r) {
     LaserNode *n;
@@ -490,7 +490,7 @@ static inline void MineSfxH(void) {
     }
 }
 
-/* func_800BBDB8's push: sets up the object's rotation and passes v through. */
+/* NoxBoxToSphere's push: sets up the object's rotation and passes v through. */
 static inline s32 BoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     ang->vx = a[8];
     ang->vy = a[9];
@@ -498,7 +498,7 @@ static inline s32 BoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     return v;
 }
 
-/* func_800C3544's box test, inlined into func_800BC7E0. */
+/* NoxPointInBox's box test, inlined into NoxLaserHitBox. */
 static inline s32 LaserInBox(s32 *arg0, s32 *arg1) {
     Box2 *src;
     s32 d[3];
@@ -552,15 +552,15 @@ extern ScriptInit D_800C446C;
 extern s32 D_800C4530;
 extern s8 D_8005A6DE;
 void func_80093038(void);
-void func_800B4138(s32 arg0);
+void N2OPlaceHero(s32 arg0);
 
-void func_800BDB00(void);
+void NoxStartPhase1(void);
 
-void func_800BE8C0(s32 arg0);
+void NoxHeroCollide(s32 arg0);
 
-void func_800BF7C8(s32 arg0);
+void SetNoxHeroDead(s32 arg0);
 
-void func_800C0C28(BossPath *arg0, BossObj *obj);
+void NoxBossFollowPath(BossPath *arg0, BossObj *obj);
 
 void InitNitroBoss(NAS *nas);
 
@@ -579,7 +579,7 @@ typedef struct NitroShotExt {
 
 extern s32 D_800C4484;
 
-s32 func_800C3544(s32 *arg0, s32 *arg1);
+s32 NoxPointInBox(s32 *arg0, s32 *arg1);
 
 /* Moves one EXTheromove velocity toward its max by acc (max != 0) or dec,
  * clamping at max. Uses the caller's s32 locals step and v. */
@@ -638,12 +638,12 @@ typedef struct SparkObj {
 extern s32 D_800C45B4;
 extern s32 D_800C45B8;
 
-void func_800C2218(SparkObj *arg0);
+void NoxInitSparks(SparkObj *arg0);
 
 extern MATRIX D_800C45BC;  /* spark view matrix */
 extern SVECTOR D_800C76E4; /* spark view rotation */
 
-void func_800C237C(SparkObj *arg0);
+void NoxDrawSparks(SparkObj *arg0);
 
 /* Asteroid roll extension (id 0x10000000): a ballistic arc (func_8008C5C4's
  * Arc, declared in bash/pause.h) at 0x0C. */
@@ -668,7 +668,7 @@ extern u8 D_80052F5C[];
 
 s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
 
-void func_800BE70C(void);
+void NoxUpdate(void);
 
 void InitAsteroidRoll(NAS *m);
 
@@ -678,7 +678,7 @@ void PlotMineSFX(NAS *nas);
 
 void PlotLaserShoot(NAS *nas);
 
-/* A scene object as func_800BC3A4 walks the list at D_80058AD0 + 0x1C. */
+/* A scene object as NoxInitAsteroids walks the list at D_80058AD0 + 0x1C. */
 typedef struct AstKind {
     /* 0x0 */ u8 kind;
     /* 0x1 */ u8 mode;
@@ -725,7 +725,7 @@ extern s32 D_800C450C;
 extern AstSlot D_800C4614[];
 extern AstMineSlot D_800C6E14[];
 
-void func_800BC3A4(void);
+void NoxInitAsteroids(void);
 
 #define BGV ((BossGameView *)D_8005A614)
 
@@ -739,7 +739,7 @@ static inline s32 AstDist(s32 *o, EXTengine *q) {
     return dx * dx + dy * dy + dz * dz;
 }
 
-/* func_800BC9B4's 0x1605 burst at the asteroid's position (o + 1). */
+/* NoxAsteroidHitHero's 0x1605 burst at the asteroid's position (o + 1). */
 static inline void AstBurst(s32 *o, s32 mode) {
     LaserExt *ext;
     NAS *nas;
@@ -759,7 +759,7 @@ static inline void AstBurst(s32 *o, s32 mode) {
     }
 }
 
-/* func_800BC9B4's asteroid hit sound. */
+/* NoxAsteroidHitHero's asteroid hit sound. */
 static inline void AstSfx(void) {
     s32 r;
 
@@ -778,7 +778,7 @@ static inline void AstSfx(void) {
     }
 }
 
-/* func_800BDC0C: flags 0x40000000 and sets the fade (unk76) of an object
+/* NoxUpdateAsteroids: flags 0x40000000 and sets the fade (unk76) of an object
  * between 0x5000 and 0x6000 ahead of hero engine e. */
 #define AST_NEAR(o, e)                                       \
     if (o->pos.z < e->unk10.z + 0x6000) {                    \
@@ -799,7 +799,7 @@ static inline void AstSfx(void) {
         o->flags &= ~0x40000000;                             \
     }
 
-/* func_800BDC0C: spins the small asteroids (kinds 1-3) and moves the
+/* NoxUpdateAsteroids: spins the small asteroids (kinds 1-3) and moves the
  * others but 7 down the track. */
 static inline void AstSpin(AstSceneObj *o, AstKind *k, u8 kind) {
     if (k->kind >= 1 && k->kind <= 3) {
@@ -827,7 +827,7 @@ static inline void AstSpin(AstSceneObj *o, AstKind *k, u8 kind) {
     }
 }
 
-/* Runs body with e set to the engine of the hero func_800BDC0C tracks:
+/* Runs body with e set to the engine of the hero NoxUpdateAsteroids tracks:
  * hero 0 in one-player games, else the first hero not out (status 0x2000). */
 #define AST_TRACKED_HERO(e, body)                          \
     if (((BossGameView *)D_8005A614)->unk6C == 0) {        \
@@ -841,15 +841,15 @@ static inline void AstSpin(AstSceneObj *o, AstKind *k, u8 kind) {
         body                                               \
     }
 
-void func_800BD6E8(s32 *arg0, s32 arg1);
+void NoxMineHitHero(s32 *arg0, s32 arg1);
 
-void func_800BF37C(s32 arg0);
+void NoxHeroFly(s32 arg0);
 
 void PlotNitroBoss(NAS *nas);
 
 extern HeroInfo Heroes[4];
 
-/* func_800BEB68's tail: steer the hero's pitch and yaw toward their targets. */
+/* NoxPreMoveHero's tail: steer the hero's pitch and yaw toward their targets. */
 static inline void BossHeroSteer(s32 i) {
     s32 *tb = D_800C4604;
     s32 *t = &tb[i];
@@ -862,9 +862,9 @@ static inline void BossHeroSteer(s32 i) {
     h->hero_eng->unk5E = 1;
 }
 
-void func_800BC9B4(s32 *arg0, s32 arg1);
+void NoxAsteroidHitHero(s32 *arg0, s32 arg1);
 
-void func_800BDC0C(void);
+void NoxUpdateAsteroids(void);
 
 void PlotNitroMine(NAS *nas);
 

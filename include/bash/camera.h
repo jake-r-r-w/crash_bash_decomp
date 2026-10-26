@@ -80,7 +80,7 @@ void func_80097AA4(subengine *s);
 void TitlesCameraHook(u8 *cam, s32 arg1);
 void func_800B8098(u8 *cam, s32 arg1);
 void func_800B96F4(CamView *out, s32 arg1);
-void func_800BB184(u8 *cam);
+void N2OCameraFollow(u8 *cam);
 
 void func_80098344(void);
 

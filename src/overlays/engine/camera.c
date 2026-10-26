@@ -52,7 +52,7 @@ void func_8009608C(s32 arg0) {
         D_8009F708 = 0x15E;
         break;
     case 8:
-        func_800BB184(D_80051640);
+        N2OCameraFollow(D_80051640);
         D_8009F708 = 0x15E;
         break;
     }

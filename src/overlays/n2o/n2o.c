@@ -4,32 +4,32 @@
 #include "bash/n2o.h"
 #include "bash/arkenoid.h"
 
-void func_800B34A4(void) {
+void InitialiseN2OFirst(void) {
     D_800C45F0 = 0;
     if (!(D_8005A644 & 0x200)) {
         D_800C417A = 0;
     }
     if (D_800C417A == 1) {
-        D_8009D6E8.unk20 = (void *)func_800B447C;
-        D_8009D6E8.unk68 = (void *)func_800B3888;
-        D_8009D6E8.unk24 = (void *)func_800B46DC;
-        D_8009D6E8.unk18 = (void *)func_800BBB10;
-        D_8009D6E8.unk1C = (void *)func_800BBA4C;
+        D_8009D6E8.unk20 = (void *)N2OPreMoveHero;
+        D_8009D6E8.unk68 = (void *)N2O_KeepInBounds;
+        D_8009D6E8.unk24 = (void *)N2OMoveHero;
+        D_8009D6E8.unk18 = (void *)N2OInitShadow;
+        D_8009D6E8.unk1C = (void *)N2OUpdateShadow;
     } else {
-        D_8009D6E8.unk20 = (void *)func_800BEB68;
-        D_8009D6E8.unk24 = (void *)func_800BF0AC;
-        D_8009D6E8.unk68 = (void *)func_800C2F70;
-        D_8009D6E8.unk2C = (void *)func_800C2EF8;
-        D_8009D6E8.unk18 = (void *)func_800C36DC;
-        D_8009D6E8.unk1C = (void *)func_800C36D4;
+        D_8009D6E8.unk20 = (void *)NoxPreMoveHero;
+        D_8009D6E8.unk24 = (void *)NoxMoveHero;
+        D_8009D6E8.unk68 = (void *)Nox_KeepInBounds;
+        D_8009D6E8.unk2C = (void *)NoxHeroFacing;
+        D_8009D6E8.unk18 = (void *)NoxInitShadow;
+        D_8009D6E8.unk1C = (void *)NoxUpdateShadow;
         D_800C4498 = 0;
     }
-    D_8009D6E8.unk0 = (s32)func_800B3E74;
+    D_8009D6E8.unk0 = (s32)N2OInitHero;
     D_8009D6E8.unk4 = D_800C403C;
     D_8009D6E8.unk14 = D_800C3774;
     D_8009E0D8 = 0x2A;
     D_8009E0E2 = 0x2E;
-    D_8005AA94 = (void *)func_800BB05C;
+    D_8005AA94 = (void *)GetN2OContour;
     OVG->unk32 |= 0x100;
     if (OVG->unk6C == 0) {
         OVG->unk51 = 9;
@@ -39,7 +39,7 @@ void func_800B34A4(void) {
     D_8009D8FC = OVG->unk6C != 0 ? D_800C3E70 : D_800C3E30;
 }
 
-void func_800B361C(void) {
+void InitialiseN2O(void) {
     HeroInfo *h;
     EXTheromove *mv;
     s32 i;
@@ -104,17 +104,17 @@ void func_800B361C(void) {
     D_800C4398.unk34 = 0;
     D_800C4398.unk38 = 0;
     D_800C4398.unk3C = 0;
-    func_800BB070(D_800C417A);
+    N2OShowPhaseObjects(D_800C417A);
     if (D_800C417A != 1) {
         D_800C4084 = CreateNAS(0, -0x200, 0xA00, 0x1C02, 0x11);
-        func_800C349C();
+        NoxInit();
     } else {
-        func_800B6F4C();
+        N2OInitBoss();
     }
-    func_800B90F4();
+    N2OInitSlots();
 }
 
-s32 func_800B3888(N2OObj *arg0) {
+s32 N2O_KeepInBounds(N2OObj *arg0) {
     s32 i;
     s32 dx;
     s32 dz;
@@ -138,7 +138,7 @@ s32 func_800B3888(N2OObj *arg0) {
     return 0;
 }
 
-s32 func_800B39C0(N2OObj *arg0, s32 arg1) {
+s32 N2O_BA_BounceOnBounds(N2OObj *arg0, s32 arg1) {
     N2OCircle *base;
     SLONG_XYZ v;
     s32 i;
@@ -204,13 +204,13 @@ found:
     v.x = cx;
     v.y = 0;
     v.z = D_800C418C[i].z;
-    func_800B9800((SLONG_XYZ *)&arg0->x, arg1, &v, r);
+    N2OLineToCircleTest((SLONG_XYZ *)&arg0->x, arg1, &v, r);
     return get_angle(D_800C418C[i].x - arg0->x, D_800C418C[i].z - arg0->z);
 fail:
     return -1;
 }
 
-s32 func_800B3C04(N2OObj *arg0) {
+s32 N2O_BA_TestLaunchBounds(N2OObj *arg0) {
     N2OCircle *base = D_800C418C;
     N2OCircle *c;
     s32 i;
@@ -247,7 +247,7 @@ s32 func_800B3C04(N2OObj *arg0) {
     return z < -lim;
 }
 
-void func_800B3CD0(s32 arg0) {
+void N2OHeroEngineUpdate(s32 arg0) {
     VECTOR sp10;
     VECTOR *v;
     EXTengine *e = (&Heroes[arg0])->hero_eng;
@@ -295,7 +295,7 @@ next:
     }
 }
 
-void func_800B3E74(s32 i) {
+void N2OInitHero(s32 i) {
     HeroInfo *h;
     HeroInfo *hb;
     HeroInfo *hb2;
@@ -345,7 +345,7 @@ void func_800B3E74(s32 i) {
     }
     k = 1;
     if (D_800C417A == k) {
-        ((void (*)(s32, s32))func_800B4138)(i, k);
+        ((void (*)(s32, s32))N2OPlaceHero)(i, k);
         return;
     }
     D_800C417C[i] = 0xF;
@@ -372,11 +372,11 @@ void func_800B3E74(s32 i) {
     h2->hero_eng->unk10.y = -0x480;
     h2->hero_weapon_count = one;
     if (i == 0) {
-        func_800C3440();
+        NoxResetHeroes();
     }
 }
 
-void func_800B4138(s32 i) {
+void N2OPlaceHero(s32 i) {
     HeroInfo *h;
     EXTengine *eng;
     subengine *sub;
@@ -462,7 +462,7 @@ void func_800B4138(s32 i) {
     sub->unk08 = 0;
     sub->unk04 = 0;
     sub->unk52 = 1;
-    func_800B3CD0(i);
+    N2OHeroEngineUpdate(i);
     FetchDefaultColBox(eng, 0x50);
     if (i == 1) {
         D_8009D59C->unk10.z = -0x2800;
@@ -473,7 +473,7 @@ void func_800B4138(s32 i) {
     Heroes[i].hero_weapon_count = 1;
 }
 
-void func_800B447C(s32 arg0) {
+void N2OPreMoveHero(s32 arg0) {
     EXTheromove *m;
     HeroInfo *h;
     HeroInfo *c;
@@ -565,7 +565,7 @@ void func_800B447C(s32 arg0) {
     }
 }
 
-void func_800B46DC(s32 arg0) {
+void N2OMoveHero(s32 arg0) {
     HeroInfo *h;
     HeroInfo *g;
     HeroInfo *f;
@@ -603,9 +603,9 @@ void func_800B46DC(s32 arg0) {
     {
         EXTengine *e2 = f->hero_eng;
         e2->unk20 = (u16)e2->unk20 + (sp >> 2);
-        func_800B9CB8(arg0, e2);
+        N2OHeroBallCollision(arg0, e2);
     }
-    if (func_800B9B10(arg0) != 0) {
+    if (N2OHeroPushTeammate(arg0) != 0) {
         if ((u16)D_800C4394 == 0) {
             PlaySfx(0x28A, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -629,7 +629,7 @@ void func_800B46DC(s32 arg0) {
     }
 }
 
-void func_800B4954(arg0)
+void N2OHeroSetSpeed(arg0)
 s32 arg0;
 {
     u16 *p;
@@ -660,7 +660,7 @@ done:
     }
 }
 
-s32 func_800B4AD8(arg0)
+s32 N2OHeroUpdateSpeed(arg0)
 s32 arg0;
 {
     s32 v;
@@ -714,14 +714,14 @@ skip:
     return 1;
 }
 
-void func_800B4CE0(s32 arg0) {
+void N2OHeroEnter(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     s32 z;
     s32 s;
     s32 n;
 
-    if (func_800B4AD8() != 0) {
+    if (N2OHeroUpdateSpeed() != 0) {
         func_8008502C(arg0);
     }
     base = Heroes;
@@ -758,7 +758,7 @@ void func_800B4CE0(s32 arg0) {
     }
 }
 
-void func_800B4E30(s32 arg0) {
+void N2OHeroIdle(s32 arg0) {
     s32 ret;
     u16 st;
     N2OPadFlags *pad;
@@ -766,7 +766,7 @@ void func_800B4E30(s32 arg0) {
     HeroInfo *hb;
     s32 mode;
 
-    if (func_800B4AD8() != 0) {
+    if (N2OHeroUpdateSpeed() != 0) {
         func_8008502C(arg0);
     }
     st = Heroes[arg0].hero_status;
@@ -798,7 +798,7 @@ void func_800B4E30(s32 arg0) {
     }
 }
 
-void func_800B4FA4(s32 arg0) {
+void SetN2OHeroHit(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     subengine *s;
@@ -806,7 +806,7 @@ void func_800B4FA4(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    func_800B4954(arg0);
+    N2OHeroSetSpeed(arg0);
     SetHeroAction(arg0, 0x27);
     h->hero_idle_count = Random(0x96) + 0xB4;
     s = h->hero_sub;
@@ -819,7 +819,7 @@ void func_800B4FA4(s32 arg0) {
     }
 }
 
-void func_800B5064(s32 arg0) {
+void N2OHeroHit(s32 arg0) {
     s32 r;
     u16 st;
     N2OPadFlags *pad;
@@ -848,7 +848,7 @@ void func_800B5064(s32 arg0) {
     }
 }
 
-void func_800B5168(s32 arg0) {
+void N2OHeroTaunt(s32 arg0) {
     s32 ret;
     u16 st;
     N2OPadFlags *pad;
@@ -886,7 +886,7 @@ void func_800B5168(s32 arg0) {
     }
 }
 
-void func_800B52CC(s32 arg0) {
+void N2OHeroMove(s32 arg0) {
     s32 ret;
     u16 st;
     N2OPadFlags *pad;
@@ -920,13 +920,13 @@ void func_800B52CC(s32 arg0) {
             ((mode = h->hero_mode, (s32)mode < 0x2C) == 0 || (s32)mode < 0x2A)) {
             SetHeroAction(arg0, 0x27);
         }
-        if (func_800B4AD8(arg0) != 0) {
+        if (N2OHeroUpdateSpeed(arg0) != 0) {
             func_8008502C(arg0);
         }
     }
 }
 
-void func_800B5440(s32 arg0) {
+void SetN2OHeroWinner(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -952,7 +952,7 @@ void func_800B5440(s32 arg0) {
     D_8005A689 = 0;
 }
 
-void func_800B5550(s32 arg0) {
+void N2OHeroWinner(s32 arg0) {
     EXTengine *e;
     s32 flag;
     s32 t;
@@ -990,7 +990,7 @@ void func_800B5550(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800B5674(s32 arg0) {
+void SetN2OHeroDie(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -1014,11 +1014,11 @@ void func_800B5674(s32 arg0) {
     h->hero_hit = 0x3C;
 }
 
-void func_800B5774(s32 arg0) {
+void SetN2OHeroKick(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    func_800B4954();
+    N2OHeroSetSpeed();
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
@@ -1032,7 +1032,7 @@ void func_800B5774(s32 arg0) {
     PlaySfx(D_800C39A0[arg0], NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
-void func_800B5838(s32 arg0) {
+void N2OHeroKick(s32 arg0) {
     HeroInfo *base;
     HeroInfo *base2;
     HeroInfo *h;
@@ -1062,7 +1062,7 @@ void func_800B5838(s32 arg0) {
             s->flags |= 0x40008021;
         }
     }
-    if (func_800BA43C(arg0, (scale & 0xFFFF) >> 3, 0)) {
+    if (N2OHeroRad2ObjectCollision(arg0, (scale & 0xFFFF) >> 3, 0)) {
         Heroes[arg0].hero_attack_timer = 0;
     }
     base2 = Heroes;
@@ -1073,12 +1073,12 @@ void func_800B5838(s32 arg0) {
             s->flags &= 0xFFFF7FFF;
         }
     }
-    if (func_800B4AD8(arg0) != 0) {
+    if (N2OHeroUpdateSpeed(arg0) != 0) {
         func_8008502C(arg0);
     }
 }
 
-void func_800B59A8(s32 arg0) {
+void SetN2OHeroDead(s32 arg0) {
     SLONG_XYZ sp18;
     EXTengine *temp_v0;
     HeroInfo *base;
@@ -1124,7 +1124,7 @@ void func_800B59A8(s32 arg0) {
     func_800898EC(arg0);
 }
 
-void func_800B5B14(s32 arg0) {
+void N2OHeroDead(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     u16 st;
@@ -1150,7 +1150,7 @@ void func_800B5B14(s32 arg0) {
     }
 }
 
-void func_800B5BFC(void) {
+void N2OBallMaster(void) {
     s32 n;
     N2ONode *p;
 
@@ -1176,7 +1176,7 @@ void func_800B5BFC(void) {
         } while (p != NULL);
     }
     if ((u16)D_800C4372 < n) {
-        func_800BB624();
+        N2OFreeBallSlot();
         D_800C4374 = 30;
     }
 }
@@ -1342,7 +1342,7 @@ void PlotN2OBall(NAS *nas) {
             obj->owner = -1;
             break;
         case 6:
-            if (((s32 (*)(EXTengine *, EXTobject *))func_800B3C04)(eng, obj) == 0) {
+            if (((s32 (*)(EXTengine *, EXTobject *))N2O_BA_TestLaunchBounds)(eng, obj) == 0) {
                 mot->Xa = mot->Za;
                 mot->Za = 0;
                 obj->status = 8;
@@ -1385,7 +1385,7 @@ void PlotN2OBall(NAS *nas) {
                 }
             }
             if (obj->can_do & 0x400) {
-                d = (s16)func_800B39C0((N2OObj *)eng, mot->Xa);
+                d = (s16)N2O_BA_BounceOnBounds((N2OObj *)eng, mot->Xa);
                 if (d != -1) {
                     a = mot->Xa;
                     if (func_80015480(d, a) < 0x200) {
@@ -1407,7 +1407,7 @@ void PlotN2OBall(NAS *nas) {
             eng->unk10.y -= 0x60;
             break;
         case 1:
-            d = (s16)func_800B39C0((N2OObj *)eng, mot->Xa);
+            d = (s16)N2O_BA_BounceOnBounds((N2OObj *)eng, mot->Xa);
             if (d != -1) {
                 a = mot->Xa;
                 if (func_80015480(d, a) > 0x200) {
@@ -1425,7 +1425,7 @@ void PlotN2OBall(NAS *nas) {
                 obj->countdown = 4;
                 obj->status = 10;
             }
-            func_800B6E6C((N2OBlend *)mot);
+            N2OBlendDirection((N2OBlend *)mot);
             eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
             break;
         case 0x11:
@@ -1515,7 +1515,7 @@ void PlotN2OBall(NAS *nas) {
                     D_8009D6DC[2] |= 0x2000;
                 }
             } else {
-                ((void (*)(s32, s32, s32, s32, s32))func_800BB3A0)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
+                ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
                 if (!(D_8005A618 & 1) && !(Heroes[obj->player].hero_status & 0xFA00)) {
                     Heroes[0].hero_health -= 0x10;
                     if (Heroes[0].hero_health < 0) {
@@ -1548,7 +1548,7 @@ void PlotN2OBall(NAS *nas) {
                     }
                 }
             } else {
-                ((void (*)(s32, s32, s32, s32, s32))func_800BB3A0)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
+                ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
                 if (!(D_8005A618 & 1) && obj->player == 0) {
                     if (!(Heroes[0].hero_status & 0xFA00)) {
                         Heroes[0].hero_health -= 0x10;
@@ -1579,7 +1579,7 @@ void PlotN2OBall(NAS *nas) {
     eng->unk1C -= dist >> 5;
     if (obj->will_do & 0x100) {
     explode:
-        ((void (*)(s32, s32, s32, s32, s32))func_800BB3A0)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
+        ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
         KillNAS(nas);
         return;
     }
@@ -1590,7 +1590,7 @@ void PlotN2OBall(NAS *nas) {
     case 0x63:
         break;
     default:
-        func_800BA6C4(eng, (N2OFuxF *)obj);
+        TestN2OObjectObstacles(eng, (N2OFuxF *)obj);
         break;
     }
     e2 = eng->Engine;
@@ -1600,7 +1600,7 @@ void PlotN2OBall(NAS *nas) {
     }
 }
 
-void func_800B6E6C(N2OBlend *p) {
+void N2OBlendDirection(N2OBlend *p) {
     s32 x1;
     s32 z1;
     s16 vel;
@@ -1624,7 +1624,7 @@ void func_800B6E6C(N2OBlend *p) {
     }
 }
 
-void func_800B6F4C(void) {
+void N2OInitBoss(void) {
     EXTengine *eng;
     subengine *sub;
     subengine *sub2;
@@ -1668,7 +1668,7 @@ void func_800B6F4C(void) {
     sub->unk04 = 0;
     sub->flags |= 0x8000;
     FetchDefaultColBox(eng, 0x50);
-    func_800B3CD0(3);
+    N2OHeroEngineUpdate(3);
     if (eng->unk10.x > 0x880) {
         eng->unk10.x = 0x880;
     }
@@ -1713,7 +1713,7 @@ void func_800B6F4C(void) {
     D_800AD12C = 8;
 }
 
-void func_800B7244(void) {
+void N2OUpdateBoss(void) {
     EXTengine *eng;
     N2OStep *st;
     subengine *sub;
@@ -1779,7 +1779,7 @@ void func_800B7244(void) {
             D_8009D6DC[2] |= 0x8000;
         }
     } else {
-        func_800B83EC((u16 *)&D_800C4378);
+        N2O_HeroBot((u16 *)&D_800C4378);
         if (D_8005A644 & 0x801) {
             D_800C4378 = 0;
         }
@@ -1856,7 +1856,7 @@ void func_800B7244(void) {
                     sub->flags |= 0x40008021;
                 }
             }
-            if (func_800BA43C(3, (sc & 0xFFFF) >> 3, 0) != 0) {
+            if (N2OHeroRad2ObjectCollision(3, (sc & 0xFFFF) >> 3, 0) != 0) {
                 D_8009D6D6 = 0;
             }
             Heroes[3].hero_attack_counter++;
@@ -1867,7 +1867,7 @@ void func_800B7244(void) {
                 }
             }
         }
-        func_800B3888((N2OObj *)eng);
+        N2O_KeepInBounds((N2OObj *)eng);
         tm = D_800C43E0;
         q = &World_floor_level;
         v = (D_80068BD4[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
@@ -1886,10 +1886,10 @@ void func_800B7244(void) {
         break;
     case 10:
         if (D_800C42D0[0].nas == NULL) {
-            func_800B8968(0);
+            N2OSpawnSlotMissile(0);
         }
         if (D_800C42D0[2].nas == NULL) {
-            func_800B8968(2);
+            N2OSpawnSlotMissile(2);
         }
         break;
     case 3:
@@ -1897,7 +1897,7 @@ void func_800B7244(void) {
         if (n != 0) {
             D_800C4382 = n - 1;
         } else {
-            func_800B8968(((u16)D_800C4380 * 2) & 2);
+            N2OSpawnSlotMissile(((u16)D_800C4380 * 2) & 2);
             D_800C4382 = 15;
             D_800C4380++;
         }
@@ -1907,18 +1907,18 @@ void func_800B7244(void) {
         if (n != 0) {
             D_800C4382 = n - 1;
         } else {
-            func_800B8968(0);
-            func_800B8968(2);
+            N2OSpawnSlotMissile(0);
+            N2OSpawnSlotMissile(2);
             D_800C4382 = 30;
             D_800C4380++;
         }
         break;
     }
     D_800C43E0++;
-    ((s32 (*)(s32))func_800B9CB8)(3);
+    ((s32 (*)(s32))N2OHeroBallCollision)(3);
 }
 
-s32 func_800B7858(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
+s32 N2OBotAimA(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
     s32 i;
     s32 n;
     u16 ang;
@@ -2018,7 +2018,7 @@ s32 func_800B7858(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
     return 1;
 }
 
-s32 func_800B7C58(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
+s32 N2OBotAimB(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
     s32 i;
     s32 n;
     u16 ang;
@@ -2118,7 +2118,7 @@ s32 func_800B7C58(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
     return 1;
 }
 
-s32 func_800B8058(s32 arg0) {
+s32 PickN2OPlayer(s32 arg0) {
     s32 sum;
     s32 i;
     s32 r;
@@ -2147,7 +2147,7 @@ s32 func_800B8058(s32 arg0) {
     return -1;
 }
 
-s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
+s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
     N2OPos buf;
     s32 a;
     N2ONode *t;
@@ -2182,7 +2182,7 @@ s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
                             best = n;
                         }
                     } else if (FindExtension((NAS *)n, 0x800) != NULL) {
-                        r = func_800B7C58(arg1, (N2OPos *)&t->x, &buf, (u16)a);
+                        r = N2OBotAimB(arg1, (N2OPos *)&t->x, &buf, (u16)a);
                         best = n;
                         if (r != 0) {
                             goto found;
@@ -2214,7 +2214,7 @@ s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         if (FindExtension((NAS *)best, 0x800) == NULL) {
             goto ret0;
         }
-        if ((func_800B7C58(arg1, (N2OPos *)&t->x, &buf, (u16)a) ^ 1) == 0) {
+        if ((N2OBotAimB(arg1, (N2OPos *)&t->x, &buf, (u16)a) ^ 1) == 0) {
             goto ret0;
         }
     }
@@ -2224,7 +2224,7 @@ ret0:
     return 0;
 }
 
-void func_800B83EC(u16 *arg0) {
+void N2O_HeroBot(u16 *arg0) {
     N2OPos best;
     N2OPos pos;
     EXTbotai *ai;
@@ -2271,7 +2271,7 @@ void func_800B83EC(u16 *arg0) {
     n = D_8005AA38;
     dist = 0x7FFFFF;
     if (ai->TargetPlayer == -1) {
-        ai->TargetPlayer = func_800B8058(3);
+        ai->TargetPlayer = PickN2OPlayer(3);
     }
     t = (N2ONode *)((0x20 - skill) << 4);
     for (; n != NULL; n = n->next) {
@@ -2280,7 +2280,7 @@ void func_800B83EC(u16 *arg0) {
         t = ((N2ONode *)d)->target;
         if (t != NULL && n->unk58 != NULL && n->unk58->unk1A == 1) {
             ext = FindExtension((NAS *)n, 0x800);
-            if (ext != NULL && func_800B7858(3, (N2OPos *)&t->x, &pos, *(u16 *)((u8 *)ext + 0x16)) != 0) {
+            if (ext != NULL && N2OBotAimA(3, (N2OPos *)&t->x, &pos, *(u16 *)((u8 *)ext + 0x16)) != 0) {
                 dx = t->x - pos.x;
                 dz = t->z - pos.z;
                 d = dx * dx + dz * dz;
@@ -2328,7 +2328,7 @@ void func_800B83EC(u16 *arg0) {
             if (D_8009D908 == 0) {
                 n = (N2ONode *)1;
             }
-            if (((s32 (*)(s32, s32, s32, s32, s32, s32))func_800B817C)(3, tgt, r, -0x200, 0x200, (s32)n) != 0) {
+            if (((s32 (*)(s32, s32, s32, s32, s32, s32))N2OBotCanHit)(3, tgt, r, -0x200, 0x200, (s32)n) != 0) {
                 ai->TargetPlayer = -1;
                 ai->AIpad |= 0x8000;
             } else if (ai->AItimer1 != 0) {
@@ -2395,7 +2395,7 @@ void func_800B83EC(u16 *arg0) {
     *arg0 |= ai->AIpad;
 }
 
-void func_800B8968(s32 a) {
+void N2OSpawnSlotMissile(s32 a) {
     s16 (*tab)[3] = (s16 (*)[3])D_800C37DC;
     s32 arg0 = a & 0xFFFF;
     NAS *n;
@@ -2493,7 +2493,7 @@ void PlotN2Omissile(NAS *nas) {
         y = eng->unk10.y += mot->Yvel;
         z = eng->unk10.z;
         if (z >= -0x1100) {
-            hit = func_800BAC30(x, y, z, 0x20, 0xA);
+            hit = N2OMissileHitTest(x, y, z, 0x20, 0xA);
             if (hit == -1) {
                 goto alive;
             }
@@ -2580,7 +2580,7 @@ void PlotN2Ofirstmissile(NAS *nas) {
         y = eng->unk10.y += mot->Yvel;
         z = eng->unk10.z;
         if (z >= -0x1100) {
-            hit = func_800BAC30(x, y, z, 0x20, 0xA);
+            hit = N2OMissileHitTest(x, y, z, 0x20, 0xA);
             if (hit == -1) {
                 goto alive;
             }
@@ -2610,7 +2610,7 @@ alive:
     eng->unk5E = 1;
 }
 
-void func_800B90F4(void) {
+void N2OInitSlots(void) {
     s32 i;
     N2OSlot *s;
     N2OEnt *e;
@@ -2676,7 +2676,7 @@ void func_800B90F4(void) {
     }
 }
 
-void func_800B92D4(void) {
+void N2OUpdateSlots(void) {
     N2OAim *pad;
     HeroInfo *heroes;
     N2OSlot *s;
@@ -2854,7 +2854,7 @@ void InitN2ODeadWall(NAS *nas)
     }
 }
 
-void func_800B9800(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
+void N2OLineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
     SLONG_XYZ start;
     SLONG_XYZ d;
     SLONG_XYZ dir;
@@ -2912,7 +2912,7 @@ void func_800B9800(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
     }
 }
 
-s32 func_800B9B10(s32 arg0) {
+s32 N2OHeroPushTeammate(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     HeroInfo *t;
@@ -2952,7 +2952,7 @@ s32 func_800B9B10(s32 arg0) {
     return 0;
 }
 
-s32 func_800B9CB8(s32 arg0, EXTengine *unused) {
+s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
     SLONG_XYZ tgt;
     SLONG_XYZ nearp;
     SLONG_XYZ farp;
@@ -3080,7 +3080,7 @@ s32 func_800B9CB8(s32 arg0, EXTengine *unused) {
         } else {
             r = get_angle(eng->OldXYZ.x - eng->unk10.x, eng->OldXYZ.z - eng->unk10.z);
         }
-        func_800B9800(&eng->unk10, r, &tgt, rad + 8);
+        N2OLineToCircleTest(&eng->unk10, r, &tgt, rad + 8);
         r = get_angle(-eng->unk10.x + tgt.x, -eng->unk10.z + tgt.z) & 0xFFF;
         puck = FindExtension(nas, 0x800);
         if (puck == NULL) {
@@ -3148,7 +3148,7 @@ s32 func_800B9CB8(s32 arg0, EXTengine *unused) {
     return 0;
 }
 
-s32 func_800BA43C(u32 arg0, s32 arg1, bool arg2) {
+s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
     EXTengine *hero;
     EXTengine *o;
     FlagRecord *rec;
@@ -3211,7 +3211,7 @@ s32 func_800BA43C(u32 arg0, s32 arg1, bool arg2) {
     return hit;
 }
 
-s32 func_800BA6C4(EXTengine *eng, N2OFuxF *self) {
+s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
     FlagRecord *box;
     FlagRecord *rec;
     EXTengine *other;
@@ -3313,7 +3313,7 @@ s32 func_800BA6C4(EXTengine *eng, N2OFuxF *self) {
     return hit;
 }
 
-NAS *func_800BAAA8(void) {
+NAS *N2OBossPushObjects(void) {
     SLONG_XYZ sp10;
     s32 r;
     EXTengine *me;
@@ -3362,7 +3362,7 @@ NAS *func_800BAAA8(void) {
     return NULL;
 }
 
-s32 func_800BAC30(x, y, z, size, mask)
+s32 N2OMissileHitTest(x, y, z, size, mask)
     s32 x;
     s32 y;
     s32 z;
@@ -3445,7 +3445,7 @@ s32 func_800BAC30(x, y, z, size, mask)
     return ret;
 }
 
-s32 func_800BAEA8(N2OVel *arg0, s32 arg1) {
+s32 TestN2OObject2Hero(N2OVel *arg0, s32 arg1) {
     s32 i;
     FlagRecord *rec;
     s32 r;
@@ -3506,11 +3506,11 @@ void PlotN2ODeadWall(NAS *arg0) {
     }
 }
 
-s32 func_800BB05C(u8 *arg0) {
+s32 GetN2OContour(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 20)) - World_floor_level;
 }
 
-void func_800BB070(u16 arg0) {
+void N2OShowPhaseObjects(u16 arg0) {
     N2OFlagNode *n = ((N2OSceneRef *)D_80058AD0)->unk1C;
     s16 *p;
 
@@ -3541,7 +3541,7 @@ void func_800BB070(u16 arg0) {
     }
 }
 
-void func_800BB184(void) {
+void N2OCameraFollow(void) {
     s32 *t;
     s32 z;
     CamState *cam;
@@ -3613,7 +3613,7 @@ void InitN2OmissileExplode(NAS *nas) {
     }
 }
 
-void func_800BB3A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void N2OSpawnExplosion(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     NAS *nas;
 
     nas = CreateNAS(arg0, arg1 - 0x80, arg2, 0x1B04, 0x11);
@@ -3690,12 +3690,12 @@ void InitN2Omissile(NAS *nas) {
     }
 }
 
-void func_800BB5F0(void) {
+void N2OSpawnFirstMissile(void) {
     volatile s32 x, y, z;
     CreateNAS(x, y, z, 0x1B01, 0x11);
 }
 
-u8 *func_800BB624(void) {
+u8 *N2OFreeBallSlot(void) {
     s32 var_v0;
     u8 *temp_v0;
     u8 *temp_v0_2;
@@ -3722,7 +3722,7 @@ u8 *func_800BB624(void) {
     return temp_v0;
 }
 
-void func_800BB6BC(s32 arg0) {
+void N2OHeroDie(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -3735,18 +3735,18 @@ void func_800BB6BC(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800BB72C(s32 arg0) {
+void SetN2OHeroMove(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
-    func_800B4954();
+    N2OHeroSetSpeed();
     SetHeroSeq(arg0, 0x22);
 }
 
-void func_800BB788(s32 arg0) {
+void SetN2OHeroTaunt(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     SetHeroSeq(arg0, 0x24);
 }
 
-void func_800BB7D4(s32 arg0) {
+void SetN2OHeroIdle(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -3754,12 +3754,12 @@ void func_800BB7D4(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    func_800B4954(arg0);
+    N2OHeroSetSpeed(arg0);
     SetHeroSeq(arg0, 0x21);
     h->hero_idle_count = Random(0x96) + 0xB4;
 }
 
-void func_800BB86C(s32 arg0) {
+void SetN2OHeroEnter(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
@@ -3767,11 +3767,11 @@ void func_800BB86C(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    func_800B4954(arg0);
+    N2OHeroSetSpeed(arg0);
     SetHeroSeq(arg0, 0x21);
 }
 
-s32 func_800BB8EC(s32 arg0) {
+s32 N2OHeroTestIdle(s32 arg0) {
     if (Heroes[arg0].hero_status & 0x200) {
         SetHeroAction(arg0, 0x2C);
         return 1;
@@ -3779,7 +3779,7 @@ s32 func_800BB8EC(s32 arg0) {
     return 0;
 }
 
-s32 func_800BB944(s32 arg0) {
+s32 N2OHeroTestMove(s32 arg0) {
     s32 act;
     u16 st = Heroes[arg0].hero_status;
 
@@ -3794,7 +3794,7 @@ s32 func_800BB944(s32 arg0) {
     return 1;
 }
 
-s32 func_800BB9B0(s32 arg0) {
+s32 N2OHeroTestKick(s32 arg0) {
     PadStick *base = (PadStick *)D_80051338;
     PadStick *pad = &base[arg0];
 
@@ -3808,7 +3808,7 @@ s32 func_800BB9B0(s32 arg0) {
     return 0;
 }
 
-void func_800BBA4C(s32 arg0) {
+void N2OUpdateShadow(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTengine *shadow = h->hero_shadow;
@@ -3822,7 +3822,7 @@ void func_800BBA4C(s32 arg0) {
     }
 }
 
-void func_800BBB10(s32 arg0) {
+void N2OInitShadow(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTengine *s = h->hero_shadow;
@@ -3837,7 +3837,7 @@ void func_800BBB10(s32 arg0) {
     s->sub->unk68 = -0x10;
 }
 
-s32 func_800BBBB4(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
+s32 N2OAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
     s32 a = arg1 * D_80068BD4[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
     s32 b = arg1 * D_80068BD4[arg0 & 0xFFF].unk2;
     s32 c = arg3 * D_80068BD4[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
@@ -3849,7 +3849,7 @@ s32 func_800BBBB4(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
     return get_angle(x, z) & 0xFFFF;
 }
 
-s32 func_800BBC78(N2OVel *arg0, N2OOut *arg1, s32 arg2) {
+s32 N2OTestWalls(N2OVel *arg0, N2OOut *arg1, s32 arg2) {
     s32 lim;
     s32 x;
     s32 z;
@@ -3888,24 +3888,24 @@ s32 func_800BBC78(N2OVel *arg0, N2OOut *arg1, s32 arg2) {
     return 0;
 }
 
-void func_800BBD18(void) {
+void UpdateN2O(void) {
     if (D_800C417A == 1) {
-        func_800B92D4();
-        func_800B5BFC();
-        func_800B7244();
+        N2OUpdateSlots();
+        N2OBallMaster();
+        N2OUpdateBoss();
         return;
     }
-    func_800BE70C();
+    NoxUpdate();
 }
 
-void func_800BBD68(void) {
-    D_8005AA70[0] = (s32)func_800B34A4;
-    D_8005AA70[1] = (s32)func_800B361C;
-    D_8005AA70[2] = (s32)func_800B361C;
-    D_8005AA70[9] = (s32)func_800BB05C;
+void N2OSetUp(void) {
+    D_8005AA70[0] = (s32)InitialiseN2OFirst;
+    D_8005AA70[1] = (s32)InitialiseN2O;
+    D_8005AA70[2] = (s32)InitialiseN2O;
+    D_8005AA70[9] = (s32)GetN2OContour;
     D_8005AA70[6] = 0;
     D_8005AA70[5] = 0;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
-    D_8005AA70[3] = (s32)func_800BBD18;
+    D_8005AA70[3] = (s32)UpdateN2O;
 }

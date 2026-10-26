@@ -6,7 +6,7 @@
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/n2o/nox", D_800B336C);
 
-s32 func_800BBDB8(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
+s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     VECTOR d;
     VECTOR n;
     MATRIX m;
@@ -171,7 +171,7 @@ s32 func_800BBDB8(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     return -1;
 }
 
-void func_800BC3A4(void) {
+void NoxInitAsteroids(void) {
     AstSceneObj *o;
     AstKind *k;
     AstSlot *a;
@@ -276,7 +276,7 @@ loop:
     }
 }
 
-void func_800BC6B8(void) {
+void NoxAsteroidSfx(void) {
     s32 temp_v0;
 
     temp_v0 = Random(6);
@@ -300,7 +300,7 @@ void func_800BC6B8(void) {
     }
 }
 
-s32 func_800BC7E0(s32 *arg0, LaserPos p) {
+s32 NoxLaserHitBox(s32 *arg0, LaserPos p) {
     LaserNode *n;
     LaserTgt *t;
 
@@ -320,7 +320,7 @@ loop:
     return 0;
 }
 
-void func_800BC9B4(s32 *arg0, s32 arg1) {
+void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
     AstSlot *a;
     AstSlot *b;
     AstSlot *tb;
@@ -394,12 +394,12 @@ void func_800BC9B4(s32 *arg0, s32 arg1) {
                 AstSfx();
             }
         } else {
-            func_800BC6B8();
+            NoxAsteroidSfx();
         }
     }
 }
 
-void func_800BD584(AngObj *o) {
+void NoxTurnAsteroid(AngObj *o) {
     if (o->state == 0x5003) {
         o->unk52 = 1;
         o->unk51 = 0;
@@ -432,7 +432,7 @@ void func_800BD584(AngObj *o) {
     }
 }
 
-void func_800BD6E8(s32 *arg0, s32 arg1) {
+void NoxMineHitHero(s32 *arg0, s32 arg1) {
     AstMineSlot *sb;
     AstMineSlot *slot;
     HeroInfo *h;
@@ -447,7 +447,7 @@ void func_800BD6E8(s32 *arg0, s32 arg1) {
     if (slot->unkC == 0) {
         h = Heroes;
         if (!(*(s32 *)&h->hero_teammate & 0x22000000) &&
-            func_800BBDB8((SLONG_XYZ *)arg0, &h->hero_eng->unk10, 1, &h->hero_eng->unk10) != -1) {
+            NoxBoxToSphere((SLONG_XYZ *)arg0, &h->hero_eng->unk10, 1, &h->hero_eng->unk10) != -1) {
             r = Random(4);
             if (r == 0) {
                 PlaySfx(0x28B, 0, 0, 0x1000, 0x1E00, 0);
@@ -473,7 +473,7 @@ void func_800BD6E8(s32 *arg0, s32 arg1) {
         if (g2->unk6C != 0) {
             h2 = Heroes;
             if (!(*(s32 *)&h2[1].hero_teammate & 0x22000000) &&
-            func_800BBDB8((SLONG_XYZ *)arg0, &h2[1].hero_eng->unk10, 1, &h2[1].hero_eng->unk10) != -1) {
+            NoxBoxToSphere((SLONG_XYZ *)arg0, &h2[1].hero_eng->unk10, 1, &h2[1].hero_eng->unk10) != -1) {
             r = Random(4);
             if (r == 0) {
                 PlaySfx(0x28B, 0, 0, 0x1000, 0x1E00, 0);
@@ -495,21 +495,21 @@ void func_800BD6E8(s32 *arg0, s32 arg1) {
             }
             }
         }
-        if (func_800BC7E0(arg0, *(LaserPos *)(arg0 + 1)) != 0) {
-            func_800BC6B8();
+        if (NoxLaserHitBox(arg0, *(LaserPos *)(arg0 + 1)) != 0) {
+            NoxAsteroidSfx();
         }
     } else {
-        func_800BD584((AngObj *)arg0);
+        NoxTurnAsteroid((AngObj *)arg0);
     }
 }
 
-void func_800BDB00(void)
+void NoxStartPhase1(void)
 {
   unsigned char one = 1;
   void (*new_var)(s32 arg0);
   D_800C417A = one;
   D_8005A6DE = 0;
-  func_800BB070(one);
+  N2OShowPhaseObjects(one);
   Heroes[0].hero_eng->unk2C.x = 0x1000;
   Heroes[0].hero_eng->unk2C.y = 0x1000;
   Heroes[0].hero_eng->unk2C.z = 0x1000;
@@ -519,21 +519,21 @@ void func_800BDB00(void)
   Heroes[0].hero_eng->unk5E = 1;
   Heroes[1].hero_eng->unk5E = 1;
   func_80026F48();
-  func_800B4138(0);
-  func_800B4138(1);
-  func_800B4138(3);
-  D_8009D6E8.unk20 = func_800B447C;
-  D_8009D6E8.unk68 = func_800B3888;
-  new_var = (void (*)(s32))func_800B46DC;
+  N2OPlaceHero(0);
+  N2OPlaceHero(1);
+  N2OPlaceHero(3);
+  D_8009D6E8.unk20 = N2OPreMoveHero;
+  D_8009D6E8.unk68 = N2O_KeepInBounds;
+  new_var = (void (*)(s32))N2OMoveHero;
   D_8009D6E8.unk24 = new_var;
-  D_8009D6E8.unk18 = func_800BBB10;
-  D_8009D6E8.unk1C = func_800BBA4C;
+  D_8009D6E8.unk18 = N2OInitShadow;
+  D_8009D6E8.unk1C = N2OUpdateShadow;
  ;
   D_8009F8B4 = func_80093038;
-  func_800B6F4C();
+  N2OInitBoss();
 }
 
-void func_800BDC0C(void) {
+void NoxUpdateAsteroids(void) {
     AstSceneObj *o;
     AstKind *k;
     EXTengine *e;
@@ -588,7 +588,7 @@ void func_800BDC0C(void) {
                 }
                 if (D_800C450C == -0x3C) {
                     set_fade(&D_8009F644, -0x100, 0);
-                    func_800BDB00();
+                    NoxStartPhase1();
                     return;
                 }
                 if (D_800C450C < 0x1F) {
@@ -601,7 +601,7 @@ void func_800BDC0C(void) {
             if (k->kind == 6 || k->kind == 10 || k->kind == 9) {
                 if (o->flags & 0x8000) {
                     if (k->kind != 7) {
-                        func_800BD6E8((s32 *)o, nMine);
+                        NoxMineHitHero((s32 *)o, nMine);
                         if (k->kind == 6) {
                             o->rz += 0x20;
                         }
@@ -624,7 +624,7 @@ void func_800BDC0C(void) {
                 }
                 D_800C4614[nAst].ang = (D_800C4614[nAst].ang + 0x20) & 0xFFF;
                 if (o->flags & 0x8000) {
-                    func_800BC9B4((s32 *)o, nAst);
+                    NoxAsteroidHitHero((s32 *)o, nAst);
                 }
                 o->unk52 = 1;
             }
@@ -707,7 +707,7 @@ void func_800BDC0C(void) {
     }
 }
 
-void func_800BE70C(void) {
+void NoxUpdate(void) {
     NAS *first;
     NAS *nas;
 
@@ -741,11 +741,11 @@ void func_800BE70C(void) {
         D_800C45F0 = 1;
     }
     if (D_8005A624 == 0) {
-        func_800BDC0C();
+        NoxUpdateAsteroids();
     }
 }
 
-void func_800BE8C0(s32 arg0) {
+void NoxHeroCollide(s32 arg0) {
     HeroInfo *h;
     HeroInfo *me;
     EXTheromove *om;
@@ -808,7 +808,7 @@ void func_800BE8C0(s32 arg0) {
     }
 }
 
-void func_800BEB68(s32 arg0) {
+void NoxPreMoveHero(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTheromove *m;
@@ -930,7 +930,7 @@ void func_800BEB68(s32 arg0) {
     m->jump_dec = 1;
 }
 
-void func_800BF0AC(s32 arg0) {
+void NoxMoveHero(s32 arg0) {
     EXTheromove *m;
     EXTengine *eng;
     HeroInfo *h;
@@ -968,11 +968,11 @@ void func_800BF0AC(s32 arg0) {
     }
     D_800C4184[arg0] = m->x_vel;
     if (D_800C4488 == 0 && (D_8005A680[0] & 1)) {
-        func_800BE8C0(arg0);
+        NoxHeroCollide(arg0);
     }
 }
 
-void func_800BF37C(s32 arg0) {
+void NoxHeroFly(s32 arg0) {
     HeroInfo *hb;
     HeroInfo *hb2;
     HeroInfo *h;
@@ -988,7 +988,7 @@ void func_800BF37C(s32 arg0) {
     hb = Heroes;
     h = &hb[arg0];
     h->hero_eng->unk5E = 1;
-    if (func_800B4AD8() != 0) {
+    if (N2OHeroUpdateSpeed() != 0) {
         func_8008502C(arg0);
     }
     ang = h->hero_eng->unk1E;
@@ -1051,10 +1051,10 @@ void func_800BF37C(s32 arg0) {
             nas->UserInfo.user2 = arg0;
         }
     }
-    func_800C2D10(arg0);
+    TestNoxHeroWon(arg0);
 }
 
-void func_800BF7C8(s32 arg0) {
+void SetNoxHeroDead(s32 arg0) {
     HeroInfo *h;
     NAS *nas;
     NAS *ret;
@@ -1351,7 +1351,7 @@ kill:
     KillNAS(nas);
 }
 
-void func_800C0C28(BossPath *arg0, BossObj *obj) {
+void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
     BossObj *arg1 = obj;
     BossGameView *g = (BossGameView *)D_8005A614;
     s32 d;
@@ -1484,7 +1484,7 @@ void PlotNitroBoss(NAS *nas) {
     nas->Engine->unk5E = 1;
     switch (ext->unk18) {
     case 0:
-        func_800C0C28((BossPath *)ext, (BossObj *)nas);
+        NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
         k = ((u16 *)func_8001E41C(ext->keys, ext->unk14))[0xB];
         if (k == 2) {
             ext->unk18 = 1;
@@ -1514,7 +1514,7 @@ void PlotNitroBoss(NAS *nas) {
         }
         break;
     case 1:
-        func_800C0C28((BossPath *)ext, (BossObj *)nas);
+        NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
         if (ext->unk1C-- < 0) {
             if (D_8005A680[0] == 0) {
                 if (!(Heroes[0].hero_status & 0x2000)) {
@@ -1561,7 +1561,7 @@ void PlotNitroBoss(NAS *nas) {
         }
         break;
     case 2:
-        func_800C0C28((BossPath *)ext, (BossObj *)nas);
+        NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
         if (ext->unk20-- < 0) {
             e2 = nas->Engine;
             CreateNAS(e2->unk10.x, e2->unk10.y, e2->unk10.z, 0x1C05, 0x11);
@@ -1900,7 +1900,7 @@ kill:
     }
 }
 
-void func_800C2218(SparkObj *arg0) {
+void NoxInitSparks(SparkObj *arg0) {
     SparkSet *set = &arg0->set;
     s32 n = set->count;
     Spark *s = arg0->set.sparks;
@@ -1940,7 +1940,7 @@ void func_800C2218(SparkObj *arg0) {
     } while (n != 0);
 }
 
-void func_800C237C(SparkObj *arg0) {
+void NoxDrawSparks(SparkObj *arg0) {
     SparkSet *set = &arg0->set;
     Spark *s = set->sparks;
     SparkLine *l = set->lines[D_8005B690 & 1];
@@ -2019,7 +2019,7 @@ void func_800C237C(SparkObj *arg0) {
     } while (--n != 0);
 }
 
-void func_800C27D4(void) {
+void NoxCameraFollow(void) {
     FollowCam *cam;
     EXTengine *e = Heroes->hero_eng;
     s32 y;
@@ -2050,7 +2050,7 @@ void InitMineSFX(MineSFX *arg0) {
     arg0->unk60 = arg0->src->unk18;
 }
 
-void func_800C2904(s32 *arg0, s32 flag, s32 *out) {
+void NoxPathAngles(s32 *arg0, s32 flag, s32 *out) {
     s32 *p = arg0;
     s32 dx;
     s32 dy;
@@ -2111,14 +2111,14 @@ void InitNitroMine(MineHolder *arg0) {
     arg0->obj->unk5E = 1;
 }
 
-void func_800C2BB0(void) {
+void NoxSpawnSmokeBoost(void) {
     if (D_800C447C-- < 0) {
         CreateNAS(0, 0, 0, 0x1C01, 0x11);
         D_800C447C = 0xF;
     }
 }
 
-void func_800C2C08(s32 arg0) {
+void NoxHeroWinner(s32 arg0) {
     func_80085890(arg0);
     Heroes[arg0].hero_eng->unk1E = 0x800;
     Heroes[arg0].hero_move->forward_angle = 0x800;
@@ -2129,7 +2129,7 @@ void func_800C2C08(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800C2C8C(s32 arg0) {
+void SetNoxHeroWinner(s32 arg0) {
     func_80089FA4(arg0);
     func_80085718(arg0, 0);
     Heroes[arg0].hero_eng->unk20 = 0;
@@ -2139,7 +2139,7 @@ void func_800C2C8C(s32 arg0) {
     Heroes[arg0].hero_eng->unk5E = 1;
 }
 
-s32 func_800C2D10(s32 arg0) {
+s32 TestNoxHeroWon(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = &base[arg0];
 
@@ -2152,7 +2152,7 @@ s32 func_800C2D10(s32 arg0) {
     return 0;
 }
 
-void func_800C2D80(s32 arg0) {
+void NoxHeroHit(s32 arg0) {
     HeroInfo *h;
     s32 act;
 
@@ -2166,7 +2166,7 @@ void func_800C2D80(s32 arg0) {
     SetHeroAction(arg0, act);
 }
 
-void func_800C2DD8(s32 arg0) {
+void SetNoxHeroHit(s32 arg0) {
     EXTengine *e = Heroes[arg0].hero_eng;
 
     CreateNAS(e->unk10.x, e->unk10.y, e->unk10.z + 0x400, 0x1C09, 0x11);
@@ -2174,16 +2174,16 @@ void func_800C2DD8(s32 arg0) {
     ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xA, 0xFF);
 }
 
-void func_800C2E58(void) {
+void NoxHeroDead(void) {
 }
 
-void func_800C2E60(s32 arg0) {
+void SetNoxHeroFly(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTheromove *m = h->hero_move;
 
     SetHeroSeq(arg0, 0x22);
-    func_800B4954(arg0);
+    N2OHeroSetSpeed(arg0);
     m->x_acc = 0x10;
     m->z_acc = 0x10;
     m->jump_acc = 0x10;
@@ -2194,7 +2194,7 @@ void func_800C2E60(s32 arg0) {
     h->hero->UserInfo.user1 = 0;
 }
 
-void func_800C2EF8(s32 arg0) {
+void NoxHeroFacing(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -2202,11 +2202,11 @@ void func_800C2EF8(s32 arg0) {
     h->hero_eng->unk5E = 1;
 }
 
-s32 func_800C2F70(void) {
+s32 Nox_KeepInBounds(void) {
     return 0;
 }
 
-void func_800C2F78(MixObj *arg0, MixObj *arg1)
+void NoxMixVelocities(MixObj *arg0, MixObj *arg1)
 {
   MixObj *p = arg0;
   MixObj *q = arg1;
@@ -2251,10 +2251,10 @@ void InitDummyCamera(NAS *nas) {
     *(s32 *)((u8 *)nas->Engine + 0x14) = -0x480;
 }
 
-void func_800C3184(void) {
+void NoxStubA(void) {
 }
 
-void func_800C318C(s32 arg0) {
+void NoxInitCamera(s32 arg0) {
     D_800C7614.sx = 0x1000;
     D_800C7614.sy = 0x1000;
     D_800C7614.sz = 0x1000;
@@ -2280,10 +2280,10 @@ void func_800C318C(s32 arg0) {
     func_8009440C();
 }
 
-void func_800C3234(void) {
+void NoxStubB(void) {
 }
 
-s32 func_800C323C(LaserPos p, s32 r) {
+s32 NoxLaserHitSphere(LaserPos p, s32 r) {
     LaserNode *n;
     LaserTgt *t;
     LaserExt *ext;
@@ -2327,7 +2327,7 @@ loop:
     return 0;
 }
 
-void func_800C3370(void) {
+void NoxMineSfx(void) {
     s32 temp_v0;
 
     temp_v0 = Random(4);
@@ -2345,7 +2345,7 @@ void func_800C3370(void) {
     }
 }
 
-void func_800C3440(void) {
+void NoxResetHeroes(void) {
     D_800C4480 = 0;
     D_800C4488 = 0;
     D_800C44FC = 0;
@@ -2357,13 +2357,13 @@ void func_800C3440(void) {
     Heroes[1].hero_eng->unk10.y = -0x480;
 }
 
-void func_800C349C(void) {
+void NoxInit(void) {
     NAS *nas;
     u8 *arg;
 
     func_8001E0A8((u8 *)D_80058AD0);
-    func_800BC3A4();
-    func_800BDC0C();
+    NoxInitAsteroids();
+    NoxUpdateAsteroids();
     nas = CreateNAS(0, 0, 0, 0x1625, 0x11);
     if (nas != NULL) {
         nas->UserInfo.user2 = 1;
@@ -2371,13 +2371,13 @@ void func_800C349C(void) {
     D_800C4478 = 0x100;
     D_800C4498 = 0;
     D_800C45F0 = 0;
-    D_8009F8B4 = (void (*)(void))func_800C318C;
+    D_8009F8B4 = (void (*)(void))NoxInitCamera;
     arg = *(u8 **)D_80058AD0;
     D_800C449C = NULL;
     func_80095258(arg);
 }
 
-s32 func_800C3544(s32 *arg0, s32 *arg1) {
+s32 NoxPointInBox(s32 *arg0, s32 *arg1) {
     Box2 *src;
     s32 d[3];
     BoxHalf lo;
@@ -2407,7 +2407,7 @@ s32 func_800C3544(s32 *arg0, s32 *arg1) {
     return 0;
 }
 
-s32 func_800C365C(void) {
+s32 NoxFadeLevel(void) {
     u8 *g = D_8005A614;
 
     s32 r;
@@ -2422,10 +2422,10 @@ s32 func_800C365C(void) {
     return r;
 }
 
-void func_800C36D4(void) {
+void NoxUpdateShadow(void) {
 }
 
-void func_800C36DC(void) {
+void NoxInitShadow(void) {
 }
 
 void PlotNitroSmokeBoost(NAS *nas) {

@@ -17,11 +17,11 @@ typedef struct N2OOdds {
 
 extern N2OOdds D_8009D87C[];
 
-s32 func_800BB05C(u8 *arg0);
-u8 *func_800BB624(void);
-void func_800BBD18(void);
-void func_800B34A4(void);
-void func_800B361C(void);
+s32 GetN2OContour(u8 *arg0);
+u8 *N2OFreeBallSlot(void);
+void UpdateN2O(void);
+void InitialiseN2OFirst(void);
+void InitialiseN2O(void);
 
 extern u16 *D_8009D6EC;
 
@@ -36,13 +36,13 @@ extern u16 D_800C417C[];
 extern u16 D_800C39EC[][5];
 extern s32 D_800C4050[][3];
 extern EXTengine *D_8009D59C;
-void func_800C3440(void);
+void NoxResetHeroes(void);
 extern u16 D_800C438A;
 extern s16 D_800C4184[];
 extern u16 D_800C39EC[][5];
 extern s32 (*D_8009D750)(EXTengine *);
 
-/* PadState (D_80051338) as func_800B447C reads it: the buttons at 0x50. */
+/* PadState (D_80051338) as N2OPreMoveHero reads it: the buttons at 0x50. */
 typedef struct N2OPad {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u8 pad4[0x50 - 0x04];
@@ -50,7 +50,7 @@ typedef struct N2OPad {
     /* 0x54 */ u8 pad54[0x58 - 0x54];
 } N2OPad;
 
-/* PadState as func_800B5064 reads it: flags at 0x4C and 0x54. */
+/* PadState as N2OHeroHit reads it: flags at 0x4C and 0x54. */
 typedef struct N2OPadFlags {
     /* 0x00 */ u8 pad0[0x4C];
     /* 0x4C */ s32 unk4C;
@@ -61,21 +61,21 @@ typedef struct N2OPadFlags {
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/n2o_nox.h"
 
-void func_800BBA4C(s32 arg0);
+void N2OUpdateShadow(s32 arg0);
 extern HeroInfo Heroes[4];
 
-void func_800B59A8(s32 arg0);
+void SetN2OHeroDead(s32 arg0);
 extern char D_80053EE4[];
 s32 csqrt(s32 x);
 
 NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2);
 void func_800898EC(s32 arg0);
 
-void func_800B9800(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
+void N2OLineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
 
-s32 func_800BBBB4(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
+s32 N2OAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
 
-/* Each player's reach box for hitting the ball (func_800B9CB8): the y range
+/* Each player's reach box for hitting the ball (N2OHeroBallCollision): the y range
  * relative to the hero, the near and far radii, and the near and far points. */
 typedef struct N2OHeroBox {
     s32 a, b, c, d;
@@ -85,7 +85,7 @@ typedef struct N2OHeroBox {
 
 extern N2OHeroBox D_800C4190[];
 
-/* Extension 0x800 of a ball (func_800B9CB8), as in arkenoid's ArkenoidPuck. */
+/* Extension 0x800 of a ball (N2OHeroBallCollision), as in arkenoid's ArkenoidPuck. */
 typedef struct N2OPuck {
     u8 pad0[0xE];
     s16 speed;
@@ -101,7 +101,7 @@ extern u16 D_800C39DC[];
 extern s32 D_8005A618;
 extern s32 D_8005A680[];
 
-s32 func_800B9CB8(s32 arg0, EXTengine *unused);
+s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
 
 typedef struct N2OVel {
     u8 pad0[0x10];
@@ -130,20 +130,20 @@ extern u16 D_800C39B0[];
 extern s32 D_8005A618;
 extern s32 D_8005A680[];
 
-s32 func_800B9CB8(s32 arg0, EXTengine *unused);
+s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
 
-void func_800B447C(s32 arg0);
+void N2OPreMoveHero(s32 arg0);
 
-s32 func_800BAEA8(N2OVel *arg0, s32 arg1);
+s32 TestN2OObject2Hero(N2OVel *arg0, s32 arg1);
 
 void PlotN2ODeadWall(NAS *arg0);
 
-void func_800BB5F0(void);
+void N2OSpawnFirstMissile(void);
 
-void func_800BB72C(s32 arg0);
+void SetN2OHeroMove(s32 arg0);
 
-void func_800BB788(s32 arg0);
-/* Round state cleared by func_800B361C. */
+void SetN2OHeroTaunt(s32 arg0);
+/* Round state cleared by InitialiseN2O. */
 typedef struct N2ORound {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -214,7 +214,7 @@ typedef struct {
 extern N2OCircle *D_800C418C;
 extern u8 D_800C37DC[];
 
-/* The object a D_800C42D0 slot moves (func_800B92D4). */
+/* The object a D_800C42D0 slot moves (N2OUpdateSlots). */
 typedef struct N2OSlotObj {
     /* 0x00 */ u8 pad0[4];
     /* 0x04 */ s32 x;
@@ -227,7 +227,7 @@ typedef struct N2OSlotObj {
     /* 0x52 */ u16 unk52;
 } N2OSlotObj;
 
-/* D_8005A614 as seen by func_800B92D4. */
+/* D_8005A614 as seen by N2OUpdateSlots. */
 typedef struct N2OAim {
     /* 0x00 */ u8 pad0[0x30];
     /* 0x30 */ u16 unk30;
@@ -295,7 +295,7 @@ extern u16 D_800C4384;
 extern s32 D_800C438C;
 extern s32 D_800C4390;
 
-/* func_800B7244's script: kind (99 = jump to step), slot kind, time/step. */
+/* N2OUpdateBoss's script: kind (99 = jump to step), slot kind, time/step. */
 typedef struct N2OStep {
     u16 kind;
     u16 slot;
@@ -318,17 +318,17 @@ typedef struct N2OPan {
 extern N2OPan *D_8009D688;
 extern u16 D_800C4394;
 extern s16 D_800C43DC;
-void func_800B6F4C(void);
-void func_800B90F4(void);
-void func_800BB070(u16 arg0);
+void N2OInitBoss(void);
+void N2OInitSlots(void);
+void N2OShowPhaseObjects(u16 arg0);
 void InitN2OmissileExplode(NAS *nas);
 
-void func_800C349C(void);
+void NoxInit(void);
 
-s32 func_800BB8EC(s32 arg0);
+s32 N2OHeroTestIdle(s32 arg0);
 
-void func_800BBD68(void);
-/* A ball in the D_8005AA38 list (func_800B817C), as in arkenoid's ArkenoidNode. */
+void N2OSetUp(void);
+/* A ball in the D_8005AA38 list (N2OBotCanHit), as in arkenoid's ArkenoidNode. */
 typedef struct N2ONode {
     u8 pad0[0x10];
     s32 x;
@@ -352,19 +352,19 @@ typedef struct N2OPos {
     s32 z;
 } N2OPos;
 
-s32 func_800B3C04(N2OObj *arg0);
+s32 N2O_BA_TestLaunchBounds(N2OObj *arg0);
 
-void func_800B4FA4(s32 arg0);
+void SetN2OHeroHit(s32 arg0);
 
-void func_800B5064(s32 arg0);
+void N2OHeroHit(s32 arg0);
 
-void func_800B5674(s32 arg0);
+void SetN2OHeroDie(s32 arg0);
 
-void func_800B5774(s32 arg0);
+void SetN2OHeroKick(s32 arg0);
 
-void func_800B5B14(s32 arg0);
+void N2OHeroDead(s32 arg0);
 
-void func_800B5BFC(void);
+void N2OBallMaster(void);
 
 typedef struct N2OEdge {
     s16 x0;
@@ -380,67 +380,67 @@ extern N2OEdge D_800C4090[];
 extern u16 D_800C4110[];
 extern u16 D_800C4386;
 
-s32 func_800B7858(s32 arg0, N2OPos *from, N2OPos *to, s32 angle);
+s32 N2OBotAimA(s32 arg0, N2OPos *from, N2OPos *to, s32 angle);
 
-s32 func_800B7C58(s32 arg0, N2OPos *from, N2OPos *to, s32 angle);
+s32 N2OBotAimB(s32 arg0, N2OPos *from, N2OPos *to, s32 angle);
 
-s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
+s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
-void func_800B8968(s32 a);
+void N2OSpawnSlotMissile(s32 a);
 
-void func_800BB184(void);
+void N2OCameraFollow(void);
 
 void PlotN2OmissileExplode(NAS *nas);
 
-void func_800BB3A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+void N2OSpawnExplosion(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 void InitN2Ofirstmissile(NAS *nas);
 
 void InitN2Omissile(NAS *nas);
 
-void func_800BB6BC(s32 arg0);
+void N2OHeroDie(s32 arg0);
 
-void func_800BB7D4(s32 arg0);
+void SetN2OHeroIdle(s32 arg0);
 
-void func_800BB86C(s32 arg0);
+void SetN2OHeroEnter(s32 arg0);
 
-s32 func_800BB944(s32 arg0);
+s32 N2OHeroTestMove(s32 arg0);
 
-s32 func_800BB9B0(s32 arg0);
+s32 N2OHeroTestKick(s32 arg0);
 
-void func_800BBB10(s32 arg0);
+void N2OInitShadow(s32 arg0);
 
-s32 func_800BBC78(N2OVel *arg0, N2OOut *arg1, s32 arg2);
+s32 N2OTestWalls(N2OVel *arg0, N2OOut *arg1, s32 arg2);
 
 extern s8 D_8005A689;
 
-s32 func_800B4AD8();
+s32 N2OHeroUpdateSpeed();
 extern u32 *D_800C43D8;
 
-s32 func_800B3888(N2OObj *arg0);
+s32 N2O_KeepInBounds(N2OObj *arg0);
 
-void func_800B5168(s32 arg0);
+void N2OHeroTaunt(s32 arg0);
 
-void func_800B52CC(s32 arg0);
+void N2OHeroMove(s32 arg0);
 
-void func_800B5440(s32 arg0);
+void SetN2OHeroWinner(s32 arg0);
 
-void func_800B5550(s32 arg0);
+void N2OHeroWinner(s32 arg0);
 
-void func_800B5838(s32 arg0);
+void N2OHeroKick(s32 arg0);
 
 void InitN2OBall(NAS *nas);
 
-void func_800B6E6C(N2OBlend *p);
+void N2OBlendDirection(N2OBlend *p);
 
-s32 func_800B8058(s32 arg0);
+s32 PickN2OPlayer(s32 arg0);
 
-/* func_800B83EC */
+/* N2O_HeroBot */
 extern s32 D_8005A624;
 extern s32 D_8009D908;
 extern u32 D_80051244[]; /* flags by angle octant */
 
-/* D_8005A614 as seen by func_800B34A4. */
+/* D_8005A614 as seen by InitialiseN2OFirst. */
 typedef struct N2OGame {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 unk32;
@@ -464,7 +464,7 @@ typedef struct N2OMissileView {
 extern u16 D_800C39CC[];
 extern u16 D_800C39D4[];
 
-/* D_8005A614 as seen by func_800B6F4C. */
+/* D_8005A614 as seen by N2OInitBoss. */
 typedef struct N2OTeams {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 unk32;
@@ -507,29 +507,29 @@ extern u8 D_800C403C[];
 extern u8 D_800C3774[];
 extern u8 D_800C3E30[];
 extern u8 D_800C3E70[];
-s32 func_800B39C0(N2OObj *arg0, s32 arg1);
+s32 N2O_BA_BounceOnBounds(N2OObj *arg0, s32 arg1);
 
-void func_800B3CD0(s32 arg0);
+void N2OHeroEngineUpdate(s32 arg0);
 
-void func_800B3E74(s32 i);
-void func_800B46DC(s32 arg0);
-void func_800B4CE0(s32 arg0);
+void N2OInitHero(s32 i);
+void N2OMoveHero(s32 arg0);
+void N2OHeroEnter(s32 arg0);
 
-void func_800B4E30(s32 arg0);
+void N2OHeroIdle(s32 arg0);
 
 void InitN2ODeadWall(NAS *nas);
 
-s32 func_800BA43C(u32 arg0, s32 arg1, bool arg2);
+s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2);
 
-NAS *func_800BAAA8(void);
+NAS *N2OBossPushObjects(void);
 
-s32 func_800B9B10(s32 arg0);
-void func_800BEB68(s32 arg0);
-void func_800BF0AC(s32 arg0);
+s32 N2OHeroPushTeammate(s32 arg0);
+void NoxPreMoveHero(s32 arg0);
+void NoxMoveHero(s32 arg0);
 
 extern N2OEdge D_800C40D0[];
 
-/* Motion extension (0x800) viewed by func_800BA6C4. */
+/* Motion extension (0x800) viewed by TestN2OObjectObstacles. */
 typedef struct N2OMot {
     u8 pad0[0xE];
     s16 a;
@@ -539,23 +539,23 @@ typedef struct N2OMot {
     s16 dir;
 } N2OMot;
 
-/* A FUX viewed for its flags word (0x80 tested by func_800BA6C4). */
+/* A FUX viewed for its flags word (0x80 tested by TestN2OObjectObstacles). */
 typedef struct N2OFuxF {
     u8 pad0[0x1C];
     u16 flags;
 } N2OFuxF;
 
-void func_800B7244(void);
+void N2OUpdateBoss(void);
 
-void func_800B83EC(u16 *arg0);
+void N2O_HeroBot(u16 *arg0);
 
 void PlotN2Omissile(NAS *nas);
 
 void PlotN2Ofirstmissile(NAS *nas);
 
-void func_800B92D4(void);
+void N2OUpdateSlots(void);
 
-s32 func_800BA6C4(EXTengine *eng, N2OFuxF *self);
+s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self);
 
 /* D_8005A614 as seen by PlotN2OBall. */
 typedef struct N2OBallView {
