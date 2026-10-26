@@ -436,6 +436,24 @@ class Converter:
             lines.append(cur.rstrip())
         return "{\n" + "\n".join(pad + l for l in lines) + "\n" + "    " * indent + "}"
 
+    def word_fields(self, tname, ptr, dims, off, out):
+        """Add the offsets of the 4-byte fields (words and pointers) of a type at off to out."""
+        if dims:
+            sz = self.types.layout(tname, ptr)[0]
+            for d in dims[1:]:
+                sz *= d
+            for i in range(dims[0]):
+                self.word_fields(tname, ptr, dims[1:], off + i * sz, out)
+            return
+        r = None if ptr else self.types.resolve(tname)
+        if ptr or r[0] == "scalar":
+            if ptr or r[1] == 4:
+                out.add(off)
+            return
+        ms, kind = self.types.members(tname)
+        for _, ft, fp, fd, fo in (ms[:1] if kind == "union" else ms):
+            self.word_fields(ft, fp, fd, off + fo, out)
+
     def covered(self, tname, ptr, dims, off, out):
         """Mark the bytes a type's leaves cover (padding stays unmarked)."""
         if dims:
@@ -483,13 +501,15 @@ class Converter:
             self.base_rom = self.rom(va)
         ctype = ("const " if False else "") + tname + " " + "*" * ptr
         decl_txt = f"{ctype}{name}{''.join(f'[{d}]' for d in dims)}"
-        if not ptr and self.types.resolve(tname)[0] == "scalar" and self.types.resolve(tname)[1] < 4:
-            for o in range(0, total - 3, 4):
-                v = int.from_bytes(body[o:o + 4], "little")
-                if self.vram <= v < self.end:
-                    sys.stderr.write(f"warning: {name}+{o:#x} holds {v:#010x}, an address in the overlay, but "
-                                     f"{name} is {tname}[]: give it a type with a pointer there\n")
-                    break
+        # an address in the overlay where the type has no 4-byte field is written as plain bytes or
+        # halves, so a shifted build would keep the old address (CharCards' anim, in a u8[0x20])
+        words = set()
+        self.word_fields(tname, ptr, dims, 0, words)
+        for o in range(0, total - 3, 4):
+            v = int.from_bytes(body[o:o + 4], "little")
+            if self.vram <= v < self.end and o not in words:
+                sys.stderr.write(f"warning: {name}+{o:#x} holds {v:#010x}, an address in the overlay, but "
+                                 f"{name}'s type ({tname}) has no 4-byte field there: give it a pointer field\n")
         if not any(body):
             init = "0" if not dims and (ptr or self.types.resolve(tname)[0] == "scalar") else "{0}"
         else:

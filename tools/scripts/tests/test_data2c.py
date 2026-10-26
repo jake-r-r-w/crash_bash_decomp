@@ -91,6 +91,15 @@ class FunctionPointers(unittest.TestCase):
         self.assertEqual([f[1] for f in t.fields("process_info")], [data2c.FN, data2c.FN, "u32"])
 
 
+class WordFields(unittest.TestCase):
+    def test_only_4_byte_fields_can_hold_a_pointer(self):
+        c = data2c.Converter.__new__(data2c.Converter)
+        c.types = data2c.Types(["typedef struct { s32 a; u8 b[8]; NAS *p; s16 h[2]; } Card;"])
+        out = set()
+        c.word_fields("Card", 0, [2], 0, out)
+        self.assertEqual(out, {0, 12, 20, 32})
+
+
 class OtherSlots(unittest.TestCase):
     def test_only_another_slot_overlays_files_are_left_out(self):
         self.assertTrue(data2c.other_slot("include/bash/ovl66.h", "ovl69"))
