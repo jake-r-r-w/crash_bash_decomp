@@ -692,6 +692,20 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **N2O** (n2o, the N. Trance / N. Oxide boss: n2o.c and nox.c; named
+  2026-10-26). Mode 0x1F; one engine world record (0x010C) points at
+  `N2O_PREMAP`, `n2o_shell_info` and `N2OSetUp`, the per-mode table at
+  `file_group_N2O` (`N2OFiles` with the exe's file group 6: 16 DAT entries,
+  all decoded). `N2OSetUp` fills Arkenoid's `LevSpec` slots (`GetN2OContour`
+  is slot 9). The fight has two phases, switched by `N2OBallPhase` (1: the
+  ball game against N2O round four pillars, n2o.c, the engine hooks
+  `N2OPreMoveHero` ..; otherwise the space fight among asteroids and mines,
+  nox.c, `NoxPreMoveHero` ..); `NoxStartPhase1` swaps the hooks over. The hero
+  states are `HEROFunc` pairs 38..50 (`NOEnter` .. `NODead` in n2o.c, then
+  `NOFly`, `N2ODead`, `N2OHit`, `N2OWinner` in nox.c, actions 0x26..0x32);
+  the 80 sequence slots are each character's `hero_seq_n2o*` (the `n2ofly`
+  ones after n2o.c's state). nox.c's first string names `NoxBoxToSphere`'s
+  original: `XZBoxToSphere`, as Dino's.
 - **Chase** (chase, the kegs and coal game; named 2026-10-26). Mode 0x1E;
   one engine world record (0x010D) points at `CHASE_PREMAP`,
   `chase_shell_info` and `CHASESetUp`, the per-mode table at

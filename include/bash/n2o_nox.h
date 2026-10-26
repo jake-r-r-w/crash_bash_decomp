@@ -53,7 +53,7 @@ typedef struct MixObj {
     /* 0x4E */ s16 w;
 } MixObj;
 
-extern SetupCam D_800C7614;
+extern SetupCam NoxCamera;
 extern fade_info D_8009F644;
 extern u8 D_8009F6F4[];
 
@@ -133,10 +133,10 @@ typedef struct SpiralExt {
     /* 0x44 */ NAS *sat[4];
 } SpiralExt;
 
-extern u8 *D_800C449C;
-extern NAS *D_800C4490;
-extern NAS *D_800C4494;
-extern s32 D_800C4478;
+extern u8 *NoxLasers;
+extern NAS *NoxCameraNas;
+extern NAS *NoxCameraNasB;
+extern s32 NoxSpeedScale;
 extern void (*D_8009F8B4)(void);
 
 typedef struct MineModel {
@@ -181,13 +181,13 @@ typedef struct MineHolder {
     /* 0x00 */ u8 pad00[0x54];
     /* 0x54 */ MineObj *obj;
 } MineHolder;
-extern s32 D_800C4480;
-extern s32 D_800C4488;
-extern s32 D_800C448C;
-extern s32 D_800C44FC;
-extern s32 D_800C4500;
-extern s32 D_800C4504;
-extern s32 D_800C4508;
+extern s32 NoxBossHits;
+extern s32 NoxHeroesDown;
+extern s32 NoxHeroesAlive;
+extern s32 NoxHeroTiltA;
+extern s32 NoxHeroTiltB;
+extern s32 NoxHeroTiltC;
+extern s32 NoxHeroTiltD;
 /* PadState (D_80051338) as seen by NoxPreMoveHero. */
 typedef struct BossPad {
     /* 0x00 */ s32 unk0;
@@ -195,9 +195,9 @@ typedef struct BossPad {
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
 } BossPad;
-extern s32 D_800C45F4[];
-extern s32 D_800C4604[];
-extern ScriptInit D_800C44F0;
+extern s32 NoxHeroBoost[];
+extern s32 NoxHeroSteer[];
+extern ScriptInit NoxSmokeScriptInit;
 
 /* Path follower of NoxBossFollowPath: a key table and a position along it. */
 typedef struct BossPath {
@@ -243,11 +243,11 @@ static inline s32 MineDamage(BossGameView *g) {
     return r;
 }
 
-extern SLONG_XYZ D_800C76CC;
-extern SLONG_XYZ D_800C76D8;
+extern SLONG_XYZ NoxHeroStartA;
+extern SLONG_XYZ NoxHeroStartB;
 extern s16 D_8009D6DC[];
 
-extern s32 D_800C4478;
+extern s32 NoxSpeedScale;
 
 void NoxBossFollowPath(BossPath *arg0, BossObj *arg1);void NoxAsteroidSfx(void);
 
@@ -283,7 +283,7 @@ void PlotNitroSmokeBoost(NAS *nas);
 void NoxInitCamera(s32 arg0);
 
 void InitNitroSmokeBoost(NAS *nas);
-extern s32 D_800C447C;
+extern s32 NoxSmokeTimer;
 
 void NoxCameraFollow(void);
 
@@ -327,7 +327,7 @@ typedef struct AngObj {
     /* 0x74 */ u16 state;
 } AngObj;
 
-extern const char D_800B336C[];
+extern const char NoxNoCollBoxMsg[];
 
 void NoxTurnAsteroid(AngObj *o);
 
@@ -376,7 +376,7 @@ static inline s32 MineHitLaser(LaserPos p, s32 r) {
     LaserPos *tp;
     s32 mode;
 
-    n = (LaserNode *)D_800C449C;
+    n = (LaserNode *)NoxLasers;
     for (;;) {
         s32 t_;
         if (n == NULL) {
@@ -507,7 +507,7 @@ static inline s32 LaserInBox(s32 *arg0, s32 *arg1) {
 
     src = (Box2 *)func_8008CE20((subengine *)arg0, 0, 0);
     if (src == NULL) {
-        printf(D_800B336C);
+        printf(NoxNoCollBoxMsg);
         return 0;
     }
     lo = src->lo;
@@ -548,8 +548,8 @@ typedef struct BossExt {
     /* 0x38 */ s32 unk38;
 } BossExt;
 
-extern ScriptInit D_800C446C;
-extern s32 D_800C4530;
+extern ScriptInit NoxBossScriptInit;
+extern s32 NoxBossPathPos;
 extern s8 D_8005A6DE;
 void func_80093038(void);
 void N2OPlaceHero(s32 arg0);
@@ -577,7 +577,7 @@ typedef struct NitroShotExt {
     /* 0x28 */ s32 unk28;
 } NitroShotExt;
 
-extern s32 D_800C4484;
+extern s32 NoxBossHitTimer;
 
 s32 NoxPointInBox(s32 *arg0, s32 *arg1);
 
@@ -635,8 +635,8 @@ typedef struct SparkObj {
     /* 0x6C */ SparkSet set;
 } SparkObj;
 
-extern s32 D_800C45B4;
-extern s32 D_800C45B8;
+extern s32 NoxSparkAlpha;
+extern s32 NoxSparkScale;
 
 /* The star field's Init/Plot pair after three words; nothing names it in the code. */
 typedef struct NoxSparkFx {
@@ -649,11 +649,11 @@ typedef struct NoxSparkFx {
 
 void NoxInitSparks(SparkObj *arg0);
 
-extern MATRIX D_800C45BC;  /* spark view matrix */
-extern SVECTOR D_800C76E4; /* spark view rotation */
+extern MATRIX NoxSparkMatrix;  /* spark view matrix */
+extern SVECTOR NoxSparkAngles; /* spark view rotation */
 
 void NoxDrawSparks(SparkObj *arg0);
-extern NoxSparkFx D_800C45DC;
+extern NoxSparkFx NoxSparkFxDef;
 
 /* Asteroid roll extension (id 0x10000000): a ballistic arc (func_8008C5C4's
  * Arc, declared in bash/pause.h) at 0x0C. */
@@ -731,9 +731,9 @@ typedef struct AstMineSlot {
     /* 0x08 */ s32 y;
     /* 0x0C */ s32 unkC;
 } AstMineSlot;
-extern s32 D_800C450C;
-extern AstSlot D_800C4614[];
-extern AstMineSlot D_800C6E14[];
+extern s32 NoxAsteroidTimer;
+extern AstSlot NoxAsteroids[];
+extern AstMineSlot NoxMines[];
 
 void NoxInitAsteroids(void);
 
@@ -861,7 +861,7 @@ extern HeroInfo Heroes[4];
 
 /* NoxPreMoveHero's tail: steer the hero's pitch and yaw toward their targets. */
 static inline void BossHeroSteer(s32 i) {
-    s32 *tb = D_800C4604;
+    s32 *tb = NoxHeroSteer;
     s32 *t = &tb[i];
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[i];
