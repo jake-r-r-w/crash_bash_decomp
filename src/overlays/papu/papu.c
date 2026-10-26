@@ -22,252 +22,359 @@ extern u8 D_8004F318[];
 extern u8 D_8004F320[];
 extern u8 D_8004F328[];
 extern u8 D_80050148[];
+extern u8 D_80063BB8[];
+extern u8 D_80063EC8[];
 extern u8 D_8005408C[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "BREATHE";
-const char D_800B32C0[] = "MEDIUM";
-const char D_800B32C8[] = "HIT";
-const char D_800B32CC[] = "DIE";
-const char D_800B32D0[] = "JUMP";
-const char D_800B32D8[] = "ATTACK";
-const char D_800B32E0[] = "PICKUP";
-const char D_800B32E8[] = "HOLD";
-const char D_800B32F0[] = "HOLD_SLOW";
-const char D_800B32FC[] = "HOLD_THROW";
-const char D_800B3308[] = "TAUNT_A";
+const char PapuAnimBreathe[] = "BREATHE";
+const char PapuAnimMedium[] = "MEDIUM";
+const char PapuAnimHit[] = "HIT";
+const char PapuAnimDie[] = "DIE";
+const char PapuAnimJump[] = "JUMP";
+const char PapuAnimAttack[] = "ATTACK";
+const char PapuAnimPickup[] = "PICKUP";
+const char PapuAnimHold[] = "HOLD";
+const char PapuAnimHoldSlow[] = "HOLD_SLOW";
+const char PapuAnimHoldThrow[] = "HOLD_THROW";
+const char PapuAnimTauntA[] = "TAUNT_A";
 
 /* data, in address order */
-u8 D_800BC89C[64] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0,
+u16 PapuAiSkill[32] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
 };
-u8 D_800BC8DC[64] = {
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0,
-    0x10, 0, 0x10, 0,
+u16 PapuAiSkillAlt[32] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
 };
-s16 D_800BC91C[32] = {
+s16 PapuBossRates[32] = {
     0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0x12C, 0x14A, 0x168, 0x186, 0x1A4,
     0x1C2, 0x1E0, 0x1FE, 0x21C, 0x23A, 0x258, 0x276, 0x294, 0x2B2, 0x2D0, 0x2EE, 0x30C, 0x32A,
     0x348, 0x366, 0x384, 0x384, 0x384,
 };
-s16 D_800BC95C[554] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4,
-    4, 4, 0, -0x7FF9, 0x17, 0x4500, -0x8000, 0, 0, -0x7FF9, 0x20, 0x4400, -0x7FE8, 0xC, 0x441F,
-    -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0xF, -0x7FF9, 0xB, 0x4202, -0x7FFC, 0x17, 0, -0x7FF9, 0x14,
-    0x4280, -0x8000, 0, 0, -0x7FF9, 7, 0x4380, -0x7FF8, 0xA, -0x7FF9, 0xC, 0x4387, -0x7FF8,
-    0xB, -0x7FF9, 5, 0x4393, -0x8000, 0, 0, -0x7FF9, 2, 0x4300, -0x7FFD, 0x12, -0x7FF9, 6,
-    0x4301, -0x7FF8, 0x10, -0x7FFD, 0x13, -0x7FF9, 7, 0x4310, -0x7FFC, 7, 0, -0x7FF9, 0x20,
-    0x4400, -0x8000, 0, 0, -0x7FF9, 0x15, 0x4580, -0x7FE8, 0x14, 0x4594, -0x7FFC, 0x1A, 0, 0,
-    -0x7FF6, 0x41, -0x7FF9, 0xC, 0x4201, -0x7FFC, 0x17, 0, -0x7FF9, 0x14, 0x4380, -0x8000, 0,
-    0, -0x7FF9, 9, 0x4300, -0x7FF8, 0x3C, -0x7FF9, 0xB, 0x4309, -0x7FF8, 0x3D, 0x4314, 0x4315,
-    -0x8000, 0, 0, 0, -0x7FF9, 2, 0x4280, -0x7FFD, 0x12, -0x7FF9, 6, 0x4281, -0x7FF8, 0x42,
-    -0x7FFD, 0x13, -0x7FF9, 8, 0x4296, -0x7FFC, 7, 0, -0x7FF9, 0x20, 0x4500, -0x8000, 0, 0,
-    -0x7FF9, 0x23, 0x4400, -0x7FE8, 5, 0x4422, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0xA5, -0x7FF9,
-    0xD, 0x4201, -0x7FFC, 0x17, 0, -0x7FF9, 0x18, 0x4280, -0x8000, 0, 0, -0x7FF8, 0xA0,
-    -0x7FF9, 0xC, 0x4300, -0x7FF8, 0xA1, -0x7FF9, 0xC, 0x430B, -0x8000, 0, 0, 0, 0x4380,
-    -0x7FFD, 0x12, 0x4381, -0x7FF5, -0x7FF8, 0xA6, -0x7FFD, 0x13, 0x4382, -0x7FF9, 0xA, 0x4383,
-    -0x7FFC, 0, 0, -0x7FF9, 0x20, 0x4080, -0x8000, 0, 0, -0x7FF9, 0x15, 0x4580, -0x7FE8, 0xF,
-    0x4594, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0x73, -0x7FF9, 8, 0x4300, -0x7FFC, 0x17, 0, -0x7FF9,
-    0x18, 0x4280, -0x8000, 0, 0, -0x7FF8, 0x6E, -0x7FF9, 0xC, 0x4400, -0x7FF8, 0x6F, -0x7FF9,
-    0xC, 0x440B, -0x8000, 0, 0, 0, 0x4380, -0x7FFD, 0x12, 0x4381, -0x7FF5, -0x7FF8, 0x74,
-    -0x7FFD, 0x13, 0x4382, -0x7FF9, 0xA, 0x4383, -0x7FFC, 0, 0, -0x7FF9, 0x1F, 0x4500, -0x8000,
-    0, 0, -0x7FF9, 0x1F, 0x4480, -0x7FE8, 0xD, 0x449E, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0x109,
-    -0x7FF9, 0x10, 0x4401, -0x7FFC, 0x17, 0, -0x7FF9, 0x16, 0x4280, -0x8000, 0, 0, -0x7FF8,
-    0x104, -0x7FF9, 0xC, 0x430B, -0x7FF8, 0x105, -0x7FF9, 0xC, 0x4300, -0x8000, 0, 0, 0,
-    -0x7FF9, 2, 0x4380, -0x7FFD, 0x12, -0x7FF9, 6, 0x4381, -0x7FF8, 0x10A, -0x7FFD, 0x13,
-    -0x7FF9, 0x14, 0x4388, -0x7FFC, 0, 0, -0x7FF9, 0x20, 0x4480, -0x8000, 0, 0, -0x7FF9, 0x15,
-    0x4600, -0x7FE8, 0xF, 0x4614, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0x13B, -0x7FF9, 9, 0x4401,
-    -0x7FFC, 0x17, 0, -0x7FF9, 0x21, 0x4300, -0x8000, 0, 0, -0x7FF8, 0x136, -0x7FF9, 0xA,
-    0x4280, -0x7FF8, 0x137, -0x7FF9, 0xA, 0x4289, -0x8000, 0, 0, 0, 0x4382, -0x7FF8, 0x13C,
-    -0x7FFD, 0x12, 0x4383, 0x4384, 0x4385, 0x4386, -0x7FFD, 0x13, 0x4387, 0x4387, 0x4388,
-    0x4389, 0x438A, 0x4394, 0x4395, 0x4396, 0x4397, 0x4398, 0x4399, 0x439A, -0x7FFC, 0, 0,
-    -0x7FF9, 0x20, 0x4500, -0x8000, 0, 0, -0x7FF9, 0x17, 0x4280, -0x7FE8, 0x17, 0x4296,
-    -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0xD7, -0x7FF9, 0x10, 0x4301, -0x7FFC, 0x17, 0, -0x7FF9, 0x15,
-    0x4380, -0x8000, 0, 0, -0x7FF8, 0xD2, -0x7FF9, 0xA, 0x4409, -0x7FF8, 0xD3, -0x7FF9, 0xA,
-    0x4400, -0x8000, 0, 0, 0, -0x7FFD, 0x12, -0x7FF9, 6, 0x4481, -0x7FF8, 0xD8, -0x7FFD, 0x13,
-    -0x7FF9, 0x14, 0x4487, -0x7FFC, 0, 0, 0, -0x7FF9, 0x17, 0x4500, -0x8000, 0, 0, -0x7FF9,
-    0x19, 0x4200, -0x7FE8, 0xB, 0x4218, -0x7FFC, 0x1A, 0, 0, -0x7FF6, 0x16D, -0x7FF9, 0xB,
-    0x430A, -0x7FFC, 0x17, 0, -0x7FF9, 0x18, 0x4380, -0x8000, 0, 0, -0x7FF8, 0x168, -0x7FF9,
-    0xA, 0x4400, -0x7FF8, 0x169, -0x7FF9, 0xA, 0x4409, -0x8000, 0, 0, 0, 0x4482, -0x7FFD, 0x12,
-    0x4483, 0x4484, 0x4485, 0x4486, -0x7FF8, 0x16E, -0x7FFD, 0x13, 0x4487, -0x7FF9, 0xE,
-    0x4488, -0x7FFC, 0, 0x2000, 0, 0x10, 0, 0x1000, 0, 0xC8, 0, 0x2BC, 0, 0x200, 0, 0x3EC8,
-    -0x7FFA, 0x3BB8, -0x7FFA, 0x20, 0, 0x400, 0,
+s16 PapuPickupRates[32] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
 };
-s32 D_800BCDB0[20] = {
+/* sequence-shaped halfwords nothing points at (no hero's sequence table, no code) */
+s16 PapuUnusedSeq[6] = { 0, -0x7FF9, 0x17, 0x4500, -0x8000, 0 };
+hero_seq CRA_PA_seq_die[10] = {
+    0, 0x8007, 0x20, 0x4400, 0x8018, 0xC, 0x441F, 0x8004, 0x1A, 0,
+};
+hero_seq CRA_PA_seq_pickup[8] = {
+    0, 0x800A, 0xF, 0x8007, 0xB, 0x4202, 0x8004, 0x17,
+};
+hero_seq CRA_PA_seq_hold[6] = {
+    0, 0x8007, 0x14, 0x4280, 0x8000, 0,
+};
+hero_seq CRA_PA_seq_hold_slow[16] = {
+    0, 0x8007, 7, 0x4380, 0x8008, 0xA, 0x8007, 0xC, 0x4387, 0x8008, 0xB, 0x8007, 5, 0x4393, 0x8000,
+    0,
+};
+hero_seq CRA_PA_seq_hold_throw[24] = {
+    0, 0x8007, 2, 0x4300, 0x8003, 0x12, 0x8007, 6, 0x4301, 0x8008, 0x10, 0x8003, 0x13, 0x8007, 7,
+    0x4310, 0x8004, 7, 0, 0x8007, 0x20, 0x4400, 0x8000, 0,
+};
+hero_seq COC_PA_seq_die[10] = {
+    0, 0x8007, 0x15, 0x4580, 0x8018, 0x14, 0x4594, 0x8004, 0x1A, 0,
+};
+hero_seq COC_PA_seq_pickup[8] = {
+    0, 0x800A, 0x41, 0x8007, 0xC, 0x4201, 0x8004, 0x17,
+};
+hero_seq COC_PA_seq_hold[6] = {
+    0, 0x8007, 0x14, 0x4380, 0x8000, 0,
+};
+hero_seq COC_PA_seq_hold_slow[16] = {
+    0, 0x8007, 9, 0x4300, 0x8008, 0x3C, 0x8007, 0xB, 0x4309, 0x8008, 0x3D, 0x4314, 0x4315, 0x8000,
+    0, 0,
+};
+hero_seq COC_PA_seq_hold_throw[24] = {
+    0, 0x8007, 2, 0x4280, 0x8003, 0x12, 0x8007, 6, 0x4281, 0x8008, 0x42, 0x8003, 0x13, 0x8007, 8,
+    0x4296, 0x8004, 7, 0, 0x8007, 0x20, 0x4500, 0x8000, 0,
+};
+hero_seq BRO_PA_seq_die[10] = {
+    0, 0x8007, 0x23, 0x4400, 0x8018, 5, 0x4422, 0x8004, 0x1A, 0,
+};
+hero_seq BRO_PA_seq_pickup[8] = {
+    0, 0x800A, 0xA5, 0x8007, 0xD, 0x4201, 0x8004, 0x17,
+};
+hero_seq BRO_PA_seq_hold[6] = {
+    0, 0x8007, 0x18, 0x4280, 0x8000, 0,
+};
+hero_seq BRO_PA_seq_hold_slow[14] = {
+    0, 0x8008, 0xA0, 0x8007, 0xC, 0x4300, 0x8008, 0xA1, 0x8007, 0xC, 0x430B, 0x8000, 0, 0,
+};
+hero_seq BRO_PA_seq_hold_throw[22] = {
+    0, 0x4380, 0x8003, 0x12, 0x4381, 0x800B, 0x8008, 0xA6, 0x8003, 0x13, 0x4382, 0x8007, 0xA,
+    0x4383, 0x8004, 0, 0, 0x8007, 0x20, 0x4080, 0x8000, 0,
+};
+hero_seq CTX_PA_seq_die[10] = {
+    0, 0x8007, 0x15, 0x4580, 0x8018, 0xF, 0x4594, 0x8004, 0x1A, 0,
+};
+hero_seq CTX_PA_seq_pickup[8] = {
+    0, 0x800A, 0x73, 0x8007, 8, 0x4300, 0x8004, 0x17,
+};
+hero_seq CTX_PA_seq_hold[6] = {
+    0, 0x8007, 0x18, 0x4280, 0x8000, 0,
+};
+hero_seq CTX_PA_seq_hold_slow[14] = {
+    0, 0x8008, 0x6E, 0x8007, 0xC, 0x4400, 0x8008, 0x6F, 0x8007, 0xC, 0x440B, 0x8000, 0, 0,
+};
+hero_seq CTX_PA_seq_hold_throw[22] = {
+    0, 0x4380, 0x8003, 0x12, 0x4381, 0x800B, 0x8008, 0x74, 0x8003, 0x13, 0x4382, 0x8007, 0xA,
+    0x4383, 0x8004, 0, 0, 0x8007, 0x1F, 0x4500, 0x8000, 0,
+};
+hero_seq DNG_PA_seq_die[10] = {
+    0, 0x8007, 0x1F, 0x4480, 0x8018, 0xD, 0x449E, 0x8004, 0x1A, 0,
+};
+hero_seq DNG_PA_seq_pickup[8] = {
+    0, 0x800A, 0x109, 0x8007, 0x10, 0x4401, 0x8004, 0x17,
+};
+hero_seq DNG_PA_seq_hold[6] = {
+    0, 0x8007, 0x16, 0x4280, 0x8000, 0,
+};
+hero_seq DNG_PA_seq_hold_slow[14] = {
+    0, 0x8008, 0x104, 0x8007, 0xC, 0x430B, 0x8008, 0x105, 0x8007, 0xC, 0x4300, 0x8000, 0, 0,
+};
+hero_seq DNG_PA_seq_hold_throw[24] = {
+    0, 0x8007, 2, 0x4380, 0x8003, 0x12, 0x8007, 6, 0x4381, 0x8008, 0x10A, 0x8003, 0x13, 0x8007,
+    0x14, 0x4388, 0x8004, 0, 0, 0x8007, 0x20, 0x4480, 0x8000, 0,
+};
+hero_seq TIN_PA_seq_die[10] = {
+    0, 0x8007, 0x15, 0x4600, 0x8018, 0xF, 0x4614, 0x8004, 0x1A, 0,
+};
+hero_seq TIN_PA_seq_pickup[8] = {
+    0, 0x800A, 0x13B, 0x8007, 9, 0x4401, 0x8004, 0x17,
+};
+hero_seq TIN_PA_seq_hold[6] = {
+    0, 0x8007, 0x21, 0x4300, 0x8000, 0,
+};
+hero_seq TIN_PA_seq_hold_slow[14] = {
+    0, 0x8008, 0x136, 0x8007, 0xA, 0x4280, 0x8008, 0x137, 0x8007, 0xA, 0x4289, 0x8000, 0, 0,
+};
+hero_seq TIN_PA_seq_hold_throw[32] = {
+    0, 0x4382, 0x8008, 0x13C, 0x8003, 0x12, 0x4383, 0x4384, 0x4385, 0x4386, 0x8003, 0x13, 0x4387,
+    0x4387, 0x4388, 0x4389, 0x438A, 0x4394, 0x4395, 0x4396, 0x4397, 0x4398, 0x4399, 0x439A, 0x8004,
+    0, 0, 0x8007, 0x20, 0x4500, 0x8000, 0,
+};
+hero_seq KAN_PA_seq_die[10] = {
+    0, 0x8007, 0x17, 0x4280, 0x8018, 0x17, 0x4296, 0x8004, 0x1A, 0,
+};
+hero_seq KAN_PA_seq_pickup[8] = {
+    0, 0x800A, 0xD7, 0x8007, 0x10, 0x4301, 0x8004, 0x17,
+};
+hero_seq KAN_PA_seq_hold[6] = {
+    0, 0x8007, 0x15, 0x4380, 0x8000, 0,
+};
+hero_seq KAN_PA_seq_hold_slow[14] = {
+    0, 0x8008, 0xD2, 0x8007, 0xA, 0x4409, 0x8008, 0xD3, 0x8007, 0xA, 0x4400, 0x8000, 0, 0,
+};
+hero_seq KAN_PA_seq_hold_throw[22] = {
+    0, 0x8003, 0x12, 0x8007, 6, 0x4481, 0x8008, 0xD8, 0x8003, 0x13, 0x8007, 0x14, 0x4487, 0x8004, 0,
+    0, 0, 0x8007, 0x17, 0x4500, 0x8000, 0,
+};
+hero_seq KON_PA_seq_die[10] = {
+    0, 0x8007, 0x19, 0x4200, 0x8018, 0xB, 0x4218, 0x8004, 0x1A, 0,
+};
+hero_seq KON_PA_seq_pickup[8] = {
+    0, 0x800A, 0x16D, 0x8007, 0xB, 0x430A, 0x8004, 0x17,
+};
+hero_seq KON_PA_seq_hold[6] = {
+    0, 0x8007, 0x18, 0x4380, 0x8000, 0,
+};
+hero_seq KON_PA_seq_hold_slow[14] = {
+    0, 0x8008, 0x168, 0x8007, 0xA, 0x4400, 0x8008, 0x169, 0x8007, 0xA, 0x4409, 0x8000, 0, 0,
+};
+hero_seq KON_PA_seq_hold_throw[18] = {
+    0, 0x4482, 0x8003, 0x12, 0x4483, 0x4484, 0x4485, 0x4486, 0x8008, 0x16E, 0x8003, 0x13, 0x4487,
+    0x8007, 0xE, 0x4488, 0x8004, 0,
+};
+/* the shell settings (engine world record 0x0105) */
+shell_setup papu_shell_info = {
+    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, D_80063EC8, D_80063BB8, 0x20, 0x400,
+};
+s32 PapuFloorWave0[20] = {
     0x70001, 0x80006, -0x10000, 0, 0, 0x70003, 6, -0x10000, 0, 0, 0x70005, 0x80006, -0x10000,
     0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BCE00[40] = {
+s32 PapuFloorWave1[40] = {
     0x70000, 0x60006, -0x10000, 0, 0, 0x70003, 0xA0006, -0x10000, 0, 0, 0x70006, 0x60006,
     -0x10000, 0, 0, 0x70001, 0x2C0006, -0x10000, 0, 0, 0x70002, 0x260006, -0x10000, 0, 0,
     0x70004, 0x260006, -0x10000, 0, 0, 0x70005, 0x2C0006, -0x10000, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BCEA0[55] = {
+s32 PapuFloorWave2[55] = {
     0x70001, 0x60006, -0x10000, 0, 0, 0x70003, 6, -0x10000, 0, 0, 0x70005, 0x60006, -0x10000,
     0, 0, 0x70000, 0x280006, -0x10000, 0, 0, 0x70002, 0x220006, -0x10000, 0, 0, 0x70004,
     0x220006, -0x10000, 0, 0, 0x70006, 0x280006, -0x10000, 0, 0, 0x70001, 0x560006, -0x10000,
     0, 0, 0x70003, 0x500006, -0x10000, 0, 0, 0x70005, 0x560006, -0x10000, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800BCF7C[35] = {
+s32 PapuFloorWave3[35] = {
     0x20000, 0xC0006, -0xFFFF, 0, 0, 0x40000, 0x60006, -0xFFFF, 0, 0, 0x60000, 6, -0xFFFF, 0,
     0, 0x70001, 6, -0xFFFF, 0, 0, 0x70003, 0x60006, -0xFFFF, 0, 0, 0x70005, 0xC0006, -0xFFFF,
     0, 0, 0, 0, 0, 0, 0,
 };
-PapuKey *D_800BD008[4] = { (void *)&D_800BCDB0, (void *)&D_800BCE00, (void *)&D_800BCEA0, (void *)&D_800BCF7C };
-s32 D_800BD018[8] = { -0x600, -0x300, 0x300, 0, 0, 0, 0, 0xFFFF };
-s32 D_800BD038[8] = { 0x600, -0x300, 0x200, 0, 0, 0, 0, 0xFFFF };
-s32 D_800BD058[12] = { -0x600, -0x300, 0x400, 0, 0x600, -0x300, 0x200, 0x14, 0, 0, 0, 0xFFFF };
-s32 D_800BD088[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x200, 0x14, 0, 0, 0, 0xFFFF };
-s32 D_800BD0B8[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x400, 0x14, 0, 0, 0, 0xFFFF };
-s32 D_800BD0E8[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x400, 0x1E, 0, 0, 0, 0xFFFF };
-PapuStep *D_800BD118[6] = {
-    (void *)&D_800BD018, (void *)&D_800BD038, (void *)&D_800BD058, (void *)&D_800BD088,
-    (void *)&D_800BD0B8, (void *)&D_800BD0E8,
+PapuKey *PapuFloorWaves[4] = { (void *)&PapuFloorWave0, (void *)&PapuFloorWave1, (void *)&PapuFloorWave2, (void *)&PapuFloorWave3 };
+s32 PapuMinionWave0[8] = { -0x600, -0x300, 0x300, 0, 0, 0, 0, 0xFFFF };
+s32 PapuMinionWave1[8] = { 0x600, -0x300, 0x200, 0, 0, 0, 0, 0xFFFF };
+s32 PapuMinionWave2[12] = { -0x600, -0x300, 0x400, 0, 0x600, -0x300, 0x200, 0x14, 0, 0, 0, 0xFFFF };
+s32 PapuMinionWave3[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x200, 0x14, 0, 0, 0, 0xFFFF };
+s32 PapuMinionWave4[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x400, 0x14, 0, 0, 0, 0xFFFF };
+s32 PapuMinionWave5[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x400, 0x1E, 0, 0, 0, 0xFFFF };
+PapuStep *PapuMinionWaves[6] = {
+    (void *)&PapuMinionWave0, (void *)&PapuMinionWave1, (void *)&PapuMinionWave2, (void *)&PapuMinionWave3,
+    (void *)&PapuMinionWave4, (void *)&PapuMinionWave5,
 };
-u16 D_800BD130[64] = {
+u16 PapuAttackPlan[64] = {
     1, 0, 2, 0, 3, 0, 5, 0, 6, 0, 8, 0, 7, 1, 8, 0, 9, 0, 4, 1, 2, 1, 3, 1, 5, 0, 6, 2, 8, 0,
     7, 3, 8, 0, 9, 0, 4, 0xA, 2, 2, 3, 2, 5, 0, 6, 4, 8, 0, 7, 5, 8, 0, 7, 4, 8, 0, 9, 0, 4,
     0x13, 2, 3, 0xA, 0,
 };
-u16 D_800BD1B0[28] = {
+u16 PapuTileModels[28] = {
     0, 0x2006, 0x2007, 0x2008, 0x2009, 0x200A, 0x2005, 0x2005, 0x2005, 0x2005, 0x2004, 0x2004,
     0x2004, 0x2004, 0x2003, 0x2003, 0x2003, 0x2003, 0x2002, 0x2002, 0x2002, 0x2002, 0x2001,
     0x2001, 0x2001, 0x2001, 0, 0,
 };
-s32 D_800BD1E8[10] = {
+s32 PapuBossSteps0[10] = {
     (s32)0x80110000, 0x40000009, 0x88005, 0x98011, (s32)0x80054009, (s32)0x80110008,
     0x40130009, 0x88005, (s32)0x8001401D, 0,
 };
-s32 D_800BD210[7] = { (s32)0x80110000, 0x42000042, 0xC8005, 0x58011, (s32)0x800F4241, 0x42460063, 0x8001 };
-s32 D_800BD22C[3] = { (s32)0x80110000, 0x4180001E, 0x8001 };
-s32 D_800BD238[2] = { (s32)0x80010000, 0 };
-s32 D_800BD240[6] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80014109, 0 };
-s32 D_800BD258[7] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80054109, (s32)&D_80010008, 0 };
-s32 D_800BD274[9] = {
+s32 PapuBossSteps1[7] = { (s32)0x80110000, 0x42000042, 0xC8005, 0x58011, (s32)0x800F4241, 0x42460063, 0x8001 };
+s32 PapuBossSteps2[3] = { (s32)0x80110000, 0x4180001E, 0x8001 };
+s32 PapuBossSteps3[2] = { (s32)0x80010000, 0 };
+s32 PapuBossSteps4[6] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80014109, 0 };
+s32 PapuBossSteps5[7] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80054109, (s32)&D_80010008, 0 };
+s32 PapuBossSteps6[9] = {
     (s32)0x80110000, 0x4080000D, 0x1F4800D, 0xA8011, (s32)&D_8005408C, (s32)0x8011000C,
     0x4097001A, 0x88005, 0x8001,
 };
-s32 D_800BD298[2] = { (s32)0x80010000, 0 };
-s32 D_800BD2A0[9] = {
+s32 PapuBossSteps7[2] = { (s32)0x80010000, 0 };
+s32 PapuBossSteps8[9] = {
     (s32)0x80110000, 0x4280000A, 0x1F7800D, 0xD8011, (s32)0x80054289, (s32)0x8011000D,
     0x42960035, 0x88005, 0x8001,
 };
-s32 D_800BD2C4[3] = { (s32)0x80110000, 0x4180001E, 0x8001 };
-s32 D_800BD2D0[3] = { (s32)0x80110000, 0x4180001E, 0x8000 };
-s32 D_800BD2DC[4] = { 0x43000000, 0x1FE800D, 0x268011, (s32)0x80014301 };
-s32 D_800BD2EC[2] = { 0x42460064, 0x8000 };
-u16 D_800BD2F4[8] = { 0xE, 0, 0xE, 0xE, 0, 0x13, 0, 0 };
-s32 D_800BD304[42] = {
-    (s32)&D_800BD1E8, 0, 0, (s32)&D_800BD274, (s32)&D_800BD240, 0, 0, (s32)&D_800BD298, 0, 0,
-    (s32)&D_800BD258, (s32)&D_800BD258, 0, 0, (s32)&D_800BD22C, (s32)&D_800BD22C,
-    (s32)&D_800BD22C, 0, 0, (s32)&D_800BD238, 0, 0, (s32)&D_800BD2A0, 0, 0, (s32)&D_800BD210,
-    0, 0x29, (s32)&D_800BD2C4, (s32)&D_800BD2D0, (s32)&D_800BD2DC, 0, 0, (s32)&D_800BD240,
-    (s32)&D_800BD240, (s32)&D_800BD22C, (s32)&D_800BD22C, (s32)&D_800BD238, (s32)&D_800BD240,
-    0, 0x21, (s32)&D_800BD2EC,
+s32 PapuBossSteps9[3] = { (s32)0x80110000, 0x4180001E, 0x8001 };
+s32 PapuBossSteps10[3] = { (s32)0x80110000, 0x4180001E, 0x8000 };
+s32 PapuBossSteps11[4] = { 0x43000000, 0x1FE800D, 0x268011, (s32)0x80014301 };
+s32 PapuBossSteps12[2] = { 0x42460064, 0x8000 };
+u16 PapuBossRandomAnims[8] = { 0xE, 0, 0xE, 0xE, 0, 0x13, 0, 0 };
+s32 PapuBossAnimList[42] = {
+    (s32)&PapuBossSteps0, 0, 0, (s32)&PapuBossSteps6, (s32)&PapuBossSteps4, 0, 0, (s32)&PapuBossSteps7, 0, 0,
+    (s32)&PapuBossSteps5, (s32)&PapuBossSteps5, 0, 0, (s32)&PapuBossSteps2, (s32)&PapuBossSteps2,
+    (s32)&PapuBossSteps2, 0, 0, (s32)&PapuBossSteps3, 0, 0, (s32)&PapuBossSteps8, 0, 0, (s32)&PapuBossSteps1,
+    0, 0x29, (s32)&PapuBossSteps9, (s32)&PapuBossSteps10, (s32)&PapuBossSteps11, 0, 0, (s32)&PapuBossSteps4,
+    (s32)&PapuBossSteps4, (s32)&PapuBossSteps2, (s32)&PapuBossSteps2, (s32)&PapuBossSteps3, (s32)&PapuBossSteps4,
+    0, 0x21, (s32)&PapuBossSteps12,
 };
-ScriptInit D_800BD3AC = { 0, (void *)&D_800BD304, 0x401 };
-s32 D_800BD3B8[4] = { (s32)0x80110000, 0x40000016, 0x88005, 0x8000 };
-s32 D_800BD3C8[7] = {
+ScriptInit PapuBossScriptInit = { 0, (void *)&PapuBossAnimList, 0x401 };
+s32 PapuMinionSteps0[4] = { (s32)0x80110000, 0x40000016, 0x88005, 0x8000 };
+s32 PapuMinionSteps1[7] = {
     (s32)0x80110000, 0x40800009, 0x205800C, 0xB8011, (s32)0x800C4089, 0x40940206,
     (s32)0x80004095,
 };
-s32 D_800BD3E4[1] = { (s32)0x80010000 };
-s32 D_800BD3E8[7] = { 0x41000002, 0x4800F, 0x41024101, 0x28800F, 0x41034103, 0x41034103, 0x8001 };
-s32 D_800BD404[4] = { (s32)0x800C0000, (s32)0x80110208, 0x4104001B, 0x8001 };
-s32 D_800BD414[4] = { (s32)0x800C0000, (s32)0x8011020A, 0x4202000B, 0x8001 };
-s32 D_800BD424[4] = { (s32)0x80110000, 0x42800014, 0x88005, 0x8000 };
-s32 D_800BD434[9] = {
+s32 PapuMinionSteps2[1] = { (s32)0x80010000 };
+s32 PapuMinionSteps3[7] = { 0x41000002, 0x4800F, 0x41024101, 0x28800F, 0x41034103, 0x41034103, 0x8001 };
+s32 PapuMinionSteps4[4] = { (s32)0x800C0000, (s32)0x80110208, 0x4104001B, 0x8001 };
+s32 PapuMinionSteps5[4] = { (s32)0x800C0000, (s32)0x8011020A, 0x4202000B, 0x8001 };
+s32 PapuMinionSteps6[4] = { (s32)0x80110000, 0x42800014, 0x88005, 0x8000 };
+s32 PapuMinionSteps7[9] = {
     (s32)0x80110000, 0x43800007, 0x205800C, 0xC8011, (s32)0x80054387, (s32)0x800C0008,
     (s32)0x80110206, 0x43930005, 0x8000,
 };
-s32 D_800BD458[8] = {
+s32 PapuMinionSteps8[8] = {
     (s32)0x80110000, 0x43000002, 0x68011, (s32)0x800C4301, (s32)0x8005020B, (s32)0x80110010,
     0x43100007, 0x8001,
 };
-s32 D_800BD478[8] = {
+s32 PapuMinionSteps9[8] = {
     (s32)0x80110000, 0x4180000B, 0x88011, (s32)0x8005418B, (s32)0x800F0008, 0x41920014,
     0x98005, 0x8001,
 };
-s32 D_800BD498[4] = { (s32)0x800C000E, 0x20060209, 0x88005, 0x8001 };
-s32 D_800BD4A8[19] = {
-    (s32)&D_800BD3B8, (s32)&D_800BD3C8, (s32)&D_800BD3E4, (s32)&D_800BD3E8, (s32)&D_800BD404,
-    0, 0, (s32)&D_800BD414, (s32)&D_800BD424, (s32)&D_800BD434, (s32)&D_800BD458, 0, 0,
-    (s32)&D_800BD478, 0, 0, (s32)&D_800BD498, 0, 0,
+s32 PapuMinionSteps10[4] = { (s32)0x800C000E, 0x20060209, 0x88005, 0x8001 };
+s32 PapuMinionAnimList[19] = {
+    (s32)&PapuMinionSteps0, (s32)&PapuMinionSteps1, (s32)&PapuMinionSteps2, (s32)&PapuMinionSteps3, (s32)&PapuMinionSteps4,
+    0, 0, (s32)&PapuMinionSteps5, (s32)&PapuMinionSteps6, (s32)&PapuMinionSteps7, (s32)&PapuMinionSteps8, 0, 0,
+    (s32)&PapuMinionSteps9, 0, 0, (s32)&PapuMinionSteps10, 0, 0,
 };
-ScriptInit D_800BD4F4 = { 0, (void *)&D_800BD4A8, 0x401 };
-PapuSpot D_800BD500[5] = {
+ScriptInit PapuMinionScriptInit = { 0, (void *)&PapuMinionAnimList, 0x401 };
+PapuSpot PapuSpawnPoints[5] = {
     { -0x500, 0, 0x500 }, { -0x500, 0, 0 }, { 0x500, 0, 0x500 }, { 0x500, 0, 0 },
     { 0, 0, 0x500 },
 };
-s32 D_800BD53C[4] = { 0x17001C, 0x18001A, 0x2D002C, 0xFFFF };
-s32 D_800BD54C[12] = {
-    (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32CC, (s32)&D_800B32D0,
-    (s32)&D_800B32D8, (s32)&D_800B32E0, (s32)&D_800B32E8, (s32)&D_800B32F0, (s32)&D_800B32FC,
-    (s32)&D_800B3308, 0,
+s16 PapuPreLoadDB[8] = { 0x1C, 0x17, 0x1A, 0x18, 0x2C, 0x2D, -1, 0 };
+char *PapuAnims[12] = {
+    (char *)PapuAnimBreathe, (char *)PapuAnimMedium, (char *)PapuAnimHit, (char *)PapuAnimDie,
+    (char *)PapuAnimJump, (char *)PapuAnimAttack, (char *)PapuAnimPickup, (char *)PapuAnimHold,
+    (char *)PapuAnimHoldSlow, (char *)PapuAnimHoldThrow, (char *)PapuAnimTauntA, NULL,
 };
-s32 D_800BD57C[1] = { 0xFFFF };
-s32 D_800BD580[29] = {
+s16 PapuLevelDB[2] = { -1, 0 };
+s32 PapuFiles[27] = {
     (s32)&D_80055684, (s32)&D_8004F328, (s32)&D_8004F320, (s32)&D_800555A4, (s32)&D_8004F308,
     (s32)&D_8004F300, (s32)&D_80053074, (s32)&D_8004F318, (s32)&D_8004F310, (s32)&D_80052F5C,
     (s32)&D_8004F2F8, (s32)&D_8004F2F0, (s32)&D_80053004, (s32)&D_8004F2E8, (s32)&D_8004F2E0,
     (s32)&D_80052F94, (s32)&D_8004F2D8, (s32)&D_8004F2D0, (s32)&D_800533F4, (s32)&D_8004F2C8,
-    (s32)&D_8004F2C0, (s32)&D_8005342C, (s32)&D_8004F2B8, (s32)&D_8004F2B0, 0, 0, 0,
-    (s32)&D_80050148, (s32)&D_800BD580,
+    (s32)&D_8004F2C0, (s32)&D_8005342C, (s32)&D_8004F2B8, (s32)&D_8004F2B0, 0, 0,
 };
-s32 D_800BD5F4[8] = { 0x2B, (s32)&D_800BD54C, (s32)&D_800BD57C, 1, 0, 0, 0, 0 };
-s32 D_800BD614[2] = { 0x2010003, 0x201020D };
-s32 D_800BD61C[9] = { (s32)&D_800BD614, 4, (s32)&D_800BD53C, (s32)&D_800BD5F4, (s32)&D_800BD61C, 0, 0, 0, 0 };
-s32 D_800BD640[11] = { (s32)0xFFE5FFEB, 0xFFDA, 0, 0, 0, (s32)0xFFED0000, (s32)0xFFDDFFE6, 0, 0, 0, 0 };
-s32 D_800BD66C[11] = { (s32)0xFFD7FFE3, 0xFFD1, 0, 0, 0, (s32)0xFFE80000, (s32)0xFFC6FFDC, 0, 0, 0, 0 };
-s32 D_800BD698[11] = { (s32)0xFFCEFFDC, 0xFFC3, 0, 0, 0, (s32)0xFFE20000, (s32)0xFFBEFFCC, 0, 0, 0, 0 };
-s32 D_800BD6C4[11] = { (s32)0xFFC2FFCE, 0xFFBC, 0, 0, 0, (s32)0xFFCC0000, (s32)0xFF90FFAE, 0, 0, 0, 0 };
-s16 *D_800BD6F0[4] = { (void *)&D_800BD640, (void *)&D_800BD66C, (void *)&D_800BD698, (void *)&D_800BD6C4 };
-u16 D_800BD700[4] = { 0x201, 0x202, 0x203, 0x204 };
-s32 D_800BD708 = 0;
-Slot40 D_800BD70C[6] = {0};
-PapuBossState D_800BD88C = {0};
-u16 D_800BD8CC = 0;
-u16 D_800BD8CE = 0;
-u16 D_800BD8D0 = 0;
-s32 D_800BD8D4 = 0;
-s32 D_800BD8D8 = 0;
-u16 D_800BD8DC = 0;
-s16 D_800BD8DE = 0;
-u16 D_800BD8E0 = 0;
-u16 D_800BD8E2 = 0;
-u16 D_800BD8E4 = 0;
-s16 D_800BD8E6 = 0;
-u16 D_800BD8E8 = 0;
-s16 D_800BD8EC[2] = {0};
-u16 D_800BD8F0[4] = {0};
-s16 D_800BD8F8[8] = {0};
-u8 D_800BD908[64] = {0};
-PapuCell D_800BD948[8][8] = {0};
-PapuGridPos D_800BDE48[16][16] = {0};
-PapuEntry D_800BE648[20] = {0};
-EXTengine D_800BE788 = {0};
-PapuSceneObj *D_800BE824 = 0;
-s16 D_800BE828 = 0;
-s16 D_800BE82A = 0;
-PapuKey *D_800BE82C = 0;
-u16 D_800BE830 = 0;
-u16 D_800BE832 = 0;
-u16 D_800BE834 = 0;
-u16 D_800BE838[40] = {0};
-u16 D_800BE888 = 0;
-s16 D_800BE88A = 0;
-s16 D_800BE88C = 0;
-s16 D_800BE88E = 0;
-s16 D_800BE890 = 0;
-s16 D_800BE892 = 0;
-s16 D_800BE894 = 0;
+/* the level's files (the engine's per-mode table points at mode 4's) */
+file_group_load_info file_group_PAPU = { D_80050148, PapuFiles };
+WWInf PapuWorldInfo[1] = {
+    { 0x2B, PapuAnims, PapuLevelDB, 1 },
+};
+u16 PapuLUPtab[4] = { 3, 0x201, 0x20D, 0x201 };
+TrigLookUp PapuLUP = { PapuLUPtab, 4 };
+PreMap PAPU_PREMAP = { PapuPreLoadDB, PapuWorldInfo, &PapuLUP };
+s16 PapuColumnHeights0[22] = {
+    -0x15, -0x1B, -0x26, 0, 0, 0, 0, 0, 0, 0, 0, -0x13, -0x1A, -0x23, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s16 PapuColumnHeights1[22] = {
+    -0x1D, -0x29, -0x2F, 0, 0, 0, 0, 0, 0, 0, 0, -0x18, -0x24, -0x3A, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s16 PapuColumnHeights2[22] = {
+    -0x24, -0x32, -0x3D, 0, 0, 0, 0, 0, 0, 0, 0, -0x1E, -0x34, -0x42, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s16 PapuColumnHeights3[22] = {
+    -0x32, -0x3E, -0x44, 0, 0, 0, 0, 0, 0, 0, 0, -0x34, -0x52, -0x70, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s16 *PapuColumnHeights[4] = { (void *)&PapuColumnHeights0, (void *)&PapuColumnHeights1, (void *)&PapuColumnHeights2, (void *)&PapuColumnHeights3 };
+u16 PapuMinionSfx[4] = { 0x201, 0x202, 0x203, 0x204 };
+s32 PapuBossFlag = 0;
+Slot40 PapuMinionSlots[6] = {0};
+PapuBossState PapuBoss = {0};
+u16 PapuPickupActive = 0;
+u16 PapuPickupDelay = 0;
+u16 PapuPickupTimer = 0;
+s32 PapuFloorTimer = 0;
+s32 PapuFloorStarted = 0;
+u16 PapuCrateTimer = 0;
+s16 PapuUnused0 = 0;
+u16 PapuCrateMixPos = 0;
+u16 PapuDropPos = 0;
+u16 PapuFirstCrates = 0;
+s16 PapuUnused1 = 0;
+u16 PapuMaxCrates = 0;
+s16 PapuUnused2[2] = {0};
+u16 PapuCrateCounts[4] = {0};
+s16 PapuUnused3[8] = {0};
+u8 PapuCrateMix[64] = {0};
+PapuCell PapuTiles[8][8] = {0};
+PapuGridPos PapuDropPoints[16][16] = {0};
+PapuEntry PapuColumns[20] = {0};
+EXTengine PapuSfxEngine = {0};
+PapuSceneObj *PapuFloorObj = 0;
+s16 PapuFloorSink = 0;
+s16 PapuBossRate = 0;
+PapuKey *PapuFloorWaveCur = 0;
+u16 PapuAttackPos = 0;
+u16 PapuAttackDelay = 0;
+u16 PapuAttackWave = 0;
+u16 PapuFloorState[40] = {0};
+u16 PapuFloorDepth = 0;
+s16 PapuUnused4 = 0;
+s16 PapuUnused5 = 0;
+s16 PapuBossCount = 0;
+s16 PapuBossLast = 0;
+s16 PapuUnused6 = 0;
+s16 PapuWaveFlag = 0;
 /* two zero bytes before pahero.c's data: the link packs to 2 (SUBALIGN), so the padding is written out */
-s16 D_800BE896 = 0;
+s16 PapuDataPad = 0;
 
 void InitialisePAPUFirst(void) {
     EngineGameView *g;
@@ -298,9 +405,9 @@ void InitialisePAPUFirst(void) {
     D_8009E0E4 = 0x1B;
     p = &D_8009D8FC;
     if (*(s32 *)(D_8005A614 + 0x6C) != 0) {
-        v = D_800BC8DC;
+        v = PapuAiSkillAlt;
     } else {
-        v = D_800BC89C;
+        v = PapuAiSkill;
     }
     *p = v;
 }
@@ -311,18 +418,18 @@ void InitialisePAPU(void) {
     s16 angle;
 
     World_floor_level = 0;
-    D_800BD8DC = 0;
-    D_800BD8DE = 0;
-    D_800BD8E2 = 0;
-    D_800BD708 = 0;
-    D_800BD8D4 = 0;
-    D_800BD8D8 = 0;
-    D_800BE828 = 0;
-    D_800BE82A = 0;
-    D_800BD8CC = 0;
-    D_800BD8CE = 0;
-    D_800BD8D0 = (Random(10) + 10) * 30;
-    D_800BE788 = EngineTemplate;
+    PapuCrateTimer = 0;
+    PapuUnused0 = 0;
+    PapuDropPos = 0;
+    PapuBossFlag = 0;
+    PapuFloorTimer = 0;
+    PapuFloorStarted = 0;
+    PapuFloorSink = 0;
+    PapuBossRate = 0;
+    PapuPickupActive = 0;
+    PapuPickupDelay = 0;
+    PapuPickupTimer = (Random(10) + 10) * 30;
+    PapuSfxEngine = EngineTemplate;
     PapuShuffleDropPoints();
     func_80086D88();
     for (i = 0; i < 4; i++) {
@@ -346,8 +453,8 @@ void InitialisePAPU(void) {
     PapuSetCrateMix(0, 0, 0, 0, 0xC, 4, 0, 0, 0);
     PapuDropFirstCrates();
     D_8009E494 = (void (*)(s32, s32, s32, s32))PapuExploRange;
-    D_800BE830 = 0;
-    D_800BE832 = 0;
+    PapuAttackPos = 0;
+    PapuAttackDelay = 0;
 }
 
 void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16 n7, u16 n8) {
@@ -363,7 +470,7 @@ void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u
     s32 x;
 
     x = arg0 * n6;
-    p = D_800BD8F0;
+    p = PapuCrateCounts;
     t = x / 16;
     k = t + 1;
     p[3] = k;
@@ -379,45 +486,45 @@ void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u
     do {
     } while (0);
     i = 0;
-    D_800BD8E4 = arg0;
-    e = &D_800BD8E8;
+    PapuFirstCrates = arg0;
+    e = &PapuMaxCrates;
     do {
     } while (0);
     p[0] = k;
     e[3] = arg0;
     e[2] = arg0;
     e[1] = arg0;
-    D_800BD8E8 = arg0;
+    PapuMaxCrates = arg0;
     do {
     } while (0);
     for (j = i; j < n4; j++) {
-        D_800BD908[i++] = 4;
+        PapuCrateMix[i++] = 4;
     }
     for (j = 0; j < n5; j++) {
-        D_800BD908[i++] = 5;
+        PapuCrateMix[i++] = 5;
     }
     for (j = 0; j < n6; j++) {
-        D_800BD908[i++] = 6;
+        PapuCrateMix[i++] = 6;
     }
     for (j = 0; j < n7; j++) {
-        D_800BD908[i++] = 1;
+        PapuCrateMix[i++] = 1;
     }
     x = n8;
     for (j = 0; j < x; j++) {
-        D_800BD908[i++] = 2;
+        PapuCrateMix[i++] = 2;
     }
     j = 0;
     do {
         i = Random(0x40);
         k = Random(0x40);
-        a = &D_800BD908[i];
-        b = &D_800BD908[k];
+        a = &PapuCrateMix[i];
+        b = &PapuCrateMix[k];
         tmp = *a;
         j++;
         *a = *b;
         *b = tmp;
     } while (j < 0x258);
-    D_800BD8E0 = Random(0x20) + 0x14;
+    PapuCrateMixPos = Random(0x20) + 0x14;
 }
 
 void PapuCrateMaster(void) {
@@ -428,31 +535,31 @@ void PapuCrateMaster(void) {
     if (D_8005A644 & 0x801) {
         return;
     }
-    if (D_800BD8DC == 0) {
-        if (D_8009E46C[0] < D_800BD8E8) {
-            D_800BD8DC = Random(15) + 15;
+    if (PapuCrateTimer == 0) {
+        if (D_8009E46C[0] < PapuMaxCrates) {
+            PapuCrateTimer = Random(15) + 15;
             PapuDropCrates(1);
         } else {
-            D_800BD8DC = Random(40) + 5;
+            PapuCrateTimer = Random(40) + 5;
         }
     } else {
-        D_800BD8DC = D_800BD8DC - 1;
+        PapuCrateTimer = PapuCrateTimer - 1;
     }
-    a1 = D_800BC95C[D_8005A6C3];
+    a1 = PapuPickupRates[D_8005A6C3];
     if (a1 != 0) {
-        if (D_800BD8D0 != 0) {
-            D_800BD8D0 -= 1;
+        if (PapuPickupTimer != 0) {
+            PapuPickupTimer -= 1;
         }
     } else {
-        D_800BD8D0 = 99;
-        D_800BD8CC = 0;
+        PapuPickupTimer = 99;
+        PapuPickupActive = 0;
     }
-    if (D_800BD8CC != 0) {
-        if (D_800BD8CE != 0) {
-            D_800BD8CE -= 1;
+    if (PapuPickupActive != 0) {
+        if (PapuPickupDelay != 0) {
+            PapuPickupDelay -= 1;
             return;
         }
-        p = &D_800BDE48[0][0];
+        p = &PapuDropPoints[0][0];
         p += Random(256);
         a1 = p->x;
         a1 >>= 8;
@@ -460,16 +567,16 @@ void PapuCrateMaster(void) {
         y = 9 - (p->y >> 8);
         if (D_8009D90C[y * 20 + a1].unk0 < 16) {
             CreateNAS(p->x, -0x800, p->y, 0x20C, 0x11);
-            D_800BD8CC -= 1;
-            D_800BD8CE = Random(4) + 2;
+            PapuPickupActive -= 1;
+            PapuPickupDelay = Random(4) + 2;
         }
-    } else if (D_800BD8D0 == 0) {
+    } else if (PapuPickupTimer == 0) {
         if (D_8009E25C[0] < a1) {
-            D_800BD8CC = a1;
-            D_800BD8D0 = (Random(10) + 10) * 30;
+            PapuPickupActive = a1;
+            PapuPickupTimer = (Random(10) + 10) * 30;
             return;
         }
-        D_800BD8D0 = 60;
+        PapuPickupTimer = 60;
     }
 }
 
@@ -490,8 +597,8 @@ void PapuShuffleDropPoints(void) {
             if ((u32)(j - 4) >= 8U) {
                 x = (Random(9) << 8) - 0x380;
             }
-            D_800BDE48[i][j].x = x;
-            D_800BDE48[i][j].y = y;
+            PapuDropPoints[i][j].x = x;
+            PapuDropPoints[i][j].y = y;
         } while (++j < 16);
     } while (++i < 16);
     for (n = 0; n < 600; n++) {
@@ -499,8 +606,8 @@ void PapuShuffleDropPoints(void) {
         j = Random(16);
         in = Random(16);
         k = Random(16);
-        a = (PapuGridPos *)((u8 *)D_800BDE48 + (j * 8 + i * 128));
-        b = (PapuGridPos *)((u8 *)D_800BDE48 + (k * 8 + in * 128));
+        a = (PapuGridPos *)((u8 *)PapuDropPoints + (j * 8 + i * 128));
+        b = (PapuGridPos *)((u8 *)PapuDropPoints + (k * 8 + in * 128));
         x = a->x;
         y = a->y;
         a->x = b->x;
@@ -525,7 +632,7 @@ PapuMsg *PapuFindDropPoint(u16 *arg0) {
     s32 zhi;
     u16 n;
 
-    cell = D_800BDE48[0];
+    cell = PapuDropPoints[0];
     bestn = 9;
     tries = 9;
     i = *arg0;
@@ -540,7 +647,7 @@ PapuMsg *PapuFindDropPoint(u16 *arg0) {
             if (i == *arg0) {
                 return NULL;
             }
-            cell = D_800BDE48[0];
+            cell = PapuDropPoints[0];
             cell = &cell[i];
             i++;
             i &= 0xFF;
@@ -597,7 +704,7 @@ PapuMsg *PapuFindDropPoint(u16 *arg0) {
         if (i == *arg0) {
             return NULL;
         }
-        cell = D_800BDE48[0];
+        cell = PapuDropPoints[0];
         cell = &cell[i];
         i++;
         i &= 0xFF;
@@ -616,9 +723,9 @@ void PapuSetColumns(u16 arg0) {
     PapuEntry *p;
 
     for (i = 0; i < 20; i++) {
-        p = &D_800BE648[i];
+        p = &PapuColumns[i];
         if (p->unk0 != 0) {
-            s16 v = D_800BD6F0[arg0][i];
+            s16 v = PapuColumnHeights[arg0][i];
             p->unkE = 4;
             p->unkA = v;
             p->unkC = 0x60;
@@ -637,10 +744,10 @@ void PapuMoveColumns(void) {
     s32 a;
     s32 c;
 
-    e = D_800BE648;
+    e = PapuColumns;
     i = 0;
     do {
-        e = &D_800BE648[i];
+        e = &PapuColumns[i];
         if ((u16)e->unk6 != 0) {
             t = (PapuTile *)e->unk0;
             v = e->unkA;
@@ -673,7 +780,7 @@ void PapuInitMinionSlots(void) {
     Slot40 *p;
 
     for (i = 0; i < 6; i++) {
-        p = &D_800BD70C[i];
+        p = &PapuMinionSlots[i];
         p->unk0 = 0;
         p->pad4[0] = 0;
         p->pad4[1] = 0;
@@ -711,33 +818,33 @@ void InitPapuBoss(NAS *nas) {
         eng->unk5C = 1;
         eng->unk5E = 1;
         FetchDefaultColBox(eng, 0x40);
-        cur = func_80024E30(nas, &D_800BD3AC);
+        cur = func_80024E30(nas, &PapuBossScriptInit);
         func_800250B0(nas);
-        D_800BE88E = 0;
-        D_800BE890 = 0;
-        D_800BE894 = 0;
+        PapuBossCount = 0;
+        PapuBossLast = 0;
+        PapuWaveFlag = 0;
         func_80026A04((u8 *)nas);
-        D_800BD88C.nas = nas;
-        D_800BD88C.eng = eng;
-        D_800BD88C.sub = eng->sub;
-        D_800BD88C.unk22 = 3;
-        D_800BD88C.cursor = cur;
-        D_800BD88C.unkC = 0;
-        D_800BD88C.unk10 = 0;
-        D_800BD88C.unk14 = 0;
-        D_800BD88C.unk1C = 0;
-        D_800BD88C.unk20 = 0;
-        D_800BD88C.unk24 = 0;
-        D_800BD88C.unk26 = 0x14;
-        D_800BD88C.unk28 = 0;
-        D_800BD88C.unk2A = 0;
-        D_800BD88C.unk2C = 0;
-        D_800BD88C.unk2E = 0;
-        D_800BD88C.unk30 = 0;
-        D_800BD88C.unk32 = 0;
-        D_800BD88C.unk34 = 0;
-        D_800BD88C.unk38 = 0;
-        D_800BD88C.unk3C = 0;
+        PapuBoss.nas = nas;
+        PapuBoss.eng = eng;
+        PapuBoss.sub = eng->sub;
+        PapuBoss.unk22 = 3;
+        PapuBoss.cursor = cur;
+        PapuBoss.unkC = 0;
+        PapuBoss.unk10 = 0;
+        PapuBoss.unk14 = 0;
+        PapuBoss.unk1C = 0;
+        PapuBoss.unk20 = 0;
+        PapuBoss.unk24 = 0;
+        PapuBoss.unk26 = 0x14;
+        PapuBoss.unk28 = 0;
+        PapuBoss.unk2A = 0;
+        PapuBoss.unk2C = 0;
+        PapuBoss.unk2E = 0;
+        PapuBoss.unk30 = 0;
+        PapuBoss.unk32 = 0;
+        PapuBoss.unk34 = 0;
+        PapuBoss.unk38 = 0;
+        PapuBoss.unk3C = 0;
     }
     if (nas->Failure != 0) {
         printf("boss failure!!!\n");
@@ -762,15 +869,15 @@ void PlotPapuBoss(NAS *nas) {
     anim = FindExtension(nas, 0x400);
     frame = func_800250B0(nas);
     if (D_8009D6E0 & 0x200) {
-        if (D_800BE88E != 0x1E) {
-            D_800BE88E = 0x1E;
+        if (PapuBossCount != 0x1E) {
+            PapuBossCount = 0x1E;
             GotoLinkAnim(anim, 0x1C);
         }
     }
-    switch (D_800BE88E) {
+    switch (PapuBossCount) {
     case 7:
         if (frame == 8) {
-            D_800BE88E = 0;
+            PapuBossCount = 0;
         } else if (frame == 0xC) {
             PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
@@ -780,10 +887,10 @@ void PlotPapuBoss(NAS *nas) {
         case 0xC:
             PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         case 0xD:
-            PapuSpawnMinions(D_800BE834);
+            PapuSpawnMinions(PapuAttackWave);
             break;
         case 8:
-            D_800BE88E = 0xB;
+            PapuBossCount = 0xB;
             break;
         }
         break;
@@ -796,10 +903,10 @@ void PlotPapuBoss(NAS *nas) {
             PlaySfx(0x1F5, NULL, NULL, 0x1000, 0x1E00, 0);
             v = 0xB0;
             i = 0;
-            p = D_800BE838;
-            D_800BE894 = 1;
-            D_800BE838[0] = 0x80;
-            D_800BE888 = 0x300;
+            p = PapuFloorState;
+            PapuWaveFlag = 1;
+            PapuFloorState[0] = 0x80;
+            PapuFloorDepth = 0x300;
             for (; i < 0x27; i++) {
                 if (v <= 0) {
                     break;
@@ -810,26 +917,26 @@ void PlotPapuBoss(NAS *nas) {
             }
             PapuStopCrates();
             for (j = 0; j < 0x14; j++) {
-                if (D_800BE648[j].unk0 != 0) {
-                    D_800BE648[j].unk6 = 1;
+                if (PapuColumns[j].unk0 != 0) {
+                    PapuColumns[j].unk6 = 1;
                 }
             }
         }
         break;
     f8:
-        D_800BD8D8 = 1;
-        D_800BE88E = 0;
+        PapuFloorStarted = 1;
+        PapuBossCount = 0;
         break;
     case 10:
         if (!(D_8005A624 & 0x04000000)) {
-            D_800BE88E = 0;
+            PapuBossCount = 0;
         }
         break;
     case 12:
-        if (D_800BD88C.unk28 != 0) {
-            D_800BE890 = D_800BE88E;
-            if (D_800BD708 != 0) {
-                D_800BE88E = 9;
+        if (PapuBoss.unk28 != 0) {
+            PapuBossLast = PapuBossCount;
+            if (PapuBossFlag != 0) {
+                PapuBossCount = 9;
                 D_8009D6DC[3] -= 5;
                 if (D_8009D6DC[3] < 0) {
                     D_8009D6DC[3] = 0;
@@ -840,32 +947,32 @@ void PlotPapuBoss(NAS *nas) {
         if (frame == 0xC) {
             PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
-        if (D_800BE82A != 0) {
-            D_800BE82A--;
+        if (PapuBossRate != 0) {
+            PapuBossRate--;
         } else {
-            D_800BE88E = 0;
+            PapuBossCount = 0;
         }
         break;
     case 11:
         empty = 1;
         for (i = 0; i < 6; i++) {
-            if (D_800BD70C[i].unk0 != 0) {
+            if (PapuMinionSlots[i].unk0 != 0) {
                 empty = 0;
             }
         }
         if (empty) {
-            D_800BE88E = 0;
+            PapuBossCount = 0;
         }
         if (frame == 8) {
-            empty = D_800BD2F4[Random(8)];
+            empty = PapuBossRandomAnims[Random(8)];
             ((void (*)(EXTanimator *, s32))GotoLinkAnim)(anim, empty);
         }
         break;
     case 9:
-        D_800BD708 = 0;
+        PapuBossFlag = 0;
     case 1:
         if (frame == 8) {
-            D_800BE88E = 0;
+            PapuBossCount = 0;
         }
         break;
     case 20:
@@ -879,93 +986,93 @@ void PlotPapuBoss(NAS *nas) {
     case 30:
         break;
     default:
-        D_800BE832 = D_800BD130[D_800BE830];
-        D_800BE830++;
-        D_800BE834 = D_800BD130[D_800BE830];
-        D_800BE830++;
-        if (D_800BE832 == 4) {
-            if (D_800BD708 != 0) {
-                D_800BE830 = D_800BE834 * 2;
-                D_800BE832 = D_800BD130[D_800BE830];
-                D_800BE830++;
-                D_800BE834 = D_800BD130[D_800BE830];
-                D_800BE830++;
+        PapuAttackDelay = PapuAttackPlan[PapuAttackPos];
+        PapuAttackPos++;
+        PapuAttackWave = PapuAttackPlan[PapuAttackPos];
+        PapuAttackPos++;
+        if (PapuAttackDelay == 4) {
+            if (PapuBossFlag != 0) {
+                PapuAttackPos = PapuAttackWave * 2;
+                PapuAttackDelay = PapuAttackPlan[PapuAttackPos];
+                PapuAttackPos++;
+                PapuAttackWave = PapuAttackPlan[PapuAttackPos];
+                PapuAttackPos++;
             } else {
-                D_800BE832 = D_800BD130[D_800BE830];
-                D_800BE830++;
-                D_800BE834 = D_800BD130[D_800BE830];
-                D_800BE830++;
+                PapuAttackDelay = PapuAttackPlan[PapuAttackPos];
+                PapuAttackPos++;
+                PapuAttackWave = PapuAttackPlan[PapuAttackPos];
+                PapuAttackPos++;
             }
         }
-        switch (D_800BE832) {
+        switch (PapuAttackDelay) {
         case 1:
-            D_800BE88E = 0xA;
+            PapuBossCount = 0xA;
             GotoLinkAnim(anim, 0);
             break;
         case 9:
-            D_800BD8D4 = 0;
-            D_800BE88E = 0xC;
-            D_800BD708 = 1;
-            D_800BE82A = D_800BC91C[D_8005A6C3];
-            if (D_800BE824 != NULL) {
-                D_800BE824->flags |= 0x8000;
+            PapuFloorTimer = 0;
+            PapuBossCount = 0xC;
+            PapuBossFlag = 1;
+            PapuBossRate = PapuBossRates[D_8005A6C3];
+            if (PapuFloorObj != NULL) {
+                PapuFloorObj->flags |= 0x8000;
             }
             GotoLinkAnim(anim, 0x21);
             break;
         case 2:
-            D_800BD708 = 0;
-            if (D_800BE824 != NULL) {
-                D_800BE824->flags &= ~0x8000;
+            PapuBossFlag = 0;
+            if (PapuFloorObj != NULL) {
+                PapuFloorObj->flags &= ~0x8000;
             }
-            D_800BE88E = 6;
-            D_800BD8E8 = (&D_800BD8E8)[1] = 0;
+            PapuBossCount = 6;
+            PapuMaxCrates = (&PapuMaxCrates)[1] = 0;
             GotoLinkAnim(anim, 3);
-            PapuSetColumns(D_800BE834);
+            PapuSetColumns(PapuAttackWave);
             break;
         case 3:
-            PapuStartFloorWave(D_800BE834);
-            D_800BE88E = 1;
+            PapuStartFloorWave(PapuAttackWave);
+            PapuBossCount = 1;
             GotoLinkAnim(anim, 0xA);
             break;
         case 5:
-            D_800BD8DC = 0x1E;
-            D_800BD8E8 = (&D_800BD8E8)[1] = 6;
+            PapuCrateTimer = 0x1E;
+            PapuMaxCrates = (&PapuMaxCrates)[1] = 6;
             break;
         case 6:
-            D_800BD8D4 = 1;
+            PapuFloorTimer = 1;
             PapuInitMinionSlots();
-            D_800BE88E = 8;
+            PapuBossCount = 8;
             GotoLinkAnim(anim, 0x16);
             break;
         case 7:
-            D_800BD8D4 = 1;
+            PapuFloorTimer = 1;
             PapuInitMinionSlots();
-            D_800BE88E = 8;
+            PapuBossCount = 8;
             GotoLinkAnim(anim, 0x16);
             break;
         case 8:
-            D_800BD8D4 = 1;
-            D_800BE88E = 0xB;
+            PapuFloorTimer = 1;
+            PapuBossCount = 0xB;
             GotoLinkAnim(anim, 0);
             break;
         case 10:
             if (D_8009D6E0 & 0x200) {
-                D_800BE88E = 0x1E;
+                PapuBossCount = 0x1E;
                 GotoLinkAnim(anim, 0x1C);
             } else {
-                D_800BE88E = 0x14;
+                PapuBossCount = 0x14;
                 GotoLinkAnim(anim, 0x19);
             }
             break;
         default:
-            D_800BE88E = 1;
+            PapuBossCount = 1;
             GotoLinkAnim(anim, 0);
             break;
         }
         break;
     }
     eng->unk5E = 1;
-    D_800BD88C.unk28 = 0;
+    PapuBoss.unk28 = 0;
 }
 
 NAS *PapuMinionFindCrate(s32 arg0) {
@@ -990,7 +1097,7 @@ NAS *PapuMinionFindCrate(s32 arg0) {
     bestScore = 0x7FFFFF;
     n = D_8005AA24;
     h = D_8009D88E;
-    px = D_800BD70C[arg0].unk34[0];
+    px = PapuMinionSlots[arg0].unk34[0];
     pz = px;
     if (n != NULL) {
         r = (0x20 - h) * 16;
@@ -1007,7 +1114,7 @@ NAS *PapuMinionFindCrate(s32 arg0) {
                     score *= mul;
                     cnt = 0;
                     for (i = 0; i < 6; i++) {
-                        o = (NAS *)D_800BD70C[i].unk0;
+                        o = (NAS *)PapuMinionSlots[i].unk0;
                         if (o != NULL && o->FUX != NULL && ((T_B4B9CFux *)o->FUX)->owner == n) {
                             cnt += 2;
                         }
@@ -1041,16 +1148,16 @@ s32 PapuPickSpawnPoint(PapuPos *arg0) {
     bestScore = 0x90000;
     r = (0x20 - D_8009D88E) * 16;
     for (i = 0; i < 5; i++) {
-        dx = D_800BD500[i].x - arg0->x;
-        dz = D_800BD500[i].z - arg0->z;
+        dx = PapuSpawnPoints[i].x - arg0->x;
+        dz = PapuSpawnPoints[i].z - arg0->z;
         dx += Random(r);
         dz += Random(r);
         score = dx * dx + dz * dz;
         for (j = 0; j < 4; j++) {
             if (!(Heroes[i].hero_status & 0xFA00)) {
                 EXTengine *e = Heroes[i].hero_eng;
-                dx = D_800BD500[i].x - e->unk10.x;
-                dz = D_800BD500[i].x - e->unk10.z;
+                dx = PapuSpawnPoints[i].x - e->unk10.x;
+                dz = PapuSpawnPoints[i].x - e->unk10.z;
                 if (dx * dx + dz * dz <= 0x8FFFF) {
                     score = 0;
                 }
@@ -1085,7 +1192,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
       FetchDefaultColBox(eng, 0x50);
       for (i = 0; i < 6; i++)
       {
-        if (D_800BD70C[i].unk0 == 0)
+        if (PapuMinionSlots[i].unk0 == 0)
         {
           goto found;
         }
@@ -1096,7 +1203,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
       if (i != (-1))
       {
         nas->UserInfo.user1 = i;
-        new_var = (u8 *) D_800BD70C;
+        new_var = (u8 *) PapuMinionSlots;
         s = (Slot40 *) (new_var + (i << 6));
         s->unk0 = (s32) nas;
         s->pad4[0] = (s32) eng;
@@ -1114,7 +1221,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
           func_80026AD8((u8 *) nas);
           func_8002694C(nas, 0x200);
         }
-        s->pad4[5] = (s32) func_80024E30(nas, &D_800BD4F4);
+        s->pad4[5] = (s32) func_80024E30(nas, &PapuMinionScriptInit);
       }
       else
       {
@@ -1305,7 +1412,7 @@ void PlotPapuMinion(NAS *nas)
           other = (MinionFux *)((NAS *)hit)->FUX;
           if (other != NULL) {
             other->unk1E |= 1;
-            other->unk16 = D_800BD70C[slot].unk22;
+            other->unk16 = PapuMinionSlots[slot].unk22;
             fux->target = NULL;
             fux->state = 8;
             GotoLinkAnim(anim, 7);
@@ -1323,9 +1430,9 @@ void PlotPapuMinion(NAS *nas)
   case 8:
     eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
     move->speed = 0;
-    if (D_800BD70C[slot].pad4[6] != 0) {
+    if (PapuMinionSlots[slot].pad4[6] != 0) {
       if (frame == 8) {
-        if (((MinionFux *)D_800BD70C[slot].pad4[6])->unk14 == 5) {
+        if (((MinionFux *)PapuMinionSlots[slot].pad4[6])->unk14 == 5) {
           fux->unk20 = 0x5A - Random(level + 0xA);
         } else {
           fux->unk20 = Random(level * 3 + 0x96) + 0xB4;
@@ -1358,11 +1465,11 @@ void PlotPapuMinion(NAS *nas)
     break;
   case 9:
     eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
-    if (D_800BD70C[slot].pad4[6] == 0) {
+    if (PapuMinionSlots[slot].pad4[6] == 0) {
       fux->unk1E |= 2;
       break;
     }
-    hit = (s32)((NAS **)D_800BD70C[slot].pad4[6])[-1];
+    hit = (s32)((NAS **)PapuMinionSlots[slot].pad4[6])[-1];
     if (hit == 0 || ((NAS *)hit)->Engine->platform != NULL) {
       fux->target = NULL;
       fux->state = 0xA;
@@ -1392,8 +1499,8 @@ void PlotPapuMinion(NAS *nas)
     break;
   case 13:
     eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
-    dx = D_800BD500[nas->UserInfo.user2].x - eng->unk10.x;
-    dz = D_800BD500[nas->UserInfo.user2].z - eng->unk10.z;
+    dx = PapuSpawnPoints[nas->UserInfo.user2].x - eng->unk10.x;
+    dz = PapuSpawnPoints[nas->UserInfo.user2].z - eng->unk10.z;
     angle = get_angle(-dx, -dz);
     dist = csqrt(dx * dx + dz * dz) >> 6;
     if (dist < 0x200) {
@@ -1408,37 +1515,37 @@ void PlotPapuMinion(NAS *nas)
     if (frame == 8) {
       fux->state = 0;
     } else if (frame == 0x10) {
-      if (D_800BD70C[slot].pad4[6] != 0) {
-        ((MinionFux *)D_800BD70C[slot].pad4[6])->unk1E |= 4;
+      if (PapuMinionSlots[slot].pad4[6] != 0) {
+        ((MinionFux *)PapuMinionSlots[slot].pad4[6])->unk1E |= 4;
       }
-      D_800BD70C[slot].pad4[6] = 0;
+      PapuMinionSlots[slot].pad4[6] = 0;
     }
     break;
   case 12:
     eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
     move->speed = 0;
-    pick = (s32)D_800BD70C[slot].pad4[6];
+    pick = (s32)PapuMinionSlots[slot].pad4[6];
     if (pick != 0) {
       ((MinionFux *)pick)->unk16 = fux->unk16;
     }
-    D_800BD70C[slot].pad4[6] = 0;
+    PapuMinionSlots[slot].pad4[6] = 0;
     fux->state = 0xB;
     fux->unk1C &= 0xFEFD;
     fux->unk1E &= 0xFEFD;
-    D_800BD70C[slot].unk26 = 0;
+    PapuMinionSlots[slot].unk26 = 0;
     GotoLinkAnim(anim, 0xD);
     break;
   case 11:
     eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
     move->speed = 0;
-    D_800BD70C[slot].pad4[6] = 0;
+    PapuMinionSlots[slot].pad4[6] = 0;
     if (frame != 8) {
-      if (frame == 9 && D_800BD70C[slot].unk26 != 0) {
+      if (frame == 9 && PapuMinionSlots[slot].unk26 != 0) {
         fux->state = 0;
       }
       break;
     }
-    D_800BD70C[slot].unk0 = 0;
+    PapuMinionSlots[slot].unk0 = 0;
     PlaySfx(0x1FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
     func_8007A524(0, &eng->unk10.x, (s32)D_8005342C);
     KillNAS(nas);
@@ -1480,16 +1587,16 @@ void PlotPapuMinion(NAS *nas)
   PapuMinionKick(slot);
   PAPU_KeepInBounds((u8 *)eng);
   if (fux->unk1E & 0x102) {
-    if (D_800BD70C[slot].pad4[6] != 0) {
-      ((MinionFux *)D_800BD70C[slot].pad4[6])->unk16 = fux->unk16;
+    if (PapuMinionSlots[slot].pad4[6] != 0) {
+      ((MinionFux *)PapuMinionSlots[slot].pad4[6])->unk16 = fux->unk16;
     }
-    D_800BD70C[slot].pad4[6] = 0;
+    PapuMinionSlots[slot].pad4[6] = 0;
     move->push = 0x40;
     move->push_angle = (move->angle + 0x800) & 0xFFF;
     fux->state = 0xB;
     fux->unk1C &= 0xFEFD;
     fux->unk1E &= 0xFEFD;
-    PlaySfx(D_800BD700[Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(PapuMinionSfx[Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
     GotoLinkAnim(anim, 0xD);
   }
   eng->unk5E = 1;
@@ -1520,8 +1627,8 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
     pz = me->z;
     for (i = 0; i < 4; i++)
     {
-      s = &((B5E44Slot *) D_800BD70C)[i];
-      if ((arg2 != i) && ((&((B5E44Slot *) D_800BD70C)[i])->obj != 0))
+      s = &((B5E44Slot *) PapuMinionSlots)[i];
+      if ((arg2 != i) && ((&((B5E44Slot *) PapuMinionSlots)[i])->obj != 0))
       {
         f = s->obj->flag;
         if ((f != 0) && (f->flags & 2))
@@ -1542,9 +1649,9 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
             }
             s->dyn->unk2A = ang ^ 0x800;
             d = (arg1 - d) >> 3;
-            (&((B5E44Slot *) D_800BD70C)[i])->dyn->unk22 = d;
-            (&((B5E44Slot *) D_800BD70C)[i])->dyn->unk16 = (&((B5E44Slot *) D_800BD70C)[i])->dyn->unk2A + 0x800;
-            PlaySfx(D_800BD700[Random(4)], 0, (SLONG_XYZ *) (&me->x), 0x1000, 0x1E00, 0);
+            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->unk22 = d;
+            (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->unk16 = (&((B5E44Slot *) PapuMinionSlots)[i])->dyn->unk2A + 0x800;
+            PlaySfx(PapuMinionSfx[Random(4)], 0, (SLONG_XYZ *) (&me->x), 0x1000, 0x1E00, 0);
             f->unk1A = 0xC;
           }
         }
@@ -1558,7 +1665,7 @@ void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
     s32 ang;
     u8 *n = D_8005AA24;
     s32 lim = 0x10000;
-    Slot40 *b = D_800BD70C;
+    Slot40 *b = PapuMinionSlots;
     Slot40 *s = &b[arg0];
     u8 *o = (u8*)s->pad4[0];
     u8 *a = (u8*)s->pad4[4];
@@ -1841,14 +1948,14 @@ s32 PapuMinionKick(u32 idx) {
     if (idx >= 6) {
         return 0;
     }
-    eng = (EXTengine *)D_800BD70C[idx].pad4[0];
+    eng = (EXTengine *)PapuMinionSlots[idx].pad4[0];
     if (eng != NULL && (box = func_80025A48(eng, 0x40)) != NULL) {
     r = box->radius;
     top = eng->unk10.y + box->unk2;
     bot = eng->unk10.y + box->height;
     for (i = 0; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xF800)) {
-            if (((s16 *)D_800BD70C[idx].pad4[4])[7] == 0) {
+            if (((s16 *)PapuMinionSlots[idx].pad4[4])[7] == 0) {
                 can = Heroes[i].hero_move->forward_speed == 0;
             } else {
                 can = 1;
@@ -1884,8 +1991,8 @@ s32 PapuMinionKick(u32 idx) {
         }
     }
     nas = D_8005AA2C;
-    p = (s32 *)D_800BD70C[idx].pad4[6];
-    slot = &D_800BD70C[idx];
+    p = (s32 *)PapuMinionSlots[idx].pad4[6];
+    slot = &PapuMinionSlots[idx];
     self = NULL;
     if (p != NULL) {
         self = (NAS *)p[-1];
@@ -1949,35 +2056,35 @@ void PapuInitTiles(void) {
     func_80018430(0xC8);
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            D_800BD948[j][i].tile = NULL;
+            PapuTiles[j][i].tile = NULL;
         }
     }
     for (j = 0; j < 6; j++) {
-        D_800BE648[j].unk0 = 0;
-        D_800BE648[j].unk6 = 0;
-        D_800BE648[j].unkA = 0;
-        D_800BE648[j].unkC = 0;
-        D_800BE648[j].unkE = 0;
-        D_800BE648[j].unk8 = 0;
+        PapuColumns[j].unk0 = 0;
+        PapuColumns[j].unk6 = 0;
+        PapuColumns[j].unkA = 0;
+        PapuColumns[j].unkC = 0;
+        PapuColumns[j].unkE = 0;
+        PapuColumns[j].unk8 = 0;
     }
-    D_800BE824 = NULL;
+    PapuFloorObj = NULL;
     while (obj != NULL) {
         id = (u16 *)func_80015870(obj->model, obj->index);
         if ((u32)(*id - 10) < 78) {
             i = 7 - (s16)((s16)*id % 10);
             j = (s16)((s16)*id / 10) - 1;
-            D_800BD948[j][i].tile = (PapuTile *)obj;
+            PapuTiles[j][i].tile = (PapuTile *)obj;
             func_8001C3D0((u8 *)obj);
             obj->flags |= 0x1000000;
         }
         j = *(s16 *)id - 100;
         if ((u32)j < 20) {
-            p = &D_800BE648[j];
+            p = &PapuColumns[j];
             p->unk0 = (s32)obj;
             p->unk8 = obj->unk8;
         }
         if (j == 50) {
-            D_800BE824 = obj;
+            PapuFloorObj = obj;
             obj->unk50 = 1;
             obj->unk51 = 0;
             obj->flags &= ~0x8000;
@@ -1985,23 +2092,23 @@ void PapuInitTiles(void) {
         obj = obj->next;
     }
     for (j = 39; j >= 0; j--) {
-        D_800BE838[j] = 0;
+        PapuFloorState[j] = 0;
     }
-    D_800BE888 = 0;
-    D_800BE88A = 0;
-    D_800BE88C = 0;
+    PapuFloorDepth = 0;
+    PapuUnused4 = 0;
+    PapuUnused5 = 0;
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            obj = (PapuSceneObj *)D_800BD948[j][i].tile;
+            obj = (PapuSceneObj *)PapuTiles[j][i].tile;
             if (obj != NULL) {
-                D_800BD948[j][i].unkA = 0;
-                D_800BD948[j][i].unk10 = obj->index;
-                D_800BD948[j][i].pad8 = 0;
-                D_800BD948[j][i].unk12 = obj->unk8;
-                D_800BD948[j][i].unkE = 0;
+                PapuTiles[j][i].unkA = 0;
+                PapuTiles[j][i].unk10 = obj->index;
+                PapuTiles[j][i].pad8 = 0;
+                PapuTiles[j][i].unk12 = obj->unk8;
+                PapuTiles[j][i].unkE = 0;
                 dx = obj->x;
                 dz = obj->z - 0x600;
-                D_800BD948[j][i].unkC = csqrt(dx * dx + dz * dz) >> 6;
+                PapuTiles[j][i].unkC = csqrt(dx * dx + dz * dz) >> 6;
             }
         }
     }
@@ -2014,8 +2121,8 @@ void PapuFloorWave(void) {
     s32 t;
 
     first = 1;
-    if (D_800BE82C != NULL && D_800BE82C->b != 0) {
-        k = D_800BE82C;
+    if (PapuFloorWaveCur != NULL && PapuFloorWaveCur->b != 0) {
+        k = PapuFloorWaveCur;
         do {
             if (k->g != 0) {
                 t = k->f;
@@ -2027,7 +2134,7 @@ void PapuFloorWave(void) {
                     }
                     first = 0;
                     if (k->g != 0) {
-                        D_800BD948[(s16)k->d][(s16)k->e].unkE = 1;
+                        PapuTiles[(s16)k->d][(s16)k->e].unkE = 1;
                     }
                     k->d += k->pad8[0];
                     k->e += k->pad8[1];
@@ -2056,70 +2163,70 @@ void PapuUpdateFloor(void) {
     u32 k;
     PapuTile *tile;
 
-    if (D_800BE824 != NULL) {
-        if (D_800BD8D4 == 0) {
-            if (D_800BE828 != 0) {
-                D_800BE828 -= 0x140;
-                if (D_800BE828 < 0) {
-                    D_800BE828 = 0;
+    if (PapuFloorObj != NULL) {
+        if (PapuFloorTimer == 0) {
+            if (PapuFloorSink != 0) {
+                PapuFloorSink -= 0x140;
+                if (PapuFloorSink < 0) {
+                    PapuFloorSink = 0;
                 }
-                if (D_800BE828 < 0x200 && D_800BE788.sfx != NULL) {
-                    StopSfx(D_800BE788.sfx);
+                if (PapuFloorSink < 0x200 && PapuSfxEngine.sfx != NULL) {
+                    StopSfx(PapuSfxEngine.sfx);
                 }
-                D_800BE824->unk24 = D_800BE828;
+                PapuFloorObj->unk24 = PapuFloorSink;
             } else {
-                D_800BE824->flags &= ~0x8000;
+                PapuFloorObj->flags &= ~0x8000;
             }
         } else {
-            if (D_800BE828 == 0) {
-                PlaySfx(0x20D, &D_800BE788.sfx, NULL, 0x1000, 0x1E00, 0);
+            if (PapuFloorSink == 0) {
+                PlaySfx(0x20D, &PapuSfxEngine.sfx, NULL, 0x1000, 0x1E00, 0);
             }
-            if (D_800BE828 < 0x1000) {
-                D_800BE828 += 0x80;
-                if (D_800BE828 > 0x1000) {
-                    D_800BE828 = 0x1000;
+            if (PapuFloorSink < 0x1000) {
+                PapuFloorSink += 0x80;
+                if (PapuFloorSink > 0x1000) {
+                    PapuFloorSink = 0x1000;
                 }
-                D_800BE824->unk24 = D_800BE828;
+                PapuFloorObj->unk24 = PapuFloorSink;
             }
-            D_800BE824->flags |= 0x8000;
+            PapuFloorObj->flags |= 0x8000;
         }
-        D_800BE824->unk52 = 1;
+        PapuFloorObj->unk52 = 1;
     }
     PapuFloorWave();
     PapuMoveColumns();
-    m = (u16)D_800BE894;
+    m = (u16)PapuWaveFlag;
     if (m < 3 && m != 0) {
-        if (D_800BE838[0] != 0) {
-            D_800BE838[0] -= 2;
+        if (PapuFloorState[0] != 0) {
+            PapuFloorState[0] -= 2;
         }
         j = 0x27;
         do {
-            D_800BE838[j] = D_800BE838[j - 1];
+            PapuFloorState[j] = PapuFloorState[j - 1];
             j--;
         } while (j > 0);
-        D_800BE888 += 0x20;
+        PapuFloorDepth += 0x20;
         for (i = 1; i < 8; i++) {
             j = 0;
             for (; j < 7; j++) {
-                tile = D_800BD948[j][i].tile;
+                tile = PapuTiles[j][i].tile;
                 if (tile != NULL) {
-                    a = D_800BD948[j][i].unkC;
-                    u = D_800BE888 + a;
+                    a = PapuTiles[j][i].unkC;
+                    u = PapuFloorDepth + a;
                     a >>= 7;
-                    w = D_800BE838[a];
-                    tile->unk8 = D_800BD948[j][i].unk12;
+                    w = PapuFloorState[a];
+                    tile->unk8 = PapuTiles[j][i].unk12;
                     k = ((u & 0xFFF) - 0x400) & 0xFFF;
                     tile->unk8 += (w * D_80068BD4[k].unk2) >> 12;
-                    if (D_800BD948[j][i].unkE != 0) {
-                        D_800BD948[j][i].unkA |= 0x100;
-                        tile->unk74 = D_800BD1B0[D_800BD948[j][i].unkE];
-                        D_800BD948[j][i].unkE++;
-                        if (D_800BD1B0[D_800BD948[j][i].unkE] == 0) {
-                            D_800BD948[j][i].unkE = 0;
+                    if (PapuTiles[j][i].unkE != 0) {
+                        PapuTiles[j][i].unkA |= 0x100;
+                        tile->unk74 = PapuTileModels[PapuTiles[j][i].unkE];
+                        PapuTiles[j][i].unkE++;
+                        if (PapuTileModels[PapuTiles[j][i].unkE] == 0) {
+                            PapuTiles[j][i].unkE = 0;
                         }
                     } else {
-                        tile->unk74 = D_800BD948[j][i].unk10;
-                        D_800BD948[j][i].unkA &= ~0x100;
+                        tile->unk74 = PapuTiles[j][i].unk10;
+                        PapuTiles[j][i].unkA &= ~0x100;
                     }
                 }
             }
@@ -2139,11 +2246,11 @@ s32 PapuHeroOverPit(s32 arg0) {
     iz = (eng->unk10.z + 0x700) >> 9;
     if ((u32)ix < 7U && (u32)iz < 7U) {
         y = eng->unk10.y - World_floor_level;
-        t = D_800BD948[ix][iz].tile;
+        t = PapuTiles[ix][iz].tile;
         if (t != NULL) {
             y -= t->unk8;
         }
-        if (abs(y) < 0x20 && (D_800BD948[ix][iz + 1].unkA & 0x100)) {
+        if (abs(y) < 0x20 && (PapuTiles[ix][iz + 1].unkA & 0x100)) {
             return 1;
         }
     }
@@ -2162,7 +2269,7 @@ s32 GetPapuContour(EXTengine *eng) {
     if ((u32)ix >= 7U || (u32)iz >= 7U) {
         return y - 0x800;
     }
-    t = D_800BD948[ix][iz].tile;
+    t = PapuTiles[ix][iz].tile;
     if (t != NULL) {
         y -= t->unk8;
     }
@@ -2173,8 +2280,8 @@ void PapuStartFloorWave(s32 arg0) {
     PapuKey *src;
     PapuKey *dst;
 
-    src = D_800BD008[arg0];
-    D_800BE82C = src;
+    src = PapuFloorWaves[arg0];
+    PapuFloorWaveCur = src;
     if (src->b != 0) {
         dst = src;
         do {
@@ -2186,7 +2293,7 @@ void PapuStartFloorWave(s32 arg0) {
             src++;
         } while (dst->b != 0);
     }
-    D_800BE894 = 2;
+    PapuWaveFlag = 2;
 }
 
 s32 PAPU_KeepInBounds(u8 *arg0) {
@@ -2277,7 +2384,7 @@ s32 PapuPickTarget(void) {
 }
 
 void PapuSpawnMinions(u16 arg0) {
-    PapuStep *s = D_800BD118[arg0];
+    PapuStep *s = PapuMinionWaves[arg0];
 
     while (s->d >= 0) {
         CreatePapuMinion(s->a, s->b, s->c, s->d);
@@ -2295,7 +2402,7 @@ s32 PapuFreeMinionSlot(void) {
     s32 i;
 
     for (i = 0; i < 6; i++) {
-        if (D_800BD70C[i].unk0 == 0) {
+        if (PapuMinionSlots[i].unk0 == 0) {
             return i;
         }
     }
@@ -2360,7 +2467,7 @@ void PapuDropColumns(void) {
 
     i = 0;
     one = 1;
-    for (p = D_800BE648; i < 20; i++, p++) {
+    for (p = PapuColumns; i < 20; i++, p++) {
         if (p->unk0 != 0) {
             p->unk6 = one;
         }
@@ -2372,7 +2479,7 @@ void PapuMarkHoles(void) {
 
     for (j = 2; j < 18; j++) {
         for (i = 2; i < 18; i++) {
-            if (D_800BD948[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
+            if (PapuTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
                 D_8009D90C[i * 20 + j].unk0 = 0xFF;
             }
         }
@@ -2388,20 +2495,20 @@ void PapuDropFirstCrates(void)
   s32 type;
   s32 n;
   short t;
-  n = D_800BD8E4;
+  n = PapuFirstCrates;
   for (i = 0;; i++)
   {
     if (i >= n)
     {
       goto done;
     }
-    p = (s32 *) PapuFindDropPoint(&D_800BD8E2);
+    p = (s32 *) PapuFindDropPoint(&PapuDropPos);
     if (p != 0)
     {
       a = p[0];
       b = p[1];
-      t = D_800BD908[D_800BD8E0];
-      D_800BD8E0 = (D_800BD8E0 + 1) & 0x3F;
+      t = PapuCrateMix[PapuCrateMixPos];
+      PapuCrateMixPos = (PapuCrateMixPos + 1) & 0x3F;
       type = t;
       if ((type == 6) && (D_8009E46C[6] >= 4))
       {
@@ -2429,12 +2536,12 @@ void PapuDropCrates(u16 arg0) {
         if (i >= (arg0 & 0xFFFF)) {
             return;
         }
-        m = PapuFindDropPoint(&D_800BD8E2);
+        m = PapuFindDropPoint(&PapuDropPos);
         if (m != NULL) {
             a = m->unk0;
             b = m->unk4;
-            t = D_800BD908[D_800BD8E0];
-            D_800BD8E0 = (D_800BD8E0 + 1) & 0x3F;
+            t = PapuCrateMix[PapuCrateMixPos];
+            PapuCrateMixPos = (PapuCrateMixPos + 1) & 0x3F;
             v = t;
             if (v == 6 && D_8009E46C[6] >= 4) {
                 v = 4;

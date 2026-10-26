@@ -7,8 +7,8 @@
 #include "bash/xtras.h"
 
 /* data, in address order */
-u16 D_800BE898[10] = { 0x2010, 0x2011, 0x2012, 0x2012, 0x2012, 0x2012, 0x2012, 0x2012, 0x2012, 0 };
-PapuWeaponVec D_800BE8AC[22] = {
+u16 PACrateTickModels[10] = { 0x2010, 0x2011, 0x2012, 0x2012, 0x2012, 0x2012, 0x2012, 0x2012, 0x2012, 0 };
+PapuWeaponVec PAHeroThrowVecs[22] = {
     { 0x5000, 0x3000, 0x5000 }, { 0x3800, 0x3000, 0x3800 }, { 0x1800, 0x2000, 0x1800 },
     { 0x1000, 0x1000, 0x1000 }, { 0x800, 0xA00, 0x800 }, { 0xA00, 0xA00, 0xA00 },
     { 0x1000, 0x800, 0x1000 }, { 0xA00, 0xA00, 0xA00 }, { 0x800, 0x1000, 0x800 },
@@ -18,7 +18,7 @@ PapuWeaponVec D_800BE8AC[22] = {
     { 0x1000, 0x800, 0x1000 }, { 0xA00, 0xA00, 0xA00 }, { 0x800, 0x1000, 0x800 },
     { 0xA00, 0xA00, 0xA00 },
 };
-s16 D_800BE930[2] = {0};
+s16 PapuUnused7[2] = {0};
 /* two zero bytes nothing reads, the overlay file's last (retail's is 0xB682 bytes long) */
 u16 PapuUnusedTail = 0;
 
@@ -261,8 +261,8 @@ void PlotPACrate(NAS *nas) {
         }
         hit = PACrateCollide(eng, obj->player, 1);
         if (hit != NULL) {
-            if (hit == D_800BD88C.nas) {
-                D_800BD88C.unk28 = 1;
+            if (hit == PapuBoss.nas) {
+                PapuBoss.unk28 = 1;
             }
             switch (kind) {
             case 4:
@@ -510,7 +510,7 @@ void PlotPACrate(NAS *nas) {
     if (kind == 7) {
         if (obj->countdown != 0) {
             obj->countdown--;
-            eng->sub->unk74 = D_800BE898[(s16)(obj->countdown / 30)];
+            eng->sub->unk74 = PACrateTickModels[(s16)(obj->countdown / 30)];
             if ((s16)(obj->countdown % 30) == 0) {
                 PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
             }
@@ -579,7 +579,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
             }
         }
     }
-    other = D_800BD88C.eng;
+    other = PapuBoss.eng;
     if (other != NULL) {
         rec2 = func_80025A48(other, 0x40);
         if (rec2 != NULL) {
@@ -587,7 +587,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
             hi = other->unk10.y + rec2->height;
             if (top < lo && hi < bottom) {
                 lo = rec2->radius;
-                if (D_800BD708 == 0) {
+                if (PapuBossFlag == 0) {
                     lo += 0x100;
                 }
                 dx = other->unk10.x;
@@ -596,7 +596,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
                 lo += r;
                 lo *= lo;
                 if (dx * dx + dz * dz < lo) {
-                    return D_800BD88C.nas;
+                    return PapuBoss.nas;
                 }
             }
         }
@@ -823,7 +823,7 @@ void PAHeroPickup(s32 arg0) {
         h->hero_fx->unk10 = h->hero_eng->unk10;
         t = h->hero_weapon_timer;
         if (t >= 0) {
-            tbl = D_800BE8AC;
+            tbl = PAHeroThrowVecs;
             w = &tbl[t];
             if (w->a == 0) {
                 goto clear;

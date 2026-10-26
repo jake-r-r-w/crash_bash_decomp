@@ -692,6 +692,24 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Papu's data** (papu, the crate games' boss; named 2026-10-26). Mode 4
+  (`LEV_PAPU`); one engine world record (0x0105) points at `PAPU_PREMAP`,
+  `papu_shell_info` and `PAPUSetUp`, the per-mode table at `file_group_PAPU`
+  (`PapuFiles` with the exe's file group 26: 16 DAT entries, all decoded).
+  It runs Bash's crate code again (`PapuCrateMaster`, `CreatePACrate` ..,
+  the same functions under `PA` names, `PlotPACrate` the Plot of the
+  engine's `AST_PACrate`) with three games of its own: the boss
+  (`PapuBoss`, `PlotPapuBoss`, its attack plan `PapuAttackPlan` that sends
+  the minions' waves `PapuMinionWaves` to `PapuMinionSlots`), twenty columns
+  that rise and fall per wave (`PapuColumns`, `PapuColumnHeights`), and a
+  7x7 floor whose tiles drop in waves (`PapuTiles`, `PapuFloorWaves`; a hero
+  over a pit falls, `PapuHeroCheckPit`, the engine hooks' `unk28`). The hero
+  states are `HEROFunc` pairs 21..27 (`HEROmode_PAhit` .. `PAwinner`), the
+  sequences each character's five `hero_PA_seq_*` (`CRA_PA_seq_pickup` ..),
+  in `pahero.c` / `papu.c` as Bash's are. `D_800BD8B4` was the boss state's
+  `unk28` and `D_800BE81C` the `sfx` field of `PapuSfxEngine`, as in Bash.
+  The two bytes before `pahero.c`'s data are padding retail has at the file
+  boundary (`PapuDataPad`), the last two the file's (`PapuUnusedTail`).
 - **Bash's levels and data** (bash, the crate games; named 2026-10-26).
   Modes 0..3 are Jungle, Space, Snow and Drains (`LEV_JUNGLE` ..
   `LEV_DRAINS`); mode 0x20, which the hub (0x1F) enters when its `unk44` is

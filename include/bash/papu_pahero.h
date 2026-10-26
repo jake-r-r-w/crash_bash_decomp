@@ -50,7 +50,7 @@ s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask);
 void SetPAHeroHit(s32 arg0);
 
 typedef struct { s16 a; s16 b; s16 c; } PapuWeaponVec;
-extern PapuWeaponVec D_800BE8AC[];
+extern PapuWeaponVec PAHeroThrowVecs[];
 
 NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes);
 
@@ -78,7 +78,7 @@ void SetPAHeroHold(s32 arg0);
 
 void SetPAHeroPickup(s32 arg0);
 
-extern u16 D_800BE898[];
+extern u16 PACrateTickModels[];
 
 /* A hero's sliding/throw stats, by hero_name (D_8009E488 tables). */
 typedef struct PapuStats {
@@ -114,10 +114,10 @@ typedef struct PapuSlide {
     /* 0x2A */ s16 unk2A;
 } PapuSlide;
 
-/* D_800BD70C entries: pad4[0] engine, pad4[4] motion, pad4[6] held object. */
-#define PAPU_SLOT_ENG(i) ((EXTengine *)D_800BD70C[i].pad4[0])
-#define PAPU_SLOT_DYN(i) ((B5E44Dyn *)D_800BD70C[i].pad4[4])
-#define PAPU_SLOT_OBJ(i) (D_800BD70C[i].pad4[6])
+/* PapuMinionSlots entries: pad4[0] engine, pad4[4] motion, pad4[6] held object. */
+#define PAPU_SLOT_ENG(i) ((EXTengine *)PapuMinionSlots[i].pad4[0])
+#define PAPU_SLOT_DYN(i) ((B5E44Dyn *)PapuMinionSlots[i].pad4[4])
+#define PAPU_SLOT_OBJ(i) (PapuMinionSlots[i].pad4[6])
 
 extern s32 D_8009E2B4[];
 

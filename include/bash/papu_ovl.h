@@ -15,7 +15,7 @@ typedef struct PapuSpot {
     s32 z;
 } PapuSpot;
 
-extern PapuSpot D_800BD500[];
+extern PapuSpot PapuSpawnPoints[];
 extern s16 D_8009D88E;
 
 typedef struct PapuPos {
@@ -35,9 +35,9 @@ typedef struct PapuEntry {
     /* 0xE */ s16 unkE;
 } PapuEntry;
 
-extern s16 *D_800BD6F0[];
+extern s16 *PapuColumnHeights[];
 
-extern PapuEntry D_800BE648[20];
+extern PapuEntry PapuColumns[20];
 
 /* The object extension (AddObject) InitPACrate fills. */
 typedef struct PapuObj {
@@ -70,7 +70,7 @@ typedef struct PapuCell {
     s16 unk12;
 } PapuCell;
 
-extern PapuCell D_800BD948[8][8];
+extern PapuCell PapuTiles[8][8];
 
 /* A scene object in the list at D_80058AD0 + 0x1C (PapuInitTiles). */
 typedef struct PapuSceneObj {
@@ -92,23 +92,23 @@ typedef struct PapuSceneObj {
     /* 0x70 */ u8 pad70[0x74 - 0x70];
     /* 0x74 */ u16 index;
 } PapuSceneObj;
-extern PapuSceneObj *D_800BE824;
-extern u16 D_800BE838[40];
-extern u16 D_800BE888;
-extern s16 D_800BE88A;
-extern s16 D_800BE88C;
+extern PapuSceneObj *PapuFloorObj;
+extern u16 PapuFloorState[40];
+extern u16 PapuFloorDepth;
+extern s16 PapuUnused4;
+extern s16 PapuUnused5;
 typedef struct PapuGridPos {
     s32 x;
     s32 y;
 } PapuGridPos;
-extern PapuGridPos D_800BDE48[16][16];
+extern PapuGridPos PapuDropPoints[16][16];
 extern u8 D_8005A6C3;
-extern s16 D_800BC95C[];
-extern u16 D_800BD8CC;
-extern u16 D_800BD8CE;
-extern u16 D_800BD8D0;
-extern u16 D_800BD8DC;
-extern u16 D_800BD8E8;
+extern s16 PapuPickupRates[];
+extern u16 PapuPickupActive;
+extern u16 PapuPickupDelay;
+extern u16 PapuPickupTimer;
+extern u16 PapuCrateTimer;
+extern u16 PapuMaxCrates;
 typedef struct {
     s32 pad0[4];
     s32 x;
@@ -134,7 +134,7 @@ typedef struct Slot40 {
     /* 0x34 */ s32 unk34[3];
 } Slot40;
 
-extern Slot40 D_800BD70C[6];
+extern Slot40 PapuMinionSlots[6];
 
 typedef struct B5E44Flag {
     /* 0x00 */ s32 pad0[6];
@@ -185,7 +185,7 @@ typedef struct B5E44Slot {
     /* 0x18 */ s32 pad18[10];
 } B5E44Slot;
 
-extern u16 D_800BD700[];
+extern u16 PapuMinionSfx[];
 
 typedef struct PapuKey {
     /* 0x00 */ u16 a;
@@ -199,9 +199,9 @@ typedef struct PapuKey {
     /* 0x12 */ u16 g;
 } PapuKey;
 
-extern PapuKey *D_800BD008[];
-extern PapuKey *D_800BE82C;
-extern s16 D_800BE894;
+extern PapuKey *PapuFloorWaves[];
+extern PapuKey *PapuFloorWaveCur;
+extern s16 PapuWaveFlag;
 
 typedef struct PapuBossState {
     /* 0x00 */ NAS *nas;
@@ -227,19 +227,19 @@ typedef struct PapuBossState {
     /* 0x3C */ s32 unk3C;
 } PapuBossState;
 
-extern PapuBossState D_800BD88C;
+extern PapuBossState PapuBoss;
 extern u8 D_800533F4[];
-extern ScriptInit D_800BD3AC;
-extern s16 D_800BE88E;
-extern s16 D_800BE890;
-extern u16 D_800BD130[];
-extern u16 D_800BD2F4[];
-extern s16 D_800BC91C[];
-extern s16 D_800BE82A;
-extern u16 D_800BE834;
-extern s32 D_800BD708;
-extern s32 D_800BD8D4;
-extern s32 D_800BD8D8;
+extern ScriptInit PapuBossScriptInit;
+extern s16 PapuBossCount;
+extern s16 PapuBossLast;
+extern u16 PapuAttackPlan[];
+extern u16 PapuBossRandomAnims[];
+extern s16 PapuBossRates[];
+extern s16 PapuBossRate;
+extern u16 PapuAttackWave;
+extern s32 PapuBossFlag;
+extern s32 PapuFloorTimer;
+extern s32 PapuFloorStarted;
 
 void PapuStartFloorWave(s32 arg0);
 
@@ -259,9 +259,9 @@ typedef struct PapuStep {
     s16 pad;
 } PapuStep;
 
-extern PapuStep *D_800BD118[];
+extern PapuStep *PapuMinionWaves[];
 extern u8 D_8005342C[];
-extern ScriptInit D_800BD4F4;
+extern ScriptInit PapuMinionScriptInit;
 NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d);
 
 s32 PAPU_KeepInBounds(u8 *arg0);
@@ -344,11 +344,11 @@ typedef struct {
     u16 status;
 } T_B4B9CFux;
 extern u16 D_8009E46C[];
-extern u16 D_800BD8E0;
-extern u16 D_800BD8E4;
-extern u16 D_800BD8E2;
-extern u8 D_800BD908[];
-extern u16 D_800BD8F0[4];
+extern u16 PapuCrateMixPos;
+extern u16 PapuFirstCrates;
+extern u16 PapuDropPos;
+extern u8 PapuCrateMix[];
+extern u16 PapuCrateCounts[4];
 
 void PapuDropFirstCrates(void);
 
@@ -358,8 +358,8 @@ NAS *PapuHero2ObjectCollision(s32 player, s32 mask, s32 unused, s32 cone);
 NAS *PapuHeroGrabObject(s32 idx, s32 arg1);
 s32 PapuHeroKickCollision(s32 arg0);
 s32 PapuHeroCarryCollision(s32 idx);
-extern u8 D_800BC89C[];
-extern u8 D_800BC8DC[];
+extern u16 PapuAiSkill[];
+extern u16 PapuAiSkillAlt[];
 
 s32 PapuPickSpawnPoint(PapuPos *arg0);
 extern u8 D_80051244[];
@@ -413,21 +413,21 @@ void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b);
 
 void PapuCountObjects(void);
 
-extern s16 D_800BD8DE;
-extern s32 D_800BD708;
-extern s32 D_800BD8D4;
-extern s32 D_800BD8D8;
-extern EXTengine D_800BE788;
-extern s16 D_800BE828;
-extern s16 D_800BE82A;
-extern u16 D_800BE830;
-extern u16 D_800BE832;
+extern s16 PapuUnused0;
+extern s32 PapuBossFlag;
+extern s32 PapuFloorTimer;
+extern s32 PapuFloorStarted;
+extern EXTengine PapuSfxEngine;
+extern s16 PapuFloorSink;
+extern s16 PapuBossRate;
+extern u16 PapuAttackPos;
+extern u16 PapuAttackDelay;
 void PapuSetCrateMix(u16 a0, s32 a1, s32 a2, s32 a3, u16 a4, u16 a5, u16 a6,
                    u16 a7, u16 a8);
 
 s32 PapuMinionKick(u32 idx);
 
-extern u16 D_800BD1B0[];
+extern u16 PapuTileModels[];
 
 void PlotPapuBoss(NAS *nas);
 
