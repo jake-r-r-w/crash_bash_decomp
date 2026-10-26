@@ -29,7 +29,7 @@ extern void (*D_8009D714)(void);
 extern HeroInfo Heroes[4];
 extern u8 D_8005A614[];
 
-/* D_8005A614 as seen by func_800BB2BC. */
+/* D_8005A614 as seen by BashSnowInitHeroMove. */
 typedef struct {
     /* 0x00 */ u8 pad0[0x30];
     /* 0x30 */ u16 pause;
@@ -54,7 +54,7 @@ static inline s32 BashASTIndex(s32 id) {
 
 extern HeroInfo Heroes[4];
 
-/* The AI state func_800B4848 writes its chosen target into. */
+/* The AI state BashAI_CheckShot writes its chosen target into. */
 typedef struct {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 target;
@@ -64,14 +64,14 @@ typedef struct {
     /* 0x2C */ s32 flags;
 } BashAiState;
 
-s32 func_800B62EC(s32 player);
-extern u16 D_800C3AC4[];      /* func_800B62EC: weight by hero_health (0..20) */
-extern SLONG_XYZ D_800C3A04[]; /* func_800B62EC: grid points, 7..15 scanned */
+s32 BashAI_ChooseTarget(s32 player);
+extern u16 D_800C3AC4[];      /* BashAI_ChooseTarget: weight by hero_health (0..20) */
+extern SLONG_XYZ D_800C3A04[]; /* BashAI_ChooseTarget: grid points, 7..15 scanned */
 
-void func_800B6F0C(void);
+void FinishBashLevel(void);
 
-/* func_800B4AB0: the bot AI tick. */
-void func_800B5E28(s32 arg0);
+/* Bash_HeroBot: the bot AI tick. */
+void BashAI_ScanAhead(s32 arg0);
 extern u16 D_800C39F0[];
 
 extern u16 D_800C3B88;
@@ -80,9 +80,9 @@ extern ScriptInit D_800C3668;
 extern EXTengine *D_800C46B0;
 extern EXTobject *D_800C46B4;
 extern u8 D_8005303C[];
-void func_800B8B00(void);
+void BashSnowMarkPenguin(void);
 
-void func_800B7D20(u16 arg0);
+void BashDropCrates(u16 arg0);
 
 typedef struct {
     /* 0x00 */ s32 unk0;
@@ -96,9 +96,9 @@ extern u16 D_800C3B94[];
 extern u16 D_800C3B8C[];
 extern u16 D_8009E46C[];
 extern s32 D_8009D758;
-BashPair *func_800B8040(u8 *arg0);
+BashPair *BashFindDropPoint(u8 *arg0);
 
-/* A scene object in the list at D_80058AD0 + 0x1C (func_800B8314). */
+/* A scene object in the list at D_80058AD0 + 0x1C (BashSpaceInitTiles). */
 typedef struct BashObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ s32 x;
@@ -141,7 +141,7 @@ typedef struct BashTumbleMove {
 
 void PlotBoing(u8 *arg0);
 
-s32 func_800BB1B4(u8 *arg0);
+s32 BASH_KeepInBounds(u8 *arg0);
 
 /* Extension 0x20000002: one entry every 2 bytes, one per subengine. */
 typedef struct SnowGlint {
@@ -158,14 +158,14 @@ typedef struct BashShoxExt {
     /* 0x48 */ s16 c[16];
 } BashShoxExt;
 
-void func_800BB360(void);
+void FirstTriggersBASH(void);
 
-void func_800B3A38(void);
-void func_800B3DD8(void);
-void func_800B432C(void);
-s32 func_800BAC5C(EXTengine *eng);
+void InitialiseBASHFirst(void);
+void InitialiseBASH(void);
+void UpdateBASH(void);
+s32 GetBashContour(EXTengine *eng);
 
-void func_800BB368(void);
+void BashRestartLevel(void);
 
 extern u8 D_80052F5C[];
 extern s16 D_800C3B08[][3];
@@ -175,29 +175,29 @@ extern s32 D_8009E468;
 extern u8 D_8009E3B4[];
 extern u8 D_8009E3DC[];
 extern s16 D_800C3B40;
-s32 func_800B6DA4(s32 arg0);
-void func_800B7358(void);
-void func_800BB7E8(void);
+s32 BashAI_PickVictim(s32 arg0);
+void BashCrateMaster(void);
+void BashCountObjects(void);
 void DoAmbience(void);
 void func_80086D88(void);
 void func_80086F78(void);
-void func_800B8578(void);
-void func_800B8B00(void);
-void func_800BAD70(void);
+void BashSpaceTileEdges(void);
+void BashSnowMarkPenguin(void);
+void BashSpaceMarkHoles(void);
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/bash_800bb64c.h"
 #include "bash/bash_800bff1c.h"
 
-void func_800B4848(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev);
+void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev);
 
-void func_800B8314(void);
+void BashSpaceInitTiles(void);
 
-void func_800B8578(void);
+void BashSpaceTileEdges(void);
 
 void PlotSnowGlint(NAS *nas);
 
-s32 func_800B95F0(s32 arg0);
+s32 BashFirePowerup(s32 arg0);
 
 void InitBash8way(NAS *nas);
 
@@ -207,7 +207,7 @@ void PlotMissileExplode(NAS *nas);
 
 void InitMissileExplode(NAS *nas);
 
-void func_800BA8A4(s32 x, s32 y, s32 z, s32 arg3, s32 arg4);
+void BashSpawnMissileExplode(s32 x, s32 y, s32 z, s32 arg3, s32 arg4);
 
 void InitBoing(NAS *nas);
 
@@ -215,32 +215,32 @@ void InitBashPenguin(NAS *nas);
 
 void InitSnowGlint(NAS *nas);
 
-void func_800BAC10(void);
+void BashDrawView(void);
 
-u16 func_800BAD0C(s32 arg0, s32 arg1);
+u16 BashSpaceTileAt(s32 arg0, s32 arg1);
 
-void func_800BAD70(void);
+void BashSpaceMarkHoles(void);
 
-void func_800BAE08(s32 arg0);
+void BashSpaceDropTile(s32 arg0);
 
-void func_800BAE98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+void BashSpaceBreakTile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 
-void func_800BAF68(void);
+void BashSpaceClearTiles(void);
 
-void func_800BAFB4(void);
+void BashDropFirstCrates(void);
 
-s32 func_800BB100(s32 arg0);
+s32 BashAI_HazardAhead(s32 arg0);
 
-void func_800BB2BC(void);
+void BashSnowInitHeroMove(void);
 
-u8 *func_800BBA14(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+u8 *CreateCrate(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern u8 *D_800C478C;
 
-void func_800BB370(void);
+void BASHSetUp(void);
 
-void func_800BB3D0(void);
+void BashInitCrateHooks(void);
 
-void func_800BB4AC(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2);
+void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2);
 
 typedef struct BashGridCell {
     s32 x;
@@ -249,25 +249,25 @@ typedef struct BashGridCell {
 
 extern BashGridCell D_800C3EAC[16][16];
 
-void func_800B44B0(s32 arg0);
+void BashSnowMoveHero(s32 arg0);
 
-s32 func_800B46B8(s32 arg0);
+s32 BashAI_EscapeAngle(s32 arg0);
 
-s32 func_800B6138(s32 arg0);
+s32 BashAI_AvoidAhead(s32 arg0);
 
-s32 func_800B6FE0(s32 arg0);
+s32 BashAI_NearestEnemy(s32 arg0);
 
-void func_800B710C(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5, u16 arg6, u16 arg7, u16 arg8);
+void BashSetCrateMix(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5, u16 arg6, u16 arg7, u16 arg8);
 
-void func_800B7E74(void);
+void BashShuffleDropPoints(void);
 
-void func_800B94C4(s32 arg0, u16 arg1);
+void BashGivePowerup(s32 arg0, u16 arg1);
 
 void PlotBash8way(NAS *nas);
 
 void InitBashHomer(NAS *nas);
 
-u8 *func_800BAFDC(s32 x, s32 unused, s32 z, u16 flag);
+u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag);
 
 /* The object extension InitTumbler adds (AddObject). */
 typedef struct TumblerObj {
@@ -278,7 +278,7 @@ typedef struct TumblerObj {
     /* 0x1A */ s16 unk1A;
 } TumblerObj;
 
-s32 func_800BF404(EXTengine *eng, s32 arg1, s32 arg2, s32 arg3);
+s32 CrateCollide(EXTengine *eng, s32 arg1, s32 arg2, s32 arg3);
 
 /* Spawns the 0x1605 puff at v and returns it (InitTumbler). */
 static inline NAS *BashSpawnPuff(SLONG_XYZ *v) {
@@ -300,7 +300,7 @@ static inline NAS *BashSpawnPuff(SLONG_XYZ *v) {
     return NULL;
 }
 
-void func_800B8C9C(EXTengine *self);
+void BashPenguinPush(EXTengine *self);
 
 void InitTumbler(NAS *nas);
 
@@ -323,18 +323,18 @@ typedef struct PenguinFux {
 extern u16 D_800C3B38;
 extern u16 D_800C3B3C;
 
-void func_800B8C9C(EXTengine *eng);
+void BashPenguinPush(EXTengine *eng);
 
 void PlotBashPenguin(NAS *nas);
 
-/* func_800B3A38: the overlay's init hook. */
+/* InitialiseBASHFirst: the overlay's init hook. */
 extern EXTengine D_800C46EC;
 extern void (*D_8009D70C)(s32);
-void func_800B4AB0(s32 arg0);
-void func_800BEF00();
-NAS *func_800C1848();
-s32 func_800C1A30(s32 arg0);
-s32 func_800C284C(s32 idx);
+void Bash_HeroBot(s32 arg0);
+void BashHero_ExtraEffects();
+NAS *BashHeroGrabObject();
+s32 BashHeroKickCollision(s32 arg0);
+s32 BashHeroCarryCollision(s32 idx);
 extern u8 D_800C3004[];
 extern u8 D_800C3018[];
 extern u8 D_800C302C[];
@@ -360,7 +360,7 @@ extern u8 D_800C3194[];
 extern u8 D_800C31AC[];
 extern u8 D_800C31C0[];
 
-/* func_800B3DD8 */
+/* InitialiseBASH */
 extern u16 D_800C3B32;
 extern u16 D_800C3B34;
 extern u16 D_800C478A;
@@ -371,7 +371,7 @@ extern s32 D_800C46AC;
 extern u8 *D_800C3B9C[4];
 extern u16 D_800C46C0[];
 
-/* The object func_800BBA14 returns, as func_800B7358 sees it. */
+/* The object CreateCrate returns, as BashCrateMaster sees it. */
 typedef struct {
     /* 0x00 */ u8 pad0[0x24];
     /* 0x24 */ u16 unk24;
@@ -381,7 +381,7 @@ typedef struct {
     /* 0x58 */ BashEdgeSub *unk58;
 } BashEdgeObj;
 
-/* func_800B7358: from (x, z), walk the board along x (dx) or z (dz),
+/* BashCrateMaster: from (x, z), walk the board along x (dx) or z (dz),
  * 1, -1, 2, -2, ... cells, to the first empty cell, and spawn there. */
 static inline u8 *BashSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
     s32 col;
@@ -420,7 +420,7 @@ static inline u8 *BashSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
     if (row < -0x700 || row > 0x700) {
         row = z;
     }
-    p = func_800BBA14(col, 0, row, 2, -1);
+    p = CreateCrate(col, 0, row, 2, -1);
     if (p != NULL) {
         func_80026B70(&D_800C478C, p);
     }

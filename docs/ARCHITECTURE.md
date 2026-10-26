@@ -417,13 +417,13 @@ code finds 15 code files; nothing else on the disc holds code.
   `SmokePoof`, `WeatherNas`). Every other id is named the same way from the
   Oct 9 prototype's enums (see Prototype debug types): Tank's 68 names come
   out exactly as the leaked Tank header spells its `Init`/`Plot` prototypes.
-  Left unnamed because one function serves several ids: `bash`'s
-  `func_800BBD48` (Init of `Crate` and `PACrate`), `func_800BC038` (Plot of
-  `Crate`, `CrateType`) and `func_800BE9D0` (Plot of five pickups); the
-  engine's `InitScriptFX`/`PlotScriptFX` also serve `AST_SpecialFX`. The
-  Plot of `PACrate`/`PACrateType` (`0x800B87A0`) is not a function start in
-  `bash`. The crate breaks through `func_800BFAC0(eng, fux)` (four paths
-  in `func_800BC038`): a random crate sfx, a type-2 effect at its position
+  One function serves several ids in `bash`: `InitCrate` (Init of `Crate`
+  and `PACrate`), `PlotCrate` (Plot of `Crate`, `CrateType`) and
+  `PlotPickup` (Plot of five pickups), named 2026-10-26 for the leak's
+  `AST_Crate` and the pickups; the engine's `InitScriptFX`/`PlotScriptFX`
+  also serve `AST_SpecialFX`. The Plot of `PACrate`/`PACrateType`
+  (`0x800B87A0`) is not a function start in `bash`. The crate breaks
+  through `CrateBreak(eng, fux)` (four paths in `PlotCrate`): a random crate sfx, a type-2 effect at its position
   (`func_8007A524`), then an `AST_CratePickup` (`0x206`) there unless the
   hook `D_8009D750` returns 1.
 

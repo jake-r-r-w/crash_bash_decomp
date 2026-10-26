@@ -44,7 +44,7 @@ typedef struct {
     u16 type;
 } T_BB7E8Fux;
 
-s32 func_800BB7B8(T_BB7B8 *p);
+s32 BashGridKey(T_BB7B8 *p);
 
 extern u16 D_800C46E4[];
 
@@ -54,7 +54,7 @@ void InitShieldPickup(NAS *arg0);
 
 void InitBootsPickup(NAS *arg0);
 
-s32 func_800BFB6C(s32 pos, ExtCurve *c);
+s32 CrateFallTime(s32 pos, ExtCurve *c);
 
 typedef struct {
     /* 0x00 */ u8 pad0[0x16];
@@ -66,10 +66,10 @@ typedef struct {
 
 
 
-void func_800BEDE8(s32 arg0, s32 arg1);
+void BashHeroesTouched(s32 arg0, s32 arg1);
 extern s32 (*D_8009D750)(EXTengine *);
 
-void func_800BFC30(EXTengine *eng);
+void CrateFindFreeSpot(EXTengine *eng);
 
 extern u16 D_8009E080[][4];
 
@@ -77,9 +77,9 @@ void InitAnvilPickup(NAS *arg0);
 
 void InitSlowmoPickup(NAS *arg0);
 
-s32 func_800BF928(EXTengine *eng, HitFlags *flags, u32 mask);
+s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask);
 
-void func_800BFD2C(s32 arg0);
+void SetBashHeroHit(s32 arg0);
 
 extern u8 D_80051244[];
 
@@ -104,9 +104,9 @@ typedef struct {
     s16 unk2A;
 } T_BB64C_B;
 
-void func_800BB64C(T_BB64C_A *a, T_BB64C_B *b);
+void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b);
 
-NAS *func_800BF708(EXTengine *eng, s32 who);
+NAS *CrateHitSolids(EXTengine *eng, s32 who);
 
 typedef struct {
     /* 0x00 */ u8 pad0[0x14];
@@ -118,11 +118,11 @@ typedef struct {
     /* 0x22 */ s16 unk22;
 } T_BBD48Obj;
 
-void func_800BBD48(NAS *arg0);
+void InitCrate(NAS *arg0);
 
-void func_800BE9D0(NAS *arg0);
+void PlotPickup(NAS *arg0);
 
-/* func_800BC038: the crate object (NAS FUX). */
+/* PlotCrate: the crate object (NAS FUX). */
 typedef struct {
     /* 0x00 */ u8 pad0[0x14];
     /* 0x14 */ u16 type;
@@ -136,7 +136,7 @@ typedef struct {
     /* 0x24 */ s16 kind;
 } T_BC038Fux;
 
-/* func_800BC038: its extension 0x800 (func_800BB64C's T_BB64C_B). */
+/* PlotCrate: its extension 0x800 (CrateAimAtGrid's T_BB64C_B). */
 typedef struct {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ u8 unkC;
@@ -154,7 +154,7 @@ typedef struct {
     /* 0x2A */ s16 tz;
 } T_BC038Ext;
 
-/* func_800BC038: entries of D_8009E488.unk0/unk4, by hero_name. */
+/* PlotCrate: entries of D_8009E488.unk0/unk4, by hero_name. */
 typedef struct {
     /* 0x00 */ s16 speed;
     /* 0x02 */ s16 max;
@@ -167,7 +167,7 @@ typedef struct {
     /* 0x10 */ s16 unk10;
 } T_BC038Stats;
 
-/* func_800BC038: frees the carrying hero's hold on the crate (cf. papu's PapuReleaseObj). */
+/* PlotCrate: frees the carrying hero's hold on the crate (cf. papu's PapuReleaseObj). */
 static inline void BC038Release(T_BC038Fux *fux) {
     s32 w = fux->who;
     HeroInfo *b;
@@ -198,12 +198,12 @@ static inline void BC038Release(T_BC038Fux *fux) {
 #define BC038_STATB(base, tbl, w) (((T_BC038Stats **)D_8009E488.tbl)[(base)[w].hero_name])
 #define BC038_STAT(tbl, w) BC038_STATB(Heroes, tbl, w)
 
-/* The crate breaks (func_800BC038 passes eng and fux). fux goes unused: a1 is
+/* The crate breaks (PlotCrate passes eng and fux). fux goes unused: a1 is
  * never read, in every disc's copy. */
-void func_800BFAC0(EXTengine *eng, T_BC038Fux *fux);
+void CrateBreak(EXTengine *eng, T_BC038Fux *fux);
 
 extern u16 D_800C46B8[];
 extern s32 D_8009E2B4[];
-void func_800BC038(NAS *arg0);
+void PlotCrate(NAS *arg0);
 
 #endif /* BASH_BASH_800BB64C_H */

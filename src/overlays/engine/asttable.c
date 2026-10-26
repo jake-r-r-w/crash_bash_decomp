@@ -45,9 +45,9 @@ void PlotBoing(NAS *nas);  /* bash */
 void PlotMissileExplode(NAS *nas);  /* bash */
 void PlotSnowGlint(NAS *nas);  /* bash */
 void PlotTumbler(NAS *nas);  /* bash */
-void func_800BBD48(NAS *nas);  /* bash */
-void func_800BC038(NAS *nas);  /* bash */
-void func_800BE9D0(NAS *nas);  /* bash */
+void InitCrate(NAS *nas);  /* bash */
+void PlotCrate(NAS *nas);  /* bash */
+void PlotPickup(NAS *nas);  /* bash */
 void InitPapuBoss(NAS *nas);  /* papu */
 void InitPapuColumn(NAS *nas);  /* papu */
 void PlotPapuBoss(NAS *nas);  /* papu */
@@ -293,17 +293,17 @@ ASTEntry EngineASTTable[174] = {
     { AST_PodiumOdo, InitPodiumOdo, PlotPodiumOdo },
     { AST_PodiumTrophy, InitPodiumTrophy, PlotPodiumTrophy },
     { AST_GatewayTrophy, InitGatewayTrophy, PlotGatewayTrophy },
-    { AST_Crate, func_800BBD48, func_800BC038 },
-    { AST_CrateType, NullProc, func_800BC038 },
-    { AST_PACrate, func_800BBD48, func_800B87A0 },
+    { AST_Crate, InitCrate, PlotCrate },
+    { AST_CrateType, NullProc, PlotCrate },
+    { AST_PACrate, InitCrate, func_800B87A0 },
     { AST_PACrateType, NullProc, func_800B87A0 },
     { AST_CrateExplode, InitCrateExplode, NullProc },
-    { AST_CratePickup, InitCratePickup, func_800BE9D0 },
+    { AST_CratePickup, InitCratePickup, PlotPickup },
     { AST_BigPoof, InitBigPoof, PlotBigPoof },
-    { AST_ShieldPickup, InitShieldPickup, func_800BE9D0 },
-    { AST_BootsPickup, InitBootsPickup, func_800BE9D0 },
-    { AST_AnvilPickup, InitAnvilPickup, func_800BE9D0 },
-    { AST_SlowmoPickup, InitSlowmoPickup, func_800BE9D0 },
+    { AST_ShieldPickup, InitShieldPickup, PlotPickup },
+    { AST_BootsPickup, InitBootsPickup, PlotPickup },
+    { AST_AnvilPickup, InitAnvilPickup, PlotPickup },
+    { AST_SlowmoPickup, InitSlowmoPickup, PlotPickup },
     { AST_Health, Init_HealthPU, Plot_HealthPU },
     { AST_SpecialFX, InitScriptFX, PlotScriptFX },
     { AST_PogoPickup, Init_PogoPickup, Plot_PogoPickup },

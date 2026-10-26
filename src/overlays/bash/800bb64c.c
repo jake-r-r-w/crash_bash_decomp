@@ -4,7 +4,7 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
-void func_800BB64C(T_BB64C_A *a, T_BB64C_B *b) {
+void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
     s32 z;
     s32 x;
     s32 sum = 0;
@@ -49,7 +49,7 @@ void func_800BB64C(T_BB64C_A *a, T_BB64C_B *b) {
     b->unkE = v;
 }
 
-s32 func_800BB7B8(T_BB7B8 *p) {
+s32 BashGridKey(T_BB7B8 *p) {
     s32 a, b, c, d;
     b = (p->x >> 8) + 8;
     a = 7 - (p->y >> 8);
@@ -61,7 +61,7 @@ s32 func_800BB7B8(T_BB7B8 *p) {
     return a + b + d;
 }
 
-void func_800BB7E8(void) {
+void BashCountObjects(void) {
     s32 i;
     s32 x, z;
     u16 t;
@@ -123,7 +123,7 @@ void func_800BB7E8(void) {
     }
 }
 
-u8 *func_800BBA14(s32 a, s32 b, s32 c, s32 d, s32 e) {
+u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
     NAS *nas;
     T_BBD48Obj *obj;
     EXTengine *eng;
@@ -215,7 +215,7 @@ u8 *func_800BBA14(s32 a, s32 b, s32 c, s32 d, s32 e) {
     return (u8 *)nas;
 }
 
-void func_800BBD48(NAS *arg0) {
+void InitCrate(NAS *arg0) {
     EXTengine *eng;
     T_BBD48Obj *obj;
     NAS *nas;
@@ -305,7 +305,7 @@ void func_800BBD48(NAS *arg0) {
     }
 }
 
-void func_800BC038(NAS *arg0) {
+void PlotCrate(NAS *arg0) {
     VECTOR a;
     VECTOR b;
     EXTengine *eng;
@@ -406,7 +406,7 @@ void func_800BC038(NAS *arg0) {
                 return;
             case 1:
                 BC038Release(fux);
-                func_800BFAC0(eng, fux);
+                CrateBreak(eng, fux);
                 func_800270B0(arg0);
                 return;
             case 2:
@@ -419,7 +419,7 @@ void func_800BC038(NAS *arg0) {
                 break;
             }
         }
-        if ((fux->flags & 0x20) && func_800BF708(eng, fux->who) != NULL) {
+        if ((fux->flags & 0x20) && CrateHitSolids(eng, fux->who) != NULL) {
             switch (type) {
             case 2:
                 BC038Release(fux);
@@ -437,7 +437,7 @@ void func_800BC038(NAS *arg0) {
                 return;
             case 1:
                 BC038Release(fux);
-                func_800BFAC0(eng, fux);
+                CrateBreak(eng, fux);
                 func_800270B0(arg0);
                 return;
             default:
@@ -541,7 +541,7 @@ void func_800BC038(NAS *arg0) {
         }
         if (GravitateNas(arg0) != 0) {
             eng->unk10.y += 0x20;
-            func_800BF404(eng, (s32)fux, fux->who, 0);
+            CrateCollide(eng, (s32)fux, fux->who, 0);
             eng->unk10.y -= 0x20;
             switch (type) {
             case 3:
@@ -556,7 +556,7 @@ void func_800BC038(NAS *arg0) {
                 func_800270B0(arg0);
                 return;
             case 1:
-                func_800BFAC0(eng, fux);
+                CrateBreak(eng, fux);
                 func_800270B0(arg0);
                 return;
             case 2:
@@ -583,7 +583,7 @@ void func_800BC038(NAS *arg0) {
             func_800270B0(arg0);
             return;
         }
-        if (func_800BF404(eng, 0, fux->who, 1) != 0) {
+        if (CrateCollide(eng, 0, fux->who, 1) != 0) {
             switch (type) {
             case 3:
             case 4:
@@ -597,7 +597,7 @@ void func_800BC038(NAS *arg0) {
                 func_800270B0(arg0);
                 return;
             case 1:
-                func_800BFAC0(eng, fux);
+                CrateBreak(eng, fux);
                 func_800270B0(arg0);
                 return;
             case 2:
@@ -650,8 +650,8 @@ void func_800BC038(NAS *arg0) {
             ext->max = BC038_STAT(unk0, v)->max;
             ext->accel = BC038_STAT(unk0, v)->accel;
             ext->decel = BC038_STAT(unk0, v)->decel;
-            func_800BB7B8((T_BB7B8 *)eng);
-            func_800BB64C((T_BB64C_A *)eng, (T_BB64C_B *)ext);
+            BashGridKey((T_BB7B8 *)eng);
+            CrateAimAtGrid((T_BB64C_A *)eng, (T_BB64C_B *)ext);
             break;
         case 3:
         case 4:
@@ -667,8 +667,8 @@ void func_800BC038(NAS *arg0) {
             ext->max = BC038_STAT(unk0, v)->max;
             ext->accel = BC038_STAT(unk0, v)->accel;
             ext->decel = BC038_STAT(unk0, v)->decel;
-            func_800BB7B8((T_BB7B8 *)eng);
-            func_800BB64C((T_BB64C_A *)eng, (T_BB64C_B *)ext);
+            BashGridKey((T_BB7B8 *)eng);
+            CrateAimAtGrid((T_BB64C_A *)eng, (T_BB64C_B *)ext);
             break;
         default:
             fux->state = 0;
@@ -721,7 +721,7 @@ void func_800BC038(NAS *arg0) {
         if (fux->timer != 0) {
             fux->timer--;
         }
-        if (func_800BF404(eng, 0, fux->who, 1) != 0) {
+        if (CrateCollide(eng, 0, fux->who, 1) != 0) {
             BC038_STOP(ext);
             if (fux->timer == 0) {
                 switch (type) {
@@ -846,7 +846,7 @@ void func_800BC038(NAS *arg0) {
             if (dx == 0 && dz == 0) {
                 done = 1;
             }
-            func_800BF928(eng, (HitFlags *)fux, 8);
+            CrateHitHeroes(eng, (HitFlags *)fux, 8);
             if (fux->hit & 8) {
                 done = 1;
             }
@@ -860,7 +860,7 @@ void func_800BC038(NAS *arg0) {
             case 0x1B:
             case 0x1C:
                 if (fux->who != -1 && fux->who < 5) {
-                    func_800B94C4(fux->who, fux->kind);
+                    BashGivePowerup(fux->who, fux->kind);
                     D_800C478A = (Random(6) + 2) * 30;
                 }
                 func_800270B0(arg0);
@@ -954,13 +954,13 @@ void func_800BC038(NAS *arg0) {
         if (ext->unkC == 0) {
             fux->flags |= 8;
         }
-        func_800BF928(eng, (HitFlags *)fux, 8);
+        CrateHitHeroes(eng, (HitFlags *)fux, 8);
         if ((fux->hit & 8) && fux->who != -1 && fux->who < 5) {
             switch (fux->kind) {
             case 0x19:
             case 0x1B:
             case 0x1C:
-                func_800B94C4(fux->who, fux->kind);
+                BashGivePowerup(fux->who, fux->kind);
                 D_800C478A = (Random(6) + 2) * 30;
                 func_800270B0(arg0);
                 n = (NAS *)D_800C478C;
@@ -1378,7 +1378,7 @@ void InitSlowmoPickup(NAS *arg0) {
     }
 }
 
-void func_800BE9D0(NAS *arg0) {
+void PlotPickup(NAS *arg0) {
     EXTengine *eng;
     EXTobject *obj;
     HeroInfo *h;
@@ -1449,7 +1449,7 @@ void func_800BE9D0(NAS *arg0) {
     KillNAS(arg0);
 }
 
-void func_800BEDE8(s32 arg0, s32 arg1) {
+void BashHeroesTouched(s32 arg0, s32 arg1) {
     HeroInfo *base = Heroes;
     HeroInfo *b = base + arg1;
     HeroInfo *a;
@@ -1477,7 +1477,7 @@ void func_800BEDE8(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800BEF00(s32 arg0) {
+void BashHero_ExtraEffects(s32 arg0) {
     HeroInfo *h;
     EXTengine *pu;
     subengine *sub;
@@ -1617,7 +1617,7 @@ void func_800BEF00(s32 arg0) {
     }
 }
 
-s32 func_800BF404(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
+s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
     s32 d;
     FlagRecord *box;
     FlagRecord *rec;
@@ -1713,7 +1713,7 @@ s32 func_800BF404(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
     return 0;
 }
 
-NAS *func_800BF708(EXTengine *eng, s32 who) {
+NAS *CrateHitSolids(EXTengine *eng, s32 who) {
     FlagRecord *box;
     FlagRecord *rec;
     EXTengine *e;
@@ -1774,7 +1774,7 @@ NAS *func_800BF708(EXTengine *eng, s32 who) {
     return NULL;
 }
 
-s32 func_800BF928(EXTengine *eng, HitFlags *flags, u32 mask) {
+s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
     s32 sum;
     FlagRecord *rec;
     FlagRecord *rec2;
@@ -1830,7 +1830,7 @@ s32 func_800BF928(EXTengine *eng, HitFlags *flags, u32 mask) {
     return -1;
 }
 
-void func_800BFAC0(EXTengine *eng, T_BC038Fux *fux) {
+void CrateBreak(EXTengine *eng, T_BC038Fux *fux) {
     PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
     func_8007A524(2, (s32 *)((u8 *)eng + 0x10), (s32)D_80052F94);
     if ((D_8009D750(eng) ^ 1) != 0) {
@@ -1838,7 +1838,7 @@ void func_800BFAC0(EXTengine *eng, T_BC038Fux *fux) {
     }
 }
 
-s32 func_800BFB6C(s32 pos, ExtCurve *c) {
+s32 CrateFallTime(s32 pos, ExtCurve *c) {
     s32 sum = 0;
     s32 a = c->unkE;
     s32 b = c->unk18;
@@ -1883,7 +1883,7 @@ s32 func_800BFB6C(s32 pos, ExtCurve *c) {
     return sum;
 }
 
-void func_800BFC30(EXTengine *eng) {
+void CrateFindFreeSpot(EXTengine *eng) {
     NAS *nas;
     EXTengine *other;
     s32 again;
@@ -1910,7 +1910,7 @@ void func_800BFC30(EXTengine *eng) {
     } while (again);
 }
 
-void func_800BFD2C(s32 arg0) {
+void SetBashHeroHit(s32 arg0) {
     HeroInfo *b = Heroes;
     HeroInfo *h = &b[arg0];
     HeroInfo *b2;

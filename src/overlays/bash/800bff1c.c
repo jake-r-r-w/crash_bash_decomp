@@ -5,7 +5,7 @@
 #include "bash/xtras.h"
 #include "bash/papu.h"
 
-void func_800BFF1C(s32 arg0) {
+void BashHeroHit(s32 arg0) {
     HeroInfo *b = Heroes;
     HeroInfo *h = &b[arg0];
     s32 sfx;
@@ -64,7 +64,7 @@ done:
     func_800871E4(arg0);
 }
 
-void func_800C013C(s32 arg0) {
+void BashHeroPickup(s32 arg0) {
     VECTOR pos;
     HeroInfo *h;
     subengine *s;
@@ -103,7 +103,7 @@ done:
     D_8009D73C(arg0);
 }
 
-void func_800C02D4(s32 arg0) {
+void BashHeroHold(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     subengine *s;
@@ -176,7 +176,7 @@ rest:
     }
 }
 
-void func_800C05A8(s32 arg0) {
+void BashHeroCarry(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     subengine *s;
@@ -234,7 +234,7 @@ rest:
     }
 }
 
-void func_800C07F4(s32 arg0) {
+void BashHeroThrow(s32 arg0) {
     VECTOR pos;
     HeroInfo *h;
     subengine *s;
@@ -289,7 +289,7 @@ done:
     D_8009D73C(arg0);
 }
 
-void func_800C09F4(s32 arg0) {
+void SetBashHeroBigWeight(s32 arg0) {
     HeroInfo *h;
     EXTengine *p;
     HeroInfo *base = Heroes;
@@ -329,7 +329,7 @@ void func_800C09F4(s32 arg0) {
     PlaySfx(0x453, NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
-void func_800C0BAC(s32 arg0) {
+void BashHeroBigWeight(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
     EXTengine *pu;
@@ -377,7 +377,7 @@ void func_800C0BAC(s32 arg0) {
     }
 }
 
-void func_800C0DE4(s32 arg0) {
+void SetBashHeroDead(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base2;
 
@@ -409,7 +409,7 @@ void func_800C0DE4(s32 arg0) {
     func_800898EC(arg0);
 }
 
-void func_800C0F14(s32 arg0) {
+void SetBashHeroWinner(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
     HeroInfo *base2;
@@ -462,7 +462,7 @@ void func_800C0F14(s32 arg0) {
     func_80089FA4(arg0);
 }
 
-void func_800C1190(s32 arg0) {
+void BashHeroWinner(s32 arg0) {
     HeroInfo *h;
     s32 dy;
 
@@ -486,7 +486,7 @@ void func_800C1190(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800C1278(s32 arg0) {
+void SetBashHeroLoser(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
     HeroInfo *base2;
@@ -537,7 +537,7 @@ void func_800C1278(s32 arg0) {
     func_80026980(h2->hero);
 }
 
-void func_800C14D4(s32 arg0) {
+void BashHeroLoser(s32 arg0) {
     HeroInfo *h;
     s32 dy;
 
@@ -557,7 +557,7 @@ void func_800C14D4(s32 arg0) {
     func_8008502C(arg0);
 }
 
-NAS *func_800C159C(player, mask, unused, cone)
+NAS *BashHero2ObjectCollision(player, mask, unused, cone)
     s32 player;
     s32 mask;
     s32 unused;
@@ -647,7 +647,7 @@ NAS *func_800C159C(player, mask, unused, cone)
     return NULL;
 }
 
-NAS *func_800C1848(idx, cone)
+NAS *BashHeroGrabObject(idx, cone)
     s32 idx;
     u16 cone;
 {
@@ -725,7 +725,7 @@ static inline void func_800C1A30_bounce(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, 
 #define BOUNCE(m1, m2) \
     func_800C1A30_bounce(&(m1)->x_vel, &(m1)->z_vel, (m1)->mass, &(m2)->x_vel, &(m2)->z_vel, (m2)->mass)
 
-s32 func_800C1A30(s32 arg0) {
+s32 BashHeroKickCollision(s32 arg0) {
     VECTOR pos;
     NAS *own;
     EXTengine *obj;
@@ -977,7 +977,7 @@ s32 func_800C1A30(s32 arg0) {
     return hit;
 }
 
-s32 func_800C284C(s32 idx) {
+s32 BashHeroCarryCollision(s32 idx) {
     VECTOR v;
     subengine *sub;
     s32 hit;
@@ -1068,7 +1068,7 @@ s32 func_800C284C(s32 idx) {
     return hit;
 }
 
-void *func_800C2B60(s32 idx, s32 mask) {
+void *BashHeroObjectAhead(s32 idx, s32 mask) {
     NAS *n;
     EXTengine *he;
     EXTengine *e;
@@ -1094,7 +1094,7 @@ void *func_800C2B60(s32 idx, s32 mask) {
     return 0;
 }
 
-void func_800C2C70(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, s16 mb) {
+void BashShareMomentum(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, s16 mb) {
     s32 total;
     s32 r;
     s32 q;
@@ -1120,7 +1120,7 @@ void func_800C2C70(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, s16 mb) {
     }
 }
 
-void func_800C2DAC(s32 arg0) {
+void BashHeroDead(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
@@ -1137,7 +1137,7 @@ void func_800C2DAC(s32 arg0) {
     }
 }
 
-void func_800C2E58(s32 arg0) {
+void SetBashHeroThrow(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
@@ -1149,17 +1149,17 @@ void func_800C2E58(s32 arg0) {
     h->hero_weapon_timer = 0;
 }
 
-void func_800C2EC8(s32 arg0) {
+void SetBashHeroCarry(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     SetHeroSeq(arg0, 0x11);
 }
 
-void func_800C2F14(s32 arg0) {
+void SetBashHeroHold(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     SetHeroSeq(arg0, 0x10);
 }
 
-void func_800C2F60(s32 arg0) {
+void SetBashHeroPickup(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
@@ -1168,7 +1168,7 @@ void func_800C2F60(s32 arg0) {
     h->hero_weapon_timer = 0;
 }
 
-s32 func_800C2FB0(s32 arg0) {
+s32 BashSpacePadHook(s32 arg0) {
     u32 m;
 
     if (D_8005A614[arg0 + 0x5C] != 0) {

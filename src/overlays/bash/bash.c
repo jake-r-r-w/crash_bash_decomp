@@ -3,7 +3,7 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
-void func_800B3A38(void) {
+void InitialiseBASHFirst(void) {
     u8 *g;
     void **p;
     void **p2;
@@ -11,16 +11,16 @@ void func_800B3A38(void) {
     void **p4;
     void *t;
 
-    D_8009D6E8.unk68 = func_800BB1B4;
-    D_8009D6E8.unk38 = func_800B4AB0;
-    D_8009D6E8.unk5C = func_800BEF00;
-    D_8009D6E8.unk60 = func_800BEDE8;
-    D_8009D6E8.unk4C = func_800C159C;
-    D_8009D6E8.unk50 = func_800C1848;
-    D_8009D6E8.unk54 = func_800C1A30;
-    D_8009D6E8.unk58 = func_800C284C;
+    D_8009D6E8.unk68 = BASH_KeepInBounds;
+    D_8009D6E8.unk38 = Bash_HeroBot;
+    D_8009D6E8.unk5C = BashHero_ExtraEffects;
+    D_8009D6E8.unk60 = BashHeroesTouched;
+    D_8009D6E8.unk4C = BashHero2ObjectCollision;
+    D_8009D6E8.unk50 = BashHeroGrabObject;
+    D_8009D6E8.unk54 = BashHeroKickCollision;
+    D_8009D6E8.unk58 = BashHeroCarryCollision;
     D_800C478C = NULL;
-    func_800BB3D0();
+    BashInitCrateHooks();
     D_8009E298 = BashASTIndex(0x206);
     D_800C46EC = EngineTemplate;
     g = D_8005A614;
@@ -38,7 +38,7 @@ void func_800B3A38(void) {
         *p = t;
         D_8009D900 = D_800C30A0;
         if (D_8005A646 & 0x80) {
-            D_8009D724 = func_800C2FB0;
+            D_8009D724 = BashSpacePadHook;
         }
         break;
     case 2:
@@ -53,7 +53,7 @@ void func_800B3A38(void) {
         }
         *p2 = t;
         D_8009D900 = D_800C3114;
-        D_8009D70C = func_800B44B0;
+        D_8009D70C = BashSnowMoveHero;
         break;
     case 3:
         D_8009D8F4 = D_800C31AC;
@@ -67,10 +67,10 @@ void func_800B3A38(void) {
         }
         *p3 = t;
         D_8009D900 = D_800C3188;
-        D_8009D724 = func_800B95F0;
+        D_8009D724 = BashFirePowerup;
         break;
     case 0x20:
-        D_8009D724 = func_800B95F0;
+        D_8009D724 = BashFirePowerup;
         g[0x52] = 9;
         g[0x53] = 9;
         break;
@@ -92,7 +92,7 @@ void func_800B3A38(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/bash/bash", D_800B32B8);
 
-void func_800B3DD8(void) {
+void InitialiseBASH(void) {
     u8 *g;
     s32 i;
     s16 a;
@@ -148,8 +148,8 @@ void func_800B3DD8(void) {
     D_800C46B4 = NULL;
     D_800C4788 = Random(0x12);
     D_800C46AC = 0x96;
-    func_800B7E74();
-    func_800BAF68();
+    BashShuffleDropPoints();
+    BashSpaceClearTiles();
     func_80086D88();
     for (i = 0; i < 4; i++) {
         a = get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z);
@@ -162,64 +162,64 @@ void func_800B3DD8(void) {
     switch (D_8005A648) {
     case 0:
         World_floor_level = -0x10;
-        func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
-        func_800BAFB4();
+        BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
+        BashDropFirstCrates();
         InitAmbience(&D_800C39C0);
         break;
     case 1:
         World_floor_level = -0x10;
-        func_800B8314();
+        BashSpaceInitTiles();
         D_800C478A = (Random(0xA) + 0xA) * 0x1E;
-        D_8009E488.unk8 = func_800BAE98;
+        D_8009E488.unk8 = BashSpaceBreakTile;
         if (D_8005A646 & 0x80) {
-            func_800B710C(6, 7, 8, 8, 0, 0xE, 2, 0, 0);
+            BashSetCrateMix(6, 7, 8, 8, 0, 0xE, 2, 0, 0);
         } else {
-            func_800B710C(0xA, 0xA, 0xC, 0xE, 0xA, 4, 2, 0, 0);
+            BashSetCrateMix(0xA, 0xA, 0xC, 0xE, 0xA, 4, 2, 0, 0);
         }
-        func_800BAFB4();
+        BashDropFirstCrates();
         break;
     case 2:
         World_floor_level = -0x10;
         D_8009E488.unk0 = D_800C395C;
         D_8009D6F4 = D_800C3984;
         D_800C478A = (Random(0xA) + 0xA) * 0x1E;
-        func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
+        BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         D_8005A5DC = 3;
         for (i = 0; i < 4; i++) {
             Heroes[i].hero_move->velocity_calc = D_8005A5DC;
         }
-        func_800BB2BC();
+        BashSnowInitHeroMove();
         CreateNAS(0, World_floor_level, 0, 0x1101, 0x11);
         CreateNAS(0, World_floor_level, 0, 0x1102, 0x11);
-        func_800BAFB4();
+        BashDropFirstCrates();
         break;
     case 3:
         World_floor_level = 0;
         D_800C478A = Random(0x1E) + 0x1E;
-        func_800B710C(6, 6, 6, 6, 0xE, 2, 0, 0, 0);
-        func_800BAFB4();
+        BashSetCrateMix(6, 6, 6, 6, 0xE, 2, 0, 0, 0);
+        BashDropFirstCrates();
         InitAmbience(&D_800C39D8);
         break;
     case 0x20:
         Heroes[2].hero_shadow->flags = 0;
         World_floor_level = -0x10;
         Heroes[3].hero_shadow->flags = 0;
-        func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
-        func_800BAFB4();
+        BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
+        BashDropFirstCrates();
         func_80095258(*(u8 **)D_80058AD0);
-        D_8009F8B4 = func_800BAC10;
+        D_8009F8B4 = BashDrawView;
         World_floor_level = 0;
         break;
     }
 }
 
-void func_800B432C(void) {
+void UpdateBASH(void) {
     s32 i;
     s16 id;
     s16 *p;
 
     func_80086F78();
-    func_800BB7E8();
+    BashCountObjects();
     func_80086D88();
     if (D_8009D908 != 0) {
         if (D_800C3B40 == -1) {
@@ -228,7 +228,7 @@ void func_800B432C(void) {
                 D_8009D87C[i].unk0 = 0x1A;
             }
             p = &D_800C3B40;
-            *p = func_800B6DA4(0x63);
+            *p = BashAI_PickVictim(0x63);
             id = *p;
             if (id != -1 && id < 4) {
                 D_8009D87C[id].unk4 = 0x30;
@@ -244,24 +244,24 @@ void func_800B432C(void) {
     case 0:
     case 3:
         DoAmbience();
-        func_800B7358();
+        BashCrateMaster();
         break;
     case 1:
-        func_800BAD70();
-        func_800B8578();
-        func_800B7358();
+        BashSpaceMarkHoles();
+        BashSpaceTileEdges();
+        BashCrateMaster();
         break;
     case 2:
-        func_800B8B00();
-        func_800B7358();
+        BashSnowMarkPenguin();
+        BashCrateMaster();
         break;
     case 32:
-        func_800B7358();
+        BashCrateMaster();
         break;
     }
 }
 
-void func_800B44B0(s32 arg0) {
+void BashSnowMoveHero(s32 arg0) {
     EXTengine *e = Heroes[arg0].hero_eng;
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
@@ -316,7 +316,7 @@ void func_800B44B0(s32 arg0) {
     }
 }
 
-s32 func_800B46B8(s32 arg0) {
+s32 BashAI_EscapeAngle(s32 arg0) {
     s32 i;
     s32 dx;
     s32 dz;
@@ -340,7 +340,7 @@ s32 func_800B46B8(s32 arg0) {
     return 0;
 }
 
-void func_800B4848(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev) {
+void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev) {
     HeroInfo *base;
     HeroInfo *h;
     HeroInfo *o;
@@ -406,7 +406,7 @@ void func_800B4848(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/bash/bash", D_800B3424);
 
-void func_800B4AB0(s32 arg0) {
+void Bash_HeroBot(s32 arg0) {
     s32 unused[6];
     EXTbotai *ai;
     u32 *dirs;
@@ -515,10 +515,10 @@ void func_800B4AB0(s32 arg0) {
             }
         }
     }
-    func_800B5E28(arg0);
+    BashAI_ScanAhead(arg0);
     switch (ai->AImode) {
     case 21:
-        tmp = func_800B46B8(arg0);
+        tmp = BashAI_EscapeAngle(arg0);
         if (tmp != 0) {
             u32 *t;
 
@@ -561,7 +561,7 @@ void func_800B4AB0(s32 arg0) {
         ai->AImode = 7;
         break;
     case 7:
-        if (func_800BB100(arg0) != 0) {
+        if (BashAI_HazardAhead(arg0) != 0) {
             ai->AIpad |= 0x100;
             break;
         }
@@ -590,11 +590,11 @@ void func_800B4AB0(s32 arg0) {
             ai->AImode = 4;
             break;
         }
-        tmp = func_800B46B8(arg0);
+        tmp = BashAI_EscapeAngle(arg0);
         if (tmp != 0) {
             ang = tmp;
         }
-        if (func_800B6138(arg0) != 0) {
+        if (BashAI_AvoidAhead(arg0) != 0) {
             u32 *t;
 
             t = (u32 *)D_80051244;
@@ -602,7 +602,7 @@ void func_800B4AB0(s32 arg0) {
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
         }
-        func_800B4848(arg0, mate, ang, (BashAiState *)ai, target);
+        BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, target);
         r = func_800864CC(arg0, 0x40);
         if (r == target) {
             ai->TargetPlayer = -1;
@@ -612,7 +612,7 @@ void func_800B4AB0(s32 arg0) {
                    (Heroes[r].hero_object != NULL || !(rnd & 0x10))) {
             ai->AIpad |= 0x8000;
         }
-        fux = func_800C2B60(arg0, 3);
+        fux = BashHeroObjectAhead(arg0, 3);
         if (fux == NULL) {
             u32 *t;
 
@@ -659,7 +659,7 @@ void func_800B4AB0(s32 arg0) {
             ai->AImode = 10;
             break;
         }
-        tmp = func_800B46B8(arg0);
+        tmp = BashAI_EscapeAngle(arg0);
         if (tmp != 0) {
             ang = tmp;
         }
@@ -667,7 +667,7 @@ void func_800B4AB0(s32 arg0) {
             ai->AImode = 1;
             break;
         }
-        if (func_800B6138(arg0) != 0) {
+        if (BashAI_AvoidAhead(arg0) != 0) {
             u32 *t;
 
             t = (u32 *)D_80051244;
@@ -676,14 +676,14 @@ void func_800B4AB0(s32 arg0) {
             goto done;
         }
         if (OVLG->mode == 3) {
-            func_800B4848(arg0, mate, ang, (BashAiState *)ai, target);
+            BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, target);
         }
         r = func_800864CC(arg0, 0x40);
         if (r != target && (Heroes[r].hero_immunity | Heroes[r].hero_frozen) == 0 &&
             (OVLG->p2_active == 0 || r != mate) && Random(3) == 0) {
             ai->AIpad |= 0x8000;
         }
-        fux = func_800C2B60(arg0, 3);
+        fux = BashHeroObjectAhead(arg0, 3);
         if (fux == NULL) {
             u32 *t;
 
@@ -775,11 +775,11 @@ void func_800B4AB0(s32 arg0) {
             ai->AImode = 1;
             break;
         }
-        tmp = func_800B46B8(arg0);
+        tmp = BashAI_EscapeAngle(arg0);
         if (tmp != 0) {
             ang = tmp;
         }
-        if (func_800B6138(arg0) != 0) {
+        if (BashAI_AvoidAhead(arg0) != 0) {
             u32 *t;
 
             t = (u32 *)D_80051244;
@@ -787,9 +787,9 @@ void func_800B4AB0(s32 arg0) {
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
         }
-        func_800B4848(arg0, mate, ang, (BashAiState *)ai, -1);
+        BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, -1);
         if (dist < 0x4000) {
-            r = func_800B6DA4(arg0);
+            r = BashAI_PickVictim(arg0);
             if (r != -1) {
                 ai->AImode = 0x15;
                 ai->AIsleep = 4;
@@ -808,7 +808,7 @@ void func_800B4AB0(s32 arg0) {
             ai->AImode = 1;
             ai->AIpad |= 0x8000;
         }
-        fux = func_800C2B60(arg0, 3);
+        fux = BashHeroObjectAhead(arg0, 3);
         if (fux == NULL) {
             u32 *t;
 
@@ -836,21 +836,21 @@ void func_800B4AB0(s32 arg0) {
         goto steer;
     case 5:
         if (ai->AIsleep != 0) {
-            tmp = func_800B46B8(arg0);
+            tmp = BashAI_EscapeAngle(arg0);
             if (tmp != 0) {
                 ang = tmp;
             }
-            if (func_800B6138(arg0) != 0) {
+            if (BashAI_AvoidAhead(arg0) != 0) {
                 break;
             }
-            func_800B4848(arg0, mate, ang, (BashAiState *)ai, -1);
+            BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, -1);
             r = func_800864CC(arg0, 0x40);
             if (r != -1 && (D_8005A680[0] == 0 || r != mate)) {
                 ai->TargetPlayer = -1;
                 ai->AImode = 1;
                 ai->AIpad |= 0x8000;
             }
-            fux = func_800C2B60(arg0, 3);
+            fux = BashHeroObjectAhead(arg0, 3);
             if (fux != NULL) {
                 switch (fux->whatami) {
                 case 3:
@@ -891,11 +891,11 @@ void func_800B4AB0(s32 arg0) {
             ai->pTargetNas = NULL;
             break;
         }
-        tmp = func_800B46B8(arg0);
+        tmp = BashAI_EscapeAngle(arg0);
         if (tmp != 0) {
             ang = tmp;
         }
-        if (func_800B6138(arg0) != 0) {
+        if (BashAI_AvoidAhead(arg0) != 0) {
             u32 *t;
 
             t = (u32 *)D_80051244;
@@ -908,7 +908,7 @@ void func_800B4AB0(s32 arg0) {
             ai->AImode = 13;
             ai->AIsleep = 5;
         }
-        if (func_800C2B60(arg0, 3) != NULL) {
+        if (BashHeroObjectAhead(arg0, 3) != NULL) {
             ai->AImode = 13;
             ai->AIsleep = 5;
         }
@@ -983,7 +983,7 @@ void func_800B4AB0(s32 arg0) {
         if (Heroes[arg0].hero_object == NULL) {
             ai->AImode = 1;
         }
-        r = func_800B6DA4(arg0);
+        r = BashAI_PickVictim(arg0);
         if (r != -1) {
             ai->TargetPlayer = r;
             ai->pTargetNas = NULL;
@@ -999,8 +999,8 @@ void func_800B4AB0(s32 arg0) {
             break;
         }
         if (ai->AIinitial_delay == 0 && ai->AItimer2 == 0 &&
-            func_800B6FE0(arg0) > (D_8009D87C[arg0].unk0 << 5) + 0x400) {
-            r = func_800B6DA4(arg0);
+            BashAI_NearestEnemy(arg0) > (D_8009D87C[arg0].unk0 << 5) + 0x400) {
+            r = BashAI_PickVictim(arg0);
             if (r != -1) {
                 ai->AImode = 0x15;
                 ai->AIsleep = 4;
@@ -1011,9 +1011,9 @@ void func_800B4AB0(s32 arg0) {
             }
         }
         if (D_8005A648 == 3) {
-            func_800B4848(arg0, mate, ang, (BashAiState *)ai, -1);
+            BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, -1);
         }
-        if (ai->AIsleep == 0 && func_800B62EC(arg0) != 0) {
+        if (ai->AIsleep == 0 && BashAI_ChooseTarget(arg0) != 0) {
             if (ai->pTargetNas != NULL) {
                 ai->AImode = 2;
             } else {
@@ -1029,7 +1029,7 @@ done:
     pad->angle = ai->AIang;
 }
 
-void func_800B5E28(s32 arg0) {
+void BashAI_ScanAhead(s32 arg0) {
     EXTengine *eng;
     EXTheromove *mv;
     s32 rx;
@@ -1103,7 +1103,7 @@ void func_800B5E28(s32 arg0) {
     }
 }
 
-s32 func_800B6138(s32 arg0) {
+s32 BashAI_AvoidAhead(s32 arg0) {
     EXTbotai *ai;
     u16 w[3];
     s32 i;
@@ -1177,7 +1177,7 @@ s32 func_800B6138(s32 arg0) {
     return 0;
 }
 
-s32 func_800B62EC(s32 player) {
+s32 BashAI_ChooseTarget(s32 player) {
     NAS *bestNas;
     s32 bestHeroScore;
     s32 r;
@@ -1225,7 +1225,7 @@ s32 func_800B62EC(s32 player) {
     pz = he->unk10.z;
     Random(0x100);
     bestNasScore = 0;
-    if (func_800B6FE0(player) < 0x300) {
+    if (BashAI_NearestEnemy(player) < 0x300) {
         wNear = 0;
         wFar = 8;
     } else {
@@ -1511,7 +1511,7 @@ s32 func_800B62EC(s32 player) {
     return 0;
 }
 
-s32 func_800B6DA4(s32 arg0) {
+s32 BashAI_PickVictim(s32 arg0) {
     s32 i;
     s32 sum;
     s32 r;
@@ -1545,7 +1545,7 @@ s32 func_800B6DA4(s32 arg0) {
     return -1;
 }
 
-void func_800B6F0C(void) {
+void FinishBashLevel(void) {
     HeroInfo *h;
     s32 i;
     s32 best;
@@ -1570,7 +1570,7 @@ void func_800B6F0C(void) {
     }
 }
 
-s32 func_800B6FE0(s32 arg0) {
+s32 BashAI_NearestEnemy(s32 arg0) {
     HeroInfo *base;
     HeroInfo *o;
     HeroInfo *h;
@@ -1615,7 +1615,7 @@ s32 func_800B6FE0(s32 arg0) {
     return r;
 }
 
-void func_800B710C(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5,
+void BashSetCrateMix(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5,
                    u16 arg6, u16 arg7, u16 arg8) {
     s32 i;
     s32 k;
@@ -1662,7 +1662,7 @@ void func_800B710C(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5,
     D_800C3B84 = Random(0x20) + 0x14;
 }
 
-void func_800B7358(void) {
+void BashCrateMaster(void) {
     u32 n;
     s32 left;
     BashGridCell *c;
@@ -1694,7 +1694,7 @@ void func_800B7358(void) {
                 pu = r;
                 D_800C3B32 = Random(10) + 2;
             }
-            func_800B7D20(pu);
+            BashDropCrates(pu);
         } else {
             D_800C3B32 = Random(40) + 5;
         }
@@ -1706,7 +1706,7 @@ void func_800B7358(void) {
         if (D_800C3B34 != 0) {
             D_800C3B34--;
         } else {
-            c = (BashGridCell *)func_800B8040(D_800C3B86);
+            c = (BashGridCell *)BashFindDropPoint(D_800C3B86);
             if (c != NULL) {
                 CreateNAS(c->x, World_floor_level, c->z, 0x20C, 0x11);
             }
@@ -1816,7 +1816,7 @@ void func_800B7358(void) {
     }
 }
 
-void func_800B7D20(u16 arg0) {
+void BashDropCrates(u16 arg0) {
     s32 i;
     BashPair *p;
     s32 t;
@@ -1828,7 +1828,7 @@ void func_800B7D20(u16 arg0) {
         if (i >= arg0) {
             return;
         }
-        p = func_800B8040(D_800C3B86);
+        p = BashFindDropPoint(D_800C3B86);
         if (p != NULL) {
             a = p->unk0;
             b = p->unk4;
@@ -1845,12 +1845,12 @@ void func_800B7D20(u16 arg0) {
             if (OVLG->mode == 3 && t == 4) {
                 t = 3;
             }
-            func_800BBA14(a, 0, b, t, -1);
+            CreateCrate(a, 0, b, t, -1);
         }
     }
 }
 
-void func_800B7E74(void) {
+void BashShuffleDropPoints(void) {
     s32 i;
     s32 j;
     s32 x;
@@ -1901,7 +1901,7 @@ void func_800B7E74(void) {
     } while (n < 0x258);
 }
 
-BashPair *func_800B8040(u8 *arg0) {
+BashPair *BashFindDropPoint(u8 *arg0) {
     BashGridCell *best;
     BashGridCell *cell;
     u16 bestn;
@@ -2002,7 +2002,7 @@ BashPair *func_800B8040(u8 *arg0) {
     return (BashPair *)best;
 }
 
-void func_800B8314(void) {
+void BashSpaceInitTiles(void) {
     s32 j;
     s32 i;
     BashCell *p;
@@ -2073,7 +2073,7 @@ void func_800B8314(void) {
     }
 }
 
-void func_800B8578(void) {
+void BashSpaceTileEdges(void) {
     s32 i;
     s32 j;
     BashObj *obj;
@@ -2206,7 +2206,7 @@ void PlotBashPenguin(NAS *nas) {
                     }
                     func_800250B0(nas);
                 }
-                func_800B8C9C(eng);
+                BashPenguinPush(eng);
                 eng->unk1E += 0x1C7;
                 break;
             case 4:
@@ -2239,7 +2239,7 @@ void PlotBashPenguin(NAS *nas) {
     eng->unk5E = 1;
 }
 
-void func_800B8B00(void) {
+void BashSnowMarkPenguin(void) {
     s32 lo, hi;
     u32 x, z;
     u32 xhi, zhi;
@@ -2273,7 +2273,7 @@ void func_800B8B00(void) {
     }
 }
 
-void func_800B8C9C(EXTengine *self) {
+void BashPenguinPush(EXTengine *self) {
     FlagRecord *rec;
     FlagRecord *r;
     s32 etop;
@@ -2463,7 +2463,7 @@ void PlotTumbler(NAS *nas) {
             return;
         }
     spawn:
-        func_800BB4AC((BashTumbler *)eng, move, hero);
+        BashTumblerAim((BashTumbler *)eng, move, hero);
         child = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1108, 0x11);
         if (child != NULL) {
             ceng = child->Engine;
@@ -2478,13 +2478,13 @@ void PlotTumbler(NAS *nas) {
     case 2:
         if (GravitateNas(nas) != 0) {
             eng->unk10.y += 0x20;
-            func_800BF404(eng, 0, -1, 0);
+            CrateCollide(eng, 0, -1, 0);
             eng->unk10.y -= 0x20;
             func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 0);
             func_800270B0(nas);
             return;
         }
-        if (func_800BF404(eng, 0, obj->unk16, 1) != 0) {
+        if (CrateCollide(eng, 0, obj->unk16, 1) != 0) {
             eng->unk10.y += 0x80;
             func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
             func_800270B0(nas);
@@ -2514,7 +2514,7 @@ void PlotTumbler(NAS *nas) {
     }
 }
 
-void func_800B94C4(s32 arg0, u16 arg1) {
+void BashGivePowerup(s32 arg0, u16 arg1) {
     HeroInfo *h2;
     HeroInfo *base2;
     (&Heroes[arg0])->hero_pu = arg1;
@@ -2549,7 +2549,7 @@ void func_800B94C4(s32 arg0, u16 arg1) {
     }
 }
 
-s32 func_800B95F0(s32 arg0)
+s32 BashFirePowerup(s32 arg0)
 {
     HeroInfo *h;
     PadButtons *p;
@@ -2608,7 +2608,7 @@ s32 func_800B95F0(s32 arg0)
     return 0;
 }
 
-s32 func_800B97A8(x, y, z, size, skip, mask)
+s32 BashMissileHitTest(x, y, z, size, skip, mask)
     s32 x;
     s32 y;
     s32 z;
@@ -2774,11 +2774,11 @@ void PlotBash8way(NAS *nas) {
                     dead = 0;
                     sub->unk12 = a;
                     if (y >= World_floor_level) {
-                        func_800BA8A4(x, World_floor_level, z, nas->UserInfo.user1, kind);
+                        BashSpawnMissileExplode(x, World_floor_level, z, nas->UserInfo.user1, kind);
                         sub->flags = 0;
                     }
-                    if (func_800B97A8(x, y, z, 0x20, nas->UserInfo.user1, 0xA) != -1) {
-                        func_800BA8A4(x, World_floor_level, z, nas->UserInfo.user1, kind);
+                    if (BashMissileHitTest(x, y, z, 0x20, nas->UserInfo.user1, 0xA) != -1) {
+                        BashSpawnMissileExplode(x, World_floor_level, z, nas->UserInfo.user1, kind);
                         sub->flags = 0;
                     }
                     sub->unk52 = 1;
@@ -2908,11 +2908,11 @@ void PlotBashHomer(NAS *nas) {
             y = eng->unk10.y;
             z = eng->unk10.z;
             if (y >= World_floor_level || nas->UserInfo.flags == 0) {
-                func_800BA8A4(x, World_floor_level, z, nas->UserInfo.user1, 0x1B);
+                BashSpawnMissileExplode(x, World_floor_level, z, nas->UserInfo.user1, 0x1B);
                 dead = 1;
             }
-            if (func_800B97A8(x, y, z, 0x80, nas->UserInfo.user1, 0xA) != -1) {
-                func_800BA8A4(x, y, z, nas->UserInfo.user1, 0x1B);
+            if (BashMissileHitTest(x, y, z, 0x80, nas->UserInfo.user1, 0xA) != -1) {
+                BashSpawnMissileExplode(x, y, z, nas->UserInfo.user1, 0x1B);
                 dead = 1;
             }
             nas->UserInfo.flags--;
@@ -3024,7 +3024,7 @@ void PlotBashShox(NAS *nas) {
                 }
                 sub->unk52 = 1;
             }
-            hit = func_800B97A8(px, py, pz, (size + 0x40) & 0xFFFF, nas->UserInfo.user1, 0xA);
+            hit = BashMissileHitTest(px, py, pz, (size + 0x40) & 0xFFFF, nas->UserInfo.user1, 0xA);
             if (hit != -1 && hit < 4) {
                 base = Heroes;
                 h = &base[hit];
@@ -3100,7 +3100,7 @@ void InitMissileExplode(NAS *nas) {
     }
 }
 
-void func_800BA8A4(s32 x, s32 y, s32 z, s32 arg3, s32 arg4) {
+void BashSpawnMissileExplode(s32 x, s32 y, s32 z, s32 arg3, s32 arg4) {
     NAS *n;
 
     n = CreateNAS(x, y - 0x80, z, 0x1106, 0x11);
@@ -3162,7 +3162,7 @@ void InitBashPenguin(NAS *nas) {
         }
         eng->unk5D = 1;
         FetchDefaultColBox(eng, 0x50);
-        func_800B8B00();
+        BashSnowMarkPenguin();
     }
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -3200,7 +3200,7 @@ void InitSnowGlint(NAS *nas) {
     }
 }
 
-void func_800BAC10(void) {
+void BashDrawView(void) {
     u8 *vp = D_8009F6F4;
     func_80093038();
     func_80018B08((GfxViewport *)vp, (GfxCamera *)D_80051640);
@@ -3208,7 +3208,7 @@ void func_800BAC10(void) {
     func_8009440C();
 }
 
-s32 func_800BAC5C(EXTengine *eng) {
+s32 GetBashContour(EXTengine *eng) {
     s32 x = (eng->unk10.x + 0x800) >> 9;
     s32 z = (eng->unk10.z + 0x800) >> 9;
     s32 dy = eng->unk10.y - World_floor_level;
@@ -3222,7 +3222,7 @@ s32 func_800BAC5C(EXTengine *eng) {
     return AddPlatformContour(eng, dy);
 }
 
-u16 func_800BAD0C(s32 arg0, s32 arg1) {
+u16 BashSpaceTileAt(s32 arg0, s32 arg1) {
     s32 x = (arg0 + 0x800) >> 9;
     s32 y = (arg1 + 0x800) >> 9;
 
@@ -3235,7 +3235,7 @@ u16 func_800BAD0C(s32 arg0, s32 arg1) {
     return D_800C3BAC[x][y].unkA;
 }
 
-void func_800BAD70(void) {
+void BashSpaceMarkHoles(void) {
     s32 i, j;
 
     for (j = 2; j < 18; j++) {
@@ -3247,7 +3247,7 @@ void func_800BAD70(void) {
     }
 }
 
-void func_800BAE08(s32 arg0) {
+void BashSpaceDropTile(s32 arg0) {
     EXTengine *eng = Heroes[arg0].hero_eng;
     BashCell *base = D_800C3BAC[0];
     s32 xi = (eng->unk10.x + 0x800) >> 9;
@@ -3261,7 +3261,7 @@ void func_800BAE08(s32 arg0) {
     }
 }
 
-void func_800BAE98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+void BashSpaceBreakTile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     BashCell *c;
     s32 x;
     u8 *g = D_8005A614;
@@ -3280,7 +3280,7 @@ void func_800BAE98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     }
 }
 
-void func_800BAF68(void) {
+void BashSpaceClearTiles(void) {
     s32 i;
     s32 j;
 
@@ -3292,11 +3292,11 @@ void func_800BAF68(void) {
     }
 }
 
-void func_800BAFB4(void) {
-    func_800B7D20(D_800C3B88);
+void BashDropFirstCrates(void) {
+    BashDropCrates(D_800C3B88);
 }
 
-u8 *func_800BAFDC(s32 x, s32 unused, s32 z, u16 flag) {
+u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag) {
     s32 step;
     s32 neg;
     s32 nx;
@@ -3341,14 +3341,14 @@ u8 *func_800BAFDC(s32 x, s32 unused, s32 z, u16 flag) {
     if ((u32)(nz + 0x700) > 0xE00U) {
         nz = z;
     }
-    res = func_800BBA14(xi, 0, nz, 2, -1);
+    res = CreateCrate(xi, 0, nz, 2, -1);
     if (res != NULL) {
         func_80026B70(&D_800C478C, res);
     }
     return res;
 }
 
-s32 func_800BB100(s32 arg0) {
+s32 BashAI_HazardAhead(s32 arg0) {
     EXTbotai *ai = Heroes[arg0].hero_ai;
     s32 i;
     s32 l;
@@ -3385,7 +3385,7 @@ s32 func_800BB100(s32 arg0) {
     return 0;
 }
 
-s32 func_800BB1B4(u8 *arg0) {
+s32 BASH_KeepInBounds(u8 *arg0) {
     s32 temp_a0;
     s32 temp_v1;
     s32 var_a2;
@@ -3432,7 +3432,7 @@ block_17:
     return var_a2;
 }
 
-void func_800BB2BC(void) {
+void BashSnowInitHeroMove(void) {
     s32 i;
     EXTheromove *m;
     for (i = 0; i < 4; i++) {
@@ -3453,25 +3453,25 @@ void func_800BB2BC(void) {
     }
 }
 
-void func_800BB360(void) {
+void FirstTriggersBASH(void) {
 }
 
-void func_800BB368(void) {
+void BashRestartLevel(void) {
 }
 
-void func_800BB370(void) {
-    D_8005AA70[0] = (s32)func_800B3A38;
-    D_8005AA70[1] = (s32)func_800B3DD8;
-    D_8005AA70[2] = (s32)func_800B3DD8;
-    D_8005AA70[3] = (s32)func_800B432C;
-    D_8005AA70[5] = (s32)func_800BB360;
-    D_8005AA70[9] = (s32)func_800BAC5C;
+void BASHSetUp(void) {
+    D_8005AA70[0] = (s32)InitialiseBASHFirst;
+    D_8005AA70[1] = (s32)InitialiseBASH;
+    D_8005AA70[2] = (s32)InitialiseBASH;
+    D_8005AA70[3] = (s32)UpdateBASH;
+    D_8005AA70[5] = (s32)FirstTriggersBASH;
+    D_8005AA70[9] = (s32)GetBashContour;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
-    D_8005AA70[10] = (s32)func_800B6F0C;
+    D_8005AA70[10] = (s32)FinishBashLevel;
 }
 
-void func_800BB3D0(void) {
+void BashInitCrateHooks(void) {
     D_8009E464 = BashASTIndex(0x201);
     D_8009E468 = BashASTIndex(0x202);
     D_8009E488.unk4 = D_8009E3B4;
@@ -3480,7 +3480,7 @@ void func_800BB3D0(void) {
     D_8009E488.unk0 = D_8009E3DC;
 }
 
-void func_800BB4AC(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2) {
+void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2) {
     s32 y;
     s32 vel;
     s32 v2;
