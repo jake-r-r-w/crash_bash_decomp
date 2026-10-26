@@ -19024,7 +19024,7 @@
   "src": "src/overlays/arkenoid/arkenoid.c"
  },
  "arkenoid:800C01B8": {
-  "asm": "asm/nonmatchings/overlays/arkenoid/arkenoid/func_800C01B8.s",
+  "asm": "asm/nonmatchings/overlays/arkenoid/arkenoid/ArkFreeBallSlot.s",
   "bin": "disc/arkenoid.bin",
   "calls": [
    "80022A3C"
@@ -19308,7 +19308,7 @@
   "src": "src/overlays/arkenoid/arkenoid.c"
  },
  "arkenoid:800C0B8C": {
-  "asm": "asm/nonmatchings/overlays/arkenoid/arkenoid/func_800C0B8C.s",
+  "asm": "asm/nonmatchings/overlays/arkenoid/arkenoid/AR_RestartLevel.s",
   "bin": "disc/arkenoid.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -19336,7 +19336,7 @@
   "src": "src/overlays/arkenoid/arkenoid.c"
  },
  "bash:800B3A38": {
-  "asm": "asm/nonmatchings/overlays/bash/bash/func_800B3A38.s",
+  "asm": "asm/nonmatchings/overlays/bash/bash/InitialiseBASHFirst.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800BB3D0"
@@ -19563,7 +19563,7 @@
   "src": "src/overlays/bash/bash.c"
  },
  "bash:800B6FE0": {
-  "asm": "asm/nonmatchings/overlays/bash/bash/func_800B6FE0.s",
+  "asm": "asm/nonmatchings/overlays/bash/bash/BashAI_NearestEnemy.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80032490"
@@ -20260,7 +20260,7 @@
   "src": "src/overlays/bash/bash.c"
  },
  "bash:800BB1B4": {
-  "asm": "asm/nonmatchings/overlays/bash/bash/func_800BB1B4.s",
+  "asm": "asm/nonmatchings/overlays/bash/bash/BASH_KeepInBounds.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "a239e257d7ad651c",
@@ -20288,7 +20288,7 @@
   "src": "src/overlays/bash/bash.c"
  },
  "bash:800BB360": {
-  "asm": "asm/nonmatchings/overlays/bash/bash/func_800BB360.s",
+  "asm": "asm/nonmatchings/overlays/bash/bash/FirstTriggersBASH.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -20302,7 +20302,7 @@
   "src": "src/overlays/bash/bash.c"
  },
  "bash:800BB368": {
-  "asm": "asm/nonmatchings/overlays/bash/bash/func_800BB368.s",
+  "asm": "asm/nonmatchings/overlays/bash/bash/BashRestartLevel.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -20907,7 +20907,7 @@
   "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C0DE4": {
-  "asm": "asm/nonmatchings/overlays/bash/bahero/func_800C0DE4.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/SetBashHeroDead.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800225C4",
@@ -21000,7 +21000,7 @@
   "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C159C": {
-  "asm": "asm/nonmatchings/overlays/bash/bahero/func_800C159C.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHero2ObjectCollision.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800142D4",
@@ -21098,7 +21098,7 @@
   "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C2C70": {
-  "asm": "asm/nonmatchings/overlays/bash/bahero/func_800C2C70.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashShareMomentum.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "0b1366fd74004bfd",
@@ -25515,7 +25515,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "engine:80078CA4": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_80078CA4.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/InitialiseNasSystem.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80011654",
@@ -25677,7 +25677,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A26C": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A26C.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/GravitateNas.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80025BBC",
@@ -25909,7 +25909,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A91C": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A91C.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/DoAmbience.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -25926,7 +25926,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A9D0": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A9D0.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/InitAmbience.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660"
@@ -30397,7 +30397,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:8009400C": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_8009400C.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/realign_panel_dbase.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "5a8ef59c66180135",
@@ -30560,7 +30560,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80094364": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80094364.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/level_load_map.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001DEF4"
@@ -31213,7 +31213,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:800972BC": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_800972BC.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/camera_count_bottom.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "8b950709f1bf935f",
@@ -31269,7 +31269,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:8009749C": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_8009749C.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/camera_add_frame_list.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "30dca738c4ebe73d",
@@ -31443,7 +31443,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80098428": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80098428.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/anim_item.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095E38",
@@ -35454,7 +35454,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "papu:800B35AC": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B35AC.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/InitialisePAPUFirst.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800B7E38"
@@ -35462,7 +35462,7 @@
   "fp": "1c1aa2d2a2000432",
   "fpn": "516cbe2be166df34",
   "leaf": false,
-  "name": "func_800B35AC",
+  "name": "InitialisePAPUFirst",
   "orig": "func_800B35AC",
   "rom": 760,
   "seg": "overlays/papu/papu",
@@ -35470,7 +35470,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B36D4": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B36D4.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/InitialisePAPU.s",
   "bin": "disc/papu.bin",
   "calls": [
    "8001463C",
@@ -35489,7 +35489,7 @@
   "fp": "b66c1165ad9c8fbb",
   "fpn": "8682cc1df3deb233",
   "leaf": false,
-  "name": "func_800B36D4",
+  "name": "InitialisePAPU",
   "orig": "func_800B36D4",
   "rom": 1056,
   "seg": "overlays/papu/papu",
@@ -35497,7 +35497,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B38FC": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B38FC.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuSetCrateMix.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015590"
@@ -35505,7 +35505,7 @@
   "fp": "94101b7be05091bb",
   "fpn": "4c266eb1235ba9a1",
   "leaf": false,
-  "name": "func_800B38FC",
+  "name": "PapuSetCrateMix",
   "orig": "func_800B38FC",
   "rom": 1608,
   "seg": "overlays/papu/papu",
@@ -35513,7 +35513,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B3B08": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B3B08.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuCrateMaster.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015590",
@@ -35523,7 +35523,7 @@
   "fp": "012cc2a493d01558",
   "fpn": "38a8ef23b56a2432",
   "leaf": false,
-  "name": "func_800B3B08",
+  "name": "PapuCrateMaster",
   "orig": "func_800B3B08",
   "rom": 2132,
   "seg": "overlays/papu/papu",
@@ -35531,7 +35531,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B3D18": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B3D18.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuShuffleDropPoints.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015590"
@@ -35539,7 +35539,7 @@
   "fp": "4338aa446b5f8273",
   "fpn": "a7f7245850ec6d19",
   "leaf": false,
-  "name": "func_800B3D18",
+  "name": "PapuShuffleDropPoints",
   "orig": "func_800B3D18",
   "rom": 2660,
   "seg": "overlays/papu/papu",
@@ -35547,13 +35547,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B3E80": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B3E80.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuFindDropPoint.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "e6f38cfc40dd4375",
   "fpn": "47f6f72afb2872e4",
   "leaf": true,
-  "name": "func_800B3E80",
+  "name": "PapuFindDropPoint",
   "orig": "func_800B3E80",
   "rom": 3020,
   "seg": "overlays/papu/papu",
@@ -35561,7 +35561,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B4154": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B4154.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuSetColumns.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80032F3C"
@@ -35569,7 +35569,7 @@
   "fp": "385769fe4f7b6cc6",
   "fpn": "3bb4e0e244f29916",
   "leaf": false,
-  "name": "func_800B4154",
+  "name": "PapuSetColumns",
   "orig": "func_800B4154",
   "rom": 3744,
   "seg": "overlays/papu/papu",
@@ -35577,13 +35577,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B4204": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B4204.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuMoveColumns.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "668a0db6786ddc84",
   "fpn": "5f66fdd7bd148026",
   "leaf": true,
-  "name": "func_800B4204",
+  "name": "PapuMoveColumns",
   "orig": "func_800B4204",
   "rom": 3920,
   "seg": "overlays/papu/papu",
@@ -35591,13 +35591,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B42C0": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B42C0.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuInitMinionSlots.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "c87a43aae53eca2c",
   "fpn": "84c5c65461795dc5",
   "leaf": true,
-  "name": "func_800B42C0",
+  "name": "PapuInitMinionSlots",
   "orig": "func_800B42C0",
   "rom": 4108,
   "seg": "overlays/papu/papu",
@@ -35654,7 +35654,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B4B9C": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B4B9C.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuMinionFindCrate.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015590",
@@ -35663,7 +35663,7 @@
   "fp": "a14e1b9e489fda50",
   "fpn": "74ce46b925d01e0d",
   "leaf": false,
-  "name": "func_800B4B9C",
+  "name": "PapuMinionFindCrate",
   "orig": "func_800B4B9C",
   "rom": 6376,
   "seg": "overlays/papu/papu",
@@ -35671,7 +35671,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B4D70": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B4D70.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuPickSpawnPoint.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015590"
@@ -35679,7 +35679,7 @@
   "fp": "a4195ea15cf7a20c",
   "fpn": "6a8c68a81f30d550",
   "leaf": false,
-  "name": "func_800B4D70",
+  "name": "PapuPickSpawnPoint",
   "orig": "func_800B4D70",
   "rom": 6844,
   "seg": "overlays/papu/papu",
@@ -35687,7 +35687,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B4EE8": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B4EE8.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/CreatePapuMinion.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80022A3C",
@@ -35702,7 +35702,7 @@
   "fp": "e43dd57a569dff59",
   "fpn": "199d9edfeeb0b659",
   "leaf": false,
-  "name": "func_800B4EE8",
+  "name": "CreatePapuMinion",
   "orig": "func_800B4EE8",
   "rom": 7220,
   "seg": "overlays/papu/papu",
@@ -35747,7 +35747,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B5E44": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B5E44.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuExploRange.s",
   "bin": "disc/papu.bin",
   "calls": [
    "8001463C",
@@ -35758,7 +35758,7 @@
   "fp": "eef9d784aca6dcfd",
   "fpn": "2bc8f46e8c1910aa",
   "leaf": false,
-  "name": "func_800B5E44",
+  "name": "PapuExploRange",
   "orig": "func_800B5E44",
   "rom": 11152,
   "seg": "overlays/papu/papu",
@@ -35766,7 +35766,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B6008": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B6008.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuMinionObjectAhead.s",
   "bin": "disc/papu.bin",
   "calls": [
    "8001463C",
@@ -35775,7 +35775,7 @@
   "fp": "bf2506963324a9d3",
   "fpn": "2629444d77f38125",
   "leaf": false,
-  "name": "func_800B6008",
+  "name": "PapuMinionObjectAhead",
   "orig": "func_800B6008",
   "rom": 11604,
   "seg": "overlays/papu/papu",
@@ -35783,7 +35783,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B61A0": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B61A0.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuHitHeroes.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800142D4",
@@ -35795,7 +35795,7 @@
   "fp": "0239bf6bfd23dbae",
   "fpn": "bedd5dac5f6a19e7",
   "leaf": false,
-  "name": "func_800B61A0",
+  "name": "PapuHitHeroes",
   "orig": "func_800B61A0",
   "rom": 12012,
   "seg": "overlays/papu/papu",
@@ -35803,7 +35803,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B6334": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B6334.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuHitHeroesFlag.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800142D4",
@@ -35814,7 +35814,7 @@
   "fp": "f94aaa871157b59d",
   "fpn": "c5253c86247bde8e",
   "leaf": false,
-  "name": "func_800B6334",
+  "name": "PapuHitHeroesFlag",
   "orig": "func_800B6334",
   "rom": 12416,
   "seg": "overlays/papu/papu",
@@ -35822,7 +35822,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B64AC": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B64AC.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuHitSolids.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800142D4",
@@ -35834,7 +35834,7 @@
   "fp": "01816ac200e95179",
   "fpn": "0157917c847626f2",
   "leaf": false,
-  "name": "func_800B64AC",
+  "name": "PapuHitSolids",
   "orig": "func_800B64AC",
   "rom": 12792,
   "seg": "overlays/papu/papu",
@@ -35842,7 +35842,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B668C": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B668C.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuHitObjects.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800142D4",
@@ -35854,7 +35854,7 @@
   "fp": "3164821df32a5351",
   "fpn": "393164a8ce63881d",
   "leaf": false,
-  "name": "func_800B668C",
+  "name": "PapuHitObjects",
   "orig": "func_800B668C",
   "rom": 13272,
   "seg": "overlays/papu/papu",
@@ -35862,7 +35862,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B6860": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B6860.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuMinionKick.s",
   "bin": "disc/papu.bin",
   "calls": [
    "8001463C",
@@ -35874,7 +35874,7 @@
   "fp": "3cc783326f77bf73",
   "fpn": "bd89cf3eed1bc91f",
   "leaf": false,
-  "name": "func_800B6860",
+  "name": "PapuMinionKick",
   "orig": "func_800B6860",
   "rom": 13740,
   "seg": "overlays/papu/papu",
@@ -35882,7 +35882,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B6D14": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B6D14.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuInitTiles.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015870",
@@ -35893,7 +35893,7 @@
   "fp": "a2a37ed7f12b99de",
   "fpn": "146985e26cb7cb9d",
   "leaf": false,
-  "name": "func_800B6D14",
+  "name": "PapuInitTiles",
   "orig": "func_800B6D14",
   "rom": 14944,
   "seg": "overlays/papu/papu",
@@ -35901,7 +35901,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B6FF8": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B6FF8.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuFloorWave.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80022660"
@@ -35909,7 +35909,7 @@
   "fp": "2844e62c2c1e3387",
   "fpn": "2ef8a61a7a9cb581",
   "leaf": false,
-  "name": "func_800B6FF8",
+  "name": "PapuFloorWave",
   "orig": "func_800B6FF8",
   "rom": 15684,
   "seg": "overlays/papu/papu",
@@ -35917,7 +35917,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7134": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7134.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuUpdateFloor.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800225C4",
@@ -35928,7 +35928,7 @@
   "fp": "f368fbf723532e4c",
   "fpn": "62213e83258cfbf5",
   "leaf": false,
-  "name": "func_800B7134",
+  "name": "PapuUpdateFloor",
   "orig": "func_800B7134",
   "rom": 16000,
   "seg": "overlays/papu/papu",
@@ -35936,7 +35936,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B744C": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B744C.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuHeroOverPit.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80032F3C"
@@ -35944,7 +35944,7 @@
   "fp": "38343fc9a058f206",
   "fpn": "e7645bc802a99cf9",
   "leaf": false,
-  "name": "func_800B744C",
+  "name": "PapuHeroOverPit",
   "orig": "func_800B744C",
   "rom": 16792,
   "seg": "overlays/papu/papu",
@@ -35952,7 +35952,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7558": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7558.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/GetPapuContour.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80025E00"
@@ -35960,7 +35960,7 @@
   "fp": "4df00dc2df191c77",
   "fpn": "b2c3f80fc84d9172",
   "leaf": false,
-  "name": "func_800B7558",
+  "name": "GetPapuContour",
   "orig": "func_800B7558",
   "rom": 17060,
   "seg": "overlays/papu/papu",
@@ -35968,13 +35968,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7600": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7600.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuStartFloorWave.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "64b27f58c48f8111",
   "fpn": "82e1a2c4783ab2f1",
   "leaf": true,
-  "name": "func_800B7600",
+  "name": "PapuStartFloorWave",
   "orig": "func_800B7600",
   "rom": 17228,
   "seg": "overlays/papu/papu",
@@ -35982,13 +35982,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7670": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7670.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PAPU_KeepInBounds.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "c9834c6fe4ffec81",
   "fpn": "ba09a85458b5fae0",
   "leaf": true,
-  "name": "func_800B7670",
+  "name": "PAPU_KeepInBounds",
   "orig": "func_800B7670",
   "rom": 17340,
   "seg": "overlays/papu/papu",
@@ -35996,13 +35996,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7778": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7778.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuStopCrates.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "d1c2e0d81459fd7c",
   "fpn": "f90eeff8ed4cd610",
   "leaf": true,
-  "name": "func_800B7778",
+  "name": "PapuStopCrates",
   "orig": "func_800B7778",
   "rom": 17604,
   "seg": "overlays/papu/papu",
@@ -36010,7 +36010,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B77D8": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B77D8.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuPickTarget.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015590"
@@ -36018,7 +36018,7 @@
   "fp": "de783fc07522fcb2",
   "fpn": "d3679f138a9a97f4",
   "leaf": false,
-  "name": "func_800B77D8",
+  "name": "PapuPickTarget",
   "orig": "func_800B77D8",
   "rom": 17700,
   "seg": "overlays/papu/papu",
@@ -36026,7 +36026,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7894": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7894.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuSpawnMinions.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800B4EE8"
@@ -36034,7 +36034,7 @@
   "fp": "a523cb854a53cb84",
   "fpn": "f060cb37ef817cd4",
   "leaf": false,
-  "name": "func_800B7894",
+  "name": "PapuSpawnMinions",
   "orig": "func_800B7894",
   "rom": 17888,
   "seg": "overlays/papu/papu",
@@ -36042,7 +36042,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B790C": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B790C.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuHeroCheckPit.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80084E04",
@@ -36051,7 +36051,7 @@
   "fp": "3617adf5a758a4cd",
   "fpn": "bdfdc5cb37f42afb",
   "leaf": false,
-  "name": "func_800B790C",
+  "name": "PapuHeroCheckPit",
   "orig": "func_800B790C",
   "rom": 18008,
   "seg": "overlays/papu/papu",
@@ -36059,13 +36059,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B794C": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B794C.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuFreeMinionSlot.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "cfd19a775b236e3a",
   "fpn": "2260db183cf5ae2f",
   "leaf": true,
-  "name": "func_800B794C",
+  "name": "PapuFreeMinionSlot",
   "orig": "func_800B794C",
   "rom": 18072,
   "seg": "overlays/papu/papu",
@@ -36105,13 +36105,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7B10": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7B10.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuDropColumns.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "db8c0d2398e404df",
   "fpn": "4f57744452a1ee03",
   "leaf": true,
-  "name": "func_800B7B10",
+  "name": "PapuDropColumns",
   "orig": "func_800B7B10",
   "rom": 18524,
   "seg": "overlays/papu/papu",
@@ -36119,13 +36119,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7B4C": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7B4C.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuMarkHoles.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "f3f5a31c96b772b4",
   "fpn": "02bac090da392f11",
   "leaf": true,
-  "name": "func_800B7B4C",
+  "name": "PapuMarkHoles",
   "orig": "func_800B7B4C",
   "rom": 18584,
   "seg": "overlays/papu/papu",
@@ -36133,7 +36133,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7BE4": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7BE4.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuDropFirstCrates.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800B3E80",
@@ -36142,7 +36142,7 @@
   "fp": "8f6846b210bb1fad",
   "fpn": "67cb62c773513863",
   "leaf": false,
-  "name": "func_800B7BE4",
+  "name": "PapuDropFirstCrates",
   "orig": "func_800B7BE4",
   "rom": 18736,
   "seg": "overlays/papu/papu",
@@ -36150,7 +36150,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7CBC": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7CBC.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuDropCrates.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800B3E80",
@@ -36159,7 +36159,7 @@
   "fp": "059432695a400dc6",
   "fpn": "1a835ae2eacfa266",
   "leaf": false,
-  "name": "func_800B7CBC",
+  "name": "PapuDropCrates",
   "orig": "func_800B7CBC",
   "rom": 18952,
   "seg": "overlays/papu/papu",
@@ -36167,13 +36167,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7D94": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7D94.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/FirstTriggersPAPU.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B7D94",
+  "name": "FirstTriggersPAPU",
   "orig": "func_800B7D94",
   "rom": 19168,
   "seg": "overlays/papu/papu",
@@ -36181,13 +36181,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7D9C": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7D9C.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuRestartLevel.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B7D9C",
+  "name": "PapuRestartLevel",
   "orig": "func_800B7D9C",
   "rom": 19176,
   "seg": "overlays/papu/papu",
@@ -36195,7 +36195,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7DA4": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7DA4.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/UpdatePAPU.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80086D88",
@@ -36215,13 +36215,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7DE4": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7DE4.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PAPUSetUp.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "5fc08b7898561f71",
   "fpn": "20971abd6d08b01e",
   "leaf": true,
-  "name": "func_800B7DE4",
+  "name": "PAPUSetUp",
   "orig": "func_800B7DE4",
   "rom": 19248,
   "seg": "overlays/papu/papu",
@@ -36229,13 +36229,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7E38": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7E38.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuInitCrateHooks.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "60db0cfb7eae6df1",
   "fpn": "38bab6fe5e98b342",
   "leaf": true,
-  "name": "func_800B7E38",
+  "name": "PapuInitCrateHooks",
   "orig": "func_800B7E38",
   "rom": 19332,
   "seg": "overlays/papu/papu",
@@ -36243,7 +36243,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B7F14": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B7F14.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PACrateAimAtGrid.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80032490"
@@ -36251,7 +36251,7 @@
   "fp": "49133625467c19e5",
   "fpn": "95ecd85249c4876b",
   "leaf": false,
-  "name": "func_800B7F14",
+  "name": "PACrateAimAtGrid",
   "orig": "func_800B7F14",
   "rom": 19552,
   "seg": "overlays/papu/papu",
@@ -36259,13 +36259,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B8080": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B8080.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuGridKey.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "533879a8373e61d0",
   "fpn": "d947dc28ba27619a",
   "leaf": true,
-  "name": "func_800B8080",
+  "name": "PapuGridKey",
   "orig": "func_800B8080",
   "rom": 19916,
   "seg": "overlays/papu/papu",
@@ -36273,13 +36273,13 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B80B0": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B80B0.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/PapuCountObjects.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "488381cfffcbe96a",
   "fpn": "35e2294f615c421d",
   "leaf": true,
-  "name": "func_800B80B0",
+  "name": "PapuCountObjects",
   "orig": "func_800B80B0",
   "rom": 19964,
   "seg": "overlays/papu/papu",
@@ -36287,7 +36287,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B82DC": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B82DC.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/CreatePACrate.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80022660",
@@ -36301,7 +36301,7 @@
   "fp": "a7a263d705f56508",
   "fpn": "4eaa59f2c6838f08",
   "leaf": false,
-  "name": "func_800B82DC",
+  "name": "CreatePACrate",
   "orig": "func_800B82DC",
   "rom": 20520,
   "seg": "overlays/papu/papu",
@@ -36309,7 +36309,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B8508": {
-  "asm": "asm/nonmatchings/overlays/papu/papu/func_800B8508.s",
+  "asm": "asm/nonmatchings/overlays/papu/papu/InitPACrate.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015590",
@@ -36322,7 +36322,7 @@
   "fp": "8e613ca54778f4fd",
   "fpn": "a867d50aae2b3b17",
   "leaf": false,
-  "name": "func_800B8508",
+  "name": "InitPACrate",
   "orig": "func_800B8508",
   "rom": 21076,
   "seg": "overlays/papu/papu",
@@ -36330,7 +36330,7 @@
   "src": "src/overlays/papu/papu.c"
  },
  "papu:800B87A0": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800B87A0.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PlotPACrate.s",
   "bin": "disc/papu.bin",
   "calls": [
    "8001463C",
@@ -36351,7 +36351,7 @@
   "fp": "3c147460684ebd86",
   "fpn": "4161adae66f7efd9",
   "leaf": false,
-  "name": "func_800B87A0",
+  "name": "PlotPACrate",
   "orig": "func_800B87A0",
   "rom": 21740,
   "seg": "overlays/papu/pahero",
@@ -36359,7 +36359,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800B9E74": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800B9E74.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PACrateCollide.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80025A48",
@@ -36368,7 +36368,7 @@
   "fp": "bb11b6cd81bb14a0",
   "fpn": "e83a1731306e117d",
   "leaf": false,
-  "name": "func_800B9E74",
+  "name": "PACrateCollide",
   "orig": "func_800B9E74",
   "rom": 27584,
   "seg": "overlays/papu/pahero",
@@ -36376,7 +36376,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BA22C": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BA22C.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PACrateHitHeroes.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80025A48"
@@ -36384,7 +36384,7 @@
   "fp": "f2644e0b22f44709",
   "fpn": "e397ce88d609863f",
   "leaf": false,
-  "name": "func_800BA22C",
+  "name": "PACrateHitHeroes",
   "orig": "func_800BA22C",
   "rom": 28536,
   "seg": "overlays/papu/pahero",
@@ -36392,7 +36392,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BA3C4": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BA3C4.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PACrateFindFreeSpot.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015590"
@@ -36400,7 +36400,7 @@
   "fp": "cd0d5b2fe0d7aa7c",
   "fpn": "4c72926352969546",
   "leaf": false,
-  "name": "func_800BA3C4",
+  "name": "PACrateFindFreeSpot",
   "orig": "func_800BA3C4",
   "rom": 28944,
   "seg": "overlays/papu/pahero",
@@ -36408,7 +36408,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BA4C0": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BA4C0.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/SetPAHeroHit.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015590",
@@ -36419,7 +36419,7 @@
   "fp": "76a086b970c007dc",
   "fpn": "25914ef184f87832",
   "leaf": false,
-  "name": "func_800BA4C0",
+  "name": "SetPAHeroHit",
   "orig": "func_800BA4C0",
   "rom": 29196,
   "seg": "overlays/papu/pahero",
@@ -36446,7 +36446,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BA7D8": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BA7D8.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PAHeroPickup.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015780",
@@ -36456,7 +36456,7 @@
   "fp": "95a78563559d0143",
   "fpn": "e37bfd2e6ee9618d",
   "leaf": false,
-  "name": "func_800BA7D8",
+  "name": "PAHeroPickup",
   "orig": "func_800BA7D8",
   "rom": 29988,
   "seg": "overlays/papu/pahero",
@@ -36464,7 +36464,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BA958": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BA958.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PAHeroHold.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015780",
@@ -36478,7 +36478,7 @@
   "fp": "5a59a6c37b0d2097",
   "fpn": "20b603e48c8556ca",
   "leaf": false,
-  "name": "func_800BA958",
+  "name": "PAHeroHold",
   "orig": "func_800BA958",
   "rom": 30372,
   "seg": "overlays/papu/pahero",
@@ -36486,7 +36486,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BABA0": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BABA0.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PAHeroCarry.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015780",
@@ -36500,7 +36500,7 @@
   "fp": "5a59a6c37b0d2097",
   "fpn": "20b603e48c8556ca",
   "leaf": false,
-  "name": "func_800BABA0",
+  "name": "PAHeroCarry",
   "orig": "func_800BABA0",
   "rom": 30956,
   "seg": "overlays/papu/pahero",
@@ -36508,7 +36508,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BADE8": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BADE8.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PAHeroThrow.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80015780",
@@ -36519,7 +36519,7 @@
   "fp": "d0ba1eb93a14ef5f",
   "fpn": "9c81ee272ea8bb0d",
   "leaf": false,
-  "name": "func_800BADE8",
+  "name": "PAHeroThrow",
   "orig": "func_800BADE8",
   "rom": 31540,
   "seg": "overlays/papu/pahero",
@@ -36527,7 +36527,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BAFD4": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BAFD4.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/SetPAHeroDead.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800225C4",
@@ -36536,7 +36536,7 @@
   "fp": "298a9034edd20889",
   "fpn": "b3fec248ecebadc5",
   "leaf": false,
-  "name": "func_800BAFD4",
+  "name": "SetPAHeroDead",
   "orig": "func_800BAFD4",
   "rom": 32032,
   "seg": "overlays/papu/pahero",
@@ -36544,7 +36544,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BB0D4": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BB0D4.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/SetPAHeroWinner.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800225C4",
@@ -36556,7 +36556,7 @@
   "fp": "ea126748d0457c74",
   "fpn": "72ca654200f01f03",
   "leaf": false,
-  "name": "func_800BB0D4",
+  "name": "SetPAHeroWinner",
   "orig": "func_800BB0D4",
   "rom": 32288,
   "seg": "overlays/papu/pahero",
@@ -36564,7 +36564,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BB308": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BB308.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PAHeroWinner.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80025F44",
@@ -36576,7 +36576,7 @@
   "fp": "543fef0f1acb3cc0",
   "fpn": "f3974f4eacd9eaa9",
   "leaf": false,
-  "name": "func_800BB308",
+  "name": "PAHeroWinner",
   "orig": "func_800BB308",
   "rom": 32852,
   "seg": "overlays/papu/pahero",
@@ -36584,7 +36584,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BB3F0": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BB3F0.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PapuHero2ObjectCollision.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800142D4",
@@ -36598,7 +36598,7 @@
   "fp": "6a54c1117a5a8f00",
   "fpn": "af32b7a799d4887b",
   "leaf": false,
-  "name": "func_800BB3F0",
+  "name": "PapuHero2ObjectCollision",
   "orig": "func_800BB3F0",
   "rom": 33084,
   "seg": "overlays/papu/pahero",
@@ -36606,7 +36606,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BB69C": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BB69C.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PapuHeroGrabObject.s",
   "bin": "disc/papu.bin",
   "calls": [
    "8001463C",
@@ -36615,7 +36615,7 @@
   "fp": "dde769bc8f4557d1",
   "fpn": "773c3fa2c399e477",
   "leaf": false,
-  "name": "func_800BB69C",
+  "name": "PapuHeroGrabObject",
   "orig": "func_800BB69C",
   "rom": 33768,
   "seg": "overlays/papu/pahero",
@@ -36623,7 +36623,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BB86C": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BB86C.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PapuHeroKickCollision.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800142D4",
@@ -36638,7 +36638,7 @@
   "fp": "0e25b23960117ee7",
   "fpn": "de2ff0e0df6dbf94",
   "leaf": false,
-  "name": "func_800BB86C",
+  "name": "PapuHeroKickCollision",
   "orig": "func_800BB86C",
   "rom": 34232,
   "seg": "overlays/papu/pahero",
@@ -36646,7 +36646,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BC274": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BC274.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PapuHeroCarryCollision.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800142D4",
@@ -36660,7 +36660,7 @@
   "fp": "97ea64cae6045191",
   "fpn": "c6e32b6a52160854",
   "leaf": false,
-  "name": "func_800BC274",
+  "name": "PapuHeroCarryCollision",
   "orig": "func_800BC274",
   "rom": 36800,
   "seg": "overlays/papu/pahero",
@@ -36668,13 +36668,13 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BC588": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BC588.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PapuHeroObjectAhead.s",
   "bin": "disc/papu.bin",
   "calls": [],
   "fp": "d8a7d77aacd9ba99",
   "fpn": "d9afe78ab0a31f32",
   "leaf": true,
-  "name": "func_800BC588",
+  "name": "PapuHeroObjectAhead",
   "orig": "func_800BC588",
   "rom": 37588,
   "seg": "overlays/papu/pahero",
@@ -36682,7 +36682,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BC698": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BC698.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/PAHeroDead.s",
   "bin": "disc/papu.bin",
   "calls": [
    "80089BE8",
@@ -36691,7 +36691,7 @@
   "fp": "80f32b8a4e3ed6de",
   "fpn": "88a733282e77c622",
   "leaf": false,
-  "name": "func_800BC698",
+  "name": "PAHeroDead",
   "orig": "func_800BC698",
   "rom": 37860,
   "seg": "overlays/papu/pahero",
@@ -36699,7 +36699,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BC744": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BC744.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/SetPAHeroThrow.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800854C0"
@@ -36707,7 +36707,7 @@
   "fp": "259a361353b51a68",
   "fpn": "5cae09fc8419c817",
   "leaf": false,
-  "name": "func_800BC744",
+  "name": "SetPAHeroThrow",
   "orig": "func_800BC744",
   "rom": 38032,
   "seg": "overlays/papu/pahero",
@@ -36731,7 +36731,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BC800": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BC800.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/SetPAHeroHold.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800854C0"
@@ -36739,7 +36739,7 @@
   "fp": "d6f16c3b80758431",
   "fpn": "efcc9da72fd17a0f",
   "leaf": false,
-  "name": "func_800BC800",
+  "name": "SetPAHeroHold",
   "orig": "func_800BC800",
   "rom": 38220,
   "seg": "overlays/papu/pahero",
@@ -36747,7 +36747,7 @@
   "src": "src/overlays/papu/pahero.c"
  },
  "papu:800BC84C": {
-  "asm": "asm/nonmatchings/overlays/papu/pahero/func_800BC84C.s",
+  "asm": "asm/nonmatchings/overlays/papu/pahero/SetPAHeroPickup.s",
   "bin": "disc/papu.bin",
   "calls": [
    "800854C0"
@@ -36755,7 +36755,7 @@
   "fp": "094b31698ffeaf29",
   "fpn": "15250f4855ad8f7e",
   "leaf": false,
-  "name": "func_800BC84C",
+  "name": "SetPAHeroPickup",
   "orig": "func_800BC84C",
   "rom": 38296,
   "seg": "overlays/papu/pahero",
@@ -39630,7 +39630,7 @@
   "src": "src/overlays/pogo/pogo.c"
  },
  "pogo:800C318C": {
-  "asm": "asm/nonmatchings/overlays/pogo/pogo/func_800C318C.s",
+  "asm": "asm/nonmatchings/overlays/pogo/pogo/PogoInit_SetClock.s",
   "bin": "disc/pogo.bin",
   "calls": [
    "8007B7FC"
@@ -39716,7 +39716,7 @@
   "src": "src/overlays/pogo/pogo.c"
  },
  "pogo:800C3390": {
-  "asm": "asm/nonmatchings/overlays/pogo/pogo/func_800C3390.s",
+  "asm": "asm/nonmatchings/overlays/pogo/pogo/POGOriggers.s",
   "bin": "disc/pogo.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -39762,7 +39762,7 @@
   "src": "src/overlays/pogo/pogo.c"
  },
  "pogo:800C34B0": {
-  "asm": "asm/nonmatchings/overlays/pogo/pogo/func_800C34B0.s",
+  "asm": "asm/nonmatchings/overlays/pogo/pogo/pogo_kill.s",
   "bin": "disc/pogo.bin",
   "calls": [
    "800183DC"
@@ -39778,7 +39778,7 @@
   "src": "src/overlays/pogo/pogo.c"
  },
  "pogo:800C34D0": {
-  "asm": "asm/nonmatchings/overlays/pogo/pogo/func_800C34D0.s",
+  "asm": "asm/nonmatchings/overlays/pogo/pogo/pogo_init.s",
   "bin": "disc/pogo.bin",
   "calls": [
    "80018430"
@@ -39794,7 +39794,7 @@
   "src": "src/overlays/pogo/pogo.c"
  },
  "pogo:800C34F0": {
-  "asm": "asm/nonmatchings/overlays/pogo/pogo/func_800C34F0.s",
+  "asm": "asm/nonmatchings/overlays/pogo/pogo/psxpogo_init_tile_heap.s",
   "bin": "disc/pogo.bin",
   "calls": [
    "80018430"
@@ -39810,7 +39810,7 @@
   "src": "src/overlays/pogo/pogo.c"
  },
  "pogo:800C3510": {
-  "asm": "asm/nonmatchings/overlays/pogo/pogo/func_800C3510.s",
+  "asm": "asm/nonmatchings/overlays/pogo/pogo/psxpogo_init_tile.s",
   "bin": "disc/pogo.bin",
   "calls": [],
   "fp": "37ab5e4ff72eca97",
@@ -48716,7 +48716,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C68A8": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C68A8.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/MoeJoeDead.s",
   "bin": "disc/tank.bin",
   "calls": [
    "80089BE8"
@@ -48767,7 +48767,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C69BC": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C69BC.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/MoeJoeMinelay.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -49727,7 +49727,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C831C": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C831C.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/TankEmptyStub.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -49799,7 +49799,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C83D0": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C83D0.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/TA_RestartLevel.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -49841,7 +49841,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C84D8": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C84D8.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/FindTankObjectNear.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "d20612b0e952df9e",
@@ -49855,7 +49855,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C8560": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C8560.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/RemoveTankObject.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "4fa3b2b5cc9b0f28",
@@ -49869,7 +49869,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C8598": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C8598.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/AddTankObject.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "b7f92d9c1c58af66",
@@ -49883,7 +49883,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C85D0": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C85D0.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/ClearTankObjects.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "18f0ea8c576d7508",
@@ -49955,7 +49955,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C8870": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C8870.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/GetTankMapCell.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "35e6c99e716bf323",
@@ -50011,7 +50011,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C8984": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C8984.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/ClearTankMapCell.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "6d67c97166cf513b",
@@ -50025,7 +50025,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C89D8": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C89D8.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/SetTankMapCell.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "75b63f72d0f8b066",
@@ -50039,7 +50039,7 @@
   "src": "src/overlays/tank/tank.c"
  },
  "tank:800C8A40": {
-  "asm": "asm/nonmatchings/overlays/tank/tank/func_800C8A40.s",
+  "asm": "asm/nonmatchings/overlays/tank/tank/TankBotReset.s",
   "bin": "disc/tank.bin",
   "calls": [],
   "fp": "84b3d6072e971c95",
@@ -50375,7 +50375,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B5324": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B5324.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/OptionsQuit.s",
   "bin": "disc/titles.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -50389,7 +50389,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B532C": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B532C.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/OptionsInit.s",
   "bin": "disc/titles.bin",
   "calls": [
    "80095BEC"
@@ -50405,7 +50405,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B5360": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B5360.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/MenuChainStart.s",
   "bin": "disc/titles.bin",
   "calls": [
    "8001E848"
@@ -50421,7 +50421,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B5390": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B5390.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/MenuChainStep.s",
   "bin": "disc/titles.bin",
   "calls": [
    "8001E848"
@@ -50469,7 +50469,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B544C": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B544C.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/BattleOptionsQuit.s",
   "bin": "disc/titles.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -50483,7 +50483,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B5454": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B5454.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/BattleOptionsInit.s",
   "bin": "disc/titles.bin",
   "calls": [
    "80095BEC"
@@ -50718,7 +50718,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B5A6C": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B5A6C.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/TitlesEmptyHook.s",
   "bin": "disc/titles.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -50732,7 +50732,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B5A74": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B5A74.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/TitlesUpdateLevel.s",
   "bin": "disc/titles.bin",
   "calls": [
    "800139A8"
@@ -51091,7 +51091,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B7D20": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B7D20.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/TitlesEmptyStub.s",
   "bin": "disc/titles.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -51248,7 +51248,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B81F0": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B81F0.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/TeamModeUpdate.s",
   "bin": "disc/titles.bin",
   "calls": [
    "80022660",
@@ -51268,7 +51268,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B83A4": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B83A4.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/team_mode_init.s",
   "bin": "disc/titles.bin",
   "calls": [
    "80095BEC"
@@ -51301,7 +51301,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B8470": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B8470.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/TitlesShellScreenRender.s",
   "bin": "disc/titles.bin",
   "calls": [
    "800917B4"
@@ -51317,7 +51317,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B8490": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B8490.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/TitlesShellScreenUpdate.s",
   "bin": "disc/titles.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -51331,7 +51331,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B8498": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B8498.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/TitlesShellScreenInit.s",
   "bin": "disc/titles.bin",
   "calls": [
    "8009246C"
@@ -51347,7 +51347,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B84B8": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B84B8.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/TitlesExtraScreenRender.s",
   "bin": "disc/titles.bin",
   "calls": [
    "8001C2C0",
@@ -51364,7 +51364,7 @@
   "src": "src/overlays/titles/titles.c"
  },
  "titles:800B84E0": {
-  "asm": "asm/nonmatchings/overlays/titles/titles/func_800B84E0.s",
+  "asm": "asm/nonmatchings/overlays/titles/titles/TitlesExtraScreenInit.s",
   "bin": "disc/titles.bin",
   "calls": [
    "80095BEC"

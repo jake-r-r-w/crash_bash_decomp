@@ -3,19 +3,19 @@
 #include "bash/papu_ovl.h"
 #include "bash/papu.h"
 
-void func_800B35AC(void) {
+void InitialisePAPUFirst(void) {
     EngineGameView *g;
     u8 *v;
     void **p;
 
-    D_8009D6E8.unk68 = func_800B7670;
-    D_8009D6E8.unk4C = func_800BB3F0;
-    D_8009D6E8.unk50 = func_800BB69C;
-    D_8009D6E8.unk54 = func_800BB86C;
-    D_8009D6E8.unk58 = func_800BC274;
-    func_800B7E38();
-    D_8005AA94 = func_800B7558;
-    D_8009D6E8.unk28 = func_800B790C;
+    D_8009D6E8.unk68 = PAPU_KeepInBounds;
+    D_8009D6E8.unk4C = PapuHero2ObjectCollision;
+    D_8009D6E8.unk50 = PapuHeroGrabObject;
+    D_8009D6E8.unk54 = PapuHeroKickCollision;
+    D_8009D6E8.unk58 = PapuHeroCarryCollision;
+    PapuInitCrateHooks();
+    D_8005AA94 = GetPapuContour;
+    D_8009D6E8.unk28 = PapuHeroCheckPit;
     g = (EngineGameView *)D_8005A614;
     g->flags |= 0x900;
     if (*(s32 *)(D_8005A614 + 0x6C) == 0) {
@@ -39,7 +39,7 @@ void func_800B35AC(void) {
     *p = v;
 }
 
-void func_800B36D4(void) {
+void InitialisePAPU(void) {
     EXTheromove *move;
     s32 i;
     s16 angle;
@@ -57,7 +57,7 @@ void func_800B36D4(void) {
     D_800BD8CE = 0;
     D_800BD8D0 = (Random(10) + 10) * 30;
     D_800BE788 = EngineTemplate;
-    func_800B3D18();
+    PapuShuffleDropPoints();
     func_80086D88();
     for (i = 0; i < 4; i++) {
         angle = get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z);
@@ -73,18 +73,18 @@ void func_800B36D4(void) {
     Clock_Off();
     func_8007E9FC(0x2C, 0x300A);
     InitBossHealthIcons();
-    func_800B42C0();
-    func_800B6D14();
+    PapuInitMinionSlots();
+    PapuInitTiles();
     CreateNAS(D_8005B2B8[2].pos.x, D_8005B2B8[2].pos.y, D_8005B2B8[2].pos.z,
                  0x1201, 0x11);
-    func_800B38FC(0, 0, 0, 0, 0xC, 4, 0, 0, 0);
-    func_800B7BE4();
-    D_8009E494 = (void (*)(s32, s32, s32, s32))func_800B5E44;
+    PapuSetCrateMix(0, 0, 0, 0, 0xC, 4, 0, 0, 0);
+    PapuDropFirstCrates();
+    D_8009E494 = (void (*)(s32, s32, s32, s32))PapuExploRange;
     D_800BE830 = 0;
     D_800BE832 = 0;
 }
 
-void func_800B38FC(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16 n7, u16 n8) {
+void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16 n7, u16 n8) {
     s32 t;
     s32 i;
     s32 j;
@@ -154,7 +154,7 @@ void func_800B38FC(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16
     D_800BD8E0 = Random(0x20) + 0x14;
 }
 
-void func_800B3B08(void) {
+void PapuCrateMaster(void) {
     PapuGridPos *p;
     s32 a1;
     s32 y;
@@ -165,7 +165,7 @@ void func_800B3B08(void) {
     if (D_800BD8DC == 0) {
         if (D_8009E46C[0] < D_800BD8E8) {
             D_800BD8DC = Random(15) + 15;
-            func_800B7CBC(1);
+            PapuDropCrates(1);
         } else {
             D_800BD8DC = Random(40) + 5;
         }
@@ -207,7 +207,7 @@ void func_800B3B08(void) {
     }
 }
 
-void func_800B3D18(void) {
+void PapuShuffleDropPoints(void) {
     s32 in, x, y;
     s32 j, i, n, k;
     PapuGridPos *a, *b;
@@ -244,7 +244,7 @@ void func_800B3D18(void) {
     }
 }
 
-PapuMsg *func_800B3E80(char *arg0) {
+PapuMsg *PapuFindDropPoint(char *arg0) {
     PapuGridPos *best;
     PapuGridPos *cell;
     u16 bestn;
@@ -345,7 +345,7 @@ PapuMsg *func_800B3E80(char *arg0) {
     return (PapuMsg *)best;
 }
 
-void func_800B4154(u16 arg0) {
+void PapuSetColumns(u16 arg0) {
     s32 i;
     PapuEntry *p;
 
@@ -363,7 +363,7 @@ void func_800B4154(u16 arg0) {
     }
 }
 
-void func_800B4204(void) {
+void PapuMoveColumns(void) {
     PapuEntry *e;
     PapuTile *t;
     s32 i;
@@ -402,7 +402,7 @@ void func_800B4204(void) {
     } while (i < 20);
 }
 
-void func_800B42C0(void) {
+void PapuInitMinionSlots(void) {
     s32 i;
     Slot40 *p;
 
@@ -515,7 +515,7 @@ void PlotPapuBoss(NAS *nas) {
         case 0xC:
             PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         case 0xD:
-            func_800B7894(D_800BE834);
+            PapuSpawnMinions(D_800BE834);
             break;
         case 8:
             D_800BE88E = 0xB;
@@ -523,7 +523,7 @@ void PlotPapuBoss(NAS *nas) {
         }
         break;
     case 6:
-        func_800B61A0(eng);
+        PapuHitHeroes(eng);
         if (frame == 8) {
             goto f8;
         }
@@ -543,7 +543,7 @@ void PlotPapuBoss(NAS *nas) {
                 v -= 0x10;
                 p++;
             }
-            func_800B7778();
+            PapuStopCrates();
             for (j = 0; j < 0x14; j++) {
                 if (D_800BE648[j].unk0 != 0) {
                     D_800BE648[j].unk6 = 1;
@@ -655,10 +655,10 @@ void PlotPapuBoss(NAS *nas) {
             D_800BE88E = 6;
             D_800BD8E8 = (&D_800BD8E8)[1] = 0;
             GotoLinkAnim(anim, 3);
-            func_800B4154(D_800BE834);
+            PapuSetColumns(D_800BE834);
             break;
         case 3:
-            func_800B7600(D_800BE834);
+            PapuStartFloorWave(D_800BE834);
             D_800BE88E = 1;
             GotoLinkAnim(anim, 0xA);
             break;
@@ -668,13 +668,13 @@ void PlotPapuBoss(NAS *nas) {
             break;
         case 6:
             D_800BD8D4 = 1;
-            func_800B42C0();
+            PapuInitMinionSlots();
             D_800BE88E = 8;
             GotoLinkAnim(anim, 0x16);
             break;
         case 7:
             D_800BD8D4 = 1;
-            func_800B42C0();
+            PapuInitMinionSlots();
             D_800BE88E = 8;
             GotoLinkAnim(anim, 0x16);
             break;
@@ -703,7 +703,7 @@ void PlotPapuBoss(NAS *nas) {
     D_800BD8B4 = 0;
 }
 
-NAS *func_800B4B9C(s32 arg0) {
+NAS *PapuMinionFindCrate(s32 arg0) {
     NAS *best;
     NAS *n;
     s32 bestScore;
@@ -762,7 +762,7 @@ NAS *func_800B4B9C(s32 arg0) {
     return best;
 }
 
-s32 func_800B4D70(PapuPos *arg0) {
+s32 PapuPickSpawnPoint(PapuPos *arg0) {
     s32 best;
     s32 bestScore;
     s32 i;
@@ -799,7 +799,7 @@ s32 func_800B4D70(PapuPos *arg0) {
     return best;
 }
 
-NAS *func_800B4EE8(s32 a, s32 b, s32 c, u16 d)
+NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
 {
   NAS *nas;
   u8 *new_var;
@@ -1008,7 +1008,7 @@ void PlotPapuMinion(NAS *nas)
       eng->unk2C.y = D_8009DC50[i];
       eng->unk2C.z = D_8009DC38[i];
     }
-    who = func_800B6334(eng, 0x400);
+    who = PapuHitHeroesFlag(eng, 0x400);
     if (who != -1) {
       if ((Heroes[who].hero_immunity | Heroes[who].hero_hit) == 0) {
         Heroes[who].hero_move->reactive_angle = angle;
@@ -1016,7 +1016,7 @@ void PlotPapuMinion(NAS *nas)
         func_80084E04(who, NULL, -1, 0x8005, 0x446);
       }
     }
-    func_800B64AC(eng, 2, 0x400, (u16)nas->UserInfo.user1);
+    PapuHitSolids(eng, 2, 0x400, (u16)nas->UserInfo.user1);
     if (target_eng != NULL) {
       move->angle = angle;
     }
@@ -1024,7 +1024,7 @@ void PlotPapuMinion(NAS *nas)
     break;
   case 7:
     eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
-    hit = (s32)func_800B6008(slot, 0x180);
+    hit = (s32)PapuMinionObjectAhead(slot, 0x180);
     if (hit != 0) {
       for (i = 0; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xFA00) &&
@@ -1183,12 +1183,12 @@ void PlotPapuMinion(NAS *nas)
     fux->unk1C |= 0x102;
     move->speed = 0;
     move->push = 0;
-    fux->target = func_800B4B9C(slot);
+    fux->target = PapuMinionFindCrate(slot);
     if (fux->target != NULL) {
       GotoLinkAnim(anim, 1);
       fux->state = 7;
     } else {
-      nas->UserInfo.user2 = func_800B4D70((PapuPos *)eng);
+      nas->UserInfo.user2 = PapuPickSpawnPoint((PapuPos *)eng);
       GotoLinkAnim(anim, 1);
       fux->state = 0xD;
     }
@@ -1212,8 +1212,8 @@ void PlotPapuMinion(NAS *nas)
       move->push = 0;
     }
   }
-  func_800B6860(slot);
-  func_800B7670((u8 *)eng);
+  PapuMinionKick(slot);
+  PAPU_KeepInBounds((u8 *)eng);
   if (fux->unk1E & 0x102) {
     if (D_800BD70C[slot].pad4[6] != 0) {
       ((MinionFux *)D_800BD70C[slot].pad4[6])->unk16 = fux->unk16;
@@ -1230,7 +1230,7 @@ void PlotPapuMinion(NAS *nas)
   eng->unk5E = 1;
 }
 
-void func_800B5E44(B5E44Owner *arg0, s32 arg1, s32 arg2)
+void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
 {
   B5E44Pos *me;
   s32 i;
@@ -1289,7 +1289,7 @@ void func_800B5E44(B5E44Owner *arg0, s32 arg1, s32 arg2)
   }
 }
 
-void *func_800B6008(s32 arg0, s32 arg1) {
+void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
     s32 ang;
     u8 *n = D_8005AA24;
     s32 lim = 0x10000;
@@ -1330,7 +1330,7 @@ void *func_800B6008(s32 arg0, s32 arg1) {
     return NULL;
 }
 
-s32 func_800B61A0(EXTengine *eng) {
+s32 PapuHitHeroes(EXTengine *eng) {
     VECTOR pos;
     FlagRecord *box;
     FlagRecord *rec;
@@ -1381,7 +1381,7 @@ s32 func_800B61A0(EXTengine *eng) {
     return -1;
 }
 
-s32 func_800B6334(EXTengine *eng, u32 flag) {
+s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
     VECTOR pos;
     FlagRecord *box;
     FlagRecord *rec;
@@ -1433,7 +1433,7 @@ s32 func_800B6334(EXTengine *eng, u32 flag) {
     return -1;
 }
 
-NAS *func_800B64AC(EXTengine *eng, u32 mask, s32 unused, s32 add) {
+NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
     VECTOR pos;
     FlagRecord *new_var;
     FlagRecord *box;
@@ -1490,7 +1490,7 @@ NAS *func_800B64AC(EXTengine *eng, u32 mask, s32 unused, s32 add) {
     return NULL;
 }
 
-NAS *func_800B668C(EXTengine *eng, s32 mask) {
+NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
     VECTOR pos;
     FlagRecord *box;
     FlagRecord *rec;
@@ -1545,7 +1545,7 @@ NAS *func_800B668C(EXTengine *eng, s32 mask) {
     return NULL;
 }
 
-s32 func_800B6860(u32 idx) {
+s32 PapuMinionKick(u32 idx) {
     s32 hit;
     s32 bot;
     s32 top;
@@ -1671,7 +1671,7 @@ s32 func_800B6860(u32 idx) {
     return hit;
 }
 
-void func_800B6D14(void) {
+void PapuInitTiles(void) {
     PapuSceneObj *obj;
     u16 *id;
     PapuEntry *p;
@@ -1742,7 +1742,7 @@ void func_800B6D14(void) {
     }
 }
 
-void func_800B6FF8(void) {
+void PapuFloorWave(void) {
     PapuKey *k;
     s32 first;
     s32 v;
@@ -1781,7 +1781,7 @@ void func_800B6FF8(void) {
     }
 }
 
-void func_800B7134(void) {
+void PapuUpdateFloor(void) {
     s32 i;
     s32 j;
     s32 m;
@@ -1820,8 +1820,8 @@ void func_800B7134(void) {
         }
         D_800BE824->unk52 = 1;
     }
-    func_800B6FF8();
-    func_800B4204();
+    PapuFloorWave();
+    PapuMoveColumns();
     m = (u16)D_800BE894;
     if (m < 3 && m != 0) {
         if (D_800BE838[0] != 0) {
@@ -1862,7 +1862,7 @@ void func_800B7134(void) {
     }
 }
 
-s32 func_800B744C(s32 arg0) {
+s32 PapuHeroOverPit(s32 arg0) {
     EXTengine *eng;
     s32 ix;
     s32 iz;
@@ -1885,7 +1885,7 @@ s32 func_800B744C(s32 arg0) {
     return 0;
 }
 
-s32 func_800B7558(EXTengine *eng) {
+s32 GetPapuContour(EXTengine *eng) {
     s32 y;
     s32 ix;
     s32 iz;
@@ -1904,7 +1904,7 @@ s32 func_800B7558(EXTengine *eng) {
     return AddPlatformContour(eng, y);
 }
 
-void func_800B7600(s32 arg0) {
+void PapuStartFloorWave(s32 arg0) {
     PapuKey *src;
     PapuKey *dst;
 
@@ -1924,7 +1924,7 @@ void func_800B7600(s32 arg0) {
     D_800BE894 = 2;
 }
 
-s32 func_800B7670(u8 *arg0) {
+s32 PAPU_KeepInBounds(u8 *arg0) {
     s32 temp_a0;
     s32 temp_v1;
     s32 var_a2;
@@ -1971,7 +1971,7 @@ block_17:
     return var_a2;
 }
 
-void func_800B7778(void) {
+void PapuStopCrates(void) {
     u8 *temp_v1;
     u8 *var_a0;
 
@@ -1991,7 +1991,7 @@ void func_800B7778(void) {
     }
 }
 
-s32 func_800B77D8(void) {
+s32 PapuPickTarget(void) {
     s32 a;
 
     if (*D_8005A680 != 0) {
@@ -2011,22 +2011,22 @@ s32 func_800B77D8(void) {
     return a;
 }
 
-void func_800B7894(u16 arg0) {
+void PapuSpawnMinions(u16 arg0) {
     PapuStep *s = D_800BD118[arg0];
 
     while (s->d >= 0) {
-        func_800B4EE8(s->a, s->b, s->c, s->d);
+        CreatePapuMinion(s->a, s->b, s->c, s->d);
         s++;
     }
 }
 
-void func_800B790C(s32 arg0) {
-    if (func_800B744C(arg0) != 0) {
+void PapuHeroCheckPit(s32 arg0) {
+    if (PapuHeroOverPit(arg0) != 0) {
         func_80084E04(arg0, 0, -1, 3, 0);
     }
 }
 
-s32 func_800B794C(void) {
+s32 PapuFreeMinionSlot(void) {
     s32 i;
 
     for (i = 0; i < 6; i++) {
@@ -2088,7 +2088,7 @@ void InitPapuColumn(NAS *nas) {
     }
 }
 
-void func_800B7B10(void) {
+void PapuDropColumns(void) {
     s32 i;
     PapuEntry *p;
     s16 one;
@@ -2102,7 +2102,7 @@ void func_800B7B10(void) {
     }
 }
 
-void func_800B7B4C(void) {
+void PapuMarkHoles(void) {
     s32 i, j;
 
     for (j = 2; j < 18; j++) {
@@ -2114,7 +2114,7 @@ void func_800B7B4C(void) {
     }
 }
 
-void func_800B7BE4(void)
+void PapuDropFirstCrates(void)
 {
   s32 i;
   s32 *p;
@@ -2130,7 +2130,7 @@ void func_800B7BE4(void)
     {
       goto done;
     }
-    p = (s32 *) func_800B3E80(D_800BD8E2);
+    p = (s32 *) PapuFindDropPoint(D_800BD8E2);
     if (p != 0)
     {
       a = p[0];
@@ -2142,7 +2142,7 @@ void func_800B7BE4(void)
       {
         type = 4;
       }
-      func_800B82DC(a, 0, b, type, -1);
+      CreatePACrate(a, 0, b, type, -1);
     }
   }
 
@@ -2152,7 +2152,7 @@ void func_800B7BE4(void)
   ;
 }
 
-void func_800B7CBC(u16 arg0) {
+void PapuDropCrates(u16 arg0) {
     s32 i;
     PapuMsg *m;
     s32 v;
@@ -2164,7 +2164,7 @@ void func_800B7CBC(u16 arg0) {
         if (i >= (arg0 & 0xFFFF)) {
             return;
         }
-        m = func_800B3E80(D_800BD8E2);
+        m = PapuFindDropPoint(D_800BD8E2);
         if (m != NULL) {
             a = m->unk0;
             b = m->unk4;
@@ -2174,36 +2174,36 @@ void func_800B7CBC(u16 arg0) {
             if (v == 6 && D_8009E46C[6] >= 4) {
                 v = 4;
             }
-            func_800B82DC(a, 0, b, v, -1);        }
+            CreatePACrate(a, 0, b, v, -1);        }
     }
 }
 
-void func_800B7D94(void) {
+void FirstTriggersPAPU(void) {
 }
 
-void func_800B7D9C(void) {
+void PapuRestartLevel(void) {
 }
 
 void UpdatePAPU(void) {
     func_80086F78();
-    func_800B80B0();
+    PapuCountObjects();
     func_80086D88();
-    func_800B3B08();
-    func_800B7134();
+    PapuCrateMaster();
+    PapuUpdateFloor();
 }
 
-void func_800B7DE4(void) {
-    D_8005AA70[0] = (s32)func_800B35AC;
-    D_8005AA70[1] = (s32)func_800B36D4;
-    D_8005AA70[2] = (s32)func_800B36D4;
+void PAPUSetUp(void) {
+    D_8005AA70[0] = (s32)InitialisePAPUFirst;
+    D_8005AA70[1] = (s32)InitialisePAPU;
+    D_8005AA70[2] = (s32)InitialisePAPU;
     D_8005AA70[3] = (s32)UpdatePAPU;
-    D_8005AA70[5] = (s32)func_800B7D94;
+    D_8005AA70[5] = (s32)FirstTriggersPAPU;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
-    D_8005AA70[9] = (s32)func_800B7558;
+    D_8005AA70[9] = (s32)GetPapuContour;
 }
 
-void func_800B7E38(void) {
+void PapuInitCrateHooks(void) {
     D_8009E464 = PapuASTIndex(0x203);
     D_8009E468 = PapuASTIndex(0x204);
     D_8009E488.unk4 = D_8009E3B4;
@@ -2212,7 +2212,7 @@ void func_800B7E38(void) {
     D_8009E488.unk0 = D_8009E3DC;
 }
 
-void func_800B7F14(T_B7F14_A *a, T_B7F14_B *b) {
+void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {
     s32 z;
     s32 x;
     s32 sum = 0;
@@ -2257,7 +2257,7 @@ void func_800B7F14(T_B7F14_A *a, T_B7F14_B *b) {
     b->unkE = v;
 }
 
-s32 func_800B8080(T_B8080 *p) {
+s32 PapuGridKey(T_B8080 *p) {
     s32 a, b, c, d;
     b = (p->x >> 8) + 8;
     a = 7 - (p->y >> 8);
@@ -2269,7 +2269,7 @@ s32 func_800B8080(T_B8080 *p) {
     return a + b + d;
 }
 
-void func_800B80B0(void) {
+void PapuCountObjects(void) {
     s32 i;
     s32 x, z;
     u16 t;
@@ -2331,7 +2331,7 @@ void func_800B80B0(void) {
     }
 }
 
-NAS *func_800B82DC(s32 a, s32 b, s32 c, s32 d, s32 e) {
+NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
     NAS *nas;
     PapuObj *obj;
     EXTengine *eng;
@@ -2397,7 +2397,7 @@ NAS *func_800B82DC(s32 a, s32 b, s32 c, s32 d, s32 e) {
     return nas;
 }
 
-void func_800B8508(NAS *arg0) {
+void InitPACrate(NAS *arg0) {
     EXTengine *eng;
     PapuObj *obj;
     NAS *nas;

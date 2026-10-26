@@ -6,7 +6,7 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
-/* Drop obj from the hero or slot that holds it (func_800B87A0). */
+/* Drop obj from the hero or slot that holds it (PlotPACrate). */
 static inline void PapuReleaseObj(EXTobject *obj, u16 p) {
     HeroInfo *h;
     HeroInfo *b;
@@ -33,7 +33,7 @@ static inline void PapuReleaseObj(EXTobject *obj, u16 p) {
     }
 }
 
-void func_800B87A0(NAS *nas) {
+void PlotPACrate(NAS *nas) {
     VECTOR a;
     VECTOR b;
     EXTengine *eng;
@@ -226,7 +226,7 @@ void func_800B87A0(NAS *nas) {
         }
         if (GravitateNas(nas) != 0) {
             eng->unk10.y += 0x20;
-            func_800B9E74(eng, obj->player, 0);
+            PACrateCollide(eng, obj->player, 0);
             eng->unk10.y -= 0x20;
             switch (kind) {
             case 4:
@@ -243,7 +243,7 @@ void func_800B87A0(NAS *nas) {
                 break;
             }
         }
-        hit = func_800B9E74(eng, obj->player, 1);
+        hit = PACrateCollide(eng, obj->player, 1);
         if (hit != NULL) {
             if (hit == D_800BD88C.nas) {
                 D_800BD88C.unk28 = 1;
@@ -283,8 +283,8 @@ void func_800B87A0(NAS *nas) {
             slide->unk14 = PAPU_STATS(unk0, Heroes[c].hero_name)->b;
             slide->unk10 = PAPU_STATS(unk0, Heroes[c].hero_name)->c;
             slide->unk12 = PAPU_STATS(unk0, Heroes[c].hero_name)->d;
-            func_800B8080((T_B8080 *)eng);
-            func_800B7F14((T_B7F14_A *)eng, (T_B7F14_B *)slide);
+            PapuGridKey((T_B8080 *)eng);
+            PACrateAimAtGrid((T_B7F14_A *)eng, (T_B7F14_B *)slide);
             break;
         case 4:
         case 7:
@@ -299,8 +299,8 @@ void func_800B87A0(NAS *nas) {
             slide->unk14 = PAPU_STATS(unk0, Heroes[c].hero_name)->b;
             slide->unk10 = PAPU_STATS(unk0, Heroes[c].hero_name)->c;
             slide->unk12 = PAPU_STATS(unk0, Heroes[c].hero_name)->d;
-            func_800B8080((T_B8080 *)eng);
-            func_800B7F14((T_B7F14_A *)eng, (T_B7F14_B *)slide);
+            PapuGridKey((T_B8080 *)eng);
+            PACrateAimAtGrid((T_B7F14_A *)eng, (T_B7F14_B *)slide);
             break;
         default:
             obj->status = 0;
@@ -351,7 +351,7 @@ void func_800B87A0(NAS *nas) {
         if (obj->timer != 0) {
             obj->timer--;
         }
-        if (func_800B9E74(eng, obj->player, 1) != NULL) {
+        if (PACrateCollide(eng, obj->player, 1) != NULL) {
             slide->unk12 = 0;
             slide->unk10 = 0;
             slide->unk14 = 0;
@@ -506,7 +506,7 @@ void func_800B87A0(NAS *nas) {
     }
 }
 
-NAS *func_800B9E74(EXTengine *eng, s32 self, s32 checkHeroes) {
+NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
     FlagRecord *rec;
     FlagRecord *rec2;
     EXTengine *other;
@@ -631,7 +631,7 @@ NAS *func_800B9E74(EXTengine *eng, s32 self, s32 checkHeroes) {
     return NULL;
 }
 
-s32 func_800BA22C(EXTengine *eng, PapuHitFlags *flags, u32 mask) {
+s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask) {
     s32 sum;
     FlagRecord *rec;
     FlagRecord *rec2;
@@ -687,7 +687,7 @@ s32 func_800BA22C(EXTengine *eng, PapuHitFlags *flags, u32 mask) {
     return -1;
 }
 
-void func_800BA3C4(EXTengine *eng) {
+void PACrateFindFreeSpot(EXTengine *eng) {
     NAS *nas;
     EXTengine *other;
     s32 again;
@@ -714,7 +714,7 @@ void func_800BA3C4(EXTengine *eng) {
     } while (again);
 }
 
-void func_800BA4C0(s32 arg0) {
+void SetPAHeroHit(s32 arg0) {
     HeroInfo *b = Heroes;
     HeroInfo *h = &b[arg0];
 
@@ -790,7 +790,7 @@ done:
     func_800871E4(arg0);
 }
 
-void func_800BA7D8(s32 arg0) {
+void PAHeroPickup(s32 arg0) {
     VECTOR pos;
     HeroInfo *h;
     subengine *s;
@@ -832,7 +832,7 @@ done:
     func_800871E4(arg0);
 }
 
-void func_800BA958(s32 arg0) {
+void PAHeroHold(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     subengine *s;
@@ -889,7 +889,7 @@ void func_800BA958(s32 arg0) {
     }
 }
 
-void func_800BABA0(s32 arg0) {
+void PAHeroCarry(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     subengine *s;
@@ -946,7 +946,7 @@ void func_800BABA0(s32 arg0) {
     }
 }
 
-void func_800BADE8(s32 arg0) {
+void PAHeroThrow(s32 arg0) {
     VECTOR pos;
     HeroInfo *h;
     subengine *s;
@@ -1000,7 +1000,7 @@ done:
     func_800871E4(arg0);
 }
 
-void func_800BAFD4(s32 arg0) {
+void SetPAHeroDead(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base2;
 
@@ -1028,7 +1028,7 @@ void func_800BAFD4(s32 arg0) {
     func_800898EC(arg0);
 }
 
-void func_800BB0D4(s32 arg0) {
+void SetPAHeroWinner(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
     HeroInfo *base2;
@@ -1076,7 +1076,7 @@ void func_800BB0D4(s32 arg0) {
     func_80089FA4(arg0);
 }
 
-void func_800BB308(s32 arg0) {
+void PAHeroWinner(s32 arg0) {
     HeroInfo *h;
     s32 dy;
 
@@ -1103,7 +1103,7 @@ void func_800BB308(s32 arg0) {
 /* The D_8009D6E8.unk4C hook: claim the first object in reach of player's
  * cylinder that can take mask (within cone of the hero's heading, 0: any).
  * Each arm claims in its own do-while (0); jump2 merges the copies. */
-NAS *func_800BB3F0(player, mask, unused, cone)
+NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
     s32 player;
     s32 mask;
     s32 unused;
@@ -1193,7 +1193,7 @@ NAS *func_800BB3F0(player, mask, unused, cone)
     return NULL;
 }
 
-NAS *func_800BB69C(idx, arg1)
+NAS *PapuHeroGrabObject(idx, arg1)
     s32 idx;
     u16 arg1;
 {
@@ -1234,7 +1234,7 @@ NAS *func_800BB69C(idx, arg1)
     return NULL;
 }
 
-s32 func_800BB86C(s32 arg0) {
+s32 PapuHeroKickCollision(s32 arg0) {
     TrigEntry *tbl;
     VECTOR pos;
     NAS *own;
@@ -1466,7 +1466,7 @@ s32 func_800BB86C(s32 arg0) {
     return hit;
 }
 
-s32 func_800BC274(s32 idx) {
+s32 PapuHeroCarryCollision(s32 idx) {
     VECTOR v;
     subengine *sub;
     s32 hit;
@@ -1557,7 +1557,7 @@ s32 func_800BC274(s32 idx) {
     return hit;
 }
 
-void *func_800BC588(s32 idx, s32 mask) {
+void *PapuHeroObjectAhead(s32 idx, s32 mask) {
     NAS *n;
     EXTengine *he;
     EXTengine *e;
@@ -1583,7 +1583,7 @@ void *func_800BC588(s32 idx, s32 mask) {
     return 0;
 }
 
-void func_800BC698(s32 arg0) {
+void PAHeroDead(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
@@ -1600,7 +1600,7 @@ void func_800BC698(s32 arg0) {
     }
 }
 
-void func_800BC744(s32 arg0) {
+void SetPAHeroThrow(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
@@ -1617,12 +1617,12 @@ void SetPAHeroCarry(u32 arg0) {
     SetHeroSeq(arg0, 0x16);
 }
 
-void func_800BC800(s32 arg0) {
+void SetPAHeroHold(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     SetHeroSeq(arg0, 0x15);
 }
 
-void func_800BC84C(s32 arg0) {
+void SetPAHeroPickup(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 

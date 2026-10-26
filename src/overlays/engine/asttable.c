@@ -53,7 +53,7 @@ void InitPapuColumn(NAS *nas);  /* papu */
 void PlotPapuBoss(NAS *nas);  /* papu */
 void PlotPapuColumn(NAS *nas);  /* papu */
 void PlotPapuMinion(NAS *nas);  /* papu */
-void func_800B87A0(NAS *nas);  /* papu */
+void PlotPACrate(NAS *nas);  /* papu */
 void InitGravityObject(NAS *nas);  /* polar */
 void PlotGravityObject(NAS *nas);  /* polar */
 void InitBarrelRoll(NAS *nas);  /* race */
@@ -295,8 +295,8 @@ ASTEntry EngineASTTable[174] = {
     { AST_GatewayTrophy, InitGatewayTrophy, PlotGatewayTrophy },
     { AST_Crate, InitCrate, PlotCrate },
     { AST_CrateType, NullProc, PlotCrate },
-    { AST_PACrate, InitCrate, func_800B87A0 },
-    { AST_PACrateType, NullProc, func_800B87A0 },
+    { AST_PACrate, InitCrate, PlotPACrate },
+    { AST_PACrateType, NullProc, PlotPACrate },
     { AST_CrateExplode, InitCrateExplode, NullProc },
     { AST_CratePickup, InitCratePickup, PlotPickup },
     { AST_BigPoof, InitBigPoof, PlotBigPoof },

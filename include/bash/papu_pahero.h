@@ -19,7 +19,7 @@ typedef struct {
     /* 0x1E */ u16 unk1E;
 } PapuHitFlags;
 
-/* Extension 0x1000 checked by func_800BC274. */
+/* Extension 0x1000 checked by PapuHeroCarryCollision. */
 typedef struct {
     /* 0x00 */ u8 pad0[0x14];
     /* 0x14 */ u16 unk14;
@@ -30,53 +30,53 @@ typedef struct {
     /* 0x1E */ u16 unk1E;
 } PapuPushExt;
 
-void func_800BB308(s32 arg0);
+void PAHeroWinner(s32 arg0);
 extern HeroInfo Heroes[4];
 s32 func_80085890();
 s32 func_8008A200(s32 arg0);
 void func_8008A810(void);
 
 extern u16 D_8009E080[][4];
-void func_800BA3C4(EXTengine *eng);
+void PACrateFindFreeSpot(EXTengine *eng);
 
 extern _sfx_handler *D_800C4780;
 void func_800898EC(s32 arg0);
-void func_800BC698(s32 arg0);
+void PAHeroDead(s32 arg0);
 extern u16 *D_8009D6EC;
 s32 func_8008ABF8(s32 arg0);
 
-s32 func_800BA22C(EXTengine *eng, PapuHitFlags *flags, u32 mask);
+s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask);
 
-void func_800BA4C0(s32 arg0);
+void SetPAHeroHit(s32 arg0);
 
 typedef struct { s16 a; s16 b; s16 c; } PapuWeaponVec;
 extern PapuWeaponVec D_800BE8AC[];
 
-NAS *func_800B9E74(EXTengine *eng, s32 self, s32 checkHeroes);
+NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes);
 
 void PAHeroHit(u32 arg0);
 
-void func_800BA7D8(s32 arg0);
+void PAHeroPickup(s32 arg0);
 
-void func_800BA958(s32 arg0);
+void PAHeroHold(s32 arg0);
 
-void func_800BABA0(s32 arg0);
+void PAHeroCarry(s32 arg0);
 
-void func_800BADE8(s32 arg0);
+void PAHeroThrow(s32 arg0);
 
-void func_800BAFD4(s32 arg0);
+void SetPAHeroDead(s32 arg0);
 
-void func_800BB0D4(s32 arg0);
+void SetPAHeroWinner(s32 arg0);
 
-void *func_800BC588(s32 idx, s32 mask);
+void *PapuHeroObjectAhead(s32 idx, s32 mask);
 
-void func_800BC744(s32 arg0);
+void SetPAHeroThrow(s32 arg0);
 
 void SetPAHeroCarry(u32 arg0);
 
-void func_800BC800(s32 arg0);
+void SetPAHeroHold(s32 arg0);
 
-void func_800BC84C(s32 arg0);
+void SetPAHeroPickup(s32 arg0);
 
 extern u16 D_800BE898[];
 
@@ -96,7 +96,7 @@ typedef struct PapuStats {
 /* D_8009E488.unk0 / .unk4: PapuStats *[] by hero_name. */
 #define PAPU_STATS(t, n) (((PapuStats **)D_8009E488.t)[n])
 
-/* Extension 0x800 of the carried objects (func_800B87A0). */
+/* Extension 0x800 of the carried objects (PlotPACrate). */
 typedef struct PapuSlide {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ u8 unkC;
@@ -121,6 +121,6 @@ typedef struct PapuSlide {
 
 extern s32 D_8009E2B4[];
 
-void func_800B87A0(NAS *nas);
+void PlotPACrate(NAS *nas);
 
 #endif /* BASH_PAPU_PAHERO_H */
