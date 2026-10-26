@@ -3690,6 +3690,17 @@ def ref_files(ovl):
     return mine, [h for h in all_headers() if header_owner(h) in mine]
 
 
+def asm_files_of(ovl, name):
+    """asm/nonmatchings/.../NAME.s files of the unit a symbol belongs to. A slot overlay's are
+    under its own directory only: the overlays share one address range, so another overlay
+    can have a function of the same placeholder name (func_800B4848 in ovl5d and ovl69)."""
+    found = glob.glob(f"asm/nonmatchings/**/{name}.s", recursive=True)
+    if ovl in ("", "engine"):
+        slots = re.compile(r"asm/nonmatchings/overlays/(?!engine/)")
+        return [f for f in found if not slots.match(f.replace("\\", "/"))]
+    return [f for f in found if f.replace("\\", "/").startswith(f"asm/nonmatchings/overlays/{ovl}/")]
+
+
 def rename_asm_file(path, old, new):
     """Move asm/nonmatchings/.../OLD.s to NEW.s with its labels renamed; returns the old text."""
     text = read(path)
@@ -3716,7 +3727,7 @@ def apply_renames(pairs, proj, write_syms=True):
             set_symbol(ovl, addr, new, typ)
         by_scope[ovl][old] = new
         yamls |= set(yamls_seeing(ovl, proj))
-        for f in glob.glob(f"asm/nonmatchings/**/{old}.s", recursive=True):
+        for f in asm_files_of(ovl, old):
             # splat writes only the functions the C file lacks, so a matched function's .s (its
             # target asm, and the owner of its rodata in the data count) must move with it
             moved_asm[f] = rename_asm_file(f, old, new)
