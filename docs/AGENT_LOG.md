@@ -452,6 +452,13 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Polar, ovl62, with the recipe):** all 134 unnamed
+  functions named (the hero actions from `HeroMode_nums`, three leak
+  names where the code proves them), data, rodata and id word C and
+  named (`POLAR_PREMAP`, two shell settings, nine file groups, 80
+  sequences), shift test passed. data2c now reads comma declarators,
+  function-pointer arrays and names used only in header code.
+
 - **2026-10-26 (Arkenoid, ovl61, with the recipe):** the last 19
   functions named (6 from arkenoid.h by its order), data, rodata and id
   word C and named (`ARKENOID_PREMAP`, the file groups, 64

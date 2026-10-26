@@ -676,6 +676,23 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Polar's data** (ovl62, named 2026-10-26). Modes 0x12..0x16 are Day,
+  Night, Cut, End and the boss; five engine world records point at it,
+  0x0109 with `polar_shell_info` and 0x0012, 0x0014..0x0016 with
+  `polar_shell_info_b`, all with `POLAR_PREMAP` and `POLARSetUp`. The
+  nine `file_group_POLAR*` lie in the leak's order (Day, Night, Cut, the
+  challenge groups CHA, CUC, NGC, End, ENC, the boss). The hero actions
+  73..90 are `HeroMode_nums`' `HEROmode_polar*` (idle .. challenge). The
+  bear AI (`Polar_HeroBot`) starts a state through `PolarAITests`, five
+  tests over one chance table (`PolarAIChances`, eight per test, by
+  hero); `polar.h`'s other test and state names (`TestEvadeChance`,
+  `TestMaskChance`, `DoChaseMask`, ...) can't be told apart from the
+  code and are left unplaced, with `NasCheckZoneBoundries`,
+  `CalcCurrentSector`, `IsRayEndInZone`, `TE_InitTestCamera`,
+  `TestHeroObstaclesICE`, `AIQuick`, `PBQualityFactor1`, `Walrus`,
+  `HeadPolarObject`, the two smoke packs and `barrierdata`. The leak's
+  header declares none of Polar's hero states, as Tank's, Arkenoid's
+  and Pogo's do theirs: they were likely a file of their own, not proven.
 - **Arkenoid's data** (ovl61, Ballistix; named 2026-10-26). Modes 14..17
   are Balls, Beach Ball, N. Gin and Sky Ball (`file_group_BALLS` ..
   `SKYBALL`); the world record (`0x80098FF0`) is `{..., &ARKENOID_PREMAP,
