@@ -273,13 +273,14 @@ def fixup(ovl, old_elf, new_elf, others):
     return done
 
 
-def raw_data_refs(provides, defined, data_start):
-    """The engine's undefined names that link as a plain address (splat's PROVIDE lines) at one
-    of the overlay's data objects: they stay at the retail address when the overlay moves
-    (InitWeatherNas's D_800C45DC was N2O's star field, and Retry crashed). provides is
-    {name: address}, defined {name: address} of the overlay; returns [(name, its name there)]."""
-    at = {a: n for n, a in defined.items() if a >= data_start}
-    return sorted((n, at[a]) for n, a in provides.items() if a in at)
+def raw_refs(fixed, defined):
+    """The engine's undefined names that link at a fixed address (splat's PROVIDE lines and its
+    undefined-functions list) where the overlay has a function or data object: they stay at the
+    retail address when the overlay moves (InitWeatherNas's D_800C45DC was N2O's star field, and
+    Retry crashed; camera.c called func_800B8098, the hub's HubCameraFollow, and loading a save
+    crashed). fixed and defined are {name: address}; returns [(name, the overlay's name there)]."""
+    at = {a: n for n, a in defined.items()}
+    return sorted((n, at[a]) for n, a in fixed.items() if a in at)
 
 
 def main():
@@ -312,12 +313,13 @@ def main():
     sym = f"{OUT}/engine_slot_syms.ld"
     elfs = [new_elf if o == a.ovl else f"build/{o}.ovl.elf" for o in slots]
     names = slot_syms.undefined(sorted(glob.glob("build/src/overlays/engine/*.c.o")))
-    # the names the engine's objects use that splat's PROVIDE lines link as a plain address
-    provides = {m.group(1): int(m.group(2), 16) for m in re.finditer(
-        r"PROVIDE\((\w+) = (0x[0-9A-Fa-f]+)\)", open("build/engine_undefined_syms.ld").read())
-        if m.group(1) in names}
-    old_defs = slot_syms.defined(f"build/{a.ovl}.ovl.elf")
-    for n, there in raw_data_refs(provides, old_defs, old_defs.get(f"{a.ovl}_DATA_START", SLOT_HI)):
+    # the names the engine's objects use that splat's lists link at a fixed address
+    lists = open("build/engine_undefined_syms.ld").read() + open("linkers/engine_undefined_funcs_auto.txt").read()
+    fixed = {m.group(1): int(m.group(2), 16) for m in re.finditer(
+        r"(?:PROVIDE\()?(\w+) = (0x[0-9A-Fa-f]+)\)?;", lists) if m.group(1) in names}
+    old_defs = {n: v for n, v in slot_syms.defined(f"build/{a.ovl}.ovl.elf").items()
+                if not n.startswith(f"{a.ovl}_")}
+    for n, there in raw_refs(fixed, old_defs):
         print(f"shift: warning: the engine names {n}, which is {there} here, by its retail address: "
               f"it won't move (give the engine's C the overlay's name)")
     syms = slot_syms.resolve(names, elfs)

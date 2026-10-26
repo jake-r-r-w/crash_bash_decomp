@@ -62,12 +62,12 @@ class ModeGroups(unittest.TestCase):
         self.assertEqual(kept[1][0], 0x80099000)
 
 
-class RawDataRefs(unittest.TestCase):
-    def test_an_engine_address_at_the_overlays_data_is_reported(self):
-        provides = {"D_800C45DC": 0x800C45DC, "D_800BDB3C": 0x800BDB3C, "D_800C0000": 0x800C0000}
-        defined = {"NoxSparkFxDef": 0x800C45DC, "N2OSetUp": 0x800BDB3C, "n2o_DATA_START": 0x800C3774}
-        # a code address is another overlay's data by coincidence; only data objects count
-        self.assertEqual(shift.raw_data_refs(provides, defined, 0x800C3774), [("D_800C45DC", "NoxSparkFxDef")])
+class RawRefs(unittest.TestCase):
+    def test_an_engine_address_at_the_overlays_symbol_is_reported(self):
+        fixed = {"D_800C45DC": 0x800C45DC, "func_800B8098": 0x800B8098, "D_800C0000": 0x800C0000}
+        defined = {"NoxSparkFxDef": 0x800C45DC, "HubCameraFollow": 0x800B8098}
+        self.assertEqual(shift.raw_refs(fixed, defined),
+                         [("D_800C45DC", "NoxSparkFxDef"), ("func_800B8098", "HubCameraFollow")])
 
 
 class PadScript(unittest.TestCase):
