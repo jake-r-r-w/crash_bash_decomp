@@ -37302,13 +37302,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CBA64": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CBA64.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/POLARSetUp.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "1f360899dc28e163",
   "fpn": "0f6983742df2f6bb",
   "leaf": true,
-  "name": "func_800CBA64",
+  "name": "POLARSetUp",
   "orig": "func_800CBA64",
   "rom": 100272,
   "seg": "overlays/ovl62/ovl62",
@@ -37316,13 +37316,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CBAA4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CBAA4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_TargetShare.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "b3e6c6ef755735e4",
   "fpn": "13fff2e2d401907e",
   "leaf": true,
-  "name": "func_800CBAA4",
+  "name": "PolarAI_TargetShare",
   "orig": "func_800CBAA4",
   "rom": 100336,
   "seg": "overlays/ovl62/ovl62",
@@ -37330,13 +37330,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CBB8C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CBB8C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_ResetPace.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "c67e0d6640f6bac9",
   "fpn": "a2949c0ca74aa062",
   "leaf": true,
-  "name": "func_800CBB8C",
+  "name": "PolarAI_ResetPace",
   "orig": "func_800CBB8C",
   "rom": 100568,
   "seg": "overlays/ovl62/ovl62",
@@ -37344,13 +37344,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CBBE8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CBBE8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroesCollide.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "abee58248fd4d3a6",
   "fpn": "41e59f08f33aa486",
   "leaf": true,
-  "name": "func_800CBBE8",
+  "name": "PolarHeroesCollide",
   "orig": "func_800CBBE8",
   "rom": 100660,
   "seg": "overlays/ovl62/ovl62",
@@ -37358,13 +37358,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CC024": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CC024.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroBounceOff.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "1462efdd48c3b514",
   "fpn": "c8f78ab2e2d8c229",
   "leaf": true,
-  "name": "func_800CC024",
+  "name": "PolarHeroBounceOff",
   "orig": "func_800CC024",
   "rom": 101744,
   "seg": "overlays/ovl62/ovl62",
@@ -37372,13 +37372,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CC2BC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CC2BC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitShadow.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "b1a8ad2600e29f78",
   "fpn": "420f1e2737f718a8",
   "leaf": true,
-  "name": "func_800CC2BC",
+  "name": "PolarInitShadow",
   "orig": "func_800CC2BC",
   "rom": 102408,
   "seg": "overlays/ovl62/ovl62",
@@ -37386,7 +37386,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CC3B4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CC3B4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarUpdateShadow.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8"
@@ -37394,7 +37394,7 @@
   "fp": "06c121f877fb9062",
   "fpn": "f1c3ef04eb8a5acd",
   "leaf": false,
-  "name": "func_800CC3B4",
+  "name": "PolarUpdateShadow",
   "orig": "func_800CC3B4",
   "rom": 102656,
   "seg": "overlays/ovl62/ovl62",
@@ -37402,7 +37402,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CCCB8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CCCB8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarPreMoveHero.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800154A0",
@@ -37411,7 +37411,7 @@
   "fp": "913eb30132feb798",
   "fpn": "f825dca9e6f2ec7a",
   "leaf": false,
-  "name": "func_800CCCB8",
+  "name": "PolarPreMoveHero",
   "orig": "func_800CCCB8",
   "rom": 104964,
   "seg": "overlays/ovl62/ovl62",
@@ -37425,7 +37425,7 @@
   "fp": "29e1b03832b375f6",
   "fpn": "c458a003197ddc42",
   "leaf": true,
-  "name": "func_800CD118",
+  "name": "PolarGetLevelPoint",
   "orig": "func_800CD118",
   "rom": 106084,
   "seg": "overlays/ovl62/ovl62",
@@ -37433,7 +37433,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CD214": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CD214.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestPolarHeroMelted.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -37444,7 +37444,7 @@
   "fp": "fe10de1e6ce1cb09",
   "fpn": "17f475c79bab756d",
   "leaf": false,
-  "name": "func_800CD214",
+  "name": "TestPolarHeroMelted",
   "orig": "func_800CD214",
   "rom": 106336,
   "seg": "overlays/ovl62/ovl62",
@@ -37452,13 +37452,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CD560": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CD560.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarClearHitBy.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "9f370abb491b8629",
   "fpn": "5907d2fec015d0de",
   "leaf": true,
-  "name": "func_800CD560",
+  "name": "PolarClearHitBy",
   "orig": "func_800CD560",
   "rom": 107180,
   "seg": "overlays/ovl62/ovl62",
@@ -37466,7 +37466,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CD594": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CD594.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroIdle.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -37480,7 +37480,7 @@
   "fp": "7f56c2c3f01ca891",
   "fpn": "fc46c971d2b8804d",
   "leaf": false,
-  "name": "func_800CD594",
+  "name": "SetPolarHeroIdle",
   "orig": "func_800CD594",
   "rom": 107232,
   "seg": "overlays/ovl62/ovl62",
@@ -37488,7 +37488,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CDA54": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CDA54.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroIdle.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -37504,7 +37504,7 @@
   "fp": "1ac3ece09a9d86ff",
   "fpn": "544852a4bfba6dc7",
   "leaf": false,
-  "name": "func_800CDA54",
+  "name": "PolarHeroIdle",
   "orig": "func_800CDA54",
   "rom": 108448,
   "seg": "overlays/ovl62/ovl62",
@@ -37512,7 +37512,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CDBD0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CDBD0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroRun.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800225C4",
@@ -37530,7 +37530,7 @@
   "fp": "84178be327c107bf",
   "fpn": "93ba7bc19a290ba6",
   "leaf": false,
-  "name": "func_800CDBD0",
+  "name": "PolarHeroRun",
   "orig": "func_800CDBD0",
   "rom": 108828,
   "seg": "overlays/ovl62/ovl62",
@@ -37538,7 +37538,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CDE8C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CDE8C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroDazed.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -37550,7 +37550,7 @@
   "fp": "5cd195f18b0436e3",
   "fpn": "fc4a687149bb3dbd",
   "leaf": false,
-  "name": "func_800CDE8C",
+  "name": "SetPolarHeroDazed",
   "orig": "func_800CDE8C",
   "rom": 109528,
   "seg": "overlays/ovl62/ovl62",
@@ -37558,7 +37558,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CE664": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CE664.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroDazed.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -37575,7 +37575,7 @@
   "fp": "c6ff36da307e1995",
   "fpn": "fbc9ccc61d82b85c",
   "leaf": false,
-  "name": "func_800CE664",
+  "name": "PolarHeroDazed",
   "orig": "func_800CE664",
   "rom": 111536,
   "seg": "overlays/ovl62/ovl62",
@@ -37583,7 +37583,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CED58": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CED58.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroChallenge.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -37594,7 +37594,7 @@
   "fp": "3896a0623c376871",
   "fpn": "813940f4fe362941",
   "leaf": false,
-  "name": "func_800CED58",
+  "name": "SetPolarHeroChallenge",
   "orig": "func_800CED58",
   "rom": 113316,
   "seg": "overlays/ovl62/ovl62",
@@ -37602,7 +37602,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CF6F8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CF6F8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroChallenge.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -37618,7 +37618,7 @@
   "fp": "fd1c257d3c9ca5c6",
   "fpn": "747a3353d904d720",
   "leaf": false,
-  "name": "func_800CF6F8",
+  "name": "PolarHeroChallenge",
   "orig": "func_800CF6F8",
   "rom": 115780,
   "seg": "overlays/ovl62/ovl62",
@@ -37626,7 +37626,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CF9EC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CF9EC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroTransmute.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800D2D2C"
@@ -37634,7 +37634,7 @@
   "fp": "414c5a7c3f2b55c9",
   "fpn": "fc122739d50634c3",
   "leaf": false,
-  "name": "func_800CF9EC",
+  "name": "SetPolarHeroTransmute",
   "orig": "func_800CF9EC",
   "rom": 116536,
   "seg": "overlays/ovl62/ovl62",
@@ -37642,7 +37642,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CFB7C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CFB7C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroTransmute.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800BBF2C",
@@ -37653,7 +37653,7 @@
   "fp": "2ffce995f7fee039",
   "fpn": "5f6f9c0fbff3965d",
   "leaf": false,
-  "name": "func_800CFB7C",
+  "name": "PolarHeroTransmute",
   "orig": "func_800CFB7C",
   "rom": 116936,
   "seg": "overlays/ovl62/ovl62",
@@ -37661,7 +37661,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CFC58": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CFC58.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroOffice.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -37674,7 +37674,7 @@
   "fp": "5542d9bf32a23227",
   "fpn": "965532693a7dc8a9",
   "leaf": false,
-  "name": "func_800CFC58",
+  "name": "SetPolarHeroOffice",
   "orig": "func_800CFC58",
   "rom": 117156,
   "seg": "overlays/ovl62/ovl62",
@@ -37682,7 +37682,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CFF44": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CFF44.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroSlideFromCentre.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C"
@@ -37690,7 +37690,7 @@
   "fp": "f789f8df00e1dbea",
   "fpn": "ca9c6735c29fff93",
   "leaf": false,
-  "name": "func_800CFF44",
+  "name": "PolarHeroSlideFromCentre",
   "orig": "func_800CFF44",
   "rom": 117904,
   "seg": "overlays/ovl62/ovl62",
@@ -37698,7 +37698,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D0060": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D0060.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroOffice.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -37715,7 +37715,7 @@
   "fp": "826c0c2efb219cb9",
   "fpn": "c69109fb75f7e1a2",
   "leaf": false,
-  "name": "func_800D0060",
+  "name": "PolarHeroOffice",
   "orig": "func_800D0060",
   "rom": 118188,
   "seg": "overlays/ovl62/ovl62",
@@ -37723,7 +37723,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D034C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D034C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroInBeam.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -37732,7 +37732,7 @@
   "fp": "1a2c6b938c6a1d08",
   "fpn": "e6dbce9e929d1d0a",
   "leaf": false,
-  "name": "func_800D034C",
+  "name": "SetPolarHeroInBeam",
   "orig": "func_800D034C",
   "rom": 118936,
   "seg": "overlays/ovl62/ovl62",
@@ -37740,7 +37740,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D0470": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D0470.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroPoll.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -37750,7 +37750,7 @@
   "fp": "27685dd2d5e2508b",
   "fpn": "1d23fbcf46e422ca",
   "leaf": false,
-  "name": "func_800D0470",
+  "name": "SetPolarHeroPoll",
   "orig": "func_800D0470",
   "rom": 119228,
   "seg": "overlays/ovl62/ovl62",
@@ -37758,7 +37758,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D05A8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D05A8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAttackPower.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8"
@@ -37766,7 +37766,7 @@
   "fp": "99263b3a2c5bd74d",
   "fpn": "0f7b5200da2964fc",
   "leaf": false,
-  "name": "func_800D05A8",
+  "name": "PolarHeroAttackPower",
   "orig": "func_800D05A8",
   "rom": 119540,
   "seg": "overlays/ovl62/ovl62",
@@ -37774,7 +37774,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D0650": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D0650.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarTestAttack.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -37784,7 +37784,7 @@
   "fp": "bcc8e53adea99627",
   "fpn": "87d7b1baa0c52ec7",
   "leaf": false,
-  "name": "func_800D0650",
+  "name": "PolarTestAttack",
   "orig": "func_800D0650",
   "rom": 119708,
   "seg": "overlays/ovl62/ovl62",
@@ -37792,7 +37792,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D0750": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D0750.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroThrowPower.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8"
@@ -37800,7 +37800,7 @@
   "fp": "f3bef2ec8ccbdfec",
   "fpn": "8d54fd2e207e0681",
   "leaf": false,
-  "name": "func_800D0750",
+  "name": "PolarHeroThrowPower",
   "orig": "func_800D0750",
   "rom": 119964,
   "seg": "overlays/ovl62/ovl62",
@@ -37808,7 +37808,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D0808": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D0808.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroAttack.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800225C4",
@@ -37821,7 +37821,7 @@
   "fp": "2a88848a03ff33ed",
   "fpn": "899923174a48de4c",
   "leaf": false,
-  "name": "func_800D0808",
+  "name": "SetPolarHeroAttack",
   "orig": "func_800D0808",
   "rom": 120148,
   "seg": "overlays/ovl62/ovl62",
@@ -37829,7 +37829,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D0A6C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D0A6C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAttackThrow.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022A3C",
@@ -37839,7 +37839,7 @@
   "fp": "8c759ecfd2cf4bef",
   "fpn": "1da7e655102fe2c8",
   "leaf": false,
-  "name": "func_800D0A6C",
+  "name": "PolarHeroAttackThrow",
   "orig": "func_800D0A6C",
   "rom": 120760,
   "seg": "overlays/ovl62/ovl62",
@@ -37847,7 +37847,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D10A0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D10A0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarTestSnowball.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -37856,7 +37856,7 @@
   "fp": "613f1cc9ae85edb2",
   "fpn": "70128975261d103e",
   "leaf": false,
-  "name": "func_800D10A0",
+  "name": "PolarTestSnowball",
   "orig": "func_800D10A0",
   "rom": 122348,
   "seg": "overlays/ovl62/ovl62",
@@ -37864,7 +37864,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D1188": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D1188.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroThrowBomb.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -37874,7 +37874,7 @@
   "fp": "29b297a33850a757",
   "fpn": "d0c6c2c8e758a1cb",
   "leaf": false,
-  "name": "func_800D1188",
+  "name": "SetPolarHeroThrowBomb",
   "orig": "func_800D1188",
   "rom": 122580,
   "seg": "overlays/ovl62/ovl62",
@@ -37882,7 +37882,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D14CC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D14CC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroSnowball.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800D2D2C"
@@ -37890,7 +37890,7 @@
   "fp": "295f587243e2f54d",
   "fpn": "1dd83e0e843a254d",
   "leaf": false,
-  "name": "func_800D14CC",
+  "name": "SetPolarHeroSnowball",
   "orig": "func_800D14CC",
   "rom": 123416,
   "seg": "overlays/ovl62/ovl62",
@@ -37898,7 +37898,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D17E8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D17E8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroSnowball.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -37911,7 +37911,7 @@
   "fp": "c11b5f9a03ac767a",
   "fpn": "c9f7a458a44e7b0a",
   "leaf": false,
-  "name": "func_800D17E8",
+  "name": "PolarHeroSnowball",
   "orig": "func_800D17E8",
   "rom": 124212,
   "seg": "overlays/ovl62/ovl62",
@@ -37919,7 +37919,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D191C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D191C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroFootIdle.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -37932,7 +37932,7 @@
   "fp": "d548aeb95d003782",
   "fpn": "201bf8947b1c92dc",
   "leaf": false,
-  "name": "func_800D191C",
+  "name": "SetPolarHeroFootIdle",
   "orig": "func_800D191C",
   "rom": 124520,
   "seg": "overlays/ovl62/ovl62",
@@ -37940,7 +37940,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D1C14": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D1C14.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroFootIdle.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -37956,7 +37956,7 @@
   "fp": "f0f1061b5e43bced",
   "fpn": "68af422160d08682",
   "leaf": false,
-  "name": "func_800D1C14",
+  "name": "PolarHeroFootIdle",
   "orig": "func_800D1C14",
   "rom": 125280,
   "seg": "overlays/ovl62/ovl62",
@@ -37964,7 +37964,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D1DB4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D1DB4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroFootRun.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -37981,7 +37981,7 @@
   "fp": "b7a9bd29f29356cc",
   "fpn": "a303e05af38a0015",
   "leaf": false,
-  "name": "func_800D1DB4",
+  "name": "PolarHeroFootRun",
   "orig": "func_800D1DB4",
   "rom": 125696,
   "seg": "overlays/ovl62/ovl62",
@@ -37989,7 +37989,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2044": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2044.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroHit.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -38000,7 +38000,7 @@
   "fp": "15cfbfb150d22ade",
   "fpn": "1505d31d3f7a31ab",
   "leaf": false,
-  "name": "func_800D2044",
+  "name": "SetPolarHeroHit",
   "orig": "func_800D2044",
   "rom": 126352,
   "seg": "overlays/ovl62/ovl62",
@@ -38008,7 +38008,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2248": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2248.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroDead.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022A3C",
@@ -38017,7 +38017,7 @@
   "fp": "27895e5b6a7719f1",
   "fpn": "fc55a6f96945d8af",
   "leaf": false,
-  "name": "func_800D2248",
+  "name": "SetPolarHeroDead",
   "orig": "func_800D2248",
   "rom": 126868,
   "seg": "overlays/ovl62/ovl62",
@@ -38025,7 +38025,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2334": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2334.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroDead.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -38036,7 +38036,7 @@
   "fp": "16b0aad0c1a877e0",
   "fpn": "962cee206bd53676",
   "leaf": false,
-  "name": "func_800D2334",
+  "name": "PolarHeroDead",
   "orig": "func_800D2334",
   "rom": 127104,
   "seg": "overlays/ovl62/ovl62",
@@ -38044,7 +38044,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D257C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D257C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroWinner.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -38057,7 +38057,7 @@
   "fp": "f1b789a4212b6e30",
   "fpn": "14175b7db699bc2e",
   "leaf": false,
-  "name": "func_800D257C",
+  "name": "SetPolarHeroWinner",
   "orig": "func_800D257C",
   "rom": 127688,
   "seg": "overlays/ovl62/ovl62",
@@ -38065,7 +38065,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2B58": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2B58.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroWinner.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8008502C",
@@ -38076,7 +38076,7 @@
   "fp": "af277d4772b9a0ea",
   "fpn": "7fb1d90cb15d27c9",
   "leaf": false,
-  "name": "func_800D2B58",
+  "name": "PolarHeroWinner",
   "orig": "func_800D2B58",
   "rom": 129188,
   "seg": "overlays/ovl62/ovl62",
@@ -38084,7 +38084,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2C38": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2C38.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroSquashed.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -38093,7 +38093,7 @@
   "fp": "747a640e588cd02f",
   "fpn": "7721b5e9122b1a76",
   "leaf": false,
-  "name": "func_800D2C38",
+  "name": "PolarHeroSquashed",
   "orig": "func_800D2C38",
   "rom": 129412,
   "seg": "overlays/ovl62/ovl62",
@@ -38101,7 +38101,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2CB8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2CB8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroSquashed.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8"
@@ -38109,7 +38109,7 @@
   "fp": "0b13251ca9edaca0",
   "fpn": "b78d343d9b2d7146",
   "leaf": false,
-  "name": "func_800D2CB8",
+  "name": "SetPolarHeroSquashed",
   "orig": "func_800D2CB8",
   "rom": 129540,
   "seg": "overlays/ovl62/ovl62",
@@ -38117,7 +38117,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2D2C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2D2C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestPolarHeroWon.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800868B4"
@@ -38125,7 +38125,7 @@
   "fp": "d4d6c1d8d942c0d1",
   "fpn": "bfe4f38298514cc0",
   "leaf": false,
-  "name": "func_800D2D2C",
+  "name": "TestPolarHeroWon",
   "orig": "func_800D2D2C",
   "rom": 129656,
   "seg": "overlays/ovl62/ovl62",
@@ -38133,7 +38133,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2D9C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2D9C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroHit.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8008502C",
@@ -38144,7 +38144,7 @@
   "fp": "0b8a3881fdba7ebb",
   "fpn": "8697b9e478823bdc",
   "leaf": false,
-  "name": "func_800D2D9C",
+  "name": "PolarHeroHit",
   "orig": "func_800D2D9C",
   "rom": 129768,
   "seg": "overlays/ovl62/ovl62",
@@ -38152,7 +38152,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2E00": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2E00.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroFootRun.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800225C4",
@@ -38161,7 +38161,7 @@
   "fp": "4b9c64bd6db7d31d",
   "fpn": "5d24c10d386e204b",
   "leaf": false,
-  "name": "func_800D2E00",
+  "name": "SetPolarHeroFootRun",
   "orig": "func_800D2E00",
   "rom": 129868,
   "seg": "overlays/ovl62/ovl62",
@@ -38169,7 +38169,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2EB0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2EB0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroThrowBomb.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -38179,7 +38179,7 @@
   "fp": "b75db4d67b55d2dd",
   "fpn": "a6472b03ec2243c6",
   "leaf": false,
-  "name": "func_800D2EB0",
+  "name": "PolarHeroThrowBomb",
   "orig": "func_800D2EB0",
   "rom": 130044,
   "seg": "overlays/ovl62/ovl62",
@@ -38187,7 +38187,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D2F48": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D2F48.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAttack.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -38201,7 +38201,7 @@
   "fp": "9fb05dbc4f1cc96e",
   "fpn": "81777f114a6f6442",
   "leaf": false,
-  "name": "func_800D2F48",
+  "name": "PolarHeroAttack",
   "orig": "func_800D2F48",
   "rom": 130196,
   "seg": "overlays/ovl62/ovl62",
@@ -38209,7 +38209,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D3018": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D3018.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroPoll.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800D2D2C"
@@ -38217,7 +38217,7 @@
   "fp": "cf1250c5e372fe3a",
   "fpn": "e4ec93de654a0aad",
   "leaf": false,
-  "name": "func_800D3018",
+  "name": "PolarHeroPoll",
   "orig": "func_800D3018",
   "rom": 130404,
   "seg": "overlays/ovl62/ovl62",
@@ -38225,7 +38225,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D307C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D307C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroInBeam.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8008502C"
@@ -38233,7 +38233,7 @@
   "fp": "8e04932764fd96d9",
   "fpn": "0c4a84cfd885602d",
   "leaf": false,
-  "name": "func_800D307C",
+  "name": "PolarHeroInBeam",
   "orig": "func_800D307C",
   "rom": 130504,
   "seg": "overlays/ovl62/ovl62",
@@ -38241,7 +38241,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D30C0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D30C0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroWeight.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800D2D2C"
@@ -38249,7 +38249,7 @@
   "fp": "01d1e7268d4d3d9d",
   "fpn": "24b572f7a44ad39d",
   "leaf": false,
-  "name": "func_800D30C0",
+  "name": "PolarHeroWeight",
   "orig": "func_800D30C0",
   "rom": 130572,
   "seg": "overlays/ovl62/ovl62",
@@ -38265,7 +38265,7 @@
   "fp": "9fa1f7fbae0801c3",
   "fpn": "b4448f5cf540030b",
   "leaf": false,
-  "name": "func_800D3170",
+  "name": "SetPolarHeroWeight",
   "orig": "func_800D3170",
   "rom": 130748,
   "seg": "overlays/ovl62/ovl62",
@@ -38273,7 +38273,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D31A0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D31A0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SetPolarHeroRun.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800225C4",
@@ -38283,7 +38283,7 @@
   "fp": "b16c41c276a00904",
   "fpn": "ee7fa2555a2fd37b",
   "leaf": false,
-  "name": "func_800D31A0",
+  "name": "SetPolarHeroRun",
   "orig": "func_800D31A0",
   "rom": 130796,
   "seg": "overlays/ovl62/ovl62",
@@ -38291,7 +38291,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D325C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D325C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAddWeight.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8"
@@ -38299,7 +38299,7 @@
   "fp": "7c13df9893a1b5c9",
   "fpn": "d9d105ba9edb45ed",
   "leaf": false,
-  "name": "func_800D325C",
+  "name": "PolarHeroAddWeight",
   "orig": "func_800D325C",
   "rom": 130984,
   "seg": "overlays/ovl62/ovl62",
@@ -38307,7 +38307,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D32CC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D32CC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestPolarHeroStop.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -38316,7 +38316,7 @@
   "fp": "c86d1d77df0e4964",
   "fpn": "4a6595cb3d040078",
   "leaf": false,
-  "name": "func_800D32CC",
+  "name": "TestPolarHeroStop",
   "orig": "func_800D32CC",
   "rom": 131096,
   "seg": "overlays/ovl62/ovl62",
@@ -38324,7 +38324,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D3394": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D3394.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestPolarHeroRun.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -38333,7 +38333,7 @@
   "fp": "06c60894a1d3373d",
   "fpn": "7c0f46ec9e853c03",
   "leaf": false,
-  "name": "func_800D3394",
+  "name": "TestPolarHeroRun",
   "orig": "func_800D3394",
   "rom": 131296,
   "seg": "overlays/ovl62/ovl62",
@@ -38341,13 +38341,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800D3460": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800D3460.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitHeroMove.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "01090e93128bec5d",
   "fpn": "47e88025fdc7ea31",
   "leaf": true,
-  "name": "func_800D3460",
+  "name": "PolarInitHeroMove",
   "orig": "func_800D3460",
   "rom": 131500,
   "seg": "overlays/ovl62/ovl62",
@@ -38361,7 +38361,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800D34F0",
+  "name": "PolarInitHero",
   "orig": "func_800D34F0",
   "rom": 131644,
   "seg": "overlays/ovl62/ovl62",
@@ -38375,7 +38375,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800D34F8",
+  "name": "PolarEmptyStub0",
   "orig": "func_800D34F8",
   "rom": 131652,
   "seg": "overlays/ovl62/ovl62",
@@ -38389,7 +38389,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800D3500",
+  "name": "PolarEmptyStub1",
   "orig": "func_800D3500",
   "rom": 131660,
   "seg": "overlays/ovl62/ovl62",
@@ -38403,7 +38403,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800D3508",
+  "name": "PolarEmptyStub2",
   "orig": "func_800D3508",
   "rom": 131668,
   "seg": "overlays/ovl62/ovl62",

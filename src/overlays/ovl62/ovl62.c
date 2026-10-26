@@ -1029,8 +1029,8 @@ void InitialisePOLARFirst(void) {
     D_800D4D0C = 0;
     D_800D4DD0 = 0x400000;
     if (((Ovl62InitView *)D_8005A614)->mode != 0x15) {
-        h->unk18 = func_800CC2BC;
-        h->unk1C = func_800CC3B4;
+        h->unk18 = PolarInitShadow;
+        h->unk1C = PolarUpdateShadow;
     } else {
         h->unk18 = D_8008B29C;
         h->unk1C = D_8008B418;
@@ -1042,11 +1042,11 @@ void InitialisePOLARFirst(void) {
         D_8009D6E8.unk4 = D_800D5280;
     }
     D_8009D6E8.unk68 = DoNowt;
-    D_8009D6E8.unk0 = (s32)func_800D34F0;
-    D_8009D6E8.unk20 = func_800CCCB8;
+    D_8009D6E8.unk0 = (s32)PolarInitHero;
+    D_8009D6E8.unk20 = PolarPreMoveHero;
     D_8009D6E8.unk24 = func_800B5788;
     D_8009D6E8.unk38 = Polar_HeroBot;
-    D_8009D6E8.unk3C = func_800D0650;
+    D_8009D6E8.unk3C = PolarTestAttack;
     D_8009D6E8.unk2C = func_800B5570;
     D_8009D6E8.unk14 = D_800D52B8;
     D_8005AA70[10] = (s32)func_800B5910;
@@ -1219,7 +1219,7 @@ void func_800B60B8(s32 player) {
     if (ext == NULL) {
         return;
     }
-    if (ext->val < func_800D05A8(player)) {
+    if (ext->val < PolarHeroAttackPower(player)) {
         return;
     }
     if (h->hero_move == NULL) {
@@ -3296,7 +3296,7 @@ loop:
                     h->hero_status = status | 0xA000;
                 }
             }
-            func_800D3460(i);
+            PolarInitHeroMove(i);
             SetHeroAction(i, 0x49);
             if (v->mode == 0x15 && (v->flags & 0x80) && ((Ovl62PolarView *)g)->unk5C[0] == 0) {
                 SetHeroAction(i, 0x54);
@@ -3616,7 +3616,7 @@ s32 func_800BBF2C(s32 player) {
                     snd = Random(4);
                     ang = get_angle(dx, dz) & 0xFFF;
                     d = range - d + 8;
-                    func_800CBBE8(player, i);
+                    PolarHeroesCollide(player, i);
                     spd = ((EXTheromove *)e)->x_vel * ((EXTheromove *)e)->x_vel + ((EXTheromove *)e)->z_vel * ((EXTheromove *)e)->z_vel;
                     hit = 1;
                     if (spd > 0x400) {
@@ -3859,7 +3859,7 @@ s32 func_800BBF2C(s32 player) {
                             d = range - d + 2;
                             eng->unk10.x -= (d * t[(ang - 0x400) & 0xFFF].unk2) >> 12;
                             eng->unk10.z -= (d * t[ang].unk2) >> 12;
-                            func_800CC024(player, (EXTheromove *)e);
+                            PolarHeroBounceOff(player, (EXTheromove *)e);
                             hit = 1;
                             if (((EXTheromove *)e)->x_vel * ((EXTheromove *)e)->x_vel + ((EXTheromove *)e)->z_vel * ((EXTheromove *)e)->z_vel > 0x2400) {
                                 k = Random(3);
@@ -9568,7 +9568,7 @@ bool DoNowt(EXTengine *eng) {
     return 0;
 }
 
-void func_800CBA64(void) {
+void POLARSetUp(void) {
     D_8005AA70[0] = (s32)InitialisePOLARFirst;
     D_8005AA70[1] = (s32)InitialisePOLAR;
     D_8005AA70[2] = (s32)InitialisePOLAR;
@@ -9576,7 +9576,7 @@ void func_800CBA64(void) {
     D_8005AA70[6] = (s32)POLARtriggers;
 }
 
-s32 func_800CBAA4(s32 arg0, s32 arg1) {
+s32 PolarAI_TargetShare(s32 arg0, s32 arg1) {
     s32 total;
     s32 result;
     s32 i;
@@ -9597,7 +9597,7 @@ s32 func_800CBAA4(s32 arg0, s32 arg1) {
     return result;
 }
 
-void func_800CBB8C(void) {
+void PolarAI_ResetPace(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -9609,7 +9609,7 @@ void func_800CBB8C(void) {
     }
 }
 
-void func_800CBBE8(s32 p1, s32 p2) {
+void PolarHeroesCollide(s32 p1, s32 p2) {
     EXTheromove *move1 = Heroes[p1].hero_move;
     EXTheromove *move2 = Heroes[p2].hero_move;
     s32 m1 = move1->mass;
@@ -9697,7 +9697,7 @@ void func_800CBBE8(s32 p1, s32 p2) {
     }
 }
 
-void func_800CC024(s32 player, EXTheromove *other) {
+void PolarHeroBounceOff(s32 player, EXTheromove *other) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = &base[player];
     EXTheromove *move = hero->hero_move;
@@ -9761,7 +9761,7 @@ void func_800CC024(s32 player, EXTheromove *other) {
     }
 }
 
-void func_800CC2BC(s32 player) {
+void PolarInitShadow(s32 player) {
     u8 *g = D_8005A614;
     HeroInfo *hero;
     EXTengine *shadow;
@@ -9795,7 +9795,7 @@ void func_800CC2BC(s32 player) {
     }
 }
 
-void func_800CC3B4(s32 player) {
+void PolarUpdateShadow(s32 player) {
     u8 *g;
     HeroInfo *h;
     s32 *ext;
@@ -10014,7 +10014,7 @@ mode58:
     }
 }
 
-void func_800CCCB8(s32 player) {
+void PolarPreMoveHero(s32 player) {
     HeroInfo *h;
     HeroInfo *base;
     EXTheromove *m;
@@ -10082,7 +10082,7 @@ void func_800CCCB8(s32 player) {
     }
 }
 
-s32 func_800CD118(s32 *arg0, s32 arg1) {
+s32 PolarGetLevelPoint(s32 *arg0, s32 arg1) {
     s32 v[3];
     u8 *base;
     s32 off;
@@ -10122,7 +10122,7 @@ s32 func_800CD118(s32 *arg0, s32 arg1) {
     return 1;
 }
 
-s32 func_800CD214(s32 player) {
+s32 TestPolarHeroMelted(s32 player) {
     HeroInfo *hb;
     HeroInfo *h;
     EXTengine *eng;
@@ -10158,7 +10158,7 @@ s32 func_800CD214(s32 player) {
         return 0;
     } else if (D_800D5298 != NULL) {
         if (D_800D5298->unk74 == 0x2008
-            && ((s32 (*)(s32 *, s32, s32))func_800CD118)((s32 *)&eng->unk10, 1, player)
+            && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 1, player)
             && !(h->hero_status & 0x200)) {
             ext->unkA8 = 1;
             if (h->hero_mode != 0x4E) {
@@ -10166,7 +10166,7 @@ s32 func_800CD214(s32 player) {
             }
         }
         if (D_800D5298->unk74 == 0x2009
-            && ((s32 (*)(s32 *, s32, s32))func_800CD118)((s32 *)&eng->unk10, 2, player)
+            && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 2, player)
             && !(Heroes[player].hero_status & 0x200)) {
             ext->unkA8 = 1;
             if (Heroes[player].hero_mode != 0x4E) {
@@ -10174,7 +10174,7 @@ s32 func_800CD214(s32 player) {
             }
         }
         if (D_800D5298->unk74 == 0x200A) {
-            out = ((s32 (*)(s32 *, s32, s32))func_800CD118)((s32 *)&eng->unk10, 3, player) != 1;
+            out = ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 3, player) != 1;
             if (out && !(Heroes[player].hero_status & 0x200)) {
                 ext->unkA8 = 1;
                 if (Heroes[player].hero_mode != 0x4E) {
@@ -10183,7 +10183,7 @@ s32 func_800CD214(s32 player) {
             }
         }
         if (D_800D5298->flags & 0x8000) {
-            if (eng != NULL && ((s32 (*)(s32 *, s32, s32))func_800CD118)((s32 *)&eng->unk10, 0, player)) {
+            if (eng != NULL && ((s32 (*)(s32 *, s32, s32))PolarGetLevelPoint)((s32 *)&eng->unk10, 0, player)) {
                 ext->unkA8 = 0;
                 return 1;
             }
@@ -10196,12 +10196,12 @@ s32 func_800CD214(s32 player) {
     return 0;
 }
 
-s32 func_800CD560(s32 arg0) {
+s32 PolarClearHitBy(s32 arg0) {
     Heroes[arg0].hero_move->HitBy = -1;
     return 1;
 }
 
-void func_800CD594(s32 player) {
+void SetPolarHeroIdle(s32 player) {
     HeroInfo *base;
     HeroInfo *info;
     EXTheromove *move;
@@ -10219,7 +10219,7 @@ void func_800CD594(s32 player) {
         StopSfx(info->hero_eng->sfx);
     }
     info->hero_eng->sub->flags &= 0xFFBFFFFF;
-    if (func_800D2D2C(player) != 0) {
+    if (TestPolarHeroWon(player) != 0) {
         return;
     }
     info->hero_eng->sub->unk68 = 0;
@@ -10318,7 +10318,7 @@ void func_800CD594(s32 player) {
     }
 }
 
-void func_800CDA54(s32 player) {
+void PolarHeroIdle(s32 player) {
     Ext20 *ext;
     Ext20 *ext2;
 
@@ -10340,14 +10340,14 @@ void func_800CDA54(s32 player) {
             SetHeroAction(player, 0x55);
         }
     }
-    func_800D0650(player);
-    func_800D10A0(player);
-    func_800CD214(player);
+    PolarTestAttack(player);
+    PolarTestSnowball(player);
+    TestPolarHeroMelted(player);
     func_800C0888(&Heroes[player].hero_eng->unk10, player);
-    func_800D2D2C(player);
+    TestPolarHeroWon(player);
 }
 
-void func_800CDBD0(s32 player) {
+void PolarHeroRun(s32 player) {
     HeroInfo *h;
     HeroInfo *base;
     Ext20 *ext;
@@ -10393,18 +10393,18 @@ void func_800CDBD0(s32 player) {
             }
         }
     }
-    func_800D0650(player);
-    func_800D10A0(player);
-    func_800CD214(player);
+    PolarTestAttack(player);
+    PolarTestSnowball(player);
+    TestPolarHeroMelted(player);
     func_800C0888(&Heroes[player].hero_eng->unk10, player);
-    if (func_800D2D2C(player) != 0) {
+    if (TestPolarHeroWon(player) != 0) {
         if (Heroes[player].hero_eng->sfx != NULL) {
             StopSfx(Heroes[player].hero_eng->sfx);
         }
     }
 }
 
-void func_800CDE8C(s32 player) {
+void SetPolarHeroDazed(s32 player) {
     s32 *ext;
     NAS *nas;
     s32 *fux;
@@ -10412,7 +10412,7 @@ void func_800CDE8C(s32 player) {
     EXTheromove *move;
     s32 sfx;
 
-    if (func_800D2D2C() == 0) {
+    if (TestPolarHeroWon() == 0) {
         PlaySfx(0x467, NULL, NULL, 0x1000, 0x1E00, 0);
         switch (Heroes[player].hero_name) {
         case 1:
@@ -10565,7 +10565,7 @@ void func_800CDE8C(s32 player) {
     }
 }
 
-void func_800CE664(s32 player) {
+void PolarHeroDazed(s32 player) {
     EXTheromove *move;
     s32 *ext;
     s32 *ext2;
@@ -10576,7 +10576,7 @@ void func_800CE664(s32 player) {
     s32 y;
     s32 z;
 
-    if (func_800D2D2C() == 0) {
+    if (TestPolarHeroWon() == 0) {
         move = Heroes[player].hero_move;
         ext = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext != NULL) {
@@ -10641,7 +10641,7 @@ void func_800CE664(s32 player) {
                 ((Ovl62Pad *)D_80051338)[player].unk50 = 0;
                 ((Ovl62Pad *)D_80051338)[player].unk54 = 0;
                 func_800BBF2C(player);
-                func_800CD214(player);
+                TestPolarHeroMelted(player);
                 func_800C0888(&Heroes[player].hero_eng->unk10, player);
                 Heroes[player].hero_frozen = 2;
                 if (ext[0x24 / 4] == 0 && ext[0x1C / 4] >= 0x1F) {
@@ -10696,11 +10696,11 @@ void func_800CE664(s32 player) {
     }
 }
 
-void func_800CED58(s32 player) {
+void SetPolarHeroChallenge(s32 player) {
     s32 *ext;
     s32 sfx;
 
-    if (func_800D2D2C() == 0) {
+    if (TestPolarHeroWon() == 0) {
         PlaySfx(0x467, NULL, NULL, 0x1000, 0x1E00, 0);
         D_800D6934[player] = 0x4000;
         switch (Heroes[player].hero_name) {
@@ -10838,7 +10838,7 @@ void func_800CED58(s32 player) {
     }
 }
 
-void func_800CF6F8(s32 player) {
+void PolarHeroChallenge(s32 player) {
     EXTheromove *move;
     s32 *ext;
     s32 *ext2;
@@ -10849,7 +10849,7 @@ void func_800CF6F8(s32 player) {
     s32 y;
     s32 z;
 
-    if (func_800D2D2C() == 0) {
+    if (TestPolarHeroWon() == 0) {
         move = Heroes[player].hero_move;
         ext = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext != NULL) {
@@ -10890,7 +10890,7 @@ void func_800CF6F8(s32 player) {
                 ((Ovl62Pad *)D_80051338)[player].unk50 = 0;
                 ((Ovl62Pad *)D_80051338)[player].unk54 = 0;
                 func_800BBF2C(player);
-                func_800CD214(player);
+                TestPolarHeroMelted(player);
                 func_800C0888(&Heroes[player].hero_eng->unk10, player);
                 Heroes[player].hero_frozen = 2;
                 if (ext[0x24 / 4] == 0) {
@@ -10915,11 +10915,11 @@ void func_800CF6F8(s32 player) {
     }
 }
 
-void func_800CF9EC(s32 player) {
+void SetPolarHeroTransmute(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
 
-    if (func_800D2D2C() == 0) {
+    if (TestPolarHeroWon() == 0) {
         base = Heroes;
         hero = base + player;
         if (hero->hero_move != NULL) {
@@ -10953,12 +10953,12 @@ void func_800CF9EC(s32 player) {
     }
 }
 
-void func_800CFB7C(s32 player) {
+void PolarHeroTransmute(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
     EXTheromove *move;
 
-    if (func_800D2D2C() == 0) {
+    if (TestPolarHeroWon() == 0) {
         base = Heroes;
         hero = &base[player];
         move = hero->hero_move;
@@ -10966,7 +10966,7 @@ void func_800CFB7C(s32 player) {
             ((Ovl62Pad *)D_80051338)[player].unk50 = 0;
             ((Ovl62Pad *)D_80051338)[player].unk54 = 0;
             func_800BBF2C(player);
-            func_800CD214(player);
+            TestPolarHeroMelted(player);
             func_800C0888(&hero->hero_eng->unk10, player);
             hero->hero_frozen = 2;
             hero->hero_eng->unk1E += 0x10;
@@ -10977,7 +10977,7 @@ void func_800CFB7C(s32 player) {
     }
 }
 
-void func_800CFC58(s32 player) {
+void SetPolarHeroOffice(s32 player) {
     HeroInfo *hero;
     Ovl62HitExt *ext;
     EXTheromove *move;
@@ -10987,7 +10987,7 @@ void func_800CFC58(s32 player) {
     HeroInfo *base2;
     HeroInfo *h;
 
-    if (func_800D2D2C() == 0) {
+    if (TestPolarHeroWon() == 0) {
         base = Heroes;
         hero = &base[player];
         ext = FindExtension(hero->hero, 0x20000000);
@@ -11044,7 +11044,7 @@ void func_800CFC58(s32 player) {
     }
 }
 
-void func_800CFF44(s32 player) {
+void PolarHeroSlideFromCentre(s32 player) {
     HeroInfo *hero;
     EXTheromove *move;
     HeroInfo *base;
@@ -11066,7 +11066,7 @@ void func_800CFF44(s32 player) {
     }
 }
 
-void func_800D0060(s32 player) {
+void PolarHeroOffice(s32 player) {
     HeroInfo *h;
     HeroInfo *h2;
     Ext20 *ext;
@@ -11075,7 +11075,7 @@ void func_800D0060(s32 player) {
     s32 angle;
     u16 mode;
 
-    if (func_800D2D2C() != 0) {
+    if (TestPolarHeroWon() != 0) {
         return;
     }
     {
@@ -11127,7 +11127,7 @@ void func_800D0060(s32 player) {
     if (h->hero_anim->Aindex < 0x21) {
         if (ext->unk18 < 0x4A && ext->unk14 >= 5) {
             do {
-                func_800CFF44(player);
+                PolarHeroSlideFromCentre(player);
                 ext->unk18 = 0;
                 if (h->hero_eng->sfx != NULL) {
                     StopSfx(h->hero_eng->sfx);
@@ -11142,7 +11142,7 @@ void func_800D0060(s32 player) {
     func_8008502C(player);
 }
 
-void func_800D034C(s32 player) {
+void SetPolarHeroInBeam(s32 player) {
     Ext20 *ext;
     EXTheromove *m;
 
@@ -11168,7 +11168,7 @@ void func_800D034C(s32 player) {
     }
 }
 
-void func_800D0470(s32 player) {
+void SetPolarHeroPoll(s32 player) {
     HeroInfo *base;
     HeroInfo *h;
 
@@ -11193,7 +11193,7 @@ void func_800D0470(s32 player) {
     }
 }
 
-s32 func_800D05A8(s32 player) {
+s32 PolarHeroAttackPower(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *info = base + player;
     s32 *ext = FindExtension(info->hero, 0x20000000);
@@ -11218,7 +11218,7 @@ s32 func_800D05A8(s32 player) {
     return 0x80;
 }
 
-s32 func_800D0650(s32 player) {
+s32 PolarTestAttack(s32 player) {
     HeroInfo *base;
     HeroInfo *h;
     Ext20 *ext;
@@ -11229,7 +11229,7 @@ s32 func_800D0650(s32 player) {
     h = base + player;
     ext = FindExtension(h->hero, 0x20000000);
 
-    if (ext != NULL && h->hero_move != NULL && ext->val >= func_800D05A8(player)) {
+    if (ext != NULL && h->hero_move != NULL && ext->val >= PolarHeroAttackPower(player)) {
         pads = (Ovl62Pad *)D_80051338;
         pad = pads + player;
         if (pad->unk54 & 0x8000) {
@@ -11245,7 +11245,7 @@ s32 func_800D0650(s32 player) {
     return 0;
 }
 
-s32 func_800D0750(s32 player) {
+s32 PolarHeroThrowPower(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *info = base + player;
     s32 *ext = FindExtension(info->hero, 0x20000000);
@@ -11271,7 +11271,7 @@ s32 func_800D0750(s32 player) {
     return 0;
 }
 
-void func_800D0808(s32 player) {
+void SetPolarHeroAttack(s32 player) {
     HeroInfo *h;
     HeroInfo *h2;
     EXTheromove *move;
@@ -11285,7 +11285,7 @@ void func_800D0808(s32 player) {
         StopSfx(h->hero_eng->sfx);
     }
     ext = FindExtension(h->hero, 0x20000000);
-    if (ext != NULL && func_800D2D2C(player) == 0) {
+    if (ext != NULL && TestPolarHeroWon(player) == 0) {
         if (ext->state == 1) {
             switch (h->hero_name) {
             case 1:
@@ -11353,7 +11353,7 @@ void func_800D0808(s32 player) {
             }
             D_800D6934[player] = 0x4080;
             h2->hero_eng->sub->unk68 = 0;
-            ext->val -= func_800D05A8(player);
+            ext->val -= PolarHeroAttackPower(player);
             move->x_vel = 0;
             move->z_vel = 0;
             move->x_max = 0;
@@ -11362,7 +11362,7 @@ void func_800D0808(s32 player) {
     }
 }
 
-void func_800D0A6C(s32 player) {
+void PolarHeroAttackThrow(s32 player) {
     HeroInfo *h;
     HeroInfo *hero;
     EXTheromove *move;
@@ -11482,7 +11482,7 @@ void func_800D0A6C(s32 player) {
     }
 }
 
-s32 func_800D10A0(s32 player) {
+s32 PolarTestSnowball(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *info = base + player;
     s32 *ext = FindExtension(info->hero, 0x20000000);
@@ -11509,7 +11509,7 @@ s32 func_800D10A0(s32 player) {
     return 0;
 }
 
-void func_800D1188(s32 player) {
+void SetPolarHeroThrowBomb(s32 player) {
     SLONG_XYZ pos;
     SLONG_XYZ to;
     HeroInfo *base;
@@ -11598,7 +11598,7 @@ void func_800D1188(s32 player) {
         Heroes[player].hero_eng->sub->unk74 = (v);            \
     }
 
-void func_800D14CC(s32 player) {
+void SetPolarHeroSnowball(s32 player) {
     HeroInfo *base;
     HeroInfo *h;
 
@@ -11607,7 +11607,7 @@ void func_800D14CC(s32 player) {
     if (h->hero_move != NULL) {
         h->hero_move->z_dir = 0;
     }
-    if (func_800D2D2C(player) != 0) {
+    if (TestPolarHeroWon(player) != 0) {
         return;
     }
     D_800D6934[player] = 0x4100;
@@ -11648,7 +11648,7 @@ void func_800D14CC(s32 player) {
     Heroes[player].hero_eng->unk5D = 2;
 }
 
-void func_800D17E8(s32 player) {
+void PolarHeroSnowball(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *info = base + player;
     EXTheromove *move;
@@ -11656,7 +11656,7 @@ void func_800D17E8(s32 player) {
     s32 speed;
 
     move = info->hero_move;
-    if (move != NULL && func_800D2D2C() == 0) {
+    if (move != NULL && TestPolarHeroWon() == 0) {
         speed = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
         ext = FindExtension(info->hero, 0x20000000);
         if (ext != NULL) {
@@ -11667,13 +11667,13 @@ void func_800D17E8(s32 player) {
         }
         func_800BBF2C(player);
         Heroes[player].hero_eng->unk1C += speed;
-        func_800CD214(player);
+        TestPolarHeroMelted(player);
         func_800C0888(&Heroes[player].hero_eng->unk10, player);
         Heroes[player].hero_eng->unk5E = 1;
     }
 }
 
-void func_800D191C(s32 player) {
+void SetPolarHeroFootIdle(s32 player) {
     HeroInfo *info;
     HeroInfo *h;
     EXTheromove *move;
@@ -11759,7 +11759,7 @@ void func_800D191C(s32 player) {
     }
 }
 
-void func_800D1C14(s32 player) {
+void PolarHeroFootIdle(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *info = base + player;
     Ext20 *ext;
@@ -11770,7 +11770,7 @@ void func_800D1C14(s32 player) {
     if (ext1 != NULL) {
         ext1->state = 1;
     }
-    if (func_800D2D2C(player) == 0) {
+    if (TestPolarHeroWon(player) == 0) {
         ext2 = FindExtension(info->hero, 0x20000000);
         if (ext2 != NULL) {
             ext2->val += 4;
@@ -11789,20 +11789,20 @@ void func_800D1C14(s32 player) {
                 SetHeroAction(player, 0x55);
             }
         }
-        func_800D0650(player);
-        func_800D10A0(player);
-        func_800CD214(player);
+        PolarTestAttack(player);
+        PolarTestSnowball(player);
+        TestPolarHeroMelted(player);
         func_800C0888(&Heroes[player].hero_eng->unk10, player);
     }
 }
 
-void func_800D1DB4(s32 player) {
+void PolarHeroFootRun(s32 player) {
     HeroInfo *h;
     HeroInfo *base;
     Ext20 *ext;
     Ext20 *ext1;
 
-    if (func_800D2D2C() == 0) {
+    if (TestPolarHeroWon() == 0) {
         ext1 = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext1 != NULL) {
             ext1->val += 4;
@@ -11843,14 +11843,14 @@ void func_800D1DB4(s32 player) {
                 }
             }
         }
-        func_800D0650(player);
-        func_800D10A0(player);
-        func_800CD214(player);
+        PolarTestAttack(player);
+        PolarTestSnowball(player);
+        TestPolarHeroMelted(player);
         func_800C0888(&Heroes[player].hero_eng->unk10, player);
     }
 }
 
-void func_800D2044(s32 player) {
+void SetPolarHeroHit(s32 player) {
     HeroInfo *h;
     Ext20 *ext;
     HeroInfo *base = Heroes;
@@ -11894,7 +11894,7 @@ void func_800D2044(s32 player) {
     }
 }
 
-void func_800D2248(s32 arg0) {
+void SetPolarHeroDead(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     s32 *ext;
@@ -11918,7 +11918,7 @@ void func_800D2248(s32 arg0) {
     }
 }
 
-void func_800D2334(s32 player) {
+void PolarHeroDead(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + player;
     s32 *ext;
@@ -11987,7 +11987,7 @@ void func_800D2334(s32 player) {
     }
 }
 
-void func_800D257C(s32 player) {
+void SetPolarHeroWinner(s32 player) {
     HeroInfo *tab;
     HeroInfo *first;
     HeroInfo *h;
@@ -12108,7 +12108,7 @@ void func_800D257C(s32 player) {
             h->hero_eng->sub->unk6C = D_80054AB4;
         }
     }
-    lost = func_800CD214(player) ^ 1;
+    lost = TestPolarHeroMelted(player) ^ 1;
     if (lost) {
         func_80026980(Heroes[player].hero);
     }
@@ -12125,7 +12125,7 @@ void func_800D257C(s32 player) {
     func_80089FA4(player);
 }
 
-void func_800D2B58(s32 player) {
+void PolarHeroWinner(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = base + player;
     EXTheromove *move;
@@ -12154,7 +12154,7 @@ void func_800D2B58(s32 player) {
     }
 }
 
-void func_800D2C38(s32 player) {
+void PolarHeroSquashed(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = base + player;
     EXTheromove *move;
@@ -12170,7 +12170,7 @@ void func_800D2C38(s32 player) {
     }
 }
 
-void func_800D2CB8(s32 arg0) {
+void SetPolarHeroSquashed(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     u16 status;
@@ -12184,7 +12184,7 @@ void func_800D2CB8(s32 arg0) {
     }
 }
 
-s32 func_800D2D2C(arg0)
+s32 TestPolarHeroWon(arg0)
 s32 arg0;
 {
     HeroInfo *base = Heroes;
@@ -12199,14 +12199,14 @@ s32 arg0;
     return 0;
 }
 
-void func_800D2D9C(s32 player) {
+void PolarHeroHit(s32 player) {
     func_8008502C(player);
-    func_800CD214(player);
+    TestPolarHeroMelted(player);
     func_800BBF2C(player);
     func_800C0888(&Heroes[player].hero_eng->unk10, player);
 }
 
-void func_800D2E00(s32 player) {
+void SetPolarHeroFootRun(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
 
@@ -12223,7 +12223,7 @@ void func_800D2E00(s32 player) {
     hero->hero_eng->sub->unk68 = 0;
 }
 
-void func_800D2EB0(s32 player) {
+void PolarHeroThrowBomb(s32 player) {
     s32 *ext = FindExtension(Heroes[player].hero, 0x20000000);
 
     if (ext != NULL) {
@@ -12237,25 +12237,25 @@ void func_800D2EB0(s32 player) {
     }
 }
 
-void func_800D2F48(s32 player) {
+void PolarHeroAttack(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *info = base + player;
     s32 *ext = FindExtension(info->hero, 0x20000000);
 
-    if (ext != NULL && func_800D2D2C(player) == 0 && info->hero_move != NULL) {
+    if (ext != NULL && TestPolarHeroWon(player) == 0 && info->hero_move != NULL) {
         func_800BBF2C(player);
-        func_800D0A6C(player);
+        PolarHeroAttackThrow(player);
         ext[4] -= 0xF;
         if (ext[4] < 0) {
             ext[4] = 0;
         }
         func_8008502C(player);
-        func_800CD214(player);
+        TestPolarHeroMelted(player);
         func_800C0888(&info->hero_eng->unk10, player);
     }
 }
 
-void func_800D3018(s32 player) {
+void PolarHeroPoll(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *info = base + player;
     EXTheromove *move = info->hero_move;
@@ -12267,10 +12267,10 @@ void func_800D3018(s32 player) {
         move->z_vel = 0;
     }
     info->hero_frozen = 4;
-    func_800D2D2C();
+    TestPolarHeroWon();
 }
 
-void func_800D307C(s32 player) {
+void PolarHeroInBeam(s32 player) {
     PadState *base;
     Ovl62Pad *pad;
 
@@ -12281,7 +12281,7 @@ void func_800D307C(s32 player) {
     func_8008502C(player);
 }
 
-void func_800D30C0(s32 player) {
+void PolarHeroWeight(s32 player) {
     u8 *g = D_8005A614;
     EXTheromove *mv;
 
@@ -12300,21 +12300,21 @@ void func_800D30C0(s32 player) {
         mv->z_vel = 0;
     }
     if (*(s16 *)(g + 0x34) != 0x16) {
-        func_800D2D2C(player);
+        TestPolarHeroWon(player);
     }
 }
 
-void func_800D3170(void) {
+void SetPolarHeroWeight(void) {
     if (D_8005A648 != 0x16) {
-        func_800D2D2C();
+        TestPolarHeroWon();
     }
 }
 
-void func_800D31A0(s32 player) {
+void SetPolarHeroRun(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
 
-    if (func_800D2D2C() == 0) {
+    if (TestPolarHeroWon() == 0) {
         base = Heroes;
         hero = base + player;
         if (hero->hero_move != NULL) {
@@ -12329,7 +12329,7 @@ void func_800D31A0(s32 player) {
     }
 }
 
-void func_800D325C(s32 arg0) {
+void PolarHeroAddWeight(s32 arg0) {
     Ext20 *ext = FindExtension(Heroes[arg0].hero, 0x20000000);
 
     if (ext != NULL) {
@@ -12340,7 +12340,7 @@ void func_800D325C(s32 arg0) {
     }
 }
 
-s32 func_800D32CC(s32 player) {
+s32 TestPolarHeroStop(s32 player) {
     Ext20 *ext;
 
     if (((Ovl62Pad *)D_80051338)[player].unk50 & 0xF0) {
@@ -12358,7 +12358,7 @@ s32 func_800D32CC(s32 player) {
     return 1;
 }
 
-s32 func_800D3394(s32 player) {
+s32 TestPolarHeroRun(s32 player) {
     Ext20 *ext;
 
     ext = FindExtension(Heroes[player].hero, 0x20000000);
@@ -12377,7 +12377,7 @@ s32 func_800D3394(s32 player) {
     return 0;
 }
 
-void func_800D3460(s32 arg0) {
+void PolarInitHeroMove(s32 arg0) {
     HeroInfo *base = Heroes;
     s16 two;
     HeroInfo *h;
@@ -12398,14 +12398,14 @@ void func_800D3460(s32 arg0) {
     }
 }
 
-void func_800D34F0(void) {
+void PolarInitHero(void) {
 }
 
-void func_800D34F8(void) {
+void PolarEmptyStub0(void) {
 }
 
-void func_800D3500(void) {
+void PolarEmptyStub1(void) {
 }
 
-void func_800D3508(void) {
+void PolarEmptyStub2(void) {
 }
