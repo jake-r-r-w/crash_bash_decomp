@@ -692,7 +692,7 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
-- **N2O** (n2o, the N. Trance / N. Oxide boss: n2o.c and nox.c; named
+- **N2O** (n2o, the Nitros Oxide boss: n2o.c and nox.c; named
   2026-10-26). Mode 0x1F; one engine world record (0x010C) points at
   `N2O_PREMAP`, `n2o_shell_info` and `N2OSetUp`, the per-mode table at
   `file_group_N2O` (`N2OFiles` with the exe's file group 6: 16 DAT entries,
