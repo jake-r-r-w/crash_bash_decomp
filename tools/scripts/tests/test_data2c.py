@@ -185,6 +185,12 @@ class Strings(unittest.TestCase):
         # "." then its NUL and two retail leftovers before the next word
         self.assertEqual(data2c.split_strings(b".\0\x22\x96OK\0\0"), [(0, '.\\000\\"\\226', 4), (4, "OK", 0)])
 
+    def test_main_exe_has_its_own_layout(self):
+        self.assertEqual(data2c.layout("main"), ("configs/USA/main.yaml", "disc/SCUS_945.70", "asm/data/main",
+                                                 "asm/nonmatchings/main"))
+        self.assertEqual(data2c.layout("hub")[1:], ("disc/hub.bin", "asm/data/overlays/hub",
+                                                    "asm/nonmatchings/overlays/hub"))
+
     def test_the_range_comes_from_the_asm(self):
         asm = ('    /* 4 800B32B8 */ .asciz "WIN"\n    /* 57494E00 */\n'
                '    /* 8 800B32BC 2E002296 */ .word 0x9622002E\n')

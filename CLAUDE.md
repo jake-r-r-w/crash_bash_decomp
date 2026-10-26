@@ -85,7 +85,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `tools/scripts/rename_unit.py OLD NEW PREFIX` renames an overlay unit everywhere and
   `rename_file.py SEG NEW` one of its files (no byte
   changes). `tools/scripts/model_slots.py` lists each exe model slot with the archive files
-  every game loads into it. `tools/scripts/data2c.py OVL [--rodata SYM]` writes an overlay's asm data as C
+  every game loads into it. `tools/scripts/data2c.py OVL [--rodata SYM ...] [--strings-only]` writes an overlay's asm data as C
+  (OVL `engine` or `main` for main.exe too; `--strings-only` for just the string blocks)
   definitions (docs/CONVENTIONS.md, Data as C). The engine's link gets the slot
   overlays' symbols its AST table names from their ELFs (`slot_syms.py`, run by
   the Makefile), so the overlays link before the engine.

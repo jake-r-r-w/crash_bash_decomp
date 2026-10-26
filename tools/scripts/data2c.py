@@ -1,6 +1,8 @@
 """Turn an overlay's asm data (splat's asm/data/overlays/<ovl>/*.data.s) into C definitions.
 
-    tools/dk python3 tools/scripts/data2c.py OVL [--rodata SYM ...] [--out FILE]
+    tools/dk python3 tools/scripts/data2c.py OVL [--rodata SYM ...] [--strings-only] [--out FILE]
+
+OVL is a slot overlay, "engine", or "main" for main.exe (configs/USA/main.yaml, disc/SCUS_945.70).
 
 Each object's bytes come from the retail binary (disc/<ovl>.bin), not from splat's directives
 (splat reads words of small values as strings). Objects start at splat's labels; a label nothing
@@ -186,6 +188,14 @@ class Types:
         return out, r[1] and self.structs[r[1]][0]
 
 
+def layout(ovl):
+    """(yaml, binary, asm data dir, asm nonmatchings dir) of an overlay, or of main.exe for "main"."""
+    if ovl == "main":
+        return f"{CFG}/main.yaml", "disc/SCUS_945.70", "asm/data/main", "asm/nonmatchings/main"
+    return (f"{CFG}/overlays/{ovl}.yaml", f"disc/{ovl}.bin", f"asm/data/overlays/{ovl}",
+            f"asm/nonmatchings/overlays/{ovl}")
+
+
 def load_syms(ovl):
     """address -> name from the exe's, the engine's and this overlay's symbol files."""
     out = {}
@@ -298,11 +308,12 @@ class Converter:
     def __init__(self, ovl):
         import yaml
         self.ovl = ovl
-        y = yaml.safe_load(open(f"{CFG}/overlays/{ovl}.yaml", encoding="utf-8"))
+        ypath, bpath, self.data_dir, self.asm_dir = layout(ovl)
+        y = yaml.safe_load(open(ypath, encoding="utf-8"))
         seg = next(s for s in y["segments"] if isinstance(s, dict) and s.get("name") == ovl)
         self.vram, self.start = seg["vram"], seg["start"]
         self.subs = [s for s in seg["subsegments"] if isinstance(s, list)]
-        self.bin = open(f"disc/{ovl}.bin", "rb").read()
+        self.bin = open(bpath, "rb").read()
         self.end = self.vram + len(self.bin) - self.start
         texts = [open(p, encoding="utf-8").read() for p in header_order(glob.glob("include/bash/*.h"), ovl)]
         # the SDK's types (MATRIX, VECTOR, ...) for layouts only; its declarations aren't the game's
@@ -316,7 +327,7 @@ class Converter:
         self.hdr_code = "\n".join(l for l in strip_comments(self.hdrs).splitlines()
                                   if not re.match(r"\s*extern\b", l))
         self.symbolic = set()
-        for p in glob.glob(f"asm/data/overlays/{ovl}/*.data.s"):
+        for p in glob.glob(f"{self.data_dir}/*.data.s"):
             self.symbolic |= asm_symbolic(p)
         self.syms = load_syms(ovl)
         self.funcs = {}
@@ -603,7 +614,7 @@ class Converter:
     def strings(self, sym):
         """const char arrays for an INCLUDE_RODATA block of strings, read from the binary: splat
         writes a string with a byte outside ASCII (the pad's button glyphs) as words."""
-        path = next(p for p in glob.glob(f"asm/nonmatchings/overlays/{self.ovl}/**/{sym}.s", recursive=True))
+        path = next(p for p in glob.glob(f"{self.asm_dir}/**/{sym}.s", recursive=True))
         lo, hi = block_range(open(path, encoding="utf-8").read())
         data = self.bin[lo - self.vram + self.start:hi - self.vram + self.start]
         out, local = [], []
@@ -680,6 +691,7 @@ def main():
     ap.add_argument("ovl")
     ap.add_argument("--rodata", action="append", default=[],
                     help="an INCLUDE_RODATA block of strings to write as const char arrays (repeatable)")
+    ap.add_argument("--strings-only", action="store_true", help="write the --rodata blocks only, not the data")
     ap.add_argument("--out")
     a = ap.parse_args()
     c = Converter(a.ovl)
@@ -689,7 +701,7 @@ def main():
         local += loc
         head = "/* rodata: the strings (const arrays keep their retail order; see data2c.py) */"
         lines += ([head] if len(a.rodata) == 1 else [f"/* rodata block {sym} */"]) + rl + [""]
-    files = sorted(glob.glob(f"asm/data/overlays/{a.ovl}/*.data.s"))
+    files = [] if a.strings_only else sorted(glob.glob(f"{c.data_dir}/*.data.s"))
     objs = []
     for p in files:
         objs += c.objects(p)
