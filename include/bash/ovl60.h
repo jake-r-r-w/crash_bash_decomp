@@ -254,12 +254,11 @@ static inline bool Ovl60_FindFreeSquare(s32 *px, s32 *pz) {
 extern s32 D_800C52E4;
 extern s32 D_800C52EC;
 extern s16 D_800C52E8;
+extern s16 D_800C52EA; /* PogoPowerups_Poll's timer, right after D_800C52E8 */
 extern s32 D_800C38D8[];
 extern s32 D_800C38E8[];
 extern s32 D_800C38F8[];
 extern s32 D_800C52F0;
-/* the s16 after D_800C52E8: PogoPowerups_Poll's timer */
-#define D_800C52EA ((&D_800C52E8)[1])
 extern s32 D_800C38B8[];
 extern s32 D_800C38C8[];
 extern s32 D_800C52F8;
@@ -565,22 +564,22 @@ extern void *D_8009D904;
 extern Ovl60ModeEntry D_800C36DC;
 extern Ovl60ModeEntry D_800C3644;
 extern Ovl60ModeEntry D_800C3658;
-extern Ovl60ModeEntry D_800C366C;
+extern u16 D_800C366C[6];
 extern Ovl60ModeEntry D_800C3684;
 extern Ovl60ModeEntry D_800C369C;
 extern Ovl60ModeEntry D_800C36F0;
 extern Ovl60ModeEntry D_800C3704;
-extern Ovl60ModeEntry D_800C3718;
+extern u16 D_800C3718[6];
 extern Ovl60ModeEntry D_800C3730;
 extern Ovl60ModeEntry D_800C3748;
 extern Ovl60ModeEntry D_800C3788;
 extern Ovl60ModeEntry D_800C379C;
-extern Ovl60ModeEntry D_800C37B0;
+extern u16 D_800C37B0[6];
 extern Ovl60ModeEntry D_800C37C8;
 extern Ovl60ModeEntry D_800C37E0;
 extern Ovl60ModeEntry D_800C3820;
 extern Ovl60ModeEntry D_800C3834;
-extern Ovl60ModeEntry D_800C3848;
+extern u16 D_800C3848[6];
 extern Ovl60ModeEntry D_800C3860;
 extern Ovl60ModeEntry D_800C3878;
 void Set_Clock(u16 time, u16 flags);
