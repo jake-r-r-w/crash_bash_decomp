@@ -9,6 +9,7 @@
 #include "bash/nas.h"
 #include "bash/shell.h"   /* Ambient_data */
 #include "bash/tank.h"    /* TA_Bot, TA_player */
+#include "bash/core.h"    /* EXTscriptdata */
 
 typedef struct Ovl5fModeView {
     /* 0x00 */ u8 pad0[0x32];
@@ -80,14 +81,6 @@ void SetTankMapCell(s32 arg0, s32 arg1);
 void TankBotReset(s32 arg0);
 NAS *FindTankPickupNear(s32 x, s32 z, s32 range);
 
-/* Object func_800C7E68/func_800C7EB0 set up alongside a hero action. */
-typedef struct Ovl5fActObj {
-    /* 0x00 */ u8 pad0[0x8];
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ u8 padC[0x50 - 0xC];
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} Ovl5fActObj;
 /* InitFlamerBitTA's 0x38-byte extension (id 0x10000000). */
 typedef struct FlamerBitExt {
     /* 0x00 */ EXT ext;
@@ -134,15 +127,6 @@ extern s32 D_800C9CE4[];
 extern s32 D_800C9D58[];
 extern s32 D_800C9DD0[];
 
-/* State block func_800C7E68/func_800C7EB0 set up alongside a hero action. */
-typedef struct Ovl5fActState {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ s32 unkC[17];
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} Ovl5fActState;
 
 extern s32 D_800CA160[];
 extern s32 D_800CA34C[];
@@ -151,26 +135,10 @@ extern u8 D_800CACFC[];
 extern s32 D_800CAFF4;
 extern u8 D_800CACB4[];
 extern TA_Bot TankBotAI[4];
-typedef struct {
-    u8 pad0[0x74];
-    s16 unk74;
-} Ovl5fUnk74;
 
-extern Ovl5fUnk74 *D_8009D60C;
-extern Ovl5fUnk74 *D_8009D678;
+extern subengine *D_8009D60C;  /* Heroes[2].hero_sub (Moe or Joe), addressed directly */
+extern subengine *D_8009D678;  /* Heroes[3].hero_sub */
 
-/* Extension 0x10000000 of the NAS 0x1605 object MoeJoeDie spawns. */
-typedef struct Ovl5fExt1605 {
-    /* 0x00 */ u8 pad[0xC];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ u8 pad10[0x14 - 0x10];
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 pad1C[0x20 - 0x1C];
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ u8 pad24[0x28 - 0x24];
-    /* 0x28 */ s32 unk28;
-} Ovl5fExt1605;
 typedef struct MineOffset {
     /* 0x00 */ s32 x;
     /* 0x04 */ s32 z;
@@ -189,32 +157,9 @@ extern s32 D_800CAADC[];
 extern s32 D_800CAC38[];
 extern s32 D_800CB0FC;
 
-typedef struct Ovl5fLink {
-    /* 0x00 */ u32 flags;
-    /* 0x04 */ u8 pad4[0x5C - 0x4];
-    /* 0x5C */ struct Ovl5fLink *next;
-} Ovl5fLink;
 
-typedef struct {
-    /* 0x00 */ u8 pad0[0x1E];
-    /* 0x1E */ s16 unk1E;
-    /* 0x20 */ u8 pad20[0x5E - 0x20];
-    /* 0x5E */ s16 unk5E;
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
-    /* 0x6C */ Ovl5fLink *list;
-} Ovl5fObj;
 
-typedef struct {
-    u8 pad0[0x10];
-    s32 x;
-    u8 pad14[4];
-    s32 z;
-} Ovl5fPos;
 
-typedef struct {
-    /* 0x00 */ u8 pad0[0x54];
-    /* 0x54 */ Ovl5fPos *pos;
-} Ovl5fHolder;
 
 /* PlotLaserBitTA's NAS.FUX. */
 typedef struct LaserBitFux {
@@ -223,17 +168,6 @@ typedef struct LaserBitFux {
     /* 0x30 */ s32 unk30;
 } LaserBitFux;
 
-/* MoveTankShot's view of a shot's NAS.FUX. */
-typedef struct Ovl5fShotFux {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 vx;
-    /* 0x14 */ s32 vy;
-    /* 0x18 */ s32 vz;
-    /* 0x1C */ u8 pad1C[0x28 - 0x1C];
-    /* 0x28 */ s32 life;
-    /* 0x2C */ s32 player;
-    /* 0x30 */ s32 unk30;
-} Ovl5fShotFux;
 
 s32 MoveTankShot(NAS *nas, s32 arg1, s32 arg2, s32 arg3);
 
@@ -374,11 +308,11 @@ s32 TankBossTurretCheckSight(s32 id, s32 x, s32 z, s32 angle);
 
 
 
-s32 TankBlockPadNear(s32 flags, Ovl5fHolder *a, Ovl5fPos *b);
+s32 TankBlockPadNear(s32 flags, NAS *nas, EXTengine *eng);
 
-void func_800C7E68(s32 player, Ovl5fActObj *obj, s32 arg2);
+void func_800C7E68(s32 player, TA_player *ta, s32 dir);
 
-void func_800C7EB0(s32 player, Ovl5fActState *state, s32 arg2);
+void func_800C7EB0(s32 player, TA_player *ta, s32 dir);
 
 
 void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX);
@@ -535,7 +469,7 @@ void TA_StopHeroSfx(void);
 
 void TA_SetUp(void);
 
-void SetPuffAngle(Ovl5fHolder *h, s16 v);
+void SetPuffAngle(NAS *puff, s16 angle);
 
 s32 TankFindHeroNear(s32 x, s32 z, s32 r, s32 skip);
 
@@ -690,22 +624,22 @@ static inline s32 Ovl5fNear(s32 a, s32 b) {
 static inline void Ovl5fSpawnBit1605(SLONG_XYZ *pos, s32 kind) {
     u8 *p;
     NAS *nas;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
 
     p = D_8005365C;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext->unkC = kind;
-            ext->unk18 = 0x100;
+            ext->scriptnumber = kind;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext->unk20 = 5;
+                ext->flags = 5;
                 nas->Engine->sub->unk6C = p;
             } else {
-                ext->unk20 = 1;
+                ext->flags = 1;
             }
-            ext->unk28 = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
     }
@@ -713,22 +647,22 @@ static inline void Ovl5fSpawnBit1605(SLONG_XYZ *pos, s32 kind) {
 static inline NAS *Ovl5fSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
     u8 *p;
     NAS *nas;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
 
     p = D_8005365C;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext->unkC = kind;
-            ext->unk18 = 0x100;
+            ext->scriptnumber = kind;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext->unk20 = 5;
+                ext->flags = 5;
                 nas->Engine->sub->unk6C = p;
             } else {
-                ext->unk20 = 1;
+                ext->flags = 1;
             }
-            ext->unk28 = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         return nas;
@@ -739,22 +673,22 @@ static inline NAS *Ovl5fSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
 static inline void Ovl5fSpawnBit1605B(SLONG_XYZ *pos, s32 kind) {
     u8 *p;
     NAS *nas;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
 
     p = D_800536CC;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext->unkC = kind;
-            ext->unk18 = 0x100;
+            ext->scriptnumber = kind;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext->unk20 = 5;
+                ext->flags = 5;
                 nas->Engine->sub->unk6C = p;
             } else {
-                ext->unk20 = 1;
+                ext->flags = 1;
             }
-            ext->unk28 = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
     }
@@ -792,22 +726,22 @@ static inline s32 Ovl5fWithin(EXTengine *e, s32 x, s32 y, s32 z, s32 rx, s32 ry,
 static inline NAS *Ovl5fPeriscopePuff(SLONG_XYZ *pos, s32 kind) {
     u8 *p;
     NAS *nas;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
 
     p = *(u8 **)D_80058AD0;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext->unkC = kind;
-            ext->unk18 = 0x100;
+            ext->scriptnumber = kind;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext->unk20 = 5;
+                ext->flags = 5;
                 nas->Engine->sub->unk6C = p;
             } else {
-                ext->unk20 = 1;
+                ext->flags = 1;
             }
-            ext->unk28 = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
         return nas;

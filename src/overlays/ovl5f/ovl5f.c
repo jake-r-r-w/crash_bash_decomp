@@ -2821,7 +2821,7 @@ void TankHeroDie(u32 arg0) {
     s32 *pos;
     u8 *p;
     NAS *nas;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
 
     if (D_8005A644 & 0x801) {
         D_800CB0F0 = -1;
@@ -2841,15 +2841,15 @@ void TankHeroDie(u32 arg0) {
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
-                ext->unkC = 0xE;
-                ext->unk18 = 0x100;
+                ext->scriptnumber = 0xE;
+                ext->speed = 0x100;
                 if (p != NULL) {
-                    ext->unk20 = 5;
+                    ext->flags = 5;
                     nas->Engine->sub->unk6C = p;
                 } else {
-                    ext->unk20 = 1;
+                    ext->flags = 1;
                 }
-                ext->unk28 = 0;
+                ext->maxloops = 0;
                 nas->InitDelete(nas);
             }
         }
@@ -2875,7 +2875,7 @@ void SetTankHeroDead(u32 arg0) {
 
 s32 MoveTankShot(NAS *nas, s32 arg1, s32 arg2, s32 arg3) {
     EXTengine *eng;
-    Ovl5fShotFux *fux;
+    EXTobject_TA *fux;
     s32 owner;
     s32 ret;
     s32 x;
@@ -2893,35 +2893,35 @@ s32 MoveTankShot(NAS *nas, s32 arg1, s32 arg2, s32 arg3) {
 retry:
     D_800CB0FC = 0;
     eng = nas->Engine;
-    fux = (Ovl5fShotFux *)nas->FUX;
-    owner = fux->player;
+    fux = (EXTobject_TA *)nas->FUX;
+    owner = fux->Owner;
     ret = 0;
     if (D_8005A648 == 8 &&
         *(((eng->unk10.z >> 9) * D_800CAFF4) + (eng->unk10.x >> 9) + D_800CACFC) != 0 &&
-        fux->unk30 != 1) {
+        fux->Status != 1) {
         x = eng->unk10.x;
         z = eng->unk10.z;
         goto dead;
     }
-    x = eng->unk10.x + fux->vx;
-    z = eng->unk10.z + fux->vz;
+    x = eng->unk10.x + fux->SpeedX;
+    z = eng->unk10.z + fux->SpeedZ;
     if (x < 0 || D_800CB100 + 0x100 < x) {
-        if (fux->unk30 == 1) {
+        if (fux->Status == 1) {
         back:
-            eng->unk10.x -= fux->vx;
-            eng->unk10.z -= fux->vz;
+            eng->unk10.x -= fux->SpeedX;
+            eng->unk10.z -= fux->SpeedZ;
             goto retry;
         }
-        x += fux->vx = -fux->vx;
+        x += fux->SpeedX = -fux->SpeedX;
         eng->unk5E = 1;
         D_800CB0FC = x;
         eng->unk1E = 0x1000 - eng->unk1E;
     } else
     if (z < 0 || D_800CB104 + 0x100 < z) {
-        if (fux->unk30 == 1) {
+        if (fux->Status == 1) {
             goto back;
         }
-        z += fux->vz = -fux->vz;
+        z += fux->SpeedZ = -fux->SpeedZ;
         eng->unk5E = 1;
         D_800CB0FC = z;
         eng->unk1E = 0x800 - eng->unk1E;
@@ -2930,7 +2930,7 @@ retry:
         tile = *(v + D_800CACFC);
         if (tile != 0) {
             D_800CB0FC = tile;
-            if (fux->unk30 == 1) {
+            if (fux->Status == 1) {
                 goto back;
             }
             dx = eng->unk10.x - ((tile & 0xF0) << 4);
@@ -2942,23 +2942,23 @@ retry:
                 dz = -dz;
             }
             if (dz < dx) {
-                a = fux->vx;
-                x += fux->vx = -a;
+                a = fux->SpeedX;
+                x += fux->SpeedX = -a;
                 if (D_800CACFC[((z >> 9) * D_800CAFF4) + (x >> 9)] != 0) {
                     x += a;
-                    fux->vx = a;
-                    z += fux->vz = -fux->vz;
+                    fux->SpeedX = a;
+                    z += fux->SpeedZ = -fux->SpeedZ;
                     eng->unk1E = 0x800 - eng->unk1E;
                 } else {
                     eng->unk1E = 0x1000 - eng->unk1E;
                 }
             } else {
-                a = (sfx = fux->vz);
-                z += fux->vz = -a;
+                a = (sfx = fux->SpeedZ);
+                z += fux->SpeedZ = -a;
                 if (D_800CACFC[((z >> 9) * D_800CAFF4) + (x >> 9)] != 0) {
                     z += a;
-                    fux->vz = a;
-                    x += fux->vx = -fux->vx;
+                    fux->SpeedZ = a;
+                    x += fux->SpeedX = -fux->SpeedX;
                     eng->unk1E = 0x1000 - eng->unk1E;
                 } else {
                     eng->unk1E = 0x800 - eng->unk1E;
@@ -3004,7 +3004,7 @@ retry:
         goto hit2;
     }
     if (Ovl5fRocketNear(eng->unk10.x, eng->unk10.z, 0xE0) == NULL) {
-        if (--fux->life != 0) {
+        if (--fux->Counter != 0) {
             return ret;
         }
     dead:
@@ -3297,7 +3297,7 @@ void PlotShell(NAS *nas) {
     SLONG_XYZ *pos;
     u8 *p;
     NAS *puff;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
     s32 sfx;
 
     fux = (ShellFux *)nas->FUX;
@@ -3314,15 +3314,15 @@ void PlotShell(NAS *nas) {
         if (puff != NULL) {
             ext = FindExtension(puff, 0x10000000);
             if (ext != NULL) {
-                ext->unkC = 9;
-                ext->unk18 = 0x100;
+                ext->scriptnumber = 9;
+                ext->speed = 0x100;
                 if (p != NULL) {
-                    ext->unk20 = 5;
+                    ext->flags = 5;
                     puff->Engine->sub->unk6C = p;
                 } else {
-                    ext->unk20 = 1;
+                    ext->flags = 1;
                 }
-                ext->unk28 = 0;
+                ext->maxloops = 0;
                 puff->InitDelete(puff);
             }
         }
@@ -3587,7 +3587,7 @@ void PlotRocketTA(NAS *nas)
     LobberFux *fux;
     NAS *n;
     NAS *puff;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
     void *p;
     SLONG_XYZ *pos;
     s32 x;
@@ -3628,15 +3628,15 @@ void PlotRocketTA(NAS *nas)
                     if (puff != NULL) {
                         ext = FindExtension(puff, 0x10000000);
                         if (ext != NULL) {
-                            ext->unkC = 0;
-                            ext->unk18 = 0x100;
+                            ext->scriptnumber = 0;
+                            ext->speed = 0x100;
                             if (p != NULL) {
-                                ext->unk20 = 5;
+                                ext->flags = 5;
                                 puff->Engine->sub->unk6C = p;
                             } else {
-                                ext->unk20 = 1;
+                                ext->flags = 1;
                             }
-                            ext->unk28 = 0;
+                            ext->maxloops = 0;
                             puff->InitDelete(puff);
                         }
                     }
@@ -3858,7 +3858,7 @@ void PlotTorpedo(NAS *nas) {
     NAS *n;
     SLONG_XYZ *pos;
     u8 *p;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
     s32 player;
     s32 angle;
     s32 t;
@@ -3910,15 +3910,15 @@ void PlotTorpedo(NAS *nas) {
     if (n != NULL) {
         ext = FindExtension(n, 0x10000000);
         if (ext != NULL) {
-            ext->unkC = 0x10;
-            ext->unk18 = 0x100;
+            ext->scriptnumber = 0x10;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext->unk20 = 5;
+                ext->flags = 5;
                 n->Engine->sub->unk6C = p;
             } else {
-                ext->unk20 = 1;
+                ext->flags = 1;
             }
-            ext->unk28 = 0;
+            ext->maxloops = 0;
             n->InitDelete(n);
         }
     }
@@ -3932,7 +3932,7 @@ void CreateMineShrapnelBits(NAS *nas) {
     NAS *m;
     SLONG_XYZ *pos;
     u8 *p;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
     s32 i;
     s32 dx;
     s32 dz;
@@ -3963,15 +3963,15 @@ void CreateMineShrapnelBits(NAS *nas) {
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
             if (ext != NULL) {
-                ext->unkC = 0x10;
-                ext->unk18 = 0x100;
+                ext->scriptnumber = 0x10;
+                ext->speed = 0x100;
                 if (p != NULL) {
-                    ext->unk20 = 5;
+                    ext->flags = 5;
                     n->Engine->sub->unk6C = p;
                 } else {
-                    ext->unk20 = 1;
+                    ext->flags = 1;
                 }
-                ext->unk28 = 0;
+                ext->maxloops = 0;
                 n->InitDelete(n);
             }
         }
@@ -4817,22 +4817,22 @@ follow:
 static inline void SpawnPuff1605(SLONG_XYZ *pos, s32 kind) {
     u8 *p;
     NAS *nas;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
 
     p = D_8005365C;
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext->unkC = kind;
-            ext->unk18 = 0x100;
+            ext->scriptnumber = kind;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext->unk20 = 5;
+                ext->flags = 5;
                 nas->Engine->sub->unk6C = p;
             } else {
-                ext->unk20 = 1;
+                ext->flags = 1;
             }
-            ext->unk28 = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
     }
@@ -5108,7 +5108,7 @@ void PlotBoatField(NAS *nas) {
     s32 *pos;
     u8 *p;
     NAS *n;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
     u32 t;
 
     src = Heroes[nas->UserInfo.user1].hero_eng;
@@ -5128,15 +5128,15 @@ void PlotBoatField(NAS *nas) {
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
             if (ext != NULL) {
-                ext->unkC = 4;
-                ext->unk18 = 0x100;
+                ext->scriptnumber = 4;
+                ext->speed = 0x100;
                 if (p != NULL) {
-                    ext->unk20 = 5;
+                    ext->flags = 5;
                     n->Engine->sub->unk6C = p;
                 } else {
-                    ext->unk20 = 1;
+                    ext->flags = 1;
                 }
-                ext->unk28 = 0;
+                ext->maxloops = 0;
                 n->InitDelete(n);
             }
         }
@@ -5448,7 +5448,7 @@ kill:
 
 void TotemBitExplode(EXTengine *arg0) {
     NAS *nas;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
     SLONG_XYZ *pos;
     u8 *p;
     s32 saved;
@@ -5467,15 +5467,15 @@ void TotemBitExplode(EXTengine *arg0) {
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
-            ext->unkC = 0;
-            ext->unk18 = 0x100;
+            ext->scriptnumber = 0;
+            ext->speed = 0x100;
             if (p != NULL) {
-                ext->unk20 = 5;
+                ext->flags = 5;
                 nas->Engine->sub->unk6C = p;
             } else {
-                ext->unk20 = 1;
+                ext->flags = 1;
             }
-            ext->unk28 = 0;
+            ext->maxloops = 0;
             nas->InitDelete(nas);
         }
     }
@@ -6914,7 +6914,7 @@ void SetMoeJoeRecoil(s32 arg0) {
             p2 = D_800CAC38;
             D_800CB250 = p2;
             val2 = *D_800CB250++;
-            ((Ovl5fUnk74 *)Heroes[2].hero_sub)->unk74 = val2;
+            Heroes[2].hero_sub->unk74 = val2;
             PlaySfx(0x260, 0, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
         }
         TA_players[arg0].SpeedY = -0x64;
@@ -6954,7 +6954,7 @@ void MoeJoeMove(s32 player) {
     subengine *sub;
     HeroInfo *h;
     TA_Bot *ai;
-    Ovl5fUnk74 *u;
+    subengine *u;
     TA_player *ta;
     s32 ex;
     s32 ez;
@@ -7218,7 +7218,7 @@ void MoeJoeDie(s32 arg0) {
     s32 *pos;
     u8 *p;
     NAS *nas;
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
     s32 mode;
 
     if (arg0 == 3) {
@@ -7234,15 +7234,15 @@ void MoeJoeDie(s32 arg0) {
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
-                ext->unkC = 0xE;
-                ext->unk18 = 0x100;
+                ext->scriptnumber = 0xE;
+                ext->speed = 0x100;
                 if (p != NULL) {
-                    ext->unk20 = 5;
+                    ext->flags = 5;
                     nas->Engine->sub->unk6C = p;
                 } else {
-                    ext->unk20 = 1;
+                    ext->flags = 1;
                 }
-                ext->unk28 = 0;
+                ext->maxloops = 0;
                 nas->InitDelete(nas);
             }
         }
@@ -8361,7 +8361,7 @@ void InitShell(NAS *nas) {
 }
 
 void InitSwirlyTA(NAS *nas) {
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
     EXTengine *eng;
     subengine *sub;
     void *p;
@@ -8370,7 +8370,7 @@ void InitSwirlyTA(NAS *nas) {
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
         p = D_8005365C;
-        ext->unk28 = 0x87;
+        ext->maxloops = 0x87;
         eng = nas->Engine;
         sub = eng->sub;
         eng->unk5D = 0;
@@ -8394,7 +8394,7 @@ void InitSwirlyTA(NAS *nas) {
 }
 
 void InitFlubberTA(NAS *nas) {
-    Ovl5fExt1605 *ext;
+    EXTscriptdata *ext;
     EXTengine *eng;
     EXTengine *e2;
     subengine *sub;
@@ -8403,8 +8403,8 @@ void InitFlubberTA(NAS *nas) {
     ext = AddExt(nas, 0x38, 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
-        ext->unk28 = 0x4B;
-        ext->unk14 = -0x1E;
+        ext->maxloops = 0x4B;
+        ext->timer = -0x1E;
         p = D_8005365C;
         eng = nas->Engine;
         sub = eng->sub;
@@ -8509,9 +8509,9 @@ void SetTankHeroDie(u32 player) {
     SetHeroSeq(player, 0x58);
 }
 
-s32 TankBlockPadNear(s32 flags, Ovl5fHolder *a, Ovl5fPos *b) {
-    s32 dx = a->pos->x - b->x;
-    s32 dz = a->pos->z - b->z;
+s32 TankBlockPadNear(s32 flags, NAS *nas, EXTengine *eng) {
+    s32 dx = nas->Engine->unk10.x - eng->unk10.x;
+    s32 dz = nas->Engine->unk10.z - eng->unk10.z;
 
     if (dx < -0x15D) {
         return flags;
@@ -8542,18 +8542,18 @@ void SetTankHeroMove(u32 arg0) {
     }
 }
 
-void func_800C7E68(s32 player, Ovl5fActObj *obj, s32 arg2) {
+void func_800C7E68(s32 player, TA_player *ta, s32 dir) {
     SetHeroAction(player, 0x6F);
-    obj->unk54 = -0x80;
-    obj->unk50 = 8;
-    obj->unk8 = arg2;
+    ta->ModeSpeed = -0x80;
+    ta->ModeCounter = 8;
+    ta->MoveDir = dir;
 }
 
-void func_800C7EB0(s32 player, Ovl5fActState *state, s32 arg2) {
+void func_800C7EB0(s32 player, TA_player *ta, s32 dir) {
     SetHeroAction(player, 0x6F);
-    state->unk54 = 0x80;
-    state->unk50 = 8;
-    state->unk8 = arg2;
+    ta->ModeSpeed = 0x80;
+    ta->ModeCounter = 8;
+    ta->MoveDir = dir;
 }
 
 void TankHeroIdle(u32 player) {
@@ -8785,17 +8785,17 @@ void ClearTankObjects(void) {
     }
 }
 
-void SetPuffAngle(Ovl5fHolder *h, s16 v) {
-    Ovl5fLink *l;
+void SetPuffAngle(NAS *puff, s16 angle) {
+    subengine *sub;
 
-    ((Ovl5fObj *)h->pos)->unk1E = v;
-    ((Ovl5fObj *)h->pos)->unk5E = 1;
-    l = ((Ovl5fObj *)h->pos)->list;
-    if (l != NULL) {
+    puff->Engine->unk1E = angle;
+    puff->Engine->unk5E = 1;
+    sub = puff->Engine->sub;
+    if (sub != NULL) {
         do {
-            l->flags |= 0x20000000;
-            l = l->next;
-        } while (l != NULL);
+            sub->flags |= 0x20000000;
+            sub = sub->next;
+        } while (sub != NULL);
     }
 }
 
