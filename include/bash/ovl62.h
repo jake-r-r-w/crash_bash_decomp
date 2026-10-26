@@ -42,16 +42,15 @@ extern u8 D_80054D54[];
 
 void InitialisePOLARFirst(void);
 void UpdatePOLAR(void);
-void func_800CAD0C(void);
-void func_800CAD1C(void);
-s32 func_800CAFF0(void);
-void func_800CB124(void);
-void func_800CB12C(void);
-void func_800CB6B4(void);
-void func_800CB6BC(void);
-s32 func_800CB6C4(s32 arg0);
-s32 func_800CB744(u8 *arg0, u8 *arg1);
-u32 func_800CBA28(u8 *arg0);
+void PolarEmptyStub3(void);
+s32 PolarAI_Never(void);
+void PolarEmptyStub4(void);
+void PolarEmptyStub5(void);
+void PolarEmptyStub6(void);
+void PolarEmptyStub7(void);
+s32 PolarPadAngle(s32 arg0);
+s32 PolarCompareXZ(u8 *arg0, u8 *arg1);
+u32 PolarAngleOf(u8 *arg0);
 void SetPolarHeroTransmute(s32 player);
 s32 TestPolarHeroWon();
 void SetPolarHeroWeight(void);
@@ -70,7 +69,7 @@ typedef struct BombGFXExt {
     /* 0x10 */ u8 pad10[0x1C - 0x10];
 } BombGFXExt;
 
-/* A scene's model object as func_800CA770 walks the list at D_80058AD0 + 0x1C. */
+/* A scene's model object as PolarInitDebug walks the list at D_80058AD0 + 0x1C. */
 typedef struct SceneObj {
     /* 0x00 */ u32 flags; /* 0x8000 visible */
     /* 0x04 */ s32 unk4;
@@ -89,11 +88,11 @@ typedef struct SceneObj {
     /* 0x74 */ u16 index;
 } SceneObj;
 
-/* Visible scene objects func_800CA770 collects. */
+/* Visible scene objects PolarInitDebug collects. */
 extern SceneObj *D_800D6010[80];
 extern char D_800B3498[];
 
-/* Scene objects func_800B38A0 picks out by index. */
+/* Scene objects PolarInitScene picks out by index. */
 extern s32 D_8009E1F4;
 extern s32 D_8009E1F8;
 extern SceneObj *D_800D529C;
@@ -101,20 +100,20 @@ extern SceneObj *D_800D52A0;
 extern s32 D_800D5FC4;
 extern s32 D_800D5FC8;
 
-/* D_80058AD0 as seen by func_800B38A0. */
+/* D_80058AD0 as seen by PolarInitScene. */
 typedef struct Ovl62Scene {
     /* 0x00 */ u8 pad0[0x1C];
     /* 0x1C */ SceneObj *objs;
 } Ovl62Scene;
 
-/* D_8005A614 as seen by func_800B38A0. */
+/* D_8005A614 as seen by PolarInitScene. */
 typedef struct Ovl62ModeView {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;
     /* 0x34 */ s16 mode;
 } Ovl62ModeView;
 
-/* D_8005A614 as func_800B649C reads it. */
+/* D_8005A614 as PolarAI_StartAttack reads it. */
 typedef struct Ovl62GameView {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;
@@ -122,7 +121,7 @@ typedef struct Ovl62GameView {
     /* 0x6C */ s32 unk6C;
 } Ovl62GameView;
 
-/* D_80051640 as the camera func_800CACC0 sets up. */
+/* D_80051640 as the camera PolarCamReset sets up. */
 typedef struct Ovl62Cam {
     /* 0x00 */ CamXYZ eye;
     /* 0x0C */ CamXYZ at;
@@ -133,7 +132,7 @@ typedef struct Ovl62Cam {
     /* 0x58 */ s16 rotZ;
 } Ovl62Cam;
 
-/* A value func_800C5EEC eases toward its target by a fixed step. */
+/* A value BearminatorEaseCam eases toward its target by a fixed step. */
 typedef struct Ovl62Ease {
     /* 0x00 */ s32 cur;
     /* 0x04 */ s32 target;
@@ -142,7 +141,7 @@ typedef struct Ovl62Ease {
     /* 0x0C */ u8 padC[0x20 - 0xC];
 } Ovl62Ease;
 
-/* The camera offsets func_800C5EEC eases and subtracts from a position. */
+/* The camera offsets BearminatorEaseCam eases and subtracts from a position. */
 typedef struct Ovl62EaseCam {
     /* 0x00 */ u8 pad0[0x20];
     /* 0x20 */ Ovl62Ease x;
@@ -154,7 +153,7 @@ typedef struct Ext10000000 {
     /* 0x0C */ s32 unkC;
 } Ext10000000;
 
-/* The 0x10000000 extension of the object func_800B44B4 spawns (0x1611). */
+/* The 0x10000000 extension of the object PolarBombHitHeroes spawns (0x1611). */
 typedef struct Ovl62Bomb {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 angle;
@@ -172,7 +171,7 @@ typedef struct Ovl62Thrown {
     /* 0x74 */ s32 unk74;
 } Ovl62Thrown;
 
-/* Extension 0x10000000 of the object func_800B5910 spawns (NAS 0x1605). */
+/* Extension 0x10000000 of the object PolarSpawnObjects spawns (NAS 0x1605). */
 typedef struct ExtSpawn5910 {
     /* 0x00 */ u8 pad[0xC];
     /* 0x0C */ s32 unkC;
@@ -250,7 +249,7 @@ typedef struct Ovl62Pad {
 
 void PolarHeroFootIdle(s32 player);
 
-/* PadState (D_80051338) as func_800B5EBC writes it: stick angle at 0x38,
+/* PadState (D_80051338) as PolarAI_SteerToTarget writes it: stick angle at 0x38,
  * buttons at 0x50. */
 typedef struct Ovl62PadAng {
     /* 0x00 */ u8 pad0[0x38];
@@ -270,7 +269,7 @@ typedef struct Ovl62PadMove {
     /* 0x54 */ s32 unk54;
 } Ovl62PadMove;
 
-/* Inlined into func_800B5EBC: the d-pad bits that steer from v toward p. */
+/* Inlined into PolarAI_SteerToTarget: the d-pad bits that steer from v toward p. */
 static inline u32 Ovl62PadToward(SLONG_XYZ *p, SLONG_XYZ *v) {
     u32 flags;
 
@@ -317,7 +316,7 @@ typedef struct BrioOwner {
     /* 0x2E */ u16 subtype;
 } BrioOwner;
 
-/* Head of a list linked through +0x20 (counted by func_800C9B5C). */
+/* Head of a list linked through +0x20 (counted by CountBears). */
 extern u8 *D_800D5454;
 extern HeroInfo Heroes[4];
 extern s32 D_8005A680[];
@@ -335,17 +334,17 @@ static inline s32 Ovl62EndAction(s32 player) {
     return 0;
 }
 
-s32 func_800C9B5C(void);
-/* func_800C2ECC's box around an engine: min/max x,z corners and push radius. */
+s32 CountBears(void);
+/* PolarBoxOverlap's box around an engine: min/max x,z corners and push radius. */
 typedef struct Ovl62Box {
     SLONG_XYZ min;
     SLONG_XYZ max;
     s32 r;
 } Ovl62Box;
 
-s32 func_800C2ECC(EXTengine *a, s32 b, EXTengine *c, s32 d);
+s32 PolarBoxOverlap(EXTengine *a, s32 b, EXTengine *c, s32 d);
 
-void func_800BFD38();
+void GravityMotionUpdate();
 
 /* A gravity object's motion block (GravityObject.target). */
 typedef struct GravityMotion {
@@ -373,7 +372,7 @@ typedef struct GravityObject {
 } GravityObject;
 
 void PlotGravityObject(GravityObject *obj);
-/* A hero's FUX extension as func_800B9714 sets it up. */
+/* A hero's FUX extension as TestWanderChance sets it up. */
 typedef struct Ovl62Fux {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ SLONG_XYZ vel;
@@ -405,11 +404,11 @@ extern s32 D_800D4410[];
 extern s32 D_800D4820[];
 extern s32 D_800D4A50[];
 extern s32 D_800D4B64[];
-void func_800B7520();
-void func_800B767C();
-void func_800B7F70();
+void PolarAI_DoWander();
+void PolarAI_DoChase();
+void PolarAI_AvoidMelt();
 void DoGetBomb(u32 player);
-void func_800B6D74();
+void PolarAI_DoHunt();
 extern s32 D_800D5FEC[];
 
 /* Inlined into TestChaseChance. */
@@ -427,7 +426,7 @@ static inline void Ovl62StartChase(s32 player) {
             n++;
         }
         f->state = 4;
-        f->func = func_800CB12C;
+        f->func = PolarEmptyStub5;
         if (n >= 3) {
             return;
         }
@@ -435,7 +434,7 @@ static inline void Ovl62StartChase(s32 player) {
     f->unk3C = 1;
     f->unk24 = Random(0x3C) + 5;
 }
-s32 func_800B9714(s32 player);
+s32 TestWanderChance(s32 player);
 
 /* Inlined twice into EnsureMateNotObstructingMate. */
 static inline void Ovl62Grab(s32 player) {
@@ -449,7 +448,7 @@ static inline void Ovl62Grab(s32 player) {
         f->unk24 = 0x3C;
     }
     f->state = 6;
-    f->func = func_800B7F70;
+    f->func = PolarAI_AvoidMelt;
     f->unk2C = 0;
     f->unk3C = 1;
     f->unk34 |= 1;
@@ -473,7 +472,7 @@ typedef struct BombMakerExt {
 
 extern s32 D_800D4DEC;
 extern VECTOR D_800D4DD4;
-/* DoesPlayerHaveBomb, inlined into func_800B782C. */
+/* DoesPlayerHaveBomb, inlined into PolarAI_DoBeam. */
 static inline s32 Ovl62HasBomb(s32 player) {
     NAS *nas;
     BombMakerExt *ext;
@@ -499,7 +498,7 @@ done:
     return found;
 }
 
-/* FindClosetPlayer, inlined into func_800B90C0. */
+/* FindClosetPlayer, inlined into PolarAI_DoChaseBomber. */
 static inline s32 Ovl62Closest(s32 self, s32 *dist) {
     SLONG_XYZ pos;
     s32 best;
@@ -575,8 +574,8 @@ loop:
     return NULL;
 }
 
-void func_800B649C(s32 player);
-void func_800B6708(s32 player);
+void PolarAI_StartAttack(s32 player);
+void PolarAI_DoAttack(s32 player);
 
 /* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
 typedef struct Ovl62Odds {
@@ -591,7 +590,7 @@ extern s32 D_800D5364[];
 extern s32 D_8009D908;
 
 extern s32 D_800D4E04;
-s32 func_800BFEE0(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out);
+s32 PolarRayHit(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out);
 
 
 /* Roll the odds in D_800D5364 (by D_8009D87C[player].unk0) and set ext->unk14. */
@@ -616,14 +615,14 @@ static inline void Ovl62RollOdds(s32 player, Ext20 *ext) {
 }
 
 s32 func_8008CEB0(u8 *arg0, u8 *arg1);
-s32 func_800B7B88(s32 arg0);
-s32 func_800B9B6C(s32 player);
+s32 PolarAI_ShotBlocked(s32 arg0);
+s32 PolarAI_TeamChoice(s32 player);
 s32 PolarHeroAttackPower(s32 arg0);
 
 /* The NAS that owns the bomb maker. */
 extern NAS *D_800D52B4;
 
-s32 func_800C9C98(u8 *arg0);
+s32 PolarBossDazeHero(u8 *arg0);
 
 NAS *IsBombAvailable(void);
 
@@ -636,9 +635,9 @@ void PolarHeroPoll(s32 player);
 extern s32 D_800D5FEC[4];
 extern s32 D_800D5FB0[4];
 
-s32 func_800B4A1C(NAS *nas);
+s32 PolarBombOwnerEngine(NAS *nas);
 
-void func_800B5910(void);
+void PolarSpawnObjects(void);
 
 /* One of the 16 angular sectors CheckMelted checks. */
 typedef struct Ovl62Sector {
@@ -647,7 +646,7 @@ typedef struct Ovl62Sector {
     /* 0x08 */ s32 pad8[2];
 } Ovl62Sector;
 
-/* Read by func_800CB0A4 and CheckMelted. */
+/* Read by PolarBeamLinkState and CheckMelted. */
 typedef struct Ovl62Link {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
@@ -671,7 +670,7 @@ extern s32 D_800D5FFC;
 extern s32 D_8009D908;
 bool EnsureMateNotObstructingMate(u32 self);
 
-/* Read by func_800CAEB0. */
+/* Read by PolarAI_Proximity. */
 typedef struct Ovl62Mode {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 mode;
@@ -697,60 +696,60 @@ extern s32 (*D_800D4DF0[5])(s32 player);
         }                                                        \
         (fux)->state = 1;                                        \
         (fux)->unk3C = 1;                                        \
-        (fux)->func = func_800B6708;                             \
+        (fux)->func = PolarAI_DoAttack;                             \
         (fux)->target = (t);                                     \
         (fux)->unk34 &= ~2;                                      \
         (f) = (Ovl62Fux *)(h)->hero->FUX;                        \
         if ((f) != NULL && TestForTeamMate((player), (t))) {     \
-            (r) = func_800B9B6C(player);                         \
+            (r) = PolarAI_TeamChoice(player);                         \
             if ((r) == -1) {                                     \
                 (f)->state = 5;                                  \
-                (f)->func = func_800CB6B4;                       \
+                (f)->func = PolarEmptyStub6;                       \
             } else {                                             \
                 (f)->target = (r);                               \
             }                                                    \
         }                                                        \
     }
 
-/* Escape headings tried by func_800B889C. */
+/* Escape headings tried by PolarAI_DoIceWalk. */
 extern s32 D_800D53E8[8];
 
-/* func_800B3AA0's swaying-ground state. */
+/* PolarUpdateScene's swaying-ground state. */
 extern s32 D_800D52A4;
 extern s32 D_800D52A8;
 extern s32 D_800D52AC;
 extern s32 D_800D52B0;
 extern MATRIX D_800D5FCC;
 
-void func_800B60B8(s32 player);
+void PolarAI_TryAttack(s32 player);
 
-void func_800B767C(s32 player);
+void PolarAI_DoChase(s32 player);
 
 bool TestChaseChance(u32 player);
 
-s32 func_800C9EC4(EXTengine *eng, s32 player);
+s32 PolarBossNear(EXTengine *eng, s32 player);
 
-s32 func_800C9F70(void);
+s32 PolarBossSpeedUp(void);
 
-void func_800CACC0(void);
+void PolarCamReset(void);
 
 
-void func_800CB0A4(void);
+void PolarBeamLinkState(void);
 
-void func_800CB134(s32 player);
-void func_800B7224();
-void func_800B90C0();
+void PolarAI_ClearState(s32 player);
+void PolarAI_AvoidBomber();
+void PolarAI_DoChaseBomber();
 
-s32 func_800CB284(void);
+s32 PolarAI_AnyBusy(void);
 s32 func_8008502C();
 
-s32 func_800CB2C8(s32 arg0);
+s32 PolarAI_NoneBusy(s32 arg0);
 
-void func_800CB314(s32 player);
+void PolarAI_Reset(s32 player);
 
-void func_800CB508(s32 player);
+void PolarAI_Timer2(s32 player);
 
-void func_800CB650(s32 player);
+void PolarAI_Timer3(s32 player);
 
 void POLARSetUp(void);
 
@@ -770,7 +769,7 @@ void PolarHeroHit(s32 player);
 
 void PolarHeroInBeam(s32 player);
 
-/* A rising slot as func_800CA6E8 steps it: 16 of them at +0xB8. */
+/* A rising slot as RiserSetReset steps it: 16 of them at +0xB8. */
 typedef struct Ovl62Riser {
     /* 0x0 */ s32 active;
     /* 0x4 */ s32 unk4;
@@ -784,7 +783,7 @@ typedef struct Ovl62RiserSet {
     /* 0xB8 */ Ovl62Riser slot[16];
 } Ovl62RiserSet;
 
-/* func_800C0FE8's ring of 16 mask segments at +0xB8 of the Uka polar ext. */
+/* UkaMaskSetSegments's ring of 16 mask segments at +0xB8 of the Uka polar ext. */
 typedef struct UkaMaskSeg {
     /* 0x0 */ s32 count;
     /* 0x4 */ s32 state;
@@ -797,7 +796,7 @@ typedef struct UkaMaskSet {
     /* 0xB8 */ UkaMaskSeg seg[16];
 } UkaMaskSet;
 
-void func_800C0FE8(s32 i, UkaMaskSet *m);
+void UkaMaskSetSegments(s32 i, UkaMaskSet *m);
 
 /* InitUkaPolarMask's extension (id 0x40000000, 0x1E0 bytes). */
 typedef struct UkaPolarExt {
@@ -916,10 +915,10 @@ typedef struct Ovl62RiserObj {
 
 extern Ovl62RiserObj *D_800D6150[16];
 
-/* Scene objects with index 0x4000, func_800C0E94 collects. */
+/* Scene objects with index 0x4000, UkaMaskInitRisers collects. */
 extern SceneObj *D_800D6190[16];
 
-void func_800CA6E8(Ovl62RiserSet *arg0);
+void RiserSetReset(Ovl62RiserSet *arg0);
 
 bool DoesPlayerHaveBomb(u32 arg0);
 /* Walrus fish extension (id 0x10000000): a ballistic arc (func_8008C5C4's
@@ -1082,7 +1081,7 @@ static inline s32 PolarShardChance(void) {
     return (((PolarBossGame *)D_8005A614)->level - 9) * k;
 }
 
-s32 func_800B3740(s32 arg0);
+s32 PolarAI_PickVictim(s32 arg0);
 
 u32 FindClosetPlayer(u32 self, s32 *dist);
 /* Weight death extension (0x28 bytes, id 0x10000000). */
@@ -1219,7 +1218,7 @@ typedef struct PolarBombExt {
     /* 0x78 */ u8 pad78[0x84 - 0x78];
 } PolarBombExt;
 
-s32 func_800B44B4(NAS *nas, s32 dist);
+s32 PolarBombHitHeroes(NAS *nas, s32 dist);
 
 extern u8 D_80054A0C[];
 
@@ -1240,7 +1239,7 @@ typedef struct BigMissileExt {
 
 extern EXTengine *D_8009D530[];
 
-/* Value easing towards a target by a step (func_800C7ED4). */
+/* Value easing towards a target by a step (SniperAimUpdate). */
 typedef struct SniperEase {
     /* 0x00 */ s32 cur;
     /* 0x04 */ s32 target;
@@ -1309,9 +1308,9 @@ typedef struct BearDeathExt {
 
 extern ScriptInit D_800D56D4;
 
-void func_800CA930(EXTheromove *a, EXTheromove *b);
+void PolarMovesSwap(EXTheromove *a, EXTheromove *b);
 
-void func_800CAE10(s32 player, s32 target);
+void PolarAI_SetTarget(s32 player, s32 target);
 
 void SetPolarHeroSquashed(s32 arg0);
 
@@ -1321,72 +1320,71 @@ extern s32 D_800D6924[];
 extern s32 D_800D6934[];
 extern u8 D_80054654[];
 
-s32 func_800CAC20(s32 i);
+s32 PolarOfficeBox(s32 i);
 
-s32 func_800CAFF8(s32 player);
+s32 PolarAI_RandomPause(s32 player);
 
 void PolarInitHeroMove(s32 arg0);
-/* D_8005A614 as seen by func_800B9B6C: the two team leaders. */
+/* D_8005A614 as seen by PolarAI_TeamChoice: the two team leaders. */
 typedef struct Ovl62TeamView {
     /* 0x00 */ u8 pad0[0x48];
     /* 0x48 */ s16 team0;
     /* 0x4A */ s16 team1;
 } Ovl62TeamView;
 
-s32 func_800B9B6C(s32 hero);
+s32 PolarAI_TeamChoice(s32 hero);
 
 
-void func_800CB368(s32 player);
+void PolarAI_CountDead(s32 player);
 
 void SetPolarHeroFootRun(s32 player);
 
 extern ScriptInit D_800D5DB8;
 
-void func_800B38A0(void);
+void PolarInitScene(void);
 
 
 bool CheckMelted(SLONG_XYZ *arg0, s32 arg1);
 
-void func_800B5570(s32 player);
+void PolarInitHeroAngle(s32 player);
 
 
-void func_800B5788(s32 arg0);
+void PolarInitHeroEngine(s32 arg0);
 
-void func_800B6258(s32 player);
-
-
-void func_800B782C(s32 player);
+void PolarAI_PickTarget(s32 player);
 
 
-s32 func_800B94B8(s32 player);
+void PolarAI_DoBeam(s32 player);
 
-s32 func_800B9600(s32 player);
 
-s32 func_800B98AC(s32 player);
+s32 TestAttackChance(s32 player);
 
-s32 func_800BCC9C(s32 player);
+s32 TestHuntChance(s32 player);
 
-void func_800BD058(s32 arg0, s32 arg1, s32 arg2);
 
-void func_800C0E94(void);
+s32 PolarHeroAnimState(s32 player);
 
-s32 func_800C5CD0(s32 *arg0, s32 arg1);
+void PolarBeamRelease(s32 arg0, s32 arg1, s32 arg2);
 
-s32 func_800C5DCC(NAS *m);
+void UkaMaskInitRisers(void);
 
-void func_800C5EEC(Ovl62EaseCam *c, s32 *pos);
+s32 BearminatorFindPoint(s32 *arg0, s32 arg1);
 
-void func_800C7ED4(SniperAim *a, s32 *out);
+s32 BearminatorTarget(NAS *m);
 
-void func_800C9D74(NAS *m);
+void BearminatorEaseCam(Ovl62EaseCam *c, s32 *pos);
 
-void func_800CA770(void);
+void SniperAimUpdate(SniperAim *a, s32 *out);
+
+void PolarBossFace(NAS *m);
+
+void PolarInitDebug(void);
 
 void InitGravityObject(NAS *m);
 
-void func_800CAEB0(s32 player, s32 idx);
+void PolarAI_Proximity(s32 player, s32 idx);
 
-void func_800CB41C(s32 player);
+void PolarAI_Timer1(s32 player);
 
 void PolarHeroBounceOff(s32 player, EXTheromove *other);
 
@@ -1565,7 +1563,7 @@ extern u8 D_800D35C4[], D_800D35D8[], D_800D35EC[], D_800D35F8[], D_800D3610[], 
 extern u8 D_800D3678[], D_800D368C[], D_800D36A0[], D_800D36AC[], D_800D36C4[], D_800D36D8[];
 extern u8 D_800D372C[], D_800D3740[], D_800D3754[], D_800D3760[], D_800D3778[], D_800D378C[];
 extern u8 D_800D37E0[], D_800D3830[], D_800D3874[], D_800D388C[], D_800D38A4[];
-s32 func_800C0888(SLONG_XYZ *pos, s32 player);
+s32 PolarIceHit(SLONG_XYZ *pos, s32 player);
 
 void PolarHeroesCollide(s32 p1, s32 p2);
 
@@ -1603,7 +1601,7 @@ typedef struct Ovl62DropExt {
 extern s32 D_800D5450;
 extern s32 D_8005138C;
 extern s32 D_8009E194;
-void func_800B3AA0(void);
+void PolarUpdateScene(void);
 
 /* One drop of UpdatePOLAR's shower (like ovl5f's Ovl5fSpawnBit1605). */
 static inline void Ovl62SpawnDrop(VECTOR *pos, s32 kind) {
@@ -1679,7 +1677,7 @@ typedef struct Ovl62PolarAi {
     /* 0xB4 */ s32 unkB4;
 } Ovl62PolarAi;
 
-/* D_800D5254's 0x40000000 extension as func_800BBF2C reads it. */
+/* D_800D5254's 0x40000000 extension as PolarHeroCollisions reads it. */
 typedef struct Ovl62PolarGame {
     /* 0x00 */ u8 pad0[0x48];
     /* 0x48 */ s32 unk48[8];
@@ -1696,8 +1694,8 @@ void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
 void InitBossHealthIcons(void);
 
-void func_800B889C(s32 player);
+void PolarAI_DoIceWalk(s32 player);
 
-s32 func_800BBF2C(s32 player);
+s32 PolarHeroCollisions(s32 player);
 
 #endif /* BASH_OVL62_H */

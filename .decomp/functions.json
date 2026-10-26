@@ -34623,7 +34623,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl62:800B3740": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B3740.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_PickVictim.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590"
@@ -34631,7 +34631,7 @@
   "fp": "b2c292476c3d1543",
   "fpn": "79f3d6d4f8d9597b",
   "leaf": false,
-  "name": "func_800B3740",
+  "name": "PolarAI_PickVictim",
   "orig": "func_800B3740",
   "rom": 1164,
   "seg": "overlays/ovl62/ovl62",
@@ -34639,7 +34639,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B38A0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B38A0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitScene.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015A18"
@@ -34647,7 +34647,7 @@
   "fp": "16ebf2cd8b115a62",
   "fpn": "988e0d28c1d96778",
   "leaf": false,
-  "name": "func_800B38A0",
+  "name": "PolarInitScene",
   "orig": "func_800B38A0",
   "rom": 1516,
   "seg": "overlays/ovl62/ovl62",
@@ -34655,7 +34655,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B3AA0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B3AA0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarUpdateScene.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -34665,7 +34665,7 @@
   "fp": "3d87c501978a7ae9",
   "fpn": "02248aa98947dc16",
   "leaf": false,
-  "name": "func_800B3AA0",
+  "name": "PolarUpdateScene",
   "orig": "func_800B3AA0",
   "rom": 2028,
   "seg": "overlays/ovl62/ovl62",
@@ -34708,7 +34708,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B44B4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B44B4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBombHitHeroes.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -34720,7 +34720,7 @@
   "fp": "be157d6e7b2a511d",
   "fpn": "7c77e1b170620ab0",
   "leaf": false,
-  "name": "func_800B44B4",
+  "name": "PolarBombHitHeroes",
   "orig": "func_800B44B4",
   "rom": 4608,
   "seg": "overlays/ovl62/ovl62",
@@ -34728,7 +34728,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B4A1C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B4A1C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBombOwnerEngine.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8"
@@ -34736,7 +34736,7 @@
   "fp": "99c54292e49d8952",
   "fpn": "89f6d06026335d07",
   "leaf": false,
-  "name": "func_800B4A1C",
+  "name": "PolarBombOwnerEngine",
   "orig": "func_800B4A1C",
   "rom": 5992,
   "seg": "overlays/ovl62/ovl62",
@@ -34804,7 +34804,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B5570": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B5570.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitHeroAngle.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800154A0"
@@ -34812,7 +34812,7 @@
   "fp": "dce3733a0c9683f0",
   "fpn": "9403bde70ad60ab2",
   "leaf": false,
-  "name": "func_800B5570",
+  "name": "PolarInitHeroAngle",
   "orig": "func_800B5570",
   "rom": 8892,
   "seg": "overlays/ovl62/ovl62",
@@ -34836,7 +34836,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B5788": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B5788.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitHeroEngine.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800860D4"
@@ -34844,7 +34844,7 @@
   "fp": "ca36fcc72ebfa03d",
   "fpn": "d104f5ff73392345",
   "leaf": false,
-  "name": "func_800B5788",
+  "name": "PolarInitHeroEngine",
   "orig": "func_800B5788",
   "rom": 9428,
   "seg": "overlays/ovl62/ovl62",
@@ -34852,7 +34852,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B5910": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B5910.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarSpawnObjects.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -34863,7 +34863,7 @@
   "fp": "44a8282c5bd45357",
   "fpn": "e002f80482845d9b",
   "leaf": false,
-  "name": "func_800B5910",
+  "name": "PolarSpawnObjects",
   "orig": "func_800B5910",
   "rom": 9820,
   "seg": "overlays/ovl62/ovl62",
@@ -34885,13 +34885,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B5EBC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B5EBC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_SteerToTarget.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "368e2e2a10631c5f",
   "fpn": "3ec8e07f14409a43",
   "leaf": true,
-  "name": "func_800B5EBC",
+  "name": "PolarAI_SteerToTarget",
   "orig": "func_800B5EBC",
   "rom": 11272,
   "seg": "overlays/ovl62/ovl62",
@@ -34899,7 +34899,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B60B8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B60B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_TryAttack.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -34911,7 +34911,7 @@
   "fp": "88605e75f1336a0d",
   "fpn": "2921f8947b05e77a",
   "leaf": false,
-  "name": "func_800B60B8",
+  "name": "PolarAI_TryAttack",
   "orig": "func_800B60B8",
   "rom": 11780,
   "seg": "overlays/ovl62/ovl62",
@@ -34919,7 +34919,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B6258": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B6258.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_PickTarget.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -34930,7 +34930,7 @@
   "fp": "6d70d28cceebfce7",
   "fpn": "4748c4c212226040",
   "leaf": false,
-  "name": "func_800B6258",
+  "name": "PolarAI_PickTarget",
   "orig": "func_800B6258",
   "rom": 12196,
   "seg": "overlays/ovl62/ovl62",
@@ -34938,7 +34938,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B649C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B649C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_StartAttack.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -34948,7 +34948,7 @@
   "fp": "f335e624e7f9748b",
   "fpn": "e244ce5dd4828123",
   "leaf": false,
-  "name": "func_800B649C",
+  "name": "PolarAI_StartAttack",
   "orig": "func_800B649C",
   "rom": 12776,
   "seg": "overlays/ovl62/ovl62",
@@ -34956,7 +34956,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B6708": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B6708.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoAttack.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -34973,7 +34973,7 @@
   "fp": "5844354155b4d372",
   "fpn": "38cd6878a62e4b6f",
   "leaf": false,
-  "name": "func_800B6708",
+  "name": "PolarAI_DoAttack",
   "orig": "func_800B6708",
   "rom": 13396,
   "seg": "overlays/ovl62/ovl62",
@@ -34981,7 +34981,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B6D74": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B6D74.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoHunt.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800B5EBC",
@@ -34994,7 +34994,7 @@
   "fp": "1afa32662a534aea",
   "fpn": "20995c6d13f1067e",
   "leaf": false,
-  "name": "func_800B6D74",
+  "name": "PolarAI_DoHunt",
   "orig": "func_800B6D74",
   "rom": 15040,
   "seg": "overlays/ovl62/ovl62",
@@ -35041,7 +35041,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B7224": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B7224.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_AvoidBomber.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35055,7 +35055,7 @@
   "fp": "904a7889e94b0a29",
   "fpn": "fdd6799730ce94ae",
   "leaf": false,
-  "name": "func_800B7224",
+  "name": "PolarAI_AvoidBomber",
   "orig": "func_800B7224",
   "rom": 16240,
   "seg": "overlays/ovl62/ovl62",
@@ -35063,7 +35063,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B7520": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B7520.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoWander.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -35074,7 +35074,7 @@
   "fp": "d10ceb9908b0bc86",
   "fpn": "cf9e2ae2aaddb107",
   "leaf": false,
-  "name": "func_800B7520",
+  "name": "PolarAI_DoWander",
   "orig": "func_800B7520",
   "rom": 17004,
   "seg": "overlays/ovl62/ovl62",
@@ -35082,7 +35082,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B767C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B767C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoChase.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800B5EBC"
@@ -35090,7 +35090,7 @@
   "fp": "6b648ada98e37e25",
   "fpn": "0b00c23de44f9e4a",
   "leaf": false,
-  "name": "func_800B767C",
+  "name": "PolarAI_DoChase",
   "orig": "func_800B767C",
   "rom": 17352,
   "seg": "overlays/ovl62/ovl62",
@@ -35098,7 +35098,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B782C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B782C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoBeam.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -35110,7 +35110,7 @@
   "fp": "ddbcc2ed7a181e99",
   "fpn": "c55dc3e16a18af3f",
   "leaf": false,
-  "name": "func_800B782C",
+  "name": "PolarAI_DoBeam",
   "orig": "func_800B782C",
   "rom": 17784,
   "seg": "overlays/ovl62/ovl62",
@@ -35134,7 +35134,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B7B88": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B7B88.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_ShotBlocked.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8008CEB0",
@@ -35144,7 +35144,7 @@
   "fp": "a71d49c7101bc729",
   "fpn": "cbbe5aa97adf44a5",
   "leaf": false,
-  "name": "func_800B7B88",
+  "name": "PolarAI_ShotBlocked",
   "orig": "func_800B7B88",
   "rom": 18644,
   "seg": "overlays/ovl62/ovl62",
@@ -35170,7 +35170,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B7F70": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B7F70.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_AvoidMelt.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35188,7 +35188,7 @@
   "fp": "0e1ea62b3d0890eb",
   "fpn": "a2dbf087c7ce67cb",
   "leaf": false,
-  "name": "func_800B7F70",
+  "name": "PolarAI_AvoidMelt",
   "orig": "func_800B7F70",
   "rom": 19644,
   "seg": "overlays/ovl62/ovl62",
@@ -35196,7 +35196,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B889C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B889C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoIceWalk.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35210,7 +35210,7 @@
   "fp": "56419dad8cf3c1f9",
   "fpn": "e80ccab8970f5d4e",
   "leaf": false,
-  "name": "func_800B889C",
+  "name": "PolarAI_DoIceWalk",
   "orig": "func_800B889C",
   "rom": 21992,
   "seg": "overlays/ovl62/ovl62",
@@ -35218,7 +35218,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B90C0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B90C0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_DoChaseBomber.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -35230,7 +35230,7 @@
   "fp": "d9de4a38924ab417",
   "fpn": "7aae35e6b25ec278",
   "leaf": false,
-  "name": "func_800B90C0",
+  "name": "PolarAI_DoChaseBomber",
   "orig": "func_800B90C0",
   "rom": 24076,
   "seg": "overlays/ovl62/ovl62",
@@ -35254,7 +35254,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B94B8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B94B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestAttackChance.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -35265,7 +35265,7 @@
   "fp": "4964748db16aaab5",
   "fpn": "436f2a1c0cbc58ba",
   "leaf": false,
-  "name": "func_800B94B8",
+  "name": "TestAttackChance",
   "orig": "func_800B94B8",
   "rom": 25092,
   "seg": "overlays/ovl62/ovl62",
@@ -35273,7 +35273,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B9600": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B9600.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestHuntChance.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -35282,7 +35282,7 @@
   "fp": "5bdbe367b91e184d",
   "fpn": "f2945d7e567e811b",
   "leaf": false,
-  "name": "func_800B9600",
+  "name": "TestHuntChance",
   "orig": "func_800B9600",
   "rom": 25420,
   "seg": "overlays/ovl62/ovl62",
@@ -35290,7 +35290,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B9714": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B9714.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestWanderChance.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -35299,7 +35299,7 @@
   "fp": "e74d0bd6445a9be0",
   "fpn": "c55e574b34644c67",
   "leaf": false,
-  "name": "func_800B9714",
+  "name": "TestWanderChance",
   "orig": "func_800B9714",
   "rom": 25696,
   "seg": "overlays/ovl62/ovl62",
@@ -35307,7 +35307,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B98AC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B98AC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestBombChance.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590"
@@ -35315,7 +35315,7 @@
   "fp": "2bbfd79b1d534e31",
   "fpn": "2a5983409b7e181f",
   "leaf": false,
-  "name": "func_800B98AC",
+  "name": "TestBombChance",
   "orig": "func_800B98AC",
   "rom": 26104,
   "seg": "overlays/ovl62/ovl62",
@@ -35339,7 +35339,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B9B6C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B9B6C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_TeamChoice.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590"
@@ -35347,7 +35347,7 @@
   "fp": "0c45da8543780a8b",
   "fpn": "902dd0f090a5cd69",
   "leaf": false,
-  "name": "func_800B9B6C",
+  "name": "PolarAI_TeamChoice",
   "orig": "func_800B9B6C",
   "rom": 26808,
   "seg": "overlays/ovl62/ovl62",
@@ -35432,7 +35432,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800BBF2C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800BBF2C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroCollisions.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35452,7 +35452,7 @@
   "fp": "764bec73ffcdde51",
   "fpn": "2ba166f52273c122",
   "leaf": false,
-  "name": "func_800BBF2C",
+  "name": "PolarHeroCollisions",
   "orig": "func_800BBF2C",
   "rom": 35960,
   "seg": "overlays/ovl62/ovl62",
@@ -35460,7 +35460,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800BCC9C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800BCC9C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarHeroAnimState.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8"
@@ -35468,7 +35468,7 @@
   "fp": "198b381845ab5262",
   "fpn": "457fe8b133803ce6",
   "leaf": false,
-  "name": "func_800BCC9C",
+  "name": "PolarHeroAnimState",
   "orig": "func_800BCC9C",
   "rom": 39400,
   "seg": "overlays/ovl62/ovl62",
@@ -35490,7 +35490,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800BD058": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800BD058.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBeamRelease.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800868B4",
@@ -35499,7 +35499,7 @@
   "fp": "5648b3aaec874a38",
   "fpn": "35945c8ff730d9e2",
   "leaf": false,
-  "name": "func_800BD058",
+  "name": "PolarBeamRelease",
   "orig": "func_800BD058",
   "rom": 40356,
   "seg": "overlays/ovl62/ovl62",
@@ -35574,7 +35574,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800BFD38": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800BFD38.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/GravityMotionUpdate.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800270B0",
@@ -35583,7 +35583,7 @@
   "fp": "b8d71c7ff37c3fc6",
   "fpn": "d99973bab24d6115",
   "leaf": false,
-  "name": "func_800BFD38",
+  "name": "GravityMotionUpdate",
   "orig": "func_800BFD38",
   "rom": 51844,
   "seg": "overlays/ovl62/ovl62",
@@ -35591,7 +35591,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800BFEE0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800BFEE0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarRayHit.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80032490"
@@ -35599,7 +35599,7 @@
   "fp": "363b35bba51cda80",
   "fpn": "c081b95230e8bcd3",
   "leaf": false,
-  "name": "func_800BFEE0",
+  "name": "PolarRayHit",
   "orig": "func_800BFEE0",
   "rom": 52268,
   "seg": "overlays/ovl62/ovl62",
@@ -35635,7 +35635,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C0888": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C0888.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarIceHit.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35649,7 +35649,7 @@
   "fp": "92fa1cf0ac75414b",
   "fpn": "a1cd530f918d7f66",
   "leaf": false,
-  "name": "func_800C0888",
+  "name": "PolarIceHit",
   "orig": "func_800C0888",
   "rom": 54740,
   "seg": "overlays/ovl62/ovl62",
@@ -35657,7 +35657,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C0E94": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C0E94.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/UkaMaskInitRisers.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35666,7 +35666,7 @@
   "fp": "db88c85643e042b4",
   "fpn": "9c0cb5c7537b87af",
   "leaf": false,
-  "name": "func_800C0E94",
+  "name": "UkaMaskInitRisers",
   "orig": "func_800C0E94",
   "rom": 56288,
   "seg": "overlays/ovl62/ovl62",
@@ -35674,13 +35674,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C0FE8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C0FE8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/UkaMaskSetSegments.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "6f16589c6fe7ca1d",
   "fpn": "49dbd56be7a463d5",
   "leaf": true,
-  "name": "func_800C0FE8",
+  "name": "UkaMaskSetSegments",
   "orig": "func_800C0FE8",
   "rom": 56628,
   "seg": "overlays/ovl62/ovl62",
@@ -35739,7 +35739,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C2ECC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C2ECC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBoxOverlap.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80032490",
@@ -35751,7 +35751,7 @@
   "fp": "1f70b436ca7ee911",
   "fpn": "8a805047fdc8e01b",
   "leaf": false,
-  "name": "func_800C2ECC",
+  "name": "PolarBoxOverlap",
   "orig": "func_800C2ECC",
   "rom": 64536,
   "seg": "overlays/ovl62/ovl62",
@@ -35977,13 +35977,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C5CD0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C5CD0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/BearminatorFindPoint.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "e78f2f4a972622cb",
   "fpn": "ad5f3dead4f66d6e",
   "leaf": true,
-  "name": "func_800C5CD0",
+  "name": "BearminatorFindPoint",
   "orig": "func_800C5CD0",
   "rom": 76316,
   "seg": "overlays/ovl62/ovl62",
@@ -35991,7 +35991,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C5DCC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C5DCC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/BearminatorTarget.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800C5CD0"
@@ -35999,7 +35999,7 @@
   "fp": "6948662047fc1fa2",
   "fpn": "4b2341aacb49355b",
   "leaf": false,
-  "name": "func_800C5DCC",
+  "name": "BearminatorTarget",
   "orig": "func_800C5DCC",
   "rom": 76568,
   "seg": "overlays/ovl62/ovl62",
@@ -36007,13 +36007,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C5EEC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C5EEC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/BearminatorEaseCam.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "fb5888198c32aa9e",
   "fpn": "0a207b0c2d7866e7",
   "leaf": true,
-  "name": "func_800C5EEC",
+  "name": "BearminatorEaseCam",
   "orig": "func_800C5EEC",
   "rom": 76856,
   "seg": "overlays/ovl62/ovl62",
@@ -36115,13 +36115,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C7ED4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C7ED4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/SniperAimUpdate.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "51c1b024374976e8",
   "fpn": "0a207b0c2d7866e7",
   "leaf": true,
-  "name": "func_800C7ED4",
+  "name": "SniperAimUpdate",
   "orig": "func_800C7ED4",
   "rom": 85024,
   "seg": "overlays/ovl62/ovl62",
@@ -36282,7 +36282,7 @@
   "fp": "bc54a594922c3076",
   "fpn": "7fc5e21059f7536d",
   "leaf": true,
-  "name": "func_800C9B5C",
+  "name": "CountBears",
   "orig": "func_800C9B5C",
   "rom": 92328,
   "seg": "overlays/ovl62/ovl62",
@@ -36307,7 +36307,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C9C98": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C9C98.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBossDazeHero.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -36317,7 +36317,7 @@
   "fp": "fc801a38e16d41df",
   "fpn": "a6eb47ca9db42534",
   "leaf": false,
-  "name": "func_800C9C98",
+  "name": "PolarBossDazeHero",
   "orig": "func_800C9C98",
   "rom": 92644,
   "seg": "overlays/ovl62/ovl62",
@@ -36325,7 +36325,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C9D74": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C9D74.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBossFace.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -36334,7 +36334,7 @@
   "fp": "f3049cec09d3bb08",
   "fpn": "c3b01c202b0fb5ad",
   "leaf": false,
-  "name": "func_800C9D74",
+  "name": "PolarBossFace",
   "orig": "func_800C9D74",
   "rom": 92864,
   "seg": "overlays/ovl62/ovl62",
@@ -36342,13 +36342,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C9EC4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C9EC4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBossNear.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "1c4b659be3736de9",
   "fpn": "a3c5ccea774e3c37",
   "leaf": true,
-  "name": "func_800C9EC4",
+  "name": "PolarBossNear",
   "orig": "func_800C9EC4",
   "rom": 93200,
   "seg": "overlays/ovl62/ovl62",
@@ -36412,13 +36412,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C9F70": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C9F70.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBossSpeedUp.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "ef4aef71ab1ab47d",
   "fpn": "48306a0ddd0a5b33",
   "leaf": true,
-  "name": "func_800C9F70",
+  "name": "PolarBossSpeedUp",
   "orig": "func_800C9F70",
   "rom": 93372,
   "seg": "overlays/ovl62/ovl62",
@@ -36609,13 +36609,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA6E8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA6E8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/RiserSetReset.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "fb0e98a40b82fed5",
   "fpn": "879eeceeb5d6fc81",
   "leaf": true,
-  "name": "func_800CA6E8",
+  "name": "RiserSetReset",
   "orig": "func_800CA6E8",
   "rom": 95284,
   "seg": "overlays/ovl62/ovl62",
@@ -36679,7 +36679,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA770": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA770.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarInitDebug.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015A18",
@@ -36688,7 +36688,7 @@
   "fp": "e71fe4c0c388ff9e",
   "fpn": "d58585f911ba0c5e",
   "leaf": false,
-  "name": "func_800CA770",
+  "name": "PolarInitDebug",
   "orig": "func_800CA770",
   "rom": 95420,
   "seg": "overlays/ovl62/ovl62",
@@ -36726,13 +36726,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA930": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA930.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarMovesSwap.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "bf6df49d48deda3a",
   "fpn": "6fd4fe9ff774a71a",
   "leaf": true,
-  "name": "func_800CA930",
+  "name": "PolarMovesSwap",
   "orig": "func_800CA930",
   "rom": 95868,
   "seg": "overlays/ovl62/ovl62",
@@ -36789,7 +36789,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CAC20": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAC20.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarOfficeBox.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800C2ECC"
@@ -36797,7 +36797,7 @@
   "fp": "d07e0746b0af844f",
   "fpn": "37877df4f64d0405",
   "leaf": false,
-  "name": "func_800CAC20",
+  "name": "PolarOfficeBox",
   "orig": "func_800CAC20",
   "rom": 96620,
   "seg": "overlays/ovl62/ovl62",
@@ -36805,13 +36805,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CACC0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CACC0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarCamReset.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "de923e09f295c768",
   "fpn": "0c0c497f37285b88",
   "leaf": true,
-  "name": "func_800CACC0",
+  "name": "PolarCamReset",
   "orig": "func_800CACC0",
   "rom": 96780,
   "seg": "overlays/ovl62/ovl62",
@@ -36825,7 +36825,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800CAD0C",
+  "name": "PolarEmptyStub3",
   "orig": "func_800CAD0C",
   "rom": 96856,
   "seg": "overlays/ovl62/ovl62",
@@ -36853,7 +36853,7 @@
   "fp": "9fa6fe340aeaa6f0",
   "fpn": "b3ca557d763bb79c",
   "leaf": true,
-  "name": "func_800CAD1C",
+  "name": "FirstTriggersPOLAR",
   "orig": "func_800CAD1C",
   "rom": 96872,
   "seg": "overlays/ovl62/ovl62",
@@ -36878,7 +36878,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CAE10": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAE10.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_SetTarget.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800B9B6C",
@@ -36887,7 +36887,7 @@
   "fp": "5ae41e5e914caf9d",
   "fpn": "e500c7a4d4082600",
   "leaf": false,
-  "name": "func_800CAE10",
+  "name": "PolarAI_SetTarget",
   "orig": "func_800CAE10",
   "rom": 97116,
   "seg": "overlays/ovl62/ovl62",
@@ -36895,13 +36895,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CAEB0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAEB0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Proximity.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "a91c2ae13ec85542",
   "fpn": "e11b056a7b2a91b9",
   "leaf": true,
-  "name": "func_800CAEB0",
+  "name": "PolarAI_Proximity",
   "orig": "func_800CAEB0",
   "rom": 97276,
   "seg": "overlays/ovl62/ovl62",
@@ -36929,7 +36929,7 @@
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_800CAFF0",
+  "name": "PolarAI_Never",
   "orig": "func_800CAFF0",
   "rom": 97596,
   "seg": "overlays/ovl62/ovl62",
@@ -36937,7 +36937,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CAFF8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAFF8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_RandomPause.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590"
@@ -36945,7 +36945,7 @@
   "fp": "97f71655921a5687",
   "fpn": "8447ec40a94c169a",
   "leaf": false,
-  "name": "func_800CAFF8",
+  "name": "PolarAI_RandomPause",
   "orig": "func_800CAFF8",
   "rom": 97604,
   "seg": "overlays/ovl62/ovl62",
@@ -36953,13 +36953,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB0A4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB0A4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarBeamLinkState.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "d8c3b92f170c0bbd",
   "fpn": "af9307b448b1eb26",
   "leaf": true,
-  "name": "func_800CB0A4",
+  "name": "PolarBeamLinkState",
   "orig": "func_800CB0A4",
   "rom": 97776,
   "seg": "overlays/ovl62/ovl62",
@@ -36973,7 +36973,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800CB124",
+  "name": "PolarEmptyStub4",
   "orig": "func_800CB124",
   "rom": 97904,
   "seg": "overlays/ovl62/ovl62",
@@ -36987,7 +36987,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800CB12C",
+  "name": "PolarEmptyStub5",
   "orig": "func_800CB12C",
   "rom": 97912,
   "seg": "overlays/ovl62/ovl62",
@@ -36995,13 +36995,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB134": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB134.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_ClearState.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "b9d5d4005c522e63",
   "fpn": "2f5767c0b6d5601a",
   "leaf": true,
-  "name": "func_800CB134",
+  "name": "PolarAI_ClearState",
   "orig": "func_800CB134",
   "rom": 97920,
   "seg": "overlays/ovl62/ovl62",
@@ -37025,13 +37025,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB284": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB284.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_AnyBusy.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "477b42f649e88823",
   "fpn": "4e289c2d945f7448",
   "leaf": true,
-  "name": "func_800CB284",
+  "name": "PolarAI_AnyBusy",
   "orig": "func_800CB284",
   "rom": 98256,
   "seg": "overlays/ovl62/ovl62",
@@ -37039,13 +37039,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB2C8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB2C8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_NoneBusy.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "c6a3733136efbdf7",
   "fpn": "ac13c4a229beeb92",
   "leaf": true,
-  "name": "func_800CB2C8",
+  "name": "PolarAI_NoneBusy",
   "orig": "func_800CB2C8",
   "rom": 98324,
   "seg": "overlays/ovl62/ovl62",
@@ -37053,13 +37053,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB314": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB314.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Reset.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "d87db82a0896429f",
   "fpn": "d0ec15ff6e673ac0",
   "leaf": true,
-  "name": "func_800CB314",
+  "name": "PolarAI_Reset",
   "orig": "func_800CB314",
   "rom": 98400,
   "seg": "overlays/ovl62/ovl62",
@@ -37067,7 +37067,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB368": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB368.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_CountDead.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590"
@@ -37075,7 +37075,7 @@
   "fp": "058b550fab93ae69",
   "fpn": "73ef24f6045ccf6b",
   "leaf": false,
-  "name": "func_800CB368",
+  "name": "PolarAI_CountDead",
   "orig": "func_800CB368",
   "rom": 98484,
   "seg": "overlays/ovl62/ovl62",
@@ -37083,7 +37083,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB41C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB41C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Timer1.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590"
@@ -37091,7 +37091,7 @@
   "fp": "ddd93ad718d7146f",
   "fpn": "54415a56144651e6",
   "leaf": false,
-  "name": "func_800CB41C",
+  "name": "PolarAI_Timer1",
   "orig": "func_800CB41C",
   "rom": 98664,
   "seg": "overlays/ovl62/ovl62",
@@ -37099,7 +37099,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB508": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB508.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Timer2.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590"
@@ -37107,7 +37107,7 @@
   "fp": "e1ae0a0572fd88f1",
   "fpn": "87a9a52bc95dbc53",
   "leaf": false,
-  "name": "func_800CB508",
+  "name": "PolarAI_Timer2",
   "orig": "func_800CB508",
   "rom": 98900,
   "seg": "overlays/ovl62/ovl62",
@@ -37147,7 +37147,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB650": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB650.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PolarAI_Timer3.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590"
@@ -37155,7 +37155,7 @@
   "fp": "e1ae0a0572fd88f1",
   "fpn": "87a9a52bc95dbc53",
   "leaf": false,
-  "name": "func_800CB650",
+  "name": "PolarAI_Timer3",
   "orig": "func_800CB650",
   "rom": 99228,
   "seg": "overlays/ovl62/ovl62",
@@ -37169,7 +37169,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800CB6B4",
+  "name": "PolarEmptyStub6",
   "orig": "func_800CB6B4",
   "rom": 99328,
   "seg": "overlays/ovl62/ovl62",
@@ -37183,7 +37183,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800CB6BC",
+  "name": "PolarEmptyStub7",
   "orig": "func_800CB6BC",
   "rom": 99336,
   "seg": "overlays/ovl62/ovl62",
@@ -37197,7 +37197,7 @@
   "fp": "180b3cab27e9edcd",
   "fpn": "20dd9205a2fddb6d",
   "leaf": true,
-  "name": "func_800CB6C4",
+  "name": "PolarPadAngle",
   "orig": "func_800CB6C4",
   "rom": 99344,
   "seg": "overlays/ovl62/ovl62",
@@ -37211,7 +37211,7 @@
   "fp": "587391f3e0d2ec8d",
   "fpn": "10356576e1c4c715",
   "leaf": true,
-  "name": "func_800CB744",
+  "name": "PolarCompareXZ",
   "orig": "func_800CB744",
   "rom": 99472,
   "seg": "overlays/ovl62/ovl62",
@@ -37280,7 +37280,7 @@
   "fp": "cafd9248ee415666",
   "fpn": "2ab538365155aa22",
   "leaf": false,
-  "name": "func_800CBA28",
+  "name": "PolarAngleOf",
   "orig": "func_800CBA28",
   "rom": 100212,
   "seg": "overlays/ovl62/ovl62",
