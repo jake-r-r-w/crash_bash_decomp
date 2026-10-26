@@ -115,7 +115,7 @@ void PodiumRankPlayers(void);
 extern s32 D_800BD5B4;
 extern s32 D_800BD598[];
 extern u8 D_800BD5B8[];
-extern u8 D_800BDB14[];
+extern GfxViewport D_800BDB14;
 extern u8 D_800BF1A8[];
 
 /* D_8005A614 as this file sees it: per-player byte flags at 0xE4.. */
@@ -229,7 +229,6 @@ void HubInitSparks(HubSparks *arg0);
 
 extern s32 D_800BD390;
 extern s32 D_800BD394;
-extern u8 D_800BD570[];
 extern s32 D_800BCEF4;
 extern u16 D_8009EEA0;
 extern EXTengine *D_8009D530;
@@ -316,8 +315,10 @@ typedef struct {
 
 extern s32 D_8009F71C;
 extern _sfx_handler *D_800BCEEC;
-extern u16 D_800BCBDC[];
+extern u16 D_800BCBDC[10];
+extern char *D_800BCBF0[]; /* the "you already have" messages */
 extern process_info D_800BCC04;
+extern process_info D_800BCC18;
 
 void PlotCrystalFlash(void);
 
@@ -611,6 +612,16 @@ void InitSparkGFX(NAS *arg0);
 void HubTrailPoint(HubTrailDst *d, HubTrail *t, s32 idx);
 
 void HubDrawSparks(HubSparks *arg0, MATRIX *m);
+
+/* The warp room's sparks: their Init/Plot pair after three words; func_80015D70 takes it. */
+typedef struct HubSparkFx {
+    s32 unk0;
+    s32 unk4;
+    s32 id;
+    void (*Init)(HubSparks *);
+    void (*Plot)(HubSparks *, MATRIX *);
+} HubSparkFx;
+extern HubSparkFx D_800BD570;
 
 void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1);
 

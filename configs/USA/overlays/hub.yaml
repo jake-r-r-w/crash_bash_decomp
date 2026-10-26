@@ -52,11 +52,13 @@ segments:
     subsegments:
       # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
-      - [0x0, rodata, overlays/hub/hub_id]
+      - [0x0, .rodata, overlays/hub/hub_id]   # src/overlays/hub/hub_id.c
       - [0x4, .rodata, overlays/hub/hub]
       - [0x58, .rodata, overlays/hub/hubcore]
       - [0x13E0, c, overlays/hub/hub]
       # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)
       - [0x1BF8, c, overlays/hub/hubcore]   # proven after 2, by 9; fewest call ties at 8; rodata from D_800B330C
-      - [0x8D34, data, overlays/hub/hub_data]
+      - [0x8D34, .data, overlays/hub/hub]          # hub.c's data (tools/scripts/data2c.py)
+      # hubcore.c's data, cut where its own objects start (the code that uses them)
+      - [0x901C, .data, overlays/hub/hubcore]
   - [0x14C5C]

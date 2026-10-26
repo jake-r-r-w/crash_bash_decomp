@@ -7,6 +7,19 @@
 #include "bash/n2o.h"
 #include "bash/titles.h"
 
+/* the exe's data the tables point at, not declared in the headers yet */
+extern u8 D_8004ECA0[];
+extern u8 D_8004ECA8[];
+extern u8 D_8004ECB0[];
+extern u8 D_8004ECB8[];
+extern u8 D_8004ECC0[];
+extern u8 D_8004ECC8[];
+extern u8 D_8004ECD0[];
+extern u8 D_8004ECD8[];
+extern u8 D_800500A0[];
+extern u8 D_80063BB8[];
+extern u8 D_80063EC8[];
+
 void InitialiseHUB(void) {
     HeroInfo *hero;
     EXTengine *eng;
@@ -67,7 +80,24 @@ void InitialiseHUB(void) {
     func_8001E934(&D_8009F8A4, &D_800BCC04);
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B330C);
+/* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
+const char D_800B330C[] = "COMPLETE ALL CHALLENGES\nTO UNLOCK THIS LEVEL";
+const char D_800B333C[] = "YOU NEED 4 TROPHIES\nTO FACE PAPU PAPU";
+const char D_800B3364[] = "YOU NEED 9 TROPHIES, 6 GEMS\nAND 3 CRYSTALS TO FACE THE BEARMINATOR";
+const char D_800B33A8[] = "YOU NEED 15 TROPHIES, 10 GEMS\nAND 7 CRYSTALS TO FACE THE TANK BOSS";
+const char D_800B33EC[] = "YOU NEED 22 TROPHIES, 15 GEMS\nAND 12 CRYSTALS TO FACE N. OXIDE";
+const char D_800B342C[] = "YOU NEED 19 CRYSTALS\nTO OPEN DRAGON DROP";
+const char D_800B3458[] = "YOU NEED 21 GOLD RELICS\nTO OPEN MALLET MASH";
+const char D_800B3484[] = "YOU NEED 25 GEMS\nTO OPEN KEG KABOOM";
+const char D_800B34A8[] = "YOU NEED 27 TROPHIES\nTO OPEN DANTE'S DASH";
+const char D_800B34D4[] = "YOU NEED 17 GOLD RELICS\nTO OPEN SPLASH DASH";
+const char D_800B3500[] = "YOU NEED 23 CRYSTALS\nTO OPEN SWAMP FOX";
+const char D_800B3528[] = "PRESS \374 BUTTON TO SAVE";
+const char D_800B3540[] = "PRESS \374 BUTTON TO START";
+const char D_800B3558[] = "PRESS LEFT - RIGHT TO SELECT CHALLENGE";
+const char D_800B3580[] = "PRESS LEFT - RIGHT TO SELECT WARP ROOM";
+const char D_800B35A8[] = "PRESS \374 BUTTON TO ENTER";
+const char D_800B35C0[] = "YOU MUST DEFEAT PAPU PAPU BEFORE\nYOU CAN GO TO THE NEXT WARP ROOM";
 
 void HubInitGateways(void) {
     s32 i;
@@ -781,7 +811,13 @@ void HubSpawnEffects(void) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B3618);
+/* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
+const char D_800B3618[] = "YOU ALREADY HAVE A TROPHY\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char D_800B3670[] = "YOU ALREADY HAVE A GEM\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char D_800B36C4[] = "YOU ALREADY HAVE A CRYSTAL\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char D_800B371C[] = "YOU ALREADY HAVE ARELIC\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char D_800B3770[] = "YOU ALREADY HAVE A PLATINUM RELIC\nARE YOU SURE YOU WANT TO PLAY AGAIN\nPRESS X BUTTON TO START";
+const char D_800B37D0[] = "";
 
 static inline void PathFace(KeyEntry *k, s32 dir, PathRot *ang) {
     s32 dx;
@@ -1423,7 +1459,11 @@ s32 HubLookup(s32 arg0) {
     return 0;
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B37EC);
+/* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
+const char D_800B37EC[] = "WIN_BREATHE";
+const char D_800B37F8[] = "WIN";
+const char D_800B37FC[] = "LOSE_BREATHE";
+const char D_800B380C[] = "LOSE";
 
 void InitialisePodiumFirst(void) {
     s32 i;
@@ -1947,7 +1987,7 @@ void InitSparkGFX(NAS *arg0) {
     arg0->UserInfo.user1 = 0;
     arg0->Engine->unk5D = 0;
     arg0->Engine->unk5C = 1;
-    if (func_80018F3C(arg0->Engine, 12) != 12 || func_80015D70(D_800BD570, (u8 *)arg0->Engine->sub) == 0) {
+    if (func_80018F3C(arg0->Engine, 12) != 12 || func_80015D70((u8 *)&D_800BD570, (u8 *)arg0->Engine->sub) == 0) {
         KillNAS(arg0);
         return;
     }
@@ -2360,7 +2400,37 @@ void UpdatePodium(void) {
     PodiumCheer();
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B3894);
+/* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
+const char D_800B3894[] = "DONE";
+const char D_800B389C[] = "CANCEL";
+const char D_800B38A4[] = "A";
+const char D_800B38A8[] = "B";
+const char D_800B38AC[] = "C";
+const char D_800B38B0[] = "D";
+const char D_800B38B4[] = "E";
+const char D_800B38B8[] = "F";
+const char D_800B38BC[] = "G";
+const char D_800B38C0[] = "H";
+const char D_800B38C4[] = "I";
+const char D_800B38C8[] = "J";
+const char D_800B38CC[] = "K";
+const char D_800B38D0[] = "L";
+const char D_800B38D4[] = "M";
+const char D_800B38D8[] = "N";
+const char D_800B38DC[] = "O";
+const char D_800B38E0[] = "P";
+const char D_800B38E4[] = "Q";
+const char D_800B38E8[] = "R";
+const char D_800B38EC[] = "S";
+const char D_800B38F0[] = "T";
+const char D_800B38F4[] = "U";
+const char D_800B38F8[] = "V";
+const char D_800B38FC[] = "W";
+const char D_800B3900[] = "X";
+const char D_800B3904[] = "Y";
+const char D_800B3908[] = "Z";
+const char D_800B390C[] = "@";
+const char D_800B3910[] = "<";
 
 void HubSaveMenuInput(void) {
     HubKey *k;
@@ -2510,7 +2580,7 @@ void HubSaveMenuRender(void) {
     s32 *p;
     EXTengine *e;
 
-    func_80018B08((GfxViewport *)D_800BDB14, (GfxCamera *)D_800BF1A8);
+    func_80018B08(&D_800BDB14, (GfxCamera *)D_800BF1A8);
     D_800569AC = D_8009F644.amount;
     e = GetEngineSlot(0);
     i = 0;
@@ -2739,4 +2809,665 @@ void HubProject(SVECTOR *v, s16 *b) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B3928);
+/* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
+const char D_800B3928[] = "ENTER NAME";
+const char D_800B3934[4] = ".\000\"\226";
+const char D_800B3938[] = "DEVELOPED BY";
+const char D_800B3948[] = "EUROCOM ENTERTAINMENT";
+const char D_800B3960[] = "SOFTWARE";
+const char D_800B396C[] = "IN ASSOCATION WITH";
+const char D_800B3980[] = "CERNY GAMES";
+const char D_800B398C[] = "PRODUCERS";
+const char D_800B3998[] = "JON WILLIAMS";
+const char D_800B39A8[] = "MARK CERNY";
+const char D_800B39B4[] = "PROGRAMMING";
+const char D_800B39C0[] = "DAVE PRIDMORE";
+const char D_800B39D0[] = "STUART JOHNSON";
+const char D_800B39E0[] = "JULIAN WALSHAW-VAUGHAN";
+const char D_800B39F8[] = "STEVE BAK";
+const char D_800B3A04[] = "KRIS ADCOCK";
+const char D_800B3A10[] = "GRAPHICS";
+const char D_800B3A1C[] = "MATT DIXON";
+const char D_800B3A28[] = "STEVE BAMFORD";
+const char D_800B3A38[] = "CLIVE STEVENSON";
+const char D_800B3A48[] = "JON PARR";
+const char D_800B3A54[] = "ANIMATION";
+const char D_800B3A60[] = "MARK POVEY";
+const char D_800B3A6C[] = "BRYAN ROGERS";
+const char D_800B3A7C[] = "BRIAN MALONE-WEST";
+const char D_800B3A90[] = "MUSIC AND SOUND EFFECTS";
+const char D_800B3AA8[] = "STEVE DUCKWORTH";
+const char D_800B3AB8[] = "ASSISTANT PRODUCER";
+const char D_800B3ACC[] = "PHIL BENNETT";
+const char D_800B3ADC[] = "TOOLS SUPPORT";
+const char D_800B3AEC[] = "ANDY MITCHELL";
+const char D_800B3AFC[] = "CHRIS JACKSON";
+const char D_800B3B0C[] = "KEVIN MARKS";
+const char D_800B3B18[] = "QUALITY ASSURANCE MANAGER";
+const char D_800B3B34[] = "MICHAEL ROBINSON";
+const char D_800B3B48[] = "QUALITY ASSURANCE";
+const char D_800B3B5C[] = "ANDY DILKS";
+const char D_800B3B68[] = "RICH HIGGINS";
+const char D_800B3B78[] = "ANDY LALLY";
+const char D_800B3B84[] = "JOHN LEE BARKER";
+const char D_800B3B94[] = "CHRIS J. JACKSON";
+const char D_800B3BA8[] = "RICHARD NICHOLLS";
+const char D_800B3BBC[] = "MARK SHAW";
+const char D_800B3BC8[] = "RICHARD CHARLES";
+const char D_800B3BD8[] = "SPECIAL THANKS";
+const char D_800B3BE8[] = "MICHAEL JOHN";
+const char D_800B3BF8[] = "HUGH BINNS";
+const char D_800B3C04[] = "MAT SNEAP";
+const char D_800B3C10[] = "JIM WILSON";
+const char D_800B3C1C[] = "RACHEL HALL";
+const char D_800B3C28[] = "MIKE BOTHAM";
+const char D_800B3C34[] = "CARL CROPLEY";
+const char D_800B3C44[] = "CORNELL JOHN";
+const char D_800B3C54[] = "PRODUCED BY";
+const char D_800B3C60[] = "UNIVERSAL INTERACTIVE";
+const char D_800B3C78[] = "STUDIOS";
+const char D_800B3C80[] = "SENIOR PRODUCER";
+const char D_800B3C90[] = "VIJAY LAKSHMAN";
+const char D_800B3CA0[] = "PRODUCTION COORDINATORS";
+const char D_800B3CB8[] = "MELISSA MILLER";
+const char D_800B3CC8[] = "BRIAN STEPHENS";
+const char D_800B3CD8[] = "ADDITIONAL MINIGAME DESIGN";
+const char D_800B3CF4[] = "SEAN KRANKEL";
+const char D_800B3D04[] = "RICCI RUKAVINA";
+const char D_800B3D14[] = "ANTHONY AHN";
+const char D_800B3D20[] = "SEAN MOUNTAIN";
+const char D_800B3D30[] = "NOEL GALLAN";
+const char D_800B3D3C[] = "JOSH GOTTSEGEN";
+const char D_800B3D4C[] = "DIRECTOR OF MARKETING";
+const char D_800B3D64[] = "PRITY PATEL";
+const char D_800B3D70[] = "MARKETING COORDINATOR";
+const char D_800B3D88[] = "MARCUS SAVINO";
+const char D_800B3D98[] = "PUBLISHED AND PRODUCED BY";
+const char D_800B3DB4[] = "SONY COMPUTER";
+const char D_800B3DC4[] = "ENTERTAINMENT";
+const char D_800B3DD4[] = "AMERICA";
+const char D_800B3DDC[] = "DONOVAN SOTO";
+const char D_800B3DEC[] = "PRODUCER";
+const char D_800B3DF8[] = "GRADY HUNT";
+const char D_800B3E04[] = "SAM THOMPSON";
+const char D_800B3E14[] = "DIRECTOR OF\01516PRODUCT DEVELOPMENT";
+const char D_800B3E38[] = "CONNIE BOOTH";
+const char D_800B3E48[] = "VICE PRESIDENT OF\01516PRODUCT DEVELOPMENT";
+const char D_800B3E70[] = "SHUHEI YOSHIDA";
+const char D_800B3E80[] = "AMI MATSUMURA-BLAIRE";
+const char D_800B3E98[] = "ASSOCIATE PRODUCT MANAGER";
+const char D_800B3EB4[] = "RON EAGLE";
+const char D_800B3EC0[] = "LEGAL AND INTELLECTUAL\01516PROPERTY";
+const char D_800B3EE4[] = "KIRSTEN COSTELLO";
+const char D_800B3EF8[] = "KERRY HOPKINS";
+const char D_800B3F08[] = "LISA LUNGER";
+const char D_800B3F14[] = "RILEY RUSSELL";
+const char D_800B3F24[] = "MARKET RESEARCH";
+const char D_800B3F34[] = "JOHN CROMPTON";
+const char D_800B3F44[] = "PROMOTIONS";
+const char D_800B3F50[] = "SHARON SHAPIRO";
+const char D_800B3F60[] = "JANEEN ANDERSON";
+const char D_800B3F70[] = "DONNA ARMENTOR";
+const char D_800B3F80[] = "AIMEE DUELL";
+const char D_800B3F8C[] = "PUBLIC RELATIONS";
+const char D_800B3FA0[] = "MOLLY SMITH";
+const char D_800B3FAC[] = "RYAN BOWLING";
+const char D_800B3FBC[] = "STEPHANIE IWAMASA";
+const char D_800B3FD0[] = "CHARLOTTE PANTHER";
+const char D_800B3FE4[] = "EILEEN RODRIQUEZ";
+const char D_800B3FF8[] = "CREATIVE SERVICES";
+const char D_800B400C[] = "MARILYN WEYANT";
+const char D_800B401C[] = "JOSH BINGHAM";
+const char D_800B402C[] = "JOHN DIAMONON";
+const char D_800B403C[] = "PEGGY GALLAGHER";
+const char D_800B404C[] = "TED JALBERT";
+const char D_800B4058[] = "QUINN LEE";
+const char D_800B4064[] = "MARIE MACASPAC";
+const char D_800B4074[] = "RUTH SATO";
+const char D_800B4080[] = "JACK SILVER";
+const char D_800B408C[] = "QA MANAGER";
+const char D_800B4098[] = "CHRIS CAPRIO";
+const char D_800B40A8[] = "SUPERVISORS";
+const char D_800B40B4[] = "BRUCE COCHRANE";
+const char D_800B40C4[] = "TIM DUZMAL";
+const char D_800B40D0[] = "CONNER MORLANG";
+const char D_800B40E0[] = "TECHNICAL COORDINATORS";
+const char D_800B40F8[] = "BEN BRIONES";
+const char D_800B4104[] = "DATABASE COORDINATOR";
+const char D_800B411C[] = "CHRISTIAN DAVIES";
+const char D_800B4130[] = "LEAD TESTERS";
+const char D_800B4140[] = "ANDREW BYRNE";
+const char D_800B4150[] = "DEREK RAYLA";
+const char D_800B415C[] = "ASSISTANT LEAD TESTERS";
+const char D_800B4174[] = "MICHAEL CHANG";
+const char D_800B4184[] = "STEVEN GONZALEZ";
+const char D_800B4194[] = "TERESA KOSSOB";
+const char D_800B41A4[] = "TESTERS";
+const char D_800B41AC[] = "ANGELICA BERNARBE";
+const char D_800B41C0[] = "ERIC BODINE";
+const char D_800B41CC[] = "COBALT DENA";
+const char D_800B41D8[] = "JENNYFER HAMILTON";
+const char D_800B41EC[] = "BURR HILSABECK";
+const char D_800B41FC[] = "RICH KRINOK";
+const char D_800B4208[] = "JOEL MANZANO";
+const char D_800B4218[] = "ROSS MONTGOMERY";
+const char D_800B4228[] = "ERIC ROSSI";
+const char D_800B4234[] = "AARON WHITMORE";
+const char D_800B4244[] = "ANDREW WOODWORTH";
+const char D_800B4258[] = "CHRIS ARENDS";
+const char D_800B4268[] = "ERIC FRANKLIN";
+const char D_800B4278[] = "GREG PHILLIPS";
+const char D_800B4288[] = "GRETEL PEREZ";
+const char D_800B4298[] = "HENRY MACAIRAN";
+const char D_800B42A8[] = "JACOB SLIPAK";
+const char D_800B42B8[] = "JASON GREEN";
+const char D_800B42C4[] = "JO ANNE LARSEN";
+const char D_800B42D4[] = "JOE RAPOSO";
+const char D_800B42E0[] = "LEONARD KO";
+const char D_800B42EC[] = "MIKAL DACE";
+const char D_800B42F8[] = "NATHAN FRANTZ";
+const char D_800B4308[] = "RAMON CONCEPCION";
+const char D_800B431C[] = "RUSSELL YOUNG";
+const char D_800B432C[] = "SEAN PHELPS";
+const char D_800B4338[] = "SEANN PARKER";
+const char D_800B4348[] = "SHANNON LYNAS";
+const char D_800B4358[] = "SHAWN REFOUA";
+const char D_800B4368[] = "STEPHANIE BEIN";
+const char D_800B4378[] = "STERLING HAYWOOD";
+const char D_800B438C[] = "TONY FELICE";
+const char D_800B4398[] = "WILL SHEPARD";
+const char D_800B43A8[] = "SETH EVANS";
+const char D_800B43B4[] = "BRUCE ADAMS";
+const char D_800B43C0[] = "GARY BARTH";
+const char D_800B43CC[] = "CLAUDETTE CASTILLO";
+const char D_800B43E0[] = "LORI CHASE";
+const char D_800B43EC[] = "SARA CHENOWETH";
+const char D_800B43FC[] = "EDDY CHU";
+const char D_800B4408[] = "MIKE CZAKO";
+const char D_800B4414[] = "BRIAN DIMICK";
+const char D_800B4424[] = "ALBERTO ESCOBEDO";
+const char D_800B4438[] = "BOB FREMGEN";
+const char D_800B4444[] = "GERRY GENTILE";
+const char D_800B4454[] = "BRIAN HALE";
+const char D_800B4460[] = "KARA HARRIS";
+const char D_800B446C[] = "PHIL HARRISON";
+const char D_800B447C[] = "KAZ HIRAI";
+const char D_800B4488[] = "BETSEY HOROWITZ";
+const char D_800B4498[] = "ANDREW HOUSE";
+const char D_800B44A8[] = "JEFF HUTCHINSON";
+const char D_800B44B8[] = "GRACE KAO";
+const char D_800B44C4[] = "LORAINE KRAUS";
+const char D_800B44D4[] = "CHUCK LACSON";
+const char D_800B44E4[] = "COLIN MACLEAN";
+const char D_800B44F4[] = "KRIS MATHUR";
+const char D_800B4500[] = "FRANK O'MALLEY";
+const char D_800B4510[] = "JOEL PAMBID";
+const char D_800B451C[] = "GARY PASCOE";
+const char D_800B4528[] = "JOHN PAYNE";
+const char D_800B4534[] = "RICH LAROCCA";
+const char D_800B4544[] = "MAGGIE ROJAS";
+const char D_800B4554[] = "RICK ROONEY";
+const char D_800B4560[] = "STEVE ROSS";
+const char D_800B456C[] = "PETER STEINZEIG";
+const char D_800B457C[] = "JONI TONEY";
+const char D_800B4588[] = "JACK TRETTON";
+const char D_800B4598[] = "MARK VALLEDOR";
+const char D_800B45A8[] = "TONEY WONG";
+const char D_800B45B4[] = "FLEISHMAN-HILLARD";
+const char D_800B45C8[] = "TBWA - CHIAT DAY";
+const char D_800B45DC[] = "AXIOM DESIGNS";
+const char D_800B45EC[] = "SONY COMPUTER ENTERTAINMENT JAPAN";
+const char D_800B4610[] = "RYOICHI HASEGAWA";
+const char D_800B4624[] = "ATSUSHI MATSUSHITA";
+const char D_800B4638[] = "SONY COMPUTER ENTERTAINMENT EUROPE";
+const char D_800B465C[] = "ELIZABETH ASHFORD";
+const char D_800B4670[] = "KENNY MATHERS";
+const char D_800B4680[20] = "ISABELLE TOMATIS\000\000\004\225";
+
+/* data, in address order */
+s32 D_800BC2D0[1] = { (s32)&D_800B330C };
+s32 D_800BC2D4[1] = { (s32)&D_800B333C };
+s32 D_800BC2D8[1] = { (s32)&D_800B3364 };
+s32 D_800BC2DC[1] = { (s32)&D_800B33A8 };
+s32 D_800BC2E0[1] = { (s32)&D_800B33EC };
+s32 D_800BC2E4[1] = { (s32)&D_800B342C };
+s32 D_800BC2E8[1] = { (s32)&D_800B3458 };
+s32 D_800BC2EC[1] = { (s32)&D_800B3484 };
+s32 D_800BC2F0[1] = { (s32)&D_800B34A8 };
+s32 D_800BC2F4[1] = { (s32)&D_800B34D4 };
+s32 D_800BC2F8[1] = { (s32)&D_800B3500 };
+s32 D_800BC2FC[27] = {
+    4, 0x12C8000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2D0, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC368[27] = {
+    4, 0x12C8000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2D4, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC3D4[27] = {
+    4, 0x1908000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2D8, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC440[27] = {
+    4, 0x1868000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2DC, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC4AC[27] = {
+    4, 0x1728000, 0x360000, 0, 0, 0, 0, 0, 0, 0xE, 0x88000, 0, 0, 0, (s32)&D_800BC2E0, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC518[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2E4, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC584[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2E8, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC5F0[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2EC, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC65C[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2F0, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC6C8[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2F4, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC734[27] = {
+    4, 0xFA8000, 0x2D0000, 0, 0, 0, 0, 0, 0, 0xE, 0x48000, 0, 0, 0, (s32)&D_800BC2F8, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BC7A0[1] = { (s32)&D_800B3528 };
+s32 D_800BC7A4[27] = {
+    4, 0x12C8000, 0x2C0000, 0, 0, 0, 0, 0, 0, 0xE, 0xE00AA, 0, 0, 0, (s32)&D_800BC7A0, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 *D_800BC810[1] = { (void *)&D_800BC7A4 };
+s32 D_800BC814[1] = { (s32)&D_800B3540 };
+s32 D_800BC818[27] = {
+    4, 0x12C8000, 0x2C0000, 0, 0, 0, 0, 0, 0, 0xE, 0xE00AA, 0, 0, 0, (s32)&D_800BC814, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 *D_800BC884[1] = { (void *)&D_800BC818 };
+s32 D_800BC888[36] = {
+    4, 0x1A48000, 0x370000, 0, 0, 0, 0, 0, 0, 3, 0x48000, 0, 0, 0, (s32)&D_800B3558, 4, 0, 0,
+    3, 0x1E8000, 0, 0, 0, (s32)&D_800B3540, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 *D_800BC918[1] = { (void *)&D_800BC888 };
+s32 D_800BC91C[36] = {
+    4, 0x18B8000, 0x3C0000, 0, 0, 0, 0, 0, 0, 3, 0x68000, 0, 0, 0, (s32)&D_800B3580, 4, 0, 0,
+    3, 0x268000, 0, 0, 0, (s32)&D_800B35A8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 *D_800BC9AC[1] = { (void *)&D_800BC91C };
+s32 D_800BC9B0[27] = {
+    4, 0x1908000, 0x3A0000, 0, 0, 0, 0, 0, 0, 3, 0xA8000, 0, 0, 0, (s32)&D_800B35C0, 4, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 *D_800BCA1C[1] = { (void *)&D_800BC9B0 };
+EngRec24 D_800BCA20[8] = {
+    {
+        {
+            4, 0, 0, 0, 0x5A, 0, 0xBE, 0, 0, 0, 0x56, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+        },
+        0, { 0, 0, 0, 0 },
+    },
+    {
+        {
+            4, 0, 0, 0, 0, 0, 0xC2, 1, 0, 0, 0x56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0,
+        },
+        0, { 0, 0, 0, 0 },
+    },
+    {
+        {
+            5, 0, 0, 0, 0x2D, 0, 0x2C, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0xD5, 0,
+        },
+        0, { 2, 0, 0, 0 },
+    },
+    {
+        {
+            5, 0, 0, 0, 0x87, 0, 0x2C, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0xD5, 0,
+        },
+        6, { 2, 0, 0, 0 },
+    },
+    {
+        {
+            5, 0, 0, 0, 0xE1, 0, 0x2C, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0xD5, 0,
+        },
+        8, { 2, 0, 0, 0 },
+    },
+    {
+        {
+            5, 0, 0, 0, 0x3B, 1, 0x2C, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0xD5, 0,
+        },
+        6, { 2, 0, 0, 0 },
+    },
+    {
+        {
+            5, 0, 0, 0, 0x95, 1, 0x2C, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0xD5, 0,
+        },
+        6, { 2, 0, 0, 0 },
+    },
+    {
+        {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0,
+        },
+        0, { 0, 0, 0, 0 },
+    },
+};
+s32 D_800BCB40[5] = { 0, 0x5A, 0xB4, 0x10E, 0x168 };
+KeyedPair D_800BCB54[11] = {
+    { 0xB, { (s32)&D_800BC2FC } }, { 4, { (s32)&D_800BC368 } }, { 0x16, { (s32)&D_800BC3D4 } },
+    { 9, { (s32)&D_800BC440 } }, { 0x1F, { (s32)&D_800BC4AC } },
+    { 0x1C, { (s32)&D_800BC518 } }, { 0x1D, { (s32)&D_800BC584 } },
+    { 0x1E, { (s32)&D_800BC5F0 } }, { 0x1A, { (s32)&D_800BC65C } },
+    { 0x19, { (s32)&D_800BC6C8 } }, { 5, { (s32)&D_800BC734 } },
+};
+CamEase D_800BCBAC = { { 4, 4, 4 }, { 0x10, 4, 1 }, { 1, 0x10, 0x10 } };
+s32 D_800BCBD0[3] = { 1, 1, 1 };
+u16 D_800BCBDC[10] = { 0x1000, 0x1000, 0x1000, 0x1000, 0x1000, 0xC00, 0xC00, 0xC00, 0xC00, 0x1000 };
+char *D_800BCBF0[5] = {
+    (void *)&D_800B3618, (void *)&D_800B3670, (void *)&D_800B36C4, (void *)&D_800B371C,
+    (void *)&D_800B3770,
+};
+process_info D_800BCC04 = { HubDoorMenuInit, HubDoorMenuUpdate, HubDoorMenuRender, HubDoorMenuQuit, 0 };
+process_info D_800BCC18 = { HubDoorMenu2Init, HubDoorMenu2Update, HubDoorMenu2Render, HubDoorMenu2Quit, 0 };
+s32 D_800BCC2C[11] = { 0x2019, 0x201A, 0x201B, 0x201C, 0x201D, 0x201E, 0x201D, 0x201C, 0x201B, 0x201A, 0x8000 };
+s32 D_800BCC58[2] = { 0x22019, 0x8000 };
+s32 D_800BCC60[11] = { 0x201F, 0x2020, 0x2021, 0x2022, 0x2023, 0x2024, 0x2023, 0x2022, 0x2021, 0x2020, 0x8000 };
+s32 D_800BCC8C[2] = { 0x22019, 0x8000 };
+s32 D_800BCC94[11] = { 0x2025, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x2029, 0x2028, 0x2027, 0x2026, 0x8000 };
+s32 D_800BCCC0[2] = { 0x22025, 0x8000 };
+s32 D_800BCCC8[8] = {
+    (s32)&D_800BCC2C, (s32)&D_800BCC58, (s32)&D_800BCC60, (s32)&D_800BCC8C, (s32)&D_800BCC94,
+    (s32)&D_800BCCC0, 0, 0,
+};
+ScriptInit D_800BCCE8 = { 0, (void *)&D_800BCCC8, 0x402 };
+EngRec90248 D_800BCCF4[12] = {0};
+s32 D_800BCED4 = 0;
+s32 D_800BCED8 = 0;
+u8 D_800BCEDC = 0;
+s32 D_800BCEE0 = 0;
+s32 D_800BCEE4 = 0;
+subengine *D_800BCEE8 = 0;
+_sfx_handler *D_800BCEEC = 0;
+s32 D_800BCEF0 = 0;
+s32 D_800BCEF4 = 0;
+s32 D_800BCEF8[1] = {0};
+s32 D_800BCEFC = 0;
+s32 D_800BCF00[3] = { (s32)0x80110000, 0x41000019, 0x8000 };
+s32 D_800BCF0C[3] = { (s32)0x80110000, 0x41190017, 0x8001 };
+s32 D_800BCF18[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
+s32 D_800BCF24[9] = {
+    (s32)0x80120000, 0x40A5000B, 0xB8011, (s32)0x8011408E, 0x408E000B, 0xB8011,
+    (s32)0x8011408E, 0x408E0017, 0x8001,
+};
+s32 D_800BCF48[8] = { (s32)&D_800BCF00, (s32)&D_800BCF0C, 0, 0, (s32)&D_800BCF18, (s32)&D_800BCF24, 0, 4 };
+ScriptInit D_800BCF68 = { 0, (void *)&D_800BCF48, 0x401 };
+s32 D_800BCF74[3] = { (s32)0x80110000, 0x4000001C, 0x8000 };
+s32 D_800BCF80[3] = { (s32)0x80110000, 0x41000064, 0x8001 };
+s32 D_800BCF8C[3] = { (s32)0x80110000, 0x40800038, 0x8001 };
+s32 D_800BCF98[8] = { (s32)&D_800BCF74, (s32)&D_800BCF80, 0, 0, (s32)&D_800BCF74, (s32)&D_800BCF8C, 0, 4 };
+ScriptInit D_800BCFB8 = { 0, (void *)&D_800BCF98, 0x401 };
+s32 D_800BCFC4[3] = { (s32)0x80110000, 0x40000016, 0x8000 };
+s32 D_800BCFD0[3] = { (s32)0x80110000, 0x40800022, 0x8001 };
+s32 D_800BCFDC[3] = { (s32)0x80110000, 0x4100005A, 0x8001 };
+s32 D_800BCFE8[8] = { (s32)&D_800BCFC4, (s32)&D_800BCFD0, 0, 0, (s32)&D_800BCFC4, (s32)&D_800BCFDC, 0, 4 };
+ScriptInit D_800BD008 = { 0, (void *)&D_800BCFE8, 0x401 };
+s32 D_800BD014[3] = { (s32)0x80110000, 0x41000020, 0x8000 };
+s32 D_800BD020[6] = { (s32)0x80110000, 0x40000020, 0x168011, (s32)0x80124009, 0x4009000A, 0x8001 };
+s32 D_800BD038[6] = { (s32)0x80110000, 0x4080002F, 0x1F8011, (s32)0x8011408F, 0x40AF0007, 0x8001 };
+s32 D_800BD050[8] = { (s32)&D_800BD014, (s32)&D_800BD020, 0, 0, (s32)&D_800BD014, (s32)&D_800BD038, 0, 4 };
+ScriptInit D_800BD070 = { 0, (void *)&D_800BD050, 0x401 };
+s32 D_800BD07C[3] = { (s32)0x80110000, 0x40000016, 0x8000 };
+s32 D_800BD088[3] = { (s32)0x80110000, 0x40800060, 0x8001 };
+s32 D_800BD094[3] = { (s32)0x80110000, 0x4180001E, 0x8000 };
+s32 D_800BD0A0[6] = { (s32)0x80110000, 0x41000020, 0x148011, (s32)0x8011410B, 0x410B001C, 0x8001 };
+s32 D_800BD0B8[8] = { (s32)&D_800BD07C, (s32)&D_800BD088, 0, 0, (s32)&D_800BD094, (s32)&D_800BD0A0, 0, 4 };
+ScriptInit D_800BD0D8 = { 0, (void *)&D_800BD0B8, 0x401 };
+s32 D_800BD0E4[3] = { (s32)0x80110000, 0x41000014, 0x8000 };
+s32 D_800BD0F0[3] = { (s32)0x80110000, 0x4180000D, 0x8001 };
+s32 D_800BD0FC[3] = { (s32)0x80110000, 0x40000014, 0x8000 };
+s32 D_800BD108[3] = { (s32)0x80110000, 0x40800043, 0x8000 };
+s32 D_800BD114[8] = { (s32)&D_800BD0E4, (s32)&D_800BD0F0, 0, 0, (s32)&D_800BD0FC, (s32)&D_800BD108, 0, 4 };
+ScriptInit D_800BD134 = { 0, (void *)&D_800BD114, 0x401 };
+s32 D_800BD140[3] = { (s32)0x80110000, 0x40000020, 0x8000 };
+s32 D_800BD14C[5] = { (s32)0x80110000, 0x4080004F, 0x218012, (s32)0x800140A1, 0 };
+s32 D_800BD160[3] = { (s32)0x80110000, 0x4100003C, 0x8001 };
+s32 D_800BD16C[8] = { (s32)&D_800BD140, (s32)&D_800BD14C, 0, 0, (s32)&D_800BD140, (s32)&D_800BD160, 0, 4 };
+ScriptInit D_800BD18C = { 0, (void *)&D_800BD16C, 0x401 };
+s32 D_800BD198[3] = { (s32)0x80110000, 0x41000020, 0x8000 };
+s32 D_800BD1A4[3] = { (s32)0x80110000, 0x40800066, 0x8001 };
+s32 D_800BD1B0[5] = { (s32)0x80110000, 0x40000040, 0x1E8012, (s32)0x8001401E, 0 };
+s32 D_800BD1C4[8] = { (s32)&D_800BD198, (s32)&D_800BD1A4, 0, 0, (s32)&D_800BD198, (s32)&D_800BD1B0, 0, 4 };
+ScriptInit D_800BD1E4 = { 0, (void *)&D_800BD1C4, 0x401 };
+u16 D_800BD1F0[8] = { 0x200C, 0, 0x200C, 0, 0x200B, 0, 0x2009, 0 };
+s32 D_800BD200[4] = { 0, 0x140, 0x180, 0x200 };
+u8 D_800BD210[384] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0xFD, 0xFF, 0xFF, 0, 0, 0, 0, 3, 1, 0, 0, 0, 3, 0,
+    0, 0, 0, 0, 0, 2, 1, 0, 0, 0x80, 2, 0, 0, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 4, 0, 0, 0, 0, 0xFD, 0xFF, 0xFF, 0, 0, 0, 0, 3, 1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0,
+    1, 1, 0, 0, 0xC0, 1, 0, 0, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0,
+    0, 0, 0, 0xFD, 0xFF, 0xFF, 0, 0, 0, 0, 3, 1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0,
+    0x80, 2, 0, 0, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0,
+    0xFD, 0xFF, 0xFF, 0, 0, 0, 0, 4, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 1, 0, 0, 0x80, 2, 0,
+    0, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0xFD, 0xFF,
+    0xFF, 0, 0, 0, 0, 4, 0, 0, 0, 0x80, 0xFE, 0xFF, 0xFF, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0,
+    0x80, 2, 0, 0, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0x80,
+    0xFD, 0xFF, 0xFF, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0xFE, 0xFF, 0xFF, 1, 1,
+    0, 0, 0x80, 2, 0, 0, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0,
+    0, 0xFD, 0xFF, 0xFF, 0, 0, 0, 0, 4, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0x80, 2,
+    0, 0, 0, 0xFE, 0xFF, 0xFF, 1, 1, 0, 0, 0, 0xFD, 0xFF, 0xFF, 0, 0, 0, 0, 1, 0, 0, 0, 0x80,
+    0xFE, 0xFF, 0xFF, 0, 0xFE, 0xFF, 0xFF, 1, 0, 0, 0, 0x80, 1, 0, 0, 0, 0xFE, 0xFF, 0xFF, 1,
+    0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+};
+s32 D_800BD390 = 0;
+s32 D_800BD394 = 0;
+u8 *D_800BD398 = (void *)&D_800B37EC;
+s32 D_800BD39C[4] = { (s32)&D_800B37F8, (s32)&D_800B37FC, (s32)&D_800B380C, 0 };
+u8 D_800BD3AC[4] = { 0x31, 0x30, 0, 0 };
+u8 D_800BD3B0[4] = { 0x32, 0x30, 0, 0 };
+u8 D_800BD3B4[4] = { 0x33, 0x30, 0, 0 };
+u8 D_800BD3B8[12] = { 0x34, 0x30, 0, 0, 0x35, 0x30, 0, 0, 0x36, 0x30, 0, 0 };
+s32 D_800BD3C4 = 4;
+s32 D_800BD3C8[106] = {
+    0x2300000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x400118, 0x18000000, (s32)0xFF800100, 0, 0, 0,
+    0x2001001C, 2, 8, 0x100000, 0x7000000, 0, 0, 0, 0, 0, 0, 3, 0x40003D, 0, 0, 0,
+    (s32)&D_800BD3AC, 4, 0, 0, 8, 0x100070, 0x7000000, 0, 0, 0, 0, 0x10000, 0, 3, 0x4000AD, 0,
+    0, 0, (s32)&D_800BD3B0, 4, 0, 0, 8, 0x100150, 0x7000000, 0, 0, 0, 0, 0x20000, 0, 3,
+    0x40018D, 0, 0, 0, (s32)&D_800BD3B4, 4, 0, 0, 8, 0x1001C0, 0x7000000, 0, 0, 0, 0, 0x30000,
+    0, 3, 0x4001FD, 0, 0, 0, (s32)&D_800BD3B8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1000, 0,
+    0x1000, 0, 0x1000, 0, 0, 0,
+};
+HubSparkFx D_800BD570 = { 0xC, 0xF00, 0xF00, HubInitSparks, HubDrawSparks };
+NAS *D_800BD584[4] = {0};
+PodiumObj *D_800BD594 = 0;
+s32 D_800BD598[4] = {0};
+s32 D_800BD5A8 = 0;
+s32 D_800BD5AC = 0;
+u32 D_800BD5B0 = 0;
+s32 D_800BD5B4 = 0;
+u8 D_800BD5B8[4] = { 0x20, 0, 0x20, 0 };
+s32 D_800BD5BC[1] = { 0x200020 };
+s32 D_800BD5C0[1] = { 0x200020 };
+s32 D_800BD5C4[3] = { 0x200020, (s32)&D_800B3894, (s32)&D_800B389C };
+s32 D_800BD5D0[120] = {
+    0, (s32)&D_800B38A4, 0x1060000, 0x715, 0x28, (s32)&D_800B38A8, 0x1FF0000, 0x715, 0x50,
+    (s32)&D_800B38AC, 0x1FF0000, 0x715, 0x78, (s32)&D_800B38B0, 0x1FF0000, 0x715, 0xA0,
+    (s32)&D_800B38B4, 0x1FF0000, 0x715, 0xC8, (s32)&D_800B38B8, 0x1FF0000, 0x715, 0xF0,
+    (s32)&D_800B38BC, (s32)0xFAFF0000, 0x715, 0x280000, (s32)&D_800B38C0, 0x1060000, 0x7F9,
+    0x280028, (s32)&D_800B38C4, 0x1FF0000, 0x7F9, 0x280050, (s32)&D_800B38C8, 0x1FF0000, 0x7F9,
+    0x280078, (s32)&D_800B38CC, 0x1FF0000, 0x7F9, 0x2800A0, (s32)&D_800B38D0, 0x1FF0000, 0x7F9,
+    0x2800C8, (s32)&D_800B38D4, 0x1FF0000, 0x7F9, 0x2800F0, (s32)&D_800B38D8, (s32)0xFAFF0000,
+    0x7F9, 0x500000, (s32)&D_800B38DC, 0x1060000, 0x7F9, 0x500028, (s32)&D_800B38E0, 0x1FF0000,
+    0x7F9, 0x500050, (s32)&D_800B38E4, 0x1FF0000, 0x7F9, 0x500078, (s32)&D_800B38E8, 0x1FF0000,
+    0x7F9, 0x5000A0, (s32)&D_800B38EC, 0x1FF0000, 0x7F9, 0x5000C8, (s32)&D_800B38F0, 0x1FF0000,
+    0x7F9, 0x5000F0, (s32)&D_800B38F4, (s32)0xFAFF0000, 0x7F9, 0x780000, (s32)&D_800B38F8,
+    0x1060000, 0x7F9, 0x780028, (s32)&D_800B38FC, 0x1FF0000, 0x6F9, 0x780050, (s32)&D_800B3900,
+    0x1FF0000, 0x5F9, 0x780078, (s32)&D_800B3904, 0x1FF0000, 0x4F9, 0x7800A0, (s32)&D_800B3908,
+    0x1FF0000, 0x3F9, 0x7800C8, (s32)&D_800B390C, 0x1FF0004, 0x2F9, 0x7800F0, (s32)&D_800B3910,
+    (s32)0xFAFF0003, 0x1F9, 0xA0808C, (s32)&D_800B3894, 1, 0x1FB, 0xC8808C, (s32)&D_800B389C,
+    2, 0xFF,
+};
+s32 D_800BD7B0[12] = {
+    0, (s32)&D_800B38A4, 0x7F90000, 0x1FF, 0xC88000, (s32)&D_800B3894, 1, 0, 0xE68000,
+    (s32)&D_800B389C, 2, 0,
+};
+HubEntry12 D_800BD7E0[2] = { { (s32)&D_800BD5D0, 0x1E, 0x1C }, { (s32)&D_800BD7B0, 3, 1 } };
+s32 D_800BD7F8[1] = { (s32)&D_800B3928 };
+s32 D_800BD7FC[45] = {
+    0xE, 0x2C8000, 0, 0, 0, (s32)&D_800BD7F8, 0, 0, 0, 4, 0x2808000, 0x500022, 0, 0, 0, 0, 0,
+    0, 4, 0x12C8000, 0x960064, 0, 0, 0, 0, 0, 0, 4, 0x12C8000, 0x1AE00AA, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_800BD8B0[153] = {
+    3, 0, 0, 0, 0, (s32)&D_800BD5B8, 0, 0, 0, 3, 0x22, 0, 0, 0, (s32)(u8 *)&D_800BD5B8 + 0x2,
+    0, 0, 0, 3, 0x44, 0, 0, 0, (s32)&D_800BD5BC, 0, 0, 0, 3, 0x66, 0, 0, 0,
+    (s32)(u8 *)&D_800BD5BC + 0x2, 0, 0, 0, 3, 0x88, 0, 0, 0, (s32)&D_800BD5C0, 0, 0, 0, 3,
+    0xAA, 0, 0, 0, (s32)(u8 *)&D_800BD5C0 + 0x2, 0, 0, 0, 3, 0xCC, 0, 0, 0, (s32)&D_800BD5C4,
+    0, 0, 0, 3, 0xEE, 0, 0, 0, (s32)(u8 *)&D_800BD5C4 + 0x2, 0, 0, 0, 3, 0, 0, 0, 0,
+    (s32)&D_800B3934, 0, 0, 0, 3, 0x22, 0, 0, 0, (s32)&D_800B3934, 0, 0, 0, 3, 0x44, 0, 0, 0,
+    (s32)&D_800B3934, 0, 0, 0, 3, 0x66, 0, 0, 0, (s32)&D_800B3934, 0, 0, 0, 3, 0x88, 0, 0, 0,
+    (s32)&D_800B3934, 0, 0, 0, 3, 0xAA, 0, 0, 0, (s32)&D_800B3934, 0, 0, 0, 3, 0xCC, 0, 0, 0,
+    (s32)&D_800B3934, 0, 0, 0, 3, 0xEE, 0, 0, 0, (s32)&D_800B3934, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0,
+};
+GfxViewport D_800BDB14 = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xFF0, 0, 0, 0, 0, 1 };
+SaveMenuHooks D_800BDB3C = { HubSaveMenuInit, HubSaveMenuUpdate, HubSaveMenuRender, HubSaveMenuQuit };
+s32 D_800BDB4C[1] = {0};
+s32 D_800BDB50 = 0;
+s32 D_800BDB54[1] = {0};
+subengine D_800BDB58[33] = {0};
+EXTengine D_800BF100 = {0};
+s32 D_800BF19C = 0;
+s32 D_800BF1A0 = 0;
+s32 D_800BF1A4 = 0;
+u8 D_800BF1A8[184] = {0};
+s32 D_800BF260 = 0;
+u8 D_800BF264[32768] = {0};
+u8 D_800C7264[48] = {0};
+OvlTextLine D_800C7294[264] = {
+    { 3, 0, 0x1F4 }, { 0, (void *)&D_800B3938, 0 }, { 1, (void *)&D_800B3948, 0 },
+    { 1, (void *)&D_800B3960, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B396C, 0 },
+    { 1, (void *)&D_800B3980, 0 }, { 3, 0, 0x96 }, { 0, (void *)&D_800B398C, 0 },
+    { 2, (void *)&D_800B3998, 0 }, { 2, (void *)&D_800B39A8, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B39B4, 0 }, { 2, (void *)&D_800B39C0, 0 },
+    { 2, (void *)&D_800B39D0, 0 }, { 2, (void *)&D_800B39E0, 0 },
+    { 2, (void *)&D_800B39F8, 0 }, { 2, (void *)&D_800B3A04, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3A10, 0 }, { 2, (void *)&D_800B3A1C, 0 },
+    { 2, (void *)&D_800B3A28, 0 }, { 2, (void *)&D_800B3A38, 0 },
+    { 2, (void *)&D_800B3A48, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3A54, 0 },
+    { 2, (void *)&D_800B3A60, 0 }, { 2, (void *)&D_800B3A6C, 0 },
+    { 2, (void *)&D_800B3A7C, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3A90, 0 },
+    { 2, (void *)&D_800B3AA8, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3AB8, 0 },
+    { 2, (void *)&D_800B3ACC, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3ADC, 0 },
+    { 2, (void *)&D_800B3AEC, 0 }, { 2, (void *)&D_800B3AFC, 0 },
+    { 2, (void *)&D_800B3B0C, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3B18, 0 },
+    { 2, (void *)&D_800B3B34, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3B48, 0 },
+    { 2, (void *)&D_800B3B5C, 0 }, { 2, (void *)&D_800B3B68, 0 },
+    { 2, (void *)&D_800B3B78, 0 }, { 2, (void *)&D_800B3B84, 0 },
+    { 2, (void *)&D_800B3B94, 0 }, { 2, (void *)&D_800B3BA8, 0 },
+    { 2, (void *)&D_800B3BBC, 0 }, { 2, (void *)&D_800B3BC8, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3BD8, 0 }, { 2, (void *)&D_800B3BE8, 0 },
+    { 2, (void *)&D_800B3BF8, 0 }, { 2, (void *)&D_800B3C04, 0 },
+    { 2, (void *)&D_800B3C10, 0 }, { 2, (void *)&D_800B3C1C, 0 },
+    { 2, (void *)&D_800B3C28, 0 }, { 2, (void *)&D_800B3C34, 0 },
+    { 2, (void *)&D_800B3C44, 0 }, { 3, 0, 0x32 }, { 3, 0, 0x96 },
+    { 0, (void *)&D_800B3C54, 0 }, { 1, (void *)&D_800B3C60, 0 },
+    { 1, (void *)&D_800B3C78, 0 }, { 3, 0, 0x96 }, { 0, (void *)&D_800B3C80, 0 },
+    { 2, (void *)&D_800B3C90, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3CA0, 0 },
+    { 2, (void *)&D_800B3CB8, 0 }, { 2, (void *)&D_800B3CC8, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3CD8, 0 }, { 2, (void *)&D_800B3CF4, 0 },
+    { 2, (void *)&D_800B3D04, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3B48, 0 },
+    { 2, (void *)&D_800B3D14, 0 }, { 2, (void *)&D_800B3D20, 0 },
+    { 2, (void *)&D_800B3D30, 0 }, { 2, (void *)&D_800B3D3C, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3D4C, 0 }, { 2, (void *)&D_800B3D64, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3D70, 0 }, { 2, (void *)&D_800B3D88, 0 }, { 3, 0, 0x32 },
+    { 3, 0, 0x96 }, { 0, (void *)&D_800B3D98, 0 }, { 1, (void *)&D_800B3DB4, 0 },
+    { 1, (void *)&D_800B3DC4, 0 }, { 1, (void *)&D_800B3DD4, 0 }, { 3, 0, 0x96 },
+    { 0, (void *)&D_800B3AB8, 0 }, { 2, (void *)&D_800B3DDC, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3DEC, 0 }, { 2, (void *)&D_800B3DF8, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3AB8, 0 }, { 2, (void *)&D_800B3E04, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3E14, 0 }, { 2, (void *)&D_800B3E38, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3E48, 0 }, { 2, (void *)&D_800B3E70, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3D4C, 0 }, { 2, (void *)&D_800B3E80, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3E98, 0 }, { 2, (void *)&D_800B3EB4, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3EC0, 0 }, { 2, (void *)&D_800B3EE4, 0 },
+    { 2, (void *)&D_800B3EF8, 0 }, { 2, (void *)&D_800B3F08, 0 },
+    { 2, (void *)&D_800B3F14, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3F24, 0 },
+    { 2, (void *)&D_800B3F34, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B3F44, 0 },
+    { 2, (void *)&D_800B3F50, 0 }, { 2, (void *)&D_800B3F60, 0 },
+    { 2, (void *)&D_800B3F70, 0 }, { 2, (void *)&D_800B3F80, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3F8C, 0 }, { 2, (void *)&D_800B3FA0, 0 },
+    { 2, (void *)&D_800B3FAC, 0 }, { 2, (void *)&D_800B3FBC, 0 },
+    { 2, (void *)&D_800B3FD0, 0 }, { 2, (void *)&D_800B3FE4, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3FF8, 0 }, { 2, (void *)&D_800B400C, 0 },
+    { 2, (void *)&D_800B401C, 0 }, { 2, (void *)&D_800B402C, 0 },
+    { 2, (void *)&D_800B403C, 0 }, { 2, (void *)&D_800B404C, 0 },
+    { 2, (void *)&D_800B4058, 0 }, { 2, (void *)&D_800B4064, 0 },
+    { 2, (void *)&D_800B4074, 0 }, { 2, (void *)&D_800B4080, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3B48, 0 }, { 0, (void *)&D_800B408C, 0 },
+    { 2, (void *)&D_800B4098, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B40A8, 0 },
+    { 2, (void *)&D_800B40B4, 0 }, { 2, (void *)&D_800B40C4, 0 },
+    { 2, (void *)&D_800B40D0, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B40E0, 0 },
+    { 2, (void *)&D_800B40F8, 0 }, { 2, (void *)&D_800B3E04, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B4104, 0 }, { 2, (void *)&D_800B411C, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B4130, 0 }, { 2, (void *)&D_800B4140, 0 },
+    { 2, (void *)&D_800B4150, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B415C, 0 },
+    { 2, (void *)&D_800B4174, 0 }, { 2, (void *)&D_800B4184, 0 },
+    { 2, (void *)&D_800B4194, 0 }, { 3, 0, 0x32 }, { 0, (void *)&D_800B41A4, 0 },
+    { 2, (void *)&D_800B41AC, 0 }, { 2, (void *)&D_800B41C0, 0 },
+    { 2, (void *)&D_800B41CC, 0 }, { 2, (void *)&D_800B41D8, 0 },
+    { 2, (void *)&D_800B41EC, 0 }, { 2, (void *)&D_800B41FC, 0 },
+    { 2, (void *)&D_800B4208, 0 }, { 2, (void *)&D_800B4218, 0 },
+    { 2, (void *)&D_800B4228, 0 }, { 2, (void *)&D_800B4234, 0 },
+    { 2, (void *)&D_800B4244, 0 }, { 2, (void *)&D_800B4258, 0 },
+    { 2, (void *)&D_800B4268, 0 }, { 2, (void *)&D_800B4278, 0 },
+    { 2, (void *)&D_800B4288, 0 }, { 2, (void *)&D_800B4298, 0 },
+    { 2, (void *)&D_800B42A8, 0 }, { 2, (void *)&D_800B42B8, 0 },
+    { 2, (void *)&D_800B42C4, 0 }, { 2, (void *)&D_800B42D4, 0 },
+    { 2, (void *)&D_800B42E0, 0 }, { 2, (void *)&D_800B42EC, 0 },
+    { 2, (void *)&D_800B42F8, 0 }, { 2, (void *)&D_800B4308, 0 },
+    { 2, (void *)&D_800B431C, 0 }, { 2, (void *)&D_800B432C, 0 },
+    { 2, (void *)&D_800B4338, 0 }, { 2, (void *)&D_800B4348, 0 },
+    { 2, (void *)&D_800B4358, 0 }, { 2, (void *)&D_800B4368, 0 },
+    { 2, (void *)&D_800B4378, 0 }, { 2, (void *)&D_800B438C, 0 },
+    { 2, (void *)&D_800B4398, 0 }, { 2, (void *)&D_800B43A8, 0 }, { 3, 0, 0x32 },
+    { 0, (void *)&D_800B3BD8, 0 }, { 2, (void *)&D_800B43B4, 0 },
+    { 2, (void *)&D_800B43C0, 0 }, { 2, (void *)&D_800B43CC, 0 },
+    { 2, (void *)&D_800B43E0, 0 }, { 2, (void *)&D_800B43EC, 0 },
+    { 2, (void *)&D_800B43FC, 0 }, { 2, (void *)&D_800B4408, 0 },
+    { 2, (void *)&D_800B4414, 0 }, { 2, (void *)&D_800B4424, 0 },
+    { 2, (void *)&D_800B4438, 0 }, { 2, (void *)&D_800B4444, 0 },
+    { 2, (void *)&D_800B4454, 0 }, { 2, (void *)&D_800B4460, 0 },
+    { 2, (void *)&D_800B446C, 0 }, { 2, (void *)&D_800B447C, 0 },
+    { 2, (void *)&D_800B4488, 0 }, { 2, (void *)&D_800B4498, 0 },
+    { 2, (void *)&D_800B44A8, 0 }, { 2, (void *)&D_800B44B8, 0 },
+    { 2, (void *)&D_800B44C4, 0 }, { 2, (void *)&D_800B44D4, 0 },
+    { 2, (void *)&D_800B44E4, 0 }, { 2, (void *)&D_800B44F4, 0 },
+    { 2, (void *)&D_800B4500, 0 }, { 2, (void *)&D_800B4510, 0 },
+    { 2, (void *)&D_800B451C, 0 }, { 2, (void *)&D_800B4528, 0 },
+    { 2, (void *)&D_800B4534, 0 }, { 2, (void *)&D_800B4544, 0 },
+    { 2, (void *)&D_800B4554, 0 }, { 2, (void *)&D_800B4560, 0 },
+    { 2, (void *)&D_800B456C, 0 }, { 2, (void *)&D_800B457C, 0 },
+    { 2, (void *)&D_800B4588, 0 }, { 2, (void *)&D_800B4598, 0 },
+    { 2, (void *)&D_800B45A8, 0 }, { 2, (void *)&D_800B45B4, 0 },
+    { 2, (void *)&D_800B45C8, 0 }, { 2, (void *)&D_800B45DC, 0 }, { 3, 0, 0x14 },
+    { 2, (void *)&D_800B45EC, 0 }, { 2, (void *)&D_800B4610, 0 },
+    { 2, (void *)&D_800B4624, 0 }, { 3, 0, 0x14 }, { 2, (void *)&D_800B4638, 0 },
+    { 2, (void *)&D_800B465C, 0 }, { 2, (void *)&D_800B4670, 0 },
+    { 2, (void *)&D_800B4680, 0 }, { 3, 0, 0x32 }, { 4, 0, 0 },
+};
+s32 D_800C7EF4 = 0;
+s32 D_800C7EF8[3] = {0};
+CamXYZ D_800C7F04 = {0};

@@ -4,6 +4,19 @@
 #include "bash/hub_ovl.h"
 #include "bash/hub.h"
 
+/* the exe's data the tables point at, not declared in the headers yet */
+extern u8 D_8004ECA0[];
+extern u8 D_8004ECA8[];
+extern u8 D_8004ECB0[];
+extern u8 D_8004ECB8[];
+extern u8 D_8004ECC0[];
+extern u8 D_8004ECC8[];
+extern u8 D_8004ECD0[];
+extern u8 D_8004ECD8[];
+extern u8 D_800500A0[];
+extern u8 D_80063BB8[];
+extern u8 D_80063EC8[];
+
 void HubRender(void) {
     func_80093110();
     if (D_8005A648 == 0x25) {
@@ -54,7 +67,12 @@ void HubStartCredits(void) {
     HubEndCredits();
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hub", D_800B32B8);
+/* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
+const char D_800B32B8[] = "BREATHE";
+const char D_800B32C0[] = "MEDIUM";
+const char D_800B32C8[] = "ATTACK";
+const char D_800B32D0[] = "JUMP";
+const char D_800B32D8[] = "KICK";
 
 s32 HubCreditsScroll(void) {
     OvlTextView *view;
@@ -220,7 +238,7 @@ void HubEndCredits(void)
 }
 
 s32 *HubCreditsText(void) {
-    return D_800C7294;
+    return (s32 *)D_800C7294;
 }
 
 int HubCountLines(unsigned char *s) {
@@ -269,3 +287,39 @@ void HUBSetUp(void) {
     D_8005AA70[8] = 0;
     D_8009F8B4 = HubRender;
 }
+
+/* data, in address order */
+s32 D_800BBFE8[6] = { (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32D0, (s32)&D_800B32D8, 0 };
+s32 D_800BC000[2] = { 0x1C00D5, 0xFFFF };
+s32 D_800BC008[1] = {0};
+s32 D_800BC00C[2] = { 0x1C0017, 0xFFFF };
+s32 D_800BC014[27] = {
+    (s32)&D_80055684, (s32)&D_8004ECB8, (s32)&D_8004ECB0, (s32)&D_80053074, (s32)&D_8004ECC8,
+    (s32)&D_8004ECC0, (s32)&D_800555A4, (s32)&D_8004ECA8, (s32)&D_8004ECA0, (s32)&D_800558EC,
+    (s32)&D_8004ECD8, (s32)&D_8004ECD0, 0, 0, 0, (s32)&D_800500A0, (s32)&D_800BC014, 0x3000,
+    0x10, 0x2000, 0xC8, 0x2BC, 0x200, (s32)&D_80063EC8, (s32)&D_80063BB8, 0x20, 0x600,
+};
+s32 D_800BC080[1] = { 0xFFFF };
+s32 D_800BC084[128] = {
+    0xCE, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xCF, (s32)&D_800BBFE8,
+    (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xD0, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0,
+    0xD1, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xD2, (s32)&D_800BBFE8,
+    (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xCE, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0,
+    0xCE, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xCE, (s32)&D_800BBFE8,
+    (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xCE, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0,
+    0xCE, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xCE, (s32)&D_800BBFE8,
+    (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xCE, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0,
+    0xCE, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xD3, (s32)&D_800BBFE8,
+    (s32)&D_800BC000, 6, 0, 0, 0, 0, 0xD4, (s32)&D_800BBFE8, (s32)&D_800BC000, 6, 0, 0, 0, 0,
+    0, (s32)&D_800BC008, (s32)&D_800BC00C, 4, 0, 0, 0, 0,
+};
+s32 D_800BC284[3] = { 0x20D0003, 0x1F021F01, 0x1F03 };
+s32 D_800BC290[9] = { (s32)&D_800BC284, 5, (s32)&D_800BC080, (s32)&D_800BC084, (s32)&D_800BC290, 0, 0, 0, 0 };
+s32 D_800BC2B4 = 0;
+s32 D_800BC2B8 = 0;
+u16 D_800BC2BC = 0;
+s16 D_800BC2BE = 0;
+u16 D_800BC2C0 = 0;
+s32 D_800BC2C4 = 0;
+s32 D_800BC2C8 = 0;
+s32 D_800BC2CC = 0;

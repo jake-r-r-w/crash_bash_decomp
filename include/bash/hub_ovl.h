@@ -15,7 +15,6 @@ void InitialiseHUBFirst(void);
 void InitialisePodiumFirst(void);
 void InitialisePodium(void);
 
-extern u8 D_800C7294[];
 extern s32 D_80098714;
 /* D_80051640 as seen by HubEndCredits. */
 typedef struct {
@@ -57,6 +56,7 @@ typedef struct OvlTextLine {
     /* 0x04 */ u8 *text;   /* '\r' separates lines */
     /* 0x08 */ s32 height; /* kind 3 */
 } OvlTextLine;
+extern OvlTextLine D_800C7294[];
 
 /* n = the number of '\r'-separated lines in text, 0 for none. */
 #define OVL_TEXT_LINE_COUNT(n, text)          \
