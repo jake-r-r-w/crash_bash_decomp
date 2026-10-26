@@ -20,14 +20,14 @@ typedef struct BonkTgt2 {
     /* 0x4 */ BonkPad *obj;
 } BonkTgt2;
 
-extern s32 D_800B9E30[];
+extern s32 BonkTargetSfx[];
 
 typedef struct BonkObj {
     /* 0x00 */ u8 pad0[4];
     /* 0x04 */ BonkPad *pad;
 } BonkObj;
 
-extern s32 D_800B9E40[];
+extern s32 BonkObjectSfx[];
 void BonkHeroHitFlash(s32 arg0, s32 arg1);
 
 s32 BonkDist2XZ(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
@@ -42,11 +42,11 @@ void InitialiseBONK(void);
 void BonkRestartLevel(void);
 void FirstTriggersBONK(void);
 
-extern s32 D_800B9EEC;
+extern s32 BonkSkill;
 typedef struct { s32 a, b, c; } BonkEnt;
-extern BonkEnt D_800B9EC8[];
-extern s32 D_800B93A0[];
-extern s32 D_800B9E20[];
+extern BonkEnt BonkEnts[];
+extern s32 BonkCrateFrames[];
+extern s32 BonkStoolSfx[];
 extern s32 D_8005A624;
 /* PlotBonkCrate's puff of smoke at pos (type 0x1605, flags 0x11). */
 static inline void Bonk_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
@@ -70,9 +70,9 @@ static inline void Bonk_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
         }
     }
 }
-extern s32 D_800B9F08;
-extern u16 D_800B9580[];
-extern ScriptInit D_800B9CE4;
+extern s32 BonkEntCur;
+extern u16 BonkAIRange[];
+extern ScriptInit BonkFlagScriptInit;
 extern u8 D_80053C0C[];
 extern u8 D_80053C7C[];
 extern u8 D_80052F5C[];
@@ -81,11 +81,11 @@ extern s32 PanelCtrl;
 extern void *D_8009D8FC;
 extern void *D_8009D900;
 extern void *D_8009D904;
-extern u8 D_800B929C[];
-extern u8 D_800B92B0[];
-extern u8 D_800B92C4[];
-extern u8 D_800B92D0[];
-extern u8 D_800B92E8[];
+extern u16 BonkAiSkill[];
+extern u16 BonkAiSkillAlt[];
+extern u16 BonkAiTeamSkill[];
+extern u16 BonkAiHumanRoundTweak[];
+extern u16 BonkAiHumanRoundTweakAlt[];
 extern s16 D_8009D87C[][3];
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
@@ -98,19 +98,19 @@ typedef struct BonkEntry {
     s32 unk4;
     s32 unk8;
 } BonkEntry;
-extern s32 D_800B9634;
-extern s32 D_800B95A8;
-extern s32 D_800B9E0C;
-extern BonkEntry D_800B9E50[10];
-extern s32 D_800B9EF0;
-extern s32 D_800B9EF4;
-extern s32 D_800B9EF8;
-extern s32 D_800B9EFC;
-extern s32 D_800B9F00;
-extern s32 D_800B9F04;
-extern s32 D_800B9300[];
-extern s32 D_800B95C4[];
-extern s32 D_800B95E0[];
+extern s32 BonkEntryCount;
+extern s32 BonkStoolCount;
+extern s32 BonkRoundTime;
+extern BonkEntry BonkEntries[10];
+extern s32 BonkEntryCur;
+extern s32 BonkCrateTimer;
+extern s32 BonkCrateDelay;
+extern s32 BonkCrateCount;
+extern s32 BonkRoundTimer;
+extern s32 BonkRoundState;
+extern s32 BonkStoolFrames[];
+extern s32 BonkStoolHeights[];
+extern s32 BonkStoolTable[];
 
 int BonkAI_Closest(int a0, int *out);
 /* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
@@ -141,7 +141,7 @@ extern s16 D_8009E0D8;
 extern s16 D_8009E0E4;
 extern s16 D_8009E0E6;
 extern u8 D_8008AB48[];
-extern u8 D_800B9DF8[];
+extern u16 BonkHeroModels[];
 extern u8 D_8008AB04[];
 void BonkHeroFacing(s32 arg0);
 s32 BONK_KeepInBounds(EXTengine *eng);
@@ -149,7 +149,7 @@ void BonkPreMoveHero(s32 arg0);
 s32 BonkHeroKickCollision(s32 arg0);
 s32 BonkHeroTestSwing(s32 arg0);
 void BonkHero_ExtraEffects(s32 player);
-extern u16 D_800B9594[];
+extern u16 BonkPowerupTimes[];
 void Bonk_HeroBot(s32 arg0);
 void BonkInitTweakAi(void);
 

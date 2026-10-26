@@ -692,6 +692,16 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Bonk** (bonk, the mallet game; named 2026-10-26). Mode 0x1D
+  (`LEV_BONK`); one engine world record (0x010E) points at `BONK_PREMAP`,
+  `bonk_shell_info` and `BONKSetUp`, the per-mode table at `file_group_BONK`
+  (`BonkFiles` with the exe's file group 7: 10 DAT entries, all decoded). Crates and stools drop in
+  (`BonkCrateMaster`, `AST_BonkCrate`, `AST_BonkStool`), the mallet hits heroes
+  and objects (`BonkMalletHit`, a swing's `AST_BonkShockwave`), and the winner
+  is chosen four ways by game flags (`BonkChooseWinner`). `bohero.c` holds the
+  hero states, `HEROFunc` pairs 64..72 (`HEROmode_bonk_idle` .. `bonk_loser`,
+  actions 0x40..0x48); the 56 sequences are each character's
+  `hero_seq_bonk_*` (`CRA_seq_bonk_idle` ..).
 - **Dino** (dino, the gem game; named 2026-10-26). Mode 0x1C (`LEV_DINO`);
   one engine world record (0x010B) points at `DINO_PREMAP`, `dino_shell_info`
   and `DINOSetUp`, the per-mode table at `file_group_DINO` (`DinoFiles` with the

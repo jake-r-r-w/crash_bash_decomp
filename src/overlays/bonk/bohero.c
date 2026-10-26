@@ -5,11 +5,11 @@
 #include "bash/bonk.h"
 
 /* data, in address order */
-s32 D_800B9F0C[4] = { 0x72F, 0x730, 0x731, 0x732 };
-s32 D_800B9F1C[4] = { 0x719, 0x71A, 0x71B, 0x71C };
-s32 D_800B9F2C[4] = { 0x721, 0x722, 0x723, 0x724 };
-s32 D_800B9F3C[4] = { 0x710, 0x711, 0x712, 0x713 };
-BonkSlot D_800B9F4C[4] = {0};
+s32 BonkShockwaveSfx[4] = { 0x72F, 0x730, 0x731, 0x732 };
+s32 BonkBackswingSfx[4] = { 0x719, 0x71A, 0x71B, 0x71C };
+s32 BonkSwingSfx[4] = { 0x721, 0x722, 0x723, 0x724 };
+s32 BonkSwingHitSfx[4] = { 0x710, 0x711, 0x712, 0x713 };
+BonkSlot BonkSlots[4] = {0};
 
 void BonkSpawnShockwave(s32 arg0) {
     VECTOR sp18;
@@ -27,7 +27,7 @@ void BonkSpawnShockwave(s32 arg0) {
         *(SLONG_XYZ *)&sp18 = h->hero_eng->unk10;
     }
     nas = CreateNAS(sp18.vx, World_floor_level - 0x80, sp18.vz, 0x1A03, 0x11);
-    sbase = D_800B9F4C;
+    sbase = BonkSlots;
     slot = sbase + arg0;
     if (slot->f8 == 1) {
         PlaySfx(0x72D, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -48,7 +48,7 @@ void BonkSpawnShockwave(s32 arg0) {
     } else {
         BonkMalletHit(&sp18, 0x380, arg0, 0);
     }
-    PlaySfx(D_800B9F0C[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(BonkShockwaveSfx[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
 void BonkHeroFacing(s32 arg0) {
@@ -76,10 +76,10 @@ void BonkPreMoveHero(s32 arg0) {
         if (((BonkPadButtons *)D_80051338)[arg0].unk50 & 0xF0) {
             m->forward_angle = ((BonkPadButtons *)D_80051338)[arg0].unk38 + 0x800;
             if (m->velocity_enable != 0) {
-                if (D_800B9F4C[arg0].f8 == 0) {
-                    m->forward_speed = D_8005A614[arg0 + 0x5C] != 0 ? D_800B94E0[D_800B9EEC] : 0x50;
+                if (BonkSlots[arg0].f8 == 0) {
+                    m->forward_speed = D_8005A614[arg0 + 0x5C] != 0 ? BonkSteerB[BonkSkill] : 0x50;
                 } else {
-                    m->forward_speed = D_8005A614[arg0 + 0x5C] != 0 ? D_800B9440[D_800B9EEC] : 0x2D;
+                    m->forward_speed = D_8005A614[arg0 + 0x5C] != 0 ? BonkSteerA[BonkSkill] : 0x2D;
                 }
             }
         } else {
@@ -196,7 +196,7 @@ void BonkHeroBackswing(s32 arg0) {
         h->hero_frozen = 10;
         if (BonkAI_FindClosest(arg0, &t, 0x306) != 0) {
             BonkPos *p;
-            D_800B9F4C[arg0].f0 = (s32)t;
+            BonkSlots[arg0].f0 = (s32)t;
             p = t->unk4->unk54;
             h->hero_move->forward_angle =
                 get_angle(h->hero_eng->unk10.x - p->x, h->hero_eng->unk10.z - p->z);
@@ -218,7 +218,7 @@ void BonkHeroExtBackswing(s32 arg0) {
     if (BonkHeroTestIdle(arg0) == 0 && BonkHeroTestLose(arg0) == 0 && BonkHeroTestWin(arg0) == 0) {
         HeroInfo *base = Heroes;
         (base + arg0)->hero_frozen = 10;
-        sb = D_800B9F4C;
+        sb = BonkSlots;
         s = sb + arg0;
         if (s->f4 == 0) {
             if (func_8008502C(arg0) == 8) {
@@ -230,7 +230,7 @@ void BonkHeroExtBackswing(s32 arg0) {
         }
         if (!(((BonkPadButtons *)D_80051338)[arg0].unk50 & 0x8000)) {
             SetHeroAction(arg0, 0x45);
-            D_800B9F4C[arg0].f4 = 0;
+            BonkSlots[arg0].f4 = 0;
         }
     }
 }
@@ -247,14 +247,14 @@ void BonkHeroSwing(s32 arg0) {
         h->hero_frozen = 10;
         act = func_8008502C(arg0);
         if (act == 0xC) {
-            PlaySfx(D_800B9F2C[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(BonkSwingSfx[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
         }
         if (act == 8) {
-            if (h->hero_last_mode == 0x44 || D_800B9F4C[arg0].f8 == 1 ||
+            if (h->hero_last_mode == 0x44 || BonkSlots[arg0].f8 == 1 ||
                 (D_8005A614[arg0 + 0x5C] != 0 && (((D5A614View *)D_8005A614)->flags & 0x80))) {
                 BonkSpawnShockwave(arg0);
             }
-            t = (BonkTgt2 *)D_800B9F4C[arg0].f0;
+            t = (BonkTgt2 *)BonkSlots[arg0].f0;
             if (t != NULL) {
                 switch (t->kind) {
                 case 0x100:
@@ -269,7 +269,7 @@ void BonkHeroSwing(s32 arg0) {
                     break;
                 }
             }
-            PlaySfx(D_800B9F3C[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(BonkSwingHitSfx[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
             SetHeroAction(arg0, 0x46);
         }
     }
@@ -547,7 +547,7 @@ void SetBonkHeroLoser(s32 arg0) {
     if (s != NULL) {
         p->flags &= 0xFFFF7FFF;
     }
-    D_800B9F4C[arg0].f8 = 3;
+    BonkSlots[arg0].f8 = 3;
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 2;
     SetHeroSeq(arg0, 0x33);
@@ -595,7 +595,7 @@ void SetBonkHeroWinner(s32 arg0) {
     if (s != NULL) {
         p->flags &= 0xFFFF7FFF;
     }
-    D_800B9F4C[arg0].f8 = 3;
+    BonkSlots[arg0].f8 = 3;
     func_80089FA4(arg0);
     SetHeroSeq(arg0, 0x39);
     h->hero_move->velocity_enable = 0;
@@ -637,17 +637,17 @@ void SetBonkHeroSwing(s32 arg0) {
 void SetBonkHeroExtBackswing(s32 arg0) {
     SetHeroSeq(arg0, 0x36);
     Heroes[arg0].hero_frozen = 10;
-    D_800B9F4C[arg0].f4 = 0;
+    BonkSlots[arg0].f4 = 0;
 }
 
 void SetBonkHeroBackswing(s32 arg0) {
     HeroInfo *hero;
     HeroInfo *base = Heroes;
 
-    D_800B9F4C[arg0].f0 = 0;
+    BonkSlots[arg0].f0 = 0;
     hero = base + arg0;
     hero->hero_frozen = 10;
-    PlaySfx(D_800B9F1C[arg0], NULL, &hero->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(BonkBackswingSfx[arg0], NULL, &hero->hero_eng->unk10, 0x1000, 0x1E00, 0);
     SetHeroSeq(arg0, 0x35);
 }
 
@@ -715,7 +715,7 @@ void BonkHidePowerup(s32 arg0) {
     if (s != NULL) {
         p->flags &= 0xFFFF7FFF;
     }
-    D_800B9F4C[arg0].f8 = 3;
+    BonkSlots[arg0].f8 = 3;
 }
 
 s32 BonkKeepInBoundsB(EXTengine *eng) {
@@ -778,8 +778,8 @@ void BonkHeroBounce(s32 arg0) {
     EXTmotion *m;
 
     SetHeroAction(arg0, 0x40);
-    D_800B9F4C[arg0].f8 = 3;
-    D_800B9F4C[arg0].f0 = 0;
+    BonkSlots[arg0].f8 = 3;
+    BonkSlots[arg0].f0 = 0;
     m = AddMotion(Heroes[arg0].hero);
     if (m != NULL) {
         m->Ymax = 0xA0;

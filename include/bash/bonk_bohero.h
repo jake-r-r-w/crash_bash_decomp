@@ -18,8 +18,8 @@ typedef struct BonkPadButtons {
 } BonkPadButtons;
 
 extern HeroInfo Heroes[4];
-extern s32 D_800B94E0[];
-extern s32 D_800B9440[];
+extern s32 BonkSteerB[];
+extern s32 BonkSteerA[];
 
 void BonkHeroSwingRecoil(s32 arg0);
 typedef struct BonkSlot {
@@ -46,15 +46,15 @@ typedef struct BonkTarget {
     /* 0x04 */ BonkInner *unk4;
 } BonkTarget;
 
-extern BonkSlot D_800B9F4C[];
+extern BonkSlot BonkSlots[];
 extern u16 D_800AD12C;
 extern HeroInfo Heroes[4];
 
-extern s32 D_800B9F1C[];
-extern s32 D_800B9F0C[];
+extern s32 BonkBackswingSfx[];
+extern s32 BonkShockwaveSfx[];
 void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c);
-extern s32 D_800B9F2C[];
-extern s32 D_800B9F3C[];
+extern s32 BonkSwingSfx[];
+extern s32 BonkSwingHitSfx[];
 
 void BonkHitTarget(s32 arg0, s32 arg1, BonkTgt2 *t);
 void BonkSpawnShockwave();

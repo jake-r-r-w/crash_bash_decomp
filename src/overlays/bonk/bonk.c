@@ -25,156 +25,308 @@ extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "BREATHE";
-const char D_800B32C0[] = "MEDIUM";
-const char D_800B32C8[] = "ATTACK";
-const char D_800B32D0[] = "HIT";
-const char D_800B32D4[] = "WIN";
+const char BonkAnimBreathe[] = "BREATHE";
+const char BonkAnimMedium[] = "MEDIUM";
+const char BonkAnimAttack[] = "ATTACK";
+const char BonkAnimHit[] = "HIT";
+const char BonkAnimWin[] = "WIN";
 
 /* data, in address order */
-u8 D_800B929C[20] = { 0x19, 0, 0x16, 0, 0x13, 0, 0x10, 0, 0xC, 0, 0x1C, 0, 0x18, 0, 0x10, 0, 0x10, 0, 0x1E, 0 };
-u8 D_800B92B0[20] = { 0x19, 0, 0x16, 0, 0x13, 0, 0x10, 0, 8, 0, 0x1C, 0, 0x18, 0, 0x10, 0, 0x10, 0, 0x1E, 0 };
-u8 D_800B92C4[12] = { 0x16, 0, 0x19, 0, 0x1E, 0, 0x16, 0, 0x19, 0, 0x1E, 0 };
-u8 D_800B92D0[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+u16 BonkAiSkill[10] = {
+    0x19, 0x16, 0x13, 0x10, 0xC, 0x1C, 0x18, 0x10, 0x10, 0x1E,
 };
-u8 D_800B92E8[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+u16 BonkAiSkillAlt[10] = {
+    0x19, 0x16, 0x13, 0x10, 8, 0x1C, 0x18, 0x10, 0x10, 0x1E,
 };
-s32 D_800B9300[40] = {
+u16 BonkAiTeamSkill[6] = {
+    0x16, 0x19, 0x1E, 0x16, 0x19, 0x1E,
+};
+u16 BonkAiHumanRoundTweak[12] = {
+    0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14,
+};
+u16 BonkAiHumanRoundTweakAlt[12] = {
+    0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14,
+};
+s32 BonkStoolFrames[40] = {
     0x60, 0x5D, 0x5A, 0x57, 0x54, 0x51, 0x4E, 0x4B, 0x48, 0x45, 0x42, 0x3F, 0x3C, 0x39, 0x36,
     0x33, 0x30, 0x2D, 0x2A, 0x27, 0x24, 0x21, 0x1E, 0x1B, 0x18, 0x15, 0x12, 0xF, 0xC, 9, 6, 3,
     0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800B93A0[40] = {
+s32 BonkCrateFrames[40] = {
     0x60, 0x5D, 0x5A, 0x57, 0x54, 0x51, 0x4E, 0x4B, 0x48, 0x45, 0x42, 0x3F, 0x3C, 0x39, 0x36,
     0x33, 0x30, 0x2D, 0x2A, 0x27, 0x24, 0x21, 0x1E, 0x1B, 0x18, 0x15, 0x12, 0xF, 0xC, 9, 6, 3,
     0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_800B9440[40] = {
+s32 BonkSteerA[40] = {
     0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D, 0x2D,
     0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B,
     0x3C, 0x3D, 0x3E, 0x3E, 0x3E, 0x3E, 0x3E, 0x3E, 0x3E, 0x3E,
 };
-s32 D_800B94E0[40] = {
+s32 BonkSteerB[40] = {
     0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50,
     0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E,
     0x5F, 0x60, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
 };
-u16 D_800B9580[10] = { 0x1000, 0x200, 0x200, 0x220, 0x220, 0x320, 0x320, 0x300, 0x300, 0 };
-u16 D_800B9594[10] = { 0x300, 0x240, 0x280, 0x200, 0x260, 0x280, 0x2C0, 0x340, 0x300, 0 };
-s32 D_800B95A8 = 6;
-s32 D_800B95AC[6] = { 5, 5, 4, 3, 2, 1 };
-s32 D_800B95C4[7] = { 0x50, 0x50, 0x46, 0x46, 0x3C, 0x32, 0x28 };
-s32 D_800B95E0[21] = {
+u16 BonkAIRange[10] = { 0x1000, 0x200, 0x200, 0x220, 0x220, 0x320, 0x320, 0x300, 0x300, 0 };
+u16 BonkPowerupTimes[10] = { 0x300, 0x240, 0x280, 0x200, 0x260, 0x280, 0x2C0, 0x340, 0x300, 0 };
+s32 BonkStoolCount = 6;
+s32 BonkUnused1[6] = { 5, 5, 4, 3, 2, 1 };
+s32 BonkStoolHeights[7] = { 0x50, 0x50, 0x46, 0x46, 0x3C, 0x32, 0x28 };
+s32 BonkStoolTable[21] = {
     0x3C, 0x32, 0x28, 0x2D, 0x28, 0x23, 0x1E, 0x5A, 0x5A, 0x5A, 0x5A, 0x3C, 0x3C, 0x3C, 0x1E,
     0x1E, 0x19, 0x19, 0x14, 0xF, 0xF,
 };
-s32 D_800B9634 = 0xF;
-s32 D_800B9638[421] = {
-    0xF, 0xD, 0xA, 0xA, 0x5A, 0x5A, (s32)0x80070000, 0x41000016, 0x8000, (s32)0x80070000,
-    0x4000001C, 0x8000, (s32)0x80070000, 0x40000020, 0x8000, (s32)0x80070000, 0x40000020,
-    0x8000, (s32)0x80070000, 0x40000016, 0x8000, (s32)0x80070000, 0x40000014, 0x8000,
-    (s32)0x80070000, 0x40000020, 0x8000, (s32)0x80070000, 0x40000020, 0x8000, 0x40000000,
-    0x40024001, 0x40044003, 0x40064005, (s32)0x80034007, 0x40080008, 0x400A4009, 0x400C400B,
-    0x400E400D, 0x4010400F, (s32)0x80034011, 0x40120009, (s32)0x80004013, 0, 0x41000000,
-    0x41024101, (s32)0x80034103, 0x41040008, 0x41064105, 0x41084107, 0x410A4109, 0x410C410B,
-    (s32)0x8003410D, 0x410E0009, 0x4110410F, 0x41124111, 0x41144113, (s32)0x80004115, 0,
-    0x40800000, (s32)0x80034081, 0x40820008, 0x40844083, 0x40864085, 0x40884087, 0x408A4089,
-    (s32)0x8003408B, 0x408C0009, 0x408E408D, 0x4090408F, 0x40924091, 0x40944093,
-    (s32)0x80004095, 0, 0x41000000, (s32)0x80034101, 0x41020008, 0x41044103, 0x41064105,
-    0x41084107, 0x410A4109, (s32)0x8003410B, 0x410C0009, 0x410E410D, 0x4110410F, 0x41124111,
-    0x41144113, (s32)0x80004115, 0, 0x41000000, 0x41024101, (s32)0x80034103, 0x41040008,
-    0x41064105, 0x41084107, 0x410A4109, 0x410C410B, 0x98003, 0x410E410D, 0x4110410F,
-    (s32)0x80004111, 0, 0x41000000, 0x41024101, (s32)0x80034103, 0x41040008, 0x41064105,
-    0x41084107, 0x410A4109, 0x410C410B, (s32)0x8003410D, 0x410E0009, 0x4110410F, 0x41124111,
-    (s32)0x80004113, 0, 0x41000000, (s32)0x80034101, 0x41020008, 0x41044103, 0x41064105,
-    0x41084107, 0x410A4109, 0x98003, 0x410C410B, 0x410E410D, 0x4110410F, 0x41124111,
-    (s32)0x80004113, 0, 0x41000000, (s32)0x80034101, 0x41020008, 0x41044103, 0x41064105,
-    0x41084107, 0x410A4109, 0x98003, 0x410C410B, 0x410E410D, 0x4110410F, 0x41124111,
-    (s32)0x80004113, 0, (s32)0x80070000, 0x41800013, 0x408004, (s32)0x80070000, 0x40800015,
-    0x408004, (s32)0x80070000, 0x4100001A, 0x408004, (s32)0x80070000, 0x40800014, 0x408004,
-    (s32)0x80070000, 0x40800020, 0x408004, (s32)0x80070000, 0x4080001B, 0x408004,
-    (s32)0x80070000, 0x4180001E, 0x408004, (s32)0x80070000, 0x4080001E, 0x408004,
-    (s32)0x80070000, 0x4200001A, 0x8000, (s32)0x80070000, 0x4180005A, 0x8000, (s32)0x80070000,
-    0x4280000E, 0x298007, (s32)0x8000428E, 3, (s32)0x80070000, 0x42800026, 0x298007,
-    (s32)0x800042A6, 3, (s32)0x80070000, 0x42800025, 0xF8007, (s32)0x80004296, 3,
-    (s32)0x80070000, 0x4200000D, 0x8000, (s32)0x80070000, 0x42800021, 0x2E8007,
-    (s32)0x800042A1, 3, (s32)0x80070000, 0x42000021, 0x2F8007, (s32)0x80004221, 3,
-    (s32)0x80070000, 0x40800009, 0x88003, 0x40884088, (s32)0x80004088, 0, (s32)0x80070000,
-    0x42000009, 0x88003, 0x42084208, (s32)0x80004208, 0, (s32)0x80070000, 0x41800009, 0x88003,
-    0x41884188, (s32)0x80004188, 0, (s32)0x80070000, 0x41800009, 0x88003, 0x41884188,
-    (s32)0x80004188, 0, (s32)0x80070000, 0x4180000A, 0x88003, 0x41894189, (s32)0x80004189, 0,
-    (s32)0x80070000, 0x41800009, 0x88003, 0x41884188, (s32)0x80004188, 0, (s32)0x80070000,
-    0x42000009, 0x88003, 0x42084208, (s32)0x80004208, 0, (s32)0x80070000, 0x42800009, 0x88003,
-    0x42884288, (s32)0x80004288, 0, (s32)0x80070000, 0x40890007, 0x88003, 0x40904090,
-    (s32)0x80004090, 0, (s32)0x80070000, 0x42090007, 0x88003, 0x42104210, (s32)0x80004210, 0,
-    (s32)0x80070000, 0x41890006, 0x88003, 0x418F418F, (s32)0x8000418F, 0, (s32)0x80070000,
-    0x41890006, 0x88003, 0x418F418F, (s32)0x8000418F, 0, (s32)0x80070000, 0x418A0009, 0x88003,
-    0x41934193, (s32)0x80004193, 0, (s32)0x80070000, 0x41890008, 0x88003, 0x41914191,
-    (s32)0x80004191, 0, (s32)0x80070000, 0x42090008, 0x88003, 0x42114211, (s32)0x80004211, 0,
-    (s32)0x80070000, 0x42890008, 0x88003, 0x42914291, (s32)0x80004291, 0, 0x40910000,
-    (s32)0x80034092, 0x4093000C, 0x40954094, 0x40974096, 0x88003, 0x40994098, 0x409B409A,
-    0x409D409C, 0x409F409E, 0x40A140A0, (s32)0x800340A2, 0x40A20009, (s32)0x800040A2, 0,
-    0x42110000, (s32)0x80034212, 0x4213000C, (s32)&D_80034214, 0x42150008, 0x42174216,
-    0x42194218, 0x421B421A, 0x421D421C, 0x421F421E, 0x42214220, 0x42234222, 0x42254224,
-    0x98003, 0x42254225, 0x8000, 0x41900000, (s32)0x80034191, 0x4192000C, (s32)0x80034193,
-    0x41940008, 0x41964195, 0x41984197, 0x419A4199, 0x419C419B, 0x419E419D, (s32)0x8003419F,
-    0x419F0009, (s32)0x8000419F, 0, 0x41900000, (s32)0x80034191, 0x4192000C, (s32)0x80034193,
-    0x41940008, 0x41964195, 0x41984197, 0x419A4199, 0x419C419B, 0x419E419D, (s32)0x8003419F,
-    0x419F0009, (s32)0x8000419F, 0, 0x41940000, 0x41964195, (s32)0x80034197, 0x41980008,
-    0x419A4199, 0x419C419B, 0x419E419D, 0x41A0419F, 0x41A241A1, 0x41A441A3, 0x98003,
-    0x41A441A4, (s32)0x800041A4, 0, 0x41910000, 0x41934192, 0x41954194, (s32)0x80034196,
-    0x41970008, 0x41994198, 0x419B419A, 0x419D419C, 0x419F419E, 0x41A141A0, 0x41A341A2,
-    0x41A541A4, (s32)0x800341A6, 0x41A60009, (s32)0x800041A6, 0, 0x42120000, (s32)0x80034213,
-    0x4214000C, 0x42164215, (s32)0x80034217, 0x42180008, 0x421A4219, 0x421C421B, 0x421E421D,
-    0x4220421F, 0x42224221, 0x42244223, 0x42264225, (s32)0x80034227, 0x42270009,
-    (s32)0x80004227, 0, 0x42920000, (s32)0x80034293, 0x4294000C, 0x42964295, 0x88003,
-    0x42984297, 0x429A4299, 0x429C429B, 0x429E429D, 0x42A0429F, 0x42A242A1, 0x42A442A3,
-    0x42A642A5, (s32)0x800342A7, 0x42A70009, (s32)0x800042A7, 0,
+s32 BonkEntryCount = 0xF;
+/* six words nothing points at, before the sequences */
+s32 BonkUnused0[6] = { 0xF, 0xD, 0xA, 0xA, 0x5A, 0x5A };
+hero_seq CRA_seq_bonk_idle[6] = {
+    0, 0x8007, 0x16, 0x4100, 0x8000, 0,
 };
-s32 D_800B9CCC[3] = { (s32)0x80110000, 0x40000010, 0x8001 };
-s32 D_800B9CD8[3] = { (s32)&D_800B9CCC, 0, 0 };
-ScriptInit D_800B9CE4 = { 0, (void *)&D_800B9CD8, 0x401 };
-s32 D_800B9CF0[2] = { 0x17001C, 0xFFFF };
-s32 D_800B9CF8[6] = { (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32D0, (s32)&D_800B32D4, 0 };
-s32 D_800B9D10[1] = { -0xFFAD };
-s32 D_800B9D14[16] = {
-    0x51, (s32)&D_800B9CF8, (s32)&D_800B9D10, 0, 0, 0, 0, 0, 0x52, (s32)&D_800B9CF8,
-    (s32)&D_800B9D10, 0, 0, 0, 0, 0,
+hero_seq COC_seq_bonk_idle[6] = {
+    0, 0x8007, 0x1C, 0x4000, 0x8000, 0,
 };
-s32 D_800B9D54[20] = {
+hero_seq CTX_seq_bonk_idle[6] = {
+    0, 0x8007, 0x20, 0x4000, 0x8000, 0,
+};
+hero_seq BRO_seq_bonk_idle[6] = {
+    0, 0x8007, 0x20, 0x4000, 0x8000, 0,
+};
+hero_seq DNG_seq_bonk_idle[6] = {
+    0, 0x8007, 0x16, 0x4000, 0x8000, 0,
+};
+hero_seq KAN_seq_bonk_idle[6] = {
+    0, 0x8007, 0x14, 0x4000, 0x8000, 0,
+};
+hero_seq TIN_seq_bonk_idle[6] = {
+    0, 0x8007, 0x20, 0x4000, 0x8000, 0,
+};
+hero_seq KON_seq_bonk_idle[6] = {
+    0, 0x8007, 0x20, 0x4000, 0x8000, 0,
+};
+hero_seq CRA_seq_bonk_run[28] = {
+    0, 0x4000, 0x4001, 0x4002, 0x4003, 0x4004, 0x4005, 0x4006, 0x4007, 0x8003, 8, 0x4008, 0x4009,
+    0x400A, 0x400B, 0x400C, 0x400D, 0x400E, 0x400F, 0x4010, 0x4011, 0x8003, 9, 0x4012, 0x4013,
+    0x8000, 0, 0,
+};
+hero_seq COC_seq_bonk_run[30] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x8003, 8, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109,
+    0x410A, 0x410B, 0x410C, 0x410D, 0x8003, 9, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113,
+    0x4114, 0x4115, 0x8000, 0, 0,
+};
+hero_seq CTX_seq_bonk_run[30] = {
+    0, 0x4080, 0x4081, 0x8003, 8, 0x4082, 0x4083, 0x4084, 0x4085, 0x4086, 0x4087, 0x4088, 0x4089,
+    0x408A, 0x408B, 0x8003, 9, 0x408C, 0x408D, 0x408E, 0x408F, 0x4090, 0x4091, 0x4092, 0x4093,
+    0x4094, 0x4095, 0x8000, 0, 0,
+};
+hero_seq BRO_seq_bonk_run[30] = {
+    0, 0x4100, 0x4101, 0x8003, 8, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109,
+    0x410A, 0x410B, 0x8003, 9, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113,
+    0x4114, 0x4115, 0x8000, 0, 0,
+};
+hero_seq DNG_seq_bonk_run[26] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x8003, 8, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109,
+    0x410A, 0x410B, 0x410C, 0x8003, 9, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x8000, 0, 0,
+};
+hero_seq KAN_seq_bonk_run[28] = {
+    0, 0x4100, 0x4101, 0x4102, 0x4103, 0x8003, 8, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109,
+    0x410A, 0x410B, 0x410C, 0x410D, 0x8003, 9, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113,
+    0x8000, 0, 0,
+};
+hero_seq TIN_seq_bonk_run[28] = {
+    0, 0x4100, 0x4101, 0x8003, 8, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109,
+    0x410A, 0x8003, 9, 0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113,
+    0x8000, 0, 0,
+};
+hero_seq KON_seq_bonk_run[28] = {
+    0, 0x4100, 0x4101, 0x8003, 8, 0x4102, 0x4103, 0x4104, 0x4105, 0x4106, 0x4107, 0x4108, 0x4109,
+    0x410A, 0x8003, 9, 0x410B, 0x410C, 0x410D, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x4113,
+    0x8000, 0, 0,
+};
+hero_seq CRA_seq_bonk_hit[6] = {
+    0, 0x8007, 0x13, 0x4180, 0x8004, 0x40,
+};
+hero_seq COC_seq_bonk_hit[6] = {
+    0, 0x8007, 0x15, 0x4080, 0x8004, 0x40,
+};
+hero_seq CTX_seq_bonk_hit[6] = {
+    0, 0x8007, 0x1A, 0x4100, 0x8004, 0x40,
+};
+hero_seq BRO_seq_bonk_hit[6] = {
+    0, 0x8007, 0x14, 0x4080, 0x8004, 0x40,
+};
+hero_seq DNG_seq_bonk_hit[6] = {
+    0, 0x8007, 0x20, 0x4080, 0x8004, 0x40,
+};
+hero_seq KAN_seq_bonk_hit[6] = {
+    0, 0x8007, 0x1B, 0x4080, 0x8004, 0x40,
+};
+hero_seq TIN_seq_bonk_hit[6] = {
+    0, 0x8007, 0x1E, 0x4180, 0x8004, 0x40,
+};
+hero_seq KON_seq_bonk_hit[6] = {
+    0, 0x8007, 0x1E, 0x4080, 0x8004, 0x40,
+};
+hero_seq CRA_seq_bonk_winner[6] = {
+    0, 0x8007, 0x1A, 0x4200, 0x8000, 0,
+};
+hero_seq COC_seq_bonk_winner[6] = {
+    0, 0x8007, 0x5A, 0x4180, 0x8000, 0,
+};
+hero_seq CTX_seq_bonk_winner[10] = {
+    0, 0x8007, 0xE, 0x4280, 0x8007, 0x29, 0x428E, 0x8000, 3, 0,
+};
+hero_seq BRO_seq_bonk_winner[10] = {
+    0, 0x8007, 0x26, 0x4280, 0x8007, 0x29, 0x42A6, 0x8000, 3, 0,
+};
+hero_seq DNG_seq_bonk_winner[10] = {
+    0, 0x8007, 0x25, 0x4280, 0x8007, 0xF, 0x4296, 0x8000, 3, 0,
+};
+hero_seq KAN_seq_bonk_winner[6] = {
+    0, 0x8007, 0xD, 0x4200, 0x8000, 0,
+};
+hero_seq TIN_seq_bonk_winner[10] = {
+    0, 0x8007, 0x21, 0x4280, 0x8007, 0x2E, 0x42A1, 0x8000, 3, 0,
+};
+hero_seq KON_seq_bonk_winner[10] = {
+    0, 0x8007, 0x21, 0x4200, 0x8007, 0x2F, 0x4221, 0x8000, 3, 0,
+};
+hero_seq CRA_seq_bonk_backswing[12] = {
+    0, 0x8007, 9, 0x4080, 0x8003, 8, 0x4088, 0x4088, 0x4088, 0x8000, 0, 0,
+};
+hero_seq COC_seq_bonk_backswing[12] = {
+    0, 0x8007, 9, 0x4200, 0x8003, 8, 0x4208, 0x4208, 0x4208, 0x8000, 0, 0,
+};
+hero_seq CTX_seq_bonk_backswing[12] = {
+    0, 0x8007, 9, 0x4180, 0x8003, 8, 0x4188, 0x4188, 0x4188, 0x8000, 0, 0,
+};
+hero_seq BRO_seq_bonk_backswing[12] = {
+    0, 0x8007, 9, 0x4180, 0x8003, 8, 0x4188, 0x4188, 0x4188, 0x8000, 0, 0,
+};
+hero_seq DNG_seq_bonk_backswing[12] = {
+    0, 0x8007, 0xA, 0x4180, 0x8003, 8, 0x4189, 0x4189, 0x4189, 0x8000, 0, 0,
+};
+hero_seq KAN_seq_bonk_backswing[12] = {
+    0, 0x8007, 9, 0x4180, 0x8003, 8, 0x4188, 0x4188, 0x4188, 0x8000, 0, 0,
+};
+hero_seq TIN_seq_bonk_backswing[12] = {
+    0, 0x8007, 9, 0x4200, 0x8003, 8, 0x4208, 0x4208, 0x4208, 0x8000, 0, 0,
+};
+hero_seq KON_seq_bonk_backswing[12] = {
+    0, 0x8007, 9, 0x4280, 0x8003, 8, 0x4288, 0x4288, 0x4288, 0x8000, 0, 0,
+};
+hero_seq CRA_seq_bonk_extended_backswing[12] = {
+    0, 0x8007, 7, 0x4089, 0x8003, 8, 0x4090, 0x4090, 0x4090, 0x8000, 0, 0,
+};
+hero_seq COC_seq_bonk_extended_backswing[12] = {
+    0, 0x8007, 7, 0x4209, 0x8003, 8, 0x4210, 0x4210, 0x4210, 0x8000, 0, 0,
+};
+hero_seq CTX_seq_bonk_extended_backswing[12] = {
+    0, 0x8007, 6, 0x4189, 0x8003, 8, 0x418F, 0x418F, 0x418F, 0x8000, 0, 0,
+};
+hero_seq BRO_seq_bonk_extended_backswing[12] = {
+    0, 0x8007, 6, 0x4189, 0x8003, 8, 0x418F, 0x418F, 0x418F, 0x8000, 0, 0,
+};
+hero_seq DNG_seq_bonk_extended_backswing[12] = {
+    0, 0x8007, 9, 0x418A, 0x8003, 8, 0x4193, 0x4193, 0x4193, 0x8000, 0, 0,
+};
+hero_seq KAN_seq_bonk_extended_backswing[12] = {
+    0, 0x8007, 8, 0x4189, 0x8003, 8, 0x4191, 0x4191, 0x4191, 0x8000, 0, 0,
+};
+hero_seq TIN_seq_bonk_extended_backswing[12] = {
+    0, 0x8007, 8, 0x4209, 0x8003, 8, 0x4211, 0x4211, 0x4211, 0x8000, 0, 0,
+};
+hero_seq KON_seq_bonk_extended_backswing[12] = {
+    0, 0x8007, 8, 0x4289, 0x8003, 8, 0x4291, 0x4291, 0x4291, 0x8000, 0, 0,
+};
+hero_seq CRA_seq_bonk_swing[30] = {
+    0, 0x4091, 0x4092, 0x8003, 0xC, 0x4093, 0x4094, 0x4095, 0x4096, 0x4097, 0x8003, 8, 0x4098,
+    0x4099, 0x409A, 0x409B, 0x409C, 0x409D, 0x409E, 0x409F, 0x40A0, 0x40A1, 0x40A2, 0x8003, 9,
+    0x40A2, 0x40A2, 0x8000, 0, 0,
+};
+hero_seq COC_seq_bonk_swing[32] = {
+    0, 0x4211, 0x4212, 0x8003, 0xC, 0x4213, 0x4214, 0x8003, 8, 0x4215, 0x4216, 0x4217, 0x4218,
+    0x4219, 0x421A, 0x421B, 0x421C, 0x421D, 0x421E, 0x421F, 0x4220, 0x4221, 0x4222, 0x4223, 0x4224,
+    0x4225, 0x8003, 9, 0x4225, 0x4225, 0x8000, 0,
+};
+hero_seq BRO_seq_bonk_swing[28] = {
+    0, 0x4190, 0x4191, 0x8003, 0xC, 0x4192, 0x4193, 0x8003, 8, 0x4194, 0x4195, 0x4196, 0x4197,
+    0x4198, 0x4199, 0x419A, 0x419B, 0x419C, 0x419D, 0x419E, 0x419F, 0x8003, 9, 0x419F, 0x419F,
+    0x8000, 0, 0,
+};
+hero_seq CTX_seq_bonk_swing[28] = {
+    0, 0x4190, 0x4191, 0x8003, 0xC, 0x4192, 0x4193, 0x8003, 8, 0x4194, 0x4195, 0x4196, 0x4197,
+    0x4198, 0x4199, 0x419A, 0x419B, 0x419C, 0x419D, 0x419E, 0x419F, 0x8003, 9, 0x419F, 0x419F,
+    0x8000, 0, 0,
+};
+hero_seq DNG_seq_bonk_swing[28] = {
+    0, 0x4194, 0x4195, 0x4196, 0x4197, 0x8003, 8, 0x4198, 0x4199, 0x419A, 0x419B, 0x419C, 0x419D,
+    0x419E, 0x419F, 0x41A0, 0x41A1, 0x41A2, 0x41A3, 0x41A4, 0x8003, 9, 0x41A4, 0x41A4, 0x41A4,
+    0x8000, 0, 0,
+};
+hero_seq KAN_seq_bonk_swing[32] = {
+    0, 0x4191, 0x4192, 0x4193, 0x4194, 0x4195, 0x4196, 0x8003, 8, 0x4197, 0x4198, 0x4199, 0x419A,
+    0x419B, 0x419C, 0x419D, 0x419E, 0x419F, 0x41A0, 0x41A1, 0x41A2, 0x41A3, 0x41A4, 0x41A5, 0x41A6,
+    0x8003, 9, 0x41A6, 0x41A6, 0x8000, 0, 0,
+};
+hero_seq TIN_seq_bonk_swing[34] = {
+    0, 0x4212, 0x4213, 0x8003, 0xC, 0x4214, 0x4215, 0x4216, 0x4217, 0x8003, 8, 0x4218, 0x4219,
+    0x421A, 0x421B, 0x421C, 0x421D, 0x421E, 0x421F, 0x4220, 0x4221, 0x4222, 0x4223, 0x4224, 0x4225,
+    0x4226, 0x4227, 0x8003, 9, 0x4227, 0x4227, 0x8000, 0, 0,
+};
+hero_seq KON_seq_bonk_swing[34] = {
+    0, 0x4292, 0x4293, 0x8003, 0xC, 0x4294, 0x4295, 0x4296, 0x8003, 8, 0x4297, 0x4298, 0x4299,
+    0x429A, 0x429B, 0x429C, 0x429D, 0x429E, 0x429F, 0x42A0, 0x42A1, 0x42A2, 0x42A3, 0x42A4, 0x42A5,
+    0x42A6, 0x42A7, 0x8003, 9, 0x42A7, 0x42A7, 0x8000, 0, 0,
+};
+s32 BonkFlagSteps[3] = { (s32)0x80110000, 0x40000010, 0x8001 };
+s32 BonkFlagAnimList[3] = { (s32)&BonkFlagSteps, 0, 0 };
+ScriptInit BonkFlagScriptInit = { 0, (void *)&BonkFlagAnimList, 0x401 };
+s16 BonkPreLoadDB[4] = { 0x1C, 0x17, -1, 0 };
+char *BonkAnims[6] = {
+    (char *)BonkAnimBreathe, (char *)BonkAnimMedium, (char *)BonkAnimAttack, (char *)BonkAnimHit,
+    (char *)BonkAnimWin, NULL,
+};
+s16 BonkLevelDB[2] = { 0x53, -1 };
+WWInf BonkWorldInfo[2] = {
+    { 0x51, BonkAnims, BonkLevelDB, 0 },
+    { 0x52, BonkAnims, BonkLevelDB, 0 },
+};
+s32 BonkFiles[18] = {
     (s32)&D_80055684, (s32)&D_8004EBB8, (s32)&D_8004EBB0, (s32)&D_800555A4, (s32)&D_8004EB98,
     (s32)&D_8004EB90, (s32)&D_80053074, (s32)&D_8004EBA8, (s32)&D_8004EBA0, (s32)&D_80052F5C,
     (s32)&D_8004EB88, (s32)&D_8004EB80, (s32)&D_80053C7C, (s32)&D_8004EB78, (s32)&D_8004EB70,
-    0, 0, 0, (s32)&D_80050064, (s32)&D_800B9D54,
+    0, 0, 0,
 };
-s32 D_800B9DA4[2] = { 0x20D0003, 0x1A020201 };
-s32 D_800B9DAC[19] = {
-    (s32)&D_800B9DA4, 4, (s32)&D_800B9CF0, (s32)&D_800B9D14, (s32)&D_800B9DAC, 0, 0, 0, 0,
-    0x2000, 0x10, 0x1000, 0x80, 0x200, 0x190, (s32)&D_80063EC8, (s32)&D_80063BB8, 0x20, 0x400,
+/* the level's files (the engine's per-mode table points at mode 0x1D's) */
+file_group_load_info file_group_BONK = { D_80050064, BonkFiles };
+u16 BonkLUPtab[4] = { 3, 0x20D, 0x201, 0x1A02 };
+TrigLookUp BonkLUP = { BonkLUPtab, 4 };
+PreMap BONK_PREMAP = { BonkPreLoadDB, BonkWorldInfo, &BonkLUP };
+/* the shell settings (engine world record 0x010E) */
+shell_setup bonk_shell_info = {
+    0x2000, 0x10, 0x1000, 0x80, 0x200, 0x190, D_80063EC8, D_80063BB8, 0x20, 0x400,
 };
-u8 D_800B9DF8[20] = { 0, 0, 0x54, 0, 0x55, 0, 0x56, 0, 0x57, 0, 0x5A, 0, 0x5B, 0, 0x58, 0, 0x59, 0, 0, 0 };
-s32 D_800B9E0C = 0x258;
-s32 D_800B9E10[4] = { 0x258, 0x258, 0x1C2, 0x12C };
-s32 D_800B9E20[4] = { 0x733, 0x734, 0x735, 0x736 };
-s32 D_800B9E30[4] = { 0x71D, 0x71E, 0x71F, 0x720 };
-s32 D_800B9E40[4] = { 0x3F5, 0x3F6, 0x3F7, 0x3F8 };
-BonkEntry D_800B9E50[10] = {0};
-BonkEnt D_800B9EC8[3] = {0};
-s32 D_800B9EEC = 0;
-s32 D_800B9EF0 = 0;
-s32 D_800B9EF4 = 0;
-s32 D_800B9EF8 = 0;
-s32 D_800B9EFC = 0;
-s32 D_800B9F00 = 0;
-s32 D_800B9F04 = 0;
-s32 D_800B9F08 = 0;
+u16 BonkHeroModels[10] = {
+    0, 0x54, 0x55, 0x56, 0x57, 0x5A, 0x5B, 0x58, 0x59, 0,
+};
+s32 BonkRoundTime = 0x258;
+s32 BonkUnused2[4] = { 0x258, 0x258, 0x1C2, 0x12C };
+s32 BonkStoolSfx[4] = { 0x733, 0x734, 0x735, 0x736 };
+s32 BonkTargetSfx[4] = { 0x71D, 0x71E, 0x71F, 0x720 };
+s32 BonkObjectSfx[4] = { 0x3F5, 0x3F6, 0x3F7, 0x3F8 };
+BonkEntry BonkEntries[10] = {0};
+BonkEnt BonkEnts[3] = {0};
+s32 BonkSkill = 0;
+s32 BonkEntryCur = 0;
+s32 BonkCrateTimer = 0;
+s32 BonkCrateDelay = 0;
+s32 BonkCrateCount = 0;
+s32 BonkRoundTimer = 0;
+s32 BonkRoundState = 0;
+s32 BonkEntCur = 0;
 
 void InitialiseBONKFirst() {
-    D_8009D6E8.unk4 = D_800B9DF8;
+    D_8009D6E8.unk4 = BonkHeroModels;
     D_8009D6E8.unk2C = BonkHeroFacing;
     D_8009D6E8.unk68 = BONK_KeepInBounds;
     D_8009D6E8.unk20 = BonkPreMoveHero;
@@ -195,49 +347,49 @@ void InitialiseBONKFirst() {
 void BonkInitEntries(void) {
     s32 i;
 
-    D_800B9EF0 = 0;
-    D_800B9EFC = 0;
-    D_800B9F04 = 0;
-    D_800B9F00 = D_800B9E0C;
+    BonkEntryCur = 0;
+    BonkCrateCount = 0;
+    BonkRoundState = 0;
+    BonkRoundTimer = BonkRoundTime;
     for (i = 0; i < 10; i++) {
-        D_800B9E50[i].unk0 = 0x100;
-        D_800B9E50[i].unk4 = 0;
-        D_800B9E50[i].unk8 = 0;
+        BonkEntries[i].unk0 = 0x100;
+        BonkEntries[i].unk4 = 0;
+        BonkEntries[i].unk8 = 0;
     }
-    D_800B9EF4 = 0;
-    D_800B9EF8 = D_800B9634 * 30;
+    BonkCrateTimer = 0;
+    BonkCrateDelay = BonkEntryCount * 30;
 }
 
 void BonkCrateMaster(void) {
     s32 i;
     s32 *new_var;
 
-    if (D_800B9EFC > 0) {
-        D_800B9EFC -= 1;
+    if (BonkCrateCount > 0) {
+        BonkCrateCount -= 1;
     }
-    if (D_800B9F00 > 0 && D_800B9F04 < 4) {
-        D_800B9F00 -= 1;
+    if (BonkRoundTimer > 0 && BonkRoundState < 4) {
+        BonkRoundTimer -= 1;
     }
-    if (D_800B9EF0 != 0) {
+    if (BonkEntryCur != 0) {
         for (i = 0; i < 10; i++) {
-            NAS *n = (NAS *)D_800B9E50[i].unk4;
+            NAS *n = (NAS *)BonkEntries[i].unk4;
             if (n != 0 && n->UserInfo.status == 1) {
                 KillNAS(n);
-                D_800B9E50[i].unk4 = 0;
+                BonkEntries[i].unk4 = 0;
             }
         }
     }
-    if (D_800B9EF4 < 4) {
-        if (D_800B9EF8 != 0) {
-            D_800B9EF8--;
+    if (BonkCrateTimer < 4) {
+        if (BonkCrateDelay != 0) {
+            BonkCrateDelay--;
         } else {
-            D_800B9EF4++;
-            D_800B9EF8 = (&D_800B9634)[D_800B9EF4] * 30;
+            BonkCrateTimer++;
+            BonkCrateDelay = (&BonkEntryCount)[BonkCrateTimer] * 30;
         }
     }
-    if (D_800B9EF0 < (new_var = &D_800B95A8)[D_800B9EF4] && D_800B9EFC == 0) {
+    if (BonkEntryCur < (new_var = &BonkStoolCount)[BonkCrateTimer] && BonkCrateCount == 0) {
         BonkSpawnCrate();
-        D_800B9EFC = 0x14;
+        BonkCrateCount = 0x14;
     }
 }
 
@@ -257,23 +409,23 @@ void PlotBonkStool(NAS *nas) {
     switch (nas->UserInfo.status) {
     case 0:
         if (BonkAI_PickEntry(&x, &z) != 0) {
-            D_800B9E50[nas->UserInfo.user2].unk8 = 1000;
+            BonkEntries[nas->UserInfo.user2].unk8 = 1000;
             e->unk10.x = x;
             e->unk10.z = z;
             e->unk10.y = World_floor_level - 0x2000;
             BonkKeepInBoundsB(e);
             nas->UserInfo.status = 2;
             if (nas->UserInfo.user1 == 0) {
-                D_800B9E50[nas->UserInfo.user2].unk8 = D_800B9300[D_800B9EEC];
+                BonkEntries[nas->UserInfo.user2].unk8 = BonkStoolFrames[BonkSkill];
                 nas->UserInfo.user1 = Random(0x14) + 10;
             } else {
-                D_800B9E50[nas->UserInfo.user2].unk8 = 0;
+                BonkEntries[nas->UserInfo.user2].unk8 = 0;
             }
             e->flags &= 0xFFFF7FFF;
-            if (D_800B9F00 == 0) {
+            if (BonkRoundTimer == 0) {
                 e->sub->unk74 = 0x2015;
-                p = &D_800B9E0C;
-                D_800B9F00 = p[++D_800B9F04];
+                p = &BonkRoundTime;
+                BonkRoundTimer = p[++BonkRoundState];
             } else {
                 e->sub->unk74 = 0x2002;
             }
@@ -301,7 +453,7 @@ void PlotBonkStool(NAS *nas) {
         if (e->unk2C.y > 0xC00) {
             e->unk2C.y = 0xC00;
             nas->UserInfo.status = 12;
-            nas->UserInfo.user1 = D_800B95C4[D_800B9EF4] + Random(D_800B95E0[D_800B9EF4]);
+            nas->UserInfo.user1 = BonkStoolHeights[BonkCrateTimer] + Random(BonkStoolTable[BonkCrateTimer]);
             if (e->sub->unk74 == 0x2015) {
                 pos = e->unk10;
                 pos.y -= 0x100;
@@ -311,8 +463,8 @@ void PlotBonkStool(NAS *nas) {
         e->unk5E = 1;
         break;
     case 12:
-        if (D_800B9E50[nas->UserInfo.user2].unk8 != 0) {
-            D_800B9E50[nas->UserInfo.user2].unk8--;
+        if (BonkEntries[nas->UserInfo.user2].unk8 != 0) {
+            BonkEntries[nas->UserInfo.user2].unk8--;
         }
         if (--nas->UserInfo.user1 <= 0) {
             nas->UserInfo.status = 13;
@@ -321,8 +473,8 @@ void PlotBonkStool(NAS *nas) {
         break;
     case 13:
     case 14:
-        if (D_800B9E50[nas->UserInfo.user2].unk8 != 0) {
-            D_800B9E50[nas->UserInfo.user2].unk8--;
+        if (BonkEntries[nas->UserInfo.user2].unk8 != 0) {
+            BonkEntries[nas->UserInfo.user2].unk8--;
         }
         if (--nas->UserInfo.user1 <= 0) {
             if (nas->UserInfo.status == 13) {
@@ -346,7 +498,7 @@ void PlotBonkStool(NAS *nas) {
         BonkMalletHit((VECTOR *)v, 0x380, -1, 0);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
-        PlaySfx(D_800B9E20[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
+        PlaySfx(BonkStoolSfx[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
         break;
     case 4:
         Bonk_SpawnPuff((s32 *)&e->unk10, 1, D_80053C7C);
@@ -354,9 +506,9 @@ void PlotBonkStool(NAS *nas) {
         nas->UserInfo.status = 6;
         break;
     case 6:
-        p = &D_800B9EF0;
-        q = &D_800B95A8;
-        if (*p > q[D_800B9EF4]) {
+        p = &BonkEntryCur;
+        q = &BonkStoolCount;
+        if (*p > q[BonkCrateTimer]) {
             nas->UserInfo.status = 1;
             (*p)--;
             e->unk10.y = World_floor_level - 0x2000;
@@ -394,8 +546,8 @@ s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
             }
         }
         if (ok) {
-            if (D_800B9EF0 != 0) {
-                for (i = 0, e = D_800B9E50; i < 10; i++, e++) {
+            if (BonkEntryCur != 0) {
+                for (i = 0, e = BonkEntries; i < 10; i++, e++) {
                     if (e->unk4 != 0) {
                         eng = ((NAS *)e->unk4)->Engine;
                         if ((csqrt(BonkDist2XZ(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x400) {
@@ -404,8 +556,8 @@ s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
                     }
                 }
             }
-            if (ok && D_800B9F08 != 0) {
-                for (i = 0, f = D_800B9EC8; i < 3; i++, f++) {
+            if (ok && BonkEntCur != 0) {
+                for (i = 0, f = BonkEnts; i < 3; i++, f++) {
                     if (f->b != 0) {
                         eng = ((NAS *)f->b)->Engine;
                         if ((csqrt(BonkDist2XZ(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x300) {
@@ -437,7 +589,7 @@ void InitBonkCrate(NAS *nas) {
         e->unk2C.x = 0;
         e->unk5E = 1;
         nas->UserInfo.status = 0;
-        nas->UserInfo.user1 = D_800B9F08 * 0x5A + 0x1E;
+        nas->UserInfo.user1 = BonkEntCur * 0x5A + 0x1E;
         s = e->sub;
         e->flags &= 0xFFFF7FFF;
         if (s != NULL) {
@@ -458,9 +610,9 @@ void InitBonkCrate(NAS *nas) {
     if (nas->Failure != 0) {
         KillNAS(nas);
     } else {
-        nas->UserInfo.user2 = D_800B9F08;
-        D_800B9EC8[D_800B9F08].b = (s32)nas;
-        D_800B9F08 += 1;
+        nas->UserInfo.user2 = BonkEntCur;
+        BonkEnts[BonkEntCur].b = (s32)nas;
+        BonkEntCur += 1;
     }
 }
 
@@ -478,10 +630,10 @@ void PlotBonkCrate(NAS *nas) {
     case 0:
         e->unk10.y = World_floor_level - 0x2000;
         if (nas->UserInfo.user1 == 0) {
-            D_800B9EC8[nas->UserInfo.user2].c = D_800B93A0[D_800B9EEC];
+            BonkEnts[nas->UserInfo.user2].c = BonkCrateFrames[BonkSkill];
             nas->UserInfo.user1 = Random(0x5A) + 0x5A;
         } else {
-            D_800B9EC8[nas->UserInfo.user2].c = 0;
+            BonkEnts[nas->UserInfo.user2].c = 0;
         }
         e->flags &= 0xFFFF7FFF;
         e->unk1E = Random(0x1000);
@@ -525,8 +677,8 @@ void PlotBonkCrate(NAS *nas) {
         e->unk2C.z = s;
         break;
     case 12:
-        if (D_800B9EC8[nas->UserInfo.user2].c > 0) {
-            D_800B9EC8[nas->UserInfo.user2].c--;
+        if (BonkEnts[nas->UserInfo.user2].c > 0) {
+            BonkEnts[nas->UserInfo.user2].c--;
         }
         break;
     case 5:
@@ -535,7 +687,7 @@ void PlotBonkCrate(NAS *nas) {
         BonkMalletHit((VECTOR *)v, 0x380, -1, 0);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
-        PlaySfx(D_800B9E20[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
+        PlaySfx(BonkStoolSfx[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
         break;
     case 4:
         Bonk_SpawnPuff((s32 *)&e->unk10, 2, D_80053C7C);
@@ -564,14 +716,14 @@ s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
 
     found = 0;
     if (arg2 & 2) {
-        best = D_800B9580[Heroes[arg0].hero_name];
+        best = BonkAIRange[Heroes[arg0].hero_name];
     } else {
         best = 0xFFFFFF;
     }
     x = Heroes[arg0].hero_eng->unk10.x;
     z = Heroes[arg0].hero_eng->unk10.z;
-    if ((arg2 & 0x100) && D_800B9EF0 != 0) {
-        for (i = 0, e = D_800B9E50; i < 10; i++, e++) {
+    if ((arg2 & 0x100) && BonkEntryCur != 0) {
+        for (i = 0, e = BonkEntries; i < 10; i++, e++) {
             if (e->unk4 == 0) {
                 continue;
             }
@@ -599,8 +751,8 @@ s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
     }
     if (arg2 & 0x200) {
         i = 0;
-        if (D_800B9F08 != 0)
-        for (f = D_800B9EC8; i < 3; i++, f++) {
+        if (BonkEntCur != 0)
+        for (f = BonkEnts; i < 3; i++, f++) {
             if (f->b == 0) {
                 continue;
             }
@@ -657,7 +809,7 @@ void BonkHitTarget(s32 arg0, s32 arg1, BonkTgt2 *t) {
                 BonkKnockBack(arg0, e, big ? 0xA : 2);
                 break;
             }
-            PlaySfx(D_800B9E30[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            PlaySfx(BonkTargetSfx[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
             if (big) {
                 PlaySfx(0x72B, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
             }
@@ -719,10 +871,10 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
     next:
         i++;
     } while (i < 4);
-    if ((c & 0x100) && D_800B9EF0 != 0) {
+    if ((c & 0x100) && BonkEntryCur != 0) {
         i = 0;
         do {
-            e = &D_800B9E50[i];
+            e = &BonkEntries[i];
             if (e->unk4 != 0) {
                 eng = ((NAS *)e->unk4)->Engine;
                 if ((csqrt(BonkDist2XZ(x, z, eng->unk10.x, eng->unk10.z)) >> 6) <= a
@@ -1173,7 +1325,7 @@ void Bonk_HeroBot(s32 arg0)
             ai->TargetXYZ = hit->nas->Engine->unk10;
             ai->AItimer1 = 10;
             if (hit->kind == 0x100) {
-                if (D_800B9F4C[arg0].f8 == 1 || (*(u16 *)(g + 0x32) & 0x80) ||
+                if (BonkSlots[arg0].f8 == 1 || (*(u16 *)(g + 0x32) & 0x80) ||
                     BonkAI_NearestEnemy(arg0) != 0) {
                     ai->AImode = 2;
                 } else {
@@ -1184,7 +1336,7 @@ void Bonk_HeroBot(s32 arg0)
                     ai->AImode = mode;
                 }
             } else {
-                if (D_800B9F4C[arg0].f8 == 1 || (*(u16 *)(g + 0x32) & 0x80) ||
+                if (BonkSlots[arg0].f8 == 1 || (*(u16 *)(g + 0x32) & 0x80) ||
                     BonkAI_NearestEnemy(arg0) != 0) {
                     ai->AImode = 4;
                 } else {
@@ -1229,7 +1381,7 @@ void Bonk_HeroBot(s32 arg0)
     case 3:
         if ((csqrt(bonk_sq(ai->pTargetNas->Engine->unk10.x, ai->pTargetNas->Engine->unk10.z,
                             Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) >> 6) <
-            D_800B9580[Heroes[arg0].hero_name]) {
+            BonkAIRange[Heroes[arg0].hero_name]) {
             if ((ai->AImode == 3 && Heroes[arg0].hero_mode != 0x44) ||
                 (ai->AImode == 2 && Heroes[arg0].hero_mode != 0x43)) {
                 ai->AIpad |= 0x8000;
@@ -1240,7 +1392,7 @@ void Bonk_HeroBot(s32 arg0)
     case 5:
         if ((csqrt(bonk_sq(ai->pTargetNas->Engine->unk10.x, ai->pTargetNas->Engine->unk10.z,
                             Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) >> 6) <
-            D_800B9580[Heroes[arg0].hero_name]) {
+            BonkAIRange[Heroes[arg0].hero_name]) {
             if ((ai->AImode == 5 && Heroes[arg0].hero_mode != 0x44) ||
                 (ai->AImode == 4 && Heroes[arg0].hero_mode != 0x43)) {
                 ai->AIpad |= 0x8000;
@@ -1338,7 +1490,7 @@ void InitBonkFlag(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        func_80024E30(nas, &D_800B9CE4);
+        func_80024E30(nas, &BonkFlagScriptInit);
         e->sub->unk6C = D_80053C0C;
     } else {
         nas->Failure = 1;
@@ -1400,7 +1552,7 @@ void BonkHitObject(s32 arg0, s32 arg1, BonkObj *obj) {
     if (p != NULL) {
         BonkHeroHitFlash(arg0, Random(2));
         p->mode = 4;
-        PlaySfx(D_800B9E40[Random(4)], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(BonkObjectSfx[Random(4)], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -1410,11 +1562,11 @@ void BonkUpdateStub(void) {
 void BonkSpawnStool(void) {
     s32 i;
 
-    D_800B9F08 = 0;
+    BonkEntCur = 0;
     for (i = 0; i < 3; i++) {
-        D_800B9EC8[i].a = 0x200;
-        D_800B9EC8[i].b = 0;
-        D_800B9EC8[i].c = 0;
+        BonkEnts[i].a = 0x200;
+        BonkEnts[i].b = 0;
+        BonkEnts[i].c = 0;
     }
     for (i = 0; i < 2; i++) {
         CreateNAS(0, 0, 0, 0x1A04, 0x11);
@@ -1459,13 +1611,13 @@ void InitBonkStool(NAS *nas) {
 void BonkSpawnCrate(void) {
     NAS *n;
 
-    if (D_800B9EF0 < 10) {
+    if (BonkEntryCur < 10) {
         n = CreateNAS(0, World_floor_level - 0x2000, 0, 0x1A01, 0x11);
         if (n != NULL) {
-            n->UserInfo.user1 = Random(10) + D_800B9EF0 * 5;
-            n->UserInfo.user2 = D_800B9EF0;
-            D_800B9E50[D_800B9EF0].unk4 = (s32)n;
-            D_800B9EF0 += 1;
+            n->UserInfo.user1 = Random(10) + BonkEntryCur * 5;
+            n->UserInfo.user2 = BonkEntryCur;
+            BonkEntries[BonkEntryCur].unk4 = (s32)n;
+            BonkEntryCur += 1;
         }
     }
 }
@@ -1475,7 +1627,7 @@ void BonkUpdateSkill(void) {
 
     for (i = 0; i < 4; i++) {
         if (D_8005A614[i + 0x5C] != 0) {
-            D_800B9EEC = D_8009D87C[i][0];
+            BonkSkill = D_8009D87C[i][0];
         }
     }
 }
@@ -1487,9 +1639,9 @@ void UpdateBONK(void) {
 }
 
 void BonkInitTweakAi(void) {
-    D_8009D904 = D_8005A680[0] != 0 ? D_800B92E8 : D_800B92D0;
-    D_8009D8FC = D_8005A680[0] != 0 ? D_800B92B0 : D_800B929C;
-    D_8009D900 = D_800B92C4;
+    D_8009D904 = D_8005A680[0] != 0 ? BonkAiHumanRoundTweakAlt : BonkAiHumanRoundTweak;
+    D_8009D8FC = D_8005A680[0] != 0 ? BonkAiSkillAlt : BonkAiSkill;
+    D_8009D900 = BonkAiTeamSkill;
 }
 
 void BonkSetClock(s32 arg0) {
@@ -1562,7 +1714,7 @@ void InitialiseBONK(void) {
     Init_Clock(0x140, 0x28, 0);
     Set_Clock(0x130, 0x81D0);
     BonkInitCamera();
-    D_800B9EEC = 0x10;
+    BonkSkill = 0x10;
     BonkUpdateSkill();
     BonkSetClockC();
     BonkInitScores();
@@ -1654,7 +1806,7 @@ void BonkHeroHitFlash(s32 arg0, s32 arg1) {
     }
     switch (arg1) {
     case 0:
-        D_800B9F4C[arg0].fC = 0xB4;
+        BonkSlots[arg0].fC = 0xB4;
         if (s != NULL) {
             s->unk6C = D_80053C7C;
             s->unk74 = 0x2013;
@@ -1675,7 +1827,7 @@ void BonkHeroHitFlash(s32 arg0, s32 arg1) {
     default:
         return;
     }
-    D_800B9F4C[arg0].f8 = arg1;
+    BonkSlots[arg0].f8 = arg1;
 }
 
 void BonkHero_ExtraEffects(s32 player) {
@@ -1686,12 +1838,12 @@ void BonkHero_ExtraEffects(s32 player) {
     if (p != NULL) {
         EXTengine *e = h->hero_eng;
         p->unk10 = e->unk10;
-        p->unk10.y -= D_800B9594[h->hero_name];
+        p->unk10.y -= BonkPowerupTimes[h->hero_name];
         p->unk1E += 0x38;
         p->unk5E = 1;
     }
-    if (D_800B9F4C[player].f8 == 0) {
-        if (--D_800B9F4C[player].fC <= 0) {
+    if (BonkSlots[player].f8 == 0) {
+        if (--BonkSlots[player].fC <= 0) {
             BonkHidePowerup(player);
         }
     }
