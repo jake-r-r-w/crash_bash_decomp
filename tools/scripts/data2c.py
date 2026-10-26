@@ -32,6 +32,7 @@ import struct
 import sys
 
 CFG = "configs/USA"
+SLOT_LO, SLOT_HI = 0x800B32B4, 0x800D7148   # the slot overlays' shared range (shift.py)
 SCALARS = {"s8": (1, True), "u8": (1, False), "char": (1, True), "s16": (2, True), "u16": (2, False),
            "short": (2, True), "s32": (4, True), "u32": (4, False), "int": (4, True), "long": (4, True),
            "unsigned": (4, False), "bool": (4, True), "signed": (4, True)}
@@ -315,6 +316,13 @@ class Converter:
         self.subs = [s for s in seg["subsegments"] if isinstance(s, list)]
         self.bin = open(bpath, "rb").read()
         self.end = self.vram + len(self.bin) - self.start
+        self.slot_names = {}
+        if ovl == "engine":
+            # the engine's image runs on over the slot, whose words name a slot overlay's symbols:
+            # which one each names is slot_refs.py's
+            import slot_refs
+            self.end = SLOT_LO
+            self.slot_names = slot_refs.resolve()[0]
         texts = [open(p, encoding="utf-8").read() for p in header_order(glob.glob("include/bash/*.h"), ovl)]
         # the SDK's types (MATRIX, VECTOR, ...) for layouts only; its declarations aren't the game's
         sdk = [open(p, encoding="latin-1").read() for p in SDK_TYPES if os.path.exists(p)]
@@ -337,6 +345,7 @@ class Converter:
                 self.funcs[int(k.split(":")[1], 16)] = e.get("name")
         self.provide = {}
         self.externs = set()
+        self.slot_used = set()
 
     def rom(self, va):
         return va - self.vram + self.start
@@ -405,6 +414,17 @@ class Converter:
         data as numbers, as it has no label there)."""
         if not (PTR_LO <= t < PTR_HI):
             return None
+        if self.ovl == "engine" and SLOT_LO <= t < SLOT_HI and rom is not None:
+            va = rom - self.start + self.vram
+            if t == SLOT_LO:   # the loaded overlay's id word, whichever overlay it is
+                self.provide["SlotOverlayId"] = t
+                self.externs.add("SlotOverlayId")
+                return "&SlotOverlayId"
+            n = self.slot_names.get(va)
+            if n is None:
+                raise ValueError(f"the slot word at {va:08X} ({t:08X}) names no overlay's symbol (slot_refs.py)")
+            self.slot_used.add(n)
+            return f"&{n}"
         if not (self.vram <= t < self.end) and t not in self.syms and rom not in self.symbolic \
                 and (t & 3 or not t & 0xFFFF):
             return None
