@@ -706,6 +706,14 @@ signature alone is not enough.
   (`RacePickupMaster`); about twenty functions nothing in the overlay calls
   (`RaceTrackCollideB`/`C`, `RaceKeepOnTrack`, `RaceDazeHeroNear`, ...) are
   named from their code.
+  Its data (named 2026-10-26): two engine world records (0x0017, 0x0018)
+  point at `RACE_PREMAP` and `race_shell_info`, the per-mode table at
+  `file_group_DASH`, `TOXIC`, `WATER`, `LAVA` (all `RaceFiles` with the exe's
+  file group 15: 16 DAT entries, all decoded); the 72 sequences are each
+  character's nine `hero_seq_race*`/`raceswim*` (`CRA_seq_raceidle` ..), at the
+  start of the data; the AI's tweak tables come in four sets (Dash, the
+  default, Toxic, Lava, Water); `RaceHeroModelsWater` replaces the models in
+  Water.
 - **Papu's data** (papu, the crate games' boss; named 2026-10-26). Mode 4
   (`LEV_PAPU`); one engine world record (0x0105) points at `PAPU_PREMAP`,
   `papu_shell_info` and `PAPUSetUp`, the per-mode table at `file_group_PAPU`
