@@ -301,7 +301,11 @@ build.
   passed (`make shift OVL=race PAD=0x40`, PLAYING.md). Left for Phase 5: its
   stand-ins (`RaceFux*`, `RaceBarrelView` as the leak's `RaceBarrel`, the
   `EXTrace*` extensions).
-- [ ] Spin
+- [x] Spin. Done 2026-10-26: every function named (many from their Bash and
+  Papu twins), rodata, data and id word as C (one file), all 95 data objects
+  named, the DAT entries it loads all decode, its shift test passed (`make
+  shift OVL=spin PAD=0x40`, PLAYING.md). Left for Phase 5: its stand-ins
+  (`SpinFux`, `SpinCell`, `SpinSlot`, `SpinGame`).
 - [ ] Dino
 - [ ] Bonk
 - [ ] N2O and NOX (`n2o`)

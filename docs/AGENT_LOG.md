@@ -457,7 +457,7 @@ Newest first, a few lines each. Details are in the commits.
   file), all 95 data objects named (24 sequences split out of the balloon
   sound table, the shell settings out of the human tweak table). data2c: a
   rest smaller than its object's element is halfwords or bytes (a word
-  object's last 2 bytes recursed). Shift test waiting on the playtest.
+  object's last 2 bytes recursed). Shift test passed (user playtest).
 
 - **2026-10-26 (Race, with the recipe):** all 99 unnamed functions named
   (about twenty are uncalled in retail), data, rodata and id word as C (one
