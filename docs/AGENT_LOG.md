@@ -470,9 +470,13 @@ Newest first, a few lines each. Details are in the commits.
   (`FontModel`, `PowerupsModel`, `AngelModel`, `PapuModel`, ...;
   `tools/scripts/model_slots.py`); then 15 more (`GameCheats`, `GameLanguage`,
   `HeroKeepInBoundsHook`, `WarpRooms`, `MapPoints`, ...), the pads' fields (`PadState.held` / `pressed`: `D_80051380` was `Pads[0].pressed`), the
-  victory sequence (`WinSeqTimer` ..) and the clear pause words; 3822 uses of 939 names
-  left. The hero action ids, the victory sequence and the pause words are separate
-  globals, not structs: nothing takes their run's address or indexes across it. Gotchas: `decomp.py rename` writes every exe or
+  victory sequence (`WinSeqTimer` ..) and the clear pause words; 3584 uses of 914 names
+  left (after a fifth batch: `DatIndex`, `NasPool`, `NextGameMode`, the viewports, `CupTable`,
+  the CD and card words, and the labels inside `Heroes` as fields). The hero action ids, the victory sequence and the pause words are separate
+  globals, not structs: nothing takes their run's address or indexes across it.
+  Gotcha: a label inside an array of structs may not become a field everywhere: in Tank,
+  `Heroes[2].hero_sub` and `Heroes[3].hero_sub` as fields share one `lui %hi(Heroes)`,
+  where retail loads each label's address apart, so Tank keeps `TankJoeSub` / `TankMoeSub`. Gotchas: `decomp.py rename` writes every exe or
   engine data name to `sym.main.txt`; move the engine's (from `0x80078C90`)
   to `sym.engine.txt`. A renamed global's PROVIDE in
   `undefined_syms_manual.txt` needs the new name too. `GameState` is already

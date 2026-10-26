@@ -17,8 +17,8 @@ extern volatile u8 *D_80067874; /* CD index/status register */
 extern volatile u8 *D_80067878; /* CD command register */
 extern volatile u8 *D_8006787C; /* CD parameter FIFO */
 extern volatile u8 *D_80067880; /* CD interrupt flag register */
-extern u8 D_80067884[];
-extern u8 D_8006788C[]; /* CD response buffer */
+extern u8 CdParams[];
+extern u8 CdResult[]; /* CD response buffer */
 
 extern s32 D_80067898;
 
@@ -32,7 +32,7 @@ typedef struct {
     u8 min;
     u8 sec;
 } BcdTime;
-extern volatile u8 D_8006EA20; /* BCD minutes; BCD seconds at D_8006EA20 + 1 */
+extern volatile u8 CdTimeBcd; /* BCD minutes; BCD seconds at CdTimeBcd + 1 */
 
 static inline u8 cd_to_bcd(u8 tens, u8 units) {
     return ((tens / 10) << 4) | (units % 10);

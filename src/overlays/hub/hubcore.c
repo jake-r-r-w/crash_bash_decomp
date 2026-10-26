@@ -287,8 +287,8 @@ void HubPreMoveHero(s32 arg0) {
     ang = eng->unk1E;
     if (((HubGameView *)GameInfo)->unk74 != 0) {
         eng->flags &= ~0x8000;
-        if (D_8009D538[0] != NULL) {
-            D_8009D538[0]->flags &= ~0x8000;
+        if (Heroes[0].hero_shadow != NULL) {
+            Heroes[0].hero_shadow->flags &= ~0x8000;
         }
         return;
     }
@@ -479,7 +479,7 @@ void HubPreMoveHero(s32 arg0) {
             func_80092AF4(&D_8009F46C, 0x200);
             break;
         default:
-            HubSpawnFlash(&CameraTarget->unk10.x, 9);
+            HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
             break;
         }
     }
@@ -1087,7 +1087,7 @@ void HubDoorMenu2Quit(void) {
 void HubDoorMenu2Render(void) {
     EXTengine *e;
 
-    func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+    func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
     FadeAmount = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
@@ -1113,7 +1113,7 @@ void HubDoorMenu2Init(void) {
 void HubDoorMenuRender(void) {
     EXTengine *e;
 
-    func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+    func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
     FadeAmount = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
@@ -1211,7 +1211,7 @@ s32 HubDistXZ(u8 *arg0, u8 *arg1) {
 
 void HubGoToMode(s32 arg0) {
     u8 *p;
-    D_8009E5DC = arg0;
+    NextGameMode = arg0;
     p = GameInfo;
     *(u16 *)(p + 0x30) = 0x8008;
     *(u16 *)(p + 0x24) = 0xA;
@@ -1255,7 +1255,7 @@ void HubCameraFollow(u8 *arg0, s32 arg1) {
         n = 3;
     }
     HubCamFromPath((u8 *)&v, n);
-    v.at = *(CamXYZ *)&CameraTarget->unk10;
+    v.at = *(CamXYZ *)&Heroes[0].hero_eng->unk10;
     v.rot.vy = -D_8009EEA0;
     if (arg1 != 0) {
         func_80013F44(cam, &v, NULL);
@@ -2377,7 +2377,7 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
 
 void PodiumRenderScene(void) {
     func_8009440C();
-    func_80018B08(D_8009F67C, D_8009F734);
+    func_80018B08(MainViewport, MainGfxCamera);
     func_8001C2C0(GetEngineSlot(6));
 }
 

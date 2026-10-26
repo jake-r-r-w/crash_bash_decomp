@@ -1630,7 +1630,7 @@ void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
     if (t->str == NULL) {
         return;
     }
-    D_8005B2B4 = t->font;
+    FontPage = t->font;
     if (t->NASid & 0x10000000) {
         x = t->x;
         if ((x & 0xC000) == 0x8000) {
@@ -1807,10 +1807,10 @@ s32 func_8001AF2C(void *arg0) {
     s32 ey;
 
     flags = 0;
-    in = &D_800569CC.in;
+    in = &GteWork.in;
     in = &box->center;
     gte_ldv0(in);
-    in = &D_800569CC.in;
+    in = &GteWork.in;
     gte_rtps();
     gte_stsxy(&c);
     gte_stsz(&sz);

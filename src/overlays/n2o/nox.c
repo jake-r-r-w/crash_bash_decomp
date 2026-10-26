@@ -1233,9 +1233,9 @@ void PlotNitroMine(NAS *nas) {
     nas->Engine->unk1E += 0x20;
     nas->Engine->unk5E = 1;
     eng = nas->Engine;
-    dx = eng->unk10.x - CameraTarget->unk10.x;
-    dz = eng->unk10.z - CameraTarget->unk10.z;
-    dy = eng->unk10.y - CameraTarget->unk10.y;
+    dx = eng->unk10.x - Heroes[0].hero_eng->unk10.x;
+    dz = eng->unk10.z - Heroes[0].hero_eng->unk10.z;
+    dy = eng->unk10.y - Heroes[0].hero_eng->unk10.y;
     if (MineHitLaser(*(LaserPos *)&eng->unk10, 0x90000)) {
         MineBurst(nas);
         MineSfx();
@@ -1423,7 +1423,7 @@ void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
     }
     do {
         if (g->unk6C == 0) {
-            target = CameraTarget;
+            target = Heroes[0].hero_eng;
         } else if (!(Heroes[0].hero_status & 0x2000)) {
             target = Heroes[0].hero_eng;
         } else {
@@ -1843,7 +1843,7 @@ void PlotMineSFX(NAS *nas) {
 
     nas->Engine->unk10.z = nas->UserInfo.user1;
     if (GameTeams[0] == 0) {
-        if (CameraTarget->unk10.z + 0x6000 < nas->Engine->unk10.z) {
+        if (Heroes[0].hero_eng->unk10.z + 0x6000 < nas->Engine->unk10.z) {
             nas->Engine->sub->flags &= ~0x8000;
         } else {
             nas->Engine->sub->flags |= 0x8000;
@@ -2325,7 +2325,7 @@ void NoxInitCamera(s32 arg0) {
     NoxCamera.unk38 = 0;
     NoxCamera.unk40 = 0;
     func_80093038();
-    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)&NoxCamera);
+    func_80018B08((GfxViewport *)GameViewport, (GfxCamera *)&NoxCamera);
     FadeAmount = ScreenFade.amount;
     func_8009440C();
 }

@@ -26,7 +26,6 @@ void InitialiseN2O(void);
 extern u16 *HeroModelTable;
 
 extern u8 OxideModel[];
-extern EXTengine *CameraTarget;
 extern u16 CameraMode;
 extern u16 N2OKickSfx[];
 extern s16 N2OExplodeScales[][3];
@@ -34,7 +33,6 @@ extern u16 N2OBallPhase;
 extern u16 N2OHeroPlaced[];
 extern u16 N2OUnusedRows[][5];
 extern s32 N2OHeroStarts[][3];
-extern EXTengine *D_8009D59C;
 void NoxResetHeroes(void);
 extern u16 N2OWallsHit;
 extern s16 N2OHeroSpeed[];
@@ -308,13 +306,11 @@ typedef struct N2OPanRef {
     struct N2OPan *p;
 } N2OPanRef;
 extern u16 N2OBossShotSfx;
-extern s16 D_8009D6D6;
 extern u16 D_8009D6E0;
 typedef struct N2OPan {
     u8 pad0[0xC];
     s32 unkC;
 } N2OPan;
-extern N2OPan *D_8009D688;
 extern u16 N2OHeroPushTimer;
 extern s16 N2OBallsLost;
 void N2OInitBoss(void);
@@ -563,9 +559,8 @@ typedef struct N2OBallView {
     /* 0x14 */ u8 pad14[0x1C];
     /* 0x30 */ u16 unk30;
 } N2OBallView;
-extern EXTengine *D_8009D674;
 extern s16 D_8009D88E;
-extern s32 D_8009E424[];
+extern s32 HitSfx[];
 extern SLONG_XYZ N2OBallStarts[];
 extern u16 N2OBallBounceSfx[];
 extern u16 N2OBallSfx[];

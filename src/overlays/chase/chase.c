@@ -767,7 +767,7 @@ void InitialiseCHASE(void) {
     func_8001682C((s32 *)KegObjectsModel);
     func_8001682C((s32 *)(KegObjectsModel - 0xF88));
     func_8001682C((s32 *)*MapScene);
-    scr = (ChaseScreen *)D_8009F6F4;
+    scr = (ChaseScreen *)GameViewport;
     scr->unk10 = 0x140;
     scr->unk14 = 0x15E;
     cam = (ChaseCam *)MainCamera;

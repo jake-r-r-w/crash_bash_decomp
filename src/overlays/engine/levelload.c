@@ -103,13 +103,13 @@ void func_80093588(void) {
     }
     D_8009F8B4 = func_80093038;
     cam_init(MainCamera);
-    cam_init(D_8009F734);
+    cam_init(MainGfxCamera);
     cam_init((u8 *)&D_8009F7EC);
-    *(s32 *)&D_8009F734[0x14] = 0x2000;
+    *(s32 *)&MainGfxCamera[0x14] = 0x2000;
     cam_init(D_800A016C);
     *(s32 *)&D_800A016C[8] = 0xA24;
     *(s32 *)&D_800A016C[0x14] = 0;
-    q = (s32 *)D_8009F6F4;
+    q = (s32 *)GameViewport;
     q[5] = 0x15E;
     q[4] = 0x140;
 }
@@ -379,9 +379,9 @@ void func_80093BE8(void) {
         D_800A0158 = 4;
         break;
     case 4:
-        ((EngColor *)D_8009F6F4)->code = ((EngColorSrc *)MapScene)->col->code;
+        ((EngColor *)GameViewport)->code = ((EngColorSrc *)MapScene)->col->code;
         c = ((EngColorSrc *)MapScene)->col;
-        ((EngColor *)D_8009F6F4)->rgb = c->rgb;
+        ((EngColor *)GameViewport)->rgb = c->rgb;
         func_8007ABC4();
         func_8007A808();
         D_800A0158 = 7;

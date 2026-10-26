@@ -25,7 +25,7 @@ typedef struct GlyphRow {
     /* 0x10 */ s16 data[16];
 } GlyphRow;
 
-/* the debug text screens, indexed by D_8006EA24 */
+/* the debug text screens, indexed by MsgFontRom */
 typedef struct TextScreen {
     /* 0x00 */ u8 rowBytes; /* bytes per glyph row */
     /* 0x01 */ u8 unk1[11];
@@ -33,7 +33,7 @@ typedef struct TextScreen {
 
 extern TextScreen D_8006789C[];
 
-extern s32 D_8006EA24; /* nonzero: ASCII from the BIOS ROM font, else Kanji (Krom2RawAdd) */
+extern s32 MsgFontRom; /* nonzero: ASCII from the BIOS ROM font, else Kanji (Krom2RawAdd) */
 
 void func_8002E0F0(void);
 

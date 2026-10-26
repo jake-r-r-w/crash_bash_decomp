@@ -3,22 +3,22 @@
 
 extern u8 D_BFC7FF52;
 extern s32 ModchipState;
-extern s32 D_8006EA24;
+extern s32 MsgFontRom;
 
 void func_8002D488(void) {
     switch (D_BFC7FF52) {
     case 0x41:
         ModchipState = 1;
-        D_8006EA24 = 1;
+        MsgFontRom = 1;
         return;
     case 0x45:
         ModchipState = 0;
-        D_8006EA24 = 2;
+        MsgFontRom = 2;
         return;
     case 0x4A:
     default:
         ModchipState = 1;
-        D_8006EA24 = 0;
+        MsgFontRom = 0;
         return;
     }
 }
@@ -49,7 +49,7 @@ loop:
                 break;
             case 1:
                 ret = 2;
-                D_8006EA1C = D_8006788C[2];
+                D_8006EA1C = CdResult[2];
                 func_8002E000(6);
                 ModchipState = 3;
                 break;
@@ -71,7 +71,7 @@ loop:
                 ret = -1;
                 break;
             case 1:
-                D_80067884[0] = (D_8006EA1C >= 2) * 2;
+                CdParams[0] = (D_8006EA1C >= 2) * 2;
                 func_8002E000(2);
                 ModchipState = 4;
             case 0:
@@ -94,18 +94,18 @@ loop:
             case 1: {
                 s32 m, s, t, mm, ss;
                 u8 a, b;
-                a = D_8006788C[1];
-                b = D_8006788C[2];
+                a = CdResult[1];
+                b = CdResult[2];
                 m = (a >> 4) * 10 + (a & 0xF);
                 s = (b >> 4) * 10 + (b & 0xF);
                 t = (m * 60 + s) >> 1;
-                D_8006EA20 = t / 60;
-                mm = D_8006EA20;
-                ((volatile BcdTime *)&D_8006EA20)->sec = t % 60;
-                ss = ((volatile BcdTime *)&D_8006EA20)->sec;
-                D_8006EA20 = cd_to_bcd(mm, mm);
-                mm = ((BcdTime *)&D_8006EA20)->min;
-                ((BcdTime *)&D_8006EA20)->sec = cd_to_bcd(ss, mm);
+                CdTimeBcd = t / 60;
+                mm = CdTimeBcd;
+                ((volatile BcdTime *)&CdTimeBcd)->sec = t % 60;
+                ss = ((volatile BcdTime *)&CdTimeBcd)->sec;
+                CdTimeBcd = cd_to_bcd(mm, mm);
+                mm = ((BcdTime *)&CdTimeBcd)->min;
+                ((BcdTime *)&CdTimeBcd)->sec = cd_to_bcd(ss, mm);
                 func_8002E000(0xC);
                 ModchipState = 5;
             }
@@ -119,14 +119,14 @@ loop:
             ret = func_8002DE2C(0xC);
             switch (ret) {
             case -1: {
-                if (!(D_8006788C[0] & 1)) {
+                if (!(CdResult[0] & 1)) {
                     ModchipState = 1;
-                } else if (D_8006788C[1] & 0x40) {
-                    u8 m = D_8006EA20;
-                    u8 s = ((volatile BcdTime *)&D_8006EA20)->sec;
-                    D_80067884[0] = m;
-                    D_80067884[1] = s;
-                    D_80067884[2] = 0;
+                } else if (CdResult[1] & 0x40) {
+                    u8 m = CdTimeBcd;
+                    u8 s = ((volatile BcdTime *)&CdTimeBcd)->sec;
+                    CdParams[0] = m;
+                    CdParams[1] = s;
+                    CdParams[2] = 0;
                     func_8002E000(3);
                     ModchipState = 7;
                     ret = 5;
@@ -159,11 +159,11 @@ loop:
                 ret = -1;
                 break;
             case 1: {
-                u8 m = D_8006EA20;
-                u8 s = ((volatile BcdTime *)&D_8006EA20)->sec;
-                D_80067884[0] = m;
-                D_80067884[1] = s;
-                D_80067884[2] = 0;
+                u8 m = CdTimeBcd;
+                u8 s = ((volatile BcdTime *)&CdTimeBcd)->sec;
+                CdParams[0] = m;
+                CdParams[1] = s;
+                CdParams[2] = 0;
             }
                 func_8002E000(3);
                 ModchipState = 7;
@@ -185,7 +185,7 @@ loop:
                 ret = -1;
                 break;
             case 1:
-                D_80067884[0] = ret;
+                CdParams[0] = ret;
                 func_8002E000(5);
                 ModchipState = 8;
             case 0:
@@ -273,7 +273,7 @@ loop:
                 ret = -1;
                 break;
             case 1:
-                D_80067884[0] = 4;
+                CdParams[0] = 4;
                 func_8002E000(9);
                 ModchipState = 0xD;
             case 0:
@@ -304,7 +304,7 @@ loop:
             break;
         case 14:
             if (VSync(-1) > D_8006EA18 + 200) {
-                D_80067884[0] = 5;
+                CdParams[0] = 5;
                 func_8002E000(0xA);
                 ModchipState = 0xF;
             }
@@ -322,7 +322,7 @@ loop:
                 ret = -1;
                 break;
             case 1:
-                if (D_8006788C[1] != 0) {
+                if (CdResult[1] != 0) {
                     func_8002E000(0);
                     ModchipState = 0x10;
                 } else {
@@ -441,11 +441,11 @@ s32 func_8002DE2C(s32 arg0) {
         if (n == 5) {
             volatile u8 *src = D_80067878;
 
-            D_8006788C[0] = *src;
-            D_8006788C[1] = *src;
+            CdResult[0] = *src;
+            CdResult[1] = *src;
             *D_80067874 = 1;
             *D_8006787C = 0x1F;
-            if (!(D_8006788C[0] & 0x10)) {
+            if (!(CdResult[0] & 0x10)) {
                 return -1;
             }
             return -2;
@@ -454,13 +454,13 @@ s32 func_8002DE2C(s32 arg0) {
         t = 0;
         if (D_8006783C[off + 2] != 0) {
             do {
-                D_8006788C[t] = *D_80067878;
+                CdResult[t] = *D_80067878;
                 t++;
             } while (t < D_8006783C[off + 2]);
         }
         *D_80067874 = 1;
         *D_8006787C = 0x1F;
-        if (arg0 == 10 || (t = D_8006788C[0], t &= 0x10, !t)) {
+        if (arg0 == 10 || (t = CdResult[0], t &= 0x10, !t)) {
             return 1;
         }
         return -2;
@@ -486,7 +486,7 @@ void func_8002E000(s32 arg0) {
     i = 0;
     if (D_8006783C[off + 1] != 0) {
         do {
-            *D_8006787C = D_80067884[i];
+            *D_8006787C = CdParams[i];
             i++;
         } while (i < D_8006783C[off + 1]);
     }

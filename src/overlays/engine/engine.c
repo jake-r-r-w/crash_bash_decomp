@@ -21,8 +21,8 @@ void InitialiseNasSystem(void) {
     }
     SetNasDefaults();
     Init_Panel();
-    D_8005AA1C = (NAS *)func_80011654(D_8005AA14 * 0x70, &MainHeap);
-    D_8005AA20 = (u8 *)D_8005AA1C + (D_8005AA14 * 0x70 - 0x70);
+    NasPool = (NAS *)func_80011654(D_8005AA14 * 0x70, &MainHeap);
+    D_8005AA20 = (u8 *)NasPool + (D_8005AA14 * 0x70 - 0x70);
     D_8005AA40 = (EngObj **)func_80011654(D_8005AA14 * 4, &MainHeap);
     *D_8005AA40 = NULL;
     p = func_80011654(D_8005AA14 * 4, &MainHeap);
@@ -132,7 +132,7 @@ void func_8007906C(void) {
         i++;
     } while (i < 4);
     for (i = FirstNas; i < D_8005AA12; i++) {
-        nas = &D_8005AA1C[i];
+        nas = &NasPool[i];
         if (nas->NASid & 1) {
             cls = nas->Class;
             if (cls & 1) {
@@ -222,7 +222,7 @@ void func_800793E8(void) {
     u8 *g;
     u8 *p;
 
-    switch (ModeTypes[D_8009E5DC * 3]) {
+    switch (ModeTypes[NextGameMode * 3]) {
     case 0x104:
         w = 0;
         break;

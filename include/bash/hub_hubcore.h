@@ -231,9 +231,7 @@ extern s32 PodiumCheerTimer;
 extern s32 PodiumCheerKind;
 extern s32 HubHeroTouchCount;
 extern u16 D_8009EEA0;
-extern EXTengine *CameraTarget;
 extern CamEase HubCamEase;
-extern EXTengine *D_8009D538[];
 extern s32 D_8009EEA4;
 /* PadState (Pads) as HubPreMoveHero reads it: held/pressed buttons at 0x50/0x54. */
 typedef struct HubPad {

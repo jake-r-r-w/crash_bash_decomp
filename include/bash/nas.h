@@ -494,7 +494,7 @@ typedef u16 hero_seq;
 /* A player's hero: Heroes[4] in the engine overlay, set up by func_80083708.
  * Functions take the player index (the leak's `unsigned int player`). */
 typedef struct HeroInfo {
-    /* 0x00 */ NAS *hero;               /* from the pool at D_8005AA1C, AST index 3 */
+    /* 0x00 */ NAS *hero;               /* from the pool at NasPool, AST index 3 */
     /* 0x04 */ EXTengine *hero_eng;     /* AddExtEngine(nas, 1) */
     /* 0x08 */ subengine *hero_sub;     /* hero_eng->sub */
     /* 0x0C */ EXTengine *hero_shadow;  /* AddExtEngine(nas, 2) */

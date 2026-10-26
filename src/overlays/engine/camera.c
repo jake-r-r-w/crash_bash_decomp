@@ -867,7 +867,7 @@ void func_800984D4(void) {
     s32 v;
     int new_var;
 
-    func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+    func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
     FadeAmount = ScreenFade.amount;
     if (D_800ADBC4 != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;

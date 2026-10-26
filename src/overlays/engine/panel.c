@@ -1965,7 +1965,7 @@ found:
                 MODEV->unk10 |= 0x40;
                 break;
             case 3:
-                D_8009E5DC = 0x28;
+                NextGameMode = 0x28;
                 MODEV->unk30 = 0x8008;
                 MODEV->unk10 &= ~0x21;
                 break;

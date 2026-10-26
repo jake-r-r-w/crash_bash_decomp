@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/modchip_msg.h"
 
-/* the debug text screens, 12 bytes each, indexed by D_8006EA24 */
+/* the debug text screens, 12 bytes each, indexed by MsgFontRom */
 extern u8 D_8006789E[]; /* +2: u8 */
 extern u8 D_800678A0[]; /* +4: s16 x */
 extern u8 D_800678A2[]; /* +6: s16 y */
@@ -37,11 +37,11 @@ void func_8002E0F0(void) {
     DrawPrim(clear);
     colour = 0xFFFF;
     i = 0;
-    w = D_8006789E[D_8006EA24 * 12];
+    w = D_8006789E[MsgFontRom * 12];
     pos.unk6 = 1;
     pos.w = w;
     do {
-        o = D_8006EA24 * 12;
+        o = MsgFontRom * 12;
         x = *(s16 *)(D_800678A0 + o);
         y = *(s16 *)(D_800678A2 + o);
         pos.x = x + i;
@@ -71,7 +71,7 @@ void func_8002E25C(u8 *str, TextPos *pos, s32 arg2) {
         if (c == '\n') {
             pos->x = startX;
             pos->y += 18;
-        } else if (D_8006EA24 == 0) {
+        } else if (MsgFontRom == 0) {
             u32 hi = *(volatile u8 *)str++;
             glyph = (u8 *)Krom2RawAdd(*(volatile u8 *)str | (hi << 8));
             func_8002E3D0(pos, glyph, arg2, 7);
@@ -113,7 +113,7 @@ void func_8002E3D0(TextPos *pos, u8 *glyph, s32 colour, s32 bits) {
     do {
         out = p.data;
         i = 0;
-        if (D_8006789C[D_8006EA24].rowBytes != 0) {
+        if (D_8006789C[MsgFontRom].rowBytes != 0) {
             do {
                 for (b = lo; b >= hi; b--) {
                     dst = out++;
@@ -126,7 +126,7 @@ void func_8002E3D0(TextPos *pos, u8 *glyph, s32 colour, s32 bits) {
                 }
                 i++;
                 glyph++;
-            } while (i < D_8006789C[D_8006EA24].rowBytes);
+            } while (i < D_8006789C[MsgFontRom].rowBytes);
         }
         for (i = 0; i < 2; i++) {
             p.xy = *(s32 *)pos;

@@ -1020,7 +1020,6 @@ typedef struct PolarBossExt {
 
 extern NAS *BearminatorNas;
 extern ScriptInit PolarBossScriptInit;
-extern NAS *D_8009D670;
 extern s16 D_8009D6E2;
 void func_80086868(void);
 
@@ -1230,7 +1229,6 @@ typedef struct BigMissileExt {
     /* 0x78 */ s32 unk78;
 } BigMissileExt;
 
-extern EXTengine *CameraTarget[];
 
 /* Value easing towards a target by a step (SniperAimUpdate). */
 typedef struct SniperEase {

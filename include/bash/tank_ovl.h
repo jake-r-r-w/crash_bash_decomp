@@ -53,8 +53,8 @@ extern s32 TankSwampFlubberTurret[];
 extern s32 TankSwampFlamerTurret[];
 extern s32 MoeState;
 extern s32 JoeState;
-extern s16 D_8009D634;
-extern s16 D_8009D6A0;
+extern s16 TankJoeTeammate;
+extern s16 TankMoeTeammate;
 extern s32 TankBossStatus;
 extern u16 TankHeroModels[];
 extern s32 TankVictorySeqs[];   /* {name, 0x5C} pairs: four "WIN" entries */
@@ -97,8 +97,8 @@ extern RockTblEnt ShrapnelFrames[];
 extern s32 TankMapWidth;
 extern TA_Bot TankBotAI[4];
 
-extern subengine *D_8009D60C;  /* Heroes[2].hero_sub (Moe or Joe), addressed directly */
-extern subengine *D_8009D678;  /* Heroes[3].hero_sub */
+extern subengine *TankJoeSub;  /* Heroes[2].hero_sub, by a label of its own: Heroes[2].hero_sub as a field shares a lui with Heroes[3] and does not match */
+extern subengine *TankMoeSub;  /* Heroes[3].hero_sub */
 
 typedef struct MineOffset {
     /* 0x00 */ s32 x;

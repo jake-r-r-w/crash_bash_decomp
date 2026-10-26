@@ -14,26 +14,26 @@ void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2) {
     switch (arg1->unk14) {
     case 5:
     case 7:
-        PlaySfx(D_8009E424[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         func_8007A524(1, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x208, 0xA0);
         break;
     case 6:
-        PlaySfx(((HitSfxTable *)D_8009E424)->hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(((HitSfxTable *)HitSfx)->hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         func_8007A524(0, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x208, 0);
         break;
     case 2:
-        PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         func_8007A524(2, arg0, (s32)CrateObjectsModel);
         break;
     case 3:
-        PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         func_8007A524(4, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x203, 0xA0);
         break;
     default:
-        PlaySfx(((HitSfxTable *)D_8009E424)->other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(((HitSfxTable *)HitSfx)->other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         func_8007A524(3, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x205, 0xA0);
         break;
@@ -48,7 +48,7 @@ void InitCrateExplode(NAS *arg0) {
     u8 *t;
 
     if (e != NULL) {
-        t = (u8 *)D_8009E424;
+        t = (u8 *)HitSfx;
         PlaySfx(*(s32 *)(t + Random(4) * 4 + 0x30), NULL, NULL, 0x1000, 0x1E00, 0);
         func_8007A524(2, (u8 *)e + 0x10, CrateObjectsModel);
     }
@@ -230,8 +230,8 @@ void func_8008ECE4(void) {
     }
     flags = g->unk30;
     if ((flags & 0x8008) == 0x8008) {
-        g->mode = D_8009E5DC;
-        res = func_800951D0((s16)D_8009E5DC);
+        g->mode = NextGameMode;
+        res = func_800951D0((s16)NextGameMode);
         if (res == 0) {
             ProcessControl.next_process = &D_800A00DC;
             return;
@@ -252,7 +252,7 @@ void func_8008ECE4(void) {
         if (flags == 0x8002) {
             g->mode = func_8008EF70();
         } else {
-            g->mode = D_8009E5DC;
+            g->mode = NextGameMode;
         }
         ProcessControl.next_process = &D_800A00DC;
         return;
@@ -312,7 +312,7 @@ s32 func_8008EF70(void) {
 }
 
 void func_8008EF9C(void) {
-    D_8009E5DC = func_8008EF70();
+    NextGameMode = func_8008EF70();
     GameExitFlags = 0x8008;
     func_8008ECE4();
 }
@@ -337,7 +337,7 @@ void func_8008EFD4(void) {
 }
 
 void func_8008F068(void) {
-    D_8009E5DC = 0x28;
+    NextGameMode = 0x28;
     GameExitFlags = 0x8008;
 }
 
@@ -353,7 +353,7 @@ void func_8008F084(void) {
 
     i = 0;
     trig = TrigTable;
-    base = D_8009E7A0;
+    base = CupTable;
     t = base + (u8)D_8005A63C;
     n = t->unk8;
     p = t->unk4;
@@ -399,11 +399,11 @@ s32 func_8008F248(s32 arg0) {
         if (i >= 7) {
             break;
         }
-        if (D_8009E7A0[i].unk0 == 3 && !EngineTable_AllDone(&D_8009E7A0[i]) &&
-            EngineTable_Reachable(&D_8009E7A0[i], tab)) {
+        if (CupTable[i].unk0 == 3 && !EngineTable_AllDone(&CupTable[i]) &&
+            EngineTable_Reachable(&CupTable[i], tab)) {
             cnt++;
             if (arg0 != 0) {
-                EngineTable_MarkDone(&D_8009E7A0[i]);
+                EngineTable_MarkDone(&CupTable[i]);
             }
         }
         i++;
@@ -475,7 +475,7 @@ void func_8008F554(void) {
         ((EngineModeView *)g)->unk32 = (((EngineModeView *)g)->unk32 & 0xFF00) | 2;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         g[0x29] = 0;
-        D_8009E5DC = D_8009E7A0[g[0x28]].unk4->unk4;
+        NextGameMode = CupTable[g[0x28]].unk4->unk4;
         MenuChainNext();
         p = GameInfo;
         for (i = 0; i < 4; i++) {
@@ -613,7 +613,7 @@ void func_8008FE00(void) {
 }
 
 s32 func_8008FE68(s32 arg0) {
-    EngineTable12 *base = D_8009E7A0;
+    EngineTable12 *base = CupTable;
     EngineTable12 *t;
     EngineEntry16Head *p;
     s32 n;
@@ -638,7 +638,7 @@ s32 func_8008FE68(s32 arg0) {
 
 s32 func_8008FF10(void) {
     u16 *wt = ModeTypes;
-    EngineTable12 *tab = D_8009E7A0;
+    EngineTable12 *tab = CupTable;
     u8 *g = GameInfo;
     EngineEntry16Head *e = tab[g[0x28]].unk4;
     s32 idx = e[g[0x29]].unk4;
@@ -651,15 +651,15 @@ s32 func_8008FF10(void) {
 }
 
 s32 func_8008FF94(void) {
-    if (GameInfo[0x29] < D_8009E7A0[GameInfo[0x28]].unk8 - 1) {
+    if (GameInfo[0x29] < CupTable[GameInfo[0x28]].unk8 - 1) {
         GameInfo[0x29] = GameInfo[0x29] + 1;
-        return D_8009E7A0[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
+        return CupTable[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
     }
     return 0x2B;
 }
 
 s32 func_80090008(void) {
-    return D_8009E7A0[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
+    return CupTable[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
 }
 
 void func_80090048(void) {
@@ -1346,7 +1346,7 @@ void func_80091F54(void) {
     CardSlotIndex = 0;
     D_8009F4BC = 0x4D2;
     func_800920DC();
-    D_8005B2B4 = 0;
+    FontPage = 0;
     D_8009F630 = 0;
     D_8009F634 = 1;
     func_80095BEC(8, &D_8009F40C);
@@ -1370,7 +1370,7 @@ void func_8009201C(void) {
     CardSlotIndex = 0;
     D_8009F4BC = 0x4D2;
     func_800920DC();
-    D_8005B2B4 = 0;
+    FontPage = 0;
     D_8009F630 = 0;
     D_8009F634 = 1;
     func_80095BEC(8, &D_8009F40C);
@@ -1477,7 +1477,7 @@ void func_8009246C(void) {
     CardSlotIndex = 0;
     D_8009F4BC = 0x4D2;
     func_800920DC();
-    D_8005B2B4 = 0;
+    FontPage = 0;
     D_8009F630 = 0;
     D_8009F634 = 1;
     func_80095BEC(8, &D_8009F40C);
@@ -1839,8 +1839,8 @@ void func_80092EDC(void) {
     } else {
         func_8007A7C0();
     }
-    ((GfxCamera *)D_8009F734)->z = 0;
-    *(s32 *)((u8 *)(GfxCamera *)D_8009F734 + 8) = 0x800;
+    ((GfxCamera *)MainGfxCamera)->z = 0;
+    *(s32 *)((u8 *)(GfxCamera *)MainGfxCamera + 8) = 0x800;
     D_8009F7EC.z = 0;
     *(s32 *)((u8 *)&D_8009F7EC + 8) = 0x40C;
     func_80097C28();
@@ -1868,7 +1868,7 @@ void func_80092FB8(void) {
 }
 
 void func_80093038(void) {
-    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)MainCamera);
+    func_80018B08((GfxViewport *)GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
     D_80056878 = 0;
     D_8005687C[0] = 0;
@@ -1877,13 +1877,13 @@ void func_80093038(void) {
     scripts_render();
     func_8007A718();
     func_8001DAF8((GfxScene *)MapScene);
-    func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+    func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     func_800798A4();
     func_800984D4();
 }
 
 void func_80093110(void) {
-    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)MainCamera);
+    func_80018B08((GfxViewport *)GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
 }

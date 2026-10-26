@@ -1654,7 +1654,7 @@ static inline s32 func_80012678_find(s32 *arg0, s32 *arg1) {
     s32 end2;
     s32 i;
 
-    tbl = D_8004E110;
+    tbl = DatIndex;
     n = arg1[1];
     n--;
     base = tbl;
@@ -1679,12 +1679,12 @@ static inline s32 func_80012678_find(s32 *arg0, s32 *arg1) {
 static inline void func_80012678_loop(u8 *arg0, s32 *arg1) {
     s32 first = arg1[0];
     s32 n = arg1[1];
-    s32 *s2 = &D_8004E110[first * 2];
+    s32 *s2 = &DatIndex[first * 2];
     s32 *s0;
 
     if (n != 0) {
         n--;
-        s0 = &D_8004E110[(first + n) * 2];
+        s0 = &DatIndex[(first + n) * 2];
         for (;;) {
             if (n == 0) {
                 return;
@@ -1736,7 +1736,7 @@ static inline s32 func_80012840_find(s32 *arg0, s32 *arg1) {
     s32 *tbl;
     s32 end2;
 
-    tbl = D_8004E110;
+    tbl = DatIndex;
     n = arg1[1];
     n--;
     base = tbl;
@@ -1763,12 +1763,12 @@ loop:
 static inline void func_80012840_loop(u8 *arg0, s32 *arg1) {
     s32 first = arg1[0];
     s32 n = arg1[1];
-    s32 *s2 = &D_8004E110[first * 2];
+    s32 *s2 = &DatIndex[first * 2];
     s32 *s0;
 
     if (n != 0) {
         n--;
-        s0 = &D_8004E110[(first + n) * 2];
+        s0 = &DatIndex[(first + n) * 2];
         for (;;) {
             if (n == 0) {
                 return;
@@ -1808,7 +1808,7 @@ u8 *func_800129D0(u8 *arg0, s32 arg1) {
     void (*fn)(u8 *, u8 *);
     LoaderState *ls;
 
-    a = (s32)D_8004E110 + **(s32 **)arg0 * 8;
+    a = (s32)DatIndex + **(s32 **)arg0 * 8;
     *(s32 *)(*(u8 **)(arg0 + 4) + 0x34) = arg1;
     fn = func_80012840;
     ls = &Loader;
@@ -1857,7 +1857,7 @@ u8 *func_80012AC4(u8 *arg0) {
     if (*(s32 *)(arg0 + 4) == 0) {
         return NULL;
     }
-    a = (s32)D_8004E110 + **(s32 **)arg0 * 8;
+    a = (s32)DatIndex + **(s32 **)arg0 * 8;
     fn = func_80012678;
     ls = &Loader;
     b = *(s32 *)(*(u8 **)arg0 + 8);
@@ -1898,7 +1898,7 @@ static inline s32 func_80012BC8_find(s32 *arg0, s32 *arg1) {
     s32 *tbl;
     s32 end2;
 
-    tbl = D_8004E110;
+    tbl = DatIndex;
     n = arg1[1];
     n--;
     base = tbl;
@@ -1937,12 +1937,12 @@ void func_80012BC8(s32 **arg0, s32 *arg1, u8 *arg2) {
 void func_80012CD4(void *arg0, s32 *arg1) {
     s32 first = arg1[0];
     s32 n = arg1[1];
-    s32 *s2 = &D_8004E110[first * 2];
+    s32 *s2 = &DatIndex[first * 2];
     s32 *s0;
 
     if (n != 0) {
         n--;
-        s0 = &D_8004E110[(first + n) * 2];
+        s0 = &DatIndex[(first + n) * 2];
         for (;;) {
             if (n == 0) {
                 return;
@@ -1963,7 +1963,7 @@ s32 func_80012D80(s32 *arg0, s32 *arg1) {
     s32 *tbl;
     s32 end2;
 
-    tbl = D_8004E110;
+    tbl = DatIndex;
     n = arg1[1];
     n--;
     base = tbl;

@@ -517,7 +517,7 @@ found:
             if (ActivePad()->pressed & 1) {
                 PSV->unk30 = 0x8008;
                 PausePad = 2;
-                D_8009E5DC = PSV->mode;
+                NextGameMode = PSV->mode;
                 PSV->flags &= 0xFFFBFFFE;
             }
             if (ActivePad()->pressed & 0x1008) {
@@ -743,7 +743,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
                           ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b, 0);
             break;
         case 6:
-            D_8005B2B4 = e->x;
+            FontPage = e->x;
             break;
         case 7:
             HUDBOX->unk10 = e->a;
@@ -819,7 +819,7 @@ void func_80080FBC(void) {
     e = D_8009BCE0;
     *(s16 *)(e + 6) = -1;
     *(s16 *)(e + 0xC) = -1;
-    D_8005B2B4 = 0;
+    FontPage = 0;
     if (MSGV->flags & 0x08000002) {
         return;
     }
@@ -1298,7 +1298,7 @@ void func_80082590(void) {
         if (GamePause & 0x4000) {
             e = D_8009BCE0;
             if (*(s16 *)(e + 0xC) != -1) {
-                func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+                func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
                 gs->otzAdd = 0x200;
                 gs->modelDp = *(s32 *)&ScreenFade;   /* a scalar read: scheduled above the otzAdd store */
                 func_8001A6D4(e, 0x10000000);
@@ -1311,7 +1311,7 @@ void func_80082590(void) {
         if (!(GamePause & 0x40)) {
             e = D_8009BCE0;
             if (*(s16 *)(e + 0xC) != -1) {
-                func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+                func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
                 gs->otzAdd = 0x200;
                 gs->modelDp = *(s32 *)&ScreenFade;
                 func_8001A6D4(e, 0x10000000);
@@ -1319,7 +1319,7 @@ void func_80082590(void) {
         }
         func_80018B08(&D_8009F6A4, &D_8009F7EC);
         func_8001C2C0((u8 *)GetEngineSlot(0));
-        func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+        func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
         func_8001C2C0((u8 *)GetEngineSlot(4));
         func_8001C298(&PanelTab[5]);
         func_8001C298(&PanelTab[6]);

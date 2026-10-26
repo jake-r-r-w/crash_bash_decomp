@@ -95,7 +95,7 @@ NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot) {
 found:
     ast = r;
     if (ast != 0 && ast < ASTCount) {
-        nas = &D_8005AA1C[slot];
+        nas = &NasPool[slot];
         *nas = NASTemplate;
         nas->NASid = 1;
         if (NASActiveTail != NULL) {
@@ -889,7 +889,7 @@ s16 func_80024008(s16 x, u8 *s) {
                     if (*s == 13) {
                         break;
                     }
-                    idx = *s + (D_8005B2B4 << 8);
+                    idx = *s + (FontPage << 8);
                     w = &D_8005AEB4[idx];
                     f = &D_8005B0B4[idx];
                     v = *w;
@@ -913,7 +913,7 @@ s16 func_80024008(s16 x, u8 *s) {
                     if (c == 13) {
                         break;
                     }
-                    idx = *s + (D_8005B2B4 << 8);
+                    idx = *s + (FontPage << 8);
                     w = &D_8005AEB4[idx];
                     f = &D_8005B0B4[idx];
                     v = *w;
@@ -998,17 +998,17 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
             } else {
                 ny = xy >> 16;
                 xy &= 0xFFFF;
-                xy |= (ny + D_8005AEB4[D_8005B2B4 << 8] * 2) << 16;
+                xy |= (ny + D_8005AEB4[FontPage << 8] * 2) << 16;
             }
             x0 = func_80024008(arg0, s);
         } else {
-            i = c + (D_8005B2B4 << 8);
+            i = c + (FontPage << 8);
             w = D_8005AEB4[i];
             fl = D_8005B0B4[i];
             if (fl & 2) {
                 col -= w;
             }
-            g = ((s16 (*)[256])&SysFontLookUp[c])[D_8005B2B4][0];
+            g = ((s16 (*)[256])&SysFontLookUp[c])[FontPage][0];
             if (g != -1) {
                 xy &= 0xFFFF0000;
                 xy |= (u16)(x0 + col * 640 / ScreenRect->w);
@@ -1054,7 +1054,7 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
                 if (*p == 13) {
                     break;
                 }
-                idx = *p + (D_8005B2B4 << 8);
+                idx = *p + (FontPage << 8);
                 w = &D_8005AEB4[idx];
                 f = &D_8005B0B4[idx];
                 v = *w;
@@ -1070,11 +1070,11 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
     if (c != 0) {
         u32 tab = (u32)SysFontLookUp;
         do {
-            s32 g = *(s16 *)(c * 2 + (D_8005B2B4 << 9) + tab);
+            s32 g = *(s16 *)(c * 2 + (FontPage << 9) + tab);
             if (g != -1) {
                 func_80029F9C(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38, &pos, 0, arg2, arg3);
             }
-            pos.x += (s32)((u8)D_8005AEB4[c + (D_8005B2B4 << 8)] << 24) >> 20;
+            pos.x += (s32)((u8)D_8005AEB4[c + (FontPage << 8)] << 24) >> 20;
             c = *s++;
         } while (c != 0);
     }
@@ -1853,7 +1853,7 @@ s16 func_80026210(s32 x, u8 *s) {
             if (c == 13) {
                 break;
             }
-            idx = *s + (D_8005B2B4 << 8);
+            idx = *s + (FontPage << 8);
             w = &D_8005AEB4[idx];
             f = &D_8005B0B4[idx];
             v = *w;
@@ -1870,7 +1870,7 @@ s16 func_80026210(s32 x, u8 *s) {
 
 void func_80026308(void) {
     func_80023A90();
-    D_8005B2B4 = 0;
+    FontPage = 0;
     sysfont_dbase = FontModel;
 }
 
@@ -1892,7 +1892,7 @@ s32 SysGetLen(char *s) {
             if (c == 13) {
                 break;
             }
-            idx = *s + (D_8005B2B4 << 8);
+            idx = *s + (FontPage << 8);
             w = &D_8005AEB4[idx];
             f = &D_8005B0B4[idx];
             v = *w;
@@ -2267,7 +2267,7 @@ void func_80026D08(void) {
     i = D_8005AA12 - 1;
     for (;;) {
         if (i >= FirstNas) {
-            nas = &D_8005AA1C[i];
+            nas = &NasPool[i];
             if (nas->NASid == 0) {
                 if (NASFreeList != NULL) {
                     NASFreeList->Tag.Parent = nas;
@@ -2312,7 +2312,7 @@ void func_80026E2C(void) {
     i = FirstNas;
     for (;;) {
         if (i < D_8005AA14) {
-            D_8005AA1C[i] = NASTemplate;
+            NasPool[i] = NASTemplate;
             i++;
         } else {
             break;
@@ -2329,7 +2329,7 @@ void func_80026ECC(void) {
         if (i >= D_8005AA14) {
             return;
         }
-        D_8005AA1C[i] = NASTemplate;
+        NasPool[i] = NASTemplate;
         i++;
     }
 }
@@ -2338,7 +2338,7 @@ void func_80026F48(void) {
     s32 i;
 
     for (i = FirstNas; i < D_8005AA14; i++) {
-        KillNAS(&D_8005AA1C[i]);
+        KillNAS(&NasPool[i]);
     }
 }
 
@@ -2346,7 +2346,7 @@ void func_80026FCC(void) {
     s32 i;
 
     for (i = 0; i < D_8005AA14; i++) {
-        KillNAS(&D_8005AA1C[i]);
+        KillNAS(&NasPool[i]);
     }
 }
 

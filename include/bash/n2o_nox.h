@@ -55,7 +55,7 @@ typedef struct MixObj {
 
 extern SetupCam NoxCamera;
 extern fade_info ScreenFade;
-extern u8 D_8009F6F4[];
+extern u8 GameViewport[];
 
 typedef struct MineSrc {
     /* 0x00 */ u8 pad00[0x18];

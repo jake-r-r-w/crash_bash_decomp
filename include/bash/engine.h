@@ -169,8 +169,8 @@ extern process_info RunGame;
 extern u8 D_8005B72C[];
 extern u8 D_8005B744[];
 extern s32 D_800A0D3C;
-extern u8 D_8009F67C[];
-extern u8 D_8009F734[];
+extern u8 MainViewport[];
+extern u8 MainGfxCamera[];
 extern process_info D_8009F46C;
 extern void *D_80098718;
 extern u16 D_8009871C;
@@ -209,13 +209,13 @@ typedef struct EngineGameView {
     /* 0x36 */ u8 unk36[0xE0 - 0x36];
     /* 0xE0 */ s32 unkE0;
 } EngineGameView;
-extern u8 D_8009F6F4[];
+extern u8 GameViewport[];
 typedef struct { s32 key; s32 v[3]; } EngineKeyed16;
 extern EngineKeyed16 D_800A0B60[];
 extern s32 D_8009F8B8;
 typedef struct { s32 unk0; s32 unk4; s32 unk8; s32 unkC; } EngineEntry16Head;
 typedef struct { s32 unk0; EngineEntry16Head *unk4; s32 unk8; } EngineTable12;
-extern EngineTable12 D_8009E7A0[];
+extern EngineTable12 CupTable[];
 /* Also in main.h; repeated for overlays that include engine.h first. */
 extern u8 GameInfo[];
 extern s32 LevelUnlockedIn(s32, u8 *);
@@ -245,7 +245,7 @@ typedef struct { u16 a, b, c, flags; } EngEntry;
 typedef struct { s32 unk0; EngEntry *entries; s32 unk8, unkC, unk10; } EngTable;
 typedef struct { u16 unk0; s32 unk4; s32 unk8; s32 unkC; s32 unk10; } EngState;
 extern EngState D_8009EE9C;
-extern s32 D_8009E5DC;
+extern s32 NextGameMode;
 extern u8 GameWarpRoom;
 extern s32 WarpRooms[][5];
 extern u16 D_800986FC[];
@@ -438,7 +438,7 @@ extern u8 NoxSparkFxDef[];
 
 extern u8 D_8009E200[];
 
-extern s32 D_8009E424[];
+extern s32 HitSfx[];
 extern u8 CrateObjectsModel[];
 NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2);
 
@@ -465,10 +465,10 @@ static inline void EngineBeginMode(s32 arg) {
     s32 mode;
     u16 world;
 
-    D_8009F6F4[0x24] = 0;
-    D_8009F6F4[0x25] = 0;
-    D_8009F6F4[0x26] = 0;
-    D_8009F6F4[0x27] = 0;
+    GameViewport[0x24] = 0;
+    GameViewport[0x25] = 0;
+    GameViewport[0x26] = 0;
+    GameViewport[0x27] = 0;
     g->unk30 &= 0xFDFF;
     func_8009608C(arg);
     process_init(&MenuProcessControl);

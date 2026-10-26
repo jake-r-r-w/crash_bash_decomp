@@ -7720,7 +7720,7 @@ void InitPolarBoss(NAS *nas) {
         nas->Engine->sub->flags |= 0x02000000;
         nas->Engine->unk5D = 0;
         D_8009D6E2 = 0x14;
-        e = FindExtension(D_8009D670, 0x20000000);
+        e = FindExtension(Heroes[3].hero, 0x20000000);
         if (e != NULL) {
             e->val = 0xFF;
         }
@@ -8259,7 +8259,7 @@ void InitBearminator(NAS *m) {
             ext->unk38 = 0xB;
             ext->unk7C = 0x96;
             ext->unk3C = 0;
-            ext->unk50 = CameraTarget[0]->unk10.y;
+            ext->unk50 = Heroes[0].hero_eng->unk10.y;
             ext->unk8C = 0;
             ext->unk1C = 0x5A;
             ext->unkA8 = 0;
@@ -9200,7 +9200,7 @@ void PlotSniperMissile(NAS *m) {
             PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
             PlaySfx(0x23A, NULL, NULL, 0x1000, 0x1E00, 0);
             D_8009D6DC[3] -= 7;
-            gun = FindExtension(D_8009D670, 0x20000000);
+            gun = FindExtension(Heroes[3].hero, 0x20000000);
             if (gun != NULL) {
                 gun[8] -= 0x55;
             }
@@ -9433,7 +9433,7 @@ void InitBigMissile(NAS *m) {
         ext->unkC = 0x10;
         ext->unk50 = 0x96;
         ext->unk10 = 0;
-        ext->unk24 = CameraTarget[0]->unk10.y;
+        ext->unk24 = Heroes[0].hero_eng->unk10.y;
         ext->unk78 = 0;
         ext->pos = m->Engine->unk10;
         PlaySfx(0x22D, NULL, NULL, 0x1000, 0x1E00, 0);

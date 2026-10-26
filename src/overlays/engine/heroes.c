@@ -51,7 +51,7 @@ void func_80083708(void) {
         if (i >= 4) {
             break;
         }
-        nas = (NAS *)((u8 *)D_8005AA1C + m * 16);
+        nas = (NAS *)((u8 *)NasPool + m * 16);
         h = &hb[i];
         h->hero = nas;
         *nas = NASTemplate;

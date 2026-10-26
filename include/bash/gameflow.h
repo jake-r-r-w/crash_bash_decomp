@@ -198,7 +198,7 @@ static inline void EngineWorldPrev(void) {
 
 /* func_8008FE68's body, inlined by func_8008F554. */
 static inline s32 EngineTable_Unlocked(s32 arg0) {
-    EngineTable12 *base = D_8009E7A0;
+    EngineTable12 *base = CupTable;
     EngineTable12 *t;
     EngineEntry16Head *p;
     s32 n;
@@ -224,7 +224,7 @@ static inline s32 EngineTable_Unlocked(s32 arg0) {
 /* func_8008FF10's body, inlined by func_8008F554. */
 static inline s32 EngineCurWorldName(void) {
     u16 *wt = ModeTypes;
-    EngineTable12 *tab = D_8009E7A0;
+    EngineTable12 *tab = CupTable;
     u8 *g = GameInfo;
     EngineEntry16Head *e = tab[g[0x28]].unk4;
     s32 idx = e[g[0x29]].unk4;

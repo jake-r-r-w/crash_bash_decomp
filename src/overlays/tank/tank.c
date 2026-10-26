@@ -1513,8 +1513,8 @@ void TA_InitLevel(void) {
     func_8001682C((s32 *)TankObjectsModel);
     func_8001682C((s32 *)(TankObjectsModel - 0x658));
     func_8001682C(*(s32 **)MapScene);
-    ((TankScreen *)D_8009F6F4)->w10 = 0x140;
-    ((TankScreen *)D_8009F6F4)->w14 = 0x15E;
+    ((TankScreen *)GameViewport)->w10 = 0x140;
+    ((TankScreen *)GameViewport)->w14 = 0x15E;
     CAM5F->w0 = 0;
     CAM5F->w8 = 0xE98;
     CAM5F->h54 = 0x200;
@@ -7325,12 +7325,12 @@ void LoopMoeJoeMoveAnim(s32 arg0) {
         s32 val;
         MoeAnimPtr = MoeMoveAnim;
         val = *MoeAnimPtr++;
-        D_8009D678->unk74 = val;
+        TankMoeSub->unk74 = val;
     } else {
         s32 val;
         JoeAnimPtr = JoeMoveAnim;
         val = *JoeAnimPtr++;
-        D_8009D60C->unk74 = val;
+        TankJoeSub->unk74 = val;
     }
 }
 
@@ -7471,12 +7471,12 @@ void SetMoeJoeIdle(s32 arg0) {
         s32 v;
         MoeAnimPtr = MoeMoveAnim;
         v = *MoeAnimPtr++;
-        D_8009D678->unk74 = v;
+        TankMoeSub->unk74 = v;
     } else {
         s32 v;
         JoeAnimPtr = JoeMoveAnim;
         v = *JoeAnimPtr++;
-        D_8009D60C->unk74 = v;
+        TankJoeSub->unk74 = v;
     }
 }
 
@@ -7485,12 +7485,12 @@ void SetMoeJoeMove(s32 arg0) {
         s32 val;
         MoeAnimPtr = MoeMoveAnim;
         val = *MoeAnimPtr++;
-        D_8009D678->unk74 = val;
+        TankMoeSub->unk74 = val;
     } else {
         s32 val;
         JoeAnimPtr = JoeMoveAnim;
         val = *JoeAnimPtr++;
-        D_8009D60C->unk74 = val;
+        TankJoeSub->unk74 = val;
     }
 }
 
@@ -7507,7 +7507,7 @@ void SetMoeJoeRecoil(s32 arg0) {
             p = MoeRecoilAnim;
             MoeAnimPtr = p;
             val = *MoeAnimPtr++;
-            D_8009D678->unk74 = val;
+            TankMoeSub->unk74 = val;
             PlaySfx(0x261, 0, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
         } else {
             p2 = JoeRecoilAnim;
@@ -7582,10 +7582,10 @@ void MoeJoeMove(s32 player) {
     UpdateTankHeroWeapons(player);
     if (player == 3) {
         v = *MoeAnimPtr++;
-        D_8009D678->unk74 = v;
+        TankMoeSub->unk74 = v;
     } else {
         v = *JoeAnimPtr++;
-        D_8009D60C->unk74 = v;
+        TankJoeSub->unk74 = v;
     }
     if (v == 0) {
         LoopMoeJoeMoveAnim(player);
@@ -7801,12 +7801,12 @@ void MoeJoeRecoil(s32 arg0) {
             s32 v;
             MoeAnimPtr = MoeMoveAnim;
             v = *MoeAnimPtr++;
-            D_8009D678->unk74 = v;
+            TankMoeSub->unk74 = v;
         } else {
             s32 v;
             JoeAnimPtr = JoeMoveAnim;
             v = *JoeAnimPtr++;
-            D_8009D60C->unk74 = v;
+            TankJoeSub->unk74 = v;
         }
     }
 }
@@ -7821,9 +7821,9 @@ void MoeJoeDie(s32 arg0) {
     s32 mode;
 
     if (arg0 == 3) {
-        D_8009D678->unk74 = val = *MoeAnimPtr++;
+        TankMoeSub->unk74 = val = *MoeAnimPtr++;
     } else {
-        D_8009D60C->unk74 = val = *JoeAnimPtr++;
+        TankJoeSub->unk74 = val = *JoeAnimPtr++;
     }
     if (val == 0) {
         eng = Heroes[arg0].hero_eng;
@@ -7870,11 +7870,11 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     sub = eng->sub;
     if (id == 0x131E) {
         p = 3;
-        D_8009D6A0 = 2;
+        TankMoeTeammate = 2;
         MoeState = 0x3B;
     } else {
         p = 2;
-        D_8009D634 = 3;
+        TankJoeTeammate = 3;
         JoeState = 0x3B;
     }
     g = GameInfo + p;
@@ -8440,10 +8440,10 @@ void StartMoeJoeAnim(s32 arg0, s32 *arg1) {
     }
     if (arg0 == 3) {
         val = *MoeAnimPtr++;
-        D_8009D678->unk74 = val;
+        TankMoeSub->unk74 = val;
     } else {
         val = *JoeAnimPtr++;
-        D_8009D60C->unk74 = val;
+        TankJoeSub->unk74 = val;
     }
 }
 
@@ -8451,9 +8451,9 @@ s32 StepMoeJoeAnim(s32 arg0) {
     s32 val;
 
     if (arg0 == 3) {
-        D_8009D678->unk74 = val = *MoeAnimPtr++;
+        TankMoeSub->unk74 = val = *MoeAnimPtr++;
     } else {
-        D_8009D60C->unk74 = val = *JoeAnimPtr++;
+        TankJoeSub->unk74 = val = *JoeAnimPtr++;
     }
     return val;
 }

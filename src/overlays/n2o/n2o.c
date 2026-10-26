@@ -888,7 +888,7 @@ void N2OPlaceHero(s32 i) {
     N2OHeroEngineUpdate(i);
     FetchDefaultColBox(eng, 0x50);
     if (i == 1) {
-        D_8009D59C->unk10.z = -0x2800;
+        Heroes[1].hero_eng->unk10.z = -0x2800;
     } else {
         Heroes[i].hero_eng->unk10.z = -0x2200;
     }
@@ -1390,7 +1390,7 @@ void N2OHeroWinner(s32 arg0) {
     }
     if (GameTeams[0] != 0) {
         if (arg0 == 0) {
-            e = CameraTarget;
+            e = Heroes[0].hero_eng;
             t = e->unk10.x;
             if (t >= -0x27F) {
                 e->unk10.x = t - 0x40;
@@ -1739,8 +1739,8 @@ void PlotN2OBall(NAS *nas) {
             if (e2 != NULL) {
                 e2->flags |= 0x8000;
             }
-            px = D_8009D674->unk10.x;
-            pz = D_8009D674->unk10.z;
+            px = Heroes[3].hero_eng->unk10.x;
+            pz = Heroes[3].hero_eng->unk10.z;
             dx = eng->unk10.x - px;
             dz = eng->unk10.z - pz;
             ang = get_angle(dx, dz);
@@ -1928,12 +1928,12 @@ void PlotN2OBall(NAS *nas) {
                     goto explode;
                 }
                 func_8007A524(0, &eng->unk10.x, 0);
-                PlaySfx(D_8009E424[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
                 D_8009D6DC[3] -= 0x20;
                 N2OBallsLost++;
                 if (D_8009D6DC[3] <= 0) {
                     D_8009D6DC[3] = 0;
-                    D_8009D6D6 = 0x1E;
+                    Heroes[3].hero_attack_timer = 0x1E;
                     D_8009D6DC[2] |= 0x2000;
                 }
             } else {
@@ -1965,7 +1965,7 @@ void PlotN2OBall(NAS *nas) {
                     D_8009D6DC[3] -= 0x20;
                     if (D_8009D6DC[3] <= 0) {
                         D_8009D6DC[3] = 0;
-                        D_8009D6D6 = 0x1E;
+                        Heroes[3].hero_attack_timer = 0x1E;
                         D_8009D6DC[2] |= 0x2000;
                     }
                 }
@@ -2206,7 +2206,7 @@ void N2OUpdateBoss(void) {
             N2OBossPad = 0;
         }
         lim = 0x68;
-        p = D_8009D688;
+        p = (N2OPan *)Heroes[3].hero_move;
         if (p != NULL) {
             fl = N2OBossPad;
             step = 0x22;
@@ -2279,7 +2279,7 @@ void N2OUpdateBoss(void) {
                 }
             }
             if (N2OHeroRad2ObjectCollision(3, (sc & 0xFFFF) >> 3, 0) != 0) {
-                D_8009D6D6 = 0;
+                Heroes[3].hero_attack_timer = 0;
             }
             Heroes[3].hero_attack_counter++;
             if (Heroes[3].hero_attack_counter >= 4) {
@@ -2294,7 +2294,7 @@ void N2OUpdateBoss(void) {
         q = &World_floor_level;
         v = (TrigTable[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         eng->unk10.y = *q + v;
-        dx = ((N2OPanRef *)&D_8009D688)->p->unkC;
+        dx = ((N2OPanRef *)&Heroes[3].hero_move)->p->unkC;
         eng->unk10.x += dx;
         v = func_800154A0(eng->unk20, -dx);
         eng->unk5E = 1;
@@ -4068,7 +4068,7 @@ void InitN2Ofirstmissile(NAS *nas) {
             mot->Xacc = 8;
             mot->Xdec = 0;
         }
-        d = CameraTarget->unk10.x;
+        d = Heroes[0].hero_eng->unk10.x;
         ang = get_angle(eng->unk10.x - d, eng->unk10.z - d);
         nas->UserInfo.user2 = ang;
         eng->unk1E = ang - 0x400;
@@ -4101,7 +4101,7 @@ void InitN2Omissile(NAS *nas) {
             mot->Xacc = 8;
             mot->Xdec = 0;
         }
-        ang = get_angle(eng->unk10.x - ((s32 *)CameraTarget)[4], eng->unk10.z - ((s32 *)CameraTarget)[4]);
+        ang = get_angle(eng->unk10.x - ((s32 *)Heroes[0].hero_eng)[4], eng->unk10.z - ((s32 *)Heroes[0].hero_eng)[4]);
         nas->UserInfo.user2 = ang;
         eng->unk1E = ang - 0x400;
         eng->boomshanka = 1;

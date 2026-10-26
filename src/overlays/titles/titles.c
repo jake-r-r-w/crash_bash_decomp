@@ -1982,7 +1982,7 @@ void LevelSelectUpdate(void) {
         GetEngineSlot(i + 3)->sub->unk74 = 0;
     }
     h = GameInfo;
-    D_8009E5DC = ((BattleLevel *)((u8 *)BattleArenas[(s8)h[0x36]].unk0 + ((s8)h[0x37] << 4)))->idx;
+    NextGameMode = ((BattleLevel *)((u8 *)BattleArenas[(s8)h[0x36]].unk0 + ((s8)h[0x37] << 4)))->idx;
     q = GetEngineSlot(2)->sub;
     q->unk10 = 0x7D;
     q->unk51 = 0;

@@ -3453,7 +3453,7 @@ void BashSpawnMissileExplode(s32 x, s32 y, s32 z, s32 arg3, s32 arg4) {
         } else if (Random(4) != 0) {
             goto set;
         }
-        PlaySfx(D_8009E424[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
 set:
         n->UserInfo.user2 = 0x208;
     }
@@ -3541,7 +3541,7 @@ void InitSnowGlint(NAS *nas) {
 }
 
 void BashDrawView(void) {
-    u8 *vp = D_8009F6F4;
+    u8 *vp = GameViewport;
     func_80093038();
     func_80018B08((GfxViewport *)vp, (GfxCamera *)MainCamera);
     FadeAmount = ScreenFade.amount;

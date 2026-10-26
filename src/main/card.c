@@ -112,7 +112,7 @@ void func_8002C894(void) {
     MemCardInit(0);
     MemCardStart();
     i = 0;
-    D_800655B8 = 0;
+    CardChannel = 0;
     CardStatus = 0;
     CardCommand = 0;
     D_800655C4 = 0;
@@ -180,7 +180,7 @@ void func_8002C97C(void) {
     }
     goto lend;
 l0:
-    MemCardExist(D_800655B8);
+    MemCardExist(CardChannel);
     i = 1;
     CardStatus = 0;
     CardCommand = i;
@@ -195,7 +195,7 @@ l1:
     case 2:
     case 3:
     case 4:
-        MemCardAccept(D_800655B8);
+        MemCardAccept(CardChannel);
         CardStatus = 0x42;
         CardCommand = 2;
         break;
@@ -217,12 +217,12 @@ l2_4:
     CardCommand = 3;
     goto lend;
 l2_03:
-    if (MemCardGetDirentry(D_800655B8, (char *)all,(struct DIRENTRY *)D_800675D4, &D_800675D0, 0, 0xF) != 0) {
+    if (MemCardGetDirentry(CardChannel, (char *)all,(struct DIRENTRY *)D_800675D4, &D_800675D0, 0, 0xF) != 0) {
         CardCommand = 0;
     }
     if (McFindSave() != NULL) {
         McClearSave();
-        MemCardReadFile(D_800655B8, D_8004CDAC, (u32 *)CardBuffer, 0, 0x2000);
+        MemCardReadFile(CardChannel, D_8004CDAC, (u32 *)CardBuffer, 0, 0x2000);
         CardCommand = 7;
         goto lend;
     }
@@ -237,14 +237,14 @@ l2_03:
 l3:
     if (D_800655C4 == 0 || card_command_delay != 0) {
         card_command_delay--;
-        MemCardExist(D_800655B8);
+        MemCardExist(CardChannel);
         CardCommand = 4;
         goto lend;
     }
     switch (D_800655C4) {
     case 2:
         McResetSaveSum();
-        if (MemCardFormat(D_800655B8) == 0) {
+        if (MemCardFormat(CardChannel) == 0) {
             CardStatus = 0x22;
             CardCommand = 3;
             D_800655C4 = 0;
@@ -254,13 +254,13 @@ l3:
         CardCommand = 6;
         return;
     case 1:
-        if (!(CardStatus & 0x10) && MemCardCreateFile(D_800655B8, D_8004CDAC, 1) != 0) {
+        if (!(CardStatus & 0x10) && MemCardCreateFile(CardChannel, D_8004CDAC, 1) != 0) {
             CardCommand = 6;
             CardStatus |= 0x100;
         }
         if (CardCommand != 6) {
             func_8002C5BC();
-            MemCardWriteFile(D_800655B8, D_8004CDAC, (u32 *)CardBuffer, 0, 0x2000);
+            MemCardWriteFile(CardChannel, D_8004CDAC, (u32 *)CardBuffer, 0, 0x2000);
             CardCommand = 5;
             return;
         }

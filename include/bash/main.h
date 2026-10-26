@@ -792,7 +792,7 @@ PointList *func_8001562C(subengine *sub);
 FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
 void func_800369FC(void);
 
-extern GteScratch D_800569CC;
+extern GteScratch GteWork;
 extern SVECTOR D_80056AC8[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
 extern TrigEntry TrigTable[];
@@ -854,7 +854,7 @@ typedef struct {
 extern D_80058B00_Entry D_80058B00[];
 extern s32 World_floor_level;
 extern s32 D_800655A8;
-extern s32 D_800655B8;
+extern s32 CardChannel;
 extern s32 CardStatus;
 extern u8 CardBuffer[];
 /* The memory card save file header at CardBuffer (PsyQ _CARD layout). */
@@ -969,7 +969,7 @@ extern FreeNode *D_80063BB0;
 extern void *D_80063BB4;        /* list walked by func_80028A00 (next at +4) */
 extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
-extern s32 D_8004E110[];         /* func_80012D80: 8-byte entries */
+extern s32 DatIndex[];         /* func_80012D80: 8-byte entries */
 extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
 extern s32 D_800654BC;            /* slots of SfxBanks in use */
 extern char D_800654CC[];
@@ -1022,7 +1022,7 @@ extern u8 MainCamera[];
 extern u8 LoadingModel[];
 extern s16 GameMode;
 extern u16 GameLevelFlags;
-extern s32 D_8005B2B4;
+extern s32 FontPage;
 extern s8 D_8005AEB4[];
 extern u8 D_8005B0B4[];
 extern u8 *sysfont_dbase;
@@ -1356,7 +1356,7 @@ extern NAS *NASFreeList;
 extern u16 FirstNas;            /* first pool slot func_80026D08 frees */
 extern u16 D_8005AA12;            /* pool slot count */
 extern u16 D_8005AA14;            /* pool slots in use (func_80026FCC kills them all) */
-extern NAS *D_8005AA1C;           /* NAS pool */
+extern NAS *NasPool;           /* NAS pool */
 extern NAS NASTemplate;            /* copied over each spawned NAS */
 extern EXTengine EngineTemplate;   /* copied over each new engine */
 extern s16 AtanTable[];            /* get_angle */
@@ -1581,7 +1581,7 @@ typedef struct {
     u8 *str;     /* 0x6C */
     u32 c0;      /* 0x70 */
     u32 c1;      /* 0x74 */
-    s32 font;    /* 0x78: into D_8005B2B4 */
+    s32 font;    /* 0x78: into FontPage */
 } TextNAS;
 extern s16 D_800569C4;
 extern PosEntry D_8005689C[];
