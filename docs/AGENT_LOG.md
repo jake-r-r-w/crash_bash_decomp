@@ -462,6 +462,11 @@ Newest first, a few lines each. Details are in the commits.
   name `assets/CRASHBSH/index.json` stored at extract time. Gotcha: splat
   writes a function's `asm/nonmatchings` file only while its C includes it,
   so a matched overlay's asm can't be split again; the tool moves it.
+  (Splitting polar with its C moved aside, to get that asm back, also wrote
+  three rodata `D_*.s` the C had replaced, and the data map counted
+  polar's data as asm until they were deleted: a stray
+  `asm/nonmatchings/<unit>/D_*.s` does that.) Polar's nine anim-name
+  strings are named now (`PolarAnimLight` ..), so all its data is.
 
 - **2026-10-26 (Polar, with the recipe):** all 134 unnamed
   functions named (the hero actions from `HeroMode_nums`, three leak

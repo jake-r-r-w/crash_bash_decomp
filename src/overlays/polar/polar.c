@@ -48,15 +48,15 @@ extern u8 D_80063EC8[];
 extern u8 D_80074328[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "LIGHT";
-const char D_800B32C0[] = "RUN";
-const char D_800B32C4[] = "BREATHE";
-const char D_800B32CC[] = "FALL";
-const char D_800B32D4[] = "PUSH";
-const char D_800B32DC[] = "TAUNT";
-const char D_800B32E4[] = "SKATE";
-const char D_800B32EC[] = "HIT";
-const char D_800B32F0[] = "BARGE";
+const char PolarAnimLight[] = "LIGHT";
+const char PolarAnimRun[] = "RUN";
+const char PolarAnimBreathe[] = "BREATHE";
+const char PolarAnimFall[] = "FALL";
+const char PolarAnimPush[] = "PUSH";
+const char PolarAnimTaunt[] = "TAUNT";
+const char PolarAnimSkate[] = "SKATE";
+const char PolarAnimHit[] = "HIT";
+const char PolarAnimBarge[] = "BARGE";
 
 /* data, in address order */
 u16 PolarDefaultAiSkill[10] = { 5, 2, 1, 1, 0x14, 0x1C, 0xB, 0x10, 0x10, 0x1C };
@@ -508,13 +508,13 @@ s32 PolarAIChances[72] = {
 };
 s16 PolarPreLoadDB[8] = { 0x1C, 0x82, -1, 0, 0, 0, 0, 0 };
 char *PolarAnims[7] = {
-    (char *)D_800B32B8, (char *)D_800B32C0, (char *)D_800B32C4, (char *)D_800B32CC, (char *)D_800B32D4, (char *)D_800B32DC, NULL,
+    (char *)PolarAnimLight, (char *)PolarAnimRun, (char *)PolarAnimBreathe, (char *)PolarAnimFall, (char *)PolarAnimPush, (char *)PolarAnimTaunt, NULL,
 };
 char *PolarAnimsB[6] = {
-    (char *)D_800B32C0, (char *)D_800B32C4, (char *)D_800B32CC, (char *)D_800B32D4, (char *)D_800B32DC, NULL,
+    (char *)PolarAnimRun, (char *)PolarAnimBreathe, (char *)PolarAnimFall, (char *)PolarAnimPush, (char *)PolarAnimTaunt, NULL,
 };
 char *PolarAnimsC[10] = {
-    (char *)D_800B32E4, (char *)D_800B32EC, (char *)D_800B32F0, (char *)D_800B32B8, (char *)D_800B32C0, (char *)D_800B32C4, (char *)D_800B32CC, (char *)D_800B32D4, (char *)D_800B32DC, NULL,
+    (char *)PolarAnimSkate, (char *)PolarAnimHit, (char *)PolarAnimBarge, (char *)PolarAnimLight, (char *)PolarAnimRun, (char *)PolarAnimBreathe, (char *)PolarAnimFall, (char *)PolarAnimPush, (char *)PolarAnimTaunt, NULL,
 };
 s16 PolarLevelDB0[4] = { 0x80, 0x85, -1, 0 };
 s16 PolarLevelDB1[2] = { 0x80, -1 };
