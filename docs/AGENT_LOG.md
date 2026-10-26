@@ -452,6 +452,15 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Papu, with the recipe):** all 65 unnamed functions named
+  (most from their Bash twins via `decomp.py similar`), data, rodata, id
+  word and tail as C (`pahero.c`'s data from `0x800BE898`), all 166 data
+  objects named (40 `*_PA_seq_*` split out). New rules: the 2 bytes of
+  padding before a later file's `.data` must be written out (the slot
+  overlays link with `SUBALIGN(2)`; OVERLAY_RECIPE.md gotchas), and data2c
+  leaves out another overlay's `<overlay>_<name>.h`. Shift test waiting on
+  the playtest.
+
 - **2026-10-26 (file names):** every address-named game file renamed for
   what it holds (`tools/scripts/rename_file.py SEG NEW`): bash `xtras`,
   `bahero`; papu `pahero`; bonk `bohero`; n2o `nox`; hub `hubcore`; engine
