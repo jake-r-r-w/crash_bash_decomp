@@ -89,9 +89,11 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    to a `decomp.py` subcommand when it is first needed. Many uncalled
    Tank functions are the out-of-line copies of the `Ovl5f*` static
    inlines in `ovl5f.h` (`TriggerTankMinesNear` is `Ovl5fTriggerNear`,
-   `GetTankMapCell` is `Ovl5fMapCell`, ...): give each pair one name once
-   it's clear how the original declared them (a C++ inline defined after
-   its callers can't be inlined by gcc 2.8, so the source had both).
+   `GetTankMapCell` is `Ovl5fMapCell`, ...). Explained (2026-10-26): the
+   source had one inline function each, which `cc1plus` both inlined and
+   emitted at the end of the file (MATCHING.md, Inline functions behind
+   odd shapes). Give each pair one name; the C keeps both, since `cc1`
+   can't emit an inline after its file's other functions.
 2. **Split Tank into its files: done, it is one file** (2026-10-26;
    ARCHITECTURE.md, Files inside the slot overlays). `units --data` reads
    the slot overlays now (`--why` lists the pairs behind each inversion;
@@ -523,6 +525,13 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Tank is one file):** `decomp.py units --data` extended to
+  the slot overlays (overlay yaml and binary, the zero tail as `.bss`,
+  `--why`; `zero_tail_start` tested). Tank: no parity change in 33 tables,
+  data ties 1..123, and the leak's order climbs, then falls from 87 to the
+  end: `cc1plus` emits out-of-line inlines last, reversed (tested), so
+  87..180 were inline and Tank is one file. Roadmap split item ticked.
 
 - **2026-10-26 (Tank typing pass):** 24 stand-in structs replaced by the
   Oct 9 and engine types (14 object extensions are all `EXTobject_TA`;
