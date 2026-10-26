@@ -410,7 +410,6 @@ extern u16 D_800BBD52;
 extern u16 D_800BBD62;
 extern s32 D_800BBD68;
 extern EXTengine D_800BBD6C;
-extern _sfx_handler *D_800BBE00;
 extern s32 D_80053004;
 
 void SpinTurnArena(void);

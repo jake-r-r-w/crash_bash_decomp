@@ -138,6 +138,11 @@ class Alignment(unittest.TestCase):
         self.assertEqual(out, "u16 D_800C3B34 = 0;\ns16 D_800C3B36 = 0;")
         # before a word-aligned object the same 2 bytes are padding
         self.assertEqual(c.define("D_800C3B34", 0x800C3B34, 4, {"short"}, [], next_align=4), "u16 D_800C3B34 = 0;")
+        # a rest smaller than the object's element (a word object's last 2 bytes) is a halfword,
+        # not a zero-length word array
+        c.decls = {"D_800C3B34": ("u16", 0, [])}
+        self.assertEqual(c.define("D_800C3B34", 0x800C3B34, 4, {"word"}, [], next_align=2),
+                         "u16 D_800C3B34 = 0;\ns16 D_800C3B36 = 0;")
 
 
 class OtherSlots(unittest.TestCase):

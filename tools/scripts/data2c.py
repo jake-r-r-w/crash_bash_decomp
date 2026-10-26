@@ -530,6 +530,9 @@ class Converter:
         decl = self.decls.get(name)
         if decl is None:
             el = "s32" if "word" in kinds or not kinds else "s16" if "short" in kinds else "u8"
+            if size % SCALARS[el][0] or size < SCALARS[el][0]:
+                # a rest smaller than (or not a multiple of) the element: halfwords or bytes
+                el = "s16" if size % 2 == 0 and va % 2 == 0 else "u8"
             esz = SCALARS[el][0]
             # an array is word-aligned (mips.h DATA_ALIGNMENT), so one element off a word is a scalar
             decl = (el, 0, [] if va % 4 and size == esz else [None])
@@ -552,9 +555,12 @@ class Converter:
             # D_800C1F16 in Arkenoid, puts its rest at the word right after it)
             rva = (va + total + 3) & ~3
             rkinds = kinds - {"asciz"} or {"word"}
-            if rva - va >= size and (va + total) % 2 == 0:
-                # less than a word is left: a halfword right after (the s16 pair D_800C52E8)
-                rva, rkinds = va + total, {"short"}
+            if rva - va >= size:
+                # less than a word is left: a halfword right after (the s16 pair D_800C52E8), or
+                # bytes when it starts at an odd address
+                rva, rkinds = va + total, {"short"} if (va + total) % 2 == 0 else {"byte"}
+            if rva <= va or rva >= va + size:
+                raise ValueError(f"{name}: no room for the rest after {tname} ({total} of {size} bytes)")
             rest = "\n" + self.define(f"D_{rva:08X}", rva, size - (rva - va), rkinds, local, next_align)
             size = rva - va
             self.base_rom = self.rom(va)

@@ -8,6 +8,157 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
+/* the exe's data the tables point at, not declared in the headers yet */
+extern u8 D_8004419C[];
+extern u8 D_80044218[];
+extern u8 D_80044594[];
+extern u8 D_80044614[];
+extern u8 D_8004EC10[];
+extern u8 D_8004EC18[];
+extern u8 D_8004EC20[];
+extern u8 D_8004EC28[];
+extern u8 D_8004EC30[];
+extern u8 D_8004EC38[];
+extern u8 D_8004EC40[];
+extern u8 D_8004EC48[];
+extern u8 D_8004EC50[];
+extern u8 D_8004EC58[];
+extern u8 D_8004EC60[];
+extern u8 D_8004EC68[];
+extern u8 D_80050088[];
+extern u8 D_80070008[];
+extern u8 D_8007000C[];
+extern u8 D_80070070[];
+extern u8 D_800700D4[];
+extern u8 D_80070138[];
+
+/* rodata: the strings (const arrays keep their retail order; see data2c.py) */
+const char D_800B32B8[] = "BREATHE";
+const char D_800B32C0[] = "MEDIUM";
+const char D_800B32C8[] = "HIT";
+const char D_800B32CC[] = "DIE";
+const char D_800B32D0[] = "JUMP";
+const char D_800B32D8[] = "ATTACK";
+const char D_800B32E0[] = "FLIP";
+const char D_800B32E8[] = "TAUNT_A";
+
+/* data, in address order */
+u8 D_800BB720[20] = { 0x16, 0, 0x13, 0, 0x10, 0, 0xD, 0, 0x13, 0, 0x16, 0, 0x13, 0, 0x10, 0, 0x10, 0, 0x17, 0 };
+u8 D_800BB734[20] = { 0x17, 0, 0x14, 0, 0x11, 0, 0xE, 0, 0x14, 0, 0x16, 0, 0x15, 0, 0x10, 0, 0x10, 0, 0x17, 0 };
+u8 D_800BB748[12] = { 0xC, 0, 0x14, 0, 0x18, 0, 0xC, 0, 0x14, 0, 0x18, 0 };
+u8 D_800BB754[24] = {
+    0x14, 0, 0x19, 0, 0x1D, 0, 0x12, 0, 0x17, 0, 0x1B, 0, 0x10, 0, 0x15, 0, 0x19, 0, 0xE, 0,
+    0x12, 0, 0x16, 0,
+};
+u8 D_800BB76C[20] = { 0xD, 0, 0xD, 0, 0xD, 0, 0xD, 0, 0x10, 0, 3, 0, 0xE, 0, 0x10, 0, 0x10, 0, 3, 0 };
+u8 D_800BB780[60] = {
+    0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x20, 0, 0x13, 0, 0x10, 0, 0x10, 0, 0x20, 0,
+    0, 0x20, 0, 0, 0x10, 0, 0, 0, 0, 0x10, 0, 0, 0xC8, 0, 0, 0, 0xBC, 2, 0, 0, 0, 2, 0, 0,
+    0xC8, 0x3E, 6, 0x80, 0xB8, 0x3B, 6, 0x80, 0x20, 0, 0, 0, 0, 4, 0, 0,
+};
+u8 D_800BB7BC[80] = {
+    0x88, 0, 0x88, 0, 9, 0, 0xB, 0, 0x80, 0, 0x80, 0, 6, 0, 0xB, 0, 0x80, 0, 0x80, 0, 6, 0,
+    0xB, 0, 0x80, 0, 0x80, 0, 6, 0, 0xB, 0, 0x80, 0, 0x80, 0, 6, 0, 0xB, 0, 0x80, 0, 0x80, 0,
+    8, 0, 0xD, 0, 0x80, 0, 0x80, 0, 8, 0, 0xD, 0, 0x80, 0, 0x80, 0, 8, 0, 0xD, 0, 0x80, 0,
+    0x80, 0, 8, 0, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+u8 D_800BB80C[60] = {
+    0, 0, 0, 0, 0, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0,
+    0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0,
+    0x32, 0, 0x32, 0, 0x37, 0, 0x32, 0, 0x32, 0, 0x37, 0, 0, 0, 0, 0, 0, 0,
+};
+u16 D_800BB848[32] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0xF, 0xE, 0xD, 0xC, 0xB, 0xA, 9, 8, 7, 6,
+    5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+u16 D_800BB888[2] = { 0x17, 0x13 };
+s16 D_800BB88C[4] = { 0xB, 8, 9, 0xA };
+u16 D_800BB894[4] = { 0x2004, 0x2003, 0x2001, 0x2002 };
+u16 D_800BB89C[6] = { 3, 2, 0, 1, 4, 0 };
+s32 D_800BB8A8[4] = { 0x5DC, 0x5DD, 0x5DE, 0x5DF };
+s32 D_800BB8B8[4] = { 0x5E0, 0x5E1, 0x5E2, 0x5E3 };
+s32 D_800BB8C8[4] = { 0x5E4, 0x5E5, 0x5E6, 0x5E7 };
+s32 D_800BB8D8[4] = { 0x5E8, 0x5E9, 0x5EA, 0x5EB };
+s32 *D_800BB8E8[178] = {
+    (void *)&D_800BB8A8, (void *)&D_800BB8B8, (void *)&D_800BB8C8, (void *)&D_800BB8D8,
+    0x80090000, 0x41800003, 0x98003, 0xA8007, 0x80034181, (void *)&D_80070008, 0x418B0004,
+    0x168018, 0x8004418F, 0, 0x80070000, 0x44000020, 0xC8018, 0x8004441F, 0x38, 0x800A0000,
+    (void *)&D_8007000C, 0x46040013, 0x28018, 0x80184617, 0x46180004, 0x288018, 0x80044619, 7,
+    0x80090000, 0x40800035, 0x98003, 0xD8007, 0x80034081, 0x408E0008, 0x58007, 0x8018408F,
+    0x40930011, 0x8004, 0x80070000, 0x45800015, 0x148018, (void *)&D_80044594, 0x38,
+    0x800A0000, 0x8007003E, 0x4605001C, 0x288018, 0x80044621, 7, 0x80090000, 0x41000099,
+    0x98003, 0xE8007, 0x80034101, (void *)&D_80070008, 0x410F0005, 0x118018, 0x80044113, 0,
+    0x80070000, 0x44000023, 0x58018, 0x80044422, 0x38, 0x800A0000, 0x800700A2, 0x46840017,
+    0x288018, 0x8004469B, 7, 0x80090000, 0x40000067, 0x98003, 0x128007, 0x80034001,
+    (void *)&D_80070008, 0x40130007, 0xB8018, 0x80044019, 0, 0x80070000, 0x45800015, 0xF8018,
+    (void *)&D_80044594, 0x38, 0x800A0000, (void *)&D_80070070, 0x46040017, 0x288018,
+    0x8004461B, 7, 0x80090000, 0x420000FD, 0x98003, 0xA8007, 0x80034201, (void *)&D_80070008,
+    0x420B0013, 0x78018, 0x8004421D, 0, 0x80070000, 0x4480001F, 0xD8018, 0x8004449E, 0x38,
+    0x800A0000, 0x80070106, 0x46840012, 0x288018, 0x80044696, 7, 0x80090000, 0x4080012F,
+    0x98003, 0x128007, 0x80034081, (void *)&D_80070008, 0x4093000B, 0x78018, 0x8004409D, 0,
+    0x80070000, 0x46000015, 0xF8018, (void *)&D_80044614, 0x38, 0x800A0000,
+    (void *)&D_80070138, 0x46840013, 0x28018, 0x8018469A, 0x469B0028, 0x78004, 0x80090000,
+    0x420000CB, 0x98003, 0x128007, 0x80034201, (void *)&D_80070008, 0x42120008, 0x98018,
+    0x8004421A, 0, 0x80070000, 0x42800017, 0x178018, 0x80044296, 0x38, 0x800A0000,
+    (void *)&D_800700D4, 0x46840016, 0x28018, 0x8018469A, 0x469B0028, 0x78004, 0x80090000,
+    0x41800161, 0x98003, 0x128007, 0x80034181, (void *)&D_80070008, 0x41930009, 0x98018,
+    (void *)&D_8004419C, 0, 0x80070000, 0x42000019, 0xB8018, (void *)&D_80044218, 0x38,
+    0x800A0000, 0x8007016A, 0x46840018, 0x28018, 0x8018469C, 0x469D0028, 0x78004,
+};
+s32 D_800BBBB0[3] = { 0x17001C, 0x190018, 0xFFFF };
+s32 D_800BBBBC[9] = {
+    (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32CC, (s32)&D_800B32D0,
+    (s32)&D_800B32D8, (s32)&D_800B32E0, (s32)&D_800B32E8, 0,
+};
+s32 D_800BBBE0[1] = { 0xFFFF };
+s32 D_800BBBE4[1] = { -0xFFE6 };
+s32 D_800BBBE8[16] = {
+    0x7D, (s32)&D_800BBBBC, (s32)&D_800BBBE0, 7, 0, 0, 0, 0, 0x7E, (s32)&D_800BBBBC,
+    (s32)&D_800BBBE4, 7, 0, 0, 0, 0,
+};
+s32 D_800BBC28[23] = {
+    (s32)&D_80055684, (s32)&D_8004EC68, (s32)&D_8004EC60, (s32)&D_800555A4, (s32)&D_8004EC48,
+    (s32)&D_8004EC40, (s32)&D_80053074, (s32)&D_8004EC58, (s32)&D_8004EC50, (s32)&D_80052F5C,
+    (s32)&D_8004EC38, (s32)&D_8004EC30, (s32)&D_80052F94, (s32)&D_8004EC28, (s32)&D_8004EC20,
+    (s32)&D_80052FCC, (s32)&D_8004EC18, (s32)&D_8004EC10, 0, 0, 0, (s32)&D_80050088,
+    (s32)&D_800BBC28,
+};
+s32 D_800BBC84[2] = { 0x2010003, 0x201020D };
+s32 D_800BBC8C[9] = { (s32)&D_800BBC84, 4, (s32)&D_800BBBB0, (s32)&D_800BBBE8, (s32)&D_800BBC8C, 0, 0, 0, 0 };
+SpinSlot D_800BBCB0[10] = {
+    { 0, { 0, 0, 0 }, { 0, 0x14, 0 } }, { 0, { 0, 0, 0 }, { 0, 0x14, 0 } },
+    { 0, { 0, 0x300, 0 }, { 0, 0, 5 } }, { 0, { 0, 0, 0 }, { 0, 0, 0xA } },
+    { 0, { 0, 0, 0 }, { 0, 0, -0xF } }, { 0, { 0, 0, 0 }, { 0, 0, 0 } },
+    { 0, { 0, 0, 0 }, { 0, 0, 0 } }, { 0, { 0, 0, 0 }, { 0, 0, 0 } },
+    { 0, { 0, 0, 0 }, { 0, 0, 0 } }, { 0, { 0, 0, 0 }, { 0, 0, 0 } },
+};
+s16 D_800BBD50[1] = {0};
+u16 D_800BBD52 = 0;
+u16 D_800BBD54 = 0;
+u16 D_800BBD56 = 0;
+u16 D_800BBD58 = 0;
+u16 D_800BBD5A = 0;
+u16 D_800BBD5C = 0;
+u16 D_800BBD5E = 0;
+s16 D_800BBD60[1] = {0};
+u16 D_800BBD62 = 0;
+u16 D_800BBD64 = 0;
+s32 D_800BBD68 = 0;
+EXTengine D_800BBD6C = {0};
+s32 D_800BBE08 = 0;
+s32 D_800BBE0C = 0;
+SpinCell D_800BBE10[4][16] = {0};
+s32 D_800BC010 = 0;
+s32 D_800BC014 = 0;
+s16 D_800BC018 = 0;
+s16 D_800BC01A = 0;
+s16 D_800BC01C = 0;
+SpinObj *D_800BC020[10] = {0};
+s32 D_800BC048 = 0;
+u16 D_800BC04C[4] = { 0x2013, 0x2012, 0x2010, 0x2011 };
+u16 D_800BC054[4] = { 0x446, 0x447, 0x448, 0x449 };
+u16 D_800BC05C[4] = {0};
+
 void InitialiseSPINFirst() {
     void *p;
     void **q;
@@ -101,7 +252,7 @@ void InitialiseSPIN() {
     SpinShuffleDropPoints();
     func_80086D88();
     SpinInitScene();
-    PlaySfx(0x5EC, &D_800BBE00, NULL, 0x1000, 0x1E00, 0);
+    PlaySfx(0x5EC, &D_800BBD6C.sfx, NULL, 0x1000, 0x1E00, 0);
 }
 
 void SpinShuffleDropPoints(void) {
@@ -580,7 +731,6 @@ void SpinDropMaster(void) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/spin/spin", D_800B32B8);
 
 void SpinCountObjects(void) {
     s32 i;
@@ -1690,7 +1840,10 @@ s32 SpinHitTest(x, y, z, size, skip, mask)
     return ret;
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/spin/spin", D_800B337C);
+/* the AI's debug printf format, which nothing prints with in retail, and an empty string;
+ * their place in .rodata is between functions' jump tables, so they are defined here */
+const char SpinAiDebugFormat[] = "%d ai mode %d target %x player %d angle %x dist %x- %x\n";
+const char SpinEmptyString[] = "";
 
 void Spin_HeroBot(s32 arg0) {
     s32 unused[4];
