@@ -8,6 +8,9 @@
 #include "common.h"
 #include "bash/nas.h"
 
+/* defined later in ovl62.c than the data that points at it */
+extern const char D_800B3358[];
+
 extern void (*D_8009D714)(void);
 extern u8 D_800546C4[];
 extern u8 D_80052EEC[];
@@ -90,7 +93,7 @@ typedef struct SceneObj {
 
 /* Visible scene objects PolarInitDebug collects. */
 extern SceneObj *D_800D6010[80];
-extern char D_800B3498[];
+extern const char D_800B3498[];
 
 /* Scene objects PolarInitScene picks out by index. */
 extern s32 D_8009E1F4;
@@ -1557,7 +1560,8 @@ extern void *D_8009D904;
 extern s32 D_800D4D0C;
 extern s32 D_800D4DD0;
 extern u8 D_8008B29C[], D_8008B418[];
-extern u8 D_800D5258[], D_800D526C[], D_800D5280[], D_800D52B8[];
+extern u8 D_800D5258[], D_800D526C[], D_800D5280[];
+extern s32 D_800D52B8[]; /* {name, 0x5C} x4: the victory sequences (the engine's hook 0x14) */
 extern u8 D_800D3510[], D_800D3524[], D_800D3538[], D_800D3544[], D_800D355C[], D_800D3570[];
 extern u8 D_800D35C4[], D_800D35D8[], D_800D35EC[], D_800D35F8[], D_800D3610[], D_800D3624[];
 extern u8 D_800D3678[], D_800D368C[], D_800D36A0[], D_800D36AC[], D_800D36C4[], D_800D36D8[];
