@@ -692,6 +692,18 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Chase** (chase, the kegs and coal game; named 2026-10-26). Mode 0x1E;
+  one engine world record (0x010D) points at `CHASE_PREMAP`,
+  `chase_shell_info` and `CHASESetUp`, the per-mode table at
+  `file_group_CHASE` (`ChaseFiles` with the exe's file group 5: 12 DAT
+  entries, all decoded). `CHASESetUp` fills the same `LevSpec` slots Tank's
+  does (`ChaseStopHeroSfx`, `ChaseTriggers`, `FirstTriggersCHASE`,
+  `FinishChaseLevel`). Barrels roll out of generators, coal burns and spreads
+  over the arena grid (`ChaseSpawnCoal`, `CoalFlameSpread`, `ChaseGrid`), and
+  the winner is chosen four ways as Bonk's. The hero states are `HEROFunc`
+  pairs 113..123 (`HEROmode_ChaseIdle` .. `ChaseLand`, actions 0x71..0x7B);
+  the 96 sequence slots are each character's `hero_seq_keg*`, the eight
+  `kegdead` slots one shared sequence (`CHASE_seq_kegdead`).
 - **Bonk** (bonk, the mallet game; named 2026-10-26). Mode 0x1D
   (`LEV_BONK`); one engine world record (0x010E) points at `BONK_PREMAP`,
   `bonk_shell_info` and `BONKSetUp`, the per-mode table at `file_group_BONK`

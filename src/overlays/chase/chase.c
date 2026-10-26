@@ -40,156 +40,383 @@ extern u8 D_800700D4[];
 extern u8 D_80070138[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "BREATHE";
-const char D_800B32C0[] = "MEDIUM";
-const char D_800B32C8[] = "HIT";
-const char D_800B32CC[] = "JUMP";
-const char D_800B32D4[] = "WIN";
+const char ChaseAnimBreathe[] = "BREATHE";
+const char ChaseAnimMedium[] = "MEDIUM";
+const char ChaseAnimHit[] = "HIT";
+const char ChaseAnimJump[] = "JUMP";
+const char ChaseAnimWin[] = "WIN";
 
 /* data, in address order */
-s32 D_800BB834[3] = { 0x17001C, 0x1A0061, 0xFFFF };
-s32 D_800BB840[5] = { (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32CC, 0 };
-s32 D_800BB854[1] = { 0xFFFF };
-s32 D_800BB858[16] = {
-    0x5F, (s32)&D_800BB840, (s32)&D_800BB854, 0, 0, 0, 0, 0, 0x60, (s32)&D_800BB840,
-    (s32)&D_800BB854, 0, 0, 0, 0, 0,
+s16 ChasePreLoadDB[6] = { 0x1C, 0x17, 0x61, 0x1A, -1, 0 };
+char *ChaseAnims[5] = {
+    (char *)ChaseAnimBreathe, (char *)ChaseAnimMedium, (char *)ChaseAnimHit, (char *)ChaseAnimJump,
+    NULL,
 };
-s32 D_800BB898[23] = {
+s16 ChaseLevelDB[2] = { -1, 0 };
+WWInf ChaseWorldInfo[2] = {
+    { 0x5F, ChaseAnims, ChaseLevelDB, 0 },
+    { 0x60, ChaseAnims, ChaseLevelDB, 0 },
+};
+s32 ChaseFiles[21] = {
     (s32)&D_80055684, (s32)&D_8004EAE8, (s32)&D_8004EAE0, (s32)&D_800555A4, (s32)&D_8004EAC8,
     (s32)&D_8004EAC0, (s32)&D_80053074, (s32)&D_8004EAD8, (s32)&D_8004EAD0, (s32)&D_80052F5C,
     (s32)&D_8004EAB8, (s32)&D_8004EAB0, (s32)&D_80053004, (s32)&D_8004EAA8, (s32)&D_8004EAA0,
-    (s32)&D_80053F8C, (s32)&D_8004EA98, (s32)&D_8004EA90, 0, 0, 0, (s32)&D_8005004C,
-    (s32)&D_800BB898,
+    (s32)&D_80053F8C, (s32)&D_8004EA98, (s32)&D_8004EA90, 0, 0,
 };
-s32 D_800BB8F4[4] = { 0x20D0003, 0x20D0201, 0x13061301, 0x130A1309 };
-s32 D_800BB904[9] = { (s32)&D_800BB8F4, 8, (s32)&D_800BB834, (s32)&D_800BB858, (s32)&D_800BB904, 0, 0, 0, 0 };
-u8 D_800BB928[20] = { 0, 0, 0x62, 0, 0x63, 0, 0x64, 0, 0x66, 0, 0x65, 0, 0x68, 0, 0x67, 0, 0x69, 0, 0, 0 };
-s32 D_800BB93C[8] = {
-    (s32)&D_800B32D4, 0x6A, (s32)&D_800B32D4, 0x6A, (s32)&D_800B32D4, 0x6A, (s32)&D_800B32D4,
+/* the level's files (the engine's per-mode table points at mode 0x1E's) */
+file_group_load_info file_group_CHASE = { D_8005004C, ChaseFiles };
+u16 ChaseLUPtab[8] = { 3, 0x20D, 0x201, 0x20D, 0x1301, 0x1306, 0x1309, 0x130A };
+TrigLookUp ChaseLUP = { ChaseLUPtab, 8 };
+PreMap CHASE_PREMAP = { ChasePreLoadDB, ChaseWorldInfo, &ChaseLUP };
+u16 ChaseHeroModels[10] = {
+    0, 0x62, 0x63, 0x64, 0x66, 0x65, 0x68, 0x67, 0x69, 0,
+};
+s32 ChaseVictorySeqs[8] = {
+    (s32)&ChaseAnimWin, 0x6A, (s32)&ChaseAnimWin, 0x6A, (s32)&ChaseAnimWin, 0x6A, (s32)&ChaseAnimWin,
     0x6A,
 };
-s32 D_800BB95C[9][4] = {
+s32 ChaseHitSfx[9][4] = {
     { 3, 4, 5, 6 }, { 0x35, 0x36, 0x37, 0x38 }, { 0x67, 0x68, 0x69, 0x6A },
     { 0x99, 0x9A, 0x9B, 0x9C }, { 0x12F, 0x130, 0x131, 0x132 }, { 0x161, 0x162, 0x163, 0x164 },
     { 0xFD, 0xFE, 0xFF, 0x100 }, { 0xCB, 0xCC, 0xCD, 0xCE }, { 0x749, 0x748, 0x747, 0x746 },
 };
-s32 D_800BB9EC[4] = { 0x745, 0x744, 0x743, 0x742 };
-s32 D_800BB9FC[4] = { 0x741, 0x740, 0x73F, 0x73E };
-s32 D_800BBA0C[14] = {
-    0x750, 0x751, 0x752, 0x753, 0x4000, 0x20, 0x1800, 0x80, 0x200, 0x100, (s32)&D_80063EC8,
-    (s32)&D_80063BB8, 0x20, 0x5DC,
+s32 ChaseBarrelSfx[4] = { 0x745, 0x744, 0x743, 0x742 };
+s32 ChaseFlameSfx[4] = { 0x741, 0x740, 0x73F, 0x73E };
+s32 ChaseChainSfx[4] = { 0x750, 0x751, 0x752, 0x753 };
+/* the shell settings (engine world record 0x010D) */
+shell_setup chase_shell_info = {
+    0x4000, 0x20, 0x1800, 0x80, 0x200, 0x100, D_80063EC8, D_80063BB8, 0x20, 0x5DC,
 };
-ChaseSpawnOfs D_800BBA44[135] = {
-    { 0x82, -0x384, 0xDC }, { 0x64, -0x4B0, 0xFA }, { 0x64, 0x44C, 0xC8 },
-    { 0x64, 0x44C, 0xC8 }, { 0x82, -0x5DC, 0xFA }, { 0x82, -0x5DC, 0x12C },
-    { 0x82, -0x44C, 0x12C }, { 0x82, -0x44C, 0x12C }, { 2, 0x8000, (s32)0x80070000 },
-    { 0x40000016, 0x8000, (s32)0x80050000 }, { 0x61, (s32)0x80050000, 0x61 },
-    { 0x40930000, 0x88003, 0xA8007 }, { (s32)&D_80034080, (s32)0x80070009, 0x408A0009 },
-    { 0x8000, (s32)0x800A0000, (s32)&D_8007000C }, { 0x41050007, 0x288018, (s32)&D_8004410C },
-    { 0x7A, 0x410D0002, 0x48018 }, { 0x410F410E, 0x288018, 0x41104110 },
-    { 0x41104110, (s32)&D_80044110, 0x7B }, { (s32)0x80090000, (s32)0x8007000D, 0x4111001B },
-    { 0x718004, (s32)0x80070000, 0x42000009 }, { 0x88003, 0xA8007, (s32)0x80044209 },
-    { 0x71, (s32)0x80070000, 0x40000016 }, { 0x8000, (s32)0x80070000, 0x4180002A },
-    { 0x8000, (s32)0x80070000, 0x41800014 }, { 0x8000, 2, 0x8000 },
-    { (s32)0x80070000, 0x4000001B, 0x8000 }, { (s32)0x80050000, 0x61, (s32)0x80050000 },
-    { 0x61, 0x40950000, 0x88003 }, { 0xB8007, (s32)&D_80034080, (s32)0x80070009 },
-    { 0x408A000A, 0x8000, (s32)0x800A0000 }, { (s32)0x8007003E, 0x41060007, 0x288018 },
-    { (s32)0x8004410D, 0x7A, 0x410E0002 }, { 0x4110410F, 0x48018, 0x41124111 },
-    { 0x288018, (s32)0x80044113, 0x7B }, { (s32)0x80090000, (s32)0x8007003F, 0x41140009 },
-    { 0x718004, (s32)0x80070000, 0x4180000E }, { 0x88003, 0x58007, (s32)0x8004418E },
-    { 0x71, (s32)0x80070000, 0x42000032 }, { 0x8000, (s32)0x80070000, 0x4000001B },
-    { 0x718004, 2, 0x8000 }, { (s32)0x80070000, 0x40000020, 0x8000 },
-    { (s32)0x80050000, 0x61, (s32)0x80050000 }, { 0x61, 0x40930000, 0x88003 },
-    { 0xA8007, (s32)&D_80034080, (s32)0x80070009 }, { 0x408A0009, 0x8000, (s32)0x800A0000 },
-    { (s32)&D_80070138, 0x41060007, 0x288018 }, { (s32)0x8004410D, 0x7A, 0x410E0002 },
-    { 0x4110410F, 0x41124111, 0x48018 }, { 0x41144113, (s32)0x80184115, 0x41160028 },
-    { (s32)0x80044116, 0x7B, (s32)0x80090000 }, { (s32)0x80070139, 0x4117000B, 0x718004 },
-    { (s32)0x80070000, 0x41800013, 0x88003 }, { 0xA8007, (s32)0x80044193, 0x71 },
-    { (s32)0x80070000, 0x42000026, 0x278007 }, { (s32)0x80004226, 3, (s32)0x80070000 },
-    { 0x40000020, 0x8000, 2 }, { 0x8000, (s32)0x80070000, 0x4000001E },
-    { 0x8000, (s32)0x80050000, 0x61 }, { (s32)0x80050000, 0x61, 0x41930000 },
-    { 0x88003, 0xB8007, (s32)&D_80034180 }, { (s32)0x80070009, 0x418A000A, 0x8000 },
-    { (s32)0x800A0000, (s32)&D_80070138, 0x41060007 }, { 0x288018, (s32)0x8004410D, 0x7A },
-    { 0x410E0002, 0x4110410F, 0x41124111 }, { 0x48018, 0x41144113, (s32)0x80184115 },
-    { 0x41160028, (s32)0x80044116, 0x7B }, { (s32)0x80090000, (s32)0x80070071, 0x41160005 },
-    { 0x718004, (s32)0x80070000, 0x40800014 }, { 0x88003, 0xF8007, (s32)0x80044093 },
-    { 0x71, (s32)0x80070000, 0x42000009 }, { 0x148007, (s32)0x80004209, 3 },
-    { (s32)0x80070000, 0x4000001E, 0x8000 }, { 2, 0x8000, (s32)0x80070000 },
-    { 0x42000013, 0x8000, (s32)0x80050000 }, { 0x61, (s32)0x80050000, 0x61 },
-    { 0x40950000, 0x88003, 0xB8007 }, { (s32)&D_80034080, (s32)0x80070009, 0x408B0009 },
-    { 0x8000, (s32)0x800A0000, (s32)0x800700A2 }, { 0x41060006, 0x288018, (s32)&D_8004410C },
-    { 0x7A, 0x410D0002, (s32)0x8018410E }, { 0x410F0004, 0x41114110, 0x288018 },
-    { 0x41134112, 0x7B8004, (s32)0x80090000 }, { (s32)0x800700A3, 0x41110002, 0x718004 },
-    { (s32)0x80070000, 0x4180000F, 0x88003 }, { 0x58007, (s32)0x8004418E, 0x71 },
-    { (s32)0x80070000, 0x40000018, 0x8000 }, { (s32)0x80070000, 0x42000013, 0x8000 },
-    { 2, 0x8000, (s32)0x80070000 }, { 0x40800016, 0x8000, (s32)0x80050000 },
-    { 0x61, (s32)0x80050000, 0x61 }, { 0x40110000, 0x88003, 0x98007 },
-    { (s32)&D_80034000, (s32)0x80070009, 0x40090008 },
-    { 0x8000, (s32)0x800A0000, (s32)0x80070106 }, { 0x41060007, 0x288018, (s32)0x8004410D },
-    { 0x7A, 0x410E0002, 0x4110410F }, { 0x41124111, 0x48018, 0x41144113 },
-    { (s32)0x80184115, 0x41160028, (s32)0x80044116 },
-    { 0x7B, (s32)0x80090000, (s32)0x80070139 }, { 0x4117000B, 0x718004, (s32)0x80070000 },
-    { 0x41800013, 0x88003, 0xD8007 }, { (s32)0x80044193, 0x71, (s32)0x80070000 },
-    { 0x42000015, 0xD8007, (s32)0x80004216 }, { 3, (s32)0x80070000, 0x40800016 },
-    { 0x8000, 2, 0x8000 }, { (s32)0x80070000, 0x42000020, 0x8000 },
-    { (s32)0x80050000, 0x61, (s32)0x80050000 }, { 0x61, 0x40930000, 0x88003 },
-    { 0xA8007, (s32)&D_80034080, (s32)0x80070009 }, { 0x408A0009, 0x8000, (s32)0x800A0000 },
-    { (s32)0x8007016A, 0x41090004, 0x288018 }, { (s32)0x8004410D, 0x7A, 0x410E0002 },
-    { 0x4110410F, 0x41124111, 0x48018 }, { 0x41144113, (s32)0x80184115, 0x41160028 },
-    { (s32)0x80044116, 0x7B, (s32)0x80090000 }, { (s32)0x8007016B, 0x4117000B, 0x718004 },
-    { (s32)0x80070000, 0x41800012, 0x88003 }, { 0xA8007, (s32)0x80044192, 0x71 },
-    { (s32)0x80070000, 0x40000021, 0x2D8007 }, { (s32)0x80004021, 3, (s32)0x80070000 },
-    { 0x42000020, 0x8000, 2 }, { 0x8000, (s32)0x80070000, 0x42000014 },
-    { 0x8000, (s32)0x80050000, 0x61 }, { (s32)0x80050000, 0x61, 0x40930000 },
-    { 0x88003, 0xA8007, (s32)&D_80034080 }, { (s32)0x80070009, 0x408A0009, 0x8000 },
-    { (s32)0x800A0000, (s32)&D_800700D4, 0x41060007 }, { 0x288018, (s32)0x8004410D, 0x7A },
-    { 0x410E0002, 0x4110410F, 0x48018 }, { 0x41124111, (s32)0x80184113, 0x41140028 },
-    { (s32)0x80044115, 0x7B, (s32)0x80090000 }, { (s32)0x800700D5, 0x41150009, 0x718004 },
-    { (s32)0x80070000, 0x41800010, 0x88003 }, { 0xA8007, (s32)0x80044191, 0x71 },
-    { (s32)0x80070000, 0x4000000C, 0x8000 }, { (s32)0x80070000, 0x42000014, 0x8000 },
+ChaseSpawnOfs ChaseSpawnOffsets[8] = {
+    { 0x82, -0x384, 0xDC },
+    { 0x64, -0x4B0, 0xFA },
+    { 0x64, 0x44C, 0xC8 },
+    { 0x64, 0x44C, 0xC8 },
+    { 0x82, -0x5DC, 0xFA },
+    { 0x82, -0x5DC, 0x12C },
+    { 0x82, -0x44C, 0x12C },
+    { 0x82, -0x44C, 0x12C },
 };
-u8 D_800BC098[20] = { 0x15, 0, 0x13, 0, 0x11, 0, 0x10, 0, 0x16, 0, 0x18, 0, 0x15, 0, 0x10, 0, 0x10, 0, 0x19, 0 };
-u8 D_800BC0AC[20] = { 0x16, 0, 0x14, 0, 0x12, 0, 0x10, 0, 0x16, 0, 0x18, 0, 0x15, 0, 0x10, 0, 0x10, 0, 0x19, 0 };
-u8 D_800BC0C0[12] = { 0xE, 0, 0x13, 0, 0x16, 0, 0xE, 0, 0x13, 0, 0x16, 0 };
-u8 D_800BC0CC[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+hero_seq CRA_seq_kegnone[4] = {
+    2, 0, 0x8000, 0,
 };
-u8 D_800BC0E4[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_800BC0F8[144] = {
-    0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0,
-    0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0,
-    0, 0, 0xE8, 0xFE, 0xFF, 0xFF, 0xB4, 0, 0, 0, 0, 0, 0, 0, 0xE7, 0xFE, 0xFF, 0xFF, 0xB4, 0,
-    0, 0, 0, 0, 0, 0, 0x82, 0xFE, 0xFF, 0xFF, 0xC8, 0, 0, 0, 0, 0, 0, 0, 0x81, 0xFE, 0xFF,
-    0xFF, 0xC8, 0, 0, 0, 0, 0, 0, 0, 2, 0xFF, 0xFF, 0xFF, 0xC8, 0, 0, 0, 0, 0, 0, 0, 1, 0xFF,
-    0xFF, 0xFF, 0xC8, 0, 0, 0, 0, 0, 0, 0, 6, 0xFE, 0xFF, 0xFF, 0xA0, 0, 0, 0, 0, 0, 0, 0, 5,
-    0xFE, 0xFF, 0xFF, 0xA0, 0, 0, 0,
+hero_seq CRA_seq_kegbreathe[6] = {
+    0, 0x8007, 0x16, 0x4000, 0x8000, 0,
 };
-u16 D_800BC188[10] = { 0, 0x2002, 0x2003, 0x2001, 0x2003, 0x2001, 0x2002, 0x2001, 0x2002, 0 };
-u16 D_800BC19C[10] = { 0, 0x4000, 0x4000, 0x4000, 0x4200, 0x4000, 0x4200, 0x4080, 0x4200, 0 };
-CircleFireOfs D_800BC1B0[8] = {
+hero_seq CRA_seq_kegidle_a[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq CRA_seq_kegidle_b[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq CRA_seq_kegmedium[14] = {
+    0, 0x4093, 0x8003, 8, 0x8007, 0xA, 0x4080, 0x8003, 9, 0x8007, 9, 0x408A, 0x8000, 0,
+};
+hero_seq CRA_seq_kegjump[12] = {
+    0, 0x800A, 0xC, 0x8007, 7, 0x4105, 0x8018, 0x28, 0x410C, 0x8004, 0x7A, 0,
+};
+hero_seq CRA_seq_kegfall[16] = {
+    2, 0x410D, 0x8018, 4, 0x410E, 0x410F, 0x8018, 0x28, 0x4110, 0x4110, 0x4110, 0x4110, 0x4110,
+    0x8004, 0x7B, 0,
+};
+hero_seq CRA_seq_kegland[8] = {
+    0, 0x8009, 0xD, 0x8007, 0x1B, 0x4111, 0x8004, 0x71,
+};
+hero_seq CRA_seq_keghit[12] = {
+    0, 0x8007, 9, 0x4200, 0x8003, 8, 0x8007, 0xA, 0x4209, 0x8004, 0x71, 0,
+};
+hero_seq CRA_seq_kegvictory[6] = {
+    0, 0x8007, 0x16, 0x4000, 0x8000, 0,
+};
+hero_seq CRA_seq_kegwin[6] = {
+    0, 0x8007, 0x2A, 0x4180, 0x8000, 0,
+};
+hero_seq CHASE_seq_kegdead[6] = {
+    0, 0x8007, 0x14, 0x4180, 0x8000, 0,
+};
+hero_seq COC_seq_kegnone[4] = {
+    2, 0, 0x8000, 0,
+};
+hero_seq COC_seq_kegbreathe[6] = {
+    0, 0x8007, 0x1B, 0x4000, 0x8000, 0,
+};
+hero_seq COC_seq_kegidle_a[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq COC_seq_kegidle_b[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq COC_seq_kegmedium[14] = {
+    0, 0x4095, 0x8003, 8, 0x8007, 0xB, 0x4080, 0x8003, 9, 0x8007, 0xA, 0x408A, 0x8000, 0,
+};
+hero_seq COC_seq_kegjump[12] = {
+    0, 0x800A, 0x3E, 0x8007, 7, 0x4106, 0x8018, 0x28, 0x410D, 0x8004, 0x7A, 0,
+};
+hero_seq COC_seq_kegfall[14] = {
+    2, 0x410E, 0x410F, 0x4110, 0x8018, 4, 0x4111, 0x4112, 0x8018, 0x28, 0x4113, 0x8004, 0x7B, 0,
+};
+hero_seq COC_seq_kegland[8] = {
+    0, 0x8009, 0x3F, 0x8007, 9, 0x4114, 0x8004, 0x71,
+};
+hero_seq COC_seq_keghit[12] = {
+    0, 0x8007, 0xE, 0x4180, 0x8003, 8, 0x8007, 5, 0x418E, 0x8004, 0x71, 0,
+};
+hero_seq COC_seq_kegwin[6] = {
+    0, 0x8007, 0x32, 0x4200, 0x8000, 0,
+};
+hero_seq COC_seq_kegvictory[6] = {
+    0, 0x8007, 0x1B, 0x4000, 0x8004, 0x71,
+};
+hero_seq TIN_seq_kegnone[4] = {
+    2, 0, 0x8000, 0,
+};
+hero_seq TIN_seq_kegbreathe[6] = {
+    0, 0x8007, 0x20, 0x4000, 0x8000, 0,
+};
+hero_seq TIN_seq_kegidle_a[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq TIN_seq_kegidle_b[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq TIN_seq_kegmedium[14] = {
+    0, 0x4093, 0x8003, 8, 0x8007, 0xA, 0x4080, 0x8003, 9, 0x8007, 9, 0x408A, 0x8000, 0,
+};
+hero_seq TIN_seq_kegjump[12] = {
+    0, 0x800A, 0x138, 0x8007, 7, 0x4106, 0x8018, 0x28, 0x410D, 0x8004, 0x7A, 0,
+};
+hero_seq TIN_seq_kegfall[18] = {
+    2, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x8018, 4, 0x4113, 0x4114, 0x4115, 0x8018, 0x28,
+    0x4116, 0x4116, 0x8004, 0x7B, 0,
+};
+hero_seq TIN_seq_kegland[8] = {
+    0, 0x8009, 0x139, 0x8007, 0xB, 0x4117, 0x8004, 0x71,
+};
+hero_seq TIN_seq_keghit[12] = {
+    0, 0x8007, 0x13, 0x4180, 0x8003, 8, 0x8007, 0xA, 0x4193, 0x8004, 0x71, 0,
+};
+hero_seq TIN_seq_kegwin[10] = {
+    0, 0x8007, 0x26, 0x4200, 0x8007, 0x27, 0x4226, 0x8000, 3, 0,
+};
+hero_seq TIN_seq_kegvictory[6] = {
+    0, 0x8007, 0x20, 0x4000, 0x8000, 0,
+};
+hero_seq CTX_seq_kegnone[4] = {
+    2, 0, 0x8000, 0,
+};
+hero_seq CTX_seq_kegbreathe[6] = {
+    0, 0x8007, 0x1E, 0x4000, 0x8000, 0,
+};
+hero_seq CTX_seq_kegidle_a[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq CTX_seq_kegidle_b[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq CTX_seq_kegmedium[14] = {
+    0, 0x4193, 0x8003, 8, 0x8007, 0xB, 0x4180, 0x8003, 9, 0x8007, 0xA, 0x418A, 0x8000, 0,
+};
+hero_seq CTX_seq_kegjump[12] = {
+    0, 0x800A, 0x138, 0x8007, 7, 0x4106, 0x8018, 0x28, 0x410D, 0x8004, 0x7A, 0,
+};
+hero_seq CTX_seq_kegfall[18] = {
+    2, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x8018, 4, 0x4113, 0x4114, 0x4115, 0x8018, 0x28,
+    0x4116, 0x4116, 0x8004, 0x7B, 0,
+};
+hero_seq CTX_seq_kegland[8] = {
+    0, 0x8009, 0x71, 0x8007, 5, 0x4116, 0x8004, 0x71,
+};
+hero_seq CTX_seq_keghit[12] = {
+    0, 0x8007, 0x14, 0x4080, 0x8003, 8, 0x8007, 0xF, 0x4093, 0x8004, 0x71, 0,
+};
+hero_seq CTX_seq_kegwin[10] = {
+    0, 0x8007, 9, 0x4200, 0x8007, 0x14, 0x4209, 0x8000, 3, 0,
+};
+hero_seq CTX_seq_kegvictory[6] = {
+    0, 0x8007, 0x1E, 0x4000, 0x8000, 0,
+};
+hero_seq BRO_seq_kegnone[4] = {
+    2, 0, 0x8000, 0,
+};
+hero_seq BRO_seq_kegbreathe[6] = {
+    0, 0x8007, 0x13, 0x4200, 0x8000, 0,
+};
+hero_seq BRO_seq_kegidle_a[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq BRO_seq_kegidle_b[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq BRO_seq_kegmedium[14] = {
+    0, 0x4095, 0x8003, 8, 0x8007, 0xB, 0x4080, 0x8003, 9, 0x8007, 9, 0x408B, 0x8000, 0,
+};
+hero_seq BRO_seq_kegjump[12] = {
+    0, 0x800A, 0xA2, 0x8007, 6, 0x4106, 0x8018, 0x28, 0x410C, 0x8004, 0x7A, 0,
+};
+hero_seq BRO_seq_kegfall[14] = {
+    2, 0x410D, 0x410E, 0x8018, 4, 0x410F, 0x4110, 0x4111, 0x8018, 0x28, 0x4112, 0x4113, 0x8004,
+    0x7B,
+};
+hero_seq BRO_seq_kegland[8] = {
+    0, 0x8009, 0xA3, 0x8007, 2, 0x4111, 0x8004, 0x71,
+};
+hero_seq BRO_seq_keghit[12] = {
+    0, 0x8007, 0xF, 0x4180, 0x8003, 8, 0x8007, 5, 0x418E, 0x8004, 0x71, 0,
+};
+hero_seq BRO_seq_kegwin[6] = {
+    0, 0x8007, 0x18, 0x4000, 0x8000, 0,
+};
+hero_seq BRO_seq_kegvictory[6] = {
+    0, 0x8007, 0x13, 0x4200, 0x8000, 0,
+};
+hero_seq DNG_seq_kegnone[4] = {
+    2, 0, 0x8000, 0,
+};
+hero_seq DNG_seq_kegbreathe[6] = {
+    0, 0x8007, 0x16, 0x4080, 0x8000, 0,
+};
+hero_seq DNG_seq_kegidle_a[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq DNG_seq_kegidle_b[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq DNG_seq_kegmedium[14] = {
+    0, 0x4011, 0x8003, 8, 0x8007, 9, 0x4000, 0x8003, 9, 0x8007, 8, 0x4009, 0x8000, 0,
+};
+hero_seq DNG_seq_kegjump[12] = {
+    0, 0x800A, 0x106, 0x8007, 7, 0x4106, 0x8018, 0x28, 0x410D, 0x8004, 0x7A, 0,
+};
+hero_seq DNG_seq_kegfall[18] = {
+    2, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x8018, 4, 0x4113, 0x4114, 0x4115, 0x8018, 0x28,
+    0x4116, 0x4116, 0x8004, 0x7B, 0,
+};
+hero_seq DNG_seq_kegland[8] = {
+    0, 0x8009, 0x139, 0x8007, 0xB, 0x4117, 0x8004, 0x71,
+};
+hero_seq DNG_seq_keghit[12] = {
+    0, 0x8007, 0x13, 0x4180, 0x8003, 8, 0x8007, 0xD, 0x4193, 0x8004, 0x71, 0,
+};
+hero_seq DNG_seq_kegwin[10] = {
+    0, 0x8007, 0x15, 0x4200, 0x8007, 0xD, 0x4216, 0x8000, 3, 0,
+};
+hero_seq DNG_seq_kegvictory[6] = {
+    0, 0x8007, 0x16, 0x4080, 0x8000, 0,
+};
+hero_seq KON_seq_kegnone[4] = {
+    2, 0, 0x8000, 0,
+};
+hero_seq KON_seq_kegbreathe[6] = {
+    0, 0x8007, 0x20, 0x4200, 0x8000, 0,
+};
+hero_seq KON_seq_kegidle_a[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq KON_seq_kegidle_b[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq KON_seq_kegmedium[14] = {
+    0, 0x4093, 0x8003, 8, 0x8007, 0xA, 0x4080, 0x8003, 9, 0x8007, 9, 0x408A, 0x8000, 0,
+};
+hero_seq KON_seq_kegjump[12] = {
+    0, 0x800A, 0x16A, 0x8007, 4, 0x4109, 0x8018, 0x28, 0x410D, 0x8004, 0x7A, 0,
+};
+hero_seq KON_seq_kegfall[18] = {
+    2, 0x410E, 0x410F, 0x4110, 0x4111, 0x4112, 0x8018, 4, 0x4113, 0x4114, 0x4115, 0x8018, 0x28,
+    0x4116, 0x4116, 0x8004, 0x7B, 0,
+};
+hero_seq KON_seq_kegland[8] = {
+    0, 0x8009, 0x16B, 0x8007, 0xB, 0x4117, 0x8004, 0x71,
+};
+hero_seq KON_seq_keghit[12] = {
+    0, 0x8007, 0x12, 0x4180, 0x8003, 8, 0x8007, 0xA, 0x4192, 0x8004, 0x71, 0,
+};
+hero_seq KON_seq_kegwin[10] = {
+    0, 0x8007, 0x21, 0x4000, 0x8007, 0x2D, 0x4021, 0x8000, 3, 0,
+};
+hero_seq KON_seq_kegvictory[6] = {
+    0, 0x8007, 0x20, 0x4200, 0x8000, 0,
+};
+hero_seq KAN_seq_kegnone[4] = {
+    2, 0, 0x8000, 0,
+};
+hero_seq KAN_seq_kegbreathe[6] = {
+    0, 0x8007, 0x14, 0x4200, 0x8000, 0,
+};
+hero_seq KAN_seq_kegidle_a[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq KAN_seq_kegidle_b[4] = {
+    0, 0x8005, 0x61, 0,
+};
+hero_seq KAN_seq_kegmedium[14] = {
+    0, 0x4093, 0x8003, 8, 0x8007, 0xA, 0x4080, 0x8003, 9, 0x8007, 9, 0x408A, 0x8000, 0,
+};
+hero_seq KAN_seq_kegjump[12] = {
+    0, 0x800A, 0xD4, 0x8007, 7, 0x4106, 0x8018, 0x28, 0x410D, 0x8004, 0x7A, 0,
+};
+hero_seq KAN_seq_kegfall[16] = {
+    2, 0x410E, 0x410F, 0x4110, 0x8018, 4, 0x4111, 0x4112, 0x4113, 0x8018, 0x28, 0x4114, 0x4115,
+    0x8004, 0x7B, 0,
+};
+hero_seq KAN_seq_kegland[8] = {
+    0, 0x8009, 0xD5, 0x8007, 9, 0x4115, 0x8004, 0x71,
+};
+hero_seq KAN_seq_keghit[12] = {
+    0, 0x8007, 0x10, 0x4180, 0x8003, 8, 0x8007, 0xA, 0x4191, 0x8004, 0x71, 0,
+};
+hero_seq KAN_seq_kegwin[6] = {
+    0, 0x8007, 0xC, 0x4000, 0x8000, 0,
+};
+hero_seq KAN_seq_kegvictory[6] = {
+    0, 0x8007, 0x14, 0x4200, 0x8000, 0,
+};
+u16 ChaseAiSkill[10] = {
+    0x15, 0x13, 0x11, 0x10, 0x16, 0x18, 0x15, 0x10, 0x10, 0x19,
+};
+u16 ChaseAiSkillAlt[10] = {
+    0x16, 0x14, 0x12, 0x10, 0x16, 0x18, 0x15, 0x10, 0x10, 0x19,
+};
+u16 ChaseAiTeamSkill[6] = {
+    0xE, 0x13, 0x16, 0xE, 0x13, 0x16,
+};
+u16 ChaseAiHumanRoundTweak[12] = {
+    0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14,
+};
+u16 ChaseAiBotTweak[10] = {
+    0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+};
+u16 ChaseAiHumanTweak[72] = {
+    0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0, 0, 1, 0, 2, 0, 3, 0, 0, 0, 1, 0,
+    2, 0, 0, 0, 0xFEE8, 0xFFFF, 0xB4, 0, 0, 0, 0xFEE7, 0xFFFF, 0xB4, 0, 0, 0, 0xFE82, 0xFFFF, 0xC8,
+    0, 0, 0, 0xFE81, 0xFFFF, 0xC8, 0, 0, 0, 0xFF02, 0xFFFF, 0xC8, 0, 0, 0, 0xFF01, 0xFFFF, 0xC8, 0,
+    0, 0, 0xFE06, 0xFFFF, 0xA0, 0, 0, 0, 0xFE05, 0xFFFF, 0xA0, 0,
+};
+u16 ChaseHeroShadowModels[10] = { 0, 0x2002, 0x2003, 0x2001, 0x2003, 0x2001, 0x2002, 0x2001, 0x2002, 0 };
+u16 ChaseHeroShadowSizes[10] = { 0, 0x4000, 0x4000, 0x4000, 0x4200, 0x4000, 0x4200, 0x4080, 0x4200, 0 };
+CircleFireOfs CircleFireOffsets[8] = {
     { -0x80, -0x80 }, { -0x80, 0 }, { -0x80, 0x80 }, { 0, -0x80 }, { 0, 0x80 },
     { 0x80, -0x80 }, { 0x80, 0 }, { 0x80, 0x80 },
 };
-s32 D_800BC1F0[8] = { -0x100, 0, 0x100, 0, 0, 0x100, 0, -0x100 };
-u8 D_800BC210[48] = {0};
-s32 D_800BC240[36] = {0};
-s32 D_800BC2D0[4][21] = {0};
-NAS *D_800BC420[1] = {0};
-NAS *D_800BC424[8] = {0};
-s32 D_800BC444 = 0;
-s32 D_800BC448 = 0;
-s32 D_800BC44C = 0;
-s32 D_800BC450 = 0;
-NAS *D_800BC454 = 0;
-NAS *D_800BC458 = 0;
-s32 D_800BC45C[4] = {0};
-s32 D_800BC46C[4] = {0};
-s32 D_800BC47C[4] = {0};
-s32 D_800BC48C[4] = {0};
-s32 D_800BC49C[4] = {0};
-u16 D_800BC4AC[30] = {0};
-s32 D_800BC4E8[1600] = {0};
+s32 ChaseUnused0[8] = { -0x100, 0, 0x100, 0, 0, 0x100, 0, -0x100 };
+u8 ChaseHeroSlots[48] = {0};
+s32 ChaseUpdateState[36] = {0};
+s32 ChaseHeroState[4][21] = {0};
+NAS *ChasePickup[1] = {0};
+NAS *ChaseBarrels[8] = {0};
+s32 ChaseRoundOver = 0;
+s32 ChaseArenaRadius = 0;
+s32 ChaseArenaShrink = 0;
+s32 ChaseBarrelCount = 0;
+NAS *ChaseGenerator = 0;
+NAS *ChaseGeneratorB = 0;
+s32 ChaseFlameTimer[4] = {0};
+s32 ChaseFlameState[4] = {0};
+s32 ChaseFlameSfxHandle[4] = {0};
+s32 ChaseFlameObj[4] = {0};
+s32 ChaseHeroSpeed[4] = {0};
+u16 ChaseRunSpeeds[30] = {0};
+s32 ChaseGrid[1600] = {0};
 
 void ChaseUpdateStub(s32 *arg0) {
 }
@@ -218,7 +445,7 @@ void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1) {
     dx = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 256) >> 12;
     dz = (D_80068BD4[a].unk2 * 256) >> 12;
     get_angle(arg1->unk10.x + dx - hx, arg1->unk10.z + dz - hz);
-    p = (arg0 * 0x30) + D_800BC210;
+    p = (arg0 * 0x30) + ChaseHeroSlots;
     *(s32 *)(p + 0xC) = arg1->unk10.x + dx;
     *(s32 *)(p + 0x10) = arg1->unk10.z + dz;
     *(s32 *)(p + 0x14) = get_angle(*(s32 *)(p + 0xC) - hx, *(s32 *)(p + 0x10) - hz);
@@ -253,7 +480,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
         }
         best = NULL;
         for (i = 0; i < 8; i++) {
-            nas = D_800BC424[i];
+            nas = ChaseBarrels[i];
             if (nas != NULL) {
                 eng = nas->Engine;
                 dx = eng->unk10.x - x;
@@ -330,7 +557,7 @@ void Chase_HeroBot(s32 arg0) {
         return;
     }
     eng = Heroes[arg0].hero->Engine;
-    ai = (ChaseAiState *)(D_800BC210 + arg0 * 0x30);
+    ai = (ChaseAiState *)(ChaseHeroSlots + arg0 * 0x30);
     switch ((ai->timer >> 4) & 3) {
     case 1:
     default:
@@ -388,7 +615,7 @@ void Chase_HeroBot(s32 arg0) {
             bestd = 0x8000;
             best = NULL;
             for (i = 0; i < 8; i++) {
-                nas = D_800BC424[i];
+                nas = ChaseBarrels[i];
                 if (nas != NULL) {
                     e = nas->Engine;
                     dx = e->unk10.x - x;
@@ -431,7 +658,7 @@ void Chase_HeroBot(s32 arg0) {
         dz = eng->unk10.z;
         dx *= dx;
         dz *= dz;
-        if ((csqrt(dx + dz) >> 6) >= D_800BC448 - 200) {
+        if ((csqrt(dx + dz) >> 6) >= ChaseArenaRadius - 200) {
             ai->state = 8;
             ai->timer = 0x3C;
             ai->angle -= 0x400;
@@ -450,7 +677,7 @@ void Chase_HeroBot(s32 arg0) {
     if (ai->timer & 7) {
         n = 0;
         for (i = 0; i < 8; i++) {
-            nas = D_800BC424[i];
+            nas = ChaseBarrels[i];
             if (nas != NULL) {
                 e = nas->Engine;
                 dx = e->unk10.x - eng->unk10.x;
@@ -481,12 +708,12 @@ void Chase_HeroBot(s32 arg0) {
 }
 
 void InitialiseCHASEFirst(void) {
-    D_8009D6E8.unk4 = D_800BB928;
+    D_8009D6E8.unk4 = ChaseHeroModels;
     D_8009D6E8.unk38 = (void *)Chase_HeroBot;
     D_8009D6E8.unk40 = (void *)ChaseHeroTestRun;
     D_8009D6E8.unk0 = (void *)ChaseInitHero;
     D_8009D6E8.unk68 = (void *)CHASE_KeepInBounds;
-    D_8009D6E8.unk14 = D_800BB93C;
+    D_8009D6E8.unk14 = ChaseVictorySeqs;
     D_8009D6E8.unk20 = (void *)ChasePreMoveHero;
     D_8009D6E8.unk24 = (void *)ChaseMoveHero;
     D_8009D6E8.unk54 = (void *)ChaseHeroKickCollision;
@@ -499,11 +726,11 @@ void InitialiseCHASEFirst(void) {
     D_8009E0E6 = 0x74;
     D_8009E0D8 = 0x73;
     D_8009D6E8.unk64 = (void *)ChaseChooseWinner;
-    D_8009D8F4 = D_800BC0E4;
-    D_8009D8F8 = D_800BC0F8;
-    D_8009D904 = D_800BC0CC;
-    D_8009D8FC = D_8005A680 != 0 ? D_800BC0AC : D_800BC098;
-    D_8009D900 = D_800BC0C0;
+    D_8009D8F4 = ChaseAiBotTweak;
+    D_8009D8F8 = ChaseAiHumanTweak;
+    D_8009D904 = ChaseAiHumanRoundTweak;
+    D_8009D8FC = D_8005A680 != 0 ? ChaseAiSkillAlt : ChaseAiSkill;
+    D_8009D900 = ChaseAiTeamSkill;
 }
 
 /* Steering in the tail: `t = v` survives cse2 and combine only because v is
@@ -525,7 +752,7 @@ void InitialiseCHASE(void) {
     ChaseCam *cam;
     ChaseScreen *scr;
 
-    D_800BC444 = 0;
+    ChaseRoundOver = 0;
     World_floor_level = 0;
     Init_Clock(0x140, 0x1E, 0);
     if (((CoalChainGame *)D_8005A614)->flags & 0x40) {
@@ -555,21 +782,21 @@ void InitialiseCHASE(void) {
     cam->unkC = 0;
     cam->unk14 = -0x770;
     for (i = 7; i >= 0; i--) {
-        D_800BC424[i] = NULL;
+        ChaseBarrels[i] = NULL;
     }
-    D_800BC448 = 0x938;
-    D_800BC44C = 0x684;
-    D_800BC450 = 0;
+    ChaseArenaRadius = 0x938;
+    ChaseArenaShrink = 0x684;
+    ChaseBarrelCount = 0;
     for (i = 0x63F; i >= 0; i--) {
-        D_800BC4E8[i] = 0;
+        ChaseGrid[i] = 0;
     }
     for (i = 0; i < 1; i++) {
-        D_800BC420[i] = NULL;
+        ChasePickup[i] = NULL;
     }
     CreateNAS(0, 0, 0, 0x1D06, 0x11);
     i = Random(0x1000);
-    D_800BC454 = CreateNAS(i, 0, 0x700, 0x1D07, 0x11);
-    D_800BC458 = CreateNAS((i + 0x800) & 0xFFF, 0, 0x700, 0x1D07, 0x11);
+    ChaseGenerator = CreateNAS(i, 0, 0x700, 0x1D07, 0x11);
+    ChaseGeneratorB = CreateNAS((i + 0x800) & 0xFFF, 0, 0x700, 0x1D07, 0x11);
     CreateNAS(0, 0, 0, 0x1D03, 0x11);
     g = D_8005A614;
     if (((CoalChainGame *)g)->flags & 0x80) {
@@ -599,17 +826,17 @@ void InitialiseCHASE(void) {
     x = v * 35 / 100;
     t = v;
     v = (s32)Heroes;
-    D_8009D6F4 = D_800BC4AC;
+    D_8009D6F4 = ChaseRunSpeeds;
     for (i = 0; i < 4; i++) {
         h = &((HeroInfo *)v)[i];
         y = t * 60 / 100 + ((t * 60) & 3);
         q = D_8005A614;
         if (q[i + 0x5C] == 0) {
-            ((ChasePct *)D_800BC4AC)[h->hero_name].unk0 = 0x23;
-            ((ChasePct *)D_800BC4AC)[h->hero_name].unk2 = 0x3C;
+            ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk0 = 0x23;
+            ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk2 = 0x3C;
         } else {
-            ((ChasePct *)D_800BC4AC)[h->hero_name].unk0 = x;
-            ((ChasePct *)D_800BC4AC)[h->hero_name].unk2 = y;
+            ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk0 = x;
+            ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk2 = y;
         }
     }
 }
@@ -624,7 +851,7 @@ void UpdateCHASE(void) {
 
     c = 0;
     i = 0;
-    p = D_800BC424;
+    p = ChaseBarrels;
 loop:
     if (i < 8) {
         if (*p != NULL) {
@@ -644,7 +871,7 @@ loop:
     } while (n >= 0);
     h = D_80053F8C;
     func_80029100(h + 0x10);
-    ChaseUpdateStub(D_800BC240);
+    ChaseUpdateStub(ChaseUpdateState);
 }
 
 void FinishChaseLevel(void) {
@@ -675,8 +902,8 @@ void FinishChaseLevel(void) {
 s32 CHASE_KeepInBounds(s32 *p) {
     s32 d;
     s32 a;
-    if (p[4] < -D_800BC44C || D_800BC44C < p[4] || p[6] < -D_800BC44C || D_800BC44C < p[6]) {
-        d = (csqrt(p[4] * p[4] + p[6] * p[6]) >> 6) - D_800BC448;
+    if (p[4] < -ChaseArenaShrink || ChaseArenaShrink < p[4] || p[6] < -ChaseArenaShrink || ChaseArenaShrink < p[6]) {
+        d = (csqrt(p[4] * p[4] + p[6] * p[6]) >> 6) - ChaseArenaRadius;
         if (d > 0) {
             a = get_angle(p[4], p[6]);
             p[4] -= (d * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
@@ -712,25 +939,25 @@ void ChaseInitHero(s32 arg0) {
     eng = h->hero_eng;
     eng->unk5D = 1;
     eng->unk1E = 0x400;
-    st = D_800BC2D0[arg0];
+    st = ChaseHeroState[arg0];
     func_80018F3C(eng, 1);
     sub = eng->sub;
     sub->unk51 = 1;
-    sub->unk74 = D_800BC188[h->hero_name];
+    sub->unk74 = ChaseHeroShadowModels[h->hero_name];
     FetchDefaultColBox(eng, 0x50);
-    sub->unk74 = D_800BC19C[h->hero_name];
+    sub->unk74 = ChaseHeroShadowSizes[h->hero_name];
     h->hero_score = 0;
     st[0] = 1;
     st[2] = 0xB4;
     st[0x12] = 0;
-    D_800BC46C[arg0] = 0;
-    D_800BC47C[arg0] = 0;
+    ChaseFlameState[arg0] = 0;
+    ChaseFlameSfxHandle[arg0] = 0;
     nas = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1D09, 0x11);
     nas->UserInfo.user2 = arg0;
-    D_800BC45C[arg0] = (s32)nas->Engine;
-    D_800BC48C[arg0] = 0;
+    ChaseFlameTimer[arg0] = (s32)nas->Engine;
+    ChaseFlameObj[arg0] = 0;
     if (g[0x5C] != 0) {
-        p = (arg0 * 0x30) + D_800BC210;
+        p = (arg0 * 0x30) + ChaseHeroSlots;
         *(s32 *)(p + 0) = 1;
         *(s32 *)(p + 4) = 1;
         *(s32 *)(p + 8) = 0;
@@ -920,9 +1147,9 @@ void ChaseMoveHero(s32 arg0) {
         break;
     }
     if ((D_80051338[arg0].unk50 & 0x8000) && e0->unk10.y >= -0x31) {
-        D_800BC49C[arg0] = 0xF;
+        ChaseHeroSpeed[arg0] = 0xF;
         e0 = Heroes[arg0].hero_eng;
-        st = D_800BC2D0[arg0];
+        st = ChaseHeroState[arg0];
         t = NULL;
         if ((NAS *)st[0x12] == NULL
             || (ne = ((NAS *)st[0x12])->Engine, dx = e0->unk10.x - ne->unk10.x, dx = dx * dx,
@@ -933,11 +1160,11 @@ void ChaseMoveHero(s32 arg0) {
             st[0x12] = (s32)t;
         }
     } else {
-        if (--D_800BC49C[arg0] <= 0) {
-            D_800BC48C[arg0] = 0;
+        if (--ChaseHeroSpeed[arg0] <= 0) {
+            ChaseFlameObj[arg0] = 0;
         }
     }
-    if ((D_80051338[arg0].unk50 & 0x2A00) && e0->unk10.y >= -0x31 && D_800BC2D0[arg0][0x14] != 0) {
+    if ((D_80051338[arg0].unk50 & 0x2A00) && e0->unk10.y >= -0x31 && ChaseHeroState[arg0][0x14] != 0) {
         v = &e0->unk10;
         PlaySfx(0x43A, NULL, v, 0x1000, 0x1E00, 0);
         ChaseHidePowerup(arg0);
@@ -1549,7 +1776,7 @@ void SetChaseHeroHit(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     SetHeroSeq(arg0, 0x68);
-    PlaySfx(D_800BB95C[h->hero_name - 1][Random(4)], 0, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    PlaySfx(ChaseHitSfx[h->hero_name - 1][Random(4)], 0, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
 void ChaseHeroHit(s32 arg0) {
@@ -1563,7 +1790,7 @@ void ChaseHeroHit(s32 arg0) {
         h->hero_immunity = 0;
         h->hero_hit += 0x28;
         SetHeroSeq(arg0, 0x61);
-        if (D_800BC2D0[arg0][0] == 0) {
+        if (ChaseHeroState[arg0][0] == 0) {
             SetHeroAction(arg0, 0x76);
         } else {
             SetHeroAction(arg0, 0x71);
@@ -1615,7 +1842,7 @@ void SetChaseHeroDead(s32 arg0) {
     if (h->hero_powerup->sfx != NULL) {
         StopSfx(h->hero_powerup->sfx);
     }
-    D_800BC2D0[arg0][0] = 0;
+    ChaseHeroState[arg0][0] = 0;
     func_800898EC(arg0);
 }
 
@@ -1692,7 +1919,7 @@ void SetChaseHeroWinner(s32 arg0) {
     SetHeroSeq(arg0, 0x6B);
     func_80089FA4(arg0);
     D_800AD12C = 1;
-    D_800BC444 = 1;
+    ChaseRoundOver = 1;
 }
 
 void ChaseHeroWinner(s32 arg0) {
@@ -1861,7 +2088,7 @@ void PlotBarrelGenerator(NAS *nas) {
     s32 x;
     s32 z;
 
-    if (D_800BC444 != 0) {
+    if (ChaseRoundOver != 0) {
         KillNAS(nas);
         return;
     }
@@ -1871,7 +2098,7 @@ void PlotBarrelGenerator(NAS *nas) {
     }
     n = 0;
     for (i = 0; i < 8; i++) {
-        if (D_800BC424[i] != NULL) {
+        if (ChaseBarrels[i] != NULL) {
             n++;
         }
     }
@@ -1890,8 +2117,8 @@ again:
         }
     } while (BarrelNearHero(x, z, 0x200) >= 0);
     for (i = 0; i < 8; i++) {
-        if (D_800BC424[i] != NULL && D_800BC424[i]->Engine->unk10.x == x &&
-            D_800BC424[i]->Engine->unk10.z == z) {
+        if (ChaseBarrels[i] != NULL && ChaseBarrels[i]->Engine->unk10.x == x &&
+            ChaseBarrels[i]->Engine->unk10.z == z) {
             goto again;
         }
     }
@@ -1918,7 +2145,7 @@ void InitBarrelCH(NAS *nas) {
     eng->unk5C = 1;
     eng->unk10.y = 0;
     sub->unk6C = D_80053F8C;
-    n = ++D_800BC450;
+    n = ++ChaseBarrelCount;
     if ((n & 0x1F) == 0) {
         sub->unk74 = 0x2016;
     } else if ((n & 7) == 0) {
@@ -1931,8 +2158,8 @@ void InitBarrelCH(NAS *nas) {
         KillNAS(nas);
     } else {
         for (i = 0; i < 8; i++) {
-            if (D_800BC424[i] == NULL) {
-                D_800BC424[i] = nas;
+            if (ChaseBarrels[i] == NULL) {
+                ChaseBarrels[i] = nas;
                 break;
             }
         }
@@ -1987,7 +2214,7 @@ void PlotBarrelCH(NAS *nas) {
     }
     if (nas->UserInfo.status != 0) {
         v = &eng->unk10;
-        PlaySfx(D_800BB9EC[Random(4)], 0, v, 0x1000, 0x1E00, 0);
+        PlaySfx(ChaseBarrelSfx[Random(4)], 0, v, 0x1000, 0x1E00, 0);
         anim = D_80053F8C;
         n = CreateNAS(eng->unk10.x, v->y, v->z, 0x1605, 0x11);
         if (n != NULL) {
@@ -2006,8 +2233,8 @@ void PlotBarrelCH(NAS *nas) {
             }
         }
         for (j = 0; j < 8; j++) {
-            if (D_800BC424[j] == nas) {
-                D_800BC424[j] = NULL;
+            if (ChaseBarrels[j] == nas) {
+                ChaseBarrels[j] = NULL;
                 break;
             }
         }
@@ -2019,7 +2246,7 @@ NAS *ChaseSpawnCoal(s32 arg0) {
     u8 *g = D_8005A614 + arg0;
     EXTengine *he = Heroes[arg0].hero_eng;
     s32 lv = g[0x50];
-    ChaseSpawnOfs *o = &D_800BBA44[--lv];
+    ChaseSpawnOfs *o = &ChaseSpawnOffsets[--lv];
     s32 r = o->r;
     s32 a = (he->unk1E + o->ang) & 0xFFF;
     s32 dx = (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
@@ -2057,8 +2284,8 @@ NAS *ChaseSpawnCoal(s32 arg0) {
             gx >>= 7;
             gz >>= 7;
             idx = gz * 40 + gx;
-            old = D_800BC4E8[idx];
-            D_800BC4E8[idx] = (s32)nas;
+            old = ChaseGrid[idx];
+            ChaseGrid[idx] = (s32)nas;
             if (old != 0) {
                 KillNAS((NAS *)old);
             }
@@ -2082,12 +2309,12 @@ void CoalFlameSpread(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
     s32 i;
     CircleFireOfs *ofs;
 
-    if (D_800BC444 != 0) {
+    if (ChaseRoundOver != 0) {
         return;
     }
     i = 0;
-    grid = D_800BC4E8;
-    ofs = D_800BC1B0;
+    grid = ChaseGrid;
+    ofs = CircleFireOffsets;
     cx = eng->x;
     cz = eng->z;
     for (;;) {
@@ -2161,7 +2388,7 @@ s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
 
     total = 0;
     for (i = 0; i < 8; i++) {
-        nas = (CoalChainNAS *)D_800BC424[i];
+        nas = (CoalChainNAS *)ChaseBarrels[i];
         if (nas == NULL || nas->unk5C == 1) {
             continue;
         }
@@ -2184,7 +2411,7 @@ s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
                     if (pts > 10) {
                         pts = 10;
                     }
-                    PlaySfx(D_800BBA0C[id], NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
+                    PlaySfx(ChaseChainSfx[id], NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
                 }
                 if (((CoalChainGame *)D_8005A614)->flags & 0x40) {
                     if (((CoalChainGame *)D_8005A614)->unk6C != 0) {
@@ -2217,7 +2444,7 @@ void PlotCoalFlame(NAS *nas) {
 
     fux = (CoalFlameFux *)nas->FUX;
     eng = (CoalFlameEng *)nas->Engine;
-    ((CoalPlayerRec *)D_800BC210)[fux->unk2C].unk20 = 2;
+    ((CoalPlayerRec *)ChaseHeroSlots)[fux->unk2C].unk20 = 2;
     if (fux->unk1C == 0) {
         if (eng->x < fux->unk20) {
             eng->x += 0x14;
@@ -2245,14 +2472,14 @@ void PlotCoalFlame(NAS *nas) {
     if (fux->unk1C < 0) {
         CoalFlameSpread(eng, fux, fux->unk2C);
     }
-    D_800BC48C[fux->unk2C] += CoalChainHit(eng->x, eng->z, fux->unk2C,
-                                            D_800BC48C[fux->unk2C], 0x12C, 0);
-    if (D_800BC48C[fux->unk2C] > 10) {
-        D_800BC48C[fux->unk2C] = 10;
+    ChaseFlameObj[fux->unk2C] += CoalChainHit(eng->x, eng->z, fux->unk2C,
+                                            ChaseFlameObj[fux->unk2C], 0x12C, 0);
+    if (ChaseFlameObj[fux->unk2C] > 10) {
+        ChaseFlameObj[fux->unk2C] = 10;
     }
-    ((CoalFlameEng *)D_800BC45C[fux->unk2C])->x = eng->x;
-    ((CoalFlameEng *)D_800BC45C[fux->unk2C])->z = eng->z;
-    D_800BC46C[fux->unk2C] = 10;
+    ((CoalFlameEng *)ChaseFlameTimer[fux->unk2C])->x = eng->x;
+    ((CoalFlameEng *)ChaseFlameTimer[fux->unk2C])->z = eng->z;
+    ChaseFlameState[fux->unk2C] = 10;
 }
 
 void PlotCircleFire(NAS *nas) {
@@ -2276,7 +2503,7 @@ void PlotCircleFire(NAS *nas) {
     eng->unk5E = 1;
     cz = eng->unk10.z;
     i = 0;
-    grid = D_800BC4E8;
+    grid = ChaseGrid;
     for (;;) {
         NAS *cell;
         NAS *fire;
@@ -2287,9 +2514,9 @@ void PlotCircleFire(NAS *nas) {
         if (i >= 8) {
             break;
         }
-        x = cx + D_800BC1B0[i].x;
+        x = cx + CircleFireOffsets[i].x;
         if (x >= -0x9FF) if (x < 0xA00) {
-            z = cz + D_800BC1B0[i].z;
+            z = cz + CircleFireOffsets[i].z;
             if (z >= -0x9FF) if (z < 0xA00) {
                 cell = CircleFireGridCell(grid, x, z);
                 if (cell != NULL) {
@@ -2415,7 +2642,7 @@ void PlotEgg(NAS *nas) {
             PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             i = BarrelNearHero(eng->unk10.x, eng->unk10.z, 0x280);
             if (i >= 0) {
-                if (D_800BC444 == 0) {
+                if (ChaseRoundOver == 0) {
                     HeroInfo *hb = Heroes;
 
                     h = &hb[i];
@@ -2425,7 +2652,7 @@ void PlotEgg(NAS *nas) {
                     }
                 }
                 if (D_8005A614[i + 0x5C] == 0) {
-                    D_800BC2D0[i][0] = 0;
+                    ChaseHeroState[i][0] = 0;
                 }
             }
             skip = 0x63;
@@ -2443,7 +2670,7 @@ void PlotEgg(NAS *nas) {
                     d = x - Heroes[i].hero_eng->unk10.x;
                     if (d >= -0x280 && d <= lim) {
                         d = z - Heroes[i].hero_eng->unk10.z;
-                        if (d >= -0x280 && d <= lim && D_800BC444 == 0 && Heroes[i].hero_immunity == 0 &&
+                        if (d >= -0x280 && d <= lim && ChaseRoundOver == 0 && Heroes[i].hero_immunity == 0 &&
                             !(Heroes[i].hero_status & 0xFA00)) {
                             SetHeroAction(i, (u16)D_8009E0D8);
                             func_80027F7C(i, 0xA, 0xF0);
@@ -2480,20 +2707,20 @@ void PlotEgg(NAS *nas) {
 void PlotCoalFlameSFX(CoalSfxObj *obj) {
     CoalSfxInner *in = obj->unk54;
 
-    if (D_800BC46C[obj->idx] > 0) {
-        if (D_800BC47C[obj->idx] == 0) {
-            PlaySfx(D_800BB9FC[Random(4)], &in->voice, &in->pos, 0x1000, 0x1E00, 0);
+    if (ChaseFlameState[obj->idx] > 0) {
+        if (ChaseFlameSfxHandle[obj->idx] == 0) {
+            PlaySfx(ChaseFlameSfx[Random(4)], &in->voice, &in->pos, 0x1000, 0x1E00, 0);
         } else {
-            D_800BC46C[obj->idx]--;
-            if (D_800BC46C[obj->idx] <= 0) {
+            ChaseFlameState[obj->idx]--;
+            if (ChaseFlameState[obj->idx] <= 0) {
                 if (in->voice != 0) {
                     StopSfx(in->voice);
                 }
-                D_800BC48C[obj->idx] = 0;
+                ChaseFlameObj[obj->idx] = 0;
             }
         }
     }
-    D_800BC47C[obj->idx] = D_800BC46C[obj->idx];
+    ChaseFlameSfxHandle[obj->idx] = ChaseFlameState[obj->idx];
 }
 
 void PlotPUGenerator_CH(NAS *nas) {
@@ -2504,7 +2731,7 @@ void PlotPUGenerator_CH(NAS *nas) {
     NAS *pu;
     subengine *sub;
 
-    if (D_800BC444 != 0) {
+    if (ChaseRoundOver != 0) {
         KillNAS(nas);
         return;
     }
@@ -2517,7 +2744,7 @@ void PlotPUGenerator_CH(NAS *nas) {
         if (i >= 1) {
             return;
         }
-        if (D_800BC420[i] != NULL) {
+        if (ChasePickup[i] != NULL) {
             continue;
         }
     again:
@@ -2526,14 +2753,14 @@ void PlotPUGenerator_CH(NAS *nas) {
             z = (Random(0xE) - 7) << 8;
         } while (BarrelNearHero(x, z, 0x200) >= 0);
         for (j = 0; j < 8; j++) {
-            if (D_800BC424[j] != NULL && D_800BC424[j]->Engine->unk10.x == x &&
-                D_800BC424[j]->Engine->unk10.z == z) {
+            if (ChaseBarrels[j] != NULL && ChaseBarrels[j]->Engine->unk10.x == x &&
+                ChaseBarrels[j]->Engine->unk10.z == z) {
                 goto again;
             }
         }
         pu = CreateNAS(x, 0, z, 0x1D04, 0x11);
         if (pu != NULL) {
-            D_800BC420[i] = pu;
+            ChasePickup[i] = pu;
             sub = pu->Engine->sub;
             sub->unk6C = D_80052F5C;
             sub->unk74 = 0x200C;
@@ -2630,10 +2857,10 @@ found:
     if (hero < 0) {
         return;
     }
-    if (D_800BC444 != 0) {
+    if (ChaseRoundOver != 0) {
         for (i = 0; i < 1; i++) {
-            if (D_800BC420[i] == nas) {
-                D_800BC420[i] = NULL;
+            if (ChasePickup[i] == nas) {
+                ChasePickup[i] = NULL;
                 break;
             }
         }
@@ -2654,12 +2881,12 @@ found:
                     sub->flags |= 0x8000;
                     p->flags |= 0x8000;
                 }
-                D_800BC2D0[hero][0x14] = status;
+                ChaseHeroState[hero][0x14] = status;
             }
         }
         for (i = 0; i < 1; i++) {
-            if (D_800BC420[i] == nas) {
-                D_800BC420[i] = NULL;
+            if (ChasePickup[i] == nas) {
+                ChasePickup[i] = NULL;
                 break;
             }
         }
@@ -2679,7 +2906,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
 
     free = -1;
     for (i = 0; i < 4; i++) {
-        if (D_800BC2D0[i][0] == 0) {
+        if (ChaseHeroState[i][0] == 0) {
             free = i;
         }
     }
@@ -3114,8 +3341,8 @@ void KillPickupCH(NAS *nas) {
     s32 i;
 
     for (i = 0; i < 1; i++) {
-        if (D_800BC420[i] == nas) {
-            D_800BC420[i] = NULL;
+        if (ChasePickup[i] == nas) {
+            ChasePickup[i] = NULL;
             break;
         }
     }
@@ -3137,7 +3364,7 @@ void ChaseHidePowerup(s32 arg0) {
     if (s != NULL) {
         p->flags &= 0xFFFF7FFF;
     }
-    D_800BC2D0[arg0][0x14] = 0;
+    ChaseHeroState[arg0][0x14] = 0;
 }
 
 void ChaseHero_ExtraEffects(s32 arg0) {
@@ -3173,7 +3400,7 @@ void ChaseHeroHitFlash(s32 arg0, s32 arg1) {
                 sub->flags |= 0x8000;
                 p->flags |= 0x8000;
             }
-            D_800BC2D0[arg0][0x14] = arg1;
+            ChaseHeroState[arg0][0x14] = arg1;
         }
     }
 }
@@ -3279,7 +3506,7 @@ void PlotCoal(CoalNAS *nas) {
         s32 xi = (eng->x + 0xA00) >> 7;
         s32 zi = (eng->z + 0xA00) >> 7;
         s32 idx = zi * 40 + xi;
-        D_800BC4E8[idx] = 0;
+        ChaseGrid[idx] = 0;
         KillNAS((NAS *)nas);
     }
 }
@@ -3306,8 +3533,8 @@ void KillPickupCHB(NAS *nas) {
     s32 i;
 
     for (i = 0; i < 8; i++) {
-        if (D_800BC424[i] == nas) {
-            D_800BC424[i] = NULL;
+        if (ChaseBarrels[i] == nas) {
+            ChaseBarrels[i] = NULL;
             break;
         }
     }
@@ -3442,7 +3669,7 @@ loop:
             } while (0);
             if (d <= range) {
                 d = z - h->hero_eng->unk10.z;
-                if (d >= neg && d <= range && D_800BC444 == 0 &&
+                if (d >= neg && d <= range && ChaseRoundOver == 0 &&
                     h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
                     SetHeroAction(i, (u16)D_8009E0D8);
                     func_80027F7C(i, 0xA, 0xF0);
@@ -3460,7 +3687,7 @@ void ChaseHitHero(s32 arg0)
 {
   HeroInfo *h;
   HeroInfo *new_var;
-  if (D_800BC444 == 0)
+  if (ChaseRoundOver == 0)
   {
     new_var = Heroes;
     h = new_var;
@@ -3531,7 +3758,7 @@ void ChaseGridClear(s32 x, s32 y) {
     s32 xi = (x + 0xA00) >> 7;
     s32 yi = (y + 0xA00) >> 7;
     s32 idx = yi * 40 + xi;
-    D_800BC4E8[idx] = 0;
+    ChaseGrid[idx] = 0;
 }
 
 s32 ChaseGridAt(s32 x, s32 z) {
@@ -3545,7 +3772,7 @@ s32 ChaseGridAt(s32 x, s32 z) {
     xi = (x + 0xA00) >> 7;
     zi = (z + 0xA00) >> 7;
     idx = zi * 40 + xi;
-    return D_800BC4E8[idx];
+    return ChaseGrid[idx];
 }
 
 void ChaseKillGridObj(CoalGridObj *obj) {
@@ -3560,9 +3787,9 @@ void ChaseKillGridObj(CoalGridObj *obj) {
     x >>= 7;
     z >>= 7;
     idx = z * 40 + x;
-    old = D_800BC4E8[idx];
+    old = ChaseGrid[idx];
 
-    D_800BC4E8[idx] = obj;
+    ChaseGrid[idx] = obj;
     if (old != NULL) {
         KillNAS((NAS *)old);
     }
@@ -3614,7 +3841,7 @@ s32 ChaseFindHeroAt(s32 x, s32 z, s32 range) {
 void ChaseResetSlot(s32 arg0) {
     u8 *temp_v0;
 
-    temp_v0 = (arg0 * 0x30) + D_800BC210;
+    temp_v0 = (arg0 * 0x30) + ChaseHeroSlots;
     (*(s32*)((u8*)(temp_v0) + 0)) = 1;
     (*(s32*)((u8*)(temp_v0) + 4)) = 1;
     (*(s32*)((u8*)(temp_v0) + 8)) = 0;
@@ -3633,7 +3860,7 @@ NAS *ChaseFindPickupNear(s32 x, s32 z, s32 range) {
     EXTengine *eng;
 
     for (i = 0; i < 1; i++) {
-        nas = D_800BC420[i];
+        nas = ChasePickup[i];
         if (nas != NULL) {
             eng = nas->Engine;
             d = x - eng->unk10.x;
@@ -3654,7 +3881,7 @@ void ChaseAimAt(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4) {
 
     ang = get_angle(arg3->unk10.x - arg1, arg3->unk10.z - arg2);
     arg4->unk0 = 2;
-    n = D_800BC2D0[arg0][17];
+    n = ChaseHeroState[arg0][17];
     arg4->unk4 = (n / 2 + 0x400) / n;
     arg4->unk8 = *(u32 *)((u8 *)D_80051244 + ((ang >> 7) & 0x1C));
     if (D_8009D908 == 0) {

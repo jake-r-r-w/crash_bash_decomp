@@ -79,9 +79,9 @@ typedef struct ChasePad {
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
 } ChasePad;
-extern u16 D_800BC188[];
-extern u16 D_800BC19C[];
-extern s32 D_800BC45C[];
+extern u16 ChaseHeroShadowModels[];
+extern u16 ChaseHeroShadowSizes[];
+extern s32 ChaseFlameTimer[];
 extern ChasePad D_80051338[];
 extern s32 D_8005A670;
 extern u16 *D_8009D6F4;
@@ -120,11 +120,11 @@ typedef struct CoalSfxObj {
     s32 idx;
 } CoalSfxObj;
 
-extern s32 D_800BC46C[];
-extern s32 D_800BC47C[];
-extern s32 D_800BC48C[];
-extern s32 D_800BC49C[];
-extern s32 D_800BB9FC[];
+extern s32 ChaseFlameState[];
+extern s32 ChaseFlameSfxHandle[];
+extern s32 ChaseFlameObj[];
+extern s32 ChaseHeroSpeed[];
+extern s32 ChaseFlameSfx[];
 void PlotCoalFlameSFX(CoalSfxObj *obj);
 
 void ChaseAimAt(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4);
@@ -170,7 +170,7 @@ typedef struct ChaseObj {
 } ChaseObj;
 
 void ChaseUpdateStub(s32 *arg0);
-extern s32 D_800BC240[];
+extern s32 ChaseUpdateState[];
 void func_80029100(void *arg0);
 void ChaseHeroJump(s32 arg0);
 void ChaseUnusedStub0(void);
@@ -193,10 +193,10 @@ typedef struct PickupCHExt {
     /* 0x18 */ u8 unk18[0x44 - 0x18];
 } PickupCHExt;
 
-extern u8 D_800BC210[];
-extern s32 D_800BC2D0[][21];
+extern u8 ChaseHeroSlots[];
+extern s32 ChaseHeroState[][21];
 extern u8 D_80052F5C[];
-extern s32 D_800BC4E8[];
+extern s32 ChaseGrid[];
 
 /* Per-level spawn offsets read by ChaseSpawnCoal: radius, angle, height. */
 typedef struct ChaseSpawnOfs {
@@ -204,7 +204,7 @@ typedef struct ChaseSpawnOfs {
     s32 ang;
     s32 y;
 } ChaseSpawnOfs;
-extern ChaseSpawnOfs D_800BBA44[];
+extern ChaseSpawnOfs ChaseSpawnOffsets[];
 
 /* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
 typedef struct ChaseOdds {
@@ -213,16 +213,16 @@ typedef struct ChaseOdds {
     s16 unk4;
 } ChaseOdds;
 extern ChaseOdds D_8009D87C[];
-extern NAS *D_800BC420[];
-extern NAS *D_800BC424[8];
-extern NAS *D_800BC424[];
-extern s32 D_800BC450;
+extern NAS *ChasePickup[];
+extern NAS *ChaseBarrels[8];
+extern NAS *ChaseBarrels[];
+extern s32 ChaseBarrelCount;
 NAS *ChaseFindPickupNear(s32 x, s32 z, s32 range);
-extern s32 D_800BC4E8[];
-extern s32 D_800BC444;
-extern s32 D_800BC448;
-extern s32 D_800BC44C;
-extern s32 D_800BB95C[][4];
+extern s32 ChaseGrid[];
+extern s32 ChaseRoundOver;
+extern s32 ChaseArenaRadius;
+extern s32 ChaseArenaShrink;
+extern s32 ChaseHitSfx[][4];
 void ChaseHidePowerup(s32 arg0);
 extern s16 D_8009E0D8;
 extern u16 *D_8009D6EC;
@@ -292,14 +292,14 @@ extern s16 D_8009E0E2;
 extern s16 D_8009E0E4;
 extern s16 D_8009E0E6;
 extern s32 D_8005A680;
-extern u8 D_800BB928[];
-extern s32 D_800BB93C[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
-extern u8 D_800BC098[];
-extern u8 D_800BC0AC[];
-extern u8 D_800BC0C0[];
-extern u8 D_800BC0CC[];
-extern u8 D_800BC0E4[];
-extern u8 D_800BC0F8[];
+extern u16 ChaseHeroModels[];
+extern s32 ChaseVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
+extern u16 ChaseAiSkill[];
+extern u16 ChaseAiSkillAlt[];
+extern u16 ChaseAiTeamSkill[];
+extern u16 ChaseAiHumanRoundTweak[];
+extern u16 ChaseAiBotTweak[];
+extern u16 ChaseAiHumanTweak[];
 void Chase_HeroBot(s32 arg0);
 void ChaseInitHero(s32 arg0);
 void ChasePreMoveHero(s32 arg0);
@@ -374,7 +374,7 @@ typedef struct BarrelCHExt {
     /* 0x20 */ u8 pad20[0x10];
     /* 0x30 */ s32 growing;
 } BarrelCHExt;
-extern s32 D_800BB9EC[];
+extern s32 ChaseBarrelSfx[];
 void PlotBarrelCH(NAS *nas);
 
 void InitPickupCH(NAS *nas);
@@ -437,7 +437,7 @@ s32 ChaseFindHeroAt(s32 x, s32 z, s32 range);
 /* PlotCircleFire: offsets of the 8 fire points around the circle, and the
  * 40x40 grid of fire NASes (128 units a cell, centred on 0). */
 typedef struct { s32 x; s32 z; } CircleFireOfs;
-extern CircleFireOfs D_800BC1B0[8];
+extern CircleFireOfs CircleFireOffsets[8];
 NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags);
 s32 KillNAS(NAS *nas);
 typedef struct { u8 pad0[0x2C]; s32 unk2C; } CircleFireFux;
@@ -453,7 +453,7 @@ static inline s32 CircleFireIndex(s32 x, s32 z) {
 
 static inline NAS *CircleFireCell(s32 x, s32 z) {
     if (x >= -0x9FF && x < 0xA00 && z >= -0x9FF) {
-        return (NAS *)D_800BC4E8[CIRCLEFIRE_CELL(x, z)];
+        return (NAS *)ChaseGrid[CIRCLEFIRE_CELL(x, z)];
     }
     return NULL;
 }
@@ -481,18 +481,18 @@ typedef struct {
     u8 pad60[0x34]; _sfx_handler *sfx;
 } CoalFlameEng;
 s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 arg4, s32 arg5);
-/* CoalChainHit: the coal NASes in D_800BC424 it ignites. */
+/* CoalChainHit: the coal NASes in ChaseBarrels it ignites. */
 typedef struct { u8 pad0[0x30]; s32 unk30; } CoalChainFux;
 typedef struct {
     u8 pad0[0x54]; CoalEng *eng; CoalChainFux *fux; u16 unk5C;
 } CoalChainNAS;
 typedef struct { u8 pad0[0x32]; u16 flags; u8 pad34[0x6C - 0x34]; s32 unk6C; } CoalChainGame;
-extern s32 D_800BBA0C[];
+extern s32 ChaseChainSfx[];
 static inline HeroInfo *ChaseHeroes(void) {
     return Heroes;
 }
 void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-/* D_800BC210: one 0x30-byte record per player (id). */
+/* ChaseHeroSlots: one 0x30-byte record per player (id). */
 typedef struct { u8 pad0[0x20]; s32 unk20; u8 pad24[0xC]; } CoalPlayerRec;
 void ChaseHeroIdle(s32 arg0);
 
@@ -550,7 +550,7 @@ static inline s32 ChaseASTIndex(s32 id) {
 typedef struct { u8 pad0[0x40]; s32 owner; } ChaseCoalFux;
 void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2);
 
-/* ChaseAI_ChooseTarget: the first pickup in D_800BC420 near (x, z), or NULL. */
+/* ChaseAI_ChooseTarget: the first pickup in ChasePickup near (x, z), or NULL. */
 static inline NAS *ChaseNearPickup(s32 x, s32 z) {
     s32 i;
     s32 d;
@@ -558,7 +558,7 @@ static inline NAS *ChaseNearPickup(s32 x, s32 z) {
     EXTengine *eng;
 
     for (i = 0; i < 1; i++) {
-        nas = D_800BC420[i];
+        nas = ChasePickup[i];
         if (nas != NULL) {
             eng = nas->Engine;
             d = x - eng->unk10.x;
@@ -596,15 +596,15 @@ typedef struct ChaseScreen {
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
 } ChaseScreen;
-/* Per-character pair at D_800BC4AC, indexed by hero_name. */
+/* Per-character pair at ChaseRunSpeeds, indexed by hero_name. */
 typedef struct ChasePct {
     /* 0x00 */ u16 unk0;
     /* 0x02 */ u16 unk2;
     /* 0x04 */ u16 unk4;
 } ChasePct;
-extern u16 D_800BC4AC[];
-extern NAS *D_800BC454;
-extern NAS *D_800BC458;
+extern u16 ChaseRunSpeeds[];
+extern NAS *ChaseGenerator;
+extern NAS *ChaseGeneratorB;
 extern s16 D_8009D88E;
 extern s32 PanelCtrl;
 extern u8 D_8009F6F4[];
