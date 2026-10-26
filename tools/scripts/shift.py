@@ -110,11 +110,6 @@ def fixup(ovl, old_elf, new_elf, others):
     """Rewrite the engine's asm-data words that point at a place only ovl has (stopgap)."""
     old = slot_syms.defined(old_elf)
     new = slot_syms.defined(new_elf)
-    old_all = {}
-    for l in slot_syms.nm(old_elf):
-        parts = l.split()
-        if len(parts) == 3:
-            old_all[parts[2]] = int(parts[0], 16)
     taken = set()
     for e in others:
         taken |= set(slot_syms.defined(e).values())
@@ -139,49 +134,14 @@ def fixup(ovl, old_elf, new_elf, others):
     left = []
     for m in maybe:
         (done if m[0] - 4 in fixed or m[0] + 4 in fixed else left).append(m)
-    # so is a word beside them that points inside one of its objects (the per-world record's
-    # first pointer, before TANK_PREMAP was a symbol of its own): mapped through the symbol that contains it
-    # Only into its data or rodata: a function pointer points at a function's start, so a word
-    # into the middle of its code is some other overlay's (the neighbouring games' tables)
-    fixed = {off for off, *_ in done}
-    lo, hi = min(old.values()), max(old.values())
-    text = (old_all.get(f"{ovl}_TEXT_START"), old_all.get(f"{ovl}_TEXT_END"))
-    ordered = sorted((a, n) for n, a in old.items() if n in new and not (text[0] <= a < text[1]))
-    inner = []
-    for rlo, rhi, delta in data_ranges("engine"):
-        for off in range(rlo, rhi - 3, 4):
-            if off in fixed or not ({off - 4, off + 4, off - 8, off + 8} & fixed):
-                continue
-            v = int.from_bytes(data[off:off + 4], "little")
-            if lo <= v <= hi and v not in by_addr and v not in shared and not (text[0] <= v < text[1]):
-                a, n = max(x for x in ordered if x[0] <= v)
-                inner.append((off, delta, n, v, new[n] + (v - a)))
-    # and any word into its .data: the engine's eight per-character hero sequence tables hold
-    # each game's sequences, Tank's nine at +0x124..+0x144 of each (the `*_seq_tank*` arrays, once inside one object).
-    # A value in that range could be another overlay's instead, so that game breaks on a disc
-    # shifted this way; for this overlay's test it is right, and the engine's data as C ends it.
-    dlo = old_all.get(f"{ovl}_DATA_START")
-    fixed |= {off for off, *_ in inner}
-    for rlo, rhi, delta in data_ranges("engine"):
-        for off in range(rlo, rhi - 3, 4):
-            if off in fixed:
-                continue
-            v = int.from_bytes(data[off:off + 4], "little")
-            if dlo is not None and dlo <= v <= hi and v not in by_addr and v not in shared:
-                a, n = max(x for x in ordered if x[0] <= v)
-                inner.append((off, delta, n, v, new[n] + (v - a)))
     for off, delta, n, v in done:
         data[off:off + 4] = new[n].to_bytes(4, "little")
-    for off, delta, n, v, w in inner:
-        data[off:off + 4] = w.to_bytes(4, "little")
     open(path, "wb").write(data)
     for off, delta, n, v in sorted(done):
         print(f"shift: engine data {off + delta:08X}: {n} {v:08X} -> {new[n]:08X}")
-    for off, delta, n, v, w in inner:
-        print(f"shift: engine data {off + delta:08X}: {v:08X} ({n} + 0x{v - old[n]:X}) -> {w:08X}")
     for off, delta, n, v in left:
         print(f"shift: engine data {off + delta:08X}: {v:08X} is {n} here and a place in another overlay: left")
-    return done + [(off, delta, n, v) for off, delta, n, v, w in inner]
+    return done
 
 
 def main():
