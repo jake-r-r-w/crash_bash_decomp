@@ -149,9 +149,9 @@ void func_8002C894(void) {
     D_80065E24 = sum;
 }
 
-INCLUDE_RODATA("asm/nonmatchings/main/card", D_8004CD8C);
+const char D_8004CD8C[] = "CRASH BASH %000 %000 %000 %000";
 
-INCLUDE_RODATA("asm/nonmatchings/main/card", CardFileName);
+const char CardFileName[] = "BASCUS-94570";
 
 void func_8002C97C(void) {
     static const char all[] = "*";

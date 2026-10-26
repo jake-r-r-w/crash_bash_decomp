@@ -458,11 +458,12 @@ Newest first, a few lines each. Details are in the commits.
 
 - **2026-10-26 (Phase 5: the engine's strings as C):** all 59 INCLUDE_RODATA blocks of
   `gameflow.c`, `heroes.c`, `panel.c` and `pause.c` (61 strings, the memory card and menu
-  messages with the pad's glyph bytes 0xFC/0xFD and `` breaks) are `const char` arrays
+  messages with the pad's glyph bytes 0xFC/0xFD and `
+` breaks) are `const char` arrays
   where the blocks were, from one `data2c.py engine --rodata ...` run; built and matched
-  first time. The engine has no INCLUDE_RODATA left; `main.exe` has six (`card.c`,
-  `main.c`, `modchip_msg.c`, `nascalls.c`), and data2c needs to read `configs/USA/main.yaml`
-  for them. The strings keep their `D_` names.
+  first time. Then `main.exe`'s six (`data2c.py main --strings-only`: the level names, the
+  pause and cheat menus, the card file name, the modchip warning in English and Shift-JIS):
+  no INCLUDE_RODATA is left anywhere in `src/`. The strings keep their `D_` names.
 
 - **2026-10-26 (Phase 5 start: the most-used globals):** the overlays' last
   own `D_` names (debug strings, `PapuStraySfx` past every overlay's end),
