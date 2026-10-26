@@ -14,7 +14,7 @@
 
 struct BashObj;
 
-/* A board cell of D_800C3BAC (0xC bytes, 8x8). */
+/* A board cell of BashSpaceTiles (0xC bytes, 8x8). */
 typedef struct BashCell {
     /* 0x00 */ struct BashObj *obj;
     /* 0x04 */ struct BashObj *obj2;
@@ -22,7 +22,7 @@ typedef struct BashCell {
     /* 0x0A */ u16 unkA; /* object index */
 } BashCell;
 
-extern BashCell D_800C3BAC[8][8];
+extern BashCell BashSpaceTiles[8][8];
 extern u8 D_8005A614[];
 extern s32 World_floor_level;
 extern void (*D_8009D714)(void);
@@ -66,20 +66,20 @@ typedef struct {
 } BashAiState;
 
 s32 BashAI_ChooseTarget(s32 player);
-extern u16 D_800C3AC4[];      /* BashAI_ChooseTarget: weight by hero_health (0..20) */
-extern SLONG_XYZ D_800C3A04[]; /* BashAI_ChooseTarget: grid points, 7..15 scanned */
+extern u16 BashAIHealthWeights[];      /* BashAI_ChooseTarget: weight by hero_health (0..20) */
+extern SLONG_XYZ BashAITargetPoints[]; /* BashAI_ChooseTarget: grid points, 7..15 scanned */
 
 void FinishBashLevel(void);
 
 /* Bash_HeroBot: the bot AI tick. */
 void BashAI_ScanAhead(s32 arg0);
-extern u16 D_800C39F0[];
+extern u16 BashAIRange[];
 
-extern u16 D_800C3B88;
-extern ScriptInit D_800C3AFC;
-extern ScriptInit D_800C3668;
-extern EXTengine *D_800C46B0;
-extern EXTobject *D_800C46B4;
+extern u16 BashFirstCrates;
+extern ScriptInit BoingScriptInit;
+extern ScriptInit PenguinScriptInit;
+extern EXTengine *BashPenguinEng;
+extern EXTobject *BashPenguinObj;
 extern u8 D_8005303C[];
 void BashSnowMarkPenguin(void);
 
@@ -90,11 +90,11 @@ typedef struct {
     /* 0x04 */ s32 unk4;
 } BashPair;
 
-extern u8 D_800C3B44[];
-extern u16 D_800C3B84;
-extern u16 D_800C3B86;
-extern u16 D_800C3B94[];
-extern u16 D_800C3B8C[];
+extern u8 BashCrateMix[];
+extern u16 BashCrateMixPos;
+extern u16 BashDropPos;
+extern u16 BashMaxNitro[];
+extern u16 BashMaxCrates[];
 extern u16 D_8009E46C[];
 extern s32 D_8009D758;
 BashPair *BashFindDropPoint(u16 *arg0);
@@ -169,13 +169,13 @@ s32 GetBashContour(EXTengine *eng);
 void BashRestartLevel(void);
 
 extern u8 D_80052F5C[];
-extern s16 D_800C3B08[][3];
+extern s16 BashExplodeScales[][3];
 extern u16 D_8009D754;
 extern s32 D_8009E464;
 extern s32 D_8009E468;
 extern u8 D_8009E3B4[];
 extern u8 D_8009E3DC[];
-extern s16 D_800C3B40;
+extern s16 BashAIVictim;
 s32 BashAI_PickVictim(s32 arg0);
 void BashCrateMaster(void);
 void BashCountObjects(void);
@@ -247,7 +247,7 @@ typedef struct BashGridCell {
     s32 z;
 } BashGridCell;
 
-extern BashGridCell D_800C3EAC[16][16];
+extern BashGridCell BashDropPoints[16][16];
 
 void BashSnowMoveHero(s32 arg0);
 
@@ -320,8 +320,8 @@ typedef struct PenguinFux {
     /* 0x22 */ s16 unk22;
 } PenguinFux;
 
-extern u16 D_800C3B38;
-extern u16 D_800C3B3C;
+extern u16 BashRainCount;
+extern u16 BashRainTimer;
 
 void BashPenguinPush(EXTengine *eng);
 
@@ -334,38 +334,38 @@ void BashHero_ExtraEffects();
 NAS *BashHeroGrabObject();
 s32 BashHeroKickCollision(s32 arg0);
 s32 BashHeroCarryCollision(s32 idx);
-extern u8 D_800C3004[];
-extern u8 D_800C3018[];
-extern u8 D_800C302C[];
-extern u8 D_800C3038[];
-extern u8 D_800C3050[];
-extern u8 D_800C3064[];
-extern u8 D_800C3078[];
-extern u8 D_800C308C[];
-extern u8 D_800C30A0[];
-extern u8 D_800C30AC[];
-extern u8 D_800C30C4[];
-extern u8 D_800C30D8[];
-extern u8 D_800C30EC[];
-extern u8 D_800C3100[];
-extern u8 D_800C3114[];
-extern u8 D_800C3120[];
-extern u8 D_800C3138[];
-extern u8 D_800C314C[];
-extern u8 D_800C3160[];
-extern u8 D_800C3174[];
-extern u8 D_800C3188[];
-extern u8 D_800C3194[];
-extern u8 D_800C31AC[];
-extern u8 D_800C31C0[];
+extern u16 BashJungleAiSkill[];
+extern u16 BashJungleAiSkillAlt[];
+extern u16 BashJungleAiTeamSkill[];
+extern u16 BashJungleAiHumanRoundTweak[];
+extern u16 BashJungleAiBotTweak[];
+extern u16 BashJungleAiHumanTweak[];
+extern u16 BashSpaceAiSkill[];
+extern u16 BashSpaceAiSkillAlt[];
+extern u16 BashSpaceAiTeamSkill[];
+extern u16 BashSpaceAiHumanRoundTweak[];
+extern u16 BashSpaceAiBotTweak[];
+extern u16 BashSpaceAiHumanTweak[];
+extern u16 BashSnowAiSkill[];
+extern u16 BashSnowAiSkillAlt[];
+extern u16 BashSnowAiTeamSkill[];
+extern u16 BashSnowAiHumanRoundTweak[];
+extern u16 BashSnowAiBotTweak[];
+extern u16 BashSnowAiHumanTweak[];
+extern u16 BashDrainsAiSkill[];
+extern u16 BashDrainsAiSkillAlt[];
+extern u16 BashDrainsAiTeamSkill[];
+extern u16 BashDrainsAiHumanRoundTweak[];
+extern u16 BashDrainsAiBotTweak[];
+extern u16 BashDrainsAiHumanTweak[];
 
 /* InitialiseBASH */
-extern u16 D_800C3B32;
-extern u16 D_800C3B34;
-extern u16 D_800C3B3A;
-extern s16 D_800C3B3E;
-extern s32 D_800C46AC;
-extern u8 *D_800C3B9C[4];
+extern u16 BashCrateTimer;
+extern u16 BashPickupTimer;
+extern u16 BashRainDelay;
+extern s16 BashUnused1;
+extern s32 BashTumblerTimer;
+extern u8 *BashDrainsEdges[4];
 
 /* The object CreateCrate returns, as BashCrateMaster sees it. */
 typedef struct {
@@ -418,16 +418,16 @@ static inline u8 *BashSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
     }
     p = CreateCrate(col, 0, row, 2, -1);
     if (p != NULL) {
-        func_80026B70(&D_800C478C, p);
+        func_80026B70(&BashCrateList, p);
     }
     return p;
 }
 /* Snow's crate velocities by hero_name (D_8009E488.unk0, the hooks' KickVels) */
-extern CrateVelocity D_800C3914, D_800C392C, D_800C3944;
-extern CrateVelocity *D_800C395C[];
-extern u16 D_800C3984[];
-extern Ambient_data D_800C39C0;
-extern Ambient_data D_800C39D8;
+extern CrateVelocity BashSnowKickVelMid, BashSnowKickVelFast, BashSnowKickVelSlow;
+extern CrateVelocity *BashSnowKickVels[];
+extern u16 BashSnowRunSpeeds[];
+extern Ambient_data BashJungleAmbience;
+extern Ambient_data BashDrainsAmbience;
 extern u16 *D_8009D6F4;
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);

@@ -6,7 +6,7 @@
 #include "bash/papu.h"
 
 /* data, in address order */
-u8 D_800C4790[68] = {
+u8 BashPickupScales[68] = {
     0x50, 0x30, 0x50, 0x38, 0x30, 0x38, 0x18, 0x20, 0x18, 0x10, 0x10, 0x10, 8, 0xA, 8, 0xA,
     0xA, 0xA, 0x10, 8, 0x10, 0xA, 0xA, 0xA, 8, 0x10, 8, 0xA, 0xA, 0xA, 0x10, 8, 0x10, 0xA, 0xA,
     0xA, 8, 0x10, 8, 0xA, 0xA, 0xA, 0x10, 8, 0x10, 0xA, 0xA, 0xA, 8, 0x10, 8, 0xA, 0xA, 0xA,
@@ -89,12 +89,12 @@ void BashHeroPickup(s32 arg0) {
         h->hero_fx->unk10 = h->hero_eng->unk10;
         t = h->hero_weapon_timer;
         if (t >= 0) {
-            if (D_800C4790[t * 3] == 0) {
+            if (BashPickupScales[t * 3] == 0) {
                 goto clear;
             }
-            s->unk20.x = D_800C4790[t * 3];
-            s->unk20.y = D_800C4790[t * 3 + 1];
-            s->unk20.x = D_800C4790[t * 3 + 2];
+            s->unk20.x = BashPickupScales[t * 3];
+            s->unk20.y = BashPickupScales[t * 3 + 1];
+            s->unk20.x = BashPickupScales[t * 3 + 2];
             s->unk04 = pos.vx - h->hero_eng->unk10.x;
             s->unk08 = pos.vy - h->hero_eng->unk10.y;
             s->unk0C = pos.vz - h->hero_eng->unk10.z;
@@ -333,8 +333,8 @@ void SetBashHeroBigWeight(s32 arg0) {
     if (h->hero_powerup->sfx != NULL) {
         StopSfx(h->hero_powerup->sfx);
     }
-    if (D_800C46EC.sfx != NULL) {
-        StopSfx(D_800C46EC.sfx);
+    if (BashSfxEngine.sfx != NULL) {
+        StopSfx(BashSfxEngine.sfx);
     }
     PlaySfx(0x453, NULL, NULL, 0x1000, 0x1E00, 0);
 }
@@ -358,8 +358,8 @@ void BashHeroBigWeight(s32 arg0) {
                     if (h->hero_powerup->sfx != NULL) {
                         StopSfx(h->hero_powerup->sfx);
                     }
-                    if (D_800C46EC.sfx != NULL) {
-                        StopSfx(D_800C46EC.sfx);
+                    if (BashSfxEngine.sfx != NULL) {
+                        StopSfx(BashSfxEngine.sfx);
                     }
                     PlaySfx(0x455, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
@@ -374,8 +374,8 @@ void BashHeroBigWeight(s32 arg0) {
             if (h->hero_powerup->sfx != NULL) {
                 StopSfx(h->hero_powerup->sfx);
             }
-            if (D_800C46EC.sfx != NULL) {
-                StopSfx(D_800C46EC.sfx);
+            if (BashSfxEngine.sfx != NULL) {
+                StopSfx(BashSfxEngine.sfx);
             }
             pu->flags &= 0xFFFF7FFF;
             h->hero_eng->unk2C.y = 0x1000;
@@ -392,8 +392,8 @@ void SetBashHeroDead(s32 arg0) {
     HeroInfo *base2;
 
     if (Heroes[arg0].hero_pu == 0x14) {
-        if (D_800C46EC.sfx != NULL) {
-            StopSfx(D_800C46EC.sfx);
+        if (BashSfxEngine.sfx != NULL) {
+            StopSfx(BashSfxEngine.sfx);
         }
     }
     base2 = Heroes;
@@ -426,8 +426,8 @@ void SetBashHeroWinner(s32 arg0) {
     HeroInfo *h2;
     s32 dy;
 
-    if (Heroes[arg0].hero_pu == 0x14 && D_800C46EC.sfx != NULL) {
-        StopSfx(D_800C46EC.sfx);
+    if (Heroes[arg0].hero_pu == 0x14 && BashSfxEngine.sfx != NULL) {
+        StopSfx(BashSfxEngine.sfx);
     }
     base = Heroes;
     h = base + arg0;
@@ -503,8 +503,8 @@ void SetBashHeroLoser(s32 arg0) {
     HeroInfo *h2;
     s32 dy;
 
-    if (Heroes[arg0].hero_pu == 0x14 && D_800C46EC.sfx != NULL) {
-        StopSfx(D_800C46EC.sfx);
+    if (Heroes[arg0].hero_pu == 0x14 && BashSfxEngine.sfx != NULL) {
+        StopSfx(BashSfxEngine.sfx);
     }
     base = Heroes;
     h = base + arg0;

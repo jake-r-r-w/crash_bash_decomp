@@ -676,6 +676,36 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Bash's levels and data** (bash, the crate games; named 2026-10-26).
+  Modes 0..3 are Jungle, Space, Snow and Drains (`LEV_JUNGLE` ..
+  `LEV_DRAINS`); mode 0x20, which the hub (0x1F) enters when its `unk44` is
+  3 and which leads to 0x25, runs here too (two players, its own draw hook
+  `BashDrawView`; the level is not identified). `BASHSetUp` fills the
+  `LevSpec` (`InitialiseBASHFirst`, `InitialiseBASH`, `UpdateBASH`,
+  `FirstTriggersBASH`, `GetBashContour`, `FinishBashLevel`); the empty,
+  unreferenced function before it is `BashRestartLevel` by its place, as
+  Tank's `TA_RestartLevel`. Four engine world records (ids 0x0104 and
+  0x0001..0x0003) point at `BASH_PREMAP`, `bash_shell_info` and `BASHSetUp`;
+  the per-mode table gives modes 0..3 and 0x20 `file_group_JUNGLE`, `SPACE`,
+  `SNOW`, `DRAINS` and `BASHMODE20` (four load `BashFiles`, Snow its own
+  `BashSnowFiles`, all with the exe's file groups 27/28: 26 DAT entries, all
+  decoded). The hero states are `HEROFunc` pairs 12..20 (`HEROmode_BAloser`
+  .. `BAwinner`: `SetBashHeroLoser` .. `BashHeroWinner`), and each
+  character's six `hero_BA_seq_*` sequences (slide, die, pickup, hold,
+  hold_slow, hold_throw) are `CRA_BA_seq_slide` .. `KAN_BA_seq_hold_throw`,
+  48 in all, between Drains' AI tables and the shell settings. The crate
+  master (`BashCrateMaster`, every frame) drops crates from a shuffled mix
+  (`BashSetCrateMix`: counts by player number, `BashMaxNitro`), rains them
+  in waves (`BashRain*`), and spawns pickups and, in Space and Snow, the
+  four powerups; Space's floor tiles fall when a TNT, nitro or ticking crate
+  goes off on them (`BashSpaceBreakTile`, the crate hooks' `unk8`), Snow's
+  penguin pushes heroes and solids (`BashPenguinPush`) and its heroes slide
+  (`BashSnowMoveHero`, `BashSnowRunSpeeds`, the crate hooks' kick velocities
+  `BashSnowKickVels`, the leak's `CrateVelocity`), and Drains spawns crates
+  at the edges (`BashSpawnEdge`). `D_800C4780` was the sfx field of
+  `BashSfxEngine`, the `EXTengine` `InitialiseBASHFirst` copies the template
+  into. The overlay file's last byte is a zero nothing reads
+  (`BashUnusedTail`).
 - **Polar's data** (polar, named 2026-10-26). Modes 0x12..0x16 are Day,
   Night, Cut, End and the boss; five engine world records point at it,
   0x0109 with `polar_shell_info` and 0x0012, 0x0014..0x0016 with

@@ -5,16 +5,16 @@
 #include "bash/xtras.h"
 
 /* data, in address order */
-u16 D_800C46B8[4] = { 0x2010, 0x2011, 0x2012, 0 };
-u16 D_800C46C0[18] = {
+u16 BashTickingCrateModels[4] = { 0x2010, 0x2011, 0x2012, 0 };
+u16 BashDrainsEdgeCrates[18] = {
     0x19, 0x1B, 0x1C, 0x19, 0x1C, 0x1B, 0x1C, 0x19, 0x1B, 0x1C, 0x1B, 0x19, 0x1B, 0x1C, 0x19,
     0x1B, 0x19, 0x1C,
 };
-u16 D_800C46E4[4] = { 0x200D, 0x200A, 0x2011, 0x2009 };
-EXTengine D_800C46EC = {0};
-u16 D_800C4788 = 0;
-u16 D_800C478A = 0;
-u8 *D_800C478C = 0;
+u16 BashPickupModels[4] = { 0x200D, 0x200A, 0x2011, 0x2009 };
+EXTengine BashSfxEngine = {0};
+u16 BashDrainsEdgePos = 0;
+u16 BashPowerupTimer = 0;
+u8 *BashCrateList = 0;
 
 void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
     s32 z;
@@ -873,10 +873,10 @@ void PlotCrate(NAS *arg0) {
             case 0x1C:
                 if (fux->who != -1 && fux->who < 5) {
                     BashGivePowerup(fux->who, fux->kind);
-                    D_800C478A = (Random(6) + 2) * 30;
+                    BashPowerupTimer = (Random(6) + 2) * 30;
                 }
                 func_800270B0(arg0);
-                n = (NAS *)D_800C478C;
+                n = (NAS *)BashCrateList;
                 while (n != NULL) {
                     fux = (T_BC038Fux *)n->FUX;
                     if (fux != NULL) {
@@ -889,7 +889,7 @@ void PlotCrate(NAS *arg0) {
                         n = n->Group.Child;
                     } else {
                         func_800270B0(n);
-                        n = (NAS *)D_800C478C;
+                        n = (NAS *)BashCrateList;
                     }
                 }
                 return;
@@ -973,9 +973,9 @@ void PlotCrate(NAS *arg0) {
             case 0x1B:
             case 0x1C:
                 BashGivePowerup(fux->who, fux->kind);
-                D_800C478A = (Random(6) + 2) * 30;
+                BashPowerupTimer = (Random(6) + 2) * 30;
                 func_800270B0(arg0);
-                n = (NAS *)D_800C478C;
+                n = (NAS *)BashCrateList;
                 while (n != NULL) {
                     fux = (T_BC038Fux *)n->FUX;
                     if (fux != NULL) {
@@ -988,7 +988,7 @@ void PlotCrate(NAS *arg0) {
                         n = n->Group.Child;
                     } else {
                         func_800270B0(n);
-                        n = (NAS *)D_800C478C;
+                        n = (NAS *)BashCrateList;
                     }
                 }
                 return;
@@ -1117,7 +1117,7 @@ void PlotCrate(NAS *arg0) {
     if (type == 7) {
         if (fux->count != 0) {
             fux->count--;
-            eng->sub->unk74 = D_800C46B8[fux->count / 30];
+            eng->sub->unk74 = BashTickingCrateModels[fux->count / 30];
             if (fux->count % 30 == 0) {
                 PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
@@ -1143,7 +1143,7 @@ void InitCratePickup(NAS *arg0) {
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
         eng->sub->unk6C = D_80052F5C;
         r = Random(4);
-        eng->sub->unk74 = D_800C46E4[r];
+        eng->sub->unk74 = BashPickupModels[r];
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
             func_80026AD8((u8 *)arg0);
@@ -1443,7 +1443,7 @@ void PlotPickup(NAS *arg0) {
             case 0x14:
                 Heroes[obj->player].hero_pu_timer = 0xF0;
                 Heroes[obj->player].hero_powerup->sub->unk74 = 0x2011;
-                PlaySfx(0x452, &D_800C46EC.sfx, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(0x452, &BashSfxEngine.sfx, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x41A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 break;
             default:
@@ -1577,16 +1577,16 @@ void BashHero_ExtraEffects(s32 arg0) {
                 do {
                     pu->unk1E += 0xAA;
                 } while (0);
-                if (D_800C46EC.sfx != NULL) {
+                if (BashSfxEngine.sfx != NULL) {
                     t = h4->hero_pu_timer;
                     if (t >= 0x12C) {
                         t = 0x12B;
                     }
-                    func_800228A4(D_800C46EC.sfx, (0x12C - t) * 0xF00 / 300 + 0x1E00);
+                    func_800228A4(BashSfxEngine.sfx, (0x12C - t) * 0xF00 / 300 + 0x1E00);
                 }
             } else {
-                if (D_800C46EC.sfx != NULL) {
-                    StopSfx(D_800C46EC.sfx);
+                if (BashSfxEngine.sfx != NULL) {
+                    StopSfx(BashSfxEngine.sfx);
                 }
                 h4->hero_pu = 0;
                 SetHeroAction(arg0, 0x12);

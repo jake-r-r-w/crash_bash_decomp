@@ -46,7 +46,7 @@ typedef struct {
 
 s32 BashGridKey(T_BB7B8 *p);
 
-extern u16 D_800C46E4[];
+extern u16 BashPickupModels[];
 
 void InitCratePickup(NAS *arg0);
 
@@ -202,15 +202,15 @@ static inline void BC038Release(T_BC038Fux *fux) {
  * never read, in every disc's copy. */
 void CrateBreak(EXTengine *eng, T_BC038Fux *fux);
 
-extern u16 D_800C46B8[];
+extern u16 BashTickingCrateModels[];
 extern s32 D_8009E2B4[];
 void PlotCrate(NAS *arg0);
 
 /* data defined in 800bb64c.c */
-extern u16 D_800C46C0[];
-extern EXTengine D_800C46EC;
-extern u16 D_800C4788;
-extern u16 D_800C478A;
-extern u8 *D_800C478C;
+extern u16 BashDrainsEdgeCrates[];
+extern EXTengine BashSfxEngine;
+extern u16 BashDrainsEdgePos;
+extern u16 BashPowerupTimer;
+extern u8 *BashCrateList;
 
 #endif /* BASH_BASH_800BB64C_H */

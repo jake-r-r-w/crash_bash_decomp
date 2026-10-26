@@ -32,206 +32,315 @@ extern u8 D_8004F3F0[];
 extern u8 D_8004F3F8[];
 extern u8 D_80050154[];
 extern u8 D_80050160[];
+extern u8 D_80063BB8[];
+extern u8 D_80063EC8[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
-const char D_800B32B8[] = "BREATHE";
-const char D_800B32C0[] = "MEDIUM";
-const char D_800B32C8[] = "HIT";
-const char D_800B32CC[] = "DIE";
-const char D_800B32D0[] = "JUMP";
-const char D_800B32D8[] = "ATTACK";
-const char D_800B32E0[] = "PICKUP";
-const char D_800B32E8[] = "HOLD";
-const char D_800B32F0[] = "HOLD_SLOW";
-const char D_800B32FC[] = "HOLD_THROW";
-const char D_800B3308[] = "TAUNT_A";
-const char D_800B3310[] = "SLIDE";
+const char BashAnimBreathe[] = "BREATHE";
+const char BashAnimMedium[] = "MEDIUM";
+const char BashAnimHit[] = "HIT";
+const char BashAnimDie[] = "DIE";
+const char BashAnimJump[] = "JUMP";
+const char BashAnimAttack[] = "ATTACK";
+const char BashAnimPickup[] = "PICKUP";
+const char BashAnimHold[] = "HOLD";
+const char BashAnimHoldSlow[] = "HOLD_SLOW";
+const char BashAnimHoldThrow[] = "HOLD_THROW";
+const char BashAnimTauntA[] = "TAUNT_A";
+const char BashAnimSlide[] = "SLIDE";
 
 /* data, in address order */
-u8 D_800C3004[20] = { 5, 0, 2, 0, 1, 0, 1, 0, 0x18, 0, 0x1A, 0, 0x1C, 0, 0x10, 0, 0x10, 0, 0x20, 0 };
-u8 D_800C3018[20] = { 7, 0, 4, 0, 1, 0, 1, 0, 0x1C, 0, 0x1C, 0, 0x1C, 0, 0x10, 0, 0x10, 0, 0x20, 0 };
-u8 D_800C302C[12] = { 1, 0, 0x10, 0, 0x20, 0, 1, 0, 0x10, 0, 0x20, 0 };
-u8 D_800C3038[24] = { 8, 0, 0x10, 0, 0x18, 0, 7, 0, 0xE, 0, 0x15, 0, 6, 0, 0xC, 0, 0x13, 0, 5, 0, 0xA, 0, 0x10, 0 };
-u8 D_800C3050[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800C3064[20] = { 0x10, 0, 0x12, 0, 0x18, 0, 0x1A, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800C3078[20] = { 0x13, 0, 0xE, 0, 0xA, 0, 5, 0, 0x18, 0, 0x1C, 0, 0x20, 0, 9, 0, 9, 0, 0x20, 0 };
-u8 D_800C308C[20] = { 0x13, 0, 0xE, 0, 0xA, 0, 5, 0, 0x18, 0, 0x1C, 0, 0x20, 0, 9, 0, 9, 0, 0x20, 0 };
-u8 D_800C30A0[12] = { 1, 0, 0x10, 0, 0x20, 0, 1, 0, 0x10, 0, 0x20, 0 };
-u8 D_800C30AC[24] = {
-    0xE, 0, 0x15, 0, 0x1C, 0, 0xC, 0, 0x13, 0, 0x19, 0, 0xA, 0, 0xF, 0, 0x15, 0, 8, 0, 0xD, 0,
-    0x12, 0,
+u16 BashJungleAiSkill[10] = { 5, 2, 1, 1, 0x18, 0x1A, 0x1C, 0x10, 0x10, 0x20 };
+u16 BashJungleAiSkillAlt[10] = { 7, 4, 1, 1, 0x1C, 0x1C, 0x1C, 0x10, 0x10, 0x20 };
+u16 BashJungleAiTeamSkill[6] = { 1, 0x10, 0x20, 1, 0x10, 0x20 };
+u16 BashJungleAiHumanRoundTweak[12] = { 8, 0x10, 0x18, 7, 0xE, 0x15, 6, 0xC, 0x13, 5, 0xA, 0x10 };
+u16 BashJungleAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 2 };
+u16 BashJungleAiHumanTweak[10] = { 0x10, 0x12, 0x18, 0x1A, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+u16 BashSpaceAiSkill[10] = { 0x13, 0xE, 0xA, 5, 0x18, 0x1C, 0x20, 9, 9, 0x20 };
+u16 BashSpaceAiSkillAlt[10] = { 0x13, 0xE, 0xA, 5, 0x18, 0x1C, 0x20, 9, 9, 0x20 };
+u16 BashSpaceAiTeamSkill[6] = { 1, 0x10, 0x20, 1, 0x10, 0x20 };
+u16 BashSpaceAiHumanRoundTweak[12] = { 0xE, 0x15, 0x1C, 0xC, 0x13, 0x19, 0xA, 0xF, 0x15, 8, 0xD, 0x12 };
+u16 BashSpaceAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 2 };
+u16 BashSpaceAiHumanTweak[10] = { 0xC, 0xD, 0x12, 0x13, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+u16 BashSnowAiSkill[10] = { 0x1B, 0x17, 0x13, 0xF, 0x1C, 0x1E, 0x20, 0x20, 0x20, 0x20 };
+u16 BashSnowAiSkillAlt[10] = { 0x1B, 0x17, 0x13, 0xF, 0x20, 0x1C, 0x20, 0x20, 0x20, 0x20 };
+u16 BashSnowAiTeamSkill[6] = { 1, 0x10, 0x20, 1, 0x10, 0x20 };
+u16 BashSnowAiHumanRoundTweak[12] = { 0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14 };
+u16 BashSnowAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 2, 2, 0x10, 0x10, 2 };
+u16 BashSnowAiHumanTweak[10] = { 0x10, 0x12, 0x18, 0x1A, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+u16 BashDrainsAiSkill[10] = { 0x1C, 0x18, 0x14, 0x10, 0x14, 0x1A, 0x1C, 0x10, 0x10, 0x1C };
+u16 BashDrainsAiSkillAlt[10] = { 0x1C, 0x18, 0x14, 0x10, 0x1C, 0x1C, 0x1C, 0x10, 0x10, 0x20 };
+u16 BashDrainsAiTeamSkill[6] = { 1, 0x10, 0x1C, 1, 0x10, 0x1C };
+u16 BashDrainsAiHumanRoundTweak[12] = { 0x14, 0x1A, 0x20, 0x11, 0x17, 0x1C, 0xE, 0x13, 0x18, 0xC, 0x10, 0x14 };
+u16 BashDrainsAiBotTweak[10] = { 0x10, 0x10, 0x10, 0x10, 0x10, 2, 0x10, 0x10, 0x10, 2 };
+u16 BashDrainsAiHumanTweak[10] = { 0x10, 0x12, 0x18, 0x1A, 0x20, 0x20, 0x20, 0x10, 0x10, 0x20 };
+hero_seq CRA_BA_seq_slide[6] = {
+    0, 0x8007, 0x17, 0x4500, 0x8000, 0,
 };
-u8 D_800C30C4[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800C30D8[20] = { 0xC, 0, 0xD, 0, 0x12, 0, 0x13, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800C30EC[20] = { 0x1B, 0, 0x17, 0, 0x13, 0, 0xF, 0, 0x1C, 0, 0x1E, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800C3100[20] = { 0x1B, 0, 0x17, 0, 0x13, 0, 0xF, 0, 0x20, 0, 0x1C, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800C3114[12] = { 1, 0, 0x10, 0, 0x20, 0, 1, 0, 0x10, 0, 0x20, 0 };
-u8 D_800C3120[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+hero_seq CRA_BA_seq_die[10] = {
+    0, 0x8007, 0x20, 0x4400, 0x8018, 0xC, 0x441F, 0x8004, 0x13, 0,
 };
-u8 D_800C3138[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0, 2, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800C314C[20] = { 0x10, 0, 0x12, 0, 0x18, 0, 0x1A, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x20, 0 };
-u8 D_800C3160[20] = { 0x1C, 0, 0x18, 0, 0x14, 0, 0x10, 0, 0x14, 0, 0x1A, 0, 0x1C, 0, 0x10, 0, 0x10, 0, 0x1C, 0 };
-u8 D_800C3174[20] = { 0x1C, 0, 0x18, 0, 0x14, 0, 0x10, 0, 0x1C, 0, 0x1C, 0, 0x1C, 0, 0x10, 0, 0x10, 0, 0x20, 0 };
-u8 D_800C3188[12] = { 1, 0, 0x10, 0, 0x1C, 0, 1, 0, 0x10, 0, 0x1C, 0 };
-u8 D_800C3194[24] = {
-    0x14, 0, 0x1A, 0, 0x20, 0, 0x11, 0, 0x17, 0, 0x1C, 0, 0xE, 0, 0x13, 0, 0x18, 0, 0xC, 0,
-    0x10, 0, 0x14, 0,
+hero_seq CRA_BA_seq_pickup[8] = {
+    0, 0x800A, 0xF, 0x8007, 0xB, 0x4202, 0x8004, 0xF,
 };
-u8 D_800C31AC[20] = { 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0, 0x10, 0, 0x10, 0, 0x10, 0, 2, 0 };
-u8 D_800C31C0[1064] = {
-    0x10, 0, 0x12, 0, 0x18, 0, 0x1A, 0, 0x20, 0, 0x20, 0, 0x20, 0, 0x10, 0, 0x10, 0, 0x20, 0,
-    0, 0, 7, 0x80, 0x17, 0, 0, 0x45, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 0x20, 0, 0, 0x44, 0x18,
-    0x80, 0xC, 0, 0x1F, 0x44, 4, 0x80, 0x13, 0, 0, 0, 0, 0, 0xA, 0x80, 0xF, 0, 7, 0x80, 0xB, 0,
-    2, 0x42, 4, 0x80, 0xF, 0, 0, 0, 7, 0x80, 0x14, 0, 0x80, 0x42, 0, 0x80, 0, 0, 0, 0, 7, 0x80,
-    7, 0, 0x80, 0x43, 8, 0x80, 0xA, 0, 7, 0x80, 0xC, 0, 0x87, 0x43, 8, 0x80, 0xB, 0, 7, 0x80,
-    5, 0, 0x93, 0x43, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 2, 0, 0, 0x43, 3, 0x80, 0x12, 0, 7, 0x80,
-    6, 0, 1, 0x43, 8, 0x80, 0x10, 0, 3, 0x80, 0x13, 0, 7, 0x80, 7, 0, 0x10, 0x43, 4, 0x80, 7,
-    0, 0, 0, 7, 0x80, 0x20, 0, 0, 0x44, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 0x15, 0, 0x80, 0x45,
-    0x18, 0x80, 0x14, 0, 0x94, 0x45, 4, 0x80, 0x13, 0, 0, 0, 0, 0, 0xA, 0x80, 0x41, 0, 7, 0x80,
-    0xC, 0, 1, 0x42, 4, 0x80, 0xF, 0, 0, 0, 7, 0x80, 0x14, 0, 0x80, 0x43, 0, 0x80, 0, 0, 0, 0,
-    7, 0x80, 9, 0, 0, 0x43, 8, 0x80, 0x3C, 0, 7, 0x80, 0xB, 0, 9, 0x43, 8, 0x80, 0x3D, 0, 0x14,
-    0x43, 0x15, 0x43, 0, 0x80, 0, 0, 0, 0, 0, 0, 7, 0x80, 2, 0, 0x80, 0x42, 3, 0x80, 0x12, 0,
-    7, 0x80, 6, 0, 0x81, 0x42, 8, 0x80, 0x42, 0, 3, 0x80, 0x13, 0, 7, 0x80, 8, 0, 0x96, 0x42,
-    4, 0x80, 7, 0, 0, 0, 7, 0x80, 0x20, 0, 0, 0x45, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 0x23, 0, 0,
-    0x44, 0x18, 0x80, 5, 0, 0x22, 0x44, 4, 0x80, 0x13, 0, 0, 0, 0, 0, 0xA, 0x80, 0xA5, 0, 7,
-    0x80, 0xD, 0, 1, 0x42, 4, 0x80, 0xF, 0, 0, 0, 7, 0x80, 0x18, 0, 0x80, 0x42, 0, 0x80, 0, 0,
-    0, 0, 8, 0x80, 0xA0, 0, 7, 0x80, 0xC, 0, 0, 0x43, 8, 0x80, 0xA1, 0, 7, 0x80, 0xC, 0, 0xB,
-    0x43, 0, 0x80, 0, 0, 0, 0, 0, 0, 0x80, 0x43, 3, 0x80, 0x12, 0, 0x81, 0x43, 0xB, 0x80, 8,
-    0x80, 0xA6, 0, 3, 0x80, 0x13, 0, 0x82, 0x43, 7, 0x80, 0xA, 0, 0x83, 0x43, 4, 0x80, 0, 0, 0,
-    0, 7, 0x80, 0x20, 0, 0x80, 0x40, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 0x15, 0, 0x80, 0x45, 0x18,
-    0x80, 0xF, 0, 0x94, 0x45, 4, 0x80, 0x13, 0, 0, 0, 0, 0, 0xA, 0x80, 0x73, 0, 7, 0x80, 8, 0,
-    0, 0x43, 4, 0x80, 0xF, 0, 0, 0, 7, 0x80, 0x18, 0, 0x80, 0x42, 0, 0x80, 0, 0, 0, 0, 8, 0x80,
-    0x6E, 0, 7, 0x80, 0xC, 0, 0, 0x44, 8, 0x80, 0x6F, 0, 7, 0x80, 0xC, 0, 0xB, 0x44, 0, 0x80,
-    0, 0, 0, 0, 0, 0, 0x80, 0x43, 3, 0x80, 0x12, 0, 0x81, 0x43, 0xB, 0x80, 8, 0x80, 0x74, 0, 3,
-    0x80, 0x13, 0, 0x82, 0x43, 7, 0x80, 0xA, 0, 0x83, 0x43, 4, 0x80, 0, 0, 0, 0, 7, 0x80, 0x1F,
-    0, 0, 0x45, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 0x1F, 0, 0x80, 0x44, 0x18, 0x80, 0xD, 0, 0x9E,
-    0x44, 4, 0x80, 0x13, 0, 0, 0, 0, 0, 0xA, 0x80, 9, 1, 7, 0x80, 0x10, 0, 1, 0x44, 4, 0x80,
-    0xF, 0, 0, 0, 7, 0x80, 0x16, 0, 0x80, 0x42, 0, 0x80, 0, 0, 0, 0, 8, 0x80, 4, 1, 7, 0x80,
-    0xC, 0, 0xB, 0x43, 8, 0x80, 5, 1, 7, 0x80, 0xC, 0, 0, 0x43, 0, 0x80, 0, 0, 0, 0, 0, 0, 7,
-    0x80, 2, 0, 0x80, 0x43, 3, 0x80, 0x12, 0, 7, 0x80, 6, 0, 0x81, 0x43, 8, 0x80, 0xA, 1, 3,
-    0x80, 0x13, 0, 7, 0x80, 0x14, 0, 0x88, 0x43, 4, 0x80, 0, 0, 0, 0, 7, 0x80, 0x20, 0, 0x80,
-    0x44, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 0x15, 0, 0, 0x46, 0x18, 0x80, 0xF, 0, 0x14, 0x46, 4,
-    0x80, 0x13, 0, 0, 0, 0, 0, 0xA, 0x80, 0x3B, 1, 7, 0x80, 9, 0, 1, 0x44, 4, 0x80, 0xF, 0, 0,
-    0, 7, 0x80, 0x21, 0, 0, 0x43, 0, 0x80, 0, 0, 0, 0, 8, 0x80, 0x36, 1, 7, 0x80, 0xA, 0, 0x80,
-    0x42, 8, 0x80, 0x37, 1, 7, 0x80, 0xA, 0, 0x89, 0x42, 0, 0x80, 0, 0, 0, 0, 0, 0, 0x82, 0x43,
-    8, 0x80, 0x3C, 1, 3, 0x80, 0x12, 0, 0x83, 0x43, 0x84, 0x43, 0x85, 0x43, 0x86, 0x43, 3,
-    0x80, 0x13, 0, 0x87, 0x43, 0x87, 0x43, 0x88, 0x43, 0x89, 0x43, 0x8A, 0x43, 0x94, 0x43,
-    0x95, 0x43, 0x96, 0x43, 0x97, 0x43, 0x98, 0x43, 0x99, 0x43, 0x9A, 0x43, 4, 0x80, 0, 0, 0,
-    0, 7, 0x80, 0x20, 0, 0, 0x45, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 0x17, 0, 0x80, 0x42, 0x18,
-    0x80, 0x17, 0, 0x96, 0x42, 4, 0x80, 0x13, 0, 0, 0, 0, 0, 0xA, 0x80, 0xD7, 0, 7, 0x80, 0x10,
-    0, 1, 0x43, 4, 0x80, 0xF, 0, 0, 0, 7, 0x80, 0x15, 0, 0x80, 0x43, 0, 0x80, 0, 0, 0, 0, 8,
-    0x80, 0xD2, 0, 7, 0x80, 0xA, 0, 9, 0x44, 8, 0x80, 0xD3, 0, 7, 0x80, 0xA, 0, 0, 0x44, 0,
-    0x80, 0, 0, 0, 0, 0, 0, 3, 0x80, 0x12, 0, 7, 0x80, 6, 0, 0x81, 0x44, 8, 0x80, 0xD8, 0, 3,
-    0x80, 0x13, 0, 7, 0x80, 0x14, 0, 0x87, 0x44, 4, 0x80, 0, 0, 0, 0, 0, 0, 7, 0x80, 0x17, 0,
-    0, 0x45, 0, 0x80, 0, 0, 0, 0, 7, 0x80, 0x19, 0, 0, 0x42, 0x18, 0x80, 0xB, 0, 0x18, 0x42, 4,
-    0x80, 0x13, 0, 0, 0, 0, 0, 0xA, 0x80, 0x6D, 1, 7, 0x80, 0xB, 0, 0xA, 0x43, 4, 0x80, 0xF, 0,
-    0, 0, 7, 0x80, 0x18, 0, 0x80, 0x43, 0, 0x80, 0, 0, 0, 0, 8, 0x80, 0x68, 1, 7, 0x80, 0xA, 0,
-    0, 0x44, 8, 0x80, 0x69, 1, 7, 0x80, 0xA, 0, 9, 0x44, 0, 0x80, 0, 0, 0, 0, 0, 0, 0x82, 0x44,
-    3, 0x80, 0x12, 0, 0x83, 0x44, 0x84, 0x44, 0x85, 0x44, 0x86, 0x44, 8, 0x80, 0x6E, 1, 3,
-    0x80, 0x13, 0, 0x87, 0x44, 7, 0x80, 0xE, 0, 0x88, 0x44, 4, 0x80, 0, 0, 0, 0x20, 0, 0, 0x10,
-    0, 0, 0, 0, 0x10, 0, 0, 0xC8, 0, 0, 0, 0xBC, 2, 0, 0, 0, 2, 0, 0, 0xC8, 0x3E, 6, 0x80,
-    0xB8, 0x3B, 6, 0x80, 0x20, 0, 0, 0, 0, 4, 0, 0,
+hero_seq CRA_BA_seq_hold[6] = {
+    0, 0x8007, 0x14, 0x4280, 0x8000, 0,
 };
-s32 D_800C35E8[6] = { (s32)0x80110000, 0x40150026, 0x424800B, 0x168011, (s32)0x80004000, 0 };
-s32 D_800C3600[15] = {
+hero_seq CRA_BA_seq_hold_slow[16] = {
+    0, 0x8007, 7, 0x4380, 0x8008, 0xA, 0x8007, 0xC, 0x4387, 0x8008, 0xB, 0x8007, 5, 0x4393, 0x8000,
+    0,
+};
+hero_seq CRA_BA_seq_hold_throw[18] = {
+    0, 0x8007, 2, 0x4300, 0x8003, 0x12, 0x8007, 6, 0x4301, 0x8008, 0x10, 0x8003, 0x13, 0x8007, 7,
+    0x4310, 0x8004, 7,
+};
+hero_seq COC_BA_seq_slide[6] = {
+    0, 0x8007, 0x20, 0x4400, 0x8000, 0,
+};
+hero_seq COC_BA_seq_die[10] = {
+    0, 0x8007, 0x15, 0x4580, 0x8018, 0x14, 0x4594, 0x8004, 0x13, 0,
+};
+hero_seq COC_BA_seq_pickup[8] = {
+    0, 0x800A, 0x41, 0x8007, 0xC, 0x4201, 0x8004, 0xF,
+};
+hero_seq COC_BA_seq_hold[6] = {
+    0, 0x8007, 0x14, 0x4380, 0x8000, 0,
+};
+hero_seq COC_BA_seq_hold_slow[16] = {
+    0, 0x8007, 9, 0x4300, 0x8008, 0x3C, 0x8007, 0xB, 0x4309, 0x8008, 0x3D, 0x4314, 0x4315, 0x8000,
+    0, 0,
+};
+hero_seq COC_BA_seq_hold_throw[18] = {
+    0, 0x8007, 2, 0x4280, 0x8003, 0x12, 0x8007, 6, 0x4281, 0x8008, 0x42, 0x8003, 0x13, 0x8007, 8,
+    0x4296, 0x8004, 7,
+};
+hero_seq BRO_BA_seq_slide[6] = {
+    0, 0x8007, 0x20, 0x4500, 0x8000, 0,
+};
+hero_seq BRO_BA_seq_die[10] = {
+    0, 0x8007, 0x23, 0x4400, 0x8018, 5, 0x4422, 0x8004, 0x13, 0,
+};
+hero_seq BRO_BA_seq_pickup[8] = {
+    0, 0x800A, 0xA5, 0x8007, 0xD, 0x4201, 0x8004, 0xF,
+};
+hero_seq BRO_BA_seq_hold[6] = {
+    0, 0x8007, 0x18, 0x4280, 0x8000, 0,
+};
+hero_seq BRO_BA_seq_hold_slow[14] = {
+    0, 0x8008, 0xA0, 0x8007, 0xC, 0x4300, 0x8008, 0xA1, 0x8007, 0xC, 0x430B, 0x8000, 0, 0,
+};
+hero_seq BRO_BA_seq_hold_throw[16] = {
+    0, 0x4380, 0x8003, 0x12, 0x4381, 0x800B, 0x8008, 0xA6, 0x8003, 0x13, 0x4382, 0x8007, 0xA,
+    0x4383, 0x8004, 0,
+};
+hero_seq CTX_BA_seq_slide[6] = {
+    0, 0x8007, 0x20, 0x4080, 0x8000, 0,
+};
+hero_seq CTX_BA_seq_die[10] = {
+    0, 0x8007, 0x15, 0x4580, 0x8018, 0xF, 0x4594, 0x8004, 0x13, 0,
+};
+hero_seq CTX_BA_seq_pickup[8] = {
+    0, 0x800A, 0x73, 0x8007, 8, 0x4300, 0x8004, 0xF,
+};
+hero_seq CTX_BA_seq_hold[6] = {
+    0, 0x8007, 0x18, 0x4280, 0x8000, 0,
+};
+hero_seq CTX_BA_seq_hold_slow[14] = {
+    0, 0x8008, 0x6E, 0x8007, 0xC, 0x4400, 0x8008, 0x6F, 0x8007, 0xC, 0x440B, 0x8000, 0, 0,
+};
+hero_seq CTX_BA_seq_hold_throw[16] = {
+    0, 0x4380, 0x8003, 0x12, 0x4381, 0x800B, 0x8008, 0x74, 0x8003, 0x13, 0x4382, 0x8007, 0xA,
+    0x4383, 0x8004, 0,
+};
+hero_seq DNG_BA_seq_slide[6] = {
+    0, 0x8007, 0x1F, 0x4500, 0x8000, 0,
+};
+hero_seq DNG_BA_seq_die[10] = {
+    0, 0x8007, 0x1F, 0x4480, 0x8018, 0xD, 0x449E, 0x8004, 0x13, 0,
+};
+hero_seq DNG_BA_seq_pickup[8] = {
+    0, 0x800A, 0x109, 0x8007, 0x10, 0x4401, 0x8004, 0xF,
+};
+hero_seq DNG_BA_seq_hold[6] = {
+    0, 0x8007, 0x16, 0x4280, 0x8000, 0,
+};
+hero_seq DNG_BA_seq_hold_slow[14] = {
+    0, 0x8008, 0x104, 0x8007, 0xC, 0x430B, 0x8008, 0x105, 0x8007, 0xC, 0x4300, 0x8000, 0, 0,
+};
+hero_seq DNG_BA_seq_hold_throw[18] = {
+    0, 0x8007, 2, 0x4380, 0x8003, 0x12, 0x8007, 6, 0x4381, 0x8008, 0x10A, 0x8003, 0x13, 0x8007,
+    0x14, 0x4388, 0x8004, 0,
+};
+hero_seq TIN_BA_seq_slide[6] = {
+    0, 0x8007, 0x20, 0x4480, 0x8000, 0,
+};
+hero_seq TIN_BA_seq_die[10] = {
+    0, 0x8007, 0x15, 0x4600, 0x8018, 0xF, 0x4614, 0x8004, 0x13, 0,
+};
+hero_seq TIN_BA_seq_pickup[8] = {
+    0, 0x800A, 0x13B, 0x8007, 9, 0x4401, 0x8004, 0xF,
+};
+hero_seq TIN_BA_seq_hold[6] = {
+    0, 0x8007, 0x21, 0x4300, 0x8000, 0,
+};
+hero_seq TIN_BA_seq_hold_slow[14] = {
+    0, 0x8008, 0x136, 0x8007, 0xA, 0x4280, 0x8008, 0x137, 0x8007, 0xA, 0x4289, 0x8000, 0, 0,
+};
+hero_seq TIN_BA_seq_hold_throw[26] = {
+    0, 0x4382, 0x8008, 0x13C, 0x8003, 0x12, 0x4383, 0x4384, 0x4385, 0x4386, 0x8003, 0x13, 0x4387,
+    0x4387, 0x4388, 0x4389, 0x438A, 0x4394, 0x4395, 0x4396, 0x4397, 0x4398, 0x4399, 0x439A, 0x8004,
+    0,
+};
+hero_seq KAN_BA_seq_slide[6] = {
+    0, 0x8007, 0x20, 0x4500, 0x8000, 0,
+};
+hero_seq KAN_BA_seq_die[10] = {
+    0, 0x8007, 0x17, 0x4280, 0x8018, 0x17, 0x4296, 0x8004, 0x13, 0,
+};
+hero_seq KAN_BA_seq_pickup[8] = {
+    0, 0x800A, 0xD7, 0x8007, 0x10, 0x4301, 0x8004, 0xF,
+};
+hero_seq KAN_BA_seq_hold[6] = {
+    0, 0x8007, 0x15, 0x4380, 0x8000, 0,
+};
+hero_seq KAN_BA_seq_hold_slow[14] = {
+    0, 0x8008, 0xD2, 0x8007, 0xA, 0x4409, 0x8008, 0xD3, 0x8007, 0xA, 0x4400, 0x8000, 0, 0,
+};
+hero_seq KAN_BA_seq_hold_throw[16] = {
+    0, 0x8003, 0x12, 0x8007, 6, 0x4481, 0x8008, 0xD8, 0x8003, 0x13, 0x8007, 0x14, 0x4487, 0x8004, 0,
+    0,
+};
+hero_seq KON_BA_seq_slide[6] = {
+    0, 0x8007, 0x17, 0x4500, 0x8000, 0,
+};
+hero_seq KON_BA_seq_die[10] = {
+    0, 0x8007, 0x19, 0x4200, 0x8018, 0xB, 0x4218, 0x8004, 0x13, 0,
+};
+hero_seq KON_BA_seq_pickup[8] = {
+    0, 0x800A, 0x16D, 0x8007, 0xB, 0x430A, 0x8004, 0xF,
+};
+hero_seq KON_BA_seq_hold[6] = {
+    0, 0x8007, 0x18, 0x4380, 0x8000, 0,
+};
+hero_seq KON_BA_seq_hold_slow[14] = {
+    0, 0x8008, 0x168, 0x8007, 0xA, 0x4400, 0x8008, 0x169, 0x8007, 0xA, 0x4409, 0x8000, 0, 0,
+};
+hero_seq KON_BA_seq_hold_throw[18] = {
+    0, 0x4482, 0x8003, 0x12, 0x4483, 0x4484, 0x4485, 0x4486, 0x8008, 0x16E, 0x8003, 0x13, 0x4487,
+    0x8007, 0xE, 0x4488, 0x8004, 0,
+};
+/* the four worlds' shell settings (engine world records 0x0104, 0x0001..0x0003) */
+shell_setup bash_shell_info = {
+    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, D_80063EC8, D_80063BB8, 0x20, 0x400,
+};
+s32 PenguinSteps0[6] = { (s32)0x80110000, 0x40150026, 0x424800B, 0x168011, (s32)0x80004000, 0 };
+s32 PenguinSteps1[15] = {
     (s32)0x80110000, 0x4100001A, 0x428800B, 0x48011, (s32)0x800F4119, 0x411D0009, 0x800F,
     0x118011, (s32)0x800F411E, 0x412E0009, 0x800F, 0x68011, (s32)0x8005412F, 0x41350008,
     0x8000,
 };
-s32 D_800C363C[6] = { (s32)0x80110000, 0x4080000E, 0x425800B, 0x288011, (s32)0x8001408D, 0 };
-s32 D_800C3654[5] = { (s32)&D_800C35E8, (s32)&D_800C3600, (s32)&D_800C363C, 0, 0 };
-ScriptInit D_800C3668 = { 0, (void *)&D_800C3654, 0x401 };
-s32 D_800C3674[3] = { 0x17001C, 0x18001A, 0xFFFF };
-s32 D_800C3680[12] = {
-    (s32)&D_800B32B8, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32CC, (s32)&D_800B32D0,
-    (s32)&D_800B32D8, (s32)&D_800B32E0, (s32)&D_800B32E8, (s32)&D_800B32F0, (s32)&D_800B32FC,
-    (s32)&D_800B3308, 0,
+s32 PenguinSteps2[6] = { (s32)0x80110000, 0x4080000E, 0x425800B, 0x288011, (s32)0x8001408D, 0 };
+s32 PenguinAnimList[5] = { (s32)&PenguinSteps0, (s32)&PenguinSteps1, (s32)&PenguinSteps2, 0, 0 };
+ScriptInit PenguinScriptInit = { 0, (void *)&PenguinAnimList, 0x401 };
+s16 BashPreLoadDB[6] = { 0x1C, 0x17, 0x1A, 0x18, -1, 0 };
+char *BashAnims[12] = {
+    (char *)BashAnimBreathe, (char *)BashAnimMedium, (char *)BashAnimHit, (char *)BashAnimDie,
+    (char *)BashAnimJump, (char *)BashAnimAttack, (char *)BashAnimPickup, (char *)BashAnimHold,
+    (char *)BashAnimHoldSlow, (char *)BashAnimHoldThrow, (char *)BashAnimTauntA, NULL,
 };
-s32 D_800C36B0[13] = {
-    (s32)&D_800B32B8, (s32)&D_800B3310, (s32)&D_800B32C0, (s32)&D_800B32C8, (s32)&D_800B32CC,
-    (s32)&D_800B32D0, (s32)&D_800B32D8, (s32)&D_800B32E0, (s32)&D_800B32E8, (s32)&D_800B32F0,
-    (s32)&D_800B32FC, (s32)&D_800B3308, 0,
+char *BashAnimsSlide[13] = {
+    (char *)BashAnimBreathe, (char *)BashAnimSlide, (char *)BashAnimMedium, (char *)BashAnimHit,
+    (char *)BashAnimDie, (char *)BashAnimJump, (char *)BashAnimAttack, (char *)BashAnimPickup,
+    (char *)BashAnimHold, (char *)BashAnimHoldSlow, (char *)BashAnimHoldThrow,
+    (char *)BashAnimTauntA, NULL,
 };
-s32 D_800C36E4[1] = { 0xFFFF };
-s32 D_800C36E8[1] = { -0xFFE5 };
-s32 D_800C36EC[72] = {
-    0x24, (s32)&D_800C3680, (s32)&D_800C36E4, 1, 0, 0, 0, 0, 0x22, (s32)&D_800C3680,
-    (s32)&D_800C36E4, 1, 0, 0, 0, 0, 0x26, (s32)&D_800C36B0, (s32)&D_800C36E8, 1, 0, 0, 0, 0,
-    0x28, (s32)&D_800C3680, (s32)&D_800C36E4, 1, 0, 0, 0, 0, 0x25, (s32)&D_800C3680,
-    (s32)&D_800C36E4, 1, 0, 0, 0, 0, 0x23, (s32)&D_800C3680, (s32)&D_800C36E4, 1, 0, 0, 0, 0,
-    0x27, (s32)&D_800C36B0, (s32)&D_800C36E8, 1, 0, 0, 0, 0, 0x29, (s32)&D_800C3680,
-    (s32)&D_800C36E4, 1, 0, 0, 0, 0, 0x2A, (s32)&D_800C3680, (s32)&D_800C36E4, 1, 0, 0, 0, 0,
+s16 BashLevelDB0[2] = { -1, 0 };
+s16 BashLevelDB1[2] = { 0x1B, -1 };
+WWInf BashWorldInfo[9] = {
+    { 0x24, BashAnims, BashLevelDB0, 1 },
+    { 0x22, BashAnims, BashLevelDB0, 1 },
+    { 0x26, BashAnimsSlide, BashLevelDB1, 1 },
+    { 0x28, BashAnims, BashLevelDB0, 1 },
+    { 0x25, BashAnims, BashLevelDB0, 1 },
+    { 0x23, BashAnims, BashLevelDB0, 1 },
+    { 0x27, BashAnimsSlide, BashLevelDB1, 1 },
+    { 0x29, BashAnims, BashLevelDB0, 1 },
+    { 0x2A, BashAnims, BashLevelDB0, 1 },
 };
-s32 D_800C380C[21] = {
+s32 BashFiles[21] = {
     (s32)&D_80055684, (s32)&D_8004F3F8, (s32)&D_8004F3F0, (s32)&D_800555A4, (s32)&D_8004F3D8,
     (s32)&D_8004F3D0, (s32)&D_80053074, (s32)&D_8004F3E8, (s32)&D_8004F3E0, (s32)&D_80052F5C,
     (s32)&D_8004F3C8, (s32)&D_8004F3C0, (s32)&D_80053004, (s32)&D_8004F3B8, (s32)&D_8004F3B0,
     (s32)&D_80052F94, (s32)&D_8004F3A8, (s32)&D_8004F3A0, 0, 0, 0,
 };
-s32 D_800C3860[34] = {
+s32 BashSnowFiles[24] = {
     (s32)&D_80055684, (s32)&D_8004F398, (s32)&D_8004F390, (s32)&D_800555A4, (s32)&D_8004F378,
     (s32)&D_8004F370, (s32)&D_80053074, (s32)&D_8004F388, (s32)&D_8004F380, (s32)&D_80052F5C,
     (s32)&D_8004F368, (s32)&D_8004F360, (s32)&D_80053004, (s32)&D_8004F358, (s32)&D_8004F350,
     (s32)&D_80052F94, (s32)&D_8004F348, (s32)&D_8004F340, (s32)&D_8005303C, (s32)&D_8004F338,
-    (s32)&D_8004F330, 0, 0, 0, (s32)&D_80050160, (s32)&D_800C380C, (s32)&D_80050154,
-    (s32)&D_800C3860, (s32)&D_80050160, (s32)&D_800C380C, (s32)&D_80050160, (s32)&D_800C380C,
-    (s32)&D_80050160, (s32)&D_800C380C,
+    (s32)&D_8004F330, 0, 0,
 };
-s32 D_800C38E8[2] = { 0x2010003, 0x201020D };
-s32 D_800C38F0[9] = { (s32)&D_800C38E8, 4, (s32)&D_800C3674, (s32)&D_800C36EC, (s32)&D_800C38F0, 0, 0, 0, 0 };
-CrateVelocity D_800C3914 = { 0x60, 0x80, 0, 2, 0, 0, 0, 0, 0xFFFF, 0, 0 };
-CrateVelocity D_800C392C = { 0x70, 0x80, 0, 2, 0, 0, 0, 0, 0xFFFF, 0, 0 };
-CrateVelocity D_800C3944 = { 0x50, 0x80, 0, 2, 0, 0, 0, 0, 0xFFFF, 0, 0 };
-CrateVelocity *D_800C395C[10] = {
-    (void *)&D_800C3914, (void *)&D_800C392C, (void *)&D_800C392C, (void *)&D_800C3944,
-    (void *)&D_800C3944, (void *)&D_800C3944, (void *)&D_800C3944, (void *)&D_800C392C,
-    (void *)&D_800C392C, (void *)&D_800C3914,
+/* the levels' files: the exe's file group and the model list (the engine's table at 0x800A001C
+ * points at modes 0..3's and 0x20's) */
+file_group_load_info file_group_JUNGLE = { D_80050160, BashFiles };
+file_group_load_info file_group_SNOW = { D_80050154, BashSnowFiles };
+file_group_load_info file_group_SPACE = { D_80050160, BashFiles };
+file_group_load_info file_group_DRAINS = { D_80050160, BashFiles };
+file_group_load_info file_group_BASHMODE20 = { D_80050160, BashFiles };
+u16 BashLUPtab[4] = { 3, 0x201, 0x20D, 0x201 };
+TrigLookUp BashLUP = { BashLUPtab, 4 };
+PreMap BASH_PREMAP = { BashPreLoadDB, BashWorldInfo, &BashLUP };
+CrateVelocity BashSnowKickVelMid = { 0x60, 0x80, 0, 2, 0, 0, 0, 0, 0xFFFF, 0, 0 };
+CrateVelocity BashSnowKickVelFast = { 0x70, 0x80, 0, 2, 0, 0, 0, 0, 0xFFFF, 0, 0 };
+CrateVelocity BashSnowKickVelSlow = { 0x50, 0x80, 0, 2, 0, 0, 0, 0, 0xFFFF, 0, 0 };
+CrateVelocity *BashSnowKickVels[10] = {
+    (void *)&BashSnowKickVelMid, (void *)&BashSnowKickVelFast, (void *)&BashSnowKickVelFast, (void *)&BashSnowKickVelSlow,
+    (void *)&BashSnowKickVelSlow, (void *)&BashSnowKickVelSlow, (void *)&BashSnowKickVelSlow, (void *)&BashSnowKickVelFast,
+    (void *)&BashSnowKickVelFast, (void *)&BashSnowKickVelMid,
 };
-u16 D_800C3984[30] = {
+u16 BashSnowRunSpeeds[30] = {
     0, 0, 0, 0x78, 0xB4, 0x50, 0x78, 0xB4, 0x50, 0x78, 0xB4, 0x50, 0x78, 0xB4, 0x50, 0xA0,
     0xB4, 0x50, 0xA0, 0xB4, 0x50, 0xA0, 0xB4, 0x50, 0xA0, 0xB4, 0x50, 0, 0, 0,
 };
-Ambient_data D_800C39C0 = { 2, 6, 0x3FC, 0, { 0x3FD, 0x3FE, 0x3FF, 0x400, 0x401, 0x402, 0x403, 0x3FD } };
-Ambient_data D_800C39D8 = { 4, 8, 0x42E, 0, { 0x42F, 0x430, 0x431, 0x432, 0x433, 0x434, 0x435, 0x42F } };
-u16 D_800C39F0[10] = { 0x500, 0x400, 0x400, 0x600, 0x600, 0x600, 0x600, 0x400, 0x400, 0x500 };
-SLONG_XYZ D_800C3A04[16] = {
+Ambient_data BashJungleAmbience = { 2, 6, 0x3FC, 0, { 0x3FD, 0x3FE, 0x3FF, 0x400, 0x401, 0x402, 0x403, 0x3FD } };
+Ambient_data BashDrainsAmbience = { 4, 8, 0x42E, 0, { 0x42F, 0x430, 0x431, 0x432, 0x433, 0x434, 0x435, 0x42F } };
+u16 BashAIRange[10] = { 0x500, 0x400, 0x400, 0x600, 0x600, 0x600, 0x600, 0x400, 0x400, 0x500 };
+SLONG_XYZ BashAITargetPoints[16] = {
     { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
     { 0, 0, 0 }, { -0x780, 0, -0x780 }, { 0, 0, -0x780 }, { 0x780, 0, -0x780 },
     { -0x780, 0, 0 }, { 0x780, 0, 0 }, { -0x780, 0, 0x780 }, { 0, 0, 0x780 },
     { 0x780, 0, 0x780 },
 };
-u16 D_800C3AC4[22] = {
+u16 BashAIHealthWeights[22] = {
     0x64, 0x14, 0xF, 0xA, 8, 5, 4, 3, 3, 2, 2, 1, 1, 1, 0, 0, 0xFFFF, 0xFFFE, 0xFFFC, 0xFFF8,
     0xFFF6, 0,
 };
-s32 D_800C3AF0[3] = { (s32)0x80110000, 0x40000026, 0x8003 };
-ScriptInit D_800C3AFC = { (s32)&D_800C3AF0, 0, 0x401 };
-s16 D_800C3B08[7][3] = {
+s32 BoingSteps[3] = { (s32)0x80110000, 0x40000026, 0x8003 };
+ScriptInit BoingScriptInit = { (s32)&BoingSteps, 0, 0x401 };
+s16 BashExplodeScales[7][3] = {
     { 0x5000, 0x5000, 0x5000 }, { 0x4000, 0x2000, 0x4000 }, { 0x1800, 0x1000, 0x1800 },
     { 0x800, 0xA00, 0x800 }, { 0x200, 0x200, 0x200 }, { 0, 0, 0 }, { 0, 0, 0 },
 };
-u16 D_800C3B32 = 0;
-u16 D_800C3B34 = 0;
-s16 D_800C3B36 = 0;
-u16 D_800C3B38 = 0;
-u16 D_800C3B3A = 0;
-u16 D_800C3B3C = 0;
-s16 D_800C3B3E = 0;
-s16 D_800C3B40 = 0;
-u8 D_800C3B44[64] = {0};
-u16 D_800C3B84 = 0;
-u16 D_800C3B86 = 0;
-u16 D_800C3B88 = 0;
-u16 D_800C3B8C[4] = {0};
-u16 D_800C3B94[4] = {0};
-u8 *D_800C3B9C[4] = {0};
-BashCell D_800C3BAC[8][8] = {0};
-BashGridCell D_800C3EAC[16][16] = {0};
-s32 D_800C46AC = 0;
-EXTengine *D_800C46B0 = 0;
-EXTobject *D_800C46B4 = 0;
+u16 BashCrateTimer = 0;
+u16 BashPickupTimer = 0;
+s16 BashUnused0 = 0;
+u16 BashRainCount = 0;
+u16 BashRainDelay = 0;
+u16 BashRainTimer = 0;
+s16 BashUnused1 = 0;
+s16 BashAIVictim = 0;
+u8 BashCrateMix[64] = {0};
+u16 BashCrateMixPos = 0;
+u16 BashDropPos = 0;
+u16 BashFirstCrates = 0;
+u16 BashMaxCrates[4] = {0};
+u16 BashMaxNitro[4] = {0};
+u8 *BashDrainsEdges[4] = {0};
+BashCell BashSpaceTiles[8][8] = {0};
+BashGridCell BashDropPoints[16][16] = {0};
+s32 BashTumblerTimer = 0;
+EXTengine *BashPenguinEng = 0;
+EXTobject *BashPenguinObj = 0;
 
 void InitialiseBASHFirst(void) {
     u8 *g;
@@ -249,54 +358,54 @@ void InitialiseBASHFirst(void) {
     D_8009D6E8.unk50 = BashHeroGrabObject;
     D_8009D6E8.unk54 = BashHeroKickCollision;
     D_8009D6E8.unk58 = BashHeroCarryCollision;
-    D_800C478C = NULL;
+    BashCrateList = NULL;
     BashInitCrateHooks();
     D_8009E298 = BashASTIndex(0x206);
-    D_800C46EC = EngineTemplate;
+    BashSfxEngine = EngineTemplate;
     g = D_8005A614;
     switch (*(s16 *)(g + 0x34)) {
     case 1:
-        D_8009D8F4 = D_800C30C4;
-        D_8009D8F8 = D_800C30D8;
-        D_8009D904 = D_800C30AC;
+        D_8009D8F4 = BashSpaceAiBotTweak;
+        D_8009D8F8 = BashSpaceAiHumanTweak;
+        D_8009D904 = BashSpaceAiHumanRoundTweak;
         p = &D_8009D8FC;
         if (*(s32 *)(g + 0x6C) != 0) {
-            t = D_800C308C;
+            t = BashSpaceAiSkillAlt;
         } else {
-            t = D_800C3078;
+            t = BashSpaceAiSkill;
         }
         *p = t;
-        D_8009D900 = D_800C30A0;
+        D_8009D900 = BashSpaceAiTeamSkill;
         if (D_8005A646 & 0x80) {
             D_8009D724 = BashSpacePadHook;
         }
         break;
     case 2:
-        D_8009D8F4 = D_800C3138;
-        D_8009D8F8 = D_800C314C;
-        D_8009D904 = D_800C3120;
+        D_8009D8F4 = BashSnowAiBotTweak;
+        D_8009D8F8 = BashSnowAiHumanTweak;
+        D_8009D904 = BashSnowAiHumanRoundTweak;
         p2 = &D_8009D8FC;
         if (*(s32 *)(g + 0x6C) != 0) {
-            t = D_800C3100;
+            t = BashSnowAiSkillAlt;
         } else {
-            t = D_800C30EC;
+            t = BashSnowAiSkill;
         }
         *p2 = t;
-        D_8009D900 = D_800C3114;
+        D_8009D900 = BashSnowAiTeamSkill;
         D_8009D70C = BashSnowMoveHero;
         break;
     case 3:
-        D_8009D8F4 = D_800C31AC;
-        D_8009D8F8 = D_800C31C0;
-        D_8009D904 = D_800C3194;
+        D_8009D8F4 = BashDrainsAiBotTweak;
+        D_8009D8F8 = BashDrainsAiHumanTweak;
+        D_8009D904 = BashDrainsAiHumanRoundTweak;
         p3 = &D_8009D8FC;
         if (*(s32 *)(g + 0x6C) != 0) {
-            t = D_800C3174;
+            t = BashDrainsAiSkillAlt;
         } else {
-            t = D_800C3160;
+            t = BashDrainsAiSkill;
         }
         *p3 = t;
-        D_8009D900 = D_800C3188;
+        D_8009D900 = BashDrainsAiTeamSkill;
         D_8009D724 = BashFirePowerup;
         break;
     case 0x20:
@@ -305,17 +414,17 @@ void InitialiseBASHFirst(void) {
         g[0x53] = 9;
         break;
     default:
-        D_8009D8F4 = D_800C3050;
-        D_8009D8F8 = D_800C3064;
-        D_8009D904 = D_800C3038;
+        D_8009D8F4 = BashJungleAiBotTweak;
+        D_8009D8F8 = BashJungleAiHumanTweak;
+        D_8009D904 = BashJungleAiHumanRoundTweak;
         p4 = &D_8009D8FC;
         if (D_8005A680[0] != 0) {
-            t = D_800C3018;
+            t = BashJungleAiSkillAlt;
         } else {
-            t = D_800C3004;
+            t = BashJungleAiSkill;
         }
         *p4 = t;
-        D_8009D900 = D_800C302C;
+        D_8009D900 = BashJungleAiTeamSkill;
         break;
     }
 }
@@ -364,19 +473,19 @@ void InitialiseBASH(void) {
     } else {
         Set_Clock(0x130, 0x81D0);
     }
-    D_800C3B32 = 0;
-    D_800C3B34 = 0;
-    D_800C478A = 0x1E;
-    D_800C3B86 = 0;
-    D_800C3B38 = 0;
-    D_800C3B3A = 0;
-    D_800C3B3E = 0;
-    D_800C3B3C = (Random(0xA) + 0xA) * 0x1E;
-    D_800C3B40 = -1;
-    D_800C46B0 = NULL;
-    D_800C46B4 = NULL;
-    D_800C4788 = Random(0x12);
-    D_800C46AC = 0x96;
+    BashCrateTimer = 0;
+    BashPickupTimer = 0;
+    BashPowerupTimer = 0x1E;
+    BashDropPos = 0;
+    BashRainCount = 0;
+    BashRainDelay = 0;
+    BashUnused1 = 0;
+    BashRainTimer = (Random(0xA) + 0xA) * 0x1E;
+    BashAIVictim = -1;
+    BashPenguinEng = NULL;
+    BashPenguinObj = NULL;
+    BashDrainsEdgePos = Random(0x12);
+    BashTumblerTimer = 0x96;
     BashShuffleDropPoints();
     BashSpaceClearTiles();
     func_80086D88();
@@ -387,18 +496,18 @@ void InitialiseBASH(void) {
         m->facing_angle = a;
         m->forward_angle = a;
     }
-    D_800C3B9C[0] = D_800C3B9C[1] = D_800C3B9C[2] = D_800C3B9C[3] = 0;
+    BashDrainsEdges[0] = BashDrainsEdges[1] = BashDrainsEdges[2] = BashDrainsEdges[3] = 0;
     switch (D_8005A648) {
     case 0:
         World_floor_level = -0x10;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         BashDropFirstCrates();
-        InitAmbience(&D_800C39C0);
+        InitAmbience(&BashJungleAmbience);
         break;
     case 1:
         World_floor_level = -0x10;
         BashSpaceInitTiles();
-        D_800C478A = (Random(0xA) + 0xA) * 0x1E;
+        BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
         D_8009E488.unk8 = BashSpaceBreakTile;
         if (D_8005A646 & 0x80) {
             BashSetCrateMix(6, 7, 8, 8, 0, 0xE, 2, 0, 0);
@@ -409,9 +518,9 @@ void InitialiseBASH(void) {
         break;
     case 2:
         World_floor_level = -0x10;
-        D_8009E488.unk0 = D_800C395C;
-        D_8009D6F4 = D_800C3984;
-        D_800C478A = (Random(0xA) + 0xA) * 0x1E;
+        D_8009E488.unk0 = BashSnowKickVels;
+        D_8009D6F4 = BashSnowRunSpeeds;
+        BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         D_8005A5DC = 3;
         for (i = 0; i < 4; i++) {
@@ -424,10 +533,10 @@ void InitialiseBASH(void) {
         break;
     case 3:
         World_floor_level = 0;
-        D_800C478A = Random(0x1E) + 0x1E;
+        BashPowerupTimer = Random(0x1E) + 0x1E;
         BashSetCrateMix(6, 6, 6, 6, 0xE, 2, 0, 0, 0);
         BashDropFirstCrates();
-        InitAmbience(&D_800C39D8);
+        InitAmbience(&BashDrainsAmbience);
         break;
     case 0x20:
         Heroes[2].hero_shadow->flags = 0;
@@ -451,22 +560,22 @@ void UpdateBASH(void) {
     BashCountObjects();
     func_80086D88();
     if (D_8009D908 != 0) {
-        if (D_800C3B40 == -1) {
+        if (BashAIVictim == -1) {
             for (i = 0; i < 4; i++) {
                 D_8009D87C[i].unk4 = 0x10;
                 D_8009D87C[i].unk0 = 0x1A;
             }
-            p = &D_800C3B40;
+            p = &BashAIVictim;
             *p = BashAI_PickVictim(0x63);
             id = *p;
             if (id != -1 && id < 4) {
                 D_8009D87C[id].unk4 = 0x30;
                 D_8009D87C[id].unk0 = 8;
             } else {
-                D_800C3B40 = -1;
+                BashAIVictim = -1;
             }
-        } else if (Heroes[D_800C3B40].hero_status & 0xFA00) {
-            D_800C3B40 = -1;
+        } else if (Heroes[BashAIVictim].hero_status & 0xFA00) {
+            BashAIVictim = -1;
         }
     }
     switch (D_8005A648) {
@@ -559,9 +668,9 @@ s32 BashAI_EscapeAngle(s32 arg0) {
             }
         }
     }
-    if (D_800C46B4 != NULL && D_800C46B4->status == 3) {
-        dx = D_800C46B0->unk10.x - Heroes[arg0].hero_eng->unk10.x;
-        dz = D_800C46B0->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+    if (BashPenguinObj != NULL && BashPenguinObj->status == 3) {
+        dx = BashPenguinEng->unk10.x - Heroes[arg0].hero_eng->unk10.x;
+        dz = BashPenguinEng->unk10.z - Heroes[arg0].hero_eng->unk10.z;
         if (dx * dx + dz * dz < 0x240000) {
             return get_angle(-dx, -dz);
         }
@@ -635,7 +744,7 @@ void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev) {
 
 /* the AI's debug printf format; nothing prints with it in retail. Its place in .rodata is
  * between functions' jump tables, so it is defined here */
-const char D_800B3424[] = "%d ai mode %d target %x player %d angle %x dist %x- %x %x %x %x\n";
+const char BashAiDebugFormat[] = "%d ai mode %d target %x player %d angle %x dist %x- %x %x %x %x\n";
 
 void Bash_HeroBot(s32 arg0) {
     s32 unused[6];
@@ -714,19 +823,19 @@ void Bash_HeroBot(s32 arg0) {
     if (target != -1) {
         if (target >= 4) {
             if (target == 6) {
-                if (D_800C46B4->status != 1) {
+                if (BashPenguinObj->status != 1) {
                     ai->TargetPlayer = -1;
                     target = -1;
                     ai->AImode = 1;
                 } else {
-                    dx = D_800C46B0->unk10.x - Heroes[arg0].hero_eng->unk10.x;
-                    dz = D_800C46B0->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+                    dx = BashPenguinEng->unk10.x - Heroes[arg0].hero_eng->unk10.x;
+                    dz = BashPenguinEng->unk10.z - Heroes[arg0].hero_eng->unk10.z;
                     dist = dx * dx + dz * dz;
                     ang = get_angle(dx, dz);
                 }
             } else {
-                dx = D_800C3A04[target].x - Heroes[arg0].hero_eng->unk10.x;
-                dz = D_800C3A04[target].z - Heroes[arg0].hero_eng->unk10.z;
+                dx = BashAITargetPoints[target].x - Heroes[arg0].hero_eng->unk10.x;
+                dz = BashAITargetPoints[target].z - Heroes[arg0].hero_eng->unk10.z;
                 dist = dx * dx + dz * dz;
                 ang = get_angle(dx, dz);
             }
@@ -1151,7 +1260,7 @@ void Bash_HeroBot(s32 arg0) {
             ang += 0x800;
             ang &= 0xFFF;
         } else {
-            tmp = D_800C39F0[arg0] + ((0x10 - D_8009D87C[arg0].unk0) << 5);
+            tmp = BashAIRange[arg0] + ((0x10 - D_8009D87C[arg0].unk0) << 5);
             if (tmp < d) {
                 if (d < tmp + 0x100) {
                     ai->AImode = 13;
@@ -1492,7 +1601,7 @@ s32 BashAI_ChooseTarget(s32 player) {
         i = 0x14;
     }
     inv = 0x10 - lvl;
-    wHealth = D_800C3AC4[i] + inv * 4;
+    wHealth = BashAIHealthWeights[i] + inv * 4;
     if (Heroes[player].hero_pu == 0x14) {
         wHero = 0xA0;
         wNas = 0;
@@ -1714,8 +1823,8 @@ s32 BashAI_ChooseTarget(s32 player) {
             d = 0x7FFFFF;
             for (k = 0; k < 4; k++) {
                 if (k == player) continue;
-                dx = D_800C3A04[i].x - Heroes[k].hero_eng->unk10.x;
-                dz = D_800C3A04[i].z - Heroes[k].hero_eng->unk10.z;
+                dx = BashAITargetPoints[i].x - Heroes[k].hero_eng->unk10.x;
+                dz = BashAITargetPoints[i].z - Heroes[k].hero_eng->unk10.z;
                 if (dx * dx + dz * dz < d) {
                     d = d2;
                 }
@@ -1755,7 +1864,7 @@ s32 BashAI_PickVictim(s32 arg0) {
             sum += D_8009D87C[i].unk4;
         }
     }
-    if (D_800C46B4 != NULL && (u32)arg0 < 4 && D_800C46B4->status == 1) {
+    if (BashPenguinObj != NULL && (u32)arg0 < 4 && BashPenguinObj->status == 1) {
         if (Random(10) == 0) {
             return 6;
         }
@@ -1854,14 +1963,14 @@ void BashSetCrateMix(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5,
     u16 c;
     u8 t;
 
-    D_800C3B94[3] = arg1 * arg6 / 16 + 1;
-    D_800C3B94[2] = arg2 * arg6 / 16 + 1;
-    D_800C3B94[1] = arg3 * arg6 / 16 + 1;
-    D_800C3B94[0] = arg3 * arg6 / 16 + 1;
-    D_800C3B88 = arg0;
-    D_800C3B8C[3] = arg1;
-    D_800C3B8C[2] = arg2;
-    D_800C3B8C[0] = D_800C3B8C[1] = arg3;
+    BashMaxNitro[3] = arg1 * arg6 / 16 + 1;
+    BashMaxNitro[2] = arg2 * arg6 / 16 + 1;
+    BashMaxNitro[1] = arg3 * arg6 / 16 + 1;
+    BashMaxNitro[0] = arg3 * arg6 / 16 + 1;
+    BashFirstCrates = arg0;
+    BashMaxCrates[3] = arg1;
+    BashMaxCrates[2] = arg2;
+    BashMaxCrates[0] = BashMaxCrates[1] = arg3;
     arg4 *= 4;
     arg5 *= 4;
     c = arg6 * 4;
@@ -1869,28 +1978,28 @@ void BashSetCrateMix(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5,
     arg8 *= 4;
     k = 0;
     for (i = 0; i < arg4; i++) {
-        D_800C3B44[k++] = 4;
+        BashCrateMix[k++] = 4;
     }
     for (i = 0; i < arg5; i++) {
-        D_800C3B44[k++] = 5;
+        BashCrateMix[k++] = 5;
     }
     for (i = 0; i < c; i++) {
-        D_800C3B44[k++] = 6;
+        BashCrateMix[k++] = 6;
     }
     for (i = 0; i < arg7; i++) {
-        D_800C3B44[k++] = 1;
+        BashCrateMix[k++] = 1;
     }
     for (i = 0; i < arg8; i++) {
-        D_800C3B44[k++] = 2;
+        BashCrateMix[k++] = 2;
     }
     for (i = 0; i < 600; i++) {
         k = Random(0x40);
         b = Random(0x40);
-        t = D_800C3B44[k];
-        D_800C3B44[k] = D_800C3B44[b];
-        D_800C3B44[b] = t;
+        t = BashCrateMix[k];
+        BashCrateMix[k] = BashCrateMix[b];
+        BashCrateMix[b] = t;
     }
-    D_800C3B84 = Random(0x20) + 0x14;
+    BashCrateMixPos = Random(0x20) + 0x14;
 }
 
 void BashCrateMaster(void) {
@@ -1908,11 +2017,11 @@ void BashCrateMaster(void) {
     if (OVLG->pause & 0x801) {
         return;
     }
-    if (D_800C3B32 != 0) {
-        D_800C3B32--;
+    if (BashCrateTimer != 0) {
+        BashCrateTimer--;
     } else {
-        if (D_8009E46C[0] < D_800C3B8C[D_8009D758 - 1]) {
-            n = D_800C3B8C[D_8009D758 - 1];
+        if (D_8009E46C[0] < BashMaxCrates[D_8009D758 - 1]) {
+            n = BashMaxCrates[D_8009D758 - 1];
             left = n - D_8009E46C[0];
             r = 4;
             if ((u16)n < 4) {
@@ -1920,57 +2029,57 @@ void BashCrateMaster(void) {
             }
             if (left < r) {
                 pu = Random(left) + 1;
-                D_800C3B32 = Random(20) + 8;
+                BashCrateTimer = Random(20) + 8;
             } else {
                 pu = r;
-                D_800C3B32 = Random(10) + 2;
+                BashCrateTimer = Random(10) + 2;
             }
             BashDropCrates(pu);
         } else {
-            D_800C3B32 = Random(40) + 5;
+            BashCrateTimer = Random(40) + 5;
         }
     }
-    if (D_800C3B3C != 0) {
-        D_800C3B3C--;
+    if (BashRainTimer != 0) {
+        BashRainTimer--;
     }
     if (D_8009E25C[0] < 3) {
-        if (D_800C3B34 != 0) {
-            D_800C3B34--;
+        if (BashPickupTimer != 0) {
+            BashPickupTimer--;
         } else {
-            c = (BashGridCell *)BashFindDropPoint(&D_800C3B86);
+            c = (BashGridCell *)BashFindDropPoint(&BashDropPos);
             if (c != NULL) {
                 CreateNAS(c->x, World_floor_level, c->z, 0x20C, 0x11);
             }
-            D_800C3B34 = Random(30) + 10;
+            BashPickupTimer = Random(30) + 10;
         }
     }
     if (D_8005A648 != 3) {
-        if (D_800C3B38 != 0) {
-            if (D_800C3B3A != 0) {
-                D_800C3B3A--;
+        if (BashRainCount != 0) {
+            if (BashRainDelay != 0) {
+                BashRainDelay--;
             } else {
-                c = D_800C3EAC[0];
+                c = BashDropPoints[0];
                 c += Random(256);
                 s = (c->x >> 8) + 10;
                 z = 9 - (c->z >> 8);
                 if (D_8009D90C[z * 20 + s].unk0 < 16) {
                     CreateNAS(c->x, -0x800, c->z, 0x20C, 0x11);
-                    D_800C3B38--;
-                    D_800C3B3A = Random(4) + 2;
+                    BashRainCount--;
+                    BashRainDelay = Random(4) + 2;
                 }
             }
-        } else if (D_800C3B3C == 0) {
+        } else if (BashRainTimer == 0) {
             if (D_8009E25C[0] < 5) {
-                D_800C3B38 = Random(4) + 6;
-                D_800C3B3C = (Random(20) + 30) * 30;
+                BashRainCount = Random(4) + 6;
+                BashRainTimer = (Random(20) + 30) * 30;
             } else {
-                D_800C3B3C = 60;
+                BashRainTimer = 60;
             }
         }
     }
     if (D_8005A648 == 1 || D_8005A648 == 2) {
-        if (D_800C478A != 0) {
-            D_800C478A--;
+        if (BashPowerupTimer != 0) {
+            BashPowerupTimer--;
         } else if (D_8009E25C[18] + D_8009E25C[19] + D_8009E25C[20] + D_8009E25C[21] == 0) {
             pu = Random(4) + 18;
             for (i = 0; i < 4; i++) {
@@ -1979,7 +2088,7 @@ void BashCrateMaster(void) {
                 }
             }
             if (pu != 0) {
-                c = D_800C3EAC[0];
+                c = BashDropPoints[0];
                 c += Random(256);
                 s = (c->x >> 8) + 10;
                 z = 9 - (c->z >> 8);
@@ -1987,46 +2096,46 @@ void BashCrateMaster(void) {
                     switch (pu) {
                     case 18:
                         CreateNAS(c->x, -0x800, c->z, 0x208, 0x11);
-                        D_800C478A = (Random(10) + 10) * 30;
+                        BashPowerupTimer = (Random(10) + 10) * 30;
                         break;
                     case 19:
                         CreateNAS(c->x, -0x800, c->z, 0x209, 0x11);
-                        D_800C478A = (Random(10) + 10) * 30;
+                        BashPowerupTimer = (Random(10) + 10) * 30;
                         break;
                     case 20:
                         CreateNAS(c->x, -0x800, c->z, 0x20A, 0x11);
-                        D_800C478A = (Random(10) + 10) * 30;
+                        BashPowerupTimer = (Random(10) + 10) * 30;
                         break;
                     case 21:
                         CreateNAS(c->x, -0x800, c->z, 0x20B, 0x11);
-                        D_800C478A = (Random(10) + 10) * 30;
+                        BashPowerupTimer = (Random(10) + 10) * 30;
                         break;
                     }
                 }
             }
         } else {
-            D_800C478A = (Random(10) + 5) * 30;
+            BashPowerupTimer = (Random(10) + 5) * 30;
         }
     }
     if (D_8005A648 == 3) {
-        if (D_800C478A != 0) {
-            D_800C478A--;
+        if (BashPowerupTimer != 0) {
+            BashPowerupTimer--;
         } else if (D_8009E46C[2] == 0) {
             s = (Random(12) << 8) - 0x580;
-            D_800C3B9C[0] = BashSpawnEdge(-s, -0x700, 1, 0);
-            D_800C3B9C[1] = BashSpawnEdge(s, 0x600, 1, 0);
-            D_800C3B9C[2] = BashSpawnEdge(-0x700, s, 0, 1);
-            D_800C3B9C[3] = BashSpawnEdge(0x600, -s, 0, 1);
+            BashDrainsEdges[0] = BashSpawnEdge(-s, -0x700, 1, 0);
+            BashDrainsEdges[1] = BashSpawnEdge(s, 0x600, 1, 0);
+            BashDrainsEdges[2] = BashSpawnEdge(-0x700, s, 0, 1);
+            BashDrainsEdges[3] = BashSpawnEdge(0x600, -s, 0, 1);
             s = Random(4);
-            pp = D_800C3B9C;
+            pp = BashDrainsEdges;
             for (i = 0; i < 4; i++, pp++) {
                 if (*pp != NULL) {
                     sub = ((BashEdgeObj *)*pp)->unk58;
                     if (sub != NULL) {
                         if (i == s) {
-                            sub->unk24 = D_800C46C0[D_800C4788];
-                            D_800C4788++;
-                            D_800C4788 %= 18;
+                            sub->unk24 = BashDrainsEdgeCrates[BashDrainsEdgePos];
+                            BashDrainsEdgePos++;
+                            BashDrainsEdgePos %= 18;
                         } else {
                             sub->unk24 = 17;
                         }
@@ -2036,13 +2145,13 @@ void BashCrateMaster(void) {
         }
     }
     if (OVLG->mode == 0 && (OVLG->flags & 0x80)) {
-        if (D_800C46AC != 0) {
-            D_800C46AC--;
+        if (BashTumblerTimer != 0) {
+            BashTumblerTimer--;
         } else {
             if (!(OVLG->pause & 0x801)) {
                 CreateNAS(0, 0, 0, 0x1107, 0x11);
             }
-            D_800C46AC = Random(90) + 30;
+            BashTumblerTimer = Random(90) + 30;
         }
     }
 }
@@ -2059,16 +2168,16 @@ void BashDropCrates(u16 arg0) {
         if (i >= arg0) {
             return;
         }
-        p = BashFindDropPoint(&D_800C3B86);
+        p = BashFindDropPoint(&BashDropPos);
         if (p != NULL) {
             a = p->unk0;
             b = p->unk4;
-            c = D_800C3B44[D_800C3B84];
-            D_800C3B84 = (D_800C3B84 + 1) & 0x3F;
+            c = BashCrateMix[BashCrateMixPos];
+            BashCrateMixPos = (BashCrateMixPos + 1) & 0x3F;
             t = c;
             if (t == 6) {
                 if (!(OVLG->flags & 0x80) || OVLG->mode != 1) {
-                    if (D_8009E46C[6] >= D_800C3B94[D_8009D758 - 1]) {
+                    if (D_8009E46C[6] >= BashMaxNitro[D_8009D758 - 1]) {
                         t = 4;
                     }
                 }
@@ -2101,8 +2210,8 @@ void BashShuffleDropPoints(void) {
                 if ((u32)(j - 2) >= 12) {
                     x = Random(11) * 256 - 0x580;
                 }
-                D_800C3EAC[i][j].x = x;
-                D_800C3EAC[i][j].z = z;
+                BashDropPoints[i][j].x = x;
+                BashDropPoints[i][j].z = z;
             }
         }
         n = 0;
@@ -2111,8 +2220,8 @@ void BashShuffleDropPoints(void) {
             z = i * 256 - 0x780;
             for (j = 0; j < 16; j++) {
                 x = j * 256 - 0x780;
-                D_800C3EAC[i][j].x = x;
-                D_800C3EAC[i][j].z = z;
+                BashDropPoints[i][j].x = x;
+                BashDropPoints[i][j].z = z;
             }
         }
         n = 0;
@@ -2122,12 +2231,12 @@ void BashShuffleDropPoints(void) {
         j = Random(16);
         tx = Random(16);
         tz = Random(16);
-        x = D_800C3EAC[i][j].x;
-        z = D_800C3EAC[i][j].z;
-        D_800C3EAC[i][j].x = D_800C3EAC[tx][tz].x;
-        D_800C3EAC[i][j].z = D_800C3EAC[tx][tz].z;
-        D_800C3EAC[tx][tz].x = x;
-        D_800C3EAC[tx][tz].z = z;
+        x = BashDropPoints[i][j].x;
+        z = BashDropPoints[i][j].z;
+        BashDropPoints[i][j].x = BashDropPoints[tx][tz].x;
+        BashDropPoints[i][j].z = BashDropPoints[tx][tz].z;
+        BashDropPoints[tx][tz].x = x;
+        BashDropPoints[tx][tz].z = z;
         n++;
     } while (n < 0x258);
 }
@@ -2147,7 +2256,7 @@ BashPair *BashFindDropPoint(u16 *arg0) {
     s32 zhi;
     u16 n;
 
-    cell = D_800C3EAC[0];
+    cell = BashDropPoints[0];
     bestn = 9;
     tries = 9;
     i = *arg0;
@@ -2162,7 +2271,7 @@ BashPair *BashFindDropPoint(u16 *arg0) {
             if (i == *arg0) {
                 return NULL;
             }
-            cell = D_800C3EAC[0];
+            cell = BashDropPoints[0];
             cell = &cell[i];
             i++;
             i &= 0xFF;
@@ -2219,7 +2328,7 @@ BashPair *BashFindDropPoint(u16 *arg0) {
         if (i == *arg0) {
             return NULL;
         }
-        cell = D_800C3EAC[0];
+        cell = BashDropPoints[0];
         cell = &cell[i];
         i++;
         i &= 0xFF;
@@ -2252,14 +2361,14 @@ void BashSpaceInitTiles(void) {
     obj = (BashObj *)((GfxScene *)D_80058AD0)->objs;
     func_80018430(200);
     if (obj != NULL) {
-        base = D_800C3BAC[0];
+        base = BashSpaceTiles[0];
         do {
             id = (u16 *)func_80015870(obj->model, obj->index);
             if ((u16)(*id - 10) < 78) {
                 v = *id;
                 i = 7 - (s16)(v % 10);
                 j = (s16)(v / 10) - 1;
-                p = (BashCell *)(i * sizeof(BashCell) + j * sizeof(D_800C3BAC[0]) + (u32)base);
+                p = (BashCell *)(i * sizeof(BashCell) + j * sizeof(BashSpaceTiles[0]) + (u32)base);
                 p->obj = obj;
                 func_8001C3D0((u8 *)obj);
                 obj->flags |= 0x1000000;
@@ -2281,16 +2390,16 @@ void BashSpaceInitTiles(void) {
                     j = (j + 0x80) >> 9;
                     i = ((i + 0x80) >> 9) + 7;
                     obj->flags = (obj->flags | 0x1000000) & ~0x8000;
-                    D_800C3BAC[j][i].obj2 = obj;
+                    BashSpaceTiles[j][i].obj2 = obj;
                 }
                 obj = obj->next;
             } while (obj != NULL);
         }
     }
     i = 0;
-    base2 = D_800C3BAC[0];
+    base2 = BashSpaceTiles[0];
     for (colOff = 0; i < 8; i++, colOff += sizeof(BashCell)) {
-        for (j = 0, off = colOff; j < 8; j++, off += sizeof(D_800C3BAC[0])) {
+        for (j = 0, off = colOff; j < 8; j++, off += sizeof(BashSpaceTiles[0])) {
             p = (BashCell *)(off + (u32)base2);
             obj = p->obj;
             if (obj != NULL) {
@@ -2311,17 +2420,17 @@ void BashSpaceTileEdges(void) {
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            obj = D_800C3BAC[i][j].obj2;
+            obj = BashSpaceTiles[i][j].obj2;
             if (obj != NULL) {
                 obj->flags &= ~0x8000;
-                if (D_800C3BAC[i][j].unkA != 0) {
-                    if (i > 0 && D_800C3BAC[i - 1][j].unkA == 0) {
+                if (BashSpaceTiles[i][j].unkA != 0) {
+                    if (i > 0 && BashSpaceTiles[i - 1][j].unkA == 0) {
                         obj->flags |= 0x01008000;
                     }
-                    if (i < 7 && D_800C3BAC[i + 1][j].unkA == 0) {
+                    if (i < 7 && BashSpaceTiles[i + 1][j].unkA == 0) {
                         obj->flags |= 0x01008000;
                     }
-                    if (j > 0 && D_800C3BAC[i][j - 1].unkA == 0) {
+                    if (j > 0 && BashSpaceTiles[i][j - 1].unkA == 0) {
                         obj->flags |= 0x01008000;
                     }
                 }
@@ -2459,8 +2568,8 @@ void PlotBashPenguin(NAS *nas) {
                     fux->unk22 = 0x3C;
                     GotoLinkAnim(anim, 1);
                     PlaySfx(0x426, NULL, NULL, 0x1000, 0x1E00, 0);
-                    D_800C3B38 = 0;
-                    D_800C3B3C += 0x258;
+                    BashRainCount = 0;
+                    BashRainTimer += 0x258;
                 }
                 func_800250B0(nas);
                 break;
@@ -2482,10 +2591,10 @@ void BashSnowMarkPenguin(void) {
             D_8009D90C[z * 20 + x].unk0 = 0xF0;
         }
     }
-    x = ((D_800C46B0->unk10.x - 0x80) >> 8) + 10;
-    z = 9 - ((D_800C46B0->unk10.z - 0x80) >> 8);
-    xhi = ((D_800C46B0->unk10.x + 0x80) >> 8) + 10;
-    zhi = 9 - ((D_800C46B0->unk10.z + 0x80) >> 8);
+    x = ((BashPenguinEng->unk10.x - 0x80) >> 8) + 10;
+    z = 9 - ((BashPenguinEng->unk10.z - 0x80) >> 8);
+    xhi = ((BashPenguinEng->unk10.x + 0x80) >> 8) + 10;
+    zhi = 9 - ((BashPenguinEng->unk10.z + 0x80) >> 8);
     if (x < 20) {
         if (z < 20) {
             D_8009D90C[z * 20 + x].unk0 |= 0x40;
@@ -3293,7 +3402,7 @@ void PlotMissileExplode(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         idx = nas->UserInfo.flags;
-        tbl = D_800C3B08;
+        tbl = BashExplodeScales;
         row = tbl[idx];
         sub = eng->sub;
         if (row[0] != 0) {
@@ -3365,7 +3474,7 @@ void InitBoing(NAS *nas) {
         eng->sub->unk6C = *(void **)D_80058AD0;
         eng->unk5D = 1;
         eng->unk5C = 1;
-        func_80024E30(nas, &D_800C3AFC);
+        func_80024E30(nas, &BoingScriptInit);
     }
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -3378,15 +3487,15 @@ void InitBashPenguin(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        D_800C46B0 = eng;
-        func_80024E30(nas, &D_800C3668);
+        BashPenguinEng = eng;
+        func_80024E30(nas, &PenguinScriptInit);
         eng->sub->unk6C = (s32)D_8005303C;
         eng->sub->unk74 = 0x2001;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
             func_80026AD8((u8 *)nas);
             func_8002694C(nas, 0x200);
-            D_800C46B4 = obj;
+            BashPenguinObj = obj;
             nas->FUX = (EXT *)obj;
             obj->whatami = 0xE;
             obj->can_do |= 2;
@@ -3447,7 +3556,7 @@ s32 GetBashContour(EXTengine *eng) {
     if ((u32)x >= 8 || (u32)z >= 8) {
         return dy;
     }
-    if (D_800C3BAC[x][z].unk8 & 0x100) {
+    if (BashSpaceTiles[x][z].unk8 & 0x100) {
         return 0x7FFFFFFF;
     }
     return AddPlatformContour(eng, dy);
@@ -3463,7 +3572,7 @@ u16 BashSpaceTileAt(s32 arg0, s32 arg1) {
     if ((u32)y >= 8) {
         return 0;
     }
-    return D_800C3BAC[x][y].unkA;
+    return BashSpaceTiles[x][y].unkA;
 }
 
 void BashSpaceMarkHoles(void) {
@@ -3471,7 +3580,7 @@ void BashSpaceMarkHoles(void) {
 
     for (j = 2; j < 18; j++) {
         for (i = 2; i < 18; i++) {
-            if (D_800C3BAC[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
+            if (BashSpaceTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
                 D_8009D90C[i * 20 + j].unk0 = 0xFF;
             }
         }
@@ -3480,7 +3589,7 @@ void BashSpaceMarkHoles(void) {
 
 void BashSpaceDropTile(s32 arg0) {
     EXTengine *eng = Heroes[arg0].hero_eng;
-    BashCell *base = D_800C3BAC[0];
+    BashCell *base = BashSpaceTiles[0];
     s32 xi = (eng->unk10.x + 0x800) >> 9;
     s32 zi = (eng->unk10.z + 0x800) >> 9;
     BashCell *cell = (BashCell *)((char *)base + (zi * 12 + xi * 0x60));
@@ -3502,10 +3611,10 @@ void BashSpaceBreakTile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
         arg0 = (arg0 + 0x800) >> 9;
         arg2 = (arg2 + 0x800) >> 9;
         if ((u32)arg0 < 8 && (u32)arg2 < 8) {
-            if (((BashCell *)((char *)D_800C3BAC + arg2 * 12 + arg0 * 0x60))->obj != NULL) {
-                *(s32 *)((BashCell *)((char *)D_800C3BAC + arg2 * 12 + arg0 * 0x60))->obj &= 0xFFFF7FFF;
-                ((BashCell *)((char *)D_800C3BAC + arg2 * 12 + arg0 * 0x60))->unkA = 0;
-                ((BashCell *)((char *)D_800C3BAC + arg2 * 12 + arg0 * 0x60))->unk8 |= 0x100;
+            if (((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->obj != NULL) {
+                *(s32 *)((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->obj &= 0xFFFF7FFF;
+                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->unkA = 0;
+                ((BashCell *)((char *)BashSpaceTiles + arg2 * 12 + arg0 * 0x60))->unk8 |= 0x100;
             }
         }
     }
@@ -3517,14 +3626,14 @@ void BashSpaceClearTiles(void) {
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            D_800C3BAC[j][i].unkA = 0;
-            D_800C3BAC[j][i].unk8 = 0;
+            BashSpaceTiles[j][i].unkA = 0;
+            BashSpaceTiles[j][i].unk8 = 0;
         }
     }
 }
 
 void BashDropFirstCrates(void) {
-    BashDropCrates(D_800C3B88);
+    BashDropCrates(BashFirstCrates);
 }
 
 u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag) {
@@ -3574,7 +3683,7 @@ u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag) {
     }
     res = CreateCrate(xi, 0, nz, 2, -1);
     if (res != NULL) {
-        func_80026B70(&D_800C478C, res);
+        func_80026B70(&BashCrateList, res);
     }
     return res;
 }
