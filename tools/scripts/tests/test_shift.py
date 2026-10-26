@@ -52,6 +52,15 @@ class ModeGroups(unittest.TestCase):
         self.assertEqual([m[2] for m in done], ["file_group_CHASE"])
         self.assertEqual(len(left), 2)
 
+    def test_another_name_in_the_mode_table_is_dropped_before_the_neighbour_rule(self):
+        # N2O's own group at mode 0x1F; its N2OHeroTestIdle has file_group_CHASE's address at 0x1E
+        done = [(shift.MODE_TABLE + 4 * 0x1F, 0, "file_group_N2O"), (shift.MODE_TABLE + 4 * 0x1E, 0, "N2OHeroTestIdle"),
+                (0x80099000, 0, "N2OHeroTestIdle")]
+        kept, dropped = shift.drop_mode_others(done)
+        self.assertEqual(dropped, [(shift.MODE_TABLE + 4 * 0x1E, 0, "N2OHeroTestIdle")])
+        self.assertEqual([m[2] for m in kept], ["file_group_N2O", "N2OHeroTestIdle"])
+        self.assertEqual(kept[1][0], 0x80099000)
+
 
 class PadScript(unittest.TestCase):
     def test_pads_before_each_c_section_and_not_the_id(self):

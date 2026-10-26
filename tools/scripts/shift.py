@@ -210,7 +210,20 @@ def take_columns(done, maybe, tables):
 
 
 MODE_TABLE = 0x800A001C   # the engine's per-mode table: one file_group_load_info pointer per game mode
-MODES = 0x30
+MODES = 0x2D
+
+
+def in_mode_table(m):
+    return MODE_TABLE <= m[0] + m[1] < MODE_TABLE + 4 * MODES
+
+
+def drop_mode_others(words):
+    """Split off the words in the engine's per-mode table that don't name a file_group_*: the
+    table holds only file groups, so a function of the overlay at the same address is another
+    overlay's group (N2OHeroTestIdle is file_group_CHASE's address, mode 0x1E beside N2O's own
+    0x1F, which the neighbour rule would otherwise take). Returns (kept, dropped)."""
+    drop = [m for m in words if in_mode_table(m) and not m[2].startswith("file_group_")]
+    return [m for m in words if m not in drop], drop
 
 
 def take_mode_groups(done, maybe):
@@ -218,8 +231,7 @@ def take_mode_groups(done, maybe):
     file_group_* objects, and return the rest: the table holds nothing else, so another
     overlay's object at the same address can't be what the word means (Chase's mode 0x1E,
     whose neighbours in the table are Bonk's and the hub's). Entries are (offset, delta, name, ...)."""
-    took = [m for m in maybe
-            if MODE_TABLE <= m[0] + m[1] < MODE_TABLE + 4 * MODES and m[2].startswith("file_group_")]
+    took = [m for m in maybe if in_mode_table(m) and m[2].startswith("file_group_")]
     done += took
     return [m for m in maybe if m not in took]
 
@@ -246,9 +258,11 @@ def fixup(ovl, old_elf, new_elf, others):
                 done.append((off, delta, n, v))
             elif v in shared:
                 maybe.append((off, delta, shared[v], v))
+    done, dropped = drop_mode_others(done)
+    maybe, dropped2 = drop_mode_others(maybe)
     left = take_neighbours(done, maybe)
     left = take_columns(done, left, hero_seq_tables(data))
-    left = take_mode_groups(done, left)
+    left = take_mode_groups(done, left) + dropped + dropped2
     for off, delta, n, v in done:
         data[off:off + 4] = new[n].to_bytes(4, "little")
     open(path, "wb").write(data)
