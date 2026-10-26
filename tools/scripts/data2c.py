@@ -32,6 +32,10 @@ SCALARS = {"s8": (1, True), "u8": (1, False), "char": (1, True), "s16": (2, True
            "short": (2, True), "s32": (4, True), "u32": (4, False), "int": (4, True), "long": (4, True),
            "unsigned": (4, False), "bool": (4, True), "signed": (4, True)}
 PTR_LO, PTR_HI = 0x80010000, 0x800D7148      # the exe, the engine and its slot
+SDK_TYPES = ["ext/psyq47/include/libgte.h"]
+# a function pointer field, `RET (*name)(ARGS)`: a 4-byte pointer written as the function's name
+FUNC_PTR = re.compile(r"^[\w\s\*]+\(\s*\*\s*(\w+)\s*\)\s*\([^()]*\)$", re.S)
+FN = "@fn"
 
 
 def strip_comments(t):
@@ -106,6 +110,10 @@ class Types:
         for decl in body.split(";"):
             decl = decl.strip()
             if not decl:
+                continue
+            fm = FUNC_PTR.match(decl)
+            if fm:
+                out.append((fm.group(1), FN, 1, [], kind))
                 continue
             if "{" in decl or "(" in decl or ":" in decl:
                 return None
@@ -227,6 +235,16 @@ def asm_kinds(path):
     return out
 
 
+SLOT_FILE = re.compile(r"(?:^|/)(ovl[0-9a-f]{2})(?=[_./]|$)")
+
+
+def other_slot(path, ovl):
+    """Whether a source or header belongs to another slot overlay: the slot overlays share one
+    address range, so another one's D_ name at the same address is a different object."""
+    m = SLOT_FILE.search(path.replace("\\", "/"))
+    return bool(m) and m.group(1) != ovl
+
+
 def declarations(texts):
     """name -> (type, ptr, dims) from `extern TYPE NAME[...];` lines."""
     out = {}
@@ -249,10 +267,14 @@ class Converter:
         self.subs = [s for s in seg["subsegments"] if isinstance(s, list)]
         self.bin = open(f"disc/{ovl}.bin", "rb").read()
         self.end = self.vram + len(self.bin) - self.start
-        texts = [open(p, encoding="utf-8").read() for p in sorted(glob.glob("include/bash/*.h"))]
-        self.types = Types(texts)
+        texts = [open(p, encoding="utf-8").read() for p in sorted(glob.glob("include/bash/*.h"))
+                 if not other_slot(p, ovl)]
+        # the SDK's types (MATRIX, VECTOR, ...) for layouts only; its declarations aren't the game's
+        sdk = [open(p, encoding="latin-1").read() for p in SDK_TYPES if os.path.exists(p)]
+        self.types = Types(sdk + texts)
         self.decls = declarations(texts)
-        self.srcs = "\n".join(open(p, encoding="utf-8").read() for p in glob.glob("src/**/*.c", recursive=True))
+        self.srcs = "\n".join(open(p, encoding="utf-8").read() for p in glob.glob("src/**/*.c", recursive=True)
+                              if not other_slot(p, ovl))
         self.hdrs = "\n".join(texts)
         self.symbolic = set()
         for p in glob.glob(f"asm/data/overlays/{ovl}/*.data.s"):
@@ -378,6 +400,12 @@ class Converter:
             items = [self.value(tname, ptr, dims[1:], off + i * sz, data, local, indent + 1) for i in range(dims[0])]
             return self._braces(items, indent)
         if ptr:
+            # a function needs no cast into its pointer field; a function pointer field holding
+            # anything else (data, an inner address) keeps its number
+            if tname == FN:
+                raw = int.from_bytes(data[off:off + 4], "little")
+                e = self.funcs.get(raw) or self.symexpr(raw, local, self.base_rom + off)
+                return e or self.scalar(4, False, off, data, False, None, local)
             return self.scalar(4, False, off, data, True, "void *", local)
         r = self.types.resolve(tname)
         if r[0] == "scalar":

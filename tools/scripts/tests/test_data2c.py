@@ -83,5 +83,24 @@ class Values(unittest.TestCase):
         self.assertTrue(long.startswith("{\n    0x1000,"))
 
 
+class FunctionPointers(unittest.TestCase):
+    def test_a_function_pointer_field_is_a_pointer(self):
+        t = data2c.Types(["typedef struct process_info {\n    void (*init)(void);\n    void (*update)(void);\n"
+                          "    u32 *heap;\n} process_info;"])
+        self.assertEqual(t.layout("process_info"), (12, 4))
+        self.assertEqual([f[1] for f in t.fields("process_info")], [data2c.FN, data2c.FN, "u32"])
+
+
+class OtherSlots(unittest.TestCase):
+    def test_only_another_slot_overlays_files_are_left_out(self):
+        self.assertTrue(data2c.other_slot("include/bash/ovl66.h", "ovl69"))
+        self.assertTrue(data2c.other_slot("src/overlays/ovl67/800bbdb8.c", "ovl69"))
+        self.assertTrue(data2c.other_slot("include/bash/ovl67_800bbdb8.h", "ovl69"))
+        self.assertFalse(data2c.other_slot("include/bash/ovl69.h", "ovl69"))
+        self.assertFalse(data2c.other_slot("include/bash/8008e27c.h", "ovl69"))
+        self.assertFalse(data2c.other_slot("src/overlays/engine/asttable.c", "ovl69"))
+        self.assertFalse(data2c.other_slot("include/bash/tank.h", "ovl69"))
+
+
 if __name__ == "__main__":
     unittest.main()
