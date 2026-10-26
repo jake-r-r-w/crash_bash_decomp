@@ -82,6 +82,16 @@ def jload(path, default):
         return default
 
 
+def jsave_rows(path, rows):
+    """A JSON list written one compact row per line: a long log (the progress history) stays
+    small and its diffs line by line."""
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        f.write("[\n" + ",\n".join(json.dumps(r, sort_keys=True, separators=(",", ":")) for r in rows) + "\n]\n")
+    os.replace(tmp, path)
+
+
 def jsave(path, obj):
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     tmp = path + ".tmp"
@@ -5469,7 +5479,7 @@ def cmd_progress(a):
         hist[-1] = point
     else:
         hist.append(point)
-    jsave(P_HIST, hist)
+    jsave_rows(P_HIST, hist)
     recent = sorted(((r.get("matched_at", ""), k) for k, r in st.items()
                      if stat.get(k) == "matched" and r.get("matched_at")), reverse=True)[:15]
     data = {
