@@ -17,7 +17,7 @@ typedef struct Ovl5fModeView {
 } Ovl5fModeView;
 
 extern s32 D_800CB210;
-extern NAS *D_800CB224[3];
+extern NAS *TankBossCrashTurrets[3];
 
 typedef struct TotemFux {
     /* 0x00 */ u8 pad0[0x28];
@@ -25,8 +25,8 @@ typedef struct TotemFux {
     /* 0x2C */ u8 pad2C[4];
     /* 0x30 */ u32 state;
 } TotemFux;
-extern NAS *D_800CB230[4];
-extern NAS *D_800CB240[2];
+extern NAS *TankBossCortexTurrets[4];
+extern NAS *TankBossRocketTurrets[2];
 extern u32 D_800CA48C[];
 extern s32 D_800CA44C[];
 typedef struct { u16 v, pad; } RockTblEnt;
@@ -43,7 +43,7 @@ extern u8 D_800C9EB0[];
 extern u8 D_800C9E9C[];
 extern u8 D_800C9EC4[];
 
-void func_800C0C68(NAS *nas, s32 id);
+void InitTotemBit(NAS *nas, s32 id);
 void PlotTotemBit(NAS *nas, s32 id);
 
 void func_800C68A8(void);
@@ -113,7 +113,7 @@ extern u8 D_8005365C[];
 extern u8 D_800537AC[];
 extern s32 D_800C9B94[][2];
 
-/* Extension 0x10000000 of the totem NAS func_800C0C68 sets up. */
+/* Extension 0x10000000 of the totem NAS InitTotemBit sets up. */
 typedef struct TotemExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;  /* turn per frame */
@@ -294,7 +294,7 @@ extern s32 D_800CB0F0;
 extern s32 D_800CB260;
 s32 get_angle(s32 x, s32 z);
 
-/* func_800C2940: can the turret at (x, z) facing ang see target i? Records state. */
+/* TankBossTurretFindTarget: can the turret at (x, z) facing ang see target i? Records state. */
 static inline s32 Ovl5fTurretSees(s32 i, s32 state, s32 x, s32 z, s32 ang) {
     if (D_800CB0F0 != 0) {
         return 0;
@@ -349,9 +349,9 @@ extern u8 D_80053704[];
 extern NAS *D_800CB208;       /* InitTankBoss's NAS */
 extern EXTengine *D_800CB20C; /* and its engine */
 extern s32 D_800CB248;
-s32 func_800C2940(EXTengine *eng);
+s32 TankBossTurretFindTarget(EXTengine *eng);
 void TankBossCortexTurretFire(EXTengine *eng);
-void func_800C3D48(NAS *nas, EXTengine *eng);
+void TankBossRocketTurretFire(NAS *nas, EXTengine *eng);
 /* Field 0xC of the 0x38-byte model record N at D_80052A54 (D_800536CC is record 57). */
 #define TANK_MODEL(n) (&D_80052A54[(n) * 0x38])
 #define TANK_MODEL_ON(b, n) (*(s32 *)((b) + (n) * 0x38 + 0xC))
@@ -442,8 +442,8 @@ extern s32 D_800CB0E0;    /* TA_UpdateLevel: countdown, plays sfx 0x4B9 when neg
 extern s32 D_800CB0E4;    /* TA_UpdateLevel: sfx id to play once */
 extern EXTengine *D_800CB0E8;
 extern s32 D_800CB0EC;    /* TA_UpdateLevel: countdown to sfx 0x501 */
-void func_800B71F8(s32 player);
-/* func_800B77E8: turret anim scripts by weapon (swamp / other levels). */
+void AnimateTankTurret(s32 player);
+/* UpdateTankHeroWeapons: turret anim scripts by weapon (swamp / other levels). */
 extern s32 D_800C987C[];
 extern s32 D_800C98B0[];
 extern s32 D_800C98E4[];
@@ -456,7 +456,7 @@ extern s32 D_800C9B10[];
 extern s32 D_800C9B60[];
 extern s32 D_800C93F8[]; /* force field sfx, by player */
 extern s32 D_800C9418[]; /* sub weapon sfx, by player */
-/* func_800C8450, inlined into func_800B77E8: sets status 1 on the TankMines
+/* func_800C8450, inlined into UpdateTankHeroWeapons: sets status 1 on the TankMines
  * mines within dist of (x, z). */
 static inline void Ovl5fTriggerNear(s32 x, s32 z, s32 dist) {
     EXTengine *eng;
@@ -499,9 +499,9 @@ extern s32 D_800CB104;
 
 
 
-void func_800C0DA0(EXTengine *arg0);
+void TotemBitExplode(EXTengine *arg0);
 
-void func_800C1F44(void);
+void SpawnTankBossTurrets(void);
 
 void func_800C4320(NAS *nas, s32 id);
 
@@ -816,11 +816,11 @@ static inline NAS *Ovl5fPeriscopePuff(SLONG_XYZ *pos, s32 kind) {
 }
 extern NAS *D_800CB214;  /* PlotPeriscope's last puff */
 extern s32 D_800CA6EC[]; /* PlotPeriscope: frame by timer in state 10, 0 ends */
-/* func_800C3D48: per-shell angle offsets. */
+/* TankBossRocketTurretFire: per-shell angle offsets. */
 static inline s32 *Ovl5fShellAngleOffsets(void) {
     return D_800C93AC;
 }
-/* func_800C3D48: face a spawned puff along `angle` and flag its subengines. */
+/* TankBossRocketTurretFire: face a spawned puff along `angle` and flag its subengines. */
 static inline void Ovl5fPuffSetAngle(NAS *puff, s32 angle) {
     subengine *s;
 
@@ -891,10 +891,10 @@ static inline s32 PickupFindHero(s32 x, s32 z) {
     return -1;
 }
 
-void func_800B6354(s32 player, s32 damage);
+void DamageTankHero(s32 player, s32 damage);
 
 
-void func_800C30C0(EXTengine *arg0);
+void TankBossCrashTurretFire(EXTengine *arg0);
 
 void func_800C4548(s32 player);
 
@@ -934,9 +934,9 @@ void func_800C57B0(NAS *nas, s32 id);
         }                                                                   \
     }
 
-void func_800B9430(s32 player);
+void TankHeroSteerMove(s32 player);
 
-void func_800B993C(s32 player);
+void TankHeroGridMove(s32 player);
 
 void func_800C4DCC(s32 player);
 
@@ -1031,7 +1031,7 @@ extern s32 D_800C927C[];
 extern s32 D_800C92B4[];
 extern s32 D_800C9318[];
 
-void func_800B77E8(s32 player);
+void UpdateTankHeroWeapons(s32 player);
 
 void func_800C60AC(NAS *nas, s32 id);
 

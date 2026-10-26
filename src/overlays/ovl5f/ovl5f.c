@@ -1129,7 +1129,7 @@ void FinishTankLevel(void) {
     }
 }
 
-void func_800B6354(s32 player, s32 damage) {
+void DamageTankHero(s32 player, s32 damage) {
     HeroInfo *h;
     HeroInfo *hb;
     EXTengine *eng;
@@ -1372,7 +1372,7 @@ void TA_MoveHero(u32 player) {
     hero = &hb[player];
     eng = hero->hero_eng;
     ta = &TA_players[player];
-    func_800B71F8(player);
+    AnimateTankTurret(player);
     if (D_8005A648 != 5) {
         x = eng->unk10.x;
         dz = eng->unk10.z - eng->OldXYZ.z;
@@ -1497,7 +1497,7 @@ void ResetToBasicWeapon(s32 player) {
     }
 }
 
-void func_800B71F8(s32 player) {
+void AnimateTankTurret(s32 player) {
     TA_player *ta;
     TA_player *ta2;
     TA_player *tab;
@@ -1655,7 +1655,7 @@ void func_800B71F8(s32 player) {
     }
 }
 
-void func_800B77E8(s32 player) {
+void UpdateTankHeroWeapons(s32 player) {
     EXTengine *eng;
     TA_player *ta;
     subengine *sub;
@@ -2089,7 +2089,7 @@ void TankHeroTurn(u32 player) {
         HeroInfo *h;
         HeroInfo *hb;
 
-        func_800B77E8(player);
+        UpdateTankHeroWeapons(player);
         if (func_8008502C(player) != 0) {
             AnimateTank(player);
         }
@@ -2128,7 +2128,7 @@ void TankHeroTurn(u32 player) {
     }
 }
 
-void func_800B9430(s32 player) {
+void TankHeroSteerMove(s32 player) {
     TA_player *ta;
     TA_player *o;
     EXTengine *eng;
@@ -2289,7 +2289,7 @@ found:
     ta->SpeedZ /= 4;
 }
 
-void func_800B993C(s32 player) {
+void TankHeroGridMove(s32 player) {
     EXTengine *eng;
     EXTengine *e;
     subengine *sub;
@@ -2501,7 +2501,7 @@ void TankHeroMove(u32 player) {
         s32 frac;
         s32 hit;
 
-        func_800B77E8(player);
+        UpdateTankHeroWeapons(player);
         if (func_8008502C(player) != 0) {
             AnimateTank(player);
         }
@@ -2511,15 +2511,15 @@ void TankHeroMove(u32 player) {
         ta = &TA_players[player];
         eng = Heroes[player].hero_eng;
         if (ta->RequestQuickFinish != 0) {
-            func_800B6354(player, 9999);
+            DamageTankHero(player, 9999);
             return;
         }
         if (D_8005A648 == 5) {
-            func_800B9430(player);
+            TankHeroSteerMove(player);
             return;
         }
         if (D_8005A648 == 7 || D_8005A648 == 9 || D_8005A648 == 5) {
-            func_800B993C(player);
+            TankHeroGridMove(player);
             return;
         }
         half = (speed = ta->Speed) / 2;
@@ -2997,9 +2997,9 @@ retry:
             goto hit2;
         }
         if (owner == hit) {
-            func_800B6354(hit, arg1 / 2);
+            DamageTankHero(hit, arg1 / 2);
         } else {
-            func_800B6354(hit, arg1);
+            DamageTankHero(hit, arg1);
         }
         goto hit2;
     }
@@ -3454,7 +3454,7 @@ void PlotLobber_TA(NAS *nas)
       {
         continue;
       }
-      func_800B6354(i, 0x3C);
+      DamageTankHero(i, 0x3C);
     }
 
 
@@ -3508,7 +3508,7 @@ void PlotLobber_TA(NAS *nas)
       goto puff;
     }
 
-    func_800B6354(hit, 0x3C);
+    DamageTankHero(hit, 0x3C);
     boom:
     if (eng->sfx != 0)
     {
@@ -3658,7 +3658,7 @@ void PlotRocketTA(NAS *nas)
     } else {
         dmg = (((D_8005A614[0xB4] * 190) / 32 + 10) * 60) / 100;
     }
-    func_800B6354(hit, dmg);
+    DamageTankHero(hit, dmg);
 boom:
     CreateNAS(x, eng->unk10.y, z, 0x1306, 0x11);
     KillNAS(nas);
@@ -3732,9 +3732,9 @@ void PlotMine(NAS *nas) {
         if (i >= 0) {
             if (((Ovl5fModeView *)D_8005A614)->mode == 8 && D_8005A614[i + 0x5C] == 0 &&
                 (((Ovl5fGameView *)D_8005A614)->flags & 0x80)) {
-                func_800B6354(i, 0x4B0);
+                DamageTankHero(i, 0x4B0);
             } else {
-                func_800B6354(i, 0x3C);
+                DamageTankHero(i, 0x3C);
             }
         }
         KillNAS(nas);
@@ -3833,12 +3833,12 @@ found:
         }
         if (D_8005A614[hit + 0x5C] == 0) {
             if (((Ovl5fGameView *)D_8005A614)->flags & 0x80) {
-                func_800B6354(hit, 0x4B0);
+                DamageTankHero(hit, 0x4B0);
             } else {
-                func_800B6354(hit, 0x3C);
+                DamageTankHero(hit, 0x3C);
             }
         } else {
-            func_800B6354(hit, 0x3C);
+            DamageTankHero(hit, 0x3C);
         }
         ta = &TA_players[hit];
         ta->SpeedX = 0;
@@ -3901,7 +3901,7 @@ void PlotTorpedo(NAS *nas) {
         h2->hero_health = 1;
         TA_players[player].Energy = 1;
         h2->hero_immunity = 0;
-        func_800B6354(player, 0x4B0);
+        DamageTankHero(player, 0x4B0);
     }
     pos = &eng->unk10;
     PlaySfx(0x4EA, NULL, pos, 0x1000, 0x1E00, 0);
@@ -3984,7 +3984,7 @@ void CreateMineShrapnelBits(NAS *nas) {
             if (!(Heroes[i].hero_status & 0xFA00)) {
                 he = Heroes[i].hero_eng;
                 if ((u32)(x - he->unk10.x + 0x300) <= 0x600 && (u32)(z - he->unk10.z + 0x2FF) < 0x5FF) {
-                    func_800B6354(i, 0x3C);
+                    DamageTankHero(i, 0x3C);
                 }
             }
         }
@@ -4077,9 +4077,9 @@ found:
     }
     if (((Ovl5fModeView *)D_8005A614)->mode == 8 && D_8005A614[hit + 0x5C] == 0 &&
         (((Ovl5fGameView *)D_8005A614)->flags & 0x80)) {
-        func_800B6354(hit, 0x4B0);
+        DamageTankHero(hit, 0x4B0);
     } else {
-        func_800B6354(hit, 0x3C);
+        DamageTankHero(hit, 0x3C);
     }
     goto kill;
 step:
@@ -4719,7 +4719,7 @@ void PlotPickupTA(NAS *nas) {
         } else {
             v = 0x4B0;
         }
-        func_800B6354(hit, v);
+        DamageTankHero(hit, v);
         CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1306, 0x11);
         goto puff;
     case 5:
@@ -5402,7 +5402,7 @@ void PlotTotemPole(NAS *nas) {
     }
 }
 
-void func_800C0C68(NAS *nas, s32 id) {
+void InitTotemBit(NAS *nas, s32 id) {
     TotemExt *ext;
     EXTengine *eng;
     subengine *sub;
@@ -5446,7 +5446,7 @@ kill:
     }
 }
 
-void func_800C0DA0(EXTengine *arg0) {
+void TotemBitExplode(EXTengine *arg0) {
     NAS *nas;
     Ovl5fExt1605 *ext;
     SLONG_XYZ *pos;
@@ -5489,7 +5489,7 @@ void func_800C0DA0(EXTengine *arg0) {
         if (d >= -0x300 && d <= lim) {
             d = z - h->hero_eng->unk10.z;
             if (d >= -0x300 && d <= lim) {
-                func_800B6354(i, 0x3C);
+                DamageTankHero(i, 0x3C);
             }
         }
     }
@@ -5593,7 +5593,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
         }
         eng->unk10.y = 0;
         if (ext->unk14 >= 0x25) {
-            func_800C0DA0(eng);
+            TotemBitExplode(eng);
         } else {
             PlaySfx(0x506, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
@@ -5686,7 +5686,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
         if (v != 0) {
             eng->sub->unk74 = v;
             if (v == -1) {
-                func_800C0DA0(eng);
+                TotemBitExplode(eng);
                 goto next;
             }
         } else {
@@ -5727,7 +5727,7 @@ void CheckMineToBoss(s32 x, s32 y, s32 z) {
             if (i >= 3) {
                 break;
             }
-            nas = D_800CB224[i];
+            nas = TankBossCrashTurrets[i];
             if (nas == NULL || nas->UserInfo.flags == 2) {
                 continue;
             }
@@ -5755,7 +5755,7 @@ void CheckMineToBoss(s32 x, s32 y, s32 z) {
             if (i >= 4) {
                 break;
             }
-            nas = D_800CB230[i];
+            nas = TankBossCortexTurrets[i];
             if (nas == NULL || nas->UserInfo.flags == 2) {
                 continue;
             }
@@ -5783,7 +5783,7 @@ void CheckMineToBoss(s32 x, s32 y, s32 z) {
             if (i >= 2) {
                 break;
             }
-            nas = D_800CB240[i];
+            nas = TankBossRocketTurrets[i];
             if (nas == NULL || nas->UserInfo.flags == 2) {
                 continue;
             }
@@ -5806,16 +5806,16 @@ void CheckMineToBoss(s32 x, s32 y, s32 z) {
     }
 }
 
-void func_800C1F44(void) {
-    D_800CB224[0] = CreateNAS(0x369, 0x7D0, 0x10E0, 0x1315, 0x11);
-    D_800CB224[1] = CreateNAS(0x900, 0x7D0, 0x10E0, 0x1315, 0x11);
-    D_800CB224[2] = CreateNAS(0xE97, 0x7D0, 0x10E0, 0x1315, 0x11);
-    D_800CB230[0] = CreateNAS(0x300, 0x7D0, 0x10E0, 0x1316, 0x11);
-    D_800CB230[1] = CreateNAS(0x700, 0x7D0, 0x10E0, 0x1316, 0x11);
-    D_800CB230[2] = CreateNAS(0xB00, 0x7D0, 0x10E0, 0x1316, 0x11);
-    D_800CB230[3] = CreateNAS(0xF00, 0x7D0, 0x10E0, 0x1316, 0x11);
-    D_800CB240[0] = CreateNAS(0x300, 0x7D0, 0x1200, 0x1317, 0x11);
-    D_800CB240[1] = CreateNAS(0xF00, 0x7D0, 0x1200, 0x1317, 0x11);
+void SpawnTankBossTurrets(void) {
+    TankBossCrashTurrets[0] = CreateNAS(0x369, 0x7D0, 0x10E0, 0x1315, 0x11);
+    TankBossCrashTurrets[1] = CreateNAS(0x900, 0x7D0, 0x10E0, 0x1315, 0x11);
+    TankBossCrashTurrets[2] = CreateNAS(0xE97, 0x7D0, 0x10E0, 0x1315, 0x11);
+    TankBossCortexTurrets[0] = CreateNAS(0x300, 0x7D0, 0x10E0, 0x1316, 0x11);
+    TankBossCortexTurrets[1] = CreateNAS(0x700, 0x7D0, 0x10E0, 0x1316, 0x11);
+    TankBossCortexTurrets[2] = CreateNAS(0xB00, 0x7D0, 0x10E0, 0x1316, 0x11);
+    TankBossCortexTurrets[3] = CreateNAS(0xF00, 0x7D0, 0x10E0, 0x1316, 0x11);
+    TankBossRocketTurrets[0] = CreateNAS(0x300, 0x7D0, 0x1200, 0x1317, 0x11);
+    TankBossRocketTurrets[1] = CreateNAS(0xF00, 0x7D0, 0x1200, 0x1317, 0x11);
 }
 
 void InitTankBoss(NAS *nas) {
@@ -5859,7 +5859,7 @@ void InitTankBoss(NAS *nas) {
         }
         ext->unk28 = 0x5A;
         D_800CB25C = 0x2C;
-        func_800C1F44();
+        SpawnTankBossTurrets();
         break;
     case 0x2C:
         base = D_80052A54;
@@ -5873,7 +5873,7 @@ void InitTankBoss(NAS *nas) {
             func_8001612C(TANK_MODEL(57), 0);
         }
         ext->unk28 = 0x3C;
-        func_800C1F44();
+        SpawnTankBossTurrets();
         break;
     case 0x3A:
         base = D_80052A54;
@@ -5938,9 +5938,9 @@ void PlotTankBoss(NAS *nas) {
         }
         break;
     case 0x2F:
-        if (D_800CB224[0]->UserInfo.flags == 2 &&
-            D_800CB224[1]->UserInfo.flags == D_800CB224[0]->UserInfo.flags &&
-            D_800CB224[2]->UserInfo.flags == D_800CB224[1]->UserInfo.flags) {
+        if (TankBossCrashTurrets[0]->UserInfo.flags == 2 &&
+            TankBossCrashTurrets[1]->UserInfo.flags == TankBossCrashTurrets[0]->UserInfo.flags &&
+            TankBossCrashTurrets[2]->UserInfo.flags == TankBossCrashTurrets[1]->UserInfo.flags) {
             fux->unk30 = 0x30;
             fux->unk28 = 0x2D;
             PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -5954,9 +5954,9 @@ void PlotTankBoss(NAS *nas) {
         break;
     case 0x31:
         if ((eng->unk10.y += 10) >= 0x2B6) {
-            KillNAS(D_800CB224[0]);
-            KillNAS(D_800CB224[1]);
-            KillNAS(D_800CB224[2]);
+            KillNAS(TankBossCrashTurrets[0]);
+            KillNAS(TankBossCrashTurrets[1]);
+            KillNAS(TankBossCrashTurrets[2]);
             eng->unk10.y = 0x2B6;
             fux->unk30 = 0x32;
             fux->unk28 = 0x33;
@@ -5974,10 +5974,10 @@ void PlotTankBoss(NAS *nas) {
         }
         break;
     case 0x33:
-        if (D_800CB230[0]->UserInfo.flags == 2 &&
-            D_800CB230[1]->UserInfo.flags == D_800CB230[0]->UserInfo.flags &&
-            D_800CB230[2]->UserInfo.flags == D_800CB230[1]->UserInfo.flags &&
-            D_800CB230[3]->UserInfo.flags == D_800CB230[2]->UserInfo.flags) {
+        if (TankBossCortexTurrets[0]->UserInfo.flags == 2 &&
+            TankBossCortexTurrets[1]->UserInfo.flags == TankBossCortexTurrets[0]->UserInfo.flags &&
+            TankBossCortexTurrets[2]->UserInfo.flags == TankBossCortexTurrets[1]->UserInfo.flags &&
+            TankBossCortexTurrets[3]->UserInfo.flags == TankBossCortexTurrets[2]->UserInfo.flags) {
             fux->unk30 = 0x34;
             fux->unk28 = 0x2D;
             PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -5991,10 +5991,10 @@ void PlotTankBoss(NAS *nas) {
         break;
     case 0x35:
         if ((eng->unk10.y += 10) >= 0x4BF) {
-            KillNAS(D_800CB230[0]);
-            KillNAS(D_800CB230[1]);
-            KillNAS(D_800CB230[2]);
-            KillNAS(D_800CB230[3]);
+            KillNAS(TankBossCortexTurrets[0]);
+            KillNAS(TankBossCortexTurrets[1]);
+            KillNAS(TankBossCortexTurrets[2]);
+            KillNAS(TankBossCortexTurrets[3]);
             eng->unk10.y = 0x4BF;
             fux->unk30 = 0x36;
             fux->unk28 = 0x3C;
@@ -6012,8 +6012,8 @@ void PlotTankBoss(NAS *nas) {
         }
         break;
     case 0x37:
-        if (D_800CB240[0]->UserInfo.flags == 2 &&
-            D_800CB240[1]->UserInfo.flags == D_800CB240[0]->UserInfo.flags) {
+        if (TankBossRocketTurrets[0]->UserInfo.flags == 2 &&
+            TankBossRocketTurrets[1]->UserInfo.flags == TankBossRocketTurrets[0]->UserInfo.flags) {
             fux->unk30 = 0x38;
             fux->unk28 = 0x5A;
             PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -6028,8 +6028,8 @@ void PlotTankBoss(NAS *nas) {
         break;
     case 0x39:
         if ((eng->unk10.y += 10) >= 0x7D0) {
-            KillNAS(D_800CB240[0]);
-            KillNAS(D_800CB240[1]);
+            KillNAS(TankBossRocketTurrets[0]);
+            KillNAS(TankBossRocketTurrets[1]);
             D_800CB25C = 0x3A;
             D_8005A6C8 = 0;
             fux->unk28 = 0x5A;
@@ -6058,7 +6058,7 @@ void PlotTankBoss(NAS *nas) {
     D_800CB210 = fux->unk30;
 }
 
-s32 func_800C2940(EXTengine *eng) {
+s32 TankBossTurretFindTarget(EXTengine *eng) {
     s32 x;
     s32 z;
     s32 ang;
@@ -6140,7 +6140,7 @@ s32 func_800C2940(EXTengine *eng) {
     return -1;
 }
 
-void func_800C30C0(EXTengine *arg0) {
+void TankBossCrashTurretFire(EXTengine *arg0) {
     NAS *shell;
     PeriscopeShellExt *ext;
     EXTengine *se;
@@ -6229,14 +6229,14 @@ void PlotTankBossCrashTurret(NAS *nas) {
         a = (a << 20) >> 20;
         if (a >= 0) {
             if (a < 20) {
-                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 10, -1);
+                ((Ovl5fTurretFireFn)TankBossCrashTurretFire)(eng, 10, -1);
                 nas->UserInfo.status = 13;
                 break;
             }
             eng->unk1E += 20;
         } else {
             if (a >= -19) {
-                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 10, -1);
+                ((Ovl5fTurretFireFn)TankBossCrashTurretFire)(eng, 10, -1);
                 nas->UserInfo.status = 13;
                 break;
             }
@@ -6315,13 +6315,13 @@ void PlotTankBossCrashTurret(NAS *nas) {
             nas->UserInfo.status = 16;
             break;
         }
-        r = func_800C2940(eng);
+        r = TankBossTurretFindTarget(eng);
         if (r >= 0) {
             nas->UserInfo.user1++;
             if (nas->UserInfo.user1 & 1) {
-                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 10, r);
+                ((Ovl5fTurretFireFn)TankBossCrashTurretFire)(eng, 10, r);
             } else {
-                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 3, r);
+                ((Ovl5fTurretFireFn)TankBossCrashTurretFire)(eng, 3, r);
             }
             nas->UserInfo.user2 = 0;
             nas->UserInfo.status = 13;
@@ -6339,13 +6339,13 @@ void PlotTankBossCrashTurret(NAS *nas) {
             nas->UserInfo.status = 15;
             break;
         }
-        r = func_800C2940(eng);
+        r = TankBossTurretFindTarget(eng);
         if (r >= 0) {
             nas->UserInfo.user1++;
             if (nas->UserInfo.user1 & 1) {
-                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 10, r);
+                ((Ovl5fTurretFireFn)TankBossCrashTurretFire)(eng, 10, r);
             } else {
-                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 3, r);
+                ((Ovl5fTurretFireFn)TankBossCrashTurretFire)(eng, 3, r);
             }
             nas->UserInfo.user2 = 0;
             nas->UserInfo.status = 13;
@@ -6514,7 +6514,7 @@ void PlotTankBossCortexTurret(NAS *nas) {
             break;
         }
     fire:
-        if (func_800C2940(eng) >= 0) {
+        if (TankBossTurretFindTarget(eng) >= 0) {
             nas->UserInfo.user1++;
             TankBossCortexTurretFire(eng);
             nas->UserInfo.user2 = 0;
@@ -6524,7 +6524,7 @@ void PlotTankBossCortexTurret(NAS *nas) {
     }
 }
 
-void func_800C3D48(NAS *nas, EXTengine *eng) {
+void TankBossRocketTurretFire(NAS *nas, EXTengine *eng) {
     s32 i;
     s32 dir;
     s32 a;
@@ -6614,7 +6614,7 @@ void PlotTankBossRocketTurret(NAS *nas) {
             eng->unk1E -= 30;
         }
         eng->unk5E = 1;
-        if (nas->UserInfo.user2 > 30 && func_800C2940(eng) >= 0) {
+        if (nas->UserInfo.user2 > 30 && TankBossTurretFindTarget(eng) >= 0) {
             nas->UserInfo.status = 10;
             nas->UserInfo.user2 = D_800CB248;
         }
@@ -6628,7 +6628,7 @@ void PlotTankBossRocketTurret(NAS *nas) {
             }
         }
         if (nas->UserInfo.user2 <= 0) {
-            func_800C3D48(nas, eng);
+            TankBossRocketTurretFire(nas, eng);
             nas->UserInfo.status = 13;
             nas->UserInfo.user2 = 30;
         }
@@ -6980,7 +6980,7 @@ void func_800C4DCC(s32 player) {
     s32 hit;
     s32 i;
 
-    func_800B77E8(player);
+    UpdateTankHeroWeapons(player);
     if (player == 3) {
         v = *D_800CB24C++;
         D_8009D678->unk74 = v;
@@ -7553,7 +7553,7 @@ void func_800C60AC(NAS *nas, s32 id) {
         if (id == 0x131E) {
             eng->unk10.x = 0xD00;
             sub->unk74 = 0x4180;
-            D_800CB224[0] = nas;
+            TankBossCrashTurrets[0] = nas;
         } else {
             eng->unk10.x = 0x400;
             sub->unk74 = 0x400A;
@@ -7969,7 +7969,7 @@ void PlotTotemBot(NAS *nas) {
 }
 
 void InitTotemBot(NAS *nas) {
-    func_800C0C68(nas, 0x131C);
+    InitTotemBit(nas, 0x131C);
 }
 
 void PlotTotemTop(NAS *nas) {
@@ -7977,7 +7977,7 @@ void PlotTotemTop(NAS *nas) {
 }
 
 void InitTotemTop(NAS *nas) {
-    func_800C0C68(nas, 0x131B);
+    InitTotemBit(nas, 0x131B);
 }
 
 void InitTotemPole(NAS *nas) {
@@ -8636,7 +8636,7 @@ void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3) {
         if (d >= neg && d <= range) {
             d = z - h->hero_eng->unk10.z;
             if (d >= neg && d <= range) {
-                func_800B6354(i, arg3);
+                DamageTankHero(i, arg3);
             }
         }
     }

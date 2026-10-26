@@ -27041,7 +27041,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B6354": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B6354.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/DamageTankHero.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80027F7C",
@@ -27054,7 +27054,7 @@
   "fp": "c3b8ca56ca91de58",
   "fpn": "e930d534e5cd9ccd",
   "leaf": false,
-  "name": "func_800B6354",
+  "name": "DamageTankHero",
   "orig": "func_800B6354",
   "rom": 12448,
   "seg": "overlays/ovl5f/ovl5f",
@@ -27134,7 +27134,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B71F8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B71F8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/AnimateTankTurret.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022660",
@@ -27147,7 +27147,7 @@
   "fp": "e3776bfc5c6f9aa6",
   "fpn": "1539df52638303fe",
   "leaf": false,
-  "name": "func_800B71F8",
+  "name": "AnimateTankTurret",
   "orig": "func_800B71F8",
   "rom": 16196,
   "seg": "overlays/ovl5f/ovl5f",
@@ -27155,7 +27155,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B77E8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B77E8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/UpdateTankHeroWeapons.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590",
@@ -27168,7 +27168,7 @@
   "fp": "b6265cea0b4cb515",
   "fpn": "3e02d430edceaa05",
   "leaf": false,
-  "name": "func_800B77E8",
+  "name": "UpdateTankHeroWeapons",
   "orig": "func_800B77E8",
   "rom": 17716,
   "seg": "overlays/ovl5f/ovl5f",
@@ -27233,13 +27233,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B9430": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B9430.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankHeroSteerMove.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "c29cdd71baacd9f1",
   "fpn": "954f19553f36b478",
   "leaf": true,
-  "name": "func_800B9430",
+  "name": "TankHeroSteerMove",
   "orig": "func_800B9430",
   "rom": 24956,
   "seg": "overlays/ovl5f/ovl5f",
@@ -27247,13 +27247,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B993C": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B993C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankHeroGridMove.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "7e966833ceadb583",
   "fpn": "9380f30d11231871",
   "leaf": true,
-  "name": "func_800B993C",
+  "name": "TankHeroGridMove",
   "orig": "func_800B993C",
   "rom": 26248,
   "seg": "overlays/ovl5f/ovl5f",
@@ -27903,7 +27903,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C0C68": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C0C68.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/InitTotemBit.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022FD4",
@@ -27912,7 +27912,7 @@
   "fp": "af4e04246304da24",
   "fpn": "9dba67db63bb6d2b",
   "leaf": false,
-  "name": "func_800C0C68",
+  "name": "InitTotemBit",
   "orig": "func_800C0C68",
   "rom": 55732,
   "seg": "overlays/ovl5f/ovl5f",
@@ -27920,7 +27920,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C0DA0": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C0DA0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TotemBitExplode.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022660",
@@ -27931,7 +27931,7 @@
   "fp": "67209bf69a928757",
   "fpn": "b538a8a96df42fa4",
   "leaf": false,
-  "name": "func_800C0DA0",
+  "name": "TotemBitExplode",
   "orig": "func_800C0DA0",
   "rom": 56044,
   "seg": "overlays/ovl5f/ovl5f",
@@ -27976,7 +27976,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C1F44": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C1F44.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/SpawnTankBossTurrets.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022A3C"
@@ -27984,7 +27984,7 @@
   "fp": "4ce8422bf3b9b25e",
   "fpn": "2148dd4b8ce879c7",
   "leaf": false,
-  "name": "func_800C1F44",
+  "name": "SpawnTankBossTurrets",
   "orig": "func_800C1F44",
   "rom": 60560,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28034,7 +28034,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C2940": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C2940.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBossTurretFindTarget.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "8001463C",
@@ -28043,7 +28043,7 @@
   "fp": "1a940514e496c439",
   "fpn": "529674d20001dcbd",
   "leaf": false,
-  "name": "func_800C2940",
+  "name": "TankBossTurretFindTarget",
   "orig": "func_800C2940",
   "rom": 63116,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28051,7 +28051,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C30C0": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C30C0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBossCrashTurretFire.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022660",
@@ -28061,7 +28061,7 @@
   "fp": "fde71b917df129df",
   "fpn": "cdc7ca6d8526c5c5",
   "leaf": false,
-  "name": "func_800C30C0",
+  "name": "TankBossCrashTurretFire",
   "orig": "func_800C30C0",
   "rom": 65036,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28121,7 +28121,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C3D48": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C3D48.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBossRocketTurretFire.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022660",
@@ -28131,7 +28131,7 @@
   "fp": "9643f289ad80e712",
   "fpn": "7e8d565b74c5cd84",
   "leaf": false,
-  "name": "func_800C3D48",
+  "name": "TankBossRocketTurretFire",
   "orig": "func_800C3D48",
   "rom": 68244,
   "seg": "overlays/ovl5f/ovl5f",
