@@ -34,10 +34,10 @@ void HubRender(void) {
         HubRenderScene();
     }
     if (D_8005A688 != 0) {
-        func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
+        func_80018B08(&MainViewport, &MainGfxCamera);
         func_8001C2C0(GetEngineSlot(0));
     }
-    func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
+    func_80018B08(&MainViewport, &MainGfxCamera);
     FadeAmount = ScreenFade.amount;
     func_800798A4();
 }

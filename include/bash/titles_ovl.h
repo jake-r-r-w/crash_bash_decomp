@@ -38,7 +38,7 @@ typedef struct TitlesSub {
     /* 0x31C */ s32 b;
 } TitlesSub;
 
-extern process_info D_8009F480;
+extern process_info SaveScreenProcess2;
 extern GfxViewport TitlesMenuView;
 extern s32 MainMenuCursor;
 extern s32 NewLoadMenuCursor;

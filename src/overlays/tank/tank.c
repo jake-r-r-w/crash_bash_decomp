@@ -1513,8 +1513,8 @@ void TA_InitLevel(void) {
     func_8001682C((s32 *)TankObjectsModel);
     func_8001682C((s32 *)(TankObjectsModel - 0x658));
     func_8001682C(*(s32 **)MapScene);
-    ((TankScreen *)GameViewport)->w10 = 0x140;
-    ((TankScreen *)GameViewport)->w14 = 0x15E;
+    GameViewport.ofx = 0x140;
+    GameViewport.ofy = 0x15E;
     CAM5F->w0 = 0;
     CAM5F->w8 = 0xE98;
     CAM5F->h54 = 0x200;

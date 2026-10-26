@@ -1208,7 +1208,7 @@ void func_800917B4(void) {
     subengine *s;
     s32 v;
 
-    func_80018B08(&D_8009F3E4, &D_8009F578);
+    func_80018B08(&SaveBackViewport, &SaveBackCamera);
     e = GetEngineSlot(8);
     s = e->sub;
     s->unk14 = FrameCount * 20;
@@ -1220,7 +1220,7 @@ void func_800917B4(void) {
     s->unk51 = 0;
     FadeAmount = ScreenFade.amount;
     func_8001C2C0((u8 *)e);
-    func_80018B08(&D_8009F3BC, &D_8009F4C0);
+    func_80018B08(&SaveViewport, &SaveCamera);
     switch (D_8009F630) {
     case 0:
         if (Pads[0].pressed & 0xF0) {
@@ -1396,11 +1396,11 @@ void func_800920DC(void) {
     GetEngineSlot(2)->unk10.y = 0x1E;
     eng = GetEngineSlot(2);
     eng->flags |= 0x10000000;
-    cam_init((u8 *)&D_8009F4C0);
-    *(s32 *)((u8 *)&D_8009F4C0 + 8) = 0x5DC;
-    cam_init((u8 *)&D_8009F578);
-    *(s32 *)((u8 *)&D_8009F578 + 8) = 0x400;
-    *(s32 *)((u8 *)&D_8009F578 + 0x18) = 0x190;
+    cam_init((u8 *)&SaveCamera);
+    *(s32 *)((u8 *)&SaveCamera + 8) = 0x5DC;
+    cam_init((u8 *)&SaveBackCamera);
+    *(s32 *)((u8 *)&SaveBackCamera + 8) = 0x400;
+    *(s32 *)((u8 *)&SaveBackCamera + 0x18) = 0x190;
     set_fade(&ScreenFade, -0x200, 0);
 }
 
@@ -1839,10 +1839,10 @@ void func_80092EDC(void) {
     } else {
         func_8007A7C0();
     }
-    ((GfxCamera *)MainGfxCamera)->z = 0;
-    *(s32 *)((u8 *)(GfxCamera *)MainGfxCamera + 8) = 0x800;
-    D_8009F7EC.z = 0;
-    *(s32 *)((u8 *)&D_8009F7EC + 8) = 0x40C;
+    MainGfxCamera.z = 0;
+    *(s32 *)((u8 *)&MainGfxCamera + 8) = 0x800;
+    HudCamera.z = 0;
+    *(s32 *)((u8 *)&HudCamera + 8) = 0x40C;
     func_80097C28();
     scripts_update();
     func_8001E610(&MenuProcessControl, &ScreenFade);
@@ -1868,7 +1868,7 @@ void func_80092FB8(void) {
 }
 
 void func_80093038(void) {
-    func_80018B08((GfxViewport *)GameViewport, (GfxCamera *)MainCamera);
+    func_80018B08(&GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
     D_80056878 = 0;
     D_8005687C[0] = 0;
@@ -1877,13 +1877,13 @@ void func_80093038(void) {
     scripts_render();
     func_8007A718();
     func_8001DAF8((GfxScene *)MapScene);
-    func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
+    func_80018B08(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     func_800798A4();
     func_800984D4();
 }
 
 void func_80093110(void) {
-    func_80018B08((GfxViewport *)GameViewport, (GfxCamera *)MainCamera);
+    func_80018B08(&GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
 }

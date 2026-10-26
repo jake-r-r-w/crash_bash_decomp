@@ -287,8 +287,8 @@ typedef struct EngColorSrc {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ EngColor *col;
 } EngColorSrc;
-extern process_info D_8009F998;
-extern process_info D_8009FA00;
+extern process_info LoadingProcess;
+extern process_info LoadingProcess2;
 extern u8 D_8004E998[];
 extern process_info RetryProcess;
 void func_80093854(void);

@@ -49,11 +49,11 @@ void func_8009608C(s32 arg0) {
             cam->at = *(CamXYZ *)(obj + 0xC);
             cam->dist = 0x200;
         }
-        D_8009F708 = 0x15E;
+        GameViewport.ofy = 0x15E;
         break;
     case 8:
         N2OCameraFollow(MainCamera);
-        D_8009F708 = 0x15E;
+        GameViewport.ofy = 0x15E;
         break;
     }
     if (GamePause == 0 && ((EngCam *)MainCamera)->shakeTime > 0) {
@@ -423,7 +423,7 @@ void func_80097158(u8 *p) {
             *(s32 *)(p + 0x18) = 0x258;
         }
     }
-    D_8009F708 = 0x15E;
+    GameViewport.ofy = 0x15E;
 }
 
 void func_80097244(u8 *p) {
@@ -435,7 +435,7 @@ void func_80097244(u8 *p) {
         *(s16 *)(p + 0x58) = 0;
         *(s32 *)(p + 0x18) = 0x200;
     }
-    D_8009F708 = 0x15E;
+    GameViewport.ofy = 0x15E;
 }
 
 void camera_count_bottom(s32 arg0, s32 arg1) {
@@ -867,7 +867,7 @@ void func_800984D4(void) {
     s32 v;
     int new_var;
 
-    func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
+    func_80018B08(&MainViewport, &MainGfxCamera);
     FadeAmount = ScreenFade.amount;
     if (D_800ADBC4 != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;

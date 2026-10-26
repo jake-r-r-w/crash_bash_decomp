@@ -1298,7 +1298,7 @@ void func_80082590(void) {
         if (GamePause & 0x4000) {
             e = D_8009BCE0;
             if (*(s16 *)(e + 0xC) != -1) {
-                func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
+                func_80018B08(&MainViewport, &MainGfxCamera);
                 gs->otzAdd = 0x200;
                 gs->modelDp = *(s32 *)&ScreenFade;   /* a scalar read: scheduled above the otzAdd store */
                 func_8001A6D4(e, 0x10000000);
@@ -1311,15 +1311,15 @@ void func_80082590(void) {
         if (!(GamePause & 0x40)) {
             e = D_8009BCE0;
             if (*(s16 *)(e + 0xC) != -1) {
-                func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
+                func_80018B08(&MainViewport, &MainGfxCamera);
                 gs->otzAdd = 0x200;
                 gs->modelDp = *(s32 *)&ScreenFade;
                 func_8001A6D4(e, 0x10000000);
             }
         }
-        func_80018B08(&D_8009F6A4, &D_8009F7EC);
+        func_80018B08(&HudViewport, &HudCamera);
         func_8001C2C0((u8 *)GetEngineSlot(0));
-        func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
+        func_80018B08(&MainViewport, &MainGfxCamera);
         func_8001C2C0((u8 *)GetEngineSlot(4));
         func_8001C298(&PanelTab[5]);
         func_8001C298(&PanelTab[6]);

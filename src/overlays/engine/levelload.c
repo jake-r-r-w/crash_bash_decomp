@@ -103,13 +103,13 @@ void func_80093588(void) {
     }
     RenderHook = func_80093038;
     cam_init(MainCamera);
-    cam_init(MainGfxCamera);
-    cam_init((u8 *)&D_8009F7EC);
-    *(s32 *)&MainGfxCamera[0x14] = 0x2000;
-    cam_init(D_800A016C);
-    *(s32 *)&D_800A016C[8] = 0xA24;
-    *(s32 *)&D_800A016C[0x14] = 0;
-    q = (s32 *)GameViewport;
+    cam_init((u8 *)&MainGfxCamera);
+    cam_init((u8 *)&HudCamera);
+    MainGfxCamera.z = 0x2000;
+    cam_init((u8 *)&LoadingCamera);
+    *(s32 *)((u8 *)&LoadingCamera + 8) = 0xA24;
+    LoadingCamera.z = 0;
+    q = (s32 *)&GameViewport;
     q[5] = 0x15E;
     q[4] = 0x140;
 }
@@ -292,7 +292,7 @@ void func_80093BE8(void) {
     s32 *p;
 
     if (D_800A0158 >= 2) {
-        func_8001E610(&D_800A015C, NULL);
+        func_8001E610(&LoadingControl, NULL);
     }
     func_8002BA44();
     func_80011410(&MainHeap);
@@ -302,9 +302,9 @@ void func_80093BE8(void) {
     switch (D_800A0158) {
     case 0:
         if (GameMode == 0x28 && FirstBootDone == 0) {
-            func_8001E934(&D_800A015C, &D_8009FA00);
+            func_8001E934(&LoadingControl, &LoadingProcess2);
         } else {
-            func_8001E934(&D_800A015C, &D_8009F998);
+            func_8001E934(&LoadingControl, &LoadingProcess);
         }
         func_8001E934(&MenuProcessControl, NULL);
         func_80095DBC();
@@ -326,7 +326,7 @@ void func_80093BE8(void) {
         func_80023158(D_8005AA50);
         func_8001D640(D_8005AA54);
         func_8001E984(0x20, 0x20);
-        process_init(&D_800A015C);
+        process_init(&LoadingControl);
         InitialiseNasSystem();
         func_8007A8C4();
         if (g->mode != 0x28 || FirstBootDone == 0) {
@@ -379,9 +379,9 @@ void func_80093BE8(void) {
         D_800A0158 = 4;
         break;
     case 4:
-        ((EngColor *)GameViewport)->code = ((EngColorSrc *)MapScene)->col->code;
+        ((EngColor *)&GameViewport)->code = ((EngColorSrc *)MapScene)->col->code;
         c = ((EngColorSrc *)MapScene)->col;
-        ((EngColor *)GameViewport)->rgb = c->rgb;
+        ((EngColor *)&GameViewport)->rgb = c->rgb;
         func_8007ABC4();
         func_8007A808();
         D_800A0158 = 7;
@@ -410,12 +410,12 @@ void realign_panel_dbase(void) {
 }
 
 void func_80094058(void) {
-    process_quit(&D_800A015C);
+    process_quit(&LoadingControl);
 }
 
 void func_8009407C(void) {
     if (D_800A0158 >= 2) {
-        func_8001E898(&D_800A015C);
+        func_8001E898(&LoadingControl);
     }
 }
 
@@ -460,7 +460,7 @@ void func_800941EC(void) {
 
 void func_8009421C(void) {
     if (D_800A0158 >= 2) {
-        func_80018B08((GfxViewport *)D_8009F8BC, (GfxCamera *)D_800A016C);
+        func_80018B08(&LoadingViewport, &LoadingCamera);
         FadeAmount = ScreenFade.amount;
         func_8001C298((EXTengine *)D_800A0224);
     }

@@ -537,7 +537,7 @@ void func_800798A4(void) {
         i++;
     } while (i < 4);
     if (!(GamePause & 1) && (PanelCtrl & 0x4000)) {
-        func_80018B08(&D_8009F6A4, &D_8009F7EC);
+        func_80018B08(&HudViewport, &HudCamera);
         func_8001C2C0((u8 *)GetEngineSlot(5));
     }
 }

@@ -804,7 +804,7 @@ void NewLoadMenuUpdate(void) {
             break;
         case 1:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_80092AF4(&D_8009F480, 0x200);
+            func_80092AF4(&SaveScreenProcess2, 0x200);
             break;
         }
     }
@@ -1325,7 +1325,7 @@ void TitlesCameraHook(u8 *cam, s32 arg1) {
     if (arg1 != 0) {
         TitlesCamFromPath(cam, 1);
     }
-    D_8009F708 = 0xF0;
+    GameViewport.ofy = 0xF0;
 }
 
 void TitlesEmptyHook(void) {

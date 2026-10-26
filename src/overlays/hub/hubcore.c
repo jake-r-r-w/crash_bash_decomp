@@ -476,7 +476,7 @@ void HubPreMoveHero(s32 arg0) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
             }
             g->unk30 |= 0x200;
-            func_80092AF4(&D_8009F46C, 0x200);
+            func_80092AF4(&SaveScreenProcess, 0x200);
             break;
         default:
             HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
@@ -1087,7 +1087,7 @@ void HubDoorMenu2Quit(void) {
 void HubDoorMenu2Render(void) {
     EXTengine *e;
 
-    func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
+    func_80018B08(&MainViewport, &MainGfxCamera);
     FadeAmount = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
@@ -1113,7 +1113,7 @@ void HubDoorMenu2Init(void) {
 void HubDoorMenuRender(void) {
     EXTengine *e;
 
-    func_80018B08((GfxViewport *)MainViewport, (GfxCamera *)MainGfxCamera);
+    func_80018B08(&MainViewport, &MainGfxCamera);
     FadeAmount = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
@@ -1951,7 +1951,7 @@ void PodiumCamera(CamView *out, s32 arg1) {
         break;
     }
     out->dist = 0x200;
-    D_8009F708 = 0x15E;
+    GameViewport.ofy = 0x15E;
 }
 
 void PodiumShowScores(void) {
@@ -2377,7 +2377,7 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
 
 void PodiumRenderScene(void) {
     func_8009440C();
-    func_80018B08(MainViewport, MainGfxCamera);
+    func_80018B08(&MainViewport, &MainGfxCamera);
     func_8001C2C0(GetEngineSlot(6));
 }
 
@@ -2609,7 +2609,7 @@ void HubSaveMenuQuit(void) {
 void HubSaveMenuUpdate(void) {
     HubSaveMenuInput();
     if (Pads[0].pressed & 9) {
-        ProcessControl.next_process = &D_8009F46C;
+        ProcessControl.next_process = &SaveScreenProcess;
     }
 }
 

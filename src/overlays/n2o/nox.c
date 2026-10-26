@@ -2325,7 +2325,7 @@ void NoxInitCamera(s32 arg0) {
     NoxCamera.unk38 = 0;
     NoxCamera.unk40 = 0;
     func_80093038();
-    func_80018B08((GfxViewport *)GameViewport, (GfxCamera *)&NoxCamera);
+    func_80018B08(&GameViewport, (GfxCamera *)&NoxCamera);
     FadeAmount = ScreenFade.amount;
     func_8009440C();
 }
