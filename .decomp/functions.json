@@ -46046,7 +46046,7 @@
   "src": "src/overlays/race/race.c"
  },
  "spin:800B3428": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B3428.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/InitialiseSPINFirst.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800B8EE0"
@@ -46054,7 +46054,7 @@
   "fp": "490668a4814e2bc0",
   "fpn": "57b4c0fa3d165bf7",
   "leaf": false,
-  "name": "func_800B3428",
+  "name": "InitialiseSPINFirst",
   "orig": "func_800B3428",
   "rom": 372,
   "seg": "overlays/spin/spin",
@@ -46062,7 +46062,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B359C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B359C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/InitialiseSPIN.s",
   "bin": "disc/spin.bin",
   "calls": [
    "8001463C",
@@ -46078,7 +46078,7 @@
   "fp": "fae4e65174db72f6",
   "fpn": "d6911660e6e87ccb",
   "leaf": false,
-  "name": "func_800B359C",
+  "name": "InitialiseSPIN",
   "orig": "func_800B359C",
   "rom": 744,
   "seg": "overlays/spin/spin",
@@ -46086,7 +46086,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B382C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B382C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinShuffleDropPoints.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015590"
@@ -46094,7 +46094,7 @@
   "fp": "5a36e34dc3ee34c3",
   "fpn": "7527d54b132fddfa",
   "leaf": false,
-  "name": "func_800B382C",
+  "name": "SpinShuffleDropPoints",
   "orig": "func_800B382C",
   "rom": 1400,
   "seg": "overlays/spin/spin",
@@ -46102,7 +46102,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B3938": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B3938.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinInitScene.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015870"
@@ -46110,7 +46110,7 @@
   "fp": "d826bdcdef7f181c",
   "fpn": "792dde187617b94e",
   "leaf": false,
-  "name": "func_800B3938",
+  "name": "SpinInitScene",
   "orig": "func_800B3938",
   "rom": 1668,
   "seg": "overlays/spin/spin",
@@ -46118,7 +46118,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B3A3C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B3A3C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinTurnArena.s",
   "bin": "disc/spin.bin",
   "calls": [
    "8001463C",
@@ -46127,7 +46127,7 @@
   "fp": "f16dcdb9496095fa",
   "fpn": "9c3dd3295261421e",
   "leaf": false,
-  "name": "func_800B3A3C",
+  "name": "SpinTurnArena",
   "orig": "func_800B3A3C",
   "rom": 1928,
   "seg": "overlays/spin/spin",
@@ -46135,13 +46135,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B3EDC": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B3EDC.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinRankHeroes.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "2a28723bca721dd9",
   "fpn": "455d920129df8d94",
   "leaf": true,
-  "name": "func_800B3EDC",
+  "name": "SpinRankHeroes",
   "orig": "func_800B3EDC",
   "rom": 3112,
   "seg": "overlays/spin/spin",
@@ -46149,7 +46149,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B4144": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B4144.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinChooseWinner.s",
   "bin": "disc/spin.bin",
   "calls": [
    "8007B120",
@@ -46158,7 +46158,7 @@
   "fp": "43409e4f14a0cde3",
   "fpn": "6a824f995356d8ea",
   "leaf": false,
-  "name": "func_800B4144",
+  "name": "SpinChooseWinner",
   "orig": "func_800B4144",
   "rom": 3728,
   "seg": "overlays/spin/spin",
@@ -46166,7 +46166,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B4970": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B4970.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinDropMaster.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015590",
@@ -46176,7 +46176,7 @@
   "fp": "967ecac7e5f54761",
   "fpn": "55ce05fe58c2b791",
   "leaf": false,
-  "name": "func_800B4970",
+  "name": "SpinDropMaster",
   "orig": "func_800B4970",
   "rom": 5820,
   "seg": "overlays/spin/spin",
@@ -46184,13 +46184,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B4BA4": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B4BA4.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinCountObjects.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "63b0ecf36f3012b6",
   "fpn": "c75c128c636dc16e",
   "leaf": true,
-  "name": "func_800B4BA4",
+  "name": "SpinCountObjects",
   "orig": "func_800B4BA4",
   "rom": 6384,
   "seg": "overlays/spin/spin",
@@ -46198,7 +46198,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B4DC4": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B4DC4.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinDropObjects.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015590",
@@ -46208,7 +46208,7 @@
   "fp": "28eec20ffb7c7f39",
   "fpn": "c2d468d6c36546c9",
   "leaf": false,
-  "name": "func_800B4DC4",
+  "name": "SpinDropObjects",
   "orig": "func_800B4DC4",
   "rom": 6928,
   "seg": "overlays/spin/spin",
@@ -46216,13 +46216,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B4F7C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B4F7C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinFindDropPoint.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "5a7507795a9f1ef4",
   "fpn": "fc21b5762f884921",
   "leaf": true,
-  "name": "func_800B4F7C",
+  "name": "SpinFindDropPoint",
   "orig": "func_800B4F7C",
   "rom": 7368,
   "seg": "overlays/spin/spin",
@@ -46230,7 +46230,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B51A0": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B51A0.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/CreateHazard.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015590",
@@ -46245,7 +46245,7 @@
   "fp": "0521bc1cde686aed",
   "fpn": "00949d5321201060",
   "leaf": false,
-  "name": "func_800B51A0",
+  "name": "CreateHazard",
   "orig": "func_800B51A0",
   "rom": 7916,
   "seg": "overlays/spin/spin",
@@ -46279,7 +46279,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B5D3C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B5D3C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/CreateBalloon.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015590",
@@ -46294,7 +46294,7 @@
   "fp": "cbb388e42686fbae",
   "fpn": "e0b47436e0795503",
   "leaf": false,
-  "name": "func_800B5D3C",
+  "name": "CreateBalloon",
   "orig": "func_800B5D3C",
   "rom": 10888,
   "seg": "overlays/spin/spin",
@@ -46332,7 +46332,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B697C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B697C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinScoreBalloon.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015590",
@@ -46342,7 +46342,7 @@
   "fp": "ab02011586b2eec9",
   "fpn": "6c04e6223e99c421",
   "leaf": false,
-  "name": "func_800B697C",
+  "name": "SpinScoreBalloon",
   "orig": "func_800B697C",
   "rom": 14024,
   "seg": "overlays/spin/spin",
@@ -46350,7 +46350,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B6C50": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B6C50.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHero_ExtraEffects.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015780",
@@ -46359,7 +46359,7 @@
   "fp": "10e8c61efd4ac98f",
   "fpn": "b0aae1ebbda99c6b",
   "leaf": false,
-  "name": "func_800B6C50",
+  "name": "SpinHero_ExtraEffects",
   "orig": "func_800B6C50",
   "rom": 14748,
   "seg": "overlays/spin/spin",
@@ -46367,7 +46367,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B6EC0": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B6EC0.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinBalloonCollide.s",
   "bin": "disc/spin.bin",
   "calls": [
    "8001463C",
@@ -46378,7 +46378,7 @@
   "fp": "64a783c34d7bd106",
   "fpn": "fc7088acdedeeab8",
   "leaf": false,
-  "name": "func_800B6EC0",
+  "name": "SpinBalloonCollide",
   "orig": "func_800B6EC0",
   "rom": 15372,
   "seg": "overlays/spin/spin",
@@ -46386,7 +46386,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B727C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B727C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHitTest.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80025A48",
@@ -46395,7 +46395,7 @@
   "fp": "d624c19f8c010aad",
   "fpn": "815e0bdf5376c98c",
   "leaf": false,
-  "name": "func_800B727C",
+  "name": "SpinHitTest",
   "orig": "func_800B727C",
   "rom": 16328,
   "seg": "overlays/spin/spin",
@@ -46403,7 +46403,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B7508": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B7508.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/Spin_HeroBot.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80013C94",
@@ -46422,7 +46422,7 @@
   "fp": "250694b0e2206e06",
   "fpn": "086069c850256273",
   "leaf": false,
-  "name": "func_800B7508",
+  "name": "Spin_HeroBot",
   "orig": "func_800B7508",
   "rom": 16980,
   "seg": "overlays/spin/spin",
@@ -46430,13 +46430,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8294": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8294.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinAI_ScanAhead.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "e2b88e1c2747ec1e",
   "fpn": "ce67728d7467dbd8",
   "leaf": true,
-  "name": "func_800B8294",
+  "name": "SpinAI_ScanAhead",
   "orig": "func_800B8294",
   "rom": 20448,
   "seg": "overlays/spin/spin",
@@ -46444,7 +46444,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B85A4": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B85A4.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinAI_ChooseTarget.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015590",
@@ -46454,7 +46454,7 @@
   "fp": "93c4ff765d06dddc",
   "fpn": "320ef062ee7ada04",
   "leaf": false,
-  "name": "func_800B85A4",
+  "name": "SpinAI_ChooseTarget",
   "orig": "func_800B85A4",
   "rom": 21232,
   "seg": "overlays/spin/spin",
@@ -46462,7 +46462,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8B5C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8B5C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinAI_PickPlayer.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80015590"
@@ -46470,7 +46470,7 @@
   "fp": "08c360f7db0b00cb",
   "fpn": "a43fb364e12e0c9d",
   "leaf": false,
-  "name": "func_800B8B5C",
+  "name": "SpinAI_PickPlayer",
   "orig": "func_800B8B5C",
   "rom": 22696,
   "seg": "overlays/spin/spin",
@@ -46478,7 +46478,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8C74": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8C74.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinAI_NearestEnemy.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80032490"
@@ -46486,7 +46486,7 @@
   "fp": "a87a236bf46919e2",
   "fpn": "dd39c7fad6b5b2f3",
   "leaf": false,
-  "name": "func_800B8C74",
+  "name": "SpinAI_NearestEnemy",
   "orig": "func_800B8C74",
   "rom": 22976,
   "seg": "overlays/spin/spin",
@@ -46494,13 +46494,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8D98": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8D98.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinAI_HazardAhead.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "ed42fc2bb7e8ca9b",
   "fpn": "f50f474a71dde3a6",
   "leaf": true,
-  "name": "func_800B8D98",
+  "name": "SpinAI_HazardAhead",
   "orig": "func_800B8D98",
   "rom": 23268,
   "seg": "overlays/spin/spin",
@@ -46508,13 +46508,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8E4C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8E4C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinAlwaysZero.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_800B8E4C",
+  "name": "SpinAlwaysZero",
   "orig": "func_800B8E4C",
   "rom": 23448,
   "seg": "overlays/spin/spin",
@@ -46522,13 +46522,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8E54": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8E54.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinNoAttack.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_800B8E54",
+  "name": "SpinNoAttack",
   "orig": "func_800B8E54",
   "rom": 23456,
   "seg": "overlays/spin/spin",
@@ -46536,13 +46536,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8E5C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8E5C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinTouched.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B8E5C",
+  "name": "SpinTouched",
   "orig": "func_800B8E5C",
   "rom": 23464,
   "seg": "overlays/spin/spin",
@@ -46550,7 +46550,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8E64": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8E64.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinDropObject.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800B4F7C",
@@ -46559,7 +46559,7 @@
   "fp": "47a43a398ef3e0a0",
   "fpn": "22e50378b028ab44",
   "leaf": false,
-  "name": "func_800B8E64",
+  "name": "SpinDropObject",
   "orig": "func_800B8E64",
   "rom": 23472,
   "seg": "overlays/spin/spin",
@@ -46567,13 +46567,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8EE0": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8EE0.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinInitASTIndices.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "e9584bec8752f9dc",
   "fpn": "a9d42e779cb53817",
   "leaf": true,
-  "name": "func_800B8EE0",
+  "name": "SpinInitASTIndices",
   "orig": "func_800B8EE0",
   "rom": 23596,
   "seg": "overlays/spin/spin",
@@ -46581,7 +46581,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B8F48": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B8F48.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SPIN_KeepInBounds.s",
   "bin": "disc/spin.bin",
   "calls": [
    "8001463C"
@@ -46589,7 +46589,7 @@
   "fp": "4e809f5c25ee7d5d",
   "fpn": "9a7df00c622d3ff4",
   "leaf": false,
-  "name": "func_800B8F48",
+  "name": "SPIN_KeepInBounds",
   "orig": "func_800B8F48",
   "rom": 23700,
   "seg": "overlays/spin/spin",
@@ -46597,13 +46597,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9038": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9038.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/FirstTriggersSPIN.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B9038",
+  "name": "FirstTriggersSPIN",
   "orig": "func_800B9038",
   "rom": 23940,
   "seg": "overlays/spin/spin",
@@ -46611,13 +46611,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9040": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9040.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinRestartLevel.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B9040",
+  "name": "SpinRestartLevel",
   "orig": "func_800B9040",
   "rom": 23948,
   "seg": "overlays/spin/spin",
@@ -46625,7 +46625,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9048": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9048.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/UpdateSPIN.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80086D88",
@@ -46637,7 +46637,7 @@
   "fp": "bc7c065f8ea7f6a6",
   "fpn": "8f3e0fa4204458b9",
   "leaf": false,
-  "name": "func_800B9048",
+  "name": "UpdateSPIN",
   "orig": "func_800B9048",
   "rom": 23956,
   "seg": "overlays/spin/spin",
@@ -46645,13 +46645,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9088": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9088.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SPINSetUp.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "80110bd047df49bf",
   "fpn": "d1ba4fada9c6e999",
   "leaf": true,
-  "name": "func_800B9088",
+  "name": "SPINSetUp",
   "orig": "func_800B9088",
   "rom": 24020,
   "seg": "overlays/spin/spin",
@@ -46659,13 +46659,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B90D0": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B90D0.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinPreMoveHero.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "4997c7aa8634f64d",
   "fpn": "78c084553003250c",
   "leaf": true,
-  "name": "func_800B90D0",
+  "name": "SpinPreMoveHero",
   "orig": "func_800B90D0",
   "rom": 24092,
   "seg": "overlays/spin/spin",
@@ -46673,7 +46673,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B92BC": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B92BC.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SetSpinHeroHit.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800225C4",
@@ -46682,7 +46682,7 @@
   "fp": "4788608f12a6771a",
   "fpn": "9fc5ea1638283f5b",
   "leaf": false,
-  "name": "func_800B92BC",
+  "name": "SetSpinHeroHit",
   "orig": "func_800B92BC",
   "rom": 24584,
   "seg": "overlays/spin/spin",
@@ -46690,7 +46690,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B937C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B937C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroHit.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80022660",
@@ -46703,7 +46703,7 @@
   "fp": "6c040734e488aaa1",
   "fpn": "aebf754de5428244",
   "leaf": false,
-  "name": "func_800B937C",
+  "name": "SpinHeroHit",
   "orig": "func_800B937C",
   "rom": 24776,
   "seg": "overlays/spin/spin",
@@ -46711,7 +46711,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9608": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9608.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SetSpinHeroFlip.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800854C0"
@@ -46719,7 +46719,7 @@
   "fp": "fba1cdd441205362",
   "fpn": "e21a4515502bd9e6",
   "leaf": false,
-  "name": "func_800B9608",
+  "name": "SetSpinHeroFlip",
   "orig": "func_800B9608",
   "rom": 25428,
   "seg": "overlays/spin/spin",
@@ -46727,7 +46727,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B971C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B971C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroFall.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80025BBC",
@@ -46737,7 +46737,7 @@
   "fp": "3471a7ab1a5f8eda",
   "fpn": "64f9c37221c3f8bb",
   "leaf": false,
-  "name": "func_800B971C",
+  "name": "SpinHeroFall",
   "orig": "func_800B971C",
   "rom": 25704,
   "seg": "overlays/spin/spin",
@@ -46745,7 +46745,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9804": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9804.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SetSpinHeroDead.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800225C4",
@@ -46754,7 +46754,7 @@
   "fp": "588a53464bef6264",
   "fpn": "cdc68b2c379a634e",
   "leaf": false,
-  "name": "func_800B9804",
+  "name": "SetSpinHeroDead",
   "orig": "func_800B9804",
   "rom": 25936,
   "seg": "overlays/spin/spin",
@@ -46762,7 +46762,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B98B8": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B98B8.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroDead.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800225C4",
@@ -46772,7 +46772,7 @@
   "fp": "c0e97691ce0b1b87",
   "fpn": "ffa5b637c2b354ae",
   "leaf": false,
-  "name": "func_800B98B8",
+  "name": "SpinHeroDead",
   "orig": "func_800B98B8",
   "rom": 26116,
   "seg": "overlays/spin/spin",
@@ -46780,7 +46780,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9A04": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9A04.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SetSpinHeroWinner.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800225C4",
@@ -46792,7 +46792,7 @@
   "fp": "69dc3de7e247f294",
   "fpn": "3a711b55f03d26bf",
   "leaf": false,
-  "name": "func_800B9A04",
+  "name": "SetSpinHeroWinner",
   "orig": "func_800B9A04",
   "rom": 26448,
   "seg": "overlays/spin/spin",
@@ -46800,7 +46800,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9BF8": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9BF8.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroWinner.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80025F44",
@@ -46812,7 +46812,7 @@
   "fp": "543fef0f1acb3cc0",
   "fpn": "f3974f4eacd9eaa9",
   "leaf": false,
-  "name": "func_800B9BF8",
+  "name": "SpinHeroWinner",
   "orig": "func_800B9BF8",
   "rom": 26948,
   "seg": "overlays/spin/spin",
@@ -46820,7 +46820,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9CE0": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9CE0.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SetSpinHeroLose.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800225C4",
@@ -46831,7 +46831,7 @@
   "fp": "2dc36a56a46594d5",
   "fpn": "ff9a228e56cd4757",
   "leaf": false,
-  "name": "func_800B9CE0",
+  "name": "SetSpinHeroLose",
   "orig": "func_800B9CE0",
   "rom": 27180,
   "seg": "overlays/spin/spin",
@@ -46839,7 +46839,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800B9EEC": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800B9EEC.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroLose.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800225C4",
@@ -46850,7 +46850,7 @@
   "fp": "f65ff3b157624e53",
   "fpn": "a433cdce5a7e05df",
   "leaf": false,
-  "name": "func_800B9EEC",
+  "name": "SpinHeroLose",
   "orig": "func_800B9EEC",
   "rom": 27704,
   "seg": "overlays/spin/spin",
@@ -46858,7 +46858,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BA098": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BA098.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHero2ObjectCollision.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800142D4",
@@ -46872,7 +46872,7 @@
   "fp": "6a54c1117a5a8f00",
   "fpn": "af32b7a799d4887b",
   "leaf": false,
-  "name": "func_800BA098",
+  "name": "SpinHero2ObjectCollision",
   "orig": "func_800BA098",
   "rom": 28132,
   "seg": "overlays/spin/spin",
@@ -46880,7 +46880,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BA344": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BA344.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroGrabObject.s",
   "bin": "disc/spin.bin",
   "calls": [
    "8001463C",
@@ -46889,7 +46889,7 @@
   "fp": "dde769bc8f4557d1",
   "fpn": "773c3fa2c399e477",
   "leaf": false,
-  "name": "func_800BA344",
+  "name": "SpinHeroGrabObject",
   "orig": "func_800BA344",
   "rom": 28816,
   "seg": "overlays/spin/spin",
@@ -46897,7 +46897,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BA514": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BA514.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroKickCollision.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800142D4",
@@ -46912,7 +46912,7 @@
   "fp": "0e25b23960117ee7",
   "fpn": "de2ff0e0df6dbf94",
   "leaf": false,
-  "name": "func_800BA514",
+  "name": "SpinHeroKickCollision",
   "orig": "func_800BA514",
   "rom": 29280,
   "seg": "overlays/spin/spin",
@@ -46920,7 +46920,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BAF1C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BAF1C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroCarryCollision.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800142D4",
@@ -46934,7 +46934,7 @@
   "fp": "97ea64cae6045191",
   "fpn": "c6e32b6a52160854",
   "leaf": false,
-  "name": "func_800BAF1C",
+  "name": "SpinHeroCarryCollision",
   "orig": "func_800BAF1C",
   "rom": 31848,
   "seg": "overlays/spin/spin",
@@ -46942,13 +46942,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BB230": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BB230.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroObjectNear.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "454fd830eb0852c4",
   "fpn": "e8ffda567bc10805",
   "leaf": true,
-  "name": "func_800BB230",
+  "name": "SpinHeroObjectNear",
   "orig": "func_800BB230",
   "rom": 32636,
   "seg": "overlays/spin/spin",
@@ -46956,7 +46956,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BB37C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BB37C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHitHeroes.s",
   "bin": "disc/spin.bin",
   "calls": [
    "80025A48"
@@ -46964,7 +46964,7 @@
   "fp": "6c96d9d276b0f4c2",
   "fpn": "b4c7de469b52ef0e",
   "leaf": false,
-  "name": "func_800BB37C",
+  "name": "SpinHitHeroes",
   "orig": "func_800BB37C",
   "rom": 32968,
   "seg": "overlays/spin/spin",
@@ -46972,13 +46972,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BB4FC": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BB4FC.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SetSpinHeroFall.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "e54906d7e1a4d4ce",
   "fpn": "4e248f0b18b2dbe2",
   "leaf": true,
-  "name": "func_800BB4FC",
+  "name": "SetSpinHeroFall",
   "orig": "func_800BB4FC",
   "rom": 33352,
   "seg": "overlays/spin/spin",
@@ -46986,7 +46986,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BB52C": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BB52C.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroFlip.s",
   "bin": "disc/spin.bin",
   "calls": [
    "8008502C"
@@ -46994,7 +46994,7 @@
   "fp": "33a5d1fe041ccb74",
   "fpn": "94c6f8f82c9d5b36",
   "leaf": false,
-  "name": "func_800BB52C",
+  "name": "SpinHeroFlip",
   "orig": "func_800BB52C",
   "rom": 33400,
   "seg": "overlays/spin/spin",
@@ -47002,13 +47002,13 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BB560": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BB560.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinCreateShadow.s",
   "bin": "disc/spin.bin",
   "calls": [],
   "fp": "9fd8cecf1639b2e3",
   "fpn": "5ac1abf08635ce06",
   "leaf": true,
-  "name": "func_800BB560",
+  "name": "SpinCreateShadow",
   "orig": "func_800BB560",
   "rom": 33452,
   "seg": "overlays/spin/spin",
@@ -47016,7 +47016,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BB5F0": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BB5F0.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinHeroTestFlip.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800868B4"
@@ -47024,7 +47024,7 @@
   "fp": "2cfb3724cd587c79",
   "fpn": "8c80524866bb558c",
   "leaf": false,
-  "name": "func_800BB5F0",
+  "name": "SpinHeroTestFlip",
   "orig": "func_800BB5F0",
   "rom": 33596,
   "seg": "overlays/spin/spin",
@@ -47032,7 +47032,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BB648": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BB648.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinTestEnd.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800868B4"
@@ -47040,7 +47040,7 @@
   "fp": "1e9d6eefcc4bae6c",
   "fpn": "42afe1b1ac400ab7",
   "leaf": false,
-  "name": "func_800BB648",
+  "name": "SpinTestEnd",
   "orig": "func_800BB648",
   "rom": 33684,
   "seg": "overlays/spin/spin",
@@ -47048,7 +47048,7 @@
   "src": "src/overlays/spin/spin.c"
  },
  "spin:800BB6B4": {
-  "asm": "asm/nonmatchings/overlays/spin/spin/func_800BB6B4.s",
+  "asm": "asm/nonmatchings/overlays/spin/spin/SpinTestEndB.s",
   "bin": "disc/spin.bin",
   "calls": [
    "800868B4"
@@ -47056,7 +47056,7 @@
   "fp": "1e9d6eefcc4bae6c",
   "fpn": "42afe1b1ac400ab7",
   "leaf": false,
-  "name": "func_800BB6B4",
+  "name": "SpinTestEndB",
   "orig": "func_800BB6B4",
   "rom": 33792,
   "seg": "overlays/spin/spin",

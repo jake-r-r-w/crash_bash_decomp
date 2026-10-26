@@ -8,30 +8,30 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
-void func_800B3428() {
+void InitialiseSPINFirst() {
     void *p;
     void **q;
 
-    D_8009D6E8.unk20 = func_800B90D0;
-    D_8009D6E8.unk68 = func_800B8F48;
-    D_8009D6E8.unk44 = func_800BB5F0;
-    D_8009D6E8.unk3C = func_800B8E54;
+    D_8009D6E8.unk20 = SpinPreMoveHero;
+    D_8009D6E8.unk68 = SPIN_KeepInBounds;
+    D_8009D6E8.unk44 = SpinHeroTestFlip;
+    D_8009D6E8.unk3C = SpinNoAttack;
     D_8009D6E8.unkC = D_800BB80C;
-    D_8009D6E8.unk38 = func_800B7508;
-    D_8009D6E8.unk64 = func_800B4144;
-    D_8009D6E8.unk4C = func_800BA098;
-    D_8009D6E8.unk50 = func_800BA344;
-    D_8009D6E8.unk54 = func_800BA514;
-    D_8009D6E8.unk58 = func_800BAF1C;
-    D_8009D6E8.unk5C = func_800B6C50;
-    D_8009D6E8.unk60 = func_800B8E5C;
-    D_8009D6E8.unk18 = func_800BB560;
+    D_8009D6E8.unk38 = Spin_HeroBot;
+    D_8009D6E8.unk64 = SpinChooseWinner;
+    D_8009D6E8.unk4C = SpinHero2ObjectCollision;
+    D_8009D6E8.unk50 = SpinHeroGrabObject;
+    D_8009D6E8.unk54 = SpinHeroKickCollision;
+    D_8009D6E8.unk58 = SpinHeroCarryCollision;
+    D_8009D6E8.unk5C = SpinHero_ExtraEffects;
+    D_8009D6E8.unk60 = SpinTouched;
+    D_8009D6E8.unk18 = SpinCreateShadow;
     D_8009D6E8.unk10 = (SpinJumpEnt *)D_800BB7BC;
     D_8009E0E2 = 0x38;
     D_8009E0E4 = 0x36;
     D_8009E0E6 = 0x37;
     D_8009E0D8 = 0x33;
-    func_800B8EE0();
+    SpinInitASTIndices();
     D_8009D8F4 = D_800BB76C;
     D_8009D8F8 = D_800BB780;
     D_8009D904 = D_800BB754;
@@ -45,7 +45,7 @@ void func_800B3428() {
     D_8009D900 = D_800BB748;
 }
 
-void func_800B359C() {
+void InitialiseSPIN() {
     s32 i;
     EXTheromove *m;
     s16 a;
@@ -98,13 +98,13 @@ void func_800B359C() {
             Heroes[3].hero_score = 0x19;
         }
     }
-    func_800B382C();
+    SpinShuffleDropPoints();
     func_80086D88();
-    func_800B3938();
+    SpinInitScene();
     PlaySfx(0x5EC, &D_800BBE00, NULL, 0x1000, 0x1E00, 0);
 }
 
-void func_800B382C(void) {
+void SpinShuffleDropPoints(void) {
     s32 i;
     s32 j;
     s32 k;
@@ -147,7 +147,7 @@ void func_800B382C(void) {
     }
 }
 
-void func_800B3938(void) {
+void SpinInitScene(void) {
     s32 i;
     SpinObj *obj;
     s16 *p;
@@ -176,7 +176,7 @@ void func_800B3938(void) {
     }
 }
 
-void func_800B3A3C(void) {
+void SpinTurnArena(void) {
     SpinObj *obj;
     HeroInfo *h;
     EXTengine *eng;
@@ -283,7 +283,7 @@ void func_800B3A3C(void) {
     }
 }
 
-s32 func_800B3EDC(void) {
+s32 SpinRankHeroes(void) {
     SpinGame *g;
     HeroInfo *h;
     s32 j;
@@ -365,7 +365,7 @@ s32 func_800B3EDC(void) {
     return gt->rank[0];
 }
 
-void func_800B4144(s32 arg0, u16 arg1) {
+void SpinChooseWinner(s32 arg0, u16 arg1) {
     s32 found;
     SpinGame *g;
     SpinGame *game;
@@ -433,7 +433,7 @@ void func_800B4144(s32 arg0, u16 arg1) {
     if (arg0 != -1) {
         return;
     }
-    found = func_800B3EDC();
+    found = SpinRankHeroes();
     g = (SpinGame *)D_8005A614;
     if ((g->flags & 0xE0) && found != 0) {
         if (g->teams != 0) {
@@ -517,7 +517,7 @@ decide:
     }
 }
 
-void func_800B4970(void) {
+void SpinDropMaster(void) {
     s32 i;
     s32 hero;
     s32 max;
@@ -546,7 +546,7 @@ void func_800B4970(void) {
         if (D_800BBD54 != 0) {
             D_800BBD54--;
         } else {
-            func_800B8E64(1, 2);
+            SpinDropObject(1, 2);
             D_800BBD54 = Random(0x3C) + 0x5A;
         }
     }
@@ -554,7 +554,7 @@ void func_800B4970(void) {
         if (D_800BBD56 != 0) {
             D_800BBD56--;
         } else {
-            func_800B4DC4(1, 0xC);
+            SpinDropObjects(1, 0xC);
             D_800BBD54 = Random(0x3C) + 0x5A;
         }
     }
@@ -571,9 +571,9 @@ void func_800B4970(void) {
             D_800BBD58 = Random(0xA) + 0x14;
         }
         if (hero != -1) {
-            func_800B4DC4(i, D_800BB88C[hero]);
+            SpinDropObjects(i, D_800BB88C[hero]);
         } else {
-            func_800B4DC4(i, -1);
+            SpinDropObjects(i, -1);
         }
     } else {
         D_800BBD58 = Random(0x1E) + 0x3C;
@@ -582,7 +582,7 @@ void func_800B4970(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/spin/spin", D_800B32B8);
 
-void func_800B4BA4(void) {
+void SpinCountObjects(void) {
     s32 i;
     u16 *p;
     s32 j;
@@ -644,7 +644,7 @@ void func_800B4BA4(void) {
     }
 }
 
-void func_800B4DC4(u16 count, s16 arg1) {
+void SpinDropObjects(u16 count, s16 arg1) {
     SpinPair *p;
     s32 a;
     s32 b;
@@ -658,14 +658,14 @@ void func_800B4DC4(u16 count, s16 arg1) {
 
     id = arg1;
     if (arg1 > 0) {
-        p = func_800B4F7C(&D_800BBD5E);
+        p = SpinFindDropPoint(&D_800BBD5E);
         if (p != NULL) {
-            func_800B5D3C(p->a, p->b, id, -1);
+            CreateBalloon(p->a, p->b, id, -1);
         }
     } else if (count != 0) {
         i = 0;
         do {
-            p = func_800B4F7C(&D_800BBD5E);
+            p = SpinFindDropPoint(&D_800BBD5E);
             if (p == NULL) {
                 continue;
             }
@@ -689,12 +689,12 @@ void func_800B4DC4(u16 count, s16 arg1) {
                     break;
                 }
             }
-            func_800B5D3C(a, b, id, -1);
+            CreateBalloon(a, b, id, -1);
         } while (++i < count);
     }
 }
 
-SpinPair *func_800B4F7C(u16 *head) {
+SpinPair *SpinFindDropPoint(u16 *head) {
     SpinCell *p;
     SpinCell *bestp;
     s32 i;
@@ -758,7 +758,7 @@ SpinPair *func_800B4F7C(u16 *head) {
     return (SpinPair *)bestp;
 }
 
-NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d)
+NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
 {
   NAS *nas;
   EXTengine *eng;
@@ -1051,7 +1051,7 @@ void PlotHazardType(NAS *nas) {
                 if (dx == 0 && dz == 0) {
                     done = 1;
                 }
-                func_800BB37C(eng, (SpinHitMask *)fux, 8, fux->owner);
+                SpinHitHeroes(eng, (SpinHitMask *)fux, 8, fux->owner);
                 if (fux->hit & 8) {
                     done = 1;
                 }
@@ -1108,7 +1108,7 @@ void PlotHazardType(NAS *nas) {
     }
 }
 
-NAS *func_800B5D3C(s32 a, s32 b, u16 c, s16 d) {
+NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
     NAS *nas;
     EXTengine *eng;
     EXTengine *shadow;
@@ -1285,7 +1285,7 @@ void PlotBalloon(NAS *nas) {
                     }
                     goto kill;
                 case 12:
-                    func_800B697C(fux);
+                    SpinScoreBalloon(fux);
                     o = fux->owner;
                     if (o != -1 && o < 5 && Heroes[o].hero_object == (EXTobject *)fux) {
                         Heroes[o].hero_object = NULL;
@@ -1331,7 +1331,7 @@ void PlotBalloon(NAS *nas) {
             eng->unk10.x -= (mot->Xvel * D_80068BD4[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
             eng->unk10.z -= (mot->Xvel * D_80068BD4[mot->Xa & 0xFFF].unk2) >> 12;
             SPIN_BOUNCE(eng, mot);
-            func_800B6EC0(eng, mot, fux);
+            SpinBalloonCollide(eng, mot, fux);
             eng->unk10.x -= (mot->Zvel * D_80068BD4[(mot->Za - 0x400) & 0xFFF].unk2) >> 12;
             eng->unk10.z -= (mot->Zvel * D_80068BD4[mot->Za & 0xFFF].unk2) >> 12;
         }
@@ -1361,7 +1361,7 @@ void PlotBalloon(NAS *nas) {
     SPIN_SHADOW(eng, shadow);
 }
 
-void func_800B697C(SpinFux *arg0) {
+void SpinScoreBalloon(SpinFux *arg0) {
     NAS *n;
     SpinFux *f;
     s16 idx;
@@ -1436,7 +1436,7 @@ void func_800B697C(SpinFux *arg0) {
     }
 }
 
-void func_800B6C50(s32 arg0) {
+void SpinHero_ExtraEffects(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     EXTengine *pu;
@@ -1502,7 +1502,7 @@ void func_800B6C50(s32 arg0) {
     }
 }
 
-s32 func_800B6EC0(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
+s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
     FlagRecord *box;
     HeroInfo *h;
     NAS *it;
@@ -1603,7 +1603,7 @@ s32 func_800B6EC0(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
     return hit;
 }
 
-s32 func_800B727C(x, y, z, size, skip, mask)
+s32 SpinHitTest(x, y, z, size, skip, mask)
     s32 x;
     s32 y;
     s32 z;
@@ -1692,7 +1692,7 @@ s32 func_800B727C(x, y, z, size, skip, mask)
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/spin/spin", D_800B337C);
 
-void func_800B7508(s32 arg0) {
+void Spin_HeroBot(s32 arg0) {
     s32 unused[4];
     SpinFux *nf;
     NAS *nas;
@@ -1824,7 +1824,7 @@ void func_800B7508(s32 arg0) {
     if (Heroes[arg0].hero_pu == 0x13) {
         ang2 = ang;
     }
-    func_800B8294(arg0);
+    SpinAI_ScanAhead(arg0);
     switch (ai->AImode) {
     case 21:
         if (ai->AIsleep != 0) {
@@ -1875,7 +1875,7 @@ void func_800B7508(s32 arg0) {
             ai->AImode = 1;
             break;
         }
-        if (func_800B8E4C(arg0) == 0) {
+        if (SpinAlwaysZero(arg0) == 0) {
             p = func_800864CC(arg0, 0x40);
             if (p == target) {
                 ai->AImode = 1;
@@ -1893,7 +1893,7 @@ void func_800B7508(s32 arg0) {
                     }
                 }
             }
-            f = func_800BB230(arg0, 0xA, 0x400);
+            f = SpinHeroObjectNear(arg0, 0xA, 0x400);
             if (f != NULL) {
                 switch (f->kind) {
                 case 8:
@@ -1942,7 +1942,7 @@ void func_800B7508(s32 arg0) {
             ai->AImode = 1;
             break;
         }
-        if (func_800B8E4C(arg0) == 0) {
+        if (SpinAlwaysZero(arg0) == 0) {
             p = func_800864CC(arg0, 0x40);
             if (p != target && (Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
                 if (D_8005A680 == 0 || p != mate) {
@@ -1953,7 +1953,7 @@ void func_800B7508(s32 arg0) {
                     }
                 }
             }
-            f = func_800BB230(arg0, 0xA, 0x400);
+            f = SpinHeroObjectNear(arg0, 0xA, 0x400);
             if (f != NULL) {
                 switch (k = f->kind) {
                 case 8:
@@ -2006,13 +2006,13 @@ void func_800B7508(s32 arg0) {
             break;
         }
         if (Heroes[arg0].hero_pu == 0 && ai->AIinitial_delay == 0 && ai->AItimer2 == 0 &&
-            func_800B8C74(arg0) > (lvl << 5) + 0x400 && (p = func_800B8B5C(arg0)) != -1) {
+            SpinAI_NearestEnemy(arg0) > (lvl << 5) + 0x400 && (p = SpinAI_PickPlayer(arg0)) != -1) {
             ai->AImode = 0x15;
             ai->TargetPlayer = p;
             ai->AIsleep = 4;
             ai->AItimer2 = (lvl + 8) * 30;
             ai->AIpad |= 0x1000;
-        } else if (func_800B85A4(arg0) != 0) {
+        } else if (SpinAI_ChooseTarget(arg0) != 0) {
             if (ai->pTargetNas == NULL) {
                 ai->AImode = 3;
             } else {
@@ -2020,7 +2020,7 @@ void func_800B7508(s32 arg0) {
             }
             ai->AIaborted_mode = 0;
         } else {
-            ai->TargetPlayer = func_800B8B5C(arg0);
+            ai->TargetPlayer = SpinAI_PickPlayer(arg0);
             if ((u32)Random(inv) >= 9) {
                 ai->AImode = 0x15;
                 ai->AIsleep = 4;
@@ -2037,7 +2037,7 @@ void func_800B7508(s32 arg0) {
     *(s32 *)((u8 *)pad + 0x38) = ai->AIang;
 }
 
-void func_800B8294(s32 arg0) {
+void SpinAI_ScanAhead(s32 arg0) {
     EXTengine *eng;
     EXTheromove *mv;
     s32 rx;
@@ -2112,7 +2112,7 @@ void func_800B8294(s32 arg0) {
 }
 
 
-s32 func_800B85A4(s32 player) {
+s32 SpinAI_ChooseTarget(s32 player) {
     NAS *bestNas;
     s32 bestHeroScore;
     s32 r;
@@ -2285,7 +2285,7 @@ s32 func_800B85A4(s32 player) {
     return 0;
 }
 
-s32 func_800B8B5C(s32 arg0) {
+s32 SpinAI_PickPlayer(s32 arg0) {
     s32 other;
     s32 sum;
     s32 i;
@@ -2317,7 +2317,7 @@ s32 func_800B8B5C(s32 arg0) {
     return -1;
 }
 
-s32 func_800B8C74(s32 arg0) {
+s32 SpinAI_NearestEnemy(s32 arg0) {
     s32 flip = arg0 ^ 1;
     s32 best = 0x7FFFFF;
     u16 i = 0;
@@ -2354,7 +2354,7 @@ s32 func_800B8C74(s32 arg0) {
     return best != 0x7FFFFF ? csqrt(best) >> 6 : 0;
 }
 
-s32 func_800B8D98(s32 arg0) {
+s32 SpinAI_HazardAhead(s32 arg0) {
     EXTbotai *ai = Heroes[arg0].hero_ai;
     s32 i;
     s32 l;
@@ -2391,30 +2391,30 @@ s32 func_800B8D98(s32 arg0) {
     return 0;
 }
 
-s32 func_800B8E4C(s32 player) {
+s32 SpinAlwaysZero(s32 player) {
     return 0;
 }
 
-s32 func_800B8E54(void) {
+s32 SpinNoAttack(void) {
     return 0;
 }
 
-void func_800B8E5C(void) {
+void SpinTouched(void) {
 }
 
-void func_800B8E64(u16 arg0, u16 arg1) {
+void SpinDropObject(u16 arg0, u16 arg1) {
     s32 i;
     SpinPair *p;
 
     for (i = 0; i < arg0; i++) {
-        p = func_800B4F7C(&D_800BBD5E);
+        p = SpinFindDropPoint(&D_800BBD5E);
         if (p != NULL) {
-            func_800B51A0(p->a, p->b, arg1, -1);
+            CreateHazard(p->a, p->b, arg1, -1);
         }
     }
 }
 
-void func_800B8EE0(void) {
+void SpinInitASTIndices(void) {
     s32 key;
     s32 i;
     s32 r;
@@ -2433,7 +2433,7 @@ found:
     D_8009E488[3] = 0;
 }
 
-s32 func_800B8F48(EXTengine *eng) {
+s32 SPIN_KeepInBounds(EXTengine *eng) {
     s32 x = eng->unk10.x;
     s32 z = eng->unk10.z;
     s32 limit;
@@ -2454,31 +2454,31 @@ s32 func_800B8F48(EXTengine *eng) {
     return ret;
 }
 
-void func_800B9038(void) {
+void FirstTriggersSPIN(void) {
 }
 
-void func_800B9040(void) {
+void SpinRestartLevel(void) {
 }
 
-void func_800B9048(void) {
+void UpdateSPIN(void) {
     func_80086F78();
-    func_800B4BA4();
+    SpinCountObjects();
     func_80086D88();
-    func_800B4970();
-    func_800B3A3C();
+    SpinDropMaster();
+    SpinTurnArena();
 }
 
-void func_800B9088(void) {
-    D_8005AA70[0] = (s32)func_800B3428;
-    D_8005AA70[1] = (s32)func_800B359C;
-    D_8005AA70[2] = (s32)func_800B359C;
-    D_8005AA70[3] = (s32)func_800B9048;
-    D_8005AA70[5] = (s32)func_800B9038;
+void SPINSetUp(void) {
+    D_8005AA70[0] = (s32)InitialiseSPINFirst;
+    D_8005AA70[1] = (s32)InitialiseSPIN;
+    D_8005AA70[2] = (s32)InitialiseSPIN;
+    D_8005AA70[3] = (s32)UpdateSPIN;
+    D_8005AA70[5] = (s32)FirstTriggersSPIN;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
 }
 
-void func_800B90D0(s32 arg0) {
+void SpinPreMoveHero(s32 arg0) {
     HeroInfo *h;
     EXTheromove *m;
     PadStick *pad;
@@ -2535,7 +2535,7 @@ void func_800B90D0(s32 arg0) {
     m->facing_angle = speed;
 }
 
-void func_800B92BC(s32 arg0) {
+void SetSpinHeroHit(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
@@ -2556,7 +2556,7 @@ void func_800B92BC(s32 arg0) {
     SetHeroSeq(arg0, 0x2B);
 }
 
-void func_800B937C(s32 arg0) {
+void SpinHeroHit(s32 arg0) {
     HeroInfo *h;
     HeroInfo *h2;
     u16 *flag;
@@ -2624,7 +2624,7 @@ void func_800B937C(s32 arg0) {
     func_800871E4(arg0);
 }
 
-void func_800B9608(s32 arg0) {
+void SetSpinHeroFlip(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *e;
@@ -2651,7 +2651,7 @@ void func_800B9608(s32 arg0) {
     h->hero_move->jump_dir = -1;
 }
 
-void func_800B971C(s32 arg0) {
+void SpinHeroFall(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     EXTengine *eng;
@@ -2673,7 +2673,7 @@ void func_800B971C(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800B9804(s32 arg0) {
+void SetSpinHeroDead(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base = Heroes;
 
@@ -2695,7 +2695,7 @@ void func_800B9804(s32 arg0) {
     func_800898EC(arg0);
 }
 
-void func_800B98B8(s32 arg0) {
+void SpinHeroDead(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     HeroInfo *base2;
@@ -2734,7 +2734,7 @@ void func_800B98B8(s32 arg0) {
     }
 }
 
-void func_800B9A04(s32 arg0) {
+void SetSpinHeroWinner(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     HeroInfo *b2;
@@ -2781,7 +2781,7 @@ void func_800B9A04(s32 arg0) {
     D_800AD12C = 1;
 }
 
-void func_800B9BF8(s32 arg0) {
+void SpinHeroWinner(s32 arg0) {
     HeroInfo *h;
     s32 dy;
 
@@ -2805,7 +2805,7 @@ void func_800B9BF8(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800B9CE0(s32 arg0) {
+void SetSpinHeroLose(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     HeroInfo *base2;
@@ -2852,7 +2852,7 @@ void func_800B9CE0(s32 arg0) {
     func_80026980(h2->hero);
 }
 
-void func_800B9EEC(s32 arg0) {
+void SpinHeroLose(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base = Heroes;
     s32 dy;
@@ -2897,7 +2897,7 @@ void func_800B9EEC(s32 arg0) {
 /* The D_8009D6E8.unk4C hook: claim the first object in reach of player's
  * cylinder that can take mask (within cone of the hero's heading, 0: any).
  * Each arm claims in its own do-while (0); jump2 merges the copies. */
-NAS *func_800BA098(player, mask, unused, cone)
+NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
     s32 player;
     s32 mask;
     s32 unused;
@@ -2987,7 +2987,7 @@ NAS *func_800BA098(player, mask, unused, cone)
     return NULL;
 }
 
-NAS *func_800BA344(s32 idx, s32 mask) {
+NAS *SpinHeroGrabObject(s32 idx, s32 mask) {
     NAS *n;
     EXTengine *he;
     EXTengine *e;
@@ -3028,7 +3028,7 @@ NAS *func_800BA344(s32 idx, s32 mask) {
     return 0;
 }
 
-s32 func_800BA514(s32 arg0) {
+s32 SpinHeroKickCollision(s32 arg0) {
     TrigEntry *tbl;
     VECTOR pos;
     NAS *own;
@@ -3260,7 +3260,7 @@ s32 func_800BA514(s32 arg0) {
     return hit;
 }
 
-s32 func_800BAF1C(s32 idx) {
+s32 SpinHeroCarryCollision(s32 idx) {
     VECTOR v;
     subengine *sub;
     s32 hit;
@@ -3351,7 +3351,7 @@ s32 func_800BAF1C(s32 idx) {
     return hit;
 }
 
-SpinFux *func_800BB230(s32 hero, u16 mask, s32 r) {
+SpinFux *SpinHeroObjectNear(s32 hero, u16 mask, s32 r) {
     SpinFux *best = NULL;
     NAS *n = D_8005AA24;
     EXTengine *eng = Heroes[hero].hero_eng;
@@ -3388,7 +3388,7 @@ SpinFux *func_800BB230(s32 hero, u16 mask, s32 r) {
     return best;
 }
 
-void func_800BB37C(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero) {
+void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero) {
     FlagRecord *r;
     FlagRecord *r2;
     HeroInfo *h;
@@ -3424,16 +3424,16 @@ void func_800BB37C(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero) {
     }
 }
 
-void func_800BB4FC(s32 arg0) {
+void SetSpinHeroFall(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
 }
 
-void func_800BB52C(s32 arg0) {
+void SpinHeroFlip(s32 arg0) {
     D_8009D73C(arg0);
     func_8008502C(arg0);
 }
 
-void func_800BB560(s32 arg0) {
+void SpinCreateShadow(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     EXTengine *shadow = h->hero_shadow;
@@ -3447,7 +3447,7 @@ void func_800BB560(s32 arg0) {
     shadow->sub->unk76 = 0xE00;
 }
 
-s32 func_800BB5F0(s32 arg0) {
+s32 SpinHeroTestFlip(s32 arg0) {
     if (!(D_80051338[arg0].unk54 & 0x4000)) {
         return 0;
     }
@@ -3455,7 +3455,7 @@ s32 func_800BB5F0(s32 arg0) {
     return 1;
 }
 
-s32 func_800BB648(s32 arg0) {
+s32 SpinTestEnd(s32 arg0) {
     s32 act;
     u16 st = Heroes[arg0].hero_status;
 
@@ -3470,7 +3470,7 @@ s32 func_800BB648(s32 arg0) {
     return 1;
 }
 
-s32 func_800BB6B4(s32 arg0) {
+s32 SpinTestEndB(s32 arg0) {
     s32 act;
     u16 st = Heroes[arg0].hero_status;
 
