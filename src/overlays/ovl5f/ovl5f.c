@@ -4,7 +4,7 @@
 #include "bash/engine.h"
 #include "bash/tank.h"
 
-s32 func_800B3B24(arg0)
+s32 TankBotPickTarget(arg0)
 s32 arg0;
 {
     s32 sum;
@@ -15,7 +15,7 @@ s32 arg0;
     mate = Heroes[arg0].hero_teammate;
     sum = 0;
     for (i = 0; i < 4; i++) {
-        if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && D_800CAD50[i].Energy > 0) {
+        if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && TA_players[i].Energy > 0) {
             sum += D_8009D87C[i].unk4;
         }
     }
@@ -25,7 +25,7 @@ s32 arg0;
     r = Random(sum);
     sum = 0;
     for (i = 0; i < 4; i++) {
-        if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && D_800CAD50[i].Energy > 0) {
+        if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && TA_players[i].Energy > 0) {
             sum += D_8009D87C[i].unk4;
             if (r < sum) {
                 return i;
@@ -35,7 +35,7 @@ s32 arg0;
     return -1;
 }
 
-s32 func_800B3C7C(arg0)
+s32 TankBotPickLinedUpTarget(arg0)
 s32 arg0;
 {
     s32 sum;
@@ -54,7 +54,7 @@ s32 arg0;
     sum = 0;
     for (i = start; i < start + 4; i++) {
         j = D_800CA160[i];
-        if (j != arg0 && j != mate && !((h = &Heroes[j])->hero_status & 0xFA00) && D_800CAD50[j].Energy > 0) {
+        if (j != arg0 && j != mate && !((h = &Heroes[j])->hero_status & 0xFA00) && TA_players[j].Energy > 0) {
             sum += D_8009D87C[j].unk4;
             if (D_8005A614[j + 0x5C] != 0 && (u32)Random(0x100) < 0xD3) {
                 continue;
@@ -73,7 +73,7 @@ s32 arg0;
     sum = 0;
     for (i = start; i < start + 4; i++) {
         j = D_800CA160[i];
-        if (j != arg0 && j != mate && !(Heroes[j].hero_status & 0xFA00) && D_800CAD50[j].Energy > 0) {
+        if (j != arg0 && j != mate && !(Heroes[j].hero_status & 0xFA00) && TA_players[j].Energy > 0) {
             sum += D_8009D87C[j].unk4;
             if (r < sum) {
                 return j;
@@ -83,7 +83,7 @@ s32 arg0;
     return -1;
 }
 
-s32 func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
+s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai) {
     EXTengine *te;
     EXTengine *me;
     HeroInfo *hb;
@@ -101,25 +101,25 @@ s32 func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
 
     if (D_8009D908 == 0) {
         i = Random(0x65);
-        if (ai->timer < (u32)i) {
+        if (ai->FirePercentChance < (u32)i) {
             return 0;
         }
     }
     do {
         do {
-            i = ai->unk8;
+            i = ai->Victim;
         } while (0);
     } while (0);
     if (i >= 0) {
     if (((Ovl5fModeView *)D_8005A614)->mode == 5) {
-        te = Heroes[ai->unk8].hero_eng;
+        te = Heroes[ai->Victim].hero_eng;
         a = get_angle(eng->unk10.x - te->unk10.x, eng->unk10.z - te->unk10.z);
         if ((u32)(((eng->unk1E - a) & 0xFFF) - 100) < 0xF39) {
             goto ret0;
         }
     } else {
     d = eng->unk1E;
-    dir = (d + ((D_800CAD50[player].TurretReqdDir - d) << 20 >> 22)) & 0xFFF;
+    dir = (d + ((TA_players[player].TurretReqdDir - d) << 20 >> 22)) & 0xFFF;
     if (GetSandbagValueTank(eng->unk10.x + (-(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
                       eng->unk10.z + (-(D_80068BD4[dir].unk2 << 9) >> 12)) != 0) {
         return 0;
@@ -145,7 +145,7 @@ s32 func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
         }
         do {
             do {
-                te = hb[ai->unk8].hero_eng;
+                te = hb[ai->Victim].hero_eng;
             } while (0);
         } while (0);
         dx = te->unk10.x - ex;
@@ -169,14 +169,14 @@ s32 func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
         }
     }
     }
-    ai->flags |= 0x8000;
+    ai->AIpad |= 0x8000;
     return 1;
     }
 ret0:
     return 0;
 }
 
-void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai) {
+void TankBotDodgeFrom(s32 player, s32 x, s32 z, EXTengine *eng, TA_Bot *ai) {
     s32 ex;
     s32 ez;
     s32 a;
@@ -188,10 +188,10 @@ void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai) 
     ex = eng->unk10.x;
     ez = eng->unk10.z;
     a = get_angle(ex - x, ez - z);
-    ai->unk0 = 2;
-    speed = D_800CAD50[player].Speed;
-    ai->unk4 = (speed / 2 + 0x400) / speed;
-    ai->flags = D_80051244[(a >> 9) & 7];
+    ai->Doing = 2;
+    speed = TA_players[player].Speed;
+    ai->DoingTimer = (speed / 2 + 0x400) / speed;
+    ai->AIpad = D_80051244[(a >> 9) & 7];
     if (D_8009D908 != 0) {
         return;
     }
@@ -199,11 +199,11 @@ void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai) 
     switch (r) {
     case 0:
     case 1:
-        if (ai->flags & 0xA0) {
+        if (ai->AIpad & 0xA0) {
             goto doz;
         }
     dox:
-        if (ai->flags & 0xA0) {
+        if (ai->AIpad & 0xA0) {
             break;
         }
         px = eng->unk10.x;
@@ -218,22 +218,22 @@ void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai) 
                 goto left;
             }
         right:
-            ai->flags |= 0x80;
+            ai->AIpad |= 0x80;
             break;
         }
         if (GetSandbagValueMiss(ex + 0x100, ez) != 0) {
             goto right;
         }
     left:
-        ai->flags |= 0x20;
+        ai->AIpad |= 0x20;
         break;
     case 2:
     case 3:
-        if (ai->flags & 0x50) {
+        if (ai->AIpad & 0x50) {
             goto dox;
         }
     doz:
-        if (ai->flags & 0x50) {
+        if (ai->AIpad & 0x50) {
             break;
         }
         p = eng->unk10.z;
@@ -248,19 +248,19 @@ void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai) 
                 goto up;
             }
         down:
-            ai->flags |= 0x10;
+            ai->AIpad |= 0x10;
             break;
         }
         if (GetSandbagValueMiss(ex, ez - 0x100) != 0) {
             goto down;
         }
     up:
-        ai->flags |= 0x40;
+        ai->AIpad |= 0x40;
         break;
     }
 }
 
-s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
+s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai) {
     NAS *nas;
     EXTengine *te;
     s32 i;
@@ -275,15 +275,15 @@ s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
     if ((u32)Random(D_8009D87C[player].unk0 + 1) < 8) {
         return 0;
     }
-    if (ai->unk0 == 2) {
+    if (ai->Doing == 2) {
         return 0;
     }
-    cur = ai->target;
+    cur = ai->pMine;
     if (cur != NULL) {
         nas = cur;
         type = nas->Type;
         if ((type != Ovl5fASTIndex(0x1303)) | (nas->NASid == 0)) {
-            ai->target = NULL;
+            ai->pMine = NULL;
             return 0;
         }
         te = nas->Engine;
@@ -292,18 +292,18 @@ s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
         }
         return 0;
     }
-    if (++ai->scan >= 8) {
-        ai->scan = 0;
+    if (++ai->nMine >= 8) {
+        ai->nMine = 0;
     }
-    nas = D_800CB0C0[ai->scan];
+    nas = TankMines[ai->nMine];
     if (nas == NULL) {
         return 0;
     }
     te = nas->Engine;
     if (Ovl5fNear(ex = eng->unk10.x, te->unk10.x) || Ovl5fNear(ex = eng->unk10.z, te->unk10.z)) {
     hit:
-        ai->target = nas;
-        func_800B4240(player, te->unk10.x, te->unk10.z, eng, ai);
+        ai->pMine = nas;
+        TankBotDodgeFrom(player, te->unk10.x, te->unk10.z, eng, ai);
         return 1;
     }
     return 0;
@@ -311,7 +311,7 @@ s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5f/ovl5f", D_800B32B8);
 
-void func_800B4688(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
+void TankBotPlanSteerMove(s32 player, EXTengine *eng, TA_Bot *ai) {
     NAS **pp;
     NAS *nas;
     NAS *tgt;
@@ -332,28 +332,28 @@ void func_800B4688(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
     switch (D_8005A648) {
     case 6:
     case 8:
-        r = func_800B3C7C(player);
-        ai->unk8 = r;
+        r = TankBotPickLinedUpTarget(player);
+        ai->Victim = r;
         break;
     case 5:
     case 7:
     case 9:
     default:
-        r = func_800B3B24(player);
-        ai->unk8 = r;
+        r = TankBotPickTarget(player);
+        ai->Victim = r;
         break;
     }
     if (r < 0) {
         goto avg;
     }
-    if (D_800CAD50[player].TurretFiring < 0) {
+    if (TA_players[player].TurretFiring < 0) {
         switch (Random(8)) {
         case 0:
         default:
             if (D_8009D908 == 0 && (u32)Random(D_8009D87C[player].unk0 + 1) < 13) {
-                ai->unk4 = Random(30) + 15;
-                ai->flags = 0;
-                ai->unk0 = 0;
+                ai->DoingTimer = Random(30) + 15;
+                ai->AIpad = 0;
+                ai->Doing = 0;
                 return;
             }
             goto retry;
@@ -371,7 +371,7 @@ void func_800B4688(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
     }
 find:
     j = 0;
-    pp = D_800CAD44;
+    pp = PU_TA_list;
     ex = eng->unk10.x;
     ez = eng->unk10.z;
     for (; j < 3; j++, pp++) {
@@ -392,15 +392,15 @@ find:
 found:
     if (tgt != NULL) {
         e = tgt->Engine;
-        ai->x = e->unk10.x;
-        ai->z = e->unk10.z;
+        ai->TargetX = e->unk10.x;
+        ai->TargetZ = e->unk10.z;
     } else {
         r = Random(9);
-        ai->x = D_800CA17C[r][0];
-        ai->z = D_800CA17C[r][1];
+        ai->TargetX = D_800CA17C[r][0];
+        ai->TargetZ = D_800CA17C[r][1];
     }
-    ai->unk0 = 4;
-    ai->unk4 = 0x5A;
+    ai->Doing = 4;
+    ai->DoingTimer = 0x5A;
     return;
 
 avg:
@@ -422,16 +422,16 @@ avg:
     }
     ax = sx / n;
     az = sz / n;
-    ai->x = ax < 0x800 ? 0xE00 : 0x200;
-    ai->z = az < 0x800 ? 0xE00 : 0x200;
-    ai->unk0 = 7;
-    ai->unk4 = 0xB4;
+    ai->TargetX = ax < 0x800 ? 0xE00 : 0x200;
+    ai->TargetZ = az < 0x800 ? 0xE00 : 0x200;
+    ai->Doing = 7;
+    ai->DoingTimer = 0xB4;
     return;
 
 retry:
-    if (ai->unk8 >= 0) {
-        ai->unk0 = 6;
-        ai->unk4 = 0x5A;
+    if (ai->Victim >= 0) {
+        ai->Doing = 6;
+        ai->DoingTimer = 0x5A;
         return;
     }
     if ((u32)Random(100) < 30) {
@@ -440,7 +440,7 @@ retry:
     goto avg;
 }
 
-void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
+void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai) {
     EXTengine *te;
     EXTengine *e;
     NAS *nas;
@@ -465,33 +465,33 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
     switch (D_8005A648) {
     case 6:
     case 8:
-        r = func_800B3C7C(player);
+        r = TankBotPickLinedUpTarget(player);
         break;
     case 5:
     case 7:
     case 9:
     default:
-        r = func_800B3B24(player);
+        r = TankBotPickTarget(player);
         break;
     }
-    ai->unk8 = r;
-    ai->unk4 = 30;
-    if (ai->target != NULL && func_800B4490(player, eng, ai) != 0) {
+    ai->Victim = r;
+    ai->DoingTimer = 30;
+    if (ai->pMine != NULL && TankBotAvoidMines(player, eng, ai) != 0) {
         return;
     }
     switch (Random(8)) {
     case 0:
         if (D_8009D908 == 0 && (u32)Random(D_8009D87C[player].unk0 + 1) < 13) {
-            ai->unk4 = Random(30) + 15;
-            ai->flags = 0;
-            ai->unk0 = 0;
+            ai->DoingTimer = Random(30) + 15;
+            ai->AIpad = 0;
+            ai->Doing = 0;
             return;
         }
         goto chase;
     case 1:
     find:
         j = 0;
-        pp = D_800CAD44;
+        pp = PU_TA_list;
         ex = eng->unk10.x;
         ez = eng->unk10.z;
         for (; j < 3; j++, pp++) {
@@ -527,9 +527,9 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
                 goto nz;
             }
         }
-        speed = D_800CAD50[player].Speed;
-        ai->unk0 = 5;
-        ai->unk4 = (speed / 2 + 0x200) / speed;
+        speed = TA_players[player].Speed;
+        ai->Doing = 5;
+        ai->DoingTimer = (speed / 2 + 0x200) / speed;
         for (;;) {
             switch (Random(4)) {
             case 0:
@@ -538,7 +538,7 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
                 if (D_800CB100 < x || GetSandbagValueMiss(x, ez) != 0) {
                     continue;
                 }
-                ai->flags = 0x20;
+                ai->AIpad = 0x20;
                 return;
             case 1:
             nx:
@@ -546,7 +546,7 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
                 if (x < 0 || GetSandbagValueMiss(x, ez) != 0) {
                     continue;
                 }
-                ai->flags = 0x80;
+                ai->AIpad = 0x80;
                 return;
             case 2:
             pz:
@@ -554,7 +554,7 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
                 if (D_800CB104 < z || GetSandbagValueMiss(ex, z) != 0) {
                     continue;
                 }
-                ai->flags = 0x10;
+                ai->AIpad = 0x10;
                 return;
             case 3:
             nz:
@@ -562,7 +562,7 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
                 if (z < 0 || GetSandbagValueMiss(ex, z) != 0) {
                     continue;
                 }
-                ai->flags = 0x40;
+                ai->AIpad = 0x40;
                 return;
             }
             return;
@@ -573,20 +573,20 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
     case 6:
     case 7:
     chase:
-        if (ai->unk8 < 0) {
+        if (ai->Victim < 0) {
             goto find;
         }
-        tab = D_800CAD50;
+        tab = TA_players;
         ta = &tab[player];
         delay = ta->MainWeaponFireDelay;
         if (delay < 5) {
         aim:
-            e = Heroes[ai->unk8].hero_eng;
+            e = Heroes[ai->Victim].hero_eng;
             a = get_angle(e->unk10.x - eng->unk10.x, e->unk10.z - eng->unk10.z);
-            ai->unk0 = 4;
-            aspeed = D_800CAD50[player].Speed;
-            ai->unk4 = (aspeed / 2 + 0x200) / aspeed;
-            ai->flags = D_80051244[(a >> 9) & 7];
+            ai->Doing = 4;
+            aspeed = TA_players[player].Speed;
+            ai->DoingTimer = (aspeed / 2 + 0x200) / aspeed;
+            ai->AIpad = D_80051244[(a >> 9) & 7];
             return;
         }
         if (D_8009D908 != 0) {
@@ -597,24 +597,24 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
                 goto aim;
             }
         }
-        e = Heroes[ai->unk8].hero_eng;
-        func_800B4240(player, e->unk10.x, e->unk10.z, eng, ai);
+        e = Heroes[ai->Victim].hero_eng;
+        TankBotDodgeFrom(player, e->unk10.x, e->unk10.z, eng, ai);
         return;
     case 2:
-        tab2 = D_800CAD50;
+        tab2 = TA_players;
         ta = &tab2[player];
         if (ta->SubWeaponRounds <= 0) {
             goto chase;
         }
         sspeed = ta->Speed;
-        ai->flags |= 0x2000;
-        ai->unk4 = (sspeed / 2 + 0x200) / sspeed;
+        ai->AIpad |= 0x2000;
+        ai->DoingTimer = (sspeed / 2 + 0x200) / sspeed;
         return;
     }
 }
 
-void func_800B4FAC(s32 player) {
-    Ovl5fAITarget *ai;
+void TankBotSteer(s32 player) {
+    TA_Bot *ai;
     EXTengine *eng;
     EXTengine *te;
     s32 buttons;
@@ -622,22 +622,22 @@ void func_800B4FAC(s32 player) {
     s32 a;
 
     eng = Heroes[player].hero_eng;
-    ai = (Ovl5fAITarget *)(D_800CAFFC + player * 0x2C);
-    if (ai->timer == 0) {
-        ai->timer = D_8009D87C[player].unk0 * 0x55 / 32 + 5;
+    ai = &TankBotAI[player];
+    if (ai->FirePercentChance == 0) {
+        ai->FirePercentChance = D_8009D87C[player].unk0 * 0x55 / 32 + 5;
     }
-    if (--ai->unk4 <= 0) {
-        func_800B4688(player, eng, ai);
+    if (--ai->DoingTimer <= 0) {
+        TankBotPlanSteerMove(player, eng, ai);
     }
     buttons = 0;
-    switch (ai->unk0) {
+    switch (ai->Doing) {
     case 4:
     case 7:
-        d = eng->unk10.x - ai->x;
+        d = eng->unk10.x - ai->TargetX;
         if ((u32)(d + 99) < 199) {
-            ai->unk4 = 0;
+            ai->DoingTimer = 0;
         }
-        a = get_angle(d, eng->unk10.z - ai->z) - eng->unk1E;
+        a = get_angle(d, eng->unk10.z - ai->TargetZ) - eng->unk1E;
         a = (a << 20) >> 20;
         if (a > 40) {
             buttons = 0x820;
@@ -647,7 +647,7 @@ void func_800B4FAC(s32 player) {
         }
         break;
     case 6:
-        te = Heroes[ai->unk8].hero_eng;
+        te = Heroes[ai->Victim].hero_eng;
         a = get_angle(eng->unk10.x - te->unk10.x, eng->unk10.z - te->unk10.z) - eng->unk1E;
         a = (a << 20) >> 20;
         if (a > 70) {
@@ -658,9 +658,9 @@ void func_800B4FAC(s32 player) {
         }
         break;
     }
-    ai->flags &= ~0x8000;
-    func_800B3F44(player, eng, ai);
-    if (ai->flags & 0x8000) {
+    ai->AIpad &= ~0x8000;
+    TankBotTryFire(player, eng, ai);
+    if (ai->AIpad & 0x8000) {
         buttons |= 0x8000;
     }
     if (D_800CB284[player] != 0) {
@@ -671,7 +671,7 @@ void func_800B4FAC(s32 player) {
 }
 
 void TA_HeroBot(u32 player) {
-    Ovl5fAITarget *ai;
+    TA_Bot *ai;
     EXTengine *eng;
     EXTengine *te;
     EXTengine *tgt;
@@ -687,58 +687,58 @@ void TA_HeroBot(u32 player) {
         return;
     }
     if (((Ovl5fModeView *)g)->mode == 5) {
-        func_800B4FAC(player);
+        TankBotSteer(player);
         return;
     }
     eng = Heroes[player].hero->Engine;
-    ai = (Ovl5fAITarget *)(D_800CAFFC + player * 0x2C);
-    if (ai->timer == 0) {
-        ai->timer = D_8009D87C[player].unk0 * 0x55 / 32 + 5;
+    ai = &TankBotAI[player];
+    if (ai->FirePercentChance == 0) {
+        ai->FirePercentChance = D_8009D87C[player].unk0 * 0x55 / 32 + 5;
     }
-    if (D_8005A648 != 5 && ai->unk8 >= 0) {
-        tgt = Heroes[ai->unk8].hero_eng;
-        D_800CAD50[player].TurretReqdDir =
+    if (D_8005A648 != 5 && ai->Victim >= 0) {
+        tgt = Heroes[ai->Victim].hero_eng;
+        TA_players[player].TurretReqdDir =
             (get_angle(tgt->unk10.x - eng->unk10.x, tgt->unk10.z - eng->unk10.z) + 0x800) & 0xFFF;
     }
-    if (ai->unk0 == 5 && !(eng->unk10.x & 0x1FF) && !(eng->unk10.z & 0x1FF)) {
-        func_800B4A28(player, eng, ai);
+    if (ai->Doing == 5 && !(eng->unk10.x & 0x1FF) && !(eng->unk10.z & 0x1FF)) {
+        TankBotPlanGridMove(player, eng, ai);
     }
-    if (--ai->unk4 <= 0) {
-        func_800B4A28(player, eng, ai);
+    if (--ai->DoingTimer <= 0) {
+        TankBotPlanGridMove(player, eng, ai);
     } else {
-        func_800B4490(player, eng, ai);
-        func_800B3F44(player, eng, ai);
+        TankBotAvoidMines(player, eng, ai);
+        TankBotTryFire(player, eng, ai);
     }
     if (D_8009D908 == 0 && (u32)Random(D_8009D87C[player].unk0 + 1) >= 9) {
         ex = eng->unk10.x;
         ez = eng->unk10.z;
         for (i = 0; i < 8; i++) {
-            nas = D_800CB0C0[i];
+            nas = TankMines[i];
             if (nas != NULL) {
                 te = nas->Engine;
                 d = ex - te->unk10.x;
                 if (d > 250) {
                     if (d < 500) {
-                        ai->flags &= ~0x80;
+                        ai->AIpad &= ~0x80;
                     }
                 } else if (d < -250 && d > -500) {
-                    ai->flags &= ~0x20;
+                    ai->AIpad &= ~0x20;
                 }
                 d = ez - te->unk10.z;
                 if (d > 250) {
                     if (d < 500) {
-                        ai->flags &= ~0x40;
+                        ai->AIpad &= ~0x40;
                     }
                 } else if (d < -250 && d > -500) {
-                    ai->flags &= ~0x10;
+                    ai->AIpad &= ~0x10;
                 }
             }
         }
     }
-    set_joypad((u8 *)&D_80051338[player], ai->flags);
+    set_joypad((u8 *)&D_80051338[player], ai->AIpad);
 }
 
-void func_800B5588(void) {
+void TA_PreInitLevel(void) {
     void **p;
     void **p2;
     void **p3;
@@ -835,7 +835,7 @@ void func_800B5588(void) {
     }
 }
 
-void func_800B58B0(void) {
+void TA_InitLevel(void) {
     Ovl5fSetupView *g;
     u8 *src1;
     u8 *src2;
@@ -928,10 +928,10 @@ void func_800B58B0(void) {
         SetHeroAction(i, 0x6C);
     }
     for (i = 2; i >= 0; i--) {
-        D_800CAD44[i] = NULL;
+        PU_TA_list[i] = NULL;
     }
     for (i = 7; i >= 0; i--) {
-        D_800CB0C0[i] = NULL;
+        TankMines[i] = NULL;
     }
     switch (D_8005A648) {
     default:
@@ -1029,7 +1029,7 @@ void func_800B58B0(void) {
     D_800CB248 = 0x1E0 / (D_8009D88E + 1);
 }
 
-void func_800B5FC4(void) {
+void TA_UpdateLevel(void) {
     s32 i;
     TA_player *ta;
     HeroInfo *hero;
@@ -1043,7 +1043,7 @@ void func_800B5FC4(void) {
         D_800CB0F8--;
     }
     for (i = 0; i < 4; i++) {
-        ta = &D_800CAD50[i];
+        ta = &TA_players[i];
         eng = Heroes[i].hero_eng;
         e = ta->Energy;
         ta->PosX = eng->unk10.x;
@@ -1102,7 +1102,7 @@ void func_800B5FC4(void) {
     }
 }
 
-void func_800B62A4(void) {
+void FinishTankLevel(void) {
     s32 i;
     s32 best;
     s32 bestHealth;
@@ -1123,7 +1123,7 @@ void func_800B62A4(void) {
     if (best != -1) {
         for (i = 0; i < 4; i++) {
             if (!(Heroes[i].hero_status & 0xFA00) && i != best) {
-                D_800CAD50[i].RequestQuickFinish = 1;
+                TA_players[i].RequestQuickFinish = 1;
             }
         }
     }
@@ -1169,7 +1169,7 @@ void func_800B6354(s32 player, s32 damage) {
         return;
     }
     h->hero->UserInfo.status = 0x20;
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     if (D_8005A648 == 9 && (u32)(player - 2) < 2) {
         SetMoeJoeMode(player, 0x69);
     } else {
@@ -1254,31 +1254,31 @@ void TA_InitHero(u32 player) {
     SetTankHeroIdle(player);
     switch ((u32)player) {
     case 0:
-        D_800CAD50[player].MoveDir = 2;
-        D_800CAD50[player].FaceDir = 2;
-        D_800CAD50[player].RunnerMoving = 2;
-        D_800CAD50[player].RunnerFacing = 2;
+        TA_players[player].MoveDir = 2;
+        TA_players[player].FaceDir = 2;
+        TA_players[player].RunnerMoving = 2;
+        TA_players[player].RunnerFacing = 2;
         break;
     case 1:
-        D_800CAD50[player].MoveDir = 3;
-        D_800CAD50[player].FaceDir = 3;
-        D_800CAD50[player].RunnerMoving = 3;
-        D_800CAD50[player].RunnerFacing = 3;
+        TA_players[player].MoveDir = 3;
+        TA_players[player].FaceDir = 3;
+        TA_players[player].RunnerMoving = 3;
+        TA_players[player].RunnerFacing = 3;
         break;
     case 2:
-        D_800CAD50[player].MoveDir = 0;
-        D_800CAD50[player].FaceDir = 0;
-        D_800CAD50[player].RunnerMoving = 0;
-        D_800CAD50[player].RunnerFacing = 0;
+        TA_players[player].MoveDir = 0;
+        TA_players[player].FaceDir = 0;
+        TA_players[player].RunnerMoving = 0;
+        TA_players[player].RunnerFacing = 0;
         break;
     case 3:
-        D_800CAD50[player].MoveDir = 1;
-        D_800CAD50[player].FaceDir = 1;
-        D_800CAD50[player].RunnerMoving = 1;
-        D_800CAD50[player].RunnerFacing = 1;
+        TA_players[player].MoveDir = 1;
+        TA_players[player].FaceDir = 1;
+        TA_players[player].RunnerMoving = 1;
+        TA_players[player].RunnerFacing = 1;
         break;
     }
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     ta->Speed = D_800C8F14[Heroes[player].hero_name - 1];
     hh = &Heroes[player];
     ta->SpeedX = 0;
@@ -1331,7 +1331,7 @@ void TA_InitHero(u32 player) {
     }
     g2 = D_8005A614;
     if (g2[player + 0x5C] != 0) {
-        bot = (TA_Bot *)(D_800CAFFC + player * 0x2C);
+        bot = &TankBotAI[player];
         bot->Doing = 0;
         bot->DoingTimer = 0;
         bot->Victim = 0;
@@ -1371,7 +1371,7 @@ void TA_MoveHero(u32 player) {
     hb = Heroes;
     hero = &hb[player];
     eng = hero->hero_eng;
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     func_800B71F8(player);
     if (D_8005A648 != 5) {
         x = eng->unk10.x;
@@ -1416,10 +1416,10 @@ void TA_MoveHero(u32 player) {
 
 void AnimateTank(u32 player) {
     if (D_8005A614[player + 0x5C] != 0) {
-        if (++D_800CAD50[player].IdleAnimCt >= 0x50 && D_800CB0F0 == 0) {
-            D_800CAD50[player].IdleAnimCt = Random(0x1E);
+        if (++TA_players[player].IdleAnimCt >= 0x50 && D_800CB0F0 == 0) {
+            TA_players[player].IdleAnimCt = Random(0x1E);
             SetHeroSeq(player, 0x5A);
-            D_800CAD50[player].IdleAnimCt = 0;
+            TA_players[player].IdleAnimCt = 0;
             PlaySfx(D_800C94A8[Heroes[player].hero_name - 1], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00,
                     0);
             return;
@@ -1432,7 +1432,7 @@ void ResetToBasicWeapon(s32 player) {
     TA_player *ta;
     subengine *sub;
 
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     ta->MainWeaponRounds = 999;
     ta->MainWeaponFireDelay = 30;
     sub = Heroes[player].hero_sub->next;
@@ -1516,7 +1516,7 @@ void func_800B71F8(s32 player) {
     s32 pad;
     u16 anim;
 
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     eng = Heroes[player].hero_eng;
     sub = Heroes[player].hero_sub->next;
     sub2 = sub->next;
@@ -1598,7 +1598,7 @@ void func_800B71F8(s32 player) {
             if (puff != NULL) {
                 Ovl5fPuffSetAngle(puff, eng->unk1E);
             }
-            tab = D_800CAD50;
+            tab = TA_players;
             ta2 = &tab[player];
             if (ta2->MainWeaponType == 3) {
                 n = CreateNAS(e->unk10.x, e->unk10.y - 0x12C, e->unk10.z, 0x130B, 0x11);
@@ -1680,7 +1680,7 @@ void func_800B77E8(s32 player) {
         return;
     }
     eng = Heroes[player].hero_eng;
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     sub = eng->sub->next;
     sub2 = sub->next;
     if (ta->TurretReqdDir != -1) {
@@ -1936,18 +1936,18 @@ void func_800B77E8(s32 player) {
             if (ta->SubWeaponFireDelay == 0) {
                 if (((Ovl5fModeView *)D_8005A614)->mode == 5) {
                     for (i = 0; i < 8; i++) {
-                        if (D_800CB0C0[i] != NULL && D_800CB0C0[i]->UserInfo.user1 == player) {
+                        if (TankMines[i] != NULL && TankMines[i]->UserInfo.user1 == player) {
                             goto subdone;
                         }
                     }
                     for (i = 0; i < 8; i++) {
-                        if (D_800CB0C0[i] == NULL) {
+                        if (TankMines[i] == NULL) {
                             break;
                         }
                     }
                     mine = CreateNAS(eng->unk10.x, eng->unk10.y + 0x14, eng->unk10.z, 0x131D, 0x11);
                     if (mine != NULL) {
-                        D_800CB0C0[i] = mine;
+                        TankMines[i] = mine;
                         mine->UserInfo.user1 = player;
                     }
                     ta->SubWeaponFireDelay = 0x1E;
@@ -2032,19 +2032,19 @@ void SetTankHeroIdle(u32 player) {
         Heroes[player].hero_idle_count = Random(0x96) + 0x5A;
         SetHeroSeq(player, 0x59);
         eng = Heroes[player].hero_eng;
-        if (D_800CAD50[player].HullSFX != 0) {
-            D_800CAD50[player].HullSFX = 0;
+        if (TA_players[player].HullSFX != 0) {
+            TA_players[player].HullSFX = 0;
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
             }
         }
-        if (D_800CAD50[player].TurretSFX != 0) {
-            D_800CAD50[player].TurretSFX = 0;
-            StopSfx(D_800CAD50[player].TurretSFXHandler);
+        if (TA_players[player].TurretSFX != 0) {
+            TA_players[player].TurretSFX = 0;
+            StopSfx(TA_players[player].TurretSFXHandler);
         }
-        if (D_800CAD50[player].FireBreatherSFX != 0) {
-            D_800CAD50[player].FireBreatherSFX = 0;
-            StopSfx(D_800CAD50[player].FireBreatherSFXHandler);
+        if (TA_players[player].FireBreatherSFX != 0) {
+            TA_players[player].FireBreatherSFX = 0;
+            StopSfx(TA_players[player].FireBreatherSFXHandler);
         }
         AnimateTank(player);
     }
@@ -2095,7 +2095,7 @@ void TankHeroTurn(u32 player) {
         }
         hb = Heroes;
         h = &hb[player];
-        ta = &D_800CAD50[player];
+        ta = &TA_players[player];
         eng = h->hero_eng;
         sub = h->hero_sub->next->next;
         sub->unk12 += ta->ModeSpeed;
@@ -2150,7 +2150,7 @@ void func_800B9430(s32 player) {
     s32 hit;
     u16 name;
 
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     eng = Heroes[player].hero_eng;
     bank = ta->BankAngle;
     pad = ((PadButtons *)D_80051338)[player].unk50 & 0xF0;
@@ -2282,7 +2282,7 @@ found:
         D_800CB0E8 = eng;
         D_800CB0E0 = -1;
     }
-    o = &D_800CAD50[hit];
+    o = &TA_players[hit];
     o->SpeedX += ta->SpeedX / 2;
     ta->SpeedX /= 4;
     o->SpeedZ += ta->SpeedZ / 2;
@@ -2320,7 +2320,7 @@ void func_800B993C(s32 player) {
     s32 i;
 
     pad = ((PadButtons *)D_80051338)[player].unk50;
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     eng = Heroes[player].hero_eng;
     speed = ta->Speed;
     dir = pad & 0xF0;
@@ -2508,7 +2508,7 @@ void TankHeroMove(u32 player) {
         if (D_800CB0F0 != 0) {
             return;
         }
-        ta = &D_800CAD50[player];
+        ta = &TA_players[player];
         eng = Heroes[player].hero_eng;
         if (ta->RequestQuickFinish != 0) {
             func_800B6354(player, 9999);
@@ -2736,7 +2736,7 @@ void SetTankHeroRecoil(u32 player) {
         done = 0;
     }
     if (done == 0) {
-        D_800CAD50[player].SpeedY = -0x64;
+        TA_players[player].SpeedY = -0x64;
         SetHeroSeq(player, 0x57);
         Heroes[player].hero_immunity = 0x3C;
         PlaySfx(D_800C9428[Heroes[player].hero_name - 1][Random(4)], NULL, &Heroes[player].hero_eng->unk10, 0x1000,
@@ -2751,8 +2751,8 @@ void TankHeroRecoil(u32 arg0) {
 
     eng = Heroes[arg0].hero_eng;
     h = &Heroes[arg0];
-    D_800CAD50[arg0].SpeedY += 0xC;
-    p = &D_800CAD50[arg0];
+    TA_players[arg0].SpeedY += 0xC;
+    p = &TA_players[arg0];
     eng->unk10.y += p->SpeedY;
     if (eng->unk10.y > 0) {
         p->SpeedY = -p->SpeedY / 2;
@@ -2991,7 +2991,7 @@ retry:
         PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
     skip:
         if (((Ovl5fModeView *)D_8005A614)->mode == 5 && D_8005A614[hit + 0x5C] != 0 &&
-            D_800CAD50[hit].ForceFieldDelay == 0 && D_8009D908 == 0 &&
+            TA_players[hit].ForceFieldDelay == 0 && D_8009D908 == 0 &&
             (u32)Random(0x20) < D_8009D87C[hit].unk0) {
             D_800CB284[hit] = 1;
             goto hit2;
@@ -3066,8 +3066,8 @@ void PlotLaserBitTA(NAS *nas) {
         }
         PlaySfx(0x4E7, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         for (i = 0; i < 3; i++) {
-            if (D_800CAD50[fux->player].MainWeaponNas[i] == nas) {
-                D_800CAD50[fux->player].MainWeaponNas[i] = NULL;
+            if (TA_players[fux->player].MainWeaponNas[i] == nas) {
+                TA_players[fux->player].MainWeaponNas[i] = NULL;
                 break;
             }
         }
@@ -3097,8 +3097,8 @@ void PlotFlamerBitTA(NAS *nas) {
         }
         PlaySfx(0x4E4, NULL, NULL, 0x1000, 0x1E00, 0);
         for (i = 0; i < 3; i++) {
-            if (D_800CAD50[fux->player].MainWeaponNas[i] == nas) {
-                D_800CAD50[fux->player].MainWeaponNas[i] = NULL;
+            if (TA_players[fux->player].MainWeaponNas[i] == nas) {
+                TA_players[fux->player].MainWeaponNas[i] = NULL;
                 break;
             }
         }
@@ -3198,8 +3198,8 @@ void PlotFlubberTA(NAS *nas) {
             PlaySfx(0x4E5, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         } while (0);
         for (i = 0; i < 3; i++) {
-            if (D_800CAD50[fux->player].MainWeaponNas[i] == nas) {
-                D_800CAD50[fux->player].MainWeaponNas[i] = NULL;
+            if (TA_players[fux->player].MainWeaponNas[i] == nas) {
+                TA_players[fux->player].MainWeaponNas[i] = NULL;
                 break;
             }
         }
@@ -3260,8 +3260,8 @@ void PlotSwirlyTA(NAS *nas) {
         }
         PlaySfx(0x4E6, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         for (i = 0; i < 3; i++) {
-            if (D_800CAD50[fux->player].MainWeaponNas[i] == nas) {
-                D_800CAD50[fux->player].MainWeaponNas[i] = NULL;
+            if (TA_players[fux->player].MainWeaponNas[i] == nas) {
+                TA_players[fux->player].MainWeaponNas[i] = NULL;
                 break;
             }
         }
@@ -3695,8 +3695,8 @@ void PlotMine(NAS *nas) {
         PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         CreateMineShrapnelBits(nas);
         for (i = 0; i < 8; i++) {
-            if (D_800CB0C0[i] == nas) {
-                D_800CB0C0[i] = NULL;
+            if (TankMines[i] == nas) {
+                TankMines[i] = NULL;
                 break;
             }
         }
@@ -3826,8 +3826,8 @@ found:
     } else if (hit >= 0) {
         PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         for (j = 0; j < 8; j++) {
-            if (D_800CB0C0[j] == nas) {
-                D_800CB0C0[j] = NULL;
+            if (TankMines[j] == nas) {
+                TankMines[j] = NULL;
                 break;
             }
         }
@@ -3840,7 +3840,7 @@ found:
         } else {
             func_800B6354(hit, 0x3C);
         }
-        ta = &D_800CAD50[hit];
+        ta = &TA_players[hit];
         ta->SpeedX = 0;
         ta->SpeedZ = 0;
         CreateMineShrapnelBits(nas);
@@ -3899,7 +3899,7 @@ void PlotTorpedo(NAS *nas) {
             return;
         }
         h2->hero_health = 1;
-        D_800CAD50[player].Energy = 1;
+        TA_players[player].Energy = 1;
         h2->hero_immunity = 0;
         func_800B6354(player, 0x4B0);
     }
@@ -4139,7 +4139,7 @@ void PlotPickupGenerator_TA(NAS *nas)
         {
           break;
         }
-        if (D_800CAD44[i] != 0)
+        if (PU_TA_list[i] != 0)
         {
           continue;
         }
@@ -4154,7 +4154,7 @@ void PlotPickupGenerator_TA(NAS *nas)
         }
         for (j = 0; j < 3; j++)
         {
-          p = D_800CAD44[j];
+          p = PU_TA_list[j];
           if (p != 0)
           {
             if ((p->Engine->unk10.x != new_var) || (p->Engine->unk10.z != z))
@@ -4172,7 +4172,7 @@ void PlotPickupGenerator_TA(NAS *nas)
           continue;
         }
         eng = p->Engine;
-        D_800CAD44[i] = p;
+        PU_TA_list[i] = p;
         r = Random(3);
         switch (r)
         {
@@ -4208,7 +4208,7 @@ void PlotPickupGenerator_TA(NAS *nas)
         {
           break;
         }
-        if (D_800CAD44[i] != 0)
+        if (PU_TA_list[i] != 0)
         {
           continue;
         }
@@ -4220,7 +4220,7 @@ void PlotPickupGenerator_TA(NAS *nas)
         }
         for (k = 0; k < 3; k++)
         {
-          p = D_800CAD44[k];
+          p = PU_TA_list[k];
           if (((p != 0) && (p->Engine->unk10.x == x)) && (p->Engine->unk10.z == z))
           {
             return;
@@ -4232,7 +4232,7 @@ void PlotPickupGenerator_TA(NAS *nas)
         {
           return;
         }
-        D_800CAD44[i] = p;
+        PU_TA_list[i] = p;
         nas->UserInfo.flags = ((D_8009D87C[3].unk0 * 2) - D_8005A614[0xB4]) * 30;
         if (((u16) (nas->UserInfo.flags & 0xFFFE)) < 60)
         {
@@ -4382,7 +4382,7 @@ void PlotHelicopterTA(NAS *nas) {
     if (fux->unk30 != 3 || D_800CB0F0 != 0 || (x & 0x1FF) != 0x100) {
         return;
     }
-    for (i = 0, s = D_800CAD44; i < 3; i++, s++) {
+    for (i = 0, s = PU_TA_list; i < 3; i++, s++) {
         p = *s;
         if (p != NULL) {
             if (i) {
@@ -4405,13 +4405,13 @@ void PlotHelicopterTA(NAS *nas) {
     }
     chance = 0;
     for (i = 0; i < 4; i++) {
-        if (Heroes[i].hero_name != 9 && D_800CAD50[i].Energy <= 0) {
+        if (Heroes[i].hero_name != 9 && TA_players[i].Energy <= 0) {
             chance += 2000;
         }
     }
     n = 0;
     g = (Ovl5fModeView *)D_8005A614;
-    slot = D_800CAD44;
+    slot = PU_TA_list;
 loop:
     if (n < 3) {
         if (*slot == NULL) {
@@ -4605,7 +4605,7 @@ void PlotPickupTA(NAS *nas) {
         fz = eng->unk10.z;
         lim = 0x100;
         for (j = 0; j < 8; j++) {
-            n = D_800CB0C0[j];
+            n = TankMines[j];
             if (n == NULL) {
                 continue;
             }
@@ -4661,8 +4661,8 @@ void PlotPickupTA(NAS *nas) {
         case 6:
             CreateNAS(eng->unk10.x, -0x14, eng->unk10.z, 0x1303, 0x11);
             for (i = 0; i < 3; i++) {
-                if (D_800CAD44[i] == nas) {
-                    D_800CAD44[i] = NULL;
+                if (PU_TA_list[i] == nas) {
+                    PU_TA_list[i] = NULL;
                     break;
                 }
             }
@@ -4703,8 +4703,8 @@ void PlotPickupTA(NAS *nas) {
         Ovl5fSpawnBit1605(&eng->unk10, 3);
         PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         for (k = 0; k < 3; k++) {
-            if (D_800CAD44[k] == nas) {
-                D_800CAD44[k] = NULL;
+            if (PU_TA_list[k] == nas) {
+                PU_TA_list[k] = NULL;
                 break;
             }
         }
@@ -4723,57 +4723,57 @@ void PlotPickupTA(NAS *nas) {
         CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1306, 0x11);
         goto puff;
     case 5:
-        D_800CAD50[hit].SubWeaponRounds++;
+        TA_players[hit].SubWeaponRounds++;
         break;
     case 4:
-        D_800CAD50[hit].Energy += 0x14;
-        if (D_800CAD50[hit].Energy >= 0x64) {
-            D_800CAD50[hit].Energy = 0x63;
+        TA_players[hit].Energy += 0x14;
+        if (TA_players[hit].Energy >= 0x64) {
+            TA_players[hit].Energy = 0x63;
         }
-        Heroes[hit].hero_health = D_800CAD50[hit].Energy;
+        Heroes[hit].hero_health = TA_players[hit].Energy;
         break;
     case 0:
     case 1:
     case 2:
     case 3:
         sub = Heroes[hit].hero_sub->next;
-        D_800CAD50[hit].TurretFiring = -1;
+        TA_players[hit].TurretFiring = -1;
         st = nas->UserInfo.status;
         if (st != 2) {
-            if (st != D_800CAD50[hit].MainWeaponType) {
-                D_800CAD50[hit].MainWeaponRounds = 2;
+            if (st != TA_players[hit].MainWeaponType) {
+                TA_players[hit].MainWeaponRounds = 2;
             } else {
-                D_800CAD50[hit].MainWeaponRounds += 2;
+                TA_players[hit].MainWeaponRounds += 2;
             }
             anim = 0x2008;
         } else {
-            if (D_800CAD50[hit].MainWeaponType != st) {
-                D_800CAD50[hit].MainWeaponRounds = st;
+            if (TA_players[hit].MainWeaponType != st) {
+                TA_players[hit].MainWeaponRounds = st;
             } else {
-                D_800CAD50[hit].MainWeaponRounds += 2;
+                TA_players[hit].MainWeaponRounds += 2;
             }
             anim = 0x200B;
         }
         sub->unk74 = anim;
-        D_800CAD50[hit].MainWeaponType = nas->UserInfo.status;
+        TA_players[hit].MainWeaponType = nas->UserInfo.status;
         break;
     case 7:
         sub = Heroes[hit].hero_sub->next;
         sub->unk74 = 0x2008;
         if (hit < 2) {
-            D_800CAD50[hit].SubWeaponRounds++;
+            TA_players[hit].SubWeaponRounds++;
         }
-        if (D_800CAD50[hit].MainWeaponType != 3) {
-            D_800CAD50[hit].MainWeaponType = 3;
-            D_800CAD50[hit].MainWeaponRounds = 1;
+        if (TA_players[hit].MainWeaponType != 3) {
+            TA_players[hit].MainWeaponType = 3;
+            TA_players[hit].MainWeaponRounds = 1;
         } else {
-            D_800CAD50[hit].MainWeaponRounds++;
+            TA_players[hit].MainWeaponRounds++;
         }
         break;
     }
     for (i = 0; i < 3; i++) {
-        if (D_800CAD44[i] == nas) {
-            D_800CAD44[i] = NULL;
+        if (PU_TA_list[i] == nas) {
+            PU_TA_list[i] = NULL;
             break;
         }
     }
@@ -4856,7 +4856,7 @@ bool MissileCollideWithPickup(EXTengine *eng) {
         if (i >= 3) {
             return 0;
         }
-        pickup = D_800CAD44[i];
+        pickup = PU_TA_list[i];
         if (pickup == NULL) {
             continue;
         }
@@ -4867,8 +4867,8 @@ bool MissileCollideWithPickup(EXTengine *eng) {
             SpawnPuff1605(&pe->unk10, 0x10);
             PlaySfx(0x4B8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             for (j = 0; j < 3; j++) {
-                if (D_800CAD44[j] == pickup) {
-                    D_800CAD44[j] = NULL;
+                if (PU_TA_list[j] == pickup) {
+                    PU_TA_list[j] = NULL;
                     break;
                 }
             }
@@ -6750,7 +6750,7 @@ void func_800C4548(s32 player) {
     s32 dz;
     u16 anim;
 
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     eng = Heroes[player].hero_eng;
     sub = Heroes[player].hero_sub->next;
     sub2 = sub->next;
@@ -6796,7 +6796,7 @@ void func_800C4548(s32 player) {
             if (puff != NULL) {
                 Ovl5fPuffSetAngle(puff, eng->unk1E);
             }
-            if (D_800CAD50[player].MainWeaponType == 3) {
+            if (TA_players[player].MainWeaponType == 3) {
                 n = CreateNAS(e->unk10.x, e->unk10.y - 0x12C, e->unk10.z, 0x130B, 0x11);
                 if (n != NULL) {
                     PlaySfx(0x4F3, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -6812,7 +6812,7 @@ void func_800C4548(s32 player) {
                     fux->vz = dz >> 13;
                     fux->unk2C = player;
                     fux->unk30 = 1;
-                    D_800CAD50[player].MainWeaponRounds--;
+                    TA_players[player].MainWeaponRounds--;
                 }
             }
         }
@@ -6854,19 +6854,19 @@ void func_800C49F8(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     Heroes[arg0].hero_idle_count = Random(0x96) + 0x5A;
     eng = Heroes[arg0].hero_eng;
-    if (D_800CAD50[arg0].HullSFX != 0) {
-        D_800CAD50[arg0].HullSFX = 0;
+    if (TA_players[arg0].HullSFX != 0) {
+        TA_players[arg0].HullSFX = 0;
         if (eng->sfx != NULL) {
             StopSfx(eng->sfx);
         }
     }
-    if (D_800CAD50[arg0].TurretSFX != 0) {
-        D_800CAD50[arg0].TurretSFX = 0;
-        StopSfx(D_800CAD50[arg0].TurretSFXHandler);
+    if (TA_players[arg0].TurretSFX != 0) {
+        TA_players[arg0].TurretSFX = 0;
+        StopSfx(TA_players[arg0].TurretSFXHandler);
     }
-    if (D_800CAD50[arg0].FireBreatherSFX != 0) {
-        D_800CAD50[arg0].FireBreatherSFX = 0;
-        StopSfx(D_800CAD50[arg0].FireBreatherSFXHandler);
+    if (TA_players[arg0].FireBreatherSFX != 0) {
+        TA_players[arg0].FireBreatherSFX = 0;
+        StopSfx(TA_players[arg0].FireBreatherSFXHandler);
     }
     if (arg0 == 3) {
         s32 v;
@@ -6917,7 +6917,7 @@ void func_800C4BC0(s32 arg0) {
             ((Ovl5fUnk74 *)Heroes[2].hero_sub)->unk74 = val2;
             PlaySfx(0x260, 0, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
         }
-        D_800CAD50[arg0].SpeedY = -0x64;
+        TA_players[arg0].SpeedY = -0x64;
         Heroes[arg0].hero_immunity = 0x3C;
         do {
             z = 0;
@@ -6953,7 +6953,7 @@ void func_800C4DCC(s32 player) {
     EXTengine *e;
     subengine *sub;
     HeroInfo *h;
-    Ovl5fAITarget *ai;
+    TA_Bot *ai;
     Ovl5fUnk74 *u;
     TA_player *ta;
     s32 ex;
@@ -6994,16 +6994,16 @@ void func_800C4DCC(s32 player) {
     if (D_800CB0F0 != 0) {
         return;
     }
-    ta = &D_800CAD50[player];
+    ta = &TA_players[player];
     eng = Heroes[player].hero_eng;
     speed = ta->Speed;
     sub = eng->sub->next->next;
     saved = ((Ovl5fGameView *)D_8005A614)->w6C;
     ((Ovl5fGameView *)D_8005A614)->w6C = 1;
-    ai = (Ovl5fAITarget *)(D_800CAFFC + player * 0x2C);
+    ai = &TankBotAI[player];
     TA_HeroBot(player);
     ((Ovl5fGameView *)D_8005A614)->w6C = saved;
-    pad = ai->flags;
+    pad = ai->AIpad;
     dir = pad & 0xF0;
     if (dir == 0) {
         return;
@@ -7135,8 +7135,8 @@ void func_800C53B0(s32 arg0) {
     s32 last;
 
     eng = Heroes[arg0].hero_eng;
-    D_800CAD50[arg0].SpeedY += 0xC;
-    p = &D_800CAD50[arg0];
+    TA_players[arg0].SpeedY += 0xC;
+    p = &TA_players[arg0];
     eng->unk10.y += p->SpeedY;
     if (eng->unk10.y > 0) {
         p->SpeedY = -p->SpeedY / 2;
@@ -7262,7 +7262,7 @@ void func_800C57B0(NAS *nas, s32 id) {
     EXTbotai *ai;
     TA_player *ta;
     TA_player *tb;
-    Ovl5fAITarget *t;
+    TA_Bot *t;
     s32 p;
     u16 mode;
     u8 *g;
@@ -7356,7 +7356,7 @@ void func_800C57B0(NAS *nas, s32 id) {
     sub->unk51 = 1;
     sub->unk68 = 0;
     func_800C49F8(p);
-    tb = D_800CAD50;
+    tb = TA_players;
     ta = &tb[p];
     ta->Speed = 0x1A;
     ta->MoveDir = 0;
@@ -7383,14 +7383,14 @@ void func_800C57B0(NAS *nas, s32 id) {
     ta->MainWeaponFireDelay = 0x1E;
     ta->MainWeaponNas[0] = (NAS *)0xFFEEEEFF;
     ta->MainWeaponNas[2] = (NAS *)0xFFEEEEFF;
-    t = (Ovl5fAITarget *)(D_800CAFFC + p * 0x2C);
-    t->unk0 = 0;
-    t->unk4 = 0;
-    t->unk8 = 0;
-    t->target = NULL;
-    t->unk10 = 0;
-    t->flags = 0;
-    t->timer = 0;
+    t = &TankBotAI[p];
+    t->Doing = 0;
+    t->DoingTimer = 0;
+    t->Victim = 0;
+    t->pMine = NULL;
+    t->pMissile = 0;
+    t->AIpad = 0;
+    t->FirePercentChance = 0;
     if (D_800CB254 == 0x3B && D_800CB258 == D_800CB254) {
         func_8007E93C(0x3B, 0x300E, 0x300F);
         func_8007C830((s32)&Heroes[2].hero_health, (s32)&Heroes[3].hero_health);
@@ -7411,7 +7411,7 @@ void func_800C5BCC(NAS *nas, s32 id) {
     }
     eng = nas->Engine;
     eng->flags = 0x8000;
-    ta = &D_800CAD50[p];
+    ta = &TA_players[p];
     switch (Heroes[p].hero_mode) {
     case 0x6C:
         mode = Heroes[p].hero_mode;
@@ -8160,8 +8160,8 @@ void func_800C7298(NAS *nas) {
     s32 i;
 
     for (i = 0; i < 3; i++) {
-        if (D_800CAD44[i] == nas) {
-            D_800CAD44[i] = NULL;
+        if (PU_TA_list[i] == nas) {
+            PU_TA_list[i] = NULL;
             break;
         }
     }
@@ -8245,8 +8245,8 @@ void InitTorpedo(NAS *nas) {
         KillNAS(nas);
     } else {
         for (i = 0; i < 8; i++) {
-            if (D_800CB0C0[i] == NULL) {
-                D_800CB0C0[i] = nas;
+            if (TankMines[i] == NULL) {
+                TankMines[i] = nas;
                 break;
             }
         }
@@ -8286,8 +8286,8 @@ void InitMine(NAS *nas) {
         KillNAS(nas);
     } else {
         for (i = 0; i < 8; i++) {
-            if (D_800CB0C0[i] == NULL) {
-                D_800CB0C0[i] = nas;
+            if (TankMines[i] == NULL) {
+                TankMines[i] = nas;
                 break;
             }
         }
@@ -8564,8 +8564,8 @@ void func_800C7F18(NAS *nas, s32 player) {
     s32 i;
 
     for (i = 0; i < 3; i++) {
-        if (D_800CAD50[player].MainWeaponNas[i] == nas) {
-            D_800CAD50[player].MainWeaponNas[i] = NULL;
+        if (TA_players[player].MainWeaponNas[i] == nas) {
+            TA_players[player].MainWeaponNas[i] = NULL;
             break;
         }
     }
@@ -8573,30 +8573,30 @@ void func_800C7F18(NAS *nas, s32 player) {
 }
 
 void SetFireBreatherSFX(s32 player, EXTengine *unused, s32 ReqdSFX) {
-    if (D_800CAD50[player].FireBreatherSFX != ReqdSFX) {
-        D_800CAD50[player].FireBreatherSFX = ReqdSFX;
+    if (TA_players[player].FireBreatherSFX != ReqdSFX) {
+        TA_players[player].FireBreatherSFX = ReqdSFX;
         if (ReqdSFX == 0) {
-            StopSfx(D_800CAD50[player].FireBreatherSFXHandler);
+            StopSfx(TA_players[player].FireBreatherSFXHandler);
         } else {
-            PlaySfx(ReqdSFX, &D_800CAD50[player].FireBreatherSFXHandler, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(ReqdSFX, &TA_players[player].FireBreatherSFXHandler, NULL, 0x1000, 0x1E00, 0);
         }
     }
 }
 
 void SetTurretSFX(s32 player, EXTengine *unused, s32 ReqdSFX) {
-    if (D_800CAD50[player].TurretSFX != ReqdSFX) {
-        D_800CAD50[player].TurretSFX = ReqdSFX;
+    if (TA_players[player].TurretSFX != ReqdSFX) {
+        TA_players[player].TurretSFX = ReqdSFX;
         if (ReqdSFX == 0) {
-            StopSfx(D_800CAD50[player].TurretSFXHandler);
+            StopSfx(TA_players[player].TurretSFXHandler);
         } else {
-            PlaySfx(ReqdSFX, &D_800CAD50[player].TurretSFXHandler, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(ReqdSFX, &TA_players[player].TurretSFXHandler, NULL, 0x1000, 0x1E00, 0);
         }
     }
 }
 
 void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX) {
-    if (D_800CAD50[player].HullSFX != ReqdSFX) {
-        D_800CAD50[player].HullSFX = ReqdSFX;
+    if (TA_players[player].HullSFX != ReqdSFX) {
+        TA_players[player].HullSFX = ReqdSFX;
         if (ReqdSFX == 0) {
             if (pEngine->sfx != NULL) {
                 StopSfx(pEngine->sfx);
@@ -8681,15 +8681,15 @@ void TA_CreateShadow(u32 arg0) {
     Heroes[arg0].hero_shadow->flags = 0;
 }
 
-void func_800C8360(void) {
+void TA_StopHeroSfx(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (D_800CAD50[i].TurretSFXHandler != NULL) {
-            StopSfx(D_800CAD50[i].TurretSFXHandler);
+        if (TA_players[i].TurretSFXHandler != NULL) {
+            StopSfx(TA_players[i].TurretSFXHandler);
         }
-        if (D_800CAD50[i].FireBreatherSFXHandler != NULL) {
-            StopSfx(D_800CAD50[i].FireBreatherSFXHandler);
+        if (TA_players[i].FireBreatherSFXHandler != NULL) {
+            StopSfx(TA_players[i].FireBreatherSFXHandler);
         }
     }
 }
@@ -8697,17 +8697,17 @@ void func_800C8360(void) {
 void func_800C83D0(void) {
 }
 
-void func_800C83D8(void) {
-    D_8005AA70[0] = (s32)func_800B5588;
-    D_8005AA70[1] = (s32)func_800B58B0;
-    D_8005AA70[2] = (s32)func_800B58B0;
-    D_8005AA70[3] = (s32)func_800B5FC4;
-    D_8005AA70[4] = (s32)func_800C8360;
+void TA_SetUp(void) {
+    D_8005AA70[0] = (s32)TA_PreInitLevel;
+    D_8005AA70[1] = (s32)TA_InitLevel;
+    D_8005AA70[2] = (s32)TA_InitLevel;
+    D_8005AA70[3] = (s32)TA_UpdateLevel;
+    D_8005AA70[4] = (s32)TA_StopHeroSfx;
     D_8005AA70[6] = (s32)TA_Triggers;
     D_8005AA70[5] = (s32)TA_EarliestTriggers;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
-    D_8005AA70[10] = (s32)func_800B62A4;
+    D_8005AA70[10] = (s32)FinishTankLevel;
     D_800CB25C = 1;
 }
 
@@ -8718,7 +8718,7 @@ void func_800C8450(s32 x, s32 z, s32 dist) {
     NAS *nas;
 
     for (i = 0; i < 8; i++) {
-        nas = D_800CB0C0[i];
+        nas = TankMines[i];
         if (nas != NULL) {
             eng = nas->Engine;
             d = x - eng->unk10.x;
@@ -8928,17 +8928,17 @@ void func_800C89D8(s32 arg0, s32 arg1) {
     D_800CACFC[(temp_a1 * D_800CAFF4) + temp_a0] = temp_a2;
 }
 
-void func_800C8A40(s32 arg0) {
-    u8 *temp_v0;
+void TankBotReset(s32 player) {
+    TA_Bot *bot;
 
-    temp_v0 = (arg0 * 0x2C) + D_800CAFFC;
-    (*(s32*)((u8*)(temp_v0) + 0)) = 0;
-    (*(s32*)((u8*)(temp_v0) + 4)) = 0;
-    (*(s32*)((u8*)(temp_v0) + 8)) = 0;
-    (*(s32*)((u8*)(temp_v0) + 12)) = 0;
-    (*(s32*)((u8*)(temp_v0) + 16)) = 0;
-    (*(s32*)((u8*)(temp_v0) + 28)) = 0;
-    (*(s16*)((u8*)(temp_v0) + 40)) = 0;
+    bot = &TankBotAI[player];
+    bot->Doing = 0;
+    bot->DoingTimer = 0;
+    bot->Victim = 0;
+    bot->pMine = NULL;
+    bot->pMissile = NULL;
+    bot->AIpad = 0;
+    bot->FirePercentChance = 0;
 }
 
 NAS *func_800C8A80(s32 x, s32 z, s32 range) {
@@ -8948,7 +8948,7 @@ NAS *func_800C8A80(s32 x, s32 z, s32 range) {
     EXTengine *eng;
 
     for (i = 0; i < 3; i++) {
-        nas = D_800CAD44[i];
+        nas = PU_TA_list[i];
         if (nas != NULL) {
             eng = nas->Engine;
             d = x - eng->unk10.x;
@@ -8971,7 +8971,7 @@ void func_800C8AF8(s32 player, EXTengine *eng, s32 *arg2) {
         hero = arg2[2];
         if (hero >= 0) {
             target = Heroes[hero].hero_eng;
-            D_800CAD50[player].TurretReqdDir =
+            TA_players[player].TurretReqdDir =
                 (get_angle(target->unk10.x - eng->unk10.x, target->unk10.z - eng->unk10.z) + 0x800) & 0xFFF;
         }
     }
@@ -8981,13 +8981,13 @@ void func_800C8BA0(void) {
     switch ((s16)(D_8005A648 - 5)) {
     case 1:
     case 3:
-        func_800B3C7C();
+        TankBotPickLinedUpTarget();
         break;
     case 0:
     case 2:
     case 4:
     default:
-        func_800B3B24();
+        TankBotPickTarget();
         break;
     }
 }

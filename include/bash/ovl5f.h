@@ -8,6 +8,7 @@
 #include "common.h"
 #include "bash/nas.h"
 #include "bash/shell.h"   /* Ambient_data */
+#include "bash/tank.h"    /* TA_Bot, TA_player */
 
 typedef struct Ovl5fModeView {
     /* 0x00 */ u8 pad0[0x32];
@@ -70,13 +71,13 @@ extern u8 D_800C9E28[];
 extern u8 D_800C9E50[];
 void TA_InitHero(u32 player);
 void TA_MoveHero(u32 player);
-void func_800B5588(void);
-void func_800B58B0(void);
-void func_800B5FC4(void);
-void func_800B62A4(void);
+void TA_PreInitLevel(void);
+void TA_InitLevel(void);
+void TA_UpdateLevel(void);
+void FinishTankLevel(void);
 void func_800C8984(s32 arg0, s32 arg1);
 void func_800C89D8(s32 arg0, s32 arg1);
-void func_800C8A40(s32 arg0);
+void TankBotReset(s32 arg0);
 NAS *func_800C8A80(s32 x, s32 z, s32 range);
 
 /* Object func_800C7E68/func_800C7EB0 set up alongside a hero action. */
@@ -149,7 +150,7 @@ extern struct { u16 v, pad; } D_800CA4AC[];
 extern u8 D_800CACFC[];
 extern s32 D_800CAFF4;
 extern u8 D_800CACB4[];
-extern u8 D_800CAFFC[];
+extern TA_Bot TankBotAI[4];
 typedef struct {
     u8 pad0[0x74];
     s16 unk74;
@@ -319,8 +320,7 @@ typedef void (*Ovl5fTurretFireFn)(EXTengine *eng, s32 a, s32 b);
 extern s32 D_800CB0F0;
 extern s32 D_800C94E8[];
 extern s32 D_800C9428[][4];
-extern NAS *D_800CAD44[];
-/* func_800B4688's fallback roam points: {x, z}. */
+/* TankBotPlanSteerMove's fallback roam points: {x, z}. */
 extern s32 D_800CA17C[][2];
 /* PlotHelicopterTA's NAS.FUX. */
 typedef struct HeliFux {
@@ -335,7 +335,7 @@ extern s32 *D_800CA8C4[];
 extern s32 D_800CB204;      /* next wave */
 extern s32 D_800CB260;
 extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
-extern NAS *D_800CB0C0[8];
+extern NAS *TankMines[8];
 
 /* InitJoe/InitMoe's 0x38-byte extension (id 0x10000000), their NAS.FUX. */
 typedef struct JoeExt {
@@ -419,7 +419,7 @@ extern u8 D_800CA134[];
 extern u8 D_800CA148[];
 extern u8 D_800CA08C[];
 extern u8 D_800C9FF8[];
-/* D_8005A614 as seen by func_800B5588. */
+/* D_8005A614 as seen by TA_PreInitLevel. */
 typedef struct Ovl5fGameView {
     /* 0x00 */ u8 pad0[4];
     /* 0x04 */ u32 w4;
@@ -438,10 +438,10 @@ extern s32 D_800C94C8[]; /* TA_MoveHero: hull sfx while moving, by player */
 extern s32 D_800C94D8[]; /* turret sfx, by player */
 extern s32 D_800C9408[]; /* hull sfx in mode 5, by player */
 extern s32 D_800CB0F8;    /* delay before the next hangabout spawn */
-extern s32 D_800CB0E0;    /* func_800B5FC4: countdown, plays sfx 0x4B9 when negative */
-extern s32 D_800CB0E4;    /* func_800B5FC4: sfx id to play once */
+extern s32 D_800CB0E0;    /* TA_UpdateLevel: countdown, plays sfx 0x4B9 when negative */
+extern s32 D_800CB0E4;    /* TA_UpdateLevel: sfx id to play once */
 extern EXTengine *D_800CB0E8;
-extern s32 D_800CB0EC;    /* func_800B5FC4: countdown to sfx 0x501 */
+extern s32 D_800CB0EC;    /* TA_UpdateLevel: countdown to sfx 0x501 */
 void func_800B71F8(s32 player);
 /* func_800B77E8: turret anim scripts by weapon (swamp / other levels). */
 extern s32 D_800C987C[];
@@ -456,7 +456,7 @@ extern s32 D_800C9B10[];
 extern s32 D_800C9B60[];
 extern s32 D_800C93F8[]; /* force field sfx, by player */
 extern s32 D_800C9418[]; /* sub weapon sfx, by player */
-/* func_800C8450, inlined into func_800B77E8: sets status 1 on the D_800CB0C0
+/* func_800C8450, inlined into func_800B77E8: sets status 1 on the TankMines
  * mines within dist of (x, z). */
 static inline void Ovl5fTriggerNear(s32 x, s32 z, s32 dist) {
     EXTengine *eng;
@@ -465,7 +465,7 @@ static inline void Ovl5fTriggerNear(s32 x, s32 z, s32 dist) {
     NAS *nas;
 
     for (i = 0; i < 8; i++) {
-        nas = D_800CB0C0[i];
+        nas = TankMines[i];
         if (nas != NULL) {
             eng = nas->Engine;
             d = x - eng->unk10.x;
@@ -531,9 +531,9 @@ s32 func_800C8120(s32 arg0);
 
 
 
-void func_800C8360(void);
+void TA_StopHeroSfx(void);
 
-void func_800C83D8(void);
+void TA_SetUp(void);
 
 void func_800C85F8(Ovl5fHolder *h, s16 v);
 
@@ -545,27 +545,13 @@ void func_800C8800(s32 arg0, s32 arg1);
 
 void func_800C8AF8(s32 player, EXTengine *eng, s32 *arg2);
 
-s32 func_800B3B24();
+s32 TankBotPickTarget();
 
-/* AI target state func_800B4490 fills (target NAS, scan cursor). */
-typedef struct Ovl5fAITarget {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ NAS *target;
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 scan;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 flags;
-    /* 0x20 */ s32 x;
-    /* 0x24 */ s32 z;
-    /* 0x28 */ u16 timer;
-    /* 0x2A */ u16 unk2A;
-} Ovl5fAITarget;
+/* AI target state TankBotAvoidMines fills (target NAS, scan cursor). */
 extern s32 D_800CB284[];
-s32 func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
-void func_800B4688(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
-void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
+s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai);
+void TankBotPlanSteerMove(s32 player, EXTengine *eng, TA_Bot *ai);
+void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai);
 static inline s32 Ovl5fASTIndex(s32 id) {
     s32 i;
 
@@ -845,10 +831,10 @@ static inline void Ovl5fPuffSetAngle(NAS *puff, s32 angle) {
     }
 }
 extern s32 D_80051244[]; /* flags by angle octant */
-void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai);
-s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
+void TankBotDodgeFrom(s32 player, s32 x, s32 z, EXTengine *eng, TA_Bot *ai);
+s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai);
 
-void func_800B4FAC(s32 player);
+void TankBotSteer(s32 player);
 
 void func_800C4BC0(s32 arg0);
 
@@ -918,7 +904,7 @@ void func_800C57B0(NAS *nas, s32 id);
 #define OVL5F_SET_HULL_SFX(player, pEngine, ReqdSFX)                        \
     {                                                                       \
         s32 sfx_ = (ReqdSFX);                                               \
-        TA_player *tb_ = D_800CAD50;                                        \
+        TA_player *tb_ = TA_players;                                        \
         TA_player *ta_ = &tb_[player];                                      \
         if (ta_->HullSFX != sfx_) {                                         \
             ta_->HullSFX = sfx_;                                            \
@@ -935,14 +921,14 @@ void func_800C57B0(NAS *nas, s32 id);
 #define OVL5F_SET_TURRET_SFX(player, ReqdSFX)                               \
     {                                                                       \
         s32 sfx_ = (ReqdSFX);                                               \
-        TA_player *tb_ = D_800CAD50;                                        \
+        TA_player *tb_ = TA_players;                                        \
         TA_player *ta_ = &tb_[player];                                      \
         if (ta_->TurretSFX != sfx_) {                                       \
             ta_->TurretSFX = sfx_;                                          \
             if (sfx_ == 0) {                                                \
                 StopSfx(ta_->TurretSFXHandler);                             \
             } else {                                                        \
-                PlaySfx(sfx_, &D_800CAD50[player].TurretSFXHandler, NULL,   \
+                PlaySfx(sfx_, &TA_players[player].TurretSFXHandler, NULL,   \
                         0x1000, 0x1E00, 0);                                 \
             }                                                               \
         }                                                                   \
@@ -956,7 +942,7 @@ void func_800C4DCC(s32 player);
 
 void func_800C5BCC(NAS *nas, s32 id);
 
-/* func_800B58B0: level setup */
+/* TA_InitLevel: level setup */
 typedef struct Ovl5fSetupView {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;

@@ -26804,7 +26804,7 @@
   "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5f:800B3B24": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B3B24.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotPickTarget.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590"
@@ -26812,7 +26812,7 @@
   "fp": "084c9f63921e64ad",
   "fpn": "c97da7dbbf098d70",
   "leaf": false,
-  "name": "func_800B3B24",
+  "name": "TankBotPickTarget",
   "orig": "func_800B3B24",
   "rom": 2160,
   "seg": "overlays/ovl5f/ovl5f",
@@ -26820,7 +26820,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B3C7C": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B3C7C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotPickLinedUpTarget.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590"
@@ -26828,7 +26828,7 @@
   "fp": "105792a34a4c88d2",
   "fpn": "751379c611a2b4e7",
   "leaf": false,
-  "name": "func_800B3C7C",
+  "name": "TankBotPickLinedUpTarget",
   "orig": "func_800B3C7C",
   "rom": 2504,
   "seg": "overlays/ovl5f/ovl5f",
@@ -26836,7 +26836,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B3F44": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B3F44.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotTryFire.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "8001463C",
@@ -26846,7 +26846,7 @@
   "fp": "79879c4cf861ea6f",
   "fpn": "2c984402c0c1ce77",
   "leaf": false,
-  "name": "func_800B3F44",
+  "name": "TankBotTryFire",
   "orig": "func_800B3F44",
   "rom": 3216,
   "seg": "overlays/ovl5f/ovl5f",
@@ -26854,7 +26854,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B4240": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B4240.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotDodgeFrom.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "8001463C",
@@ -26864,7 +26864,7 @@
   "fp": "0b14f0ede11a9860",
   "fpn": "81bc686fba636ff7",
   "leaf": false,
-  "name": "func_800B4240",
+  "name": "TankBotDodgeFrom",
   "orig": "func_800B4240",
   "rom": 3980,
   "seg": "overlays/ovl5f/ovl5f",
@@ -26872,7 +26872,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B4490": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B4490.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotAvoidMines.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590",
@@ -26881,7 +26881,7 @@
   "fp": "20182b9675bed2f4",
   "fpn": "9dc9fc94606b5419",
   "leaf": false,
-  "name": "func_800B4490",
+  "name": "TankBotAvoidMines",
   "orig": "func_800B4490",
   "rom": 4572,
   "seg": "overlays/ovl5f/ovl5f",
@@ -26889,7 +26889,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B4688": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B4688.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotPlanSteerMove.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590",
@@ -26899,7 +26899,7 @@
   "fp": "d490f3d431f05b18",
   "fpn": "793800d46277bc5c",
   "leaf": false,
-  "name": "func_800B4688",
+  "name": "TankBotPlanSteerMove",
   "orig": "func_800B4688",
   "rom": 5076,
   "seg": "overlays/ovl5f/ovl5f",
@@ -26907,7 +26907,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B4A28": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B4A28.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotPlanGridMove.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "8001463C",
@@ -26921,7 +26921,7 @@
   "fp": "ab07e937733dd856",
   "fpn": "a325301e2249fa0d",
   "leaf": false,
-  "name": "func_800B4A28",
+  "name": "TankBotPlanGridMove",
   "orig": "func_800B4A28",
   "rom": 6004,
   "seg": "overlays/ovl5f/ovl5f",
@@ -26929,7 +26929,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B4FAC": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B4FAC.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotSteer.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80013C94",
@@ -26940,7 +26940,7 @@
   "fp": "6ba870886480c1e7",
   "fpn": "7858274b77202e6a",
   "leaf": false,
-  "name": "func_800B4FAC",
+  "name": "TankBotSteer",
   "orig": "func_800B4FAC",
   "rom": 7416,
   "seg": "overlays/ovl5f/ovl5f",
@@ -26970,13 +26970,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B5588": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B5588.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TA_PreInitLevel.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "777e54700f9d432f",
   "fpn": "035cc7ab3f893b66",
   "leaf": true,
-  "name": "func_800B5588",
+  "name": "TA_PreInitLevel",
   "orig": "func_800B5588",
   "rom": 8916,
   "seg": "overlays/ovl5f/ovl5f",
@@ -26984,7 +26984,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B58B0": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B58B0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TA_InitLevel.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "8001682C",
@@ -26999,7 +26999,7 @@
   "fp": "29f4a12bba8fd7a7",
   "fpn": "c824f3c2d8b88cda",
   "leaf": false,
-  "name": "func_800B58B0",
+  "name": "TA_InitLevel",
   "orig": "func_800B58B0",
   "rom": 9724,
   "seg": "overlays/ovl5f/ovl5f",
@@ -27007,7 +27007,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B5FC4": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B5FC4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TA_UpdateLevel.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022660",
@@ -27019,7 +27019,7 @@
   "fp": "08c7a86c8d3a243f",
   "fpn": "045c6dbdcaf109dc",
   "leaf": false,
-  "name": "func_800B5FC4",
+  "name": "TA_UpdateLevel",
   "orig": "func_800B5FC4",
   "rom": 11536,
   "seg": "overlays/ovl5f/ovl5f",
@@ -27027,13 +27027,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800B62A4": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B62A4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/FinishTankLevel.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "35c050a1adf049de",
   "fpn": "85241ac1bd1fe56b",
   "leaf": true,
-  "name": "func_800B62A4",
+  "name": "FinishTankLevel",
   "orig": "func_800B62A4",
   "rom": 12272,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29523,7 +29523,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C8360": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C8360.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TA_StopHeroSfx.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800225C4"
@@ -29531,7 +29531,7 @@
   "fp": "864dc0b259a90878",
   "fpn": "e16792920ab632f1",
   "leaf": false,
-  "name": "func_800C8360",
+  "name": "TA_StopHeroSfx",
   "orig": "func_800C8360",
   "rom": 86188,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29553,13 +29553,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C83D8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C83D8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TA_SetUp.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "653089adc0be4b63",
   "fpn": "186d1f3fe994bc77",
   "leaf": true,
-  "name": "func_800C83D8",
+  "name": "TA_SetUp",
   "orig": "func_800C83D8",
   "rom": 86308,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29785,7 +29785,7 @@
   "fp": "84b3d6072e971c95",
   "fpn": "8af44b4889afe774",
   "leaf": true,
-  "name": "func_800C8A40",
+  "name": "TankBotReset",
   "orig": "func_800C8A40",
   "rom": 87948,
   "seg": "overlays/ovl5f/ovl5f",
