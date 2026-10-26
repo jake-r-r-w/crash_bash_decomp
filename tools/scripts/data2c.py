@@ -284,6 +284,14 @@ def declarations(texts):
     return out
 
 
+def header_order(paths, ovl, slots=None):
+    """The headers a slot overlay's data is typed from, its own first: the engine's headers may
+    declare another overlay's object at the same shared address, and the first declaration wins."""
+    slots = slot_names() if slots is None else slots
+    keep = [p for p in sorted(paths) if not other_slot(p, ovl, slots)]
+    return sorted(keep, key=lambda p: slot_of(p, slots) != ovl)
+
+
 class Converter:
     def __init__(self, ovl):
         import yaml
@@ -294,8 +302,7 @@ class Converter:
         self.subs = [s for s in seg["subsegments"] if isinstance(s, list)]
         self.bin = open(f"disc/{ovl}.bin", "rb").read()
         self.end = self.vram + len(self.bin) - self.start
-        texts = [open(p, encoding="utf-8").read() for p in sorted(glob.glob("include/bash/*.h"))
-                 if not other_slot(p, ovl)]
+        texts = [open(p, encoding="utf-8").read() for p in header_order(glob.glob("include/bash/*.h"), ovl)]
         # the SDK's types (MATRIX, VECTOR, ...) for layouts only; its declarations aren't the game's
         sdk = [open(p, encoding="latin-1").read() for p in SDK_TYPES if os.path.exists(p)]
         self.types = Types(sdk + texts)

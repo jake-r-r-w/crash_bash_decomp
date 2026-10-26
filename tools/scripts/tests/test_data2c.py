@@ -164,6 +164,14 @@ class OtherSlots(unittest.TestCase):
         self.assertFalse(other("include/bash/tank.h"))
         self.assertFalse(other("include/bash/bash.h"))
 
+    def test_the_overlays_own_headers_come_first(self):
+        slots = ["n2o", "hub"]
+        paths = ["include/bash/engine.h", "include/bash/hub_ovl.h", "include/bash/n2o_nox.h",
+                 "include/bash/n2o_ovl.h", "include/bash/common.h"]
+        self.assertEqual(data2c.header_order(paths, "n2o", slots),
+                         ["include/bash/n2o_nox.h", "include/bash/n2o_ovl.h", "include/bash/common.h",
+                          "include/bash/engine.h"])
+
 
 if __name__ == "__main__":
     unittest.main()
