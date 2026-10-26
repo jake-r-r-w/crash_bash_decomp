@@ -1,6 +1,6 @@
 #include "common.h"
 #include "bash/main.h"
-#include "bash/8002e0f0.h"
+#include "bash/modchip_msg.h"
 
 /* the debug text screens, 12 bytes each, indexed by D_8006EA24 */
 extern u8 D_8006789E[]; /* +2: u8 */
@@ -179,7 +179,7 @@ s32 func_8002E584(u8 *arg0) {
     return (min << 16) | max;
 }
 
-INCLUDE_RODATA("asm/nonmatchings/main/8002e0f0", D_8004CE5C);
+INCLUDE_RODATA("asm/nonmatchings/main/modchip_msg", D_8004CE5C);
 
 void func_8002E618(void) {
     extern u8 D_800678B4[][2];

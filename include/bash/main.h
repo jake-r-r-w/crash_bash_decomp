@@ -2087,11 +2087,11 @@ void func_8001492C(void);
 
 #include "bash/sound.h"
 
-#include "bash/80022a3c.h"
+#include "bash/nascalls.h"
 
 #include "bash/sfx.h"
 
-#include "bash/80017164.h"
+#include "bash/prims.h"
 
 #include "bash/dbase.h"
 

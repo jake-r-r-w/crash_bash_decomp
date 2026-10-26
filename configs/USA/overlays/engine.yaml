@@ -60,10 +60,10 @@ segments:
       # given in the comment as "after A, by B"
       - [0x1F90, c, overlays/engine/panel]     # starts after func_800793E8, by Setup_panel (func_8007AC20)
       - [0x619C, c, overlays/engine/pause]     # after Cups_Update (func_8007D9DC), by func_8007F314  (PAUSE.CPP)
-      - [0xAA78, c, overlays/engine/80083708]     # after PAUSE.CPP: Jampack's line table ends there
-      - [0x155EC, c, overlays/engine/8008e27c]    # after func_8008A200 (strings of 175 stay before), by func_8008E27C
-      - [0x1A4EC, c, overlays/engine/8009317c]    # after func_80090E20 (memcard tables used to 247), by func_80093BE8
-      - [0x1D3FC, c, overlays/engine/8009608c]    # after func_800952F8, by func_8009608C
+      - [0xAA78, c, overlays/engine/heroes]     # after PAUSE.CPP: Jampack's line table ends there
+      - [0x155EC, c, overlays/engine/gameflow]    # after func_8008A200 (strings of 175 stay before), by func_8008E27C
+      - [0x1A4EC, c, overlays/engine/levelload]    # after func_80090E20 (memcard tables used to 247), by func_80093BE8
+      - [0x1D3FC, c, overlays/engine/camera]    # after func_800952F8, by func_8009608C
       # .data: written by the engine; the last word (0x800ADBCC) is followed by 8-byte alignment
       - [0x1F904, data, overlays/engine/engine_data]
       - [0x1FA90, .data, overlays/engine/asttable]   # EngineASTTable, C (src/overlays/engine/asttable.c)
@@ -72,10 +72,10 @@ segments:
       - [0x34F48, .rodata, overlays/engine/engine]
       - [0x34F9C, .rodata, overlays/engine/panel]
       - [0x35120, .rodata, overlays/engine/pause]   # the mode names D_8009AF00 points to (used by 77, 78)
-      - [0x352D0, .rodata, overlays/engine/80083708]
-      - [0x357D4, .rodata, overlays/engine/8008e27c]
-      - [0x35F38, .rodata, overlays/engine/8009317c]
-      - [0x35FA4, .rodata, overlays/engine/8009608c]
+      - [0x352D0, .rodata, overlays/engine/heroes]
+      - [0x357D4, .rodata, overlays/engine/gameflow]
+      - [0x35F38, .rodata, overlays/engine/levelload]
+      - [0x35FA4, .rodata, overlays/engine/camera]
       # second writable block after the rodata (stored to from 0x800AEC58 on)
       - [0x35FC8, sdata, overlays/engine/engine_sdata]
   # The minigame slot image the file reserves (vram 0x800B32B4): stub id 0x5C, zeros, then

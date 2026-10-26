@@ -5,7 +5,7 @@
  * that moves takes its entries with it. The ids are the Oct 9 prototype's AST enums. */
 #include "common.h"
 #include "bash/nas.h"
-#include "bash/80022a3c.h"
+#include "bash/nascalls.h"
 #include "bash/arkenoid.h"
 #include "bash/bash.h"
 #include "bash/bonk.h"

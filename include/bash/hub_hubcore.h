@@ -1,9 +1,9 @@
-#ifndef BASH_HUB_800B4EAC_H
-#define BASH_HUB_800B4EAC_H
+#ifndef BASH_HUB_HUBCORE_H
+#define BASH_HUB_HUBCORE_H
 
-/* Functions and data defined in src/overlays/hub/800b4eac.c. Anything the original headers
+/* Functions and data defined in src/overlays/hub/hubcore.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/hub/800b4eac.c */
+ * owner: src/overlays/hub/hubcore.c */
 
 #include "common.h"
 #include "bash/hub_ovl.h"
@@ -647,4 +647,4 @@ void func_800B551C(void);
 
 void PlotPathEffect(NAS *nas);
 
-#endif /* BASH_HUB_800B4EAC_H */
+#endif /* BASH_HUB_HUBCORE_H */

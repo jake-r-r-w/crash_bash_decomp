@@ -1,7 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
-#include "bash/8009608c.h"
+#include "bash/camera.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
 

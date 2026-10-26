@@ -63,15 +63,15 @@ segments:
     subsegments:
       - [0x800, c, main/main]
       - [0x6760, c, main/dbase]
-      - [0x7964, c, main/80017164]
+      - [0x7964, c, main/prims]
       - [0xF184, c, main/scripts]
       - [0x12940, c, main/sfx]
-      - [0x1323C, c, main/80022a3c]
+      - [0x1323C, c, main/nascalls]
       - [0x1B2A0, c, main/sound]
       - [0x1C598, c, main/music]
       - [0x1CCB0, c, main/card]
-      - [0x1DC88, c, main/8002d488]          # gcc 2.7.2 + ASPSX (lui $at stores)
-      - [0x1E8F0, c, main/8002e0f0]
+      - [0x1DC88, c, main/modchip]          # gcc 2.7.2 + ASPSX (lui $at stores)
+      - [0x1E8F0, c, main/modchip_msg]
       - [0x1EFA0, pad]                       # 8 zero bytes after the unit (the asm had them as nops)
       - [0x1EFA8, asm, main/psyq/2mbyte]
       - [0x1F06C, lib, libapi, c81, .text]
@@ -356,11 +356,11 @@ segments:
       - [0x3CD4C, lib, libapi, a18, .text]
       - [0x3CD5C, lib, libapi, a19, .text]
       - [0x3CD6C, .rodata, main/main]          # game rodata (follows .text)
-      - [0x3D0A8, .rodata, main/80017164]
-      - [0x3D0D0, .rodata, main/80022a3c]
+      - [0x3D0A8, .rodata, main/prims]
+      - [0x3D0D0, .rodata, main/nascalls]
       - [0x3D510, .rodata, main/card]
-      - [0x3D60C, .rodata, main/8002d488]
-      - [0x3D65C, .rodata, main/8002e0f0]
+      - [0x3D60C, .rodata, main/modchip]
+      - [0x3D65C, .rodata, main/modchip_msg]
       - [0x3D6F4, pad]                       # 8 zero bytes after the unit's rodata
       - [0x3D6FC, lib, libgpu, sys, .rdata]
       - [0x3D91C, lib, libetc, intr, .rdata]

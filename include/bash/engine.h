@@ -452,10 +452,10 @@ void DoAmbience(void);
 /* The engine's other files (ARCHITECTURE.md, Files inside the engine). */
 #include "bash/panel.h"
 #include "bash/pause.h"
-#include "bash/80083708.h"
-#include "bash/8008e27c.h"
-#include "bash/8009317c.h"
-#include "bash/8009608c.h"
+#include "bash/heroes.h"
+#include "bash/gameflow.h"
+#include "bash/levelload.h"
+#include "bash/camera.h"
 
 /* Needs prototypes from the unit headers above. */
 /* func_80092CAC's tail: resets state, then starts the mode by its D_8004DDD0 world. */

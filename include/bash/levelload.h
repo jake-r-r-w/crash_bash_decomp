@@ -1,9 +1,9 @@
-#ifndef BASH_8009317C_H
-#define BASH_8009317C_H
+#ifndef BASH_LEVELLOAD_H
+#define BASH_LEVELLOAD_H
 
-/* Functions and data defined in src/overlays/engine/8009317c.c. Anything the original headers
+/* Functions and data defined in src/overlays/engine/levelload.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/engine/8009317c.c */
+ * owner: src/overlays/engine/levelload.c */
 
 #include "common.h"
 #include "bash/engine.h"
@@ -303,4 +303,4 @@ void func_80094B38(void);
 
 void func_80095A60(s32 arg0, s32 arg1);
 
-#endif /* BASH_8009317C_H */
+#endif /* BASH_LEVELLOAD_H */

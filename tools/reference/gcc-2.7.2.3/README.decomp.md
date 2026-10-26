@@ -12,7 +12,7 @@ targets.
 
 ## Why
 
-The two `main.exe` units built with gcc 2.7.2 (`src/main/8002d488.c`, `src/main/8002e0f0.c`;
+The two `main.exe` units built with gcc 2.7.2 (`src/main/modchip.c`, `src/main/modchip_msg.c`;
 Makefile `CC_VER = 2.7.2-psx`) are matched by reading what this compiler does. The `-d` dumps
 (docs/MATCHING.md) show what a pass did; the source says why. 2.7.2.1-2.7.2.3 are bug-fix
 releases over 2.7.2 (`NEWS`), so for this project they are the same compiler.

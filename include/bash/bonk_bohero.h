@@ -1,9 +1,9 @@
-#ifndef BASH_BONK_800B6EFC_H
-#define BASH_BONK_800B6EFC_H
+#ifndef BASH_BONK_BOHERO_H
+#define BASH_BONK_BOHERO_H
 
-/* Functions and data defined in src/overlays/bonk/800b6efc.c. Anything the original headers
+/* Functions and data defined in src/overlays/bonk/bohero.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/bonk/800b6efc.c */
+ * owner: src/overlays/bonk/bohero.c */
 
 #include "common.h"
 #include "bash/bonk_ovl.h"
@@ -162,4 +162,4 @@ typedef struct BonkHitFlags {
     /* 0x1E */ u16 unk1E;
 } BonkHitFlags;
 
-#endif /* BASH_BONK_800B6EFC_H */
+#endif /* BASH_BONK_BOHERO_H */

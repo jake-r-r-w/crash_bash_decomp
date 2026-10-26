@@ -54,9 +54,9 @@ segments:
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
       - [0x0, rodata, overlays/n2o/n2o_id]
       - [0x4, .rodata, overlays/n2o/n2o]
-      - [0xB8, .rodata, overlays/n2o/800bbdb8]
+      - [0xB8, .rodata, overlays/n2o/nox]
       - [0x1F0, c, overlays/n2o/n2o]
       # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)
-      - [0x8B04, c, overlays/n2o/800bbdb8]   # proven after 35, by 75; its rodata starts with D_800B336C (used by 75, 78, 129)
+      - [0x8B04, c, overlays/n2o/nox]   # proven after 35, by 75; its rodata starts with D_800B336C (used by 75, 78, 129)
       - [0x104C0, data, overlays/n2o/n2o_data]
   - [0x14438]

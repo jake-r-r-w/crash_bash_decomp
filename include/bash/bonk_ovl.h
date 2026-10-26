@@ -89,7 +89,7 @@ extern u8 D_800B92E8[];
 extern s16 D_8009D87C[][3];
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
-#include "bash/bonk_800b6efc.h"
+#include "bash/bonk_bohero.h"
 
 void func_800B33A4();
 

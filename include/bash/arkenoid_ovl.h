@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 #include "bash/engine.h"
 #include "bash/pause.h"
-#include "bash/80083708.h"
+#include "bash/heroes.h"
 
 extern HeroInfo Heroes[4];
 extern char D_80054504[];

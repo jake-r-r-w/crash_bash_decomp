@@ -1,5 +1,5 @@
 #include "common.h"
-#include "bash/8002d488.h"
+#include "bash/modchip.h"
 
 extern u8 D_BFC7FF52;
 extern s32 D_80067894;

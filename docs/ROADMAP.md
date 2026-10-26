@@ -121,7 +121,7 @@ rebuilds the retail image.
 - [x] Match every function in the slot overlays (2026-10-26; the last three
   with cc1 analysis variants, `tools/cc1/`).
 - [x] Only C everywhere, with one recorded exception: `draw_verts`
-  (`func_800193A8`, `src/main/80017164.c`) keeps its three register pins
+  (`func_800193A8`, `src/main/prims.c`) keeps its three register pins
   (`register s32 xy asm("$20")`, ...). They are the original's register
   variables: no pin-free C can give the target's `$18`-`$20` with `$16`/`$17`
   unused (2026-10-26; CONVENTIONS.md, Matching rules).

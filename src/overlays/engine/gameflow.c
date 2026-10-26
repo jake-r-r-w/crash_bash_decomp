@@ -1,7 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
-#include "bash/8008e27c.h"
+#include "bash/gameflow.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
 
@@ -943,83 +943,83 @@ void func_80090A10(void) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE47C);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE47C);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE490);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE490);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE498);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE498);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE4B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE4B4);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE4FC);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE4FC);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE500);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE500);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE504);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE504);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE554);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE554);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE594);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE594);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE5CC);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE5CC);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE618);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE618);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE634);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE634);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE64C);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE64C);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE664);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE664);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE68C);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE68C);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE6A0);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE6A0);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE6B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE6B4);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE6EC);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE6EC);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE760);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE760);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE7D4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE7D4);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE7E0);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE7E0);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE850);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE850);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE8D4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE8D4);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE8E0);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE8E0);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AE988);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE988);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEA04);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEA04);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEA34);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEA34);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEA64);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEA64);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEA8C);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEA8C);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEAC4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAC4);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEAEC);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAEC);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEAF4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAF4);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEAF8);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAF8);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEAFC);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAFC);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEB00);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB00);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEB04);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB04);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEB08);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB08);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEB14);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB14);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8008e27c", D_800AEB1C);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB1C);
 
 void func_80090E20(void) {
     s32 f;

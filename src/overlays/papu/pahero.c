@@ -1,7 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/papu_ovl.h"
-#include "bash/papu_800b87a0.h"
+#include "bash/papu_pahero.h"
 #include "bash/papu.h"
 #include "bash/bash.h"
 #include "bash/xtras.h"

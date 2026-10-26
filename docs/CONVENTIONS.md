@@ -41,7 +41,7 @@ A file is finished when every function in it reaches level 4.
   inlines, `make split`, `decomp.py index`, the build and the check. A file
   is named by what it holds when that is known (`sound.c`; a leaked source
   name wins: `panel.c` is `PANEL.CPP`) and by its start address until then
-  (`src/main/80017164.c`); rename it when it is.
+  (`src/main/prims.c`); rename it when it is.
 - A unit built with other compiler settings than `configs/USA/project.mk`
   gets them in the Makefile as `build/<src>.o: VAR = value` lines
   (`CC_VER`, `ASPSX_FILL`); `decomp.py` reads the same lines.
@@ -58,7 +58,7 @@ A file is finished when every function in it reaches level 4.
   overlay's first file, which includes the others' `bash/panel.h` ...), `bash/bash_ovl.h`..`bash/hub_ovl.h` for the slot overlays (`_ovl`, since the leak's
   `bash/polar.h` and the rest are the original headers; each includes its later files'
   `bash/<ovl>_<unit>.h`), and one per split unit
-  (`bash/8002d488.h`, created by `decomp.py done` when it first needs one). Each is marked
+  (`bash/modchip.h`, created by `decomp.py done` when it first needs one). Each is marked
   `owner: <source path>`, and that marker is how `decomp.py` finds it. When a
   file is split, its declarations move with its functions to the new file's
   header.

@@ -1,9 +1,9 @@
-#ifndef BASH_80083708_H
-#define BASH_80083708_H
+#ifndef BASH_HEROES_H
+#define BASH_HEROES_H
 
-/* Functions and data defined in src/overlays/engine/80083708.c, the file after PAUSE.CPP.
+/* Functions and data defined in src/overlays/engine/heroes.c, the file after PAUSE.CPP.
  * Anything the original headers declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/engine/80083708.c */
+ * owner: src/overlays/engine/heroes.c */
 
 #include "common.h"
 #include "bash/engine.h"
@@ -225,4 +225,4 @@ static inline s32 HeroCheckStopped(s32 arg0) {
     return 0;
 }
 
-#endif /* BASH_80083708_H */
+#endif /* BASH_HEROES_H */

@@ -9,7 +9,7 @@
 #include "bash/bash_ovl.h"
 #include "bash/main.h"
 #include "bash/pause.h"
-#include "bash/80083708.h"
+#include "bash/heroes.h"
 
 void BashHeroWinner(s32 arg0);
 

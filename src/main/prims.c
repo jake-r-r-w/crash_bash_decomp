@@ -1,6 +1,6 @@
 #include "common.h"
 #include "bash/main.h"
-#include "bash/80017164.h"
+#include "bash/prims.h"
 
 static inline void func_80017164_clear(u8 *p) {
     *(s32 *)(p + 4) = 0;

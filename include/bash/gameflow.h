@@ -1,9 +1,9 @@
-#ifndef BASH_8008E27C_H
-#define BASH_8008E27C_H
+#ifndef BASH_GAMEFLOW_H
+#define BASH_GAMEFLOW_H
 
-/* Functions and data defined in src/overlays/engine/8008e27c.c. Anything the original headers
+/* Functions and data defined in src/overlays/engine/gameflow.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/engine/8008e27c.c */
+ * owner: src/overlays/engine/gameflow.c */
 
 #include "common.h"
 #include "bash/engine.h"
@@ -598,4 +598,4 @@ void func_8008F554(void);
 
 void func_800926CC(GameState *arg0);
 
-#endif /* BASH_8008E27C_H */
+#endif /* BASH_GAMEFLOW_H */

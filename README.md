@@ -166,7 +166,7 @@ the image with the repository at `/work`, building the image on first use.
 
 The compiler profile is in `configs/USA/project.mk` (GCC 2.8.1, `-O2 -G0`,
 maspsx `--aspsx-version=2.86`); change it with `decomp.py config`. Two units of
-the executable (`src/main/8002d488.c`, `8002e0f0.c`) were built with GCC 2.7.2
+the executable (`src/main/modchip.c`, `8002e0f0.c`) were built with GCC 2.7.2
 and Sony's assembler: their settings are per unit in the Makefile, and
 `tools/scripts/aspsx_fill.py` reproduces what that assembler (and Sony's build
 of the compiler) did to the code. The source of GCC 2.8.1 and 2.7.2.3 is kept in

@@ -298,7 +298,7 @@ static inline s32 PapuASTIndex(s32 id) {
 }
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
-#include "bash/papu_800b87a0.h"
+#include "bash/papu_pahero.h"
 
 void func_800B42C0(void);
 

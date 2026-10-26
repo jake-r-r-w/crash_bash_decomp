@@ -1,9 +1,9 @@
-#ifndef BASH_8009608C_H
-#define BASH_8009608C_H
+#ifndef BASH_CAMERA_H
+#define BASH_CAMERA_H
 
-/* Functions and data defined in src/overlays/engine/8009608c.c. Anything the original headers
+/* Functions and data defined in src/overlays/engine/camera.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/engine/8009608c.c */
+ * owner: src/overlays/engine/camera.c */
 
 #include "common.h"
 #include "bash/engine.h"
@@ -147,4 +147,4 @@ extern EngRec24 D_800ADB54[];
 
 void func_800976F8(void);
 
-#endif /* BASH_8009608C_H */
+#endif /* BASH_CAMERA_H */

@@ -1,6 +1,6 @@
 #include "common.h"
 #include "bash/main.h"
-#include "bash/80022a3c.h"
+#include "bash/nascalls.h"
 
 static inline NAS *AllocNAS(void) {
     NAS *free;
@@ -457,7 +457,7 @@ void FreeExtension(void *ext) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/main/80022a3c", D_8004C8D0);
+INCLUDE_RODATA("asm/nonmatchings/main/nascalls", D_8004C8D0);
 
 static inline ArenaDef *func_800235BC_find(ArenaDef *p, s32 id) {
     while (p != NULL) {

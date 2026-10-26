@@ -1,9 +1,9 @@
-#ifndef BASH_80017164_H
-#define BASH_80017164_H
+#ifndef BASH_PRIMS_H
+#define BASH_PRIMS_H
 
-/* Functions and data defined in src/main/80017164.c. Anything the original headers declare
+/* Functions and data defined in src/main/prims.c. Anything the original headers declare
  * (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/main/80017164.c */
+ * owner: src/main/prims.c */
 
 #include "common.h"
 #include "bash/main.h"
@@ -246,4 +246,4 @@ static inline subengine *MapEnv_GetSubs(MapEnvHead *env) {
 
 #include "bash/scripts.h"
 
-#endif /* BASH_80017164_H */
+#endif /* BASH_PRIMS_H */

@@ -1,7 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/bonk_ovl.h"
-#include "bash/bonk_800b6efc.h"
+#include "bash/bonk_bohero.h"
 #include "bash/bonk.h"
 
 void func_800B6EFC(s32 arg0) {

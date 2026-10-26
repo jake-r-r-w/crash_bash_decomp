@@ -40,7 +40,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `scratch/`.
 - `make diff` / `decomp.py try` end with `STAGE NAME structure|instructions|registers n/total`:
   fix the stages in that order. Check the asm's style fits the file's compiler
-  first (gcc 2.7.2 units: `main/8002d488`, `main/8002e0f0`; per-unit settings
+  first (gcc 2.7.2 units: `main/modchip`, `main/modchip_msg`; per-unit settings
   in the Makefile). For a tie in instruction order, register choice or a
   merged tail, read the deciding pass in `tools/reference/gcc-2.8.1/` (FSF base of our
   2.8.1-psx; `gcc-2.7.2.3/` for the 2.7.2 units) before the permuter. Work the rule through by hand against the

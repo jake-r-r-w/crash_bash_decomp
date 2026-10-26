@@ -1,9 +1,9 @@
-#ifndef BASH_8002D488_H
-#define BASH_8002D488_H
+#ifndef BASH_MODCHIP_H
+#define BASH_MODCHIP_H
 
-/* Functions and data defined in src/main/8002d488.c. Anything the original headers
+/* Functions and data defined in src/main/modchip.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/main/8002d488.c */
+ * owner: src/main/modchip.c */
 
 #include "common.h"
 #include "bash/nas.h"
@@ -37,4 +37,4 @@ extern volatile u8 D_8006EA20; /* BCD minutes; BCD seconds at D_8006EA20 + 1 */
 static inline u8 cd_to_bcd(u8 tens, u8 units) {
     return ((tens / 10) << 4) | (units % 10);
 }
-#endif /* BASH_8002D488_H */
+#endif /* BASH_MODCHIP_H */

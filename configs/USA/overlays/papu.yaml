@@ -54,10 +54,10 @@ segments:
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
       - [0x0, rodata, overlays/papu/papu_id]
       - [0x4, .rodata, overlays/papu/papu]
-      - [0x148, .rodata, overlays/papu/800b87a0]
+      - [0x148, .rodata, overlays/papu/pahero]
       - [0x2F8, c, overlays/papu/papu]
       # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)
-      - [0x54EC, c, overlays/papu/800b87a0]   # proven after 14 PlotPapuMinion, by 50; fewest call ties at 44..50
+      - [0x54EC, c, overlays/papu/pahero]   # proven after 14 PlotPapuMinion, by 50; fewest call ties at 44..50
       - [0x95E8, data, overlays/papu/papu_data]
       - [0xB680, bin, overlays/papu/papu_tail]
   - [0xB682]

@@ -41,7 +41,7 @@ extern s32 D_800BCEE0;
 extern subengine *D_800BCEE8;
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
-#include "bash/hub_800b4eac.h"
+#include "bash/hub_hubcore.h"
 
 void func_800B4694(void);
 

@@ -1,6 +1,6 @@
 #include "common.h"
 #include "bash/main.h"
-#include "bash/80017164.h"
+#include "bash/prims.h"
 #include "bash/scripts.h"
 
 void func_8001E984(s32 arg0, s32 arg1) {

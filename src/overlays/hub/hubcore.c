@@ -2,7 +2,7 @@
 #include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/hub_ovl.h"
-#include "bash/hub_800b4eac.h"
+#include "bash/hub_hubcore.h"
 #include "bash/hub.h"
 #include "bash/n2o.h"
 #include "bash/titles.h"
@@ -67,7 +67,7 @@ void func_800B4EAC(void) {
     func_8001E934(&D_8009F8A4, &D_800BCC04);
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/800b4eac", D_800B330C);
+INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B330C);
 
 void func_800B5158(void) {
     s32 i;
@@ -781,7 +781,7 @@ void func_800B6E20(void) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/800b4eac", D_800B3618);
+INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B3618);
 
 static inline void PathFace(KeyEntry *k, s32 dir, PathRot *ang) {
     s32 dx;
@@ -1423,7 +1423,7 @@ s32 func_800B8708(s32 arg0) {
     return 0;
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/800b4eac", D_800B37EC);
+INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B37EC);
 
 void func_800B875C(void) {
     s32 i;
@@ -2360,7 +2360,7 @@ void func_800BAB40(void) {
     func_800B8F50();
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/800b4eac", D_800B3894);
+INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B3894);
 
 void func_800BABEC(void) {
     HubKey *k;
@@ -2739,4 +2739,4 @@ void func_800BBF44(SVECTOR *v, s16 *b) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/hub/800b4eac", D_800B3928);
+INCLUDE_RODATA("asm/nonmatchings/overlays/hub/hubcore", D_800B3928);

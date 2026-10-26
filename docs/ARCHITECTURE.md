@@ -22,8 +22,8 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 | VRAM | File | Section | Owner |
 |---|---|---|---|
 | `0x80010000..0x8002D488` | `0x800` | `.text` | game code, nine files in `src/main/` (Files inside `main/main`) |
-| `0x8002D488..0x8002E0F0` | `0x1DC88` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/8002d488.c` |
-| `0x8002E0F0..0x8002E7A8` | `0x1E8F0` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/8002e0f0.c` |
+| `0x8002D488..0x8002E0F0` | `0x1DC88` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/modchip.c` |
+| `0x8002E0F0..0x8002E7A8` | `0x1E8F0` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/modchip_msg.c` |
 | `0x8002E7A8..0x8004C56C` | `0x1EFA8` | `.text` | PsyQ 4.7: 281 Sony objects linked in place, plus `2MBYTE.OBJ` (asm) |
 | `0x8004C56C..0x8004CEFC` | `0x3CD6C` | `.rodata` | game (strings, jump tables) |
 | `0x8004CEFC..0x8004DCBC` | `0x3D6FC` | `.rodata` | PsyQ, per object (`.rdata` of the linked objects) |
@@ -41,11 +41,11 @@ How the boundaries were found:
 - **`.rodata` start** `0x8004C56C`: the end of `.text`. **Game/library seam**
   `0x8004CEFC`: the unreferenced `$Id: sys.c` string of LIBGPU; the highest
   game reference is `0x8004CEEC`, the lowest library one `0x8004CF34`.
-- **`main/8002d488`** (`0x8002D488..0x8002E0F0`, rodata `0x8004CE0C..0x8004CE5C`):
+- **`main/modchip`** (`0x8002D488..0x8002E0F0`, rodata `0x8004CE0C..0x8004CE5C`):
   every global store is `lui $at` + `sw`, and `j`/`jr` slots are filled by the
   assembler, which `main.c`'s gcc 2.8.1 never produces. gcc 2.7.2-psx through
   ASPSX does: `func_8002D488` (the region byte at `0xBFC7FF52`) matches with it.
-- **`main/8002e0f0`** (`0x8002E0F0..0x8002E7A8`) is 2.7.2 + ASPSX too, not
+- **`main/modchip_msg`** (`0x8002E0F0..0x8002E7A8`) is 2.7.2 + ASPSX too, not
   2.8.1 as first thought: `func_8002E0F0` has a `lui $at` store and an
   indexed load expanded through its destination register, `func_8002E25C`
   a `bne; nop` whose slot 2.8.1's reorg would fill, and `func_8002E618`
@@ -126,7 +126,7 @@ How the boundaries were found:
     193), `0x8004C8B8` (202) or `0x8004C8D0` (358). With the one-file
     regions below that leaves three separate places for the start, 121..193,
     194..199 or 226..354; two of them turned out to be file starts
-    (`80017164` at `0x8004C8A8` and `80022a3c` at `0x8004C8D0`). The engine
+    (`prims` at `0x8004C8A8` and `nascalls` at `0x8004C8D0`). The engine
     has five (after 4/by 33,
     59/77, 154/208, 244/289, 320/330), and `bash` two, `papu`, `bonk`,
     `n2o`, `hub` one each (`decomp.py units overlays/<ovl>/<ovl>`).
@@ -146,7 +146,7 @@ How the boundaries were found:
     strings (`0x8004C56C..0x8004C7D0`) and the `D_8004DDD0` level table, used
     by the engine, `titles` and functions 101/332-358, so the first object is a
     shared tables file. The 2.7.2 units' data (`0x8006783C..0x80067898` for
-    `8002d488`, `0x8006789C..` for `8002e0f0`) follows `main/main`'s last data
+    `modchip`, `0x8006789C..` for `modchip_msg`) follows `main/main`'s last data
     directly, as their code follows it. Pointer tables tie functions to their
     file: `D_80058B00` lists functions 276-314 and is used by 283-297.
   - `.data` interleaves game chunks with Sony's objects (`main.yaml`: game
@@ -226,17 +226,17 @@ How the boundaries were found:
   - **Split so far** (2026-10-23, `tools/scripts/split_unit.py`; each build
     byte-identical, which also proves each new file's rodata start). The
     main segment links with `SUBALIGN(4)`: psylink 4-aligned every object,
-    and `80022a3c`'s rodata needs the 2 bytes of padding retail has before
+    and `nascalls`'s rodata needs the 2 bytes of padding retail has before
     it (`SUBALIGN(2)` packed it 2 bytes early).
 
     | Unit | Functions | Evidence | Rodata from |
     |---|---|---|---|
     | `main` | 0..135: the shell, `mal_*`, file loading, joypad, camera, maths, `Random`, entities, dots | | `0x8004C56C` |
     | `dbase` | 136..169: `dbase_*` | 134 creates the dots subengine (the three blocks at +0x6C that `init_dots` fills, 133 its destructor, 132 its renderer, all three in one handler table) and 135 is the same allocation on a bare point-sprite set; 136 loads a dbase's file table and only 141, the dbase load callback, calls it | none |
-    | `80017164` | 170..274: `prim_*`, sprims, `tga_convert`, draw, subengines, `map_*`, `path_*`, fade, process | 164 releases mesh animations and 168/169 set up the 0x38-byte records at `D_80052A54` (`load_initial_dbases`' pool), before the prim data block; 170 allocates the prim and sprim pools and is the first user of that block (`0x8005683C..0x80058AC7`) | `0x8004C8A8` ("empty prims", right after `main`'s last jump table) |
+    | `prims` | 170..274: `prim_*`, sprims, `tga_convert`, draw, subengines, `map_*`, `path_*`, fade, process | 164 releases mesh animations and 168/169 set up the 0x38-byte records at `D_80052A54` (`load_initial_dbases`' pool), before the prim data block; 170 allocates the prim and sprim pools and is the first user of that block (`0x8005683C..0x80058AC7`) | `0x8004C8A8` ("empty prims", right after `main`'s last jump table) |
     | `scripts` | 275..331: `sub_play_script`, `get_script_header`, `scripts_*`, the threads | the scripts' data block `0x80058B00..0x80058B87` (thread table `D_80058B00`, six types each pairing an update function from 276..282 with init and render ones from 298..313; `D_80058B68..B84`, `free_scripts`) is used only by 275..331, so the zones after 288-291 and 294-325 hold no cut; 275 allocates the 0x7C-byte script slots and is the block's first user, while 266..274 are the process manager (266 switches modes, 267-272 queue, interrupt, quit and init them, 273 sets it up, 274 flushes the heap as 266 does) | none |
     | `sfx` | 332..349: `sfx_delete_all`, `StopSfx`, `PlaySfx`, ... | 331 (`scripts_update`) is the last script function; 332 restarts the sound system and loads the level's sfx bank (`func_8002BBB4`, `func_8002BD0C`) through `D_80058B88`, the sfx code's own data that 349 uses too | none |
-    | `80022a3c` | 350..496: `CreateNAS`, the NAS calls, `xa_setvol`, rumble, `texture_*` | 348 restarts the sound system and the sfx voice pool; 349 loads a music track through the music loader with `D_80058B88`, which lies in the sfx code's data block (before `0x80058F0C`), while the NAS calls' own data starts at `0x8005A5C0`: each file's `.data` is one block in code order, so 349 is sfx | `0x8004C8D0` (0 mod 8, as the switch-table parity requires: a file starts after 95 and by 370) |
+    | `nascalls` | 350..496: `CreateNAS`, the NAS calls, `xa_setvol`, rumble, `texture_*` | 348 restarts the sound system and the sfx voice pool; 349 loads a music track through the music loader with `D_80058B88`, which lies in the sfx code's data block (before `0x80058F0C`), while the NAS calls' own data starts at `0x8005A5C0`: each file's `.data` is one block in code order, so 349 is sfx | `0x8004C8D0` (0 mod 8, as the switch-table parity requires: a file starts after 95 and by 370) |
     | `sound` | 497..528: `sound_critical`, `machine_load_sfx`, ... | 495 releases a texture (`func_80028AE4`) and 496 clears a texture set (the map code calls it right before `map_loaded_textureset`); 497 resets `D_80064414`, a flag only the sound code uses | none |
     | `music` | 529..548: `continue_music`, `music_dload_midi`, ... | 527 loads sfx banks (`machine_load_sfx`), 528 fills `SfxTable`; 529 opens and plays a SEQ (`SsSeqOpen`, `SsSeqPlay`) and sets the music volume | none |
     | `card` | 549..565: `func_8002C4B0` (ASCII to Shift-JIS for save titles: Euro's `card_ascii2sjis`), `card_save` | the one exact cut: music ends by 548, the memory card starts by 554, and no other gap may hold a boundary; no zone after 548, so it is one file | `0x8004CD10` (549's jump table) |
@@ -287,10 +287,10 @@ code finds 15 code files; nothing else on the disc holds code.
   | `engine` | `InitialiseNasSystem` (0) | - | `0x800ADBD8` |
   | `panel` (`PANEL.CPP`) | `Setup_panel` (33) | 7..33: function 6's string stays before | `0x800ADC2C` |
   | `pause` (`PAUSE.CPP`) | `func_8007EE2C` (74) | 60..77; fewest call ties at 74 | `0x800ADDB0`: the mode names `D_8009AF00` (used by 77, 78) points to |
-  | `80083708` | `func_80083708` (96) | exact, from Jampack's line table (below) | `0x800ADF60` (proven: the build matches) |
-  | `8008e27c` | `func_8008E27C` (208) | 176..208: function 175's strings can't straddle; no call ties from 192 | `0x800AE464` |
-  | `8009317c` | `func_8009317C` (282) | 248..289: the memory-card text tables are used up to 247; no call ties 273..282 | `0x800AEBC8` |
-  | `8009608c` | `func_8009608C` (330) | 321..330; no call ties from 328 | `0x800AEC34` |
+  | `heroes` | `func_80083708` (96) | exact, from Jampack's line table (below) | `0x800ADF60` (proven: the build matches) |
+  | `gameflow` | `func_8008E27C` (208) | 176..208: function 175's strings can't straddle; no call ties from 192 | `0x800AE464` |
+  | `levelload` | `func_8009317C` (282) | 248..289: the memory-card text tables are used up to 247; no call ties 273..282 | `0x800AEBC8` |
+  | `camera` | `func_8009608C` (330) | 321..330; no call ties from 328 | `0x800AEC34` |
 
   A start can still move earlier inside its range, and a unit can hide more
   starts where the parity doesn't change.
@@ -325,16 +325,26 @@ code finds 15 code files; nothing else on the disc holds code.
   (`tools/scripts/rename_file.py`): Bash's are `xtras.c` (the crates and
   pickups, the `XTRAS_AST_types` of the Oct 9 prototype's `xtras.h`) and
   `bahero.c` (its hero states, `HEROmode_BA*`; the Aug 23 include list has
-  a hero file per game, `BOHERO.H`, `SPHERO.H`). The others keep their
-  start address for now.
+  a hero file per game, `BOHERO.H`, `SPHERO.H`). The others (2026-10-26):
+  `papu`'s `pahero.c` and `bonk`'s `bohero.c` hold all of those games'
+  `HEROFunc` pairs (`HEROmode_PA*`, `HEROmode_bonk_*`; `BOHERO.H` by name),
+  `n2o`'s `nox.c` every `NOX_AST_types` object (the boss game; `n2o.c` has
+  the `N2O_AST_types` ones), and `hub`'s `hubcore.c` the hub and podium
+  code after `hub.c`'s setup (`HUBCORE.H` in the include list; the likeliest
+  fit, not proven). The engine's and `main.exe`'s address-named files are
+  named for what they hold too: `heroes`, `gameflow`, `levelload`, `camera`
+  (engine) and `prims`, `nascalls`, `modchip`, `modchip_msg` (exe; the two
+  gcc 2.7.2 units are the mod-chip check: the BIOS region byte, then the
+  "CONSOLE MAY HAVE BEEN MODIFIED" screen). The PsyQ objects not identified
+  yet (`main/psyq/unknown/*`) keep their addresses.
 
   | Overlay | Later files start at (function number, name) | Proven range | Rodata from |
   |---|---|---|---|
   | `bash` | 59 `CrateAimAtGrid` (`xtras.c`); 80 `BashHeroHit` (`bahero.c`) | 22..62 (fewest call ties at 59); 73..80 (none from 77) | `0x800B3734`; `0x800B3A18` |
-  | `papu` | 50 `func_800B87A0` | 15..50 (fewest call ties at 44..50) | `0x800B33FC` |
-  | `bonk` | 45 `func_800B6EFC` | 15..50 (fewest call ties at 44, 45) | `0x800B3364` |
-  | `n2o` | 75 `func_800BBDB8` | 36..75 | `0x800B336C` (`D_800B336C`, used by 75, 78, 129) |
-  | `hub` | 8 `func_800B4EAC` | 3..9 (fewest call ties at 8) | `0x800B330C` |
+  | `papu` | 50 `func_800B87A0` (`pahero.c`) | 15..50 (fewest call ties at 44..50) | `0x800B33FC` |
+  | `bonk` | 45 `func_800B6EFC` (`bohero.c`) | 15..50 (fewest call ties at 44, 45) | `0x800B3364` |
+  | `n2o` | 75 `func_800BBDB8` (`nox.c`) | 36..75 | `0x800B336C` (`D_800B336C`, used by 75, 78, 129) |
+  | `hub` | 8 `func_800B4EAC` (`hubcore.c`) | 3..9 (fewest call ties at 8) | `0x800B330C` |
 
   `tank`..`dino`, `chase` have tables but no parity change; `titles` has
   none. The other positive signs are absent everywhere too (checked
@@ -1204,7 +1214,7 @@ matched C (`tools/scripts/aspsx_compare.py`; binaries in the ignored
   writing this epilogue in noreorder mode, which our FSF-based cc1 doesn't.
   `aspsx_fill.py --jumps-only` gives retail's bytes and stays; only its name
   for the cause was wrong.
-- **gcc 2.7.2 files (`main/8002d488`, `main/8002e0f0`): ASPSX fills fewer
+- **gcc 2.7.2 files (`main/modchip`, `main/modchip_msg`): ASPSX fills fewer
   slots than retail** (32 and 16 bytes longer, every version). The fills
   `aspsx_fill.py` makes there, derived from retail, are likewise the game's
   gcc 2.7.2 build, not its assembler.
@@ -1254,11 +1264,11 @@ ld --> build/main.elf --objcopy--> build/main.exe   == configs/USA/checksum.sha
 
 A unit can override project.mk per object (`build/<src>.o: VAR = value` in
 the Makefile; `decomp.py`'s `unit_cfg` reads the same lines):
-`main/8002d488` and `main/8002e0f0` use `CC_VER = 2.7.2-psx` and `ASPSX_FILL`
+`main/modchip` and `main/modchip_msg` use `CC_VER = 2.7.2-psx` and `ASPSX_FILL`
 (`tools/scripts/aspsx_fill.py`: ASPSX's delay-slot filling for `j`/`jr` and
 conditional branches, and its expansion of indexed symbol loads, plus one
 delay-slot fill that Sony's gcc 2.7.2 orders differently from FSF 2.7.2's;
-its docstring lists each with the function it came from). `main/8002d488` is
+its docstring lists each with the function it came from). `main/modchip` is
 also built with `-fno-rerun-cse-after-loop`: without that second cse pass, a
 global array read or written at several offsets keeps one `la` base, as
 retail does. Every unit is built with `-fno-builtin` (`EXTRA_CC1FLAGS`): the

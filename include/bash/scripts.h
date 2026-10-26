@@ -6,7 +6,7 @@
  * owner: src/main/scripts.c */
 
 #include "common.h"
-#include "bash/80017164.h"
+#include "bash/prims.h"
 
 void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
 void func_8002141C(u8 *arg0);

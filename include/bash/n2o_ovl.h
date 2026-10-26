@@ -59,7 +59,7 @@ typedef struct N2OPadFlags {
 } N2OPadFlags;
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
-#include "bash/n2o_800bbdb8.h"
+#include "bash/n2o_nox.h"
 
 void func_800BBA4C(s32 arg0);
 extern HeroInfo Heroes[4];

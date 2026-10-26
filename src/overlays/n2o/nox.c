@@ -1,10 +1,10 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/n2o_ovl.h"
-#include "bash/n2o_800bbdb8.h"
+#include "bash/n2o_nox.h"
 #include "bash/n2o.h"
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/n2o/800bbdb8", D_800B336C);
+INCLUDE_RODATA("asm/nonmatchings/overlays/n2o/nox", D_800B336C);
 
 s32 func_800BBDB8(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     VECTOR d;

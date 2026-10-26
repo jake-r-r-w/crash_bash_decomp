@@ -1,9 +1,9 @@
-#ifndef BASH_80022A3C_H
-#define BASH_80022A3C_H
+#ifndef BASH_NASCALLS_H
+#define BASH_NASCALLS_H
 
-/* Functions and data defined in src/main/80022a3c.c. Anything the original headers declare
+/* Functions and data defined in src/main/nascalls.c. Anything the original headers declare
  * (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/main/80022a3c.c */
+ * owner: src/main/nascalls.c */
 
 #include "common.h"
 #include "bash/main.h"
@@ -232,4 +232,4 @@ static inline s32 PadRumble_update(PadRumble *r, s32 port) {
     return 8;
 }
 
-#endif /* BASH_80022A3C_H */
+#endif /* BASH_NASCALLS_H */

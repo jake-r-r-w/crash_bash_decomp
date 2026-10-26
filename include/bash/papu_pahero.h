@@ -1,9 +1,9 @@
-#ifndef BASH_PAPU_800B87A0_H
-#define BASH_PAPU_800B87A0_H
+#ifndef BASH_PAPU_PAHERO_H
+#define BASH_PAPU_PAHERO_H
 
-/* Functions and data defined in src/overlays/papu/800b87a0.c. Anything the original headers
+/* Functions and data defined in src/overlays/papu/pahero.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/papu/800b87a0.c */
+ * owner: src/overlays/papu/pahero.c */
 
 #include "common.h"
 #include "bash/papu_ovl.h"
@@ -123,4 +123,4 @@ extern s32 D_8009E2B4[];
 
 void func_800B87A0(NAS *nas);
 
-#endif /* BASH_PAPU_800B87A0_H */
+#endif /* BASH_PAPU_PAHERO_H */

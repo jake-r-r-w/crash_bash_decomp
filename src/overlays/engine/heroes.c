@@ -1,7 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
-#include "bash/80083708.h"
+#include "bash/heroes.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
 
@@ -282,25 +282,25 @@ void func_80083708(void) {
     func_80086FA0();
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADF60);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF60);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADF68);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF68);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADF70);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF70);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADF78);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF78);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADF80);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF80);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADF88);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF88);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADF90);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF90);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADF98);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF98);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADFA4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADFA4);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/80083708", D_800ADFAC);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADFAC);
 
 void func_80083E8C(void) {
     HeroInfo *h;

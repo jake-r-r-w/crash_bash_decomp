@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 #include "bash/main.h"
 #include "bash/engine.h"
-#include "bash/8008e27c.h"
+#include "bash/gameflow.h"
 #include "bash/xtras.h"
 
 struct BashObj;

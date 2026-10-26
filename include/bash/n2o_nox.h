@@ -1,9 +1,9 @@
-#ifndef BASH_N2O_800BBDB8_H
-#define BASH_N2O_800BBDB8_H
+#ifndef BASH_N2O_NOX_H
+#define BASH_N2O_NOX_H
 
-/* Functions and data defined in src/overlays/n2o/800bbdb8.c. Anything the original headers
+/* Functions and data defined in src/overlays/n2o/nox.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/n2o/800bbdb8.c */
+ * owner: src/overlays/n2o/nox.c */
 
 #include "common.h"
 #include "bash/n2o_ovl.h"
@@ -872,4 +872,4 @@ void PlotNitroMissile(NAS *nas);
 
 void PlotSpiralSat(NAS *nas);
 
-#endif /* BASH_N2O_800BBDB8_H */
+#endif /* BASH_N2O_NOX_H */

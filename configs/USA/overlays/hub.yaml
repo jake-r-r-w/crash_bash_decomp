@@ -54,9 +54,9 @@ segments:
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
       - [0x0, rodata, overlays/hub/hub_id]
       - [0x4, .rodata, overlays/hub/hub]
-      - [0x58, .rodata, overlays/hub/800b4eac]
+      - [0x58, .rodata, overlays/hub/hubcore]
       - [0x13E0, c, overlays/hub/hub]
       # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)
-      - [0x1BF8, c, overlays/hub/800b4eac]   # proven after 2, by 9; fewest call ties at 8; rodata from D_800B330C
+      - [0x1BF8, c, overlays/hub/hubcore]   # proven after 2, by 9; fewest call ties at 8; rodata from D_800B330C
       - [0x8D34, data, overlays/hub/hub_data]
   - [0x14C5C]

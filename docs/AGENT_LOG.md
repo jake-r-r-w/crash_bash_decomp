@@ -28,7 +28,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
   steering C counts as matched, inline asm is refused by the gate. One
   recorded exception (2026-10-26): `draw_verts` (`func_800193A8`,
-  `src/main/80017164.c`) keeps its three original register pins
+  `src/main/prims.c`) keeps its three original register pins
   (`register s32 xy asm("$20")`, ...; CONVENTIONS.md). The
   last three matches (`func_800B4048`, `PlotTransmuterBeam`,
   `func_800BE914`) are steering; their natural forms are Open leads.
@@ -101,7 +101,7 @@ recipe.
   file inside the engine. Full reports: `protos/<disc>/scan.md`.
 - **Typing pass for the overlays with no struct coverage** (spin, dino,
   n2o: enums only), with `field_survey.py`.
-- The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`): their toolchain
+- The gcc 2.7.2 units (`main/modchip`, `main/modchip_msg`): their toolchain
   differences are all in the Makefile and `aspsx_fill.py` (ASPSX's slot
   filling and load expansion; `8002d488` built with
   `-fno-rerun-cse-after-loop`; `refill_from_jump` redoes one slot fill
@@ -343,7 +343,7 @@ recipe.
 - A unit whose last function ends in padding `nop`s (and rodata ending in
   zero padding) comes out short once that function is C: add a splat
   `[offset, pad]` subsegment after it (`configs/USA/main.yaml` has the two
-  for `main/8002e0f0`).
+  for `main/modchip_msg`).
 - The swarm refuses any patch that adds inline asm, even a GTE macro, and a
   big-mode function then parks as "no progress" though its sessions said
   MATCH. Read the parks' `result.json` notes after a run: `func_8001AA48`
@@ -451,6 +451,14 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (file names):** every address-named game file renamed for
+  what it holds (`tools/scripts/rename_file.py SEG NEW`): bash `xtras`,
+  `bahero`; papu `pahero`; bonk `bohero`; n2o `nox`; hub `hubcore`; engine
+  `heroes`, `gameflow`, `levelload`, `camera`; exe `prims`, `nascalls`,
+  `modchip`, `modchip_msg` (ARCHITECTURE.md, Files inside the slot
+  overlays). No byte changes. The dashboard's data map lists each file
+  once. Older log entries keep the old names in prose.
 
 - **2026-10-26 (Bash, with the recipe):** all 83 unnamed functions named
   from their code (no leak header; the `LevSpec` slots, the engine hooks,
