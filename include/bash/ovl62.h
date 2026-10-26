@@ -399,14 +399,6 @@ typedef struct Ovl62Fux {
 
 extern s32 D_800D4E0C[];
 extern s32 D_800D4E08;
-extern s32 D_800D3BB4[];
-extern s32 D_800D3C74[];
-extern s32 D_800D3EDC[];
-extern s32 D_800D4174[];
-extern s32 D_800D4410[];
-extern s32 D_800D4820[];
-extern s32 D_800D4A50[];
-extern s32 D_800D4B64[];
 void PolarAI_DoWander();
 void PolarAI_DoChase();
 void PolarAI_AvoidMelt();
@@ -1575,8 +1567,8 @@ void PolarHeroesCollide(s32 p1, s32 p2);
 extern u16 D_800D61D0[][2], D_800D624C[][2], D_800D62B4[][2], D_800D63B0[][2];
 extern u16 D_800D6418[][2], D_800D64BC[][2], D_800D6548[][2], D_800D65F0[][2];
 extern u16 D_800D66A8[][2], D_800D6760[][2], D_800D6828[][2];
-extern hero_seq D_800D3948[], D_800D40D0[], D_800D4AC0[], D_800D3C1C[];
-extern hero_seq D_800D4860[], D_800D4330[], D_800D4624[];
+/* the polar.h sequences the code names directly are declared there */
+extern hero_seq KON_seq_polarwin[], TIN_seq_polarwin[], BRO_seq_polarwin[];
 void PolarUpdateShadow(s32 player);
 void PolarPreMoveHero(s32 player);
 
