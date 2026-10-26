@@ -33074,13 +33074,13 @@
   "src": "src/overlays/hub/hubcore.c"
  },
  "n2o:800B34A4": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B34A4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/InitialiseN2OFirst.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "2106657a6c872831",
   "fpn": "1e4e895bac8f5ac1",
   "leaf": true,
-  "name": "func_800B34A4",
+  "name": "InitialiseN2OFirst",
   "orig": "func_800B34A4",
   "rom": 496,
   "seg": "overlays/n2o/n2o",
@@ -33088,7 +33088,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B361C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B361C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/InitialiseN2O.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001682C",
@@ -33103,7 +33103,7 @@
   "fp": "455685320125af34",
   "fpn": "f484c1218a7f357f",
   "leaf": false,
-  "name": "func_800B361C",
+  "name": "InitialiseN2O",
   "orig": "func_800B361C",
   "rom": 872,
   "seg": "overlays/n2o/n2o",
@@ -33111,7 +33111,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B3888": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B3888.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2O_KeepInBounds.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C"
@@ -33119,7 +33119,7 @@
   "fp": "7862e2391fb50aac",
   "fpn": "6b6709904ae9ad78",
   "leaf": false,
-  "name": "func_800B3888",
+  "name": "N2O_KeepInBounds",
   "orig": "func_800B3888",
   "rom": 1492,
   "seg": "overlays/n2o/n2o",
@@ -33127,7 +33127,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B39C0": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B39C0.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2O_BA_BounceOnBounds.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -33137,7 +33137,7 @@
   "fp": "2430ae96df9a649f",
   "fpn": "46497a17b5ec5ab2",
   "leaf": false,
-  "name": "func_800B39C0",
+  "name": "N2O_BA_BounceOnBounds",
   "orig": "func_800B39C0",
   "rom": 1804,
   "seg": "overlays/n2o/n2o",
@@ -33145,13 +33145,13 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B3C04": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B3C04.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2O_BA_TestLaunchBounds.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "3132b35bb7a12c82",
   "fpn": "f37bcc833eb715e2",
   "leaf": true,
-  "name": "func_800B3C04",
+  "name": "N2O_BA_TestLaunchBounds",
   "orig": "func_800B3C04",
   "rom": 2384,
   "seg": "overlays/n2o/n2o",
@@ -33159,7 +33159,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B3CD0": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B3CD0.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroEngineUpdate.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800142D4",
@@ -33170,7 +33170,7 @@
   "fp": "87579fd66e0d8650",
   "fpn": "5dee84fb4b093a8e",
   "leaf": false,
-  "name": "func_800B3CD0",
+  "name": "N2OHeroEngineUpdate",
   "orig": "func_800B3CD0",
   "rom": 2588,
   "seg": "overlays/n2o/n2o",
@@ -33178,7 +33178,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B3E74": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B3E74.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OInitHero.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001D390",
@@ -33191,7 +33191,7 @@
   "fp": "f5ca67a70e873e42",
   "fpn": "7be69e427152c2a9",
   "leaf": false,
-  "name": "func_800B3E74",
+  "name": "N2OInitHero",
   "orig": "func_800B3E74",
   "rom": 3008,
   "seg": "overlays/n2o/n2o",
@@ -33199,7 +33199,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B4138": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B4138.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OPlaceHero.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80025B10",
@@ -33210,7 +33210,7 @@
   "fp": "dd24371e0ccca69d",
   "fpn": "a6ad9b2a4c36046f",
   "leaf": false,
-  "name": "func_800B4138",
+  "name": "N2OPlaceHero",
   "orig": "func_800B4138",
   "rom": 3716,
   "seg": "overlays/n2o/n2o",
@@ -33218,13 +33218,13 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B447C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B447C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OPreMoveHero.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "b4b633babd9a5e10",
   "fpn": "b573e3e416840e34",
   "leaf": true,
-  "name": "func_800B447C",
+  "name": "N2OPreMoveHero",
   "orig": "func_800B447C",
   "rom": 4552,
   "seg": "overlays/n2o/n2o",
@@ -33232,7 +33232,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B46DC": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B46DC.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OMoveHero.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800154A0",
@@ -33243,7 +33243,7 @@
   "fp": "f30eff5910484634",
   "fpn": "6a6d5023c078be92",
   "leaf": false,
-  "name": "func_800B46DC",
+  "name": "N2OMoveHero",
   "orig": "func_800B46DC",
   "rom": 5160,
   "seg": "overlays/n2o/n2o",
@@ -33251,7 +33251,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B4954": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B4954.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroSetSpeed.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80032F3C"
@@ -33259,7 +33259,7 @@
   "fp": "bd382549fb2d0a0e",
   "fpn": "1e2eab1eec2f72ed",
   "leaf": false,
-  "name": "func_800B4954",
+  "name": "N2OHeroSetSpeed",
   "orig": "func_800B4954",
   "rom": 5792,
   "seg": "overlays/n2o/n2o",
@@ -33267,13 +33267,13 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B4AD8": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B4AD8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroUpdateSpeed.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "28524fd0cc32f644",
   "fpn": "207b28748ace1f00",
   "leaf": true,
-  "name": "func_800B4AD8",
+  "name": "N2OHeroUpdateSpeed",
   "orig": "func_800B4AD8",
   "rom": 6180,
   "seg": "overlays/n2o/n2o",
@@ -33281,7 +33281,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B4CE0": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B4CE0.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroEnter.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8008502C",
@@ -33291,7 +33291,7 @@
   "fp": "d255e79919291f5f",
   "fpn": "99c61c68cfedbd09",
   "leaf": false,
-  "name": "func_800B4CE0",
+  "name": "N2OHeroEnter",
   "orig": "func_800B4CE0",
   "rom": 6700,
   "seg": "overlays/n2o/n2o",
@@ -33299,7 +33299,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B4E30": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B4E30.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroIdle.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8008502C",
@@ -33309,7 +33309,7 @@
   "fp": "bea6e6a9969ca4ff",
   "fpn": "bde57189b143babb",
   "leaf": false,
-  "name": "func_800B4E30",
+  "name": "N2OHeroIdle",
   "orig": "func_800B4E30",
   "rom": 7036,
   "seg": "overlays/n2o/n2o",
@@ -33317,7 +33317,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B4FA4": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B4FA4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/SetN2OHeroHit.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -33328,7 +33328,7 @@
   "fp": "fedb93f9bd15a4ff",
   "fpn": "2c6434457acaf5ae",
   "leaf": false,
-  "name": "func_800B4FA4",
+  "name": "SetN2OHeroHit",
   "orig": "func_800B4FA4",
   "rom": 7408,
   "seg": "overlays/n2o/n2o",
@@ -33336,7 +33336,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B5064": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B5064.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroHit.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8008502C",
@@ -33345,7 +33345,7 @@
   "fp": "30949b639223767d",
   "fpn": "a4eb54d6b1ddd6c3",
   "leaf": false,
-  "name": "func_800B5064",
+  "name": "N2OHeroHit",
   "orig": "func_800B5064",
   "rom": 7600,
   "seg": "overlays/n2o/n2o",
@@ -33353,7 +33353,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B5168": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B5168.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroTaunt.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8008502C",
@@ -33362,7 +33362,7 @@
   "fp": "2add4444243b7b60",
   "fpn": "22ec7e7ec4cc8c68",
   "leaf": false,
-  "name": "func_800B5168",
+  "name": "N2OHeroTaunt",
   "orig": "func_800B5168",
   "rom": 7860,
   "seg": "overlays/n2o/n2o",
@@ -33370,7 +33370,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B52CC": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B52CC.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroMove.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8008502C",
@@ -33380,7 +33380,7 @@
   "fp": "6cf67f7d8c45a0de",
   "fpn": "0c109c1a4685da28",
   "leaf": false,
-  "name": "func_800B52CC",
+  "name": "N2OHeroMove",
   "orig": "func_800B52CC",
   "rom": 8216,
   "seg": "overlays/n2o/n2o",
@@ -33388,7 +33388,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B5440": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B5440.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/SetN2OHeroWinner.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800225C4",
@@ -33399,7 +33399,7 @@
   "fp": "4c2ab6e4d380d662",
   "fpn": "59437d8a1f1da3ca",
   "leaf": false,
-  "name": "func_800B5440",
+  "name": "SetN2OHeroWinner",
   "orig": "func_800B5440",
   "rom": 8588,
   "seg": "overlays/n2o/n2o",
@@ -33407,7 +33407,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B5550": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B5550.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroWinner.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8008502C",
@@ -33418,7 +33418,7 @@
   "fp": "7ba447483e794418",
   "fpn": "38be661385232d31",
   "leaf": false,
-  "name": "func_800B5550",
+  "name": "N2OHeroWinner",
   "orig": "func_800B5550",
   "rom": 8860,
   "seg": "overlays/n2o/n2o",
@@ -33426,7 +33426,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B5674": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B5674.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/SetN2OHeroDie.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800225C4",
@@ -33436,7 +33436,7 @@
   "fp": "b0ecc976504c39a0",
   "fpn": "0ec4502bcd666b7d",
   "leaf": false,
-  "name": "func_800B5674",
+  "name": "SetN2OHeroDie",
   "orig": "func_800B5674",
   "rom": 9152,
   "seg": "overlays/n2o/n2o",
@@ -33444,7 +33444,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B5774": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B5774.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/SetN2OHeroKick.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022660",
@@ -33454,7 +33454,7 @@
   "fp": "d274817b9d9fe347",
   "fpn": "0ca9afed95449408",
   "leaf": false,
-  "name": "func_800B5774",
+  "name": "SetN2OHeroKick",
   "orig": "func_800B5774",
   "rom": 9408,
   "seg": "overlays/n2o/n2o",
@@ -33462,7 +33462,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B5838": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B5838.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroKick.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8008502C",
@@ -33473,7 +33473,7 @@
   "fp": "f7c9b894a08d80f7",
   "fpn": "738c0114cacf0adc",
   "leaf": false,
-  "name": "func_800B5838",
+  "name": "N2OHeroKick",
   "orig": "func_800B5838",
   "rom": 9604,
   "seg": "overlays/n2o/n2o",
@@ -33481,7 +33481,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B59A8": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B59A8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/SetN2OHeroDead.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800225C4",
@@ -33492,7 +33492,7 @@
   "fp": "0bc8f2319be3987e",
   "fpn": "552e2bd4de2cac45",
   "leaf": false,
-  "name": "func_800B59A8",
+  "name": "SetN2OHeroDead",
   "orig": "func_800B59A8",
   "rom": 9972,
   "seg": "overlays/n2o/n2o",
@@ -33500,7 +33500,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B5B14": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B5B14.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroDead.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800868B4",
@@ -33509,7 +33509,7 @@
   "fp": "c7c496c7782be168",
   "fpn": "ecb29c4533317c3f",
   "leaf": false,
-  "name": "func_800B5B14",
+  "name": "N2OHeroDead",
   "orig": "func_800B5B14",
   "rom": 10336,
   "seg": "overlays/n2o/n2o",
@@ -33517,7 +33517,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B5BFC": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B5BFC.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OBallMaster.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800BB624"
@@ -33525,7 +33525,7 @@
   "fp": "896af2d7250bcdde",
   "fpn": "1a710321bd86180e",
   "leaf": false,
-  "name": "func_800B5BFC",
+  "name": "N2OBallMaster",
   "orig": "func_800B5BFC",
   "rom": 10568,
   "seg": "overlays/n2o/n2o",
@@ -33586,7 +33586,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B6E6C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B6E6C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OBlendDirection.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C"
@@ -33594,7 +33594,7 @@
   "fp": "371810140df9edf2",
   "fpn": "9662d42a97166f42",
   "leaf": false,
-  "name": "func_800B6E6C",
+  "name": "N2OBlendDirection",
   "orig": "func_800B6E6C",
   "rom": 15288,
   "seg": "overlays/n2o/n2o",
@@ -33602,7 +33602,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B6F4C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B6F4C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OInitBoss.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -33615,7 +33615,7 @@
   "fp": "ac92dfe7371de637",
   "fpn": "5b534f5697132118",
   "leaf": false,
-  "name": "func_800B6F4C",
+  "name": "N2OInitBoss",
   "orig": "func_800B6F4C",
   "rom": 15512,
   "seg": "overlays/n2o/n2o",
@@ -33623,7 +33623,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B7244": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B7244.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OUpdateBoss.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800154A0",
@@ -33638,7 +33638,7 @@
   "fp": "501e99042e7c2693",
   "fpn": "e8949aa3a8a7623f",
   "leaf": false,
-  "name": "func_800B7244",
+  "name": "N2OUpdateBoss",
   "orig": "func_800B7244",
   "rom": 16272,
   "seg": "overlays/n2o/n2o",
@@ -33646,7 +33646,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B7858": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B7858.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OBotAimA.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590"
@@ -33654,7 +33654,7 @@
   "fp": "a5d486e1206cc3e3",
   "fpn": "f8c5071e5a2785f8",
   "leaf": false,
-  "name": "func_800B7858",
+  "name": "N2OBotAimA",
   "orig": "func_800B7858",
   "rom": 17828,
   "seg": "overlays/n2o/n2o",
@@ -33662,7 +33662,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B7C58": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B7C58.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OBotAimB.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590"
@@ -33670,7 +33670,7 @@
   "fp": "a5d486e1206cc3e3",
   "fpn": "f8c5071e5a2785f8",
   "leaf": false,
-  "name": "func_800B7C58",
+  "name": "N2OBotAimB",
   "orig": "func_800B7C58",
   "rom": 18852,
   "seg": "overlays/n2o/n2o",
@@ -33678,7 +33678,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B8058": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B8058.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/PickN2OPlayer.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590"
@@ -33686,7 +33686,7 @@
   "fp": "4de12fd04656de3d",
   "fpn": "aadac5185a3bc9b3",
   "leaf": false,
-  "name": "func_800B8058",
+  "name": "PickN2OPlayer",
   "orig": "func_800B8058",
   "rom": 19876,
   "seg": "overlays/n2o/n2o",
@@ -33694,7 +33694,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B817C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B817C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OBotCanHit.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -33705,7 +33705,7 @@
   "fp": "a818a1f4c837a3f9",
   "fpn": "9744c3d127cee690",
   "leaf": false,
-  "name": "func_800B817C",
+  "name": "N2OBotCanHit",
   "orig": "func_800B817C",
   "rom": 20168,
   "seg": "overlays/n2o/n2o",
@@ -33713,7 +33713,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B83EC": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B83EC.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2O_HeroBot.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -33728,7 +33728,7 @@
   "fp": "b140b6238ba25db3",
   "fpn": "3efeba7dde07297d",
   "leaf": false,
-  "name": "func_800B83EC",
+  "name": "N2O_HeroBot",
   "orig": "func_800B83EC",
   "rom": 20792,
   "seg": "overlays/n2o/n2o",
@@ -33736,7 +33736,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B8968": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B8968.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OSpawnSlotMissile.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022A3C"
@@ -33744,7 +33744,7 @@
   "fp": "18834440d7e9fc5d",
   "fpn": "0cdcc1aacfad2b79",
   "leaf": false,
-  "name": "func_800B8968",
+  "name": "N2OSpawnSlotMissile",
   "orig": "func_800B8968",
   "rom": 22196,
   "seg": "overlays/n2o/n2o",
@@ -33794,7 +33794,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B90F4": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B90F4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OInitSlots.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015870"
@@ -33802,7 +33802,7 @@
   "fp": "b890bd1775ae8d47",
   "fpn": "6fc91665c9afb74d",
   "leaf": false,
-  "name": "func_800B90F4",
+  "name": "N2OInitSlots",
   "orig": "func_800B90F4",
   "rom": 24128,
   "seg": "overlays/n2o/n2o",
@@ -33810,7 +33810,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B92D4": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B92D4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OUpdateSlots.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -33820,7 +33820,7 @@
   "fp": "bc381f920156a2c4",
   "fpn": "2e88c05a8a1790bd",
   "leaf": false,
-  "name": "func_800B92D4",
+  "name": "N2OUpdateSlots",
   "orig": "func_800B92D4",
   "rom": 24608,
   "seg": "overlays/n2o/n2o",
@@ -33846,7 +33846,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B9800": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B9800.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OLineToCircleTest.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80032490"
@@ -33854,7 +33854,7 @@
   "fp": "9fd189bd6c251eae",
   "fpn": "021ef6c97cde342d",
   "leaf": false,
-  "name": "func_800B9800",
+  "name": "N2OLineToCircleTest",
   "orig": "func_800B9800",
   "rom": 25932,
   "seg": "overlays/n2o/n2o",
@@ -33862,7 +33862,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B9B10": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B9B10.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroPushTeammate.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C"
@@ -33870,7 +33870,7 @@
   "fp": "a943e3f2207f4029",
   "fpn": "543961b2e7a1d1e6",
   "leaf": false,
-  "name": "func_800B9B10",
+  "name": "N2OHeroPushTeammate",
   "orig": "func_800B9B10",
   "rom": 26716,
   "seg": "overlays/n2o/n2o",
@@ -33878,7 +33878,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800B9CB8": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800B9CB8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroBallCollision.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800142D4",
@@ -33901,7 +33901,7 @@
   "fp": "9589e08af4f575e8",
   "fpn": "3561dc6f18a56079",
   "leaf": false,
-  "name": "func_800B9CB8",
+  "name": "N2OHeroBallCollision",
   "orig": "func_800B9CB8",
   "rom": 27140,
   "seg": "overlays/n2o/n2o",
@@ -33909,7 +33909,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BA43C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BA43C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroRad2ObjectCollision.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -33921,7 +33921,7 @@
   "fp": "ed1a9b472692a843",
   "fpn": "90e78c9375c43037",
   "leaf": false,
-  "name": "func_800BA43C",
+  "name": "N2OHeroRad2ObjectCollision",
   "orig": "func_800BA43C",
   "rom": 29064,
   "seg": "overlays/n2o/n2o",
@@ -33929,7 +33929,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BA6C4": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BA6C4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/TestN2OObjectObstacles.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -33942,7 +33942,7 @@
   "fp": "ad4e52a16cff3829",
   "fpn": "4ece7926125f367f",
   "leaf": false,
-  "name": "func_800BA6C4",
+  "name": "TestN2OObjectObstacles",
   "orig": "func_800BA6C4",
   "rom": 29712,
   "seg": "overlays/n2o/n2o",
@@ -33950,7 +33950,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BAAA8": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BAAA8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OBossPushObjects.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800142D4",
@@ -33962,7 +33962,7 @@
   "fp": "b690ea5fe04c2fc3",
   "fpn": "6a447d29dd659526",
   "leaf": false,
-  "name": "func_800BAAA8",
+  "name": "N2OBossPushObjects",
   "orig": "func_800BAAA8",
   "rom": 30708,
   "seg": "overlays/n2o/n2o",
@@ -33970,7 +33970,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BAC30": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BAC30.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OMissileHitTest.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80025A48",
@@ -33979,7 +33979,7 @@
   "fp": "8fded1ca0bb1c40f",
   "fpn": "f92b21450a489e67",
   "leaf": false,
-  "name": "func_800BAC30",
+  "name": "N2OMissileHitTest",
   "orig": "func_800BAC30",
   "rom": 31100,
   "seg": "overlays/n2o/n2o",
@@ -33987,7 +33987,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BAEA8": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BAEA8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/TestN2OObject2Hero.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80025A48"
@@ -33995,7 +33995,7 @@
   "fp": "97e951d7c4a07681",
   "fpn": "e6d0f0376e91c942",
   "leaf": false,
-  "name": "func_800BAEA8",
+  "name": "TestN2OObject2Hero",
   "orig": "func_800BAEA8",
   "rom": 31732,
   "seg": "overlays/n2o/n2o",
@@ -34019,13 +34019,13 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB05C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB05C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/GetN2OContour.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "5f1cd881586e7b69",
   "fpn": "3f50c59ca7046bde",
   "leaf": true,
-  "name": "func_800BB05C",
+  "name": "GetN2OContour",
   "orig": "func_800BB05C",
   "rom": 32168,
   "seg": "overlays/n2o/n2o",
@@ -34033,7 +34033,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB070": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB070.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OShowPhaseObjects.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015870"
@@ -34041,7 +34041,7 @@
   "fp": "2ff330e534487ca0",
   "fpn": "51b1a1b6a1694dc5",
   "leaf": false,
-  "name": "func_800BB070",
+  "name": "N2OShowPhaseObjects",
   "orig": "func_800BB070",
   "rom": 32188,
   "seg": "overlays/n2o/n2o",
@@ -34049,7 +34049,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB184": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB184.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OCameraFollow.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800153B4",
@@ -34058,7 +34058,7 @@
   "fp": "4d2b511d903a415c",
   "fpn": "508671a3caa39dc0",
   "leaf": false,
-  "name": "func_800BB184",
+  "name": "N2OCameraFollow",
   "orig": "func_800BB184",
   "rom": 32464,
   "seg": "overlays/n2o/n2o",
@@ -34098,7 +34098,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB3A0": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB3A0.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OSpawnExplosion.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -34108,7 +34108,7 @@
   "fp": "15e7a3f53e3d572b",
   "fpn": "58f529b61c1e99eb",
   "leaf": false,
-  "name": "func_800BB3A0",
+  "name": "N2OSpawnExplosion",
   "orig": "func_800BB3A0",
   "rom": 33004,
   "seg": "overlays/n2o/n2o",
@@ -34152,7 +34152,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB5F0": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB5F0.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OSpawnFirstMissile.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022A3C"
@@ -34160,7 +34160,7 @@
   "fp": "9e74a280ed3c2205",
   "fpn": "84aa5f68bfb1cf4d",
   "leaf": false,
-  "name": "func_800BB5F0",
+  "name": "N2OSpawnFirstMissile",
   "orig": "func_800BB5F0",
   "rom": 33596,
   "seg": "overlays/n2o/n2o",
@@ -34168,7 +34168,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB624": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB624.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OFreeBallSlot.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022A3C"
@@ -34176,7 +34176,7 @@
   "fp": "c3bbcdbe31609bb1",
   "fpn": "f304a05cd709aeee",
   "leaf": false,
-  "name": "func_800BB624",
+  "name": "N2OFreeBallSlot",
   "orig": "func_800BB624",
   "rom": 33648,
   "seg": "overlays/n2o/n2o",
@@ -34184,7 +34184,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB6BC": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB6BC.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroDie.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8008502C",
@@ -34193,7 +34193,7 @@
   "fp": "defb0632f1d1fcb1",
   "fpn": "e3aa2450db15aa28",
   "leaf": false,
-  "name": "func_800BB6BC",
+  "name": "N2OHeroDie",
   "orig": "func_800BB6BC",
   "rom": 33800,
   "seg": "overlays/n2o/n2o",
@@ -34201,7 +34201,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB72C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB72C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/SetN2OHeroMove.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800854C0",
@@ -34210,7 +34210,7 @@
   "fp": "89a1efa4efd85957",
   "fpn": "1c08a12fb74eabcc",
   "leaf": false,
-  "name": "func_800BB72C",
+  "name": "SetN2OHeroMove",
   "orig": "func_800BB72C",
   "rom": 33912,
   "seg": "overlays/n2o/n2o",
@@ -34218,7 +34218,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB788": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB788.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/SetN2OHeroTaunt.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800854C0"
@@ -34226,7 +34226,7 @@
   "fp": "dadcf18c6e05e031",
   "fpn": "efcc9da72fd17a0f",
   "leaf": false,
-  "name": "func_800BB788",
+  "name": "SetN2OHeroTaunt",
   "orig": "func_800BB788",
   "rom": 34004,
   "seg": "overlays/n2o/n2o",
@@ -34234,7 +34234,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB7D4": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB7D4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/SetN2OHeroIdle.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -34245,7 +34245,7 @@
   "fp": "df5af46972117794",
   "fpn": "85e50083c649a9fb",
   "leaf": false,
-  "name": "func_800BB7D4",
+  "name": "SetN2OHeroIdle",
   "orig": "func_800BB7D4",
   "rom": 34080,
   "seg": "overlays/n2o/n2o",
@@ -34253,7 +34253,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB86C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB86C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/SetN2OHeroEnter.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800225C4",
@@ -34263,7 +34263,7 @@
   "fp": "ed7efba11edbd9d0",
   "fpn": "df67f94e2b373426",
   "leaf": false,
-  "name": "func_800BB86C",
+  "name": "SetN2OHeroEnter",
   "orig": "func_800BB86C",
   "rom": 34232,
   "seg": "overlays/n2o/n2o",
@@ -34271,7 +34271,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB8EC": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB8EC.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroTestIdle.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800868B4"
@@ -34279,7 +34279,7 @@
   "fp": "8474bf24a23cb14e",
   "fpn": "63f0dc913bad6ef6",
   "leaf": false,
-  "name": "func_800BB8EC",
+  "name": "N2OHeroTestIdle",
   "orig": "func_800BB8EC",
   "rom": 34360,
   "seg": "overlays/n2o/n2o",
@@ -34287,7 +34287,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB944": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB944.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroTestMove.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800868B4"
@@ -34295,7 +34295,7 @@
   "fp": "a54daf11c100054a",
   "fpn": "42afe1b1ac400ab7",
   "leaf": false,
-  "name": "func_800BB944",
+  "name": "N2OHeroTestMove",
   "orig": "func_800BB944",
   "rom": 34448,
   "seg": "overlays/n2o/n2o",
@@ -34303,7 +34303,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BB9B0": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BB9B0.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OHeroTestKick.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800868B4"
@@ -34311,7 +34311,7 @@
   "fp": "9fc75929b3716ced",
   "fpn": "a8e44be356729707",
   "leaf": false,
-  "name": "func_800BB9B0",
+  "name": "N2OHeroTestKick",
   "orig": "func_800BB9B0",
   "rom": 34556,
   "seg": "overlays/n2o/n2o",
@@ -34319,7 +34319,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BBA4C": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BBA4C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OUpdateShadow.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80025F44"
@@ -34327,7 +34327,7 @@
   "fp": "228ac543680b013e",
   "fpn": "d0a2648296ed9a4e",
   "leaf": false,
-  "name": "func_800BBA4C",
+  "name": "N2OUpdateShadow",
   "orig": "func_800BBA4C",
   "rom": 34712,
   "seg": "overlays/n2o/n2o",
@@ -34335,13 +34335,13 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BBB10": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BBB10.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OInitShadow.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "cca24703acad9eec",
   "fpn": "17ad6717b2da4f85",
   "leaf": true,
-  "name": "func_800BBB10",
+  "name": "N2OInitShadow",
   "orig": "func_800BBB10",
   "rom": 34908,
   "seg": "overlays/n2o/n2o",
@@ -34349,7 +34349,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BBBB4": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BBBB4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OAddPolar.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C"
@@ -34357,7 +34357,7 @@
   "fp": "2b9e1bff932ff4f8",
   "fpn": "b0fcd7582c19b37c",
   "leaf": false,
-  "name": "func_800BBBB4",
+  "name": "N2OAddPolar",
   "orig": "func_800BBBB4",
   "rom": 35072,
   "seg": "overlays/n2o/n2o",
@@ -34365,13 +34365,13 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BBC78": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BBC78.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OTestWalls.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "f8998671fefbe22f",
   "fpn": "287a3d41376a8e68",
   "leaf": true,
-  "name": "func_800BBC78",
+  "name": "N2OTestWalls",
   "orig": "func_800BBC78",
   "rom": 35268,
   "seg": "overlays/n2o/n2o",
@@ -34379,7 +34379,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BBD18": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BBD18.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/UpdateN2O.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800B5BFC",
@@ -34390,7 +34390,7 @@
   "fp": "53525f972e111c0e",
   "fpn": "ddfc7cfd30d85a2f",
   "leaf": false,
-  "name": "func_800BBD18",
+  "name": "UpdateN2O",
   "orig": "func_800BBD18",
   "rom": 35428,
   "seg": "overlays/n2o/n2o",
@@ -34398,13 +34398,13 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BBD68": {
-  "asm": "asm/nonmatchings/overlays/n2o/n2o/func_800BBD68.s",
+  "asm": "asm/nonmatchings/overlays/n2o/n2o/N2OSetUp.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "e4f65a4a1d6aad53",
   "fpn": "a687da7086421f84",
   "leaf": true,
-  "name": "func_800BBD68",
+  "name": "N2OSetUp",
   "orig": "func_800BBD68",
   "rom": 35508,
   "seg": "overlays/n2o/n2o",
@@ -34412,7 +34412,7 @@
   "src": "src/overlays/n2o/n2o.c"
  },
  "n2o:800BBDB8": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BBDB8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxBoxToSphere.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800322FC",
@@ -34426,7 +34426,7 @@
   "fp": "230a1d1202a843c1",
   "fpn": "5867018e04c9adbb",
   "leaf": false,
-  "name": "func_800BBDB8",
+  "name": "NoxBoxToSphere",
   "orig": "func_800BBDB8",
   "rom": 35588,
   "seg": "overlays/n2o/nox",
@@ -34434,7 +34434,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BC3A4": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BC3A4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxInitAsteroids.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -34443,7 +34443,7 @@
   "fp": "288871af411a4e27",
   "fpn": "796a30cd660ca811",
   "leaf": false,
-  "name": "func_800BC3A4",
+  "name": "NoxInitAsteroids",
   "orig": "func_800BC3A4",
   "rom": 37104,
   "seg": "overlays/n2o/nox",
@@ -34451,7 +34451,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BC6B8": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BC6B8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxAsteroidSfx.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -34460,7 +34460,7 @@
   "fp": "8dd4d5e50e1ffc18",
   "fpn": "7d3584a5d83b3566",
   "leaf": false,
-  "name": "func_800BC6B8",
+  "name": "NoxAsteroidSfx",
   "orig": "func_800BC6B8",
   "rom": 37892,
   "seg": "overlays/n2o/nox",
@@ -34468,7 +34468,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BC7E0": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BC7E0.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxLaserHitBox.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022A3C",
@@ -34480,7 +34480,7 @@
   "fp": "33a8e52013902f6a",
   "fpn": "c231b2122f8f3062",
   "leaf": false,
-  "name": "func_800BC7E0",
+  "name": "NoxLaserHitBox",
   "orig": "func_800BC7E0",
   "rom": 38188,
   "seg": "overlays/n2o/nox",
@@ -34488,7 +34488,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BC9B4": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BC9B4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxAsteroidHitHero.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -34502,7 +34502,7 @@
   "fp": "a38f89637db4171f",
   "fpn": "3219596442206cfa",
   "leaf": false,
-  "name": "func_800BC9B4",
+  "name": "NoxAsteroidHitHero",
   "orig": "func_800BC9B4",
   "rom": 38656,
   "seg": "overlays/n2o/nox",
@@ -34510,13 +34510,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BD584": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BD584.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxTurnAsteroid.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "ece19631755a6036",
   "fpn": "239e1b2898fd2fe2",
   "leaf": true,
-  "name": "func_800BD584",
+  "name": "NoxTurnAsteroid",
   "orig": "func_800BD584",
   "rom": 41680,
   "seg": "overlays/n2o/nox",
@@ -34524,7 +34524,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BD6E8": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BD6E8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxMineHitHero.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -34538,7 +34538,7 @@
   "fp": "ce1d0e83522d5f64",
   "fpn": "94846c38dbbcf0a7",
   "leaf": false,
-  "name": "func_800BD6E8",
+  "name": "NoxMineHitHero",
   "orig": "func_800BD6E8",
   "rom": 42036,
   "seg": "overlays/n2o/nox",
@@ -34546,7 +34546,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BDB00": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BDB00.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxStartPhase1.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80026F48",
@@ -34557,7 +34557,7 @@
   "fp": "e9783e498ad4304e",
   "fpn": "6de6c7af5cc24d19",
   "leaf": false,
-  "name": "func_800BDB00",
+  "name": "NoxStartPhase1",
   "orig": "func_800BDB00",
   "rom": 43084,
   "seg": "overlays/n2o/nox",
@@ -34565,7 +34565,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BDC0C": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BDC0C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxUpdateAsteroids.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001E588",
@@ -34577,7 +34577,7 @@
   "fp": "0eab3373d0d156b1",
   "fpn": "a7fc51e80629c93e",
   "leaf": false,
-  "name": "func_800BDC0C",
+  "name": "NoxUpdateAsteroids",
   "orig": "func_800BDC0C",
   "rom": 43352,
   "seg": "overlays/n2o/nox",
@@ -34585,7 +34585,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BE70C": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BE70C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxUpdate.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022A3C",
@@ -34596,7 +34596,7 @@
   "fp": "477d67346560d973",
   "fpn": "628272268f14e59e",
   "leaf": false,
-  "name": "func_800BE70C",
+  "name": "NoxUpdate",
   "orig": "func_800BE70C",
   "rom": 46168,
   "seg": "overlays/n2o/nox",
@@ -34604,7 +34604,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BE8C0": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BE8C0.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxHeroCollide.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -34613,7 +34613,7 @@
   "fp": "edd5082e1ea46ba7",
   "fpn": "0a6e6168e45f8fd1",
   "leaf": false,
-  "name": "func_800BE8C0",
+  "name": "NoxHeroCollide",
   "orig": "func_800BE8C0",
   "rom": 46604,
   "seg": "overlays/n2o/nox",
@@ -34621,7 +34621,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BEB68": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BEB68.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxPreMoveHero.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800154A0"
@@ -34629,7 +34629,7 @@
   "fp": "aeea314fdcfd762a",
   "fpn": "0693b643bb6eab36",
   "leaf": false,
-  "name": "func_800BEB68",
+  "name": "NoxPreMoveHero",
   "orig": "func_800BEB68",
   "rom": 47284,
   "seg": "overlays/n2o/nox",
@@ -34637,7 +34637,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BF0AC": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BF0AC.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxMoveHero.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800BE8C0"
@@ -34645,7 +34645,7 @@
   "fp": "6fe4510713451f95",
   "fpn": "c411cd91cd4ded8f",
   "leaf": false,
-  "name": "func_800BF0AC",
+  "name": "NoxMoveHero",
   "orig": "func_800BF0AC",
   "rom": 48632,
   "seg": "overlays/n2o/nox",
@@ -34653,7 +34653,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BF37C": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BF37C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxHeroFly.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -34666,7 +34666,7 @@
   "fp": "9149f7ead545bf99",
   "fpn": "b7a01a7a193eef09",
   "leaf": false,
-  "name": "func_800BF37C",
+  "name": "NoxHeroFly",
   "orig": "func_800BF37C",
   "rom": 49352,
   "seg": "overlays/n2o/nox",
@@ -34674,7 +34674,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800BF7C8": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800BF7C8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/SetNoxHeroDead.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022A3C",
@@ -34686,7 +34686,7 @@
   "fp": "b875f1ea736c45fa",
   "fpn": "6d7bc87297063896",
   "leaf": false,
-  "name": "func_800BF7C8",
+  "name": "SetNoxHeroDead",
   "orig": "func_800BF7C8",
   "rom": 50452,
   "seg": "overlays/n2o/nox",
@@ -34773,7 +34773,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C0C28": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C0C28.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxBossFollowPath.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -34785,7 +34785,7 @@
   "fp": "6d053ba4eef1130f",
   "fpn": "5a9923e7ca16f6b0",
   "leaf": false,
-  "name": "func_800C0C28",
+  "name": "NoxBossFollowPath",
   "orig": "func_800C0C28",
   "rom": 55668,
   "seg": "overlays/n2o/nox",
@@ -34912,7 +34912,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2218": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2218.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxInitSparks.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590"
@@ -34920,7 +34920,7 @@
   "fp": "3db0983a2ad58c54",
   "fpn": "3dcc714672387f93",
   "leaf": false,
-  "name": "func_800C2218",
+  "name": "NoxInitSparks",
   "orig": "func_800C2218",
   "rom": 61284,
   "seg": "overlays/n2o/nox",
@@ -34928,7 +34928,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C237C": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C237C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxDrawSparks.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -34938,7 +34938,7 @@
   "fp": "026c19197a9f0fc6",
   "fpn": "7a6bb18d2fb26706",
   "leaf": false,
-  "name": "func_800C237C",
+  "name": "NoxDrawSparks",
   "orig": "func_800C237C",
   "rom": 61640,
   "seg": "overlays/n2o/nox",
@@ -34946,13 +34946,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C27D4": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C27D4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxCameraFollow.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "b5d3374d97acd169",
   "fpn": "372a72677c6996ed",
   "leaf": true,
-  "name": "func_800C27D4",
+  "name": "NoxCameraFollow",
   "orig": "func_800C27D4",
   "rom": 62752,
   "seg": "overlays/n2o/nox",
@@ -34992,7 +34992,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2904": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2904.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxPathAngles.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001463C",
@@ -35001,7 +35001,7 @@
   "fp": "51c693537e216ad6",
   "fpn": "871d904c3d9fa802",
   "leaf": false,
-  "name": "func_800C2904",
+  "name": "NoxPathAngles",
   "orig": "func_800C2904",
   "rom": 63056,
   "seg": "overlays/n2o/nox",
@@ -35043,7 +35043,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2BB0": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2BB0.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxSpawnSmokeBoost.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022A3C"
@@ -35051,7 +35051,7 @@
   "fp": "269efd11ba7bdae0",
   "fpn": "4ae440f1a2be8a14",
   "leaf": false,
-  "name": "func_800C2BB0",
+  "name": "NoxSpawnSmokeBoost",
   "orig": "func_800C2BB0",
   "rom": 63740,
   "seg": "overlays/n2o/nox",
@@ -35059,7 +35059,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2C08": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2C08.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxHeroWinner.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8008502C",
@@ -35070,7 +35070,7 @@
   "fp": "a75f67f833cb5e05",
   "fpn": "275b2e11c2a69109",
   "leaf": false,
-  "name": "func_800C2C08",
+  "name": "NoxHeroWinner",
   "orig": "func_800C2C08",
   "rom": 63828,
   "seg": "overlays/n2o/nox",
@@ -35078,7 +35078,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2C8C": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2C8C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/SetNoxHeroWinner.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80085718",
@@ -35087,7 +35087,7 @@
   "fp": "54c6f4ad4aeec73c",
   "fpn": "ee941f5b47300fd7",
   "leaf": false,
-  "name": "func_800C2C8C",
+  "name": "SetNoxHeroWinner",
   "orig": "func_800C2C8C",
   "rom": 63960,
   "seg": "overlays/n2o/nox",
@@ -35095,7 +35095,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2D10": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2D10.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/TestNoxHeroWon.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800868B4"
@@ -35103,7 +35103,7 @@
   "fp": "0812b324755ed52f",
   "fpn": "bfe4f38298514cc0",
   "leaf": false,
-  "name": "func_800C2D10",
+  "name": "TestNoxHeroWon",
   "orig": "func_800C2D10",
   "rom": 64092,
   "seg": "overlays/n2o/nox",
@@ -35111,7 +35111,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2D80": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2D80.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxHeroHit.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800868B4"
@@ -35119,7 +35119,7 @@
   "fp": "4345de833e1bee6a",
   "fpn": "bec2dc3ca6503e34",
   "leaf": false,
-  "name": "func_800C2D80",
+  "name": "NoxHeroHit",
   "orig": "func_800C2D80",
   "rom": 64204,
   "seg": "overlays/n2o/nox",
@@ -35127,7 +35127,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2DD8": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2DD8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/SetNoxHeroHit.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022A3C",
@@ -35137,7 +35137,7 @@
   "fp": "2aa66d2780b3be6e",
   "fpn": "0ae2d1a4b6f2fb6b",
   "leaf": false,
-  "name": "func_800C2DD8",
+  "name": "SetNoxHeroHit",
   "orig": "func_800C2DD8",
   "rom": 64292,
   "seg": "overlays/n2o/nox",
@@ -35145,13 +35145,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2E58": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2E58.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxHeroDead.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C2E58",
+  "name": "NoxHeroDead",
   "orig": "func_800C2E58",
   "rom": 64420,
   "seg": "overlays/n2o/nox",
@@ -35159,7 +35159,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2E60": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2E60.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/SetNoxHeroFly.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800854C0",
@@ -35168,7 +35168,7 @@
   "fp": "58037b76437020ca",
   "fpn": "4ff8c97d754b3642",
   "leaf": false,
-  "name": "func_800C2E60",
+  "name": "SetNoxHeroFly",
   "orig": "func_800C2E60",
   "rom": 64428,
   "seg": "overlays/n2o/nox",
@@ -35176,7 +35176,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2EF8": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2EF8.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxHeroFacing.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800154A0"
@@ -35184,7 +35184,7 @@
   "fp": "1d9c2e29d89c2073",
   "fpn": "0ae06302f9f0ecd1",
   "leaf": false,
-  "name": "func_800C2EF8",
+  "name": "NoxHeroFacing",
   "orig": "func_800C2EF8",
   "rom": 64580,
   "seg": "overlays/n2o/nox",
@@ -35192,13 +35192,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2F70": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2F70.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/Nox_KeepInBounds.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_800C2F70",
+  "name": "Nox_KeepInBounds",
   "orig": "func_800C2F70",
   "rom": 64700,
   "seg": "overlays/n2o/nox",
@@ -35206,13 +35206,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C2F78": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C2F78.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxMixVelocities.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "2f29d8ad5f235fc4",
   "fpn": "fee1a8d49b1e9759",
   "leaf": true,
-  "name": "func_800C2F78",
+  "name": "NoxMixVelocities",
   "orig": "func_800C2F78",
   "rom": 64708,
   "seg": "overlays/n2o/nox",
@@ -35248,13 +35248,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C3184": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C3184.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxStubA.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C3184",
+  "name": "NoxStubA",
   "orig": "func_800C3184",
   "rom": 65232,
   "seg": "overlays/n2o/nox",
@@ -35262,7 +35262,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C318C": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C318C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxInitCamera.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80018B08",
@@ -35272,7 +35272,7 @@
   "fp": "5982718a93d52edb",
   "fpn": "1172725a13f995b4",
   "leaf": false,
-  "name": "func_800C318C",
+  "name": "NoxInitCamera",
   "orig": "func_800C318C",
   "rom": 65240,
   "seg": "overlays/n2o/nox",
@@ -35280,13 +35280,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C3234": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C3234.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxStubB.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C3234",
+  "name": "NoxStubB",
   "orig": "func_800C3234",
   "rom": 65408,
   "seg": "overlays/n2o/nox",
@@ -35294,7 +35294,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C323C": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C323C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxLaserHitSphere.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80022A3C",
@@ -35304,7 +35304,7 @@
   "fp": "76cec653295fb8d6",
   "fpn": "f24f4ae46d279d49",
   "leaf": false,
-  "name": "func_800C323C",
+  "name": "NoxLaserHitSphere",
   "orig": "func_800C323C",
   "rom": 65416,
   "seg": "overlays/n2o/nox",
@@ -35312,7 +35312,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C3370": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C3370.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxMineSfx.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "80015590",
@@ -35321,7 +35321,7 @@
   "fp": "3d604353e4fd4c5e",
   "fpn": "5d50fefe158f26b8",
   "leaf": false,
-  "name": "func_800C3370",
+  "name": "NoxMineSfx",
   "orig": "func_800C3370",
   "rom": 65724,
   "seg": "overlays/n2o/nox",
@@ -35329,13 +35329,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C3440": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C3440.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxResetHeroes.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "40cec383e1ac31c4",
   "fpn": "4ccc5c4050e3bfa7",
   "leaf": true,
-  "name": "func_800C3440",
+  "name": "NoxResetHeroes",
   "orig": "func_800C3440",
   "rom": 65932,
   "seg": "overlays/n2o/nox",
@@ -35343,7 +35343,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C349C": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C349C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxInit.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "8001E0A8",
@@ -35355,7 +35355,7 @@
   "fp": "f7baa26c3429974b",
   "fpn": "c13b2f2f45092c35",
   "leaf": false,
-  "name": "func_800C349C",
+  "name": "NoxInit",
   "orig": "func_800C349C",
   "rom": 66024,
   "seg": "overlays/n2o/nox",
@@ -35363,7 +35363,7 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C3544": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C3544.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxPointInBox.s",
   "bin": "disc/n2o.bin",
   "calls": [
    "800322FC",
@@ -35372,7 +35372,7 @@
   "fp": "36e1a37baab12072",
   "fpn": "aaef54cef1c21674",
   "leaf": false,
-  "name": "func_800C3544",
+  "name": "NoxPointInBox",
   "orig": "func_800C3544",
   "rom": 66192,
   "seg": "overlays/n2o/nox",
@@ -35380,13 +35380,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C365C": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C365C.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxFadeLevel.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "2685898264f7d53e",
   "fpn": "b78cdfa8fbdf0494",
   "leaf": true,
-  "name": "func_800C365C",
+  "name": "NoxFadeLevel",
   "orig": "func_800C365C",
   "rom": 66472,
   "seg": "overlays/n2o/nox",
@@ -35394,13 +35394,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C36D4": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C36D4.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxUpdateShadow.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C36D4",
+  "name": "NoxUpdateShadow",
   "orig": "func_800C36D4",
   "rom": 66592,
   "seg": "overlays/n2o/nox",
@@ -35408,13 +35408,13 @@
   "src": "src/overlays/n2o/nox.c"
  },
  "n2o:800C36DC": {
-  "asm": "asm/nonmatchings/overlays/n2o/nox/func_800C36DC.s",
+  "asm": "asm/nonmatchings/overlays/n2o/nox/NoxInitShadow.s",
   "bin": "disc/n2o.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C36DC",
+  "name": "NoxInitShadow",
   "orig": "func_800C36DC",
   "rom": 66600,
   "seg": "overlays/n2o/nox",
