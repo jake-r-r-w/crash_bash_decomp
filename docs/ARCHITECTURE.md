@@ -676,6 +676,20 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Arkenoid's data** (ovl61, Ballistix; named 2026-10-26). Modes 14..17
+  are Balls, Beach Ball, N. Gin and Sky Ball (`file_group_BALLS` ..
+  `SKYBALL`); the world record (`0x80098FF0`) is `{..., &ARKENOID_PREMAP,
+  &arkenoid_shell_info, AR_SetUp}`. The 64 `*_seq_ark*` sequences
+  (`HeroSeqTables[hero][25..32]`) are one block. Each level picks its
+  bounds code into three pointers (`ArkBounceOnBounds`,
+  `ArkTestOutOfBounds`, `ArkTestLaunchBounds`): the `BA` set for Balls and
+  Beach Ball, `BA` with `AR_NG_TestOutOfBounds` for N. Gin, and the `PI`
+  set for Sky Ball. Not in this build, of `arkenoid.h`: the `SE` set
+  (`AR_SE_BounceOnBounds`, `AR_SE_TestOutOfBounds`; no level uses one),
+  the magna ring (`Init_/Plot_MagnaRing`; no AST id), `AR_InitIcons`,
+  `DangerBalls`, `HeroChooseARScoreWinner`, and `ARKENOIDSpecifics`
+  (`AR_SetUp` fills the exe's `LevSpec`). The two `BounceOnBounds` return
+  a word here where the leak says `s16`.
 - **Pogo's data** (ovl60, named 2026-10-26). Modes 10..13 are Painter,
   a-Gogo, Loco and Bouncer (`file_group_POGOPAINTER` .. `BOUNCER`, the
   `levnumbers` order); the world record (`0x80098FD8`) is `{...,

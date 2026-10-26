@@ -267,7 +267,12 @@ build.
   (no object fits it). Left for Phase 5: its game-state views
   (`Ovl60*View`) and the tile grid's and AI's stand-ins (`Ovl60Cell`,
   `Ovl60Move`, the leak's `PogoSquare`/`PogoAIPlayer`).
-- [ ] Arkenoid (`ovl61`)
+- [x] Arkenoid (`ovl61`). Done 2026-10-26: every function named (6 from
+  the leak's order), rodata, data and id word as C and named, one file,
+  its shift test passed (`make shift OVL=ovl61 PAD=0x40`, PLAYING.md).
+  `arkenoid.h`'s eight undefined names are not in this build
+  (ARCHITECTURE.md, Arkenoid's data). Left for Phase 5: its game-state
+  views and stand-in structs (`Ovl61*`).
 - [ ] Polar (`ovl62`): name functions 155..216 first, then run
   `leak_order.py` again to place them (one file or a second).
 - [ ] Bash (`ovl5d`, with the crates and pickups of `XTRAS_AST_types`)

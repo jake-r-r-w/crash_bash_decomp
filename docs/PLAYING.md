@@ -87,6 +87,12 @@ DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 390
 `sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
 Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
 
+### The shift test route (Arkenoid, 2026-10-26)
+
+`make shift OVL=ovl61 PAD=0x40`, with the same save: Battle Mode, Ballistix, and its four
+levels (Ballistix, Beach Ball, N. Ballism with N. Gin, Sky Balls), watching each hero's
+sequences and the balls on the walls and posts. Passed 2026-10-26.
+
 ### The shift test route (Pogo, 2026-10-26)
 
 `make shift OVL=ovl60 PAD=0x40`, with the same save: Battle Mode, Pogo, and its levels

@@ -452,6 +452,12 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Arkenoid, ovl61, with the recipe):** the last 19
+  functions named (6 from arkenoid.h by its order), data, rodata and id
+  word C and named (`ARKENOID_PREMAP`, the file groups, 64
+  `*_seq_ark*`), shift test passed. data2c fix: a short object at 2 mod 4
+  put its rest 2 bytes late.
+
 - **2026-10-26 (Pogo, ovl60, with the recipe):** the last 13 functions
   named (11 from pogo.h by its order, with the leak's signatures), the
   data, rodata and id word C, the 40 `*_seq_pogo_*` cut out of the
