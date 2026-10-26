@@ -24136,7 +24136,7 @@
   "src": "src/overlays/chase/chase.c"
  },
  "dino:800B33D8": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B33D8.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_PickVictim.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80015590"
@@ -24144,7 +24144,7 @@
   "fp": "b2c292476c3d1543",
   "fpn": "79f3d6d4f8d9597b",
   "leaf": false,
-  "name": "func_800B33D8",
+  "name": "DinoAI_PickVictim",
   "orig": "func_800B33D8",
   "rom": 292,
   "seg": "overlays/dino/dino",
@@ -24152,7 +24152,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B3538": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B3538.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_SteerToTarget.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8"
@@ -24160,7 +24160,7 @@
   "fp": "11c36d6e8fc09a39",
   "fpn": "b3fd1a01e5186726",
   "leaf": false,
-  "name": "func_800B3538",
+  "name": "DinoAI_SteerToTarget",
   "orig": "func_800B3538",
   "rom": 644,
   "seg": "overlays/dino/dino",
@@ -24168,7 +24168,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B3760": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B3760.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_NearestGem.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80015590",
@@ -24177,7 +24177,7 @@
   "fp": "d439e4c93cfe0c49",
   "fpn": "525fb0293f43cc02",
   "leaf": false,
-  "name": "func_800B3760",
+  "name": "DinoAI_NearestGem",
   "orig": "func_800B3760",
   "rom": 1196,
   "seg": "overlays/dino/dino",
@@ -24185,7 +24185,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B38BC": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B38BC.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_PickGem.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80015590",
@@ -24196,7 +24196,7 @@
   "fp": "a56a6ab5c06b480c",
   "fpn": "942c0896eb5698d4",
   "leaf": false,
-  "name": "func_800B38BC",
+  "name": "DinoAI_PickGem",
   "orig": "func_800B38BC",
   "rom": 1544,
   "seg": "overlays/dino/dino",
@@ -24204,7 +24204,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B3A38": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B3A38.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_ChaseGem.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8",
@@ -24215,7 +24215,7 @@
   "fp": "ad25a26be4e22b2f",
   "fpn": "51535fa4fd0ca76a",
   "leaf": false,
-  "name": "func_800B3A38",
+  "name": "DinoAI_ChaseGem",
   "orig": "func_800B3A38",
   "rom": 1924,
   "seg": "overlays/dino/dino",
@@ -24223,7 +24223,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B3C1C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B3C1C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_GuardGem.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8",
@@ -24233,7 +24233,7 @@
   "fp": "91d354775d0868d1",
   "fpn": "3ddafd04886975b7",
   "leaf": false,
-  "name": "func_800B3C1C",
+  "name": "DinoAI_GuardGem",
   "orig": "func_800B3C1C",
   "rom": 2408,
   "seg": "overlays/dino/dino",
@@ -24241,7 +24241,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B3D90": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B3D90.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_ShootGem.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80015590",
@@ -24253,7 +24253,7 @@
   "fp": "023e15d2baf15e5e",
   "fpn": "16372b8db8cb0d05",
   "leaf": false,
-  "name": "func_800B3D90",
+  "name": "DinoAI_ShootGem",
   "orig": "func_800B3D90",
   "rom": 2780,
   "seg": "overlays/dino/dino",
@@ -24261,7 +24261,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B3FDC": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B3FDC.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_CarryGem.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8",
@@ -24272,7 +24272,7 @@
   "fp": "4979f24dce7cf17a",
   "fpn": "c50737cc7851b52c",
   "leaf": false,
-  "name": "func_800B3FDC",
+  "name": "DinoAI_CarryGem",
   "orig": "func_800B3FDC",
   "rom": 3368,
   "seg": "overlays/dino/dino",
@@ -24280,7 +24280,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B4268": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B4268.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoRayHit.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800322FC",
@@ -24289,7 +24289,7 @@
   "fp": "53f89c1fc693cf93",
   "fpn": "69054840516c9029",
   "leaf": false,
-  "name": "func_800B4268",
+  "name": "DinoRayHit",
   "orig": "func_800B4268",
   "rom": 4020,
   "seg": "overlays/dino/dino",
@@ -24297,7 +24297,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B4474": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B4474.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoRayHitB.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80032490"
@@ -24305,7 +24305,7 @@
   "fp": "363b35bba51cda80",
   "fpn": "c081b95230e8bcd3",
   "leaf": false,
-  "name": "func_800B4474",
+  "name": "DinoRayHitB",
   "orig": "func_800B4474",
   "rom": 4544,
   "seg": "overlays/dino/dino",
@@ -24313,7 +24313,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B475C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B475C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_RayToPlayer.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800B4268"
@@ -24321,7 +24321,7 @@
   "fp": "98087756b449cc7c",
   "fpn": "cbe8f36eac700f51",
   "leaf": false,
-  "name": "func_800B475C",
+  "name": "DinoAI_RayToPlayer",
   "orig": "func_800B475C",
   "rom": 5288,
   "seg": "overlays/dino/dino",
@@ -24329,13 +24329,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B485C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B485C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoTestTeamMate.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "497ed1dc3ec8d80e",
   "fpn": "c884f0c1a4b15067",
   "leaf": true,
-  "name": "func_800B485C",
+  "name": "DinoTestTeamMate",
   "orig": "func_800B485C",
   "rom": 5544,
   "seg": "overlays/dino/dino",
@@ -24343,7 +24343,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B49AC": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B49AC.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_ShotBlocked.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8008CEB0",
@@ -24354,7 +24354,7 @@
   "fp": "9f528526b71f26ba",
   "fpn": "d10163f834bd750d",
   "leaf": false,
-  "name": "func_800B49AC",
+  "name": "DinoAI_ShotBlocked",
   "orig": "func_800B49AC",
   "rom": 5880,
   "seg": "overlays/dino/dino",
@@ -24362,7 +24362,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B4B14": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B4B14.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_ReturnGem.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8",
@@ -24372,7 +24372,7 @@
   "fp": "214b1146e3906d4d",
   "fpn": "ab5ce9811a84ccf0",
   "leaf": false,
-  "name": "func_800B4B14",
+  "name": "DinoAI_ReturnGem",
   "orig": "func_800B4B14",
   "rom": 6240,
   "seg": "overlays/dino/dino",
@@ -24380,13 +24380,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B4C70": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B4C70.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoGetLevelPoint.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "29e1b03832b375f6",
   "fpn": "c458a003197ddc42",
   "leaf": true,
-  "name": "func_800B4C70",
+  "name": "DinoGetLevelPoint",
   "orig": "func_800B4C70",
   "rom": 6588,
   "seg": "overlays/dino/dino",
@@ -24394,7 +24394,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B4D6C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B4D6C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_Wander.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8001463C",
@@ -24408,7 +24408,7 @@
   "fp": "a7ac01eb25411c37",
   "fpn": "68f5222f98029743",
   "leaf": false,
-  "name": "func_800B4D6C",
+  "name": "DinoAI_Wander",
   "orig": "func_800B4D6C",
   "rom": 6840,
   "seg": "overlays/dino/dino",
@@ -24416,7 +24416,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B5424": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B5424.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_Think.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80015590",
@@ -24427,7 +24427,7 @@
   "fp": "9efb33b3b1f974b0",
   "fpn": "588fefd6b5183088",
   "leaf": false,
-  "name": "func_800B5424",
+  "name": "DinoAI_Think",
   "orig": "func_800B5424",
   "rom": 8560,
   "seg": "overlays/dino/dino",
@@ -24435,7 +24435,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B55E8": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B55E8.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoChooseWinnerScore.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80022A3C",
@@ -24445,7 +24445,7 @@
   "fp": "57ceded1870fd04b",
   "fpn": "752b862f4f2452cd",
   "leaf": false,
-  "name": "func_800B55E8",
+  "name": "DinoChooseWinnerScore",
   "orig": "func_800B55E8",
   "rom": 9012,
   "seg": "overlays/dino/dino",
@@ -24453,7 +24453,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B5DCC": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B5DCC.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoChooseWinnerOther.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80026980"
@@ -24461,7 +24461,7 @@
   "fp": "d9a236f7ab8ebf6f",
   "fpn": "ceca2c39c5de88c8",
   "leaf": false,
-  "name": "func_800B5DCC",
+  "name": "DinoChooseWinnerOther",
   "orig": "func_800B5DCC",
   "rom": 11032,
   "seg": "overlays/dino/dino",
@@ -24469,7 +24469,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B62D8": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B62D8.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoChooseWinnerPuffs.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80022A3C",
@@ -24478,7 +24478,7 @@
   "fp": "4cfd68b4d5b57c6b",
   "fpn": "2ca18b08c6e9f063",
   "leaf": false,
-  "name": "func_800B62D8",
+  "name": "DinoChooseWinnerPuffs",
   "orig": "func_800B62D8",
   "rom": 12324,
   "seg": "overlays/dino/dino",
@@ -24486,7 +24486,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B69F4": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B69F4.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoChooseWinnerTeam.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80022A3C",
@@ -24496,7 +24496,7 @@
   "fp": "02f9d4837b953273",
   "fpn": "cf0f656e0f07385c",
   "leaf": false,
-  "name": "func_800B69F4",
+  "name": "DinoChooseWinnerTeam",
   "orig": "func_800B69F4",
   "rom": 14144,
   "seg": "overlays/dino/dino",
@@ -24504,13 +24504,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B6FE4": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B6FE4.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/InitialiseDINOFirst.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "4e6c1b30350839fd",
   "fpn": "3b0c00e4fcad823c",
   "leaf": true,
-  "name": "func_800B6FE4",
+  "name": "InitialiseDINOFirst",
   "orig": "func_800B6FE4",
   "rom": 15664,
   "seg": "overlays/dino/dino",
@@ -24518,7 +24518,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B714C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B714C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoFindTargets.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800322FC"
@@ -24526,7 +24526,7 @@
   "fp": "bfad263bd88cfa6e",
   "fpn": "2d149233cac16581",
   "leaf": false,
-  "name": "func_800B714C",
+  "name": "DinoFindTargets",
   "orig": "func_800B714C",
   "rom": 16024,
   "seg": "overlays/dino/dino",
@@ -24534,7 +24534,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B7300": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B7300.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoUpdateTargets.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80015590",
@@ -24544,7 +24544,7 @@
   "fp": "4bca8f4ce094a190",
   "fpn": "4c94cf863239e243",
   "leaf": false,
-  "name": "func_800B7300",
+  "name": "DinoUpdateTargets",
   "orig": "func_800B7300",
   "rom": 16460,
   "seg": "overlays/dino/dino",
@@ -24552,7 +24552,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B7664": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B7664.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/InitialiseDINO.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8001463C",
@@ -24568,7 +24568,7 @@
   "fp": "1c9b9369b496f673",
   "fpn": "6bca0d7e34774751",
   "leaf": false,
-  "name": "func_800B7664",
+  "name": "InitialiseDINO",
   "orig": "func_800B7664",
   "rom": 17328,
   "seg": "overlays/dino/dino",
@@ -24576,7 +24576,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B7AA0": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B7AA0.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoScoreGems.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8001463C",
@@ -24588,7 +24588,7 @@
   "fp": "db89c27169a8d614",
   "fpn": "ecb510a06e6b9782",
   "leaf": false,
-  "name": "func_800B7AA0",
+  "name": "DinoScoreGems",
   "orig": "func_800B7AA0",
   "rom": 18412,
   "seg": "overlays/dino/dino",
@@ -24596,7 +24596,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B85DC": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B85DC.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/UpdateDINO.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8",
@@ -24606,7 +24606,7 @@
   "fp": "45079322b280595d",
   "fpn": "56eb1cc102933e0e",
   "leaf": false,
-  "name": "func_800B85DC",
+  "name": "UpdateDINO",
   "orig": "func_800B85DC",
   "rom": 21288,
   "seg": "overlays/dino/dino",
@@ -24614,7 +24614,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B86C8": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B86C8.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoKeepInArena.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8001463C",
@@ -24625,7 +24625,7 @@
   "fp": "d547742fb3ca5a1a",
   "fpn": "ad7cb6e8f2c94e8d",
   "leaf": false,
-  "name": "func_800B86C8",
+  "name": "DinoKeepInArena",
   "orig": "func_800B86C8",
   "rom": 21524,
   "seg": "overlays/dino/dino",
@@ -24671,7 +24671,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B9020": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B9020.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoTrackCollide.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80032490"
@@ -24679,7 +24679,7 @@
   "fp": "2e0911d43570fd18",
   "fpn": "cab66e6f0b88d44a",
   "leaf": false,
-  "name": "func_800B9020",
+  "name": "DinoTrackCollide",
   "orig": "func_800B9020",
   "rom": 23916,
   "seg": "overlays/dino/dino",
@@ -24687,13 +24687,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B9534": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B9534.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoMovesSwap.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "c55383c1e1802e5c",
   "fpn": "3d4f19edb4e9e2f2",
   "leaf": true,
-  "name": "func_800B9534",
+  "name": "DinoMovesSwap",
   "orig": "func_800B9534",
   "rom": 25216,
   "seg": "overlays/dino/dino",
@@ -24701,7 +24701,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B96A0": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B96A0.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroFacing.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800154A0"
@@ -24709,7 +24709,7 @@
   "fp": "ceb53fb4d0bea6bb",
   "fpn": "348239cd53d798d1",
   "leaf": false,
-  "name": "func_800B96A0",
+  "name": "DinoHeroFacing",
   "orig": "func_800B96A0",
   "rom": 25580,
   "seg": "overlays/dino/dino",
@@ -24717,7 +24717,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B9778": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B9778.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoMoveHero.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800B86C8"
@@ -24725,7 +24725,7 @@
   "fp": "17b443da9ef9bf61",
   "fpn": "10e6b9c98f9bb82b",
   "leaf": false,
-  "name": "func_800B9778",
+  "name": "DinoMoveHero",
   "orig": "func_800B9778",
   "rom": 25796,
   "seg": "overlays/dino/dino",
@@ -24733,7 +24733,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B9930": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B9930.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoPreMoveHero.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800154A0",
@@ -24743,7 +24743,7 @@
   "fp": "ac9a867360d6a334",
   "fpn": "2ba088cb36a12c6e",
   "leaf": false,
-  "name": "func_800B9930",
+  "name": "DinoPreMoveHero",
   "orig": "func_800B9930",
   "rom": 26236,
   "seg": "overlays/dino/dino",
@@ -24751,7 +24751,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B9C10": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B9C10.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroRun.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80022660",
@@ -24765,7 +24765,7 @@
   "fp": "45b52e2fe9618d91",
   "fpn": "785545d56233623f",
   "leaf": false,
-  "name": "func_800B9C10",
+  "name": "DinoHeroRun",
   "orig": "func_800B9C10",
   "rom": 26972,
   "seg": "overlays/dino/dino",
@@ -24773,7 +24773,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800B9E68": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800B9E68.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/SetDinoHeroDazed.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80015590",
@@ -24786,7 +24786,7 @@
   "fp": "0bc36f4a6dab5954",
   "fpn": "02f4d14a3c85b19a",
   "leaf": false,
-  "name": "func_800B9E68",
+  "name": "SetDinoHeroDazed",
   "orig": "func_800B9E68",
   "rom": 27572,
   "seg": "overlays/dino/dino",
@@ -24794,7 +24794,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BA468": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BA468.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroDazed.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8",
@@ -24805,7 +24805,7 @@
   "fp": "774c3a79702d5052",
   "fpn": "e3c7455dee814da9",
   "leaf": false,
-  "name": "func_800BA468",
+  "name": "DinoHeroDazed",
   "orig": "func_800BA468",
   "rom": 29108,
   "seg": "overlays/dino/dino",
@@ -24813,7 +24813,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BA574": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BA574.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/SetDinoHeroSlide.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80022660",
@@ -24822,7 +24822,7 @@
   "fp": "5e3d7cd48a4280d4",
   "fpn": "f23ab3711377acad",
   "leaf": false,
-  "name": "func_800BA574",
+  "name": "SetDinoHeroSlide",
   "orig": "func_800BA574",
   "rom": 29376,
   "seg": "overlays/dino/dino",
@@ -24830,7 +24830,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BA724": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BA724.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroSlide.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80022A3C",
@@ -24842,7 +24842,7 @@
   "fp": "07c5e36832b13df4",
   "fpn": "2ccfe1b60c00d7db",
   "leaf": false,
-  "name": "func_800BA724",
+  "name": "DinoHeroSlide",
   "orig": "func_800BA724",
   "rom": 29808,
   "seg": "overlays/dino/dino",
@@ -24850,7 +24850,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BA810": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BA810.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroTestShoot.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8",
@@ -24859,7 +24859,7 @@
   "fp": "c7607865d985d3bd",
   "fpn": "864e17789ee72527",
   "leaf": false,
-  "name": "func_800BA810",
+  "name": "DinoHeroTestShoot",
   "orig": "func_800BA810",
   "rom": 30044,
   "seg": "overlays/dino/dino",
@@ -24867,7 +24867,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BA960": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BA960.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroCollide.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8001463C",
@@ -24881,7 +24881,7 @@
   "fp": "885cac0923db6c73",
   "fpn": "306460ff1868555f",
   "leaf": false,
-  "name": "func_800BA960",
+  "name": "DinoHeroCollide",
   "orig": "func_800BA960",
   "rom": 30380,
   "seg": "overlays/dino/dino",
@@ -24889,7 +24889,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BAD18": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BAD18.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoGemCarrier.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8",
@@ -24898,7 +24898,7 @@
   "fp": "967a8f458cb1e57e",
   "fpn": "6d4f5597671c3c85",
   "leaf": false,
-  "name": "func_800BAD18",
+  "name": "DinoGemCarrier",
   "orig": "func_800BAD18",
   "rom": 31332,
   "seg": "overlays/dino/dino",
@@ -24906,7 +24906,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BAE94": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BAE94.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoGemPhysics.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8001463C",
@@ -24919,7 +24919,7 @@
   "fp": "b144a4ee768f2ca9",
   "fpn": "2a3ec43d8b8004f4",
   "leaf": false,
-  "name": "func_800BAE94",
+  "name": "DinoGemPhysics",
   "orig": "func_800BAE94",
   "rom": 31712,
   "seg": "overlays/dino/dino",
@@ -24989,13 +24989,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BC5B0": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BC5B0.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoInitGems.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "d7a34f4befd674b1",
   "fpn": "18dc929c812ecfff",
   "leaf": true,
-  "name": "func_800BC5B0",
+  "name": "DinoInitGems",
   "orig": "func_800BC5B0",
   "rom": 37628,
   "seg": "overlays/dino/dino",
@@ -25019,7 +25019,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BC684": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BC684.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoClampToArena.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8001463C",
@@ -25028,7 +25028,7 @@
   "fp": "6604bf64cc303eaa",
   "fpn": "657baa505eda9fe7",
   "leaf": false,
-  "name": "func_800BC684",
+  "name": "DinoClampToArena",
   "orig": "func_800BC684",
   "rom": 37840,
   "seg": "overlays/dino/dino",
@@ -25036,7 +25036,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BC774": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BC774.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroTestStop.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80032490",
@@ -25045,7 +25045,7 @@
   "fp": "949a36019557a1ef",
   "fpn": "1ae5659d5c33feda",
   "leaf": false,
-  "name": "func_800BC774",
+  "name": "DinoHeroTestStop",
   "orig": "func_800BC774",
   "rom": 38080,
   "seg": "overlays/dino/dino",
@@ -25053,7 +25053,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BC820": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BC820.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroTestIdle.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800868B4"
@@ -25061,7 +25061,7 @@
   "fp": "33568094498ac8f2",
   "fpn": "51ba5e65a8e8a73a",
   "leaf": false,
-  "name": "func_800BC820",
+  "name": "DinoHeroTestIdle",
   "orig": "func_800BC820",
   "rom": 38252,
   "seg": "overlays/dino/dino",
@@ -25069,7 +25069,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BC878": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BC878.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroTestRun.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800868B4"
@@ -25077,7 +25077,7 @@
   "fp": "35ce9dd189ff7479",
   "fpn": "8c80524866bb558c",
   "leaf": false,
-  "name": "func_800BC878",
+  "name": "DinoHeroTestRun",
   "orig": "func_800BC878",
   "rom": 38340,
   "seg": "overlays/dino/dino",
@@ -25085,7 +25085,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BC8D0": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BC8D0.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroShoot.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8008502C",
@@ -25095,7 +25095,7 @@
   "fp": "e7e844b1599db62e",
   "fpn": "11a98f4a5dcb1304",
   "leaf": false,
-  "name": "func_800BC8D0",
+  "name": "DinoHeroShoot",
   "orig": "func_800BC8D0",
   "rom": 38428,
   "seg": "overlays/dino/dino",
@@ -25103,7 +25103,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BC948": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BC948.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/SetDinoHeroShoot.s",
   "bin": "disc/dino.bin",
   "calls": [
    "80022660",
@@ -25112,7 +25112,7 @@
   "fp": "fecad6a7fd2b9877",
   "fpn": "f5f0d3caab17db89",
   "leaf": false,
-  "name": "func_800BC948",
+  "name": "SetDinoHeroShoot",
   "orig": "func_800BC948",
   "rom": 38548,
   "seg": "overlays/dino/dino",
@@ -25120,7 +25120,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCA18": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCA18.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/SetDinoHeroRun.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800854C0"
@@ -25128,7 +25128,7 @@
   "fp": "884456ff90e268dc",
   "fpn": "01496b097f06b6dc",
   "leaf": false,
-  "name": "func_800BCA18",
+  "name": "SetDinoHeroRun",
   "orig": "func_800BCA18",
   "rom": 38756,
   "seg": "overlays/dino/dino",
@@ -25136,7 +25136,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCA38": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCA38.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroIdle.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8008502C",
@@ -25148,7 +25148,7 @@
   "fp": "d6c04923ffa8270c",
   "fpn": "b1f7abf7df062834",
   "leaf": false,
-  "name": "func_800BCA38",
+  "name": "DinoHeroIdle",
   "orig": "func_800BCA38",
   "rom": 38788,
   "seg": "overlays/dino/dino",
@@ -25156,7 +25156,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCAC0": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCAC0.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/SetDinoHeroIdle.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800225C4",
@@ -25165,7 +25165,7 @@
   "fp": "9ab481e5bbbfe540",
   "fpn": "701d510ebfcffcfc",
   "leaf": false,
-  "name": "func_800BCAC0",
+  "name": "SetDinoHeroIdle",
   "orig": "func_800BCAC0",
   "rom": 38924,
   "seg": "overlays/dino/dino",
@@ -25173,7 +25173,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCB4C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCB4C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoInitHero.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800868B4"
@@ -25181,7 +25181,7 @@
   "fp": "b5b936e2cc49db4d",
   "fpn": "0a9034e4949f34c5",
   "leaf": false,
-  "name": "func_800BCB4C",
+  "name": "DinoInitHero",
   "orig": "func_800BCB4C",
   "rom": 39064,
   "seg": "overlays/dino/dino",
@@ -25189,13 +25189,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCBB8": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCBB8.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoMovesSwapB.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "df1568674b20393e",
   "fpn": "12cd7180fe61b214",
   "leaf": true,
-  "name": "func_800BCBB8",
+  "name": "DinoMovesSwapB",
   "orig": "func_800BCBB8",
   "rom": 39172,
   "seg": "overlays/dino/dino",
@@ -25203,7 +25203,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCCE8": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCCE8.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoFloorKind.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8008C4C8"
@@ -25211,7 +25211,7 @@
   "fp": "70a9a737c2bf22ca",
   "fpn": "f3e32e7e55a18302",
   "leaf": false,
-  "name": "func_800BCCE8",
+  "name": "DinoFloorKind",
   "orig": "func_800BCCE8",
   "rom": 39476,
   "seg": "overlays/dino/dino",
@@ -25235,13 +25235,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCDF0": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCDF0.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoKeepInBounds.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "ec6e7855062c462b",
   "fpn": "b7bce9131c1e193b",
   "leaf": true,
-  "name": "func_800BCDF0",
+  "name": "DinoKeepInBounds",
   "orig": "func_800BCDF0",
   "rom": 39740,
   "seg": "overlays/dino/dino",
@@ -25249,13 +25249,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCE6C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCE6C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/FirstTriggersDINO.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800BCE6C",
+  "name": "FirstTriggersDINO",
   "orig": "func_800BCE6C",
   "rom": 39864,
   "seg": "overlays/dino/dino",
@@ -25263,13 +25263,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCE74": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCE74.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoRestartLevel.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800BCE74",
+  "name": "DinoRestartLevel",
   "orig": "func_800BCE74",
   "rom": 39872,
   "seg": "overlays/dino/dino",
@@ -25277,7 +25277,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCE7C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCE7C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoChooseWinner.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800B55E8",
@@ -25287,7 +25287,7 @@
   "fp": "db2e215eabc94816",
   "fpn": "f881eeb29df63dec",
   "leaf": false,
-  "name": "func_800BCE7C",
+  "name": "DinoChooseWinner",
   "orig": "func_800BCE7C",
   "rom": 39880,
   "seg": "overlays/dino/dino",
@@ -25295,13 +25295,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCEFC": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCEFC.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DINOSetUp.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "80110bd047df49bf",
   "fpn": "d1ba4fada9c6e999",
   "leaf": true,
-  "name": "func_800BCEFC",
+  "name": "DINOSetUp",
   "orig": "func_800BCEFC",
   "rom": 40008,
   "seg": "overlays/dino/dino",
@@ -25309,7 +25309,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCF44": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCF44.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroWinner.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8008502C",
@@ -25320,7 +25320,7 @@
   "fp": "a2ab33e9ba85d551",
   "fpn": "617ac22d4932ad35",
   "leaf": false,
-  "name": "func_800BCF44",
+  "name": "DinoHeroWinner",
   "orig": "func_800BCF44",
   "rom": 40080,
   "seg": "overlays/dino/dino",
@@ -25328,7 +25328,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BCF88": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BCF88.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/SetDinoHeroWinner.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800225C4",
@@ -25339,7 +25339,7 @@
   "fp": "5d05eb59589b2a16",
   "fpn": "19cac8c5835d65bf",
   "leaf": false,
-  "name": "func_800BCF88",
+  "name": "SetDinoHeroWinner",
   "orig": "func_800BCF88",
   "rom": 40148,
   "seg": "overlays/dino/dino",
@@ -25347,7 +25347,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD01C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD01C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/TestDinoHeroWon.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800868B4"
@@ -25355,7 +25355,7 @@
   "fp": "c147fdc25cdcd69f",
   "fpn": "bfe4f38298514cc0",
   "leaf": false,
-  "name": "func_800BD01C",
+  "name": "TestDinoHeroWon",
   "orig": "func_800BD01C",
   "rom": 40296,
   "seg": "overlays/dino/dino",
@@ -25363,7 +25363,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD08C": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD08C.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/Dino_HeroBot.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800B5424"
@@ -25371,7 +25371,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_800BD08C",
+  "name": "Dino_HeroBot",
   "orig": "func_800BD08C",
   "rom": 40408,
   "seg": "overlays/dino/dino",
@@ -25379,7 +25379,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD0AC": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD0AC.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoFindClosestPlayer.s",
   "bin": "disc/dino.bin",
   "calls": [
    "8008CEB0"
@@ -25387,7 +25387,7 @@
   "fp": "737e19c60263c8c1",
   "fpn": "7d58639bed7f028e",
   "leaf": false,
-  "name": "func_800BD0AC",
+  "name": "DinoFindClosestPlayer",
   "orig": "func_800BD0AC",
   "rom": 40440,
   "seg": "overlays/dino/dino",
@@ -25395,7 +25395,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD1B8": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD1B8.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_SetNearestGem.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800B3760"
@@ -25403,7 +25403,7 @@
   "fp": "f0452489821a8e1a",
   "fpn": "0ed6519d42f28cd6",
   "leaf": false,
-  "name": "func_800BD1B8",
+  "name": "DinoAI_SetNearestGem",
   "orig": "func_800BD1B8",
   "rom": 40708,
   "seg": "overlays/dino/dino",
@@ -25411,13 +25411,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD1FC": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD1FC.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoUnusedStub.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800BD1FC",
+  "name": "DinoUnusedStub",
   "orig": "func_800BD1FC",
   "rom": 40776,
   "seg": "overlays/dino/dino",
@@ -25425,7 +25425,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD204": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD204.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoGemFree.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8"
@@ -25433,7 +25433,7 @@
   "fp": "06577d5c5796a1ed",
   "fpn": "fb6d21074fdd0a76",
   "leaf": false,
-  "name": "func_800BD204",
+  "name": "DinoGemFree",
   "orig": "func_800BD204",
   "rom": 40784,
   "seg": "overlays/dino/dino",
@@ -25441,7 +25441,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD258": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD258.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoHeroHasGem.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8"
@@ -25449,7 +25449,7 @@
   "fp": "30af0411cec5592e",
   "fpn": "5e5db1a3e8e65d77",
   "leaf": false,
-  "name": "func_800BD258",
+  "name": "DinoHeroHasGem",
   "orig": "func_800BD258",
   "rom": 40868,
   "seg": "overlays/dino/dino",
@@ -25457,7 +25457,7 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD2B8": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD2B8.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoGemLoose.s",
   "bin": "disc/dino.bin",
   "calls": [
    "800264E8"
@@ -25465,7 +25465,7 @@
   "fp": "42a7e6dfd170c698",
   "fpn": "d8f3458be36cad6f",
   "leaf": false,
-  "name": "func_800BD2B8",
+  "name": "DinoGemLoose",
   "orig": "func_800BD2B8",
   "rom": 40964,
   "seg": "overlays/dino/dino",
@@ -25473,13 +25473,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD320": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD320.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoAI_TargetShare.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "b3e6c6ef755735e4",
   "fpn": "13fff2e2d401907e",
   "leaf": true,
-  "name": "func_800BD320",
+  "name": "DinoAI_TargetShare",
   "orig": "func_800BD320",
   "rom": 41068,
   "seg": "overlays/dino/dino",
@@ -25487,13 +25487,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD408": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD408.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoPadAngle.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "180b3cab27e9edcd",
   "fpn": "20dd9205a2fddb6d",
   "leaf": true,
-  "name": "func_800BD408",
+  "name": "DinoPadAngle",
   "orig": "func_800BD408",
   "rom": 41300,
   "seg": "overlays/dino/dino",
@@ -25501,13 +25501,13 @@
   "src": "src/overlays/dino/dino.c"
  },
  "dino:800BD488": {
-  "asm": "asm/nonmatchings/overlays/dino/dino/func_800BD488.s",
+  "asm": "asm/nonmatchings/overlays/dino/dino/DinoCompareXZ.s",
   "bin": "disc/dino.bin",
   "calls": [],
   "fp": "587391f3e0d2ec8d",
   "fpn": "10356576e1c4c715",
   "leaf": true,
-  "name": "func_800BD488",
+  "name": "DinoCompareXZ",
   "orig": "func_800BD488",
   "rom": 41428,
   "seg": "overlays/dino/dino",

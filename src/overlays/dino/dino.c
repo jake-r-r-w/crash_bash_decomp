@@ -5,7 +5,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-s32 func_800B33D8(s32 arg0) {
+s32 DinoAI_PickVictim(s32 arg0) {
     s32 start;
     s32 r;
     s32 i;
@@ -52,7 +52,7 @@ s32 func_800B33D8(s32 arg0) {
     return neg;
 }
 
-void func_800B3538(id)
+void DinoAI_SteerToTarget(id)
 s32 id;
 {
     HeroInfo *h;
@@ -132,7 +132,7 @@ s32 id;
     }
 }
 
-s32 func_800B3760(s32 arg0) {
+s32 DinoAI_NearestGem(s32 arg0) {
     s32 best = -1;
     s32 bestd = 0x7FFFFFFF;
     s32 start = Random(3);
@@ -176,7 +176,7 @@ done:
     return best;
 }
 
-s32 func_800B38BC(s32 arg0) {
+s32 DinoAI_PickGem(s32 arg0) {
     s32 best = -1;
     s32 bestd = 0x7FFFFFFF;
     s32 start = Random(3);
@@ -202,8 +202,8 @@ s32 func_800B38BC(s32 arg0) {
         idx = i - off;
         ext = FindExtension(D_800BDA08[idx], 0x10000000);
         if (ext != NULL && ext->unkC == 1) {
-            t = func_800B33D8(arg0);
-            if (t == ext->unk10 && func_800B485C(arg0, t) == 0) {
+            t = DinoAI_PickVictim(arg0);
+            if (t == ext->unk10 && DinoTestTeamMate(arg0, t) == 0) {
                 b = Heroes[arg0].hero_eng;
                 a = D_800BDA08[idx]->Engine;
                 dx = a->unk10.x - b->unk10.x;
@@ -221,7 +221,7 @@ done:
     return best;
 }
 
-void func_800B3A38(s32 id) {
+void DinoAI_ChaseGem(s32 id) {
     HeroInfo *h;
     HeroInfo *hb;
     DinoChase *c;
@@ -237,7 +237,7 @@ void func_800B3A38(s32 id) {
     h = &hb[id];
     c = FindExtension(h->hero, 0x20000000);
     if (c != NULL) {
-        t = func_800B3760(id);
+        t = DinoAI_NearestGem(id);
         if (t != -1) {
             c->unk28 = t;
         }
@@ -253,7 +253,7 @@ void func_800B3A38(s32 id) {
             near = 0;
         }
         if ((near ^ 1) != 0) {
-            t = func_800B3760(id);
+            t = DinoAI_NearestGem(id);
             if (t != -1) {
                 ok = 1;
                 c->unk28 = t;
@@ -262,22 +262,22 @@ void func_800B3A38(s32 id) {
             }
             if ((ok ^ 1) != 0) {
                 c->unk28 = -1;
-                c->fn = func_800BD1FC;
+                c->fn = DinoUnusedStub;
                 return;
             }
         }
-        if (func_800B49AC(id) != 0) {
+        if (DinoAI_ShotBlocked(id) != 0) {
             Heroes[id].hero_ai->AIpad |= 0x8000;
         }
         b = Heroes[id].hero_eng;
         c->pos = b->unk10;
         a = D_800BDA08[c->unk28]->Engine;
         c->tgt = a->unk10;
-        func_800B3538(id);
+        DinoAI_SteerToTarget(id);
     }
 }
 
-void func_800B3C1C(s32 id) {
+void DinoAI_GuardGem(s32 id) {
     HeroInfo *h;
     HeroInfo *hb;
     DinoChase *c;
@@ -299,24 +299,24 @@ void func_800B3C1C(s32 id) {
         far = near ^ 1;
         if (far != 0) {
             c->unk28 = -1;
-            c->fn = func_800BD1FC;
+            c->fn = DinoUnusedStub;
             return;
         }
         b = h->hero_eng;
         c->pos = b->unk10;
         a = D_800BDA08[c->unk28]->Engine;
         c->tgt = a->unk10;
-        if (func_800B49AC(id) != 0) {
+        if (DinoAI_ShotBlocked(id) != 0) {
             h->hero_ai->AIpad |= 0x8000;
         }
         ((PadButtons *)D_80051338)[id].unk50 = h->hero_ai->AIpad;
-        func_800B3538(id);
+        DinoAI_SteerToTarget(id);
     }
 }
 
-s32 func_800B4268();
+s32 DinoRayHit();
 
-void func_800B3D90(s32 id) {
+void DinoAI_ShootGem(s32 id) {
     DinoChase *c;
     DinoExt *e;
     s32 near;
@@ -338,17 +338,17 @@ void func_800B3D90(s32 id) {
         }
         if ((near ^ 1) != 0) {
             c->unk28 = -1;
-            c->fn = func_800BD1FC;
+            c->fn = DinoUnusedStub;
             return;
         }
-        if (func_800B49AC(id) != 0) {
+        if (DinoAI_ShotBlocked(id) != 0) {
             c->timer = Random(0xF) + 0x3C;
             c->state = 4;
             return;
         }
         c->pos = Heroes[id].hero_eng->unk10;
         c->tgt = ((DinoPos *)D_800BDB54)->pos;
-        func_800B3538(id);
+        DinoAI_SteerToTarget(id);
         yaw = Heroes[id].hero_eng->unk1E;
         sc = D_800BDB50 * 4;
         v1[0] = (sc * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
@@ -360,7 +360,7 @@ void func_800B3D90(s32 id) {
         d[2] = p->z - ((DinoEngH *)Heroes[id].hero_eng)->z;
         d[1] = 0;
         d[3] = 0x300;
-        if (func_800B4268(v2, v1, d) == 1) {
+        if (DinoRayHit(v2, v1, d) == 1) {
             hit = 1;
         }
         if (hit != 0) {
@@ -368,13 +368,13 @@ void func_800B3D90(s32 id) {
             ((DinoPad *)D_80051338)[id].unk50 = Heroes[id].hero_ai->AIpad;
             c->unk28 = -1;
             c->unk30 = 8;
-            c->fn = func_800BD1FC;
+            c->fn = DinoUnusedStub;
             c->state = 0;
         }
     }
 }
 
-void func_800B3FDC(s32 id) {
+void DinoAI_CarryGem(s32 id) {
     DinoChase *c;
     DinoExt *e;
     s32 near;
@@ -397,20 +397,20 @@ void func_800B3FDC(s32 id) {
         }
         if ((near ^ 1) != 0) {
             c->unk28 = -1;
-            c->fn = func_800BD1FC;
+            c->fn = DinoUnusedStub;
             return;
         }
-        r = func_800BCCE8(id);
+        r = DinoFloorKind(id);
         if (r != 1) {
             c->timer = 0x3C;
             c->state = 4;
-            c->fn = func_800B4D6C;
+            c->fn = DinoAI_Wander;
             return;
         }
         c->pos = Heroes[id].hero_eng->unk10;
         c->tgt = ((DinoPos *)D_800BDB54)->pos;
         if (c->unk30-- > 0) {
-            func_800B3538(id);
+            DinoAI_SteerToTarget(id);
         }
         if (c->unk30 < -2) {
             c->unk30 = 8;
@@ -426,7 +426,7 @@ void func_800B3FDC(s32 id) {
         d[2] = p->z - ((DinoEngH *)Heroes[id].hero_eng)->z;
         d[1] = 0;
         d[3] = 0x300;
-        if (func_800B4268(v2, v1, d) == r) {
+        if (DinoRayHit(v2, v1, d) == r) {
             hit = 1;
         }
         if (hit != 0) {
@@ -434,7 +434,7 @@ void func_800B3FDC(s32 id) {
             ((DinoPad *)D_80051338)[id].unk50 = Heroes[id].hero_ai->AIpad;
             c->unk28 = -1;
             c->unk30 = 8;
-            c->fn = func_800BD1FC;
+            c->fn = DinoUnusedStub;
             c->state = 0;
         }
     }
@@ -442,7 +442,7 @@ void func_800B3FDC(s32 id) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/dino/dino", D_800B32B8);
 
-s32 func_800B4268(a, b, c, unused)
+s32 DinoRayHit(a, b, c, unused)
     s32 *a;
     s32 *b;
     s16 *c;
@@ -513,7 +513,7 @@ one:
     return 1;
 }
 
-s32 func_800B4474(s32 *a, s32 *b, s16 *c, s32 *d) {
+s32 DinoRayHitB(s32 *a, s32 *b, s16 *c, s32 *d) {
     s32 rel[3];
     s32 dir[3];
     s32 qa;
@@ -569,7 +569,7 @@ s32 func_800B4474(s32 *a, s32 *b, s16 *c, s32 *d) {
     return 0;
 }
 
-s32 func_800B475C(s32 a, s32 b) {
+s32 DinoAI_RayToPlayer(s32 a, s32 b) {
     s32 v1[3];
     s32 v2[3];
     s16 d[8];
@@ -588,10 +588,10 @@ s32 func_800B475C(s32 a, s32 b) {
     d[2] = *(u16 *)((u8 *)eb + 0x18) - *(u16 *)((u8 *)ea + 0x18);
     d[1] = 0;
     d[3] = 0xC8;
-    return func_800B4268(v2, v1, d, ea) == 1;
+    return DinoRayHit(v2, v1, d, ea) == 1;
 }
 
-s32 func_800B485C(s32 arg0, s32 arg1) {
+s32 DinoTestTeamMate(s32 arg0, s32 arg1) {
     u8 *g = D_8005A614;
 
     if (*(s32 *)(g + 0x6C) != 0) {
@@ -614,7 +614,7 @@ s32 func_800B485C(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_800B49AC(s32 id)
+s32 DinoAI_ShotBlocked(s32 id)
 {
   Vec3W pos;
   s32 best;
@@ -661,13 +661,13 @@ s32 func_800B49AC(s32 id)
   sel = best;
   if (sel != (-1))
   {
-    if (func_800B33D8(id) == sel)
+    if (DinoAI_PickVictim(id) == sel)
     {
-      if (func_800B485C(id, sel) == 0)
+      if (DinoTestTeamMate(id, sel) == 0)
       {
         if (dist <= 0xFFFFF)
         {
-          if (func_800B475C(id, sel) != 0)
+          if (DinoAI_RayToPlayer(id, sel) != 0)
           {
             return 1;
           }
@@ -678,7 +678,7 @@ s32 func_800B49AC(s32 id)
   return 0;
 }
 
-void func_800B4B14(s32 id) {
+void DinoAI_ReturnGem(s32 id) {
     DinoChase *c;
     DinoExt *e;
     s32 near;
@@ -693,7 +693,7 @@ void func_800B4B14(s32 id) {
         sp.x = 0;
         sp.y = 0;
         sp.z = -0xB00;
-        if (func_800B49AC(id) != 0) {
+        if (DinoAI_ShotBlocked(id) != 0) {
             c->timer = 0x5A;
             c->state = 4;
             return;
@@ -706,7 +706,7 @@ void func_800B4B14(s32 id) {
         far = near ^ 1;
         if (far != 0) {
             c->unk28 = -1;
-            c->fn = func_800BD1FC;
+            c->fn = DinoUnusedStub;
             return;
         }
         c->pos = Heroes[id].hero_eng->unk10;
@@ -714,14 +714,14 @@ void func_800B4B14(s32 id) {
         dx = c->pos.x - c->tgt.x;
         dz = c->pos.z - c->tgt.z;
         dist = dx * dx + dz * dz;
-        func_800B3538(id);
+        DinoAI_SteerToTarget(id);
         if (dist <= 0x3FFFF) {
             c->state = 3;
         }
     }
 }
 
-s32 func_800B4C70(s32 *arg0, s32 arg1) {
+s32 DinoGetLevelPoint(s32 *arg0, s32 arg1) {
     s32 v[3];
     u8 *base;
     s32 off;
@@ -761,7 +761,7 @@ s32 func_800B4C70(s32 *arg0, s32 arg1) {
     return 1;
 }
 
-void func_800B4D6C(s32 arg0) {
+void DinoAI_Wander(s32 arg0) {
     s32 v1[4];
     s32 sp20[4];
     s32 v2[4];
@@ -805,7 +805,7 @@ void func_800B4D6C(s32 arg0) {
     bad = ok ^ 1;
     if (bad != 0) {
         ext->unk28 = -1;
-        ext->func = func_800BD1FC;
+        ext->func = DinoUnusedStub;
         return;
     }
     i = 0;
@@ -848,7 +848,7 @@ void func_800B4D6C(s32 arg0) {
     best = 0;
     v2[0] = 0;
     v2[2] = 0;
-    if (func_800B4474(v2, v1, d, sp20) == 0) {
+    if (DinoRayHitB(v2, v1, d, sp20) == 0) {
         found2 = 0;
         j = 0;
         for (;;) {
@@ -862,7 +862,7 @@ void func_800B4D6C(s32 arg0) {
                 d2[2] = *(u16 *)&e2->unk10.z - *(u16 *)&my->unk10.z;
                 d2[1] = 0;
                 d2[3] = D_800BDB78;
-                if (func_800B4474(v2, v1, d2, sp20) == 1) {
+                if (DinoRayHitB(v2, v1, d2, sp20) == 1) {
                     found2 = 1;
                 }
             }
@@ -871,10 +871,10 @@ void func_800B4D6C(s32 arg0) {
         if (!found2) {
             pos.v.x = Heroes[arg0].hero_eng->unk10.x - v1[0];
             pos.v.z = Heroes[arg0].hero_eng->unk10.z - v1[2];
-            if (func_800B4C70(&pos.v.x, 0) != 0) {
+            if (DinoGetLevelPoint(&pos.v.x, 0) != 0) {
                 ext->target = pos.v;
                 ext->pos = Heroes[arg0].hero_eng->unk10;
-                func_800B3538(arg0);
+                DinoAI_SteerToTarget(arg0);
                 best = 1;
             }
         }
@@ -889,7 +889,7 @@ void func_800B4D6C(s32 arg0) {
             v1[2] = (D_800BDB50 * D_80068BD4[ang & 0xFFF].unk2) >> 12;
             v2[0] = 0;
             v2[2] = 0;
-            if (func_800B4474(v2, v1, d, sp20) != 0) {
+            if (DinoRayHitB(v2, v1, d, sp20) != 0) {
                 continue;
             }
             found = 0;
@@ -908,20 +908,20 @@ void func_800B4D6C(s32 arg0) {
                     d3[2] = *(u16 *)&e3->unk10.z - *(u16 *)&my->unk10.z;
                     d3[1] = 0;
                     d3[3] = D_800BDB78;
-                    if (func_800B4474(v2, v1, d3, sp20) == 1) {
+                    if (DinoRayHitB(v2, v1, d3, sp20) == 1) {
                         found = 1;
                     }
                 }
                 h++;
                 i++;
             }
-            if (!found && func_800B4C70(&pos.v.x, 0) != 0) {
+            if (!found && DinoGetLevelPoint(&pos.v.x, 0) != 0) {
                 break;
             }
         }
         ext->target = pos.v;
         ext->pos = Heroes[arg0].hero_eng->unk10;
-        func_800B3538(arg0);
+        DinoAI_SteerToTarget(arg0);
         ext->angle = ang;
     }
 end:
@@ -929,11 +929,11 @@ end:
         return;
     }
 chase:
-    ext->func = func_800B3D90;
+    ext->func = DinoAI_ShootGem;
     ext->unk38 = 1;
 }
 
-void func_800B5424(id)
+void DinoAI_Think(id)
 s32 id;
 {
     DinoChase *c;
@@ -950,7 +950,7 @@ s32 id;
     if (c != NULL) {
         h->hero_ai->AIpad = 0;
         h->hero_ai->AImode = 1;
-        if (c->fn != func_800B3D90) {
+        if (c->fn != DinoAI_ShootGem) {
             e = FindExtension(h->hero, 0x10000000);
             near = 0;
             if (e != NULL) {
@@ -967,37 +967,37 @@ s32 id;
                     c->state = r;
                 }
                 if (c->state == 2) {
-                    c->fn = func_800B4B14;
+                    c->fn = DinoAI_ReturnGem;
                 }
                 if (c->state == 1) {
-                    c->fn = func_800B3D90;
+                    c->fn = DinoAI_ShootGem;
                 }
                 if (c->state == 4) {
-                    c->fn = func_800B4D6C;
+                    c->fn = DinoAI_Wander;
                 }
                 if (c->state == 3) {
-                    c->fn = func_800B3FDC;
+                    c->fn = DinoAI_CarryGem;
                 }
             }
         }
-        if (c->fn == func_800BD1FC) {
+        if (c->fn == DinoUnusedStub) {
             c->state = 0;
-            r = func_800B3760(id);
+            r = DinoAI_NearestGem(id);
             if (r != -1) {
                 c->unk28 = r;
-                c->fn = func_800B3A38;
+                c->fn = DinoAI_ChaseGem;
             }
-            r2 = func_800B38BC(id);
+            r2 = DinoAI_PickGem(id);
             if (r2 != -1) {
                 c->unk28 = r2;
-                c->fn = func_800B3C1C;
+                c->fn = DinoAI_GuardGem;
             }
         }
         c->fn(id);
     }
 }
 
-void func_800B55E8(s32 arg0, u16 arg1) {
+void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
     s32 taken;
     s32 j;
     s32 i;
@@ -1121,7 +1121,7 @@ void func_800B55E8(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B5DCC(s32 arg0, u16 arg1) {
+void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
     s32 taken;
     s32 j;
     s32 i;
@@ -1223,7 +1223,7 @@ void func_800B5DCC(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B62D8(s32 arg0, u16 arg1)
+void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
 {
   s32 best;
   s32 i;
@@ -1469,7 +1469,7 @@ void func_800B62D8(s32 arg0, u16 arg1)
   }
 }
 
-void func_800B69F4(s32 arg0, u16 arg1) {
+void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
     HeroInfo *ha;
     DinoTeamView *w;
     DinoTeamView *q;
@@ -1614,22 +1614,22 @@ end:
     }
 }
 
-void func_800B6FE4(void) {
+void InitialiseDINOFirst(void) {
     void *v;
     void *f;
     void **p;
     u8 *g;
-    D_8009D6E8.unk38 = func_800BD08C;
+    D_8009D6E8.unk38 = Dino_HeroBot;
     D_8009D6E8.unk4 = D_800BDA7C;
-    D_8009D6E8.unk0 = func_800BCB4C;
-    D_8009D6E8.unk20 = func_800B9930;
-    D_8009D6E8.unk24 = func_800B9778;
-    D_8009D6E8.unk2C = func_800B96A0;
-    f = func_800BCE7C;
+    D_8009D6E8.unk0 = DinoInitHero;
+    D_8009D6E8.unk20 = DinoPreMoveHero;
+    D_8009D6E8.unk24 = DinoMoveHero;
+    D_8009D6E8.unk2C = DinoHeroFacing;
+    f = DinoChooseWinner;
     D_8009D6E8.unk64 = f;
     g = D_8005A614;
     if (*(u16 *)(g + 0x32) & 0x40) {
-        D_8009D6E8.unk64 = func_800B69F4;
+        D_8009D6E8.unk64 = DinoChooseWinnerTeam;
     }
     D_8009D6E8.unk14 = D_800BDA5C;
     D_8009D6E8.unk18 = D_8008B29C;
@@ -1659,7 +1659,7 @@ void func_800B6FE4(void) {
     D_800BDB54 = 0;
 }
 
-void func_800B714C(void) {
+void DinoFindTargets(void) {
     DinoObj *o;
 
     for (o = *(DinoObj **)((u8 *)D_80058AD0 + 0x1C); o != NULL; o = o->next) {
@@ -1702,7 +1702,7 @@ void func_800B714C(void) {
     D_800BDC6C[2] = D_800BDB84;
 }
 
-void func_800B7300(void) {
+void DinoUpdateTargets(void) {
     DinoObj *cur;
     DinoObj **p;
     DinoObj **q;
@@ -1790,7 +1790,7 @@ void func_800B7300(void) {
     }
 }
 
-void func_800B7664(void) {
+void InitialiseDINO(void) {
     NAS *nas;
     NAS *o;
     DinoChase *c;
@@ -1826,7 +1826,7 @@ void func_800B7664(void) {
     }
     Set_Clock(a, 0x81C0);
     World_floor_level = -0x10;
-    func_800B714C();
+    DinoFindTargets();
     D_800BDBA4 = 0;
     D_800BDBA8 = 0;
     D_800BDB90 = 0;
@@ -1862,7 +1862,7 @@ void func_800B7664(void) {
         c = AddExt(h->hero, 0x44, 0x20000000);
         if (c != NULL) {
             c->unk28 = -1;
-            c->fn = func_800BD1FC;
+            c->fn = DinoUnusedStub;
             c->unk30 = 8;
             c->state = 0;
         }
@@ -1924,7 +1924,7 @@ void func_800B7664(void) {
     D_800BDA08[2] = D_800BDA04;
 }
 
-void func_800B7AA0(void) {
+void DinoScoreGems(void) {
     VECTOR n;
     VECTOR d;
     VECTOR r;
@@ -2091,14 +2091,14 @@ void func_800B7AA0(void) {
     }
 }
 
-void func_800B85DC(void) {
+void UpdateDINO(void) {
     s32 i;
     DinoExt *ext;
     HeroInfo *hero;
 
-    func_800B7AA0();
+    DinoScoreGems();
     i = 0;
-    func_800B7300();
+    DinoUpdateTargets();
     hero = Heroes;
 loop:
     if (i < 4) {
@@ -2124,7 +2124,7 @@ loop:
     }
 }
 
-s32 func_800B86C8(s32 arg0) {
+s32 DinoKeepInArena(s32 arg0) {
     s32 dist;
     s32 ang;
     s32 d;
@@ -2348,7 +2348,7 @@ s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     return -1;
 }
 
-s32 func_800B9020(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags) {
+s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags) {
     DinoVec p;
     DinoVec hit;
     DinoVec d;
@@ -2479,7 +2479,7 @@ s32 func_800B9020(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags) {
     return found;
 }
 
-void func_800B9534(s32 arg0, s32 arg1) {
+void DinoMovesSwap(s32 arg0, s32 arg1) {
     EXTheromove *a;
     EXTheromove *b;
     s32 ma;
@@ -2513,7 +2513,7 @@ void func_800B9534(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800B96A0(s32 arg0) {
+void DinoHeroFacing(s32 arg0) {
     if (Heroes[arg0].hero_frozen == 0) {
         if (!(Heroes[arg0].hero_ctrl & 1)) {
             Heroes[arg0].hero_eng->unk1E += func_800154A0(Heroes[arg0].hero_eng->unk1E, Heroes[arg0].hero_move->forward_angle) >> 2;
@@ -2523,7 +2523,7 @@ void func_800B96A0(s32 arg0) {
     Heroes[arg0].hero_eng->unk5E = 1;
 }
 
-void func_800B9778(s32 arg0) {
+void DinoMoveHero(s32 arg0) {
     EXTengine *e = Heroes[arg0].hero_eng;
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
@@ -2567,7 +2567,7 @@ void func_800B9778(s32 arg0) {
     }
     e->unk10.x += m->x_vel;
     e->unk10.z += m->z_vel;
-    if (func_800B86C8(arg0) != 0 && Heroes[arg0].hero_mode == 0x66) {
+    if (DinoKeepInArena(arg0) != 0 && Heroes[arg0].hero_mode == 0x66) {
         m->z_vel = 0;
         m->x_vel = 0;
         m->z_max = 0;
@@ -2575,7 +2575,7 @@ void func_800B9778(s32 arg0) {
     }
 }
 
-void func_800B9930(s32 id) {
+void DinoPreMoveHero(s32 id) {
     HeroInfo *h;
     DinoExt *ext;
     EXTheromove *m;
@@ -2633,7 +2633,7 @@ void func_800B9930(s32 id) {
     }
 }
 
-void func_800B9C10(s32 id) {
+void DinoHeroRun(s32 id) {
     DinoHeroExt *ext;
 
     ext = FindExtension(Heroes[id].hero, 0x10000000);
@@ -2669,9 +2669,9 @@ void func_800B9C10(s32 id) {
         if (ext->timer >= 0x1A) {
             ext->timer = 0;
         }
-        func_800BA960(id);
-        func_800BC820(id);
-        func_800BA810(id);
+        DinoHeroCollide(id);
+        DinoHeroTestIdle(id);
+        DinoHeroTestShoot(id);
         func_8008502C(id);
         if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
             SetHeroAction(id, 0x68);
@@ -2679,7 +2679,7 @@ void func_800B9C10(s32 id) {
     }
 }
 
-void func_800B9E68(s32 id) {
+void SetDinoHeroDazed(s32 id) {
     DinoExtB *ext;
     EXTheromove *mv;
     s32 r;
@@ -2727,13 +2727,13 @@ void func_800B9E68(s32 id) {
     }
 }
 
-void func_800BA468(s32 id) {
+void DinoHeroDazed(s32 id) {
     DinoExt *ext;
 
     ext = FindExtension(Heroes[id].hero, 0x10000000);
     if (ext != NULL) {
         Heroes[id].hero_eng->unk1E += 0x80;
-        func_800BA960(id);
+        DinoHeroCollide(id);
         Heroes[id].hero_frozen = 2;
         ((PadButtons *)D_80051338)[id].unk50 = 0;
         ((PadButtons *)D_80051338)[id].unk54 = 0;
@@ -2747,7 +2747,7 @@ void func_800BA468(s32 id) {
     }
 }
 
-void func_800BA574(s32 id) {
+void SetDinoHeroSlide(s32 id) {
     EXTheromove *m;
     s32 v;
 
@@ -2778,7 +2778,7 @@ void func_800BA574(s32 id) {
     SetHeroSeq(id, 0x50);
 }
 
-void func_800BA724(s32 id) {
+void DinoHeroSlide(s32 id) {
     NAS *nas;
 
     if (Heroes[id].hero_anim->Aindex == 2) {
@@ -2787,15 +2787,15 @@ void func_800BA724(s32 id) {
             nas->UserInfo.user1 = (s32)&Heroes[id];
         }
     }
-    func_800BA960(id);
-    func_800BC774(id);
+    DinoHeroCollide(id);
+    DinoHeroTestStop(id);
     func_8008502C(id);
     if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
         SetHeroAction(id, 0x68);
     }
 }
 
-s32 func_800BA810(s32 arg0) {
+s32 DinoHeroTestShoot(s32 arg0) {
     DinoExtB *a;
     DinoExtB *b;
 
@@ -2824,7 +2824,7 @@ s32 func_800BA810(s32 arg0) {
     return 0;
 }
 
-s32 func_800BA960(s32 hero) {
+s32 DinoHeroCollide(s32 hero) {
     s32 dx;
     s32 dz;
     HeroInfo *me;
@@ -2885,7 +2885,7 @@ s32 func_800BA960(s32 hero) {
                         hit = 1;
                         ang = get_angle(dx, dz) & 0xFFF;
                         dist = lim - dist;
-                        func_800B9534(hero, i);
+                        DinoMovesSwap(hero, i);
                         do {
                             mx = FindExtension(me->hero, 0x10000000);
                             ox = FindExtension(o->hero, 0x10000000);
@@ -2928,7 +2928,7 @@ s32 func_800BA960(s32 hero) {
     return hit;
 }
 
-s32 func_800BAD18(NAS *m) {
+s32 DinoGemCarrier(NAS *m) {
     DinoExtB *me;
     DinoExtB *he;
     s32 i;
@@ -2966,7 +2966,7 @@ done:
     return 0;
 }
 
-void func_800BAE94(NAS *arg0) {
+void DinoGemPhysics(NAS *arg0) {
     DinoExt *e;
     DinoExt *o;
     EXTengine *a;
@@ -3148,7 +3148,7 @@ void PlotDinoGem(NAS *m) {
     case 0:
         m->Engine->unk1E += 0x20;
         ext->unk84->sub->flags |= 0x8000;
-        func_800BAE94(m);
+        DinoGemPhysics(m);
         m->Engine->unk10.x += ext->unkB4;
         m->Engine->unk10.z += ext->unkD4;
         if (ext->unkB4 < 0) {
@@ -3301,7 +3301,7 @@ void PlotDinoGem(NAS *m) {
             }
         }
     check:
-        if (func_800BAD18(m) != 0) {
+        if (DinoGemCarrier(m) != 0) {
             ext->unkC = 1;
             func_80026980(m);
             PlaySfx(0x6CD, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -3426,7 +3426,7 @@ void PlotDinoScratch(NAS *m) {
     }
 }
 
-void func_800BC5B0(void) {
+void DinoInitGems(void) {
     D_800BDA08[0] = D_800BD9FC;
     D_800BDA08[1] = D_800BDA00;
     D_800BDA08[2] = D_800BDA04;
@@ -3456,7 +3456,7 @@ void InitDinoScratch(NAS *m) {
     }
 }
 
-s32 func_800BC684(s32 *p, s32 arg1) {
+s32 DinoClampToArena(s32 *p, s32 arg1) {
     s32 d;
     s32 ang;
 
@@ -3473,7 +3473,7 @@ s32 func_800BC684(s32 *p, s32 arg1) {
     return -1;
 }
 
-s32 func_800BC774(s32 arg0) {
+s32 DinoHeroTestStop(s32 arg0) {
     if ((csqrt(Heroes[arg0].hero_move->x_vel * Heroes[arg0].hero_move->x_vel +
                Heroes[arg0].hero_move->z_vel * Heroes[arg0].hero_move->z_vel) >> 6) < 0x20) {
         if (Heroes[arg0].hero_mode != 0x63) {
@@ -3484,7 +3484,7 @@ s32 func_800BC774(s32 arg0) {
     return 0;
 }
 
-s32 func_800BC820(s32 arg0) {
+s32 DinoHeroTestIdle(s32 arg0) {
     if (((PadButtons *)D_80051338)[arg0].unk50 & 0xF0) {
         return 0;
     }
@@ -3492,7 +3492,7 @@ s32 func_800BC820(s32 arg0) {
     return 1;
 }
 
-s32 func_800BC878(s32 arg0) {
+s32 DinoHeroTestRun(s32 arg0) {
     if (!(((PadButtons *)D_80051338)[arg0].unk50 & 0xF0)) {
         return 0;
     }
@@ -3500,15 +3500,15 @@ s32 func_800BC878(s32 arg0) {
     return 1;
 }
 
-void func_800BC8D0(s32 arg0) {
-    func_800BA960(arg0);
+void DinoHeroShoot(s32 arg0) {
+    DinoHeroCollide(arg0);
     func_8008502C(arg0);
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x68) {
         SetHeroAction(arg0, 0x68);
     }
 }
 
-void func_800BC948(s32 player) {
+void SetDinoHeroShoot(s32 player) {
     SetHeroSeq(player, 0x4F);
     if (player == 0) {
         PlaySfx(0x6B3, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -3524,21 +3524,21 @@ void func_800BC948(s32 player) {
     }
 }
 
-void func_800BCA18(s32 player) {
+void SetDinoHeroRun(s32 player) {
     SetHeroSeq(player, 0x4E);
 }
 
-void func_800BCA38(s32 arg0) {
-    func_800BA960(arg0);
-    func_800BC878(arg0);
-    func_800BA810(arg0);
+void DinoHeroIdle(s32 arg0) {
+    DinoHeroCollide(arg0);
+    DinoHeroTestRun(arg0);
+    DinoHeroTestShoot(arg0);
     func_8008502C(arg0);
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x68) {
         SetHeroAction(arg0, 0x68);
     }
 }
 
-void func_800BCAC0(s32 arg0) {
+void SetDinoHeroIdle(s32 arg0) {
     EXTheromove *mv;
 
     mv = Heroes[arg0].hero_move;
@@ -3553,14 +3553,14 @@ void func_800BCAC0(s32 arg0) {
     mv->mass = 0x100;
 }
 
-void func_800BCB4C(s32 arg0) {
+void DinoInitHero(s32 arg0) {
     SetHeroAction(arg0, 0x63);
     Heroes[arg0].hero_eng->unk1E = 0;
     Heroes[arg0].hero_eng->unk5E = 1;
     Heroes[arg0].hero->Camera.height = 0x600;
 }
 
-void func_800BCBB8(EXTheromove *a, EXTheromove *b) {
+void DinoMovesSwapB(EXTheromove *a, EXTheromove *b) {
     s32 ma;
     s32 mb;
     s32 d;
@@ -3588,7 +3588,7 @@ void func_800BCBB8(EXTheromove *a, EXTheromove *b) {
     }
 }
 
-s32 func_800BCCE8(s32 arg0) {
+s32 DinoFloorKind(s32 arg0) {
     s32 i;
     s32 best;
 
@@ -3618,7 +3618,7 @@ void InitDinoSmoke(NAS *arg0) {
     }
 }
 
-s32 func_800BCDF0(u8 *arg0) {
+s32 DinoKeepInBounds(u8 *arg0) {
     s32 var_v1;
 
     var_v1 = 0;
@@ -3641,41 +3641,41 @@ s32 func_800BCDF0(u8 *arg0) {
     return var_v1;
 }
 
-void func_800BCE6C(void) {
+void FirstTriggersDINO(void) {
 }
 
-void func_800BCE74(void) {
+void DinoRestartLevel(void) {
 }
 
-void func_800BCE7C(s32 arg0, s32 arg1) {
+void DinoChooseWinner(s32 arg0, s32 arg1) {
     u8 *g = D_8005A614;
 
     if (!(*(u16 *)(g + 0x30) & 0x801)) {
         u16 f = *(u16 *)(g + 0x32);
 
         if (f & 0x40) {
-            func_800B69F4(arg0, (u16)arg1);
+            DinoChooseWinnerTeam(arg0, (u16)arg1);
         } else if (f & 0x20) {
-            func_800B55E8(arg0, (u16)arg1);
+            DinoChooseWinnerScore(arg0, (u16)arg1);
         } else if (f & 0x80) {
-            func_800B55E8(arg0, (u16)arg1);
+            DinoChooseWinnerScore(arg0, (u16)arg1);
         } else {
-            func_800B62D8(arg0, (u16)arg1);
+            DinoChooseWinnerPuffs(arg0, (u16)arg1);
         }
     }
 }
 
-void func_800BCEFC(void) {
-    D_8005AA70[0] = (s32)func_800B6FE4;
-    D_8005AA70[1] = (s32)func_800B7664;
-    D_8005AA70[2] = (s32)func_800B7664;
-    D_8005AA70[3] = (s32)func_800B85DC;
-    D_8005AA70[5] = (s32)func_800BCE6C;
+void DINOSetUp(void) {
+    D_8005AA70[0] = (s32)InitialiseDINOFirst;
+    D_8005AA70[1] = (s32)InitialiseDINO;
+    D_8005AA70[2] = (s32)InitialiseDINO;
+    D_8005AA70[3] = (s32)UpdateDINO;
+    D_8005AA70[5] = (s32)FirstTriggersDINO;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
 }
 
-void func_800BCF44(s32 arg0) {
+void DinoHeroWinner(s32 arg0) {
     func_80085890(arg0);
     if (func_8008A200(arg0) != 0) {
         func_8008A810();
@@ -3683,7 +3683,7 @@ void func_800BCF44(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800BCF88(s32 arg0) {
+void SetDinoHeroWinner(s32 arg0) {
     func_80089FA4(arg0);
     SetHeroSeq(arg0, 0x4D);
     Heroes[arg0].hero_eng->unk20 = 0;
@@ -3694,7 +3694,7 @@ void func_800BCF88(s32 arg0) {
     func_80085718(arg0, 0);
 }
 
-s32 func_800BD01C(s32 id) {
+s32 TestDinoHeroWon(s32 id) {
     if (Heroes[id].hero_status & 0x200) {
         if (Heroes[id].hero_mode != 0x68) {
             SetHeroAction(id, 0x68);
@@ -3704,11 +3704,11 @@ s32 func_800BD01C(s32 id) {
     return 0;
 }
 
-void func_800BD08C(void) {
-    func_800B5424();
+void Dino_HeroBot(void) {
+    DinoAI_Think();
 }
 
-s32 func_800BD0AC(s32 self, s32 *dist) {
+s32 DinoFindClosestPlayer(s32 self, s32 *dist) {
     SLONG_XYZ pos;
     s32 best;
     HeroInfo *h;
@@ -3747,8 +3747,8 @@ loop:
     return best;
 }
 
-s32 func_800BD1B8(s32 *arg0, s32 arg1) {
-    s32 v = func_800B3760(arg1);
+s32 DinoAI_SetNearestGem(s32 *arg0, s32 arg1) {
+    s32 v = DinoAI_NearestGem(arg1);
 
     if (v != -1) {
         arg0[10] = v;
@@ -3757,10 +3757,10 @@ s32 func_800BD1B8(s32 *arg0, s32 arg1) {
     return 0;
 }
 
-void func_800BD1FC(void) {
+void DinoUnusedStub(void) {
 }
 
-s32 func_800BD204(s32 arg0) {
+s32 DinoGemFree(s32 arg0) {
     DinoExt *ext;
     s32 ret;
 
@@ -3774,7 +3774,7 @@ s32 func_800BD204(s32 arg0) {
     return 0;
 }
 
-s32 func_800BD258(s32 arg0) {
+s32 DinoHeroHasGem(s32 arg0) {
     DinoExt *ext;
 
     ext = FindExtension(Heroes[arg0].hero, 0x10000000);
@@ -3784,7 +3784,7 @@ s32 func_800BD258(s32 arg0) {
     return 0;
 }
 
-s32 func_800BD2B8(s32 arg0) {
+s32 DinoGemLoose(s32 arg0) {
     DinoExt *ext;
 
     ext = FindExtension(D_800BDA08[arg0], 0x10000000);
@@ -3798,7 +3798,7 @@ s32 func_800BD2B8(s32 arg0) {
     return 0;
 }
 
-s32 func_800BD320(s32 arg0, s32 arg1) {
+s32 DinoAI_TargetShare(s32 arg0, s32 arg1) {
     s32 total;
     s32 result;
     s32 i;
@@ -3819,7 +3819,7 @@ s32 func_800BD320(s32 arg0, s32 arg1) {
     return result;
 }
 
-s32 func_800BD408(s32 arg0) {
+s32 DinoPadAngle(s32 arg0) {
     s32 var_a1;
 
     var_a1 = 0;
@@ -3850,7 +3850,7 @@ s32 func_800BD408(s32 arg0) {
     return var_a1;
 }
 
-s32 func_800BD488(u8 *arg0, u8 *arg1) {
+s32 DinoCompareXZ(u8 *arg0, u8 *arg1) {
     s32 temp_a0;
     s32 temp_a0_2;
     s32 temp_a2;
