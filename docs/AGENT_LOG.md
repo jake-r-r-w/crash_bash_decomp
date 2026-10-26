@@ -465,7 +465,10 @@ Newest first, a few lines each. Details are in the commits.
   more: each game's hero action ids `HeroActHit` .. `HeroActLoser` (Papu sets
   them all), the hero hooks' fields, the NAS extension templates (4837 `D_`
   uses of 999 names left; the top ones now are the exe's file buffers models
-  load into, and labels inside structs that typing will turn into fields). Gotchas: `decomp.py rename` writes every exe or
+  load into, and labels inside structs that typing will turn into fields); then
+  the exe's 29 model slots from the files each game loads into them
+  (`FontModel`, `PowerupsModel`, `AngelModel`, `PapuModel`, ...;
+  `tools/scripts/model_slots.py`), 4353 uses of 970 names left. Gotchas: `decomp.py rename` writes every exe or
   engine data name to `sym.main.txt`; move the engine's (from `0x80078C90`)
   to `sym.engine.txt`. A renamed global's PROVIDE in
   `undefined_syms_manual.txt` needs the new name too. `GameState` is already

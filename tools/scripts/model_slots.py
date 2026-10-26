@@ -3,44 +3,55 @@ puts there (names from configs/USA/dat_names.txt), most used first: the evidence
 
     tools/dk python3 tools/scripts/model_slots.py
 """
-import re
 import glob
+import re
 
-names = {}
-for l in open("configs/USA/dat_names.txt", encoding="utf-8"):
-    l = l.strip()
-    if l and not l.startswith("#"):
-        m = re.match(r"(\d+)\s*=\s*(.*)", l)
+DAT_INDEX = 0x8004E110   # the exe's {sector, size} entries, 8 bytes each
+
+
+def dat_names(path="configs/USA/dat_names.txt"):
+    names = {}
+    for l in open(path, encoding="utf-8"):
+        m = re.match(r"(\d+)\s*=\s*(.*)", l.strip())
         if m:
             names[int(m.group(1))] = m.group(2).strip()
+    return names
 
 
-def ent(sym):
+def entry(sym):
+    """The archive entry a D_8004xxxx index symbol names, or None."""
     m = re.match(r"D_(8004[DEF][0-9A-F]{3})$", sym)
-    if not m:
+    if not m or int(m.group(1), 16) < DAT_INDEX:
         return None
-    a = int(m.group(1), 16)
-    return (a - 0x8004E110) // 8 if a >= 0x8004E110 else None
+    return (int(m.group(1), 16) - DAT_INDEX) // 8
 
 
-slots = {}
-for p in sorted(glob.glob("src/overlays/*/*.c")):
-    ovl = p.split("/")[2]
-    t = open(p, encoding="utf-8").read()
-    for m in re.finditer(r"^s32 (\w+)\[\d+\] = \{(.*?)\};", t, re.M | re.S):
-        words = [w.strip() for w in m.group(2).split(",") if w.strip()]
-        syms = [re.sub(r"^\(s32\)&", "", w) for w in words]
-        if len(syms) < 3 or not any(ent(s) is not None for s in syms[1:3]):
-            continue
-        for i in range(0, len(syms) - 2, 3):
-            s, a, b = syms[i:i + 3]
-            if s == "0":
-                break
-            ea, eb = ent(a), ent(b)
-            if ea is None or eb is None:
-                continue
-            slots.setdefault(s, []).append(f"{ovl}:{names.get(ea, ea)}|{names.get(eb, eb)}")
-for s in sorted(slots, key=lambda s: -len(slots[s])):
-    print(s, len(slots[s]))
-    for v in sorted(set(slots[s]))[:14]:
-        print("   ", v)
+def triples(body):
+    """(slot, mdl entry, tex entry) from a file list's initialiser body, up to its zeros."""
+    syms = [re.sub(r"^\(s32\)&", "", w.strip()) for w in body.split(",") if w.strip()]
+    out = []
+    for i in range(0, len(syms) - 2, 3):
+        s, a, b = syms[i:i + 3]
+        if s == "0":
+            break
+        if entry(a) is not None and entry(b) is not None:
+            out.append((s, entry(a), entry(b)))
+    return out
+
+
+def main():
+    names = dat_names()
+    slots = {}
+    for p in sorted(glob.glob("src/overlays/*/*.c")):
+        ovl = p.replace("\\", "/").split("/")[2]
+        for m in re.finditer(r"^s32 \w+\[\d+\] = \{(.*?)\};", open(p, encoding="utf-8").read(), re.M | re.S):
+            for s, a, b in triples(m.group(1)):
+                slots.setdefault(s, []).append(f"{ovl}:{names.get(a, a)}|{names.get(b, b)}")
+    for s in sorted(slots, key=lambda s: -len(slots[s])):
+        print(s, len(slots[s]))
+        for v in sorted(set(slots[s])):
+            print("   ", v)
+
+
+if __name__ == "__main__":
+    main()
