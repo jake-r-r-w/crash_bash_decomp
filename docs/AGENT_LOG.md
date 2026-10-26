@@ -148,7 +148,8 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    `CRASHBSH.DAT` and its index for a grown entry (`pack_disc.py` and
    `dat.py` today only allow shrinking), stay inside the slot (up to
    `0x800D7144`; Tank ends at `0x800CB294`).
-6. **The shift test**: boot it (RetroArch, CLAUDE.md) and play Tank to a
+6. **The shift test: passed 2026-10-26** (Desert Fox to a win). Before:
+   boot it (RetroArch, CLAUDE.md) and play Tank to a
    win; write the route in docs/PLAYING.md.
 
 The Tank pilot starts next session.
@@ -546,6 +547,11 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Tank's shift test passed):** Desert Fox played through to a
+  win on the PAD=0x40 shifted disc, everything as on retail. ROADMAP's
+  shift-test item ticked; the pilot's last item, the recipe write-up, is
+  next (and Tank's id word, and retyping its tables).
 
 - **2026-10-26 (Tank plays on the shifted disc):** traced by bisecting
   (`make shift PAD=0` played, so the pipeline was fine), a RAM dump of the

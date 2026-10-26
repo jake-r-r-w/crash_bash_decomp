@@ -198,9 +198,14 @@ retail does. The recipe is written up for Phase 4.
 - [x] The engine's slot image in the `NON_MATCHING` build: the id word (`0x5C`)
   and zeros in place of the 147 KB the matching build reads from the disc
   (ARCHITECTURE.md, The engine's slot image). The shift test runs with it.
-- [ ] Tank's shift test: the padded build boots and Tank plays through to a
+- [x] Tank's shift test: the padded build boots and Tank plays through to a
   win, the same way as on the retail disc. Write the route down in
   docs/PLAYING.md, so the test can be repeated and later automated.
+  Passed 2026-10-26: `make shift OVL=ovl5f PAD=0x40`, Desert Fox played
+  through to a win, everything as on retail (route: PLAYING.md, The shift
+  test route). It relies on `shift.py`'s stopgap for the engine's asm data
+  (the per-character hero sequence tables, the hero mode table, the
+  per-world record), until Phase 5 makes that data C.
 - [ ] Write the recipe up (data to C, naming, the AST table, the shift
   test) with what the pilot learned, so each Phase 4 overlay follows it.
 
