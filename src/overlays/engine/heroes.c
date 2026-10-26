@@ -4098,7 +4098,7 @@ void InitWeatherNas(u8 *arg0) {
     *(s32 *)(arg0 + 0x64) = 0;
     **(s32 **)(*(u8 **)(arg0 + 0x54) + 0x6C) = 0x20008000;
     if (D_8005A648 == 0x1F) {
-        func_80015D70(D_800C45DC, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
+        func_80015D70(NoxSparkFxDef, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
     }
 }
 

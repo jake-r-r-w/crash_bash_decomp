@@ -433,7 +433,8 @@ extern s32 map[];
 
 void func_8007A8C4(void);
 
-extern u8 D_800C45DC[];
+/* N2O's star field (nox.c's NoxSparkFx; the engine's link takes it from the overlay's ELF) */
+extern u8 NoxSparkFxDef[];
 
 extern u8 D_8009E200[];
 
