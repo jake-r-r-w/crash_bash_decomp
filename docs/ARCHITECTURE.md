@@ -321,10 +321,16 @@ code finds 15 code files; nothing else on the disc holds code.
   so the overlay name keeps header names unique), which `bash/<ovl>_ovl.h`
   includes. Most of their functions are declared in the recovered original
   headers (`bash.h`, `papu.h`, ...), which stay as they are.
+  A later file is named for what it holds once that is known
+  (`tools/scripts/rename_file.py`): Bash's are `xtras.c` (the crates and
+  pickups, the `XTRAS_AST_types` of the Oct 9 prototype's `xtras.h`) and
+  `bahero.c` (its hero states, `HEROmode_BA*`; the Aug 23 include list has
+  a hero file per game, `BOHERO.H`, `SPHERO.H`). The others keep their
+  start address for now.
 
   | Overlay | Later files start at (function number, name) | Proven range | Rodata from |
   |---|---|---|---|
-  | `bash` | 59 `func_800BB64C`; 80 `func_800BFF1C` | 22..62 (fewest call ties at 59); 73..80 (none from 77) | `0x800B3734`; `0x800B3A18` |
+  | `bash` | 59 `CrateAimAtGrid` (`xtras.c`); 80 `BashHeroHit` (`bahero.c`) | 22..62 (fewest call ties at 59); 73..80 (none from 77) | `0x800B3734`; `0x800B3A18` |
   | `papu` | 50 `func_800B87A0` | 15..50 (fewest call ties at 44..50) | `0x800B33FC` |
   | `bonk` | 45 `func_800B6EFC` | 15..50 (fewest call ties at 44, 45) | `0x800B3364` |
   | `n2o` | 75 `func_800BBDB8` | 36..75 | `0x800B336C` (`D_800B336C`, used by 75, 78, 129) |

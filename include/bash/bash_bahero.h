@@ -1,9 +1,9 @@
-#ifndef BASH_BASH_800BFF1C_H
-#define BASH_BASH_800BFF1C_H
+#ifndef BASH_BASH_BAHERO_H
+#define BASH_BASH_BAHERO_H
 
-/* Functions and data defined in src/overlays/bash/800bff1c.c. Anything the original headers
+/* Functions and data defined in src/overlays/bash/bahero.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/bash/800bff1c.c */
+ * owner: src/overlays/bash/bahero.c */
 
 #include "common.h"
 #include "bash/bash_ovl.h"
@@ -58,4 +58,4 @@ void BashHeroThrow(s32 arg0);
 
 void SetBashHeroBigWeight(s32 arg0);
 
-#endif /* BASH_BASH_800BFF1C_H */
+#endif /* BASH_BASH_BAHERO_H */

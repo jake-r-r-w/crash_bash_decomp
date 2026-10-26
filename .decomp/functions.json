@@ -20361,7 +20361,7 @@
   "src": "src/overlays/bash/bash.c"
  },
  "bash:800BB64C": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/CrateAimAtGrid.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/CrateAimAtGrid.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80032490"
@@ -20372,12 +20372,12 @@
   "name": "CrateAimAtGrid",
   "orig": "func_800BB64C",
   "rom": 33688,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 364,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BB7B8": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/BashGridKey.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/BashGridKey.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "533879a8373e61d0",
@@ -20386,12 +20386,12 @@
   "name": "BashGridKey",
   "orig": "func_800BB7B8",
   "rom": 34052,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 48,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BB7E8": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/BashCountObjects.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/BashCountObjects.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "488381cfffcbe96a",
@@ -20400,12 +20400,12 @@
   "name": "BashCountObjects",
   "orig": "func_800BB7E8",
   "rom": 34100,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 556,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BBA14": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/CreateCrate.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/CreateCrate.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80022660",
@@ -20422,12 +20422,12 @@
   "name": "CreateCrate",
   "orig": "func_800BBA14",
   "rom": 34656,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 820,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BBD48": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/InitCrate.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/InitCrate.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015590",
@@ -20443,12 +20443,12 @@
   "name": "InitCrate",
   "orig": "func_800BBD48",
   "rom": 35476,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 752,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BC038": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/PlotCrate.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/PlotCrate.s",
   "bin": "disc/bash.bin",
   "calls": [
    "8001463C",
@@ -20479,12 +20479,12 @@
   "name": "PlotCrate",
   "orig": "func_800BC038",
   "rom": 36228,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 8600,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BE1D0": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/InitCratePickup.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/InitCratePickup.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015590",
@@ -20501,12 +20501,12 @@
   "name": "InitCratePickup",
   "orig": "func_800BE1D0",
   "rom": 44828,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 416,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BE370": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/InitShieldPickup.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/InitShieldPickup.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80022660",
@@ -20523,12 +20523,12 @@
   "name": "InitShieldPickup",
   "orig": "func_800BE370",
   "rom": 45244,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 408,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BE508": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/InitBootsPickup.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/InitBootsPickup.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80022660",
@@ -20545,12 +20545,12 @@
   "name": "InitBootsPickup",
   "orig": "func_800BE508",
   "rom": 45652,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 408,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BE6A0": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/InitAnvilPickup.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/InitAnvilPickup.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80022660",
@@ -20567,12 +20567,12 @@
   "name": "InitAnvilPickup",
   "orig": "func_800BE6A0",
   "rom": 46060,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 408,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BE838": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/InitSlowmoPickup.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/InitSlowmoPickup.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80022660",
@@ -20589,12 +20589,12 @@
   "name": "InitSlowmoPickup",
   "orig": "func_800BE838",
   "rom": 46468,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 408,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BE9D0": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/PlotPickup.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/PlotPickup.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80022660",
@@ -20609,12 +20609,12 @@
   "name": "PlotPickup",
   "orig": "func_800BE9D0",
   "rom": 46876,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 1048,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BEDE8": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/BashHeroesTouched.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/BashHeroesTouched.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80022660"
@@ -20625,12 +20625,12 @@
   "name": "BashHeroesTouched",
   "orig": "func_800BEDE8",
   "rom": 47924,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 280,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BEF00": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/BashHero_ExtraEffects.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/BashHero_ExtraEffects.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015780",
@@ -20645,12 +20645,12 @@
   "name": "BashHero_ExtraEffects",
   "orig": "func_800BEF00",
   "rom": 48204,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 1284,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BF404": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/CrateCollide.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/CrateCollide.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80025A48",
@@ -20662,12 +20662,12 @@
   "name": "CrateCollide",
   "orig": "func_800BF404",
   "rom": 49488,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 772,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BF708": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/CrateHitSolids.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/CrateHitSolids.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80025A48",
@@ -20679,12 +20679,12 @@
   "name": "CrateHitSolids",
   "orig": "func_800BF708",
   "rom": 50260,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 544,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BF928": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/CrateHitHeroes.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/CrateHitHeroes.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80025A48"
@@ -20695,12 +20695,12 @@
   "name": "CrateHitHeroes",
   "orig": "func_800BF928",
   "rom": 50804,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 408,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BFAC0": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/CrateBreak.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/CrateBreak.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015590",
@@ -20714,12 +20714,12 @@
   "name": "CrateBreak",
   "orig": "func_800BFAC0",
   "rom": 51212,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 172,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BFB6C": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/CrateFallTime.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/CrateFallTime.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "d728b2b0975559e4",
@@ -20728,12 +20728,12 @@
   "name": "CrateFallTime",
   "orig": "func_800BFB6C",
   "rom": 51384,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 196,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BFC30": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/CrateFindFreeSpot.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/CrateFindFreeSpot.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015590"
@@ -20744,12 +20744,12 @@
   "name": "CrateFindFreeSpot",
   "orig": "func_800BFC30",
   "rom": 51580,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 252,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BFD2C": {
-  "asm": "asm/nonmatchings/overlays/bash/800bb64c/SetBashHeroHit.s",
+  "asm": "asm/nonmatchings/overlays/bash/xtras/SetBashHeroHit.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015590",
@@ -20763,12 +20763,12 @@
   "name": "SetBashHeroHit",
   "orig": "func_800BFD2C",
   "rom": 51832,
-  "seg": "overlays/bash/800bb64c",
+  "seg": "overlays/bash/xtras",
   "size": 496,
-  "src": "src/overlays/bash/800bb64c.c"
+  "src": "src/overlays/bash/xtras.c"
  },
  "bash:800BFF1C": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroHit.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroHit.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80022660",
@@ -20782,12 +20782,12 @@
   "name": "BashHeroHit",
   "orig": "func_800BFF1C",
   "rom": 52328,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 544,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C013C": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroPickup.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroPickup.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015780",
@@ -20800,12 +20800,12 @@
   "name": "BashHeroPickup",
   "orig": "func_800C013C",
   "rom": 52872,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 408,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C02D4": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroHold.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroHold.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015780",
@@ -20822,12 +20822,12 @@
   "name": "BashHeroHold",
   "orig": "func_800C02D4",
   "rom": 53280,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 724,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C05A8": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroCarry.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroCarry.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015780",
@@ -20844,12 +20844,12 @@
   "name": "BashHeroCarry",
   "orig": "func_800C05A8",
   "rom": 54004,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 588,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C07F4": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroThrow.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroThrow.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80015780",
@@ -20863,12 +20863,12 @@
   "name": "BashHeroThrow",
   "orig": "func_800C07F4",
   "rom": 54592,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 512,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C09F4": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/SetBashHeroBigWeight.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/SetBashHeroBigWeight.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800225C4",
@@ -20881,12 +20881,12 @@
   "name": "SetBashHeroBigWeight",
   "orig": "func_800C09F4",
   "rom": 55104,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 440,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C0BAC": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroBigWeight.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroBigWeight.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800225C4",
@@ -20902,12 +20902,12 @@
   "name": "BashHeroBigWeight",
   "orig": "func_800C0BAC",
   "rom": 55544,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 568,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C0DE4": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/func_800C0DE4.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/func_800C0DE4.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800225C4",
@@ -20919,12 +20919,12 @@
   "name": "SetBashHeroDead",
   "orig": "func_800C0DE4",
   "rom": 56112,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 304,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C0F14": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/SetBashHeroWinner.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/SetBashHeroWinner.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800225C4",
@@ -20939,12 +20939,12 @@
   "name": "SetBashHeroWinner",
   "orig": "func_800C0F14",
   "rom": 56416,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 636,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C1190": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroWinner.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroWinner.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80025F44",
@@ -20959,12 +20959,12 @@
   "name": "BashHeroWinner",
   "orig": "func_800C1190",
   "rom": 57052,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 232,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C1278": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/SetBashHeroLoser.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/SetBashHeroLoser.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800225C4",
@@ -20978,12 +20978,12 @@
   "name": "SetBashHeroLoser",
   "orig": "func_800C1278",
   "rom": 57284,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 604,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C14D4": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroLoser.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroLoser.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80025F44",
@@ -20995,12 +20995,12 @@
   "name": "BashHeroLoser",
   "orig": "func_800C14D4",
   "rom": 57888,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 200,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C159C": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/func_800C159C.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/func_800C159C.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800142D4",
@@ -21017,12 +21017,12 @@
   "name": "BashHero2ObjectCollision",
   "orig": "func_800C159C",
   "rom": 58088,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 684,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C1848": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroGrabObject.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroGrabObject.s",
   "bin": "disc/bash.bin",
   "calls": [
    "8001463C",
@@ -21034,12 +21034,12 @@
   "name": "BashHeroGrabObject",
   "orig": "func_800C1848",
   "rom": 58772,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 488,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C1A30": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroKickCollision.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroKickCollision.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800142D4",
@@ -21057,12 +21057,12 @@
   "name": "BashHeroKickCollision",
   "orig": "func_800C1A30",
   "rom": 59260,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 3612,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C284C": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroCarryCollision.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroCarryCollision.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800142D4",
@@ -21079,12 +21079,12 @@
   "name": "BashHeroCarryCollision",
   "orig": "func_800C284C",
   "rom": 62872,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 788,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C2B60": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroObjectAhead.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroObjectAhead.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "d8a7d77aacd9ba99",
@@ -21093,12 +21093,12 @@
   "name": "BashHeroObjectAhead",
   "orig": "func_800C2B60",
   "rom": 63660,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 272,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C2C70": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/func_800C2C70.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/func_800C2C70.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "0b1366fd74004bfd",
@@ -21107,12 +21107,12 @@
   "name": "BashShareMomentum",
   "orig": "func_800C2C70",
   "rom": 63932,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 316,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C2DAC": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashHeroDead.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashHeroDead.s",
   "bin": "disc/bash.bin",
   "calls": [
    "80089BE8",
@@ -21124,12 +21124,12 @@
   "name": "BashHeroDead",
   "orig": "func_800C2DAC",
   "rom": 64248,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 172,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C2E58": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/SetBashHeroThrow.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/SetBashHeroThrow.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800854C0"
@@ -21140,12 +21140,12 @@
   "name": "SetBashHeroThrow",
   "orig": "func_800C2E58",
   "rom": 64420,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 112,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C2EC8": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/SetBashHeroCarry.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/SetBashHeroCarry.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800854C0"
@@ -21156,12 +21156,12 @@
   "name": "SetBashHeroCarry",
   "orig": "func_800C2EC8",
   "rom": 64532,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 76,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C2F14": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/SetBashHeroHold.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/SetBashHeroHold.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800854C0"
@@ -21172,12 +21172,12 @@
   "name": "SetBashHeroHold",
   "orig": "func_800C2F14",
   "rom": 64608,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 76,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C2F60": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/SetBashHeroPickup.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/SetBashHeroPickup.s",
   "bin": "disc/bash.bin",
   "calls": [
    "800854C0"
@@ -21188,12 +21188,12 @@
   "name": "SetBashHeroPickup",
   "orig": "func_800C2F60",
   "rom": 64684,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 80,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bash:800C2FB0": {
-  "asm": "asm/nonmatchings/overlays/bash/800bff1c/BashSpacePadHook.s",
+  "asm": "asm/nonmatchings/overlays/bash/bahero/BashSpacePadHook.s",
   "bin": "disc/bash.bin",
   "calls": [],
   "fp": "a6d6e1c94c535fef",
@@ -21202,9 +21202,9 @@
   "name": "BashSpacePadHook",
   "orig": "func_800C2FB0",
   "rom": 64764,
-  "seg": "overlays/bash/800bff1c",
+  "seg": "overlays/bash/bahero",
   "size": 84,
-  "src": "src/overlays/bash/800bff1c.c"
+  "src": "src/overlays/bash/bahero.c"
  },
  "bonk:800B33A4": {
   "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B33A4.s",

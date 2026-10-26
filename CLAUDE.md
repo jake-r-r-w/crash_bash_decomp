@@ -82,7 +82,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   exe or slot overlay unit, `--why` the symbol pairs behind each inversion;
   `tools/scripts/leak_order.py OVL HEADER` the climb/fall fit against a
   leaked header's order).
-  `tools/scripts/rename_unit.py OLD NEW PREFIX` renames an overlay unit everywhere (no byte
+  `tools/scripts/rename_unit.py OLD NEW PREFIX` renames an overlay unit everywhere and
+  `rename_file.py SEG NEW` one of its files (no byte
   changes). `tools/scripts/data2c.py OVL [--rodata SYM]` writes an overlay's asm data as C
   definitions (docs/CONVENTIONS.md, Data as C). The engine's link gets the slot
   overlays' symbols its AST table names from their ELFs (`slot_syms.py`, run by

@@ -1,6 +1,6 @@
 #include "common.h"
 #include "bash/bash_ovl.h"
-#include "bash/bash_800bff1c.h"
+#include "bash/bash_bahero.h"
 #include "bash/bash.h"
 #include "bash/xtras.h"
 #include "bash/papu.h"

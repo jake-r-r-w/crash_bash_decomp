@@ -1,9 +1,9 @@
-#ifndef BASH_BASH_800BB64C_H
-#define BASH_BASH_800BB64C_H
+#ifndef BASH_BASH_XTRAS_H
+#define BASH_BASH_XTRAS_H
 
-/* Functions and data defined in src/overlays/bash/800bb64c.c. Anything the original headers
+/* Functions and data defined in src/overlays/bash/xtras.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/bash/800bb64c.c */
+ * owner: src/overlays/bash/xtras.c */
 
 #include "common.h"
 #include "bash/bash_ovl.h"
@@ -206,11 +206,11 @@ extern u16 BashTickingCrateModels[];
 extern s32 D_8009E2B4[];
 void PlotCrate(NAS *arg0);
 
-/* data defined in 800bb64c.c */
+/* data defined in xtras.c */
 extern u16 BashDrainsEdgeCrates[];
 extern EXTengine BashSfxEngine;
 extern u16 BashDrainsEdgePos;
 extern u16 BashPowerupTimer;
 extern u8 *BashCrateList;
 
-#endif /* BASH_BASH_800BB64C_H */
+#endif /* BASH_BASH_XTRAS_H */

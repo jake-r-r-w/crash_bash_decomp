@@ -187,8 +187,8 @@ void BashSnowMarkPenguin(void);
 void BashSpaceMarkHoles(void);
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
-#include "bash/bash_800bb64c.h"
-#include "bash/bash_800bff1c.h"
+#include "bash/bash_xtras.h"
+#include "bash/bash_bahero.h"
 
 void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev);
 
