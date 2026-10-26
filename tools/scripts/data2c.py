@@ -380,6 +380,12 @@ class Converter:
         raw = int.from_bytes(data[off:off + size], "little")
         if size == 4 and ptr_ok:
             e = self.symexpr(raw, local, self.base_rom + off)
+            # a plain word equal to an unnamed exe function's address is data (two halfwords of
+            # a hero sequence in Pogo); a real code pointer has a function-pointer field
+            if e is not None and re.fullmatch(r"&func_[0-9A-F]{8}", e):
+                self.externs.discard(e[1:])
+                self.provide.pop(e[1:], None)
+                e = None
             if e is not None:
                 return f"({cast}){e}" if cast else e
         if signed and raw >= 1 << (size * 8 - 1):
