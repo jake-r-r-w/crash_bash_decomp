@@ -5163,7 +5163,7 @@ SLOT_IMAGES = {"overlays/engine/engine_slot"}
 
 
 def data_items(funcs, stat, proj, images=False):
-    """Every data block outside the code subsegments as [unit, file, symbol, bytes, in C]: rodata
+    """Every data block outside the code subsegments as [unit, file, symbol, bytes, in C, type]: rodata
     migrated into a matched function and data subsegments owned by a C file (.data etc.) with
     nothing left in asm count as C. Asm-owned subsegments are cut at their splat labels, so the
     dashboard's data map shows each table. The blocks tile the subsegments exactly. The memory
@@ -5185,16 +5185,50 @@ def data_items(funcs, stat, proj, images=False):
                 if not rs or rs[0][0] > start:
                     # a C file's rodata with no asm piece left in it is all the compiler's
                     out.append([unit, name, name, (rs[0][0] if rs else end) - start,
-                                not glob.glob(f"asm/nonmatchings/{name}/D_*.s")])
+                                not glob.glob(f"asm/nonmatchings/{name}/D_*.s"), typ])
                 for i, (rom, sym, owners) in enumerate(rs):
                     nxt = rs[i + 1][0] if i + 1 < len(rs) else end
                     out.append([unit, name, sym, nxt - rom, len(owners) == 1 and owners[0] in matched
-                                and not os.path.exists(f"asm/nonmatchings/{name}/{sym}.s")])
+                                and not os.path.exists(f"asm/nonmatchings/{name}/{sym}.s"), typ])
             elif typ.startswith("."):
-                out.append([unit, name, name, end - start, not glob.glob(f"asm/nonmatchings/{name}/D_*.s")])
+                out.append([unit, name, name, end - start, not glob.glob(f"asm/nonmatchings/{name}/D_*.s"), typ])
             else:
-                out += [[unit, name, sym, size, False] for sym, size in asm_data_labels(name, typ, start, end)]
+                out += [[unit, name, sym, size, False, typ] for sym, size in asm_data_labels(name, typ, start, end)]
     return out
+
+
+# nm letters of a C object's data symbols, by section (globals upper case, statics lower)
+NM_SECTION = {"d": ".data", "r": ".rodata", "b": ".bss", "g": ".sdata", "s": ".sbss"}
+# a data name nobody chose: splat's D_ label, or a whole asm file with no label in it
+DATA_PLACEHOLDER = re.compile(r"^D_[0-9A-Fa-f]{8}$")
+
+
+def object_data_syms(path):
+    """{section: [(offset, name)]} of a compiled C object's data symbols, one name per offset."""
+    out = defaultdict(dict)
+    for line in run(["mipsel-linux-gnu-nm", "-n", "--defined-only", path]).stdout.splitlines():
+        p = line.split()
+        sect = len(p) == 3 and NM_SECTION.get(p[1].lower())
+        if sect and not p[2].startswith((".", "$", "_MACRO")):
+            out[sect].setdefault(int(p[0], 16), p[2])
+    return {s: sorted(v.items()) for s, v in out.items()}
+
+
+def split_c_block(name, typ, size, cache):
+    """[(symbol, bytes)] tiling the first size bytes of a C file's typ section from its object's
+    symbols; the bytes before the first symbol (string literals, jump tables) keep the file's
+    name. None when the object isn't built or has no symbols there."""
+    path = f"build/src/{name}.c.o"
+    if not os.path.exists(path):
+        return None
+    if path not in cache:
+        cache[path] = object_data_syms(path)
+    syms = [(o, n) for o, n in cache[path].get(typ, []) if o < size]
+    if not syms:
+        return None
+    if syms[0][0] > 0:
+        syms.insert(0, (0, os.path.basename(name)))
+    return [(n, (syms[i + 1][0] if i + 1 < len(syms) else size) - o) for i, (o, n) in enumerate(syms)]
 
 
 def asm_data_labels(name, typ, start, end):
@@ -5360,17 +5394,31 @@ def page_map(funcs, stat, proj, syms):
 
 def page_data_map(items):
     """data_items() packed like page_map: [file, unit, count] per file, then per block its name,
-    bytes and status letter (c in C, a still asm)."""
-    out = {"segs": [], "n": [], "s": [], "t": ""}
-    for un, seg, sym, size, done in items:
+    bytes, status letter (c in C, a still asm) and whether it has a real name (nm: 1 or 0). A
+    block a C file owns whole is cut at its object's symbols, so each C object is a cell. A D_
+    label is a placeholder, and so is an asm file's name standing for a block with no label. The
+    compiler's own data is not: the file's name on a C block's unlabelled bytes, and a matched
+    function's rodata (its string literals and jump tables, under splat's labels)."""
+    out = {"segs": [], "n": [], "s": [], "t": "", "nm": ""}
+    cache = {}
+    for un, seg, sym, size, done, typ in items:
         if size <= 0:
             continue
-        if not out["segs"] or out["segs"][-1][0] != seg:
-            out["segs"].append([seg, un, 0])
-        out["segs"][-1][2] += 1
-        out["n"].append(sym)
-        out["s"].append(size)
-        out["t"] += "c" if done else "a"
+        parts = split_c_block(seg, typ, size, cache) if done and sym == seg else None
+        for name, n in parts or [(sym, size)]:
+            if n <= 0:
+                continue
+            if not out["segs"] or out["segs"][-1][0] != seg:
+                out["segs"].append([seg, un, 0])
+            out["segs"][-1][2] += 1
+            out["n"].append(name)
+            out["s"].append(n)
+            out["t"] += "c" if done else "a"
+            if done and typ == ".rodata" and parts is None:
+                unnamed = False
+            else:
+                unnamed = DATA_PLACEHOLDER.match(name) or (not done and name in (seg, os.path.basename(seg)))
+            out["nm"] += "0" if unnamed else "1"
     return out
 
 

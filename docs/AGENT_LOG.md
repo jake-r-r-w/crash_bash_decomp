@@ -550,6 +550,12 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (dashboard: Data named):** the map has a fourth mode,
+  data blocks by real name vs `D_`. `page_data_map` now cuts a block a C
+  file owns whole at its object's symbols (`split_c_block`), so the Data in
+  C map shows each C object too; a matched function's rodata counts as the
+  compiler's (named). Tested in `test_data_map.py`.
+
 - **2026-10-26 (Tank's data named and typed):** 156 of Tank's `D_` data
   names replaced (`scratch/tank_names.py`; names in `sym.ovl5f.txt`), from
   the code that reads each table and the leak: `TANK_PREMAP` +
