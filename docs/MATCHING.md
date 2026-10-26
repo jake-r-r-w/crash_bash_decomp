@@ -2247,6 +2247,15 @@ inline's block note. An argument or return copy doesn't help a copy that has
 to survive cse or combine (they fold it like a plain one), nor a pointer that
 must outlive its one use.
 
+The game's files were compiled with `cc1plus`, and it emits an inline function that needs
+an out-of-line copy (its address is taken, or a call couldn't be inlined, as one before the
+definition) at the end of the file, as a local symbol, in reverse definition order: defining
+`InitA`, `InitB`, `InitC`, `Helper` gives `Helper`, `InitC`, `InitB`, `InitA` after the file's
+other functions, whatever order the addresses are taken in. That is why a unit can end in a run of
+small functions in reverse order (Tank's `Init*` functions and hero mode setters) and why a
+helper's code appears both inlined and as an uncalled function at the end (`TriggerTankMinesNear`
+and `Ovl5fTriggerNear`). Our C, compiled with `cc1`, writes those functions where they're emitted.
+
 Drafts from the swarm or m2c often imitate a pass by hand: a `goto` loop with
 pointer copies made before it is what loop.c does to a plain `for`, and
 `inv = 0x21; inv -= lvl;` stands for `inv = 0x21 - lvl;`. Write such shapes

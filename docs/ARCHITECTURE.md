@@ -335,6 +335,26 @@ code finds 15 code files; nothing else on the disc holds code.
   2026-10-15): no overlay or engine string is stored twice, and no overlay
   function has the gcc 2.7.2 `lui $at` stores. So the remaining files inside
   each unit can't be placed yet.
+
+  **`ovl5f` (Tank) is one file** (2026-10-26). The game was C++, and
+  `cc1plus` emits a file's inline functions that need an out-of-line copy
+  (address taken, or called before their definition) at the end of the
+  file, as local symbols, in reverse definition order (tested with
+  `/opt/gcc/2.8.1-psx/cc1plus`: MATCHING.md, Inline functions behind odd
+  shapes). So a translation unit reads: its non-inline functions in source
+  order, then its inline ones reversed. Against the leak's declaration
+  order (which follows definition order), Tank's code climbs through
+  functions 6..73 and then falls, nearly without a break, from 87
+  (`PlotJoe`) to the end (`GetSandbagValueMiss`, then the helpers the
+  header defines first): one climb and one fall, so one file. A second file
+  would show a second climb with its own falling tail. `decomp.py units
+  overlays/ovl5f/ovl5f --data` agrees: 33 jump tables with no parity change,
+  and the initialised data's order (its zero tail, the `.bss`, left out)
+  ties functions 1..123 into one file. So functions 87..180 (the `Init*`
+  functions, the hero mode setters, the SFX helpers, `TA_PreMoveHero`,
+  `TA_Triggers`, the helpers' copies) were `inline` in the source.
+  `ovl62` (Polar) shows the same data tie (1..107); the same check with the
+  Pogo, Arkenoid and Polar leaks would place their files.
 - **Slot overlays** are named by their first word, an id (`0x5D`..`0x6A`).
   Layout: `.rodata` (id, strings, jump tables), `.text`, `.data`. The id
   word is its own unit: in every slot overlay the first file's jump tables

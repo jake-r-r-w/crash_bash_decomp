@@ -77,7 +77,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   --differing` (permute only the differing blocks' C), `permstats` (every
   permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any
-  segment; `--data` adds data blocks, inversions and call ties for `main.c`).
+  segment; `--data` adds data blocks, inversions and call ties for any
+  exe or slot overlay unit, `--why` the symbol pairs behind each inversion).
   `sched`, `jtrace`, `trace`, `regions` and `vars` read a parked function's C under
   `#ifdef NON_MATCHING` (built apart, with `-DNON_MATCHING`).
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,

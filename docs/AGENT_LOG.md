@@ -92,10 +92,12 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    `GetTankMapCell` is `Ovl5fMapCell`, ...): give each pair one name once
    it's clear how the original declared them (a C++ inline defined after
    its callers can't be inlined by gcc 2.8, so the source had both).
-2. **Split Tank into its files** where the evidence settles it: extend
-   `decomp.py units --data` (data blocks in code order, call ties; today it
-   reads only `main.yaml`'s c segments) to the slot overlays, and read it
-   with the new names. Tank has no jump tables (`units overlays/ovl5f`: 0),
+2. **Split Tank into its files: done, it is one file** (2026-10-26;
+   ARCHITECTURE.md, Files inside the slot overlays). `units --data` reads
+   the slot overlays now (`--why` lists the pairs behind each inversion;
+   the zero tail, the `.bss`, is its own chunk), and `cc1plus` closes a file
+   with its out-of-line inline functions in reverse definition order, which
+   Tank shows once (87..180). What follows was written before that. Tank has no jump tables (`units overlays/ovl5f`: 0),
    so the parity check can't help, and the leak (preprocessed, Tank's
    header start cut off) and the demo discs name no Tank file. One hint:
    the leak lists prototypes in code order within a file, and its order

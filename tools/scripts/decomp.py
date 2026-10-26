@@ -4432,6 +4432,12 @@ def units_parity(seg, funcs, syms):
     print()
 
 
+def zero_tail_start(vram, data):
+    """Address where a data block's all-zero tail starts (word-aligned): in an overlay that is
+    where the uninitialised globals begin, every file's .bss and the commons after all the .data."""
+    return vram + ((len(data.rstrip(b"\0")) + 3) & ~3)
+
+
 def cmd_units(a):
     """Evidence for splitting a C segment (main/main) into its original translation units. Each
     object's .rodata is linked in the same order as its .text and follows its functions' order,
@@ -4443,8 +4449,16 @@ def cmd_units(a):
     proj, funcs = need_proj(), need_funcs()
     syms = sym_names()
     units_parity(a.seg, funcs, syms)
-    y = yaml.safe_load(read(f"{CFG}/main.yaml"))
-    seg = next(s for s in y["segments"] if isinstance(s, dict) and s.get("name") == "main")
+    # main/... is a unit of the exe; overlays/<ovl>/... one of an overlay, with its own yaml, binary
+    # and layout (a slot overlay is .rodata, .text, .data, so its data starts after the code)
+    ovl = a.seg.split("/")[1] if a.seg.startswith("overlays/") else None
+    target = ovl or "main"
+    y = yaml.safe_load(read(yaml_of(target)))
+    seg = next((s for s in y["segments"] if isinstance(s, dict) and s.get("name") == target
+                and any(isinstance(x, list) and len(x) > 2 and x[2] == a.seg for x in s.get("subsegments", []))), None)
+    if seg is None:
+        print(f"(no segment of {yaml_of(target)} holds {a.seg}: only the jump-table check)")
+        return
     subs = [s for s in seg["subsegments"] if isinstance(s, list)]
     v = lambda rom: rom - seg["start"] + seg["vram"]
     rng = {}
@@ -4453,10 +4467,11 @@ def cmd_units(a):
         if len(s) >= 3 and s[2] == a.seg and nxt:
             rng[".rodata" if s[1] == ".rodata" else "text"] = (v(s[0]), v(nxt))
     if "text" not in rng:
-        print(f"(the other evidence needs a c segment of main.yaml; {a.seg} has only the jump-table check)")
+        print(f"(the other evidence needs a c subsegment of {yaml_of(target)}; {a.seg} has only the jump-table check)")
         return
     ro = rng.get(".rodata", (0, 0))
-    code_end = v(next(s[0] for s in subs if len(s) > 1 and str(s[1]).lstrip(".") == "rodata"))  # data starts here
+    data_kinds = ("data", "sdata", "bss", "sbss") if ovl else ("rodata",)
+    code_end = v(next(s[0] for s in subs if len(s) > 1 and str(s[1]).lstrip(".") in data_kinds))  # data starts here
     fl = sorted(((k, e) for k, e in funcs.items() if e["seg"] == a.seg), key=lambda x: x[1]["rom"])
     idx = {k: i for i, (k, _) in enumerate(fl)}
     refs = func_refs(funcs)
@@ -4515,7 +4530,7 @@ def cmd_units(a):
             gaps[g]["score"] -= 0.5
 
     # 4. duplicate string literals in this segment's rodata
-    with open(os.path.join("disc", proj["exe"]), "rb") as f:
+    with open(f"disc/{ovl}.bin" if ovl else os.path.join("disc", proj["exe"]), "rb") as f:
         exe = f.read()
     rom = lambda va: va - seg["vram"] + seg["start"]
     strs = {}
@@ -4608,8 +4623,16 @@ def cmd_units(a):
         # split by library objects), and only short spans: a global defined in another file and used
         # by one far function inverts against everything in between.
         chunk = lambda x: sum(1 for lo, _ in lib if lo <= x)
-        spans = sorted((l2, h1) for l1, h1, x1, _ in local for l2, h2, x2, _ in local
+        if ovl:
+            # an overlay's data block ends with the uninitialised globals (every file's .bss and the
+            # commons, after all the .data), seen as the all-zero tail: its own chunk
+            dend = next((s[0] for s in subs if s[0] > dstart - seg["vram"] + seg["start"]), len(exe))
+            bss = zero_tail_start(dstart, exe[dstart - seg["vram"] + seg["start"]:dend])
+            chunk = lambda x: 1 if x >= bss else 0
+            print(f"(initialised data {dstart:08X}-{bss:08X}; the zero tail after it counts as .bss)")
+        pairs = sorted((l2, h1, n1, x1, n2, x2) for l1, h1, x1, n1 in local for l2, h2, x2, n2 in local
                        if x1 < x2 and l1 > h2 and chunk(x1) == chunk(x2) and h1 - l2 <= 40)
+        spans = [(l, h) for l, h, *_ in pairs]
         same = []
         for l, h in spans:
             if same and l <= same[-1][1]:
@@ -4619,6 +4642,10 @@ def cmd_units(a):
         print("one file each (private data out of code order inside the span; boundaries lie between):")
         for l, h in same:
             print(f"  {l:4d}-{h:<4d} {names[l]} .. {names[h]}")
+            if a.why:
+                for l2, h1, n1, x1, n2, x2 in pairs:
+                    if l <= l2 and h1 <= h:
+                        print(f"        {n2} {x2:08X} (used by {l2}..) is after {n1} {x1:08X} (used up to {h1})")
         # 7. calls: a function only nearby code calls (no other unit, no data table, no far caller) is
         # probably static, so it shares its callers' file and no boundary lies between them.
         name2key = {}
@@ -5488,6 +5515,7 @@ def main():
     p.add_argument("--top", type=int, default=25)
     p.add_argument("--clusters", action="store_true", help="list each cluster and its file-local symbols")
     p.add_argument("--data", action="store_true", help="group the data each run of functions uses alone into address blocks")
+    p.add_argument("--why", action="store_true", help="with --data: the symbol pairs behind each data inversion")
     p.set_defaults(fn=cmd_units)
     p = sub.add_parser("vars", help="which C variables the differing blocks' register swaps belong to")
     p.add_argument("func")
