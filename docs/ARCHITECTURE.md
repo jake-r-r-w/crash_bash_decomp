@@ -353,8 +353,25 @@ code finds 15 code files; nothing else on the disc holds code.
   ties functions 1..123 into one file. So functions 87..180 (the `Init*`
   functions, the hero mode setters, the SFX helpers, `TA_PreMoveHero`,
   `TA_Triggers`, the helpers' copies) were `inline` in the source.
-  `ovl62` (Polar) shows the same data tie (1..107); the same check with the
-  Pogo, Arkenoid and Polar leaks would place their files.
+  `ovl62` (Polar) shows the same data tie (1..107).
+
+  **The other leaked games, checked 2026-10-26** with
+  `tools/scripts/leak_order.py OVL HEADER`, which scores the best "one
+  climb, one fall" against the best two-file fit. Tank, known to be one
+  file, sets the noise: a second file explains 7 more of its 104 declared
+  functions. Pogo (`ovl60`, +10 of 167), Arkenoid (`ovl61`, +5 of 78) and
+  Polar (`ovl62`, +5 of 78) gain no more, and the best two-file cut lies
+  inside a range the data ties into one file for Tank (109, in 1..123),
+  Arkenoid (12, in 2..76) and Polar (15, in 1..107); Pogo's (117) is in a
+  possible cut zone, unproven. So no new file start is proven: Pogo and
+  Arkenoid read as one file each, and so do Polar's functions 1..154 (the
+  tail ends at `DoNowt`). Polar's 155..216 are all `func_` names with no
+  place in the header (36 of its declarations, the bear AI's `Test*` and
+  `Do*` among them, are not matched to a function yet), so they can be
+  placed once they are named. The overlays with no leaked header have no
+  further evidence: their jump tables show no other parity change, and the
+  data only ties functions together (`units --data` lists possible cut
+  zones, none proven).
 - **Slot overlays** are named by their first word, an id (`0x5D`..`0x6A`).
   Layout: `.rodata` (id, strings, jump tables), `.text`, `.data`. The id
   word is its own unit: in every slot overlay the first file's jump tables

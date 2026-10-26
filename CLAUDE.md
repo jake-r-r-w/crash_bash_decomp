@@ -79,7 +79,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any
   segment; `--data` adds data blocks, inversions and call ties for any
-  exe or slot overlay unit, `--why` the symbol pairs behind each inversion).
+  exe or slot overlay unit, `--why` the symbol pairs behind each inversion;
+  `tools/scripts/leak_order.py OVL HEADER` the climb/fall fit against a
+  leaked header's order).
   `tools/scripts/data2c.py OVL [--rodata SYM]` writes an overlay's asm data as C
   definitions (docs/CONVENTIONS.md, Data as C). The engine's link gets the slot
   overlays' symbols its AST table names from their ELFs (`slot_syms.py`, run by

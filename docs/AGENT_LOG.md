@@ -452,6 +452,14 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (slot overlay file splits: nothing more proven):** new
+  `tools/scripts/leak_order.py` (tested) fits the cc1plus climb/fall
+  shape against a leaked header. Pogo, Arkenoid and Polar gain no more
+  from a second file than Tank (one file) does, and three of the four
+  best cuts fall inside data-tied ranges; `units --data` proves no cut
+  in any slot overlay. Roadmap item ticked; Polar's 155..216 wait for
+  their names (Polar's box).
+
 - **2026-10-26 (Phase 3 closed):** the Tank pilot is done. The roadmap
   records the extra work it took (settling `tank.h`: `TANKSpecifics` is
   not in this build; never-read words checked on every disc; the

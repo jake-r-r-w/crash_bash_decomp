@@ -46,7 +46,10 @@ cc1plus, which built the game, writes a file's out-of-line inline functions at
 its end in reverse definition order, so a run of functions that the leaked
 header lists in the opposite order is one file's inline tail (MATCHING.md,
 Inline functions behind odd shapes; ARCHITECTURE.md, Files inside the slot
-overlays). Tank turned out to be one file. Split before the data goes
+overlays). `tools/scripts/leak_order.py <ovl> <header>` scores that shape:
+a second file is only evidence when it explains clearly more than Tank's
+noise (+7 of 104) and its cut isn't inside a range the data ties together.
+Tank turned out to be one file. Split before the data goes
 to C: a file's local data moves with it (`split_unit.py`).
 
 ## 3. Data to C

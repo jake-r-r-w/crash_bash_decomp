@@ -252,12 +252,18 @@ an overlay (Pogo, Arkenoid, Polar), every declaration in it is either
 defined by matched code or noted in `docs/ARCHITECTURE.md` as not in this
 build.
 
-- [ ] Finish the slot overlays' file splits where the binary proves a start
+- [x] Finish the slot overlays' file splits where the binary proves a start
   (ARCHITECTURE.md, Files inside the slot overlays), each before that
-  overlay's data goes to C, since a file's local data moves with it.
+  overlay's data goes to C, since a file's local data moves with it. Done
+  2026-10-26: every start the binary proves was split already (`ovl5d`,
+  `ovl5e`, `ovl66`, `ovl67`, `ovl6a`, by jump-table parity); the leaked
+  headers' order (`tools/scripts/leak_order.py`) and `units --data` prove no
+  other. Pogo and Arkenoid read as one file each like Tank. Polar's
+  functions 155..216 can't be placed until they are named (Polar's box).
 - [ ] Pogo (`ovl60`)
 - [ ] Arkenoid (`ovl61`)
-- [ ] Polar (`ovl62`)
+- [ ] Polar (`ovl62`): name functions 155..216 first, then run
+  `leak_order.py` again to place them (one file or a second).
 - [ ] Bash (`ovl5d`, with the crates and pickups of `XTRAS_AST_types`)
 - [ ] Papu (`ovl5e`)
 - [ ] Race (`ovl63`)
