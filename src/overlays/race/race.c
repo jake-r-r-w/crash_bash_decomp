@@ -1077,31 +1077,31 @@ void InitialiseRACEFirst(void) {
 
     RaceOver = 0;
     h = &HeroHooks;
-    h->unk38 = Race_HeroBot;
-    h->unk4 = RaceHeroModels;
+    h->HeroBot = Race_HeroBot;
+    h->HeroModels = RaceHeroModels;
     do {} while (0);
     g = GameInfo;
     if (*(s16 *)(g + 0x34) == 0x19) {
-        h->unk4 = RaceHeroModelsWater;
+        h->HeroModels = RaceHeroModelsWater;
     }
-    h->unk0 = (s32)RaceInitHero;
-    h->unk20 = RacePreMoveHero;
-    h->unk24 = RaceMoveHero;
-    h->unkC = RaceJumpTable;
-    h->unk18 = D_8008B29C;
-    h->unk1C = D_8008B418;
+    h->InitHero = (s32)RaceInitHero;
+    h->PreMoveHero = RacePreMoveHero;
+    h->MoveHero = RaceMoveHero;
+    h->RunSpeeds = RaceJumpTable;
+    h->CreateShadow = D_8008B29C;
+    h->UpdateShadow = D_8008B418;
     flags = *(u16 *)(g + 0x32);
-    h->unk64 = RaceChooseWinner;
+    h->ChooseWinner = RaceChooseWinner;
     if (flags & 0x40) {
-        h->unk64 = RaceChooseWinnerTeam;
+        h->ChooseWinner = RaceChooseWinnerTeam;
     }
     if (flags & 0x20) {
-        h->unk64 = RaceChooseWinnerTeam;
+        h->ChooseWinner = RaceChooseWinnerTeam;
     }
     if (flags & 0x80) {
-        h->unk64 = RaceChooseWinnerTeam;
+        h->ChooseWinner = RaceChooseWinnerTeam;
     }
-    h->unk14 = RaceVictorySeqs;
+    h->VictorySeqs = RaceVictorySeqs;
     *(u16 *)(g + 0x32) = flags | 0x800;
     do {} while (0);
     p = &AiSkillTable;
@@ -3622,7 +3622,7 @@ void SetRaceHeroRun(s32 player) {
     if (f != NULL) {
         m = h->hero_move;
         if (m != NULL) {
-            spd = HeroHooks.unkC[h->hero_name * 3];
+            spd = HeroHooks.RunSpeeds[h->hero_name * 3];
             m->x_vel = (spd * rcossin_tbl[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
             m->z_vel = (spd * rcossin_tbl[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
         }
@@ -5016,7 +5016,7 @@ check:
                 if (GameCheats & 0x800) {
                     flags = 0x201;
                 }
-                HeroHooks.unk64(-1, flags);
+                HeroHooks.ChooseWinner(-1, flags);
             }
         }
     }

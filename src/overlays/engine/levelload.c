@@ -188,7 +188,7 @@ loop:
             if ((u32)(c - 1) < 8) {
                 {
                     u8 *p = D_8009FA14;
-                    e = ((u16 *)tbl->unk4)[c] * 0x38 + (s32)base;
+                    e = ((u16 *)tbl->HeroModels)[c] * 0x38 + (s32)base;
                     for (j = 0; j < 0x60; j++) {
                         if (e == *(s32 *)(p + 4)) {
                             func_800129D0(p, arg);
@@ -247,7 +247,7 @@ void load_initial_dbases(void)
     k = ((u8 *) g)[i + 0x50];
     if ((k - 1) < 8)
     {
-      func_8001612C((u8 *) ((((u16 *) h->unk4)[k] * 0x38) + ((s32) b)), arg);
+      func_8001612C((u8 *) ((((u16 *) h->HeroModels)[k] * 0x38) + ((s32) b)), arg);
       if (h->unk8 != 0)
       {
         func_8001612C((u8 *) ((((u16 *) h->unk8)[k] * 0x38) + ((s32) b)), arg);

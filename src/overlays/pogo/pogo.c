@@ -7582,16 +7582,16 @@ void POGOriggers(NASTrigger *trig, s32 arg1) {
 }
 
 void InitialisePOGOFirst(void) {
-    HeroHooks.unk0 = (s32)POGO_InitHero;
-    HeroHooks.unk44 = &D_8008AB04;
-    HeroHooks.unk4 = &PogoHeroModels;
-    HeroHooks.unkC = &PogoHookTableC;
-    HeroHooks.unk20 = PreMovePOGO;
-    HeroHooks.unk28 = PostMovePOGO;
-    HeroHooks.unk64 = PogoHeroChooseWinner;
-    HeroHooks.unk5C = PogoHero_ExtraEffects;
-    HeroHooks.unk18 = PogoCreateShadow;
-    HeroHooks.unk38 = PogoAI_Poll;
+    HeroHooks.InitHero = (s32)POGO_InitHero;
+    HeroHooks.TestJump = &D_8008AB04;
+    HeroHooks.HeroModels = &PogoHeroModels;
+    HeroHooks.RunSpeeds = &PogoHookTableC;
+    HeroHooks.PreMoveHero = PreMovePOGO;
+    HeroHooks.PostMoveHero = PostMovePOGO;
+    HeroHooks.ChooseWinner = PogoHeroChooseWinner;
+    HeroHooks.HeroExtraEffects = PogoHero_ExtraEffects;
+    HeroHooks.CreateShadow = PogoCreateShadow;
+    HeroHooks.HeroBot = PogoAI_Poll;
     PogoInit_AIQuality();
 }
 

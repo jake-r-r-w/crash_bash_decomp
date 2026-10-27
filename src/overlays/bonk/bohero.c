@@ -113,7 +113,7 @@ void BonkHeroIdle(s32 arg0) {
         func_8008502C(arg0);
         if (VelocityCalc < 4) {
             if (VelocityCalc >= 2) {
-                HeroHooks.unk54(arg0);
+                HeroHooks.HeroKickCollision(arg0);
             }
         }
         base = Heroes;
@@ -140,7 +140,7 @@ void BonkHeroRun(s32 arg0) {
             base = Heroes;
             h = base + arg0;
             h->hero_move->velocity_enable = 1;
-            HeroHooks.unk54(arg0);
+            HeroHooks.HeroKickCollision(arg0);
             id = func_8008502C(arg0);
             switch (id) {
             case 8:
@@ -653,7 +653,7 @@ void SetBonkHeroBackswing(s32 arg0) {
 
 void BonkHeroHit(s32 arg0) {
     if (Heroes[arg0].hero_move->reactive_speed != 0) {
-        HeroHooks.unk54();
+        HeroHooks.HeroKickCollision();
     }
     func_8008502C(arg0);
     func_800871E4(arg0);
@@ -677,7 +677,7 @@ void SetBonkHeroRun(s32 arg0) {
 }
 
 s32 BonkHeroTestRun(s32 arg0) {
-    if (HeroHooks.unk40(arg0) == 0) {
+    if (HeroHooks.TestRun(arg0) == 0) {
         if (Heroes[arg0].hero_move->forward_speed == 0) {
             return 0;
         }

@@ -226,21 +226,21 @@ void InitialiseSPINFirst() {
     void *p;
     void **q;
 
-    HeroHooks.unk20 = SpinPreMoveHero;
-    HeroHooks.unk68 = SPIN_KeepInBounds;
-    HeroHooks.unk44 = SpinHeroTestFlip;
-    HeroHooks.unk3C = SpinNoAttack;
-    HeroHooks.unkC = SpinRunSpeeds;
-    HeroHooks.unk38 = Spin_HeroBot;
-    HeroHooks.unk64 = SpinChooseWinner;
-    HeroHooks.unk4C = SpinHero2ObjectCollision;
-    HeroHooks.unk50 = SpinHeroGrabObject;
-    HeroHooks.unk54 = SpinHeroKickCollision;
-    HeroHooks.unk58 = SpinHeroCarryCollision;
-    HeroHooks.unk5C = SpinHero_ExtraEffects;
-    HeroHooks.unk60 = SpinTouched;
-    HeroHooks.unk18 = SpinCreateShadow;
-    HeroHooks.unk10 = (SpinJumpEnt *)SpinJumpEnts;
+    HeroHooks.PreMoveHero = SpinPreMoveHero;
+    HeroHooks.KeepInBounds = SPIN_KeepInBounds;
+    HeroHooks.TestJump = SpinHeroTestFlip;
+    HeroHooks.TestAttack = SpinNoAttack;
+    HeroHooks.RunSpeeds = SpinRunSpeeds;
+    HeroHooks.HeroBot = Spin_HeroBot;
+    HeroHooks.ChooseWinner = SpinChooseWinner;
+    HeroHooks.Hero2ObjectCollision = SpinHero2ObjectCollision;
+    HeroHooks.HeroGrabObject = SpinHeroGrabObject;
+    HeroHooks.HeroKickCollision = SpinHeroKickCollision;
+    HeroHooks.HeroCarryCollision = SpinHeroCarryCollision;
+    HeroHooks.HeroExtraEffects = SpinHero_ExtraEffects;
+    HeroHooks.HeroesTouched = SpinTouched;
+    HeroHooks.CreateShadow = SpinCreateShadow;
+    HeroHooks.JumpEnts = (SpinJumpEnt *)SpinJumpEnts;
     HeroActDead = 0x38;
     HeroActWinner = 0x36;
     HeroActLoser = 0x37;
@@ -1113,7 +1113,7 @@ void PlotHazardType(NAS *nas) {
     if (eng == NULL) {
         return;
     }
-    HeroHooks.unk68(eng);
+    HeroHooks.KeepInBounds(eng);
     fux = (SpinFux *)nas->FUX;
     if (fux == NULL) {
         return;
@@ -1226,7 +1226,7 @@ void PlotHazardType(NAS *nas) {
         }
         break;
     case 13:
-        if (HeroHooks.unk68(eng) != 0) {
+        if (HeroHooks.KeepInBounds(eng) != 0) {
             func_800270B0(nas);
             break;
         }
@@ -1424,7 +1424,7 @@ void PlotBalloon(NAS *nas) {
     if (eng == NULL) {
         return;
     }
-    HeroHooks.unk68(eng);
+    HeroHooks.KeepInBounds(eng);
     fux = (SpinFux *)nas->FUX;
     if (fux != NULL) {
         kind = fux->kind;
@@ -2710,8 +2710,8 @@ void SpinPreMoveHero(s32 arg0) {
     h = hb + arg0;
     m = h->hero_move;
     m->forward_speed = 0;
-    speed = (HeroHooks.unkC + h->hero_name * 3)[1] + (AiPlayerSkill[arg0][0] >> 2);
-    (HeroHooks.unkC + h->hero_name * 3)[2] = speed;
+    speed = (HeroHooks.RunSpeeds + h->hero_name * 3)[1] + (AiPlayerSkill[arg0][0] >> 2);
+    (HeroHooks.RunSpeeds + h->hero_name * 3)[2] = speed;
     if (h->hero_frozen != 0) {
         ((PadStick *)Pads)[arg0].dirHeld2 = 0;
         ((PadStick *)Pads)[arg0].dirPressed = 0;
@@ -2728,7 +2728,7 @@ void SpinPreMoveHero(s32 arg0) {
                         rw--;
                     }
                 }
-                row = HeroHooks.unkC;
+                row = HeroHooks.RunSpeeds;
                 hb2 = Heroes;
                 h2 = hb2 + arg0;
                 speed = (row + h2->hero_name * 3)[rw];
@@ -2782,7 +2782,7 @@ void SpinHeroHit(s32 arg0) {
 
     h = base + arg0;
     if (h->hero_move->reactive_speed != 0) {
-        HeroHooks.unk54();
+        HeroHooks.HeroKickCollision();
     }
     r = func_8008502C(arg0);
     if (r != 8) {
@@ -2834,8 +2834,8 @@ void SpinHeroHit(s32 arg0) {
             }
         }
     }
-    if (HeroHooks.unk58 != NULL) {
-        HeroHooks.unk58(arg0);
+    if (HeroHooks.HeroCarryCollision != NULL) {
+        HeroHooks.HeroCarryCollision(arg0);
     }
     func_800871E4(arg0);
 }
@@ -2860,10 +2860,10 @@ void SetSpinHeroFlip(s32 arg0) {
     if (GameInfo[arg0 + 0x5C] == 0) {
         idx = h->hero_name;
     }
-    h->hero_move->jump_vel = HeroHooks.unk10[idx].vel;
-    h->hero_move->jump_max = HeroHooks.unk10[idx].max;
-    h->hero_move->jump_acc = HeroHooks.unk10[idx].acc;
-    h->hero_move->jump_dec = HeroHooks.unk10[idx].dec;
+    h->hero_move->jump_vel = HeroHooks.JumpEnts[idx].vel;
+    h->hero_move->jump_max = HeroHooks.JumpEnts[idx].max;
+    h->hero_move->jump_acc = HeroHooks.JumpEnts[idx].acc;
+    h->hero_move->jump_dec = HeroHooks.JumpEnts[idx].dec;
     h->hero_move->jump_dir = -1;
 }
 
@@ -2885,7 +2885,7 @@ void SpinHeroFall(s32 arg0) {
             }
         }
     }
-    HeroHooks.unk54(arg0);
+    HeroHooks.HeroKickCollision(arg0);
     func_8008502C(arg0);
 }
 
@@ -2941,7 +2941,7 @@ void SpinHeroDead(s32 arg0) {
         base2 = Heroes;
         h2 = &base2[arg0];
         if ((u32)(h2->hero_name - 1) < 8) {
-            h2->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[*(volatile u16 *)&h2->hero_name] * 0x38;
+            h2->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[*(volatile u16 *)&h2->hero_name] * 0x38;
         } else {
             h2->hero_sub->unk6C = 0;
         }
@@ -2975,7 +2975,7 @@ void SetSpinHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -3047,7 +3047,7 @@ void SetSpinHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = (s32)HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = (s32)HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -3110,7 +3110,7 @@ void SpinHeroLose(s32 arg0) {
     }
 }
 
-/* The HeroHooks.unk4C hook: claim the first object in reach of player's
+/* The HeroHooks.Hero2ObjectCollision hook: claim the first object in reach of player's
  * cylinder that can take mask (within cone of the hero's heading, 0: any).
  * Each arm claims in its own do-while (0); jump2 merges the copies. */
 NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
@@ -3359,10 +3359,10 @@ s32 SpinHeroKickCollision(s32 arg0) {
                                             eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
                                             hit = 1;
                                             if (self->hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&HeroHooks.unk60)(arg0, i);
+                                                (*(void (**)(s32, s32))&HeroHooks.HeroesTouched)(arg0, i);
                                             }
                                             if (other[i].hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&HeroHooks.unk60)(i, arg0);
+                                                (*(void (**)(s32, s32))&HeroHooks.HeroesTouched)(i, arg0);
                                             }
                                         }
                                     }
@@ -3645,7 +3645,7 @@ void SetSpinHeroFall(s32 arg0) {
 }
 
 void SpinHeroFlip(s32 arg0) {
-    HeroHooks.unk54(arg0);
+    HeroHooks.HeroKickCollision(arg0);
     func_8008502C(arg0);
 }
 

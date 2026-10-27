@@ -477,18 +477,18 @@ void func_80086868(void);
 
 /* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct N2OHooks {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ u16 *unk4;
+    /* 0x00 */ s32 InitHero;
+    /* 0x04 */ u16 *HeroModels;
     /* 0x08 */ u8 pad8[0xC];
-    /* 0x14 */ void *unk14;
-    /* 0x18 */ void *unk18;
-    /* 0x1C */ void *unk1C;
-    /* 0x20 */ void *unk20;
-    /* 0x24 */ void *unk24;
+    /* 0x14 */ void *VictorySeqs;
+    /* 0x18 */ void *CreateShadow;
+    /* 0x1C */ void *UpdateShadow;
+    /* 0x20 */ void *PreMoveHero;
+    /* 0x24 */ void *MoveHero;
     /* 0x28 */ u8 pad28[4];
-    /* 0x2C */ void *unk2C;
+    /* 0x2C */ void *HeroFacing;
     /* 0x30 */ u8 pad30[0x38];
-    /* 0x68 */ s32 (*unk68)(EXTengine *);
+    /* 0x68 */ s32 (*KeepInBounds)(EXTengine *);
 } N2OHooks;
 extern N2OHooks HeroHooks;
 extern void *AiSkillTable;

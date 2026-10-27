@@ -25,10 +25,10 @@ void InitialiseHUB(void) {
     eng = hero->hero_eng;
     G6A->unk32 |= 0x200;
     eng->flags |= 0x8000;
-    HeroHooks.unk44 = HubHeroTestJump;
-    HeroHooks.unk48 = HubHeroTestKick;
-    HeroHooks.unk3C = HubHeroTestButton;
-    HeroHooks.unk30 = HubHeroSetIdle;
+    HeroHooks.TestJump = HubHeroTestJump;
+    HeroHooks.TestKick = HubHeroTestKick;
+    HeroHooks.TestAttack = HubHeroTestButton;
+    HeroHooks.HeroSetIdle = HubHeroSetIdle;
     HubInitHero(0);
     if (G6A->unk34 == 0x22) {
         HubSpawnEffects();
@@ -268,7 +268,7 @@ void HubPreMoveHero(s32 arg0) {
 
     eng = Heroes[arg0].hero_eng;
     mv = Heroes[arg0].hero_move;
-    speed = HeroHooks.unkC[Heroes[arg0].hero_name * 3 + 1];
+    speed = HeroHooks.RunSpeeds[Heroes[arg0].hero_name * 3 + 1];
     rate = (u32)(D_8009EEA4 * 0x648) >> 8;
     if (rate != 0) {
         step = (s32)(speed << 12) / (s32)rate;
@@ -1430,9 +1430,9 @@ void InitialiseHUBFirst(void) {
     ((HubGameView *)GameInfo)->unk51 = 9;
     ((HubGameView *)GameInfo)->unk52 = 9;
     ((HubGameView *)GameInfo)->unk53 = 9;
-    HeroHooks.unk0 = (s32)HubInitHero;
-    HeroHooks.unk20 = (void *)HubPreMoveHero;
-    HeroHooks.unk34 = (void *)HubHeroTouched;
+    HeroHooks.InitHero = (s32)HubInitHero;
+    HeroHooks.PreMoveHero = (void *)HubPreMoveHero;
+    HeroHooks.HeroTouched = (void *)HubHeroTouched;
     ((HubGameView *)GameInfo)->unk50 = ((HubGameView *)GameInfo)->unk4C;
     ((HubGameView *)GameInfo)->unk32 |= 0x200;
 }

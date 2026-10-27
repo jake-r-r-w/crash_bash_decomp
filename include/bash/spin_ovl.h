@@ -91,7 +91,7 @@ void InitBigScore(void);
 /* Turns the heading half a quadrant when the engine collides. */
 #define SPIN_BOUNCE(eng, mot)                                          \
     do {                                                                \
-        if (HeroHooks.unk68(eng) != 0) {                                     \
+        if (HeroHooks.KeepInBounds(eng) != 0) {                                     \
             (mot)->Xa = ((mot)->Xa - SpinSpeed * 0x200) & 0xFFF;       \
         }                                                               \
     } while (0)
@@ -316,35 +316,35 @@ void SetSpinHeroWinner(s32 arg0);
 void SetSpinHeroLose(s32 arg0);
 extern u8 GameInfo[];
 
-/* Hero jump parameters, 8 bytes per hero (HeroHooks.unk10). */
+/* Hero jump parameters, 8 bytes per hero (HeroHooks.JumpEnts). */
 typedef struct SpinJumpEnt {
     u16 vel, max, acc, dec;
 } SpinJumpEnt;
 
 typedef struct SpinHooks {
     /* 0x00 */ u8 pad0[0x4];
-    /* 0x04 */ u16 *unk4;
+    /* 0x04 */ u16 *HeroModels;
     /* 0x08 */ u8 pad8[0x4];
-    /* 0x0C */ u16 *unkC;
-    /* 0x10 */ SpinJumpEnt *unk10;
+    /* 0x0C */ u16 *RunSpeeds;
+    /* 0x10 */ SpinJumpEnt *JumpEnts;
     /* 0x14 */ u8 pad14[4];
-    /* 0x18 */ void *unk18;
+    /* 0x18 */ void *CreateShadow;
     /* 0x1C */ u8 pad1C[4];
-    /* 0x20 */ void *unk20;
+    /* 0x20 */ void *PreMoveHero;
     /* 0x24 */ u8 pad24[0x14];
-    /* 0x38 */ void *unk38;
-    /* 0x3C */ void *unk3C;
+    /* 0x38 */ void *HeroBot;
+    /* 0x3C */ void *TestAttack;
     /* 0x40 */ u8 pad40[4];
-    /* 0x44 */ void *unk44;
+    /* 0x44 */ void *TestJump;
     /* 0x48 */ u8 pad48[4];
-    /* 0x4C */ void *unk4C;
-    /* 0x50 */ void *unk50;
-    /* 0x54 */ void (*unk54)();
-    /* 0x58 */ void (*unk58)(s32);
-    /* 0x5C */ void *unk5C;
-    /* 0x60 */ void *unk60;
-    /* 0x64 */ void *unk64;
-    /* 0x68 */ s32 (*unk68)(EXTengine *);
+    /* 0x4C */ void *Hero2ObjectCollision;
+    /* 0x50 */ void *HeroGrabObject;
+    /* 0x54 */ void (*HeroKickCollision)();
+    /* 0x58 */ void (*HeroCarryCollision)(s32);
+    /* 0x5C */ void *HeroExtraEffects;
+    /* 0x60 */ void *HeroesTouched;
+    /* 0x64 */ void *ChooseWinner;
+    /* 0x68 */ s32 (*KeepInBounds)(EXTengine *);
 } SpinHooks;
 extern SpinHooks HeroHooks;
 

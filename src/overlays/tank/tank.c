@@ -1318,14 +1318,14 @@ void TA_PreInitLevel(void) {
     void *t;
     TankGameView *g;
 
-    HeroHooks.unk4 = TankHeroModels;
-    HeroHooks.unk38 = TA_HeroBot;
-    HeroHooks.unk0 = (s32)TA_InitHero;
-    HeroHooks.unk68 = TA_KeepInBounds;
-    HeroHooks.unk14 = TankVictorySeqs;
-    HeroHooks.unk18 = TA_CreateShadow;
-    HeroHooks.unk20 = TA_PreMoveHero;
-    HeroHooks.unk24 = TA_MoveHero;
+    HeroHooks.HeroModels = TankHeroModels;
+    HeroHooks.HeroBot = TA_HeroBot;
+    HeroHooks.InitHero = (s32)TA_InitHero;
+    HeroHooks.KeepInBounds = TA_KeepInBounds;
+    HeroHooks.VictorySeqs = TankVictorySeqs;
+    HeroHooks.CreateShadow = TA_CreateShadow;
+    HeroHooks.PreMoveHero = TA_PreMoveHero;
+    HeroHooks.MoveHero = TA_MoveHero;
     switch (GameMode) {
     case 6:
     default:

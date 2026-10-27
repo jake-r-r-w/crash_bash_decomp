@@ -572,12 +572,12 @@ void NoxStartPhase1(void)
   N2OPlaceHero(0);
   N2OPlaceHero(1);
   N2OPlaceHero(3);
-  HeroHooks.unk20 = N2OPreMoveHero;
-  HeroHooks.unk68 = N2O_KeepInBounds;
+  HeroHooks.PreMoveHero = N2OPreMoveHero;
+  HeroHooks.KeepInBounds = N2O_KeepInBounds;
   new_var = (void (*)(s32))N2OMoveHero;
-  HeroHooks.unk24 = new_var;
-  HeroHooks.unk18 = N2OInitShadow;
-  HeroHooks.unk1C = N2OUpdateShadow;
+  HeroHooks.MoveHero = new_var;
+  HeroHooks.CreateShadow = N2OInitShadow;
+  HeroHooks.UpdateShadow = N2OUpdateShadow;
  ;
   RenderHook = func_80093038;
   N2OInitBoss();

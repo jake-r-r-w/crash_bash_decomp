@@ -1806,7 +1806,7 @@ void PolarInitHeroEngine(s32 arg0) {
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
 
-    HeroHooks.unk2C();
+    HeroHooks.HeroFacing();
     func_800860D4(arg0);
     if (m->velocity_calc == 3) {
         if (m->x_vel != m->x_max) {
@@ -1934,32 +1934,32 @@ void InitialisePOLARFirst(void) {
 
     h = &HeroHooks;
     h->unk8 = NULL;
-    h->unk4 = PolarHeroModelsB;
+    h->HeroModels = PolarHeroModelsB;
     PolarBeamOwner = NULL;
     BombMaster = NULL;
     PolarFirstFlag = 0;
     PolarArenaRadius2 = 0x400000;
     if (((PolarInitView *)GameInfo)->mode != 0x15) {
-        h->unk18 = PolarInitShadow;
-        h->unk1C = PolarUpdateShadow;
+        h->CreateShadow = PolarInitShadow;
+        h->UpdateShadow = PolarUpdateShadow;
     } else {
-        h->unk18 = D_8008B29C;
-        h->unk1C = D_8008B418;
+        h->CreateShadow = D_8008B29C;
+        h->UpdateShadow = D_8008B418;
         h->unk8 = PolarHeroModelsB;
-        h->unk4 = PolarHeroModels;
+        h->HeroModels = PolarHeroModels;
     }
     g = (PolarInitView *)GameInfo;
     if (g->mode == 0x14) {
-        HeroHooks.unk4 = PolarHeroModelsCut;
+        HeroHooks.HeroModels = PolarHeroModelsCut;
     }
-    HeroHooks.unk68 = DoNowt;
-    HeroHooks.unk0 = (s32)PolarInitHero;
-    HeroHooks.unk20 = PolarPreMoveHero;
-    HeroHooks.unk24 = PolarInitHeroEngine;
-    HeroHooks.unk38 = Polar_HeroBot;
-    HeroHooks.unk3C = PolarTestAttack;
-    HeroHooks.unk2C = PolarInitHeroAngle;
-    HeroHooks.unk14 = PolarVictorySeqs;
+    HeroHooks.KeepInBounds = DoNowt;
+    HeroHooks.InitHero = (s32)PolarInitHero;
+    HeroHooks.PreMoveHero = PolarPreMoveHero;
+    HeroHooks.MoveHero = PolarInitHeroEngine;
+    HeroHooks.HeroBot = Polar_HeroBot;
+    HeroHooks.TestAttack = PolarTestAttack;
+    HeroHooks.HeroFacing = PolarInitHeroAngle;
+    HeroHooks.VictorySeqs = PolarVictorySeqs;
     LevelSpecs.FinishQuick = PolarSpawnObjects;
     HeroesAllOut = 0;
     switch (g->mode) {
@@ -4097,7 +4097,7 @@ void InitialisePOLAR(void) {
     PolarInitScene();
     PolarUpdateWord = 0;
     PolarRoundState = 0;
-    HeroHooks.unkC = PolarHeroSfx;
+    HeroHooks.RunSpeeds = PolarHeroSfx;
     PolarIceRadius = 0x658;
     obj = ((PolarScene *)MapScene)->objs;
     PolarInitWord = 0x800;
@@ -4921,7 +4921,7 @@ void PolarBeamRelease(s32 arg0, s32 arg1, s32 arg2) {
                 shadow->unk2C.y = 0x1000;
                 shadow->unk2C.z = 0x1000;
                 ResetMass(arg0);
-                PolarHeroMass[arg0] = HeroHooks.unkC[h->hero_name * 3];
+                PolarHeroMass[arg0] = HeroHooks.RunSpeeds[h->hero_name * 3];
             }
         }
         break;
@@ -5698,7 +5698,7 @@ void PlotTransmuterBeam(NAS *m) {
                     hs->unk2C.z += 0x100;
                 } else {
                     ext->unk28[ext->unk10] = -1;
-                    PolarHeroMass[ext->unk10] = HeroHooks.unkC[Heroes[ext->unk10].hero_name * 3];
+                    PolarHeroMass[ext->unk10] = HeroHooks.RunSpeeds[Heroes[ext->unk10].hero_name * 3];
                     ext->unk58 = 0;
                     ResetMass(ext->unk10);
                     ext->unk10 = -1;
@@ -5716,7 +5716,7 @@ void PlotTransmuterBeam(NAS *m) {
                 } else {
                     ext->unk28[ext->unk10] = -1;
                     ResetMass(ext->unk10);
-                    PolarHeroMass[ext->unk10] = HeroHooks.unkC[Heroes[ext->unk10].hero_name * 3];
+                    PolarHeroMass[ext->unk10] = HeroHooks.RunSpeeds[Heroes[ext->unk10].hero_name * 3];
                     ext->unk58 = 0;
                     ext->unk10 = -1;
                     he->unk2C.x = 0x1000;
@@ -6281,7 +6281,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
                             mv->x_vel = -(sp * t[(-ang + 0x400) & 0xFFF].unk2 >> 13);
                             mv->z_vel = -(sp * t[-ang & 0xFFF].unk2 >> 13);
                             sp *= Heroes[player].hero_move->mass;
-                            if ((HeroHooks.unkC[Heroes[player].hero_name * 3] * 0xC000 >> 8) < sp) {
+                            if ((HeroHooks.RunSpeeds[Heroes[player].hero_name * 3] * 0xC000 >> 8) < sp) {
                                 nas = CreateNAS(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
                                 if (nas != NULL) {
                                     m = (EXTmotion *)nas->FUX;
@@ -6947,7 +6947,7 @@ void PlotUkaPolarMask(NAS *m) {
                     sh->unk2C.z += 0x100;
                 } else {
                     ext->unk28[ext->unk10] = -1;
-                    PolarHeroMass[ext->unk10] = HeroHooks.unkC[Heroes[ext->unk10].hero_name * 3];
+                    PolarHeroMass[ext->unk10] = HeroHooks.RunSpeeds[Heroes[ext->unk10].hero_name * 3];
                     ResetMass(ext->unk10);
                     ext->unk10 = -1;
                     ext->unk14 = 0;
@@ -7000,7 +7000,7 @@ void PlotUkaPolarMask(NAS *m) {
             if (ext->unk64-- < 0) {
                 ResetMass(ext->unk10);
                 ext->unk14 = 0;
-                PolarHeroMass[ext->unk10] = HeroHooks.unkC[Heroes[ext->unk10].hero_name * 3];
+                PolarHeroMass[ext->unk10] = HeroHooks.RunSpeeds[Heroes[ext->unk10].hero_name * 3];
                 ext->unk28[ext->unk10] = -1;
                 if (Heroes[ext->unk10].hero_mode != 0x49) {
                     SetHeroAction(ext->unk10, 0x49);
@@ -13306,7 +13306,7 @@ void PolarInitHeroMove(s32 arg0) {
         m->x_acc = two;
         m->z_acc = two;
         m->velocity_calc = 3;
-        PolarHeroMass[arg0] = HeroHooks.unkC[h->hero_name * 3];
+        PolarHeroMass[arg0] = HeroHooks.RunSpeeds[h->hero_name * 3];
     }
 }
 

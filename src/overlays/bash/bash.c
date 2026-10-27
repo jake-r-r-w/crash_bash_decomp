@@ -324,14 +324,14 @@ void InitialiseBASHFirst(void) {
     void **p4;
     void *t;
 
-    HeroHooks.unk68 = BASH_KeepInBounds;
-    HeroHooks.unk38 = Bash_HeroBot;
-    HeroHooks.unk5C = BashHero_ExtraEffects;
-    HeroHooks.unk60 = BashHeroesTouched;
-    HeroHooks.unk4C = BashHero2ObjectCollision;
-    HeroHooks.unk50 = BashHeroGrabObject;
-    HeroHooks.unk54 = BashHeroKickCollision;
-    HeroHooks.unk58 = BashHeroCarryCollision;
+    HeroHooks.KeepInBounds = BASH_KeepInBounds;
+    HeroHooks.HeroBot = Bash_HeroBot;
+    HeroHooks.HeroExtraEffects = BashHero_ExtraEffects;
+    HeroHooks.HeroesTouched = BashHeroesTouched;
+    HeroHooks.Hero2ObjectCollision = BashHero2ObjectCollision;
+    HeroHooks.HeroGrabObject = BashHeroGrabObject;
+    HeroHooks.HeroKickCollision = BashHeroKickCollision;
+    HeroHooks.HeroCarryCollision = BashHeroCarryCollision;
     BashCrateList = NULL;
     BashInitCrateHooks();
     D_8009E298 = BashASTIndex(0x206);
@@ -351,7 +351,7 @@ void InitialiseBASHFirst(void) {
         *p = t;
         AiTeamSkillTable = BashSpaceAiTeamSkill;
         if (GameLevelFlags & 0x80) {
-            HeroHooks.unk3C = BashSpacePadHook;
+            HeroHooks.TestAttack = BashSpacePadHook;
         }
         break;
     case 2:
@@ -380,10 +380,10 @@ void InitialiseBASHFirst(void) {
         }
         *p3 = t;
         AiTeamSkillTable = BashDrainsAiTeamSkill;
-        HeroHooks.unk3C = BashFirePowerup;
+        HeroHooks.TestAttack = BashFirePowerup;
         break;
     case 0x20:
-        HeroHooks.unk3C = BashFirePowerup;
+        HeroHooks.TestAttack = BashFirePowerup;
         g[0x52] = 9;
         g[0x53] = 9;
         break;
@@ -493,7 +493,7 @@ void InitialiseBASH(void) {
     case 2:
         World_floor_level = -0x10;
         HitHooks.unk0 = BashSnowKickVels;
-        HeroHooks.unkC = BashSnowRunSpeeds;
+        HeroHooks.RunSpeeds = BashSnowRunSpeeds;
         BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         VelocityCalc = 3;
@@ -578,7 +578,7 @@ void BashSnowMoveHero(s32 arg0) {
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
 
-    HeroHooks.unk2C();
+    HeroHooks.HeroFacing();
     func_800860D4(arg0);
     if (m->velocity_calc == 3) {
         if (m->x_vel != m->x_max) {

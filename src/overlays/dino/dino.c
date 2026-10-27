@@ -1892,21 +1892,21 @@ void InitialiseDINOFirst(void) {
     void *f;
     void **p;
     u8 *g;
-    HeroHooks.unk38 = Dino_HeroBot;
-    HeroHooks.unk4 = DinoHeroModels;
-    HeroHooks.unk0 = DinoInitHero;
-    HeroHooks.unk20 = DinoPreMoveHero;
-    HeroHooks.unk24 = DinoMoveHero;
-    HeroHooks.unk2C = DinoHeroFacing;
+    HeroHooks.HeroBot = Dino_HeroBot;
+    HeroHooks.HeroModels = DinoHeroModels;
+    HeroHooks.InitHero = DinoInitHero;
+    HeroHooks.PreMoveHero = DinoPreMoveHero;
+    HeroHooks.MoveHero = DinoMoveHero;
+    HeroHooks.HeroFacing = DinoHeroFacing;
     f = DinoChooseWinner;
-    HeroHooks.unk64 = f;
+    HeroHooks.ChooseWinner = f;
     g = GameInfo;
     if (*(u16 *)(g + 0x32) & 0x40) {
-        HeroHooks.unk64 = DinoChooseWinnerTeam;
+        HeroHooks.ChooseWinner = DinoChooseWinnerTeam;
     }
-    HeroHooks.unk14 = DinoVictorySeqs;
-    HeroHooks.unk18 = D_8008B29C;
-    HeroHooks.unk1C = D_8008B418;
+    HeroHooks.VictorySeqs = DinoVictorySeqs;
+    HeroHooks.CreateShadow = D_8008B29C;
+    HeroHooks.UpdateShadow = D_8008B418;
     p = &AiSkillTable;
     if (*(s32 *)(g + 0x6C) != 0) {
         v = DinoAiSkillAlt;
@@ -2801,7 +2801,7 @@ void DinoMoveHero(s32 arg0) {
     EXTheromove *m = Heroes[arg0].hero_move;
     s32 step;
 
-    ((void (*)(s32))HeroHooks.unk2C)(arg0);
+    ((void (*)(s32))HeroHooks.HeroFacing)(arg0);
     if (m->x_vel != m->x_max) {
         if (m->x_max != 0) {
             step = m->x_acc;

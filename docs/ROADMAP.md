@@ -378,9 +378,10 @@ load extract and are documented.
   and Pogo's, ...). One `GameState` struct with those labels as fields, the views
   merged into it, checked use by use (Tank's `Heroes` labels show a field access can
   change the code).
-- [ ] Name `EngineHooks`' fields (`unk4` the hero models, `unk44` the jump test,
-  `unk68` the bounds hook, ...) and give the overlays' views of `HeroHooks` (Bonk,
-  Chase, N2O, Pogo, Polar, Race, Spin) the same names, or one shared type.
+- [x] Name `EngineHooks`' fields (2026-10-27), from what the games put in each slot
+  (`InitHero`, `HeroModels`, `RunSpeeds`, `PreMoveHero` .. `KeepInBounds`; `unk8` is
+  always 0), in `EngineHooks` and in the overlays' views of `HeroHooks` (Bonk, Chase,
+  N2O, Pogo, Polar, Race, Spin). Left: merging the views into the one type.
 - [ ] Extract and document the asset formats the engine loads (models,
   animation, level data, ...) that Phase 2's extractor still keeps as bytes.
 - [x] `main.exe`'s rodata as C: its six INCLUDE_RODATA blocks (`data2c.py main

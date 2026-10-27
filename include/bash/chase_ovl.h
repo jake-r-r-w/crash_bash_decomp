@@ -249,37 +249,37 @@ typedef struct ChaseRankView {
 } ChaseRankView;
 #define RANK68V ((ChaseRankView *)GameInfo)
 
-/* Hero jump parameters, 8 bytes per hero (HeroHooks.unk10). */
+/* Hero jump parameters, 8 bytes per hero (HeroHooks.JumpEnts). */
 typedef struct ChaseJumpEnt {
     u16 vel, max, acc, dec;
 } ChaseJumpEnt;
 
 /* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct ChaseHooks {
-    /* 0x00 */ void *unk0;
-    /* 0x04 */ u16 *unk4;
+    /* 0x00 */ void *InitHero;
+    /* 0x04 */ u16 *HeroModels;
     /* 0x08 */ u8 pad8[0x4];
-    /* 0x0C */ u16 *unkC;
-    /* 0x10 */ ChaseJumpEnt *unk10;
-    /* 0x14 */ void *unk14;
+    /* 0x0C */ u16 *RunSpeeds;
+    /* 0x10 */ ChaseJumpEnt *JumpEnts;
+    /* 0x14 */ void *VictorySeqs;
     /* 0x18 */ u8 pad18[8];
-    /* 0x20 */ void *unk20;
-    /* 0x24 */ void *unk24;
+    /* 0x20 */ void *PreMoveHero;
+    /* 0x24 */ void *MoveHero;
     /* 0x28 */ u8 pad28[4];
-    /* 0x2C */ void *unk2C;
+    /* 0x2C */ void *HeroFacing;
     /* 0x30 */ u8 pad30[8];
-    /* 0x38 */ void *unk38;
+    /* 0x38 */ void *HeroBot;
     /* 0x3C */ u8 pad3C[4];
-    /* 0x40 */ void *unk40;
-    /* 0x44 */ void *unk44;
-    /* 0x48 */ void *unk48;
+    /* 0x40 */ void *TestRun;
+    /* 0x44 */ void *TestJump;
+    /* 0x48 */ void *TestKick;
     /* 0x4C */ u8 pad4C[8];
-    /* 0x54 */ void *unk54;
+    /* 0x54 */ void *HeroKickCollision;
     /* 0x58 */ u8 pad58[4];
-    /* 0x5C */ void *unk5C;
+    /* 0x5C */ void *HeroExtraEffects;
     /* 0x60 */ u8 pad60[4];
-    /* 0x64 */ void *unk64;
-    /* 0x68 */ void *unk68;
+    /* 0x64 */ void *ChooseWinner;
+    /* 0x68 */ void *KeepInBounds;
 } ChaseHooks;
 extern ChaseHooks HeroHooks;
 extern void *AiBotTweakTable;

@@ -347,39 +347,39 @@ typedef struct HeroJumpEnt {
     u16 vel, max, acc, dec;
 } HeroJumpEnt;
 
-/* Engine callback table filled by func_80083550 (0x54 is HeroHooks.unk54). */
+/* Engine callback table filled by func_80083550 (0x54 is HeroHooks.HeroKickCollision). */
 typedef struct EngineHooks {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ u16 *unk4;
+    /* 0x00 */ s32 InitHero;
+    /* 0x04 */ u16 *HeroModels;
     /* 0x08 */ void *unk8;
-    /* 0x0C */ u16 *unkC;
-    /* 0x10 */ void *unk10;
-    /* 0x14 */ void *unk14;     /* the victory sequences (D_8009D6FC_t, pause.h) */
-    /* 0x18 */ void *unk18;
-    /* 0x1C */ void (*unk1C)(void);
-    /* 0x20 */ void *unk20;
-    /* 0x24 */ void *unk24;
-    /* 0x28 */ void *unk28;
-    /* 0x2C */ void (*unk2C)(void);
-    /* 0x30 */ void (*unk30)();
-    /* 0x34 */ void (*unk34)(s32);
-    /* 0x38 */ void *unk38;
-    /* 0x3C */ s32 (*unk3C)(s32);
-    /* 0x40 */ s32 (*unk40)(s32);
-    /* 0x44 */ s32 (*unk44)(s32);
-    /* 0x48 */ s32 (*unk48)(s32);
-    /* 0x4C */ void *unk4C;
-    /* 0x50 */ s32 (*unk50)(s32, s32);
-    /* 0x54 */ void (*unk54)();
-    /* 0x58 */ void (*unk58)(s32);
-    /* 0x5C */ void *unk5C;
-    /* 0x60 */ void *unk60;
-    /* 0x64 */ void (*unk64)(s32, s32);
-    /* 0x68 */ s32 (*unk68)(EXTengine *);
+    /* 0x0C */ u16 *RunSpeeds;
+    /* 0x10 */ void *JumpEnts;
+    /* 0x14 */ void *VictorySeqs;     /* the victory sequences (D_8009D6FC_t, pause.h) */
+    /* 0x18 */ void *CreateShadow;
+    /* 0x1C */ void (*UpdateShadow)(void);
+    /* 0x20 */ void *PreMoveHero;
+    /* 0x24 */ void *MoveHero;
+    /* 0x28 */ void *PostMoveHero;
+    /* 0x2C */ void (*HeroFacing)(void);
+    /* 0x30 */ void (*HeroSetIdle)();
+    /* 0x34 */ void (*HeroTouched)(s32);
+    /* 0x38 */ void *HeroBot;
+    /* 0x3C */ s32 (*TestAttack)(s32);
+    /* 0x40 */ s32 (*TestRun)(s32);
+    /* 0x44 */ s32 (*TestJump)(s32);
+    /* 0x48 */ s32 (*TestKick)(s32);
+    /* 0x4C */ void *Hero2ObjectCollision;
+    /* 0x50 */ s32 (*HeroGrabObject)(s32, s32);
+    /* 0x54 */ void (*HeroKickCollision)();
+    /* 0x58 */ void (*HeroCarryCollision)(s32);
+    /* 0x5C */ void *HeroExtraEffects;
+    /* 0x60 */ void *HeroesTouched;
+    /* 0x64 */ void (*ChooseWinner)(s32, s32);
+    /* 0x68 */ s32 (*KeepInBounds)(EXTengine *);
 } EngineHooks;
 extern EngineHooks HeroHooks;
 extern u8 D_8009D2E4[];
-extern s32 D_8009D2F8[];   /* {name, id} pairs: the default victory sequences (HeroHooks.unk14) */
+extern s32 D_8009D2F8[];   /* {name, id} pairs: the default victory sequences (HeroHooks.VictorySeqs) */
 extern u8 D_8009D318[];
 extern u8 D_8009D354[];
 extern u8 D_8009D894[];

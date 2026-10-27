@@ -417,23 +417,23 @@ void InitialiseN2OFirst(void) {
         N2OBallPhase = 0;
     }
     if (N2OBallPhase == 1) {
-        HeroHooks.unk20 = (void *)N2OPreMoveHero;
-        HeroHooks.unk68 = (void *)N2O_KeepInBounds;
-        HeroHooks.unk24 = (void *)N2OMoveHero;
-        HeroHooks.unk18 = (void *)N2OInitShadow;
-        HeroHooks.unk1C = (void *)N2OUpdateShadow;
+        HeroHooks.PreMoveHero = (void *)N2OPreMoveHero;
+        HeroHooks.KeepInBounds = (void *)N2O_KeepInBounds;
+        HeroHooks.MoveHero = (void *)N2OMoveHero;
+        HeroHooks.CreateShadow = (void *)N2OInitShadow;
+        HeroHooks.UpdateShadow = (void *)N2OUpdateShadow;
     } else {
-        HeroHooks.unk20 = (void *)NoxPreMoveHero;
-        HeroHooks.unk24 = (void *)NoxMoveHero;
-        HeroHooks.unk68 = (void *)Nox_KeepInBounds;
-        HeroHooks.unk2C = (void *)NoxHeroFacing;
-        HeroHooks.unk18 = (void *)NoxInitShadow;
-        HeroHooks.unk1C = (void *)NoxUpdateShadow;
+        HeroHooks.PreMoveHero = (void *)NoxPreMoveHero;
+        HeroHooks.MoveHero = (void *)NoxMoveHero;
+        HeroHooks.KeepInBounds = (void *)Nox_KeepInBounds;
+        HeroHooks.HeroFacing = (void *)NoxHeroFacing;
+        HeroHooks.CreateShadow = (void *)NoxInitShadow;
+        HeroHooks.UpdateShadow = (void *)NoxUpdateShadow;
         NoxBossDead = 0;
     }
-    HeroHooks.unk0 = (s32)N2OInitHero;
-    HeroHooks.unk4 = N2OHeroModels;
-    HeroHooks.unk14 = N2OVictorySeqs;
+    HeroHooks.InitHero = (s32)N2OInitHero;
+    HeroHooks.HeroModels = N2OHeroModels;
+    HeroHooks.VictorySeqs = N2OVictorySeqs;
     HeroActHit = 0x2A;
     HeroActDead = 0x2E;
     LevelSpecs.GetContour = (void *)GetN2OContour;
@@ -910,7 +910,7 @@ void N2OPreMoveHero(s32 arg0) {
         if (p->unk50 & 0xA0) {
             if (m->velocity_enable != 0) {
                 d = 0;
-                if (HeroHooks.unk68(h->hero_eng) != 0) {
+                if (HeroHooks.KeepInBounds(h->hero_eng) != 0) {
                     fast = 1;
                 }
                 b = p->unk50;
@@ -948,7 +948,7 @@ void N2OPreMoveHero(s32 arg0) {
             N2OHeroSpeed[arg0] = m->forward_speed;
         } else {
             N2OHeroSpeed[arg0] = 0;
-            if (HeroHooks.unk68(h->hero_eng) != 0) {
+            if (HeroHooks.KeepInBounds(h->hero_eng) != 0) {
                 m->forward_speed = 0;
             }
             if (m->forward_speed > 0) {
@@ -998,7 +998,7 @@ void N2OMoveHero(s32 arg0) {
     } else {
         g->hero_eng->unk10.y = World_floor_level - 0x80;
     }
-    ((void (*)(s32))HeroHooks.unk2C)(arg0);
+    ((void (*)(s32))HeroHooks.HeroFacing)(arg0);
     b = Heroes;
     f = b + arg0;
     sp = f->hero_move->forward_speed;
@@ -1548,7 +1548,7 @@ void N2OHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[*(volatile u16 *)&h->hero_name] * 0x38;
+            h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }

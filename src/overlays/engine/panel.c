@@ -458,7 +458,7 @@ void Draw_Clock(void) {
             if (GameCheats & 0x800) {
                 n = 0x201;
             }
-            HeroHooks.unk64(-1, n);
+            HeroHooks.ChooseWinner(-1, n);
             Clock_flags = 0x8000;
         }
     }
@@ -472,7 +472,7 @@ void Draw_Clock(void) {
             if (GameCheats & 0x800) {
                 n = 0x201;
             }
-            HeroHooks.unk64(-1, n);
+            HeroHooks.ChooseWinner(-1, n);
             Clock_Time = 0;
             Clock_flags = 0x8000;
         }

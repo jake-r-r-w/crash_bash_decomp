@@ -365,14 +365,14 @@ void InitialisePAPUFirst(void) {
     u8 *v;
     void **p;
 
-    HeroHooks.unk68 = PAPU_KeepInBounds;
-    HeroHooks.unk4C = PapuHero2ObjectCollision;
-    HeroHooks.unk50 = PapuHeroGrabObject;
-    HeroHooks.unk54 = PapuHeroKickCollision;
-    HeroHooks.unk58 = PapuHeroCarryCollision;
+    HeroHooks.KeepInBounds = PAPU_KeepInBounds;
+    HeroHooks.Hero2ObjectCollision = PapuHero2ObjectCollision;
+    HeroHooks.HeroGrabObject = PapuHeroGrabObject;
+    HeroHooks.HeroKickCollision = PapuHeroKickCollision;
+    HeroHooks.HeroCarryCollision = PapuHeroCarryCollision;
     PapuInitCrateHooks();
     LevelSpecs.GetContour = GetPapuContour;
-    HeroHooks.unk28 = PapuHeroCheckPit;
+    HeroHooks.PostMoveHero = PapuHeroCheckPit;
     g = (EngineGameView *)GameInfo;
     g->flags |= 0x900;
     if (*(s32 *)(GameInfo + 0x6C) == 0) {

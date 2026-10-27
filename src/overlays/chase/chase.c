@@ -696,24 +696,24 @@ void Chase_HeroBot(s32 arg0) {
 }
 
 void InitialiseCHASEFirst(void) {
-    HeroHooks.unk4 = ChaseHeroModels;
-    HeroHooks.unk38 = (void *)Chase_HeroBot;
-    HeroHooks.unk40 = (void *)ChaseHeroTestRun;
-    HeroHooks.unk0 = (void *)ChaseInitHero;
-    HeroHooks.unk68 = (void *)CHASE_KeepInBounds;
-    HeroHooks.unk14 = ChaseVictorySeqs;
-    HeroHooks.unk20 = (void *)ChasePreMoveHero;
-    HeroHooks.unk24 = (void *)ChaseMoveHero;
-    HeroHooks.unk54 = (void *)ChaseHeroKickCollision;
-    HeroHooks.unk44 = (void *)ChaseHeroTestJump;
-    HeroHooks.unk48 = (void *)ChaseNoKick;
-    HeroHooks.unk40 = (void *)ChaseHeroTestRun;
-    HeroHooks.unk5C = (void *)ChaseHero_ExtraEffects;
+    HeroHooks.HeroModels = ChaseHeroModels;
+    HeroHooks.HeroBot = (void *)Chase_HeroBot;
+    HeroHooks.TestRun = (void *)ChaseHeroTestRun;
+    HeroHooks.InitHero = (void *)ChaseInitHero;
+    HeroHooks.KeepInBounds = (void *)CHASE_KeepInBounds;
+    HeroHooks.VictorySeqs = ChaseVictorySeqs;
+    HeroHooks.PreMoveHero = (void *)ChasePreMoveHero;
+    HeroHooks.MoveHero = (void *)ChaseMoveHero;
+    HeroHooks.HeroKickCollision = (void *)ChaseHeroKickCollision;
+    HeroHooks.TestJump = (void *)ChaseHeroTestJump;
+    HeroHooks.TestKick = (void *)ChaseNoKick;
+    HeroHooks.TestRun = (void *)ChaseHeroTestRun;
+    HeroHooks.HeroExtraEffects = (void *)ChaseHero_ExtraEffects;
     HeroActDead = 0x77;
     HeroActWinner = 0x75;
     HeroActLoser = 0x74;
     HeroActHit = 0x73;
-    HeroHooks.unk64 = (void *)ChaseChooseWinner;
+    HeroHooks.ChooseWinner = (void *)ChaseChooseWinner;
     AiBotTweakTable = ChaseAiBotTweak;
     AiHumanTweakTable = ChaseAiHumanTweak;
     AiHumanRoundTweakTable = ChaseAiHumanRoundTweak;
@@ -814,7 +814,7 @@ void InitialiseCHASE(void) {
     x = v * 35 / 100;
     t = v;
     v = (s32)Heroes;
-    HeroHooks.unkC = ChaseRunSpeeds;
+    HeroHooks.RunSpeeds = ChaseRunSpeeds;
     for (i = 0; i < 4; i++) {
         h = &((HeroInfo *)v)[i];
         y = t * 60 / 100 + ((t * 60) & 3);
@@ -991,7 +991,7 @@ void ChasePreMoveHero(s32 arg0) {
                         rw--;
                     }
                 }
-                row = HeroHooks.unkC;
+                row = HeroHooks.RunSpeeds;
                 hb2 = Heroes;
                 h2 = hb2 + arg0;
                 speed = (row + h2->hero_name * 3)[rw];
@@ -1049,7 +1049,7 @@ void ChaseMoveHero(s32 arg0) {
     } else {
         m->run_walk = 1;
     }
-    ((void (*)(s32))HeroHooks.unk2C)(arg0);
+    ((void (*)(s32))HeroHooks.HeroFacing)(arg0);
     func_800860D4(arg0);
     switch (m->velocity_calc) {
     case 2:
@@ -1578,10 +1578,10 @@ void SetChaseHeroJump(s32 arg0) {
     if (GameInfo[arg0 + 0x5C] == 0) {
         idx = h->hero_name;
     }
-    h->hero_move->jump_vel = HeroHooks.unk10[idx].vel;
-    h->hero_move->jump_max = HeroHooks.unk10[idx].max;
-    h->hero_move->jump_acc = HeroHooks.unk10[idx].acc;
-    h->hero_move->jump_dec = HeroHooks.unk10[idx].dec;
+    h->hero_move->jump_vel = HeroHooks.JumpEnts[idx].vel;
+    h->hero_move->jump_max = HeroHooks.JumpEnts[idx].max;
+    h->hero_move->jump_acc = HeroHooks.JumpEnts[idx].acc;
+    h->hero_move->jump_dec = HeroHooks.JumpEnts[idx].dec;
     h->hero_move->jump_dir = -1;
 }
 
@@ -1854,7 +1854,7 @@ void ChaseHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = (s32)(HeroModelBank + HeroHooks.unk4[*(volatile u16 *)&h->hero_name] * 0x38);
+            h->hero_sub->unk6C = (s32)(HeroModelBank + HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name] * 0x38);
         } else {
             h->hero_sub->unk6C = 0;
         }
@@ -1888,7 +1888,7 @@ void SetChaseHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1959,7 +1959,7 @@ void SetChaseHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {

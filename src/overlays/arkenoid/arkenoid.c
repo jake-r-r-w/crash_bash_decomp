@@ -515,12 +515,12 @@ void AR_PreInitLevel(void) {
     void **p4;
     void *t;
 
-    HeroHooks.unk4 = ArkHeroModels;
-    HeroHooks.unk0 = (s32)AR_InitHero;
-    HeroHooks.unk18 = AR_InitShadow;
-    HeroHooks.unk1C = AR_UpdateShadow;
-    HeroHooks.unk38 = Ark_HeroBot;
-    HeroHooks.unk14 = ArkVictorySeqs;
+    HeroHooks.HeroModels = ArkHeroModels;
+    HeroHooks.InitHero = (s32)AR_InitHero;
+    HeroHooks.CreateShadow = AR_InitShadow;
+    HeroHooks.UpdateShadow = AR_UpdateShadow;
+    HeroHooks.HeroBot = Ark_HeroBot;
+    HeroHooks.VictorySeqs = ArkVictorySeqs;
     if (GameTeams[0] != 0) {
         ArkSidePlayer1 = 1;
         ArkSidePlayer2 = 3;
@@ -534,9 +534,9 @@ void AR_PreInitLevel(void) {
     g = GameInfo;
     switch (*(s16 *)(g + 0x34)) {
     case 15:
-        HeroHooks.unk68 = AR_KeepInBounds;
-        HeroHooks.unk20 = AR_PreMoveHero;
-        HeroHooks.unk24 = AR_MoveHero;
+        HeroHooks.KeepInBounds = AR_KeepInBounds;
+        HeroHooks.PreMoveHero = AR_PreMoveHero;
+        HeroHooks.MoveHero = AR_MoveHero;
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
@@ -554,9 +554,9 @@ void AR_PreInitLevel(void) {
         AiTeamSkillTable = ArkBeachAiTeamSkill;
         return;
     case 16:
-        HeroHooks.unk68 = AR_KeepInBounds;
-        HeroHooks.unk20 = AR_PreMoveHero;
-        HeroHooks.unk24 = AR_MoveHero;
+        HeroHooks.KeepInBounds = AR_KeepInBounds;
+        HeroHooks.PreMoveHero = AR_PreMoveHero;
+        HeroHooks.MoveHero = AR_MoveHero;
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_NG_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
@@ -574,9 +574,9 @@ void AR_PreInitLevel(void) {
         AiTeamSkillTable = ArkNginAiTeamSkill;
         return;
     case 17:
-        HeroHooks.unk68 = AR_PI_KeepInBounds;
-        HeroHooks.unk20 = AR_PI_PreMoveHero;
-        HeroHooks.unk24 = AR_PI_MoveHero;
+        HeroHooks.KeepInBounds = AR_PI_KeepInBounds;
+        HeroHooks.PreMoveHero = AR_PI_PreMoveHero;
+        HeroHooks.MoveHero = AR_PI_MoveHero;
         ArkBounceOnBounds = AR_PI_BounceOnBounds;
         ArkTestOutOfBounds = AR_PI_TestOutOfBounds;
         ArkTestLaunchBounds = AR_PI_TestLaunchBounds;
@@ -595,9 +595,9 @@ void AR_PreInitLevel(void) {
         return;
     case 0:
     default:
-        HeroHooks.unk68 = AR_KeepInBounds;
-        HeroHooks.unk20 = AR_PreMoveHero;
-        HeroHooks.unk24 = AR_MoveHero;
+        HeroHooks.KeepInBounds = AR_KeepInBounds;
+        HeroHooks.PreMoveHero = AR_PreMoveHero;
+        HeroHooks.MoveHero = AR_MoveHero;
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
@@ -1346,7 +1346,7 @@ void AR_PreMoveHero(u32 arg0) {
         if (p->unk50 & mask) {
             if (m->velocity_enable != 0) {
                 d = 0;
-                if (((s32 (*)(EXTengine *))HeroHooks.unk68)(Heroes[arg0].hero_eng) != 0) {
+                if (((s32 (*)(EXTengine *))HeroHooks.KeepInBounds)(Heroes[arg0].hero_eng) != 0) {
                     fast = 1;
                 }
                 if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
@@ -1395,7 +1395,7 @@ void AR_PreMoveHero(u32 arg0) {
             ArkHeroSpeedDelta[arg0] = m->forward_speed;
         } else {
             ArkHeroSpeedDelta[arg0] = 0;
-            if (((s32 (*)(EXTengine *))HeroHooks.unk68)(Heroes[arg0].hero_eng) != 0) {
+            if (((s32 (*)(EXTengine *))HeroHooks.KeepInBounds)(Heroes[arg0].hero_eng) != 0) {
                 m->forward_speed = 0;
             }
             if (m->forward_speed > 0) {
@@ -1458,7 +1458,7 @@ void AR_PI_PreMoveHero(u32 arg0) {
         if (p->unk50 & mask) {
             if (mv->velocity_enable != 0) {
                 d = 0;
-                if (HeroHooks.unk68(Heroes[arg0].hero_eng) != 0) {
+                if (HeroHooks.KeepInBounds(Heroes[arg0].hero_eng) != 0) {
                     hit = 1;
                 }
                 if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
@@ -1500,7 +1500,7 @@ void AR_PI_PreMoveHero(u32 arg0) {
             ArkHeroSpeedDelta[arg0] = mv->forward_speed;
         } else {
             ArkHeroSpeedDelta[arg0] = 0;
-            if (HeroHooks.unk68(Heroes[arg0].hero_eng) != 0) {
+            if (HeroHooks.KeepInBounds(Heroes[arg0].hero_eng) != 0) {
                 mv->forward_speed = 0;
             }
             if (mv->forward_speed > 0) {
@@ -1544,7 +1544,7 @@ void AR_MoveHero(u32 arg0) {
         g->hero_eng->unk10.y = -0x80;
     }
     hooks = &HeroHooks;
-    ((void (*)(s32))hooks->unk2C)(arg0);
+    ((void (*)(s32))hooks->HeroFacing)(arg0);
     f = Heroes;
     g = f + arg0;
     sp = g->hero_move->forward_speed;
@@ -1565,7 +1565,7 @@ void AR_MoveHero(u32 arg0) {
             a1 = -sp;
             g->hero_eng->unk10.z += sp;
         }
-        ((void (*)(EXTengine *))hooks->unk68)(g->hero_eng);
+        ((void (*)(EXTengine *))hooks->KeepInBounds)(g->hero_eng);
     }
     b = Heroes;
     h = b + arg0;
@@ -2445,7 +2445,7 @@ void ArkHeroDead(u32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = HeroModelBank + HeroHooks.unk4[*(volatile u16 *)&h->hero_name] * 0x38;
+            h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }
