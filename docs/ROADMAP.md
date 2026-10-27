@@ -385,8 +385,18 @@ load extract and are documented.
   animation, level data, ...) that Phase 2's extractor still keeps as bytes.
 - [x] `main.exe`'s rodata as C: its six INCLUDE_RODATA blocks (`data2c.py main
   --strings-only`, 2026-10-26); no INCLUDE_RODATA is left in `src/`.
-- [ ] `main.exe`'s data and bss as C, each file's local data with its unit
-  (`data2c.py main` reads the exe's yaml; its data hasn't been converted).
+- [ ] `main.exe`'s data and bss as C, each file's local data with its unit.
+  Status (2026-10-27): the game's .data is C, data2c's 918 objects cut by file in
+  link order (main.c, dbase.c from `HeroModelBank`, prims.c, scripts.c, sfx.c from
+  `MusicTable`, nascalls.c, sound.c, music.c, card.c from `CardChannel`, modchip.c,
+  modchip_msg.c); the data-only Sony objects are linked (ARCHITECTURE.md, PsyQ).
+  Left: the .bss written into the file (ARCHITECTURE.md, The exe's .bss), as C
+  with a link that writes it out; and 471 pointer words in byte arrays (data2c's
+  warnings), all inside the exe: the model bank's 0x38-byte `obj_dbase` records
+  (`HeroModelBank` .. `AdventureItemsModel`, one array the code indexes, still
+  separate `u8[]` labels), the archive index's 8-byte entries (`DatIndex`, still
+  one label per entry) and `D_80063BB8`'s table. They only matter once the exe
+  moves (Phase 6, Shift everything at once).
 - [ ] Name and type every function and global in the exe. Status: the
   names, parameter types and struct names the demo discs leaked are applied
   ([PROTOTYPES.md](PROTOTYPES.md)); the rest is named from behaviour. For

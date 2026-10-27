@@ -10,7 +10,7 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-26)
+## Current state (2026-10-27)
 
 - **Every game function matches**: all 2537 in `main.exe`, the engine and
   the 14 slot overlays (100% of game code bytes, 2026-10-26), and all 564
@@ -23,8 +23,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   source-only, named, typed and shift-tested) are done. Phase 4 repeats
   the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
   Phase 5 does the engine and `main.exe`. Figures (`progress`,
-  2026-10-26): 804 of 2537 functions named (all of Tank's), 2317 typed,
-  5.25% of the data is C, Tank's data all named.
+  2026-10-27): 1756 of 2537 functions named, 2317 typed, 89.77% of the
+  data is C (every slot overlay's, the engine's, and the exe's game
+  `.data`).
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
   steering C counts as matched, inline asm is refused by the gate. One
   recorded exception (2026-10-26): `draw_verts` (`func_800193A8`,
@@ -57,15 +58,23 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-Phase 4 (ROADMAP.md) is done: all 14 slot overlays are source-only (no
-INCLUDE_RODATA or data asm left in `src/overlays/` outside the engine), named
-and shift-tested. Next is Phase 5, the engine and `main.exe` with the same
-recipe; the engine's `gameflow.c`, `heroes.c`, `panel.c` and `pause.c` still
-have INCLUDE_RODATA blocks (data2c's `--rodata` now takes them all at once and
-reads strings from the binary). Open from Phase 4: the overlays' stand-in
-types (each ROADMAP box lists them). Phase 3, the Tank
-pilot, finished 2026-10-26; its steps are in the Session log and the
-recipe.
+Phase 5 (ROADMAP.md) is under way. Done: the engine's rodata and data (cut by
+file, its slot words linked from the overlays, so `shift.py` no longer rewrites
+anything), the exe's rodata and game `.data` (cut by file), and the data-only
+Sony objects. Next, none of them needing a playtest:
+
+1. Type the game state (`GameInfo` and its labels, the overlays' views; the
+   ROADMAP box). `CardSlots[i].unk8` is a copy of `GameInfo` from +0x60.
+2. Name `EngineHooks`' fields across the views.
+3. The exe's last data asm: `asm/data/5F1EC.data.s` is its `.bss` written into
+   the file (ARCHITECTURE.md, The exe's .bss). As C its globals are
+   uninitialised definitions; the link would have to write `.bss` into the
+   file. Try it on `nascalls.c`'s words first.
+4. The exe's pointer words in byte arrays (data2c's 471 warnings): the model
+   bank as one `obj_dbase` array, `DatIndex` as one array of entries.
+
+Needing the user: the shift retests (ROADMAP Phase 5, last box): every
+overlay on the new engine link.
 
 ## Open leads
 
@@ -130,6 +139,15 @@ recipe.
 ## Gotchas
 
 **Tooling**
+- **Data as C: a label inside another object is a field.** The asm gave every
+  label its own symbol; in C a label data2c merges into the object before it
+  (or that the object's type covers) is undefined at link time. Rewrite its uses
+  as the field (`FadeAmount` was `RenderState.modelDp`, `LevelContourHook`
+  `LevelSpecs.GetContour`). A field store can change the code where the label
+  didn't: `func_8002B760` had to store through a pointer like its twin. The
+  splice script reads the build's `.i` files to see what a file already
+  declares: build from clean sources first, or a failed try's extern lines
+  count as declarations.
 - **cc1 variants live in `build/cc1/`, so `make clean` deletes them**
   (rebuild with `tools/cc1/build.sh`; its downloads stay in `ext/cc1/`). In
   Git Bash, `[ -x FILE ]` is false for a Linux ELF such as cc1 (MSYS counts
@@ -455,6 +473,19 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-27 (Phase 5: the engine's and the exe's data as C):** the engine's
+  data spliced, cut by file (`engine.c` .. `camera.c`, the world records with
+  `asttable.c`); its .bss is a memory image (`engine_bss`); `shift.py`'s
+  engine-data rewrite is gone (the slot words take the overlays' addresses).
+  Then `main.exe`: data2c's 918 objects in eleven files, cut by which file's
+  code names each object. On the way, labels inside structs became fields
+  (`RenderState`'s `FadeAmount`, `GteWork`, `otzAdd`; `PrimPool.mem`; the text
+  screens' x/y/text; `CardSlots[0].unk8`; `LevelSpecs` as the leak's `LevSpec`
+  in every game), and seven Sony objects with only `.data` were found and linked
+  (`cstbl.o` is `rcossin_tbl`, the game's `TrigTable`). data2c learned the SDK's
+  `RECT`/`CdlLOC`, `volatile`, cast fixed addresses, several externs per line.
+  All byte-identical, no playtest (the user was away).
 
 - **2026-10-27 (Phase 5: the engine's data, groundwork):** `slot_refs.py` names the slot
   overlay symbol behind each of the 1086 words of the engine's asm data that point into the

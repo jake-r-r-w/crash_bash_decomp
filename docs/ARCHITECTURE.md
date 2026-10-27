@@ -27,11 +27,28 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 | `0x8002E7A8..0x8004C56C` | `0x1EFA8` | `.text` | PsyQ 4.7: 281 Sony objects linked in place, plus `2MBYTE.OBJ` (asm) |
 | `0x8004C56C..0x8004CEFC` | `0x3CD6C` | `.rodata` | game (strings, jump tables) |
 | `0x8004CEFC..0x8004DCBC` | `0x3D6FC` | `.rodata` | PsyQ, per object (`.rdata` of the linked objects) |
-| `0x8004DCBC..0x80079000` | `0x3E4BC` | `.data` | game data (blob pieces), with 32 PsyQ objects' `.data` linked from the objects |
+| `0x8004DCBC..0x800678E4` | `0x3E4BC` | `.data` | game data, C in each of the eleven files (main.c .. modchip_msg.c) |
+| `0x800678E4..0x8006E9EC` | `0x580E4` | `.data` | PsyQ: 39 Sony objects' `.data` linked from the objects; `bios_1.o`'s from the exe |
+| `0x8006E9EC..0x80079000` | `0x5F1EC` | `.bss` | written into the file as zeros: The exe's .bss |
 | `0x80079000..` | | `.bss` | not yet measured |
 
 The engine module loads at `0x80078C90`, over the last `0x370` bytes of the
 exe's `.data` (zeros in the file).
+
+### The exe's .bss
+
+The last 0xA614 bytes of the file (`0x8006E9EC..0x80079000`, after every
+object's `.data`) are the `.bss`, written into the file as zeros, plus one
+initialised pair first: `D_8006E9EC` is `{func_8001492C, 0}`, a null-ended list
+of one function (the shape of a static-constructor list; `func_8001492C` fills
+the engine's table of exe functions at `D_800527C4`). Then the game's zeroed
+globals in link order (`main.c`'s `D_8006E9F4`.., `nascalls.c`'s `D_8006EA00`..,
+`modchip.c`'s `ModchipVSync`.., `modchip_msg.c`'s `MsgFontRom`), then Sony's
+`.bss` (pinned `NOLOAD` in `configs/USA/psyq/sections.ld`) from `0x8006EA28`
+(`libgpu` `sys.o`), and `HeapStart` (`0x80078C90`), the heap the engine loads
+into. It is still asm (`asm/data/5F1EC.data.s`): as C its globals would be
+uninitialised definitions, and the link would have to write the `.bss` into the
+file as the original did.
 
 How the boundaries were found:
 
@@ -1376,6 +1393,11 @@ address the exe uses. `configs/USA/psyq/`:
   to 0 at `0x8006DE5C` where 4.7 has 1, so the game's libcd is a slightly
   different build. Every other object's `.data` is linked from the object
   (`decomp.py link-psyq --data` cut the data blob around them).
+- Seven objects have only `.data`, so the signature scan, which finds objects
+  by their code, never saw them; they are in `main.yaml` by hand: `libgte`
+  `cstbl.o` (`rcossin_tbl`, the 0x4000-byte sine/cosine table the game reads
+  directly), `libsn` `sndef.o` (`_stacksize`, `_ramsize`), `libc2` `ctype_0.o`
+  (`_ctype_`), and `libspu` `s_rmp0.o`, `zerobuf.o`, `s_rmp2.o` and `s_m.o`.
 - `symbols.ld` - symbols psylink placed differently from the objects' own
   layout; read last so they win.
 
