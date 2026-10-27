@@ -124,7 +124,7 @@ extern CamVec3 D_8009F9F4;
 extern ASTEntry EngineASTTable[];
 extern fade_info ScreenFade;
 extern s32 D_800ADBC4;
-extern process_info D_800A00DC;
+extern process_info LevelLoadProcess;
 extern s32 GamePause;
 extern u8 D_8009BCE0[];
 extern u8 PowerupsModel[];
@@ -250,8 +250,10 @@ extern process_info TournamentSelect;   /* after D_8009EB3C's two records: the t
 extern s32 D_8009EB98;
 typedef struct { u16 a, b, c, flags; } EngEntry;
 typedef struct { s32 unk0; EngEntry *entries; s32 unk8, unkC, unk10; } EngTable;
-typedef struct { u16 unk0; s32 unk4; s32 unk8; s32 unkC; s32 unk10; } EngState;
-extern EngState D_8009EE9C;
+/* The hub hero's place on the warp room's ring (HubPreMoveHero): its angle and its distance from
+ * the centre, kept between path 2's limits (HubInitHero). */
+typedef struct { u16 unk0; s32 angle; s32 radius; s32 radiusMin; s32 radiusMax; } HubRing;
+extern HubRing HubHeroRing;
 extern s32 NextGameMode;
 extern u8 GameWarpRoom;
 extern s32 WarpRooms[][5];

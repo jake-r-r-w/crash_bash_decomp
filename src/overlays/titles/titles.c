@@ -553,14 +553,14 @@ void TitlesCheckIdle(void) {
         f = D_8009F654;
         if (f & 1) {
             GameMode = 0x28;
-            func_80094D88((s32)D_800A0840, &D_800A00DC);
+            func_80094D88((s32)D_800A0840, &LevelLoadProcess);
         } else {
             u8 *g = GameInfo;
             u8 *t = (u8 *)TitlesDemoModes;
             u16 v = *(u16 *)(t + ((f * 2) & 0xC));
             *(s32 *)(g + 0x68) = 1;
             *(s32 *)(g + 0x14) = 0x384;
-            ProcessControl.next_process = &D_800A00DC;
+            ProcessControl.next_process = &LevelLoadProcess;
             *(u16 *)(g + 0x34) = v;
         }
         D_8009F654 += 1;

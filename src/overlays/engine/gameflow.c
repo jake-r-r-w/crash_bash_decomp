@@ -94,7 +94,7 @@ void func_8008E5BC(void) {
     }
     if ((u32)IntroStepIndex >= 4) {
         ProcessControl.flags = 0x12;
-        ProcessControl.next_process = &D_800A00DC;
+        ProcessControl.next_process = &LevelLoadProcess;
         D_8009E5A8 = -1;
         return;
     }
@@ -233,10 +233,10 @@ void func_8008ECE4(void) {
         g->mode = NextGameMode;
         res = func_800951D0((s16)NextGameMode);
         if (res == 0) {
-            ProcessControl.next_process = &D_800A00DC;
+            ProcessControl.next_process = &LevelLoadProcess;
             return;
         }
-        func_80094D88(res, &D_800A00DC);
+        func_80094D88(res, &LevelLoadProcess);
         return;
     }
     w = ModeTypes[g->mode * 3];
@@ -246,7 +246,7 @@ void func_8008ECE4(void) {
     if (w == 0x102) {
         if (g->mode == 0x2B) {
             g->mode = 0x28;
-            ProcessControl.next_process = &D_800A00DC;
+            ProcessControl.next_process = &LevelLoadProcess;
             return;
         }
         if (flags == 0x8002) {
@@ -254,7 +254,7 @@ void func_8008ECE4(void) {
         } else {
             g->mode = NextGameMode;
         }
-        ProcessControl.next_process = &D_800A00DC;
+        ProcessControl.next_process = &LevelLoadProcess;
         return;
     }
     if (flags & 0x200) {
@@ -266,13 +266,13 @@ void func_8008ECE4(void) {
         if (g->unk187 != 0 && (flags & 1)) {
             if (g->unk44 == 3) {
                 g->mode = 0x20;
-                func_80094D88((s32)D_800A0888, &D_800A00DC);
+                func_80094D88((s32)D_800A0888, &LevelLoadProcess);
             } else if (g->unk44 == 1) {
                 g->mode = 0x25;
-                func_80094D88((s32)D_800A0858, &D_800A00DC);
+                func_80094D88((s32)D_800A0858, &LevelLoadProcess);
             } else {
                 g->mode = 0x25;
-                func_80094D88((s32)D_800A0870, &D_800A00DC);
+                func_80094D88((s32)D_800A0870, &LevelLoadProcess);
             }
             return;
         }
@@ -285,7 +285,7 @@ void func_8008ECE4(void) {
         } else {
             msg = (s32)D_800A0870;
         }
-        func_80094D88(msg, &D_800A00DC);
+        func_80094D88(msg, &LevelLoadProcess);
         return;
     }
     g = (EngineModeView *)GameInfo;
@@ -304,7 +304,7 @@ void func_8008ECE4(void) {
         g->mode = func_8008EF70();
         break;
     }
-    ProcessControl.next_process = &D_800A00DC;
+    ProcessControl.next_process = &LevelLoadProcess;
 }
 
 s32 func_8008EF70(void) {
@@ -328,7 +328,7 @@ void func_8008EFD4(void) {
                     return;
                 }
             }
-            func_80092AF4(&D_800A00DC, 0x200);
+            func_80092AF4(&LevelLoadProcess, 0x200);
             if (!(*(u16 *)(g + 0x30) & 0x200)) {
                 func_8002C284(-1);
             }
@@ -764,9 +764,9 @@ void func_8009029C(void) {
         }
         t++;
     }
-    D_8009EE9C.unk0 = 0;
-    D_8009EE9C.unk4 = 0;
-    D_8009EE9C.unk8 = 0x400;
+    HubHeroRing.unk0 = 0;
+    HubHeroRing.angle = 0;
+    HubHeroRing.radius = 0x400;
 }
 
 void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -901,7 +901,7 @@ void func_80090A10(void) {
                         *d = *(Blk12p4 *)(s + 0xD0);
                     }
                     func_80091E58();
-                    func_80092AF4(&D_800A00DC, 0x200);
+                    func_80092AF4(&LevelLoadProcess, 0x200);
                     D_8009F638 = 3;
                 }
                 return;
@@ -1715,7 +1715,7 @@ void func_800929D8(void) {
     ScreenFade.speed = 0x100;
     SetDispMask(1);
     FirstBootDone = 1;
-    func_80092AF4(&D_800A00DC, 0x200);
+    func_80092AF4(&LevelLoadProcess, 0x200);
     func_8001E598(&ScreenFade);
     func_8001E610(&ProcessControl, &ScreenFade);
     func_8001E898(&ProcessControl);
@@ -1768,7 +1768,7 @@ void func_80092BDC(void) {
     ScreenFade.speed = 0x100;
     SetDispMask(1);
     FirstBootDone = 1;
-    func_80092AF4(&D_800A00DC, 0x200);
+    func_80092AF4(&LevelLoadProcess, 0x200);
 }
 
 void func_80092C54(void) {
@@ -2080,7 +2080,7 @@ s32 WarpRooms[10][5] = {
     { 0x21, (s32)&D_8009EBDC, 0, 0, 0 }, { 0x26, (s32)&D_8009EB9C, 0, 0, 0 },
     { 0x27, (s32)&D_8009EB9C, 0, 0, 0 },
 };
-EngState D_8009EE9C = {0};
+HubRing HubHeroRing = {0};
 s32 D_8009EEB0 = 3;
 s32 D_8009EEB4[44] = {
     0x328000, 0, 0, 0, 0, 0, 0, 0, 3, 0x788000, 0, 0, 0, 0, 0, 0, 0, 4, 0x1B88000, 0x19A0072,

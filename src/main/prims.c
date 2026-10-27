@@ -1761,7 +1761,7 @@ MATRIX *func_8001ACC0(GfxXform *obj) {
         if (!(flags & 0x200000)) {
             rot = view;
         } else {
-            rot = &D_80058AD4;
+            rot = &MapSceneMatrix;
         }
         pos = &RenderState.cam->x;
         v.vx = obj->x - pos[0];
@@ -2835,7 +2835,7 @@ void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3) {
     if (!(flags & 0x200000)) {
         rot = &RenderState.cam->view;
     } else {
-        rot = &D_80058AD4;
+        rot = &MapSceneMatrix;
     }
     ApplyMatrixLV(rot, &v, (VECTOR *)m.t);
     m.t[0] += RenderState.cam->view.t[0];
@@ -2863,8 +2863,8 @@ void func_8001DAF8(GfxScene *scene) {
     void (*fn)(u8 *, MATRIX *, s32);
 
     MapScene = scene;
-    RotMatrix(&D_80058AF4, &m);
-    MulMatrix0(&RenderState.cam->view, &m, &D_80058AD4);
+    RotMatrix(&MapSceneRot, &m);
+    MulMatrix0(&RenderState.cam->view, &m, &MapSceneMatrix);
     pv = &view;
     view = RenderState.cam->view;
     obj = scene->objs;
@@ -3351,6 +3351,6 @@ SVECTOR D_80056AC8[1024] = {0};
 s32 D_80058AC8 = 0;
 subengine *next_sub = 0;
 void *MapScene = 0;
-MATRIX D_80058AD4 = {0};
-SVECTOR D_80058AF4 = {0};
+MATRIX MapSceneMatrix = {0};
+SVECTOR MapSceneRot = {0};
 s32 D_80058AFC[1] = {0};

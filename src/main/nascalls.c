@@ -726,9 +726,9 @@ void func_80023A90(void) {
         u8 *pf;
 
         pg[0] = -1;
-        pw = &D_8005AEB4[i];
+        pw = &SysFontWidth[i];
         pw[0] = 16;
-        pf = &D_8005B0B4[i];
+        pf = &SysFontFlags[i];
         pf[0] = 0;
         pg[256] = -1;
         pw[256] = 11;
@@ -809,24 +809,24 @@ void func_80023A90(void) {
     SysFontLookUp['%'] = 0x305D;
     SysFontLookUp['<'] = 0x305E;
     SysFontLookUp['>'] = 0x305F;
-    D_8005AEB4['.'] = 9;
-    D_8005AEB4[','] = 9;
-    D_8005AEB4['\''] = 13;
-    D_8005AEB4[0] = 20;
-    D_8005AEB4[' '] = 12;
-    D_8005AEB4[9] = 48;
+    SysFontWidth['.'] = 9;
+    SysFontWidth[','] = 9;
+    SysFontWidth['\''] = 13;
+    SysFontWidth[0] = 20;
+    SysFontWidth[' '] = 12;
+    SysFontWidth[9] = 48;
     SysFontLookUp[0xFC] = 0x3066;
     SysFontLookUp[0xFD] = 0x3062;
     SysFontLookUp[0xFE] = 0x3065;
     SysFontLookUp[0xFF] = 0x3064;
-    D_8005B0B4[0xFC] = 1;
-    D_8005B0B4[0xFD] = 1;
-    D_8005B0B4[0xFE] = 1;
-    D_8005B0B4[0xFF] = 1;
-    D_8005AEB4[0xFC] = 32;
-    D_8005AEB4[0xFD] = 32;
-    D_8005AEB4[0xFE] = 32;
-    D_8005AEB4[0xFF] = 32;
+    SysFontFlags[0xFC] = 1;
+    SysFontFlags[0xFD] = 1;
+    SysFontFlags[0xFE] = 1;
+    SysFontFlags[0xFF] = 1;
+    SysFontWidth[0xFC] = 32;
+    SysFontWidth[0xFD] = 32;
+    SysFontWidth[0xFE] = 32;
+    SysFontWidth[0xFF] = 32;
     SysFontLookUp[0x100 + '@'] = 0x3000;
     SysFontLookUp[0x100 + 'A'] = 0x3002;
     SysFontLookUp[0x100 + 'B'] = 0x3003;
@@ -900,30 +900,30 @@ void func_80023A90(void) {
     SysFontLookUp[0x100 + '%'] = 0x302C;
     SysFontLookUp[0x100 + ':'] = 0x302D;
     SysFontLookUp[0x100 + '-'] = 0x302E;
-    D_8005AEB4[0x100 + 0] = 10;
-    D_8005AEB4[0x100 + ' '] = 6;
-    D_8005AEB4[0x100 + 9] = 24;
-    D_8005AEB4[0x100 + '.'] = 4;
-    D_8005AEB4[0x100 + '!'] = 6;
-    D_8005AEB4[0x100 + ','] = 6;
-    D_8005AEB4[0x100 + '`'] = 6;
-    D_8005AEB4[0x100 + '\''] = 6;
+    SysFontWidth[0x100 + 0] = 10;
+    SysFontWidth[0x100 + ' '] = 6;
+    SysFontWidth[0x100 + 9] = 24;
+    SysFontWidth[0x100 + '.'] = 4;
+    SysFontWidth[0x100 + '!'] = 6;
+    SysFontWidth[0x100 + ','] = 6;
+    SysFontWidth[0x100 + '`'] = 6;
+    SysFontWidth[0x100 + '\''] = 6;
     SysFontLookUp[0x1FC] = 0x3066;
     SysFontLookUp[0x1FD] = 0x3062;
     SysFontLookUp[0x1FE] = 0x3065;
     SysFontLookUp[0x1FF] = 0x3064;
-    D_8005B0B4[0x1FC] = 1;
-    D_8005B0B4[0x1FD] = 1;
-    D_8005B0B4[0x1FE] = 1;
-    D_8005B0B4[0x1FF] = 1;
-    D_8005B0B4[0x1FC] = 5;
-    D_8005B0B4[0x1FD] = 5;
-    D_8005B0B4[0x1FE] = 5;
-    D_8005B0B4[0x1FF] = 5;
-    D_8005AEB4[0x1FC] = 32;
-    D_8005AEB4[0x1FD] = 32;
-    D_8005AEB4[0x1FE] = 32;
-    D_8005AEB4[0x1FF] = 32;
+    SysFontFlags[0x1FC] = 1;
+    SysFontFlags[0x1FD] = 1;
+    SysFontFlags[0x1FE] = 1;
+    SysFontFlags[0x1FF] = 1;
+    SysFontFlags[0x1FC] = 5;
+    SysFontFlags[0x1FD] = 5;
+    SysFontFlags[0x1FE] = 5;
+    SysFontFlags[0x1FF] = 5;
+    SysFontWidth[0x1FC] = 32;
+    SysFontWidth[0x1FD] = 32;
+    SysFontWidth[0x1FE] = 32;
+    SysFontWidth[0x1FF] = 32;
 }
 
 s16 func_80024008(s16 x, u8 *s) {
@@ -947,8 +947,8 @@ s16 func_80024008(s16 x, u8 *s) {
                         break;
                     }
                     idx = *s + (FontPage << 8);
-                    w = &D_8005AEB4[idx];
-                    f = &D_8005B0B4[idx];
+                    w = &SysFontWidth[idx];
+                    f = &SysFontFlags[idx];
                     v = *w;
                     if (!(*f & 2)) {
                         n += v;
@@ -971,8 +971,8 @@ s16 func_80024008(s16 x, u8 *s) {
                         break;
                     }
                     idx = *s + (FontPage << 8);
-                    w = &D_8005AEB4[idx];
-                    f = &D_8005B0B4[idx];
+                    w = &SysFontWidth[idx];
+                    f = &SysFontFlags[idx];
                     v = *w;
                     if (!(*f & 2)) {
                         sum += v;
@@ -1055,13 +1055,13 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
             } else {
                 ny = xy >> 16;
                 xy &= 0xFFFF;
-                xy |= (ny + D_8005AEB4[FontPage << 8] * 2) << 16;
+                xy |= (ny + SysFontWidth[FontPage << 8] * 2) << 16;
             }
             x0 = func_80024008(arg0, s);
         } else {
             i = c + (FontPage << 8);
-            w = D_8005AEB4[i];
-            fl = D_8005B0B4[i];
+            w = SysFontWidth[i];
+            fl = SysFontFlags[i];
             if (fl & 2) {
                 col -= w;
             }
@@ -1112,8 +1112,8 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
                     break;
                 }
                 idx = *p + (FontPage << 8);
-                w = &D_8005AEB4[idx];
-                f = &D_8005B0B4[idx];
+                w = &SysFontWidth[idx];
+                f = &SysFontFlags[idx];
                 v = *w;
                 if (!(*f & 2)) {
                     n += v;
@@ -1131,7 +1131,7 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
             if (g != -1) {
                 func_80029F9C(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38, &pos, 0, arg2, arg3);
             }
-            pos.x += (s32)((u8)D_8005AEB4[c + (FontPage << 8)] << 24) >> 20;
+            pos.x += (s32)((u8)SysFontWidth[c + (FontPage << 8)] << 24) >> 20;
             c = *s++;
         } while (c != 0);
     }
@@ -1911,8 +1911,8 @@ s16 func_80026210(s32 x, u8 *s) {
                 break;
             }
             idx = *s + (FontPage << 8);
-            w = &D_8005AEB4[idx];
-            f = &D_8005B0B4[idx];
+            w = &SysFontWidth[idx];
+            f = &SysFontFlags[idx];
             v = *w;
             if (!(*f & 2)) {
                 sum += v;
@@ -1950,8 +1950,8 @@ s32 SysGetLen(char *s) {
                 break;
             }
             idx = *s + (FontPage << 8);
-            w = &D_8005AEB4[idx];
-            f = &D_8005B0B4[idx];
+            w = &SysFontWidth[idx];
+            f = &SysFontFlags[idx];
             v = *w;
             if (!(*f & 2)) {
                 sum += v;
@@ -4157,8 +4157,8 @@ LevSpec LevelSpecs = {0};
 NAS *D_8005AA9C = 0;
 s32 D_8005AAA0[5] = {0};
 s16 SysFontLookUp[512] = {0};
-s8 D_8005AEB4[512] = {0};
-u8 D_8005B0B4[512] = {0};
+s8 SysFontWidth[512] = {0};
+u8 SysFontFlags[512] = {0};
 s32 FontPage = 0;
 MapPoint MapPoints[32] = {0};
 s32 D_8005B5B8 = 0;

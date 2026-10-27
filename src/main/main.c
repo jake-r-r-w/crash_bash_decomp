@@ -1569,8 +1569,8 @@ s32 func_8001231C(void) {
         } else {
             node = (LoadNode *)ls->unkC;
             ls->unkC = (s32)node->next;
-            node->next = D_80050F3C;
-            D_80050F3C = node;
+            node->next = LoadNodeFree;
+            LoadNodeFree = node;
             if (ls->unkC != 0) {
                 ((LoadNode *)ls->unkC)->prev = NULL;
             } else {
@@ -1862,12 +1862,12 @@ u8 *func_800129D0(u8 *arg0, s32 arg1) {
     fn = func_80012840;
     ls = &Loader;
     b = *(s32 *)(*(u8 **)arg0 + 8);
-    p = D_80050F3C;
+    p = LoadNodeFree;
     if (p != NULL) {
         next = p->next;
         p->next = NULL;
         p->prev = (LoadNode *)ls->unk10;
-        D_80050F3C = next;
+        LoadNodeFree = next;
         tail = (LoadNode *)ls->unk10;
         if (tail != NULL) {
             tail->next = p;
@@ -1910,12 +1910,12 @@ u8 *func_80012AC4(u8 *arg0) {
     fn = func_80012678;
     ls = &Loader;
     b = *(s32 *)(*(u8 **)arg0 + 8);
-    p = D_80050F3C;
+    p = LoadNodeFree;
     if (p != NULL) {
         next = p->next;
         p->next = NULL;
         p->prev = (LoadNode *)ls->unk10;
-        D_80050F3C = next;
+        LoadNodeFree = next;
         tail = (LoadNode *)ls->unk10;
         if (tail != NULL) {
             tail->next = p;
@@ -2087,14 +2087,14 @@ void init_file(void) {
     s32 i;
 
     func_800279A4();
-    node = (LoadNode *)D_8005063C;
+    node = (LoadNode *)LoadNodePool;
     i = 0x3E;
     Loader.state = 3;
     Loader.unk4 = 0;
     Loader.unk8 = 0;
     Loader.unkC = 0;
     Loader.unk10 = 0;
-    D_80050F3C = D_8005063C;
+    LoadNodeFree = LoadNodePool;
     do {
         LoadNode *next = (LoadNode *)((u8 *)node + 0x24);
         node->next = next;
@@ -2125,16 +2125,16 @@ void func_80012F04(LoadNode *arg0) {
     if ((s32)arg0 == ls->unk10) {
         ls->unk10 = (s32)prev;
     }
-    temp_v1 = D_80050F3C;
-    D_80050F3C = arg0;
+    temp_v1 = LoadNodeFree;
+    LoadNodeFree = arg0;
     arg0->next = temp_v1;
 }
 
 void func_80012F90(u8 *arg0) {
     u8 *temp_v1;
 
-    temp_v1 = D_80050F3C;
-    D_80050F3C = arg0;
+    temp_v1 = LoadNodeFree;
+    LoadNodeFree = arg0;
     (*(s32*)((u8*)(arg0) + 28)) = temp_v1;
 }
 
@@ -2173,12 +2173,12 @@ s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *ar
     u8 *q;
     LoaderState *ls = &Loader;
 
-    p = D_80050F3C;
+    p = LoadNodeFree;
     if (p != NULL) {
         next = p->next;
         p->next = NULL;
         p->prev = (LoadNode *)ls->unk10;
-        D_80050F3C = next;
+        LoadNodeFree = next;
         tail = (LoadNode *)ls->unk10;
         if (tail != NULL) {
             tail->next = p;
@@ -2206,13 +2206,13 @@ u8 *func_80013110(u8 *arg0) {
     u8 *temp_v0;
     u8 *temp_v1;
 
-    temp_a1 = D_80050F3C;
+    temp_a1 = LoadNodeFree;
     if (temp_a1 != NULL) {
         temp_v1 = (*(s32*)((u8*)(temp_a1) + 28));
         (*(s32*)((u8*)(temp_a1) + 28)) = NULL;
         (*(s32*)((u8*)(temp_a1) + 32)) = (u8 *) (*(s32*)((u8*)(arg0) + 16));
         temp_v0 = (*(s32*)((u8*)(arg0) + 16));
-        D_80050F3C = temp_v1;
+        LoadNodeFree = temp_v1;
         if (temp_v0 != NULL) {
             (*(s32*)((u8*)(temp_v0) + 28)) = temp_a1;
         } else {
@@ -2232,12 +2232,12 @@ u8 *func_8001316C(u8 *arg0) {
     u8 *next;
     u8 *head;
 
-    head = D_80050F3C;
+    head = LoadNodeFree;
     node = *(u8 **)(arg0 + 12);
     *(u8 **)(arg0 + 12) = *(u8 **)(node + 28);
     *(u8 **)(node + 28) = head;
     next = *(u8 **)(arg0 + 12);
-    D_80050F3C = node;
+    LoadNodeFree = node;
     if (next != NULL) {
         *(u8 **)(next + 32) = NULL;
     } else {
@@ -2278,8 +2278,8 @@ void func_8001325C(void) {
     u8 *p;
     s32 i;
 
-    p = D_8005063C;
-    D_80050F3C = p;
+    p = LoadNodePool;
+    LoadNodeFree = p;
     for (i = 62; i != -1; i--) {
         *(u8 **)(p + 0x1C) = p + 0x24;
         p += 0x24;
@@ -3944,8 +3944,8 @@ u8 D_80050010[1560] = {
     0, 0, 0xE8, 5, 0,
 };
 LoaderState Loader = {0};
-u8 D_8005063C[2304] = {0};
-void *D_80050F3C = 0;
+u8 LoadNodePool[2304] = {0};
+void *LoadNodeFree = 0;
 u8 D_80050F40[768] = {0};
 void *D_80051240 = 0;
 s32 DirPadBits[24] = {

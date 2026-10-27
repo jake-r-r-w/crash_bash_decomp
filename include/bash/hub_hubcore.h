@@ -291,15 +291,15 @@ extern s32 PodiumHeroX[];
 
 #define G6A ((HubGameView *)GameInfo)
 
-/* D_8009EE9C as seen by InitialiseHUB. */
+/* HubHeroRing as seen by InitialiseHUB. */
 typedef struct {
     /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ u32 unk8;
-    /* 0x0C */ u32 unkC;
-    /* 0x10 */ u32 unk10;
+    /* 0x04 */ s32 angle;
+    /* 0x08 */ u32 radius;
+    /* 0x0C */ u32 radiusMin;
+    /* 0x10 */ u32 radiusMax;
 } HubCamState;
-#define CAM6A ((HubCamState *)&D_8009EE9C)
+#define CAM6A ((HubCamState *)&HubHeroRing)
 
 /* HubGateways entries (0x28 bytes) as seen by InitialiseHUB. */
 typedef struct {

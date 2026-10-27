@@ -1493,7 +1493,7 @@ u8 *D_800A001C[45] = {
     (void *)&file_group_TITLES, (void *)&D_800A0014, (void *)&file_group_POLARDAY,
 };
 u16 D_800A00D0[6] = { 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0 };
-process_info D_800A00DC = { func_800936C4, func_80093BE8, func_8009407C, func_80094058, 0 };
+process_info LevelLoadProcess = { func_800936C4, func_80093BE8, func_8009407C, func_80094058, 0 };
 s32 map[26] = {0};
 s32 D_800A0158 = 0;
 process_control_info LoadingControl = {0};

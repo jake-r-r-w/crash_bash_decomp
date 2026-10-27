@@ -974,8 +974,8 @@ void PolarInitScene(void) {
     obj =((const PolarScene *)MapScene)->objs;
     PolarSceneA = NULL;
     PolarSceneB = NULL;
-    D_80058AF4.vx = 0;
-    D_80058AF4.vz = 0;
+    MapSceneRot.vx = 0;
+    MapSceneRot.vz = 0;
     do {
         Heroes[i].hero_eng->flags |= 0x200000;
         i++;
@@ -1154,9 +1154,9 @@ void PolarUpdateScene(void)
     {
       D_8009E1F4 = 0x40;
     }
-    D_80058AF4.vy = 0;
-    D_80058AF4.vx = D_8009E1F4;
-    D_80058AF4.vz = D_8009E1F8;
+    MapSceneRot.vy = 0;
+    MapSceneRot.vx = D_8009E1F4;
+    MapSceneRot.vz = D_8009E1F8;
     if ((((PolarModeView *) GameInfo)->flags & 0x80) && (((PolarModeView *) GameInfo)->mode == 0x12))
     {
       a = (PolarSceneWord2 * rcossin_tbl[(PolarSceneWord0 - 0x400) & 0xFFF].unk2) >> 12;
@@ -1191,16 +1191,16 @@ void PolarUpdateScene(void)
         }
       }
       PolarSceneWord0 &= 0xFFF;
-      D_80058AF4.vx -= ((a - D_80058AF4.vx) << 20) >> 22;
-      D_80058AF4.vz -= ((b - D_80058AF4.vz) << 20) >> 22;
+      MapSceneRot.vx -= ((a - MapSceneRot.vx) << 20) >> 22;
+      MapSceneRot.vz -= ((b - MapSceneRot.vz) << 20) >> 22;
     }
-    RotMatrix(&D_80058AF4, &PolarSceneMatrix);
+    RotMatrix(&MapSceneRot, &PolarSceneMatrix);
   }
   else
   {
-    D_80058AF4.vx = 0;
-    D_80058AF4.vz = 0;
-    D_80058AF4.vy = 0;
+    MapSceneRot.vx = 0;
+    MapSceneRot.vz = 0;
+    MapSceneRot.vy = 0;
   }
 }
 
@@ -2309,7 +2309,7 @@ void PolarAI_DoAttack(s32 player) {
         IsPlayerInRange(player, fux->target);
     }
     tilted = 0;
-    if (abs(D_80058AF4.vx) > 0x40 || abs(D_80058AF4.vx) > 0x40) {
+    if (abs(MapSceneRot.vx) > 0x40 || abs(MapSceneRot.vx) > 0x40) {
         tilted = 1;
     }
     if (tilted && (PolarAIFlags[player] & 4)) {
@@ -4173,9 +4173,9 @@ void InitialisePOLAR(void) {
     hp = Heroes;
     PolarBeamTimer = 0;
     PolarClock = 0;
-    D_80058AF4.vx = 0;
-    D_80058AF4.vz = 0;
-    D_80058AF4.vy = 0;
+    MapSceneRot.vx = 0;
+    MapSceneRot.vz = 0;
+    MapSceneRot.vy = 0;
     D_8009E1F8 = 0;
     D_8009E1F4 = 0;
     polarbossnas = NULL;
@@ -10966,11 +10966,11 @@ void PolarPreMoveHero(s32 player) {
             if (g->mode == 0x12) {
                 if (g->flags & 0x80) {
                     if (GameInfo[player + 0x5C] != 0) {
-                        m->x_max += ((m->mass * 3) >> 4) * rcossin_tbl[(D_80058AF4.vz - 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max -= ((m->mass * 3) >> 4) * rcossin_tbl[(D_80058AF4.vx - 0x400) & 0xFFF].unk2 >> 12;
+                        m->x_max += ((m->mass * 3) >> 4) * rcossin_tbl[(MapSceneRot.vz - 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max -= ((m->mass * 3) >> 4) * rcossin_tbl[(MapSceneRot.vx - 0x400) & 0xFFF].unk2 >> 12;
                     } else {
-                        m->x_max += ((m->mass * 5) >> 3) * rcossin_tbl[(D_80058AF4.vz - 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max -= ((m->mass * 5) >> 3) * rcossin_tbl[(D_80058AF4.vx - 0x400) & 0xFFF].unk2 >> 12;
+                        m->x_max += ((m->mass * 5) >> 3) * rcossin_tbl[(MapSceneRot.vz - 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max -= ((m->mass * 5) >> 3) * rcossin_tbl[(MapSceneRot.vx - 0x400) & 0xFFF].unk2 >> 12;
                     }
                 }
             }

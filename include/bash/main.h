@@ -829,9 +829,9 @@ extern s32 D_8004E0B4;
 extern s32 D_8006E9F4;
 s32 func_800320CC(void);
 void func_800320DC(s32 arg0);
-extern void *D_80050F3C;
+extern void *LoadNodeFree;
 extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in D_80051240 */
-extern u8 D_8005063C[]; /* 63 x 0x24 pool, free list in D_80050F3C */
+extern u8 LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
 extern s32 cam_ramp_overide_count;
 extern s32 D_800517B4;
 extern s32 RandomSeedA;
@@ -1013,8 +1013,8 @@ extern u8 LoadingModel[];
 extern s16 GameMode;
 extern u16 GameLevelFlags;
 extern s32 FontPage;
-extern s8 D_8005AEB4[];
-extern u8 D_8005B0B4[];
+extern s8 SysFontWidth[];
+extern u8 SysFontFlags[];
 extern u8 *sysfont_dbase;
 extern s16 SysFontLookUp[];
 extern s32 D_8006EA00;
@@ -1098,8 +1098,8 @@ typedef struct ComboSeq {
     /* 0x10 */ s32 steps[1];
 } ComboSeq;
 
-extern MATRIX D_80058AD4;
-extern SVECTOR D_80058AF4;
+extern MATRIX MapSceneMatrix;
+extern SVECTOR MapSceneRot;
 extern u8 D_800512A8[]; /* ComboSeq table, 0x90 bytes per entry */
 extern u8 D_800536CC[];
 extern CdlLOC D_8006EA14;

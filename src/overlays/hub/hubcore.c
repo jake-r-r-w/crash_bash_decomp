@@ -44,26 +44,26 @@ void InitialiseHUB(void) {
     HubInitLevelSelect();
     HubDoorFade = 0;
     if (G6A->unk34 == 0x25 && G6A->unk75 == 0) {
-        CAM6A->unk4 = 0xEBC;
+        CAM6A->angle = 0xEBC;
         G6A->unk63 = -1;
-        CAM6A->unk8 = (CAM6A->unkC + CAM6A->unk10) >> 1;
+        CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
     } else if (G6A->unk64 != 0) {
         G6A->unk64 = 0;
-        CAM6A->unk4 = CAMTBL6A[G6A->unk63].unk10;
-        CAM6A->unk8 = (CAMTBL6A[G6A->unk63].unkC + CAMTBL6A[G6A->unk63].unk8) >> 1;
+        CAM6A->angle = CAMTBL6A[G6A->unk63].unk10;
+        CAM6A->radius = (CAMTBL6A[G6A->unk63].unkC + CAMTBL6A[G6A->unk63].unk8) >> 1;
     } else {
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 5:
             G6A->unk63 = -1;
-            CAM6A->unk8 = (CAM6A->unkC + CAM6A->unk10) >> 1;
-            CAM6A->unk4 = CAMTBL6A[0].unk10;
+            CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
+            CAM6A->angle = CAMTBL6A[0].unk10;
             break;
         case 2:
-            CAM6A->unk8 = (CAMTBL6A[G6A->unk63].unkC + CAMTBL6A[G6A->unk63].unk8) >> 1;
+            CAM6A->radius = (CAMTBL6A[G6A->unk63].unkC + CAMTBL6A[G6A->unk63].unk8) >> 1;
             break;
         default:
             G6A->unk63 = -1;
-            CAM6A->unk8 = (CAM6A->unkC + CAM6A->unk10) >> 1;
+            CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
             break;
         }
     }
@@ -295,14 +295,14 @@ void HubPreMoveHero(s32 arg0) {
     if (((HubGameView *)GameInfo)->unk63 == -1) {
         if (((HubPad *)Pads)[arg0].unk50 & 0x10) {
             mv->forward_speed = speed;
-            ang = D_8009EE9C.unk4 + 0x800;
-            D_8009EE9C.unk8 += speed;
-            if ((u32)D_8009EE9C.unk10 < (u32)D_8009EE9C.unk8) {
+            ang = HubHeroRing.angle + 0x800;
+            HubHeroRing.radius += speed;
+            if ((u32)HubHeroRing.radiusMax < (u32)HubHeroRing.radius) {
                 best = -1;
                 bestd = 0x1000;
                 for (i = 0; i < 12; i++) {
                     if (HubGateways[i].unk14 != NULL && (HubGateways[i].unk14->unk6 & 2)) {
-                        d = func_80015480(HubGateways[i].unk10, D_8009EE9C.unk4);
+                        d = func_80015480(HubGateways[i].unk10, HubHeroRing.angle);
                         if (d < bestd) {
                             bestd = d;
                             if ((u32)d < 0x81) {
@@ -312,23 +312,23 @@ void HubPreMoveHero(s32 arg0) {
                     }
                 }
                 if (best != -1) {
-                    D_8009EE9C.unk4 = HubGateways[best].unk10;
+                    HubHeroRing.angle = HubGateways[best].unk10;
                     ((HubGameView *)GameInfo)->unk63 = best;
                     HubGateways[best].unk1C = 1;
                 } else {
-                    D_8009EE9C.unk8 = D_8009EE9C.unk10;
+                    HubHeroRing.radius = HubHeroRing.radiusMax;
                     stop++;
                     mv->forward_speed = 0;
                 }
             }
         }
         if (((HubPad *)Pads)[arg0].unk50 & 0x40) {
-            ang = D_8009EE9C.unk4;
+            ang = HubHeroRing.angle;
             mv->forward_speed = speed;
-            D_8009EE9C.unk8 -= speed;
-            if ((u32)D_8009EE9C.unk8 < (u32)D_8009EE9C.unkC) {
+            HubHeroRing.radius -= speed;
+            if ((u32)HubHeroRing.radius < (u32)HubHeroRing.radiusMin) {
                 stop++;
-                D_8009EE9C.unk8 = D_8009EE9C.unkC;
+                HubHeroRing.radius = HubHeroRing.radiusMin;
                 mv->forward_speed = 0;
             }
         }
@@ -336,31 +336,31 @@ void HubPreMoveHero(s32 arg0) {
             if (((HubPad *)Pads)[arg0].unk50 & 0x80) {
                 mv->forward_speed = speed;
                 ang = 0x400;
-                ang = (D_8009EE9C.unk4 -= step % 0x1000) + ang;
+                ang = (HubHeroRing.angle -= step % 0x1000) + ang;
             }
             if (((HubPad *)Pads)[arg0].unk50 & 0x20) {
                 mv->forward_speed = speed;
-                ang = (D_8009EE9C.unk4 += step) - 0x400;
+                ang = (HubHeroRing.angle += step) - 0x400;
             }
-            D_8009EE9C.unk4 &= 0xFFF;
+            HubHeroRing.angle &= 0xFFF;
         }
     } else {
         if (((HubPad *)Pads)[arg0].unk50 & 0x10) {
             mv->forward_speed = speed;
-            t = D_8009EE9C.unk8 + speed;
-            D_8009EE9C.unk8 = t;
+            t = HubHeroRing.radius + speed;
+            HubHeroRing.radius = t;
             lim = HubGateways[((HubGameView *)GameInfo)->unk63].unkC;
-            ang = D_8009EE9C.unk4 + 0x800;
+            ang = HubHeroRing.angle + 0x800;
             if ((u32)lim < (u32)t) {
-                D_8009EE9C.unk8 = lim;
+                HubHeroRing.radius = lim;
                 mv->forward_speed = 0;
             }
         }
         if (((HubPad *)Pads)[arg0].unk50 & 0x40) {
-            ang = D_8009EE9C.unk4;
+            ang = HubHeroRing.angle;
             mv->forward_speed = speed;
-            D_8009EE9C.unk8 -= speed;
-            if ((u32)D_8009EE9C.unk8 < (u32)D_8009EE9C.unk10) {
+            HubHeroRing.radius -= speed;
+            if ((u32)HubHeroRing.radius < (u32)HubHeroRing.radiusMax) {
                 GameGateway = -1;
             }
         }
@@ -1298,10 +1298,10 @@ void HubCamTarget(void) {
 
     s32 a, b;
 
-    a = rcossin_tbl[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2 * D_8009EE9C.unk8;
-    v[0] = rcossin_tbl[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2;
-    b = rcossin_tbl[D_8009EE9C.unk4 & 0xFFF].unk2 * D_8009EE9C.unk8;
-    v[1] = rcossin_tbl[D_8009EE9C.unk4 & 0xFFF].unk2;
+    a = rcossin_tbl[(HubHeroRing.angle - 0x400) & 0xFFF].unk2 * HubHeroRing.radius;
+    v[0] = rcossin_tbl[(HubHeroRing.angle - 0x400) & 0xFFF].unk2;
+    b = rcossin_tbl[HubHeroRing.angle & 0xFFF].unk2 * HubHeroRing.radius;
+    v[1] = rcossin_tbl[HubHeroRing.angle & 0xFFF].unk2;
     v[0] = a;
     a >>= 12;
     v[0] = a;
@@ -1359,8 +1359,8 @@ void HubInitHero(s32 arg0) {
     HubCreateShadow(arg0);
     o = (u8 *)path_get(2);
     if (o != NULL) {
-        D_8009EE9C.unkC = *(s32 *)(o + 0x58);
-        D_8009EE9C.unk10 = *(s32 *)(o + 0x74);
+        HubHeroRing.radiusMin = *(s32 *)(o + 0x58);
+        HubHeroRing.radiusMax = *(s32 *)(o + 0x74);
     }
     HubPreMoveHero(arg0);
 }
@@ -1377,7 +1377,7 @@ s32 HubNearestGateway(void) {
     for (i = 0; i < 12; i++) {
         p = &HubGateways[i];
         if (p->unk14 != NULL && (p->unk14->unk6 & 2)) {
-            d = func_80015480(p->unk10, D_8009EE9C.unk4);
+            d = func_80015480(p->unk10, HubHeroRing.angle);
             if (d < bestDist) {
                 bestDist = d;
                 if ((u32)d < 0x81U) {

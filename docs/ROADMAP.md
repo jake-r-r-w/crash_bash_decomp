@@ -419,7 +419,10 @@ load extract and are documented.
 - [ ] The memory images: the slot's and the engine's .bss stay files read from
   the user's disc (build-machine leftovers, not source); decide whether a
   source build may write zeros there instead (the game shouldn't read them
-  before writing; the shift build already zeroes the slot's).
+  before writing; the shift build already zeroes the slot's). The exe's .bss is
+  written into its file too (zeros, after one two-word function list;
+  ARCHITECTURE.md, The exe's .bss): as C, uninitialised definitions in each file
+  and a link that writes `.bss` out, or the same memory-image treatment.
 - [ ] Every remaining disc file (music, movies, anything not covered above)
   extracts, and the formats are documented.
 - [ ] Shift everything at once: pad `main.exe` and the engine too, and relink
