@@ -355,7 +355,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = TrigTable;
+                tbl = rcossin_tbl;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -490,8 +490,8 @@ s32 BonkHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * TrigTable[ang & 0xFFF].unk2) >> 12;
+                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->unk1C & 8)) {
@@ -732,8 +732,8 @@ s32 BonkKeepInBoundsB(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->unk10.x = limit * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->unk10.z = limit * TrigTable[ang & 0xFFF].unk2 >> 12;
+        eng->unk10.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->unk10.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;
@@ -753,8 +753,8 @@ s32 BONK_KeepInBounds(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->unk10.x = limit * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->unk10.z = limit * TrigTable[ang & 0xFFF].unk2 >> 12;
+        eng->unk10.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->unk10.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;

@@ -789,7 +789,7 @@ void func_800369FC(void);
 
 extern SVECTOR D_80056AC8[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
-extern TrigEntry TrigTable[];
+extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
 /* A 4.12 fixed-point quaternion (func_80020344 slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
 extern s32 D_80064478[];

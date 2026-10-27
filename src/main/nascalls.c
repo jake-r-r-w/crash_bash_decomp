@@ -993,7 +993,7 @@ void func_80024214(u8 *a, u8 *b) {
     s32 bl, g, r;
 
     r = a[0];
-    t = (TrigTable[(((FrameCount << 7) & 0x7FF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+    t = (rcossin_tbl[(((FrameCount << 7) & 0x7FF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
     g = a[1];
     bl = a[2];
     r += ((0xFF - r) * t) / 20;
@@ -1629,8 +1629,8 @@ s32 func_8002578C(NAS *nas) {
                                 ang = get_angle(dx, dz) & 0xFFF;
                                 d = csqrt(d) >> 6;
                                 d = rec->radius - d;
-                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                             }
                         }
                     }

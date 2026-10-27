@@ -642,7 +642,7 @@ void func_80097AA4(subengine *s) {
     TrigEntry *e;
 
     s->unk51 = 0;
-    t = TrigTable;
+    t = rcossin_tbl;
     f = FrameCount;
     e = &t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF];
     s->unk10 = *(s32 *)e >> 20;

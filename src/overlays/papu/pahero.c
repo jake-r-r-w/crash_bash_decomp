@@ -107,7 +107,7 @@ void PlotPACrate(NAS *nas) {
                         eng->unk1E = get_angle(dx, dz) - 0x200;
                         ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
                         eng->unk1C = ang;
-                        eng->unk10.y = b.vy - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->unk10.y = b.vy - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
                         eng->unk20 = 0;
@@ -159,7 +159,7 @@ void PlotPACrate(NAS *nas) {
                         eng->unk1E = get_angle(dx, dz) - 0x200;
                         ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
                         eng->unk1C = ang;
-                        eng->unk10.y = b.vy - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->unk10.y = b.vy - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
                         eng->unk20 = 0;
@@ -331,8 +331,8 @@ void PlotPACrate(NAS *nas) {
         if (slide->unkE > slide->unk14) {
             slide->unkE = slide->unk14;
         }
-        eng->unk10.x -= (slide->unkE * TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (slide->unkE * TrigTable[eng->unk1E & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (slide->unkE * rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (slide->unkE * rcossin_tbl[eng->unk1E & 0xFFF].unk2) >> 12;
         switch (slide->dir & 0xF0) {
         case 0x10:
         case 0x30:
@@ -890,7 +890,7 @@ void PAHeroHold(s32 arg0) {
             s = self->hero_fx->sub;
             if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->unk10 = self->hero_eng->unk10;
-                v = (TrigTable[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+                v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
                 s->unk20.y = s->unk20.x = v;
                 s->unk04 = pos.vx - self->hero_eng->unk10.x;
                 s->unk08 = pos.vy - self->hero_eng->unk10.y;
@@ -947,7 +947,7 @@ void PAHeroCarry(s32 arg0) {
             s = self->hero_fx->sub;
             if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->unk10 = self->hero_eng->unk10;
-                v = (TrigTable[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+                v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
                 s->unk20.y = s->unk20.x = v;
                 s->unk04 = pos.vx - self->hero_eng->unk10.x;
                 s->unk08 = pos.vy - self->hero_eng->unk10.y;
@@ -1225,8 +1225,8 @@ NAS *PapuHeroGrabObject(idx, arg1)
     n = HeadOfObjects;
     ang = Heroes[idx2].hero_move->facing_angle;
     he = Heroes[idx2].hero_eng;
-    hx = he->unk10.x - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (TrigTable[ang & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (rcossin_tbl[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = (u8 *)n->FUX;
         if (fux == NULL) continue;
@@ -1330,7 +1330,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = TrigTable;
+                tbl = rcossin_tbl;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -1465,8 +1465,8 @@ s32 PapuHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * TrigTable[ang & 0xFFF].unk2) >> 12;
+                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->unk1C & 8)) {
@@ -1551,8 +1551,8 @@ s32 PapuHeroCarryCollision(s32 idx) {
                                             if (d < r) {
                                                 ang = get_angle(dx, dz) & 0xFFF;
                                                 d = r - d + 1;
-                                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                 hit = 1;
                                                 if (ext->unk1C & 8) {
                                                     ext->unk16 = idx;
@@ -1584,8 +1584,8 @@ void *PapuHeroObjectAhead(s32 idx, s32 mask) {
     m = mask;
     lim = 0x10000;
     he = Heroes[idx].hero_eng;
-    hx = he->unk10.x - (TrigTable[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (TrigTable[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (rcossin_tbl[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (rcossin_tbl[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = n->FUX;
         if (fux == NULL) continue;

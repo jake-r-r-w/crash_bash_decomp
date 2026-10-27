@@ -1574,11 +1574,11 @@ void PlotPapuMinion(NAS *nas)
       eng->unk1E = move->angle;
     }
   }
-  eng->unk10.x -= (move->speed * TrigTable[(move->angle - 0x400) & 0xFFF].unk2) >> 12;
-  eng->unk10.z -= (move->speed * TrigTable[(u16)move->angle & 0xFFF].unk2) >> 12;
+  eng->unk10.x -= (move->speed * rcossin_tbl[(move->angle - 0x400) & 0xFFF].unk2) >> 12;
+  eng->unk10.z -= (move->speed * rcossin_tbl[(u16)move->angle & 0xFFF].unk2) >> 12;
   if (move->push != 0) {
-    eng->unk10.x -= (move->push * TrigTable[(move->push_angle - 0x400) & 0xFFF].unk2) >> 12;
-    eng->unk10.z -= (move->push * TrigTable[(u16)move->push_angle & 0xFFF].unk2) >> 12;
+    eng->unk10.x -= (move->push * rcossin_tbl[(move->push_angle - 0x400) & 0xFFF].unk2) >> 12;
+    eng->unk10.z -= (move->push * rcossin_tbl[(u16)move->push_angle & 0xFFF].unk2) >> 12;
     move->push -= 4;
     if ((s16)move->push < 0) {
       move->push = 0;
@@ -1669,8 +1669,8 @@ void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
     Slot40 *s = &b[arg0];
     u8 *o = (u8*)s->pad4[0];
     u8 *a = (u8*)s->pad4[4];
-    s32 px = *(s32*)(o + 0x10) - (TrigTable[(*(s16*)(a + 0x16) - 0x400) & 0xFFF].unk2 * 256 >> 12);
-    s32 pz = *(s32*)(o + 0x18) - (TrigTable[*(u16*)(a + 0x16) & 0xFFF].unk2 * 256 >> 12);
+    s32 px = *(s32*)(o + 0x10) - (rcossin_tbl[(*(s16*)(a + 0x16) - 0x400) & 0xFFF].unk2 * 256 >> 12);
+    s32 pz = *(s32*)(o + 0x18) - (rcossin_tbl[*(u16*)(a + 0x16) & 0xFFF].unk2 * 256 >> 12);
     Slot40 *q;
 
     if (n != NULL) {
@@ -1979,9 +1979,9 @@ s32 PapuMinionKick(u32 idx) {
                                 if (d2 < rr) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     d2 = rr - d2 + 1;
-                                    eng->unk10.x -= d2 * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    eng->unk10.x -= d2 * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
                                     hit = 1;
-                                    eng->unk10.z -= d2 * TrigTable[ang].unk2 >> 12;
+                                    eng->unk10.z -= d2 * rcossin_tbl[ang].unk2 >> 12;
                                 }
                             }
                         }
@@ -2024,8 +2024,8 @@ s32 PapuMinionKick(u32 idx) {
                                 }
                                 d2 = rr - d2 + 1;
                                 if (can) {
-                                    eng->unk10.x -= d2 * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
-                                    eng->unk10.z -= d2 * TrigTable[ang & 0xFFF].unk2 >> 12;
+                                    eng->unk10.x -= d2 * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    eng->unk10.z -= d2 * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
                                 }
                                 obj = FindExtension(nas, 0x1000);
                                 if (obj != NULL && (obj->can_do & 8)) {
@@ -2216,7 +2216,7 @@ void PapuUpdateFloor(void) {
                     w = PapuFloorState[a];
                     tile->unk8 = PapuTiles[j][i].unk12;
                     k = ((u & 0xFFF) - 0x400) & 0xFFF;
-                    tile->unk8 += (w * TrigTable[k].unk2) >> 12;
+                    tile->unk8 += (w * rcossin_tbl[k].unk2) >> 12;
                     if (PapuTiles[j][i].unkE != 0) {
                         PapuTiles[j][i].unkA |= 0x100;
                         tile->unk74 = PapuTileModels[PapuTiles[j][i].unkE];
@@ -2602,8 +2602,8 @@ void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {
         } while (v != 0);
     }
     x = a->x;
-    mx = sum * TrigTable[(a->ang - 0x400) & 0xFFF].unk2;
-    mz = sum * TrigTable[(u16)a->ang & 0xFFF].unk2;
+    mx = sum * rcossin_tbl[(a->ang - 0x400) & 0xFFF].unk2;
+    mz = sum * rcossin_tbl[(u16)a->ang & 0xFFF].unk2;
     z = a->z;
     x -= mx >> 12;
     z -= mz >> 12;

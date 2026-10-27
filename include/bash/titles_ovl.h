@@ -258,7 +258,7 @@ static inline s32 TitlesSteer(s32 pos, s32 tgt, s32 vx, s32 lim) {
     }
     return v;
 }
-/* TrigTable read bytewise: hi is the sine's high byte. */
+/* rcossin_tbl read bytewise: hi is the sine's high byte. */
 typedef struct {
     s16 unk0;
     s8 lo;

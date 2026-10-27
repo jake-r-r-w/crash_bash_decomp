@@ -98,7 +98,7 @@ typedef struct PodiumTrophy {
     /* 0x58 */ u8 pad58[4];
     /* 0x5C */ u16 state;
 } PodiumTrophy;
-#define PODIUM_SIN(k) TrigTable[((((FrameCount * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
+#define PODIUM_SIN(k) rcossin_tbl[((((FrameCount * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
 extern u32 PodiumState;
 extern s32 PodiumCamState;
 extern s32 PodiumCamTimer;

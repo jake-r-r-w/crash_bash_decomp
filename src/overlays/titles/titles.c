@@ -590,7 +590,7 @@ void AnimateTitlesBackdrop(void) {
     sub->unk20.x = 0x2800;
     sub->unk52 = 1;
     eng = GetEngineSlot(1);
-    tbl = TrigTable;
+    tbl = rcossin_tbl;
     pos = TitlesBackdropPos;
     d = GameFrameCount;
     pos.x += (tbl[(((d * 0x14) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x8F) >> 0xF;
@@ -1419,7 +1419,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
     t->unk04 = func_80015210(t->unk04, x, 0x800);
     t->unk08 = func_80015210(t->unk08, y, 0x800);
     still = abs(t->unk04 - x) + abs(t->unk08 - y);
-    s->unk08 = s2->unk08 = ((TitlesTrig *)TrigTable)[(FrameCount * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
+    s->unk08 = s2->unk08 = ((TitlesTrig *)rcossin_tbl)[(FrameCount * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
     still = still == 0;
     if (o->unk0 & 1) {
         tgt = CharCards[o->unk30].target;
@@ -1602,14 +1602,14 @@ void CharSelectUpdate(void) {
     AnimateTitlesBackdrop();
     eng = GetEngineSlot(0);
     s = &eng->sub[24];
-    s->unk08 = ((TrigTable[(((GameFrameCount * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
-    s->unk12 = (TrigTable[(((GameFrameCount * 25) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
-    s->unk14 = (TrigTable[(((GameFrameCount * 36) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s->unk08 = ((rcossin_tbl[(((GameFrameCount * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
+    s->unk12 = (rcossin_tbl[(((GameFrameCount * 25) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s->unk14 = (rcossin_tbl[(((GameFrameCount * 36) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
     s->unk52 = 1;
     s2 = &GetEngineSlot(0)->sub[25];
-    s2->unk08 = ((TrigTable[(((GameFrameCount * 41) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0xBE;
-    s2->unk12 = (TrigTable[(((GameFrameCount * 35) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
-    s2->unk14 = (TrigTable[(((GameFrameCount * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s2->unk08 = ((rcossin_tbl[(((GameFrameCount * 41) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0xBE;
+    s2->unk12 = (rcossin_tbl[(((GameFrameCount * 35) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s2->unk14 = (rcossin_tbl[(((GameFrameCount * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
     s2->unk52 = 1;
     min = 0x7FFFFFFF;
     for (i = 0; i < ((TitlesModeView *)GameInfo)->unk26; i++) {
@@ -1959,14 +1959,14 @@ void LevelSelectUpdate(void) {
             s->unk10 = 0x7D;
             s->unk12 = 0;
             s->unk14 = 0;
-            s->unk04 = TrigTable[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
-            s->unk08 = (TrigTable[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+            s->unk04 = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
+            s->unk08 = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
         } else {
             s->unk6C = D_800555DC;
             s->unk74 = 0x2006;
             s->unk10 = 0;
             s->unk12 = FrameCount * 50 + (i << 10);
-            val = TrigTable[(((GameFrameCount * 100 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2;
+            val = rcossin_tbl[(((GameFrameCount * 100 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2;
             s->unk04 = 0;
             s->unk08 = 0;
             s->unk14 = (val * 25) >> 9;
@@ -1985,7 +1985,7 @@ void LevelSelectUpdate(void) {
     q = GetEngineSlot(2)->sub;
     q->unk10 = 0x7D;
     q->unk51 = 0;
-    q->unk04 = TrigTable[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->unk08 = (TrigTable[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+    q->unk04 = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->unk08 = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
     q->unk52 = 1;
 }
 

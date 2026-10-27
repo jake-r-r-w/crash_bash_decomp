@@ -1082,8 +1082,8 @@ void func_800859D4(s32 arg0) {
                 if (vc != 1) {
                     if (vc != 0) {
                         if (vc < 4) {
-                            m->x_max = (speed * TrigTable[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                            m->z_max = (speed * TrigTable[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                            m->x_max = (speed * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                            m->z_max = (speed * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                         }
                     }
                 }
@@ -1206,11 +1206,11 @@ void func_80085D2C(s32 arg0) {
         break;
     case 1:
     default:
-        e->unk10.x -= (m->forward_speed * TrigTable[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
-        e->unk10.z -= (m->forward_speed * TrigTable[m->forward_angle & 0xFFF].unk2) >> 12;
+        e->unk10.x -= (m->forward_speed * rcossin_tbl[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
+        e->unk10.z -= (m->forward_speed * rcossin_tbl[m->forward_angle & 0xFFF].unk2) >> 12;
         if (m->reactive_speed != 0) {
-            e->unk10.x -= (m->reactive_speed * TrigTable[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
-            e->unk10.z -= (m->reactive_speed * TrigTable[m->reactive_angle & 0xFFF].unk2) >> 12;
+            e->unk10.x -= (m->reactive_speed * rcossin_tbl[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
+            e->unk10.z -= (m->reactive_speed * rcossin_tbl[m->reactive_angle & 0xFFF].unk2) >> 12;
             m->reactive_speed -= 4;
             if (m->reactive_speed < 0) {
                 m->reactive_speed = 0;
@@ -2285,8 +2285,8 @@ void func_80088794(s32 arg0) {
                         m = o->hero_move;
                         vc = m->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
-                            m->x_vel -= (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                            o->hero_move->z_vel -= (TrigTable[angle & 0xFFF].unk2 * 3) >> 8;
+                            m->x_vel -= (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                            o->hero_move->z_vel -= (rcossin_tbl[angle & 0xFFF].unk2 * 3) >> 8;
                         }
                         Heroes[id].hero_move->reactive_angle = angle;
                         Heroes[id].hero_move->reactive_speed = 0x30;
@@ -2360,8 +2360,8 @@ void func_80088C28(s32 arg0) {
                         m = o->hero_move;
                         vc = m->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
-                            m->x_vel -= (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                            o->hero_move->z_vel -= (TrigTable[angle & 0xFFF].unk2 * 3) >> 8;
+                            m->x_vel -= (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                            o->hero_move->z_vel -= (rcossin_tbl[angle & 0xFFF].unk2 * 3) >> 8;
                         }
                         Heroes[id].hero_move->reactive_angle = angle;
                         Heroes[id].hero_move->reactive_speed = 0x30;
@@ -2463,8 +2463,8 @@ void func_8008900C(s32 arg0) {
                             if (vc != 1) {
                                 if (vc != 0) {
                                     if (vc < 4) {
-                                        m->x_vel -= (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                                        h2->hero_move->z_vel -= (TrigTable[angle & 0xFFF].unk2 * 3) >> 8;
+                                        m->x_vel -= (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                                        h2->hero_move->z_vel -= (rcossin_tbl[angle & 0xFFF].unk2 * 3) >> 8;
                                     }
                                 }
                             }
@@ -2583,8 +2583,8 @@ void func_8008955C(s32 arg0) {
                             if (vc != 1) {
                                 if (vc != 0) {
                                     if (vc < 4) {
-                                        m->x_vel -= (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                                        h2->hero_move->z_vel -= (TrigTable[angle & 0xFFF].unk2 * 3) >> 8;
+                                        m->x_vel -= (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                                        h2->hero_move->z_vel -= (rcossin_tbl[angle & 0xFFF].unk2 * 3) >> 8;
                                     }
                                 }
                             }
@@ -2725,8 +2725,8 @@ s32 arg0;
             if (D_8009E0E8[i][arg0].unk6 < 0) {
                 D_8009E0E8[i][arg0].unk6 = 0;
             }
-            s->unk04 += D_8009E0E8[i][arg0].unk6 * TrigTable[(D_8009E0E8[i][arg0].unk4 - 0x400) & 0xFFF].unk2 >> 12;
-            s->unk0C += D_8009E0E8[i][arg0].unk6 * TrigTable[D_8009E0E8[i][arg0].unk4 & 0xFFF].unk2 >> 12;
+            s->unk04 += D_8009E0E8[i][arg0].unk6 * rcossin_tbl[(D_8009E0E8[i][arg0].unk4 - 0x400) & 0xFFF].unk2 >> 12;
+            s->unk0C += D_8009E0E8[i][arg0].unk6 * rcossin_tbl[D_8009E0E8[i][arg0].unk4 & 0xFFF].unk2 >> 12;
             y = D_8009E0E8[i][arg0].unk8;
             y += D_8009E0E8[i][arg0].unkA;
             if (y > 0x30) {
@@ -3898,7 +3898,7 @@ s32 func_8008C4C8(s32 *arg0, s32 arg1) {
     if (p != NULL) {
         i = 0;
         n = *(s32 *)(p + 0x38);
-        t = TrigTable;
+        t = rcossin_tbl;
         a2 = p + 0x50;
         a3 = p;
         for (;;) {
@@ -3945,8 +3945,8 @@ s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos) {
         arc->vy = arc->vy0 = dy / n - (n >> 1) * arc->gravity;
         ang = get_angle(dx, dz) & 0xFFF;
         arc->angle = ang;
-        arc->vx = arc->speed * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        arc->vz = arc->speed * TrigTable[arc->angle & 0xFFF].unk2 >> 12;
+        arc->vx = arc->speed * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        arc->vz = arc->speed * rcossin_tbl[arc->angle & 0xFFF].unk2 >> 12;
         arc->started = 1;
     }
     pos[1] += arc->vy;
@@ -4004,7 +4004,7 @@ void func_8008C824(SparkObj *obj) {
         t = Random(0xFFF);
         s->ang = t;
         s->base_x = s->x;
-        s->x = s->base_x + ((TrigTable[(t - 0x400) & 0xFFF].unk2 * 512 >> 12));
+        s->x = s->base_x + ((rcossin_tbl[(t - 0x400) & 0xFFF].unk2 * 512 >> 12));
         s->x2 = s->x + 0x40;
         s++;
         *(u32 *)&p0->r0 = 0xA0A0A0;
@@ -4042,12 +4042,12 @@ void func_8008CA90(u8 *arg0, MATRIX *m) {
     tag = col | 0x2E000000;
     while (n != 0) {
         p->top.vy += 0x18;
-        p->top.vx = p->base + (TrigTable[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
+        p->top.vx = p->base + (rcossin_tbl[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
         p->angle = (p->angle + 0x10) & 0xFFF;
         if (p->top.vy > 0x800) {
             p->angle = Random(0xFFF);
             p->base = Random(0x3000) - Random(0x3000);
-            p->top.vx = p->base + (TrigTable[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
+            p->top.vx = p->base + (rcossin_tbl[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
             t = Random(0x4000) - Random(0x1000);
             p->top.vz = t;
             p->top.vy = -0xDAC;
@@ -4275,7 +4275,7 @@ void PlotFloatyScore(NAS *nas) {
         case 2:
             ang = ++nas->UserInfo.user1;
             y = nas->UserInfo.user2;
-            ang = TrigTable[((ang << 7) & 0xFFF) - 0x400 & 0xFFF].unk2;
+            ang = rcossin_tbl[((ang << 7) & 0xFFF) - 0x400 & 0xFFF].unk2;
             eng->unk5E = one;
             eng->unk10.y = y - (ang * 3 >> 7);
             s = eng->unk2C.x + 0x40;
@@ -4660,8 +4660,8 @@ void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                         dist = (arg1 - dist) >> 3;
                         vc = hero[i].hero_move->velocity_calc;
                         if (vc != 1) if (vc != 0) if (vc < 4) {
-                            hero[i].hero_move->x_vel = (dist * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                            hero[i].hero_move->z_vel = (dist * TrigTable[ang & 0xFFF].unk2) >> 12;
+                            hero[i].hero_move->x_vel = (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                            hero[i].hero_move->z_vel = (dist * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             hero[i].hero_move->x_max = 0;
                             hero[i].hero_move->z_max = 0;
                         }

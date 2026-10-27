@@ -1391,10 +1391,10 @@ void BashAI_ScanAhead(s32 arg0) {
     rx = eng->unk10.x;
     rz = eng->unk10.z;
     mv = Heroes[arg0].hero_move;
-    dx = TrigTable[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
+    dx = rcossin_tbl[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
     ang = mv->forward_angle;
-    c = TrigTable[(ang + 0x400) & 0xFFF].unk2;
-    s = TrigTable[(ang + 0x800) & 0xFFF].unk2;
+    c = rcossin_tbl[(ang + 0x400) & 0xFFF].unk2;
+    s = rcossin_tbl[(ang + 0x800) & 0xFFF].unk2;
     dz = c * 15 >> 9;
     lx = rx + dx;
     rx = rx - dx;
@@ -2526,7 +2526,7 @@ void PlotBashPenguin(NAS *nas) {
                 }
                 t = nas->UserInfo.user1;
                 if (t > 0) {
-                    r = (TrigTable[(t - 0x400) & 0xFFF].unk2 * 3) >> 3;
+                    r = (rcossin_tbl[(t - 0x400) & 0xFFF].unk2 * 3) >> 3;
                     if (r > 0x500) {
                         r = 0x500;
                     }
@@ -2534,8 +2534,8 @@ void PlotBashPenguin(NAS *nas) {
                     d = ((0x500 - abs(r)) >> 6) + 0x28;
                     ang = (nas->UserInfo.user2 + d) & 0xFFF;
                     nas->UserInfo.user2 = ang;
-                    eng->unk10.x = (r * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                    eng->unk10.z = (r * TrigTable[ang].unk2) >> 12;
+                    eng->unk10.x = (r * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->unk10.z = (r * rcossin_tbl[ang].unk2) >> 12;
                     eng->sub->unk74 = 0x2002;
                 } else {
                     GotoLinkAnim(anim, 2);
@@ -2689,8 +2689,8 @@ void BashPenguinPush(EXTengine *self) {
                 ang = get_angle(-dx, -dz);
                 dist = csqrt(dist) >> 6;
                 dist = rr - dist;
-                eng->unk10.x -= (dist * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                eng->unk10.z -= (dist * TrigTable[ang & 0xFFF].unk2) >> 12;
+                eng->unk10.x -= (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                eng->unk10.z -= (dist * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                 obj = FindExtension(nas, 0x1000);
                 if (obj != NULL) {
                     if (obj->can_do & 8) {
@@ -3104,8 +3104,8 @@ void PlotBash8way(NAS *nas) {
             for (; sub != NULL; ang += 0x200, sub = sub->next, ang &= 0xFFF) {
                 if (sub->flags != 0) {
                     a = (ang - 0x400) & 0xFFF;
-                    sub->unk04 -= (speed * TrigTable[a].unk2) >> 12;
-                    sub->unk0C -= (speed * TrigTable[ang & 0xFFF].unk2) >> 12;
+                    sub->unk04 -= (speed * rcossin_tbl[a].unk2) >> 12;
+                    sub->unk0C -= (speed * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                     t = sub->unk08 + mot->Yvel;
                     sub->unk08 = t;
                     x = eng->unk10.x + sub->unk04;
@@ -3242,8 +3242,8 @@ void PlotBashHomer(NAS *nas) {
                     eng->unk10.y -= (eng->unk10.y - (he->unk10.y - 0xA0)) >> 2;
                 }
             }
-            eng->unk10.x -= (mot->Xvel * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            eng->unk10.z -= (mot->Xvel * TrigTable[ang & 0xFFF].unk2) >> 12;
+            eng->unk10.x -= (mot->Xvel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            eng->unk10.z -= (mot->Xvel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
             x = eng->unk10.x;
             y = eng->unk10.y;
             z = eng->unk10.z;
@@ -3376,8 +3376,8 @@ void PlotBashShox(NAS *nas) {
                     if (vc == 1) {
                     } else if (vc == 0) {
                     } else if (vc < 4) {
-                        mv->x_vel -= (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 3) >> 8;
-                        h->hero_move->z_vel -= (TrigTable[ang & 0xFFF].unk2 * 3) >> 8;
+                        mv->x_vel -= (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                        h->hero_move->z_vel -= (rcossin_tbl[ang & 0xFFF].unk2 * 3) >> 8;
                     }
                     Heroes[hit].hero_move->reactive_angle = ang;
                     Heroes[hit].hero_move->reactive_speed = 0x30;

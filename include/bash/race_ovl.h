@@ -530,10 +530,10 @@ static inline s32 RaceBounce(s32 a, s32 b) {
     s32 r[4];
     s32 dot;
 
-    n[0] = TrigTable[b & 0xFFF].unk2;
-    n[2] = TrigTable[(b - 0x400) & 0xFFF].unk2;
-    d[0] = -TrigTable[(a - 0x400) & 0xFFF].unk2;
-    d[2] = -TrigTable[a & 0xFFF].unk2;
+    n[0] = rcossin_tbl[b & 0xFFF].unk2;
+    n[2] = rcossin_tbl[(b - 0x400) & 0xFFF].unk2;
+    d[0] = -rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
+    d[2] = -rcossin_tbl[a & 0xFFF].unk2;
     dot = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);
     r[0] = d[0] - (dot * n[0] >> 11);
     r[2] = d[2] - (dot * n[2] >> 11);
@@ -547,10 +547,10 @@ static inline s32 RaceBounce(s32 a, s32 b) {
         s32 a_ = (ang);                                         \
         s32 dot_;                                               \
                                                                 \
-        n[0] = TrigTable[b_ & 0xFFF].unk2;                     \
-        n[2] = TrigTable[(b_ - 0x400) & 0xFFF].unk2;           \
-        d[0] = -TrigTable[(a_ - 0x400) & 0xFFF].unk2;          \
-        d[2] = -TrigTable[a_ & 0xFFF].unk2;                    \
+        n[0] = rcossin_tbl[b_ & 0xFFF].unk2;                     \
+        n[2] = rcossin_tbl[(b_ - 0x400) & 0xFFF].unk2;           \
+        d[0] = -rcossin_tbl[(a_ - 0x400) & 0xFFF].unk2;          \
+        d[2] = -rcossin_tbl[a_ & 0xFFF].unk2;                    \
         dot_ = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);       \
         r[0] = d[0] - (dot_ * n[0] >> 11);                      \
         r[2] = d[2] - (dot_ * n[2] >> 11);                      \

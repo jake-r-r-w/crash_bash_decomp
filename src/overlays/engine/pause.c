@@ -1615,7 +1615,7 @@ void func_80082D90(s32 arg0) {
         counter_sub.unk20.x += d >> 3;
         counter_sub.unk20.y = counter_sub.unk20.x;
         counter_sub.unk20.z = counter_sub.unk20.x;
-        counter_sub.unk12 = ((TrigTable[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.unk12 = ((rcossin_tbl[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
         counter_sub.unk52 = 1;
         if (d < 0x100) {
             PlaySfx(0x1AF, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1627,7 +1627,7 @@ void func_80082D90(s32 arg0) {
         counter_sub.unk20.x = t;
         counter_sub.unk20.y = t;
         counter_sub.unk20.z = t;
-        counter_sub.unk12 = ((TrigTable[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.unk12 = ((rcossin_tbl[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
         counter_sub.unk52 = 1;
     }
     if (D_8009BD08 <= 0) {

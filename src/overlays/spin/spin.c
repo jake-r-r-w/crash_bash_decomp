@@ -481,8 +481,8 @@ void SpinTurnArena(void) {
         d = (csqrt(d) + 0x20) >> 6;
         a = get_angle(x, z) + SpinAngle;
         a &= 0xFFF;
-        h->hero_eng->unk10.x = d * TrigTable[(a - 0x400) & 0xFFF].unk2 >> 12;
-        h->hero_eng->unk10.z = d * TrigTable[a].unk2 >> 12;
+        h->hero_eng->unk10.x = d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
+        h->hero_eng->unk10.z = d * rcossin_tbl[a].unk2 >> 12;
         h->hero_move->forward_angle += SpinAngle;
         h->hero_move->forward_angle &= 0xFFF;
     }
@@ -502,8 +502,8 @@ void SpinTurnArena(void) {
         a += SpinAngle;
         a &= 0xFFF;
         f->angle = a;
-        e->unk10.x = d * TrigTable[(a - 0x400) & 0xFFF].unk2 >> 12;
-        e->unk10.z = d * TrigTable[a].unk2 >> 12;
+        e->unk10.x = d * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
+        e->unk10.z = d * rcossin_tbl[a].unk2 >> 12;
         e->unk1E = (e->unk1E + SpinAngle) & 0xFFF;
         e->unk5E = 1;
     }
@@ -992,8 +992,8 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
   SpinFux *new_var;
   s32 z;
   u16 mask;
-  x = (b * TrigTable[(a - 0x400) & 0xFFF].unk2) >> 12;
-  z = (b * TrigTable[a & 0xFFF].unk2) >> 12;
+  x = (b * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 12;
+  z = (b * rcossin_tbl[a & 0xFFF].unk2) >> 12;
   nas = CreateNAS(x, World_floor_level, z, 0x1801, 0x11);
   if (nas != 0)
   {
@@ -1344,8 +1344,8 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
     s32 z;
     s32 r;
 
-    x = b * TrigTable[(a - 0x400) & 0xFFF].unk2 >> 12;
-    z = b * TrigTable[a & 0xFFF].unk2 >> 12;
+    x = b * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
+    z = b * rcossin_tbl[a & 0xFFF].unk2 >> 12;
     r = Random(0x80);
     y = World_floor_level - 0x600;
     nas = CreateNAS(x, y - r, z, 0x1802, 0x11);
@@ -1553,12 +1553,12 @@ void PlotBalloon(NAS *nas) {
             mot->Zvel = 4;
             a &= 0xFFF;
             mot->Za = a;
-            eng->unk10.x -= (mot->Xvel * TrigTable[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
-            eng->unk10.z -= (mot->Xvel * TrigTable[mot->Xa & 0xFFF].unk2) >> 12;
+            eng->unk10.x -= (mot->Xvel * rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+            eng->unk10.z -= (mot->Xvel * rcossin_tbl[mot->Xa & 0xFFF].unk2) >> 12;
             SPIN_BOUNCE(eng, mot);
             SpinBalloonCollide(eng, mot, fux);
-            eng->unk10.x -= (mot->Zvel * TrigTable[(mot->Za - 0x400) & 0xFFF].unk2) >> 12;
-            eng->unk10.z -= (mot->Zvel * TrigTable[mot->Za & 0xFFF].unk2) >> 12;
+            eng->unk10.x -= (mot->Zvel * rcossin_tbl[(mot->Za - 0x400) & 0xFFF].unk2) >> 12;
+            eng->unk10.z -= (mot->Zvel * rcossin_tbl[mot->Za & 0xFFF].unk2) >> 12;
         }
         if ((u16)fux->state < 4) {
             t = SpinBalloonTimer;
@@ -1580,7 +1580,7 @@ void PlotBalloon(NAS *nas) {
             }
         }
         a = fux->angle + GameFrameCount * 16;
-        eng->sub->unk08 = (TrigTable[(a * 4 - 0x400) & 0xFFF].unk2 + TrigTable[a & 0xFFF].unk2) >> 6;
+        eng->sub->unk08 = (rcossin_tbl[(a * 4 - 0x400) & 0xFFF].unk2 + rcossin_tbl[a & 0xFFF].unk2) >> 6;
         SPIN_FLOAT(eng, g, y, s);
     }
     SPIN_SHADOW(eng, shadow);
@@ -1777,8 +1777,8 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
                     r = csqrt(d);
                     ang = get_angle(dx, dz) & 0xFFF;
                     d = r >> 9;
-                    eng->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                    eng->unk10.z += (d * TrigTable[ang].unk2) >> 12;
+                    eng->unk10.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->unk10.z += (d * rcossin_tbl[ang].unk2) >> 12;
                     if (d < 0x280) {
                         t = eng->unk10.y - 0x200;
                         dy = t - h->hero_powerup->unk10.y;
@@ -1809,9 +1809,9 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
                                 if (d < 0x100) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     d = 0xFF - d;
-                                    eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
                                     hit = 1;
-                                    eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                    eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                 } else if (d < 0x400) {
                                     ang = get_angle(dx, dz) & 0xFFF;
                                     mot->Zvel = (0x400 - d) >> 6;
@@ -2023,8 +2023,8 @@ void Spin_HeroBot(s32 arg0) {
 
             d = (csqrt(x * x + z * z) + 0x20) >> 6;
             b = (get_angle(x, z) - inv * SpinSpeed) & 0xFFF;
-            x = (d * TrigTable[(b - 0x400) & 0xFFF].unk2) >> 12;
-            z = (d * TrigTable[b].unk2) >> 12;
+            x = (d * rcossin_tbl[(b - 0x400) & 0xFFF].unk2) >> 12;
+            z = (d * rcossin_tbl[b].unk2) >> 12;
         }
         get_angle(x, z);
         x -= Heroes[arg0].hero_eng->unk10.x;
@@ -2287,10 +2287,10 @@ void SpinAI_ScanAhead(s32 arg0) {
     rx = eng->unk10.x;
     rz = eng->unk10.z;
     mv = Heroes[arg0].hero_move;
-    dx = TrigTable[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
+    dx = rcossin_tbl[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
     ang = mv->forward_angle;
-    c = TrigTable[(ang + 0x400) & 0xFFF].unk2;
-    s = TrigTable[(ang + 0x800) & 0xFFF].unk2;
+    c = rcossin_tbl[(ang + 0x400) & 0xFFF].unk2;
+    s = rcossin_tbl[(ang + 0x800) & 0xFFF].unk2;
     dz = c * 15 >> 9;
     lx = rx + dx;
     rx = rx - dx;
@@ -2675,8 +2675,8 @@ s32 SPIN_KeepInBounds(EXTengine *eng) {
     }
     if (x * x + z * z >= limit * limit) {
         ang = get_angle(x, z);
-        eng->unk10.x = limit * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
-        eng->unk10.z = limit * TrigTable[ang & 0xFFF].unk2 >> 12;
+        eng->unk10.x = limit * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->unk10.z = limit * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
         ret = 1;
     }
     return ret;
@@ -3233,8 +3233,8 @@ NAS *SpinHeroGrabObject(s32 idx, s32 mask) {
     h = &hb[idx];
     he = h->hero_eng;
     ang = Heroes[idx].hero_move->facing_angle;
-    hx = he->unk10.x - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (TrigTable[ang & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (rcossin_tbl[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = n->FUX;
         if (fux == NULL) continue;
@@ -3336,7 +3336,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
             i = 0;
             self = &Heroes[arg0];
             do {
-                tbl = TrigTable;
+                tbl = rcossin_tbl;
                 if (arg0 != i && !(other[i].hero_status & 0xF800)) {
                     if (self->hero_move->forward_speed != 0) {
                         push = 1;
@@ -3471,8 +3471,8 @@ s32 SpinHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * TrigTable[ang & 0xFFF].unk2) >> 12;
+                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->unk1C & 8)) {
@@ -3557,8 +3557,8 @@ s32 SpinHeroCarryCollision(s32 idx) {
                                             if (d < r) {
                                                 ang = get_angle(dx, dz) & 0xFFF;
                                                 d = r - d + 1;
-                                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                 hit = 1;
                                                 if (ext->unk1C & 8) {
                                                     ext->unk16 = idx;
@@ -3585,8 +3585,8 @@ SpinFux *SpinHeroObjectNear(s32 hero, u16 mask, s32 r) {
     EXTengine *eng = Heroes[hero].hero_eng;
     s32 cx = eng->unk10.x;
     s32 cz = eng->unk10.z;
-    s32 px = cx - (TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    s32 pz = cz - (TrigTable[eng->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    s32 px = cx - (rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    s32 pz = cz - (rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 1024 >> 14);
     s32 bestd;
     s32 lim, dx, dz, d;
     SpinFux *f;

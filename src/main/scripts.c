@@ -343,12 +343,12 @@ void func_8001F604(u8 *obj, EmitPart *part, u8 *def) {
     if (r != 0) {
         pitch = (*(s32 *)(def + 0x38) + Random(r)) & 0xFFF;
     }
-    part->vel[0] = speed * TrigTable[(yaw - 0x400) & 0xFFF].unk2 >> 4;
-    part->vel[2] = speed * TrigTable[yaw & 0xFFF].unk2 >> 4;
-    part->vel[1] = -(speed * TrigTable[pitch & 0xFFF].unk2 >> 4);
-    *(s32 *)(obj + 4) = (radius * TrigTable[(yaw - 0x400) & 0xFFF].unk2 >> 12) + *(s32 *)(def + 4);
-    *(s32 *)(obj + 0xC) = (radius * TrigTable[yaw & 0xFFF].unk2 >> 12) + *(s32 *)(def + 0xC);
-    *(s32 *)(obj + 8) = *(s32 *)(def + 8) - (radius * TrigTable[pitch & 0xFFF].unk2 >> 12);
+    part->vel[0] = speed * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 4;
+    part->vel[2] = speed * rcossin_tbl[yaw & 0xFFF].unk2 >> 4;
+    part->vel[1] = -(speed * rcossin_tbl[pitch & 0xFFF].unk2 >> 4);
+    *(s32 *)(obj + 4) = (radius * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 12) + *(s32 *)(def + 4);
+    *(s32 *)(obj + 0xC) = (radius * rcossin_tbl[yaw & 0xFFF].unk2 >> 12) + *(s32 *)(def + 0xC);
+    *(s32 *)(obj + 8) = *(s32 *)(def + 8) - (radius * rcossin_tbl[pitch & 0xFFF].unk2 >> 12);
     *(s32 *)(obj + 0) |= 0x8000;
 }
 
@@ -704,8 +704,8 @@ void func_80020344(Quat *a, Quat *b, s32 t, Quat *out) {
     }
     ang = get_angle(s, d);
     inv = 0x1000000 / s;
-    ka = (TrigTable[((((0x1000 - t) * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
-    kb = (TrigTable[(((t * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
+    ka = (rcossin_tbl[((((0x1000 - t) * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
+    kb = (rcossin_tbl[(((t * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
     out->v[0] = (ka * a->v[0] + kb * q.v[0]) >> 18;
     out->v[1] = (ka * a->v[1] + kb * q.v[1]) >> 18;
     out->v[2] = (ka * a->v[2] + kb * q.v[2]) >> 18;
@@ -715,9 +715,9 @@ void func_80020344(Quat *a, Quat *b, s32 t, Quat *out) {
 /* Cosine at angle x / 2, linearly interpolated for odd x. */
 static inline s32 Trig_HalfCos(s32 x) {
     if (x & 1) {
-        return (TrigTable[((x >> 1) - 0x400) & 0xFFF].unk2 + TrigTable[((x >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+        return (rcossin_tbl[((x >> 1) - 0x400) & 0xFFF].unk2 + rcossin_tbl[((x >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     }
-    return TrigTable[((x >> 1) - 0x400) & 0xFFF].unk2;
+    return rcossin_tbl[((x >> 1) - 0x400) & 0xFFF].unk2;
 }
 
 void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
@@ -773,9 +773,9 @@ void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
     ia >>= 11;
     ka = Trig_HalfCos(ia) * inv;
     if (ib & 1) {
-        ang = (TrigTable[((ib >> 1) - 0x400) & 0xFFF].unk2 + TrigTable[((ib >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+        ang = (rcossin_tbl[((ib >> 1) - 0x400) & 0xFFF].unk2 + rcossin_tbl[((ib >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     } else {
-        ang = TrigTable[((ib >> 1) - 0x400) & 0xFFF].unk2;
+        ang = rcossin_tbl[((ib >> 1) - 0x400) & 0xFFF].unk2;
     }
     ia = ang * inv;
     if (ka > 0) {
@@ -821,8 +821,8 @@ s32 func_80020C04(s32 arg0) {
     s32 b;
     s32 t;
 
-    a = TrigTable[((arg0 >> 16) - 0x400) & 0xFFF].unk2;
-    b = TrigTable[((arg0 >> 16) - 0x3FF) & 0xFFF].unk2;
+    a = rcossin_tbl[((arg0 >> 16) - 0x400) & 0xFFF].unk2;
+    b = rcossin_tbl[((arg0 >> 16) - 0x3FF) & 0xFFF].unk2;
     t = (b - a) * (arg0 & 0xFFFF);
     if (!((arg0 & 0x7FFF) >> 15)) {
         return a;
@@ -832,9 +832,9 @@ s32 func_80020C04(s32 arg0) {
 
 s16 func_80020C4C(s32 arg0) {
     if (arg0 & 1) {
-        return (TrigTable[((arg0 >> 1) - 0x400) & 0xFFF].unk2 + TrigTable[((arg0 >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+        return (rcossin_tbl[((arg0 >> 1) - 0x400) & 0xFFF].unk2 + rcossin_tbl[((arg0 >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     }
-    return TrigTable[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
+    return rcossin_tbl[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
 }
 
 void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {

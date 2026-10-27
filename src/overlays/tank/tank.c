@@ -721,8 +721,8 @@ s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai) {
     } else {
     d = eng->unk1E;
     dir = (d + ((TA_players[player].TurretReqdDir - d) << 20 >> 22)) & 0xFFF;
-    if (GetSandbagValueTank(eng->unk10.x + (-(TrigTable[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
-                      eng->unk10.z + (-(TrigTable[dir].unk2 << 9) >> 12)) != 0) {
+    if (GetSandbagValueTank(eng->unk10.x + (-(rcossin_tbl[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
+                      eng->unk10.z + (-(rcossin_tbl[dir].unk2 << 9) >> 12)) != 0) {
         return 0;
     }
     if (((TankGameView *)GameInfo)->w6C != 0 || ((TankModeView *)GameInfo)->mode == 9) {
@@ -2209,9 +2209,9 @@ void AnimateTankTurret(s32 player) {
                     }
                     n->FUX = (EXT *)fux;
                     se = n->Engine;
-                    dx = -(TrigTable[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
+                    dx = -(rcossin_tbl[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
                     se->unk10.x += dx >> 12;
-                    dz = -(TrigTable[(u16)e->unk1E & 0xFFF].unk2 * 250);
+                    dz = -(rcossin_tbl[(u16)e->unk1E & 0xFFF].unk2 * 250);
                     se->unk10.z += dz >> 12;
                     fux->SpeedX = dx >> 13;
                     fux->SpeedY = -0x5B;
@@ -2359,13 +2359,13 @@ void UpdateTankHeroWeapons(s32 player) {
                     } else {
                         PlaySfx(0x4CD, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
-                    n->Engine->unk10.x += (-(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(TrigTable[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk10.x += (-(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
                     n->Engine->unk1E = eng->unk1E;
                     fux = (EXTobject_TA *)n->FUX;
                     fux->Owner = player;
-                    fux->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x4A) >> 12;
-                    fux->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 0x4A) >> 12;
+                    fux->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x4A) >> 12;
+                    fux->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 0x4A) >> 12;
                     if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
@@ -2405,11 +2405,11 @@ void UpdateTankHeroWeapons(s32 player) {
                         PlaySfx(0x4D0, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
                     fux = (EXTobject_TA *)n->FUX;
-                    n->Engine->unk10.x += (-(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(TrigTable[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk10.x += (-(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
                     n->Engine->unk1E = eng->unk1E;
-                    fux->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x36) >> 12;
-                    fux->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 0x36) >> 12;
+                    fux->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x36) >> 12;
+                    fux->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 0x36) >> 12;
                     if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
@@ -2441,11 +2441,11 @@ void UpdateTankHeroWeapons(s32 player) {
                         PlaySfx(0x4CB, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
                     fux = (EXTobject_TA *)n->FUX;
-                    n->Engine->unk10.x += (-(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(TrigTable[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk10.x += (-(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
                     n->Engine->unk1E = eng->unk1E;
-                    fux->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
-                    fux->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
                     if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
@@ -2476,11 +2476,11 @@ void UpdateTankHeroWeapons(s32 player) {
                         PlaySfx(0x4CF, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                     }
                     fux = (EXTobject_TA *)n->FUX;
-                    n->Engine->unk10.x += (-(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
-                    n->Engine->unk10.z += (-(TrigTable[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk10.x += (-(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
                     n->Engine->unk1E = eng->unk1E;
-                    fux->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
-                    fux->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
                     if (GameMode == 5) {
                         BumpSpeedsForSwamp(fux);
                     }
@@ -2499,12 +2499,12 @@ void UpdateTankHeroWeapons(s32 player) {
                             PlaySfx(0x522, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
                             e = n->Engine;
                             a = dir - TankRocketAngles[i];
-                            e->unk10.x -= (TrigTable[(a - 0x400) & 0xFFF].unk2 * 0x19) >> 8;
-                            e->unk10.z -= (TrigTable[a & 0xFFF].unk2 * 0x19) >> 8;
+                            e->unk10.x -= (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 0x19) >> 8;
+                            e->unk10.z -= (rcossin_tbl[a & 0xFFF].unk2 * 0x19) >> 8;
                             e->unk1E = eng->unk1E;
                             fux = (EXTobject_TA *)n->FUX;
-                            fux->SpeedX = -(TrigTable[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
-                            fux->SpeedZ = -(TrigTable[dir & 0xFFF].unk2 * 200) >> 12;
+                            fux->SpeedX = -(rcossin_tbl[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
+                            fux->SpeedZ = -(rcossin_tbl[dir & 0xFFF].unk2 * 200) >> 12;
                             fux->Status = 1;
                             fux->Owner = player;
                         }
@@ -2793,8 +2793,8 @@ void TankHeroSteerMove(s32 player) {
     if (c & 0x200) {
     thrust:
         v = ta->Speed;
-        px = v * TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2;
-        pz = v * TrigTable[(u16)eng->unk1E & 0xFFF].unk2;
+        px = v * rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2;
+        pz = v * rcossin_tbl[(u16)eng->unk1E & 0xFFF].unk2;
         ta->SpeedX += -(px >> 12) >> 2;
         ta->SpeedZ += -(pz >> 12) >> 2;
     }
@@ -3007,8 +3007,8 @@ loop:
     sub->unk12 = (a + df) & 0xFFF;
     sub->unk52 = 1;
     a = (eng->unk1E + sub->unk12) & 0xFFF;
-    sn = TrigTable[(a - 0x400) & 0xFFF].unk2;
-    cs = TrigTable[a].unk2;
+    sn = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
+    cs = rcossin_tbl[a].unk2;
     x = eng->unk10.x + ((speed * sn) >> 12);
     fx = x + ((sn * 256) >> 12);
     z = eng->unk10.z + ((speed * cs) >> 12);
@@ -4374,8 +4374,8 @@ void PlotWaterMine(NAS *nas) {
     eng->unk10.y += TankWaterBob[t & 0xF];
     nas->UserInfo.user2 = t + 1;
     nas->UserInfo.status = (nas->UserInfo.status + 4) & 0xFFF;
-    eng->unk10.x += (TrigTable[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 7) >> 12;
-    eng->unk10.z += (TrigTable[nas->UserInfo.status & 0xFFF].unk2 * 7) >> 12;
+    eng->unk10.x += (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 7) >> 12;
+    eng->unk10.z += (rcossin_tbl[nas->UserInfo.status & 0xFFF].unk2 * 7) >> 12;
     if (eng->unk10.x > TankArenaMaxX) {
         eng->unk10.x = TankArenaMaxX;
     }
@@ -4478,8 +4478,8 @@ void PlotTorpedo(NAS *nas) {
         if (nas->UserInfo.status != 0) {
             nas->UserInfo.status--;
         } else {
-            eng->unk10.x += (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 9) >> 12;
-            eng->unk10.z += (TrigTable[angle & 0xFFF].unk2 * 9) >> 12;
+            eng->unk10.x += (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 9) >> 12;
+            eng->unk10.z += (rcossin_tbl[angle & 0xFFF].unk2 * 9) >> 12;
         }
         hb = Heroes;
         h2 = &hb[player];
@@ -5193,10 +5193,10 @@ void PlotPickupTA(NAS *nas) {
     case 5:
         eng->unk10.y += 0x14;
         nas->UserInfo.user2 = (nas->UserInfo.user2 + 0x78) & 0xFFF;
-        sn = TrigTable[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2;
+        sn = rcossin_tbl[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2;
         eng->unk5E = 1;
         eng->unk20 = (sn * 25) >> 9;
-        dx = -(TrigTable[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2 * 120) >> 12;
+        dx = -(rcossin_tbl[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2 * 120) >> 12;
         if (eng->unk10.y < -0x12B) {
             break;
         }
@@ -5685,9 +5685,9 @@ void PlotPeriscopeGun(NAS *nas) {
         }
         shell->FUX = (EXT *)ext;
         se = shell->Engine;
-        dx = -(TrigTable[(e->unk1E - 0x400) & 0xFFF].unk2 * 620);
+        dx = -(rcossin_tbl[(e->unk1E - 0x400) & 0xFFF].unk2 * 620);
         se->unk10.x += dx >> 12;
-        dz = -(TrigTable[(u16)e->unk1E & 0xFFF].unk2 * 620);
+        dz = -(rcossin_tbl[(u16)e->unk1E & 0xFFF].unk2 * 620);
         se->unk10.z += dz >> 12;
         ext->SpeedY = -150;
         ext->Owner = -1;
@@ -6163,11 +6163,11 @@ void PlotTotemBit(NAS *nas, s32 id) {
                 ne->sub->unk6C = D_800537AC;
                 ne->sub->unk74 = 0x2006;
                 nx->Owner = v;
-                ne->unk10.x += -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 300) >> 12;
-                ne->unk10.z += -(TrigTable[eng->unk1E & 0xFFF].unk2 * 300) >> 12;
+                ne->unk10.x += -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 300) >> 12;
+                ne->unk10.z += -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 300) >> 12;
                 ne->unk1E = eng->unk1E;
-                nx->SpeedX = -(TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 * 60) >> 12;
-                nx->SpeedZ = -(TrigTable[eng->unk1E & 0xFFF].unk2 * 60) >> 12;
+                nx->SpeedX = -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 60) >> 12;
+                nx->SpeedZ = -(rcossin_tbl[eng->unk1E & 0xFFF].unk2 * 60) >> 12;
             }
             } else {
                 eng->sub->unk74 = v;
@@ -6756,12 +6756,12 @@ void TankBossCrashTurretFire(EXTengine *arg0) {
     se = shell->Engine;
     ext->Counter *= 2;
     PlaySfx(0x4CE, &se->sfx, NULL, 0x1000, 0x1E00, 0);
-    se->unk10.x += -(TrigTable[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
-    se->unk10.z += -(TrigTable[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
+    se->unk10.x += -(rcossin_tbl[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
+    se->unk10.z += -(rcossin_tbl[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
     se->unk1E = arg0->unk1E;
-    ext->SpeedX = -(TrigTable[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 58) >> 12;
+    ext->SpeedX = -(rcossin_tbl[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 58) >> 12;
     ext->SpeedY = -0x10;
-    dz = TrigTable[(u16)arg0->unk1E & 0xFFF].unk2;
+    dz = rcossin_tbl[(u16)arg0->unk1E & 0xFFF].unk2;
     ext->Status = 1;
     ext->Owner = -1;
     ext->SpeedZ = -(dz * 58) >> 12;
@@ -6970,11 +6970,11 @@ void TankBossCortexTurretFire(EXTengine *arg0) {
     ext->Counter = ext->Counter * 5 / 3;
     se = shell->Engine;
     PlaySfx(0x4CC, &se->sfx, NULL, 0x1000, 0x1E00, 0);
-    se->unk10.x += -(TrigTable[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
-    se->unk10.z += -(TrigTable[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
+    se->unk10.x += -(rcossin_tbl[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
+    se->unk10.z += -(rcossin_tbl[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
     se->unk1E = arg0->unk1E;
-    ext->SpeedX = -(TrigTable[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 74) >> 12;
-    dz = TrigTable[(u16)arg0->unk1E & 0xFFF].unk2;
+    ext->SpeedX = -(rcossin_tbl[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 74) >> 12;
+    dz = rcossin_tbl[(u16)arg0->unk1E & 0xFFF].unk2;
     ext->Status = 1;
     ext->Owner = -1;
     ext->SpeedZ = -(dz * 74) >> 12;
@@ -7145,11 +7145,11 @@ void TankBossRocketTurretFire(NAS *nas, EXTengine *eng) {
             PlaySfx(0x522, &n->Engine->sfx, (fux = (EXTobject_TA *)n->FUX, (SLONG_XYZ *)NULL), 0x1000, 0x1E00, 0);
             e = n->Engine;
             a = dir - TankShellAngleOffsets()[i];
-            e->unk10.x -= (TrigTable[(a - 0x400) & 0xFFF].unk2 * 245) >> 11;
-            e->unk10.z -= (TrigTable[a & 0xFFF].unk2 * 245) >> 11;
+            e->unk10.x -= (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 245) >> 11;
+            e->unk10.z -= (rcossin_tbl[a & 0xFFF].unk2 * 245) >> 11;
             e->unk1E = eng->unk1E;
-            fux->SpeedX = -(TrigTable[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
-            fux->SpeedZ = -(TrigTable[dir & 0xFFF].unk2 * 200) >> 12;
+            fux->SpeedX = -(rcossin_tbl[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
+            fux->SpeedZ = -(rcossin_tbl[dir & 0xFFF].unk2 * 200) >> 12;
             fux->Status = 1;
             fux->Owner = -1;
         }
@@ -7402,9 +7402,9 @@ void AnimateMoeJoeTurret(s32 player) {
                     fux = AddExt(n, 0x38, 0x10000000);
                     n->FUX = fux;
                     se = n->Engine;
-                    dx = -(TrigTable[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
+                    dx = -(rcossin_tbl[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
                     se->unk10.x += dx >> 12;
-                    dz = -(TrigTable[(u16)e->unk1E & 0xFFF].unk2 * 250);
+                    dz = -(rcossin_tbl[(u16)e->unk1E & 0xFFF].unk2 * 250);
                     se->unk10.z += dz >> 12;
                     fux->SpeedX = dx >> 13;
                     fux->SpeedY = -0x5B;
@@ -7674,8 +7674,8 @@ loop:
     sub->unk12 = (a + df) & 0xFFF;
     sub->unk52 = 1;
     a = (eng->unk1E + sub->unk12) & 0xFFF;
-    sn = TrigTable[(a - 0x400) & 0xFFF].unk2;
-    cs = TrigTable[a].unk2;
+    sn = rcossin_tbl[(a - 0x400) & 0xFFF].unk2;
+    cs = rcossin_tbl[a].unk2;
     x = eng->unk10.x + ((speed * sn) >> 12);
     fx = x + ((sn * 256) >> 12);
     z = eng->unk10.z + ((speed * cs) >> 12);

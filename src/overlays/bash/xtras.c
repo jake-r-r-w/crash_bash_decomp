@@ -34,8 +34,8 @@ void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
         } while (v != 0);
     }
     x = a->x;
-    mx = sum * TrigTable[(a->ang - 0x400) & 0xFFF].unk2;
-    mz = sum * TrigTable[(u16)a->ang & 0xFFF].unk2;
+    mx = sum * rcossin_tbl[(a->ang - 0x400) & 0xFFF].unk2;
+    mz = sum * rcossin_tbl[(u16)a->ang & 0xFFF].unk2;
     z = a->z;
     x -= mx >> 12;
     z -= mz >> 12;
@@ -386,7 +386,7 @@ void PlotCrate(NAS *arg0) {
                         eng->unk1E = get_angle(dx, dz) - 0x200;
                         ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
                         eng->unk1C = ang;
-                        eng->unk10.y = b.vy - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        eng->unk10.y = b.vy - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
                         dx = a.vx - dx / 2;
                         dz = a.vz - dz / 2;
                         eng->unk20 = 0;
@@ -698,8 +698,8 @@ void PlotCrate(NAS *arg0) {
         if (ext->speed > ext->max) {
             ext->speed = ext->max;
         }
-        eng->unk10.x -= (ext->speed * TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (ext->speed * TrigTable[(u16)eng->unk1E & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (ext->speed * rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (ext->speed * rcossin_tbl[(u16)eng->unk1E & 0xFFF].unk2) >> 12;
         switch (ext->dir & 0xF0) {
         case 0x10:
         case 0x30:

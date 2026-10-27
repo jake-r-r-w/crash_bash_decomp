@@ -1191,9 +1191,9 @@ void PolarUpdateScene(void)
     D_80058AF4.vz = D_8009E1F8;
     if ((((PolarModeView *) GameInfo)->flags & 0x80) && (((PolarModeView *) GameInfo)->mode == 0x12))
     {
-      a = (PolarSceneWord2 * TrigTable[(PolarSceneWord0 - 0x400) & 0xFFF].unk2) >> 12;
-      b = (PolarSceneWord2 * TrigTable[PolarSceneWord0 & 0xFFF].unk2) >> 12;
-      PolarSceneWord0 = (TrigTable[(PolarSceneWord1 - 0x400) & 0xFFF].unk2 * 3) >> 2;
+      a = (PolarSceneWord2 * rcossin_tbl[(PolarSceneWord0 - 0x400) & 0xFFF].unk2) >> 12;
+      b = (PolarSceneWord2 * rcossin_tbl[PolarSceneWord0 & 0xFFF].unk2) >> 12;
+      PolarSceneWord0 = (rcossin_tbl[(PolarSceneWord1 - 0x400) & 0xFFF].unk2 * 3) >> 2;
       PolarSceneWord1 = (PolarSceneWord1 + PolarSceneWord3) & 0xFFF;
       if (PolarSceneWord1 == 0)
       {
@@ -1262,7 +1262,7 @@ bool IsPtInALLZone(SLONG_XYZ *arg0, s32 arg1) {
         a2 = p + 0x50;
         a3 = p;
         ry = ((((get_angle(arg0->x, arg0->z) - 0x7D) & 0xFFF) >> 8) + 1 & 0xF) << 8;
-        t = TrigTable;
+        t = rcossin_tbl;
         n = *(s32 *)(p + 0x38);
         for (;;) {
             s32 ang;
@@ -1339,7 +1339,7 @@ bool CheckMelted(SLONG_XYZ *arg0, s32 arg1) {
     i = 0;
     if (p != NULL) {
         n = *(s32 *)(p + 0x38);
-        t = TrigTable;
+        t = rcossin_tbl;
         a2 = p + 0x50;
         a3 = p;
         for (;;) {
@@ -1384,7 +1384,7 @@ s32 PolarBombHitHeroes(NAS *nas, s32 dist) {
     }
     vol = 0x1E00;
     spd = 0xBB8;
-    t = TrigTable;
+    t = rcossin_tbl;
     h = Heroes;
     while (1) {
     if ((u32)i < 4) {
@@ -2752,8 +2752,8 @@ bool Player2PlayerRayTest(u32 player, u32 target) {
     a = h->hero_eng;
     ang = a->unk1E;
     b = base[target].hero_eng;
-    vel.vx = PolarIceRadius * TrigTable[(ang - 0x400) & 0xFFF].unk2 >> 12;
-    vel.vz = PolarIceRadius * TrigTable[ang & 0xFFF].unk2 >> 12;
+    vel.vx = PolarIceRadius * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+    vel.vz = PolarIceRadius * rcossin_tbl[ang & 0xFFF].unk2 >> 12;
     pos.vx = 0;
     pos.vz = 0;
     d.vx = b->unk10.x - a->unk10.x;
@@ -3069,8 +3069,8 @@ void PolarAI_AvoidMelt(s32 player)
     goto end;
   }
   rnd = Random(8);
-  v1.vx = (PolarIceRadius * TrigTable[(fux->angle - 0x400) & 0xFFF].unk2) >> 12;
-  v1.vz = (PolarIceRadius * TrigTable[fux->angle & 0xFFF].unk2) >> 12;
+  v1.vx = (PolarIceRadius * rcossin_tbl[(fux->angle - 0x400) & 0xFFF].unk2) >> 12;
+  v1.vz = (PolarIceRadius * rcossin_tbl[fux->angle & 0xFFF].unk2) >> 12;
   done = 0;
   v2.vx = 0;
   v2.vz = 0;
@@ -3147,8 +3147,8 @@ void PolarAI_AvoidMelt(s32 player)
         goto end;
       }
       ang = PolarMeltOffsets[j & 7];
-      v1.vx = (PolarIceRadius * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-      v1.vz = (PolarIceRadius * TrigTable[ang & 0xFFF].unk2) >> 12;
+      v1.vx = (PolarIceRadius * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+      v1.vz = (PolarIceRadius * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
       v2.vx = 0;
       v2.vz = 0;
       if (PolarRayHit(&v2, &v1, d, &out) != 0)
@@ -3345,8 +3345,8 @@ aim:
         goto end;
     }
     rnd = Random(8);
-    v1.vx = (PolarIceRadius * TrigTable[(fux->angle - 0x400) & 0xFFF].unk2) >> 12;
-    v1.vz = (PolarIceRadius * TrigTable[fux->angle & 0xFFF].unk2) >> 12;
+    v1.vx = (PolarIceRadius * rcossin_tbl[(fux->angle - 0x400) & 0xFFF].unk2) >> 12;
+    v1.vz = (PolarIceRadius * rcossin_tbl[fux->angle & 0xFFF].unk2) >> 12;
     bestd = 0;
     v2.vx = 0;
     v2.vz = 0;
@@ -3395,8 +3395,8 @@ aim:
                 goto end;
             }
             ang = PolarMeltOffsets[j & 7];
-            v1.vx = (PolarIceRadius * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-            v1.vz = (PolarIceRadius * TrigTable[ang & 0xFFF].unk2) >> 12;
+            v1.vx = (PolarIceRadius * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            v1.vz = (PolarIceRadius * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
             v2.vx = 0;
             v2.vz = 0;
             if (PolarRayHit(&v2, &v1, d, &out) != 0) {
@@ -3627,8 +3627,8 @@ s32 TestWanderChance(s32 player) {
     f = (PolarWanderFux *)h->hero->FUX;
     spd = 0x708;
     if (f != NULL) {
-        v.x = (TrigTable[r & 0xFFF].unk2 * spd) >> 12;
-        v.z = (TrigTable[(r - 0x400) & 0xFFF].unk2 * spd) >> 12;
+        v.x = (rcossin_tbl[r & 0xFFF].unk2 * spd) >> 12;
+        v.z = (rcossin_tbl[(r - 0x400) & 0xFFF].unk2 * spd) >> 12;
         f->vel = v;
         f->pos = h->hero_eng->unk10;
     }
@@ -4753,8 +4753,8 @@ s32 PolarHeroCollisions(s32 player) {
                             }
                         }
                     }
-                    eng->unk10.x -= ((d + 2) * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                    eng->unk10.z -= ((d + 2) * TrigTable[ang].unk2) >> 12;
+                    eng->unk10.x -= ((d + 2) * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->unk10.z -= ((d + 2) * rcossin_tbl[ang].unk2) >> 12;
                 }
             }
         }
@@ -4783,7 +4783,7 @@ s32 PolarHeroCollisions(s32 player) {
     } else {
         range = 0x1F4;
         p = PolarBears;
-        t = TrigTable;
+        t = rcossin_tbl;
         while (1) {
             if (p == NULL) {
                 break;
@@ -5274,8 +5274,8 @@ void PlotTransmuterBeam(NAS *m) {
                 if (Heroes[i].hero_mode == 0x5A) {
                     goto next1;
                 }
-                Heroes[i].hero_move->x_vel = TrigTable[(t - 0x400) & 0xFFF].unk2 * 128 >> 12;
-                Heroes[i].hero_move->z_vel = TrigTable[t & 0xFFF].unk2 * 128 >> 12;
+                Heroes[i].hero_move->x_vel = rcossin_tbl[(t - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                Heroes[i].hero_move->z_vel = rcossin_tbl[t & 0xFFF].unk2 * 128 >> 12;
                 SetHeroAction(i, 0x5A);
                 BeamTimer = 1;
             next1:;
@@ -5320,7 +5320,7 @@ void PlotTransmuterBeam(NAS *m) {
                 EXTengine *me;
                 TrigEntry *tr;
 
-                tr = TrigTable;
+                tr = rcossin_tbl;
                 a = BeamState >> 1;
                 me = m->Engine;
                 ox = me->unk10.x - (ext->pos.x + (((ext->unk98 << 8) >> 8) * tr[(tr[(a - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12));
@@ -5351,7 +5351,7 @@ void PlotTransmuterBeam(NAS *m) {
         } else {
             TrigEntry *tr;
 
-            tr = TrigTable;
+            tr = rcossin_tbl;
             t2 = BeamState >> 1;
             m->Engine->unk10.x = ext->pos.x + (((ext->unk98 << 8) >> 8) * tr[(tr[(t2 - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12);
             BeamTimer = 0;
@@ -5359,7 +5359,7 @@ void PlotTransmuterBeam(NAS *m) {
             m->Engine->unk10.z = ext->pos.z + (ext->unk98 * tr[t5 & 0xFFF].unk2 >> 12);
         }
         if (PolarClock == 0) {
-            m->Engine->unk10.y = ext->pos.y + (TrigTable[((ext->unk9C << 4) - 0x400) & 0xFFF].unk2 * 64 >> 12);
+            m->Engine->unk10.y = ext->pos.y + (rcossin_tbl[((ext->unk9C << 4) - 0x400) & 0xFFF].unk2 * 64 >> 12);
         } else {
             m->Engine->unk10.y -= 0x10;
         }
@@ -6289,7 +6289,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
     o = PolarIceObjects[0];
     if (GameMode == 0x13) {
         t0 = VSync(1);
-        t = TrigTable;
+        t = rcossin_tbl;
         k = 0x100;
         while (1) {
             if (o != NULL) {
@@ -6534,8 +6534,8 @@ void InitUkaPolarMask(NAS *m) {
     if (r == 3) {
         ext->angle = 0xB00;
     }
-    ext->unk1D0 = (TrigTable[(ext->angle - 0x400) & 0xFFF].unk2 * 0x115) >> 9;
-    ext->unk1D8 = (TrigTable[ext->angle & 0xFFF].unk2 * 0x115) >> 9;
+    ext->unk1D0 = (rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2 * 0x115) >> 9;
+    ext->unk1D8 = (rcossin_tbl[ext->angle & 0xFFF].unk2 * 0x115) >> 9;
     ext->unk1C4 = 1;
     ext->unk1C8 = 1;
     ext->unk68 = -1;
@@ -6629,8 +6629,8 @@ void PlotUkaPolarMask(NAS *m) {
         ext->bit->Engine->flags &= ~0x8000;
     }
     seg = ((get_angle(m->Engine->unk10.x, m->Engine->unk10.z) + 1) & 0xFFF) >> 8;
-    cs = TrigTable[(ext->unk9C - 0x400) & 0xFFF].unk2;
-    sn = TrigTable[ext->unk9C & 0xFFF].unk2;
+    cs = rcossin_tbl[(ext->unk9C - 0x400) & 0xFFF].unk2;
+    sn = rcossin_tbl[ext->unk9C & 0xFFF].unk2;
     ty = (cs * 3) >> 5;
     tx = tz = sn * 128 >> 12;
     if (ext->unk14 != 2) {
@@ -6840,8 +6840,8 @@ void PlotUkaPolarMask(NAS *m) {
             v &= 0xF;
             ga = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
             ext->angle = ((v << 8) - 0x40) & 0xFFF;
-            ext->unk1D0 = (TrigTable[(ext->angle - 0x400) & 0xFFF].unk2 * 0x115) >> 9;
-            ext->unk1D8 = (TrigTable[ext->angle & 0xFFF].unk2 * 0x115) >> 9;
+            ext->unk1D0 = (rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2 * 0x115) >> 9;
+            ext->unk1D8 = (rcossin_tbl[ext->angle & 0xFFF].unk2 * 0x115) >> 9;
             UkaMaskTimer++;
             ext->unk1B8 = 0;
             if (((ga - ext->angle) << 20) < 0) {
@@ -6933,8 +6933,8 @@ void PlotUkaPolarMask(NAS *m) {
                             ang = get_angle(h8->hero_eng->unk10.x, h8->hero_eng->unk10.z) & 0xFFF;
                             Heroes[ext->unk10].hero_eng->unk1E = ang;
                             Heroes[ext->unk10].hero_move->forward_angle = ang;
-                            m8->x_max = -(TrigTable[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12);
-                            m8->z_max = -(TrigTable[ang].unk2 * 64 >> 12);
+                            m8->x_max = -(rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12);
+                            m8->z_max = -(rcossin_tbl[ang].unk2 * 64 >> 12);
                             m8->x_vel = m8->x_max;
                             m8->z_vel = m8->z_max;
                         }
@@ -7304,8 +7304,8 @@ void InitPolarWalrus(NAS *m) {
         m->Engine->sub->unk74 = 0x4000;
         m->UserInfo.status = 0;
         func_80026B70(&PolarBears, (u8 *)m);
-        m->Engine->unk10.x = (TrigTable[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.z = (TrigTable[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.y = 0x400;
         m->Engine->unk1E = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
         m->Engine->sub->flags &= ~0x8000;
@@ -7322,9 +7322,9 @@ void InitPolarWalrus(NAS *m) {
         ext->arc[1] = 0;
         ext->arc[6] = 0;
         ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
-        ext->to.x = (TrigTable[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
         ext->to.y = 0;
-        ext->to.z = (TrigTable[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
         m->Engine->sub->flags |= 0x02000000;
         ext->timer = Random(8) * 0x1E + 0x10E;
         ext->unk90 = 0;
@@ -7472,10 +7472,10 @@ void PlotPolarWalrus(NAS *m) {
         if (++ext->timer == 0x1E) {
             PlaySfx(0x47A, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        m->Engine->unk10.x -= (ext->speed * TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-        m->Engine->unk10.z -= (ext->speed * TrigTable[m->Engine->unk1E & 0xFFF].unk2) >> 12;
-        pos.x = m->Engine->unk10.x + ((TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x80) >> 12);
-        pos.z = m->Engine->unk10.z + ((TrigTable[m->Engine->unk1E & 0xFFF].unk2 * 0x80) >> 12);
+        m->Engine->unk10.x -= (ext->speed * rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        m->Engine->unk10.z -= (ext->speed * rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2) >> 12;
+        pos.x = m->Engine->unk10.x + ((rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x80) >> 12);
+        pos.z = m->Engine->unk10.z + ((rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2 * 0x80) >> 12);
         e2->unk20 = 0;
         e2->unk40 = 0;
         if ((CheckMelted(&pos, 0) ^ 1) != 0) {
@@ -7500,14 +7500,14 @@ void PlotPolarWalrus(NAS *m) {
         m->Engine->sub->flags &= ~0x8000;
         m->Engine->sub->unk68 = 0x200;
         ang = WalrusState;
-        m->Engine->unk10.x = (TrigTable[(ang + 0x400) & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.z = (TrigTable[(ang + 0x800) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.x = (rcossin_tbl[(ang + 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.z = (rcossin_tbl[(ang + 0x800) & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.y = 0x400;
         WalrusState += 0x800;
         ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
-        ext->to.x = (TrigTable[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
         ext->to.y = 0;
-        ext->to.z = (TrigTable[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
         m->Engine->unk1E = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
         ext->cursor->unk1E = 0;
         ext->cursor->unk1C = 0;
@@ -7527,8 +7527,8 @@ void InitWalrusFish(NAS *m) {
     if (ext != NULL) {
         ext->cursor = func_80024E30(m, &WalrusFishScriptInit);
         m->Engine->flags |= 0x200000;
-        m->Engine->unk10.x = (TrigTable[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
-        m->Engine->unk10.z = (TrigTable[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.y = 0x400;
         m->Engine->sub->unk6C = D_8005476C;
         m->Engine->sub->unk74 = 0x2002;
@@ -7544,9 +7544,9 @@ void InitWalrusFish(NAS *m) {
         ext->arc[1] = 0;
         ext->arc[6] = 0;
         ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
-        ext->to.x = (TrigTable[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
         ext->to.y = 0;
-        ext->to.z = (TrigTable[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
         m->Engine->sub->flags |= 0x02000000;
         ext->spin = 0x80;
         ext->timer = 0;
@@ -7618,7 +7618,7 @@ void PlotSmokeTrail(NAS *m) {
     }
     if (ext->flags & 1) {
         m->Engine->unk10.y -= ext->rise;
-        m->Engine->unk10.x = ext->baseX + ((ext->amp * TrigTable[(ext->angle - 0x400) & 0xFFF].unk2) >> 12);
+        m->Engine->unk10.x = ext->baseX + ((ext->amp * rcossin_tbl[(ext->angle - 0x400) & 0xFFF].unk2) >> 12);
         ext->amp -= ext->ampDecay;
         if (ext->amp < 0) {
             ext->amp = 0;
@@ -7821,8 +7821,8 @@ void InitPolarBoss(NAS *nas) {
         ext->unk80 = 0;
         ext->unk8C = 0xC;
         PlaySfx(0x226, &nas->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
-        nas->Engine->OldXYZ.x = (TrigTable[(((ext->ang + 0x20) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 2;
-        nas->Engine->OldXYZ.z = ((TrigTable[(ext->ang + 0x20) & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
+        nas->Engine->OldXYZ.x = (rcossin_tbl[(((ext->ang + 0x20) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 2;
+        nas->Engine->OldXYZ.z = ((rcossin_tbl[(ext->ang + 0x20) & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
         get_angle(nas->Engine->OldXYZ.x - nas->Engine->unk10.x, nas->Engine->OldXYZ.z - nas->Engine->unk10.z);
         nas->Engine->unk1E = 0x800;
         nas->Engine->unk5E = 1;
@@ -7914,16 +7914,16 @@ void PlotPolarBoss(NAS *m) {
         if (ext->unk84->Engine->sfx != NULL) {
             StopSfx(ext->unk84->Engine->sfx);
         }
-        m->Engine->OldXYZ.x = (TrigTable[(((ext->ang + 0x20) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 2;
-        m->Engine->OldXYZ.z = ((TrigTable[(ext->ang + 0x20) & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
+        m->Engine->OldXYZ.x = (rcossin_tbl[(((ext->ang + 0x20) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 2;
+        m->Engine->OldXYZ.z = ((rcossin_tbl[(ext->ang + 0x20) & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
         ext->unk84->Engine->unk10 = m->Engine->unk10;
         ext->unk88->Engine->unk10 = m->Engine->unk10;
         ext->unk88->Engine->unk10.y -= 0x400;
         rot = (get_angle(m->Engine->OldXYZ.x - m->Engine->unk10.x,
                          m->Engine->OldXYZ.z - m->Engine->unk10.z) & 0xFFF) + 0x400;
         m->Engine->unk1E -= ((m->Engine->unk1E - rot) << 20) >> 22;
-        m->Engine->unk10.x = (TrigTable[(ext->ang - 0x400) & 0xFFF].unk2 * 3) >> 2;
-        m->Engine->unk10.z = ((TrigTable[ext->ang & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
+        m->Engine->unk10.x = (rcossin_tbl[(ext->ang - 0x400) & 0xFFF].unk2 * 3) >> 2;
+        m->Engine->unk10.z = ((rcossin_tbl[ext->ang & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
         ext->ang = (ext->ang + ext->unk8C) & 0xFFF;
         if (ext->unk70 != 0) {
             if (ext->phase == 0 || ext->phase == 2 || ext->phase == 4 || ext->phase == 6) {
@@ -8101,20 +8101,20 @@ void PlotPolarBoss(NAS *m) {
                 if (be != NULL) {
                     be->unk70 = 0;
                     if (ext->phase == 1) {
-                        be->ang = (TrigTable[0xA00].unk2 * 3) >> 3;
-                        be->unk74 = (TrigTable[0xE00].unk2 * 3) >> 3;
+                        be->ang = (rcossin_tbl[0xA00].unk2 * 3) >> 3;
+                        be->unk74 = (rcossin_tbl[0xE00].unk2 * 3) >> 3;
                     }
                     if (ext->phase == 3) {
-                        be->ang = (TrigTable[0xE00].unk2 * 3) >> 3;
-                        be->unk74 = (TrigTable[0x200].unk2 * 3) >> 3;
+                        be->ang = (rcossin_tbl[0xE00].unk2 * 3) >> 3;
+                        be->unk74 = (rcossin_tbl[0x200].unk2 * 3) >> 3;
                     }
                     if (ext->phase == 5) {
-                        be->ang = (TrigTable[0x200].unk2 * 3) >> 3;
-                        be->unk74 = (TrigTable[0x600].unk2 * 3) >> 3;
+                        be->ang = (rcossin_tbl[0x200].unk2 * 3) >> 3;
+                        be->unk74 = (rcossin_tbl[0x600].unk2 * 3) >> 3;
                     }
                     if (ext->phase == 7) {
-                        be->ang = (TrigTable[0x600].unk2 * 3) >> 3;
-                        be->unk74 = (TrigTable[0xA00].unk2 * 3) >> 3;
+                        be->ang = (rcossin_tbl[0x600].unk2 * 3) >> 3;
+                        be->unk74 = (rcossin_tbl[0xA00].unk2 * 3) >> 3;
                     }
                 }
             }
@@ -8189,7 +8189,7 @@ s32 BearminatorFindPoint(s32 *arg0, s32 arg1) {
     if (p != NULL) {
         i = 0;
         n = *(s32 *)(p + 0x38);
-        t = TrigTable;
+        t = rcossin_tbl;
         a2 = p + 0x50;
         a3 = p;
         for (;;) {
@@ -8422,8 +8422,8 @@ void PlotBearminator(NAS *m) {
                 if (d <= 0x3D08F) {
                     s = 0x7D00 - csqrt(d);
                     a = get_angle(dx, dz) & 0xFFF;
-                    m->Engine->unk10.x -= ((s + 2) * TrigTable[(a - 0x400) & 0xFFF].unk2) >> 18;
-                    m->Engine->unk10.z -= ((s + 2) * TrigTable[a].unk2) >> 18;
+                    m->Engine->unk10.x -= ((s + 2) * rcossin_tbl[(a - 0x400) & 0xFFF].unk2) >> 18;
+                    m->Engine->unk10.z -= ((s + 2) * rcossin_tbl[a].unk2) >> 18;
                 }
             }
         }
@@ -8439,9 +8439,9 @@ void PlotBearminator(NAS *m) {
             s32 r;
 
             r = Random(0x29C) + 0x400;
-            ext->vel[0] = (r * TrigTable[(ext->unk94 - 0x400) & 0xFFF].unk2) >> 12;
+            ext->vel[0] = (r * rcossin_tbl[(ext->unk94 - 0x400) & 0xFFF].unk2) >> 12;
             ext->vel[1] = 0;
-            ext->vel[2] = (r * TrigTable[ext->unk94 & 0xFFF].unk2) >> 12;
+            ext->vel[2] = (r * rcossin_tbl[ext->unk94 & 0xFFF].unk2) >> 12;
             *(SLONG_XYZ *)ext->from = m->Engine->unk10;
             func_8008C5C4(ext->from, ext->vel, &ext->unk38, &m->Engine->unk10.x);
             m->Engine->sub->flags |= 0x8000;
@@ -8641,8 +8641,8 @@ void PlotBearminator(NAS *m) {
             s32 k;
 
             k = AiPlayerSkill[0].unk0 + 0x20;
-            cam->x.target = (k * TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 13;
-            cam->z.target = (k * TrigTable[m->Engine->unk1E & 0xFFF].unk2) >> 13;
+            cam->x.target = (k * rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 13;
+            cam->z.target = (k * rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2) >> 13;
         }
         if (Heroes[ext->unkA0].hero_mode == 0x4E) {
             ext->unkC = 6;
@@ -8661,8 +8661,8 @@ void PlotBearminator(NAS *m) {
                 if (near != 0)
                 if (near == 1) {
                     ext->unkC = near;
-                    cam->x.target = cam->x.cur = (TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
-                    cam->z.target = cam->z.cur = (TrigTable[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
+                    cam->x.target = cam->x.cur = (rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
+                    cam->z.target = cam->z.cur = (rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
                     GotoLinkAnim((EXTanimator *)ext->cursor, 1);
                     ext->unk1C = 0x5A - (AiPlayerSkill[0].unk0 - 0x10) * 4;
                 }
@@ -8700,8 +8700,8 @@ void PlotBearminator(NAS *m) {
                 a = (get_angle(dx, dz) + 0x800) & 0xFFF;
                 ext->unk18 = a;
                 m->Engine->unk1E += ((a - m->Engine->unk1E) << 20) >> 21;
-                cam->x.target = (TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 3) >> 9;
-                cam->z.target = (TrigTable[m->Engine->unk1E & 0xFFF].unk2 * 3) >> 9;
+                cam->x.target = (rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 3) >> 9;
+                cam->z.target = (rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2 * 3) >> 9;
             } else {
                 h = Heroes[ext->unkA0].hero_eng;
                 dx = h->unk10.x;
@@ -8765,8 +8765,8 @@ void PlotBearminator(NAS *m) {
             ext->unk14 = 1;
         }
         m->Engine->unk1E += ((ext->unk18 - m->Engine->unk1E) << 20) >> 21;
-        cam->x.target = (TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
-        cam->z.target = (TrigTable[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
+        cam->x.target = (rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
+        cam->z.target = (rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
         BearminatorEaseCam(cam, &m->Engine->unk10.x);
         if (done != 0) {
             ext->unkC = 0;
@@ -8809,8 +8809,8 @@ void PlotPolarMissile(NAS *m) {
         }
         break;
     }
-    ext->pos.x -= (ext->unk5C * TrigTable[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
-    ext->pos.z -= (ext->unk5C * TrigTable[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+    ext->pos.x -= (ext->unk5C * rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->unk5C * rcossin_tbl[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
     if (PolarMissileHitHero(&ext->pos) != -1) {
     blast:
         PolarMissileBlast(m, 1);
@@ -9249,9 +9249,9 @@ void PlotSniperMissile(NAS *m) {
         break;
     case 1:
         ext->unk34++;
-        m->Engine->unk10.x -= TrigTable[(ext->yaw - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
-        m->Engine->unk10.z -= TrigTable[ext->yaw & 0xFFF].unk2 * 0x100 >> 12;
-        m->Engine->unk10.y -= TrigTable[(ext->pitch - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
+        m->Engine->unk10.x -= rcossin_tbl[(ext->yaw - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
+        m->Engine->unk10.z -= rcossin_tbl[ext->yaw & 0xFFF].unk2 * 0x100 >> 12;
+        m->Engine->unk10.y -= rcossin_tbl[(ext->pitch - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
         if (--ext->unk30 == -1) {
             PolarMissileBlast(m, 0);
             ext->unk30 = 1;
@@ -9603,7 +9603,7 @@ void PolarBossFace(NAS *m) {
     TrigEntry *t;
 
     p = PolarBears;
-    t = TrigTable;
+    t = rcossin_tbl;
 loop:
     if (p != NULL) {
         e = *(EXTengine **)(p + 0x54);
@@ -9976,8 +9976,8 @@ void InitGravityObject(NAS *m) {
         m->Engine->sub->unk74 = 0x200C;
         m->Engine->sub->unk6C = PolarObjectsModel;
         m->Engine->sub->flags |= 0x02000000;
-        g->vx = (TrigTable[0xE00].unk2 * 27) >> 11;
-        t = TrigTable[0x200].unk2;
+        g->vx = (rcossin_tbl[0xE00].unk2 * 27) >> 11;
+        t = rcossin_tbl[0x200].unk2;
         g->vy = -0x54;
         g->ax = 0;
         g->az = 0;
@@ -10313,8 +10313,8 @@ void PolarAI_Timer1(s32 player) {
     f = (PolarWanderFux *)h->hero->FUX;
     spd = 0x708;
     if (f != NULL) {
-        v.x = (TrigTable[r & 0xFFF].unk2 * spd) >> 12;
-        v.z = (TrigTable[(r - 0x400) & 0xFFF].unk2 * spd) >> 12;
+        v.x = (rcossin_tbl[r & 0xFFF].unk2 * spd) >> 12;
+        v.z = (rcossin_tbl[(r - 0x400) & 0xFFF].unk2 * spd) >> 12;
         f->vel = v;
         f->pos = h->hero_eng->unk10;
     }
@@ -10987,28 +10987,28 @@ void PolarPreMoveHero(s32 player) {
             if (p2->buttons & 0xF0) {
                 m->forward_angle = (p2->angle + 0x800) & 0xFFF;
                 spd = &PolarHeroMass[player];
-                m->x_max = (*spd * TrigTable[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
-                m->z_max = (*spd * TrigTable[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                m->x_max = (*spd * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                m->z_max = (*spd * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
             }
         }
         g = (PolarModeView *)GameInfo;
         if (g->mode != 0x16) {
-            m->x_max += ((m->mass * 3) >> 3) * TrigTable[(D_8009E1F8 - 0x400) & 0xFFF].unk2 >> 12;
-            m->z_max -= ((m->mass * 3) >> 3) * TrigTable[(D_8009E1F4 - 0x400) & 0xFFF].unk2 >> 12;
+            m->x_max += ((m->mass * 3) >> 3) * rcossin_tbl[(D_8009E1F8 - 0x400) & 0xFFF].unk2 >> 12;
+            m->z_max -= ((m->mass * 3) >> 3) * rcossin_tbl[(D_8009E1F4 - 0x400) & 0xFFF].unk2 >> 12;
             if (g->mode == 0x12) {
                 if (g->flags & 0x80) {
                     if (GameInfo[player + 0x5C] != 0) {
-                        m->x_max += ((m->mass * 3) >> 4) * TrigTable[(D_80058AF4.vz - 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max -= ((m->mass * 3) >> 4) * TrigTable[(D_80058AF4.vx - 0x400) & 0xFFF].unk2 >> 12;
+                        m->x_max += ((m->mass * 3) >> 4) * rcossin_tbl[(D_80058AF4.vz - 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max -= ((m->mass * 3) >> 4) * rcossin_tbl[(D_80058AF4.vx - 0x400) & 0xFFF].unk2 >> 12;
                     } else {
-                        m->x_max += ((m->mass * 5) >> 3) * TrigTable[(D_80058AF4.vz - 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max -= ((m->mass * 5) >> 3) * TrigTable[(D_80058AF4.vx - 0x400) & 0xFFF].unk2 >> 12;
+                        m->x_max += ((m->mass * 5) >> 3) * rcossin_tbl[(D_80058AF4.vz - 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max -= ((m->mass * 5) >> 3) * rcossin_tbl[(D_80058AF4.vx - 0x400) & 0xFFF].unk2 >> 12;
                     }
                 }
             }
         } else {
-            m->x_max += ((m->mass * 25) >> 6) * TrigTable[(D_8009E1F8 - 0x400) & 0xFFF].unk2 >> 12;
-            m->z_max -= ((m->mass * 25) >> 6) * TrigTable[(D_8009E1F4 - 0x400) & 0xFFF].unk2 >> 12;
+            m->x_max += ((m->mass * 25) >> 6) * rcossin_tbl[(D_8009E1F8 - 0x400) & 0xFFF].unk2 >> 12;
+            m->z_max -= ((m->mass * 25) >> 6) * rcossin_tbl[(D_8009E1F4 - 0x400) & 0xFFF].unk2 >> 12;
         }
     }
     if (Heroes[player].hero_status & 0x200) {
@@ -11044,7 +11044,7 @@ s32 PolarGetLevelPoint(s32 *arg0, s32 arg1) {
     if (p != NULL) {
         i = 0;
         n = *(s32 *)(p + 0x38);
-        t = TrigTable;
+        t = rcossin_tbl;
         a2 = p + 0x50;
         a3 = p;
         for (;;) {
@@ -12003,8 +12003,8 @@ void PolarHeroSlideFromCentre(s32 player) {
         move->forward_angle = angle + 0x800;
         move->x_max = 0;
         move->z_max = 0;
-        move->x_vel = (TrigTable[(angle - 0x400) & 0xFFF].unk2 * 0x25) >> 11;
-        move->z_vel = (TrigTable[angle].unk2 * 0x25) >> 11;
+        move->x_vel = (rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 0x25) >> 11;
+        move->z_vel = (rcossin_tbl[angle].unk2 * 0x25) >> 11;
         hero->hero_eng->unk10.x += move->x_vel;
         hero->hero_eng->unk10.z += move->z_vel;
     }
@@ -12527,9 +12527,9 @@ void SetPolarHeroThrowBomb(s32 player) {
     base2 = Heroes;
     h2 = &base2[player];
     eng = h2->hero_eng;
-    to.x = eng->unk10.x - (dist * TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    to.x = eng->unk10.x - (dist * rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
     eng = h2->hero_eng;
-    to.z = eng->unk10.z - (dist * TrigTable[eng->unk1E & 0xFFF].unk2 >> 12);
+    to.z = eng->unk10.z - (dist * rcossin_tbl[eng->unk1E & 0xFFF].unk2 >> 12);
     t->pos = to;
     }
     }

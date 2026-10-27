@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 
 typedef struct { s16 unk0; s16 unk2; } ChaseTrig;
-extern ChaseTrig TrigTable[];
+extern ChaseTrig rcossin_tbl[];
 
 extern NAS *D_8005AA9C;
 extern s32 VelocityCalc;

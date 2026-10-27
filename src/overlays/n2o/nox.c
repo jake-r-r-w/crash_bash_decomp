@@ -248,7 +248,7 @@ void NoxInitAsteroids(void) {
     nAst = 0;
     nMine = 0;
     nBig = 0;
-    trig = TrigTable;
+    trig = rcossin_tbl;
     a = NoxAsteroids;
     NoxAsteroidTimer = 0x3C;
 loop:
@@ -669,8 +669,8 @@ void NoxUpdateAsteroids(void) {
                     o->pos.y = NoxAsteroids[nAst].pos.y;
                     o->pos.x = NoxAsteroids[nAst].pos.x;
                 } else {
-                    o->pos.y = NoxAsteroids[nAst].pos.y + (TrigTable[(NoxAsteroids[nAst].ang - 0x400) & 0xFFF].unk2 * 512 >> 12);
-                    o->pos.x = NoxAsteroids[nAst].pos.x + (TrigTable[NoxAsteroids[nAst].ang & 0xFFF].unk2 * 512 >> 12);
+                    o->pos.y = NoxAsteroids[nAst].pos.y + (rcossin_tbl[(NoxAsteroids[nAst].ang - 0x400) & 0xFFF].unk2 * 512 >> 12);
+                    o->pos.x = NoxAsteroids[nAst].pos.x + (rcossin_tbl[NoxAsteroids[nAst].ang & 0xFFF].unk2 * 512 >> 12);
                 }
                 NoxAsteroids[nAst].ang = (NoxAsteroids[nAst].ang + 0x20) & 0xFFF;
                 if (o->flags & 0x8000) {
@@ -817,7 +817,7 @@ void NoxHeroCollide(s32 arg0) {
     base = Heroes;
     i = 0;
     total = 0x200;
-    trig = TrigTable;
+    trig = rcossin_tbl;
     while (1) {
         if (i >= 4) {
             break;
@@ -916,8 +916,8 @@ void NoxPreMoveHero(s32 arg0) {
         spd = NoxSpeedScale;
         base2 = Heroes;
         hh = &base2[arg0];
-        m->x_max = (spd * TrigTable[(hh->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 11;
-        m->jump_max = (spd * TrigTable[(hh->hero_eng->unk1C + 0x400) & 0xFFF].unk2) >> 11;
+        m->x_max = (spd * rcossin_tbl[(hh->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 11;
+        m->jump_max = (spd * rcossin_tbl[(hh->hero_eng->unk1C + 0x400) & 0xFFF].unk2) >> 11;
         if (NoxBossHitTimer == 0) {
             m->z_max = spd;
         } else {
@@ -1042,10 +1042,10 @@ void NoxHeroFly(s32 arg0) {
         func_8008502C(arg0);
     }
     ang = h->hero_eng->unk1E;
-    x1 = (TrigTable[ang & 0xFFF].unk2 * 0x67) >> 10;
-    z1 = (TrigTable[(ang + 0x400) & 0xFFF].unk2 * 0x67) >> 10;
-    x2 = (TrigTable[(ang - 0x800) & 0xFFF].unk2 * 0x67) >> 10;
-    z2 = (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 0x67) >> 10;
+    x1 = (rcossin_tbl[ang & 0xFFF].unk2 * 0x67) >> 10;
+    z1 = (rcossin_tbl[(ang + 0x400) & 0xFFF].unk2 * 0x67) >> 10;
+    x2 = (rcossin_tbl[(ang - 0x800) & 0xFFF].unk2 * 0x67) >> 10;
+    z2 = (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 0x67) >> 10;
     sub = h->hero_sub;
     if (sub->unk74 < 0x401D) {
         sub->unk74++;
@@ -1164,7 +1164,7 @@ void InitAsteroidRoll(NAS *m) {
         ext->arc[1] = 0;
         ext->floor = 0;
         ext->to.x = Heroes->hero_eng->unk10.x;
-        ext->to.z = (TrigTable[0].unk2 * 9) >> 4;
+        ext->to.z = (rcossin_tbl[0].unk2 * 9) >> 4;
         m->Engine->unk1E = 0;
         ext->to.y = 0;
         ext->from.x = Heroes->hero_eng->unk10.x;
@@ -1323,9 +1323,9 @@ void PlotNitroMissile(NAS *nas) {
         b = get_angle(-dy, d);
         nas->Engine->unk1E += ((a - nas->Engine->unk1E) << 20) >> 20;
         nas->Engine->unk1C += ((b - nas->Engine->unk1C) << 20) >> 20;
-        nas->Engine->unk10.x -= TrigTable[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.z -= TrigTable[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.y += TrigTable[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.x -= rcossin_tbl[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.z -= rcossin_tbl[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.y += rcossin_tbl[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
         eng = nas->Engine;
         h = &Heroes[ext->unk14];
         if (eng->unk10.z < h->hero_eng->unk10.z) {
@@ -1388,9 +1388,9 @@ void PlotNitroMissile(NAS *nas) {
         }
         goto kill;
     case 1:
-        nas->Engine->unk10.x -= TrigTable[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.z -= TrigTable[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
-        nas->Engine->unk10.y += TrigTable[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.x -= rcossin_tbl[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.z -= rcossin_tbl[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.y += rcossin_tbl[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
         if (nas->Engine->unk10.z < Heroes[ext->unk14].hero_eng->unk10.z - 0x1000) {
             goto kill;
         }
@@ -1657,8 +1657,8 @@ void InitSpiralSat(NAS *nas) {
                 ext->ang[i] = i << 10;
                 ext->eng[i] = e;
                 ext->radius = 0x800;
-                e->unk10.x = ext->c.x + ((ext->radius * TrigTable[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
-                e->unk10.y = ext->c.y + ((ext->radius * TrigTable[ext->ang[i] & 0xFFF].unk2) >> 12);
+                e->unk10.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+                e->unk10.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
                 e->unk10.z = ext->c.z;
                 e->sub->unk6C = *(s32 *)MapScene;
                 e->sub->unk74 = 0x201A;
@@ -1797,8 +1797,8 @@ void PlotSpiralSat(NAS *nas) {
             ext->eng[i]->unk1C += 0x40;
             ext->eng[i]->unk1E += 0x40;
             ext->eng[i]->unk5E = 1;
-            ext->eng[i]->unk10.x = ext->c.x + ((ext->radius * TrigTable[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
-            ext->eng[i]->unk10.y = ext->c.y + ((ext->radius * TrigTable[ext->ang[i] & 0xFFF].unk2) >> 12);
+            ext->eng[i]->unk10.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+            ext->eng[i]->unk10.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
             ext->eng[i]->unk10.z = ext->c.z;
             if (ext->sat[i] != NULL) {
                 ext->sat[i]->Engine->unk10 = ext->eng[i]->unk10;
@@ -1810,7 +1810,7 @@ void PlotSpiralSat(NAS *nas) {
             }
         }
     done:
-        ext->radius = abs((TrigTable[(ext->unk40 - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
+        ext->radius = abs((rcossin_tbl[(ext->unk40 - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
         ext->unk40 = (ext->unk40 + 0x18) & 0xFFF;
     }
     z = nas->Engine->unk10.z;
@@ -1894,9 +1894,9 @@ void PlotLaserShoot(NAS *nas) {
     s32 dz;
     s32 r;
 
-    nas->Engine->unk10.x += TrigTable[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 12;
-    nas->Engine->unk10.z += TrigTable[nas->Engine->unk1E & 0xFFF].unk2 * 1024 >> 12;
-    nas->Engine->unk10.y -= TrigTable[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->unk10.x += rcossin_tbl[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->unk10.z += rcossin_tbl[nas->Engine->unk1E & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->unk10.y -= rcossin_tbl[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 1024 >> 12;
     if (nas->UserInfo.user2 == 0) {
         nas->Engine->sub->unk74 = 0x201D;
     }

@@ -173,7 +173,7 @@ rest:
         s = self->hero_fx->sub;
         if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
             self->hero_fx->unk10 = self->hero_eng->unk10;
-            v = (TrigTable[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+            v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
             s->unk20.y = s->unk20.x = v;
             s->unk04 = pos.vx - self->hero_eng->unk10.x;
             s->unk08 = pos.vy - self->hero_eng->unk10.y;
@@ -231,7 +231,7 @@ rest:
         s = self->hero_fx->sub;
         if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
             self->hero_fx->unk10 = self->hero_eng->unk10;
-            v = (TrigTable[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+            v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
             s->unk20.y = s->unk20.x = v;
             s->unk04 = pos.vx - self->hero_eng->unk10.x;
             s->unk08 = pos.vy - self->hero_eng->unk10.y;
@@ -677,8 +677,8 @@ NAS *BashHeroGrabObject(idx, cone)
     h = &heroes[idx];
     ang = h->hero_move->facing_angle;
     he = h->hero_eng;
-    hx = he->unk10.x - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (TrigTable[ang & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (rcossin_tbl[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = (u8 *)n->FUX;
         if (fux == NULL) continue;
@@ -855,8 +855,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                             if (d < r) {
                                 ang = get_angle(dx, dz) & 0xFFF;
                                 d = r - d + 1;
-                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                 hit = 1;
                                 if (self->hero_pu != 0) {
                                     (*(void (**)(s32, s32))&HeroHooks.unk60)(arg0, i);
@@ -887,11 +887,11 @@ s32 BashHeroKickCollision(s32 arg0) {
                             ang = get_angle(dx, dz) & 0xFFF;
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                             } else {
-                                e->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                e->unk10.z += (d * TrigTable[ang].unk2) >> 12;
+                                e->unk10.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                e->unk10.z += (d * rcossin_tbl[ang].unk2) >> 12;
                             }
                             if (VelocityCalc < 4) {
                                 if (VelocityCalc >= 2) {
@@ -915,11 +915,11 @@ s32 BashHeroKickCollision(s32 arg0) {
                             ang = get_angle(dx, dz) & 0xFFF;
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                             } else {
-                                e->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                e->unk10.z += (d * TrigTable[ang].unk2) >> 12;
+                                e->unk10.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                e->unk10.z += (d * rcossin_tbl[ang].unk2) >> 12;
                             }
                             if (VelocityCalc < 4) {
                                 if (VelocityCalc >= 2) {
@@ -970,8 +970,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                             }
                             d = r - d + 1;
                             if (push != 0) {
-                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                eng->unk10.z -= (d * TrigTable[ang & 0xFFF].unk2) >> 12;
+                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
                             }
                             t = FindExtension(n, 0x1000);
                             if (t != NULL && (t->can_do & 8)) {
@@ -1056,8 +1056,8 @@ s32 BashHeroCarryCollision(s32 idx) {
                                             if (d < r) {
                                                 ang = get_angle(dx, dz) & 0xFFF;
                                                 d = r - d + 1;
-                                                eng->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                                eng->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                 hit = 1;
                                                 if (ext->can_do & 8) {
                                                     ext->player = idx;
@@ -1089,8 +1089,8 @@ void *BashHeroObjectAhead(s32 idx, s32 mask) {
     m = mask;
     lim = 0x10000;
     he = Heroes[idx].hero_eng;
-    hx = he->unk10.x - (TrigTable[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
-    hz = he->unk10.z - (TrigTable[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    hx = he->unk10.x - (rcossin_tbl[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (rcossin_tbl[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
         fux = n->FUX;
         if (fux == NULL) continue;

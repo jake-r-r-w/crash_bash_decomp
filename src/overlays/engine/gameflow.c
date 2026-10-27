@@ -352,7 +352,7 @@ void func_8008F084(void) {
     u32 mask;
 
     i = 0;
-    trig = TrigTable;
+    trig = rcossin_tbl;
     base = CupTable;
     t = base + (u8)D_8005A63C;
     n = t->unk8;
@@ -511,7 +511,7 @@ void func_8008F554(void) {
     sub->unk74 = 0x2006;
     sub->unk12 = FrameCount * 50;
     sub->unk10 = 0;
-    sub->unk14 = TrigTable[(((GameFrameCount * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
+    sub->unk14 = rcossin_tbl[(((GameFrameCount * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
     sub->unk52 = 1;
     GetEngineSlot(0)->sub[5].flags |= 0x8000;
     func_8008F41C();

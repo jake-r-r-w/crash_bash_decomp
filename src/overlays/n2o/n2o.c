@@ -554,7 +554,7 @@ s32 N2O_KeepInBounds(N2OObj *arg0) {
             r = c->r + 0x80;
         }
         if (dx * dx + dz * dz < r * r) {
-            arg0->x = N2OPillarList[i].x - ((r * TrigTable[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+            arg0->x = N2OPillarList[i].x - ((r * rcossin_tbl[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
             return 1;
         }
     }
@@ -1007,9 +1007,9 @@ void N2OMoveHero(s32 arg0) {
         s32 y;
         s32 d;
         t = ((GameFrameCount + arg0) << 6) & 0xFFF;
-        a1 = TrigTable[(t - 0x400) & 0xFFF].unk2 * 17 >> 10;
+        a1 = rcossin_tbl[(t - 0x400) & 0xFFF].unk2 * 17 >> 10;
         y = World_floor_level;
-        d = (TrigTable[(t * 2 - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
+        d = (rcossin_tbl[(t * 2 - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         g->hero_eng->unk10.y = y + d;
     } else {
         g->hero_eng->unk10.y = World_floor_level - 0x80;
@@ -1695,8 +1695,8 @@ void PlotN2OBall(NAS *nas) {
                 mot->Xvel = mot->Xmax;
             }
         }
-        eng->unk10.x -= (mot->Xvel * TrigTable[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (mot->Xvel * TrigTable[mot->Xa & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (mot->Xvel * rcossin_tbl[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (mot->Xvel * rcossin_tbl[mot->Xa & 0xFFF].unk2) >> 12;
         if (obj->timer != 0) {
             obj->timer--;
         }
@@ -2034,10 +2034,10 @@ void N2OBlendDirection(N2OBlend *p) {
         u32 db = p->dir_b;
         s32 a, b, c, d;
         vel = p->speed_a;
-        a = vel * TrigTable[(da - 0x400) & 0xFFF].unk2;
-        b = vel * TrigTable[da & 0xFFF].unk2;
-        c = speed * TrigTable[(db - 0x400) & 0xFFF].unk2;
-        d = speed * TrigTable[db & 0xFFF].unk2;
+        a = vel * rcossin_tbl[(da - 0x400) & 0xFFF].unk2;
+        b = vel * rcossin_tbl[da & 0xFFF].unk2;
+        c = speed * rcossin_tbl[(db - 0x400) & 0xFFF].unk2;
+        d = speed * rcossin_tbl[db & 0xFFF].unk2;
         x1 = a >> 12;
         z1 = b >> 12;
         x1 += c >> 12;
@@ -2292,7 +2292,7 @@ void N2OUpdateBoss(void) {
         N2O_KeepInBounds((N2OObj *)eng);
         tm = N2OBossClock;
         q = &World_floor_level;
-        v = (TrigTable[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
+        v = (rcossin_tbl[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         eng->unk10.y = *q + v;
         dx = ((N2OPanRef *)&Heroes[3].hero_move)->p->unkC;
         eng->unk10.x += dx;
@@ -2390,8 +2390,8 @@ s32 N2OBotAimA(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - TrigTable[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - TrigTable[ang & 0xFFF].unk2;
+    to->x = from->x - rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - rcossin_tbl[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2490,8 +2490,8 @@ s32 N2OBotAimB(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
             } while (0);
         } while (0);
     } while (0);
-    to->x = from->x - TrigTable[(ang - 0x400) & 0xFFF].unk2;
-    to->z = from->z - TrigTable[ang & 0xFFF].unk2;
+    to->x = from->x - rcossin_tbl[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - rcossin_tbl[ang & 0xFFF].unk2;
     if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
         return 0;
     }
@@ -2909,8 +2909,8 @@ void PlotN2Omissile(NAS *nas) {
     }
     ang = nas->UserInfo.user2;
     if (sub->flags != 0) {
-        eng->unk10.x -= (vel * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (vel * TrigTable[ang & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (vel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (vel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
         x = eng->unk10.x;
         y = eng->unk10.y += mot->Yvel;
         z = eng->unk10.z;
@@ -2996,8 +2996,8 @@ void PlotN2Ofirstmissile(NAS *nas) {
     }
     ang = nas->UserInfo.user2;
     if (vel != 0) {
-        eng->unk10.x -= (vel * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-        eng->unk10.z -= (vel * TrigTable[ang & 0xFFF].unk2) >> 12;
+        eng->unk10.x -= (vel * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (vel * rcossin_tbl[ang & 0xFFF].unk2) >> 12;
         x = eng->unk10.x;
         y = eng->unk10.y += mot->Yvel;
         z = eng->unk10.z;
@@ -3289,8 +3289,8 @@ void N2OLineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
 
     arg1 = (arg1 + 0x800) & 0xFFF;
     start = *pos;
-    start.x -= (0x200 * TrigTable[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
-    start.z -= (0x200 * TrigTable[arg1].unk2) >> 12;
+    start.x -= (0x200 * rcossin_tbl[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
+    start.z -= (0x200 * rcossin_tbl[arg1].unk2) >> 12;
     dir.x = start.x - pos->x;
     dir.y = 0;
     dir.z = start.z - pos->z;
@@ -3364,7 +3364,7 @@ s32 N2OHeroPushTeammate(s32 arg0) {
                 r *= 2;
                 r += 0x90;
                 if (dx * dx + dz * dz < r * r) {
-                    eng->unk10.x = Heroes[mate].hero_eng->unk10.x - ((r * TrigTable[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+                    eng->unk10.x = Heroes[mate].hero_eng->unk10.x - ((r * rcossin_tbl[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
                     return 1;
                 }
                 return 0;
@@ -3447,7 +3447,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
     farp.x = hero->hero_eng->unk10.x + box->x1;
     farp.y = hero->hero_eng->unk10.y + box->y1;
     farp.z = hero->hero_eng->unk10.z + box->z1;
-    tbl = TrigTable;
+    tbl = rcossin_tbl;
     for (nas = HeadOfSolids;; nas = nas->Solid.Child) {
         if (nas == NULL) {
             return 0;
@@ -3609,8 +3609,8 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                                     *(u16 *)(t + 0x1C) |= 8;
                                     ang = get_angle(-dx, -dz) & 0xFFF;
                                     d = r - d + 1;
-                                    o->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                    o->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                    o->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    o->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                     *(u16 *)(t + 0x16) = arg0;
                                     e = FindExtension((NAS *)n, 0x800);
                                     if (e != NULL) {
@@ -3686,8 +3686,8 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                             if (self->flags & 0x80) {
                                                 m = FindExtension(it, 0x800);
                                                 if (m != NULL) {
-                                                    other->unk10.x -= (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                    other->unk10.z -= (d * TrigTable[ang].unk2) >> 12;
+                                                    other->unk10.x -= (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                    other->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
                                                     ang += func_800154A0((m->dir + 0x800) & 0xFFF, ang);
@@ -3699,8 +3699,8 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                                 if (r / 2 < d) {
                                                     d = r;
                                                 }
-                                                eng->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
-                                                eng->unk10.z += (d * TrigTable[ang].unk2) >> 12;
+                                                eng->unk10.x += (d * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z += (d * rcossin_tbl[ang].unk2) >> 12;
                                                 if (mine != NULL) {
                                                     m = FindExtension(it, 0x800);
                                                     if (m != NULL) {
@@ -4260,10 +4260,10 @@ void N2OInitShadow(s32 arg0) {
 }
 
 s32 N2OAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
-    s32 a = arg1 * TrigTable[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 b = arg1 * TrigTable[arg0 & 0xFFF].unk2;
-    s32 c = arg3 * TrigTable[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
-    s32 d = arg3 * TrigTable[arg2 & 0xFFF].unk2;
+    s32 a = arg1 * rcossin_tbl[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 b = arg1 * rcossin_tbl[arg0 & 0xFFF].unk2;
+    s32 c = arg3 * rcossin_tbl[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 d = arg3 * rcossin_tbl[arg2 & 0xFFF].unk2;
     s32 x = a >> 12;
     s32 z = b >> 12;
     x += c >> 12;

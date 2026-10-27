@@ -55,8 +55,8 @@ void func_80078DD4(void) {
                 r = w;
                 if (!(g->unk30 & 0x801)) {
                     ang = eng->unk1E & 0xFFF;
-                    dx = -TrigTable[(ang - 0x400) & 0xFFF].unk2 * nas->Camera.look_ahead >> 12;
-                    dz = -TrigTable[ang].unk2 * nas->Camera.look_ahead >> 12;
+                    dx = -rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * nas->Camera.look_ahead >> 12;
+                    dz = -rcossin_tbl[ang].unk2 * nas->Camera.look_ahead >> 12;
                     if (dx < 0) {
                         dx = -dx;
                         l = w;
@@ -599,8 +599,8 @@ s32 GravitateNas(NAS *nas) {
     if (m->Xvel > m->Xmax) {
         m->Xvel = m->Xmax;
     }
-    eng->unk10.x -= m->Xvel * TrigTable[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12;
-    eng->unk10.z -= m->Xvel * TrigTable[eng->unk1E & 0xFFF].unk2 >> 12;
+    eng->unk10.x -= m->Xvel * rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12;
+    eng->unk10.z -= m->Xvel * rcossin_tbl[eng->unk1E & 0xFFF].unk2 >> 12;
     m->Yvel += m->Yacc - m->Ydec;
     if (m->Yvel < 0) {
         m->Yvel = 0;

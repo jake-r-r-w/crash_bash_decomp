@@ -1614,8 +1614,8 @@ bool TestHeroPogo(u32 arg0) {
         if (m->forward_speed != 0) {
             angle = m->forward_angle;
             e = h->hero_eng;
-            sx = TrigTable[(angle - 0x400) & 0xFFF].unk2;
-            sz = TrigTable[angle & 0xFFF].unk2;
+            sx = rcossin_tbl[(angle - 0x400) & 0xFFF].unk2;
+            sz = rcossin_tbl[angle & 0xFFF].unk2;
             t = e->unk10.x;
             t -= sx * 512 >> 12;
             t += 0x800;
@@ -4446,8 +4446,8 @@ void Plot_PogoProjectile(NAS *arg0) {
         return;
     }
     if (arg0->UserInfo.flags & 2) {
-        e->unk10.x -= (TrigTable[(arg0->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 8;
-        e->unk10.z -= (TrigTable[arg0->UserInfo.status & 0xFFF].unk2 * 9) >> 8;
+        e->unk10.x -= (rcossin_tbl[(arg0->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 8;
+        e->unk10.z -= (rcossin_tbl[arg0->UserInfo.status & 0xFFF].unk2 * 9) >> 8;
     }
     j = 0;
     n = 0;

@@ -32,7 +32,7 @@ void func_80093270(void) {
     s32 i;
 
     if (D_800A0158 >= 2 && (o = D_800A0290) != NULL) {
-        t = TrigTable;
+        t = rcossin_tbl;
         o->unk51 = 0;
         o->unk12 += 0x20;
         f = FrameCount;

@@ -856,8 +856,8 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         if (vc != 1) {
             if (vc != 0) {
                 if (vc < 4) {
-                    mv->x_vel -= (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 5) >> 8;
-                    h->hero_move->z_vel -= (TrigTable[ang & 0xFFF].unk2 * 5) >> 8;
+                    mv->x_vel -= (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 5) >> 8;
+                    h->hero_move->z_vel -= (rcossin_tbl[ang & 0xFFF].unk2 * 5) >> 8;
                 }
             }
         }

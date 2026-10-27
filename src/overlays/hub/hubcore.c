@@ -214,7 +214,7 @@ void HubUpdateGateways(void) {
         if (q[-4] != 0) {
             o = (s32 *)q[-3];
             if (o != NULL) {
-                s32 v = TrigTable[(((GameFrameCount * 0x50) & 0xFFF) - 0x400) & 0xFFF].unk2;
+                s32 v = rcossin_tbl[(((GameFrameCount * 0x50) & 0xFFF) - 0x400) & 0xFFF].unk2;
                 o[2] = v * 0x20 >> 12;
             }
             if (q[-2] == one) {
@@ -1306,10 +1306,10 @@ void HubCamTarget(void) {
 
     s32 a, b;
 
-    a = TrigTable[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2 * D_8009EE9C.unk8;
-    v[0] = TrigTable[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2;
-    b = TrigTable[D_8009EE9C.unk4 & 0xFFF].unk2 * D_8009EE9C.unk8;
-    v[1] = TrigTable[D_8009EE9C.unk4 & 0xFFF].unk2;
+    a = rcossin_tbl[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2 * D_8009EE9C.unk8;
+    v[0] = rcossin_tbl[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2;
+    b = rcossin_tbl[D_8009EE9C.unk4 & 0xFFF].unk2 * D_8009EE9C.unk8;
+    v[1] = rcossin_tbl[D_8009EE9C.unk4 & 0xFFF].unk2;
     v[0] = a;
     a >>= 12;
     v[0] = a;
@@ -1827,7 +1827,7 @@ void PlotPodiumTrophy(PodiumTrophy *arg0) {
         }
         fx = in->fx;
         if (fx != NULL) {
-            tb = TrigTable;
+            tb = rcossin_tbl;
             t = FrameCount;
 #define TSIN(k) tb[((((t * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
             fx->unk10 = *(s32 *)&tb[(((t * 0x46) & 0xFFF) - 0x400) & 0xFFF] >> 20;
@@ -2079,18 +2079,18 @@ void HubInitSparks(HubSparks *arg0) {
         }
         row->unk134 = 0;
         ang = n << 9;
-        a = &TrigTable[ang & 0xFFF];
+        a = &rcossin_tbl[ang & 0xFFF];
         for (;;) {
             s32 r;
 
             if (i >= 8) {
                 break;
             }
-            row->rot[i].vx = TrigTable[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12;
+            row->rot[i].vx = rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12;
             row->rot[i].vy = (a->unk2 * 64 >> 12) - 0x400;
             row->rot[i].vz = 0x2000;
             row->unk120 = (a->unk2 * 256 >> 12) + Random(0x40) - Random(0x40);
-            row->unk12C = (TrigTable[(ang - 0x400) & 0xFFF].unk2 >> k) + Random(0x40) - Random(0x40);
+            row->unk12C = (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 >> k) + Random(0x40) - Random(0x40);
             row->unkE0[i].vz = 0;
             row->unkA0[i].vz = 0;
             row->unk40[i] = 0;
@@ -2225,15 +2225,15 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
                 prim->y2 = prim->y3;
             } else {
                 r = 0x80 - i * 16;
-                v.vx = row->rot[i].vx + (r * TrigTable[row->unkE0[i].vz & 0xFFF].unk2 >> 12);
-                v.vy = row->rot[i].vy + (r * TrigTable[(row->unkE0[i].vz + 0x400) & 0xFFF].unk2 >> 12);
+                v.vx = row->rot[i].vx + (r * rcossin_tbl[row->unkE0[i].vz & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->unkE0[i].vz + 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
                 gte_ldv0(p);
                 gte_rtps();
                 gte_stsxy(&prim->x3);
-                v.vx = row->rot[i].vx + (r * TrigTable[(((row->unkE0[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
-                v.vy = row->rot[i].vy + (r * TrigTable[(row->unkE0[i].vz - 0x400) & 0xFFF].unk2 >> 12);
+                v.vx = row->rot[i].vx + (r * rcossin_tbl[(((row->unkE0[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * rcossin_tbl[(row->unkE0[i].vz - 0x400) & 0xFFF].unk2 >> 12);
                 v.vz = row->rot[i].vz;
                 p = &v;
                 gte_ldv0(p);
