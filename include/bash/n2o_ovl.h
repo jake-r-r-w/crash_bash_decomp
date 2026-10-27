@@ -563,7 +563,7 @@ extern SLONG_XYZ N2OBallStarts[];
 extern u16 N2OBallBounceSfx[];
 extern u16 N2OBallSfx[];
 
-/* LevelContourHook as PlotN2OBall reads it: the level's contour hook. */
+/* LevelSpecs.GetContour as PlotN2OBall reads it: the level's contour hook. */
 typedef struct N2OHook {
     s32 (*fn)(EXTengine *eng);
 } N2OHook;

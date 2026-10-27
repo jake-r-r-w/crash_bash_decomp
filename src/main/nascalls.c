@@ -532,17 +532,17 @@ static inline ArenaDef *func_800235BC_find(ArenaDef *p, s32 id) {
 void func_800235BC(ArenaDef *arg0) {
     ArenaDef *e;
 
-    LevelSpecs[0] = 0;
-    LevelSpecs[1] = 0;
-    LevelSpecs[2] = 0;
-    LevelSpecs[3] = 0;
-    LevelSpecs[4] = 0;
-    LevelSpecs[5] = 0;
-    LevelSpecs[6] = 0;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
-    LevelSpecs[9] = 0;
-    LevelSpecs[10] = 0;
+    LevelSpecs.LevelPreInit = 0;
+    LevelSpecs.LevelInit = 0;
+    LevelSpecs.LevelRestartInit = 0;
+    LevelSpecs.LevelRoutine = 0;
+    LevelSpecs.LevelExit = 0;
+    LevelSpecs.EarliestTriggers = 0;
+    LevelSpecs.PostTriggers = 0;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
+    LevelSpecs.GetContour = 0;
+    LevelSpecs.FinishQuick = 0;
     e = func_800235BC_find(arg0, GameMode);
     if (e == NULL) {
         e = func_800235BC_find(arg0, ModeTypes[GameMode * 3]);
@@ -1222,8 +1222,8 @@ void func_80024AD8(void) {
             trig->StartUp = *(u16 *)&info->slot;
         }
     }
-    if (D_8005AA88 != NULL) {
-        D_8005AA88(HeadOfTriggers, TriggerCount);
+    if (LevelSpecs.PostTriggers != NULL) {
+        LevelSpecs.PostTriggers(HeadOfTriggers, TriggerCount);
     }
     } else {
         TriggerCount = 0;
@@ -1696,8 +1696,8 @@ s32 func_80025BBC(EXTengine *eng) {
     abs(eng->unk10.y - eng->OldXYZ.y);
     abs(eng->unk10.x - eng->OldXYZ.x);
     abs(eng->unk10.z - eng->OldXYZ.z);
-    if (LevelContourHook != NULL) {
-        dy = LevelContourHook(eng);
+    if (LevelSpecs.GetContour != NULL) {
+        dy = LevelSpecs.GetContour(eng);
     } else {
         dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
@@ -1720,8 +1720,8 @@ s32 FollowUnderContour(EXTengine *eng) {
     if (lim < 0x10) {
         lim = 4;
     }
-    if (LevelContourHook != NULL) {
-        dy = LevelContourHook(eng);
+    if (LevelSpecs.GetContour != NULL) {
+        dy = LevelSpecs.GetContour(eng);
     } else {
         dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
@@ -1747,8 +1747,8 @@ s32 FollowContour(EXTengine *eng) {
     new_var = -eng->OldXYZ.x + new_var;
     abs(new_var);
     abs(eng->unk10.z - eng->OldXYZ.z);
-    if (LevelContourHook != NULL) {
-        dy = LevelContourHook(eng);
+    if (LevelSpecs.GetContour != NULL) {
+        dy = LevelSpecs.GetContour(eng);
     } else {
         dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
@@ -1804,10 +1804,10 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
 }
 
 void func_80025F44(EXTengine *eng) {
-    if (LevelContourHook == NULL) {
+    if (LevelSpecs.GetContour == NULL) {
         AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     } else {
-        LevelContourHook(eng);
+        LevelSpecs.GetContour(eng);
     }
 }
 
@@ -1882,8 +1882,8 @@ void func_8002617C(void) {
     NASTrigger *trig;
 
     trig = HeadOfTriggers;
-    if (D_8005AA84 != NULL) {
-        D_8005AA84();
+    if (LevelSpecs.EarliestTriggers != NULL) {
+        LevelSpecs.EarliestTriggers();
     }
     for (i = 0; i < TriggerCount; i++, trig++) {
         if (!(trig->Status & 0x8001)) {
@@ -2784,7 +2784,7 @@ void func_80027D90(void) {
     pad = Pads;
     PadCount = 0;
     PadCount += func_80027D90_read(D_80063A90[0], (u8 *)pad, 0);
-    PadCount += func_80027D90_read(D_80063AC4, (u8 *)&pad[PadCount], 0x10);
+    PadCount += func_80027D90_read(D_80063A90[1], (u8 *)&pad[PadCount], 0x10);
     count = 8 - PadCount;
     pad += PadCount;
     if (count > 0) {

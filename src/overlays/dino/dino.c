@@ -3947,13 +3947,13 @@ void DinoChooseWinner(s32 arg0, s32 arg1) {
 }
 
 void DINOSetUp(void) {
-    LevelSpecs[0] = (s32)InitialiseDINOFirst;
-    LevelSpecs[1] = (s32)InitialiseDINO;
-    LevelSpecs[2] = (s32)InitialiseDINO;
-    LevelSpecs[3] = (s32)UpdateDINO;
-    LevelSpecs[5] = (s32)FirstTriggersDINO;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
+    LevelSpecs.LevelPreInit = InitialiseDINOFirst;
+    LevelSpecs.LevelInit = InitialiseDINO;
+    LevelSpecs.LevelRestartInit = InitialiseDINO;
+    LevelSpecs.LevelRoutine = UpdateDINO;
+    LevelSpecs.EarliestTriggers = FirstTriggersDINO;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
 }
 
 void DinoHeroWinner(s32 arg0) {

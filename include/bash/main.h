@@ -920,7 +920,6 @@ extern s32 first_joypad;            /* first pad with flag 1 set, or -1 */
 extern s32 PadRunEnd;            /* pads 0..n-1 all have flag 1 */
 extern s32 joypad_idle_count;            /* frames with no button down */
 extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
-extern u8 D_80063AC4[0x34];       /* D_80063A90[1] */
 extern PadState Pads[8];
 typedef struct FreeHdr { u16 f0; u16 f2; } FreeHdr;
 typedef struct FreeNode {
@@ -999,7 +998,7 @@ typedef struct ArenaDef {
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
 } ArenaDef;
-extern s32 LevelSpecs[11];
+extern LevSpec LevelSpecs; /* the level's hooks */
 extern s32 D_8005AA50;
 extern s32 D_8005AA54;
 extern s32 D_8005A5E4;
@@ -1047,7 +1046,18 @@ extern s32 ASTCount;            /* entries in ASTTable */
 extern ASTEntry *ASTTable;      /* the AST table in use */
 extern s32 D_80058AC8;
 extern SfxPool SfxVoicePool;
-extern s8 SfxTable[][2]; extern s32 D_800637B4;
+extern s8 SfxTable[][2];
+extern s32 D_800637B4;
+
+/* 32-byte records of D_8005A5E8, indexed by D_8005A61C (func_8008688C). */
+typedef struct {
+    /* 0x00 */ u8 unk0[4];
+    /* 0x04 */ s32 unk4; /* passed to func_800129D0 by func_80093854 */
+    /* 0x08 */ u8 unk8[4];
+    /* 0x0C */ u16 unkC;
+    /* 0x0E */ u8 unkE[0x12];
+} EngineRec32;
+extern EngineRec32 *D_8005A5E8;
 extern s32 D_800637B8;
 void func_80034C4C(s32, s32);
 extern u8 D_8006EA08;
@@ -1055,7 +1065,6 @@ extern CdlLOC D_8006EA10;
 void func_80034AEC(void);
 extern NASTrigger *HeadOfTriggers;
 extern s32 TriggerCount;
-extern void (*D_8005AA84)(void);
 extern void *D_80058B78;
 extern RECT D_8005B640;
 extern void *free_scripts;
@@ -1081,7 +1090,6 @@ typedef struct U16Table {
     /* 0x04 */ u16 count;
 } U16Table;
 extern void *D_8005A5E0;
-extern void (*D_8005AA88)(NASTrigger *, s32);
 extern MapPoint MapPoints[32];
 /* A button-combo sequence: steps[] are pad masks, 0-terminated. */
 typedef struct ComboSeq {
@@ -1273,7 +1281,6 @@ typedef struct AnimStep {
     s16 cmd;
     u16 arg;
 } AnimStep;
-extern s32 (*LevelContourHook)(EXTengine *eng); /* optional hook: replaces AddPlatformContour */
 extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;

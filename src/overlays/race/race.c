@@ -7214,11 +7214,11 @@ s32 RaceAI_TargetShare(s32 arg0, s32 arg1) {
 }
 
 void RACESetUp(void) {
-    LevelSpecs[0] = (s32)InitialiseRACEFirst;
-    LevelSpecs[1] = (s32)InitialiseRACE;
-    LevelSpecs[2] = (s32)InitialiseRACE;
-    LevelSpecs[3] = (s32)UpdateRACE;
-    LevelSpecs[5] = (s32)FirstTriggersRACE;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
+    LevelSpecs.LevelPreInit = InitialiseRACEFirst;
+    LevelSpecs.LevelInit = InitialiseRACE;
+    LevelSpecs.LevelRestartInit = InitialiseRACE;
+    LevelSpecs.LevelRoutine = UpdateRACE;
+    LevelSpecs.EarliestTriggers = FirstTriggersRACE;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
 }

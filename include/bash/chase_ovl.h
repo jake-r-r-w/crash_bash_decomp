@@ -179,7 +179,7 @@ void FirstTriggersCHASE(void);
 void ChaseTriggers(void);
 void ChaseStopHeroSfx(void);
 void ChaseResetSlot(s32 arg0);
-extern s32 LevelSpecs[11];
+extern LevSpec LevelSpecs; /* the level's hooks */
 void InitialiseCHASEFirst(void);
 void InitialiseCHASE(void);
 void UpdateCHASE(void);

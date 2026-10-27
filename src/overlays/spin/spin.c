@@ -2697,13 +2697,13 @@ void UpdateSPIN(void) {
 }
 
 void SPINSetUp(void) {
-    LevelSpecs[0] = (s32)InitialiseSPINFirst;
-    LevelSpecs[1] = (s32)InitialiseSPIN;
-    LevelSpecs[2] = (s32)InitialiseSPIN;
-    LevelSpecs[3] = (s32)UpdateSPIN;
-    LevelSpecs[5] = (s32)FirstTriggersSPIN;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
+    LevelSpecs.LevelPreInit = InitialiseSPINFirst;
+    LevelSpecs.LevelInit = InitialiseSPIN;
+    LevelSpecs.LevelRestartInit = InitialiseSPIN;
+    LevelSpecs.LevelRoutine = UpdateSPIN;
+    LevelSpecs.EarliestTriggers = FirstTriggersSPIN;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
 }
 
 void SpinPreMoveHero(s32 arg0) {

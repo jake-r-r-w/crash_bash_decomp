@@ -1345,13 +1345,13 @@ void TitlesPreInitLevel(void) {
 }
 
 void TitlesSetUp(void) {
-    LevelSpecs[0] = (s32)TitlesPreInitLevel;
-    LevelSpecs[1] = (s32)TitlesInitLevel;
-    LevelSpecs[2] = (s32)TitlesInitLevel;
-    LevelSpecs[3] = (s32)TitlesUpdateLevel;
-    LevelSpecs[5] = 0;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
+    LevelSpecs.LevelPreInit = TitlesPreInitLevel;
+    LevelSpecs.LevelInit = TitlesInitLevel;
+    LevelSpecs.LevelRestartInit = TitlesInitLevel;
+    LevelSpecs.LevelRoutine = TitlesUpdateLevel;
+    LevelSpecs.EarliestTriggers = 0;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
     RenderHook = TitlesEmptyHook;
 }
 

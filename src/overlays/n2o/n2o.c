@@ -452,7 +452,7 @@ void InitialiseN2OFirst(void) {
     HeroHooks.unk14 = N2OVictorySeqs;
     HeroActHit = 0x2A;
     HeroActDead = 0x2E;
-    LevelContourHook = (void *)GetN2OContour;
+    LevelSpecs.GetContour = (void *)GetN2OContour;
     OVG->unk32 |= 0x100;
     if (OVG->unk6C == 0) {
         OVG->unk51 = 9;
@@ -2018,7 +2018,7 @@ void PlotN2OBall(NAS *nas) {
     e2 = eng->Engine;
     if (e2 != NULL) {
         e2->unk10 = eng->unk10;
-        ((N2OHook *)&LevelContourHook)->fn(eng);
+        ((N2OHook *)&LevelSpecs.GetContour)->fn(eng);
     }
 }
 
@@ -4321,13 +4321,13 @@ void UpdateN2O(void) {
 }
 
 void N2OSetUp(void) {
-    LevelSpecs[0] = (s32)InitialiseN2OFirst;
-    LevelSpecs[1] = (s32)InitialiseN2O;
-    LevelSpecs[2] = (s32)InitialiseN2O;
-    LevelSpecs[9] = (s32)GetN2OContour;
-    LevelSpecs[6] = 0;
-    LevelSpecs[5] = 0;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
-    LevelSpecs[3] = (s32)UpdateN2O;
+    LevelSpecs.LevelPreInit = InitialiseN2OFirst;
+    LevelSpecs.LevelInit = InitialiseN2O;
+    LevelSpecs.LevelRestartInit = InitialiseN2O;
+    LevelSpecs.GetContour = GetN2OContour;
+    LevelSpecs.PostTriggers = 0;
+    LevelSpecs.EarliestTriggers = 0;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
+    LevelSpecs.LevelRoutine = UpdateN2O;
 }

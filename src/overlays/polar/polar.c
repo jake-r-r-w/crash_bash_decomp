@@ -1992,7 +1992,7 @@ void InitialisePOLARFirst(void) {
     HeroHooks.unk3C = PolarTestAttack;
     HeroHooks.unk2C = PolarInitHeroAngle;
     HeroHooks.unk14 = PolarVictorySeqs;
-    LevelSpecs[10] = (s32)PolarSpawnObjects;
+    LevelSpecs.FinishQuick = PolarSpawnObjects;
     HeroesAllOut = 0;
     switch (g->mode) {
     case 0x12:
@@ -10513,11 +10513,11 @@ bool DoNowt(EXTengine *eng) {
 }
 
 void POLARSetUp(void) {
-    LevelSpecs[0] = (s32)InitialisePOLARFirst;
-    LevelSpecs[1] = (s32)InitialisePOLAR;
-    LevelSpecs[2] = (s32)InitialisePOLAR;
-    LevelSpecs[3] = (s32)UpdatePOLAR;
-    LevelSpecs[6] = (s32)POLARtriggers;
+    LevelSpecs.LevelPreInit = InitialisePOLARFirst;
+    LevelSpecs.LevelInit = InitialisePOLAR;
+    LevelSpecs.LevelRestartInit = InitialisePOLAR;
+    LevelSpecs.LevelRoutine = UpdatePOLAR;
+    LevelSpecs.PostTriggers = POLARtriggers;
 }
 
 s32 PolarAI_TargetShare(s32 arg0, s32 arg1) {

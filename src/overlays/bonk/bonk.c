@@ -1726,13 +1726,13 @@ void InitialiseBONK(void) {
 }
 
 void BONKSetUp(void) {
-    LevelSpecs[0] = (s32)InitialiseBONKFirst;
-    LevelSpecs[1] = (s32)InitialiseBONK;
-    LevelSpecs[2] = (s32)InitialiseBONK;
-    LevelSpecs[3] = (s32)UpdateBONK;
-    LevelSpecs[5] = (s32)FirstTriggersBONK;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
+    LevelSpecs.LevelPreInit = InitialiseBONKFirst;
+    LevelSpecs.LevelInit = InitialiseBONK;
+    LevelSpecs.LevelRestartInit = InitialiseBONK;
+    LevelSpecs.LevelRoutine = UpdateBONK;
+    LevelSpecs.EarliestTriggers = FirstTriggersBONK;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
 }
 
 void BonkRestartLevel(void) {

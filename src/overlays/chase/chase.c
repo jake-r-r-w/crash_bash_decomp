@@ -3742,16 +3742,16 @@ void ChaseStopHeroSfx(void) {
 }
 
 void CHASESetUp(void) {
-    LevelSpecs[0] = (s32)InitialiseCHASEFirst;
-    LevelSpecs[1] = (s32)InitialiseCHASE;
-    LevelSpecs[2] = (s32)InitialiseCHASE;
-    LevelSpecs[3] = (s32)UpdateCHASE;
-    LevelSpecs[4] = (s32)ChaseStopHeroSfx;
-    LevelSpecs[6] = (s32)ChaseTriggers;
-    LevelSpecs[5] = (s32)FirstTriggersCHASE;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
-    LevelSpecs[10] = (s32)FinishChaseLevel;
+    LevelSpecs.LevelPreInit = InitialiseCHASEFirst;
+    LevelSpecs.LevelInit = InitialiseCHASE;
+    LevelSpecs.LevelRestartInit = InitialiseCHASE;
+    LevelSpecs.LevelRoutine = UpdateCHASE;
+    LevelSpecs.LevelExit = ChaseStopHeroSfx;
+    LevelSpecs.PostTriggers = ChaseTriggers;
+    LevelSpecs.EarliestTriggers = FirstTriggersCHASE;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
+    LevelSpecs.FinishQuick = FinishChaseLevel;
 }
 
 void ChaseGridClear(s32 x, s32 y) {

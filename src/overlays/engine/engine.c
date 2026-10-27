@@ -166,8 +166,8 @@ void func_80079260(void) {
     func_80026D9C();
     func_80083550();
     func_8008688C();
-    if (LevelSpecs[0] != 0) {
-        ((void (*)(void))LevelSpecs[0])();
+    if (LevelSpecs.LevelPreInit != NULL) {
+        LevelSpecs.LevelPreInit();
     }
     GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
@@ -776,8 +776,8 @@ void func_8007A8C4(void) {
     g->flags &= 0xF4FF;
     func_80083550();
     func_8008688C();
-    if (LevelSpecs[0] != 0) {
-        ((void (*)(void))LevelSpecs[0])();
+    if (LevelSpecs.LevelPreInit != NULL) {
+        LevelSpecs.LevelPreInit();
     }
 }
 

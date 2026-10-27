@@ -884,7 +884,6 @@ MasksModel = 0x8005468C;
 RingObjectsModel = 0x80052FCC;
 GameCheats = 0x8005A618;
 GameLanguage = 0x8005A640;
-LevelContourHook = 0x8005AA94;
 CurrentMusic = 0x8006557C;
 PrimPool = 0x80056844;
 MapPoints = 0x8005B2B8;

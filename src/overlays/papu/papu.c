@@ -387,7 +387,7 @@ void InitialisePAPUFirst(void) {
     HeroHooks.unk54 = PapuHeroKickCollision;
     HeroHooks.unk58 = PapuHeroCarryCollision;
     PapuInitCrateHooks();
-    LevelContourHook = GetPapuContour;
+    LevelSpecs.GetContour = GetPapuContour;
     HeroHooks.unk28 = PapuHeroCheckPit;
     g = (EngineGameView *)GameInfo;
     g->flags |= 0x900;
@@ -2565,14 +2565,14 @@ void UpdatePAPU(void) {
 }
 
 void PAPUSetUp(void) {
-    LevelSpecs[0] = (s32)InitialisePAPUFirst;
-    LevelSpecs[1] = (s32)InitialisePAPU;
-    LevelSpecs[2] = (s32)InitialisePAPU;
-    LevelSpecs[3] = (s32)UpdatePAPU;
-    LevelSpecs[5] = (s32)FirstTriggersPAPU;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
-    LevelSpecs[9] = (s32)GetPapuContour;
+    LevelSpecs.LevelPreInit = InitialisePAPUFirst;
+    LevelSpecs.LevelInit = InitialisePAPU;
+    LevelSpecs.LevelRestartInit = InitialisePAPU;
+    LevelSpecs.LevelRoutine = UpdatePAPU;
+    LevelSpecs.EarliestTriggers = FirstTriggersPAPU;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
+    LevelSpecs.GetContour = GetPapuContour;
 }
 
 void PapuInitCrateHooks(void) {

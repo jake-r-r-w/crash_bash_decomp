@@ -273,18 +273,18 @@ void UpdateHUB(void) {
 
 void HUBSetUp(void) {
     if (GameMode == 0x2B) {
-        LevelSpecs[0] = (s32)InitialisePodiumFirst;
-        LevelSpecs[1] = (s32)InitialisePodium;
-        LevelSpecs[2] = (s32)InitialisePodium;
-        LevelSpecs[3] = (s32)UpdatePodium;
+        LevelSpecs.LevelPreInit = InitialisePodiumFirst;
+        LevelSpecs.LevelInit = InitialisePodium;
+        LevelSpecs.LevelRestartInit = InitialisePodium;
+        LevelSpecs.LevelRoutine = UpdatePodium;
     } else {
-        LevelSpecs[0] = (s32)InitialiseHUBFirst;
-        LevelSpecs[1] = (s32)InitialiseHUB;
-        LevelSpecs[2] = (s32)InitialiseHUB;
-        LevelSpecs[3] = (s32)UpdateHUB;
+        LevelSpecs.LevelPreInit = InitialiseHUBFirst;
+        LevelSpecs.LevelInit = InitialiseHUB;
+        LevelSpecs.LevelRestartInit = InitialiseHUB;
+        LevelSpecs.LevelRoutine = UpdateHUB;
     }
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
     RenderHook = HubRender;
 }
 

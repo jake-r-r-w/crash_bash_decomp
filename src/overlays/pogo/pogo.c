@@ -7614,14 +7614,14 @@ void InitialisePOGOFirst(void) {
 }
 
 void POGOSetUp(void) {
-    LevelSpecs[0] = (s32)InitialisePOGOFirst;
-    LevelSpecs[1] = (s32)InitialisePOGO;
-    LevelSpecs[2] = (s32)InitialisePOGO;
-    LevelSpecs[3] = (s32)UpdatePOGO;
-    LevelSpecs[5] = (s32)FirstTriggersPOGO;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
-    LevelSpecs[9] = (s32)GetPogoContour;
+    LevelSpecs.LevelPreInit = InitialisePOGOFirst;
+    LevelSpecs.LevelInit = InitialisePOGO;
+    LevelSpecs.LevelRestartInit = InitialisePOGO;
+    LevelSpecs.LevelRoutine = UpdatePOGO;
+    LevelSpecs.EarliestTriggers = FirstTriggersPOGO;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
+    LevelSpecs.GetContour = GetPogoContour;
     func_8001E934(&MenuProcessControl, &PogoProcess);
 }
 

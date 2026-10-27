@@ -282,20 +282,27 @@ def other_slot(path, ovl, slots=None):
     return s is not None and s != ovl
 
 
+VOLATILE = set()   # names declared volatile (modchip.c's CD registers)
+
+
 def declarations(texts):
     """name -> (type, ptr, dims) from `extern TYPE NAME[...];` lines."""
     out = {}
     for t in texts:
         # one or more declarators: `extern u8 D_X[], D_Y[];` declares both
-        for m in re.finditer(r"^\s*extern\s+((?:const\s+|volatile\s+|struct\s+|unsigned\s+|signed\s+)*\w+)\s+([^;()]+);",
+        for m in re.finditer(r"(?:^|(?<=;))[ \t]*extern\s+((?:const\s+|volatile\s+|struct\s+|unsigned\s+|signed\s+)*\w+)\s+([^;()]+);",
                              strip_comments(t), re.M):
             base = m.group(1).split()[-1]
+            vol = "volatile" in m.group(1).split()
             for d in m.group(2).split(","):
                 dm = re.match(r"\s*(\**)\s*(\w+)\s*((?:\[[^\]]*\]\s*)*)\s*$", d)
                 if not dm:
                     break
                 dims = [evaldim(x) for x in re.findall(r"\[([^\]]*)\]", dm.group(3))]
                 out.setdefault(dm.group(2), (base, len(dm.group(1)), dims))
+                if vol:
+                    # kept on the definition (a const one would move to .rodata, so only this)
+                    VOLATILE.add(dm.group(2))
         # a function pointer or an array of them: `extern s32 (*D_X[5])(s32 player);`
         for m in re.finditer(r"^\s*extern\s+[\w\s\*]+\(\s*\*\s*(\w+)\s*((?:\[[^\]]*\]\s*)*)\)\s*\([^;]*\)\s*;",
                              strip_comments(t), re.M):
@@ -502,7 +509,9 @@ class Converter:
                 raw = int.from_bytes(data[off:off + 4], "little")
                 e = self.funcs.get(raw) or self.symexpr(raw, local, self.base_rom + off)
                 return e or self.scalar(4, False, off, data, False, None, local)
-            return self.scalar(4, False, off, data, True, "void *", local)
+            v = self.scalar(4, False, off, data, True, "void *", local)
+            # a fixed address (the CD registers at 0x1F801800 in modchip.c) needs its cast too
+            return v if v == "0" or not re.fullmatch(r"-?(0x)?[0-9A-F]+", v) else f"(void *){v}"
         r = self.types.resolve(tname)
         if r[0] == "scalar":
             return self.scalar(r[1], r[2], off, data, r[1] == 4, "s32" if r[2] else "u32", local)
@@ -621,7 +630,7 @@ class Converter:
             rest = "\n" + self.define(f"D_{rva:08X}", rva, size - (rva - va), rkinds, local, next_align)
             size = rva - va
             self.base_rom = self.rom(va)
-        ctype = ("const " if False else "") + tname + " " + "*" * ptr
+        ctype = ("volatile " if name in VOLATILE else "") + tname + " " + "*" * ptr
         decl_txt = f"{ctype}{name}{''.join(f'[{d}]' for d in dims)}"
         if tname == FN:
             # a function pointer's definition is its declaration's text (sized from the slot)

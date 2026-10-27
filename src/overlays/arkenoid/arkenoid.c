@@ -570,7 +570,7 @@ void AR_PreInitLevel(void) {
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
-        LevelContourHook = (void *)GetArkContour;
+        LevelSpecs.GetContour = (void *)GetArkContour;
         AiBotTweakTable = ArkBeachAiBotTweak;
         AiHumanTweakTable = ArkBeachAiHumanTweak;
         AiHumanRoundTweakTable = ArkBeachAiHumanRoundTweak;
@@ -590,7 +590,7 @@ void AR_PreInitLevel(void) {
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_NG_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
-        LevelContourHook = (void *)GetArkContour;
+        LevelSpecs.GetContour = (void *)GetArkContour;
         AiBotTweakTable = ArkNginAiBotTweak;
         AiHumanTweakTable = ArkNginAiHumanTweak;
         AiHumanRoundTweakTable = ArkNginAiHumanRoundTweak;
@@ -610,7 +610,7 @@ void AR_PreInitLevel(void) {
         ArkBounceOnBounds = AR_PI_BounceOnBounds;
         ArkTestOutOfBounds = AR_PI_TestOutOfBounds;
         ArkTestLaunchBounds = AR_PI_TestLaunchBounds;
-        LevelContourHook = (void *)GetArkPIContour;
+        LevelSpecs.GetContour = (void *)GetArkPIContour;
         AiBotTweakTable = ArkSkyAiBotTweak;
         AiHumanTweakTable = ArkSkyAiHumanTweak;
         AiHumanRoundTweakTable = ArkSkyAiHumanRoundTweak;
@@ -631,7 +631,7 @@ void AR_PreInitLevel(void) {
         ArkBounceOnBounds = AR_BA_BounceOnBounds;
         ArkTestOutOfBounds = AR_BA_TestOutOfBounds;
         ArkTestLaunchBounds = AR_BA_TestLaunchBounds;
-        LevelContourHook = (void *)GetArkContour;
+        LevelSpecs.GetContour = (void *)GetArkContour;
         AiBotTweakTable = ArkBallsAiBotTweak;
         AiHumanTweakTable = ArkBallsAiHumanTweak;
         AiHumanRoundTweakTable = ArkBallsAiHumanRoundTweak;
@@ -3902,8 +3902,8 @@ void PlotBall(NAS *nas) {
     }
     e2->unk10 = eng->unk10;
     e2->sub->unk68 = shade;
-    /* LevelSpecs is the level's LevSpec: [9] is GetContour */
-    y = eng->unk10.y - ((s32 (*)(EXTengine *))LevelSpecs[9])(eng);
+    /* the level's GetContour hook */
+    y = eng->unk10.y - LevelSpecs.GetContour(eng);
     e2 = e2->Engine;
     if (e2 == NULL) {
         return;
@@ -6460,14 +6460,14 @@ void AR_RestartLevel(void) {
 }
 
 void AR_SetUp(void) {
-    LevelSpecs[0] = (s32)AR_PreInitLevel;
-    LevelSpecs[1] = (s32)AR_InitLevel;
-    LevelSpecs[2] = (s32)AR_InitLevel;
-    LevelSpecs[3] = (s32)AR_UpdateLevel;
-    LevelSpecs[6] = (s32)AR_Triggers;
-    LevelSpecs[5] = (s32)AR_EarliestTriggers;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
-    LevelSpecs[9] = (s32)GetArkContour;
-    LevelSpecs[10] = (s32)FinishArkLevel;
+    LevelSpecs.LevelPreInit = AR_PreInitLevel;
+    LevelSpecs.LevelInit = AR_InitLevel;
+    LevelSpecs.LevelRestartInit = AR_InitLevel;
+    LevelSpecs.LevelRoutine = AR_UpdateLevel;
+    LevelSpecs.PostTriggers = AR_Triggers;
+    LevelSpecs.EarliestTriggers = AR_EarliestTriggers;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
+    LevelSpecs.GetContour = GetArkContour;
+    LevelSpecs.FinishQuick = FinishArkLevel;
 }

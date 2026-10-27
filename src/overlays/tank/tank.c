@@ -9309,16 +9309,16 @@ void TA_RestartLevel(void) {
 }
 
 void TA_SetUp(void) {
-    LevelSpecs[0] = (s32)TA_PreInitLevel;
-    LevelSpecs[1] = (s32)TA_InitLevel;
-    LevelSpecs[2] = (s32)TA_InitLevel;
-    LevelSpecs[3] = (s32)TA_UpdateLevel;
-    LevelSpecs[4] = (s32)TA_StopHeroSfx;
-    LevelSpecs[6] = (s32)TA_Triggers;
-    LevelSpecs[5] = (s32)TA_EarliestTriggers;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
-    LevelSpecs[10] = (s32)FinishTankLevel;
+    LevelSpecs.LevelPreInit = TA_PreInitLevel;
+    LevelSpecs.LevelInit = TA_InitLevel;
+    LevelSpecs.LevelRestartInit = TA_InitLevel;
+    LevelSpecs.LevelRoutine = TA_UpdateLevel;
+    LevelSpecs.LevelExit = TA_StopHeroSfx;
+    LevelSpecs.PostTriggers = TA_Triggers;
+    LevelSpecs.EarliestTriggers = TA_EarliestTriggers;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
+    LevelSpecs.FinishQuick = FinishTankLevel;
     TankBossStartStatus = 1;
 }
 

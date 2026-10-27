@@ -3800,15 +3800,15 @@ void BashRestartLevel(void) {
 }
 
 void BASHSetUp(void) {
-    LevelSpecs[0] = (s32)InitialiseBASHFirst;
-    LevelSpecs[1] = (s32)InitialiseBASH;
-    LevelSpecs[2] = (s32)InitialiseBASH;
-    LevelSpecs[3] = (s32)UpdateBASH;
-    LevelSpecs[5] = (s32)FirstTriggersBASH;
-    LevelSpecs[9] = (s32)GetBashContour;
-    LevelSpecs[7] = 0;
-    LevelSpecs[8] = 0;
-    LevelSpecs[10] = (s32)FinishBashLevel;
+    LevelSpecs.LevelPreInit = InitialiseBASHFirst;
+    LevelSpecs.LevelInit = InitialiseBASH;
+    LevelSpecs.LevelRestartInit = InitialiseBASH;
+    LevelSpecs.LevelRoutine = UpdateBASH;
+    LevelSpecs.EarliestTriggers = FirstTriggersBASH;
+    LevelSpecs.GetContour = GetBashContour;
+    LevelSpecs.SpecTriggerFunc = 0;
+    LevelSpecs.OnOffWindowTest = 0;
+    LevelSpecs.FinishQuick = FinishBashLevel;
 }
 
 void BashInitCrateHooks(void) {
