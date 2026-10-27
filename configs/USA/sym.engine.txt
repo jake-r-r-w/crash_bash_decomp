@@ -236,3 +236,5 @@ TournamentSelect = 0x8009EB84;
 ModeTextBuffer = 0x800AEC60;
 HubHeroRing = 0x8009EE9C;
 LevelLoadProcess = 0x800A00DC;
+ScreenCount = 0x800ADBD4;
+PauseMenuY = 0x8009BD18;

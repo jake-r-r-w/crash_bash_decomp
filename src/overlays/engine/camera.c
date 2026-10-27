@@ -555,7 +555,7 @@ s32 func_800976A8(u8 *arg0, s32 arg1) {
     return var_t0 - var_a3;
 }
 
-extern s32 D_800ADBD4;
+extern s32 ScreenCount;
 void func_800976F8(void) {
     EXTengine *eng;
     s32 v;
@@ -575,7 +575,7 @@ void func_800976F8(void) {
     D_800AD5D8[7].unk1E = D_8009922C[GV->unk50[3]];
     D_800AD5D8[8].unk1E = GV->unkCC[GV->unk48] + 0x200E;
     D_800AD5D8[9].unk1E = GV->unkCC[GV->unk4A] + 0x200E;
-    D_800ADBD4 = 0;
+    ScreenCount = 0;
     D_800AD7AC[3].unk1E = D_8009922C[GV->unk50[0]];
     D_800AD7AC[4].unk1E = D_8009922C[GV->unk50[1]];
     D_800AD7AC[5].unk1E = GV->unkCC[0] + 0x200E;
@@ -597,10 +597,10 @@ void func_800976F8(void) {
         D_800AD8CC[0].unk1E = v;
         if (GV->unk6C != 0) {
             func_80095BEC(3, (s32 *)D_800AD7AC);
-            D_800ADBD4 = 1;
+            ScreenCount = 1;
         } else {
             func_80095BEC(3, (s32 *)D_800AD8CC);
-            D_800ADBD4 = 1;
+            ScreenCount = 1;
         }
         break;
     case 0x40:
@@ -619,13 +619,13 @@ void func_800976F8(void) {
         D_800AD8CC[0].unk1E = 0x2022;
         if (GV->mode == 0x20) {
             func_80095BEC(3, (s32 *)D_800AD9C8);
-            D_800ADBD4 = 2;
+            ScreenCount = 2;
         } else if (GV->unk6C != 0) {
             func_80095BEC(3, (s32 *)D_800AD5D8);
-            D_800ADBD4 = 2;
+            ScreenCount = 2;
         } else {
             func_80095BEC(3, (s32 *)D_800AD32C);
-            D_800ADBD4 = 4;
+            ScreenCount = 4;
         }
         break;
     }
@@ -686,12 +686,12 @@ void func_80097C28(void) {
         eng->unk2C.x = v;
         eng->unk5E = 1;
         s = GetEngineSlot(3)->sub + 2;
-        for (i = 0; i < D_800ADBD4; i++) {
+        for (i = 0; i < ScreenCount; i++) {
             s->unk20.z = 0x199;
             s->unk51 = 0;
             s->unk50 = 1;
             s->flags |= 0x8000;
-            s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + FrameCount * 40;
+            s->unk12 = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
             s->unk52 = 1;
             s = s->next;
         }
@@ -713,12 +713,12 @@ void func_80097C28(void) {
         break;
     case 1:
         s = GetEngineSlot(3)->sub + 2;
-        for (i = 0; i < D_800ADBD4; i++) {
+        for (i = 0; i < ScreenCount; i++) {
             s->unk20.z = 0x199;
             s->unk51 = 0;
             s->unk50 = 1;
             s->flags |= 0x8000;
-            s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + FrameCount * 40;
+            s->unk12 = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
             s->unk52 = 1;
             s = s->next;
         }
@@ -744,12 +744,12 @@ void func_80097C28(void) {
     case 2:
         if (p[2] < 10) {
             s = GetEngineSlot(3)->sub + 2;
-            for (i = 0; i < D_800ADBD4; i++) {
+            for (i = 0; i < ScreenCount; i++) {
                 s->unk20.z = 0x199;
                 s->unk51 = 0;
                 s->unk50 = 1;
                 s->flags |= 0x8000;
-                s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + FrameCount * 40;
+                s->unk12 = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
                 s->unk52 = 1;
                 s = s->next;
             }
@@ -772,7 +772,7 @@ void func_80097C28(void) {
             {
                 s32 j;
                 subengine *e = GetEngineSlot(3)->sub + 2;
-                for (j = 0; j < D_800ADBD4; j++) {
+                for (j = 0; j < ScreenCount; j++) {
                     e->flags &= ~0x8000;
                     e = e->next;
                 }
@@ -796,7 +796,7 @@ void func_80097C28(void) {
         {
             s32 j;
             subengine *e = GetEngineSlot(3)->sub + 2;
-            for (j = 0; j < D_800ADBD4; j++) {
+            for (j = 0; j < ScreenCount; j++) {
                 e->flags &= ~0x8000;
                 e = e->next;
             }
@@ -821,11 +821,11 @@ void func_80098284(void) {
     }
 }
 
-extern s32 D_800ADBD4;
+extern s32 ScreenCount;
 void func_800982E0(void) {
     s32 i;
     subengine *s = GetEngineSlot(3)->sub + 2;
-    for (i = 0; i < D_800ADBD4; i++) {
+    for (i = 0; i < ScreenCount; i++) {
         s->flags &= ~0x8000;
         s = s->next;
     }
@@ -834,12 +834,12 @@ void func_800982E0(void) {
 void func_80098344(void) {
     s32 i;
     subengine *s = GetEngineSlot(3)->sub + 2;
-    for (i = 0; i < D_800ADBD4; i++) {
+    for (i = 0; i < ScreenCount; i++) {
         s->unk20.z = 0x199;
         s->unk51 = 0;
         s->unk50 = 1;
         s->flags |= 0x8000;
-        s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + FrameCount * 40;
+        s->unk12 = i * (0x1000 / (ScreenCount + 1)) + FrameCount * 40;
         s->unk52 = 1;
         s = s->next;
     }
@@ -1164,4 +1164,4 @@ s32 D_800ADBC4 = 0;
 s32 D_800ADBC8[1] = {0};
 s32 D_800ADBCC = 0;
 s32 D_800ADBD0[1] = {0};
-s32 D_800ADBD4 = 0;
+s32 ScreenCount = 0;

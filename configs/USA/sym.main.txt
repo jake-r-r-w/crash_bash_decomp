@@ -1034,3 +1034,5 @@ MapSceneRot = 0x80058AF4;
 MapSceneMatrix = 0x80058AD4;
 LoadNodePool = 0x8005063C;
 LoadNodeFree = 0x80050F3C;
+CardRequest = 0x800655C4;
+card_format = 0x8002D108; // type:func

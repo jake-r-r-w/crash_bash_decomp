@@ -17,7 +17,7 @@ void func_8002D274(void);
 void func_8002D33C(u8 *arg0);
 s32 func_8002C4B0(u8 arg0);
 void card_save(void);
-void func_8002D108(void);
+void card_format(void);
 s32 func_8002D094(void);
 s32 func_8002D360(u8 *arg0);
 s32 func_8002D178(void);

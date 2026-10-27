@@ -3031,7 +3031,7 @@ void func_8001492C(void) {
     t[0x260 / 4] = func_800101E0;
     t[0x264 / 4] = func_800160F8;
     t[0x268 / 4] = func_800160C4;
-    t[0x26C / 4] = func_8002D108;
+    t[0x26C / 4] = card_format;
     t[0x270 / 4] = func_80028158;
     t[0x274 / 4] = func_8002D488;
     t[0x278 / 4] = func_8002D4F4;

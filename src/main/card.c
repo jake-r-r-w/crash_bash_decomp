@@ -115,7 +115,7 @@ void func_8002C894(void) {
     CardChannel = 0;
     CardStatus = 0;
     CardCommand = 0;
-    D_800655C4 = 0;
+    CardRequest = 0;
     for (;;) {
         if (i < 4) {
             CardSlots[i].b[0] = 0;
@@ -235,19 +235,19 @@ l2_03:
     CardCommand = 3;
     return;
 l3:
-    if (D_800655C4 == 0 || card_command_delay != 0) {
+    if (CardRequest == 0 || card_command_delay != 0) {
         card_command_delay--;
         MemCardExist(CardChannel);
         CardCommand = 4;
         goto lend;
     }
-    switch (D_800655C4) {
+    switch (CardRequest) {
     case 2:
         McResetSaveSum();
         if (MemCardFormat(CardChannel) == 0) {
             CardStatus = 0x22;
             CardCommand = 3;
-            D_800655C4 = 0;
+            CardRequest = 0;
             return;
         }
         CardStatus |= 0x100;
@@ -278,11 +278,11 @@ l4_13:
     CardCommand = 0;
     return;
 l5:
-    if (D_800655C4 == 1) {
+    if (CardRequest == 1) {
         if (D_80067830 == 0) {
             CardStatus = 0x12;
             CardCommand = 3;
-            D_800655C4 = 0;
+            CardRequest = 0;
             return;
         }
         CardStatus |= 0x100;
@@ -313,7 +313,7 @@ lend:;
 }
 
 s32 func_8002D094(void) {
-    if (D_800655C4 == 1 && (CardStatus & 0x80)) {
+    if (CardRequest == 1 && (CardStatus & 0x80)) {
         return 1;
     }
     return 0;
@@ -327,27 +327,27 @@ void card_save(void) {
     if ((flags & 2) && (flags & 0x30)) {
         on = TRUE;
         card_command_delay = on;
-        D_800655C4 = on;
+        CardRequest = on;
         CardStatus = flags | 0x80;
     }
 }
 
-void func_8002D108(void) {
+void card_format(void) {
     s32 mode = 2;
 
     card_command_delay = 1;
-    D_800655C4 = mode;
+    CardRequest = mode;
     CardStatus |= 0x80;
 }
 
 void func_8002D134(s32 arg0) {
     card_command_delay = 1;
-    D_800655C4 = arg0;
+    CardRequest = arg0;
     CardStatus |= 0x80;
 }
 
 void func_8002D15C(void) {
-    D_800655C4 = 0;
+    CardRequest = 0;
     CardCommand = 0;
     CardStatus = 0;
 }
@@ -509,7 +509,7 @@ fillit:
 s32 CardChannel = 0;
 char *D_800655BC = (void *)&CardSaveTitleFormat;
 s32 CardStatus = 0;
-s32 D_800655C4 = 0;
+s32 CardRequest = 0;
 u8 CardBuffer[128] = {0};
 u8 D_80065648[384] = {0};
 D_800657C8_Slot CardSlots[4] = {0};

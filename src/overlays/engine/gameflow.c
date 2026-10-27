@@ -1035,7 +1035,7 @@ void func_80090E20(void) {
                     SAVEMENU_SET_ANIM(D_8009EFE0);
                     if (Pads[0].pressed & 0x8000) {
                         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                        func_8002D108();
+                        card_format();
                         SaveMenuState = 6;
                     }
                 } else {

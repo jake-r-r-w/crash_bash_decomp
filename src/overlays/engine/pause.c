@@ -538,7 +538,7 @@ found:
             case 1:
                 func_80083334(PSV->mode, kind, 0);
                 ret = 1;
-                func_800831C4(D_8009BD18);
+                func_800831C4(PauseMenuY);
                 PSV->flags |= 0x40;
                 break;
             case 2:
@@ -816,7 +816,7 @@ void func_80080FBC(void) {
     D_8009ACAC.unk74 = 0;
     func_8007E7A4();
     func_8007BE84();
-    D_8009BD18 = 0x70;
+    PauseMenuY = 0x70;
     e = D_8009BCE0;
     *(s16 *)(e + 6) = -1;
     *(s16 *)(e + 0xC) = -1;
@@ -841,36 +841,36 @@ void func_80080FBC(void) {
     switch (MSGV->flags & 0x023F8FEC) {
     case 0:
         if (MSGV->mode == 0x20) {
-            func_800809A0(D_8005981C, D_8009BD18);
+            func_800809A0(D_8005981C, PauseMenuY);
             D_8009BD30 = 0;
             return;
         }
         if (MSGV->unk32 & 4) {
-            func_800809A0(D_8005975C, D_8009BD18);
+            func_800809A0(D_8005975C, PauseMenuY);
         } else {
-            func_800809A0(D_800598DC, D_8009BD18);
+            func_800809A0(D_800598DC, PauseMenuY);
         }
         D_8009BD30 = 1;
         break;
     case 8:
-        func_800809A0(D_800599B4, D_8009BD18);
+        func_800809A0(D_800599B4, PauseMenuY);
         D_8009BD30 = 1;
         break;
     case 0x8000:
-        func_800809A0(D_80059C24, D_8009BD18);
+        func_800809A0(D_80059C24, PauseMenuY);
         break;
     case 4:
     case 0xC:
-        func_800809A0(D_80059ABC, D_8009BD18);
+        func_800809A0(D_80059ABC, PauseMenuY);
         break;
     case 0x40:
     case 0x240:
-        func_800809A0(D_80059A5C, D_8009BD18);
-        func_800831C4(D_8009BD18);
+        func_800809A0(D_80059A5C, PauseMenuY);
+        func_800831C4(PauseMenuY);
         break;
     case 0x80:
-        func_800809A0(D_80059A8C, D_8009BD18);
-        func_800831C4(D_8009BD18);
+        func_800809A0(D_80059A8C, PauseMenuY);
+        func_800831C4(PauseMenuY);
         break;
     case 0x100:
     case 0x108:
@@ -882,7 +882,7 @@ void func_80080FBC(void) {
             D_8009BD1C[0] = OPTV->unk8 != 0;
             func_8008D488(D_80059748[MSGV->level]->unkBC, OPTV->unk0);
             func_8008D488(D_80059748[MSGV->level]->unkC0, OPTV->unk4);
-            func_800809A0(D_80059D2C, D_8009BD18);
+            func_800809A0(D_80059D2C, PauseMenuY);
             break;
         case 2:
             for (i = 0; i < MSGV->numPlayers; i++) {
@@ -895,25 +895,25 @@ void func_80080FBC(void) {
             for (; i < 4; i++) {
                 D_8009BD1C[i] = 9;
             }
-            func_800809A0(D_80059E4C, D_8009BD18);
+            func_800809A0(D_80059E4C, PauseMenuY);
             break;
         default:
-            func_800809A0(D_80059C9C, D_8009BD18);
+            func_800809A0(D_80059C9C, PauseMenuY);
             break;
         }
         break;
     case 0x200:
-        func_800809A0(D_8005A14C, D_8009BD18);
+        func_800809A0(D_8005A14C, PauseMenuY);
         break;
     case 0x20:
-        func_800809A0(D_8005A1C4, D_8009BD18);
+        func_800809A0(D_8005A1C4, PauseMenuY);
         break;
     case 0x400:
-        func_800809A0(D_8005A20C, D_8009BD18);
+        func_800809A0(D_8005A20C, PauseMenuY);
         break;
     case 0x2000000:
         if (MSGV->unkC & 0x10) {
-            func_800809A0(D_8005A524, D_8009BD18);
+            func_800809A0(D_8005A524, PauseMenuY);
         }
         break;
     }
@@ -1920,7 +1920,7 @@ s32 D_8009BD08 = 0;
 EngineRec24 *PauseRec = 0;
 EngineRec24 **PauseRecSet = 0;
 s32 PauseRecIndex = 0;
-s16 D_8009BD18 = 0;
+s16 PauseMenuY = 0;
 s16 D_8009BD1C[4] = {0};
 s16 D_8009BD24[4] = {0};
 u16 D_8009BD2C = 0;

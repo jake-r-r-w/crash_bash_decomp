@@ -8320,12 +8320,12 @@
   "src": "src/main/card.c"
  },
  "8002D108": {
-  "asm": "asm/nonmatchings/main/card/func_8002D108.s",
+  "asm": "asm/nonmatchings/main/card/card_format.s",
   "calls": [],
   "fp": "77127881201df1c3",
   "fpn": "13645cb8e91d6188",
   "leaf": true,
-  "name": "func_8002D108",
+  "name": "card_format",
   "orig": "func_8002D108",
   "rom": 121096,
   "seg": "main/card",

@@ -870,7 +870,7 @@ typedef struct {
 } D_800657C8_Slot;
 extern D_800657C8_Slot CardSlots[];
 extern s32 D_80065E24;
-extern s32 D_800655C4;
+extern s32 CardRequest;
 extern s32 CardCommand;
 extern s32 D_800675D0;
 

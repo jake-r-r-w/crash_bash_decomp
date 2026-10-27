@@ -334,7 +334,7 @@ extern s16 D_8005A494[];
 extern s16 D_8005A4DC[];
 extern s16 D_8005A524[];
 extern s32 PauseLastChoice;
-extern s16 D_8009BD18;
+extern s16 PauseMenuY;
 extern s16 D_8009BD1C[4];
 extern s32 D_8009BD30;
 extern u16 D_8009BD00;
