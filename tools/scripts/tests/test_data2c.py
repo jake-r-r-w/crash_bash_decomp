@@ -206,7 +206,7 @@ class Strings(unittest.TestCase):
         self.assertEqual([os.path.basename(p) for p in data2c.data_files(d)], ["a.data.s", "b.sdata.s"])
 
     def test_main_exe_has_its_own_layout(self):
-        self.assertEqual(data2c.layout("main"), ("configs/USA/main.yaml", "disc/SCUS_945.70", "asm/data/main",
+        self.assertEqual(data2c.layout("main"), ("configs/USA/main.yaml", "disc/SCUS_945.70", "asm/data",
                                                  "asm/nonmatchings/main"))
         self.assertEqual(data2c.layout("hub")[1:], ("disc/hub.bin", "asm/data/overlays/hub",
                                                     "asm/nonmatchings/overlays/hub"))

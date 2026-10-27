@@ -192,7 +192,7 @@ class Types:
 def layout(ovl):
     """(yaml, binary, asm data dir, asm nonmatchings dir) of an overlay, or of main.exe for "main"."""
     if ovl == "main":
-        return f"{CFG}/main.yaml", "disc/SCUS_945.70", "asm/data/main", "asm/nonmatchings/main"
+        return f"{CFG}/main.yaml", "disc/SCUS_945.70", "asm/data", "asm/nonmatchings/main"
     return (f"{CFG}/overlays/{ovl}.yaml", f"disc/{ovl}.bin", f"asm/data/overlays/{ovl}",
             f"asm/nonmatchings/overlays/{ovl}")
 
