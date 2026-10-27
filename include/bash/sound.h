@@ -43,8 +43,8 @@ S16Pair func_8002B7C8(s32 x, s32 v);
 S16Pair func_8002B210(VECTOR *pos);
 
 static inline void ViewProject(VECTOR *pos, s32 *psxy) {
-    VECTOR *out = &GteWork.out;
-    SVECTOR *in = &GteWork.in;
+    VECTOR *out = &RenderState.gteOut;
+    SVECTOR *in = &RenderState.gteIn;
     View *view = (View *)MainCamera;
 
     in->vx = pos->vx - view->pos.vx;
@@ -78,8 +78,8 @@ static inline S16Pair PanVolume(s32 x, s32 v) {
     return r;
 }
 static inline s32 ViewVolumeXY(VECTOR *pos, View *view, s32 *psxy) {
-    VECTOR *out = &GteWork.out;
-    SVECTOR *in = &GteWork.in;
+    VECTOR *out = &RenderState.gteOut;
+    SVECTOR *in = &RenderState.gteIn;
 
     in->vx = pos->vx - view->pos.vx;
     in->vy = pos->vy - view->pos.vy;

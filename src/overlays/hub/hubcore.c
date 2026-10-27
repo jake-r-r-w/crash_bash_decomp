@@ -1088,7 +1088,7 @@ void HubDoorMenu2Render(void) {
     EXTengine *e;
 
     func_80018B08(&MainViewport, &MainGfxCamera);
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
@@ -1114,7 +1114,7 @@ void HubDoorMenuRender(void) {
     EXTengine *e;
 
     func_80018B08(&MainViewport, &MainGfxCamera);
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
@@ -2581,7 +2581,7 @@ void HubSaveMenuRender(void) {
     EXTengine *e;
 
     func_80018B08(&HubSaveViewport, (GfxCamera *)HubSaveCamera);
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     e = GetEngineSlot(0);
     i = 0;
     g = GameInfo;

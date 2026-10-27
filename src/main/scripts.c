@@ -668,7 +668,7 @@ void func_800201BC(u8 *arg0, GteSetup *arg1) {
         }
         p = *(u8 **)(p + 0xB4);
     }
-    FadeAmount = dp;
+    RenderState.modelDp = dp;
 }
 
 void func_80020344(Quat *a, Quat *b, s32 t, Quat *out) {

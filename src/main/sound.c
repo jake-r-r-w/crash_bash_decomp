@@ -245,10 +245,10 @@ s32 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 }
 
 s32 func_8002B6D0(VECTOR *pos, View *view) {
-    VECTOR *out = &GteWork.out;
+    VECTOR *out = &RenderState.gteOut;
     s32 sxy;
     s32 *psxy = &sxy;
-    SVECTOR *in = &GteWork.in;
+    SVECTOR *in = &RenderState.gteIn;
 
     in->vx = pos->vx - view->pos.vx;
     in->vy = pos->vy - view->pos.vy;
@@ -261,10 +261,12 @@ s32 func_8002B6D0(VECTOR *pos, View *view) {
 }
 
 void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy) {
-    GteWork.in.vx = pos->vx - view->pos.vx;
-    GteWork.in.vy = pos->vy - view->pos.vy;
-    GteWork.in.vz = pos->vz - view->pos.vz;
-    gte_ldv0(&GteWork.in);
+    SVECTOR *in = &RenderState.gteIn;
+
+    in->vx = pos->vx - view->pos.vx;
+    in->vy = pos->vy - view->pos.vy;
+    in->vz = pos->vz - view->pos.vz;
+    gte_ldv0(in);
     gte_rtps();
     gte_stlvl(out);
     gte_stsxy(sxy);

@@ -461,7 +461,7 @@ void func_800941EC(void) {
 void func_8009421C(void) {
     if (D_800A0158 >= 2) {
         func_80018B08(&LoadingViewport, &LoadingCamera);
-        FadeAmount = ScreenFade.amount;
+        RenderState.modelDp = ScreenFade.amount;
         func_8001C298((EXTengine *)D_800A0224);
     }
 }

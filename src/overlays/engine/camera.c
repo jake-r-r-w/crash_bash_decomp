@@ -868,7 +868,7 @@ void func_800984D4(void) {
     int new_var;
 
     func_80018B08(&MainViewport, &MainGfxCamera);
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     if (D_800ADBC4 != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;
         s[new_var = 0xA8 / 4] &= 0xFFFF7FFF;

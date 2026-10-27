@@ -35,9 +35,11 @@ CFG = "configs/USA"
 SLOT_LO, SLOT_HI = 0x800B32B4, 0x800D7148   # the slot overlays' shared range (shift.py)
 SCALARS = {"s8": (1, True), "u8": (1, False), "char": (1, True), "s16": (2, True), "u16": (2, False),
            "short": (2, True), "s32": (4, True), "u32": (4, False), "int": (4, True), "long": (4, True),
-           "unsigned": (4, False), "bool": (4, True), "signed": (4, True)}
+           "unsigned": (4, False), "bool": (4, True), "signed": (4, True),
+           # the SDK headers' own names (sys/types.h)
+           "u_char": (1, False), "u_short": (2, False), "u_int": (4, False), "u_long": (4, False)}
 PTR_LO, PTR_HI = 0x80010000, 0x800D7148      # the exe, the engine and its slot
-SDK_TYPES = ["ext/psyq47/include/libgte.h"]
+SDK_TYPES = ["ext/psyq47/include/libgte.h", "ext/psyq47/include/libgpu.h", "ext/psyq47/include/libcd.h"]
 # a function pointer field, `RET (*name)(ARGS)`: a 4-byte pointer written as the function's name
 FUNC_PTR = re.compile(r"^[\w\s\*]+\(\s*\*\s*(\w+)\s*\)\s*\([^()]*\)$", re.S)
 FN = "@fn"

@@ -2,12 +2,6 @@
 #include "bash/main.h"
 #include "bash/modchip_msg.h"
 
-/* the debug text screens, 12 bytes each, indexed by MsgFontRom */
-extern u8 D_8006789E[]; /* +2: u8 */
-extern u8 D_800678A0[]; /* +4: s16 x */
-extern u8 D_800678A2[]; /* +6: s16 y */
-extern u8 D_800678A4[]; /* +8: u8 *text */
-
 void func_8002E0F0(void) {
     DRAWENV draw;
     DISPENV disp;
@@ -16,7 +10,6 @@ void func_8002E0F0(void) {
     TextPos pos;
     s32 colour;
     s32 i;
-    s32 o;
     s32 w;
     s16 x;
     s16 y;
@@ -37,17 +30,16 @@ void func_8002E0F0(void) {
     DrawPrim(clear);
     colour = 0xFFFF;
     i = 0;
-    w = D_8006789E[MsgFontRom * 12];
+    w = D_8006789C[MsgFontRom].w;
     pos.unk6 = 1;
     pos.w = w;
     do {
-        o = MsgFontRom * 12;
-        x = *(s16 *)(D_800678A0 + o);
-        y = *(s16 *)(D_800678A2 + o);
+        x = D_8006789C[MsgFontRom].x;
+        y = D_8006789C[MsgFontRom].y;
         pos.x = x + i;
         pos.y = y + i;
         i++;
-        func_8002E25C(*(u8 **)(D_800678A4 + o), &pos, colour);
+        func_8002E25C(D_8006789C[MsgFontRom].text, &pos, colour);
         colour = 0x8000;
     } while (i < 2);
     func_8002E618();

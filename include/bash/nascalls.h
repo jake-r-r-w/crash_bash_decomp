@@ -164,7 +164,7 @@ static inline s32 FadeColor(s32 r, s32 g, s32 b) {
     s32 t;
     s32 d;
 
-    d = FadeAmount;
+    d = RenderState.modelDp;
     if (d != 0) {
         t = 0x1000 - d;
         r *= t;

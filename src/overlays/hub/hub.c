@@ -38,7 +38,7 @@ void HubRender(void) {
         func_8001C2C0(GetEngineSlot(0));
     }
     func_80018B08(&MainViewport, &MainGfxCamera);
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_800798A4();
 }
 

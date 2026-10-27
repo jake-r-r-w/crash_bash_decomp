@@ -854,7 +854,7 @@ void func_80090A10(void) {
     u8 *src;
     u8 *p;
 
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     switch (D_8009F638) {
     case 0:
         pad = Pads;
@@ -1025,7 +1025,7 @@ const char MenuEmpty2[] = "";
 void func_80090E20(void) {
     s32 f;
 
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     switch (SaveMenuState) {
     case 0:
         f = CardStatus;
@@ -1219,7 +1219,7 @@ void func_800917B4(void) {
     s->unk20.x = 0x2800;
     s->unk52 = 1;
     s->unk51 = 0;
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)e);
     func_80018B08(&SaveViewport, &SaveCamera);
     switch (D_8009F630) {
@@ -1824,7 +1824,7 @@ void func_80092E40(void) {
 
 void func_80092E94(void) {
     RenderHook();
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_80082590();
     func_8001E898(&MenuProcessControl);
 }

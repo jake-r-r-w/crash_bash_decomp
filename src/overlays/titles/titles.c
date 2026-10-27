@@ -1217,7 +1217,7 @@ void NewLoadMenuInit(void) {
 }
 
 void num_players_render(void) {
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_80018B08(&TitlesMenuView, &TitlesCamera);
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
@@ -1658,7 +1658,7 @@ void CharSelectRender(void) {
     eng->unk10.y = -0xF0;
     RenderTitlesBackdropAndMenu();
     func_80018B08(&TitlesMenuView, &CharSelectCamera);
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8001C2C0((u8 *)GetEngineSlot(2));
 }
 

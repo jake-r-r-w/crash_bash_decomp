@@ -74,7 +74,7 @@ void func_80017164(s32 *cfg) {
     func_80017164_clear(p + 0x40);
     D_80056864 = NULL;
     *(u8 **)p = NULL;
-    D_80056848 = 0;
+    PrimPool.mem = NULL;
     D_80056860 = (s32 *)D_8005685C;
 }
 
@@ -986,7 +986,7 @@ void *func_80019094(void *arg0, s32 arg1) {
     s32 c[3];
 
     prim = NULL;
-    if ((arg1 & 0x40000001) | FadeAmount | (D_80056878 != 0 && (u32)prim < D_80056AC4)) {
+    if ((arg1 & 0x40000001) | RenderState.modelDp | (D_80056878 != 0 && (u32)prim < D_80056AC4)) {
         set = *(PrimSet **)arg0;
         if (set != NULL || (set = (PrimSet *)func_80018694((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
@@ -1476,7 +1476,7 @@ void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     x = (s16) arg0[0];
     if ((x & 0xC000) == 0x8000) {
         x = 0x140 - (w / 2);
-        x -= D_800569C0;
+        x -= ((GfxScreen *)RenderState.unk28)->x;
         w += x;
     }
     l = x - arg3;
@@ -1572,7 +1572,7 @@ void func_8001A6D4(void *arg0, u32 hidden) {
                 x = (x & 0xFFFF3FFF) - (w / 2);
             } else {
                 x = 0x140 - (w / 2);
-                x -= D_800569C0;
+                x -= ((GfxScreen *)RenderState.unk28)->x;
             }
             w += x;
         }
@@ -1637,13 +1637,13 @@ void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
             x &= ~0xC000;
             x <<= 14;
             x >>= 14;
-            x += D_800569C0;
+            x += ((GfxScreen *)RenderState.unk28)->x;
             x &= ~0xC000;
             x |= 0x8000;
         } else {
-            x = D_800569C0 + t->x;
+            x = ((GfxScreen *)RenderState.unk28)->x + t->x;
         }
-        func_800243A0(x, (s16)(D_800569C4 + t->y), t->str, t->c0, t->c1, 0);
+        func_800243A0(x, (s16)(*(s16 *)&((GfxScreen *)RenderState.unk28)->y + t->y), t->str, t->c0, t->c1, 0);
         return;
     }
     RenderState.unk84 = RenderState.unkCC;
@@ -1807,10 +1807,10 @@ s32 func_8001AF2C(void *arg0) {
     s32 ey;
 
     flags = 0;
-    in = &GteWork.in;
+    in = &RenderState.gteIn;
     in = &box->center;
     gte_ldv0(in);
-    in = &GteWork.in;
+    in = &RenderState.gteIn;
     gte_rtps();
     gte_stsxy(&c);
     gte_stsz(&sz);
@@ -2201,7 +2201,7 @@ void func_8001C2C0(u8 *arg0) {
     u8 *var_s0;
 
     var_s0 = (*(s32*)((u8*)(arg0) + 108));
-    D_8005699C = arg0;
+    RenderState.unk4 = arg0;
     if (var_s0 != NULL) {
         temp_s1 = (*(s32*)((u8*)(arg0) + 12));
         if (temp_s1 & 0x8000) {
@@ -2324,9 +2324,9 @@ void func_8001C690(NAS *nas, u8 *arg1) {
     if (nas->NASid & 0x8000) {
         hidden = nas->NASid & 0x10000000;
         if (nas->NASid & 0x02000000) {
-            D_800569DC = nas->Class;
+            RenderState.otzAdd = nas->Class;
         } else {
-            D_800569DC = 0;
+            RenderState.otzAdd = 0;
         }
         if (!(nas->NASid & 0x10000000)) {
             RenderState.unk84 = RenderState.unkCC;
@@ -2349,9 +2349,9 @@ void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
     if (nas->NASid & 0x8000) {
         f = flags | nas->NASid;
         if (nas->NASid & 0x02000000) {
-            D_800569DC = nas->Class;
+            RenderState.otzAdd = nas->Class;
         } else {
-            D_800569DC = 0;
+            RenderState.otzAdd = 0;
         }
         if (!(nas->NASid & 0x10000000)) {
             RenderState.unk84 = RenderState.unkCC;
@@ -2373,9 +2373,9 @@ u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags) {
 
     flags |= nas->NASid;
     if (nas->NASid & 0x02000000) {
-        D_800569DC = nas->Class;
+        RenderState.otzAdd = nas->Class;
     } else {
-        D_800569DC = 0;
+        RenderState.otzAdd = 0;
     }
     if (!(nas->NASid & 0x10000000)) {
         RenderState.unk84 = RenderState.unkCC;
@@ -2403,7 +2403,7 @@ void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2) {
             x = (x & ~0xC000) - (w / 2);
         } else {
             x = 0x140 - (w / 2);
-            x -= D_800569C0;
+            x -= ((GfxScreen *)RenderState.unk28)->x;
         }
         w += x;
     }

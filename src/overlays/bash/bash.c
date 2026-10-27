@@ -3544,7 +3544,7 @@ void BashDrawView(void) {
     u8 *vp = (u8 *)&GameViewport;
     func_80093038();
     func_80018B08((GfxViewport *)vp, (GfxCamera *)MainCamera);
-    FadeAmount = ScreenFade.amount;
+    RenderState.modelDp = ScreenFade.amount;
     func_8009440C();
 }
 

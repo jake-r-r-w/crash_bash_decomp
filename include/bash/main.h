@@ -187,14 +187,6 @@ typedef struct TexAnimEntry {
     /* 0x34 */ s32 time;   /* frame stamp, compared to FrameCount */
 } TexAnimEntry;
 
-/* Scratch for one GTE transform (0x800569CC, 0x50 bytes; the next symbol is
- * 0x80056A1C). func_8002B6D0 addresses `in` as `&out - 0x40`, so both are one
- * object. */
-typedef struct {
-    SVECTOR in;       /* 0x00: position relative to the view */
-    u8 unk8[0x38];
-    VECTOR out;       /* 0x40: rotated and translated position */
-} GteScratch;
 
 /* Bounding box tested for visibility by func_8001AF2C: corners min/max and a
  * centre whose pad is a radius. */
@@ -360,22 +352,25 @@ typedef struct {
  * func_8001965C, and the ordering table that primitives are added to. */
 typedef struct {
     struct GfxModel *unk0;
-    u8 unk4[4];
+    void *unk4;
     s32 *farColor; /* 0x08: r, g, b for gte_ldfcdir */
     s32 dp;        /* 0x0C: depth-cue factor for gte_lddp */
     void *viewport; /* 0x10: GfxViewport (func_80018B08) */
-    s32 modelDp;   /* 0x14: dp for ModelObj quads (func_8001AA48) */
+    s32 modelDp;   /* 0x14: dp for ModelObj quads (func_8001AA48); the screen fade */
     u8 unk18[4];
     s16 clipX1;    /* 0x1C: viewport clip right/bottom on screen */
     s16 clipY1;
     s32 ofx;   /* 0x20: geometry offset x (scaled by the screen width / 640) */
     s32 ofy;   /* 0x24: geometry offset y (halved) */
-    u8 unk28[0x18];
+    u8 unk28[0xC]; /* 0x28: a GfxScreen */
+    SVECTOR gteIn; /* 0x34: GTE scratch, a position relative to the view (func_8002B6D0) */
+    u8 unk3C[4];
     u32 *ot;   /* 0x40 */
     s16 otzAdd; /* 0x44: added to the average Z before it is halved */
     s16 otLen;  /* 0x46: entries in ot */
     struct GfxCamera *cam; /* 0x48 */
-    u8 unk4C[0x38];
+    u8 unk4C[0x28];
+    VECTOR gteOut; /* 0x74: gteIn rotated and translated */
     u8 *unk84; /* 0x84: = unkCC */
     u8 *unk88; /* 0x88: = unk10C */
     MATRIX unk8C; /* 0x8C: set to identity by draw_init */
@@ -436,7 +431,7 @@ BASH_SIZE_CHECK(_sfx_handler, 0x38);
 typedef struct {
     _sfx_handler voices[24];
     _sfx_handler *free;         /* 0x540 */
-    _sfx_handler *active;       /* 0x544 (the symbol SfxActiveVoices, used by asm) */
+    _sfx_handler *active;       /* 0x544 */
 } SfxPool;
 
 /* A VAB file in memory: the header and body as byte offsets from its start
@@ -792,7 +787,6 @@ PointList *func_8001562C(subengine *sub);
 FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
 void func_800369FC(void);
 
-extern GteScratch GteWork;
 extern SVECTOR D_80056AC8[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
 extern TrigEntry TrigTable[];
@@ -807,7 +801,6 @@ extern u8 D_80050010[];
 void func_8002D488(void);
 void func_8002D4F4();
 extern s32 D_80064414;
-extern s32 FadeAmount;
 extern s32 D_8006559C;
 extern s32 D_800655A4;
 extern s32 D_800655A0;
@@ -1189,10 +1182,8 @@ typedef union {
 } SprPos;
 
 
-/* calc_rgbcode: fades r, g, b towards black by FadeAmount / 0x1000. */
+/* calc_rgbcode: fades r, g, b towards black by RenderState.modelDp / 0x1000. */
 /* FadeColor reading the fade from gs->modelDp (func_80029F9C). */
-extern u16 D_800569DC;
-extern s32 D_800569C0;
 
 typedef struct {
     struct {
@@ -1291,7 +1282,6 @@ extern s32 *D_8005683C;            /* pool sizes (func_80017164) */
 extern u8 *D_8005685C;             /* 0x58-byte nodes (func_80017164) */
 extern u8 *D_80056840;             /* 0x54-byte nodes, free list in D_80056850 */
 extern u8 *D_80056854;             /* 8-byte nodes, free list in D_80056858 */
-extern s32 D_80056848;
 typedef struct ListNode18938 {
     s32 f0;
     s32 f4;
@@ -1324,7 +1314,6 @@ extern s32 D_80058B64;
 extern s32 D_80058B68;
 extern s32 D_80058B6C;
 extern s8 D_8005A63C;
-extern void *D_8005699C;
 extern void *HeadOfBalls;
 extern void *D_80056864;
 extern s32 *D_80056860;
@@ -1583,7 +1572,6 @@ typedef struct {
     u32 c1;      /* 0x74 */
     s32 font;    /* 0x78: into FontPage */
 } TextNAS;
-extern s16 D_800569C4;
 extern PosEntry D_8005689C[];
 void func_80010158(void);
 
