@@ -1724,7 +1724,7 @@ s32 UnlockCardLevels(s32 arg0) {
     e = BattleArenas;
     count = 0;
     i = count;
-    tbl = D_800657D0;
+    tbl = CardSlots[0].unk8;
 outer:
     if (i < 7) {
         j = 0;
@@ -2099,7 +2099,7 @@ s32 AnyCardHasLevel(s32 idx) {
     s32 i;
 
     i = 0;
-    p = D_800657D0;
+    p = CardSlots[0].unk8;
 loop:
     if (i < 4) {
         if ((p + idx)[0xE4] != 0) {

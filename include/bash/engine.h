@@ -217,7 +217,6 @@ extern EngineTable12 CupTable[];
 /* Also in main.h; repeated for overlays that include engine.h first. */
 extern u8 GameInfo[];
 extern s32 LevelUnlockedIn(s32, u8 *);
-extern u8 D_800657D0[];
 extern u16 ModeTypes[];
 void process_init(process_control_info *pc);
 void func_80079260(void);

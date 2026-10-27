@@ -391,7 +391,7 @@ s32 func_8008F248(s32 arg0) {
     s32 i;
     u8 *tab;
 
-    tab = D_800657D0;
+    tab = CardSlots[0].unk8;
     cnt = 0;
     i = 0;
     for (;;) {
@@ -548,7 +548,7 @@ s32 func_8008FC60(void *arg0) {
     u8 *tab;
 
     i = 0;
-    tab = D_800657D0;
+    tab = CardSlots[0].unk8;
     for (;;) {
         if (i >= *(s32 *)((u8 *)arg0 + 8)) {
             goto done;
@@ -1149,7 +1149,7 @@ void func_80090E20(void) {
                 dst->b[6] = q[0x5E];
                 dst->b[7] = q[0x5F];
                 *(Blk12p4 *)(q + 0xD0) = *(Blk12p4 *)GameOptions;
-                *(Blk18C *)dst->pad = *(Blk18C *)q;
+                *(Blk18C *)dst->unk8 = *(Blk18C *)q;
                 func_80091E58();
                 card_save();
                 SaveMenuState = 1;

@@ -376,7 +376,7 @@ typedef struct {
     MATRIX unk8C; /* 0x8C: set to identity by draw_init */
     MATRIX unkAC; /* 0xAC: object's local-to-screen matrix (func_8001ACC0) */
     u8 unkCC[0x40];
-    u8 unk10C[0x40];
+    u8 unk10C[0x20]; /* the struct ends at 0x12C: D_80056AC4 is the next global */
 } GfxState;
 
 /* A 0x1C-byte entry of a sorted table at +0x4C of a block (func_8001E41C). */
@@ -867,7 +867,7 @@ s32 func_80010000(u8 *arg0);
  * full-width spaces (func_8002C5BC). */
 typedef struct {
     u8 b[8];
-    u8 pad[0x18C];
+    u8 unk8[0x18C]; /* a copy of GameInfo from +0x60 (the hub's save), with the arena results */
 } D_800657C8_Slot;
 extern D_800657C8_Slot CardSlots[];
 extern s32 D_80065E24;
