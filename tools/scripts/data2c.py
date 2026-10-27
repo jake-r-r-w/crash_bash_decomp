@@ -197,6 +197,12 @@ def layout(ovl):
             f"asm/nonmatchings/overlays/{ovl}")
 
 
+def data_files(d):
+    """A binary's asm data files: splat's *.data.s, and *.sdata.s (the engine's tables after its
+    rodata, which splat calls sdata though the code reaches them by plain addresses)."""
+    return sorted(glob.glob(f"{d}/*.data.s") + glob.glob(f"{d}/*.sdata.s"))
+
+
 def load_syms(ovl):
     """address -> name from the exe's, the engine's and this overlay's symbol files."""
     out = {}
@@ -335,7 +341,7 @@ class Converter:
         self.hdr_code = "\n".join(l for l in strip_comments(self.hdrs).splitlines()
                                   if not re.match(r"\s*extern\b", l))
         self.symbolic = set()
-        for p in glob.glob(f"{self.data_dir}/*.data.s"):
+        for p in data_files(self.data_dir):
             self.symbolic |= asm_symbolic(p)
         self.syms = load_syms(ovl)
         self.sym_names = set(self.syms.values())
@@ -726,7 +732,7 @@ def main():
         local += loc
         head = "/* rodata: the strings (const arrays keep their retail order; see data2c.py) */"
         lines += ([head] if len(a.rodata) == 1 else [f"/* rodata block {sym} */"]) + rl + [""]
-    files = [] if a.strings_only else sorted(glob.glob(f"{c.data_dir}/*.data.s"))
+    files = [] if a.strings_only else data_files(c.data_dir)
     objs = []
     for p in files:
         objs += c.objects(p)

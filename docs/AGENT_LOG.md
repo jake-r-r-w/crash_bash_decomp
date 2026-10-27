@@ -481,6 +481,13 @@ Newest first, a few lines each. Details are in the commits.
   rewritten for it). `D_8009EB3C`'s last 0x14 bytes are the tournament select menu's
   `process_info` (`TournamentSelect`, which the front end's `TournamentChain` runs). data2c
   now gives 512 objects, 0 errors, 0 warnings.
+  Then (3) done: data2c reads `engine_sdata.sdata.s` too (`data_files`): 18 KB after the
+  rodata, plain-address data splat calls sdata, two words `gameflow.c` uses
+  (`D_800AEC58`/`5C`) and tables only the first data block points at (`D_800985F0`'s 45
+  pointers); 551 objects, no errors or warnings, no offsets off `MenuEmpty2` left. Open:
+  where its C goes. It sits after all the .rodata, so it can't be any file's ordinary
+  .data; a const tables file linked last, or the two words a separate small-data unit, are
+  the candidates to check before (4) the cut by file.
 
 - **2026-10-26 (Phase 5: the engine's strings as C):** all 59 INCLUDE_RODATA blocks of
   `gameflow.c`, `heroes.c`, `panel.c` and `pause.c` (61 strings, the memory card and menu

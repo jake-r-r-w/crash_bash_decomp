@@ -197,6 +197,14 @@ class Strings(unittest.TestCase):
         # "." then its NUL and two retail leftovers before the next word
         self.assertEqual(data2c.split_strings(b".\0\x22\x96OK\0\0"), [(0, '.\\000\\"\\226', 4), (4, "OK", 0)])
 
+    def test_the_engines_sdata_file_is_data_too(self):
+        import os
+        import tempfile
+        d = tempfile.mkdtemp()
+        for n in ("a.data.s", "b.sdata.s", "c.rodata.s"):
+            open(os.path.join(d, n), "w").close()
+        self.assertEqual([os.path.basename(p) for p in data2c.data_files(d)], ["a.data.s", "b.sdata.s"])
+
     def test_main_exe_has_its_own_layout(self):
         self.assertEqual(data2c.layout("main"), ("configs/USA/main.yaml", "disc/SCUS_945.70", "asm/data/main",
                                                  "asm/nonmatchings/main"))
