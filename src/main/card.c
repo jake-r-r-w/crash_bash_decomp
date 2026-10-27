@@ -504,3 +504,22 @@ fillit:
         arg1++;
     } while ((s32)arg1 < (s32)end);
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+s32 CardChannel = 0;
+char *D_800655BC = (void *)&CardSaveTitleFormat;
+s32 CardStatus = 0;
+s32 D_800655C4 = 0;
+u8 CardBuffer[128] = {0};
+u8 D_80065648[384] = {0};
+D_800657C8_Slot CardSlots[4] = {0};
+s32 D_80065E18[3] = {0};
+s32 D_80065E24 = 0;
+s32 D_80065E28[1512] = {0};
+s32 card_command_delay = 0;
+s32 CardCommand = 0;
+s32 D_800675D0 = 0;
+SizeEntry D_800675D4[15] = {0};
+s32 D_8006782C = 0;
+s32 D_80067830 = 0;
+s32 D_80067834[2] = { 0x1C7350, 0x3200000 };

@@ -180,3 +180,12 @@ void func_8002C44C(void) {
 void func_8002C488(s32 arg0, s32 type) {
     music_dload_midi(arg0, &CurrentMusic, type);
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+s32 D_8006559C = 0;
+s32 D_800655A0 = 0;
+s32 D_800655A4 = 0;
+s32 D_800655A8 = 0;
+s32 D_800655AC = 0;
+s32 D_800655B0 = 0;
+s32 D_800655B4 = 0;

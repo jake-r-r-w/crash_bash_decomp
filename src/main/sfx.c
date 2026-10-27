@@ -343,3 +343,369 @@ static inline NAS *AllocNAS(void) {
     }
     return free;
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+/* what the data points at that this file's headers don't declare */
+extern u8 D_8004E5E0[];
+extern u8 D_8004E5E8[];
+extern u8 D_8004E5F0[];
+extern u8 D_8004E5F8[];
+extern u8 D_8004E600[];
+extern u8 D_8004E608[];
+extern u8 D_8004E610[];
+extern u8 D_8004E618[];
+extern u8 D_8004E620[];
+extern u8 D_8004E628[];
+extern u8 D_8004E630[];
+extern u8 D_8004E638[];
+extern u8 D_8004E640[];
+extern u8 D_8004E648[];
+extern u8 D_8004E650[];
+extern u8 D_8004E658[];
+extern u8 D_8004E660[];
+extern u8 D_8004E668[];
+extern u8 D_8004E670[];
+extern u8 D_8004E678[];
+extern u8 D_8004E680[];
+extern u8 D_8004E688[];
+extern u8 D_8004E690[];
+extern u8 D_8004E698[];
+extern u8 D_8004E6A0[];
+extern u8 D_8004E6A8[];
+extern u8 D_8004E6B0[];
+extern u8 D_8004E6B8[];
+extern u8 D_8004E6C0[];
+extern u8 D_8004E6C8[];
+extern u8 D_8004E6D0[];
+extern u8 D_8004E6D8[];
+extern u8 D_8004E6E0[];
+extern u8 D_8004E6E8[];
+extern u8 D_8004E6F0[];
+extern u8 D_8004E6F8[];
+extern u8 D_8004E700[];
+extern u8 D_8004E708[];
+extern u8 D_8004E710[];
+extern u8 D_8004E718[];
+extern u8 D_8004E720[];
+extern u8 D_8004E728[];
+extern u8 D_8004E730[];
+extern u8 D_8004E738[];
+extern u8 D_8004E740[];
+extern u8 D_8004E748[];
+extern u8 D_8004E750[];
+extern u8 D_8004E758[];
+extern u8 D_8004E760[];
+extern u8 D_8004E768[];
+extern u8 D_8004E770[];
+extern u8 D_8004E778[];
+extern u8 D_8004E780[];
+extern u8 D_8004E788[];
+extern u8 D_8004E790[];
+extern u8 D_8004E798[];
+extern u8 D_8004E7A0[];
+extern u8 D_8004E7A8[];
+extern u8 D_8004E7B0[];
+extern u8 D_8004E7B8[];
+extern u8 D_8004E990[];
+extern u8 D_8004E998[];
+extern u8 D_8004E9C8[];
+extern u8 D_8004E9D0[];
+extern u8 D_8004E9D8[];
+extern u8 D_8004E9E0[];
+extern u8 D_8004E9E8[];
+extern u8 D_8004E9F0[];
+extern u8 D_8004E9F8[];
+extern u8 D_8004EA00[];
+extern u8 D_8004EA08[];
+extern u8 D_8004EA10[];
+extern u8 D_8004EA18[];
+extern u8 D_8004EA20[];
+extern u8 D_8004EA28[];
+extern u8 D_8004EA30[];
+extern u8 D_8004EA38[];
+extern u8 D_8004EA40[];
+extern u8 D_8004EA48[];
+extern u8 D_8004EA50[];
+extern u8 D_8004EA58[];
+extern u8 D_8004EA60[];
+extern u8 D_8004EA68[];
+extern u8 D_8004EA78[];
+extern u8 D_8004EA80[];
+extern u8 D_8004EA88[];
+extern u8 D_8004EF00[];
+extern u8 D_8004EF08[];
+extern u8 D_8004EF10[];
+extern u8 D_8004EF18[];
+extern u8 D_8004EF20[];
+extern u8 D_8004EF28[];
+extern u8 D_8004EF30[];
+extern u8 D_8004EF38[];
+extern u8 D_8004EF40[];
+extern const char PauseText01[];
+extern const char PauseText02[];
+extern const char PauseText03[];
+extern const char PauseText090Percent[];
+extern const char PauseText100Percent[];
+extern const char PauseTextAdjustLevel[];
+extern const char PauseTextAudioMode[];
+extern const char PauseTextChangeArena[];
+extern const char PauseTextChangeArena2[];
+extern const char PauseTextCheatFlags[];
+extern const char PauseTextCheatMenu[];
+extern const char PauseTextContinue[];
+extern const char PauseTextController[];
+extern const char PauseTextController1AIsUnplugged[];
+extern const char PauseTextController1BIsUnplugged[];
+extern const char PauseTextController1CIsUnplugged[];
+extern const char PauseTextController1DIsUnplugged[];
+extern const char PauseTextController1IsUnplugged[];
+extern const char PauseTextController2IsUnplugged[];
+extern const char PauseTextDemo[];
+extern const char PauseTextEmpty[];
+extern const char PauseTextExit[];
+extern const char PauseTextExitArena[];
+extern const char PauseTextExitArena2[];
+extern const char PauseTextFxVolume[];
+extern const char PauseTextLevelSelector[];
+extern const char PauseTextMono[];
+extern const char PauseTextMusicVolume[];
+extern const char PauseTextNewGame[];
+extern const char PauseTextNo[];
+extern const char PauseTextOff[];
+extern const char PauseTextOn[];
+extern const char PauseTextOptions[];
+extern const char PauseTextP1[];
+extern const char PauseTextP2[];
+extern const char PauseTextP3[];
+extern const char PauseTextP4[];
+extern const char PauseTextPleaseInsertAController[];
+extern const char PauseTextPressButtonToAccept[];
+extern const char PauseTextPressButtonToChange[];
+extern const char PauseTextPressButtonToForceVictory[];
+extern const char PauseTextQuitGame[];
+extern const char PauseTextQuitGame2[];
+extern const char PauseTextReplayThisArena[];
+extern const char PauseTextReturnToWarpRoom[];
+extern const char PauseTextReturnToWarpRoom2[];
+extern const char PauseTextShowRules[];
+extern const char PauseTextSound[];
+extern const char PauseTextSoundOptions[];
+extern const char PauseTextStereo[];
+extern const char PauseTextTweakAwards[];
+extern const char PauseTextTweakSettings[];
+extern const char PauseTextVibration[];
+extern const char PauseTextViewStats[];
+extern const char PauseTextYes[];
+extern const char PauseTextYesNo[];
+
+MusicEntry MusicTable[45] = {
+    { (s32)&D_8004EA38, 2, { 0, 0 }, (s32)&D_8004E648, (s32)&D_8004E648, 0x9A, { 0, 0 } },
+    { (s32)&D_8004EA58, 2, { 0, 0 }, (s32)&D_8004E640, (s32)&D_8004E640, 0x88, { 0, 0 } },
+    { (s32)&D_8004EA18, 2, { 0, 0 }, (s32)&D_8004E638, (s32)&D_8004E638, 0xE1, { 0, 0 } },
+    { (s32)&D_8004EA60, 2, { 0, 0 }, (s32)&D_8004E630, (s32)&D_8004E630, 0x90, { 0, 0 } },
+    { (s32)&D_8004EA20, 2, { 0, 0 }, (s32)&D_8004E628, (s32)&D_8004E628, 0x88, { 0, 0 } },
+    { (s32)&D_8004E9E8, 2, { 0, 0 }, (s32)&D_8004E608, (s32)&D_8004E608, 0x90, { 0, 0 } },
+    { (s32)&D_8004E9D8, 2, { 0, 0 }, (s32)&D_8004E620, (s32)&D_8004E620, 0x74, { 0, 0 } },
+    { (s32)&D_8004E9E0, 2, { 0, 0 }, (s32)&D_8004E610, (s32)&D_8004E610, 0x79, { 0, 0 } },
+    { (s32)&D_8004E9D0, 2, { 0, 0 }, (s32)&D_8004E618, (s32)&D_8004E618, 0x6F, { 0, 0 } },
+    { (s32)&D_8004E9D0, 2, { 0, 0 }, (s32)&D_8004E600, (s32)&D_8004E600, 0x6F, { 0, 0 } },
+    { (s32)&D_8004EA68, 2, { 0, 0 }, (s32)&D_8004E668, (s32)&D_8004E668, 0x6C, { 0, 0 } },
+    { (s32)&D_8004EA00, 2, { 0, 0 }, (s32)&D_8004E660, (s32)&D_8004E660, 0xB2, { 0, 0 } },
+    { (s32)&D_8004EA28, 2, { 0, 0 }, (s32)&D_8004E658, (s32)&D_8004E658, 0xA0, { 0, 0 } },
+    { (s32)&D_8004EF40, 2, { 0, 0 }, (s32)&D_8004E650, (s32)&D_8004E650, 0x5F, { 0, 0 } },
+    { (s32)&D_8004EA50, 2, { 0, 0 }, (s32)&D_8004E5F8, (s32)&D_8004E5F8, 0xA0, { 0, 0 } },
+    { (s32)&D_8004EA08, 2, { 0, 0 }, (s32)&D_8004E5F0, (s32)&D_8004E5F0, 0x8C, { 0, 0 } },
+    { (s32)&D_8004EA00, 2, { 0, 0 }, (s32)&D_8004E5E8, (s32)&D_8004E5E8, 0xB2, { 0, 0 } },
+    { (s32)&D_8004EA80, 2, { 0, 0 }, (s32)&D_8004E5E0, (s32)&D_8004E5E0, 0x83, { 0, 0 } },
+    { (s32)&D_8004E9C8, 2, { 0, 0 }, (s32)&D_8004EF20, (s32)&D_8004EF18, 0xD7, { 0, 0 } },
+    { (s32)&D_8004EA48, 2, { 0, 0 }, (s32)&D_8004EF28, (s32)&D_8004EF28, 0xA0, { 0, 0 } },
+    { (s32)&D_8004EA60, 2, { 0, 0 }, (s32)&D_8004EF10, (s32)&D_8004EF10, 0x90, { 0, 0 } },
+    { (s32)&D_8004EF38, 2, { 0, 0 }, (s32)&D_8004EF08, (s32)&D_8004EF08, 0x83, { 0, 0 } },
+    { (s32)&D_8004EF30, 2, { 0, 0 }, (s32)&D_8004EF00, (s32)&D_8004EF00, 0x9D, { 0, 0 } },
+    { (s32)&D_8004E9F8, 2, { 0, 0 }, (s32)&D_8004E688, (s32)&D_8004E688, 0xC8, { 0, 0 } },
+    { (s32)&D_8004E9F0, 2, { 0, 0 }, (s32)&D_8004E680, (s32)&D_8004E680, 0xBE, { 0, 0 } },
+    { (s32)&D_8004E9F8, 2, { 0, 0 }, (s32)&D_8004E678, (s32)&D_8004E678, 0xC8, { 0, 0 } },
+    { (s32)&D_8004E9E8, 2, { 0, 0 }, (s32)&D_8004E670, (s32)&D_8004E670, 0x90, { 0, 0 } },
+    { (s32)&D_8004E9C8, 2, { 0, 0 }, (s32)&D_8004E6B0, (s32)&D_8004E6B0, 0xD7, { 0, 0 } },
+    { (s32)&D_8004E9E8, 2, { 0, 0 }, (s32)&D_8004E6A8, (s32)&D_8004E6A8, 0x90, { 0, 0 } },
+    { (s32)&D_8004EA30, 3, { 0, 0 }, (s32)&D_8004E6A0, (s32)&D_8004E6A0, 0x9B, { 0, 0 } },
+    { (s32)&D_8004EA30, 2, { 0, 0 }, (s32)&D_8004E698, (s32)&D_8004E698, 0x9B, { 0, 0 } },
+    { (s32)&D_8004E9F8, 2, { 0, 0 }, (s32)&D_8004E690, (s32)&D_8004E690, 0xC8, { 0, 0 } },
+    { (s32)&D_8004EA20, 2, { 0, 0 }, (s32)&D_8004E640, (s32)&D_8004E640, 0x88, { 0, 0 } },
+    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
+    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
+    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
+    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
+    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
+    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
+    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
+    { (s32)&D_8004EA88, 2, { 0, 0 }, (s32)&D_8004E998, (s32)&D_8004E998, 0x88, { 0, 0 } },
+    { (s32)&D_8004EA88, 2, { 0, 0 }, (s32)&D_8004E998, (s32)&D_8004E998, 0x88, { 0, 0 } },
+    { (s32)&D_8004EA88, 2, { 0, 0 }, (s32)&D_8004E998, (s32)&D_8004E998, 0x88, { 0, 0 } },
+    { (s32)&D_8004EA10, 2, { 0, 0 }, (s32)&D_8004E6B8, (s32)&D_8004E6B8, 0x9C, { 0, 0 } },
+    { (s32)&D_8004EA78, 0, { 0, 0 }, (s32)&D_8004E998, (s32)&D_8004E998, 0x78, { 0, 0 } },
+};
+s32 D_80058F0C[14][8] = {
+    {
+        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
+        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+    },
+    {
+        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
+        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+    },
+    {
+        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
+        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+    },
+    {
+        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
+        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+    },
+    {
+        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
+        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+    },
+    {
+        (s32)&D_8004E6F0, (s32)&D_8004E6F8, (s32)&D_8004E6E8, (s32)&D_8004E6E0,
+        (s32)&D_8004E6C8, (s32)&D_8004E6C0, (s32)&D_8004E6D8, (s32)&D_8004E6D0,
+    },
+    {
+        (s32)&D_8004E730, (s32)&D_8004E738, (s32)&D_8004E728, (s32)&D_8004E720,
+        (s32)&D_8004E708, (s32)&D_8004E700, (s32)&D_8004E718, (s32)&D_8004E710,
+    },
+    {
+        (s32)&D_8004E730, (s32)&D_8004E738, (s32)&D_8004E728, (s32)&D_8004E720,
+        (s32)&D_8004E708, (s32)&D_8004E700, (s32)&D_8004E718, (s32)&D_8004E710,
+    },
+    {
+        (s32)&D_8004E770, (s32)&D_8004E778, (s32)&D_8004E768, (s32)&D_8004E760,
+        (s32)&D_8004E748, (s32)&D_8004E740, (s32)&D_8004E758, (s32)&D_8004E750,
+    },
+    {
+        (s32)&D_8004E730, (s32)&D_8004E738, (s32)&D_8004E728, (s32)&D_8004E720,
+        (s32)&D_8004E708, (s32)&D_8004E700, (s32)&D_8004E718, (s32)&D_8004E710,
+    },
+    {
+        (s32)&D_8004E770, (s32)&D_8004E778, (s32)&D_8004E768, (s32)&D_8004E760,
+        (s32)&D_8004E748, (s32)&D_8004E740, (s32)&D_8004E758, (s32)&D_8004E750,
+    },
+    {
+        (s32)&D_8004E6F0, (s32)&D_8004E6F8, (s32)&D_8004E6E8, (s32)&D_8004E6E0,
+        (s32)&D_8004E6C8, (s32)&D_8004E6C0, (s32)&D_8004E6D8, (s32)&D_8004E6D0,
+    },
+    {
+        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
+        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+    },
+    {
+        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
+        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+    },
+};
+s32 FirstBootDone = 0;
+SfxPool SfxVoicePool = {0};
+s32 D_80059618[20] = {
+    0x6253414E, 0x646C6975, 0x20666F20, 0x343A3030, 0x36353A32, 0x206E6F20, 0x2074634F,
+    0x32203031, 0xA303030, 0x6D6F4320, 0x656C6970, 0x65762072, 0x6F697372, 0x2E32206E,
+    0x20312E38, 0x32334E53, 0x49554220, 0x3420444C, 0x302E302E, 0x303130,
+};
+s32 D_80059668[982] = {
+    (s32)&PauseTextContinue, (s32)&PauseTextShowRules, (s32)&PauseTextOptions,
+    (s32)&PauseTextChangeArena, (s32)&PauseTextChangeArena2, (s32)&PauseTextQuitGame,
+    (s32)&PauseTextExitArena, (s32)&PauseTextExitArena2, (s32)&PauseTextReturnToWarpRoom,
+    (s32)&PauseTextReturnToWarpRoom2, (s32)&PauseTextNewGame, (s32)&PauseTextReplayThisArena,
+    (s32)&PauseTextCheatMenu, (s32)&PauseTextLevelSelector, (s32)&PauseTextQuitGame2,
+    (s32)&PauseTextYesNo, (s32)&PauseTextYes, (s32)&PauseTextNo, (s32)&PauseTextVibration,
+    (s32)&PauseTextOn, (s32)&PauseTextOff, (s32)&PauseTextCheatFlags,
+    (s32)&PauseTextTweakSettings, (s32)&PauseTextTweakAwards, (s32)&PauseTextViewStats,
+    (s32)&PauseTextAdjustLevel, (s32)&PauseTextController1IsUnplugged,
+    (s32)&PauseTextController2IsUnplugged, (s32)&PauseTextController1AIsUnplugged,
+    (s32)&PauseTextController1BIsUnplugged, (s32)&PauseTextController1CIsUnplugged,
+    (s32)&PauseTextController1DIsUnplugged, (s32)&PauseTextPleaseInsertAController,
+    (s32)&PauseTextEmpty, (s32)&PauseTextEmpty, (s32)&PauseTextDemo, (s32)&PauseText01,
+    (s32)&PauseText02, (s32)&PauseText03, (s32)&PauseTextSound, (s32)&PauseTextSoundOptions,
+    (s32)&PauseTextAudioMode, (s32)&PauseTextMusicVolume, (s32)&PauseTextFxVolume,
+    (s32)&PauseTextController, (s32)&PauseTextStereo, (s32)&PauseTextMono,
+    (s32)&PauseText100Percent, (s32)&PauseText090Percent, (s32)&PauseTextExit,
+    (s32)&PauseTextPressButtonToAccept, (s32)&PauseTextPressButtonToChange, (s32)&PauseTextP1,
+    (s32)&PauseTextP2, (s32)&PauseTextP3, (s32)&PauseTextP4, (s32)&D_80059668,
+    (s32)&D_80059668, (s32)&D_80059668, (s32)&D_80059668, (s32)&D_80059668, (s32)0xFFF60002,
+    0xEA00EA, 0, 0, 0x8080, 0, (s32)0x80000004, 0, 0xD0FF, 0xFF, 0, 0, (s32)0x80000000, 0x46,
+    0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x1006E, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF,
+    (s32)0x80000000, 0x20096, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x600BE, 0xD0FF,
+    0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000001, 0xC00FA, 0xFF, 0xFF, 0xFFFF00, 0xFFFF00, 0xFFFF,
+    0, 0, 0, 0, 0, (s32)0xFFF60002, 0xEA00EA, 0, 0, 0x8080, 0, (s32)0x80000004, 0, 0xD0FF,
+    0xFF, 0, 0, (s32)0x80000000, 0x46, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000,
+    0x1006E, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x20096, 0xD0FF, 0xFF, 0xFFFFFF,
+    0xFFFF, (s32)0x80000000, 0x500BE, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000001, 0xC00FA,
+    0xFF, 0xFF, 0xFFFF00, 0xFFFF00, 0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFF60002, 0xEA00EA, 0, 0,
+    0x8080, 0, (s32)0x80000004, 0, 0xD0FF, 0xFF, 0, 0, (s32)0x80000000, 0x46, 0xD0FF, 0xFF,
+    0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x10064, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF,
+    (s32)0x80000000, 0x20082, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x300A0, 0xD0FF,
+    0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x500BE, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF,
+    (s32)0x80000001, 0xC00FA, 0xFF, 0xFF, 0xFFFF00, 0xFFFF00, 0xFFFF, 0, 0, 0, 0, 0,
+    (s32)0xFFF60002, 0xC600C6, 0, 0, 0x8080, 0, (s32)0x80000004, 0, 0xD0FF, 0xFF, 0, 0,
+    (s32)0x80000000, 0x46, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x2006E, 0xD0FF,
+    0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x50096, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF,
+    (s32)0x80000001, 0xC00FA, 0xFF, 0xFF, 0xFFFF00, 0xFFFF00, 0xFFFF, 0, 0, 0, 0, 0,
+    (s32)0x80000004, 0x10000, 0xD0FF, 0xFF, 0, 0, 0xFFFF, 0, 0, 0, 0, 0, (s32)0x80000004, 0,
+    0xD0FF, 0xFF, 0, 0, 0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFF60002, 0x960096, 0, 0, 0x8080, 0,
+    (s32)0x80000005, 0xE0014, 0xD0FF, 0xFF, 0, 0, (s32)0x80000000, 0x100050, 0xD0FF, 0xFF,
+    0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x110050, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, 0xFFFF, 0, 0,
+    0, 0, 0, (s32)0xFFF60002, 0x960096, 0, 0, 0x8080, 0, (s32)0x80000005, 0x40014, 0xD0FF,
+    0xFF, 0, 0, (s32)0x80000000, 0x100050, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000,
+    0x110050, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, 0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFF60002, 0x960096,
+    0, 0, 0x8080, 0, (s32)0x80000005, 0x90014, 0xD0FF, 0xFF, 0, 0, (s32)0x80000000, 0x100050,
+    0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x110050, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF,
+    0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFF60002, 0x960096, 0, 0, 0x8080, 0, (s32)0x80000005,
+    0x70014, 0xD0FF, 0xFF, 0, 0, (s32)0x80000000, 0x100050, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF,
+    (s32)0x80000000, 0x110050, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, 0xFFFF, 0, 0, 0, 0, 0,
+    (s32)0xFFF60002, 0xCE00CE, 0, 0, 0x8080, 0, (s32)0x80000005, 0x2000A, 0xD0FF, 0xFF, 0, 0,
+    (s32)0x80000000, 0x270046, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x2C006E,
+    0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x310096, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF,
+    0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFF60007, 0xFA00FA, 0, 0, 0x8080, 0, (s32)0x80000005,
+    0x27000A, 0xD0FF, 0xFF, 0, 0, 0x640000, 0x29004B, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF,
+    0x186000A, 0x2D004B, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, 0x1860014, 0x2E004B, 0xD0FF, 0xFF,
+    0xFFFFFF, 0xFFFF, 0x640000, 0x2A0073, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, 0x19A000B, 0x2F0073,
+    0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, 0x640000, 0x2B009B, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF,
+    0x19A000C, 0x30009B, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, 0x10006, 0, 0, 0, 0, 0,
+    (s32)0x80000005, 0x3200CE, 0xD0FF, 0xFF, 0, 0, 0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFF60002,
+    0x1040104, 0, 0, 0x8080, 0, (s32)0x80000005, 0x2C000A, 0xD0FF, 0xFF, 0, 0, (s32)0x80000005,
+    0x12003C, 0xD0FF, 0xFF, 0, 0, 0x10006, 0, 0, 0, 0, 0, 0x9B0005, 0x340062, 0xD0FF, 0xFF, 0,
+    0, 0xFF0005, 0x350062, 0xD0FF, 0xFF, 0, 0, 0x1630005, 0x360062, 0xD0FF, 0xFF, 0, 0,
+    0x1C70005, 0x370062, 0xD0FF, 0xFF, 0, 0, 6, 0, 0, 0, 0, 0, 0x93000A, 0x130072, 0xFFFFFF,
+    0xFFFF, 0xFFFFFF, 0xFFFF, 0x8C0014, 0x140072, 0xD0FF, 0xFF, 0xD0FF, 0xFF, 0x8C001E,
+    0x140072, 0x808080, 0x808080, 0, 0, 0xF7000B, 0x130072, 0xFFFFFF, 0xFFFF, 0xFFFFFF, 0xFFFF,
+    0xF00015, 0x140072, 0xD0FF, 0xFF, 0xD0FF, 0xFF, 0xF0001F, 0x140072, 0x808080, 0x808080, 0,
+    0, 0x15B000C, 0x130072, 0xFFFFFF, 0xFFFF, 0xFFFFFF, 0xFFFF, 0x1540016, 0x140072, 0xD0FF,
+    0xFF, 0xD0FF, 0xFF, 0x1540020, 0x140072, 0x808080, 0x808080, 0, 0, 0x1BF000D, 0x130072,
+    0xFFFFFF, 0xFFFF, 0xFFFFFF, 0xFFFF, 0x1B80017, 0x140072, 0xD0FF, 0xFF, 0xD0FF, 0xFF,
+    0x1B80021, 0x140072, 0x808080, 0x808080, 0, 0, 0x10006, 0, 0, 0, 0, 0, (s32)0x80000005,
+    0x3300AA, 0xD0FF, 0xFF, 0, 0, (s32)0x80000005, 0x3200D2, 0xD0FF, 0xFF, 0, 0, 0xFFFF, 0, 0,
+    0, 0, 0, (s32)0xFFF60002, 0x1400140, 0, 0, 0x8080, 0, (s32)0x80000005, 0xC000A, 0xD0FF,
+    0xFF, 0, 0, (s32)0x80000000, 0xD0032, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000,
+    0x15005A, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x160082, 0xD0FF, 0xFF,
+    0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x1700AA, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, 0xFFFF, 0, 0,
+    0, 0, 0, (s32)0x80000000, 0xB003C, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000,
+    0x10064, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x3008C, 0xD0FF, 0xFF, 0xFFFFFF,
+    0xFFFF, (s32)0x80000000, 0x500B4, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, 0xFFFF, 0, 0, 0, 0, 0,
+    (s32)0x80000000, 0xB00C8, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x800FA, 0xD0FF,
+    0xFF, 0xFFFFFF, 0xFFFF, 0xFFFF, 0, 0, 0, 0, 0, 0xAA0002, 0x620062, 0, 0, 0x8080, 0,
+    (s32)0x80000000, 0xB00B4, 0xD0FF, 0xFF, 0xFFFFFF, 0xFFFF, (s32)0x80000000, 0x800E6, 0xD0FF,
+    0xFF, 0xFFFFFF, 0xFFFF, 0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFEC0002, 0x14A014A, 0, 0, 0x80, 0,
+    (s32)0x80000005, 0x16FFF6, 0xD0FF, 0xFF, 0, 0, 0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFEC0002,
+    0x14A014A, 0, 0, 0x80, 0, (s32)0x80000005, 0xCFFF6, 0xD0FF, 0xFF, 0, 0, 0xFFFF, 0, 0, 0, 0,
+    0, (s32)0xFFEC0002, 0x14A014A, 0, 0, 0x80, 0, (s32)0x80000005, 0x17FFF6, 0xD0FF, 0xFF, 0,
+    0, 0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFB00002, 0x1860186, 0, 0, 0x80, 0, 0xFFFF, 0, 0, 0, 0, 0,
+    (s32)0xFFEC0002, 0x14A014A, 0, 0, 0x80, 0, 0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFF60002,
+    0x1400140, 0, 0, 0x8080, 0, (s32)0x80000004, 0, 0xD0FF, 0xFF, 0, 0, 0x10006, 0, 0, 0, 0, 0,
+    (s32)0x80000005, 0x1C0050, 0xD0FF, 0xFF, 0, 0, (s32)0x80000005, 0x1D0062, 0xD0FF, 0xFF, 0,
+    0, (s32)0x80000005, 0x1E0074, 0xD0FF, 0xFF, 0, 0, (s32)0x80000005, 0x1F0086, 0xD0FF, 0xFF,
+    0, 0, (s32)0x80000005, 0x200098, 0xD0FF, 0xFF, 0, 0, 6, 0, 0, 0, 0, 0, 0xFFFF, 0, 0, 0, 0,
+    0, (s32)0xFFF60002, 0xC800C8, 0, 0, 0x8080, 0, (s32)0x80000005, 0x210014, 0xFF, 0xFF, 0, 0,
+    0xFFFF, 0, 0, 0, 0, 0, (s32)0xFFF60002, 0xC800C8, 0, 0, 0x8080, 0, (s32)0x80000005,
+    0x220014, 0xFF, 0xFF, 0, 0, 0xFFFF, 0, 0, 0, 0, 0, (s32)0x80000005, 0x230014, 0xD0FF, 0xFF,
+    0, 0, 0xFFFF, 0, 0, 0, 0, 0, 4, 0x1908000, 0x280000, 0, 0, 0, 0, 0, 0, 3, 0xC8000, 0, 0, 0,
+    (s32)&PauseTextPressButtonToForceVictory, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};

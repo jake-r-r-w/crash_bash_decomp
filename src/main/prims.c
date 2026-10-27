@@ -3322,3 +3322,35 @@ void func_8001E948(void) {
     } while (func_80011DB4(&MainHeap) != 0);
     func_80010AE8(&MainHeap);
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+s32 *D_8005683C = 0;
+u8 *D_80056840 = 0;
+NodePool PrimPool = {0};
+s32 *D_80056850 = 0;
+u8 *D_80056854 = 0;
+s32 *D_80056858 = 0;
+u8 *D_8005685C = 0;
+s32 *D_80056860 = 0;
+void *D_80056864 = 0;
+s32 D_80056868[3] = {0};
+s32 D_80056874[1] = {0};
+s32 D_80056878 = 0;
+s32 D_8005687C[4] = {0};
+VECTOR D_8005688C = { 0, 0, 0x680, 0 };
+PosEntry D_8005689C[9] = {
+    { { 0, 0xD0FF, 0xFF }, 0, { 0, 0, 0 } }, { { 0, 0x808080, 0x808080 }, 0, { 0, 0, 0 } },
+    { { 0, 0xD0FF, 0xFF }, 2, { 0, 0, 0 } }, { { 0, 0x606060, 0x606060 }, 0, { 0, 0, 0 } },
+    { { 1, 0xD0FF, 0xFF }, 0, { 0, 0, 0 } }, { { 0, 0xFF, 0xFF }, 0, { 0, 0, 0 } },
+    { { 1, 0xFF, 0xFF }, 0, { 0, 0, 0 } }, { { 0, 0xFFFFFF, 0xFFFF }, 0, { 0, 0, 0 } },
+    { { 1, 0xFFFFFF, 0xFFFF }, 0, { 0, 0, 0 } },
+};
+GfxState RenderState = {0};
+s32 D_80056AC4 = 0;
+SVECTOR D_80056AC8[1024] = {0};
+s32 D_80058AC8 = 0;
+subengine *next_sub = 0;
+void *MapScene = 0;
+MATRIX D_80058AD4 = {0};
+SVECTOR D_80058AF4 = {0};
+s32 D_80058AFC[1] = {0};

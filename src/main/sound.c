@@ -435,3 +435,24 @@ void func_8002BD68(void) {
         p += 2;
     }
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+s32 D_80064414 = 0;
+s32 D_80064418[24] = {
+    1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000, 0x2000, 0x4000,
+    0x8000, 0x10000, 0x20000, 0x40000, 0x80000, 0x100000, 0x200000, 0x400000, 0x800000,
+};
+s32 D_80064478[12] = { 0x400, 0x1000, 0xF00, 0xA00, 0x1200, 0x2800, 0x800, 0x1000, 0xF00, 0xA00, 0x1200, 0x1C00 };
+u8 D_800644A8[24] = {0};
+sfx_machine_bank_info SfxBanks[6] = {0};
+s8 SfxTable[2002][2] = {0};
+s32 num_sfx_banks = 0;
+s32 D_800654B0 = 0;
+s32 D_800654B4 = 0;
+s32 D_800654B8 = 0;
+s32 SfxBankCount = 0;
+VabFile *VabLoading = 0;
+sfx_machine_bank_info *SfxBankLoading = 0;
+s32 D_800654C8 = 0;
+char D_800654CC[176] = {0};
+music_midi CurrentMusic = {0};

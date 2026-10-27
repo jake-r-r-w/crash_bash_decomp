@@ -493,3 +493,18 @@ void func_8002E000(s32 arg0) {
     *CdRegIndex = 0;
     *D_80067878 = D_8006783C[arg0 * 4];
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+u8 D_8006783C[56] = {
+    1, 0, 1, 3, 0x13, 0, 3, 3, 0x14, 1, 3, 3, 2, 3, 1, 3, 0x16, 0, 1, 5, 0xE, 1, 1, 3, 0xA, 0,
+    1, 5, 0xB, 0, 1, 3, 3, 0, 1, 3, 0x19, 1, 1, 3, 0x19, 1, 2, 3, 9, 0, 1, 5, 0x1E, 0, 1, 5,
+    0x1A, 0, 1, 5,
+};
+volatile u8 *CdRegIndex = (void *)0x1F801800;
+volatile u8 *D_80067878 = (void *)0x1F801801;
+volatile u8 *D_8006787C = (void *)0x1F801802;
+volatile u8 *D_80067880 = (void *)0x1F801803;
+u8 CdParams[8] = {0};
+u8 CdResult[8] = {0};
+s32 ModchipState = 1;
+s32 D_80067898 = 0;

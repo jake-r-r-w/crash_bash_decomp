@@ -382,7 +382,17 @@ segments:
       - [0x3E44C, lib, libsnd, seqinit, .rdata]
       - [0x3E48C, lib, libmcrd, userfunc, .rdata]
       - [0x3E4AC, lib, libmcrd, low, .rdata]
-      - [0x3E4BC, data, 3E4BC]            # .data: first game table (ptrs to game strings) after last libmcrd string; Sony objects' .data cut out (link-psyq --data)
+      - [0x3E4BC, .data, main/main]            # .data: the game's, then Sony's objects' (link-psyq --data)
+      - [0x43254, .data, main/dbase]
+      - [0x4703C, .data, main/prims]
+      - [0x49300, .data, main/scripts]
+      - [0x49388, .data, main/sfx]
+      - [0x4ADC0, .data, main/nascalls]
+      - [0x54C14, .data, main/sound]
+      - [0x55D9C, .data, main/music]
+      - [0x55DB8, .data, main/card]
+      - [0x5803C, .data, main/modchip]
+      - [0x5809C, .data, main/modchip_msg]
       - [0x580E4, lib, libapi, counter, .data]
       - [0x58104, lib, libgpu, sys, .data]
       - [0x582A4, lib, libetc, intr, .data]

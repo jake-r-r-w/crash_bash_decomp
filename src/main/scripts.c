@@ -1639,3 +1639,35 @@ void scripts_update(void) {
         } while (var_s0 != NULL);
     }
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+D_80058B00_Entry ScriptCommands[6] = {
+    {
+        (s32)(u8 *)&render_entity_thread + 0x2AC, (s32)(u8 *)&process_init + 0x1B4,
+        (s32)(u8 *)&render_entity_thread + 0x220, 0,
+    },
+    {
+        (s32)(u8 *)&sub_play_script + 0x940, (s32)(u8 *)&update_camera_thread + 0xA2C,
+        (s32)(u8 *)&sub_play_script + 0x66C, (u8 *)&sub_play_script + 0x758,
+    },
+    { (s32)(u8 *)&render_entity_thread + 0x1D0, (s32)&update_camera_thread, 0, 0 },
+    {
+        (s32)(u8 *)&render_entity_thread + 0x28, (s32)(u8 *)&update_camera_thread + 0x2D8,
+        (s32)&render_entity_thread, 0,
+    },
+    { (s32)(u8 *)&sub_play_script + 0xA44, (s32)(u8 *)&update_camera_thread + 0x6FC, 0, 0 },
+    {
+        (s32)(u8 *)&sub_play_script + 0x5C8, (s32)(u8 *)&update_camera_thread + 0xEE0,
+        (s32)(u8 *)&sub_play_script + 0x574, (u8 *)&sub_play_script + 0x548,
+    },
+};
+s32 D_80058B60 = 0;
+s32 D_80058B64 = 0;
+s32 D_80058B68 = 0;
+s32 D_80058B6C = 0;
+void *ScriptList = 0;
+void *free_scripts = 0;
+void *D_80058B78 = 0;
+u8 *D_80058B7C = 0;
+s32 D_80058B80 = 0;
+s32 D_80058B84 = 0;
