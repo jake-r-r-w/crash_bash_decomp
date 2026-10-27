@@ -358,27 +358,60 @@ load extract and are documented.
   Files inside the engine), and Jampack's records name two of the files
   (`panel` is `PANEL.CPP`, `pause` `PAUSE.CPP`); more files may hide inside
   those units.
-- [ ] The engine's data and rodata as C (its AST table is done in Phase 3).
-  With it, `shift.py`'s stopgap goes: the engine's per-game table, the hero
-  mode tables and the level tables point into the slot overlays, and as C
-  they take their addresses from the overlays' links like the AST table.
-- [ ] Name and type every engine function and global.
+- [x] The engine's rodata as C: all 59 INCLUDE_RODATA blocks are `const char` arrays where
+  they were (2026-10-26), and its 176 strings are named from their text.
+- [ ] The engine's data as C (its AST table is done in Phase 3). With it,
+  `shift.py`'s stopgap goes: the engine's per-game table, the hero mode tables
+  and the level tables point into the slot overlays, and as C they take their
+  addresses from the overlays' links like the AST table. Status (2026-10-27):
+  `slot_refs.py` names the overlay symbol behind all 1086 slot words;
+  `data2c.py engine` reads the data as 515 objects with no errors or warnings
+  (the labels inside structs are fields, the pointer fields typed); the 0x465C
+  bytes after the rodata are the engine's .bss, a memory image kept from the disc
+  like the slot's (ARCHITECTURE.md, The engine's .bss). Left: cut the data by
+  file, splice it, drop `shift.py`'s engine-data rewrite (`fixup`), and shift-test
+  the overlays again on the new link (a playtest).
+- [ ] Name and type every engine function and global. Status (2026-10-27): the
+  most-used globals are named (`GameInfo`, `HeroHooks`, `LevelSpecs`, `Pads`,
+  `MainCamera`, the viewports and cameras typed, ...); 791 `D_` names are left across
+  the engine and the exe, most of them fields of structs still untyped.
+- [ ] Type the game state: `GameInfo` is a byte array with its fields reached by
+  labels of their own (`GameMode` is `+0x34`, `GameTeams` `+0x6C`, `GameExitFlags`
+  `+0x30`, ...) and through each overlay's view (`HubGameView`, `BossGameView`, Tank's
+  and Pogo's, ...). One `GameState` struct with those labels as fields, the views
+  merged into it, checked use by use (Tank's `Heroes` labels show a field access can
+  change the code).
+- [ ] Name `EngineHooks`' fields (`unk4` the hero models, `unk44` the jump test,
+  `unk68` the bounds hook, ...) and give the overlays' views of `HeroHooks` (Bonk,
+  Chase, N2O, Pogo, Polar, Race, Spin) the same names, or one shared type.
 - [ ] Extract and document the asset formats the engine loads (models,
   animation, level data, ...) that Phase 2's extractor still keeps as bytes.
-- [ ] `main.exe`'s rodata, data and bss as C, each file's local data with
-  its unit.
+- [x] `main.exe`'s rodata as C: its six INCLUDE_RODATA blocks (`data2c.py main
+  --strings-only`, 2026-10-26); no INCLUDE_RODATA is left in `src/`.
+- [ ] `main.exe`'s data and bss as C, each file's local data with its unit
+  (`data2c.py main` reads the exe's yaml; its data hasn't been converted).
 - [ ] Name and type every function and global in the exe. Status: the
   names, parameter types and struct names the demo discs leaked are applied
   ([PROTOTYPES.md](PROTOTYPES.md)); the rest is named from behaviour. For
   browsing cross-references across the whole binary, try Ghidra with a PSX
   loader by hand.
 
+- [ ] Shift-test again (playtests): Bash, Arkenoid and Pogo were shift-tested
+  before the overlay links took splat's labels as PROVIDEs (they had 7, 6 and 1
+  pinned labels); Polar before its skating sequences (`*_seq_breathe_ft` ..) were
+  split out, so 32 engine words into it didn't move then; and every overlay once
+  the engine's data is C and `shift.py`'s rewrite is gone.
+
 ## Phase 6 - Finish
 
 **Done when** every test in [The final test](#the-final-test) passes.
 
-- [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere (no function has been
-  asm or parked since 2026-10-26; the rodata is left).
+- [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere: none since 2026-10-26 (every
+  function C, every string block C); the box closes with the data.
+- [ ] The memory images: the slot's and the engine's .bss stay files read from
+  the user's disc (build-machine leftovers, not source); decide whether a
+  source build may write zeros there instead (the game shouldn't read them
+  before writing; the shift build already zeroes the slot's).
 - [ ] Every remaining disc file (music, movies, anything not covered above)
   extracts, and the formats are documented.
 - [ ] Shift everything at once: pad `main.exe` and the engine too, and relink
