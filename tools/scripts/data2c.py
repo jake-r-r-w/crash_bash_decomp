@@ -338,6 +338,7 @@ class Converter:
         for p in glob.glob(f"{self.data_dir}/*.data.s"):
             self.symbolic |= asm_symbolic(p)
         self.syms = load_syms(ovl)
+        self.sym_names = set(self.syms.values())
         self.funcs = {}
         fj = json.load(open(".decomp/functions.json", encoding="utf-8"))
         for k, e in fj.items():
@@ -354,6 +355,10 @@ class Converter:
         """Whether C code names it (headers=True: or a header)."""
         pat = re.compile(r"\b" + re.escape(name) + r"\b")
         if pat.search(self.srcs) is not None or (headers and pat.search(self.hdrs) is not None):
+            return True
+        # a name the symbol files give (not splat's D_) is an object, whoever uses it (the engine's
+        # TournamentSelect is named only by the front end's code, which another slot's)
+        if not re.fullmatch(r"D_[0-9A-F]{8}", name) and name in self.sym_names:
             return True
         # code in a header (an inline function, a macro) names it too; a declaration doesn't
         return pat.search(self.hdr_code) is not None

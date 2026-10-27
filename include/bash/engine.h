@@ -245,7 +245,7 @@ typedef struct EngRec24 {
 } EngRec24;
 
 extern EngRec24 D_8009E8B4[];
-extern EngRec24 D_8009EB3C[];
+extern EngRec24 D_8009EB3C[2];
 extern process_info TournamentSelect;   /* after D_8009EB3C's two records: the tournament select menu (TournamentChain) */
 extern s32 D_8009EB98;
 typedef struct { u16 a, b, c, flags; } EngEntry;

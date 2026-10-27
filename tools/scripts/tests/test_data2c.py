@@ -53,7 +53,7 @@ class Values(unittest.TestCase):
         c.vram, c.end, c.syms, c.funcs, c.decls = 0x800B32B4, 0x800CB294, {}, {}, {}
         c.symbolic, c.provide, c.externs, c.base_rom = set(), {}, set(), 0
         c.srcs = c.hdrs = ""
-        c.ovl, c.start, c.slot_names, c.slot_used = "tank", 0, {}, set()
+        c.ovl, c.start, c.slot_names, c.slot_used, c.sym_names = "tank", 0, {}, set(), set()
         self.c = c
 
     def word(self, v, signed=True, ptr_ok=True, local=()):
