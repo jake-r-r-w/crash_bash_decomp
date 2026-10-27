@@ -245,6 +245,7 @@ first. Rows that need inline asm are not allowed (only C).
 
 | Symptom in the diff | Likely source change | Example |
 |---|---|---|
+| In a loop, a global's field is read through a base register set before the loop (`lui; addiu s5, %lo(G)` then `lh 52(s5)`) where the target reloads `lui %hi(X); lh %lo(X)` each time | The target names the address as a constant: a label of its own, or a deref of a constant address (`*(s16 *)((u8 *)&G + 0x34)`). A field (`G.mode`, `((View *)&G)->mode`, `g->mode`) expands to base + offset, and loop.c hoists the base; an address constant is split into `%hi`/`%lo` and only the `lui` can move. So turning such a label into a field doesn't match there | `GameMode` in Pogo's `Tiles_PlayerIsStealing` (2026-10-27) |
 | A u16 parameter gets an `andi 0xffff` the target lacks, before a `- 1` and a small mask | Do the arithmetic in u16: `arg0--; t = arg0 & 0xFFF;` (combine drops the zero-extension; `(arg0 - 1) & 0xFFF` keeps it) | `map_entity_address` |
 | An index the target sign-extends from 16 bits (`sll 16; sra 14`) right after storing it to an s16 field, where an int parameter indexes unextended | Index by the field just stored (`Alist[anim->ALindex]`): cse reuses the truncated register instead of reloading | `GotoLinkAnim` |
 | Count-down loop ending `bne v1, a1` with `a1 = -1`, and a `beqz` guard before it | `for (i = n - 1; i != -1; i--)`; `while (n--)` and `while (n-- != 0)` don't match. Fixed count: `for (i = 62; i != -1; i--)` | `func_800154C0`, `func_800154EC`; `func_80012E54`, `func_8001325C` |

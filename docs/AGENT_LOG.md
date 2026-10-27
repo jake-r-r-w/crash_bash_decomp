@@ -63,15 +63,21 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. Type the game state (`GameInfo` and its labels, the overlays' views; the
-   ROADMAP box). `CardSlots[i].unk8` is a copy of `GameInfo` from +0x60.
-2. Name `EngineHooks`' fields across the views.
+1. Type the game state (the ROADMAP box). A first try (reverted) matched everywhere
+   but Pogo's `Tiles_PlayerIsStealing`, whose loop reloads `GameMode` by label: decide
+   whether the labels are globals of their own or macros over the byte array
+   (`*(s16 *)(GameInfo + 0x34)` gives the label's code) before typing the rest.
+   `CardSlots[i].unk8` is a copy of the whole 0x18C bytes.
+2. The model bank as one `obj_dbase` array (283 records from `HeroModelBank` to
+   0x8005683C; the slot labels as elements or an enum of indices: a naming choice
+   for the user).
 3. The exe's last data asm: `asm/data/5F1EC.data.s` is its `.bss` written into
    the file (ARCHITECTURE.md, The exe's .bss). As C its globals are
    uninitialised definitions; the link would have to write `.bss` into the
    file. Try it on `nascalls.c`'s words first.
-4. The exe's pointer words in byte arrays (data2c's 471 warnings): the model
-   bank as one `obj_dbase` array, `DatIndex` as one array of entries.
+4. Keep naming: `decomp.py rename --file` (it writes sym.main.txt; move names at
+   0x80078C90 and up to sym.engine.txt). `scratch/rank_d.py`-style counts of the `D_`
+   uses left point at the next batch.
 
 Needing the user: the shift retests (ROADMAP Phase 5, last box): every
 overlay on the new engine link.
@@ -485,7 +491,11 @@ Newest first, a few lines each. Details are in the commits.
   in every game), and seven Sony objects with only `.data` were found and linked
   (`cstbl.o` is `rcossin_tbl`, the game's `TrigTable`). data2c learned the SDK's
   `RECT`/`CdlLOC`, `volatile`, cast fixed addresses, several externs per line.
-  All byte-identical, no playtest (the user was away).
+  All byte-identical, no playtest (the user was away). Then `DatIndex` as one array
+  (`&DatIndex[2 * N]` for archive file N), `HeroHooks`' 26 fields named from what the
+  games store (`InitHero` .. `KeepInBounds`), twelve globals named (`SysFontWidth`,
+  `HubHeroRing`, `LoadNodePool`, `ScreenCount`, `CardRequest`, ...), and the game state
+  tried as a struct (reverted; ROADMAP, MATCHING.md Diff patterns).
 
 - **2026-10-27 (Phase 5: the engine's data, groundwork):** `slot_refs.py` names the slot
   overlay symbol behind each of the 1086 words of the engine's asm data that point into the

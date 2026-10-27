@@ -377,7 +377,14 @@ load extract and are documented.
   `+0x30`, ...) and through each overlay's view (`HubGameView`, `BossGameView`, Tank's
   and Pogo's, ...). One `GameState` struct with those labels as fields, the views
   merged into it, checked use by use (Tank's `Heroes` labels show a field access can
-  change the code).
+  change the code). Tried 2026-10-27 (reverted): `GameInfo` as a `GameState` struct with
+  the nine labels as fields and the byte users through a `u8 b[0x18C]` member (a member
+  array keeps `GameInfo[i + 0x50]`'s constant out of the symbol, where `((u8 *)&GameInfo)[..]`
+  folds it in) left only Pogo's `Tiles_PlayerIsStealing` different: in its loop `GameMode`
+  is reloaded by label, which a field can't give (MATCHING.md, Diff patterns). So the game
+  reached `GameMode` as an address constant, a global of its own or a macro over the byte
+  array (`*(s16 *)(GameInfo + 0x34)`); decide which before typing the rest. gameflow.h's
+  `GameState` is the fullest view (0x18C bytes, func_800926CC).
 - [x] Name `EngineHooks`' fields (2026-10-27), from what the games put in each slot
   (`InitHero`, `HeroModels`, `RunSpeeds`, `PreMoveHero` .. `KeepInBounds`; `unk8` is
   always 0), in `EngineHooks` and in the overlays' views of `HeroHooks` (Bonk, Chase,
