@@ -122,13 +122,11 @@ the code that reads it, and from what points at it:
 
 `tools/dk make shift OVL=<ovl> PAD=0x40` relinks the overlay padded 0x40
 before each of its rodata, text and data, relinks the engine against it with
-the zeroed slot image, rewrites the engine's asm-data words that point into
-it, and packs `build/shift/CrashBash.cue` (docs/PLAYING.md, The shifted
+the zeroed slot image and the moved overlay's addresses (the engine's data is
+C, so every word of it that points into the overlay is a symbol and moves), and packs `build/shift/CrashBash.cue` (docs/PLAYING.md, The shifted
 build). Read its output:
 
-- each `engine data ... ->` line is a word it rewrote; a `left` line is a
-  word it couldn't place (an address another overlay also has). Each `left`
-  line needs a reason before the test (Tank's only one is its id word);
+- the last line counts the engine's slot names that moved with the overlay.
 - the packer lays the DAT out again in place if the overlay outgrew its
   sectors. The slot overlays are one file group, so entries can't move to
   the end.
@@ -179,7 +177,7 @@ engine's objects: no `func_800B`/`func_800C` or `D_800B`/`D_800C` name should be
   no `*(COMMON)`, so zero objects are `= 0` / `= {0}`.
 - Read the game mode as the game-state struct's field when the schedule
   matters (MATCHING.md, Diff patterns).
-- Until the engine's data is C (Phase 5), `shift.py`'s engine fix-up is a
-  stopgap. A word into the overlay's `.data` range is rewritten even when it
-  is another overlay's, so on a shifted disc only the shifted overlay's game
-  is tested.
+- The engine's data is C (2026-10-27), so a shifted disc moves exactly the
+  engine words that name the overlay's symbols. Until then `shift.py` rewrote
+  the asm data's words by address, which could catch another overlay's, so
+  only the shifted overlay's game was tested.

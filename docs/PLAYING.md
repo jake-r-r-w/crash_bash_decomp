@@ -58,16 +58,11 @@ matching build's objects and:
 
 - links the overlay with PAD bytes before its C rodata, its text and its data (its id word
   stays first), so its code and data move by PAD, 2*PAD and 3*PAD;
-- links the engine with the moved overlay's addresses for its AST table (`slot_syms.py`) and
-  with its slot image as the id word and zeros instead of the retail leftovers;
-- as a stopgap until the engine's data is C (ROADMAP Phase 5), rewrites the engine's asm-data
-  words that point into that overlay, by name (each is printed): every word at a place only
-  it has (for Tank: `TA_SetUp` in the per-world record, the 16-entry hero mode table), a
-  word inside one of its data objects beside those, and any word into its `.data`. The last
-  covers the engine's eight per-character hero sequence tables, whose entries +0x124..+0x144
-  are Tank's nine sequences per character (the `*_seq_tank*` arrays; missing them crashed the
-  game as Desert Fox started). A value in that range can be another game's, so other games
-  may break on a disc shifted this way;
+- links the engine with the moved overlay's addresses for every slot name its C uses (the AST
+  table, the world records, the per-mode table, the hero tables; `slot_syms.py`), and with its
+  slot image as the id word and zeros instead of the retail leftovers. Until the engine's data
+  was C (2026-10-27) a stopgap rewrote its asm data's words by address; a value in the range
+  could be another game's, so other games could break on a disc shifted that way.
 - packs a disc with `pack_disc.py --grow`: the overlay, now bigger than its retail size, stays
   in its place in `CRASHBSH.DAT`, which is laid out again around it when it outgrows the
   sectors before the next entry, and the exe's DAT index and file group sizes follow. (It

@@ -8,12 +8,11 @@ From the matching build's objects (nothing is recompiled), into build/shift/:
    a symbol, so the link moves them all.
 2. engine_slot.bin: the engine's slot image as its id word (0x5C) and zeros, not the build
    machine's leftovers (ARCHITECTURE.md, The engine's slot image).
-3. engine.ovl.elf / engine.bin: the engine linked with that image and with the slot symbols
-   its AST table names taken from the moved overlay (slot_syms.py).
-4. A stopgap until the engine's data is C (Phase 5): words of the engine's asm data that point
-   at a place only this overlay has (a function, object or string no other overlay has at that
-   address) are rewritten from the old link's address to the new one, by name. Each is listed.
-5. CrashBash.bin/.cue: pack_disc.py --grow with the two binaries; the overlay, now bigger than
+3. engine.ovl.elf / engine.bin: the engine linked with that image and with the slot symbols its
+   C names (the AST table, the world records, the hero tables, ...) taken from the moved
+   overlay (slot_syms.py). The engine's data is C, so that moves every word of it that points
+   into the overlay; until it was, a stopgap here rewrote the asm data's words by name.
+4. CrashBash.bin/.cue: pack_disc.py --grow with the two binaries; the overlay, now bigger than
    its retail size, stays in its DAT place, which the DAT is laid out again around if it must
    (the exe's index and file group sizes follow).
 Then the shift test: play the overlay's game on it (docs/PLAYING.md).
@@ -160,24 +159,6 @@ def check_pointers(ovl):
     return n
 
 
-def take_neighbours(done, maybe):
-    """Move the words of maybe (an address another overlay also has) that sit beside a word of
-    done into done, and return the rest. An address is the overlay's when the words beside it
-    are (TankHeroMove in Tank's hero mode table, which is also a data label of bonk), and a word
-    taken that way vouches for the next one too (Bash's file groups in the engine's per-mode
-    table: Space's is the overlay's, so Snow's beside it is, and so Drains' beside that).
-    Entries are (offset, ...)."""
-    fixed = {m[0] for m in done}
-    left = list(maybe)
-    while True:
-        took = [m for m in left if m[0] - 4 in fixed or m[0] + 4 in fixed]
-        if not took:
-            return left
-        done += took
-        fixed |= {m[0] for m in took}
-        left = [m for m in left if m not in took]
-
-
 SEQ_IDS = 130   # more than HeroAnim_seqs has: a slot index past the table never matches
 
 
@@ -191,86 +172,8 @@ def hero_seq_tables(data):
     return [int.from_bytes(data[at[0] - base + 4 * i:at[0] - base + 4 * i + 4], "little") for i in range(1, 9)]
 
 
-def take_columns(done, maybe, tables):
-    """Move the words of maybe that sit in a character's sequence table at an id whose slot in
-    another character's table is in done, and return the rest: a game's sequence ids are its
-    own in every character's table (Coco's dinowin slot shares its address with another
-    overlay's data while the other seven are Dino's alone). Entries are (offset, delta, ...)
-    with vram offset + delta."""
-    def column(m):
-        a = m[0] + m[1]
-        for t in tables:
-            if t <= a < t + 4 * SEQ_IDS:
-                return (a - t) // 4
-        return None
-    cols = {column(m) for m in done} - {None}
-    took = [m for m in maybe if column(m) in cols]
-    done += took
-    return [m for m in maybe if m not in took]
-
-
 MODE_TABLE = 0x800A001C   # the engine's per-mode table: one file_group_load_info pointer per game mode
 MODES = 0x2D
-
-
-def in_mode_table(m):
-    return MODE_TABLE <= m[0] + m[1] < MODE_TABLE + 4 * MODES
-
-
-def drop_mode_others(words):
-    """Split off the words in the engine's per-mode table that don't name a file_group_*: the
-    table holds only file groups, so a function of the overlay at the same address is another
-    overlay's group (N2OHeroTestIdle is file_group_CHASE's address, mode 0x1E beside N2O's own
-    0x1F, which the neighbour rule would otherwise take). Returns (kept, dropped)."""
-    drop = [m for m in words if in_mode_table(m) and not m[2].startswith("file_group_")]
-    return [m for m in words if m not in drop], drop
-
-
-def take_mode_groups(done, maybe):
-    """Move the words of maybe in the engine's per-mode table that name one of the overlay's
-    file_group_* objects, and return the rest: the table holds nothing else, so another
-    overlay's object at the same address can't be what the word means (Chase's mode 0x1E,
-    whose neighbours in the table are Bonk's and the hub's). Entries are (offset, delta, name, ...)."""
-    took = [m for m in maybe if in_mode_table(m) and m[2].startswith("file_group_")]
-    done += took
-    return [m for m in maybe if m not in took]
-
-
-def fixup(ovl, old_elf, new_elf, others):
-    """Rewrite the engine's asm-data words that point at a place only ovl has (stopgap)."""
-    old = slot_syms.defined(old_elf)
-    new = slot_syms.defined(new_elf)
-    taken = set()
-    for e in others:
-        taken |= set(slot_syms.defined(e).values())
-    by_addr, shared = {}, {}
-    for n, a in old.items():
-        if n in new:
-            (shared if a in taken else by_addr).setdefault(a, n)
-    path = f"{OUT}/engine.bin"
-    data = bytearray(open(path, "rb").read())
-    done, maybe = [], []
-    for lo, hi, delta in data_ranges("engine"):
-        for off in range(lo, hi - 3, 4):
-            v = int.from_bytes(data[off:off + 4], "little")
-            n = by_addr.get(v)
-            if n:
-                done.append((off, delta, n, v))
-            elif v in shared:
-                maybe.append((off, delta, shared[v], v))
-    done, dropped = drop_mode_others(done)
-    maybe, dropped2 = drop_mode_others(maybe)
-    left = take_neighbours(done, maybe)
-    left = take_columns(done, left, hero_seq_tables(data))
-    left = take_mode_groups(done, left) + dropped + dropped2
-    for off, delta, n, v in done:
-        data[off:off + 4] = new[n].to_bytes(4, "little")
-    open(path, "wb").write(data)
-    for off, delta, n, v in sorted(done):
-        print(f"shift: engine data {off + delta:08X}: {n} {v:08X} -> {new[n]:08X}")
-    for off, delta, n, v in left:
-        print(f"shift: engine data {off + delta:08X}: {v:08X} is {n} here and a place in another overlay: left")
-    return done
 
 
 def raw_refs(fixed, defined):
@@ -327,11 +230,10 @@ def main():
         for n, v in syms:
             f.write(f"{n} = 0x{v:08X};\n")
     link("engine", slot_image(), ["-T", sym])
-    fixed = fixup(a.ovl, old_elf, new_elf, [f"build/{o}.ovl.elf" for o in slots if o != a.ovl])
     moved = sum(1 for n, v in syms if v != dict(slot_syms.resolve(names, [old_elf] + [e for e in elfs if e != new_elf])).get(n))
     old_size, new_size = os.path.getsize(f"build/{a.ovl}.bin"), os.path.getsize(f"{OUT}/{a.ovl}.bin")
-    print(f"shift: {a.ovl} {old_size} -> {new_size} bytes (pad 0x{pad:X} x{len(sections)}); {moved} AST entries moved; "
-          f"{len(fixed)} engine data words rewritten")
+    print(f"shift: {a.ovl} {old_size} -> {new_size} bytes (pad 0x{pad:X} x{len(sections)}); {moved} of the engine's slot names "
+          "moved")
     r = subprocess.run([sys.executable, "tools/scripts/pack_disc.py", "--out", OUT, "--grow",
                         "--use", f"{a.ovl}={OUT}/{a.ovl}.bin", "--use", f"engine={OUT}/engine.bin"])
     if r.returncode:

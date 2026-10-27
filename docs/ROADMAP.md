@@ -360,17 +360,14 @@ load extract and are documented.
   those units.
 - [x] The engine's rodata as C: all 59 INCLUDE_RODATA blocks are `const char` arrays where
   they were (2026-10-26), and its 176 strings are named from their text.
-- [ ] The engine's data as C (its AST table is done in Phase 3). With it,
-  `shift.py`'s stopgap goes: the engine's per-game table, the hero mode tables
-  and the level tables point into the slot overlays, and as C they take their
-  addresses from the overlays' links like the AST table. Status (2026-10-27):
-  `slot_refs.py` names the overlay symbol behind all 1086 slot words;
-  `data2c.py engine` reads the data as 515 objects with no errors or warnings
-  (the labels inside structs are fields, the pointer fields typed); the 0x465C
-  bytes after the rodata are the engine's .bss, a memory image kept from the disc
-  like the slot's (ARCHITECTURE.md, The engine's .bss). Left: cut the data by
-  file, splice it, drop `shift.py`'s engine-data rewrite (`fixup`), and shift-test
-  the overlays again on the new link (a playtest).
+- [x] The engine's data as C (2026-10-27). `slot_refs.py` named the overlay symbol
+  behind all 1086 slot words and `data2c.py engine` wrote the 515 objects, cut by
+  file in link order (engine.c, asttable.c with the world records, panel.c from
+  `countdown_eng`, pause.c, heroes.c, gameflow.c, levelload.c, camera.c). The
+  0x465C bytes after the rodata are the engine's .bss, a memory image kept from
+  the disc like the slot's (ARCHITECTURE.md, The engine's .bss). The engine's
+  slot words take their addresses from the overlays' links, so `shift.py`'s
+  engine-data rewrite is gone. Left from it: the shift retests below (playtests).
 - [ ] Name and type every engine function and global. Status (2026-10-27): the
   most-used globals are named (`GameInfo`, `HeroHooks`, `LevelSpecs`, `Pads`,
   `MainCamera`, the viewports and cameras typed, ...); 791 `D_` names are left across

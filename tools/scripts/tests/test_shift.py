@@ -20,48 +20,6 @@ LD = """    .tank 0x800B32B4 : AT(tank_ROM_START) SUBALIGN(2)
 """
 
 
-class Neighbours(unittest.TestCase):
-    def test_a_shared_address_beside_the_overlays_words_is_taken_in_a_chain(self):
-        # Bash's per-mode file groups: 0x1C, 0x20 are only Bash's; 0x24 and 0x28 are addresses
-        # another overlay also has, and 0x28 is beside 0x24 only
-        done = [(0x1C, "jungle"), (0x20, "space")]
-        maybe = [(0x24, "snow"), (0x28, "drains"), (0x40, "elsewhere")]
-        left = shift.take_neighbours(done, maybe)
-        self.assertEqual(left, [(0x40, "elsewhere")])
-        self.assertEqual([m[1] for m in done], ["jungle", "space", "snow", "drains"])
-
-
-class Columns(unittest.TestCase):
-    def test_a_shared_address_in_a_taken_sequence_column_is_taken(self):
-        # two characters' tables at 0x1000 and 0x2000; id 86 is taken for the first, so the
-        # second's id-86 slot is the overlay's too; an id nothing took stays left
-        tables = [0x1000, 0x2000]
-        done = [(0x1000 + 4 * 86, 0, "CRA_seq_dinowin")]
-        maybe = [(0x2000 + 4 * 86, 0, "COC_seq_dinowin"), (0x2000 + 4 * 87, 0, "other"), (0x3000, 0, "outside")]
-        left = shift.take_columns(done, maybe, tables)
-        self.assertEqual([m[2] for m in left], ["other", "outside"])
-        self.assertIn((0x2000 + 4 * 86, 0, "COC_seq_dinowin"), done)
-
-
-class ModeGroups(unittest.TestCase):
-    def test_a_file_group_in_the_mode_table_is_taken(self):
-        done = []
-        maybe = [(shift.MODE_TABLE + 4 * 0x1E, 0, "file_group_CHASE"), (shift.MODE_TABLE + 4, 0, "ChaseGrid"),
-                 (0x80099000, 0, "file_group_CHASE")]
-        left = shift.take_mode_groups(done, maybe)
-        self.assertEqual([m[2] for m in done], ["file_group_CHASE"])
-        self.assertEqual(len(left), 2)
-
-    def test_another_name_in_the_mode_table_is_dropped_before_the_neighbour_rule(self):
-        # N2O's own group at mode 0x1F; its N2OHeroTestIdle has file_group_CHASE's address at 0x1E
-        done = [(shift.MODE_TABLE + 4 * 0x1F, 0, "file_group_N2O"), (shift.MODE_TABLE + 4 * 0x1E, 0, "N2OHeroTestIdle"),
-                (0x80099000, 0, "N2OHeroTestIdle")]
-        kept, dropped = shift.drop_mode_others(done)
-        self.assertEqual(dropped, [(shift.MODE_TABLE + 4 * 0x1E, 0, "N2OHeroTestIdle")])
-        self.assertEqual([m[2] for m in kept], ["file_group_N2O", "N2OHeroTestIdle"])
-        self.assertEqual(kept[1][0], 0x80099000)
-
-
 class RawRefs(unittest.TestCase):
     def test_an_engine_address_at_the_overlays_symbol_is_reported(self):
         fixed = {"D_800C45DC": 0x800C45DC, "func_800B8098": 0x800B8098, "D_800C0000": 0x800C0000}
