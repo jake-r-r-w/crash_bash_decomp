@@ -333,7 +333,11 @@ class Converter:
         # the SDK's types (MATRIX, VECTOR, ...) for layouts only; its declarations aren't the game's
         sdk = [open(p, encoding="latin-1").read() for p in SDK_TYPES if os.path.exists(p)]
         self.types = Types(sdk + texts)
-        self.decls = declarations(texts)
+        # the headers' declarations first, then the ones a source file makes for itself (camera.c's
+        # extern s32 D_800ADBD4;): a definition has to match both
+        own = [open(p, encoding="utf-8").read() for p in sorted(glob.glob("src/**/*.c", recursive=True))
+               if not other_slot(p, ovl)]
+        self.decls = declarations(texts + own)
         self.srcs = "\n".join(open(p, encoding="utf-8").read() for p in glob.glob("src/**/*.c", recursive=True)
                               if not other_slot(p, ovl))
         self.hdrs = "\n".join(texts)
@@ -746,6 +750,11 @@ def main():
         except ValueError as e:
             errors += 1
             lines.append(f"#error {e}")
+    slot = sorted(n for n in c.slot_used if n not in c.decls)
+    if slot:
+        lines = ["/* the slot overlays' functions and data the tables point at (slot_refs.py); the engine's",
+                 " * link takes their addresses from the overlays' ELFs */"] + \
+            [f"extern u8 {n}[];" for n in slot] + [""] + lines
     if c.externs:
         lines = ["/* the exe's data the tables point at, not declared in the headers yet */"] + \
             [f"extern u8 {n}[];" for n in sorted(c.externs)] + [""] + lines

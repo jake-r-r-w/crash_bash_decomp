@@ -864,3 +864,47 @@ int func_8007AC00(void) {
     }
     return i;
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+/* what the data points at that this file's headers don't declare */
+extern u8 ModeTextBuffer[];
+extern u8 SlotOverlayId[];
+
+u8 *D_80098594 = (void *)&SlotOverlayId;
+u8 *D_80098598 = (void *)&ModeTextBuffer;
+s32 D_8009859C[9] = {0};
+s32 D_800985C0[12] = {0};
+s32 D_800985F0[45] = {
+    (s32)(u8 *)&ModeTextBuffer + 0x3B44, (s32)(u8 *)&ModeTextBuffer + 0x3C1C,
+    (s32)(u8 *)&ModeTextBuffer + 0x3CF4, (s32)(u8 *)&ModeTextBuffer + 0x3DCC,
+    (s32)(u8 *)&ModeTextBuffer + 0x7B4, (s32)(u8 *)&ModeTextBuffer + 0x2C58,
+    (s32)(u8 *)&ModeTextBuffer + 0x2A48, (s32)(u8 *)&ModeTextBuffer + 0x2BA8,
+    (s32)(u8 *)&ModeTextBuffer + 0x2AF8, (s32)(u8 *)&ModeTextBuffer + 0x2CA0,
+    (s32)(u8 *)&ModeTextBuffer + 0x3808, (s32)(u8 *)&ModeTextBuffer + 0x38B8,
+    (s32)(u8 *)&ModeTextBuffer + 0x397C, (s32)(u8 *)&ModeTextBuffer + 0x3A40,
+    (s32)(u8 *)&ModeTextBuffer + 0x2178, (s32)(u8 *)&ModeTextBuffer + 0x2228,
+    (s32)(u8 *)&ModeTextBuffer + 0x22D8, (s32)(u8 *)&ModeTextBuffer + 0x2374,
+    (s32)(u8 *)&ModeTextBuffer + 0x26B0, (s32)(u8 *)&ModeTextBuffer + 0x2600,
+    (s32)(u8 *)&ModeTextBuffer + 0x2760, (s32)(u8 *)&ModeTextBuffer + 0x2820,
+    (s32)(u8 *)&ModeTextBuffer + 0x2868, (s32)(u8 *)&ModeTextBuffer + 0x1FB4,
+    (s32)(u8 *)&ModeTextBuffer + 0x2078, (s32)(u8 *)&ModeTextBuffer + 0x2200,
+    (s32)(u8 *)&ModeTextBuffer + 0x213C, (s32)(u8 *)&ModeTextBuffer + 0x1850,
+    (s32)(u8 *)&ModeTextBuffer + 0x1594, (s32)(u8 *)&ModeTextBuffer + 0x1828,
+    (s32)(u8 *)&ModeTextBuffer + 0x17DC, (s32)(u8 *)&ModeTextBuffer + 0x544,
+    (s32)(u8 *)&ModeTextBuffer + 0x3E24, (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0,
+    (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0,
+    (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0,
+};
+s32 D_800986A4[6] = {
+    (s32)&D_800985F0, (s32)&D_800985F0, (s32)&D_800985F0, (s32)&D_800985F0, (s32)&D_800985F0,
+    (s32)&D_800985F0,
+};
+u16 D_800986BC[32] = {
+    4, 7, 6, 1, 3, 7, 2, 5, 2, 8, 1, 7, 6, 5, 3, 4, 5, 1, 8, 3, 8, 6, 7, 5, 1, 3, 4, 2, 4, 7,
+    6, 1,
+};
+u16 D_800986FC[14] = { 0, 0x13, 0xA, 0xE, 6, 0x17, 0x17, 0x17, 0x17, 0, 0, 0, 0, 0 };
+void *D_80098718 = 0;
+u16 D_8009871C = 0;
+/* the padding to the word asttable.c's table starts on: the engine links with SUBALIGN(2) */
+s16 EngineDataPad = 0;

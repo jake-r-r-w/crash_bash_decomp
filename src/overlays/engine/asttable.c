@@ -346,3 +346,70 @@ ASTEntry EngineASTTable[174] = {
     { AST_Egg, InitEgg, PlotEgg },
     { AST_CoalFlameSFX, InitCoalFlameSFX, PlotCoalFlameSFX },
 };
+
+/* data, in address order (tools/scripts/data2c.py) */
+/* what the data points at that this file's headers don't declare */
+extern u8 BASHSetUp[];
+extern u8 BASH_PREMAP[];
+extern u8 BONKSetUp[];
+extern u8 BONK_PREMAP[];
+extern u8 CHASESetUp[];
+extern u8 CHASE_PREMAP[];
+extern u8 DINOSetUp[];
+extern u8 DINO_PREMAP[];
+extern u8 HUBSetUp[];
+extern u8 HUB_PREMAP[];
+extern u8 N2OSetUp[];
+extern u8 N2O_PREMAP[];
+extern u8 PAPUSetUp[];
+extern u8 PAPU_PREMAP[];
+extern u8 POLARSetUp[];
+extern u8 POLAR_PREMAP[];
+extern u8 RACESetUp[];
+extern u8 RACE_PREMAP[];
+extern u8 SPINSetUp[];
+extern u8 SPIN_PREMAP[];
+extern u8 TA_SetUp[];
+extern u8 TITLES_PREMAP[];
+extern u8 TitlesSetUp[];
+extern u8 bash_shell_info[];
+extern u8 bonk_shell_info[];
+extern u8 chase_shell_info[];
+extern u8 dino_shell_info[];
+extern u8 hub_shell_info[];
+extern u8 n2o_shell_info[];
+extern u8 papu_shell_info[];
+extern u8 polar_shell_info[];
+extern u8 polar_shell_info_b[];
+extern u8 race_shell_info[];
+extern u8 spin_shell_info[];
+extern u8 titles_shell_info[];
+
+ArenaDef D_80098F48 = {
+    0x104, 0x1A, 0, 0x12, 0x69, { 0, 0 }, (void *)&BASH_PREMAP, (s32)&bash_shell_info,
+    (s32)&BASHSetUp,
+};
+s32 D_80098F60[132] = {
+    0x1A0001, 0x120000, 0x69, (s32)&BASH_PREMAP, (s32)&bash_shell_info, (s32)&BASHSetUp,
+    0x1A0002, 0x120000, 0x69, (s32)&BASH_PREMAP, (s32)&bash_shell_info, (s32)&BASHSetUp,
+    0x1A0003, 0x120000, 0x69, (s32)&BASH_PREMAP, (s32)&bash_shell_info, (s32)&BASHSetUp,
+    0x280105, 0x180000, 0xA0, (s32)&PAPU_PREMAP, (s32)&papu_shell_info, (s32)&PAPUSetUp,
+    0xA00106, 0x380000, 0x12C, (s32)&TANK_PREMAP, (s32)&tank_shell_info, (s32)&TA_SetUp,
+    0x320107, 0x260000, 0xE6, (s32)&POGO_PREMAP, (s32)&POGO_shell_info, (s32)&POGOSetUp,
+    0x280108, 0x200000, 0xA0, (s32)&ARKENOID_PREMAP, (s32)&arkenoid_shell_info, (s32)&AR_SetUp,
+    0x640109, 0x190000, 0xC8, (s32)&POLAR_PREMAP, (s32)&polar_shell_info, (s32)&POLARSetUp,
+    0x280014, 0xF0000, 0x82, (s32)&POLAR_PREMAP, (s32)&polar_shell_info_b, (s32)&POLARSetUp,
+    0x3C0015, 0xF0000, 0x8C, (s32)&POLAR_PREMAP, (s32)&polar_shell_info_b, (s32)&POLARSetUp,
+    0x3C0012, 0x140000, 0x8C, (s32)&POLAR_PREMAP, (s32)&polar_shell_info_b, (s32)&POLARSetUp,
+    0x3C0016, 0x140000, 0x78, (s32)&POLAR_PREMAP, (s32)&polar_shell_info_b, (s32)&POLARSetUp,
+    0x64010A, 0x1E0000, 0x82, (s32)&RACE_PREMAP, (s32)&race_shell_info, (s32)&RACESetUp,
+    0x640019, 0x1E0000, 0x64, (s32)&RACE_PREMAP, (s32)&race_shell_info, (s32)&RACESetUp,
+    0x40101, 0x40000, 0x40, (s32)&TITLES_PREMAP, (s32)&titles_shell_info, (s32)&TitlesSetUp,
+    0x640102, 0x200000, 0x12C, (s32)&HUB_PREMAP, (s32)&hub_shell_info, (s32)&HUBSetUp,
+    0x1E0103, 0x200000, 0x78, (s32)&SPIN_PREMAP, (s32)&spin_shell_info, (s32)&SPINSetUp,
+    0x1E010B, 0x1E0000, 0xC8, (s32)&DINO_PREMAP, (s32)&dino_shell_info, (s32)&DINOSetUp,
+    0x1E010E, 0x120000, 0x64, (s32)&BONK_PREMAP, (s32)&bonk_shell_info, (s32)&BONKSetUp,
+    0x64010C, 0x1E0000, 0x96, (s32)&N2O_PREMAP, (s32)&n2o_shell_info, (s32)&N2OSetUp, 0x64010D,
+    0x3C0000, 0xFA, (s32)&CHASE_PREMAP, (s32)&chase_shell_info, (s32)&CHASESetUp, 0x1403E7,
+    0x100001, 0x14, 0, 0, 0,
+};

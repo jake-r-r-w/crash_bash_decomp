@@ -827,12 +827,12 @@ void func_80090564(u8 *arg0, s32 arg1) {
     e->sub[2].unk6C = D_8009F498;
     func_800150E8(D_8009F498 + 3, EngineSum147(arg0), 10);
     e->sub[6].unk6C = D_8009F498 + 3;
-    func_800150E8(D_8009F49E, EngineSum126(arg0), 10);
-    e->sub[4].unk6C = D_8009F49E;
-    func_800150E8(D_8009F4A1, EngineCount105(arg0), 10);
-    e->sub[8].unk6C = D_8009F4A1;
-    func_8001517C(D_8009F4A4, EngineExtra105(arg0), 10);
-    e->sub[10].unk6C = D_8009F4A4;
+    func_800150E8(D_8009F498 + 6, EngineSum126(arg0), 10);
+    e->sub[4].unk6C = D_8009F498 + 6;
+    func_800150E8(D_8009F498 + 9, EngineCount105(arg0), 10);
+    e->sub[8].unk6C = D_8009F498 + 9;
+    func_8001517C(D_8009F498 + 12, EngineExtra105(arg0), 10);
+    e->sub[10].unk6C = D_8009F498 + 12;
     switch (*(s32 *)(arg0 + 0xE0)) {
     case 1:
         EngineSetSlot3Digits(3, 1);
@@ -1888,3 +1888,288 @@ void func_80093110(void) {
     func_80018B08(&GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+/* what the data points at that this file's headers don't declare */
+extern u8 D_8004E560[];
+extern u8 D_8004E568[];
+extern u8 D_80055614[];
+extern u8 D_8005564C[];
+extern u8 D_800556BC[];
+extern u8 D_8005B69C[];
+extern u8 D_8005B6CC[];
+extern u8 D_8005B6FC[];
+extern u8 D_8005B75C[];
+
+s32 HitSfx[25] = {
+    0x3EC, 0x3ED, 0x3EE, 0x3EF, 0x3F1, 0x3F1, 0x3F3, 0x3F4, 0x3E8, 0x3E8, 0x3EA, 0x3EB, 0x3F5,
+    0x3F5, 0x3F7, 0x3F8, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+HitCallbacks HitHooks = {0};
+u8 D_8009E498[40] = {
+    0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0x40, 1, 0, 0, 0xF0, 0, 0, 0,
+    0, 2, 0, 0, 0xFF, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+IntroStep IntroSteps[4] = {
+    { 1, (void *)&D_8004E568, 0, 0, -1, { 0x3B6, 0x3B7, 0x3B8 }, 0x3B9, 0x5A },
+    { 1, (void *)&D_8004E560, 0, 0, -1, { 0x3BB, 0x3BC, 0x3BD }, 0x3BE, 0x8C },
+    { 2, 0, (void *)&D_800556BC, 0, -1, { 0x3C0, 0x3C1, 0x3C2 }, 0x3C3, 0x14 },
+    { 2, 0, (void *)&D_800556F4, 0, 1, { 0x3C5, 0x3C6, 0x3C7 }, 0x3C8, 0x14 },
+};
+Blk32 D_8009E560 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
+CamVec3 D_8009E580 = {0};
+s32 D_8009E58C[6] = { (s32)func_8008EB8C, (s32)func_8008E5BC, (s32)func_8008EB3C, (s32)func_8008EAC8, 0, 0 };
+s32 IntroStepIndex = 0;
+s32 D_8009E5A8 = 0;
+u8 *D_8009E5AC = 0;
+s32 D_8009E5B0 = 0;
+s32 D_8009E5B4 = 0;
+_sfx_handler *IntroSfx[3] = {0};
+_sfx_handler *D_8009E5C4 = 0;
+s32 D_8009E5C8[5] = { (s32)func_8008EF9C, 0, 0, 0, 0 };
+s32 NextGameMode = 0;
+s32 D_8009E5E0[16] = {
+    1, 0, (s32)&D_80055614, 0x2005, 1, 1, (s32)&D_80055614, 0x2006, 1, 2, (s32)&D_80055614,
+    0x2007, 1, 3, (s32)&D_80055614, 0x2008,
+};
+s32 D_8009E620[16] = {
+    1, 0x13, (s32)&D_8005564C, 0x2005, 1, 0x12, (s32)&D_8005564C, 0x2006, 1, 0x14,
+    (s32)&D_8005564C, 0x2007, 1, 0x15, (s32)&D_8005564C, 0x2008,
+};
+s32 D_8009E660[16] = {
+    1, 0xA, (s32)&D_8005564C, 0x2001, 1, 0xB, (s32)&D_8005564C, 0x2002, 1, 0xC,
+    (s32)&D_8005564C, 0x2003, 1, 0xD, (s32)&D_8005564C, 0x2001,
+};
+s32 D_8009E6A0[16] = {
+    1, 0xE, (s32)&D_80055614, 0x2001, 1, 0xF, (s32)&D_80055614, 0x2002, 1, 0x10,
+    (s32)&D_80055614, 0x2003, 1, 0x11, (s32)&D_80055614, 0x2004,
+};
+s32 D_8009E6E0[16] = {
+    2, 6, (s32)&D_8005564C, 0x2009, 2, 8, (s32)&D_8005564C, 0x200A, 2, 7, (s32)&D_8005564C,
+    0x200B, 2, 5, (s32)&D_8005564C, 0x200C,
+};
+s32 D_8009E720[16] = {
+    2, 0x17, (s32)&D_80055614, 0x2009, 2, 0x18, (s32)&D_80055614, 0x200A, 2, 0x1A,
+    (s32)&D_80055614, 0x200B, 2, 0x19, (s32)&D_80055614, 0x200C,
+};
+s32 D_8009E760[16] = {
+    2, 0x1B, (s32)&D_80055614, 0x200D, 2, 0x1C, (s32)&D_80055614, 0x200E, 2, 0x1D,
+    (s32)&D_80055614, 0x200F, 2, 0x1E, (s32)&D_80055614, 0x2010,
+};
+EngineTable12 CupTable[7] = {
+    { 1, (void *)&D_8009E5E0, 4 }, { 1, (void *)&D_8009E620, 4 },
+    { 1, (void *)&D_8009E660, 4 }, { 1, (void *)&D_8009E6A0, 4 },
+    { 3, (void *)&D_8009E6E0, 4 }, { 3, (void *)&D_8009E720, 4 },
+    { 3, (void *)&D_8009E760, 4 },
+};
+u8 D_8009E7F4[180] = {
+    4, 0, 0, 0, 0x32, 0, 0x36, 1, 0x58, 0, 0xD0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0x4A, 1, 0x4E, 2, 0x58, 0, 0xD0, 0, 4, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0x32, 0, 0x36, 1,
+    0xE0, 0, 0x58, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    4, 0, 0, 0, 0x4A, 1, 0x4E, 2, 0xE0, 0, 0x58, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_8009E8A8[1] = { (s32)&MenuTournamentSelect };
+s32 D_8009E8AC[1] = { (s32)&MenuLocked };
+s32 D_8009E8B0[1] = { (s32)&MenuPressButtonToSelect };
+EngRec24 D_8009E8B4[12] = {
+    {
+        { 3, 0, 0, 0, 0, 0x80, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
+        { 2, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 0xE, 0, 0, 0, 0, 0x80, 0x38, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        (void *)&D_8009E8A8, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 4, 0, 0, 0, 0, 0x80, 0x58, 2, 0x36, 0xFF, 0x5A, 0xFF, 1, 0, 0, 0, 0, 0, 0, 0 }, 0,
+        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 4, 0, 0, 0, 0, 0x80, 0x90, 1, 0x92, 0xFF, 0x5A, 0, 4, 0, 0, 0, 0, 0, 0, 0 }, 0,
+        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 6, 0, 0, 0, 0x60, 0xFF, 0x2E, 0, 0, 0, 0x66, 6, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
+        { 0, 0, 0, 0, 0xC7, 0 }, 0x2006, { 0, 0, 0, 0 },
+    },
+    {
+        { 0xE, 0, 0, 0, 0x32, 0x80, 0x9A, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        (void *)&D_8009E8AC, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 3, 0, 0, 0, 0x32, 0x80, 0xD8, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        (void *)&MenuInsertCardForUnlocked, { 4, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 0xE, 0, 0, 0, 0, 0x80, 0xA5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        (void *)&D_8009E8B0, { 4, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 3, 0, 0, 0, 0xF7, 0xFE, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        (void *)&MenuArrowLeft, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 3, 0, 0, 0, 0xF0, 0, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        (void *)&MenuArrowRight, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 4, 0, 0, 0, 0, 0x80, 0x58, 2, 0x9A, 0, 0xC0, 0, 1, 0, 0, 0, 0, 0, 0, 0 }, 0,
+        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+    {
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
+        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+};
+s32 D_8009EA64[1] = { (s32)&MenuUnlockWithCard };
+s32 D_8009EA68[1] = { (s32)&MenuInsertCardForUnlocked };
+s32 D_8009EA6C[1] = { (s32)&MenuCheckingUnlocked };
+s32 D_8009EA70[1] = { (s32)&MenuThereAreNoMoreUnlockedLevels };
+GfxViewport D_8009EA74 = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0x800, 0x7FF, -0x80, 0, 0, 0, 1 };
+GfxViewport D_8009EA9C = { 0x32, 0x58, 0x136, 0xD0, 0, 0, 0x280, 0x1E0, 0xB4, 0xF8, 0x200, 0x17F, 0, 0, 0, 0, 0 };
+GfxViewport D_8009EAC4 = { 0x14A, 0x58, 0x24E, 0xD0, 0, 0, 0x280, 0x1E0, 0x1CC, 0xF8, 0x380, 0x17F, 0, 0, 0, 0, 0 };
+GfxViewport D_8009EAEC = { 0x32, 0xE0, 0x136, 0x158, 0, 0, 0x280, 0x1E0, 0xB4, 0x180, 0x500, 0x17F, 0, 0, 0, 0, 0 };
+GfxViewport D_8009EB14 = { 0x14A, 0xE0, 0x24E, 0x158, 0, 0, 0x280, 0x1E0, 0x1CC, 0x180, 0x680, 0x17F, 0, 0, 0, 0, 0 };
+EngRec24 D_8009EB3C[2] = {
+    {
+        { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xCC, 0xC, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
+        { 0, 0, 0, 0, 0xC8, 0 }, 0x2005, { 0, 0, 0, 0 },
+    },
+    {
+        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
+        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+    },
+};
+process_info TournamentSelect = { func_80090048, func_8008F554, func_8008FB48, func_8008FC58, 0 };
+s32 D_8009EB98 = 0;
+s32 D_8009EB9C[8] = { 0x20001, 0x3000A, 0x20002, 0x30013, 0x20003, 0x3000B, 0, 0 };
+s32 D_8009EBBC[8] = { 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24, 0x2016, 0x25 };
+s32 D_8009EBDC[16] = {
+    0x20001, 0x3000E, 0x20002, 0x30013, 0x20003, 0x3000A, 0x20004, 0x30000, 0x20005, 0x30004,
+    0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
+};
+s32 D_8009EC1C[8] = { 0x200F, 0x21, 0x2013, 0x23, 0x2015, 0x24, 0x2017, 0x25 };
+s32 D_8009EC3C[18] = {
+    0x20001, 0x3000F, 0x20002, 0x30012, 0x20003, 0x3000B, 0x20004, 0x30001, 0x20005, 0x30006,
+    0x20006, 0x30016, 0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
+};
+s32 D_8009EC84[8] = { 0x200E, 0x21, 0x2010, 0x22, 0x2014, 0x24, 0x2016, 0x25 };
+s32 D_8009ECA4[20] = {
+    0x20001, 0x30010, 0x20002, 0x30014, 0x20003, 0x3000C, 0x20004, 0x30002, 0x20005, 0x30008,
+    0x20006, 0x30017, 0x20007, 0x30009, 0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
+};
+s32 D_8009ECF4[8] = { 0x200F, 0x21, 0x2011, 0x22, 0x2013, 0x23, 0x2017, 0x25 };
+s32 D_8009ED14[22] = {
+    0x20001, 0x30011, 0x20002, 0x30015, 0x20003, 0x3000D, 0x20004, 0x30003, 0x20005, 0x30007,
+    0x20006, 0x30018, 0x20007, 0x3001B, 0x20008, 0x3001F, 0x5000B, 0x30000, 0x4000C, 0x30000,
+    0, 0,
+};
+s32 D_8009ED6C[8] = { 0x200E, 0x21, 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24 };
+s32 D_8009ED8C[18] = {
+    0x20001, 0x30019, 0x20002, 0x3001C, 0x20003, 0x3001D, 0x20004, 0x30005, 0x20005, 0x3001E,
+    0x20006, 0x3001A, 0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
+};
+s32 WarpRooms[10][5] = {
+    { 0x21, (s32)&D_8009EBDC, 4, (s32)&D_8009EBBC, 0x5021 },
+    { 0x22, (s32)&D_8009EC3C, 4, (s32)&D_8009EC1C, 0x502D },
+    { 0x23, (s32)&D_8009ECA4, 4, (s32)&D_8009EC84, 0x502E },
+    { 0x24, (s32)&D_8009ED14, 4, (s32)&D_8009ECF4, 0x502A },
+    { 0x25, (s32)&D_8009ED8C, 4, (s32)&D_8009ED6C, 0x502D },
+    { 0x21, (s32)&D_8009EBDC, 0, 0, 0 }, { 0x21, (s32)&D_8009EBDC, 0, 0, 0 },
+    { 0x21, (s32)&D_8009EBDC, 0, 0, 0 }, { 0x26, (s32)&D_8009EB9C, 0, 0, 0 },
+    { 0x27, (s32)&D_8009EB9C, 0, 0, 0 },
+};
+EngState D_8009EE9C = {0};
+s32 D_8009EEB0 = 3;
+s32 D_8009EEB4[44] = {
+    0x328000, 0, 0, 0, 0, 0, 0, 0, 3, 0x788000, 0, 0, 0, 0, 0, 0, 0, 4, 0x1B88000, 0x19A0072,
+    0, 0, 0, 0, 0, 0, 4, 0x2808000, 0x5A0028, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_8009EF64 = 4;
+s32 D_8009EF68[17] = { 0x1180000, 0x5A0000, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+void *D_8009EFAC[1] = { (void *)&MenuConfirmOverwrite };
+void *D_8009EFB0[1] = { (void *)&MenuPressButtonToOverwrite };
+void *D_8009EFB4[1] = { (void *)&MenuPressButtonToLoad };
+void *D_8009EFB8[2] = { (void *)&MenuPressButtonToSave, (void *)&MenuPressButtonToExitWithoutSaving };
+void *D_8009EFC0[1] = { (void *)&MenuSelectAGameSave };
+void *D_8009EFC4[1] = { (void *)&MenuPressButtonToExitWithoutSaving };
+void *D_8009EFC8[1] = { (void *)&MenuSelectGameToLoad };
+void *D_8009EFCC[1] = { (void *)&MenuCheckingCard };
+void *D_8009EFD0[1] = { (void *)&MenuCardUnformatted };
+void *D_8009EFD4[1] = { (void *)&MenuNoCrashBashData };
+void *D_8009EFD8[1] = { (void *)&MenuLoadGame };
+void *D_8009EFDC[1] = { (void *)&MenuNoCard };
+void *D_8009EFE0[1] = { (void *)&MenuFormatCard };
+void *D_8009EFE4[1] = { (void *)&MenuSaveGame };
+void *D_8009EFE8[1] = { (void *)&MenuCardFull };
+void *D_8009EFEC[1] = { (void *)&MenuNoCard2 };
+void *D_8009EFF0[1] = { (void *)&MenuSaving };
+void *D_8009EFF4[1] = { (void *)&MenuSaveCompleted };
+void *D_8009EFF8[1] = { (void *)&MenuSaveFailedPressButtonToExit };
+void *D_8009EFFC[1] = { (void *)&MenuFormatting };
+void *D_8009F000[1] = { (void *)&MenuPressButtonToExitWithoutLoading };
+void *D_8009F004[1] = { (void *)&MenuEmpty };
+s32 D_8009F008 = 4;
+s32 D_8009F00C[143] = {
+    0x2300000, 0x500000, 6, 0, 0, 0, 0, 0, 0xA, 0x260050, 0xB330000, 0x280000, 0, 0, 0,
+    0x2022001C, 2, 3, 0x320050, 0, 0, 0, (s32)&Menu01, 4, 0, 0, 0xA, 0x2600B4, 0xB330000,
+    0x280000, 0, 0, 0, 0x201F001C, 2, 3, 0x3200B4, 0, 0, 0, (s32)&Menu02, 4, 0, 0, 0xA,
+    0x260118, 0xB330000, 0x280000, 0, 0, 0, 0x201E001C, 2, 3, 0x320118, 0, 0, 0, (s32)&Menu03,
+    4, 0, 0, 0xA, 0x26017C, 0xB330000, 0x280000, 0, 0, 0, 0x2021001C, 2, 3, 0x32017C, 0, 0, 0,
+    (s32)&Menu04, 4, 0, 0, 0xA, 0x2601E0, 0xB330000, 0x280000, 0, 0, 0, 0x2020001C, 2, 3,
+    0x3201E0, 0, 0, 0, (s32)&Menu05, 4, 0, 0, 4, 0x2300000, 0xCE0056, 6, 0, 0, 0, 0, 0, 3,
+    0x608118, 0, 0, 0, 0, 0, 0, 0, 3, 0x8A8118, 0, 0, 0, 0, 4, 0, 0, 3, 0xAC8118, 0, 0, 0, 0,
+    4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+s32 D_8009F248[4][5] = {
+    { 0xB4, 0x118, 0x17C, -1, -1 }, { 0x82, 0xE6, 0x14A, 0x1AE, -1 },
+    { 0x50, 0xB4, 0x118, 0x17C, 0x1E0 }, { -1, -1, -1, -1, -1 },
+};
+s32 D_8009F298[72] = {
+    4, 0x1180000, 0x5A0000, 6, 0, 0, 0, 0, 0, 3, 0x2000C, 0, 0, 0, (s32)&MenuNameWidth, 0, 0,
+    0, 3, 0x200BC, 0, 0, 0, (s32)&Menu200Percent, 0, 0, 0, 6, 0x24000C, 0x10000000, 0, 0, 0, 0,
+    0x3003001C, 0, 6, 0x240048, 0x10000000, 0, 0, 0, 0, 0x3003001C, 0, 6, 0x240084, 0x10000000,
+    0, 0, 0, 0, 0x3003001C, 0, 6, 0x2400C0, 0x10000000, 0, 0, 0, 0, 0x3003001C, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0,
+};
+s32 CardSlotIndex = 0;
+GfxViewport SaveViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xDFF, 0, 0, 0, 0x10, 1 };
+GfxViewport SaveBackViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xD00, -0x80, 0, 0, 0, 1 };
+s32 D_8009F40C = 6;
+s32 D_8009F410[17] = { 0xFF9C, 0x100004C8, 0, 0, 0, 0, 0x200700C7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+void *D_8009F454[6] = {
+    (void *)&MenuCardCorrupt, (void *)func_8009246C, (void *)func_800923FC,
+    (void *)func_800917B4, (void *)func_80092404, 0,
+};
+process_info SaveScreenProcess = { func_80091F54, func_800923FC, func_800917B4, func_80092404, 0 };
+s32 SaveScreenProcess2[5] = { (s32)func_8009201C, (s32)func_800923FC, (s32)func_800917B4, (s32)func_80092404, 0 };
+s32 D_8009F494 = 0;
+/* the results screen's number texts, one buffer: +0, +3, +6, +9 three digits each, +12 the last */
+char D_8009F498[16] = {0};
+char D_8009F4A8[4][5] = {0};
+s32 D_8009F4BC = 0;
+GfxCamera SaveCamera = {0};
+GfxCamera SaveBackCamera = {0};
+s32 D_8009F630 = 0;
+s32 D_8009F634 = 0;
+s32 D_8009F638 = 0;
+s32 D_8009F63C = 0;
+s32 SaveMenuState = 0;
+fade_info ScreenFade = {0};
+s32 D_8009F654 = 0;
+process_control_info ProcessControl = {0};
+s32 D_8009F668[5] = { (s32)&D_8005B75C, (s32)&vmode_512_ntsc, (s32)&D_8005B6FC, (s32)&D_8005B6CC, (s32)&D_8005B69C };
+GfxViewport MainViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0x200, -0x100, 0xF0, 0xF0, 0xF0, 0 };
+GfxViewport HudViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xDAC, 0, 0xF0, 0xF0, 0xF0, 0 };
+s32 D_8009F6CC[10] = { 0xF00140, 0x1E00280, 0xF00140, 0x1E00280, 0x1E0, 0x168, 0x200, 0x800, 0, 0x1000000 };
+GfxViewport GameViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0x15E, 0x200, 0xDFF, 0, 8, 0x30, 0x10, 0 };
+s32 D_8009F71C[1] = {0};
+process_info RetryProcess = { func_80092CAC, func_80092EDC, func_80092E94, func_80092E40, 0 };
+GfxCamera MainGfxCamera = {0};
+GfxCamera HudCamera = {0};
+process_control_info MenuProcessControl = {0};
+void (*RenderHook)(void) = 0;
+s32 D_8009F8B8 = 0;

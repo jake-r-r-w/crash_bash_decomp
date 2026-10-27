@@ -721,14 +721,14 @@ void InitHealthIcons(void) {
         pHeroHealth[i] = col;
         if (Heroes[i].hero_name != 9) {
             pHeroHealth[i] = (s32)&Heroes[i].hero_health;
-            p = D_8009986C[i];
+            p = ((PanelPrim (*)[7])&IconParts[0][2])[i];
             p->u6C.ptr = tim;
             p->unk0 = 0x10008000;
             p->unk4 = HealthIconPos[i].x + 0x10;
             yb = HealthIconPos[i].y;
             p->unk74 = 0x2018;
-            off = i * sizeof(D_8009986C[0]);
-            b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
+            off = i * sizeof(((PanelPrim (*)[7])&IconParts[0][2])[0]);
+            b = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][2])[0][1]);
             p->unkC = 0;
             p->unk8 = yb + 0x10;
             x0 = HealthIconPos[i].x + 0x1C;
@@ -754,7 +754,7 @@ void InitHealthIcons(void) {
             b->unk84 = x1;
             x0 = HealthIconPos[i].x + 0x1C;
             x1 = HealthIconPos[i].x + 0x5C;
-            q = &D_8009986C[i][2];
+            q = &((PanelPrim (*)[7])&IconParts[0][2])[i][2];
             q->unk54 = tex;
             q->u6C.s.unk6E = y0;
             q->u6C.s.unk6C = x0;
@@ -817,14 +817,14 @@ void ClearHealthIcons(void) {
         pHeroHealth[i] = col;
         if (Heroes[i].hero_name != 9) {
             pHeroHealth[i] = (s32)&Heroes[i].hero_health;
-            p = D_8009986C[i];
+            p = ((PanelPrim (*)[7])&IconParts[0][2])[i];
             p->u6C.ptr = tim;
             p->unk0 = 0x10008000;
             p->unk4 = HealthIconPos[i].x;
             yb = HealthIconPos[i].y;
             p->unk74 = 0x2018;
-            off = i * sizeof(D_8009986C[0]);
-            b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
+            off = i * sizeof(((PanelPrim (*)[7])&IconParts[0][2])[0]);
+            b = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][2])[0][1]);
             p->unkC = 0;
             p->unk8 = yb + 0x10;
             x0 = HealthIconPos[i].x + 8;
@@ -850,7 +850,7 @@ void ClearHealthIcons(void) {
             b->unk84 = x1;
             x0 = HealthIconPos[i].x + 8;
             x1 = HealthIconPos[i].x + 0x48;
-            q = &D_8009986C[i][2];
+            q = &((PanelPrim (*)[7])&IconParts[0][2])[i][2];
             q->unk54 = tex;
             q->u6C.s.unk6E = y0;
             q->u6C.s.unk6C = x0;
@@ -894,7 +894,7 @@ void InitBossHealthIcons(void) {
 
     i = 3;
     pHeroHealth[3] = (s32)&D_8009D6DC[3];
-    sub = D_8009986C[3];
+    sub = ((PanelPrim (*)[7])&IconParts[0][2])[3];
     b = sub + 1;
     sub->u6C.ptr = PowerupsModel;
     sub->unk0 = 0x10008000;
@@ -970,7 +970,7 @@ void func_8007C830(s32 arg0, s32 arg1) {
     tim = PowerupsModel;
 
     pHeroHealth[2] = arg0;
-    p = D_8009986C[2];
+    p = ((PanelPrim (*)[7])&IconParts[0][2])[2];
     p->u6C.ptr = tim;
     p->unk0 = 0x10008000;
     y0 = 0x37;
@@ -1123,7 +1123,7 @@ void UpdateHealthIcons(void) {
         if (BarLength >= 0x20) {
             BarLength = 0x1F;
         }
-        sub = D_80099914 + i * 0x498;
+        sub = ((u8 *)&IconParts[0][3]) + i * 0x498;
         len = BarLength * 2 + *(s16 *)(sub + 0x6C);
         *(s16 *)(sub + 0x74) = len;
         *(s16 *)(sub + 0x84) = len;
@@ -1132,7 +1132,7 @@ void UpdateHealthIcons(void) {
         } else {
             *(s32 *)sub &= 0xFFFF7FFF;
         }
-        sub = D_800999BC + i * 0x498;
+        sub = ((u8 *)&IconParts[0][4]) + i * 0x498;
         *(s16 *)(sub + 0x6C) = len;
         *(s16 *)(sub + 0x7C) = len;
         if (BarLength < 0x1F) {
@@ -1178,14 +1178,14 @@ void InitPowerIcons(void) {
         col = 0;
         pHeroHealth[i] = col;
         if (Heroes[i].hero_name != 9) {
-            p = D_8009986C[i];
+            p = ((PanelPrim (*)[7])&IconParts[0][2])[i];
             p->u6C.ptr = tim;
             p->unk0 = 0x10008000;
             p->unk4 = HealthIconPos[i].x - 0xE;
             yb = HealthIconPos[i].y;
             p->unk74 = 0x3021;
-            off = i * sizeof(D_8009986C[0]);
-            b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
+            off = i * sizeof(((PanelPrim (*)[7])&IconParts[0][2])[0]);
+            b = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][2])[0][1]);
             p->unkC = 0;
             p->unk8 = yb - 0x10;
             x0 = HealthIconPos[3].x + 0x10;
@@ -1211,7 +1211,7 @@ void InitPowerIcons(void) {
             b->unk84 = x1;
             x0 = HealthIconPos[3].x + 0x10;
             x1 = HealthIconPos[3].x + 0x50;
-            q = &D_8009986C[i][2];
+            q = &((PanelPrim (*)[7])&IconParts[0][2])[i][2];
             q->unk54 = tex;
             q->u6C.s.unk6E = y0;
             q->unk70 = 0;
@@ -1279,7 +1279,7 @@ loop:
             if (BarLength >= 0x40) {
                 BarLength = 0x3F;
             }
-            sub = D_80099914 + off;
+            sub = ((u8 *)&IconParts[0][3]) + off;
             len = BarLength + *(s16 *)(sub + 0x6C);
             *(s16 *)(sub + 0x74) = len;
             *(s16 *)(sub + 0x84) = len;
@@ -1288,7 +1288,7 @@ loop:
             } else {
                 *(s32 *)sub &= 0xFFFF7FFF;
             }
-            sub = D_800999BC + off;
+            sub = ((u8 *)&IconParts[0][4]) + off;
             *(s16 *)(sub + 0x6C) = len;
             *(s16 *)(sub + 0x7C) = len;
             if (BarLength < 0x3F) {
@@ -1388,15 +1388,15 @@ void func_8007D208(void) {
         D_8009AE40[i].b = NULL;
         if (Heroes[i].hero_name != 9) {
             D_8009AE40[i].a = &TA_players[i].MainWeaponType;   /* Tank's, linked from tank (slot_syms.py) */
-            off = i * sizeof(D_80099A64[0]);
-            p = (PanelPrim *)(off + (u8 *)&D_80099A64[0][0]);
+            off = i * sizeof(((PanelPrim (*)[7])&IconParts[0][5])[0]);
+            p = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][5])[0][0]);
             p->unk4 = 0x2E;
             p->unk8 = 0x38;
             p->u6C.ptr = TankObjectsModel;
             p->unk0 = 0x10000000;
             p->unkC = 0;
             p->unk74 = 0x3029;
-            p = (PanelPrim *)(off + (u8 *)&D_80099A64[0][1]);
+            p = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][5])[0][1]);
             D_8009AE40[i].b = &TA_players[i].MainWeaponRounds;
             p->unk4 = 0xA;
             p->unk8 = 0x39;
@@ -1416,7 +1416,7 @@ void func_8007D2F4(void) {
 
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_name != 9) {
-            p = &D_80099A64[i][0];
+            p = &((PanelPrim (*)[7])&IconParts[0][5])[i][0];
             switch (*(s32 *)D_8009AE40[i].a) {
             case 3:
                 p->unk0 |= 0x8000;
@@ -1453,7 +1453,7 @@ void func_8007D2F4(void) {
                 p->unk0 &= ~0x8000;
                 break;
             }
-            p = &D_80099A64[i][1];
+            p = &((PanelPrim (*)[7])&IconParts[0][5])[i][1];
             switch (*D_8009AE40[i].c) {
             case 0:
                 p->unk0 &= ~0x8000;
@@ -2125,7 +2125,7 @@ void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b) {
 void func_8007E93C(u16 arg0, s16 arg1, s16 arg2) {
     if (PanelCtrl & 2) {
         void *p = &HeroModelBank[arg0 * 0x38];
-        subengine *s = D_8009A04C;
+        subengine *s = IconParts[2];
         s->unk6C = p;
         s->unk74 = arg1;
         Icon.a[4] = D_80099208[4];
@@ -2142,8 +2142,9 @@ void func_8007E93C(u16 arg0, s16 arg1, s16 arg2) {
 
 void func_8007E9FC(u16 arg0, s16 arg1) {
     if (PanelCtrl & 2) {
-        D_8009A4E4.unk6C = &HeroModelBank[arg0 * 0x38];
-        D_8009A4E4.unk74 = arg1;
+        subengine *s = IconParts[3];
+        s->unk6C = &HeroModelBank[arg0 * 0x38];
+        s->unk74 = arg1;
         Icon.b[4] = D_80099208[2];
         Icon.b[5] = D_80099208[3];
         Icon.b[6] = 0;
@@ -2252,3 +2253,57 @@ void func_8007ED0C(void) {
     e->unk2C.y = 0xE00;
     e->unk2C.z = 0xE00;
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+subengine *countdown_eng = 0;
+s32 PanelCtrl = 0;
+u32 Clock_Time = 0;
+u16 Clock_flags = 0;
+U16Pair Clock_offsets[5] = { { 0xFFE2, 0xFFFF }, { 0x19, 0 }, { 0xFFF7, 0xFFFF }, { 0xFFC9, 0xFFFF }, { 0xFFBF, 0xFFFF } };
+s16 D_80099194 = 0;
+DigitSrc D_80099198[16] = {
+    { 5, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0xB, 0 }, { 0xFFEA, 0xFFFF }, { 0, 0 }, { 0, 0 },
+    { 0x1E, 0 }, { 0xFFF5, 0xFFFF }, { 0xFFD4, 0xFFFF }, { 0, 0 }, { 0x28, 0 }, { 7, 0 },
+    { 0xFFE6, 0xFFFF }, { 0xFFC5, 0xFFFF },
+};
+u16 D_800991D8[4] = { 1, 0, 3, 2 };
+s16 D_800991E0[4][2] = { { 0x28, 0x18 }, { 0xA0, 0x18 }, { 0x190, 0x18 }, { 0x208, 0x18 } };
+s16 D_800991F0[4][2] = { { 0x64, 0x18 }, { 0x1CC, 0x18 }, { -0x258, 0 }, { 0x258, 0 } };
+char *left_score = (void *)&PanelDigits123;
+char *right_score = (void *)&PanelDigits456;
+s16 D_80099208[8] = { 0x64, 0x18, 0x1CC, 0x18, 0x190, 0x18, 0x208, 0x18 };
+u16 IconImage[10] = { 0, 0x3003, 0x3002, 0x3004, 0x3006, 0x3007, 0x3008, 0x3005, 0x3016, 0 };
+u16 D_8009922C[10] = { 0, 0x2008, 0x2007, 0x2009, 0x200B, 0x200C, 0x200D, 0x200A, 0x201D, 0 };
+EngXY D_80099240[4] = { { -2, -4 }, { -2, -4 }, { -2, -4 }, { -2, -4 } };
+SWORD_XY HealthIconPos[4] = { { -8, 0x45 }, { -8, 0x45 }, { -8, 0x45 }, { -8, 0x45 } };
+SWORD_XY ScoreIcon3Pos[4] = { { 0x34, 0x32 }, { 0x34, 0x32 }, { 0x34, 0x32 }, { 0x34, 0x32 } };
+SWORD_XY ScoreIcon2Pos[4] = { { 0x26, 0x46 }, { 0x26, 0x46 }, { 0x26, 0x46 }, { 0x26, 0x46 } };
+SWORD_XY ScoreIcon1Pos[4] = { { 0x26, 0x32 }, { 0x26, 0x32 }, { 0x26, 0x32 }, { 0x26, 0x32 } };
+EXTengine PanelTab[7] = {0};
+s32 Clock_XYZ[3] = {0};
+DigitEnt D_800996E0[4] = {0};
+s32 D_80099700[3] = {0};
+IconSet Icon = {0};
+subengine IconParts[4][7] = {0};
+EXTengine BigScore1 = {0};
+EXTengine BigScore2 = {0};
+subengine BigScoreParts1 = {0};
+subengine BigScoreParts2 = {0};
+subengine D_8009AC04 = {0};
+subengine D_8009ACAC = {0};
+ClockInfo Clock[4] = {0};
+ScoreInfo Score[4] = {0};
+subengine counter_sub = {0};
+s32 CupTimer = 0;
+EngPtr3 D_8009AE40[4] = {0};
+u16 CupMode = 0;
+s16 CupWinner = 0;
+u16 Trophy_Cups = 0;
+u16 Clock_last_ping = 0;
+s32 D_8009AE78 = 0;
+u16 BigScore_scale = 0;
+u16 BigScore_teamA = 0;
+u16 BigScore_teamB = 0;
+u16 BigScore_Adelay = 0;
+u16 BigScore_Bdelay = 0;
+u16 *pHeroHealth[4] = {0};

@@ -65,9 +65,14 @@ segments:
       - [0x1A4EC, c, overlays/engine/levelload]    # after func_80090E20 (memcard tables used to 247), by func_80093BE8
       - [0x1D3FC, c, overlays/engine/camera]    # after func_800952F8, by func_8009608C
       # .data: written by the engine; the last word (0x800ADBCC) is followed by 8-byte alignment
-      - [0x1F904, data, overlays/engine/engine_data]
-      - [0x1FA90, .data, overlays/engine/asttable]   # EngineASTTable, C (src/overlays/engine/asttable.c)
-      - [0x202B8, data, overlays/engine/engine_data_2]
+      - [0x1F904, .data, overlays/engine/engine]
+      - [0x1FA90, .data, overlays/engine/asttable]   # EngineASTTable, then the world records
+      - [0x204E0, .data, overlays/engine/panel]
+      - [0x22208, .data, overlays/engine/pause]
+      - [0x230BC, .data, overlays/engine/heroes]
+      - [0x25794, .data, overlays/engine/gameflow]
+      - [0x26C2C, .data, overlays/engine/levelload]
+      - [0x34464, .data, overlays/engine/camera]
       # .rodata: switch tables and strings, one block per file (first jtbl_800ADBD8 .. last ends 0x800AEC58)
       - [0x34F48, .rodata, overlays/engine/engine]
       - [0x34F9C, .rodata, overlays/engine/panel]

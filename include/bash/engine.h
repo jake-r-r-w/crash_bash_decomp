@@ -69,7 +69,8 @@ typedef struct EngObj {
 extern EngObj **D_8005AA40;
 extern void (*D_8005AA7C)(void);
 extern subengine D_8009A04C[];
-extern struct { s32 *c; u8 pad[4]; s32 *a; s32 *b; } Icon;
+typedef struct IconSet { s32 *c; u8 pad[4]; s32 *a; s32 *b; } IconSet;
+extern IconSet Icon;
 extern s16 D_80099208[];
 extern s32 GameTeams[];
 extern subengine D_8009A4E4;

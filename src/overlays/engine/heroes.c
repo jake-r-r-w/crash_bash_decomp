@@ -4696,3 +4696,1657 @@ void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         }
     }
 }
+
+/* data, in address order (tools/scripts/data2c.py) */
+/* what the data points at that this file's headers don't declare */
+extern u8 ArkHeroDead[];
+extern u8 ArkHeroDie[];
+extern u8 ArkHeroGrab[];
+extern u8 ArkHeroIdle[];
+extern u8 ArkHeroKick[];
+extern u8 ArkHeroLose[];
+extern u8 ArkHeroMove[];
+extern u8 ArkHeroRedKick[];
+extern u8 ArkHeroTaunt[];
+extern u8 ArkHeroWinner[];
+extern u8 BRO_BA_seq_die[];
+extern u8 BRO_BA_seq_hold[];
+extern u8 BRO_BA_seq_hold_slow[];
+extern u8 BRO_BA_seq_hold_throw[];
+extern u8 BRO_BA_seq_pickup[];
+extern u8 BRO_BA_seq_slide[];
+extern u8 BRO_PA_seq_die[];
+extern u8 BRO_PA_seq_hold[];
+extern u8 BRO_PA_seq_hold_slow[];
+extern u8 BRO_PA_seq_hold_throw[];
+extern u8 BRO_PA_seq_pickup[];
+extern u8 BRO_SP_seq_die[];
+extern u8 BRO_seq_arkbreathe[];
+extern u8 BRO_seq_arkidle[];
+extern u8 BRO_seq_arkkick[];
+extern u8 BRO_seq_arklose[];
+extern u8 BRO_seq_arkmove[];
+extern u8 BRO_seq_arktaunt[];
+extern u8 BRO_seq_arkvictory[];
+extern u8 BRO_seq_arkwin[];
+extern u8 BRO_seq_bonk_backswing[];
+extern u8 BRO_seq_bonk_extended_backswing[];
+extern u8 BRO_seq_bonk_hit[];
+extern u8 BRO_seq_bonk_idle[];
+extern u8 BRO_seq_bonk_run[];
+extern u8 BRO_seq_bonk_swing[];
+extern u8 BRO_seq_bonk_winner[];
+extern u8 BRO_seq_breathe_ft[];
+extern u8 BRO_seq_dinodazed[];
+extern u8 BRO_seq_dinoidle[];
+extern u8 BRO_seq_dinorun[];
+extern u8 BRO_seq_dinoshoot[];
+extern u8 BRO_seq_dinoslide[];
+extern u8 BRO_seq_dinowin[];
+extern u8 BRO_seq_flip_jump[];
+extern u8 BRO_seq_kegbreathe[];
+extern u8 BRO_seq_kegfall[];
+extern u8 BRO_seq_keghit[];
+extern u8 BRO_seq_kegidle_a[];
+extern u8 BRO_seq_kegidle_b[];
+extern u8 BRO_seq_kegjump[];
+extern u8 BRO_seq_kegland[];
+extern u8 BRO_seq_kegmedium[];
+extern u8 BRO_seq_kegnone[];
+extern u8 BRO_seq_kegvictory[];
+extern u8 BRO_seq_kegwin[];
+extern u8 BRO_seq_lightbear[];
+extern u8 BRO_seq_long_hit[];
+extern u8 BRO_seq_n2obreathe[];
+extern u8 BRO_seq_n2ofly[];
+extern u8 BRO_seq_n2ohit[];
+extern u8 BRO_seq_n2oidle[];
+extern u8 BRO_seq_n2okick[];
+extern u8 BRO_seq_n2olose[];
+extern u8 BRO_seq_n2omove[];
+extern u8 BRO_seq_n2otaunt[];
+extern u8 BRO_seq_n2ovictory[];
+extern u8 BRO_seq_n2owin[];
+extern u8 BRO_seq_pogo_dazed[];
+extern u8 BRO_seq_pogo_idle[];
+extern u8 BRO_seq_pogo_quick_idle[];
+extern u8 BRO_seq_pogo_tazing[];
+extern u8 BRO_seq_pogo_winner[];
+extern u8 BRO_seq_polarattack[];
+extern u8 BRO_seq_polardazed[];
+extern u8 BRO_seq_polardead[];
+extern u8 BRO_seq_polarfall[];
+extern u8 BRO_seq_polarhit[];
+extern u8 BRO_seq_polaridle[];
+extern u8 BRO_seq_polarrun[];
+extern u8 BRO_seq_polartaunt[];
+extern u8 BRO_seq_polarwin[];
+extern u8 BRO_seq_racefall[];
+extern u8 BRO_seq_racehit[];
+extern u8 BRO_seq_raceidle[];
+extern u8 BRO_seq_racerun[];
+extern u8 BRO_seq_raceswimfall[];
+extern u8 BRO_seq_raceswimidle[];
+extern u8 BRO_seq_raceswimrun[];
+extern u8 BRO_seq_raceswimwin[];
+extern u8 BRO_seq_racewin[];
+extern u8 BRO_seq_skate_attack[];
+extern u8 BRO_seq_skate_ft[];
+extern u8 BRO_seq_tankdie[];
+extern u8 BRO_seq_tankfire1[];
+extern u8 BRO_seq_tankfire2[];
+extern u8 BRO_seq_tankfire3[];
+extern u8 BRO_seq_tankidle[];
+extern u8 BRO_seq_tankidle1[];
+extern u8 BRO_seq_tankminelay[];
+extern u8 BRO_seq_tankrecoil[];
+extern u8 BRO_seq_tankvictory[];
+extern u8 BRO_seq_win_ft[];
+extern u8 BashHeroBigWeight[];
+extern u8 BashHeroCarry[];
+extern u8 BashHeroDead[];
+extern u8 BashHeroHit[];
+extern u8 BashHeroHold[];
+extern u8 BashHeroLoser[];
+extern u8 BashHeroPickup[];
+extern u8 BashHeroThrow[];
+extern u8 BashHeroWinner[];
+extern u8 BonkHeroBackswing[];
+extern u8 BonkHeroExtBackswing[];
+extern u8 BonkHeroHit[];
+extern u8 BonkHeroIdle[];
+extern u8 BonkHeroLoser[];
+extern u8 BonkHeroRun[];
+extern u8 BonkHeroSwing[];
+extern u8 BonkHeroSwingRecoil[];
+extern u8 BonkHeroWinner[];
+extern u8 CHASE_seq_kegdead[];
+extern u8 COC_BA_seq_die[];
+extern u8 COC_BA_seq_hold[];
+extern u8 COC_BA_seq_hold_slow[];
+extern u8 COC_BA_seq_hold_throw[];
+extern u8 COC_BA_seq_pickup[];
+extern u8 COC_BA_seq_slide[];
+extern u8 COC_PA_seq_die[];
+extern u8 COC_PA_seq_hold[];
+extern u8 COC_PA_seq_hold_slow[];
+extern u8 COC_PA_seq_hold_throw[];
+extern u8 COC_PA_seq_pickup[];
+extern u8 COC_SP_seq_die[];
+extern u8 COC_seq_arkbreathe[];
+extern u8 COC_seq_arkidle[];
+extern u8 COC_seq_arkkick[];
+extern u8 COC_seq_arklose[];
+extern u8 COC_seq_arkmove[];
+extern u8 COC_seq_arktaunt[];
+extern u8 COC_seq_arkvictory[];
+extern u8 COC_seq_arkwin[];
+extern u8 COC_seq_bonk_backswing[];
+extern u8 COC_seq_bonk_extended_backswing[];
+extern u8 COC_seq_bonk_hit[];
+extern u8 COC_seq_bonk_idle[];
+extern u8 COC_seq_bonk_run[];
+extern u8 COC_seq_bonk_swing[];
+extern u8 COC_seq_bonk_winner[];
+extern u8 COC_seq_breathe_ft[];
+extern u8 COC_seq_dinodazed[];
+extern u8 COC_seq_dinoidle[];
+extern u8 COC_seq_dinorun[];
+extern u8 COC_seq_dinoshoot[];
+extern u8 COC_seq_dinoslide[];
+extern u8 COC_seq_dinowin[];
+extern u8 COC_seq_flip_jump[];
+extern u8 COC_seq_kegbreathe[];
+extern u8 COC_seq_kegfall[];
+extern u8 COC_seq_keghit[];
+extern u8 COC_seq_kegidle_a[];
+extern u8 COC_seq_kegidle_b[];
+extern u8 COC_seq_kegjump[];
+extern u8 COC_seq_kegland[];
+extern u8 COC_seq_kegmedium[];
+extern u8 COC_seq_kegnone[];
+extern u8 COC_seq_kegvictory[];
+extern u8 COC_seq_kegwin[];
+extern u8 COC_seq_lightbear[];
+extern u8 COC_seq_long_hit[];
+extern u8 COC_seq_n2obreathe[];
+extern u8 COC_seq_n2ofly[];
+extern u8 COC_seq_n2ohit[];
+extern u8 COC_seq_n2oidle[];
+extern u8 COC_seq_n2okick[];
+extern u8 COC_seq_n2olose[];
+extern u8 COC_seq_n2omove[];
+extern u8 COC_seq_n2otaunt[];
+extern u8 COC_seq_n2ovictory[];
+extern u8 COC_seq_n2owin[];
+extern u8 COC_seq_pogo_dazed[];
+extern u8 COC_seq_pogo_idle[];
+extern u8 COC_seq_pogo_quick_idle[];
+extern u8 COC_seq_pogo_tazing[];
+extern u8 COC_seq_pogo_winner[];
+extern u8 COC_seq_polarattack[];
+extern u8 COC_seq_polardazed[];
+extern u8 COC_seq_polardead[];
+extern u8 COC_seq_polarfall[];
+extern u8 COC_seq_polarhit[];
+extern u8 COC_seq_polaridle[];
+extern u8 COC_seq_polarrun[];
+extern u8 COC_seq_polartaunt[];
+extern u8 COC_seq_polarwin[];
+extern u8 COC_seq_racefall[];
+extern u8 COC_seq_racehit[];
+extern u8 COC_seq_raceidle[];
+extern u8 COC_seq_racerun[];
+extern u8 COC_seq_raceswimfall[];
+extern u8 COC_seq_raceswimidle[];
+extern u8 COC_seq_raceswimrun[];
+extern u8 COC_seq_raceswimwin[];
+extern u8 COC_seq_racewin[];
+extern u8 COC_seq_skate_attack[];
+extern u8 COC_seq_skate_ft[];
+extern u8 COC_seq_tankdie[];
+extern u8 COC_seq_tankfire1[];
+extern u8 COC_seq_tankfire2[];
+extern u8 COC_seq_tankfire3[];
+extern u8 COC_seq_tankidle[];
+extern u8 COC_seq_tankidle1[];
+extern u8 COC_seq_tankminelay[];
+extern u8 COC_seq_tankrecoil[];
+extern u8 COC_seq_tankvictory[];
+extern u8 COC_seq_win_ft[];
+extern u8 CRA_BA_seq_die[];
+extern u8 CRA_BA_seq_hold[];
+extern u8 CRA_BA_seq_hold_slow[];
+extern u8 CRA_BA_seq_hold_throw[];
+extern u8 CRA_BA_seq_pickup[];
+extern u8 CRA_BA_seq_slide[];
+extern u8 CRA_PA_seq_die[];
+extern u8 CRA_PA_seq_hold[];
+extern u8 CRA_PA_seq_hold_slow[];
+extern u8 CRA_PA_seq_hold_throw[];
+extern u8 CRA_PA_seq_pickup[];
+extern u8 CRA_SP_seq_die[];
+extern u8 CRA_seq_arkbreathe[];
+extern u8 CRA_seq_arkidle[];
+extern u8 CRA_seq_arkkick[];
+extern u8 CRA_seq_arklose[];
+extern u8 CRA_seq_arkmove[];
+extern u8 CRA_seq_arktaunt[];
+extern u8 CRA_seq_arkvictory[];
+extern u8 CRA_seq_arkwin[];
+extern u8 CRA_seq_bonk_backswing[];
+extern u8 CRA_seq_bonk_extended_backswing[];
+extern u8 CRA_seq_bonk_hit[];
+extern u8 CRA_seq_bonk_idle[];
+extern u8 CRA_seq_bonk_run[];
+extern u8 CRA_seq_bonk_swing[];
+extern u8 CRA_seq_bonk_winner[];
+extern u8 CRA_seq_breathe_ft[];
+extern u8 CRA_seq_dinodazed[];
+extern u8 CRA_seq_dinoidle[];
+extern u8 CRA_seq_dinorun[];
+extern u8 CRA_seq_dinoshoot[];
+extern u8 CRA_seq_dinoslide[];
+extern u8 CRA_seq_dinowin[];
+extern u8 CRA_seq_flip_jump[];
+extern u8 CRA_seq_kegbreathe[];
+extern u8 CRA_seq_kegfall[];
+extern u8 CRA_seq_keghit[];
+extern u8 CRA_seq_kegidle_a[];
+extern u8 CRA_seq_kegidle_b[];
+extern u8 CRA_seq_kegjump[];
+extern u8 CRA_seq_kegland[];
+extern u8 CRA_seq_kegmedium[];
+extern u8 CRA_seq_kegnone[];
+extern u8 CRA_seq_kegvictory[];
+extern u8 CRA_seq_kegwin[];
+extern u8 CRA_seq_lightbear[];
+extern u8 CRA_seq_long_hit[];
+extern u8 CRA_seq_n2obreathe[];
+extern u8 CRA_seq_n2ofly[];
+extern u8 CRA_seq_n2ohit[];
+extern u8 CRA_seq_n2oidle[];
+extern u8 CRA_seq_n2okick[];
+extern u8 CRA_seq_n2olose[];
+extern u8 CRA_seq_n2omove[];
+extern u8 CRA_seq_n2otaunt[];
+extern u8 CRA_seq_n2ovictory[];
+extern u8 CRA_seq_n2owin[];
+extern u8 CRA_seq_pogo_dazed[];
+extern u8 CRA_seq_pogo_idle[];
+extern u8 CRA_seq_pogo_quick_idle[];
+extern u8 CRA_seq_pogo_tazing[];
+extern u8 CRA_seq_pogo_winner[];
+extern u8 CRA_seq_polarattack[];
+extern u8 CRA_seq_polardazed[];
+extern u8 CRA_seq_polardead[];
+extern u8 CRA_seq_polarfall[];
+extern u8 CRA_seq_polarhit[];
+extern u8 CRA_seq_polaridle[];
+extern u8 CRA_seq_polarrun[];
+extern u8 CRA_seq_polartaunt[];
+extern u8 CRA_seq_polarwin[];
+extern u8 CRA_seq_racefall[];
+extern u8 CRA_seq_racehit[];
+extern u8 CRA_seq_raceidle[];
+extern u8 CRA_seq_racerun[];
+extern u8 CRA_seq_raceswimfall[];
+extern u8 CRA_seq_raceswimidle[];
+extern u8 CRA_seq_raceswimrun[];
+extern u8 CRA_seq_raceswimwin[];
+extern u8 CRA_seq_racewin[];
+extern u8 CRA_seq_skate_attack[];
+extern u8 CRA_seq_skate_ft[];
+extern u8 CRA_seq_tankdie[];
+extern u8 CRA_seq_tankfire1[];
+extern u8 CRA_seq_tankfire2[];
+extern u8 CRA_seq_tankfire3[];
+extern u8 CRA_seq_tankidle[];
+extern u8 CRA_seq_tankidle1[];
+extern u8 CRA_seq_tankminelay[];
+extern u8 CRA_seq_tankrecoil[];
+extern u8 CRA_seq_tankvictory[];
+extern u8 CRA_seq_win_ft[];
+extern u8 CTX_BA_seq_die[];
+extern u8 CTX_BA_seq_hold[];
+extern u8 CTX_BA_seq_hold_slow[];
+extern u8 CTX_BA_seq_hold_throw[];
+extern u8 CTX_BA_seq_pickup[];
+extern u8 CTX_BA_seq_slide[];
+extern u8 CTX_PA_seq_die[];
+extern u8 CTX_PA_seq_hold[];
+extern u8 CTX_PA_seq_hold_slow[];
+extern u8 CTX_PA_seq_hold_throw[];
+extern u8 CTX_PA_seq_pickup[];
+extern u8 CTX_SP_seq_die[];
+extern u8 CTX_seq_arkbreathe[];
+extern u8 CTX_seq_arkidle[];
+extern u8 CTX_seq_arkkick[];
+extern u8 CTX_seq_arklose[];
+extern u8 CTX_seq_arkmove[];
+extern u8 CTX_seq_arktaunt[];
+extern u8 CTX_seq_arkvictory[];
+extern u8 CTX_seq_arkwin[];
+extern u8 CTX_seq_bonk_backswing[];
+extern u8 CTX_seq_bonk_extended_backswing[];
+extern u8 CTX_seq_bonk_hit[];
+extern u8 CTX_seq_bonk_idle[];
+extern u8 CTX_seq_bonk_run[];
+extern u8 CTX_seq_bonk_swing[];
+extern u8 CTX_seq_bonk_winner[];
+extern u8 CTX_seq_breathe_ft[];
+extern u8 CTX_seq_dinodazed[];
+extern u8 CTX_seq_dinoidle[];
+extern u8 CTX_seq_dinorun[];
+extern u8 CTX_seq_dinoshoot[];
+extern u8 CTX_seq_dinoslide[];
+extern u8 CTX_seq_dinowin[];
+extern u8 CTX_seq_flip_jump[];
+extern u8 CTX_seq_kegbreathe[];
+extern u8 CTX_seq_kegfall[];
+extern u8 CTX_seq_keghit[];
+extern u8 CTX_seq_kegidle_a[];
+extern u8 CTX_seq_kegidle_b[];
+extern u8 CTX_seq_kegjump[];
+extern u8 CTX_seq_kegland[];
+extern u8 CTX_seq_kegmedium[];
+extern u8 CTX_seq_kegnone[];
+extern u8 CTX_seq_kegvictory[];
+extern u8 CTX_seq_kegwin[];
+extern u8 CTX_seq_lightbear[];
+extern u8 CTX_seq_long_hit[];
+extern u8 CTX_seq_n2obreathe[];
+extern u8 CTX_seq_n2ofly[];
+extern u8 CTX_seq_n2ohit[];
+extern u8 CTX_seq_n2oidle[];
+extern u8 CTX_seq_n2okick[];
+extern u8 CTX_seq_n2olose[];
+extern u8 CTX_seq_n2omove[];
+extern u8 CTX_seq_n2otaunt[];
+extern u8 CTX_seq_n2ovictory[];
+extern u8 CTX_seq_n2owin[];
+extern u8 CTX_seq_pogo_dazed[];
+extern u8 CTX_seq_pogo_idle[];
+extern u8 CTX_seq_pogo_quick_idle[];
+extern u8 CTX_seq_pogo_tazing[];
+extern u8 CTX_seq_pogo_winner[];
+extern u8 CTX_seq_polarattack[];
+extern u8 CTX_seq_polardazed[];
+extern u8 CTX_seq_polardead[];
+extern u8 CTX_seq_polarfall[];
+extern u8 CTX_seq_polarhit[];
+extern u8 CTX_seq_polaridle[];
+extern u8 CTX_seq_polarrun[];
+extern u8 CTX_seq_polartaunt[];
+extern u8 CTX_seq_polarwin[];
+extern u8 CTX_seq_racefall[];
+extern u8 CTX_seq_racehit[];
+extern u8 CTX_seq_raceidle[];
+extern u8 CTX_seq_racerun[];
+extern u8 CTX_seq_raceswimfall[];
+extern u8 CTX_seq_raceswimidle[];
+extern u8 CTX_seq_raceswimrun[];
+extern u8 CTX_seq_raceswimwin[];
+extern u8 CTX_seq_racewin[];
+extern u8 CTX_seq_skate_attack[];
+extern u8 CTX_seq_skate_ft[];
+extern u8 CTX_seq_tankdie[];
+extern u8 CTX_seq_tankfire1[];
+extern u8 CTX_seq_tankfire2[];
+extern u8 CTX_seq_tankfire3[];
+extern u8 CTX_seq_tankidle[];
+extern u8 CTX_seq_tankidle1[];
+extern u8 CTX_seq_tankminelay[];
+extern u8 CTX_seq_tankrecoil[];
+extern u8 CTX_seq_tankvictory[];
+extern u8 CTX_seq_win_ft[];
+extern u8 ChaseHeroDead[];
+extern u8 ChaseHeroDie[];
+extern u8 ChaseHeroDrop[];
+extern u8 ChaseHeroFall[];
+extern u8 ChaseHeroHit[];
+extern u8 ChaseHeroIdle[];
+extern u8 ChaseHeroJump[];
+extern u8 ChaseHeroLand[];
+extern u8 ChaseHeroLose[];
+extern u8 ChaseHeroRun[];
+extern u8 ChaseHeroWinner[];
+extern u8 DNG_BA_seq_die[];
+extern u8 DNG_BA_seq_hold[];
+extern u8 DNG_BA_seq_hold_slow[];
+extern u8 DNG_BA_seq_hold_throw[];
+extern u8 DNG_BA_seq_pickup[];
+extern u8 DNG_BA_seq_slide[];
+extern u8 DNG_PA_seq_die[];
+extern u8 DNG_PA_seq_hold[];
+extern u8 DNG_PA_seq_hold_slow[];
+extern u8 DNG_PA_seq_hold_throw[];
+extern u8 DNG_PA_seq_pickup[];
+extern u8 DNG_SP_seq_die[];
+extern u8 DNG_seq_arkbreathe[];
+extern u8 DNG_seq_arkidle[];
+extern u8 DNG_seq_arkkick[];
+extern u8 DNG_seq_arklose[];
+extern u8 DNG_seq_arkmove[];
+extern u8 DNG_seq_arktaunt[];
+extern u8 DNG_seq_arkvictory[];
+extern u8 DNG_seq_arkwin[];
+extern u8 DNG_seq_bonk_backswing[];
+extern u8 DNG_seq_bonk_extended_backswing[];
+extern u8 DNG_seq_bonk_hit[];
+extern u8 DNG_seq_bonk_idle[];
+extern u8 DNG_seq_bonk_run[];
+extern u8 DNG_seq_bonk_swing[];
+extern u8 DNG_seq_bonk_winner[];
+extern u8 DNG_seq_breathe_ft[];
+extern u8 DNG_seq_dinodazed[];
+extern u8 DNG_seq_dinoidle[];
+extern u8 DNG_seq_dinorun[];
+extern u8 DNG_seq_dinoshoot[];
+extern u8 DNG_seq_dinoslide[];
+extern u8 DNG_seq_dinowin[];
+extern u8 DNG_seq_flip_jump[];
+extern u8 DNG_seq_kegbreathe[];
+extern u8 DNG_seq_kegfall[];
+extern u8 DNG_seq_keghit[];
+extern u8 DNG_seq_kegidle_a[];
+extern u8 DNG_seq_kegidle_b[];
+extern u8 DNG_seq_kegjump[];
+extern u8 DNG_seq_kegland[];
+extern u8 DNG_seq_kegmedium[];
+extern u8 DNG_seq_kegnone[];
+extern u8 DNG_seq_kegvictory[];
+extern u8 DNG_seq_kegwin[];
+extern u8 DNG_seq_lightbear[];
+extern u8 DNG_seq_long_hit[];
+extern u8 DNG_seq_n2obreathe[];
+extern u8 DNG_seq_n2ofly[];
+extern u8 DNG_seq_n2ohit[];
+extern u8 DNG_seq_n2oidle[];
+extern u8 DNG_seq_n2okick[];
+extern u8 DNG_seq_n2olose[];
+extern u8 DNG_seq_n2omove[];
+extern u8 DNG_seq_n2otaunt[];
+extern u8 DNG_seq_n2ovictory[];
+extern u8 DNG_seq_n2owin[];
+extern u8 DNG_seq_pogo_dazed[];
+extern u8 DNG_seq_pogo_idle[];
+extern u8 DNG_seq_pogo_quick_idle[];
+extern u8 DNG_seq_pogo_tazing[];
+extern u8 DNG_seq_pogo_winner[];
+extern u8 DNG_seq_polarattack[];
+extern u8 DNG_seq_polardazed[];
+extern u8 DNG_seq_polardead[];
+extern u8 DNG_seq_polarfall[];
+extern u8 DNG_seq_polarhit[];
+extern u8 DNG_seq_polaridle[];
+extern u8 DNG_seq_polarrun[];
+extern u8 DNG_seq_polartaunt[];
+extern u8 DNG_seq_polarwin[];
+extern u8 DNG_seq_racefall[];
+extern u8 DNG_seq_racehit[];
+extern u8 DNG_seq_raceidle[];
+extern u8 DNG_seq_racerun[];
+extern u8 DNG_seq_raceswimfall[];
+extern u8 DNG_seq_raceswimidle[];
+extern u8 DNG_seq_raceswimrun[];
+extern u8 DNG_seq_raceswimwin[];
+extern u8 DNG_seq_racewin[];
+extern u8 DNG_seq_skate_attack[];
+extern u8 DNG_seq_skate_ft[];
+extern u8 DNG_seq_tankdie[];
+extern u8 DNG_seq_tankfire1[];
+extern u8 DNG_seq_tankfire2[];
+extern u8 DNG_seq_tankfire3[];
+extern u8 DNG_seq_tankidle[];
+extern u8 DNG_seq_tankidle1[];
+extern u8 DNG_seq_tankminelay[];
+extern u8 DNG_seq_tankrecoil[];
+extern u8 DNG_seq_tankvictory[];
+extern u8 DNG_seq_win_ft[];
+extern u8 D_80034000[];
+extern u8 D_80034080[];
+extern u8 D_80034084[];
+extern u8 D_80034100[];
+extern u8 D_80034108[];
+extern u8 D_8004410C[];
+extern u8 D_80044110[];
+extern u8 D_8004418C[];
+extern u8 D_80044190[];
+extern u8 D_80044288[];
+extern u8 D_80044480[];
+extern u8 D_80044580[];
+extern u8 D_8007000C[];
+extern u8 D_80070034[];
+extern u8 D_80070070[];
+extern u8 D_80070098[];
+extern u8 D_800700A4[];
+extern u8 D_800700D4[];
+extern u8 D_800700FC[];
+extern u8 D_80070108[];
+extern u8 D_80070138[];
+extern u8 D_80070160[];
+extern u8 D_8007016C[];
+extern u8 D_80074580[];
+extern u8 D_800A0000[];
+extern u8 DinoHeroDazed[];
+extern u8 DinoHeroIdle[];
+extern u8 DinoHeroRun[];
+extern u8 DinoHeroShoot[];
+extern u8 DinoHeroSlide[];
+extern u8 DinoHeroWinner[];
+extern u8 HeroPogo[];
+extern u8 HeroPogoDazed[];
+extern u8 HeroPogoIdle[];
+extern u8 HeroPogoLoser[];
+extern u8 HeroPogoTazing[];
+extern u8 HeroPogoTied[];
+extern u8 HeroPogoWinner[];
+extern u8 KAN_BA_seq_die[];
+extern u8 KAN_BA_seq_hold[];
+extern u8 KAN_BA_seq_hold_slow[];
+extern u8 KAN_BA_seq_hold_throw[];
+extern u8 KAN_BA_seq_pickup[];
+extern u8 KAN_BA_seq_slide[];
+extern u8 KAN_PA_seq_die[];
+extern u8 KAN_PA_seq_hold[];
+extern u8 KAN_PA_seq_hold_slow[];
+extern u8 KAN_PA_seq_hold_throw[];
+extern u8 KAN_PA_seq_pickup[];
+extern u8 KAN_SP_seq_die[];
+extern u8 KAN_seq_arkbreathe[];
+extern u8 KAN_seq_arkidle[];
+extern u8 KAN_seq_arkkick[];
+extern u8 KAN_seq_arklose[];
+extern u8 KAN_seq_arkmove[];
+extern u8 KAN_seq_arktaunt[];
+extern u8 KAN_seq_arkvictory[];
+extern u8 KAN_seq_arkwin[];
+extern u8 KAN_seq_bonk_backswing[];
+extern u8 KAN_seq_bonk_extended_backswing[];
+extern u8 KAN_seq_bonk_hit[];
+extern u8 KAN_seq_bonk_idle[];
+extern u8 KAN_seq_bonk_run[];
+extern u8 KAN_seq_bonk_swing[];
+extern u8 KAN_seq_bonk_winner[];
+extern u8 KAN_seq_breathe_ft[];
+extern u8 KAN_seq_dinodazed[];
+extern u8 KAN_seq_dinoidle[];
+extern u8 KAN_seq_dinorun[];
+extern u8 KAN_seq_dinoshoot[];
+extern u8 KAN_seq_dinoslide[];
+extern u8 KAN_seq_dinowin[];
+extern u8 KAN_seq_flip_jump[];
+extern u8 KAN_seq_kegbreathe[];
+extern u8 KAN_seq_kegfall[];
+extern u8 KAN_seq_keghit[];
+extern u8 KAN_seq_kegidle_a[];
+extern u8 KAN_seq_kegidle_b[];
+extern u8 KAN_seq_kegjump[];
+extern u8 KAN_seq_kegland[];
+extern u8 KAN_seq_kegmedium[];
+extern u8 KAN_seq_kegnone[];
+extern u8 KAN_seq_kegvictory[];
+extern u8 KAN_seq_kegwin[];
+extern u8 KAN_seq_lightbear[];
+extern u8 KAN_seq_long_hit[];
+extern u8 KAN_seq_n2obreathe[];
+extern u8 KAN_seq_n2ofly[];
+extern u8 KAN_seq_n2ohit[];
+extern u8 KAN_seq_n2oidle[];
+extern u8 KAN_seq_n2okick[];
+extern u8 KAN_seq_n2olose[];
+extern u8 KAN_seq_n2omove[];
+extern u8 KAN_seq_n2otaunt[];
+extern u8 KAN_seq_n2ovictory[];
+extern u8 KAN_seq_n2owin[];
+extern u8 KAN_seq_pogo_dazed[];
+extern u8 KAN_seq_pogo_idle[];
+extern u8 KAN_seq_pogo_quick_idle[];
+extern u8 KAN_seq_pogo_tazing[];
+extern u8 KAN_seq_pogo_winner[];
+extern u8 KAN_seq_polarattack[];
+extern u8 KAN_seq_polardazed[];
+extern u8 KAN_seq_polardead[];
+extern u8 KAN_seq_polarfall[];
+extern u8 KAN_seq_polarhit[];
+extern u8 KAN_seq_polaridle[];
+extern u8 KAN_seq_polarrun[];
+extern u8 KAN_seq_polartaunt[];
+extern u8 KAN_seq_polarwin[];
+extern u8 KAN_seq_racefall[];
+extern u8 KAN_seq_racehit[];
+extern u8 KAN_seq_raceidle[];
+extern u8 KAN_seq_racerun[];
+extern u8 KAN_seq_raceswimfall[];
+extern u8 KAN_seq_raceswimidle[];
+extern u8 KAN_seq_raceswimrun[];
+extern u8 KAN_seq_raceswimwin[];
+extern u8 KAN_seq_racewin[];
+extern u8 KAN_seq_skate_attack[];
+extern u8 KAN_seq_skate_ft[];
+extern u8 KAN_seq_tankdie[];
+extern u8 KAN_seq_tankfire1[];
+extern u8 KAN_seq_tankfire2[];
+extern u8 KAN_seq_tankfire3[];
+extern u8 KAN_seq_tankidle[];
+extern u8 KAN_seq_tankidle1[];
+extern u8 KAN_seq_tankminelay[];
+extern u8 KAN_seq_tankrecoil[];
+extern u8 KAN_seq_tankvictory[];
+extern u8 KAN_seq_win_ft[];
+extern u8 KON_BA_seq_die[];
+extern u8 KON_BA_seq_hold[];
+extern u8 KON_BA_seq_hold_slow[];
+extern u8 KON_BA_seq_hold_throw[];
+extern u8 KON_BA_seq_pickup[];
+extern u8 KON_BA_seq_slide[];
+extern u8 KON_PA_seq_die[];
+extern u8 KON_PA_seq_hold[];
+extern u8 KON_PA_seq_hold_slow[];
+extern u8 KON_PA_seq_hold_throw[];
+extern u8 KON_PA_seq_pickup[];
+extern u8 KON_SP_seq_die[];
+extern u8 KON_seq_arkbreathe[];
+extern u8 KON_seq_arkidle[];
+extern u8 KON_seq_arkkick[];
+extern u8 KON_seq_arklose[];
+extern u8 KON_seq_arkmove[];
+extern u8 KON_seq_arktaunt[];
+extern u8 KON_seq_arkvictory[];
+extern u8 KON_seq_arkwin[];
+extern u8 KON_seq_bonk_backswing[];
+extern u8 KON_seq_bonk_extended_backswing[];
+extern u8 KON_seq_bonk_hit[];
+extern u8 KON_seq_bonk_idle[];
+extern u8 KON_seq_bonk_run[];
+extern u8 KON_seq_bonk_swing[];
+extern u8 KON_seq_bonk_winner[];
+extern u8 KON_seq_breathe_ft[];
+extern u8 KON_seq_dinodazed[];
+extern u8 KON_seq_dinoidle[];
+extern u8 KON_seq_dinorun[];
+extern u8 KON_seq_dinoshoot[];
+extern u8 KON_seq_dinoslide[];
+extern u8 KON_seq_dinowin[];
+extern u8 KON_seq_flip_jump[];
+extern u8 KON_seq_kegbreathe[];
+extern u8 KON_seq_kegfall[];
+extern u8 KON_seq_keghit[];
+extern u8 KON_seq_kegidle_a[];
+extern u8 KON_seq_kegidle_b[];
+extern u8 KON_seq_kegjump[];
+extern u8 KON_seq_kegland[];
+extern u8 KON_seq_kegmedium[];
+extern u8 KON_seq_kegnone[];
+extern u8 KON_seq_kegvictory[];
+extern u8 KON_seq_kegwin[];
+extern u8 KON_seq_lightbear[];
+extern u8 KON_seq_long_hit[];
+extern u8 KON_seq_n2obreathe[];
+extern u8 KON_seq_n2ofly[];
+extern u8 KON_seq_n2ohit[];
+extern u8 KON_seq_n2oidle[];
+extern u8 KON_seq_n2okick[];
+extern u8 KON_seq_n2olose[];
+extern u8 KON_seq_n2omove[];
+extern u8 KON_seq_n2otaunt[];
+extern u8 KON_seq_n2ovictory[];
+extern u8 KON_seq_n2owin[];
+extern u8 KON_seq_pogo_dazed[];
+extern u8 KON_seq_pogo_idle[];
+extern u8 KON_seq_pogo_quick_idle[];
+extern u8 KON_seq_pogo_tazing[];
+extern u8 KON_seq_pogo_winner[];
+extern u8 KON_seq_polarattack[];
+extern u8 KON_seq_polardazed[];
+extern u8 KON_seq_polardead[];
+extern u8 KON_seq_polarfall[];
+extern u8 KON_seq_polarhit[];
+extern u8 KON_seq_polaridle[];
+extern u8 KON_seq_polarrun[];
+extern u8 KON_seq_polartaunt[];
+extern u8 KON_seq_polarwin[];
+extern u8 KON_seq_racefall[];
+extern u8 KON_seq_racehit[];
+extern u8 KON_seq_raceidle[];
+extern u8 KON_seq_racerun[];
+extern u8 KON_seq_raceswimfall[];
+extern u8 KON_seq_raceswimidle[];
+extern u8 KON_seq_raceswimrun[];
+extern u8 KON_seq_raceswimwin[];
+extern u8 KON_seq_racewin[];
+extern u8 KON_seq_skate_attack[];
+extern u8 KON_seq_skate_ft[];
+extern u8 KON_seq_tankdie[];
+extern u8 KON_seq_tankfire1[];
+extern u8 KON_seq_tankfire2[];
+extern u8 KON_seq_tankfire3[];
+extern u8 KON_seq_tankidle[];
+extern u8 KON_seq_tankidle1[];
+extern u8 KON_seq_tankminelay[];
+extern u8 KON_seq_tankrecoil[];
+extern u8 KON_seq_tankvictory[];
+extern u8 KON_seq_win_ft[];
+extern u8 N2OHeroDead[];
+extern u8 N2OHeroDie[];
+extern u8 N2OHeroEnter[];
+extern u8 N2OHeroHit[];
+extern u8 N2OHeroIdle[];
+extern u8 N2OHeroKick[];
+extern u8 N2OHeroMove[];
+extern u8 N2OHeroTaunt[];
+extern u8 N2OHeroWinner[];
+extern u8 NoxHeroDead[];
+extern u8 NoxHeroFly[];
+extern u8 NoxHeroHit[];
+extern u8 NoxHeroWinner[];
+extern u8 PAHeroCarry[];
+extern u8 PAHeroDead[];
+extern u8 PAHeroHit[];
+extern u8 PAHeroHold[];
+extern u8 PAHeroPickup[];
+extern u8 PAHeroThrow[];
+extern u8 PAHeroWinner[];
+extern u8 PolarHeroAttack[];
+extern u8 PolarHeroChallenge[];
+extern u8 PolarHeroDazed[];
+extern u8 PolarHeroDead[];
+extern u8 PolarHeroFootIdle[];
+extern u8 PolarHeroFootRun[];
+extern u8 PolarHeroHit[];
+extern u8 PolarHeroIdle[];
+extern u8 PolarHeroInBeam[];
+extern u8 PolarHeroOffice[];
+extern u8 PolarHeroPoll[];
+extern u8 PolarHeroRun[];
+extern u8 PolarHeroSnowball[];
+extern u8 PolarHeroSquashed[];
+extern u8 PolarHeroThrowBomb[];
+extern u8 PolarHeroTransmute[];
+extern u8 PolarHeroWeight[];
+extern u8 PolarHeroWinner[];
+extern u8 RaceHeroDazed[];
+extern u8 RaceHeroIdle[];
+extern u8 RaceHeroJump[];
+extern u8 RaceHeroKick[];
+extern u8 RaceHeroOffTrack[];
+extern u8 RaceHeroOiled[];
+extern u8 RaceHeroRun[];
+extern u8 RaceHeroWinner[];
+extern u8 SetArkHeroDead[];
+extern u8 SetArkHeroDie[];
+extern u8 SetArkHeroGrab[];
+extern u8 SetArkHeroIdle[];
+extern u8 SetArkHeroKick[];
+extern u8 SetArkHeroLose[];
+extern u8 SetArkHeroMove[];
+extern u8 SetArkHeroRedKick[];
+extern u8 SetArkHeroTaunt[];
+extern u8 SetArkHeroWinner[];
+extern u8 SetBashHeroBigWeight[];
+extern u8 SetBashHeroCarry[];
+extern u8 SetBashHeroDead[];
+extern u8 SetBashHeroHit[];
+extern u8 SetBashHeroHold[];
+extern u8 SetBashHeroLoser[];
+extern u8 SetBashHeroPickup[];
+extern u8 SetBashHeroThrow[];
+extern u8 SetBashHeroWinner[];
+extern u8 SetBonkHeroBackswing[];
+extern u8 SetBonkHeroExtBackswing[];
+extern u8 SetBonkHeroHit[];
+extern u8 SetBonkHeroIdle[];
+extern u8 SetBonkHeroLoser[];
+extern u8 SetBonkHeroRun[];
+extern u8 SetBonkHeroSwing[];
+extern u8 SetBonkHeroSwingRecoil[];
+extern u8 SetBonkHeroWinner[];
+extern u8 SetChaseHeroDead[];
+extern u8 SetChaseHeroDie[];
+extern u8 SetChaseHeroDrop[];
+extern u8 SetChaseHeroFall[];
+extern u8 SetChaseHeroHit[];
+extern u8 SetChaseHeroIdle[];
+extern u8 SetChaseHeroJump[];
+extern u8 SetChaseHeroLand[];
+extern u8 SetChaseHeroLose[];
+extern u8 SetChaseHeroRun[];
+extern u8 SetChaseHeroWinner[];
+extern u8 SetDinoHeroDazed[];
+extern u8 SetDinoHeroIdle[];
+extern u8 SetDinoHeroRun[];
+extern u8 SetDinoHeroShoot[];
+extern u8 SetDinoHeroSlide[];
+extern u8 SetDinoHeroWinner[];
+extern u8 SetHeroPogo[];
+extern u8 SetHeroPogoDazed[];
+extern u8 SetHeroPogoIdle[];
+extern u8 SetHeroPogoLoser[];
+extern u8 SetHeroPogoTazing[];
+extern u8 SetHeroPogoTied[];
+extern u8 SetHeroPogoWinner[];
+extern u8 SetN2OHeroDead[];
+extern u8 SetN2OHeroDie[];
+extern u8 SetN2OHeroEnter[];
+extern u8 SetN2OHeroHit[];
+extern u8 SetN2OHeroIdle[];
+extern u8 SetN2OHeroKick[];
+extern u8 SetN2OHeroMove[];
+extern u8 SetN2OHeroTaunt[];
+extern u8 SetN2OHeroWinner[];
+extern u8 SetNoxHeroDead[];
+extern u8 SetNoxHeroFly[];
+extern u8 SetNoxHeroHit[];
+extern u8 SetNoxHeroWinner[];
+extern u8 SetPAHeroCarry[];
+extern u8 SetPAHeroDead[];
+extern u8 SetPAHeroHit[];
+extern u8 SetPAHeroHold[];
+extern u8 SetPAHeroPickup[];
+extern u8 SetPAHeroThrow[];
+extern u8 SetPAHeroWinner[];
+extern u8 SetPolarHeroAttack[];
+extern u8 SetPolarHeroChallenge[];
+extern u8 SetPolarHeroDazed[];
+extern u8 SetPolarHeroDead[];
+extern u8 SetPolarHeroFootIdle[];
+extern u8 SetPolarHeroFootRun[];
+extern u8 SetPolarHeroHit[];
+extern u8 SetPolarHeroIdle[];
+extern u8 SetPolarHeroInBeam[];
+extern u8 SetPolarHeroOffice[];
+extern u8 SetPolarHeroPoll[];
+extern u8 SetPolarHeroRun[];
+extern u8 SetPolarHeroSnowball[];
+extern u8 SetPolarHeroSquashed[];
+extern u8 SetPolarHeroThrowBomb[];
+extern u8 SetPolarHeroTransmute[];
+extern u8 SetPolarHeroWeight[];
+extern u8 SetPolarHeroWinner[];
+extern u8 SetRaceHeroDazed[];
+extern u8 SetRaceHeroIdle[];
+extern u8 SetRaceHeroJump[];
+extern u8 SetRaceHeroKick[];
+extern u8 SetRaceHeroOffTrack[];
+extern u8 SetRaceHeroOiled[];
+extern u8 SetRaceHeroRun[];
+extern u8 SetRaceHeroWinner[];
+extern u8 SetSpinHeroDead[];
+extern u8 SetSpinHeroFall[];
+extern u8 SetSpinHeroFlip[];
+extern u8 SetSpinHeroHit[];
+extern u8 SetSpinHeroLose[];
+extern u8 SetSpinHeroWinner[];
+extern u8 SetTankHeroDead[];
+extern u8 SetTankHeroDie[];
+extern u8 SetTankHeroIdle[];
+extern u8 SetTankHeroMinelay[];
+extern u8 SetTankHeroMove[];
+extern u8 SetTankHeroRecoil[];
+extern u8 SetTankHeroTurn[];
+extern u8 SetTankHeroVictory[];
+extern u8 SpinHeroDead[];
+extern u8 SpinHeroFall[];
+extern u8 SpinHeroFlip[];
+extern u8 SpinHeroHit[];
+extern u8 SpinHeroLose[];
+extern u8 SpinHeroWinner[];
+extern u8 TIN_BA_seq_die[];
+extern u8 TIN_BA_seq_hold[];
+extern u8 TIN_BA_seq_hold_slow[];
+extern u8 TIN_BA_seq_hold_throw[];
+extern u8 TIN_BA_seq_pickup[];
+extern u8 TIN_BA_seq_slide[];
+extern u8 TIN_PA_seq_die[];
+extern u8 TIN_PA_seq_hold[];
+extern u8 TIN_PA_seq_hold_slow[];
+extern u8 TIN_PA_seq_hold_throw[];
+extern u8 TIN_PA_seq_pickup[];
+extern u8 TIN_SP_seq_die[];
+extern u8 TIN_seq_arkbreathe[];
+extern u8 TIN_seq_arkidle[];
+extern u8 TIN_seq_arkkick[];
+extern u8 TIN_seq_arklose[];
+extern u8 TIN_seq_arkmove[];
+extern u8 TIN_seq_arktaunt[];
+extern u8 TIN_seq_arkvictory[];
+extern u8 TIN_seq_arkwin[];
+extern u8 TIN_seq_bonk_backswing[];
+extern u8 TIN_seq_bonk_extended_backswing[];
+extern u8 TIN_seq_bonk_hit[];
+extern u8 TIN_seq_bonk_idle[];
+extern u8 TIN_seq_bonk_run[];
+extern u8 TIN_seq_bonk_swing[];
+extern u8 TIN_seq_bonk_winner[];
+extern u8 TIN_seq_breathe_ft[];
+extern u8 TIN_seq_dinodazed[];
+extern u8 TIN_seq_dinoidle[];
+extern u8 TIN_seq_dinorun[];
+extern u8 TIN_seq_dinoshoot[];
+extern u8 TIN_seq_dinoslide[];
+extern u8 TIN_seq_dinowin[];
+extern u8 TIN_seq_flip_jump[];
+extern u8 TIN_seq_kegbreathe[];
+extern u8 TIN_seq_kegfall[];
+extern u8 TIN_seq_keghit[];
+extern u8 TIN_seq_kegidle_a[];
+extern u8 TIN_seq_kegidle_b[];
+extern u8 TIN_seq_kegjump[];
+extern u8 TIN_seq_kegland[];
+extern u8 TIN_seq_kegmedium[];
+extern u8 TIN_seq_kegnone[];
+extern u8 TIN_seq_kegvictory[];
+extern u8 TIN_seq_kegwin[];
+extern u8 TIN_seq_lightbear[];
+extern u8 TIN_seq_long_hit[];
+extern u8 TIN_seq_n2obreathe[];
+extern u8 TIN_seq_n2ofly[];
+extern u8 TIN_seq_n2ohit[];
+extern u8 TIN_seq_n2oidle[];
+extern u8 TIN_seq_n2okick[];
+extern u8 TIN_seq_n2olose[];
+extern u8 TIN_seq_n2omove[];
+extern u8 TIN_seq_n2otaunt[];
+extern u8 TIN_seq_n2ovictory[];
+extern u8 TIN_seq_n2owin[];
+extern u8 TIN_seq_pogo_dazed[];
+extern u8 TIN_seq_pogo_idle[];
+extern u8 TIN_seq_pogo_quick_idle[];
+extern u8 TIN_seq_pogo_tazing[];
+extern u8 TIN_seq_pogo_winner[];
+extern u8 TIN_seq_polarattack[];
+extern u8 TIN_seq_polardazed[];
+extern u8 TIN_seq_polardead[];
+extern u8 TIN_seq_polarfall[];
+extern u8 TIN_seq_polarhit[];
+extern u8 TIN_seq_polaridle[];
+extern u8 TIN_seq_polarrun[];
+extern u8 TIN_seq_polartaunt[];
+extern u8 TIN_seq_polarwin[];
+extern u8 TIN_seq_racefall[];
+extern u8 TIN_seq_racehit[];
+extern u8 TIN_seq_raceidle[];
+extern u8 TIN_seq_racerun[];
+extern u8 TIN_seq_raceswimfall[];
+extern u8 TIN_seq_raceswimidle[];
+extern u8 TIN_seq_raceswimrun[];
+extern u8 TIN_seq_raceswimwin[];
+extern u8 TIN_seq_racewin[];
+extern u8 TIN_seq_skate_attack[];
+extern u8 TIN_seq_skate_ft[];
+extern u8 TIN_seq_tankdie[];
+extern u8 TIN_seq_tankfire1[];
+extern u8 TIN_seq_tankfire2[];
+extern u8 TIN_seq_tankfire3[];
+extern u8 TIN_seq_tankidle[];
+extern u8 TIN_seq_tankidle1[];
+extern u8 TIN_seq_tankminelay[];
+extern u8 TIN_seq_tankrecoil[];
+extern u8 TIN_seq_tankvictory[];
+extern u8 TIN_seq_win_ft[];
+extern u8 TankHeroDead[];
+extern u8 TankHeroDie[];
+extern u8 TankHeroIdle[];
+extern u8 TankHeroMinelay[];
+extern u8 TankHeroMove[];
+extern u8 TankHeroRecoil[];
+extern u8 TankHeroTurn[];
+extern u8 TankHeroVictory[];
+
+s32 D_8009BD4C[2] = { 0x14, 0x8000 };
+s32 D_8009BD54[3] = { (s32)0x80070000, 0x40000016, 0x8000 };
+s32 D_8009BD60[4] = { (s32)&D_800A0000, (s32)0x80070002, 0x45800038, 0x8004 };
+s32 D_8009BD70[2] = { (s32)0x80050000, 1 };
+s32 D_8009BD78[2] = { (s32)0x80050000, 3 };
+s32 D_8009BD80[8] = {
+    (s32)0x80070000, 0x40800009, 0x88003, 0xB8007, (s32)0x80034089, 0x40940009,
+    (s32)0x80004095, 0,
+};
+s32 D_8009BDA0[6] = { (s32)&D_800A0000, (s32)&D_8007000C, 0x41000007, 0x288018, (s32)0x80044107, 5 };
+s32 D_8009BDB8[7] = { 0x41080002, 0x48018, 0x410A4109, 0x288018, 0x410B410B, 0x410B410B, 0x78004 };
+s32 D_8009BDD4[4] = { (s32)(u8 *)&func_8008FF94 + 0x6C, (s32)0x8007000D, 0x410C001B, 0x8004 };
+s32 D_8009BDE4[3] = { (s32)(u8 *)&D_800A0000 + 0xF, 0x2002000E, 0x8004 };
+s32 D_8009BDF0[9] = {
+    (s32)0x80070000, 0x4180000B, 0x88003, 0x48007, (s32)0x8007418B, 0x418F0004, 0xA8018,
+    (s32)0x80044192, 0,
+};
+s32 D_8009BE14[3] = { (s32)0x80070000, 0x45800038, 0x8000 };
+s32 D_8009BE20[3] = { (s32)0x80070000, 0x44800022, 0x8000 };
+s32 D_8009BE2C[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
+s32 D_8009BE38[108] = {
+    (s32)&D_8009BD4C, (s32)&D_8009BD54, (s32)&D_8009BD60, (s32)&D_8009BD70, (s32)&D_8009BD78,
+    (s32)&D_8009BD80, (s32)&D_8009BDA0, (s32)&D_8009BDB8, (s32)&D_8009BDD4, (s32)&D_8009BDF0,
+    (s32)&D_8009BDE4, (s32)&D_8009BE2C, (s32)&D_8009BE14, (s32)&D_8009BE20,
+    (s32)&CRA_BA_seq_slide, (s32)&CRA_BA_seq_pickup, (s32)&CRA_BA_seq_hold,
+    (s32)&CRA_BA_seq_hold_slow, (s32)&CRA_BA_seq_hold_throw, (s32)&CRA_BA_seq_die,
+    (s32)&CRA_PA_seq_pickup, (s32)&CRA_PA_seq_hold, (s32)&CRA_PA_seq_hold_slow,
+    (s32)&CRA_PA_seq_hold_throw, (s32)&CRA_PA_seq_die, (s32)&CRA_seq_arkbreathe,
+    (s32)&CRA_seq_arkmove, (s32)&CRA_seq_arkidle, (s32)&CRA_seq_arktaunt,
+    (s32)&CRA_seq_arkkick, (s32)&CRA_seq_arkwin, (s32)&CRA_seq_arkvictory,
+    (s32)&CRA_seq_arklose, (s32)&CRA_seq_n2obreathe, (s32)&CRA_seq_n2omove,
+    (s32)&CRA_seq_n2oidle, (s32)&CRA_seq_n2otaunt, (s32)&CRA_seq_n2okick, (s32)&CRA_seq_n2ohit,
+    (s32)&CRA_seq_n2owin, (s32)&CRA_seq_n2ovictory, (s32)&CRA_seq_n2olose,
+    (s32)&CRA_seq_n2ofly, (s32)&CRA_seq_long_hit, (s32)&CRA_seq_flip_jump,
+    (s32)&CRA_SP_seq_die, (s32)&CRA_seq_pogo_idle, (s32)&CRA_seq_pogo_quick_idle,
+    (s32)&CRA_seq_pogo_tazing, (s32)&CRA_seq_pogo_dazed, (s32)&CRA_seq_pogo_winner,
+    (s32)&CRA_seq_bonk_idle, (s32)&CRA_seq_bonk_run, (s32)&CRA_seq_bonk_backswing,
+    (s32)&CRA_seq_bonk_extended_backswing, (s32)&CRA_seq_bonk_swing, (s32)&CRA_seq_bonk_hit,
+    (s32)&CRA_seq_bonk_winner, (s32)&CRA_seq_polaridle, (s32)&CRA_seq_polarrun,
+    (s32)&CRA_seq_polardazed, (s32)&CRA_seq_polarfall, (s32)&CRA_seq_polarattack,
+    (s32)&CRA_seq_polarhit, (s32)&CRA_seq_polardead, (s32)&CRA_seq_polartaunt,
+    (s32)&CRA_seq_breathe_ft, (s32)&CRA_seq_skate_ft, (s32)&CRA_seq_lightbear,
+    (s32)&CRA_seq_skate_attack, (s32)&CRA_seq_polarwin, (s32)&CRA_seq_win_ft,
+    (s32)&CRA_seq_raceidle, (s32)&CRA_seq_racerun, (s32)&CRA_seq_racehit,
+    (s32)&CRA_seq_racefall, (s32)&CRA_seq_racewin, (s32)&CRA_seq_dinoidle,
+    (s32)&CRA_seq_dinorun, (s32)&CRA_seq_dinoshoot, (s32)&CRA_seq_dinoslide,
+    (s32)&CRA_seq_dinodazed, (s32)&CRA_seq_raceswimidle, (s32)&CRA_seq_raceswimrun,
+    (s32)&CRA_seq_raceswimfall, (s32)&CRA_seq_raceswimwin, (s32)&CRA_seq_dinowin,
+    (s32)&CRA_seq_tankrecoil, (s32)&CRA_seq_tankdie, (s32)&CRA_seq_tankidle,
+    (s32)&CRA_seq_tankidle1, (s32)&CRA_seq_tankminelay, (s32)&CRA_seq_tankvictory,
+    (s32)&CRA_seq_tankfire1, (s32)&CRA_seq_tankfire2, (s32)&CRA_seq_tankfire3,
+    (s32)&CRA_seq_kegnone, (s32)&CRA_seq_kegbreathe, (s32)&CRA_seq_kegidle_a,
+    (s32)&CRA_seq_kegidle_b, (s32)&CRA_seq_kegmedium, (s32)&CRA_seq_kegjump,
+    (s32)&CRA_seq_kegfall, (s32)&CRA_seq_kegland, (s32)&CRA_seq_keghit,
+    (s32)&CHASE_seq_kegdead, (s32)&CRA_seq_kegwin, (s32)&CRA_seq_kegvictory,
+};
+s32 D_8009BFE8[2] = { 2, 0x8000 };
+s32 D_8009BFF0[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
+s32 D_8009BFFC[13] = {
+    (s32)&D_800A0000, (s32)&D_80070034, 0x44800031, 0x448F4490, 0x448D448E, 0x448B448C,
+    0x4489448A, 0x44874488, 0x44854486, 0x44834484, 0x44814482, (s32)&D_80044480, 0,
+};
+s32 D_8009C030[2] = { (s32)0x80050000, 1 };
+s32 D_8009C038[2] = { (s32)0x80050000, 1 };
+s32 D_8009C040[8] = {
+    (s32)0x80070000, 0x41000008, 0x88003, 0xB8007, (s32)&D_80034108, 0x41130009, 0x41154114,
+    0x8000,
+};
+s32 D_8009C060[4] = { (s32)&D_800A0000, (s32)0x8007003E, 0x4182000A, 0x58004 };
+s32 D_8009C070[6] = { 0x418C0002, 0x48018, 0x418E418D, 0x288018, (s32)0x8004418F, 7 };
+s32 D_8009C088[4] = { (s32)(u8 *)&func_8008FF94 + 0x6C, (s32)0x8007003F, 0x4190000B, 0x8004 };
+s32 D_8009C098[3] = { (s32)(u8 *)&D_800A0000 + 0xF, 0x20020040, 0x8004 };
+s32 D_8009C0A4[7] = { (s32)0x80070000, 0x4080000E, 0x88003, (s32)0x8018408E, (s32)0x80070002, 0x408F0005, 0x8004 };
+s32 D_8009C0C0[12] = {
+    (s32)0x80070000, 0x44800031, 0x448F4490, 0x448D448E, 0x448B448C, 0x4489448A, 0x44874488,
+    0x44854486, 0x44834484, 0x44814482, (s32)0x80004480, 0,
+};
+s32 D_8009C0F0[3] = { (s32)0x80070000, 0x45000064, 0x8000 };
+s32 D_8009C0FC[108] = {
+    (s32)&D_8009BFE8, (s32)&D_8009BFF0, (s32)&D_8009BFFC, (s32)&D_8009C030, (s32)&D_8009C038,
+    (s32)&D_8009C040, (s32)&D_8009C060, (s32)&D_8009C070, (s32)&D_8009C088, (s32)&D_8009C0A4,
+    (s32)&D_8009C098, (s32)&D_8009BE2C, (s32)&D_8009C0C0, (s32)&D_8009C0F0,
+    (s32)&COC_BA_seq_slide, (s32)&COC_BA_seq_pickup, (s32)&COC_BA_seq_hold,
+    (s32)&COC_BA_seq_hold_slow, (s32)&COC_BA_seq_hold_throw, (s32)&COC_BA_seq_die,
+    (s32)&COC_PA_seq_pickup, (s32)&COC_PA_seq_hold, (s32)&COC_PA_seq_hold_slow,
+    (s32)&COC_PA_seq_hold_throw, (s32)&COC_PA_seq_die, (s32)&COC_seq_arkbreathe,
+    (s32)&COC_seq_arkmove, (s32)&COC_seq_arkidle, (s32)&COC_seq_arktaunt,
+    (s32)&COC_seq_arkkick, (s32)&COC_seq_arkwin, (s32)&COC_seq_arkvictory,
+    (s32)&COC_seq_arklose, (s32)&COC_seq_n2obreathe, (s32)&COC_seq_n2omove,
+    (s32)&COC_seq_n2oidle, (s32)&COC_seq_n2otaunt, (s32)&COC_seq_n2okick, (s32)&COC_seq_n2ohit,
+    (s32)&COC_seq_n2owin, (s32)&COC_seq_n2ovictory, (s32)&COC_seq_n2olose,
+    (s32)&COC_seq_n2ofly, (s32)&COC_seq_long_hit, (s32)&COC_seq_flip_jump,
+    (s32)&COC_SP_seq_die, (s32)&COC_seq_pogo_idle, (s32)&COC_seq_pogo_quick_idle,
+    (s32)&COC_seq_pogo_tazing, (s32)&COC_seq_pogo_dazed, (s32)&COC_seq_pogo_winner,
+    (s32)&COC_seq_bonk_idle, (s32)&COC_seq_bonk_run, (s32)&COC_seq_bonk_backswing,
+    (s32)&COC_seq_bonk_extended_backswing, (s32)&COC_seq_bonk_swing, (s32)&COC_seq_bonk_hit,
+    (s32)&COC_seq_bonk_winner, (s32)&COC_seq_polaridle, (s32)&COC_seq_polarrun,
+    (s32)&COC_seq_polardazed, (s32)&COC_seq_polarfall, (s32)&COC_seq_polarattack,
+    (s32)&COC_seq_polarhit, (s32)&COC_seq_polardead, (s32)&COC_seq_polartaunt,
+    (s32)&COC_seq_breathe_ft, (s32)&COC_seq_skate_ft, (s32)&COC_seq_lightbear,
+    (s32)&COC_seq_skate_attack, (s32)&COC_seq_polarwin, (s32)&COC_seq_win_ft,
+    (s32)&COC_seq_raceidle, (s32)&COC_seq_racerun, (s32)&COC_seq_racehit,
+    (s32)&COC_seq_racefall, (s32)&COC_seq_racewin, (s32)&COC_seq_dinoidle,
+    (s32)&COC_seq_dinorun, (s32)&COC_seq_dinoshoot, (s32)&COC_seq_dinoslide,
+    (s32)&COC_seq_dinodazed, (s32)&COC_seq_raceswimidle, (s32)&COC_seq_raceswimrun,
+    (s32)&COC_seq_raceswimfall, (s32)&COC_seq_raceswimwin, (s32)&COC_seq_dinowin,
+    (s32)&COC_seq_tankrecoil, (s32)&COC_seq_tankdie, (s32)&COC_seq_tankidle,
+    (s32)&COC_seq_tankidle1, (s32)&COC_seq_tankminelay, (s32)&COC_seq_tankvictory,
+    (s32)&COC_seq_tankfire1, (s32)&COC_seq_tankfire2, (s32)&COC_seq_tankfire3,
+    (s32)&COC_seq_kegnone, (s32)&COC_seq_kegbreathe, (s32)&COC_seq_kegidle_a,
+    (s32)&COC_seq_kegidle_b, (s32)&COC_seq_kegmedium, (s32)&COC_seq_kegjump,
+    (s32)&COC_seq_kegfall, (s32)&COC_seq_kegland, (s32)&COC_seq_keghit,
+    (s32)&CHASE_seq_kegdead, (s32)&COC_seq_kegwin, (s32)&COC_seq_kegvictory,
+};
+s32 D_8009C2AC[2] = { 2, 0x8000 };
+s32 D_8009C2B4[3] = { (s32)0x80070000, 0x40800020, 0x8000 };
+s32 D_8009C2C0[4] = { (s32)&D_800A0000, (s32)0x80070066, 0x45000028, 0x8004 };
+s32 D_8009C2D0[2] = { (s32)0x80050000, 1 };
+s32 D_8009C2D8[2] = { (s32)0x80050000, 1 };
+s32 D_8009C2E0[7] = { 0x41150000, 0x88003, 0xB8007, (s32)&D_80034100, (s32)0x80070009, 0x410B000A, 0x8000 };
+s32 D_8009C2FC[6] = { (s32)&D_800A0000, (s32)&D_80070070, 0x41800007, 0x288018, (s32)0x80044187, 5 };
+s32 D_8009C314[9] = {
+    0x41870000, 0x41894188, 0x28018, 0x418B418A, 0x288018, 0x418C418C, 0x418C418C,
+    (s32)&D_8004418C, 7,
+};
+s32 D_8009C338[4] = { (s32)(u8 *)&func_8008FF94 + 0x6C, (s32)0x80070071, 0x418D0006, 0x8004 };
+s32 D_8009C348[4] = { (s32)&D_800A0000, (s32)0x80070072, 0x42000013, 0x8004 };
+s32 D_8009C358[11] = {
+    (s32)0x80070000, 0x4000000D, 0x98003, 0x410E410D, 0x4110410F, 0x41124111, 0x88003, 0x78007,
+    (s32)0x80184013, 0x40190003, 0x8004,
+};
+s32 D_8009C384[3] = { (s32)0x80070000, 0x45000028, 0x8000 };
+s32 D_8009C390[5] = { (s32)0x80070000, 0x4480000B, 0x168007, (s32)0x8000448A, 3 };
+s32 D_8009C3A4[108] = {
+    (s32)&D_8009C2AC, (s32)&D_8009C2B4, (s32)&D_8009C2C0, (s32)&D_8009C2D0, (s32)&D_8009C2D8,
+    (s32)&D_8009C2E0, (s32)&D_8009C2FC, (s32)&D_8009C314, (s32)&D_8009C338, (s32)&D_8009C358,
+    (s32)&D_8009C348, (s32)&D_8009BE2C, (s32)&D_8009C384, (s32)&D_8009C390,
+    (s32)&CTX_BA_seq_slide, (s32)&CTX_BA_seq_pickup, (s32)&CTX_BA_seq_hold,
+    (s32)&CTX_BA_seq_hold_slow, (s32)&CTX_BA_seq_hold_throw, (s32)&CTX_BA_seq_die,
+    (s32)&CTX_PA_seq_pickup, (s32)&CTX_PA_seq_hold, (s32)&CTX_PA_seq_hold_slow,
+    (s32)&CTX_PA_seq_hold_throw, (s32)&CTX_PA_seq_die, (s32)&CTX_seq_arkbreathe,
+    (s32)&CTX_seq_arkmove, (s32)&CTX_seq_arkidle, (s32)&CTX_seq_arktaunt,
+    (s32)&CTX_seq_arkkick, (s32)&CTX_seq_arkwin, (s32)&CTX_seq_arkvictory,
+    (s32)&CTX_seq_arklose, (s32)&CTX_seq_n2obreathe, (s32)&CTX_seq_n2omove,
+    (s32)&CTX_seq_n2oidle, (s32)&CTX_seq_n2otaunt, (s32)&CTX_seq_n2okick, (s32)&CTX_seq_n2ohit,
+    (s32)&CTX_seq_n2owin, (s32)&CTX_seq_n2ovictory, (s32)&CTX_seq_n2olose,
+    (s32)&CTX_seq_n2ofly, (s32)&CTX_seq_long_hit, (s32)&CTX_seq_flip_jump,
+    (s32)&CTX_SP_seq_die, (s32)&CTX_seq_pogo_idle, (s32)&CTX_seq_pogo_quick_idle,
+    (s32)&CTX_seq_pogo_tazing, (s32)&CTX_seq_pogo_dazed, (s32)&CTX_seq_pogo_winner,
+    (s32)&CTX_seq_bonk_idle, (s32)&CTX_seq_bonk_run, (s32)&CTX_seq_bonk_backswing,
+    (s32)&CTX_seq_bonk_extended_backswing, (s32)&CTX_seq_bonk_swing, (s32)&CTX_seq_bonk_hit,
+    (s32)&CTX_seq_bonk_winner, (s32)&CTX_seq_polaridle, (s32)&CTX_seq_polarrun,
+    (s32)&CTX_seq_polardazed, (s32)&CTX_seq_polarfall, (s32)&CTX_seq_polarattack,
+    (s32)&CTX_seq_polarhit, (s32)&CTX_seq_polardead, (s32)&CTX_seq_polartaunt,
+    (s32)&CTX_seq_breathe_ft, (s32)&CTX_seq_skate_ft, (s32)&CTX_seq_lightbear,
+    (s32)&CTX_seq_skate_attack, (s32)&CTX_seq_polarwin, (s32)&CTX_seq_win_ft,
+    (s32)&CTX_seq_raceidle, (s32)&CTX_seq_racerun, (s32)&CTX_seq_racehit,
+    (s32)&CTX_seq_racefall, (s32)&CTX_seq_racewin, (s32)&CTX_seq_dinoidle,
+    (s32)&CTX_seq_dinorun, (s32)&CTX_seq_dinoshoot, (s32)&CTX_seq_dinoslide,
+    (s32)&CTX_seq_dinodazed, (s32)&CTX_seq_raceswimidle, (s32)&CTX_seq_raceswimrun,
+    (s32)&CTX_seq_raceswimfall, (s32)&CTX_seq_raceswimwin, (s32)&CTX_seq_dinowin,
+    (s32)&CTX_seq_tankrecoil, (s32)&CTX_seq_tankdie, (s32)&CTX_seq_tankidle,
+    (s32)&CTX_seq_tankidle1, (s32)&CTX_seq_tankminelay, (s32)&CTX_seq_tankvictory,
+    (s32)&CTX_seq_tankfire1, (s32)&CTX_seq_tankfire2, (s32)&CTX_seq_tankfire3,
+    (s32)&CTX_seq_kegnone, (s32)&CTX_seq_kegbreathe, (s32)&CTX_seq_kegidle_a,
+    (s32)&CTX_seq_kegidle_b, (s32)&CTX_seq_kegmedium, (s32)&CTX_seq_kegjump,
+    (s32)&CTX_seq_kegfall, (s32)&CTX_seq_kegland, (s32)&CTX_seq_keghit,
+    (s32)&CHASE_seq_kegdead, (s32)&CTX_seq_kegwin, (s32)&CTX_seq_kegvictory,
+};
+s32 D_8009C554[2] = { 2, 0x8000 };
+s32 D_8009C55C[3] = { (s32)0x80070000, 0x40000020, 0x8000 };
+s32 D_8009C568[4] = { (s32)&D_800A0000, (s32)&D_80070098, 0x46000028, 0x8004 };
+s32 D_8009C578[2] = { (s32)0x80050000, 1 };
+s32 D_8009C580[2] = { (s32)0x80050000, 1 };
+s32 D_8009C588[7] = { 0x40950000, 0x88003, 0xB8007, (s32)&D_80034080, (s32)0x80070009, 0x408B000A, 0x8000 };
+s32 D_8009C5A4[6] = { (s32)&D_800A0000, (s32)0x800700A2, 0x41800007, 0x288018, (s32)0x80044183, 5 };
+s32 D_8009C5BC[9] = {
+    0x41840000, 0x41864185, 0x28018, 0x41884187, 0x288018, 0x41894189, 0x41894189,
+    (s32)0x80044189, 7,
+};
+s32 D_8009C5E0[4] = { (s32)(u8 *)&func_8008FF94 + 0x6C, (s32)0x800700A3, 0x418A0004, 0x8004 };
+s32 D_8009C5F0[4] = { (s32)&D_800A0000, (s32)&D_800700A4, 0x4480000D, 0x8004 };
+s32 D_8009C600[9] = {
+    (s32)0x80070000, 0x4100000D, 0x98003, 0x410E410D, 0x88003, 0x58007, (s32)0x8018410F,
+    0x41130009, 0x8004,
+};
+s32 D_8009C624[3] = { (s32)0x80070000, 0x46000028, 0x8000 };
+s32 D_8009C630[3] = { (s32)0x80070000, 0x45800018, 0x8000 };
+s32 D_8009C63C[108] = {
+    (s32)&D_8009C554, (s32)&D_8009C55C, (s32)&D_8009C568, (s32)&D_8009C578, (s32)&D_8009C580,
+    (s32)&D_8009C588, (s32)&D_8009C5A4, (s32)&D_8009C5BC, (s32)&D_8009C5E0, (s32)&D_8009C600,
+    (s32)&D_8009C5F0, (s32)&D_8009BE2C, (s32)&D_8009C624, (s32)&D_8009C630,
+    (s32)&BRO_BA_seq_slide, (s32)&BRO_BA_seq_pickup, (s32)&BRO_BA_seq_hold,
+    (s32)&BRO_BA_seq_hold_slow, (s32)&BRO_BA_seq_hold_throw, (s32)&BRO_BA_seq_die,
+    (s32)&BRO_PA_seq_pickup, (s32)&BRO_PA_seq_hold, (s32)&BRO_PA_seq_hold_slow,
+    (s32)&BRO_PA_seq_hold_throw, (s32)&BRO_PA_seq_die, (s32)&BRO_seq_arkbreathe,
+    (s32)&BRO_seq_arkmove, (s32)&BRO_seq_arkidle, (s32)&BRO_seq_arktaunt,
+    (s32)&BRO_seq_arkkick, (s32)&BRO_seq_arkwin, (s32)&BRO_seq_arkvictory,
+    (s32)&BRO_seq_arklose, (s32)&BRO_seq_n2obreathe, (s32)&BRO_seq_n2omove,
+    (s32)&BRO_seq_n2oidle, (s32)&BRO_seq_n2otaunt, (s32)&BRO_seq_n2okick, (s32)&BRO_seq_n2ohit,
+    (s32)&BRO_seq_n2owin, (s32)&BRO_seq_n2ovictory, (s32)&BRO_seq_n2olose,
+    (s32)&BRO_seq_n2ofly, (s32)&BRO_seq_long_hit, (s32)&BRO_seq_flip_jump,
+    (s32)&BRO_SP_seq_die, (s32)&BRO_seq_pogo_idle, (s32)&BRO_seq_pogo_quick_idle,
+    (s32)&BRO_seq_pogo_tazing, (s32)&BRO_seq_pogo_dazed, (s32)&BRO_seq_pogo_winner,
+    (s32)&BRO_seq_bonk_idle, (s32)&BRO_seq_bonk_run, (s32)&BRO_seq_bonk_backswing,
+    (s32)&BRO_seq_bonk_extended_backswing, (s32)&BRO_seq_bonk_swing, (s32)&BRO_seq_bonk_hit,
+    (s32)&BRO_seq_bonk_winner, (s32)&BRO_seq_polaridle, (s32)&BRO_seq_polarrun,
+    (s32)&BRO_seq_polardazed, (s32)&BRO_seq_polarfall, (s32)&BRO_seq_polarattack,
+    (s32)&BRO_seq_polarhit, (s32)&BRO_seq_polardead, (s32)&BRO_seq_polartaunt,
+    (s32)&BRO_seq_breathe_ft, (s32)&BRO_seq_skate_ft, (s32)&BRO_seq_lightbear,
+    (s32)&BRO_seq_skate_attack, (s32)&BRO_seq_polarwin, (s32)&BRO_seq_win_ft,
+    (s32)&BRO_seq_raceidle, (s32)&BRO_seq_racerun, (s32)&BRO_seq_racehit,
+    (s32)&BRO_seq_racefall, (s32)&BRO_seq_racewin, (s32)&BRO_seq_dinoidle,
+    (s32)&BRO_seq_dinorun, (s32)&BRO_seq_dinoshoot, (s32)&BRO_seq_dinoslide,
+    (s32)&BRO_seq_dinodazed, (s32)&BRO_seq_raceswimidle, (s32)&BRO_seq_raceswimrun,
+    (s32)&BRO_seq_raceswimfall, (s32)&BRO_seq_raceswimwin, (s32)&BRO_seq_dinowin,
+    (s32)&BRO_seq_tankrecoil, (s32)&BRO_seq_tankdie, (s32)&BRO_seq_tankidle,
+    (s32)&BRO_seq_tankidle1, (s32)&BRO_seq_tankminelay, (s32)&BRO_seq_tankvictory,
+    (s32)&BRO_seq_tankfire1, (s32)&BRO_seq_tankfire2, (s32)&BRO_seq_tankfire3,
+    (s32)&BRO_seq_kegnone, (s32)&BRO_seq_kegbreathe, (s32)&BRO_seq_kegidle_a,
+    (s32)&BRO_seq_kegidle_b, (s32)&BRO_seq_kegmedium, (s32)&BRO_seq_kegjump,
+    (s32)&BRO_seq_kegfall, (s32)&BRO_seq_kegland, (s32)&BRO_seq_keghit,
+    (s32)&CHASE_seq_kegdead, (s32)&BRO_seq_kegwin, (s32)&BRO_seq_kegvictory,
+};
+s32 D_8009C7EC[2] = { 2, 0x8000 };
+s32 D_8009C7F4[3] = { (s32)0x80070000, 0x40000020, 0x8000 };
+s32 D_8009C800[7] = { (s32)&D_800A0000, (s32)0x8007012E, 0x4580002A, 0x45834584, 0x45814582, (s32)&D_80044580, 0 };
+s32 D_8009C81C[2] = { (s32)0x80050000, 1 };
+s32 D_8009C824[2] = { (s32)0x80050000, 1 };
+s32 D_8009C82C[7] = { 0x41130000, 0x88003, 0xA8007, (s32)&D_80034100, (s32)0x80070009, 0x410A0009, 0x8000 };
+s32 D_8009C848[6] = { (s32)&D_800A0000, (s32)&D_80070138, 0x41800007, 0x288018, (s32)0x80044187, 5 };
+s32 D_8009C860[9] = {
+    0x41880002, 0x418A4189, 0x418C418B, 0x48018, 0x418E418D, (s32)0x8018418F, 0x41900028,
+    (s32)&D_80044190, 7,
+};
+s32 D_8009C884[4] = { (s32)(u8 *)&func_8008FF94 + 0x6C, (s32)0x80070139, 0x4191000B, 0x8004 };
+s32 D_8009C894[4] = { (s32)&D_800A0000, (s32)0x8007013A, 0x4200000C, 0x8004 };
+s32 D_8009C8A4[6] = { (s32)0x80070000, 0x40800013, 0x88003, 0xB8007, (s32)0x80044093, 0 };
+s32 D_8009C8BC[6] = { (s32)0x80070000, 0x4580002A, 0x45834584, 0x45814582, (s32)0x80004580, 0 };
+s32 D_8009C8D4[5] = { (s32)0x80070000, 0x45000022, 0x2C8007, (s32)0x80004522, 3 };
+s32 D_8009C8E8[108] = {
+    (s32)&D_8009C7EC, (s32)&D_8009C7F4, (s32)&D_8009C800, (s32)&D_8009C81C, (s32)&D_8009C824,
+    (s32)&D_8009C82C, (s32)&D_8009C848, (s32)&D_8009C860, (s32)&D_8009C884, (s32)&D_8009C8A4,
+    (s32)&D_8009C894, (s32)&D_8009BE2C, (s32)&D_8009C8BC, (s32)&D_8009C8D4,
+    (s32)&TIN_BA_seq_slide, (s32)&TIN_BA_seq_pickup, (s32)&TIN_BA_seq_hold,
+    (s32)&TIN_BA_seq_hold_slow, (s32)&TIN_BA_seq_hold_throw, (s32)&TIN_BA_seq_die,
+    (s32)&TIN_PA_seq_pickup, (s32)&TIN_PA_seq_hold, (s32)&TIN_PA_seq_hold_slow,
+    (s32)&TIN_PA_seq_hold_throw, (s32)&TIN_PA_seq_die, (s32)&TIN_seq_arkbreathe,
+    (s32)&TIN_seq_arkmove, (s32)&TIN_seq_arkidle, (s32)&TIN_seq_arktaunt,
+    (s32)&TIN_seq_arkkick, (s32)&TIN_seq_arkwin, (s32)&TIN_seq_arkvictory,
+    (s32)&TIN_seq_arklose, (s32)&TIN_seq_n2obreathe, (s32)&TIN_seq_n2omove,
+    (s32)&TIN_seq_n2oidle, (s32)&TIN_seq_n2otaunt, (s32)&TIN_seq_n2okick, (s32)&TIN_seq_n2ohit,
+    (s32)&TIN_seq_n2owin, (s32)&TIN_seq_n2ovictory, (s32)&TIN_seq_n2olose,
+    (s32)&TIN_seq_n2ofly, (s32)&TIN_seq_long_hit, (s32)&TIN_seq_flip_jump,
+    (s32)&TIN_SP_seq_die, (s32)&TIN_seq_pogo_idle, (s32)&TIN_seq_pogo_quick_idle,
+    (s32)&TIN_seq_pogo_tazing, (s32)&TIN_seq_pogo_dazed, (s32)&TIN_seq_pogo_winner,
+    (s32)&TIN_seq_bonk_idle, (s32)&TIN_seq_bonk_run, (s32)&TIN_seq_bonk_backswing,
+    (s32)&TIN_seq_bonk_extended_backswing, (s32)&TIN_seq_bonk_swing, (s32)&TIN_seq_bonk_hit,
+    (s32)&TIN_seq_bonk_winner, (s32)&TIN_seq_polaridle, (s32)&TIN_seq_polarrun,
+    (s32)&TIN_seq_polardazed, (s32)&TIN_seq_polarfall, (s32)&TIN_seq_polarattack,
+    (s32)&TIN_seq_polarhit, (s32)&TIN_seq_polardead, (s32)&TIN_seq_polartaunt,
+    (s32)&TIN_seq_breathe_ft, (s32)&TIN_seq_skate_ft, (s32)&TIN_seq_lightbear,
+    (s32)&TIN_seq_skate_attack, (s32)&TIN_seq_polarwin, (s32)&TIN_seq_win_ft,
+    (s32)&TIN_seq_raceidle, (s32)&TIN_seq_racerun, (s32)&TIN_seq_racehit,
+    (s32)&TIN_seq_racefall, (s32)&TIN_seq_racewin, (s32)&TIN_seq_dinoidle,
+    (s32)&TIN_seq_dinorun, (s32)&TIN_seq_dinoshoot, (s32)&TIN_seq_dinoslide,
+    (s32)&TIN_seq_dinodazed, (s32)&TIN_seq_raceswimidle, (s32)&TIN_seq_raceswimrun,
+    (s32)&TIN_seq_raceswimfall, (s32)&TIN_seq_raceswimwin, (s32)&TIN_seq_dinowin,
+    (s32)&TIN_seq_tankrecoil, (s32)&TIN_seq_tankdie, (s32)&TIN_seq_tankidle,
+    (s32)&TIN_seq_tankidle1, (s32)&TIN_seq_tankminelay, (s32)&TIN_seq_tankvictory,
+    (s32)&TIN_seq_tankfire1, (s32)&TIN_seq_tankfire2, (s32)&TIN_seq_tankfire3,
+    (s32)&TIN_seq_kegnone, (s32)&TIN_seq_kegbreathe, (s32)&TIN_seq_kegidle_a,
+    (s32)&TIN_seq_kegidle_b, (s32)&TIN_seq_kegmedium, (s32)&TIN_seq_kegjump,
+    (s32)&TIN_seq_kegfall, (s32)&TIN_seq_kegland, (s32)&TIN_seq_keghit,
+    (s32)&CHASE_seq_kegdead, (s32)&TIN_seq_kegwin, (s32)&TIN_seq_kegvictory,
+};
+s32 D_8009CA98[2] = { 2, 0x8000 };
+s32 D_8009CAA0[3] = { (s32)0x80070000, 0x40800020, 0x8000 };
+s32 D_8009CAAC[10] = {
+    (s32)&D_800A0000, (s32)&D_80070160, 0x46000030, 0x460A460B, 0x46084609, 0x46064607,
+    0x46044605, 0x46024603, 0x46004601, 0x8004,
+};
+s32 D_8009CAD4[3] = { (s32)0x80070000, 0x40800020, 0x18005 };
+s32 D_8009CAE0[3] = { (s32)0x80070000, 0x40800020, 0x38005 };
+s32 D_8009CAEC[7] = { 0x40130000, 0x88003, 0xA8007, (s32)&D_80034000, (s32)0x80070009, 0x40090009, 0x8000 };
+s32 D_8009CB08[6] = { (s32)&D_800A0000, (s32)0x8007016A, 0x42810007, 0x288018, (s32)&D_80044288, 5 };
+s32 D_8009CB20[9] = {
+    0x42890002, 0x428B428A, 0x428D428C, 0x48018, 0x428F428E, (s32)0x80184290, 0x42910028,
+    (s32)0x80044291, 7,
+};
+s32 D_8009CB44[4] = { (s32)(u8 *)&func_8008FF94 + 0x6C, (s32)0x8007016B, 0x42920009, 0x8004 };
+s32 D_8009CB54[4] = { (s32)&D_800A0000, (s32)&D_8007016C, 0x41000010, 0x8004 };
+s32 D_8009CB64[6] = { (s32)0x80070000, 0x41800013, 0x88003, 0xA8007, (s32)0x80044193, 0 };
+s32 D_8009CB7C[9] = {
+    (s32)0x80070000, 0x46000030, 0x460A460B, 0x46084609, 0x46064607, 0x46044605, 0x46024603,
+    0x46004601, 0x8000,
+};
+s32 D_8009CBA0[5] = { (s32)0x80070000, 0x45800021, 0x2E8007, (s32)0x800045A1, 3 };
+s32 D_8009CBB4[108] = {
+    (s32)&D_8009CA98, (s32)&D_8009CAA0, (s32)&D_8009CAAC, (s32)&D_8009CAD4, (s32)&D_8009CAE0,
+    (s32)&D_8009CAEC, (s32)&D_8009CB08, (s32)&D_8009CB20, (s32)&D_8009CB44, (s32)&D_8009CB64,
+    (s32)&D_8009CB54, (s32)&D_8009BE2C, (s32)&D_8009CB7C, (s32)&D_8009CBA0,
+    (s32)&KON_BA_seq_slide, (s32)&KON_BA_seq_pickup, (s32)&KON_BA_seq_hold,
+    (s32)&KON_BA_seq_hold_slow, (s32)&KON_BA_seq_hold_throw, (s32)&KON_BA_seq_die,
+    (s32)&KON_PA_seq_pickup, (s32)&KON_PA_seq_hold, (s32)&KON_PA_seq_hold_slow,
+    (s32)&KON_PA_seq_hold_throw, (s32)&KON_PA_seq_die, (s32)&KON_seq_arkbreathe,
+    (s32)&KON_seq_arkmove, (s32)&KON_seq_arkidle, (s32)&KON_seq_arktaunt,
+    (s32)&KON_seq_arkkick, (s32)&KON_seq_arkwin, (s32)&KON_seq_arkvictory,
+    (s32)&KON_seq_arklose, (s32)&KON_seq_n2obreathe, (s32)&KON_seq_n2omove,
+    (s32)&KON_seq_n2oidle, (s32)&KON_seq_n2otaunt, (s32)&KON_seq_n2okick, (s32)&KON_seq_n2ohit,
+    (s32)&KON_seq_n2owin, (s32)&KON_seq_n2ovictory, (s32)&KON_seq_n2olose,
+    (s32)&KON_seq_n2ofly, (s32)&KON_seq_long_hit, (s32)&KON_seq_flip_jump,
+    (s32)&KON_SP_seq_die, (s32)&KON_seq_pogo_idle, (s32)&KON_seq_pogo_quick_idle,
+    (s32)&KON_seq_pogo_tazing, (s32)&KON_seq_pogo_dazed, (s32)&KON_seq_pogo_winner,
+    (s32)&KON_seq_bonk_idle, (s32)&KON_seq_bonk_run, (s32)&KON_seq_bonk_backswing,
+    (s32)&KON_seq_bonk_extended_backswing, (s32)&KON_seq_bonk_swing, (s32)&KON_seq_bonk_hit,
+    (s32)&KON_seq_bonk_winner, (s32)&KON_seq_polaridle, (s32)&KON_seq_polarrun,
+    (s32)&KON_seq_polardazed, (s32)&KON_seq_polarfall, (s32)&KON_seq_polarattack,
+    (s32)&KON_seq_polarhit, (s32)&KON_seq_polardead, (s32)&KON_seq_polartaunt,
+    (s32)&KON_seq_breathe_ft, (s32)&KON_seq_skate_ft, (s32)&KON_seq_lightbear,
+    (s32)&KON_seq_skate_attack, (s32)&KON_seq_polarwin, (s32)&KON_seq_win_ft,
+    (s32)&KON_seq_raceidle, (s32)&KON_seq_racerun, (s32)&KON_seq_racehit,
+    (s32)&KON_seq_racefall, (s32)&KON_seq_racewin, (s32)&KON_seq_dinoidle,
+    (s32)&KON_seq_dinorun, (s32)&KON_seq_dinoshoot, (s32)&KON_seq_dinoslide,
+    (s32)&KON_seq_dinodazed, (s32)&KON_seq_raceswimidle, (s32)&KON_seq_raceswimrun,
+    (s32)&KON_seq_raceswimfall, (s32)&KON_seq_raceswimwin, (s32)&KON_seq_dinowin,
+    (s32)&KON_seq_tankrecoil, (s32)&KON_seq_tankdie, (s32)&KON_seq_tankidle,
+    (s32)&KON_seq_tankidle1, (s32)&KON_seq_tankminelay, (s32)&KON_seq_tankvictory,
+    (s32)&KON_seq_tankfire1, (s32)&KON_seq_tankfire2, (s32)&KON_seq_tankfire3,
+    (s32)&KON_seq_kegnone, (s32)&KON_seq_kegbreathe, (s32)&KON_seq_kegidle_a,
+    (s32)&KON_seq_kegidle_b, (s32)&KON_seq_kegmedium, (s32)&KON_seq_kegjump,
+    (s32)&KON_seq_kegfall, (s32)&KON_seq_kegland, (s32)&KON_seq_keghit,
+    (s32)&CHASE_seq_kegdead, (s32)&KON_seq_kegwin, (s32)&KON_seq_kegvictory,
+};
+s32 D_8009CD64[2] = { 2, 0x8000 };
+s32 D_8009CD6C[3] = { (s32)0x80070000, 0x40000016, 0x8000 };
+s32 D_8009CD78[4] = { (s32)&D_800A0000, (s32)&D_800700FC, 0x46000028, 0x8004 };
+s32 D_8009CD88[3] = { (s32)0x80070000, 0x4000000E, 0x18005 };
+s32 D_8009CD94[3] = { (s32)0x80070000, 0x4000000C, 0x38005 };
+s32 D_8009CDA0[8] = {
+    (s32)0x80070000, 0x40800004, 0x88003, 0x98007, (s32)&D_80034084, (s32)0x80070009,
+    0x408D0005, 0x8000,
+};
+s32 D_8009CDC0[6] = { (s32)&D_800A0000, (s32)0x80070106, 0x41000008, 0x288018, (s32)0x80044107, 5 };
+s32 D_8009CDD8[6] = { 0x41080002, 0x48018, 0x410A4109, 0x288018, (s32)0x8004410B, 7 };
+s32 D_8009CDF0[4] = { (s32)(u8 *)&func_8008FF94 + 0x6C, (s32)0x80070107, 0x410C000F, 0x8004 };
+s32 D_8009CE00[4] = { (s32)&D_800A0000, (s32)&D_80070108, 0x4180000E, 0x78004 };
+s32 D_8009CE10[6] = { (s32)0x80070000, 0x4200000B, 0x88003, 0x138007, (s32)0x8004420B, 0 };
+s32 D_8009CE28[3] = { (s32)0x80070000, 0x46000028, 0x8000 };
+s32 D_8009CE34[3] = { (s32)0x80070000, 0x4580004C, 0x8000 };
+s32 D_8009CE40[108] = {
+    (s32)&D_8009CD64, (s32)&D_8009CD6C, (s32)&D_8009CD78, (s32)&D_8009CD88, (s32)&D_8009CD94,
+    (s32)&D_8009CDA0, (s32)&D_8009CDC0, (s32)&D_8009CDD8, (s32)&D_8009CDF0, (s32)&D_8009CE10,
+    (s32)&D_8009CE00, (s32)&D_8009BE2C, (s32)&D_8009CE28, (s32)&D_8009CE34,
+    (s32)&DNG_BA_seq_slide, (s32)&DNG_BA_seq_pickup, (s32)&DNG_BA_seq_hold,
+    (s32)&DNG_BA_seq_hold_slow, (s32)&DNG_BA_seq_hold_throw, (s32)&DNG_BA_seq_die,
+    (s32)&DNG_PA_seq_pickup, (s32)&DNG_PA_seq_hold, (s32)&DNG_PA_seq_hold_slow,
+    (s32)&DNG_PA_seq_hold_throw, (s32)&DNG_PA_seq_die, (s32)&DNG_seq_arkbreathe,
+    (s32)&DNG_seq_arkmove, (s32)&DNG_seq_arkidle, (s32)&DNG_seq_arktaunt,
+    (s32)&DNG_seq_arkkick, (s32)&DNG_seq_arkwin, (s32)&DNG_seq_arkvictory,
+    (s32)&DNG_seq_arklose, (s32)&DNG_seq_n2obreathe, (s32)&DNG_seq_n2omove,
+    (s32)&DNG_seq_n2oidle, (s32)&DNG_seq_n2otaunt, (s32)&DNG_seq_n2okick, (s32)&DNG_seq_n2ohit,
+    (s32)&DNG_seq_n2owin, (s32)&DNG_seq_n2ovictory, (s32)&DNG_seq_n2olose,
+    (s32)&DNG_seq_n2ofly, (s32)&DNG_seq_long_hit, (s32)&DNG_seq_flip_jump,
+    (s32)&DNG_SP_seq_die, (s32)&DNG_seq_pogo_idle, (s32)&DNG_seq_pogo_quick_idle,
+    (s32)&DNG_seq_pogo_tazing, (s32)&DNG_seq_pogo_dazed, (s32)&DNG_seq_pogo_winner,
+    (s32)&DNG_seq_bonk_idle, (s32)&DNG_seq_bonk_run, (s32)&DNG_seq_bonk_backswing,
+    (s32)&DNG_seq_bonk_extended_backswing, (s32)&DNG_seq_bonk_swing, (s32)&DNG_seq_bonk_hit,
+    (s32)&DNG_seq_bonk_winner, (s32)&DNG_seq_polaridle, (s32)&DNG_seq_polarrun,
+    (s32)&DNG_seq_polardazed, (s32)&DNG_seq_polarfall, (s32)&DNG_seq_polarattack,
+    (s32)&DNG_seq_polarhit, (s32)&DNG_seq_polardead, (s32)&DNG_seq_polartaunt,
+    (s32)&DNG_seq_breathe_ft, (s32)&DNG_seq_skate_ft, (s32)&DNG_seq_lightbear,
+    (s32)&DNG_seq_skate_attack, (s32)&DNG_seq_polarwin, (s32)&DNG_seq_win_ft,
+    (s32)&DNG_seq_raceidle, (s32)&DNG_seq_racerun, (s32)&DNG_seq_racehit,
+    (s32)&DNG_seq_racefall, (s32)&DNG_seq_racewin, (s32)&DNG_seq_dinoidle,
+    (s32)&DNG_seq_dinorun, (s32)&DNG_seq_dinoshoot, (s32)&DNG_seq_dinoslide,
+    (s32)&DNG_seq_dinodazed, (s32)&DNG_seq_raceswimidle, (s32)&DNG_seq_raceswimrun,
+    (s32)&DNG_seq_raceswimfall, (s32)&DNG_seq_raceswimwin, (s32)&DNG_seq_dinowin,
+    (s32)&DNG_seq_tankrecoil, (s32)&DNG_seq_tankdie, (s32)&DNG_seq_tankidle,
+    (s32)&DNG_seq_tankidle1, (s32)&DNG_seq_tankminelay, (s32)&DNG_seq_tankvictory,
+    (s32)&DNG_seq_tankfire1, (s32)&DNG_seq_tankfire2, (s32)&DNG_seq_tankfire3,
+    (s32)&DNG_seq_kegnone, (s32)&DNG_seq_kegbreathe, (s32)&DNG_seq_kegidle_a,
+    (s32)&DNG_seq_kegidle_b, (s32)&DNG_seq_kegmedium, (s32)&DNG_seq_kegjump,
+    (s32)&DNG_seq_kegfall, (s32)&DNG_seq_kegland, (s32)&DNG_seq_keghit,
+    (s32)&CHASE_seq_kegdead, (s32)&DNG_seq_kegwin, (s32)&DNG_seq_kegvictory,
+};
+s32 D_8009CFF0[2] = { 2, 0x8000 };
+s32 D_8009CFF8[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
+s32 D_8009D004[7] = { (s32)&D_800A0000, (s32)0x800700CA, 0x4580000D, 0xD8007, (s32)&D_80074580, 0x4580000D, 0x8004 };
+s32 D_8009D020[3] = { (s32)0x80070000, 0x40000014, 0x18005 };
+s32 D_8009D02C[3] = { (s32)0x80070000, 0x40000014, 0x38005 };
+s32 D_8009D038[9] = {
+    0x40860000, 0x88003, 0xA8007, (s32)0x80034087, 0x40910009, 0x40934092, 0x68007,
+    (s32)0x80004080, 0,
+};
+s32 D_8009D05C[6] = { (s32)&D_800A0000, (s32)&D_800700D4, 0x41030009, 0x288018, (s32)&D_8004410C, 5 };
+s32 D_8009D074[5] = { 0x410D0001, 0x410F410E, 0x288018, (s32)&D_80044110, 7 };
+s32 D_8009D088[4] = { (s32)(u8 *)&func_8008FF94 + 0x6C, (s32)0x800700D5, 0x41110007, 0x8004 };
+s32 D_8009D098[4] = { (s32)(u8 *)&func_8007F314 + 0xCEC, (s32)0x800700D6, 0x4180000E, 0x78004 };
+s32 D_8009D0A8[9] = {
+    (s32)0x80070000, 0x4200000A, 0x88003, 0x48007, (s32)0x80184209, 0x42140004, 0x42164215,
+    (s32)0x80044217, 0,
+};
+s32 D_8009D0CC[5] = { (s32)0x80070000, 0x40000014, 0xD8007, (s32)0x80004580, 0 };
+s32 D_8009D0E0[3] = { (s32)0x80070000, 0x46000076, 0x8000 };
+s32 D_8009D0EC[108] = {
+    (s32)&D_8009CFF0, (s32)&D_8009CFF8, (s32)&D_8009D004, (s32)&D_8009D020, (s32)&D_8009D02C,
+    (s32)&D_8009D038, (s32)&D_8009D05C, (s32)&D_8009D074, (s32)&D_8009D088, (s32)&D_8009D0A8,
+    (s32)&D_8009D098, (s32)&D_8009BE2C, (s32)&D_8009D0CC, (s32)&D_8009D0E0,
+    (s32)&KAN_BA_seq_slide, (s32)&KAN_BA_seq_pickup, (s32)&KAN_BA_seq_hold,
+    (s32)&KAN_BA_seq_hold_slow, (s32)&KAN_BA_seq_hold_throw, (s32)&KAN_BA_seq_die,
+    (s32)&KAN_PA_seq_pickup, (s32)&KAN_PA_seq_hold, (s32)&KAN_PA_seq_hold_slow,
+    (s32)&KAN_PA_seq_hold_throw, (s32)&KAN_PA_seq_die, (s32)&KAN_seq_arkbreathe,
+    (s32)&KAN_seq_arkmove, (s32)&KAN_seq_arkidle, (s32)&KAN_seq_arktaunt,
+    (s32)&KAN_seq_arkkick, (s32)&KAN_seq_arkwin, (s32)&KAN_seq_arkvictory,
+    (s32)&KAN_seq_arklose, (s32)&KAN_seq_n2obreathe, (s32)&KAN_seq_n2omove,
+    (s32)&KAN_seq_n2oidle, (s32)&KAN_seq_n2otaunt, (s32)&KAN_seq_n2okick, (s32)&KAN_seq_n2ohit,
+    (s32)&KAN_seq_n2owin, (s32)&KAN_seq_n2ovictory, (s32)&KAN_seq_n2olose,
+    (s32)&KAN_seq_n2ofly, (s32)&KAN_seq_long_hit, (s32)&KAN_seq_flip_jump,
+    (s32)&KAN_SP_seq_die, (s32)&KAN_seq_pogo_idle, (s32)&KAN_seq_pogo_quick_idle,
+    (s32)&KAN_seq_pogo_tazing, (s32)&KAN_seq_pogo_dazed, (s32)&KAN_seq_pogo_winner,
+    (s32)&KAN_seq_bonk_idle, (s32)&KAN_seq_bonk_run, (s32)&KAN_seq_bonk_backswing,
+    (s32)&KAN_seq_bonk_extended_backswing, (s32)&KAN_seq_bonk_swing, (s32)&KAN_seq_bonk_hit,
+    (s32)&KAN_seq_bonk_winner, (s32)&KAN_seq_polaridle, (s32)&KAN_seq_polarrun,
+    (s32)&KAN_seq_polardazed, (s32)&KAN_seq_polarfall, (s32)&KAN_seq_polarattack,
+    (s32)&KAN_seq_polarhit, (s32)&KAN_seq_polardead, (s32)&KAN_seq_polartaunt,
+    (s32)&KAN_seq_breathe_ft, (s32)&KAN_seq_skate_ft, (s32)&KAN_seq_lightbear,
+    (s32)&KAN_seq_skate_attack, (s32)&KAN_seq_polarwin, (s32)&KAN_seq_win_ft,
+    (s32)&KAN_seq_raceidle, (s32)&KAN_seq_racerun, (s32)&KAN_seq_racehit,
+    (s32)&KAN_seq_racefall, (s32)&KAN_seq_racewin, (s32)&KAN_seq_dinoidle,
+    (s32)&KAN_seq_dinorun, (s32)&KAN_seq_dinoshoot, (s32)&KAN_seq_dinoslide,
+    (s32)&KAN_seq_dinodazed, (s32)&KAN_seq_raceswimidle, (s32)&KAN_seq_raceswimrun,
+    (s32)&KAN_seq_raceswimfall, (s32)&KAN_seq_raceswimwin, (s32)&KAN_seq_dinowin,
+    (s32)&KAN_seq_tankrecoil, (s32)&KAN_seq_tankdie, (s32)&KAN_seq_tankidle,
+    (s32)&KAN_seq_tankidle1, (s32)&KAN_seq_tankminelay, (s32)&KAN_seq_tankvictory,
+    (s32)&KAN_seq_tankfire1, (s32)&KAN_seq_tankfire2, (s32)&KAN_seq_tankfire3,
+    (s32)&KAN_seq_kegnone, (s32)&KAN_seq_kegbreathe, (s32)&KAN_seq_kegidle_a,
+    (s32)&KAN_seq_kegidle_b, (s32)&KAN_seq_kegmedium, (s32)&KAN_seq_kegjump,
+    (s32)&KAN_seq_kegfall, (s32)&KAN_seq_kegland, (s32)&KAN_seq_keghit,
+    (s32)&CHASE_seq_kegdead, (s32)&KAN_seq_kegwin, (s32)&KAN_seq_kegvictory,
+};
+hero_seq **HeroSeqTables[18] = {
+    0, (void *)&D_8009BE38, (void *)&D_8009C0FC, (void *)&D_8009C3A4, (void *)&D_8009C63C,
+    (void *)&D_8009C8E8, (void *)&D_8009CBB4, (void *)&D_8009CE40, (void *)&D_8009D0EC,
+    (void *)&HeroNameNobody, (void *)&HeroNameCrash, (void *)&HeroNameCoco,
+    (void *)&HeroNameCortex, (void *)&HeroNameBrio, (void *)&HeroNameTiny,
+    (void *)&HeroNameKong, (void *)&HeroNameDingodile, (void *)&HeroNameKanga,
+};
+u8 D_8009D2E4[20] = { 0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 0, 0 };
+s32 D_8009D2F8[8] = {
+    (s32)&HeroAnimWin, 0xD, (s32)&HeroAnimWin, 0xD, (s32)&HeroAnimWin, 0xD, (s32)&HeroAnimWin,
+    0xD,
+};
+u8 D_8009D318[60] = {
+    0, 0, 0, 0, 0, 0, 0x1E, 0, 0x2D, 0, 0x14, 0, 0x1E, 0, 0x2D, 0, 0x14, 0, 0x1E, 0, 0x2D, 0,
+    0x14, 0, 0x1E, 0, 0x2D, 0, 0x14, 0, 0x28, 0, 0x2D, 0, 0x14, 0, 0x28, 0, 0x2D, 0, 0x14, 0,
+    0x28, 0, 0x2D, 0, 0x14, 0, 0x28, 0, 0x2D, 0, 0x14, 0, 0, 0, 0, 0, 0, 0,
+};
+u8 D_8009D354[80] = {
+    0x6C, 0, 0x72, 0, 8, 0, 0xA, 0, 0x6C, 0, 0x72, 0, 8, 0, 0xA, 0, 0x6C, 0, 0x72, 0, 8, 0,
+    0xA, 0, 0x6C, 0, 0x72, 0, 8, 0, 0xA, 0, 0x6C, 0, 0x72, 0, 8, 0, 0xA, 0, 0x48, 0, 0x72, 0,
+    0xA, 0, 6, 0, 0x48, 0, 0x72, 0, 0xA, 0, 6, 0, 0x48, 0, 0x72, 0, 0xA, 0, 6, 0, 0x48, 0,
+    0x72, 0, 0xA, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+u16 D_8009D3A4[10] = { 0, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0 };
+u16 D_8009D3B8[9][4] = {
+    { 0, 0, 0, 0 }, { 0x100, 0x100, 0x100, 0x100 }, { 0x200, 0x200, 0x200, 0x200 },
+    { 0x300, 0x200, 0x200, 0x100 }, { 0x400, 0x400, 0x400, 0x400 },
+    { 0x500, 0x400, 0x300, 0x200 }, { 0x600, 0x600, 0x600, 0x600 },
+    { 0x700, 0x700, 0x700, 0x700 }, { 0x800, 0x700, 0x600, 0x500 },
+};
+u16 D_8009D400[9][9] = {
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    { 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100 },
+    { 0x200, 0x1C0, 0x180, 0x140, 0x100, 0xC0, 0x80, 0x40, 0x40 },
+    { 0x300, 0x2C0, 0x280, 0x240, 0x200, 0x1C0, 0x180, 0x140, 0x100 },
+    { 0x400, 0x3C0, 0x380, 0x340, 0x300, 0x2C0, 0x280, 0x240, 0x200 },
+    { 0x500, 0x4C0, 0x480, 0x440, 0x400, 0x3C0, 0x380, 0x340, 0x300 },
+    { 0x600, 0x5C0, 0x580, 0x540, 0x500, 0x4C0, 0x480, 0x440, 0x400 },
+    { 0x700, 0x6C0, 0x680, 0x640, 0x600, 0x5C0, 0x580, 0x540, 0x500 },
+    { 0x800, 0x7C0, 0x780, 0x740, 0x700, 0x6C0, 0x680, 0x640, 0x600 },
+};
+u16 D_8009D4A4[64] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+    3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0,
+};
+u16 D_8009D524[4] = {0};
+HeroInfo Heroes[4] = {0};
+s16 D_8009D6DC[2] = {0};
+u16 D_8009D6E0 = 0;
+s16 D_8009D6E4[2] = {0};
+EngineHooks HeroHooks = {0};
+s32 D_8009D754[1] = {0};
+s32 D_8009D758 = 0;
+s32 D_8009D75C = 0;
+u16 D_8009D760 = 0;
+s32 D_8009D764[16][4] = {0};
+s16 D_8009D864 = 0;
+u16 D_8009D866 = 0;
+s32 D_8009D868 = 0;
+s32 D_8009D86C = 0;
+s16 D_8009D870 = 0;
+u16 D_8009D872 = 0;
+s32 D_8009D874 = 0;
+s32 D_8009D878 = 0;
+D_8009D87C_t AiPlayerSkill[4] = {0};
+u8 D_8009D894[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
+u8 D_8009D8A8[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
+u8 D_8009D8BC[20] = { 0x18, 0, 0x14, 0, 0x10, 0, 0xC, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
+u8 D_8009D8D0[12] = { 8, 0, 0x10, 0, 0x18, 0, 8, 0, 0x10, 0, 0x18, 0 };
+u8 D_8009D8DC[24] = {
+    0x10, 0, 0x18, 0, 0x20, 0, 0x10, 0, 0x16, 0, 0x1C, 0, 0x10, 0, 0x14, 0, 0x18, 0, 0x10, 0,
+    0x12, 0, 0x14, 0,
+};
+void *AiBotTweakTable = 0;
+void *AiHumanTweakTable = 0;
+void *AiSkillTable = 0;
+void *AiTeamSkillTable = 0;
+void *AiHumanRoundTweakTable = 0;
+s32 HeroesAllOut = 0;
+D_8009D90C_t ArenaGrid[400] = {0};
+u16 D_8009DC2C[6] = { 0x456, 0x457, 0x458, 0x459, 0x45A, 0x45B };
+u16 D_8009DC38[12] = { 0xE66, 0xEFF, 0xF99, 0x1032, 0x10CC, 0x1165, 0x1200, 0x1165, 0x10CC, 0x1032, 0xF99, 0xEFF };
+u16 D_8009DC50[12] = { 0x1000, 0xF66, 0xECC, 0xE33, 0xD99, 0xD00, 0xC66, 0xD00, 0xD99, 0xE33, 0xECC, 0xF66 };
+s16 D_8009DC68[9][3] = {
+    { 0x5000, 0x5000, 0x5000 }, { 0x4000, 0x2000, 0x4000 }, { 0x1800, 0x1000, 0x1800 },
+    { 0x800, 0xA00, 0x800 }, { 0x200, 0x200, 0x200 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
+    { 0, 0, 0 },
+};
+HeroActionEntry HeroActionTable[134] = {
+    { func_80087428, (s32)func_800874EC }, { func_8008AAB0, (s32)HeroQuiet },
+    { func_8008A99C, (s32)func_8008795C }, { func_8008A924, (s32)func_80087B8C },
+    { func_80087FC0, (s32)func_8008A8F0 }, { func_800880E0, (s32)func_800881E0 },
+    { func_800882DC, (s32)func_8008A854 }, { func_80088450, (s32)func_80088544 },
+    { func_80088708, (s32)func_80088794 }, { func_80088BAC, (s32)func_80088C28 },
+    { func_80088F78, (s32)func_8008900C }, { func_800894E0, (s32)func_8008955C },
+    { &SetBashHeroLoser, (s32)&BashHeroLoser }, { &SetBashHeroHit, (s32)&BashHeroHit },
+    { &SetBashHeroPickup, (s32)&BashHeroPickup }, { &SetBashHeroHold, (s32)&BashHeroHold },
+    { &SetBashHeroCarry, (s32)&BashHeroCarry }, { &SetBashHeroThrow, (s32)&BashHeroThrow },
+    { &SetBashHeroBigWeight, (s32)&BashHeroBigWeight },
+    { &SetBashHeroDead, (s32)&BashHeroDead }, { &SetBashHeroWinner, (s32)&BashHeroWinner },
+    { &SetPAHeroHit, (s32)&PAHeroHit }, { &SetPAHeroPickup, (s32)&PAHeroPickup },
+    { &SetPAHeroHold, (s32)&PAHeroHold }, { &SetPAHeroCarry, (s32)&PAHeroCarry },
+    { &SetPAHeroThrow, (s32)&PAHeroThrow }, { &SetPAHeroDead, (s32)&PAHeroDead },
+    { &SetPAHeroWinner, (s32)&PAHeroWinner }, { &SetArkHeroIdle, (s32)&ArkHeroIdle },
+    { &SetArkHeroMove, (s32)&ArkHeroMove }, { &SetArkHeroTaunt, (s32)&ArkHeroTaunt },
+    { &SetArkHeroKick, (s32)&ArkHeroKick }, { &SetArkHeroRedKick, (s32)&ArkHeroRedKick },
+    { &SetArkHeroGrab, (s32)&ArkHeroGrab }, { &SetArkHeroWinner, (s32)&ArkHeroWinner },
+    { &SetArkHeroLose, (s32)&ArkHeroLose }, { &SetArkHeroDie, (s32)&ArkHeroDie },
+    { &SetArkHeroDead, (s32)&ArkHeroDead }, { &SetN2OHeroEnter, (s32)&N2OHeroEnter },
+    { &SetN2OHeroIdle, (s32)&N2OHeroIdle }, { &SetN2OHeroMove, (s32)&N2OHeroMove },
+    { &SetN2OHeroTaunt, (s32)&N2OHeroTaunt }, { &SetN2OHeroHit, (s32)&N2OHeroHit },
+    { &SetN2OHeroKick, (s32)&N2OHeroKick }, { &SetN2OHeroWinner, (s32)&N2OHeroWinner },
+    { &SetN2OHeroDie, (s32)&N2OHeroDie }, { &SetN2OHeroDead, (s32)&N2OHeroDead },
+    { &SetNoxHeroFly, (s32)&NoxHeroFly }, { &SetNoxHeroDead, (s32)&NoxHeroDead },
+    { &SetNoxHeroHit, (s32)&NoxHeroHit }, { &SetNoxHeroWinner, (s32)&NoxHeroWinner },
+    { &SetSpinHeroHit, (s32)&SpinHeroHit }, { &SetSpinHeroFlip, (s32)&SpinHeroFlip },
+    { &SetSpinHeroFall, (s32)&SpinHeroFall }, { &SetSpinHeroWinner, (s32)&SpinHeroWinner },
+    { &SetSpinHeroLose, (s32)&SpinHeroLose }, { &SetSpinHeroDead, (s32)&SpinHeroDead },
+    { &SetHeroPogoIdle, (s32)&HeroPogoIdle }, { &SetHeroPogo, (s32)&HeroPogo },
+    { &SetHeroPogoDazed, (s32)&HeroPogoDazed }, { &SetHeroPogoWinner, (s32)&HeroPogoWinner },
+    { &SetHeroPogoLoser, (s32)&HeroPogoLoser }, { &SetHeroPogoTied, (s32)&HeroPogoTied },
+    { &SetHeroPogoTazing, (s32)&HeroPogoTazing }, { &SetBonkHeroIdle, (s32)&BonkHeroIdle },
+    { &SetBonkHeroRun, (s32)&BonkHeroRun }, { &SetBonkHeroHit, (s32)&BonkHeroHit },
+    { &SetBonkHeroBackswing, (s32)&BonkHeroBackswing },
+    { &SetBonkHeroExtBackswing, (s32)&BonkHeroExtBackswing },
+    { &SetBonkHeroSwing, (s32)&BonkHeroSwing },
+    { &SetBonkHeroSwingRecoil, (s32)&BonkHeroSwingRecoil },
+    { &SetBonkHeroWinner, (s32)&BonkHeroWinner }, { &SetBonkHeroLoser, (s32)&BonkHeroLoser },
+    { &SetPolarHeroIdle, (s32)&PolarHeroIdle }, { &SetPolarHeroRun, (s32)&PolarHeroRun },
+    { &SetPolarHeroDazed, (s32)&PolarHeroDazed },
+    { &SetPolarHeroTransmute, (s32)&PolarHeroTransmute },
+    { &SetPolarHeroWeight, (s32)&PolarHeroWeight },
+    { &SetPolarHeroOffice, (s32)&PolarHeroOffice },
+    { &SetPolarHeroInBeam, (s32)&PolarHeroInBeam }, { &SetPolarHeroPoll, (s32)&PolarHeroPoll },
+    { &SetPolarHeroAttack, (s32)&PolarHeroAttack },
+    { &SetPolarHeroSnowball, (s32)&PolarHeroSnowball },
+    { &SetPolarHeroThrowBomb, (s32)&PolarHeroThrowBomb },
+    { &SetPolarHeroFootIdle, (s32)&PolarHeroFootIdle },
+    { &SetPolarHeroFootRun, (s32)&PolarHeroFootRun }, { &SetPolarHeroHit, (s32)&PolarHeroHit },
+    { &SetPolarHeroDead, (s32)&PolarHeroDead }, { &SetPolarHeroWinner, (s32)&PolarHeroWinner },
+    { &SetPolarHeroSquashed, (s32)&PolarHeroSquashed },
+    { &SetPolarHeroChallenge, (s32)&PolarHeroChallenge },
+    { &SetRaceHeroIdle, (s32)&RaceHeroIdle }, { &SetRaceHeroRun, (s32)&RaceHeroRun },
+    { &SetRaceHeroDazed, (s32)&RaceHeroDazed }, { &SetRaceHeroJump, (s32)&RaceHeroJump },
+    { &SetRaceHeroKick, (s32)&RaceHeroKick }, { &SetRaceHeroOiled, (s32)&RaceHeroOiled },
+    { &SetRaceHeroOffTrack, (s32)&RaceHeroOffTrack },
+    { &SetRaceHeroWinner, (s32)&RaceHeroWinner }, { &SetDinoHeroIdle, (s32)&DinoHeroIdle },
+    { &SetDinoHeroRun, (s32)&DinoHeroRun }, { &SetDinoHeroShoot, (s32)&DinoHeroShoot },
+    { &SetDinoHeroSlide, (s32)&DinoHeroSlide }, { &SetDinoHeroDazed, (s32)&DinoHeroDazed },
+    { &SetDinoHeroWinner, (s32)&DinoHeroWinner }, { &SetTankHeroRecoil, (s32)&TankHeroRecoil },
+    { &SetTankHeroDie, (s32)&TankHeroDie }, { &SetTankHeroDead, (s32)&TankHeroDead },
+    { &SetTankHeroIdle, (s32)&TankHeroIdle }, { &SetTankHeroMinelay, (s32)&TankHeroMinelay },
+    { &SetTankHeroMove, (s32)&TankHeroMove }, { &SetTankHeroTurn, (s32)&TankHeroTurn },
+    { &SetTankHeroVictory, (s32)&TankHeroVictory }, { &SetChaseHeroIdle, (s32)&ChaseHeroIdle },
+    { &SetChaseHeroRun, (s32)&ChaseHeroRun }, { &SetChaseHeroHit, (s32)&ChaseHeroHit },
+    { &SetChaseHeroLose, (s32)&ChaseHeroLose }, { &SetChaseHeroWinner, (s32)&ChaseHeroWinner },
+    { &SetChaseHeroDie, (s32)&ChaseHeroDie }, { &SetChaseHeroDead, (s32)&ChaseHeroDead },
+    { &SetChaseHeroJump, (s32)&ChaseHeroJump }, { &SetChaseHeroDrop, (s32)&ChaseHeroDrop },
+    { &SetChaseHeroFall, (s32)&ChaseHeroFall }, { &SetChaseHeroLand, (s32)&ChaseHeroLand },
+    { 0, 0 }, { 0x40003, 0x60005 }, { 0x360035, 0x380037 }, { 0x680067, 0x6A0069 },
+    { 0x9A0099, 0x9C009B }, { 0x130012F, 0x1320131 }, { 0x1620161, 0x1640163 },
+    { 0xFE00FD, 0x10000FF }, { 0xCC00CB, 0xCE00CD }, { 0, 0 },
+};
+s16 WinSeqTimer = 0;
+s16 WinSeqStep = 0;
+s16 WinSeqHero = 0;
+s16 WinSeqDelay = 0;
+s16 HeroActHit = 0;
+s16 HeroActPickup = 0;
+s16 HeroActHold = 0;
+s16 HeroActCarry = 0;
+s16 HeroActThrow = 0;
+s16 HeroActDead = 0;
+s16 HeroActWinner = 0;
+s16 HeroActLoser = 0;
+D_8009E0E8_t D_8009E0E8[3][4] = {0};
+s16 D_8009E190[2] = {0};
+s32 D_8009E194 = 1;
+s32 D_8009E198[17] = {
+    0x201B, 0x1201B, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021, 0x2022, 0x2023, 0x2024, 0x2025,
+    0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x8003,
+};
+s32 D_8009E1DC[3] = { (s32)&D_8009E198, 0, 0 };
+ScriptInit D_8009E1E8 = { 0, (void *)&D_8009E1DC, 0x402 };
+s32 D_8009E1F4[3] = {0};
+WeatherFx D_8009E200 = { 0x100, 0x2800, 0x1800, func_8008C824, func_8008CA90 };
+u16 D_8009E214[8] = { 0x1C5, 0x1C6, 0x1C7, 0x1C8, 0x1C9, 0x1CA, 0x1CB, 0x1CC };
+u16 D_8009E224[4] = { 1, 1, 2, 2 };
+s32 D_8009E22C[9] = {
+    0x20260000, 0x20282027, 0x202A2029, 0x202C202B, 0x202E202D, 0x2030202F, 0x20322031,
+    0x20342033, (s32)0x80042035,
+};
+ScriptInit D_8009E250 = { (s32)&D_8009E22C, 0, 0x401 };
+s32 D_8009E25C[15] = {0};
+s32 D_8009E298 = 0;
+s32 D_8009E29C = 0;
+s32 D_8009E2A0[9] = { 0x20112010, 0x20122012, 0x20122012, 0x20122012, 0x2012, 0x442, 0x443, 0x444, 0x445 };
+s32 D_8009E2C4[6] = { 0x800060, 0x20000, 0x500020, 0x60000, 0xFFFF, 0 };
+s32 D_8009E2DC[6] = { 0x800090, 0x50000, 0x500000, 6, 0, 0 };
+s32 D_8009E2F4[6] = { 0x900090, 0x50000, 0x500012, 0x80000, 0xFFFF, 0 };
+s32 D_8009E30C[6] = { 0x800070, 0x50000, 0x500000, 7, 0, 0 };
+s32 D_8009E324[6] = { 0x800080, 0x50000, 0x500000, 7, 0, 0 };
+s32 D_8009E33C[6] = { 0x800071, 0x60000, 0x500020, 0x90000, 0xFFFF, 0 };
+s32 D_8009E354[6] = { 0x800080, 0x50000, 0x500028, 0x90000, 0xFFFF, 0 };
+s32 D_8009E36C[6] = { 0x800060, 0x30000, 0, 0, 0xFFFF, 0 };
+s32 D_8009E384[6] = { 0x800070, 0x40000, 0, 0, 0xFFFF, 0 };
+s32 D_8009E39C[34] = {
+    0x800050, 0x30000, 0, 0, 0xFFFF, 0, (s32)&D_8009E2C4, (s32)&D_8009E33C, (s32)&D_8009E354,
+    (s32)&D_8009E2F4, (s32)&D_8009E2F4, (s32)&D_8009E2DC, (s32)&D_8009E2DC, (s32)&D_8009E30C,
+    (s32)&D_8009E324, (s32)&D_8009E2C4, (s32)&D_8009E36C, (s32)&D_8009E384, (s32)&D_8009E384,
+    (s32)&D_8009E39C, (s32)&D_8009E39C, (s32)&D_8009E39C, (s32)&D_8009E39C, (s32)&D_8009E384,
+    (s32)&D_8009E384, (s32)&D_8009E36C, 0x1FFFF, 0x4000000, -1, 0x4000800, -0xFFFF, 0xC000800,
+    0x10001, 0xC000000,
+};
