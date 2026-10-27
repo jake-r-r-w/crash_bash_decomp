@@ -443,6 +443,19 @@ code finds 15 code files; nothing else on the disc holds code.
   (`func_8007A524`), then an `AST_CratePickup` (`0x206`) there unless the
   hook `D_8009D750` returns 1.
 
+### The engine's .bss
+
+The engine's last 0x465C bytes before the slot (`0x800AEC58..0x800B32B4`, after all its
+rodata) are uninitialised memory, not data any file defines: two `gameflow.c` words
+(`D_800AEC58`, `D_800AEC5C`) and `ModeTextBuffer` (`0x800AEC60`), where `func_800134FC` loads
+the current mode's text file (`levelload.c`; the text files' absolute pointers start at
+`0x800AEC64`, ASSETS.md). The engine's first two data words are the two load destinations:
+`D_80098594` the slot, `D_80098598` this buffer. The image holds the build machine's leftovers
+there (small numbers, no text, no pointers), so like the slot image it stays a memory image read
+from the disc (`engine_bss` in engine.yaml, its own segment so it isn't grouped with `.data`),
+counted apart from the data to turn into C. The engine's tables that point into the buffer
+(`D_800985F0`, the pause menu's per-mode panel sets) point at the text file's records.
+
 ### The engine's slot image
 
 The engine file ends with the slot the minigame overlays load into: 147,092

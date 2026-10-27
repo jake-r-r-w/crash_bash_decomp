@@ -76,8 +76,17 @@ segments:
       - [0x357D4, .rodata, overlays/engine/gameflow]
       - [0x35F38, .rodata, overlays/engine/levelload]
       - [0x35FA4, .rodata, overlays/engine/camera]
-      # second writable block after the rodata (stored to from 0x800AEC58 on)
-      - [0x35FC8, sdata, overlays/engine/engine_sdata]
+  # The .bss after the rodata: gameflow's D_800AEC58/5C, then ModeTextBuffer (0x800AEC60), where
+  # func_800134FC loads the mode's text file. The image holds the build machine's leftovers
+  # there, so it stays a memory image read from the disc (ARCHITECTURE.md, The engine's .bss);
+  # its own segment, as the slot's, so it is not grouped with the engine's .data.
+  - name: engine_bss
+    type: code
+    start: 0x35FC8
+    align: 4
+    vram: 0x800AEC58
+    subsegments:
+      - [0x35FC8, bin, overlays/engine/engine_bss]
   # The minigame slot image the file reserves (vram 0x800B32B4): stub id 0x5C, zeros, then
   # leftover build-machine memory from offset 0x54000 (leaked headers). Its own segment so it
   # is not grouped with the engine's .data.

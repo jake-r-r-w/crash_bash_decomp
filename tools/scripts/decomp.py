@@ -5180,7 +5180,9 @@ def subsegments(yaml_path):
 # slot overlays' load area as it was in the build machine's memory (a stub id, zeros, leftover
 # copies of CRASHBSH.DAT files and the leaked headers; ARCHITECTURE.md, The engine's slot image).
 # It stays a file read from the user's disc and is counted apart from the data to turn into C.
-SLOT_IMAGES = {"overlays/engine/engine_slot"}
+# The engine's .bss (its last 0x465C bytes before the slot) is one too: two words and the mode text
+# buffer, holding the build machine's leftovers.
+SLOT_IMAGES = {"overlays/engine/engine_slot", "overlays/engine/engine_bss"}
 
 
 def data_items(funcs, stat, proj, images=False):
