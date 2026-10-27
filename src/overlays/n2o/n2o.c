@@ -5,22 +5,6 @@
 #include "bash/arkenoid.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8004EAF0[];
-extern u8 D_8004EAF8[];
-extern u8 D_8004EB00[];
-extern u8 D_8004EB08[];
-extern u8 D_8004EB10[];
-extern u8 D_8004EB18[];
-extern u8 D_8004EB20[];
-extern u8 D_8004EB28[];
-extern u8 D_8004EB30[];
-extern u8 D_8004EB38[];
-extern u8 D_8004EB40[];
-extern u8 D_8004EB48[];
-extern u8 D_8004EB50[];
-extern u8 D_8004EB58[];
-extern u8 D_8004EB60[];
-extern u8 D_8004EB68[];
 extern u8 D_80050058[];
 extern u8 AngelModel[];
 extern u8 D_80063BB8[];
@@ -331,11 +315,11 @@ WWInf N2OWorldInfo[1] = {
     { 0x5C, N2OAnims, N2OLevelDB, 1 },
 };
 s32 N2OFiles[27] = {
-    (s32)&FontModel, (s32)&D_8004EB68, (s32)&D_8004EB60, (s32)&LoadingModel, (s32)&D_8004EB48,
-    (s32)&D_8004EB40, (s32)&InterfaceModel, (s32)&D_8004EB58, (s32)&D_8004EB50, (s32)&PowerupsModel,
-    (s32)&D_8004EB38, (s32)&D_8004EB30, (s32)&AngelModel, (s32)&D_8004EB28, (s32)&D_8004EB20,
-    (s32)&PlayerVehicleModel, (s32)&D_8004EB08, (s32)&D_8004EB00, (s32)&BallsEffectsModel, (s32)&D_8004EB18,
-    (s32)&D_8004EB10, (s32)&OxideModel, (s32)&D_8004EAF8, (s32)&D_8004EAF0, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 331], (s32)&DatIndex[2 * 330], (s32)&LoadingModel, (s32)&DatIndex[2 * 327],
+    (s32)&DatIndex[2 * 326], (s32)&InterfaceModel, (s32)&DatIndex[2 * 329], (s32)&DatIndex[2 * 328], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 325], (s32)&DatIndex[2 * 324], (s32)&AngelModel, (s32)&DatIndex[2 * 323], (s32)&DatIndex[2 * 322],
+    (s32)&PlayerVehicleModel, (s32)&DatIndex[2 * 319], (s32)&DatIndex[2 * 318], (s32)&BallsEffectsModel, (s32)&DatIndex[2 * 321],
+    (s32)&DatIndex[2 * 320], (s32)&OxideModel, (s32)&DatIndex[2 * 317], (s32)&DatIndex[2 * 316], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1F's) */
 file_group_load_info file_group_N2O = { D_80050058, N2OFiles };

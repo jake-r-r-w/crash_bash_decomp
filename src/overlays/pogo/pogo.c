@@ -6,24 +6,6 @@
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80030014[];
 extern u8 D_80034010[];
-extern u8 D_8004F140[];
-extern u8 D_8004F148[];
-extern u8 D_8004F150[];
-extern u8 D_8004F158[];
-extern u8 D_8004F160[];
-extern u8 D_8004F168[];
-extern u8 D_8004F170[];
-extern u8 D_8004F178[];
-extern u8 D_8004F180[];
-extern u8 D_8004F188[];
-extern u8 D_8004F190[];
-extern u8 D_8004F198[];
-extern u8 D_8004F1A0[];
-extern u8 D_8004F1A8[];
-extern u8 D_8004F1B0[];
-extern u8 D_8004F1B8[];
-extern u8 D_8004F1C0[];
-extern u8 D_8004F1C8[];
 extern u8 D_80050118[];
 extern u8 D_80050124[];
 extern u8 D_80063BB8[];
@@ -522,14 +504,14 @@ WWInf PogoWorldInfo[8] = {
     { 0x4E, PogoAnims, PogoLevelDB0 },
 };
 s32 PogoFiles[15] = {
-    (s32)&FontModel, (s32)&D_8004F1C8, (s32)&D_8004F1C0, (s32)&LoadingModel, (s32)&D_8004F1A8,
-    (s32)&D_8004F1A0, (s32)&InterfaceModel, (s32)&D_8004F1B8, (s32)&D_8004F1B0, (s32)&PogoObjectsModel,
-    (s32)&D_8004F198, (s32)&D_8004F190, 0, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 535], (s32)&DatIndex[2 * 534], (s32)&LoadingModel, (s32)&DatIndex[2 * 531],
+    (s32)&DatIndex[2 * 530], (s32)&InterfaceModel, (s32)&DatIndex[2 * 533], (s32)&DatIndex[2 * 532], (s32)&PogoObjectsModel,
+    (s32)&DatIndex[2 * 529], (s32)&DatIndex[2 * 528], 0, 0, 0,
 };
 s32 PogoLocoFiles[18] = {
-    (s32)&FontModel, (s32)&D_8004F188, (s32)&D_8004F180, (s32)&LoadingModel, (s32)&D_8004F168,
-    (s32)&D_8004F160, (s32)&InterfaceModel, (s32)&D_8004F178, (s32)&D_8004F170, (s32)&PogoObjectsModel,
-    (s32)&D_8004F158, (s32)&D_8004F150, (s32)&RooModel, (s32)&D_8004F148, (s32)&D_8004F140,
+    (s32)&FontModel, (s32)&DatIndex[2 * 527], (s32)&DatIndex[2 * 526], (s32)&LoadingModel, (s32)&DatIndex[2 * 523],
+    (s32)&DatIndex[2 * 522], (s32)&InterfaceModel, (s32)&DatIndex[2 * 525], (s32)&DatIndex[2 * 524], (s32)&PogoObjectsModel,
+    (s32)&DatIndex[2 * 521], (s32)&DatIndex[2 * 520], (s32)&RooModel, (s32)&DatIndex[2 * 519], (s32)&DatIndex[2 * 518],
     0, 0, 0,
 };
 /* the four levels' files (modes 10..13; the engine's table at 0x800A0030): the exe's file group

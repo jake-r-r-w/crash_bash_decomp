@@ -16,18 +16,6 @@ extern u8 D_80034080[];
 extern u8 D_80034180[];
 extern u8 D_8004410C[];
 extern u8 D_80044110[];
-extern u8 D_8004EA90[];
-extern u8 D_8004EA98[];
-extern u8 D_8004EAA0[];
-extern u8 D_8004EAA8[];
-extern u8 D_8004EAB0[];
-extern u8 D_8004EAB8[];
-extern u8 D_8004EAC0[];
-extern u8 D_8004EAC8[];
-extern u8 D_8004EAD0[];
-extern u8 D_8004EAD8[];
-extern u8 D_8004EAE0[];
-extern u8 D_8004EAE8[];
 extern u8 D_8005004C[];
 extern u8 AngelModel[];
 extern u8 InterfaceModel[];
@@ -58,10 +46,10 @@ WWInf ChaseWorldInfo[2] = {
     { 0x60, ChaseAnims, ChaseLevelDB, 0 },
 };
 s32 ChaseFiles[21] = {
-    (s32)&FontModel, (s32)&D_8004EAE8, (s32)&D_8004EAE0, (s32)&LoadingModel, (s32)&D_8004EAC8,
-    (s32)&D_8004EAC0, (s32)&InterfaceModel, (s32)&D_8004EAD8, (s32)&D_8004EAD0, (s32)&PowerupsModel,
-    (s32)&D_8004EAB8, (s32)&D_8004EAB0, (s32)&AngelModel, (s32)&D_8004EAA8, (s32)&D_8004EAA0,
-    (s32)&KegObjectsModel, (s32)&D_8004EA98, (s32)&D_8004EA90, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 315], (s32)&DatIndex[2 * 314], (s32)&LoadingModel, (s32)&DatIndex[2 * 311],
+    (s32)&DatIndex[2 * 310], (s32)&InterfaceModel, (s32)&DatIndex[2 * 313], (s32)&DatIndex[2 * 312], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 309], (s32)&DatIndex[2 * 308], (s32)&AngelModel, (s32)&DatIndex[2 * 307], (s32)&DatIndex[2 * 306],
+    (s32)&KegObjectsModel, (s32)&DatIndex[2 * 305], (s32)&DatIndex[2 * 304], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1E's) */
 file_group_load_info file_group_CHASE = { D_8005004C, ChaseFiles };

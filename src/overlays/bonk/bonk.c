@@ -10,16 +10,6 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80034214[];
-extern u8 D_8004EB70[];
-extern u8 D_8004EB78[];
-extern u8 D_8004EB80[];
-extern u8 D_8004EB88[];
-extern u8 D_8004EB90[];
-extern u8 D_8004EB98[];
-extern u8 D_8004EBA0[];
-extern u8 D_8004EBA8[];
-extern u8 D_8004EBB0[];
-extern u8 D_8004EBB8[];
 extern u8 D_80050064[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
@@ -292,9 +282,9 @@ WWInf BonkWorldInfo[2] = {
     { 0x52, BonkAnims, BonkLevelDB, 0 },
 };
 s32 BonkFiles[18] = {
-    (s32)&FontModel, (s32)&D_8004EBB8, (s32)&D_8004EBB0, (s32)&LoadingModel, (s32)&D_8004EB98,
-    (s32)&D_8004EB90, (s32)&InterfaceModel, (s32)&D_8004EBA8, (s32)&D_8004EBA0, (s32)&PowerupsModel,
-    (s32)&D_8004EB88, (s32)&D_8004EB80, (s32)&MalletObjectsModel, (s32)&D_8004EB78, (s32)&D_8004EB70,
+    (s32)&FontModel, (s32)&DatIndex[2 * 341], (s32)&DatIndex[2 * 340], (s32)&LoadingModel, (s32)&DatIndex[2 * 337],
+    (s32)&DatIndex[2 * 336], (s32)&InterfaceModel, (s32)&DatIndex[2 * 339], (s32)&DatIndex[2 * 338], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 335], (s32)&DatIndex[2 * 334], (s32)&MalletObjectsModel, (s32)&DatIndex[2 * 333], (s32)&DatIndex[2 * 332],
     0, 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1D's) */

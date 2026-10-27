@@ -5,22 +5,6 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80010008[];
-extern u8 D_8004F2B0[];
-extern u8 D_8004F2B8[];
-extern u8 D_8004F2C0[];
-extern u8 D_8004F2C8[];
-extern u8 D_8004F2D0[];
-extern u8 D_8004F2D8[];
-extern u8 D_8004F2E0[];
-extern u8 D_8004F2E8[];
-extern u8 D_8004F2F0[];
-extern u8 D_8004F2F8[];
-extern u8 D_8004F300[];
-extern u8 D_8004F308[];
-extern u8 D_8004F310[];
-extern u8 D_8004F318[];
-extern u8 D_8004F320[];
-extern u8 D_8004F328[];
 extern u8 D_80050148[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
@@ -307,11 +291,11 @@ char *PapuAnims[12] = {
 };
 s16 PapuLevelDB[2] = { -1, 0 };
 s32 PapuFiles[27] = {
-    (s32)&FontModel, (s32)&D_8004F328, (s32)&D_8004F320, (s32)&LoadingModel, (s32)&D_8004F308,
-    (s32)&D_8004F300, (s32)&InterfaceModel, (s32)&D_8004F318, (s32)&D_8004F310, (s32)&PowerupsModel,
-    (s32)&D_8004F2F8, (s32)&D_8004F2F0, (s32)&AngelModel, (s32)&D_8004F2E8, (s32)&D_8004F2E0,
-    (s32)&CrateObjectsModel, (s32)&D_8004F2D8, (s32)&D_8004F2D0, (s32)&PapuModel, (s32)&D_8004F2C8,
-    (s32)&D_8004F2C0, (s32)&MinionModel, (s32)&D_8004F2B8, (s32)&D_8004F2B0, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 579], (s32)&DatIndex[2 * 578], (s32)&LoadingModel, (s32)&DatIndex[2 * 575],
+    (s32)&DatIndex[2 * 574], (s32)&InterfaceModel, (s32)&DatIndex[2 * 577], (s32)&DatIndex[2 * 576], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 573], (s32)&DatIndex[2 * 572], (s32)&AngelModel, (s32)&DatIndex[2 * 571], (s32)&DatIndex[2 * 570],
+    (s32)&CrateObjectsModel, (s32)&DatIndex[2 * 569], (s32)&DatIndex[2 * 568], (s32)&PapuModel, (s32)&DatIndex[2 * 567],
+    (s32)&DatIndex[2 * 566], (s32)&MinionModel, (s32)&DatIndex[2 * 565], (s32)&DatIndex[2 * 564], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 4's) */
 file_group_load_info file_group_PAPU = { D_80050148, PapuFiles };

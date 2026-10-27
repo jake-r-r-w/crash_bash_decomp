@@ -4,32 +4,6 @@
 #include "bash/xtras.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8004F330[];
-extern u8 D_8004F338[];
-extern u8 D_8004F340[];
-extern u8 D_8004F348[];
-extern u8 D_8004F350[];
-extern u8 D_8004F358[];
-extern u8 D_8004F360[];
-extern u8 D_8004F368[];
-extern u8 D_8004F370[];
-extern u8 D_8004F378[];
-extern u8 D_8004F380[];
-extern u8 D_8004F388[];
-extern u8 D_8004F390[];
-extern u8 D_8004F398[];
-extern u8 D_8004F3A0[];
-extern u8 D_8004F3A8[];
-extern u8 D_8004F3B0[];
-extern u8 D_8004F3B8[];
-extern u8 D_8004F3C0[];
-extern u8 D_8004F3C8[];
-extern u8 D_8004F3D0[];
-extern u8 D_8004F3D8[];
-extern u8 D_8004F3E0[];
-extern u8 D_8004F3E8[];
-extern u8 D_8004F3F0[];
-extern u8 D_8004F3F8[];
 extern u8 D_80050154[];
 extern u8 D_80050160[];
 extern u8 D_80063BB8[];
@@ -268,17 +242,17 @@ WWInf BashWorldInfo[9] = {
     { 0x2A, BashAnims, BashLevelDB0, 1 },
 };
 s32 BashFiles[21] = {
-    (s32)&FontModel, (s32)&D_8004F3F8, (s32)&D_8004F3F0, (s32)&LoadingModel, (s32)&D_8004F3D8,
-    (s32)&D_8004F3D0, (s32)&InterfaceModel, (s32)&D_8004F3E8, (s32)&D_8004F3E0, (s32)&PowerupsModel,
-    (s32)&D_8004F3C8, (s32)&D_8004F3C0, (s32)&AngelModel, (s32)&D_8004F3B8, (s32)&D_8004F3B0,
-    (s32)&CrateObjectsModel, (s32)&D_8004F3A8, (s32)&D_8004F3A0, 0, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 605], (s32)&DatIndex[2 * 604], (s32)&LoadingModel, (s32)&DatIndex[2 * 601],
+    (s32)&DatIndex[2 * 600], (s32)&InterfaceModel, (s32)&DatIndex[2 * 603], (s32)&DatIndex[2 * 602], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 599], (s32)&DatIndex[2 * 598], (s32)&AngelModel, (s32)&DatIndex[2 * 597], (s32)&DatIndex[2 * 596],
+    (s32)&CrateObjectsModel, (s32)&DatIndex[2 * 595], (s32)&DatIndex[2 * 594], 0, 0, 0,
 };
 s32 BashSnowFiles[24] = {
-    (s32)&FontModel, (s32)&D_8004F398, (s32)&D_8004F390, (s32)&LoadingModel, (s32)&D_8004F378,
-    (s32)&D_8004F370, (s32)&InterfaceModel, (s32)&D_8004F388, (s32)&D_8004F380, (s32)&PowerupsModel,
-    (s32)&D_8004F368, (s32)&D_8004F360, (s32)&AngelModel, (s32)&D_8004F358, (s32)&D_8004F350,
-    (s32)&CrateObjectsModel, (s32)&D_8004F348, (s32)&D_8004F340, (s32)&PenguinModel, (s32)&D_8004F338,
-    (s32)&D_8004F330, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 593], (s32)&DatIndex[2 * 592], (s32)&LoadingModel, (s32)&DatIndex[2 * 589],
+    (s32)&DatIndex[2 * 588], (s32)&InterfaceModel, (s32)&DatIndex[2 * 591], (s32)&DatIndex[2 * 590], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 587], (s32)&DatIndex[2 * 586], (s32)&AngelModel, (s32)&DatIndex[2 * 585], (s32)&DatIndex[2 * 584],
+    (s32)&CrateObjectsModel, (s32)&DatIndex[2 * 583], (s32)&DatIndex[2 * 582], (s32)&PenguinModel, (s32)&DatIndex[2 * 581],
+    (s32)&DatIndex[2 * 580], 0, 0,
 };
 /* the levels' files: the exe's file group and the model list (the engine's table at 0x800A001C
  * points at modes 0..3's and 0x20's) */

@@ -19,7 +19,11 @@ def dat_names(path="configs/USA/dat_names.txt"):
 
 
 def entry(sym):
-    """The archive entry a D_8004xxxx index symbol names, or None."""
+    """The archive entry an index reference names (DatIndex[2 * N], or an old D_8004xxxx label),
+    or None."""
+    m = re.fullmatch(r"DatIndex\[2 \* (\d+)\]", sym)
+    if m:
+        return int(m.group(1))
     m = re.match(r"D_(8004[DEF][0-9A-F]{3})$", sym)
     if not m or int(m.group(1), 16) < DAT_INDEX:
         return None

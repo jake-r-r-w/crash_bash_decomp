@@ -9,7 +9,6 @@
 #include "bash/nas.h"
 #include "bash/levelload.h" /* PlaceRec: the engine's screen placement records */
 
-extern u8 D_8004E568[];
 extern void (*D_8009E58C)(void);
 extern PlaceRec PlayersMenuPlace[];
 extern PlaceRec PlayersMenuAdventurePlace[];

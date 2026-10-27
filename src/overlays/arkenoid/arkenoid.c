@@ -4,36 +4,6 @@
 #include "bash/arkenoid.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8004F050[];
-extern u8 D_8004F058[];
-extern u8 D_8004F060[];
-extern u8 D_8004F068[];
-extern u8 D_8004F070[];
-extern u8 D_8004F078[];
-extern u8 D_8004F080[];
-extern u8 D_8004F088[];
-extern u8 D_8004F090[];
-extern u8 D_8004F098[];
-extern u8 D_8004F0A0[];
-extern u8 D_8004F0A8[];
-extern u8 D_8004F0B0[];
-extern u8 D_8004F0B8[];
-extern u8 D_8004F0C0[];
-extern u8 D_8004F0C8[];
-extern u8 D_8004F0D0[];
-extern u8 D_8004F0D8[];
-extern u8 D_8004F0E0[];
-extern u8 D_8004F0E8[];
-extern u8 D_8004F0F0[];
-extern u8 D_8004F0F8[];
-extern u8 D_8004F100[];
-extern u8 D_8004F108[];
-extern u8 D_8004F110[];
-extern u8 D_8004F118[];
-extern u8 D_8004F120[];
-extern u8 D_8004F128[];
-extern u8 D_8004F130[];
-extern u8 D_8004F138[];
 extern u8 D_80050100[];
 extern u8 D_8005010C[];
 extern u8 D_80063BB8[];
@@ -66,18 +36,18 @@ WWInf ArkWorldInfo[8] = {
     { 0x71, ArkAnims, ArkLevelDB0, 7 },
 };
 s32 ArkFiles[24] = {
-    (s32)&FontModel, (s32)&D_8004F138, (s32)&D_8004F130, (s32)&LoadingModel, (s32)&D_8004F118,
-    (s32)&D_8004F110, (s32)&InterfaceModel, (s32)&D_8004F128, (s32)&D_8004F120, (s32)&PowerupsModel,
-    (s32)&D_8004F108, (s32)&D_8004F100, (s32)&AngelModel, (s32)&D_8004F0F8, (s32)&D_8004F0F0,
-    (s32)&BallsVehicleModel, (s32)&D_8004F0D8, (s32)&D_8004F0D0, (s32)&BallsEffectsModel, (s32)&D_8004F0E8,
-    (s32)&D_8004F0E0, 0, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 517], (s32)&DatIndex[2 * 516], (s32)&LoadingModel, (s32)&DatIndex[2 * 513],
+    (s32)&DatIndex[2 * 512], (s32)&InterfaceModel, (s32)&DatIndex[2 * 515], (s32)&DatIndex[2 * 514], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 511], (s32)&DatIndex[2 * 510], (s32)&AngelModel, (s32)&DatIndex[2 * 509], (s32)&DatIndex[2 * 508],
+    (s32)&BallsVehicleModel, (s32)&DatIndex[2 * 505], (s32)&DatIndex[2 * 504], (s32)&BallsEffectsModel, (s32)&DatIndex[2 * 507],
+    (s32)&DatIndex[2 * 506], 0, 0, 0,
 };
 s32 ArkNginFiles[27] = {
-    (s32)&FontModel, (s32)&D_8004F0C8, (s32)&D_8004F0C0, (s32)&LoadingModel, (s32)&D_8004F0A8,
-    (s32)&D_8004F0A0, (s32)&InterfaceModel, (s32)&D_8004F0B8, (s32)&D_8004F0B0, (s32)&PowerupsModel,
-    (s32)&D_8004F098, (s32)&D_8004F090, (s32)&AngelModel, (s32)&D_8004F088, (s32)&D_8004F080,
-    (s32)&BallsVehicleModel, (s32)&D_8004F078, (s32)&D_8004F070, (s32)&BallsEffectsModel, (s32)&D_8004F068,
-    (s32)&D_8004F060, (s32)&NginModel, (s32)&D_8004F058, (s32)&D_8004F050, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 503], (s32)&DatIndex[2 * 502], (s32)&LoadingModel, (s32)&DatIndex[2 * 499],
+    (s32)&DatIndex[2 * 498], (s32)&InterfaceModel, (s32)&DatIndex[2 * 501], (s32)&DatIndex[2 * 500], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 497], (s32)&DatIndex[2 * 496], (s32)&AngelModel, (s32)&DatIndex[2 * 495], (s32)&DatIndex[2 * 494],
+    (s32)&BallsVehicleModel, (s32)&DatIndex[2 * 493], (s32)&DatIndex[2 * 492], (s32)&BallsEffectsModel, (s32)&DatIndex[2 * 491],
+    (s32)&DatIndex[2 * 490], (s32)&NginModel, (s32)&DatIndex[2 * 489], (s32)&DatIndex[2 * 488], 0, 0,
 };
 /* the four levels' files (modes 14..17; the engine's table at 0x800A0030): the exe's file group
  * and the model list; N. Gin's has more models */

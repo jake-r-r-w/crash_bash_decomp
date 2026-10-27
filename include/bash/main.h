@@ -822,7 +822,6 @@ extern s32 D_8004E0E4;
 void mal_update(_mal_area *heap);
 extern u8 HeapStart[];
 mal *func_80011BF8(_mal_area *heap, u8 *start, s32 size);
-extern u8 D_80050008[];
 extern u8 D_8004E0B8[];
 s32 func_800134FC(u8 *a, u8 *b);
 void init_file(void);
@@ -961,7 +960,7 @@ extern FreeNode *D_80063BB0;
 extern void *D_80063BB4;        /* list walked by func_80028A00 (next at +4) */
 extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
-extern s32 DatIndex[];         /* func_80012D80: 8-byte entries */
+extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N at [2 * N] */
 extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
 extern s32 SfxBankCount;            /* slots of SfxBanks in use */
 extern char D_800654CC[];
@@ -1003,7 +1002,6 @@ extern s32 D_8005AA50;
 extern s32 D_8005AA54;
 extern s32 D_8005A5E4;
 extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
-extern u8 D_8004E9C0[];           /* func_80022140: passed (-0x10/-8/+0) to func_8002BD0C */
 extern s32 D_80058F0C[][8];       /* func_80022140 */
 extern s8 GameOptions[];
 extern s32 card_command_delay;

@@ -180,6 +180,7 @@ void ChaseTriggers(void);
 void ChaseStopHeroSfx(void);
 void ChaseResetSlot(s32 arg0);
 extern LevSpec LevelSpecs; /* the level's hooks */
+extern s32 DatIndex[]; /* the archive index (main.h) */
 void InitialiseCHASEFirst(void);
 void InitialiseCHASE(void);
 void UpdateCHASE(void);

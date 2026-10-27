@@ -1891,8 +1891,6 @@ void func_80093110(void) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 /* what the data points at that this file's headers don't declare */
-extern u8 D_8004E560[];
-extern u8 D_8004E568[];
 extern u8 D_80055614[];
 extern u8 D_8005564C[];
 extern u8 D_800556BC[];
@@ -1911,8 +1909,8 @@ u8 D_8009E498[40] = {
     0, 2, 0, 0, 0xFF, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 IntroStep IntroSteps[4] = {
-    { 1, (void *)&D_8004E568, 0, 0, -1, { 0x3B6, 0x3B7, 0x3B8 }, 0x3B9, 0x5A },
-    { 1, (void *)&D_8004E560, 0, 0, -1, { 0x3BB, 0x3BC, 0x3BD }, 0x3BE, 0x8C },
+    { 1, (void *)&DatIndex[2 * 139], 0, 0, -1, { 0x3B6, 0x3B7, 0x3B8 }, 0x3B9, 0x5A },
+    { 1, (void *)&DatIndex[2 * 138], 0, 0, -1, { 0x3BB, 0x3BC, 0x3BD }, 0x3BE, 0x8C },
     { 2, 0, (void *)&D_800556BC, 0, -1, { 0x3C0, 0x3C1, 0x3C2 }, 0x3C3, 0x14 },
     { 2, 0, (void *)&D_800556F4, 0, 1, { 0x3C5, 0x3C6, 0x3C7 }, 0x3C8, 0x14 },
 };

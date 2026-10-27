@@ -5,10 +5,6 @@
 #include "bash/titles.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8004ED60[];
-extern u8 D_8004ED68[];
-extern u8 D_8004ED70[];
-extern u8 D_8004ED78[];
 extern u8 D_800500B8[];
 extern u8 D_80055614[];
 extern u8 D_8005564C[];
@@ -143,8 +139,8 @@ PlaceRec BattleOptionsPlace[12] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 s32 TitlesFiles[9] = {
-    (s32)&FontModel, (s32)&D_8004ED78, (s32)&D_8004ED70, (s32)&InterfaceModel, (s32)&D_8004ED68,
-    (s32)&D_8004ED60, 0, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 397], (s32)&DatIndex[2 * 396], (s32)&InterfaceModel, (s32)&DatIndex[2 * 395],
+    (s32)&DatIndex[2 * 394], 0, 0, 0,
 };
 /* the engine's table at 0x800A0030 points at it for the front end's modes */
 file_group_load_info file_group_TITLES = { D_800500B8, TitlesFiles };
@@ -1120,9 +1116,9 @@ void RunGameInit(void) {
         func_80010AE8(&MainHeap);
         func_8002BAE8();
     }
-    func_8008EC00(D_8004E568);
+    func_8008EC00(&DatIndex[2 * 139]);
     func_8002BBB4();
-    func_8002BD0C((s32)(D_8004E568 + 0x438));
+    func_8002BD0C((s32)&DatIndex[2 * 274]);
     while (func_80012FFC() != 0) {
         func_8001231C();
         func_80010AE8(&MainHeap);

@@ -288,7 +288,6 @@ typedef struct EngColorSrc {
 } EngColorSrc;
 extern process_info LoadingProcess;
 extern process_info LoadingProcess2;
-extern u8 D_8004E998[];
 extern process_info RetryProcess;
 void func_80093854(void);
 void load_initial_dbases(void);

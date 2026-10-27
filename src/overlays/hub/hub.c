@@ -5,14 +5,6 @@
 #include "bash/hub.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8004ECA0[];
-extern u8 D_8004ECA8[];
-extern u8 D_8004ECB0[];
-extern u8 D_8004ECB8[];
-extern u8 D_8004ECC0[];
-extern u8 D_8004ECC8[];
-extern u8 D_8004ECD0[];
-extern u8 D_8004ECD8[];
 extern u8 D_800500A0[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
@@ -297,9 +289,9 @@ s16 HubLevelDB[4] = { 0xD5, 0x1C, -1, 0 };
 char *HubNoAnims[1] = { NULL };
 s16 HubLevelDB2[4] = { 0x17, 0x1C, -1, 0 };
 s32 HubFiles[15] = {
-    (s32)&FontModel, (s32)&D_8004ECB8, (s32)&D_8004ECB0, (s32)&InterfaceModel, (s32)&D_8004ECC8,
-    (s32)&D_8004ECC0, (s32)&LoadingModel, (s32)&D_8004ECA8, (s32)&D_8004ECA0, (s32)&AdventureItemsModel,
-    (s32)&D_8004ECD8, (s32)&D_8004ECD0, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 373], (s32)&DatIndex[2 * 372], (s32)&InterfaceModel, (s32)&DatIndex[2 * 375],
+    (s32)&DatIndex[2 * 374], (s32)&LoadingModel, (s32)&DatIndex[2 * 371], (s32)&DatIndex[2 * 370], (s32)&AdventureItemsModel,
+    (s32)&DatIndex[2 * 377], (s32)&DatIndex[2 * 376], 0, 0,
 };
 /* the warp rooms' files (the engine's per-mode table points at modes 0x21..0x27's) */
 file_group_load_info file_group_HUB = { D_800500A0, HubFiles };

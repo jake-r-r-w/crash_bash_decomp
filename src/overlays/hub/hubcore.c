@@ -8,14 +8,6 @@
 #include "bash/titles.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8004ECA0[];
-extern u8 D_8004ECA8[];
-extern u8 D_8004ECB0[];
-extern u8 D_8004ECB8[];
-extern u8 D_8004ECC0[];
-extern u8 D_8004ECC8[];
-extern u8 D_8004ECD0[];
-extern u8 D_8004ECD8[];
 extern u8 D_800500A0[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];

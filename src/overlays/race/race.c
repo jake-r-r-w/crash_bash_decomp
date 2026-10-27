@@ -7,22 +7,6 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8004ED80[];
-extern u8 D_8004ED88[];
-extern u8 D_8004ED90[];
-extern u8 D_8004ED98[];
-extern u8 D_8004EDA0[];
-extern u8 D_8004EDA8[];
-extern u8 D_8004EDB0[];
-extern u8 D_8004EDB8[];
-extern u8 D_8004EDC0[];
-extern u8 D_8004EDC8[];
-extern u8 D_8004EDD0[];
-extern u8 D_8004EDD8[];
-extern u8 D_8004EDE0[];
-extern u8 D_8004EDE8[];
-extern u8 D_8004EDF0[];
-extern u8 D_8004EDF8[];
 extern u8 D_800500C4[];
 extern u8 MasksModel[];
 extern u8 D_80063BB8[];
@@ -365,11 +349,11 @@ WWInf RaceWorldInfo[8] = {
     { 0xB9, RaceAnimsB, RaceLevelDB, 1 },
 };
 s32 RaceFiles[27] = {
-    (s32)&FontModel, (s32)&D_8004EDF8, (s32)&D_8004EDF0, (s32)&LoadingModel, (s32)&D_8004EDD8,
-    (s32)&D_8004EDD0, (s32)&InterfaceModel, (s32)&D_8004EDE8, (s32)&D_8004EDE0, (s32)&PowerupsModel,
-    (s32)&D_8004EDC8, (s32)&D_8004EDC0, (s32)&PolarObjectsModel, (s32)&D_8004EDA8, (s32)&D_8004EDA0,
-    (s32)&CrateEffectsModel, (s32)&D_8004EDB8, (s32)&D_8004EDB0, (s32)&CrateObjectsModel, (s32)&D_8004ED98,
-    (s32)&D_8004ED90, (s32)&MasksModel, (s32)&D_8004ED88, (s32)&D_8004ED80, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 413], (s32)&DatIndex[2 * 412], (s32)&LoadingModel, (s32)&DatIndex[2 * 409],
+    (s32)&DatIndex[2 * 408], (s32)&InterfaceModel, (s32)&DatIndex[2 * 411], (s32)&DatIndex[2 * 410], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 407], (s32)&DatIndex[2 * 406], (s32)&PolarObjectsModel, (s32)&DatIndex[2 * 403], (s32)&DatIndex[2 * 402],
+    (s32)&CrateEffectsModel, (s32)&DatIndex[2 * 405], (s32)&DatIndex[2 * 404], (s32)&CrateObjectsModel, (s32)&DatIndex[2 * 401],
+    (s32)&DatIndex[2 * 400], (s32)&MasksModel, (s32)&DatIndex[2 * 399], (s32)&DatIndex[2 * 398], 0, 0,
 };
 /* the levels' files (the engine's per-mode table points at modes 0x17..0x1A's) */
 file_group_load_info file_group_DASH = { D_800500C4, RaceFiles };

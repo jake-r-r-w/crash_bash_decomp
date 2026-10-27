@@ -13,18 +13,6 @@ extern u8 D_8004419C[];
 extern u8 D_80044218[];
 extern u8 D_80044594[];
 extern u8 D_80044614[];
-extern u8 D_8004EC10[];
-extern u8 D_8004EC18[];
-extern u8 D_8004EC20[];
-extern u8 D_8004EC28[];
-extern u8 D_8004EC30[];
-extern u8 D_8004EC38[];
-extern u8 D_8004EC40[];
-extern u8 D_8004EC48[];
-extern u8 D_8004EC50[];
-extern u8 D_8004EC58[];
-extern u8 D_8004EC60[];
-extern u8 D_8004EC68[];
 extern u8 D_80050088[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
@@ -190,10 +178,10 @@ WWInf SpinWorldInfo[2] = {
     { 0x7E, SpinAnims, SpinLevelDB1, 7 },
 };
 s32 SpinFiles[21] = {
-    (s32)&FontModel, (s32)&D_8004EC68, (s32)&D_8004EC60, (s32)&LoadingModel, (s32)&D_8004EC48,
-    (s32)&D_8004EC40, (s32)&InterfaceModel, (s32)&D_8004EC58, (s32)&D_8004EC50, (s32)&PowerupsModel,
-    (s32)&D_8004EC38, (s32)&D_8004EC30, (s32)&CrateObjectsModel, (s32)&D_8004EC28, (s32)&D_8004EC20,
-    (s32)&RingObjectsModel, (s32)&D_8004EC18, (s32)&D_8004EC10, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 363], (s32)&DatIndex[2 * 362], (s32)&LoadingModel, (s32)&DatIndex[2 * 359],
+    (s32)&DatIndex[2 * 358], (s32)&InterfaceModel, (s32)&DatIndex[2 * 361], (s32)&DatIndex[2 * 360], (s32)&PowerupsModel,
+    (s32)&DatIndex[2 * 357], (s32)&DatIndex[2 * 356], (s32)&CrateObjectsModel, (s32)&DatIndex[2 * 355], (s32)&DatIndex[2 * 354],
+    (s32)&RingObjectsModel, (s32)&DatIndex[2 * 353], (s32)&DatIndex[2 * 352], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1B's) */
 file_group_load_info file_group_RING = { D_80050088, SpinFiles };

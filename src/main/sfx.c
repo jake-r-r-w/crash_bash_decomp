@@ -24,7 +24,7 @@ void func_80022140(s32 arg0, s32 arg1) {
         func_8002BD0C(f);
     }
     do {
-        q = D_8004E9C0;
+        q = &DatIndex[2 * 278];
         t8 = (u32)(q - 8);
     } while (0);
     d = ModeTypes;
@@ -346,101 +346,6 @@ static inline NAS *AllocNAS(void) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 /* what the data points at that this file's headers don't declare */
-extern u8 D_8004E5E0[];
-extern u8 D_8004E5E8[];
-extern u8 D_8004E5F0[];
-extern u8 D_8004E5F8[];
-extern u8 D_8004E600[];
-extern u8 D_8004E608[];
-extern u8 D_8004E610[];
-extern u8 D_8004E618[];
-extern u8 D_8004E620[];
-extern u8 D_8004E628[];
-extern u8 D_8004E630[];
-extern u8 D_8004E638[];
-extern u8 D_8004E640[];
-extern u8 D_8004E648[];
-extern u8 D_8004E650[];
-extern u8 D_8004E658[];
-extern u8 D_8004E660[];
-extern u8 D_8004E668[];
-extern u8 D_8004E670[];
-extern u8 D_8004E678[];
-extern u8 D_8004E680[];
-extern u8 D_8004E688[];
-extern u8 D_8004E690[];
-extern u8 D_8004E698[];
-extern u8 D_8004E6A0[];
-extern u8 D_8004E6A8[];
-extern u8 D_8004E6B0[];
-extern u8 D_8004E6B8[];
-extern u8 D_8004E6C0[];
-extern u8 D_8004E6C8[];
-extern u8 D_8004E6D0[];
-extern u8 D_8004E6D8[];
-extern u8 D_8004E6E0[];
-extern u8 D_8004E6E8[];
-extern u8 D_8004E6F0[];
-extern u8 D_8004E6F8[];
-extern u8 D_8004E700[];
-extern u8 D_8004E708[];
-extern u8 D_8004E710[];
-extern u8 D_8004E718[];
-extern u8 D_8004E720[];
-extern u8 D_8004E728[];
-extern u8 D_8004E730[];
-extern u8 D_8004E738[];
-extern u8 D_8004E740[];
-extern u8 D_8004E748[];
-extern u8 D_8004E750[];
-extern u8 D_8004E758[];
-extern u8 D_8004E760[];
-extern u8 D_8004E768[];
-extern u8 D_8004E770[];
-extern u8 D_8004E778[];
-extern u8 D_8004E780[];
-extern u8 D_8004E788[];
-extern u8 D_8004E790[];
-extern u8 D_8004E798[];
-extern u8 D_8004E7A0[];
-extern u8 D_8004E7A8[];
-extern u8 D_8004E7B0[];
-extern u8 D_8004E7B8[];
-extern u8 D_8004E990[];
-extern u8 D_8004E998[];
-extern u8 D_8004E9C8[];
-extern u8 D_8004E9D0[];
-extern u8 D_8004E9D8[];
-extern u8 D_8004E9E0[];
-extern u8 D_8004E9E8[];
-extern u8 D_8004E9F0[];
-extern u8 D_8004E9F8[];
-extern u8 D_8004EA00[];
-extern u8 D_8004EA08[];
-extern u8 D_8004EA10[];
-extern u8 D_8004EA18[];
-extern u8 D_8004EA20[];
-extern u8 D_8004EA28[];
-extern u8 D_8004EA30[];
-extern u8 D_8004EA38[];
-extern u8 D_8004EA40[];
-extern u8 D_8004EA48[];
-extern u8 D_8004EA50[];
-extern u8 D_8004EA58[];
-extern u8 D_8004EA60[];
-extern u8 D_8004EA68[];
-extern u8 D_8004EA78[];
-extern u8 D_8004EA80[];
-extern u8 D_8004EA88[];
-extern u8 D_8004EF00[];
-extern u8 D_8004EF08[];
-extern u8 D_8004EF10[];
-extern u8 D_8004EF18[];
-extern u8 D_8004EF20[];
-extern u8 D_8004EF28[];
-extern u8 D_8004EF30[];
-extern u8 D_8004EF38[];
-extern u8 D_8004EF40[];
 extern const char PauseText01[];
 extern const char PauseText02[];
 extern const char PauseText03[];
@@ -499,108 +404,108 @@ extern const char PauseTextYes[];
 extern const char PauseTextYesNo[];
 
 MusicEntry MusicTable[45] = {
-    { (s32)&D_8004EA38, 2, { 0, 0 }, (s32)&D_8004E648, (s32)&D_8004E648, 0x9A, { 0, 0 } },
-    { (s32)&D_8004EA58, 2, { 0, 0 }, (s32)&D_8004E640, (s32)&D_8004E640, 0x88, { 0, 0 } },
-    { (s32)&D_8004EA18, 2, { 0, 0 }, (s32)&D_8004E638, (s32)&D_8004E638, 0xE1, { 0, 0 } },
-    { (s32)&D_8004EA60, 2, { 0, 0 }, (s32)&D_8004E630, (s32)&D_8004E630, 0x90, { 0, 0 } },
-    { (s32)&D_8004EA20, 2, { 0, 0 }, (s32)&D_8004E628, (s32)&D_8004E628, 0x88, { 0, 0 } },
-    { (s32)&D_8004E9E8, 2, { 0, 0 }, (s32)&D_8004E608, (s32)&D_8004E608, 0x90, { 0, 0 } },
-    { (s32)&D_8004E9D8, 2, { 0, 0 }, (s32)&D_8004E620, (s32)&D_8004E620, 0x74, { 0, 0 } },
-    { (s32)&D_8004E9E0, 2, { 0, 0 }, (s32)&D_8004E610, (s32)&D_8004E610, 0x79, { 0, 0 } },
-    { (s32)&D_8004E9D0, 2, { 0, 0 }, (s32)&D_8004E618, (s32)&D_8004E618, 0x6F, { 0, 0 } },
-    { (s32)&D_8004E9D0, 2, { 0, 0 }, (s32)&D_8004E600, (s32)&D_8004E600, 0x6F, { 0, 0 } },
-    { (s32)&D_8004EA68, 2, { 0, 0 }, (s32)&D_8004E668, (s32)&D_8004E668, 0x6C, { 0, 0 } },
-    { (s32)&D_8004EA00, 2, { 0, 0 }, (s32)&D_8004E660, (s32)&D_8004E660, 0xB2, { 0, 0 } },
-    { (s32)&D_8004EA28, 2, { 0, 0 }, (s32)&D_8004E658, (s32)&D_8004E658, 0xA0, { 0, 0 } },
-    { (s32)&D_8004EF40, 2, { 0, 0 }, (s32)&D_8004E650, (s32)&D_8004E650, 0x5F, { 0, 0 } },
-    { (s32)&D_8004EA50, 2, { 0, 0 }, (s32)&D_8004E5F8, (s32)&D_8004E5F8, 0xA0, { 0, 0 } },
-    { (s32)&D_8004EA08, 2, { 0, 0 }, (s32)&D_8004E5F0, (s32)&D_8004E5F0, 0x8C, { 0, 0 } },
-    { (s32)&D_8004EA00, 2, { 0, 0 }, (s32)&D_8004E5E8, (s32)&D_8004E5E8, 0xB2, { 0, 0 } },
-    { (s32)&D_8004EA80, 2, { 0, 0 }, (s32)&D_8004E5E0, (s32)&D_8004E5E0, 0x83, { 0, 0 } },
-    { (s32)&D_8004E9C8, 2, { 0, 0 }, (s32)&D_8004EF20, (s32)&D_8004EF18, 0xD7, { 0, 0 } },
-    { (s32)&D_8004EA48, 2, { 0, 0 }, (s32)&D_8004EF28, (s32)&D_8004EF28, 0xA0, { 0, 0 } },
-    { (s32)&D_8004EA60, 2, { 0, 0 }, (s32)&D_8004EF10, (s32)&D_8004EF10, 0x90, { 0, 0 } },
-    { (s32)&D_8004EF38, 2, { 0, 0 }, (s32)&D_8004EF08, (s32)&D_8004EF08, 0x83, { 0, 0 } },
-    { (s32)&D_8004EF30, 2, { 0, 0 }, (s32)&D_8004EF00, (s32)&D_8004EF00, 0x9D, { 0, 0 } },
-    { (s32)&D_8004E9F8, 2, { 0, 0 }, (s32)&D_8004E688, (s32)&D_8004E688, 0xC8, { 0, 0 } },
-    { (s32)&D_8004E9F0, 2, { 0, 0 }, (s32)&D_8004E680, (s32)&D_8004E680, 0xBE, { 0, 0 } },
-    { (s32)&D_8004E9F8, 2, { 0, 0 }, (s32)&D_8004E678, (s32)&D_8004E678, 0xC8, { 0, 0 } },
-    { (s32)&D_8004E9E8, 2, { 0, 0 }, (s32)&D_8004E670, (s32)&D_8004E670, 0x90, { 0, 0 } },
-    { (s32)&D_8004E9C8, 2, { 0, 0 }, (s32)&D_8004E6B0, (s32)&D_8004E6B0, 0xD7, { 0, 0 } },
-    { (s32)&D_8004E9E8, 2, { 0, 0 }, (s32)&D_8004E6A8, (s32)&D_8004E6A8, 0x90, { 0, 0 } },
-    { (s32)&D_8004EA30, 3, { 0, 0 }, (s32)&D_8004E6A0, (s32)&D_8004E6A0, 0x9B, { 0, 0 } },
-    { (s32)&D_8004EA30, 2, { 0, 0 }, (s32)&D_8004E698, (s32)&D_8004E698, 0x9B, { 0, 0 } },
-    { (s32)&D_8004E9F8, 2, { 0, 0 }, (s32)&D_8004E690, (s32)&D_8004E690, 0xC8, { 0, 0 } },
-    { (s32)&D_8004EA20, 2, { 0, 0 }, (s32)&D_8004E640, (s32)&D_8004E640, 0x88, { 0, 0 } },
-    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
-    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
-    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
-    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
-    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
-    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
-    { (s32)&D_8004EA40, 2, { 0, 0 }, (s32)&D_8004E990, (s32)&D_8004E990, 0x78, { 0, 0 } },
-    { (s32)&D_8004EA88, 2, { 0, 0 }, (s32)&D_8004E998, (s32)&D_8004E998, 0x88, { 0, 0 } },
-    { (s32)&D_8004EA88, 2, { 0, 0 }, (s32)&D_8004E998, (s32)&D_8004E998, 0x88, { 0, 0 } },
-    { (s32)&D_8004EA88, 2, { 0, 0 }, (s32)&D_8004E998, (s32)&D_8004E998, 0x88, { 0, 0 } },
-    { (s32)&D_8004EA10, 2, { 0, 0 }, (s32)&D_8004E6B8, (s32)&D_8004E6B8, 0x9C, { 0, 0 } },
-    { (s32)&D_8004EA78, 0, { 0, 0 }, (s32)&D_8004E998, (s32)&D_8004E998, 0x78, { 0, 0 } },
+    { (s32)&DatIndex[2 * 293], 2, { 0, 0 }, (s32)&DatIndex[2 * 167], (s32)&DatIndex[2 * 167], 0x9A, { 0, 0 } },
+    { (s32)&DatIndex[2 * 297], 2, { 0, 0 }, (s32)&DatIndex[2 * 166], (s32)&DatIndex[2 * 166], 0x88, { 0, 0 } },
+    { (s32)&DatIndex[2 * 289], 2, { 0, 0 }, (s32)&DatIndex[2 * 165], (s32)&DatIndex[2 * 165], 0xE1, { 0, 0 } },
+    { (s32)&DatIndex[2 * 298], 2, { 0, 0 }, (s32)&DatIndex[2 * 164], (s32)&DatIndex[2 * 164], 0x90, { 0, 0 } },
+    { (s32)&DatIndex[2 * 290], 2, { 0, 0 }, (s32)&DatIndex[2 * 163], (s32)&DatIndex[2 * 163], 0x88, { 0, 0 } },
+    { (s32)&DatIndex[2 * 283], 2, { 0, 0 }, (s32)&DatIndex[2 * 159], (s32)&DatIndex[2 * 159], 0x90, { 0, 0 } },
+    { (s32)&DatIndex[2 * 281], 2, { 0, 0 }, (s32)&DatIndex[2 * 162], (s32)&DatIndex[2 * 162], 0x74, { 0, 0 } },
+    { (s32)&DatIndex[2 * 282], 2, { 0, 0 }, (s32)&DatIndex[2 * 160], (s32)&DatIndex[2 * 160], 0x79, { 0, 0 } },
+    { (s32)&DatIndex[2 * 280], 2, { 0, 0 }, (s32)&DatIndex[2 * 161], (s32)&DatIndex[2 * 161], 0x6F, { 0, 0 } },
+    { (s32)&DatIndex[2 * 280], 2, { 0, 0 }, (s32)&DatIndex[2 * 158], (s32)&DatIndex[2 * 158], 0x6F, { 0, 0 } },
+    { (s32)&DatIndex[2 * 299], 2, { 0, 0 }, (s32)&DatIndex[2 * 171], (s32)&DatIndex[2 * 171], 0x6C, { 0, 0 } },
+    { (s32)&DatIndex[2 * 286], 2, { 0, 0 }, (s32)&DatIndex[2 * 170], (s32)&DatIndex[2 * 170], 0xB2, { 0, 0 } },
+    { (s32)&DatIndex[2 * 291], 2, { 0, 0 }, (s32)&DatIndex[2 * 169], (s32)&DatIndex[2 * 169], 0xA0, { 0, 0 } },
+    { (s32)&DatIndex[2 * 454], 2, { 0, 0 }, (s32)&DatIndex[2 * 168], (s32)&DatIndex[2 * 168], 0x5F, { 0, 0 } },
+    { (s32)&DatIndex[2 * 296], 2, { 0, 0 }, (s32)&DatIndex[2 * 157], (s32)&DatIndex[2 * 157], 0xA0, { 0, 0 } },
+    { (s32)&DatIndex[2 * 287], 2, { 0, 0 }, (s32)&DatIndex[2 * 156], (s32)&DatIndex[2 * 156], 0x8C, { 0, 0 } },
+    { (s32)&DatIndex[2 * 286], 2, { 0, 0 }, (s32)&DatIndex[2 * 155], (s32)&DatIndex[2 * 155], 0xB2, { 0, 0 } },
+    { (s32)&DatIndex[2 * 302], 2, { 0, 0 }, (s32)&DatIndex[2 * 154], (s32)&DatIndex[2 * 154], 0x83, { 0, 0 } },
+    { (s32)&DatIndex[2 * 279], 2, { 0, 0 }, (s32)&DatIndex[2 * 450], (s32)&DatIndex[2 * 449], 0xD7, { 0, 0 } },
+    { (s32)&DatIndex[2 * 295], 2, { 0, 0 }, (s32)&DatIndex[2 * 451], (s32)&DatIndex[2 * 451], 0xA0, { 0, 0 } },
+    { (s32)&DatIndex[2 * 298], 2, { 0, 0 }, (s32)&DatIndex[2 * 448], (s32)&DatIndex[2 * 448], 0x90, { 0, 0 } },
+    { (s32)&DatIndex[2 * 453], 2, { 0, 0 }, (s32)&DatIndex[2 * 447], (s32)&DatIndex[2 * 447], 0x83, { 0, 0 } },
+    { (s32)&DatIndex[2 * 452], 2, { 0, 0 }, (s32)&DatIndex[2 * 446], (s32)&DatIndex[2 * 446], 0x9D, { 0, 0 } },
+    { (s32)&DatIndex[2 * 285], 2, { 0, 0 }, (s32)&DatIndex[2 * 175], (s32)&DatIndex[2 * 175], 0xC8, { 0, 0 } },
+    { (s32)&DatIndex[2 * 284], 2, { 0, 0 }, (s32)&DatIndex[2 * 174], (s32)&DatIndex[2 * 174], 0xBE, { 0, 0 } },
+    { (s32)&DatIndex[2 * 285], 2, { 0, 0 }, (s32)&DatIndex[2 * 173], (s32)&DatIndex[2 * 173], 0xC8, { 0, 0 } },
+    { (s32)&DatIndex[2 * 283], 2, { 0, 0 }, (s32)&DatIndex[2 * 172], (s32)&DatIndex[2 * 172], 0x90, { 0, 0 } },
+    { (s32)&DatIndex[2 * 279], 2, { 0, 0 }, (s32)&DatIndex[2 * 180], (s32)&DatIndex[2 * 180], 0xD7, { 0, 0 } },
+    { (s32)&DatIndex[2 * 283], 2, { 0, 0 }, (s32)&DatIndex[2 * 179], (s32)&DatIndex[2 * 179], 0x90, { 0, 0 } },
+    { (s32)&DatIndex[2 * 292], 3, { 0, 0 }, (s32)&DatIndex[2 * 178], (s32)&DatIndex[2 * 178], 0x9B, { 0, 0 } },
+    { (s32)&DatIndex[2 * 292], 2, { 0, 0 }, (s32)&DatIndex[2 * 177], (s32)&DatIndex[2 * 177], 0x9B, { 0, 0 } },
+    { (s32)&DatIndex[2 * 285], 2, { 0, 0 }, (s32)&DatIndex[2 * 176], (s32)&DatIndex[2 * 176], 0xC8, { 0, 0 } },
+    { (s32)&DatIndex[2 * 290], 2, { 0, 0 }, (s32)&DatIndex[2 * 166], (s32)&DatIndex[2 * 166], 0x88, { 0, 0 } },
+    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
+    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
+    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
+    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
+    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
+    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
+    { (s32)&DatIndex[2 * 294], 2, { 0, 0 }, (s32)&DatIndex[2 * 272], (s32)&DatIndex[2 * 272], 0x78, { 0, 0 } },
+    { (s32)&DatIndex[2 * 303], 2, { 0, 0 }, (s32)&DatIndex[2 * 273], (s32)&DatIndex[2 * 273], 0x88, { 0, 0 } },
+    { (s32)&DatIndex[2 * 303], 2, { 0, 0 }, (s32)&DatIndex[2 * 273], (s32)&DatIndex[2 * 273], 0x88, { 0, 0 } },
+    { (s32)&DatIndex[2 * 303], 2, { 0, 0 }, (s32)&DatIndex[2 * 273], (s32)&DatIndex[2 * 273], 0x88, { 0, 0 } },
+    { (s32)&DatIndex[2 * 288], 2, { 0, 0 }, (s32)&DatIndex[2 * 181], (s32)&DatIndex[2 * 181], 0x9C, { 0, 0 } },
+    { (s32)&DatIndex[2 * 301], 0, { 0, 0 }, (s32)&DatIndex[2 * 273], (s32)&DatIndex[2 * 273], 0x78, { 0, 0 } },
 };
 s32 D_80058F0C[14][8] = {
     {
-        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
-        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
+        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
     },
     {
-        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
-        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
+        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
     },
     {
-        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
-        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
+        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
     },
     {
-        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
-        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
+        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
     },
     {
-        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
-        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
+        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
     },
     {
-        (s32)&D_8004E6F0, (s32)&D_8004E6F8, (s32)&D_8004E6E8, (s32)&D_8004E6E0,
-        (s32)&D_8004E6C8, (s32)&D_8004E6C0, (s32)&D_8004E6D8, (s32)&D_8004E6D0,
+        (s32)&DatIndex[2 * 188], (s32)&DatIndex[2 * 189], (s32)&DatIndex[2 * 187], (s32)&DatIndex[2 * 186],
+        (s32)&DatIndex[2 * 183], (s32)&DatIndex[2 * 182], (s32)&DatIndex[2 * 185], (s32)&DatIndex[2 * 184],
     },
     {
-        (s32)&D_8004E730, (s32)&D_8004E738, (s32)&D_8004E728, (s32)&D_8004E720,
-        (s32)&D_8004E708, (s32)&D_8004E700, (s32)&D_8004E718, (s32)&D_8004E710,
+        (s32)&DatIndex[2 * 196], (s32)&DatIndex[2 * 197], (s32)&DatIndex[2 * 195], (s32)&DatIndex[2 * 194],
+        (s32)&DatIndex[2 * 191], (s32)&DatIndex[2 * 190], (s32)&DatIndex[2 * 193], (s32)&DatIndex[2 * 192],
     },
     {
-        (s32)&D_8004E730, (s32)&D_8004E738, (s32)&D_8004E728, (s32)&D_8004E720,
-        (s32)&D_8004E708, (s32)&D_8004E700, (s32)&D_8004E718, (s32)&D_8004E710,
+        (s32)&DatIndex[2 * 196], (s32)&DatIndex[2 * 197], (s32)&DatIndex[2 * 195], (s32)&DatIndex[2 * 194],
+        (s32)&DatIndex[2 * 191], (s32)&DatIndex[2 * 190], (s32)&DatIndex[2 * 193], (s32)&DatIndex[2 * 192],
     },
     {
-        (s32)&D_8004E770, (s32)&D_8004E778, (s32)&D_8004E768, (s32)&D_8004E760,
-        (s32)&D_8004E748, (s32)&D_8004E740, (s32)&D_8004E758, (s32)&D_8004E750,
+        (s32)&DatIndex[2 * 204], (s32)&DatIndex[2 * 205], (s32)&DatIndex[2 * 203], (s32)&DatIndex[2 * 202],
+        (s32)&DatIndex[2 * 199], (s32)&DatIndex[2 * 198], (s32)&DatIndex[2 * 201], (s32)&DatIndex[2 * 200],
     },
     {
-        (s32)&D_8004E730, (s32)&D_8004E738, (s32)&D_8004E728, (s32)&D_8004E720,
-        (s32)&D_8004E708, (s32)&D_8004E700, (s32)&D_8004E718, (s32)&D_8004E710,
+        (s32)&DatIndex[2 * 196], (s32)&DatIndex[2 * 197], (s32)&DatIndex[2 * 195], (s32)&DatIndex[2 * 194],
+        (s32)&DatIndex[2 * 191], (s32)&DatIndex[2 * 190], (s32)&DatIndex[2 * 193], (s32)&DatIndex[2 * 192],
     },
     {
-        (s32)&D_8004E770, (s32)&D_8004E778, (s32)&D_8004E768, (s32)&D_8004E760,
-        (s32)&D_8004E748, (s32)&D_8004E740, (s32)&D_8004E758, (s32)&D_8004E750,
+        (s32)&DatIndex[2 * 204], (s32)&DatIndex[2 * 205], (s32)&DatIndex[2 * 203], (s32)&DatIndex[2 * 202],
+        (s32)&DatIndex[2 * 199], (s32)&DatIndex[2 * 198], (s32)&DatIndex[2 * 201], (s32)&DatIndex[2 * 200],
     },
     {
-        (s32)&D_8004E6F0, (s32)&D_8004E6F8, (s32)&D_8004E6E8, (s32)&D_8004E6E0,
-        (s32)&D_8004E6C8, (s32)&D_8004E6C0, (s32)&D_8004E6D8, (s32)&D_8004E6D0,
+        (s32)&DatIndex[2 * 188], (s32)&DatIndex[2 * 189], (s32)&DatIndex[2 * 187], (s32)&DatIndex[2 * 186],
+        (s32)&DatIndex[2 * 183], (s32)&DatIndex[2 * 182], (s32)&DatIndex[2 * 185], (s32)&DatIndex[2 * 184],
     },
     {
-        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
-        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
+        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
     },
     {
-        (s32)&D_8004E7B0, (s32)&D_8004E7B8, (s32)&D_8004E7A8, (s32)&D_8004E7A0,
-        (s32)&D_8004E788, (s32)&D_8004E780, (s32)&D_8004E798, (s32)&D_8004E790,
+        (s32)&DatIndex[2 * 212], (s32)&DatIndex[2 * 213], (s32)&DatIndex[2 * 211], (s32)&DatIndex[2 * 210],
+        (s32)&DatIndex[2 * 207], (s32)&DatIndex[2 * 206], (s32)&DatIndex[2 * 209], (s32)&DatIndex[2 * 208],
     },
 };
 s32 FirstBootDone = 0;

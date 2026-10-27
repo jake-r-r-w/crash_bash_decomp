@@ -8,38 +8,6 @@
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 PowerupsModel[]; /* engine.h declares it, but polar.c does not include that */
 extern u8 D_80044188[];
-extern u8 D_8004EE00[];
-extern u8 D_8004EE08[];
-extern u8 D_8004EE10[];
-extern u8 D_8004EE18[];
-extern u8 D_8004EE20[];
-extern u8 D_8004EE28[];
-extern u8 D_8004EE30[];
-extern u8 D_8004EE38[];
-extern u8 D_8004EE40[];
-extern u8 D_8004EE48[];
-extern u8 D_8004EE50[];
-extern u8 D_8004EE58[];
-extern u8 D_8004EE60[];
-extern u8 D_8004EE68[];
-extern u8 D_8004EE70[];
-extern u8 D_8004EE78[];
-extern u8 D_8004EE80[];
-extern u8 D_8004EE88[];
-extern u8 D_8004EE90[];
-extern u8 D_8004EE98[];
-extern u8 D_8004EEA0[];
-extern u8 D_8004EEA8[];
-extern u8 D_8004EEB0[];
-extern u8 D_8004EEB8[];
-extern u8 D_8004EEC0[];
-extern u8 D_8004EEC8[];
-extern u8 D_8004EED0[];
-extern u8 D_8004EED8[];
-extern u8 D_8004EEE0[];
-extern u8 D_8004EEE8[];
-extern u8 D_8004EEF0[];
-extern u8 D_8004EEF8[];
 extern u8 D_800500D0[];
 extern u8 D_800500DC[];
 extern u8 D_800500E8[];
@@ -614,22 +582,22 @@ WWInf PolarWorldInfo[10] = {
     { 0x98, PolarAnims, PolarLevelDB1, 1 },
 };
 s32 PolarEndFiles[15] = {
-    (s32)&FontModel, (s32)&D_8004EEF8, (s32)&D_8004EEF0, (s32)&LoadingModel, (s32)&D_8004EED8,
-    (s32)&D_8004EED0, (s32)&InterfaceModel, (s32)&D_8004EEE8, (s32)&D_8004EEE0, (s32)&PolarObjectsModel,
-    (s32)&D_8004EEC8, (s32)&D_8004EEC0, 0, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 445], (s32)&DatIndex[2 * 444], (s32)&LoadingModel, (s32)&DatIndex[2 * 441],
+    (s32)&DatIndex[2 * 440], (s32)&InterfaceModel, (s32)&DatIndex[2 * 443], (s32)&DatIndex[2 * 442], (s32)&PolarObjectsModel,
+    (s32)&DatIndex[2 * 439], (s32)&DatIndex[2 * 438], 0, 0, 0,
 };
 s32 PolarFiles[18] = {
-    (s32)&FontModel, (s32)&D_8004EEB8, (s32)&D_8004EEB0, (s32)&LoadingModel, (s32)&D_8004EE98,
-    (s32)&D_8004EE90, (s32)&InterfaceModel, (s32)&D_8004EEA8, (s32)&D_8004EEA0, (s32)&PolarObjectsModel,
-    (s32)&D_8004EE88, (s32)&D_8004EE80, (s32)&PolarModel, (s32)&D_8004EE78, (s32)&D_8004EE70,
+    (s32)&FontModel, (s32)&DatIndex[2 * 437], (s32)&DatIndex[2 * 436], (s32)&LoadingModel, (s32)&DatIndex[2 * 433],
+    (s32)&DatIndex[2 * 432], (s32)&InterfaceModel, (s32)&DatIndex[2 * 435], (s32)&DatIndex[2 * 434], (s32)&PolarObjectsModel,
+    (s32)&DatIndex[2 * 431], (s32)&DatIndex[2 * 430], (s32)&PolarModel, (s32)&DatIndex[2 * 429], (s32)&DatIndex[2 * 428],
     0, 0, 0,
 };
 s32 PolarBossFiles[24] = {
-    (s32)&FontModel, (s32)&D_8004EE68, (s32)&D_8004EE60, (s32)&LoadingModel, (s32)&D_8004EE48,
-    (s32)&D_8004EE40, (s32)&InterfaceModel, (s32)&D_8004EE58, (s32)&D_8004EE50, (s32)&PolarObjectsModel,
-    (s32)&D_8004EE38, (s32)&D_8004EE30, (s32)&PolarModel, (s32)&D_8004EE28, (s32)&D_8004EE20,
-    (s32)&RoboPolarModel, (s32)&D_8004EE18, (s32)&D_8004EE10, (s32)&PowerupsModel, (s32)&D_8004EE08,
-    (s32)&D_8004EE00, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 427], (s32)&DatIndex[2 * 426], (s32)&LoadingModel, (s32)&DatIndex[2 * 423],
+    (s32)&DatIndex[2 * 422], (s32)&InterfaceModel, (s32)&DatIndex[2 * 425], (s32)&DatIndex[2 * 424], (s32)&PolarObjectsModel,
+    (s32)&DatIndex[2 * 421], (s32)&DatIndex[2 * 420], (s32)&PolarModel, (s32)&DatIndex[2 * 419], (s32)&DatIndex[2 * 418],
+    (s32)&RoboPolarModel, (s32)&DatIndex[2 * 417], (s32)&DatIndex[2 * 416], (s32)&PowerupsModel, (s32)&DatIndex[2 * 415],
+    (s32)&DatIndex[2 * 414], 0, 0,
 };
 /* the levels' files, in the leak's order (Day, Night, Cut, their challenges, End and its challenge,
  * the boss): the exe's file group and the model list; the engine's table at 0x800A0030 points at

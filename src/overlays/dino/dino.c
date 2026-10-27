@@ -6,14 +6,6 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8004EBD0[];
-extern u8 D_8004EBD8[];
-extern u8 D_8004EBE0[];
-extern u8 D_8004EBE8[];
-extern u8 D_8004EBF0[];
-extern u8 D_8004EBF8[];
-extern u8 D_8004EC00[];
-extern u8 D_8004EC08[];
 extern u8 D_8005007C[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
@@ -243,9 +235,9 @@ WWInf DinoWorldInfo[2] = {
     { 0xBA, DinoAnims, DinoLevelDB, 1 },
 };
 s32 DinoFiles[15] = {
-    (s32)&FontModel, (s32)&D_8004EC08, (s32)&D_8004EC00, (s32)&LoadingModel, (s32)&D_8004EBE8,
-    (s32)&D_8004EBE0, (s32)&InterfaceModel, (s32)&D_8004EBF8, (s32)&D_8004EBF0, (s32)&DragonObjectsModel,
-    (s32)&D_8004EBD8, (s32)&D_8004EBD0, 0, 0,
+    (s32)&FontModel, (s32)&DatIndex[2 * 351], (s32)&DatIndex[2 * 350], (s32)&LoadingModel, (s32)&DatIndex[2 * 347],
+    (s32)&DatIndex[2 * 346], (s32)&InterfaceModel, (s32)&DatIndex[2 * 349], (s32)&DatIndex[2 * 348], (s32)&DragonObjectsModel,
+    (s32)&DatIndex[2 * 345], (s32)&DatIndex[2 * 344], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1C's) */
 file_group_load_info file_group_DINO = { D_8005007C, DinoFiles };
