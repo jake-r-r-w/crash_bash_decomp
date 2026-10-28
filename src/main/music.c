@@ -147,7 +147,7 @@ void func_8002C2C4(music_midi *slot) {
     slot->seq = SsVabOpenHead(head, -1);
     SsVabTransBody(body, (s16)slot->seq);
     SpuIsTransferCompleted(1);
-    slot->data = (s32)func_800112A4((void *)slot->data, ((s32 *)slot->data)[1], &MainHeap);
+    slot->data = (s32)mal_trim_front((void *)slot->data, ((s32 *)slot->data)[1], &MainHeap);
 }
 
 void music_dload_midi(s32 arg0, music_midi *slot, s32 type) {

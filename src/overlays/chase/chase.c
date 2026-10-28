@@ -752,9 +752,9 @@ void InitialiseCHASE(void) {
         a = 0x130;
     }
     Set_Clock(a, 0x81C0);
-    func_8001682C((s32 *)KegObjectsModel);
-    func_8001682C((s32 *)(KegObjectsModel - 0xF88));
-    func_8001682C((s32 *)*MapScene);
+    dbase_load_all_mesh_anims((s32 *)KegObjectsModel);
+    dbase_load_all_mesh_anims((s32 *)(KegObjectsModel - 0xF88));
+    dbase_load_all_mesh_anims((s32 *)*MapScene);
     scr = (ChaseScreen *)GameViewport;
     scr->unk10 = 0x140;
     scr->unk14 = 0x15E;
@@ -1016,7 +1016,7 @@ void ChasePreMoveHero(s32 arg0) {
         }
     }
     m->forward_angle &= 0xFFF;
-    if (abs(func_800154A0(m->forward_angle, m->facing_angle) & 0xFFFF) > 0x110) {
+    if (abs(angle_diff(m->forward_angle, m->facing_angle) & 0xFFFF) > 0x110) {
         m->facing_angle = (m->forward_angle + 0x100) & 0xE00;
     }
 }
@@ -1259,7 +1259,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
             box = func_80025A48(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
-                    func_800142D4(&eng->unk1C);
+                    rotscale_update(&eng->unk1C);
                 }
                 func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
                 lo2 = eng->unk10.y + box->unk2;
@@ -1270,7 +1270,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                     lo2 = tmp;
                 }
                 rad2 = box->radius;
-                func_80015758((SVECTOR *)box, &pos);
+                gte_rotate_point((SVECTOR *)box, &pos);
             }
             if (Heroes[arg0].hero_object != NULL) {
                 n = ((NAS **)Heroes[arg0].hero_object)[-1];

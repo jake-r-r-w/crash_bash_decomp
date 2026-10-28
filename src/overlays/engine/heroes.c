@@ -998,7 +998,7 @@ static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, 
     v = ((D_8009D6FC_t *)t)->a;
     *a = v;
     *seq = t->b;
-    func_800165F8((u8 *)q, (u8 *)((D_8009D6FC_t *)t)->a);
+    dbase_mesh_anim_name_load((u8 *)q, (u8 *)((D_8009D6FC_t *)t)->a);
 }
 
 void func_80085718(s32 arg0, u16 arg1) {
@@ -1104,7 +1104,7 @@ void func_800859D4(s32 arg0) {
         }
     }
     m->forward_angle &= 0xFFF;
-    if (abs(func_800154A0(m->forward_angle, m->facing_angle) & 0xFFFF) > 0x110) {
+    if (abs(angle_diff(m->forward_angle, m->facing_angle) & 0xFFFF) > 0x110) {
         m->facing_angle = (m->forward_angle + 0x100) & 0xE00;
     }
 }
@@ -1115,7 +1115,7 @@ void func_80085C84(s32 arg0) {
 
     if (h->hero_frozen == 0) {
         if (!(h->hero_ctrl & 1)) {
-            h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+            h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
         }
         h->hero_ctrl &= 0xFFFE;
         h->hero_eng->unk5E = 1;
@@ -1343,7 +1343,7 @@ s32 func_800864CC(s32 id, u32 flag) {
         return -1;
     }
     if (eng->unk5E != 0) {
-        func_800142D4(&eng->unk1C);
+        rotscale_update(&eng->unk1C);
     }
     func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
     i = 0;
@@ -1352,7 +1352,7 @@ s32 func_800864CC(s32 id, u32 flag) {
     r = box->radius;
     top = eng->unk10.y + box->unk2;
     bot = eng->unk10.y + box->height;
-    func_80015758((SVECTOR *)box, &pos);
+    gte_rotate_point((SVECTOR *)box, &pos);
     for (; i < 4; i++) {
         if (i == id) {
             continue;
@@ -1444,10 +1444,10 @@ void func_8008680C(void) {
 
 void func_80086814(void) {
     if (D_8009D86C != 0) {
-        func_80016478(D_8009D86C, D_8009D868);
+        dbase_mesh_anim_name_release(D_8009D86C, D_8009D868);
     }
     if (D_8009D878 != 0) {
-        func_80016478(D_8009D878, D_8009D874);
+        dbase_mesh_anim_name_release(D_8009D878, D_8009D874);
     }
 }
 
@@ -2453,7 +2453,7 @@ void func_8008900C(s32 arg0) {
                     h2 = &base[other];
                     if ((h2->hero_immunity | h2->hero_hit) == 0) {
                         h = &base[arg0];
-                        if (func_80015480(h->hero_move->forward_angle,
+                        if (angle_diff_abs(h->hero_move->forward_angle,
                                           get_angle(h->hero_eng->unk10.x - h2->hero_eng->unk10.x,
                                                     h->hero_eng->unk10.z - h2->hero_eng->unk10.z)) < 0x200) {
                             angle = h->hero_move->forward_angle;
@@ -2480,7 +2480,7 @@ void func_8008900C(s32 arg0) {
                 base2 = Heroes;
                 self = &base2[arg0];
                 s = self->hero_fx->sub;
-                if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
+                if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                     self->hero_fx->unk10 = self->hero_eng->unk10;
                     t = self->hero_weapon_timer;
                     i = (s16)t;
@@ -2573,7 +2573,7 @@ void func_8008955C(s32 arg0) {
                     h2 = &base[other];
                     if ((h2->hero_immunity | h2->hero_hit) == 0) {
                         h = &base[arg0];
-                        if (func_80015480(h->hero_move->forward_angle,
+                        if (angle_diff_abs(h->hero_move->forward_angle,
                                           get_angle(h->hero_eng->unk10.x - h2->hero_eng->unk10.x,
                                                     h->hero_eng->unk10.z - h2->hero_eng->unk10.z)) < 0x200) {
                             angle = h->hero_move->forward_angle;
@@ -2830,7 +2830,7 @@ s32 func_8008A200(s32 arg0) {
         p = Heroes;
         h = &p[arg0];
         if (!(h->hero_ctrl & 2)) {
-            h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, ret) >> 2;
+            h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, ret) >> 2;
         }
         h->hero_ctrl |= 1;
         h->hero_eng->unk5E = 1;
@@ -3621,12 +3621,12 @@ void InitScriptFX(NAS *nas)
       {
         goto kill;
       }
-        func_800115D8((*((s32 *) (k + 0x10))) * 0x28, &t->threadinfo, (s32) (&MainHeap), 0);
+        mal_alloc_owned_low((*((s32 *) (k + 0x10))) * 0x28, &t->threadinfo, (s32) (&MainHeap), 0);
         if (mal_first_free(0xA, MainHeap.free) == 0)
       {
         goto kill;
       }
-        func_800115D8(0x28, &t->threadcontrol, (s32) (&MainHeap), 0);
+        mal_alloc_owned_low(0x28, &t->threadcontrol, (s32) (&MainHeap), 0);
         t->particlesactive = *((s32 *) (k + 0x14));
         ((pcontrol *) t->threadcontrol)->freqcounter = 0;
         j = 1;
@@ -4109,7 +4109,7 @@ void func_8008CE18(void) {
 }
 
 FlagPoint *func_8008CE20(subengine *sub, s32 idx, s32 mask) {
-    PointList *list = func_8001562C(sub);
+    PointList *list = sub_point_list(sub);
     u8 *p;
     s32 i;
     s32 n;

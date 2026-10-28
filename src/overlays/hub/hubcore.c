@@ -210,8 +210,8 @@ void HubUpdateGateways(void) {
                 o[2] = v * 0x20 >> 12;
             }
             if (q[-2] == one) {
-                if (q[0] == 0 || (func_800163E0(*(u8 **)MapScene, q[0]), q[0] == 0) ||
-                    func_80016450(*(u8 **)MapScene, q[0]) != 0) {
+                if (q[0] == 0 || (dbase_anim_load(*(u8 **)MapScene, q[0]), q[0] == 0) ||
+                    dbase_anim_ptr(*(u8 **)MapScene, q[0]) != 0) {
                     if (q[-1] == one) {
                         if (o != NULL) {
                             o[0] |= 0x8000;
@@ -235,7 +235,7 @@ void HubUpdateGateways(void) {
                     o[0] &= ~0x8000;
                 }
                 if (q[0] != 0) {
-                    func_8001636C(*(u8 **)MapScene, q[0]);
+                    dbase_anim_release(*(u8 **)MapScene, q[0]);
                 }
             }
         }
@@ -302,7 +302,7 @@ void HubPreMoveHero(s32 arg0) {
                 bestd = 0x1000;
                 for (i = 0; i < 12; i++) {
                     if (HubGateways[i].unk14 != NULL && (HubGateways[i].unk14->unk6 & 2)) {
-                        d = func_80015480(HubGateways[i].unk10, HubHeroRing.angle);
+                        d = angle_diff_abs(HubGateways[i].unk10, HubHeroRing.angle);
                         if (d < bestd) {
                             bestd = d;
                             if ((u32)d < 0x81) {
@@ -591,7 +591,7 @@ void HubDoorMenuUpdate(void) {
             PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
             HubDoorChoice++;
         }
-        v = func_80015284(*(s16 *)&sub->unk70, HubDoorAngles[HubDoorChoice], 2000);
+        v = lerp_fix12(*(s16 *)&sub->unk70, HubDoorAngles[HubDoorChoice], 2000);
         *(s16 *)&sub->unk70 = v;
         sub->unk76 = v + 90;
     }
@@ -730,7 +730,7 @@ void HubLevelSelect(void) {
         }
         break;
     case 1:
-        if (func_80012FFC() == 0) {
+        if (loader_pending() == 0) {
             set_fade(&ScreenFade, 0x200, 0);
             HubSelectState = 2;
         }
@@ -1250,9 +1250,9 @@ void HubCameraFollow(u8 *arg0, s32 arg1) {
     v.at = *(CamXYZ *)&Heroes[0].hero_eng->unk10;
     v.rot.vy = -D_8009EEA0;
     if (arg1 != 0) {
-        func_80013F44(cam, &v, NULL);
+        cam_ease_to(cam, &v, NULL);
     } else {
-        func_80013F44(cam, &v, &HubCamEase);
+        cam_ease_to(cam, &v, &HubCamEase);
     }
 }
 #undef v
@@ -1377,7 +1377,7 @@ s32 HubNearestGateway(void) {
     for (i = 0; i < 12; i++) {
         p = &HubGateways[i];
         if (p->unk14 != NULL && (p->unk14->unk6 & 2)) {
-            d = func_80015480(p->unk10, HubHeroRing.angle);
+            d = angle_diff_abs(p->unk10, HubHeroRing.angle);
             if (d < bestDist) {
                 bestDist = d;
                 if ((u32)d < 0x81U) {
@@ -1397,7 +1397,7 @@ void HubUpdateRoom(void) {
     if (GameAdventure.unk74 == 0) {
         HubUpdateGateways();
         HubLevelSelect();
-        func_800139A8();
+        combo_check_all();
     }
 }
 
@@ -1464,14 +1464,14 @@ void InitialisePodiumFirst(void) {
     for (i = 0; i < 4; i++) {
         PodiumHeroNas[i] = 0;
         switch (GameInfo[i + 0x4C]) {
-        case 1: func_80016D44(D_80055924); break;
-        case 2: func_80016D44(D_8005595C); break;
-        case 3: func_80016D44(D_80055994); break;
-        case 4: func_80016D44(D_800559CC); break;
-        case 5: func_80016D44(D_80055A04); break;
-        case 6: func_80016D44(D_80055A3C); break;
-        case 7: func_80016D44(D_80055A74); break;
-        case 8: func_80016D44(D_80055AAC); break;
+        case 1: dbase_load_textures(D_80055924); break;
+        case 2: dbase_load_textures(D_8005595C); break;
+        case 3: dbase_load_textures(D_80055994); break;
+        case 4: dbase_load_textures(D_800559CC); break;
+        case 5: dbase_load_textures(D_80055A04); break;
+        case 6: dbase_load_textures(D_80055A3C); break;
+        case 7: dbase_load_textures(D_80055A74); break;
+        case 8: dbase_load_textures(D_80055AAC); break;
         }
     }
     ((HubGameView *)GameInfo)->unk50 = 9;
@@ -1513,7 +1513,7 @@ void InitialisePodium(void) {
         default: k = 0xD6; break;
         }
         for (j = 0; (&PodiumAnimName)[j] != NULL;) {
-            func_800165F8(HeroModelBank + k * 0x38, (&PodiumAnimName)[j++]);
+            dbase_mesh_anim_name_load(HeroModelBank + k * 0x38, (&PodiumAnimName)[j++]);
         }
         PodiumSpawnHero(i, &((HubSpawnEnt (*)[4])PodiumSpawns)[PodiumTies][i]);
         PodiumInitScript(i, name);

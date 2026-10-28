@@ -472,6 +472,5 @@ void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u
 
 void PlotPapuMinion(NAS *nas);
 
-extern AdventureState GameAdventure;
 
 #endif /* BASH_PAPU_OVL_H */

@@ -867,7 +867,7 @@ static inline void BossHeroSteer(s32 i) {
     EXTengine *e = h->hero_eng;
 
     e->unk1C += ((*t - e->unk1C) << 20) >> 23;
-    h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+    h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
     h->hero_eng->unk5E = 1;
 }
 
@@ -881,6 +881,5 @@ void PlotNitroMissile(NAS *nas);
 
 void PlotSpiralSat(NAS *nas);
 
-extern AdventureState GameAdventure;
 
 #endif /* BASH_N2O_NOX_H */

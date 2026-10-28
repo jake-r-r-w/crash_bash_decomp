@@ -331,7 +331,7 @@ typedef struct GfxCamera {
 typedef struct {
     u32 flags;      /* 0x00: 0x10000000 screen space, 0x20000000 screen-aligned */
     s32 x, y, z;    /* 0x04 */
-    u8 unk10[0x10]; /* 0x10: passed to func_800142D4 (0x20 bytes) */
+    u8 unk10[0x10]; /* 0x10: passed to rotscale_update (0x20 bytes) */
     s32 sx, sy, sz; /* 0x20: scale for screen-aligned (func_8001965C) */
     u8 unk2C[4];
     MATRIX rot;     /* 0x30 */
@@ -449,7 +449,7 @@ typedef struct sfx_machine_bank_info {
     s32 handle; /* asload_permanent_callback's result (machine_load_sfx) */
 } sfx_machine_bank_info;
 
-/* Points drawn as one-pixel tiles by func_80015C1C (an engine API entry). */
+/* Points drawn as one-pixel tiles by plot_point_sprites (an engine API entry). */
 typedef struct {
     SVECTOR v;
     u8 unk8[0x10];
@@ -474,7 +474,7 @@ typedef struct {
     s16 ofy;       /* halved */
 } GteSetup;
 
-/* Returned by func_8001562C: points with flag bits (func_80015780 picks the
+/* Returned by sub_point_list: points with flag bits (sub_find_point picks the
  * first point with a given flag). */
 typedef struct {
     s16 vx, vy, vz;
@@ -564,7 +564,7 @@ typedef struct PadState {
     /* 0x54 */ s32 unk54;
 } PadState;
 
-/* Analog/edge view of a PadState (func_800136BC). */
+/* Analog/edge view of a PadState (pad_read). */
 typedef struct PadStick {
     /* 0x00 */ s32 flags;
     /* 0x04 */ s32 buttons;
@@ -623,7 +623,7 @@ typedef struct MusicEntry {
     /* 0x12 */ u8 unk12[0x14 - 0x12];
 } MusicEntry;
 
-/* Loader: file loader state (func_80013238 resets it). Only these fields are known. */
+/* Loader: file loader state (loader_reset resets it). Only these fields are known. */
 typedef struct LoaderState {
     /* 0x00 */ s32 state;                /* 3 after a reset */
     /* 0x04 */ s32 unk4;
@@ -666,13 +666,13 @@ typedef struct fade_info {
 BASH_SIZE_CHECK(fade_info, 0x10);
 
 typedef struct LoadNode {
-    /* 0x00 */ u8 *file;                 /* file table entry; NULL once cancelled mid-load (func_80012F04) */
+    /* 0x00 */ u8 *file;                 /* file table entry; NULL once cancelled mid-load (loader_cancel) */
     /* 0x04 */ s32 offset;               /* bytes into the file */
     /* 0x08 */ s32 size;                 /* bytes */
-    /* 0x0C */ s32 mode;                 /* 1: func_80011544 after the load */
+    /* 0x0C */ s32 mode;                 /* 1: mal_set_owner after the load */
     /* 0x10 */ void (*fn)(u8 *, u8 *);   /* called with (buffer, arg) when done */
     /* 0x14 */ u8 *arg;
-    /* 0x18 */ u8 *buf;                  /* preset buffer (func_800121F8) */
+    /* 0x18 */ u8 *buf;                  /* preset buffer (loader_alloc) */
     /* 0x1C */ struct LoadNode *next;
     /* 0x20 */ struct LoadNode *prev;
 } LoadNode;
@@ -682,7 +682,7 @@ typedef struct _mal_area {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ mal *free;           /* free list, smallest first */
     /* 0x0C */ mal *lowest;         /* lowest free block, or NULL */
-    /* 0x10 */ mal *deferred;       /* freed once unk2 ticks run out (func_80011578, func_80011DB4) */
+    /* 0x10 */ mal *deferred;       /* freed once unk2 ticks run out (mal_free_later, mal_update_deferred) */
 } _mal_area;
 
 /* The used block right after the heap's lowest free block, or NULL. */
@@ -714,19 +714,19 @@ static inline mal *Heap_NextToMove(_mal_area *heap) {
     return p;
 }
 
-/* A node from the free list func_80012E28 hands out (func_80012E14 returns
+/* A node from the free list smallnode_alloc hands out (smallnode_free returns
  * it); ptr is the heap block it owns. */
 typedef struct {
     /* 0x00 */ u8 *ptr;
 } BlockRef;
 
 /* An entry of the 0x18-byte table at +0x44 (+ offset at +0x44) of a file
- * loaded by func_80016234 (func_80015F60). */
+ * loaded by dbase_asload_with_anims_callback (dbase_setup_blocks). */
 typedef struct {
     /* 0x00 */ s32 start;
     /* 0x04 */ s32 end;
     /* 0x08 */ u8 unk8[8];
-    /* 0x10 */ s32 hash;   /* func_8001534C of its name */
+    /* 0x10 */ s32 hash;   /* string_hash of its name */
     /* 0x14 */ BlockRef *block;
 } FileEntry;
 
@@ -737,38 +737,38 @@ typedef struct {
 } Func8001CC10Slot;
 
 void mal_print_free(void);
-s32 func_8001151C(u8 *arg0);
-void func_80011530(u8 *arg0);
-void func_80011544(u8 *arg0, u8 * *arg1);
-s16 func_8001156C(u8 *arg0);
-u8 *func_80011654(s32 arg0, _mal_area *arg1);
-u8 *func_80011748(s32 arg0, u8 *arg1);
+s32 mal_is_unowned(u8 *arg0);
+void mal_disown(u8 *arg0);
+void mal_set_owner(u8 *arg0, u8 * *arg1);
+s16 mal_get_flags(u8 *arg0);
+u8 *mal_alloc(s32 arg0, _mal_area *arg1);
+u8 *mal_alloc_nocompact(s32 arg0, u8 *arg1);
 void mal_unlink(mal *blk, _mal_area *area);
-void func_80011D00(s32 arg0);
-void func_80011D28(u8 *arg0);
-u8 *func_80011DB4(_mal_area *arg0);
-void func_80012DDC(s32 arg0);
+void mal_compact_ptr(s32 arg0);
+void mal_compact_step(u8 *arg0);
+u8 *mal_update_deferred(_mal_area *arg0);
+void sortlist_sort(s32 arg0);
 void func_80012E0C(void);
-void func_80012E14(u8 *arg0);
-void func_80012F04(LoadNode *arg0);
-s32 func_8001534C(u8 *s);
-s32 func_80013650(s32 arg0, void (*done)(), void *ctx);
-s32 func_80012FFC(void);
-s32 func_8001231C(void);
-void func_80010AE8(_mal_area *arg0);
+void smallnode_free(u8 *arg0);
+void loader_cancel(LoadNode *arg0);
+s32 string_hash(u8 *s);
+s32 load_file_cb(s32 arg0, void (*done)(), void *ctx);
+s32 loader_pending(void);
+s32 loader_update(void);
+void mal_compact(_mal_area *arg0);
 mal *mal_first_free(u32 words, mal *blk);
-s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
+s32 loader_queue(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx);
 void func_80012E88(void);
-void func_80012F90(u8 *arg0);
-u8 *func_80013110(u8 *arg0);
-s32 func_80013160(u8 *arg0);
+void loadnode_free(u8 *arg0);
+u8 *loadlist_push(u8 *arg0);
+s32 loadlist_head(u8 *arg0);
 void set_joypad(u8 *arg0, u32 arg1);
 void cam_init(u8 *arg0);
-void func_8001452C(s32 arg0, s32 arg1);
-s32 *func_800153A8(void);
-s32 func_80015480(s32 arg0, s32 arg1);
-s32 func_800154A0(s32 arg0, s32 arg1);
+void cam_ramp_override(s32 arg0, s32 arg1);
+s32 *get_exe_exports(void);
+s32 angle_diff_abs(s32 arg0, s32 arg1);
+s32 angle_diff(s32 arg0, s32 arg1);
 void SetRandomSeed(s32 arg0, s32 arg1);
 void func_80015D08(u8 *arg0);
 s32 func_80015E94(u8 *arg0, u8 *arg1);
@@ -781,10 +781,10 @@ typedef struct RotScale {
     /* 0x41 */ u8 order;
     /* 0x42 */ s16 dirty;
 } RotScale;
-void func_80013D54(SVECTOR *rot, MATRIX *m);
-void func_800142D4(void *arg0);
-PointList *func_8001562C(subengine *sub);
-FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
+void quat_to_matrix(SVECTOR *rot, MATRIX *m);
+void rotscale_update(void *arg0);
+PointList *sub_point_list(subengine *sub);
+FlagPoint *sub_find_point(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
 void func_800369FC(void);
 
 extern SVECTOR D_80056AC8[];
@@ -814,16 +814,16 @@ typedef struct {
     u8 unkC[4];
     u8 *unk10;
 } VTable8;
-s32 func_800155FC(void);
+s32 rand_step(void);
 extern VTable8 *D_8004E0DC;
 extern VTable8 *D_8005B648;
 extern s32 D_8004E0E0;
 extern s32 D_8004E0E4;
 void mal_update(_mal_area *heap);
 extern u8 HeapStart[];
-mal *func_80011BF8(_mal_area *heap, u8 *start, s32 size);
+mal *mal_init(_mal_area *heap, u8 *start, s32 size);
 extern u8 D_8004E0B8[];
-s32 func_800134FC(u8 *a, u8 *b);
+s32 load_file_direct(u8 *a, u8 *b);
 void init_file(void);
 extern s32 D_8004E0B4;
 extern s32 D_8006E9F4;
@@ -858,7 +858,7 @@ typedef struct {
 extern char *D_800655BC;
 extern u8 D_80065648[]; /* the header's icon frames (CardBuffer + 0x80) */
 extern const char CardSaveTitleFormat[];
-s32 func_80010000(u8 *arg0);
+s32 count_completion(u8 *arg0);
 
 /* Writes up to 32 Shift-JIS characters of src (ASCII) to dst, padding with
  * full-width spaces (func_8002C5BC). */
@@ -901,8 +901,8 @@ extern void *HeadOfObjects;
 extern music_midi CurrentMusic;
 extern LoaderState Loader;
 extern const char MsgTooManyLoadsInQueue[];
-extern void func_80012840(u8 *, u8 *);
-extern void func_80012678(u8 *, u8 *);
+extern void load_dbase_done(u8 *, u8 *);
+extern void load_group_done(u8 *, u8 *);
 extern MusicEntry MusicTable[];
 extern sfx_machine_bank_info SfxBanks[6];
 extern NodePool PrimPool;
@@ -956,10 +956,10 @@ extern u8 D_80063BA0[];
 extern FreeNode *D_80063BAC;
 extern FreeNode *D_80063BB0;
 extern void *D_80063BB4;        /* list walked by func_80028A00 (next at +4) */
-extern s32 D_8004E104;            /* func_80011410: free bytes */
-extern s32 D_8004E108;            /* func_80011410: free blocks */
+extern s32 D_8004E104;            /* mal_count_free: free bytes */
+extern s32 D_8004E108;            /* mal_count_free: free blocks */
 extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N at [2 * N] */
-extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
+extern s32 D_8004E10C;            /* mal_count_free: largest free block, bytes */
 extern s32 SfxBankCount;            /* slots of SfxBanks in use */
 extern char D_800654CC[];
 extern s32 D_8005A608;
@@ -1054,7 +1054,7 @@ extern s32 D_800637B4;
 /* 32-byte records of D_8005A5E8, indexed by D_8005A61C (func_8008688C). */
 typedef struct {
     /* 0x00 */ u8 unk0[4];
-    /* 0x04 */ s32 unk4; /* passed to func_800129D0 by func_80093854 */
+    /* 0x04 */ s32 unk4; /* passed to queue_dbase_load by func_80093854 */
     /* 0x08 */ u8 unk8[4];
     /* 0x0C */ u16 unkC;
     /* 0x0E */ u8 unkE[0x12];
@@ -1114,8 +1114,8 @@ extern u32 D_80063AF8[];
 extern s32 D_800643E8;
 extern s32 D_800643EC;
 extern s32 D_800643F0;
-void *func_800112A4(void *base, s32 offset, _mal_area *arg2);
-void func_80014540(u8 *arg0, RECT *rect);
+void *mal_trim_front(void *base, s32 offset, _mal_area *arg2);
+void cam_build_view(u8 *arg0, RECT *rect);
 extern GfxState RenderState;
 extern VECTOR D_8005688C; /* screen-space translation (func_8001965C) */
 
@@ -1131,7 +1131,7 @@ typedef struct {
 /* A viewport func_80018B08 makes current (coordinates in 640-wide units). */
 typedef struct {
     s16 x0, y0, x1, y1;     /* 0x00: draw area */
-    s16 cx0, cy0, cx1, cy1; /* 0x08: clip area (func_80014540) */
+    s16 cx0, cy0, cx1, cy1; /* 0x08: clip area (cam_build_view) */
     s32 ofx, ofy;           /* 0x10: geometry offset */
     s32 otIdx;              /* 0x18: first ot entry in cdb */
     s32 otLen;              /* 0x1C */
@@ -1314,7 +1314,7 @@ extern s32 num_sfx_banks;
 extern s32 D_800654B0;
 extern s32 D_800654B4;
 extern s32 GameFrameCount;
-extern s32 D_8004E0D0; /* BCD of func_80010000's count */
+extern s32 D_8004E0D0; /* BCD of count_completion's count */
 extern s32 FirstBootDone;
 extern subengine *next_sub;
 extern s32 D_80058B60;
@@ -1365,25 +1365,25 @@ extern s32 screen_aspect[2];
 
 
 
-void func_80015758(SVECTOR *v, VECTOR *out);
+void gte_rotate_point(SVECTOR *v, VECTOR *out);
 
 
 
 
 
 
-void func_80015C1C(PointSprites *ps, MATRIX *m);
+void plot_point_sprites(PointSprites *ps, MATRIX *m);
 
 
 
-void func_80012E54(void);
+void smallnode_init(void);
 
-void func_8001325C(void);
+void loadnode_init(void);
 
 void palette_set_top_bits(u16 *arg0, u32 arg1);
 
 
-void func_800154C0(u16 *arg0, s32 arg1);
+void clear_bit15(u16 *arg0, s32 arg1);
 
 
 
@@ -1413,20 +1413,20 @@ void mal_free(void *ptr, _mal_area *heap);
 
 
 
-s32 func_80011410(_mal_area *heap);
+s32 mal_count_free(_mal_area *heap);
 
 
 
-void func_800101E0(void);
+void shell_run_spyro_demo(void);
 
 
 
 
-void func_80013C78(void);
+void cheat_menu_enable(void);
 
-s32 func_8001538C(u32 x);
+s32 bit_count(u32 x);
 
-s32 func_80015284(s32 a, s32 b, s32 t);
+s32 lerp_fix12(s32 a, s32 b, s32 t);
 
 void *func_80015AB0(s32 *arg0, u8 *rec);
 
@@ -1434,7 +1434,7 @@ void *func_80015AB0(s32 *arg0, u8 *rec);
 
 
 
-void func_80013CFC(s32 pad, u8 *out);
+void pad_dpad_to_stick(s32 pad, u8 *out);
 
 
 
@@ -1467,19 +1467,13 @@ void WSwapEndian(u16 *p, u32 n);
 
 
 
-void func_80013238(void);
+void loader_reset(void);
 
 
 
 
 
-void *func_80012E28(void);
-
-
-
-
-
-
+void *smallnode_alloc(void);
 
 
 
@@ -1488,22 +1482,28 @@ void *func_80012E28(void);
 
 
 
-void *func_80011828(void *ptr, s32 bytes);
 
-void func_800138A4(void);
+
+
+
+
+
+void *mal_split_ptr(void *ptr, s32 bytes);
+
+void pads_update(void);
 
 s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u32 **arg2, s32 arg3);
 
 
-u8 *func_8001316C(u8 *arg0);
+u8 *loadlist_pop(u8 *arg0);
 
-s32 func_8001361C(s32 *arg0, u8 *arg1);
+s32 load_file_to(s32 *arg0, u8 *arg1);
 
-mal *func_80011BC0(mal *blk);
+mal *mal_next_free_block(mal *blk);
 
-s32 func_800135E4(s32 *arg0, u8 *arg1);
+s32 load_file(s32 *arg0, u8 *arg1);
 
-mal *func_80011878(mal *blk, s32 words);
+mal *mal_split(mal *blk, s32 words);
 
 s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
@@ -1522,19 +1522,19 @@ typedef struct {
 
 s32 func_80015984(s32 i, EntryBlock *blk);
 
-void func_80011578(u8 *arg0, _mal_area *heap, s32 arg2);
+void mal_free_later(u8 *arg0, _mal_area *heap, s32 arg2);
 
 
 
 
 
-void func_80010354(void);
+void shell_render(void);
 
-mal *func_80011F74(_mal_area *heap);
+mal *mal_after_lowest(_mal_area *heap);
 
-void func_80013C24(void);
+void toggle_widescreen(void);
 
-void func_80013CA4(void);
+void pads_init(void);
 
 s32 map_entity_address(u16 arg0, u8 *arg1);
 
@@ -1551,7 +1551,7 @@ u8 *entity_address(u32 arg0, u8 *arg1);
 
 
 
-s32 func_800152A8(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+s32 lerp_angle(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 
 
@@ -1581,37 +1581,37 @@ typedef struct {
     s32 font;    /* 0x78: into FontPage */
 } TextNAS;
 extern PosEntry D_8005689C[];
-void func_80010158(void);
+void shell_init(void);
 
 void shell_render_dcache(void);
 
-void func_800102F8(void);
+void shell_init_heap(void);
 
-void func_80010394(void);
+void shell_update(void);
 
-void func_80010410(void);
+void shell_start_engine(void);
 
-void func_80011AE8(mal *blk, _mal_area *heap);
+void mal_insert_free(mal *blk, _mal_area *heap);
 
-mal *func_80011C98(mal *arg0);
+mal *mal_prev_movable(mal *arg0);
 
-mal *func_80011EF0(_mal_area *heap);
+mal *mal_next_movable_now(_mal_area *heap);
 
-void func_80012CD4(void *arg0, s32 *arg1);
+void group_split_buffer(void *arg0, s32 *arg1);
 
-s32 func_80012D80(s32 *arg0, s32 *arg1);
+s32 group_file_offset(s32 *arg0, s32 *arg1);
 
-void func_80012FA4(LoadNode *arg0);
+void loadnode_unlink(LoadNode *arg0);
 
 s32 load_file_permanent(s32 *arg0);
 
-s32 func_80013488(s32 arg0, s32 arg1, s32 arg2);
+s32 load_file_to_wait(s32 arg0, s32 arg1, s32 arg2);
 
-void func_800150E8(char *dst, s32 val, s32 div);
+void itoa_div(char *dst, s32 val, s32 div);
 
-char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
+char *itoa_div_end(char *arg0, s32 arg1, s32 arg2);
 
-s32 func_80015210(s32 a, s32 b, s32 t);
+s32 lerp_snap(s32 a, s32 b, s32 t);
 
 
 
@@ -1682,9 +1682,9 @@ typedef struct VelState {
     /* 0x10 */ s32 vz;
 } VelState;
 
-u8 *func_80011498(u8 *arg0, s32 arg1, _mal_area *arg2);
+u8 *mal_trim(u8 *arg0, s32 arg1, _mal_area *arg2);
 
-void *func_800115D8(s32 arg0, void * *arg1, s32 arg2, s32 arg3);
+void *mal_alloc_owned_low(s32 arg0, void * *arg1, s32 arg2, s32 arg3);
 
 struct obj_textureset;
 
@@ -1710,7 +1710,7 @@ typedef struct {
     TexUploadEntry e[1];
 } TexUploadList;
 
-SortNode *func_8001251C(SortList *arg0);
+SortNode *sortlist_bubble(SortList *arg0);
 
 typedef struct PosNode {
     s32 *base;         /* 0x00 */
@@ -1725,15 +1725,15 @@ typedef struct PosList {
     PosNode *tail;     /* 0x10 */
 } PosList;
 
-PosNode *func_800125B4(PosList *arg0);
+PosNode *loadlist_sort_by_sector(PosList *arg0);
 
-s32 func_800131B0(s32 arg0);
+s32 mal_can_alloc(s32 arg0);
 
-s32 func_80013290(s32 *arg0, u8 * *arg1);
+s32 load_file_wait(s32 *arg0, u8 * *arg1);
 
-s32 func_80013334(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
+s32 load_file_part_wait(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
 
-s32 func_800153B4(s32 *a, s32 *b, s16 *out);
+s32 get_dist_angles(s32 *a, s32 *b, s16 *out);
 
 u8 *func_80015870(u8 *arg0, s32 arg1);
 
@@ -1758,7 +1758,7 @@ s32 func_800158E4(u8 *arg0, s32 arg1);
 
 
 
-void *func_80010E8C(s32 bytes, _mal_area *heap);
+void *mal_take_low(s32 bytes, _mal_area *heap);
 
 
 
@@ -1831,19 +1831,19 @@ extern s32 D_80063A8C;
 
 /* func_800281C0's body, inlined into func_80027AD4. */
 
-mal *func_800118BC(mal *blk, s32 words, _mal_area *heap);
+mal *mal_take_low_from(mal *blk, s32 words, _mal_area *heap);
 
-void func_800119D4(mal *arg0, s32 arg1, _mal_area *arg2);
+void mal_take_high_from(mal *arg0, s32 arg1, _mal_area *arg2);
 
-void func_800120E8(mal *arg0, _mal_area *arg1);
+void mal_move_up(mal *arg0, _mal_area *arg1);
 
-u8 *func_800129D0(u8 *arg0, s32 arg1);
+u8 *queue_dbase_load(u8 *arg0, s32 arg1);
 
-u8 *func_80012AC4(u8 *arg0);
+u8 *queue_group_load(u8 *arg0);
 
-void func_80012BC8(s32 * *arg0, s32 *arg1, u8 *arg2);
+void dbase_files_loaded(s32 * *arg0, s32 *arg1, u8 *arg2);
 
-void func_80013B0C(ComboSeq *c);
+void combo_check(ComboSeq *c);
 
 
 
@@ -1872,13 +1872,13 @@ typedef struct {
     s16 b;
 } S16Pair;
 
-void func_80011FC8(mal *arg0, _mal_area *arg1);
+void mal_move_down(mal *arg0, _mal_area *arg1);
 
-u8 *func_800121F8(u8 *arg0);
+u8 *loader_alloc(u8 *arg0);
 
-void func_800136BC(PadState *pad);
+void pad_read(PadState *pad);
 
-void func_800143F0(s32 arg0, s32 arg1);
+void cam_set_projection(s32 arg0, s32 arg1);
 
 s32 func_80015D70(u8 *arg0, u8 *arg1);
 
@@ -1964,27 +1964,25 @@ typedef struct obj_textureset {
 } obj_textureset;
 
 /* A dbase: one of the 0x38-byte records at HeroModelBank (load_initial_dbases'
- * pool), a loaded file and its textures (func_8001612C loads it, the callbacks
+ * pool), a loaded file and its textures (dbase_asload_with_anims loads it, the callbacks
  * below fill it). The name is the C++ symbols'
  * (dbase_mesh_anim_name_loaded__FP10_obj_dbasePc; the Oct 9 records' tag is
  * obj_dbase, whose typedef is in bash/core.h); the fields are from the code. */
 struct obj_dbase {
     /* 0x00 */ s32 file;              /* loaded into data once the textures are in */
-    /* 0x04 */ s32 textureFile;       /* loaded first, into textures (func_8001612C) */
+    /* 0x04 */ s32 textureFile;       /* loaded first, into textures (dbase_asload_with_anims) */
     /* 0x08 */ s32 load;              /* the load in flight, or 0 */
     /* 0x0C */ u8 *data;
     /* 0x10 */ obj_textureset textures;
-    /* 0x34 */ s32 *keep;             /* name hashes of the blocks to keep (func_80015F60) */
+    /* 0x34 */ s32 *keep;             /* name hashes of the blocks to keep (dbase_setup_blocks) */
 };
 BASH_SIZE_CHECK(obj_dbase, 0x38);
 
-void func_800107C8(mal *arg0, _mal_area *arg1);
+void mal_compact_from(mal *arg0, _mal_area *arg1);
 
-void func_8001097C(_mal_area *heap);
+void mal_compact_high(_mal_area *heap);
 
-void func_800139A8(void);
-
-
+void combo_check_all(void);
 
 
 
@@ -2006,7 +2004,9 @@ void func_800139A8(void);
 
 
 
-/* func_80013F44: camera eased towards a target view */
+
+
+/* cam_ease_to: camera eased towards a target view */
 typedef struct { s32 x, y, z; } CamXYZ;
 
 typedef struct CamView {
@@ -2023,7 +2023,7 @@ typedef struct CamEase {
     /* 0x18 */ CamXYZ eye;
 } CamEase;
 
-void func_80013F44(CamView *cam, CamView *dst, CamEase *ease);
+void cam_ease_to(CamView *cam, CamView *dst, CamEase *ease);
 
 
 
@@ -2064,9 +2064,9 @@ typedef struct MapEnvHead {
 extern u8 InterfaceModel[];
 extern u16 D_8005A5C0[][3];
 
-mal *func_80011E80(_mal_area *heap);
+mal *mal_next_movable(_mal_area *heap);
 
-void func_8001492C(void);
+void export_exe_functions(void);
 
 
 

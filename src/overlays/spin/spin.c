@@ -296,7 +296,7 @@ void InitialiseSPIN() {
         }
     }
     if (((SpinGame *)GameInfo)->flags & 0x80) {
-        func_8001682C(&AngelModel);
+        dbase_load_all_mesh_anims(&AngelModel);
     }
     if (((SpinGame *)GameInfo)->flags & 0x40) {
         if (((SpinGame *)GameInfo)->teams != 0) {
@@ -1241,7 +1241,7 @@ void PlotHazardType(NAS *nas) {
                 fux->mask |= 8;
                 hb = Heroes;
                 h = &hb[owner];
-                if (func_80015780(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
+                if (sub_find_point(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
                     dx = eng->unk10.x - pos.vx;
                     dy = eng->unk10.y - pos.vy;
                     dz = eng->unk10.z - pos.vz;
@@ -1669,7 +1669,7 @@ void SpinHero_ExtraEffects(s32 arg0) {
     if (h->hero_pu != 0) {
         pu = h->hero_powerup;
         sub = pu->sub;
-        if (func_80015780(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
+        if (sub_find_point(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
             top = pos.vy - 0x40;
             y = top - h->hero_eng->unk10.y;
         } else {
@@ -2005,7 +2005,7 @@ void Spin_HeroBot(s32 arg0) {
     }
     if (found) {
         a = get_angle(x, z);
-        turn = func_800154A0(a, get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) * SpinSpeed;
+        turn = angle_diff(a, get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) * SpinSpeed;
         if (Heroes[arg0].hero_pu != 0x13 && turn >= 0x29 && Heroes[arg0].hero_move->jump_max == 0) {
             s32 b;
 
@@ -3149,13 +3149,13 @@ NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
         return NULL;
     }
     if (me->unk5E != 0) {
-        func_800142D4(&me->unk1C);
+        rotscale_update(&me->unk1C);
     }
     func_8001CD04(me->sub, me->unk3C, &me->unk10);
     bot = me->unk10.y + rec->unk2;
     top = me->unk10.y + rec->height;
     rad = rec->radius;
-    func_80015758((SVECTOR *)rec, &pos);
+    gte_rotate_point((SVECTOR *)rec, &pos);
     nas = HeadOfSolids;
     self = NULL;
     if (h->hero_object != NULL) {
@@ -3188,7 +3188,7 @@ NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
                             obj->will_do |= mask;
                             return nas;
                         } while (0);
-                    } else if (func_80015480(Heroes[player].hero_move->forward_angle,
+                    } else if (angle_diff_abs(Heroes[player].hero_move->forward_angle,
                                              get_angle(eng->unk10.x - me->unk10.x, eng->unk10.z - me->unk10.z) ^ 0x800) < cone) {
                         do {
                             obj->player = player;
@@ -3233,7 +3233,7 @@ NAS *SpinHeroGrabObject(s32 idx, s32 mask) {
         dx = e->unk10.x - hx;
         dz = e->unk10.z - hz;
         if (dx * dx + dz * dz >= lim) continue;
-        if (um != 0 && func_80015480(Heroes[idx].hero_move->forward_angle,
+        if (um != 0 && angle_diff_abs(Heroes[idx].hero_move->forward_angle,
                 get_angle(e->unk10.x - he->unk10.x, e->unk10.z - he->unk10.z) ^ 0x800) >= um) continue;
         do {
             *(s16 *)((u8 *)fux + 0x16) = idx;
@@ -3298,7 +3298,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
             box = func_80025A48(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
-                    func_800142D4(&eng->unk1C);
+                    rotscale_update(&eng->unk1C);
                 }
                 func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
                 lo2 = eng->unk10.y + box->unk2;
@@ -3309,7 +3309,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                     lo2 = tmp;
                 }
                 rad2 = box->radius;
-                func_80015758((SVECTOR *)box, &pos);
+                gte_rotate_point((SVECTOR *)box, &pos);
             }
             if (Heroes[arg0].hero_object != NULL) {
                 n = ((NAS **)Heroes[arg0].hero_object)[-1];
@@ -3507,7 +3507,7 @@ s32 SpinHeroCarryCollision(s32 idx) {
             box = func_80025A48(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
-                    func_800142D4(&eng->unk1C);
+                    rotscale_update(&eng->unk1C);
                     sub = eng->sub;
                     eng->sub = sub;
                     func_8001CD04(sub, eng->unk3C, &eng->unk10);
@@ -3516,7 +3516,7 @@ s32 SpinHeroCarryCollision(s32 idx) {
                     eng->sub = sub;
                     func_8001CD04(sub, eng->unk3C, &eng->unk10);
                 }
-                func_80015758((SVECTOR *)box, &v);
+                gte_rotate_point((SVECTOR *)box, &v);
             }
             nas = HeadOfSolids;
             self = NULL;

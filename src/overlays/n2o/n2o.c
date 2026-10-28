@@ -485,10 +485,10 @@ void InitialiseN2O(void) {
         }
         N2OPillarList = N2OPillars;
     }
-    func_8001682C((s32 *)BallsEffectsModel);
-    func_8001682C((s32 *)(BallsEffectsModel - 0x1500));
-    func_8001682C((s32 *)(BallsEffectsModel - 0x658));
-    func_8001682C((s32 *)(BallsEffectsModel - 0x620));
+    dbase_load_all_mesh_anims((s32 *)BallsEffectsModel);
+    dbase_load_all_mesh_anims((s32 *)(BallsEffectsModel - 0x1500));
+    dbase_load_all_mesh_anims((s32 *)(BallsEffectsModel - 0x658));
+    dbase_load_all_mesh_anims((s32 *)(BallsEffectsModel - 0x620));
     func_8007E9FC(0x5C, 0x3088);
     N2OBossRound.unk0 = 0;
     N2OBossRound.unk22 = i + 10;
@@ -664,7 +664,7 @@ void N2OHeroEngineUpdate(s32 arg0) {
     s32 t;
 
     if (e->unk5E != 0) {
-        func_800142D4(&e->unk1C);
+        rotscale_update(&e->unk1C);
     }
     func_8001CD04(e->sub, e->unk3C, &e->unk10);
     r = func_80025A48(e, 1);
@@ -679,7 +679,7 @@ void N2OHeroEngineUpdate(s32 arg0) {
         b->a = t;
         b->b = r->height;
         b->c = r->radius;
-        func_80015758((SVECTOR *)r, &sp10);
+        gte_rotate_point((SVECTOR *)r, &sp10);
         b->x0 = sp10.vx - (&Heroes[arg0])->hero_eng->unk10.x;
         b->y0 = sp10.vy - (&Heroes[arg0])->hero_eng->unk10.y;
         b->z0 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
@@ -695,7 +695,7 @@ next:
         t = r->radius;
         b = (N2OHeroBox *)((s32)base + (s32)b);
         b->d = t;
-        func_80015758((SVECTOR *)r, v);
+        gte_rotate_point((SVECTOR *)r, v);
         b->x1 = sp10.vx - (&Heroes[arg0])->hero_eng->unk10.x;
         b->y1 = sp10.vy - (&Heroes[arg0])->hero_eng->unk10.y;
         b->z1 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
@@ -1006,7 +1006,7 @@ void N2OMoveHero(s32 arg0) {
         a1 = -sp;
         f->hero_eng->unk10.x += sp;
     }
-    sp = func_800154A0(f->hero_eng->unk20, a1);
+    sp = angle_diff(f->hero_eng->unk20, a1);
     {
         EXTengine *e2 = f->hero_eng;
         e2->unk20 = (u16)e2->unk20 + (sp >> 2);
@@ -1794,10 +1794,10 @@ void PlotN2OBall(NAS *nas) {
                 d = (s16)N2O_BA_BounceOnBounds((N2OObj *)eng, mot->Xa);
                 if (d != -1) {
                     a = mot->Xa;
-                    if (func_80015480(d, a) < 0x200) {
+                    if (angle_diff_abs(d, a) < 0x200) {
                         a += 0x800;
                     }
-                    k = (s16)func_800154A0(a & 0xFFF, d);
+                    k = (s16)angle_diff(a & 0xFFF, d);
                     if (abs(k) < 8) {
                         k = Random(0x10) + 8;
                     }
@@ -1816,10 +1816,10 @@ void PlotN2OBall(NAS *nas) {
             d = (s16)N2O_BA_BounceOnBounds((N2OObj *)eng, mot->Xa);
             if (d != -1) {
                 a = mot->Xa;
-                if (func_80015480(d, a) > 0x200) {
+                if (angle_diff_abs(d, a) > 0x200) {
                     a += 0x800;
                 }
-                k = (s16)func_800154A0(a & 0xFFF, d);
+                k = (s16)angle_diff(a & 0xFFF, d);
                 if (abs(k) < 8) {
                     k = Random(0x10) + 8;
                 }
@@ -2280,7 +2280,7 @@ void N2OUpdateBoss(void) {
         eng->unk10.y = *q + v;
         dx = ((N2OPanRef *)&Heroes[3].hero_move)->p->unkC;
         eng->unk10.x += dx;
-        v = func_800154A0(eng->unk20, -dx);
+        v = angle_diff(eng->unk20, -dx);
         eng->unk5E = 1;
         eng->unk20 += v >> 2;
     }
@@ -2582,7 +2582,7 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
                 dz = h->hero_eng->unk10.z - t->z;
                 if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->unk14 != 2) {
                     a = get_angle(dx, dz);
-                    d = func_800154A0(a, h->hero_move->forward_angle);
+                    d = angle_diff(a, h->hero_move->forward_angle);
                     if (arg1 == -1) {
                         if ((s16)arg3 < d && d < (s16)arg4) {
                             best = n;
@@ -3173,7 +3173,7 @@ loop:
                 break;
             }
             o->unk51 = 2;
-            y = func_800154A0(o->ang, (s16)s->f18);
+            y = angle_diff(o->ang, (s16)s->f18);
             o->unk52 = 1;
             o->ang += y >> 1;
         }
@@ -3408,12 +3408,12 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
     if (arg0 == 3) {
         speed = -Heroes[3].hero_move->forward_speed;
     }
-    if (func_80015780(me, me->sub, 1, &pos) == NULL) {
+    if (sub_find_point(me, me->sub, 1, &pos) == NULL) {
         *(SLONG_XYZ *)&pos = me->unk10;
     }
     if (func_80025A48(me, 2) != NULL) {
         if (me->unk5E != 0) {
-            func_800142D4(&me->unk1C);
+            rotscale_update(&me->unk1C);
         }
         func_8001CD04(me->sub, me->unk3C, &me->unk10);
     }
@@ -3455,7 +3455,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
             continue;
         }
         rad = rec->radius;
-        if (func_80015480(hero->hero_move->forward_angle,
+        if (angle_diff_abs(hero->hero_move->forward_angle,
                           get_angle(-eng->OldXYZ.x + pos.vx, -eng->OldXYZ.z + pos.vz)) >= 0x38F) {
             r = rnear;
             tgt = nearp;
@@ -3517,9 +3517,9 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         dz = sp * tbl[(fc - 0x400) & 0xFFF].unk2 >> 12;
         cz = sp * tbl[fa].unk2 >> 12;
         r = get_angle(x1 + dz, z2 + cz) & 0xFFF;
-        d = func_800154A0(rad, r);
+        d = angle_diff(rad, r);
         if (abs(d) > 0x400) {
-            func_800154A0(rad ^ 0x800, r);
+            angle_diff(rad ^ 0x800, r);
             fb = hero->hero_move->forward_angle & 0xFFF;
             ang2 = r;
             fc2 = fb;
@@ -3674,7 +3674,7 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                                     other->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
-                                                    ang += func_800154A0((m->dir + 0x800) & 0xFFF, ang);
+                                                    ang += angle_diff((m->dir + 0x800) & 0xFFF, ang);
                                                     ang &= 0xFFF;
                                                     m->dir = ang;
                                                     PlaySfx(0x580, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -3698,7 +3698,7 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                                                     }
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
-                                                    ang += func_800154A0((mine->dir + 0x800) & 0xFFF, ang);
+                                                    ang += angle_diff((mine->dir + 0x800) & 0xFFF, ang);
                                                     ang &= 0xFFF;
                                                     mine->dir = ang;
                                                 }
@@ -3736,11 +3736,11 @@ NAS *N2OBossPushObjects(void) {
         rec = func_80025A48(me, 0x40);
         if (rec != NULL) {
             if (me->unk5E != 0) {
-                func_800142D4(&me->unk1C);
+                rotscale_update(&me->unk1C);
             }
             func_8001CD04(me->sub, me->unk3C, &me->unk10);
             r0 = rec->radius;
-            func_80015758((SVECTOR *)rec, (VECTOR *)&sp10);
+            gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
             for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
                 eng = nas->Engine;
                 if (eng != NULL && eng != me) {
@@ -3969,7 +3969,7 @@ void N2OCameraFollow(void) {
         cam = (CamState *)MainCamera;
         cam->unk0 = 0;
         cam->unk4 = 0;
-        cam->unk8 = func_800153B4(t + 0x13, t + 0xC, cam->rot);
+        cam->unk8 = get_dist_angles(t + 0x13, t + 0xC, cam->rot);
         cam->pos = *(CamVec3 *)(t + 0xC);
         cam->unk18 = 0x200;
         d = -0xA00 - cam->pos.v[2];

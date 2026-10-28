@@ -8,39 +8,39 @@
 #include "common.h"
 #include "bash/main.h"
 
-s32 func_800160F8(u8 *arg0, s32 arg1);
-void func_8001612C(u8 *arg0, s32 arg1);
-void func_80016234(u8 *arg0, u8 *arg1);
-void func_800162E4(u8 *arg0, s32 arg1);
-void func_800163E0(u8 *arg0, s32 arg1);
-u8 *func_80016C18(s32 *arg0, u8 *arg1);
-void func_80016D44(u8 *arg0);
-void func_80016EF4(u8 *arg0, u8 *arg1);
-void func_80017070(void);
-void func_80017094(u8 *arg0, s32 arg1, s32 arg2);
-void func_80017138(u8 *arg0);
-void func_80016D98();
+s32 dbase_texture_ptr(u8 *arg0, s32 arg1);
+void dbase_asload_with_anims(u8 *arg0, s32 arg1);
+void dbase_asload_with_anims_callback(u8 *arg0, u8 *arg1);
+void dbase_copy_block(u8 *arg0, s32 arg1);
+void dbase_anim_load(u8 *arg0, s32 arg1);
+u8 *dbase_mesh_anim_rec_load(s32 *arg0, u8 *arg1);
+void dbase_load_textures(u8 *arg0);
+void dbase_set_textures(u8 *arg0, u8 *arg1);
+void load_font(void);
+void dbase_set(u8 *arg0, s32 arg1, s32 arg2);
+void dbase_init(u8 *arg0);
+void dbase_textures_loaded();
 void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db);
-void func_80016F34(u8 *arg0, u8 *arg1);
-u8 *func_80016AD4(s32 *arg0, u8 *rec);
-u8 *func_800160C4(u8 *arg0, s32 i);
-s32 func_80016274(s32 *list, u8 *arg1);
-void func_8001682C(s32 *arg0);
-void func_80016CA0(u8 *rec);
-void func_8001636C(u8 *arg0, s32 arg1);
-s32 func_80016450(u8 *arg0, s32 arg1);
-void func_80016E5C(u8 *arg0, u8 *arg1);
-void func_8001702C(SlotList *arg0);
-void func_80016F54(u8 *arg0);
-void func_800170D4(void);
-u8 *func_800167A8(u8 *arg0, u8 *arg1);
-u8 *func_80016478(u8 *arg0, u8 *arg1);
+void dbase_set_data(u8 *arg0, u8 *arg1);
+u8 *dbase_mesh_anim_rec_release(s32 *arg0, u8 *rec);
+u8 *dbase_texture_entry(u8 *arg0, s32 i);
+s32 name_list_find(s32 *list, u8 *arg1);
+void dbase_load_all_mesh_anims(s32 *arg0);
+void dbase_load_textures_wait(u8 *rec);
+void dbase_anim_release(u8 *arg0, s32 arg1);
+s32 dbase_anim_ptr(u8 *arg0, s32 arg1);
+void dbase_group_textures_loaded(u8 *arg0, u8 *arg1);
+void slotlist_mark(SlotList *arg0);
+void dbase_release(u8 *arg0);
+void dbase_init_all(void);
+u8 *dbase_mesh_anim_find(u8 *arg0, u8 *arg1);
+u8 *dbase_mesh_anim_name_release(u8 *arg0, u8 *arg1);
 s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1);
-u8 *func_800165F8(u8 *arg0, u8 *arg1);
-s32 func_800166FC(u8 *arg0, u8 *arg1);
-u8 *func_80016A20(u8 *arg0, s32 arg1);
-u8 *func_80016B48(u8 *arg0, s32 arg1);
-void func_80015F60(u8 *arg0, s32 *arg1);
+u8 *dbase_mesh_anim_name_load(u8 *arg0, u8 *arg1);
+s32 dbase_mesh_anim_name_size(u8 *arg0, u8 *arg1);
+u8 *dbase_mesh_anim_release(u8 *arg0, s32 arg1);
+u8 *dbase_mesh_anim_load(u8 *arg0, s32 arg1);
+void dbase_setup_blocks(u8 *arg0, s32 *arg1);
 
 
 #endif /* BASH_DBASE_H */

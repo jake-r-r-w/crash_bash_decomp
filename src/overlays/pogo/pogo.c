@@ -1529,7 +1529,7 @@ void PostMovePOGO(u32 i) {
     name = Heroes[i].hero_name;
     if ((u32)(name - 3) < 2) {
         sub = Heroes[i].hero_fx->sub;
-        if (sub != NULL && func_80015780(Heroes[i].hero_eng, Heroes[i].hero_sub, 0x200, &v) != NULL) {
+        if (sub != NULL && sub_find_point(Heroes[i].hero_eng, Heroes[i].hero_sub, 0x200, &v) != NULL) {
             sub->unk6C = PogoObjectsModel;
             sub->unk50 = 1;
             sub->flags |= 0x8000;
@@ -1861,7 +1861,7 @@ void HeroPogoTazing(u32 arg0) {
     if (eng != NULL) {
         mv = h->hero_move;
         if (mv != NULL) {
-            d = func_800154A0(eng->unk1E, mv->facing_angle);
+            d = angle_diff(eng->unk1E, mv->facing_angle);
             eng->unk5E = 1;
             eng->unk1E += d >> 3;
         }
@@ -1913,7 +1913,7 @@ void HeroPogoWinner(u32 arg0) {
     }
     eng = Heroes[arg0].hero_eng;
     if (eng != NULL) {
-        s32 r = func_80015480(0, eng->unk1E);
+        s32 r = angle_diff_abs(0, eng->unk1E);
         eng->unk5E = 1;
         eng->unk1E += r >> 3;
     }
@@ -2118,7 +2118,7 @@ void HeroPogoDazed(u32 arg0) {
     if (s->flags & 1) {
         eng = h->hero_eng;
         if (eng != NULL) {
-            s32 r = func_80015480(0, eng->unk1E);
+            s32 r = angle_diff_abs(0, eng->unk1E);
             eng->unk5E = 1;
             eng->unk1E += r >> 3;
         }
@@ -2293,7 +2293,7 @@ void PogoHero_ExtraEffects(s32 arg0) {
                 goto clear;
             }
             if (state != 0) {
-                if (func_80015780(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
+                if (sub_find_point(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
                     pu->unk10 = *(SLONG_XYZ *)&pos;
                     dy = PogoHeroHeights[h->hero_name];
                 } else {
@@ -3722,7 +3722,7 @@ void Plot_PogoPickup(NAS *nas) {
         if (nas->UserInfo.user2 != 0) {
             nas->UserInfo.user2--;
         }
-        d = func_80015480(dir << 10, eng->unk1E) >> 3;
+        d = angle_diff_abs(dir << 10, eng->unk1E) >> 3;
         eng->unk5E = 1;
         eng->unk1E += d;
         if (d < 2) {
@@ -5593,7 +5593,7 @@ void Init_PogoRipperRoo(NAS *nas) {
     e = nas->Engine;
     if (e != NULL) {
         func_80024E30(nas, &RooScriptInit);
-        func_8001682C((s32 *)RooModel);
+        dbase_load_all_mesh_anims((s32 *)RooModel);
         e->sub->unk6C = RooModel;
         e->sub->unk74 = 0x2001;
         e->unk5D = 0;
@@ -5928,7 +5928,7 @@ void Roo_UpdatePosition(EXTengine *eng) {
         eng->unk10.x += RooSpeedX;
         eng->unk10.z += RooSpeedZ;
     }
-    a = func_800154A0(RooAngle, eng->unk1E);
+    a = angle_diff(RooAngle, eng->unk1E);
     eng->unk5E = 1;
     eng->unk1E -= a >> 1;
 }
@@ -7277,7 +7277,7 @@ void HeroPogoTied(u32 arg0) {
     Pickup_Lose(arg0);
     eng = h->hero_eng;
     if (eng != NULL) {
-        s32 r = func_80015480(0, eng->unk1E);
+        s32 r = angle_diff_abs(0, eng->unk1E);
         eng->unk5E = 1;
         eng->unk1E += r >> 3;
     }

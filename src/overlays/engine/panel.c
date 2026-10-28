@@ -2047,7 +2047,7 @@ found:
 }
 
 void func_8007E7A4(void) {
-    func_80010000(GameInfo);
+    count_completion(GameInfo);
 }
 
 s32 CalcElapsedTime(void) {

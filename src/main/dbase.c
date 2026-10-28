@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/dbase.h"
 
-void func_80015F60(u8 *arg0, s32 *arg1) {
+void dbase_setup_blocks(u8 *arg0, s32 *arg1) {
     FileEntry *tbl;
     FileEntry *e;
     FileEntry *next;
@@ -20,12 +20,12 @@ void func_80015F60(u8 *arg0, s32 *arg1) {
             goto second;
         }
         e = next;
-        blk = func_80012E28();
+        blk = smallnode_alloc();
         e->block = blk;
-        blk->ptr = func_80011828(arg0, e->start);
+        blk->ptr = mal_split_ptr(arg0, e->start);
         i--;
-        func_80011544(blk->ptr, &blk->ptr);
-        func_80011498(blk->ptr, e->end - e->start, &MainHeap);
+        mal_set_owner(blk->ptr, &blk->ptr);
+        mal_trim(blk->ptr, e->end - e->start, &MainHeap);
         next = e - 1;
     }
 second:
@@ -42,7 +42,7 @@ second:
                     if (*p == 0) {
                         goto none;
                     }
-                    if (func_8001534C((u8 *)*p) == e->hash) {
+                    if (string_hash((u8 *)*p) == e->hash) {
                         found = *p;
                         goto chk;
                     }
@@ -55,7 +55,7 @@ chk:
                 old = e->block;
                 mal_free(old->ptr, &MainHeap);
                 e->block = NULL;
-                func_80012E14((u8 *)old);
+                smallnode_free((u8 *)old);
             }
             e++;
             i--;
@@ -64,7 +64,7 @@ chk:
 end:
 }
 
-u8 *func_800160C4(u8 *arg0, s32 i) {
+u8 *dbase_texture_entry(u8 *arg0, s32 i) {
     if (arg0 != NULL) {
         arg0 += 0x10;
         if (*(s32 *)(arg0 + 8) != 0) {
@@ -74,7 +74,7 @@ u8 *func_800160C4(u8 *arg0, s32 i) {
     return NULL;
 }
 
-s32 func_800160F8(u8 *arg0, s32 arg1) {
+s32 dbase_texture_ptr(u8 *arg0, s32 arg1) {
     s32 temp_a0;
 
     if (arg0 != NULL) {
@@ -86,10 +86,10 @@ s32 func_800160F8(u8 *arg0, s32 arg1) {
     return 0;
 }
 
-void func_8001612C(u8 *arg0, s32 arg1) {
+void dbase_asload_with_anims(u8 *arg0, s32 arg1) {
     if (((*(s32*)((u8*)(arg0) + 8)) == 0) && ((*(s32*)((u8*)(arg0) + 12)) == 0)) {
         (*(s32*)((u8*)(arg0) + 52)) = arg1;
-        (*(s32*)((u8*)(arg0) + 8)) = func_80013650((*(s32*)((u8*)(arg0) + 4)), dbase_asload_with_anims_texture_callback, arg0);
+        (*(s32*)((u8*)(arg0) + 8)) = load_file_cb((*(s32*)((u8*)(arg0) + 4)), dbase_asload_with_anims_texture_callback, arg0);
     }
 }
 
@@ -103,28 +103,28 @@ void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db) {
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         mal_free(arg0, heap);
         db->load = 0;
-        func_80016D44((u8 *)db);
+        dbase_load_textures((u8 *)db);
     } else {
         set = &db->textures;
         func_8002A5A4((u8 *)set, arg0);
         func_80029560((u8 *)set);
         texture_release_loading_mem(set);
     }
-    func_80013650(db->file, func_80016234, db);
+    load_file_cb(db->file, dbase_asload_with_anims_callback, db);
 }
 
-void func_80016234(u8 *arg0, u8 *arg1) {
-    func_80011544(arg0, arg1 + 0xC);
-    func_80015F60(arg0, (*(s32*)((u8*)(arg1) + 52)));
+void dbase_asload_with_anims_callback(u8 *arg0, u8 *arg1) {
+    mal_set_owner(arg0, arg1 + 0xC);
+    dbase_setup_blocks(arg0, (*(s32*)((u8*)(arg1) + 52)));
 }
 
-s32 func_80016274(s32 *list, u8 *arg1) {
+s32 name_list_find(s32 *list, u8 *arg1) {
     if (list != NULL) {
         for (;; list++) {
             if (*list == 0) {
                 return 0;
             }
-            if (func_8001534C((u8 *)*list) == *(s32 *)(arg1 + 0x10)) {
+            if (string_hash((u8 *)*list) == *(s32 *)(arg1 + 0x10)) {
                 return *list;
             }
         }
@@ -132,19 +132,19 @@ s32 func_80016274(s32 *list, u8 *arg1) {
     return 0;
 }
 
-void func_800162E4(u8 *arg0, s32 arg1) {
+void dbase_copy_block(u8 *arg0, s32 arg1) {
     s32 *temp_v0;
     s32 temp_s0;
 
-    temp_v0 = func_80012E28();
+    temp_v0 = smallnode_alloc();
     (*(s32*)((u8*)(arg0) + 20)) = temp_v0;
     temp_s0 = (*(s32*)((u8*)(arg0) + 4)) - (*(s32*)((u8*)(arg0) + 0));
-    func_800131B0(temp_s0);
-    func_800115D8(temp_s0, temp_v0, &MainHeap, 0);
+    mal_can_alloc(temp_s0);
+    mal_alloc_owned_low(temp_s0, temp_v0, &MainHeap, 0);
     memcpy(*temp_v0, arg1 + (*(s32*)((u8*)(arg0) + 0)), temp_s0);
 }
 
-void func_8001636C(u8 *arg0, s32 arg1) {
+void dbase_anim_release(u8 *arg0, s32 arg1) {
     u8 *temp_s0;
     u8 *temp_v0;
 
@@ -154,13 +154,13 @@ void func_8001636C(u8 *arg0, s32 arg1) {
         mal_free((void *)(*(s32*)((u8*)(temp_s0) + 8)), &MainHeap);
         (*(s32*)((u8*)(temp_s0) + 12)) = 0;
     } else if ((*(s32*)((u8*)(temp_s0) + 12)) != 0) {
-        func_80012F04((void *)(*(s32*)((u8*)(temp_s0) + 12)));
+        loader_cancel((void *)(*(s32*)((u8*)(temp_s0) + 12)));
         (*(s32*)((u8*)(temp_s0) + 12)) = 0;
     }
 }
 
 
-void func_800163E0(u8 *arg0, s32 arg1) {
+void dbase_anim_load(u8 *arg0, s32 arg1) {
     s32 temp_a1;
     u8 *temp_s0;
     u8 *temp_v1;
@@ -173,7 +173,7 @@ void func_800163E0(u8 *arg0, s32 arg1) {
     }
 }
 
-s32 func_80016450(u8 *arg0, s32 arg1) {
+s32 dbase_anim_ptr(u8 *arg0, s32 arg1) {
     u8 *temp_s0;
     u8 *temp_v0;
 
@@ -183,7 +183,7 @@ s32 func_80016450(u8 *arg0, s32 arg1) {
 }
 
 
-u8 *func_80016478(u8 *arg0, u8 *arg1) {
+u8 *dbase_mesh_anim_name_release(u8 *arg0, u8 *arg1) {
     u8 *tbl;
     u8 *p;
     s32 n;
@@ -195,7 +195,7 @@ u8 *func_80016478(u8 *arg0, u8 *arg1) {
     if (tbl == NULL) {
         res = NULL;
     } else {
-        key = func_8001534C(arg1);
+        key = string_hash(arg1);
         p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
         n = *(s32 *)(tbl + 0x40);
         n--;
@@ -214,9 +214,9 @@ found:
             if (*(void **)blk != NULL) {
                 mal_free(*(void **)blk, &MainHeap);
             } else {
-                func_80012F04(*(LoadNode **)(blk + 4));
+                loader_cancel(*(LoadNode **)(blk + 4));
             }
-            func_80012E14(blk);
+            smallnode_free(blk);
             *(u8 **)(res + 0x14) = NULL;
             return res;
         }
@@ -235,7 +235,7 @@ s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1) {
     if (tbl == NULL) {
         res = NULL;
     } else {
-        key = func_8001534C(arg1);
+        key = string_hash(arg1);
         p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
         n = *(s32 *)(tbl + 0x40);
         n--;
@@ -254,7 +254,7 @@ found:
     return 0;
 }
 
-u8 *func_800165F8(u8 *arg0, u8 *arg1) {
+u8 *dbase_mesh_anim_name_load(u8 *arg0, u8 *arg1) {
     u8 *tbl;
     u8 *p;
     s32 n;
@@ -269,7 +269,7 @@ u8 *func_800165F8(u8 *arg0, u8 *arg1) {
     if (tbl == NULL) {
         res = NULL;
     } else {
-        key = func_8001534C(arg1);
+        key = string_hash(arg1);
         p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
         n = *(s32 *)(tbl + 0x40);
         n--;
@@ -288,14 +288,14 @@ found:
             return cur;
         }
         {
-            node = func_80012E28();
+            node = smallnode_alloc();
             if (node != NULL) {
                 start = *(s32 *)res;
                 *(u8 **)(res + 0x14) = node;
                 h = asload_chunk_relocatable(*(s32 *)arg0, start, node, *(s32 *)(res + 4) - start);
                 *(s32 *)(node + 4) = h;
                 if (h == 0) {
-                    func_80012E14(node);
+                    smallnode_free(node);
                     return NULL;
                 }
                 return node;
@@ -306,7 +306,7 @@ found:
     return NULL;
 }
 
-s32 func_800166FC(u8 *arg0, u8 *arg1) {
+s32 dbase_mesh_anim_name_size(u8 *arg0, u8 *arg1) {
     u8 *tbl;
     u8 *p;
     s32 n;
@@ -319,7 +319,7 @@ s32 func_800166FC(u8 *arg0, u8 *arg1) {
     if (tbl == NULL) {
         res = NULL;
     } else {
-        key = func_8001534C(arg1);
+        key = string_hash(arg1);
         p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
         n = *(s32 *)(tbl + 0x40);
         n--;
@@ -336,7 +336,7 @@ found:
     return ((d + 0x7FF) / 0x800) * 0x800;
 }
 
-u8 *func_800167A8(u8 *arg0, u8 *arg1) {
+u8 *dbase_mesh_anim_find(u8 *arg0, u8 *arg1) {
     u8 *p;
     s32 n;
     s32 key;
@@ -344,7 +344,7 @@ u8 *func_800167A8(u8 *arg0, u8 *arg1) {
     if (arg0 == NULL) {
         return NULL;
     }
-    key = func_8001534C(arg1);
+    key = string_hash(arg1);
     p = arg0 + (*(s32 *)(arg0 + 0x44) + 0x44);
     n = *(s32 *)(arg0 + 0x40);
     n--;
@@ -356,7 +356,7 @@ u8 *func_800167A8(u8 *arg0, u8 *arg1) {
     return NULL;
 }
 
-void func_8001682C(s32 *arg0) {
+void dbase_load_all_mesh_anims(s32 *arg0) {
     u8 *tbl;
     u8 *t;
     u8 *rec;
@@ -378,14 +378,14 @@ void func_8001682C(s32 *arg0) {
                 rec = t + (*(s32 *)(t + 0x44) + 0x44);
                 rec += i * 0x18;
                 if (*(u8 **)(rec + 0x14) == NULL) {
-                    node = func_80012E28();
+                    node = smallnode_alloc();
                     if (node != NULL) {
                         start = *(s32 *)rec;
                         *(u8 **)(rec + 0x14) = node;
                         handle = asload_chunk_relocatable(*arg0, start, node, *(s32 *)(rec + 4) - start);
                         *(s32 *)(node + 4) = handle;
                         if (handle == 0) {
-                            func_80012E14(node);
+                            smallnode_free(node);
                         }
                     }
                 }
@@ -421,9 +421,9 @@ u8 *a;
                     if (*(void **)e != NULL) {
                         mal_free(*(void **)e, &MainHeap);
                     } else {
-                        func_80012F04(*(void **)(e + 4));
+                        loader_cancel(*(void **)(e + 4));
                     }
-                    func_80012E14(e);
+                    smallnode_free(e);
                     slot[5] = NULL;
                 }
             }
@@ -434,7 +434,7 @@ u8 *a;
     }
 }
 
-u8 *func_80016A20(u8 *arg0, s32 arg1) {
+u8 *dbase_mesh_anim_release(u8 *arg0, s32 arg1) {
     u8 *base;
     u8 *e;
     void **item;
@@ -449,9 +449,9 @@ u8 *func_80016A20(u8 *arg0, s32 arg1) {
                 if (item[0] != NULL) {
                     mal_free(item[0], &MainHeap);
                 } else {
-                    func_80012F04(item[1]);
+                    loader_cancel(item[1]);
                 }
-                func_80012E14((u8 *)item);
+                smallnode_free((u8 *)item);
                 *(s32 *)(e + 0x14) = 0;
                 return e;
             }
@@ -460,9 +460,9 @@ u8 *func_80016A20(u8 *arg0, s32 arg1) {
     return NULL;
 }
 
-/* Unloads what func_80016C18 loaded: the record's node at +0x14 holds a heap
+/* Unloads what dbase_mesh_anim_rec_load loaded: the record's node at +0x14 holds a heap
  * block or (if that is NULL) a handle at +4. */
-u8 *func_80016AD4(s32 *arg0, u8 *rec) {
+u8 *dbase_mesh_anim_rec_release(s32 *arg0, u8 *rec) {
     u8 *node;
 
     node = *(u8 **)(rec + 0x14);
@@ -472,14 +472,14 @@ u8 *func_80016AD4(s32 *arg0, u8 *rec) {
     if (*(void **)node != NULL) {
         mal_free(*(void **)node, &MainHeap);
     } else {
-        func_80012F04(*(void **)(node + 4));
+        loader_cancel(*(void **)(node + 4));
     }
-    func_80012E14(node);
+    smallnode_free(node);
     *(u8 **)(rec + 0x14) = NULL;
     return rec;
 }
 
-/* Inlined copy of func_80016C18 (load a record's node); being an inline call
+/* Inlined copy of dbase_mesh_anim_rec_load (load a record's node); being an inline call
  * is what puts arg1 in v1 and the table in a1. */
 static inline u8 *func_80016B48_load(s32 *arg0, u8 *arg1) {
     u8 *cur;
@@ -489,7 +489,7 @@ static inline u8 *func_80016B48_load(s32 *arg0, u8 *arg1) {
 
     cur = *(u8 **)(arg1 + 0x14);
     if (cur == NULL) {
-        node = func_80012E28();
+        node = smallnode_alloc();
         if (node != NULL) {
             start = *(s32 *)arg1;
             *(u8 **)(arg1 + 0x14) = node;
@@ -498,7 +498,7 @@ static inline u8 *func_80016B48_load(s32 *arg0, u8 *arg1) {
             if (h != 0) {
                 goto ok;
             }
-            func_80012E14(node);
+            smallnode_free(node);
         }
         return NULL;
     ok:
@@ -507,7 +507,7 @@ static inline u8 *func_80016B48_load(s32 *arg0, u8 *arg1) {
     return cur;
 }
 
-u8 *func_80016B48(u8 *arg0, s32 arg1) {
+u8 *dbase_mesh_anim_load(u8 *arg0, s32 arg1) {
     u8 *base;
     u8 *e;
 
@@ -520,7 +520,7 @@ u8 *func_80016B48(u8 *arg0, s32 arg1) {
     return func_80016B48_load((s32 *)arg0, e);
 }
 
-u8 *func_80016C18(s32 *arg0, u8 *arg1) {
+u8 *dbase_mesh_anim_rec_load(s32 *arg0, u8 *arg1) {
     s32 temp_a1;
     s32 temp_v0_2;
     u8 *temp_v0;
@@ -528,7 +528,7 @@ u8 *func_80016C18(s32 *arg0, u8 *arg1) {
 
     var_v0 = (*(s32*)((u8*)(arg1) + 20));
     if (var_v0 == NULL) {
-        temp_v0 = func_80012E28();
+        temp_v0 = smallnode_alloc();
         if (temp_v0 != NULL) {
             temp_a1 = (*(s32*)((u8*)(arg1) + 0));
             (*(s32*)((u8*)(arg1) + 20)) = temp_v0;
@@ -537,7 +537,7 @@ u8 *func_80016C18(s32 *arg0, u8 *arg1) {
             if (temp_v0_2 != 0) {
                 return temp_v0;
             }
-            func_80012E14(temp_v0);
+            smallnode_free(temp_v0);
             goto block_5;
         }
 block_5:
@@ -548,31 +548,31 @@ block_5:
     return var_v0;
 }
 
-void func_80016CA0(u8 *rec) {
+void dbase_load_textures_wait(u8 *rec) {
     if (*(s32 *)(rec + 8) == 0 && *(s32 *)(rec + 0xC) == 0) {
-        *(s32 *)(rec + 8) = func_80013650(*(s32 *)(rec + 4), func_80016D98, rec);
+        *(s32 *)(rec + 8) = load_file_cb(*(s32 *)(rec + 4), dbase_textures_loaded, rec);
     }
     for (;;) {
-        if (func_80012FFC() == 0) {
+        if (loader_pending() == 0) {
             goto done;
         }
-        func_8001231C();
-        func_80010AE8(&MainHeap);
+        loader_update();
+        mal_compact(&MainHeap);
         func_8002BAE8();
     }
 done:
     DrawSync(0);
-    while (func_80011DB4(&MainHeap) != NULL) {
+    while (mal_update_deferred(&MainHeap) != NULL) {
     }
 }
 
-void func_80016D44(u8 *arg0) {
+void dbase_load_textures(u8 *arg0) {
     if (((*(s32*)((u8*)(arg0) + 8)) == 0) && ((*(s32*)((u8*)(arg0) + 12)) == 0)) {
-        (*(s32*)((u8*)(arg0) + 8)) = func_80013650((*(s32*)((u8*)(arg0) + 4)), func_80016D98, arg0);
+        (*(s32*)((u8*)(arg0) + 8)) = load_file_cb((*(s32*)((u8*)(arg0) + 4)), dbase_textures_loaded, arg0);
     }
 }
 
-void func_80016D98(u8 *data, u8 *rec) {
+void dbase_textures_loaded(u8 *data, u8 *rec) {
     _mal_area *heap;
     s32 size;
 
@@ -581,16 +581,16 @@ void func_80016D98(u8 *data, u8 *rec) {
     if (mal_first_free((size + 3) >> 2, heap->free) == NULL) {
         mal_free(data, heap);
         *(s32 *)(rec + 8) = 0;
-        func_80016D44(rec);
+        dbase_load_textures(rec);
     } else {
         func_8002A5A4(rec + 0x10, data);
         func_80029560(rec + 0x10);
         texture_release_loading_mem((obj_textureset *)(rec + 0x10));
     }
-    *(s32 *)(rec + 8) = func_80013034(*(s32 *)(rec + 0), 0, *(s32 *)(rec + 0x24), func_80016F34, rec, 1, 0);
+    *(s32 *)(rec + 8) = loader_queue(*(s32 *)(rec + 0), 0, *(s32 *)(rec + 0x24), dbase_set_data, rec, 1, 0);
 }
 
-void func_80016E5C(u8 *arg0, u8 *arg1) {
+void dbase_group_textures_loaded(u8 *arg0, u8 *arg1) {
     _mal_area *heap;
     s32 n;
 
@@ -599,7 +599,7 @@ void func_80016E5C(u8 *arg0, u8 *arg1) {
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         mal_free(arg0, heap);
         *(s32 *)(arg1 + 8) = 0;
-        func_80016D44(arg1);
+        dbase_load_textures(arg1);
     } else {
         arg1 += 0x10;
         func_8002A5A4(arg1, arg0);
@@ -609,7 +609,7 @@ void func_80016E5C(u8 *arg0, u8 *arg1) {
 }
 
 
-void func_80016EF4(u8 *arg0, u8 *arg1) {
+void dbase_set_textures(u8 *arg0, u8 *arg1) {
     u8 *temp_s0;
 
     temp_s0 = arg0 + 0x10;
@@ -618,11 +618,11 @@ void func_80016EF4(u8 *arg0, u8 *arg1) {
     (*(s32*)((u8*)(arg0) + 32)) = 0;
 }
 
-void func_80016F34(u8 *arg0, u8 *arg1) {
-    func_80011544(arg0, arg1 + 0xC);
+void dbase_set_data(u8 *arg0, u8 *arg1) {
+    mal_set_owner(arg0, arg1 + 0xC);
 }
 
-void func_80016F54(u8 *arg0) {
+void dbase_release(u8 *arg0) {
     s32 i;
     u8 *p;
     u8 *q;
@@ -653,12 +653,12 @@ void func_80016F54(u8 *arg0) {
         if (*(s32 *)(arg0 + 0x18) != 0) {
             func_80029790(arg0 + 0x10);
         }
-        func_80012F04(*(void **)(arg0 + 8));
+        loader_cancel(*(void **)(arg0 + 8));
         *(s32 *)(arg0 + 8) = 0;
     }
 }
 
-void func_8001702C(SlotList *arg0) {
+void slotlist_mark(SlotList *arg0) {
     s32 i;
     SlotEntry *e;
 
@@ -674,11 +674,11 @@ void func_8001702C(SlotList *arg0) {
     }
 }
 
-void func_80017070(void) {
-    func_80016CA0(FontModel);
+void load_font(void) {
+    dbase_load_textures_wait(FontModel);
 }
 
-void func_80017094(u8 *arg0, s32 arg1, s32 arg2) {
+void dbase_set(u8 *arg0, s32 arg1, s32 arg2) {
     s32 temp_s0;
 
     temp_s0 = arg0 + 0x10;
@@ -688,7 +688,7 @@ void func_80017094(u8 *arg0, s32 arg1, s32 arg2) {
     func_80029560(temp_s0);
 }
 
-void func_800170D4(void) {
+void dbase_init_all(void) {
     s32 i;
     s32 end;
     u8 *base;
@@ -710,7 +710,7 @@ loop:
     }
 }
 
-void func_80017138(u8 *arg0) {
+void dbase_init(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 8)) = 0;
     (*(s32*)((u8*)(arg0) + 12)) = 0;
     (*(s32*)((u8*)(arg0) + 52)) = 0;

@@ -158,7 +158,7 @@ static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
     gs->clipX1 = c->w * ScreenRect->w / 640;
     gs->clipY1 = c->h / 2;
     gs->cam = cam;
-    func_80014540((u8 *)cam, &clip);
+    cam_build_view((u8 *)cam, &clip);
 }
 
 /* func_80019A60: draw model entry e with vertices v. */
@@ -239,7 +239,7 @@ static inline subengine *MapEnv_GetSubs(MapEnvHead *env) {
         sub = t;
         kill_subs(sub);
     } else {
-        sub = (subengine *)func_80011654(env->num_placements * 0xA8, &MainHeap);
+        sub = (subengine *)mal_alloc(env->num_placements * 0xA8, &MainHeap);
     }
     return sub;
 }

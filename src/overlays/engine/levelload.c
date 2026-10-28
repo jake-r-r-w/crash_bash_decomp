@@ -15,11 +15,11 @@ s32 func_8009317C(void) {
     rp =&tab[*(s32 *)(GameInfo + 0x2C)];
     p = (u8 *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
     if (p != NULL) {
-        func_800134FC(p, D_80098598);
+        load_file_direct(p, D_80098598);
     }
     p = (u8 *)D_8009F8E4[ModeTypes[g->mode * 3] - 0x101];
     if ((s32)p != D_8009F968) {
-        func_800134FC(p, D_80098594);
+        load_file_direct(p, D_80098594);
         D_8009F968 = (s32)p;
     }
     return (s32)(D_80098594 + *(s32 *)(p + 4));
@@ -88,18 +88,18 @@ void func_80093588(void) {
 
     p = D_800A001C[GameMode];
     if (p != NULL) {
-        func_80012AC4(p);
-        while (func_80012FFC() != 0) {
-            func_8001231C();
-            func_80010AE8(&MainHeap);
+        queue_group_load(p);
+        while (loader_pending() != 0) {
+            loader_update();
+            mal_compact(&MainHeap);
             func_8002BAE8();
         }
     }
-    func_80017070();
+    load_font();
     if (GameMode == 0x28 && FirstBootDone == 0) {
-        func_80016CA0(D_800556F4);
+        dbase_load_textures_wait(D_800556F4);
     } else {
-        func_80016CA0(LoadingModel);
+        dbase_load_textures_wait(LoadingModel);
     }
     RenderHook = func_80093038;
     cam_init(MainCamera);
@@ -119,8 +119,8 @@ static inline void func_800936C4_heap(_mal_area *heap, s32 p) {
 
     size = 0x801FF000;
     size -= p;
-    func_80011BF8(heap, (u8 *)p, size);
-    func_80012E54();
+    mal_init(heap, (u8 *)p, size);
+    smallnode_init();
 }
 
 void func_800936C4(void) {
@@ -128,9 +128,9 @@ void func_800936C4(void) {
     EngineCfg *cfg;
 
     func_8002AC70();
-    while (func_80012FFC() != 0) {
-        func_8001231C();
-        func_80010AE8(&MainHeap);
+    while (loader_pending() != 0) {
+        loader_update();
+        mal_compact(&MainHeap);
         func_8002BAE8();
     }
     func_800936C4_heap(&MainHeap, (s32)D_800D7144);
@@ -148,7 +148,7 @@ void func_800936C4(void) {
     GameInfo[0x61] = 0;
     func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     func_80017164(cfg->pools);
-    func_800170D4();
+    dbase_init_all();
     func_800222FC();
     draw_init();
     D_800A0158 = 0;
@@ -191,7 +191,7 @@ loop:
                     e = ((u16 *)tbl->HeroModels)[c] * 0x38 + (s32)base;
                     for (j = 0; j < 0x60; j++) {
                         if (e == *(s32 *)(p + 4)) {
-                            func_800129D0(p, arg);
+                            queue_dbase_load(p, arg);
                         }
                         p += 0x10;
                     }
@@ -201,7 +201,7 @@ loop:
                     e = ((u16 *)tbl->unk8)[c] * 0x38 + (s32)base;
                     for (j = 0; j < 0x60; j++) {
                         if (e == *(s32 *)(p + 4)) {
-                            func_800129D0(p, arg);
+                            queue_dbase_load(p, arg);
                         }
                         p += 0x10;
                     }
@@ -247,10 +247,10 @@ void load_initial_dbases(void)
     k = ((u8 *) g)[i + 0x50];
     if ((k - 1) < 8)
     {
-      func_8001612C((u8 *) ((((u16 *) h->HeroModels)[k] * 0x38) + ((s32) b)), arg);
+      dbase_asload_with_anims((u8 *) ((((u16 *) h->HeroModels)[k] * 0x38) + ((s32) b)), arg);
       if (h->unk8 != 0)
       {
-        func_8001612C((u8 *) ((((u16 *) h->unk8)[k] * 0x38) + ((s32) b)), arg);
+        dbase_asload_with_anims((u8 *) ((((u16 *) h->unk8)[k] * 0x38) + ((s32) b)), arg);
       }
     }
     i++;
@@ -263,7 +263,7 @@ void load_initial_dbases(void)
   {
     do
     {
-      func_8001612C(HeroModelBank + (v * 0x38), 0);
+      dbase_asload_with_anims(HeroModelBank + (v * 0x38), 0);
       p++;
       v = *p;
     }
@@ -275,7 +275,7 @@ void load_initial_dbases(void)
   {
     do
     {
-      func_8001612C(HeroModelBank + (v * 0x38), 0);
+      dbase_asload_with_anims(HeroModelBank + (v * 0x38), 0);
       p++;
       v = *p;
     }
@@ -295,8 +295,8 @@ void func_80093BE8(void) {
         func_8001E610(&LoadingControl, NULL);
     }
     func_8002BA44();
-    func_80011410(&MainHeap);
-    if (func_80012FFC() != 0 || MainHeap.deferred != NULL) {
+    mal_count_free(&MainHeap);
+    if (loader_pending() != 0 || MainHeap.deferred != NULL) {
         return;
     }
     switch (D_800A0158) {
@@ -425,7 +425,7 @@ void func_800940B0(s32 arg0, s32 arg1) {
 
     for (i = 0; i < 0x60; i++) {
         if (arg0 == *(s32 *)(p + 4)) {
-            func_800129D0(p, arg1);
+            queue_dbase_load(p, arg1);
         }
         p += 0x10;
     }
@@ -433,7 +433,7 @@ void func_800940B0(s32 arg0, s32 arg1) {
 
 void func_80094120(void) {
     func_80022030();
-    func_80016F54(D_800556F4);
+    dbase_release(D_800556F4);
 }
 
 void func_8009414C(void) {
@@ -455,7 +455,7 @@ void func_800941BC(void) {
 
 void func_800941EC(void) {
     func_8001D174(D_800A0224);
-    func_80016F54(LoadingModel);
+    dbase_release(LoadingModel);
 }
 
 void func_8009421C(void) {
@@ -508,9 +508,9 @@ void level_load_map(void) {
 
 void func_800943B8(void) {
     if (GameMode == 0x28 && FirstBootDone == 0) {
-        func_80016CA0(D_800556F4);
+        dbase_load_textures_wait(D_800556F4);
     } else {
-        func_80016CA0(LoadingModel);
+        dbase_load_textures_wait(LoadingModel);
     }
 }
 
@@ -544,9 +544,9 @@ void func_8009440C(void) {
 void func_800945C0(EngineStartArgs *arg0) {
     s32 rate;
 
-    while (func_80012FFC() != 0) {
-        func_8001231C();
-        func_80010AE8(&MainHeap);
+    while (loader_pending() != 0) {
+        loader_update();
+        mal_compact(&MainHeap);
         func_8002BAE8();
     }
     rate = 3;
@@ -577,22 +577,22 @@ void func_80094754(void) {
     EngineCfg *cfg;
 
     func_8002AC70();
-    while (func_80012FFC() != 0) {
-        func_8001231C();
-        func_80010AE8(&MainHeap);
+    while (loader_pending() != 0) {
+        loader_update();
+        mal_compact(&MainHeap);
         func_8002BAE8();
     }
     D_800A0D3C = 0;
     func_8002232C();
     D_8009F968 = 0;
-    func_80011BF8(&MainHeap, D_80098594, 0x801FF000 - (s32)D_80098594);
-    func_80012E54();
+    mal_init(&MainHeap, D_80098594, 0x801FF000 - (s32)D_80098594);
+    smallnode_init();
     cfg = &D_800A0314;
     func_800274FC((s32 *)cfg);
     ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
     func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     func_80017164(cfg->pools);
-    func_800170D4();
+    dbase_init_all();
     func_8001E984(0x20, 0x80);
     func_800945C0((EngineStartArgs *)D_800A0C0C);
 }
@@ -630,7 +630,7 @@ void func_80094860(void) {
     if (((EngineVabCue *)D_800A0D1C)->vab != 0) {
         base = SfxBanks;
         slot = &base[D_800A0D20[0]];
-        if (slot->head == NULL && slot->handle == 0 && func_80012FFC() == 0) {
+        if (slot->head == NULL && slot->handle == 0 && loader_pending() == 0) {
             machine_load_sfx(((EngineVabCue *)D_800A0D1C)->vab, &base[D_800A0D20[0]]);
         }
     }
@@ -686,7 +686,7 @@ void func_80094B38(void) {
     if (D_800A0D2C != NULL) {
         if (D_800A0D34 == NULL) {
             if ((s32)((MarkCtx *)D_800A0D2C)->obj != D_800A0D30 && D_800A0D30 != 0) {
-                func_80016F54((u8 *)D_800A0D30);
+                dbase_release((u8 *)D_800A0D30);
             }
             if (((MarkCtx *)D_800A0D2C)->obj == NULL && D_800A0D3C == 0) {
                 if (D_800A0C08 != 0) {
@@ -725,7 +725,7 @@ void func_80094B38(void) {
         if (D_800A0D3C == 0) {
             obj = ((MarkCtx *)D_800A0D2C)->obj;
             if (obj != NULL) {
-                func_8001612C((u8 *)obj, 0);
+                dbase_asload_with_anims((u8 *)obj, 0);
             }
         }
     }
@@ -745,9 +745,9 @@ void func_80094D88(s32 arg0, process_info *arg1) {
 
 void func_80094DD0(void) {
     func_8002BA44();
-    while (func_80012FFC() != 0) {
-        func_8001231C();
-        func_80010AE8(&MainHeap);
+    while (loader_pending() != 0) {
+        loader_update();
+        mal_compact(&MainHeap);
         func_8002BAE8();
     }
     func_80094F60();
@@ -789,7 +789,7 @@ s32 func_80094F30(void) {
 
 void func_80094F60(void) {
     if (((*(s32*)((u8*)(D_800A0D2C) + 4)) != D_800A0D30) && (D_800A0D30 != 0)) {
-        func_80016F54(D_800A0D30);
+        dbase_release(D_800A0D30);
     }
 }
 
@@ -798,7 +798,7 @@ void func_80094FA8(void) {
 
     temp_a0 = (*(s32*)((u8*)(D_800A0D2C) + 4));
     if (temp_a0 != 0) {
-        func_8001612C(temp_a0, 0);
+        dbase_asload_with_anims(temp_a0, 0);
     }
 }
 
@@ -811,9 +811,9 @@ void func_80094FE0(void) {
 
 void func_80095020(void) {
     func_8002BA44();
-    while (func_80012FFC() != 0) {
-        func_8001231C();
-        func_80010AE8(&MainHeap);
+    while (loader_pending() != 0) {
+        loader_update();
+        mal_compact(&MainHeap);
         func_8002BAE8();
     }
     func_80094F60();

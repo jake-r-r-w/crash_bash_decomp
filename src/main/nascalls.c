@@ -245,7 +245,7 @@ void func_80023158(s32 arg0) {
 
     size = (arg0 + 3) & ~3;
     D_8006EA04 = size;
-    res = func_80011654(size, &MainHeap);
+    res = mal_alloc(size, &MainHeap);
     *pb = (s32)res;
     if (res != NULL) {
         base = (s32 *)res;
@@ -1185,7 +1185,7 @@ void func_80024AD8(void) {
         return;
     }
     if (HeadOfTriggers == NULL) {
-        HeadOfTriggers = (NASTrigger *)func_80011654(TriggerCount * sizeof(NASTrigger), &MainHeap);
+        HeadOfTriggers = (NASTrigger *)mal_alloc(TriggerCount * sizeof(NASTrigger), &MainHeap);
     }
     t = HeadOfTriggers;
     if (t != NULL) {
@@ -1571,7 +1571,7 @@ static inline FlagRecord *func_80025A48_inline(EXTengine *eng, u32 flag) {
     if (eng->collision_box.flags & flag) {
         return &eng->collision_box;
     }
-    if (eng->sub != NULL && (list = func_8001562C(eng->sub)) != NULL) {
+    if (eng->sub != NULL && (list = sub_point_list(eng->sub)) != NULL) {
         n = list->nRecs;
         rec = (FlagRecord *)&list->pts[list->count];
         for (; n != 0; n--, rec++) {
@@ -1650,7 +1650,7 @@ FlagRecord *func_80025A48(EXTengine *eng, u32 flag) {
     if (eng->collision_box.flags & flag) {
         return &eng->collision_box;
     }
-    if (eng->sub != NULL && (list = func_8001562C(eng->sub)) != NULL) {
+    if (eng->sub != NULL && (list = sub_point_list(eng->sub)) != NULL) {
         n = list->nRecs;
         rec = (FlagRecord *)&list->pts[list->count];
         for (; n != 0; n--, rec++) {
@@ -1678,7 +1678,7 @@ void FetchDefaultColBox(EXTengine *eng, u32 flag) {
     s32 n;
 
     eng->collision_box.flags = 0;
-    if (eng->sub != NULL && (list = func_8001562C(eng->sub)) != NULL) {
+    if (eng->sub != NULL && (list = sub_point_list(eng->sub)) != NULL) {
         n = list->nRecs;
         rec = (FlagRecord *)&list->pts[list->count];
         for (; n != 0; n--, rec++) {
@@ -2461,9 +2461,9 @@ s32 func_8002718C(void) {
     DrawSync(0);
     func_8002AABC();
     func_80028C94();
-    func_80010158();
+    shell_init();
     func_80027908();
-    func_800153A8();
+    get_exe_exports();
     machine_quit_sound();
     StopCallback();
     PadStopCom();
@@ -2558,11 +2558,11 @@ s32 func_800274FC(s32 *arg0) {
     OtBuf *b;
     u8 *t;
 
-    t = func_80011654(*arg0 + 0x1800, &MainHeap);
+    t = mal_alloc(*arg0 + 0x1800, &MainHeap);
     b = (OtBuf *)D_8005B790;
     b[0].prim = t;
     b[0].end = b[0].prim + *arg0 + 0x1800;
-    b[1].prim = func_80011654(*arg0 + 0x1800, &MainHeap);
+    b[1].prim = mal_alloc(*arg0 + 0x1800, &MainHeap);
     b[1].end = b[1].prim + *arg0 + 0x1800;
     ScreenRect = NULL;
     return (s32)b[1].end;
@@ -2610,11 +2610,11 @@ void func_800276C4(s32 *arg0) {
     u8 *g;
     u8 *t;
 
-    t = func_80011654(*arg0 + 0x1800, &MainHeap);
+    t = mal_alloc(*arg0 + 0x1800, &MainHeap);
     g = D_8005B790;
     *(u8 **)(g + 0x4000) = t;
     *(s32 *)(g + 0x4004) = *(s32 *)(g + 0x4000) + *arg0 + 0x1800;
-    *(u8 **)((g += 0x8000) + 0xC) = func_80011654(*arg0 + 0x1800, &MainHeap);
+    *(u8 **)((g += 0x8000) + 0xC) = mal_alloc(*arg0 + 0x1800, &MainHeap);
     *(s32 *)(g + 0x10) = *(s32 *)(g + 0xC) + *arg0 + 0x1800;
 }
 
@@ -2706,7 +2706,7 @@ void xa_setvol(s32 vol) {
 }
 
 void func_80027A74(void) {
-    func_80012FFC();
+    loader_pending();
 }
 
 void func_80027A94(void) {
@@ -3133,7 +3133,7 @@ void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     BufNode *first;
     s32 i;
 
-    D_800643F4 = func_80011654(nbuf * 0x18, &MainHeap);
+    D_800643F4 = mal_alloc(nbuf * 0x18, &MainHeap);
     D_80063BB4 = pool;
     n = pool;
     i = npool - 2;
@@ -3519,7 +3519,7 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         p = (s32 *)(b + (off + 0x1C));
         r = p + 1;
         cnt = *p;
-        a = func_80011654(cnt * 0x5A8, &MainHeap);
+        a = mal_alloc(cnt * 0x5A8, &MainHeap);
         arg0->nAnim = cnt;
         arg0->anim = a;
         while (--cnt != -1) {
@@ -3864,13 +3864,13 @@ void texture_release_loading_mem(obj_textureset *set) {
 
     if (set->anims != NULL) {
         base = set->base;
-        anims = func_800112A4(base, *(s32 *)(base + 0x18), &MainHeap);
+        anims = mal_trim_front(base, *(s32 *)(base + 0x18), &MainHeap);
         set->base = anims;
-        func_80011544(anims, (u8 **)&set->anims);
+        mal_set_owner(anims, (u8 **)&set->anims);
         set->base = NULL;
         return;
     }
-    func_80011578(set->base, &MainHeap, 2);
+    mal_free_later(set->base, &MainHeap, 2);
     set->base = NULL;
 }
 
@@ -3937,8 +3937,8 @@ loop:
 void func_8002A5A4(u8 *a0, u8 *arg1) {
     Func2A5A4Obj *arg0 = (Func2A5A4Obj *)a0;
     arg0->src = arg1;
-    func_800115D8(*(u16 *)(arg1 + 8) * 0x38, (void **)&arg0->f8, (s32)&MainHeap, 0);
-    func_800115D8(*(u16 *)(arg0->src + 0xA) * 0xC, (void **)&arg0->fC, (s32)&MainHeap, 0);
+    mal_alloc_owned_low(*(u16 *)(arg1 + 8) * 0x38, (void **)&arg0->f8, (s32)&MainHeap, 0);
+    mal_alloc_owned_low(*(u16 *)(arg0->src + 0xA) * 0xC, (void **)&arg0->fC, (s32)&MainHeap, 0);
     arg0->f0 = *(u16 *)(arg0->src + 8);
     arg0->f4 = *(u16 *)(arg0->src + 0xA);
     arg0->f14 = *(s32 *)(arg0->src + 0x14);

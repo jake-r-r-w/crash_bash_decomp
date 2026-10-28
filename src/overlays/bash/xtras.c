@@ -378,8 +378,8 @@ void PlotCrate(NAS *arg0) {
         if (fux->who != -1 && fux->who < 5) {
             he = Heroes[fux->who].hero_eng;
             if (he != NULL) {
-                if (func_80015780(he, he->sub, 0x10, &a) != NULL) {
-                    if (func_80015780(he, he->sub, 0x20, &b) != NULL) {
+                if (sub_find_point(he, he->sub, 0x10, &a) != NULL) {
+                    if (sub_find_point(he, he->sub, 0x20, &b) != NULL) {
                         dx = a.vx - b.vx;
                         dy = b.vy - a.vy;
                         dz = a.vz - b.vz;
@@ -393,7 +393,7 @@ void PlotCrate(NAS *arg0) {
                         eng->unk10.x = dx;
                         eng->unk10.z = dz;
                     }
-                } else if (func_80015780(he, he->sub, 1, &b) != NULL) {
+                } else if (sub_find_point(he, he->sub, 1, &b) != NULL) {
                     eng->unk10 = *(SLONG_XYZ *)&b;
                     eng->unk1E = he->unk1E;
                 } else {
@@ -836,7 +836,7 @@ void PlotCrate(NAS *arg0) {
         done = 0;
         if (fux->who != -1 && ext->unkC == 0) {
             fux->flags |= 8;
-            if (func_80015780(Heroes[fux->who].hero_eng, Heroes[fux->who].hero_sub, 0x80, &a) != NULL) {
+            if (sub_find_point(Heroes[fux->who].hero_eng, Heroes[fux->who].hero_sub, 0x80, &a) != NULL) {
                 dx = eng->unk10.x - a.vx;
                 dy = eng->unk10.y - a.vy;
                 dz = eng->unk10.z - a.vz;
@@ -1518,7 +1518,7 @@ void BashHero_ExtraEffects(s32 arg0) {
     if (h->hero_pu != 0) {
         pu = h->hero_powerup;
         sub = pu->sub;
-        if (func_80015780(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
+        if (sub_find_point(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
             top = pos.vy - 0x40;
             y = top - h->hero_eng->unk10.y;
         } else {

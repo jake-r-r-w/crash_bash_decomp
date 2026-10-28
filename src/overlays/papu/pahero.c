@@ -99,8 +99,8 @@ void PlotPACrate(NAS *nas) {
         if (p != -1 && p < 5) {
             other = Heroes[p].hero_eng;
             if (other != NULL) {
-                if (func_80015780(other, other->sub, 0x10, &a) != NULL) {
-                    if (func_80015780(other, other->sub, 0x20, &b) != NULL) {
+                if (sub_find_point(other, other->sub, 0x10, &a) != NULL) {
+                    if (sub_find_point(other, other->sub, 0x20, &b) != NULL) {
                         dx = a.vx - b.vx;
                         dy = b.vy - a.vy;
                         dz = a.vz - b.vz;
@@ -114,7 +114,7 @@ void PlotPACrate(NAS *nas) {
                         eng->unk10.x = dx;
                         eng->unk10.z = dz;
                     }
-                } else if (func_80015780(other, other->sub, 1, &b) != NULL) {
+                } else if (sub_find_point(other, other->sub, 1, &b) != NULL) {
                     eng->unk10 = *(SLONG_XYZ *)&b;
                     eng->unk1E = other->unk1E;
                 } else {
@@ -151,8 +151,8 @@ void PlotPACrate(NAS *nas) {
             }
             other = PAPU_SLOT_ENG(obj->player - 0x14);
             if (other != NULL) {
-                if (func_80015780(other, other->sub, 0x10, &a) != NULL) {
-                    if (func_80015780(other, other->sub, 0x20, &b) != NULL) {
+                if (sub_find_point(other, other->sub, 0x10, &a) != NULL) {
+                    if (sub_find_point(other, other->sub, 0x20, &b) != NULL) {
                         dx = a.vx - b.vx;
                         dy = b.vy - a.vy;
                         dz = a.vz - b.vz;
@@ -166,7 +166,7 @@ void PlotPACrate(NAS *nas) {
                         eng->unk10.x = dx;
                         eng->unk10.z = dz;
                     }
-                } else if (func_80015780(other, other->sub, 1, &b) != NULL) {
+                } else if (sub_find_point(other, other->sub, 1, &b) != NULL) {
                     eng->unk10 = *(SLONG_XYZ *)&b;
                     eng->unk1E = other->unk1E;
                 } else {
@@ -819,7 +819,7 @@ void PAHeroPickup(s32 arg0) {
     b = Heroes;
     h = &b[arg0];
     s = h->hero_fx->sub;
-    if (s != NULL && func_80015780(h->hero_eng, h->hero_sub, 0x40, &pos) != NULL) {
+    if (s != NULL && sub_find_point(h->hero_eng, h->hero_sub, 0x40, &pos) != NULL) {
         h->hero_fx->unk10 = h->hero_eng->unk10;
         t = h->hero_weapon_timer;
         if (t >= 0) {
@@ -888,7 +888,7 @@ void PAHeroHold(s32 arg0) {
             base2 = Heroes;
             self = &base2[arg0];
             s = self->hero_fx->sub;
-            if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
+            if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->unk10 = self->hero_eng->unk10;
                 v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
                 s->unk20.y = s->unk20.x = v;
@@ -945,7 +945,7 @@ void PAHeroCarry(s32 arg0) {
             base2 = Heroes;
             self = &base2[arg0];
             s = self->hero_fx->sub;
-            if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
+            if (s != NULL && sub_find_point(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
                 self->hero_fx->unk10 = self->hero_eng->unk10;
                 v = (rcossin_tbl[(((GameFrameCount << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
                 s->unk20.y = s->unk20.x = v;
@@ -987,7 +987,7 @@ void PAHeroThrow(s32 arg0) {
     b = Heroes;
     h = &b[arg0];
     s = h->hero_fx->sub;
-    if (s != NULL && func_80015780(h->hero_eng, h->hero_sub, 0x40, &pos) != NULL) {
+    if (s != NULL && sub_find_point(h->hero_eng, h->hero_sub, 0x40, &pos) != NULL) {
         h->hero_fx->unk10 = h->hero_eng->unk10;
         t = h->hero_weapon_timer;
         if (t >= 0) {
@@ -1155,13 +1155,13 @@ NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
         return NULL;
     }
     if (me->unk5E != 0) {
-        func_800142D4(&me->unk1C);
+        rotscale_update(&me->unk1C);
     }
     func_8001CD04(me->sub, me->unk3C, &me->unk10);
     bot = me->unk10.y + rec->unk2;
     top = me->unk10.y + rec->height;
     rad = rec->radius;
-    func_80015758((SVECTOR *)rec, &pos);
+    gte_rotate_point((SVECTOR *)rec, &pos);
     nas = HeadOfSolids;
     self = NULL;
     if (h->hero_object != NULL) {
@@ -1194,7 +1194,7 @@ NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
                             obj->will_do |= mask;
                             return nas;
                         } while (0);
-                    } else if (func_80015480(Heroes[player].hero_move->forward_angle,
+                    } else if (angle_diff_abs(Heroes[player].hero_move->forward_angle,
                                              get_angle(eng->unk10.x - me->unk10.x, eng->unk10.z - me->unk10.z) ^ 0x800) < cone) {
                         do {
                             obj->player = player;
@@ -1238,7 +1238,7 @@ NAS *PapuHeroGrabObject(idx, arg1)
         dz = e->unk10.z - hz;
         if (dx * dx + dz * dz >= lim) continue;
         if (arg1 == 0 ||
-            func_80015480(Heroes[idx2].hero_move->forward_angle,
+            angle_diff_abs(Heroes[idx2].hero_move->forward_angle,
                           get_angle(e->unk10.x - he->unk10.x, e->unk10.z - he->unk10.z) ^ 0x800) < arg1) {
             do {
                 *(s16 *)(fux + 0x16) = idx;
@@ -1304,7 +1304,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
             box = func_80025A48(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
-                    func_800142D4(&eng->unk1C);
+                    rotscale_update(&eng->unk1C);
                 }
                 func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
                 lo2 = eng->unk10.y + box->unk2;
@@ -1315,7 +1315,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                     lo2 = tmp;
                 }
                 rad2 = box->radius;
-                func_80015758((SVECTOR *)box, &pos);
+                gte_rotate_point((SVECTOR *)box, &pos);
             }
             if (Heroes[arg0].hero_object != NULL) {
                 n = ((NAS **)Heroes[arg0].hero_object)[-1];
@@ -1513,7 +1513,7 @@ s32 PapuHeroCarryCollision(s32 idx) {
             box = func_80025A48(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
-                    func_800142D4(&eng->unk1C);
+                    rotscale_update(&eng->unk1C);
                     sub = eng->sub;
                     eng->sub = sub;
                     func_8001CD04(sub, eng->unk3C, &eng->unk10);
@@ -1522,7 +1522,7 @@ s32 PapuHeroCarryCollision(s32 idx) {
                     eng->sub = sub;
                     func_8001CD04(sub, eng->unk3C, &eng->unk10);
                 }
-                func_80015758((SVECTOR *)box, &v);
+                gte_rotate_point((SVECTOR *)box, &v);
             }
             nas = HeadOfSolids;
             self = NULL;

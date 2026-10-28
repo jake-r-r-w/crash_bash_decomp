@@ -68,19 +68,19 @@ void func_8002C5BC(void) {
         k--;
         p--;
     } while (k >= 0);
-    func_8001517C(D_800655BC + 0xC, func_80010000(CardBuffer + 0x208), 100);
-    func_8001517C(D_800655BC + 0x11, func_80010000(CardBuffer + 0x208 + 0x194), 100);
-    func_8001517C(D_800655BC + 0x16, func_80010000(CardBuffer + 0x208 + 0x194 * 2), 100);
-    func_8001517C(D_800655BC + 0x1B, func_80010000(CardBuffer + 0x208 + 0x194 * 3), 100);
+    itoa_div_end(D_800655BC + 0xC, count_completion(CardBuffer + 0x208), 100);
+    itoa_div_end(D_800655BC + 0x11, count_completion(CardBuffer + 0x208 + 0x194), 100);
+    itoa_div_end(D_800655BC + 0x16, count_completion(CardBuffer + 0x208 + 0x194 * 2), 100);
+    itoa_div_end(D_800655BC + 0x1B, count_completion(CardBuffer + 0x208 + 0x194 * 3), 100);
     McSetTitle(CardSaveTitleFormat, ((McHeader *)CardBuffer)->title);
-    rect = (RECT *)(func_800160F8(FontModel, 0x306B) + 0x18);
+    rect = (RECT *)(dbase_texture_ptr(FontModel, 0x306B) + 0x18);
     if (rect->w == 4) {
         h = rect->h;
         if (h == 0x10) {
             StoreImage(rect, (u_long *)D_80065648);
-            img = (u8 *)func_800160F8(FontModel, 0x306C);
+            img = (u8 *)dbase_texture_ptr(FontModel, 0x306C);
             StoreImage((RECT *)(img + 0x18), (u_long *)(D_80065648 + 0x80));
-            pal = func_800160C4(FontModel, *(u16 *)(img + 2));
+            pal = dbase_texture_entry(FontModel, *(u16 *)(img + 2));
             clut.x = (*(u16 **)(pal + 4))[0];
             clut.y = (*(u16 **)(pal + 4))[1];
             w = *(u16 *)pal;

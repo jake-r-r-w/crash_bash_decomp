@@ -37,7 +37,7 @@ void func_8009608C(s32 arg0) {
         break;
     case 4:
         PodiumCamera(view, arg0);
-        func_80013F44((CamView *)MainCamera, view, &D_800AD0F4);
+        cam_ease_to((CamView *)MainCamera, view, &D_800AD0F4);
         break;
     case 7:
         obj = path_get(1);
@@ -45,7 +45,7 @@ void func_8009608C(s32 arg0) {
             cam = (EngCam *)MainCamera;
             cam->eye.x = 0;
             cam->eye.y = 0;
-            cam->eye.z = func_800153B4(obj + 0x13, obj + 0xC, &cam->rot.vx);
+            cam->eye.z = get_dist_angles(obj + 0x13, obj + 0xC, &cam->rot.vx);
             cam->at = *(CamXYZ *)(obj + 0xC);
             cam->dist = 0x200;
         }
@@ -678,8 +678,8 @@ void func_80097C28(void) {
     eng->unk10.z = 0;
     switch (p[1]) {
     case 0:
-        eng->unk20 = func_800152A8(-0x800, 0, 0x14, p[2]);
-        eng->unk1C = func_800152A8(-0x400, 0, 0x14, p[2]);
+        eng->unk20 = lerp_angle(-0x800, 0, 0x14, p[2]);
+        eng->unk1C = lerp_angle(-0x400, 0, 0x14, p[2]);
         v = interp(0x800, 0x1800, 0x14, p[2]);
         eng->unk2C.z = v;
         eng->unk2C.y = v;
@@ -780,7 +780,7 @@ void func_80097C28(void) {
         }
         {
             s32 *r = &D_800ADBC0;
-            eng->unk1E = func_800152A8(0, 0x800, 0x14, ++r[2]);
+            eng->unk1E = lerp_angle(0, 0x800, 0x14, ++r[2]);
             eng->unk5E = 1;
             if (r[2] >= 0x14) {
                 r[1] = 3;

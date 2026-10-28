@@ -469,7 +469,7 @@ void ArkHeroEngineUpdate(s32 arg0) {
     s32 t;
 
     if (e->unk5E != 0) {
-        func_800142D4(&e->unk1C);
+        rotscale_update(&e->unk1C);
     }
     func_8001CD04(e->sub, e->unk3C, &e->unk10);
     r = func_80025A48(e, 1);
@@ -484,7 +484,7 @@ void ArkHeroEngineUpdate(s32 arg0) {
         b->a = t;
         b->b = r->height;
         b->c = r->radius;
-        func_80015758((SVECTOR *)r, &sp10);
+        gte_rotate_point((SVECTOR *)r, &sp10);
         b->x0 = sp10.vx - (&Heroes[arg0])->hero_eng->unk10.x;
         b->y0 = sp10.vy - (&Heroes[arg0])->hero_eng->unk10.y;
         b->z0 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
@@ -500,7 +500,7 @@ next:
         t = r->radius;
         b = (ArkenoidHeroBox *)((s32)base + (s32)b);
         b->d = t;
-        func_80015758((SVECTOR *)r, v);
+        gte_rotate_point((SVECTOR *)r, v);
         b->x1 = sp10.vx - (&Heroes[arg0])->hero_eng->unk10.x;
         b->y1 = sp10.vy - (&Heroes[arg0])->hero_eng->unk10.y;
         b->z1 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
@@ -1569,7 +1569,7 @@ void AR_MoveHero(u32 arg0) {
     }
     b = Heroes;
     h = b + arg0;
-    sp = func_800154A0(h->hero_eng->unk20, a1);
+    sp = angle_diff(h->hero_eng->unk20, a1);
     {
         EXTengine *e2 = h->hero_eng;
         e2->unk20 = (u16)e2->unk20 + (sp >> 2);
@@ -1643,7 +1643,7 @@ void AR_PI_MoveHero(u32 arg0) {
     a0 &= 0xFFF;
     h->hero_eng->unk1E = a0;
     h->hero_move->forward_angle = a0;
-    sp = func_800154A0(h->hero_eng->unk20, a1);
+    sp = angle_diff(h->hero_eng->unk20, a1);
     {
         EXTengine *e2 = h->hero_eng;
         e2->unk20 = (u16)e2->unk20 + (sp >> 2);
@@ -2738,7 +2738,7 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
                 dz = h->hero_eng->unk10.z - t->z;
                 if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->unk14 != 2) {
                     a = get_angle(dx, dz);
-                    d = func_800154A0(a, h->hero_move->forward_angle);
+                    d = angle_diff(a, h->hero_move->forward_angle);
                     if (arg1 == -1) {
                         if ((s16)arg3 < d) {
                             if (d < (s16)arg4) {
@@ -2812,7 +2812,7 @@ s32 ArkBallComingAtHero(s32 arg0) {
                     dx = e->x - t->x;
                     dz = e->z - t->z;
                     if (dx * dx + dz * dz < lim) {
-                        if (func_80015480(get_angle(dx, dz), h->hero_move->forward_angle) < 0x2AA) {
+                        if (angle_diff_abs(get_angle(dx, dz), h->hero_move->forward_angle) < 0x2AA) {
                             return 1;
                         }
                     }
@@ -3597,7 +3597,7 @@ void PlotBall(NAS *nas) {
             if (obj->can_do & 0x400) {
                 d = ((s16 (*)(EXTengine *, s32))ArkBounceOnBounds)(eng, mot->Xa);
                 if (d != -1) {
-                    k = func_800154A0(((u16)mot->Xa + 0x800) & 0xFFF, d);
+                    k = angle_diff(((u16)mot->Xa + 0x800) & 0xFFF, d);
                     if (abs(k) < 8) {
                         k = Random(0x10) + 8;
                     }
@@ -3645,7 +3645,7 @@ void PlotBall(NAS *nas) {
         case 1:
             d = ((s16 (*)(EXTengine *, s32))ArkBounceOnBounds)(eng, mot->Xa);
             if (d != -1) {
-                k = func_800154A0(((u16)mot->Xa + 0x800) & 0xFFF, d);
+                k = angle_diff(((u16)mot->Xa + 0x800) & 0xFFF, d);
                 if (abs(k) < 8) {
                     k = Random(0x10) + 8;
                 }
@@ -4014,12 +4014,12 @@ void FreeGrabbedObject(u32 arg0, bool arg1) {
                                 }
                                 mot->Xvel = spd;
                                 mot->Xmax = spd;
-                                if (func_80015780(hero, hero->sub, 4, &sp18) != NULL) {
+                                if (sub_find_point(hero, hero->sub, 4, &sp18) != NULL) {
                                     dir = get_angle(-eng->unk10.x + sp18.vx, -eng->unk10.z + sp18.vz);
                                 } else {
                                     dir = get_angle(-eng->unk10.x + hero->unk10.x, -eng->unk10.z + hero->unk10.z);
                                 }
-                                a = func_800154A0(hero->unk1E, dir);
+                                a = angle_diff(hero->unk1E, dir);
                                 if (a > 0x220) {
                                     a = 0x220;
                                 }
@@ -4061,7 +4061,7 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
 
     base = Heroes;
     hero = &base[arg2->player];
-    if (func_80015780(hero->hero_eng, hero->hero_sub, 4, &target) == NULL) {
+    if (sub_find_point(hero->hero_eng, hero->hero_sub, 4, &target) == NULL) {
         *(SLONG_XYZ *)&target = hero->hero_eng->unk10;
     }
     for (i = 0; i < 4; i++) {
@@ -4099,8 +4099,8 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
                     a1 = get_angle(target.vx - arg0->unk10.x, target.vz - arg0->unk10.z);
                     dx = -o->unk10.x;
                     a2 = get_angle(dx + target.vx, (dz = -o->unk10.z) + target.vz);
-                    d = (0xE3 - func_80015480(a1, a2)) >> 1;
-                    if (func_800154A0(a1, a2) < 0) {
+                    d = (0xE3 - angle_diff_abs(a1, a2)) >> 1;
+                    if (angle_diff(a1, a2) < 0) {
                         a1 += d;
                         a2 -= d;
                     } else {
@@ -4192,7 +4192,7 @@ void Plot_N_Gin(NAS *arg0) {
                 } else {
                     for (i = 0; i < 4; i++) {
                         if ((i == 0 || (((ArkenoidGinView *)GameInfo)->unk6C != 0 && i == 1)) && !(Heroes[i].hero_status & 0xFA00)) {
-                            if (func_80015480(eng->unk1E, Heroes[i].hero_move->facing_angle & 0xFFF) < 0xE3) {
+                            if (angle_diff_abs(eng->unk1E, Heroes[i].hero_move->facing_angle & 0xFFF) < 0xE3) {
                                 ArkSpawnBall();
                                 gin->unk20 = Random(0xB) + 6;
                             } else {
@@ -5355,13 +5355,13 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
     if (arg0 == ArkSidePlayer3) {
         speed = -Heroes[arg0].hero_move->forward_speed;
     }
-    if (func_80015780(me, me->sub, 1, &pos) == NULL) {
+    if (sub_find_point(me, me->sub, 1, &pos) == NULL) {
         *(SLONG_XYZ *)&pos = me->unk10;
     }
     fr = func_80025A48(me, 2);
     if (fr != NULL) {
         if (me->unk5E != 0) {
-            func_800142D4(&me->unk1C);
+            rotscale_update(&me->unk1C);
         }
         func_8001CD04(me->sub, me->unk3C, &me->unk10);
         grab = fr;
@@ -5405,7 +5405,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
             continue;
         }
         rad = rec->radius;
-        if (func_80015480(hero->hero_move->forward_angle,
+        if (angle_diff_abs(hero->hero_move->forward_angle,
                           get_angle(-eng->OldXYZ.x + pos.vx, -eng->OldXYZ.z + pos.vz)) >= 0x38F) {
             r = rnear;
             tgt = nearp;
@@ -5428,7 +5428,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
                 puck = FindExtension(nas, 0x800);
                 if (puck != NULL && grab != NULL) {
                     rad += rfar;
-                    r = func_800154A0(me->unk1E, puck->dir);
+                    r = angle_diff(me->unk1E, puck->dir);
                     if (r > 0x220) {
                         r = 0x220;
                     }
@@ -5440,7 +5440,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
                     z1 = rad * tbl[r].unk2 >> 12;
                     spot.vz = ((ArkenoidSpot *)grab)->z - z1;
                     spot.vy = 0;
-                    func_80015758(&spot, (VECTOR *)&eng->unk10);
+                    gte_rotate_point(&spot, (VECTOR *)&eng->unk10);
                 }
             }
             continue;
@@ -5534,9 +5534,9 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
             r = (u16)get_angle(x1 + dz, z2 + cz);
         }
         r &= 0xFFF;
-        d = func_800154A0(rad, r);
+        d = angle_diff(rad, r);
         if (abs(d) > 0x400) {
-            func_800154A0(rad ^ 0x800, r);
+            angle_diff(rad ^ 0x800, r);
             fb = hero->hero_move->forward_angle & 0xFFF;
             ang2 = r;
             fc2 = fb;
@@ -5675,10 +5675,10 @@ void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
         rec = func_80025A48(eng, 1);
         if (rec != NULL) {
             if (eng->unk5E != 0) {
-                func_800142D4(&eng->unk1C);
+                rotscale_update(&eng->unk1C);
             }
             func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
-            func_80015758((SVECTOR *)rec, (VECTOR *)&sp10);
+            gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
         } else {
             sp10 = eng->unk10;
         }
@@ -5731,10 +5731,10 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
         rec = func_80025A48(eng, 2);
         if (rec != NULL) {
             if (eng->unk5E != 0) {
-                func_800142D4(&eng->unk1C);
+                rotscale_update(&eng->unk1C);
             }
             func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
-            func_80015758((SVECTOR *)rec, (VECTOR *)&sp10);
+            gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
         } else {
             sp10 = eng->unk10;
         }
@@ -5752,7 +5752,7 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
                         e = FindExtension((NAS *)n, 0x800);
                         if (e != NULL) {
                             ang = get_angle(dx, dz) & 0xFFF;
-                            a = func_80015480(ang, *(s16 *)(e + 0x16));
+                            a = angle_diff_abs(ang, *(s16 *)(e + 0x16));
                             if (a < 0x300) {
                                 s32 s = csqrt(d);
                                 d = s >> 6;
@@ -5829,7 +5829,7 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                                                     other->unk10.z -= (d * rcossin_tbl[ang].unk2) >> 12;
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
-                                                    ang += func_800154A0((m->dir + 0x800) & 0xFFF, ang);
+                                                    ang += angle_diff((m->dir + 0x800) & 0xFFF, ang);
                                                     ang &= 0xFFF;
                                                     m->dir = ang;
                                                     PlaySfx(0x580, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -5853,7 +5853,7 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                                                     }
                                                     ang += 0x800;
                                                     ang &= 0xFFF;
-                                                    ang += func_800154A0((mine->dir + 0x800) & 0xFFF, ang);
+                                                    ang += angle_diff((mine->dir + 0x800) & 0xFFF, ang);
                                                     ang &= 0xFFF;
                                                     mine->dir = ang;
                                                 }

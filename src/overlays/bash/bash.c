@@ -695,7 +695,7 @@ void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev) {
     loop2:
         for (i = 0; i < 4; i++) {
             if (i != arg0 && i != arg1) {
-                d = func_80015480(arg2, get_angle(Heroes[i].hero_eng->unk10.x - Heroes[arg0].hero_eng->unk10.x,
+                d = angle_diff_abs(arg2, get_angle(Heroes[i].hero_eng->unk10.x - Heroes[arg0].hero_eng->unk10.x,
                                                   Heroes[i].hero_eng->unk10.z - Heroes[arg0].hero_eng->unk10.z));
                 if (d < min) {
                     min = d;
@@ -1243,7 +1243,7 @@ void Bash_HeroBot(s32 arg0) {
             } else {
                 if (Heroes[arg0].hero_eng->unk10.x < -0x780 || Heroes[arg0].hero_eng->unk10.x > 0x780 ||
                     Heroes[arg0].hero_eng->unk10.z > 0x780 || Heroes[arg0].hero_eng->unk10.z < -0x780) {
-                    if (func_80015480(get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z),
+                    if (angle_diff_abs(get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z),
                                       Heroes[arg0].hero_move->forward_angle) > 0x400) {
                         ai->AImode = 13;
                         ai->AIsleep = 5;
@@ -1268,7 +1268,7 @@ void Bash_HeroBot(s32 arg0) {
                     goto steer;
                 }
                 if (Heroes[arg0].hero_pu == 0x19 || Heroes[arg0].hero_pu == 0x1B) {
-                    if (func_80015480(Heroes[arg0].hero_move->facing_angle + 0x800, ang) < 0x155) {
+                    if (angle_diff_abs(Heroes[arg0].hero_move->facing_angle + 0x800, ang) < 0x155) {
                         ai->AIpad |= 0x8000;
                     }
                 } else {
@@ -1284,7 +1284,7 @@ void Bash_HeroBot(s32 arg0) {
         }
         if (ai->AIsleep == 0) {
             if ((Heroes[arg0].hero_mode == (u16)HeroActHold || Heroes[arg0].hero_mode == (u16)HeroActCarry) &&
-                func_80015480(Heroes[arg0].hero_move->facing_angle + 0x800, ang) < 0x155) {
+                angle_diff_abs(Heroes[arg0].hero_move->facing_angle + 0x800, ang) < 0x155) {
                 ai->AIpad |= 0x2000;
             }
         }
@@ -3155,7 +3155,7 @@ void InitBashHomer(NAS *nas) {
         for (i = 0; i < 4; i++) {
             u1 = nas->UserInfo.user1;
             if (i != u1 && (OVLG->p2_active == 0 || Heroes[i].hero_teammate != u1)) {
-                d = func_80015480(nas->UserInfo.user2,
+                d = angle_diff_abs(nas->UserInfo.user2,
                                   get_angle(eng->unk10.x - Heroes[i].hero_eng->unk10.x,
                                             eng->unk10.z - Heroes[i].hero_eng->unk10.z));
                 if (d < bestd) {
@@ -3197,7 +3197,7 @@ void PlotBashHomer(NAS *nas) {
             ang = nas->UserInfo.user2;
             target = nas->UserInfo.status;
             if (target != -1) {
-                d = func_800154A0(get_angle(eng->unk10.x - Heroes[target].hero_eng->unk10.x,
+                d = angle_diff(get_angle(eng->unk10.x - Heroes[target].hero_eng->unk10.x,
                                             eng->unk10.z - Heroes[target].hero_eng->unk10.z), ang);
                 if (abs(d) < 0x40) {
                     if (d < 0) {

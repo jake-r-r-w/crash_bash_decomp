@@ -841,6 +841,5 @@ void UpdateTankHeroWeapons(s32 player);
 
 void PlotMoeJoe(NAS *nas, s32 id);
 
-extern AdventureState GameAdventure;
 
 #endif /* BASH_TANK_OVL_H */

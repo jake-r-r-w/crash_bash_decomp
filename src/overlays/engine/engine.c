@@ -21,11 +21,11 @@ void InitialiseNasSystem(void) {
     }
     SetNasDefaults();
     Init_Panel();
-    NasPool = (NAS *)func_80011654(NasPoolUsed * 0x70, &MainHeap);
+    NasPool = (NAS *)mal_alloc(NasPoolUsed * 0x70, &MainHeap);
     D_8005AA20 = (u8 *)NasPool + (NasPoolUsed * 0x70 - 0x70);
-    D_8005AA40 = (EngObj **)func_80011654(NasPoolUsed * 4, &MainHeap);
+    D_8005AA40 = (EngObj **)mal_alloc(NasPoolUsed * 4, &MainHeap);
     *D_8005AA40 = NULL;
-    p = func_80011654(NasPoolUsed * 4, &MainHeap);
+    p = mal_alloc(NasPoolUsed * 4, &MainHeap);
     D_8005AA44 = p;
     *(s32 *)p = 0;
     func_80026308();
@@ -360,7 +360,7 @@ void func_8007976C(void) {
     s32 i;
     EngObj *o;
 
-    func_80011410(&MainHeap);
+    mal_count_free(&MainHeap);
     func_80079554();
     if (GameCheats & 0x10) {
         FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", D_8004E104, D_8004E10C);
@@ -736,7 +736,7 @@ void func_8007A718(void) {
 }
 
 void func_8007A7C0(void) {
-    func_80011410(&MainHeap);
+    mal_count_free(&MainHeap);
     func_80079554();
     GlobalNAStatus = 4;
     func_8007AF3C();

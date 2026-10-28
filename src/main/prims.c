@@ -21,9 +21,9 @@ void func_80017164(s32 *cfg) {
 
     cnt = cfg[0];
     D_8005683C = cfg;
-    D_8005685C = func_80011654((u32)(cnt * 0x2C0) >> 3, &MainHeap);
-    D_80056840 = func_80011654((u32)(cfg[2] * 0x2A0) >> 3, &MainHeap);
-    q = func_80011654((u32)(cfg[1] << 6) >> 3, &MainHeap);
+    D_8005685C = mal_alloc((u32)(cnt * 0x2C0) >> 3, &MainHeap);
+    D_80056840 = mal_alloc((u32)(cfg[2] * 0x2A0) >> 3, &MainHeap);
+    q = mal_alloc((u32)(cfg[1] << 6) >> 3, &MainHeap);
     D_80056854 = q;
     p = D_8005685C;
     next = D_80056840;
@@ -522,7 +522,7 @@ FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, Face
         }
         *node = list->f4;
         list->f4 = (s32)node;
-        func_800115D8(*(u16 *)((u8 *)faces + 8) * 0x28, (void **)(node + 1), (s32)&MainHeap, ((FrameCount & 1)?3:2));
+        mal_alloc_owned_low(*(u16 *)((u8 *)faces + 8) * 0x28, (void **)(node + 1), (s32)&MainHeap, ((FrameCount & 1)?3:2));
         prim = (FacePrim *)node[1];
         prim_write_uvs(faces, prim);
         func_80017D90(faces, prim);
@@ -628,7 +628,7 @@ void func_80018430(s32 count) {
     s32 last;
 
     if (PrimPool.mem == NULL) {
-        PrimPool.mem = func_80011654(count * 0x64, &MainHeap);
+        PrimPool.mem = mal_alloc(count * 0x64, &MainHeap);
     }
     p = PrimPool.mem;
     last = count - 1;
@@ -875,7 +875,7 @@ u8 *tga_convert(u8 *arg0, s32 w, s32 h) {
     if (*(s16 *)(arg0 + 0xE) < h) {
         h = pw;
     }
-    res = func_80011654(w * h * 2, &MainHeap);
+    res = mal_alloc(w * h * 2, &MainHeap);
     src = (u16 *)(arg0 + (*(s16 *)(arg0 + 0xC) * (*(s16 *)(arg0 + 0xE) - 9) * 2 + 0x12));
     dst = (u16 *)res;
     for (h--; h != -1; h--) {
@@ -1178,7 +1178,7 @@ void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg4)
     }
     if (obj->unk51 != 4) {
         if (obj->unk52 != 0) {
-            func_800142D4(obj->unk10);
+            rotscale_update(obj->unk10);
         }
         if (flags & 0x40000) {
             MulMatrix0(&RenderState.cam->view, &obj->rot, (MATRIX *)RenderState.unk84);
@@ -1748,7 +1748,7 @@ MATRIX *func_8001ACC0(GfxXform *obj) {
             out->m[2][2] = cs->scale.vz;
         } else {
             if (obj->unk52 != 0) {
-                func_800142D4(obj->unk10);
+                rotscale_update(obj->unk10);
             }
             MulMatrix0(view, &obj->rot, out);
         }
@@ -1783,7 +1783,7 @@ MATRIX *func_8001ACC0(GfxXform *obj) {
             out->m[2][2] = cs->scale.vz;
         } else {
             if (obj->unk52 != 0) {
-                func_800142D4(obj->unk10);
+                rotscale_update(obj->unk10);
             }
             MulMatrix0(rot, &obj->rot, out);
         }
@@ -2447,7 +2447,7 @@ s32 func_8001CC10(void *arg0, s32 arg1) {
             if (slot->ptr != 0) {
                 mal_free(slot, &MainHeap);
             }
-            func_800115D8(*(u16 *)((u8 *)arg0 + 8) * 0x28, slot, &MainHeap, ((FrameCount & 1)?3:2));
+            mal_alloc_owned_low(*(u16 *)((u8 *)arg0 + 8) * 0x28, slot, &MainHeap, ((FrameCount & 1)?3:2));
             if (slot->ptr == 0) {
                 slot->size = 0;
                 return 0;
@@ -2771,7 +2771,7 @@ void func_8001D640(s32 n) {
     s32 i;
     u8 *p;
 
-    p = func_80011654(n * 0xA8, &MainHeap);
+    p = mal_alloc(n * 0xA8, &MainHeap);
     i = n - 1;
     sub = (subengine *)p;
     D_80058AC8 = (s32)sub;
@@ -2845,7 +2845,7 @@ void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3) {
         gte_SetRotMatrix(&RenderState.cam->rot);
     } else {
         if (*(u16 *)&((subengine *)sub)->unk52 != 0) {
-            func_800142D4(&((subengine *)sub)->unk10);
+            rotscale_update(&((subengine *)sub)->unk10);
         }
         MulMatrix0(rot, (MATRIX *)((u8 *)sub + 0x30), mp);
         gte_SetRotMatrix(mp);
@@ -2921,7 +2921,7 @@ void map_update(s32 *arg0) {
 }
 
 void func_8001DDD8(u8 *arg0) {
-    func_80016F54((*(s32*)((u8*)(arg0) + 0)));
+    dbase_release((*(s32*)((u8*)(arg0) + 0)));
     mal_free((*(s32*)((u8*)(arg0) + 28)), &MainHeap);
     (*(s32*)((u8*)(arg0) + 28)) = 0;
 }
@@ -2974,7 +2974,7 @@ void func_8001DEF4(s32 *arg0, s32 *arg1) {
     }
     arg0[1] = 3;
     func_8002AA8C(p);
-    func_80013650(arg1[1], map_loaded_textureset, arg0);
+    load_file_cb(arg1[1], map_loaded_textureset, arg0);
 }
 
 void map_loaded_textureset(u8 *arg0, u8 **arg1) {
@@ -2982,12 +2982,12 @@ void map_loaded_textureset(u8 *arg0, u8 **arg1) {
     u8 *temp_s1;
 
     temp_s1 = *arg1;
-    func_80011544(arg0, temp_s1 + 0x20);
+    mal_set_owner(arg0, temp_s1 + 0x20);
     temp_s0 = temp_s1 + 0x10;
     func_8002A5A4(temp_s0, (*(s32*)((u8*)(temp_s0) + 16)));
     func_80029560(temp_s0);
     texture_release_loading_mem((obj_textureset *)temp_s0);
-    (*(s32*)((u8*)(temp_s1) + 8)) = func_80013034((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), map_loaded_geo, arg1, 0, 0);
+    (*(s32*)((u8*)(temp_s1) + 8)) = loader_queue((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), map_loaded_geo, arg1, 0, 0);
 }
 
 void map_loaded_geo(s32 arg0, map_enviroment *env) {
@@ -3002,7 +3002,7 @@ void map_loaded_geo(s32 arg0, map_enviroment *env) {
     func_8001DE18(env);
     env->subs = NULL;
     func_8001D6B4((MapEnvHead *)env);
-    func_8001682C((s32 *)db);
+    dbase_load_all_mesh_anims((s32 *)db);
 }
 
 void func_8001E054(u8 *arg0, s32 arg1) {
@@ -3012,7 +3012,7 @@ void func_8001E054(u8 *arg0, s32 arg1) {
     func_8001DE18();
     (*(s32*)((u8*)(arg0) + 28)) = 0;
     func_8001D6B4(arg0);
-    func_8001682C(arg1);
+    dbase_load_all_mesh_anims(arg1);
 }
 
 void func_8001E0A8(u8 *arg0) {
@@ -3213,9 +3213,9 @@ void func_8001E610(process_control_info *pc, fade_info *fade) {
             }
             if (fade != NULL && fade->speed != 0 && fade->maxed >= 3) {
                 func_8001888C();
-                while (func_80011DB4(&MainHeap) != NULL) {
+                while (mal_update_deferred(&MainHeap) != NULL) {
                 }
-                func_80010AE8(&MainHeap);
+                mal_compact(&MainHeap);
             }
         }
         pc->last_process = pc->process;
@@ -3223,13 +3223,13 @@ void func_8001E610(process_control_info *pc, fade_info *fade) {
         pc->next_process = NULL;
         if (pc->process->heap != NULL) {
             func_8002AC70();
-            while (func_80012FFC() != 0) {
-                func_8001231C();
-                func_80010AE8(&MainHeap);
+            while (loader_pending() != 0) {
+                loader_update();
+                mal_compact(&MainHeap);
                 func_8002BAE8();
             }
-            func_80011BF8(&MainHeap, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
-            func_80012E54();
+            mal_init(&MainHeap, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
+            smallnode_init();
         }
         ((D5A614View *)GameInfo)->unk30 &= ~1;
         if (!(pc->flags & 2)) {
@@ -3319,8 +3319,8 @@ void func_8001E948(void) {
     func_8001888C();
     do {
 
-    } while (func_80011DB4(&MainHeap) != 0);
-    func_80010AE8(&MainHeap);
+    } while (mal_update_deferred(&MainHeap) != 0);
+    mal_compact(&MainHeap);
 }
 
 /* data, in address order (tools/scripts/data2c.py) */

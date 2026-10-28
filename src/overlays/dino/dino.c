@@ -2789,7 +2789,7 @@ void DinoMovesSwap(s32 arg0, s32 arg1) {
 void DinoHeroFacing(s32 arg0) {
     if (Heroes[arg0].hero_frozen == 0) {
         if (!(Heroes[arg0].hero_ctrl & 1)) {
-            Heroes[arg0].hero_eng->unk1E += func_800154A0(Heroes[arg0].hero_eng->unk1E, Heroes[arg0].hero_move->forward_angle) >> 2;
+            Heroes[arg0].hero_eng->unk1E += angle_diff(Heroes[arg0].hero_eng->unk1E, Heroes[arg0].hero_move->forward_angle) >> 2;
         }
         Heroes[arg0].hero_ctrl &= 0xFFFE;
     }
@@ -2901,7 +2901,7 @@ void DinoPreMoveHero(s32 id) {
             }
         }
     }
-    if (abs(func_800154A0(m->forward_angle, m->facing_angle)) > 0x110) {
+    if (abs(angle_diff(m->forward_angle, m->facing_angle)) > 0x110) {
         m->facing_angle = (m->forward_angle + 0x100) & 0xE00;
     }
 }

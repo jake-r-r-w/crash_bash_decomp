@@ -733,7 +733,7 @@ s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
             d = csqrt(BonkDist2XZ(x, z, ex, ez));
             d >>= 6;
             if (d < best) {
-                if (!(arg2 & 4) || func_80015480(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
+                if (!(arg2 & 4) || angle_diff_abs(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
                     BONK_SET_CLOSEST(best, found, d, e);
                 }
             }
@@ -762,7 +762,7 @@ s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
             d = csqrt(BonkDist2XZ(x, z, ex, ez));
             d >>= 6;
             if (d < best) {
-                if (!(arg2 & 4) || func_80015480(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
+                if (!(arg2 & 4) || angle_diff_abs(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
                     BONK_SET_CLOSEST(best, found, d, (BonkEntry *)f);
                 }
             }

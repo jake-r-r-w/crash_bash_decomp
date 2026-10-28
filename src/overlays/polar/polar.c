@@ -1759,9 +1759,9 @@ void PolarInitHeroAngle(s32 player) {
     if (h->hero_frozen == 0) {
         if (!(h->hero_ctrl & 1)) {
             if (h->hero_mode != 0x52) {
-                h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+                h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
             } else {
-                h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 5;
+                h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 5;
             }
         }
         Heroes[player].hero_ctrl &= ~1;
@@ -4165,7 +4165,7 @@ void InitialisePOLAR(void) {
         }
     }
     PolarInitDebug();
-    func_8001682C((s32 *)PolarModel);
+    dbase_load_all_mesh_anims((s32 *)PolarModel);
     j = 0;
     fast = 0x1000;
     slow = 0x2000;
@@ -4220,10 +4220,10 @@ loop:
             eng->unk2C.y = 0x1000;
             eng->unk2C.x = 0x1000;
             if (v->mode == 0x12) {
-                func_8001682C((s32 *)D_8005476C);
+                dbase_load_all_mesh_anims((s32 *)D_8005476C);
             }
             if (v->mode == 0x15) {
-                func_8001682C((s32 *)PolarObjectsModel);
+                dbase_load_all_mesh_anims((s32 *)PolarObjectsModel);
             }
             ResetMass(i);
             eng2 = h->hero_eng;
@@ -4321,7 +4321,7 @@ loop:
         CreateNAS(0, 0, 0, 0x160E, 0x11);
     }
     if (w->mode == 0x16) {
-        func_8001682C((s32 *)RoboPolarModel);
+        dbase_load_all_mesh_anims((s32 *)RoboPolarModel);
         func_8007E9FC(0x82, 0x3031);
         InitBossHealthIcons();
         CreateNAS(0, 0, 0, 0x1625, 0x11);
@@ -10989,7 +10989,7 @@ void PolarPreMoveHero(s32 player) {
             m2->z_vel = 0;
         }
     }
-    if (abs(func_800154A0(m->forward_angle, m->facing_angle)) > 0x110) {
+    if (abs(angle_diff(m->forward_angle, m->facing_angle)) > 0x110) {
         m->facing_angle = (m->forward_angle + 0x100) & 0xE00;
     }
 }

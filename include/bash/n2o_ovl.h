@@ -610,6 +610,5 @@ static inline s32 N2OBallOut(EXTengine *eng, EXTobject *obj, s32 wide) {
 
 void PlotN2OBall(NAS *nas);
 
-extern AdventureState GameAdventure;
 
 #endif /* BASH_N2O_OVL_H */

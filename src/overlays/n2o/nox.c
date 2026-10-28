@@ -2248,7 +2248,7 @@ void NoxHeroFacing(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
-    h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+    h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
     h->hero_eng->unk5E = 1;
 }
 

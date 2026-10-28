@@ -1384,7 +1384,7 @@ void PlotPapuMinion(NAS *nas)
     if (hit != 0) {
       for (i = 0; i < 4; i++) {
         if (!(Heroes[i].hero_status & 0xFA00) &&
-            func_80015480(eng->unk1E, get_angle(eng->unk10.x - Heroes[i].hero_eng->unk10.x,
+            angle_diff_abs(eng->unk1E, get_angle(eng->unk10.x - Heroes[i].hero_eng->unk10.x,
                                                 eng->unk10.z - Heroes[i].hero_eng->unk10.z)) < level * 4 + 0x1C0) {
           GotoLinkAnim(anim, 0x10);
           fux->state = 6;
@@ -1462,7 +1462,7 @@ void PlotPapuMinion(NAS *nas)
     if (fux->unk20 != 0) {
       fux->unk20--;
       if (frame == 8 && dist < 0x600 &&
-          func_80015480(angle, eng->unk1E) < (0x20 - level) * 4 + 0x40) {
+          angle_diff_abs(angle, eng->unk1E) < (0x20 - level) * 4 + 0x40) {
         fux->target = NULL;
         fux->state = 0xA;
         GotoLinkAnim(anim, 0xA);
@@ -1551,7 +1551,7 @@ void PlotPapuMinion(NAS *nas)
     break;
   }
   if (fux->state != 6) {
-    s32 turn = func_800154A0(eng->unk1E, move->angle) >> 2;
+    s32 turn = angle_diff(eng->unk1E, move->angle) >> 2;
     if (turn != 0) {
       eng->unk1E += turn;
     } else {
@@ -1673,7 +1673,7 @@ void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
                         if (ang == 0) {
                             return n;
                         }
-                        if (func_80015480(*(s16*)((u8*)q->pad4[4] + 0x16),
+                        if (angle_diff_abs(*(s16*)((u8*)q->pad4[4] + 0x16),
                                           get_angle(ex - *(s32*)(o + 0x10), ez - *(s32*)(o + 0x18)) ^ 0x800) < ang) {
                             return n;
                         }
@@ -1703,13 +1703,13 @@ s32 PapuHitHeroes(EXTengine *eng) {
     box = func_80025A48(eng, 0x400);
     if (box != NULL) {
         if (eng->unk5E != 0) {
-            func_800142D4(&eng->unk1C);
+            rotscale_update(&eng->unk1C);
         }
         func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
         r = box->radius;
         top = eng->unk10.y + box->unk2;
         bot = eng->unk10.y + box->height;
-        func_80015758((SVECTOR *)box, &pos);
+        gte_rotate_point((SVECTOR *)box, &pos);
         for (i = 0; i < 4; i++) {
             if (Heroes[i].hero_status & 0xF800) {
                 continue;
@@ -1756,13 +1756,13 @@ s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
         return -1;
     }
     if (eng->unk5E != 0) {
-        func_800142D4(&eng->unk1C);
+        rotscale_update(&eng->unk1C);
     }
     func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
     r = box->radius;
     top = eng->unk10.y + box->unk2;
     bot = eng->unk10.y + box->height;
-    func_80015758((SVECTOR *)box, &pos);
+    gte_rotate_point((SVECTOR *)box, &pos);
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_status & 0xF800) {
             continue;
@@ -1807,14 +1807,14 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
     box = func_80025A48(eng, 0x400);
     if (box != NULL) {
         if (eng->unk5E != 0) {
-            func_800142D4(&eng->unk1C);
+            rotscale_update(&eng->unk1C);
         }
         func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
         r = box->radius;
         new_var = box;
         top = eng->unk10.y + new_var->unk2;
         bot = eng->unk10.y + new_var->height;
-        func_80015758((SVECTOR *)new_var, &pos);
+        gte_rotate_point((SVECTOR *)new_var, &pos);
         for (n = HeadOfSolids; n != NULL; n = n->Solid.Child) {
             if (!(n->Class & 0x200)) {
                 continue;
@@ -1865,13 +1865,13 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
     box = func_80025A48(eng, 0x40);
     if (box != NULL) {
     if (eng->unk5E != 0) {
-        func_800142D4(&eng->unk1C);
+        rotscale_update(&eng->unk1C);
     }
     func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
     r = box->radius;
     top = eng->unk10.y + box->unk2;
     bot = eng->unk10.y + box->height;
-    func_80015758((SVECTOR *)box, &pos);
+    gte_rotate_point((SVECTOR *)box, &pos);
     for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {
         if (nas->Class & 0x200) {
             e = nas->Engine;

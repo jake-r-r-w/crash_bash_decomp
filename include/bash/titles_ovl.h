@@ -399,7 +399,7 @@ extern TitlesPreset TeamModePresets[];
         s32 v_ = (val);                                                       \
         EXTengine *e_ = GetEngineSlot(0);                                     \
         u8 *q_ = (u8 *)e_->sub + ((i) * 0xA8 + 0x2A0);                        \
-        s16 r_ = func_80015284(*(s16 *)(q_ + 0x70), v_, 0x800);               \
+        s16 r_ = lerp_fix12(*(s16 *)(q_ + 0x70), v_, 0x800);               \
         *(s16 *)(q_ + 0x70) = r_;                                             \
         *(s16 *)(q_ + 0x76) = r_ + 0x78;                                      \
         *(s32 *)((u8 *)e_->sub + (i) * 0xA8 + 4) = *(s16 *)(q_ + 0x70) + 0x1A; \
@@ -479,6 +479,5 @@ void MenuChainNext(void);
 
 void CharSelectUpdate(void);
 
-extern s8 GameArena;
 
 #endif /* BASH_TITLES_OVL_H */

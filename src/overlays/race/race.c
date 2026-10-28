@@ -1055,11 +1055,11 @@ void RaceInitHeroAngle(s32 player) {
     h = &base[player];
     if (h->hero_frozen == 0) {
         if (!(h->hero_ctrl & 1)) {
-            h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+            h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
             if (GameInfo[player + 0x5C] != 0) {
-                h->hero_eng->unk20 += func_800154A0(h->hero_eng->unk20, RaceSteer[player]) >> 3;
+                h->hero_eng->unk20 += angle_diff(h->hero_eng->unk20, RaceSteer[player]) >> 3;
             } else {
-                h->hero_eng->unk20 += func_800154A0(h->hero_eng->unk20, RaceSteer[player]) >> 2;
+                h->hero_eng->unk20 += angle_diff(h->hero_eng->unk20, RaceSteer[player]) >> 2;
             }
         }
         Heroes[player].hero_ctrl &= ~1;
@@ -2643,7 +2643,7 @@ void InitialiseRACE(void) {
     RaceInitStub();
     scene = *(s32 **)MapScene;
     RaceTagTimer = 0;
-    func_8001682C(scene);
+    dbase_load_all_mesh_anims(scene);
     RaceInitSpinners();
     RaceOver = 0;
     g = G63B;
@@ -2909,7 +2909,7 @@ void RacePreMoveHero(s32 player) {
                 fux->unk13C = 0;
                 fux->unk140 = 0;
             }
-            func_800154A0(m->forward_angle, m->facing_angle);
+            angle_diff(m->forward_angle, m->facing_angle);
             m->facing_angle = m->forward_angle;
         }
     }
@@ -4084,7 +4084,7 @@ void SetRaceHeroWinner(s32 player) {
     }
     func_80085718(player, 1);
     func_80017640();
-    func_80011D28((u8 *)&MainHeap);
+    mal_compact_step((u8 *)&MainHeap);
 }
 
 void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {

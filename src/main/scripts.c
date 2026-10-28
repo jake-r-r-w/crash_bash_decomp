@@ -8,7 +8,7 @@ void func_8001E984(s32 arg0, s32 arg1) {
     u8 *next;
 
     if (arg0 != 0) {
-        D_80058B6C = (s32)func_80011654(arg0 * 0x7C, &MainHeap);
+        D_80058B6C = (s32)mal_alloc(arg0 * 0x7C, &MainHeap);
         p = (u8 *)D_80058B6C;
         for (; arg0 >= 2; arg0--) {
             next = p + 0x7C;
@@ -22,7 +22,7 @@ void func_8001E984(s32 arg0, s32 arg1) {
     D_80058B78 = NULL;
     free_scripts = (void *)D_80058B6C;
     if (arg1 != 0) {
-        D_80058B68 = (s32)func_80011654(arg1 * 0xB8, &MainHeap);
+        D_80058B68 = (s32)mal_alloc(arg1 * 0xB8, &MainHeap);
         p = (u8 *)D_80058B68;
         for (; arg1 >= 2; arg1--) {
             next = p + 0xB8;
@@ -175,7 +175,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
             eye = key->eye;
             at = key->at;
         }
-        func_800153B4((s32 *)&eye, (s32 *)&at, cam->rot);
+        get_dist_angles((s32 *)&eye, (s32 *)&at, cam->rot);
         cam->pos = eye;
         cam->unk8 = 0;
         cam->unk0 = 0;
@@ -1217,7 +1217,7 @@ void func_80021604(u8 *arg0, u8 *arg1, s32 arg2) {
             } while (q != NULL);
         }
         *(s32 *)(p + 0x14) = 0;
-        func_800115D8(*(s32 *)(e + 0x10) * 0x28, (void **)(p + 0x14), (s32)&MainHeap, 0);
+        mal_alloc_owned_low(*(s32 *)(e + 0x10) * 0x28, (void **)(p + 0x14), (s32)&MainHeap, 0);
     }
 }
 
@@ -1386,9 +1386,9 @@ void func_80021A1C(u8 *arg0, u8 *arg1, s32 arg2) {
 }
 
 void func_80021AF0(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
-    arg2[0] = func_800152A8(arg0[0], arg1[0], arg3, arg4);
-    arg2[1] = func_800152A8(arg0[1], arg1[1], arg3, arg4);
-    arg2[2] = func_800152A8(arg0[2], arg1[2], arg3, arg4);
+    arg2[0] = lerp_angle(arg0[0], arg1[0], arg3, arg4);
+    arg2[1] = lerp_angle(arg0[1], arg1[1], arg3, arg4);
+    arg2[2] = lerp_angle(arg0[2], arg1[2], arg3, arg4);
 }
 
 void func_80021B88(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {

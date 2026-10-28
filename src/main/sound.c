@@ -113,7 +113,7 @@ void func_8002ADD4(void *data, sfx_machine_bank_info *slot) {
     SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
     if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
         SfxBankLoading->id = D_800654C8;
-        func_800112A4(VabLoading, VabLoading->head, &MainHeap);
+        mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         func_8002ACA0(SfxBankLoading->id, 0);
         VabLoading = NULL;
         SfxBankLoading = NULL;
@@ -135,14 +135,14 @@ void func_8002AEE0(void) {
     if (VabLoading != NULL || SfxBankLoading != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
             SfxBankLoading->id = D_800654C8;
-            func_800112A4(VabLoading, VabLoading->head, &MainHeap);
+            mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
             func_8002ACA0(SfxBankLoading->id, 0);
             VabLoading = NULL;
             SfxBankLoading = NULL;
         }
     }
     SpuGetAllKeysStatus(D_800644A8);
-    func_80014540(MainCamera, ScreenRect);
+    cam_build_view(MainCamera, ScreenRect);
     m = (MATRIX *)(MainCamera + 0x74);
     gte_SetRotMatrix(m);
     gte_SetGeomScreen(*(s32 *)(MainCamera + 0x18));
@@ -339,7 +339,7 @@ void func_8002BA44(void) {
     if (VabLoading != NULL || SfxBankLoading != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
             SfxBankLoading->id = D_800654C8;
-            func_800112A4(VabLoading, VabLoading->head, &MainHeap);
+            mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
             func_8002ACA0(SfxBankLoading->id, 0);
             VabLoading = NULL;
             SfxBankLoading = NULL;
@@ -350,7 +350,7 @@ void func_8002BA44(void) {
 void func_8002BAE8(void) {
     if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(0) == 1) {
         SfxBankLoading->id = D_800654C8;
-        func_800112A4(VabLoading, VabLoading->head, &MainHeap);
+        mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         func_8002ACA0(SfxBankLoading->id, 0);
         VabLoading = NULL;
         SfxBankLoading = NULL;

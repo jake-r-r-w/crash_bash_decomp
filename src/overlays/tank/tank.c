@@ -1475,16 +1475,16 @@ void TA_InitLevel(void) {
         Set_Clock(0x130, 0x81C0);
     }
     if (GameMode == 5) {
-        func_8001682C((s32 *)TankVehicleModel);
+        dbase_load_all_mesh_anims((s32 *)TankVehicleModel);
     } else {
-        func_8001682C((s32 *)TankObjects2Model);
+        dbase_load_all_mesh_anims((s32 *)TankObjects2Model);
     }
     if (GameMode == 7) {
-        func_8001682C((s32 *)D_800537AC);
+        dbase_load_all_mesh_anims((s32 *)D_800537AC);
     }
-    func_8001682C((s32 *)TankObjectsModel);
-    func_8001682C((s32 *)(TankObjectsModel - 0x658));
-    func_8001682C(*(s32 **)MapScene);
+    dbase_load_all_mesh_anims((s32 *)TankObjectsModel);
+    dbase_load_all_mesh_anims((s32 *)(TankObjectsModel - 0x658));
+    dbase_load_all_mesh_anims(*(s32 **)MapScene);
     GameViewport.ofx = 0x140;
     GameViewport.ofy = 0x15E;
     CAM5F->w0 = 0;
@@ -6420,13 +6420,13 @@ void InitTankBoss(NAS *nas) {
     case 1:
         base = HeroModelBank;
         if (TANK_MODEL_ON(base, 59)) {
-            func_80016F54(TANK_MODEL(59));
+            dbase_release(TANK_MODEL(59));
         }
         if (!TANK_MODEL_ON(base, 58)) {
-            func_8001612C(TANK_MODEL(58), 0);
+            dbase_asload_with_anims(TANK_MODEL(58), 0);
         }
         if (!TANK_MODEL_ON(base, 57)) {
-            func_8001612C(TANK_MODEL(57), 0);
+            dbase_asload_with_anims(TANK_MODEL(57), 0);
         }
         ext->Counter = 0x5A;
         TankBossStartStatus = 0x2C;
@@ -6435,13 +6435,13 @@ void InitTankBoss(NAS *nas) {
     case 0x2C:
         base = HeroModelBank;
         if (TANK_MODEL_ON(base, 59)) {
-            func_80016F54(TANK_MODEL(59));
+            dbase_release(TANK_MODEL(59));
         }
         if (TANK_MODEL_ON(base, 58)) {
-            func_80016F54(TANK_MODEL(58));
+            dbase_release(TANK_MODEL(58));
         }
         if (!TANK_MODEL_ON(base, 57)) {
-            func_8001612C(TANK_MODEL(57), 0);
+            dbase_asload_with_anims(TANK_MODEL(57), 0);
         }
         ext->Counter = 0x3C;
         SpawnTankBossTurrets();
@@ -6449,13 +6449,13 @@ void InitTankBoss(NAS *nas) {
     case 0x3A:
         base = HeroModelBank;
         if (TANK_MODEL_ON(base, 58)) {
-            func_80016F54(TANK_MODEL(58));
+            dbase_release(TANK_MODEL(58));
         }
         if (TANK_MODEL_ON(base, 57)) {
-            func_80016F54(TANK_MODEL(57));
+            dbase_release(TANK_MODEL(57));
         }
         if (!TANK_MODEL_ON(base, 59)) {
-            func_8001612C(TANK_MODEL(59), 0);
+            dbase_asload_with_anims(TANK_MODEL(59), 0);
         }
         ext->Counter = 0x3C;
         break;
@@ -6606,8 +6606,8 @@ void PlotTankBoss(NAS *nas) {
             fux->Counter = 0x5A;
             fux->Status = 0x3A;
             PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_80016F54(D_800536CC);
-            func_8001612C(D_800536CC + 0x70, 0);
+            dbase_release(D_800536CC);
+            dbase_asload_with_anims(D_800536CC + 0x70, 0);
         }
         break;
     case 0x3A:
@@ -8235,7 +8235,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
             if (m[1].on == 0) {
                 return;
             }
-            func_80016F54((u8 *)&m[1]);
+            dbase_release((u8 *)&m[1]);
         }
         break;
     case 0:

@@ -23,7 +23,7 @@ void BonkSpawnShockwave(s32 arg0) {
 
     base = Heroes;
     h = base + arg0;
-    if (func_80015780(h->hero_eng, h->hero_sub, 1, &sp18) == NULL) {
+    if (sub_find_point(h->hero_eng, h->hero_sub, 1, &sp18) == NULL) {
         *(SLONG_XYZ *)&sp18 = h->hero_eng->unk10;
     }
     nas = CreateNAS(sp18.vx, World_floor_level - 0x80, sp18.vz, 0x1A03, 0x11);
@@ -57,7 +57,7 @@ void BonkHeroFacing(s32 arg0) {
 
     if (h->hero_frozen == 0 || h->hero_mode == 0x43) {
         if (!(h->hero_ctrl & 1)) {
-            h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+            h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
         }
         h->hero_ctrl &= 0xFFFE;
         h->hero_eng->unk5E = 1;
@@ -329,7 +329,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
             box = func_80025A48(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
-                    func_800142D4(&eng->unk1C);
+                    rotscale_update(&eng->unk1C);
                 }
                 func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
                 lo2 = eng->unk10.y + box->unk2;
@@ -340,7 +340,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                     lo2 = tmp;
                 }
                 rad2 = box->radius;
-                func_80015758((SVECTOR *)box, &pos);
+                gte_rotate_point((SVECTOR *)box, &pos);
             }
             if (Heroes[arg0].hero_object != NULL) {
                 n = ((NAS **)Heroes[arg0].hero_object)[-1];

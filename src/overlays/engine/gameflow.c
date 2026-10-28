@@ -64,7 +64,7 @@ void func_8008E5BC(void) {
 
     GameFrameCount++;
     if ((Pads[0].held & 0x8C08) == 0x8C08) {
-        func_800101E0();
+        shell_run_spyro_demo();
     }
     scripts_update();
     if (D_8009E5B4 != 0) {
@@ -76,7 +76,7 @@ void func_8008E5BC(void) {
         return;
     }
     if (D_800AEC5C != 0) {
-        func_80016F54((u8 *)D_800AEC5C);
+        dbase_release((u8 *)D_800AEC5C);
         D_800AEC5C = 0;
     }
     if (IntroStepIndex == 1 && D_8009E5A8 == IntroSteps[0].delay) {
@@ -88,7 +88,7 @@ void func_8008E5BC(void) {
     if (--D_8009E5A8 > 0) {
         return;
     }
-    if (func_80012FFC() != 0) {
+    if (loader_pending() != 0) {
         D_8009E5A8 = 1;
         return;
     }
@@ -137,14 +137,14 @@ void func_8008E5BC(void) {
             func_8002C284(IntroSteps[IntroStepIndex].unk10);
         }
         if (D_800AEC5C != 0) {
-            func_80016F54((u8 *)D_800AEC5C);
+            dbase_release((u8 *)D_800AEC5C);
         }
         D_800AEC5C = (s32)IntroSteps[IntroStepIndex].model;
         break;
     }
     IntroStepIndex++;
     if (IntroSteps[IntroStepIndex].type == 2) {
-        func_8001612C(IntroSteps[IntroStepIndex].model, 0);
+        dbase_asload_with_anims(IntroSteps[IntroStepIndex].model, 0);
     }
 }
 
@@ -154,7 +154,7 @@ void func_8008EAC8(void) {
     RECT *r;
 
     if (D_800AEC5C != 0) {
-        func_80016F54((u8 *)D_800AEC5C);
+        dbase_release((u8 *)D_800AEC5C);
     }
     func_80021FB0();
     func_8001D604();
@@ -458,7 +458,7 @@ void func_8008F554(void) {
     if (D_8009EB98 != 0) {
         D_8009EB98--;
         func_80017640();
-        func_80011D28((u8 *)&MainHeap);
+        mal_compact_step((u8 *)&MainHeap);
     }
     if (Pads[0].pressed & 0x80) {
         EngineWorldPrev();
@@ -798,7 +798,7 @@ void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     e->sub[1].unk6C = arg0 + 0x18;
     e->sub[1].unk04 = 0xC;
     e->sub[1].unk08 = 2;
-    n = func_80010000(arg0);
+    n = count_completion(arg0);
     D_8009F4A8[arg1][0] = n / 100 + '0';
     n %= 100;
     d = n / 10;
@@ -823,15 +823,15 @@ void func_80090564(u8 *arg0, s32 arg1) {
         EngineSetSlot3Digits(3, 3);
         return;
     }
-    func_800150E8(D_8009F498, func_8007A5E8(arg0), 10);
+    itoa_div(D_8009F498, func_8007A5E8(arg0), 10);
     e->sub[2].unk6C = D_8009F498;
-    func_800150E8(D_8009F498 + 3, EngineSum147(arg0), 10);
+    itoa_div(D_8009F498 + 3, EngineSum147(arg0), 10);
     e->sub[6].unk6C = D_8009F498 + 3;
-    func_800150E8(D_8009F498 + 6, EngineSum126(arg0), 10);
+    itoa_div(D_8009F498 + 6, EngineSum126(arg0), 10);
     e->sub[4].unk6C = D_8009F498 + 6;
-    func_800150E8(D_8009F498 + 9, EngineCount105(arg0), 10);
+    itoa_div(D_8009F498 + 9, EngineCount105(arg0), 10);
     e->sub[8].unk6C = D_8009F498 + 9;
-    func_8001517C(D_8009F498 + 12, EngineExtra105(arg0), 10);
+    itoa_div_end(D_8009F498 + 12, EngineExtra105(arg0), 10);
     e->sub[10].unk6C = D_8009F498 + 12;
     switch (*(s32 *)(arg0 + 0xE0)) {
     case 1:
@@ -925,14 +925,14 @@ void func_80090A10(void) {
         func_8001C2C0((u8 *)GetEngineSlot(1));
         break;
     case 1:
-        if (func_80012FFC() == 0) {
+        if (loader_pending() == 0) {
             u8 *q = GameInfo;
             D_8009F638 = 2;
             q[0x50] = q[0x4C];
         }
         break;
     case 2:
-        if (func_80012FFC() == 0) {
+        if (loader_pending() == 0) {
             u8 *q;
             func_80092AF4(&RetryProcess, 0x200);
             q = GameInfo;
@@ -1690,7 +1690,7 @@ void func_800928E8(void) {
     *(s32 *)(g + 4) = 0x80000000;
     func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     func_80017164(cfg->pools);
-    func_800170D4();
+    dbase_init_all();
     func_80095DBC();
     D_8004E0D4 = 0;
     D_8009F654 = 0;
@@ -1802,7 +1802,7 @@ void func_80092CAC(void) {
         g->unkE0 = 2;
     }
     func_80017640();
-    func_80010AE8(&MainHeap);
+    mal_compact(&MainHeap);
     FirstBootDone = 0;
     if (GameExitFlags & 0x200) {
         func_80079260();

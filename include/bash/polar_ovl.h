@@ -1713,6 +1713,5 @@ extern u16 PolarHeroModels[];
 extern u16 PolarHeroModelsB[];
 extern u16 PolarHeroModelsCut[];
 
-extern s16 GameTeamLeader[2];
 
 #endif /* BASH_POLAR_OVL_H */

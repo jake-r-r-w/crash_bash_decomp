@@ -1113,17 +1113,17 @@ void RunGameInit(void) {
     }
     func_800222FC();
     func_800229FC(GameMode);
-    while (func_80012FFC() != 0) {
-        func_8001231C();
-        func_80010AE8(&MainHeap);
+    while (loader_pending() != 0) {
+        loader_update();
+        mal_compact(&MainHeap);
         func_8002BAE8();
     }
     func_8008EC00(&DatIndex[2 * 139]);
     func_8002BBB4();
     func_8002BD0C((s32)&DatIndex[2 * 274]);
-    while (func_80012FFC() != 0) {
-        func_8001231C();
-        func_80010AE8(&MainHeap);
+    while (loader_pending() != 0) {
+        loader_update();
+        mal_compact(&MainHeap);
         func_8002BAE8();
     }
 }
@@ -1328,7 +1328,7 @@ void TitlesEmptyHook(void) {
 }
 
 void TitlesUpdateLevel(void) {
-    func_800139A8();
+    combo_check_all();
 }
 
 void TitlesPreInitLevel(void) {
@@ -1413,8 +1413,8 @@ void UpdateCharSelector(TitlesSlot *slot) {
     s2 = o->unk10;
     x = CharCards[o->unk30].x + CharSelectorOffsets[o->unk4].x;
     y = CharCards[o->unk30].y + CharSelectorOffsets[o->unk4].y;
-    t->unk04 = func_80015210(t->unk04, x, 0x800);
-    t->unk08 = func_80015210(t->unk08, y, 0x800);
+    t->unk04 = lerp_snap(t->unk04, x, 0x800);
+    t->unk08 = lerp_snap(t->unk08, y, 0x800);
     still = abs(t->unk04 - x) + abs(t->unk08 - y);
     s->unk08 = s2->unk08 = ((TitlesTrig *)rcossin_tbl)[(FrameCount * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
     still = still == 0;
@@ -1905,7 +1905,7 @@ void LevelSelectUpdate(void) {
 
     if (LevelSelectReload != 0) {
         func_80017640();
-        func_80011D28((u8 *)&MainHeap);
+        mal_compact_step((u8 *)&MainHeap);
         LevelSelectReload--;
     }
     AnimateTitlesBackdrop();
@@ -1922,7 +1922,7 @@ void LevelSelectUpdate(void) {
     off = ((s32 **)D_8004DDBC)[*(s32 *)(GameInfo + 0x2C)][w];
     e0->sub[6].unk6C = (void *)off;
     t = &GetEngineSlot(0)->sub[1];
-    t->unk08 = func_80015284(t->unk08,
+    t->unk08 = lerp_fix12(t->unk08,
         *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)GameInfo[0x37] + 4] + 0x72) + 0x32, 0x800);
     i = 0;
     off = 0;
@@ -2027,7 +2027,7 @@ void LevelSelectCursor(s32 arg0) {
     s32 v = *(s16 *)((u8 *)GetEngineSlot(1)->sub + D_8005A64B * 0xA8 + 0x312) + 0x32;
 
     if (arg0 != 0) {
-        *(s32 *)(p + 8) = func_80015284(*(s32 *)(p + 8), v, 0x800);
+        *(s32 *)(p + 8) = lerp_fix12(*(s32 *)(p + 8), v, 0x800);
     } else {
         *(s32 *)(p + 8) = v;
     }
@@ -2197,7 +2197,7 @@ void MoveTeamBar(s32 arg0, s32 arg1) {
     u8 *p = (u8 *)eng->sub + (off + 0x2A0);
     s16 v;
 
-    v = func_80015284(*(s16 *)(p + 0x70), arg1, 0x800);
+    v = lerp_fix12(*(s16 *)(p + 0x70), arg1, 0x800);
     *(s16 *)(p + 0x70) = v;
     *(s16 *)(p + 0x76) = v + 0x78;
     *(s32 *)((u8 *)eng->sub + off + 4) = *(s16 *)(p + 0x70) + 0x1A;

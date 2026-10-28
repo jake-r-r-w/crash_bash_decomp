@@ -219,7 +219,5 @@ extern s16 CupWinner;
 extern u16 D_8009AF38[7];
 extern s32 D_800ADBCC;
 
-extern u8 GameWinner[2];
-extern s16 GameTeamLeader[2];
 
 #endif /* BASH_PANEL_H */

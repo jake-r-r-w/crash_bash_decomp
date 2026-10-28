@@ -314,8 +314,8 @@ typedef struct ChaseHitFlags {
 } ChaseHitFlags;
 extern NAS *HeadOfSolids;
 void func_8001CD04(void *arg0, void *arg1, void *arg2);
-void func_800142D4(void *arg0);
-void func_80015758(SVECTOR *v, VECTOR *out);
+void rotscale_update(void *arg0);
+void gte_rotate_point(SVECTOR *v, VECTOR *out);
 s32 Random(s32 n);
 void *FindExtension(NAS *nas, s32 id);
 s32 get_angle(s32 x, s32 z);
