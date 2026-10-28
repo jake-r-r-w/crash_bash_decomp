@@ -42,7 +42,7 @@ void init_scripts(s32 arg0, s32 arg1) {
 
 void update_model_thread(script_thread_handler *th, script_control_info *ci) {
     ModelFile *p;
-    u8 *r;
+    script_header *r;
     script_thread *res;
     s32 *q;
     s32 lo;
@@ -70,12 +70,12 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (u8 *)q + *q;
+        r = (script_header *)((u8 *)q + *q);
     }
     if (r == NULL) {
         res = NULL;
     } else {
-        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
+        res = (script_thread *)((u8 *)&r->threaddata[idx] + r->threaddata[idx]);
     }
     if (res != NULL) {
         if (v < res->start_frame || res->end_frame < v) {
@@ -121,7 +121,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
 
 void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     ModelFile *p;
-    u8 *r;
+    script_header *r;
     script_thread *res;
     s32 *q;
     s32 lo;
@@ -148,12 +148,12 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (u8 *)q + *q;
+        r = (script_header *)((u8 *)q + *q);
     }
     if (r == NULL) {
         res = NULL;
     } else {
-        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
+        res = (script_thread *)((u8 *)&r->threaddata[idx] + r->threaddata[idx]);
     }
     if (res != NULL) {
         if (v < res->start_frame || res->end_frame < v) {
@@ -190,7 +190,7 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
     AnimKey *k;
     AnimKey *key;
     ModelFile *p;
-    u8 *r;
+    script_header *r;
     script_thread *res;
     s32 *q;
     s32 lo;
@@ -217,12 +217,12 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (u8 *)q + *q;
+        r = (script_header *)((u8 *)q + *q);
     }
     if (r == NULL) {
         res = NULL;
     } else {
-        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
+        res = (script_thread *)((u8 *)&r->threaddata[idx] + r->threaddata[idx]);
     }
     if (res != NULL) {
         if (v < res->start_frame || res->end_frame < v) {
@@ -270,7 +270,7 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
 
 void update_fade_thread(script_thread_handler *th, script_control_info *ci) {
     ModelFile *p;
-    u8 *r;
+    script_header *r;
     script_thread *res;
     s32 *q;
     s32 lo;
@@ -290,12 +290,12 @@ void update_fade_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (u8 *)q + *q;
+        r = (script_header *)((u8 *)q + *q);
     }
     if (r == NULL) {
         res = NULL;
     } else {
-        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
+        res = (script_thread *)((u8 *)&r->threaddata[idx] + r->threaddata[idx]);
     }
     if (res != NULL) {
         if (v < res->start_frame || res->end_frame < v) {
@@ -357,7 +357,7 @@ void emit_particle(subengine *obj, EmitPart *part, partdata *def) {
 
 void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
     ModelFile *p;
-    u8 *r;
+    script_header *r;
     script_thread *res;
     s32 *q;
     s32 lo;
@@ -384,12 +384,12 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (u8 *)q + *q;
+        r = (script_header *)((u8 *)q + *q);
     }
     if (r == NULL) {
         res = NULL;
     } else {
-        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));  /* the header's self-relative offset to the thread */
+        res = (script_thread *)((u8 *)&r->threaddata[idx] + r->threaddata[idx]);  /* the header's self-relative offset to the thread */
     }
     if (res == NULL) {
         return;
@@ -482,7 +482,7 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
 
 void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
     ModelFile *p;
-    u8 *r;
+    script_header *r;
     script_thread *res;
     s32 *q;
     s32 lo;
@@ -504,12 +504,12 @@ void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (u8 *)q + *q;
+        r = (script_header *)((u8 *)q + *q);
     }
     if (r == NULL) {
         res = NULL;
     } else {
-        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
+        res = (script_thread *)((u8 *)&r->threaddata[idx] + r->threaddata[idx]);
     }
     if (res != NULL) {
         if (v < res->start_frame || res->end_frame < v) {
@@ -1381,7 +1381,7 @@ s32 *find_range(s32 *arg0, s32 arg1, s32 arg2) {
 
 u8 *script_track_at(u8 *arg0, s32 arg1) {
     ModelFile *p;
-    u8 *r;
+    script_header *r;
     script_thread *res;
     s32 *q;
     s32 lo;
@@ -1400,12 +1400,12 @@ u8 *script_track_at(u8 *arg0, s32 arg1) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
-        r = (u8 *)q + *q;
+        r = (script_header *)((u8 *)q + *q);
     }
     if (r == NULL) {
         res = NULL;
     } else {
-        res = (script_thread *)(r + (arg1 * 4 + 0x1C) + *(s32 *)(r + (arg1 << 2) + 0x1C));
+        res = (script_thread *)((u8 *)&r->threaddata[arg1] + r->threaddata[arg1]);
     }
     if (res != NULL) {
         if (v < res->start_frame || res->end_frame < v) {
@@ -1417,7 +1417,7 @@ u8 *script_track_at(u8 *arg0, s32 arg1) {
 
 u8 *get_script_track(u8 *arg0, s32 arg1, s32 arg2) {
     ModelFile *p;
-    u8 *r;
+    script_header *r;
     s32 *q;
 
     ScriptTrackDbase = arg0;
@@ -1428,12 +1428,12 @@ u8 *get_script_track(u8 *arg0, s32 arg1, s32 arg2) {
         r = NULL;
     } else {
         q = (s32 *)((u8 *)&p->scripts + p->scripts) + arg1;
-        r = (u8 *)q + *q;
+        r = (script_header *)((u8 *)q + *q);
     }
     if (r == NULL) {
         return NULL;
     }
-    return r + (arg2 * 4 + 0x1C) + *(s32 *)(r + (arg2 << 2) + 0x1C);
+    return (u8 *)&r->threaddata[arg2] + r->threaddata[arg2];
 }
 
 u8 *offset_table_entry(OffsetTable *tbl, s32 i) {
