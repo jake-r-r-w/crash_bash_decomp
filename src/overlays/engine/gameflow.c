@@ -662,8 +662,8 @@ s32 CupCurrentArena(void) {
 
 void InitCupMenu(void) {
     CupMenuCompact = 0;
-    PlaceEngineSlot(0, (s32 *)D_8009E8B4);
-    PlaceEngineSlot(2, D_8009E7F4);
+    PlaceEngineSlot(0, (s32 *)CupMenuLabels);
+    PlaceEngineSlot(2, CupMenuPanel);
     PlaceEngineSlot(3, (s32 *)CupSlotPanel);
     PlaceEngineSlot(4, (s32 *)CupSlotPanel);
     PlaceEngineSlot(5, (s32 *)CupSlotPanel);
@@ -1390,7 +1390,7 @@ void ShowSaveScreen(void) {
     EXTengine *eng;
 
     ShowCardSlots();
-    PlaceEngineSlot(2, &D_8009EF64);
+    PlaceEngineSlot(2, &SaveScreenPanel);
     GetEngineSlot(2)->unk10.x = 0x28;
     GetEngineSlot(2)->unk10.y = 0x1E;
     eng = GetEngineSlot(2);
@@ -1407,7 +1407,7 @@ void RefreshCardSlots(void) {
     EXTengine *eng;
 
     ShowCardSlots();
-    PlaceEngineSlot(2, &D_8009EF64);
+    PlaceEngineSlot(2, &SaveScreenPanel);
     GetEngineSlot(2)->unk10.x = 0x28;
     GetEngineSlot(2)->unk10.y = 0x1E;
     eng = GetEngineSlot(2);
@@ -1959,7 +1959,7 @@ EngineTable12 CupTable[7] = {
     { 3, (void *)&D_8009E6E0, 4 }, { 3, (void *)&D_8009E720, 4 },
     { 3, (void *)&D_8009E760, 4 },
 };
-u8 D_8009E7F4[180] = {
+u8 CupMenuPanel[180] = {
     4, 0, 0, 0, 0x32, 0, 0x36, 1, 0x58, 0, 0xD0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0x4A, 1, 0x4E, 2, 0x58, 0, 0xD0, 0, 4, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0x32, 0, 0x36, 1,
@@ -1971,7 +1971,7 @@ u8 D_8009E7F4[180] = {
 s32 LangTournamentSelect[1] = { (s32)&MenuTournamentSelect };
 s32 LangMenuLocked[1] = { (s32)&MenuLocked };
 s32 LangMenuPressButtonToSelect[1] = { (s32)&MenuPressButtonToSelect };
-EngRec24 D_8009E8B4[12] = {
+EngRec24 CupMenuLabels[12] = {
     {
         { 3, 0, 0, 0, 0, 0x80, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 2, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
@@ -2042,42 +2042,42 @@ EngRec24 CupSlotPanel[2] = {
 };
 process_info TournamentSelect = { InitCupMenu, UpdateCupMenu, RenderCupMenu, QuitCupMenu, 0 };
 s32 CupMenuCompact = 0;
-s32 D_8009EB9C[8] = { 0x20001, 0x3000A, 0x20002, 0x30013, 0x20003, 0x3000B, 0, 0 };
-s32 D_8009EBBC[8] = { 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24, 0x2016, 0x25 };
-s32 D_8009EBDC[16] = {
+s32 WarpRoomBossItems[8] = { 0x20001, 0x3000A, 0x20002, 0x30013, 0x20003, 0x3000B, 0, 0 };
+s32 WarpRoom1Doors[8] = { 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24, 0x2016, 0x25 };
+s32 WarpRoom1Items[16] = {
     0x20001, 0x3000E, 0x20002, 0x30013, 0x20003, 0x3000A, 0x20004, 0x30000, 0x20005, 0x30004,
     0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
 };
-s32 D_8009EC1C[8] = { 0x200F, 0x21, 0x2013, 0x23, 0x2015, 0x24, 0x2017, 0x25 };
-s32 D_8009EC3C[18] = {
+s32 WarpRoom2Doors[8] = { 0x200F, 0x21, 0x2013, 0x23, 0x2015, 0x24, 0x2017, 0x25 };
+s32 WarpRoom2Items[18] = {
     0x20001, 0x3000F, 0x20002, 0x30012, 0x20003, 0x3000B, 0x20004, 0x30001, 0x20005, 0x30006,
     0x20006, 0x30016, 0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
 };
-s32 D_8009EC84[8] = { 0x200E, 0x21, 0x2010, 0x22, 0x2014, 0x24, 0x2016, 0x25 };
-s32 D_8009ECA4[20] = {
+s32 WarpRoom3Doors[8] = { 0x200E, 0x21, 0x2010, 0x22, 0x2014, 0x24, 0x2016, 0x25 };
+s32 WarpRoom3Items[20] = {
     0x20001, 0x30010, 0x20002, 0x30014, 0x20003, 0x3000C, 0x20004, 0x30002, 0x20005, 0x30008,
     0x20006, 0x30017, 0x20007, 0x30009, 0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
 };
-s32 D_8009ECF4[8] = { 0x200F, 0x21, 0x2011, 0x22, 0x2013, 0x23, 0x2017, 0x25 };
-s32 D_8009ED14[22] = {
+s32 WarpRoom4Doors[8] = { 0x200F, 0x21, 0x2011, 0x22, 0x2013, 0x23, 0x2017, 0x25 };
+s32 WarpRoom4Items[22] = {
     0x20001, 0x30011, 0x20002, 0x30015, 0x20003, 0x3000D, 0x20004, 0x30003, 0x20005, 0x30007,
     0x20006, 0x30018, 0x20007, 0x3001B, 0x20008, 0x3001F, 0x5000B, 0x30000, 0x4000C, 0x30000,
     0, 0,
 };
-s32 D_8009ED6C[8] = { 0x200E, 0x21, 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24 };
-s32 D_8009ED8C[18] = {
+s32 WarpRoom5Doors[8] = { 0x200E, 0x21, 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24 };
+s32 WarpRoom5Items[18] = {
     0x20001, 0x30019, 0x20002, 0x3001C, 0x20003, 0x3001D, 0x20004, 0x30005, 0x20005, 0x3001E,
     0x20006, 0x3001A, 0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
 };
 s32 WarpRooms[10][5] = {
-    { 0x21, (s32)&D_8009EBDC, 4, (s32)&D_8009EBBC, 0x5021 },
-    { 0x22, (s32)&D_8009EC3C, 4, (s32)&D_8009EC1C, 0x502D },
-    { 0x23, (s32)&D_8009ECA4, 4, (s32)&D_8009EC84, 0x502E },
-    { 0x24, (s32)&D_8009ED14, 4, (s32)&D_8009ECF4, 0x502A },
-    { 0x25, (s32)&D_8009ED8C, 4, (s32)&D_8009ED6C, 0x502D },
-    { 0x21, (s32)&D_8009EBDC, 0, 0, 0 }, { 0x21, (s32)&D_8009EBDC, 0, 0, 0 },
-    { 0x21, (s32)&D_8009EBDC, 0, 0, 0 }, { 0x26, (s32)&D_8009EB9C, 0, 0, 0 },
-    { 0x27, (s32)&D_8009EB9C, 0, 0, 0 },
+    { 0x21, (s32)&WarpRoom1Items, 4, (s32)&WarpRoom1Doors, 0x5021 },
+    { 0x22, (s32)&WarpRoom2Items, 4, (s32)&WarpRoom2Doors, 0x502D },
+    { 0x23, (s32)&WarpRoom3Items, 4, (s32)&WarpRoom3Doors, 0x502E },
+    { 0x24, (s32)&WarpRoom4Items, 4, (s32)&WarpRoom4Doors, 0x502A },
+    { 0x25, (s32)&WarpRoom5Items, 4, (s32)&WarpRoom5Doors, 0x502D },
+    { 0x21, (s32)&WarpRoom1Items, 0, 0, 0 }, { 0x21, (s32)&WarpRoom1Items, 0, 0, 0 },
+    { 0x21, (s32)&WarpRoom1Items, 0, 0, 0 }, { 0x26, (s32)&WarpRoomBossItems, 0, 0, 0 },
+    { 0x27, (s32)&WarpRoomBossItems, 0, 0, 0 },
 };
 HubRing HubHeroRing = {0};
 s32 CardPromptPanel = 3;
@@ -2085,7 +2085,7 @@ s32 D_8009EEB4[44] = {
     0x328000, 0, 0, 0, 0, 0, 0, 0, 3, 0x788000, 0, 0, 0, 0, 0, 0, 0, 4, 0x1B88000, 0x19A0072,
     0, 0, 0, 0, 0, 0, 4, 0x2808000, 0x5A0028, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009EF64 = 4;
+s32 SaveScreenPanel = 4;
 s32 D_8009EF68[17] = { 0x1180000, 0x5A0000, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 void *LangConfirmOverwrite[1] = { (void *)&MenuConfirmOverwrite };
 void *LangPressButtonToOverwrite[1] = { (void *)&MenuPressButtonToOverwrite };

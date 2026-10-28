@@ -41,7 +41,7 @@ void LevelUnused(void);
 void UpdateLevelTriggers(void);
 void ResetASTTable(void);
 void ClearLevelNas(void);
-extern s32 D_8009EF64;
+extern s32 SaveScreenPanel;
 extern s32 D_8009F008;
 extern s32 CardSlotIndex;
 extern s32 CardBufferStamp;
@@ -224,7 +224,7 @@ extern s32 IntroStepTimer;
 extern s32 IntroNextSfx;
 extern s32 IntroSfxDelay;
 extern s32 D_800AEC58;
-extern u8 D_8009E7F4[];
+extern u8 CupMenuPanel[];
 /* A text-panel record PlaceEngineSlot builds from (0x24 bytes): kind at 0, the text at 0x14. */
 typedef struct EngRec24 {
     /* 0x00 */ u8 pad0[0x14];
@@ -234,7 +234,7 @@ typedef struct EngRec24 {
     /* 0x20 */ u8 pad20[4];
 } EngRec24;
 
-extern EngRec24 D_8009E8B4[];
+extern EngRec24 CupMenuLabels[];
 extern EngRec24 CupSlotPanel[2];
 extern process_info TournamentSelect;   /* after CupSlotPanel's two records: the tournament select menu (TournamentChain) */
 extern s32 CupMenuCompact;
