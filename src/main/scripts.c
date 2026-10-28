@@ -265,7 +265,7 @@ void update_entity_thread(u8 *arg0, u8 *arg1) {
     }
 }
 
-void update_fade_thread(u8 *arg0, u8 *arg1) {
+void update_fade_thread(script_thread_handler *th, script_control_info *ci) {
     u8 *p;
     u8 *r;
     u8 *res;
@@ -275,12 +275,12 @@ void update_fade_thread(u8 *arg0, u8 *arg1) {
     s32 v;
     u8 *e;
 
-    e = *(u8 **)(arg1 + 0);
-    lo = *(s32 *)(arg1 + 4);
-    idx = *(s32 *)(arg0 + 0);
-    v = *(s16 *)(arg1 + 0xE);
+    e = (u8 *)ci->dbase;
+    lo = ci->script;
+    idx = th->thread_num;
+    v = ci->time.h.frame;
     ScriptTrackDbase = e;
-    p = *(u8 **)(e + 0xC);
+    p = ((obj_dbase *)e)->data;
     ScriptTrackIndex = lo;
     ScriptTrackThread = idx;
     if (p == NULL) {
@@ -299,9 +299,9 @@ void update_fade_thread(u8 *arg0, u8 *arg1) {
             res = NULL;
         }
         if (res != NULL) {
-            ScriptFade = interp(*(s32 *)(arg0 + 8), *(s32 *)(arg0 + 0xC),
-                                       (*(s32 *)(res + 8) - *(s32 *)(res + 4)) << 8,
-                                       (*(s32 *)(arg1 + 0xC) >> 8) - (*(s32 *)(res + 4) << 8));
+            ScriptFade = interp(th->type.fade.start, th->type.fade.end,
+                                (*(s32 *)(res + 8) - *(s32 *)(res + 4)) << 8,
+                                (ci->time.w >> 8) - (*(s32 *)(res + 4) << 8));
         }
     }
 }
@@ -477,7 +477,7 @@ void update_emitter_thread(u8 *arg0, u8 *arg1) {
     }
 }
 
-void update_sub_thread(u8 *arg0, u8 *arg1) {
+void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
     u8 *p;
     u8 *r;
     u8 *res;
@@ -486,15 +486,15 @@ void update_sub_thread(u8 *arg0, u8 *arg1) {
     s32 idx;
     s32 v;
     u8 *e;
-    u8 *d;
+    subengine *d;
     u32 t;
 
-    e = *(u8 **)(arg1 + 0);
-    lo = *(s32 *)(arg1 + 4);
-    idx = *(s32 *)(arg0 + 0);
-    v = *(s16 *)(arg1 + 0xE);
+    e = (u8 *)ci->dbase;
+    lo = ci->script;
+    idx = th->thread_num;
+    v = ci->time.h.frame;
     ScriptTrackDbase = e;
-    p = *(u8 **)(e + 0xC);
+    p = ((obj_dbase *)e)->data;
     ScriptTrackIndex = lo;
     ScriptTrackThread = idx;
     if (p == NULL) {
@@ -513,24 +513,24 @@ void update_sub_thread(u8 *arg0, u8 *arg1) {
             res = NULL;
         }
     }
-    d = arg0 + 8;
-    if (res != NULL && *(s32 *)(arg1 + 0xC) >= (*(s32 *)(res + 4) << 16) &&
-        !(*(s32 *)(arg0 + 8) & 0x8000)) {
-        *(s32 *)(d + 4) = *(s32 *)(res + 0x2C);
-        *(s32 *)(d + 8) = *(s32 *)(res + 0x30);
-        *(s32 *)(d + 0xC) = *(s32 *)(res + 0x34);
-        *(u16 *)(d + 0x10) = *(u16 *)(res + 0x38);
-        *(u16 *)(d + 0x12) = *(u16 *)(res + 0x3C);
-        *(u16 *)(d + 0x14) = *(u16 *)(res + 0x40);
-        *(s32 *)(d + 0x20) = *(s32 *)(res + 0x60);
-        *(s32 *)(d + 0x24) = *(s32 *)(res + 0x64);
-        *(s32 *)(d + 0x28) = *(s32 *)(res + 0x68);
-        *(u8 *)(d + 0x51) = 0;
+    d = &th->type.subscript.sub;
+    if (res != NULL && ci->time.w >= (*(s32 *)(res + 4) << 16) &&
+        !(th->type.subscript.sub.flags & 0x8000)) {
+        d->unk04 = *(s32 *)(res + 0x2C);
+        d->unk08 = *(s32 *)(res + 0x30);
+        d->unk0C = *(s32 *)(res + 0x34);
+        d->unk10 = *(u16 *)(res + 0x38);
+        d->unk12 = *(u16 *)(res + 0x3C);
+        d->unk14 = *(u16 *)(res + 0x40);
+        d->unk20.x = *(s32 *)(res + 0x60);
+        d->unk20.y = *(s32 *)(res + 0x64);
+        d->unk20.z = *(s32 *)(res + 0x68);
+        d->unk51 = 0;
         t = *(u16 *)(res + 0x18);
-        *(u16 *)(d + 0x52) = 1;
-        *(u16 *)(d + 0x68) = t;
-        sub_play_script(*(obj_dbase **)arg1, *(s32 *)(res + 0x14), (subengine *)d, 0);
-        *(s32 *)(arg0 + 8) |= 0x8000;
+        d->unk52 = 1;
+        d->unk68 = t;
+        sub_play_script(ci->dbase, *(s32 *)(res + 0x14), d, 0);
+        th->type.subscript.sub.flags |= 0x8000;
     }
 }
 
@@ -1040,21 +1040,21 @@ void script_attach(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3, u8 **arg4) {
     update_script(arg2);
 }
 
-void kill_sub_thread(u8 *arg0) {
-    u8 *p;
+void kill_sub_thread(script_thread_handler *th) {
+    subengine *sub;
 
-    p = arg0 + 8;
-    (*(void (**)(u8 *))(p + 0x58))(p);
+    sub = &th->type.subscript.sub;
+    sub->release(sub);
 }
 
-void render_sub_thread(u8 *arg0, s32 *arg1) {
+void render_sub_thread(script_thread_handler *th, s32 *arg1) {
     s32 saved;
     u32 flags;
     subengine *sub;
     s32 val;
 
-    sub = (subengine *)(arg0 + 8);
-    flags = *(u32 *)(arg0 + 8);
+    sub = &th->type.subscript.sub;
+    flags = th->type.subscript.sub.flags;
     val = *arg1;
     saved = ScriptFade;
     if (flags & 0x8000) {
@@ -1063,48 +1063,50 @@ void render_sub_thread(u8 *arg0, s32 *arg1) {
     ScriptFade = saved;
 }
 
-static inline u8 *Pop4(void) {
-    u8 *cur;
+/* A thread from the free list (ScriptList), or NULL. */
+static inline script_thread_handler *ThreadPop(void) {
+    script_thread_handler *cur;
 
     cur = ScriptList;
     if (cur != NULL) {
-        ScriptList = *(void **)(cur + 0xB4);
+        ScriptList = cur->next;
     }
     return cur;
 }
 
-static inline u8 *Push4(u8 *arg1) {
-    u8 *p;
+/* A thread from the free list, put first on a script's. */
+static inline script_thread_handler *ThreadPush(script_control_info *ci) {
+    script_thread_handler *p;
 
-    p = Pop4();
+    p = ThreadPop();
     if (p != NULL) {
-        *(u8 **)(p + 0xB4) = *(u8 **)(arg1 + 8);
-        *(u8 **)(arg1 + 8) = p;
+        p->next = ci->threads;
+        ci->threads = p;
     }
     return p;
 }
 
-void init_sub_thread(u8 *arg0, u8 *arg1, s32 arg2) {
-    u8 *p;
+void init_sub_thread(u8 *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
     subengine *sub;
 
-    p = Push4(arg1);
+    p = ThreadPush(ci);
     if (p != NULL) {
-        sub = (subengine *)(p + 8);
-        *(s32 *)(p + 4) = 5;
-        *(s32 *)p = arg2;
+        sub = &p->type.subscript.sub;
+        p->thread_type = 5;
+        p->thread_num = num;
         *sub = SubEngineTemplate;
-        *(s32 *)sub = 0;
+        sub->flags = 0;
     }
 }
 
-void render_emitter_thread(u8 *arg0, s32 *arg1) {
+void render_emitter_thread(script_thread_handler *th, s32 *arg1) {
     subengine *first;
     subengine *sub;
     s32 val;
     u32 flags;
 
-    first = *(subengine **)(arg0 + 0xC);
+    first = th->type.particle.subs;
     val = *arg1;
     if (first != NULL) {
         sub = first;
@@ -1188,69 +1190,49 @@ void vel_update(VelObj *obj, VelParams *p, VelState *s) {
     }
 }
 
-void init_emitter_thread(u8 *arg0, u8 *arg1, s32 arg2) {
-    u8 *p;
+void init_emitter_thread(u8 *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
     u8 *e;
-    u8 *q;
-    s32 v;
+    subengine *q;
+    obj_dbase *v;
     u16 w;
 
-    p = Push4(arg1);
+    p = ThreadPush(ci);
     if (p != NULL) {
-        e = arg0 + 0x14;
-        *(s32 *)(p + 4) = 1;
-        *(s32 *)p = arg2;
-        *(s32 *)(p + 0xC) = 0;
-        *(s32 *)(p + 0x10) = 0;
-        *(s32 *)(p + 8) = subs_alloc_list(p + 0xC, p + 0x10, *(s32 *)(e + 0x10));
-        q = *(u8 **)(p + 0xC);
+        e = def + 0x14;
+        p->thread_type = 1;
+        p->thread_num = num;
+        p->type.particle.subs = NULL;
+        p->type.particle.last_sub = NULL;
+        p->type.particle.num_subs = subs_alloc_list(&p->type.particle.subs, &p->type.particle.last_sub,
+                                                    *(s32 *)(e + 0x10));
+        q = p->type.particle.subs;
         if (q != NULL) {
             do {
-                *(s32 *)q = 0;
-                v = *(s32 *)arg1;
-                *(s32 *)(q + 0x6C) = v;
-                w = *(u16 *)(arg0 + 0x3C);
-                *(u8 *)(q + 0x51) = 0;
-                *(s16 *)(q + 0x52) = 1;
-                *(u16 *)(q + 0x74) = w;
-                q = *(u8 **)(q + 0x5C);
+                q->flags = 0;
+                v = ci->dbase;
+                q->u6C.dbase = v;
+                w = *(u16 *)(def + 0x3C);
+                q->unk51 = 0;
+                q->unk52 = 1;
+                q->entity = w;
+                q = q->next;
             } while (q != NULL);
         }
-        *(s32 *)(p + 0x14) = 0;
-        mal_alloc_owned_low(*(s32 *)(e + 0x10) * 0x28, (void **)(p + 0x14), (s32)&MainHeap, 0);
+        p->type.particle.mdata = NULL;
+        mal_alloc_owned_low(*(s32 *)(e + 0x10) * 0x28, (void **)&p->type.particle.mdata, (s32)&MainHeap, 0);
     }
 }
 
-static inline u8 *Pop3(void) {
-    u8 *cur;
+void init_fade_thread(u8 *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
 
-    cur = ScriptList;
-    if (cur != NULL) {
-        ScriptList = *(void **)(cur + 0xB4);
-    }
-    return cur;
-}
-
-static inline u8 *Push3(u8 *arg1) {
-    u8 *p;
-
-    p = Pop3();
+    p = ThreadPush(ci);
     if (p != NULL) {
-        *(u8 **)(p + 0xB4) = *(u8 **)(arg1 + 8);
-        *(u8 **)(arg1 + 8) = p;
-    }
-    return p;
-}
-
-void init_fade_thread(u8 *arg0, u8 *arg1, s32 arg2) {
-    u8 *p;
-
-    p = Push3(arg1);
-    if (p != NULL) {
-        *(s32 *)(p + 4) = 4;
-        *(s32 *)p = arg2;
-        *(s32 *)(p + 8) = *(s32 *)(arg0 + 0x14);
-        *(s32 *)(p + 0xC) = *(s32 *)(arg0 + 0x18);
+        p->thread_type = 4;
+        p->thread_num = num;
+        p->type.fade.start = *(s32 *)(def + 0x14);
+        p->type.fade.end = *(s32 *)(def + 0x18);
     }
 }
 
@@ -1258,28 +1240,28 @@ void render_entity_thread(script_thread_handler *th, geom_info *gi) {
     draw_object((u8 *)&th->type.entity.sub, gi->rot, th->type.entity.sub.flags);
 }
 
-void init_entity_thread(u8 *arg0, u8 *arg1, s32 arg2) {
-    u8 *p;
-    u8 *sub;
-    s32 v;
+void init_entity_thread(u8 *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
+    subengine *sub;
+    obj_dbase *v;
     u16 w;
 
-    p = Push3(arg1);
+    p = ThreadPush(ci);
     if (p != NULL) {
-        sub = p + 8;
-        *(s32 *)(p + 4) = 3;
-        *(subengine *)sub = SubEngineTemplate;
-        v = *(s32 *)arg1;
-        *(s16 *)(sub + 0x74) = 0;
-        *(s32 *)sub = 0;
-        *(s32 *)(sub + 0x6C) = v;
-        w = *(u16 *)(arg0 + 0x28);
-        *(u16 *)(sub + 0x68) = w;
+        sub = &p->type.anim.sub;
+        p->thread_type = 3;
+        *sub = SubEngineTemplate;
+        v = ci->dbase;
+        sub->entity = 0;
+        sub->flags = 0;
+        sub->u6C.dbase = v;
+        w = *(u16 *)(def + 0x28);
+        sub->unk68 = w;
         if ((w << 16) != 0) {
-            *(s32 *)sub |= 0x2000000;
+            sub->flags |= 0x2000000;
         }
-        *(s32 *)p = arg2;
-        *(s32 *)(p + 0xB0) = -1;
+        p->thread_num = num;
+        p->type.anim.frame_count = -1;
     }
 }
 
@@ -1313,39 +1295,18 @@ s32 *find_range_1c(u8 *arg0, s32 arg1) {
     return p;
 }
 
-static inline u8 *Pop2(void) {
-    u8 *cur;
+void init_camera_thread(s32 def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
 
-    cur = ScriptList;
-    if (cur != NULL) {
-        ScriptList = *(void **)(cur + 0xB4);
-    }
-    return cur;
-}
-
-static inline u8 *Push2(u8 *arg0) {
-    u8 *p;
-
-    p = Pop2();
+    p = ThreadPush(ci);
     if (p != NULL) {
-        *(u8 **)(p + 0xB4) = *(u8 **)(arg0 + 8);
-        *(u8 **)(arg0 + 8) = p;
-    }
-    return p;
-}
-
-void init_camera_thread(s32 arg0, u8 *arg1, s32 arg2) {
-    u8 *p;
-
-    p = Push2(arg1);
-    if (p != NULL) {
-        *(s32 *)(p + 4) = 2;
-        *(s32 *)p = arg2;
+        p->thread_type = 2;
+        p->thread_num = num;
     }
 }
 
-void render_model_thread(u8 *arg0, s32 *arg1) {
-    draw_object(arg0 + 8, *arg1, (*(s32*)((u8*)(arg0) + 8)));
+void render_model_thread(script_thread_handler *th, s32 *arg1) {
+    draw_object((u8 *)&th->type.anim.sub, (u8 *)*arg1, th->type.anim.sub.flags);
 }
 
 s32 *find_range_24(u8 *arg0, s32 arg1) {
@@ -1361,27 +1322,27 @@ s32 *find_range_24(u8 *arg0, s32 arg1) {
     return p;
 }
 
-void init_model_thread(u8 *arg0, u8 *arg1, s32 arg2) {
-    u8 *p;
-    u8 *sub;
-    s32 v;
+void init_model_thread(u8 *def, script_control_info *ci, s32 num) {
+    script_thread_handler *p;
+    subengine *sub;
+    obj_dbase *v;
     u16 w;
 
-    p = Push4(arg1);
+    p = ThreadPush(ci);
     if (p != NULL) {
-        sub = p + 8;
-        *(s32 *)(p + 4) = 0;
-        *(subengine *)sub = SubEngineTemplate;
-        v = *(s32 *)arg1;
-        *(s16 *)(sub + 0x74) = 0;
-        *(s32 *)sub = 0;
-        *(s32 *)(sub + 0x6C) = v;
-        w = *(u16 *)(arg0 + 0x1C);
-        *(u16 *)(sub + 0x68) = w;
+        sub = &p->type.anim.sub;
+        p->thread_type = 0;
+        *sub = SubEngineTemplate;
+        v = ci->dbase;
+        sub->entity = 0;
+        sub->flags = 0;
+        sub->u6C.dbase = v;
+        w = *(u16 *)(def + 0x1C);
+        sub->unk68 = w;
         if ((w << 16) != 0) {
-            *(s32 *)sub |= 0x2000000;
+            sub->flags |= 0x2000000;
         }
-        *(s32 *)p = arg2;
+        p->thread_num = num;
     }
 }
 
@@ -1486,41 +1447,31 @@ u8 *get_script_header(obj_dbase *db, s32 arg1) {
     return NULL;
 }
 
-static inline u8 *PopD_80058B70(void) {
-    u8 *cur;
+script_thread_handler *script_thread_alloc(script_control_info *ci) {
+    script_thread_handler *p;
 
-    cur = ScriptList;
-    if (cur != NULL) {
-        ScriptList = *(void **)(cur + 0xB4);
-    }
-    return cur;
-}
-
-u8 *script_thread_alloc(u8 *arg0) {
-    u8 *p;
-
-    p = PopD_80058B70();
+    p = ThreadPop();
     if (p != NULL) {
-        *(u8 **)(p + 0xB4) = *(u8 **)(arg0 + 8);
-        *(u8 **)(arg0 + 8) = p;
+        p->next = ci->threads;
+        ci->threads = p;
     }
     return p;
 }
 
-void script_list_push(u8 *arg0) {
-    u8 *temp_v1;
+void script_list_push(script_thread_handler *th) {
+    script_thread_handler *head;
 
-    temp_v1 = ScriptList;
-    ScriptList = arg0;
-    (*(s32*)((u8*)(arg0) + 180)) = temp_v1;
+    head = ScriptList;
+    ScriptList = th;
+    th->next = head;
 }
 
-void *script_list_pop(void) {
-    u8 *cur;
+script_thread_handler *script_list_pop(void) {
+    script_thread_handler *cur;
 
     cur = ScriptList;
     if (cur != NULL) {
-        ScriptList = *(void **)(cur + 0xB4);
+        ScriptList = cur->next;
     }
     return cur;
 }
@@ -1654,7 +1605,7 @@ s32 ScriptFade = 0;
 s32 ScriptTimeStep = 0;
 s32 ScriptThreadPool = 0;
 s32 ScriptPool = 0;
-void *ScriptList = 0;
+script_thread_handler *ScriptList = 0;
 script_handler *free_scripts = 0;
 script_handler *active_scripts = 0;
 u8 *ScriptTrackDbase = 0;

@@ -865,7 +865,7 @@ extern s32 cam_ramp_overide_count;
 extern s32 D_800517B4;
 extern s32 RandomSeedA;
 extern s32 RandomSeedB;
-extern void *ScriptList;
+extern script_thread_handler *ScriptList;
 typedef struct {
     s32 unk0;
     s32 unk4;
