@@ -106,7 +106,7 @@ f` frame f of mesh animation n.
 | 0x00 | u32 | tag (`0x0C160029`; `0x09160026` in one file) |
 | 0x04 .. 0x0C | | not read by the exe (0x08 self, 0x0C a count) |
 | 0x10 | self | the map's animations (`map_enviroment.map_animations` is 8 bytes past it) |
-| 0x14 | u32 | 0, 1 in arenas |
+| 0x14 | u32 | 0 or 1 (1 in 73 files, arenas and others) |
 | 0x18 | self | the maps: a `map_list` (u32 count, then a self offset each to a `map_map`) |
 | 0x1C | self | the map directory: s32 count, then 12-byte entities (s32 self offset to a mesh header, s32, s32 group) |
 | 0x20 | self | the colour table: u32 RGB + code, 3 per face (one a corner: Gouraud) |
@@ -116,7 +116,7 @@ f` frame f of mesh animation n.
 | 0x3C | self | chunks loaded on demand: s32 count, then 16 bytes each (u32 start, u32 end, then the loaded data's pointer and load handle, 0 in the file) |
 | 0x40, 0x44 | u32, self | the mesh animations: count, then 0x18-byte entries (below) |
 | 0x48, 0x4C | u32, self | the scripts: count, then a self offset each to a `script_header` (the prototype's: thread count, sub count, end, start, frames, then a self offset per thread) |
-| 0x50 | u32 | the size of the part kept in memory (the file's size, or where the animations' data starts) |
+| 0x50 | u32 | the size of the part kept in memory: the whole file in 168, in 228 the on-demand data (mesh animations, chunks) starts at the next 2 KB sector after it |
 | 0x54 | u32 | number of meshes (0 in the fonts) |
 | 0x58 | 0x34 each | mesh headers |
 

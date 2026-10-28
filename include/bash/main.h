@@ -201,7 +201,7 @@ typedef struct ModelFile {
     /* 0x44 */ s32 meshAnims;  /* FileEntry each (by name hash) */
     /* 0x48 */ s32 nScripts;
     /* 0x4C */ s32 scripts;    /* s32 each, from itself to a script_header */
-    /* 0x50 */ u32 size;       /* the part kept in memory: the chunks' data follows */
+    /* 0x50 */ u32 size;       /* the part kept in memory; on-demand data starts at the next 2 KB sector */
     /* 0x54 */ s32 nMeshes;
     /* 0x58 */ MeshHeader meshes[1];
 } ModelFile;
