@@ -5686,30 +5686,30 @@ extern u8 TankHeroRecoil[];
 extern u8 TankHeroTurn[];
 extern u8 TankHeroVictory[];
 
-s32 D_8009BD4C[2] = { 0x14, 0x8000 };
-s32 D_8009BD54[3] = { (s32)0x80070000, 0x40000016, 0x8000 };
-s32 D_8009BD60[4] = { (s32)0x800A0000, (s32)0x80070002, 0x45800038, 0x8004 };
-s32 D_8009BD70[2] = { (s32)0x80050000, 1 };
-s32 D_8009BD78[2] = { (s32)0x80050000, 3 };
-s32 D_8009BD80[8] = {
+s32 CRA_seq_none[2] = { 0x14, 0x8000 };
+s32 CRA_seq_breathe[3] = { (s32)0x80070000, 0x40000016, 0x8000 };
+s32 CRA_seq_taunt_a[4] = { (s32)0x800A0000, (s32)0x80070002, 0x45800038, 0x8004 };
+s32 CRA_seq_idle_a[2] = { (s32)0x80050000, 1 };
+s32 CRA_seq_idle_b[2] = { (s32)0x80050000, 3 };
+s32 CRA_seq_medium[8] = {
     (s32)0x80070000, 0x40800009, 0x88003, 0xB8007, (s32)0x80034089, 0x40940009,
     (s32)0x80004095, 0,
 };
-s32 D_8009BDA0[6] = { (s32)0x800A0000, (s32)0x8007000C, 0x41000007, 0x288018, (s32)0x80044107, 5 };
-s32 D_8009BDB8[7] = { 0x41080002, 0x48018, 0x410A4109, 0x288018, 0x410B410B, 0x410B410B, 0x78004 };
-s32 D_8009BDD4[4] = { (s32)0x80090000, (s32)0x8007000D, 0x410C001B, 0x8004 };
-s32 D_8009BDE4[3] = { (s32)0x800A000F, 0x2002000E, 0x8004 };
-s32 D_8009BDF0[9] = {
+s32 CRA_seq_jump[6] = { (s32)0x800A0000, (s32)0x8007000C, 0x41000007, 0x288018, (s32)0x80044107, 5 };
+s32 CRA_seq_fall[7] = { 0x41080002, 0x48018, 0x410A4109, 0x288018, 0x410B410B, 0x410B410B, 0x78004 };
+s32 CRA_seq_land[4] = { (s32)0x80090000, (s32)0x8007000D, 0x410C001B, 0x8004 };
+s32 CRA_seq_attack[3] = { (s32)0x800A000F, 0x2002000E, 0x8004 };
+s32 CRA_seq_hit[9] = {
     (s32)0x80070000, 0x4180000B, 0x88003, 0x48007, (s32)0x8007418B, 0x418F0004, 0xA8018,
     (s32)0x80044192, 0,
 };
-s32 D_8009BE14[3] = { (s32)0x80070000, 0x45800038, 0x8000 };
-s32 D_8009BE20[3] = { (s32)0x80070000, 0x44800022, 0x8000 };
-s32 D_8009BE2C[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
-s32 D_8009BE38[108] = {
-    (s32)&D_8009BD4C, (s32)&D_8009BD54, (s32)&D_8009BD60, (s32)&D_8009BD70, (s32)&D_8009BD78,
-    (s32)&D_8009BD80, (s32)&D_8009BDA0, (s32)&D_8009BDB8, (s32)&D_8009BDD4, (s32)&D_8009BDF0,
-    (s32)&D_8009BDE4, (s32)&D_8009BE2C, (s32)&D_8009BE14, (s32)&D_8009BE20,
+s32 CRA_seq_win[3] = { (s32)0x80070000, 0x45800038, 0x8000 };
+s32 CRA_seq_victory[3] = { (s32)0x80070000, 0x44800022, 0x8000 };
+s32 HERO_seq_dead[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
+s32 CRA_seqs[108] = {
+    (s32)&CRA_seq_none, (s32)&CRA_seq_breathe, (s32)&CRA_seq_taunt_a, (s32)&CRA_seq_idle_a, (s32)&CRA_seq_idle_b,
+    (s32)&CRA_seq_medium, (s32)&CRA_seq_jump, (s32)&CRA_seq_fall, (s32)&CRA_seq_land, (s32)&CRA_seq_hit,
+    (s32)&CRA_seq_attack, (s32)&HERO_seq_dead, (s32)&CRA_seq_win, (s32)&CRA_seq_victory,
     (s32)&CRA_BA_seq_slide, (s32)&CRA_BA_seq_pickup, (s32)&CRA_BA_seq_hold,
     (s32)&CRA_BA_seq_hold_slow, (s32)&CRA_BA_seq_hold_throw, (s32)&CRA_BA_seq_die,
     (s32)&CRA_PA_seq_pickup, (s32)&CRA_PA_seq_hold, (s32)&CRA_PA_seq_hold_slow,
@@ -5742,32 +5742,32 @@ s32 D_8009BE38[108] = {
     (s32)&CRA_seq_kegfall, (s32)&CRA_seq_kegland, (s32)&CRA_seq_keghit,
     (s32)&CHASE_seq_kegdead, (s32)&CRA_seq_kegwin, (s32)&CRA_seq_kegvictory,
 };
-s32 D_8009BFE8[2] = { 2, 0x8000 };
-s32 D_8009BFF0[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
-s32 D_8009BFFC[13] = {
+s32 COC_seq_none[2] = { 2, 0x8000 };
+s32 COC_seq_breathe[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
+s32 COC_seq_taunt_a[13] = {
     (s32)0x800A0000, (s32)0x80070034, 0x44800031, 0x448F4490, 0x448D448E, 0x448B448C,
     0x4489448A, 0x44874488, 0x44854486, 0x44834484, 0x44814482, (s32)&D_80044480, 0,
 };
-s32 D_8009C030[2] = { (s32)0x80050000, 1 };
-s32 D_8009C038[2] = { (s32)0x80050000, 1 };
-s32 D_8009C040[8] = {
+s32 COC_seq_idle_a[2] = { (s32)0x80050000, 1 };
+s32 COC_seq_idle_b[2] = { (s32)0x80050000, 1 };
+s32 COC_seq_medium[8] = {
     (s32)0x80070000, 0x41000008, 0x88003, 0xB8007, (s32)&D_80034108, 0x41130009, 0x41154114,
     0x8000,
 };
-s32 D_8009C060[4] = { (s32)0x800A0000, (s32)0x8007003E, 0x4182000A, 0x58004 };
-s32 D_8009C070[6] = { 0x418C0002, 0x48018, 0x418E418D, 0x288018, (s32)0x8004418F, 7 };
-s32 D_8009C088[4] = { (s32)0x80090000, (s32)0x8007003F, 0x4190000B, 0x8004 };
-s32 D_8009C098[3] = { (s32)0x800A000F, 0x20020040, 0x8004 };
-s32 D_8009C0A4[7] = { (s32)0x80070000, 0x4080000E, 0x88003, (s32)0x8018408E, (s32)0x80070002, 0x408F0005, 0x8004 };
-s32 D_8009C0C0[12] = {
+s32 COC_seq_jump[4] = { (s32)0x800A0000, (s32)0x8007003E, 0x4182000A, 0x58004 };
+s32 COC_seq_fall[6] = { 0x418C0002, 0x48018, 0x418E418D, 0x288018, (s32)0x8004418F, 7 };
+s32 COC_seq_land[4] = { (s32)0x80090000, (s32)0x8007003F, 0x4190000B, 0x8004 };
+s32 COC_seq_attack[3] = { (s32)0x800A000F, 0x20020040, 0x8004 };
+s32 COC_seq_hit[7] = { (s32)0x80070000, 0x4080000E, 0x88003, (s32)0x8018408E, (s32)0x80070002, 0x408F0005, 0x8004 };
+s32 COC_seq_win[12] = {
     (s32)0x80070000, 0x44800031, 0x448F4490, 0x448D448E, 0x448B448C, 0x4489448A, 0x44874488,
     0x44854486, 0x44834484, 0x44814482, (s32)0x80004480, 0,
 };
-s32 D_8009C0F0[3] = { (s32)0x80070000, 0x45000064, 0x8000 };
-s32 D_8009C0FC[108] = {
-    (s32)&D_8009BFE8, (s32)&D_8009BFF0, (s32)&D_8009BFFC, (s32)&D_8009C030, (s32)&D_8009C038,
-    (s32)&D_8009C040, (s32)&D_8009C060, (s32)&D_8009C070, (s32)&D_8009C088, (s32)&D_8009C0A4,
-    (s32)&D_8009C098, (s32)&D_8009BE2C, (s32)&D_8009C0C0, (s32)&D_8009C0F0,
+s32 COC_seq_victory[3] = { (s32)0x80070000, 0x45000064, 0x8000 };
+s32 COC_seqs[108] = {
+    (s32)&COC_seq_none, (s32)&COC_seq_breathe, (s32)&COC_seq_taunt_a, (s32)&COC_seq_idle_a, (s32)&COC_seq_idle_b,
+    (s32)&COC_seq_medium, (s32)&COC_seq_jump, (s32)&COC_seq_fall, (s32)&COC_seq_land, (s32)&COC_seq_hit,
+    (s32)&COC_seq_attack, (s32)&HERO_seq_dead, (s32)&COC_seq_win, (s32)&COC_seq_victory,
     (s32)&COC_BA_seq_slide, (s32)&COC_BA_seq_pickup, (s32)&COC_BA_seq_hold,
     (s32)&COC_BA_seq_hold_slow, (s32)&COC_BA_seq_hold_throw, (s32)&COC_BA_seq_die,
     (s32)&COC_PA_seq_pickup, (s32)&COC_PA_seq_hold, (s32)&COC_PA_seq_hold_slow,
@@ -5800,29 +5800,29 @@ s32 D_8009C0FC[108] = {
     (s32)&COC_seq_kegfall, (s32)&COC_seq_kegland, (s32)&COC_seq_keghit,
     (s32)&CHASE_seq_kegdead, (s32)&COC_seq_kegwin, (s32)&COC_seq_kegvictory,
 };
-s32 D_8009C2AC[2] = { 2, 0x8000 };
-s32 D_8009C2B4[3] = { (s32)0x80070000, 0x40800020, 0x8000 };
-s32 D_8009C2C0[4] = { (s32)0x800A0000, (s32)0x80070066, 0x45000028, 0x8004 };
-s32 D_8009C2D0[2] = { (s32)0x80050000, 1 };
-s32 D_8009C2D8[2] = { (s32)0x80050000, 1 };
-s32 D_8009C2E0[7] = { 0x41150000, 0x88003, 0xB8007, (s32)&D_80034100, (s32)0x80070009, 0x410B000A, 0x8000 };
-s32 D_8009C2FC[6] = { (s32)0x800A0000, (s32)0x80070070, 0x41800007, 0x288018, (s32)0x80044187, 5 };
-s32 D_8009C314[9] = {
+s32 CTX_seq_none[2] = { 2, 0x8000 };
+s32 CTX_seq_breathe[3] = { (s32)0x80070000, 0x40800020, 0x8000 };
+s32 CTX_seq_taunt_a[4] = { (s32)0x800A0000, (s32)0x80070066, 0x45000028, 0x8004 };
+s32 CTX_seq_idle_a[2] = { (s32)0x80050000, 1 };
+s32 CTX_seq_idle_b[2] = { (s32)0x80050000, 1 };
+s32 CTX_seq_medium[7] = { 0x41150000, 0x88003, 0xB8007, (s32)&D_80034100, (s32)0x80070009, 0x410B000A, 0x8000 };
+s32 CTX_seq_jump[6] = { (s32)0x800A0000, (s32)0x80070070, 0x41800007, 0x288018, (s32)0x80044187, 5 };
+s32 CTX_seq_fall[9] = {
     0x41870000, 0x41894188, 0x28018, 0x418B418A, 0x288018, 0x418C418C, 0x418C418C,
     (s32)&D_8004418C, 7,
 };
-s32 D_8009C338[4] = { (s32)0x80090000, (s32)0x80070071, 0x418D0006, 0x8004 };
-s32 D_8009C348[4] = { (s32)0x800A0000, (s32)0x80070072, 0x42000013, 0x8004 };
-s32 D_8009C358[11] = {
+s32 CTX_seq_land[4] = { (s32)0x80090000, (s32)0x80070071, 0x418D0006, 0x8004 };
+s32 CTX_seq_attack[4] = { (s32)0x800A0000, (s32)0x80070072, 0x42000013, 0x8004 };
+s32 CTX_seq_hit[11] = {
     (s32)0x80070000, 0x4000000D, 0x98003, 0x410E410D, 0x4110410F, 0x41124111, 0x88003, 0x78007,
     (s32)0x80184013, 0x40190003, 0x8004,
 };
-s32 D_8009C384[3] = { (s32)0x80070000, 0x45000028, 0x8000 };
-s32 D_8009C390[5] = { (s32)0x80070000, 0x4480000B, 0x168007, (s32)0x8000448A, 3 };
-s32 D_8009C3A4[108] = {
-    (s32)&D_8009C2AC, (s32)&D_8009C2B4, (s32)&D_8009C2C0, (s32)&D_8009C2D0, (s32)&D_8009C2D8,
-    (s32)&D_8009C2E0, (s32)&D_8009C2FC, (s32)&D_8009C314, (s32)&D_8009C338, (s32)&D_8009C358,
-    (s32)&D_8009C348, (s32)&D_8009BE2C, (s32)&D_8009C384, (s32)&D_8009C390,
+s32 CTX_seq_win[3] = { (s32)0x80070000, 0x45000028, 0x8000 };
+s32 CTX_seq_victory[5] = { (s32)0x80070000, 0x4480000B, 0x168007, (s32)0x8000448A, 3 };
+s32 CTX_seqs[108] = {
+    (s32)&CTX_seq_none, (s32)&CTX_seq_breathe, (s32)&CTX_seq_taunt_a, (s32)&CTX_seq_idle_a, (s32)&CTX_seq_idle_b,
+    (s32)&CTX_seq_medium, (s32)&CTX_seq_jump, (s32)&CTX_seq_fall, (s32)&CTX_seq_land, (s32)&CTX_seq_hit,
+    (s32)&CTX_seq_attack, (s32)&HERO_seq_dead, (s32)&CTX_seq_win, (s32)&CTX_seq_victory,
     (s32)&CTX_BA_seq_slide, (s32)&CTX_BA_seq_pickup, (s32)&CTX_BA_seq_hold,
     (s32)&CTX_BA_seq_hold_slow, (s32)&CTX_BA_seq_hold_throw, (s32)&CTX_BA_seq_die,
     (s32)&CTX_PA_seq_pickup, (s32)&CTX_PA_seq_hold, (s32)&CTX_PA_seq_hold_slow,
@@ -5855,29 +5855,29 @@ s32 D_8009C3A4[108] = {
     (s32)&CTX_seq_kegfall, (s32)&CTX_seq_kegland, (s32)&CTX_seq_keghit,
     (s32)&CHASE_seq_kegdead, (s32)&CTX_seq_kegwin, (s32)&CTX_seq_kegvictory,
 };
-s32 D_8009C554[2] = { 2, 0x8000 };
-s32 D_8009C55C[3] = { (s32)0x80070000, 0x40000020, 0x8000 };
-s32 D_8009C568[4] = { (s32)0x800A0000, (s32)0x80070098, 0x46000028, 0x8004 };
-s32 D_8009C578[2] = { (s32)0x80050000, 1 };
-s32 D_8009C580[2] = { (s32)0x80050000, 1 };
-s32 D_8009C588[7] = { 0x40950000, 0x88003, 0xB8007, (s32)&D_80034080, (s32)0x80070009, 0x408B000A, 0x8000 };
-s32 D_8009C5A4[6] = { (s32)0x800A0000, (s32)0x800700A2, 0x41800007, 0x288018, (s32)0x80044183, 5 };
-s32 D_8009C5BC[9] = {
+s32 BRO_seq_none[2] = { 2, 0x8000 };
+s32 BRO_seq_breathe[3] = { (s32)0x80070000, 0x40000020, 0x8000 };
+s32 BRO_seq_taunt_a[4] = { (s32)0x800A0000, (s32)0x80070098, 0x46000028, 0x8004 };
+s32 BRO_seq_idle_a[2] = { (s32)0x80050000, 1 };
+s32 BRO_seq_idle_b[2] = { (s32)0x80050000, 1 };
+s32 BRO_seq_medium[7] = { 0x40950000, 0x88003, 0xB8007, (s32)&D_80034080, (s32)0x80070009, 0x408B000A, 0x8000 };
+s32 BRO_seq_jump[6] = { (s32)0x800A0000, (s32)0x800700A2, 0x41800007, 0x288018, (s32)0x80044183, 5 };
+s32 BRO_seq_fall[9] = {
     0x41840000, 0x41864185, 0x28018, 0x41884187, 0x288018, 0x41894189, 0x41894189,
     (s32)0x80044189, 7,
 };
-s32 D_8009C5E0[4] = { (s32)0x80090000, (s32)0x800700A3, 0x418A0004, 0x8004 };
-s32 D_8009C5F0[4] = { (s32)0x800A0000, (s32)0x800700A4, 0x4480000D, 0x8004 };
-s32 D_8009C600[9] = {
+s32 BRO_seq_land[4] = { (s32)0x80090000, (s32)0x800700A3, 0x418A0004, 0x8004 };
+s32 BRO_seq_attack[4] = { (s32)0x800A0000, (s32)0x800700A4, 0x4480000D, 0x8004 };
+s32 BRO_seq_hit[9] = {
     (s32)0x80070000, 0x4100000D, 0x98003, 0x410E410D, 0x88003, 0x58007, (s32)0x8018410F,
     0x41130009, 0x8004,
 };
-s32 D_8009C624[3] = { (s32)0x80070000, 0x46000028, 0x8000 };
-s32 D_8009C630[3] = { (s32)0x80070000, 0x45800018, 0x8000 };
-s32 D_8009C63C[108] = {
-    (s32)&D_8009C554, (s32)&D_8009C55C, (s32)&D_8009C568, (s32)&D_8009C578, (s32)&D_8009C580,
-    (s32)&D_8009C588, (s32)&D_8009C5A4, (s32)&D_8009C5BC, (s32)&D_8009C5E0, (s32)&D_8009C600,
-    (s32)&D_8009C5F0, (s32)&D_8009BE2C, (s32)&D_8009C624, (s32)&D_8009C630,
+s32 BRO_seq_win[3] = { (s32)0x80070000, 0x46000028, 0x8000 };
+s32 BRO_seq_victory[3] = { (s32)0x80070000, 0x45800018, 0x8000 };
+s32 BRO_seqs[108] = {
+    (s32)&BRO_seq_none, (s32)&BRO_seq_breathe, (s32)&BRO_seq_taunt_a, (s32)&BRO_seq_idle_a, (s32)&BRO_seq_idle_b,
+    (s32)&BRO_seq_medium, (s32)&BRO_seq_jump, (s32)&BRO_seq_fall, (s32)&BRO_seq_land, (s32)&BRO_seq_hit,
+    (s32)&BRO_seq_attack, (s32)&HERO_seq_dead, (s32)&BRO_seq_win, (s32)&BRO_seq_victory,
     (s32)&BRO_BA_seq_slide, (s32)&BRO_BA_seq_pickup, (s32)&BRO_BA_seq_hold,
     (s32)&BRO_BA_seq_hold_slow, (s32)&BRO_BA_seq_hold_throw, (s32)&BRO_BA_seq_die,
     (s32)&BRO_PA_seq_pickup, (s32)&BRO_PA_seq_hold, (s32)&BRO_PA_seq_hold_slow,
@@ -5910,26 +5910,26 @@ s32 D_8009C63C[108] = {
     (s32)&BRO_seq_kegfall, (s32)&BRO_seq_kegland, (s32)&BRO_seq_keghit,
     (s32)&CHASE_seq_kegdead, (s32)&BRO_seq_kegwin, (s32)&BRO_seq_kegvictory,
 };
-s32 D_8009C7EC[2] = { 2, 0x8000 };
-s32 D_8009C7F4[3] = { (s32)0x80070000, 0x40000020, 0x8000 };
-s32 D_8009C800[7] = { (s32)0x800A0000, (s32)0x8007012E, 0x4580002A, 0x45834584, 0x45814582, (s32)&D_80044580, 0 };
-s32 D_8009C81C[2] = { (s32)0x80050000, 1 };
-s32 D_8009C824[2] = { (s32)0x80050000, 1 };
-s32 D_8009C82C[7] = { 0x41130000, 0x88003, 0xA8007, (s32)&D_80034100, (s32)0x80070009, 0x410A0009, 0x8000 };
-s32 D_8009C848[6] = { (s32)0x800A0000, (s32)&D_80070138, 0x41800007, 0x288018, (s32)0x80044187, 5 };
-s32 D_8009C860[9] = {
+s32 TIN_seq_none[2] = { 2, 0x8000 };
+s32 TIN_seq_breathe[3] = { (s32)0x80070000, 0x40000020, 0x8000 };
+s32 TIN_seq_taunt_a[7] = { (s32)0x800A0000, (s32)0x8007012E, 0x4580002A, 0x45834584, 0x45814582, (s32)&D_80044580, 0 };
+s32 TIN_seq_idle_a[2] = { (s32)0x80050000, 1 };
+s32 TIN_seq_idle_b[2] = { (s32)0x80050000, 1 };
+s32 TIN_seq_medium[7] = { 0x41130000, 0x88003, 0xA8007, (s32)&D_80034100, (s32)0x80070009, 0x410A0009, 0x8000 };
+s32 TIN_seq_jump[6] = { (s32)0x800A0000, (s32)&D_80070138, 0x41800007, 0x288018, (s32)0x80044187, 5 };
+s32 TIN_seq_fall[9] = {
     0x41880002, 0x418A4189, 0x418C418B, 0x48018, 0x418E418D, (s32)0x8018418F, 0x41900028,
     (s32)&D_80044190, 7,
 };
-s32 D_8009C884[4] = { (s32)0x80090000, (s32)0x80070139, 0x4191000B, 0x8004 };
-s32 D_8009C894[4] = { (s32)0x800A0000, (s32)0x8007013A, 0x4200000C, 0x8004 };
-s32 D_8009C8A4[6] = { (s32)0x80070000, 0x40800013, 0x88003, 0xB8007, (s32)0x80044093, 0 };
-s32 D_8009C8BC[6] = { (s32)0x80070000, 0x4580002A, 0x45834584, 0x45814582, (s32)0x80004580, 0 };
-s32 D_8009C8D4[5] = { (s32)0x80070000, 0x45000022, 0x2C8007, (s32)0x80004522, 3 };
-s32 D_8009C8E8[108] = {
-    (s32)&D_8009C7EC, (s32)&D_8009C7F4, (s32)&D_8009C800, (s32)&D_8009C81C, (s32)&D_8009C824,
-    (s32)&D_8009C82C, (s32)&D_8009C848, (s32)&D_8009C860, (s32)&D_8009C884, (s32)&D_8009C8A4,
-    (s32)&D_8009C894, (s32)&D_8009BE2C, (s32)&D_8009C8BC, (s32)&D_8009C8D4,
+s32 TIN_seq_land[4] = { (s32)0x80090000, (s32)0x80070139, 0x4191000B, 0x8004 };
+s32 TIN_seq_attack[4] = { (s32)0x800A0000, (s32)0x8007013A, 0x4200000C, 0x8004 };
+s32 TIN_seq_hit[6] = { (s32)0x80070000, 0x40800013, 0x88003, 0xB8007, (s32)0x80044093, 0 };
+s32 TIN_seq_win[6] = { (s32)0x80070000, 0x4580002A, 0x45834584, 0x45814582, (s32)0x80004580, 0 };
+s32 TIN_seq_victory[5] = { (s32)0x80070000, 0x45000022, 0x2C8007, (s32)0x80004522, 3 };
+s32 TIN_seqs[108] = {
+    (s32)&TIN_seq_none, (s32)&TIN_seq_breathe, (s32)&TIN_seq_taunt_a, (s32)&TIN_seq_idle_a, (s32)&TIN_seq_idle_b,
+    (s32)&TIN_seq_medium, (s32)&TIN_seq_jump, (s32)&TIN_seq_fall, (s32)&TIN_seq_land, (s32)&TIN_seq_hit,
+    (s32)&TIN_seq_attack, (s32)&HERO_seq_dead, (s32)&TIN_seq_win, (s32)&TIN_seq_victory,
     (s32)&TIN_BA_seq_slide, (s32)&TIN_BA_seq_pickup, (s32)&TIN_BA_seq_hold,
     (s32)&TIN_BA_seq_hold_slow, (s32)&TIN_BA_seq_hold_throw, (s32)&TIN_BA_seq_die,
     (s32)&TIN_PA_seq_pickup, (s32)&TIN_PA_seq_hold, (s32)&TIN_PA_seq_hold_slow,
@@ -5962,32 +5962,32 @@ s32 D_8009C8E8[108] = {
     (s32)&TIN_seq_kegfall, (s32)&TIN_seq_kegland, (s32)&TIN_seq_keghit,
     (s32)&CHASE_seq_kegdead, (s32)&TIN_seq_kegwin, (s32)&TIN_seq_kegvictory,
 };
-s32 D_8009CA98[2] = { 2, 0x8000 };
-s32 D_8009CAA0[3] = { (s32)0x80070000, 0x40800020, 0x8000 };
-s32 D_8009CAAC[10] = {
+s32 KON_seq_none[2] = { 2, 0x8000 };
+s32 KON_seq_breathe[3] = { (s32)0x80070000, 0x40800020, 0x8000 };
+s32 KON_seq_taunt_a[10] = {
     (s32)0x800A0000, (s32)&D_80070160, 0x46000030, 0x460A460B, 0x46084609, 0x46064607,
     0x46044605, 0x46024603, 0x46004601, 0x8004,
 };
-s32 D_8009CAD4[3] = { (s32)0x80070000, 0x40800020, 0x18005 };
-s32 D_8009CAE0[3] = { (s32)0x80070000, 0x40800020, 0x38005 };
-s32 D_8009CAEC[7] = { 0x40130000, 0x88003, 0xA8007, (s32)&D_80034000, (s32)0x80070009, 0x40090009, 0x8000 };
-s32 D_8009CB08[6] = { (s32)0x800A0000, (s32)0x8007016A, 0x42810007, 0x288018, (s32)&D_80044288, 5 };
-s32 D_8009CB20[9] = {
+s32 KON_seq_idle_a[3] = { (s32)0x80070000, 0x40800020, 0x18005 };
+s32 KON_seq_idle_b[3] = { (s32)0x80070000, 0x40800020, 0x38005 };
+s32 KON_seq_medium[7] = { 0x40130000, 0x88003, 0xA8007, (s32)&D_80034000, (s32)0x80070009, 0x40090009, 0x8000 };
+s32 KON_seq_jump[6] = { (s32)0x800A0000, (s32)0x8007016A, 0x42810007, 0x288018, (s32)&D_80044288, 5 };
+s32 KON_seq_fall[9] = {
     0x42890002, 0x428B428A, 0x428D428C, 0x48018, 0x428F428E, (s32)0x80184290, 0x42910028,
     (s32)0x80044291, 7,
 };
-s32 D_8009CB44[4] = { (s32)0x80090000, (s32)0x8007016B, 0x42920009, 0x8004 };
-s32 D_8009CB54[4] = { (s32)0x800A0000, (s32)&D_8007016C, 0x41000010, 0x8004 };
-s32 D_8009CB64[6] = { (s32)0x80070000, 0x41800013, 0x88003, 0xA8007, (s32)0x80044193, 0 };
-s32 D_8009CB7C[9] = {
+s32 KON_seq_land[4] = { (s32)0x80090000, (s32)0x8007016B, 0x42920009, 0x8004 };
+s32 KON_seq_attack[4] = { (s32)0x800A0000, (s32)&D_8007016C, 0x41000010, 0x8004 };
+s32 KON_seq_hit[6] = { (s32)0x80070000, 0x41800013, 0x88003, 0xA8007, (s32)0x80044193, 0 };
+s32 KON_seq_win[9] = {
     (s32)0x80070000, 0x46000030, 0x460A460B, 0x46084609, 0x46064607, 0x46044605, 0x46024603,
     0x46004601, 0x8000,
 };
-s32 D_8009CBA0[5] = { (s32)0x80070000, 0x45800021, 0x2E8007, (s32)0x800045A1, 3 };
-s32 D_8009CBB4[108] = {
-    (s32)&D_8009CA98, (s32)&D_8009CAA0, (s32)&D_8009CAAC, (s32)&D_8009CAD4, (s32)&D_8009CAE0,
-    (s32)&D_8009CAEC, (s32)&D_8009CB08, (s32)&D_8009CB20, (s32)&D_8009CB44, (s32)&D_8009CB64,
-    (s32)&D_8009CB54, (s32)&D_8009BE2C, (s32)&D_8009CB7C, (s32)&D_8009CBA0,
+s32 KON_seq_victory[5] = { (s32)0x80070000, 0x45800021, 0x2E8007, (s32)0x800045A1, 3 };
+s32 KON_seqs[108] = {
+    (s32)&KON_seq_none, (s32)&KON_seq_breathe, (s32)&KON_seq_taunt_a, (s32)&KON_seq_idle_a, (s32)&KON_seq_idle_b,
+    (s32)&KON_seq_medium, (s32)&KON_seq_jump, (s32)&KON_seq_fall, (s32)&KON_seq_land, (s32)&KON_seq_hit,
+    (s32)&KON_seq_attack, (s32)&HERO_seq_dead, (s32)&KON_seq_win, (s32)&KON_seq_victory,
     (s32)&KON_BA_seq_slide, (s32)&KON_BA_seq_pickup, (s32)&KON_BA_seq_hold,
     (s32)&KON_BA_seq_hold_slow, (s32)&KON_BA_seq_hold_throw, (s32)&KON_BA_seq_die,
     (s32)&KON_PA_seq_pickup, (s32)&KON_PA_seq_hold, (s32)&KON_PA_seq_hold_slow,
@@ -6020,26 +6020,26 @@ s32 D_8009CBB4[108] = {
     (s32)&KON_seq_kegfall, (s32)&KON_seq_kegland, (s32)&KON_seq_keghit,
     (s32)&CHASE_seq_kegdead, (s32)&KON_seq_kegwin, (s32)&KON_seq_kegvictory,
 };
-s32 D_8009CD64[2] = { 2, 0x8000 };
-s32 D_8009CD6C[3] = { (s32)0x80070000, 0x40000016, 0x8000 };
-s32 D_8009CD78[4] = { (s32)0x800A0000, (s32)0x800700FC, 0x46000028, 0x8004 };
-s32 D_8009CD88[3] = { (s32)0x80070000, 0x4000000E, 0x18005 };
-s32 D_8009CD94[3] = { (s32)0x80070000, 0x4000000C, 0x38005 };
-s32 D_8009CDA0[8] = {
+s32 DNG_seq_none[2] = { 2, 0x8000 };
+s32 DNG_seq_breathe[3] = { (s32)0x80070000, 0x40000016, 0x8000 };
+s32 DNG_seq_taunt_a[4] = { (s32)0x800A0000, (s32)0x800700FC, 0x46000028, 0x8004 };
+s32 DNG_seq_idle_a[3] = { (s32)0x80070000, 0x4000000E, 0x18005 };
+s32 DNG_seq_idle_b[3] = { (s32)0x80070000, 0x4000000C, 0x38005 };
+s32 DNG_seq_medium[8] = {
     (s32)0x80070000, 0x40800004, 0x88003, 0x98007, (s32)&D_80034084, (s32)0x80070009,
     0x408D0005, 0x8000,
 };
-s32 D_8009CDC0[6] = { (s32)0x800A0000, (s32)0x80070106, 0x41000008, 0x288018, (s32)0x80044107, 5 };
-s32 D_8009CDD8[6] = { 0x41080002, 0x48018, 0x410A4109, 0x288018, (s32)0x8004410B, 7 };
-s32 D_8009CDF0[4] = { (s32)0x80090000, (s32)0x80070107, 0x410C000F, 0x8004 };
-s32 D_8009CE00[4] = { (s32)0x800A0000, (s32)&D_80070108, 0x4180000E, 0x78004 };
-s32 D_8009CE10[6] = { (s32)0x80070000, 0x4200000B, 0x88003, 0x138007, (s32)0x8004420B, 0 };
-s32 D_8009CE28[3] = { (s32)0x80070000, 0x46000028, 0x8000 };
-s32 D_8009CE34[3] = { (s32)0x80070000, 0x4580004C, 0x8000 };
-s32 D_8009CE40[108] = {
-    (s32)&D_8009CD64, (s32)&D_8009CD6C, (s32)&D_8009CD78, (s32)&D_8009CD88, (s32)&D_8009CD94,
-    (s32)&D_8009CDA0, (s32)&D_8009CDC0, (s32)&D_8009CDD8, (s32)&D_8009CDF0, (s32)&D_8009CE10,
-    (s32)&D_8009CE00, (s32)&D_8009BE2C, (s32)&D_8009CE28, (s32)&D_8009CE34,
+s32 DNG_seq_jump[6] = { (s32)0x800A0000, (s32)0x80070106, 0x41000008, 0x288018, (s32)0x80044107, 5 };
+s32 DNG_seq_fall[6] = { 0x41080002, 0x48018, 0x410A4109, 0x288018, (s32)0x8004410B, 7 };
+s32 DNG_seq_land[4] = { (s32)0x80090000, (s32)0x80070107, 0x410C000F, 0x8004 };
+s32 DNG_seq_attack[4] = { (s32)0x800A0000, (s32)&D_80070108, 0x4180000E, 0x78004 };
+s32 DNG_seq_hit[6] = { (s32)0x80070000, 0x4200000B, 0x88003, 0x138007, (s32)0x8004420B, 0 };
+s32 DNG_seq_win[3] = { (s32)0x80070000, 0x46000028, 0x8000 };
+s32 DNG_seq_victory[3] = { (s32)0x80070000, 0x4580004C, 0x8000 };
+s32 DNG_seqs[108] = {
+    (s32)&DNG_seq_none, (s32)&DNG_seq_breathe, (s32)&DNG_seq_taunt_a, (s32)&DNG_seq_idle_a, (s32)&DNG_seq_idle_b,
+    (s32)&DNG_seq_medium, (s32)&DNG_seq_jump, (s32)&DNG_seq_fall, (s32)&DNG_seq_land, (s32)&DNG_seq_hit,
+    (s32)&DNG_seq_attack, (s32)&HERO_seq_dead, (s32)&DNG_seq_win, (s32)&DNG_seq_victory,
     (s32)&DNG_BA_seq_slide, (s32)&DNG_BA_seq_pickup, (s32)&DNG_BA_seq_hold,
     (s32)&DNG_BA_seq_hold_slow, (s32)&DNG_BA_seq_hold_throw, (s32)&DNG_BA_seq_die,
     (s32)&DNG_PA_seq_pickup, (s32)&DNG_PA_seq_hold, (s32)&DNG_PA_seq_hold_slow,
@@ -6072,29 +6072,29 @@ s32 D_8009CE40[108] = {
     (s32)&DNG_seq_kegfall, (s32)&DNG_seq_kegland, (s32)&DNG_seq_keghit,
     (s32)&CHASE_seq_kegdead, (s32)&DNG_seq_kegwin, (s32)&DNG_seq_kegvictory,
 };
-s32 D_8009CFF0[2] = { 2, 0x8000 };
-s32 D_8009CFF8[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
-s32 D_8009D004[7] = { (s32)0x800A0000, (s32)0x800700CA, 0x4580000D, 0xD8007, (s32)&D_80074580, 0x4580000D, 0x8004 };
-s32 D_8009D020[3] = { (s32)0x80070000, 0x40000014, 0x18005 };
-s32 D_8009D02C[3] = { (s32)0x80070000, 0x40000014, 0x38005 };
-s32 D_8009D038[9] = {
+s32 KAN_seq_none[2] = { 2, 0x8000 };
+s32 KAN_seq_breathe[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
+s32 KAN_seq_taunt_a[7] = { (s32)0x800A0000, (s32)0x800700CA, 0x4580000D, 0xD8007, (s32)&D_80074580, 0x4580000D, 0x8004 };
+s32 KAN_seq_idle_a[3] = { (s32)0x80070000, 0x40000014, 0x18005 };
+s32 KAN_seq_idle_b[3] = { (s32)0x80070000, 0x40000014, 0x38005 };
+s32 KAN_seq_medium[9] = {
     0x40860000, 0x88003, 0xA8007, (s32)0x80034087, 0x40910009, 0x40934092, 0x68007,
     (s32)0x80004080, 0,
 };
-s32 D_8009D05C[6] = { (s32)0x800A0000, (s32)0x800700D4, 0x41030009, 0x288018, (s32)&D_8004410C, 5 };
-s32 D_8009D074[5] = { 0x410D0001, 0x410F410E, 0x288018, (s32)&D_80044110, 7 };
-s32 D_8009D088[4] = { (s32)0x80090000, (s32)0x800700D5, 0x41110007, 0x8004 };
-s32 D_8009D098[4] = { (s32)0x80080000, (s32)0x800700D6, 0x4180000E, 0x78004 };
-s32 D_8009D0A8[9] = {
+s32 KAN_seq_jump[6] = { (s32)0x800A0000, (s32)0x800700D4, 0x41030009, 0x288018, (s32)&D_8004410C, 5 };
+s32 KAN_seq_fall[5] = { 0x410D0001, 0x410F410E, 0x288018, (s32)&D_80044110, 7 };
+s32 KAN_seq_land[4] = { (s32)0x80090000, (s32)0x800700D5, 0x41110007, 0x8004 };
+s32 KAN_seq_attack[4] = { (s32)0x80080000, (s32)0x800700D6, 0x4180000E, 0x78004 };
+s32 KAN_seq_hit[9] = {
     (s32)0x80070000, 0x4200000A, 0x88003, 0x48007, (s32)0x80184209, 0x42140004, 0x42164215,
     (s32)0x80044217, 0,
 };
-s32 D_8009D0CC[5] = { (s32)0x80070000, 0x40000014, 0xD8007, (s32)0x80004580, 0 };
-s32 D_8009D0E0[3] = { (s32)0x80070000, 0x46000076, 0x8000 };
-s32 D_8009D0EC[108] = {
-    (s32)&D_8009CFF0, (s32)&D_8009CFF8, (s32)&D_8009D004, (s32)&D_8009D020, (s32)&D_8009D02C,
-    (s32)&D_8009D038, (s32)&D_8009D05C, (s32)&D_8009D074, (s32)&D_8009D088, (s32)&D_8009D0A8,
-    (s32)&D_8009D098, (s32)&D_8009BE2C, (s32)&D_8009D0CC, (s32)&D_8009D0E0,
+s32 KAN_seq_win[5] = { (s32)0x80070000, 0x40000014, 0xD8007, (s32)0x80004580, 0 };
+s32 KAN_seq_victory[3] = { (s32)0x80070000, 0x46000076, 0x8000 };
+s32 KAN_seqs[108] = {
+    (s32)&KAN_seq_none, (s32)&KAN_seq_breathe, (s32)&KAN_seq_taunt_a, (s32)&KAN_seq_idle_a, (s32)&KAN_seq_idle_b,
+    (s32)&KAN_seq_medium, (s32)&KAN_seq_jump, (s32)&KAN_seq_fall, (s32)&KAN_seq_land, (s32)&KAN_seq_hit,
+    (s32)&KAN_seq_attack, (s32)&HERO_seq_dead, (s32)&KAN_seq_win, (s32)&KAN_seq_victory,
     (s32)&KAN_BA_seq_slide, (s32)&KAN_BA_seq_pickup, (s32)&KAN_BA_seq_hold,
     (s32)&KAN_BA_seq_hold_slow, (s32)&KAN_BA_seq_hold_throw, (s32)&KAN_BA_seq_die,
     (s32)&KAN_PA_seq_pickup, (s32)&KAN_PA_seq_hold, (s32)&KAN_PA_seq_hold_slow,
@@ -6128,8 +6128,8 @@ s32 D_8009D0EC[108] = {
     (s32)&CHASE_seq_kegdead, (s32)&KAN_seq_kegwin, (s32)&KAN_seq_kegvictory,
 };
 hero_seq **HeroSeqTables[18] = {
-    0, (void *)&D_8009BE38, (void *)&D_8009C0FC, (void *)&D_8009C3A4, (void *)&D_8009C63C,
-    (void *)&D_8009C8E8, (void *)&D_8009CBB4, (void *)&D_8009CE40, (void *)&D_8009D0EC,
+    0, (void *)&CRA_seqs, (void *)&COC_seqs, (void *)&CTX_seqs, (void *)&BRO_seqs,
+    (void *)&TIN_seqs, (void *)&KON_seqs, (void *)&DNG_seqs, (void *)&KAN_seqs,
     (void *)&HeroNameNobody, (void *)&HeroNameCrash, (void *)&HeroNameCoco,
     (void *)&HeroNameCortex, (void *)&HeroNameBrio, (void *)&HeroNameTiny,
     (void *)&HeroNameKong, (void *)&HeroNameDingodile, (void *)&HeroNameKanga,
