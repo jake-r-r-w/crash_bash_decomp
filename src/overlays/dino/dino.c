@@ -1000,7 +1000,7 @@ s32 DinoGetLevelPoint(s32 *arg0, s32 arg1) {
     s32 i;
     s32 ang;
 
-    base = *(u8 **)((u8 *)MapScene + 0x10);
+    base = ((u8 *)MapScene->map);
     off = *(s32 *)(base + 0x14);
     p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
     if (p != NULL) {
@@ -1929,7 +1929,7 @@ void InitialiseDINOFirst(void) {
 void DinoFindTargets(void) {
     DinoObj *o;
 
-    for (o = *(DinoObj **)((u8 *)MapScene + 0x1C); o != NULL; o = o->next) {
+    for (o = ((DinoObj *)MapScene->subs); o != NULL; o = o->next) {
         if (((DinoGame *)GameInfo)->flags & 0x80) {
             if (o->index == 0x5002) {
                 DinoGoal = o;
@@ -3711,7 +3711,7 @@ void InitDinoScratch(NAS *m) {
         m->UserInfo.user2 = 0;
         if (sub != NULL) do {
             sub->flags = 0x40000000;
-            sub->u6C.dbase = *(void **)MapScene;
+            sub->u6C.dbase = MapScene->dbase;
             sub->entity = 0x2003;
             sub->unk51 = 2;
             sub->unk14 = 0;

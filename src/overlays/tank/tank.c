@@ -1482,7 +1482,7 @@ void TA_InitLevel(void) {
     }
     dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_TankObjects]);
     dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_TankObjects]) - 0x658));
-    dbase_load_all_mesh_anims(*(s32 **)MapScene);
+    dbase_load_all_mesh_anims(((s32 *)MapScene->dbase));
     GameViewport.ofx = 0x140;
     GameViewport.ofy = 0x15E;
     CAM5F->w0 = 0;
@@ -4192,7 +4192,7 @@ void PlotRocketTA(NAS *nas)
                 n = (NAS *) *(((z >> 9) * TankMapWidth) + (x >> 9) + TankMapNas);
                 if (n != NULL) {
                     pos = &n->Engine->unk10;
-                    p = *(void **) MapScene;
+                    p = MapScene->dbase;
                     puff = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
                     if (puff != NULL) {
                         ext = FindExtension(puff, 0x10000000);
@@ -8600,7 +8600,7 @@ void PlotPillarCover(NAS *nas) {
 void InitPillarCover(NAS *nas) {
     EXTengine *e = nas->Engine;
     e->unk10.y = 0;
-    e->sub->u6C.dbase = *(void **)MapScene;
+    e->sub->u6C.dbase = MapScene->dbase;
 }
 
 void InitPillar(NAS *nas) {
@@ -8610,7 +8610,7 @@ void InitPillar(NAS *nas) {
     nas->UserInfo.status = 6;
     e->unk10.y = 0xB8;
     s = e->sub;
-    s->u6C.dbase = *(void **)MapScene;
+    s->u6C.dbase = MapScene->dbase;
     s->unk68 = 0x20;
     s->flags |= 0x02000000;
 }
@@ -8660,7 +8660,7 @@ void InitBoatWake(NAS *nas) {
 }
 
 void InitPeriscopeGun(NAS *nas) {
-    nas->Engine->sub->u6C.dbase = *(void **)MapScene;
+    nas->Engine->sub->u6C.dbase = MapScene->dbase;
     nas->Engine->sub->entity = 0x4080;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8680,14 +8680,14 @@ void InitPeriscope(NAS *nas) {
         ext->Status = one;
         eng = nas->Engine;
         eng->unk5D = 0;
-        p = *(void **)MapScene;
+        p = MapScene->dbase;
         s = eng->sub;
         s->flags = 0;
         s->u6C.dbase = p;
         if (eng_add_subs(eng, one) != 0) {
             s = s->next;
             s->flags = 0;
-            s->u6C.dbase = *(void **)MapScene;
+            s->u6C.dbase = MapScene->dbase;
             s->entity = 0x2001;
         }
         if (nas->Failure != 0) {
@@ -8715,7 +8715,7 @@ void InitRock_TA(NAS *nas) {
     }
     nas->FUX = ext;
     sub = nas->Engine->sub;
-    sub->u6C.dbase = *(void **)MapScene;
+    sub->u6C.dbase = MapScene->dbase;
     sub->entity = RockFrames[info->val1].v;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8811,7 +8811,7 @@ void InitTorpedo(NAS *nas) {
     nas->UserInfo.user2 = 0;
     eng->unk10.y = -0x14;
     sub = eng->sub;
-    sub->u6C.dbase = *(void **)MapScene;
+    sub->u6C.dbase = MapScene->dbase;
     sub->entity = 0x2001;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8835,7 +8835,7 @@ void InitWaterMine(NAS *nas) {
     nas->UserInfo.user2 = 0;
     e->unk10.y = -0x14;
     s = e->sub;
-    s->u6C.dbase = *(void **)MapScene;
+    s->u6C.dbase = MapScene->dbase;
     s->entity = 0x2001;
     if (nas->Failure != 0) {
         KillNAS(nas);

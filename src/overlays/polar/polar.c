@@ -1215,7 +1215,7 @@ bool IsPtInALLZone(SLONG_XYZ *arg0, s32 arg1) {
     s32 cnt;
     s32 ry;
 
-    base = *(u8 **)((u8 *)MapScene + 0x10);
+    base = ((u8 *)MapScene->map);
     off = *(s32 *)(base + 0x14);
     p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
     if (p != NULL) {
@@ -1296,7 +1296,7 @@ bool CheckMelted(SLONG_XYZ *arg0, s32 arg1) {
             }
         }
     }
-    base = *(u8 **)((u8 *)MapScene + 0x10);
+    base = ((u8 *)MapScene->map);
     off = *(s32 *)(base + 0x14);
     p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
     i = 0;
@@ -6368,7 +6368,7 @@ void UkaMaskInitRisers(void) {
     VECTOR v;
     VECTOR *vp;
 
-    scan = *(SceneObj **)((u8 *)MapScene + 0x1C);
+    scan = ((SceneObj *)MapScene->subs);
     for (i = 15; i >= 0; i--) {
         UkaMaskObjects[i] = NULL;
     }
@@ -6474,7 +6474,7 @@ void InitUkaPolarMask(NAS *m) {
     ext->unk1B8 = 0xC;
     ext->unk1CC = 0xC;
     m->FUX = (EXT *)ext;
-    m->Engine->sub->u6C.dbase = *(void **)MapScene;
+    m->Engine->sub->u6C.dbase = MapScene->dbase;
     *(u16 *)((u8 *)m->Engine->sub + 0x74) = 0x200C;
     PolarBeamOwner = (PolarOwner *)m;
     if (GameLevelFlags & 0x80) {
@@ -7758,7 +7758,7 @@ void InitPolarBoss(NAS *nas) {
             AddCamera((u8 *)s);
         }
         ext->unk90 = 0;
-        nas->Engine->sub->u6C.dbase = *(void **)MapScene;
+        nas->Engine->sub->u6C.dbase = MapScene->dbase;
         nas->Engine->sub->unk68 = 0x300;
         nas->Engine->sub->flags |= 0x02000000;
         nas->Engine->unk5D = 0;
@@ -8146,7 +8146,7 @@ s32 BearminatorFindPoint(s32 *arg0, s32 arg1) {
     s32 i;
     s32 ang;
 
-    base = *(u8 **)((u8 *)MapScene + 0x10);
+    base = ((u8 *)MapScene->map);
     off = *(s32 *)(base + 0x14);
     p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
     if (p != NULL) {
@@ -8936,7 +8936,7 @@ void InitSniper(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk10 = e;
-            e->sub->u6C.dbase = *(void **)MapScene;
+            e->sub->u6C.dbase = MapScene->dbase;
             e->sub->entity = 0x2018;
             e->sub->flags = 0x22000000;
             e->sub->flags &= ~0x8000;
@@ -8951,7 +8951,7 @@ void InitSniper(NAS *m) {
         e = AddExtEngine(m, 3);
         if (e != NULL) {
             ext->unk20 = e;
-            e->sub->u6C.dbase = *(void **)MapScene;
+            e->sub->u6C.dbase = MapScene->dbase;
             e->sub->entity = 0x2019;
             e->sub->flags = 0x22000000;
             e->sub->flags &= ~0x8000;
@@ -9646,7 +9646,7 @@ void InitBearBoss(NAS *m) {
         m->Engine->unk5D = 0;
         m->Engine->sub->unk68 = 0x300;
         m->Engine->sub->flags |= 0x02000000;
-        m->Engine->sub->u6C.dbase = *(void **)MapScene;
+        m->Engine->sub->u6C.dbase = MapScene->dbase;
         ext->unkC = (s32)ScriptCursorFirst(m, &BearBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->unkC, 0);
         RunNasAnim(m);
@@ -9797,7 +9797,7 @@ void InitBearDeath(NAS *m) {
     ext = AddExt(m, 0x88, 0x10000000);
     if (ext != NULL) {
         ScriptCursorFirst(m, &BearDeathScriptInit);
-        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
+        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
         m->Engine->unk5D = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk2C = 2;
@@ -9838,7 +9838,7 @@ void PolarInitDebug(void) {
     SceneObj *obj;
     SceneObj **out;
 
-    obj = *(SceneObj **)((u8 *)MapScene + 0x1C);
+    obj = ((SceneObj *)MapScene->subs);
     for (i = 79; i >= 0; i--) {
         PolarIceObjects[i] = NULL;
     }
@@ -10010,7 +10010,7 @@ void POLARtriggers(NASTrigger *arg0, s32 arg1) {
 void FirstTriggersPOLAR(void) {
     u8 *var_v1;
 
-    var_v1 = (*(s32*)((u8*)(MapScene) + 28));
+    var_v1 = ((s32)MapScene->subs);
     if (var_v1 != NULL) {
         do {
             (*(s32*)((u8*)(var_v1) + 0)) = (s32) ((*(s32*)((u8*)(var_v1) + 0)) | 0x01000000);
@@ -10788,7 +10788,7 @@ void PolarUpdateShadow(s32 player) {
             }
             shadow->unk10 = eng->unk10;
             if (h2->hero_mode == 0x52) {
-                shadow->sub->u6C.dbase = *(void **)MapScene;
+                shadow->sub->u6C.dbase = MapScene->dbase;
                 shadow->unk10.y += 0x298;
                 shadow->sub->entity = 0x2003;
                 *p = 0x2003;
@@ -11001,7 +11001,7 @@ s32 PolarGetLevelPoint(s32 *arg0, s32 arg1) {
     s32 i;
     s32 ang;
 
-    base = *(u8 **)((u8 *)MapScene + 0x10);
+    base = ((u8 *)MapScene->map);
     off = *(s32 *)(base + 0x14);
     p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
     if (p != NULL) {
@@ -12551,7 +12551,7 @@ void SetPolarHeroSnowball(s32 player) {
         }
         break;
     }
-    Heroes[player].hero_eng->sub->u6C.dbase = *(void **)MapScene;
+    Heroes[player].hero_eng->sub->u6C.dbase = MapScene->dbase;
     Heroes[player].hero_eng->unk5D = 2;
 }
 

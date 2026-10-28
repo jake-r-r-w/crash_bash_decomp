@@ -614,7 +614,7 @@ static inline NAS *TankPeriscopePuff(SLONG_XYZ *pos, s32 kind) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    p = *(u8 **)MapScene;
+    p = ((u8 *)MapScene->dbase);
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);

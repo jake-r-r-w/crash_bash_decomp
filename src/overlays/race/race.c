@@ -1179,9 +1179,9 @@ s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
   s32 r;
   s32 c;
   found = -1;
-  if ((*((s32 *) MapScene)) != 0)
+  if (((s32)MapScene->dbase) != 0)
   {
-    u8 *q = *((u8 **) (((u8 *) MapScene) + 0x10));
+    u8 *q = ((u8 *)MapScene->map);
     c = arg1 >= (*((s32 *) (((*((s32 *) (q + 0x14))) + 0x14) + q)));
   }
   else
@@ -1195,7 +1195,7 @@ s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
   {
     return 0;
   }
-  base = *((u8 **) (((u8 *) MapScene) + 0x10));
+  base = ((u8 *)MapScene->map);
   off = *((s32 *) (base + 0x14));
   p = ((u8 *) (&((s32 *) ((base + 0x14) + off))[arg1 + 1])) + ((s32 *) ((base + 0x14) + off))[arg1 + 1];
   if ((new_var = p) != 0)
@@ -2639,7 +2639,7 @@ void InitialiseRACE(void) {
     RaceObjects = NULL;
     World_floor_level = -0x10;
     RaceInitStub();
-    scene = *(s32 **)MapScene;
+    scene = ((s32 *)MapScene->dbase);
     RaceTagTimer = 0;
     dbase_load_all_mesh_anims(scene);
     RaceInitSpinners();
@@ -5202,14 +5202,14 @@ held:
         if (fux->unk18 == 4) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2005;
-            eng->sub->u6C.dbase = *(void **)MapScene;
+            eng->sub->u6C.dbase = MapScene->dbase;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
         }
         if (fux->unk18 == 8) {
             eng->sub->entity = 0x2002;
-            eng->sub->u6C.dbase = *(void **)MapScene;
+            eng->sub->u6C.dbase = MapScene->dbase;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5218,7 +5218,7 @@ held:
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
-            eng->sub->u6C.dbase = *(void **)MapScene;
+            eng->sub->u6C.dbase = MapScene->dbase;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5236,7 +5236,7 @@ held:
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
-            eng->sub->u6C.dbase = *(void **)MapScene;
+            eng->sub->u6C.dbase = MapScene->dbase;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5467,7 +5467,7 @@ void InitDinoEgg(NAS *m) {
         m->Engine->unk5D = 0;
         m->Engine->unk5C = 1;
         m->Engine->sub->entity = 0x2005;
-        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
+        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
         ext->NasStatus = 0;
         ext->angcounter = 0;
         ext->yang = 0;
@@ -5773,7 +5773,7 @@ void InitRaceVolcano(NAS *nas) {
                 eng->unk5C = 1;
                 eng->unk5D = 2;
                 eng->sub->entity = 0x2019;
-                eng->sub->u6C.dbase = *(void **)MapScene;
+                eng->sub->u6C.dbase = MapScene->dbase;
                 ext->eng[0]->unk1E = Random(0x1000);
                 ext->eng[0]->unk20 = 0;
                 ext->unk144[0] = 0;
@@ -6104,7 +6104,7 @@ void InitBarrelRoll(NAS *m) {
 
     ext = AddExt(m, 0x80, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
+        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
         m->Engine->sub->entity = 0x2037;
         m->Engine->unk5D = 1;
         ext->unkC = 0xC;
@@ -6185,7 +6185,7 @@ void InitTrackGlob(NAS *m) {
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &TrackGlobScriptInit);
         AddToGroup((NAS **)&RaceObjects, (NAS *)m);
-        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
+        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
         m->Engine->sub->entity = 0x4100;
         m->Engine->unk5D = 1;
         ext->unk10 = 0x10;
@@ -6327,7 +6327,7 @@ void InitDac(NAS *m) {
 
     ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
+        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
         m->Engine->unk5C = 1;
         m->Engine->unk5D = 2;
         m->Engine->unk2C.x = 0x2000;
@@ -6523,7 +6523,7 @@ void InitGlob(NAS *m) {
     ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         ext->unk10 = ScriptCursorFirst(m, &GlobScriptInit);
-        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
+        m->Engine->sub->u6C.dbase = ((s32)MapScene->dbase);
         GotoLinkAnim((EXTanimator *)ext->unk10, 2);
         RunNasAnim(m);
         ext->unkC = 3;

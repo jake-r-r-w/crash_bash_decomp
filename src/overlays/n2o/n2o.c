@@ -751,7 +751,7 @@ void N2OInitHero(s32 i) {
         return;
     }
     N2OHeroPlaced[i] = 0xF;
-    sub->u6C.dbase = *(void **)MapScene;
+    sub->u6C.dbase = MapScene->dbase;
     sub->entity = 0x4000;
     if ((u32)(i - 2) < 2) {
         sub->flags &= ~0x8000;

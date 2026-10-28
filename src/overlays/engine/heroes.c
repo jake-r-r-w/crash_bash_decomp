@@ -3449,7 +3449,7 @@ void InitScriptFX(NAS *nas)
   if (!(sd->flags & 4))
   {
 
-    new_var->Engine->sub->u6C.dbase = *((void **) MapScene);
+    new_var->Engine->sub->u6C.dbase = MapScene->dbase;
 
   }
 
@@ -3892,7 +3892,7 @@ s32 PointInZone(s32 *arg0, s32 arg1) {
     s32 i;
     s32 ang;
 
-    base = *(u8 **)((u8 *)MapScene + 0x10);
+    base = ((u8 *)MapScene->map);
     off = *(s32 *)(base + 0x14);
     p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
     if (p != NULL) {
@@ -3978,13 +3978,13 @@ void PlotSparks(SparkObj *obj) {
     s = obj->set.sparks;
     tex = (SparkTex *)((u8 *)HeroModelBank[DB_ArenaBossBearArena].textures.tex + 0xAF0);
     if (GameMode == 0x22) {
-        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)MapScene + 0x18) + 0x2BF8);
+        tex = (SparkTex *)(*(u8 **)((u8 *)MapScene->dbase + 0x18) + 0x2BF8);
     }
     if (GameMode == 0x13) {
-        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)MapScene + 0x18) + 0x6C8);
+        tex = (SparkTex *)(*(u8 **)((u8 *)MapScene->dbase + 0x18) + 0x6C8);
     }
     if (GameMode == 0x1D) {
-        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)MapScene + 0x18) + 0xA10);
+        tex = (SparkTex *)(*(u8 **)((u8 *)MapScene->dbase + 0x18) + 0xA10);
     }
     for (; n != 0; n--) {
         do {

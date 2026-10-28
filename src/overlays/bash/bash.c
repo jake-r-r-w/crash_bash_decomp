@@ -516,7 +516,7 @@ void InitialiseBASH(void) {
         Heroes[3].hero_shadow->flags = 0;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         BashDropFirstCrates();
-        SetupSceneMarks(*(u8 **)MapScene);
+        SetupSceneMarks(((u8 *)MapScene->dbase));
         RenderHook = BashDrawView;
         World_floor_level = 0;
         break;
@@ -2689,7 +2689,7 @@ void InitTumbler(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        sub->u6C.dbase = *(void **)MapScene;
+        sub->u6C.dbase = MapScene->dbase;
         eng->sub->entity = 0x200A;
         eng->flags &= 0xFFFF7FFF;
         eng->unk10 = MapPoints[8].pos;
@@ -2698,7 +2698,7 @@ void InitTumbler(NAS *nas) {
         eng_add_subs_n(eng, 1);
         sub = sub->next;
         if (sub != NULL) {
-            sub->u6C.dbase = *(void **)MapScene;
+            sub->u6C.dbase = MapScene->dbase;
             sub->entity = 0x2001;
             sub->flags |= 0x40008041;
             sub->unk50 = 1;
@@ -3443,7 +3443,7 @@ void InitBoing(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         eng->unk10.y -= 0x100;
-        eng->sub->u6C.dbase = *(void **)MapScene;
+        eng->sub->u6C.dbase = MapScene->dbase;
         eng->unk5D = 1;
         eng->unk5C = 1;
         ScriptCursorFirst(nas, &BoingScriptInit);
@@ -3489,14 +3489,14 @@ void InitSnowGlint(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        eng->sub->u6C.dbase = *(s32 *)MapScene;
+        eng->sub->u6C.dbase = ((s32)MapScene->dbase);
         eng_add_subs_n(eng, 9);
         sub = nas->Engine->sub;
         g = AddExt(nas, 0x34, 0x20000002);
         if (g != NULL && sub != NULL) {
             i = 0;
             do {
-                s32 v = *(s32 *)MapScene;
+                s32 v = ((s32)MapScene->dbase);
                 sub->entity = 0x2001;
                 sub->flags = (sub->flags | 0x21) & 0xFFFF7FFF;
                 sub->u6C.dbase = v;

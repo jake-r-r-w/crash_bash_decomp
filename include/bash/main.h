@@ -1092,7 +1092,7 @@ extern s32 TriggerCount;
 extern script_handler *active_scripts;
 extern RECT VramRect;
 extern script_handler *free_scripts;
-extern void *MapScene;
+extern map_enviroment *MapScene;
 /* A map trigger record (InitTriggers): position, then a word whose low 2
  * bits are the cast and the rest the offset from +0xC to its info. */
 typedef struct MapTrigRec {

@@ -1156,7 +1156,7 @@ void InitAsteroidRoll(NAS *m) {
 
     ext = AddExt(m, 0x80, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->u6C.dbase = *(void **)MapScene;
+        m->Engine->sub->u6C.dbase = MapScene->dbase;
         m->Engine->unk5D = 1;
         ext->arc[0] = 0xC;
         ext->bounces = 0;
@@ -1466,7 +1466,7 @@ void InitNitroBoss(NAS *nas) {
     u8 *p;
 
     if (ext != NULL) {
-        nas->Engine->sub->u6C.dbase = *(void **)MapScene;
+        nas->Engine->sub->u6C.dbase = MapScene->dbase;
         nas->Engine->unk2C.x = 0x1830;
         nas->Engine->unk2C.y = 0x1830;
         nas->Engine->unk2C.z = 0x1830;
@@ -1660,7 +1660,7 @@ void InitSpiralSat(NAS *nas) {
                 e->unk10.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
                 e->unk10.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
                 e->unk10.z = ext->c.z;
-                e->sub->u6C.dbase = *(s32 *)MapScene;
+                e->sub->u6C.dbase = ((s32)MapScene->dbase);
                 e->sub->entity = 0x201A;
                 e->sub->flags = 0x8000;
                 q =&e->unk10;
@@ -2086,7 +2086,7 @@ void NoxCameraFollow(void) {
 }
 
 void InitLaserShoot(LaserShoot *arg0) {
-    arg0->obj->sub->unk6C = *(s32 *)MapScene;
+    arg0->obj->sub->unk6C = ((s32)MapScene->dbase);
     arg0->obj->sub->unk74 = 0x201D;
     arg0->obj->unk1E = 0;
     arg0->obj->unk5D = 2;
@@ -2129,7 +2129,7 @@ void InitNitroMissile(MissileHolder *arg0) {
     s32 r;
 
     if (ext != NULL) {
-        arg0->obj->model->unk6C = *(s32 *)MapScene;
+        arg0->obj->model->unk6C = ((s32)MapScene->dbase);
         arg0->obj->model->unk74 = 0x2019;
         arg0->obj->unk5D = 2;
         ext->unk10 = 0;
@@ -2153,7 +2153,7 @@ void InitNitroMissile(MissileHolder *arg0) {
 }
 
 void InitNitroMine(MineHolder *arg0) {
-    arg0->obj->model->unk6C = *(s32 *)MapScene;
+    arg0->obj->model->unk6C = ((s32)MapScene->dbase);
     arg0->obj->model->unk74 = 0x2012;
     arg0->obj->unk1C = Random(0x1000);
     arg0->obj->unk1E = Random(0x1000);
@@ -2422,7 +2422,7 @@ void NoxInit(void) {
     NoxBossDead = 0;
     NoxStarted = 0;
     RenderHook = (void (*)(void))NoxInitCamera;
-    arg = *(u8 **)MapScene;
+    arg = ((u8 *)MapScene->dbase);
     NoxLasers = NULL;
     SetupSceneMarks(arg);
 }
@@ -2491,6 +2491,6 @@ void InitNitroSmokeBoost(NAS *nas) {
             cur->unk1E = 4;
         }
     }
-    nas->Engine->sub->u6C.dbase = *(GfxModel **)MapScene;
+    nas->Engine->sub->u6C.dbase = ((GfxModel *)MapScene->dbase);
     nas->UserInfo.user1 = 0;
 }

@@ -2033,7 +2033,7 @@ void PapuInitTiles(void) {
     s32 dx;
     s32 dz;
 
-    obj = *(PapuSceneObj **)((u8 *)MapScene + 0x1C);
+    obj = ((PapuSceneObj *)MapScene->subs);
     primpool_init(0xC8);
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
@@ -2430,7 +2430,7 @@ void InitPapuColumn(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->u6C.dbase = *(GfxModel **)MapScene;
+        e->sub->u6C.dbase = ((GfxModel *)MapScene->dbase);
         e->sub->entity = 0x200C;
         e->unk5D = 0;
         e->unk5C = 1;

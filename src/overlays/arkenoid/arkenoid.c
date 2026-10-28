@@ -5031,7 +5031,7 @@ void Create_ArkPickup(void)
 
   pos = MapPoints[s + 4].pos;
   ArkGoals[nas->UserInfo.user1].unk10 = 1;
-  tgt = SpawnModelFxOnce(1, (s32 *) (&pos), *((s32 *) MapScene));
+  tgt = SpawnModelFxOnce(1, (s32 *) (&pos), ((s32)MapScene->dbase));
   if (tgt != 0)
   {
     AppendExtension((NAS *)nas, (NAS *)tgt);
@@ -5220,7 +5220,7 @@ void Init_ArkLaserWall(NAS *nas)
         off = 0;
         if (sub != 0) {
             do {
-                sub->u6C.dbase = *(s32 *)MapScene;
+                sub->u6C.dbase = ((s32)MapScene->dbase);
                 sub->flags |= 0x21;
                 sub->entity = 0x2019;
                 sub->unk04 = off;
@@ -6033,7 +6033,7 @@ void Init_ArkCameraFlash(NAS *arg0) {
     if (eng != NULL) {
         s32 val;
         sub = (u8*)(*(s32*)(eng + 108));
-        val = *(s32*)MapScene;
+        val = ((s32)MapScene->dbase);
         (*(u16*)(sub + 116)) = 0x2017;
         (*(u8*)(sub + 80)) = 1;
         (*(u8*)(sub + 81)) = 0;
@@ -6055,7 +6055,7 @@ void Init_seaweed(NAS *arg0) {
     EXTengine *eng = arg0->Engine;
     if (eng != NULL) {
         ScriptCursor *cur;
-        eng->sub->u6C.dbase = *(s32*)MapScene;
+        eng->sub->u6C.dbase = ((s32)MapScene->dbase);
         cur = ScriptCursorFirst(arg0, &SeaweedScriptInit);
         if (cur != NULL) {
             u8 *trig = (u8*)arg0->trigger;

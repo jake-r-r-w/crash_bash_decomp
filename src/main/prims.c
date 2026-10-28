@@ -2827,7 +2827,7 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
     MATRIX *mp;
 
     m = RenderState.cam->view;
-    RenderState.unk0 = ((subengine *)sub)->u6C.dbase = *(GfxModel **)MapScene;
+    RenderState.unk0 = ((subengine *)sub)->u6C.dbase = ((GfxModel *)MapScene->dbase);
     v.vx = ((subengine *)sub)->unk04 - RenderState.cam->x;
     v.vy = ((subengine *)sub)->unk08 - RenderState.cam->y;
     v.vz = ((subengine *)sub)->unk0C - RenderState.cam->z;
@@ -2884,7 +2884,7 @@ void draw_map_scene(GfxScene *scene) {
 subengine *mapscene_find_sub(s32 i, s32 val) {
     subengine *sub;
 
-    for (sub = *(subengine **)((u8 *)MapScene + 0x1C); sub != NULL; sub = sub->next) {
+    for (sub = MapScene->subs; sub != NULL; sub = sub->next) {
         if (((u8 *)sub + i)[0x64] == val) {
             return sub;
         }
@@ -3129,8 +3129,8 @@ s32 *path_get(u32 arg0) {
     s32 *q;
 
     p = NULL;
-    if (*(s32 *)MapScene != 0) {
-        p = *(s32 **)((u8 *)MapScene + 0x28);
+    if (((s32)MapScene->dbase) != 0) {
+        p = ((s32 *)MapScene->path_list);
     }
     i = 0;
     n = *p;
@@ -3146,7 +3146,7 @@ loop:
     i = -1;
 found:
     if (i >= 0) {
-        q = (s32 *)(*(u8 **)((u8 *)MapScene + 0x2C) + (i << 2));
+        q = (s32 *)(((u8 *)MapScene->path) + (i << 2));
         return (s32 *)((u8 *)q + *q);
     }
     return NULL;
@@ -3158,8 +3158,8 @@ s32 path_find(u32 arg0) {
     s32 i;
 
     p = NULL;
-    if (*(s32 *)MapScene != 0) {
-        p = *(s32 **)((u8 *)MapScene + 0x28);
+    if (((s32)MapScene->dbase) != 0) {
+        p = ((s32 *)MapScene->path_list);
     }
     i = 0;
     n = *p;
@@ -3350,7 +3350,7 @@ s32 PrimDepthLimit = 0;
 SVECTOR MorphVerts[1024] = {0};
 s32 SubPool = 0;
 subengine *next_sub = 0;
-void *MapScene = 0;
+map_enviroment *MapScene = 0;
 MATRIX MapSceneMatrix = {0};
 SVECTOR MapSceneRot = {0};
 s32 D_80058AFC[1] = {0};

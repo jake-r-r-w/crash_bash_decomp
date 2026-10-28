@@ -1181,7 +1181,7 @@ void InitTriggers(void) {
     tbl = *(U16Table **)((u8 *)LevelTriggerData + 8);
     types = tbl->data;
     ntypes = tbl->count;
-    if ((TriggerCount = (*(s32 *)MapScene != 0) ? **(s32 **)((u8 *)MapScene + 0x30) : 0) == 0) {
+    if ((TriggerCount = (((s32)MapScene->dbase) != 0) ? *((s32 *)MapScene->triggers) : 0) == 0) {
         return;
     }
     if (HeadOfTriggers == NULL) {
@@ -1195,7 +1195,7 @@ void InitTriggers(void) {
     }
     trig = HeadOfTriggers;
     for (i = 0; i < TriggerCount; i++, trig++) {
-        src = (MapTrigRec *)(*(u8 **)((u8 *)MapScene + 0x30) + 4) + i;
+        src = (MapTrigRec *)(((u8 *)MapScene->triggers) + 4) + i;
         info = (MapTrigInfo *)((u8 *)src + ((src->info & ~3) + 0xC));
         trig->InfoStruct = (MapTriggerInfo *)info;
         if (info->flags & 0x4000) {

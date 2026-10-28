@@ -39,7 +39,7 @@ void InitialiseHUB(void) {
     eng->unk2C.x = size;
     G6A->unk62 = WarpRoomIndex(G6A->unk34);
     HubInitGateways();
-    SetupSceneMarks(*(u8 **)MapScene);
+    SetupSceneMarks(((u8 *)MapScene->dbase));
     HubInitLevelSelect();
     HubDoorFade = 0;
     if (G6A->unk34 == 0x25 && G6A->unk75 == 0) {
@@ -111,7 +111,7 @@ void HubInitGateways(void) {
         HubGateways[i].unk20 = 0;
         HubGateways[i].unk24 = 0;
     }
-    o = *(u8 **)((u8 *)MapScene + 0x1C);
+    o = ((u8 *)MapScene->subs);
     for (;;) {
         s32 k;
         void *g;
@@ -209,8 +209,8 @@ void HubUpdateGateways(void) {
                 o[2] = v * 0x20 >> 12;
             }
             if (q[-2] == one) {
-                if (q[0] == 0 || (dbase_anim_load(*(obj_dbase **)MapScene, q[0]), q[0] == 0) ||
-                    dbase_anim_ptr(*(u8 **)MapScene, q[0]) != 0) {
+                if (q[0] == 0 || (dbase_anim_load(MapScene->dbase, q[0]), q[0] == 0) ||
+                    dbase_anim_ptr(((u8 *)MapScene->dbase), q[0]) != 0) {
                     if (q[-1] == one) {
                         if (o != NULL) {
                             o[0] |= 0x8000;
@@ -234,7 +234,7 @@ void HubUpdateGateways(void) {
                     o[0] &= ~0x8000;
                 }
                 if (q[0] != 0) {
-                    dbase_anim_release(*(obj_dbase **)MapScene, q[0]);
+                    dbase_anim_release(MapScene->dbase, q[0]);
                 }
             }
         }
@@ -759,8 +759,8 @@ void HubSpawnEffects(void) {
     HubSpawnExt *ext;
 
     tbl = NULL;
-    if (*(s32 *)MapScene != 0) {
-        tbl = *(s32 **)((u8 *)MapScene + 0x28);
+    if (((s32)MapScene->dbase) != 0) {
+        tbl = ((s32 *)MapScene->path_list);
     }
     i = 0;
     n = tbl[0];
@@ -775,7 +775,7 @@ void HubSpawnEffects(void) {
             if (nas != NULL) {
                 ext = FindExtension(nas, 0x10000000);
                 if (ext != NULL) {
-                    s32 *q = (s32 *)(*(u8 **)((u8 *)MapScene + 0x2C) + i * 4);
+                    s32 *q = (s32 *)(((u8 *)MapScene->path) + i * 4);
                     ext->unkC = (s32 *)((u8 *)q + *q);
                     if (e[3] == 0xC8) {
                         ext->unk34 = 0;
@@ -987,7 +987,7 @@ void InitPathEffect(NAS *nas) {
 
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(nas, &HubPathScriptInit);
-        nas->Engine->sub->u6C.dbase = *(void **)MapScene;
+        nas->Engine->sub->u6C.dbase = MapScene->dbase;
         nas->Engine->sub->entity = 0x2018;
         nas->Engine->sub->flags &= 0xFEFFFFFF;
         nas->Engine->unk5D = 2;
@@ -1003,7 +1003,7 @@ void PlotCrystalFlash(void) {
 }
 
 void InitCrystalFlash(FxObj *arg0) {
-    arg0->mid->inner->unk6C = **(s32 **)&MapScene;
+    arg0->mid->inner->unk6C = ((s32)MapScene->dbase);
     arg0->mid->inner->unk74 = 0x200E;
     arg0->mid->inner->unk51 = 0;
     arg0->mid->inner->unk50 = 1;
@@ -1405,7 +1405,7 @@ void HubCullObjects(void) {
     u8 *cam;
     s32 a;
 
-    o = *(u8 **)((u8 *)MapScene + 0x1C);
+    o = ((u8 *)MapScene->subs);
     cam = MainCamera;
     for (;;) {
         if (o == 0) {
@@ -1518,7 +1518,7 @@ void InitialisePodium(void) {
         PodiumInitScript(i, name);
     }
     PodiumShowScores();
-    SetupSceneMarks(*(u8 **)MapScene);
+    SetupSceneMarks(((u8 *)MapScene->dbase));
 }
 
 void PodiumRankPlayers(void) {
