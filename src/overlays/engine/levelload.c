@@ -114,7 +114,8 @@ void LoadModeFiles(void) {
     q[4] = 0x140;
 }
 
-static inline void func_800936C4_heap(_mal_area *heap, s32 p) {
+/* the heap from p to the top of RAM below the stack (0x801FF000) */
+static inline void InitHeapToRamTop(_mal_area *heap, s32 p) {
     s32 size;
 
     size = 0x801FF000;
@@ -133,10 +134,10 @@ void InitLevelLoad(void) {
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    func_800936C4_heap(&MainHeap, (s32)SlotHeapStart);
+    InitHeapToRamTop(&MainHeap, (s32)SlotHeapStart);
     start = LoadModeText() + 7;
     start &= ~7;
-    func_800936C4_heap(&MainHeap, start);
+    InitHeapToRamTop(&MainHeap, start);
     SetupLevelSpecs(&DefaultArenaDef);
     cfg = (EngineCfg *)LevelConfig;
     if (cfg == NULL) {

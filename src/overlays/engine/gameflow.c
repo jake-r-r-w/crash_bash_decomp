@@ -671,7 +671,8 @@ void InitCupMenu(void) {
     GameCup = 0;
 }
 
-static inline s32 func_800900CC_find(s32 arg0) {
+/* WarpRoomIndex, inlined into its callers */
+static inline s32 WarpRoomFind(s32 arg0) {
     s32 i;
     hub_info *p;
 
@@ -690,7 +691,7 @@ s32 WarpRoomBestLevel(void) {
     hub_info *t;
 
     best = -1;
-    i = func_800900CC_find(GameMode);
+    i = WarpRoomFind(GameMode);
     if (i < 0) {
         t = 0;
     } else {
@@ -707,20 +708,8 @@ s32 WarpRoomBestLevel(void) {
     return best;
 }
 
-static inline s32 func_800901B4_find(s32 arg0) {
-    s32 i;
-    hub_info *p;
-
-    for (i = 0, p = WarpRooms; (u32)i < 10; i++, p++) {
-        if (p->levnum == arg0) {
-            return i;
-        }
-    }
-    return -1;
-}
-
 hub_info *WarpRoomOfMode(s32 arg0) {
-    s32 i = func_800901B4_find(arg0);
+    s32 i = WarpRoomFind(arg0);
 
     if (i < 0) {
         return NULL;
