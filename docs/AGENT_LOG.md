@@ -494,7 +494,9 @@ Newest first, a few lines each. Details are in the commits.
   writes the maps: paths (a 0x30-byte header, not the runtime KeyBlock view: keys from +0x30),
   triggers, placements (a rotation MATRIX and a model id each); all 205 files with level data
   round-trip, and `make disc-check` passes with map.json read in. assets/ got map.json from each
-  folder's own model.bin.
+  folder's own model.bin. Playtested: Warp Room 1's placements raised 400 lifted the floor and
+  scenery, and Crash stood sunk below it: the geometry is placed, the ground collision is not (it is
+  the maps' contour grids / cell lists, still bytes: the next decode).
 - **2026-10-28 (Phase 5: asset formats, model files):** `ModelFile` names every header section
   the code reads; RelTable, UvTable, EntryBlock, FaceRuns, TexFaceRuns, ModelSet, ModelEntry and
   MorphModel folded into it and `MeshHeader`; dbase.c, main.c, scripts.c (21 functions) and prims.c

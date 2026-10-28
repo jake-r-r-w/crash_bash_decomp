@@ -176,7 +176,10 @@ keeping each mesh's count and order (Blender: Split > Keep Vert Order). Texture 
 materials, colours and the animations are for viewing: pack ignores them, and they stay as they
 are in `model.bin`. Edit the textures in the texture set's PNGs. `make disc` also writes
 `map.json`'s map fields into `model.bin`: move or turn placements, triggers and path keys, change
-their ids and flags; the counts stay (nothing can be added or removed), and two triggers that share
+their ids and flags (playtested 2026-10-28: raising Warp Room 1's 81 placements by 400 raised its
+floor and scenery, so the room's geometry is placed objects, while Crash stayed at his old height:
+his ground comes from the map's collision, not the placements); the counts stay (nothing can be
+added or removed), and two triggers that share
 one info record must keep the same values. The entities and scripts are for viewing.
 
 ## Title screens (`.tga`)
