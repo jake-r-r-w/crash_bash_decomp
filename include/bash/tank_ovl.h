@@ -179,7 +179,7 @@ extern s32 TankBossRocketDelay;
 s32 TankBossTurretFindTarget(EXTengine *eng);
 void TankBossCortexTurretFire(EXTengine *eng);
 void TankBossRocketTurretFire(NAS *nas, EXTengine *eng);
-/* Field 0xC of the 0x38-byte model record N at HeroModelBank (D_800536CC is record 57). */
+/* Field 0xC of the 0x38-byte model record N at HeroModelBank (record 57 is DB_ArenaBossKomodoArenaobjects). */
 #define TANK_MODEL(n) ((u8 *)&HeroModelBank[n])
 #define TANK_MODEL_ON(b, n) (*(s32 *)((b) + (n) * 0x38 + 0xC))
 extern s32 TankBossBob[16]; /* PlotTankBoss: per-frame height wobble */
@@ -555,7 +555,7 @@ static inline NAS *TankSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
     }
     return NULL;
 }
-/* CheckMineToBoss's puff: TankSpawnBit1605 with model record D_800536CC. */
+/* CheckMineToBoss's puff: TankSpawnBit1605 with model record DB_ArenaBossKomodoArenaobjects. */
 static inline void TankSpawnBit1605B(SLONG_XYZ *pos, s32 kind) {
     u8 *p;
     NAS *nas;

@@ -476,7 +476,7 @@ void ProcessHeroes(void) {
                 HPADS[id].unk54 = 0;
             }
             ((void (*)(s32))HeroHooks.PreMoveHero)(id);
-            ((void (*)(s32))HeroActionTable[h->hero_mode].pad)(id);
+            HeroActionTable[h->hero_mode].update(id);
             ((void (*)(s32))HeroHooks.MoveHero)(id);
             if (HeroHooks.PostMoveHero != NULL) {
                 ((void (*)(s32))HeroHooks.PostMoveHero)(id);
@@ -5204,23 +5204,6 @@ extern u8 DNG_seq_tankminelay[];
 extern u8 DNG_seq_tankrecoil[];
 extern u8 DNG_seq_tankvictory[];
 extern u8 DNG_seq_win_ft[];
-extern u8 D_80034000[];
-extern u8 D_80034080[];
-extern u8 D_80034084[];
-extern u8 D_80034100[];
-extern u8 D_80034108[];
-extern u8 D_8004410C[];
-extern u8 D_80044110[];
-extern u8 D_8004418C[];
-extern u8 D_80044190[];
-extern u8 D_80044288[];
-extern u8 D_80044480[];
-extern u8 D_80044580[];
-extern u8 D_80070108[];
-extern u8 D_80070138[];
-extern u8 D_80070160[];
-extern u8 D_8007016C[];
-extern u8 D_80074580[];
 extern u8 DinoHeroDazed[];
 extern u8 DinoHeroIdle[];
 extern u8 DinoHeroRun[];
@@ -5746,12 +5729,12 @@ s32 COC_seq_none[2] = { 2, 0x8000 };
 s32 COC_seq_breathe[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
 s32 COC_seq_taunt_a[13] = {
     (s32)0x800A0000, (s32)0x80070034, 0x44800031, 0x448F4490, 0x448D448E, 0x448B448C,
-    0x4489448A, 0x44874488, 0x44854486, 0x44834484, 0x44814482, (s32)&D_80044480, 0,
+    0x4489448A, 0x44874488, 0x44854486, 0x44834484, 0x44814482, (s32)0x80044480, 0,
 };
 s32 COC_seq_idle_a[2] = { (s32)0x80050000, 1 };
 s32 COC_seq_idle_b[2] = { (s32)0x80050000, 1 };
 s32 COC_seq_medium[8] = {
-    (s32)0x80070000, 0x41000008, 0x88003, 0xB8007, (s32)&D_80034108, 0x41130009, 0x41154114,
+    (s32)0x80070000, 0x41000008, 0x88003, 0xB8007, (s32)0x80034108, 0x41130009, 0x41154114,
     0x8000,
 };
 s32 COC_seq_jump[4] = { (s32)0x800A0000, (s32)0x8007003E, 0x4182000A, 0x58004 };
@@ -5805,11 +5788,11 @@ s32 CTX_seq_breathe[3] = { (s32)0x80070000, 0x40800020, 0x8000 };
 s32 CTX_seq_taunt_a[4] = { (s32)0x800A0000, (s32)0x80070066, 0x45000028, 0x8004 };
 s32 CTX_seq_idle_a[2] = { (s32)0x80050000, 1 };
 s32 CTX_seq_idle_b[2] = { (s32)0x80050000, 1 };
-s32 CTX_seq_medium[7] = { 0x41150000, 0x88003, 0xB8007, (s32)&D_80034100, (s32)0x80070009, 0x410B000A, 0x8000 };
+s32 CTX_seq_medium[7] = { 0x41150000, 0x88003, 0xB8007, (s32)0x80034100, (s32)0x80070009, 0x410B000A, 0x8000 };
 s32 CTX_seq_jump[6] = { (s32)0x800A0000, (s32)0x80070070, 0x41800007, 0x288018, (s32)0x80044187, 5 };
 s32 CTX_seq_fall[9] = {
     0x41870000, 0x41894188, 0x28018, 0x418B418A, 0x288018, 0x418C418C, 0x418C418C,
-    (s32)&D_8004418C, 7,
+    (s32)0x8004418C, 7,
 };
 s32 CTX_seq_land[4] = { (s32)0x80090000, (s32)0x80070071, 0x418D0006, 0x8004 };
 s32 CTX_seq_attack[4] = { (s32)0x800A0000, (s32)0x80070072, 0x42000013, 0x8004 };
@@ -5860,7 +5843,7 @@ s32 BRO_seq_breathe[3] = { (s32)0x80070000, 0x40000020, 0x8000 };
 s32 BRO_seq_taunt_a[4] = { (s32)0x800A0000, (s32)0x80070098, 0x46000028, 0x8004 };
 s32 BRO_seq_idle_a[2] = { (s32)0x80050000, 1 };
 s32 BRO_seq_idle_b[2] = { (s32)0x80050000, 1 };
-s32 BRO_seq_medium[7] = { 0x40950000, 0x88003, 0xB8007, (s32)&D_80034080, (s32)0x80070009, 0x408B000A, 0x8000 };
+s32 BRO_seq_medium[7] = { 0x40950000, 0x88003, 0xB8007, (s32)0x80034080, (s32)0x80070009, 0x408B000A, 0x8000 };
 s32 BRO_seq_jump[6] = { (s32)0x800A0000, (s32)0x800700A2, 0x41800007, 0x288018, (s32)0x80044183, 5 };
 s32 BRO_seq_fall[9] = {
     0x41840000, 0x41864185, 0x28018, 0x41884187, 0x288018, 0x41894189, 0x41894189,
@@ -5912,14 +5895,14 @@ s32 BRO_seqs[108] = {
 };
 s32 TIN_seq_none[2] = { 2, 0x8000 };
 s32 TIN_seq_breathe[3] = { (s32)0x80070000, 0x40000020, 0x8000 };
-s32 TIN_seq_taunt_a[7] = { (s32)0x800A0000, (s32)0x8007012E, 0x4580002A, 0x45834584, 0x45814582, (s32)&D_80044580, 0 };
+s32 TIN_seq_taunt_a[7] = { (s32)0x800A0000, (s32)0x8007012E, 0x4580002A, 0x45834584, 0x45814582, (s32)0x80044580, 0 };
 s32 TIN_seq_idle_a[2] = { (s32)0x80050000, 1 };
 s32 TIN_seq_idle_b[2] = { (s32)0x80050000, 1 };
-s32 TIN_seq_medium[7] = { 0x41130000, 0x88003, 0xA8007, (s32)&D_80034100, (s32)0x80070009, 0x410A0009, 0x8000 };
-s32 TIN_seq_jump[6] = { (s32)0x800A0000, (s32)&D_80070138, 0x41800007, 0x288018, (s32)0x80044187, 5 };
+s32 TIN_seq_medium[7] = { 0x41130000, 0x88003, 0xA8007, (s32)0x80034100, (s32)0x80070009, 0x410A0009, 0x8000 };
+s32 TIN_seq_jump[6] = { (s32)0x800A0000, (s32)0x80070138, 0x41800007, 0x288018, (s32)0x80044187, 5 };
 s32 TIN_seq_fall[9] = {
     0x41880002, 0x418A4189, 0x418C418B, 0x48018, 0x418E418D, (s32)0x8018418F, 0x41900028,
-    (s32)&D_80044190, 7,
+    (s32)0x80044190, 7,
 };
 s32 TIN_seq_land[4] = { (s32)0x80090000, (s32)0x80070139, 0x4191000B, 0x8004 };
 s32 TIN_seq_attack[4] = { (s32)0x800A0000, (s32)0x8007013A, 0x4200000C, 0x8004 };
@@ -5965,19 +5948,19 @@ s32 TIN_seqs[108] = {
 s32 KON_seq_none[2] = { 2, 0x8000 };
 s32 KON_seq_breathe[3] = { (s32)0x80070000, 0x40800020, 0x8000 };
 s32 KON_seq_taunt_a[10] = {
-    (s32)0x800A0000, (s32)&D_80070160, 0x46000030, 0x460A460B, 0x46084609, 0x46064607,
+    (s32)0x800A0000, (s32)0x80070160, 0x46000030, 0x460A460B, 0x46084609, 0x46064607,
     0x46044605, 0x46024603, 0x46004601, 0x8004,
 };
 s32 KON_seq_idle_a[3] = { (s32)0x80070000, 0x40800020, 0x18005 };
 s32 KON_seq_idle_b[3] = { (s32)0x80070000, 0x40800020, 0x38005 };
-s32 KON_seq_medium[7] = { 0x40130000, 0x88003, 0xA8007, (s32)&D_80034000, (s32)0x80070009, 0x40090009, 0x8000 };
-s32 KON_seq_jump[6] = { (s32)0x800A0000, (s32)0x8007016A, 0x42810007, 0x288018, (s32)&D_80044288, 5 };
+s32 KON_seq_medium[7] = { 0x40130000, 0x88003, 0xA8007, (s32)0x80034000, (s32)0x80070009, 0x40090009, 0x8000 };
+s32 KON_seq_jump[6] = { (s32)0x800A0000, (s32)0x8007016A, 0x42810007, 0x288018, (s32)0x80044288, 5 };
 s32 KON_seq_fall[9] = {
     0x42890002, 0x428B428A, 0x428D428C, 0x48018, 0x428F428E, (s32)0x80184290, 0x42910028,
     (s32)0x80044291, 7,
 };
 s32 KON_seq_land[4] = { (s32)0x80090000, (s32)0x8007016B, 0x42920009, 0x8004 };
-s32 KON_seq_attack[4] = { (s32)0x800A0000, (s32)&D_8007016C, 0x41000010, 0x8004 };
+s32 KON_seq_attack[4] = { (s32)0x800A0000, (s32)0x8007016C, 0x41000010, 0x8004 };
 s32 KON_seq_hit[6] = { (s32)0x80070000, 0x41800013, 0x88003, 0xA8007, (s32)0x80044193, 0 };
 s32 KON_seq_win[9] = {
     (s32)0x80070000, 0x46000030, 0x460A460B, 0x46084609, 0x46064607, 0x46044605, 0x46024603,
@@ -6026,13 +6009,13 @@ s32 DNG_seq_taunt_a[4] = { (s32)0x800A0000, (s32)0x800700FC, 0x46000028, 0x8004 
 s32 DNG_seq_idle_a[3] = { (s32)0x80070000, 0x4000000E, 0x18005 };
 s32 DNG_seq_idle_b[3] = { (s32)0x80070000, 0x4000000C, 0x38005 };
 s32 DNG_seq_medium[8] = {
-    (s32)0x80070000, 0x40800004, 0x88003, 0x98007, (s32)&D_80034084, (s32)0x80070009,
+    (s32)0x80070000, 0x40800004, 0x88003, 0x98007, (s32)0x80034084, (s32)0x80070009,
     0x408D0005, 0x8000,
 };
 s32 DNG_seq_jump[6] = { (s32)0x800A0000, (s32)0x80070106, 0x41000008, 0x288018, (s32)0x80044107, 5 };
 s32 DNG_seq_fall[6] = { 0x41080002, 0x48018, 0x410A4109, 0x288018, (s32)0x8004410B, 7 };
 s32 DNG_seq_land[4] = { (s32)0x80090000, (s32)0x80070107, 0x410C000F, 0x8004 };
-s32 DNG_seq_attack[4] = { (s32)0x800A0000, (s32)&D_80070108, 0x4180000E, 0x78004 };
+s32 DNG_seq_attack[4] = { (s32)0x800A0000, (s32)0x80070108, 0x4180000E, 0x78004 };
 s32 DNG_seq_hit[6] = { (s32)0x80070000, 0x4200000B, 0x88003, 0x138007, (s32)0x8004420B, 0 };
 s32 DNG_seq_win[3] = { (s32)0x80070000, 0x46000028, 0x8000 };
 s32 DNG_seq_victory[3] = { (s32)0x80070000, 0x4580004C, 0x8000 };
@@ -6074,15 +6057,15 @@ s32 DNG_seqs[108] = {
 };
 s32 KAN_seq_none[2] = { 2, 0x8000 };
 s32 KAN_seq_breathe[3] = { (s32)0x80070000, 0x40000014, 0x8000 };
-s32 KAN_seq_taunt_a[7] = { (s32)0x800A0000, (s32)0x800700CA, 0x4580000D, 0xD8007, (s32)&D_80074580, 0x4580000D, 0x8004 };
+s32 KAN_seq_taunt_a[7] = { (s32)0x800A0000, (s32)0x800700CA, 0x4580000D, 0xD8007, (s32)0x80074580, 0x4580000D, 0x8004 };
 s32 KAN_seq_idle_a[3] = { (s32)0x80070000, 0x40000014, 0x18005 };
 s32 KAN_seq_idle_b[3] = { (s32)0x80070000, 0x40000014, 0x38005 };
 s32 KAN_seq_medium[9] = {
     0x40860000, 0x88003, 0xA8007, (s32)0x80034087, 0x40910009, 0x40934092, 0x68007,
     (s32)0x80004080, 0,
 };
-s32 KAN_seq_jump[6] = { (s32)0x800A0000, (s32)0x800700D4, 0x41030009, 0x288018, (s32)&D_8004410C, 5 };
-s32 KAN_seq_fall[5] = { 0x410D0001, 0x410F410E, 0x288018, (s32)&D_80044110, 7 };
+s32 KAN_seq_jump[6] = { (s32)0x800A0000, (s32)0x800700D4, 0x41030009, 0x288018, (s32)0x8004410C, 5 };
+s32 KAN_seq_fall[5] = { 0x410D0001, 0x410F410E, 0x288018, (s32)0x80044110, 7 };
 s32 KAN_seq_land[4] = { (s32)0x80090000, (s32)0x800700D5, 0x41110007, 0x8004 };
 s32 KAN_seq_attack[4] = { (s32)0x80080000, (s32)0x800700D6, 0x4180000E, 0x78004 };
 s32 KAN_seq_hit[9] = {
@@ -6214,80 +6197,81 @@ s16 D_8009DC68[9][3] = {
     { 0x800, 0xA00, 0x800 }, { 0x200, 0x200, 0x200 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
     { 0, 0, 0 },
 };
-HeroActionEntry HeroActionTable[134] = {
-    { SetHeroIdle, (s32)HeroIdle }, { SetHeroQuiet, (s32)HeroQuiet },
-    { SetHeroTaunt, (s32)HeroTaunt }, { SetHeroRun, (s32)HeroRun },
-    { SetHeroJump, (s32)HeroJump }, { SetHeroFall, (s32)HeroFall },
-    { SetHeroDrop, (s32)HeroDrop }, { SetHeroLand, (s32)HeroLand },
-    { SetHeroSpin, (s32)HeroSpin }, { SetHeroWhip, (s32)HeroWhip },
-    { SetHeroShoot, (s32)HeroShoot }, { SetHeroKick, (s32)HeroKick },
-    { &SetBashHeroLoser, (s32)&BashHeroLoser }, { &SetBashHeroHit, (s32)&BashHeroHit },
-    { &SetBashHeroPickup, (s32)&BashHeroPickup }, { &SetBashHeroHold, (s32)&BashHeroHold },
-    { &SetBashHeroCarry, (s32)&BashHeroCarry }, { &SetBashHeroThrow, (s32)&BashHeroThrow },
-    { &SetBashHeroBigWeight, (s32)&BashHeroBigWeight },
-    { &SetBashHeroDead, (s32)&BashHeroDead }, { &SetBashHeroWinner, (s32)&BashHeroWinner },
-    { &SetPAHeroHit, (s32)&PAHeroHit }, { &SetPAHeroPickup, (s32)&PAHeroPickup },
-    { &SetPAHeroHold, (s32)&PAHeroHold }, { &SetPAHeroCarry, (s32)&PAHeroCarry },
-    { &SetPAHeroThrow, (s32)&PAHeroThrow }, { &SetPAHeroDead, (s32)&PAHeroDead },
-    { &SetPAHeroWinner, (s32)&PAHeroWinner }, { &SetArkHeroIdle, (s32)&ArkHeroIdle },
-    { &SetArkHeroMove, (s32)&ArkHeroMove }, { &SetArkHeroTaunt, (s32)&ArkHeroTaunt },
-    { &SetArkHeroKick, (s32)&ArkHeroKick }, { &SetArkHeroRedKick, (s32)&ArkHeroRedKick },
-    { &SetArkHeroGrab, (s32)&ArkHeroGrab }, { &SetArkHeroWinner, (s32)&ArkHeroWinner },
-    { &SetArkHeroLose, (s32)&ArkHeroLose }, { &SetArkHeroDie, (s32)&ArkHeroDie },
-    { &SetArkHeroDead, (s32)&ArkHeroDead }, { &SetN2OHeroEnter, (s32)&N2OHeroEnter },
-    { &SetN2OHeroIdle, (s32)&N2OHeroIdle }, { &SetN2OHeroMove, (s32)&N2OHeroMove },
-    { &SetN2OHeroTaunt, (s32)&N2OHeroTaunt }, { &SetN2OHeroHit, (s32)&N2OHeroHit },
-    { &SetN2OHeroKick, (s32)&N2OHeroKick }, { &SetN2OHeroWinner, (s32)&N2OHeroWinner },
-    { &SetN2OHeroDie, (s32)&N2OHeroDie }, { &SetN2OHeroDead, (s32)&N2OHeroDead },
-    { &SetNoxHeroFly, (s32)&NoxHeroFly }, { &SetNoxHeroDead, (s32)&NoxHeroDead },
-    { &SetNoxHeroHit, (s32)&NoxHeroHit }, { &SetNoxHeroWinner, (s32)&NoxHeroWinner },
-    { &SetSpinHeroHit, (s32)&SpinHeroHit }, { &SetSpinHeroFlip, (s32)&SpinHeroFlip },
-    { &SetSpinHeroFall, (s32)&SpinHeroFall }, { &SetSpinHeroWinner, (s32)&SpinHeroWinner },
-    { &SetSpinHeroLose, (s32)&SpinHeroLose }, { &SetSpinHeroDead, (s32)&SpinHeroDead },
-    { &SetHeroPogoIdle, (s32)&HeroPogoIdle }, { &SetHeroPogo, (s32)&HeroPogo },
-    { &SetHeroPogoDazed, (s32)&HeroPogoDazed }, { &SetHeroPogoWinner, (s32)&HeroPogoWinner },
-    { &SetHeroPogoLoser, (s32)&HeroPogoLoser }, { &SetHeroPogoTied, (s32)&HeroPogoTied },
-    { &SetHeroPogoTazing, (s32)&HeroPogoTazing }, { &SetBonkHeroIdle, (s32)&BonkHeroIdle },
-    { &SetBonkHeroRun, (s32)&BonkHeroRun }, { &SetBonkHeroHit, (s32)&BonkHeroHit },
-    { &SetBonkHeroBackswing, (s32)&BonkHeroBackswing },
-    { &SetBonkHeroExtBackswing, (s32)&BonkHeroExtBackswing },
-    { &SetBonkHeroSwing, (s32)&BonkHeroSwing },
-    { &SetBonkHeroSwingRecoil, (s32)&BonkHeroSwingRecoil },
-    { &SetBonkHeroWinner, (s32)&BonkHeroWinner }, { &SetBonkHeroLoser, (s32)&BonkHeroLoser },
-    { &SetPolarHeroIdle, (s32)&PolarHeroIdle }, { &SetPolarHeroRun, (s32)&PolarHeroRun },
-    { &SetPolarHeroDazed, (s32)&PolarHeroDazed },
-    { &SetPolarHeroTransmute, (s32)&PolarHeroTransmute },
-    { &SetPolarHeroWeight, (s32)&PolarHeroWeight },
-    { &SetPolarHeroOffice, (s32)&PolarHeroOffice },
-    { &SetPolarHeroInBeam, (s32)&PolarHeroInBeam }, { &SetPolarHeroPoll, (s32)&PolarHeroPoll },
-    { &SetPolarHeroAttack, (s32)&PolarHeroAttack },
-    { &SetPolarHeroSnowball, (s32)&PolarHeroSnowball },
-    { &SetPolarHeroThrowBomb, (s32)&PolarHeroThrowBomb },
-    { &SetPolarHeroFootIdle, (s32)&PolarHeroFootIdle },
-    { &SetPolarHeroFootRun, (s32)&PolarHeroFootRun }, { &SetPolarHeroHit, (s32)&PolarHeroHit },
-    { &SetPolarHeroDead, (s32)&PolarHeroDead }, { &SetPolarHeroWinner, (s32)&PolarHeroWinner },
-    { &SetPolarHeroSquashed, (s32)&PolarHeroSquashed },
-    { &SetPolarHeroChallenge, (s32)&PolarHeroChallenge },
-    { &SetRaceHeroIdle, (s32)&RaceHeroIdle }, { &SetRaceHeroRun, (s32)&RaceHeroRun },
-    { &SetRaceHeroDazed, (s32)&RaceHeroDazed }, { &SetRaceHeroJump, (s32)&RaceHeroJump },
-    { &SetRaceHeroKick, (s32)&RaceHeroKick }, { &SetRaceHeroOiled, (s32)&RaceHeroOiled },
-    { &SetRaceHeroOffTrack, (s32)&RaceHeroOffTrack },
-    { &SetRaceHeroWinner, (s32)&RaceHeroWinner }, { &SetDinoHeroIdle, (s32)&DinoHeroIdle },
-    { &SetDinoHeroRun, (s32)&DinoHeroRun }, { &SetDinoHeroShoot, (s32)&DinoHeroShoot },
-    { &SetDinoHeroSlide, (s32)&DinoHeroSlide }, { &SetDinoHeroDazed, (s32)&DinoHeroDazed },
-    { &SetDinoHeroWinner, (s32)&DinoHeroWinner }, { &SetTankHeroRecoil, (s32)&TankHeroRecoil },
-    { &SetTankHeroDie, (s32)&TankHeroDie }, { &SetTankHeroDead, (s32)&TankHeroDead },
-    { &SetTankHeroIdle, (s32)&TankHeroIdle }, { &SetTankHeroMinelay, (s32)&TankHeroMinelay },
-    { &SetTankHeroMove, (s32)&TankHeroMove }, { &SetTankHeroTurn, (s32)&TankHeroTurn },
-    { &SetTankHeroVictory, (s32)&TankHeroVictory }, { &SetChaseHeroIdle, (s32)&ChaseHeroIdle },
-    { &SetChaseHeroRun, (s32)&ChaseHeroRun }, { &SetChaseHeroHit, (s32)&ChaseHeroHit },
-    { &SetChaseHeroLose, (s32)&ChaseHeroLose }, { &SetChaseHeroWinner, (s32)&ChaseHeroWinner },
-    { &SetChaseHeroDie, (s32)&ChaseHeroDie }, { &SetChaseHeroDead, (s32)&ChaseHeroDead },
-    { &SetChaseHeroJump, (s32)&ChaseHeroJump }, { &SetChaseHeroDrop, (s32)&ChaseHeroDrop },
-    { &SetChaseHeroFall, (s32)&ChaseHeroFall }, { &SetChaseHeroLand, (s32)&ChaseHeroLand },
-    { 0, 0 }, { 0x40003, 0x60005 }, { 0x360035, 0x380037 }, { 0x680067, 0x6A0069 },
-    { 0x9A0099, 0x9C009B }, { 0x130012F, 0x1320131 }, { 0x1620161, 0x1640163 },
-    { 0xFE00FD, 0x10000FF }, { 0xCC00CB, 0xCE00CD }, { 0, 0 },
+HeroActionEntry HeroActionTable[124] = {
+    { SetHeroIdle, HeroIdle }, { SetHeroQuiet, HeroQuiet },
+    { SetHeroTaunt, HeroTaunt }, { SetHeroRun, HeroRun },
+    { SetHeroJump, HeroJump }, { SetHeroFall, HeroFall },
+    { SetHeroDrop, HeroDrop }, { SetHeroLand, HeroLand },
+    { SetHeroSpin, HeroSpin }, { SetHeroWhip, HeroWhip },
+    { SetHeroShoot, HeroShoot }, { SetHeroKick, HeroKick },
+    { &SetBashHeroLoser, BashHeroLoser }, { &SetBashHeroHit, BashHeroHit },
+    { &SetBashHeroPickup, BashHeroPickup }, { &SetBashHeroHold, BashHeroHold },
+    { &SetBashHeroCarry, BashHeroCarry }, { &SetBashHeroThrow, BashHeroThrow },
+    { &SetBashHeroBigWeight, BashHeroBigWeight },
+    { &SetBashHeroDead, BashHeroDead }, { &SetBashHeroWinner, BashHeroWinner },
+    { &SetPAHeroHit, PAHeroHit }, { &SetPAHeroPickup, PAHeroPickup },
+    { &SetPAHeroHold, PAHeroHold }, { &SetPAHeroCarry, PAHeroCarry },
+    { &SetPAHeroThrow, PAHeroThrow }, { &SetPAHeroDead, PAHeroDead },
+    { &SetPAHeroWinner, PAHeroWinner }, { &SetArkHeroIdle, ArkHeroIdle },
+    { &SetArkHeroMove, ArkHeroMove }, { &SetArkHeroTaunt, ArkHeroTaunt },
+    { &SetArkHeroKick, ArkHeroKick }, { &SetArkHeroRedKick, ArkHeroRedKick },
+    { &SetArkHeroGrab, ArkHeroGrab }, { &SetArkHeroWinner, ArkHeroWinner },
+    { &SetArkHeroLose, ArkHeroLose }, { &SetArkHeroDie, ArkHeroDie },
+    { &SetArkHeroDead, ArkHeroDead }, { &SetN2OHeroEnter, N2OHeroEnter },
+    { &SetN2OHeroIdle, N2OHeroIdle }, { &SetN2OHeroMove, N2OHeroMove },
+    { &SetN2OHeroTaunt, N2OHeroTaunt }, { &SetN2OHeroHit, N2OHeroHit },
+    { &SetN2OHeroKick, N2OHeroKick }, { &SetN2OHeroWinner, N2OHeroWinner },
+    { &SetN2OHeroDie, N2OHeroDie }, { &SetN2OHeroDead, N2OHeroDead },
+    { &SetNoxHeroFly, NoxHeroFly }, { &SetNoxHeroDead, NoxHeroDead },
+    { &SetNoxHeroHit, NoxHeroHit }, { &SetNoxHeroWinner, NoxHeroWinner },
+    { &SetSpinHeroHit, SpinHeroHit }, { &SetSpinHeroFlip, SpinHeroFlip },
+    { &SetSpinHeroFall, SpinHeroFall }, { &SetSpinHeroWinner, SpinHeroWinner },
+    { &SetSpinHeroLose, SpinHeroLose }, { &SetSpinHeroDead, SpinHeroDead },
+    { &SetHeroPogoIdle, HeroPogoIdle }, { &SetHeroPogo, HeroPogo },
+    { &SetHeroPogoDazed, HeroPogoDazed }, { &SetHeroPogoWinner, HeroPogoWinner },
+    { &SetHeroPogoLoser, HeroPogoLoser }, { &SetHeroPogoTied, HeroPogoTied },
+    { &SetHeroPogoTazing, HeroPogoTazing }, { &SetBonkHeroIdle, BonkHeroIdle },
+    { &SetBonkHeroRun, BonkHeroRun }, { &SetBonkHeroHit, BonkHeroHit },
+    { &SetBonkHeroBackswing, BonkHeroBackswing },
+    { &SetBonkHeroExtBackswing, BonkHeroExtBackswing },
+    { &SetBonkHeroSwing, BonkHeroSwing },
+    { &SetBonkHeroSwingRecoil, BonkHeroSwingRecoil },
+    { &SetBonkHeroWinner, BonkHeroWinner }, { &SetBonkHeroLoser, BonkHeroLoser },
+    { &SetPolarHeroIdle, PolarHeroIdle }, { &SetPolarHeroRun, PolarHeroRun },
+    { &SetPolarHeroDazed, PolarHeroDazed },
+    { &SetPolarHeroTransmute, PolarHeroTransmute },
+    { &SetPolarHeroWeight, PolarHeroWeight },
+    { &SetPolarHeroOffice, PolarHeroOffice },
+    { &SetPolarHeroInBeam, PolarHeroInBeam }, { &SetPolarHeroPoll, PolarHeroPoll },
+    { &SetPolarHeroAttack, PolarHeroAttack },
+    { &SetPolarHeroSnowball, PolarHeroSnowball },
+    { &SetPolarHeroThrowBomb, PolarHeroThrowBomb },
+    { &SetPolarHeroFootIdle, PolarHeroFootIdle },
+    { &SetPolarHeroFootRun, PolarHeroFootRun }, { &SetPolarHeroHit, PolarHeroHit },
+    { &SetPolarHeroDead, PolarHeroDead }, { &SetPolarHeroWinner, PolarHeroWinner },
+    { &SetPolarHeroSquashed, PolarHeroSquashed },
+    { &SetPolarHeroChallenge, PolarHeroChallenge },
+    { &SetRaceHeroIdle, RaceHeroIdle }, { &SetRaceHeroRun, RaceHeroRun },
+    { &SetRaceHeroDazed, RaceHeroDazed }, { &SetRaceHeroJump, RaceHeroJump },
+    { &SetRaceHeroKick, RaceHeroKick }, { &SetRaceHeroOiled, RaceHeroOiled },
+    { &SetRaceHeroOffTrack, RaceHeroOffTrack },
+    { &SetRaceHeroWinner, RaceHeroWinner }, { &SetDinoHeroIdle, DinoHeroIdle },
+    { &SetDinoHeroRun, DinoHeroRun }, { &SetDinoHeroShoot, DinoHeroShoot },
+    { &SetDinoHeroSlide, DinoHeroSlide }, { &SetDinoHeroDazed, DinoHeroDazed },
+    { &SetDinoHeroWinner, DinoHeroWinner }, { &SetTankHeroRecoil, TankHeroRecoil },
+    { &SetTankHeroDie, TankHeroDie }, { &SetTankHeroDead, TankHeroDead },
+    { &SetTankHeroIdle, TankHeroIdle }, { &SetTankHeroMinelay, TankHeroMinelay },
+    { &SetTankHeroMove, TankHeroMove }, { &SetTankHeroTurn, TankHeroTurn },
+    { &SetTankHeroVictory, TankHeroVictory }, { &SetChaseHeroIdle, ChaseHeroIdle },
+    { &SetChaseHeroRun, ChaseHeroRun }, { &SetChaseHeroHit, ChaseHeroHit },
+    { &SetChaseHeroLose, ChaseHeroLose }, { &SetChaseHeroWinner, ChaseHeroWinner },
+    { &SetChaseHeroDie, ChaseHeroDie }, { &SetChaseHeroDead, ChaseHeroDead },
+    { &SetChaseHeroJump, ChaseHeroJump }, { &SetChaseHeroDrop, ChaseHeroDrop },
+    { &SetChaseHeroFall, ChaseHeroFall }, { &SetChaseHeroLand, ChaseHeroLand },
+};
+/* by hero name: the sfx a hit plays (four, one at random) */
+u16 HeroHitSfx[10][4] = {
+    { 0, 0, 0, 0 }, { 0x3, 0x4, 0x5, 0x6 }, { 0x35, 0x36, 0x37, 0x38 }, { 0x67, 0x68, 0x69, 0x6A }, { 0x99, 0x9A, 0x9B, 0x9C }, { 0x12F, 0x130, 0x131, 0x132 }, { 0x161, 0x162, 0x163, 0x164 }, { 0xFD, 0xFE, 0xFF, 0x100 }, { 0xCB, 0xCC, 0xCD, 0xCE }, { 0, 0, 0, 0 },
 };
 s16 WinSeqTimer = 0;
 s16 WinSeqStep = 0;
@@ -6324,7 +6308,8 @@ ScriptInit D_8009E250 = { (s32)&D_8009E22C, 0, 0x401 };
 s32 PickupCounts[15] = {0};
 s32 D_8009E298 = 0;
 s32 D_8009E29C = 0;
-s32 D_8009E2A0[9] = { 0x20112010, 0x20122012, 0x20122012, 0x20122012, 0x2012, 0x442, 0x443, 0x444, 0x445 };
+s32 D_8009E2A0[5] = { 0x20112010, 0x20122012, 0x20122012, 0x20122012, 0x2012 };
+s32 PlayerHitSfx[4] = { 0x442, 0x443, 0x444, 0x445 };
 s32 D_8009E2C4[6] = { 0x800060, 0x20000, 0x500020, 0x60000, 0xFFFF, 0 };
 s32 D_8009E2DC[6] = { 0x800090, 0x50000, 0x500000, 6, 0, 0 };
 s32 D_8009E2F4[6] = { 0x900090, 0x50000, 0x500012, 0x80000, 0xFFFF, 0 };

@@ -366,7 +366,7 @@ void InitialiseBASHFirst(void) {
         }
         *p2 = t;
         AiTeamSkillTable = BashSnowAiTeamSkill;
-        D_8009D70C = BashSnowMoveHero;
+        HeroHooks.MoveHero = BashSnowMoveHero;
         break;
     case 3:
         AiBotTweakTable = BashDrainsAiBotTweak;

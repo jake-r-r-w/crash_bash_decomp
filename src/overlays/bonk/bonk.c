@@ -857,7 +857,7 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         h->hero_health = 0x14;
         pad_rumble_small(i, 0xF);
         BonkHidePowerup(i);
-        PlaySfx(D_8009E080[h->hero_name][Random(4)], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        PlaySfx(HeroHitSfx[h->hero_name][Random(4)], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
     next:
         i++;
     } while (i < 4);

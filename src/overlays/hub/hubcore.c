@@ -269,7 +269,7 @@ void HubPreMoveHero(s32 arg0) {
     eng = Heroes[arg0].hero_eng;
     mv = Heroes[arg0].hero_move;
     speed = HeroHooks.RunSpeeds[Heroes[arg0].hero_name * 3 + 1];
-    rate = (u32)(D_8009EEA4 * 0x648) >> 8;
+    rate = (u32)(HubHeroRing.radius * 0x648) >> 8;
     if (rate != 0) {
         step = (s32)(speed << 12) / (s32)rate;
     } else {
@@ -368,7 +368,7 @@ void HubPreMoveHero(s32 arg0) {
             goto done;
         }
         old = HubGateways[GameGateway].unk20;
-        if ((u32)(HubGateways[GameGateway].unkC - D_8009EEA4) < 0x100) {
+        if ((u32)(HubGateways[GameGateway].unkC - HubHeroRing.radius) < 0x100) {
             HubGateways[GameGateway].unk20 = 1;
         } else {
             HubGateways[GameGateway].unk20 = 0;
@@ -405,7 +405,7 @@ void HubPreMoveHero(s32 arg0) {
         }
         p = HubGateways;
         g = (HubGameView *)GameInfo;
-        if ((u32)(p[g->unk63].unkC - D_8009EEA4) >= 0x100) {
+        if ((u32)(p[g->unk63].unkC - HubHeroRing.radius) >= 0x100) {
             goto done;
         }
         switch (((s32(*)(void))HubGatewayKind)()) {
@@ -1248,7 +1248,7 @@ void HubCameraFollow(u8 *arg0, s32 arg1) {
     }
     HubCamFromPath((u8 *)&v, n);
     v.at = *(CamXYZ *)&Heroes[0].hero_eng->unk10;
-    v.rot.vy = -D_8009EEA0;
+    v.rot.vy = -HubHeroRing.angle;
     if (arg1 != 0) {
         cam_ease_to(cam, &v, NULL);
     } else {

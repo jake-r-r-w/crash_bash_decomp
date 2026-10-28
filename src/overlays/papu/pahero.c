@@ -483,7 +483,7 @@ void PlotPACrate(NAS *nas) {
                     tgt = Heroes[p].hero_eng;
                     dx = eng->unk10.x - tgt->unk10.x;
                     dz = tgt->unk10.z - eng->unk10.z;
-                    PlaySfx(D_8009E2B4[p], NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(PlayerHitSfx[p], NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
                 }
                 eng->unk1E = (get_angle(-dx, dz) + 0x100) & 0xE00;
                 obj->status = 9;
@@ -746,7 +746,7 @@ void SetPAHeroHit(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    PlaySfx(D_8009E080[h->hero_name][Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+    PlaySfx(HeroHitSfx[h->hero_name][Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
     SetHeroSeq(arg0, 9);
 }
 

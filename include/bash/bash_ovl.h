@@ -325,7 +325,6 @@ void BashPenguinPush(EXTengine *eng);
 void PlotBashPenguin(NAS *nas);
 
 /* InitialiseBASHFirst: the overlay's init hook. */
-extern void (*D_8009D70C)(s32);
 void Bash_HeroBot(s32 arg0);
 void BashHero_ExtraEffects();
 NAS *BashHeroGrabObject();

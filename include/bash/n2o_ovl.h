@@ -458,7 +458,6 @@ extern u16 N2OBossAiSkill[];
 extern u16 N2OBossAiSkillAlt[];
 extern s16 N2OBossAnimTimer;
 extern s32 N2OBossClock;
-extern s16 D_8009D6E2;
 void InitBossHealthIcons(void);
 void ResetHeroGlobals(void);
 

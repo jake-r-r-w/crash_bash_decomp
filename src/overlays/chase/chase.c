@@ -11,17 +11,9 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_80034000[];
-extern u8 D_80034080[];
-extern u8 D_80034180[];
-extern u8 D_8004410C[];
-extern u8 D_80044110[];
 extern u8 D_8005004C[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
-extern u8 D_8007000C[];
-extern u8 D_800700D4[];
-extern u8 D_80070138[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char ChaseAnimBreathe[] = "BREATHE";

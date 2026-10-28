@@ -228,7 +228,7 @@ void BonkKnockBack(s32 arg0, EXTengine *p, s32 arg2);
 
 extern u16 Clock_flags;
 
-extern u16 D_8009E080[][4];
+extern u16 HeroHitSfx[][4];
 void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
 
 void PlotBonkCrate(NAS *nas);

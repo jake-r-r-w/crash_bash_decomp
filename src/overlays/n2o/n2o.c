@@ -2112,7 +2112,7 @@ void N2OInitBoss(void) {
         sub->unk08 = 0;
         sub2->unk04 = 0;
     }
-    D_8009D6E2 = 0xFF;
+    BossState.health = 0xFF;
     CreateNAS(4, World_floor_level - 0x20, 0, 0x1B05, 0x11);
     CreateNAS(5, World_floor_level - 0x20, 0, 0x1B05, 0x11);
     CameraMode = 8;

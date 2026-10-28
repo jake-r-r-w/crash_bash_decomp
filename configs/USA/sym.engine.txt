@@ -812,3 +812,5 @@ LoadingScriptRot = 0x8009F9D4;
 LoadingScriptPos = 0x8009F9F4;
 SceneScriptRot = 0x800A0BA0;
 SceneScriptPos = 0x800A0BC0;
+HeroHitSfx = 0x8009E080;
+PlayerHitSfx = 0x8009E2B4;

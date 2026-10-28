@@ -27,8 +27,6 @@ typedef struct {
 } D_800AD1EC_entry;
 extern s32 camera_frame_list_size;
 extern D_800AD1EC_entry D_800AD1EC[];
-extern void (*D_8005AA80)(void);
-extern void (*D_8005AA74)(void);
 extern s32 D_8009E29C;
 extern s32 D_8009E298;
 
@@ -65,7 +63,6 @@ typedef struct EngObj {
     void (*update)(struct EngObj *);
 } EngObj;
 extern EngObj **NasUpdateList;
-extern void (*D_8005AA7C)(void);
 extern subengine D_8009A04C[];
 typedef struct IconSet { s32 *c; u8 pad[4]; s32 *a; s32 *b; } IconSet;
 extern IconSet Icon;
@@ -98,9 +95,10 @@ extern u8 D_8009FA14[];
 extern process_control_info LoadingControl;
 extern EXTengine EnginePool[];
 extern HeroInfo Heroes[4];
+/* A hero action (SetHeroAction): what starts it and what runs it each frame. */
 typedef struct HeroActionEntry {
     void (*fn)(void);
-    s32 pad;
+    void (*update)(s32);
 } HeroActionEntry;
 extern HeroActionEntry HeroActionTable[];
 extern hero_seq **HeroSeqTables[]; /* by HeroInfo.hero_name (1-8): each character's sequences, by id */
@@ -547,7 +545,5 @@ typedef struct EngHudGame {
 extern s32 D_8009AEF4;
 void DrawLevelHud(void);
 
-extern u8 D_8005B3A8[];
-extern u8 D_8005B3D8[];
 
 #endif /* BASH_ENGINE_H */

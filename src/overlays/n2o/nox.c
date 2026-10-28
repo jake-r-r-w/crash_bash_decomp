@@ -1471,7 +1471,7 @@ void InitNitroBoss(NAS *nas) {
         nas->Engine->unk2C.y = 0x1830;
         nas->Engine->unk2C.z = 0x1830;
         ResetHeroGlobals();
-        D_8009D6E2 = 0xFF;
+        BossState.health = 0xFF;
         NoxBossPathPos = 0;
         ext->cursor = ScriptCursorFirst(nas, &NoxBossScriptInit);
         nas->Engine->unk5D = 2;

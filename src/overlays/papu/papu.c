@@ -2401,7 +2401,7 @@ void PlotPapuColumn(NAS *nas) {
     if (e != NULL && nas->UserInfo.user1 != 0) {
         cur = e->unk10.y + 0x140;
         e->unk10.y = cur;
-        lim = D_8005B2EC;
+        lim = MapPoints[2].pos.y;
         if (nas->Family.Parent != NULL) {
             other = nas->Family.Parent->Engine;
             if (other != NULL) {

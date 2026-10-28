@@ -1076,7 +1076,7 @@ void PlotCrate(NAS *arg0) {
                 ho = Heroes[fux->who].hero_eng;
                 dx = eng->unk10.x - ho->unk10.x;
                 dz = ho->unk10.z - eng->unk10.z;
-                PlaySfx(D_8009E2B4[fux->who], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(PlayerHitSfx[fux->who], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
             ang = get_angle(-dx, dz);
             eng->unk1E = (ang + 0x100) & 0xE00;
@@ -1957,6 +1957,6 @@ void SetBashHeroHit(s32 arg0) {
     if (h3->hero_eng->sfx != NULL) {
         StopSfx(h3->hero_eng->sfx);
     }
-    PlaySfx(D_8009E080[h3->hero_name][Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+    PlaySfx(HeroHitSfx[h3->hero_name][Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
     SetHeroSeq(arg0, 9);
 }

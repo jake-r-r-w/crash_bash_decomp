@@ -96,16 +96,16 @@ void BuildCameraFrameList(void) {
     {
         EngineGameView *g1 = (EngineGameView *)GameInfo;
         if ((g1->unk4 & 0x200) && !(g1->unk30 & 0x801)) {
-            camera_add_frame_list((s32)D_8005B3A8, 0x80, 0x80, 0, 0, 0x80);
-            camera_add_frame_list((s32)(D_8005B3A8 + 0x18), 0x80, 0x80, 0, 0, 0x80);
+            camera_add_frame_list((s32)&MapPoints[10], 0x80, 0x80, 0, 0, 0x80);
+            camera_add_frame_list((s32)&MapPoints[11], 0x80, 0x80, 0, 0, 0x80);
         }
     }
     {
         EngineGameView *g2 = (EngineGameView *)GameInfo;
         if (g2->flags & 0x800) {
             if (!(g2->unk30 & 0x800)) {
-                camera_add_frame_list((s32)D_8005B3D8, 0x80, 0x80, 0, 0, 0x80);
-                camera_add_frame_list((s32)(D_8005B3D8 + 0x18), 0x80, 0x80, 0, 0, 0x80);
+                camera_add_frame_list((s32)&MapPoints[12], 0x80, 0x80, 0, 0, 0x80);
+                camera_add_frame_list((s32)&MapPoints[13], 0x80, 0x80, 0, 0, 0x80);
             }
         }
     }
@@ -121,8 +121,8 @@ void UpdateAllNas(void) {
     *NasUpdateList = NULL;
     *(s32 *)HeroNasList = 0;
     i = 0;
-    if (D_8005AA7C != NULL) {
-        D_8005AA7C();
+    if (LevelSpecs.LevelRoutine != NULL) {
+        LevelSpecs.LevelRoutine();
     }
     do {
         if (Heroes[i].hero->Class & 0x1000) {
@@ -206,8 +206,8 @@ found1:
     r = 0;
 found2:
     D_8009E29C = r;
-    if (D_8005AA74 != NULL) {
-        D_8005AA74();
+    if (LevelSpecs.LevelInit != NULL) {
+        LevelSpecs.LevelInit();
     }
 }
 
@@ -765,8 +765,8 @@ void InitialiseEngine(void) {
     r = 0;
 found:
     D_8009E29C = r;
-    if (D_8005AA74 != NULL) {
-        D_8005AA74();
+    if (LevelSpecs.LevelInit != NULL) {
+        LevelSpecs.LevelInit();
     }
 }
 
@@ -832,8 +832,8 @@ void LevelUnused(void) {
 
 void QuitLevel(void) {
     GlobalNAStatus = 0;
-    if (D_8005AA80 != NULL) {
-        D_8005AA80();
+    if (LevelSpecs.LevelExit != NULL) {
+        LevelSpecs.LevelExit();
     }
     ReleaseHeroAnims();
     KillEveryNas();

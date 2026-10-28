@@ -311,7 +311,6 @@ void PAPUSetUp(void);
 
 s32 PapuGridKey(T_B8080 *p);
 
-extern s32 D_8005B2EC;
 
 void PapuSetColumns(u16 arg0);
 

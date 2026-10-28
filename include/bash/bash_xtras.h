@@ -70,7 +70,7 @@ void BashHeroesTouched(s32 arg0, s32 arg1);
 
 void CrateFindFreeSpot(EXTengine *eng);
 
-extern u16 D_8009E080[][4];
+extern u16 HeroHitSfx[][4];
 
 void InitAnvilPickup(NAS *arg0);
 
@@ -202,7 +202,7 @@ static inline void BC038Release(T_BC038Fux *fux) {
 void CrateBreak(EXTengine *eng, T_BC038Fux *fux);
 
 extern u16 BashTickingCrateModels[];
-extern s32 D_8009E2B4[];
+extern s32 PlayerHitSfx[];
 void PlotCrate(NAS *arg0);
 
 /* data defined in xtras.c */

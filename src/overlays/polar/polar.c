@@ -7767,7 +7767,7 @@ void InitPolarBoss(NAS *nas) {
         nas->Engine->sub->unk68 = 0x300;
         nas->Engine->sub->flags |= 0x02000000;
         nas->Engine->unk5D = 0;
-        D_8009D6E2 = 0x14;
+        BossState.health = 0x14;
         e = FindExtension(Heroes[3].hero, 0x20000000);
         if (e != NULL) {
             e->val = 0xFF;
