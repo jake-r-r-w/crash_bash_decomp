@@ -7,7 +7,7 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 /* engine.h declares it, but polar.c does not include that */
-extern u8 VramNodePool[];
+extern s32 VramNodePool[];
 extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */

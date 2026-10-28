@@ -52,7 +52,7 @@ void shell_init(void) {
     pads_update();
     load_file_direct(&DatIndex[2 * 991], HeapStart);
     EngineModule = (ModuleEntry *)HeapStart;
-    RunModules(ShellModules);
+    RunModules(&ShellModules);
 }
 
 const char LevNameJungleBash[] = "JUNGLE BASH";
@@ -3618,7 +3618,7 @@ u16 LevelRequirements[234] = {
     0, 0, 0, 0, 0, 0, 0x1FF, 0x201, 0x102, 0x102, 2, 0, 0, 0,
 };
 s32 DcacheReady = 0;
-u8 ShellModules[20] = { 0x10, 4, 1, 0x80, 0x94, 3, 1, 0x80, 0x78, 2, 1, 0x80, 0, 0, 0, 0, 0, 0, 0, 0 };
+ModuleEntry ShellModules = { shell_start_engine, shell_update, shell_render_dcache, NULL, NULL };
 s16 core_process = 0;
 s32 CompletionBcd = 0;
 s32 GraphicsMode = 0;
@@ -3942,13 +3942,13 @@ s32 DirPadBits[24] = {
     0xC00, 0xE00, 0, 0, 0xA00, 0, 0, 0,
 };
 s32 WideScreen = 0;
-u8 ComboSeqs[144] = {
-    0x24, 0x3C, 1, 0x80, 0x3C, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x20, 0, 0, 0, 0x80, 0, 0, 0,
-    0x80, 0, 0, 0, 0x20, 0, 0, 0, 0x80, 0, 0, 0, 0x80, 0, 0, 0, 0x20, 0, 0, 0, 0x80, 0, 0, 0,
-    0x80, 0, 0, 0, 0x20, 0, 0, 0, 0x80, 0, 0, 0, 0x80, 0, 0, 0, 0x80, 0, 0, 0, 0x20, 0, 0, 0,
-    0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+s32 ComboSeqs[36] = {
+    (s32)&toggle_widescreen, 0x3C, 0, 0, 0x20, 0x80,
+    0x80, 0x20, 0x80, 0x80, 0x20, 0x80,
+    0x80, 0x20, 0x80, 0x80, 0x80, 0x20,
+    0x80, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0,
 };
 PadState Pads[8] = {0};
 s32 PadCount = 0;

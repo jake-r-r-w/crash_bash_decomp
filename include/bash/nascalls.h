@@ -59,7 +59,7 @@ void texture_unused_e(void);
 void clut_release(u8 *arg0);
 void texture_release_vram(u8 *arg0);
 void textureset_clear(obj_textureset *ts);
-void RunModules(u8 *a);
+void RunModules(ModuleEntry *p);
 void FlipScreen(s32 arg0);
 s32 cd_read(s32 *file, s32 b, u8 *c, s32 d);
 extern FreeHdr *vram_take(u8 *);

@@ -8,7 +8,7 @@
 #include "bash/titles.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 VramNodePool[];
+extern s32 VramNodePool[];
 extern u8 VramAreas[];
 
 void InitialiseHUB(void) {

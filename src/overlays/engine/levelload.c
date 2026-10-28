@@ -1255,7 +1255,7 @@ s32 PlaceTextSub(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 /* what the data points at that this file's headers don't declare */
-extern u8 VramNodePool[];
+extern s32 VramNodePool[];
 extern u8 VramAreas[];
 extern u8 D_80063ED8[];
 extern u8 file_group_BALLS[];

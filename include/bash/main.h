@@ -840,7 +840,7 @@ extern s32 LastFlipVSync;
 void mal_update(_mal_area *heap);
 extern u8 HeapStart[];
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);
-extern u8 ShellModules[];
+extern ModuleEntry ShellModules;
 s32 load_file_direct(s32 *file, u8 *buf);
 void init_file(void);
 extern s32 DcacheReady;
@@ -1126,7 +1126,7 @@ typedef struct ComboSeq {
 
 extern MATRIX MapSceneMatrix;
 extern SVECTOR MapSceneRot;
-extern u8 ComboSeqs[]; /* ComboSeq table, 0x90 bytes per entry */
+extern s32 ComboSeqs[]; /* ComboSeq table, 0x90 bytes per entry */
 extern CdlLOC CdSeekLoc;
 extern RECT *ScreenRect;
 extern s32 ScreenSetFrame;
