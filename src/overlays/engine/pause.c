@@ -1515,9 +1515,9 @@ void AnimateWinCounter(void) {
             counter_sub.unk04 = 0x140;
             counter_sub.flags &= 0xFFFF7FFF;
             if (WinCounterState == 4) {
-                u8 *g = GameInfo;
+                GameState *g = GAME;
                 WinCounterAnim = 0;
-                *(u16 *)(g + 0x30) &= 0xEFFF;
+                g->exitFlags &= 0xEFFF;
             }
         }
         counter_sub.unk52 = 1;

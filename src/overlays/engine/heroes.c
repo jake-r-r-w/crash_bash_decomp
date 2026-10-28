@@ -1585,10 +1585,10 @@ s32 AdjustAiSkill(s32 arg0) {
             v = arg0 * 3;
             arg0 = v / 4;
         }
-        if (GameInfo[*(s16 *)(GameInfo + 0x34) + 0xAB] == 3) {
+        if (GameInfo[GAME->mode + 0xAB] == 3) {
             arg0 *= 2;
         }
-        idx = *(s16 *)(GameInfo + 0x42);
+        idx = GAME->cupLeader;
         if (idx != -1) {
             AiPlayerSkill[idx].quality = arg0;
         }
@@ -2764,7 +2764,7 @@ void StartHeroVictory(s32 arg0) {
     music_flag_restart();
     g = (GameState *)GameInfo;
     if (g->mode == 0x20) {
-        if (HeroSide[GameInfo[0x60]] == 1) {
+        if (HeroSide[GAME->winner[0]] == 1) {
             WinSeqTimer = 0xF;
             WinSeqStep = 0xF;
             WinSeqDelay = 0x1E;
@@ -2932,7 +2932,7 @@ s32 UpdateHeroVictory(s32 arg0) {
         break;
     case 9:
         for (i = 0; i < 4; i++) {
-            if (Heroes[i].hero_name == GameInfo[0x60]) {
+            if (Heroes[i].hero_name == GAME->winner[0]) {
                 if (i & 2) {
                     PlaySfx(0x1AE, NULL, NULL, 0x1000, 0x1E00, 0);
                     WinSeqTimer = 0xE;
@@ -2948,7 +2948,7 @@ s32 UpdateHeroVictory(s32 arg0) {
         WinSeqTimer = 0;
         WinSeqStep = 0;
         for (i = 0; i < 4; i++) {
-            if (Heroes[i].hero_name == GameInfo[0x60]) {
+            if (Heroes[i].hero_name == GAME->winner[0]) {
                 if (i & 2) {
                     PlaySfx(0x1A5, NULL, NULL, 0x1000, 0x1E00, 0);
                     WinSeqTimer = 0x16;
@@ -4537,7 +4537,7 @@ plot:
         p = obj->player;
         if (p != -1 && p < 5 && !(Heroes[p].hero_status & 0xFA00)) {
             if (GameInfo[p + 0x5C] != 0) {
-                n = 3 - GameInfo[0x9B];
+                n = 3 - GAME->adventure.unk9B[0];
             } else {
                 n = 0;
             }

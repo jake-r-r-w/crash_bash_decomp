@@ -649,15 +649,15 @@ s32 CupCurrentModeType(void) {
 }
 
 s32 CupNextArena(void) {
-    if (GameInfo[0x29] < CupTable[GameInfo[0x28]].roundCount - 1) {
-        GameInfo[0x29] = GameInfo[0x29] + 1;
-        return CupTable[GameInfo[0x28]].rounds[GameInfo[0x29]].mode;
+    if (GAME->cupRound < CupTable[GameInfo[0x28]].roundCount - 1) {
+        GAME->cupRound = GAME->cupRound + 1;
+        return CupTable[GameInfo[0x28]].rounds[GAME->cupRound].mode;
     }
     return 0x2B;
 }
 
 s32 CupCurrentArena(void) {
-    return CupTable[GameInfo[0x28]].rounds[GameInfo[0x29]].mode;
+    return CupTable[GameInfo[0x28]].rounds[GAME->cupRound].mode;
 }
 
 void InitCupMenu(void) {
@@ -1096,7 +1096,7 @@ void UpdateSaveMenu(void) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             GotoProcess(&RetryProcess, 0x200);
             SaveMenuState = 4;
-            *(u16 *)(GameInfo + 0x30) |= 0x200;
+            GAME->exitFlags |= 0x200;
         }
         break;
     case 2:
@@ -1404,16 +1404,16 @@ void RefreshCardSlots(void) {
 }
 
 void RestoreHeroChoice(u8 *src) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    g[0x4C] = src[0];
-    g[0x4D] = src[1];
-    g[0x4E] = src[2];
-    g[0x4F] = src[3];
-    g[0x5C] = src[4];
-    g[0x5D] = src[5];
-    g[0x5E] = src[6];
-    g[0x5F] = src[7];
+    g->heroChoice[0] = src[0];
+    g->heroChoice[1] = src[1];
+    g->heroChoice[2] = src[2];
+    g->heroChoice[3] = src[3];
+    g->heroOut[0] = src[4];
+    g->heroOut[1] = src[5];
+    g->heroOut[2] = src[6];
+    g->heroOut[3] = src[7];
     *GAME = *(GameState *)(src + 8);
     {
         GameOptionSet *d = &GameOptions;
@@ -1839,7 +1839,7 @@ void UpdateGame(void) {
 
 void SetReturnGateway(void) {
     GameInfo[0x63] = 0xA;
-    *(s32 *)(GameInfo + 0x64) = 1;
+    GAME->returnToHub = 1;
 }
 
 void UpdateSecretLevel(void) {

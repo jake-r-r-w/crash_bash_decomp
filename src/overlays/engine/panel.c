@@ -1354,17 +1354,17 @@ void InitScore1Icons(void) {
 
 void InitSharedScoreIcons(void) {
     s32 i;
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    if (*(s32 *)(g + 0x6C) != 0) {
-        i = *(s16 *)(g + 0x48);
+    if (g->teams != 0) {
+        i = g->teamLeader[0];
         Score[i].Ctrl = 1;
         Score[i].Xoffs += 0x46;
         i = Heroes[i].hero_teammate;
         if (i != -1) {
             Score[i].Ctrl = 0;
         }
-        i = *(s16 *)(g + 0x4A);
+        i = g->teamLeader[1];
         Score[i].Ctrl = 1;
         Score[i].Xoffs += 0x46;
         i = Heroes[i].hero_teammate;
@@ -1515,7 +1515,7 @@ void CheckHeroesAllOut(void) {
     EXTengine *e;
     EXTengine *f;
 
-    if (!(g->exitFlags & 0x8801) && *(s32 *)(GameInfo + 0x68) == 0 && HeroesAllOut != 0) {
+    if (!(g->exitFlags & 0x8801) && GAME->demo == 0 && HeroesAllOut != 0) {
         if (HeroesOutTimer != 0) {
             HeroesOutTimer -= 1;
             return;

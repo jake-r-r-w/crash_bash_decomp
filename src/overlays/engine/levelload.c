@@ -12,7 +12,7 @@ s32 LoadModeText(void) {
     s32 **rp;
 
     g = (GameState *)GameInfo;
-    rp =&tab[*(s32 *)(GameInfo + 0x2C)];
+    rp =&tab[GAME->language];
     p = (u8 *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
     if (p != NULL) {
         load_file_direct(p, ModeTextLoadAddr);
@@ -145,8 +145,8 @@ void InitLevelLoad(void) {
     }
     AllocOtBuffers((s32 *)cfg);
     ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
-    GameInfo[0x60] = 0;
-    GameInfo[0x61] = 0;
+    GAME->winner[0] = 0;
+    GAME->winner[1] = 0;
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
