@@ -499,7 +499,11 @@ Newest first, a few lines each. Details are in the commits.
   included by nas.h; the dbase types moved there): 136 slot labels are `&HeroModelBank[DB_x]`.
   Gotchas: a label inside a record can be a pointer *field* read (`D_80054944` was
   `textures.tex`) or a sequence word that only looks like an address (Papu's `0x8005408C`);
-  a macro that did byte arithmetic (`TANK_MODEL`) has to stay a `u8 *`.
+  a macro that did byte arithmetic (`TANK_MODEL`) has to stay a `u8 *`. Then the exe's last
+  data asm: bios_1.o's .data as C, the $gp word and the .bss in their files, the file padded
+  to 0x69800; data is 100% C. Gotcha: cc1 2.8.1 emits a file's variables in the order of
+  their *first declaration*, so a header that declares two globals in the other order swaps
+  them (main.h had `D_8006E9F8` before `D_8006E9F4`).
 
 - **2026-10-27 (Phase 5: the engine's and the exe's data as C):** the engine's
   data spliced, cut by file (`engine.c` .. `camera.c`, the world records with

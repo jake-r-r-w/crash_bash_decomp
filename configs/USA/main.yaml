@@ -416,7 +416,7 @@ segments:
       - [0x5E1CC, lib, libc2, puts, .data]
       - [0x5E1DC, lib, libgte, msc02, .data]
       - [0x5E37C, lib, libsnd, ssinit, .data]
-      - [0x5E3AC, data, 5E3AC]
+      - [0x5E3AC, .data, main/psyq/bios_1]   # libcd bios_1.o's .data, the game's copy
       - [0x5E6BC, lib, libspu, spu, .data]
       - [0x5E71C, lib, libpad, pdtapres, .data]
       - [0x5E72C, lib, libspu, s_ini, .data]
@@ -433,5 +433,5 @@ segments:
       - [0x5F0AC, lib, libspu, s_m, .data]
       - [0x5F0BC, lib, libspu, s_n2p, .data]
       - [0x5F1DC, lib, libapi, pad, .data]
-      - [0x5F1EC, data, 5F1EC]
+      - [0x5F1EC, .sdata, main/main]         # the word $gp points at; the .bss follows
   - [0x69800]

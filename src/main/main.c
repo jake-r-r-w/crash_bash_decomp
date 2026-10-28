@@ -4124,3 +4124,13 @@ s16 AtanTable[2050] = {
     0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x200, 0x200, 0x200, 0x200, 0,
 };
 u8 D_800527C4[656] = {0};
+
+/* After every object's .data (main.yaml's .sdata entry): the startup code (2MBYTE.OBJ) points
+ * $gp here and clears what follows up to HeapStart, the .bss. */
+void (*ExportsInit)(void) __attribute__((section(".sdata"))) = export_exe_functions;
+
+/* the .bss, in link order: written into the file as zeros, as the original link did */
+s32 StartupRa __attribute__((section(".bss")));   /* where the startup code saves $ra */
+s32 D_8006E9F4 __attribute__((section(".bss")));
+s32 D_8006E9F8 __attribute__((section(".bss")));
+u8 *D_8006E9FC __attribute__((section(".bss")));

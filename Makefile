@@ -146,8 +146,11 @@ $(ELF): $(FULL_LD) $(O_FILES) $(PSYQ_OBJS) $(PSYQ_SYMS)
 	  -T $(FULL_LD) -T linkers/undefined_syms_auto.txt -T linkers/undefined_funcs_auto.txt \
 	  -T $(CFG)/undefined_syms_manual.txt $(PSYQ_SYMS:%=-T %) -o $@
 
+# The exe's file runs on past its last object, to 0x69800 (the header's t_size, a whole number of
+# 0x800 sectors): the .bss, which the original link wrote out as zeros, and the padding after it.
+EXE_FILE_SIZE := 0x69800
 $(TARGET): $(ELF)
-	$(OBJCOPY) -O binary $< $@
+	$(OBJCOPY) -O binary --pad-to $(EXE_FILE_SIZE) $< $@
 
 # Overlays call into the exe (and each other) at fixed addresses: splat lists those as undefined
 # symbols with absolute values, so each overlay links on its own. splat also lists some of the

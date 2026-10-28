@@ -28,7 +28,7 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 | `0x8004C56C..0x8004CEFC` | `0x3CD6C` | `.rodata` | game (strings, jump tables) |
 | `0x8004CEFC..0x8004DCBC` | `0x3D6FC` | `.rodata` | PsyQ, per object (`.rdata` of the linked objects) |
 | `0x8004DCBC..0x800678E4` | `0x3E4BC` | `.data` | game data, C in each of the eleven files (main.c .. modchip_msg.c) |
-| `0x800678E4..0x8006E9EC` | `0x580E4` | `.data` | PsyQ: 39 Sony objects' `.data` linked from the objects; `bios_1.o`'s from the exe |
+| `0x800678E4..0x8006E9EC` | `0x580E4` | `.data` | PsyQ: 39 Sony objects' `.data` linked from the objects; `bios_1.o`'s as C (`src/main/psyq/bios_1.c`) |
 | `0x8006E9EC..0x80079000` | `0x5F1EC` | `.bss` | written into the file as zeros: The exe's .bss |
 | `0x80079000..` | | `.bss` | not yet measured |
 
@@ -37,18 +37,19 @@ exe's `.data` (zeros in the file).
 
 ### The exe's .bss
 
-The last 0xA614 bytes of the file (`0x8006E9EC..0x80079000`, after every
-object's `.data`) are the `.bss`, written into the file as zeros, plus one
-initialised pair first: `D_8006E9EC` is `{func_8001492C, 0}`, a null-ended list
-of one function (the shape of a static-constructor list; `func_8001492C` fills
-the engine's table of exe functions at `D_800527C4`). Then the game's zeroed
-globals in link order (`main.c`'s `D_8006E9F4`.., `nascalls.c`'s `D_8006EA00`..,
-`modchip.c`'s `ModchipVSync`.., `modchip_msg.c`'s `MsgFontRom`), then Sony's
-`.bss` (pinned `NOLOAD` in `configs/USA/psyq/sections.ld`) from `0x8006EA28`
-(`libgpu` `sys.o`), and `HeapStart` (`0x80078C90`), the heap the engine loads
-into. It is still asm (`asm/data/5F1EC.data.s`): as C its globals would be
-uninitialised definitions, and the link would have to write the `.bss` into the
-file as the original did.
+After every object's `.data` comes one word, `ExportsInit` (`0x8006E9EC`, a pointer to
+`export_exe_functions`), where the startup code (2MBYTE.OBJ) points `$gp`; it then clears
+`0x8006E9F0..0x80078C90`, the `.bss`, and saves `$ra` in its first word (`StartupRa`). The
+`.bss` is the game's globals in link order (`main.c`'s `D_8006E9F4`.., `nascalls.c`'s
+`D_8006EA00`.., `modchip.c`'s `ModchipVSync`.., `modchip_msg.c`'s `MsgFontRom`), then
+Sony's from `0x8006EA28` (`libgpu` `sys.o`, pinned `NOLOAD` in `configs/USA/psyq/sections.ld`),
+then `HeapStart` (`0x80078C90`), where the heap starts and the engine loads. The original
+link wrote the `.bss` into the file as zeros, and the file runs on to 0x69800 (the header's
+size). In C (2026-10-28): `ExportsInit` is `main.c`'s `.sdata` (its own entry in
+main.yaml, after the libraries), the game's `.bss` globals are defined in their files with
+`__attribute__((section(".bss")))` (cc1 2.8.1 makes a plain `s32 x;` COMMON, and GNU ld
+places COMMON symbols in its own order), and `objcopy --pad-to 0x69800` writes the zeros
+after the last object (the Makefile's `EXE_FILE_SIZE`).
 
 How the boundaries were found:
 
@@ -1404,7 +1405,9 @@ address the exe uses. `configs/USA/psyq/`:
 - `data_keep.txt` - objects whose `.data` still comes from the exe because the
   game's copy differs from 4.7: `bios_1.o` (libcd) has one static initialised
   to 0 at `0x8006DE5C` where 4.7 has 1, so the game's libcd is a slightly
-  different build. Every other object's `.data` is linked from the object
+  different build; its bytes are C in `src/main/psyq/bios_1.c` (2026-10-28), pointing into
+  the object's `.rdata` and `.bss` by the addresses `undefined_syms_manual.txt` gives
+  (`libcd_bios_1_rdata`, `libcd_bios_1_bss`). Every other object's `.data` is linked from the object
   (`decomp.py link-psyq --data` cut the data blob around them).
 - Seven objects have only `.data`, so the signature scan, which finds objects
   by their code, never saw them; they are in `main.yaml` by hand: `libgte`

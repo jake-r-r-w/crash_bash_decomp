@@ -793,6 +793,7 @@ extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
 /* A 4.12 fixed-point quaternion (quat_slerp slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
 extern s32 D_80064478[];
+extern s32 D_8006E9F4;
 extern s32 D_8006E9F8;
 extern u8 D_800527C4[];
 extern u8 D_8004DDBC[];
@@ -825,7 +826,6 @@ extern u8 D_8004E0B8[];
 s32 load_file_direct(u8 *a, u8 *b);
 void init_file(void);
 extern s32 D_8004E0B4;
-extern s32 D_8006E9F4;
 extern void *LoadNodeFree;
 extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in D_80051240 */
 extern u8 LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
@@ -1057,7 +1057,7 @@ typedef struct {
 } EngineRec32;
 extern EngineRec32 *D_8005A5E8;
 extern s32 D_800637B8;
-extern u8 D_8006EA08;
+extern u8 D_8006EA08[8];
 extern CdlLOC D_8006EA10;
 void func_80034AEC(void);
 extern NASTrigger *HeadOfTriggers;

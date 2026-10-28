@@ -508,3 +508,8 @@ u8 CdParams[8] = {0};
 u8 CdResult[8] = {0};
 s32 ModchipState = 1;
 s32 D_80067898 = 0;
+
+/* the .bss */
+s32 ModchipVSync __attribute__((section(".bss")));
+s32 D_8006EA1C __attribute__((section(".bss")));
+volatile u8 CdTimeBcd __attribute__((section(".bss")));

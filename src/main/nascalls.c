@@ -2630,7 +2630,7 @@ s32 cd_read(u8 *a, s32 b, u8 *c, s32 d) {
     if (r > 0) {
         CdReadStatus = CdReadSync(1, 0);
         if (CdReadStatus == 0) {
-            CdControl(1, 0, &D_8006EA08);
+            CdControl(1, 0, D_8006EA08);
             func_80034AEC();
         }
         s = CdReadStatus;
@@ -2647,7 +2647,7 @@ s32 cd_read(u8 *a, s32 b, u8 *c, s32 d) {
     CdReadStatus = 1;
     CdReadStatus = CdReadSync(1, 0);
     if (CdReadStatus == 0) {
-        CdControl(1, 0, &D_8006EA08);
+        CdControl(1, 0, D_8006EA08);
         func_80034AEC();
     }
     return CdReadStatus;
@@ -2671,7 +2671,7 @@ s32 cd_read_poll(void) {
     if (r > 0) {
         CdReadStatus = CdReadSync(1, 0);
         if (CdReadStatus == 0) {
-            CdControl(1, 0, &D_8006EA08);
+            CdControl(1, 0, D_8006EA08);
             func_80034AEC();
         }
         r = CdReadStatus;
@@ -4371,3 +4371,10 @@ s32 D_800643F0 = 0;
 u8 *D_800643F4 = 0;
 void (*D_800643F8)() = 0x4D2;
 s32 D_800643FC[6] = {0};
+
+/* the .bss (main.c's comes first) */
+s32 D_8006EA00 __attribute__((section(".bss")));
+u32 D_8006EA04 __attribute__((section(".bss")));
+u8 D_8006EA08[8] __attribute__((section(".bss")));   /* CdControl's result */
+CdlLOC D_8006EA10 __attribute__((section(".bss")));
+CdlLOC D_8006EA14 __attribute__((section(".bss")));
