@@ -519,16 +519,8 @@ typedef struct EngMenuGame {
     /* 0x6C */ u8 pad6C[0x74 - 0x6C];
     /* 0x74 */ u8 unk74;
 } EngMenuGame;
-/* 0x18-byte entries at D_8005A3EC (CheckControllers). */
-typedef struct EngMenuItem {
-    /* 0x00 */ s16 unk0;
-    /* 0x02 */ s16 unk2;
-    /* 0x04 */ s16 unk4;
-    /* 0x06 */ s16 unk6;
-    /* 0x08 */ u8 pad8[0x18 - 0x08];
-} EngMenuItem;
-extern EngMenuItem D_8005A3EC[];
-extern s16 D_8005A3A4[];
+extern HudEntry PauseUnpluggedMenu[];
+extern HudEntry PausePadMessage[];
 
 void CheckControllers(void);
 

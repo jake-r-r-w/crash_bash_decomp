@@ -279,7 +279,7 @@ void PickCpuHeroes(void) {
 
 void CheckControllers(void) {
     EngMenuGame *g = (EngMenuGame *)GameInfo;
-    EngMenuItem *item;
+    HudEntry *item;
     u16 *levels;
     s32 i;
     s16 y;
@@ -291,12 +291,12 @@ void CheckControllers(void) {
     if (levels[g->mode * 3] == 0x101) {
         return;
     }
-    item = D_8005A3EC;
+    item = PauseUnpluggedMenu;
     g->flags &= ~0x4000;
-    item[1].unk0 = -1;
-    item[2].unk0 = -1;
-    item[3].unk0 = -1;
-    item[4].unk0 = -1;
+    item[1].type = -1;
+    item[2].type = -1;
+    item[3].type = -1;
+    item[4].type = -1;
     y = 0x72;
     if (PadCount < g->count) {
         i = 0;
@@ -311,8 +311,8 @@ void CheckControllers(void) {
                     g1->flags |= 0x4001;
                 }
                 PausePad = 0;
-                item->unk0 = 5;
-                item->unk6 = i + 0x1C;
+                item->type = 5;
+                item->idx = i + 0x1C;
                 item++;
                 y += 0x12;
                 i++;
@@ -332,16 +332,16 @@ void CheckControllers(void) {
                     } else {
                         g2->flags |= 0x4001;
                     }
-                    item->unk0 = 5;
+                    item->type = 5;
                     PausePad = 0;
                     if (g2->count < 3) {
                         if (PadCount < 3) {
-                            item->unk6 = i + 0x1A;
+                            item->idx = i + 0x1A;
                         } else {
-                            item->unk6 = i + 0x1C;
+                            item->idx = i + 0x1C;
                         }
                     } else {
-                        item->unk6 = i + 0x1C;
+                        item->idx = i + 0x1C;
                     }
                     item++;
                     y += 0x12;
@@ -350,10 +350,10 @@ void CheckControllers(void) {
             } while (i < g2->count);
         }
     }
-    item->unk6 = 0x20;
-    item->unk0 = 5;
-    D_8005A3A4[2] = y;
-    D_8005A3A4[3] = y;
+    item->idx = 0x20;
+    item->type = 5;
+    PausePadMessage[0].y = y;
+    PausePadMessage[0].idx = y;
 }
 
 void UpdateLevel(void) {

@@ -2086,4 +2086,16 @@ extern BossRecord BossState;
 
 #include "bash/aiskill.h"
 
+/* DrawHudEntries: one 0x18-byte HUD script entry; the list ends at type -1. */
+typedef struct HudEntry {
+    /* 0x00 */ s16 type;
+    /* 0x02 */ s16 x;
+    /* 0x04 */ s16 y;
+    /* 0x06 */ s16 idx;
+    /* 0x08 */ s32 a;
+    /* 0x0C */ s32 b;
+    /* 0x10 */ s32 c;
+    /* 0x14 */ s32 d;
+} HudEntry;
+
 #endif /* BASH_MAIN_H */

@@ -826,50 +826,50 @@ void DrawPauseMenu(void) {
     }
     if (MSGV->flags & 0x7000) {
         if (MSGV->flags & 0x2000) {
-            DrawHudEntries(D_8005A4DC, 0x70);
+            DrawHudEntries(PauseBlankB, 0x70);
             return;
         }
         if (MSGV->flags & 0x1000) {
-            DrawHudEntries(D_8005A494, 0x70);
+            DrawHudEntries(PauseBlankA, 0x70);
             return;
         }
         if (MSGV->flags & 0x4000) {
-            DrawHudEntries(D_8005A3A4, 0x70);
+            DrawHudEntries(PausePadMessage, 0x70);
             return;
         }
     }
     switch (MSGV->flags & 0x023F8FEC) {
     case 0:
         if (MSGV->mode == 0x20) {
-            DrawHudEntries(D_8005981C, PauseMenuY);
+            DrawHudEntries(PauseMenuQuit, PauseMenuY);
             D_8009BD30 = 0;
             return;
         }
         if (MSGV->unk32 & 4) {
-            DrawHudEntries(D_8005975C, PauseMenuY);
+            DrawHudEntries(PauseMenuExitArena, PauseMenuY);
         } else {
-            DrawHudEntries(D_800598DC, PauseMenuY);
+            DrawHudEntries(PauseMenuChangeArena, PauseMenuY);
         }
         D_8009BD30 = 1;
         break;
     case 8:
-        DrawHudEntries(D_800599B4, PauseMenuY);
+        DrawHudEntries(PauseMenuShort, PauseMenuY);
         D_8009BD30 = 1;
         break;
     case 0x8000:
-        DrawHudEntries(D_80059C24, PauseMenuY);
+        DrawHudEntries(PauseConfirmExit, PauseMenuY);
         break;
     case 4:
     case 0xC:
-        DrawHudEntries(D_80059ABC, PauseMenuY);
+        DrawHudEntries(PauseConfirmMenus, PauseMenuY);
         break;
     case 0x40:
     case 0x240:
-        DrawHudEntries(D_80059A5C, PauseMenuY);
+        DrawHudEntries(PauseRules1, PauseMenuY);
         SetPauseY(PauseMenuY);
         break;
     case 0x80:
-        DrawHudEntries(D_80059A8C, PauseMenuY);
+        DrawHudEntries(PauseRules0, PauseMenuY);
         SetPauseY(PauseMenuY);
         break;
     case 0x100:
@@ -882,7 +882,7 @@ void DrawPauseMenu(void) {
             PauseToggles[0] = GameOptions.stereo != 0;
             FormatPercent(LangMessages[MSGV->level]->unkBC, GameOptions.music);
             FormatPercent(LangMessages[MSGV->level]->unkC0, GameOptions.sfx);
-            DrawHudEntries(D_80059D2C, PauseMenuY);
+            DrawHudEntries(PauseSoundMenu, PauseMenuY);
             break;
         case 2:
             for (i = 0; i < MSGV->numPlayers; i++) {
@@ -895,25 +895,25 @@ void DrawPauseMenu(void) {
             for (; i < 4; i++) {
                 PauseToggles[i] = 9;
             }
-            DrawHudEntries(D_80059E4C, PauseMenuY);
+            DrawHudEntries(PauseControllerMenu, PauseMenuY);
             break;
         default:
-            DrawHudEntries(D_80059C9C, PauseMenuY);
+            DrawHudEntries(PauseOptionsMenu, PauseMenuY);
             break;
         }
         break;
     case 0x200:
-        DrawHudEntries(D_8005A14C, PauseMenuY);
+        DrawHudEntries(PauseEndMenu, PauseMenuY);
         break;
     case 0x20:
-        DrawHudEntries(D_8005A1C4, PauseMenuY);
+        DrawHudEntries(PauseEndWarpMenu, PauseMenuY);
         break;
     case 0x400:
-        DrawHudEntries(D_8005A20C, PauseMenuY);
+        DrawHudEntries(PauseEndAdventureMenu, PauseMenuY);
         break;
     case 0x2000000:
         if (MSGV->unkC & 0x10) {
-            DrawHudEntries(D_8005A524, PauseMenuY);
+            DrawHudEntries(PauseDemoLabel, PauseMenuY);
         }
         break;
     }

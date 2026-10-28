@@ -300,23 +300,23 @@ typedef struct FxOwner {
     /* 0x3B8 */ u8 *fx;
 } FxOwner;
 extern EngineLevelInfo *LangMessages[];
-extern s16 D_8005975C[];
-extern s16 D_8005981C[];
-extern s16 D_800598DC[];
-extern s16 D_800599B4[];
-extern s16 D_80059A5C[];
-extern s16 D_80059A8C[];
-extern s16 D_80059ABC[];
-extern s16 D_80059C24[];
-extern s16 D_80059C9C[];
-extern s16 D_80059D2C[];
-extern s16 D_80059E4C[];
-extern s16 D_8005A14C[];
-extern s16 D_8005A1C4[];
-extern s16 D_8005A20C[];
-extern s16 D_8005A494[];
-extern s16 D_8005A4DC[];
-extern s16 D_8005A524[];
+extern HudEntry PauseMenuExitArena[];
+extern HudEntry PauseMenuQuit[];
+extern HudEntry PauseMenuChangeArena[];
+extern HudEntry PauseMenuShort[];
+extern HudEntry PauseRules1[];
+extern HudEntry PauseRules0[];
+extern HudEntry PauseConfirmMenus[];
+extern HudEntry PauseConfirmExit[];
+extern HudEntry PauseOptionsMenu[];
+extern HudEntry PauseSoundMenu[];
+extern HudEntry PauseControllerMenu[];
+extern HudEntry PauseEndMenu[];
+extern HudEntry PauseEndWarpMenu[];
+extern HudEntry PauseEndAdventureMenu[];
+extern HudEntry PauseBlankA[];
+extern HudEntry PauseBlankB[];
+extern HudEntry PauseDemoLabel[];
 extern s32 PauseLastChoice;
 extern s16 PauseMenuY;
 extern s16 PauseToggles[4];
@@ -361,17 +361,6 @@ extern s32 D_8009B590[];
 extern s32 D_8009B788[];
 extern s32 D_8009B980[];
 extern s32 D_8009BB30[];
-/* DrawHudEntries: one 0x18-byte HUD script entry; the list ends at type -1. */
-typedef struct HudEntry {
-    /* 0x00 */ s16 type;
-    /* 0x02 */ s16 x;
-    /* 0x04 */ s16 y;
-    /* 0x06 */ s16 idx;
-    /* 0x08 */ s32 a;
-    /* 0x0C */ s32 b;
-    /* 0x10 */ s32 c;
-    /* 0x14 */ s32 d;
-} HudEntry;
 /* GameInfo as seen by DrawHudEntries. */
 typedef struct HudGameView {
     /* 0x00 */ s32 unk0;
