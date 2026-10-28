@@ -482,6 +482,18 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-28 (Phase 5: the tools, then the overlays' GameInfo):** the scratch scripts are tools
+  now: `struct_layout.py` (layouts from cc1 -g), `retype.py` (a byte pointer's offsets as fields;
+  LEFT lines for arithmetic the type now scales or byte reads it left), `fold_views.py` (views
+  onto one struct, traps through `t_` names, `--rename` passes), `diff_funcs.py` (every differing
+  function); tests in test_struct_tools.py. With them: the overlays' 43 GameInfo views folded
+  (GameState moved to nas.h for Chase; +0x75 and battleWins unsigned; N2OPuck is a ball
+  extension, kept), 106 overlay functions' raw GameInfo reads as fields, and seven exe dbase
+  functions typed. Gotcha: a retype that still matches proves nothing about the type (it can
+  change only the signature, or the offsets can fit another struct): check the callers before
+  keeping a guess. The fold can't rename through macros: their uses show as `left:` on the
+  macro's call line; fix the macro body.
+
 - **2026-10-28 (Phase 5: the exe, partway):** placeholders gone (GetVideoMode, CdStatus,
   SsUtReverbOn, CdLastPos; the inlines named after what they inline). One `obj_texture`
   (TexDst2A84C, AnimEntry folded); `PadState` everywhere (PadStick, PadInput and 14 overlay pad

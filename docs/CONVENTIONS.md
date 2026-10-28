@@ -39,7 +39,8 @@ A file is finished when every function in it reaches level 4.
   rename passes alone). `diff_funcs.py [UNIT]` lists every function whose bytes differ, where
   `decomp.py verify` stops at the first. Two things to watch after a retype: a cast like
   `*(s16 *)&x.f` is a different alias class from a field of that type (the schedule can change:
-  give the struct the field instead), and a load's sign follows the member's type.
+  give the struct the field instead), and a load's sign follows the member's type. A retype that
+  still matches doesn't prove the type: read the callers first (the bytes can fit another struct).
 - PsyQ names come from the signature scan and Sony's objects; do not rename them.
 
 ## Source layout

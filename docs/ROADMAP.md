@@ -438,9 +438,9 @@ load extract and are documented.
   the heap's and pools' own block arithmetic and the files' self-relative layouts (the model
   file's header and mesh records, the mesh animations, the texture file, the card image, the
   script table at +0x4C), which want the file-format structs of the asset formats item; the
-  131 Sony statics the converted objects carry no names for; and the overlays' 45 GameInfo
-  views still to fold into `GameState` (`scratch/fold.py GameState VIEW...` does it, as it did
-  the pads). For browsing cross-references across the whole binary, try Ghidra with a PSX
+  131 Sony statics the converted objects carry no names for. The overlays' 43 GameInfo views are
+  folded into `GameState` (now in nas.h; `tools/scripts/fold_views.py`), and 106 overlay
+  functions read GameInfo by field. For browsing cross-references across the whole binary, try Ghidra with a PSX
   loader by hand.
 
 - [ ] Shift-test again (playtests): Bash, Arkenoid and Pogo were shift-tested
