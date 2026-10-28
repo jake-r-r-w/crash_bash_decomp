@@ -55,7 +55,7 @@ void AnimateLoadingIcon(void) {
     }
 }
 
-void func_8009342C(void) {
+void UpdateLoadingScene(void) {
     u8 *p;
     u8 *b;
 
@@ -67,7 +67,7 @@ void func_8009342C(void) {
                 PlaySfx(0x3C7, NULL, NULL, 0x1000, 0x1E00, 0);
                 p = b + 0x2CA0;
                 D_800A02C4 = 6;
-                func_80095258(p);
+                SetupSceneMarks(p);
                 D_800A02C0 += 1;
                 play_script(p, 0, &D_8009F9D4, &D_8009F9F4, 8, NULL);
             }
@@ -158,7 +158,7 @@ void InitLevelLoad(void) {
     }
 }
 
-void func_80093854(void) {
+void QueueHeroModels(void) {
     View939FC *g;
     s32 arg;
     s32 i;
@@ -360,7 +360,7 @@ void UpdateLevelLoad(void) {
             music_request(0);
         }
     case 8:
-        func_80093854();
+        QueueHeroModels();
         D_800A0158 = 6;
         break;
     case 5:
@@ -431,17 +431,17 @@ void LoadModeDbases(s32 arg0, s32 arg1) {
     }
 }
 
-void func_80094120(void) {
+void QuitLoadingScene(void) {
     scripts_kill_all();
     dbase_release(D_800556F4);
 }
 
-void func_8009414C(void) {
+void RenderLoadingScene(void) {
     if (D_800A0158 >= 2) {
         GameFrameCount += 1;
         gfx_set_viewport(D_8009F9AC, MainCamera);
         if (D_800A02C0 != 0) {
-            func_8009440C();
+            DrawSceneMarks();
         }
         scripts_render();
     }
@@ -514,7 +514,7 @@ void LoadLoadingModel(void) {
     }
 }
 
-void func_8009440C(void) {
+void DrawSceneMarks(void) {
     s32 h = *(s32 *)(RenderState.cam->unk18);
     subengine *e = &D_800A0C74;
     EngineMarker *m;
@@ -541,7 +541,7 @@ void func_8009440C(void) {
     }
 }
 
-void func_800945C0(EngineStartArgs *arg0) {
+void SetupScriptScene(EngineStartArgs *arg0) {
     s32 rate;
 
     while (loader_pending() != 0) {
@@ -594,10 +594,10 @@ void InitScriptScene(void) {
     prims_init(cfg->pools);
     dbase_init_all();
     init_scripts(0x20, 0x80);
-    func_800945C0((EngineStartArgs *)D_800A0C0C);
+    SetupScriptScene((EngineStartArgs *)D_800A0C0C);
 }
 
-void func_80094860(void) {
+void UpdateSceneVabCues(void) {
     sfx_machine_bank_info *slot;
     sfx_machine_bank_info *base;
     s32 n;
@@ -729,7 +729,7 @@ void UpdateScriptScene(void) {
             }
         }
     }
-    func_80094860();
+    UpdateSceneVabCues();
     if ((Pads[0].pressed & 0x4000) && D_800A0D3C == 0 && D_800A0C08 != 0) {
         GotoProcess(D_800A0C08, 0x200);
         D_800A0D3C += 1;
@@ -750,7 +750,7 @@ void QuitScriptScene(void) {
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    func_80094F60();
+    ReleaseOldSceneModel();
     scripts_kill_all();
     vab_transfer_wait();
     sfx_all_off();
@@ -772,10 +772,10 @@ void RenderScriptScene(void) {
     RenderState.modelDp = ScreenFade.amount;
     scripts_render();
     RenderState.modelDp = 0x1000 - (((0x1000 - D_80058B60) * (0x1000 - RenderState.modelDp)) >> 12);
-    func_8009440C();
+    DrawSceneMarks();
 }
 
-s32 func_80094F30(void) {
+s32 SceneModelLoaded(void) {
     s32 var_v0;
     u8 *temp_v1;
 
@@ -787,13 +787,13 @@ s32 func_80094F30(void) {
     return var_v0;
 }
 
-void func_80094F60(void) {
+void ReleaseOldSceneModel(void) {
     if (((*(s32*)((u8*)(D_800A0D2C) + 4)) != D_800A0D30) && (D_800A0D30 != 0)) {
         dbase_release(D_800A0D30);
     }
 }
 
-void func_80094FA8(void) {
+void LoadSceneModel(void) {
     s32 temp_a0;
 
     temp_a0 = (*(s32*)((u8*)(D_800A0D2C) + 4));
@@ -802,21 +802,21 @@ void func_80094FA8(void) {
     }
 }
 
-void func_80094FE0(void) {
+void SceneNextProcess(void) {
     if (D_800A0C08 != 0) {
         GotoProcess(D_800A0C08, 0x200);
         D_800A0D3C += 1;
     }
 }
 
-void func_80095020(void) {
+void UnloadScene(void) {
     vab_transfer_wait();
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    func_80094F60();
+    ReleaseOldSceneModel();
     scripts_kill_all();
     vab_transfer_wait();
     sfx_all_off();
@@ -832,7 +832,7 @@ void func_80095020(void) {
     D_800A0D3C += 1;
 }
 
-s32 func_800950FC(void) {
+s32 SceneVabReady(void) {
     if (D_800A0D1C == 0) {
         return 1;
     }
@@ -842,7 +842,7 @@ s32 func_800950FC(void) {
     return ~SfxBanks[D_800A0D20[0]].id != 0;
 }
 
-void func_80095160(EngineStartArgs *arg0) {
+void SceneSoundInit(EngineStartArgs *arg0) {
     D_800A0D1C = arg0->unk4;
     D_800A0D20[0] = 0;
     D_800A0D24[0] = 0;
@@ -878,7 +878,7 @@ s32 PickModeVariant(s32 arg0) {
     return 0;
 }
 
-void func_80095258(u8 *arg0) {
+void SetupSceneMarks(u8 *arg0) {
     MarkObj *o = (MarkObj *)arg0;
     MarkSrc *s;
     EngineMarker *m;
@@ -1064,7 +1064,7 @@ void ApplyPlaceRecs(subengine *sub, s32 *recs) {
             break;
         case 10:
             if (skip == 0) {
-                s->hook = func_80095E5C;
+                s->hook = draw_animated_sub;
                 s->rec = rec;
                 s->flags |= 0x10008000;
                 s->x = rec->x;
@@ -1187,7 +1187,7 @@ EXTengine *GetEngineSlot(s32 arg0) {
     return &EnginePool[arg0];
 }
 
-void func_80095E5C(u8 *arg0, u8 *arg1, s32 arg2) {
+void draw_animated_sub(u8 *arg0, u8 *arg1, s32 arg2) {
     u8 *p;
     u32 flags;
     u32 n;
@@ -1215,7 +1215,7 @@ void func_80095E5C(u8 *arg0, u8 *arg1, s32 arg2) {
     draw_object(arg0, arg1, arg2);
 }
 
-s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4) {
+s32 PlaceFlashSub(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4) {
     if (p == NULL) {
         return 0;
     }
@@ -1228,7 +1228,7 @@ s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4) {
     return p[0x5C / 4];
 }
 
-s32 func_80095F88(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
+s32 PlaceTextSub(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
     Tmpl1C *t;
     if (p == NULL) {
         return 0;
@@ -1383,7 +1383,7 @@ u8 D_8009F9AC[40] = {
 };
 Blk32 D_8009F9D4 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 D_8009F9F4 = {0};
-process_info LoadingProcess2 = { InitLoadingCamera, func_8009342C, func_8009414C, func_80094120, 0 };
+process_info LoadingProcess2 = { InitLoadingCamera, UpdateLoadingScene, RenderLoadingScene, QuitLoadingScene, 0 };
 u8 D_8009FA14[1516] = {
     0x10, 6, 5, 0x80, 0x8C, 0x2A, 5, 0x80, 0, 0, 5, 0x80, 0xF8, 0xFF, 4, 0x80, 4, 6, 5, 0x80,
     0xC4, 0x2A, 5, 0x80, 0xF0, 0xFF, 4, 0x80, 0xE8, 0xFF, 4, 0x80, 0xF8, 5, 5, 0x80, 0xFC,

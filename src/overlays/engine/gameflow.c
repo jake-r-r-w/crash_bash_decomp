@@ -16,12 +16,12 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     case 7:
         PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(1, arg0, (s32)CrateObjectsModel);
-        func_8008DEC8(obj, 0x280, id, 0x208, 0xA0);
+        HurtHeroesInRadius(obj, 0x280, id, 0x208, 0xA0);
         break;
     case 6:
         PlaySfx(((HitSfxTable *)HitSfx)->hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(0, arg0, (s32)CrateObjectsModel);
-        func_8008DEC8(obj, 0x280, id, 0x208, 0);
+        HurtHeroesInRadius(obj, 0x280, id, 0x208, 0);
         break;
     case 2:
         PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
@@ -30,12 +30,12 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     case 3:
         PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(4, arg0, (s32)CrateObjectsModel);
-        func_8008DEC8(obj, 0x280, id, 0x203, 0xA0);
+        HurtHeroesInRadius(obj, 0x280, id, 0x203, 0xA0);
         break;
     default:
         PlaySfx(((HitSfxTable *)HitSfx)->other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(3, arg0, (s32)CrateObjectsModel);
-        func_8008DEC8(obj, 0x280, id, 0x205, 0xA0);
+        HurtHeroesInRadius(obj, 0x280, id, 0x205, 0xA0);
         break;
     }
     if (HitHooks.unk8 != NULL) {
@@ -121,7 +121,7 @@ void UpdateIntro(void) {
         break;
     case 2:
         D_8009E5A8 = e->delay;
-        func_80095258(e->model);
+        SetupSceneMarks(e->model);
         D_80058B64 = 0x10000;
         D_8004E0E0 = type;
         D_8009E5AC = play_script(IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
@@ -167,7 +167,7 @@ void QuitIntro(void) {
 void RenderIntro(void) {
     gfx_set_viewport(D_8009E498, MainCamera);
     if (D_800AEC5C != 0) {
-        func_8009440C();
+        DrawSceneMarks();
     }
     scripts_render();
 }
@@ -226,7 +226,7 @@ void HandleLevelExit(void) {
     g->unk58[2] = g->unk54[2];
     g->unk58[3] = g->unk54[3];
     if (g->unk32 & 0x20) {
-        func_800793E8();
+        PickCpuHeroes();
     }
     flags = g->unk30;
     if ((flags & 0x8008) == 0x8008) {
@@ -536,7 +536,7 @@ void RenderCupMenu(void) {
     eng_render_subs((u8 *)GetEngineSlot(2));
 }
 
-void func_8008FC58(void) {
+void QuitCupMenu(void) {
 }
 
 s32 CountCupTrophies(void *arg0) {
@@ -685,7 +685,7 @@ static inline s32 func_800900CC_find(s32 arg0) {
     return -1;
 }
 
-s32 func_800900CC(void) {
+s32 WarpRoomBestLevel(void) {
     s32 i;
     s32 j;
     s32 best;
@@ -702,7 +702,7 @@ s32 func_800900CC(void) {
         return best;
     }
     for (j = 0; j < t[2]; j++) {
-        if (((s32(*)(s32))func_8007A6D0)(((u16 *)(t[3] + j * 8))[2]) != 0 && best < j) {
+        if (((s32(*)(s32))ModeRequirementMet)(((u16 *)(t[3] + j * 8))[2]) != 0 && best < j) {
             best = j;
         }
     }
@@ -812,7 +812,7 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     e->sub[2].unk6C = D_8009F4A8[arg1];
 }
 
-void func_80090564(u8 *arg0, s32 arg1) {
+void ShowCardSlotStats(u8 *arg0, s32 arg1) {
     EXTengine *e;
 
     e = GetEngineSlot(3);
@@ -1338,7 +1338,7 @@ void ShowCardSlots(void) {
     ShowCardSlot(p + 0x330, 2, *(s32 *)(p + 0x328) == 0, 0x28, 0x7C);
     ShowCardSlot(p + 0x4C4, 3, *(s32 *)(p + 0x4BC) == 0, 0x140, 0x7C);
     PlaceEngineSlot(3, &D_8009F008);
-    func_80090564(pad + CardSlotIndex * 0x194,*(s32 *)(p + CardSlotIndex * 0x194) == 0);
+    ShowCardSlotStats(pad + CardSlotIndex * 0x194,*(s32 *)(p + CardSlotIndex * 0x194) == 0);
 }
 
 void InitSaveMenu(void) {
@@ -1365,7 +1365,7 @@ void InitSaveMenu(void) {
     D_8009F630 = 1;
 }
 
-void func_8009201C(void) {
+void InitCardPromptMenu(void) {
     subengine *sub;
 
     CardSlotIndex = 0;
@@ -1452,11 +1452,11 @@ void SaveHeroChoice(u8 *dst) {
     ShowCardSlots();
 }
 
-s32 func_800923F0(s32 *arg0) {
+s32 CardSlotEmpty(s32 *arg0) {
     return *arg0 == 0;
 }
 
-void func_800923FC(void) {
+void UpdateSaveScreen(void) {
 }
 
 void ClearEngineSlots(void) {
@@ -1472,7 +1472,7 @@ void ClearEngineSlots(void) {
     primpool_free();
 }
 
-void func_8009246C(void) {
+void InitCardMenu(void) {
     subengine *sub;
 
     CardSlotIndex = 0;
@@ -1493,7 +1493,7 @@ void func_8009246C(void) {
     PlaceEngineSlot(1, &D_8009EEB0);
 }
 
-s32 func_8009251C(u8 *arg0) {
+s32 GameExtra105(u8 *arg0) {
     u8 *p;
     s32 i;
     s32 n;
@@ -1508,7 +1508,7 @@ s32 func_8009251C(u8 *arg0) {
     return n;
 }
 
-s32 func_80092560(u8 *arg0) {
+s32 GameCount105(u8 *arg0) {
     s32 n;
     s32 i;
 
@@ -1523,7 +1523,7 @@ s32 func_80092560(u8 *arg0) {
     return n;
 }
 
-s32 func_80092598(u8 *arg0) {
+s32 GameSum126(u8 *arg0) {
     s32 n;
     s32 i;
 
@@ -1536,7 +1536,7 @@ s32 func_80092598(u8 *arg0) {
     return n;
 }
 
-s32 func_800925C4(u8 *arg0) {
+s32 GameSum147(u8 *arg0) {
     s32 n;
     s32 i;
 
@@ -1549,7 +1549,7 @@ s32 func_800925C4(u8 *arg0) {
     return n;
 }
 
-void func_800925F0(s32 arg0) {
+void GameSetSlot3Digits(s32 arg0) {
     s32 *src;
     s32 *p;
     s32 i;
@@ -1759,7 +1759,7 @@ void UpdateProcess(void) {
     process_control_update(&ProcessControl, &ScreenFade);
 }
 
-void func_80092BDC(void) {
+void RestartGame(void) {
     ProcessControl.process = NULL;
     process_control_init(&ProcessControl, NULL);
     InitGraphics();
@@ -1787,7 +1787,7 @@ void InitGameOptions(void) {
     p[0xF] = 1;
 }
 
-void func_80092CAC(void) {
+void InitRetry(void) {
     EngineGameView *g;
 
     g = (EngineGameView *)GameInfo;
@@ -1850,12 +1850,12 @@ void UpdateGame(void) {
     UpdateExitDelay();
 }
 
-void func_80092F9C(void) {
+void SetReturnGateway(void) {
     GameInfo[0x63] = 0xA;
     *(s32 *)(GameInfo + 0x64) = 1;
 }
 
-void func_80092FB8(void) {
+void UpdateSecretLevel(void) {
     EngineGameView *a = (EngineGameView *)GameInfo;
     EngineGameView *g;
 
@@ -2041,7 +2041,7 @@ EngRec24 D_8009EB3C[2] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-process_info TournamentSelect = { InitCupMenu, UpdateCupMenu, RenderCupMenu, func_8008FC58, 0 };
+process_info TournamentSelect = { InitCupMenu, UpdateCupMenu, RenderCupMenu, QuitCupMenu, 0 };
 s32 D_8009EB98 = 0;
 s32 D_8009EB9C[8] = { 0x20001, 0x3000A, 0x20002, 0x30013, 0x20003, 0x3000B, 0, 0 };
 s32 D_8009EBBC[8] = { 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24, 0x2016, 0x25 };
@@ -2139,11 +2139,11 @@ GfxViewport SaveBackViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 
 s32 D_8009F40C = 6;
 s32 D_8009F410[17] = { 0xFF9C, 0x100004C8, 0, 0, 0, 0, 0x200700C7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 void *D_8009F454[6] = {
-    (void *)&MenuCardCorrupt, (void *)func_8009246C, (void *)func_800923FC,
+    (void *)&MenuCardCorrupt, (void *)InitCardMenu, (void *)UpdateSaveScreen,
     (void *)RenderSaveMenu, (void *)ClearEngineSlots, 0,
 };
-process_info SaveScreenProcess = { InitSaveMenu, func_800923FC, RenderSaveMenu, ClearEngineSlots, 0 };
-s32 SaveScreenProcess2[5] = { (s32)func_8009201C, (s32)func_800923FC, (s32)RenderSaveMenu, (s32)ClearEngineSlots, 0 };
+process_info SaveScreenProcess = { InitSaveMenu, UpdateSaveScreen, RenderSaveMenu, ClearEngineSlots, 0 };
+s32 SaveScreenProcess2[5] = { (s32)InitCardPromptMenu, (s32)UpdateSaveScreen, (s32)RenderSaveMenu, (s32)ClearEngineSlots, 0 };
 s32 D_8009F494 = 0;
 /* the results screen's number texts, one buffer: +0, +3, +6, +9 three digits each, +12 the last */
 char D_8009F498[16] = {0};
@@ -2165,7 +2165,7 @@ GfxViewport HudViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xD
 s32 D_8009F6CC[10] = { 0xF00140, 0x1E00280, 0xF00140, 0x1E00280, 0x1E0, 0x168, 0x200, 0x800, 0, 0x1000000 };
 GfxViewport GameViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0x15E, 0x200, 0xDFF, 0, 8, 0x30, 0x10, 0 };
 s32 D_8009F71C[1] = {0};
-process_info RetryProcess = { func_80092CAC, UpdateGame, RenderGame, QuitGame, 0 };
+process_info RetryProcess = { InitRetry, UpdateGame, RenderGame, QuitGame, 0 };
 GfxCamera MainGfxCamera = {0};
 GfxCamera HudCamera = {0};
 process_control_info MenuProcessControl = {0};

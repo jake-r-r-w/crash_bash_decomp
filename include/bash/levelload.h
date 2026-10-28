@@ -50,9 +50,9 @@ void QuitLevelLoad(void);
 
 void RenderLevelLoad(void);
 
-void func_80094120(void);
+void QuitLoadingScene(void);
 
-void func_8009414C(void);
+void RenderLoadingScene(void);
 
 void InitLoadingCamera(void);
 
@@ -62,13 +62,13 @@ void InitLoadingScreen(void);
 
 void GotoScriptScene(s32 arg0, process_info *arg1);
 
-s32 func_80094F30(void);
+s32 SceneModelLoaded(void);
 
-void func_80094F60(void);
+void ReleaseOldSceneModel(void);
 
-void func_80094FA8(void);
+void LoadSceneModel(void);
 
-void func_80094FE0(void);
+void SceneNextProcess(void);
 
 void KillEngineSlot(s32 arg0);
 
@@ -181,7 +181,7 @@ void PlaceEngineSlot(s32 arg0, s32 *recs);
 
 EXTengine *GetEngineSlot(s32 arg0);
 
-void func_80095258(u8 *arg0);
+void SetupSceneMarks(u8 *arg0);
 
 s32 LoadModeText(void);
 extern s32 *D_8009F954[];
@@ -198,19 +198,19 @@ s32 CountPlaceRecs(s32 *rec);
 
 void InitLevelLoad(void);
 
-void func_800945C0(EngineStartArgs *arg0);
+void SetupScriptScene(EngineStartArgs *arg0);
 
-void func_8009342C(void);
+void UpdateLoadingScene(void);
 
-void func_80095020(void);
+void UnloadScene(void);
 
 void LoadLoadingModel(void);
 
-void func_8009440C(void);
+void DrawSceneMarks(void);
 
-void func_80095E5C(u8 *arg0, u8 *arg1, s32 arg2);
+void draw_animated_sub(u8 *arg0, u8 *arg1, s32 arg2);
 
-s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
+s32 PlaceFlashSub(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
 
 void QuitScriptScene(void);
 
@@ -222,19 +222,19 @@ void level_load_map(void);
 
 void RenderScriptScene(void);
 
-s32 func_800950FC(void);
+s32 SceneVabReady(void);
 
-void func_80095160(EngineStartArgs *arg0);
+void SceneSoundInit(EngineStartArgs *arg0);
 
 void ResetEnginePool(void);
 
 void InitScriptScene(void);
 
-void func_80094860(void);
+void UpdateSceneVabCues(void);
 
 s32 PickModeVariant(s32 arg0);
 
-s32 func_80095F88(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
+s32 PlaceTextSub(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
 
 typedef struct MarkSrcEnt {
     /* 0x00 */ s16 val;
@@ -288,7 +288,7 @@ typedef struct EngColorSrc {
 extern process_info LoadingProcess;
 extern process_info LoadingProcess2;
 extern process_info RetryProcess;
-void func_80093854(void);
+void QueueHeroModels(void);
 void load_initial_dbases(void);
 void GotoProcess(process_info *process, s32 speed);
 

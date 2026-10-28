@@ -193,7 +193,7 @@ void InitBigScore(void) {
     BigScore1.unk10.y = 0x8C;
     BigScore1.unk10.z = 0;
     subs_init_array(&BigScore1, 1, &BigScoreParts1);
-    func_80095F48((s32 *)&BigScoreParts1, -0x30, 0, left_score, 0);
+    PlaceFlashSub((s32 *)&BigScoreParts1, -0x30, 0, left_score, 0);
     BigScore1.unk5D = 0;
     BigScore1.unk5C = 1;
     BigScoreParts1.flags &= ~0x10000000;
@@ -203,7 +203,7 @@ void InitBigScore(void) {
     BigScore2.unk10.y = 0x8C;
     BigScore2.unk10.z = 0;
     subs_init_array(&BigScore2, 1, &BigScoreParts2);
-    func_80095F48((s32 *)&BigScoreParts2, -0x30, 0, right_score, 0);
+    PlaceFlashSub((s32 *)&BigScoreParts2, -0x30, 0, right_score, 0);
     BigScore2.unk5C = 1;
     BigScore2.unk5D = 0;
     BigScore_scale = 0x10;
@@ -1667,7 +1667,7 @@ found:
                 slot = MODEV->unk34;
                 if (CupWinner != -1) {
                     MODEV->unk168[slot] = 1;
-                    func_80092F9C();
+                    SetReturnGateway();
                 }
                 CupMode = 0x10;
                 CupTimer = 0x78;
@@ -1981,7 +1981,7 @@ found:
         break;
     case 12:
         {
-            s32 ok = func_8008A200(-1) ^ 1;
+            s32 ok = UpdateHeroVictory(-1) ^ 1;
             if (ok) {
                 UpdateWinCounter(0);
                 break;

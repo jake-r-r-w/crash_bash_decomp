@@ -822,7 +822,7 @@ void InitPogo_Tiles(void) {
     base2 = PogoGrid[0];
     g = GameInfo;
     do {
-        id = (u16 *)func_80015870(obj->model, obj->index);
+        id = (u16 *)model_entry_data(obj->model, obj->index);
         if ((u16)(*id - 10) < 78) {
             v = *id;
             j = 7 - (s16)(v % 10);
@@ -1828,7 +1828,7 @@ void HeroPogoIdle(u32 arg0) {
         }
         break;
     }
-    func_800871E4(arg0);
+    HeroTestFall(arg0);
 }
 
 void HeroPogoTazing(u32 arg0) {
@@ -1871,7 +1871,7 @@ void HeroPogoTazing(u32 arg0) {
         HeroPogoTazingCancel(arg0);
         SetHeroAction(arg0, 0x39);
     }
-    func_800871E4(arg0);
+    HeroTestFall(arg0);
 }
 
 void HeroPogoWinner(u32 arg0) {
@@ -1880,7 +1880,7 @@ void HeroPogoWinner(u32 arg0) {
 
     Heroes[arg0].hero_frozen = 2;
     Pickup_Lose(arg0);
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         g = GameInfo;
         if (*(s32 *)(g + 4) & 0x800) {
             *(u16 *)(g + 0x30) |= 0x201;
@@ -2123,7 +2123,7 @@ void HeroPogoDazed(u32 arg0) {
             eng->unk1E += r >> 3;
         }
     }
-    func_800871E4(arg0);
+    HeroTestFall(arg0);
     ProcessHeroAnim(arg0);
     switch (Heroes[arg0].hero_name) {
     case 4:

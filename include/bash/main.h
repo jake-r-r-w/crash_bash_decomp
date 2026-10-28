@@ -211,7 +211,7 @@ typedef struct {
 } RelTable;
 
 /* A block with 12-byte entries at a byte offset from its field at +0x1C + 0x1C
- * (func_80015984). */
+ * (entry_block_value). */
 typedef struct {
     u8 unk0[0x1C];
     s32 entries; /* 0x1C */
@@ -748,7 +748,7 @@ void mal_compact_ptr(s32 arg0);
 void mal_compact_step(u8 *arg0);
 u8 *mal_update_deferred(_mal_area *arg0);
 void sortlist_sort(s32 arg0);
-void func_80012E0C(void);
+void loader_unused_a(void);
 void smallnode_free(u8 *arg0);
 void loader_cancel(LoadNode *arg0);
 s32 string_hash(u8 *s);
@@ -759,7 +759,7 @@ void mal_compact(_mal_area *arg0);
 mal *mal_first_free(u32 words, mal *blk);
 s32 loader_queue(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx);
-void func_80012E88(void);
+void loader_unused_b(void);
 void loadnode_free(u8 *arg0);
 u8 *loadlist_push(u8 *arg0);
 s32 loadlist_head(u8 *arg0);
@@ -770,8 +770,8 @@ s32 *get_exe_exports(void);
 s32 angle_diff_abs(s32 arg0, s32 arg1);
 s32 angle_diff(s32 arg0, s32 arg1);
 void SetRandomSeed(s32 arg0, s32 arg1);
-void func_80015D08(u8 *arg0);
-s32 func_80015E94(u8 *arg0, u8 *arg1);
+void fx_free_buffers(u8 *arg0);
+s32 fx_alloc_buffers_b(u8 *arg0, u8 *arg1);
 typedef struct RotScale {
     /* 0x00 */ SVECTOR rot;
     /* 0x08 */ u8 pad8[8];
@@ -1054,7 +1054,7 @@ extern s32 D_800637B4;
 /* 32-byte records of D_8005A5E8, indexed by D_8005A61C (SetLevelCameraMode). */
 typedef struct {
     /* 0x00 */ u8 unk0[4];
-    /* 0x04 */ s32 unk4; /* passed to queue_dbase_load by func_80093854 */
+    /* 0x04 */ s32 unk4; /* passed to queue_dbase_load by QueueHeroModels */
     /* 0x08 */ u8 unk8[4];
     /* 0x0C */ u16 unkC;
     /* 0x0E */ u8 unkE[0x12];
@@ -1181,7 +1181,7 @@ typedef union {
     } s;
 } ScreenXY;
 
-/* The same packed position built with bitfields (func_800248A0). */
+/* The same packed position built with bitfields (DrawSpriteTriple). */
 typedef union {
     struct {
         s32 x : 16;
@@ -1428,7 +1428,7 @@ s32 bit_count(u32 x);
 
 s32 lerp_fix12(s32 a, s32 b, s32 t);
 
-void *func_80015AB0(s32 *arg0, u8 *rec);
+void *dbase_anim_node(s32 *arg0, u8 *rec);
 
 
 
@@ -1455,7 +1455,7 @@ typedef struct {
 } ClutUpload;
 
 
-u8 *func_80015A78(s32 i, u8 *rec);
+u8 *dbase_anim_frame(s32 i, u8 *rec);
 
 void BSwapEndian(u8 *p, u32 n);
 
@@ -1520,7 +1520,7 @@ typedef struct {
 } PitchVoice;
 
 
-s32 func_80015984(s32 i, EntryBlock *blk);
+s32 entry_block_value(s32 i, EntryBlock *blk);
 
 void mal_free_later(u8 *arg0, _mal_area *heap, s32 arg2);
 
@@ -1735,9 +1735,9 @@ s32 load_file_part_wait(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
 
 s32 get_dist_angles(s32 *a, s32 *b, s16 *out);
 
-u8 *func_80015870(u8 *arg0, s32 arg1);
+u8 *model_entry_data(u8 *arg0, s32 arg1);
 
-s32 func_800158E4(u8 *arg0, s32 arg1);
+s32 model_entry_texture(u8 *arg0, s32 arg1);
 
 
 
@@ -1880,7 +1880,7 @@ void pad_read(PadState *pad);
 
 void cam_set_projection(s32 arg0, s32 arg1);
 
-s32 func_80015D70(u8 *arg0, u8 *arg1);
+s32 fx_alloc_buffers(u8 *arg0, u8 *arg1);
 
 
 
@@ -2060,7 +2060,7 @@ typedef struct MapEnvHead {
 
 
 
-/* func_800248A0: three 0x38-byte sprite records drawn side by side */
+/* DrawSpriteTriple: three 0x38-byte sprite records drawn side by side */
 extern u8 InterfaceModel[];
 extern u16 D_8005A5C0[][3];
 

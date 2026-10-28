@@ -42,7 +42,7 @@ void modchip_show_warning(void) {
         msg_print(D_8006789C[MsgFontRom].text, &pos, colour);
         colour = 0x8000;
     } while (i < 2);
-    func_8002E618();
+    msg_draw_emblem();
     SetDispMask(1);
     exit();
 }
@@ -174,7 +174,7 @@ s32 msg_glyph_width(u8 *arg0) {
 const char ModchipMsg[] = "     SOFTWARE TERMINATED\nCONSOLE MAY HAVE BEEN MODIFIED\n     CALL 1-888-780-7690";
 const char ModchipMsgJapanese[] = "\213\255\220\247\217I\227\271\202\265\202\334\202\265\202\275\201B\n\226{\221\314\202\252\211\374\221\242\202\263\202\352\202\304\202\242\202\351\n\202\250\202\273\202\352\202\252\202\240\202\350\202\334\202\267\201B";
 
-void func_8002E618(void) {
+void msg_draw_emblem(void) {
     extern u8 D_800678B4[][2];
     extern void DrawPrim(void *);
     s32 prim[6];

@@ -685,7 +685,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             if (ModeTypes[g->mode * 3] == 0x102 && (g->flags & 0x40)) {
                 goto clear;
             }
-            func_800248A0(e->x, (s16)(e->y + arg1), e->a, e->b, e->idx);
+            DrawSpriteTriple(e->x, (s16)(e->y + arg1), e->a, e->b, e->idx);
             if (!(g->flags & 0xC0)) {
                 goto clear;
             }
@@ -1302,7 +1302,7 @@ void RenderPause(void) {
                 gfx_set_viewport(&MainViewport, &MainGfxCamera);
                 gs->otzAdd = 0x200;
                 gs->modelDp = *(s32 *)&ScreenFade;   /* a scalar read: scheduled above the otzAdd store */
-                func_8001A6D4(e, 0x10000000);
+                draw_panel_rect(e, 0x10000000);
             }
         }
     } else if (GamePause & 1) {
@@ -1315,7 +1315,7 @@ void RenderPause(void) {
                 gfx_set_viewport(&MainViewport, &MainGfxCamera);
                 gs->otzAdd = 0x200;
                 gs->modelDp = *(s32 *)&ScreenFade;
-                func_8001A6D4(e, 0x10000000);
+                draw_panel_rect(e, 0x10000000);
             }
         }
         gfx_set_viewport(&HudViewport, &HudCamera);

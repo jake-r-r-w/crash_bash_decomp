@@ -3480,7 +3480,7 @@ void PlotDinoGem(NAS *m) {
         ext->unkC = 3;
         hb = &Heroes[ext->unk10];
         for (i = 3; i > 0; i--) {
-            if (func_8008C4C8((s32 *)&hb->hero_eng->unk10, i) != 0) {
+            if (PointInZone((s32 *)&hb->hero_eng->unk10, i) != 0) {
                 found = i;
             }
         }
@@ -3868,7 +3868,7 @@ s32 DinoFloorKind(s32 arg0) {
     best = -1;
     i = 3;
     do {
-        if (func_8008C4C8((s32 *)&Heroes[arg0].hero_eng->unk10, i) != 0) {
+        if (PointInZone((s32 *)&Heroes[arg0].hero_eng->unk10, i) != 0) {
             best = i;
         }
         i--;
@@ -3950,7 +3950,7 @@ void DINOSetUp(void) {
 
 void DinoHeroWinner(s32 arg0) {
     CheckHeroAnim(arg0);
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
     ProcessHeroAnim(arg0);

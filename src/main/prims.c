@@ -1258,7 +1258,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
             return;
         }
         e = set + (*(s32 *)(set + 0x44) + 0x44) + entry * 0x18;
-        anim = func_80015AB0((s32 *)a, e);
+        anim = dbase_anim_node((s32 *)a, e);
         if (c < 0) {
             frame = *(s16 *)((u8 *)d + 0x72);
         } else {
@@ -1465,7 +1465,7 @@ s32 draw_gouraud_quad(void *arg0, u32 flags) {
 #undef q
 }
 
-void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
+void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     QuadVerts q;
     s32 x;
     s32 w;
@@ -1551,7 +1551,7 @@ void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     draw_gouraud_quad(&q, arg2);
 }
 
-void func_8001A6D4(void *arg0, u32 hidden) {
+void draw_panel_rect(void *arg0, u32 hidden) {
     QuadVerts q;
     u32 f;
     u16 *r;
@@ -1615,7 +1615,7 @@ void func_8001A6D4(void *arg0, u32 hidden) {
         }
     }
     if (p[7] & 0x8000) {
-        func_8001A43C((u16 *) arg0 + 2, p[5], p[7] | hidden, ((s16 *) arg0)[12], ((s16 *) arg0)[13]);
+        draw_panel_frame((u16 *) arg0 + 2, p[5], p[7] | hidden, ((s16 *) arg0)[12], ((s16 *) arg0)[13]);
     }
 #undef p
 }
@@ -2338,7 +2338,7 @@ void draw_nas_model(NAS *nas, u8 *arg1) {
             }
             gte_SetRotMatrix(s.rot);
         }
-        func_8001A6D4(&nas->Type, hidden);
+        draw_panel_rect(&nas->Type, hidden);
     }
 }
 
@@ -2391,7 +2391,7 @@ u32 draw_nas_model_ret(NAS *nas, u8 *arg1, u32 flags) {
     return flags | nas->NASid;
 }
 
-void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2) {
+void draw_flat_rect(u16 *arg0, s32 arg1, u32 arg2) {
     QuadVerts q;
     s32 x;
     s32 w;
@@ -2430,7 +2430,7 @@ void calc_rgbcode_packed(u32 arg0) {
     calc_rgbcode((arg0 >> 0x10) & 0xFF, (arg0 >> 8) & 0xFF, arg0 & 0xFF);
 }
 
-void func_8001CC08(void) {
+void sub_release_none(void) {
 }
 
 s32 sub_alloc_prims(void *arg0, s32 arg1) {

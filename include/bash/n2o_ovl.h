@@ -472,7 +472,7 @@ extern s16 N2OBossAnimTimer;
 extern s32 N2OBossClock;
 extern s16 D_8009D6E2;
 void InitBossHealthIcons(void);
-void func_80086868(void);
+void ResetHeroGlobals(void);
 
 /* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct N2OHooks {

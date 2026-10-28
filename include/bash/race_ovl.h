@@ -218,7 +218,7 @@ void RaceMovesSwap(EXTheromove *a, EXTheromove *b);
 
 extern HeroInfo Heroes[4];
 void SetHeroAction(s32 player, s32 action);
-s32 func_8008C4C8(s32 *arg0, s32 arg1);
+s32 PointInZone(s32 *arg0, s32 arg1);
 s32 DistXZSq(u8 *arg0, u8 *arg1);
 
 s32 RaceBounceObject(RaceBounceObj *obj, RaceBouncer *b);

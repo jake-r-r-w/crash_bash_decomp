@@ -142,7 +142,7 @@ void UpdateOutMessage(void);
 
 s16 FindTeamLeader(void);
 
-s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
+s32 PlaceFlashSub(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
 extern char *left_score;
 extern char *right_score;
 extern EXTengine BigScore1;

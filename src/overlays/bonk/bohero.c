@@ -125,7 +125,7 @@ void BonkHeroIdle(s32 arg0) {
             }
             CameraMode = 1;
         }
-        func_800871E4(arg0);
+        HeroTestFall(arg0);
     }
 }
 
@@ -180,7 +180,7 @@ void BonkHeroRun(s32 arg0) {
                 break;
             }
 done:
-            func_800871E4(arg0);
+            HeroTestFall(arg0);
         }
     }
 }
@@ -573,7 +573,7 @@ void BonkHeroWinner(s32 idx) {
         h->hero_move->facing_angle = 0;
     }
     ProcessHeroAnim(idx);
-    if (func_8008A200(idx) != 0) {
+    if (UpdateHeroVictory(idx) != 0) {
         g = (D5A614View *)GameInfo;
         if (g->unk4 & 0x800) {
             g->unk30 = g->unk30 | 0x201;
@@ -656,7 +656,7 @@ void BonkHeroHit(s32 arg0) {
         HeroHooks.HeroKickCollision();
     }
     ProcessHeroAnim(arg0);
-    func_800871E4(arg0);
+    HeroTestFall(arg0);
 }
 
 void SetBonkHeroHit(s32 arg0) {

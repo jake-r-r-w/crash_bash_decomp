@@ -1470,7 +1470,7 @@ void InitNitroBoss(NAS *nas) {
         nas->Engine->unk2C.x = 0x1830;
         nas->Engine->unk2C.y = 0x1830;
         nas->Engine->unk2C.z = 0x1830;
-        func_80086868();
+        ResetHeroGlobals();
         D_8009D6E2 = 0xFF;
         NoxBossPathPos = 0;
         ext->cursor = ScriptCursorFirst(nas, &NoxBossScriptInit);
@@ -2173,7 +2173,7 @@ void NoxHeroWinner(s32 arg0) {
     Heroes[arg0].hero_eng->unk1E = 0x800;
     Heroes[arg0].hero_move->forward_angle = 0x800;
     Heroes[arg0].hero_eng->unk5E = 1;
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
     ProcessHeroAnim(arg0);
@@ -2327,7 +2327,7 @@ void NoxInitCamera(s32 arg0) {
     RenderGameScene();
     gfx_set_viewport(&GameViewport, (GfxCamera *)&NoxCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8009440C();
+    DrawSceneMarks();
 }
 
 void NoxStubB(void) {
@@ -2424,7 +2424,7 @@ void NoxInit(void) {
     RenderHook = (void (*)(void))NoxInitCamera;
     arg = *(u8 **)MapScene;
     NoxLasers = NULL;
-    func_80095258(arg);
+    SetupSceneMarks(arg);
 }
 
 s32 NoxPointInBox(s32 *arg0, s32 *arg1) {

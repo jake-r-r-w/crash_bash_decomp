@@ -429,6 +429,6 @@ extern Ambient_data BashJungleAmbience;
 extern Ambient_data BashDrainsAmbience;
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
-void func_80095258(u8 *arg0);
+void SetupSceneMarks(u8 *arg0);
 
 #endif /* BASH_BASH_OVL_H */

@@ -2098,7 +2098,7 @@ void ArkHeroWinner(u32 arg0) {
         CameraMode = 1;
     }
     CheckHeroAnim(arg0);
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
     ProcessHeroAnim(arg0);
@@ -4426,7 +4426,7 @@ void InitARKfloor(void) {
         ArkWalls[i].f1A = 0;
     }
     for (obj = (ArkenoidScnObj *)((GfxScene *)MapScene)->objs; obj != 0; obj = obj->next) {
-        p = (s16 *)func_80015870(obj->unk6C, obj->unk74);
+        p = (s16 *)model_entry_data(obj->unk6C, obj->unk74);
         k = *p;
         if (k - 1 < 9) {
             FloorObjectsA[k] = obj;

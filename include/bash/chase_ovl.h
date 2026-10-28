@@ -330,7 +330,7 @@ void ApplyContour(EXTengine *eng);
 void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
 
 s32 CheckHeroAnim();
-s32 func_8008A200(s32 arg0);
+s32 UpdateHeroVictory(s32 arg0);
 void FinishLevel(void);
 
 void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1);

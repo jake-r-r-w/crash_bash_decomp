@@ -613,7 +613,7 @@ void SetNasDefaults(void) {
     SubEngineTemplate.unk20.x = 0x1000;
     SubEngineTemplate.unk51 = 4;
     SubEngineTemplate.hook = (void (*)(subengine *, s32, u32)) draw_object;
-    SubEngineTemplate.release = (void (*)(subengine *)) func_8001CC08;
+    SubEngineTemplate.release = (void (*)(subengine *)) sub_release_none;
     SubEngineTemplate.unk50 = 0;
     SubEngineTemplate.unk74 = 0;
     SubEngineTemplate.unk70 = 0;
@@ -1137,7 +1137,7 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
     }
 }
 
-void func_800248A0(x, y, c0, c1, n)
+void DrawSpriteTriple(x, y, c0, c1, n)
     s16 x;
     s16 y;
     s32 c0;
@@ -1662,7 +1662,7 @@ FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag) {
     return NULL;
 }
 
-void func_80025AE4(u8 *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6) {
+void SetEngineMotion(u8 *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6) {
     (*(s16*)((u8*)(arg0) + 132)) = arg1;
     (*(s16*)((u8*)(arg0) + 134)) = arg2;
     (*(s16*)((u8*)(arg0) + 136)) = arg3;
@@ -1811,16 +1811,16 @@ void ApplyContour(EXTengine *eng) {
     }
 }
 
-void func_80025F8C(void) {
+void nas_unused_a(void) {
 }
 
-void func_80025F94(void) {
+void nas_unused_b(void) {
 }
 
-void func_80025F9C(void) {
+void nas_unused_c(void) {
 }
 
-void func_80025FA4(void) {
+void nas_unused_d(void) {
 }
 
 void GotoLinkAnim(EXTanimator *anim, s32 n) {
@@ -1979,13 +1979,13 @@ IdEntry *FindIdEntry(IdEntry *p, s32 id) {
     return NULL;
 }
 
-void func_80026418(void) {
+void nas_unused_e(void) {
 }
 
-void func_80026420(void) {
+void nas_unused_f(void) {
 }
 
-void func_80026428(void) {
+void nas_unused_g(void) {
 }
 
 void FreeAllExtensions(NAS *nas) {
@@ -2709,7 +2709,7 @@ void loader_pending_stub(void) {
     loader_pending();
 }
 
-void func_80027A94(void) {
+void cd_unused(void) {
 }
 
 void xa_mute(void) {
@@ -3180,7 +3180,7 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
 }
 
-s32 func_80028994(s32 a, s32 b, s32 c) {
+s32 vram_slot_class(s32 a, s32 b, s32 c) {
     s32 r;
     s32 h;
 
@@ -3309,7 +3309,7 @@ void debug_font_init2(void) {
     D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
 }
 
-void func_80028D38(void) {
+void texture_unused_a(void) {
 }
 
 void texture_upload_anim(AnimTex *t, s32 base, AnimTexSet *set) {
@@ -3496,11 +3496,11 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         d->fA = s->w2;
         if (d->flag == 0) {
             d->f8 = s->w0 << 2;
-            d->slot = &D_80063B1C[func_80028994(s->w0 << 2, s->w2, 0x10)];
+            d->slot = &D_80063B1C[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
             d->f10 = (*(u8 *)s << 2) - 1;
         } else {
             d->f8 = s->w0 << 1;
-            d->slot = &D_80063B1C[func_80028994(s->w0 << 1, s->w2, 0x100)];
+            d->slot = &D_80063B1C[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
             d->f10 = (*(u8 *)s << 1) - 1;
         }
         d->f11 = *(u8 *)((u8 *)s + 2) - 1;
@@ -3832,10 +3832,10 @@ s32 texture_draw_3d(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     return f->advance * 640 / ScreenRect->w;
 }
 
-void func_8002A2DC(void) {
+void texture_unused_b(void) {
 }
 
-void func_8002A2E4(void) {
+void texture_unused_c(void) {
 }
 
 s32 calc_rgbcode(s32 r, s32 g, s32 b) {
@@ -3903,7 +3903,7 @@ void textureset_upload_cluts(u8 *arg0) {
     }
 }
 
-void func_8002A4B8(void) {
+void texture_unused_d(void) {
 }
 
 void texture_upload_list(TexUploadList *arg0, u8 *arg1) {
@@ -3954,7 +3954,7 @@ s32 textureset_mem_size(u8 *arg0) {
     return size;
 }
 
-void func_8002A67C(void) {
+void texture_unused_e(void) {
 }
 
 void texture_scroll_step(u8 *arg0, u8 *arg1) {
@@ -4035,11 +4035,11 @@ void texture_init_entry(TexSrc2A84C *s, TexDst2A84C *d, s32 n) {
     d->fA = s->w2;
     if (d->flag == 0) {
         d->f8 = s->w0 << 2;
-        d->slot = &D_80063B1C[func_80028994(s->w0 << 2, s->w2, 0x10)];
+        d->slot = &D_80063B1C[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
         d->f10 = (*(u8 *)s << 2) - 1;
     } else {
         d->f8 = s->w0 << 1;
-        d->slot = &D_80063B1C[func_80028994(s->w0 << 1, s->w2, 0x100)];
+        d->slot = &D_80063B1C[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
         d->f10 = (*(u8 *)s << 1) - 1;
     }
     d->f11 = *(u8 *)((u8 *)s + 2) - 1;

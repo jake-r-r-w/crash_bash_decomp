@@ -3093,7 +3093,7 @@ void PolarAI_AvoidMelt(s32 player)
       }
       else
       {
-        ok = func_8008C4C8((s32 *) (&pos.v), 1);
+        ok = PointInZone((s32 *) (&pos.v), 1);
       }
       join:
       if (ok != 0)
@@ -3165,7 +3165,7 @@ void PolarAI_AvoidMelt(s32 player)
           }
         }
         else
-          if (func_8008C4C8((s32 *) (&pos.v), 1) != 0)
+          if (PointInZone((s32 *) (&pos.v), 1) != 0)
         {
           goto here;
         }
@@ -5750,7 +5750,7 @@ void PlotTransmuterBeam(NAS *m) {
                     if (ext->unk68 > 0) {
                         t3 = --ext->unk68;
                         if (ext->eng->sfx != NULL) {
-                            func_800228A4(ext->eng->sfx, (0x12C - t3) * 0xF00 / 300 + 0x1E00);
+                            sfx_set_pitch(ext->eng->sfx, (0x12C - t3) * 0xF00 / 300 + 0x1E00);
                         }
                         if (ext->eng != NULL) {
                             ext->eng->unk10 = Heroes[ext->unk6C].hero_eng->unk10;
@@ -5842,7 +5842,7 @@ void PlotTransmuterBeam(NAS *m) {
                     if (ext->unk68 > 0) {
                         t4 = --ext->unk68;
                         if (ext->eng->sfx != NULL) {
-                            func_800228A4(ext->eng->sfx, (0x12C - t4) * 0xF00 / 300 + 0x1E00);
+                            sfx_set_pitch(ext->eng->sfx, (0x12C - t4) * 0xF00 / 300 + 0x1E00);
                         }
                         if (ext->eng != NULL) {
                             k = 0;
@@ -7033,7 +7033,7 @@ void PlotUkaPolarMask(NAS *m) {
                 ext->unkAC = NULL;
             }
             if (ext->eng->sfx != NULL) {
-                func_800228A4(ext->eng->sfx, (0x12C - ext->unk68) * 0xF00 / 300 + 0x1E00);
+                sfx_set_pitch(ext->eng->sfx, (0x12C - ext->unk68) * 0xF00 / 300 + 0x1E00);
             }
             if (ext->unk68 > 0) {
                 ext->unk68--;
@@ -7751,7 +7751,7 @@ void InitPolarBoss(NAS *nas) {
 
     if (ext != NULL) {
         AddCamera((u8 *)nas);
-        func_80086868();
+        ResetHeroGlobals();
         BearminatorNas = nas;
         ext->cursor = ScriptCursorFirst(nas, &PolarBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->cursor, 0);
@@ -13059,7 +13059,7 @@ void PolarHeroWinner(s32 player) {
             move->x_vel = 0;
             move->z_vel = 0;
         }
-        if (func_8008A200(player) != 0) {
+        if (UpdateHeroVictory(player) != 0) {
             FinishLevel();
         }
         ProcessHeroAnim(player);

@@ -2211,7 +2211,7 @@ void TitlesShellScreenUpdate(void) {
 }
 
 void TitlesShellScreenInit(void) {
-    func_8009246C();
+    InitCardMenu();
 }
 
 void TitlesExtraScreenRender(void) {

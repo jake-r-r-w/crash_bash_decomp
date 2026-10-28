@@ -1928,7 +1928,7 @@ void ChaseHeroWinner(s32 arg0) {
         h->hero_eng->unk10.y = World_floor_level;
     }
     CheckHeroAnim(arg0);
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
     ProcessHeroAnim(arg0);

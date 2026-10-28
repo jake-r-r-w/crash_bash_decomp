@@ -9,8 +9,8 @@
 #include "common.h"
 #include "bash/engine.h"
 
-/* Hook func_8008DEC8 calls with its own arguments after the hero loop. */
-/* The part of a NAS's FUX extension func_8008DEC8 flags. */
+/* Hook HurtHeroesInRadius calls with its own arguments after the hero loop. */
+/* The part of a NAS's FUX extension HurtHeroesInRadius flags. */
 typedef struct {
     /* 0x00 */ u8 pad0[0x16];
     /* 0x16 */ s16 unk16;
@@ -297,7 +297,7 @@ typedef struct EngineLevelInfo {
     /* 0xBC */ u8 *unkBC;
     /* 0xC0 */ u8 *unkC0;
 } EngineLevelInfo;
-/* func_8008ADA4: script FX emitter state */
+/* UpdateFxEmitter: script FX emitter state */
 typedef struct FxEmitter {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -490,7 +490,7 @@ extern u16 D_8009AF38[];
 #define HUDENG ((HudEngView *)PanelTab)
 extern s32 D_8009AF00;
 extern s16 D_8009AE98[][8];
-void func_800248A0();
+void DrawSpriteTriple();
 void DrawHudEntries(HudEntry *e, s32 arg1);
 
 void DrawPauseMenu(void);

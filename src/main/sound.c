@@ -54,12 +54,12 @@ void sound_vsync_tick(void) {
 
 void sound_resume(void) {
     continue_music();
-    func_800227C0();
+    sfx_resume_all();
 }
 
 void sound_pause(void) {
     music_pause();
-    func_800227FC();
+    sfx_pause_all();
     xa_mute();
 }
 

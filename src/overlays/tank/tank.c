@@ -3377,7 +3377,7 @@ void TankHeroVictory(u32 arg0) {
     }
     ProcessHeroAnim(arg0);
     CheckHeroAnim(arg0);
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         if (HLV->state & 0x800) {
             HLV->unk30 |= 0x201;
         } else {
@@ -6396,7 +6396,7 @@ void InitTankBoss(NAS *nas) {
     u8 *base;
     u8 *model;
 
-    func_80086868();
+    ResetHeroGlobals();
     TankBossNas = nas;
     eng = nas->Engine;
     TankBossEng = eng;
@@ -7151,7 +7151,7 @@ void PlotTankBossRocketTurret(NAS *nas) {
     if (TankBossStatus >= 0x38) {
         return;
     }
-    ((void (*)(char *, s32))func_8008AD9C)("RocketTurret", nas->UserInfo.status);
+    ((void (*)(char *, s32))DebugNasStatus)("RocketTurret", nas->UserInfo.status);
     if (nas->UserInfo.flags == 2) {
         return;
     }

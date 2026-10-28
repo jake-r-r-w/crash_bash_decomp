@@ -236,15 +236,15 @@ static inline s32 EngineCurWorldName(void) {
     return *(s32 *)((u8 *)t + w * 4);
 }
 
-void func_8008FC58(void);
+void QuitCupMenu(void);
 
 void InitCupMenu(void);
 
 void InitSaveMenu(void);
 
-s32 func_800923F0(s32 *arg0);
+s32 CardSlotEmpty(s32 *arg0);
 
-void func_800923FC(void);
+void UpdateSaveScreen(void);
 
 void ClearEngineSlots(void);
 
@@ -264,13 +264,13 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern s32 D_8009F298[];
 extern void *D_8009F004[];
 extern char D_8009F4A8[][5];
-void func_80090564(u8 *arg0, s32 arg1);
+void ShowCardSlotStats(u8 *arg0, s32 arg1);
 extern char D_8009F498[];
 
 extern s32 D_8009F248[][5];
 EXTengine *GetEngineSlot(s32 arg0);
 
-/* func_800925C4's body, inlined by func_80090564. */
+/* GameSum147's body, inlined by ShowCardSlotStats. */
 static inline s32 EngineSum147(u8 *arg0) {
     s32 n;
     s32 i;
@@ -284,7 +284,7 @@ static inline s32 EngineSum147(u8 *arg0) {
     return n;
 }
 
-/* func_80092598's body, inlined by func_80090564. */
+/* GameSum126's body, inlined by ShowCardSlotStats. */
 static inline s32 EngineSum126(u8 *arg0) {
     s32 n;
     s32 i;
@@ -298,7 +298,7 @@ static inline s32 EngineSum126(u8 *arg0) {
     return n;
 }
 
-/* func_80092560's body, inlined by func_80090564. */
+/* GameCount105's body, inlined by ShowCardSlotStats. */
 static inline s32 EngineCount105(u8 *arg0) {
     s32 n;
     s32 i;
@@ -314,7 +314,7 @@ static inline s32 EngineCount105(u8 *arg0) {
     return n;
 }
 
-/* func_8009251C's body, inlined by func_80090564. */
+/* GameExtra105's body, inlined by ShowCardSlotStats. */
 static inline s32 EngineExtra105(u8 *arg0) {
     u8 *p;
     s32 i;
@@ -330,7 +330,7 @@ static inline s32 EngineExtra105(u8 *arg0) {
     return n;
 }
 
-/* func_800925F0's body, inlined by func_80090564. */
+/* GameSetSlot3Digits's body, inlined by ShowCardSlotStats. */
 static inline void EngineSetSlot3Digits(s32 slot, s32 arg0) {
     s32 *src;
     s32 *p;
@@ -359,7 +359,7 @@ static inline void EngineSetSlot3Digits(s32 slot, s32 arg0) {
     } while (i < 5);
 }
 
-void func_80090564(u8 *arg0, s32 arg1);
+void ShowCardSlotStats(u8 *arg0, s32 arg1);
 
 void ShowSaveScreen(void);
 
@@ -409,7 +409,7 @@ extern void *D_8009EFDC[];
         q_ = p_ + 8;                                  \
         a_ = q_ + off_;                               \
         CardSlotIndex = i_;                              \
-        func_80090564(a_, b_);                        \
+        ShowCardSlotStats(a_, b_);                        \
     }
 extern void *D_8009EFB0[];
 extern void *D_8009EFB4[];
@@ -465,11 +465,11 @@ void ReturnToWarpRoom(void);
 
 void ExitToTitles(void);
 
-void func_80092F9C(void);
+void SetReturnGateway(void);
 
 void CopyScreen(void);
 
-s32 func_80092560(u8 *arg0);
+s32 GameCount105(u8 *arg0);
 
 void ResetWarpRooms(void);
 
@@ -477,11 +477,11 @@ void QuitIntro(void);
 
 s32 WarpRoomIndex(s32 arg0);
 
-void func_80092CAC(void);
+void InitRetry(void);
 
-s32 func_80092598(u8 *arg0);
+s32 GameSum126(u8 *arg0);
 
-s32 func_800925C4(u8 *arg0);
+s32 GameSum147(u8 *arg0);
 
 void InitGameOptions(void);
 
@@ -495,7 +495,7 @@ s32 *WarpRoomOfMode(s32 arg0);
 
 void RenderSaveMenu(void);
 
-s32 func_8009251C(u8 *arg0);
+s32 GameExtra105(u8 *arg0);
 
 void QuitProcess(void);
 
@@ -519,9 +519,9 @@ s32 CupNextArena(void);
 
 void RefreshCardSlots(void);
 
-void func_80092BDC(void);
+void RestartGame(void);
 
-void func_80092FB8(void);
+void UpdateSecretLevel(void);
 
 void InitCrateExplode(NAS *arg0);
 
@@ -531,9 +531,9 @@ void UpdateExitDelay(void);
 
 s32 CupUnlocked(s32 arg0);
 
-void func_8009246C(void);
+void InitCardMenu(void);
 
-void func_8009201C(void);
+void InitCardPromptMenu(void);
 
 extern s32 D_8009F248[][5];
 
@@ -543,13 +543,13 @@ void RenderCupMenu(void);
 
 s32 CountCupTrophies(void *arg0);
 
-s32 func_800900CC(void);
+s32 WarpRoomBestLevel(void);
 
 void RestoreHeroChoice(u8 *src);
 
 void SaveHeroChoice(u8 *dst);
 
-void func_800925F0(s32 arg0);
+void GameSetSlot3Digits(s32 arg0);
 
 void InitGraphics(void);
 
@@ -592,7 +592,7 @@ extern u8 *D_8009E5AC;
 extern _sfx_handler *IntroSfx[3];
 extern _sfx_handler *D_8009E5C4;
 void UpdateIntro(void);
-void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2);
 
 void UpdateCupMenu(void);

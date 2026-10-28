@@ -33,7 +33,7 @@ typedef struct {
 void PAHeroWinner(s32 arg0);
 extern HeroInfo Heroes[4];
 s32 CheckHeroAnim();
-s32 func_8008A200(s32 arg0);
+s32 UpdateHeroVictory(s32 arg0);
 void FinishLevel(void);
 
 extern u16 D_8009E080[][4];

@@ -1155,7 +1155,7 @@ void InitCratePickup(NAS *arg0) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
-                func_8008DDC0(arg0);
+                AddPowerupFloat(arg0);
             }
         }
         FetchDefaultColBox(eng, 0x50);
@@ -1206,7 +1206,7 @@ void InitShieldPickup(NAS *arg0) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
-                func_8008DDC0(arg0);
+                AddPowerupFloat(arg0);
             }
         }
         FetchDefaultColBox(eng, 0x50);
@@ -1258,7 +1258,7 @@ void InitBootsPickup(NAS *arg0) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
-                func_8008DDC0(arg0);
+                AddPowerupFloat(arg0);
             }
         }
         FetchDefaultColBox(eng, 0x50);
@@ -1310,7 +1310,7 @@ void InitAnvilPickup(NAS *arg0) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
-                func_8008DDC0(arg0);
+                AddPowerupFloat(arg0);
             }
         }
         FetchDefaultColBox(eng, 0x50);
@@ -1362,7 +1362,7 @@ void InitSlowmoPickup(NAS *arg0) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
-                func_8008DDC0(arg0);
+                AddPowerupFloat(arg0);
             }
         }
         FetchDefaultColBox(eng, 0x50);
@@ -1417,7 +1417,7 @@ void PlotPickup(NAS *arg0) {
         }
         return;
     }
-    func_8008D6C8(arg0);
+    UpdateBounceMotion(arg0);
     if (obj->will_do & 8) {
         obj->will_do &= ~8;
         if (obj->player != -1 && obj->player < 5) {
@@ -1582,7 +1582,7 @@ void BashHero_ExtraEffects(s32 arg0) {
                     if (t >= 0x12C) {
                         t = 0x12B;
                     }
-                    func_800228A4(BashSfxEngine.sfx, (0x12C - t) * 0xF00 / 300 + 0x1E00);
+                    sfx_set_pitch(BashSfxEngine.sfx, (0x12C - t) * 0xF00 / 300 + 0x1E00);
                 }
             } else {
                 if (BashSfxEngine.sfx != NULL) {

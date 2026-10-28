@@ -71,7 +71,7 @@ done:
     if (HeroHooks.HeroCarryCollision != NULL) {
         HeroHooks.HeroCarryCollision(arg0);
     }
-    func_800871E4(arg0);
+    HeroTestFall(arg0);
 }
 
 void BashHeroPickup(s32 arg0) {
@@ -109,7 +109,7 @@ clear:
         s->flags &= ~0x8000;
     }
 done:
-    func_800871E4(arg0);
+    HeroTestFall(arg0);
     HeroHooks.HeroKickCollision(arg0);
 }
 
@@ -165,7 +165,7 @@ none:
     SetHeroAction(arg0, 0);
     return;
 rest:
-    if (func_8008ACF0(arg0) == 0) {
+    if (HeroTestMove(arg0) == 0) {
         HeroHooks.HeroKickCollision(arg0);
         ProcessHeroAnim(arg0);
         base2 = Heroes;
@@ -182,7 +182,7 @@ rest:
             s->unk52 = 1;
             s->unk0C = new_var;
         }
-        func_800871E4(arg0);
+        HeroTestFall(arg0);
     }
 }
 
@@ -223,7 +223,7 @@ none:
     SetHeroAction(arg0, 0);
     return;
 rest:
-    if (func_8008AC74(arg0) == 0) {
+    if (HeroTestStop(arg0) == 0) {
         HeroHooks.HeroKickCollision(arg0);
         ProcessHeroAnim(arg0);
         base2 = Heroes;
@@ -240,7 +240,7 @@ rest:
             s->unk52 = 1;
             s->unk0C = new_var;
         }
-        func_800871E4(arg0);
+        HeroTestFall(arg0);
     }
 }
 
@@ -295,7 +295,7 @@ clear:
         s->flags &= ~0x8000;
     }
 done:
-    func_800871E4(arg0);
+    HeroTestFall(arg0);
     HeroHooks.HeroKickCollision(arg0);
 }
 
@@ -490,7 +490,7 @@ void BashHeroWinner(s32 arg0) {
         h->hero_eng->unk10.y = World_floor_level;
     }
     CheckHeroAnim(arg0);
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
     ProcessHeroAnim(arg0);

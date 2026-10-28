@@ -376,7 +376,7 @@ void SpinInitScene(void) {
         SpinArenaObjs[i] = NULL;
     }
     for (; obj != NULL; obj = obj->next) {
-        p = (s16 *)func_80015870(obj->model, obj->index);
+        p = (s16 *)model_entry_data(obj->model, obj->index);
         i = *p - 10;
         if ((u32)i < 10) {
             SpinArenaObjs[i] = obj;
@@ -2837,7 +2837,7 @@ void SpinHeroHit(s32 arg0) {
     if (HeroHooks.HeroCarryCollision != NULL) {
         HeroHooks.HeroCarryCollision(arg0);
     }
-    func_800871E4(arg0);
+    HeroTestFall(arg0);
 }
 
 void SetSpinHeroFlip(s32 arg0) {
@@ -3015,7 +3015,7 @@ void SpinHeroWinner(s32 arg0) {
         h->hero_eng->unk10.y = World_floor_level;
     }
     CheckHeroAnim(arg0);
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
     ProcessHeroAnim(arg0);

@@ -1391,7 +1391,7 @@ void N2OHeroWinner(s32 arg0) {
         CameraMode = 1;
     }
     CheckHeroAnim(arg0, flag);
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
     ProcessHeroAnim(arg0);
@@ -2051,7 +2051,7 @@ void N2OInitBoss(void) {
             AiPlayerSkill[i].unk4 = 0x10;
         }
     }
-    func_80086868();
+    ResetHeroGlobals();
     sub = Heroes[3].hero_sub;
     eng = Heroes[3].hero_eng;
     pos = &eng->unk10.x;
@@ -3054,7 +3054,7 @@ void N2OInitSlots(void) {
     e = (N2OEnt *)((GfxScene *)MapScene)->objs;
     N2OPhaseObject = NULL;
     for (; e != NULL; e = e->next) {
-        t = (s16 *)func_80015870(e->key, e->id);
+        t = (s16 *)model_entry_data(e->key, e->id);
         if (t[1] == 0x63) {
             k = t[0] - 10;
             if (k < 4) {
@@ -3922,7 +3922,7 @@ void N2OShowPhaseObjects(u16 arg0) {
 
     if (arg0) {
         while (n != NULL) {
-            p = (s16 *)func_80015870(n->unk6C, n->unk74);
+            p = (s16 *)model_entry_data(n->unk6C, n->unk74);
             if (p[1] == 0x63) {
                 if (p[0] != 0x62) {
                     n->flags |= 0x8000;
@@ -3936,7 +3936,7 @@ void N2OShowPhaseObjects(u16 arg0) {
         }
     } else {
         while (n != NULL) {
-            p = (s16 *)func_80015870(n->unk6C, n->unk74);
+            p = (s16 *)model_entry_data(n->unk6C, n->unk74);
             if (p[1] == 0x63) {
                 n->flags &= ~0x8000;
             } else {

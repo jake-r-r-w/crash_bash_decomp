@@ -1240,14 +1240,14 @@ u32 RaceAI_FollowTrack(s32 player) {
             pos.x = h->hero_eng->unk10.x - (d * rcossin_tbl[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
             pos.y = 0;
             pos.z = h->hero_eng->unk10.z - (d * rcossin_tbl[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
-            if (func_8008C4C8(&pos.x, 0) != 0) {
+            if (PointInZone(&pos.x, 0) != 0) {
                 h->hero_ai->AIpad |= 0x80;
                 h->hero_ai->AIpad &= ~0x8000;
             }
             pos.x = h->hero_eng->unk10.x - (rcossin_tbl[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 0x79 >> 8);
             pos.y = 0;
             pos.z = h->hero_eng->unk10.z - (rcossin_tbl[h->hero_eng->unk1E & 0xFFF].unk2 * 0x79 >> 8);
-            if (GameMode == 0x17 && (d = func_8008C4C8(&pos.x, 3) != 1)) {
+            if (GameMode == 0x17 && (d = PointInZone(&pos.x, 3) != 1)) {
                 h->hero_ai->AIpad |= 0x20;
                 h->hero_ai->AIpad &= ~0x8000;
             }
@@ -4055,8 +4055,8 @@ s32 RaceHeroTestOil(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = base + arg0;
 
-    if (func_8008C4C8((s32 *)&hero->hero_eng->unk10, 2) == 0 &&
-        func_8008C4C8((s32 *)&hero->hero_eng->unk10, 3) == 0) {
+    if (PointInZone((s32 *)&hero->hero_eng->unk10, 2) == 0 &&
+        PointInZone((s32 *)&hero->hero_eng->unk10, 3) == 0) {
         return 0;
     }
     if (hero->hero_mode != 0x60) {
@@ -5700,7 +5700,7 @@ loop1:
         goto loop1;
     }
     if (m->Engine->sfx != NULL) {
-        func_800228A4(m->Engine->sfx, (0x12C - RaceTagTime) * 0xF00 / 300 + 0x1E00);
+        sfx_set_pitch(m->Engine->sfx, (0x12C - RaceTagTime) * 0xF00 / 300 + 0x1E00);
     }
     i = 0;
     if (RaceTagTime == 0) {
@@ -6852,7 +6852,7 @@ s32 RaceTrackAngle(s32 arg0) {
 
 void RaceHeroWinner(s32 arg0) {
     CheckHeroAnim(arg0);
-    if (func_8008A200(arg0) != 0) {
+    if (UpdateHeroVictory(arg0) != 0) {
         FinishLevel();
     }
     ProcessHeroAnim(arg0);

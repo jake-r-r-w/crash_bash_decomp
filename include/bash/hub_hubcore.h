@@ -611,7 +611,7 @@ void HubTrailPoint(HubTrailDst *d, HubTrail *t, s32 idx);
 
 void HubDrawSparks(HubSparks *arg0, MATRIX *m);
 
-/* The warp room's sparks: their Init/Plot pair after three words; func_80015D70 takes it. */
+/* The warp room's sparks: their Init/Plot pair after three words; fx_alloc_buffers takes it. */
 typedef struct HubSparkFx {
     s32 unk0;
     s32 unk4;

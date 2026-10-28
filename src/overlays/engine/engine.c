@@ -211,7 +211,7 @@ found2:
     }
 }
 
-void func_800793E8(void) {
+void PickCpuHeroes(void) {
     s32 w;
     s32 i;
     s32 j;
@@ -277,7 +277,7 @@ void func_800793E8(void) {
     }
 }
 
-void func_80079554(void) {
+void CheckControllers(void) {
     EngMenuGame *g = (EngMenuGame *)GameInfo;
     EngMenuItem *item;
     u16 *levels;
@@ -361,7 +361,7 @@ void UpdateLevel(void) {
     EngObj *o;
 
     mal_count_free(&MainHeap);
-    func_80079554();
+    CheckControllers();
     if (GameCheats & 0x10) {
         FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", D_8004E104, D_8004E10C);
     }
@@ -692,24 +692,24 @@ s32 CountTrophies(u8 *arg0) {
     return sum;
 }
 
-void func_8007A614(s32 arg0) {
+void ArenaRequirementMet(s32 arg0) {
     u8 *p = GameInfo;
     LevelRequirementMet(D_800986FC[arg0 & 0xFFFF], p);
 }
 
-void func_8007A650(s32 arg0) {
+void ArenaRequirementMetAny(s32 arg0) {
     LevelRequirementMet(D_800986FC[arg0 & 0xFFFF]);
 }
 
-void func_8007A688(s32 arg0) {
+void RequirementMet(s32 arg0) {
     LevelRequirementMet(arg0 & 0xFFFF, GameInfo);
 }
 
-void func_8007A6B0(s32 arg0) {
+void RequirementMetAny(s32 arg0) {
     LevelRequirementMet(arg0 & 0xFFFF);
 }
 
-void func_8007A6D0(s32 arg0) {
+void ModeRequirementMet(s32 arg0) {
     LevelRequirementMet(arg0 & 0xFFFF, GameInfo);
 }
 
@@ -737,7 +737,7 @@ void RenderAllNas(void) {
 
 void RenderLevel(void) {
     mal_count_free(&MainHeap);
-    func_80079554();
+    CheckControllers();
     GlobalNAStatus = 4;
     UpdatePanel();
     GlobalNAStatus = 0;
@@ -827,7 +827,7 @@ void RenderNas(void) {
     GlobalNAStatus = 0;
 }
 
-void func_8007AB20(void) {
+void LevelUnused(void) {
 }
 
 void QuitLevel(void) {
@@ -839,7 +839,7 @@ void QuitLevel(void) {
     KillEveryNas();
 }
 
-void func_8007AB6C(void) {
+void UpdateLevelTriggers(void) {
     RunLevelTriggers();
 }
 

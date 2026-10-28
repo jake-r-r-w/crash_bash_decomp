@@ -14,7 +14,7 @@ void CamFromPath1(u8 *p);
 
 s32 CamEdgeIntersect(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2);
 
-s32 func_800976A8(u8 *arg0, s32 arg1);
+s32 span_z(u8 *arg0, s32 arg1);
 
 void ScreenLabelsOff(void);
 
@@ -104,7 +104,7 @@ void ScreenLabelsStart(void);
 
 void HideScreenLabels(void);
 
-void func_80098464(void);
+void ShowLevelLabel(void);
 
 s32 CamEdgeIntersectZY(VECTOR *arg0, VECTOR *arg1, s32 arg2);
 

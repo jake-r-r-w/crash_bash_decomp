@@ -44,6 +44,6 @@ void modchip_show_warning(void);
 
 void msg_print(u8 *str, TextPos *pos, s32 arg2);
 void msg_draw_glyph(TextPos *pos, u8 *glyph, s32 colour, s32 bits);
-void func_8002E618(void);
+void msg_draw_emblem(void);
 
 #endif /* BASH_MODCHIP_MSG_H */

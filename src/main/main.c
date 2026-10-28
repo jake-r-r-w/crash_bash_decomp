@@ -2042,7 +2042,7 @@ void sortlist_sort(s32 arg0) {
     } while (sortlist_bubble(arg0) != 0);
 }
 
-void func_80012E0C(void) {
+void loader_unused_a(void) {
 }
 
 void smallnode_free(u8 *arg0) {
@@ -2079,7 +2079,7 @@ void smallnode_init(void) {
     *(u8 **)(p + 8) = NULL;
 }
 
-void func_80012E88(void) {
+void loader_unused_b(void) {
 }
 
 void init_file(void) {
@@ -2883,7 +2883,7 @@ void export_exe_functions(void) {
     t[0x010 / 4] = sfx_bank_load;
     t[0x014 / 4] = sound_reinit;
     t[0x018 / 4] = sfx_delete_all;
-    t[0x01C / 4] = func_800228A4;
+    t[0x01C / 4] = sfx_set_pitch;
     t[0x020 / 4] = sfx_bank_close;
     t[0x024 / 4] = sound_pause;
     t[0x028 / 4] = sound_resume;
@@ -2916,7 +2916,7 @@ void export_exe_functions(void) {
     t[0x094 / 4] = release_sprim;
     t[0x098 / 4] = new_sprim;
     t[0x09C / 4] = draw_gouraud_quad;
-    t[0x0A0 / 4] = func_8001A6D4;
+    t[0x0A0 / 4] = draw_panel_rect;
     t[0x0A4 / 4] = sub_play_script;
     t[0x0A8 / 4] = draw_model_quad;
     t[0x0AC / 4] = draw_nas_model_flags;
@@ -2924,8 +2924,8 @@ void export_exe_functions(void) {
     t[0x0B4 / 4] = draw_text_nas;
     t[0x0B8 / 4] = sub_use_quad_model;
     t[0x0BC / 4] = kill_sprim_sub;
-    t[0x0C0 / 4] = func_800158E4;
-    t[0x0C4 / 4] = func_80015870;
+    t[0x0C0 / 4] = model_entry_texture;
+    t[0x0C4 / 4] = model_entry_data;
     t[0x0C8 / 4] = SetDrawArea;
     t[0x0CC / 4] = tga_convert;
     t[0x0D0 / 4] = eng_add_subs;
@@ -2939,8 +2939,8 @@ void export_exe_functions(void) {
     t[0x0F0 / 4] = entity_address;
     t[0x0F4 / 4] = init_dots;
     t[0x0F8 / 4] = plot_point_sprites;
-    t[0x0FC / 4] = func_80015D70;
-    t[0x100 / 4] = func_80015D08;
+    t[0x0FC / 4] = fx_alloc_buffers;
+    t[0x100 / 4] = fx_free_buffers;
     t[0x104 / 4] = calc_rgbcode;
     t[0x108 / 4] = cam_init;
     t[0x10C / 4] = cam_ease_to;
@@ -2976,7 +2976,7 @@ void export_exe_functions(void) {
     t[0x184 / 4] = load_file_direct;
     t[0x188 / 4] = mapenv_place_subs;
     t[0x18C / 4] = mapscene_find_sub;
-    t[0x190 / 4] = func_80015984;
+    t[0x190 / 4] = entry_block_value;
     t[0x194 / 4] = gte_rotate_point;
     t[0x198 / 4] = fade_update;
     t[0x19C / 4] = set_fade;
@@ -3254,7 +3254,7 @@ PointList *sub_point_list(subengine *sub) {
         case 0x3000:
             break;
         case 0x4000:
-            rec = func_80015A78(flag, base + (*(s32 *)(base + 0x44) + 0x44) + ((flag & 0xF80) >> 7) * 0x18);
+            rec = dbase_anim_frame(flag, base + (*(s32 *)(base + 0x44) + 0x44) + ((flag & 0xF80) >> 7) * 0x18);
             if (rec != NULL) {
                 off = *(s32 *)(rec + 0xC);
                 if (off == 0) {
@@ -3325,7 +3325,7 @@ none:
     return NULL;
 }
 
-u8 *func_80015870(u8 *arg0, s32 arg1) {
+u8 *model_entry_data(u8 *arg0, s32 arg1) {
     u8 *base;
     u8 *rec;
 
@@ -3347,7 +3347,7 @@ u8 *func_80015870(u8 *arg0, s32 arg1) {
     return NULL;
 }
 
-s32 func_800158E4(u8 *arg0, s32 arg1) {
+s32 model_entry_texture(u8 *arg0, s32 arg1) {
     u8 *base;
     u8 *p;
     s32 k;
@@ -3376,7 +3376,7 @@ s32 func_800158E4(u8 *arg0, s32 arg1) {
     return -1;
 }
 
-s32 func_80015984(s32 i, EntryBlock *blk) {
+s32 entry_block_value(s32 i, EntryBlock *blk) {
     s32 idx = i;
 
     u8 *base;
@@ -3417,7 +3417,7 @@ u8 *entity_address(u32 arg0, u8 *arg1) {
     return arg1 + ((arg0 & 0xFFF) * 0x34 + 0x24);
 }
 
-u8 *func_80015A78(s32 i, u8 *rec) {
+u8 *dbase_anim_frame(s32 i, u8 *rec) {
     void **node;
     u8 *data;
 
@@ -3432,7 +3432,7 @@ u8 *func_80015A78(s32 i, u8 *rec) {
     return data + ((i & 0x7F) * 0x10 + 4);
 }
 
-void *func_80015AB0(s32 *arg0, u8 *rec) {
+void *dbase_anim_node(s32 *arg0, u8 *rec) {
     void **node;
 
     node = *(void ***)(rec + 0x14);
@@ -3496,7 +3496,7 @@ void plot_point_sprites(PointSprites *ps, MATRIX *m) {
         prim++;
     }
 }
-void func_80015D08(u8 *arg0) {
+void fx_free_buffers(u8 *arg0) {
     u8 *temp_s2;
 
     temp_s2 = arg0 + 0x6C;
@@ -3505,7 +3505,7 @@ void func_80015D08(u8 *arg0) {
     mal_free((*(s32*)((u8*)(arg0) + 108)), &MainHeap);
 }
 
-s32 func_80015D70(u8 *arg0, u8 *arg1) {
+s32 fx_alloc_buffers(u8 *arg0, u8 *arg1) {
     u8 *temp_s0;
     u8 *temp_s4;
     s32 var_v0;
@@ -3532,7 +3532,7 @@ s32 func_80015D70(u8 *arg0, u8 *arg1) {
     }
     if (var_v0 != 0) {
         s32 temp_v1 = *(s32 *)(arg0 + 0x10);
-        *(void **)(arg1 + 0x58) = func_80015D08;
+        *(void **)(arg1 + 0x58) = fx_free_buffers;
         *(s32 *)(arg1 + 0x54) = temp_v1;
         (*(void (**)(u8 *))(arg0 + 0xC))(arg1);
     } else {
@@ -3542,7 +3542,7 @@ s32 func_80015D70(u8 *arg0, u8 *arg1) {
     return *(s32 *)(arg1 + 0x78);
 }
 
-s32 func_80015E94(u8 *arg0, u8 *arg1) {
+s32 fx_alloc_buffers_b(u8 *arg0, u8 *arg1) {
     u8 *temp_s3;
 
     temp_s3 = arg1 + 4;

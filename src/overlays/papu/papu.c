@@ -796,7 +796,7 @@ void InitPapuBoss(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        func_80086868();
+        ResetHeroGlobals();
         eng->sub->unk6C = PapuModel;
         eng->sub->unk74 = 0x2001;
         eng->unk5C = 1;
@@ -2053,7 +2053,7 @@ void PapuInitTiles(void) {
     }
     PapuFloorObj = NULL;
     while (obj != NULL) {
-        id = (u16 *)func_80015870(obj->model, obj->index);
+        id = (u16 *)model_entry_data(obj->model, obj->index);
         if ((u32)(*id - 10) < 78) {
             i = 7 - (s16)((s16)*id % 10);
             j = (s16)((s16)*id / 10) - 1;

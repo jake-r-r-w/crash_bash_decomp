@@ -1019,7 +1019,7 @@ typedef struct PolarBossExt {
 extern NAS *BearminatorNas;
 extern ScriptInit PolarBossScriptInit;
 extern s16 D_8009D6E2;
-void func_80086868(void);
+void ResetHeroGlobals(void);
 
 extern NAS *polarbossnas;
 

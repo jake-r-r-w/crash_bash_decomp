@@ -32,15 +32,15 @@ extern void (*D_8005AA74)(void);
 extern s32 D_8009E29C;
 extern s32 D_8009E298;
 
-void func_8007A688(s32 arg0);
-void func_8007A6B0(s32 arg0);
-void func_8007A6D0(s32 arg0);
+void RequirementMet(s32 arg0);
+void RequirementMetAny(s32 arg0);
+void ModeRequirementMet(s32 arg0);
 void RunLevelTriggers(void);
 void RenderLevel(void);
 void InitAmbience(Ambient_data *arg0);
 void RenderNas(void);
-void func_8007AB20(void);
-void func_8007AB6C(void);
+void LevelUnused(void);
+void UpdateLevelTriggers(void);
 void ResetASTTable(void);
 void ClearLevelNas(void);
 extern s32 D_8009EF64;
@@ -175,7 +175,7 @@ extern process_info ScriptSceneProcess;
 extern s32 D_800A0C0C;
 extern s32 D_800A0D30;
 extern s32 D_800A0C70;
-/* func_8009440C's entries (D_800A0C10, 0xC bytes) and the table they index (0x14 bytes). */
+/* DrawSceneMarks's entries (D_800A0C10, 0xC bytes) and the table they index (0x14 bytes). */
 typedef struct EngineMarker {
     /* 0x0 */ u16 unk0;
     /* 0x4 */ s32 idx;
@@ -195,7 +195,7 @@ extern s32 D_800A0D24[];
 extern s32 D_800A0D28;
 extern s32 D_800A0D38;
 extern u8 D_8009E498[];
-/* GameInfo as seen by func_80092CAC. */
+/* GameInfo as seen by InitRetry. */
 typedef struct EngineGameView {
     /* 0x00 */ u8 unk0[4];
     /* 0x04 */ s32 unk4;
@@ -263,7 +263,7 @@ typedef struct { s32 *unk0; s32 *unk4; s32 unk8; s32 unkC; s32 unk10; EngSub9024
 extern s8 GameGateway;
 extern EngRec90248 HubGateways[];
 
-void func_8007A650(s32 arg0);
+void ArenaRequirementMetAny(s32 arg0);
 
 typedef struct {
     u8 unk0;
@@ -296,17 +296,17 @@ typedef struct PadButtons {
 
 extern s32 PauseChoice;
 extern s32 PausePad;
-void func_8007A614(s32 arg0);
+void ArenaRequirementMet(s32 arg0);
 
 
-/* An entry of the list D_800A0D1C walks (func_80094860), 12 bytes. */
+/* An entry of the list D_800A0D1C walks (UpdateSceneVabCues), 12 bytes. */
 typedef struct {
     s32 vab;   /* machine_load_sfx's first argument; 0 ends the list */
     s32 sfx;   /* PlaySfx id */
     s32 unk8;  /* -> D_800654B0 */
 } EngineVabCue;
 
-/* func_800945C0's argument. */
+/* SetupScriptScene's argument. */
 typedef struct {
     void *unk0; /* -> D_800A0D2C */
     s32 unk4;   /* -> D_800A0D1C */
@@ -461,7 +461,7 @@ void DoAmbience(void);
 #include "bash/camera.h"
 
 /* Needs prototypes from the unit headers above. */
-/* func_80092CAC's tail: resets state, then starts the mode by its ModeTypes world. */
+/* InitRetry's tail: resets state, then starts the mode by its ModeTypes world. */
 static inline void EngineBeginMode(s32 arg) {
     EngineGameView *g = (EngineGameView *)GameInfo;
     s32 mode;
@@ -515,11 +515,11 @@ void InitialiseNasSystem(void);
 
 void UpdateAllNas(void);
 
-void func_800793E8(void);
+void PickCpuHeroes(void);
 
 s32 GravitateNas(NAS *nas);
 
-/* GameInfo as seen by func_80079554. */
+/* GameInfo as seen by CheckControllers. */
 typedef struct EngMenuGame {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 flags;
@@ -532,7 +532,7 @@ typedef struct EngMenuGame {
     /* 0x6C */ u8 pad6C[0x74 - 0x6C];
     /* 0x74 */ u8 unk74;
 } EngMenuGame;
-/* 0x18-byte entries at D_8005A3EC (func_80079554). */
+/* 0x18-byte entries at D_8005A3EC (CheckControllers). */
 typedef struct EngMenuItem {
     /* 0x00 */ s16 unk0;
     /* 0x02 */ s16 unk2;
@@ -543,7 +543,7 @@ typedef struct EngMenuItem {
 extern EngMenuItem D_8005A3EC[];
 extern s16 D_8005A3A4[];
 
-void func_80079554(void);
+void CheckControllers(void);
 
 /* GameInfo as seen by DrawLevelHud. */
 typedef struct EngHudGame {

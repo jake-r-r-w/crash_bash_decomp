@@ -221,7 +221,7 @@ _sfx_handler *PlaySfx(s32 id, _sfx_handler **handle, SLONG_XYZ *pos, s32 arg3, s
     return voice;
 }
 
-void func_800227C0(void) {
+void sfx_resume_all(void) {
     _sfx_handler *voice;
 
     voice = SfxVoicePool.active;
@@ -233,7 +233,7 @@ void func_800227C0(void) {
     }
 }
 
-void func_800227FC(void) {
+void sfx_pause_all(void) {
     _sfx_handler *voice;
 
     voice = SfxVoicePool.active;
@@ -262,7 +262,7 @@ void sfx_update_all(void) {
     }
 }
 
-void func_800228A4(_sfx_handler *voice, s32 arg1) {
+void sfx_set_pitch(_sfx_handler *voice, s32 arg1) {
     if (voice != NULL) {
         voice->unk24 = arg1;
         voice->flags |= 1;

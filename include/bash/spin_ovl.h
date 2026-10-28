@@ -241,7 +241,7 @@ void ApplyContour(EXTengine *eng);
 void *FindExtension(NAS *nas, s32 id);
 
 s32 CheckHeroAnim();
-s32 func_8008A200(s32 arg0);
+s32 UpdateHeroVictory(s32 arg0);
 void FinishLevel(void);
 
 s32 SpinAI_HazardAhead(s32 arg0);
@@ -298,7 +298,7 @@ extern u16 SpinHitSfx[];
 extern u16 SpinHitDone[];
 extern s32 GameCheats;
 s32 ProcessHeroAnim();
-s32 func_800871E4(s32 arg0);
+s32 HeroTestFall(s32 arg0);
 s32 SetHeroSeq(s32 player, s32 seq);
 
 void SpinShuffleDropPoints(void);

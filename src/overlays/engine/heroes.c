@@ -1389,7 +1389,7 @@ s32 HeroTestBox(s32 id, u32 flag) {
     return -1;
 }
 
-s32 func_800866DC(s32 *arg0) {
+s32 HeroCopyPosStub(s32 *arg0) {
     s32 buf[4];
 
     *(Vec3W *)(buf + 1) = *(Vec3W *)(arg0 + 4);
@@ -1435,7 +1435,7 @@ void UpdateHeroShadow(s32 idx) {
     }
 }
 
-void func_800867EC(void) {
+void MoveSecondHero(void) {
     DefMoveHero(1);
 }
 
@@ -1451,7 +1451,7 @@ void ReleaseHeroAnims(void) {
     }
 }
 
-void func_80086868(void) {
+void ResetHeroGlobals(void) {
     D_8009D6DC[0] = 0;
     D_8009D6DC[1] = 0;
     D_8009D6DC[2] = 0;
@@ -1554,7 +1554,7 @@ void SetTweakAi(void) {
             }
         }
     }
-    func_80086C94(ret);
+    AdjustAiSkill(ret);
     n = 0;
     do {
         flags = n < 4;
@@ -1562,7 +1562,7 @@ void SetTweakAi(void) {
     } while (flags);
 }
 
-s32 func_80086C94(s32 arg0) {
+s32 AdjustAiSkill(s32 arg0) {
     s32 v;
     u8 *g;
     s32 idx;
@@ -1661,7 +1661,7 @@ void MarkHeroesOnGrid(void) {
     }
 }
 
-void func_80086F4C(void) {
+void ArenaGridScan(void) {
     s32 i;
     s32 j;
 
@@ -1757,7 +1757,7 @@ s32 HeroTestActions(s32 arg0) {
     return 0;
 }
 
-s32 func_800871E4(s32 arg0) {
+s32 HeroTestFall(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     HeroInfo *base13;
@@ -1921,7 +1921,7 @@ void HeroIdle(s32 arg0) {
             } else if (HeroHooks.HeroCarryCollision != NULL) {
                 HeroHooks.HeroCarryCollision(arg0);
             }
-            func_800871E4(arg0);
+            HeroTestFall(arg0);
         }
     }
 }
@@ -1946,7 +1946,7 @@ void HeroTaunt(s32 arg0) {
                     HeroHooks.HeroKickCollision(arg0);
                 }
             }
-            func_800871E4(arg0);
+            HeroTestFall(arg0);
         }
     }
 }
@@ -2010,7 +2010,7 @@ void HeroRun(s32 arg0) {
                 break;
             }
         end:
-            func_800871E4(arg0);
+            HeroTestFall(arg0);
         }
     }
 }
@@ -2208,7 +2208,7 @@ void HeroLand(s32 arg0) {
             if (ret == 0) {
                 HeroHooks.HeroKickCollision(arg0);
                 ProcessHeroAnim(arg0);
-                func_800871E4(arg0);
+                HeroTestFall(arg0);
             }
         }
     }
@@ -2296,7 +2296,7 @@ void HeroSpin(s32 arg0) {
                 ((void (*)(s32, s32, s32, s32))HeroHooks.Hero2ObjectCollision)(arg0, 2, 0x400, 0);
                 ((void (*)(s32))HeroHooks.HeroKickCollision)(arg0);
                 ProcessHeroAnim(arg0);
-                func_800871E4(arg0);
+                HeroTestFall(arg0);
             }
         }
     }
@@ -2371,7 +2371,7 @@ void HeroWhip(s32 arg0) {
                 ((void (*)(s32, s32, s32, s32))HeroHooks.Hero2ObjectCollision)(arg0, 2, 0x400, 0);
                 ((void (*)(s32))HeroHooks.HeroKickCollision)(arg0);
                 ProcessHeroAnim(arg0);
-                func_800871E4(arg0);
+                HeroTestFall(arg0);
             }
         }
     }
@@ -2504,7 +2504,7 @@ void HeroShoot(s32 arg0) {
                         }
                     }
                 }
-                func_800871E4(arg0);
+                HeroTestFall(arg0);
             }
         }
     }
@@ -2597,7 +2597,7 @@ void HeroKick(s32 arg0) {
                 ((void (*)(s32, s32, s32, s32))HeroHooks.Hero2ObjectCollision)(arg0, 2, 0x400, 0x280);
                 ((void (*)(s32))HeroHooks.HeroKickCollision)(arg0);
                 ProcessHeroAnim(arg0);
-                func_800871E4(arg0);
+                HeroTestFall(arg0);
             }
         }
     }
@@ -2818,7 +2818,7 @@ void StartHeroVictory(s32 arg0) {
     }
 }
 
-s32 func_8008A200(s32 arg0) {
+s32 UpdateHeroVictory(s32 arg0) {
     HeroInfo *h;
     HeroInfo *p;
     s32 ret;
@@ -3139,7 +3139,7 @@ s32 HeroCheckResult(s32 arg0) {
     return 1;
 }
 
-s32 func_8008AC74(s32 arg0) {
+s32 HeroTestStop(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     u16 mode;
@@ -3159,7 +3159,7 @@ s32 func_8008AC74(s32 arg0) {
     return 1;
 }
 
-s32 func_8008ACF0(s32 arg0) {
+s32 HeroTestMove(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     u16 mode;
@@ -3182,10 +3182,10 @@ s32 func_8008ACF0(s32 arg0) {
     return 1;
 }
 
-void func_8008AD9C(void) {
+void DebugNasStatus(void) {
 }
 
-s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
+s32 UpdateFxEmitter(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
     volatile s32 t0;
     volatile s32 t1;
     EmitPart *part;
@@ -3533,7 +3533,7 @@ void InitScriptFX(NAS *nas)
   start:
   {
 
-    new_var->Engine->kill = func_8008CFBC;
+    new_var->Engine->kill = KillScriptFx;
   }
 
   while (1)
@@ -3722,7 +3722,7 @@ void PlotScriptFX(NAS *nas) {
                 if (sd->timer >= sd->totalframes << 8) {
                     state = 1;
                 }
-                sub = (subengine *)func_8008ADA4((u8 *)sd, (u8 *)sub, (u8 *)t, &state);
+                sub = (subengine *)UpdateFxEmitter((u8 *)sd, (u8 *)sub, (u8 *)t, &state);
                 if (nas->trigger == NULL && state == 2) {
                     j = 0;
                     while (1) {
@@ -3880,7 +3880,7 @@ void PlotSmokePoof(NAS *m) {
     RunNasAnim(m);
 }
 
-s32 func_8008C4C8(s32 *arg0, s32 arg1) {
+s32 PointInZone(s32 *arg0, s32 arg1) {
     s32 v[3];
     u8 *base;
     s32 off;
@@ -4083,7 +4083,7 @@ void PlotWeatherNas(u8 *arg0) {
         s32 v = *(s32 *)(arg0 + 0x64);
         switch (v) {
         case 0:
-            func_80015D70((u8 *)&D_8009E200, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
+            fx_alloc_buffers((u8 *)&D_8009E200, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
             *(s32 *)(arg0 + 0x60) = 1;
             break;
         case 1:
@@ -4098,14 +4098,14 @@ void InitWeatherNas(u8 *arg0) {
     *(s32 *)(arg0 + 0x64) = 0;
     **(s32 **)(*(u8 **)(arg0 + 0x54) + 0x6C) = 0x20008000;
     if (GameMode == 0x1F) {
-        func_80015D70(NoxSparkFxDef, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
+        fx_alloc_buffers(NoxSparkFxDef, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
     }
 }
 
-void func_8008CE10(void) {
+void WeatherUnusedA(void) {
 }
 
-void func_8008CE18(void) {
+void WeatherUnusedB(void) {
 }
 
 FlagPoint *SubFindFlagPoint(subengine *sub, s32 idx, s32 mask) {
@@ -4161,7 +4161,7 @@ void InitSmokePoof(NAS *nas) {
     }
 }
 
-void func_8008CFBC(EXTengine *eng) {
+void KillScriptFx(EXTengine *eng) {
     NAS *nas;
     EXTscriptdata *sd;
     threaddata *t;
@@ -4190,7 +4190,7 @@ void func_8008CFBC(EXTengine *eng) {
     }
 }
 
-void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4) {
+void emit_script_particle(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4) {
     s32 life;
     s32 t;
     s32 r;
@@ -4231,7 +4231,7 @@ void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4) {
     *(s32 *)(arg4 + 0x2C) += 1;
 }
 
-u8 *func_8008D24C(u8 *arg0, s32 *arg1) {
+u8 *script_track_keys(u8 *arg0, s32 *arg1) {
     u8 *r;
 
     r = get_script_track(arg0, arg1[0x24 / 4], arg1[1]);
@@ -4241,7 +4241,7 @@ u8 *func_8008D24C(u8 *arg0, s32 *arg1) {
     return NULL;
 }
 
-u8 *func_8008D284(u8 *arg0, u8 *arg1) {
+u8 *script_track_data(u8 *arg0, u8 *arg1) {
     u8 *p = get_script_track(arg0, *(s32 *)(arg1 + 0x24), *(s32 *)(arg1 + 4));
     if (p != NULL) {
         return p + 0x14;
@@ -4382,7 +4382,7 @@ void CreateFloatyScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
 }
 
-void func_8008D6C8(NAS *nas) {
+void UpdateBounceMotion(NAS *nas) {
     EXTengine *eng;
     EXTengine *next;
     EXTmotion *m;
@@ -4448,7 +4448,7 @@ void Init_HealthPU(NAS *nas) {
             nas->FUX = (EXT *)obj;
             obj->whatami = 0x11;
             obj->can_do |= 0x18;
-            func_80025AE4((u8 *)eng, 0, 0, 0, 0x80, -0x100, 0x40);
+            SetEngineMotion((u8 *)eng, 0, 0, 0, 0x80, -0x100, 0x40);
             if (eng->unk10.y == World_floor_level) {
                 obj->status = 1;
             } else {
@@ -4532,7 +4532,7 @@ void Plot_HealthPU(NAS *nas) {
         return;
     }
 plot:
-    func_8008D6C8(nas);
+    UpdateBounceMotion(nas);
     if (obj->will_do & 8) {
         p = obj->player;
         if (p != -1 && p < 5 && !(Heroes[p].hero_status & 0xFA00)) {
@@ -4572,7 +4572,7 @@ void InitBigPoof(NAS *nas) {
     }
 }
 
-void func_8008DDC0(NAS *nas) {
+void AddPowerupFloat(NAS *nas) {
     EXTmotion *mot;
     EXTengine *eng;
     EXTengine *src;
@@ -4597,15 +4597,15 @@ void func_8008DDC0(NAS *nas) {
     }
 }
 
-s32 func_8008DE8C(void) {
+s32 HeroStubFalse(void) {
     return 0;
 }
 
-s32 func_8008DE94(s32 arg0) {
+s32 HeroIsActive(s32 arg0) {
     return (Heroes[arg0].hero_status & 0xFA00) == 0;
 }
 
-void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void HurtHeroesInRadius(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     EXTengine *eng;
     HeroInfo *hero;
     NAS *nas;

@@ -518,7 +518,7 @@ void InitialiseBASH(void) {
         Heroes[3].hero_shadow->flags = 0;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         BashDropFirstCrates();
-        func_80095258(*(u8 **)MapScene);
+        SetupSceneMarks(*(u8 **)MapScene);
         RenderHook = BashDrawView;
         World_floor_level = 0;
         break;
@@ -2337,7 +2337,7 @@ void BashSpaceInitTiles(void) {
     if (obj != NULL) {
         base = BashSpaceTiles[0];
         do {
-            id = (u16 *)func_80015870(obj->model, obj->index);
+            id = (u16 *)model_entry_data(obj->model, obj->index);
             if ((u16)(*id - 10) < 78) {
                 v = *id;
                 i = 7 - (s16)(v % 10);
@@ -2358,7 +2358,7 @@ void BashSpaceInitTiles(void) {
         obj = (BashObj *)((GfxScene *)MapScene)->objs;
         if (obj != NULL) {
             do {
-                if (*(s16 *)func_80015870(obj->model, obj->index) == 5) {
+                if (*(s16 *)model_entry_data(obj->model, obj->index) == 5) {
                     j = obj->x - x;
                     i = obj->z - z;
                     j = (j + 0x80) >> 9;
@@ -3387,7 +3387,7 @@ void PlotMissileExplode(NAS *nas) {
             sub->unk20.x = z;
             nas->UserInfo.flags++;
             if (idx == 1) {
-                func_8008DEC8((s32)nas, 0x280, nas->UserInfo.user1, nas->UserInfo.user2, 0);
+                HurtHeroesInRadius((s32)nas, 0x280, nas->UserInfo.user1, nas->UserInfo.user2, 0);
             }
         } else {
             KillNAS(nas);
@@ -3519,7 +3519,7 @@ void BashDrawView(void) {
     RenderGameScene();
     gfx_set_viewport((GfxViewport *)vp, (GfxCamera *)MainCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8009440C();
+    DrawSceneMarks();
 }
 
 s32 GetBashContour(EXTengine *eng) {

@@ -40,7 +40,7 @@ void InitialiseHUB(void) {
     eng->unk2C.x = size;
     G6A->unk62 = WarpRoomIndex(G6A->unk34);
     HubInitGateways();
-    func_80095258(*(u8 **)MapScene);
+    SetupSceneMarks(*(u8 **)MapScene);
     HubInitLevelSelect();
     HubDoorFade = 0;
     if (G6A->unk34 == 0x25 && G6A->unk75 == 0) {
@@ -141,7 +141,7 @@ void HubInitGateways(void) {
                 g = MapScene;
                 *(void **)(o + 0x54) = HubDrawObj;
                 *(s32 *)o = k & ~0x8000;
-                q->unk24 = func_80015984(*(u16 *)(o + 0x74), *(EntryBlock **)(*(u8 **)g + 0xC));
+                q->unk24 = entry_block_value(*(u16 *)(o + 0x74), *(EntryBlock **)(*(u8 **)g + 0xC));
                 break;
             }
         }
@@ -380,7 +380,7 @@ void HubPreMoveHero(s32 arg0) {
                     PlaySfx(0x399, NULL, NULL, 0x1000, 0x1E00, 0);
                     break;
                 case 5:
-                    PlaySfx(((s32(*)(void))func_800900CC)() >= 0 ? 0x39E : 0x39D, &HubSelectSfx, NULL, 0x1000, 0x1E00, 0);
+                    PlaySfx(((s32(*)(void))WarpRoomBestLevel)() >= 0 ? 0x39E : 0x39D, &HubSelectSfx, NULL, 0x1000, 0x1E00, 0);
                 case 4:
                     PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
                     break;
@@ -411,7 +411,7 @@ void HubPreMoveHero(s32 arg0) {
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 5:
             n = HubSelectedLevel();
-            if (n >= 0 && ((s32(*)(s32))func_8007A6D0)(n & 0xFFFF) == 1) {
+            if (n >= 0 && ((s32(*)(s32))ModeRequirementMet)(n & 0xFFFF) == 1) {
                 HubGoToMode(n);
                 SetHeroAction(0, 1);
                 if (Heroes[0].hero_shadow != NULL) {
@@ -424,7 +424,7 @@ void HubPreMoveHero(s32 arg0) {
             break;
         case 2:
             sel = p[g->unk63].unk14->unk4;
-            if ((g->unk4 & 0x2000) || ((g->unkE4[sel] != 0 || HubDoorChoice <= 0) && ((s32(*)(s32))func_8007A6D0)(sel) == 1)) {
+            if ((g->unk4 & 0x2000) || ((g->unkE4[sel] != 0 || HubDoorChoice <= 0) && ((s32(*)(s32))ModeRequirementMet)(sel) == 1)) {
             mode = HubDoorChoice;
             if (mode != 4 || ((HubGameView *)GameInfo)->unk105[sel] != 0) {
             gv = (HubGameView *)GameInfo;
@@ -601,7 +601,7 @@ void HubDoorMenuUpdate(void) {
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
                 n = HubGateways[((HubGameView *)GameInfo)->unk63].unk14->unk4;
                 g2 = (HubGameView *)GameInfo;
-                if (((s32(*)(s32))func_8007A6D0)(n) == 1) {
+                if (((s32(*)(s32))ModeRequirementMet)(n) == 1) {
                     if (g2->unkE4[n] != 0) {
                         PlaceEngineSlot(2, HubChallengePanels[g2->unk2C]);
                     } else {
@@ -627,7 +627,7 @@ void HubDoorMenuUpdate(void) {
         case 5:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
                 g3 = (HubGameView *)GameInfo;
-                if (g3->unk34 == 0x21 && ((s32(*)(s32))func_8007A6D0)(0x22) == 0) {
+                if (g3->unk34 == 0x21 && ((s32(*)(s32))ModeRequirementMet)(0x22) == 0) {
                     recs = HubPapuPanels[g3->unk2C];
                 } else {
                     recs = HubWarpPanels[g3->unk2C];
@@ -703,7 +703,7 @@ void HubLevelSelect(void) {
         if (r != 0 && ((HubSelView *)GameInfo)->unk30 != 0x8008) {
             if ((Pads[0].pressed & 0x20)
                 && HubSelectedEntry < WarpRooms[((HubSelView *)GameInfo)->unk62][2] - 1
-                && ((s32(*)(s32))func_8007A6D0)(ents[HubSelectedEntry + 1].unk4)) {
+                && ((s32(*)(s32))ModeRequirementMet)(ents[HubSelectedEntry + 1].unk4)) {
                 PlaySfx(0x39F, NULL, NULL, 0x1000, 0x1E00, 0);
                 HubSelectedEntry++;
             }
@@ -712,14 +712,14 @@ void HubLevelSelect(void) {
                 HubSelectedEntry--;
             }
             if (HubSelectedEntry < 0) {
-                HubSelectedEntry = func_800900CC();
+                HubSelectedEntry = WarpRoomBestLevel();
             }
             if (HubSelectedEntry >= WarpRooms[GameWarpRoom][2]) {
                 n = WarpRooms[GameWarpRoom][2];
                 HubSelectedEntry = n - 1;
             }
             if (HubSelectSub != NULL) {
-                if (HubSelectedEntry >= 0 && ((s32(*)(s32))func_8007A6D0)(ents[HubSelectedEntry].unk4)) {
+                if (HubSelectedEntry >= 0 && ((s32(*)(s32))ModeRequirementMet)(ents[HubSelectedEntry].unk4)) {
                     HubSelectSub->unk74 = ents[HubSelectedEntry].unk0;
                     return;
                 }
@@ -1390,7 +1390,7 @@ s32 HubNearestGateway(void) {
 }
 
 void HubRenderScene(void) {
-    func_8009440C();
+    DrawSceneMarks();
 }
 
 void HubUpdateRoom(void) {
@@ -1519,7 +1519,7 @@ void InitialisePodium(void) {
         PodiumInitScript(i, name);
     }
     PodiumShowScores();
-    func_80095258(*(u8 **)MapScene);
+    SetupSceneMarks(*(u8 **)MapScene);
 }
 
 void PodiumRankPlayers(void) {
@@ -1979,7 +1979,7 @@ void InitSparkGFX(NAS *arg0) {
     arg0->UserInfo.user1 = 0;
     arg0->Engine->unk5D = 0;
     arg0->Engine->unk5C = 1;
-    if (eng_add_subs(arg0->Engine, 12) != 12 || func_80015D70((u8 *)&HubSparkFxDef, (u8 *)arg0->Engine->sub) == 0) {
+    if (eng_add_subs(arg0->Engine, 12) != 12 || fx_alloc_buffers((u8 *)&HubSparkFxDef, (u8 *)arg0->Engine->sub) == 0) {
         KillNAS(arg0);
         return;
     }
@@ -2368,7 +2368,7 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
 }
 
 void PodiumRenderScene(void) {
-    func_8009440C();
+    DrawSceneMarks();
     gfx_set_viewport(&MainViewport, &MainGfxCamera);
     eng_render_subs(GetEngineSlot(6));
 }
@@ -2540,7 +2540,7 @@ void HubSaveMenuInit(void) {
     HubNameEngine.flags |= 0x10000000;
     if (i < list->count) {
         do {
-            func_80095F48((s32 *)s, p->a, p->b, p->c, 0);
+            PlaceFlashSub((s32 *)s, p->a, p->b, p->c, 0);
             p++;
             s++;
             i++;
@@ -2640,7 +2640,7 @@ void HubSaveMenuSubs(SubInitList *list) {
     p = list->items;
     if (list->count > 0) {
         do {
-            func_80095F48((s32 *)s, p->a, p->b, p->c, 0);
+            PlaceFlashSub((s32 *)s, p->a, p->b, p->c, 0);
             p++;
             s++;
             i++;

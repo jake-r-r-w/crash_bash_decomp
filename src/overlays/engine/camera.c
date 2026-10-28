@@ -528,7 +528,7 @@ s32 CamEdgeIntersectZY(VECTOR *arg0, VECTOR *arg1, s32 arg2) {
     return line_intersect_zy(arg0, &sp18, arg1, &sp28, (VECTOR *)arg2) != 0;
 }
 
-s32 func_800976A8(u8 *arg0, s32 arg1) {
+s32 span_z(u8 *arg0, s32 arg1) {
     s32 temp_v1;
     s32 var_a2;
     s32 var_a3;
@@ -851,7 +851,7 @@ void anim_item(void) {
     BobSub(s);
 }
 
-void func_80098464(void) {
+void ShowLevelLabel(void) {
     subengine *s = GetEngineSlot(3)->sub;
     u32 t = GameLevelFlags & 0xF0;
     if (t == 0x40 || t == 0x80) {
