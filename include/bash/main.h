@@ -1883,7 +1883,7 @@ typedef struct {
 typedef struct TexEnt12 {
     /* 0x00 */ u16 id;
     /* 0x02 */ u8 pad2[2];
-    /* 0x04 */ s32 f4;
+    /* 0x04 */ struct FreeHdr *pos; /* the clut's VRAM position */
     /* 0x08 */ s32 off;
 } TexEnt12;
 

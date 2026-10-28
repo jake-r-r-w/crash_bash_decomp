@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/main.h"
 
-s32 dbase_texture_ptr(obj_dbase *db, s32 i);
+struct obj_texture *dbase_texture_ptr(obj_dbase *db, s32 i);
 void dbase_asload_with_anims(obj_dbase *db, s32 *keep);
 void dbase_asload_with_anims_callback(u8 *data, obj_dbase *db);
 void dbase_copy_block(FileEntry *e, s32 base);
@@ -33,7 +33,7 @@ void dbase_textures_loaded();
 void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db);
 void dbase_set_data(u8 *arg0, u8 *arg1);
 u8 *dbase_mesh_anim_rec_release(s32 *arg0, u8 *rec);
-u8 *dbase_texture_entry(u8 *arg0, s32 i);
+struct TexEnt12 *dbase_texture_entry(obj_dbase *db, s32 i);
 s32 name_list_find(s32 *list, u8 *arg1);
 void dbase_load_all_mesh_anims(s32 *arg0);
 void dbase_load_textures_wait(u8 *rec);

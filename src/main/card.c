@@ -49,8 +49,8 @@ void card_make_header(void) {
     u8 *base;
     u8 *p;
     s32 k;
-    u8 *img;
-    u8 *pal;
+    obj_texture *img;
+    TexEnt12 *pal;
     s16 h;
     u16 w;
     s32 *q;
@@ -74,17 +74,17 @@ void card_make_header(void) {
     itoa_div_end(CardSaveTitle + 0x16, count_completion(CardBuffer + 0x208 + 0x194 * 2), 100);
     itoa_div_end(CardSaveTitle + 0x1B, count_completion(CardBuffer + 0x208 + 0x194 * 3), 100);
     McSetTitle(CardSaveTitleFormat, ((McHeader *)CardBuffer)->title);
-    rect = (RECT *)(dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306B) + 0x18);
+    rect = (RECT *)&dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306B)->vramX;
     if (rect->w == 4) {
         h = rect->h;
         if (h == 0x10) {
             StoreImage(rect, (u_long *)CardIconFrames);
-            img = (u8 *)dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306C);
-            StoreImage((RECT *)(img + 0x18), (u_long *)(CardIconFrames + 0x80));
-            pal = dbase_texture_entry(&HeroModelBank[DB_Font], *(u16 *)(img + 2));
-            clut.x = (*(u16 **)(pal + 4))[0];
-            clut.y = (*(u16 **)(pal + 4))[1];
-            w = *(u16 *)pal;
+            img = dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306C);
+            StoreImage((RECT *)&img->vramX, (u_long *)(CardIconFrames + 0x80));
+            pal = dbase_texture_entry(&HeroModelBank[DB_Font], (u16)img->f2);
+            clut.x = pal->pos->f0;
+            clut.y = pal->pos->f2;
+            w = pal->id;
             if (w == h) {
                 clut.w = w;
                 clut.h = 1;

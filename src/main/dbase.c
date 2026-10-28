@@ -64,26 +64,28 @@ chk:
 end:
 }
 
-u8 *dbase_texture_entry(u8 *arg0, s32 i) {
-    if (arg0 != NULL) {
-        arg0 += 0x10;
-        if (*(s32 *)(arg0 + 8) != 0) {
-            return *(u8 **)(arg0 + 0xC) + i * 0xC;
+TexEnt12 *dbase_texture_entry(obj_dbase *db, s32 i) {
+    obj_textureset *set;
+
+    if (db != NULL) {
+        set = &db->textures;
+        if (set->tex != NULL) {
+            return &set->ent[i];
         }
     }
     return NULL;
 }
 
-s32 dbase_texture_ptr(obj_dbase *db, s32 i) {
+obj_texture *dbase_texture_ptr(obj_dbase *db, s32 i) {
     obj_texture *tex;
 
     if (db != NULL) {
         tex = db->textures.tex;
         if (tex != NULL) {
-            return (s32)&tex[i & 0xFFF];
+            return &tex[i & 0xFFF];
         }
     }
-    return 0;
+    return NULL;
 }
 
 void dbase_asload_with_anims(obj_dbase *db, s32 *keep) {

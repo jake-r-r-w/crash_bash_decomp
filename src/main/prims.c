@@ -1367,7 +1367,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
             otz = d->unk68;
         }
         if ((u32)otz < (u32)RenderState.otLen) {
-            texture_draw((obj_texture *)(*(u8 **)((u8 *)RenderState.unk0 + 0x18) + (a & 0xFFF) * 0x38),
+            texture_draw((obj_texture *)&RenderState.unk0->texs.tex[a & 0xFFF],
                           (s32)e, otz, g);
         }
         return;

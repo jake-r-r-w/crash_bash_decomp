@@ -3466,7 +3466,7 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         id = *(u16 *)q;
         q -= len - 4;
         e->id = id;
-        e->f4 = 0;
+        e->pos = NULL;
         e->off = (s32)q;
         e++;
         src += *(u16 *)src * 2 + 4;
