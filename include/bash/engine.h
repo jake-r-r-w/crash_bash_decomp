@@ -115,8 +115,8 @@ extern GfxViewport LoadingViewport;   /* the loading screen's (RenderLoadingScre
 extern GfxCamera LoadingCamera;
 extern s32 LevelLoadStage;
 extern s8 D_80064C93;
-extern Blk32 D_8009F9D4;
-extern CamVec3 D_8009F9F4;
+extern Blk32 LoadingScriptRot;
+extern CamVec3 LoadingScriptPos;
 extern ASTEntry EngineASTTable[];
 extern fade_info ScreenFade;
 extern s32 D_800ADBC4;

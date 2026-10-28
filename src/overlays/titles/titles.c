@@ -1106,8 +1106,8 @@ void RunGameUpdate(void) {
 void RunGameInit(void) {
     void LoadScreenImage();
     init_scripts(0x20, 0x20);
-    if (D_8009E58C != NULL) {
-        D_8009E58C();
+    if (IntroProcess != NULL) {
+        IntroProcess();
     }
     sound_init();
     music_load_track(GameMode);
@@ -1192,7 +1192,7 @@ void TitlesLeaveRender(void) {
 
 void TitlesLeaveInit(void) {
     set_fade(&ScreenFade, 0x200, 0);
-    GotoScriptScene((s32)D_800A0840, &D_8009E5C8);
+    GotoScriptScene((s32)D_800A0840, &WarpReturnProcess);
 }
 
 void NewLoadMenuInit(void) {

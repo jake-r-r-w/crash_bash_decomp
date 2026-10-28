@@ -69,7 +69,7 @@ void UpdateLoadingScene(void) {
                 LoadingSceneDelay = 6;
                 SetupSceneMarks(p);
                 LoadingScenePlaying += 1;
-                play_script((obj_dbase *)p, 0, &D_8009F9D4, &D_8009F9F4, 8, NULL);
+                play_script((obj_dbase *)p, 0, &LoadingScriptRot, &LoadingScriptPos, 8, NULL);
             }
         }
         if (LoadingSceneDelay != 0) {
@@ -647,7 +647,7 @@ void StartSceneScript(void) {
     s32 t;
     MarkSrcEnt *e;
 
-    play_script((obj_dbase *)((MarkCtx *)SceneMark)->obj, ((MarkCtx *)SceneMark)->unk8, &D_800A0BA0, &D_800A0BC0, 4, &SceneScript);
+    play_script((obj_dbase *)((MarkCtx *)SceneMark)->obj, ((MarkCtx *)SceneMark)->unk8, &SceneScriptRot, &SceneScriptPos, 4, &SceneScript);
     SceneMarkCount = 0;
     t = (s32)((MarkCtx *)SceneMark)->obj;
     SceneOldDbase = t;
@@ -1321,8 +1321,8 @@ u8 D_8009F9AC[40] = {
     0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0x40, 1, 0, 0, 0xF0, 0, 0, 0,
     0, 2, 0, 0, 0xFF, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-Blk32 D_8009F9D4 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
-CamVec3 D_8009F9F4 = {0};
+Blk32 LoadingScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
+CamVec3 LoadingScriptPos = {0};
 process_info LoadingProcess2 = { InitLoadingCamera, UpdateLoadingScene, RenderLoadingScene, QuitLoadingScene, 0 };
 u8 D_8009FA14[1516] = {
     0x10, 6, 5, 0x80, 0x8C, 0x2A, 5, 0x80, 0, 0, 5, 0x80, 0xF8, 0xFF, 4, 0x80, 4, 6, 5, 0x80,
@@ -1551,8 +1551,8 @@ EngineKeyed16 D_800A0B60[4] = {
     { 0x1F, { (s32)&SceneAkuData2, (s32)&SceneUkaData2, (s32)&SceneAkuUkaData2 } },
     { 9, { (s32)&SceneAkuData, (s32)&SceneUkaData, (s32)&SceneAkuUkaData } },
 };
-Blk32 D_800A0BA0 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
-CamVec3 D_800A0BC0 = {0};
+Blk32 SceneScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
+CamVec3 SceneScriptPos = {0};
 GfxViewport D_800A0BCC = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xDFF, 0, 0, 0, 0, 1 };
 process_info ScriptSceneProcess = { InitScriptScene, UpdateScriptScene, RenderScriptScene, QuitScriptScene, 0 };
 process_info *SceneSkipProcess = 0;

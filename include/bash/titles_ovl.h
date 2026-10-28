@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 #include "bash/levelload.h" /* PlaceRec: the engine's screen placement records */
 
-extern void (*D_8009E58C)(void);
+extern void (*IntroProcess)(void);
 extern PlaceRec PlayersMenuPlace[];
 extern PlaceRec PlayersMenuAdventurePlace[];
 void OptionsQuit(void);
@@ -47,7 +47,7 @@ extern s8 AdventureHeadsSolo[];
 extern s8 AdventureHeadsTeam[];
 extern PlaceRec MainMenuPlace[];
 extern u8 D_800A0840[];
-extern process_info D_8009E5C8;
+extern process_info WarpReturnProcess;
 extern u16 TitlesDemoModes[];
 void GotoScriptScene(s32 arg0, process_info *arg1);
 extern PlaceRec TitlesExtraPlace[];

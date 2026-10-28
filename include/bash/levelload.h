@@ -256,8 +256,8 @@ typedef struct MarkCtx {
     /* 0x8 */ s32 unk8;
     /* 0xC */ u8 unkC;
 } MarkCtx;
-extern Blk32 D_800A0BA0;
-extern CamVec3 D_800A0BC0;
+extern Blk32 SceneScriptRot;
+extern CamVec3 SceneScriptPos;
 extern script_handler *SceneScript;
 
 /* GameInfo as seen by UpdateLevelLoad. */

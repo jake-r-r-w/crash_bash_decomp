@@ -67,7 +67,7 @@ void UpdateIntro(void) {
     scripts_update();
     if (IntroSfxDelay != 0) {
         if (--IntroSfxDelay == 0) {
-            PlaySfx(IntroNextSfx, &D_8009E5C4, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(IntroNextSfx, &IntroSfxHandle, NULL, 0x1000, 0x1E00, 0);
         }
     }
     if (D_800AEC58 != 0) {
@@ -123,7 +123,7 @@ void UpdateIntro(void) {
         ScriptTimeStep = 0x10000;
         VSyncRate = type;
         IntroScript = play_script((obj_dbase *)IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
-                                   &D_8009E560, &D_8009E580, 4, (script_handler **)&D_800AEC58);
+                                   &IntroScriptRot, &IntroScriptPos, 4, (script_handler **)&D_800AEC58);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
             PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
             PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &IntroSfx[1], NULL, 0x1000, 0x1E00, 0);
@@ -516,20 +516,20 @@ void UpdateCupMenu(void) {
 }
 
 void RenderCupMenu(void) {
-    gfx_set_viewport(&D_8009EA9C, &TitlesCamera);
+    gfx_set_viewport(&CupViewport0, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs((u8 *)GetEngineSlot(3));
-    gfx_set_viewport(&D_8009EAC4, &TitlesCamera);
+    gfx_set_viewport(&CupViewport1, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs((u8 *)GetEngineSlot(4));
-    gfx_set_viewport(&D_8009EAEC, &TitlesCamera);
+    gfx_set_viewport(&CupViewport2, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs((u8 *)GetEngineSlot(5));
-    gfx_set_viewport(&D_8009EB14, &TitlesCamera);
+    gfx_set_viewport(&CupViewport3, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs((u8 *)GetEngineSlot(6));
     RenderTitlesBackdropAndMenu();
-    gfx_set_viewport(&D_8009EA74, &TitlesCamera);
+    gfx_set_viewport(&CupMenuViewport, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs((u8 *)GetEngineSlot(2));
 }
@@ -1912,17 +1912,17 @@ IntroStep IntroSteps[4] = {
     { 2, 0, (void *)&HeroModelBank[DB_CutsceneIntroEurocom], 0, -1, { 0x3C0, 0x3C1, 0x3C2 }, 0x3C3, 0x14 },
     { 2, 0, (void *)&HeroModelBank[DB_CutsceneIntroLogo2], 0, 1, { 0x3C5, 0x3C6, 0x3C7 }, 0x3C8, 0x14 },
 };
-Blk32 D_8009E560 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
-CamVec3 D_8009E580 = {0};
-s32 D_8009E58C[6] = { (s32)InitIntro, (s32)UpdateIntro, (s32)RenderIntro, (s32)QuitIntro, 0, 0 };
+Blk32 IntroScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
+CamVec3 IntroScriptPos = {0};
+s32 IntroProcess[6] = { (s32)InitIntro, (s32)UpdateIntro, (s32)RenderIntro, (s32)QuitIntro, 0, 0 };
 s32 IntroStepIndex = 0;
 s32 IntroStepTimer = 0;
 script_handler *IntroScript = 0;
 s32 IntroNextSfx = 0;
 s32 IntroSfxDelay = 0;
 _sfx_handler *IntroSfx[3] = {0};
-_sfx_handler *D_8009E5C4 = 0;
-s32 D_8009E5C8[5] = { (s32)ReturnToWarpRoom, 0, 0, 0, 0 };
+_sfx_handler *IntroSfxHandle = 0;
+s32 WarpReturnProcess[5] = { (s32)ReturnToWarpRoom, 0, 0, 0, 0 };
 s32 NextGameMode = 0;
 s32 D_8009E5E0[16] = {
     1, 0, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2005, 1, 1, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2006, 1, 2, (s32)&HeroModelBank[DB_MainmenuArenaModels2],
@@ -2024,11 +2024,11 @@ s32 LangUnlockWithCard[1] = { (s32)&MenuUnlockWithCard };
 s32 LangInsertCardForUnlocked[1] = { (s32)&MenuInsertCardForUnlocked };
 s32 LangCheckingUnlocked[1] = { (s32)&MenuCheckingUnlocked };
 s32 LangThereAreNoMoreUnlockedLevels[1] = { (s32)&MenuThereAreNoMoreUnlockedLevels };
-GfxViewport D_8009EA74 = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0x800, 0x7FF, -0x80, 0, 0, 0, 1 };
-GfxViewport D_8009EA9C = { 0x32, 0x58, 0x136, 0xD0, 0, 0, 0x280, 0x1E0, 0xB4, 0xF8, 0x200, 0x17F, 0, 0, 0, 0, 0 };
-GfxViewport D_8009EAC4 = { 0x14A, 0x58, 0x24E, 0xD0, 0, 0, 0x280, 0x1E0, 0x1CC, 0xF8, 0x380, 0x17F, 0, 0, 0, 0, 0 };
-GfxViewport D_8009EAEC = { 0x32, 0xE0, 0x136, 0x158, 0, 0, 0x280, 0x1E0, 0xB4, 0x180, 0x500, 0x17F, 0, 0, 0, 0, 0 };
-GfxViewport D_8009EB14 = { 0x14A, 0xE0, 0x24E, 0x158, 0, 0, 0x280, 0x1E0, 0x1CC, 0x180, 0x680, 0x17F, 0, 0, 0, 0, 0 };
+GfxViewport CupMenuViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0x800, 0x7FF, -0x80, 0, 0, 0, 1 };
+GfxViewport CupViewport0 = { 0x32, 0x58, 0x136, 0xD0, 0, 0, 0x280, 0x1E0, 0xB4, 0xF8, 0x200, 0x17F, 0, 0, 0, 0, 0 };
+GfxViewport CupViewport1 = { 0x14A, 0x58, 0x24E, 0xD0, 0, 0, 0x280, 0x1E0, 0x1CC, 0xF8, 0x380, 0x17F, 0, 0, 0, 0, 0 };
+GfxViewport CupViewport2 = { 0x32, 0xE0, 0x136, 0x158, 0, 0, 0x280, 0x1E0, 0xB4, 0x180, 0x500, 0x17F, 0, 0, 0, 0, 0 };
+GfxViewport CupViewport3 = { 0x14A, 0xE0, 0x24E, 0x158, 0, 0, 0x280, 0x1E0, 0x1CC, 0x180, 0x680, 0x17F, 0, 0, 0, 0, 0 };
 EngRec24 CupSlotPanel[2] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xCC, 0xC, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
