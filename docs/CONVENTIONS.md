@@ -26,7 +26,9 @@ A file is finished when every function in it reaches level 4.
   wrong confident one.
 - Names are written through `decomp.py rename OLD NEW`, which updates
   `configs/USA/sym.main.txt` (or `sym.<ovl>.txt`), the sources and the index,
-  and rolls back if the build stops matching.
+  and rolls back if the build stops matching. A struct field is renamed in its struct by
+  hand, then `tools/scripts/field_rename.py OLD NEW` renames its uses: the lines where cc1
+  reports the old member missing, so a name other structs share (`unk6C`) is safe.
 - PsyQ names come from the signature scan and Sony's objects; do not rename them.
 
 ## Source layout
