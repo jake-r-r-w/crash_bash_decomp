@@ -14,7 +14,7 @@
 typedef struct obj_textureset {
     /* 0x00 */ s32 nTex;
     /* 0x04 */ s32 nEnt;
-    /* 0x08 */ struct TexDst2A84C *tex; /* nTex obj_textures */
+    /* 0x08 */ struct obj_texture *tex; /* nTex obj_textures */
     /* 0x0C */ struct TexEnt12 *ent;
     /* 0x10 */ u8 *base;
     /* 0x14 */ u8 pad14[4];

@@ -14,13 +14,6 @@ typedef struct AnimData {
     s32 subOff;    /* 0x04 */
 } AnimData;
 
-/* An obj_texture as texture_update_scroll scrolls it. */
-typedef struct {
-    u8 unk0[0x1C];
-    u16 w;          /* 0x1C */
-    s16 h;          /* 0x1E */
-    s16 *src;       /* 0x20: x, y */
-} AnimEntry;
 
 /* A scrolling track (texture_update_anims's sub list, 16 bytes each); the name is
  * the C++ symbols' (texture_update_scroll__FP14texture_scrollP14obj_textureset). */
@@ -1182,23 +1175,34 @@ typedef struct {
 
 
 
+/* A VRAM slot class (VramSlots). */
+typedef struct { u8 pad[0xC]; } Slot12;
 /* A texture: the 0x38-byte entries of a texture set's table, which
  * texture_draw draws as one POLY_FT4 (the name is the C++ symbols',
- * texture_draw__FP11obj_textureG4xy_wiUl). AnimEntry and TexDst2A84C are other
- * views of the same entry, kept apart until their fields are merged. */
+ * texture_draw__FP11obj_textureG4xy_wiUl). */
 typedef struct obj_texture {
-    u8 unk0[8];
-    s16 w;       /* 0x08 */
-    s16 h;       /* 0x0A */
-    u8 unkC[4];
-    u8 advance;  /* 0x10: returned scaled to the screen width */
-    u8 unk11[0x13];
-    u16 tpage;   /* 0x24 */
-    u16 clut;    /* 0x26 */
-    u16 uv0;     /* 0x28 */
-    u16 uv1;     /* 0x2A */
-    u16 uv2;     /* 0x2C */
-    u16 uv3;     /* 0x2E */
+    /* 0x00 */ u16 flag;     /* 1: 8-bit (texture_init_entry) */
+    /* 0x02 */ s16 f2;
+    /* 0x04 */ Slot12 *slot; /* its VRAM slot class */
+    /* 0x08 */ s16 w;        /* in pixels */
+    /* 0x0A */ s16 h;
+    /* 0x0C */ u32 fC;
+    /* 0x10 */ u8 advance;   /* w - 1; returned scaled to the screen width */
+    /* 0x11 */ s8 f11;       /* h - 1 */
+    /* 0x12 */ u16 f12;
+    /* 0x14 */ u32 f14;
+    /* 0x18 */ u8 pad18[4];
+    /* 0x1C */ u16 vramW;    /* in VRAM units */
+    /* 0x1E */ s16 vramH;
+    /* 0x20 */ s16 *src;     /* a scrolling texture's source x, y (texture_update_scroll) */
+    /* 0x24 */ u16 tpage;
+    /* 0x26 */ u16 clut;
+    /* 0x28 */ u16 uv0;
+    /* 0x2A */ u16 uv1;
+    /* 0x2C */ u16 uv2;
+    /* 0x2E */ u16 uv3;
+    /* 0x30 */ s32 f30;
+    /* 0x34 */ s32 f34;
 } obj_texture;
 
 /* A screen position as one word (x low, y high). */
@@ -1923,7 +1927,6 @@ void init_dots(subengine *arg0);
 
 
 
-typedef struct { u8 pad[0xC]; } Slot12;
 extern Slot12 VramSlots[];
 
 typedef struct {
@@ -1935,25 +1938,6 @@ typedef struct {
     /* 0x10 */ u32 w10;
 } TexSrc2A84C;
 
-typedef struct TexDst2A84C {
-    /* 0x00 */ u16 flag;
-    /* 0x02 */ s16 f2;
-    /* 0x04 */ Slot12 *slot;
-    /* 0x08 */ s16 f8;
-    /* 0x0A */ s16 fA;
-    /* 0x0C */ u32 fC;
-    /* 0x10 */ s8 f10;
-    /* 0x11 */ s8 f11;
-    /* 0x12 */ u16 f12;
-    /* 0x14 */ u32 f14;
-    /* 0x18 */ u8 pad18[4];
-    /* 0x1C */ u16 f1C;
-    /* 0x1E */ u16 f1E;
-    /* 0x20 */ s32 f20;
-    /* 0x24 */ u8 pad24[0xC];
-    /* 0x30 */ s32 f30;
-    /* 0x34 */ s32 f34;
-} TexDst2A84C;
 
 typedef struct TexEnt12 {
     /* 0x00 */ u16 id;

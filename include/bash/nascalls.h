@@ -152,7 +152,7 @@ s32 CheckSolidCollision(NAS *nas);
 void InitDisplay(void);
 void pads_read(void);
 void textureset_release(u8 *arg0);
-void texture_init_entry(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
+void texture_init_entry(TexSrc2A84C *s, obj_texture *d, s32 n);
 void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5);
 void texture_upload_anim(AnimTex *t, s32 base, AnimTexSet *set);
 void SetupLevelSpecs(ArenaDef *arg0);

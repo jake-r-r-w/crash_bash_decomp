@@ -3348,34 +3348,34 @@ void texture_upload_anim(AnimTex *t, s32 base, AnimTexSet *set) {
 }
 
 void texture_update_scroll(texture_scroll *s, obj_textureset *o) {
-    AnimEntry *e;
+    obj_texture *e;
     DR_MOVE *p;
     RECT r;
     s32 pos;
     s32 y;
 
-    e = (AnimEntry *)&o->tex[s->idx];
+    e = &o->tex[s->idx];
     pos = s->pos + s->speed;
     s->pos = pos;
     if (s->speed > 0) {
-        if ((pos >> 8) >= e->h) {
-            s->pos = pos - (e->h << 8);
+        if ((pos >> 8) >= e->vramH) {
+            s->pos = pos - (e->vramH << 8);
         }
     } else if (pos < 0) {
-        s->pos = pos + (e->h << 8);
+        s->pos = pos + (e->vramH << 8);
     }
     y = s->pos >> 8;
     r.x = s->dst[0];
     r.y = s->dst[1] + y;
-    r.w = e->w;
-    r.h = e->h - y;
+    r.w = e->vramW;
+    r.h = e->vramH - y;
     p = (*(DR_MOVE **)(cdb + 0x4008))++;
     SetDrawMove(p, &r, e->src[0], e->src[1]);
     addPrim(cdb + 0x3FFC, p);
     r.y = s->dst[1];
     r.h = y;
     p = (*(DR_MOVE **)(cdb + 0x4008))++;
-    SetDrawMove(p, &r, e->src[0], e->src[1] + e->h - y);
+    SetDrawMove(p, &r, e->src[0], e->src[1] + e->vramH - y);
     addPrim(cdb + 0x3FFC, p);
 }
 
@@ -3439,7 +3439,7 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
     u8 *src;
     TexEnt12 *e;
     TexSrc2A84C *s;
-    TexDst2A84C *d;
+    obj_texture *d;
     u8 *b;
     s32 *p;
     s32 *r;
@@ -3484,25 +3484,25 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
             break;
         }
         b = arg0->base;
-        d->f20 = 0;
+        d->src = NULL;
         d->f34 = -1;
         d->flag = *(u16 *)&s->wC & 1;
         d->f2 = (s->wC >> 1) & 0x7FFF;
         d->f12 = *(u16 *)((u8 *)s + 0xE);
         d->f14 = s->w10;
-        d->fA = s->w2;
+        d->h = s->w2;
         if (d->flag == 0) {
-            d->f8 = s->w0 << 2;
+            d->w = s->w0 << 2;
             d->slot = &VramSlots[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
-            d->f10 = (*(u8 *)s << 2) - 1;
+            d->advance = (*(u8 *)s << 2) - 1;
         } else {
-            d->f8 = s->w0 << 1;
+            d->w = s->w0 << 1;
             d->slot = &VramSlots[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
-            d->f10 = (*(u8 *)s << 1) - 1;
+            d->advance = (*(u8 *)s << 1) - 1;
         }
         d->f11 = *(u8 *)((u8 *)s + 2) - 1;
-        d->f1C = s->w0;
-        d->f1E = s->w2;
+        d->vramW = s->w0;
+        d->vramH = s->w2;
         u = (s32)b - 0x14;
         t = s->w8;
         d->fC = t;
@@ -4019,29 +4019,29 @@ void texsrc_init(u8 *src, u8 *out, s32 len) {
     *(u16 *)out = id;
 }
 
-void texture_init_entry(TexSrc2A84C *s, TexDst2A84C *d, s32 n) {
+void texture_init_entry(TexSrc2A84C *s, obj_texture *d, s32 n) {
     u32 t;
     s32 u;
 
-    d->f20 = 0;
+    d->src = NULL;
     d->f34 = -1;
     d->flag = *(u16 *)&s->wC & 1;
     d->f2 = (s->wC >> 1) & 0x7FFF;
     d->f12 = *(u16 *)((u8 *)s + 0xE);
     d->f14 = s->w10;
-    d->fA = s->w2;
+    d->h = s->w2;
     if (d->flag == 0) {
-        d->f8 = s->w0 << 2;
+        d->w = s->w0 << 2;
         d->slot = &VramSlots[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
-        d->f10 = (*(u8 *)s << 2) - 1;
+        d->advance = (*(u8 *)s << 2) - 1;
     } else {
-        d->f8 = s->w0 << 1;
+        d->w = s->w0 << 1;
         d->slot = &VramSlots[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
-        d->f10 = (*(u8 *)s << 1) - 1;
+        d->advance = (*(u8 *)s << 1) - 1;
     }
     d->f11 = *(u8 *)((u8 *)s + 2) - 1;
-    d->f1C = s->w0;
-    d->f1E = s->w2;
+    d->vramW = s->w0;
+    d->vramH = s->w2;
     u = n - 0x14;
     t = s->w8;
     d->f30 = (s32)s - u;

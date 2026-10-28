@@ -75,7 +75,7 @@ u8 *dbase_texture_entry(u8 *arg0, s32 i) {
 }
 
 s32 dbase_texture_ptr(obj_dbase *db, s32 i) {
-    TexDst2A84C *tex;
+    obj_texture *tex;
 
     if (db != NULL) {
         tex = db->textures.tex;
