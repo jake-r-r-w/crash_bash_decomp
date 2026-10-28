@@ -398,8 +398,8 @@ load extract and are documented.
   of the exe's left are a heap block's own arithmetic (`(u8 *)b + b->size * 4 + 0x18`) or
   a file's self-relative offsets (`(u8 *)q + *q`, the dbase, texture, path and script
   files), which is how the data is laid out; the engine's read `GameInfo` by offset,
-  which stays by the game state decision below. MapScene is a `map_enviroment *`, the
-  subengine's +0x70 a union, SceneMark a `MarkCtx *` (2026-10-28).
+  which stays by the game state decision below. MapScene is a `map_enviroment *` in every unit (its
+  views folded), the subengine's +0x70 a union, SceneMark a `MarkCtx *` (2026-10-28).
 - [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
   globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads
   `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff

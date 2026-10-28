@@ -143,7 +143,7 @@ s32 DinoKeepInBounds(u8 *arg0);
 
 void FirstTriggersDINO(void);
 
-/* A scene object in the list at MapScene + 0x1C (DinoFindTargets). */
+/* A scene object in the list at MapScene->subs (DinoFindTargets). */
 typedef struct DinoObj {
     u32 flags;             /* 0x00 */
     u8 pad4[0x58];

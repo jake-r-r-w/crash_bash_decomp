@@ -44,7 +44,7 @@ typedef struct BombGFXExt {
     /* 0x10 */ u8 pad10[0x1C - 0x10];
 } BombGFXExt;
 
-/* A scene's model object as PolarInitDebug walks the list at MapScene + 0x1C. */
+/* A scene's model object as PolarInitDebug walks the list at MapScene->subs. */
 typedef struct SceneObj {
     /* 0x00 */ u32 flags; /* 0x8000 visible */
     /* 0x04 */ s32 unk4;

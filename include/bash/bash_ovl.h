@@ -97,7 +97,7 @@ extern u16 CrateCounts[];
 extern s32 HeroesInPlay;
 BashPair *BashFindDropPoint(u16 *arg0);
 
-/* A scene object in the list at MapScene + 0x1C (BashSpaceInitTiles). */
+/* A scene object in the list at MapScene->subs (BashSpaceInitTiles). */
 typedef struct BashObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ s32 x;

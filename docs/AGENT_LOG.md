@@ -74,8 +74,7 @@ Sony objects. Next, none of them needing a playtest:
    exe, 77 overlay). What's left in the exe is mostly the heap's block arithmetic and
    the files' self-relative offsets; typing those means file-format structs (the dbase's
    table at +0x3C/+0x44/+0x4C, the script track records, the texture and path files).
-   The overlays' views of MapScene (`GfxScene`, `RaceScene`, `PolarScene`, `DinoScene`,
-   ...) can become `map_enviroment` fields now that MapScene is typed.
+   MapScene's views are folded (2026-10-28): every unit reads it as `map_enviroment`.
 4. Keep naming: `decomp.py rename --file` (it writes sym.main.txt; move names at
    0x80078C90 and up to sym.engine.txt). `scratch/rank_d.py`-style counts of the `D_`
    uses left point at the next batch.
@@ -489,7 +488,9 @@ Newest first, a few lines each. Details are in the commits.
   cup trophy functions, the mal header helpers (`(mal *)p - 1`), the small node pool
   (`BlockRef`), the dbase setters, PadState's 0x2C..0x40 words. Engine 24 -> 11, exe 94 ->
   62. Gotcha: draw_object_model's flags word must stay a plain deref (`*(u32 *)d`): as an
-  in-struct field sched1 moves its load past the PrimDepthLimit store.
+  in-struct field sched1 moves its load past the PrimDepthLimit store. Then the overlays'
+  eight views of MapScene folded into map_enviroment (GfxScene's `viewport` was the
+  map_map's clear colour and flag), chase.c's extern too; draw_map_scene walks the subs.
 
 - **2026-10-28 (Phase 5: globals and typing, second pass):** `tools/scripts/field_rename.py`
   renames a struct field's uses by cc1's missing-member errors (names like `unk6C` that

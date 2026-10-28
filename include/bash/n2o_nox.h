@@ -677,7 +677,7 @@ void PlotMineSFX(NAS *nas);
 
 void PlotLaserShoot(NAS *nas);
 
-/* A scene object as NoxInitAsteroids walks the list at MapScene + 0x1C. */
+/* A scene object as NoxInitAsteroids walks the list at MapScene->subs. */
 typedef struct AstKind {
     /* 0x0 */ u8 kind;
     /* 0x1 */ u8 mode;

@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 #include "bash/main.h"
 
-/* A scene object in the list at MapScene + 0x1C (SpinInitScene). */
+/* A scene object in the list at MapScene->subs (SpinInitScene). */
 typedef struct SpinObj {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ u16 rx;

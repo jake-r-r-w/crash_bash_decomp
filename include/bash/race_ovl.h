@@ -787,7 +787,7 @@ void InitGlob(NAS *m);
 s32 RaceHeroTestRun(s32 arg0);
 
 s32 RaceJumpUp(s32 player);
-/* A scene object in the list at MapScene + 0x1C (RaceInitBarrels). */
+/* A scene object in the list at MapScene->subs (RaceInitBarrels). */
 typedef struct RaceSceneObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ SLONG_XYZ pos;

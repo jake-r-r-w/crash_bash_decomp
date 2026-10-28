@@ -91,7 +91,7 @@ extern PogoCell PogoGrid[8][8];
 /* The position a board cell's unk4 points to, as PlaySfx takes it. */
 #define CELL_POS(cx, cz) ((SLONG_XYZ *)&((PogoCell *)((cx) * sizeof(PogoGrid[0]) + (cz) * sizeof(PogoCell) + (u32)PogoGrid))->unk4->x)
 
-/* A scene object in the list at MapScene + 0x1C (InitPogo_Tiles). */
+/* A scene object in the list at MapScene->subs (InitPogo_Tiles). */
 typedef struct PogoObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ u8 pad4[0x5C - 0x4];

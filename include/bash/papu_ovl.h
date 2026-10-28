@@ -71,7 +71,7 @@ typedef struct PapuCell {
 
 extern PapuCell PapuTiles[8][8];
 
-/* A scene object in the list at MapScene + 0x1C (PapuInitTiles). */
+/* A scene object in the list at MapScene->subs (PapuInitTiles). */
 typedef struct PapuSceneObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ s32 x;
