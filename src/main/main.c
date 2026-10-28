@@ -937,31 +937,31 @@ u8 *mal_trim(u8 *arg0, s32 arg1, _mal_area *arg2) {
     return arg0;
 }
 
-s32 mal_is_unowned(u8 *arg0) {
-    return ~(*(s32*)((u8*)(arg0) + -20)) == 0;
+s32 mal_is_unowned(void *p) {
+    return ~(s32)((mal *)p - 1)->owner == 0;
 }
 
-void mal_disown(u8 *arg0) {
-    (*(s32*)((u8*)(arg0) + -20)) = -1;
-    (*(s16*)((u8*)(arg0) + -24)) = 4;
+void mal_disown(void *p) {
+    ((mal *)p - 1)->owner = (void **)-1;
+    ((mal *)p - 1)->unk0 = 4;
 }
 
-void mal_set_owner(u8 *arg0, u8 **arg1) {
-    u8 **temp_v1;
-    u8 *temp_a2;
+void mal_set_owner(void *p, void **owner) {
+    void **old;
+    mal *b;
 
-    temp_a2 = arg0 - 0x18;
-    temp_v1 = (*(s32*)((u8*)(temp_a2) + 4));
-    if (temp_v1 != (u8 **)-1) {
-        *temp_v1 = NULL;
+    b = (mal *)p - 1;
+    old = b->owner;
+    if (old != (void **)-1) {
+        *old = NULL;
     }
-    (*(s16*)((u8*)(arg0) + -24)) = 0;
-    (*(s32*)((u8*)(temp_a2) + 4)) = arg1;
-    *arg1 = arg0;
+    ((mal *)p - 1)->unk0 = 0;
+    b->owner = owner;
+    *owner = p;
 }
 
-s16 mal_get_flags(u8 *arg0) {
-    return (*(s16*)((u8*)(arg0) + -24));
+s16 mal_get_flags(void *p) {
+    return ((mal *)p - 1)->unk0;
 }
 
 void mal_free_later(u8 *arg0, _mal_area *heap, s32 arg2) {
@@ -2099,7 +2099,7 @@ void init_file(void) {
     Loader.tail = NULL;
     LoadNodeFree = LoadNodePool;
     do {
-        LoadNode *next = (LoadNode *)((u8 *)node + 0x24);
+        LoadNode *next = node + 1;
         node->next = next;
         i--;
         node = next;
@@ -2133,12 +2133,12 @@ void loader_cancel(LoadNode *arg0) {
     arg0->next = temp_v1;
 }
 
-void loadnode_free(u8 *arg0) {
-    u8 *temp_v1;
+void loadnode_free(LoadNode *node) {
+    LoadNode *head;
 
-    temp_v1 = LoadNodeFree;
-    LoadNodeFree = arg0;
-    (*(s32*)((u8*)(arg0) + 28)) = temp_v1;
+    head = LoadNodeFree;
+    LoadNodeFree = node;
+    node->next = head;
 }
 
 void loadnode_unlink(LoadNode *arg0) {
@@ -2604,9 +2604,9 @@ void cheat_menu_enable(void) {
     p[1] |= 0x80010000;
 }
 
-void set_joypad(u8 *arg0, u32 arg1) {
-    (*(s32*)((u8*)(arg0) + 48)) = arg1;
-    (*(s32*)((u8*)(arg0) + 44)) = 1;
+void set_joypad(PadState *pad, u32 buttons) {
+    pad->unk30 = buttons;
+    pad->unk2C = 1;
 }
 
 void pads_init(void) {
@@ -2620,9 +2620,9 @@ void pads_init(void) {
         pad->unk4 = 0;
         pad->held = 0;
         pad->pressed = 0;
-        *(s32 *)&pad->unk2A[0x38 - 0x2A] = 0;
-        *(s32 *)&pad->unk2A[0x30 - 0x2A + 0xC] = 0;
-        *(s32 *)&pad->unk2A[0x30 - 0x2A] = 0;
+        pad->unk38 = 0;
+        pad->unk3C = 0;
+        pad->unk30 = 0;
         pad++;
     } while (--i != -1);
     first_joypad = -1;
@@ -3446,11 +3446,11 @@ void *dbase_anim_node(s32 *arg0, u8 *rec) {
 }
 
 void init_dots(subengine *arg0) {
-    s32 *p = (s32 *)((u8 *)arg0 + 0x6C);
-    s32 n = p[3];
-    TILE_1 *a = (TILE_1 *)p[1];
-    TILE_1 *b = (TILE_1 *)p[2];
-    s16 *vel = ((s16 **)arg0)[0x6C / 4];
+    SubFx *fx = (SubFx *)&arg0->u6C;
+    s32 n = fx->count;
+    TILE_1 *a = fx->a;
+    TILE_1 *b = fx->b;
+    s16 *vel = arg0->u6C.ptr;
 
     if (n != 0) {
         do {

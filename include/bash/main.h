@@ -553,7 +553,13 @@ typedef struct PadState {
     /* 0x22 */ s16 unk22;
     /* 0x24 */ u8 unk24[4];
     /* 0x28 */ s16 unk28;
-    /* 0x2A */ u8 unk2A[0x44 - 0x2A];
+    /* 0x2A */ u8 unk2A[2];
+    /* 0x2C */ s32 unk2C;     /* set_joypad: 1 */
+    /* 0x30 */ s32 unk30;     /* set_joypad: the buttons */
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ s32 unk3C;
+    /* 0x40 */ s32 unk40;
     /* 0x44 */ s32 held;      /* buttons down */
     /* 0x48 */ s32 pressed;   /* buttons down this frame and not the last */
     /* 0x4C */ s32 unk4C;
@@ -735,10 +741,10 @@ typedef struct {
 } Func8001CC10Slot;
 
 void mal_print_free(void);
-s32 mal_is_unowned(u8 *arg0);
-void mal_disown(u8 *arg0);
-void mal_set_owner(u8 *arg0, u8 * *arg1);
-s16 mal_get_flags(u8 *arg0);
+s32 mal_is_unowned(void *p);
+void mal_disown(void *p);
+void mal_set_owner(void *p, void **owner);
+s16 mal_get_flags(void *p);
 u8 *mal_alloc(s32 arg0, _mal_area *arg1);
 u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1);
 void mal_unlink(mal *blk, _mal_area *area);
@@ -758,10 +764,10 @@ mal *mal_first_free(u32 words, mal *blk);
 s32 loader_queue(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx);
 void loader_unused_b(void);
-void loadnode_free(u8 *arg0);
+void loadnode_free(LoadNode *node);
 struct LoadNode *loadlist_push(LoaderState *ls);
 struct LoadNode *loadlist_head(LoaderState *ls);
-void set_joypad(u8 *arg0, u32 arg1);
+void set_joypad(PadState *pad, u32 buttons);
 void cam_init(GfxCamera *cam);
 void cam_ramp_override(s32 arg0, s32 arg1);
 s32 *get_exe_exports(void);

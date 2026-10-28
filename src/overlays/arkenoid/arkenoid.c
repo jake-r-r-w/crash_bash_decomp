@@ -3155,7 +3155,7 @@ void Ark_HeroBot(u32 arg0) {
     }
     pad = &Pads[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
-    *(s32 *)((u8 *)pad + 0x38) = ai->AIang;
+    pad->unk38 = ai->AIang;
 }
 
 void FinishArkLevel(void) {
