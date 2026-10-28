@@ -68,7 +68,8 @@ Sony objects. Next, none of them needing a playtest:
    `Game*` globals named from their users. A new label inside an object: use the field or
    element (`MainCamera.at`, `SfxTable[0x3C5][1]`), not a new `D_`.
 2. The engine is done (ROADMAP's engine item closed 2026-10-28): every function and global
-   typed, `GameInfo` one `GameState` read through `GAME`. Next, the same for the exe: its
+   typed, `GameInfo` one `GameState` read through `GAME`. The exe is partway (ROADMAP's exe
+   item has the state); next for the exe: its
    62 raw byte-offset functions (mostly the heap's block arithmetic and the files'
    self-relative offsets: file-format structs for the dbase table at +0x3C/+0x44/+0x4C, the
    script tracks, the texture and path files), its own GameInfo views (`HubGameView` ..
@@ -480,6 +481,19 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (Phase 5: the exe, partway):** placeholders gone (GetVideoMode, CdStatus,
+  SsUtReverbOn, CdLastPos; the inlines named after what they inline). One `obj_texture`
+  (TexDst2A84C, AnimEntry folded); `PadState` everywhere (PadStick, PadInput and 14 overlay pad
+  views; the stick angle a union because two games read its low half as a field; the rumble the
+  existing `PadRumble`); `DrawBuffer` for DrawBuffers and cdb; the script threads and headers
+  typed; 20-odd functions' byte parameters typed. Tools in scratch/: `retype.py FILE FUNC VAR
+  TYPE[:member]` (a variable's offsets as fields, from cc1's layout; it warns about arithmetic
+  left that the new type would scale), `fold.py CANON VIEW...` (any views onto one struct, by
+  offset, in rounds; clashing names go through temporaries first), `rename_pass.py`. Gotchas:
+  after retyping, `VAR + N` scales by the struct (check the LEFT warnings); an `*(T *)&x.f`
+  cast is a different alias class from a field of type T (titles' and Bonk's pad halfwords
+  needed real fields); a file write can fail mid-pass on Windows (rename_pass retries).
 
 - **2026-10-28 (Phase 5: the engine typed, item closed):** `GameState` (main.h) is GameInfo's
   layout, each field the global at its address; the engine's 23 views folded (`GAME`). The

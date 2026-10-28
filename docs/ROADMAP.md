@@ -427,9 +427,20 @@ load extract and are documented.
   (the shell, allocator, loader, dbase, renderer, scripts, NAS calls, textures, sound,
   music, card, modchip), in the leak's styles (`mal_*`, `dbase_*`, `*_thread`,
   CamelCase for the NAS calls); the last ones from their callers, every game function
-  named (2537 of 2537, 2026-10-28; empty ones nothing calls are `*_unused`). Left: the
-  globals, and the 131 Sony statics the converted objects carry no names for. For
-  browsing cross-references across the whole binary, try Ghidra with a PSX
+  named (2537 of 2537, 2026-10-28; empty ones nothing calls are `*_unused`). Then
+  (2026-10-28, in progress): no placeholder name is left (four PsyQ functions by their SDK
+  names, the address-named inlines by what they inline); one `obj_texture` for the texture
+  entry (TexDst2A84C and AnimEntry folded); `PadState` for every unit's pads (PadStick,
+  PadInput and 14 overlay pad views folded, the rumble a `PadRumble`); `DrawBuffer` for
+  DrawBuffers/cdb; the script threads read `script_thread`, `script_header` and `partdata`
+  fields; texture sets, dbases, load nodes, music slots, subengines and the trigger file's head
+  typed where functions took bytes. Left: 106 exe functions with raw offsets (438), mostly
+  the heap's and pools' own block arithmetic and the files' self-relative layouts (the model
+  file's header and mesh records, the mesh animations, the texture file, the card image, the
+  script table at +0x4C), which want the file-format structs of the asset formats item; the
+  131 Sony statics the converted objects carry no names for; and the overlays' 45 GameInfo
+  views still to fold into `GameState` (`scratch/fold.py GameState VIEW...` does it, as it did
+  the pads). For browsing cross-references across the whole binary, try Ghidra with a PSX
   loader by hand.
 
 - [ ] Shift-test again (playtests): Bash, Arkenoid and Pogo were shift-tested
