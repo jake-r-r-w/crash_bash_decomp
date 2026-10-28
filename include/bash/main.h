@@ -997,6 +997,7 @@ typedef struct GameState {
     /* 0x06C */ s32 teams;
     /* 0x070 */ AdventureState adventure;
 } GameState;
+#define GAME ((GameState *)GameInfo)
 extern u8 GameInfo[];
 extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
 extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (views: numPlayers) */

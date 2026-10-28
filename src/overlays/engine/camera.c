@@ -561,41 +561,41 @@ void InitScreenLabels(void) {
     s32 v;
 
     eng = GetEngineSlot(3);
-    ScreenLabels4P[6].unk1E = HeroNameText[GV->heroes[0]];
-    ScreenLabels4P[7].unk1E = HeroNameText[GV->heroes[1]];
-    ScreenLabels4P[8].unk1E = HeroNameText[GV->heroes[2]];
-    ScreenLabels4P[9].unk1E = HeroNameText[GV->heroes[3]];
-    ScreenLabels4P[10].unk1E = GV->adventure.unkCC[0] + 0x200E;
-    ScreenLabels4P[11].unk1E = GV->adventure.unkCC[1] + 0x200E;
-    ScreenLabels4P[12].unk1E = GV->adventure.unkCC[2] + 0x200E;
-    ScreenLabels4P[13].unk1E = GV->adventure.unkCC[3] + 0x200E;
-    ScreenLabelsTeams[4].unk1E = HeroNameText[GV->heroes[0]];
-    ScreenLabelsTeams[5].unk1E = HeroNameText[GV->heroes[1]];
-    ScreenLabelsTeams[6].unk1E = HeroNameText[GV->heroes[2]];
-    ScreenLabelsTeams[7].unk1E = HeroNameText[GV->heroes[3]];
-    ScreenLabelsTeams[8].unk1E = GV->adventure.unkCC[GV->teamLeader[0]] + 0x200E;
-    ScreenLabelsTeams[9].unk1E = GV->adventure.unkCC[GV->teamLeader[1]] + 0x200E;
+    ScreenLabels4P[6].unk1E = HeroNameText[GAME->heroes[0]];
+    ScreenLabels4P[7].unk1E = HeroNameText[GAME->heroes[1]];
+    ScreenLabels4P[8].unk1E = HeroNameText[GAME->heroes[2]];
+    ScreenLabels4P[9].unk1E = HeroNameText[GAME->heroes[3]];
+    ScreenLabels4P[10].unk1E = GAME->adventure.unkCC[0] + 0x200E;
+    ScreenLabels4P[11].unk1E = GAME->adventure.unkCC[1] + 0x200E;
+    ScreenLabels4P[12].unk1E = GAME->adventure.unkCC[2] + 0x200E;
+    ScreenLabels4P[13].unk1E = GAME->adventure.unkCC[3] + 0x200E;
+    ScreenLabelsTeams[4].unk1E = HeroNameText[GAME->heroes[0]];
+    ScreenLabelsTeams[5].unk1E = HeroNameText[GAME->heroes[1]];
+    ScreenLabelsTeams[6].unk1E = HeroNameText[GAME->heroes[2]];
+    ScreenLabelsTeams[7].unk1E = HeroNameText[GAME->heroes[3]];
+    ScreenLabelsTeams[8].unk1E = GAME->adventure.unkCC[GAME->teamLeader[0]] + 0x200E;
+    ScreenLabelsTeams[9].unk1E = GAME->adventure.unkCC[GAME->teamLeader[1]] + 0x200E;
     ScreenCount = 0;
-    ScreenLabelsPair[3].unk1E = HeroNameText[GV->heroes[0]];
-    ScreenLabelsPair[4].unk1E = HeroNameText[GV->heroes[1]];
-    ScreenLabelsPair[5].unk1E = GV->adventure.unkCC[0] + 0x200E;
-    ScreenLabels2P[4].unk1E = HeroNameText[GV->heroes[0]];
-    ScreenLabels2P[5].unk1E = HeroNameText[GV->heroes[1]];
-    ScreenLabels2P[6].unk1E = GV->adventure.unkCC[0] + 0x200E;
-    ScreenLabels2P[7].unk1E = GV->adventure.unkCC[1] + 0x200E;
-    ScreenLabelsOne[3].unk1E = HeroNameText[GV->heroes[0]];
-    ScreenLabelsOne[4].unk1E = GV->adventure.unkCC[0] + 0x200E;
-    switch (GV->levelFlags & 0xF0) {
+    ScreenLabelsPair[3].unk1E = HeroNameText[GAME->heroes[0]];
+    ScreenLabelsPair[4].unk1E = HeroNameText[GAME->heroes[1]];
+    ScreenLabelsPair[5].unk1E = GAME->adventure.unkCC[0] + 0x200E;
+    ScreenLabels2P[4].unk1E = HeroNameText[GAME->heroes[0]];
+    ScreenLabels2P[5].unk1E = HeroNameText[GAME->heroes[1]];
+    ScreenLabels2P[6].unk1E = GAME->adventure.unkCC[0] + 0x200E;
+    ScreenLabels2P[7].unk1E = GAME->adventure.unkCC[1] + 0x200E;
+    ScreenLabelsOne[3].unk1E = HeroNameText[GAME->heroes[0]];
+    ScreenLabelsOne[4].unk1E = GAME->adventure.unkCC[0] + 0x200E;
+    switch (GAME->levelFlags & 0xF0) {
     case 0x20:
         v = 0x2021;
-        if (GV->levelFlags & 8) {
+        if (GAME->levelFlags & 8) {
             v = 0x2020;
         }
         ScreenLabels4P[0].unk1E = v;
         ScreenLabelsTeams[0].unk1E = v;
         ScreenLabelsPair[0].unk1E = v;
         ScreenLabelsOne[0].unk1E = v;
-        if (GV->teams != 0) {
+        if (GAME->teams != 0) {
             PlaceEngineSlot(3, (s32 *)ScreenLabelsPair);
             ScreenCount = 1;
         } else {
@@ -617,10 +617,10 @@ void InitScreenLabels(void) {
         ScreenLabelsTeams[0].unk1E = 0x2022;
         ScreenLabelsPair[0].unk1E = 0x2022;
         ScreenLabelsOne[0].unk1E = 0x2022;
-        if (GV->mode == 0x20) {
+        if (GAME->mode == 0x20) {
             PlaceEngineSlot(3, (s32 *)ScreenLabels2P);
             ScreenCount = 2;
-        } else if (GV->teams != 0) {
+        } else if (GAME->teams != 0) {
             PlaceEngineSlot(3, (s32 *)ScreenLabelsTeams);
             ScreenCount = 2;
         } else {

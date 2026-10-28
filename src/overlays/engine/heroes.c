@@ -45,7 +45,7 @@ void InitialiseHeroes(void) {
     HeroesInPlay = 4;
     HeroesSidelined = 4;
     FinalHeroesTempo = 0;
-    HSV->exitFlags &= 0xF7FF;
+    GAME->exitFlags &= 0xF7FF;
     hb = Heroes;
     while (1) {
         if (i >= 4) {
@@ -77,7 +77,7 @@ void InitialiseHeroes(void) {
         h->hero_ai = NULL;
         h->hero_object = NULL;
         h->hero_health = 0x14;
-        g = HSV;
+        g = GAME;
         g->pause = 0;
         g = (GameState *)((u8 *)g + i);  /* indexing unk50/unk58 by i adds two insns */
         h->hero_status = 0;
@@ -351,7 +351,7 @@ void ProcessHeroes(void) {
             HPADS[id].unk54 = 0;
             goto reset;
         }
-        if (HLV->cheats < 0 && (HLV->cheats & 4) &&
+        if (GAME->cheats < 0 && (GAME->cheats & 4) &&
             (pad = PadCount - 1, HPADS[pad].held & 0x400)) {
             a->hero_status = status | 0x2000;
             SetHeroAction(id, (u16)HeroActDead);
@@ -412,7 +412,7 @@ void ProcessHeroes(void) {
         if (h->hero_hit != 0) {
             if (--h->hero_hit == 0) {
                 if (h->hero_health <= 0) {
-                    if (!(HLV->cheats & 2)) {
+                    if (!(GAME->cheats & 2)) {
                         h->hero_status |= 0x2000;
                         SetHeroAction(id, (u16)HeroActDead);
                         h->hero_immunity = 0;
@@ -421,7 +421,7 @@ void ProcessHeroes(void) {
                     h->hero_immunity = 0x28;
                 }
             }
-            if (!(HLV->levelFlags & 0x1000)) {
+            if (!(GAME->levelFlags & 0x1000)) {
                 HPADS[id].unk50 = 0;
                 HPADS[id].unk54 = 0;
             }
@@ -441,7 +441,7 @@ void ProcessHeroes(void) {
         if (!(st & 0x2000)) {
             last = id;
             HeroesInPlay++;
-        } else if (HLV->exitFlags & 0x800) {
+        } else if (GAME->exitFlags & 0x800) {
             RemoveCamera(c->hero);
         } else {
             HeroesSidelined++;
@@ -466,12 +466,12 @@ void ProcessHeroes(void) {
         if (sub != NULL) {
             sub->flags &= ~0x8000;
         }
-        if (!(HLV->cheats & 0x100) && HLV->heroOut[id] != 0) {
+        if (!(GAME->cheats & 0x100) && GAME->heroOut[id] != 0) {
             ((void (*)(s32))HeroHooks.HeroBot)(id);
         }
         h = &Heroes[id];
         if (h->hero_pu != 0x15 || (GameFrameCount & 1)) {
-            if (HLV->pause & 0x4000000) {
+            if (GAME->pause & 0x4000000) {
                 HPADS[id].unk50 = 0;
                 HPADS[id].unk54 = 0;
             }
@@ -489,11 +489,11 @@ void ProcessHeroes(void) {
         }
     next:;
     }
-    if (HLV->levelFlags & 0x100) {
+    if (GAME->levelFlags & 0x100) {
         if (!(BossState.flags & 0x8000)) {
             if (!(BossState.flags & 0x2000)) {
                 HeroesInPlay++;
-            } else if (!(HLV->exitFlags & 0x800)) {
+            } else if (!(GAME->exitFlags & 0x800)) {
                 HeroesSidelined++;
             }
             pc = (u16 *)&BossState;
@@ -502,20 +502,20 @@ void ProcessHeroes(void) {
             }
         }
     }
-    if (!(HLV->cheats & 0x20)) {
+    if (!(GAME->cheats & 0x20)) {
         bits = 1;
-        if (HLV->cheats & 0x800) {
+        if (GAME->cheats & 0x800) {
             bits = 0x201;
         }
-        if (!(HLV->levelFlags & 0x200)) {
+        if (!(GAME->levelFlags & 0x200)) {
             ((void (*)(s32, s32))HeroHooks.ChooseWinner)(last, bits);
         }
-        if (HLV->levelFlags & 0x400) {
-            HLV->exitFlags |= bits;
+        if (GAME->levelFlags & 0x400) {
+            GAME->exitFlags |= bits;
         }
     }
-    if (!(HLV->exitFlags & 0x801) && FinalHeroesTempo == 0) {
-        switch (HLV->mode) {
+    if (!(GAME->exitFlags & 0x801) && FinalHeroesTempo == 0) {
+        switch (GAME->mode) {
         case 0:
         case 1:
         case 2:
@@ -549,13 +549,13 @@ void DefChooseWinner(s32 idx, u16 arg1) {
     s32 n;
     s32 best;
 
-    if (WINV->exitFlags & 0x801) {
+    if (GAME->exitFlags & 0x801) {
         return;
     }
-    if (WINV->levelFlags & 0xE0) {
+    if (GAME->levelFlags & 0xE0) {
         if (idx == -1) {
-            WINV->winner[0] = 0;
-            WINV->exitFlags |= arg1;
+            GAME->winner[0] = 0;
+            GAME->exitFlags |= arg1;
             for (i = 0; i < 4; i++) {
                 h = &Heroes[i];
                 if (!(h->hero_status & 0xFA00)) {
@@ -566,13 +566,13 @@ void DefChooseWinner(s32 idx, u16 arg1) {
             n = 0;
             for (i = 0; i < 4; i++) {
                 h = &Heroes[i];
-                if (!(h->hero_status & 0xF800) && WINV->heroOut[i] == 0) {
+                if (!(h->hero_status & 0xF800) && GAME->heroOut[i] == 0) {
                     n++;
                 }
             }
             if (n == 0) {
-                WINV->winner[0] = 0;
-                WINV->exitFlags |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (i = 0; i < 4; i++) {
                     h = &Heroes[i];
                     if (!(h->hero_status & 0xFA00)) {
@@ -581,15 +581,15 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                 }
                 return;
             }
-            if (WINV->heroOut[idx] != 0) {
+            if (GAME->heroOut[idx] != 0) {
                 return;
             }
         }
     }
     best = 0;
     if (idx == -1) {
-        if (!(WINV->levelFlags & 0xE0)) {
-            switch (WINV->mode) {
+        if (!(GAME->levelFlags & 0xE0)) {
+            switch (GAME->mode) {
             case 0:
             case 1:
             case 2:
@@ -604,9 +604,9 @@ void DefChooseWinner(s32 idx, u16 arg1) {
             case 21:
             case 30:
             case 32:
-                if (WINV->teams != 0 && WINV->mode != 0x20) {
+                if (GAME->teams != 0 && GAME->mode != 0x20) {
                     HeroInfo *hb = Heroes;
-                    s32 t0 = WINV->teamLeader[0];
+                    s32 t0 = GAME->teamLeader[0];
                     s32 t1;
                     s32 dead0, dead1;
                     u16 mate0, mate1;
@@ -623,7 +623,7 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                     if (!(h->hero_status & 0xF800)) {
                         h0 += h->hero_health;
                     }
-                    t1 = WINV->teamLeader[1];
+                    t1 = GAME->teamLeader[1];
                     h = &Heroes[t1];
                     dead1 = h->hero_status & 0xF800;
                     h1 = 0;
@@ -672,17 +672,17 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                 HeroInfo *w = &b1[idx];
 
                 w->hero_status |= 0x200;
-                if (WINV->teams != 0 && WINV->mode != 0x20) {
+                if (GAME->teams != 0 && GAME->mode != 0x20) {
                     m = &b1[(u16)w->hero_teammate];
                     if (!(m->hero_status & 0xA000)) {
                         m->hero_status |= 0x200;
                     }
                 }
-                WINV->winner[0] = Heroes[idx].hero_name;
-                WINV->exitFlags |= 0x800;
+                GAME->winner[0] = Heroes[idx].hero_name;
+                GAME->exitFlags |= 0x800;
             } else {
-                WINV->winner[0] = 0;
-                WINV->exitFlags |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
             }
         }
     } else {
@@ -690,7 +690,7 @@ void DefChooseWinner(s32 idx, u16 arg1) {
         HeroInfo *base = Heroes;
 
         h = &base[idx];
-        g = WINV;
+        g = GAME;
         n = (u16)h->hero_teammate;
         if (g->teams != 0 && g->mode != 0x20) {
             idx = HeroesInPlay;
@@ -711,8 +711,8 @@ void DefChooseWinner(s32 idx, u16 arg1) {
             }
         } else if (HeroesInPlay < 2) {
             Heroes[idx].hero_status |= 0x200;
-            WINV->winner[0] = Heroes[idx].hero_name;
-            WINV->exitFlags |= 0x800;
+            GAME->winner[0] = Heroes[idx].hero_name;
+            GAME->exitFlags |= 0x800;
         }
     }
     if (GameExitFlags & 0x800) {
@@ -728,10 +728,10 @@ void DefChooseWinner(s32 idx, u16 arg1) {
         for (i = 0; i < 4; i++) {
             h = &Heroes[i];
             if (!(h->hero_status & 0xFA00)) {
-                if (WINV->heroOut[i] == 0) {
+                if (GAME->heroOut[i] == 0) {
                     HeroesAllOut = 0;
                 }
-                if (WINV->teams != 0 && WINV->heroOut[h->hero_teammate] == 0) {
+                if (GAME->teams != 0 && GAME->heroOut[h->hero_teammate] == 0) {
                     HeroesAllOut = 0;
                 }
             }

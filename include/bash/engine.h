@@ -467,7 +467,6 @@ extern HudEntry PausePadMessage[];
 
 void CheckControllers(void);
 
-#define HUDGAME ((GameState *)GameInfo)
 #define HUDPLAYERS ((EXTengine **)&Icon)
 extern s32 PauseFlashItem;
 void DrawLevelHud(void);

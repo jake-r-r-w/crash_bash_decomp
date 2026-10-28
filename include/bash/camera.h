@@ -103,7 +103,6 @@ void RenderScreenLabels(void);
 
 /* Read through a cast, not a local: sched then sees the base as the symbol and
  * moves these loads past the record stores, as the target does. */
-#define GV ((GameState *)GameInfo)
 
 extern u16 HeroNameText[];
 extern TextPanelItem ScreenLabels4P[];

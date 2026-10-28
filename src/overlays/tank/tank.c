@@ -3369,17 +3369,17 @@ void TankHeroVictory(u32 arg0) {
     sub = Heroes[arg0].hero_sub->next->next;
     eng->unk1E += 0x15;
     eng->unk5E = 1;
-    if (HLV->mode != 5) {
+    if (GAME->mode != 5) {
         sub->unk52 = 1;
         sub->unk12 -= 0x15;
     }
     ProcessHeroAnim(arg0);
     CheckHeroAnim(arg0);
     if (UpdateHeroVictory(arg0) != 0) {
-        if (HLV->cheats & 0x800) {
-            HLV->exitFlags |= 0x201;
+        if (GAME->cheats & 0x800) {
+            GAME->exitFlags |= 0x201;
         } else {
-            HLV->exitFlags |= 1;
+            GAME->exitFlags |= 1;
         }
     }
 }

@@ -160,7 +160,6 @@ void Setup_panel(void);
 
 void Draw_Clock(void);
 
-#define MODEV ((GameState *)GameInfo)
 
 extern s16 CupWinner;
 extern u16 LevelKindKeys[7];

@@ -248,7 +248,6 @@ typedef struct {
 } FallParticles;
 
 
-#define MSGV ((GameState *)GameInfo)
 typedef struct EngineLevelInfo {
     /* 0x00 */ u8 unk0[0xBC];
     /* 0xBC */ u8 *unkBC;
@@ -300,7 +299,6 @@ extern s32 StatsHasPage1;
 extern s32 StatsHasPage3;
 extern s32 StatsHasBonus;
 void DrawAdventureStats(s32 arg0);
-#define SCV ((GameState *)GameInfo)
 /* Two-digit text fields (tens, units) of the score panel. */
 extern char PauseDigits[2];
 extern char PauseDigits2[2];
@@ -345,15 +343,11 @@ typedef struct HudEngView {
     /* 0x3C8 */ u8 pad3C8[0x406 - 0x3C8];
     /* 0x406 */ s16 on1;
 } HudEngView;
-#define HUDG ((GameState *)GameInfo)
-#define WINV ((GameState *)GameInfo)
 extern s32 HeroesInPlay;
-#define HLV ((GameState *)GameInfo)
 #define HPADS ((PadButtons *)Pads)
 extern s32 HeroesSidelined;
 extern u16 FinalHeroesTempo;
 extern u16 HeroLastHarm[4];
-#define PSV ((GameState *)GameInfo)
 extern u16 LevelKindKeys[];
 #define HUDBOX (&PauseMenuPanel)
 #define HUDENG ((HudEngView *)PanelTab)
@@ -377,7 +371,6 @@ extern s32 HeroesInPlay;
 extern s32 HeroesSidelined;
 extern u16 HeroEntities[];
 
-#define HSV ((GameState *)GameInfo)
 
 
 /* A particle PlotSparks scatters (0x18 bytes). */

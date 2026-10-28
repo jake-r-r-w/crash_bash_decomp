@@ -1667,19 +1667,19 @@ s32 ArkHeroModeCheck(s32 arg0) {
     s32 t;
     s32 f;
 
-    switch (MODEV->mode) {
+    switch (GAME->mode) {
     break;
     case 14:
-        if (MODEV->levelFlags & 0x80) {
-            if (arg0 == 0 || (MODEV->teams != 0 && arg0 == 1)) {
+        if (GAME->levelFlags & 0x80) {
+            if (arg0 == 0 || (GAME->teams != 0 && arg0 == 1)) {
                 Heroes[arg0].hero_attack_timer = 10;
             }
             goto l17;
         }
     case 17:
 l17:
-        if (MODEV->levelFlags & 0x80) {
-            if (arg0 != 0 && (MODEV->teams == 0 || arg0 != 1)) {
+        if (GAME->levelFlags & 0x80) {
+            if (arg0 != 0 && (GAME->teams == 0 || arg0 != 1)) {
                 if (HPADS[arg0].unk54 & 0x2000) {
                     act = 0x20;
                     goto call;
@@ -2353,7 +2353,7 @@ void ArkHeroGrab(u32 arg0) {
         if (w < 0x91) {
             if (!(HPADS[arg0].unk50 & 0x4000)) {
                 f = 1;
-                if (HLV->heroOut[arg0] != 0) {
+                if (GAME->heroOut[arg0] != 0) {
                     f = h->hero_ai->AItimer3 < 1U;
                 }
                 if (f != 0) {
@@ -2692,14 +2692,14 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
     s32 r;
 
     arg2 *= arg2;
-    if (MODEV->mode < 0xE) {
+    if (GAME->mode < 0xE) {
         goto ret0;
     }
-    if (MODEV->mode >= 0x11) {
-        if (MODEV->mode != 0x11) {
+    if (GAME->mode >= 0x11) {
+        if (GAME->mode != 0x11) {
             return 0;
         }
-        if (MODEV->levelFlags & 0x80) {
+        if (GAME->levelFlags & 0x80) {
             n = HeadOfBalls;
             if (n != NULL) {
                 HeroInfo *base = Heroes;

@@ -397,11 +397,11 @@ void DrawLevelHud(void) {
     u32 c1;
     u8 *tim;
 
-    if (ModeTypes[HUDGAME->mode * 3] == 0x102) {
+    if (ModeTypes[GAME->mode * 3] == 0x102) {
         show = 1;
-        if (!(HUDGAME->pause & 1)) {
+        if (!(GAME->pause & 1)) {
             show = 0;
-        } else if (HUDGAME->pause & 0x0A007662) {
+        } else if (GAME->pause & 0x0A007662) {
             show = 0;
         }
         if (GameLevelFlags & 3) {
@@ -436,7 +436,7 @@ void DrawLevelHud(void) {
     } else if (GamePause & 0x0A007662) {
         show = 0;
     }
-    if (HUDGAME->levelFlags & 3) {
+    if (GAME->levelFlags & 3) {
         show = 0;
     }
     if (show) {
@@ -458,7 +458,7 @@ void DrawLevelHud(void) {
         c0 = 0xD0FF;
         c1 = 0xFF;
         pos.f.y = Clock_XYZ[1];
-        if (!(Clock_flags & 2) && (HUDGAME->pause & 1)) {
+        if (!(Clock_flags & 2) && (GAME->pause & 1)) {
             Clock[0].Ctrl |= 0x8000;
         }
         for (i = 0; i < 4; i++) {
