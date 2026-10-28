@@ -31,7 +31,7 @@ void AnimateLoadingIcon(void) {
     s32 f;
     s32 i;
 
-    if (D_800A0158 >= 2 && (o = D_800A0290) != NULL) {
+    if (LevelLoadStage >= 2 && (o = D_800A0290) != NULL) {
         t = rcossin_tbl;
         o->unk51 = 0;
         o->unk12 += 0x20;
@@ -59,7 +59,7 @@ void UpdateLoadingScene(void) {
     u8 *p;
     u8 *b;
 
-    if (D_800A0158 >= 2) {
+    if (LevelLoadStage >= 2) {
         if (D_800A02C0 == 0 && *(s32 *)((b = HeroModelBank) + 0x2CAC) != 0) {
             if (D_80064C93 != -1) {
                 PlaySfx(0x3C5, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -143,7 +143,7 @@ void InitLevelLoad(void) {
         cfg = &D_8009F96C;
     }
     AllocOtBuffers((s32 *)cfg);
-    ((void (*)(u8 *))ResetScreen)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
+    ((void (*)(u8 *))ResetScreen)(VideoMode == 0 ? vmode_512_ntsc : D_8005B744);
     GameInfo[0x60] = 0;
     GameInfo[0x61] = 0;
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
@@ -151,7 +151,7 @@ void InitLevelLoad(void) {
     dbase_init_all();
     sound_init();
     draw_init();
-    D_800A0158 = 0;
+    LevelLoadStage = 0;
     if (((D5A614View *)GameInfo)->mode == 0x28 && FirstBootDone != 0) {
         ProcessControl.flags = 0x1D;
         ProcessControl.next_process = &RunGame;
@@ -291,7 +291,7 @@ void UpdateLevelLoad(void) {
     s32 *a;
     s32 *p;
 
-    if (D_800A0158 >= 2) {
+    if (LevelLoadStage >= 2) {
         process_control_update(&LoadingControl, NULL);
     }
     vab_transfer_wait();
@@ -299,7 +299,7 @@ void UpdateLevelLoad(void) {
     if (loader_pending() != 0 || MainHeap.deferred != NULL) {
         return;
     }
-    switch (D_800A0158) {
+    switch (LevelLoadStage) {
     case 0:
         if (GameMode == 0x28 && FirstBootDone == 0) {
             process_control_init(&LoadingControl, &LoadingProcess2);
@@ -315,7 +315,7 @@ void UpdateLevelLoad(void) {
         g0->unkCC[1] = 0;
         g0->unkCC[2] = 0;
         g0->unkCC[3] = 0;
-        D_800A0158 = 1;
+        LevelLoadStage = 1;
         g0->unk30 &= ~0x200;
         break;
     case 1:
@@ -337,7 +337,7 @@ void UpdateLevelLoad(void) {
             sfx_bank_load((s32)&DatIndex[2 * 273]);
         }
         set_fade(&ScreenFade, -0x300, 0);
-        D_800A0158 = 2;
+        LevelLoadStage = 2;
         break;
     case 6:
         if (GameMode != 0x28 || FirstBootDone == 0) {
@@ -351,7 +351,7 @@ void UpdateLevelLoad(void) {
             p = NULL;
         }
         mapscene_init(a, p);
-        D_800A0158 = 4;
+        LevelLoadStage = 4;
         break;
     case 2:
         if (GameMode == 0x28) {
@@ -361,11 +361,11 @@ void UpdateLevelLoad(void) {
         }
     case 8:
         QueueHeroModels();
-        D_800A0158 = 6;
+        LevelLoadStage = 6;
         break;
     case 5:
         music_play_level(GameMode, ModeTypes[GameMode * 3]);
-        D_800A0158 = 3;
+        LevelLoadStage = 3;
         break;
     case 3:
         a = map;
@@ -376,7 +376,7 @@ void UpdateLevelLoad(void) {
         }
         mapscene_init(a, p);
         load_initial_dbases();
-        D_800A0158 = 4;
+        LevelLoadStage = 4;
         break;
     case 4:
         ((EngColor *)&GameViewport)->code = ((EngColorSrc *)MapScene)->col->code;
@@ -384,14 +384,14 @@ void UpdateLevelLoad(void) {
         ((EngColor *)&GameViewport)->rgb = c->rgb;
         ClearLevelNas();
         InitialiseEngine();
-        D_800A0158 = 7;
+        LevelLoadStage = 7;
         break;
     case 7:
         GotoProcess(&RetryProcess, 0x300);
         if (GameMode != 0x28) {
             music_request(-1);
         }
-        D_800A0158 = 9;
+        LevelLoadStage = 9;
         break;
     case 9:
         break;
@@ -414,7 +414,7 @@ void QuitLevelLoad(void) {
 }
 
 void RenderLevelLoad(void) {
-    if (D_800A0158 >= 2) {
+    if (LevelLoadStage >= 2) {
         process_control_render(&LoadingControl);
     }
 }
@@ -437,7 +437,7 @@ void QuitLoadingScene(void) {
 }
 
 void RenderLoadingScene(void) {
-    if (D_800A0158 >= 2) {
+    if (LevelLoadStage >= 2) {
         GameFrameCount += 1;
         gfx_set_viewport(D_8009F9AC, MainCamera);
         if (D_800A02C0 != 0) {
@@ -459,7 +459,7 @@ void QuitLoadingScreen(void) {
 }
 
 void RenderLoadingScreen(void) {
-    if (D_800A0158 >= 2) {
+    if (LevelLoadStage >= 2) {
         gfx_set_viewport(&LoadingViewport, &LoadingCamera);
         RenderState.modelDp = ScreenFade.amount;
         eng_render((EXTengine *)D_800A0224);
@@ -522,8 +522,8 @@ void DrawSceneMarks(void) {
     s32 i;
     s32 s;
 
-    for (i = 0; i < D_800A0C70; i++) {
-        m = &D_800A0C10[i];
+    for (i = 0; i < SceneMarkCount; i++) {
+        m = &SceneMarks[i];
         p = &D_800A02D8[m->idx];
         *e = SubEngineTemplate;
         e->unk74 = m->unk0;
@@ -556,9 +556,9 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     cam_init(MainCamera);
     D_800A0D30 = 0;
     D_800A0D38 = 1;
-    D_800A0C70 = 0;
-    ((EngineStartArgs *)&D_800A0D2C)->unk0 = arg0->unk0;
-    D_800A0D1C = arg0->unk4;
+    SceneMarkCount = 0;
+    ((EngineStartArgs *)&SceneMark)->unk0 = arg0->unk0;
+    SceneVabCue = arg0->unk4;
     D_800A0D20[0] = 0;
     D_800A0D24[0] = 0;
     sound_reinit();
@@ -589,7 +589,7 @@ void InitScriptScene(void) {
     smallnode_init();
     cfg = &D_800A0314;
     AllocOtBuffers((s32 *)cfg);
-    ((void (*)(u8 *))ResetScreen)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
+    ((void (*)(u8 *))ResetScreen)(VideoMode == 0 ? vmode_512_ntsc : D_8005B744);
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
@@ -603,35 +603,35 @@ void UpdateSceneVabCues(void) {
     s32 n;
     s32 ok;
 
-    if (D_800A0D1C == 0) {
+    if (SceneVabCue == 0) {
         return;
     }
     if (D_800654B4 != 0) {
-        if (((EngineVabCue *)D_800A0D1C)->vab == 0) {
+        if (((EngineVabCue *)SceneVabCue)->vab == 0) {
             ok = 1;
         } else {
             ok = ~SfxBanks[D_800A0D20[0]].id != 0;
         }
         if (ok) {
-            if (((EngineVabCue *)D_800A0D1C)->vab == 0) {
+            if (((EngineVabCue *)SceneVabCue)->vab == 0) {
                 return;
             }
-            PlaySfx(((EngineVabCue *)D_800A0D1C)->sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(((EngineVabCue *)SceneVabCue)->sfx, NULL, NULL, 0x1000, 0x1E00, 0);
             D_800654B4 -= 1;
             n = (D_800A0D20[0] + 1) & 1;
             D_800A0D20[0] = n;
-            D_800654B0 = ((EngineVabCue *)D_800A0D1C)->unk8;
+            D_800654B0 = ((EngineVabCue *)SceneVabCue)->unk8;
             if (SfxBanks[n].id != -1) {
                 sfx_bank_close((s32 *)&SfxBanks[n]);
             }
-            D_800A0D1C += sizeof(EngineVabCue);
+            SceneVabCue += sizeof(EngineVabCue);
         }
     }
-    if (((EngineVabCue *)D_800A0D1C)->vab != 0) {
+    if (((EngineVabCue *)SceneVabCue)->vab != 0) {
         base = SfxBanks;
         slot = &base[D_800A0D20[0]];
         if (slot->head == NULL && slot->handle == 0 && loader_pending() == 0) {
-            machine_load_sfx(((EngineVabCue *)D_800A0D1C)->vab, &base[D_800A0D20[0]]);
+            machine_load_sfx(((EngineVabCue *)SceneVabCue)->vab, &base[D_800A0D20[0]]);
         }
     }
 }
@@ -647,9 +647,9 @@ void StartSceneScript(void) {
     s32 t;
     MarkSrcEnt *e;
 
-    play_script((u8 *)((MarkCtx *)D_800A0D2C)->obj, ((MarkCtx *)D_800A0D2C)->unk8, &D_800A0BA0, &D_800A0BC0, 4, &D_800A0D34);
-    D_800A0C70 = 0;
-    t = (s32)((MarkCtx *)D_800A0D2C)->obj;
+    play_script((u8 *)((MarkCtx *)SceneMark)->obj, ((MarkCtx *)SceneMark)->unk8, &D_800A0BA0, &D_800A0BC0, 4, &D_800A0D34);
+    SceneMarkCount = 0;
+    t = (s32)((MarkCtx *)SceneMark)->obj;
     D_800A0D30 = t;
     o = (MarkObj *)t;
     if (o != NULL) {
@@ -660,20 +660,20 @@ void StartSceneScript(void) {
                 do {
                     e = s->ent;
                     if (((s16 *)&e[i])[-1] == 0x64) {
-                        b = D_800A0C10;
-                        n = D_800A0C70;
+                        b = SceneMarks;
+                        n = SceneMarkCount;
                         m = &b[n];
                         m->unk8 = o;
                         *(s32 *)m = i + 0x2001;
                         v = e[i].val;
-                        D_800A0C70 = n + 1;
+                        SceneMarkCount = n + 1;
                         m->idx = v;
                     }
                 } while (++i < s->count);
             }
         }
     }
-    D_800A0BCC.isbg = ((MarkCtx *)D_800A0D2C)->unkC;
+    D_800A0BCC.isbg = ((MarkCtx *)SceneMark)->unkC;
 }
 
 void UpdateScriptScene(void) {
@@ -683,25 +683,25 @@ void UpdateScriptScene(void) {
 
     GameFrameCount += 1;
     scripts_update();
-    if (D_800A0D2C != NULL) {
+    if (SceneMark != NULL) {
         if (D_800A0D34 == NULL) {
-            if ((s32)((MarkCtx *)D_800A0D2C)->obj != D_800A0D30 && D_800A0D30 != 0) {
+            if ((s32)((MarkCtx *)SceneMark)->obj != D_800A0D30 && D_800A0D30 != 0) {
                 dbase_release((u8 *)D_800A0D30);
             }
-            if (((MarkCtx *)D_800A0D2C)->obj == NULL && D_800A0D3C == 0) {
+            if (((MarkCtx *)SceneMark)->obj == NULL && D_800A0D3C == 0) {
                 if (D_800A0C08 != 0) {
                     GotoProcess(D_800A0C08, 0x200);
                     D_800A0D3C += 1;
                 }
             } else {
-                o = ((MarkCtx *)D_800A0D2C)->obj;
+                o = ((MarkCtx *)SceneMark)->obj;
                 ok = 0;
                 if (o != NULL) {
                     ok = o->src != NULL;
                 }
                 if (ok) {
                     if (D_800A0D38 != 0) {
-                        if (D_800A0D1C == 0 || ((EngineVabCue *)D_800A0D1C)->vab == 0) {
+                        if (SceneVabCue == 0 || ((EngineVabCue *)SceneVabCue)->vab == 0) {
                             ok = 1;
                         } else {
                             ok = ~SfxBanks[D_800A0D20[0]].id != 0;
@@ -711,7 +711,7 @@ void UpdateScriptScene(void) {
                         }
                     }
                     StartSceneScript();
-                    D_800A0D2C = (MarkCtx *)D_800A0D2C + 1;
+                    SceneMark = (MarkCtx *)SceneMark + 1;
                     if (D_800A0D38 != 0) {
                         D_800654B0 = 1;
                         D_800A0D38 = 0;
@@ -723,7 +723,7 @@ void UpdateScriptScene(void) {
         }
     end:
         if (D_800A0D3C == 0) {
-            obj = ((MarkCtx *)D_800A0D2C)->obj;
+            obj = ((MarkCtx *)SceneMark)->obj;
             if (obj != NULL) {
                 dbase_asload_with_anims((u8 *)obj, 0);
             }
@@ -762,7 +762,7 @@ void QuitScriptScene(void) {
     }
     sound_reinit();
     ClearVram();
-    D_800A0C70 = 0;
+    SceneMarkCount = 0;
     D_800A0D3C += 1;
     D_8004E0E0 = 2;
 }
@@ -779,7 +779,7 @@ s32 SceneModelLoaded(void) {
     s32 var_v0;
     u8 *temp_v1;
 
-    temp_v1 = (*(s32*)((u8*)(D_800A0D2C) + 4));
+    temp_v1 = (*(s32*)((u8*)(SceneMark) + 4));
     var_v0 = 0;
     if (temp_v1 != NULL) {
         var_v0 = (*(s32*)((u8*)(temp_v1) + 12)) != 0;
@@ -788,7 +788,7 @@ s32 SceneModelLoaded(void) {
 }
 
 void ReleaseOldSceneModel(void) {
-    if (((*(s32*)((u8*)(D_800A0D2C) + 4)) != D_800A0D30) && (D_800A0D30 != 0)) {
+    if (((*(s32*)((u8*)(SceneMark) + 4)) != D_800A0D30) && (D_800A0D30 != 0)) {
         dbase_release(D_800A0D30);
     }
 }
@@ -796,7 +796,7 @@ void ReleaseOldSceneModel(void) {
 void LoadSceneModel(void) {
     s32 temp_a0;
 
-    temp_a0 = (*(s32*)((u8*)(D_800A0D2C) + 4));
+    temp_a0 = (*(s32*)((u8*)(SceneMark) + 4));
     if (temp_a0 != 0) {
         dbase_asload_with_anims(temp_a0, 0);
     }
@@ -828,22 +828,22 @@ void UnloadScene(void) {
     }
     sound_reinit();
     ClearVram();
-    D_800A0C70 = 0;
+    SceneMarkCount = 0;
     D_800A0D3C += 1;
 }
 
 s32 SceneVabReady(void) {
-    if (D_800A0D1C == 0) {
+    if (SceneVabCue == 0) {
         return 1;
     }
-    if (*(s32 *)D_800A0D1C == 0) {
+    if (*(s32 *)SceneVabCue == 0) {
         return 1;
     }
     return ~SfxBanks[D_800A0D20[0]].id != 0;
 }
 
 void SceneSoundInit(EngineStartArgs *arg0) {
-    D_800A0D1C = arg0->unk4;
+    SceneVabCue = arg0->unk4;
     D_800A0D20[0] = 0;
     D_800A0D24[0] = 0;
     sound_reinit();
@@ -888,7 +888,7 @@ void SetupSceneMarks(u8 *arg0) {
     s32 n;
     s32 v;
 
-    D_800A0C70 = 0;
+    SceneMarkCount = 0;
     if (o != NULL) {
         s = o->src;
         if (s != NULL) {
@@ -898,13 +898,13 @@ void SetupSceneMarks(u8 *arg0) {
                 do {
                     e = s->ent;
                     if (((s16 *)&e[i])[-1] == 0x64) {
-                        b = D_800A0C10;
-                        n = D_800A0C70;
+                        b = SceneMarks;
+                        n = SceneMarkCount;
                         m = &b[n];
                         m->unk8 = o;
                         *(s32 *)m = i + 0x2001;
                         v = e[i].val;
-                        D_800A0C70 = n + 1;
+                        SceneMarkCount = n + 1;
                         m->idx = v;
                     }
                 } while (++i < s->count);
@@ -1495,7 +1495,7 @@ u8 *D_800A001C[45] = {
 u16 D_800A00D0[6] = { 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0 };
 process_info LevelLoadProcess = { InitLevelLoad, UpdateLevelLoad, RenderLevelLoad, QuitLevelLoad, 0 };
 s32 map[26] = {0};
-s32 D_800A0158 = 0;
+s32 LevelLoadStage = 0;
 process_control_info LoadingControl = {0};
 GfxCamera LoadingCamera = {0};
 u8 D_800A0224[108] = {0};
@@ -1617,14 +1617,14 @@ GfxViewport D_800A0BCC = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 
 process_info ScriptSceneProcess = { InitScriptScene, UpdateScriptScene, RenderScriptScene, QuitScriptScene, 0 };
 process_info *D_800A0C08 = 0;
 s32 D_800A0C0C = 0;
-EngineMarker D_800A0C10[8] = {0};
-s32 D_800A0C70 = 0;
+EngineMarker SceneMarks[8] = {0};
+s32 SceneMarkCount = 0;
 subengine D_800A0C74 = {0};
-s32 D_800A0D1C = 0;
+s32 SceneVabCue = 0;
 s32 D_800A0D20[1] = {0};
 s32 D_800A0D24[1] = {0};
 s32 D_800A0D28 = 0;
-void *D_800A0D2C = 0;
+void *SceneMark = 0;
 s32 D_800A0D30 = 0;
 u8 *D_800A0D34 = 0;
 s32 D_800A0D38 = 0;

@@ -19,7 +19,7 @@ void init_scripts(s32 arg0, s32 arg1) {
     } else {
         D_80058B6C = 0;
     }
-    D_80058B78 = NULL;
+    active_scripts = NULL;
     free_scripts = (void *)D_80058B6C;
     if (arg1 != 0) {
         D_80058B68 = (s32)mal_alloc(arg1 * 0xB8, &MainHeap);
@@ -551,12 +551,12 @@ u8 *play_script(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 **a
     n = free_scripts;
     if (n != NULL) {
         free_scripts = *(u8 **)(n + 0x74);
-        if (D_80058B78 != NULL) {
-            *(u8 **)((u8 *)D_80058B78 + 0x70) = n;
+        if (active_scripts != NULL) {
+            *(u8 **)((u8 *)active_scripts + 0x70) = n;
         }
-        prev = D_80058B78;
+        prev = active_scripts;
         *(u8 **)(n + 0x70) = NULL;
-        D_80058B78 = n;
+        active_scripts = n;
         *(u8 **)(n + 0x74) = prev;
     }
     p = n;
@@ -963,7 +963,7 @@ unlink:
     if (prev != NULL) {
         *(s32 *)(prev + 0x74) = *(s32 *)(arg0 + 0x74);
     } else {
-        D_80058B78 = *(void **)(arg0 + 0x74);
+        active_scripts = *(void **)(arg0 + 0x74);
     }
     nxt = *(u8 **)(arg0 + 0x74);
     if (nxt != NULL) {
@@ -1534,7 +1534,7 @@ void script_unlink(u8 *arg0) {
     if (temp_v1 != NULL) {
         (*(s32*)((u8*)(temp_v1) + 116)) = (u8 *) (*(s32*)((u8*)(arg0) + 116));
     } else {
-        D_80058B78 = (*(s32*)((u8*)(arg0) + 116));
+        active_scripts = (*(s32*)((u8*)(arg0) + 116));
     }
     temp_v1_2 = (*(s32*)((u8*)(arg0) + 116));
     if (temp_v1_2 != NULL) {
@@ -1552,12 +1552,12 @@ u8 *script_alloc(void) {
     temp_v1 = free_scripts;
     if (temp_v1 != NULL) {
         free_scripts = (*(s32*)((u8*)(temp_v1) + 116));
-        if (D_80058B78 != NULL) {
-            (*(s32*)((u8*)(D_80058B78) + 112)) = temp_v1;
+        if (active_scripts != NULL) {
+            (*(s32*)((u8*)(active_scripts) + 112)) = temp_v1;
         }
-        temp_v0 = D_80058B78;
+        temp_v0 = active_scripts;
         (*(s32*)((u8*)(temp_v1) + 112)) = 0;
-        D_80058B78 = temp_v1;
+        active_scripts = temp_v1;
         (*(s32*)((u8*)(temp_v1) + 116)) = temp_v0;
     }
     return temp_v1;
@@ -1567,7 +1567,7 @@ void scripts_release(void) {
     u8 *temp_s0;
     u8 *var_a0;
 
-    var_a0 = D_80058B78;
+    var_a0 = active_scripts;
     if (var_a0 != NULL) {
         do {
             temp_s0 = (*(s32*)((u8*)(var_a0) + 116));
@@ -1587,7 +1587,7 @@ void scripts_kill_all(void) {
     u8 *temp_s0;
     u8 *var_a0;
 
-    var_a0 = D_80058B78;
+    var_a0 = active_scripts;
     if (var_a0 != NULL) {
         do {
             temp_s0 = (*(s32*)((u8*)(var_a0) + 116));
@@ -1607,7 +1607,7 @@ void scripts_render(void) {
     u8 *var_s0;
     GfxState *gs;
 
-    var_s0 = D_80058B78;
+    var_s0 = active_scripts;
     gs = &RenderState;
     for (;;) {
         /* block-scope declaration, as the implicit one was: keeps the loop unrotated */
@@ -1628,7 +1628,7 @@ void scripts_update(void) {
     u8 *temp_s1;
     u8 *var_s0;
 
-    var_s0 = D_80058B78;
+    var_s0 = active_scripts;
     if (var_s0 != NULL) {
         do {
             temp_s1 = (*(s32*)((u8*)(var_s0) + 116));
@@ -1656,7 +1656,7 @@ s32 D_80058B68 = 0;
 s32 D_80058B6C = 0;
 void *ScriptList = 0;
 void *free_scripts = 0;
-void *D_80058B78 = 0;
+void *active_scripts = 0;
 u8 *D_80058B7C = 0;
 s32 D_80058B80 = 0;
 s32 D_80058B84 = 0;

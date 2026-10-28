@@ -21,7 +21,7 @@ typedef struct DigitSrc {
     u16 pad;
 } DigitSrc;
 
-extern DigitEnt D_800996E0[4];
+extern DigitEnt CompletionDigits[4];
 extern DigitSrc D_80099198[];
 
 void CheckHeroesAllOut(void);

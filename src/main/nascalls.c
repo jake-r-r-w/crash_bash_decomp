@@ -2453,9 +2453,9 @@ s32 machine_init(void) {
     SetGraphDebug(0);
     InitGeom();
     SsInit();
-    D_800637A8 = 0;
+    VideoMode = 0;
     pads_init_mtap();
-    SetVideoMode(D_800637A8);
+    SetVideoMode(VideoMode);
     DrawSync(0);
     ClearImage2(&D_8005B640, 0, 0, 0);
     DrawSync(0);
@@ -2488,8 +2488,8 @@ void FlipScreen(s32 arg0) {
     DrawSync(0);
     mal_update(&MainHeap);
     if (r != NULL) {
-        if (D_8005B790 == cdb) {
-            if (D_8005B790) {
+        if (DrawBuffers == cdb) {
+            if (DrawBuffers) {
                 src = r;
             } else {
                 src = r;
@@ -2500,15 +2500,15 @@ void FlipScreen(s32 arg0) {
         sp10.disp = *src;
         sp10.screen.x = 0;
         sp10.screen.w = 0x100;
-        sp10.screen.y = (D_800637A8 == 0) ? 8 : 0x10;
-        sp10.screen.h = (D_800637A8 == 0) ? 0xF0 : 0x100;
+        sp10.screen.y = (VideoMode == 0) ? 8 : 0x10;
+        sp10.screen.h = (VideoMode == 0) ? 0xF0 : 0x100;
         sp10.isinter = ((u8 *)r)[0x14];
         sp10.isrgb24 = ((u8 *)r)[0x10];
         D_8004E0E4 = VSync(1);
         VSync(arg0);
         PutDispEnv(&sp10);
         DrawOTag((u32 *)(cdb + 0x3FFC));
-        buf = D_8005B790;
+        buf = DrawBuffers;
         if (cdb == buf) {
             buf += 0x400C;
         }
@@ -2559,7 +2559,7 @@ s32 AllocOtBuffers(s32 *arg0) {
     u8 *t;
 
     t = mal_alloc(*arg0 + 0x1800, &MainHeap);
-    b = (OtBuf *)D_8005B790;
+    b = (OtBuf *)DrawBuffers;
     b[0].prim = t;
     b[0].end = b[0].prim + *arg0 + 0x1800;
     b[1].prim = mal_alloc(*arg0 + 0x1800, &MainHeap);
@@ -2587,7 +2587,7 @@ RECT *arg0;
     if (arg0 != NULL) {
         D_8005B694 = FrameCount + 1;
         if (ScreenRect == NULL) {
-            u8 *g = D_8005B790;
+            u8 *g = DrawBuffers;
             u8 *h;
 
             ClearOTagR((u_long *)g, 0x1000);
@@ -2611,7 +2611,7 @@ void AllocPrimBuffers(s32 *arg0) {
     u8 *t;
 
     t = mal_alloc(*arg0 + 0x1800, &MainHeap);
-    g = D_8005B790;
+    g = DrawBuffers;
     *(u8 **)(g + 0x4000) = t;
     *(s32 *)(g + 0x4004) = *(s32 *)(g + 0x4000) + *arg0 + 0x1800;
     *(u8 **)((g += 0x8000) + 0xC) = mal_alloc(*arg0 + 0x1800, &MainHeap);
@@ -2626,14 +2626,14 @@ void ClearOt(u8 *arg0) {
 s32 cd_read(u8 *a, s32 b, u8 *c, s32 d) {
     s32 r;
     s32 s;
-    r = D_800637B4;
+    r = CdReadStatus;
     if (r > 0) {
-        D_800637B4 = CdReadSync(1, 0);
-        if (D_800637B4 == 0) {
+        CdReadStatus = CdReadSync(1, 0);
+        if (CdReadStatus == 0) {
             CdControl(1, 0, &D_8006EA08);
             func_80034AEC();
         }
-        s = D_800637B4;
+        s = CdReadStatus;
     } else {
         s = r;
     }
@@ -2644,13 +2644,13 @@ s32 cd_read(u8 *a, s32 b, u8 *c, s32 d) {
     if (CdControl(2, (u8 *)&D_8006EA10, 0) == 0 || CdRead(d, (u_long *)c, 0x80) == 0) {
         return -1;
     }
-    D_800637B4 = 1;
-    D_800637B4 = CdReadSync(1, 0);
-    if (D_800637B4 == 0) {
+    CdReadStatus = 1;
+    CdReadStatus = CdReadSync(1, 0);
+    if (CdReadStatus == 0) {
         CdControl(1, 0, &D_8006EA08);
         func_80034AEC();
     }
-    return D_800637B4;
+    return CdReadStatus;
 }
 
 void cd_seek(s32 *arg0, s32 arg1) {
@@ -2660,21 +2660,21 @@ void cd_seek(s32 *arg0, s32 arg1) {
 }
 
 void cd_read_wait(void) {
-    if (D_800637B4 > 0) {
-        D_800637B4 = CdReadSync(0, 0);
+    if (CdReadStatus > 0) {
+        CdReadStatus = CdReadSync(0, 0);
     }
 }
 
 s32 cd_read_poll(void) {
     s32 r;
-    r = D_800637B4;
+    r = CdReadStatus;
     if (r > 0) {
-        D_800637B4 = CdReadSync(1, 0);
-        if (D_800637B4 == 0) {
+        CdReadStatus = CdReadSync(1, 0);
+        if (CdReadStatus == 0) {
             CdControl(1, 0, &D_8006EA08);
             func_80034AEC();
         }
-        r = D_800637B4;
+        r = CdReadStatus;
     }
     return r;
 }
@@ -2686,7 +2686,7 @@ void cd_init(void) {
         CdInit();
     } while (CdDiskReady(1) != 2);
     CdSync(0, 0);
-    D_800637B4 = 0;
+    CdReadStatus = 0;
     while (CdSearchFile(&file, "\\CRASHBSH\\CRASHBSH.DAT;1") == NULL) {
         printf("Cant find CRASHBSH.DAT");
     }
@@ -4192,7 +4192,7 @@ s32 D_8005B64C[16] = {
     0, 0x200, 0x400, 0x580, 0x680, 0x720, 0x780, 0x7B8, 0, 0x80, 0x100, 0x160, 0x1A0, 0x1C8,
     0x1E0, 0x1EE,
 };
-u8 *cdb = (void *)&D_8005B790;
+u8 *cdb = (void *)&DrawBuffers;
 s32 FrameCount = 0;
 s32 D_8005B694 = 0;
 RECT *ScreenRect = 0;
@@ -4211,11 +4211,11 @@ u8 vmode_512_ntsc[96] = {
     1, 0x80, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 s32 D_8005B78C = 0;
-u8 D_8005B790[32792] = {0};
-s32 D_800637A8 = 0;
+u8 DrawBuffers[32792] = {0};
+s32 VideoMode = 0;
 s32 D_800637AC[1] = {0};
 s32 D_800637B0 = 0;
-s32 D_800637B4 = 0;
+s32 CdReadStatus = 0;
 s32 D_800637B8 = 0;
 s32 D_800637BC[176] = {
     0x13F0199, 0x16D0128, 0x1CE0136, 0x18A0178, 0x10801A2, 0xFE00C5, 0xF100E4, 0x12B010C,

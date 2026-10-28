@@ -657,7 +657,7 @@ void BobSub(subengine *s) {
 }
 
 void UpdateScreenLabels(void) {
-    s32 *p = &D_800ADBC0;
+    s32 *p = &ScreenLabelState;
     EXTengine *eng;
     subengine *s;
     s32 *q;
@@ -705,7 +705,7 @@ void UpdateScreenLabels(void) {
                 e->flags &= ~0x8000;
             }
         }
-        q = &D_800ADBC0;
+        q = &ScreenLabelState;
         if (++q[2] > 0x14) {
             q[2] = 0;
             q[1] = 1;
@@ -733,7 +733,7 @@ void UpdateScreenLabels(void) {
             }
         }
         if (!(GameLevelFlags & 0xC0)) {
-            q = &D_800ADBC0;
+            q = &ScreenLabelState;
             if (q[3] != 0) {
                 q[1] = 2;
                 q[2] = 0;
@@ -779,7 +779,7 @@ void UpdateScreenLabels(void) {
             }
         }
         {
-            s32 *r = &D_800ADBC0;
+            s32 *r = &ScreenLabelState;
             eng->unk1E = lerp_angle(0, 0x800, 0x14, ++r[2]);
             eng->unk5E = 1;
             if (r[2] >= 0x14) {
@@ -806,14 +806,14 @@ void UpdateScreenLabels(void) {
 }
 
 void ScreenLabelsOff(void) {
-    D_800ADBC0 = 0;
+    ScreenLabelState = 0;
 }
 
 void ScreenLabelsStart(void) {
     s32 *p;
-    if (D_800ADBC0 == 0) {
-        D_800ADBC0 = 1;
-        p = &D_800ADBC0;
+    if (ScreenLabelState == 0) {
+        ScreenLabelState = 1;
+        p = &ScreenLabelState;
         p[1] = 0;
         p[2] = 0;
         InitScreenLabels();
@@ -881,8 +881,8 @@ void RenderScreenLabels(void) {
 
 void ResetScreenLabels(void) {
     s32 *p;
-    D_800ADBC0 = 0;
-    p = &D_800ADBC0;
+    ScreenLabelState = 0;
+    p = &ScreenLabelState;
     p[1] = -1;
     p[3] = 0;
     p[4] = 1;
@@ -1159,7 +1159,7 @@ EngRec24 D_800ADB54[3] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-s32 D_800ADBC0 = 0;
+s32 ScreenLabelState = 0;
 s32 D_800ADBC4 = 0;
 s32 D_800ADBC8[1] = {0};
 s32 D_800ADBCC = 0;

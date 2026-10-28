@@ -59,14 +59,14 @@ extern ScoreInfo Score[4];
 extern SWORD_XY ScoreIcon3Pos[4];
 extern SWORD_XY ScoreIcon2Pos[4];
 
-extern s32 D_800ADBC0;
+extern s32 ScreenLabelState;
 extern s32 PanelCtrl;
 typedef struct EngObj {
     s32 flags;
     u8 pad[0x48];
     void (*update)(struct EngObj *);
 } EngObj;
-extern EngObj **D_8005AA40;
+extern EngObj **NasUpdateList;
 extern void (*D_8005AA7C)(void);
 extern subengine D_8009A04C[];
 typedef struct IconSet { s32 *c; u8 pad[4]; s32 *a; s32 *b; } IconSet;
@@ -111,12 +111,12 @@ extern s16 D_8009D6DC[];
 extern s32 D_800A02C0;
 extern s32 D_800A02C4;
 extern u8 D_800A0224[];
-extern void *D_800A0D2C;
+extern void *SceneMark;
 extern process_control_info MenuProcessControl;
 extern void (*RenderHook)(void);
 extern GfxViewport LoadingViewport;   /* the loading screen's (RenderLoadingScreen) */
 extern GfxCamera LoadingCamera;
-extern s32 D_800A0158;
+extern s32 LevelLoadStage;
 extern s8 D_80064C93;
 extern Blk32 D_8009F9D4;
 extern CamVec3 D_8009F9F4;
@@ -174,8 +174,8 @@ extern u16 D_8009871C;
 extern process_info ScriptSceneProcess;
 extern s32 D_800A0C0C;
 extern s32 D_800A0D30;
-extern s32 D_800A0C70;
-/* DrawSceneMarks's entries (D_800A0C10, 0xC bytes) and the table they index (0x14 bytes). */
+extern s32 SceneMarkCount;
+/* DrawSceneMarks's entries (SceneMarks, 0xC bytes) and the table they index (0x14 bytes). */
 typedef struct EngineMarker {
     /* 0x0 */ u16 unk0;
     /* 0x4 */ s32 idx;
@@ -186,10 +186,10 @@ typedef struct EngineMarkerPos {
     /* 0x0C */ s16 unkC;
     /* 0x0E */ u8 unkE[6];
 } EngineMarkerPos;
-extern EngineMarker D_800A0C10[];
+extern EngineMarker SceneMarks[];
 extern EngineMarkerPos D_800A02D8[];
 extern subengine D_800A0C74;
-extern s32 D_800A0D1C;
+extern s32 SceneVabCue;
 extern s32 D_800A0D20[]; /* arrays: their stores must alias struct loads (gcc 2.7 sched) */
 extern s32 D_800A0D24[];
 extern s32 D_800A0D28;
@@ -222,7 +222,7 @@ void InitialiseLevel(void);
 s32 CountTrophies(u8 *arg0);
 void HubStartCredits(void);
 
-extern s32 D_800AEC5C;
+extern s32 IntroDbase;
 extern s32 D_8009D868;
 extern s32 D_8009D86C;
 extern s32 D_8009D874;
@@ -299,7 +299,7 @@ extern s32 PausePad;
 void ArenaRequirementMet(s32 arg0);
 
 
-/* An entry of the list D_800A0D1C walks (UpdateSceneVabCues), 12 bytes. */
+/* An entry of the list SceneVabCue walks (UpdateSceneVabCues), 12 bytes. */
 typedef struct {
     s32 vab;   /* machine_load_sfx's first argument; 0 ends the list */
     s32 sfx;   /* PlaySfx id */
@@ -308,8 +308,8 @@ typedef struct {
 
 /* SetupScriptScene's argument. */
 typedef struct {
-    void *unk0; /* -> D_800A0D2C */
-    s32 unk4;   /* -> D_800A0D1C */
+    void *unk0; /* -> SceneMark */
+    s32 unk4;   /* -> SceneVabCue */
     s32 unk8;   /* frame rate scale */
 } EngineStartArgs;
 

@@ -27,7 +27,7 @@ void prims_init(s32 *cfg) {
     D_80056854 = q;
     p = D_8005685C;
     next = D_80056840;
-    D_80056850 = (s32 *)next;
+    PrimNodeFree = (s32 *)next;
     n = cfg[2] - 2;
     if (n != -1) {
         do {
@@ -83,8 +83,8 @@ static inline void PrimList_Flush(ListNode18938 *arg0, s32 arg1) {
     if (arg1 == 1) {
         primnodes_free(arg0->fC);
     } else {
-        *arg0->f8 = D_80056850;
-        D_80056850 = arg0->fC;
+        *arg0->f8 = PrimNodeFree;
+        PrimNodeFree = arg0->fC;
         if (arg0->f10 != NULL) {
             *arg0->f10 = NULL;
         } else {
@@ -655,11 +655,11 @@ s32 *primnode_alloc(s32 arg0, s32 *arg1, s32 arg2, s32 arg3) {
     s32 *node;
     s32 *data;
 
-    node = D_80056850;
+    node = PrimNodeFree;
     if (node == NULL) {
         return NULL;
     }
-    D_80056850 = (s32 *) *node;
+    PrimNodeFree = (s32 *) *node;
     if (arg1[1] == 0) {
         arg1[2] = (s32) node;
     }
@@ -792,8 +792,8 @@ void primlist_reset(ListNode18938 *arg0, s32 arg1) {
         if (arg1 == 1) {
             primnodes_free(arg0->fC);
         } else {
-            *arg0->f8 = D_80056850;
-            D_80056850 = arg0->fC;
+            *arg0->f8 = PrimNodeFree;
+            PrimNodeFree = arg0->fC;
             if (arg0->f10 != NULL) {
                 *arg0->f10 = NULL;
             } else {
@@ -816,8 +816,8 @@ void prims_empty(void) {
     DrawSync(0);
     printf("empty prims\n");
     if (ScreenRect != 0) {
-        ClearOt(D_8005B790);
-        ClearOt(D_8005B790 + 0x400C);
+        ClearOt(DrawBuffers);
+        ClearOt(DrawBuffers + 0x400C);
     }
     var_s0 = D_80056864;
     if (var_s0 != NULL) {
@@ -836,8 +836,8 @@ void primlist_release(ListNode18938 *arg0, s32 arg1) {
     if (arg1 == 1) {
         primnodes_free(arg0->fC);
     } else {
-        *arg0->f8 = D_80056850;
-        D_80056850 = arg0->fC;
+        *arg0->f8 = PrimNodeFree;
+        PrimNodeFree = arg0->fC;
         if (arg0->f10 != NULL) {
             *arg0->f10 = NULL;
         } else {
@@ -897,7 +897,7 @@ void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam) {
     gs->viewport = vp;
     GfxSetClip(gs, (RECT *)&vp->cx0, cam);
     disp = ScreenRect;
-    if (cdb == D_8005B790) {
+    if (cdb == DrawBuffers) {
         disp += 1;
     }
     env = (*(DRAWENV **)(cdb + 0x4008))++;
@@ -3327,7 +3327,7 @@ void prims_empty_and_compact(void) {
 s32 *D_8005683C = 0;
 u8 *D_80056840 = 0;
 NodePool PrimPool = {0};
-s32 *D_80056850 = 0;
+s32 *PrimNodeFree = 0;
 u8 *D_80056854 = 0;
 s32 *D_80056858 = 0;
 u8 *D_8005685C = 0;

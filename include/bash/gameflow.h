@@ -265,7 +265,7 @@ extern s32 D_8009F298[];
 extern void *D_8009F004[];
 extern char D_8009F4A8[][5];
 void ShowCardSlotStats(u8 *arg0, s32 arg1);
-extern char D_8009F498[];
+extern char CardStatsText[];
 
 extern s32 D_8009F248[][5];
 EXTengine *GetEngineSlot(s32 arg0);

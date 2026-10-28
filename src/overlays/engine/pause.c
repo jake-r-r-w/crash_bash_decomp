@@ -623,7 +623,7 @@ found:
                     if (ModeTypes[PSV->mode * 3] == 0x102) {
                         PSV->flags |= 9;
                     }
-                    D_8009BD00 = 1;
+                    StatsPageWanted = 1;
                     DrawAdventureStats(1);
                     ret = 0;
                 }
@@ -957,38 +957,38 @@ void DrawAdventureStats(s32 arg0) {
         }
     }
     if (GameLevelFlags & 0xC0) {
-        D_8009BD38 = 0;
+        StatsHasPage3 = 0;
     } else {
-        D_8009BD38 = 1;
+        StatsHasPage3 = 1;
     }
     if (SCV->flags & 8) {
-        D_8009BD38 = 0;
+        StatsHasPage3 = 0;
     }
     if (SCV->unk32 & 0x100) {
-        D_8009BD38 = 0;
+        StatsHasPage3 = 0;
     }
     if (SCV->unk32 & 3) {
-        D_8009BD34 = 0;
+        StatsHasPage1 = 0;
     } else {
-        D_8009BD34 = 1;
+        StatsHasPage1 = 1;
     }
     if (GameLevelFlags & 2) {
-        D_8009BD3C = 1;
+        StatsHasBonus = 1;
     } else {
-        D_8009BD3C = 0;
+        StatsHasBonus = 0;
     }
-    if (mode == 1 && D_8009BD34 == 0) {
-        D_8009BD00 = 3;
+    if (mode == 1 && StatsHasPage1 == 0) {
+        StatsPageWanted = 3;
         mode = 3;
     }
-    if (mode == 3 && D_8009BD38 == 0) {
-        D_8009BD00 = 1;
+    if (mode == 3 && StatsHasPage3 == 0) {
+        StatsPageWanted = 1;
         mode = 1;
     }
-    if (D_8009BD38 == 0 && D_8009BD34 == 0) {
+    if (StatsHasPage3 == 0 && StatsHasPage1 == 0) {
         mode = 0;
     }
-    D_8009BD2C = mode;
+    StatsPageShown = mode;
     e = GetEngineSlot(4);
     switch (mode) {
     case 1:
@@ -1061,7 +1061,7 @@ void DrawAdventureStats(s32 arg0) {
         if (SCV->unk32 & 8) {
             sub[1].unk04 = sub[11].unk04;
         }
-        if (D_8009BD38 != 0) {
+        if (StatsHasPage3 != 0) {
             sub[2].flags |= 0x8000;
         } else {
             sub[2].flags &= ~0x8000;
@@ -1090,12 +1090,12 @@ void DrawAdventureStats(s32 arg0) {
         e->unk10.y = 0x1E0;
         sub = e->sub;
         e->flags |= 0x10008000;
-        if (D_8009BD34 != 0) {
+        if (StatsHasPage1 != 0) {
             sub[2].flags |= 0x8000;
         } else {
             sub[2].flags &= ~0x8000;
         }
-        if (D_8009BD3C != 0) {
+        if (StatsHasBonus != 0) {
             sub[2].flags |= 0x8000;
         }
         break;
@@ -1121,12 +1121,12 @@ void DrawAdventureStats(s32 arg0) {
         e->unk10.y = 0x1E0;
         sub = e->sub;
         e->flags |= 0x10008000;
-        if (D_8009BD34 != 0) {
+        if (StatsHasPage1 != 0) {
             sub[2].flags |= 0x8000;
         } else {
             sub[2].flags &= ~0x8000;
         }
-        if (D_8009BD3C != 0) {
+        if (StatsHasBonus != 0) {
             sub[2].flags |= 0x8000;
         }
         break;
@@ -1144,43 +1144,43 @@ void UpdatePauseSlide(s32 arg0) {
     }
     e = GetEngineSlot(4);
     if (D_8009BD30 == 0) {
-        if (D_8009BD2C != 0) {
-            D_8009BD2C = 9;
+        if (StatsPageShown != 0) {
+            StatsPageShown = 9;
         }
     } else {
-        switch (D_8009BD2C) {
+        switch (StatsPageShown) {
         case 3:
         case 4:
-            if (D_8009BD00 == 1) {
-                D_8009BD2C = 2;
+            if (StatsPageWanted == 1) {
+                StatsPageShown = 2;
             }
-            if (D_8009BD00 == 5) {
-                D_8009BD2C = 6;
+            if (StatsPageWanted == 5) {
+                StatsPageShown = 6;
             }
             break;
         case 1:
         case 2:
         case 5:
         case 6:
-            if (D_8009BD00 == 3) {
-                D_8009BD2C = 4;
+            if (StatsPageWanted == 3) {
+                StatsPageShown = 4;
             }
             break;
         default:
-            if (D_8009BD00 == 1) {
-                D_8009BD2C = 2;
+            if (StatsPageWanted == 1) {
+                StatsPageShown = 2;
             }
-            if (D_8009BD00 == 3) {
-                D_8009BD2C = 4;
+            if (StatsPageWanted == 3) {
+                StatsPageShown = 4;
             }
-            if (D_8009BD00 == 5) {
-                D_8009BD2C = 6;
+            if (StatsPageWanted == 5) {
+                StatsPageShown = 6;
             }
             break;
         }
     }
     D_8009BD30 = 0;
-    switch (D_8009BD2C) {
+    switch (StatsPageShown) {
     case 1:
         if (e->unk10.y > lim) {
             e->unk10.y -= 0x20;
@@ -1188,8 +1188,8 @@ void UpdatePauseSlide(s32 arg0) {
         if (e->unk10.y < lim) {
             e->unk10.y = lim;
         }
-        if (D_8009BD38 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
-            D_8009BD00 = 3;
+        if (StatsHasPage3 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
+            StatsPageWanted = 3;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
         break;
@@ -1200,15 +1200,15 @@ void UpdatePauseSlide(s32 arg0) {
         if (e->unk10.y < lim) {
             e->unk10.y = lim;
         }
-        if (D_8009BD34 == 0 && D_8009BD3C == 0) {
+        if (StatsHasPage1 == 0 && StatsHasBonus == 0) {
             break;
         }
         pads = (PadButtons *)Pads;
         if (HPADS[PausePad].pressed & 0x1000) {
             if (GameLevelFlags & 2) {
-                D_8009BD00 = 5;
+                StatsPageWanted = 5;
             } else {
-                D_8009BD00 = 1;
+                StatsPageWanted = 1;
             }
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1220,8 +1220,8 @@ void UpdatePauseSlide(s32 arg0) {
         if (e->unk10.y < lim) {
             e->unk10.y = lim;
         }
-        if (D_8009BD38 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
-            D_8009BD00 = 3;
+        if (StatsHasPage3 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
+            StatsPageWanted = 3;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
         break;
@@ -1233,8 +1233,8 @@ void UpdatePauseSlide(s32 arg0) {
             DrawAdventureStats(1);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
-        if (D_8009BD38 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
-            D_8009BD00 = 3;
+        if (StatsHasPage3 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
+            StatsPageWanted = 3;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
         break;
@@ -1246,15 +1246,15 @@ void UpdatePauseSlide(s32 arg0) {
             DrawAdventureStats(3);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
-        if (D_8009BD34 == 0 && D_8009BD3C == 0) {
+        if (StatsHasPage1 == 0 && StatsHasBonus == 0) {
             break;
         }
         pads = (PadButtons *)Pads;
         if (HPADS[PausePad].pressed & 0x1000) {
             if (GameLevelFlags & 2) {
-                D_8009BD00 = 5;
+                StatsPageWanted = 5;
             } else {
-                D_8009BD00 = 1;
+                StatsPageWanted = 1;
             }
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1267,8 +1267,8 @@ void UpdatePauseSlide(s32 arg0) {
             DrawAdventureStats(5);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
-        if (D_8009BD38 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
-            D_8009BD00 = 5;
+        if (StatsHasPage3 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
+            StatsPageWanted = 5;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
         break;
@@ -1283,7 +1283,7 @@ void UpdatePauseSlide(s32 arg0) {
             }
         }
         KillEngineSlot(4);
-        D_8009BD2C = 0;
+        StatsPageShown = 0;
         break;
     }
 }
@@ -1336,9 +1336,9 @@ void StartWinSequence(s32 arg0) {
     WinSeqTimer = 0x4B;
     WinSeqStep = 4;
     WinSeqHero = 0x63;
-    D_8009BD08 = 0x19;
-    D_8009BD40 = 0;
-    D_8009BD44 = 1;
+    WinCounterSize = 0x19;
+    WinCounterState = 0;
+    WinCounterAnim = 1;
     g = (EngineHintView *)GameInfo;
     g->flags &= 0xFDC07013;
     PauseDelay = 3;
@@ -1368,7 +1368,7 @@ void StartWinSequence(s32 arg0) {
         g->shown[g->mode] |= 0x80;
         PausePad = 0;
         g->flags |= 0x41;
-        D_8009BD08 >>= 1;
+        WinCounterSize >>= 1;
         return;
     case 0x20:
         if (g->unk32 & 8) {
@@ -1386,7 +1386,7 @@ void StartWinSequence(s32 arg0) {
             g->shown[g->mode] |= 8;
             PausePad = 0;
             g->flags |= 0x41;
-            D_8009BD08 >>= 1;
+            WinCounterSize >>= 1;
         } else {
             if (g->shown[g->mode] & 0x20) {
                 return;
@@ -1402,7 +1402,7 @@ void StartWinSequence(s32 arg0) {
             g->shown[g->mode] |= 0x20;
             PausePad = 0;
             g->flags |= 0x41;
-            D_8009BD08 >>= 1;
+            WinCounterSize >>= 1;
         }
         return;
     case 0x40:
@@ -1420,7 +1420,7 @@ void StartWinSequence(s32 arg0) {
         g->shown[g->mode] |= 0x40;
         PausePad = 0;
         g->flags |= 0x41;
-        D_8009BD08 >>= 1;
+        WinCounterSize >>= 1;
         return;
     default:
         g2 = (EngineHintView *)GameInfo;
@@ -1438,7 +1438,7 @@ void StartWinSequence(s32 arg0) {
         g2->shown[g2->mode] |= 0x10;
         PausePad = 0;
         g2->flags |= 0x41;
-        D_8009BD08 >>= 1;
+        WinCounterSize >>= 1;
         return;
     }
 }
@@ -1450,7 +1450,7 @@ void RecordWin(void) {
     u8 *q;
     u8 *r;
 
-    D_8009BD08 = 0x1E;
+    WinCounterSize = 0x1E;
     g = GameInfo;
     if (*(u16 *)(g + 0x32) & 0x100) {
         (g + *(s16 *)(g + 0x34))[0xAB] += 2;
@@ -1468,23 +1468,23 @@ void RecordWin(void) {
             r--;
         }
         if ((GameLevelFlags & 0x40) && (PanelCtrl & 1) && Clock_Time == 0) {
-            D_8009BD40 = 6;
-            D_8009BD44 = 3;
+            WinCounterState = 6;
+            WinCounterAnim = 3;
             WinSeqStep = 0x28;
             WinSeqHero = -1;
             WinSeqTimer = 0xF;
             WinSeqDelay = 0x1E;
             return;
         }
-        D_8009BD40 = 6;
-        D_8009BD44 = 3;
+        WinCounterState = 6;
+        WinCounterAnim = 3;
         WinSeqStep = 0x1E;
         WinSeqHero = -1;
         WinSeqTimer = 0xF;
         WinSeqDelay = 0x1E;
         return;
     }
-    D_8009BD40 = 5;
+    WinCounterState = 5;
 }
 
 void AnimateWinCounter(void) {
@@ -1492,18 +1492,18 @@ void AnimateWinCounter(void) {
     s32 r;
     s32 u;
 
-    switch (D_8009BD44) {
+    switch (WinCounterAnim) {
     case 1:
-        t = counter_sub.unk20.x = (D_8009BD08 << 12) / 25;
+        t = counter_sub.unk20.x = (WinCounterSize << 12) / 25;
         counter_sub.unk20.y = t;
         counter_sub.unk20.z = t;
-        counter_sub.unk10 = (D_8009BD08 << 10) / 25 - 0x400;
-        if (D_8009BD40 & 1) {
+        counter_sub.unk10 = (WinCounterSize << 10) / 25 - 0x400;
+        if (WinCounterState & 1) {
             counter_sub.unk12 = counter_sub.unk12 + 0x80;
         } else {
             counter_sub.unk12 = counter_sub.unk12 - 0x80;
         }
-        if (D_8009BD40 == 4) {
+        if (WinCounterState == 4) {
             counter_sub.unk04 = 0x140;
         }
         if (counter_sub.unk20.x < 0x101) {
@@ -1514,17 +1514,17 @@ void AnimateWinCounter(void) {
             counter_sub.unk10 = 0;
             counter_sub.unk04 = 0x140;
             counter_sub.flags &= 0xFFFF7FFF;
-            if (D_8009BD40 == 4) {
+            if (WinCounterState == 4) {
                 u8 *g = GameInfo;
-                D_8009BD44 = 0;
+                WinCounterAnim = 0;
                 *(u16 *)(g + 0x30) &= 0xEFFF;
             }
         }
         counter_sub.unk52 = 1;
         return;
     case 3:
-        D_8009BD40 = 6;
-        D_8009BD44 = 0;
+        WinCounterState = 6;
+        WinCounterAnim = 0;
         return;
     }
 }
@@ -1536,11 +1536,11 @@ void UpdateWinCounter(s32 arg0) {
     s32 r;
 
     if (!(counter_sub.flags & 0x8000)) {
-        switch (D_8009BD40) {
+        switch (WinCounterState) {
         case 1:
             counter_sub.unk74 = 0x2004;
             PauseDelay = 3;
-            D_8009BD44 = 1;
+            WinCounterAnim = 1;
             counter_sub.flags |= 0x8000;
             pos = *(SLONG_XYZ *)&counter_sub.unk04;
             pos.y -= 0x300;
@@ -1550,7 +1550,7 @@ void UpdateWinCounter(s32 arg0) {
         case 2:
             counter_sub.unk74 = 0x2003;
             PauseDelay = 3;
-            D_8009BD44 = 1;
+            WinCounterAnim = 1;
             counter_sub.flags |= 0x8000;
             pos = *(SLONG_XYZ *)&counter_sub.unk04;
             pos.y -= 0x300;
@@ -1560,7 +1560,7 @@ void UpdateWinCounter(s32 arg0) {
         case 3:
             counter_sub.unk74 = 0x2002;
             PauseDelay = 3;
-            D_8009BD44 = 1;
+            WinCounterAnim = 1;
             counter_sub.flags |= 0x8000;
             pos = *(SLONG_XYZ *)&counter_sub.unk04;
             pos.y -= 0x300;
@@ -1580,8 +1580,8 @@ void UpdateWinCounter(s32 arg0) {
             counter_sub.unk20.y = 0x100;
             counter_sub.unk20.z = 0x100;
             counter_sub.unk52 = 1;
-            D_8009BD40 = 0xB;
-            D_8009BD44 = 2;
+            WinCounterState = 0xB;
+            WinCounterAnim = 2;
             counter_sub.flags |= 0x8000;
             break;
         case 6:
@@ -1593,13 +1593,13 @@ void UpdateWinCounter(s32 arg0) {
             counter_sub.unk12 = 0;
             counter_sub.unk14 = 0;
             counter_sub.unk52 = 1;
-            D_8009BD40 = 0xB;
-            D_8009BD44 = 2;
+            WinCounterState = 0xB;
+            WinCounterAnim = 2;
             counter_sub.flags |= 0x8000;
             break;
         }
     }
-    if (D_8009BD44 == 0) {
+    if (WinCounterAnim == 0) {
         counter_sub.flags &= 0xFFFF7FFF;
     }
     if (arg0 != 0) {
@@ -1607,10 +1607,10 @@ void UpdateWinCounter(s32 arg0) {
             PauseDelay--;
         } else {
             AnimateWinCounter();
-            D_8009BD08--;
+            WinCounterSize--;
         }
     }
-    if (D_8009BD40 == 0xB) {
+    if (WinCounterState == 0xB) {
         d = 0x1000 - counter_sub.unk20.x;
         counter_sub.unk20.x += d >> 3;
         counter_sub.unk20.y = counter_sub.unk20.x;
@@ -1619,10 +1619,10 @@ void UpdateWinCounter(s32 arg0) {
         counter_sub.unk52 = 1;
         if (d < 0x100) {
             PlaySfx(0x1AF, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009BD40 = 0xC;
+            WinCounterState = 0xC;
         }
     }
-    if (D_8009BD40 == 0xC) {
+    if (WinCounterState == 0xC) {
         t = counter_sub.unk20.x + ((0x1000 - counter_sub.unk20.x) >> 3);
         counter_sub.unk20.x = t;
         counter_sub.unk20.y = t;
@@ -1630,10 +1630,10 @@ void UpdateWinCounter(s32 arg0) {
         counter_sub.unk12 = ((rcossin_tbl[(((GameFrameCount << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
         counter_sub.unk52 = 1;
     }
-    if (D_8009BD08 <= 0) {
-        D_8009BD08 = 0x19;
-        if (D_8009BD44 == 1) {
-            D_8009BD40++;
+    if (WinCounterSize <= 0) {
+        WinCounterSize = 0x19;
+        if (WinCounterAnim == 1) {
+            WinCounterState++;
         }
     }
 }
@@ -1914,20 +1914,20 @@ u8 D_8009BCE0[32] = {
     1, 0x80, 0, 0x10, 0x7C, 0, 0xFF, 0xFF, 0, 0, 4, 2, 0xFF, 0xFF, 0, 0, 0, 0, 0, 0, 0x80,
     0x80, 0, 0, 4, 0, 4, 0, 0x21, 0x80, 0, 0x10,
 };
-u16 D_8009BD00 = 0;
+u16 StatsPageWanted = 0;
 s32 D_8009BD04 = 0;
-s32 D_8009BD08 = 0;
+s32 WinCounterSize = 0;
 EngineRec24 *PauseRec = 0;
 EngineRec24 **PauseRecSet = 0;
 s32 PauseRecIndex = 0;
 s16 PauseMenuY = 0;
 s16 D_8009BD1C[4] = {0};
 s16 D_8009BD24[4] = {0};
-u16 D_8009BD2C = 0;
+u16 StatsPageShown = 0;
 s32 D_8009BD30 = 0;
-s32 D_8009BD34 = 0;
-s32 D_8009BD38 = 0;
-s32 D_8009BD3C = 0;
-s32 D_8009BD40 = 0;
-s32 D_8009BD44 = 0;
+s32 StatsHasPage1 = 0;
+s32 StatsHasPage3 = 0;
+s32 StatsHasBonus = 0;
+s32 WinCounterState = 0;
+s32 WinCounterAnim = 0;
 s32 PauseDelay = 0;

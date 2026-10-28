@@ -2727,7 +2727,7 @@ void HubSetDrawArea(s16 *a, void *b, s32 c, s32 d) {
     s32 off;
 
     r = ScreenRect;
-    if (cdb == D_8005B790) {
+    if (cdb == DrawBuffers) {
         r += 1;
     }
     SetDrawArea((DRAWENV *)((u8 *)b + (FrameCount & 1) * 12), r);

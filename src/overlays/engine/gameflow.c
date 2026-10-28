@@ -75,9 +75,9 @@ void UpdateIntro(void) {
     if (D_800AEC58 != 0) {
         return;
     }
-    if (D_800AEC5C != 0) {
-        dbase_release((u8 *)D_800AEC5C);
-        D_800AEC5C = 0;
+    if (IntroDbase != 0) {
+        dbase_release((u8 *)IntroDbase);
+        IntroDbase = 0;
     }
     if (IntroStepIndex == 1 && D_8009E5A8 == IntroSteps[0].delay) {
         modchip_step(0);
@@ -136,10 +136,10 @@ void UpdateIntro(void) {
         if (IntroSteps[IntroStepIndex].unk10 != -1) {
             music_request(IntroSteps[IntroStepIndex].unk10);
         }
-        if (D_800AEC5C != 0) {
-            dbase_release((u8 *)D_800AEC5C);
+        if (IntroDbase != 0) {
+            dbase_release((u8 *)IntroDbase);
         }
-        D_800AEC5C = (s32)IntroSteps[IntroStepIndex].model;
+        IntroDbase = (s32)IntroSteps[IntroStepIndex].model;
         break;
     }
     IntroStepIndex++;
@@ -153,8 +153,8 @@ void QuitIntro(void) {
     RECT *a;
     RECT *r;
 
-    if (D_800AEC5C != 0) {
-        dbase_release((u8 *)D_800AEC5C);
+    if (IntroDbase != 0) {
+        dbase_release((u8 *)IntroDbase);
     }
     scripts_release();
     subpool_free();
@@ -166,7 +166,7 @@ void QuitIntro(void) {
 
 void RenderIntro(void) {
     gfx_set_viewport(D_8009E498, MainCamera);
-    if (D_800AEC5C != 0) {
+    if (IntroDbase != 0) {
         DrawSceneMarks();
     }
     scripts_render();
@@ -176,7 +176,7 @@ void InitIntro(void) {
     IntroStepIndex = 0;
     D_8009E5A8 = 0;
     D_800AEC58 = 0;
-    D_800AEC5C = 0;
+    IntroDbase = 0;
     init_scripts(0x20, 0x80);
     D_8009E5B0 = -1;
     D_8009E5B4 = 0;
@@ -823,16 +823,16 @@ void ShowCardSlotStats(u8 *arg0, s32 arg1) {
         EngineSetSlot3Digits(3, 3);
         return;
     }
-    itoa_div(D_8009F498, CountTrophies(arg0), 10);
-    e->sub[2].unk6C = D_8009F498;
-    itoa_div(D_8009F498 + 3, EngineSum147(arg0), 10);
-    e->sub[6].unk6C = D_8009F498 + 3;
-    itoa_div(D_8009F498 + 6, EngineSum126(arg0), 10);
-    e->sub[4].unk6C = D_8009F498 + 6;
-    itoa_div(D_8009F498 + 9, EngineCount105(arg0), 10);
-    e->sub[8].unk6C = D_8009F498 + 9;
-    itoa_div_end(D_8009F498 + 12, EngineExtra105(arg0), 10);
-    e->sub[10].unk6C = D_8009F498 + 12;
+    itoa_div(CardStatsText, CountTrophies(arg0), 10);
+    e->sub[2].unk6C = CardStatsText;
+    itoa_div(CardStatsText + 3, EngineSum147(arg0), 10);
+    e->sub[6].unk6C = CardStatsText + 3;
+    itoa_div(CardStatsText + 6, EngineSum126(arg0), 10);
+    e->sub[4].unk6C = CardStatsText + 6;
+    itoa_div(CardStatsText + 9, EngineCount105(arg0), 10);
+    e->sub[8].unk6C = CardStatsText + 9;
+    itoa_div_end(CardStatsText + 12, EngineExtra105(arg0), 10);
+    e->sub[10].unk6C = CardStatsText + 12;
     switch (*(s32 *)(arg0 + 0xE0)) {
     case 1:
         EngineSetSlot3Digits(3, 1);
@@ -1610,7 +1610,7 @@ void InitGameState(GameState *arg0) {
     arg0->unk24 = 0;
     arg0->unk30 = 0;
     arg0->unk10 = 0;
-    if (D_800637A8 == 1) {
+    if (VideoMode == 1) {
         t = 0x32;
     }
     arg0->unk21 = t;
@@ -1685,7 +1685,7 @@ void InitGraphics(void) {
     u8 *g;
 
     AllocOtBuffers((s32 *)cfg);
-    ((void (*)(u8 *))ResetScreen)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
+    ((void (*)(u8 *))ResetScreen)(VideoMode == 0 ? vmode_512_ntsc : D_8005B744);
     g = GameInfo;
     *(s32 *)(g + 4) = 0x80000000;
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
@@ -2146,7 +2146,7 @@ process_info SaveScreenProcess = { InitSaveMenu, UpdateSaveScreen, RenderSaveMen
 s32 SaveScreenProcess2[5] = { (s32)InitCardPromptMenu, (s32)UpdateSaveScreen, (s32)RenderSaveMenu, (s32)ClearEngineSlots, 0 };
 s32 D_8009F494 = 0;
 /* the results screen's number texts, one buffer: +0, +3, +6, +9 three digits each, +12 the last */
-char D_8009F498[16] = {0};
+char CardStatsText[16] = {0};
 char D_8009F4A8[4][5] = {0};
 s32 D_8009F4BC = 0;
 GfxCamera SaveCamera = {0};

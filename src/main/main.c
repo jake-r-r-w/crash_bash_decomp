@@ -2776,7 +2776,7 @@ void cam_set_projection(s32 arg0, s32 arg1) {
     ((s32 *)arg0)[0x64 / 4] = (screen_aspect[1] << 12) / screen_aspect[0];
     t = (((s32 *)arg0)[0x68 / 4] * *(s16 *)(arg1 + 6)) / 480;
     ((s32 *)arg0)[0x68 / 4] = t;
-    if (D_800637A8 == 1) {
+    if (VideoMode == 1) {
         v = t * 0xF8;
     } else {
         v = t * 0xF0;

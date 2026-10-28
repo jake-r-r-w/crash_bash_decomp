@@ -1049,7 +1049,7 @@ extern ASTEntry *ASTTable;      /* the AST table in use */
 extern s32 D_80058AC8;
 extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2];
-extern s32 D_800637B4;
+extern s32 CdReadStatus;
 
 /* 32-byte records of D_8005A5E8, indexed by D_8005A61C (SetLevelCameraMode). */
 typedef struct {
@@ -1066,7 +1066,7 @@ extern CdlLOC D_8006EA10;
 void func_80034AEC(void);
 extern NASTrigger *HeadOfTriggers;
 extern s32 TriggerCount;
-extern void *D_80058B78;
+extern void *active_scripts;
 extern RECT D_8005B640;
 extern void *free_scripts;
 extern void *MapScene;
@@ -1285,10 +1285,10 @@ typedef struct AnimStep {
 extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;
-extern s32 *D_80056850;
+extern s32 *PrimNodeFree;
 extern s32 *D_8005683C;            /* pool sizes (prims_init) */
 extern u8 *D_8005685C;             /* 0x58-byte nodes (prims_init) */
-extern u8 *D_80056840;             /* 0x54-byte nodes, free list in D_80056850 */
+extern u8 *D_80056840;             /* 0x54-byte nodes, free list in PrimNodeFree */
 extern u8 *D_80056854;             /* 8-byte nodes, free list in D_80056858 */
 typedef struct ListNode18938 {
     s32 f0;
@@ -1326,7 +1326,7 @@ extern void *HeadOfBalls;
 extern void *D_80056864;
 extern s32 *D_80056860;
 /* An ordering table and the primitive area drawn through it (0x400C bytes;
- * D_8005B790 holds two). */
+ * DrawBuffers holds two). */
 typedef struct {
     u_long ot[0x1000];
     u8 *prim; /* 0x4000 */
@@ -1334,8 +1334,8 @@ typedef struct {
     u8 *cur;  /* 0x4008 */
 } OtBuf;
 
-extern u8 D_8005B790[];
-extern s32 D_800637A8;
+extern u8 DrawBuffers[];
+extern s32 VideoMode;
 extern u8 *D_80058B7C;
 extern s32 D_80058B80;
 extern s32 D_80058B84;

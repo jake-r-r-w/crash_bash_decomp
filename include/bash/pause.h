@@ -149,9 +149,9 @@ extern s16 WinSeqStep;
 extern s16 WinSeqHero;
 extern s16 WinSeqDelay;
 extern s8 D_8004E0A4[];
-extern s32 D_8009BD08;
-extern s32 D_8009BD40;
-extern s32 D_8009BD44;
+extern s32 WinCounterSize;
+extern s32 WinCounterState;
+extern s32 WinCounterAnim;
 extern s32 PauseDelay;
 /* GameInfo as seen by StartWinSequence. */
 typedef struct EngineHintView {
@@ -337,11 +337,11 @@ extern s32 PauseLastChoice;
 extern s16 PauseMenuY;
 extern s16 D_8009BD1C[4];
 extern s32 D_8009BD30;
-extern u16 D_8009BD00;
-extern u16 D_8009BD2C;
-extern s32 D_8009BD34;
-extern s32 D_8009BD38;
-extern s32 D_8009BD3C;
+extern u16 StatsPageWanted;
+extern u16 StatsPageShown;
+extern s32 StatsHasPage1;
+extern s32 StatsHasPage3;
+extern s32 StatsHasBonus;
 void DrawAdventureStats(s32 arg0);
 /* GameInfo as seen by DrawAdventureStats. */
 typedef struct ScoreView {

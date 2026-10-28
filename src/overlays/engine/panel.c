@@ -589,21 +589,21 @@ void SetupCompletionDigits(void) {
     s32 i;
 
     v = D_8004E0D0;
-    D_800996E0[0].flags = 0x10008000;
-    D_800996E0[0].cmd = 0x3014;
+    CompletionDigits[0].flags = 0x10008000;
+    CompletionDigits[0].cmd = 0x3014;
     for (i = 1; i < 4; i++) {
         n = v & 0xF;
         if (n >= 10) {
             n = 0;
         }
         v >>= 4;
-        D_800996E0[i].cmd = n + 0x3009;
-        D_800996E0[i].flags = 0x10008000;
+        CompletionDigits[i].cmd = n + 0x3009;
+        CompletionDigits[i].flags = 0x10008000;
     }
     n = 3;
     i = 3;
     do {
-        e = &D_800996E0[i];
+        e = &CompletionDigits[i];
         if (e->cmd == 0x3009) {
             n--;
             e->flags &= 0xFFFF7FFF;
@@ -614,9 +614,9 @@ void SetupCompletionDigits(void) {
     } while (i >= 2);
     i = 1;
     for (; i < 4; i++) {
-        D_800996E0[i].arg = *(u16 *)((u8 *)D_80099198 + n * 16 + i * 4);
+        CompletionDigits[i].arg = *(u16 *)((u8 *)D_80099198 + n * 16 + i * 4);
     }
-    D_800996E0[0].arg = *(u16 *)(n * 16 + (u8 *)D_80099198);
+    CompletionDigits[0].arg = *(u16 *)(n * 16 + (u8 *)D_80099198);
 }
 
 void InitIcons4(void) {
@@ -2281,7 +2281,7 @@ SWORD_XY ScoreIcon2Pos[4] = { { 0x26, 0x46 }, { 0x26, 0x46 }, { 0x26, 0x46 }, { 
 SWORD_XY ScoreIcon1Pos[4] = { { 0x26, 0x32 }, { 0x26, 0x32 }, { 0x26, 0x32 }, { 0x26, 0x32 } };
 EXTengine PanelTab[7] = {0};
 s32 Clock_XYZ[3] = {0};
-DigitEnt D_800996E0[4] = {0};
+DigitEnt CompletionDigits[4] = {0};
 s32 D_80099700[3] = {0};
 IconSet Icon = {0};
 subengine IconParts[4][7] = {0};

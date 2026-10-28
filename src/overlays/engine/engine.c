@@ -23,8 +23,8 @@ void InitialiseNasSystem(void) {
     Init_Panel();
     NasPool = (NAS *)mal_alloc(NasPoolUsed * 0x70, &MainHeap);
     D_8005AA20 = (u8 *)NasPool + (NasPoolUsed * 0x70 - 0x70);
-    D_8005AA40 = (EngObj **)mal_alloc(NasPoolUsed * 4, &MainHeap);
-    *D_8005AA40 = NULL;
+    NasUpdateList = (EngObj **)mal_alloc(NasPoolUsed * 4, &MainHeap);
+    *NasUpdateList = NULL;
     p = mal_alloc(NasPoolUsed * 4, &MainHeap);
     D_8005AA44 = p;
     *(s32 *)p = 0;
@@ -118,7 +118,7 @@ void UpdateAllNas(void) {
     u16 cls;
 
     GlobalNAStatus = 1;
-    *D_8005AA40 = NULL;
+    *NasUpdateList = NULL;
     *(s32 *)D_8005AA44 = 0;
     i = 0;
     if (D_8005AA7C != NULL) {
@@ -139,8 +139,8 @@ void UpdateAllNas(void) {
                 nas->Handler(nas);
             }
             if (cls & 2) {
-                n = ++*(s32 *)D_8005AA40;
-                D_8005AA40[n] = (EngObj *)nas;
+                n = ++*(s32 *)NasUpdateList;
+                NasUpdateList[n] = (EngObj *)nas;
             }
             if (cls & 0x1000) {
                 n = ++*(s32 *)D_8005AA44;
@@ -369,14 +369,14 @@ void UpdateLevel(void) {
     ProcessHeroes();
     GlobalNAStatus = 2;
     i = 0;
-    if (*(s32 *)D_8005AA40 > 0) {
+    if (*(s32 *)NasUpdateList > 0) {
         do {
             i++;
-            o = D_8005AA40[i];
+            o = NasUpdateList[i];
             if (o->flags & 1) {
                 o->update(o);
             }
-        } while (i < *(s32 *)D_8005AA40);
+        } while (i < *(s32 *)NasUpdateList);
     }
     GlobalNAStatus = 0;
     Draw_Clock();
@@ -413,9 +413,9 @@ void DrawLevelHud(void) {
             c1 = 0xFFFF;
             pos.f.y = D_80099700[1];
             for (i = 0; i < 4; i++) {
-                if (D_800996E0[i].flags & 0x8000) {
-                    pos.f.x = D_80099700[0] + D_800996E0[i].arg;
-                    texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (D_800996E0[i].cmd & 0xFFF) * 0x38),
+                if (CompletionDigits[i].flags & 0x8000) {
+                    pos.f.x = D_80099700[0] + CompletionDigits[i].arg;
+                    texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (CompletionDigits[i].cmd & 0xFFF) * 0x38),
                                   pos.w, 0, c0, c0, c1, c1);
                 }
             }
@@ -446,9 +446,9 @@ void DrawLevelHud(void) {
             c1 = 0xFFFF;
             pos.f.y = D_80099700[1];
             for (i = 0; i < 4; i++) {
-                if (D_800996E0[i].flags & 0x8000) {
-                    pos.f.x = D_80099700[0] + D_800996E0[i].arg;
-                    texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (D_800996E0[i].cmd & 0xFFF) * 0x38),
+                if (CompletionDigits[i].flags & 0x8000) {
+                    pos.f.x = D_80099700[0] + CompletionDigits[i].arg;
+                    texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (CompletionDigits[i].cmd & 0xFFF) * 0x38),
                                   pos.w, 0, c0, c0, c1, c1);
                 }
             }
@@ -804,14 +804,14 @@ void UpdateNasObjects(void) {
 
     GlobalNAStatus = 2;
     i = 0;
-    if (*(s32 *)D_8005AA40 > 0) {
+    if (*(s32 *)NasUpdateList > 0) {
         do {
             i++;
-            o = D_8005AA40[i];
+            o = NasUpdateList[i];
             if (o->flags & 1) {
                 o->update(o);
             }
-        } while (i < *(s32 *)D_8005AA40);
+        } while (i < *(s32 *)NasUpdateList);
     }
     GlobalNAStatus = 0;
     Draw_Clock();
