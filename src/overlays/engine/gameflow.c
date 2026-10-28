@@ -837,7 +837,7 @@ void UpdateCardPrompt(void) {
     PadState *pad;
     s32 idx;
     EXTengine *e;
-    u8 *g;
+    GameState *g;
     u8 *src;
     u8 *p;
 
@@ -850,15 +850,15 @@ void UpdateCardPrompt(void) {
             CardPromptRetry = 1;
             GotoProcess(&RetryProcess, 0x200);
             {
-                u8 *q = GameInfo;
-                *(u16 *)(q + 0x30) |= 0x200;
+                GameState *q = GAME;
+                q->exitFlags |= 0x200;
             }
         }
         if (CardStatus & 2) {
             if (CardStatus & 0x40) {
                 e = GetEngineSlot(1);
-                e->sub[1].u6C.text = LangMenuCheckingCard[*(s32 *)((g = GameInfo) + 0x2C)];
-                GetEngineSlot(1)->sub->u6C.text = LangLoadGame[*(s32 *)(g + 0x2C)];
+                e->sub[1].u6C.text = LangMenuCheckingCard[(g = GAME)->language];
+                GetEngineSlot(1)->sub->u6C.text = LangLoadGame[g->language];
                 eng_render_subs(GetEngineSlot(1));
                 return;
             } else if (CardStatus & 0x10) {
@@ -871,15 +871,15 @@ void UpdateCardPrompt(void) {
                     music_request(-1);
                     src = CardSlotIndex * 0x194 + p;
                     {
-                        u8 *q = GameInfo;
-                        q[0x4C] = src[0];
-                        q[0x4D] = src[1];
-                        q[0x4E] = src[2];
-                        q[0x4F] = src[3];
-                        q[0x5C] = src[4];
-                        q[0x5D] = src[5];
-                        q[0x5E] = src[6];
-                        q[0x5F] = src[7];
+                        GameState *q = GAME;
+                        q->heroChoice[0] = src[0];
+                        q->heroChoice[1] = src[1];
+                        q->heroChoice[2] = src[2];
+                        q->heroChoice[3] = src[3];
+                        q->heroOut[0] = src[4];
+                        q->heroOut[1] = src[5];
+                        q->heroOut[2] = src[6];
+                        q->heroOut[3] = src[7];
                     }
                     *GAME = *(GameState *)(src + 8);
                     {
@@ -905,26 +905,26 @@ void UpdateCardPrompt(void) {
         }
         e = GetEngineSlot(1);
         {
-            u8 *q;
-            e->sub[1].u6C.text = LangNoCard[*(s32 *)((q = GameInfo) + 0x2C)];
-            GetEngineSlot(1)->sub->u6C.text = LangLoadGame[*(s32 *)(q + 0x2C)];
+            GameState *q;
+            e->sub[1].u6C.text = LangNoCard[(q = GAME)->language];
+            GetEngineSlot(1)->sub->u6C.text = LangLoadGame[q->language];
         }
         eng_render_subs(GetEngineSlot(1));
         break;
     case 1:
         if (loader_pending() == 0) {
-            u8 *q = GameInfo;
+            GameState *q = GAME;
             CardPromptStep = 2;
-            q[0x50] = q[0x4C];
+            q->heroes[0] = q->heroChoice[0];
         }
         break;
     case 2:
         if (loader_pending() == 0) {
-            u8 *q;
+            GameState *q;
             GotoProcess(&RetryProcess, 0x200);
-            q = GameInfo;
+            q = GAME;
             CardPromptStep = 3;
-            *(u16 *)(q + 0x30) |= 0x200;
+            q->exitFlags |= 0x200;
         }
         break;
     }
@@ -1058,9 +1058,9 @@ void UpdateSaveMenu(void) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
             GotoProcess(&RetryProcess, 0x200);
             {
-                u8 *q = GameInfo;
+                GameState *q = GAME;
                 SaveMenuState = 4;
-                *(u16 *)(q + 0x30) |= 0x200;
+                q->exitFlags |= 0x200;
             }
         }
         break;
@@ -1126,17 +1126,17 @@ void UpdateSaveMenu(void) {
             switch (HubSaveChoice) {
             case 1: {
                 CardSlot *dst = &CardSlots[CardSlotIndex];
-                u8 *q = GameInfo;
-                dst->summary[0] = q[0x4C];
-                dst->summary[1] = q[0x4D];
-                dst->summary[2] = q[0x4E];
-                dst->summary[3] = q[0x4F];
-                dst->summary[4] = q[0x5C];
-                dst->summary[5] = q[0x5D];
-                dst->summary[6] = q[0x5E];
-                dst->summary[7] = q[0x5F];
-                *(GameOptionSet *)(q + 0xD0) = GameOptions;
-                dst->state = *(GameState *)q;
+                GameState *q = GAME;
+                dst->summary[0] = q->heroChoice[0];
+                dst->summary[1] = q->heroChoice[1];
+                dst->summary[2] = q->heroChoice[2];
+                dst->summary[3] = q->heroChoice[3];
+                dst->summary[4] = q->heroOut[0];
+                dst->summary[5] = q->heroOut[1];
+                dst->summary[6] = q->heroOut[2];
+                dst->summary[7] = q->heroOut[3];
+                *(GameOptionSet *)q->adventure.unkD0 = GameOptions;
+                dst->state = *q;
                 ShowCardSlots();
                 card_save();
                 SaveMenuState = 1;
@@ -1150,8 +1150,8 @@ void UpdateSaveMenu(void) {
                 GotoProcess(&RetryProcess, 0x200);
                 SaveMenuState = 4;
                 {
-                    u8 *q = GameInfo;
-                    *(u16 *)(q + 0x30) |= 0x200;
+                    GameState *q = GAME;
+                    q->exitFlags |= 0x200;
                 }
                 if (HubSaveMenuHooks.unkC != NULL) {
                     HubSaveMenuHooks.unkC();
@@ -1185,8 +1185,8 @@ void UpdateSaveMenu(void) {
         GotoProcess(&RetryProcess, 0x200);
         SaveMenuState = 4;
         {
-            u8 *q = GameInfo;
-            *(u16 *)(q + 0x30) |= 0x200;
+            GameState *q = GAME;
+            q->exitFlags |= 0x200;
         }
     }
 }
@@ -1285,7 +1285,7 @@ void UpdateCardSlots(void) {
         {
             s32 idx;
             u8 *p;
-            u8 *g;
+            GameState *g;
             idx = CardSlotIndex * 0x194;
             p = (u8 *)CardSlots;
             if (*(s32 *)(idx + p) == 0) {
@@ -1293,15 +1293,15 @@ void UpdateCardSlots(void) {
             } else {
                 GetEngineSlot(3)->sub[13].u6C.text = LangPressButtonToLoad[GameLanguage];
             }
-            GetEngineSlot(3)->sub[12].u6C.text = LangSelectGameToLoad[*(s32 *)((g = GameInfo) + 0x2C)];
-            GetEngineSlot(3)->sub[14].u6C.text = LangPressButtonToExitWithoutLoading[*(s32 *)(g + 0x2C)];
+            GetEngineSlot(3)->sub[12].u6C.text = LangSelectGameToLoad[(g = GAME)->language];
+            GetEngineSlot(3)->sub[14].u6C.text = LangPressButtonToExitWithoutLoading[g->language];
         }
         break;
     case 1:
         {
             s32 idx;
             u8 *p;
-            u8 *g;
+            GameState *g;
             idx = CardSlotIndex * 0x194;
             p = (u8 *)CardSlots;
             if (*(s32 *)(idx + p) == 0) {
@@ -1309,8 +1309,8 @@ void UpdateCardSlots(void) {
             } else {
                 GetEngineSlot(3)->sub[13].u6C.text = LangPressButtonToOverwrite[GameLanguage];
             }
-            GetEngineSlot(3)->sub[12].u6C.text = LangSelectAGameSave[*(s32 *)((g = GameInfo) + 0x2C)];
-            GetEngineSlot(3)->sub[14].u6C.text = LangPressButtonToExitWithoutSaving[*(s32 *)(g + 0x2C)];
+            GetEngineSlot(3)->sub[12].u6C.text = LangSelectAGameSave[(g = GAME)->language];
+            GetEngineSlot(3)->sub[14].u6C.text = LangPressButtonToExitWithoutSaving[g->language];
         }
         break;
     }
@@ -1669,12 +1669,12 @@ void InitGameState(GameState *arg0) {
 
 void InitGraphics(void) {
     EngineCfg *cfg = &DefaultLevelConfig;
-    u8 *g;
+    GameState *g;
 
     AllocOtBuffers((s32 *)cfg);
     ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
-    g = GameInfo;
-    *(s32 *)(g + 4) = 0x80000000;
+    g = GAME;
+    g->cheats = 0x80000000;
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
@@ -1689,7 +1689,7 @@ void InitGraphics(void) {
     GameOptions.vibrate[1] = 1;
     GameOptions.vibrate[2] = 1;
     GameOptions.vibrate[3] = 1;
-    InitGameState((GameState *)g);
+    InitGameState(g);
     sound_init();
 }
 
