@@ -903,7 +903,7 @@ s32 CamBoundBottom = 0;
 s32 CamBoundTop = 0;
 s32 CamBoundLeft = 0;
 s32 CamBoundRight = 0;
-EngRec24 ScreenLabels4P[19] = {
+TextPanelItem ScreenLabels4P[19] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0x2022, { 0, 0, 0, 0 },
@@ -981,7 +981,7 @@ EngRec24 ScreenLabels4P[19] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 ScreenLabelsTeams[13] = {
+TextPanelItem ScreenLabelsTeams[13] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },
@@ -1035,7 +1035,7 @@ EngRec24 ScreenLabelsTeams[13] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 ScreenLabelsPair[8] = {
+TextPanelItem ScreenLabelsPair[8] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },
@@ -1069,7 +1069,7 @@ EngRec24 ScreenLabelsPair[8] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 ScreenLabelsOne[7] = {
+TextPanelItem ScreenLabelsOne[7] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },
@@ -1099,7 +1099,7 @@ EngRec24 ScreenLabelsOne[7] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 ScreenLabels2P[11] = {
+TextPanelItem ScreenLabels2P[11] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },
@@ -1145,7 +1145,7 @@ EngRec24 ScreenLabels2P[11] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 ScreenLabelsNotice[3] = {
+TextPanelItem ScreenLabelsNotice[3] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },

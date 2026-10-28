@@ -1385,7 +1385,7 @@ void BashAI_ScanAhead(s32 arg0) {
     while ((u32)(lx + 0x7FF) < 0xFFF && lz < 0x800 && lz >= -0x7FF && i < 8) {
         gx = (lx >> 8) + 10;
         gz = 9 - (lz >> 8);
-        v = ArenaGrid[gz * 20 + gx].unk0;
+        v = ArenaGrid[gz * 20 + gx].flags;
         if ((v & 0xF0) == id) {
             v &= 0x1F;
         }
@@ -1401,7 +1401,7 @@ void BashAI_ScanAhead(s32 arg0) {
     while ((u32)(rx + 0x7FF) < 0xFFF && rz < 0x800 && rz >= -0x7FF && i < 8) {
         gx = (rx >> 8) + 10;
         gz = 9 - (rz >> 8);
-        v = ArenaGrid[gz * 20 + gx].unk0;
+        v = ArenaGrid[gz * 20 + gx].flags;
         if ((v & 0xF0) == id) {
             v &= 0x1F;
         }
@@ -2034,7 +2034,7 @@ void BashCrateMaster(void) {
                 c += Random(256);
                 s = (c->x >> 8) + 10;
                 z = 9 - (c->z >> 8);
-                if (ArenaGrid[z * 20 + s].unk0 < 16) {
+                if (ArenaGrid[z * 20 + s].flags < 16) {
                     CreateNAS(c->x, -0x800, c->z, 0x20C, 0x11);
                     BashRainCount--;
                     BashRainDelay = Random(4) + 2;
@@ -2064,7 +2064,7 @@ void BashCrateMaster(void) {
                 c += Random(256);
                 s = (c->x >> 8) + 10;
                 z = 9 - (c->z >> 8);
-                if (ArenaGrid[z * 20 + s].unk0 == 0) {
+                if (ArenaGrid[z * 20 + s].flags == 0) {
                     switch (pu) {
                     case 18:
                         CreateNAS(c->x, -0x800, c->z, 0x208, 0x11);
@@ -2239,7 +2239,7 @@ BashPair *BashFindDropPoint(u16 *arg0) {
     x = (cell->x >> 8) + 10;
     z = 9 - (cell->z >> 8);
     do {
-        while (ArenaGrid[z * 20 + x].unk0 != 0) {
+        while (ArenaGrid[z * 20 + x].flags != 0) {
             if (i == *arg0) {
                 return NULL;
             }
@@ -2266,26 +2266,26 @@ BashPair *BashFindDropPoint(u16 *arg0) {
         if (z < 19) {
             zhi = z + 1;
         }
-        n = ArenaGrid[zlo * 20 + xlo].unk0 != 0;
-        if (ArenaGrid[zlo * 20 + x].unk0 != 0) {
+        n = ArenaGrid[zlo * 20 + xlo].flags != 0;
+        if (ArenaGrid[zlo * 20 + x].flags != 0) {
             n++;
         }
-        if (ArenaGrid[zlo * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[zlo * 20 + xhi].flags != 0) {
             n++;
         }
-        if (ArenaGrid[z * 20 + xlo].unk0 != 0) {
+        if (ArenaGrid[z * 20 + xlo].flags != 0) {
             n++;
         }
-        if (ArenaGrid[z * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[z * 20 + xhi].flags != 0) {
             n++;
         }
-        if (ArenaGrid[zhi * 20 + xlo].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + xlo].flags != 0) {
             n++;
         }
-        if (ArenaGrid[zhi * 20 + x].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + x].flags != 0) {
             n++;
         }
-        if (ArenaGrid[zhi * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + xhi].flags != 0) {
             n++;
         }
         if (n == 0) {
@@ -2560,7 +2560,7 @@ void BashSnowMarkPenguin(void) {
     hi = 12;
     for (x = lo; (s32)x < hi; x++) {
         for (z = lo; (s32)z < hi; z++) {
-            ArenaGrid[z * 20 + x].unk0 = 0xF0;
+            ArenaGrid[z * 20 + x].flags = 0xF0;
         }
     }
     x = ((BashPenguinEng->unk10.x - 0x80) >> 8) + 10;
@@ -2569,18 +2569,18 @@ void BashSnowMarkPenguin(void) {
     zhi = 9 - ((BashPenguinEng->unk10.z + 0x80) >> 8);
     if (x < 20) {
         if (z < 20) {
-            ArenaGrid[z * 20 + x].unk0 |= 0x40;
+            ArenaGrid[z * 20 + x].flags |= 0x40;
         }
         if (zhi < 20) {
-            ArenaGrid[zhi * 20 + x].unk0 |= 0x40;
+            ArenaGrid[zhi * 20 + x].flags |= 0x40;
         }
     }
     if (xhi < 20) {
         if (z < 20) {
-            ArenaGrid[z * 20 + xhi].unk0 |= 0x40;
+            ArenaGrid[z * 20 + xhi].flags |= 0x40;
         }
         if (zhi < 20) {
-            ArenaGrid[zhi * 20 + xhi].unk0 |= 0x40;
+            ArenaGrid[zhi * 20 + xhi].flags |= 0x40;
         }
     }
 }
@@ -3553,7 +3553,7 @@ void BashSpaceMarkHoles(void) {
     for (j = 2; j < 18; j++) {
         for (i = 2; i < 18; i++) {
             if (BashSpaceTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
-                ArenaGrid[i * 20 + j].unk0 = 0xFF;
+                ArenaGrid[i * 20 + j].flags = 0xFF;
             }
         }
     }
@@ -3622,7 +3622,7 @@ u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag) {
     zi = 9 - (z >> 8);
 
     do {
-        if (ArenaGrid[zi * 20 + xi].unk0 != 0) {
+        if (ArenaGrid[zi * 20 + xi].flags != 0) {
             xi = (x >> 8) + 10;
             zi = 9 - (z >> 8);
             if (flag != 0) {

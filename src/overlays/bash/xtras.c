@@ -109,7 +109,7 @@ void BashCountObjects(void) {
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
             if (z < 0) z = 0;
-            ArenaGrid[z * 20 + x].unk0 = t;
+            ArenaGrid[z * 20 + x].flags = t;
             if ((u16)(f->type - 1) < 12) {
                 CrateCounts[0]++;
                 CrateCounts[f->type]++;
@@ -128,7 +128,7 @@ void BashCountObjects(void) {
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
             if (z < 0) z = 0;
-            ArenaGrid[z * 20 + x].unk0 = c;
+            ArenaGrid[z * 20 + x].flags = c;
         }
         }
         n = n->Object.Child;
@@ -216,7 +216,7 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 if (x < 0) x = 0;
                 if (z >= 20) z = 19;
                 if (z < 0) z = 0;
-                ArenaGrid[z * 20 + x].unk0 = t;
+                ArenaGrid[z * 20 + x].flags = t;
             }
         }
         if (nas->Failure != 0) {
@@ -306,7 +306,7 @@ void InitCrate(NAS *arg0) {
             if (z < 0) {
                 z = 0;
             }
-            ArenaGrid[z * 20 + x].unk0 = obj->unk14;
+            ArenaGrid[z * 20 + x].flags = obj->unk14;
             AddMotion(arg0);
             LinkObject(arg0);
             AddSolid(arg0, 0x300);
@@ -1175,7 +1175,7 @@ void InitCratePickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        ArenaGrid[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].flags = id;
     }
     if (arg0->Failure != 0) {
         KillNAS(arg0);
@@ -1226,7 +1226,7 @@ void InitShieldPickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        ArenaGrid[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].flags = id;
         PlaySfx(0x41F, NULL, pos, 0x1000, 0x1E00, 0);
     }
     if (arg0->Failure != 0) {
@@ -1278,7 +1278,7 @@ void InitBootsPickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        ArenaGrid[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].flags = id;
         PlaySfx(0x41F, NULL, pos, 0x1000, 0x1E00, 0);
     }
     if (arg0->Failure != 0) {
@@ -1330,7 +1330,7 @@ void InitAnvilPickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        ArenaGrid[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].flags = id;
         PlaySfx(0x41F, NULL, pos, 0x1000, 0x1E00, 0);
     }
     if (arg0->Failure != 0) {
@@ -1382,7 +1382,7 @@ void InitSlowmoPickup(NAS *arg0) {
         if (z < 0) {
             z = 0;
         }
-        ArenaGrid[z * 0x14 + x].unk0 = id;
+        ArenaGrid[z * 0x14 + x].flags = id;
         PlaySfx(0x41F, NULL, pos, 0x1000, 0x1E00, 0);
     }
     if (arg0->Failure != 0) {

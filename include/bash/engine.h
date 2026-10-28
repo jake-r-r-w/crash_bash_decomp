@@ -200,9 +200,11 @@ typedef struct EngineGameView {
 } EngineGameView;
 extern GfxViewport GameViewport;
 extern s32 GameSceneFade;
-typedef struct { s32 unk0; s32 unk4; s32 unk8; s32 unkC; } EngineEntry16Head;
-typedef struct { s32 unk0; EngineEntry16Head *unk4; s32 unk8; } EngineTable12;
-extern EngineTable12 CupTable[];
+/* A round of a cup (CupDef.rounds): the arena's mode at 4. */
+typedef struct { s32 unk0; s32 mode; s32 unk8; s32 unkC; } CupRound;
+/* A cup (CupTable, by GameCup): its rounds. */
+typedef struct { s32 unk0; CupRound *rounds; s32 roundCount; } CupDef;
+extern CupDef CupTable[];
 /* Also in main.h; repeated for overlays that include engine.h first. */
 extern u8 GameInfo[];
 extern s32 LevelUnlockedIn(s32, u8 *);
@@ -225,16 +227,16 @@ extern s32 IntroSfxDelay;
 extern s32 IntroScriptHandle;
 extern u8 CupMenuPanel[];
 /* A text-panel record PlaceEngineSlot builds from (0x24 bytes): kind at 0, the text at 0x14. */
-typedef struct EngRec24 {
+typedef struct TextPanelItem {
     /* 0x00 */ u8 pad0[0x14];
     /* 0x14 */ void *text;
     /* 0x18 */ u8 pad18[6];
     /* 0x1E */ s16 unk1E;
     /* 0x20 */ u8 pad20[4];
-} EngRec24;
+} TextPanelItem;
 
-extern EngRec24 CupMenuLabels[];
-extern EngRec24 CupSlotPanel[2];
+extern TextPanelItem CupMenuLabels[];
+extern TextPanelItem CupSlotPanel[2];
 extern process_info TournamentSelect;   /* after CupSlotPanel's two records: the tournament select menu (TournamentChain) */
 extern s32 CupMenuCompact;
 /* The hub hero's place on the warp room's ring (HubPreMoveHero): its angle and its distance from
@@ -251,11 +253,12 @@ extern HubGateway HubGateways[];       /* by HubTableEntry.gateway - 1 */
 
 void ArenaRequirementMetAny(s32 arg0);
 
+/* A cell of the arena's 20 x 20 grid (ArenaGrid, by z * 20 + x): what stands on it. */
 typedef struct {
-    u8 unk0;
+    u8 flags;
     u8 unk1;
-} D_8009D90C_t;
-extern D_8009D90C_t ArenaGrid[400];
+} ArenaCell;
+extern ArenaCell ArenaGrid[400];
 
 int ASTTableCount(void);
 
@@ -333,13 +336,13 @@ extern s32 PauseMenuSetsByLang[];
 extern s32 LevelRecIndex;
 extern u16 CameraMode;
 
-typedef struct EngineRec24 {
+typedef struct PauseRecord {
     s32 kind;
     s16 val;
     char pad[0x1E];
-} EngineRec24;
-extern EngineRec24 *PauseRec;
-extern EngineRec24 **PauseRecSet;
+} PauseRecord;
+extern PauseRecord *PauseRec;
+extern PauseRecord **PauseRecSet;
 extern s32 PauseRecIndex;
 
 /* Hero jump parameters, 8 bytes per hero (EngineHooks.unk10). */
@@ -354,7 +357,7 @@ typedef struct EngineHooks {
     /* 0x08 */ void *unk8;
     /* 0x0C */ u16 *RunSpeeds;
     /* 0x10 */ void *JumpEnts;
-    /* 0x14 */ void *VictorySeqs;     /* the victory sequences (D_8009D6FC_t, pause.h) */
+    /* 0x14 */ void *VictorySeqs;     /* the victory sequences (VictorySeq, pause.h) */
     /* 0x18 */ void *CreateShadow;
     /* 0x1C */ void (*UpdateShadow)(void);
     /* 0x20 */ void *PreMoveHero;

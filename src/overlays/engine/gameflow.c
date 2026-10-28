@@ -340,9 +340,9 @@ void ExitToTitles(void) {
 }
 
 void AnimateCupMenu(void) {
-    EngineEntry16Head *p;
-    EngineTable12 *base;
-    EngineTable12 *t;
+    CupRound *p;
+    CupDef *base;
+    CupDef *t;
     subengine *sub;
     TrigEntry *trig;
     s32 n;
@@ -353,14 +353,14 @@ void AnimateCupMenu(void) {
     trig = rcossin_tbl;
     base = CupTable;
     t = base + (u8)GameCup;
-    n = t->unk8;
-    p = t->unk4;
+    n = t->roundCount;
+    p = t->rounds;
 loop:
     if (i < n) {
         sub = GetEngineSlot(i + 3)->sub;
         sub->u6C.dbase = (void *)p->unk8;
         sub->entity = p->unkC;
-        if (p->unk0 == 1 || (p->unk0 == 2 && LevelUnlockedIn(p->unk4, GameInfo) != 0)) {
+        if (p->unk0 == 1 || (p->unk0 == 2 && LevelUnlockedIn(p->mode, GameInfo) != 0)) {
             sub->flags |= 0x8000;
         } else {
             sub->flags &= ~0x8000;
@@ -473,7 +473,7 @@ void UpdateCupMenu(void) {
         ((EngineModeView *)g)->unk32 = (((EngineModeView *)g)->unk32 & 0xFF00) | 2;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         g[0x29] = 0;
-        NextGameMode = CupTable[g[0x28]].unk4->unk4;
+        NextGameMode = CupTable[g[0x28]].rounds->mode;
         MenuChainNext();
         p = GameInfo;
         for (i = 0; i < 4; i++) {
@@ -537,7 +537,7 @@ void RenderCupMenu(void) {
 void QuitCupMenu(void) {
 }
 
-s32 CountCupTrophies(EngineTable12 *cup) {
+s32 CountCupTrophies(CupDef *cup) {
     s32 i;
     s32 j;
     s32 cnt;
@@ -548,10 +548,10 @@ s32 CountCupTrophies(EngineTable12 *cup) {
     i = 0;
     tab = CardSlots[0].unk8;
     for (;;) {
-        if (i >= cup->unk8) {
+        if (i >= cup->roundCount) {
             goto done;
         }
-        obj = cup->unk4[i].unk4;
+        obj = cup->rounds[i].mode;
         if (LevelUnlockedIn(obj, GameInfo) == 0) {
             cnt = 0;
             j = cnt;
@@ -573,14 +573,14 @@ done:
     return 1;
 }
 
-void AwardCupTrophies(EngineTable12 *cup) {
+void AwardCupTrophies(CupDef *cup) {
     s32 i;
-    s32 n = cup->unk8;
+    s32 n = cup->roundCount;
 
     for (i = 0; i < n; i++) {
-        EngineEntry16Head *e = cup->unk4;
-        GameInfo[e[i].unk4 + 0xE4] = 1;
-        n = cup->unk8;
+        CupRound *e = cup->rounds;
+        GameInfo[e[i].mode + 0xE4] = 1;
+        n = cup->roundCount;
     }
 }
 
@@ -611,9 +611,9 @@ void CupMenuPrev(void) {
 }
 
 s32 CupUnlocked(s32 arg0) {
-    EngineTable12 *base = CupTable;
-    EngineTable12 *t;
-    EngineEntry16Head *p;
+    CupDef *base = CupTable;
+    CupDef *t;
+    CupRound *p;
     s32 n;
     s32 i;
 
@@ -624,10 +624,10 @@ s32 CupUnlocked(s32 arg0) {
     if (t->unk0 == 2) {
         return 0;
     }
-    n = t->unk8;
-    p = t->unk4;
+    n = t->roundCount;
+    p = t->rounds;
     for (i = 0; i < n; i++, p++) {
-        if (!LevelUnlockedIn(p->unk4, GameInfo)) {
+        if (!LevelUnlockedIn(p->mode, GameInfo)) {
             return 0;
         }
     }
@@ -636,10 +636,10 @@ s32 CupUnlocked(s32 arg0) {
 
 s32 CupCurrentModeType(void) {
     u16 *wt = ModeTypes;
-    EngineTable12 *tab = CupTable;
+    CupDef *tab = CupTable;
     u8 *g = GameInfo;
-    EngineEntry16Head *e = tab[g[0x28]].unk4;
-    s32 idx = e[g[0x29]].unk4;
+    CupRound *e = tab[g[0x28]].rounds;
+    s32 idx = e[g[0x29]].mode;
     s32 **tbl;
     s32 w = wt[idx * 3] - 0x101;
     s32 *t;
@@ -649,15 +649,15 @@ s32 CupCurrentModeType(void) {
 }
 
 s32 CupNextArena(void) {
-    if (GameInfo[0x29] < CupTable[GameInfo[0x28]].unk8 - 1) {
+    if (GameInfo[0x29] < CupTable[GameInfo[0x28]].roundCount - 1) {
         GameInfo[0x29] = GameInfo[0x29] + 1;
-        return CupTable[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
+        return CupTable[GameInfo[0x28]].rounds[GameInfo[0x29]].mode;
     }
     return 0x2B;
 }
 
 s32 CupCurrentArena(void) {
-    return CupTable[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
+    return CupTable[GameInfo[0x28]].rounds[GameInfo[0x29]].mode;
 }
 
 void InitCupMenu(void) {
@@ -1927,49 +1927,49 @@ _sfx_handler *IntroSfx[3] = {0};
 _sfx_handler *IntroSfxHandle = 0;
 s32 WarpReturnProcess[5] = { (s32)ReturnToWarpRoom, 0, 0, 0, 0 };
 s32 NextGameMode = 0;
-EngineEntry16Head Cup0Arenas[4] = {
+CupRound Cup0Arenas[4] = {
     { 1, 0, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2005 },
     { 1, 1, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2006 },
     { 1, 2, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2007 },
     { 1, 3, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2008 },
 };
-EngineEntry16Head Cup1Arenas[4] = {
+CupRound Cup1Arenas[4] = {
     { 1, 0x13, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2005 },
     { 1, 0x12, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2006 },
     { 1, 0x14, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2007 },
     { 1, 0x15, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2008 },
 };
-EngineEntry16Head Cup2Arenas[4] = {
+CupRound Cup2Arenas[4] = {
     { 1, 0xA, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001 },
     { 1, 0xB, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2002 },
     { 1, 0xC, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2003 },
     { 1, 0xD, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001 },
 };
-EngineEntry16Head Cup3Arenas[4] = {
+CupRound Cup3Arenas[4] = {
     { 1, 0xE, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2001 },
     { 1, 0xF, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2002 },
     { 1, 0x10, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2003 },
     { 1, 0x11, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2004 },
 };
-EngineEntry16Head Cup4Arenas[4] = {
+CupRound Cup4Arenas[4] = {
     { 2, 6, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2009 },
     { 2, 8, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200A },
     { 2, 7, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200B },
     { 2, 5, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200C },
 };
-EngineEntry16Head Cup5Arenas[4] = {
+CupRound Cup5Arenas[4] = {
     { 2, 0x17, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2009 },
     { 2, 0x18, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200A },
     { 2, 0x1A, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200B },
     { 2, 0x19, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200C },
 };
-EngineEntry16Head Cup6Arenas[4] = {
+CupRound Cup6Arenas[4] = {
     { 2, 0x1B, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200D },
     { 2, 0x1C, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200E },
     { 2, 0x1D, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200F },
     { 2, 0x1E, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2010 },
 };
-EngineTable12 CupTable[7] = {
+CupDef CupTable[7] = {
     { 1, Cup0Arenas, 4 }, { 1, Cup1Arenas, 4 },
     { 1, Cup2Arenas, 4 }, { 1, Cup3Arenas, 4 },
     { 3, Cup4Arenas, 4 }, { 3, Cup5Arenas, 4 },
@@ -1987,7 +1987,7 @@ u8 CupMenuPanel[180] = {
 s32 LangTournamentSelect[1] = { (s32)&MenuTournamentSelect };
 s32 LangMenuLocked[1] = { (s32)&MenuLocked };
 s32 LangMenuPressButtonToSelect[1] = { (s32)&MenuPressButtonToSelect };
-EngRec24 CupMenuLabels[12] = {
+TextPanelItem CupMenuLabels[12] = {
     {
         { 3, 0, 0, 0, 0, 0x80, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 2, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
@@ -2046,7 +2046,7 @@ GfxViewport CupViewport0 = { 0x32, 0x58, 0x136, 0xD0, 0, 0, 0x280, 0x1E0, 0xB4, 
 GfxViewport CupViewport1 = { 0x14A, 0x58, 0x24E, 0xD0, 0, 0, 0x280, 0x1E0, 0x1CC, 0xF8, 0x380, 0x17F, 0, 0, 0, 0, 0 };
 GfxViewport CupViewport2 = { 0x32, 0xE0, 0x136, 0x158, 0, 0, 0x280, 0x1E0, 0xB4, 0x180, 0x500, 0x17F, 0, 0, 0, 0, 0 };
 GfxViewport CupViewport3 = { 0x14A, 0xE0, 0x24E, 0x158, 0, 0, 0x280, 0x1E0, 0x1CC, 0x180, 0x680, 0x17F, 0, 0, 0, 0, 0 };
-EngRec24 CupSlotPanel[2] = {
+TextPanelItem CupSlotPanel[2] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xCC, 0xC, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0xC8, 0 }, 0x2005, { 0, 0, 0, 0 },

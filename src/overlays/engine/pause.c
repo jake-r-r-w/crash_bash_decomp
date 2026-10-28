@@ -1330,8 +1330,8 @@ void RenderPause(void) {
 void StartWinSequence(s32 arg0) {
     EngineHintView *g;
     EngineHintView *g2;
-    EngineRec24 **set;
-    EngineRec24 *rec;
+    PauseRecord **set;
+    PauseRecord *rec;
 
     WinSeqTimer = 0x4B;
     WinSeqStep = 4;
@@ -1357,7 +1357,7 @@ void StartWinSequence(s32 arg0) {
         if (g->shown[g->mode] & 0x80) {
             return;
         }
-        set = ((EngineRec24 ****)PauseMenuSets)[g->mode][2];
+        set = ((PauseRecord ****)PauseMenuSets)[g->mode][2];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
@@ -1375,7 +1375,7 @@ void StartWinSequence(s32 arg0) {
             if (g->shown[g->mode] & 8) {
                 return;
             }
-            set = ((EngineRec24 ****)PauseMenuSets)[g->mode][8];
+            set = ((PauseRecord ****)PauseMenuSets)[g->mode][8];
             if (set != NULL) {
                 PauseRecSet = set;
                 rec = *set;
@@ -1391,7 +1391,7 @@ void StartWinSequence(s32 arg0) {
             if (g->shown[g->mode] & 0x20) {
                 return;
             }
-            set = ((EngineRec24 ****)PauseMenuSets)[g->mode][6];
+            set = ((PauseRecord ****)PauseMenuSets)[g->mode][6];
             if (set != NULL) {
                 PauseRecSet = set;
                 rec = *set;
@@ -1409,7 +1409,7 @@ void StartWinSequence(s32 arg0) {
         if (g->shown[g->mode] & 0x40) {
             return;
         }
-        set = ((EngineRec24 ****)PauseMenuSets)[g->mode][4];
+        set = ((PauseRecord ****)PauseMenuSets)[g->mode][4];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
@@ -1427,7 +1427,7 @@ void StartWinSequence(s32 arg0) {
         if (g2->shown[g2->mode] & 0x10) {
             return;
         }
-        set = ((EngineRec24 ****)PauseMenuSets)[g2->mode][0];
+        set = ((PauseRecord ****)PauseMenuSets)[g2->mode][0];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
@@ -1643,7 +1643,7 @@ void SetPauseY(s32 arg0) {
 }
 
 s16 PauseRecValue(void) {
-    EngineRec24 *p = PauseRec;
+    PauseRecord *p = PauseRec;
 
     if (p != NULL) {
         do {
@@ -1661,7 +1661,7 @@ s16 PauseRecValue(void) {
 }
 
 void PauseRecPrev(void) {
-    EngineRec24 *rec;
+    PauseRecord *rec;
     s32 n;
 
     if (PauseRecSet != NULL) {
@@ -1677,7 +1677,7 @@ void PauseRecPrev(void) {
 }
 
 s32 PauseRecNext(void) {
-    EngineRec24 *rec;
+    PauseRecord *rec;
 
     if (PauseRecSet != NULL) {
         rec = PauseRecSet[PauseRecIndex + 1];
@@ -1694,11 +1694,11 @@ s32 PauseRecNext(void) {
 }
 
 void SetPauseRecs(s32 arg0, s32 kind, s32 flag) {
-    EngineRec24 ***t;
-    EngineRec24 **set;
-    EngineRec24 *rec;
+    PauseRecord ***t;
+    PauseRecord **set;
+    PauseRecord *rec;
 
-    t = ((EngineRec24 ****)PauseMenuSets)[GameMode];
+    t = ((PauseRecord ****)PauseMenuSets)[GameMode];
     if (flag != 0) {
         switch (kind) {
         case 3:
@@ -1915,8 +1915,8 @@ s32 PauseMenuPanelUnused[2] = { 0x40004, 0x10008021 };
 u16 StatsPageWanted = 0;
 s32 ElapsedStart = 0;
 s32 WinCounterSize = 0;
-EngineRec24 *PauseRec = 0;
-EngineRec24 **PauseRecSet = 0;
+PauseRecord *PauseRec = 0;
+PauseRecord **PauseRecSet = 0;
 s32 PauseRecIndex = 0;
 s16 PauseMenuY = 0;
 u16 PauseToggles[4] = {0};

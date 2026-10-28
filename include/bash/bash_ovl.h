@@ -385,7 +385,7 @@ static inline u8 *BashSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
     col = (x >> 8) + 10;
     row = 9 - (z >> 8);
     do {
-        if (ArenaGrid[row * 20 + col].unk0 != 0) {
+        if (ArenaGrid[row * 20 + col].flags != 0) {
             col = (x >> 8) + 10;
             row = 9 - (z >> 8);
             col += d * dx;

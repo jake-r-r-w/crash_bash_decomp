@@ -21,11 +21,12 @@ typedef struct {
 /* Hero engine scale tables, 12 steps (HeroSpin). */
 extern u16 HeroSquashCycle[];
 extern u16 HeroSpinScale[];
+/* A victory sequence (HeroHooks.VictorySeqs, by hero): the animation's name, its sequence. */
 typedef struct {
-    s32 a;
-    u16 b;
+    s32 name;
+    u16 seq;
     u16 pad;
-} D_8009D6FC_t;
+} VictorySeq;
 /* Per-hero run speed rows: 3 u16 per hero_name (DefPreMoveHero). */
 extern s16 HeroAnimHeroA;
 extern u16 HeroAnimSeqA;
@@ -235,8 +236,8 @@ typedef struct {
     s16 unk8;
     s16 unkA;
     s16 unkC;
-} D_8009E0E8_t;
-extern D_8009E0E8_t AngelSparkles[3][4];
+} AngelSparkle;
+extern AngelSparkle AngelSparkles[3][4];
 
 void UpdateWinCounter(s32 arg0);
 

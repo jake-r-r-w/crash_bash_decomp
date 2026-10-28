@@ -546,7 +546,7 @@ void PapuCrateMaster(void) {
         a1 >>= 8;
         a1 += 10;
         y = 9 - (p->y >> 8);
-        if (ArenaGrid[y * 20 + a1].unk0 < 16) {
+        if (ArenaGrid[y * 20 + a1].flags < 16) {
             CreateNAS(p->x, -0x800, p->y, 0x20C, 0x11);
             PapuPickupActive -= 1;
             PapuPickupDelay = Random(4) + 2;
@@ -624,7 +624,7 @@ PapuMsg *PapuFindDropPoint(u16 *arg0) {
     x = (cell->x >> 8) + 10;
     z = 9 - (cell->y >> 8);
     do {
-        while (ArenaGrid[z * 20 + x].unk0 != 0) {
+        while (ArenaGrid[z * 20 + x].flags != 0) {
             if (i == *arg0) {
                 return NULL;
             }
@@ -651,26 +651,26 @@ PapuMsg *PapuFindDropPoint(u16 *arg0) {
         if (z < 19) {
             zhi = z + 1;
         }
-        n = ArenaGrid[zlo * 20 + xlo].unk0 != 0;
-        if (ArenaGrid[zlo * 20 + x].unk0 != 0) {
+        n = ArenaGrid[zlo * 20 + xlo].flags != 0;
+        if (ArenaGrid[zlo * 20 + x].flags != 0) {
             n++;
         }
-        if (ArenaGrid[zlo * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[zlo * 20 + xhi].flags != 0) {
             n++;
         }
-        if (ArenaGrid[z * 20 + xlo].unk0 != 0) {
+        if (ArenaGrid[z * 20 + xlo].flags != 0) {
             n++;
         }
-        if (ArenaGrid[z * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[z * 20 + xhi].flags != 0) {
             n++;
         }
-        if (ArenaGrid[zhi * 20 + xlo].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + xlo].flags != 0) {
             n++;
         }
-        if (ArenaGrid[zhi * 20 + x].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + x].flags != 0) {
             n++;
         }
-        if (ArenaGrid[zhi * 20 + xhi].unk0 != 0) {
+        if (ArenaGrid[zhi * 20 + xhi].flags != 0) {
             n++;
         }
         if (n == 0) {
@@ -2461,7 +2461,7 @@ void PapuMarkHoles(void) {
     for (j = 2; j < 18; j++) {
         for (i = 2; i < 18; i++) {
             if (PapuTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
-                ArenaGrid[i * 20 + j].unk0 = 0xFF;
+                ArenaGrid[i * 20 + j].flags = 0xFF;
             }
         }
     }
@@ -2658,7 +2658,7 @@ void PapuCountObjects(void) {
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
             if (z < 0) z = 0;
-            ArenaGrid[z * 20 + x].unk0 = t;
+            ArenaGrid[z * 20 + x].flags = t;
             if ((u16)(f->type - 1) < 12) {
                 CrateCounts[0]++;
                 CrateCounts[f->type]++;
@@ -2677,7 +2677,7 @@ void PapuCountObjects(void) {
             if (x < 0) x = 0;
             if (z >= 20) z = 19;
             if (z < 0) z = 0;
-            ArenaGrid[z * 20 + x].unk0 = c;
+            ArenaGrid[z * 20 + x].flags = c;
         }
         }
         n = n->Object.Child;
@@ -2739,7 +2739,7 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 if (x < 0) x = 0;
                 if (z >= 20) z = 19;
                 if (z < 0) z = 0;
-                ArenaGrid[z * 20 + x].unk0 = t;
+                ArenaGrid[z * 20 + x].flags = t;
             }
         }
         if (nas->Failure != 0) {
@@ -2819,7 +2819,7 @@ void InitPACrate(NAS *arg0) {
             if (z < 0) {
                 z = 0;
             }
-            ArenaGrid[z * 20 + x].unk0 = obj->unk14;
+            ArenaGrid[z * 20 + x].flags = obj->unk14;
             AddMotion(arg0);
             LinkObject(arg0);
             AddSolid(arg0, 0x300);

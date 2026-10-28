@@ -173,11 +173,11 @@ void QueueHeroModels(void) {
     arg = LevelRecs[a->unk8].unk4;
     {
         s32 n = LangPanelModels[a->unk2C];
-        u8 *b = (u8 *)HeroModelBank;
-        Blk38 *t = &((Blk38 *)b)[n];
-        ((Blk38 *)b)[28].head.w0 = t->head.w0;
-        base = b;
-        ((Blk38 *)base)[28].head.w4 = t->head.w4;
+        obj_dbase *b = HeroModelBank;
+        obj_dbase *t = &b[n];
+        b[DB_Interface].file = t->file;  /* the language's panel models */
+        base = (u8 *)b;
+        ((obj_dbase *)base)[DB_Interface].textureFile = t->textureFile;
     }
     g = a;
     tbl = &HeroHooks;
@@ -238,10 +238,10 @@ void load_initial_dbases(void)
   arg = *((s32 *) (((u8 *) (&((EngineRec32 *) tg)[idx])) + 4));
   t = (u8 *)HeroModelBank;
   h = &HeroHooks;
-  src = (s32 *) (&((Blk38 *) t)[new_var[g->unk2C]]);
-  ((Blk38 *) t)[28].head.w0 = src[0];
+  src = (s32 *) (&((obj_dbase *) t)[new_var[g->unk2C]]);
+  ((obj_dbase *) t)[DB_Interface].file = src[0];
   b = t;
-  ((Blk38 *) b)[28].head.w4 = src[1];
+  ((obj_dbase *) b)[DB_Interface].textureFile = src[1];
   do
   {
     k = ((u8 *) g)[i + 0x50];

@@ -100,15 +100,15 @@ extern s32 LangThereAreNoMoreUnlockedLevels[];
 s32 CountSavedWins(s32 arg0);
 
 /* Inlined copies used by CountSavedWins. */
-static inline s32 EngineTable_AllDone(EngineTable12 *t) {
-    EngineEntry16Head *p;
+static inline s32 EngineTable_AllDone(CupDef *t) {
+    CupRound *p;
     s32 n;
     s32 i;
 
-    n = t->unk8;
-    p = t->unk4;
+    n = t->roundCount;
+    p = t->rounds;
     for (i = 0; i < n; i++, p++) {
-        if (!LevelUnlockedIn(p->unk4, GameInfo)) {
+        if (!LevelUnlockedIn(p->mode, GameInfo)) {
             return 0;
         }
     }
@@ -152,8 +152,8 @@ done:
 static inline void EngineTable_MarkDone(void *arg0) {
     s32 i;
 
-    for (i = 0; i < ((EngineTable12 *)arg0)->unk8; i++) {
-        GameInfo[((EngineTable12 *)arg0)->unk4[i].unk4 + 0xE4] = 1;
+    for (i = 0; i < ((CupDef *)arg0)->roundCount; i++) {
+        GameInfo[((CupDef *)arg0)->rounds[i].mode + 0xE4] = 1;
     }
 }
 
@@ -197,9 +197,9 @@ static inline void EngineWorldPrev(void) {
 
 /* CupUnlocked's body, inlined by UpdateCupMenu. */
 static inline s32 EngineTable_Unlocked(s32 arg0) {
-    EngineTable12 *base = CupTable;
-    EngineTable12 *t;
-    EngineEntry16Head *p;
+    CupDef *base = CupTable;
+    CupDef *t;
+    CupRound *p;
     s32 n;
     s32 i;
 
@@ -210,10 +210,10 @@ static inline s32 EngineTable_Unlocked(s32 arg0) {
     if (t->unk0 == 2) {
         return 0;
     }
-    n = t->unk8;
-    p = t->unk4;
+    n = t->roundCount;
+    p = t->rounds;
     for (i = 0; i < n; i++, p++) {
-        if (!LevelUnlockedIn(p->unk4, GameInfo)) {
+        if (!LevelUnlockedIn(p->mode, GameInfo)) {
             return 0;
         }
     }
@@ -223,10 +223,10 @@ static inline s32 EngineTable_Unlocked(s32 arg0) {
 /* CupCurrentModeType's body, inlined by UpdateCupMenu. */
 static inline s32 EngineCurWorldName(void) {
     u16 *wt = ModeTypes;
-    EngineTable12 *tab = CupTable;
+    CupDef *tab = CupTable;
     u8 *g = GameInfo;
-    EngineEntry16Head *e = tab[g[0x28]].unk4;
-    s32 idx = e[g[0x29]].unk4;
+    CupRound *e = tab[g[0x28]].rounds;
+    s32 idx = e[g[0x29]].mode;
     s32 **tbl;
     s32 w = wt[idx * 3] - 0x101;
     s32 *t;
@@ -492,7 +492,7 @@ s32 GameExtra105(u8 *arg0);
 
 void QuitProcess(void);
 
-void AwardCupTrophies(EngineTable12 *cup);
+void AwardCupTrophies(CupDef *cup);
 
 s32 GatewayMode(void);
 
@@ -534,7 +534,7 @@ void UpdateCardMessage(void);
 
 void RenderCupMenu(void);
 
-s32 CountCupTrophies(EngineTable12 *cup);
+s32 CountCupTrophies(CupDef *cup);
 
 s32 WarpRoomBestLevel(void);
 

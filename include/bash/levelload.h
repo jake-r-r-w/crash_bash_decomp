@@ -10,7 +10,6 @@
 
 extern u16 LoadingEntities[];
 
-/* 0x38-byte records at HeroModelBank (load_initial_dbases). */
 /* GameInfo as seen by load_initial_dbases. */
 typedef struct View939FC {
     /* 0x00 */ u8 pad0[8];
@@ -21,14 +20,6 @@ typedef struct View939FC {
     /* 0x50 */ u8 unk50[4];
 } View939FC;
 
-typedef struct Blk8 {
-    s32 w0;
-    s32 w4;
-} Blk8;
-typedef struct Blk38 {
-    Blk8 head;
-    u8 pad8[0x30];
-} Blk38;
 
 typedef struct Tmpl1C {
     s32 f0;

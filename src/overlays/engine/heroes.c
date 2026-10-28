@@ -981,7 +981,7 @@ void ClearHeroAnimSlots(void) {
 
 static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, volatile s32 *p, volatile s32 *p2, s32 hero, u16 n) {
     subengine *s;
-    volatile D_8009D6FC_t *t;
+    volatile VictorySeq *t;
     s32 q;
     s32 v;
 
@@ -994,11 +994,11 @@ static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, 
     } while (0);
     q = *p2;
     *id = hero;
-    t = (volatile D_8009D6FC_t *)(n * sizeof(D_8009D6FC_t) + (u32)*(D_8009D6FC_t * volatile *)&HeroHooks.VictorySeqs);
-    v = ((D_8009D6FC_t *)t)->a;
+    t = (volatile VictorySeq *)(n * sizeof(VictorySeq) + (u32)*(VictorySeq * volatile *)&HeroHooks.VictorySeqs);
+    v = ((VictorySeq *)t)->name;
     *a = v;
-    *seq = t->b;
-    dbase_mesh_anim_name_load((u8 *)q, (u8 *)((D_8009D6FC_t *)t)->a);
+    *seq = t->seq;
+    dbase_mesh_anim_name_load((u8 *)q, (u8 *)((VictorySeq *)t)->name);
 }
 
 void RequestHeroAnim(s32 arg0, u16 arg1) {
@@ -1647,15 +1647,15 @@ void MarkHeroesOnGrid(void) {
                 if (zhi < 19) {
                     zhi++;
                 }
-                ArenaGrid[z * 20 + x].unk0 |= flag;
-                ArenaGrid[zlo * 20 + x].unk0 |= flag;
-                ArenaGrid[zhi * 20 + x].unk0 |= flag;
-                ArenaGrid[z * 20 + xlo].unk0 |= flag;
-                ArenaGrid[zlo * 20 + xlo].unk0 |= flag;
-                ArenaGrid[zhi * 20 + xlo].unk0 |= flag;
-                ArenaGrid[z * 20 + xhi].unk0 |= flag;
-                ArenaGrid[zlo * 20 + xhi].unk0 |= flag;
-                ArenaGrid[zhi * 20 + xhi].unk0 |= flag;
+                ArenaGrid[z * 20 + x].flags |= flag;
+                ArenaGrid[zlo * 20 + x].flags |= flag;
+                ArenaGrid[zhi * 20 + x].flags |= flag;
+                ArenaGrid[z * 20 + xlo].flags |= flag;
+                ArenaGrid[zlo * 20 + xlo].flags |= flag;
+                ArenaGrid[zhi * 20 + xlo].flags |= flag;
+                ArenaGrid[z * 20 + xhi].flags |= flag;
+                ArenaGrid[zlo * 20 + xhi].flags |= flag;
+                ArenaGrid[zhi * 20 + xhi].flags |= flag;
             }
         }
     }
@@ -1681,21 +1681,21 @@ inner:
 
 void ArenaGridClear(void) {
     s32 i = 399;
-    D_8009D90C_t *p = ArenaGrid;
+    ArenaCell *p = ArenaGrid;
 
     for (p += 399; i >= 0; i--) {
-        p->unk0 = 0;
+        p->flags = 0;
         p--;
     }
 }
 
 void ArenaGridReset(void) {
     s32 i;
-    D_8009D90C_t *p;
+    ArenaCell *p;
 
     for (i = 0, p = ArenaGrid; i < 400; i++) {
         p->unk1 = 0;
-        p->unk0 = 0;
+        p->flags = 0;
         p++;
     }
 }
@@ -4486,7 +4486,7 @@ void Init_HealthPU(NAS *nas) {
             if (z < 0) {
                 z = 0;
             }
-            ArenaGrid[z * 20 + x].unk0 = 0x11;
+            ArenaGrid[z * 20 + x].flags = 0x11;
         }
     }
     if (nas->Failure != 0) {
@@ -6188,7 +6188,7 @@ void *AiSkillTable = 0;
 void *AiTeamSkillTable = 0;
 void *AiHumanRoundTweakTable = 0;
 s32 HeroesAllOut = 0;
-D_8009D90C_t ArenaGrid[400] = {0};
+ArenaCell ArenaGrid[400] = {0};
 u16 HeroIdleSfx[6] = { 0x456, 0x457, 0x458, 0x459, 0x45A, 0x45B };
 u16 HeroSquashCycle[12] = { 0xE66, 0xEFF, 0xF99, 0x1032, 0x10CC, 0x1165, 0x1200, 0x1165, 0x10CC, 0x1032, 0xF99, 0xEFF };
 u16 HeroSpinScale[12] = { 0x1000, 0xF66, 0xECC, 0xE33, 0xD99, 0xD00, 0xC66, 0xD00, 0xD99, 0xE33, 0xECC, 0xF66 };
@@ -6285,7 +6285,7 @@ s16 HeroActThrow = 0;
 s16 HeroActDead = 0;
 s16 HeroActWinner = 0;
 s16 HeroActLoser = 0;
-D_8009E0E8_t AngelSparkles[3][4] = {0};
+AngelSparkle AngelSparkles[3][4] = {0};
 s16 AngelUnused[2] = {0};
 s32 ScriptFxOn = 1;
 s32 SmokePoofScript[17] = {
