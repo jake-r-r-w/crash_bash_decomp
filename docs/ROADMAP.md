@@ -421,9 +421,9 @@ load extract and are documented.
   and `TexImage`. Model files: the code reads them through `ModelFile` (every header section
   named, the maps through the prototype's `map_list`/`map_map`), `MeshHeader`, `MeshVerts`,
   `ModelEntity`, `FileEntry` and `MeshAnimFrame` (2026-10-28; the exe's raw-offset functions 97 to
-  69). Next: mdl.py decodes the sections it keeps as bytes (the maps' paths, triggers and
-  placements, the map directory, the scripts), then the script tracks, the mode text's data and
-  the card image.
+  69); mdl.py writes the level data to map.json (`mapdata.py`: paths, triggers and placements,
+  editable; the map directory and scripts listed). Next: the maps' collision (contour grids, cell
+  lists), the scripts' threads, the mode text's data and the card image.
 - [x] `main.exe`'s rodata as C: its six INCLUDE_RODATA blocks (`data2c.py main
   --strings-only`, 2026-10-26); no INCLUDE_RODATA is left in `src/`.
 - [x] `main.exe`'s data and bss as C (2026-10-28): the game's .data cut by file in link

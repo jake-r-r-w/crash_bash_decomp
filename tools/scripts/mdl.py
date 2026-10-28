@@ -18,11 +18,15 @@ normals, and the strips' faces with texture coordinates and materials from the t
 before the model in the DAT), and model.glb (gltf.py: the same with the animations). pack writes
 the OBJ's vertex positions and normals into model.bin: move vertices, but keep each mesh's count
 and order (Blender: import with Split > Keep Vert Order). UVs, materials and animations are for
-viewing; pack ignores them.
+viewing; pack ignores them. map.json (mapdata.py) holds the level data: the maps' paths,
+triggers and placements, which pack writes back, and the map directory and scripts, for viewing.
 """
+import json
 import os
 import struct
 import sys
+
+import mapdata
 
 COUNT_AT = 0x54
 HEAD = 0x34
@@ -30,6 +34,7 @@ OBJ = "model.obj"
 MTL = "model.mtl"
 GLB = "model.glb"                      # gltf.py: meshes, textures, animations (view only)
 RAW = "model.bin"
+MAP = "map.json"                       # mapdata.py: maps, map directory, scripts
 
 
 class Bad(Exception):
@@ -185,6 +190,11 @@ def unpack(src, dest):
     os.makedirs(dest, exist_ok=True)
     with open(os.path.join(dest, RAW), "wb") as f:
         f.write(d)
+    level = mapdata.read(d)
+    if level:
+        with open(os.path.join(dest, MAP), "w") as f:
+            json.dump(level, f, indent=1)
+            f.write("\n")
     tx = textures(dest) if ms else None
     lines = [f"# {os.path.basename(src)}: {len(ms)} meshes; keep each one's vertex count and order"]
     if tx:
@@ -288,6 +298,9 @@ def pack(src):
                 if not all(-32768 <= v <= 32767 for v in (x, -y, -z)):
                     raise Bad(f"{OBJ} mesh_{m:02d} vertex {i} is out of range (16-bit)")
                 struct.pack_into("<hhh", d, at + 8 * i, x, -y, -z)
+    mp = os.path.join(src, MAP)
+    if os.path.exists(mp):
+        mapdata.write(d, json.load(open(mp)))
     return bytes(d)
 
 
