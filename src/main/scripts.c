@@ -41,7 +41,7 @@ void init_scripts(s32 arg0, s32 arg1) {
 
 
 void update_model_thread(script_thread_handler *th, script_control_info *ci) {
-    u8 *p;
+    ModelFile *p;
     u8 *r;
     script_thread *res;
     s32 *q;
@@ -69,7 +69,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
     if (p == NULL) {
         r = NULL;
     } else {
-        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
         r = (u8 *)q + *q;
     }
     if (r == NULL) {
@@ -120,7 +120,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
 }
 
 void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
-    u8 *p;
+    ModelFile *p;
     u8 *r;
     script_thread *res;
     s32 *q;
@@ -147,7 +147,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     if (p == NULL) {
         r = NULL;
     } else {
-        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
         r = (u8 *)q + *q;
     }
     if (r == NULL) {
@@ -189,7 +189,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
 void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
     AnimKey *k;
     AnimKey *key;
-    u8 *p;
+    ModelFile *p;
     u8 *r;
     script_thread *res;
     s32 *q;
@@ -216,7 +216,7 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
     if (p == NULL) {
         r = NULL;
     } else {
-        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
         r = (u8 *)q + *q;
     }
     if (r == NULL) {
@@ -269,7 +269,7 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
 }
 
 void update_fade_thread(script_thread_handler *th, script_control_info *ci) {
-    u8 *p;
+    ModelFile *p;
     u8 *r;
     script_thread *res;
     s32 *q;
@@ -289,7 +289,7 @@ void update_fade_thread(script_thread_handler *th, script_control_info *ci) {
     if (p == NULL) {
         r = NULL;
     } else {
-        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
         r = (u8 *)q + *q;
     }
     if (r == NULL) {
@@ -356,7 +356,7 @@ void emit_particle(subengine *obj, EmitPart *part, partdata *def) {
 }
 
 void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
-    u8 *p;
+    ModelFile *p;
     u8 *r;
     script_thread *res;
     s32 *q;
@@ -383,7 +383,7 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
     if (p == NULL) {
         r = NULL;
     } else {
-        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
         r = (u8 *)q + *q;
     }
     if (r == NULL) {
@@ -481,7 +481,7 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
 }
 
 void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
-    u8 *p;
+    ModelFile *p;
     u8 *r;
     script_thread *res;
     s32 *q;
@@ -503,7 +503,7 @@ void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
     if (p == NULL) {
         r = NULL;
     } else {
-        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
         r = (u8 *)q + *q;
     }
     if (r == NULL) {
@@ -540,7 +540,7 @@ void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
 script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4,
                             script_handler **arg5) {
     script_handler *p;
-    u8 *e;
+    ModelFile *e;
     script_header *hdr;
     s32 *t;
     s32 *q;
@@ -574,7 +574,7 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
         e = arg0->data;
         hdr = NULL;
         if (e != NULL) {
-            s32 *r = (s32 *)(e + (*(s32 *)(e + 0x4C) + 0x4C)) + arg1;
+            s32 *r = (s32 *)((u8 *)&e->scripts + e->scripts) + arg1;
             hdr = (script_header *)((u8 *)r + *r);
         }
         p->info.flags = arg4;
@@ -605,7 +605,7 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
 s32 update_script(script_control_info *ci) {
     script_thread_handler *s;
     script_header *a;
-    u8 *c;
+    ModelFile *c;
     void (*fn)(script_thread_handler *, script_control_info *);
     s32 idx;
 
@@ -624,7 +624,7 @@ s32 update_script(script_control_info *ci) {
     if (c == NULL) {
         a = NULL;
     } else {
-        s32 *t = (s32 *)(c + (*(s32 *)(c + 0x4C) + 0x4C) + idx * 4);
+        s32 *t = (s32 *)((u8 *)&c->scripts + c->scripts) + idx;
         a = (script_header *)((u8 *)t + *t);
     }
     if (ci->time.h.frame >= a->end_frame) {
@@ -848,14 +848,14 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
     s32 *q;
     s32 i;
     void (*fn)(u8 *, script_control_info *, s32);
-    u8 *base;
+    ModelFile *base;
 
     p = (script_control_info *)&sub->u6C.dbase;
     base = db->data;
     if (base == NULL) {
         e = NULL;
     } else {
-        s = (s32 *)(base + (*(s32 *)(base + 0x4C) + 0x4C)) + arg1;
+        s = (s32 *)((u8 *)&base->scripts + base->scripts) + arg1;
         e = (script_header *)((u8 *)s + *s);
     }
     p->flags = arg3;
@@ -1008,7 +1008,7 @@ void kill_script_threads(script_control_info *ci) {
 
 void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg3,
                    script_control_info **arg4) {
-    u8 *e;
+    ModelFile *e;
     script_header *hdr;
     s32 *t;
     s32 *q;
@@ -1017,7 +1017,7 @@ void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg
 
     e = arg0->data;
     if (e != NULL) {
-        s32 *p = (s32 *)(e + (*(s32 *)(e + 0x4C) + 0x4C)) + arg1;
+        s32 *p = (s32 *)((u8 *)&e->scripts + e->scripts) + arg1;
         hdr = (script_header *)((u8 *)p + *p);
     } else {
         hdr = NULL;
@@ -1380,7 +1380,7 @@ s32 *find_range(s32 *arg0, s32 arg1, s32 arg2) {
 }
 
 u8 *script_track_at(u8 *arg0, s32 arg1) {
-    u8 *p;
+    ModelFile *p;
     u8 *r;
     script_thread *res;
     s32 *q;
@@ -1394,12 +1394,12 @@ u8 *script_track_at(u8 *arg0, s32 arg1) {
     v = *(s16 *)(arg0 + 0xE);
     ScriptTrackThread = arg1;
     ScriptTrackDbase = e;
-    p = *(u8 **)(e + 0xC);
+    p = ((obj_dbase *)e)->data;
     ScriptTrackIndex = lo;
     if (p == NULL) {
         r = NULL;
     } else {
-        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + lo;
         r = (u8 *)q + *q;
     }
     if (r == NULL) {
@@ -1416,18 +1416,18 @@ u8 *script_track_at(u8 *arg0, s32 arg1) {
 }
 
 u8 *get_script_track(u8 *arg0, s32 arg1, s32 arg2) {
-    u8 *p;
+    ModelFile *p;
     u8 *r;
     s32 *q;
 
     ScriptTrackDbase = arg0;
-    p = *(u8 **)(arg0 + 0xC);
+    p = ((obj_dbase *)arg0)->data;
     ScriptTrackIndex = arg1;
     ScriptTrackThread = arg2;
     if (p == NULL) {
         r = NULL;
     } else {
-        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + arg1 * 4);
+        q = (s32 *)((u8 *)&p->scripts + p->scripts) + arg1;
         r = (u8 *)q + *q;
     }
     if (r == NULL) {
@@ -1441,12 +1441,12 @@ u8 *offset_table_entry(OffsetTable *tbl, s32 i) {
 }
 
 u8 *get_script_header(obj_dbase *db, s32 arg1) {
-    u8 *p;
+    ModelFile *p;
     s32 *e;
 
     p = db->data;
     if (p != NULL) {
-        e = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + arg1 * 4);
+        e = (s32 *)((u8 *)&p->scripts + p->scripts) + arg1;
         return (u8 *)e + *e;
     }
     return NULL;

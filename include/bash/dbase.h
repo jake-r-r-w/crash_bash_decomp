@@ -43,7 +43,7 @@ void dbase_group_textures_loaded(u8 *arg0, u8 *arg1);
 void slotlist_mark(SlotList *arg0);
 void dbase_release(obj_dbase *arg0);
 void dbase_init_all(void);
-u8 *dbase_mesh_anim_find(u8 *arg0, u8 *arg1);
+struct FileEntry *dbase_mesh_anim_find(struct ModelFile *arg0, u8 *arg1);
 u8 *dbase_mesh_anim_name_release(obj_dbase *arg0, u8 *arg1);
 s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1);
 u8 *dbase_mesh_anim_name_load(obj_dbase *arg0, u8 *arg1);

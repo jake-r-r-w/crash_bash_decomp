@@ -338,8 +338,8 @@ found:
     return ((d + 0x7FF) / 0x800) * 0x800;
 }
 
-u8 *dbase_mesh_anim_find(u8 *arg0, u8 *arg1) {
-    u8 *p;
+FileEntry *dbase_mesh_anim_find(ModelFile *arg0, u8 *arg1) {
+    FileEntry *p;
     s32 n;
     s32 key;
 
@@ -347,11 +347,11 @@ u8 *dbase_mesh_anim_find(u8 *arg0, u8 *arg1) {
         return NULL;
     }
     key = string_hash(arg1);
-    p = arg0 + (*(s32 *)(arg0 + 0x44) + 0x44);
-    n = *(s32 *)(arg0 + 0x40);
+    p = (FileEntry *)((u8 *)&arg0->meshAnims + arg0->meshAnims);
+    n = arg0->nMeshAnims;
     n--;
-    for (; n != -1; n--, p += 0x18) {
-        if (*(s32 *)(p + 0x10) == key) {
+    for (; n != -1; n--, p++) {
+        if (p->hash == key) {
             return p;
         }
     }
