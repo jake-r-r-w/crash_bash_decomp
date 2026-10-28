@@ -360,6 +360,10 @@ load extract and are documented.
   those units.
 - [x] The engine's rodata as C: all 59 INCLUDE_RODATA blocks are `const char` arrays where
   they were (2026-10-26), and its 176 strings are named from their text.
+- [ ] The engine's 0x14-byte header as C: it is still a `textbin` blob
+  (`engine_header`), the engine's entry table the exe calls through (`shell_start_engine`'s
+  `D_8004E0DC`): `RestartGame`, `UpdateProcess`, `RenderProcess`, `QuitProcess`, then the end
+  of the slot (`0x800D7144`). As C it needs a data object linked ahead of the engine's .text.
 - [x] The engine's data as C (2026-10-27). `slot_refs.py` named the overlay symbol
   behind all 1086 slot words and `data2c.py engine` wrote the 515 objects, cut by
   file in link order (engine.c, asttable.c with the world records, panel.c from
@@ -374,8 +378,10 @@ load extract and are documented.
   named from their code (the level loop, panel, pause, heroes, game flow, loading,
   camera), the default hero actions from the leaked `HeroMode_nums` (`SetHeroIdle`
   .. `HeroKick`) and the process functions from their `process_info` slots. Every
-  engine function is named (2026-10-28). Left: 773 `D_` names (2254 uses) across the
-  engine and the exe. The most-used are labels inside objects: `GameOptions + 4`
+  engine function is named (2026-10-28). Left: 666 `D_` names (2034 uses) across the
+  engine, the exe and the overlays' references to them, and the functions whose C still does
+  raw byte-offset arithmetic (27 of the engine's 357, 128 of the exe's 575: `progress`'s
+  typed figure). The most-used are labels inside objects: `GameOptions + 4`
   (`D_8005A608`), the arena object counts (`D_8009E46C`, `D_8009E25C`); they need their
   structs typed first. The model bank is typed (2026-10-28): `obj_dbase HeroModelBank[283]`
   with `enum DbaseIds` (ARCHITECTURE.md, The model bank), its 136 labels gone.
