@@ -419,9 +419,9 @@ static inline void EngineBeginMode(s32 arg) {
     s32 mode;
     u16 world;
 
-    GameViewport.r = 0;
-    GameViewport.g = 0;
-    GameViewport.b = 0;
+    GameViewport.bg.r = 0;
+    GameViewport.bg.g = 0;
+    GameViewport.bg.b = 0;
     GameViewport.isbg = 0;
     g->exitFlags &= 0xFDFF;
     UpdateCamera(arg);

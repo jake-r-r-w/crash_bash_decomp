@@ -138,11 +138,11 @@ static inline void GfxSetSceneBg(GfxState *gs, map_enviroment *scene) {
     }
     if (vp->isbg != 0) {
         if (gs->modelDp != 0) {
-            vp->r = scene->map->clear_colour.r * (0x1000 - gs->modelDp) / 4096;
-            vp->g = scene->map->clear_colour.g * (0x1000 - gs->modelDp) / 4096;
-            vp->b = scene->map->clear_colour.b * (0x1000 - gs->modelDp) / 4096;
+            vp->bg.r = scene->map->clear_colour.r * (0x1000 - gs->modelDp) / 4096;
+            vp->bg.g = scene->map->clear_colour.g * (0x1000 - gs->modelDp) / 4096;
+            vp->bg.b = scene->map->clear_colour.b * (0x1000 - gs->modelDp) / 4096;
         } else {
-            *(GfxRgb8 *)&vp->r = *(GfxRgb8 *)&scene->map->clear_colour;
+            vp->bg = scene->map->clear_colour;
         }
     }
 }

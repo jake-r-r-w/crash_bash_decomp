@@ -1177,13 +1177,10 @@ typedef struct {
     s32 otIdx;              /* 0x18: first ot entry in cdb */
     s32 otLen;              /* 0x1C */
     s32 unk20;
-    u8 r, g, b, isbg;       /* 0x24: background */
+    UBYTE_RGB bg;           /* 0x24: background (the map's clear colour) */
+    u8 isbg;                /* 0x27: clear to it (the map's clear) */
 } GfxViewport;
 
-/* GfxViewport's background colour, copied as a block (draw_map_scene). */
-typedef struct {
-    s8 r, g, b;
-} GfxRgb8;
 
 
 

@@ -308,23 +308,6 @@ typedef struct HudBox {
     /* 0x10 */ s32 colour;
     /* 0x14 */ s32 unk14;
 } HudBox;
-/* PanelTab as seen by DrawHudEntries. */
-typedef struct HudEngView {
-    /* 0x000 */ u8 pad0[0x31C];
-    /* 0x31C */ s32 x0;
-    /* 0x320 */ s32 y0;
-    /* 0x324 */ u8 pad324[0x32A - 0x324];
-    /* 0x32A */ u16 rot0;
-    /* 0x32C */ u8 pad32C[0x36A - 0x32C];
-    /* 0x36A */ s16 on0;
-    /* 0x36C */ u8 pad36C[0x3B8 - 0x36C];
-    /* 0x3B8 */ s32 x1;
-    /* 0x3BC */ s32 y1;
-    /* 0x3C0 */ u8 pad3C0[0x3C6 - 0x3C0];
-    /* 0x3C6 */ u16 rot1;
-    /* 0x3C8 */ u8 pad3C8[0x406 - 0x3C8];
-    /* 0x406 */ s16 on1;
-} HudEngView;
 extern s32 HeroesInPlay;
 #define HPADS ((PadButtons *)Pads)
 extern s32 HeroesSidelined;
@@ -332,7 +315,6 @@ extern u16 FinalHeroesTempo;
 extern u16 HeroLastHarm[4];
 extern u16 LevelKindKeys[];
 #define HUDBOX (&PauseMenuPanel)
-#define HUDENG ((HudEngView *)PanelTab)
 extern s32 PauseTextHold;
 extern s16 LangHudRows[][8];
 void DrawSpriteTriple();

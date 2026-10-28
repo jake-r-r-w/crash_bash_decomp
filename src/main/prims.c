@@ -906,9 +906,9 @@ void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam) {
     env->dfe = 1;
     env->dtd = 0;
     env->isbg = vp->isbg;
-    env->r0 = vp->r;
-    env->g0 = vp->g;
-    env->b0 = vp->b;
+    env->r0 = vp->bg.r;
+    env->g0 = vp->bg.g;
+    env->b0 = vp->bg.b;
     env->ofs[0] = disp->x;
     env->ofs[1] = disp->y;
     dr = (*(DR_ENV **)(cdb + 0x4008))++;

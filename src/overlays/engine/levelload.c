@@ -380,9 +380,9 @@ void UpdateLevelLoad(void) {
         LevelLoadStage = 4;
         break;
     case 4:
-        ((EngColor *)&GameViewport)->code = MapScene->map->clear;
+        GameViewport.isbg = MapScene->map->clear;
         c = MapScene->map;
-        ((EngColor *)&GameViewport)->rgb = *(EngRgb *)&c->clear_colour;
+        GameViewport.bg = c->clear_colour;
         ClearLevelNas();
         InitialiseEngine();
         LevelLoadStage = 7;

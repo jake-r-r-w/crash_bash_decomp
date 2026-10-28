@@ -216,14 +216,6 @@ extern Blk32 SceneScriptRot;
 extern CamVec3 SceneScriptPos;
 extern script_handler *SceneScript;
 
-typedef struct EngRgb {
-    u8 r, g, b;
-} EngRgb;
-typedef struct EngColor {
-    /* 0x00 */ u8 pad0[0x24];
-    /* 0x24 */ EngRgb rgb;
-    /* 0x27 */ u8 code;
-} EngColor;
 extern process_info LoadingProcess;
 extern process_info LoadingProcess2;
 extern process_info RetryProcess;

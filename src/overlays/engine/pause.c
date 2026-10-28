@@ -642,7 +642,7 @@ found:
 void DrawHudEntries(HudEntry *e, s32 arg1) {
     s32 n;
     GameState *g;
-    HudEngView *eng;
+    EXTengine *eng;
     s16 *row;
     s16 *row2;
     s32 i;
@@ -692,17 +692,17 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             if (g->pause & 0x40) {
                 row = LangHudRows[g->language];
                 i = arg1 + e->y;
-                HUDENG->x0 = row[0] + 0x140;
-                HUDENG->y0 = i + row[1];
-                HUDENG->x1 = row[2] + 0x140;
-                HUDENG->y1 = i + row[3];
+                PanelTab[5].unk10.x = row[0] + 0x140;
+                PanelTab[5].unk10.y = i + row[1];
+                PanelTab[6].unk10.x = row[2] + 0x140;
+                PanelTab[6].unk10.y = i + row[3];
             } else {
                 row2 = LangHudRows[g->language];
                 i = arg1 + e->y;
-                HUDENG->x0 = row2[4] + 0x140;
-                HUDENG->y0 = i + row2[5];
-                HUDENG->x1 = row2[6] + 0x140;
-                HUDENG->y1 = i + row2[7];
+                PanelTab[5].unk10.x = row2[4] + 0x140;
+                PanelTab[5].unk10.y = i + row2[5];
+                PanelTab[6].unk10.x = row2[6] + 0x140;
+                PanelTab[6].unk10.y = i + row2[7];
             }
             sfx = 0;
             if (g->levelFlags & 0x10) {
@@ -797,11 +797,11 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
     if (PauseTextHold != 0) {
         PauseTextHold--;
     }
-    eng = (HudEngView *)PanelTab;
-    eng->on0 = 1;
-    eng->on1 = 1;
-    eng->rot0 += 0x40;
-    eng->rot1 += 0x40;
+    eng = PanelTab;
+    eng[5].unk5E = 1;
+    eng[6].unk5E = 1;
+    eng[5].unk1E += 0x40;
+    eng[6].unk1E += 0x40;
 }
 
 void DrawPauseMenu(void) {
