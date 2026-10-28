@@ -9,11 +9,9 @@
 #include "bash/nas.h"
 #include "bash/pogo.h" /* PogoPlayer, PogoPlay */
 
-void UpdatePOGO(void);
 s32 HeroNoJump(s32 arg0);
 extern u16 PogoHeroModels[];
 extern u8 PogoHookTableC[];
-void PogoInit_AIQuality();
 
 /* The engine callback table (EngineHooks in bash/engine.h). */
 typedef struct PogoHooks {
@@ -94,7 +92,6 @@ typedef struct PogoObj {
 extern PogoObj *PogoKerbObj;
 extern HeroInfo Heroes[4];
 
-void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 extern s32 PogoBounceCount[];
 extern s16 PogoBounceHeights[];
 extern s32 PogoHeroHeights[];
@@ -123,7 +120,6 @@ static inline void Pogo_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
         }
     }
 }
-void Pickup_Lose(s32);
 /* Drops hero i's pickup and sets its slot state (Pickup_Claim). */
 #define Pogo_PickupSet(i, state) \
     {                             \
@@ -142,7 +138,6 @@ static inline void Pogo_PowerupAnim(s32 i, s32 anim) {
         sub->entity = anim;
     }
 }
-void ZapInDir(s32, s32, s32, s32, s32);
 /* ZapArrow, inlined into Pickup_Claim. */
 static inline void Pogo_ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     NAS *nas = (NAS *)PogoGrid[arg0][arg1].hero;
@@ -197,7 +192,6 @@ extern s32 PadlockFlags[];
 static inline s32 Pogo_PadlockMoves(s32 level) {
     return PadlockFlags[level];
 }
-bool SquareIsFreeForMushroom(s32 arg0, s32 arg1);
 /* FindFreeSquare (the same C), inlined into FindFreeSquareForMushroom and
  * Plot_PogoPadlock: up to 10 random tries for a free square. */
 static inline bool Pogo_FindFreeSquare(s32 *px, s32 *pz) {
@@ -281,13 +275,6 @@ extern PogoMove PogoAIPlay[];
 extern PogoOffset EncloseStepsOdd[];
 extern PogoOffset EncloseStepsEven[];
 extern s32 DirPadBits[]; /* pad flags by direction octant */
-s32 PogoAI_CountMyTiles(u32 arg0);
-
-
-
-
-
-void HeroPogoTazingCancel(u32 arg0);
 
 
 
@@ -296,7 +283,11 @@ void HeroPogoTazingCancel(u32 arg0);
 
 
 
-s32 PogoAI_CountMyTiles(u32 arg0);
+
+
+
+
+
 
 
 
@@ -341,7 +332,6 @@ typedef enum PogoMode {
     POGO_MODE_12 = 12
 } PogoMode;
 s32 ProcessHeroAnim();
-void InitPogo_Tiles(void);
 
 
 
@@ -350,8 +340,6 @@ void InitPogo_Tiles(void);
 
 
 
-void PogoWinner_Relic(s32 arg0, u16 arg1);
-void PogoWinner_Normal(s32 arg0, u16 arg1);
 
 
 
@@ -500,15 +488,6 @@ void InitSharedScoreIcons(void);
 extern s32 PanelCtrl;
 
 
-void PogoInit_RelicChallenge(void);
-
-void PogoQuality_Init(void);
-
-
-
-
-
-void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 
 
 
@@ -517,17 +496,20 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 
 
 
-void Fire_Rocket(s32 arg0, s32 arg1);
 
 
 
 
 
-bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags);
 
 
 
-bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags);
+
+
+
+
+
+
 
 /* HeroPogoDazed: a status bit sends the hero to an action and seq. */
 static inline s32 Pogo_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
@@ -543,9 +525,7 @@ static inline s32 Pogo_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
     return 0;
 }
 
-void HeroPogo(u32 arg0);
 
-void HeroPogoDazed(u32 arg0);
 
 
 extern s32 TileStepFrames[];

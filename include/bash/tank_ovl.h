@@ -49,7 +49,6 @@ extern s32 MoeState;
 extern s32 JoeState;
 extern s16 TankJoeTeammate;
 extern s16 TankMoeTeammate;
-extern s32 TankBossStatus;
 extern u16 TankHeroModels[];
 extern s32 TankVictorySeqs[];   /* {name, 0x5C} pairs: four "WIN" entries */
 extern u16 TankDesertAiBotTweak[];
@@ -58,8 +57,6 @@ extern u16 TankDesertAiHumanRoundTweak[];
 extern u16 TankDesertAiSkillAlt[];
 extern u16 TankDesertAiSkill[];
 extern u16 TankDesertAiTeamSkill[];
-void TA_InitHero(u32 player);
-void TA_MoveHero(u32 player);
 void TA_PreInitLevel(void);
 void TA_InitLevel(void);
 void TA_UpdateLevel(void);
@@ -147,7 +144,6 @@ static inline s32 TankTurretSees(s32 i, s32 state, s32 x, s32 z, s32 ang) {
     return 1;
 }
 
-extern TankPoint TankBossTargets[];
 typedef struct {
     u16 v, pad;
 } TankU16Pad;
@@ -155,7 +151,6 @@ extern TankU16Pad PillarCoverFrames[];
 extern u16 CrashTurretFrames[]; /* crash turret anim frames (flags == 0) */
 extern u16 CrashTurretFramesAlt[]; /* crash turret anim frames (flags != 0) */
 typedef void (*TankTurretFireFn)(EXTengine *eng, s32 a, s32 b);
-extern s32 TankLevelOver;
 extern s32 TankTurnSfx[];
 extern s32 TankRecoilSfx[][4];
 /* TankBotPlanSteerMove's fallback roam points: {x, z}. */
@@ -164,7 +159,6 @@ extern TankU16Pad HelicopterFrames[];    /* PlotHelicopterTA's rotor frames, by 
 /* PlotPillarControl's waves: delay, then {x, z, angle} until x < 0. */
 extern s32 *PillarWaves[];
 extern s32 PillarWave;      /* next wave */
-extern s32 TankBossSightedHero;
 extern NAS *TankObjects[8];    /* objects AddTankObject adds and RemoveTankObject removes; FindTankObjectNear tests their distance */
 extern NAS *TankMines[8];
 
@@ -202,7 +196,6 @@ void TankHeroTurnClockwise(s32 player, TA_player *ta, s32 dir);
 void TankHeroTurnAnticlockwise(s32 player, TA_player *ta, s32 dir);
 
 
-void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX);
 
 void DamageTankHeroesNear(s32 x, s32 z, s32 range, s32 arg3);
 
@@ -327,7 +320,6 @@ void KillPickupTA(NAS *nas);
 void KillTankMainWeaponNas(NAS *nas, s32 player);
 
 
-void SetTurretSFX(s32 player, EXTengine *unused, s32 ReqdSFX);
 
 s32 CheckTankHeroWon(s32 arg0);
 

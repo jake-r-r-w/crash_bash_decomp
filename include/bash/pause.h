@@ -59,10 +59,6 @@ void RenderPause(void);
 void StartWinSequence(s32 arg0);
 
 
-extern s16 HeroAnimHeroA;
-extern u16 HeroAnimSeqA;
-extern s16 HeroAnimHeroB;
-extern u16 HeroAnimSeqB;
 
 
 
@@ -97,7 +93,6 @@ s16 PauseRecValue(void);
 
 void SetDefaultHeroHooks(void);
 
-void RenderPause(void);
 
 
 s32 PauseExitPressed(void);
@@ -331,8 +326,6 @@ void UpdatePauseSlide(s32 arg0);
 
 
 /* InitialiseHeroes: hero setup. */
-extern s32 HeroesInPlay;
-extern s32 HeroesSidelined;
 extern u16 HeroEntities[];
 
 

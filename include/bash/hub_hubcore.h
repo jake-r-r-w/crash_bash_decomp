@@ -17,7 +17,6 @@ typedef struct HubSpawnExt {
 extern s32 PodiumTies;
 extern u8 *PodiumAnimName;
 extern u8 PodiumSpawns[];
-void HubDrawObj();
 
 typedef struct HubPt {
     /* 0x0 */ u16 x;

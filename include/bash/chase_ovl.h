@@ -205,10 +205,8 @@ extern ChaseSpawnOfs ChaseSpawnOffsets[];
 
 extern NAS *ChasePickup[];
 extern NAS *ChaseBarrels[8];
-extern NAS *ChaseBarrels[];
 extern s32 ChaseBarrelCount;
 NAS *ChaseFindPickupNear(s32 x, s32 z, s32 range);
-extern s32 ChaseGrid[];
 extern s32 ChaseRoundOver;
 extern s32 ChaseArenaRadius;
 extern s32 ChaseArenaShrink;

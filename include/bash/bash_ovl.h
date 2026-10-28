@@ -27,7 +27,6 @@ extern u8 GameInfo[];
 extern s32 World_floor_level;
 
 extern HeroInfo Heroes[4];
-extern u8 GameInfo[];
 
 #define OVLG ((GameState *)GameInfo)
 
@@ -43,7 +42,6 @@ static inline s32 BashASTIndex(s32 id) {
     return 0;
 }
 
-extern HeroInfo Heroes[4];
 
 /* The AI state BashAI_CheckShot writes its chosen target into. */
 typedef struct {
@@ -171,7 +169,6 @@ void DoAmbience(void);
 void MarkHeroesOnGrid(void);
 void ArenaGridClear(void);
 void BashSpaceTileEdges(void);
-void BashSnowMarkPenguin(void);
 void BashSpaceMarkHoles(void);
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
@@ -182,7 +179,6 @@ void BashAI_CheckShot(s32 arg0, s32 arg1, s32 arg2, BashAiState *ai, s32 prev);
 
 void BashSpaceInitTiles(void);
 
-void BashSpaceTileEdges(void);
 
 void PlotSnowGlint(NAS *nas);
 
@@ -208,7 +204,6 @@ void BashDrawView(void);
 
 u16 BashSpaceTileAt(s32 arg0, s32 arg1);
 
-void BashSpaceMarkHoles(void);
 
 void BashSpaceDropTile(s32 arg0);
 
@@ -311,7 +306,6 @@ typedef struct PenguinFux {
 extern u16 BashRainCount;
 extern u16 BashRainTimer;
 
-void BashPenguinPush(EXTengine *eng);
 
 void PlotBashPenguin(NAS *nas);
 

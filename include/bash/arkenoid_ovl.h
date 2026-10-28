@@ -41,16 +41,13 @@ extern s32 ArkSidePlayer2;
 extern s32 ArkSidePlayer3;
 extern s32 ArkDeadWalls;
 extern s32 ArkSidePlayer0;
-extern s32 ArkDeadWalls;
 extern u16 ArkFloorState;
 extern u16 ArkWallFlags;
-extern HeroInfo Heroes[4];
 extern s32 CrateMasterState;
 extern u16 ArkHeroSpeeds[][5];
 extern u16 ArkHeroSpeed[];
 extern s16 ArkHeroSpeedDelta[];
 extern s32 ArkHeroStarts[4][3];
-extern u16 ArkWallFlags;
 
 extern u16 RoundWinner;
 
@@ -63,8 +60,6 @@ typedef struct ArkenoidFuxType {
     u16 type;
 } ArkenoidFuxType;
 
-void ArkCrateMaster(void);
-void UpdateArkFloor(void);
 
 
 typedef struct {
@@ -147,7 +142,6 @@ u8 *ArkFreeBallSlot(void);
 
 
 
-void Ark_HeroBot(u32 arg0);
 extern u16 ArkHeroModels[];
 extern s32 ArkVictorySeqs[];
 extern void *ArkBounceOnBounds;
@@ -177,7 +171,6 @@ extern u16 ArkSkyAiTeamSkill[];
 extern u16 ArkSkyAiHumanRoundTweak[];
 extern u16 ArkSkyAiBotTweak[];
 extern u16 ArkSkyAiHumanTweak[];
-void AR_InitLevel(void);
 
 
 
@@ -262,7 +255,6 @@ extern ArkenoidCircle ArkNginBumpers[];
 extern ArkenoidCircle ArkSkyPosts[];
 extern ArkenoidCircle ArkSkyCircles[];
 extern ArkenoidCircle ArkSkyBumpers[];
-void InitARKfloor(void);
 extern u16 CornerFailFrames[];
 
 /* Blinking light slots (ArkGoals, ArkDoorsA) as ArkenoidLink (declared
@@ -426,9 +418,7 @@ extern u16 FloorLayout[][3];
 
 s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
-void InitARKfloor(void);
 
-bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self);
 
 /* Extension 0x10000000: the ball's trail positions. */
 typedef struct {
@@ -464,7 +454,6 @@ typedef struct ArkenoidSpot {
 
 extern u16 ArkGrabFrames[];
 
-NAS *ArkHero2ObjectCollision(u32 arg0);
 
 /* Ark_HeroBot: the object lists (HeadOfBalls by next, HeadOfObjects by child). */
 typedef struct ArkenoidAiFux {

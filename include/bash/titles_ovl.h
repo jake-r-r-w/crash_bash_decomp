@@ -50,7 +50,6 @@ extern ScriptScene IntroMovieMsgs[]; /* the intro movie's scenes (levelload.c) *
 extern process_info WarpReturnProcess;
 extern u16 TitlesDemoModes[];
 extern PlaceRec TitlesExtraPlace[];
-extern GfxViewport TitlesMenuView;
 extern camera_info_tag CharSelectCamera;
 extern process_info **MenuChainPos;
 extern PlaceRec BattleOptionsPlace[];
@@ -136,7 +135,6 @@ static inline s32 TitlesSlotOn(void) {
 
 void TitlesCheckIdle(void);
 void AnimateTitlesBackdrop(void);
-void MenuChainStart(process_info **chain);
 
 extern s32 MainMenuHints[];
 extern process_info OptionsScreen;
@@ -267,7 +265,6 @@ int ApproachSpeed(int a0, int a1, int a2, int a3, int a4);
 
 s32 LevelListCount(s32 arg0);
 
-extern s32 *LangLevelNames[];
 
 s32 LevelListText(s32 a, s32 b);
 
@@ -276,7 +273,6 @@ void MoveTeamBar(s32 arg0, s32 arg1);
 #include "bash/main.h"
 void FormatPercent(u8 *arg0, s32 arg1);
 extern camera_info_tag TitlesCamera;
-extern GfxViewport TitlesMenuView;
 extern GfxViewport TitlesBackdropView;
 extern GfxViewport LevelSelectView0;
 extern GfxViewport LevelSelectView1;

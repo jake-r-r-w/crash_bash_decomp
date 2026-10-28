@@ -40,7 +40,6 @@ typedef struct BonkTarget {
 
 extern BonkSlot BonkSlots[];
 extern u16 CameraMode;
-extern HeroInfo Heroes[4];
 
 extern s32 BonkBackswingSfx[];
 extern s32 BonkShockwaveSfx[];
@@ -49,10 +48,8 @@ extern s32 BonkSwingSfx[];
 extern s32 BonkSwingHitSfx[];
 
 void BonkHitTarget(s32 arg0, s32 arg1, BonkTgt2 *t);
-void BonkSpawnShockwave();
 void BonkHeroSwing(s32 arg0);
 
-extern u16 CameraMode;
 
 void SetBonkHeroIdle(s32 idx);
 

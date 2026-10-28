@@ -16,8 +16,6 @@ extern const char PolarAnimWin[];
 
 /* Per-character tables SetPolarHeroIdle hangs on hero_eng->sub->unk6C. */
 
-void InitialisePOLARFirst(void);
-void UpdatePOLAR(void);
 void PolarEmptyStub3(void);
 s32 PolarAI_Never(void);
 void PolarEmptyStub4(void);
@@ -241,7 +239,6 @@ typedef struct BrioOwner {
 
 /* Head of a list linked through +0x20 (counted by CountBears). */
 extern u8 *PolarBears;
-extern HeroInfo Heroes[4];
 extern s32 GameTeams[];
 
 /* TestPolarHeroMelted's ending: put the hero into action 0x4E unless status bit
@@ -257,7 +254,6 @@ static inline s32 PolarEndAction(s32 player) {
     return 0;
 }
 
-s32 CountBears(void);
 /* PolarBoxOverlap's box around an engine: min/max x,z corners and push radius. */
 typedef struct PolarBox {
     SLONG_XYZ min;
@@ -320,11 +316,9 @@ typedef struct PolarWanderFux {
 extern s32 PolarAIChances[];
 extern s32 PolarAnimFlag;
 void PolarAI_DoWander();
-void PolarAI_DoChase();
 void PolarAI_AvoidMelt();
 void DoGetBomb(u32 player);
 void PolarAI_DoHunt();
-extern s32 PolarAIFlags[];
 
 /* Inlined into TestChaseChance. */
 static inline void PolarStartChase(s32 player) {
@@ -523,14 +517,12 @@ static inline void RollPolarOdds(s32 player, Ext20 *ext) {
 
 s32 DistXZSq(SLONG_XYZ *a, SLONG_XYZ *b);
 s32 PolarAI_ShotBlocked(s32 arg0);
-s32 PolarAI_TeamChoice(s32 player);
 s32 PolarHeroAttackPower(s32 arg0);
 
 /* The NAS that owns the bomb maker. */
 
 s32 PolarBossDazeHero(u8 *arg0);
 
-NAS *IsBombAvailable(void);
 
 void PolarHeroSquashed(s32 player);
 
@@ -573,8 +565,6 @@ typedef struct PolarOwner {
 
 extern PolarOwner *PolarBeamOwner;
 extern s32 PolarBeamMode;
-extern s32 HeroesAllOut;
-bool EnsureMateNotObstructingMate(u32 self);
 
 /* Read by PolarAI_Proximity. */
 typedef struct PolarMode {
@@ -631,7 +621,6 @@ void PolarAI_TryAttack(s32 player);
 
 void PolarAI_DoChase(s32 player);
 
-bool TestChaseChance(u32 player);
 
 s32 PolarBossNear(EXTengine *eng, s32 player);
 
@@ -814,7 +803,6 @@ extern SceneObj *UkaMaskObjects[16];
 
 void RiserSetReset(PolarRiserSet *arg0);
 
-bool DoesPlayerHaveBomb(u32 arg0);
 /* Walrus fish extension (id 0x10000000): a ballistic arc (ArcUpdate's
  * Arc, declared in bash/pause.h) at 0x10. */
 typedef struct WalrusFishExt {
@@ -965,7 +953,6 @@ static inline s32 PolarShardChance(void) {
 
 s32 PolarAI_PickVictim(s32 arg0);
 
-u32 FindClosetPlayer(u32 self, s32 *dist);
 /* Weight death extension (0x28 bytes, id 0x10000000). */
 typedef struct WeightDeathExt {
     /* 0x00 */ u8 pad0[0xC];
@@ -1214,7 +1201,6 @@ extern ScriptInit BearBossScriptInit;
 void PolarInitScene(void);
 
 
-bool CheckMelted(SLONG_XYZ *arg0, s32 arg1);
 
 void PolarInitHeroAngle(s32 player);
 
@@ -1520,8 +1506,6 @@ typedef struct PolarGame {
 
 extern u16 PolarHeroSfx[];
 extern s32 PolarInitWord;
-extern s32 PolarBeamTimer;
-extern u16 CameraMode;
 void SetPanelHeroIconB(u16 arg0, s16 arg1);
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);

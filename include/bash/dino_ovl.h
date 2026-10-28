@@ -244,7 +244,6 @@ s32 DinoHeroHasGem(s32 arg0);
 s32 DinoAI_TargetShare(s32 arg0, s32 arg1);
 extern ScriptInit DinoSmokeScriptInit;
 
-s32 DinoAI_PickVictim(s32 arg0);
 
 void DinoAI_GuardGem(s32 id);
 
@@ -254,8 +253,6 @@ s32 DinoRayHitB(s32 *a, s32 *b, s16 *c, s32 *d);
 
 void DinoAI_ReturnGem(s32 id);
 void DinoAI_ChaseGem(s32 id);
-void DinoAI_GuardGem(s32 id);
-void DinoAI_ShootGem(s32 id);
 void DinoAI_CarryGem(s32 id);
 void DinoAI_Wander(s32 id);
 
@@ -374,7 +371,6 @@ extern s32 DinoTargetTimer, DinoTargetDelay, DinoTargetStep, DinoScoreTimer, Din
 void DinoChooseWinnerTeam(s32 arg0, u16 arg1);
 void DinoPreMoveHero();
 void DinoMoveHero();
-void DinoHeroFacing();
 
 typedef struct DinoVec {
     s32 vx, vy, vz;

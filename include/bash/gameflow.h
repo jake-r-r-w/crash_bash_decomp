@@ -287,7 +287,6 @@ static inline void EngineSetSlot3Digits(s32 slot, s32 arg0) {
     } while (i < 5);
 }
 
-void ShowCardSlotStats(GameState *arg0, s32 arg1);
 
 void ShowSaveScreen(void);
 
@@ -439,7 +438,6 @@ void InitCardMenu(void);
 
 void InitCardPromptMenu(void);
 
-extern s32 Slot3DigitSrc[][5];
 
 void UpdateCardMessage(void);
 

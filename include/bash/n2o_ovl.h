@@ -26,7 +26,6 @@ extern s32 N2OHeroStarts[][3];
 void NoxResetHeroes(void);
 extern u16 N2OWallsHit;
 extern s16 N2OHeroSpeed[];
-extern u16 N2OUnusedRows[][5];
 
 
 
@@ -98,11 +97,7 @@ typedef struct N2OOut {
     s16 dir;
 } N2OOut;
 
-extern u16 N2OBallHitSfx[];
-extern s32 GameCheats;
-extern s32 GameTeams[];
 
-s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
 
 void N2OPreMoveHero(s32 arg0);
 

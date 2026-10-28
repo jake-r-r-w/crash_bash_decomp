@@ -337,7 +337,6 @@ typedef struct {
     u8 pad16[4];
     u16 status;
 } T_B4B9CFux;
-extern u16 CrateCounts[];
 extern u16 PapuCrateMixPos;
 extern u16 PapuFirstCrates;
 extern u16 PapuDropPos;
@@ -408,16 +407,10 @@ void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b);
 void PapuCountObjects(void);
 
 extern s16 PapuUnused0;
-extern s32 PapuBossFlag;
-extern s32 PapuFloorTimer;
-extern s32 PapuFloorStarted;
 extern EXTengine PapuSfxEngine;
 extern s16 PapuFloorSink;
-extern s16 PapuBossRate;
 extern u16 PapuAttackPos;
 extern u16 PapuAttackDelay;
-void PapuSetCrateMix(u16 a0, s32 a1, s32 a2, s32 a3, u16 a4, u16 a5, u16 a6,
-                   u16 a7, u16 a8);
 
 s32 PapuMinionKick(u32 idx);
 

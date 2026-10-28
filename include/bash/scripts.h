@@ -31,7 +31,6 @@ void render_sub_thread(script_thread_handler *th, s32 *arg1);
 void interp3_s16(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4);
 void lerp_angles3(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4);
 void init_fade_thread(script_thread *def, script_control_info *ci, s32 num);
-void quat_slerp_ex_frac(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
 void quat_slerp_frac(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4);
 s16 cos_half(s32 arg0);
 s32 interp_window(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);

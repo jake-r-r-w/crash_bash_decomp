@@ -1175,7 +1175,6 @@ typedef struct {
         s16 x, y;
     } v[4];    /* 0x0C */
 } ModePolyG4;
-extern s32 FrameCount; /* frame counter: its low bit picks the frame buffer */
 extern s32 MalMoveVSyncs; /* VSync ticks spent compacting the heap (mal_update) */
 extern s32 MalMoveWords; /* words moved compacting the heap (mal_update) */
 extern s32 PrimDepthLimit; /* draw_object_model: the object's +0x8A */
@@ -1449,7 +1448,6 @@ s32 load_file(s32 *arg0, u8 *arg1);
 
 mal *mal_split(mal *blk, s32 words);
 
-s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 
 /* Per-note pitch data: a signed note and a signed fine nibble in the top of +1. */

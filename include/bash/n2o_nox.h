@@ -211,9 +211,8 @@ static inline s32 MineDamage(GameState *g) {
 extern SLONG_XYZ NoxHeroStartA;
 extern SLONG_XYZ NoxHeroStartB;
 
-extern s32 NoxSpeedScale;
 
-void NoxBossFollowPath(BossPath *arg0, BossObj *arg1);void NoxAsteroidSfx(void);
+void NoxAsteroidSfx(void);
 
 void InitMineSFX(MineSFX *arg0);
 

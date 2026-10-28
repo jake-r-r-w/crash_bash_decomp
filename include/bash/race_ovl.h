@@ -30,7 +30,6 @@ extern s32 RaceFloorLevel;
 extern s32 RaceTagTime;
 extern ScriptInit RaceGreenSmokeBoostScriptInit;
 extern ScriptInit RaceSmokeBoostScriptInit;
-extern HeroInfo Heroes[4];
 extern ScriptInit RaceSmokePoofScriptInit;
 extern ScriptInit RaceGreenSmokePoofScriptInit;
 extern s32 RaceBarrelRollTimer;
@@ -66,7 +65,6 @@ typedef struct EXTraceai {
 } EXTraceai;
 extern s32 RaceAISpeeds[];
 void RaceAI_Think();
-void RaceAI_SpinnerBrake(s32 arg0);
 void RaceAI_AvoidBarrels(s32 arg0);
 void RaceAI_AvoidObjects(s32 arg0);
 s32 RaceAI_UseCloseWeapon(s32 arg0);
@@ -213,7 +211,6 @@ typedef struct RaceBounceObj {
 
 void RaceMovesSwap(EXTheromove *a, EXTheromove *b);
 
-extern HeroInfo Heroes[4];
 void SetHeroAction(s32 player, s32 action);
 s32 PointInZone(s32 *arg0, s32 arg1);
 s32 DistXZSq(SLONG_XYZ *a, SLONG_XYZ *b);
@@ -832,8 +829,6 @@ s32 RaceHeroTestOil(s32 arg0);
 void SetRaceHeroIdle(s32 player);
 #define MODE63 ((GameState *)GameInfo)
 
-extern u16 CameraMode;
-extern HeroInfo Heroes[4];
 
 void RaceHeroKick(s32 arg0);
 
@@ -890,7 +885,6 @@ void RaceAI_ChasePickup(s32 arg0);
 /* Six object pointers walked by RaceAI_SpinnerBrake and others. */
 extern s32 RaceSpinnerBoxes[];
 
-s32 XZBoxToSphere(s32 obj, SLONG_XYZ *a, s32 b, SLONG_XYZ *c);
 
 void RaceEaseCamStep(RaceEaseCam *c, s32 *pos);
 
@@ -993,7 +987,6 @@ void RaceHeroRun(s32 player);
 void RaceHeroDazed(s32 arg0);
 
 void RaceHeroJump(s32 player);
-extern s32 RaceSpinnerBoxes[];
 
 typedef struct RaceBoxHalf {
     s16 v[3];
