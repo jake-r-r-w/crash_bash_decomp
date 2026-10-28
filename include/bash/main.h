@@ -1046,9 +1046,9 @@ extern s8 SysFontWidth[];
 extern u8 SysFontFlags[];
 extern u8 *sysfont_dbase;
 extern s16 SysFontLookUp[];
-extern s32 D_8006EA00;
+extern s32 NasHeapMem;
 extern u32 D_8006EA04;
-extern s32 D_8005A7A0[];
+extern s32 ExtHeap[];
 typedef struct ExtBlk ExtBlk;
 struct ExtBlk {
     ExtBlk *prev;
@@ -1070,7 +1070,7 @@ extern s32 D_80064418[];       /* voice bit masks, by voice */
 extern s32 MusicDuckCur;
 extern s32 ASTCount;            /* entries in ASTTable */
 extern ASTEntry *ASTTable;      /* the AST table in use */
-extern s32 D_80058AC8;
+extern s32 SubPool;
 extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2];
 extern s32 CdReadStatus;
@@ -1114,7 +1114,7 @@ typedef struct U16Table {
     /* 0x00 */ u16 *data;
     /* 0x04 */ u16 count;
 } U16Table;
-extern void *D_8005A5E0;
+extern void *LevelTriggerData;
 extern MapPoint MapPoints[32];
 /* A button-combo sequence: steps[] are pad masks, 0-terminated. */
 typedef struct ComboSeq {
@@ -1133,10 +1133,10 @@ extern RECT *ScreenRect;
 extern s32 D_8005B694;
 extern s32 D_8005B78C;
 extern s32 D_800335BC;
-extern u32 D_80063AF8[];
+extern u32 DebugFontClutData[];
 extern s32 DebugFontStream;
-extern s32 D_800643EC;
-extern s32 D_800643F0;
+extern s32 DebugFontTPage;
+extern s32 DebugFontClut;
 void *mal_trim_front(void *base, s32 offset, _mal_area *arg2);
 void cam_build_view(u8 *arg0, RECT *rect);
 extern GfxState RenderState;
@@ -1309,7 +1309,7 @@ extern void (*SsTickSaved)();
 extern NAS *NASActiveTail;
 extern s32 *PrimNodeFree;
 extern s32 *D_8005683C;            /* pool sizes (prims_init) */
-extern u8 *D_8005685C;             /* 0x58-byte nodes (prims_init) */
+extern u8 *PrimSetPool;             /* 0x58-byte nodes (prims_init) */
 extern u8 *D_80056840;             /* 0x54-byte nodes, free list in PrimNodeFree */
 extern u8 *PrimLinkPool;             /* 8-byte nodes, free list in PrimLinkFree */
 typedef struct PrimList {
@@ -1373,7 +1373,7 @@ typedef struct EmitPart {
 
 extern NAS *NASFreeList;
 extern u16 FirstNas;            /* first pool slot BuildNASFreeList frees */
-extern u16 D_8005AA12;            /* pool slot count */
+extern u16 NasPoolSlots;            /* pool slot count */
 extern u16 NasPoolUsed;            /* pool slots in use (KillEveryNas kills them all) */
 extern NAS *NasPool;           /* NAS pool */
 extern NAS NASTemplate;            /* copied over each spawned NAS */

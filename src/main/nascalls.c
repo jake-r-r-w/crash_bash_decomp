@@ -240,7 +240,7 @@ void InitNasHeap(s32 arg0) {
     u32 size;
     u32 words;
 
-    s32 *pb = &D_8006EA00;
+    s32 *pb = &NasHeapMem;
     u8 *res;
 
     size = (arg0 + 3) & ~3;
@@ -249,7 +249,7 @@ void InitNasHeap(s32 arg0) {
     *pb = (s32)res;
     if (res != NULL) {
         base = (s32 *)res;
-        hd = D_8005A7A0;
+        hd = ExtHeap;
         hd[0] = 0;
         hd[1] = (s32)base;
         hd[2] = 0;
@@ -283,12 +283,12 @@ void ResetNasHeap(void) {
     u32 words;
 
     size = D_8006EA04;
-    if (D_8006EA00 != 0) {
-        base = (s32 *)D_8006EA00;
+    if (NasHeapMem != 0) {
+        base = (s32 *)NasHeapMem;
         flag = size | 2;
         words = size >> 2;
         size -= 0x18;
-        hd = D_8005A7A0;
+        hd = ExtHeap;
         hd[0] = 0;
         hd[1] = (s32)base;
         hd[2] = 0;
@@ -406,7 +406,7 @@ void FreeExtension(void *ext) {
     u32 size;
 
     e = ext;
-    if ((u32)D_8005A7A0[6] < (u32)ext && (u32)ext < (u32)D_8005A7A0[7]) {
+    if ((u32)ExtHeap[6] < (u32)ext && (u32)ext < (u32)ExtHeap[7]) {
         b = (ExtBlk *)((u8 *)ext - 0x18);
         f = (ExtBlk *)b->owner;
         size = b->size;
@@ -421,7 +421,7 @@ void FreeExtension(void *ext) {
         }
         f = b;
         n = f->next;
-        m = (ExtBlk *)D_8005A7A0;
+        m = (ExtBlk *)ExtHeap;
         if (n != NULL && (n->size & 1)) {
             size += 0x18 + (n->size & ~3);
             if ((n->fprev->fnext = n->fnext) != NULL) {
@@ -549,19 +549,19 @@ void SetupLevelSpecs(ArenaDef *arg0) {
     }
     if (e != NULL) {
         FirstNas = e->unk4 + 4;
-        D_8005AA12 = NasPoolUsed = e->unk2 + 4;
+        NasPoolSlots = NasPoolUsed = e->unk2 + 4;
         D_8005AA50 = e->unk6 << 10;
         D_8005AA54 = e->unk8;
         D_8005A5E4 = e->unk10;
         ((D5A614View *)GameInfo)->unk0 = e->unk14;
-        D_8005A5E0 = e->unkC;
+        LevelTriggerData = e->unkC;
         if (((D5A614View *)GameInfo)->flags & 0x80) {
             ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)ModeTypes)[((D5A614View *)GameInfo)->mode].unk4;
         } else {
             ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)ModeTypes)[((D5A614View *)GameInfo)->mode].unk2;
         }
     }
-    if (e == NULL || D_8005A5E0 == NULL) {
+    if (e == NULL || LevelTriggerData == NULL) {
         printf(MsgFatalMetricsError, GameMode, ((LevelInfo *)ModeTypes)[GameMode].world);
     }
 }
@@ -1178,7 +1178,7 @@ void InitTriggers(void) {
     s32 idx;
 
     tmp = EngineTemplate;
-    tbl = *(U16Table **)((u8 *)D_8005A5E0 + 8);
+    tbl = *(U16Table **)((u8 *)LevelTriggerData + 8);
     types = tbl->data;
     ntypes = tbl->count;
     if ((TriggerCount = (*(s32 *)MapScene != 0) ? **(s32 **)((u8 *)MapScene + 0x30) : 0) == 0) {
@@ -2003,8 +2003,8 @@ void FreeAllExtensions(NAS *nas) {
 }
 
 void FreeNasHeap(void) {
-    mal_free(D_8006EA00, &MainHeap);
-    D_8006EA00 = 0;
+    mal_free(NasHeapMem, &MainHeap);
+    NasHeapMem = 0;
 }
 
 void *FindExtension(NAS *nas, s32 id) {
@@ -2321,7 +2321,7 @@ void BuildNASFreeList(void) {
     s32 i;
 
     NASFreeList = NULL;
-    i = D_8005AA12 - 1;
+    i = NasPoolSlots - 1;
     for (;;) {
         if (i >= FirstNas) {
             nas = &NasPool[i];
@@ -3176,8 +3176,8 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
     DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
-    D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
-    D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
+    DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
+    DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
 
 s32 vram_slot_class(s32 a, s32 b, s32 c) {
@@ -3297,16 +3297,16 @@ void debug_font_init(void) {
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
     DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
-    D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
-    D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
+    DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
+    DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
 
 void debug_font_init2(void) {
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
     DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
-    D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
-    D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
+    DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
+    DebugFontClut = LoadClut2(DebugFontClutData, 0x380, 0x11F) & 0xFFFF;
 }
 
 void texture_unused_a(void) {
@@ -4095,7 +4095,7 @@ u16 D_8005A5C0[4][3] = {
 };
 s32 World_floor_level = 0;
 s32 VelocityCalc = 0;
-void *D_8005A5E0 = 0;
+void *LevelTriggerData = 0;
 s32 D_8005A5E4 = 0;
 EngineRec32 *LevelRecs = 0;
 s32 D_8005A5EC[6] = {0};
@@ -4137,7 +4137,7 @@ s8 GameGateway = 0;
 s16 D_8005A678[4] = {0};
 s32 GameTeams[1] = {0};
 AdventureState GameAdventure = {0};
-s32 D_8005A7A0[3] = {0};
+s32 ExtHeap[3] = {0};
 ExtBlk *D_8005A7AC = 0;
 s32 D_8005A7B0[4] = {0};
 NAS NASTemplate = {0};
@@ -4151,7 +4151,7 @@ NAS *NASActiveHead = 0;
 NAS *NASActiveTail = 0;
 NAS *NASFreeList = 0;
 u16 FirstNas = 0;
-u16 D_8005AA12 = 0;
+u16 NasPoolSlots = 0;
 u16 NasPoolUsed = 0;
 s16 D_8005AA18[2] = {0};
 NAS *NasPool = 0;
@@ -4243,7 +4243,7 @@ s32 D_80063A80[1] = {0};
 u8 D_80063A84[8] = { 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0 };
 s32 D_80063A8C = 0;
 u8 PadMtapBuf[2][52] = {0};
-u32 D_80063AF8[8] = {
+u32 DebugFontClutData[8] = {
     0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000,
     0xFFFF0000,
 };
@@ -4363,14 +4363,14 @@ u8 VramNodePool[2096] = {
     0xFF,
 };
 s32 DebugFontStream = 0;
-s32 D_800643EC = 0;
-s32 D_800643F0 = 0;
+s32 DebugFontTPage = 0;
+s32 DebugFontClut = 0;
 u8 *D_800643F4 = 0;
 void (*SsTickSaved)() = 0x4D2;
 s32 D_800643FC[6] = {0};
 
 /* the .bss (main.c's comes first) */
-s32 D_8006EA00 __attribute__((section(".bss")));
+s32 NasHeapMem __attribute__((section(".bss")));
 u32 D_8006EA04 __attribute__((section(".bss")));
 u8 D_8006EA08[8] __attribute__((section(".bss")));   /* CdControl's result */
 CdlLOC D_8006EA10 __attribute__((section(".bss")));

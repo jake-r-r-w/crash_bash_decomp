@@ -729,12 +729,12 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             if (ModeTypes[g->mode * 3] == 0x102) {
                 sfx = 0;
             }
-            D_8009AC04.entity = sfx;
-            D_8009ACAC.entity = sfx;
+            PauseVolSubA.entity = sfx;
+            PauseVolSubB.entity = sfx;
             break;
         clear:
-            D_8009AC04.entity = 0;
-            D_8009ACAC.entity = 0;
+            PauseVolSubA.entity = 0;
+            PauseVolSubB.entity = 0;
             break;
         case 5:
             if (D_8009AF00 != 0) {
@@ -812,8 +812,8 @@ void DrawPauseMenu(void) {
     if (MSGV->flags == 0) {
         return;
     }
-    D_8009AC04.entity = 0;
-    D_8009ACAC.entity = 0;
+    PauseVolSubA.entity = 0;
+    PauseVolSubB.entity = 0;
     PanelCountCompletion();
     SetupCompletionDigits();
     PauseMenuY = 0x70;
@@ -1009,9 +1009,9 @@ void DrawAdventureStats(s32 arg0) {
         i /= 10;
         PauseDigits4[0] = i % 10 + '0';
         i = c4;
-        D_8009AF58[1] = i % 10 + '0';
+        PauseDigits5[1] = i % 10 + '0';
         i /= 10;
-        D_8009AF58[0] = i % 10 + '0';
+        PauseDigits5[0] = i % 10 + '0';
         if (SCV->unk4 & 0x2000) {
             if (SCV->flags & 8) {
                 PlaceEngineSlot(4, D_8009B788);
@@ -1842,7 +1842,7 @@ char PauseDigits[2] = { 0x31, 0x30 };
 char PauseDigits2[2] = { 0x32, 0x30 };
 char PauseDigits3[2] = { 0x33, 0x30 };
 char PauseDigits4[2] = { 0x34, 0x30 };
-char D_8009AF58[2] = { 0x35, 0x30 };
+char PauseDigits5[2] = { 0x35, 0x30 };
 u8 D_8009AF5C[4] = { 0x36, 0x30, 0, 0 };
 s32 D_8009AF60[90] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C004B, 0, 0, 0, 0, 0, 0x5001C, 2, 0xA,
@@ -1881,7 +1881,7 @@ s32 D_8009B590[126] = {
     0x40008C, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x1C, 2, 3,
     0x4000E6, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 5, 0x2C013B, 0, 0, 0, 0, 0, 0x3001C, 2, 3,
     0x400140, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 5, 0x2C0195, 0, 0, 0, 0, 0, 0x2001C, 2, 3,
-    0x40019A, 0, 0, 0, (s32)&D_8009AF58, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0x40019A, 0, 0, 0, (s32)&PauseDigits5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 s32 D_8009B788[126] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x3C00FE, 0x10000000, 0, 0, 0, 0, 0xD5, 0,
@@ -1890,7 +1890,7 @@ s32 D_8009B788[126] = {
     0x40008C, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x700D5, 2, 3,
     0x4000E6, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 5, 0x2C013B, 0, 0, 0, 0, 0, 0x300D5, 2, 3,
     0x400140, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 5, 0x2C0195, 0, 0, 0, 0, 0, 0x200D5, 2, 3,
-    0x40019A, 0, 0, 0, (s32)&D_8009AF58, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0x40019A, 0, 0, 0, (s32)&PauseDigits5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 s32 D_8009B980[108] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x4000E1, 0x18000000, (s32)0xFF800100, 0, 0,

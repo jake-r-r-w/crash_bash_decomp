@@ -188,7 +188,7 @@ extern s32 SceneVabCue;
 extern s32 SceneVabSlot[]; /* arrays: their stores must alias struct loads (gcc 2.7 sched) */
 extern s32 D_800A0D24[];
 extern s32 D_800A0D28;
-extern s32 D_800A0D38;
+extern s32 SceneStarting;
 extern u8 D_8009E498[];
 /* GameInfo as seen by InitRetry. */
 typedef struct EngineGameView {

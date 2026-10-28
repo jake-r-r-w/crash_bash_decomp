@@ -21,11 +21,11 @@ void prims_init(s32 *cfg) {
 
     cnt = cfg[0];
     D_8005683C = cfg;
-    D_8005685C = mal_alloc((u32)(cnt * 0x2C0) >> 3, &MainHeap);
+    PrimSetPool = mal_alloc((u32)(cnt * 0x2C0) >> 3, &MainHeap);
     D_80056840 = mal_alloc((u32)(cfg[2] * 0x2A0) >> 3, &MainHeap);
     q = mal_alloc((u32)(cfg[1] << 6) >> 3, &MainHeap);
     PrimLinkPool = q;
-    p = D_8005685C;
+    p = PrimSetPool;
     next = D_80056840;
     PrimNodeFree = (s32 *)next;
     n = cfg[2] - 2;
@@ -75,7 +75,7 @@ void prims_init(s32 *cfg) {
     PrimSetList = NULL;
     *(u8 **)p = NULL;
     PrimPool.mem = NULL;
-    PrimSetFree = (s32 *)D_8005685C;
+    PrimSetFree = (s32 *)PrimSetPool;
 }
 
 static inline void PrimList_Flush(PrimList *arg0, s32 arg1) {
@@ -2760,9 +2760,9 @@ void draw_init(void) {
 
 
 void subpool_free(void) {
-    if (D_80058AC8 != 0) {
-        mal_free(D_80058AC8, &MainHeap);
-        D_80058AC8 = 0;
+    if (SubPool != 0) {
+        mal_free(SubPool, &MainHeap);
+        SubPool = 0;
     }
 }
 
@@ -2774,7 +2774,7 @@ void subpool_init(s32 n) {
     p = mal_alloc(n * 0xA8, &MainHeap);
     i = n - 1;
     sub = (subengine *)p;
-    D_80058AC8 = (s32)sub;
+    SubPool = (s32)sub;
     next_sub = sub;
     if (i > 0) {
         do {
@@ -3330,7 +3330,7 @@ NodePool PrimPool = {0};
 s32 *PrimNodeFree = 0;
 u8 *PrimLinkPool = 0;
 s32 *PrimLinkFree = 0;
-u8 *D_8005685C = 0;
+u8 *PrimSetPool = 0;
 s32 *PrimSetFree = 0;
 void *PrimSetList = 0;
 s32 D_80056868[3] = {0};
@@ -3348,7 +3348,7 @@ PosEntry D_8005689C[9] = {
 GfxState RenderState = {0};
 s32 D_80056AC4 = 0;
 SVECTOR MorphVerts[1024] = {0};
-s32 D_80058AC8 = 0;
+s32 SubPool = 0;
 subengine *next_sub = 0;
 void *MapScene = 0;
 MATRIX MapSceneMatrix = {0};

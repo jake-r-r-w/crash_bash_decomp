@@ -614,3 +614,7 @@ IntroSfxDelay = 0x8009E5B4;
 CupSlotPanel = 0x8009EB3C;
 IntroScript = 0x8009E5AC;
 SceneScript = 0x800A0D34;
+PauseVolSubA = 0x8009AC04;
+PauseVolSubB = 0x8009ACAC;
+PauseDigits5 = 0x8009AF58;
+SceneStarting = 0x800A0D38;

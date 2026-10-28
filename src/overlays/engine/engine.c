@@ -9,7 +9,7 @@ void InitialiseNasSystem(void) {
     EngineBootView *v;
     u8 *p;
 
-    rec = ((EngineBootSrc *)D_8005A5E0)->unk4;
+    rec = ((EngineBootSrc *)LevelTriggerData)->unk4;
     LevelRecs = rec;
     if (rec != NULL) {
         EngineBootView *w = (EngineBootView *)GameInfo;
@@ -131,7 +131,7 @@ void UpdateAllNas(void) {
         }
         i++;
     } while (i < 4);
-    for (i = FirstNas; i < D_8005AA12; i++) {
+    for (i = FirstNas; i < NasPoolSlots; i++) {
         nas = &NasPool[i];
         if (nas->NASid & 1) {
             cls = nas->Class;

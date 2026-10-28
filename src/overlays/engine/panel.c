@@ -2231,7 +2231,7 @@ void InitBossHealthBar(void) {
     EXTengine *f;
 
     e = &PanelTab[5];
-    subs_init_array(e, 1, &D_8009AC04);
+    subs_init_array(e, 1, &PauseVolSubA);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;
     e->sub->u6C.dbase = &HeroModelBank[DB_Interface];
@@ -2242,7 +2242,7 @@ void InitBossHealthBar(void) {
     e->unk2C.y = 0xE00;
     e->unk2C.z = 0xE00;
     e++;
-    subs_init_array(e, 1, &D_8009ACAC);
+    subs_init_array(e, 1, &PauseVolSubB);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;
     e->sub->u6C.dbase = &HeroModelBank[DB_Interface];
@@ -2289,8 +2289,8 @@ EXTengine BigScore1 = {0};
 EXTengine BigScore2 = {0};
 subengine BigScoreParts1 = {0};
 subengine BigScoreParts2 = {0};
-subengine D_8009AC04 = {0};
-subengine D_8009ACAC = {0};
+subengine PauseVolSubA = {0};
+subengine PauseVolSubB = {0};
 ClockInfo Clock[4] = {0};
 ScoreInfo Score[4] = {0};
 subengine counter_sub = {0};

@@ -257,7 +257,7 @@ void load_initial_dbases(void)
   }
   while (i < 4);
 
-  p = *((s16 **) D_8005A5E0);
+  p = *((s16 **) LevelTriggerData);
   v = *p;
   if (v >= 0)
   {
@@ -555,7 +555,7 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     ScriptTimeStep = arg0->unk8 * rate / 60;
     cam_init((GfxCamera *)MainCamera);
     SceneOldDbase = 0;
-    D_800A0D38 = 1;
+    SceneStarting = 1;
     SceneMarkCount = 0;
     ((EngineStartArgs *)&SceneMark)->unk0 = arg0->unk0;
     SceneVabCue = arg0->unk4;
@@ -700,7 +700,7 @@ void UpdateScriptScene(void) {
                     ok = o->src != NULL;
                 }
                 if (ok) {
-                    if (D_800A0D38 != 0) {
+                    if (SceneStarting != 0) {
                         if (SceneVabCue == 0 || ((EngineVabCue *)SceneVabCue)->vab == 0) {
                             ok = 1;
                         } else {
@@ -712,9 +712,9 @@ void UpdateScriptScene(void) {
                     }
                     StartSceneScript();
                     SceneMark = (MarkCtx *)SceneMark + 1;
-                    if (D_800A0D38 != 0) {
+                    if (SceneStarting != 0) {
                         VabCueTimer = 1;
-                        D_800A0D38 = 0;
+                        SceneStarting = 0;
                         D_800A0D28 = 1;
                         set_fade(&ScreenFade, -0x800, 0);
                     }
@@ -1567,7 +1567,7 @@ s32 D_800A0D28 = 0;
 void *SceneMark = 0;
 s32 SceneOldDbase = 0;
 script_handler *SceneScript = 0;
-s32 D_800A0D38 = 0;
+s32 SceneStarting = 0;
 s32 SceneStep = 0;
 s32 D_800A0D40[1] = {0};
 Tmpl1C D_800A0D44[11] = {

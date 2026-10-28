@@ -352,7 +352,7 @@ extern char PauseDigits[2];
 extern char PauseDigits2[2];
 extern char PauseDigits3[2];
 extern char PauseDigits4[2];
-extern char D_8009AF58[2];
+extern char PauseDigits5[2];
 extern s32 D_8009AF60[];
 extern s32 D_8009B0C8[];
 extern s32 D_8009B230[];

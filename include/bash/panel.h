@@ -79,8 +79,8 @@ void InitIcons4(void);
 
 extern subengine *countdown_eng;
 extern subengine counter_sub;
-extern subengine D_8009AC04;
-extern subengine D_8009ACAC;
+extern subengine PauseVolSubA;
+extern subengine PauseVolSubB;
 
 void InitCountdown(void);
 typedef struct PanelPrim {
