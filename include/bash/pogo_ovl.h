@@ -487,7 +487,7 @@ typedef struct PogoTeamView {
         for (; i < 4; i++) {                                             \
             if (((u8 *)g_)[i + 0x5C] != 0) {                             \
                 Heroes[i].hero_status |= 0x400;                          \
-                func_80026980(Heroes[i].hero);                           \
+                RemoveCamera(Heroes[i].hero);                           \
             } else {                                                     \
                 Heroes[i].hero_status |= 0x200;                          \
             }                                                            \
@@ -506,7 +506,7 @@ typedef struct PogoTeamView {
         for (; i < 4; i++) {                                             \
             if (((u8 *)g_)[i + 0x5C] != 0) {                             \
                 Heroes[i].hero_status |= 0x400;                          \
-                func_80026980(Heroes[i].hero);                           \
+                RemoveCamera(Heroes[i].hero);                           \
             } else {                                                     \
                 Heroes[i].hero_status |= 0x200;                          \
             }                                                            \
@@ -525,7 +525,7 @@ typedef struct PogoTeamView {
         for (; i < 4; i++) {                                             \
             if (((u8 *)g_)[i + 0x5C] != 0) {                             \
                 Heroes[i].hero_status |= 0x400;                          \
-                func_80026980(Heroes[i].hero);                           \
+                RemoveCamera(Heroes[i].hero);                           \
             } else {                                                     \
                 Heroes[i].hero_status |= 0x100;                          \
             }                                                            \

@@ -150,8 +150,8 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
         if (eng != NULL) {
             obj = (T_BBD48Obj *)AddObject(nas);
             if (obj != NULL && AddMotion(nas) != NULL) {
-                func_80026AD8((u8 *)nas);
-                func_8002694C(nas, 0x300);
+                LinkObject((u8 *)nas);
+                AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 eng->sub->unk6C = CrateObjectsModel;
                 eng->unk5D = 1;
@@ -308,8 +308,8 @@ void InitCrate(NAS *arg0) {
             }
             ArenaGrid[z * 20 + x].unk0 = obj->unk14;
             AddMotion(arg0);
-            func_80026AD8((u8 *)arg0);
-            func_8002694C(arg0, 0x300);
+            LinkObject((u8 *)arg0);
+            AddSolid(arg0, 0x300);
         }
     }
     if (arg0->Failure != 0) {
@@ -407,19 +407,19 @@ void PlotCrate(NAS *arg0) {
             case 4:
                 BC038Release(fux);
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 5:
             case 6:
             case 7:
                 BC038Release(fux);
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 1:
                 BC038Release(fux);
                 CrateBreak(eng, fux);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 2:
                 BC038Release(fux);
@@ -445,12 +445,12 @@ void PlotCrate(NAS *arg0) {
             case 7:
                 BC038Release(fux);
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 1:
                 BC038Release(fux);
                 CrateBreak(eng, fux);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             default:
                 ext->decel = 0;
@@ -502,7 +502,7 @@ void PlotCrate(NAS *arg0) {
         v -= 0x200;
         BC038_SNAP(eng);
         if (v < 0x41) {
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         eng->unk2C.y = v;
@@ -559,22 +559,22 @@ void PlotCrate(NAS *arg0) {
             case 3:
             case 4:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 5:
             case 6:
             case 7:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 1:
                 CrateBreak(eng, fux);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 2:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
                 if (HeroHooks.KeepInBounds(eng) != 0) {
-                    func_800270B0(arg0);
+                    KillTriggerNas(arg0);
                     return;
                 }
                 fux->state = 0xE;
@@ -592,7 +592,7 @@ void PlotCrate(NAS *arg0) {
         if (fux->hit & 2) {
             fux->who = 6;
             func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         if (CrateCollide(eng, 0, fux->who, 1) != 0) {
@@ -600,17 +600,17 @@ void PlotCrate(NAS *arg0) {
             case 3:
             case 4:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 5:
             case 6:
             case 7:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 1:
                 CrateBreak(eng, fux);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 2:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
@@ -627,7 +627,7 @@ void PlotCrate(NAS *arg0) {
         case 1:
             BC038Release(fux);
             func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         case 2:
             BC038Release(fux);
@@ -646,7 +646,7 @@ void PlotCrate(NAS *arg0) {
         case 6:
             BC038Release(fux);
             func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         case 5:
             fux->count = 0x5A;
@@ -741,20 +741,20 @@ void PlotCrate(NAS *arg0) {
                 case 4:
                     BC038Release(fux);
                     func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                    func_800270B0(arg0);
+                    KillTriggerNas(arg0);
                     return;
                 case 5:
                 case 7:
                     BC038Release(fux);
                     func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                    func_800270B0(arg0);
+                    KillTriggerNas(arg0);
                     return;
                 }
             } else if (type < 5) {
                 if (type >= 3) {
                     BC038Release(fux);
                     func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                    func_800270B0(arg0);
+                    KillTriggerNas(arg0);
                     return;
                 }
             }
@@ -764,11 +764,11 @@ void PlotCrate(NAS *arg0) {
             case 3:
             case 4:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 6:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 5:
             case 7:
@@ -789,7 +789,7 @@ void PlotCrate(NAS *arg0) {
         }
         BC038Release(fux);
         func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
-        func_800270B0(arg0);
+        KillTriggerNas(arg0);
         return;
     case 0xC:
         fux->count = 0x78;
@@ -820,17 +820,17 @@ void PlotCrate(NAS *arg0) {
             eng->sub->unk74 = Random(0xE) + 0x2018;
             eng->unk5D = 4;
             fux->state = 0xD;
-            func_80026A54(arg0);
-            func_800268BC(arg0);
+            UnlinkObject(arg0);
+            RemoveSolid(arg0);
             break;
         default:
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         break;
     case 0xD:
         if (HeroHooks.KeepInBounds(eng) != 0) {
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         done = 0;
@@ -875,7 +875,7 @@ void PlotCrate(NAS *arg0) {
                     BashGivePowerup(fux->who, fux->kind);
                     BashPowerupTimer = (Random(6) + 2) * 30;
                 }
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 n = (NAS *)BashCrateList;
                 while (n != NULL) {
                     fux = (T_BC038Fux *)n->FUX;
@@ -888,7 +888,7 @@ void PlotCrate(NAS *arg0) {
                         }
                         n = n->Group.Child;
                     } else {
-                        func_800270B0(n);
+                        KillTriggerNas(n);
                         n = (NAS *)BashCrateList;
                     }
                 }
@@ -901,7 +901,7 @@ void PlotCrate(NAS *arg0) {
                     }
                     PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 }
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             }
         }
@@ -941,18 +941,18 @@ void PlotCrate(NAS *arg0) {
             fux->state = 0xF;
             break;
         default:
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         break;
     case 0xF:
         if (HeroHooks.KeepInBounds(eng) != 0) {
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         GravitateNas(arg0);
         if (fux->count == 0) {
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         fux->count--;
@@ -974,7 +974,7 @@ void PlotCrate(NAS *arg0) {
             case 0x1C:
                 BashGivePowerup(fux->who, fux->kind);
                 BashPowerupTimer = (Random(6) + 2) * 30;
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 n = (NAS *)BashCrateList;
                 while (n != NULL) {
                     fux = (T_BC038Fux *)n->FUX;
@@ -987,7 +987,7 @@ void PlotCrate(NAS *arg0) {
                         }
                         n = n->Group.Child;
                     } else {
-                        func_800270B0(n);
+                        KillTriggerNas(n);
                         n = (NAS *)BashCrateList;
                     }
                 }
@@ -998,7 +998,7 @@ void PlotCrate(NAS *arg0) {
                     Heroes[fux->who].hero_health = 0x14;
                 }
                 PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             }
         }
@@ -1006,13 +1006,13 @@ void PlotCrate(NAS *arg0) {
         break;
     case 0x63:
         if (GravitateNas(arg0) != 0) {
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         v = eng->unk2C.x;
         v -= 0x100;
         if (v < 0x101) {
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         eng->unk2C.x = v;
@@ -1053,7 +1053,7 @@ void PlotCrate(NAS *arg0) {
             switch (type) {
             case 6:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             case 5:
                 if (fux->who == -1) {
@@ -1090,7 +1090,7 @@ void PlotCrate(NAS *arg0) {
     hit8:
         if ((fux->hit & 8) && type == 6) {
             func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
             return;
         }
         if (eng->platform != NULL) {
@@ -1100,7 +1100,7 @@ void PlotCrate(NAS *arg0) {
                 PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             } else if (type == 6) {
                 func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
-                func_800270B0(arg0);
+                KillTriggerNas(arg0);
                 return;
             }
         }
@@ -1124,7 +1124,7 @@ void PlotCrate(NAS *arg0) {
         } else {
             BC038Release(fux);
             func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
-            func_800270B0(arg0);
+            KillTriggerNas(arg0);
         }
     }
 }
@@ -1146,8 +1146,8 @@ void InitCratePickup(NAS *arg0) {
         eng->sub->unk74 = BashPickupModels[r];
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            func_80026AD8((u8 *)arg0);
-            func_8002694C(arg0, 0x200);
+            LinkObject((u8 *)arg0);
+            AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = r + 0x12;
             obj->countdown = 0x78;
@@ -1197,8 +1197,8 @@ void InitShieldPickup(NAS *arg0) {
         eng->sub->unk74 = 0x200D;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            func_80026AD8((u8 *)arg0);
-            func_8002694C(arg0, 0x200);
+            LinkObject((u8 *)arg0);
+            AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x12;
             obj->countdown = 0x78;
@@ -1249,8 +1249,8 @@ void InitBootsPickup(NAS *arg0) {
         eng->sub->unk74 = 0x200A;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            func_80026AD8((u8 *)arg0);
-            func_8002694C(arg0, 0x200);
+            LinkObject((u8 *)arg0);
+            AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x13;
             obj->countdown = 0x78;
@@ -1301,8 +1301,8 @@ void InitAnvilPickup(NAS *arg0) {
         eng->sub->unk74 = 0x2011;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            func_80026AD8((u8 *)arg0);
-            func_8002694C(arg0, 0x200);
+            LinkObject((u8 *)arg0);
+            AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x14;
             obj->countdown = 0x78;
@@ -1353,8 +1353,8 @@ void InitSlowmoPickup(NAS *arg0) {
         eng->sub->unk74 = 0x2009;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            func_80026AD8((u8 *)arg0);
-            func_8002694C(arg0, 0x200);
+            LinkObject((u8 *)arg0);
+            AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x15;
             obj->countdown = 0x78;
@@ -1646,7 +1646,7 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
     s32 lo;
     s32 hi;
 
-    box = func_80025A48(eng, 0x40);
+    box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         r = box->radius;
         top = eng->unk10.y + box->unk2;
@@ -1663,7 +1663,7 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
                 if (e == NULL) {
                     continue;
                 }
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) {
                     continue;
                 }
@@ -1686,7 +1686,7 @@ s32 CrateCollide(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
             if (nas->Class & 0x200) {
                 e = nas->Engine;
                 if (e != NULL && e != eng) {
-                    rec = func_80025A48(e, 0x40);
+                    rec = FindCollisionBox(e, 0x40);
                     if (rec != NULL) {
                         lo = e->unk10.y + rec->unk2;
                         hi = e->unk10.y + rec->height;
@@ -1740,7 +1740,7 @@ NAS *CrateHitSolids(EXTengine *eng, s32 who) {
     s32 lo;
     s32 hi;
 
-    box = func_80025A48(eng, 0x40);
+    box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         r = box->radius;
         top = eng->unk10.y + box->unk2;
@@ -1749,7 +1749,7 @@ NAS *CrateHitSolids(EXTengine *eng, s32 who) {
             if (nas->Class & 0x200) {
                 e = nas->Engine;
                 if (e != NULL && e != eng) {
-                    rec = func_80025A48(e, 0x40);
+                    rec = FindCollisionBox(e, 0x40);
                     if (rec != NULL) {
                         lo = e->unk10.y + rec->unk2;
                         hi = e->unk10.y + rec->height;
@@ -1801,7 +1801,7 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
     s32 lo;
     s32 hi;
 
-    rec =func_80025A48(eng, 0x40);
+    rec =FindCollisionBox(eng, 0x40);
     i = 0;
     if (rec != NULL) {
         r = rec->radius;
@@ -1816,7 +1816,7 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
             if (other == NULL) {
                 continue;
             }
-            rec2 = func_80025A48(other, 0x40);
+            rec2 = FindCollisionBox(other, 0x40);
             if (rec2 == NULL) {
                 continue;
             }

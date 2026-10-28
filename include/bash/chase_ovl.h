@@ -168,7 +168,7 @@ typedef struct ChaseObj {
 
 void ChaseUpdateStub(s32 *arg0);
 extern s32 ChaseUpdateState[];
-void func_80029100(void *arg0);
+void texture_update_anims(void *arg0);
 void ChaseHeroJump(s32 arg0);
 void ChaseUnusedStub0(void);
 void ChaseUnusedStub1(void);
@@ -319,14 +319,14 @@ void gte_rotate_point(SVECTOR *v, VECTOR *out);
 s32 Random(s32 n);
 void *FindExtension(NAS *nas, s32 id);
 s32 get_angle(s32 x, s32 z);
-FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
+FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
 s32 csqrt(s32 x);
 
 void ChaseHeroWinner(s32 arg0);
 extern s32 World_floor_level;
 extern s32 D_8005B5B8;
 extern HeroInfo Heroes[4];
-void func_80025F44(EXTengine *eng);
+void ApplyContour(EXTengine *eng);
 void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
 
 s32 func_80085890();

@@ -2605,7 +2605,7 @@ void BashPenguinPush(EXTengine *self) {
     s32 dist;
     s32 ang;
 
-    rec = func_80025A48(self, 0x400);
+    rec = FindCollisionBox(self, 0x400);
     i = 0;
     if (rec == NULL) {
         return;
@@ -2617,7 +2617,7 @@ void BashPenguinPush(EXTengine *self) {
         if (!(Heroes[i].hero_status & 0xF800)) {
             eng = Heroes[i].hero_eng;
             if (eng != NULL) {
-                r = func_80025A48(eng, 0x40);
+                r = FindCollisionBox(eng, 0x40);
                 if (r == NULL) {
                     continue;
                 }
@@ -2647,7 +2647,7 @@ void BashPenguinPush(EXTengine *self) {
         if (eng == NULL || eng == self) {
             continue;
         }
-        r = func_80025A48(eng, 0x40);
+        r = FindCollisionBox(eng, 0x40);
         if (r == NULL) {
             continue;
         }
@@ -2708,7 +2708,7 @@ void InitTumbler(NAS *nas) {
         }
         puff = BashSpawnPuff(&MapPoints[8].pos);
         if (puff != NULL) {
-            func_80026C38((u8 *)nas, (u8 *)puff);
+            AppendExtension((u8 *)nas, (u8 *)puff);
         }
         obj = (TumblerObj *)AddObject(nas);
         if (obj != NULL) {
@@ -2773,7 +2773,7 @@ void PlotTumbler(NAS *nas) {
         }
         if (Heroes[hero].hero_status & 0xFA00) {
             func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
-            func_800270B0(nas);
+            KillTriggerNas(nas);
             return;
         }
     spawn:
@@ -2795,18 +2795,18 @@ void PlotTumbler(NAS *nas) {
             CrateCollide(eng, 0, -1, 0);
             eng->unk10.y -= 0x20;
             func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 0);
-            func_800270B0(nas);
+            KillTriggerNas(nas);
             return;
         }
         if (CrateCollide(eng, 0, obj->unk16, 1) != 0) {
             eng->unk10.y += 0x80;
             func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
-            func_800270B0(nas);
+            KillTriggerNas(nas);
             return;
         }
         sub = sub->next;
         if (sub != NULL) {
-            dy = ((s32 (*)(EXTengine *))func_80025F44)(eng);
+            dy = ((s32 (*)(EXTengine *))ApplyContour)(eng);
             sub->unk08 = -dy;
             dy = 0x1000 - dy;
             if (dy < 0x10) {
@@ -2955,7 +2955,7 @@ s32 BashMissileHitTest(x, y, z, size, skip, mask)
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -2981,7 +2981,7 @@ s32 BashMissileHitTest(x, y, z, size, skip, mask)
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -3448,7 +3448,7 @@ void InitBoing(NAS *nas) {
         eng->sub->unk6C = *(void **)MapScene;
         eng->unk5D = 1;
         eng->unk5C = 1;
-        func_80024E30(nas, &BoingScriptInit);
+        ScriptCursorFirst(nas, &BoingScriptInit);
     }
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -3462,13 +3462,13 @@ void InitBashPenguin(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         BashPenguinEng = eng;
-        func_80024E30(nas, &PenguinScriptInit);
+        ScriptCursorFirst(nas, &PenguinScriptInit);
         eng->sub->unk6C = (s32)PenguinModel;
         eng->sub->unk74 = 0x2001;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
-            func_80026AD8((u8 *)nas);
-            func_8002694C(nas, 0x200);
+            LinkObject((u8 *)nas);
+            AddSolid(nas, 0x200);
             BashPenguinObj = obj;
             nas->FUX = (EXT *)obj;
             obj->whatami = 0xE;
@@ -3657,7 +3657,7 @@ u8 *BashDropCrateNear(s32 x, s32 unused, s32 z, u16 flag) {
     }
     res = CreateCrate(xi, 0, nz, 2, -1);
     if (res != NULL) {
-        func_80026B70(&BashCrateList, res);
+        AddToGroup(&BashCrateList, res);
     }
     return res;
 }

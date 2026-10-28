@@ -472,7 +472,7 @@ void ArkHeroEngineUpdate(s32 arg0) {
         rotscale_update(&e->unk1C);
     }
     gfx_load_xform(e->sub, e->unk3C, &e->unk10);
-    r = func_80025A48(e, 1);
+    r = FindCollisionBox(e, 1);
     if (r == NULL) goto next;
     {
         base = ArkHeroBoxes;
@@ -490,7 +490,7 @@ void ArkHeroEngineUpdate(s32 arg0) {
         b->z0 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
     }
 next:
-    r = func_80025A48(e, 2);
+    r = FindCollisionBox(e, 2);
     v = &sp10;
     if (r != NULL) {
         base = ArkHeroBoxes;
@@ -664,7 +664,7 @@ void AR_InitLevel(void) {
         e->unk1E = a;
         mv->facing_angle = a;
         mv->forward_angle = a;
-        func_80026980(h->hero);
+        RemoveCamera(h->hero);
         switch (m->unk34) {
         case 15:
             ArkPosts = ArkBeachPosts;
@@ -840,7 +840,7 @@ void AR_UpdateLevel(void) {
     }
     ao = (u8 *)BallsEffectsModel;
     ao += 0x10;
-    func_80029100((obj_textureset *)ao);
+    texture_update_anims((obj_textureset *)ao);
 }
 
 bool AR_KeepInBounds(EXTengine *arg0) {
@@ -1601,7 +1601,7 @@ void AR_PI_MoveHero(u32 arg0) {
     s32 y;
     s32 r;
 
-    r =((s32 (*)(EXTengine *))func_80025F44)(Heroes[arg0].hero_eng);
+    r =((s32 (*)(EXTengine *))ApplyContour)(Heroes[arg0].hero_eng);
     e = Heroes[arg0].hero_eng;
     y = e->unk10.y - r;
     if (!(Heroes[arg0].hero_status & 0xFA00)) {
@@ -2019,7 +2019,7 @@ void SetArkHeroWinner(u32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    func_80026A04((u8 *)h->hero);
+    AddCamera((u8 *)h->hero);
     h->hero_sub->unk08 = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
@@ -2145,12 +2145,12 @@ void SetArkHeroDie(u32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    func_80026980(h->hero);
+    RemoveCamera(h->hero);
     h->hero_sub->unk08 = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
     SetHeroSeq(arg0, 0x20);
-    func_80028018(arg0, 0x3C);
+    pad_rumble_small(arg0, 0x3C);
     s = h->hero_sub->next;
     if (s != NULL) {
         s = s->next;
@@ -3306,8 +3306,8 @@ void InitBall(NAS *nas) {
     if (obj != NULL) {
         mot = AddMotion(nas);
         if (mot != NULL) {
-            func_80026AD8((u8 *)nas);
-            func_8002694C(nas, 0x300);
+            LinkObject((u8 *)nas);
+            AddSolid(nas, 0x300);
             nas->FUX = (EXT *)obj;
             obj->whatami = 1;
             obj->owner = 0x63;
@@ -3329,7 +3329,7 @@ void InitBall(NAS *nas) {
     } else {
         eng->sub->unk74 = 0x2009;
     }
-    func_80026B70((u8 **)&HeadOfBalls, (u8 *)nas);
+    AddToGroup((u8 **)&HeadOfBalls, (u8 *)nas);
     e1 = AddExtEngine(nas, 1);
     if (e1 != NULL) {
         sub = e1->sub;
@@ -3575,7 +3575,7 @@ void PlotBall(NAS *nas) {
                 break;
             }
             eng->unk10.y += 0x60;
-            if (func_80025BBC(eng) != 0) {
+            if (ApplyContourMoved(eng) != 0) {
                 obj->can_do |= 0x400;
                 if (nas->UserInfo.flags == 0) {
                     PlaySfx(BallFramesA[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -3640,7 +3640,7 @@ void PlotBall(NAS *nas) {
                 PlaySfx(BallFramesA[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
                 obj->status = 1;
             }
-            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
             break;
         case 1:
             d = ((s16 (*)(EXTengine *, s32))ArkBounceOnBounds)(eng, mot->Xa);
@@ -3678,7 +3678,7 @@ void PlotBall(NAS *nas) {
                 break;
             }
             CalcArkInfluence(mot);
-            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
             break;
         case 0x63:
             if (obj->countdown != 0) {
@@ -3698,7 +3698,7 @@ void PlotBall(NAS *nas) {
                 mot->Yacc = 6;
                 mot->Ydec = 0;
             }
-            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
             break;
         case 0x11:
             if (obj->countdown != 0) {
@@ -3728,7 +3728,7 @@ void PlotBall(NAS *nas) {
             if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 1) != 0 || done != 0) {
                 obj->status = 0x12;
             }
-            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
             break;
         case 4:
             if (obj->countdown != 0) {
@@ -5036,7 +5036,7 @@ void Create_ArkPickup(void)
   tgt = func_8007A464(1, (s32 *) (&pos), *((s32 *) MapScene));
   if (tgt != 0)
   {
-    func_80026C38((u8 *) nas, (u8 *) tgt);
+    AppendExtension((u8 *) nas, (u8 *) tgt);
   }
   if (nas->Failure != 0)
   {
@@ -5063,7 +5063,7 @@ void Plot_Ark_Pickup(NAS *arg0) {
         case 0:
             fux->status = 1;
             fux->can_do = (fux->can_do & 0xFFD0) | 0x12;
-            func_80026AD8((u8 *)arg0);
+            LinkObject((u8 *)arg0);
             fux->player = -1;
             break;
         case 7:
@@ -5358,7 +5358,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
     if (sub_find_point(me, me->sub, 1, &pos) == NULL) {
         *(SLONG_XYZ *)&pos = me->unk10;
     }
-    fr = func_80025A48(me, 2);
+    fr = FindCollisionBox(me, 2);
     if (fr != NULL) {
         if (me->unk5E != 0) {
             rotscale_update(&me->unk1C);
@@ -5390,7 +5390,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
         if (eng == NULL || eng == me) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -5517,7 +5517,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
                 if (arg0 == ArkSidePlayer1) {
                     ArkWallFlags |= 8;
                 }
-                ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xC, 0xFF);
+                ((void (*)(s32, s32, s32))pad_rumble_big)(arg0, 0xC, 0xFF);
                 SetHeroAction(arg0, 0x25);
                 return 0;
             }
@@ -5595,7 +5595,7 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
             do {
                 o = *(EXTengine **)(n + 0x54);
                 if (o != NULL && o != hero) {
-                    rec = func_80025A48(o, 0x40);
+                    rec = FindCollisionBox(o, 0x40);
                     if (rec != NULL) {
                         dx = o->unk10.x - hero->unk10.x;
                         dz = o->unk10.z - hero->unk10.z;
@@ -5672,7 +5672,7 @@ void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
 
     eng = Heroes[arg0].hero_eng;
     if (eng != NULL) {
-        rec = func_80025A48(eng, 1);
+        rec = FindCollisionBox(eng, 1);
         if (rec != NULL) {
             if (eng->unk5E != 0) {
                 rotscale_update(&eng->unk1C);
@@ -5728,7 +5728,7 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
 
     eng = Heroes[arg0].hero_eng;
     if (eng != NULL) {
-        rec = func_80025A48(eng, 2);
+        rec = FindCollisionBox(eng, 2);
         if (rec != NULL) {
             if (eng->unk5E != 0) {
                 rotscale_update(&eng->unk1C);
@@ -5793,7 +5793,7 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
     s32 avg;
 
     hit = 0;
-    box = func_80025A48(eng, 0x40);
+    box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         top = eng->unk10.y + box->unk2;
         bot = eng->unk10.y + box->height;
@@ -5805,7 +5805,7 @@ bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
                 if (it->Class & 0x200) {
                     other = it->Engine;
                     if (other != NULL && other != eng) {
-                        rec = func_80025A48(other, 0x40);
+                        rec = FindCollisionBox(other, 0x40);
                         if (rec != NULL) {
                             lo = other->unk10.y + rec->unk2;
                             hi = other->unk10.y + rec->height;
@@ -5893,7 +5893,7 @@ s32 TestArkObject2Hero(EXTengine *arg0, u16 arg1) {
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             goto next;
         }
@@ -6058,7 +6058,7 @@ void Init_seaweed(NAS *arg0) {
     if (eng != NULL) {
         ScriptCursor *cur;
         eng->sub->unk6C = *(s32*)MapScene;
-        cur = func_80024E30(arg0, &SeaweedScriptInit);
+        cur = ScriptCursorFirst(arg0, &SeaweedScriptInit);
         if (cur != NULL) {
             u8 *trig = (u8*)arg0->trigger;
             if (trig != NULL) {
@@ -6085,14 +6085,14 @@ void Init_N_Gin(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        func_80024E30(nas, &NGinScriptInit);
+        ScriptCursorFirst(nas, &NGinScriptInit);
         ArkBallSpawner = eng;
         eng->sub->unk6C = NginModel;
         eng->sub->unk74 = 0x2001;
         ArkNGin = obj = (ArkenoidGin *)AddObject(nas);
         if (obj != NULL) {
-            func_80026AD8((u8 *)nas);
-            func_8002694C(nas, 0x200);
+            LinkObject((u8 *)nas);
+            AddSolid(nas, 0x200);
             nas->FUX = (EXT *)obj;
             obj->unk14 = 0xE;
             obj->unk1A = 0;
@@ -6261,7 +6261,7 @@ void AR_UpdateShadow(u32 arg0) {
     EXTengine *shadow = h->hero_shadow;
 
     shadow->unk10 = h->hero_eng->unk10;
-    shadow->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(shadow);
+    shadow->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(shadow);
     shadow->unk1E = h->hero_eng->unk1E;
     shadow->unk5E = 1;
     if (h->hero_status & 0xF800) {

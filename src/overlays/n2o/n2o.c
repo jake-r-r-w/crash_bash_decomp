@@ -481,7 +481,7 @@ void InitialiseN2O(void) {
         mv->facing_angle = 0x800;
         mv->forward_angle = 0x800;
         if (N2OBallPhase == 1) {
-            func_80026980(h->hero);
+            RemoveCamera(h->hero);
         }
         N2OPillarList = N2OPillars;
     }
@@ -667,7 +667,7 @@ void N2OHeroEngineUpdate(s32 arg0) {
         rotscale_update(&e->unk1C);
     }
     gfx_load_xform(e->sub, e->unk3C, &e->unk10);
-    r = func_80025A48(e, 1);
+    r = FindCollisionBox(e, 1);
     if (r == NULL) goto next;
     {
         base = N2OHeroBoxes;
@@ -685,7 +685,7 @@ void N2OHeroEngineUpdate(s32 arg0) {
         b->z0 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
     }
 next:
-    r = func_80025A48(e, 2);
+    r = FindCollisionBox(e, 2);
     v = &sp10;
     if (r != NULL) {
         base = N2OHeroBoxes;
@@ -774,7 +774,7 @@ void N2OInitHero(s32 i) {
     FetchDefaultColBox(eng, 0x50);
     hb2 = Heroes;
     h2 = hb2 + i;
-    func_80026B70((u8 **)&N2OHeroList, (u8 *)h2->hero);
+    AddToGroup((u8 **)&N2OHeroList, (u8 *)h2->hero);
     SetHeroAction(i, 0x2F);
     h2->hero_eng->unk10.y = -0x480;
     h2->hero_weapon_count = one;
@@ -798,7 +798,7 @@ void N2OPlaceHero(s32 i) {
 
     hb = Heroes;
     h0 = &hb[i];
-    func_80026980(h0->hero);
+    RemoveCamera(h0->hero);
     if (h0->hero_status & 0x8000) {
         return;
     }
@@ -1350,7 +1350,7 @@ void SetN2OHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    func_80026A04((u8 *)h->hero);
+    AddCamera((u8 *)h->hero);
     h->hero_sub->unk08 = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
@@ -1413,7 +1413,7 @@ void SetN2OHeroDie(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    func_80026980(h->hero);
+    RemoveCamera(h->hero);
     h->hero_sub->unk08 = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
@@ -1603,8 +1603,8 @@ void InitN2OBall(NAS *nas) {
         if (obj != NULL) {
             mot = AddMotion(nas);
             if (mot != NULL) {
-                func_80026AD8((u8 *)nas);
-                func_8002694C(nas, 0x300);
+                LinkObject((u8 *)nas);
+                AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 obj->whatami = 1;
                 obj->owner = 0x63;
@@ -1620,7 +1620,7 @@ void InitN2OBall(NAS *nas) {
         eng->unk5D = 2;
         eng->sub->unk6C = BallsEffectsModel;
         eng->sub->unk74 = 0x2009;
-        func_80026B70((u8 **)&HeadOfBalls, (u8 *)nas);
+        AddToGroup((u8 **)&HeadOfBalls, (u8 *)nas);
         e1 = AddExtEngine(nas, 1);
         if (e1 != NULL) {
             sub = e1->sub;
@@ -1775,7 +1775,7 @@ void PlotN2OBall(NAS *nas) {
                 break;
             }
             eng->unk10.y += 0x60;
-            if (func_80025BBC(eng) != 0) {
+            if (ApplyContourMoved(eng) != 0) {
                 obj->can_do |= 0x400;
                 if (nas->UserInfo.flags == 0) {
                     PlaySfx(N2OBallBounceSfx[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -1832,7 +1832,7 @@ void PlotN2OBall(NAS *nas) {
                 obj->status = 10;
             }
             N2OBlendDirection((N2OBlend *)mot);
-            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
             break;
         case 0x11:
             if (obj->countdown != 0) {
@@ -1861,7 +1861,7 @@ void PlotN2OBall(NAS *nas) {
             if (N2OBallOut(eng, obj, 1) || done != 0) {
                 obj->status = 0x12;
             }
-            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))ApplyContour)(eng) - 0x60;
             break;
         case 4:
             if (obj->countdown != 0) {
@@ -3411,7 +3411,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
     if (sub_find_point(me, me->sub, 1, &pos) == NULL) {
         *(SLONG_XYZ *)&pos = me->unk10;
     }
-    if (func_80025A48(me, 2) != NULL) {
+    if (FindCollisionBox(me, 2) != NULL) {
         if (me->unk5E != 0) {
             rotscale_update(&me->unk1C);
         }
@@ -3440,7 +3440,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         if (eng == NULL || eng == me) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -3501,7 +3501,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
             if (!(GameCheats & 1)) {
                 hero->hero_score = 0;
                 hero->hero_health = 0;
-                ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xC, 0xFF);
+                ((void (*)(s32, s32, s32))pad_rumble_big)(arg0, 0xC, 0xFF);
                 SetHeroAction(arg0, 0x2E);
             }
             KillNAS(nas);
@@ -3576,7 +3576,7 @@ s32 N2OHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
             do {
                 o = *(EXTengine **)(n + 0x54);
                 if (o != NULL && o != hero) {
-                    rec = func_80025A48(o, 0x40);
+                    rec = FindCollisionBox(o, 0x40);
                     if (rec != NULL) {
                         dx = o->unk10.x - hero->unk10.x;
                         dz = o->unk10.z - hero->unk10.z;
@@ -3638,7 +3638,7 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
     s32 ang;
 
     hit = 0;
-    box = func_80025A48(eng, 0x40);
+    box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         top = eng->unk10.y + box->unk2;
         bot = eng->unk10.y + box->height;
@@ -3650,7 +3650,7 @@ s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self) {
                 if (it->Class & 0x200) {
                     other = it->Engine;
                     if (other != NULL && other != eng) {
-                        rec = func_80025A48(other, 0x40);
+                        rec = FindCollisionBox(other, 0x40);
                         if (rec != NULL) {
                             lo = other->unk10.y + rec->unk2;
                             hi = other->unk10.y + rec->height;
@@ -3733,7 +3733,7 @@ NAS *N2OBossPushObjects(void) {
 
     me = N2OBossRound.unk4;
     if (me != NULL) {
-        rec = func_80025A48(me, 0x40);
+        rec = FindCollisionBox(me, 0x40);
         if (rec != NULL) {
             if (me->unk5E != 0) {
                 rotscale_update(&me->unk1C);
@@ -3745,7 +3745,7 @@ NAS *N2OBossPushObjects(void) {
                 eng = nas->Engine;
                 if (eng != NULL && eng != me) {
                     FlagRecord *rec2;
-                    do { rec2 = func_80025A48(eng, 0x40); } while (0);
+                    do { rec2 = FindCollisionBox(eng, 0x40); } while (0);
                     if (rec2 != NULL) {
                         r = rec2->radius;
                         ext = FindExtension(nas, 0x1000);
@@ -3797,7 +3797,7 @@ s32 N2OMissileHitTest(x, y, z, size, mask)
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -3823,7 +3823,7 @@ s32 N2OMissileHitTest(x, y, z, size, mask)
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -3870,7 +3870,7 @@ s32 TestN2OObject2Hero(N2OVel *arg0, s32 arg1) {
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             goto next;
         }
@@ -4220,7 +4220,7 @@ void N2OUpdateShadow(s32 arg0) {
     EXTengine *shadow = h->hero_shadow;
 
     shadow->unk10 = h->hero_eng->unk10;
-    shadow->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(shadow);
+    shadow->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(shadow);
     shadow->unk1E = h->hero_eng->unk1E;
     shadow->unk5E = 1;
     if (h->hero_status & 0xF800) {

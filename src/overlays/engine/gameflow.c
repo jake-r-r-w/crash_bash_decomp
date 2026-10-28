@@ -124,7 +124,7 @@ void func_8008E5BC(void) {
         func_80095258(e->model);
         D_80058B64 = 0x10000;
         D_8004E0E0 = type;
-        D_8009E5AC = func_8001FE80(IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
+        D_8009E5AC = play_script(IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
                                    &D_8009E560, &D_8009E580, 4, (u8 **)&D_800AEC58);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
             PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
@@ -156,7 +156,7 @@ void func_8008EAC8(void) {
     if (D_800AEC5C != 0) {
         dbase_release((u8 *)D_800AEC5C);
     }
-    func_80021FB0();
+    scripts_release();
     subpool_free();
     f = FrameCount;
     a = &ScreenRect[f & 1];
@@ -177,7 +177,7 @@ void func_8008EB8C(void) {
     D_8009E5A8 = 0;
     D_800AEC58 = 0;
     D_800AEC5C = 0;
-    func_8001E984(0x20, 0x80);
+    init_scripts(0x20, 0x80);
     D_8009E5B0 = -1;
     D_8009E5B4 = 0;
     subpool_init(0x200);
@@ -1684,11 +1684,11 @@ void func_800928E8(void) {
     EngineCfg *cfg = &D_8009F96C;
     u8 *g;
 
-    func_800274FC((s32 *)cfg);
-    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
+    AllocOtBuffers((s32 *)cfg);
+    ((void (*)(u8 *))ResetScreen)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
     g = GameInfo;
     *(s32 *)(g + 4) = 0x80000000;
-    func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
+    vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
     func_80095DBC();
@@ -1703,7 +1703,7 @@ void func_800928E8(void) {
     GameOptions[0xE] = 1;
     GameOptions[0xF] = 1;
     func_800926CC((GameState *)g);
-    func_800222FC();
+    sound_init();
 }
 
 void func_800929D8(void) {
@@ -1813,7 +1813,7 @@ void func_80092CAC(void) {
 }
 
 void func_80092E40(void) {
-    func_80022030();
+    scripts_kill_all();
     func_8007AB28();
     sfx_delete_all();
     process_quit(&MenuProcessControl);

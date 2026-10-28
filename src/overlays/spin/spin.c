@@ -995,8 +995,8 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
         fux->dist = b;
         if (AddMotion(nas) != 0)
         {
-          func_80026AD8((u8 *) nas);
-          func_8002694C(nas, 0x300);
+          LinkObject((u8 *) nas);
+          AddSolid(nas, 0x300);
           nas->FUX = (EXT *) fux;
           eng->sub->unk6C = CrateObjectsModel;
           eng->unk5D = 1;
@@ -1166,7 +1166,7 @@ void PlotHazardType(NAS *nas) {
         case 6:
             SpinDropHazard(fux);
             func_8008E27C((s32 *)&eng->unk10, fux, 0);
-            func_800270B0(nas);
+            KillTriggerNas(nas);
             break;
         case 5:
             fux->timer = 0x5A;
@@ -1227,7 +1227,7 @@ void PlotHazardType(NAS *nas) {
         break;
     case 13:
         if (HeroHooks.KeepInBounds(eng) != 0) {
-            func_800270B0(nas);
+            KillTriggerNas(nas);
             break;
         }
         done = 0;
@@ -1298,7 +1298,7 @@ void PlotHazardType(NAS *nas) {
                     break;
                 }
             }
-            func_800270B0(nas);
+            KillTriggerNas(nas);
         }
         eng->unk5E = 1;
         eng->unk1E += 0x71;
@@ -1315,7 +1315,7 @@ void PlotHazardType(NAS *nas) {
         }
         if ((fux->hit & 8) && kind == 6) {
             func_8008E27C((s32 *)&eng->unk10, fux, 0);
-            func_800270B0(nas);
+            KillTriggerNas(nas);
         }
         break;
     }
@@ -1347,8 +1347,8 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                 fux->dist = b;
                 mot = AddMotion(nas);
                 if (mot != NULL) {
-                    func_80026AD8((u8 *)nas);
-                    func_8002694C(nas, 0x300);
+                    LinkObject((u8 *)nas);
+                    AddSolid(nas, 0x300);
                     nas->FUX = (EXT *)fux;
                     eng->sub->unk6C = RingObjectsModel;
                     eng->unk5D = 1;
@@ -1520,7 +1520,7 @@ void PlotBalloon(NAS *nas) {
                 s -= 0x100;
                 if (s < 0x101) {
                 kill:
-                    func_800270B0(nas);
+                    KillTriggerNas(nas);
                     return;
                 }
                 eng->unk2C.x = s;
@@ -1736,7 +1736,7 @@ s32 SpinBalloonCollide(EXTengine *eng, EXTmotion *mot, SpinFux *fux) {
     s32 kind;
 
     hit = 0;
-    box = func_80025A48(eng, 0x40);
+    box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
         i = 0;
         top = eng->unk10.y + box->unk2;
@@ -1849,7 +1849,7 @@ s32 SpinHitTest(x, y, z, size, skip, mask)
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -1875,7 +1875,7 @@ s32 SpinHitTest(x, y, z, size, skip, mask)
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -2804,7 +2804,7 @@ void SpinHeroHit(s32 arg0) {
         HeroInfo *base2 = Heroes;
 
         h2 = base2 + arg0;
-        if (abs(((s32 (*)(EXTengine *))func_80025F44)(h2->hero_eng)) < 0x20) {
+        if (abs(((s32 (*)(EXTengine *))ApplyContour)(h2->hero_eng)) < 0x20) {
             *flag = 0;
             switch (h2->hero_name) {
             case 1:
@@ -2872,7 +2872,7 @@ void SpinHeroFall(s32 arg0) {
     HeroInfo *h = base + arg0;
     EXTengine *eng;
 
-    if (func_80025BBC(h->hero_eng) != 0) {
+    if (ApplyContourMoved(h->hero_eng) != 0) {
         SetHeroAction(arg0, 7);
     } else {
         eng = h->hero_eng;
@@ -2977,7 +2977,7 @@ void SetSpinHeroWinner(s32 arg0) {
     }
     h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -3008,7 +3008,7 @@ void SpinHeroWinner(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -3049,7 +3049,7 @@ void SetSpinHeroLose(s32 arg0) {
     }
     h->hero_sub->unk6C = (s32)HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -3065,7 +3065,7 @@ void SetSpinHeroLose(s32 arg0) {
     h2->hero_pu = 0;
     h2->hero_pu_timer = 0;
     SetHeroSeq(arg0, 1);
-    func_80026980(h2->hero);
+    RemoveCamera(h2->hero);
 }
 
 void SpinHeroLose(s32 arg0) {
@@ -3078,7 +3078,7 @@ void SpinHeroLose(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -3144,7 +3144,7 @@ NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
     if (me == NULL) {
         return NULL;
     }
-    rec = func_80025A48(me, 0x400);
+    rec = FindCollisionBox(me, 0x400);
     if (rec == NULL) {
         return NULL;
     }
@@ -3169,7 +3169,7 @@ NAS *SpinHero2ObjectCollision(player, mask, unused, cone)
         if (eng == NULL || eng == me) {
             continue;
         }
-        rec2 = func_80025A48(eng, 0x40);
+        rec2 = FindCollisionBox(eng, 0x40);
         if (rec2 == NULL) {
             continue;
         }
@@ -3290,12 +3290,12 @@ s32 SpinHeroKickCollision(s32 arg0) {
     eng = Heroes[arg0].hero_eng;
     obj = NULL;
     if (eng != NULL) {
-        box = func_80025A48(eng, 0x40);
+        box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
             hi = eng->unk10.y + box->unk2;
             lo = eng->unk10.y + box->height;
-            box = func_80025A48(eng, 1);
+            box = FindCollisionBox(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
@@ -3338,7 +3338,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                     }
                     e = other[i].hero_eng;
                     if (e != NULL) {
-                        rec = func_80025A48(e, 0x40);
+                        rec = FindCollisionBox(e, 0x40);
                         if (rec != NULL) {
                             bot = e->unk10.y + rec->unk2;
                             top = e->unk10.y + rec->height;
@@ -3437,7 +3437,7 @@ s32 SpinHeroKickCollision(s32 arg0) {
                 e = n->Engine;
                 if (e == NULL) continue;
                 if (e == eng) continue;
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
                 bot = e->unk10.y + rec->unk2;
                 top = e->unk10.y + rec->height;
@@ -3500,11 +3500,11 @@ s32 SpinHeroCarryCollision(s32 idx) {
     eng = Heroes[idx].hero_eng;
     hit = 0;
     if (eng != NULL) {
-        box = func_80025A48(eng, 0x40);
+        box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             bot = eng->unk10.y + box->unk2;
             top = eng->unk10.y + box->height;
-            box = func_80025A48(eng, 1);
+            box = FindCollisionBox(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
@@ -3530,7 +3530,7 @@ s32 SpinHeroCarryCollision(s32 idx) {
                         if (other != NULL && other != eng) {
                             ext = FindExtension(nas, 0x1000);
                             if (ext != NULL && (ext->unk1A == 1 || ext->unk1A == 0xB)) {
-                                rec = func_80025A48(other, 0x40);
+                                rec = FindCollisionBox(other, 0x40);
                                 if (rec != NULL) {
                                     lo = other->unk10.y + rec->unk2;
                                     hi = other->unk10.y + rec->height;
@@ -3612,7 +3612,7 @@ void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero) {
     s32 top, bot, dx, dz, rr, y, lo, hi;
     s32 rad;
 
-    r = func_80025A48(eng, 0x40);
+    r = FindCollisionBox(eng, 0x40);
     if (r != NULL) {
         top = eng->unk10.y + r->unk2;
         rad = r->radius;
@@ -3621,7 +3621,7 @@ void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero) {
         if (!(h->hero_status & 0xF800)) {
             e2 = h->hero_eng;
             if (e2 != NULL) {
-                r2 = func_80025A48(e2, 0x40);
+                r2 = FindCollisionBox(e2, 0x40);
                 if (r2 != NULL) {
                     lo = e2->unk10.y + r2->unk2;
                     hi = e2->unk10.y + r2->height;

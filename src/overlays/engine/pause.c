@@ -165,7 +165,7 @@ found:
         }
         if (toggle) {
             if (GamePause & 1) {
-                func_80028158();
+                pads_reset_rumble();
                 func_8002AC40();
                 PlaySfx(0x193, NULL, NULL, 0x1000, 0x1E00, 0);
             } else {
@@ -431,10 +431,10 @@ found:
                             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
                             if ((u16)D_8009BD1C[0] != 0) {
                                 OPTV->unk8 = s;
-                                func_800222BC();
+                                sound_set_stereo();
                             } else {
                                 OPTV->unk8 = 0;
-                                func_800222DC();
+                                sound_set_mono();
                             }
                         }
                         break;
@@ -473,7 +473,7 @@ found:
                 for (i = 0; i < PSV->numPlayers; i++) {
                     if ((HPADS[i].pressed & 0x8000) && (((PadStick *)Pads)[i].flags & 8)) {
                         OPTV->unkC[i] = OPTV->unkC[i] == 0;
-                        func_80028018(i, 10);
+                        pad_rumble_small(i, 10);
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                 }
@@ -658,7 +658,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
             }
         case 0:
             if (D_8009AF00 == 0) {
-                func_800243A0(e->x, (s16)(e->y + arg1),
+                DrawSysText(e->x, (s16)(e->y + arg1),
                               ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b,
                               PauseChoice == n);
             }
@@ -678,7 +678,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
             break;
         case 3:
             if (D_8009AF00 == 0) {
-                func_800243A0(e->x, (s16)(e->y + arg1), (u8 *)e->idx, e->a, e->b, 0);
+                DrawSysText(e->x, (s16)(e->y + arg1), (u8 *)e->idx, e->a, e->b, 0);
             }
             break;
         case 4:
@@ -740,7 +740,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
             if (D_8009AF00 != 0) {
                 break;
             }
-            func_800243A0(e->x, (s16)(e->y + arg1),
+            DrawSysText(e->x, (s16)(e->y + arg1),
                           ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b, 0);
             break;
         case 6:
@@ -767,7 +767,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
             if (PauseChoice != k) {
                 goto draw;
             }
-            func_800243A0(e->x, (s16)(e->y + arg1),
+            DrawSysText(e->x, (s16)(e->y + arg1),
                           ((u8 **)D_80059748[g->level])[e->idx], e->c, e->d, 0);
             break;
         case 20: case 21: case 22: case 23: case 24:
@@ -779,7 +779,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
             if (PauseChoice != k) {
                 goto draw;
             }
-            func_800243A0(e->x, (s16)(e->y + arg1),
+            DrawSysText(e->x, (s16)(e->y + arg1),
                           ((u8 **)D_80059748[g->level])[e->idx], e->c, e->d, 0);
             break;
         case 30: case 31: case 32: case 33: case 34:
@@ -789,7 +789,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
                 break;
             }
         draw:
-            func_800243A0(e->x, (s16)(e->y + arg1),
+            DrawSysText(e->x, (s16)(e->y + arg1),
                           ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b, 0);
             break;
         }

@@ -851,14 +851,14 @@ loop:
     }
     g = HeroModelBank;
     if (*(s32 *)(g + 0x1544) != 0) {
-        func_80029100(g + 0x1548);
+        texture_update_anims(g + 0x1548);
     }
     n = 3;
     do {
         n--;
     } while (n >= 0);
     h = KegObjectsModel;
-    func_80029100(h + 0x10);
+    texture_update_anims(h + 0x10);
     ChaseUpdateStub(ChaseUpdateState);
 }
 
@@ -1183,7 +1183,7 @@ s32 ChaseHeroTestDrop(s32 arg0) {
     HeroInfo *h = &base[arg0];
 
     if (h->hero_move->jump_max != 0) {
-        if (func_80025BBC(h->hero_eng) != 0) {
+        if (ApplyContourMoved(h->hero_eng) != 0) {
             h->hero_move->jump_max = 0;
             h->hero_sub->unk08 = 0;
         } else {
@@ -1251,12 +1251,12 @@ s32 ChaseHeroKickCollision(s32 arg0) {
     eng = Heroes[arg0].hero_eng;
     obj = NULL;
     if (eng != NULL) {
-        box = func_80025A48(eng, 0x40);
+        box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
             hi = eng->unk10.y + box->unk2;
             lo = eng->unk10.y + box->height;
-            box = func_80025A48(eng, 1);
+            box = FindCollisionBox(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
@@ -1299,7 +1299,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                     }
                     e = other[i].hero_eng;
                     if (e != NULL) {
-                        rec = func_80025A48(e, 0x40);
+                        rec = FindCollisionBox(e, 0x40);
                         if (rec != NULL) {
                             bot = e->unk10.y + rec->unk2;
                             top = e->unk10.y + rec->height;
@@ -1398,7 +1398,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                 e = n->Engine;
                 if (e == NULL) continue;
                 if (e == eng) continue;
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
                 bot = e->unk10.y + rec->unk2;
                 top = e->unk10.y + rec->height;
@@ -1614,7 +1614,7 @@ void ChaseHeroFall(s32 arg0) {
     HeroInfo *h = &base[arg0];
     EXTengine *e;
 
-    if (func_80025BBC(h->hero_eng) != 0) {
+    if (ApplyContourMoved(h->hero_eng) != 0) {
         SetHeroAction(arg0, 0x7B);
     } else if (!(h->hero_ctrl & 8)) {
         e = h->hero_eng;
@@ -1755,7 +1755,7 @@ void SetChaseHeroHit(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
-    func_80027F7C(arg0, 0xA, 0xF0);
+    pad_rumble_big(arg0, 0xA, 0xF0);
     ChaseHidePowerup(arg0);
     base = Heroes;
     h = &base[arg0];
@@ -1890,7 +1890,7 @@ void SetChaseHeroWinner(s32 arg0) {
     }
     h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -1921,7 +1921,7 @@ void ChaseHeroWinner(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -1961,7 +1961,7 @@ void SetChaseHeroLose(s32 arg0) {
     }
     h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -2008,7 +2008,7 @@ void SetChaseHeroLose(s32 arg0) {
         eng->unk2C.y = 0x1000;
         eng->unk2C.z = 0x1000;
         eng->Engine->sub->flags = 0;
-        func_80026980(k->hero);
+        RemoveCamera(k->hero);
     }
 }
 
@@ -2024,7 +2024,7 @@ void ChaseHeroLose(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -2636,7 +2636,7 @@ void PlotEgg(NAS *nas) {
                     h = &hb[i];
                     if (h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
                         SetHeroAction(i, (u16)HeroActHit);
-                        func_80027F7C(i, 0xA, 0xF0);
+                        pad_rumble_big(i, 0xA, 0xF0);
                     }
                 }
                 if (GameInfo[i + 0x5C] == 0) {
@@ -2661,7 +2661,7 @@ void PlotEgg(NAS *nas) {
                         if (d >= -0x280 && d <= lim && ChaseRoundOver == 0 && Heroes[i].hero_immunity == 0 &&
                             !(Heroes[i].hero_status & 0xFA00)) {
                             SetHeroAction(i, (u16)HeroActHit);
-                            func_80027F7C(i, 0xA, 0xF0);
+                            pad_rumble_big(i, 0xA, 0xF0);
                         }
                     }
                 }
@@ -2903,7 +2903,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
         *(u16 *)(GameInfo + 0x30) |= arg1;
         for (i = 0; i < 4; i++) {
             if (GameInfo[i + 0x5C] != 0) {
-                func_80026980(Heroes[i].hero);
+                RemoveCamera(Heroes[i].hero);
                 Heroes[i].hero_status |= 0x400;
             } else if (i != free) {
                 Heroes[i].hero_status |= 0x100;
@@ -2936,7 +2936,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -2975,7 +2975,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -3003,7 +3003,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -3048,7 +3048,7 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -3087,7 +3087,7 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -3115,7 +3115,7 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -3660,7 +3660,7 @@ loop:
                 if (d >= neg && d <= range && ChaseRoundOver == 0 &&
                     h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
                     SetHeroAction(i, (u16)HeroActHit);
-                    func_80027F7C(i, 0xA, 0xF0);
+                    pad_rumble_big(i, 0xA, 0xF0);
                 }
             }
         }
@@ -3683,7 +3683,7 @@ void ChaseHitHero(s32 arg0)
     if ((h->hero_immunity == 0) && (!(h->hero_status & 0xFA00)))
     {
       SetHeroAction(arg0, (u16) HeroActHit);
-      func_80027F7C(arg0, 0xA, 0xF0);
+      pad_rumble_big(arg0, 0xA, 0xF0);
     }
   }
 }

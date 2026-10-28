@@ -225,9 +225,9 @@ struct NAStype {
     /* 0x0C */ NASnode Tag;             /* active list, or (Child) the free list */
     /* 0x14 */ NASnode Family;          /* ReAdoptChild appends, RemoveFamily unlinks */
     /* 0x1C */ GRPnode Group;
-    /* 0x28 */ OBJnode Object;          /* list headed by HeadOfObjects (func_80026A54 unlinks) */
-    /* 0x30 */ OBJnode Solid;           /* list headed by HeadOfSolids (func_8002694C pushes) */
-    /* 0x38 */ CAMnode Camera;          /* list headed by D_8005AA34 (func_80026980 unlinks) */
+    /* 0x28 */ OBJnode Object;          /* list headed by HeadOfObjects (UnlinkObject unlinks) */
+    /* 0x30 */ OBJnode Solid;           /* list headed by HeadOfSolids (AddSolid pushes) */
+    /* 0x38 */ CAMnode Camera;          /* list headed by D_8005AA34 (RemoveCamera unlinks) */
     /* 0x48 */ void (*InitDelete)(NAS *); /* AST Init: called once when spawned */
     /* 0x4C */ void (*Handler)(NAS *);  /* AST Plot */
     /* 0x50 */ NASTrigger *trigger;     /* the trigger it was built from, or NULL */
@@ -250,12 +250,12 @@ typedef struct ASTEntry {
 } ASTEntry;
 BASH_SIZE_CHECK(ASTEntry, 0xC);
 
-/* A 16-byte record with flag bits, found by func_80025A48: an engine has one
+/* A 16-byte record with flag bits, found by FindCollisionBox: an engine has one
  * of its own (EXTengine.collision_box), and a PointList carries more after its
  * points. The prototype's type for it is anonymous and not in the fragment. */
 typedef struct {
     /* 0x00 */ u8 unk0[2];
-    /* 0x02 */ s16 unk2;                 /* bottom (y offset) for func_8002578C */
+    /* 0x02 */ s16 unk2;                 /* bottom (y offset) for CheckSolidCollision */
     /* 0x04 */ u8 unk4[2];
     /* 0x06 */ s16 radius;
     /* 0x08 */ s16 height;
@@ -290,7 +290,7 @@ struct EXTengtype {
     /* 0x78 */ void (*kill)();
     /* 0x7C */ EXTengine *Engine;        /* next engine extension of the same NAS */
     /* 0x80 */ EXTengine *platform;      /* paired engine (its platform points back); cleared both ways by KillNAS */
-    /* 0x84 */ FlagRecord collision_box; /* checked first by func_80025A48 */
+    /* 0x84 */ FlagRecord collision_box; /* checked first by FindCollisionBox */
     /* 0x94 */ _sfx_handler *sfx;        /* StopSfx'd when the subengines are freed */
     /* 0x98 */ u8 boomshanka;
     /* 0x99 */ u8 direction;
@@ -320,7 +320,7 @@ struct subengine {
     /* 0x50 */ u8 unk50;
     /* 0x51 */ u8 unk51;
     /* 0x52 */ s16 unk52;
-    /* 0x54 */ void (*hook)(subengine *, s32, u32); /* func_80021330 calls it on each node */
+    /* 0x54 */ void (*hook)(subengine *, s32, u32); /* render_emitter_thread calls it on each node */
     /* 0x58 */ void (*release)(subengine *); /* called when the node is freed */
     /* 0x5C */ subengine *next;
     /* 0x60 */ subengine *prev;
@@ -377,10 +377,10 @@ typedef struct EXTmotion {
 } EXTmotion;
 BASH_SIZE_CHECK(EXTmotion, 0x34);
 
-/* Extension id 0x400 | kind, 0x2C bytes, made by func_800265DC (which also
+/* Extension id 0x400 | kind, 0x2C bytes, made by AllocExt400 (which also
  * sets 0x400 in NAS.NASid). It plays a hero_seq (Atable, set by SetHeroSeq);
- * func_800250B0 runs it: kind 1 with func_800251A8, kind 2 with
- * func_80025534. */
+ * func_800250B0 runs it: kind 1 with DoAnimCommand, kind 2 with
+ * DoAnimCommand2. */
 typedef struct EXTanimator {
     /* 0x00 */ s32 EXTid;
     /* 0x04 */ EXTnode Extend;
@@ -501,7 +501,7 @@ typedef struct HeroInfo {
     /* 0x10 */ EXTengine *hero_powerup; /* AddExtEngine(nas, 3) */
     /* 0x14 */ EXTengine *hero_fx;      /* AddExtEngine(nas, 3) */
     /* 0x18 */ EXTheromove *hero_move;  /* AddExt(nas, 0x54, 0x400000F0) */
-    /* 0x1C */ EXTanimator *hero_anim;  /* func_800265DC(nas) */
+    /* 0x1C */ EXTanimator *hero_anim;  /* AllocExt400(nas) */
     /* 0x20 */ EXTbotai *hero_ai;       /* AddExt(nas, 0x44, 0x400000F4) */
     /* 0x24 */ EXTobject *hero_object;
     /* 0x28 */ NAS *hero_harm_Nas;

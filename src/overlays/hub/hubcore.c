@@ -987,7 +987,7 @@ void InitPathEffect(NAS *nas) {
     ScriptExt40 *ext = AddExt(nas, 0x40, 0x10000000);
 
     if (ext != NULL) {
-        ext->cursor = func_80024E30(nas, &HubPathScriptInit);
+        ext->cursor = ScriptCursorFirst(nas, &HubPathScriptInit);
         nas->Engine->sub->unk6C = *(void **)MapScene;
         nas->Engine->sub->unk74 = 0x2018;
         nas->Engine->sub->flags &= 0xFEFFFFFF;
@@ -1757,35 +1757,35 @@ void PodiumInitScript(s32 arg0, s32 arg1) {
             switch (arg1) {
             case 1:
                 mid->inner->script = D_80055924;
-                func_80024E30((NAS *)obj, &PodiumScript2);
+                ScriptCursorFirst((NAS *)obj, &PodiumScript2);
                 break;
             case 2:
                 mid->inner->script = D_8005595C;
-                func_80024E30((NAS *)obj, &PodiumScript1);
+                ScriptCursorFirst((NAS *)obj, &PodiumScript1);
                 break;
             case 3:
                 mid->inner->script = D_80055994;
-                func_80024E30((NAS *)obj, &PodiumScript3);
+                ScriptCursorFirst((NAS *)obj, &PodiumScript3);
                 break;
             case 4:
                 mid->inner->script = D_800559CC;
-                func_80024E30((NAS *)obj, &PodiumScript0);
+                ScriptCursorFirst((NAS *)obj, &PodiumScript0);
                 break;
             case 5:
                 mid->inner->script = D_80055A04;
-                func_80024E30((NAS *)obj, &PodiumScript6);
+                ScriptCursorFirst((NAS *)obj, &PodiumScript6);
                 break;
             case 6:
                 mid->inner->script = D_80055A3C;
-                func_80024E30((NAS *)obj, &PodiumScript7);
+                ScriptCursorFirst((NAS *)obj, &PodiumScript7);
                 break;
             case 7:
                 mid->inner->script = D_80055A74;
-                func_80024E30((NAS *)obj, &PodiumScript4);
+                ScriptCursorFirst((NAS *)obj, &PodiumScript4);
                 break;
             case 8:
                 mid->inner->script = D_80055AAC;
-                func_80024E30((NAS *)obj, &PodiumScript5);
+                ScriptCursorFirst((NAS *)obj, &PodiumScript5);
                 break;
             }
             obj->unk64 = arg1;

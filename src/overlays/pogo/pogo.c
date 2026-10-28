@@ -1042,7 +1042,7 @@ void PogoWinner_Crystal(s32 arg0, u16 arg1) {
         ((D5A614View *)g)->unk30 |= arg1;
         for (i = 0; i < 4; i++) {
             if (g[i + 0x5C] != 0) {
-                func_80026980(Heroes[i].hero);
+                RemoveCamera(Heroes[i].hero);
                 Heroes[i].hero_status |= 0x400;
             } else if (i != found) {
                 Heroes[i].hero_status |= 0x100;
@@ -1093,7 +1093,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1132,7 +1132,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1162,7 +1162,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1227,7 +1227,7 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
         for (; i < 4; i++) {
             if (GameInfo[i + 0x5C] != 0) {
                 Heroes[i].hero_status |= 0x400;
-                func_80026980(Heroes[i].hero);
+                RemoveCamera(Heroes[i].hero);
             } else {
                 Heroes[i].hero_status |= 0x100;
             }
@@ -1270,7 +1270,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1309,7 +1309,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1339,7 +1339,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1953,7 +1953,7 @@ void SetHeroPogoLoser(u32 arg0) {
             nas->InitDelete(nas);
         }
     }
-    func_80026980(Heroes[arg0].hero);
+    RemoveCamera(Heroes[arg0].hero);
     Heroes[arg0].hero_shadow->flags &= ~0x8000;
 }
 
@@ -2060,7 +2060,7 @@ void SetHeroPogoDazed(u32 arg0) {
         HeroPogoTazingCancel(arg0);
     }
     Pickup_Lose(arg0);
-    func_80028018(arg0, 0x1E);
+    pad_rumble_small(arg0, 0x1E);
     Player_SnapToTile(arg0);
     x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
     z = (Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9;
@@ -5592,7 +5592,7 @@ void Init_PogoRipperRoo(NAS *nas) {
 
     e = nas->Engine;
     if (e != NULL) {
-        func_80024E30(nas, &RooScriptInit);
+        ScriptCursorFirst(nas, &RooScriptInit);
         dbase_load_all_mesh_anims((s32 *)RooModel);
         e->sub->unk6C = RooModel;
         e->sub->unk74 = 0x2001;

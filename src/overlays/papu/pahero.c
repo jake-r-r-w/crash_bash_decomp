@@ -247,12 +247,12 @@ void PlotPACrate(NAS *nas) {
             switch (kind) {
             case 4:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
-                func_800270B0(nas);
+                KillTriggerNas(nas);
                 return;
             case 5:
             case 7:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
-                func_800270B0(nas);
+                KillTriggerNas(nas);
                 return;
             default:
                 obj->status = 0;
@@ -267,12 +267,12 @@ void PlotPACrate(NAS *nas) {
             switch (kind) {
             case 4:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
-                func_800270B0(nas);
+                KillTriggerNas(nas);
                 return;
             case 5:
             case 7:
                 func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
-                func_800270B0(nas);
+                KillTriggerNas(nas);
                 return;
             default:
                 slide->unk12 = 0;
@@ -377,13 +377,13 @@ void PlotPACrate(NAS *nas) {
                 case 4:
                     PapuReleaseObj(obj, obj->player);
                     func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
-                    func_800270B0(nas);
+                    KillTriggerNas(nas);
                     return;
                 case 5:
                 case 7:
                     PapuReleaseObj(obj, obj->player);
                     func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
-                    func_800270B0(nas);
+                    KillTriggerNas(nas);
                     return;
                 }
             }
@@ -410,7 +410,7 @@ void PlotPACrate(NAS *nas) {
         }
         PapuReleaseObj(obj, obj->player);
         func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
-        func_800270B0(nas);
+        KillTriggerNas(nas);
         return;
     case 0x63:
         if (GravitateNas(nas) == 0) {
@@ -425,7 +425,7 @@ void PlotPACrate(NAS *nas) {
                 break;
             }
         }
-        func_800270B0(nas);
+        KillTriggerNas(nas);
         return;
     default:
         if (obj->will_do & 0x100) {
@@ -517,7 +517,7 @@ void PlotPACrate(NAS *nas) {
         } else {
             PapuReleaseObj(obj, obj->player);
             func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 0);
-            func_800270B0(nas);
+            KillTriggerNas(nas);
         }
     }
 }
@@ -540,7 +540,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
     s32 lo;
     s32 hi;
 
-    rec =func_80025A48(eng, 0x40);
+    rec =FindCollisionBox(eng, 0x40);
     if (rec == NULL) {
         return NULL;
     }
@@ -560,7 +560,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
             if (other == NULL) {
                 continue;
             }
-            rec2 = func_80025A48(other, 0x40);
+            rec2 = FindCollisionBox(other, 0x40);
             if (rec2 == NULL) {
                 continue;
             }
@@ -581,7 +581,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
     }
     other = PapuBoss.eng;
     if (other != NULL) {
-        rec2 = func_80025A48(other, 0x40);
+        rec2 = FindCollisionBox(other, 0x40);
         if (rec2 != NULL) {
             lo = other->unk10.y + rec2->unk2;
             hi = other->unk10.y + rec2->height;
@@ -609,7 +609,7 @@ NAS *PACrateCollide(EXTengine *eng, s32 self, s32 checkHeroes) {
         if (other == NULL || other == eng) {
             continue;
         }
-        rec2 = func_80025A48(other, 0x40);
+        rec2 = FindCollisionBox(other, 0x40);
         if (rec2 == NULL) {
             continue;
         }
@@ -662,7 +662,7 @@ s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask) {
     s32 lo;
     s32 hi;
 
-    rec = func_80025A48(eng, 0x40);
+    rec = FindCollisionBox(eng, 0x40);
     i = 0;
     if (rec != NULL) {
         r = rec->radius;
@@ -677,7 +677,7 @@ s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask) {
             if (other == NULL) {
                 continue;
             }
-            rec2 = func_80025A48(other, 0x40);
+            rec2 = FindCollisionBox(other, 0x40);
             if (rec2 == NULL) {
                 continue;
             }
@@ -1076,7 +1076,7 @@ void SetPAHeroWinner(s32 arg0) {
     }
     h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -1103,7 +1103,7 @@ void PAHeroWinner(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -1150,7 +1150,7 @@ NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
     if (me == NULL) {
         return NULL;
     }
-    rec = func_80025A48(me, 0x400);
+    rec = FindCollisionBox(me, 0x400);
     if (rec == NULL) {
         return NULL;
     }
@@ -1175,7 +1175,7 @@ NAS *PapuHero2ObjectCollision(player, mask, unused, cone)
         if (eng == NULL || eng == me) {
             continue;
         }
-        rec2 = func_80025A48(eng, 0x40);
+        rec2 = FindCollisionBox(eng, 0x40);
         if (rec2 == NULL) {
             continue;
         }
@@ -1296,12 +1296,12 @@ s32 PapuHeroKickCollision(s32 arg0) {
     eng = Heroes[arg0].hero_eng;
     obj = NULL;
     if (eng != NULL) {
-        box = func_80025A48(eng, 0x40);
+        box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
             hi = eng->unk10.y + box->unk2;
             lo = eng->unk10.y + box->height;
-            box = func_80025A48(eng, 1);
+            box = FindCollisionBox(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
@@ -1344,7 +1344,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                     }
                     e = other[i].hero_eng;
                     if (e != NULL) {
-                        rec = func_80025A48(e, 0x40);
+                        rec = FindCollisionBox(e, 0x40);
                         if (rec != NULL) {
                             bot = e->unk10.y + rec->unk2;
                             top = e->unk10.y + rec->height;
@@ -1443,7 +1443,7 @@ s32 PapuHeroKickCollision(s32 arg0) {
                 e = n->Engine;
                 if (e == NULL) continue;
                 if (e == eng) continue;
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
                 bot = e->unk10.y + rec->unk2;
                 top = e->unk10.y + rec->height;
@@ -1506,11 +1506,11 @@ s32 PapuHeroCarryCollision(s32 idx) {
     eng = Heroes[idx].hero_eng;
     hit = 0;
     if (eng != NULL) {
-        box = func_80025A48(eng, 0x40);
+        box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             bot = eng->unk10.y + box->unk2;
             top = eng->unk10.y + box->height;
-            box = func_80025A48(eng, 1);
+            box = FindCollisionBox(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
@@ -1536,7 +1536,7 @@ s32 PapuHeroCarryCollision(s32 idx) {
                         if (other != NULL && other != eng) {
                             ext = FindExtension(nas, 0x1000);
                             if (ext != NULL && (ext->unk1A == 1 || ext->unk1A == 0xB)) {
-                                rec = func_80025A48(other, 0x40);
+                                rec = FindCollisionBox(other, 0x40);
                                 if (rec != NULL) {
                                     lo = other->unk10.y + rec->unk2;
                                     hi = other->unk10.y + rec->height;

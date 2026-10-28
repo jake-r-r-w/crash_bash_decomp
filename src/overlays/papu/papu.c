@@ -802,12 +802,12 @@ void InitPapuBoss(NAS *nas) {
         eng->unk5C = 1;
         eng->unk5E = 1;
         FetchDefaultColBox(eng, 0x40);
-        cur = func_80024E30(nas, &PapuBossScriptInit);
+        cur = ScriptCursorFirst(nas, &PapuBossScriptInit);
         func_800250B0(nas);
         PapuBossCount = 0;
         PapuBossLast = 0;
         PapuWaveFlag = 0;
-        func_80026A04((u8 *)nas);
+        AddCamera((u8 *)nas);
         PapuBoss.nas = nas;
         PapuBoss.eng = eng;
         PapuBoss.sub = eng->sub;
@@ -963,7 +963,7 @@ void PlotPapuBoss(NAS *nas) {
         if (frame == 0xC) {
             o = CreateNAS(eng->unk10.x, eng->unk10.y - 0x800, eng->unk10.z, 0x1203, 0x11);
             if (o != NULL) {
-                func_80026C38((u8 *)nas, (u8 *)o);
+                AppendExtension((u8 *)nas, (u8 *)o);
             }
         }
         break;
@@ -1202,10 +1202,10 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
           obj->unk1A = 1;
           obj->unk22 = d;
           obj->unk14 = s->unk22;
-          func_80026AD8((u8 *) nas);
-          func_8002694C(nas, 0x200);
+          LinkObject((u8 *) nas);
+          AddSolid(nas, 0x200);
         }
-        s->pad4[5] = (s32) func_80024E30(nas, &PapuMinionScriptInit);
+        s->pad4[5] = (s32) ScriptCursorFirst(nas, &PapuMinionScriptInit);
       }
       else
       {
@@ -1302,7 +1302,7 @@ void PlotPapuMinion(NAS *nas)
   switch (fux->state) {
   case 5:
     move->speed = 0;
-    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     break;
   case 1:
     move->speed = 0;
@@ -1346,7 +1346,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 6:
-    dx = ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    dx = ((s32 (*)(EXTengine *))ApplyContour)(eng);
     i = (s16)((s16)(((eng->unk1E -= 0x155) & 0xFFF) / 341) % 12);
     eng->unk10.y -= dx;
     if (frame == 8) {
@@ -1379,7 +1379,7 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0x20;
     break;
   case 7:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     hit = (s32)PapuMinionObjectAhead(slot, 0x180);
     if (hit != 0) {
       for (i = 0; i < 4; i++) {
@@ -1412,7 +1412,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 8:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->speed = 0;
     if (PapuMinionSlots[slot].pad4[6] != 0) {
       if (frame == 8) {
@@ -1448,7 +1448,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 9:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     if (PapuMinionSlots[slot].pad4[6] == 0) {
       fux->unk1E |= 2;
       break;
@@ -1482,7 +1482,7 @@ void PlotPapuMinion(NAS *nas)
     GotoLinkAnim(anim, 0xA);
     break;
   case 13:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     dx = PapuSpawnPoints[nas->UserInfo.user2].x - eng->unk10.x;
     dz = PapuSpawnPoints[nas->UserInfo.user2].z - eng->unk10.z;
     angle = get_angle(-dx, -dz);
@@ -1494,7 +1494,7 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0x20;
     break;
   case 10:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->speed = 0;
     if (frame == 8) {
       fux->state = 0;
@@ -1506,7 +1506,7 @@ void PlotPapuMinion(NAS *nas)
     }
     break;
   case 12:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->speed = 0;
     pick = (s32)PapuMinionSlots[slot].pad4[6];
     if (pick != 0) {
@@ -1520,7 +1520,7 @@ void PlotPapuMinion(NAS *nas)
     GotoLinkAnim(anim, 0xD);
     break;
   case 11:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     move->speed = 0;
     PapuMinionSlots[slot].pad4[6] = 0;
     if (frame != 8) {
@@ -1535,7 +1535,7 @@ void PlotPapuMinion(NAS *nas)
     KillNAS(nas);
     return;
   default:
-    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    eng->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);
     fux->unk1C |= 0x102;
     move->speed = 0;
     move->push = 0;
@@ -1700,7 +1700,7 @@ s32 PapuHitHeroes(EXTengine *eng) {
     s32 lo;
     s32 hi;
 
-    box = func_80025A48(eng, 0x400);
+    box = FindCollisionBox(eng, 0x400);
     if (box != NULL) {
         if (eng->unk5E != 0) {
             rotscale_update(&eng->unk1C);
@@ -1718,7 +1718,7 @@ s32 PapuHitHeroes(EXTengine *eng) {
             if (eng == NULL) {
                 continue;
             }
-            rec = func_80025A48(eng, 0x40);
+            rec = FindCollisionBox(eng, 0x40);
             if (rec == NULL) {
                 continue;
             }
@@ -1751,7 +1751,7 @@ s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
     s32 lo;
     s32 hi;
 
-    box = func_80025A48(eng, flag);
+    box = FindCollisionBox(eng, flag);
     if (box == NULL) {
         return -1;
     }
@@ -1771,7 +1771,7 @@ s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -1804,7 +1804,7 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
     EXTengine *o;
     s32 hi;
 
-    box = func_80025A48(eng, 0x400);
+    box = FindCollisionBox(eng, 0x400);
     if (box != NULL) {
         if (eng->unk5E != 0) {
             rotscale_update(&eng->unk1C);
@@ -1823,7 +1823,7 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
             if (o == NULL || o == eng) {
                 continue;
             }
-            rec = func_80025A48(o, 0x40);
+            rec = FindCollisionBox(o, 0x40);
             if (rec == NULL) {
                 continue;
             }
@@ -1862,7 +1862,7 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
     s32 lo;
     s32 hi;
 
-    box = func_80025A48(eng, 0x40);
+    box = FindCollisionBox(eng, 0x40);
     if (box != NULL) {
     if (eng->unk5E != 0) {
         rotscale_update(&eng->unk1C);
@@ -1876,7 +1876,7 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
         if (nas->Class & 0x200) {
             e = nas->Engine;
             if (e != NULL && e != eng) {
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec != NULL) {
                     lo = e->unk10.y + rec->unk2;
                     hi = e->unk10.y + rec->height;
@@ -1933,7 +1933,7 @@ s32 PapuMinionKick(u32 idx) {
         return 0;
     }
     eng = (EXTengine *)PapuMinionSlots[idx].pad4[0];
-    if (eng != NULL && (box = func_80025A48(eng, 0x40)) != NULL) {
+    if (eng != NULL && (box = FindCollisionBox(eng, 0x40)) != NULL) {
     r = box->radius;
     top = eng->unk10.y + box->unk2;
     bot = eng->unk10.y + box->height;
@@ -1946,7 +1946,7 @@ s32 PapuMinionKick(u32 idx) {
             }
             e = Heroes[i].hero_eng;
             if (e != NULL) {
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec != NULL) {
                     lo = e->unk10.y + rec->unk2;
                     hi = e->unk10.y + rec->height;
@@ -1987,7 +1987,7 @@ s32 PapuMinionKick(u32 idx) {
         if ((nas->Class & 0x200) && nas != self) {
             e = nas->Engine;
             if (e != NULL && e != eng) {
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec != NULL) {
                     lo = e->unk10.y + rec->unk2;
                     hi = e->unk10.y + rec->height;
@@ -2704,8 +2704,8 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
         if (eng != NULL) {
             obj = (PapuObj *)AddObject(nas);
             if (obj != NULL && AddMotion(nas) != NULL) {
-                func_80026AD8((u8 *)nas);
-                func_8002694C(nas, 0x300);
+                LinkObject((u8 *)nas);
+                AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 eng->sub->unk6C = CrateObjectsModel;
                 eng->unk5D = 1;
@@ -2824,8 +2824,8 @@ void InitPACrate(NAS *arg0) {
             }
             ArenaGrid[z * 20 + x].unk0 = obj->unk14;
             AddMotion(arg0);
-            func_80026AD8((u8 *)arg0);
-            func_8002694C(arg0, 0x300);
+            LinkObject((u8 *)arg0);
+            AddSolid(arg0, 0x300);
         }
     }
     if (arg0->Failure != 0) {

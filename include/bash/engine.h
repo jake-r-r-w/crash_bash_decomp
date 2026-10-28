@@ -147,7 +147,7 @@ extern s32 SaveMenuState;
 typedef struct EngineCfg {
     /* 0x00 */ u8 unk0[0xC];
     /* 0x0C */ s32 pools[3];       /* prims_init */
-    /* 0x18 */ VramArea *areas;    /* func_80028774 */
+    /* 0x18 */ VramArea *areas;    /* vram_init */
     /* 0x1C */ FreeNode *pool;
     /* 0x20 */ s32 npool;
     /* 0x24 */ s32 nbuf;

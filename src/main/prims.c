@@ -816,8 +816,8 @@ void prims_empty(void) {
     DrawSync(0);
     printf("empty prims\n");
     if (ScreenRect != 0) {
-        func_8002775C(D_8005B790);
-        func_8002775C(D_8005B790 + 0x400C);
+        ClearOt(D_8005B790);
+        ClearOt(D_8005B790 + 0x400C);
     }
     var_s0 = D_80056864;
     if (var_s0 != NULL) {
@@ -1643,7 +1643,7 @@ void draw_text_nas(TextNAS *t, s32 arg1, s32 arg2) {
         } else {
             x = ((GfxScreen *)RenderState.unk28)->x + t->x;
         }
-        func_800243A0(x, (s16)(*(s16 *)&((GfxScreen *)RenderState.unk28)->y + t->y), t->str, t->c0, t->c1, 0);
+        DrawSysText(x, (s16)(*(s16 *)&((GfxScreen *)RenderState.unk28)->y + t->y), t->str, t->c0, t->c1, 0);
         return;
     }
     RenderState.unk84 = RenderState.unkCC;
@@ -2278,7 +2278,7 @@ void posdst_flash(PosDst *arg0, s32 arg1, s32 arg2) {
     case 2:
         sp10 = e->a[1];
         sp14 = e->a[2];
-        func_80024214(&sp10, &sp14);
+        TextFlashColour(&sp10, &sp14);
         arg0->x = e->b[0];
         arg0->y = sp10;
         arg0->z = sp14;
@@ -2309,7 +2309,7 @@ void posdst_flash_at(PosDst *arg0, s32 arg1) {
     case 2:
         sp10 = e->a[1];
         sp14 = e->a[2];
-        func_80024214(&sp10, &sp14);
+        TextFlashColour(&sp10, &sp14);
         arg0->x = e->b[0];
         arg0->y = sp10;
         arg0->z = sp14;
@@ -2917,7 +2917,7 @@ void draw_map_sub(void *arg0, void *arg1) {
 }
 
 void map_update(s32 *arg0) {
-    func_80029100(*arg0 + 0x10);
+    texture_update_anims(*arg0 + 0x10);
 }
 
 void mapscene_release(u8 *arg0) {
@@ -2973,7 +2973,7 @@ void mapscene_init(s32 *arg0, s32 *arg1) {
         return;
     }
     arg0[1] = 3;
-    func_8002AA8C(p);
+    textureset_clear(p);
     load_file_cb(arg1[1], map_loaded_textureset, arg0);
 }
 
@@ -2984,8 +2984,8 @@ void map_loaded_textureset(u8 *arg0, u8 **arg1) {
     temp_s1 = *arg1;
     mal_set_owner(arg0, temp_s1 + 0x20);
     temp_s0 = temp_s1 + 0x10;
-    func_8002A5A4(temp_s0, (*(s32*)((u8*)(temp_s0) + 16)));
-    func_80029560(temp_s0);
+    textureset_init(temp_s0, (*(s32*)((u8*)(temp_s0) + 16)));
+    textureset_upload(temp_s0);
     texture_release_loading_mem((obj_textureset *)temp_s0);
     (*(s32*)((u8*)(temp_s1) + 8)) = loader_queue((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), map_loaded_geo, arg1, 0, 0);
 }

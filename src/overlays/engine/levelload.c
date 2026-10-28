@@ -69,7 +69,7 @@ void func_8009342C(void) {
                 D_800A02C4 = 6;
                 func_80095258(p);
                 D_800A02C0 += 1;
-                func_8001FE80(p, 0, &D_8009F9D4, &D_8009F9F4, 8, NULL);
+                play_script(p, 0, &D_8009F9D4, &D_8009F9F4, 8, NULL);
             }
         }
         if (D_800A02C4 != 0) {
@@ -137,19 +137,19 @@ void func_800936C4(void) {
     start = func_8009317C() + 7;
     start &= ~7;
     func_800936C4_heap(&MainHeap, start);
-    func_800235BC(&D_80098F48);
+    SetupLevelSpecs(&D_80098F48);
     cfg = (EngineCfg *)D_8005A5E4;
     if (cfg == NULL) {
         cfg = &D_8009F96C;
     }
-    func_800274FC((s32 *)cfg);
-    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
+    AllocOtBuffers((s32 *)cfg);
+    ((void (*)(u8 *))ResetScreen)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
     GameInfo[0x60] = 0;
     GameInfo[0x61] = 0;
-    func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
+    vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
-    func_800222FC();
+    sound_init();
     draw_init();
     D_800A0158 = 0;
     if (((D5A614View *)GameInfo)->mode == 0x28 && FirstBootDone != 0) {
@@ -323,14 +323,14 @@ void func_80093BE8(void) {
         g = (EngStateView *)GameInfo;
         g->unk30 = 0;
         g->unk10 = 0;
-        func_80023158(D_8005AA50);
+        InitNasHeap(D_8005AA50);
         subpool_init(D_8005AA54);
-        func_8001E984(0x20, 0x20);
+        init_scripts(0x20, 0x20);
         process_init(&LoadingControl);
         InitialiseNasSystem();
         func_8007A8C4();
         if (g->mode != 0x28 || FirstBootDone == 0) {
-            func_800229FC(g->mode);
+            music_load_track(g->mode);
         }
         if (GameMode == 0x28 && FirstBootDone == 0) {
             func_8002BBB4();
@@ -341,7 +341,7 @@ void func_80093BE8(void) {
         break;
     case 6:
         if (GameMode != 0x28 || FirstBootDone == 0) {
-            func_80022140(GameMode, ModeTypes[GameMode * 3]);
+            music_play_level(GameMode, ModeTypes[GameMode * 3]);
         }
         load_initial_dbases();
         a = map;
@@ -364,7 +364,7 @@ void func_80093BE8(void) {
         D_800A0158 = 6;
         break;
     case 5:
-        func_80022140(GameMode, ModeTypes[GameMode * 3]);
+        music_play_level(GameMode, ModeTypes[GameMode * 3]);
         D_800A0158 = 3;
         break;
     case 3:
@@ -432,7 +432,7 @@ void func_800940B0(s32 arg0, s32 arg1) {
 }
 
 void func_80094120(void) {
-    func_80022030();
+    scripts_kill_all();
     dbase_release(D_800556F4);
 }
 
@@ -561,7 +561,7 @@ void func_800945C0(EngineStartArgs *arg0) {
     D_800A0D1C = arg0->unk4;
     D_800A0D20[0] = 0;
     D_800A0D24[0] = 0;
-    func_8002232C();
+    sound_reinit();
     SfxBanks[0].id = -1;
     SfxBanks[0].handle = 0;
     SfxBanks[0].head = NULL;
@@ -583,17 +583,17 @@ void func_80094754(void) {
         func_8002BAE8();
     }
     D_800A0D3C = 0;
-    func_8002232C();
+    sound_reinit();
     D_8009F968 = 0;
     mal_init(&MainHeap, D_80098594, 0x801FF000 - (s32)D_80098594);
     smallnode_init();
     cfg = &D_800A0314;
-    func_800274FC((s32 *)cfg);
-    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
-    func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
+    AllocOtBuffers((s32 *)cfg);
+    ((void (*)(u8 *))ResetScreen)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
+    vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
-    func_8001E984(0x20, 0x80);
+    init_scripts(0x20, 0x80);
     func_800945C0((EngineStartArgs *)D_800A0C0C);
 }
 
@@ -647,7 +647,7 @@ void func_80094A28(void) {
     s32 t;
     MarkSrcEnt *e;
 
-    func_8001FE80((u8 *)((MarkCtx *)D_800A0D2C)->obj, ((MarkCtx *)D_800A0D2C)->unk8, &D_800A0BA0, &D_800A0BC0, 4, &D_800A0D34);
+    play_script((u8 *)((MarkCtx *)D_800A0D2C)->obj, ((MarkCtx *)D_800A0D2C)->unk8, &D_800A0BA0, &D_800A0BC0, 4, &D_800A0D34);
     D_800A0C70 = 0;
     t = (s32)((MarkCtx *)D_800A0D2C)->obj;
     D_800A0D30 = t;
@@ -751,7 +751,7 @@ void func_80094DD0(void) {
         func_8002BAE8();
     }
     func_80094F60();
-    func_80022030();
+    scripts_kill_all();
     func_8002BA44();
     func_8002B96C();
     if (SfxBanks[0].id != -1) {
@@ -760,8 +760,8 @@ void func_80094DD0(void) {
     if (SfxBanks[1].id != -1) {
         func_8002BCB0((s32 *)&SfxBanks[1]);
     }
-    func_8002232C();
-    func_8002726C();
+    sound_reinit();
+    ClearVram();
     D_800A0C70 = 0;
     D_800A0D3C += 1;
     D_8004E0E0 = 2;
@@ -817,7 +817,7 @@ void func_80095020(void) {
         func_8002BAE8();
     }
     func_80094F60();
-    func_80022030();
+    scripts_kill_all();
     func_8002BA44();
     func_8002B96C();
     if (SfxBanks[0].id != -1) {
@@ -826,8 +826,8 @@ void func_80095020(void) {
     if (SfxBanks[1].id != -1) {
         func_8002BCB0((s32 *)&SfxBanks[1]);
     }
-    func_8002232C();
-    func_8002726C();
+    sound_reinit();
+    ClearVram();
     D_800A0C70 = 0;
     D_800A0D3C += 1;
 }
@@ -846,7 +846,7 @@ void func_80095160(EngineStartArgs *arg0) {
     D_800A0D1C = arg0->unk4;
     D_800A0D20[0] = 0;
     D_800A0D24[0] = 0;
-    func_8002232C();
+    sound_reinit();
     SfxBanks[0].id = -1;
     SfxBanks[0].handle = 0;
     SfxBanks[0].head = NULL;

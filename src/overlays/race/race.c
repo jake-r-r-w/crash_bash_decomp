@@ -3676,8 +3676,8 @@ void SetRaceHeroDazed(s32 player) {
     if (G63->unk34 != 0x19) {
         SetHeroSeq(player, 0x4A);
     }
-    func_80028018(player, 0xA);
-    ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xFF);
+    pad_rumble_small(player, 0xA);
+    ((void (*)(s32, s32, s32))pad_rumble_big)(player, 0xA, 0xFF);
     base = Heroes;
     h = &base[player];
     f = (RaceSpawnExt *)h->hero->FUX;
@@ -4122,7 +4122,7 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
                 for (k = 0; k < 4; k++) {
                     Heroes[k].hero_status |= 0x100;
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                     }
                 }
             } else {
@@ -4634,7 +4634,7 @@ s32 RaceMissileHitHeroes(u8 *arg0, u32 arg1) {
                     for (j = 0; j < 4; j++) {
                         Heroes[j].hero_status |= 0x100;
                         if (G63B->unk5C[j] != 0) {
-                            func_80026980(Heroes[j].hero);
+                            RemoveCamera(Heroes[j].hero);
                         }
                     }
                     CameraMode = 1;
@@ -4793,7 +4793,7 @@ void InitRacePickUp(NAS *m) {
 
     ext = AddExt(m, 0x50, 0x10000000);
     if (ext != NULL) {
-        func_80026B70((u8 **)&RacePickups, (u8 *)m);
+        AddToGroup((u8 **)&RacePickups, (u8 *)m);
         m->Engine->sub->unk74 = 0x2006;
         m->Engine->sub->unk6C = &CrateEffectsModel;
         m->Engine->unk5D = 2;
@@ -5465,7 +5465,7 @@ void InitDinoEgg(NAS *m) {
 
     ext = AddExt(m, 0x34, 0x10000000);
     if (ext != NULL) {
-        ext->anim = (EXTanimator *)func_80024E30(m, &DinoEggScriptInit);
+        ext->anim = (EXTanimator *)ScriptCursorFirst(m, &DinoEggScriptInit);
         m->Engine->unk5D = 0;
         m->Engine->unk5C = 1;
         m->Engine->sub->unk74 = 0x2005;
@@ -6088,7 +6088,7 @@ s32 RaceExplodeHitHeroes(SLONG_XYZ *pos) {
                     for (j = 0; j < 4; j++) {
                         Heroes[j].hero_status |= 0x100;
                         if (MODE63->unk5C[j] != 0) {
-                            func_80026980(Heroes[j].hero);
+                            RemoveCamera(Heroes[j].hero);
                         }
                     }
                     CameraMode = 1;
@@ -6185,8 +6185,8 @@ void InitTrackGlob(NAS *m) {
 
     ext = AddExt(m, 0x8C, 0x10000000);
     if (ext != NULL) {
-        ext->cursor = func_80024E30(m, &TrackGlobScriptInit);
-        func_80026B70(&RaceObjects, (u8 *)m);
+        ext->cursor = ScriptCursorFirst(m, &TrackGlobScriptInit);
+        AddToGroup(&RaceObjects, (u8 *)m);
         m->Engine->sub->unk6C = *(s32 *)MapScene;
         m->Engine->sub->unk74 = 0x4100;
         m->Engine->unk5D = 1;
@@ -6339,7 +6339,7 @@ void InitDac(NAS *m) {
         m->Engine->unk10.z = (rcossin_tbl[0xC00].unk2 * 7) >> 4;
         m->Engine->sub->unk68 = -0x300;
         m->Engine->sub->flags |= 0x02000000;
-        ext->unk10 = (s32)func_80024E30(m, &DacScriptInit);
+        ext->unk10 = (s32)ScriptCursorFirst(m, &DacScriptInit);
         func_800250B0(m);
         m->Engine->unk1E = 0x800;
         m->Engine->unk5E = 1;
@@ -6493,7 +6493,7 @@ void PlotRaceSmokeBoostWater(NAS *nas) {
 }
 
 void InitRaceSmokeBoostWater(NAS *nas) {
-    func_80024E30(nas, &RaceSmokeBoostWaterScriptInit);
+    ScriptCursorFirst(nas, &RaceSmokeBoostWaterScriptInit);
     nas->Engine->sub->unk6C = &CrateEffectsModel;
     nas->UserInfo.user1 = 0;
 }
@@ -6524,7 +6524,7 @@ void InitGlob(NAS *m) {
 
     ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
-        ext->unk10 = func_80024E30(m, &GlobScriptInit);
+        ext->unk10 = ScriptCursorFirst(m, &GlobScriptInit);
         m->Engine->sub->unk6C = *(s32 *)MapScene;
         GotoLinkAnim((EXTanimator *)ext->unk10, 2);
         func_800250B0(m);
@@ -6550,7 +6550,7 @@ void PlotInnerRipple(NAS *m) {
         m->Engine->unk5E = 1;
         sub = m->Engine->sub;
         if ((s16)sub->unk76 >= 0xFFF) {
-            func_800270B0(m);
+            KillTriggerNas(m);
             return;
         }
         sub->unk76 += ext->unk18;
@@ -6594,7 +6594,7 @@ void PlotRippled(NAS *m) {
         m->Engine->sub->unk76 += ext->fade;
         m->Engine->unk5E = 1;
         if ((s16)m->Engine->sub->unk76 >= 0xFFF) {
-            func_800270B0(m);
+            KillTriggerNas(m);
         }
     }
 }
@@ -6627,7 +6627,7 @@ void PlotRaceGreenSmokeBoost(NAS *nas) {
 }
 
 void InitRaceGreenSmokeBoost(NAS *nas) {
-    func_80024E30(nas, &RaceGreenSmokeBoostScriptInit);
+    ScriptCursorFirst(nas, &RaceGreenSmokeBoostScriptInit);
     nas->Engine->sub->unk6C = &CrateEffectsModel;
     nas->UserInfo.user1 = 0;
 }
@@ -6637,7 +6637,7 @@ void PlotRaceGreenSmokePoof(NAS *nas) {
 }
 
 void InitRaceGreenSmokePoof(NAS *nas) {
-    func_80024E30(nas, &RaceGreenSmokePoofScriptInit);
+    ScriptCursorFirst(nas, &RaceGreenSmokePoofScriptInit);
     nas->Engine->sub->unk6C = &CrateEffectsModel;
     nas->Engine->sub->flags |= 0x21;
     nas->UserInfo.user1 = 0;
@@ -6648,7 +6648,7 @@ void PlotRaceSmokePoof(NAS *nas) {
 }
 
 void InitRaceSmokePoof(NAS *nas) {
-    func_80024E30(nas, &RaceSmokePoofScriptInit);
+    ScriptCursorFirst(nas, &RaceSmokePoofScriptInit);
     nas->Engine->sub->unk6C = PolarObjectsModel;
     nas->Engine->sub->flags |= 0x21;
     nas->UserInfo.user1 = 0;
@@ -6766,7 +6766,7 @@ void PlotRaceSmokeBoost(NAS *nas) {
 void InitRaceSmokeBoost(NAS *nas) {
     ScriptCursor *cur;
 
-    cur = func_80024E30(nas, &RaceSmokeBoostScriptInit);
+    cur = ScriptCursorFirst(nas, &RaceSmokeBoostScriptInit);
     if (GameMode == 0x1F) {
         if (cur != NULL) {
             cur->unk1E = 4;

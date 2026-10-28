@@ -456,7 +456,7 @@ void SetBashHeroWinner(s32 arg0) {
     }
     h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -483,7 +483,7 @@ void BashHeroWinner(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -532,7 +532,7 @@ void SetBashHeroLoser(s32 arg0) {
     }
     h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -544,7 +544,7 @@ void SetBashHeroLoser(s32 arg0) {
     h2->hero_pu = 0;
     h2->hero_pu_timer = 0;
     SetHeroSeq(arg0, 1);
-    func_80026980(h2->hero);
+    RemoveCamera(h2->hero);
 }
 
 void BashHeroLoser(s32 arg0) {
@@ -558,7 +558,7 @@ void BashHeroLoser(s32 arg0) {
         h->hero_health = 2;
     }
     h->hero_eng->unk10.y = World_floor_level - 0x200;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
@@ -598,7 +598,7 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
     if (me == NULL) {
         return NULL;
     }
-    rec = func_80025A48(me, 0x400);
+    rec = FindCollisionBox(me, 0x400);
     if (rec == NULL) {
         return NULL;
     }
@@ -623,7 +623,7 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
         if (eng == NULL || eng == me) {
             continue;
         }
-        rec2 = func_80025A48(eng, 0x40);
+        rec2 = FindCollisionBox(eng, 0x40);
         if (rec2 == NULL) {
             continue;
         }
@@ -780,12 +780,12 @@ s32 BashHeroKickCollision(s32 arg0) {
     eng = Heroes[arg0].hero_eng;
     obj = NULL;
     if (eng != NULL) {
-        box = func_80025A48(eng, 0x40);
+        box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
             hi = eng->unk10.y + box->unk2;
             lo = eng->unk10.y + box->height;
-            box = func_80025A48(eng, 1);
+            box = FindCollisionBox(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
@@ -836,7 +836,7 @@ s32 BashHeroKickCollision(s32 arg0) {
                 if (e == NULL) {
                     continue;
                 }
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) {
                     continue;
                 }
@@ -948,7 +948,7 @@ s32 BashHeroKickCollision(s32 arg0) {
                 e = n->Engine;
                 if (e == NULL) continue;
                 if (e == eng) continue;
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
                 bot = e->unk10.y + rec->unk2;
                 top = e->unk10.y + rec->height;
@@ -1011,11 +1011,11 @@ s32 BashHeroCarryCollision(s32 idx) {
     eng = Heroes[idx].hero_eng;
     hit = 0;
     if (eng != NULL) {
-        box = func_80025A48(eng, 0x40);
+        box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             bot = eng->unk10.y + box->unk2;
             top = eng->unk10.y + box->height;
-            box = func_80025A48(eng, 1);
+            box = FindCollisionBox(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
@@ -1041,7 +1041,7 @@ s32 BashHeroCarryCollision(s32 idx) {
                         if (other != NULL && other != eng) {
                             ext = FindExtension(nas, 0x1000);
                             if (ext != NULL && (ext->status == 1 || ext->status == 0xB)) {
-                                rec = func_80025A48(other, 0x40);
+                                rec = FindCollisionBox(other, 0x40);
                                 if (rec != NULL) {
                                     lo = other->unk10.y + rec->unk2;
                                     hi = other->unk10.y + rec->height;

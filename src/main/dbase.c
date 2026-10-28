@@ -98,7 +98,7 @@ void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db) {
     obj_textureset *set;
     s32 n;
 
-    n = func_8002A650(arg0);
+    n = textureset_mem_size(arg0);
     heap = &MainHeap;
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         mal_free(arg0, heap);
@@ -106,8 +106,8 @@ void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db) {
         dbase_load_textures((u8 *)db);
     } else {
         set = &db->textures;
-        func_8002A5A4((u8 *)set, arg0);
-        func_80029560((u8 *)set);
+        textureset_init((u8 *)set, arg0);
+        textureset_upload((u8 *)set);
         texture_release_loading_mem(set);
     }
     load_file_cb(db->file, dbase_asload_with_anims_callback, db);
@@ -576,15 +576,15 @@ void dbase_textures_loaded(u8 *data, u8 *rec) {
     _mal_area *heap;
     s32 size;
 
-    size = func_8002A650(data);
+    size = textureset_mem_size(data);
     heap = &MainHeap;
     if (mal_first_free((size + 3) >> 2, heap->free) == NULL) {
         mal_free(data, heap);
         *(s32 *)(rec + 8) = 0;
         dbase_load_textures(rec);
     } else {
-        func_8002A5A4(rec + 0x10, data);
-        func_80029560(rec + 0x10);
+        textureset_init(rec + 0x10, data);
+        textureset_upload(rec + 0x10);
         texture_release_loading_mem((obj_textureset *)(rec + 0x10));
     }
     *(s32 *)(rec + 8) = loader_queue(*(s32 *)(rec + 0), 0, *(s32 *)(rec + 0x24), dbase_set_data, rec, 1, 0);
@@ -594,7 +594,7 @@ void dbase_group_textures_loaded(u8 *arg0, u8 *arg1) {
     _mal_area *heap;
     s32 n;
 
-    n = func_8002A650(arg0);
+    n = textureset_mem_size(arg0);
     heap = &MainHeap;
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         mal_free(arg0, heap);
@@ -602,8 +602,8 @@ void dbase_group_textures_loaded(u8 *arg0, u8 *arg1) {
         dbase_load_textures(arg1);
     } else {
         arg1 += 0x10;
-        func_8002A5A4(arg1, arg0);
-        func_80029560(arg1);
+        textureset_init(arg1, arg0);
+        textureset_upload(arg1);
         texture_release_loading_mem((obj_textureset *)arg1);
     }
 }
@@ -613,8 +613,8 @@ void dbase_set_textures(u8 *arg0, u8 *arg1) {
     u8 *temp_s0;
 
     temp_s0 = arg0 + 0x10;
-    func_8002A5A4(temp_s0, arg1);
-    func_80029560(temp_s0);
+    textureset_init(temp_s0, arg1);
+    textureset_upload(temp_s0);
     (*(s32*)((u8*)(arg0) + 32)) = 0;
 }
 
@@ -645,13 +645,13 @@ void dbase_release(u8 *arg0) {
         }
         mal_free(*(void **)(arg0 + 0xC), &MainHeap);
         *(s32 *)(arg0 + 0xC) = 0;
-        func_80029790(arg0 + 0x10);
+        textureset_release(arg0 + 0x10);
         *(s32 *)(arg0 + 8) = 0;
         return;
     }
     if (*(s32 *)(arg0 + 8) != 0) {
         if (*(s32 *)(arg0 + 0x18) != 0) {
-            func_80029790(arg0 + 0x10);
+            textureset_release(arg0 + 0x10);
         }
         loader_cancel(*(void **)(arg0 + 8));
         *(s32 *)(arg0 + 8) = 0;
@@ -684,8 +684,8 @@ void dbase_set(u8 *arg0, s32 arg1, s32 arg2) {
     temp_s0 = arg0 + 0x10;
     (*(s32*)((u8*)(arg0) + 12)) = arg1;
     (*(s32*)((u8*)(arg0) + 32)) = arg2;
-    func_8002A5A4(temp_s0, arg2);
-    func_80029560(temp_s0);
+    textureset_init(temp_s0, arg2);
+    textureset_upload(temp_s0);
 }
 
 void dbase_init_all(void) {
@@ -704,7 +704,7 @@ loop:
         *(s32 *)(p - 8) = 0;
         *(s32 *)(p - 4) = 0;
         *(s32 *)(p + 0x24) = 0;
-        func_8002AA8C(p);
+        textureset_clear(p);
         p += 0x38;
         goto loop;
     }
@@ -714,7 +714,7 @@ void dbase_init(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 8)) = 0;
     (*(s32*)((u8*)(arg0) + 12)) = 0;
     (*(s32*)((u8*)(arg0) + 52)) = 0;
-    func_8002AA8C(arg0 + 0x10);
+    textureset_clear(arg0 + 0x10);
 }
 
 static inline void func_80017164_clear(u8 *p) {

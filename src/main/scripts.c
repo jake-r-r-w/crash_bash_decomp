@@ -3,7 +3,7 @@
 #include "bash/prims.h"
 #include "bash/scripts.h"
 
-void func_8001E984(s32 arg0, s32 arg1) {
+void init_scripts(s32 arg0, s32 arg1) {
     u8 *p;
     u8 *next;
 
@@ -37,7 +37,7 @@ void func_8001E984(s32 arg0, s32 arg1) {
     ScriptList = (void *)D_80058B68;
 }
 
-void func_8001EAA4(u8 *arg0, u8 *arg1) {
+void update_model_thread(u8 *arg0, u8 *arg1) {
     u8 *p;
     u8 *r;
     u8 *res;
@@ -90,7 +90,7 @@ void func_8001EAA4(u8 *arg0, u8 *arg1) {
             len = f << 8;
             t = (*(s32 *)(arg1 + 0xC) >> 8) - (key->start << 8);
             CamVec3_Lerp((CamVec3 *)(arg0 + 0xC), &key->pos, &key[1].pos, len, t);
-            func_80020B44((s32)&key->rot, (s32)&key[1].rot, (s32)(arg0 + 0x18), len, t, (s32)key->unk34);
+            quat_slerp_ex_frac((s32)&key->rot, (s32)&key[1].rot, (s32)(arg0 + 0x18), len, t, (s32)key->unk34);
             *(s16 *)(d + 0x52) = 1;
             CamVec3_Lerp((CamVec3 *)(arg0 + 0x28), &key->scale, &key[1].scale, len, t);
             w = interp(key->unk4C, key[1].unk4C, len, t);
@@ -183,7 +183,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     }
 }
 
-void func_8001F0D4(u8 *arg0, u8 *arg1) {
+void update_entity_thread(u8 *arg0, u8 *arg1) {
     AnimKey *k;
     AnimKey *key;
     u8 *p;
@@ -239,7 +239,7 @@ void func_8001F0D4(u8 *arg0, u8 *arg1) {
         if (len != 0) {
             len <<= 8;
             t = (*(s32 *)(arg1 + 0xC) >> 8) - (key->start << 8);
-            func_80020B44((s32)key->rot, (s32)key[1].rot, (s32)pose->rot, len, t, (s32)key->unk30);
+            quat_slerp_ex_frac((s32)key->rot, (s32)key[1].rot, (s32)pose->rot, len, t, (s32)key->unk30);
             CamVec3_Lerp(&pose->pos, &key->pos, &key[1].pos, len, t);
             CamVec3_Lerp(&pose->scale, &key->scale, &key[1].scale, len, t);
             a = interp(key->alpha, key[1].alpha, len << 8, t);
@@ -265,7 +265,7 @@ void func_8001F0D4(u8 *arg0, u8 *arg1) {
     }
 }
 
-void func_8001F4F8(u8 *arg0, u8 *arg1) {
+void update_fade_thread(u8 *arg0, u8 *arg1) {
     u8 *p;
     u8 *r;
     u8 *res;
@@ -306,7 +306,7 @@ void func_8001F4F8(u8 *arg0, u8 *arg1) {
     }
 }
 
-void func_8001F604(u8 *obj, EmitPart *part, u8 *def) {
+void emit_particle(u8 *obj, EmitPart *part, u8 *def) {
     s32 speed;
     s32 n;
     s32 yaw;
@@ -352,7 +352,7 @@ void func_8001F604(u8 *obj, EmitPart *part, u8 *def) {
     *(s32 *)(obj + 0) |= 0x8000;
 }
 
-void func_8001F828(u8 *arg0, u8 *arg1) {
+void update_emitter_thread(u8 *arg0, u8 *arg1) {
     u8 *p;
     u8 *r;
     u8 *res;
@@ -471,13 +471,13 @@ void func_8001F828(u8 *arg0, u8 *arg1) {
         }
         if (spawn != 0 && !(*(s32 *)obj & 0x8000)) {
             *(s32 *)obj |= 0x8000;
-            func_8001F604(obj, part, def);
+            emit_particle(obj, part, def);
             spawn--;
         }
     }
 }
 
-void func_8001FCDC(u8 *arg0, u8 *arg1) {
+void update_sub_thread(u8 *arg0, u8 *arg1) {
     u8 *p;
     u8 *r;
     u8 *res;
@@ -534,7 +534,7 @@ void func_8001FCDC(u8 *arg0, u8 *arg1) {
     }
 }
 
-u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 **arg5) {
+u8 *play_script(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 **arg5) {
     u8 *p;
     u8 *e;
     u8 *hdr;
@@ -593,12 +593,12 @@ u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 *
             }
             t++;
         }
-        func_80020064(p);
+        update_script(p);
     }
     return p;
 }
 
-s32 func_80020064(u8 *arg0) {
+s32 update_script(u8 *arg0) {
     u8 *s;
     s32 *a;
     u8 *c;
@@ -632,14 +632,14 @@ s32 func_80020064(u8 *arg0) {
             *(s16 *)(arg0 + 0xE) = *(u16 *)(a + 3);
         }
         if (*(s32 *)(arg0 + 0x14) & 4) {
-            func_80021054(arg0);
+            kill_script_threads(arg0);
             return 0;
         }
     }
     return 1;
 }
 
-void func_800201BC(u8 *arg0, GteSetup *arg1) {
+void render_script(u8 *arg0, GteSetup *arg1) {
     MATRIX m;
     GteSetup out;
     s32 dp;
@@ -671,7 +671,7 @@ void func_800201BC(u8 *arg0, GteSetup *arg1) {
     RenderState.modelDp = dp;
 }
 
-void func_80020344(Quat *a, Quat *b, s32 t, Quat *out) {
+void quat_slerp(Quat *a, Quat *b, s32 t, Quat *out) {
     Quat q;
     s32 d;
     s32 sq;
@@ -720,7 +720,7 @@ static inline s32 Trig_HalfCos(s32 x) {
     return rcossin_tbl[((x >> 1) - 0x400) & 0xFFF].unk2;
 }
 
-void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
+void quat_slerp_ex(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
     Quat q;
     s32 d;
     s32 sq;
@@ -804,19 +804,19 @@ void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
     out->v[3] = (((pb >= 0 ? pb + 0x800 : pb - 0x800) >> 12) + ((ia * q.v[3] >= 0 ? kb + 0x800 : kb - 0x800) >> 12)) >> 7;
 }
 
-void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
-    func_80020680(a0, a1, (a4 << 12) / a3, a2, a5);
+void quat_slerp_ex_frac(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+    quat_slerp_ex(a0, a1, (a4 << 12) / a3, a2, a5);
 }
 
-void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4) {
-    func_80020344(a0, a1, (a4 << 12) / a3, a2);
+void quat_slerp_frac(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4) {
+    quat_slerp(a0, a1, (a4 << 12) / a3, a2);
 }
 
 /* No callers. Retail multiplies (b - a) by the fraction but never reads lo
  * (no mflo) and returns a: the interpolating return sits behind a test that
  * is always false, which only combine sees (after flow), so the mult stays
  * and the dead block is dropped after reload. */
-s32 func_80020C04(s32 arg0) {
+s32 cos_interp(s32 arg0) {
     s32 a;
     s32 b;
     s32 t;
@@ -830,7 +830,7 @@ s32 func_80020C04(s32 arg0) {
     return a + (t >> 16);
 }
 
-s16 func_80020C4C(s32 arg0) {
+s16 cos_half(s32 arg0) {
     if (arg0 & 1) {
         return (rcossin_tbl[((arg0 >> 1) - 0x400) & 0xFFF].unk2 + rcossin_tbl[((arg0 >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
     }
@@ -874,12 +874,12 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
             q++;
         } while (++i < *(s32 *)e);
     }
-    func_80020064(p);
-    *(void **)((u8 *)sub + 0x54) = func_80020E9C;
-    *(void **)((u8 *)sub + 0x58) = func_80020DF8;
+    update_script(p);
+    *(void **)((u8 *)sub + 0x54) = plot_script_nas;
+    *(void **)((u8 *)sub + 0x58) = kill_nas_script;
 }
 
-void func_80020DF8(u8 *arg0) {
+void kill_nas_script(u8 *arg0) {
     u8 *p;
     u8 *cur;
     u8 *next;
@@ -911,25 +911,25 @@ void func_80020DF8(u8 *arg0) {
     }
 }
 
-void func_80020E9C(NAS *nas, u8 *arg1) {
+void plot_script_nas(NAS *nas, u8 *arg1) {
     struct { s32 a; s32 b; } saved;
     GteSetup s;
     u8 *sub;
 
     if (nas->NASid & 0x8000) {
         sub = (u8 *)nas + 0x6C;
-        if (func_80020064(sub) == 0) {
+        if (update_script(sub) == 0) {
             nas->NASid &= ~0x8000;
             return;
         }
         saved = *(typeof(saved) *)RenderState.unk28;
         gfx_setup_xform(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
-        func_800201BC(sub, &s);
+        render_script(sub, &s);
         *(typeof(saved) *)RenderState.unk28 = saved;
     }
 }
 
-void func_80020F5C(u8 *arg0) {
+void kill_script(u8 *arg0) {
     s32 *p;
     u8 *cur;
     u8 *next;
@@ -974,7 +974,7 @@ unlink:
     *(void **)(arg0 + 0x74) = head2;
 }
 
-void func_80021054(u8 *arg0) {
+void kill_script_threads(u8 *arg0) {
     s32 *p;
     u8 *cur;
     u8 *next;
@@ -1002,7 +1002,7 @@ void func_80021054(u8 *arg0) {
     }
 }
 
-void func_800210F8(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3, u8 **arg4) {
+void script_attach(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3, u8 **arg4) {
     u8 *e;
     u8 *hdr;
     s32 *t;
@@ -1037,17 +1037,17 @@ void func_800210F8(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3, u8 **arg4) {
         }
         t++;
     }
-    func_80020064(arg2);
+    update_script(arg2);
 }
 
-void func_8002120C(u8 *arg0) {
+void kill_sub_thread(u8 *arg0) {
     u8 *p;
 
     p = arg0 + 8;
     (*(void (**)(u8 *))(p + 0x58))(p);
 }
 
-void func_80021238(u8 *arg0, s32 *arg1) {
+void render_sub_thread(u8 *arg0, s32 *arg1) {
     s32 saved;
     u32 flags;
     subengine *sub;
@@ -1084,7 +1084,7 @@ static inline u8 *Push4(u8 *arg1) {
     return p;
 }
 
-void func_8002128C(u8 *arg0, u8 *arg1, s32 arg2) {
+void init_sub_thread(u8 *arg0, u8 *arg1, s32 arg2) {
     u8 *p;
     subengine *sub;
 
@@ -1098,7 +1098,7 @@ void func_8002128C(u8 *arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-void func_80021330(u8 *arg0, s32 *arg1) {
+void render_emitter_thread(u8 *arg0, s32 *arg1) {
     subengine *first;
     subengine *sub;
     s32 val;
@@ -1121,7 +1121,7 @@ void func_80021330(u8 *arg0, s32 *arg1) {
     }
 }
 
-s32 func_800213A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+s32 interp_window(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     if (arg5 < 0) {
         return arg0;
     }
@@ -1137,7 +1137,7 @@ s32 func_800213A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     return arg1;
 }
 
-void func_8002141C(u8 *arg0) {
+void kill_emitter_thread(u8 *arg0) {
     s32 temp_a0;
     s32 temp_a0_2;
 
@@ -1153,7 +1153,7 @@ void func_8002141C(u8 *arg0) {
     }
 }
 
-void func_8002147C(VelObj *obj, VelParams *p, VelState *s) {
+void vel_update(VelObj *obj, VelParams *p, VelState *s) {
     if (s->vx != 0) {
         obj->x += s->vx >> 8;
     }
@@ -1188,7 +1188,7 @@ void func_8002147C(VelObj *obj, VelParams *p, VelState *s) {
     }
 }
 
-void func_80021604(u8 *arg0, u8 *arg1, s32 arg2) {
+void init_emitter_thread(u8 *arg0, u8 *arg1, s32 arg2) {
     u8 *p;
     u8 *e;
     u8 *q;
@@ -1242,7 +1242,7 @@ static inline u8 *Push3(u8 *arg1) {
     return p;
 }
 
-void func_80021708(u8 *arg0, u8 *arg1, s32 arg2) {
+void init_fade_thread(u8 *arg0, u8 *arg1, s32 arg2) {
     u8 *p;
 
     p = Push3(arg1);
@@ -1258,7 +1258,7 @@ void render_entity_thread(script_thread_handler *th, geom_info *gi) {
     draw_object((u8 *)&th->type.entity.sub, gi->rot, th->type.entity.sub.flags);
 }
 
-void func_80021798(u8 *arg0, u8 *arg1, s32 arg2) {
+void init_entity_thread(u8 *arg0, u8 *arg1, s32 arg2) {
     u8 *p;
     u8 *sub;
     s32 v;
@@ -1283,7 +1283,7 @@ void func_80021798(u8 *arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-s32 *func_80021878(u8 *arg0, s32 arg1) {
+s32 *find_range_30(u8 *arg0, s32 arg1) {
     s32 *p;
 
     p = (s32 *)(arg0 + 0x30);
@@ -1298,7 +1298,7 @@ s32 *func_80021878(u8 *arg0, s32 arg1) {
     return p;
 }
 
-s32 *func_800218DC(u8 *arg0, s32 arg1) {
+s32 *find_range_1c(u8 *arg0, s32 arg1) {
     s32 *p;
 
     p = (s32 *)(arg0 + 0x1C);
@@ -1334,7 +1334,7 @@ static inline u8 *Push2(u8 *arg0) {
     return p;
 }
 
-void func_80021940(s32 arg0, u8 *arg1, s32 arg2) {
+void init_camera_thread(s32 arg0, u8 *arg1, s32 arg2) {
     u8 *p;
 
     p = Push2(arg1);
@@ -1344,11 +1344,11 @@ void func_80021940(s32 arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-void func_80021990(u8 *arg0, s32 *arg1) {
+void render_model_thread(u8 *arg0, s32 *arg1) {
     draw_object(arg0 + 8, *arg1, (*(s32*)((u8*)(arg0) + 8)));
 }
 
-s32 *func_800219B8(u8 *arg0, s32 arg1) {
+s32 *find_range_24(u8 *arg0, s32 arg1) {
     s32 *p;
 
     p = (s32 *)(arg0 + 0x24);
@@ -1361,7 +1361,7 @@ s32 *func_800219B8(u8 *arg0, s32 arg1) {
     return p;
 }
 
-void func_80021A1C(u8 *arg0, u8 *arg1, s32 arg2) {
+void init_model_thread(u8 *arg0, u8 *arg1, s32 arg2) {
     u8 *p;
     u8 *sub;
     s32 v;
@@ -1385,25 +1385,25 @@ void func_80021A1C(u8 *arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-void func_80021AF0(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
+void lerp_angles3(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
     arg2[0] = lerp_angle(arg0[0], arg1[0], arg3, arg4);
     arg2[1] = lerp_angle(arg0[1], arg1[1], arg3, arg4);
     arg2[2] = lerp_angle(arg0[2], arg1[2], arg3, arg4);
 }
 
-void func_80021B88(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
+void interp3_s16(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
     arg2[0] = interp(arg0[0], arg1[0], arg3, arg4);
     arg2[1] = interp(arg0[1], arg1[1], arg3, arg4);
     arg2[2] = interp(arg0[2], arg1[2], arg3, arg4);
 }
 
-void func_80021C20(u8 *arg0, u8 *arg1, u8 *arg2, s32 arg3, s32 arg4) {
+void interp3(u8 *arg0, u8 *arg1, u8 *arg2, s32 arg3, s32 arg4) {
     (*(s32*)((u8*)(arg2) + 0)) = interp((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg1) + 0)), arg3, arg4);
     (*(s32*)((u8*)(arg2) + 4)) = interp((*(s32*)((u8*)(arg0) + 4)), (*(s32*)((u8*)(arg1) + 4)), arg3, arg4);
     (*(s32*)((u8*)(arg2) + 8)) = interp((*(s32*)((u8*)(arg0) + 8)), (*(s32*)((u8*)(arg1) + 8)), arg3, arg4);
 }
 
-s32 *func_80021CB8(s32 *arg0, s32 arg1, s32 arg2) {
+s32 *find_range(s32 *arg0, s32 arg1, s32 arg2) {
     while (arg0[1] != 0) {
         if (arg0[0] <= arg1 && arg1 < arg0[0] + arg0[1]) {
             return arg0;
@@ -1413,7 +1413,7 @@ s32 *func_80021CB8(s32 *arg0, s32 arg1, s32 arg2) {
     return arg0;
 }
 
-u8 *func_80021D1C(u8 *arg0, s32 arg1) {
+u8 *script_track_at(u8 *arg0, s32 arg1) {
     u8 *p;
     u8 *r;
     u8 *res;
@@ -1449,7 +1449,7 @@ u8 *func_80021D1C(u8 *arg0, s32 arg1) {
     return res;
 }
 
-u8 *func_80021DD4(u8 *arg0, s32 arg1, s32 arg2) {
+u8 *get_script_track(u8 *arg0, s32 arg1, s32 arg2) {
     u8 *p;
     u8 *r;
     s32 *q;
@@ -1470,7 +1470,7 @@ u8 *func_80021DD4(u8 *arg0, s32 arg1, s32 arg2) {
     return r + (arg2 * 4 + 0x1C) + *(s32 *)(r + (arg2 << 2) + 0x1C);
 }
 
-u8 *func_80021E44(OffsetTable *tbl, s32 i) {
+u8 *offset_table_entry(OffsetTable *tbl, s32 i) {
     return (u8 *)&tbl->offs[i] + tbl->offs[i];
 }
 
@@ -1496,7 +1496,7 @@ static inline u8 *PopD_80058B70(void) {
     return cur;
 }
 
-u8 *func_80021E98(u8 *arg0) {
+u8 *script_thread_alloc(u8 *arg0) {
     u8 *p;
 
     p = PopD_80058B70();
@@ -1507,7 +1507,7 @@ u8 *func_80021E98(u8 *arg0) {
     return p;
 }
 
-void func_80021ED8(u8 *arg0) {
+void script_list_push(u8 *arg0) {
     u8 *temp_v1;
 
     temp_v1 = ScriptList;
@@ -1515,7 +1515,7 @@ void func_80021ED8(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 180)) = temp_v1;
 }
 
-void *func_80021EEC(void) {
+void *script_list_pop(void) {
     u8 *cur;
 
     cur = ScriptList;
@@ -1525,7 +1525,7 @@ void *func_80021EEC(void) {
     return cur;
 }
 
-void func_80021F14(u8 *arg0) {
+void script_unlink(u8 *arg0) {
     u8 *temp_v1;
     u8 *temp_v1_2;
     u8 *temp_v1_3;
@@ -1545,7 +1545,7 @@ void func_80021F14(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 116)) = temp_v1_3;
 }
 
-u8 *func_80021F6C(void) {
+u8 *script_alloc(void) {
     u8 *temp_v0;
     u8 *temp_v1;
 
@@ -1563,7 +1563,7 @@ u8 *func_80021F6C(void) {
     return temp_v1;
 }
 
-void func_80021FB0(void) {
+void scripts_release(void) {
     u8 *temp_s0;
     u8 *var_a0;
 
@@ -1571,7 +1571,7 @@ void func_80021FB0(void) {
     if (var_a0 != NULL) {
         do {
             temp_s0 = (*(s32*)((u8*)(var_a0) + 116));
-            func_80020F5C(var_a0);
+            kill_script(var_a0);
             var_a0 = temp_s0;
         } while (var_a0 != NULL);
     }
@@ -1583,7 +1583,7 @@ void func_80021FB0(void) {
     }
 }
 
-void func_80022030(void) {
+void scripts_kill_all(void) {
     u8 *temp_s0;
     u8 *var_a0;
 
@@ -1591,7 +1591,7 @@ void func_80022030(void) {
     if (var_a0 != NULL) {
         do {
             temp_s0 = (*(s32*)((u8*)(var_a0) + 116));
-            func_80020F5C(var_a0);
+            kill_script(var_a0);
             var_a0 = temp_s0;
         } while (var_a0 != NULL);
     }
@@ -1611,7 +1611,7 @@ void scripts_render(void) {
     gs = &RenderState;
     for (;;) {
         /* block-scope declaration, as the implicit one was: keeps the loop unrotated */
-        extern void func_800201BC(u8 *, GteSetup *);
+        extern void render_script(u8 *, GteSetup *);
         if (var_s0 == NULL) {
             break;
         }
@@ -1619,7 +1619,7 @@ void scripts_render(void) {
         s.b = s.a + 0x14;
         s.c = *(u16 *)&gs->unk28[0];
         s.d = *(u16 *)&gs->unk28[4];
-        func_800201BC(var_s0, &s);
+        render_script(var_s0, &s);
         var_s0 = *(u8 **)(var_s0 + 0x74);
     }
 }
@@ -1632,8 +1632,8 @@ void scripts_update(void) {
     if (var_s0 != NULL) {
         do {
             temp_s1 = (*(s32*)((u8*)(var_s0) + 116));
-            if (func_80020064(var_s0) == 0) {
-                func_80021F14(var_s0);
+            if (update_script(var_s0) == 0) {
+                script_unlink(var_s0);
             }
             var_s0 = temp_s1;
         } while (var_s0 != NULL);
@@ -1642,24 +1642,13 @@ void scripts_update(void) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 D_80058B00_Entry ScriptCommands[6] = {
-    {
-        (s32)(u8 *)&render_entity_thread + 0x2AC, (s32)(u8 *)&process_init + 0x1B4,
-        (s32)(u8 *)&render_entity_thread + 0x220, 0,
-    },
-    {
-        (s32)(u8 *)&sub_play_script + 0x940, (s32)(u8 *)&update_camera_thread + 0xA2C,
-        (s32)(u8 *)&sub_play_script + 0x66C, (u8 *)&sub_play_script + 0x758,
-    },
-    { (s32)(u8 *)&render_entity_thread + 0x1D0, (s32)&update_camera_thread, 0, 0 },
-    {
-        (s32)(u8 *)&render_entity_thread + 0x28, (s32)(u8 *)&update_camera_thread + 0x2D8,
-        (s32)&render_entity_thread, 0,
-    },
-    { (s32)(u8 *)&sub_play_script + 0xA44, (s32)(u8 *)&update_camera_thread + 0x6FC, 0, 0 },
-    {
-        (s32)(u8 *)&sub_play_script + 0x5C8, (s32)(u8 *)&update_camera_thread + 0xEE0,
-        (s32)(u8 *)&sub_play_script + 0x574, (u8 *)&sub_play_script + 0x548,
-    },
+    /* the threads a script runs, by type: {init, update, render, release} */
+    { (s32)init_model_thread, (s32)update_model_thread, (s32)render_model_thread, 0 },
+    { (s32)init_emitter_thread, (s32)update_emitter_thread, (s32)render_emitter_thread, kill_emitter_thread },
+    { (s32)init_camera_thread, (s32)update_camera_thread, 0, 0 },
+    { (s32)init_entity_thread, (s32)update_entity_thread, (s32)render_entity_thread, 0 },
+    { (s32)init_fade_thread, (s32)update_fade_thread, 0, 0 },
+    { (s32)init_sub_thread, (s32)update_sub_thread, (s32)render_sub_thread, kill_sub_thread },
 };
 s32 D_80058B60 = 0;
 s32 D_80058B64 = 0;

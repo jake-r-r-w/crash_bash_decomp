@@ -4452,7 +4452,7 @@ void UpdatePOLAR(void) {
             break;
         }
         if (Heroes[i].hero_eng->unk10.y > 0) {
-            func_80026980(Heroes[i].hero);
+            RemoveCamera(Heroes[i].hero);
         }
         if (Heroes[i].hero_mode == 0x50) {
             dead++;
@@ -4549,8 +4549,8 @@ s32 PolarHeroCollisions(s32 player) {
                         }
                     }
                     if (spd > 0x1000) {
-                        func_80028018(player, 0xA);
-                        ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xFF);
+                        pad_rumble_small(player, 0xA);
+                        ((void (*)(s32, s32, s32))pad_rumble_big)(player, 0xA, 0xFF);
                         hp =&Heroes[player];
                         if (hp->hero_mode == 0x52) {
                             goto snow;
@@ -6040,7 +6040,7 @@ void GravityMotionUpdate(NAS *nas, GravityMotion *m) {
                 m->vy = -m->vy >> 1;
             }
             if (m->flags & 2) {
-                func_800270B0(nas);
+                KillTriggerNas(nas);
             }
         }
     }
@@ -6518,7 +6518,7 @@ void InitUkaPolarMask(NAS *m) {
     }
     ext->mask = n = CreateNAS(0, 0, 0, 0x160B, 0x11);
     if (n != NULL) {
-        func_80026A04((u8 *)n);
+        AddCamera((u8 *)n);
     }
     ext->bit = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
     if (n != NULL) {
@@ -6579,7 +6579,7 @@ void PlotUkaPolarMask(NAS *m) {
     }
     r = Random(4);
     if (PolarClock != 0) {
-        func_80026980(ext->mask);
+        RemoveCamera(ext->mask);
     }
     if (PolarClock != 0) {
         if (ext->unkAC != NULL) {
@@ -7266,12 +7266,12 @@ void InitPolarWalrus(NAS *m) {
     m->Engine->flags |= 0x200000;
     ext = AddExt(m, 0x94, 0x10000000);
     if (ext != NULL) {
-        ext->cursor = func_80024E30(m, &WalrusScriptInit);
+        ext->cursor = ScriptCursorFirst(m, &WalrusScriptInit);
         m->FUX = (EXT *)ext;
         m->Engine->sub->unk6C = D_8005476C;
         m->Engine->sub->unk74 = 0x4000;
         m->UserInfo.status = 0;
-        func_80026B70(&PolarBears, (u8 *)m);
+        AddToGroup(&PolarBears, (u8 *)m);
         m->Engine->unk10.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.y = 0x400;
@@ -7322,7 +7322,7 @@ void PlotPolarWalrus(NAS *m) {
     }
     m->Engine->unk5E = 1;
     if (PolarClock != 0) {
-        func_80026980(m);
+        RemoveCamera(m);
     }
     e2 = FindExtension(m, 0x20000000);
     if (e2 == NULL) {
@@ -7350,7 +7350,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->state = 3;
             PlaySfx(0x473, NULL, NULL, 0x1000, 0x1E00, 0);
             m->Engine->sub->flags |= 0x8000;
-            func_80026A04((u8 *)m);
+            AddCamera((u8 *)m);
             ext->timer = 0;
         }
         break;
@@ -7483,7 +7483,7 @@ void PlotPolarWalrus(NAS *m) {
         ext->arc[0] = 0x10;
         ext->unk58 = 0x28;
         ext->arc[1] = 0;
-        func_80026980(m);
+        RemoveCamera(m);
         break;
     }
 }
@@ -7493,7 +7493,7 @@ void InitWalrusFish(NAS *m) {
 
     ext = AddExt(m, 0x88, 0x10000000);
     if (ext != NULL) {
-        ext->cursor = func_80024E30(m, &WalrusFishScriptInit);
+        ext->cursor = ScriptCursorFirst(m, &WalrusFishScriptInit);
         m->Engine->flags |= 0x200000;
         m->Engine->unk10.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
@@ -7750,17 +7750,17 @@ void InitPolarBoss(NAS *nas) {
     Ext20 *e;
 
     if (ext != NULL) {
-        func_80026A04((u8 *)nas);
+        AddCamera((u8 *)nas);
         func_80086868();
         BearminatorNas = nas;
-        ext->cursor = func_80024E30(nas, &PolarBossScriptInit);
+        ext->cursor = ScriptCursorFirst(nas, &PolarBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->cursor, 0);
         func_800250B0(nas);
         ext->unk84 = CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1622, 0x11);
         s = CreateNAS(nas->Engine->unk10.x, 0, nas->Engine->unk10.z, 0x1620, 0x11);
         if (s != NULL) {
             ext->unk88 = s;
-            func_80026A04((u8 *)s);
+            AddCamera((u8 *)s);
         }
         ext->unk90 = 0;
         nas->Engine->sub->unk6C = *(void **)MapScene;
@@ -8277,7 +8277,7 @@ void InitBearminator(NAS *m) {
             n = CreateNAS(m->Engine->unk10.x, 0, m->Engine->unk10.z, 0x1620, 0x11);
             if (n != NULL) {
                 ext->unk98 = n;
-                func_80026A04((u8 *)n);
+                AddCamera((u8 *)n);
             }
             ext->unkAC = e2;
             ext->unkB4 = 0;
@@ -8287,8 +8287,8 @@ void InitBearminator(NAS *m) {
             m->Engine->unk2C.z = 0x1F40;
             m->Engine->unk5E = 1;
             m->Engine->flags |= 0x200000;
-            func_80026B70(&PolarBears, (u8 *)m);
-            ext->cursor = func_80024E30(m, &BearminatorScriptInit);
+            AddToGroup(&PolarBears, (u8 *)m);
+            ext->cursor = ScriptCursorFirst(m, &BearminatorScriptInit);
             ext->unkC = 3;
             e2->unk20 = 0;
             e2->unk4E = v = ((u16)AiPlayerSkill[0].unk0 * 8) - 0x30;
@@ -8424,7 +8424,7 @@ void PlotBearminator(NAS *m) {
         m->Engine->sub->unk74 = 0x4100;
         m->Engine->unk1C += 0x200;
         if (ext->unk4C < 0) {
-            func_80026980(ext->unk98);
+            RemoveCamera(ext->unk98);
         }
         if (func_8008C5C4(ext->from, ext->vel, &ext->unk38, &m->Engine->unk10.x) == 0) {
             break;
@@ -9652,7 +9652,7 @@ void InitBearBoss(NAS *m) {
         m->Engine->sub->unk68 = 0x300;
         m->Engine->sub->flags |= 0x02000000;
         m->Engine->sub->unk6C = *(void **)MapScene;
-        ext->unkC = (s32)func_80024E30(m, &BearBossScriptInit);
+        ext->unkC = (s32)ScriptCursorFirst(m, &BearBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->unkC, 0);
         func_800250B0(m);
     }
@@ -9784,7 +9784,7 @@ void PlotBearDeath(NAS *m) {
             m->Engine->sub->unk68 = 0x200;
         }
         if (++ext->unk80 == 0x1F) {
-            func_80026980(m);
+            RemoveCamera(m);
         }
         if (--ext->unk84 < 0) {
             CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
@@ -9801,7 +9801,7 @@ void InitBearDeath(NAS *m) {
 
     ext = AddExt(m, 0x88, 0x10000000);
     if (ext != NULL) {
-        func_80024E30(m, &BearDeathScriptInit);
+        ScriptCursorFirst(m, &BearDeathScriptInit);
         m->Engine->sub->unk6C = *(s32 *)MapScene;
         m->Engine->unk5D = 2;
         m->Engine->sub->flags |= 0x02000000;
@@ -9811,7 +9811,7 @@ void InitBearDeath(NAS *m) {
         ext->unk30 = 0;
         ext->unk80 = 0;
         ext->unk84 = 5;
-        func_80026A04((u8 *)m);
+        AddCamera((u8 *)m);
     }
 }
 
@@ -10413,7 +10413,7 @@ void InitBombGFX(NAS *m) {
         m->Engine->sub->unk6C = PolarObjectsModel;
         ext->unkC = 0;
         m->Engine->unk5C = 1;
-        func_80026B70((u8 **)&PolarBomb, (u8 *)m);
+        AddToGroup((u8 **)&PolarBomb, (u8 *)m);
         m->FUX = NULL;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
@@ -12010,7 +12010,7 @@ void PolarHeroOffice(s32 player) {
         }
         h2->hero_eng->unk10.y += 0x60;
         ext->unkAC = 1;
-        func_80026980(h2->hero);
+        RemoveCamera(h2->hero);
         if (!(h2->hero_status & 0x200)) {
             h2->hero_status |= 0x2000;
         }
@@ -12092,7 +12092,7 @@ void SetPolarHeroPoll(s32 player) {
     if (PolarRoundState == 0) {
         PlaySfx(0x45D, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    func_80026980(h->hero);
+    RemoveCamera(h->hero);
     h->hero_eng->sub->flags &= ~0x8000;
     if (!(h->hero_status & 0x200)) {
         h->hero_status |= 0x8000;
@@ -12801,8 +12801,8 @@ void SetPolarHeroHit(s32 player) {
             h->hero_status |= 0x2000;
         }
         SetHeroSeq(player, 0x3F);
-        func_80028018(player, 0xA);
-        ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xFF);
+        pad_rumble_small(player, 0xA);
+        ((void (*)(s32, s32, s32))pad_rumble_big)(player, 0xA, 0xFF);
     }
 }
 
@@ -13022,10 +13022,10 @@ void SetPolarHeroWinner(s32 player) {
     }
     lost = TestPolarHeroMelted(player) ^ 1;
     if (lost) {
-        func_80026980(Heroes[player].hero);
+        RemoveCamera(Heroes[player].hero);
     }
     if (Heroes[player].hero_eng->unk10.y > 0x60) {
-        func_80026980(Heroes[player].hero);
+        RemoveCamera(Heroes[player].hero);
     }
     if (ext->state == 0) {
         SetHeroSeq(player, 0x3A);

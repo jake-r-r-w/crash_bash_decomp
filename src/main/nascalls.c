@@ -75,7 +75,7 @@ found:
     return nas;
 }
 
-NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot) {
+NAS *CreateASTNas(s32 x, s32 y, s32 z, u16 id, s32 slot) {
     NAS *nas;
     EXTengine *eng;
     s32 i;
@@ -207,12 +207,12 @@ s32 KillNAS(NAS *nas) {
         eng = eng->Engine;
     }
 freed:
-    func_80026430(nas);
+    FreeAllExtensions(nas);
     RemoveFamily((u8 *)nas);
-    func_80026AFC(nas);
-    func_80026980(nas);
-    func_80026A54(nas);
-    func_800268BC(nas);
+    RemoveFromGroup(nas);
+    RemoveCamera(nas);
+    UnlinkObject(nas);
+    RemoveSolid(nas);
     if (nas->Tag.Parent != NULL) {
         nas->Tag.Parent->Tag.Child = nas->Tag.Child;
         if (nas->Tag.Child != NULL) {
@@ -234,7 +234,7 @@ freed:
     return 1;
 }
 
-void func_80023158(s32 arg0) {
+void InitNasHeap(s32 arg0) {
     s32 *base;
     s32 *hd;
     u32 size;
@@ -275,7 +275,7 @@ void func_80023158(s32 arg0) {
     }
 }
 
-void func_8002321C(void) {
+void ResetNasHeap(void) {
     s32 *base;
     s32 *hd;
     u32 size;
@@ -529,7 +529,7 @@ static inline ArenaDef *func_800235BC_find(ArenaDef *p, s32 id) {
     return NULL;
 }
 
-void func_800235BC(ArenaDef *arg0) {
+void SetupLevelSpecs(ArenaDef *arg0) {
     ArenaDef *e;
 
     LevelSpecs.LevelPreInit = 0;
@@ -717,7 +717,7 @@ void SetNasDefaults(void) {
     ExtMotionTemplate.Fdist = 0;
 }
 
-void func_80023A90(void) {
+void InitSysFont(void) {
     s32 i;
 
     for (i = 0; i < 256; i++) {
@@ -926,7 +926,7 @@ void func_80023A90(void) {
     SysFontWidth[0x1FF] = 32;
 }
 
-s16 func_80024008(s16 x, u8 *s) {
+s16 TextAlignX(s16 x, u8 *s) {
     s32 y = x;
     s32 sum;
     s32 c;
@@ -988,7 +988,7 @@ s16 func_80024008(s16 x, u8 *s) {
     return x;
 }
 
-void func_80024214(u8 *a, u8 *b) {
+void TextFlashColour(u8 *a, u8 *b) {
     s32 t;
     s32 bl, g, r;
 
@@ -1013,7 +1013,7 @@ void func_80024214(u8 *a, u8 *b) {
     b[2] = bl;
 }
 
-void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
+void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     s32 xy;
     s32 col;
     s16 x0;
@@ -1029,10 +1029,10 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
 
     xy &= 0xFFFF;
     xy |= arg1 << 16;
-    x0 = func_80024008(arg0, s);
+    x0 = TextAlignX(arg0, s);
     col = 0;
     if (arg5 != 0) {
-        func_80024214((u8 *)&arg3, (u8 *)&arg4);
+        TextFlashColour((u8 *)&arg3, (u8 *)&arg4);
     }
     c = *s++;
     while (c != 0) {
@@ -1057,7 +1057,7 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                 xy &= 0xFFFF;
                 xy |= (ny + SysFontWidth[FontPage << 8] * 2) << 16;
             }
-            x0 = func_80024008(arg0, s);
+            x0 = TextAlignX(arg0, s);
         } else {
             i = c + (FontPage << 8);
             w = SysFontWidth[i];
@@ -1082,7 +1082,7 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                         texture_draw((obj_texture *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
                     }
                 } else {
-                    func_8002992C((obj_texture *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, arg3, arg3, arg4, arg4);
+                    texture_draw_quad((obj_texture *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, arg3, arg3, arg4, arg4);
                 }
             }
             col += w;
@@ -1129,7 +1129,7 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
         do {
             s32 g = *(s16 *)(c * 2 + (FontPage << 9) + tab);
             if (g != -1) {
-                func_80029F9C(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38, &pos, 0, arg2, arg3);
+                texture_draw_3d(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38, &pos, 0, arg2, arg3);
             }
             pos.x += (s32)((u8)SysFontWidth[c + (FontPage << 8)] << 24) >> 20;
             c = *s++;
@@ -1157,14 +1157,14 @@ void func_800248A0(x, y, c0, c1, n)
     tbl = D_8005A5C0;
     ids = tbl[n];
     base = InterfaceModel;
-    func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    texture_draw_quad((obj_texture *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
     pos.f.x = x + 0x9D80 / ScreenRect->w;
-    func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    texture_draw_quad((obj_texture *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
     pos.f.x = x + 0x13B00 / ScreenRect->w;
-    func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[2] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    texture_draw_quad((obj_texture *)(*(u8 **)(base + 0x18) + (ids[2] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
 }
 
-void func_80024AD8(void) {
+void InitTriggers(void) {
     EXTengine tmp;
     s32 pad[2];
     U16Table *tbl;
@@ -1230,7 +1230,7 @@ void func_80024AD8(void) {
     }
 }
 
-ScriptCursor *func_80024E30(NAS *nas, ScriptInit *init) {
+ScriptCursor *ScriptCursorFirst(NAS *nas, ScriptInit *init) {
     ScriptCursor *c;
     EXT *e;
     Ext400 *ext;
@@ -1274,13 +1274,13 @@ skip:
     *(s32 *)c = (*(s32 *)c & ~0xFF) | flags;
     c->cur = init->cur;
     c->tbl = init->tbl;
-    func_80024FA4(c);
+    ScriptCursorNext(c);
     return c;
     }
     return NULL;
 }
 
-void func_80024FA4(ScriptCursor *c) {
+void ScriptCursorNext(ScriptCursor *c) {
     s32 e;
 
     switch (c->kind) {
@@ -1357,16 +1357,16 @@ s16 func_800250B0(NAS *nas) {
             }
             switch (kind) {
             case 1:
-                return func_800251A8(nas, eng, sub, anim);
+                return DoAnimCommand(nas, eng, sub, anim);
             case 2:
-                return func_80025534(nas, eng, sub, anim);
+                return DoAnimCommand2(nas, eng, sub, anim);
             }
         }
     }
     return 1;
 }
 
-s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
+s16 DoAnimCommand(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
     /* A label table, not a switch: cc1 2.8.1 aligns a switch's jump table
      * to 8 in .rodata, but this one sits at a 4 mod 8 offset (and is
      * followed by a zero word). */
@@ -1409,7 +1409,7 @@ s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                     }
                     goto lnext;
                 l8001:
-                    func_80024FA4((ScriptCursor *)anim);
+                    ScriptCursorNext((ScriptCursor *)anim);
                     if (ret == 0) {
                         ret = 3;
                     }
@@ -1480,7 +1480,7 @@ s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
     return ret;
 }
 
-s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
+s16 DoAnimCommand2(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
     /* A label table, not a switch: cc1 2.8.1 aligns a switch's jump table
      * to 8 in .rodata, but this one sits at a 4 mod 8 offset. */
     static const void *const tbl[17] = {
@@ -1515,7 +1515,7 @@ s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                 ret = 2;
                 goto next;
             l8001:
-                func_80024FA4((ScriptCursor *)anim);
+                ScriptCursorNext((ScriptCursor *)anim);
                 ret = 3;
                 goto next;
             l8002:
@@ -1583,7 +1583,7 @@ static inline FlagRecord *func_80025A48_inline(EXTengine *eng, u32 flag) {
     return NULL;
 }
 
-s32 func_8002578C(NAS *nas) {
+s32 CheckSolidCollision(NAS *nas) {
     EXTengine *eng;
     NAS *it;
     s32 hit;
@@ -1642,7 +1642,7 @@ s32 func_8002578C(NAS *nas) {
     return hit;
 }
 
-FlagRecord *func_80025A48(EXTengine *eng, u32 flag) {
+FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag) {
     PointList *list;
     FlagRecord *rec;
     s32 n;
@@ -1690,7 +1690,7 @@ void FetchDefaultColBox(EXTengine *eng, u32 flag) {
     }
 }
 
-s32 func_80025BBC(EXTengine *eng) {
+s32 ApplyContourMoved(EXTengine *eng) {
     s32 dy;
 
     abs(eng->unk10.y - eng->OldXYZ.y);
@@ -1780,7 +1780,7 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
             if (nas->Class & 0x100) {
                 other = nas->Engine;
                 if (other != NULL && other != eng) {
-                    rec = func_80025A48(other, 0x10);
+                    rec = FindCollisionBox(other, 0x10);
                     if (rec != NULL) {
                         dx = other->unk10.x - eng->unk10.x;
                         dz = other->unk10.z - eng->unk10.z;
@@ -1803,7 +1803,7 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
     return y;
 }
 
-void func_80025F44(EXTengine *eng) {
+void ApplyContour(EXTengine *eng) {
     if (LevelSpecs.GetContour == NULL) {
         AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     } else {
@@ -1850,7 +1850,7 @@ void GotoLinkAnim(EXTanimator *anim, s32 n) {
     anim->Seq_count_down = 0;
 }
 
-ScriptCursor *func_80026048(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init) {
+ScriptCursor *CreateScriptCursor(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init) {
     ScriptCursor *c;
     Ext400 *ext;
     u32 flags;
@@ -1870,14 +1870,14 @@ ScriptCursor *func_80026048(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init) {
             c->tbl = init->tbl;
             *(s32 *)c->pad14 = arg1;
             *(s32 *)(c->pad14 + 4) = arg2;
-            func_80024FA4(c);
+            ScriptCursorNext(c);
             return c;
         }
     }
     return NULL;
 }
 
-void func_8002617C(void) {
+void RunTriggers(void) {
     s32 i;
     NASTrigger *trig;
 
@@ -1892,7 +1892,7 @@ void func_8002617C(void) {
     }
 }
 
-s16 func_80026210(s32 x, u8 *s) {
+s16 TextWidth(s32 x, u8 *s) {
     s32 sum;
     s32 c;
     s32 d;
@@ -1925,8 +1925,8 @@ s16 func_80026210(s32 x, u8 *s) {
     return x - (sum * 5 * 128) / ScreenRect->w / 2;
 }
 
-void func_80026308(void) {
-    func_80023A90();
+void InitSysFontModel(void) {
+    InitSysFont();
     FontPage = 0;
     sysfont_dbase = FontModel;
 }
@@ -1964,7 +1964,7 @@ s32 SysGetLen(char *s) {
     return sum;
 }
 
-IdEntry *func_800263D8(IdEntry *p, s32 id) {
+IdEntry *FindIdEntry(IdEntry *p, s32 id) {
     if (p != NULL) {
         do {
             if (p->id == id) {
@@ -1988,7 +1988,7 @@ void func_80026420(void) {
 void func_80026428(void) {
 }
 
-void func_80026430(NAS *nas) {
+void FreeAllExtensions(NAS *nas) {
     EXT *ext;
 
     ext = (EXT *)nas;
@@ -2002,7 +2002,7 @@ void func_80026430(NAS *nas) {
     nas->NASid = *(u8 *)nas;
 }
 
-void func_800264B4(void) {
+void FreeNasHeap(void) {
     mal_free(D_8006EA00, &MainHeap);
     D_8006EA00 = 0;
 }
@@ -2038,7 +2038,7 @@ EXTmotion *AddMotion(NAS *nas) {
     return mot;
 }
 
-Ext400 *func_800265DC(NAS *nas) {
+Ext400 *AllocExt400(NAS *nas) {
     Ext400 *ext;
 
     ext = AllocExtension(nas, 0x2C, 0x400, &ExtTemplate400);
@@ -2089,7 +2089,7 @@ EXTengine *AddExtEngine(NAS *nas, s32 id) {
     return eng;
 }
 
-void func_80026858(void *owner, s32 size, s32 id, Words3 *tmpl) {
+void AllocExtensionCopy(void *owner, s32 size, s32 id, Words3 *tmpl) {
     Words3 *ext;
 
     ext = AllocExtension(owner, size, id, tmpl);
@@ -2102,7 +2102,7 @@ void *AddExt(NAS *owner, s32 size, s32 id) {
     return AllocExtension(owner, size, id, NULL);
 }
 
-void func_800268BC(NAS *nas) {
+void RemoveSolid(NAS *nas) {
     NAS **head = (NAS **)&HeadOfSolids;
 
     if (nas->Solid.Parent != NULL || nas->Solid.Child != NULL) {
@@ -2123,7 +2123,7 @@ void func_800268BC(NAS *nas) {
     }
 }
 
-void func_8002694C(NAS *nas, s32 bits) {
+void AddSolid(NAS *nas, s32 bits) {
     if (HeadOfSolids != NULL) {
         nas->Solid.Child = HeadOfSolids;
         HeadOfSolids->Solid.Parent = nas;
@@ -2132,7 +2132,7 @@ void func_8002694C(NAS *nas, s32 bits) {
     nas->Class = (nas->Class & ~0x300) | bits;
 }
 
-void func_80026980(NAS *nas) {
+void RemoveCamera(NAS *nas) {
     NAS **head = (NAS **)&D_8005AA34;
 
     if (nas->Camera.Parent != NULL || nas->Camera.Child != NULL) {
@@ -2152,7 +2152,7 @@ void func_80026980(NAS *nas) {
     }
 }
 
-void func_80026A04(u8 *arg0) {
+void AddCamera(u8 *arg0) {
     if (D_8005AA34 != NULL) {
         (*(s32*)((u8*)(arg0) + 60)) = (u8 *) D_8005AA34;
         (*(s32*)((u8*)(D_8005AA34) + 56)) = arg0;
@@ -2160,7 +2160,7 @@ void func_80026A04(u8 *arg0) {
     D_8005AA34 = arg0;
 }
 
-s32 func_80026A28(void) {
+s32 CountObjects(void) {
     NAS *nas;
     s32 n;
 
@@ -2171,7 +2171,7 @@ s32 func_80026A28(void) {
     return n;
 }
 
-void func_80026A54(NAS *nas) {
+void UnlinkObject(NAS *nas) {
     NAS **head = (NAS **)&HeadOfObjects;
 
     if (nas->Object.Parent != NULL || nas->Object.Child != NULL) {
@@ -2191,7 +2191,7 @@ void func_80026A54(NAS *nas) {
     }
 }
 
-void func_80026AD8(u8 *arg0) {
+void LinkObject(u8 *arg0) {
     if (HeadOfObjects != NULL) {
         (*(s32*)((u8*)(arg0) + 44)) = (u8 *) HeadOfObjects;
         (*(s32*)((u8*)(HeadOfObjects) + 40)) = arg0;
@@ -2199,7 +2199,7 @@ void func_80026AD8(u8 *arg0) {
     HeadOfObjects = arg0;
 }
 
-void func_80026AFC(NAS *nas) {
+void RemoveFromGroup(NAS *nas) {
     NAS **head = nas->Group.Head;
 
     if (head != NULL) {
@@ -2221,7 +2221,7 @@ void func_80026AFC(NAS *nas) {
     nas->Group.Head = NULL;
 }
 
-void func_80026B70(u8 **arg0, u8 *arg1) {
+void AddToGroup(u8 **arg0, u8 *arg1) {
     u8 *temp_v0;
 
     temp_v0 = *arg0;
@@ -2264,7 +2264,7 @@ void RemoveFamily(NAS *arg0) {
     (*(s32*)((u8*)(arg0) + 24)) = NULL;
 }
 
-void func_80026C38(u8 *arg0, u8 *arg1) {
+void AppendExtension(u8 *arg0, u8 *arg1) {
     u8 *var_a0;
 
     var_a0 = arg0;
@@ -2289,7 +2289,7 @@ void InsertNasTag(NAS *arg0, NAS *arg1) {
     }
 }
 
-void func_80026C94(u8 *arg0, u8 *arg1) {
+void MoveChildren(u8 *arg0, u8 *arg1) {
     u8 *temp_a2;
     u8 *temp_v1;
     u8 *temp_v1_2;
@@ -2316,7 +2316,7 @@ void func_80026C94(u8 *arg0, u8 *arg1) {
 void NullProc(NAS *arg0) {
 }
 
-void func_80026D08(void) {
+void BuildNASFreeList(void) {
     NAS *nas;
     s32 i;
 
@@ -2343,7 +2343,7 @@ void func_80026D08(void) {
     }
 }
 
-void func_80026D9C(void) {
+void ResetNasLists(void) {
     s32 i;
 
     D_8005AA34 = NULL;
@@ -2355,7 +2355,7 @@ void func_80026D9C(void) {
     NASActiveTail = NULL;
     World_floor_level = 0;
     VelocityCalc = 1;
-    func_80026D08();
+    BuildNASFreeList();
     for (i = 1; i < 16; i++) {
         ACMD[i][0] = 0;
         ACMD[i][1] = 0;
@@ -2363,7 +2363,7 @@ void func_80026D9C(void) {
 }
 
 
-void func_80026E2C(void) {
+void ClearNasPool(void) {
     s32 i;
 
     i = FirstNas;
@@ -2375,10 +2375,10 @@ void func_80026E2C(void) {
             break;
         }
     }
-    func_80026D08();
+    BuildNASFreeList();
 }
 
-void func_80026ECC(void) {
+void ClearAllNasPool(void) {
     s32 i;
 
     i = 0;
@@ -2391,7 +2391,7 @@ void func_80026ECC(void) {
     }
 }
 
-void func_80026F48(void) {
+void KillAllNas(void) {
     s32 i;
 
     for (i = FirstNas; i < NasPoolUsed; i++) {
@@ -2399,7 +2399,7 @@ void func_80026F48(void) {
     }
 }
 
-void func_80026FCC(void) {
+void KillEveryNas(void) {
     s32 i;
 
     for (i = 0; i < NasPoolUsed; i++) {
@@ -2423,14 +2423,14 @@ void DeleteNas_AllAST(s32 arg0) {
     }
 }
 
-void func_800270B0(NAS *nas) {
+void KillTriggerNas(NAS *nas) {
     if (nas->trigger != NULL) {
         nas->trigger->Status |= 0x8000;
     }
     KillNAS(nas);
 }
 
-void func_800270F0(u8 *a) {
+void RunVTables(u8 *a) {
     VTable8 *p;
 
     p = (VTable8 *)a;
@@ -2445,7 +2445,7 @@ void func_800270F0(u8 *a) {
     }
 }
 
-s32 func_8002718C(void) {
+s32 machine_init(void) {
     __main();
     ResetCallback();
     ResetGraph(0);
@@ -2454,15 +2454,15 @@ s32 func_8002718C(void) {
     InitGeom();
     SsInit();
     D_800637A8 = 0;
-    func_80027F00();
+    pads_init_mtap();
     SetVideoMode(D_800637A8);
     DrawSync(0);
     ClearImage2(&D_8005B640, 0, 0, 0);
     DrawSync(0);
     func_8002AABC();
-    func_80028C94();
+    debug_font_init2();
     shell_init();
-    func_80027908();
+    cd_read_wait();
     get_exe_exports();
     machine_quit_sound();
     StopCallback();
@@ -2472,13 +2472,13 @@ s32 func_8002718C(void) {
     return 0;
 }
 
-void func_8002726C(void) {
+void ClearVram(void) {
     DrawSync(0);
     ClearImage2(&D_8005B640, 0, 0, 0);
     DrawSync(0);
 }
 
-void func_800272AC(s32 arg0) {
+void FlipScreen(s32 arg0) {
     DISPENV sp10;
     RECT *r = ScreenRect;
     RECT *src;
@@ -2520,7 +2520,7 @@ void func_800272AC(s32 arg0) {
     prims_update();
 }
 
-void func_80027408(void) {
+void InitDisplay(void) {
     DISPENV disp;
     DRAWENV draw;
 
@@ -2554,7 +2554,7 @@ void func_80027408(void) {
     }
 }
 
-s32 func_800274FC(s32 *arg0) {
+s32 AllocOtBuffers(s32 *arg0) {
     OtBuf *b;
     u8 *t;
 
@@ -2568,7 +2568,7 @@ s32 func_800274FC(s32 *arg0) {
     return (s32)b[1].end;
 }
 
-void func_8002759C(void) {
+void ClearScreens(void) {
     RECT *temp_s0;
 
     temp_s0 = ScreenRect;
@@ -2579,7 +2579,7 @@ void func_8002759C(void) {
     }
 }
 
-void func_800275F8(arg0)
+void SetScreen(arg0)
 RECT *arg0;
 {
     DrawSync(0);
@@ -2602,11 +2602,11 @@ RECT *arg0;
     ScreenRect = arg0;
 }
 
-void func_800276A4(void) {
-    func_800275F8();
+void ResetScreen(void) {
+    SetScreen();
 }
 
-void func_800276C4(s32 *arg0) {
+void AllocPrimBuffers(s32 *arg0) {
     u8 *g;
     u8 *t;
 
@@ -2618,12 +2618,12 @@ void func_800276C4(s32 *arg0) {
     *(s32 *)(g + 0x10) = *(s32 *)(g + 0xC) + *arg0 + 0x1800;
 }
 
-void func_8002775C(u8 *arg0) {
+void ClearOt(u8 *arg0) {
     ClearOTagR((u_long *)arg0, 0x1000);
     *(s32 *)(arg0 + 0x4008) = *(s32 *)(arg0 + 0x4000);
 }
 
-s32 func_80027790(u8 *a, s32 b, u8 *c, s32 d) {
+s32 cd_read(u8 *a, s32 b, u8 *c, s32 d) {
     s32 r;
     s32 s;
     r = D_800637B4;
@@ -2653,19 +2653,19 @@ s32 func_80027790(u8 *a, s32 b, u8 *c, s32 d) {
     return D_800637B4;
 }
 
-void func_800278BC(s32 *arg0, s32 arg1) {
+void cd_seek(s32 *arg0, s32 arg1) {
     CdIntToPos(*arg0 + arg1, &D_8006EA14);
     CdControlF(CdlSetloc, (u8 *)&D_8006EA14);
     CdControlF(CdlSeekL, (u8 *)&D_8006EA14);
 }
 
-void func_80027908(void) {
+void cd_read_wait(void) {
     if (D_800637B4 > 0) {
         D_800637B4 = CdReadSync(0, 0);
     }
 }
 
-s32 func_80027944(void) {
+s32 cd_read_poll(void) {
     s32 r;
     r = D_800637B4;
     if (r > 0) {
@@ -2679,7 +2679,7 @@ s32 func_80027944(void) {
     return r;
 }
 
-void func_800279A4(void) {
+void cd_init(void) {
     CdlFILE file;
 
     do {
@@ -2705,21 +2705,21 @@ void xa_setvol(s32 vol) {
     SpuSetCommonAttr(&attr);
 }
 
-void func_80027A74(void) {
+void loader_pending_stub(void) {
     loader_pending();
 }
 
 void func_80027A94(void) {
 }
 
-void func_80027A9C(void) {
+void xa_mute(void) {
     if (xa_count >= 0x1F) {
         xa_count = 0x1E;
     }
     xa_setvol(0);
 }
 
-void func_80027AD4(PadPacket *p, PadInput *in, s32 n) {
+void pad_read_packet(PadPacket *p, PadInput *in, s32 n) {
     if (p->status == 0) {
         in->flags |= 1;
         in->flags |= PadRumble_update(&in->rumble, n);
@@ -2762,22 +2762,22 @@ static inline s32 func_80027D90_read(u8 *src, u8 *dst, s32 n) {
 
     if ((*(u16 *)src & 0xF000) == 0x8000) {
         if (n == 0) {
-            func_80027AD4(src + 2, dst, 0);
-            func_80027AD4(src + 0xA, dst + 0x58, 1);
-            func_80027AD4(src + 0x12, dst + 0xB0, 2);
-            func_80027AD4(src + 0x1A, dst + 0x108, 3);
+            pad_read_packet(src + 2, dst, 0);
+            pad_read_packet(src + 0xA, dst + 0x58, 1);
+            pad_read_packet(src + 0x12, dst + 0xB0, 2);
+            pad_read_packet(src + 0x1A, dst + 0x108, 3);
             count = 4;
         } else {
             count = 0;
         }
     } else {
-        func_80027AD4(src, dst, n);
+        pad_read_packet(src, dst, n);
         count = 1;
     }
     return count;
 }
 
-void func_80027D90(void) {
+void pads_read(void) {
     s32 count;
     PadState *pad;
 
@@ -2797,7 +2797,7 @@ void func_80027D90(void) {
     }
 }
 
-void func_80027F00(void) {
+void pads_init_mtap(void) {
     PadState *pad;
     s32 i;
     s32 on;
@@ -2823,7 +2823,7 @@ loop:
     PadStartCom();
 }
 
-void func_80027F7C(s32 pad, s32 arg1, s8 arg2) {
+void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
     u8 *p;
 
     if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && GameOptions[pad + 0xC] != 0 &&
@@ -2835,7 +2835,7 @@ void func_80027F7C(s32 pad, s32 arg1, s8 arg2) {
     }
 }
 
-void func_80028018(s32 pad, s32 arg1) {
+void pad_rumble_small(s32 pad, s32 arg1) {
     u8 *p;
 
     if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && pad < 4 && GameOptions[pad + 0xC] != 0 &&
@@ -2847,27 +2847,27 @@ void func_80028018(s32 pad, s32 arg1) {
     }
 }
 
-s32 func_800280C0(u8 *src, u8 *dst, s32 n) {
+s32 pad_read_mtap(u8 *src, u8 *dst, s32 n) {
     s32 count;
 
     if ((*(u16 *)src & 0xF000) == 0x8000) {
         if (n == 0) {
-            func_80027AD4(src + 2, dst, 0);
-            func_80027AD4(src + 0xA, dst + 0x58, 1);
-            func_80027AD4(src + 0x12, dst + 0xB0, 2);
-            func_80027AD4(src + 0x1A, dst + 0x108, 3);
+            pad_read_packet(src + 2, dst, 0);
+            pad_read_packet(src + 0xA, dst + 0x58, 1);
+            pad_read_packet(src + 0x12, dst + 0xB0, 2);
+            pad_read_packet(src + 0x1A, dst + 0x108, 3);
             count = 4;
         } else {
             count = 0;
         }
     } else {
-        func_80027AD4(src, dst, n);
+        pad_read_packet(src, dst, n);
         count = 1;
     }
     return count;
 }
 
-void func_80028158(void) {
+void pads_reset_rumble(void) {
     s32 v;
     s32 i;
 
@@ -2877,19 +2877,19 @@ void func_80028158(void) {
     }
 }
 
-void func_80028184(u8 *arg0, s32 arg1, s8 arg2) {
+void pad_set_rumble_big(u8 *arg0, s32 arg1, s8 arg2) {
     (*(s8*)((u8*)(arg0) + 5)) = arg2;
     (*(s16*)((u8*)(arg0) + 10)) = (s16) (arg1 + 1);
     (*(u16*)((u8*)(arg0) + 6)) = (u16) ((*(u16*)((u8*)(arg0) + 6)) | 1);
 }
 
-void func_800281A0(u8 *arg0, s32 arg1) {
+void pad_set_rumble_small(u8 *arg0, s32 arg1) {
     (*(s8*)((u8*)(arg0) + 4)) = 1;
     (*(s16*)((u8*)(arg0) + 8)) = (s16) (arg1 + 1);
     (*(u16*)((u8*)(arg0) + 6)) = (u16) ((*(u16*)((u8*)(arg0) + 6)) | 1);
 }
 
-s32 func_800281C0(PadRumble *r, s32 port) {
+s32 pad_rumble_send(PadRumble *r, s32 port) {
     if (r->reset != 0) {
         if (r->time0 != 0) {
             r->time0 = 1;
@@ -2925,7 +2925,7 @@ s32 func_800281C0(PadRumble *r, s32 port) {
     return 8;
 }
 
-void func_800282D8(u8 *arg0) {
+void pad_input_reset(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 4)) = 0;
     (*(s32*)((u8*)(arg0) + 0)) = 0;
     (*(s32*)((u8*)(arg0) + 24)) = 1;
@@ -2934,7 +2934,7 @@ void func_800282D8(u8 *arg0) {
     (*(s16*)((u8*)(arg0) + 40)) = 0;
 }
 
-FreeHdr *func_800282F8(u8 *arg0) {
+FreeHdr *vram_take(u8 *arg0) {
 #define pool ((FreePool *)arg0)
     FreeNode *a2;
     FreeNode *a3;
@@ -2956,7 +2956,7 @@ FreeHdr *func_800282F8(u8 *arg0) {
         return &a3->hdr;
     }
     if ((u8 *)pool < D_80063BA0) {
-        p = func_800282F8((u8 *)(pool + 1));
+        p = vram_take((u8 *)(pool + 1));
         a2 = FreeBufNodes;
         FreeBufNodes = a2->next;
         a3 = FreeBufNodes;
@@ -2984,7 +2984,7 @@ FreeHdr *func_800282F8(u8 *arg0) {
 #undef pool
 }
 
-ClutPos *func_80028420(void) {
+ClutPos *clut_alloc_small(void) {
     s32 i;
     FreeNode *a;
     FreeNode *head;
@@ -3002,7 +3002,7 @@ ClutPos *func_80028420(void) {
     if (a == NULL) {
         head = FreeBufNodes;
         FreeBufNodes = head->next;
-        src = func_800282F8(D_80063B58);
+        src = vram_take(D_80063B58);
         prev = NULL;
         h = *src;
         i = 0x1F;
@@ -3061,7 +3061,7 @@ static inline void BufNode_Release(BufNode *arg0) {
         if (p->next != NULL) {
             p->next->prev = p->prev;
         }
-        func_80028AE4(arg0->child);
+        vram_free_node(arg0->child);
         old = (BufNode *)FreeBufNodes;
         FreeBufNodes = (FreeNode *)arg0;
         p->next = old;
@@ -3077,7 +3077,7 @@ static inline void BufNode_Release(BufNode *arg0) {
     }
 }
 
-void func_8002854C(FreeNode *n) {
+void vram_release(FreeNode *n) {
     FreeNode *a;
     FreeNode *p;
 
@@ -3127,7 +3127,7 @@ void func_8002854C(FreeNode *n) {
     }
 }
 
-void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
+void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     FreeNode *n;
     BufNode *b;
     BufNode *first;
@@ -3210,7 +3210,7 @@ dec:
     return r;
 }
 
-void *func_80028A00(void) {
+void *clut_alloc_large(void) {
     u8 *cur;
 
     cur = D_80063BB4;
@@ -3220,7 +3220,7 @@ void *func_80028A00(void) {
     return cur;
 }
 
-FreeNode *func_80028A28(void) {
+FreeNode *vram_alloc_node(void) {
     FreeNode *head;
     FreeNode *prev;
     FreeNode *n;
@@ -3231,7 +3231,7 @@ FreeNode *func_80028A28(void) {
 
     head = FreeBufNodes;
     FreeBufNodes = head->next;
-    src = func_800282F8(D_80063B58);
+    src = vram_take(D_80063B58);
     prev = NULL;
     h = *src;
     i = 0x1F;
@@ -3252,7 +3252,7 @@ FreeNode *func_80028A28(void) {
     return head;
 }
 
-void func_80028AE4(BufNode *arg0) {
+void vram_free_node(BufNode *arg0) {
     BufNode *p;
     BufNode *old;
 
@@ -3266,7 +3266,7 @@ void func_80028AE4(BufNode *arg0) {
         if (p->next != NULL) {
             p->next->prev = p->prev;
         }
-        func_80028AE4(arg0->child);
+        vram_free_node(arg0->child);
         old = (BufNode *)FreeBufNodes;
         FreeBufNodes = (FreeNode *)arg0;
         p->next = old;
@@ -3282,7 +3282,7 @@ void func_80028AE4(BufNode *arg0) {
     }
 }
 
-s32 func_80028BC8(u8 **arg0) {
+s32 list_count(u8 **arg0) {
     u8 *p;
     s32 n;
 
@@ -3293,7 +3293,7 @@ s32 func_80028BC8(u8 **arg0) {
     return n;
 }
 
-void func_80028BF0(void) {
+void debug_font_init(void) {
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
     D_800643E8 = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
@@ -3301,7 +3301,7 @@ void func_80028BF0(void) {
     D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
 }
 
-void func_80028C94(void) {
+void debug_font_init2(void) {
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
     D_800643E8 = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
@@ -3312,13 +3312,13 @@ void func_80028C94(void) {
 void func_80028D38(void) {
 }
 
-void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set) {
+void texture_upload_anim(AnimTex *t, s32 base, AnimTexSet *set) {
     TexUV uv;
     s16 y;
     u8 *p;
     AnimClut *cl;
 
-    t->pos = func_800282F8(t->src);
+    t->pos = vram_take(t->src);
     if (t->pos != NULL) {
         t->rect.x = t->pos->f0;
         t->rect.y = y = t->pos->f2;
@@ -3382,7 +3382,7 @@ void texture_update_scroll(texture_scroll *s, obj_textureset *o) {
     addPrim(cdb + 0x3FFC, p);
 }
 
-void func_80029100(obj_textureset *arg0) {
+void texture_update_anims(obj_textureset *arg0) {
     AnimData *d;
     s32 *p;
     s32 n;
@@ -3553,9 +3553,9 @@ static inline void Tex_UploadCluts(u8 *set) {
             return;
         }
         if (e->w < 0x11U) {
-            e->pos = func_80028420();
+            e->pos = clut_alloc_small();
         } else {
-            e->pos = func_80028A00();
+            e->pos = clut_alloc_large();
         }
         rect.x = e->pos->x;
         rect.y = e->pos->y;
@@ -3583,7 +3583,7 @@ loop:
     if (n != -1) {
         rec = *(u8 **)(arg1 + 8) + *ip * 0x38;
         ip += 4;
-        *pp = func_800282F8(*(u8 **)(rec + 4));
+        *pp = vram_take(*(u8 **)(rec + 4));
         rect.w = *(u16 *)(rec + 0x1C);
         rect.h = *(u16 *)(rec + 0x1E);
         rect.x = (*pp)->f0;
@@ -3595,7 +3595,7 @@ loop:
     }
 }
 
-void func_80029560(u8 *arg0) {
+void textureset_upload(u8 *arg0) {
     AnimTex *t;
     u8 *base;
     s32 n;
@@ -3606,7 +3606,7 @@ void func_80029560(u8 *arg0) {
     Tex_UploadCluts(arg0);
     n = *(s32 *)arg0;
     while (n != 0) {
-        func_80028D40(t, (s32)base, (AnimTexSet *)arg0);
+        texture_upload_anim(t, (s32)base, (AnimTexSet *)arg0);
         if (t->flags & 2) {
             n -= t->frames;
             t += t->frames;
@@ -3626,7 +3626,7 @@ static inline void func_8002AA50_i(u8 *arg0) {
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 32));
     if (temp_a0 != 0) {
-        func_80028AE4(temp_a0);
+        vram_free_node(temp_a0);
         (*(s32*)((u8*)(arg0) + 32)) = 0;
     }
 }
@@ -3636,7 +3636,7 @@ static inline void func_8002A740_i(u8 *arg0) {
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 4));
     if (temp_a0 != 0) {
-        func_8002854C(temp_a0);
+        vram_release(temp_a0);
         (*(s32*)((u8*)(arg0) + 4)) = 0;
     }
 }
@@ -3671,7 +3671,7 @@ static inline void func_80029790_b(u8 *arg0, u8 *p) {
     }
 }
 
-void func_80029790(u8 *arg0) {
+void textureset_release(u8 *arg0) {
     s32 n;
     u8 *d;
     s32 *q;
@@ -3689,7 +3689,7 @@ void func_80029790(u8 *arg0) {
             n = *q;
             if (--n != -1) {
                 do {
-                    func_80028AE4(r[3]);
+                    vram_free_node(r[3]);
                     r += 4;
                 } while (--n != -1);
             }
@@ -3716,7 +3716,7 @@ void func_80029790(u8 *arg0) {
     }
 }
 
-s32 func_8002992C(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3) {
+s32 texture_draw_quad(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3) {
     POLY_GT4 *p;
     GfxState *gs;
     ScreenXY v;
@@ -3783,7 +3783,7 @@ s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color) {
     return f->advance * 640 / ScreenRect->w;
 }
 
-s32 func_80029F9C(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
+s32 texture_draw_3d(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     POLY_GT4 *p;
     GfxState *gs;
     volatile SVECTOR v;
@@ -3874,7 +3874,7 @@ void texture_release_loading_mem(obj_textureset *set) {
     set->base = NULL;
 }
 
-void func_8002A3D0(u8 *arg0) {
+void textureset_upload_cluts(u8 *arg0) {
     RECT rect;
     ClutUpload *e;
     u8 *base;
@@ -3889,9 +3889,9 @@ void func_8002A3D0(u8 *arg0) {
             return;
         }
         if (e->w < 0x11U) {
-            e->pos = func_80028420();
+            e->pos = clut_alloc_small();
         } else {
-            e->pos = func_80028A00();
+            e->pos = clut_alloc_large();
         }
         rect.x = e->pos->x;
         rect.y = e->pos->y;
@@ -3906,7 +3906,7 @@ void func_8002A3D0(u8 *arg0) {
 void func_8002A4B8(void) {
 }
 
-void func_8002A4C0(TexUploadList *arg0, u8 *arg1) {
+void texture_upload_list(TexUploadList *arg0, u8 *arg1) {
     s32 n;
     u8 *rec;
     s32 *ip;
@@ -3922,7 +3922,7 @@ loop:
     if (n != -1) {
         rec = *(u8 **)(arg1 + 8) + *ip * 0x38;
         ip += 4;
-        *pp = func_800282F8(*(u8 **)(rec + 4));
+        *pp = vram_take(*(u8 **)(rec + 4));
         rect.w = *(u16 *)(rec + 0x1C);
         rect.h = *(u16 *)(rec + 0x1E);
         rect.x = (*pp)->f0;
@@ -3934,7 +3934,7 @@ loop:
     }
 }
 
-void func_8002A5A4(u8 *a0, u8 *arg1) {
+void textureset_init(u8 *a0, u8 *arg1) {
     Func2A5A4Obj *arg0 = (Func2A5A4Obj *)a0;
     arg0->src = arg1;
     mal_alloc_owned_low(*(u16 *)(arg1 + 8) * 0x38, (void **)&arg0->f8, (s32)&MainHeap, 0);
@@ -3946,7 +3946,7 @@ void func_8002A5A4(u8 *a0, u8 *arg1) {
 }
 
 /* Size in bytes: 0xB0 plus +8 records of 0x38 and +0xA records of 0xC. */
-s32 func_8002A650(u8 *arg0) {
+s32 textureset_mem_size(u8 *arg0) {
     s32 size;
 
     size = *(u16 *)(arg0 + 8) * 0x38 + 0xB0;
@@ -3957,7 +3957,7 @@ s32 func_8002A650(u8 *arg0) {
 void func_8002A67C(void) {
 }
 
-void func_8002A684(u8 *arg0, u8 *arg1) {
+void texture_scroll_step(u8 *arg0, u8 *arg1) {
     s32 old;
     s32 pos;
     s32 step;
@@ -3986,23 +3986,23 @@ void func_8002A684(u8 *arg0, u8 *arg1) {
     }
 }
 
-void func_8002A740(u8 *arg0) {
+void clut_release(u8 *arg0) {
     s32 temp_a0;
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 4));
     if (temp_a0 != 0) {
-        func_8002854C(temp_a0);
+        vram_release(temp_a0);
         (*(s32*)((u8*)(arg0) + 4)) = 0;
     }
 }
 
-void func_8002A77C(ClutUpload *arg0, s32 arg1) {
+void clut_upload(ClutUpload *arg0, s32 arg1) {
     RECT rect;
 
     if (arg0->w < 0x11U) {
-        arg0->pos = func_80028420();
+        arg0->pos = clut_alloc_small();
     } else {
-        arg0->pos = func_80028A00();
+        arg0->pos = clut_alloc_large();
     }
     rect.x = arg0->pos->x;
     rect.y = arg0->pos->y;
@@ -4012,7 +4012,7 @@ void func_8002A77C(ClutUpload *arg0, s32 arg1) {
     arg0->clut = GetClut(rect.x, rect.y);
 }
 
-void func_8002A830(u8 *src, u8 *out, s32 len) {
+void texsrc_init(u8 *src, u8 *out, s32 len) {
     u16 id;
 
     id = *(u16 *)src;
@@ -4022,7 +4022,7 @@ void func_8002A830(u8 *src, u8 *out, s32 len) {
     *(u16 *)out = id;
 }
 
-void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n) {
+void texture_init_entry(TexSrc2A84C *s, TexDst2A84C *d, s32 n) {
     u32 t;
     s32 u;
 
@@ -4051,7 +4051,7 @@ void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n) {
     d->fC = t;
 }
 
-void func_8002A9AC(s32 *arg0, s32 arg1) {
+void texanims_release(s32 *arg0, s32 arg1) {
     s32 n;
     TexAnimEntry *p;
 
@@ -4064,24 +4064,24 @@ void func_8002A9AC(s32 *arg0, s32 arg1) {
                 return;
             }
             if (p->handle != 0 && FrameCount - p->time >= arg1) {
-                func_80028AE4(p->handle);
+                vram_free_node(p->handle);
                 p->handle = 0;
             }
         }
     }
 }
 
-void func_8002AA50(u8 *arg0) {
+void texture_release_vram(u8 *arg0) {
     s32 temp_a0;
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 32));
     if (temp_a0 != 0) {
-        func_80028AE4(temp_a0);
+        vram_free_node(temp_a0);
         (*(s32*)((u8*)(arg0) + 32)) = 0;
     }
 }
 
-void func_8002AA8C(u8 *arg0) {
+void textureset_clear(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 0)) = 0;
     (*(s32*)((u8*)(arg0) + 8)) = 0;
     (*(s32*)((u8*)(arg0) + 12)) = 0;

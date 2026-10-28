@@ -568,7 +568,7 @@ void NoxStartPhase1(void)
   Heroes[1].hero_eng->unk2C.z = 0x1000;
   Heroes[0].hero_eng->unk5E = 1;
   Heroes[1].hero_eng->unk5E = 1;
-  func_80026F48();
+  KillAllNas();
   N2OPlaceHero(0);
   N2OPlaceHero(1);
   N2OPlaceHero(3);
@@ -776,18 +776,18 @@ void NoxUpdate(void) {
         NoxCameraNas = first;
         if (first != NULL) {
             first->UserInfo.user1 = 0;
-            func_80026A04((u8 *)first);
+            AddCamera((u8 *)first);
         }
         if (((BossGameView *)GameInfo)->unk6C != 0) {
             nas = CreateNAS(0, 0, 0, 0x1C03, 0x11);
             NoxCameraNasB = nas;
             if (nas != NULL) {
                 nas->UserInfo.user1 = 1;
-                func_80026A04((u8 *)nas);
+                AddCamera((u8 *)nas);
             }
         }
-        func_80026980(Heroes[0].hero);
-        func_80026980(Heroes[1].hero);
+        RemoveCamera(Heroes[0].hero);
+        RemoveCamera(Heroes[1].hero);
         NoxStarted = 1;
     }
     if (GamePause == 0) {
@@ -1113,16 +1113,16 @@ void SetNoxHeroDead(s32 arg0) {
     SLONG_XYZ *p;
     HeroInfo *base;
 
-    func_80028018(arg0, 0xA);
-    ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xA, 0xFF);
+    pad_rumble_small(arg0, 0xA);
+    ((void (*)(s32, s32, s32))pad_rumble_big)(arg0, 0xA, 0xFF);
     base = Heroes;
     h = &base[arg0];
     h->hero_status |= 0xA000;
     if (arg0 == 0) {
-        func_80026980(NoxCameraNas);
+        RemoveCamera(NoxCameraNas);
     }
     if (arg0 == 1) {
-        func_80026980(NoxCameraNasB);
+        RemoveCamera(NoxCameraNasB);
     }
     ret = NULL;
     p = &h->hero_eng->unk10;
@@ -1473,7 +1473,7 @@ void InitNitroBoss(NAS *nas) {
         func_80086868();
         D_8009D6E2 = 0xFF;
         NoxBossPathPos = 0;
-        ext->cursor = func_80024E30(nas, &NoxBossScriptInit);
+        ext->cursor = ScriptCursorFirst(nas, &NoxBossScriptInit);
         nas->Engine->unk5D = 2;
         nas->Engine->unk5C = 1;
         func_800250B0(nas);
@@ -2091,7 +2091,7 @@ void InitLaserShoot(LaserShoot *arg0) {
     arg0->obj->unk1E = 0;
     arg0->obj->unk5D = 2;
     arg0->unk60 = 0;
-    func_80026B70(&NoxLasers, (u8 *)arg0);
+    AddToGroup(&NoxLasers, (u8 *)arg0);
 }
 
 void InitMineSFX(MineSFX *arg0) {
@@ -2220,8 +2220,8 @@ void SetNoxHeroHit(s32 arg0) {
     EXTengine *e = Heroes[arg0].hero_eng;
 
     CreateNAS(e->unk10.x, e->unk10.y, e->unk10.z + 0x400, 0x1C09, 0x11);
-    func_80028018(arg0, 0xA);
-    ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xA, 0xFF);
+    pad_rumble_small(arg0, 0xA);
+    ((void (*)(s32, s32, s32))pad_rumble_big)(arg0, 0xA, 0xFF);
 }
 
 void NoxHeroDead(void) {
@@ -2485,7 +2485,7 @@ void PlotNitroSmokeBoost(NAS *nas) {
 void InitNitroSmokeBoost(NAS *nas) {
     ScriptCursor *cur;
 
-    cur = func_80024E30(nas, &NoxSmokeScriptInit);
+    cur = ScriptCursorFirst(nas, &NoxSmokeScriptInit);
     if (GameMode == 0x1F) {
         if (cur != NULL) {
             cur->unk1E = 4;

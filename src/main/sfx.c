@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/sfx.h"
 
-void func_80022140(s32 arg0, s32 arg1) {
+void music_play_level(s32 arg0, s32 arg1) {
     D5A614View *p;
     u8 *q;
     u32 t8;
@@ -50,27 +50,27 @@ void func_80022140(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800222BC(void) {
+void sound_set_stereo(void) {
     SsSetStereo();
 }
 
-void func_800222DC(void) {
+void sound_set_mono(void) {
     SsSetMono();
 }
 
-void func_800222FC(void) {
+void sound_init(void) {
     SsInit();
     func_8002C060();
-    func_80022984();
+    sfx_voices_init();
 }
 
-void func_8002232C(void) {
+void sound_reinit(void) {
     func_8002BBEC();
     SsInit();
     func_8002C44C();
 }
 
-s32 func_8002235C(_sfx_handler *voice) {
+s32 sfx_update_voice(_sfx_handler *voice) {
     S16Pair vol;
     S16Pair tmp;
     S16Pair tmp2;
@@ -176,7 +176,7 @@ _sfx_handler *PlaySfx(s32 id, _sfx_handler **handle, SLONG_XYZ *pos, s32 arg3, s
 
     voice = NULL;
     if (id & 0x8000) {
-        func_80027A74();
+        loader_pending_stub();
     } else {
         if (SfxTable[id][1] == -1) {
             return NULL;
@@ -245,7 +245,7 @@ void func_800227FC(void) {
     }
 }
 
-void func_80022838(void) {
+void sfx_update_all(void) {
     _sfx_handler *next;
     _sfx_handler *voice;
 
@@ -254,7 +254,7 @@ void func_80022838(void) {
     if (voice != NULL) {
         do {
             next = voice->next;
-            if (func_8002235C(voice) != 1) {
+            if (sfx_update_voice(voice) != 1) {
                 StopSfx(voice);
             }
             voice = next;
@@ -269,7 +269,7 @@ void func_800228A4(_sfx_handler *voice, s32 arg1) {
     }
 }
 
-void func_800228C4(_sfx_handler *voice) {
+void sfx_voice_free(_sfx_handler *voice) {
     if (voice->next != NULL) {
         voice->next->prev = voice->prev;
     }
@@ -282,7 +282,7 @@ void func_800228C4(_sfx_handler *voice) {
     SfxVoicePool.free = voice;
 }
 
-_sfx_handler *func_80022924(void) {
+_sfx_handler *sfx_voice_alloc(void) {
     _sfx_handler *v;
     _sfx_handler *r;
 
@@ -303,7 +303,7 @@ _sfx_handler *func_80022924(void) {
     return r;
 }
 
-void func_80022984(void) {
+void sfx_voices_init(void) {
     _sfx_handler *v;
     s32 i;
 
@@ -319,12 +319,12 @@ void func_80022984(void) {
 }
 
 
-void func_800229D4(void) {
+void sfx_reset(void) {
     func_8002BBB4();
-    func_80022984();
+    sfx_voices_init();
 }
 
-void func_800229FC(s32 i) {
+void music_load_track(s32 i) {
     func_8002C488(MusicTable[i].file, MusicTable[i].reverb);
 }
 

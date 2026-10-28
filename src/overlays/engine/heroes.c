@@ -131,7 +131,7 @@ void func_80083708(void) {
         eng->unk10 = MapPoints[i].pos;
         h->hero_eng->unk10.y = World_floor_level;
         eng->OldXYZ = eng->unk10;
-        h->hero_anim = func_800265DC(h->hero);
+        h->hero_anim = AllocExt400(h->hero);
         name = h->hero_name;
         if ((u32)(name - 1) < 8) {
             h->hero_sub->unk6C = HeroModelBank + ((u16 *)HeroHooks.HeroModels)[name] * 0x38;
@@ -270,7 +270,7 @@ void func_80083708(void) {
             h->hero->Camera.width = 0x200;
             h->hero->Camera.height = 0x500;
             h->hero->Camera.look_ahead = 0x400;
-            func_80026A04((u8 *)h->hero);
+            AddCamera((u8 *)h->hero);
         }
     next:
         i++;
@@ -398,10 +398,10 @@ void func_80083E8C(void) {
                 SetHeroAction(id, (u16)HeroActHit);
                 h->hero_immunity = 0;
                 if (h->hero_harm_flags & 0x8000) {
-                    ((void (*)(s32, s32, s32))func_80027F7C)(id, 4, 0xFF);
+                    ((void (*)(s32, s32, s32))pad_rumble_big)(id, 4, 0xFF);
                 } else {
-                    func_80028018(id, 0xC);
-                    ((void (*)(s32, s32, s32))func_80027F7C)(id, 0xC, 0xFF);
+                    pad_rumble_small(id, 0xC);
+                    ((void (*)(s32, s32, s32))pad_rumble_big)(id, 0xC, 0xFF);
                 }
             }
         }
@@ -435,14 +435,14 @@ void func_80083E8C(void) {
         c->hero_harm_flags = 0;
         if (st & 0x8000) {
             c->hero_eng->flags = 0;
-            func_80026980(c->hero);
+            RemoveCamera(c->hero);
             continue;
         }
         if (!(st & 0x2000)) {
             last = id;
             D_8009D758++;
         } else if (HLV->unk30 & 0x800) {
-            func_80026980(c->hero);
+            RemoveCamera(c->hero);
         } else {
             D_8009D75C++;
         }
@@ -1298,7 +1298,7 @@ s32 func_800863D0(s32 arg0) {
     dz = abs(h->hero_eng->unk10.z - h->hero_eng->OldXYZ.z);
     new_var = 0x40;
     dist = (dist + new_var) + dz;
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy == 0x7FFFFFFF) {
         h->hero_eng->unk10 = h->hero_eng->OldXYZ;
         return 0;
@@ -1338,7 +1338,7 @@ s32 func_800864CC(s32 id, u32 flag) {
     base = Heroes;
     h = &base[id];
     eng = h->hero_eng;
-    box = func_80025A48(eng, flag);
+    box = FindCollisionBox(eng, flag);
     if (box == NULL) {
         return -1;
     }
@@ -1364,7 +1364,7 @@ s32 func_800864CC(s32 id, u32 flag) {
         if (eng == NULL) {
             continue;
         }
-        rec = func_80025A48(eng, 0x40);
+        rec = FindCollisionBox(eng, 0x40);
         if (rec == NULL) {
             continue;
         }
@@ -1431,7 +1431,7 @@ void func_8008672C(s32 idx) {
         if (h->hero_status & 0xA000) {
             s->sub->flags &= 0xFFFF7FFF;
         }
-        s->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(s);
+        s->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(s);
     }
 }
 
@@ -1770,7 +1770,7 @@ s32 func_800871E4(s32 arg0) {
     s32 moved;
 
     if (h->hero_move->jump_max != 0) {
-        if (func_80025BBC(h->hero_eng) != 0) {
+        if (ApplyContourMoved(h->hero_eng) != 0) {
             h->hero_move->jump_max = 0;
             h->hero_sub->unk08 = 0;
         } else if (!(h->hero_ctrl & 8)) {
@@ -2080,7 +2080,7 @@ void func_800881E0(s32 arg0) {
     HeroInfo *h = base + arg0;
     u8 *eng;
 
-    if (func_80025BBC(h->hero_eng) != 0) {
+    if (ApplyContourMoved(h->hero_eng) != 0) {
         SetHeroAction(arg0, 7);
     } else if (!(h->hero_ctrl & 8)) {
         eng = (u8 *)h->hero_eng;
@@ -3204,7 +3204,7 @@ s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
     st = *(s32 **)(arg2 + 0x34);
     t0 = VSync(1);
     def = NULL;
-    p = func_80021DD4(((FxOwner *)arg0)->fx, ((FxEmitter *)arg2)->unk24, ((FxEmitter *)arg2)->unk4);
+    p = get_script_track(((FxOwner *)arg0)->fx, ((FxEmitter *)arg2)->unk24, ((FxEmitter *)arg2)->unk4);
     if (p != NULL) {
         def = p + 0x14;
     }
@@ -3219,7 +3219,7 @@ s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
                     break;
                 }
                 if (!(*(s32 *)obj & 0x8000)) {
-                func_8001F604(obj, part, def);
+                emit_particle(obj, part, def);
                 life = *(s32 *)(def + 0x18);
                 if (life == 0) {
                     life = *(s32 *)(arg2 + 0x20);
@@ -3286,7 +3286,7 @@ s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
                 }
                 *(s32 *)(obj + 0x24) = *(s32 *)(obj + 0x28) = *(s32 *)(obj + 0x20);
             }
-            func_8002147C((VelObj *)obj, (VelParams *)def, (VelState *)part);
+            vel_update((VelObj *)obj, (VelParams *)def, (VelState *)part);
             if (!(*(s32 *)obj & 0x8000) && *(s32 *)(def + 0x6C) != 0) {
                 if ((*(s32 *)(arg2 + 0x2C) -= 1) < 0) {
                     *(s32 *)(arg2 + 0x2C) = 0;
@@ -3582,7 +3582,7 @@ void InitScriptFX(NAS *nas)
         sub->unk51 = 2;
       }
         sub->unk50 = 1;
-        r = func_80021DD4(dbase, t->scriptnumber, t->threadnumber);
+        r = get_script_track(dbase, t->scriptnumber, t->threadnumber);
         kf = 0;
         if (r != 0)
       {
@@ -3607,7 +3607,7 @@ void InitScriptFX(NAS *nas)
         break;
 
       case 1:
-        r = func_80021DD4(dbase, t->scriptnumber, t->threadnumber);
+        r = get_script_track(dbase, t->scriptnumber, t->threadnumber);
         k = 0;
         if (r != 0)
       {
@@ -3738,12 +3738,12 @@ void PlotScriptFX(NAS *nas) {
                         }
                         j++;
                     }
-                    func_800270B0(nas);
+                    KillTriggerNas(nas);
                     return;
                 }
                 break;
             case 0:
-                r = func_80021DD4((u8 *)sd->dbase, t->scriptnumber, t->threadnumber);
+                r = get_script_track((u8 *)sd->dbase, t->scriptnumber, t->threadnumber);
                 kf = NULL;
                 if (r != NULL) {
                     kf = (ScriptKey *)(r + 0x24);
@@ -3775,7 +3775,7 @@ void PlotScriptFX(NAS *nas) {
                     if (sub != NULL && (sub->flags & 0x8000)) {
                         sub->unk52 = 1;
                         if (sub->unk51 == 3) {
-                            func_80020344(&cur->quat, &next->quat, (f << 12) / d >> 8, (Quat *)&sub->unk10);
+                            quat_slerp(&cur->quat, &next->quat, (f << 12) / d >> 8, (Quat *)&sub->unk10);
                         } else {
                             sub->unk12 = *(u16 *)&cur->ry - ((-next->ry + cur->ry) << 20 >> 20) * f / (d << 8);
                             sub->unk52 = 1;
@@ -3820,7 +3820,7 @@ void PlotScriptFX(NAS *nas) {
                                     }
                                     k++;
                                 }
-                                func_800270B0(nas);
+                                KillTriggerNas(nas);
                                 return;
                             }
                         }
@@ -4147,7 +4147,7 @@ void InitParticleEffect(void) {
 }
 
 void InitSmokePoof(NAS *nas) {
-    func_80024E30(nas, &D_8009E1E8);
+    ScriptCursorFirst(nas, &D_8009E1E8);
     nas->Engine->sub->unk6C = PolarObjectsModel;
     nas->Engine->sub->flags |= 0x40000041;
     nas->UserInfo.user1 = 0;
@@ -4196,7 +4196,7 @@ void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4) {
     s32 r;
     s32 u;
 
-    func_8001F604(arg0, arg2, arg1);
+    emit_particle(arg0, arg2, arg1);
     life = *(s32 *)(arg1 + 0x18);
     if (life == 0) {
         life = *(s32 *)(arg4 + 0x20);
@@ -4234,7 +4234,7 @@ void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4) {
 u8 *func_8008D24C(u8 *arg0, s32 *arg1) {
     u8 *r;
 
-    r = func_80021DD4(arg0, arg1[0x24 / 4], arg1[1]);
+    r = get_script_track(arg0, arg1[0x24 / 4], arg1[1]);
     if (r != NULL) {
         return r + 0x24;
     }
@@ -4242,7 +4242,7 @@ u8 *func_8008D24C(u8 *arg0, s32 *arg1) {
 }
 
 u8 *func_8008D284(u8 *arg0, u8 *arg1) {
-    u8 *p = func_80021DD4(arg0, *(s32 *)(arg1 + 0x24), *(s32 *)(arg1 + 4));
+    u8 *p = get_script_track(arg0, *(s32 *)(arg1 + 0x24), *(s32 *)(arg1 + 4));
     if (p != NULL) {
         return p + 0x14;
     }
@@ -4408,7 +4408,7 @@ void func_8008D6C8(NAS *nas) {
     } else {
         eng->unk10.y += m->Yvel;
     }
-    dy = ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    dy = ((s32 (*)(EXTengine *))ApplyContour)(eng);
     next = eng->Engine;
     if (next != NULL) {
         next->unk10 = eng->unk10;
@@ -4420,7 +4420,7 @@ void func_8008D6C8(NAS *nas) {
         m->Ydir = 0;
         m->Yacc = acc;
     }
-    if (m->Ydir == 0 && func_80025BBC(eng) != 0) {
+    if (m->Ydir == 0 && ApplyContourMoved(eng) != 0) {
         m->Ydec = 8;
         m->Ydir = 0xFF;
         m->Yacc = 0;
@@ -4443,8 +4443,8 @@ void Init_HealthPU(NAS *nas) {
         eng->sub->unk74 = Random(0xE) + 0x2018;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
-            func_80026AD8((u8 *)nas);
-            func_8002694C(nas, 0x200);
+            LinkObject((u8 *)nas);
+            AddSolid(nas, 0x200);
             nas->FUX = (EXT *)obj;
             obj->whatami = 0x11;
             obj->can_do |= 0x18;
@@ -4564,7 +4564,7 @@ void InitBigPoof(NAS *nas) {
     if (eng != NULL) {
         eng->sub->unk6C = PowerupsModel;
         eng->sub->unk74 = 0;
-        func_80024E30(nas, &D_8009E250);
+        ScriptCursorFirst(nas, &D_8009E250);
         eng->flags |= 0x21;
     }
     if (nas->Failure != 0) {

@@ -1305,7 +1305,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                 for (k = 0; k < 4; k++) {
                     Heroes[k].hero_status |= 0x100;
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                     }
                 }
             } else {
@@ -1429,7 +1429,7 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
                 for (k = 0; k < 4; k++) {
                     Heroes[k].hero_status |= 0x100;
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                     }
                 }
                 CameraMode = 1;
@@ -1792,7 +1792,7 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
                     Heroes[i].hero_status |= 0x8400;
                     Heroes[i].hero_shadow->sub->flags &= ~0x8000;
                     DINO_PUFF(&Heroes[i]);
-                    func_80026980(Heroes[i].hero);
+                    RemoveCamera(Heroes[i].hero);
                 } else {
                     Heroes[i].hero_status |= 0x200;
                 }
@@ -1816,7 +1816,7 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
                     hb[i].hero_status |= 0x8100;
                     DINO_PUFF(&hb[i]);
                     hb[i].hero_shadow->sub->flags &= ~0x8000;
-                    func_80026980(hb[i].hero);
+                    RemoveCamera(hb[i].hero);
                 } else {
                     hb[i].hero_status |= 0x200;
                 }
@@ -1848,7 +1848,7 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
                     Heroes[i].hero_status |= 0x8400;
                     DINO_PUFF(&Heroes[i]);
                     Heroes[i].hero_shadow->sub->flags &= ~0x8000;
-                    func_80026980(Heroes[i].hero);
+                    RemoveCamera(Heroes[i].hero);
                 } else {
                     Heroes[i].hero_status |= 0x200;
                 }
@@ -1879,7 +1879,7 @@ end:
                 Heroes[i].hero_status |= 0x8400;
                 DINO_PUFF(&Heroes[i]);
                 Heroes[i].hero_shadow->sub->flags &= ~0x8000;
-                func_80026980(Heroes[i].hero);
+                RemoveCamera(Heroes[i].hero);
             } else {
                 Heroes[i].hero_status |= 0x100;
             }
@@ -2969,8 +2969,8 @@ void SetDinoHeroDazed(s32 id) {
         SetHeroSeq(id, 0x4D);
         ext->unkC = 7;
         ext->unk14 = 0;
-        func_80028018(id, 0xA);
-        ((void (*)(s32, s32, s32))func_80027F7C)(id, 0xA, 0xFF);
+        pad_rumble_small(id, 0xA);
+        ((void (*)(s32, s32, s32))pad_rumble_big)(id, 0xA, 0xFF);
         switch (Heroes[id].hero_name) {
         case 1:
             SFX4(3, 4, 5, 6);
@@ -3345,7 +3345,7 @@ void InitDinoGem(NAS *m) {
         ext->unkE2 = 0x100;
         ext->unkB4 = 0;
         ext->unkD4 = 0;
-        func_80026A04((u8 *)m);
+        AddCamera((u8 *)m);
         m->Engine->sub->flags &= 0xFFFF7FFF;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
@@ -3475,7 +3475,7 @@ void PlotDinoGem(NAS *m) {
         ext->unkB4 = ext->unk48;
         ext->unkD4 = ext->unk4C;
         ext->unk84->sub->flags |= 0x8000;
-        func_80026A04((u8 *)m);
+        AddCamera((u8 *)m);
         found = -1;
         ext->unkC = 3;
         hb = &Heroes[ext->unk10];
@@ -3518,7 +3518,7 @@ void PlotDinoGem(NAS *m) {
         ext->unk84->sub->flags |= 0x8000;
         ext->unkC = 4;
         SFX4(0x6C0, 0x6C1, 0x6C2, 0x6C3);
-        func_80026A04((u8 *)m);
+        AddCamera((u8 *)m);
         break;
     }
     case 4:
@@ -3565,7 +3565,7 @@ void PlotDinoGem(NAS *m) {
             SFX4(0x6B7, 0x6B8, 0x6B9, 0x6BA);
             if (ext->unk80 >= 5) {
                 ext->unk80 = 0;
-                func_80026980(m);
+                RemoveCamera(m);
                 ext->unkC = 0;
                 ext->unkB4 = 0;
                 ext->unkD4 = 0;
@@ -3576,7 +3576,7 @@ void PlotDinoGem(NAS *m) {
     check:
         if (DinoGemCarrier(m) != 0) {
             ext->unkC = 1;
-            func_80026980(m);
+            RemoveCamera(m);
             PlaySfx(0x6CD, NULL, NULL, 0x1000, 0x1E00, 0);
             m->Engine->unk2C.x = 0x800;
             m->Engine->unk2C.y = 0x800;
@@ -3879,7 +3879,7 @@ s32 DinoFloorKind(s32 arg0) {
 void InitDinoSmoke(NAS *arg0) {
     s16 *p;
 
-    func_80024E30(arg0, &DinoSmokeScriptInit);
+    ScriptCursorFirst(arg0, &DinoSmokeScriptInit);
     arg0->Engine->sub->unk6C = DragonObjectsModel;
     arg0->Engine->sub->flags |= 0x40000041;
     p = &GameMode;

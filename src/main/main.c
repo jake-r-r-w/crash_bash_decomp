@@ -52,7 +52,7 @@ void shell_init(void) {
     pads_update();
     load_file_direct(&DatIndex[2 * 991], HeapStart);
     D_8004E0DC = (VTable8 *)HeapStart;
-    func_800270F0(D_8004E0B8);
+    RunVTables(D_8004E0B8);
 }
 
 const char LevNameJungleBash[] = "JUNGLE BASH";
@@ -132,7 +132,7 @@ void shell_render_dcache(void) {
     }
     SetSp(0x1F8003FC);
     D_8004E0DC->unk8();
-    func_800272AC(D_8004E0E0);
+    FlipScreen(D_8004E0E0);
     SetSp(D_8006E9F4);
 }
 
@@ -146,14 +146,14 @@ void shell_init_heap(void) {
 
 void shell_render(void) {
     D_8004E0DC->unk8();
-    func_800272AC(D_8004E0E0);
+    FlipScreen(D_8004E0E0);
 }
 
 void shell_update(void) {
     loader_update();
     pads_update();
     rand_step();
-    func_80022838();
+    sfx_update_all();
     func_8002BEA8();
     if (!(FrameCount & 1)) {
         func_8002D274();
@@ -168,7 +168,7 @@ void shell_start_engine(void) {
         mal_init(&MainHeap, p, 0x801FF000 - (s32)p);
         smallnode_init();
     }
-    func_800222FC();
+    sound_init();
     SetNasDefaults();
     D_8004E0DC->unk0();
 }
@@ -1559,7 +1559,7 @@ s32 loader_update(void) {
         return 0;
     }
     if (ls->unk4 != 0) {
-        r = func_80027944();
+        r = cd_read_poll();
         if (r > 0) {
             return 0;
         }
@@ -1610,7 +1610,7 @@ s32 loader_update(void) {
     if (data == NULL) {
         return 0;
     }
-    if (func_80027790(node->file, node->offset / 2048, data, (node->size + 0x7FF) / 2048) < 0) {
+    if (cd_read(node->file, node->offset / 2048, data, (node->size + 0x7FF) / 2048) < 0) {
         mal_free((void *)ls->unk4, &MainHeap);
         ls->unk4 = 0;
     }
@@ -2086,7 +2086,7 @@ void init_file(void) {
     LoadNode *node;
     s32 i;
 
-    func_800279A4();
+    cd_init();
     node = (LoadNode *)LoadNodePool;
     i = 0x3E;
     Loader.state = 3;
@@ -2355,17 +2355,17 @@ s32 load_file_direct(u8 *a, u8 *b) {
         func_8002BAE8();
     }
     D_800637B0 = 0;
-    while (func_80027944() > 0) {
+    while (cd_read_poll() > 0) {
     }
     do {
         for (;;) {
             n = *(s32 *)(a + 4);
-            if (func_80027790(a, 0, b, (n + 0x7FF) / 2048) >= 0) {
+            if (cd_read(a, 0, b, (n + 0x7FF) / 2048) >= 0) {
                 break;
             }
         }
         do {
-            r = func_80027944();
+            r = cd_read_poll();
         } while (r > 0);
     } while (r < 0);
     D_800637B0 = 1;
@@ -2488,7 +2488,7 @@ void pads_update(void) {
     s32 any;
     s32 i;
 
-    func_80027D90();
+    pads_read();
     pad = Pads;
     any = 0;
     PadRunEnd = 0;
@@ -2876,22 +2876,22 @@ s32 get_angle(s32 x, s32 z) {
 void export_exe_functions(void) {
     void **t = (void **)D_800527C4;
 
-    t[0x000 / 4] = func_80027408;
+    t[0x000 / 4] = InitDisplay;
     t[0x004 / 4] = &num_sfx_banks;
     t[0x008 / 4] = PlaySfx;
     t[0x00C / 4] = StopSfx;
     t[0x010 / 4] = func_8002BD0C;
-    t[0x014 / 4] = func_8002232C;
+    t[0x014 / 4] = sound_reinit;
     t[0x018 / 4] = sfx_delete_all;
     t[0x01C / 4] = func_800228A4;
     t[0x020 / 4] = func_8002BCB0;
     t[0x024 / 4] = func_8002AC40;
     t[0x028 / 4] = func_8002AC18;
-    t[0x02C / 4] = func_80022140;
+    t[0x02C / 4] = music_play_level;
     t[0x030 / 4] = func_8002C284;
-    t[0x034 / 4] = func_800222FC;
-    t[0x038 / 4] = func_800222DC;
-    t[0x03C / 4] = func_800222BC;
+    t[0x034 / 4] = sound_init;
+    t[0x038 / 4] = sound_set_mono;
+    t[0x03C / 4] = sound_set_stereo;
     t[0x040 / 4] = music_fade_out;
     t[0x044 / 4] = path_find;
     t[0x048 / 4] = path_get;
@@ -2944,19 +2944,19 @@ void export_exe_functions(void) {
     t[0x104 / 4] = calc_rgbcode;
     t[0x108 / 4] = cam_init;
     t[0x10C / 4] = cam_ease_to;
-    t[0x110 / 4] = func_800276A4;
-    t[0x114 / 4] = func_80028774;
+    t[0x110 / 4] = ResetScreen;
+    t[0x114 / 4] = vram_init;
     t[0x118 / 4] = load_font;
     t[0x11C / 4] = dbase_asload_with_anims;
-    t[0x120 / 4] = func_800274FC;
+    t[0x120 / 4] = AllocOtBuffers;
     t[0x124 / 4] = dbase_init;
     t[0x128 / 4] = dbase_load_textures_wait;
     t[0x12C / 4] = dbase_init_all;
     t[0x130 / 4] = HeroModelBank;
     t[0x134 / 4] = MulMatrix;
-    t[0x138 / 4] = func_80028018;
-    t[0x13C / 4] = func_80027F7C;
-    t[0x140 / 4] = func_80028C94;
+    t[0x138 / 4] = pad_rumble_small;
+    t[0x13C / 4] = pad_rumble_big;
+    t[0x140 / 4] = debug_font_init2;
     t[0x144 / 4] = dbase_mesh_anim_name_load;
     t[0x148 / 4] = dbase_mesh_anim_name_loaded;
     t[0x14C / 4] = dbase_mesh_anim_name_release;
@@ -2988,28 +2988,28 @@ void export_exe_functions(void) {
     t[0x1B4 / 4] = process_control_goto;
     t[0x1B8 / 4] = process_interrupt;
     t[0x1BC / 4] = process_control_back;
-    t[0x1C0 / 4] = func_8002992C;
+    t[0x1C0 / 4] = texture_draw_quad;
     t[0x1C4 / 4] = texture_release_loading_mem;
     t[0x1C8 / 4] = func_8002D274;
-    t[0x1CC / 4] = func_800229FC;
-    t[0x1D0 / 4] = func_80029F9C;
+    t[0x1CC / 4] = music_load_track;
+    t[0x1D0 / 4] = texture_draw_3d;
     t[0x1D4 / 4] = SysPrintAt3d;
-    t[0x1D8 / 4] = func_800243A0;
+    t[0x1D8 / 4] = DrawSysText;
     t[0x1DC / 4] = card_save;
     t[0x1E0 / 4] = func_8002D15C;
     t[0x1E4 / 4] = quat_to_matrix;
-    t[0x1E8 / 4] = func_8001E984;
+    t[0x1E8 / 4] = init_scripts;
     t[0x1EC / 4] = scripts_update;
     t[0x1F0 / 4] = scripts_render;
-    t[0x1F4 / 4] = func_80021FB0;
-    t[0x1F8 / 4] = func_80022030;
-    t[0x1FC / 4] = func_8001FE80;
+    t[0x1F4 / 4] = scripts_release;
+    t[0x1F8 / 4] = scripts_kill_all;
+    t[0x1FC / 4] = play_script;
     t[0x200 / 4] = get_script_header;
-    t[0x204 / 4] = func_80021E44;
-    t[0x208 / 4] = func_80021DD4;
+    t[0x204 / 4] = offset_table_entry;
+    t[0x208 / 4] = get_script_track;
     t[0x20C / 4] = gfx_object_matrix;
-    t[0x210 / 4] = func_8001F604;
-    t[0x214 / 4] = func_8002147C;
+    t[0x210 / 4] = emit_particle;
+    t[0x214 / 4] = vel_update;
     t[0x218 / 4] = interp;
     t[0x21C / 4] = lerp_angle;
     t[0x220 / 4] = lerp_fix12;
@@ -3024,7 +3024,7 @@ void export_exe_functions(void) {
     t[0x244 / 4] = music_duck_off;
     t[0x248 / 4] = func_8002BB80;
     t[0x24C / 4] = func_8002BA44;
-    t[0x250 / 4] = func_80020344;
+    t[0x250 / 4] = quat_slerp;
     t[0x254 / 4] = (void *)D_800654B0;
     t[0x258 / 4] = (void *)D_800654B4;
     t[0x25C / 4] = itoa_div;
@@ -3032,14 +3032,14 @@ void export_exe_functions(void) {
     t[0x264 / 4] = dbase_texture_ptr;
     t[0x268 / 4] = dbase_texture_entry;
     t[0x26C / 4] = card_format;
-    t[0x270 / 4] = func_80028158;
+    t[0x270 / 4] = pads_reset_rumble;
     t[0x274 / 4] = func_8002D488;
     t[0x278 / 4] = func_8002D4F4;
     t[0x27C / 4] = queue_group_load;
     t[0x280 / 4] = D_80050010;
     t[0x284 / 4] = subpool_free;
-    t[0x288 / 4] = func_80021054;
-    t[0x28C / 4] = func_80020F5C;
+    t[0x288 / 4] = kill_script_threads;
+    t[0x28C / 4] = kill_script;
 }
 
 void itoa_div(char *dst, s32 val, s32 div) {

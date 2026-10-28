@@ -114,7 +114,7 @@ void InitBigScore(void);
         (shadow) = (eng)->Engine;                                                   \
         if ((shadow) != NULL) {                                                     \
             (shadow)->unk10 = (eng)->unk10;                                         \
-            (shadow)->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);        \
+            (shadow)->unk10.y -= ((s32 (*)(EXTengine *))ApplyContour)(eng);        \
         }                                                                           \
     } while (0)
 
@@ -235,9 +235,9 @@ static inline void SpinDropHazard(SpinFux *fux) {
 extern s32 GameTeams;
 extern s16 AiPlayerSkill[][3];
 extern u16 CameraMode;
-FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
+FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
 
-void func_80025F44(EXTengine *eng);
+void ApplyContour(EXTengine *eng);
 void *FindExtension(NAS *nas, s32 id);
 
 s32 func_80085890();

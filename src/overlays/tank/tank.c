@@ -1644,13 +1644,13 @@ void TA_UpdateLevel(void) {
     }
     base = HeroModelBank;
     if (TANK_MODEL_ON(base, 56)) {
-        func_80029100((obj_textureset *)(TANK_MODEL(56) + 0x10));
+        texture_update_anims((obj_textureset *)(TANK_MODEL(56) + 0x10));
     }
     if (GameMode == 5 && TANK_MODEL_ON(base, 60)) {
-        func_80029100((obj_textureset *)(TANK_MODEL(60) + 0x10));
+        texture_update_anims((obj_textureset *)(TANK_MODEL(60) + 0x10));
     }
     if (GameMode == 9 && TANK_MODEL_ON(b2 = HeroModelBank, 57)) {
-        func_80029100((obj_textureset *)(b2 + 57 * 0x38 + 0x10));
+        texture_update_anims((obj_textureset *)(b2 + 57 * 0x38 + 0x10));
     }
     if (HeroesAllOut == 0) {
         HeroesAllOut = 1;
@@ -1723,7 +1723,7 @@ void DamageTankHero(s32 player, s32 damage) {
         return;
     }
     if (damage < 400) {
-        ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xF0);
+        ((void (*)(s32, s32, s32))pad_rumble_big)(player, 0xA, 0xF0);
         if (HeroesAllOut != 0) {
             damage *= 3;
         } else if (g[player + 0x5C] != 0) {
@@ -3348,7 +3348,7 @@ void SetTankHeroVictory(u32 arg0) {
         CameraMode = 1;
         for (i = 0; i < 4; i++) {
             if (i != arg0 && !(Heroes[i].hero_status & 0x200)) {
-                func_80026980(Heroes[i].hero);
+                RemoveCamera(Heroes[i].hero);
             }
         }
     }

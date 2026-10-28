@@ -589,8 +589,8 @@ void InitBonkCrate(NAS *nas) {
             nas->Failure = 1;
         }
         if (AddObject(nas) != NULL) {
-            func_80026AD8((u8 *)nas);
-            func_8002694C(nas, 0x200);
+            LinkObject((u8 *)nas);
+            AddSolid(nas, 0x200);
         } else {
             nas->Failure = 1;
         }
@@ -855,7 +855,7 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         h->hero_move->reactive_speed = 0x50;
         func_80084E04(i, NULL, -1, 0x8001, 0x446);
         h->hero_health = 0x14;
-        func_80028018(i, 0xF);
+        pad_rumble_small(i, 0xF);
         BonkHidePowerup(i);
         PlaySfx(D_8009E080[h->hero_name][Random(4)], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
     next:
@@ -911,7 +911,7 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -950,7 +950,7 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -978,7 +978,7 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1023,7 +1023,7 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1062,7 +1062,7 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1090,7 +1090,7 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 *(u16 *)(GameInfo + 0x30) |= arg1;
                 for (k = 0; k < 4; k++) {
                     if (GameInfo[k + 0x5C] != 0) {
-                        func_80026980(Heroes[k].hero);
+                        RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
                         Heroes[k].hero_status |= 0x100;
@@ -1480,7 +1480,7 @@ void InitBonkFlag(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        func_80024E30(nas, &BonkFlagScriptInit);
+        ScriptCursorFirst(nas, &BonkFlagScriptInit);
         e->sub->unk6C = D_80053C0C;
     } else {
         nas->Failure = 1;
@@ -1585,8 +1585,8 @@ void InitBonkStool(NAS *nas) {
             nas->Failure = 1;
         }
         if (AddObject(nas) != NULL) {
-            func_80026AD8((u8 *)nas);
-            func_8002694C(nas, 0x200);
+            LinkObject((u8 *)nas);
+            AddSolid(nas, 0x200);
         } else {
             nas->Failure = 1;
         }

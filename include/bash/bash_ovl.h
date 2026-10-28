@@ -417,7 +417,7 @@ static inline u8 *BashSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
     }
     p = CreateCrate(col, 0, row, 2, -1);
     if (p != NULL) {
-        func_80026B70(&BashCrateList, p);
+        AddToGroup(&BashCrateList, p);
     }
     return p;
 }

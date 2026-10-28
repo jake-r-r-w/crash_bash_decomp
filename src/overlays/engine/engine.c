@@ -28,7 +28,7 @@ void InitialiseNasSystem(void) {
     p = mal_alloc(NasPoolUsed * 4, &MainHeap);
     D_8005AA44 = p;
     *(s32 *)p = 0;
-    func_80026308();
+    InitSysFontModel();
     D_8005AAB0 = D_800986A4[v->unk2C];
 }
 
@@ -159,11 +159,11 @@ void func_80079260(void) {
     s32 n;
 
     g->flags &= 0xF4FF;
-    func_80024AD8();
+    InitTriggers();
     mapenv_place_subs((MapEnvHead *)MapScene);
-    func_80026ECC();
-    func_8002321C();
-    func_80026D9C();
+    ClearAllNasPool();
+    ResetNasHeap();
+    ResetNasLists();
     func_80083550();
     func_8008688C();
     if (LevelSpecs.LevelPreInit != NULL) {
@@ -415,7 +415,7 @@ void func_800798A4(void) {
             for (i = 0; i < 4; i++) {
                 if (D_800996E0[i].flags & 0x8000) {
                     pos.f.x = D_80099700[0] + D_800996E0[i].arg;
-                    func_8002992C((obj_texture *)(*(u8 **)(tim + 0x18) + (D_800996E0[i].cmd & 0xFFF) * 0x38),
+                    texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (D_800996E0[i].cmd & 0xFFF) * 0x38),
                                   pos.w, 0, c0, c0, c1, c1);
                 }
             }
@@ -448,7 +448,7 @@ void func_800798A4(void) {
             for (i = 0; i < 4; i++) {
                 if (D_800996E0[i].flags & 0x8000) {
                     pos.f.x = D_80099700[0] + D_800996E0[i].arg;
-                    func_8002992C((obj_texture *)(*(u8 **)(tim + 0x18) + (D_800996E0[i].cmd & 0xFFF) * 0x38),
+                    texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (D_800996E0[i].cmd & 0xFFF) * 0x38),
                                   pos.w, 0, c0, c0, c1, c1);
                 }
             }
@@ -464,7 +464,7 @@ void func_800798A4(void) {
         for (i = 0; i < 4; i++) {
             if (Clock[i].Ctrl & 0x8000) {
                 pos.f.x = Clock_XYZ[0] + Clock[i].Xoffs;
-                func_8002992C((obj_texture *)(*(u8 **)(tim + 0x18) + (Clock[i].frame & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (Clock[i].frame & 0xFFF) * 0x38),
                               pos.w, 0, c0, c0, c1, c1);
             }
         }
@@ -496,15 +496,15 @@ void func_800798A4(void) {
                 pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
                 pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
                 n = Score[i].score;
-                func_8002992C((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
                               pos.w, 0, c0, c0, c1, c1);
                 n /= 10;
                 pos.f.x -= 0x18;
-                func_8002992C((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
                               pos.w, 0, c0, c0, c1, c1);
                 n /= 10;
                 pos.f.x -= 0x18;
-                func_8002992C((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
                               pos.w, 0, c0, c0, c1, c1);
             }
         }
@@ -516,11 +516,11 @@ void func_800798A4(void) {
                 pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
                 pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
                 n = Score[i].score;
-                func_8002992C((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
                               pos.w, 0, c0, c0, c1, c1);
                 n /= 10;
                 pos.f.x -= 0x18;
-                func_8002992C((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
                               pos.w, 0, c0, c0, c1, c1);
             }
         }
@@ -531,7 +531,7 @@ void func_800798A4(void) {
             n = Score[i].score;
             pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
             pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
-            func_8002992C((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+            texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
                           pos.w, 0, c0, c0, c1, c1);
         }
         i++;
@@ -622,7 +622,7 @@ s32 GravitateNas(NAS *nas) {
     if (m->Ydir != 0) {
         return 0;
     }
-    if (func_80025BBC(eng) == 0) {
+    if (ApplyContourMoved(eng) == 0) {
         return 0;
     }
     dec = m->Yacc;
@@ -714,7 +714,7 @@ void func_8007A6D0(s32 arg0) {
 }
 
 void func_8007A6F8(void) {
-    func_8002617C();
+    RunTriggers();
 }
 
 void func_8007A718(void) {
@@ -836,7 +836,7 @@ void func_8007AB28(void) {
         D_8005AA80();
     }
     func_80086814();
-    func_80026FCC();
+    KillEveryNas();
 }
 
 void func_8007AB6C(void) {
@@ -852,9 +852,9 @@ void func_8007AB8C(void) {
 void func_8007ABC4(void) {
     GlobalNAStatus = 0;
     HeadOfTriggers = 0;
-    func_80024AD8();
-    func_80026ECC();
-    func_80026D9C();
+    InitTriggers();
+    ClearAllNasPool();
+    ResetNasLists();
 }
 
 int func_8007AC00(void) {

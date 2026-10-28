@@ -60,13 +60,13 @@ void func_8002AC18(void) {
 void func_8002AC40(void) {
     func_8002C11C();
     func_800227FC();
-    func_80027A9C();
+    xa_mute();
 }
 
 void func_8002AC70(void) {
     func_8002C428();
     sfx_delete_all();
-    func_80027A9C();
+    xa_mute();
 }
 
 void func_8002ACA0(s32 id, s32 arg1) {

@@ -32,7 +32,7 @@ void BonkSpawnShockwave(s32 arg0) {
     if (slot->f8 == 1) {
         PlaySfx(0x72D, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
         if (nas != NULL) {
-            func_80028018(arg0, 5);
+            pad_rumble_small(arg0, 5);
             nas->UserInfo.user2 = 0x8000;
             BonkMalletHit(&sp18, 0x600, arg0, 0x100);
             pu = h->hero_powerup;
@@ -321,12 +321,12 @@ s32 BonkHeroKickCollision(s32 arg0) {
     eng = Heroes[arg0].hero_eng;
     obj = NULL;
     if (eng != NULL) {
-        box = func_80025A48(eng, 0x40);
+        box = FindCollisionBox(eng, 0x40);
         if (box != NULL) {
             rad = box->radius;
             hi = eng->unk10.y + box->unk2;
             lo = eng->unk10.y + box->height;
-            box = func_80025A48(eng, 1);
+            box = FindCollisionBox(eng, 1);
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
@@ -369,7 +369,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                     }
                     e = other[i].hero_eng;
                     if (e != NULL) {
-                        rec = func_80025A48(e, 0x40);
+                        rec = FindCollisionBox(e, 0x40);
                         if (rec != NULL) {
                             bot = e->unk10.y + rec->unk2;
                             top = e->unk10.y + rec->height;
@@ -468,7 +468,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                 e = n->Engine;
                 if (e == NULL) continue;
                 if (e == eng) continue;
-                rec = func_80025A48(e, 0x40);
+                rec = FindCollisionBox(e, 0x40);
                 if (rec == NULL) continue;
                 bot = e->unk10.y + rec->unk2;
                 top = e->unk10.y + rec->height;
@@ -551,7 +551,7 @@ void SetBonkHeroLoser(s32 arg0) {
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 2;
     SetHeroSeq(arg0, 0x33);
-    func_80026980(h->hero);
+    RemoveCamera(h->hero);
 }
 
 s32 BonkHeroTestLose(s32 arg0) {

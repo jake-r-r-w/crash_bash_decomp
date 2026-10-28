@@ -22,7 +22,7 @@ typedef struct {
     s16 *src;       /* 0x20: x, y */
 } AnimEntry;
 
-/* A scrolling track (func_80029100's sub list, 16 bytes each); the name is
+/* A scrolling track (texture_update_anims's sub list, 16 bytes each); the name is
  * the C++ symbols' (texture_update_scroll__FP14texture_scrollP14obj_textureset). */
 typedef struct texture_scroll {
     s32 idx;        /* 0x00: entry in obj_textureset.tex */
@@ -32,7 +32,7 @@ typedef struct texture_scroll {
 } texture_scroll;
 
 
-/* The same 0x38-byte entry as func_80028D40 uploads it to VRAM. */
+/* The same 0x38-byte entry as texture_upload_anim uploads it to VRAM. */
 typedef struct AnimTex {
     u16 mode;       /* 0x00: 0 = 4-bit, else 8-bit */
     u16 clut;       /* 0x02: 0x7FFF = none */
@@ -84,7 +84,7 @@ typedef struct {
     s32 v[3];
 } CamVec3;
 
-/* A 0x20-byte block func_8001FE80 copies whole. */
+/* A 0x20-byte block play_script copies whole. */
 typedef struct {
     s32 v[8];
 } Blk32;
@@ -113,7 +113,7 @@ s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 
 
-/* A 0x4C-byte animation key of the track func_8001F0D4 walks (at track+0x30). */
+/* A 0x4C-byte animation key of the track update_entity_thread walks (at track+0x30). */
 typedef struct AnimKey {
     /* 0x00 */ s32 start;
     /* 0x04 */ s32 len;   /* 0 ends the track */
@@ -134,7 +134,7 @@ typedef struct {
     s32 v[4];
 } ObjQuat;
 
-/* A 0x50-byte key of the object track func_8001EAA4 walks (from track + 0x24);
+/* A 0x50-byte key of the object track update_model_thread walks (from track + 0x24);
  * it interpolates from one key to the next. */
 typedef struct ObjKey {
     /* 0x00 */ s32 start;
@@ -160,7 +160,7 @@ typedef struct {
 } AnimRange;
 
 
-/* The pose func_8001F0D4 writes (at obj+8). */
+/* The pose update_entity_thread writes (at obj+8). */
 typedef struct {
     /* 0x00 */ s32 flags;
     /* 0x04 */ CamVec3 pos;
@@ -178,11 +178,11 @@ typedef struct {
 
 
 
-/* A 0x38-byte record in the table at +8 of the block func_8002A9AC frees
+/* A 0x38-byte record in the table at +8 of the block texanims_release frees
  * (count at +0). */
 typedef struct TexAnimEntry {
     /* 0x00 */ u8 unk0[0x20];
-    /* 0x20 */ s32 handle; /* freed with func_80028AE4 */
+    /* 0x20 */ s32 handle; /* freed with vram_free_node */
     /* 0x24 */ u8 unk24[0x10];
     /* 0x34 */ s32 time;   /* frame stamp, compared to FrameCount */
 } TexAnimEntry;
@@ -427,7 +427,7 @@ struct _sfx_handler {
 };
 BASH_SIZE_CHECK(_sfx_handler, 0x38);
 
-/* 24 voices (func_80022984 links them into the free list). */
+/* 24 voices (sfx_voices_init links them into the free list). */
 typedef struct {
     _sfx_handler voices[24];
     _sfx_handler *free;         /* 0x540 */
@@ -533,19 +533,19 @@ typedef struct NodePool {
 } NodePool;
 
 /* Data with a table of self-relative offsets at +0x1C: entry i points to
- * &offs[i] + offs[i] (func_80021E44). */
+ * &offs[i] + offs[i] (offset_table_entry). */
 typedef struct OffsetTable {
     /* 0x00 */ u8 unk0[0x1C];
     /* 0x1C */ s32 offs[1];
 } OffsetTable;
 
-/* 0x18-byte entry of an id-keyed table ended by id 0x3E7 (func_800263D8). */
+/* 0x18-byte entry of an id-keyed table ended by id 0x3E7 (FindIdEntry). */
 typedef struct IdEntry {
     /* 0x00 */ u16 id;
     /* 0x02 */ u8 unk2[0x16];
 } IdEntry;
 
-/* Per-pad state, 8 of them at Pads (func_80027F00 resets them). */
+/* Per-pad state, 8 of them at Pads (pads_init_mtap resets them). */
 typedef struct PadState {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -612,13 +612,13 @@ typedef struct {
     s32 o18;
 } SeqHdr;
 
-/* MusicTable: what func_800229FC passes to func_8002C488 for an index. */
+/* MusicTable: what music_load_track passes to func_8002C488 for an index. */
 typedef struct MusicEntry {
     /* 0x00 */ s32 file;
     /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
     /* 0x06 */ u8 unk6[2];
-    /* 0x08 */ s32 unk8;                 /* func_80022140: music file */
-    /* 0x0C */ s32 unkC;                 /* func_80022140: alt music file (flag 0x80) */
+    /* 0x08 */ s32 unk8;                 /* music_play_level: music file */
+    /* 0x0C */ s32 unkC;                 /* music_play_level: alt music file (flag 0x80) */
     /* 0x10 */ s16 tempo;
     /* 0x12 */ u8 unk12[0x14 - 0x12];
 } MusicEntry;
@@ -790,7 +790,7 @@ void func_800369FC(void);
 extern SVECTOR D_80056AC8[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
 extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
-/* A 4.12 fixed-point quaternion (func_80020344 slerps two of them). */
+/* A 4.12 fixed-point quaternion (quat_slerp slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
 extern s32 D_80064478[];
 extern s32 D_8006E9F8;
@@ -911,7 +911,7 @@ extern NAS *D_8005AA9C;
 extern void *HeadOfMissiles;            /* tail of the HeadOfObjects list */
 extern void *D_8005AA30;            /* tail of the HeadOfSolids list */
 extern s32 VelocityCalc;
-extern s32 ACMD[16][2];       /* entries 1..15 cleared by func_80026D9C */
+extern s32 ACMD[16][2];       /* entries 1..15 cleared by ResetNasLists */
 extern s32 PadCount;
 extern s32 first_joypad;            /* first pad with flag 1 set, or -1 */
 extern s32 PadRunEnd;            /* pads 0..n-1 all have flag 1 */
@@ -936,13 +936,13 @@ typedef struct BufNode {
     struct BufNode **head;
 } BufNode;
 
-/* func_80028774's VRAM areas: a list head and the area's position; x = -1
+/* vram_init's VRAM areas: a list head and the area's position; x = -1
  * ends the list. */
 typedef struct {
     BufNode **head;
     FreeHdr hdr;
 } VramArea;
-extern u8 *D_800643F4; /* the BufNode pool (func_80028774) */
+extern u8 *D_800643F4; /* the BufNode pool (vram_init) */
 typedef struct FreePool {
     FreeNode *head;
     u16 w;
@@ -955,7 +955,7 @@ extern u8 D_80063B58[];
 extern u8 D_80063BA0[];
 extern FreeNode *D_80063BAC;
 extern FreeNode *D_80063BB0;
-extern void *D_80063BB4;        /* list walked by func_80028A00 (next at +4) */
+extern void *D_80063BB4;        /* list walked by clut_alloc_large (next at +4) */
 extern s32 D_8004E104;            /* mal_count_free: free bytes */
 extern s32 D_8004E108;            /* mal_count_free: free blocks */
 extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N at [2 * N] */
@@ -971,11 +971,11 @@ extern s16 GameTeamLeader[2];    /* GameInfo + 0x48: each team's leading hero */
 extern u8 GameHeroOut[4];        /* GameInfo + 0x5C: each hero out of the game */
 extern u8 GameWinner[2];         /* GameInfo + 0x60: the winners' hero names */
 
-/* GameInfo as seen by func_80022140. */
+/* GameInfo as seen by music_play_level. */
 typedef struct D5A614View {
-    /* 0x00 */ s32 unk0;    /* func_800235BC: the arena's unk14 */
+    /* 0x00 */ s32 unk0;    /* SetupLevelSpecs: the arena's unk14 */
     /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;    /* func_800235BC: a LevelInfo field by flags 0x80 */
+    /* 0x08 */ s32 unk8;    /* SetupLevelSpecs: a LevelInfo field by flags 0x80 */
     /* 0x0C */ u8 unkC[0x30 - 0xC];
     /* 0x30 */ u16 unk30;   /* bit 0 cleared on a mode change (process_control_update) */
     /* 0x32 */ u16 flags;
@@ -983,14 +983,14 @@ typedef struct D5A614View {
     /* 0x36 */ u8 unk36[0x50 - 0x36];
     /* 0x50 */ u8 unk50[4];
 } D5A614View;
-extern u16 ModeTypes[];          /* func_80022140: 6-byte entries indexed by GameInfo+0x34 */
-/* ModeTypes as 6-byte entries indexed by level (func_800235BC). */
+extern u16 ModeTypes[];          /* music_play_level: 6-byte entries indexed by GameInfo+0x34 */
+/* ModeTypes as 6-byte entries indexed by level (SetupLevelSpecs). */
 typedef struct LevelInfo {
     /* 0x00 */ u16 world;
     /* 0x02 */ u16 unk2;
     /* 0x04 */ u16 unk4;
 } LevelInfo;
-/* An arena definition (func_800235BC): 0x18 bytes, a table ends at id 999. */
+/* An arena definition (SetupLevelSpecs): 0x18 bytes, a table ends at id 999. */
 typedef struct ArenaDef {
     /* 0x00 */ u16 id;
     /* 0x02 */ u16 unk2;
@@ -1007,7 +1007,7 @@ extern s32 D_8005AA50;
 extern s32 D_8005AA54;
 extern s32 D_8005A5E4;
 extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
-extern s32 D_80058F0C[][8];       /* func_80022140 */
+extern s32 D_80058F0C[][8];       /* music_play_level */
 extern s8 GameOptions[];
 extern s32 card_command_delay;
 extern s32 D_8005A620;
@@ -1070,7 +1070,7 @@ extern void *D_80058B78;
 extern RECT D_8005B640;
 extern void *free_scripts;
 extern void *MapScene;
-/* A map trigger record (func_80024AD8): position, then a word whose low 2
+/* A map trigger record (InitTriggers): position, then a word whose low 2
  * bits are the cast and the rest the offset from +0xC to its info. */
 typedef struct MapTrigRec {
     /* 0x00 */ SLONG_XYZ pos;
@@ -1192,7 +1192,7 @@ typedef union {
 
 
 /* calc_rgbcode: fades r, g, b towards black by RenderState.modelDp / 0x1000. */
-/* FadeColor reading the fade from gs->modelDp (func_80029F9C). */
+/* FadeColor reading the fade from gs->modelDp (texture_draw_3d). */
 
 typedef struct {
     struct {
@@ -1276,7 +1276,7 @@ typedef struct Words4 {
     s32 w[4];
 } Words4;
 s32 abs(s32);         /* LIBC2 ABS_0.OBJ (labs in ABS_1.OBJ is identical); a call, not inlined: -fno-builtin */
-/* A step of a kind 2 animator's Atable (func_80025534): cmd >= 0 is a frame
+/* A step of a kind 2 animator's Atable (DoAnimCommand2): cmd >= 0 is a frame
  * shown for arg ticks, 0x8000 | n is command n with operand arg. */
 typedef struct AnimStep {
     s16 cmd;
@@ -1340,7 +1340,7 @@ extern u8 *D_80058B7C;
 extern s32 D_80058B80;
 extern s32 D_80058B84;
 
-/* func_8001F828: per-particle state, 0x28 bytes */
+/* update_emitter_thread: per-particle state, 0x28 bytes */
 typedef struct EmitPart {
     s32 age;
     s32 unk4;
@@ -1350,9 +1350,9 @@ typedef struct EmitPart {
 
 
 extern NAS *NASFreeList;
-extern u16 FirstNas;            /* first pool slot func_80026D08 frees */
+extern u16 FirstNas;            /* first pool slot BuildNASFreeList frees */
 extern u16 D_8005AA12;            /* pool slot count */
-extern u16 NasPoolUsed;            /* pool slots in use (func_80026FCC kills them all) */
+extern u16 NasPoolUsed;            /* pool slots in use (KillEveryNas kills them all) */
 extern NAS *NasPool;           /* NAS pool */
 extern NAS NASTemplate;            /* copied over each spawned NAS */
 extern EXTengine EngineTemplate;   /* copied over each new engine */
@@ -1568,7 +1568,7 @@ typedef struct {
     s32 idx; /* 0x7C */
 } PosDst;
 /* A text object draw_text_nas draws: a NAS-like header with the position at
- * +4 (x keeps func_800243A0's 0xC000 centring flags) and the text at +0x6C. */
+ * +4 (x keeps DrawSysText's 0xC000 centring flags) and the text at +0x6C. */
 typedef struct {
     s32 NASid;   /* 0x00: 0x8000 drawn, 0x10000000 2D (no GTE setup) */
     s32 x;       /* 0x04 */
@@ -1697,12 +1697,12 @@ typedef struct {
     s32 f14;
 } Func2A5A4Obj;
 
-/* func_8002A4C0: count at +0, then 0x10-byte entries from +4. */
+/* texture_upload_list: count at +0, then 0x10-byte entries from +4. */
 typedef struct {
     s32 idx;      /* 0x0: record index into the 0x38-byte table */
     s32 unk4;
     s32 unk8;
-    FreeHdr *pos; /* 0xC: VRAM slot from func_800282F8 */
+    FreeHdr *pos; /* 0xC: VRAM slot from vram_take */
 } TexUploadEntry;
 
 typedef struct {
@@ -1793,7 +1793,7 @@ void *mal_take_low(s32 bytes, _mal_area *heap);
 
 extern u8 D_80063A84[];
 
-/* Pad rumble state (func_800281C0). */
+/* Pad rumble state (pad_rumble_send). */
 typedef struct PadRumble {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u8 act[2];  /* motor values passed to PadSetAct */
@@ -1803,7 +1803,7 @@ typedef struct PadRumble {
     /* 0x0C */ s16 reset;
 } PadRumble;
 
-/* Raw controller packet read by func_80027AD4 (status byte, type in the top nibble). */
+/* Raw controller packet read by pad_read_packet (status byte, type in the top nibble). */
 typedef struct PadPacket {
     /* 0x00 */ u8 status;
     /* 0x01 */ u8 unk1;
@@ -1814,7 +1814,7 @@ typedef struct PadPacket {
     /* 0x07 */ u8 ly;
 } PadPacket;
 
-/* PadState as written by func_80027AD4. */
+/* PadState as written by pad_read_packet. */
 typedef struct PadInput {
     /* 0x00 */ s32 flags;
     /* 0x04 */ s32 buttons;
@@ -1829,7 +1829,7 @@ typedef struct PadInput {
 
 extern s32 D_80063A8C;
 
-/* func_800281C0's body, inlined into func_80027AD4. */
+/* pad_rumble_send's body, inlined into pad_read_packet. */
 
 mal *mal_take_low_from(mal *blk, s32 words, _mal_area *heap);
 

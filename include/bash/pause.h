@@ -566,7 +566,7 @@ typedef struct {
 extern u8 *D_80054944;
 
 
-/* A script keyframe (0x50 bytes): func_80021DD4 + 0x24 starts the array (InitScriptFX, PlotScriptFX). */
+/* A script keyframe (0x50 bytes): get_script_track + 0x24 starts the array (InitScriptFX, PlotScriptFX). */
 typedef struct ScriptKey {
     /* 0x00 */ s32 frame;
     /* 0x04 */ s32 unk4;

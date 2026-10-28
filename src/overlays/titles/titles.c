@@ -600,7 +600,7 @@ void AnimateTitlesBackdrop(void) {
     p2->unk51 = 0;
     p2->unk14 = ang;
     p2->unk52 = 1;
-    func_800251A8(NULL, eng, p2, &TitlesBackdropAnimator);
+    DoAnimCommand(NULL, eng, p2, &TitlesBackdropAnimator);
     p2 = &eng->sub[2];
     *(SLONG_XYZ *)&p2->unk04 = pos;
     p2->unk51 = 0;
@@ -967,9 +967,9 @@ void OptionsUpdate(void) {
                 opt[2] ^= 1;
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
                 if (opt[2] != 0) {
-                    func_800222BC();
+                    sound_set_stereo();
                 } else {
-                    func_800222DC();
+                    sound_set_mono();
                 }
             }
             sub[3].unk7C = 2;
@@ -1012,7 +1012,7 @@ void OptionsUpdate(void) {
         for (i = 0; i < n; i++) {
             if (((PadButtons *)Pads)[i].pressed & 0x8000) {
                 ((TitlesOpt *)GameOptions)->unkC[i] ^= 1;
-                func_80028018(i, 0xA);
+                pad_rumble_small(i, 0xA);
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
             }
         }
@@ -1107,12 +1107,12 @@ void RunGameUpdate(void) {
 
 void RunGameInit(void) {
     void func_8008EC00();
-    func_8001E984(0x20, 0x20);
+    init_scripts(0x20, 0x20);
     if (D_8009E58C != NULL) {
         D_8009E58C();
     }
-    func_800222FC();
-    func_800229FC(GameMode);
+    sound_init();
+    music_load_track(GameMode);
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
@@ -1432,7 +1432,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
         s->unk20.y = o->unk20 >> 4;
         {
             EXTengine *e = GetEngineSlot(2);
-            func_800251A8(NULL, e, o->unk8, (EXTanimator *)&o->ext);
+            DoAnimCommand(NULL, e, o->unk8, (EXTanimator *)&o->ext);
         }
         s->unk52 = 1;
         o->unk24++;
@@ -1910,8 +1910,8 @@ void LevelSelectUpdate(void) {
     }
     AnimateTitlesBackdrop();
     a = D_800555DC;
-    func_80029100((obj_textureset *)(a + 0x10));
-    func_80029100((obj_textureset *)(a + 0x48));
+    texture_update_anims((obj_textureset *)(a + 0x10));
+    texture_update_anims((obj_textureset *)(a + 0x48));
     val = LevelSelectBusy;
     if (val == 0) {
         LevelSelectInput();
