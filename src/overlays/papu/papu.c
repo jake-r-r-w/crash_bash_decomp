@@ -4,7 +4,6 @@
 #include "bash/papu.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_80010008[];
 extern u8 D_80050148[];
 extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
@@ -226,7 +225,7 @@ s32 PapuBossSteps1[7] = { (s32)0x80110000, 0x42000042, 0xC8005, 0x58011, (s32)0x
 s32 PapuBossSteps2[3] = { (s32)0x80110000, 0x4180001E, 0x8001 };
 s32 PapuBossSteps3[2] = { (s32)0x80010000, 0 };
 s32 PapuBossSteps4[6] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80014109, 0 };
-s32 PapuBossSteps5[7] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80054109, (s32)&D_80010008, 0 };
+s32 PapuBossSteps5[7] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80054109, (s32)0x80010008, 0 };
 s32 PapuBossSteps6[9] = {
     (s32)0x80110000, 0x4080000D, 0x1F4800D, 0xA8011, (s32)&D_8005408C, (s32)0x8011000C,
     0x4097001A, 0x88005, 0x8001,
