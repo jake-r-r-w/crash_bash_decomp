@@ -653,9 +653,9 @@ void SetNasDefaults(void) {
     EngineTemplate.OldXYZ.x = 0;
     EngineTemplate.Engine = NULL;
     EngineTemplate.platform = NULL;
-    *(s16 *)&EngineTemplate.collision_box.unk4 = 0;
+    EngineTemplate.collision_box.unk4 = 0;
     EngineTemplate.collision_box.unk2 = 0;
-    *(s16 *)&EngineTemplate.collision_box.unk0 = 0;
+    EngineTemplate.collision_box.unk0 = 0;
     EngineTemplate.collision_box.radius = 0;
     *(s32 *)&EngineTemplate.collision_box.height = 0;
     EngineTemplate.collision_box.flags = 0;
@@ -1662,14 +1662,14 @@ FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag) {
     return NULL;
 }
 
-void SetEngineMotion(u8 *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    (*(s16*)((u8*)(arg0) + 132)) = arg1;
-    (*(s16*)((u8*)(arg0) + 134)) = arg2;
-    (*(s16*)((u8*)(arg0) + 136)) = arg3;
-    (*(s16*)((u8*)(arg0) + 142)) = 0;
-    (*(s16*)((u8*)(arg0) + 138)) = (s16) arg4;
-    (*(s16*)((u8*)(arg0) + 140)) = (s16) arg5;
-    (*(s32*)((u8*)(arg0) + 144)) = arg6;
+void SetEngineColBox(EXTengine *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    arg0->collision_box.unk0 = arg1;
+    arg0->collision_box.unk2 = arg2;
+    arg0->collision_box.unk4 = arg3;
+    arg0->collision_box.unkA = 0;
+    arg0->collision_box.radius = arg4;
+    arg0->collision_box.height = arg5;
+    arg0->collision_box.flags = arg6;
 }
 
 void FetchDefaultColBox(EXTengine *eng, u32 flag) {
@@ -2925,13 +2925,13 @@ s32 pad_rumble_send(PadRumble *r, s32 port) {
     return 8;
 }
 
-void pad_input_reset(u8 *arg0) {
-    (*(s32*)((u8*)(arg0) + 4)) = 0;
-    (*(s32*)((u8*)(arg0) + 0)) = 0;
-    (*(s32*)((u8*)(arg0) + 24)) = 1;
-    (*(s32*)((u8*)(arg0) + 28)) = 0;
-    (*(s16*)((u8*)(arg0) + 34)) = 0;
-    (*(s16*)((u8*)(arg0) + 40)) = 0;
+void pad_input_reset(PadState *arg0) {
+    arg0->unk4 = 0;
+    arg0->unk0 = 0;
+    arg0->unk18 = 1;
+    arg0->unk1C = 0;
+    arg0->unk22 = 0;
+    arg0->unk28 = 0;
 }
 
 FreeHdr *vram_take(u8 *arg0) {
@@ -4081,11 +4081,11 @@ void texture_release_vram(u8 *arg0) {
     }
 }
 
-void textureset_clear(u8 *arg0) {
-    (*(s32*)((u8*)(arg0) + 0)) = 0;
-    (*(s32*)((u8*)(arg0) + 8)) = 0;
-    (*(s32*)((u8*)(arg0) + 12)) = 0;
-    (*(s32*)((u8*)(arg0) + 16)) = 0;
+void textureset_clear(obj_textureset *ts) {
+    ts->nTex = 0;
+    ts->tex = NULL;
+    ts->ent = NULL;
+    ts->base = NULL;
 }
 
 /* data, in address order (tools/scripts/data2c.py) */

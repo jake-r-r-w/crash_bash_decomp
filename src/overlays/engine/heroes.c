@@ -4448,7 +4448,7 @@ void Init_HealthPU(NAS *nas) {
             nas->FUX = (EXT *)obj;
             obj->whatami = 0x11;
             obj->can_do |= 0x18;
-            SetEngineMotion((u8 *)eng, 0, 0, 0, 0x80, -0x100, 0x40);
+            SetEngineColBox(eng, 0, 0, 0, 0x80, -0x100, 0x40);
             if (eng->unk10.y == World_floor_level) {
                 obj->status = 1;
             } else {

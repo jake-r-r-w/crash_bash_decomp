@@ -2973,7 +2973,7 @@ void mapscene_init(s32 *arg0, s32 *arg1) {
         return;
     }
     arg0[1] = 3;
-    textureset_clear(p);
+    textureset_clear((obj_textureset *)p);
     load_file_cb(arg1[1], map_loaded_textureset, arg0);
 }
 

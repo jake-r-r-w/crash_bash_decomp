@@ -18,7 +18,7 @@ void dbase_load_textures(u8 *arg0);
 void dbase_set_textures(u8 *arg0, u8 *arg1);
 void load_font(void);
 void dbase_set(u8 *arg0, s32 arg1, s32 arg2);
-void dbase_init(u8 *arg0);
+void dbase_init(obj_dbase *db);
 void dbase_textures_loaded();
 void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db);
 void dbase_set_data(u8 *arg0, u8 *arg1);

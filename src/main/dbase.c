@@ -704,17 +704,17 @@ loop:
         *(s32 *)(p - 8) = 0;
         *(s32 *)(p - 4) = 0;
         *(s32 *)(p + 0x24) = 0;
-        textureset_clear(p);
+        textureset_clear((obj_textureset *)p);
         p += 0x38;
         goto loop;
     }
 }
 
-void dbase_init(u8 *arg0) {
-    (*(s32*)((u8*)(arg0) + 8)) = 0;
-    (*(s32*)((u8*)(arg0) + 12)) = 0;
-    (*(s32*)((u8*)(arg0) + 52)) = 0;
-    textureset_clear(arg0 + 0x10);
+void dbase_init(obj_dbase *db) {
+    db->load = 0;
+    db->data = NULL;
+    db->keep = NULL;
+    textureset_clear(&db->textures);
 }
 
 static inline void func_80017164_clear(u8 *p) {

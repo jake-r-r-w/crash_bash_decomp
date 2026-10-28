@@ -5570,12 +5570,12 @@
   "src": "src/main/nascalls.c"
  },
  "80025AE4": {
-  "asm": "asm/nonmatchings/main/nascalls/SetEngineMotion.s",
+  "asm": "asm/nonmatchings/main/nascalls/SetEngineColBox.s",
   "calls": [],
   "fp": "bede8e06bb02b4d0",
   "fpn": "6ab149ac5e710a76",
   "leaf": true,
-  "name": "SetEngineMotion",
+  "name": "SetEngineColBox",
   "orig": "func_80025AE4",
   "rom": 90852,
   "seg": "main/nascalls",
