@@ -804,7 +804,7 @@ void InitPapuBoss(NAS *nas) {
         PapuBossCount = 0;
         PapuBossLast = 0;
         PapuWaveFlag = 0;
-        AddCamera((u8 *)nas);
+        AddCamera(nas);
         PapuBoss.nas = nas;
         PapuBoss.eng = eng;
         PapuBoss.sub = eng->sub;
@@ -1199,7 +1199,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
           obj->unk1A = 1;
           obj->unk22 = d;
           obj->unk14 = s->unk22;
-          LinkObject((u8 *) nas);
+          LinkObject(nas);
           AddSolid(nas, 0x200);
         }
         s->pad4[5] = (s32) ScriptCursorFirst(nas, &PapuMinionScriptInit);
@@ -2701,7 +2701,7 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
         if (eng != NULL) {
             obj = (PapuObj *)AddObject(nas);
             if (obj != NULL && AddMotion(nas) != NULL) {
-                LinkObject((u8 *)nas);
+                LinkObject(nas);
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
@@ -2821,7 +2821,7 @@ void InitPACrate(NAS *arg0) {
             }
             ArenaGrid[z * 20 + x].unk0 = obj->unk14;
             AddMotion(arg0);
-            LinkObject((u8 *)arg0);
+            LinkObject(arg0);
             AddSolid(arg0, 0x300);
         }
     }

@@ -6513,7 +6513,7 @@ void InitUkaPolarMask(NAS *m) {
     }
     ext->mask = n = CreateNAS(0, 0, 0, 0x160B, 0x11);
     if (n != NULL) {
-        AddCamera((u8 *)n);
+        AddCamera(n);
     }
     ext->bit = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
     if (n != NULL) {
@@ -7345,7 +7345,7 @@ void PlotPolarWalrus(NAS *m) {
             ext->state = 3;
             PlaySfx(0x473, NULL, NULL, 0x1000, 0x1E00, 0);
             m->Engine->sub->flags |= 0x8000;
-            AddCamera((u8 *)m);
+            AddCamera(m);
             ext->timer = 0;
         }
         break;
@@ -7745,7 +7745,7 @@ void InitPolarBoss(NAS *nas) {
     Ext20 *e;
 
     if (ext != NULL) {
-        AddCamera((u8 *)nas);
+        AddCamera(nas);
         ResetHeroGlobals();
         BearminatorNas = nas;
         ext->cursor = ScriptCursorFirst(nas, &PolarBossScriptInit);
@@ -7755,7 +7755,7 @@ void InitPolarBoss(NAS *nas) {
         s = CreateNAS(nas->Engine->unk10.x, 0, nas->Engine->unk10.z, 0x1620, 0x11);
         if (s != NULL) {
             ext->unk88 = s;
-            AddCamera((u8 *)s);
+            AddCamera(s);
         }
         ext->unk90 = 0;
         nas->Engine->sub->u6C.dbase = MapScene->dbase;
@@ -8272,7 +8272,7 @@ void InitBearminator(NAS *m) {
             n = CreateNAS(m->Engine->unk10.x, 0, m->Engine->unk10.z, 0x1620, 0x11);
             if (n != NULL) {
                 ext->unk98 = n;
-                AddCamera((u8 *)n);
+                AddCamera(n);
             }
             ext->unkAC = e2;
             ext->unkB4 = 0;
@@ -9806,7 +9806,7 @@ void InitBearDeath(NAS *m) {
         ext->unk30 = 0;
         ext->unk80 = 0;
         ext->unk84 = 5;
-        AddCamera((u8 *)m);
+        AddCamera(m);
     }
 }
 

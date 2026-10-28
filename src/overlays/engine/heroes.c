@@ -270,7 +270,7 @@ void InitialiseHeroes(void) {
             h->hero->Camera.width = 0x200;
             h->hero->Camera.height = 0x500;
             h->hero->Camera.look_ahead = 0x400;
-            AddCamera((u8 *)h->hero);
+            AddCamera(h->hero);
         }
     next:
         i++;
@@ -4443,7 +4443,7 @@ void Init_HealthPU(NAS *nas) {
         eng->sub->entity = Random(0xE) + 0x2018;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
-            LinkObject((u8 *)nas);
+            LinkObject(nas);
             AddSolid(nas, 0x200);
             nas->FUX = (EXT *)obj;
             obj->whatami = 0x11;

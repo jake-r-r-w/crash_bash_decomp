@@ -445,7 +445,7 @@ extern s32 HubSaveChoice;
         e_ = GetEngineSlot(1);                                                 \
         e_->sub[1].u6C.ptr = (tbl)[*(s32 *)((g_ = GameInfo) + 0x2C)];          \
         GetEngineSlot(1)->sub->u6C.ptr = LangSaveGame[*(s32 *)(g_ + 0x2C)];        \
-        eng_render_subs((u8 *)GetEngineSlot(1));                                 \
+        eng_render_subs(GetEngineSlot(1));                                 \
     }
 extern s32 CardPromptRetry;
 void UpdateCardSlots(void);

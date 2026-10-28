@@ -2017,7 +2017,7 @@ void SetArkHeroWinner(u32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    AddCamera((u8 *)h->hero);
+    AddCamera(h->hero);
     h->hero_sub->unk08 = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
@@ -3304,7 +3304,7 @@ void InitBall(NAS *nas) {
     if (obj != NULL) {
         mot = AddMotion(nas);
         if (mot != NULL) {
-            LinkObject((u8 *)nas);
+            LinkObject(nas);
             AddSolid(nas, 0x300);
             nas->FUX = (EXT *)obj;
             obj->whatami = 1;
@@ -5061,7 +5061,7 @@ void Plot_Ark_Pickup(NAS *arg0) {
         case 0:
             fux->status = 1;
             fux->can_do = (fux->can_do & 0xFFD0) | 0x12;
-            LinkObject((u8 *)arg0);
+            LinkObject(arg0);
             fux->player = -1;
             break;
         case 7:
@@ -6089,7 +6089,7 @@ void Init_N_Gin(NAS *nas) {
         eng->sub->entity = 0x2001;
         ArkNGin = obj = (ArkenoidGin *)AddObject(nas);
         if (obj != NULL) {
-            LinkObject((u8 *)nas);
+            LinkObject(nas);
             AddSolid(nas, 0x200);
             nas->FUX = (EXT *)obj;
             obj->unk14 = 0xE;

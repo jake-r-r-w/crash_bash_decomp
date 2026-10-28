@@ -875,7 +875,7 @@ void RenderScreenLabels(void) {
         if ((GamePause & 0x240) != 0x240) {
             s[0xA8 / 4] |= 0x8000;
         }
-        eng_render_subs((u8 *)GetEngineSlot(3));
+        eng_render_subs(GetEngineSlot(3));
     }
 }
 

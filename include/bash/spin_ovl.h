@@ -254,7 +254,7 @@ extern u16 SpinBigDrop;
 void SpinHero_ExtraEffects(s32 arg0);
 
 void SpinHeroDead(s32 arg0);
-extern void *HeadOfObjects;
+extern NAS *HeadOfObjects;
 s32 get_angle(s32 x, s32 z);
 s32 angle_diff_abs(s32 arg0, s32 arg1);
 

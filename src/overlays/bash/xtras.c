@@ -150,7 +150,7 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
         if (eng != NULL) {
             obj = (T_BBD48Obj *)AddObject(nas);
             if (obj != NULL && AddMotion(nas) != NULL) {
-                LinkObject((u8 *)nas);
+                LinkObject(nas);
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
@@ -308,7 +308,7 @@ void InitCrate(NAS *arg0) {
             }
             ArenaGrid[z * 20 + x].unk0 = obj->unk14;
             AddMotion(arg0);
-            LinkObject((u8 *)arg0);
+            LinkObject(arg0);
             AddSolid(arg0, 0x300);
         }
     }
@@ -1146,7 +1146,7 @@ void InitCratePickup(NAS *arg0) {
         eng->sub->entity = BashPickupModels[r];
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            LinkObject((u8 *)arg0);
+            LinkObject(arg0);
             AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = r + 0x12;
@@ -1197,7 +1197,7 @@ void InitShieldPickup(NAS *arg0) {
         eng->sub->entity = 0x200D;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            LinkObject((u8 *)arg0);
+            LinkObject(arg0);
             AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x12;
@@ -1249,7 +1249,7 @@ void InitBootsPickup(NAS *arg0) {
         eng->sub->entity = 0x200A;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            LinkObject((u8 *)arg0);
+            LinkObject(arg0);
             AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x13;
@@ -1301,7 +1301,7 @@ void InitAnvilPickup(NAS *arg0) {
         eng->sub->entity = 0x2011;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            LinkObject((u8 *)arg0);
+            LinkObject(arg0);
             AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x14;
@@ -1353,7 +1353,7 @@ void InitSlowmoPickup(NAS *arg0) {
         eng->sub->entity = 0x2009;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
-            LinkObject((u8 *)arg0);
+            LinkObject(arg0);
             AddSolid(arg0, 0x200);
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x15;

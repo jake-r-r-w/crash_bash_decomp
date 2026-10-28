@@ -1345,7 +1345,7 @@ void SetN2OHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    AddCamera((u8 *)h->hero);
+    AddCamera(h->hero);
     h->hero_sub->unk08 = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
@@ -1598,7 +1598,7 @@ void InitN2OBall(NAS *nas) {
         if (obj != NULL) {
             mot = AddMotion(nas);
             if (mot != NULL) {
-                LinkObject((u8 *)nas);
+                LinkObject(nas);
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
                 obj->whatami = 1;

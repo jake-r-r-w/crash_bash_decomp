@@ -587,7 +587,7 @@ void InitBonkCrate(NAS *nas) {
             nas->Failure = 1;
         }
         if (AddObject(nas) != NULL) {
-            LinkObject((u8 *)nas);
+            LinkObject(nas);
             AddSolid(nas, 0x200);
         } else {
             nas->Failure = 1;
@@ -1583,7 +1583,7 @@ void InitBonkStool(NAS *nas) {
             nas->Failure = 1;
         }
         if (AddObject(nas) != NULL) {
-            LinkObject((u8 *)nas);
+            LinkObject(nas);
             AddSolid(nas, 0x200);
         } else {
             nas->Failure = 1;

@@ -1085,11 +1085,11 @@ void HubDoorMenu2Render(void) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
             e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
-            eng_render_subs((u8 *)GetEngineSlot(1));
+            eng_render_subs(GetEngineSlot(1));
         }
     }
     if (HubDoorFade != 0 && !(GamePause & 1)) {
-        eng_render_subs((u8 *)GetEngineSlot(2));
+        eng_render_subs(GetEngineSlot(2));
     }
 }
 
@@ -1111,11 +1111,11 @@ void HubDoorMenuRender(void) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
             e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
-            eng_render_subs((u8 *)GetEngineSlot(1));
+            eng_render_subs(GetEngineSlot(1));
         }
     }
     if (HubDoorFade != 0 && !(GamePause & 1)) {
-        eng_render_subs((u8 *)GetEngineSlot(2));
+        eng_render_subs(GetEngineSlot(2));
     }
 }
 
@@ -2587,9 +2587,9 @@ void HubSaveMenuRender(void) {
         p += 0x2A;
         i++;
     } while (i < 8);
-    eng_render_subs((u8 *)GetEngineSlot(0));
-    eng_render_subs((u8 *)GetEngineSlot(1));
-    eng_render_subs((u8 *)&HubNameEngine);
+    eng_render_subs(GetEngineSlot(0));
+    eng_render_subs(GetEngineSlot(1));
+    eng_render_subs(&HubNameEngine);
 }
 
 void HubSaveMenuQuit(void) {

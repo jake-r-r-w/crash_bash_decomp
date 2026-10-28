@@ -2196,25 +2196,25 @@ void eng_render(EXTengine *eng) {
     eng->render(eng);
 }
 
-void eng_render_subs(u8 *arg0) {
-    s32 (*temp_v0)(u8 *, s32, s32);
-    s32 temp_s1;
-    s32 temp_s2;
-    u8 *var_s0;
+void eng_render_subs(EXTengine *e) {
+    void (*hook)(subengine *, s32, u32);
+    s32 flags;
+    s32 m;
+    subengine *sub;
 
-    var_s0 = (*(s32*)((u8*)(arg0) + 108));
-    RenderState.unk4 = arg0;
-    if (var_s0 != NULL) {
-        temp_s1 = (*(s32*)((u8*)(arg0) + 12));
-        if (temp_s1 & 0x8000) {
-            temp_s2 = gfx_object_matrix(arg0 + 0xC);
+    sub = e->sub;
+    RenderState.unk4 = e;
+    if (sub != NULL) {
+        flags = e->flags;
+        if (flags & 0x8000) {
+            m = (s32)gfx_object_matrix((GfxXform *)&e->flags);
 loop_3:
-            if (var_s0 != NULL) {
-                temp_v0 = (*(s32*)((u8*)(var_s0) + 84));
-                if (temp_v0 != NULL) {
-                    temp_v0(var_s0, temp_s2, temp_s1);
+            if (sub != NULL) {
+                hook = sub->hook;
+                if (hook != NULL) {
+                    hook(sub, m, flags);
                 }
-                var_s0 = (*(s32*)((u8*)(var_s0) + 92));
+                sub = sub->next;
                 goto loop_3;
             }
         }

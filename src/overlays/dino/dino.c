@@ -3339,7 +3339,7 @@ void InitDinoGem(NAS *m) {
         ext->unkE2 = 0x100;
         ext->unkB4 = 0;
         ext->unkD4 = 0;
-        AddCamera((u8 *)m);
+        AddCamera(m);
         m->Engine->sub->flags &= 0xFFFF7FFF;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
@@ -3469,7 +3469,7 @@ void PlotDinoGem(NAS *m) {
         ext->unkB4 = ext->unk48;
         ext->unkD4 = ext->unk4C;
         ext->unk84->sub->flags |= 0x8000;
-        AddCamera((u8 *)m);
+        AddCamera(m);
         found = -1;
         ext->unkC = 3;
         hb = &Heroes[ext->unk10];
@@ -3512,7 +3512,7 @@ void PlotDinoGem(NAS *m) {
         ext->unk84->sub->flags |= 0x8000;
         ext->unkC = 4;
         SFX4(0x6C0, 0x6C1, 0x6C2, 0x6C3);
-        AddCamera((u8 *)m);
+        AddCamera(m);
         break;
     }
     case 4:

@@ -866,10 +866,10 @@ void BattleOptionsRender(void) {
     *(s32 *)(p + 0x150) &= 0xFFFF7FFF;
     gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(1));
+    eng_render_subs(GetEngineSlot(1));
     gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(0));
+    eng_render_subs(GetEngineSlot(0));
 }
 
 void TitlesSetHeroMasks(void) {
@@ -1076,12 +1076,12 @@ void OptionsRender(void) {
         break;
     }
     gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
-    eng_render_subs((u8 *)GetEngineSlot(4));
+    eng_render_subs(GetEngineSlot(4));
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
     gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(1));
+    eng_render_subs(GetEngineSlot(1));
 }
 
 void RunGameQuit(void) {
@@ -1214,7 +1214,7 @@ void NewLoadMenuInit(void) {
 void num_players_render(void) {
     RenderState.modelDp = ScreenFade.amount;
     gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
-    eng_render_subs((u8 *)GetEngineSlot(0));
+    eng_render_subs(GetEngineSlot(0));
 }
 
 
@@ -1243,10 +1243,10 @@ void RenderTitlesBackdropAndMenu(void) {
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
     gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(1));
+    eng_render_subs(GetEngineSlot(1));
     gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(0));
+    eng_render_subs(GetEngineSlot(0));
 }
 
 void RenderTitlesBackdrop(void) {
@@ -1254,7 +1254,7 @@ void RenderTitlesBackdrop(void) {
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
     gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(1));
+    eng_render_subs(GetEngineSlot(1));
 }
 
 void RenderTitlesMenu(void) {
@@ -1262,10 +1262,10 @@ void RenderTitlesMenu(void) {
     GetEngineSlot(1)->sub[2].flags |= 0x8000;
     gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(0));
+    eng_render_subs(GetEngineSlot(0));
     gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(1));
+    eng_render_subs(GetEngineSlot(1));
 }
 
 void SetupTitlesBackdrop(void) {
@@ -1653,7 +1653,7 @@ void CharSelectRender(void) {
     RenderTitlesBackdropAndMenu();
     gfx_set_viewport(&TitlesMenuView, &CharSelectCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(2));
+    eng_render_subs(GetEngineSlot(2));
 }
 
 s8 adventure_mode_head(s32 a0) {
@@ -1989,25 +1989,25 @@ void LevelSelectRender(void) {
 
     gfx_set_viewport(&LevelSelectView0, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(2));
+    eng_render_subs(GetEngineSlot(2));
     RenderTitlesBackdropAndMenu();
     m = (s8 *)GameInfo;
     cam[2] = (m[0x37] != 0) ? 0x400 : 0x578;
     gfx_set_viewport(&LevelSelectView1, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(3));
+    eng_render_subs(GetEngineSlot(3));
     cam[2] = (m[0x37] != 1) ? 0x400 : 0x578;
     gfx_set_viewport(&LevelSelectView2, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(4));
+    eng_render_subs(GetEngineSlot(4));
     cam[2] = (m[0x37] != 2) ? 0x400 : 0x578;
     gfx_set_viewport(&LevelSelectView3, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(5));
+    eng_render_subs(GetEngineSlot(5));
     cam[2] = (m[0x37] != 3) ? 0x400 : 0x578;
     gfx_set_viewport(&LevelSelectView4, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(6));
+    eng_render_subs(GetEngineSlot(6));
     cam[2] = 0x400;
 }
 
@@ -2212,7 +2212,7 @@ void TitlesShellScreenInit(void) {
 }
 
 void TitlesExtraScreenRender(void) {
-    eng_render_subs((u8 *)GetEngineSlot(2));
+    eng_render_subs(GetEngineSlot(2));
 }
 
 void TitlesExtraScreenInit(void) {

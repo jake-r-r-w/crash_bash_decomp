@@ -3465,7 +3465,7 @@ void InitBashPenguin(NAS *nas) {
         eng->sub->entity = 0x2001;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
-            LinkObject((u8 *)nas);
+            LinkObject(nas);
             AddSolid(nas, 0x200);
             BashPenguinObj = obj;
             nas->FUX = (EXT *)obj;

@@ -518,20 +518,20 @@ void UpdateCupMenu(void) {
 void RenderCupMenu(void) {
     gfx_set_viewport(&CupViewport0, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(3));
+    eng_render_subs(GetEngineSlot(3));
     gfx_set_viewport(&CupViewport1, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(4));
+    eng_render_subs(GetEngineSlot(4));
     gfx_set_viewport(&CupViewport2, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(5));
+    eng_render_subs(GetEngineSlot(5));
     gfx_set_viewport(&CupViewport3, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(6));
+    eng_render_subs(GetEngineSlot(6));
     RenderTitlesBackdropAndMenu();
     gfx_set_viewport(&CupMenuViewport, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(2));
+    eng_render_subs(GetEngineSlot(2));
 }
 
 void QuitCupMenu(void) {
@@ -870,7 +870,7 @@ void UpdateCardPrompt(void) {
                 e = GetEngineSlot(1);
                 e->sub[1].u6C.text = LangMenuCheckingCard[*(s32 *)((g = GameInfo) + 0x2C)];
                 GetEngineSlot(1)->sub->u6C.text = LangLoadGame[*(s32 *)(g + 0x2C)];
-                eng_render_subs((u8 *)GetEngineSlot(1));
+                eng_render_subs(GetEngineSlot(1));
                 return;
             } else if (CardStatus & 0x10) {
                 UpdateCardSlots();
@@ -910,7 +910,7 @@ void UpdateCardPrompt(void) {
                     GetEngineSlot(1)->sub[1].u6C.text = LangNoCrashBashData[GameLanguage];
                 }
                 GetEngineSlot(1)->sub->u6C.text = LangLoadGame[GameLanguage];
-                eng_render_subs((u8 *)GetEngineSlot(1));
+                eng_render_subs(GetEngineSlot(1));
                 return;
             }
         }
@@ -920,7 +920,7 @@ void UpdateCardPrompt(void) {
             e->sub[1].u6C.text = LangNoCard[*(s32 *)((q = GameInfo) + 0x2C)];
             GetEngineSlot(1)->sub->u6C.text = LangLoadGame[*(s32 *)(q + 0x2C)];
         }
-        eng_render_subs((u8 *)GetEngineSlot(1));
+        eng_render_subs(GetEngineSlot(1));
         break;
     case 1:
         if (loader_pending() == 0) {
@@ -1218,7 +1218,7 @@ void RenderSaveMenu(void) {
     s->unk52 = 1;
     s->unk51 = 0;
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)e);
+    eng_render_subs(e);
     gfx_set_viewport(&SaveViewport, &SaveCamera);
     switch (SaveMenuStep) {
     case 0:
@@ -1285,12 +1285,12 @@ void UpdateCardSlots(void) {
     e2->unk10.y = e->unk10.y;
     e2->unk10.x = e->unk10.x;
     RenderState.modelDp = ScreenFade.amount;
-    eng_render_subs((u8 *)GetEngineSlot(4));
-    eng_render_subs((u8 *)GetEngineSlot(5));
-    eng_render_subs((u8 *)GetEngineSlot(6));
-    eng_render_subs((u8 *)GetEngineSlot(7));
-    eng_render_subs((u8 *)GetEngineSlot(3));
-    eng_render_subs((u8 *)GetEngineSlot(2));
+    eng_render_subs(GetEngineSlot(4));
+    eng_render_subs(GetEngineSlot(5));
+    eng_render_subs(GetEngineSlot(6));
+    eng_render_subs(GetEngineSlot(7));
+    eng_render_subs(GetEngineSlot(3));
+    eng_render_subs(GetEngineSlot(2));
     switch (SaveMenuStep) {
     case 2:
         {

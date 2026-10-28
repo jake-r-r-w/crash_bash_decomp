@@ -985,7 +985,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
         fux->dist = b;
         if (AddMotion(nas) != 0)
         {
-          LinkObject((u8 *) nas);
+          LinkObject(nas);
           AddSolid(nas, 0x300);
           nas->FUX = (EXT *) fux;
           eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
@@ -1337,7 +1337,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                 fux->dist = b;
                 mot = AddMotion(nas);
                 if (mot != NULL) {
-                    LinkObject((u8 *)nas);
+                    LinkObject(nas);
                     AddSolid(nas, 0x300);
                     nas->FUX = (EXT *)fux;
                     eng->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];

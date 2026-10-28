@@ -1319,9 +1319,9 @@ void RenderPause(void) {
             }
         }
         gfx_set_viewport(&HudViewport, &HudCamera);
-        eng_render_subs((u8 *)GetEngineSlot(0));
+        eng_render_subs(GetEngineSlot(0));
         gfx_set_viewport(&MainViewport, &MainGfxCamera);
-        eng_render_subs((u8 *)GetEngineSlot(4));
+        eng_render_subs(GetEngineSlot(4));
         eng_render(&PanelTab[5]);
         eng_render(&PanelTab[6]);
     }

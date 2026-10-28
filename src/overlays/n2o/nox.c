@@ -776,14 +776,14 @@ void NoxUpdate(void) {
         NoxCameraNas = first;
         if (first != NULL) {
             first->UserInfo.user1 = 0;
-            AddCamera((u8 *)first);
+            AddCamera(first);
         }
         if (((BossGameView *)GameInfo)->unk6C != 0) {
             nas = CreateNAS(0, 0, 0, 0x1C03, 0x11);
             NoxCameraNasB = nas;
             if (nas != NULL) {
                 nas->UserInfo.user1 = 1;
-                AddCamera((u8 *)nas);
+                AddCamera(nas);
             }
         }
         RemoveCamera(Heroes[0].hero);

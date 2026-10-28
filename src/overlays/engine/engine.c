@@ -538,7 +538,7 @@ void DrawLevelHud(void) {
     } while (i < 4);
     if (!(GamePause & 1) && (PanelCtrl & 0x4000)) {
         gfx_set_viewport(&HudViewport, &HudCamera);
-        eng_render_subs((u8 *)GetEngineSlot(5));
+        eng_render_subs(GetEngineSlot(5));
     }
 }
 

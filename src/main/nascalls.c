@@ -2152,12 +2152,12 @@ void RemoveCamera(NAS *nas) {
     }
 }
 
-void AddCamera(u8 *arg0) {
+void AddCamera(NAS *nas) {
     if (HeadOfCameras != NULL) {
-        (*(s32*)((u8*)(arg0) + 60)) = (u8 *) HeadOfCameras;
-        (*(s32*)((u8*)(HeadOfCameras) + 56)) = arg0;
+        nas->Camera.Child = HeadOfCameras;
+        HeadOfCameras->Camera.Parent = nas;
     }
-    HeadOfCameras = arg0;
+    HeadOfCameras = nas;
 }
 
 s32 CountObjects(void) {
@@ -2191,12 +2191,12 @@ void UnlinkObject(NAS *nas) {
     }
 }
 
-void LinkObject(u8 *arg0) {
+void LinkObject(NAS *nas) {
     if (HeadOfObjects != NULL) {
-        (*(s32*)((u8*)(arg0) + 44)) = (u8 *) HeadOfObjects;
-        (*(s32*)((u8*)(HeadOfObjects) + 40)) = arg0;
+        nas->Object.Child = HeadOfObjects;
+        HeadOfObjects->Object.Parent = nas;
     }
-    HeadOfObjects = arg0;
+    HeadOfObjects = nas;
 }
 
 void RemoveFromGroup(NAS *nas) {
@@ -4153,11 +4153,11 @@ u16 NasPoolUsed = 0;
 s16 D_8005AA18[2] = {0};
 NAS *NasPool = 0;
 u8 *NasPoolLast = 0;
-void *HeadOfObjects = 0;
+NAS *HeadOfObjects = 0;
 void *HeadOfMissiles = 0;
 NAS *HeadOfSolids = 0;
 void *D_8005AA30 = 0;
-void *HeadOfCameras = 0;
+NAS *HeadOfCameras = 0;
 void *HeadOfBalls = 0;
 s32 D_8005AA3C[3] = {0};
 NASTrigger *HeadOfTriggers = 0;
