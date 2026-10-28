@@ -6317,7 +6317,7 @@
   "fp": "8adf483f67e9ef24",
   "fpn": "a28c378952689bca",
   "leaf": true,
-  "name": "RunVTables",
+  "name": "RunModules",
   "orig": "func_800270F0",
   "rom": 96496,
   "seg": "main/nascalls",

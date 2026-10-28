@@ -79,23 +79,23 @@ void UpdateIntro(void) {
         dbase_release((u8 *)IntroDbase);
         IntroDbase = 0;
     }
-    if (IntroStepIndex == 1 && D_8009E5A8 == IntroSteps[0].delay) {
+    if (IntroStepIndex == 1 && IntroStepTimer == IntroSteps[0].delay) {
         modchip_step(0);
     }
-    if (D_8009E5A8 < 0) {
+    if (IntroStepTimer < 0) {
         return;
     }
-    if (--D_8009E5A8 > 0) {
+    if (--IntroStepTimer > 0) {
         return;
     }
     if (loader_pending() != 0) {
-        D_8009E5A8 = 1;
+        IntroStepTimer = 1;
         return;
     }
     if ((u32)IntroStepIndex >= 4) {
         ProcessControl.flags = 0x12;
         ProcessControl.next_process = &LevelLoadProcess;
-        D_8009E5A8 = -1;
+        IntroStepTimer = -1;
         return;
     }
     tbl = IntroSteps;
@@ -103,7 +103,7 @@ void UpdateIntro(void) {
     type = e->type;
     switch (type) {
     case 1:
-        D_8009E5A8 = e->delay;
+        IntroStepTimer = e->delay;
         a = (u8 *)load_file_permanent(e->pic);
         b = tga_convert(a, ScreenRect->w, ScreenRect->h);
         mal_free(a, &MainHeap);
@@ -120,7 +120,7 @@ void UpdateIntro(void) {
         }
         break;
     case 2:
-        D_8009E5A8 = e->delay;
+        IntroStepTimer = e->delay;
         SetupSceneMarks(e->model);
         D_80058B64 = 0x10000;
         VSyncRate = type;
@@ -174,7 +174,7 @@ void RenderIntro(void) {
 
 void InitIntro(void) {
     IntroStepIndex = 0;
-    D_8009E5A8 = 0;
+    IntroStepTimer = 0;
     D_800AEC58 = 0;
     IntroDbase = 0;
     init_scripts(0x20, 0x80);
@@ -455,8 +455,8 @@ void UpdateCupMenu(void) {
 
     AnimateTitlesBackdrop();
     AnimateCupMenu();
-    if (D_8009EB98 != 0) {
-        D_8009EB98--;
+    if (CupMenuCompact != 0) {
+        CupMenuCompact--;
         prims_empty_back();
         mal_compact_step((u8 *)&MainHeap);
     }
@@ -590,7 +590,7 @@ void CupMenuNext(void) {
     u8 *g = GameInfo;
     s32 n;
 
-    D_8009EB98 = 4;
+    CupMenuCompact = 4;
     n = g[0x28];
     if (n < 6) {
         n++;
@@ -603,7 +603,7 @@ void CupMenuPrev(void) {
     u8 *g = GameInfo;
     s32 n;
 
-    D_8009EB98 = 4;
+    CupMenuCompact = 4;
     n = g[0x28];
     if (n > 0) {
         n--;
@@ -663,7 +663,7 @@ s32 CupCurrentArena(void) {
 }
 
 void InitCupMenu(void) {
-    D_8009EB98 = 0;
+    CupMenuCompact = 0;
     PlaceEngineSlot(0, (s32 *)D_8009E8B4);
     PlaceEngineSlot(2, D_8009E7F4);
     PlaceEngineSlot(3, (s32 *)D_8009EB3C);
@@ -1222,24 +1222,24 @@ void RenderSaveMenu(void) {
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs((u8 *)e);
     gfx_set_viewport(&SaveViewport, &SaveCamera);
-    switch (D_8009F630) {
+    switch (SaveMenuStep) {
     case 0:
         if (Pads[0].pressed & 0xF0) {
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
             v = 1;
-            if (D_8009F634 == 1) {
+            if (SaveMenuYesNo == 1) {
                 v = 2;
             }
-            D_8009F634 = v;
+            SaveMenuYesNo = v;
         }
         if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            if (D_8009F634 == 1) {
+            if (SaveMenuYesNo == 1) {
                 SaveMenuState = 0;
-                D_8009F630 = D_8009F634;
+                SaveMenuStep = SaveMenuYesNo;
             } else {
                 D_8009F638 = 0;
-                D_8009F630 = 2;
+                SaveMenuStep = 2;
             }
         }
         break;
@@ -1293,7 +1293,7 @@ void UpdateCardSlots(void) {
     eng_render_subs((u8 *)GetEngineSlot(7));
     eng_render_subs((u8 *)GetEngineSlot(3));
     eng_render_subs((u8 *)GetEngineSlot(2));
-    switch (D_8009F630) {
+    switch (SaveMenuStep) {
     case 2:
         {
             s32 idx;
@@ -1348,8 +1348,8 @@ void InitSaveMenu(void) {
     D_8009F4BC = 0x4D2;
     ShowSaveScreen();
     FontPage = 0;
-    D_8009F630 = 0;
-    D_8009F634 = 1;
+    SaveMenuStep = 0;
+    SaveMenuYesNo = 1;
     PlaceEngineSlot(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
@@ -1362,7 +1362,7 @@ void InitSaveMenu(void) {
     PlaceEngineSlot(1, &D_8009EEB0);
     D_8009F494 = 0;
     SaveMenuState = 0;
-    D_8009F630 = 1;
+    SaveMenuStep = 1;
 }
 
 void InitCardPromptMenu(void) {
@@ -1372,8 +1372,8 @@ void InitCardPromptMenu(void) {
     D_8009F4BC = 0x4D2;
     ShowSaveScreen();
     FontPage = 0;
-    D_8009F630 = 0;
-    D_8009F634 = 1;
+    SaveMenuStep = 0;
+    SaveMenuYesNo = 1;
     PlaceEngineSlot(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
@@ -1385,7 +1385,7 @@ void InitCardPromptMenu(void) {
     }
     PlaceEngineSlot(1, &D_8009EEB0);
     D_8009F638 = 0;
-    D_8009F630 = 2;
+    SaveMenuStep = 2;
 }
 
 void ShowSaveScreen(void) {
@@ -1479,8 +1479,8 @@ void InitCardMenu(void) {
     D_8009F4BC = 0x4D2;
     ShowSaveScreen();
     FontPage = 0;
-    D_8009F630 = 0;
-    D_8009F634 = 1;
+    SaveMenuStep = 0;
+    SaveMenuYesNo = 1;
     PlaceEngineSlot(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
@@ -1915,7 +1915,7 @@ Blk32 D_8009E560 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 D_8009E580 = {0};
 s32 D_8009E58C[6] = { (s32)InitIntro, (s32)UpdateIntro, (s32)RenderIntro, (s32)QuitIntro, 0, 0 };
 s32 IntroStepIndex = 0;
-s32 D_8009E5A8 = 0;
+s32 IntroStepTimer = 0;
 u8 *D_8009E5AC = 0;
 s32 D_8009E5B0 = 0;
 s32 D_8009E5B4 = 0;
@@ -2039,7 +2039,7 @@ EngRec24 D_8009EB3C[2] = {
     },
 };
 process_info TournamentSelect = { InitCupMenu, UpdateCupMenu, RenderCupMenu, QuitCupMenu, 0 };
-s32 D_8009EB98 = 0;
+s32 CupMenuCompact = 0;
 s32 D_8009EB9C[8] = { 0x20001, 0x3000A, 0x20002, 0x30013, 0x20003, 0x3000B, 0, 0 };
 s32 D_8009EBBC[8] = { 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24, 0x2016, 0x25 };
 s32 D_8009EBDC[16] = {
@@ -2148,8 +2148,8 @@ char D_8009F4A8[4][5] = {0};
 s32 D_8009F4BC = 0;
 GfxCamera SaveCamera = {0};
 GfxCamera SaveBackCamera = {0};
-s32 D_8009F630 = 0;
-s32 D_8009F634 = 0;
+s32 SaveMenuStep = 0;
+s32 SaveMenuYesNo = 0;
 s32 D_8009F638 = 0;
 s32 D_8009F63C = 0;
 s32 SaveMenuState = 0;

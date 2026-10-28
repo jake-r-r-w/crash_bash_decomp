@@ -301,7 +301,6 @@ typedef struct N2OPanRef {
     struct N2OPan *p;
 } N2OPanRef;
 extern u16 N2OBossShotSfx;
-extern u16 D_8009D6E0;
 typedef struct N2OPan {
     u8 pad0[0xC];
     s32 unkC;

@@ -5082,7 +5082,7 @@ void Plot_Ark_Pickup(NAS *arg0) {
                 }
                 r += 0x40;
                 if (dx * dx + dz * dz < r * r) {
-                    D_8009D754 = i;
+                    RoundWinner = i;
                     h->hero_pu = fux->contains;
                     if (fux->contains == 0x12 || fux->contains == 0x17) {
                         CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1503, 0x11);
@@ -5946,7 +5946,7 @@ void Init_RepulseRing(NAS *nas)
   eng = nas->Engine;
   if (eng != 0)
   {
-    nas->UserInfo.user1 = D_8009D754;
+    nas->UserInfo.user1 = RoundWinner;
     eng->unk5D = 0;
     eng->unk5C = 1;
     sub = eng->sub;

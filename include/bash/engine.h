@@ -69,7 +69,7 @@ extern void (*D_8005AA7C)(void);
 extern subengine D_8009A04C[];
 typedef struct IconSet { s32 *c; u8 pad[4]; s32 *a; s32 *b; } IconSet;
 extern IconSet Icon;
-extern s16 D_80099208[];
+extern s16 IconPos[];
 extern s32 GameTeams[];
 extern subengine D_8009A4E4;
 extern u32 Clock_Time;
@@ -79,7 +79,7 @@ extern ClockInfo Clock[4];
 extern s32 Clock_XYZ[3];
 extern u16 Clock_last_ping;
 extern s16 D_80099194;
-extern s32 D_80099700[];
+extern s32 CompletionPos[];
 extern s32 D_8009AE78;
 void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags);
 typedef struct EngineBox {
@@ -105,7 +105,6 @@ typedef struct HeroActionEntry {
 extern HeroActionEntry HeroActionTable[];
 extern hero_seq **HeroSeqTables[]; /* by HeroInfo.hero_name (1-8): each character's sequences, by id */
 extern s32 D_8009BD04;
-extern s16 D_8009D6DC[];
 extern s32 D_800A02C0;
 extern s32 D_800A02C4;
 extern u8 D_800A0224[];
@@ -129,13 +128,13 @@ extern ScriptInit D_8009E1E8;
 extern GfxViewport HudViewport;
 extern GfxViewport D_800A0BCC;
 extern GfxCamera HudCamera;
-extern process_info *D_800A0C08;
+extern process_info *SceneSkipProcess;
 extern GfxViewport SaveViewport;
 extern GfxViewport SaveBackViewport;
 extern GfxCamera SaveCamera;
 extern GfxCamera SaveBackCamera;
-extern s32 D_8009F630;
-extern s32 D_8009F634;
+extern s32 SaveMenuStep;
+extern s32 SaveMenuYesNo;
 extern s32 D_8009F638;
 extern s32 SaveMenuState;
 
@@ -225,7 +224,7 @@ extern s32 D_8009D874;
 extern s32 D_8009D878;
 extern u8 D_8009F9AC[];
 extern s32 IntroStepIndex;
-extern s32 D_8009E5A8;
+extern s32 IntroStepTimer;
 extern s32 D_8009E5B0;
 extern s32 D_8009E5B4;
 extern s32 D_800AEC58;
@@ -242,7 +241,7 @@ typedef struct EngRec24 {
 extern EngRec24 D_8009E8B4[];
 extern EngRec24 D_8009EB3C[2];
 extern process_info TournamentSelect;   /* after D_8009EB3C's two records: the tournament select menu (TournamentChain) */
-extern s32 D_8009EB98;
+extern s32 CupMenuCompact;
 typedef struct { u16 a, b, c, flags; } EngEntry;
 typedef struct { s32 unk0; EngEntry *entries; s32 unk8, unkC, unk10; } EngTable;
 /* The hub hero's place on the warp room's ring (HubPreMoveHero): its angle and its distance from

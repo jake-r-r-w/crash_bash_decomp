@@ -173,7 +173,7 @@ static inline void EngineWorldNext(void) {
     u8 *g = GameInfo;
     s32 n;
 
-    D_8009EB98 = 4;
+    CupMenuCompact = 4;
     n = g[0x28];
     if (n < 6) {
         n++;
@@ -187,7 +187,7 @@ static inline void EngineWorldPrev(void) {
     u8 *g = GameInfo;
     s32 n;
 
-    D_8009EB98 = 4;
+    CupMenuCompact = 4;
     n = g[0x28];
     if (n > 0) {
         n--;

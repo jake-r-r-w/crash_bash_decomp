@@ -765,7 +765,7 @@ void NoxUpdate(void) {
         ((BossGameView *)GameInfo)->unk75 = 0;
     }
     if (((BossGameView *)GameInfo)->unk4 & 8) {
-        D_8009D6DC[2] |= 0x8000;
+        BossState.flags |= 0x8000;
     }
     if (NoxStarted == 0) {
         NoxCameraNasB = NULL;
@@ -1512,7 +1512,7 @@ void PlotNitroBoss(NAS *nas) {
     if (ext == NULL) {
         return;
     }
-    fl = (u16 *)D_8009D6DC;
+    fl = (u16 *)&BossState;
     if (fl[2] & 0x8000) {
         pos = &nas->Engine->unk10;
         n = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
@@ -1937,9 +1937,9 @@ void PlotLaserShoot(NAS *nas) {
             if (r == 3) {
                 PlaySfx(0x2B6, NULL, NULL, 0x1000, 0x1E00, 0);
             }
-            if (D_8009D6DC[3] <= 0) {
-                D_8009D6DC[3] = 0;
-                D_8009D6DC[2] |= 0x8000;
+            if (BossState.health <= 0) {
+                BossState.health = 0;
+                BossState.flags |= 0x8000;
             }
             goto kill;
         }

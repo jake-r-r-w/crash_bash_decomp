@@ -42,9 +42,9 @@ void InitialiseHeroes(void) {
     D_8009D874 = 0;
     D_8009D86C = 0;
     D_8009D878 = 0;
-    D_8009D758 = 4;
-    D_8009D75C = 4;
-    D_8009D760 = 0;
+    HeroesInPlay = 4;
+    HeroesSidelined = 4;
+    FinalHeroesTempo = 0;
     HSV->unk30 &= 0xF7FF;
     hb = Heroes;
     while (1) {
@@ -325,8 +325,8 @@ void ProcessHeroes(void) {
     r = Random(0x10);
     last = -1;
     i = 0;
-    D_8009D758 = 0;
-    D_8009D75C = 0;
+    HeroesInPlay = 0;
+    HeroesSidelined = 0;
     for (;; i++) {
         HeroInfo *a;
 
@@ -440,11 +440,11 @@ void ProcessHeroes(void) {
         }
         if (!(st & 0x2000)) {
             last = id;
-            D_8009D758++;
+            HeroesInPlay++;
         } else if (HLV->unk30 & 0x800) {
             RemoveCamera(c->hero);
         } else {
-            D_8009D75C++;
+            HeroesSidelined++;
         }
         d = &Heroes[id];
         if (d->hero_frozen != 0) {
@@ -490,13 +490,13 @@ void ProcessHeroes(void) {
     next:;
     }
     if (HLV->unk32 & 0x100) {
-        if (!(D_8009D6E0 & 0x8000)) {
-            if (!(D_8009D6E0 & 0x2000)) {
-                D_8009D758++;
+        if (!(BossState.flags & 0x8000)) {
+            if (!(BossState.flags & 0x2000)) {
+                HeroesInPlay++;
             } else if (!(HLV->unk30 & 0x800)) {
-                D_8009D75C++;
+                HeroesSidelined++;
             }
-            pc = (u16 *)D_8009D6DC;
+            pc = (u16 *)&BossState;
             if (pc[4] != 0) {
                 pc[4]--;
             }
@@ -514,7 +514,7 @@ void ProcessHeroes(void) {
             HLV->unk30 |= bits;
         }
     }
-    if (!(HLV->unk30 & 0x801) && D_8009D760 == 0) {
+    if (!(HLV->unk30 & 0x801) && FinalHeroesTempo == 0) {
         switch (HLV->mode) {
         case 0:
         case 1:
@@ -533,8 +533,8 @@ void ProcessHeroes(void) {
         case 20:
         case 21:
         case 30:
-            if (D_8009D758 + D_8009D75C < 3) {
-                D_8009D760 = 1;
+            if (HeroesInPlay + HeroesSidelined < 3) {
+                FinalHeroesTempo = 1;
                 music_set_tempo(0x6E, 0xF0);
             }
             break;
@@ -664,7 +664,7 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                 break;
             case 4:
             case 9:
-                D_8009D6DC[2] |= 0x200;
+                BossState.flags |= 0x200;
                 break;
             }
             if (idx != -1) {
@@ -693,7 +693,7 @@ void DefChooseWinner(s32 idx, u16 arg1) {
         g = WINV;
         n = (u16)h->hero_teammate;
         if (g->teams != 0 && g->mode != 0x20) {
-            idx = D_8009D758;
+            idx = HeroesInPlay;
             if (idx < 3) {
                 m = &base[(u16)n];
                 if (m->hero_status & 0xA000) {
@@ -709,7 +709,7 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                     g->flags |= 0x800;
                 }
             }
-        } else if (D_8009D758 < 2) {
+        } else if (HeroesInPlay < 2) {
             Heroes[idx].hero_status |= 0x200;
             WINV->winner = Heroes[idx].hero_name;
             WINV->flags |= 0x800;
@@ -1452,11 +1452,11 @@ void ReleaseHeroAnims(void) {
 }
 
 void ResetHeroGlobals(void) {
-    D_8009D6DC[0] = 0;
-    D_8009D6DC[1] = 0;
-    D_8009D6DC[2] = 0;
-    D_8009D6DC[3] = 20;
-    D_8009D6DC[4] = 0;
+    BossState.unk0 = 0;
+    BossState.unk2 = 0;
+    BossState.flags = 0;
+    BossState.health = 20;
+    BossState.unk8 = 0;
 }
 
 void SetLevelCameraMode(void) {
@@ -2668,13 +2668,13 @@ void HeroBecomeAngel(s32 arg0) {
         s->flags = (s->flags | 0x60000021) & ~0x8000;
     }
     for (i = 0; i < 3; i++) {
-        D_8009E0E8[i][arg0].unk0 = Random(10) + i * 3;
-        D_8009E0E8[i][arg0].unk2 = 0;
-        D_8009E0E8[i][arg0].unk4 = 0;
-        D_8009E0E8[i][arg0].unk6 = 0;
-        D_8009E0E8[i][arg0].unk8 = 0;
-        D_8009E0E8[i][arg0].unkA = 0;
-        D_8009E0E8[i][arg0].unkC = 0;
+        AngelSparkles[i][arg0].unk0 = Random(10) + i * 3;
+        AngelSparkles[i][arg0].unk2 = 0;
+        AngelSparkles[i][arg0].unk4 = 0;
+        AngelSparkles[i][arg0].unk6 = 0;
+        AngelSparkles[i][arg0].unk8 = 0;
+        AngelSparkles[i][arg0].unkA = 0;
+        AngelSparkles[i][arg0].unkC = 0;
     }
     if (Random(2) != 0) {
         PlaySfx(0x1C4, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -2720,36 +2720,36 @@ s32 arg0;
     s->flags |= 0x8000;
     ProcessHeroAnim(arg0, y);
     for (s = s->next, i = 0; s != NULL; s = s->next, i++) {
-        if (D_8009E0E8[i][arg0].unk2 != 0) {
-            D_8009E0E8[i][arg0].unk6 -= 3;
-            if (D_8009E0E8[i][arg0].unk6 < 0) {
-                D_8009E0E8[i][arg0].unk6 = 0;
+        if (AngelSparkles[i][arg0].unk2 != 0) {
+            AngelSparkles[i][arg0].unk6 -= 3;
+            if (AngelSparkles[i][arg0].unk6 < 0) {
+                AngelSparkles[i][arg0].unk6 = 0;
             }
-            s->unk04 += D_8009E0E8[i][arg0].unk6 * rcossin_tbl[(D_8009E0E8[i][arg0].unk4 - 0x400) & 0xFFF].unk2 >> 12;
-            s->unk0C += D_8009E0E8[i][arg0].unk6 * rcossin_tbl[D_8009E0E8[i][arg0].unk4 & 0xFFF].unk2 >> 12;
-            y = D_8009E0E8[i][arg0].unk8;
-            y += D_8009E0E8[i][arg0].unkA;
+            s->unk04 += AngelSparkles[i][arg0].unk6 * rcossin_tbl[(AngelSparkles[i][arg0].unk4 - 0x400) & 0xFFF].unk2 >> 12;
+            s->unk0C += AngelSparkles[i][arg0].unk6 * rcossin_tbl[AngelSparkles[i][arg0].unk4 & 0xFFF].unk2 >> 12;
+            y = AngelSparkles[i][arg0].unk8;
+            y += AngelSparkles[i][arg0].unkA;
             if (y > 0x30) {
                 y = 0x30;
             }
-            D_8009E0E8[i][arg0].unk8 = y;
+            AngelSparkles[i][arg0].unk8 = y;
             s->unk08 += y;
             s->flags |= 0x8000;
-            s->unk76 = D_8009E0E8[i][arg0].unkC += 0x60;
-            if (World_floor_level < s->unk08 || D_8009E0E8[i][arg0].unkC >= 0x1000) {
-                D_8009E0E8[i][arg0].unk2 = 0;
-                D_8009E0E8[i][arg0].unk0 = Random(10) + 2;
+            s->unk76 = AngelSparkles[i][arg0].unkC += 0x60;
+            if (World_floor_level < s->unk08 || AngelSparkles[i][arg0].unkC >= 0x1000) {
+                AngelSparkles[i][arg0].unk2 = 0;
+                AngelSparkles[i][arg0].unk0 = Random(10) + 2;
                 s->flags &= ~0x8000;
             }
-        } else if (D_8009E0E8[i][arg0].unk0 != 0) {
-            D_8009E0E8[i][arg0].unk0--;
+        } else if (AngelSparkles[i][arg0].unk0 != 0) {
+            AngelSparkles[i][arg0].unk0--;
         } else {
-            D_8009E0E8[i][arg0].unk2 = 1;
-            D_8009E0E8[i][arg0].unk4 = Random(0x800) + 0x400;
-            D_8009E0E8[i][arg0].unk6 = 0x30;
-            D_8009E0E8[i][arg0].unk8 = -0x40;
-            D_8009E0E8[i][arg0].unkA = 4;
-            D_8009E0E8[i][arg0].unkC = 0x100;
+            AngelSparkles[i][arg0].unk2 = 1;
+            AngelSparkles[i][arg0].unk4 = Random(0x800) + 0x400;
+            AngelSparkles[i][arg0].unk6 = 0x30;
+            AngelSparkles[i][arg0].unk8 = -0x40;
+            AngelSparkles[i][arg0].unkA = 4;
+            AngelSparkles[i][arg0].unkC = 0x100;
             *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&Heroes[arg0].hero_fx->sub->unk04;
         }
     }
@@ -6175,14 +6175,12 @@ u16 D_8009D4A4[64] = {
 };
 u16 D_8009D524[4] = {0};
 HeroInfo Heroes[4] = {0};
-s16 D_8009D6DC[2] = {0};
-u16 D_8009D6E0 = 0;
-s16 D_8009D6E4[2] = {0};
+BossRecord BossState = {0};
 EngineHooks HeroHooks = {0};
-s32 D_8009D754[1] = {0};
-s32 D_8009D758 = 0;
-s32 D_8009D75C = 0;
-u16 D_8009D760 = 0;
+s32 RoundWinner[1] = {0};
+s32 HeroesInPlay = 0;
+s32 HeroesSidelined = 0;
+u16 FinalHeroesTempo = 0;
 s32 D_8009D764[16][4] = {0};
 s16 D_8009D864 = 0;
 u16 D_8009D866 = 0;
@@ -6303,7 +6301,7 @@ s16 HeroActThrow = 0;
 s16 HeroActDead = 0;
 s16 HeroActWinner = 0;
 s16 HeroActLoser = 0;
-D_8009E0E8_t D_8009E0E8[3][4] = {0};
+D_8009E0E8_t AngelSparkles[3][4] = {0};
 s16 D_8009E190[2] = {0};
 s32 D_8009E194 = 1;
 s32 D_8009E198[17] = {

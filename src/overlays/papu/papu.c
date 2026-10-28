@@ -850,7 +850,7 @@ void PlotPapuBoss(NAS *nas) {
     }
     anim = FindExtension(nas, 0x400);
     frame = RunNasAnim(nas);
-    if (D_8009D6E0 & 0x200) {
+    if (BossState.flags & 0x200) {
         if (PapuBossCount != 0x1E) {
             PapuBossCount = 0x1E;
             GotoLinkAnim(anim, 0x1C);
@@ -919,9 +919,9 @@ void PlotPapuBoss(NAS *nas) {
             PapuBossLast = PapuBossCount;
             if (PapuBossFlag != 0) {
                 PapuBossCount = 9;
-                D_8009D6DC[3] -= 5;
-                if (D_8009D6DC[3] < 0) {
-                    D_8009D6DC[3] = 0;
+                BossState.health -= 5;
+                if (BossState.health < 0) {
+                    BossState.health = 0;
                 }
                 GotoLinkAnim(anim, 0x1E);
             }
@@ -1038,7 +1038,7 @@ void PlotPapuBoss(NAS *nas) {
             GotoLinkAnim(anim, 0);
             break;
         case 10:
-            if (D_8009D6E0 & 0x200) {
+            if (BossState.flags & 0x200) {
                 PapuBossCount = 0x1E;
                 GotoLinkAnim(anim, 0x1C);
             } else {
@@ -2412,14 +2412,14 @@ void PlotPapuColumn(NAS *nas) {
                 }
                 if (d < 0x200) {
                     other->unk2C.y = d * 8;
-                    D_8009D6DC[2] |= 0x2000;
+                    BossState.flags |= 0x2000;
                 }
             }
         }
         if (lim < e->unk10.y) {
             PlaySfx(0x20C, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009D6DC[3] = 0;
-            D_8009D6DC[2] |= 0x8000;
+            BossState.health = 0;
+            BossState.flags |= 0x8000;
             e->unk10.y = lim;
             nas->UserInfo.user1 = 0;
         }

@@ -1994,8 +1994,8 @@ void BashCrateMaster(void) {
     if (BashCrateTimer != 0) {
         BashCrateTimer--;
     } else {
-        if (D_8009E46C[0] < BashMaxCrates[D_8009D758 - 1]) {
-            n = BashMaxCrates[D_8009D758 - 1];
+        if (D_8009E46C[0] < BashMaxCrates[HeroesInPlay - 1]) {
+            n = BashMaxCrates[HeroesInPlay - 1];
             left = n - D_8009E46C[0];
             r = 4;
             if ((u16)n < 4) {
@@ -2151,7 +2151,7 @@ void BashDropCrates(u16 arg0) {
             t = c;
             if (t == 6) {
                 if (!(OVLG->flags & 0x80) || OVLG->mode != 1) {
-                    if (D_8009E46C[6] >= BashMaxNitro[D_8009D758 - 1]) {
+                    if (D_8009E46C[6] >= BashMaxNitro[HeroesInPlay - 1]) {
                         t = 4;
                     }
                 }
@@ -2882,7 +2882,7 @@ s32 BashFirePowerup(s32 arg0)
             if (h->hero_attack_timer != 0) {
                 p->unk4C &= ~0x8000;
             } else {
-            D_8009D754 = arg0;
+            RoundWinner = arg0;
             switch (h->hero_pu) {
             case 0x19:
                 n = CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1103, 0x11);
@@ -3016,8 +3016,8 @@ void InitBash8way(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        nas->UserInfo.user1 = D_8009D754;
-        nas->UserInfo.user2 = Heroes[D_8009D754].hero_move->facing_angle;
+        nas->UserInfo.user1 = RoundWinner;
+        nas->UserInfo.user2 = Heroes[RoundWinner].hero_move->facing_angle;
         eng_add_subs_n(eng, 7);
         sub = eng->sub;
         eng->unk5D = 0;
@@ -3115,8 +3115,8 @@ void InitBashHomer(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         h = Heroes;
-        nas->UserInfo.user1 = D_8009D754;
-        nas->UserInfo.user2 = Heroes[D_8009D754].hero_move->facing_angle;
+        nas->UserInfo.user1 = RoundWinner;
+        nas->UserInfo.user2 = Heroes[RoundWinner].hero_move->facing_angle;
         eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         eng->sub->unk74 = 0x200F;
         eng_add_subs_n(eng, 1);
@@ -3243,7 +3243,7 @@ void PlotBashHomer(NAS *nas) {
     }
 }
 
-extern u16 D_8009D754;
+extern u16 RoundWinner;
 
 void InitBashShox(NAS *nas) {
     EXTengine *eng;
@@ -3253,7 +3253,7 @@ void InitBashShox(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        nas->UserInfo.user1 = D_8009D754;
+        nas->UserInfo.user1 = RoundWinner;
         x = AddExt(nas, 0x68, 0x20000000);
         if (x != NULL) {
             nas->FUX = (void *)x;

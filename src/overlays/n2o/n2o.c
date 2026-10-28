@@ -1912,12 +1912,12 @@ void PlotN2OBall(NAS *nas) {
                 }
                 SpawnModelFx(0, &eng->unk10.x, 0);
                 PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-                D_8009D6DC[3] -= 0x20;
+                BossState.health -= 0x20;
                 N2OBallsLost++;
-                if (D_8009D6DC[3] <= 0) {
-                    D_8009D6DC[3] = 0;
+                if (BossState.health <= 0) {
+                    BossState.health = 0;
                     Heroes[3].hero_attack_timer = 0x1E;
-                    D_8009D6DC[2] |= 0x2000;
+                    BossState.flags |= 0x2000;
                 }
             } else {
                 ((void (*)(s32, s32, s32, s32, s32))N2OSpawnExplosion)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
@@ -1945,11 +1945,11 @@ void PlotN2OBall(NAS *nas) {
                 if (obj->player == 3) {
                     SpawnModelFx(0, (s32 *)&eng->unk10, 0);
                     PlaySfx(N2OHitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-                    D_8009D6DC[3] -= 0x20;
-                    if (D_8009D6DC[3] <= 0) {
-                        D_8009D6DC[3] = 0;
+                    BossState.health -= 0x20;
+                    if (BossState.health <= 0) {
+                        BossState.health = 0;
                         Heroes[3].hero_attack_timer = 0x1E;
-                        D_8009D6DC[2] |= 0x2000;
+                        BossState.flags |= 0x2000;
                     }
                 }
             } else {
@@ -2141,7 +2141,7 @@ void N2OUpdateBoss(void) {
     s32 *q;
     s32 tm;
 
-    if (D_8009D6E0 & 0x8000) {
+    if (BossState.flags & 0x8000) {
         return;
     }
     if (Heroes[3].hero_attack_timer != 0) {
@@ -2172,7 +2172,7 @@ void N2OUpdateBoss(void) {
         }
     }
     N2OBossPad = 0;
-    if (D_8009D6DC[2] & 0x2000) {
+    if (BossState.flags & 0x2000) {
         N2OBossStepFlag = 1;
         N2OSlots[0].kind = 1;
         N2OSlots[2].kind = 1;
@@ -2181,7 +2181,7 @@ void N2OUpdateBoss(void) {
             Heroes[3].hero_eng->flags = 0;
             PlaySfx(0x586, NULL, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
             SpawnModelFx(0, &eng->unk10.x, (s32)&HeroModelBank[DB_BallsEffects]);
-            D_8009D6DC[2] |= 0x8000;
+            BossState.flags |= 0x8000;
         }
     } else {
         N2O_HeroBot((u16 *)&N2OBossPad);

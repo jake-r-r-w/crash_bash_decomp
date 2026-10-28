@@ -94,7 +94,7 @@ extern u16 BashDropPos;
 extern u16 BashMaxNitro[];
 extern u16 BashMaxCrates[];
 extern u16 D_8009E46C[];
-extern s32 D_8009D758;
+extern s32 HeroesInPlay;
 BashPair *BashFindDropPoint(u16 *arg0);
 
 /* A scene object in the list at MapScene + 0x1C (BashSpaceInitTiles). */
@@ -167,7 +167,7 @@ s32 GetBashContour(EXTengine *eng);
 void BashRestartLevel(void);
 
 extern s16 BashExplodeScales[][3];
-extern u16 D_8009D754;
+extern u16 RoundWinner;
 extern s32 D_8009E464;
 extern s32 D_8009E468;
 extern u8 D_8009E3B4[];

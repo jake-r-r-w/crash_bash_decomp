@@ -1719,7 +1719,7 @@ void DamageTankHero(s32 player, s32 damage) {
         return;
     }
     g = GameInfo;
-    if (((TankModeView *)g)->mode == 9 && (D_8009D6E0 & 0x8000)) {
+    if (((TankModeView *)g)->mode == 9 && (BossState.flags & 0x8000)) {
         return;
     }
     if (damage < 400) {
@@ -6622,7 +6622,7 @@ void PlotTankBoss(NAS *nas) {
         break;
     case 0:
         if (MoeState == 0x26 && JoeState == MoeState) {
-            D_8009D6DC[2] |= 0x8000;
+            BossState.flags |= 0x8000;
         }
         break;
     }

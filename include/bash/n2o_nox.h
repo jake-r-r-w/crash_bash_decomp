@@ -245,7 +245,6 @@ static inline s32 MineDamage(BossGameView *g) {
 
 extern SLONG_XYZ NoxHeroStartA;
 extern SLONG_XYZ NoxHeroStartB;
-extern s16 D_8009D6DC[];
 
 extern s32 NoxSpeedScale;
 

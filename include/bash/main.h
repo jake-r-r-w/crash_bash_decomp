@@ -2060,4 +2060,16 @@ void export_exe_functions(void);
 
 #include "bash/dbase.h"
 
+/* The boss's record in a boss arena, after Heroes: flags as a hero's (0x8000 out, 0x2000
+ * beaten), health as the panel shows it (pHeroHealth[3]). */
+typedef struct BossRecord {
+    s16 unk0;
+    s16 unk2;
+    u16 flags;
+    s16 health;
+    s16 unk8;
+    s16 unkA;
+} BossRecord;
+extern BossRecord BossState;
+
 #endif /* BASH_MAIN_H */

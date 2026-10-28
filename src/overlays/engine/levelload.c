@@ -689,8 +689,8 @@ void UpdateScriptScene(void) {
                 dbase_release((u8 *)SceneOldDbase);
             }
             if (((MarkCtx *)SceneMark)->obj == NULL && SceneStep == 0) {
-                if (D_800A0C08 != 0) {
-                    GotoProcess(D_800A0C08, 0x200);
+                if (SceneSkipProcess != 0) {
+                    GotoProcess(SceneSkipProcess, 0x200);
                     SceneStep += 1;
                 }
             } else {
@@ -730,14 +730,14 @@ void UpdateScriptScene(void) {
         }
     }
     UpdateSceneVabCues();
-    if ((Pads[0].pressed & 0x4000) && SceneStep == 0 && D_800A0C08 != 0) {
-        GotoProcess(D_800A0C08, 0x200);
+    if ((Pads[0].pressed & 0x4000) && SceneStep == 0 && SceneSkipProcess != 0) {
+        GotoProcess(SceneSkipProcess, 0x200);
         SceneStep += 1;
     }
 }
 
 void GotoScriptScene(s32 arg0, process_info *arg1) {
-    D_800A0C08 = arg1;
+    SceneSkipProcess = arg1;
     D_800A0C0C = arg0;
     set_fade(&ScreenFade, 0x200, 0);
     ProcessControl.next_process = &ScriptSceneProcess;
@@ -803,8 +803,8 @@ void LoadSceneModel(void) {
 }
 
 void SceneNextProcess(void) {
-    if (D_800A0C08 != 0) {
-        GotoProcess(D_800A0C08, 0x200);
+    if (SceneSkipProcess != 0) {
+        GotoProcess(SceneSkipProcess, 0x200);
         SceneStep += 1;
     }
 }
@@ -1555,7 +1555,7 @@ Blk32 D_800A0BA0 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 D_800A0BC0 = {0};
 GfxViewport D_800A0BCC = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xDFF, 0, 0, 0, 0, 1 };
 process_info ScriptSceneProcess = { InitScriptScene, UpdateScriptScene, RenderScriptScene, QuitScriptScene, 0 };
-process_info *D_800A0C08 = 0;
+process_info *SceneSkipProcess = 0;
 s32 D_800A0C0C = 0;
 EngineMarker SceneMarks[8] = {0};
 s32 SceneMarkCount = 0;

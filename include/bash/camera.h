@@ -131,7 +131,7 @@ typedef struct EngRecView {
  * moves these loads past the record stores, as the target does. */
 #define GV ((EngRecView *)GameInfo)
 
-extern u16 D_8009922C[];
+extern u16 HeroNameText[];
 extern EngRec24 D_800AD32C[];
 extern EngRec24 D_800AD5D8[];
 extern EngRec24 D_800AD7AC[];

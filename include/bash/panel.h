@@ -68,7 +68,7 @@ void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2);
  * builds, which RenderPause draws. */
 extern EXTengine PanelTab[7];
 extern subengine IconParts[4][7];
-extern u16 D_800991D8[4];
+extern u16 PanelHeroOrder[4];
 extern s16 D_800991E0[][2];
 extern s16 D_800991F0[][2];
 extern u16 IconImage[];

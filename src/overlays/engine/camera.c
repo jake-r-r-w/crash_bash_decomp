@@ -561,29 +561,29 @@ void InitScreenLabels(void) {
     s32 v;
 
     eng = GetEngineSlot(3);
-    D_800AD32C[6].unk1E = D_8009922C[GV->unk50[0]];
-    D_800AD32C[7].unk1E = D_8009922C[GV->unk50[1]];
-    D_800AD32C[8].unk1E = D_8009922C[GV->unk50[2]];
-    D_800AD32C[9].unk1E = D_8009922C[GV->unk50[3]];
+    D_800AD32C[6].unk1E = HeroNameText[GV->unk50[0]];
+    D_800AD32C[7].unk1E = HeroNameText[GV->unk50[1]];
+    D_800AD32C[8].unk1E = HeroNameText[GV->unk50[2]];
+    D_800AD32C[9].unk1E = HeroNameText[GV->unk50[3]];
     D_800AD32C[10].unk1E = GV->unkCC[0] + 0x200E;
     D_800AD32C[11].unk1E = GV->unkCC[1] + 0x200E;
     D_800AD32C[12].unk1E = GV->unkCC[2] + 0x200E;
     D_800AD32C[13].unk1E = GV->unkCC[3] + 0x200E;
-    D_800AD5D8[4].unk1E = D_8009922C[GV->unk50[0]];
-    D_800AD5D8[5].unk1E = D_8009922C[GV->unk50[1]];
-    D_800AD5D8[6].unk1E = D_8009922C[GV->unk50[2]];
-    D_800AD5D8[7].unk1E = D_8009922C[GV->unk50[3]];
+    D_800AD5D8[4].unk1E = HeroNameText[GV->unk50[0]];
+    D_800AD5D8[5].unk1E = HeroNameText[GV->unk50[1]];
+    D_800AD5D8[6].unk1E = HeroNameText[GV->unk50[2]];
+    D_800AD5D8[7].unk1E = HeroNameText[GV->unk50[3]];
     D_800AD5D8[8].unk1E = GV->unkCC[GV->unk48] + 0x200E;
     D_800AD5D8[9].unk1E = GV->unkCC[GV->unk4A] + 0x200E;
     ScreenCount = 0;
-    D_800AD7AC[3].unk1E = D_8009922C[GV->unk50[0]];
-    D_800AD7AC[4].unk1E = D_8009922C[GV->unk50[1]];
+    D_800AD7AC[3].unk1E = HeroNameText[GV->unk50[0]];
+    D_800AD7AC[4].unk1E = HeroNameText[GV->unk50[1]];
     D_800AD7AC[5].unk1E = GV->unkCC[0] + 0x200E;
-    D_800AD9C8[4].unk1E = D_8009922C[GV->unk50[0]];
-    D_800AD9C8[5].unk1E = D_8009922C[GV->unk50[1]];
+    D_800AD9C8[4].unk1E = HeroNameText[GV->unk50[0]];
+    D_800AD9C8[5].unk1E = HeroNameText[GV->unk50[1]];
     D_800AD9C8[6].unk1E = GV->unkCC[0] + 0x200E;
     D_800AD9C8[7].unk1E = GV->unkCC[1] + 0x200E;
-    D_800AD8CC[3].unk1E = D_8009922C[GV->unk50[0]];
+    D_800AD8CC[3].unk1E = HeroNameText[GV->unk50[0]];
     D_800AD8CC[4].unk1E = GV->unkCC[0] + 0x200E;
     switch (GV->flags & 0xF0) {
     case 0x20:

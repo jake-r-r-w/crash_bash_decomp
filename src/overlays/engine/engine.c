@@ -411,10 +411,10 @@ void DrawLevelHud(void) {
             tim = &HeroModelBank[DB_Interface];
             c0 = 0xFFFFFF;
             c1 = 0xFFFF;
-            pos.f.y = D_80099700[1];
+            pos.f.y = CompletionPos[1];
             for (i = 0; i < 4; i++) {
                 if (CompletionDigits[i].flags & 0x8000) {
-                    pos.f.x = D_80099700[0] + CompletionDigits[i].arg;
+                    pos.f.x = CompletionPos[0] + CompletionDigits[i].arg;
                     texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (CompletionDigits[i].cmd & 0xFFF) * 0x38),
                                   pos.w, 0, c0, c0, c1, c1);
                 }
@@ -444,10 +444,10 @@ void DrawLevelHud(void) {
             tim = &HeroModelBank[DB_Interface];
             c0 = 0xFFFFFF;
             c1 = 0xFFFF;
-            pos.f.y = D_80099700[1];
+            pos.f.y = CompletionPos[1];
             for (i = 0; i < 4; i++) {
                 if (CompletionDigits[i].flags & 0x8000) {
-                    pos.f.x = D_80099700[0] + CompletionDigits[i].arg;
+                    pos.f.x = CompletionPos[0] + CompletionDigits[i].arg;
                     texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (CompletionDigits[i].cmd & 0xFFF) * 0x38),
                                   pos.w, 0, c0, c0, c1, c1);
                 }
@@ -873,7 +873,7 @@ extern u8 SlotOverlayId[];
 u8 *D_80098594 = (void *)&SlotOverlayId;
 u8 *D_80098598 = (void *)&ModeTextBuffer;
 s32 D_8009859C[9] = {0};
-s32 D_800985C0[12] = {0};
+s32 ModeTextEmpty[12] = {0};
 s32 D_800985F0[45] = {
     (s32)(u8 *)&ModeTextBuffer + 0x3B44, (s32)(u8 *)&ModeTextBuffer + 0x3C1C,
     (s32)(u8 *)&ModeTextBuffer + 0x3CF4, (s32)(u8 *)&ModeTextBuffer + 0x3DCC,
@@ -891,9 +891,9 @@ s32 D_800985F0[45] = {
     (s32)(u8 *)&ModeTextBuffer + 0x213C, (s32)(u8 *)&ModeTextBuffer + 0x1850,
     (s32)(u8 *)&ModeTextBuffer + 0x1594, (s32)(u8 *)&ModeTextBuffer + 0x1828,
     (s32)(u8 *)&ModeTextBuffer + 0x17DC, (s32)(u8 *)&ModeTextBuffer + 0x544,
-    (s32)(u8 *)&ModeTextBuffer + 0x3E24, (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0,
-    (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0,
-    (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0, (s32)&D_800985C0,
+    (s32)(u8 *)&ModeTextBuffer + 0x3E24, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
+    (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
+    (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
 };
 s32 D_800986A4[6] = {
     (s32)&D_800985F0, (s32)&D_800985F0, (s32)&D_800985F0, (s32)&D_800985F0, (s32)&D_800985F0,

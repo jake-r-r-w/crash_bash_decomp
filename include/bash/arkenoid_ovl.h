@@ -52,7 +52,7 @@ extern s16 ArkHeroSpeedDelta[];
 extern s32 ArkHeroStarts[4][3];
 extern u16 ArkWallFlags;
 
-extern u16 D_8009D754;
+extern u16 RoundWinner;
 typedef struct ArkenoidCnt {
     u16 n;
 } ArkenoidCnt;

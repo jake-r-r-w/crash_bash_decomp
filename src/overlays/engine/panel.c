@@ -14,24 +14,24 @@ void Setup_panel(void) {
     v = (EngineSlotView *)GameInfo;
     if (v->unk6C != 0) {
         i = v->unk48;
-        D_800991D8[0] = i;
-        D_800991D8[1] = i;
+        PanelHeroOrder[0] = i;
+        PanelHeroOrder[1] = i;
         i = v->unk58[i];
         if (i != -1) {
-            D_800991D8[1] = i;
+            PanelHeroOrder[1] = i;
         }
         i = v->unk4A;
-        D_800991D8[2] = i;
-        D_800991D8[3] = i;
+        PanelHeroOrder[2] = i;
+        PanelHeroOrder[3] = i;
         i = v->unk58[i];
         if (i != -1) {
-            D_800991D8[3] = i;
+            PanelHeroOrder[3] = i;
         }
     } else {
-        D_800991D8[0] = 0;
-        D_800991D8[1] = 1;
-        D_800991D8[2] = 2;
-        D_800991D8[3] = 3;
+        PanelHeroOrder[0] = 0;
+        PanelHeroOrder[1] = 1;
+        PanelHeroOrder[2] = 2;
+        PanelHeroOrder[3] = 3;
     }
     InitCompletionCounter();
     if (ModeTypes[GameMode * 3] != 0x101 && ModeTypes[GameMode * 3] != 0x102) {
@@ -637,8 +637,8 @@ void InitIcons4(void) {
         sub->unk6C = &HeroModelBank[DB_Interface];
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
-        ((EXTengine **)&Icon)[i]->unk10.x = D_800991E0[D_800991D8[i]][0];
-        ((EXTengine **)&Icon)[i]->unk10.y = D_800991E0[D_800991D8[i]][1];
+        ((EXTengine **)&Icon)[i]->unk10.x = D_800991E0[PanelHeroOrder[i]][0];
+        ((EXTengine **)&Icon)[i]->unk10.y = D_800991E0[PanelHeroOrder[i]][1];
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->unk74 = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
@@ -670,8 +670,8 @@ void InitIcons2(void) {
         sub->unk6C = &HeroModelBank[DB_Interface];
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
-        ((EXTengine **)&Icon)[i]->unk10.x = D_800991F0[D_800991D8[i]][0];
-        ((EXTengine **)&Icon)[i]->unk10.y = D_800991F0[D_800991D8[i]][1];
+        ((EXTengine **)&Icon)[i]->unk10.x = D_800991F0[PanelHeroOrder[i]][0];
+        ((EXTengine **)&Icon)[i]->unk10.y = D_800991F0[PanelHeroOrder[i]][1];
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->unk74 = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
@@ -893,7 +893,7 @@ void InitBossHealthIcons(void) {
     u8 i;
 
     i = 3;
-    pHeroHealth[3] = (s32)&D_8009D6DC[3];
+    pHeroHealth[3] = (s32)&BossState.health;
     sub = ((PanelPrim (*)[7])&IconParts[0][2])[3];
     b = sub + 1;
     sub->u6C.ptr = &HeroModelBank[DB_Powerups];
@@ -2128,14 +2128,14 @@ void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2) {
         subengine *s = IconParts[2];
         s->unk6C = p;
         s->unk74 = arg1;
-        Icon.a[4] = D_80099208[4];
-        Icon.a[5] = D_80099208[5];
+        Icon.a[4] = IconPos[4];
+        Icon.a[5] = IconPos[5];
         Icon.a[6] = 0;
         s = (subengine *)((u8 *)s + 0x498);
         s->unk6C = p;
         s->unk74 = arg2;
-        Icon.b[4] = D_80099208[6];
-        Icon.b[5] = D_80099208[7];
+        Icon.b[4] = IconPos[6];
+        Icon.b[5] = IconPos[7];
         Icon.b[6] = 0;
     }
 }
@@ -2145,12 +2145,12 @@ void SetPanelHeroIconB(u16 arg0, s16 arg1) {
         subengine *s = IconParts[3];
         s->unk6C = &HeroModelBank[arg0];
         s->unk74 = arg1;
-        Icon.b[4] = D_80099208[2];
-        Icon.b[5] = D_80099208[3];
+        Icon.b[4] = IconPos[2];
+        Icon.b[5] = IconPos[3];
         Icon.b[6] = 0;
         if (GameTeams[0] == 0) {
-            Icon.c[4] = D_80099208[0];
-            Icon.c[5] = D_80099208[1];
+            Icon.c[4] = IconPos[0];
+            Icon.c[5] = IconPos[1];
             Icon.c[6] = 0;
         }
     }
@@ -2159,9 +2159,9 @@ void SetPanelHeroIconB(u16 arg0, s16 arg1) {
 void InitCompletionCounter(void) {
     D_8004E0D0 = 0;
     D_80099194 = 0;
-    D_80099700[0] = 0x138;
-    D_80099700[1] = 0x20;
-    D_80099700[2] = 0;
+    CompletionPos[0] = 0x138;
+    CompletionPos[1] = 0x20;
+    CompletionPos[2] = 0;
     PanelCtrl |= 0x20000;
 }
 
@@ -2266,14 +2266,14 @@ DigitSrc D_80099198[16] = {
     { 0x1E, 0 }, { 0xFFF5, 0xFFFF }, { 0xFFD4, 0xFFFF }, { 0, 0 }, { 0x28, 0 }, { 7, 0 },
     { 0xFFE6, 0xFFFF }, { 0xFFC5, 0xFFFF },
 };
-u16 D_800991D8[4] = { 1, 0, 3, 2 };
+u16 PanelHeroOrder[4] = { 1, 0, 3, 2 };
 s16 D_800991E0[4][2] = { { 0x28, 0x18 }, { 0xA0, 0x18 }, { 0x190, 0x18 }, { 0x208, 0x18 } };
 s16 D_800991F0[4][2] = { { 0x64, 0x18 }, { 0x1CC, 0x18 }, { -0x258, 0 }, { 0x258, 0 } };
 char *left_score = (void *)&PanelDigits123;
 char *right_score = (void *)&PanelDigits456;
-s16 D_80099208[8] = { 0x64, 0x18, 0x1CC, 0x18, 0x190, 0x18, 0x208, 0x18 };
+s16 IconPos[8] = { 0x64, 0x18, 0x1CC, 0x18, 0x190, 0x18, 0x208, 0x18 };
 u16 IconImage[10] = { 0, 0x3003, 0x3002, 0x3004, 0x3006, 0x3007, 0x3008, 0x3005, 0x3016, 0 };
-u16 D_8009922C[10] = { 0, 0x2008, 0x2007, 0x2009, 0x200B, 0x200C, 0x200D, 0x200A, 0x201D, 0 };
+u16 HeroNameText[10] = { 0, 0x2008, 0x2007, 0x2009, 0x200B, 0x200C, 0x200D, 0x200A, 0x201D, 0 };
 EngXY D_80099240[4] = { { -2, -4 }, { -2, -4 }, { -2, -4 }, { -2, -4 } };
 SWORD_XY HealthIconPos[4] = { { -8, 0x45 }, { -8, 0x45 }, { -8, 0x45 }, { -8, 0x45 } };
 SWORD_XY ScoreIcon3Pos[4] = { { 0x34, 0x32 }, { 0x34, 0x32 }, { 0x34, 0x32 }, { 0x34, 0x32 } };
@@ -2282,7 +2282,7 @@ SWORD_XY ScoreIcon1Pos[4] = { { 0x26, 0x32 }, { 0x26, 0x32 }, { 0x26, 0x32 }, { 
 EXTengine PanelTab[7] = {0};
 s32 Clock_XYZ[3] = {0};
 DigitEnt CompletionDigits[4] = {0};
-s32 D_80099700[3] = {0};
+s32 CompletionPos[3] = {0};
 IconSet Icon = {0};
 subengine IconParts[4][7] = {0};
 EXTengine BigScore1 = {0};

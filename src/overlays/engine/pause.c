@@ -425,11 +425,11 @@ found:
                     switch (PauseChoice) {
                     case 0:
                         on = OPTV->unk8 != 0;
-                        D_8009BD1C[0] = on;
+                        PauseToggles[0] = on;
                         if (ActivePad()->pressed & 0xA0) {
-                            D_8009BD1C[0] = on ^ 1;
+                            PauseToggles[0] = on ^ 1;
                             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-                            if ((u16)D_8009BD1C[0] != 0) {
+                            if ((u16)PauseToggles[0] != 0) {
                                 OPTV->unk8 = s;
                                 sound_set_stereo();
                             } else {
@@ -761,7 +761,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
         case 10: case 11: case 12: case 13: case 14:
         case 15: case 16: case 17: case 18: case 19:
             k = e->type - 10;
-            if (((u16 *)D_8009BD1C)[k] != 1) {
+            if (((u16 *)PauseToggles)[k] != 1) {
                 break;
             }
             if (PauseChoice != k) {
@@ -773,7 +773,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
         case 20: case 21: case 22: case 23: case 24:
         case 25: case 26: case 27: case 28: case 29:
             k = e->type - 20;
-            if (((u16 *)D_8009BD1C)[k] != 0) {
+            if (((u16 *)PauseToggles)[k] != 0) {
                 break;
             }
             if (PauseChoice != k) {
@@ -785,7 +785,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
         case 30: case 31: case 32: case 33: case 34:
         case 35: case 36: case 37: case 38: case 39:
             k = e->type - 30;
-            if (((u16 *)D_8009BD1C)[k] != 9) {
+            if (((u16 *)PauseToggles)[k] != 9) {
                 break;
             }
         draw:
@@ -877,9 +877,9 @@ void DrawPauseMenu(void) {
         sel = PauseLastChoice;
         switch (sel) {
         case 1:
-            D_8009BD1C[1] = sel;
-            D_8009BD1C[2] = sel;
-            D_8009BD1C[0] = OPTV->unk8 != 0;
+            PauseToggles[1] = sel;
+            PauseToggles[2] = sel;
+            PauseToggles[0] = OPTV->unk8 != 0;
             FormatPercent(D_80059748[MSGV->level]->unkBC, OPTV->unk0);
             FormatPercent(D_80059748[MSGV->level]->unkC0, OPTV->unk4);
             DrawHudEntries(D_80059D2C, PauseMenuY);
@@ -887,13 +887,13 @@ void DrawPauseMenu(void) {
         case 2:
             for (i = 0; i < MSGV->numPlayers; i++) {
                 if (Pads[i].unk0 & 8) {
-                    D_8009BD1C[i] = OPTV->unkC[i] != 0;
+                    PauseToggles[i] = OPTV->unkC[i] != 0;
                 } else {
-                    D_8009BD1C[i] = 9;
+                    PauseToggles[i] = 9;
                 }
             }
             for (; i < 4; i++) {
-                D_8009BD1C[i] = 9;
+                PauseToggles[i] = 9;
             }
             DrawHudEntries(D_80059E4C, PauseMenuY);
             break;
@@ -1921,7 +1921,7 @@ EngineRec24 *PauseRec = 0;
 EngineRec24 **PauseRecSet = 0;
 s32 PauseRecIndex = 0;
 s16 PauseMenuY = 0;
-s16 D_8009BD1C[4] = {0};
+s16 PauseToggles[4] = {0};
 s16 D_8009BD24[4] = {0};
 u16 StatsPageShown = 0;
 s32 D_8009BD30 = 0;

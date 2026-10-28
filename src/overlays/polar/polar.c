@@ -9247,14 +9247,14 @@ void PlotSniperMissile(NAS *m) {
             GotoLinkAnim((EXTanimator *)boss->cursor, 9);
             PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
             PlaySfx(0x23A, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009D6DC[3] -= 7;
+            BossState.health -= 7;
             gun = FindExtension(Heroes[3].hero, 0x20000000);
             if (gun != NULL) {
                 gun[8] -= 0x55;
             }
-            if (D_8009D6DC[3] <= 0) {
-                D_8009D6DC[3] = 0;
-                D_8009D6DC[2] |= 0x8000;
+            if (BossState.health <= 0) {
+                BossState.health = 0;
+                BossState.flags |= 0x8000;
                 anim = FindExtension(boss->unk84, 0x10000000);
                 if (anim != NULL) {
                     GotoLinkAnim((EXTanimator *)anim[3], 5);

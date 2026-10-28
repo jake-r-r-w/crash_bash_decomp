@@ -242,7 +242,7 @@ typedef struct {
     s16 unkA;
     s16 unkC;
 } D_8009E0E8_t;
-extern D_8009E0E8_t D_8009E0E8[3][4];
+extern D_8009E0E8_t AngelSparkles[3][4];
 
 void UpdateWinCounter(s32 arg0);
 
@@ -333,7 +333,7 @@ extern s16 D_8005A4DC[];
 extern s16 D_8005A524[];
 extern s32 PauseLastChoice;
 extern s16 PauseMenuY;
-extern s16 D_8009BD1C[4];
+extern s16 PauseToggles[4];
 extern s32 D_8009BD30;
 extern u16 StatsPageWanted;
 extern u16 StatsPageShown;
@@ -444,7 +444,7 @@ typedef struct WinnerView {
     /* 0x6C */ s32 teams;
 } WinnerView;
 #define WINV ((WinnerView *)GameInfo)
-extern s32 D_8009D758;
+extern s32 HeroesInPlay;
 /* GameInfo as seen by ProcessHeroes. */
 typedef struct HeroLoopView {
     /* 0x00 */ s32 unk0;
@@ -460,9 +460,8 @@ typedef struct HeroLoopView {
 } HeroLoopView;
 #define HLV ((HeroLoopView *)GameInfo)
 #define HPADS ((PadButtons *)Pads)
-extern s32 D_8009D75C;
-extern u16 D_8009D760;
-extern u16 D_8009D6E0;
+extern s32 HeroesSidelined;
+extern u16 FinalHeroesTempo;
 extern u16 D_8009D524[4];
 /* GameInfo as seen by UpdatePause (the pause menu). */
 typedef struct PauseView {
@@ -502,8 +501,8 @@ void UpdatePauseSlide(s32 arg0);
 
 
 /* InitialiseHeroes: hero setup. */
-extern s32 D_8009D758;
-extern s32 D_8009D75C;
+extern s32 HeroesInPlay;
+extern s32 HeroesSidelined;
 extern u16 D_8009D3A4[];
 
 /* GameInfo as seen by InitialiseHeroes. */

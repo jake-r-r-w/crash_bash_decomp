@@ -1082,7 +1082,6 @@ typedef struct PolarCollBox {
 } PolarCollBox;
 
 s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c);
-extern s16 D_8009D6DC[];
 
 /* Polar missile extension (0x70 bytes, id 0x10000000). */
 typedef struct PolarMissileExt {
