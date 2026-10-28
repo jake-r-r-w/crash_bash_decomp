@@ -318,7 +318,7 @@ code finds 15 code files; nothing else on the disc holds code.
   and after `InitBigPoof`, 107..110), but the hero action pairs run across it
   (`HeroDrop`, `HeroJump` and `SetHeroRun` come after the victory code), so it is not
   taken. The prototypes name no engine file but `PANEL.CPP` and `PAUSE.CPP`; the Aug 23
-  include list names the exe's `CORENASCORE` headers (`NAS.H`, `MOTION.H`, `COLLBOX.H`,
+  include list names the exe's `CORE\NASCORE` headers (`NAS.H`, `MOTION.H`, `COLLBOX.H`,
   `CONTOUR.H`, `TRIGGER.H`, `SYSFONT.H`, `NASDBUG.H`, `ANIMTYPE.H`), a lead for files
   inside the exe's `nascalls.c` (no parity change there either).
 
