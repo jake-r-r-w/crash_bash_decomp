@@ -793,16 +793,16 @@ void AR_UpdateLevel(void) {
         if (ArkBallTimer == -1) {
             best = 99;
             for (i = 0; i < 4; i++) {
-                AiPlayerSkill[i].unk4 = 4;
-                AiPlayerSkill[i].unk0 = 32;
+                AiPlayerSkill[i].quality = 4;
+                AiPlayerSkill[i].level = 32;
                 if (!(Heroes[i].hero_status & 0xFA00) && Heroes[i].hero_score < best) {
                     best = Heroes[i].hero_score;
                     ArkBallTimer = i;
                 }
             }
             if (ArkBallTimer != -1 && ArkBallTimer < 4) {
-                AiPlayerSkill[ArkBallTimer].unk4 = 32;
-                AiPlayerSkill[ArkBallTimer].unk0 = 0;
+                AiPlayerSkill[ArkBallTimer].quality = 32;
+                AiPlayerSkill[ArkBallTimer].level = 0;
             }
             i = 12;
         }
@@ -2482,7 +2482,7 @@ s32 ArkBotAimA(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle) {
     } else {
         i = (arg0 == ArkSidePlayer1) * 2;
     }
-    n = 0x20 - AiPlayerSkill[arg0].unk0;
+    n = 0x20 - AiPlayerSkill[arg0].level;
     n -= ArkBotSkill;
     x0 = ArkBotEdgesA[i].x0;
     z0 = ArkBotEdgesA[i].z0;
@@ -2580,7 +2580,7 @@ s32 ArkBotAimB(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle) {
     } else {
         i = (arg0 == ArkSidePlayer1) * 2;
     }
-    n = 0x20 - AiPlayerSkill[arg0].unk0;
+    n = 0x20 - AiPlayerSkill[arg0].level;
     n -= ArkBotSkill;
     x0 = ArkBotEdgesB[i].x0;
     z0 = ArkBotEdgesB[i].z0;
@@ -2660,7 +2660,7 @@ s32 PickArkPlayer(u32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += AiPlayerSkill[i].unk4;
+            sum += AiPlayerSkill[i].quality;
         }
     }
     if (sum == 0) {
@@ -2670,7 +2670,7 @@ s32 PickArkPlayer(u32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += AiPlayerSkill[i].unk4;
+            sum += AiPlayerSkill[i].quality;
             if (r < sum) {
                 return i;
             }
@@ -2857,7 +2857,7 @@ void Ark_HeroBot(u32 arg0) {
     s32 flag;
     s32 v;
     PadState *pad;
-    D_8009D87C_t *sk;
+    AiSkill *sk;
 
     if (GamePause & 0x04000000) {
         return;
@@ -2890,7 +2890,7 @@ void Ark_HeroBot(u32 arg0) {
         ai->TargetPlayer = PickArkPlayer(arg0);
     }
     target = ai->TargetPlayer;
-    k = (0x20 - AiPlayerSkill[arg0].unk0) << 4;
+    k = (0x20 - AiPlayerSkill[arg0].level) << 4;
     for (; n != NULL; n = n->next) {
         e = n->eng;
         if (e != NULL && (ext = (ArkenoidAiExt *)n->fux) != NULL && ext->unk1A == 1) {
@@ -2939,7 +2939,7 @@ void Ark_HeroBot(u32 arg0) {
         }
     }
     if (GameMode == 0x10) {
-        k = (0x20 - AiPlayerSkill[arg0].unk0) << 5;
+        k = (0x20 - AiPlayerSkill[arg0].level) << 5;
         if (k <= 0) {
             k = 1;
         }
@@ -3006,7 +3006,7 @@ void Ark_HeroBot(u32 arg0) {
     }
     switch (ai->AImode) {
     case 3:
-        k = AiPlayerSkill[arg0].unk0 * 0x10;
+        k = AiPlayerSkill[arg0].level * 0x10;
         sk = &AiPlayerSkill[arg0];
         k -= ArkBotSkill;
         if (k <= 0) {
@@ -3020,8 +3020,8 @@ void Ark_HeroBot(u32 arg0) {
                 flag = 0;
                 if (target != -1) {
                     if (ai->AItimer1 == 0) {
-                        if ((s16)Random(0x18) > sk->unk0) {
-                            ai->AItimer1 = ((0x20 - sk->unk0) >> 1) + 0x40;
+                        if ((s16)Random(0x18) > sk->level) {
+                            ai->AItimer1 = ((0x20 - sk->level) >> 1) + 0x40;
                             if (ai->AItimer1 == 0) {
                                 ai->AItimer1 = 1;
                             }
@@ -3062,8 +3062,8 @@ void Ark_HeroBot(u32 arg0) {
             flag = 0;
             if (target != -1) {
                 if (ai->AItimer1 == 0) {
-                    if ((s16)Random(0x20) > sk->unk0) {
-                        ai->AItimer1 = ((0x20 - sk->unk0) >> 1) + 0x20;
+                    if ((s16)Random(0x20) > sk->level) {
+                        ai->AItimer1 = ((0x20 - sk->level) >> 1) + 0x20;
                         if (ai->AItimer1 == 0) {
                             ai->AItimer1 = 1;
                         }
@@ -3095,7 +3095,7 @@ void Ark_HeroBot(u32 arg0) {
             } else {
                 v = abs(r);
             }
-            v += (AiPlayerSkill[arg0].unk0 + ArkBotSkill) << 5;
+            v += (AiPlayerSkill[arg0].level + ArkBotSkill) << 5;
             if (abs(v) > 0x280) {
                 if (dist < v) {
                     ai->AIpad |= 0xF00;

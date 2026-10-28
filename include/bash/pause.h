@@ -131,13 +131,7 @@ s32 PauseRecNext(void);
 
 extern s32 D_8009D764[16][4];
 
-typedef struct {
-    s16 unk0;
-    s16 unk2;
-    s16 unk4;
-} D_8009D87C_t;
 
-extern D_8009D87C_t AiPlayerSkill[];
 
 /* HeroTakeHit: harm tables. */
 extern u16 D_8009D3B8[][4];

@@ -589,7 +589,7 @@ s32 arg0;
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && TA_players[i].Energy > 0) {
-            sum += AiPlayerSkill[i].unk4;
+            sum += AiPlayerSkill[i].quality;
         }
     }
     if (sum == 0) {
@@ -599,7 +599,7 @@ s32 arg0;
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && TA_players[i].Energy > 0) {
-            sum += AiPlayerSkill[i].unk4;
+            sum += AiPlayerSkill[i].quality;
             if (r < sum) {
                 return i;
             }
@@ -628,7 +628,7 @@ s32 arg0;
     for (i = start; i < start + 4; i++) {
         j = TankBotTargetOrder[i];
         if (j != arg0 && j != mate && !((h = &Heroes[j])->hero_status & 0xFA00) && TA_players[j].Energy > 0) {
-            sum += AiPlayerSkill[j].unk4;
+            sum += AiPlayerSkill[j].quality;
             if (GameInfo[j + 0x5C] != 0 && (u32)Random(0x100) < 0xD3) {
                 continue;
             }
@@ -647,7 +647,7 @@ s32 arg0;
     for (i = start; i < start + 4; i++) {
         j = TankBotTargetOrder[i];
         if (j != arg0 && j != mate && !(Heroes[j].hero_status & 0xFA00) && TA_players[j].Energy > 0) {
-            sum += AiPlayerSkill[j].unk4;
+            sum += AiPlayerSkill[j].quality;
             if (r < sum) {
                 return j;
             }
@@ -845,7 +845,7 @@ s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai) {
     if (HeroesAllOut != 0) {
         return 0;
     }
-    if ((u32)Random(AiPlayerSkill[player].unk0 + 1) < 8) {
+    if ((u32)Random(AiPlayerSkill[player].level + 1) < 8) {
         return 0;
     }
     if (ai->Doing == 2) {
@@ -921,7 +921,7 @@ void TankBotPlanSteerMove(s32 player, EXTengine *eng, TA_Bot *ai) {
         switch (Random(8)) {
         case 0:
         default:
-            if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].unk0 + 1) < 13) {
+            if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].level + 1) < 13) {
                 ai->DoingTimer = Random(30) + 15;
                 ai->AIpad = 0;
                 ai->Doing = 0;
@@ -1052,7 +1052,7 @@ void TankBotPlanGridMove(s32 player, EXTengine *eng, TA_Bot *ai) {
     }
     switch (Random(8)) {
     case 0:
-        if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].unk0 + 1) < 13) {
+        if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].level + 1) < 13) {
             ai->DoingTimer = Random(30) + 15;
             ai->AIpad = 0;
             ai->Doing = 0;
@@ -1195,7 +1195,7 @@ void TankBotSteer(s32 player) {
     eng = Heroes[player].hero_eng;
     ai = &TankBotAI[player];
     if (ai->FirePercentChance == 0) {
-        ai->FirePercentChance = AiPlayerSkill[player].unk0 * 0x55 / 32 + 5;
+        ai->FirePercentChance = AiPlayerSkill[player].level * 0x55 / 32 + 5;
     }
     if (--ai->DoingTimer <= 0) {
         TankBotPlanSteerMove(player, eng, ai);
@@ -1264,7 +1264,7 @@ void TA_HeroBot(u32 player) {
     eng = Heroes[player].hero->Engine;
     ai = &TankBotAI[player];
     if (ai->FirePercentChance == 0) {
-        ai->FirePercentChance = AiPlayerSkill[player].unk0 * 0x55 / 32 + 5;
+        ai->FirePercentChance = AiPlayerSkill[player].level * 0x55 / 32 + 5;
     }
     if (GameMode != 5 && ai->Victim >= 0) {
         tgt = Heroes[ai->Victim].hero_eng;
@@ -1280,7 +1280,7 @@ void TA_HeroBot(u32 player) {
         TankBotAvoidMines(player, eng, ai);
         TankBotTryFire(player, eng, ai);
     }
-    if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].unk0 + 1) >= 9) {
+    if (HeroesAllOut == 0 && (u32)Random(AiPlayerSkill[player].level + 1) >= 9) {
         ex = eng->unk10.x;
         ez = eng->unk10.z;
         for (i = 0; i < 8; i++) {
@@ -1597,7 +1597,7 @@ void TA_InitLevel(void) {
     }
     TankPendingSfx = 0;
     TankDropDelay = 0x50;
-    TankBossRocketDelay = 0x1E0 / (D_8009D88E + 1);
+    TankBossRocketDelay = 0x1E0 / (AiPlayerSkill[3].level + 1);
 }
 
 void TA_UpdateLevel(void) {
@@ -1666,8 +1666,8 @@ void TA_UpdateLevel(void) {
         }
         if (HeroesAllOut != 0) {
             for (j = 0; j < 4; j++) {
-                AiPlayerSkill[j].unk4 = 0x10;
-                AiPlayerSkill[j].unk0 = 0x1E;
+                AiPlayerSkill[j].quality = 0x10;
+                AiPlayerSkill[j].level = 0x1E;
             }
         }
     }
@@ -1727,7 +1727,7 @@ void DamageTankHero(s32 player, s32 damage) {
         if (HeroesAllOut != 0) {
             damage *= 3;
         } else if (g[player + 0x5C] != 0) {
-            t = (0x20 - AiPlayerSkill[player].unk0) * 150;
+            t = (0x20 - AiPlayerSkill[player].level) * 150;
             u = t / 32; /* dead: keeps t live for the divide's copy */
             t = t / 32 + 50;
             damage = damage * t / 100;
@@ -1859,7 +1859,7 @@ void TA_InitHero(u32 player) {
         ta->Speed = ta->Speed * 3 / 2;
     }
     if (g1[player + 0x5C] != 0) {
-        ta->Speed = ta->Speed * (AiPlayerSkill[player].unk0 + 0x54) / 100;
+        ta->Speed = ta->Speed * (AiPlayerSkill[player].level + 0x54) / 100;
     }
     ta->Energy = 0x63;
     hh->hero_health = ta->Energy;
@@ -2556,7 +2556,7 @@ subdone:
             if (GameInfo[player + 0x5C] == 0) {
                 ta->ForceFieldDelay = 0x3C;
             } else {
-                ta->ForceFieldDelay = (0x20 - AiPlayerSkill[player].unk0) * 0x3C / 32 + 0xF;
+                ta->ForceFieldDelay = (0x20 - AiPlayerSkill[player].level) * 0x3C / 32 + 0xF;
             }
         }
     }
@@ -3563,7 +3563,7 @@ retry:
     skip:
         if (((TankModeView *)GameInfo)->mode == 5 && GameInfo[hit + 0x5C] != 0 &&
             TA_players[hit].ForceFieldDelay == 0 && HeroesAllOut == 0 &&
-            (u32)Random(0x20) < AiPlayerSkill[hit].unk0) {
+            (u32)Random(0x20) < AiPlayerSkill[hit].level) {
             TankBotForceField[hit] = 1;
             goto hit2;
         }
@@ -4804,7 +4804,7 @@ void PlotPickupGenerator_TA(NAS *nas)
           return;
         }
         PU_TA_list[i] = p;
-        nas->UserInfo.flags = ((AiPlayerSkill[3].unk0 * 2) - GameInfo[0xB4]) * 30;
+        nas->UserInfo.flags = ((AiPlayerSkill[3].level * 2) - GameInfo[0xB4]) * 30;
         if (((u16) (nas->UserInfo.flags & 0xFFFE)) < 60)
         {
           nas->UserInfo.flags = 60;
@@ -6640,7 +6640,7 @@ s32 TankBossTurretFindTarget(EXTengine *eng) {
     x = eng->unk10.x;
     z = eng->unk10.z;
     ang = eng->unk1E;
-    if ((u32)Random(0x20) < (u32)D_8009D88E) {
+    if ((u32)Random(0x20) < (u32)AiPlayerSkill[3].level) {
         return -1;
     }
     if (Heroes[0].hero_health <= 0 || (Heroes[0].hero_status & 0xFA00)) {
@@ -7887,9 +7887,9 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     h->hero_attack_counter = 0;
     h->hero_name = 9;
     g[0x50] = 9;
-    AiPlayerSkill[p].unk0 = 0x10;
+    AiPlayerSkill[p].level = 0x10;
     AiPlayerSkill[p].unk2 = 0x10;
-    AiPlayerSkill[p].unk4 = 0x10;
+    AiPlayerSkill[p].quality = 0x10;
     if (h->hero_ai == NULL) {
         ai = AddExt(h->hero, 0x44, 0x400000F4);
         if (ai != NULL) {
@@ -7936,7 +7936,7 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     ta->RunnerFacing = 0;
     ta->SpeedX = 0;
     ta->SpeedZ = 0;
-    ta->Speed = ta->Speed * (AiPlayerSkill[p].unk0 + 0x54) / 100;
+    ta->Speed = ta->Speed * (AiPlayerSkill[p].level + 0x54) / 100;
     ta->Energy = 0x63;
     Heroes[p].hero_health = ta->Energy;
     ta->PosX = eng->unk10.x;

@@ -83,7 +83,6 @@ extern u16 BonkAiSkillAlt[];
 extern u16 BonkAiTeamSkill[];
 extern u16 BonkAiHumanRoundTweak[];
 extern u16 BonkAiHumanRoundTweakAlt[];
-extern s16 AiPlayerSkill[][3];
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/bonk_bohero.h"

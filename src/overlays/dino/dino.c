@@ -309,11 +309,11 @@ s32 DinoAI_PickVictim(s32 arg0) {
         } else {
             for (k = 0; k < 4; k++) {
                 if (k != arg0 && !(Heroes[k].hero_status & 0x2000)) {
-                    total += AiPlayerSkill[k].unk4 << 7;
+                    total += AiPlayerSkill[k].quality << 7;
                 }
             }
             if (total != 0) {
-                result = (AiPlayerSkill[j].unk4 << 19) / total;
+                result = (AiPlayerSkill[j].quality << 19) / total;
             }
             v = result;
         }
@@ -2873,7 +2873,7 @@ void DinoPreMoveHero(s32 id) {
                         m->forward_angle = (((DinoPadAng *)Pads)[id].angle + 0x800) & 0xFFF;
                         sc = DinoSteerMin;
                         if (GameInfo[id + 0x5C] != 0) {
-                            sc = DinoSteerTable[(s16)(u16)AiPlayerSkill[id].unk0 >> 1];
+                            sc = DinoSteerTable[(s16)(u16)AiPlayerSkill[id].level >> 1];
                         }
                         m->x_max = (sc * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
                         m->z_max = (sc * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
@@ -4083,11 +4083,11 @@ s32 DinoAI_TargetShare(s32 arg0, s32 arg1) {
     }
     for (i = 0; i < 4; i++) {
         if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
-            total += AiPlayerSkill[i].unk4 << 7;
+            total += AiPlayerSkill[i].quality << 7;
         }
     }
     if (total != 0) {
-        result = (AiPlayerSkill[arg1].unk4 << 19) / total;
+        result = (AiPlayerSkill[arg1].quality << 19) / total;
     }
     return result;
 }

@@ -304,7 +304,6 @@ s32 PogoAI_CountMyTiles(u32 arg0);
 
 
 void HeroPogoTazingCancel(u32 arg0);
-extern s16 AiPlayerSkill[][3];
 
 
 

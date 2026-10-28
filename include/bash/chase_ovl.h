@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/aiskill.h"
 
 typedef struct { s16 unk0; s16 unk2; } ChaseTrig;
 extern ChaseTrig rcossin_tbl[];
@@ -201,13 +202,6 @@ typedef struct ChaseSpawnOfs {
 } ChaseSpawnOfs;
 extern ChaseSpawnOfs ChaseSpawnOffsets[];
 
-/* AiPlayerSkill (declared in bash/pause.h, which this unit does not include). */
-typedef struct ChaseOdds {
-    s16 unk0;
-    s16 unk2;
-    s16 unk4;
-} ChaseOdds;
-extern ChaseOdds AiPlayerSkill[];
 extern NAS *ChasePickup[];
 extern NAS *ChaseBarrels[8];
 extern NAS *ChaseBarrels[];
@@ -599,7 +593,6 @@ typedef struct ChasePct {
 extern u16 ChaseRunSpeeds[];
 extern NAS *ChaseGenerator;
 extern NAS *ChaseGeneratorB;
-extern s16 D_8009D88E;
 extern s32 PanelCtrl;
 extern u8 GameViewport[];
 extern u8 MainCamera[];

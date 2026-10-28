@@ -1617,7 +1617,7 @@ void BonkUpdateSkill(void) {
 
     for (i = 0; i < 4; i++) {
         if (GameInfo[i + 0x5C] != 0) {
-            BonkSkill = AiPlayerSkill[i][0];
+            BonkSkill = AiPlayerSkill[i].level;
         }
     }
 }

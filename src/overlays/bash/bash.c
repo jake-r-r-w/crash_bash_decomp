@@ -536,15 +536,15 @@ void UpdateBASH(void) {
     if (HeroesAllOut != 0) {
         if (BashAIVictim == -1) {
             for (i = 0; i < 4; i++) {
-                AiPlayerSkill[i].unk4 = 0x10;
-                AiPlayerSkill[i].unk0 = 0x1A;
+                AiPlayerSkill[i].quality = 0x10;
+                AiPlayerSkill[i].level = 0x1A;
             }
             p = &BashAIVictim;
             *p = BashAI_PickVictim(0x63);
             id = *p;
             if (id != -1 && id < 4) {
-                AiPlayerSkill[id].unk4 = 0x30;
-                AiPlayerSkill[id].unk0 = 8;
+                AiPlayerSkill[id].quality = 0x30;
+                AiPlayerSkill[id].level = 8;
             } else {
                 BashAIVictim = -1;
             }
@@ -1234,7 +1234,7 @@ void Bash_HeroBot(s32 arg0) {
             ang += 0x800;
             ang &= 0xFFF;
         } else {
-            tmp = BashAIRange[arg0] + ((0x10 - AiPlayerSkill[arg0].unk0) << 5);
+            tmp = BashAIRange[arg0] + ((0x10 - AiPlayerSkill[arg0].level) << 5);
             if (tmp < d) {
                 if (d < tmp + 0x100) {
                     ai->AImode = 13;
@@ -1313,7 +1313,7 @@ void Bash_HeroBot(s32 arg0) {
             break;
         }
         if (ai->AIinitial_delay == 0 && ai->AItimer2 == 0 &&
-            BashAI_NearestEnemy(arg0) > (AiPlayerSkill[arg0].unk0 << 5) + 0x400) {
+            BashAI_NearestEnemy(arg0) > (AiPlayerSkill[arg0].level << 5) + 0x400) {
             r = BashAI_PickVictim(arg0);
             if (r != -1) {
                 ai->AImode = 0x15;
@@ -1565,7 +1565,7 @@ s32 BashAI_ChooseTarget(s32 player) {
         wHero = 0;
     }
     wNas = 0x20;
-    lvl = AiPlayerSkill[player].unk0;
+    lvl = AiPlayerSkill[player].level;
     i = Heroes[player].hero_health;
     w = ((lvl - 0x10) * 2) | 1;
     if (i < 0) {
@@ -1835,7 +1835,7 @@ s32 BashAI_PickVictim(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += AiPlayerSkill[i].unk4;
+            sum += AiPlayerSkill[i].quality;
         }
     }
     if (BashPenguinObj != NULL && (u32)arg0 < 4 && BashPenguinObj->status == 1) {
@@ -1850,7 +1850,7 @@ s32 BashAI_PickVictim(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += AiPlayerSkill[i].unk4;
+            sum += AiPlayerSkill[i].quality;
             if (r < sum) {
                 return i;
             }

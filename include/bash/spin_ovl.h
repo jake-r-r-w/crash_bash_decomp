@@ -230,7 +230,6 @@ static inline void SpinDropHazard(SpinFux *fux) {
     }
 }
 extern s32 GameTeams;
-extern s16 AiPlayerSkill[][3];
 extern u16 CameraMode;
 FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
 

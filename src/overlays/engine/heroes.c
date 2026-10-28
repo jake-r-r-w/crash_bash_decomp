@@ -18,7 +18,7 @@ void InitialiseHeroes(void) {
     NAS *hn;
     EXTheromove *mv;
     EXTbotai *ai;
-    D_8009D87C_t *c;
+    AiSkill *c;
     HeroSetupView *g;
     u8 *p;
     u8 *q;
@@ -113,10 +113,10 @@ void InitialiseHeroes(void) {
         h->hero_attack_counter = 0;
         D_8009D524[i] = 0;
         h->hero_name = g->unk50[0];
-        c = (D_8009D87C_t *)((s16 *)AiPlayerSkill + k);
-        c->unk0 = 0x10;
+        c = (AiSkill *)((s16 *)AiPlayerSkill + k);
+        c->level = 0x10;
         c->unk2 = 0x10;
-        c->unk4 = 0x10;
+        c->quality = 0x10;
         if (h->hero_name == 9) {
             h->hero_status = 0x1000;
         }
@@ -749,7 +749,7 @@ void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     if (Heroes[player].hero_status & 0xFF00) {
         return;
     }
-    dist = AiPlayerSkill[player].unk0;
+    dist = AiPlayerSkill[player].level;
     base = GameInfo;
     g = base + player;
     v = 0x20 - (dist + g[0xCC]);
@@ -1474,7 +1474,7 @@ void SetHeroAction(s32 player, s32 action) {
 }
 
 void SetTweakAi(void) {
-    D_8009D87C_t *t;
+    AiSkill *t;
     u8 *g;
     s32 ret;
     s32 i;
@@ -1490,66 +1490,66 @@ void SetTweakAi(void) {
         if (flags & 0x100) {
             c = g[*(s16 *)(g + 0x34) + 0xAB];
             g[i + 0x9B] = c;
-            t[i].unk0 = ((u16 *)AiSkillTable)[c];
-            t[i].unk4 = 0x10;
+            t[i].level = ((u16 *)AiSkillTable)[c];
+            t[i].quality = 0x10;
         } else if (flags & 1) {
-            t[i].unk0 = ((u16 *)AiTeamSkillTable)[*(s16 *)(g + 0x38)];
-            t[i].unk4 = 0x10;
+            t[i].level = ((u16 *)AiTeamSkillTable)[*(s16 *)(g + 0x38)];
+            t[i].quality = 0x10;
         } else if (flags & 2) {
-            t[i].unk0 = ((u16 *)AiTeamSkillTable)[*(s16 *)(g + 0x38) + 3];
-            t[i].unk4 = 0x10;
+            t[i].level = ((u16 *)AiTeamSkillTable)[*(s16 *)(g + 0x38) + 3];
+            t[i].quality = 0x10;
         } else if (flags & 0x40) {
-            t[i].unk0 = ((u16 *)AiSkillTable)[4];
+            t[i].level = ((u16 *)AiSkillTable)[4];
             if (g[i + 0x5C] != 0) {
-                ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[4];
+                ret = t[i].quality = ((u16 *)AiBotTweakTable)[4];
             } else {
-                t[i].unk4 = ((u16 *)AiHumanTweakTable)[4];
+                t[i].quality = ((u16 *)AiHumanTweakTable)[4];
             }
         } else if (flags & 0x20) {
             if (flags & 8) {
-                t[i].unk0 = ((u16 *)AiSkillTable)[9];
+                t[i].level = ((u16 *)AiSkillTable)[9];
                 if (g[i + 0x5C] != 0) {
-                    ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[9];
+                    ret = t[i].quality = ((u16 *)AiBotTweakTable)[9];
                 } else {
-                    t[i].unk4 = ((u16 *)AiHumanTweakTable)[9];
+                    t[i].quality = ((u16 *)AiHumanTweakTable)[9];
                 }
             } else {
-                t[i].unk0 = ((u16 *)AiSkillTable)[5];
+                t[i].level = ((u16 *)AiSkillTable)[5];
                 if (g[i + 0x5C] != 0) {
-                    ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[5];
+                    ret = t[i].quality = ((u16 *)AiBotTweakTable)[5];
                 } else {
-                    t[i].unk4 = ((u16 *)AiHumanTweakTable)[5];
+                    t[i].quality = ((u16 *)AiHumanTweakTable)[5];
                 }
             }
         } else if (flags & 0x80) {
-            t[i].unk0 = ((u16 *)AiSkillTable)[6];
+            t[i].level = ((u16 *)AiSkillTable)[6];
             if (g[i + 0x5C] != 0) {
-                ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[6];
+                ret = t[i].quality = ((u16 *)AiBotTweakTable)[6];
             } else {
-                t[i].unk4 = ((u16 *)AiHumanTweakTable)[6];
+                t[i].quality = ((u16 *)AiHumanTweakTable)[6];
             }
         } else if (flags & 0x10) {
             if (*(s32 *)(g + 0x70) != 0) {
                 c = g[*(s16 *)(g + 0x34) + 0xAB];
                 g[i + 0x9B] = c;
-                t[i].unk0 = ((u16 *)AiSkillTable)[3];
+                t[i].level = ((u16 *)AiSkillTable)[3];
                 if (g[i + 0x5C] != 0) {
-                    ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[3];
+                    ret = t[i].quality = ((u16 *)AiBotTweakTable)[3];
                 } else {
-                    t[i].unk4 = ((u16 *)AiHumanRoundTweakTable)[9];
+                    t[i].quality = ((u16 *)AiHumanRoundTweakTable)[9];
                 }
             } else {
                 c = g[*(s16 *)(g + 0x34) + 0xAB];
                 g[i + 0x9B] = c;
-                t[i].unk0 = ((u16 *)AiSkillTable)[c];
+                t[i].level = ((u16 *)AiSkillTable)[c];
                 if (g[i + 0x5C] != 0) {
-                    ret = t[i].unk4 = ((u16 *)AiBotTweakTable)[g[0x9B]];
+                    ret = t[i].quality = ((u16 *)AiBotTweakTable)[g[0x9B]];
                 } else {
                     n = g[i + 0xCC];
                     if (n >= 3) {
                         n = 2;
                     }
-                    t[i].unk4 = ((u16 (*)[3])AiHumanRoundTweakTable)[c][n];
+                    t[i].quality = ((u16 (*)[3])AiHumanRoundTweakTable)[c][n];
                 }
             }
         }
@@ -1590,7 +1590,7 @@ s32 AdjustAiSkill(s32 arg0) {
         }
         idx = *(s16 *)(GameInfo + 0x42);
         if (idx != -1) {
-            AiPlayerSkill[idx].unk4 = arg0;
+            AiPlayerSkill[idx].quality = arg0;
         }
         if (arg0 <= 0) {
             arg0 = 1;
@@ -6190,7 +6190,7 @@ s16 HeroAnimHeroB = 0;
 u16 HeroAnimSeqB = 0;
 s32 HeroAnimNameB = 0;
 s32 HeroAnimDbaseB = 0;
-D_8009D87C_t AiPlayerSkill[4] = {0};
+AiSkill AiPlayerSkill[4] = {0};
 u8 D_8009D894[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
 u8 D_8009D8A8[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
 u8 D_8009D8BC[20] = { 0x18, 0, 0x14, 0, 0x10, 0, 0xC, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };

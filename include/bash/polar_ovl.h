@@ -543,14 +543,6 @@ loop:
 void PolarAI_StartAttack(s32 player);
 void PolarAI_DoAttack(s32 player);
 
-/* AiPlayerSkill (declared in bash/pause.h, which this unit does not include). */
-typedef struct PolarOdds {
-    s16 unk0;
-    s16 unk2;
-    s16 unk4;
-} PolarOdds;
-
-extern PolarOdds AiPlayerSkill[];
 extern s32 PolarAttackOdds[];
 extern s32 PolarRollOdds[];
 extern s32 HeroesAllOut;
@@ -559,16 +551,16 @@ extern s32 PolarIceRadius;
 s32 PolarRayHit(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out);
 
 
-/* Roll the odds in PolarRollOdds (by AiPlayerSkill[player].unk0) and set ext->unk14. */
+/* Roll the odds in PolarRollOdds (by AiPlayerSkill[player].level) and set ext->unk14. */
 static inline void RollPolarOdds(s32 player, Ext20 *ext) {
     s32 r;
     s32 limit;
 
     r = Random(0x1000);
-    if (AiPlayerSkill[player].unk0 > 0x30) {
-        AiPlayerSkill[player].unk0 = 0x30;
+    if (AiPlayerSkill[player].level > 0x30) {
+        AiPlayerSkill[player].level = 0x30;
     }
-    limit = PolarRollOdds[AiPlayerSkill[player].unk0] << 7;
+    limit = PolarRollOdds[AiPlayerSkill[player].level] << 7;
     if (GameMode == 0x12) {
         limit += 0x400;
     }

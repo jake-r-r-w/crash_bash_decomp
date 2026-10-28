@@ -128,7 +128,7 @@ typedef struct DinoPad {
 
 extern NAS *DinoGems[];
 
-/* DinoPreMoveHero: move speeds (normal, carrying, by AiPlayerSkill[id].unk0 / 2). */
+/* DinoPreMoveHero: move speeds (normal, carrying, by AiPlayerSkill[id].level / 2). */
 extern s32 DinoSteerMin;
 extern s32 DinoSteerMax;
 extern s32 DinoSteerTable[];

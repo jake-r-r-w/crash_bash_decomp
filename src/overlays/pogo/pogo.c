@@ -975,7 +975,7 @@ void PogoQuality_Init(void) {
             h = g;
             for (; i < 4; i++) {
                 if (((u8 *)h)[i + 0x5C] == 0) {
-                    AiPlayerSkill[i][2] = *((h->flags & 2) ? &e->unk10 : &e->unkE);
+                    AiPlayerSkill[i].quality = *((h->flags & 2) ? &e->unk10 : &e->unkE);
                 }
             }
         }
@@ -7444,10 +7444,10 @@ void PogoQuality_Update(void) {
     for (i = 0; i < 4; i++) {
         p = GameInfo + i;
         if (p[0x5C] != 0) {
-            PogoLevelIndex = AiPlayerSkill[i][0];
+            PogoLevelIndex = AiPlayerSkill[i].level;
         }
         if (p[0x5C] == 0) {
-            PogoAiQualityIndex = AiPlayerSkill[i][2];
+            PogoAiQualityIndex = AiPlayerSkill[i].quality;
         }
     }
 }

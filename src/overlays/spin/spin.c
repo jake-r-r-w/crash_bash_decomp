@@ -892,7 +892,7 @@ void SpinDropObjects(u16 count, s16 arg1) {
                 continue;
             }
             if (((SpinGame *)GameInfo)->cpu[idx] == 0
-                && (n = AiPlayerSkill[idx][0], n++, (u32)Clock_Time >> 8 < 0x120)) {
+                && (n = AiPlayerSkill[idx].level, n++, (u32)Clock_Time >> 8 < 0x120)) {
                 if (kind == 0) {
                     r = (u32)Random(n) < 9;
                 } else {
@@ -1194,7 +1194,7 @@ void PlotHazardType(NAS *nas) {
         eng->unk20 = 0;
         owner = fux->owner;
         if (owner != -1) {
-            a = AiPlayerSkill[owner][0];
+            a = AiPlayerSkill[owner].level;
             b = 0x20 - a;
             if (GameInfo[owner + 0x5C] != 0) {
                 w = a;
@@ -1591,7 +1591,7 @@ void SpinScoreBalloon(SpinFux *arg0) {
     n = HeadOfObjects;
     idx = arg0->owner;
     if (idx != -1) {
-        a = AiPlayerSkill[idx][0];
+        a = AiPlayerSkill[idx].level;
         p = SpinBalloonWeights;
         b = 0x20 - a;
         a = p[a];
@@ -1937,7 +1937,7 @@ void Spin_HeroBot(s32 arg0) {
     if (SPIN_GAME->flags10 & 0x04000000) {
         return;
     }
-    lvl = AiPlayerSkill[arg0][0];
+    lvl = AiPlayerSkill[arg0].level;
     inv = 0x21 - lvl;
     ai = Heroes[arg0].hero_ai;
     if (ai->AIinitial_delay != 0) {
@@ -2360,7 +2360,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
     bestNas = NULL;
     bestHero = -1;
     bestHeroScore = 0;
-    lvl = AiPlayerSkill[player][0];
+    lvl = AiPlayerSkill[player].level;
     inv = 0x21 - lvl;
     mate = Heroes[player].hero_teammate;
     he = Heroes[player].hero_eng;
@@ -2514,7 +2514,7 @@ s32 SpinAI_PickPlayer(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != other && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += AiPlayerSkill[i][2];
+            sum += AiPlayerSkill[i].quality;
         }
     }
     if (sum == 0) {
@@ -2524,7 +2524,7 @@ s32 SpinAI_PickPlayer(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != other && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += AiPlayerSkill[i][2];
+            sum += AiPlayerSkill[i].quality;
             if (r < sum) {
                 return i;
             }
@@ -2710,7 +2710,7 @@ void SpinPreMoveHero(s32 arg0) {
     h = hb + arg0;
     m = h->hero_move;
     m->forward_speed = 0;
-    speed = (HeroHooks.RunSpeeds + h->hero_name * 3)[1] + (AiPlayerSkill[arg0][0] >> 2);
+    speed = (HeroHooks.RunSpeeds + h->hero_name * 3)[1] + (AiPlayerSkill[arg0].level >> 2);
     (HeroHooks.RunSpeeds + h->hero_name * 3)[2] = speed;
     if (h->hero_frozen != 0) {
         ((PadStick *)Pads)[arg0].dirHeld2 = 0;

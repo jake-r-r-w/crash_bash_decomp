@@ -1651,7 +1651,7 @@ void PlotN2OBall(NAS *nas) {
     s32 px;
     s32 pz;
 
-    skill = D_8009D88E + (u16)N2OBallsLost;
+    skill = AiPlayerSkill[3].level + (u16)N2OBallsLost;
     if (skill > 0x20) {
         skill = 0x20;
     }
@@ -2046,8 +2046,8 @@ void N2OInitBoss(void) {
         if (OVT->unk32 & 0x100) {
             t = OVT->unkAB[OVT->unk34];
             OVT->unk9B[i] = t;
-            AiPlayerSkill[i].unk0 = ((u16 *)AiSkillTable)[t];
-            AiPlayerSkill[i].unk4 = 0x10;
+            AiPlayerSkill[i].level = ((u16 *)AiSkillTable)[t];
+            AiPlayerSkill[i].quality = 0x10;
         }
     }
     ResetHeroGlobals();
@@ -2349,7 +2349,7 @@ s32 N2OBotAimA(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
     } else {
         i = 3;
     }
-    n = AiPlayerSkill[arg0].unk0 + (u16)N2OBallsLost;
+    n = AiPlayerSkill[arg0].level + (u16)N2OBallsLost;
     x0 = N2OAimEdgesA[i].x0;
     z0 = N2OAimEdgesA[i].z0;
     x1 = N2OAimEdgesA[i].x1;
@@ -2449,7 +2449,7 @@ s32 N2OBotAimB(s32 arg0, N2OPos *from, N2OPos *to, s32 angle) {
     } else {
         i = 3;
     }
-    n = AiPlayerSkill[arg0].unk0 + (u16)N2OBallsLost;
+    n = AiPlayerSkill[arg0].level + (u16)N2OBallsLost;
     x0 = N2OAimEdgesB[i].x0;
     z0 = N2OAimEdgesB[i].z0;
     x1 = N2OAimEdgesB[i].x1;
@@ -2533,7 +2533,7 @@ s32 PickN2OPlayer(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += AiPlayerSkill[i].unk4;
+            sum += AiPlayerSkill[i].quality;
         }
     }
     if (sum == 0) {
@@ -2543,7 +2543,7 @@ s32 PickN2OPlayer(s32 arg0) {
     sum = 0;
     for (i = 0; i < 4; i++) {
         if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00)) {
-            sum += AiPlayerSkill[i].unk4;
+            sum += AiPlayerSkill[i].quality;
             if (r < sum) {
                 return i;
             }
@@ -2664,7 +2664,7 @@ void N2O_HeroBot(u16 *arg0) {
             ai->AItimer2--;
         }
         ai->AIpad = 0;
-        skill = AiPlayerSkill[3].unk0 + (u16)N2OBallsLost;
+        skill = AiPlayerSkill[3].level + (u16)N2OBallsLost;
         if (skill > 0x20) {
             skill = 0x20;
         }
@@ -2741,7 +2741,7 @@ void N2O_HeroBot(u16 *arg0) {
             }
         }
         if (dist != 0) {
-            r = abs(Heroes[3].hero_eng->unk10.x - best.x) + ((AiPlayerSkill[3].unk0 + N2OSkillBias) << 5);
+            r = abs(Heroes[3].hero_eng->unk10.x - best.x) + ((AiPlayerSkill[3].level + N2OSkillBias) << 5);
             if (abs(r) > 0x280) {
                 if (dist < r) {
                     ai->AIpad |= 0xF00;

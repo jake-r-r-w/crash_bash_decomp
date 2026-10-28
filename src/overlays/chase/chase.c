@@ -446,7 +446,7 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
     u32 r;
     ChaseCoalFux *fux;
 
-    if (Random(0x40) <= AiPlayerSkill[arg0].unk0 + 0x20) {
+    if (Random(0x40) <= AiPlayerSkill[arg0].level + 0x20) {
         x = arg1->unk10.x;
         z = arg1->unk10.z;
         if ((arg2->pickup = ChaseNearPickup(x, z)) != NULL) {
@@ -588,7 +588,7 @@ void Chase_HeroBot(s32 arg0) {
         if (ai->target->Type != ChaseASTIndex(0x1D01) || ai->target->NASid == 0) {
             goto rethink;
         }
-        if (Random(0x20) < AiPlayerSkill[arg0].unk0) {
+        if (Random(0x20) < AiPlayerSkill[arg0].level) {
             nas = ai->target;
             fux = (ChaseCoalFux *)nas->FUX;
             x = eng->unk10.x;
@@ -805,7 +805,7 @@ void InitialiseCHASE(void) {
             PanelCtrl |= 0x2000;
         }
     }
-    t = D_8009D88E * 2 + 0x44;
+    t = AiPlayerSkill[3].level * 2 + 0x44;
     v = t & 0xFFFE;
     x = v * 35 / 100;
     t = v;
@@ -2275,7 +2275,7 @@ NAS *ChaseSpawnCoal(s32 arg0) {
             }
         }
         if (g[0x5C] != 0) {
-            nas->UserInfo.status = (nas->UserInfo.status * AiPlayerSkill[arg0].unk0) / 16;
+            nas->UserInfo.status = (nas->UserInfo.status * AiPlayerSkill[arg0].level) / 16;
         }
         e = nas->Engine;
         e->unk1E = he->unk1E;

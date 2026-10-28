@@ -793,7 +793,6 @@ extern s32 TankUnused3;
 extern s32 TankUnused4;
 extern s32 TankMapHeight;
 extern s32 TankUnusedGrid[9][7];
-extern s16 D_8009D88E;
 extern Ambient_data TankJungleAmbience;
 extern u8 TankDesertMap[];
 extern u8 TankDesertMapAlt[];

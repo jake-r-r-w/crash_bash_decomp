@@ -539,11 +539,11 @@ s32 RaceAI_PickVictim(s32 arg0) {
         } else {
             for (k = 0; k < 4; k++) {
                 if (k != arg0 && !(Heroes[k].hero_status & 0x2000)) {
-                    total += AiPlayerSkill[k].unk4 << 7;
+                    total += AiPlayerSkill[k].quality << 7;
                 }
             }
             if (total != 0) {
-                result = (AiPlayerSkill[j].unk4 << 19) / total;
+                result = (AiPlayerSkill[j].quality << 19) / total;
             }
             v = result;
         }
@@ -1268,7 +1268,7 @@ u32 RaceAI_FollowTrack(s32 player) {
                     Heroes[player].hero_ai->AIpad &= ~0x8000;
                 }
             }
-            ext[7] = 0x20 - AiPlayerSkill[player].unk0;
+            ext[7] = 0x20 - AiPlayerSkill[player].level;
         }
     }
     return 0x8000;
@@ -2862,8 +2862,8 @@ void RacePreMoveHero(s32 player) {
                         m->z_acc = fux->unk158;
                         m->x_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
                         m->z_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
-                        if (AiPlayerSkill[player].unk0 >= 0x17 && G63B->unk5C[player] != 0) {
-                            fux->unk58 -= 0x180 - RaceSteerAngles[AiPlayerSkill[player].unk0 - 0x16];
+                        if (AiPlayerSkill[player].level >= 0x17 && G63B->unk5C[player] != 0) {
+                            fux->unk58 -= 0x180 - RaceSteerAngles[AiPlayerSkill[player].level - 0x16];
                         } else if (Heroes[player].hero_mode != 0x61) {
                             fux->unk58 -= 0x180;
                         }
@@ -2877,9 +2877,9 @@ void RacePreMoveHero(s32 player) {
                         m->x_acc = fux->unk15C;
                         m->z_acc = fux->unk15C;
                         if (G63B->unk5C[player] != 0) {
-                            if (AiPlayerSkill[player].unk0 < 0x16) {
-                                m->x_acc = RaceAccel - ((0x10 - AiPlayerSkill[player].unk0) << 6);
-                                m->z_acc = RaceAccel - ((0x10 - AiPlayerSkill[player].unk0) << 6);
+                            if (AiPlayerSkill[player].level < 0x16) {
+                                m->x_acc = RaceAccel - ((0x10 - AiPlayerSkill[player].level) << 6);
+                                m->z_acc = RaceAccel - ((0x10 - AiPlayerSkill[player].level) << 6);
                                 if (m->x_acc < 0x200) {
                                     m->x_acc = 0x200;
                                 }
@@ -2887,8 +2887,8 @@ void RacePreMoveHero(s32 player) {
                                     m->z_acc = 0x200;
                                 }
                             } else {
-                                m->x_acc = RaceAccel + RaceSteerSpeeds[AiPlayerSkill[player].unk0 - 0x16];
-                                m->z_acc = RaceAccel + RaceSteerSpeeds[AiPlayerSkill[player].unk0 - 0x16];
+                                m->x_acc = RaceAccel + RaceSteerSpeeds[AiPlayerSkill[player].level - 0x16];
+                                m->z_acc = RaceAccel + RaceSteerSpeeds[AiPlayerSkill[player].level - 0x16];
                             }
                         }
                         if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
@@ -7187,11 +7187,11 @@ s32 RaceAI_TargetShare(s32 arg0, s32 arg1) {
     }
     for (i = 0; i < 4; i++) {
         if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
-            total += AiPlayerSkill[i].unk4 << 7;
+            total += AiPlayerSkill[i].quality << 7;
         }
     }
     if (total != 0) {
-        result = (AiPlayerSkill[arg1].unk4 << 19) / total;
+        result = (AiPlayerSkill[arg1].quality << 19) / total;
     }
     return result;
 }

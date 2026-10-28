@@ -774,14 +774,6 @@ void RaceSpawnBarrelRolls(void);
 void RaceCycleModel(void);
 
 NAS *RacePickupAhead(s32 arg0);
-/* AiPlayerSkill (declared in bash/pause.h, which this unit does not include). */
-typedef struct RaceOdds {
-    s16 unk0;
-    s16 unk2;
-    s16 unk4;
-} RaceOdds;
-
-extern RaceOdds AiPlayerSkill[];
 
 s32 RaceOtherHeroNear(u8 *arg0, u32 arg1, s32 arg2);
 

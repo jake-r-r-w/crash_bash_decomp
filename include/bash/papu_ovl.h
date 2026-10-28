@@ -16,7 +16,6 @@ typedef struct PapuSpot {
 } PapuSpot;
 
 extern PapuSpot PapuSpawnPoints[];
-extern s16 D_8009D88E;
 
 typedef struct PapuPos {
     s32 pad0[4];

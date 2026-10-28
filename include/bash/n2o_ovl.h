@@ -8,14 +8,6 @@
 #include "common.h"
 #include "bash/nas.h"
 
-/* AiPlayerSkill (declared in bash/pause.h, which this unit does not include). */
-typedef struct N2OOdds {
-    s16 unk0;
-    s16 unk2;
-    s16 unk4;
-} N2OOdds;
-
-extern N2OOdds AiPlayerSkill[];
 
 s32 GetN2OContour(u8 *arg0);
 u8 *N2OFreeBallSlot(void);
@@ -552,7 +544,6 @@ typedef struct N2OBallView {
     /* 0x14 */ u8 pad14[0x1C];
     /* 0x30 */ u16 unk30;
 } N2OBallView;
-extern s16 D_8009D88E;
 extern s32 HitSfx[];
 extern SLONG_XYZ N2OBallStarts[];
 extern u16 N2OBallBounceSfx[];

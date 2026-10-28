@@ -2076,4 +2076,6 @@ typedef struct BossRecord {
 } BossRecord;
 extern BossRecord BossState;
 
+#include "bash/aiskill.h"
+
 #endif /* BASH_MAIN_H */

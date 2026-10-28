@@ -1078,7 +1078,7 @@ NAS *PapuMinionFindCrate(s32 arg0) {
     best = NULL;
     bestScore = 0x7FFFFF;
     n = HeadOfObjects;
-    h = D_8009D88E;
+    h = AiPlayerSkill[3].level;
     px = PapuMinionSlots[arg0].unk34[0];
     pz = px;
     if (n != NULL) {
@@ -1128,7 +1128,7 @@ s32 PapuPickSpawnPoint(PapuPos *arg0) {
 
     best = Random(5);
     bestScore = 0x90000;
-    r = (0x20 - D_8009D88E) * 16;
+    r = (0x20 - AiPlayerSkill[3].level) * 16;
     for (i = 0; i < 5; i++) {
         dx = PapuSpawnPoints[i].x - arg0->x;
         dz = PapuSpawnPoints[i].z - arg0->z;
@@ -1246,7 +1246,7 @@ void PlotPapuMinion(NAS *nas)
 
   slot = nas->UserInfo.user1;
   eng = nas->Engine;
-  level = D_8009D88E;
+  level = AiPlayerSkill[3].level;
   if (eng == NULL) {
     return;
   }

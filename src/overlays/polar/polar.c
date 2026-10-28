@@ -944,11 +944,11 @@ s32 PolarAI_PickVictim(s32 arg0) {
         } else {
             for (k = 0; k < 4; k++) {
                 if (k != arg0 && !(Heroes[k].hero_status & 0x2000)) {
-                    total += AiPlayerSkill[k].unk4 << 7;
+                    total += AiPlayerSkill[k].quality << 7;
                 }
             }
             if (total != 0) {
-                result = (AiPlayerSkill[j].unk4 << 19) / total;
+                result = (AiPlayerSkill[j].quality << 19) / total;
             }
             v = result;
         }
@@ -2142,10 +2142,10 @@ void PolarAI_TryAttack(s32 player) {
     if (h->hero_ai->AIpad & 0x8000) {
         return;
     }
-    if (AiPlayerSkill[player].unk0 > 0x20) {
-        AiPlayerSkill[player].unk0 = 0x20;
+    if (AiPlayerSkill[player].level > 0x20) {
+        AiPlayerSkill[player].level = 0x20;
     }
-    t = PolarAttackOdds[AiPlayerSkill[player].unk0];
+    t = PolarAttackOdds[AiPlayerSkill[player].level];
     h->hero_ai->AIpad |= 0x8000;
     fux->timer = 0x40 - t;
 }
@@ -8291,7 +8291,7 @@ void InitBearminator(NAS *m) {
             ext->cursor = ScriptCursorFirst(m, &BearminatorScriptInit);
             ext->unkC = 3;
             e2->unk20 = 0;
-            e2->unk4E = v = ((u16)AiPlayerSkill[0].unk0 * 8) - 0x30;
+            e2->unk4E = v = ((u16)AiPlayerSkill[0].level * 8) - 0x30;
             if (v < 0x10) {
                 e2->unk4E = 0x10;
             }
@@ -8608,7 +8608,7 @@ void PlotBearminator(NAS *m) {
         {
             s32 k;
 
-            k = AiPlayerSkill[0].unk0 + 0x20;
+            k = AiPlayerSkill[0].level + 0x20;
             cam->x.target = (k * rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 13;
             cam->z.target = (k * rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2) >> 13;
         }
@@ -8632,7 +8632,7 @@ void PlotBearminator(NAS *m) {
                     cam->x.target = cam->x.cur = (rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
                     cam->z.target = cam->z.cur = (rcossin_tbl[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
                     GotoLinkAnim((EXTanimator *)ext->cursor, 1);
-                    ext->unk1C = 0x5A - (AiPlayerSkill[0].unk0 - 0x10) * 4;
+                    ext->unk1C = 0x5A - (AiPlayerSkill[0].level - 0x10) * 4;
                 }
             }
         }
@@ -10500,11 +10500,11 @@ s32 PolarAI_TargetShare(s32 arg0, s32 arg1) {
     }
     for (i = 0; i < 4; i++) {
         if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
-            total += AiPlayerSkill[i].unk4 << 7;
+            total += AiPlayerSkill[i].quality << 7;
         }
     }
     if (total != 0) {
-        result = (AiPlayerSkill[arg1].unk4 << 19) / total;
+        result = (AiPlayerSkill[arg1].quality << 19) / total;
     }
     return result;
 }
@@ -10535,25 +10535,25 @@ void PolarHeroesCollide(s32 p1, s32 p2) {
 
     if (m1 > 0 && m2 > 0) {
         if (GameInfo[p1 + 0x5C] != 0) {
-            if (AiPlayerSkill[p1].unk0 < 9) {
-                m1 -= (9 - AiPlayerSkill[p1].unk0) << 5;
+            if (AiPlayerSkill[p1].level < 9) {
+                m1 -= (9 - AiPlayerSkill[p1].level) << 5;
                 if (m1 < 0x11) {
                     m1 = 0x10;
                 }
             }
-            if (AiPlayerSkill[p1].unk0 > 0x18) {
-                m1 += (AiPlayerSkill[p1].unk0 - 0x18) << 6;
+            if (AiPlayerSkill[p1].level > 0x18) {
+                m1 += (AiPlayerSkill[p1].level - 0x18) << 6;
             }
         }
         if (GameInfo[p2 + 0x5C] != 0) {
-            if (AiPlayerSkill[p2].unk0 < 9) {
-                m2 -= (9 - AiPlayerSkill[p2].unk0) << 5;
+            if (AiPlayerSkill[p2].level < 9) {
+                m2 -= (9 - AiPlayerSkill[p2].level) << 5;
                 if (m2 < 0x11) {
                     m2 = 0x10;
                 }
             }
-            if (AiPlayerSkill[p2].unk0 > 0x18) {
-                m2 += (AiPlayerSkill[p2].unk0 - 0x18) << 6;
+            if (AiPlayerSkill[p2].level > 0x18) {
+                m2 += (AiPlayerSkill[p2].level - 0x18) << 6;
             }
         }
         if (Heroes[p1].hero_mode == 0x51 && Heroes[p1].hero_eng->unk2C.x > 0xFA0) {
