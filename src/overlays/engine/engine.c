@@ -395,7 +395,7 @@ void DrawLevelHud(void) {
     SprPos pos;
     u32 c0;
     u32 c1;
-    u8 *tim;
+    obj_dbase *tim;
 
     if (ModeTypes[GAME->mode * 3] == 0x102) {
         show = 1;
@@ -415,7 +415,7 @@ void DrawLevelHud(void) {
             for (i = 0; i < 4; i++) {
                 if (CompletionDigits[i].flags & 0x8000) {
                     pos.f.x = CompletionPos[0] + CompletionDigits[i].arg;
-                    texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (CompletionDigits[i].cmd & 0xFFF) * 0x38),
+                    texture_draw_quad((obj_texture *)&tim->textures.tex[CompletionDigits[i].cmd & 0xFFF],
                                   pos.w, 0, c0, c0, c1, c1);
                 }
             }
@@ -448,7 +448,7 @@ void DrawLevelHud(void) {
             for (i = 0; i < 4; i++) {
                 if (CompletionDigits[i].flags & 0x8000) {
                     pos.f.x = CompletionPos[0] + CompletionDigits[i].arg;
-                    texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (CompletionDigits[i].cmd & 0xFFF) * 0x38),
+                    texture_draw_quad((obj_texture *)&tim->textures.tex[CompletionDigits[i].cmd & 0xFFF],
                                   pos.w, 0, c0, c0, c1, c1);
                 }
             }
@@ -464,7 +464,7 @@ void DrawLevelHud(void) {
         for (i = 0; i < 4; i++) {
             if (Clock[i].Ctrl & 0x8000) {
                 pos.f.x = Clock_XYZ[0] + Clock[i].Xoffs;
-                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + (Clock[i].frame & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)&tim->textures.tex[Clock[i].frame & 0xFFF],
                               pos.w, 0, c0, c0, c1, c1);
             }
         }
@@ -496,15 +496,15 @@ void DrawLevelHud(void) {
                 pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
                 pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
                 n = Score[i].score;
-                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                               pos.w, 0, c0, c0, c1, c1);
                 n /= 10;
                 pos.f.x -= 0x18;
-                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                               pos.w, 0, c0, c0, c1, c1);
                 n /= 10;
                 pos.f.x -= 0x18;
-                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                               pos.w, 0, c0, c0, c1, c1);
             }
         }
@@ -516,11 +516,11 @@ void DrawLevelHud(void) {
                 pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
                 pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
                 n = Score[i].score;
-                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                               pos.w, 0, c0, c0, c1, c1);
                 n /= 10;
                 pos.f.x -= 0x18;
-                texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                               pos.w, 0, c0, c0, c1, c1);
             }
         }
@@ -531,7 +531,7 @@ void DrawLevelHud(void) {
             n = Score[i].score;
             pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
             pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
-            texture_draw_quad((obj_texture *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+            texture_draw_quad((obj_texture *)&tim->textures.tex[(n % 10 + 0x3017) & 0xFFF],
                           pos.w, 0, c0, c0, c1, c1);
         }
         i++;

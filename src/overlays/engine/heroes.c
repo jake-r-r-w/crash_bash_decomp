@@ -3976,15 +3976,15 @@ void PlotSparks(SparkObj *obj) {
     p0 = ss->polys0;
     p1 = ss->polys1;
     s = obj->set.sparks;
-    tex = (SparkTex *)((u8 *)HeroModelBank[DB_ArenaBossBearArena].textures.tex + 0xAF0);
+    tex = (SparkTex *)&HeroModelBank[DB_ArenaBossBearArena].textures.tex[50];
     if (GameMode == 0x22) {
-        tex = (SparkTex *)(*(u8 **)((u8 *)MapScene->dbase + 0x18) + 0x2BF8);
+        tex = (SparkTex *)&MapScene->dbase->textures.tex[201];
     }
     if (GameMode == 0x13) {
-        tex = (SparkTex *)(*(u8 **)((u8 *)MapScene->dbase + 0x18) + 0x6C8);
+        tex = (SparkTex *)&MapScene->dbase->textures.tex[31];
     }
     if (GameMode == 0x1D) {
-        tex = (SparkTex *)(*(u8 **)((u8 *)MapScene->dbase + 0x18) + 0xA10);
+        tex = (SparkTex *)&MapScene->dbase->textures.tex[46];
     }
     for (; n != 0; n--) {
         do {
