@@ -57,15 +57,15 @@ void AnimateLoadingIcon(void) {
 
 void UpdateLoadingScene(void) {
     u8 *p;
-    u8 *b;
+    u8 *b;  /* the bank as bytes: an obj_dbase * here changes the branches */
 
     if (LevelLoadStage >= 2) {
-        if (LoadingScenePlaying == 0 && *(s32 *)((b = (u8 *)HeroModelBank) + 0x2CAC) != 0 /* HeroModelBank[DB_CutsceneIntroLogo2].data */) {
+        if (LoadingScenePlaying == 0 && (b = (u8 *)HeroModelBank, ((obj_dbase *)b)[DB_CutsceneIntroLogo2].data != NULL)) {
             if (SfxTable[0x3C5][1] != -1) {
                 PlaySfx(0x3C5, NULL, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x3C6, NULL, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x3C7, NULL, NULL, 0x1000, 0x1E00, 0);
-                p = b + 0x2CA0;
+                p = (u8 *)&((obj_dbase *)b)[DB_CutsceneIntroLogo2];
                 LoadingSceneDelay = 6;
                 SetupSceneMarks(p);
                 LoadingScenePlaying += 1;
@@ -776,15 +776,15 @@ void RenderScriptScene(void) {
 }
 
 s32 SceneModelLoaded(void) {
-    s32 var_v0;
-    u8 *temp_v1;
+    s32 loaded;
+    MarkObj *obj;
 
-    temp_v1 = ((s32)SceneMark->obj);
-    var_v0 = 0;
-    if (temp_v1 != NULL) {
-        var_v0 = (*(s32*)((u8*)(temp_v1) + 12)) != 0;
+    obj = SceneMark->obj;
+    loaded = 0;
+    if (obj != NULL) {
+        loaded = obj->src != NULL;
     }
-    return var_v0;
+    return loaded;
 }
 
 void ReleaseOldSceneModel(void) {

@@ -22,7 +22,7 @@ void InitialiseNasSystem(void) {
     SetNasDefaults();
     Init_Panel();
     NasPool = (NAS *)mal_alloc(NasPoolUsed * 0x70, &MainHeap);
-    NasPoolLast = (u8 *)NasPool + (NasPoolUsed * 0x70 - 0x70);
+    NasPoolLast = &NasPool[NasPoolUsed - 1];
     NasUpdateList = (EngObj **)mal_alloc(NasPoolUsed * 4, &MainHeap);
     *NasUpdateList = NULL;
     p = mal_alloc(NasPoolUsed * 4, &MainHeap);
@@ -257,11 +257,11 @@ void PickCpuHeroes(void) {
         if (i != 0 && (*(s32 *)(g + 0x6C) == 0 || i != 1)) {
             found = 1;
             while (n < 6) {
-                p = (u8 *)(i + (s32)g);
+                p = (u8 *)(i + (s32)g);  /* as an int sum: g + i swaps two registers */
                 if (found == 0) {
                     break;
                 }
-                v = *(u16 *)((u8 *)CpuHeroChoices + (n * 2 + w * 8));
+                v = (&CpuHeroChoices[w * 4])[n];
                 n++;
                 found = 0;
                 for (j = 0; j < 4; j++) {
@@ -549,7 +549,6 @@ EngineReqObj *arg1;
     s32 sa, sb, sc, sd;
     s32 i;
     EngineReq *r;
-    u8 *p;
     EngineReq *tab;
 
     if ((arg1->flags & 0x80002000) == 0x80002000) {
@@ -561,19 +560,18 @@ EngineReqObj *arg1;
     sa = 0;
     i = 0;
     do {
-        p = (u8 *)arg1 + i;
+        sa += arg1->a[i];
+        sc += arg1->c[i];
+        sb += arg1->b[i];
+        sd += arg1->d[i];
         i++;
-        sa += p[0xE4];
-        sc += p[0x126];
-        sb += p[0x105];
-        sd += p[0x147];
     } while (i < 0x21);
     tab = LevelRequirements;
     r = &tab[arg0 & 0xFFFF];
     if (sa < r->min0 || sc < r->min4 || sb < r->min2 || sd < r->min6) {
         return 0;
     }
-    if (r->off != 0 && *((u8 *)arg1 + r->off + 0x168) == 0) {
+    if (r->off != 0 && arg1->e[r->off] == 0) {
         return 0;
     }
     return 1;

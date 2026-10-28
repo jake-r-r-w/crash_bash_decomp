@@ -51,7 +51,7 @@ void InitialiseHeroes(void) {
         if (i >= 4) {
             break;
         }
-        nas = (NAS *)((u8 *)NasPool + m * 16);
+        nas = (NAS *)((u8 *)NasPool + m * 16);  /* &NasPool[i] drops the m counter (+7 a hero) */
         h = &hb[i];
         h->hero = nas;
         *nas = NASTemplate;
@@ -79,7 +79,7 @@ void InitialiseHeroes(void) {
         h->hero_health = 0x14;
         g = HSV;
         g->unk10 = 0;
-        g = (HeroSetupView *)((u8 *)g + i);
+        g = (HeroSetupView *)((u8 *)g + i);  /* indexing unk50/unk58 by i adds two insns */
         h->hero_status = 0;
         h->hero_strength = 0x14;
         h->hero_immunity = 0;
@@ -113,7 +113,7 @@ void InitialiseHeroes(void) {
         h->hero_attack_counter = 0;
         HeroLastHarm[i] = 0;
         h->hero_name = g->unk50[0];
-        c = (AiSkill *)((s16 *)AiPlayerSkill + k);
+        c = (AiSkill *)((s16 *)AiPlayerSkill + k);  /* &AiPlayerSkill[i] drops the k counter */
         c->level = 0x10;
         c->unk2 = 0x10;
         c->quality = 0x10;
@@ -134,7 +134,7 @@ void InitialiseHeroes(void) {
         h->hero_anim = AllocExt400(h->hero);
         name = h->hero_name;
         if ((u32)(name - 1) < 8) {
-            h->hero_sub->u6C.dbase = (u8 *)HeroModelBank + ((u16 *)HeroHooks.HeroModels)[name] * 0x38;
+            h->hero_sub->u6C.dbase = &HeroModelBank[((u16 *)HeroHooks.HeroModels)[name]];
         } else {
             h->hero_sub->u6C.dbase = NULL;
         }
@@ -250,7 +250,7 @@ void InitialiseHeroes(void) {
                 ai->TargetXYZ.x = 0;
                 ai->AIinitial_delay = Random(0x3C) + 0x1E;
                 ai->AIsleep = 8;
-                j = 7;
+                j = 7;  /* AIforward_left[j] loses the stepped pointer p */
                 p = (u8 *)ai + j;
                 do {
                     p[0x34] = 0;
@@ -3393,7 +3393,7 @@ void InitScriptFX(NAS *nas)
   u8 *scripts;
   u8 *hdr;
   NAS *new_var;
-  u8 *th;
+  script_thread *th;
   u8 *r;
   u8 *k;
   u8 *kf;
@@ -3543,10 +3543,10 @@ void InitScriptFX(NAS *nas)
       break;
     }
     t = &sd->threads[i];
-    th = ((u8 *) ent) + (*ent);
-    type = *((s32 *) th);
-    frames = *((s32 *) (th + 0xC));
-    keys = *((s32 *) (th + 0x10));
+    th = (script_thread *) (((u8 *) ent) + (*ent));  /* the header's self-relative offset to the thread */
+    type = th->thread_type;
+    frames = th->total_frames;
+    keys = th->key_frame_count;
     sd->totalframes = frames;
     t->threadtype = type;
     t->scriptnumber = sd->scriptnumber;
@@ -3572,7 +3572,7 @@ void InitScriptFX(NAS *nas)
         sub->u6C.dbase = dbase;
         sub->unk68 = id;
         sub->flags = 0x42000000;
-        sub->flags = ((*((u32 *) (th + 0x18))) | 0x42000000) & (~0x8000);
+        sub->flags = (((u32) th->type.entity[1]) | 0x42000000) & (~0x8000);
         if (sd->flags & 8)
       {
         sub->unk51 = 3;

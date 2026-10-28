@@ -614,9 +614,9 @@ void SetupCompletionDigits(void) {
     } while (i >= 2);
     i = 1;
     for (; i < 4; i++) {
-        CompletionDigits[i].arg = *(u16 *)((u8 *)CompletionDigitSrc + n * 16 + i * 4);
+        CompletionDigits[i].arg = CompletionDigitSrc[n][i].v;
     }
-    CompletionDigits[0].arg = *(u16 *)(n * 16 + (u8 *)CompletionDigitSrc);
+    CompletionDigits[0].arg = CompletionDigitSrc[n][0].v;
 }
 
 void InitIcons4(void) {
@@ -1536,7 +1536,7 @@ void UpdateOutMessage(void) {
     EngineGameView *g;
 
     g =(EngineGameView *)GameInfo;
-    if (*(s32 *)((u8 *)g + 0x10) & 1) {
+    if (g->pause & 1) {
         return;
     }
     e = GetEngineSlot(5);
@@ -2261,10 +2261,11 @@ u32 Clock_Time = 0;
 u16 Clock_flags = 0;
 U16Pair Clock_offsets[5] = { { 0xFFE2, 0xFFFF }, { 0x19, 0 }, { 0xFFF7, 0xFFFF }, { 0xFFC9, 0xFFFF }, { 0xFFBF, 0xFFFF } };
 s16 CompletionShown = 0;
-DigitSrc CompletionDigitSrc[16] = {
-    { 5, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0xB, 0 }, { 0xFFEA, 0xFFFF }, { 0, 0 }, { 0, 0 },
-    { 0x1E, 0 }, { 0xFFF5, 0xFFFF }, { 0xFFD4, 0xFFFF }, { 0, 0 }, { 0x28, 0 }, { 7, 0 },
-    { 0xFFE6, 0xFFFF }, { 0xFFC5, 0xFFFF },
+DigitSrc CompletionDigitSrc[4][4] = {  /* per digit count - 1: each digit's x offset */
+    { { 5, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } },
+    { { 0xB, 0 }, { 0xFFEA, 0xFFFF }, { 0, 0 }, { 0, 0 } },
+    { { 0x1E, 0 }, { 0xFFF5, 0xFFFF }, { 0xFFD4, 0xFFFF }, { 0, 0 } },
+    { { 0x28, 0 }, { 7, 0 }, { 0xFFE6, 0xFFFF }, { 0xFFC5, 0xFFFF } },
 };
 u16 PanelHeroOrder[4] = { 1, 0, 3, 2 };
 s16 IconPos4[4][2] = { { 0x28, 0x18 }, { 0xA0, 0x18 }, { 0x190, 0x18 }, { 0x208, 0x18 } };

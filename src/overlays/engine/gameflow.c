@@ -645,7 +645,7 @@ s32 CupCurrentModeType(void) {
     s32 *t;
     tbl = (s32 **)LangModeTypeTexts;
     t = tbl[*(s32 *)(g + 0x2C)];
-    return *(s32 *)((u8 *)t + w * 4);
+    return t[w];
 }
 
 s32 CupNextArena(void) {
@@ -1591,7 +1591,7 @@ void InitGameState(GameState *arg0) {
     arg0->unk36 = 0;
     arg0->unk37 = 0;
     k = ' ';
-    for (i = 7, p = (u8 *)arg0 + i; i >= 0; i--, p--) {
+    for (i = 7, p = (u8 *)arg0 + i; i >= 0; i--, p--) {  /* unk18[i] loses the stepped pointer p */
         p[0x18] = k;
     }
     t = 0x3C;

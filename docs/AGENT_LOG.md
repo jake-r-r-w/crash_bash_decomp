@@ -67,7 +67,8 @@ Sony objects. Next, none of them needing a playtest:
    no unnamed block). Objects nothing reads by name are `*Unused`; `GameInfo`'s gaps are
    `Game*` globals named from their users. A new label inside an object: use the field or
    element (`MainCamera.at`, `SfxTable[0x3C5][1]`), not a new `D_`.
-2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 11 engine, 62
+2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 4 engine (kept, with
+   comments), 62
    exe, 77 overlay). What's left in the exe is mostly the heap's block arithmetic and
    the files' self-relative offsets; typing those means file-format structs (the dbase's
    table at +0x3C/+0x44/+0x4C, the script track records, the texture and path files).
@@ -476,6 +477,15 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (Phase 5: the engine's raw offsets):** 11 -> 4. Typed: `NasPoolLast` a `NAS *`,
+  `CpuHeroChoices` read by row (`(&CpuHeroChoices[w * 4])[n]`: its rows overlap, n runs to 5),
+  `CompletionDigitSrc[4][4]`, LevelRequirementMet's sums by field, EngineGameView's `pause`,
+  InitScriptFX's thread as `script_thread`, CupCurrentModeType, SceneModelLoaded, and the
+  model bank indexed in InitialiseHeroes and UpdateLoadingScene. Kept, with comments: a byte
+  pointer stepped down through an array (indexing the field drops it), counters apart from
+  the loop index, an int sum's operand order. ROADMAP's "the engine's read GameInfo" was wrong:
+  only UpdateOutMessage did, and a view field matched.
 
 - **2026-10-28 (Phase 5: the camera's type):** `GfxCamera` is `camera_info_tag` (the Oct 9
   prototype's name; 184 bytes), in core.h with its fields named (`eye`, `at`, `dist`,

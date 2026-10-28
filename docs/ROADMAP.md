@@ -394,12 +394,15 @@ load extract and are documented.
   would have kept the old addresses): now words with relocations. Then every `D_`
   data name went (2026-10-28: `GameInfo`'s gaps as `Game*` globals, `ArenaDefs`, the
   panels' item lists, unread objects as `*Unused`). Left:
-  the functions whose C still does raw byte-offset arithmetic (11 of the engine's 357, 62
-  of the exe's 575, 77 in the slot overlays: `progress`'s typed figure, 2408 typed). Most
+  the functions whose C still does raw byte-offset arithmetic (4 of the engine's 357, 62
+  of the exe's 575, 77 in the slot overlays: `progress`'s typed figure, 2415 typed). Most
   of the exe's left are a heap block's own arithmetic (`(u8 *)b + b->size * 4 + 0x18`) or
   a file's self-relative offsets (`(u8 *)q + *q`, the dbase, texture, path and script
-  files), which is how the data is laid out; the engine's read `GameInfo` by offset,
-  which stays by the game state decision below. MapScene is a `map_enviroment *` in every unit (its
+  files), which is how the data is laid out. The engine's four (2026-10-28: the other
+  seven typed) keep a byte form the code needs, each with a comment: a pointer stepped
+  down through a byte array (InitGameState, InitialiseHeroes' AI arrays), a counter
+  apart from the loop index (InitialiseHeroes' `m += 7`, `k += 3`), an int sum's operand
+  order (PickCpuHeroes), and InitScriptFX's self-relative offset to a `script_thread`. MapScene is a `map_enviroment *` in every unit (its
   views folded), the subengine's +0x70 a union, SceneMark a `MarkCtx *` (2026-10-28).
 - [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
   globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads

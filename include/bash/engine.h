@@ -189,7 +189,9 @@ extern u8 IntroViewport[];
 typedef struct EngineGameView {
     /* 0x00 */ u8 unk0[4];
     /* 0x04 */ s32 unk4;
-    /* 0x08 */ u8 unk8[0x28];
+    /* 0x08 */ u8 unk8[8];
+    /* 0x10 */ s32 pause;  /* GamePause */
+    /* 0x14 */ u8 unk14[0x30 - 0x14];
     /* 0x30 */ u16 unk30;
     /* 0x32 */ u16 flags;
     /* 0x34 */ s16 mode;
@@ -317,7 +319,7 @@ typedef struct {
     /* 0x30 */ u8 unk30[0xC];
     /* 0x3C */ u16 unk3C;
 } EngineBootView;
-extern u8 *NasPoolLast;
+extern NAS *NasPoolLast;
 extern u8 *HeroNasList;
 extern s32 PauseMenuSets;
 extern s32 PauseMenuSetsByLang[];

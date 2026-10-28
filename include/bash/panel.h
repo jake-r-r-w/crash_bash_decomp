@@ -22,7 +22,7 @@ typedef struct DigitSrc {
 } DigitSrc;
 
 extern DigitEnt CompletionDigits[4];
-extern DigitSrc CompletionDigitSrc[];
+extern DigitSrc CompletionDigitSrc[4][4];
 
 void CheckHeroesAllOut(void);
 
