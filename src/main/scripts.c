@@ -588,7 +588,7 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
         t = (s32 *)(hdr + 0x1C);
         for (i = 0; i < *(s32 *)hdr; i++) {
             q = (s32 *)((u8 *)t + *t);
-            fn = (void (*)(s32 *, script_control_info *, s32))ScriptCommands[*q].unk0;
+            fn = ScriptCommands[*q].init;
             if (fn != NULL) {
                 fn(q, &p->info, i);
             }
@@ -609,7 +609,7 @@ s32 update_script(script_control_info *ci) {
     s = ci->threads;
     ScriptFade = 0;
     while (s != NULL) {
-        fn = (void (*)(script_thread_handler *, script_control_info *))ScriptCommands[s->thread_type].unk4;
+        fn = ScriptCommands[s->thread_type].update;
         if (fn != NULL) {
             fn(s, ci);
         }
@@ -663,7 +663,7 @@ void render_script(script_control_info *ci, GteSetup *arg1) {
         gs = &RenderState;
         ((GfxScreen *)gs->unk28)->x = arg1->ofx;
         ((GfxScreen *)gs->unk28)->y = arg1->ofy;
-        fn = (void (*)(script_thread_handler *, GteSetup *))ScriptCommands[p->thread_type].unk8;
+        fn = ScriptCommands[p->thread_type].render;
         if (fn != NULL) {
             fn(p, &out);
         }
@@ -868,7 +868,7 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
     if (*(s32 *)e > 0) {
         do {
             u8 *a = (u8 *)q + *q;
-            fn = (void (*)(u8 *, script_control_info *, s32))ScriptCommands[*(s32 *)a].unk0;
+            fn = ScriptCommands[*(s32 *)a].init;
             if (fn != NULL) {
                 fn(a, p, i);
             }
@@ -886,7 +886,7 @@ void kill_nas_script(subengine *sub) {
     script_thread_handler *next;
     s32 *flag;
     script_thread_handler *old;
-    D_80058B00_Entry *tab;
+    ScriptCommand *tab;
     void (*fn)(script_thread_handler *, script_control_info *);
 
     p = (script_control_info *)&sub->u6C;
@@ -900,7 +900,7 @@ void kill_nas_script(subengine *sub) {
         if (cur == NULL) {
             return;
         }
-        fn = (void (*)(script_thread_handler *, script_control_info *))tab[cur->thread_type].unkC;
+        fn = (void (*)(script_thread_handler *, script_control_info *))tab[cur->thread_type].kill;
         next = cur->next;
         if (fn != NULL) {
             fn(cur, p);
@@ -949,7 +949,7 @@ void kill_script(script_handler *s) {
         if (cur == NULL) {
             goto unlink;
         }
-        fn = (void (*)(script_thread_handler *, script_control_info *))ScriptCommands[cur->thread_type].unkC;
+        fn = ScriptCommands[cur->thread_type].kill;
         next = cur->next;
         if (fn != NULL) {
             fn(cur, &s->info);
@@ -991,7 +991,7 @@ void kill_script_threads(script_control_info *ci) {
         if (cur == NULL) {
             return;
         }
-        fn = (void (*)(script_thread_handler *, script_control_info *))ScriptCommands[cur->thread_type].unkC;
+        fn = ScriptCommands[cur->thread_type].kill;
         next = cur->next;
         if (fn != NULL) {
             fn(cur, ci);
@@ -1033,7 +1033,7 @@ void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg
     t = (s32 *)(hdr + 0x1C);
     for (i = 0; i < *(s32 *)hdr; i++) {
         q = (s32 *)((u8 *)t + *t);
-        fn = (void (*)(s32 *, script_control_info *, s32))ScriptCommands[*q].unk0;
+        fn = ScriptCommands[*q].init;
         if (fn != NULL) {
             fn(q, arg2, i);
         }
@@ -1594,14 +1594,14 @@ void scripts_update(void) {
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-D_80058B00_Entry ScriptCommands[6] = {
-    /* the threads a script runs, by type: {init, update, render, release} */
-    { (s32)init_model_thread, (s32)update_model_thread, (s32)render_model_thread, 0 },
-    { (s32)init_emitter_thread, (s32)update_emitter_thread, (s32)render_emitter_thread, kill_emitter_thread },
-    { (s32)init_camera_thread, (s32)update_camera_thread, 0, 0 },
-    { (s32)init_entity_thread, (s32)update_entity_thread, (s32)render_entity_thread, 0 },
-    { (s32)init_fade_thread, (s32)update_fade_thread, 0, 0 },
-    { (s32)init_sub_thread, (s32)update_sub_thread, (s32)render_sub_thread, kill_sub_thread },
+ScriptCommand ScriptCommands[6] = {
+    /* the threads a script runs, by type */
+    { init_model_thread, update_model_thread, render_model_thread, NULL },
+    { init_emitter_thread, update_emitter_thread, render_emitter_thread, kill_emitter_thread },
+    { init_camera_thread, update_camera_thread, NULL, NULL },
+    { init_entity_thread, update_entity_thread, render_entity_thread, NULL },
+    { init_fade_thread, update_fade_thread, NULL, NULL },
+    { init_sub_thread, update_sub_thread, render_sub_thread, kill_sub_thread },
 };
 s32 ScriptFade = 0;
 s32 ScriptTimeStep = 0;

@@ -853,13 +853,16 @@ extern s32 D_800517B4;
 extern s32 RandomSeedA;
 extern s32 RandomSeedB;
 extern script_thread_handler *ScriptList;
-typedef struct {
-    s32 unk0;
-    s32 unk4;
-    s32 unk8;
-    void (*unkC)(u8 *, u8 *);
-} D_80058B00_Entry;
-extern D_80058B00_Entry ScriptCommands[];
+/* What each kind of script thread runs (ScriptCommands, by thread_type): init (the thread's
+ * definition, the script's control info, the thread's number), update, render (the thread,
+ * the render setup), and the release, if it has one. */
+typedef struct ScriptCommand {
+    void (*init)();
+    void (*update)(script_thread_handler *, script_control_info *);
+    void (*render)();
+    void (*kill)();
+} ScriptCommand;
+extern ScriptCommand ScriptCommands[];
 extern s32 World_floor_level;
 extern s32 MusicRestart;
 extern s32 CardChannel;
