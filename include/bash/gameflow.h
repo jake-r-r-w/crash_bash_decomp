@@ -192,7 +192,7 @@ void QuitGame(void);
 
 void ShowCardSlots(void);
 
-void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void ShowCardSlot(GameState *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern s32 CardSlotPanel[];
 extern void *LangEmpty[];
 extern char PercentText[][5];

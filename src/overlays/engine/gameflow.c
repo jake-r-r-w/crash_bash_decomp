@@ -756,7 +756,7 @@ void ResetWarpRooms(void) {
     HubHeroRing.radius = 0x400;
 }
 
-void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void ShowCardSlot(GameState *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     EXTengine *e;
     s32 n;
     s32 d;
@@ -778,14 +778,14 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         e->sub[1].unk08 = 0x1E;
         return;
     }
-    e->sub[3].entity = IconImage[arg0[0x4C]];
-    e->sub[4].entity = IconImage[arg0[0x4D]];
-    e->sub[5].entity = IconImage[arg0[0x4E]];
-    e->sub[6].entity = IconImage[arg0[0x4F]];
-    e->sub[1].u6C.dbase = arg0 + 0x18;
+    e->sub[3].entity = IconImage[arg0->heroChoice[0]];
+    e->sub[4].entity = IconImage[arg0->heroChoice[1]];
+    e->sub[5].entity = IconImage[arg0->heroChoice[2]];
+    e->sub[6].entity = IconImage[arg0->heroChoice[3]];
+    e->sub[1].u6C.text = arg0->name;
     e->sub[1].unk04 = 0xC;
     e->sub[1].unk08 = 2;
-    n = count_completion(arg0);
+    n = count_completion((u8 *)arg0);
     PercentText[arg1][0] = n / 100 + '0';
     n %= 100;
     d = n / 10;
@@ -1245,7 +1245,7 @@ void UpdateCardSlots(void) {
     EXTengine *e2;
 
     if (CardStatus & 2) {
-        u8 *c = CardBuffer;
+        u8 *c = CardBuffer;  /* the image's sum (CardSaveSum) by the buffer: one instruction less */
         if (*(s32 *)(c + 0x85C) != CardBufferStamp) {
             RefreshCardSlots();
             CardBufferStamp = *(s32 *)(c + 0x85C);
@@ -1317,15 +1317,16 @@ void UpdateCardSlots(void) {
 }
 
 void ShowCardSlots(void) {
-    u8 *p = (u8 *)CardSlots;
-    u8 *pad = p + 8;
+    CardSlot *p = CardSlots;
+    GameState *pad = &p->state;
 
-    ShowCardSlot(pad, 0,*(s32 *)CardSlots == 0, 0x28, 0x1E);
-    ShowCardSlot(p + 0x19C, 1, *(s32 *)(p + 0x194) == 0, 0x140, 0x1E);
-    ShowCardSlot(p + 0x330, 2, *(s32 *)(p + 0x328) == 0, 0x28, 0x7C);
-    ShowCardSlot(p + 0x4C4, 3, *(s32 *)(p + 0x4BC) == 0, 0x140, 0x7C);
+    /* a slot is empty when its summary's first word is 0 */
+    ShowCardSlot(pad, 0, *(s32 *)CardSlots[0].summary == 0, 0x28, 0x1E);
+    ShowCardSlot(&p[1].state, 1, *(s32 *)p[1].summary == 0, 0x140, 0x1E);
+    ShowCardSlot(&p[2].state, 2, *(s32 *)p[2].summary == 0, 0x28, 0x7C);
+    ShowCardSlot(&p[3].state, 3, *(s32 *)p[3].summary == 0, 0x140, 0x7C);
     PlaceEngineSlot(3, &CardSlotsPanel);
-    ShowCardSlotStats(pad + CardSlotIndex * 0x194,*(s32 *)(p + CardSlotIndex * 0x194) == 0);
+    ShowCardSlotStats((GameState *)((u8 *)pad + CardSlotIndex * sizeof(CardSlot)), *(s32 *)p[CardSlotIndex].summary == 0);
 }
 
 void InitSaveMenu(void) {
