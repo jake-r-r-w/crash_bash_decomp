@@ -264,13 +264,13 @@ void HandleLevelExit(void) {
         if (g->unk187 != 0 && (flags & 1)) {
             if (g->unk44 == 3) {
                 g->mode = 0x20;
-                GotoScriptScene((s32)D_800A0888, &LevelLoadProcess);
+                GotoScriptScene((s32)LevelExitMsgsC, &LevelLoadProcess);
             } else if (g->unk44 == 1) {
                 g->mode = 0x25;
-                GotoScriptScene((s32)D_800A0858, &LevelLoadProcess);
+                GotoScriptScene((s32)LevelExitMsgsA, &LevelLoadProcess);
             } else {
                 g->mode = 0x25;
-                GotoScriptScene((s32)D_800A0870, &LevelLoadProcess);
+                GotoScriptScene((s32)LevelExitMsgsB, &LevelLoadProcess);
             }
             return;
         }
@@ -279,9 +279,9 @@ void HandleLevelExit(void) {
     case 0x20:
         g->mode = 0x25;
         if (HeroSide[g->unk60] == 1) {
-            msg = (s32)D_800A0858;
+            msg = (s32)LevelExitMsgsA;
         } else {
-            msg = (s32)D_800A0870;
+            msg = (s32)LevelExitMsgsB;
         }
         GotoScriptScene(msg, &LevelLoadProcess);
         return;

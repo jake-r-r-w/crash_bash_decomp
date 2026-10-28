@@ -12,7 +12,7 @@
 #include "bash/shell.h"   /* ClockInfo, ScoreInfo */
 
 extern s32 camera_frame_top[];
-extern u16 D_800A00D0[];
+extern u16 LangPanelModels[];
 extern s32 CamBoundTop;
 extern s32 camera_frame_right[];
 extern s32 CamBoundRight;
@@ -48,7 +48,7 @@ extern s32 CardBufferStamp;
 extern s32 SaveMenuStage;
 extern s32 SaveMenuPanel;
 extern s32 CardPromptPanel;
-extern subengine D_800A13F4[][32]; /* 32 subengines per EnginePool slot */
+extern subengine EngineSlotSubs[][32]; /* 32 subengines per EnginePool slot */
 
 typedef struct { u16 a, b; } U16Pair;
 extern ScoreInfo Score[4];
@@ -103,7 +103,7 @@ extern hero_seq **HeroSeqTables[]; /* by HeroInfo.hero_name (1-8): each characte
 extern s32 D_8009BD04;
 extern s32 LoadingScenePlaying;
 extern s32 LoadingSceneDelay;
-extern u8 D_800A0224[];
+extern u8 LoadingIconEngine[];
 extern void *SceneMark;
 extern process_control_info MenuProcessControl;
 extern void (*RenderHook)(void);
@@ -122,7 +122,7 @@ extern u8 PauseMenuPanel[];
 extern ScriptInit BigPoofInit;
 extern ScriptInit SmokePoofInit;
 extern GfxViewport HudViewport;
-extern GfxViewport D_800A0BCC;
+extern GfxViewport SceneViewport;
 extern GfxCamera HudCamera;
 extern process_info *SceneSkipProcess;
 extern GfxViewport SaveViewport;
@@ -145,7 +145,7 @@ typedef struct EngineCfg {
 } EngineCfg;
 
 extern EngineCfg DefaultLevelConfig;
-extern EngineCfg D_800A0314;
+extern EngineCfg SceneLevelConfig;
 extern s32 GraphicsMode;
 extern s32 IdleFrames;
 extern s16 core_process;
@@ -163,7 +163,7 @@ extern process_info SaveScreenProcess;
 extern void *AmbienceDef;
 extern u16 AmbienceTimer;
 extern process_info ScriptSceneProcess;
-extern s32 D_800A0C0C;
+extern s32 SceneArgs;
 extern s32 SceneOldDbase;
 extern s32 SceneMarkCount;
 /* DrawSceneMarks's entries (SceneMarks, 0xC bytes) and the table they index (0x14 bytes). */
@@ -178,12 +178,12 @@ typedef struct EngineMarkerPos {
     /* 0x0E */ u8 unkE[6];
 } EngineMarkerPos;
 extern EngineMarker SceneMarks[];
-extern EngineMarkerPos D_800A02D8[];
-extern subengine D_800A0C74;
+extern EngineMarkerPos SceneMarkPos[];
+extern subengine SceneMarkSub;
 extern s32 SceneVabCue;
 extern s32 SceneVabSlot[]; /* arrays: their stores must alias struct loads (gcc 2.7 sched) */
-extern s32 D_800A0D24[];
-extern s32 D_800A0D28;
+extern s32 SceneSoundHandle[];
+extern s32 SceneStarted;
 extern s32 SceneStarting;
 extern u8 IntroViewport[];
 /* GameInfo as seen by InitRetry. */
@@ -199,7 +199,7 @@ typedef struct EngineGameView {
 } EngineGameView;
 extern GfxViewport GameViewport;
 typedef struct { s32 key; s32 v[3]; } EngineKeyed16;
-extern EngineKeyed16 D_800A0B60[];
+extern EngineKeyed16 ModeVariants[];
 extern s32 GameSceneFade;
 typedef struct { s32 unk0; s32 unk4; s32 unk8; s32 unkC; } EngineEntry16Head;
 typedef struct { s32 unk0; EngineEntry16Head *unk4; s32 unk8; } EngineTable12;
@@ -395,7 +395,7 @@ extern s16 HeroActWinner;
 extern s16 HeroActLoser;
 void QuitLevel(void);
 
-/* Object wobbled by AnimateLoadingIcon (D_800A0290); unk5C is a linked one. */
+/* Object wobbled by AnimateLoadingIcon (LoadingIconObj); unk5C is a linked one. */
 typedef struct WobbleObj {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -410,7 +410,7 @@ typedef struct WobbleObj {
     /* 0x54 */ u8 pad54[0x5C - 0x54];
     /* 0x5C */ struct WobbleObj *unk5C;
 } WobbleObj;
-extern WobbleObj *D_800A0290;
+extern WobbleObj *LoadingIconObj;
 
 extern SWORD_XY ScoreIcon1Pos[4];
 extern s16 LevelLoadModel;

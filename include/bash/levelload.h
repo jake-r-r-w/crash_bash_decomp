@@ -43,7 +43,7 @@ typedef struct Tmpl1C {
     u16 pad1A;
 } Tmpl1C;
 
-extern Tmpl1C D_800A0D44[];
+extern Tmpl1C TextTemplates[];
 extern u8 *ModeFileGroups[];
 
 void QuitLevelLoad(void);
@@ -155,7 +155,7 @@ static inline void PlaceTmpl(PlaceSub *s, s32 x, s32 y, s32 z, s32 scale, s32 id
     Tmpl1C *t;
 
     if (s != NULL) {
-        t = &D_800A0D44[idx];
+        t = &TextTemplates[idx];
         s->flags = t->f0 | 0x12008000;
         s->hook = draw_nas_model;
         if ((x & 0xC000) == 0x8000) {

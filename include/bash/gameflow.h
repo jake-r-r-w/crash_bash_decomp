@@ -455,9 +455,9 @@ typedef struct MsgStep {
     void *b;
     s32 time;
 } MsgStep;
-extern MsgStep D_800A0858[];
-extern MsgStep D_800A0870[];
-extern MsgStep D_800A0888[];
+extern MsgStep LevelExitMsgsA[];
+extern MsgStep LevelExitMsgsB[];
+extern MsgStep LevelExitMsgsC[];
 
 s32 WarpRoomMode(void);
 

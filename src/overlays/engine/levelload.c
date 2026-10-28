@@ -31,7 +31,7 @@ void AnimateLoadingIcon(void) {
     s32 f;
     s32 i;
 
-    if (LevelLoadStage >= 2 && (o = D_800A0290) != NULL) {
+    if (LevelLoadStage >= 2 && (o = LoadingIconObj) != NULL) {
         t = rcossin_tbl;
         o->unk51 = 0;
         o->unk12 += 0x20;
@@ -172,7 +172,7 @@ void QueueHeroModels(void) {
     i = 0;
     arg = LevelRecs[a->unk8].unk4;
     {
-        s32 n = D_800A00D0[a->unk2C];
+        s32 n = LangPanelModels[a->unk2C];
         u8 *b = (u8 *)HeroModelBank;
         Blk38 *t = &((Blk38 *)b)[n];
         ((Blk38 *)b)[28].head.w0 = t->head.w0;
@@ -229,7 +229,7 @@ void load_initial_dbases(void)
   u16 *new_var;
   u32 k;
 
-  new_var = D_800A00D0;
+  new_var = LangPanelModels;
   i = 0;
   tg = GameInfo;
   idx = ((View939FC *) tg)->unk8;
@@ -402,7 +402,7 @@ void realign_panel_dbase(void) {
     struct E { s32 a, b; u8 pad[0x30]; };
     struct G { struct E e[0x1C]; s32 x, y; } *g;
     struct E *e;
-    u16 i = D_800A00D0[GameLanguage];
+    u16 i = LangPanelModels[GameLanguage];
     g = (void *)HeroModelBank;
     e = &g->e[i];
     g->x = e->a;
@@ -454,7 +454,7 @@ void InitLoadingCamera(void) {
 }
 
 void QuitLoadingScreen(void) {
-    eng_release_subs_sfx(D_800A0224);
+    eng_release_subs_sfx(LoadingIconEngine);
     dbase_release(&HeroModelBank[DB_Loading]);
 }
 
@@ -462,12 +462,12 @@ void RenderLoadingScreen(void) {
     if (LevelLoadStage >= 2) {
         gfx_set_viewport(&LoadingViewport, &LoadingCamera);
         RenderState.modelDp = ScreenFade.amount;
-        eng_render((EXTengine *)D_800A0224);
+        eng_render((EXTengine *)LoadingIconEngine);
     }
 }
 
 void InitLoadingScreen(void) {
-    EXTengine *eng = (EXTengine *)D_800A0224;
+    EXTengine *eng = (EXTengine *)LoadingIconEngine;
     subengine *sub;
     u16 *p;
 
@@ -516,7 +516,7 @@ void LoadLoadingModel(void) {
 
 void DrawSceneMarks(void) {
     s32 h = RenderState.cam->unk18;
-    subengine *e = &D_800A0C74;
+    subengine *e = &SceneMarkSub;
     EngineMarker *m;
     EngineMarkerPos *p;
     s32 i;
@@ -524,7 +524,7 @@ void DrawSceneMarks(void) {
 
     for (i = 0; i < SceneMarkCount; i++) {
         m = &SceneMarks[i];
-        p = &D_800A02D8[m->idx];
+        p = &SceneMarkPos[m->idx];
         *e = SubEngineTemplate;
         e->entity = m->unk0;
         e->u6C.dbase = m->unk8;
@@ -560,7 +560,7 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     ((EngineStartArgs *)&SceneMark)->unk0 = arg0->unk0;
     SceneVabCue = arg0->unk4;
     SceneVabSlot[0] = 0;
-    D_800A0D24[0] = 0;
+    SceneSoundHandle[0] = 0;
     sound_reinit();
     SfxBanks[0].id = -1;
     SfxBanks[0].handle = 0;
@@ -568,7 +568,7 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     SfxBanks[1].id = -1;
     SfxBanks[1].handle = 0;
     SfxBanks[1].head = NULL;
-    D_800A0D28 = 0;
+    SceneStarted = 0;
     VabCueTimer = 0;
     VabCuePending = 0;
 }
@@ -587,14 +587,14 @@ void InitScriptScene(void) {
     ModeTextLoaded = 0;
     mal_init(&MainHeap, SlotBase, 0x801FF000 - (s32)SlotBase);
     smallnode_init();
-    cfg = &D_800A0314;
+    cfg = &SceneLevelConfig;
     AllocOtBuffers((s32 *)cfg);
     ((void (*)(u8 *))ResetScreen)(VideoMode == 0 ? vmode_512_ntsc : D_8005B744);
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
     init_scripts(0x20, 0x80);
-    SetupScriptScene((EngineStartArgs *)D_800A0C0C);
+    SetupScriptScene((EngineStartArgs *)SceneArgs);
 }
 
 void UpdateSceneVabCues(void) {
@@ -673,7 +673,7 @@ void StartSceneScript(void) {
             }
         }
     }
-    D_800A0BCC.isbg = ((MarkCtx *)SceneMark)->unkC;
+    SceneViewport.isbg = ((MarkCtx *)SceneMark)->unkC;
 }
 
 void UpdateScriptScene(void) {
@@ -715,7 +715,7 @@ void UpdateScriptScene(void) {
                     if (SceneStarting != 0) {
                         VabCueTimer = 1;
                         SceneStarting = 0;
-                        D_800A0D28 = 1;
+                        SceneStarted = 1;
                         set_fade(&ScreenFade, -0x800, 0);
                     }
                 }
@@ -738,7 +738,7 @@ void UpdateScriptScene(void) {
 
 void GotoScriptScene(s32 arg0, process_info *arg1) {
     SceneSkipProcess = arg1;
-    D_800A0C0C = arg0;
+    SceneArgs = arg0;
     set_fade(&ScreenFade, 0x200, 0);
     ProcessControl.next_process = &ScriptSceneProcess;
 }
@@ -768,7 +768,7 @@ void QuitScriptScene(void) {
 }
 
 void RenderScriptScene(void) {
-    gfx_set_viewport(&D_800A0BCC, (GfxCamera *)MainCamera);
+    gfx_set_viewport(&SceneViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = ScreenFade.amount;
     scripts_render();
     RenderState.modelDp = 0x1000 - (((0x1000 - ScriptFade) * (0x1000 - RenderState.modelDp)) >> 12);
@@ -845,7 +845,7 @@ s32 SceneVabReady(void) {
 void SceneSoundInit(EngineStartArgs *arg0) {
     SceneVabCue = arg0->unk4;
     SceneVabSlot[0] = 0;
-    D_800A0D24[0] = 0;
+    SceneSoundHandle[0] = 0;
     sound_reinit();
     SfxBanks[0].id = -1;
     SfxBanks[0].handle = 0;
@@ -853,14 +853,14 @@ void SceneSoundInit(EngineStartArgs *arg0) {
     SfxBanks[1].id = -1;
     SfxBanks[1].handle = 0;
     SfxBanks[1].head = NULL;
-    D_800A0D28 = 0;
+    SceneStarted = 0;
     VabCueTimer = 0;
     VabCuePending = 0;
 }
 
 s32 PickModeVariant(s32 arg0) {
     s32 i;
-    EngineKeyed16 *e = D_800A0B60;
+    EngineKeyed16 *e = ModeVariants;
     u8 *g;
 
     for (i = 0, g = GameInfo; i < 4; e++, i++) {
@@ -1113,7 +1113,7 @@ void InitEngineSlot(s32 arg0, s32 arg1) {
 
     eng = &EnginePool[arg0];
     *eng = EngineTemplate;
-    subs = D_800A13F4[arg0];
+    subs = EngineSlotSubs[arg0];
     n = arg1;
     kill_subs(eng->sub);
     *eng = EngineTemplate;
@@ -1144,7 +1144,7 @@ void PlaceEngineSlot(s32 arg0, s32 *recs) {
         *eng = EngineTemplate;
         rec = recs;
         i = 0;
-        subs = D_800A13F4[arg0];
+        subs = EngineSlotSubs[arg0];
         while (*rec >= 2) {
             rec += 9;
             i++;
@@ -1233,7 +1233,7 @@ s32 PlaceTextSub(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
     if (p == NULL) {
         return 0;
     }
-    t = &D_800A0D44[idx];
+    t = &TextTemplates[idx];
     *(s32 *)p = t->f0 | 0x12008000;
     *(s32 *)(p + 0x54) = (s32)draw_nas_model;
     if ((a1 & 0xC000) == 0x8000) {
@@ -1431,24 +1431,24 @@ u8 *ModeFileGroups[45] = {
     (void *)&file_group_HUB, (void *)&file_group_TITLES, (void *)&file_group_TITLES,
     (void *)&file_group_TITLES, (void *)&D_800A0014, (void *)&file_group_POLARDAY,
 };
-u16 D_800A00D0[6] = { 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0 };
+u16 LangPanelModels[6] = { 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0 };
 process_info LevelLoadProcess = { InitLevelLoad, UpdateLevelLoad, RenderLevelLoad, QuitLevelLoad, 0 };
 s32 map[26] = {0};
 s32 LevelLoadStage = 0;
 process_control_info LoadingControl = {0};
 GfxCamera LoadingCamera = {0};
-u8 D_800A0224[108] = {0};
-WobbleObj *D_800A0290 = 0;
+u8 LoadingIconEngine[108] = {0};
+WobbleObj *LoadingIconObj = 0;
 s32 D_800A0294[11] = {0};
 s32 LoadingScenePlaying = 0;
 s32 LoadingSceneDelay = 0;
 s32 D_800A02C8[4] = {0};
-EngineMarkerPos D_800A02D8[3] = {
+EngineMarkerPos SceneMarkPos[3] = {
     { 0x7FB, 0x1FC3, 0xFA0, 0x7D0, { 0, 0, 0, 0, 0, 0 } },
     { 0x1FC3, 0xFA0, 0x7E4, 0x5DC, { 0, 0, 0, 0, 0, 0 } },
     { 0, 0, 0, 0x3E8, { 0, 0, 0, 0, 0, 0 } },
 };
-EngineCfg D_800A0314 = {
+EngineCfg SceneLevelConfig = {
     { 0, 0x10, 0, 0, 0x10, 0, 0, 0, 0, 0x10, 0, 0 }, { 0x80, 0x200, 0x20 },
     (void *)&D_80063ED8, (void *)&VramNodePool, 0x10, 0x400,
 };
@@ -1500,15 +1500,15 @@ s32 D_800A07B0[42] = {
     0x255, 0, 0, 0, (s32)&D_800A0670, (s32)&D_800A07B0, 0x1DFC40, (s32)&SceneTextIntromovieMarks,
     (s32)&D_800A07B0, 0x1E0000,
 };
-MsgStep D_800A0858[2] = {
+MsgStep LevelExitMsgsA[2] = {
     { (void *)&D_800A033C, (void *)&D_800A040C, 0x1E0000 },
     { (void *)&SceneTextGoodwinsMarks, (void *)&D_800A07B0, 0x1E0000 },
 };
-MsgStep D_800A0870[2] = {
+MsgStep LevelExitMsgsB[2] = {
     { (void *)&D_800A0480, (void *)&D_800A0520, 0x1E0000 },
     { (void *)&D_800A0480, (void *)&D_800A07B0, 0x1E0000 },
 };
-MsgStep D_800A0888[4] = {
+MsgStep LevelExitMsgsC[4] = {
     { (void *)&D_800A0590, (void *)&D_800A05E0, 0x1E0000 },
     { (void *)&SceneTextMixteamwinsMarks, (void *)&D_800A07B0, 0x1E0000 },
     { (void *)&SceneTextCreditsMarks, (void *)&D_800A07B0, 0x1E0000 },
@@ -1544,7 +1544,7 @@ s32 SceneAkuUkaDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData], 0
 s32 SceneAkuUkaData[3] = { (s32)&SceneAkuUkaDataMarks, (s32)&SceneAkuUkaDataAudio, 0x1E0000 };
 s32 SceneAkuUkaData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData2], 0, 0, 0, 0, 0, 0 };
 s32 SceneAkuUkaData2[3] = { (s32)&SceneAkuUkaData2Marks, (s32)&SceneAkuUkaData2Audio, 0x1E0000 };
-EngineKeyed16 D_800A0B60[4] = {
+EngineKeyed16 ModeVariants[4] = {
     { 4, { (s32)&SceneAkuData3, (s32)&SceneUkaData3, (s32)&SceneAkuData3 } },
     { 0x16, { (s32)&SceneAkuData4, (s32)&SceneUkaData4, (s32)&SceneAkuData4 } },
     { 0x1F, { (s32)&SceneAkuData2, (s32)&SceneUkaData2, (s32)&SceneAkuUkaData2 } },
@@ -1552,24 +1552,24 @@ EngineKeyed16 D_800A0B60[4] = {
 };
 Blk32 SceneScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 SceneScriptPos = {0};
-GfxViewport D_800A0BCC = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xDFF, 0, 0, 0, 0, 1 };
+GfxViewport SceneViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xDFF, 0, 0, 0, 0, 1 };
 process_info ScriptSceneProcess = { InitScriptScene, UpdateScriptScene, RenderScriptScene, QuitScriptScene, 0 };
 process_info *SceneSkipProcess = 0;
-s32 D_800A0C0C = 0;
+s32 SceneArgs = 0;
 EngineMarker SceneMarks[8] = {0};
 s32 SceneMarkCount = 0;
-subengine D_800A0C74 = {0};
+subengine SceneMarkSub = {0};
 s32 SceneVabCue = 0;
 s32 SceneVabSlot[1] = {0};
-s32 D_800A0D24[1] = {0};
-s32 D_800A0D28 = 0;
+s32 SceneSoundHandle[1] = {0};
+s32 SceneStarted = 0;
 void *SceneMark = 0;
 s32 SceneOldDbase = 0;
 script_handler *SceneScript = 0;
 s32 SceneStarting = 0;
 s32 SceneStep = 0;
 s32 D_800A0D40[1] = {0};
-Tmpl1C D_800A0D44[11] = {
+Tmpl1C TextTemplates[11] = {
     { 0x8001, 0, 0x8021, 0x8080, 4, 0, 4, 0, 0x180, 0 },
     { 0x8001, 0, 0x8021, 0x8080, 4, 0, 4, 0, 0x100, 0 },
     { 0x8000, 0, 0x8000, 0xC0C0, 4, 0, 4, 0, 0x180, 0 },
@@ -1583,4 +1583,4 @@ Tmpl1C D_800A0D44[11] = {
     { 0x8000, 0, 0x8000, 0xFF, 4, 0, 4, 0, 0x100, 0 },
 };
 EXTengine EnginePool[9] = {0};
-subengine D_800A13F4[9][32] = {0};
+subengine EngineSlotSubs[9][32] = {0};
