@@ -27085,7 +27085,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80083708": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80083708.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/InitialiseHeroes.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -27103,7 +27103,7 @@
   "fp": "33087dcb12579fcb",
   "fpn": "653b6458b70ddff5",
   "leaf": false,
-  "name": "func_80083708",
+  "name": "InitialiseHeroes",
   "orig": "func_80083708",
   "rom": 43640,
   "seg": "overlays/engine/heroes",
@@ -27111,7 +27111,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80083E8C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80083E8C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/ProcessHeroes.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -27126,7 +27126,7 @@
   "fp": "34300baad49b6448",
   "fpn": "b2efd585563502a0",
   "leaf": false,
-  "name": "func_80083E8C",
+  "name": "ProcessHeroes",
   "orig": "func_80083E8C",
   "rom": 45564,
   "seg": "overlays/engine/heroes",
@@ -27134,13 +27134,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80084788": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80084788.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefChooseWinner.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "b99df81021fdf6de",
   "fpn": "43aae898712f6872",
   "leaf": true,
-  "name": "func_80084788",
+  "name": "DefChooseWinner",
   "orig": "func_80084788",
   "rom": 47864,
   "seg": "overlays/engine/heroes",
@@ -27148,13 +27148,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80084E04": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80084E04.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroTakeHit.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "74b9e8d0868796cf",
   "fpn": "d54e9d70a567cbde",
   "leaf": true,
-  "name": "func_80084E04",
+  "name": "HeroTakeHit",
   "orig": "func_80084E04",
   "rom": 49524,
   "seg": "overlays/engine/heroes",
@@ -27162,7 +27162,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008502C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008502C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/ProcessHeroAnim.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800225C4",
@@ -27174,7 +27174,7 @@
   "fp": "612904f558ceb2c6",
   "fpn": "8bdaf3356cc57366",
   "leaf": false,
-  "name": "func_8008502C",
+  "name": "ProcessHeroAnim",
   "orig": "func_8008502C",
   "rom": 50076,
   "seg": "overlays/engine/heroes",
@@ -27198,7 +27198,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80085584": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80085584.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroAseq.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C"
@@ -27206,7 +27206,7 @@
   "fp": "d5829555a5cbf77f",
   "fpn": "c716519fd55d48b8",
   "leaf": false,
-  "name": "func_80085584",
+  "name": "SetHeroAseq",
   "orig": "func_80085584",
   "rom": 51444,
   "seg": "overlays/engine/heroes",
@@ -27214,7 +27214,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80085650": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80085650.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/ClearHeroAnimSlots.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590"
@@ -27222,7 +27222,7 @@
   "fp": "1bacef713402c598",
   "fpn": "746ac215c83c255f",
   "leaf": false,
-  "name": "func_80085650",
+  "name": "ClearHeroAnimSlots",
   "orig": "func_80085650",
   "rom": 51648,
   "seg": "overlays/engine/heroes",
@@ -27230,7 +27230,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80085718": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80085718.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/RequestHeroAnim.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800165F8"
@@ -27238,7 +27238,7 @@
   "fp": "709337eca6da94fc",
   "fpn": "4c907166cda6eaf2",
   "leaf": false,
-  "name": "func_80085718",
+  "name": "RequestHeroAnim",
   "orig": "func_80085718",
   "rom": 51848,
   "seg": "overlays/engine/heroes",
@@ -27246,7 +27246,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80085890": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80085890.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/CheckHeroAnim.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80016558",
@@ -27255,7 +27255,7 @@
   "fp": "eae6f86418e0faa5",
   "fpn": "d3b7d6a918492cab",
   "leaf": false,
-  "name": "func_80085890",
+  "name": "CheckHeroAnim",
   "orig": "func_80085890",
   "rom": 52224,
   "seg": "overlays/engine/heroes",
@@ -27263,7 +27263,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800859D4": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800859D4.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefPreMoveHero.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800154A0",
@@ -27272,7 +27272,7 @@
   "fp": "05566537636fba9e",
   "fpn": "685518757ce07bb8",
   "leaf": false,
-  "name": "func_800859D4",
+  "name": "DefPreMoveHero",
   "orig": "func_800859D4",
   "rom": 52548,
   "seg": "overlays/engine/heroes",
@@ -27280,7 +27280,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80085C84": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80085C84.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefHeroFacing.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800154A0"
@@ -27288,7 +27288,7 @@
   "fp": "91f1da9355957500",
   "fpn": "b9ecc0e9891abc37",
   "leaf": false,
-  "name": "func_80085C84",
+  "name": "DefHeroFacing",
   "orig": "func_80085C84",
   "rom": 53236,
   "seg": "overlays/engine/heroes",
@@ -27296,7 +27296,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80085D2C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80085D2C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefMoveHero.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800860D4"
@@ -27304,7 +27304,7 @@
   "fp": "f7a72d739bd122a5",
   "fpn": "90c02b61d27341f4",
   "leaf": false,
-  "name": "func_80085D2C",
+  "name": "DefMoveHero",
   "orig": "func_80085D2C",
   "rom": 53404,
   "seg": "overlays/engine/heroes",
@@ -27312,13 +27312,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800860D4": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800860D4.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroApplyJump.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "df1d589f0eddb6fe",
   "fpn": "fdd9c512ab20d275",
   "leaf": true,
-  "name": "func_800860D4",
+  "name": "HeroApplyJump",
   "orig": "func_800860D4",
   "rom": 54340,
   "seg": "overlays/engine/heroes",
@@ -27326,7 +27326,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800863D0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800863D0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroMovedDist.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80025F44",
@@ -27335,7 +27335,7 @@
   "fp": "7ed5324988dda756",
   "fpn": "f4d6742fa5eda6f2",
   "leaf": false,
-  "name": "func_800863D0",
+  "name": "HeroMovedDist",
   "orig": "func_800863D0",
   "rom": 55104,
   "seg": "overlays/engine/heroes",
@@ -27343,7 +27343,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800864CC": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800864CC.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroTestBox.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800142D4",
@@ -27354,7 +27354,7 @@
   "fp": "b625c55055a4506f",
   "fpn": "acc389a371dec8db",
   "leaf": false,
-  "name": "func_800864CC",
+  "name": "HeroTestBox",
   "orig": "func_800864CC",
   "rom": 55356,
   "seg": "overlays/engine/heroes",
@@ -27390,13 +27390,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008670C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008670C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefKeepInBounds.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_8008670C",
+  "name": "DefKeepInBounds",
   "orig": "func_8008670C",
   "rom": 55932,
   "seg": "overlays/engine/heroes",
@@ -27404,13 +27404,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80086714": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80086714.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefHeroKickCollision.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_80086714",
+  "name": "DefHeroKickCollision",
   "orig": "func_80086714",
   "rom": 55940,
   "seg": "overlays/engine/heroes",
@@ -27418,13 +27418,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008671C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008671C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefHeroGrabObject.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_8008671C",
+  "name": "DefHeroGrabObject",
   "orig": "func_8008671C",
   "rom": 55948,
   "seg": "overlays/engine/heroes",
@@ -27446,7 +27446,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008672C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008672C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/UpdateHeroShadow.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80025F44"
@@ -27454,7 +27454,7 @@
   "fp": "27b4744fd1183e5c",
   "fpn": "d10e0ad488960495",
   "leaf": false,
-  "name": "func_8008672C",
+  "name": "UpdateHeroShadow",
   "orig": "func_8008672C",
   "rom": 55964,
   "seg": "overlays/engine/heroes",
@@ -27478,13 +27478,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008680C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008680C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefHeroBot.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_8008680C",
+  "name": "DefHeroBot",
   "orig": "func_8008680C",
   "rom": 56188,
   "seg": "overlays/engine/heroes",
@@ -27492,7 +27492,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80086814": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80086814.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/ReleaseHeroAnims.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80016478"
@@ -27500,7 +27500,7 @@
   "fp": "f1f64bde7e150020",
   "fpn": "a2069b4e9895b531",
   "leaf": false,
-  "name": "func_80086814",
+  "name": "ReleaseHeroAnims",
   "orig": "func_80086814",
   "rom": 56196,
   "seg": "overlays/engine/heroes",
@@ -27522,13 +27522,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008688C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008688C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetLevelCameraMode.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "5d47a4bc6c56265b",
   "fpn": "7d3b41fc78abb43e",
   "leaf": true,
-  "name": "func_8008688C",
+  "name": "SetLevelCameraMode",
   "orig": "func_8008688C",
   "rom": 56316,
   "seg": "overlays/engine/heroes",
@@ -27580,13 +27580,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80086D88": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80086D88.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/MarkHeroesOnGrid.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "4727eebb0bb990b5",
   "fpn": "486453c335b4ff5d",
   "leaf": true,
-  "name": "func_80086D88",
+  "name": "MarkHeroesOnGrid",
   "orig": "func_80086D88",
   "rom": 57592,
   "seg": "overlays/engine/heroes",
@@ -27608,13 +27608,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80086F78": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80086F78.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/ArenaGridClear.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "3e0ed40b5c2d10b7",
   "fpn": "e0fb43e4cb143ae7",
   "leaf": true,
-  "name": "func_80086F78",
+  "name": "ArenaGridClear",
   "orig": "func_80086F78",
   "rom": 58088,
   "seg": "overlays/engine/heroes",
@@ -27622,13 +27622,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80086FA0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80086FA0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/ArenaGridReset.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "6bac7d73b8116891",
   "fpn": "443a6340769fbbbf",
   "leaf": true,
-  "name": "func_80086FA0",
+  "name": "ArenaGridReset",
   "orig": "func_80086FA0",
   "rom": 58128,
   "seg": "overlays/engine/heroes",
@@ -27636,7 +27636,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80086FCC": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80086FCC.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroTestActions.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800868B4"
@@ -27644,7 +27644,7 @@
   "fp": "4604028b531ee2d0",
   "fpn": "da014b7cfacd1f9c",
   "leaf": false,
-  "name": "func_80086FCC",
+  "name": "HeroTestActions",
   "orig": "func_80086FCC",
   "rom": 58172,
   "seg": "overlays/engine/heroes",
@@ -27670,7 +27670,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80087428": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80087428.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroIdle.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -27678,7 +27678,7 @@
   "fp": "a6ba4e76a6024f15",
   "fpn": "852fba08ecbdc7ba",
   "leaf": false,
-  "name": "func_80087428",
+  "name": "SetHeroIdle",
   "orig": "func_80087428",
   "rom": 59288,
   "seg": "overlays/engine/heroes",
@@ -27686,7 +27686,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800874EC": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800874EC.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroIdle.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -27701,7 +27701,7 @@
   "fp": "23421a22a534d698",
   "fpn": "858ab575363dda74",
   "leaf": false,
-  "name": "func_800874EC",
+  "name": "HeroIdle",
   "orig": "func_800874EC",
   "rom": 59484,
   "seg": "overlays/engine/heroes",
@@ -27709,7 +27709,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008795C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008795C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroTaunt.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C",
@@ -27720,7 +27720,7 @@
   "fp": "6105408defa19b0d",
   "fpn": "021235ed9617121b",
   "leaf": false,
-  "name": "func_8008795C",
+  "name": "HeroTaunt",
   "orig": "func_8008795C",
   "rom": 60620,
   "seg": "overlays/engine/heroes",
@@ -27728,7 +27728,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80087B8C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80087B8C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroRun.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -27740,7 +27740,7 @@
   "fp": "23f518e0f727f164",
   "fpn": "0c6506d460cb8f7e",
   "leaf": false,
-  "name": "func_80087B8C",
+  "name": "HeroRun",
   "orig": "func_80087B8C",
   "rom": 61180,
   "seg": "overlays/engine/heroes",
@@ -27748,7 +27748,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80087FC0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80087FC0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroJump.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -27756,7 +27756,7 @@
   "fp": "e57001125a3e0bbe",
   "fpn": "9d143cb435a3900e",
   "leaf": false,
-  "name": "func_80087FC0",
+  "name": "SetHeroJump",
   "orig": "func_80087FC0",
   "rom": 62256,
   "seg": "overlays/engine/heroes",
@@ -27764,7 +27764,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800880E0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800880E0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroFall.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800225C4",
@@ -27773,7 +27773,7 @@
   "fp": "0846c24f4c7c9337",
   "fpn": "75f89379f203158d",
   "leaf": false,
-  "name": "func_800880E0",
+  "name": "SetHeroFall",
   "orig": "func_800880E0",
   "rom": 62544,
   "seg": "overlays/engine/heroes",
@@ -27781,7 +27781,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800881E0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800881E0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroFall.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80025BBC",
@@ -27791,7 +27791,7 @@
   "fp": "d421fb8728269b9b",
   "fpn": "3cb0e31f9c8af60f",
   "leaf": false,
-  "name": "func_800881E0",
+  "name": "HeroFall",
   "orig": "func_800881E0",
   "rom": 62800,
   "seg": "overlays/engine/heroes",
@@ -27799,7 +27799,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800882DC": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800882DC.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroDrop.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -27808,7 +27808,7 @@
   "fp": "3b1cd9ec9b0a6adf",
   "fpn": "1559155774a5019b",
   "leaf": false,
-  "name": "func_800882DC",
+  "name": "SetHeroDrop",
   "orig": "func_800882DC",
   "rom": 63052,
   "seg": "overlays/engine/heroes",
@@ -27816,7 +27816,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80088450": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80088450.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroLand.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800264E8",
@@ -27825,7 +27825,7 @@
   "fp": "e90d374cf0ba444a",
   "fpn": "dd72cea2aa504457",
   "leaf": false,
-  "name": "func_80088450",
+  "name": "SetHeroLand",
   "orig": "func_80088450",
   "rom": 63424,
   "seg": "overlays/engine/heroes",
@@ -27833,7 +27833,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80088544": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80088544.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroLand.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C",
@@ -27844,7 +27844,7 @@
   "fp": "9d3d3171ef578f06",
   "fpn": "634ca437f1a2e74e",
   "leaf": false,
-  "name": "func_80088544",
+  "name": "HeroLand",
   "orig": "func_80088544",
   "rom": 63668,
   "seg": "overlays/engine/heroes",
@@ -27852,7 +27852,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80088708": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80088708.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroSpin.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -27860,7 +27860,7 @@
   "fp": "064793b7ce914ef2",
   "fpn": "8488041c543c3484",
   "leaf": false,
-  "name": "func_80088708",
+  "name": "SetHeroSpin",
   "orig": "func_80088708",
   "rom": 64120,
   "seg": "overlays/engine/heroes",
@@ -27868,7 +27868,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80088794": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80088794.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroSpin.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -27881,7 +27881,7 @@
   "fp": "854ef2aaaa80a5e8",
   "fpn": "b9fb87cc02ebc10c",
   "leaf": false,
-  "name": "func_80088794",
+  "name": "HeroSpin",
   "orig": "func_80088794",
   "rom": 64260,
   "seg": "overlays/engine/heroes",
@@ -27889,7 +27889,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80088BAC": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80088BAC.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroWhip.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -27897,7 +27897,7 @@
   "fp": "0ad341ef8bcf95a8",
   "fpn": "70e52c4cbc826946",
   "leaf": false,
-  "name": "func_80088BAC",
+  "name": "SetHeroWhip",
   "orig": "func_80088BAC",
   "rom": 65308,
   "seg": "overlays/engine/heroes",
@@ -27905,7 +27905,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80088C28": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80088C28.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroWhip.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -27918,7 +27918,7 @@
   "fp": "0ad85fd574c3f2cc",
   "fpn": "c4b4d9d298d129a9",
   "leaf": false,
-  "name": "func_80088C28",
+  "name": "HeroWhip",
   "orig": "func_80088C28",
   "rom": 65432,
   "seg": "overlays/engine/heroes",
@@ -27926,7 +27926,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80088F78": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80088F78.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroShoot.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -27934,7 +27934,7 @@
   "fp": "b2269a65ee3fb86f",
   "fpn": "8377e93e825a4704",
   "leaf": false,
-  "name": "func_80088F78",
+  "name": "SetHeroShoot",
   "orig": "func_80088F78",
   "rom": 66280,
   "seg": "overlays/engine/heroes",
@@ -27942,7 +27942,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008900C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008900C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroShoot.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -27957,7 +27957,7 @@
   "fp": "c85befda00155835",
   "fpn": "e2c0cdbea1e5a359",
   "leaf": false,
-  "name": "func_8008900C",
+  "name": "HeroShoot",
   "orig": "func_8008900C",
   "rom": 66428,
   "seg": "overlays/engine/heroes",
@@ -27965,7 +27965,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800894E0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800894E0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroKick.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -27973,7 +27973,7 @@
   "fp": "0ad341ef8bcf95a8",
   "fpn": "70e52c4cbc826946",
   "leaf": false,
-  "name": "func_800894E0",
+  "name": "SetHeroKick",
   "orig": "func_800894E0",
   "rom": 67664,
   "seg": "overlays/engine/heroes",
@@ -27981,7 +27981,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008955C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008955C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroKick.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -27995,7 +27995,7 @@
   "fp": "4e2bf8fe60b92aeb",
   "fpn": "db404aaa0f3c89d8",
   "leaf": false,
-  "name": "func_8008955C",
+  "name": "HeroKick",
   "orig": "func_8008955C",
   "rom": 67788,
   "seg": "overlays/engine/heroes",
@@ -28003,7 +28003,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:800898EC": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_800898EC.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroBecomeAngel.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -28013,7 +28013,7 @@
   "fp": "adfd8b740f487b58",
   "fpn": "817e34ed5fa5b8fb",
   "leaf": false,
-  "name": "func_800898EC",
+  "name": "HeroBecomeAngel",
   "orig": "func_800898EC",
   "rom": 68700,
   "seg": "overlays/engine/heroes",
@@ -28038,7 +28038,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:80089FA4": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_80089FA4.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/StartHeroVictory.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8002C1C0",
@@ -28047,7 +28047,7 @@
   "fp": "5d2e63309a06aa9c",
   "fpn": "2c603cded7f2dea2",
   "leaf": false,
-  "name": "func_80089FA4",
+  "name": "StartHeroVictory",
   "orig": "func_80089FA4",
   "rom": 70420,
   "seg": "overlays/engine/heroes",
@@ -28072,13 +28072,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008A810": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008A810.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/FinishLevel.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "8146892f46e93034",
   "fpn": "b9ddbdcabde059d7",
   "leaf": true,
-  "name": "func_8008A810",
+  "name": "FinishLevel",
   "orig": "func_8008A810",
   "rom": 72576,
   "seg": "overlays/engine/heroes",
@@ -28086,7 +28086,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008A854": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008A854.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroDrop.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C",
@@ -28095,7 +28095,7 @@
   "fp": "19830ce6de29a087",
   "fpn": "b8fbeb646147e988",
   "leaf": false,
-  "name": "func_8008A854",
+  "name": "HeroDrop",
   "orig": "func_8008A854",
   "rom": 72644,
   "seg": "overlays/engine/heroes",
@@ -28103,7 +28103,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008A8F0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008A8F0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroJump.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C"
@@ -28111,7 +28111,7 @@
   "fp": "33a5d1fe041ccb74",
   "fpn": "94c6f8f82c9d5b36",
   "leaf": false,
-  "name": "func_8008A8F0",
+  "name": "HeroJump",
   "orig": "func_8008A8F0",
   "rom": 72800,
   "seg": "overlays/engine/heroes",
@@ -28119,7 +28119,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008A924": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008A924.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroRun.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -28127,7 +28127,7 @@
   "fp": "30f75b1ac907228c",
   "fpn": "e7d466bd3315d90f",
   "leaf": false,
-  "name": "func_8008A924",
+  "name": "SetHeroRun",
   "orig": "func_8008A924",
   "rom": 72852,
   "seg": "overlays/engine/heroes",
@@ -28135,7 +28135,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008A99C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008A99C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroTaunt.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -28143,7 +28143,7 @@
   "fp": "f3f7a6d4b7a90914",
   "fpn": "676419556c6571e9",
   "leaf": false,
-  "name": "func_8008A99C",
+  "name": "SetHeroTaunt",
   "orig": "func_8008A99C",
   "rom": 72972,
   "seg": "overlays/engine/heroes",
@@ -28151,7 +28151,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008A9F0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008A9F0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefHeroTouched.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590"
@@ -28159,7 +28159,7 @@
   "fp": "8b85de55b45b3d13",
   "fpn": "0e38288f74537f01",
   "leaf": false,
-  "name": "func_8008A9F0",
+  "name": "DefHeroTouched",
   "orig": "func_8008A9F0",
   "rom": 73056,
   "seg": "overlays/engine/heroes",
@@ -28167,7 +28167,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008AA40": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008AA40.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DefHeroSetIdle.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590"
@@ -28175,7 +28175,7 @@
   "fp": "b5e1d5a9cf0cbfee",
   "fpn": "0e38288f74537f01",
   "leaf": false,
-  "name": "func_8008AA40",
+  "name": "DefHeroSetIdle",
   "orig": "func_8008AA40",
   "rom": 73136,
   "seg": "overlays/engine/heroes",
@@ -28199,7 +28199,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008AAB0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008AAB0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SetHeroQuiet.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -28207,7 +28207,7 @@
   "fp": "10a6ce181bcd2957",
   "fpn": "40483a888971bd94",
   "leaf": false,
-  "name": "func_8008AAB0",
+  "name": "SetHeroQuiet",
   "orig": "func_8008AAB0",
   "rom": 73248,
   "seg": "overlays/engine/heroes",
@@ -28215,13 +28215,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008AB04": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008AB04.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroNoJump.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "675b3180eabd5e33",
   "fpn": "9555fdad9c4657f2",
   "leaf": true,
-  "name": "func_8008AB04",
+  "name": "HeroNoJump",
   "orig": "func_8008AB04",
   "rom": 73332,
   "seg": "overlays/engine/heroes",
@@ -28229,13 +28229,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008AB48": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008AB48.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroNoKick.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
   "fpn": "af99c5b3dbef98d9",
   "leaf": true,
-  "name": "func_8008AB48",
+  "name": "HeroNoKick",
   "orig": "func_8008AB48",
   "rom": 73400,
   "seg": "overlays/engine/heroes",
@@ -28243,13 +28243,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008AB50": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008AB50.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroIsWinnerOrLoser.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "91a6f68585cac66a",
   "fpn": "1fc61870db04e94b",
   "leaf": true,
-  "name": "func_8008AB50",
+  "name": "HeroIsWinnerOrLoser",
   "orig": "func_8008AB50",
   "rom": 73408,
   "seg": "overlays/engine/heroes",
@@ -28257,7 +28257,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008AB94": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008AB94.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroCheckDying.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800868B4"
@@ -28265,7 +28265,7 @@
   "fp": "5eb61b73bdbc33fc",
   "fpn": "179d6e11d2e09e8b",
   "leaf": false,
-  "name": "func_8008AB94",
+  "name": "HeroCheckDying",
   "orig": "func_8008AB94",
   "rom": 73476,
   "seg": "overlays/engine/heroes",
@@ -28273,7 +28273,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008ABF8": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008ABF8.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/HeroCheckResult.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800868B4"
@@ -28281,7 +28281,7 @@
   "fp": "ff2637ee6e68b185",
   "fpn": "2ae1effc6a3b2d6d",
   "leaf": false,
-  "name": "func_8008ABF8",
+  "name": "HeroCheckResult",
   "orig": "func_8008ABF8",
   "rom": 73576,
   "seg": "overlays/engine/heroes",
@@ -28355,13 +28355,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008B29C": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008B29C.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/ModelCreateShadow.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "9b9b46535728d634",
   "fpn": "8755fe0cb14ef2cd",
   "leaf": true,
-  "name": "func_8008B29C",
+  "name": "ModelCreateShadow",
   "orig": "func_8008B29C",
   "rom": 75276,
   "seg": "overlays/engine/heroes",
@@ -28369,13 +28369,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008B418": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008B418.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/ModelUpdateShadow.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "7aae394a124a50fd",
   "fpn": "d825e3d1111aa20a",
   "leaf": true,
-  "name": "func_8008B418",
+  "name": "ModelUpdateShadow",
   "orig": "func_8008B418",
   "rom": 75656,
   "seg": "overlays/engine/heroes",
@@ -28456,7 +28456,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008C5C4": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008C5C4.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/ArcUpdate.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -28466,7 +28466,7 @@
   "fp": "2118a003ce1e3963",
   "fpn": "a70da6dca6ba4041",
   "leaf": false,
-  "name": "func_8008C5C4",
+  "name": "ArcUpdate",
   "orig": "func_8008C5C4",
   "rom": 80180,
   "seg": "overlays/engine/heroes",
@@ -28474,7 +28474,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008C824": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008C824.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/PlotSparks.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590"
@@ -28482,7 +28482,7 @@
   "fp": "a060b4a02500f98e",
   "fpn": "c871008e1529bf19",
   "leaf": false,
-  "name": "func_8008C824",
+  "name": "PlotSparks",
   "orig": "func_8008C824",
   "rom": 80788,
   "seg": "overlays/engine/heroes",
@@ -28490,7 +28490,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008CA90": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008CA90.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/PlotFallParticles.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -28499,7 +28499,7 @@
   "fp": "724305d4b8d9c7d7",
   "fpn": "9274fe9466c96d5d",
   "leaf": false,
-  "name": "func_8008CA90",
+  "name": "PlotFallParticles",
   "orig": "func_8008CA90",
   "rom": 81408,
   "seg": "overlays/engine/heroes",
@@ -28567,7 +28567,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008CE20": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008CE20.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/SubFindFlagPoint.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001562C"
@@ -28575,7 +28575,7 @@
   "fp": "f988f3d4bd425baa",
   "fpn": "9d5f2e19810c8258",
   "leaf": false,
-  "name": "func_8008CE20",
+  "name": "SubFindFlagPoint",
   "orig": "func_8008CE20",
   "rom": 82320,
   "seg": "overlays/engine/heroes",
@@ -28583,13 +28583,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008CEB0": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008CEB0.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/DistXZSq.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "ee8c3652aa2d2079",
   "fpn": "f53c1c1f4891bafe",
   "leaf": true,
-  "name": "func_8008CEB0",
+  "name": "DistXZSq",
   "orig": "func_8008CEB0",
   "rom": 82464,
   "seg": "overlays/engine/heroes",
@@ -28724,13 +28724,13 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008D488": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008D488.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/FormatPercent.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "8d77cc31a1934c57",
   "fpn": "9a5e30630cce2a72",
   "leaf": true,
-  "name": "func_8008D488",
+  "name": "FormatPercent",
   "orig": "func_8008D488",
   "rom": 83960,
   "seg": "overlays/engine/heroes",
@@ -28754,7 +28754,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008D5D4": {
-  "asm": "asm/nonmatchings/overlays/engine/heroes/func_8008D5D4.s",
+  "asm": "asm/nonmatchings/overlays/engine/heroes/CreateFloatyScore.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018F3C",
@@ -28764,7 +28764,7 @@
   "fp": "af52ba653ebaf499",
   "fpn": "d59c417a0511fba0",
   "leaf": false,
-  "name": "func_8008D5D4",
+  "name": "CreateFloatyScore",
   "orig": "func_8008D5D4",
   "rom": 84292,
   "seg": "overlays/engine/heroes",

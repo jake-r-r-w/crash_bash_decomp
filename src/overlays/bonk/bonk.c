@@ -323,8 +323,8 @@ void InitialiseBONKFirst() {
     HeroHooks.PostMoveHero = BonkHeroPostMove;
     HeroHooks.HeroKickCollision = BonkHeroKickCollision;
     HeroHooks.TestAttack = BonkHeroTestSwing;
-    HeroHooks.TestKick = D_8008AB48;
-    HeroHooks.TestJump = D_8008AB04;
+    HeroHooks.TestKick = HeroNoKick;
+    HeroHooks.TestJump = HeroNoJump;
     HeroHooks.HeroExtraEffects = BonkHero_ExtraEffects;
     HeroHooks.ChooseWinner = BonkChooseWinner;
     HeroHooks.HeroBot = Bonk_HeroBot;
@@ -853,7 +853,7 @@ void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
         }
         h->hero_move->reactive_angle = ang;
         h->hero_move->reactive_speed = 0x50;
-        func_80084E04(i, NULL, -1, 0x8001, 0x446);
+        HeroTakeHit(i, NULL, -1, 0x8001, 0x446);
         h->hero_health = 0x14;
         pad_rumble_small(i, 0xF);
         BonkHidePowerup(i);
@@ -1755,7 +1755,7 @@ void BonkKnockBack(s32 arg0, EXTengine *p, s32 arg2) {
     } else {
         z = Heroes[arg0].hero_eng->unk10.z;
     }
-    func_8008D5D4(x, y, z, arg2, 0);
+    CreateFloatyScore(x, y, z, arg2, 0);
     g = GameInfo;
     if (*(u16 *)(g + 0x32) & 0x40) {
         if (*(s32 *)(g + 0x6C) != 0) {

@@ -240,9 +240,9 @@ FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
 void ApplyContour(EXTengine *eng);
 void *FindExtension(NAS *nas, s32 id);
 
-s32 func_80085890();
+s32 CheckHeroAnim();
 s32 func_8008A200(s32 arg0);
-void func_8008A810(void);
+void FinishLevel(void);
 
 s32 SpinAI_HazardAhead(s32 arg0);
 
@@ -297,7 +297,7 @@ void SpinHeroLose(s32 arg0);
 extern u16 SpinHitSfx[];
 extern u16 SpinHitDone[];
 extern s32 GameCheats;
-s32 func_8008502C();
+s32 ProcessHeroAnim();
 s32 func_800871E4(s32 arg0);
 s32 SetHeroSeq(s32 player, s32 seq);
 
@@ -430,6 +430,6 @@ void SpinAI_ScanAhead(s32 arg0);
 /* Spin_HeroBot */
 extern u32 DirPadBits[]; /* pad flags by angle octant */
 s32 csqrt(s32 x);
-s32 func_800864CC(s32 id, u32 flag);
+s32 HeroTestBox(s32 id, u32 flag);
 
 #endif /* BASH_SPIN_OVL_H */

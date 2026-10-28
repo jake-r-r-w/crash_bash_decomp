@@ -64,7 +64,7 @@ extern char PlayerVehicleModel[];
 s32 csqrt(s32 x);
 
 NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2);
-void func_800898EC(s32 arg0);
+void HeroBecomeAngel(s32 arg0);
 
 void N2OLineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
 

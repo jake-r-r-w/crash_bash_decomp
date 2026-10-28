@@ -107,7 +107,7 @@ typedef struct MineOffset {
 } MineOffset;
 extern MineOffset MineShrapnelOffsets[4];
 void SetMoeJoeDead(s32 hero, s32 last_mode);
-s32 func_8008502C();
+s32 ProcessHeroAnim();
 extern s32 *MoeAnimPtr;
 extern s32 *JoeAnimPtr;
 extern s32 MoeMoveAnim[];

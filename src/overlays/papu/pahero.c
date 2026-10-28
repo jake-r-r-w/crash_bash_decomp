@@ -758,7 +758,7 @@ void PAHeroHit(u32 arg0) {
     if (h->hero_move->reactive_speed != 0) {
         HeroHooks.HeroKickCollision();
     }
-    switch (func_8008502C(arg0)) {
+    switch (ProcessHeroAnim(arg0)) {
     case 8:
         switch (h->hero_name) {
         case 1:
@@ -815,7 +815,7 @@ void PAHeroPickup(s32 arg0) {
     s16 t;
     PapuWeaponVec *tbl;
 
-    func_8008502C();
+    ProcessHeroAnim();
     b = Heroes;
     h = &b[arg0];
     s = h->hero_fx->sub;
@@ -860,7 +860,7 @@ void PAHeroHold(s32 arg0) {
     VECTOR pos;
     int new_var;
 
-    if (func_8008ABF8(arg0) == 0) {
+    if (HeroCheckResult(arg0) == 0) {
         base = Heroes;
         h = &base[arg0];
         o = h->hero_object;
@@ -884,7 +884,7 @@ void PAHeroHold(s32 arg0) {
         {
         if (func_8008ACF0(arg0) == 0) {
             HeroHooks.HeroKickCollision(arg0);
-            func_8008502C(arg0);
+            ProcessHeroAnim(arg0);
             base2 = Heroes;
             self = &base2[arg0];
             s = self->hero_fx->sub;
@@ -917,7 +917,7 @@ void PAHeroCarry(s32 arg0) {
     VECTOR pos;
     int new_var;
 
-    if (func_8008ABF8(arg0) == 0) {
+    if (HeroCheckResult(arg0) == 0) {
         base = Heroes;
         h = &base[arg0];
         o = h->hero_object;
@@ -941,7 +941,7 @@ void PAHeroCarry(s32 arg0) {
         {
         if (func_8008AC74(arg0) == 0) {
             HeroHooks.HeroKickCollision(arg0);
-            func_8008502C(arg0);
+            ProcessHeroAnim(arg0);
             base2 = Heroes;
             self = &base2[arg0];
             s = self->hero_fx->sub;
@@ -973,7 +973,7 @@ void PAHeroThrow(s32 arg0) {
     s16 (*tbl)[3];
     s16 t;
 
-    if (func_8008502C() == 0x13) {
+    if (ProcessHeroAnim() == 0x13) {
         b0 = Heroes;
         h0 = &b0[arg0];
         if (h0->hero_object != NULL) {
@@ -1041,7 +1041,7 @@ void SetPAHeroDead(s32 arg0) {
     if (h->hero_powerup->sfx != NULL) {
         StopSfx(h->hero_powerup->sfx);
     }
-    func_800898EC(arg0);
+    HeroBecomeAngel(arg0);
 }
 
 void SetPAHeroWinner(s32 arg0) {
@@ -1087,9 +1087,9 @@ void SetPAHeroWinner(s32 arg0) {
     h2->hero_sub->unk08 = 0;
     h2->hero_pu = 0;
     h2->hero_pu_timer = 0;
-    func_80085718(arg0, 0);
+    RequestHeroAnim(arg0, 0);
     SetHeroSeq(arg0, 0xC);
-    func_80089FA4(arg0);
+    StartHeroVictory(arg0);
 }
 
 void PAHeroWinner(s32 arg0) {
@@ -1109,11 +1109,11 @@ void PAHeroWinner(s32 arg0) {
     } else {
         h->hero_eng->unk10.y = World_floor_level;
     }
-    func_80085890(arg0);
+    CheckHeroAnim(arg0);
     if (func_8008A200(arg0) != 0) {
-        func_8008A810();
+        FinishLevel();
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 /* The HeroHooks.Hero2ObjectCollision hook: claim the first object in reach of player's
@@ -1603,7 +1603,7 @@ void PAHeroDead(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
-    if (func_8008ABF8(arg0) != 0) {
+    if (HeroCheckResult(arg0) != 0) {
         base = Heroes;
         h = base + arg0;
         if ((u16)(h->hero_name - 1) < 8) {

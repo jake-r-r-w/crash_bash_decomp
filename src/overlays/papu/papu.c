@@ -415,7 +415,7 @@ void InitialisePAPU(void) {
     PapuPickupTimer = (Random(10) + 10) * 30;
     PapuSfxEngine = EngineTemplate;
     PapuShuffleDropPoints();
-    func_80086D88();
+    MarkHeroesOnGrid();
     for (i = 0; i < 4; i++) {
         angle = get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z);
         move = Heroes[i].hero_move;
@@ -1369,7 +1369,7 @@ void PlotPapuMinion(NAS *nas)
       if ((Heroes[who].hero_immunity | Heroes[who].hero_hit) == 0) {
         Heroes[who].hero_move->reactive_angle = angle;
         Heroes[who].hero_move->reactive_speed = 0x30;
-        func_80084E04(who, NULL, -1, 0x8005, 0x446);
+        HeroTakeHit(who, NULL, -1, 0x8005, 0x446);
       }
     }
     PapuHitSolids(eng, 2, 0x400, (u16)nas->UserInfo.user1);
@@ -1729,7 +1729,7 @@ s32 PapuHitHeroes(EXTengine *eng) {
                 dz = eng->unk10.z - pos.vz;
                 d = dx * dx + dz * dz;
                 if (d < (rec->radius + r) * (rec->radius + r)) {
-                    func_80084E04(i, NULL, -1, 0x8008, 0x446);
+                    HeroTakeHit(i, NULL, -1, 0x8008, 0x446);
                 }
             }
         }
@@ -2378,7 +2378,7 @@ void PapuSpawnMinions(u16 arg0) {
 
 void PapuHeroCheckPit(s32 arg0) {
     if (PapuHeroOverPit(arg0) != 0) {
-        func_80084E04(arg0, 0, -1, 3, 0);
+        HeroTakeHit(arg0, 0, -1, 3, 0);
     }
 }
 
@@ -2541,9 +2541,9 @@ void PapuRestartLevel(void) {
 }
 
 void UpdatePAPU(void) {
-    func_80086F78();
+    ArenaGridClear();
     PapuCountObjects();
-    func_80086D88();
+    MarkHeroesOnGrid();
     PapuCrateMaster();
     PapuUpdateFloor();
 }

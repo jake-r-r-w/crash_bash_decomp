@@ -219,7 +219,7 @@ void RaceMovesSwap(EXTheromove *a, EXTheromove *b);
 extern HeroInfo Heroes[4];
 void SetHeroAction(s32 player, s32 action);
 s32 func_8008C4C8(s32 *arg0, s32 arg1);
-s32 func_8008CEB0(u8 *arg0, u8 *arg1);
+s32 DistXZSq(u8 *arg0, u8 *arg1);
 
 s32 RaceBounceObject(RaceBounceObj *obj, RaceBouncer *b);
 
@@ -569,7 +569,7 @@ loop:
         s32 dist;
 
         do {
-            dist = func_8008CEB0(pos, (u8 *)hero->hero_eng + 0x10);
+            dist = DistXZSq(pos, (u8 *)hero->hero_eng + 0x10);
         } while (0);
         if (dist < 0x6184) {
             if (hero->hero_mode != 0x5D) {
@@ -636,7 +636,7 @@ typedef struct RaceFuxState {
     /* 0x5C */ u8 pad5C[0x130 - 0x5C];
     /* 0x130 */ s32 unk130;
 } RaceFuxState;
-/* A volcano rock's arc, passed to func_8008C5C4 (0x54 bytes). */
+/* A volcano rock's arc, passed to ArcUpdate (0x54 bytes). */
 typedef struct RaceVolcArc {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -720,7 +720,7 @@ typedef struct BarrelRollExt {
 } BarrelRollExt;
 
 void InitBarrelRoll(NAS *m);
-s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
+s32 ArcUpdate(s32 *from, s32 *to, void *arc, s32 *pos);
 
 extern NAS *RacePickups;
 NAS *RaceNearestPickup(s32 arg0);
@@ -1222,7 +1222,8 @@ extern void *AiTeamSkillTable;
 extern void *AiHumanRoundTweakTable;
 
 /* Tables InitialiseRACEFirst hooks into the engine. */
-extern u8 D_8008B29C[], D_8008B418[];
+void ModelCreateShadow(s32 idx);
+void ModelUpdateShadow(s32 idx);
 extern s32 RaceVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1);
 

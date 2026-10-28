@@ -395,7 +395,8 @@ void PlotDinoGem(NAS *m);
 
 #endif /* BASH_DINO_OVL_H */
 
-extern u8 D_8008B29C[], D_8008B418[];
+void ModelCreateShadow(s32 idx);
+void ModelUpdateShadow(s32 idx);
 extern s32 DinoVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern DinoObj *DinoTargetD, *DinoTargetE;
 extern s32 DinoTargetTimer, DinoTargetDelay, DinoTargetStep, DinoScoreTimer, DinoTargetFlag;

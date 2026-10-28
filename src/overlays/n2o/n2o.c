@@ -1129,7 +1129,7 @@ void N2OHeroEnter(s32 arg0) {
     s32 n;
 
     if (N2OHeroUpdateSpeed() != 0) {
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
     base = Heroes;
     h = &base[arg0];
@@ -1174,7 +1174,7 @@ void N2OHeroIdle(s32 arg0) {
     s32 mode;
 
     if (N2OHeroUpdateSpeed() != 0) {
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
@@ -1251,7 +1251,7 @@ void N2OHeroHit(s32 arg0) {
                 SetHeroAction(arg0, 0x2B);
             }
         }
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
 }
 
@@ -1289,7 +1289,7 @@ void N2OHeroTaunt(s32 arg0) {
             ((mode = h->hero_mode, (s32)mode < 0x2C) == 0 || (s32)mode < 0x2A)) {
             SetHeroAction(arg0, 0x28);
         }
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
 }
 
@@ -1328,7 +1328,7 @@ void N2OHeroMove(s32 arg0) {
             SetHeroAction(arg0, 0x27);
         }
         if (N2OHeroUpdateSpeed(arg0) != 0) {
-            func_8008502C(arg0);
+            ProcessHeroAnim(arg0);
         }
     }
 }
@@ -1354,8 +1354,8 @@ void SetN2OHeroWinner(s32 arg0) {
     h->hero_sub->unk08 = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
-    func_80085718(arg0, 0);
-    func_80089FA4(arg0);
+    RequestHeroAnim(arg0, 0);
+    StartHeroVictory(arg0);
     GameAdventure.unk75 = 0;
 }
 
@@ -1390,11 +1390,11 @@ void N2OHeroWinner(s32 arg0) {
     if (flag != 0) {
         CameraMode = 1;
     }
-    func_80085890(arg0, flag);
+    CheckHeroAnim(arg0, flag);
     if (func_8008A200(arg0) != 0) {
-        func_8008A810();
+        FinishLevel();
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetN2OHeroDie(s32 arg0) {
@@ -1481,7 +1481,7 @@ void N2OHeroKick(s32 arg0) {
         }
     }
     if (N2OHeroUpdateSpeed(arg0) != 0) {
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
 }
 
@@ -1528,7 +1528,7 @@ void SetN2OHeroDead(s32 arg0) {
     sp18 = temp_v0->unk10;
     SpawnModelFx(0, (s32 *)&sp18, (s32) &PlayerVehicleModel);
     PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->unk10, 0x1000, 0x1E00, 0);
-    func_800898EC(arg0);
+    HeroBecomeAngel(arg0);
 }
 
 void N2OHeroDead(s32 arg0) {
@@ -4138,7 +4138,7 @@ void N2OHeroDie(s32 arg0) {
     } else {
         SetHeroAction(arg0, 0x2E);
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetN2OHeroMove(s32 arg0) {

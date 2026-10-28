@@ -165,14 +165,14 @@ void InitialiseLevel(void) {
     ResetNasHeap();
     ResetNasLists();
     SetDefaultHeroHooks();
-    func_8008688C();
+    SetLevelCameraMode();
     if (LevelSpecs.LevelPreInit != NULL) {
         LevelSpecs.LevelPreInit();
     }
     GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
     ASTCount = ASTTableCount();
-    func_80083708();
+    InitialiseHeroes();
     SetTweakAi();
     RunLevelTriggers();
     {
@@ -366,7 +366,7 @@ void UpdateLevel(void) {
         FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", D_8004E104, D_8004E10C);
     }
     UpdateAllNas();
-    func_80083E8C();
+    ProcessHeroes();
     GlobalNAStatus = 2;
     i = 0;
     if (*(s32 *)D_8005AA40 > 0) {
@@ -752,7 +752,7 @@ void InitialiseEngine(void) {
     GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
     ASTCount = ASTTableCount();
-    func_80083708();
+    InitialiseHeroes();
     SetTweakAi();
     RunLevelTriggers();
     want = 0x20C;
@@ -775,7 +775,7 @@ void PreInitLevel(void) {
 
     g->flags &= 0xF4FF;
     SetDefaultHeroHooks();
-    func_8008688C();
+    SetLevelCameraMode();
     if (LevelSpecs.LevelPreInit != NULL) {
         LevelSpecs.LevelPreInit();
     }
@@ -835,7 +835,7 @@ void QuitLevel(void) {
     if (D_8005AA80 != NULL) {
         D_8005AA80();
     }
-    func_80086814();
+    ReleaseHeroAnims();
     KillEveryNas();
 }
 

@@ -18,7 +18,7 @@ typedef struct {
     /* 0x1C */ u16 unk1C;
     /* 0x1E */ u16 unk1E;
 } FuxFlags;
-/* Hero engine scale tables, 12 steps (func_80088794). */
+/* Hero engine scale tables, 12 steps (HeroSpin). */
 extern u16 D_8009DC38[];
 extern u16 D_8009DC50[];
 typedef struct {
@@ -26,7 +26,7 @@ typedef struct {
     u16 b;
     u16 pad;
 } D_8009D6FC_t;
-/* Per-hero run speed rows: 3 u16 per hero_name (func_800859D4). */
+/* Per-hero run speed rows: 3 u16 per hero_name (DefPreMoveHero). */
 extern s16 D_8009D864;
 extern u16 D_8009D866;
 extern s16 D_8009D870;
@@ -139,7 +139,7 @@ typedef struct {
 
 extern D_8009D87C_t AiPlayerSkill[];
 
-/* func_80084E04: harm tables. */
+/* HeroTakeHit: harm tables. */
 extern u16 D_8009D3B8[][4];
 extern u16 D_8009D400[][9];
 extern u16 D_8009D4A4[];
@@ -205,7 +205,7 @@ extern u16 D_8009DC2C[];
 
 
 
-/* ballistic arc state used by func_8008C5C4 */
+/* ballistic arc state used by ArcUpdate */
 typedef struct {
     /* 0x00 */ s32 gravity;
     /* 0x04 */ s32 started;
@@ -233,7 +233,7 @@ extern u16 D_8009E224[];
 
 
 
-/* func_800898EC: a 14-byte record per hero, 3 rows of 4 heroes. */
+/* HeroBecomeAngel: a 14-byte record per hero, 3 rows of 4 heroes. */
 typedef struct {
     u16 unk0;
     u16 unk2;
@@ -252,10 +252,10 @@ void UpdateWinCounter(s32 arg0);
 
 
 
-/* func_8008900C: per weapon-timer step, an s16 triple. */
+/* HeroShoot: per weapon-timer step, an s16 triple. */
 extern s16 D_8009DC68[][3];
 
-/* func_8008CA90: one falling particle, drawn as a quad between two points */
+/* PlotFallParticles: one falling particle, drawn as a quad between two points */
 typedef struct {
     SVECTOR top;  /* 0x0 */
     SVECTOR bot;  /* 0x8 */
@@ -430,7 +430,7 @@ typedef struct HudEngView {
     /* 0x406 */ s16 on1;
 } HudEngView;
 #define HUDG ((HudGameView *)GameInfo)
-/* GameInfo as seen by func_80084788. */
+/* GameInfo as seen by DefChooseWinner. */
 typedef struct WinnerView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 flags;
@@ -447,7 +447,7 @@ typedef struct WinnerView {
 } WinnerView;
 #define WINV ((WinnerView *)GameInfo)
 extern s32 D_8009D758;
-/* GameInfo as seen by func_80083E8C. */
+/* GameInfo as seen by ProcessHeroes. */
 typedef struct HeroLoopView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 state;
@@ -503,12 +503,12 @@ void UpdatePauseSlide(s32 arg0);
 
 
 
-/* func_80083708: hero setup. */
+/* InitialiseHeroes: hero setup. */
 extern s32 D_8009D758;
 extern s32 D_8009D75C;
 extern u16 D_8009D3A4[];
 
-/* GameInfo as seen by func_80083708. */
+/* GameInfo as seen by InitialiseHeroes. */
 typedef struct HeroSetupView {
     /* 0x00 */ u8 unk0[0x10];
     /* 0x10 */ s32 unk10;
@@ -521,7 +521,7 @@ typedef struct HeroSetupView {
 #define HSV ((HeroSetupView *)GameInfo)
 
 
-/* A particle func_8008C824 scatters (0x18 bytes). */
+/* A particle PlotSparks scatters (0x18 bytes). */
 typedef struct {
     s16 x, y, z;
     s16 pad6;
@@ -545,7 +545,7 @@ typedef struct {
     u16 uv3, pad2;
 } SparkPoly;
 
-/* The texture func_8008C824 puts on its polys. */
+/* The texture PlotSparks puts on its polys. */
 typedef struct {
     u8 pad[0x24];
     u16 tpage, clut, uv0, uv1, uv2, uv3;

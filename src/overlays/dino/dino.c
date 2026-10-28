@@ -916,7 +916,7 @@ s32 DinoAI_ShotBlocked(s32 id)
         if (!(st & 0x8000))
         {
           pos = *((Vec3W *) (&Heroes[i].hero_eng->unk10));
-          d = func_8008CEB0((u8 *) (&pos), (u8 *) (&Heroes[id].hero_eng->unk10));
+          d = DistXZSq((u8 *) (&pos), (u8 *) (&Heroes[id].hero_eng->unk10));
           if (d < bestd)
           {
             bestd = d;
@@ -1091,7 +1091,7 @@ void DinoAI_Wander(s32 arg0) {
         }
         if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
             pos.v = Heroes[i].hero_eng->unk10;
-            dist = func_8008CEB0((u8 *)&pos.v, (u8 *)&Heroes[arg0].hero_eng->unk10);
+            dist = DistXZSq((u8 *)&pos.v, (u8 *)&Heroes[arg0].hero_eng->unk10);
             if (dist < bestd) {
                 bestd = dist;
                 best = i;
@@ -1905,8 +1905,8 @@ void InitialiseDINOFirst(void) {
         HeroHooks.ChooseWinner = DinoChooseWinnerTeam;
     }
     HeroHooks.VictorySeqs = DinoVictorySeqs;
-    HeroHooks.CreateShadow = D_8008B29C;
-    HeroHooks.UpdateShadow = D_8008B418;
+    HeroHooks.CreateShadow = ModelCreateShadow;
+    HeroHooks.UpdateShadow = ModelUpdateShadow;
     p = &AiSkillTable;
     if (*(s32 *)(g + 0x6C) != 0) {
         v = DinoAiSkillAlt;
@@ -2479,7 +2479,7 @@ s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     ap = (s32 *)a;
     dist = 0x7FFFFFF;
     side = 0;
-    src = (DinoBox2 *)func_8008CE20((subengine *)a, side, side);
+    src = (DinoBox2 *)SubFindFlagPoint((subengine *)a, side, side);
     p = sv;
     if (src == NULL) {
         printf("No Coll box on subengine in XZBoxToSphere\n");
@@ -2945,7 +2945,7 @@ void DinoHeroRun(s32 id) {
         DinoHeroCollide(id);
         DinoHeroTestIdle(id);
         DinoHeroTestShoot(id);
-        func_8008502C(id);
+        ProcessHeroAnim(id);
         if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
             SetHeroAction(id, 0x68);
         }
@@ -3013,7 +3013,7 @@ void DinoHeroDazed(s32 id) {
         if (ext->unkC-- < 0) {
             SetHeroAction(id, 0x63);
         }
-        func_8008502C(id);
+        ProcessHeroAnim(id);
         if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
             SetHeroAction(id, 0x68);
         }
@@ -3062,7 +3062,7 @@ void DinoHeroSlide(s32 id) {
     }
     DinoHeroCollide(id);
     DinoHeroTestStop(id);
-    func_8008502C(id);
+    ProcessHeroAnim(id);
     if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
         SetHeroAction(id, 0x68);
     }
@@ -3775,7 +3775,7 @@ s32 DinoHeroTestRun(s32 arg0) {
 
 void DinoHeroShoot(s32 arg0) {
     DinoHeroCollide(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x68) {
         SetHeroAction(arg0, 0x68);
     }
@@ -3805,7 +3805,7 @@ void DinoHeroIdle(s32 arg0) {
     DinoHeroCollide(arg0);
     DinoHeroTestRun(arg0);
     DinoHeroTestShoot(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x68) {
         SetHeroAction(arg0, 0x68);
     }
@@ -3949,22 +3949,22 @@ void DINOSetUp(void) {
 }
 
 void DinoHeroWinner(s32 arg0) {
-    func_80085890(arg0);
+    CheckHeroAnim(arg0);
     if (func_8008A200(arg0) != 0) {
-        func_8008A810();
+        FinishLevel();
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetDinoHeroWinner(s32 arg0) {
-    func_80089FA4(arg0);
+    StartHeroVictory(arg0);
     SetHeroSeq(arg0, 0x4D);
     Heroes[arg0].hero_eng->unk20 = 0;
     Heroes[arg0].hero_eng->unk5E = 1;
     if (Heroes[arg0].hero_eng->sfx != NULL) {
         StopSfx(Heroes[arg0].hero_eng->sfx);
     }
-    func_80085718(arg0, 0);
+    RequestHeroAnim(arg0, 0);
 }
 
 s32 TestDinoHeroWon(s32 id) {
@@ -4002,7 +4002,7 @@ loop:
     if (i < 4) {
         if (i != self &&!((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
             pos = h->hero_eng->unk10;
-            d = func_8008CEB0((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+            d = DistXZSq((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
             if (d < min) {
                 min = d;
                 do {

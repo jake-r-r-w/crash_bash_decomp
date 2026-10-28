@@ -5,7 +5,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-void func_80083708(void) {
+void InitialiseHeroes(void) {
     s32 i;
     s32 j;
     HeroInfo *h;
@@ -278,8 +278,8 @@ void func_80083708(void) {
         k += 3;
     }
     Setup_panel();
-    func_80085650();
-    func_80086FA0();
+    ClearHeroAnimSlots();
+    ArenaGridReset();
 }
 
 const char HeroNameNobody[] = "nobody";
@@ -302,7 +302,7 @@ const char HeroNameKanga[] = "Kanga";
 
 const char HeroAnimWin[] = "WIN";
 
-void func_80083E8C(void) {
+void ProcessHeroes(void) {
     HeroInfo *h;
     HeroInfo *b;
     u16 *pc;
@@ -483,7 +483,7 @@ void func_80083E8C(void) {
             }
         }
         ((void (*)(EXTengine *))HeroHooks.KeepInBounds)(Heroes[id].hero_eng);
-        func_8008672C(id);
+        UpdateHeroShadow(id);
         if (HeroHooks.HeroExtraEffects != NULL) {
             ((void (*)(s32))HeroHooks.HeroExtraEffects)(id);
         }
@@ -542,7 +542,7 @@ void func_80083E8C(void) {
     }
 }
 
-void func_80084788(s32 idx, u16 arg1) {
+void DefChooseWinner(s32 idx, u16 arg1) {
     HeroInfo *h;
     HeroInfo *m;
     s32 i;
@@ -739,7 +739,7 @@ void func_80084788(s32 idx, u16 arg1) {
     }
 }
 
-void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
+void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     HeroInfo *h;
     u8 *base;
     u8 *g;
@@ -803,7 +803,7 @@ void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     }
 }
 
-s32 func_8008502C(player)
+s32 ProcessHeroAnim(player)
 s32 player;
 {
     HeroInfo *h;
@@ -876,7 +876,7 @@ s32 player;
                 }
                 break;
             case 0x8017:
-                func_80084E04(player, NULL, -1, 0x1000, 0);
+                HeroTakeHit(player, NULL, -1, 0x1000, 0);
                 break;
             case 0x8018:
                 anim->Masterspeed = ((s16 *)anim->Atable)[++anim->Aindex];
@@ -914,12 +914,12 @@ s32 SetHeroSeq(s32 player, s32 seq) {
         h->hero_anim->Aindex = 0;
         h->hero_anim->Masterspeed = *(u16 *)h->hero_anim->Atable;
         h->hero_anim->Seq_count = 0;
-        return func_8008502C(player, seq);
+        return ProcessHeroAnim(player, seq);
     }
     return 0;
 }
 
-s32 func_80085584(s32 hero, u16 name, s32 seq) {
+s32 SetHeroAseq(s32 hero, u16 name, s32 seq) {
     HeroInfo *h;
 
     if ((u16)(name - 1) < 8) {
@@ -934,12 +934,12 @@ s32 func_80085584(s32 hero, u16 name, s32 seq) {
         h->hero_anim->Aindex = 0;
         h->hero_anim->Masterspeed = *(u16 *)h->hero_anim->Atable;
         h->hero_anim->Seq_count = 0;
-        return func_8008502C(hero);
+        return ProcessHeroAnim(hero);
     }
     return 0;
 }
 
-void func_80085650(void) {
+void ClearHeroAnimSlots(void) {
     s32 i;
     s32 j;
     s32 off;
@@ -1001,7 +1001,7 @@ static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, 
     dbase_mesh_anim_name_load((u8 *)q, (u8 *)((D_8009D6FC_t *)t)->a);
 }
 
-void func_80085718(s32 arg0, u16 arg1) {
+void RequestHeroAnim(s32 arg0, u16 arg1) {
     if (D_8009D86C == 0) {
         HeroAnimSlotSet(&D_8009D864, &D_8009D866, &D_8009D868, &D_8009D86C, (volatile s32 *)((u8 *)&D_8009D878 - 12), arg0, arg1);
     } else if (ModeTypes[GameMode * 3] != 0x104) {
@@ -1009,7 +1009,7 @@ void func_80085718(s32 arg0, u16 arg1) {
     }
 }
 
-s32 func_80085890(s32 arg0) {
+s32 CheckHeroAnim(s32 arg0) {
     s32 i;
 
     if (D_8009D864 == arg0) {
@@ -1038,7 +1038,7 @@ s32 func_80085890(s32 arg0) {
     }
 }
 
-void func_800859D4(s32 arg0) {
+void DefPreMoveHero(s32 arg0) {
     HeroInfo *hb;
     HeroInfo *hb2;
     PadStick *pb;
@@ -1109,7 +1109,7 @@ void func_800859D4(s32 arg0) {
     }
 }
 
-void func_80085C84(s32 arg0) {
+void DefHeroFacing(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
@@ -1122,7 +1122,7 @@ void func_80085C84(s32 arg0) {
     }
 }
 
-void func_80085D2C(s32 arg0) {
+void DefMoveHero(s32 arg0) {
     HeroInfo *h;
     EXTengine *e;
     EXTheromove *m;
@@ -1134,7 +1134,7 @@ void func_80085D2C(s32 arg0) {
     e = h->hero_eng;
     m = h->hero_move;
     ((void (*)(s32))HeroHooks.HeroFacing)(arg0);
-    func_800860D4(arg0);
+    HeroApplyJump(arg0);
     switch (m->velocity_calc) {
     case 2:
         m->x_vel += m->x_acc - m->x_dec;
@@ -1220,7 +1220,7 @@ void func_80085D2C(s32 arg0) {
     }
 }
 
-void func_800860D4(s32 arg0) {
+void HeroApplyJump(s32 arg0) {
     HeroInfo *b0;
     HeroInfo *base;
     HeroInfo *h;
@@ -1284,7 +1284,7 @@ void func_800860D4(s32 arg0) {
     }
 }
 
-s32 func_800863D0(s32 arg0) {
+s32 HeroMovedDist(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     s32 dist;
@@ -1316,7 +1316,7 @@ s32 func_800863D0(s32 arg0) {
     return 1;
 }
 
-s32 func_800864CC(s32 id, u32 flag) {
+s32 HeroTestBox(s32 id, u32 flag) {
     VECTOR pos;
     HeroInfo *base;
     HeroInfo *me;
@@ -1399,15 +1399,15 @@ s32 func_800866DC(s32 *arg0) {
 void DefaultTouched(s32 arg0, s32 arg1) {
 }
 
-s32 func_8008670C(void) {
+s32 DefKeepInBounds(void) {
     return 0;
 }
 
-s32 func_80086714(void) {
+s32 DefHeroKickCollision(void) {
     return 0;
 }
 
-s32 func_8008671C(void) {
+s32 DefHeroGrabObject(void) {
     return 0;
 }
 
@@ -1415,7 +1415,7 @@ s32 DefHero2ObjectCollision(void) {
     return 0;
 }
 
-void func_8008672C(s32 idx) {
+void UpdateHeroShadow(s32 idx) {
     HeroInfo *h;
     EXTengine *s;
     EXTengine *e;
@@ -1436,13 +1436,13 @@ void func_8008672C(s32 idx) {
 }
 
 void func_800867EC(void) {
-    func_80085D2C(1);
+    DefMoveHero(1);
 }
 
-void func_8008680C(void) {
+void DefHeroBot(void) {
 }
 
-void func_80086814(void) {
+void ReleaseHeroAnims(void) {
     if (D_8009D86C != 0) {
         dbase_mesh_anim_name_release(D_8009D86C, D_8009D868);
     }
@@ -1459,7 +1459,7 @@ void func_80086868(void) {
     D_8009D6DC[4] = 0;
 }
 
-void func_8008688C(void) {
+void SetLevelCameraMode(void) {
     CameraMode = D_8005A5E8[D_8005A61C].unkC;
 }
 
@@ -1600,7 +1600,7 @@ s32 func_80086C94(s32 arg0) {
     return -1;
 }
 
-void func_80086D88(void) {
+void MarkHeroesOnGrid(void) {
     s32 i;
     HeroInfo *hero;
     EXTengine *eng;
@@ -1679,7 +1679,7 @@ inner:
     }
 }
 
-void func_80086F78(void) {
+void ArenaGridClear(void) {
     s32 i = 399;
     D_8009D90C_t *p = ArenaGrid;
 
@@ -1689,7 +1689,7 @@ void func_80086F78(void) {
     }
 }
 
-void func_80086FA0(void) {
+void ArenaGridReset(void) {
     s32 i;
     D_8009D90C_t *p;
 
@@ -1700,7 +1700,7 @@ void func_80086FA0(void) {
     }
 }
 
-s32 func_80086FCC(s32 arg0) {
+s32 HeroTestActions(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     PadButtons *pads;
@@ -1783,7 +1783,7 @@ s32 func_800871E4(s32 arg0) {
                 h->hero_sub->unk08 = 0;
             }
         }
-    } else if ((moved = func_800863D0(arg0) != 1)) {
+    } else if ((moved = HeroMovedDist(arg0) != 1)) {
         switch (h->hero_mode) {
         case 0:
         case 2:
@@ -1836,7 +1836,7 @@ s32 func_800871E4(s32 arg0) {
     return 0;
 }
 
-void func_80087428(s32 arg0) {
+void SetHeroIdle(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *e;
@@ -1857,7 +1857,7 @@ void func_80087428(s32 arg0) {
     }
 }
 
-void func_800874EC(s32 arg0) {
+void HeroIdle(s32 arg0) {
     s32 ret2;
     HeroInfo *h;
     HeroInfo *h2;
@@ -1867,7 +1867,7 @@ void func_800874EC(s32 arg0) {
     EXTengine *e;
 
     if (HeroCheckStatus2000(arg0) == 0 && HeroCheckStatus600(arg0) == 0 &&
-        func_80086FCC(arg0) == 0) {
+        HeroTestActions(arg0) == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
@@ -1911,7 +1911,7 @@ void func_800874EC(s32 arg0) {
                 }
             }
         idle_done:
-            func_8008502C(arg0);
+            ProcessHeroAnim(arg0);
             if (VelocityCalc < 4) {
                 if (VelocityCalc >= 2) {
                     HeroHooks.HeroKickCollision(arg0);
@@ -1926,11 +1926,11 @@ void func_800874EC(s32 arg0) {
     }
 }
 
-void func_8008795C(s32 arg0) {
+void HeroTaunt(s32 arg0) {
     s32 ret2;
 
     if (HeroCheckStatus2000(arg0) == 0 && HeroCheckStatus600(arg0) == 0 &&
-        func_80086FCC(arg0) == 0) {
+        HeroTestActions(arg0) == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
@@ -1940,7 +1940,7 @@ void func_8008795C(s32 arg0) {
             ret2 = 0;
         }
         if (ret2 == 0 && HeroCheckMoving(arg0) == 0) {
-            func_8008502C(arg0);
+            ProcessHeroAnim(arg0);
             if (VelocityCalc < 4) {
                 if (VelocityCalc >= 2) {
                     HeroHooks.HeroKickCollision(arg0);
@@ -1951,14 +1951,14 @@ void func_8008795C(s32 arg0) {
     }
 }
 
-void func_80087B8C(s32 arg0) {
+void HeroRun(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     s32 ret2;
     s32 id;
 
     if (HeroCheckStatus2000(arg0) == 0 && HeroCheckStatus600(arg0) == 0 &&
-        func_80086FCC(arg0) == 0) {
+        HeroTestActions(arg0) == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
         } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
@@ -1972,7 +1972,7 @@ void func_80087B8C(s32 arg0) {
             h = base + arg0;
             h->hero_move->velocity_enable = 1;
             HeroHooks.HeroKickCollision(arg0);
-            switch (func_8008502C(arg0)) {
+            switch (ProcessHeroAnim(arg0)) {
             case 8:
                 if (h->hero_pu != 0x15) {
                     switch (h->hero_name) {
@@ -2015,7 +2015,7 @@ void func_80087B8C(s32 arg0) {
     }
 }
 
-void func_80087FC0(s32 arg0) {
+void SetHeroJump(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *e;
@@ -2043,7 +2043,7 @@ void func_80087FC0(s32 arg0) {
     h->hero->Camera.look_ahead = 0x400;
 }
 
-void func_800880E0(s32 arg0) {
+void SetHeroFall(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *e;
@@ -2075,7 +2075,7 @@ void func_800880E0(s32 arg0) {
     SetHeroSeq(arg0, 7);
 }
 
-void func_800881E0(s32 arg0) {
+void HeroFall(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     u8 *eng;
@@ -2094,10 +2094,10 @@ void func_800881E0(s32 arg0) {
         }
     }
     HeroHooks.HeroKickCollision(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
-void func_800882DC(s32 arg0) {
+void SetHeroDrop(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *p;
@@ -2129,7 +2129,7 @@ void func_800882DC(s32 arg0) {
     PlaySfx(0x410, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
-void func_80088450(s32 arg0) {
+void SetHeroLand(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *e;
@@ -2164,7 +2164,7 @@ void func_80088450(s32 arg0) {
     }
 }
 
-void func_80088544(s32 arg0) {
+void HeroLand(s32 arg0) {
     s32 ret;
     u16 status;
 
@@ -2178,7 +2178,7 @@ void func_80088544(s32 arg0) {
     } else {
         ret = 0;
     }
-    if (ret == 0 && func_80086FCC(arg0) == 0) {
+    if (ret == 0 && HeroTestActions(arg0) == 0) {
         s32 ret2;
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
@@ -2207,14 +2207,14 @@ void func_80088544(s32 arg0) {
             }
             if (ret == 0) {
                 HeroHooks.HeroKickCollision(arg0);
-                func_8008502C(arg0);
+                ProcessHeroAnim(arg0);
                 func_800871E4(arg0);
             }
         }
     }
 }
 
-void func_80088708(s32 arg0) {
+void SetHeroSpin(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = &base[arg0];
     NAS *nas;
@@ -2230,7 +2230,7 @@ void func_80088708(s32 arg0) {
     nas->Camera.look_ahead = nas->Camera.width;
 }
 
-void func_80088794(s32 arg0) {
+void HeroSpin(s32 arg0) {
     s32 ret2;
     s32 id;
     HeroInfo *base;
@@ -2275,7 +2275,7 @@ void func_80088794(s32 arg0) {
                 h->hero_eng->unk2C.y = D_8009DC50[idx];
                 h->hero_eng->unk2C.z = D_8009DC38[idx];
                 h->hero_ctrl |= 5;
-                id = func_800864CC(arg0, 0x400);
+                id = HeroTestBox(arg0, 0x400);
                 if (id != -1) {
                     o = base + id;
                     if ((o->hero_immunity | o->hero_hit) == 0) {
@@ -2290,19 +2290,19 @@ void func_80088794(s32 arg0) {
                         }
                         Heroes[id].hero_move->reactive_angle = angle;
                         Heroes[id].hero_move->reactive_speed = 0x30;
-                        func_80084E04(id, NULL, arg0, 0x8001, 0x446);
+                        HeroTakeHit(id, NULL, arg0, 0x8001, 0x446);
                     }
                 }
                 ((void (*)(s32, s32, s32, s32))HeroHooks.Hero2ObjectCollision)(arg0, 2, 0x400, 0);
                 ((void (*)(s32))HeroHooks.HeroKickCollision)(arg0);
-                func_8008502C(arg0);
+                ProcessHeroAnim(arg0);
                 func_800871E4(arg0);
             }
         }
     }
 }
 
-void func_80088BAC(s32 arg0) {
+void SetHeroWhip(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = &base[arg0];
 
@@ -2315,7 +2315,7 @@ void func_80088BAC(s32 arg0) {
     hero->hero_attack_timer = hero->hero_attack_delay;
 }
 
-void func_80088C28(s32 arg0) {
+void HeroWhip(s32 arg0) {
     s32 ret2;
     s32 id;
     HeroInfo *base;
@@ -2349,7 +2349,7 @@ void func_80088C28(s32 arg0) {
         }
         if (ret2 == 0) {
             if (HeroCheckPad1000(arg0) == 0) {
-                id = func_800864CC(arg0, 0x400);
+                id = HeroTestBox(arg0, 0x400);
                 if (id != -1) {
                     base = Heroes;
                     o = base + id;
@@ -2365,19 +2365,19 @@ void func_80088C28(s32 arg0) {
                         }
                         Heroes[id].hero_move->reactive_angle = angle;
                         Heroes[id].hero_move->reactive_speed = 0x30;
-                        func_80084E04(id, NULL, arg0, 0x8001, 0x446);
+                        HeroTakeHit(id, NULL, arg0, 0x8001, 0x446);
                     }
                 }
                 ((void (*)(s32, s32, s32, s32))HeroHooks.Hero2ObjectCollision)(arg0, 2, 0x400, 0);
                 ((void (*)(s32))HeroHooks.HeroKickCollision)(arg0);
-                func_8008502C(arg0);
+                ProcessHeroAnim(arg0);
                 func_800871E4(arg0);
             }
         }
     }
 }
 
-void func_80088F78(s32 arg0) {
+void SetHeroShoot(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = &base[arg0];
 
@@ -2395,7 +2395,7 @@ void func_80088F78(s32 arg0) {
     }
 }
 
-void func_8008900C(s32 arg0) {
+void HeroShoot(s32 arg0) {
     s32 ret2;
     s32 ret3;
     s32 other;
@@ -2447,7 +2447,7 @@ void func_8008900C(s32 arg0) {
                 ret3 = 0;
             }
             if (ret3 == 0) {
-                other = func_800864CC(arg0, 0x400);
+                other = HeroTestBox(arg0, 0x400);
                 if (other != -1) {
                     base = Heroes;
                     h2 = &base[other];
@@ -2470,13 +2470,13 @@ void func_8008900C(s32 arg0) {
                             }
                             Heroes[other].hero_move->reactive_angle = angle;
                             Heroes[other].hero_move->reactive_speed = 0x30;
-                            func_80084E04(other, NULL, arg0, 0x8001, 0x446);
+                            HeroTakeHit(other, NULL, arg0, 0x8001, 0x446);
                         }
                     }
                 }
                 ((void (*)(s32, s32, s32, s32))HeroHooks.Hero2ObjectCollision)(arg0, 2, 0x400, 0x280);
                 ((void (*)(s32))HeroHooks.HeroKickCollision)(arg0);
-                func_8008502C(arg0);
+                ProcessHeroAnim(arg0);
                 base2 = Heroes;
                 self = &base2[arg0];
                 s = self->hero_fx->sub;
@@ -2510,7 +2510,7 @@ void func_8008900C(s32 arg0) {
     }
 }
 
-void func_800894E0(s32 arg0) {
+void SetHeroKick(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *hero = &base[arg0];
 
@@ -2523,7 +2523,7 @@ void func_800894E0(s32 arg0) {
     hero->hero_attack_timer = hero->hero_attack_delay;
 }
 
-void func_8008955C(s32 arg0) {
+void HeroKick(s32 arg0) {
     s32 ret2;
     s32 ret3;
     s32 other;
@@ -2567,7 +2567,7 @@ void func_8008955C(s32 arg0) {
                 ret3 = 0;
             }
             if (ret3 == 0) {
-                other = func_800864CC(arg0, 0x400);
+                other = HeroTestBox(arg0, 0x400);
                 if (other != -1) {
                     base = Heroes;
                     h2 = &base[other];
@@ -2590,20 +2590,20 @@ void func_8008955C(s32 arg0) {
                             }
                             Heroes[other].hero_move->reactive_angle = angle;
                             Heroes[other].hero_move->reactive_speed = 0x30;
-                            func_80084E04(other, NULL, arg0, 0x8001, 0x446);
+                            HeroTakeHit(other, NULL, arg0, 0x8001, 0x446);
                         }
                     }
                 }
                 ((void (*)(s32, s32, s32, s32))HeroHooks.Hero2ObjectCollision)(arg0, 2, 0x400, 0x280);
                 ((void (*)(s32))HeroHooks.HeroKickCollision)(arg0);
-                func_8008502C(arg0);
+                ProcessHeroAnim(arg0);
                 func_800871E4(arg0);
             }
         }
     }
 }
 
-void func_800898EC(s32 arg0) {
+void HeroBecomeAngel(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     EXTengine *e;
@@ -2681,7 +2681,7 @@ void func_800898EC(s32 arg0) {
     } else {
         PlaySfx(0x1C3, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
     }
-    func_80085584(arg0, 1, 0xB);
+    SetHeroAseq(arg0, 1, 0xB);
 }
 
 void HeroGhost(arg0)
@@ -2718,7 +2718,7 @@ s32 arg0;
     e->unk10 = Heroes[arg0].hero_eng->unk10;
     *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&Heroes[arg0].hero_sub->unk04;
     s->flags |= 0x8000;
-    func_8008502C(arg0, y);
+    ProcessHeroAnim(arg0, y);
     for (s = s->next, i = 0; s != NULL; s = s->next, i++) {
         if (D_8009E0E8[i][arg0].unk2 != 0) {
             D_8009E0E8[i][arg0].unk6 -= 3;
@@ -2755,7 +2755,7 @@ s32 arg0;
     }
 }
 
-void func_80089FA4(s32 arg0) {
+void StartHeroVictory(s32 arg0) {
     u16 mate;
     EngineGameView *g;
 
@@ -3014,7 +3014,7 @@ s32 func_8008A200(s32 arg0) {
     return ret;
 }
 
-void func_8008A810(void) {
+void FinishLevel(void) {
     u8 *p = GameInfo;
 
     if (*(s32 *)(p + 4) & 0x800) {
@@ -3024,7 +3024,7 @@ void func_8008A810(void) {
     *(u16 *)(p + 0x30) |= 1;
 }
 
-void func_8008A854(s32 arg0) {
+void HeroDrop(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
@@ -3036,15 +3036,15 @@ void func_8008A854(s32 arg0) {
         SetHeroAction(arg0, (u16)HeroActDead);
     }
     HeroHooks.HeroKickCollision(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
-void func_8008A8F0(s32 arg0) {
+void HeroJump(s32 arg0) {
     HeroHooks.HeroKickCollision(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
-void func_8008A924(s32 arg0) {
+void SetHeroRun(s32 arg0) {
     u8 rw;
 
     Heroes[arg0].hero_move->velocity_enable = 1;
@@ -3056,7 +3056,7 @@ void func_8008A924(s32 arg0) {
     HeroHooks.HeroKickCollision(arg0);
 }
 
-void func_8008A99C(s32 arg0) {
+void SetHeroTaunt(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     h->hero_move->jump_max = 0;
@@ -3064,19 +3064,19 @@ void func_8008A99C(s32 arg0) {
     SetHeroSeq(arg0, 2);
 }
 
-void func_8008A9F0(s32 arg0) {
+void DefHeroTouched(s32 arg0) {
     Heroes[arg0].hero_idle_count = Random(0x258) + 0x12C;
 }
 
-void func_8008AA40(s32 arg0) {
+void DefHeroSetIdle(s32 arg0) {
     Heroes[arg0].hero_idle_count = Random(0x96) + 0x5A;
 }
 
 void HeroQuiet(void) {
-    func_8008502C();
+    ProcessHeroAnim();
 }
 
-void func_8008AAB0(s32 arg0) {
+void SetHeroQuiet(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -3085,7 +3085,7 @@ void func_8008AAB0(s32 arg0) {
     SetHeroSeq(arg0, 0);
 }
 
-s32 func_8008AB04(s32 arg0) {
+s32 HeroNoJump(s32 arg0) {
     PadState *base = Pads;
     PadState *pad = &base[arg0];
 
@@ -3094,11 +3094,11 @@ s32 func_8008AB04(s32 arg0) {
     return 0;
 }
 
-s32 func_8008AB48(void) {
+s32 HeroNoKick(void) {
     return 0;
 }
 
-s32 func_8008AB50(s32 arg0) {
+s32 HeroIsWinnerOrLoser(s32 arg0) {
     u16 temp_v1;
     u32 m;
 
@@ -3111,7 +3111,7 @@ s32 func_8008AB50(s32 arg0) {
     return m != 0;
 }
 
-s32 func_8008AB94(s32 arg0) {
+s32 HeroCheckDying(s32 arg0) {
     s32 ret;
 
     if (!(Heroes[arg0].hero_status & 0x2000)) {
@@ -3123,7 +3123,7 @@ s32 func_8008AB94(s32 arg0) {
     return ret;
 }
 
-s32 func_8008ABF8(s32 arg0) {
+s32 HeroCheckResult(s32 arg0) {
     u16 temp_v1;
     u16 act;
 
@@ -3321,7 +3321,7 @@ s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
     return st[9];
 }
 
-void func_8008B29C(s32 idx) {
+void ModelCreateShadow(s32 idx) {
     EXTengine *s;
     EXTengine *e;
 
@@ -3354,7 +3354,7 @@ void func_8008B29C(s32 idx) {
     }
 }
 
-void func_8008B418(s32 idx) {
+void ModelUpdateShadow(s32 idx) {
     HeroInfo *h;
     EXTengine *s;
     EXTengine *e;
@@ -3920,7 +3920,7 @@ s32 func_8008C4C8(s32 *arg0, s32 arg1) {
     return 1;
 }
 
-s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos) {
+s32 ArcUpdate(s32 *from, s32 *to, Arc *arc, s32 *pos) {
     s32 dx;
     s32 dz;
     s32 dist;
@@ -3960,7 +3960,7 @@ s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos) {
     return hit;
 }
 
-void func_8008C824(SparkObj *obj) {
+void PlotSparks(SparkObj *obj) {
     SparkPoly *p0;
     Spark *s;
     SparkPoly *p1;
@@ -4020,7 +4020,7 @@ void func_8008C824(SparkObj *obj) {
     }
 }
 
-void func_8008CA90(u8 *arg0, MATRIX *m) {
+void PlotFallParticles(u8 *arg0, MATRIX *m) {
     FallParticles *fp = (FallParticles *)(arg0 + 0x6C);
     FallParticle *p;
     POLY_FT4 *prim;
@@ -4108,7 +4108,7 @@ void func_8008CE10(void) {
 void func_8008CE18(void) {
 }
 
-FlagPoint *func_8008CE20(subengine *sub, s32 idx, s32 mask) {
+FlagPoint *SubFindFlagPoint(subengine *sub, s32 idx, s32 mask) {
     PointList *list = sub_point_list(sub);
     u8 *p;
     s32 i;
@@ -4131,7 +4131,7 @@ FlagPoint *func_8008CE20(subengine *sub, s32 idx, s32 mask) {
     return NULL;
 }
 
-s32 func_8008CEB0(u8 *arg0, u8 *arg1) {
+s32 DistXZSq(u8 *arg0, u8 *arg1) {
     s32 temp_v0;
     s32 temp_v0_2;
 
@@ -4301,7 +4301,7 @@ void PlotFloatyScore(NAS *nas) {
     }
 }
 
-void func_8008D488(u8 *arg0, s32 arg1) {
+void FormatPercent(u8 *arg0, s32 arg1) {
     s32 a;
     s32 b;
 
@@ -4345,7 +4345,7 @@ void InitFloatyScore(u8 *arg0) {
     }
 }
 
-void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void CreateFloatyScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     EXTengine *eng;
     NAS *nas;
     subengine *sub;
@@ -4671,7 +4671,7 @@ void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
                         hero[i].hero_move->forward_angle = hero[i].hero_move->reactive_angle + 0x800;
                     }
                 }
-                ((void (*)(s32, NAS *, s32, s32, s32))func_80084E04)(i, NULL, -1, arg3, 0);
+                ((void (*)(s32, NAS *, s32, s32, s32))HeroTakeHit)(i, NULL, -1, arg3, 0);
             }
         }
     } while (++i < 4);
@@ -6225,12 +6225,12 @@ s16 D_8009DC68[9][3] = {
     { 0, 0, 0 },
 };
 HeroActionEntry HeroActionTable[134] = {
-    { func_80087428, (s32)func_800874EC }, { func_8008AAB0, (s32)HeroQuiet },
-    { func_8008A99C, (s32)func_8008795C }, { func_8008A924, (s32)func_80087B8C },
-    { func_80087FC0, (s32)func_8008A8F0 }, { func_800880E0, (s32)func_800881E0 },
-    { func_800882DC, (s32)func_8008A854 }, { func_80088450, (s32)func_80088544 },
-    { func_80088708, (s32)func_80088794 }, { func_80088BAC, (s32)func_80088C28 },
-    { func_80088F78, (s32)func_8008900C }, { func_800894E0, (s32)func_8008955C },
+    { SetHeroIdle, (s32)HeroIdle }, { SetHeroQuiet, (s32)HeroQuiet },
+    { SetHeroTaunt, (s32)HeroTaunt }, { SetHeroRun, (s32)HeroRun },
+    { SetHeroJump, (s32)HeroJump }, { SetHeroFall, (s32)HeroFall },
+    { SetHeroDrop, (s32)HeroDrop }, { SetHeroLand, (s32)HeroLand },
+    { SetHeroSpin, (s32)HeroSpin }, { SetHeroWhip, (s32)HeroWhip },
+    { SetHeroShoot, (s32)HeroShoot }, { SetHeroKick, (s32)HeroKick },
     { &SetBashHeroLoser, (s32)&BashHeroLoser }, { &SetBashHeroHit, (s32)&BashHeroHit },
     { &SetBashHeroPickup, (s32)&BashHeroPickup }, { &SetBashHeroHold, (s32)&BashHeroHold },
     { &SetBashHeroCarry, (s32)&BashHeroCarry }, { &SetBashHeroThrow, (s32)&BashHeroThrow },
@@ -6321,7 +6321,7 @@ s32 D_8009E198[17] = {
 s32 D_8009E1DC[3] = { (s32)&D_8009E198, 0, 0 };
 ScriptInit D_8009E1E8 = { 0, (void *)&D_8009E1DC, 0x402 };
 s32 D_8009E1F4[3] = {0};
-WeatherFx D_8009E200 = { 0x100, 0x2800, 0x1800, func_8008C824, func_8008CA90 };
+WeatherFx D_8009E200 = { 0x100, 0x2800, 0x1800, PlotSparks, PlotFallParticles };
 u16 D_8009E214[8] = { 0x1C5, 0x1C6, 0x1C7, 0x1C8, 0x1C9, 0x1CA, 0x1CB, 0x1CC };
 u16 D_8009E224[4] = { 1, 1, 2, 2 };
 s32 D_8009E22C[9] = {

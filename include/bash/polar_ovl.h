@@ -513,7 +513,7 @@ loop:
         do {
             if (i != self && !((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
                 pos = h->hero_eng->unk10;
-                d = func_8008CEB0((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+                d = DistXZSq((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
                 if (d < min) {
                     min = d;
                     best = i;
@@ -606,7 +606,7 @@ static inline void RollPolarOdds(s32 player, Ext20 *ext) {
     }
 }
 
-s32 func_8008CEB0(u8 *arg0, u8 *arg1);
+s32 DistXZSq(u8 *arg0, u8 *arg1);
 s32 PolarAI_ShotBlocked(s32 arg0);
 s32 PolarAI_TeamChoice(s32 player);
 s32 PolarHeroAttackPower(s32 arg0);
@@ -732,7 +732,7 @@ void PolarAI_AvoidBomber();
 void PolarAI_DoChaseBomber();
 
 s32 PolarAI_AnyBusy(void);
-s32 func_8008502C();
+s32 ProcessHeroAnim();
 
 s32 PolarAI_NoneBusy(s32 arg0);
 
@@ -912,7 +912,7 @@ extern SceneObj *UkaMaskObjects[16];
 void RiserSetReset(PolarRiserSet *arg0);
 
 bool DoesPlayerHaveBomb(u32 arg0);
-/* Walrus fish extension (id 0x10000000): a ballistic arc (func_8008C5C4's
+/* Walrus fish extension (id 0x10000000): a ballistic arc (ArcUpdate's
  * Arc, declared in bash/pause.h) at 0x10. */
 typedef struct WalrusFishExt {
     /* 0x00 */ u8 pad0[0xC];
@@ -975,7 +975,7 @@ extern ScriptInit WalrusFishScriptInit;
 extern s32 WalrusState;
 extern u8 D_8005476C[];
 
-s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
+s32 ArcUpdate(s32 *from, s32 *to, void *arc, s32 *pos);
 
 /* Big missile extension (id 0x10000000) as PlotBigMissile reads it: a ballistic
  * arc at 0xC (the same block as BigMissileExt, InitBigMissile's view). */
@@ -1098,7 +1098,7 @@ typedef struct SniperMissileExt {
     /* 0x34 */ s32 unk34;
 } SniperMissileExt;
 
-/* XZBoxToSphere's collision box (func_8008CE20's FlagPoint data): two corners. */
+/* XZBoxToSphere's collision box (SubFindFlagPoint's FlagPoint data): two corners. */
 typedef struct PolarBoxHalf {
     s16 v[3];
 } PolarBoxHalf;
@@ -1153,7 +1153,7 @@ static inline s32 PolarMissileHitHero(SLONG_XYZ *pos) {
         }
         h = &Heroes[i];
         if (!(h->hero_mode & 0x2000)
-            && func_8008CEB0((u8 *)pos, (u8 *)&h->hero_eng->unk10) < 0x7BC4) {
+            && DistXZSq((u8 *)pos, (u8 *)&h->hero_eng->unk10) < 0x7BC4) {
             if (h->hero_mode != 0x4B) {
                 SetHeroAction(i, 0x4B);
             }
@@ -1197,8 +1197,8 @@ typedef struct PolarBombExt {
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
     /* 0x14 */ u8 pad14[0x18 - 0x14];
-    /* 0x18 */ s32 to[3];   /* func_8008C5C4 target */
-    /* 0x24 */ s32 from[3]; /* func_8008C5C4 start */
+    /* 0x18 */ s32 to[3];   /* ArcUpdate target */
+    /* 0x24 */ s32 from[3]; /* ArcUpdate start */
     /* 0x30 */ s32 unk30;   /* arc state from here */
     /* 0x34 */ s32 unk34;
     /* 0x38 */ u8 pad38[0x48 - 0x38];
@@ -1283,7 +1283,7 @@ typedef struct BearDeathExt {
     /* 0x00 */ u8 pad0[0x14];
     /* 0x14 */ SLONG_XYZ to;
     /* 0x20 */ SLONG_XYZ from;
-    /* 0x2C */ s32 unk2C; /* start of the arc passed to func_8008C5C4 */
+    /* 0x2C */ s32 unk2C; /* start of the arc passed to ArcUpdate */
     /* 0x30 */ s32 unk30;
     /* 0x34 */ u8 pad34[0xC];
     /* 0x40 */ s32 unk40;
@@ -1462,7 +1462,7 @@ typedef struct BearminatorExt {
     /* 0x1C */ s32 unk1C;
     /* 0x20 */ s32 vel[3];
     /* 0x2C */ s32 from[3];
-    /* 0x38 */ s32 unk38; /* arc state for func_8008C5C4 */
+    /* 0x38 */ s32 unk38; /* arc state for ArcUpdate */
     /* 0x3C */ s32 unk3C;
     /* 0x40 */ u8 pad40[0x4C - 0x40];
     /* 0x4C */ s32 unk4C;
@@ -1544,7 +1544,8 @@ extern void *AiTeamSkillTable;
 extern void *AiHumanRoundTweakTable;
 extern s32 PolarFirstFlag;
 extern s32 PolarArenaRadius2;
-extern u8 D_8008B29C[], D_8008B418[];
+void ModelCreateShadow(s32 idx);
+void ModelUpdateShadow(s32 idx);
 extern s32 PolarVictorySeqs[]; /* {name, 0x5C} x4: the victory sequences (the engine's hook 0x14) */
 s32 PolarIceHit(SLONG_XYZ *pos, s32 player);
 

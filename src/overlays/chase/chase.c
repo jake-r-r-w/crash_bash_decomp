@@ -881,7 +881,7 @@ void FinishChaseLevel(void) {
         for (i = 0; i < 4; i++) {
             h = &Heroes[i];
             if (!(h->hero_status & 0xFA00) && i != best) {
-                func_80084E04(i, 0, -1, 0x1000, 0);
+                HeroTakeHit(i, 0, -1, 0x1000, 0);
             }
         }
     }
@@ -1050,7 +1050,7 @@ void ChaseMoveHero(s32 arg0) {
         m->run_walk = 1;
     }
     ((void (*)(s32))HeroHooks.HeroFacing)(arg0);
-    func_800860D4(arg0);
+    HeroApplyJump(arg0);
     switch (m->velocity_calc) {
     case 2:
         m->x_vel += m->x_acc - m->x_dec;
@@ -1200,7 +1200,7 @@ s32 ChaseHeroTestDrop(s32 arg0) {
             }
         }
     } else {
-        func_800863D0(arg0);
+        HeroMovedDist(arg0);
     }
     return 0;
 }
@@ -1485,7 +1485,7 @@ void ChaseHeroIdle(s32 arg0) {
                 if (Heroes[arg0].hero_move->velocity_calc == 3) {
                     SetHeroSeq(arg0, 0x61);
                 }
-                func_8008502C(arg0);
+                ProcessHeroAnim(arg0);
                 if (VelocityCalc < 4) {
                     if (VelocityCalc >= 2) {
                         ChaseHeroKickCollision(arg0);
@@ -1518,7 +1518,7 @@ void ChaseHeroRun(s32 arg0) {
                 h = base + arg0;
                 h->hero_move->velocity_enable = 1;
                 ChaseHeroKickCollision(arg0);
-                switch (func_8008502C(arg0)) {
+                switch (ProcessHeroAnim(arg0)) {
                 case 8:
                     e = h->hero_eng;
                     if (h->hero_pu == 0x15) {
@@ -1628,7 +1628,7 @@ void ChaseHeroFall(s32 arg0) {
         }
     }
     ChaseHeroKickCollision(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetChaseHeroDrop(s32 arg0) {
@@ -1744,7 +1744,7 @@ void ChaseHeroLand(s32 arg0) {
         if (!Chk66A4_B(arg0)) {
             if (!Chk66A4_C(arg0)) {
                 ChaseHeroKickCollision(arg0);
-                func_8008502C(arg0);
+                ProcessHeroAnim(arg0);
                 ChaseHeroTestDrop(arg0);
             }
         }
@@ -1770,7 +1770,7 @@ void SetChaseHeroHit(s32 arg0) {
 void ChaseHeroHit(s32 arg0) {
     u8 *g;
 
-    if (func_8008502C() == 8 && ((g = GameInfo), (*(u16 *)(g + 0x32) & 0x80)) && g[arg0 + 0x5C] == 0 &&
+    if (ProcessHeroAnim() == 8 && ((g = GameInfo), (*(u16 *)(g + 0x32) & 0x80)) && g[arg0 + 0x5C] == 0 &&
         !(*(s32 *)(g + 4) & 2)) {
         HeroInfo *base = Heroes;
         HeroInfo *h = &base[arg0];
@@ -1831,7 +1831,7 @@ void SetChaseHeroDead(s32 arg0) {
         StopSfx(h->hero_powerup->sfx);
     }
     ChaseHeroState[arg0][0] = 0;
-    func_800898EC(arg0);
+    HeroBecomeAngel(arg0);
 }
 
 void ChaseHeroDead(s32 arg0) {
@@ -1903,9 +1903,9 @@ void SetChaseHeroWinner(s32 arg0) {
         g->hero_pu = 0;
         g->hero_pu_timer = 0;
     }
-    func_80085718(arg0, 0);
+    RequestHeroAnim(arg0, 0);
     SetHeroSeq(arg0, 0x6B);
-    func_80089FA4(arg0);
+    StartHeroVictory(arg0);
     CameraMode = 1;
     ChaseRoundOver = 1;
 }
@@ -1927,11 +1927,11 @@ void ChaseHeroWinner(s32 arg0) {
     } else {
         h->hero_eng->unk10.y = World_floor_level;
     }
-    func_80085890(arg0);
+    CheckHeroAnim(arg0);
     if (func_8008A200(arg0) != 0) {
-        func_8008A810();
+        FinishLevel();
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetChaseHeroLose(s32 arg0) {
@@ -2030,7 +2030,7 @@ void ChaseHeroLose(s32 arg0) {
     } else {
         h->hero_eng->unk10.y = World_floor_level;
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
     eng = Heroes[arg0].hero_eng;
     eng->unk5C = 1;
     if (eng->unk2C.x > 0x12C) {
@@ -2416,7 +2416,7 @@ s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
                 } else {
                     ChaseHeroes()[id].hero_score += pts;
                 }
-                func_8008D5D4(eng->x, -300, eng->z, pts, delay);
+                CreateFloatyScore(eng->x, -300, eng->z, pts, delay);
                 delay += 10;
                 total += CoalChainHit(eng->x, eng->z, id, pts, 0x120, delay);
             }
@@ -3547,7 +3547,7 @@ void ChaseHeroDie(s32 arg0) {
     } else {
         SetHeroAction(arg0, 0x77);
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void ChaseHeroDrop(s32 arg0) {
@@ -3563,12 +3563,12 @@ void ChaseHeroDrop(s32 arg0) {
         SetHeroAction(arg0, 0x77);
     }
     ChaseHeroKickCollision(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void ChaseHeroJump(s32 arg0) {
     ChaseHeroKickCollision(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetChaseHeroRun(s32 arg0) {

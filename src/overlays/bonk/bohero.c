@@ -109,8 +109,8 @@ void BonkHeroIdle(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
-    if (func_8008ABF8() == 0 && func_80086FCC(arg0) == 0 && BonkHeroTestRun(arg0) == 0) {
-        func_8008502C(arg0);
+    if (HeroCheckResult() == 0 && HeroTestActions(arg0) == 0 && BonkHeroTestRun(arg0) == 0) {
+        ProcessHeroAnim(arg0);
         if (VelocityCalc < 4) {
             if (VelocityCalc >= 2) {
                 HeroHooks.HeroKickCollision(arg0);
@@ -135,13 +135,13 @@ void BonkHeroRun(s32 arg0) {
     s32 id;
     s32 a0;
 
-    if (func_8008ABF8() == 0 && func_80086FCC(arg0) == 0) {
+    if (HeroCheckResult() == 0 && HeroTestActions(arg0) == 0) {
         if (BonkStopInline(arg0) == 0) {
             base = Heroes;
             h = base + arg0;
             h->hero_move->velocity_enable = 1;
             HeroHooks.HeroKickCollision(arg0);
-            id = func_8008502C(arg0);
+            id = ProcessHeroAnim(arg0);
             switch (id) {
             case 8:
                 a0 = 0x41E;
@@ -201,7 +201,7 @@ void BonkHeroBackswing(s32 arg0) {
             h->hero_move->forward_angle =
                 get_angle(h->hero_eng->unk10.x - p->x, h->hero_eng->unk10.z - p->z);
         }
-        if (func_8008502C(arg0) == 8) {
+        if (ProcessHeroAnim(arg0) == 8) {
             if (((BonkPadButtons *)Pads)[arg0].unk50 & 0x8000) {
                 SetHeroAction(arg0, 0x44);
             } else {
@@ -221,7 +221,7 @@ void BonkHeroExtBackswing(s32 arg0) {
         sb = BonkSlots;
         s = sb + arg0;
         if (s->f4 == 0) {
-            if (func_8008502C(arg0) == 8) {
+            if (ProcessHeroAnim(arg0) == 8) {
                 s->f4 = 1;
             }
             if (s->f4 == 0) {
@@ -245,7 +245,7 @@ void BonkHeroSwing(s32 arg0) {
         base = Heroes;
         h = base + arg0;
         h->hero_frozen = 10;
-        act = func_8008502C(arg0);
+        act = ProcessHeroAnim(arg0);
         if (act == 0xC) {
             PlaySfx(BonkSwingSfx[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
         }
@@ -524,7 +524,7 @@ void BonkHeroLoser(s32 arg0) {
         }
     }
     Heroes[arg0].hero_frozen = 2;
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 s32 BonkHeroTestIdle(s32 arg0) {
@@ -572,7 +572,7 @@ void BonkHeroWinner(s32 idx) {
         h->hero_move->forward_angle = 0;
         h->hero_move->facing_angle = 0;
     }
-    func_8008502C(idx);
+    ProcessHeroAnim(idx);
     if (func_8008A200(idx) != 0) {
         g = (D5A614View *)GameInfo;
         if (g->unk4 & 0x800) {
@@ -596,7 +596,7 @@ void SetBonkHeroWinner(s32 arg0) {
         p->flags &= 0xFFFF7FFF;
     }
     BonkSlots[arg0].f8 = 3;
-    func_80089FA4(arg0);
+    StartHeroVictory(arg0);
     SetHeroSeq(arg0, 0x39);
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 2;
@@ -618,7 +618,7 @@ void BonkHeroSwingRecoil(s32 arg0) {
         HeroInfo *base = Heroes;
         hero = base + arg0;
         hero->hero_frozen = 10;
-        if (func_8008502C(arg0) == 9) {
+        if (ProcessHeroAnim(arg0) == 9) {
             SetHeroAction(arg0, 0x40);
             hero->hero_frozen = 0;
         }
@@ -655,7 +655,7 @@ void BonkHeroHit(s32 arg0) {
     if (Heroes[arg0].hero_move->reactive_speed != 0) {
         HeroHooks.HeroKickCollision();
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
     func_800871E4(arg0);
 }
 

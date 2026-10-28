@@ -505,7 +505,7 @@ static inline s32 LaserInBox(s32 *arg0, s32 *arg1) {
     BoxHalf lo;
     BoxHalf hi;
 
-    src = (Box2 *)func_8008CE20((subengine *)arg0, 0, 0);
+    src = (Box2 *)SubFindFlagPoint((subengine *)arg0, 0, 0);
     if (src == NULL) {
         printf(NoxNoCollBoxMsg);
         return 0;
@@ -654,7 +654,7 @@ extern SVECTOR NoxSparkAngles; /* spark view rotation */
 void NoxDrawSparks(SparkObj *arg0);
 extern NoxSparkFx NoxSparkFxDef;
 
-/* Asteroid roll extension (id 0x10000000): a ballistic arc (func_8008C5C4's
+/* Asteroid roll extension (id 0x10000000): a ballistic arc (ArcUpdate's
  * Arc, declared in bash/pause.h) at 0x0C. */
 typedef struct AsteroidExt {
     /* 0x00 */ u8 pad00[0xC];
@@ -675,7 +675,7 @@ typedef struct AsteroidExt {
 
 extern u8 PowerupsModel[];
 
-s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
+s32 ArcUpdate(s32 *from, s32 *to, void *arc, s32 *pos);
 
 void NoxUpdate(void);
 

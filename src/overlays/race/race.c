@@ -1016,7 +1016,7 @@ s32 arg0;
         nas = RaceNearestPickup(arg0);
         found = NULL;
         if (nas != NULL) {
-            if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+            if (DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
                 angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
                 if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
                     found = nas;
@@ -1088,8 +1088,8 @@ void InitialiseRACEFirst(void) {
     h->PreMoveHero = RacePreMoveHero;
     h->MoveHero = RaceMoveHero;
     h->RunSpeeds = RaceJumpTable;
-    h->CreateShadow = D_8008B29C;
-    h->UpdateShadow = D_8008B418;
+    h->CreateShadow = ModelCreateShadow;
+    h->UpdateShadow = ModelUpdateShadow;
     flags = *(u16 *)(g + 0x32);
     h->ChooseWinner = RaceChooseWinner;
     if (flags & 0x40) {
@@ -1328,7 +1328,7 @@ static inline NAS *RacePickupAheadInline(s32 arg0) {
     nas = RaceNearestPickup(arg0);
     if (nas != NULL) {
         hero = &Heroes[arg0];
-        if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+        if (DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
             angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
             if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
                 return nas;
@@ -2474,7 +2474,7 @@ s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
     ap = (s32 *)arg0;
     dist = 0x7FFFFFF;
     side = 0;
-    src = (RaceBox *)func_8008CE20((subengine *)arg0, side, side);
+    src = (RaceBox *)SubFindFlagPoint((subengine *)arg0, side, side);
     p = sv;
     if (src == NULL) {
         printf("No Coll box on subengine in XZBoxToSphere\n");
@@ -3402,11 +3402,11 @@ void RaceHeroIdle(s32 player) {
     }
     TestRaceHeroWon(player);
     if (G63B->unk34 != 0x19) {
-        if (func_8008502C(player) != 0) {
+        if (ProcessHeroAnim(player) != 0) {
             SetHeroSeq(player, 0x48);
         }
     } else {
-        func_8008502C(player);
+        ProcessHeroAnim(player);
     }
 }
 
@@ -3514,7 +3514,7 @@ void RaceHeroOffTrack(s32 player) {
     if (f->unk144 != 0) {
         h->hero_shadow->sub->flags |= 0x8000;
         h->hero_eng->sub->unk68 = 0;
-        func_8008502C(player);
+        ProcessHeroAnim(player);
         h->hero_move->forward_angle = ((f->unk54 - 0x200) << 20) >> 20;
         h->hero_eng->unk1E = ((f->unk54 - 0x200) << 20) >> 20;
         h->hero_eng->unk20 = 0;
@@ -3581,7 +3581,7 @@ void RaceHeroOffTrack(s32 player) {
             f->unk13C = 0;
             f->unk140 = 0;
         }
-        if (func_8008502C(player) != 0) {
+        if (ProcessHeroAnim(player) != 0) {
             f->unk144 = 1;
             SetHeroSeq(player, 0x48);
             if (G63->unk34 == 0x19) {
@@ -3661,7 +3661,7 @@ void RaceHeroRun(s32 player) {
         m->x_max = (RaceJumpVel * rcossin_tbl[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
         m->z_max = (RaceJumpVel * rcossin_tbl[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
     }
-    func_8008502C(player);
+    ProcessHeroAnim(player);
     RaceHeroUsePickup(player);
 }
 
@@ -3766,7 +3766,7 @@ void RaceHeroDazed(s32 arg0) {
     pad->unk50 = 0;
     pad->unk54 = 0;
     if (GameMode != 0x19) {
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
     hero->hero_frozen = 2;
     hero->hero_eng->unk5E = 1;
@@ -3824,7 +3824,7 @@ void RaceHeroJump(s32 player) {
     RaceJumpFux *fux;
     EXTheromove *move;
 
-    func_8008502C();
+    ProcessHeroAnim();
     move = Heroes[player].hero_move;
     if (move == NULL) {
         return;
@@ -3855,7 +3855,7 @@ void RaceHeroOiled(s32 arg0) {
     if (fux == NULL) {
         return;
     }
-    func_8008502C();
+    ProcessHeroAnim();
     RaceHeroUsePickup(arg0);
     move = hero->hero_move;
     if (move == NULL) {
@@ -3913,7 +3913,7 @@ void RaceHeroKick(s32 arg0) {
 loop:
     found = -1;
     if (i < 4) {
-        if (i == arg0 || func_8008CEB0((u8 *)pos, (u8 *)&other->hero_eng->unk10) >= lim) {
+        if (i == arg0 || DistXZSq((u8 *)pos, (u8 *)&other->hero_eng->unk10) >= lim) {
             other++;
             i++;
             goto loop;
@@ -3931,7 +3931,7 @@ loop:
             }
         }
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 s32 RaceHeroUsePickup(s32 player) {
@@ -3988,7 +3988,7 @@ s32 RaceHeroUsePickup(s32 player) {
             loop:
                 found = -1;
                 if (i < 4) {
-                    if (i == player || func_8008CEB0((u8 *)pp, (u8 *)&other->hero_eng->unk10) >= lim) {
+                    if (i == player || DistXZSq((u8 *)pp, (u8 *)&other->hero_eng->unk10) >= lim) {
                         other++;
                         i++;
                         goto loop;
@@ -4070,7 +4070,7 @@ void SetRaceHeroWinner(s32 player) {
     HeroInfo *base;
 
     RaceOver = 1;
-    func_80089FA4(player);
+    StartHeroVictory(player);
     SetHeroSeq(player, 0x48);
     base = Heroes;
     hero = base + player;
@@ -4079,10 +4079,10 @@ void SetRaceHeroWinner(s32 player) {
     hero->hero_eng->unk10.y = RaceFloorLevel;
     hero->hero_eng->unk5E = 1;
     if (GameMode != 0x19) {
-        func_80085718(player, 0);
+        RequestHeroAnim(player, 0);
         return;
     }
-    func_80085718(player, 1);
+    RequestHeroAnim(player, 1);
     prims_empty_back();
     mal_compact_step((u8 *)&MainHeap);
 }
@@ -4616,7 +4616,7 @@ s32 RaceMissileHitHeroes(u8 *arg0, u32 arg1) {
             return -1;
         }
         if (i != arg1 && Heroes[i].hero_mode != 0x61) {
-            d = func_8008CEB0(arg0, (u8 *)Heroes[i].hero_eng + 0x10);
+            d = DistXZSq(arg0, (u8 *)Heroes[i].hero_eng + 0x10);
             if (abs(*(s32 *)(arg0 + 4) - *(s32 *)((u8 *)Heroes[i].hero_eng + 0x14)) > 0x180) {
                 break;
             }
@@ -4883,7 +4883,7 @@ void PlotRacePickUp(NAS *m) {
     loop:
         if (i < 4) {
             do {
-                d = func_8008CEB0((u8 *)pos, (u8 *)&h->hero_eng->unk10);
+                d = DistXZSq((u8 *)pos, (u8 *)&h->hero_eng->unk10);
                 lim = 0x24000;
                 if (d < lim) {
                     if (abs(pos->y - h->hero_eng->unk10.y) < 0x200) {
@@ -5441,7 +5441,7 @@ void PlotTNTCrate(NAS *nas) {
             h = Heroes;
         loop:
             if (i < 4) {
-                if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&h->hero_eng->unk10) < 0x40000 &&
+                if (DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&h->hero_eng->unk10) < 0x40000 &&
                     h->hero_mode != 0x5D) {
                     SetHeroAction(i, 0x5D);
                 }
@@ -5640,7 +5640,7 @@ void PlotRaceShield(NAS *nas) {
                 found = -1;
                 break;
             }
-            if (i != me && func_8008CEB0((u8 *)pos, (u8 *)&other->hero_eng->unk10) < lim) {
+            if (i != me && DistXZSq((u8 *)pos, (u8 *)&other->hero_eng->unk10) < lim) {
                 found = i;
                 break;
             }
@@ -5884,7 +5884,7 @@ void PlotRaceVolcano(NAS *nas) {
                 cur->unk1C -= 0x80;
                 eng = ext->eng[n];
                 d = eng->unk10.x * eng->unk10.x + eng->unk10.z * eng->unk10.z;
-                func_8008C5C4(&zero.x, &ext->vel[n].x, &ext->arc[n], &eng->unk10.x);
+                ArcUpdate(&zero.x, &ext->vel[n].x, &ext->arc[n], &eng->unk10.x);
                 if (d < 0x90000) {
                     if (ext->unk144[n] != NULL) {
                         ext->unk144[n]->Engine->unk10.y = 0;
@@ -6155,7 +6155,7 @@ void PlotBarrelRoll(NAS *nas) {
             return;
         }
         nas->Engine->unk1C += 0x200;
-        if (func_8008C5C4(&ext->pos.x, &ext->vel.x, &ext->unkC,&nas->Engine->unk10.x) != 0) {
+        if (ArcUpdate(&ext->pos.x, &ext->vel.x, &ext->unkC,&nas->Engine->unk10.x) != 0) {
             ext->unk20 = -((ext->unk20 * 200) >> 8);
             nas->Engine->unk10.y = ext->unk24;
             n = ext->unk78 + 1;
@@ -6240,7 +6240,7 @@ void PlotTrackGlob(NAS *nas) {
     }
     switch (ext->unkC) {
     case 0:
-        if (func_8008C5C4(&ext->pos.x, &ext->unk64, &ext->unk10, &nas->Engine->unk10.x) != 0) {
+        if (ArcUpdate(&ext->pos.x, &ext->unk64, &ext->unk10, &nas->Engine->unk10.x) != 0) {
             ext->unkC = 1;
             GotoLinkAnim((EXTanimator *)ext->cursor, 0);
             RunNasAnim(nas);
@@ -6725,7 +6725,7 @@ s32 RaceDazeHeroNear(u8 *arg0) {
     hero = Heroes;
 loop:
     if (i < 4) {
-        if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < 0x6184) {
+        if (DistXZSq(arg0, (u8 *)hero->hero_eng + 0x10) < 0x6184) {
             if (hero->hero_mode != 0x5D) {
                 SetHeroAction(i, 0x5D);
             }
@@ -6784,7 +6784,7 @@ s32 RaceHeroNear(u8 *arg0, s32 arg1) {
     hero = Heroes;
 loop:
     if (i < 4) {
-        if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < arg1 * arg1) {
+        if (DistXZSq(arg0, (u8 *)hero->hero_eng + 0x10) < arg1 * arg1) {
             if (abs(((s32 *)arg0)[1] - hero->hero_eng->unk10.y) < 0x200) {
                 return i;
             }
@@ -6851,11 +6851,11 @@ s32 RaceTrackAngle(s32 arg0) {
 }
 
 void RaceHeroWinner(s32 arg0) {
-    func_80085890(arg0);
+    CheckHeroAnim(arg0);
     if (func_8008A200(arg0) != 0) {
-        func_8008A810();
+        FinishLevel();
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 s32 TestRaceHeroWon(s32 arg0) {
@@ -6930,7 +6930,7 @@ s32 RaceOtherHeroNear(u8 *arg0, u32 arg1, s32 arg2) {
 loop:
     if (i < 4) {
         if (i != arg1) {
-            if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < arg2 * arg2) {
+            if (DistXZSq(arg0, (u8 *)hero->hero_eng + 0x10) < arg2 * arg2) {
                 return i;
             }
         }
@@ -7108,7 +7108,7 @@ NAS *RaceNearestPickup(s32 arg0) {
     hero = base + arg0;
 loop:
     if (nas != NULL) {
-        dist = func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10);
+        dist = DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10);
         do {
             if (dist < min) {
                 min = dist;
@@ -7166,7 +7166,7 @@ NAS *RacePickupAhead(s32 arg0) {
     if (nas != NULL) {
         base = Heroes;
         hero = base + arg0;
-        if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+        if (DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
             angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
             if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
                 return nas;

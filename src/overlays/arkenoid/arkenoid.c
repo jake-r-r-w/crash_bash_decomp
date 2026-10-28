@@ -784,7 +784,7 @@ void AR_UpdateLevel(void) {
     ArkenoidFuxType *f;
     u16 *cnt;
 
-    func_80086F78();
+    ArenaGridClear();
     if ((GameExitFlags & 0x801) && ArkFloorState != 0) {
         ArkFloorState = ArkFloorState - 1;
     }
@@ -1878,7 +1878,7 @@ void ArkHeroIdle(u32 arg0) {
             }
         }
         if (ArkHeroUpdateSpeed(arg0) != 0) {
-            func_8008502C(arg0);
+            ProcessHeroAnim(arg0);
         }
         if (HeroCheckStatus2600(arg0) == 0) {
             ArkHeroModeCheck(arg0);
@@ -1962,7 +1962,7 @@ void ArkHeroTaunt(u32 arg0) {
                 SetHeroAction(arg0, 0x1D);
             }
         }
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
 }
 
@@ -1997,7 +1997,7 @@ void ArkHeroMove(u32 arg0) {
             }
         }
         if (ArkHeroUpdateSpeed(arg0) != 0) {
-            func_8008502C(arg0);
+            ProcessHeroAnim(arg0);
         }
     }
 }
@@ -2023,8 +2023,8 @@ void SetArkHeroWinner(u32 arg0) {
     h->hero_sub->unk08 = 0;
     h->hero_pu = 0;
     h->hero_pu_timer = 0;
-    func_80085718(arg0, 0);
-    func_80089FA4(arg0);
+    RequestHeroAnim(arg0, 0);
+    StartHeroVictory(arg0);
 }
 
 void ArkHeroWinner(u32 arg0) {
@@ -2097,11 +2097,11 @@ void ArkHeroWinner(u32 arg0) {
     if (done != 0) {
         CameraMode = 1;
     }
-    func_80085890(arg0);
+    CheckHeroAnim(arg0);
     if (func_8008A200(arg0) != 0) {
-        func_8008A810();
+        FinishLevel();
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetArkHeroLose(u32 arg0) {
@@ -2270,7 +2270,7 @@ void ArkHeroKick(u32 arg0) {
         }
     }
     if (ArkHeroUpdateSpeed(arg0) != 0) {
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
 }
 
@@ -2317,7 +2317,7 @@ void ArkHeroRedKick(u32 arg0) {
         }
     }
     if (ArkHeroUpdateSpeed(arg0) != 0) {
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
 }
 
@@ -2375,7 +2375,7 @@ act:
         }
     }
     if (ArkHeroUpdateSpeed(arg0) != 0) {
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
 }
 
@@ -2422,7 +2422,7 @@ void SetArkHeroDead(u32 arg0) {
     sp18 = temp_v0->unk10;
     SpawnModelFx(0, (s32 *)&sp18, (s32) &BallsEffectsModel);
     PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->unk10, 0x1000, 0x1E00, 0);
-    func_800898EC(arg0);
+    HeroBecomeAngel(arg0);
 }
 
 void ArkHeroDead(u32 arg0) {
@@ -6197,12 +6197,12 @@ void ArkHeroDie(u32 arg0) {
     } else {
         SetHeroAction(arg0, 0x25);
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void ArkHeroLose(u32 arg0) {
     Heroes[arg0].hero_frozen = 5;
-    func_8008502C();
+    ProcessHeroAnim();
 }
 
 void SetArkHeroMove(u32 arg0) {

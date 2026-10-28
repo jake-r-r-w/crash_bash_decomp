@@ -313,7 +313,7 @@ void InitialiseSPIN() {
         }
     }
     SpinShuffleDropPoints();
-    func_80086D88();
+    MarkHeroesOnGrid();
     SpinInitScene();
     PlaySfx(0x5EC, &SpinSfxEngine.sfx, NULL, 0x1000, 0x1E00, 0);
 }
@@ -1462,7 +1462,7 @@ void PlotBalloon(NAS *nas) {
                                     owner = fux->owner;
                                     if (owner == 0 || (SPIN_GAME->teams != 0 && owner == 1)) {
                                         Heroes[owner].hero_health = 0;
-                                        func_80084E04(fux->owner, NULL, -1, 1, 8);
+                                        HeroTakeHit(fux->owner, NULL, -1, 1, 8);
                                     }
                                 }
                             }
@@ -1481,7 +1481,7 @@ void PlotBalloon(NAS *nas) {
                                 owner = fux->owner;
                                 if (owner == 0 || (SPIN_GAME->teams != 0 && owner == 1)) {
                                     Heroes[owner].hero_health = 0;
-                                    func_80084E04(fux->owner, NULL, -1, 1, 8);
+                                    HeroTakeHit(fux->owner, NULL, -1, 1, 8);
                                 }
                             }
                         }
@@ -2092,7 +2092,7 @@ void Spin_HeroBot(s32 arg0) {
             break;
         }
         if (SpinAlwaysZero(arg0) == 0) {
-            p = func_800864CC(arg0, 0x40);
+            p = HeroTestBox(arg0, 0x40);
             if (p == target) {
                 ai->AImode = 1;
                 ai->TargetPlayer = -1;
@@ -2159,7 +2159,7 @@ void Spin_HeroBot(s32 arg0) {
             break;
         }
         if (SpinAlwaysZero(arg0) == 0) {
-            p = func_800864CC(arg0, 0x40);
+            p = HeroTestBox(arg0, 0x40);
             if (p != target && (Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
                 if (GameTeams == 0 || p != mate) {
                     if (Random(3) == 0) {
@@ -2677,9 +2677,9 @@ void SpinRestartLevel(void) {
 }
 
 void UpdateSPIN(void) {
-    func_80086F78();
+    ArenaGridClear();
     SpinCountObjects();
-    func_80086D88();
+    MarkHeroesOnGrid();
     SpinDropMaster();
     SpinTurnArena();
 }
@@ -2784,7 +2784,7 @@ void SpinHeroHit(s32 arg0) {
     if (h->hero_move->reactive_speed != 0) {
         HeroHooks.HeroKickCollision();
     }
-    r = func_8008502C(arg0);
+    r = ProcessHeroAnim(arg0);
     if (r != 8) {
         if (r == 9) {
             PlaySfx(SpinHitSfx[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -2886,7 +2886,7 @@ void SpinHeroFall(s32 arg0) {
         }
     }
     HeroHooks.HeroKickCollision(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetSpinHeroDead(s32 arg0) {
@@ -2908,7 +2908,7 @@ void SetSpinHeroDead(s32 arg0) {
     if (h->hero_powerup->sfx != NULL) {
         StopSfx(h->hero_powerup->sfx);
     }
-    func_800898EC(arg0);
+    HeroBecomeAngel(arg0);
 }
 
 void SpinHeroDead(s32 arg0) {
@@ -2991,9 +2991,9 @@ void SetSpinHeroWinner(s32 arg0) {
         h2->hero_pu = 0;
         h2->hero_pu_timer = 0;
     }
-    func_80085718(arg0, 0);
+    RequestHeroAnim(arg0, 0);
     SetHeroSeq(arg0, 0xC);
-    func_80089FA4(arg0);
+    StartHeroVictory(arg0);
     CameraMode = 1;
 }
 
@@ -3014,11 +3014,11 @@ void SpinHeroWinner(s32 arg0) {
     } else {
         h->hero_eng->unk10.y = World_floor_level;
     }
-    func_80085890(arg0);
+    CheckHeroAnim(arg0);
     if (func_8008A200(arg0) != 0) {
-        func_8008A810();
+        FinishLevel();
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetSpinHeroLose(s32 arg0) {
@@ -3084,7 +3084,7 @@ void SpinHeroLose(s32 arg0) {
     } else {
         h->hero_eng->unk10.y = World_floor_level;
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
     {
         HeroInfo *b2 = Heroes;
         h = b2 + arg0;
@@ -3646,7 +3646,7 @@ void SetSpinHeroFall(s32 arg0) {
 
 void SpinHeroFlip(s32 arg0) {
     HeroHooks.HeroKickCollision(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SpinCreateShadow(s32 arg0) {

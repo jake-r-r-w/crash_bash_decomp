@@ -73,7 +73,7 @@ s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     ap = (s32 *)a;
     dist = 0x7FFFFFF;
     side = 0;
-    src = (Box2 *)func_8008CE20((subengine *)a, side, side);
+    src = (Box2 *)SubFindFlagPoint((subengine *)a, side, side);
     p = sv;
     if (src == NULL) {
         printf(NoxNoCollBoxMsg);
@@ -1039,7 +1039,7 @@ void NoxHeroFly(s32 arg0) {
     h = &hb[arg0];
     h->hero_eng->unk5E = 1;
     if (N2OHeroUpdateSpeed() != 0) {
-        func_8008502C(arg0);
+        ProcessHeroAnim(arg0);
     }
     ang = h->hero_eng->unk1E;
     x1 = (rcossin_tbl[ang & 0xFFF].unk2 * 0x67) >> 10;
@@ -1197,7 +1197,7 @@ void PlotAsteroidRoll(NAS *nas) {
     ext = FindExtension(nas, 0x10000000);
     if (ext != NULL) {
         nas->Engine->unk1C += 0x200;
-        if (func_8008C5C4(&ext->from.x, &ext->to.x, ext->arc, &nas->Engine->unk10.x) != 0) {
+        if (ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &nas->Engine->unk10.x) != 0) {
             ext->vy = -((ext->vy * 200) >> 8);
             nas->Engine->unk10.y = ext->floor;
             n = ext->bounces + 1;
@@ -2169,19 +2169,19 @@ void NoxSpawnSmokeBoost(void) {
 }
 
 void NoxHeroWinner(s32 arg0) {
-    func_80085890(arg0);
+    CheckHeroAnim(arg0);
     Heroes[arg0].hero_eng->unk1E = 0x800;
     Heroes[arg0].hero_move->forward_angle = 0x800;
     Heroes[arg0].hero_eng->unk5E = 1;
     if (func_8008A200(arg0) != 0) {
-        func_8008A810();
+        FinishLevel();
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetNoxHeroWinner(s32 arg0) {
-    func_80089FA4(arg0);
-    func_80085718(arg0, 0);
+    StartHeroVictory(arg0);
+    RequestHeroAnim(arg0, 0);
     Heroes[arg0].hero_eng->unk20 = 0;
     NoxSpeedScale = 0;
     Heroes[arg0].hero_eng->unk1C = 0;
@@ -2433,7 +2433,7 @@ s32 NoxPointInBox(s32 *arg0, s32 *arg1) {
     BoxHalf lo;
     BoxHalf hi;
 
-    src = (Box2 *)func_8008CE20((subengine *)arg0, 0, 0);
+    src = (Box2 *)SubFindFlagPoint((subengine *)arg0, 0, 0);
     if (src == NULL) {
         printf(NoxNoCollBoxMsg);
         return 0;

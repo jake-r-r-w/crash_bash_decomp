@@ -1792,7 +1792,7 @@ void HeroPogoIdle(u32 arg0) {
     if (TestHeroPogo(arg0) != 0) {
         return;
     }
-    switch (func_8008502C(arg0)) {
+    switch (ProcessHeroAnim(arg0)) {
     case 0x12:
         PlayBoingNoise(arg0);
         Set_Tile_Under_Player(arg0, 1);
@@ -1854,7 +1854,7 @@ void HeroPogoTazing(u32 arg0) {
     base = Heroes;
     h = &base[arg0];
     h->hero_frozen = 10;
-    if (func_8008502C(arg0) == 0x14) {
+    if (ProcessHeroAnim(arg0) == 0x14) {
         AddTazerRing(arg0);
     }
     eng = h->hero_eng;
@@ -1888,7 +1888,7 @@ void HeroPogoWinner(u32 arg0) {
             *(u16 *)(g + 0x30) |= 1;
         }
     }
-    switch (func_8008502C(arg0)) {
+    switch (ProcessHeroAnim(arg0)) {
     case 0x12:
         PlayBoingNoise(arg0);
         Set_Tile_Under_Player(arg0, 1);
@@ -2124,7 +2124,7 @@ void HeroPogoDazed(u32 arg0) {
         }
     }
     func_800871E4(arg0);
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
     switch (Heroes[arg0].hero_name) {
     case 4:
         if (BrioSmokeFrame == 0) {
@@ -6470,7 +6470,7 @@ void Create_PogoPadlock(s32 arg0, s32 arg1) {
 }
 
 void CreateFloatyPogoScore(u32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    func_8008D5D4((arg1 << 9) - 0x700, World_floor_level - 0x100, (arg2 << 9) - 0x800, arg3, 0);
+    CreateFloatyScore((arg1 << 9) - 0x700, World_floor_level - 0x100, (arg2 << 9) - 0x800, arg3, 0);
 }
 
 bool SquareIsFreeForRoo(s32 arg0, s32 arg1) {
@@ -7281,7 +7281,7 @@ void HeroPogoTied(u32 arg0) {
         eng->unk5E = 1;
         eng->unk1E += r >> 3;
     }
-    func_8008502C(arg0);
+    ProcessHeroAnim(arg0);
 }
 
 void SetHeroPogoTied(u32 arg0) {
@@ -7325,7 +7325,7 @@ void SetHeroPogoWinner(u32 arg0) {
     HeroInfo *h;
 
     Player_RemoveReserve(arg0);
-    func_80089FA4(arg0);
+    StartHeroVictory(arg0);
     Pickup_Lose(arg0);
     base = Heroes;
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
@@ -7583,7 +7583,7 @@ void POGOriggers(NASTrigger *trig, s32 arg1) {
 
 void InitialisePOGOFirst(void) {
     HeroHooks.InitHero = (s32)POGO_InitHero;
-    HeroHooks.TestJump = &D_8008AB04;
+    HeroHooks.TestJump = &HeroNoJump;
     HeroHooks.HeroModels = &PogoHeroModels;
     HeroHooks.RunSpeeds = &PogoHookTableC;
     HeroHooks.PreMoveHero = PreMovePOGO;

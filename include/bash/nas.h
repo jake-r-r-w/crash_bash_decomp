@@ -484,14 +484,14 @@ typedef struct _EXTbotai {
 BASH_SIZE_CHECK(EXTbotai, 0x44);
 
 /* A hero animation sequence is a stream of halfwords: the interpreter
- * (func_8008502C) reads seq[pos] and treats 0x8000 | n as command n (27 of
+ * (ProcessHeroAnim) reads seq[pos] and treats 0x8000 | n as command n (27 of
  * them, some taking halfword operands; the prototype's HEROcmds enum) and
  * anything else as a frame. The leak declares the sequences as
  * `hero_seq NAME[]`. The prototype types it `short`. */
 typedef u16 hero_seq;
 #define BASH_HAVE_HERO_SEQ
 
-/* A player's hero: Heroes[4] in the engine overlay, set up by func_80083708.
+/* A player's hero: Heroes[4] in the engine overlay, set up by InitialiseHeroes.
  * Functions take the player index (the leak's `unsigned int player`). */
 typedef struct HeroInfo {
     /* 0x00 */ NAS *hero;               /* from the pool at NasPool, AST index 3 */

@@ -288,7 +288,7 @@ s32 LevelListText(s32 a, s32 b);
 void MoveTeamBar(s32 arg0, s32 arg1);
 /* OptionsRender */
 #include "bash/main.h"
-void func_8008D488(u8 *arg0, s32 arg1);
+void FormatPercent(u8 *arg0, s32 arg1);
 extern GfxCamera TitlesCamera;
 extern GfxViewport TitlesMenuView;
 extern GfxViewport TitlesBackdropView;

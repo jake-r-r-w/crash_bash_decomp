@@ -32,18 +32,18 @@ typedef struct {
 
 void PAHeroWinner(s32 arg0);
 extern HeroInfo Heroes[4];
-s32 func_80085890();
+s32 CheckHeroAnim();
 s32 func_8008A200(s32 arg0);
-void func_8008A810(void);
+void FinishLevel(void);
 
 extern u16 D_8009E080[][4];
 void PACrateFindFreeSpot(EXTengine *eng);
 
 /* past the end of the overlay, at a fixed address (configs/USA/undefined_syms_manual.txt) */
 extern _sfx_handler *PapuStraySfx;
-void func_800898EC(s32 arg0);
+void HeroBecomeAngel(s32 arg0);
 void PAHeroDead(s32 arg0);
-s32 func_8008ABF8(s32 arg0);
+s32 HeroCheckResult(s32 arg0);
 
 s32 PACrateHitHeroes(EXTengine *eng, PapuHitFlags *flags, u32 mask);
 

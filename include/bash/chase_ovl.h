@@ -327,11 +327,11 @@ extern s32 World_floor_level;
 extern s32 D_8005B5B8;
 extern HeroInfo Heroes[4];
 void ApplyContour(EXTengine *eng);
-void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
+void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
 
-s32 func_80085890();
+s32 CheckHeroAnim();
 s32 func_8008A200(s32 arg0);
-void func_8008A810(void);
+void FinishLevel(void);
 
 void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1);
 
@@ -489,7 +489,7 @@ extern s32 ChaseChainSfx[];
 static inline HeroInfo *ChaseHeroes(void) {
     return Heroes;
 }
-void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void CreateFloatyScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 /* ChaseHeroSlots: one 0x30-byte record per player (id). */
 typedef struct { u8 pad0[0x20]; s32 unk20; u8 pad24[0xC]; } CoalPlayerRec;
 void ChaseHeroIdle(s32 arg0);

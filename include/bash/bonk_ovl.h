@@ -140,9 +140,9 @@ extern BonkHooks HeroHooks;
 extern s16 HeroActHit;
 extern s16 HeroActWinner;
 extern s16 HeroActLoser;
-extern u8 D_8008AB48[];
+s32 HeroNoKick(void);
 extern u16 BonkHeroModels[];
-extern u8 D_8008AB04[];
+s32 HeroNoJump(s32 arg0);
 void BonkHeroFacing(s32 arg0);
 s32 BONK_KeepInBounds(EXTengine *eng);
 void BonkPreMoveHero(s32 arg0);
@@ -233,7 +233,7 @@ void BonkKnockBack(s32 arg0, EXTengine *p, s32 arg2);
 extern u16 Clock_flags;
 
 extern u16 D_8009E080[][4];
-void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
+void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
 
 void PlotBonkCrate(NAS *nas);
 

@@ -2661,7 +2661,7 @@ void TankHeroTurn(u32 player) {
         HeroInfo *hb;
 
         UpdateTankHeroWeapons(player);
-        if (func_8008502C(player) != 0) {
+        if (ProcessHeroAnim(player) != 0) {
             AnimateTank(player);
         }
         hb = Heroes;
@@ -3073,7 +3073,7 @@ void TankHeroMove(u32 player) {
         s32 hit;
 
         UpdateTankHeroWeapons(player);
-        if (func_8008502C(player) != 0) {
+        if (ProcessHeroAnim(player) != 0) {
             AnimateTank(player);
         }
         if (TankLevelOver != 0) {
@@ -3330,7 +3330,7 @@ void TankHeroRecoil(u32 arg0) {
         eng->unk10.y = 0;
     }
     eng->sub->next->next->unk08 = -eng->unk10.y / 2;
-    if (func_8008502C(arg0) != 0) {
+    if (ProcessHeroAnim(arg0) != 0) {
         if (h->hero_status & 0x2000) {
             SetHeroAction(arg0, 0x6A);
         } else {
@@ -3354,8 +3354,8 @@ void SetTankHeroVictory(u32 arg0) {
     }
     Heroes[arg0].hero_ctrl |= 2;
     SetHeroSeq(arg0, 0x5A);
-    func_80089FA4(arg0);
-    func_80085718(arg0, 0);
+    StartHeroVictory(arg0);
+    RequestHeroAnim(arg0, 0);
     Heroes[arg0].hero_eng->unk10.y = 0;
     sub = Heroes[arg0].hero_eng->sub;
     sub = sub->next;
@@ -3375,8 +3375,8 @@ void TankHeroVictory(u32 arg0) {
         sub->unk52 = 1;
         sub->unk12 -= 0x15;
     }
-    func_8008502C(arg0);
-    func_80085890(arg0);
+    ProcessHeroAnim(arg0);
+    CheckHeroAnim(arg0);
     if (func_8008A200(arg0) != 0) {
         if (HLV->state & 0x800) {
             HLV->unk30 |= 0x201;
@@ -3404,7 +3404,7 @@ void TankHeroDie(u32 arg0) {
     } else {
         ok = 0;
     }
-    if (ok == 0 && func_8008502C(arg0) != 0) {
+    if (ok == 0 && ProcessHeroAnim(arg0) != 0) {
         eng = Heroes[arg0].hero_eng;
         pos = (s32 *)&eng->unk10;
         p = TankObjectsModel;
@@ -3436,7 +3436,7 @@ void SetTankHeroDead(u32 arg0) {
     Heroes[arg0].hero_immunity = 0;
     Heroes[arg0].hero_health = 0;
     Heroes[arg0].hero_status |= 0x6000;
-    func_800898EC(arg0);
+    HeroBecomeAngel(arg0);
     s = Heroes[arg0].hero_eng->sub;
     s = s->next;
     s->flags &= 0xFFFF7FFF;
@@ -7506,7 +7506,7 @@ void SetMoeJoeDead(s32 hero, s32 last_mode) {
     Heroes[hero].hero_immunity = 0;
     Heroes[hero].hero_health = 0;
     Heroes[hero].hero_status |= 0x6000;
-    func_800898EC(hero);
+    HeroBecomeAngel(hero);
     s = Heroes[hero].hero_eng->sub;
     s = s->next;
     s->flags &= 0xFFFF7FFF;

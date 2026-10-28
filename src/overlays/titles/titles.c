@@ -1037,7 +1037,7 @@ void OptionsRender(void) {
     RenderState.modelDp = ScreenFade.amount;
     switch (OptionsPage) {
     case 1:
-        func_8008D488(sub[7].unk6C, *(s32 *)GameOptions);
+        FormatPercent(sub[7].unk6C, *(s32 *)GameOptions);
         if (((s32 *)GameOptions)[2] != 0) {
             sub[5].flags &= ~0x8000;
             sub[4].flags |= 0x8000;
@@ -1045,7 +1045,7 @@ void OptionsRender(void) {
             sub[5].flags |= 0x8000;
             sub[4].flags &= ~0x8000;
         }
-        func_8008D488(sub[9].unk6C, D_8005A608);
+        FormatPercent(sub[9].unk6C, D_8005A608);
         break;
     case 2:
         n = PadCount;

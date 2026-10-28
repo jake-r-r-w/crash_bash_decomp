@@ -10,7 +10,7 @@
 #include "bash/pogo.h" /* PogoPlayer, PogoPlay */
 
 void UpdatePOGO(void);
-extern u8 D_8008AB04[];
+s32 HeroNoJump(s32 arg0);
 extern u16 PogoHeroModels[];
 extern u8 PogoHookTableC[];
 void PogoInit_AIQuality();
@@ -51,7 +51,7 @@ extern process_control_info MenuProcessControl;
 
 void psxpogo_render_tile();
 
-void func_80089FA4(s32 arg0);
+void StartHeroVictory(s32 arg0);
 extern u16 CameraMode;
 
 /* MainCamera as the camera PogoInit_Camera sets up. */
@@ -360,7 +360,7 @@ typedef enum PogoMode {
     POGO_MODE_11 = 11,
     POGO_MODE_12 = 12
 } PogoMode;
-s32 func_8008502C();
+s32 ProcessHeroAnim();
 void InitPogo_Tiles(void);
 
 

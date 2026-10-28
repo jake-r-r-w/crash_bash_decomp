@@ -462,7 +462,7 @@ void InitialiseBASH(void) {
     BashTumblerTimer = 0x96;
     BashShuffleDropPoints();
     BashSpaceClearTiles();
-    func_80086D88();
+    MarkHeroesOnGrid();
     for (i = 0; i < 4; i++) {
         a = get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z);
         m = Heroes[i].hero_move;
@@ -530,9 +530,9 @@ void UpdateBASH(void) {
     s16 id;
     s16 *p;
 
-    func_80086F78();
+    ArenaGridClear();
     BashCountObjects();
-    func_80086D88();
+    MarkHeroesOnGrid();
     if (HeroesAllOut != 0) {
         if (BashAIVictim == -1) {
             for (i = 0; i < 4; i++) {
@@ -579,7 +579,7 @@ void BashSnowMoveHero(s32 arg0) {
     s32 step;
 
     HeroHooks.HeroFacing();
-    func_800860D4(arg0);
+    HeroApplyJump(arg0);
     if (m->velocity_calc == 3) {
         if (m->x_vel != m->x_max) {
             if (m->x_max != 0) {
@@ -917,7 +917,7 @@ void Bash_HeroBot(s32 arg0) {
             goto done;
         }
         BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, target);
-        r = func_800864CC(arg0, 0x40);
+        r = HeroTestBox(arg0, 0x40);
         if (r == target) {
             ai->TargetPlayer = -1;
             ai->AImode = 1;
@@ -992,7 +992,7 @@ void Bash_HeroBot(s32 arg0) {
         if (OVLG->mode == 3) {
             BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, target);
         }
-        r = func_800864CC(arg0, 0x40);
+        r = HeroTestBox(arg0, 0x40);
         if (r != target && (Heroes[r].hero_immunity | Heroes[r].hero_frozen) == 0 &&
             (OVLG->p2_active == 0 || r != mate) && Random(3) == 0) {
             ai->AIpad |= 0x8000;
@@ -1116,7 +1116,7 @@ void Bash_HeroBot(s32 arg0) {
             ai->TargetPlayer = r;
             ai->pTargetNas = NULL;
         }
-        r = func_800864CC(arg0, 0x40);
+        r = HeroTestBox(arg0, 0x40);
         if (r != -1 && (GameTeams[0] == 0 || r != mate)) {
             ai->TargetPlayer = -1;
             ai->AImode = 1;
@@ -1158,7 +1158,7 @@ void Bash_HeroBot(s32 arg0) {
                 break;
             }
             BashAI_CheckShot(arg0, mate, ang, (BashAiState *)ai, -1);
-            r = func_800864CC(arg0, 0x40);
+            r = HeroTestBox(arg0, 0x40);
             if (r != -1 && (GameTeams[0] == 0 || r != mate)) {
                 ai->TargetPlayer = -1;
                 ai->AImode = 1;
@@ -1217,7 +1217,7 @@ void Bash_HeroBot(s32 arg0) {
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
         }
-        r = func_800864CC(arg0, 0x40);
+        r = HeroTestBox(arg0, 0x40);
         if (r != -1 && (GameTeams[0] == 0 || r != mate)) {
             ai->AImode = 13;
             ai->AIsleep = 5;
@@ -1878,7 +1878,7 @@ void FinishBashLevel(void) {
         for (i = 0; i < 4; i++) {
             h = &Heroes[i];
             if (!(h->hero_status & 0xFA00) && i != best) {
-                func_80084E04(i, 0, -1, 0x1000, 0);
+                HeroTakeHit(i, 0, -1, 0x1000, 0);
             }
         }
     }
@@ -2633,7 +2633,7 @@ void BashPenguinPush(EXTengine *self) {
                     if (dist < rr) {
                         Heroes[i].hero_move->reactive_angle = get_angle(self->unk10.x, self->unk10.z);
                         Heroes[i].hero_move->reactive_speed = 0x60;
-                        func_80084E04(i, NULL, -1, 0x8005, 0x446);
+                        HeroTakeHit(i, NULL, -1, 0x8005, 0x446);
                     }
                 }
             }
@@ -3355,7 +3355,7 @@ void PlotBashShox(NAS *nas) {
                     }
                     Heroes[hit].hero_move->reactive_angle = ang;
                     Heroes[hit].hero_move->reactive_speed = 0x30;
-                    func_80084E04(hit, NULL, nas->UserInfo.user1, 0x8008, 0x446);
+                    HeroTakeHit(hit, NULL, nas->UserInfo.user1, 0x8008, 0x446);
                 }
             }
         }
