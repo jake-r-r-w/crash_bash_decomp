@@ -719,9 +719,11 @@ static inline mal *Heap_NextToMove(_mal_area *heap) {
 }
 
 /* A node from the free list smallnode_alloc hands out (smallnode_free returns
- * it); ptr is the heap block it owns. */
-typedef struct {
+ * it): the heap block it owns and the load filling it. */
+typedef struct BlockRef {
     /* 0x00 */ u8 *ptr;
+    /* 0x04 */ s32 load;
+    /* 0x08 */ struct BlockRef *next;   /* on the free list */
 } BlockRef;
 
 /* An entry of the 0x18-byte table at +0x44 (+ offset at +0x44) of a file
@@ -753,7 +755,7 @@ void mal_compact_step(_mal_area *heap);
 u8 *mal_update_deferred(_mal_area *arg0);
 void sortlist_sort(s32 arg0);
 void loader_unused_a(void);
-void smallnode_free(u8 *arg0);
+void smallnode_free(BlockRef *node);
 void loader_cancel(LoadNode *arg0);
 s32 string_hash(u8 *s);
 s32 load_file_cb(s32 arg0, void (*done)(), void *ctx);
@@ -828,7 +830,7 @@ extern s32 MusicCur;
 extern s32 MusicStopDelay;
 extern s32 MusicVolCur;
 extern s32 MusicDuck;
-extern void *SmallNodeFree;
+extern BlockRef *SmallNodeFree;
 /* A module's entry table, the first bytes of its image: the engine's (entry.c) is what the
  * shell runs (EngineModule), and RunModules runs one until it hands over (CurrentModule). */
 typedef struct ModuleEntry {
@@ -851,7 +853,7 @@ s32 load_file_direct(s32 *file, u8 *buf);
 void init_file(void);
 extern s32 DcacheReady;
 extern void *LoadNodeFree;
-extern u8 SmallNodePool[]; /* 63 x 0xC pool, free list in SmallNodeFree */
+extern BlockRef SmallNodePool[]; /* 63 of them, free list in SmallNodeFree */
 extern u8 LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
 extern s32 cam_ramp_overide_count;
 extern s32 CamEaseOverride;

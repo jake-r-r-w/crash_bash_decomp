@@ -8,10 +8,10 @@
 #include "common.h"
 #include "bash/main.h"
 
-s32 dbase_texture_ptr(u8 *arg0, s32 arg1);
+s32 dbase_texture_ptr(obj_dbase *db, s32 i);
 void dbase_asload_with_anims(obj_dbase *db, s32 *keep);
-void dbase_asload_with_anims_callback(u8 *arg0, u8 *arg1);
-void dbase_copy_block(u8 *arg0, s32 arg1);
+void dbase_asload_with_anims_callback(u8 *data, obj_dbase *db);
+void dbase_copy_block(FileEntry *e, s32 base);
 /* One of a .mdl's animations that load on their own (dbase_anim_load): its byte range in the
  * file, the loaded copy and the load in flight. The table (a count, then these) is at the
  * data's +0x3C offset. */
@@ -23,11 +23,11 @@ typedef struct DbaseAnim {
 } DbaseAnim;
 
 void dbase_anim_load(obj_dbase *db, s32 i);
-u8 *dbase_mesh_anim_rec_load(s32 *arg0, u8 *arg1);
+BlockRef *dbase_mesh_anim_rec_load(s32 *file, FileEntry *e);
 void dbase_load_textures(obj_dbase *db);
-void dbase_set_textures(u8 *arg0, u8 *arg1);
+void dbase_set_textures(obj_dbase *db, u8 *base);
 void load_font(void);
-void dbase_set(u8 *arg0, s32 arg1, s32 arg2);
+void dbase_set(obj_dbase *db, u8 *data, u8 *base);
 void dbase_init(obj_dbase *db);
 void dbase_textures_loaded();
 void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db);

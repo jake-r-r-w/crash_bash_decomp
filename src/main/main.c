@@ -2048,38 +2048,38 @@ void sortlist_sort(s32 arg0) {
 void loader_unused_a(void) {
 }
 
-void smallnode_free(u8 *arg0) {
-    u8 *temp_v1;
+void smallnode_free(BlockRef *node) {
+    BlockRef *head;
 
-    temp_v1 = SmallNodeFree;
-    SmallNodeFree = arg0;
-    (*(s32*)((u8*)(arg0) + 8)) = temp_v1;
+    head = SmallNodeFree;
+    SmallNodeFree = node;
+    node->next = head;
 }
 
 void *smallnode_alloc(void) {
-    u8 *p;
+    BlockRef *p;
 
     p = SmallNodeFree;
     if (p != NULL) {
-        *(s32 *)(p + 0) = 0;
-        *(s32 *)(p + 4) = 0;
-        SmallNodeFree = *(u8 **)(p + 8);
+        p->ptr = NULL;
+        p->load = 0;
+        SmallNodeFree = p->next;
     }
     return p;
 }
 
 
 void smallnode_init(void) {
-    u8 *p;
+    BlockRef *p;
     s32 i;
 
     p = SmallNodePool;
     SmallNodeFree = p;
     for (i = 62; i != -1; i--) {
-        *(u8 **)(p + 8) = p + 0xC;
-        p += 0xC;
+        p->next = p + 1;
+        p++;
     }
-    *(u8 **)(p + 8) = NULL;
+    p->next = NULL;
 }
 
 void loader_unused_b(void) {
@@ -3935,8 +3935,8 @@ FileGroup FileGroups[130] = {
 LoaderState Loader = {0};
 u8 LoadNodePool[2304] = {0};
 void *LoadNodeFree = 0;
-u8 SmallNodePool[768] = {0};
-void *SmallNodeFree = 0;
+BlockRef SmallNodePool[64] = {0};
+BlockRef *SmallNodeFree = 0;
 s32 DirPadBits[24] = {
     0x10, 0x30, 0x20, 0x60, 0x40, 0xC0, 0x80, 0x90, 0, 0, 0x400, 0x200, 0x800, 0, 0x600, 0,
     0xC00, 0xE00, 0, 0, 0xA00, 0, 0, 0,

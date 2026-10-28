@@ -74,13 +74,13 @@ u8 *dbase_texture_entry(u8 *arg0, s32 i) {
     return NULL;
 }
 
-s32 dbase_texture_ptr(u8 *arg0, s32 arg1) {
-    s32 temp_a0;
+s32 dbase_texture_ptr(obj_dbase *db, s32 i) {
+    TexDst2A84C *tex;
 
-    if (arg0 != NULL) {
-        temp_a0 = (*(s32*)((u8*)(arg0) + 24));
-        if (temp_a0 != 0) {
-            return temp_a0 + ((arg1 & 0xFFF) * 0x38);
+    if (db != NULL) {
+        tex = db->textures.tex;
+        if (tex != NULL) {
+            return (s32)&tex[i & 0xFFF];
         }
     }
     return 0;
@@ -113,9 +113,9 @@ void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db) {
     load_file_cb(db->file, dbase_asload_with_anims_callback, db);
 }
 
-void dbase_asload_with_anims_callback(u8 *arg0, u8 *arg1) {
-    mal_set_owner(arg0, arg1 + 0xC);
-    dbase_setup_blocks(arg0, (*(s32*)((u8*)(arg1) + 52)));
+void dbase_asload_with_anims_callback(u8 *data, obj_dbase *db) {
+    mal_set_owner(data, (void **)&db->data);
+    dbase_setup_blocks(data, db->keep);
 }
 
 s32 name_list_find(s32 *list, u8 *arg1) {
@@ -132,16 +132,16 @@ s32 name_list_find(s32 *list, u8 *arg1) {
     return 0;
 }
 
-void dbase_copy_block(u8 *arg0, s32 arg1) {
-    s32 *temp_v0;
-    s32 temp_s0;
+void dbase_copy_block(FileEntry *e, s32 base) {
+    BlockRef *node;
+    s32 size;
 
-    temp_v0 = smallnode_alloc();
-    (*(s32*)((u8*)(arg0) + 20)) = temp_v0;
-    temp_s0 = (*(s32*)((u8*)(arg0) + 4)) - (*(s32*)((u8*)(arg0) + 0));
-    mal_can_alloc(temp_s0);
-    mal_alloc_owned_low(temp_s0, temp_v0, &MainHeap, 0);
-    memcpy(*temp_v0, arg1 + (*(s32*)((u8*)(arg0) + 0)), temp_s0);
+    node = smallnode_alloc();
+    e->block = node;
+    size = e->end - e->start;
+    mal_can_alloc(size);
+    mal_alloc_owned_low(size, (void **)node, (s32)&MainHeap, 0);
+    memcpy(node->ptr, (u8 *)(base + e->start), size);
 }
 
 void dbase_anim_release(obj_dbase *db, s32 i) {
@@ -520,32 +520,31 @@ u8 *dbase_mesh_anim_load(u8 *arg0, s32 arg1) {
     return func_80016B48_load((s32 *)arg0, e);
 }
 
-u8 *dbase_mesh_anim_rec_load(s32 *arg0, u8 *arg1) {
-    s32 temp_a1;
-    s32 temp_v0_2;
-    u8 *temp_v0;
-    u8 *var_v0;
+BlockRef *dbase_mesh_anim_rec_load(s32 *file, FileEntry *e) {
+    s32 start;
+    s32 load;
+    BlockRef *node;
+    BlockRef *ret;
 
-    var_v0 = (*(s32*)((u8*)(arg1) + 20));
-    if (var_v0 == NULL) {
-        temp_v0 = smallnode_alloc();
-        if (temp_v0 != NULL) {
-            temp_a1 = (*(s32*)((u8*)(arg1) + 0));
-            (*(s32*)((u8*)(arg1) + 20)) = temp_v0;
-            temp_v0_2 = asload_chunk_relocatable(*arg0, temp_a1, temp_v0, (*(s32*)((u8*)(arg1) + 4)) - temp_a1);
-            (*(s32*)((u8*)(temp_v0) + 4)) = temp_v0_2;
-            if (temp_v0_2 != 0) {
-                return temp_v0;
+    ret = e->block;
+    if (ret == NULL) {
+        node = smallnode_alloc();
+        if (node != NULL) {
+            start = e->start;
+            e->block = node;
+            load = asload_chunk_relocatable(*file, start, (u32 **)node, e->end - start);
+            node->load = load;
+            if (load != 0) {
+                return node;
             }
-            smallnode_free(temp_v0);
-            goto block_5;
+            smallnode_free(node);
+            goto fail;
         }
-block_5:
-        var_v0 = NULL;
-        /* Duplicate return node #6. Try simplifying control flow for better match */
-        return var_v0;
+fail:
+        ret = NULL;
+        return ret;
     }
-    return var_v0;
+    return ret;
 }
 
 void dbase_load_textures_wait(u8 *rec) {
@@ -609,13 +608,13 @@ void dbase_group_textures_loaded(u8 *arg0, u8 *arg1) {
 }
 
 
-void dbase_set_textures(u8 *arg0, u8 *arg1) {
-    u8 *temp_s0;
+void dbase_set_textures(obj_dbase *db, u8 *base) {
+    u8 *ts;
 
-    temp_s0 = arg0 + 0x10;
-    textureset_init(temp_s0, arg1);
-    textureset_upload(temp_s0);
-    (*(s32*)((u8*)(arg0) + 32)) = 0;
+    ts = (u8 *)&db->textures;
+    textureset_init(ts, base);
+    textureset_upload(ts);
+    db->textures.base = NULL;
 }
 
 void dbase_set_data(u8 *arg0, u8 *arg1) {
@@ -678,14 +677,14 @@ void load_font(void) {
     dbase_load_textures_wait(&HeroModelBank[DB_Font]);
 }
 
-void dbase_set(u8 *arg0, s32 arg1, s32 arg2) {
-    s32 temp_s0;
+void dbase_set(obj_dbase *db, u8 *data, u8 *base) {
+    u8 *ts;
 
-    temp_s0 = arg0 + 0x10;
-    (*(s32*)((u8*)(arg0) + 12)) = arg1;
-    (*(s32*)((u8*)(arg0) + 32)) = arg2;
-    textureset_init(temp_s0, arg2);
-    textureset_upload(temp_s0);
+    ts = (u8 *)&db->textures;
+    db->data = data;
+    db->textures.base = base;
+    textureset_init(ts, base);
+    textureset_upload(ts);
 }
 
 void dbase_init_all(void) {
