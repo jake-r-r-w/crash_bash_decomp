@@ -510,11 +510,8 @@ s32 LevelSfxBanks[14][8] = {
 };
 s32 FirstBootDone = 0;
 SfxPool SfxVoicePool = {0};
-s32 D_80059618[20] = {
-    0x6253414E, 0x646C6975, 0x20666F20, 0x343A3030, 0x36353A32, 0x206E6F20, 0x2074634F,
-    0x32203031, 0xA303030, 0x6D6F4320, 0x656C6970, 0x65762072, 0x6F697372, 0x2E32206E,
-    0x20312E38, 0x32334E53, 0x49554220, 0x3420444C, 0x302E302E, 0x303130,
-};
+/* the build's stamp (the library's own banner) */
+char NasBuildStamp[80] = "NASbuild of 00:42:56 on Oct 10 2000\n Compiler version 2.8.1 SN32 BUILD 4.0.0010";
 s32 PauseTexts[56] = {
     (s32)&PauseTextContinue, (s32)&PauseTextShowRules, (s32)&PauseTextOptions, (s32)&PauseTextChangeArena, (s32)&PauseTextChangeArena2, (s32)&PauseTextQuitGame, (s32)&PauseTextExitArena, (s32)&PauseTextExitArena2, (s32)&PauseTextReturnToWarpRoom, (s32)&PauseTextReturnToWarpRoom2, (s32)&PauseTextNewGame, (s32)&PauseTextReplayThisArena, (s32)&PauseTextCheatMenu, (s32)&PauseTextLevelSelector, (s32)&PauseTextQuitGame2, (s32)&PauseTextYesNo, (s32)&PauseTextYes, (s32)&PauseTextNo, (s32)&PauseTextVibration, (s32)&PauseTextOn, (s32)&PauseTextOff, (s32)&PauseTextCheatFlags, (s32)&PauseTextTweakSettings, (s32)&PauseTextTweakAwards, (s32)&PauseTextViewStats, (s32)&PauseTextAdjustLevel, (s32)&PauseTextController1IsUnplugged, (s32)&PauseTextController2IsUnplugged, (s32)&PauseTextController1AIsUnplugged, (s32)&PauseTextController1BIsUnplugged, (s32)&PauseTextController1CIsUnplugged, (s32)&PauseTextController1DIsUnplugged, (s32)&PauseTextPleaseInsertAController, (s32)&PauseTextEmpty, (s32)&PauseTextEmpty, (s32)&PauseTextDemo, (s32)&PauseText01, (s32)&PauseText02, (s32)&PauseText03, (s32)&PauseTextSound, (s32)&PauseTextSoundOptions, (s32)&PauseTextAudioMode, (s32)&PauseTextMusicVolume, (s32)&PauseTextFxVolume, (s32)&PauseTextController, (s32)&PauseTextStereo, (s32)&PauseTextMono, (s32)&PauseText100Percent, (s32)&PauseText090Percent, (s32)&PauseTextExit, (s32)&PauseTextPressButtonToAccept, (s32)&PauseTextPressButtonToChange, (s32)&PauseTextP1, (s32)&PauseTextP2, (s32)&PauseTextP3, (s32)&PauseTextP4,
 };

@@ -936,7 +936,7 @@ extern NodePool PrimPool;
 extern NAS *HeadOfSolids;
 extern NAS *ContourPlatform;
 extern void *HeadOfMissiles;            /* tail of the HeadOfObjects list */
-extern void *D_8005AA30;            /* tail of the HeadOfSolids list */
+extern void *HeadOfUnused;            /* tail of the HeadOfSolids list */
 extern s32 VelocityCalc;
 extern s32 ACMD[16][2];       /* entries 1..15 cleared by ResetNasLists */
 extern s32 PadCount;
@@ -1138,8 +1138,8 @@ extern s32 ComboSeqs[]; /* ComboSeq table, 0x90 bytes per entry */
 extern CdlLOC CdSeekLoc;
 extern RECT *ScreenRect;
 extern s32 ScreenSetFrame;
-extern s32 D_8005B78C;
-extern s32 D_800335BC;
+extern s32 ScreenSetFlag;
+extern s32 FntLoadPatch;
 extern u32 DebugFontClutData[];
 extern s32 DebugFontStream;
 extern s32 DebugFontTPage;
@@ -1342,7 +1342,7 @@ extern s32 ScriptFade;
 extern s32 ScriptTimeStep;
 extern s32 ScriptThreadPool;
 extern s32 ScriptPool;
-extern s8 CupMenuAnim;
+extern s8 GameCup;
 extern void *HeadOfBalls;
 extern void *PrimSetList;
 extern s32 *PrimSetFree;

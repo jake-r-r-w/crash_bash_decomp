@@ -248,7 +248,7 @@ typedef struct {
 } ArkenoidModeView;
 
 /* AR_InitLevel (stage setup) */
-extern s32 D_8005AA3C;
+extern s32 HeadOfBalls2;
 extern s16 ArkInitWord0;
 extern s16 ArkInitWord1;
 extern s16 ArkInitWord2;

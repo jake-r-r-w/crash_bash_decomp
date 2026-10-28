@@ -321,7 +321,7 @@ s32 LevelListModel(s32 arg0, s32 arg1);
 
 
 
-extern s8 D_8005A64B;
+extern s8 GameArenaLevel;
 
 void NewLoadMenuUpdate(void);
 
@@ -435,7 +435,7 @@ void BattleOptionsUpdate(void);
 typedef struct {
     u8 pad0[0x26];
     u8 unk26;      /* 0x26: chosen count */
-    u8 unk27;      /* 0x27: mode (D_8005A63B) */
+    u8 unk27;      /* 0x27: mode (GameMaxPlayers) */
     u8 pad28[0x32 - 0x28];
     u16 unk32;     /* 0x32 */
     u8 pad34[0x54 - 0x34];
@@ -458,7 +458,7 @@ typedef struct {
     u8 pad4C[0x58 - 0x4C];
 } TitlesPad;
 #define O69PAD ((TitlesPad *)Pads)
-extern u8 D_8005A63B;
+extern u8 GameMaxPlayers;
 void PlayersMenuUpdate(void);
 
 void OptionsUpdate(void);

@@ -2348,7 +2348,7 @@ void ResetNasLists(void) {
 
     HeadOfCameras = NULL;
     HeadOfSolids = NULL;
-    D_8005AA30 = NULL;
+    HeadOfUnused = NULL;
     HeadOfObjects = NULL;
     HeadOfMissiles = NULL;
     NASActiveHead = NULL;
@@ -2580,7 +2580,7 @@ void SetScreen(arg0)
 RECT *arg0;
 {
     DrawSync(0);
-    D_8005B78C = 0;
+    ScreenSetFlag = 0;
     if (arg0 != NULL) {
         ScreenSetFrame = FrameCount + 1;
         if (ScreenRect == NULL) {
@@ -3170,7 +3170,7 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
         *(FreeHdr *)b = areas->hdr;
         areas++;
     }
-    D_800335BC = 0x2626001F;
+    FntLoadPatch = 0x2626001F;
     FntLoad(0x380, 0x100);
     DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
@@ -3291,7 +3291,7 @@ s32 list_count(u8 **arg0) {
 }
 
 void debug_font_init(void) {
-    D_800335BC = 0x2626001F;
+    FntLoadPatch = 0x2626001F;
     FntLoad(0x380, 0x100);
     DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
@@ -3299,7 +3299,7 @@ void debug_font_init(void) {
 }
 
 void debug_font_init2(void) {
-    D_800335BC = 0x2626001F;
+    FntLoadPatch = 0x2626001F;
     FntLoad(0x380, 0x100);
     DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     DebugFontTPage = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
@@ -4095,83 +4095,90 @@ s32 VelocityCalc = 0;
 void *LevelTriggerData = 0;
 s32 LevelConfig = 0;
 EngineRec32 *LevelRecs = 0;
-s32 D_8005A5EC[6] = {0};
+s32 LevelUnused[6] = {0};
 GameOptionSet GameOptions = {0};
 u8 GameInfo[4] = {0};
 s32 GameCheats = 0;
 s32 LevelRecIndex = 0;
 s32 GameFrames = 0;
 s32 GamePause = 0;
-s32 D_8005A628[4] = {0};
-s16 D_8005A638 = 0;
+s32 GameDemoTimer = 0;    /* +0x14: frames a demo runs (titles) */
+s32 GameClockState[3] = {0};
+s16 GameExitDelay = 0;   /* +0x24: UpdateExitDelay's countdown */
 u8 GamePlayers = 0;
-u8 D_8005A63B = 0;
-s8 CupMenuAnim = 0;
-u8 D_8005A63D = 0;
-u8 D_8005A63E = 0;
-u8 D_8005A63F = 0;
+u8 GameMaxPlayers = 0;
+s8 GameCup = 0;
+u8 GameCupRound = 0;     /* +0x29: the arena of the cup (CupTable[GameCup]) */
+u8 GameInfoUnk2A = 0;
+u8 GameInfoUnk2B = 0;
 s32 GameLanguage = 0;
 u16 GameExitFlags = 0;
 u16 GameLevelFlags = 0;
 s16 GameMode = 0;
 s8 GameArena = 0;
-s8 D_8005A64B = 0;
-s16 D_8005A64C[2] = {0};
+s8 GameArenaLevel = 0;   /* +0x37: the level of BattleArenas[GameArena] */
+s16 GameAiLevel = 0;     /* +0x38: the AI tables' index */
+s16 GameBattleWins = 0;  /* +0x3A: battle options' wins (2..7) */
 s16 LevelLoadModel = 0;
-s16 D_8005A652 = 0;
-s16 D_8005A654[4] = {0};
+s16 GameInfoUnk3E = 0;
+s16 GameInfoUnk40 = 0;
+s16 GameCupLeader = 0;   /* +0x42: the cup's leading player */
+s16 GameTeamSide[2] = {0};  /* +0x44: each team's HeroSide bits */
 s16 GameTeamLeader[2] = {0};
-s32 D_8005A660 = 0;
-u8 D_8005A664 = 0;
-u8 D_8005A665 = 0;
-u8 D_8005A666 = 0;
-u8 D_8005A667 = 0;
-s32 D_8005A668[2] = {0};
+u8 GameHeroChoice[4] = {0};  /* +0x4C: the heroes picked (saved with the game) */
+u8 GameHeroes[4] = {0};  /* +0x50: each player's hero (HeroInfo.hero_name; 9 none) */
+s8 GameTeammateChoice[4] = {0};
+s8 GameTeammates[4] = {0};  /* +0x58: each player's teammate, -1 none */
 u8 GameHeroOut[4] = {0};
 u8 GameWinner[2] = {0};
 u8 GameWarpRoom = 0;
 s8 GameGateway = 0;
-s16 D_8005A678[4] = {0};
+s32 GameReturnToHub = 0;  /* +0x64: SetReturnGateway */
+s32 GameDemo = 0;         /* +0x68: a demo is running */
 s32 GameTeams[1] = {0};
 AdventureState GameAdventure = {0};
 s32 ExtHeap[3] = {0};
 ExtBlk *ExtFreeList = 0;
-s32 D_8005A7B0[4] = {0};
+s32 ExtHeapInfo[4] = {0};  /* the NAS heap's size and bounds (InitNasHeap) */
 NAS NASTemplate = {0};
 subengine SubEngineTemplate = {0};
 EXTengine EngineTemplate = {0};
 Ext1000 ExtTemplate1000 = {0};
 Ext400 ExtTemplate400 = {0};
 EXTmotion ExtMotionTemplate = {0};
-s32 D_8005AA00[1] = {0};
+s32 NasUnused[1] = {0};
 NAS *NASActiveHead = 0;
 NAS *NASActiveTail = 0;
 NAS *NASFreeList = 0;
 u16 FirstNas = 0;
 u16 NasPoolSlots = 0;
 u16 NasPoolUsed = 0;
-s16 D_8005AA18[2] = {0};
+s16 NasPoolUnused[2] = {0};
 NAS *NasPool = 0;
 u8 *NasPoolLast = 0;
 NAS *HeadOfObjects = 0;
 void *HeadOfMissiles = 0;
 NAS *HeadOfSolids = 0;
-void *D_8005AA30 = 0;
+void *HeadOfUnused = 0;   /* reset with the other heads, read nowhere */
 NAS *HeadOfCameras = 0;
 void *HeadOfBalls = 0;
-s32 D_8005AA3C[3] = {0};
+void *HeadOfBalls2 = 0;   /* reset with HeadOfBalls (Arkenoid, N2O) */
+void **NasUpdateList = 0;  /* the engine sees EngObj ** (engine.h) */
+u8 *HeroNasList = 0;
 NASTrigger *HeadOfTriggers = 0;
 s32 TriggerCount = 0;
 s32 NasHeapSize = 0;
 s32 SubPoolCount = 0;
 s32 GlobalNAStatus = 0;
-s32 D_8005AA5C[1] = {0};
+s32 AstUnused[1] = {0};
 s32 ASTCount = 0;
-s32 D_8005AA64[2] = {0};
+s32 ASTString[2] = {0};
 ASTEntry *ASTTable = 0;
 LevSpec LevelSpecs = {0};
 NAS *ContourPlatform = 0;
-s32 D_8005AAA0[5] = {0};
+s32 ContourUnused[2] = {0};
+s32 GemRules[2] = {0};
+s32 PauseMenuSets = 0;
 s16 SysFontLookUp[512] = {0};
 s8 SysFontWidth[512] = {0};
 u8 SysFontFlags[512] = {0};
@@ -4182,7 +4189,7 @@ s32 ACMD[16][2] = {0};
 u8 *sysfont_dbase = 0;
 RECT VramRect = { 0, 0, 0x1FF, 0x1FF };
 ModuleEntry *CurrentModule = 0;
-s32 D_8005B64C[16] = {
+s32 EaseCurves[16] = {  /* two easing curves (0..0x7B8, 0..0x1EE); read nowhere */
     0, 0x200, 0x400, 0x580, 0x680, 0x720, 0x780, 0x7B8, 0, 0x80, 0x100, 0x160, 0x1A0, 0x1C8,
     0x1E0, 0x1EE,
 };
@@ -4201,14 +4208,14 @@ ScreenMode vmode_512_ntsc = { { 0, 0, 0x200, 0xF0 }, { 0, 0x100, 0x200, 0xF0 }, 
 ScreenMode vmode_512_pal = { { 0, 0, 0x200, 0x100 }, { 0, 0x100, 0x200, 0x100 }, { 0, 0 } };
 ScreenMode vmode_640_ntsc = { { 0, 0, 0x280, 0xF0 }, { 0, 0x100, 0x280, 0xF0 }, { 0, 0 } };
 ScreenMode vmode_640_pal = { { 0, 0, 0x280, 0x100 }, { 0, 0x100, 0x280, 0x100 }, { 0, 0 } };
-s32 D_8005B78C = 0;
+s32 ScreenSetFlag = 0;
 u8 DrawBuffers[32792] = {0};
 s32 VideoMode = 0;
-s32 D_800637AC[1] = {0};
+s32 CdUnused[1] = {0};
 s32 LoadDirectBusy = 0;
 s32 CdReadStatus = 0;
 s32 ArchiveSector = 0;
-s32 D_800637BC[176] = {
+s32 UnusedPairs[176] = {  /* halfword pairs; read nowhere */
     0x13F0199, 0x16D0128, 0x1CE0136, 0x18A0178, 0x10801A2, 0xFE00C5, 0xF100E4, 0x12B010C,
     0x10B00F1, 0xE000E2, 0x10300FB, 0x12E0126, 0x1610115, 0x12D0124, 0x1400138, 0x12B0112,
     0x144013D, 0x16D013D, 0x1440146, 0x16B0179, 0x1E7011E, 0x16A0189, 0x19E0162, 0x11E010B,
@@ -4233,7 +4240,7 @@ s32 D_800637BC[176] = {
     0x10E010B, 0x12700ED, 0x13000EC, 0x2830087, 0x2D00223, 0xD300D2, 0xE4, 0,
 };
 s32 xa_count = 0;
-s32 D_80063A80[1] = {0};
+s32 PadUnused[1] = {0};
 u8 PadActAlign[8] = { 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0 };
 s32 PadLastRead = 0;
 u8 PadMtapBuf[2][52] = {0};
@@ -4349,7 +4356,7 @@ s32 DebugFontTPage = 0;
 s32 DebugFontClut = 0;
 u8 *VramBufNodes = 0;
 void (*SsTickSaved)() = 0x4D2;
-s32 D_800643FC[6] = {0};
+s32 SoundUnused[6] = {0};
 
 /* the .bss (main.c's comes first) */
 s32 NasHeapMem __attribute__((section(".bss")));

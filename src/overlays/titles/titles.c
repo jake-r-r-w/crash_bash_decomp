@@ -698,7 +698,7 @@ void PlayersMenuUpdate(void) {
     s[1].unk7C = 3;
     s[2].unk7C = 3;
     s[3].unk7C = 3;
-    if (D_8005A63B == 2) {
+    if (GameMaxPlayers == 2) {
         s[0].unk08 = -0x22;
         s[1].unk08 = 0;
     } else {
@@ -2021,7 +2021,7 @@ void LevelSelectQuit(void) {
 
 void LevelSelectCursor(s32 arg0) {
     u8 *p = (u8 *)GetEngineSlot(0)->sub + 0xA8;
-    s32 v = *(s16 *)((u8 *)GetEngineSlot(1)->sub + D_8005A64B * 0xA8 + 0x312) + 0x32;
+    s32 v = *(s16 *)((u8 *)GetEngineSlot(1)->sub + GameArenaLevel * 0xA8 + 0x312) + 0x32;
 
     if (arg0 != 0) {
         *(s32 *)(p + 8) = lerp_fix12(*(s32 *)(p + 8), v, 0x800);

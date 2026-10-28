@@ -449,7 +449,7 @@ void InitialiseN2O(void) {
     i = 0;
     World_floor_level = 0x2800;
     HeadOfBalls = NULL;
-    D_8005AA3C = 0;
+    HeadOfBalls2 = 0;
     N2OBallClock = 0;
     N2OBallCount = 0;
     N2OBallDelay = 50;

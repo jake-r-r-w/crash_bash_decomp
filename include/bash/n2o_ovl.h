@@ -164,7 +164,7 @@ typedef struct N2OFlagNode {
 } N2OFlagNode;
 
 extern N2ORound N2OBossRound;
-extern s32 D_8005AA3C;
+extern s32 HeadOfBalls2;
 extern s32 N2OHeroList;
 extern NAS *N2OBossNas;
 typedef struct {

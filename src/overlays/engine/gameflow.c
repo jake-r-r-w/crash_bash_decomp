@@ -352,7 +352,7 @@ void AnimateCupMenu(void) {
     i = 0;
     trig = rcossin_tbl;
     base = CupTable;
-    t = base + (u8)CupMenuAnim;
+    t = base + (u8)GameCup;
     n = t->unk8;
     p = t->unk4;
 loop:
@@ -487,7 +487,7 @@ void UpdateCupMenu(void) {
     } else {
         GetEngineSlot(0)->sub[8].flags &= ~0x8000;
     }
-    if ((u8)CupMenuAnim < 6) {
+    if ((u8)GameCup < 6) {
         GetEngineSlot(0)->sub[9].flags |= 0x8000;
     } else {
         GetEngineSlot(0)->sub[9].flags &= ~0x8000;
@@ -668,7 +668,7 @@ void InitCupMenu(void) {
     PlaceEngineSlot(4, (s32 *)CupSlotPanel);
     PlaceEngineSlot(5, (s32 *)CupSlotPanel);
     PlaceEngineSlot(6, (s32 *)CupSlotPanel);
-    CupMenuAnim = 0;
+    GameCup = 0;
 }
 
 static inline s32 func_800900CC_find(s32 arg0) {

@@ -626,7 +626,7 @@ void AR_InitLevel(void) {
 
     World_floor_level = 0;
     HeadOfBalls = 0;
-    D_8005AA3C = 0;
+    HeadOfBalls2 = 0;
     ArkInitWord0 = 0;
     ArkInitWord1 = 0;
     ArkInitWord2 = 0;
