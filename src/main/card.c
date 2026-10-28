@@ -50,7 +50,7 @@ void card_make_header(void) {
     u8 *p;
     s32 k;
     obj_texture *img;
-    TexEnt12 *pal;
+    TexClut *pal;
     s16 h;
     u16 w;
     s32 *q;
@@ -81,10 +81,10 @@ void card_make_header(void) {
             StoreImage(rect, (u_long *)CardIconFrames);
             img = dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306C);
             StoreImage((RECT *)&img->info.vramX, (u_long *)(CardIconFrames + 0x80));
-            pal = dbase_texture_entry(&HeroModelBank[DB_Font], (u16)img->f2);
-            clut.x = pal->pos->f0;
-            clut.y = pal->pos->f2;
-            w = pal->id;
+            pal = dbase_texture_entry(&HeroModelBank[DB_Font], (u16)img->clut);
+            clut.x = pal->pos->x;
+            clut.y = pal->pos->y;
+            w = pal->w;
             if (w == h) {
                 clut.w = w;
                 clut.h = 1;

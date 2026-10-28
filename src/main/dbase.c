@@ -64,7 +64,7 @@ chk:
 end:
 }
 
-TexEnt12 *dbase_texture_entry(obj_dbase *db, s32 i) {
+TexClut *dbase_texture_entry(obj_dbase *db, s32 i) {
     obj_textureset *set;
 
     if (db != NULL) {

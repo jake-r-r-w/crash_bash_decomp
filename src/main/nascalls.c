@@ -3309,40 +3309,40 @@ void debug_font_init2(void) {
 void texture_unused_a(void) {
 }
 
-void texture_upload_anim(AnimTex *t, s32 base, AnimTexSet *set) {
+void texture_upload_anim(obj_texture *t, s32 base, obj_textureset *set) {
     TexUV uv;
     s16 y;
     u8 *p;
-    AnimClut *cl;
+    TexClut *cl;
 
-    t->pos = vram_take(t->src);
-    if (t->pos != NULL) {
-        t->rect.x = t->pos->f0;
-        t->rect.y = y = t->pos->f2;
-        if (t->mode != 0) {
-            t->tpage = getTPage(1, 1, t->rect.x >> 7 << 7, y);
-            uv.f.u = t->rect.x << 1;
+    t->info.vram = vram_take((u8 *)t->slot);
+    if (t->info.vram != NULL) {
+        t->info.vramX = t->info.vram->f0;
+        t->info.vramY = y = t->info.vram->f2;
+        if (t->flag != 0) {
+            t->info.tpage = getTPage(1, 1, t->info.vramX >> 7 << 7, y);
+            uv.f.u = t->info.vramX << 1;
         } else {
-            t->tpage = getTPage(0, 1, t->rect.x, y);
-            uv.f.u = t->rect.x << 2;
+            t->info.tpage = getTPage(0, 1, t->info.vramX, y);
+            uv.f.u = t->info.vramX << 2;
         }
         if ((t->flags & 2) && GameLanguage < t->frames) {
-            p = t[GameLanguage].pix + base;
+            p = (u8 *)(t[GameLanguage].pix + base);
         } else {
-            p = t->pix + base;
+            p = (u8 *)(t->pix + base);
         }
-        LoadImage(&t->rect, (u_long *)p);
-        uv.h = uv.b[0] | (*(u8 *)&t->rect.y << 8);
-        t->uv0 = uv.h;
-        ((u8 *)&uv)[0] += t->du;
-        t->uv1 = uv.h;
+        LoadImage((RECT *)&t->info.vramX, (u_long *)p);
+        uv.h = uv.b[0] | (*(u8 *)&t->info.vramY << 8);
+        t->info.uv0 = uv.h;
+        ((u8 *)&uv)[0] += t->advance;
+        t->info.uv1 = uv.h;
         ((u8 *)&uv)[1] += t->dv;
-        t->uv3 = uv.h;
-        uv.b[0] -= t->du;
-        t->uv2 = uv.h;
+        t->info.uv3 = uv.h;
+        uv.b[0] -= t->advance;
+        t->info.uv2 = uv.h;
         if (t->clut != 0x7FFF) {
-            cl = &set->cluts[t->clut];
-            t->clutId = cl->id;
+            cl = &set->ent[t->clut];
+            t->info.clut = cl->clut;
         }
     }
 }
@@ -3370,12 +3370,12 @@ void texture_update_scroll(texture_scroll *s, obj_textureset *o) {
     r.w = e->info.vramW;
     r.h = e->info.vramH - y;
     p = (*(DR_MOVE **)&cdb->prim)++;
-    SetDrawMove(p, &r, e->info.src[0], e->info.src[1]);
+    SetDrawMove(p, &r, (s16)e->info.vram->f0, (s16)e->info.vram->f2);
     addPrim(&cdb->ot[0xFFF], p);
     r.y = s->dst[1];
     r.h = y;
     p = (*(DR_MOVE **)&cdb->prim)++;
-    SetDrawMove(p, &r, e->info.src[0], e->info.src[1] + e->info.vramH - y);
+    SetDrawMove(p, &r, (s16)e->info.vram->f0, (s16)e->info.vram->f2 + e->info.vramH - y);
     addPrim(&cdb->ot[0xFFF], p);
 }
 
@@ -3437,7 +3437,7 @@ void texture_update_anims(obj_textureset *arg0) {
 void texture_init_mem_textureset(obj_textureset *arg0) {
     s32 n;
     u8 *src;
-    TexEnt12 *e;
+    TexClut *e;
     TexSrc2A84C *s;
     obj_texture *d;
     u8 *b;
@@ -3465,7 +3465,7 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         len = (s32)arg0->base;
         id = *(u16 *)q;
         q -= len - 4;
-        e->id = id;
+        e->w = id;
         e->pos = NULL;
         e->off = (s32)q;
         e++;
@@ -3484,12 +3484,12 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
             break;
         }
         b = arg0->base;
-        d->info.src = NULL;
-        d->f34 = -1;
+        d->info.vram = NULL;
+        d->time = -1;
         d->flag = *(u16 *)&s->wC & 1;
-        d->f2 = (s->wC >> 1) & 0x7FFF;
-        d->f12 = *(u16 *)((u8 *)s + 0xE);
-        d->f14 = s->w10;
+        d->clut = (s->wC >> 1) & 0x7FFF;
+        d->flags = *(u16 *)((u8 *)s + 0xE);
+        d->frames = s->w10;
         d->h = s->w2;
         if (d->flag == 0) {
             d->w = s->w0 << 2;
@@ -3500,13 +3500,13 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
             d->slot = &VramSlots[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
             d->advance = (*(u8 *)s << 1) - 1;
         }
-        d->f11 = *(u8 *)((u8 *)s + 2) - 1;
+        d->dv = *(u8 *)((u8 *)s + 2) - 1;
         d->info.vramW = s->w0;
         d->info.vramH = s->w2;
         u = (s32)b - 0x14;
         t = s->w8;
         d->fC = t;
-        d->f30 = (s32)s - u;
+        d->pix = (s32)s - u;
         d++;
         s = (TexSrc2A84C *)((u8 *)s + (s->w0 * s->w2 * 2 + 0x14));
     }
@@ -3534,15 +3534,15 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
     }
 }
 
-static inline void Tex_UploadCluts(u8 *set) {
+static inline void Tex_UploadCluts(obj_textureset *set) {
     RECT rect;
-    ClutUpload *e;
+    TexClut *e;
     u8 *base;
     s32 n;
 
-    e = *(ClutUpload **)(set + 0xC);
-    base = *(u8 **)(set + 0x10);
-    n = *(s32 *)(set + 4);
+    e = set->ent;
+    base = set->base;
+    n = set->nEnt;
 
     for (;;) {
         n--;
@@ -3587,13 +3587,13 @@ loop:
         rect.y = (*pp)->f2;
         pp += 4;
         base = (s32)arg1->base;
-        LoadImage(&rect, (u_long *)(rec->f30 + base));
+        LoadImage(&rect, (u_long *)(rec->pix + base));
         goto loop;
     }
 }
 
 void textureset_upload(obj_textureset *arg0) {
-    AnimTex *t;
+    obj_texture *t;
     u8 *base;
     s32 n;
     AnimData *p;
@@ -3603,7 +3603,7 @@ void textureset_upload(obj_textureset *arg0) {
     Tex_UploadCluts(arg0);
     n = arg0->nTex;
     while (n != 0) {
-        texture_upload_anim(t, (s32)base, (AnimTexSet *)arg0);
+        texture_upload_anim(t, (s32)base, arg0);
         if (t->flags & 2) {
             n -= t->frames;
             t += t->frames;
@@ -3618,33 +3618,33 @@ void textureset_upload(obj_textureset *arg0) {
     }
 }
 
-static inline void texture_release_vram_one(u8 *arg0) {
-    s32 temp_a0;
+static inline void texture_release_vram_one(obj_texture *tex) {
+    FreeHdr *node;
 
-    temp_a0 = (*(s32*)((u8*)(arg0) + 32));
-    if (temp_a0 != 0) {
-        vram_free_node(temp_a0);
-        (*(s32*)((u8*)(arg0) + 32)) = 0;
+    node = tex->info.vram;
+    if (node != NULL) {
+        vram_free_node((BufNode *)node);
+        tex->info.vram = NULL;
     }
 }
 
-static inline void clut_release_one(u8 *arg0) {
-    s32 temp_a0;
+static inline void clut_release_one(TexClut *c) {
+    ClutPos *pos;
 
-    temp_a0 = (*(s32*)((u8*)(arg0) + 4));
-    if (temp_a0 != 0) {
-        vram_release(temp_a0);
-        (*(s32*)((u8*)(arg0) + 4)) = 0;
+    pos = c->pos;
+    if (pos != NULL) {
+        vram_release((FreeNode *)pos);
+        c->pos = NULL;
     }
 }
 
-static inline void textureset_release_vram(u8 *arg0) {
+static inline void textureset_release_vram(obj_textureset *arg0) {
     s32 n;
-    u8 *p;
+    obj_texture *p;
 
-    n = *(s32 *)(arg0 + 0);
-    p = *(u8 **)(arg0 + 8);
-    for (;; p += 0x38) {
+    n = arg0->nTex;
+    p = arg0->tex;
+    for (;; p++) {
         n--;
         if (n == -1) {
             return;
@@ -3653,14 +3653,14 @@ static inline void textureset_release_vram(u8 *arg0) {
     }
 }
 
-static inline void textureset_release_cluts(obj_textureset *arg0, u8 *p) {
+static inline void textureset_release_cluts(obj_textureset *arg0, TexClut *p) {
     s32 n;
 
     n = arg0->nEnt;
-    p -= 0xC;
+    p--;
     for (;;) {
         n--;
-        p += 0xC;
+        p++;
         if (n == -1) {
             return;
         }
@@ -3673,7 +3673,7 @@ void textureset_release(obj_textureset *arg0) {
     u8 *d;
     s32 *q;
     s32 *r;
-    u8 *b;
+    TexClut *b;
 
     b = arg0->ent;
     textureset_release_vram(arg0);
@@ -3873,7 +3873,7 @@ void texture_release_loading_mem(obj_textureset *set) {
 
 void textureset_upload_cluts(obj_textureset *arg0) {
     RECT rect;
-    ClutUpload *e;
+    TexClut *e;
     u8 *base;
     s32 n;
 
@@ -3926,7 +3926,7 @@ loop:
         rect.y = (*pp)->f2;
         pp += 4;
         base = (s32)arg1->base;
-        LoadImage(&rect, (u_long *)(rec->f30 + base));
+        LoadImage(&rect, (u_long *)(rec->pix + base));
         goto loop;
     }
 }
@@ -3992,7 +3992,7 @@ void clut_release(u8 *arg0) {
     }
 }
 
-void clut_upload(ClutUpload *arg0, s32 arg1) {
+void clut_upload(TexClut *arg0, s32 arg1) {
     RECT rect;
 
     if (arg0->w < 0x11U) {
@@ -4022,12 +4022,12 @@ void texture_init_entry(TexSrc2A84C *s, obj_texture *d, s32 n) {
     u32 t;
     s32 u;
 
-    d->info.src = NULL;
-    d->f34 = -1;
+    d->info.vram = NULL;
+    d->time = -1;
     d->flag = *(u16 *)&s->wC & 1;
-    d->f2 = (s->wC >> 1) & 0x7FFF;
-    d->f12 = *(u16 *)((u8 *)s + 0xE);
-    d->f14 = s->w10;
+    d->clut = (s->wC >> 1) & 0x7FFF;
+    d->flags = *(u16 *)((u8 *)s + 0xE);
+    d->frames = s->w10;
     d->h = s->w2;
     if (d->flag == 0) {
         d->w = s->w0 << 2;
@@ -4038,42 +4038,42 @@ void texture_init_entry(TexSrc2A84C *s, obj_texture *d, s32 n) {
         d->slot = &VramSlots[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
         d->advance = (*(u8 *)s << 1) - 1;
     }
-    d->f11 = *(u8 *)((u8 *)s + 2) - 1;
+    d->dv = *(u8 *)((u8 *)s + 2) - 1;
     d->info.vramW = s->w0;
     d->info.vramH = s->w2;
     u = n - 0x14;
     t = s->w8;
-    d->f30 = (s32)s - u;
+    d->pix = (s32)s - u;
     d->fC = t;
 }
 
-void texanims_release(s32 *arg0, s32 arg1) {
+void texanims_release(obj_textureset *set, s32 arg1) {
     s32 n;
-    TexAnimEntry *p;
+    obj_texture *p;
 
-    p = (TexAnimEntry *)arg0[2];
-    n = arg0[0];
+    p = set->tex;
+    n = set->nTex;
     if (p != NULL) {
         for (;; p++) {
             n--;
             if (n == -1) {
                 return;
             }
-            if (p->handle != 0 && FrameCount - p->time >= arg1) {
-                vram_free_node(p->handle);
-                p->handle = 0;
+            if (p->info.vram != NULL && FrameCount - p->time >= arg1) {
+                vram_free_node((BufNode *)p->info.vram);
+                p->info.vram = NULL;
             }
         }
     }
 }
 
-void texture_release_vram(u8 *arg0) {
-    s32 temp_a0;
+void texture_release_vram(obj_texture *tex) {
+    FreeHdr *node;
 
-    temp_a0 = (*(s32*)((u8*)(arg0) + 32));
-    if (temp_a0 != 0) {
-        vram_free_node(temp_a0);
-        (*(s32*)((u8*)(arg0) + 32)) = 0;
+    node = tex->info.vram;
+    if (node != NULL) {
+        vram_free_node((BufNode *)node);
+        tex->info.vram = NULL;
     }
 }
 

@@ -35,38 +35,7 @@ typedef struct texture_scroll {
 } texture_scroll;
 
 
-/* The same 0x38-byte entry as texture_upload_anim uploads it to VRAM. */
-typedef struct AnimTex {
-    u16 mode;       /* 0x00: 0 = 4-bit, else 8-bit */
-    u16 clut;       /* 0x02: 0x7FFF = none */
-    u8 *src;        /* 0x04 */
-    u8 unk8[8];
-    u8 du;          /* 0x10 */
-    u8 dv;          /* 0x11 */
-    u16 flags;      /* 0x12 */
-    s32 frames;     /* 0x14 */
-    RECT rect;      /* 0x18 */
-    struct FreeHdr *pos; /* 0x20 */
-    u16 tpage;      /* 0x24 */
-    u16 clutId;     /* 0x26 */
-    u16 uv0;        /* 0x28 */
-    u16 uv1;        /* 0x2A */
-    u16 uv2;        /* 0x2C */
-    u16 uv3;        /* 0x2E */
-    u8 *pix;        /* 0x30 */
-    u8 unk34[4];
-} AnimTex;
 
-typedef struct {
-    u16 unk0;
-    u16 id;         /* 0x02 */
-    u8 unk4[8];
-} AnimClut;
-
-typedef struct {
-    u8 unk0[0xC];
-    AnimClut *cluts; /* 0x0C */
-} AnimTexSet;
 
 typedef union {
     u16 h;
@@ -167,14 +136,6 @@ typedef struct {
 
 
 
-/* A 0x38-byte record in the table at +8 of the block texanims_release frees
- * (count at +0). */
-typedef struct TexAnimEntry {
-    /* 0x00 */ u8 unk0[0x20];
-    /* 0x20 */ s32 handle; /* freed with vram_free_node */
-    /* 0x24 */ u8 unk24[0x10];
-    /* 0x34 */ s32 time;   /* frame stamp, compared to FrameCount */
-} TexAnimEntry;
 
 
 /* Bounding box tested for visibility by bbox_visible: corners min/max and a
@@ -239,7 +200,7 @@ typedef struct GfxTexInfo {
     /* 0x02 */ s16 vramY;
     /* 0x04 */ u16 vramW;    /* in VRAM units */
     /* 0x06 */ s16 vramH;
-    /* 0x08 */ s16 *src;     /* a scrolling texture's source x, y (texture_update_scroll) */
+    /* 0x08 */ struct FreeHdr *vram; /* its VRAM node (vram_take), freed with vram_free_node */
     /* 0x0C */ u16 tpage;
     /* 0x0E */ u16 clut;
     /* 0x10 */ u16 uv0;      /* ORed into each vertex's uv */
@@ -248,18 +209,12 @@ typedef struct GfxTexInfo {
     /* 0x16 */ u16 uv3;
 } GfxTexInfo;
 
-typedef struct {
-    u8 unk0[2];
-    u16 clut; /* 0x02 */
-    u8 unk4[8];
-} GfxClutEntry;
-
 /* At +0x10 of GfxModel (prim_write_uvs). */
 typedef struct {
     s32 count;            /* 0x00: entries in tex */
     u8 unk4[4];
     struct obj_texture *tex; /* 0x08 */
-    GfxClutEntry *cluts;  /* 0x0C */
+    struct TexClut *cluts; /* 0x0C */
 } GfxTexSet;
 
 /* A block with a table at a byte offset from its field at +0x24. */
@@ -1149,18 +1104,18 @@ typedef struct { u8 pad[0xC]; } Slot12;
  * texture_draw__FP11obj_textureG4xy_wiUl). */
 typedef struct obj_texture {
     /* 0x00 */ u16 flag;     /* 1: 8-bit (texture_init_entry) */
-    /* 0x02 */ s16 f2;
+    /* 0x02 */ u16 clut;     /* its clut: an entry in the set's ent, 0x7FFF none */
     /* 0x04 */ Slot12 *slot; /* its VRAM slot class */
     /* 0x08 */ s16 w;        /* in pixels */
     /* 0x0A */ s16 h;
     /* 0x0C */ u32 fC;
     /* 0x10 */ u8 advance;   /* w - 1; returned scaled to the screen width */
-    /* 0x11 */ s8 f11;       /* h - 1 */
-    /* 0x12 */ u16 f12;
-    /* 0x14 */ u32 f14;
+    /* 0x11 */ u8 dv;        /* h - 1 */
+    /* 0x12 */ u16 flags;     /* 2: one frame per language from here (texture_upload_anim) */
+    /* 0x14 */ s32 frames;
     /* 0x18 */ GfxTexInfo info;
-    /* 0x30 */ s32 f30;
-    /* 0x34 */ s32 f34;
+    /* 0x30 */ s32 pix;      /* its pixels: an offset into the set's base */
+    /* 0x34 */ s32 time;     /* FrameCount when last used, -1 when loaded (texanims_release) */
 } obj_texture;
 
 /* A screen position as one word (x low, y high). */
@@ -1436,12 +1391,14 @@ typedef struct {
     u16 x;
     u16 y;
 } ClutPos;
-typedef struct {
-    u16 w;
-    u16 clut;
-    ClutPos *pos;
-    s32 off;
-} ClutUpload;
+/* One of a texture set's cluts (obj_textureset.ent): its colours are at base + off in the
+ * texture file until textureset_upload_cluts loads them into VRAM at pos. */
+typedef struct TexClut {
+    /* 0x00 */ u16 w;       /* colours */
+    /* 0x02 */ u16 clut;    /* GetClut's word for pos */
+    /* 0x04 */ ClutPos *pos;
+    /* 0x08 */ s32 off;
+} TexClut;
 
 
 u8 *dbase_anim_frame(s32 i, u8 *rec);
@@ -1870,12 +1827,6 @@ typedef struct {
 } TexSrc2A84C;
 
 
-typedef struct TexEnt12 {
-    /* 0x00 */ u16 id;
-    /* 0x02 */ u8 pad2[2];
-    /* 0x04 */ struct FreeHdr *pos; /* the clut's VRAM position */
-    /* 0x08 */ s32 off;
-} TexEnt12;
 
 
 void mal_compact_from(mal *arg0, _mal_area *arg1);
