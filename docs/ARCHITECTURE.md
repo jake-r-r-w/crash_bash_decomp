@@ -311,7 +311,16 @@ code finds 15 code files; nothing else on the disc holds code.
   | `camera` | `func_8009608C` (330) | 321..330; no call ties from 328 | `0x800AEC34` |
 
   A start can still move earlier inside its range, and a unit can hide more
-  starts where the parity doesn't change.
+  starts where the parity doesn't change. Rechecked 2026-10-28 with `decomp.py units
+  overlays/engine/<unit> --data`: no unit has a further parity change (heroes has 11
+  tables, all one parity), and the data order proves no more starts. Only `heroes`
+  shows a possible cut zone (after `HeroGhost` or `StartHeroVictory`, functions 56..57,
+  and after `InitBigPoof`, 107..110), but the hero action pairs run across it
+  (`HeroDrop`, `HeroJump` and `SetHeroRun` come after the victory code), so it is not
+  taken. The prototypes name no engine file but `PANEL.CPP` and `PAUSE.CPP`; the Aug 23
+  include list names the exe's `CORENASCORE` headers (`NAS.H`, `MOTION.H`, `COLLBOX.H`,
+  `CONTOUR.H`, `TRIGGER.H`, `SYSFONT.H`, `NASDBUG.H`, `ANIMTYPE.H`), a lead for files
+  inside the exe's `nascalls.c` (no parity change there either).
 
   `PAUSE.CPP`'s extent (2026-10-23): Jampack's 1021 line records cover the
   demo's code from just after `Init_Panel` to `0x8007A080`. Its early
