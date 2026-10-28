@@ -40,7 +40,7 @@ void init_scripts(s32 arg0, s32 arg1) {
 void update_model_thread(script_thread_handler *th, script_control_info *ci) {
     u8 *p;
     u8 *r;
-    u8 *res;
+    script_thread *res;
     s32 *q;
     s32 lo;
     s32 idx;
@@ -72,10 +72,10 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
     if (r == NULL) {
         res = NULL;
     } else {
-        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
     }
     if (res != NULL) {
-        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+        if (v < res->start_frame || res->end_frame < v) {
             res = NULL;
         }
     }
@@ -119,7 +119,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
 void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     u8 *p;
     u8 *r;
-    u8 *res;
+    script_thread *res;
     s32 *q;
     s32 lo;
     s32 idx;
@@ -150,10 +150,10 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     if (r == NULL) {
         res = NULL;
     } else {
-        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
     }
     if (res != NULL) {
-        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+        if (v < res->start_frame || res->end_frame < v) {
             res = NULL;
         }
     }
@@ -188,7 +188,7 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
     AnimKey *key;
     u8 *p;
     u8 *r;
-    u8 *res;
+    script_thread *res;
     s32 *q;
     s32 lo;
     s32 idx;
@@ -219,19 +219,19 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
     if (r == NULL) {
         res = NULL;
     } else {
-        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
     }
     if (res != NULL) {
-        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+        if (v < res->start_frame || res->end_frame < v) {
             res = NULL;
         }
     }
     pose = (AnimPose *)&th->type.entity.sub;
     if (res != NULL) {
-        range = (AnimRange *)(res + 0x14);
-        k = AnimTrack_FindKey((AnimKey *)(res + 0x30), ci->time.h.frame);
+        range = (AnimRange *)&res->type.anim;
+        k = AnimTrack_FindKey((AnimKey *)res->type.anim.key, ci->time.h.frame);
         key = k;
-        f = ci->time.w - (*(s32 *)(res + 4) << 16);
+        f = ci->time.w - (res->start_frame << 16);
         frame = AnimRange_Frame(range, f);
         pose->frame = frame;
         pose->unk74 = range->base + range->lo;
@@ -268,7 +268,7 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
 void update_fade_thread(script_thread_handler *th, script_control_info *ci) {
     u8 *p;
     u8 *r;
-    u8 *res;
+    script_thread *res;
     s32 *q;
     s32 lo;
     s32 idx;
@@ -292,16 +292,16 @@ void update_fade_thread(script_thread_handler *th, script_control_info *ci) {
     if (r == NULL) {
         res = NULL;
     } else {
-        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
     }
     if (res != NULL) {
-        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+        if (v < res->start_frame || res->end_frame < v) {
             res = NULL;
         }
         if (res != NULL) {
             ScriptFade = interp(th->type.fade.start, th->type.fade.end,
-                                (*(s32 *)(res + 8) - *(s32 *)(res + 4)) << 8,
-                                (ci->time.w >> 8) - (*(s32 *)(res + 4) << 8));
+                                (res->end_frame - res->start_frame) << 8,
+                                (ci->time.w >> 8) - (res->start_frame << 8));
         }
     }
 }
@@ -1379,7 +1379,7 @@ s32 *find_range(s32 *arg0, s32 arg1, s32 arg2) {
 u8 *script_track_at(u8 *arg0, s32 arg1) {
     u8 *p;
     u8 *r;
-    u8 *res;
+    script_thread *res;
     s32 *q;
     s32 lo;
     s32 v;
@@ -1402,10 +1402,10 @@ u8 *script_track_at(u8 *arg0, s32 arg1) {
     if (r == NULL) {
         res = NULL;
     } else {
-        res = r + (arg1 * 4 + 0x1C) + *(s32 *)(r + (arg1 << 2) + 0x1C);
+        res = (script_thread *)(r + (arg1 * 4 + 0x1C) + *(s32 *)(r + (arg1 << 2) + 0x1C));
     }
     if (res != NULL) {
-        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+        if (v < res->start_frame || res->end_frame < v) {
             res = NULL;
         }
     }
