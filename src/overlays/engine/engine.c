@@ -219,7 +219,7 @@ void PickCpuHeroes(void) {
     s32 found;
     s32 off;
     u16 v;
-    u8 *g;
+    GameState *g;
     u8 *p;
 
     switch (ModeTypes[NextGameMode * 3]) {
@@ -252,9 +252,9 @@ void PickCpuHeroes(void) {
     }
     n = 0;
     i = 0;
-    g = GameInfo;
+    g = GAME;
     for (; i < 4; i++) {
-        if (i != 0 && (*(s32 *)(g + 0x6C) == 0 || i != 1)) {
+        if (i != 0 && (g->teams == 0 || i != 1)) {
             found = 1;
             while (n < 6) {
                 p = (u8 *)(i + (s32)g);  /* as an int sum: g + i swaps two registers */
@@ -265,7 +265,7 @@ void PickCpuHeroes(void) {
                 n++;
                 found = 0;
                 for (j = 0; j < 4; j++) {
-                    if ((j == 0 || (*(s32 *)(g + 0x6C) != 0 && j == 1)) && g[j + 0x50] == v) {
+                    if ((j == 0 || (g->teams != 0 && j == 1)) && ((u8 *)g)[j + 0x50] == v) {  /* heroes[j], added the other way round */
                         found = 1;
                     }
                 }
