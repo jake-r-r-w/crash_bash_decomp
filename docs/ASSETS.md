@@ -40,7 +40,9 @@ filler, and `SPYRO3/` is the bundled Spyro 3 demo.
 ## Texture sets (type 8)
 
 `tools/scripts/tex.py`; layout as CTR-tools reads it, confirmed on all 400 sets (each packs back
-byte for byte) and by eye (the PNGs show the game's textures in their colours).
+byte for byte) and by eye (the PNGs show the game's textures in their colours), and as the game
+reads it: `TexFile` and `TexImage` in `include/bash/main.h` (`textureset_init`,
+`texture_init_mem_textureset`).
 
 | Offset | Size | Field |
 |---|---|---|
@@ -51,9 +53,9 @@ byte for byte) and by eye (the PNGs show the game's textures in their colours).
 | 0x10 | s32 | 0x10: from here to the CLUTs |
 | 0x14 | u32 | unknown (the game copies it to `obj_textureset.f14`) |
 | 0x18 | u32 | offset of the animated textures (0: none; 86 sets) |
-| 0x1C | u32 | 0 |
+| 0x1C | s32 | 0 in every file (self: a count and words the game copies into `obj_textureset.anim`) |
 | 0x20 | | CLUTs: u32 n (16 or 256), then n 16-bit colours |
-| | | images: u16 w (VRAM 16-bit units), u16 h, u32 (unknown; CTR-tools: margins/size bytes), u32 0, s16 CLUT << 1 \| 8-bit, s16 (0, 3 for some banners), u32 (1, 2, 8, 16), then w * h * 2 bytes of pixels |
+| | | images: u16 w (VRAM 16-bit units), u16 h, u16, u16 (unknown; CTR-tools: margins/size bytes), u32 0 (copied to `obj_texture.fC`), u16 CLUT << 1 \| 8-bit (CLUT 0x7FFF: none), u16 flags (0; 3 for some banners: bit 1 means this and the next images are one per language, `frames` of them, and the game picks its language's), s32 frames (1, 2, 8, 16), then w * h * 2 bytes of pixels |
 | | | then the animated textures (below) or zeros: `tail.bin` |
 
 Pixels are 4-bit (low nibble = left pixel, width w * 4) or 8-bit (width w * 2). A negative CLUT

@@ -69,11 +69,12 @@ Sony objects. Next, none of them needing a playtest:
    element (`MainCamera.at`, `SfxTable[0x3C5][1]`), not a new `D_`.
 2. The engine is done (ROADMAP's engine item closed 2026-10-28): every function and global
    typed, `GameInfo` one `GameState` read through `GAME`. The exe is partway (ROADMAP's exe
-   item has the state). The exe's raw offsets left (97 functions, 2026-10-28) are the heap's
-   and pools' block arithmetic, the export table's slot offsets and the files' self-relative
-   layouts: next is the asset formats item's file-format structs (the model file header at
-   +0x28/+0x3C/+0x44/+0x4C/+0x54, mesh records, mesh anims, the texture file header at
-   +0x08..+0x1C, script tracks, the map's path table, the card image).
+   item is closed). Now the asset formats item (ROADMAP Phase 5): texture sets done
+   (animated textures decoded; `TexFile`/`TexImage` in C). Next the model file: a header struct
+   for +0x1C/+0x28/+0x3C/+0x44/+0x4C/+0x54 from the code's raw reads (`map_entity_address`,
+   `draw_object_model`, `get_script_header`, `dbase_anim_frame`), then decode what mdl.py
+   keeps as bytes (the 27 mesh-less files: fonts and arenas; the script table at +0x4C).
+   A sample retail-DAT reader for scratch scripts: scratch/retail.py (`each(fmt)`).
    `obj_texture`'s +0x18 block is its own struct, `info` (`GfxTexInfo`: VRAM rect, src,
    tpage, clut, uv0..3), since two functions take a pointer to it; GfxTexEntry is folded.
    One clut entry, `TexClut` (TexEnt12, ClutUpload, AnimClut, GfxClutEntry folded); AnimTex
@@ -487,6 +488,11 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-28 (Phase 5: asset formats, texture sets):** the exe's name-and-type item ticked.
+  tex.py decodes the animated textures (tracks of frame PNGs, scrolls; all 86 sets byte for byte,
+  1,137 frames; checked by eye on 068's electric arc). `TexFile`/`TexImage` give the code the
+  header: the image's +0x0C is `u16 eight : 1, clut : 15` (u16 bitfields give lhu for bit 0 and
+  lw/srl for bits 1-15, as retail; u32 ones give lw for both).
 - **2026-10-28 (Phase 5: the texture views):** obj_texture nests its +0x18 block (`info`,
   GfxTexInfo); four clut entry views are `TexClut`; AnimTex, TexAnimEntry, GfxTexEntry,
   GfxModel and GfxTexSet folded. field_rename.py takes dotted new names (`info.vramX`); where a

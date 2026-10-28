@@ -413,7 +413,14 @@ load extract and are documented.
   always 0), in `EngineHooks` and in the overlays' views of `HeroHooks` (Bonk, Chase,
   N2O, Pogo, Polar, Race, Spin). Left: merging the views into the one type.
 - [ ] Extract and document the asset formats the engine loads (models,
-  animation, level data, ...) that Phase 2's extractor still keeps as bytes.
+  animation, level data, ...) that Phase 2's extractor still keeps as bytes. Each format gets a
+  C struct the code reads it through (the exe's raw file offsets, from the name-and-type item)
+  and its extractor in `tools/scripts/`, documented in [ASSETS.md](ASSETS.md). Status
+  (2026-10-28): texture sets done: their animated textures (`tail.bin`) come out as frame PNGs
+  and tex.json fields (all 86 sets pack back), and the code reads the file through `TexFile`
+  and `TexImage`. Next: the model file's header (+0x1C entities, +0x28, +0x3C, +0x44 the
+  animations, +0x4C the scripts, +0x54 meshes) and the 27 mesh-less files (fonts, arenas: the
+  level data), the scripts' tracks, the map's path table, the mode text's data, the card image.
 - [x] `main.exe`'s rodata as C: its six INCLUDE_RODATA blocks (`data2c.py main
   --strings-only`, 2026-10-26); no INCLUDE_RODATA is left in `src/`.
 - [x] `main.exe`'s data and bss as C (2026-10-28): the game's .data cut by file in link
