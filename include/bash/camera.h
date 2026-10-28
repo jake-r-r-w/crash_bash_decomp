@@ -105,12 +105,12 @@ void RenderScreenLabels(void);
  * moves these loads past the record stores, as the target does. */
 
 extern u16 HeroNameText[];
-extern TextPanelItem ScreenLabels4P[];
-extern TextPanelItem ScreenLabelsTeams[];
-extern TextPanelItem ScreenLabelsPair[];
-extern TextPanelItem ScreenLabelsOne[];
-extern TextPanelItem ScreenLabels2P[];
-extern TextPanelItem ScreenLabelsNotice[];
+extern PlaceRec ScreenLabels4P[];
+extern PlaceRec ScreenLabelsTeams[];
+extern PlaceRec ScreenLabelsPair[];
+extern PlaceRec ScreenLabelsOne[];
+extern PlaceRec ScreenLabels2P[];
+extern PlaceRec ScreenLabelsNotice[];
 
 void InitScreenLabels(void);
 

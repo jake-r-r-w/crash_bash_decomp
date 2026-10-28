@@ -236,7 +236,7 @@ typedef struct DistPos {
     u8 pad14[4];
     s32 z;
 } DistPos;
-extern TextPanelItem HubDoorMenuRecs[];
+extern PlaceRec HubDoorMenuRecs[];
 extern s32 HubDoorChoices;
 extern u8 PodiumScore1[];
 extern u8 PodiumScore2[];

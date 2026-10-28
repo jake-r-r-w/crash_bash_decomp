@@ -42,13 +42,13 @@ void LevelUnused(void);
 void UpdateLevelTriggers(void);
 void ResetASTTable(void);
 void ClearLevelNas(void);
-extern s32 SaveScreenPanel;
-extern s32 CardSlotsPanel;
+extern PlaceRec SaveScreenPanel[];
+extern PlaceRec CardSlotsPanel[];
 extern s32 CardSlotIndex;
 extern s32 CardBufferStamp;
 extern s32 SaveMenuStage;
-extern s32 SaveMenuPanel;
-extern s32 CardPromptPanel;
+extern PlaceRec SaveMenuPanel[];
+extern PlaceRec CardPromptPanel[];
 extern subengine EngineSlotSubs[][32]; /* 32 subengines per EnginePool slot */
 
 typedef struct { u16 a, b; } U16Pair;
@@ -220,18 +220,10 @@ extern s32 IntroStepTimer;
 extern s32 IntroNextSfx;
 extern s32 IntroSfxDelay;
 extern s32 IntroScriptHandle;
-extern u8 CupMenuPanel[];
-/* A text-panel record PlaceEngineSlot builds from (0x24 bytes): kind at 0, the text at 0x14. */
-typedef struct TextPanelItem {
-    /* 0x00 */ u8 pad0[0x14];
-    /* 0x14 */ void *text;
-    /* 0x18 */ u8 pad18[6];
-    /* 0x1E */ s16 unk1E;
-    /* 0x20 */ u8 pad20[4];
-} TextPanelItem;
+extern PlaceRec CupMenuPanel[];
 
-extern TextPanelItem CupMenuLabels[];
-extern TextPanelItem CupSlotPanel[2];
+extern PlaceRec CupMenuLabels[];
+extern PlaceRec CupSlotPanel[];
 extern process_info TournamentSelect;   /* after CupSlotPanel's two records: the tournament select menu (TournamentChain) */
 extern s32 CupMenuCompact;
 /* The hub hero's place on the warp room's ring (HubPreMoveHero): its angle and its distance from
@@ -322,13 +314,8 @@ extern s32 PauseMenuSetsByLang[];
 extern s32 LevelRecIndex;
 extern u16 CameraMode;
 
-typedef struct PauseRecord {
-    s32 kind;
-    s16 val;
-    char pad[0x1E];
-} PauseRecord;
-extern PauseRecord *PauseRec;
-extern PauseRecord **PauseRecSet;
+extern PlaceRec *PauseRec;
+extern PlaceRec **PauseRecSet;
 extern s32 PauseRecIndex;
 
 /* Hero jump parameters, 8 bytes per hero (EngineHooks.unk10). */

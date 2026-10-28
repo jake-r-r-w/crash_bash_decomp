@@ -56,23 +56,6 @@ void SceneNextProcess(void);
 
 void KillEngineSlot(s32 arg0);
 
-/* 0x24-byte placement record read by ApplyPlaceRecs. */
-typedef struct PlaceRec {
-    /* 0x00 */ s32 type;
-    /* 0x04 */ s16 x;
-    /* 0x06 */ s16 y;
-    /* 0x08 */ s16 z;
-    /* 0x0A */ s16 scale;
-    /* 0x0C */ s16 unkC;
-    /* 0x0E */ s16 unkE;
-    /* 0x10 */ s16 unk10;
-    /* 0x12 */ s16 pad12;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s16 unk1C;
-    /* 0x1E */ s16 unk1E;
-    /* 0x20 */ s32 unk20;
-} PlaceRec;
 
 /* subengine as filled by ApplyPlaceRecs. */
 typedef struct PlaceSub {
@@ -148,9 +131,9 @@ static inline void PlaceTmpl(PlaceSub *s, s32 x, s32 y, s32 z, s32 scale, s32 id
     }
 }
 
-void ApplyPlaceRecs(subengine *sub, s32 *recs);
+void ApplyPlaceRecs(subengine *sub, PlaceRec *recs);
 
-void PlaceEngineSlot(s32 arg0, s32 *recs);
+void PlaceEngineSlot(s32 arg0, PlaceRec *recs);
 
 EXTengine *GetEngineSlot(s32 arg0);
 

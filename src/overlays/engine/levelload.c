@@ -915,13 +915,13 @@ void SetupSceneMarks(u8 *arg0) {
     }
 }
 
-void ApplyPlaceRecs(subengine *sub, s32 *recs) {
+void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
     PlaceSub *s;
     PlaceRec *rec;
     s32 skip;
 
     s = (PlaceSub *)sub;
-    rec = (PlaceRec *)recs;
+    rec = recs;
     skip = 0;
     for (;;) {
         if (s == NULL || rec->type < 2) {
@@ -974,10 +974,10 @@ void ApplyPlaceRecs(subengine *sub, s32 *recs) {
             if (skip == 0) {
                 if (rec->type == 14) {
                     PlaceSprite(s, rec->x, rec->y,
-                                ((s32 *)rec->unk14)[((GameState *)GameInfo)->language],
+                                ((s32 *)rec->data)[((GameState *)GameInfo)->language],
                                 rec->unk18);
                 } else {
-                    PlaceSprite(s, rec->x, rec->y, rec->unk14, rec->unk18);
+                    PlaceSprite(s, rec->x, rec->y, rec->data, rec->unk18);
                 }
                 if (rec->type == 11) {
                     s->z = 0;
@@ -992,7 +992,7 @@ void ApplyPlaceRecs(subengine *sub, s32 *recs) {
             if (skip == 0) {
                 if (rec->type == 18) {
                     PlaceTmpl(s, rec->x,
-                              ((s32 *)rec->unk14)[((GameState *)GameInfo)->language],
+                              ((s32 *)rec->data)[((GameState *)GameInfo)->language],
                               rec->z, rec->scale, rec->unkC);
                 } else {
                     PlaceTmpl(s, rec->x, rec->y, rec->z, rec->scale, rec->unkC);
@@ -1133,10 +1133,10 @@ void InitEngineSlot(s32 arg0, s32 arg1) {
     }
 }
 
-void PlaceEngineSlot(s32 arg0, s32 *recs) {
+void PlaceEngineSlot(s32 arg0, PlaceRec *recs) {
     EXTengine *eng;
     subengine *subs;
-    s32 *rec;
+    PlaceRec *rec;
     s32 i;
     s32 n;
 
@@ -1146,8 +1146,8 @@ void PlaceEngineSlot(s32 arg0, s32 *recs) {
         rec = recs;
         i = 0;
         subs = EngineSlotSubs[arg0];
-        while (*rec >= 2) {
-            rec += 9;
+        while (rec->type >= 2) {
+            rec++;
             i++;
         }
         n = i;

@@ -511,7 +511,7 @@ void TitlesInitLevel(void) {
     cam_init(&TitlesCamera);
     *(s32 *)((u8 *)&TitlesCamera + 8) = 0x400;
     *(s32 *)((u8 *)&TitlesCamera + 0x18) = 0x190;
-    PlaceEngineSlot(1, (s32 *)TitlesBackdropPlace);
+    PlaceEngineSlot(1, (PlaceRec *)TitlesBackdropPlace);
     GetEngineSlot(1)->sub[4].flags &= ~0x8000;
     GetEngineSlot(1)->sub[5].flags &= ~0x8000;
     GetEngineSlot(1)->sub[6].flags &= ~0x8000;
@@ -923,11 +923,11 @@ void OptionsUpdate(void) {
             switch (OptionsCursor) {
             case 0:
                 OptionsPage = 1;
-                PlaceEngineSlot(4, (s32 *)OptionsSoundPlace);
+                PlaceEngineSlot(4, (PlaceRec *)OptionsSoundPlace);
                 break;
             case 1:
                 OptionsPage = 2;
-                PlaceEngineSlot(4, (s32 *)OptionsControllerPlace);
+                PlaceEngineSlot(4, (PlaceRec *)OptionsControllerPlace);
                 break;
             case 2:
                 process_control_back(&MenuProcessControl);
@@ -1021,7 +1021,7 @@ void OptionsUpdate(void) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         OptionsPage = 0;
         OptionsCursor = 0;
-        PlaceEngineSlot(4, (s32 *)OptionsPlace);
+        PlaceEngineSlot(4, (PlaceRec *)OptionsPlace);
     }
 }
 
@@ -1129,7 +1129,7 @@ void OptionsQuit(void) {
 }
 
 void OptionsInit(void) {
-    PlaceEngineSlot(4, (s32 *)OptionsPlace);
+    PlaceEngineSlot(4, (PlaceRec *)OptionsPlace);
     OptionsCursor = 0;
     OptionsPage = 0;
 }
@@ -1179,7 +1179,7 @@ void BattleOptionsQuit(void) {
 }
 
 void BattleOptionsInit(void) {
-    PlaceEngineSlot(0, (s32 *)BattleOptionsPlace);
+    PlaceEngineSlot(0, (PlaceRec *)BattleOptionsPlace);
     BattleOptionsState = 2;
 }
 
@@ -1196,7 +1196,7 @@ void TitlesLeaveInit(void) {
 
 void NewLoadMenuInit(void) {
     u8 *g;
-    PlaceEngineSlot(0, (s32 *)NewLoadMenuPlace);
+    PlaceEngineSlot(0, (PlaceRec *)NewLoadMenuPlace);
     NewLoadMenuCursor = 0;
     MainMenuCursor = 0;
     g = GameInfo;
@@ -1220,9 +1220,9 @@ void num_players_render(void) {
 
 void PlayersMenuInit(void) {
     if (GameLevelFlags & 4) {
-        PlaceEngineSlot(0, (s32 *)PlayersMenuAdventurePlace);
+        PlaceEngineSlot(0, (PlaceRec *)PlayersMenuAdventurePlace);
     } else {
-        PlaceEngineSlot(0, (s32 *)PlayersMenuPlace);
+        PlaceEngineSlot(0, (PlaceRec *)PlayersMenuPlace);
     }
     GamePlayers = PadRunEnd != 0;
 }
@@ -1235,7 +1235,7 @@ void MainMenuInit(void) {
     *(s16 *)(g + 0x34) = 0x28;
     MainMenuHintTimer = 0;
     *(u16 *)(g + 0x32) |= 0x200;
-    PlaceEngineSlot(0, (s32 *)MainMenuPlace);
+    PlaceEngineSlot(0, (PlaceRec *)MainMenuPlace);
 }
 
 void RenderTitlesBackdropAndMenu(void) {
@@ -1497,8 +1497,8 @@ void CharSelectInit(void) {
     *(s32 *)((u8 *)&CharSelectCamera + 8) = 0x400;
     *(s32 *)((u8 *)&CharSelectCamera + 0x18) = 0x190;
     eng = GetEngineSlot(0);
-    PlaceEngineSlot(0, (s32 *)CharSelectPlace);
-    PlaceEngineSlot(2, (s32 *)CharSelectModelsPlace);
+    PlaceEngineSlot(0, (PlaceRec *)CharSelectPlace);
+    PlaceEngineSlot(2, (PlaceRec *)CharSelectModelsPlace);
     i = 0;
     do {
         InitCharSelector(i);
@@ -1787,12 +1787,12 @@ void LevelSelectInit(void) {
     subengine *sub;
 
     LevelSelectReload = 0;
-    PlaceEngineSlot(0, (s32 *)LevelSelectPlace);
-    PlaceEngineSlot(2, (s32 *)LevelSelectPlace0);
-    PlaceEngineSlot(3, (s32 *)LevelSelectPlace1);
-    PlaceEngineSlot(4, (s32 *)LevelSelectPlace2);
-    PlaceEngineSlot(5, (s32 *)LevelSelectPlace3);
-    PlaceEngineSlot(6, (s32 *)LevelSelectPlace4);
+    PlaceEngineSlot(0, (PlaceRec *)LevelSelectPlace);
+    PlaceEngineSlot(2, (PlaceRec *)LevelSelectPlace0);
+    PlaceEngineSlot(3, (PlaceRec *)LevelSelectPlace1);
+    PlaceEngineSlot(4, (PlaceRec *)LevelSelectPlace2);
+    PlaceEngineSlot(5, (PlaceRec *)LevelSelectPlace3);
+    PlaceEngineSlot(6, (PlaceRec *)LevelSelectPlace4);
     GetEngineSlot(1)->sub[4].flags |= 0x8000;
     GetEngineSlot(1)->sub[5].flags |= 0x8000;
     GetEngineSlot(1)->sub[6].flags |= 0x8000;
@@ -2183,7 +2183,7 @@ void TeamModeUpdate(void) {
 }
 
 void team_mode_init(void) {
-    PlaceEngineSlot(0, (s32 *)TeamModePlace);
+    PlaceEngineSlot(0, (PlaceRec *)TeamModePlace);
     TeamModeRow = 0;
     TeamModePreset = 0;
 }
@@ -2216,5 +2216,5 @@ void TitlesExtraScreenRender(void) {
 }
 
 void TitlesExtraScreenInit(void) {
-    PlaceEngineSlot(2, (s32 *)TitlesExtraPlace);
+    PlaceEngineSlot(2, (PlaceRec *)TitlesExtraPlace);
 }

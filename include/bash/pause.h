@@ -287,14 +287,14 @@ extern char PauseDigits2[2];
 extern char PauseDigits3[2];
 extern char PauseDigits4[2];
 extern char PauseDigits5[2];
-extern s32 AdvStatsPanel0[];
-extern s32 AdvStatsPanel1[];
-extern s32 AdvStatsPanel2[];
-extern s32 AdvStatsPanel3[];
-extern s32 AdvStatsPanel4[];
-extern s32 AdvStatsPanel5[];
-extern s32 AdvStatsPanel6[];
-extern s32 AdvStatsPanel7[];
+extern PlaceRec AdvStatsPanel0[];
+extern PlaceRec AdvStatsPanel1[];
+extern PlaceRec AdvStatsPanel2[];
+extern PlaceRec AdvStatsPanel3[];
+extern PlaceRec AdvStatsPanel4[];
+extern PlaceRec AdvStatsPanel5[];
+extern PlaceRec AdvStatsPanel6[];
+extern PlaceRec AdvStatsPanel7[];
 /* A panel rectangle, draw_panel_rect's record (PauseMenuPanel: the highlight behind the pause
  * menu's selected line, DrawHudEntries). -1 in top hides it. */
 typedef struct HudBox {

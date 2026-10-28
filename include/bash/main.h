@@ -1000,6 +1000,25 @@ typedef struct CardSlot {
     GameState state;
 } CardSlot;
 extern CardSlot CardSlots[];
+/* A panel's record (0x24 bytes; PlaceEngineSlot's lists, ending at a type below 2), read by
+ * ApplyPlaceRecs: what to place (type), where, and its text table or image (data). The pause
+ * screens' records and the text panels' items are the same record. */
+typedef struct PlaceRec {
+    /* 0x00 */ s32 type;
+    /* 0x04 */ s16 x;
+    /* 0x06 */ s16 y;
+    /* 0x08 */ s16 z;
+    /* 0x0A */ s16 scale;
+    /* 0x0C */ s16 unkC;
+    /* 0x0E */ s16 unkE;
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 pad12;
+    /* 0x14 */ void *data;   /* a text table (by language), or a sprite's image */
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s16 unk1C;
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ s32 unk20;
+} PlaceRec;
 extern u8 GameInfo[];
 extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
 extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (views: numPlayers) */

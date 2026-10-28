@@ -1330,8 +1330,8 @@ void RenderPause(void) {
 void StartWinSequence(s32 arg0) {
     GameState *g;
     GameState *g2;
-    PauseRecord **set;
-    PauseRecord *rec;
+    PlaceRec **set;
+    PlaceRec *rec;
 
     WinSeqTimer = 0x4B;
     WinSeqStep = 4;
@@ -1357,13 +1357,13 @@ void StartWinSequence(s32 arg0) {
         if (g->adventure.unk76[g->mode] & 0x80) {
             return;
         }
-        set = ((PauseRecord ****)PauseMenuSets)[g->mode][2];
+        set = ((PlaceRec ****)PauseMenuSets)[g->mode][2];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
             PauseRecIndex = 0;
             PauseRec = rec;
-            PlaceEngineSlot(0, &rec->kind);
+            PlaceEngineSlot(0, rec);
         }
         g->adventure.unk76[g->mode] |= 0x80;
         PausePad = 0;
@@ -1375,13 +1375,13 @@ void StartWinSequence(s32 arg0) {
             if (g->adventure.unk76[g->mode] & 8) {
                 return;
             }
-            set = ((PauseRecord ****)PauseMenuSets)[g->mode][8];
+            set = ((PlaceRec ****)PauseMenuSets)[g->mode][8];
             if (set != NULL) {
                 PauseRecSet = set;
                 rec = *set;
                 PauseRecIndex = 0;
                 PauseRec = rec;
-                PlaceEngineSlot(0, &rec->kind);
+                PlaceEngineSlot(0, rec);
             }
             g->adventure.unk76[g->mode] |= 8;
             PausePad = 0;
@@ -1391,13 +1391,13 @@ void StartWinSequence(s32 arg0) {
             if (g->adventure.unk76[g->mode] & 0x20) {
                 return;
             }
-            set = ((PauseRecord ****)PauseMenuSets)[g->mode][6];
+            set = ((PlaceRec ****)PauseMenuSets)[g->mode][6];
             if (set != NULL) {
                 PauseRecSet = set;
                 rec = *set;
                 PauseRecIndex = 0;
                 PauseRec = rec;
-                PlaceEngineSlot(0, &rec->kind);
+                PlaceEngineSlot(0, rec);
             }
             g->adventure.unk76[g->mode] |= 0x20;
             PausePad = 0;
@@ -1409,13 +1409,13 @@ void StartWinSequence(s32 arg0) {
         if (g->adventure.unk76[g->mode] & 0x40) {
             return;
         }
-        set = ((PauseRecord ****)PauseMenuSets)[g->mode][4];
+        set = ((PlaceRec ****)PauseMenuSets)[g->mode][4];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
             PauseRecIndex = 0;
             PauseRec = rec;
-            PlaceEngineSlot(0, &rec->kind);
+            PlaceEngineSlot(0, rec);
         }
         g->adventure.unk76[g->mode] |= 0x40;
         PausePad = 0;
@@ -1427,13 +1427,13 @@ void StartWinSequence(s32 arg0) {
         if (g2->adventure.unk76[g2->mode] & 0x10) {
             return;
         }
-        set = ((PauseRecord ****)PauseMenuSets)[g2->mode][0];
+        set = ((PlaceRec ****)PauseMenuSets)[g2->mode][0];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
             PauseRecIndex = 0;
             PauseRec = rec;
-            PlaceEngineSlot(0, &rec->kind);
+            PlaceEngineSlot(0, rec);
         }
         g2->adventure.unk76[g2->mode] |= 0x10;
         PausePad = 0;
@@ -1643,13 +1643,13 @@ void SetPauseY(s32 arg0) {
 }
 
 s16 PauseRecValue(void) {
-    PauseRecord *p = PauseRec;
+    PlaceRec *p = PauseRec;
 
     if (p != NULL) {
         do {
-            if (p->kind != 0) {
-                if (p->kind == 1) {
-                    return p->val;
+            if (p->type != 0) {
+                if (p->type == 1) {
+                    return p->x;
                 }
             } else {
                 return 0;
@@ -1661,7 +1661,7 @@ s16 PauseRecValue(void) {
 }
 
 void PauseRecPrev(void) {
-    PauseRecord *rec;
+    PlaceRec *rec;
     s32 n;
 
     if (PauseRecSet != NULL) {
@@ -1670,21 +1670,21 @@ void PauseRecPrev(void) {
             rec = PauseRecSet[n];
             PauseRecIndex = n;
             PauseRec = rec;
-            PlaceEngineSlot(0, &rec->kind);
+            PlaceEngineSlot(0, rec);
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
         }
     }
 }
 
 s32 PauseRecNext(void) {
-    PauseRecord *rec;
+    PlaceRec *rec;
 
     if (PauseRecSet != NULL) {
         rec = PauseRecSet[PauseRecIndex + 1];
         if (rec != NULL) {
             PauseRecIndex = PauseRecIndex + 1;
             PauseRec = rec;
-            PlaceEngineSlot(0, &rec->kind);
+            PlaceEngineSlot(0, rec);
             return 1;
         }
     }
@@ -1694,11 +1694,11 @@ s32 PauseRecNext(void) {
 }
 
 void SetPauseRecs(s32 arg0, s32 kind, s32 flag) {
-    PauseRecord ***t;
-    PauseRecord **set;
-    PauseRecord *rec;
+    PlaceRec ***t;
+    PlaceRec **set;
+    PlaceRec *rec;
 
-    t = ((PauseRecord ****)PauseMenuSets)[GameMode];
+    t = ((PlaceRec ****)PauseMenuSets)[GameMode];
     if (flag != 0) {
         switch (kind) {
         case 3:
@@ -1741,7 +1741,7 @@ void SetPauseRecs(s32 arg0, s32 kind, s32 flag) {
         rec = *set;
         PauseRecIndex = 0;
         PauseRec = rec;
-        PlaceEngineSlot(0, &rec->kind);
+        PlaceEngineSlot(0, rec);
     }
 }
 
@@ -1844,79 +1844,125 @@ char PauseDigits3[2] = { 0x33, 0x30 };
 char PauseDigits4[2] = { 0x34, 0x30 };
 char PauseDigits5[2] = { 0x35, 0x30 };
 u8 PauseDigits6[4] = { 0x36, 0x30, 0, 0 };
-s32 AdvStatsPanel0[90] = {
-    4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C004B, 0, 0, 0, 0, 0, 0x5001C, 2, 0xA,
-    0x3C01B2, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 5, 0x2C004B, 0, 0, 0, 0, 0, 0x4001C, 2, 3,
-    0x400050, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x1001C, 2, 3,
-    0x4000E6, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C0177, 0, 0, 0, 0, 0, 0x1C, 2, 3,
-    0x40017C, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec AdvStatsPanel0[10] = {
+    { 4, 0, 0x1C2, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 5, 0x4B, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 5, 2 },
+    { 0xA, 0x1B2, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xCA, 0x3065, 0 },
+    { 5, 0x4B, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 4, 2 },
+    { 3, 0x50, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits, 4, 0, 0, 0 },
+    { 5, 0xE1, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 1, 2 },
+    { 3, 0xE6, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits2, 4, 0, 0, 0 },
+    { 5, 0x177, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 0, 2 },
+    { 3, 0x17C, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits3, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 AdvStatsPanel1[90] = {
-    4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x3C01B2, 0x10000000, 0, 0, 0, 0, 0xD5, 0,
-    0xA, 0x3C01B2, 0x10000000, 0, 0, 0, 0, 0xD5, 0, 5, 0x2C004B, 0, 0, 0, 0, 0, 0xD5, 2, 3,
-    0x400050, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x500D5, 2, 3,
-    0x4000E6, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C0177, 0, 0, 0, 0, 0, 0x700D5, 2, 3,
-    0x40017C, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec AdvStatsPanel1[10] = {
+    { 4, 0, 0x1C2, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xA, 0x1B2, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xD5, 0, 0 },
+    { 0xA, 0x1B2, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xD5, 0, 0 },
+    { 5, 0x4B, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 0, 2 },
+    { 3, 0x50, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits, 4, 0, 0, 0 },
+    { 5, 0xE1, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 5, 2 },
+    { 3, 0xE6, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits2, 4, 0, 0, 0 },
+    { 5, 0x177, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 7, 2 },
+    { 3, 0x17C, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits3, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 AdvStatsPanel2[108] = {
-    4, 0x1C00000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C0038, 0, 0, 0, 0, 0, 0x5001C, 2, 0xA,
-    0x3C01B0, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 5, 0x2C0038, 0, 0, 0, 0, 0, 0x4001C, 2, 3,
-    0x40003D, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C00A8, 0, 0, 0, 0, 0, 0x1001C, 2, 3,
-    0x4000AD, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C0118, 0, 0, 0, 0, 0, 0x1C, 2, 3,
-    0x40011D, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 5, 0x2C0188, 0, 0, 0, 0, 0, 0x3001C, 2, 3,
-    0x40018D, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec AdvStatsPanel2[12] = {
+    { 4, 0, 0x1C0, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 5, 0x38, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 5, 2 },
+    { 0xA, 0x1B0, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xCA, 0x3065, 0 },
+    { 5, 0x38, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 4, 2 },
+    { 3, 0x3D, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits, 4, 0, 0, 0 },
+    { 5, 0xA8, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 1, 2 },
+    { 3, 0xAD, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits2, 4, 0, 0, 0 },
+    { 5, 0x118, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 0, 2 },
+    { 3, 0x11D, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits3, 4, 0, 0, 0 },
+    { 5, 0x188, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 3, 2 },
+    { 3, 0x18D, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits4, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 AdvStatsPanel3[108] = {
-    4, 0x1C00000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x3C0140, 0x10000000, 0, 0, 0, 0, 0xD5, 0,
-    0xA, 0x3C01B0, 0x10000000, 0, 0, 0, 0, 0xD5, 0, 5, 0x2C0038, 0, 0, 0, 0, 0, 0xD5, 2, 3,
-    0x40003D, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C00A8, 0, 0, 0, 0, 0, 0x500D5, 2, 3,
-    0x4000AD, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C0118, 0, 0, 0, 0, 0, 0x700D5, 2, 3,
-    0x40011D, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 5, 0x2C0188, 0, 0, 0, 0, 0, 0x300D5, 2, 3,
-    0x40018D, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec AdvStatsPanel3[12] = {
+    { 4, 0, 0x1C0, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xA, 0x140, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xD5, 0, 0 },
+    { 0xA, 0x1B0, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xD5, 0, 0 },
+    { 5, 0x38, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 0, 2 },
+    { 3, 0x3D, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits, 4, 0, 0, 0 },
+    { 5, 0xA8, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 5, 2 },
+    { 3, 0xAD, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits2, 4, 0, 0, 0 },
+    { 5, 0x118, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 7, 2 },
+    { 3, 0x11D, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits3, 4, 0, 0, 0 },
+    { 5, 0x188, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 3, 2 },
+    { 3, 0x18D, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits4, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 AdvStatsPanel4[126] = {
-    4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C002D, 0, 0, 0, 0, 0, 0x5001C, 2, 0xA,
-    0x3C01B2, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 5, 0x2C002D, 0, 0, 0, 0, 0, 0x4001C, 2, 3,
-    0x400032, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C0087, 0, 0, 0, 0, 0, 0x1001C, 2, 3,
-    0x40008C, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x1C, 2, 3,
-    0x4000E6, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 5, 0x2C013B, 0, 0, 0, 0, 0, 0x3001C, 2, 3,
-    0x400140, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 5, 0x2C0195, 0, 0, 0, 0, 0, 0x2001C, 2, 3,
-    0x40019A, 0, 0, 0, (s32)&PauseDigits5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec AdvStatsPanel4[14] = {
+    { 4, 0, 0x1C2, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 5, 0x2D, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 5, 2 },
+    { 0xA, 0x1B2, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xCA, 0x3065, 0 },
+    { 5, 0x2D, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 4, 2 },
+    { 3, 0x32, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits, 4, 0, 0, 0 },
+    { 5, 0x87, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 1, 2 },
+    { 3, 0x8C, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits2, 4, 0, 0, 0 },
+    { 5, 0xE1, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 0, 2 },
+    { 3, 0xE6, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits3, 4, 0, 0, 0 },
+    { 5, 0x13B, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 3, 2 },
+    { 3, 0x140, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits4, 4, 0, 0, 0 },
+    { 5, 0x195, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 2, 2 },
+    { 3, 0x19A, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits5, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 AdvStatsPanel5[126] = {
-    4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x3C00FE, 0x10000000, 0, 0, 0, 0, 0xD5, 0,
-    0xA, 0x3C01B2, 0x10000000, 0, 0, 0, 0, 0xD5, 0, 5, 0x2C002D, 0, 0, 0, 0, 0, 0xD5, 2, 3,
-    0x400032, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C0087, 0, 0, 0, 0, 0, 0x500D5, 2, 3,
-    0x40008C, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x700D5, 2, 3,
-    0x4000E6, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 5, 0x2C013B, 0, 0, 0, 0, 0, 0x300D5, 2, 3,
-    0x400140, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 5, 0x2C0195, 0, 0, 0, 0, 0, 0x200D5, 2, 3,
-    0x40019A, 0, 0, 0, (s32)&PauseDigits5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec AdvStatsPanel5[14] = {
+    { 4, 0, 0x1C2, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xA, 0xFE, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xD5, 0, 0 },
+    { 0xA, 0x1B2, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xD5, 0, 0 },
+    { 5, 0x2D, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 0, 2 },
+    { 3, 0x32, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits, 4, 0, 0, 0 },
+    { 5, 0x87, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 5, 2 },
+    { 3, 0x8C, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits2, 4, 0, 0, 0 },
+    { 5, 0xE1, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 7, 2 },
+    { 3, 0xE6, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits3, 4, 0, 0, 0 },
+    { 5, 0x13B, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 3, 2 },
+    { 3, 0x140, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits4, 4, 0, 0, 0 },
+    { 5, 0x195, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0xD5, 2, 2 },
+    { 3, 0x19A, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits5, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 AdvStatsPanel6[108] = {
-    4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x4000E1, 0x18000000, (s32)0xFF800100, 0, 0,
-    0, 0x2001001C, 2, 0xA, 0x3C01B2, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 8, 0x100000,
-    0x7000000, 0, 0, 0, 0, 0, 0, 3, 0x400032, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 8, 0x10005A,
-    0x7000000, 0, 0, 0, 0, 0x10000, 0, 3, 0x40008C, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 8,
-    0x10010E, 0x7000000, 0, 0, 0, 0, 0x20000, 0, 3, 0x400140, 0, 0, 0, (s32)&PauseDigits3, 4,
-    0, 0, 8, 0x100168, 0x7000000, 0, 0, 0, 0, 0x30000, 0, 3, 0x40019A, 0, 0, 0,
-    (s32)&PauseDigits4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec AdvStatsPanel6[12] = {
+    { 4, 0, 0x1C2, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xA, 0xE1, 0x40, 0, 0x1800, 0x100, -0x80, 0, 0, NULL, 0, 0x1C, 0x2001, 2 },
+    { 0xA, 0x1B2, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xCA, 0x3065, 0 },
+    { 8, 0, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, 0x32, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits, 4, 0, 0, 0 },
+    { 8, 0x5A, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 1, 0 },
+    { 3, 0x8C, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits2, 4, 0, 0, 0 },
+    { 8, 0x10E, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 2, 0 },
+    { 3, 0x140, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits3, 4, 0, 0, 0 },
+    { 8, 0x168, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 3, 0 },
+    { 3, 0x19A, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits4, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 AdvStatsPanel7[108] = {
-    4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x4001C, 2, 0xA,
-    0x3C01B2, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 8, 0x100000, 0x7000000, 0, 0, 0, 0, 0, 0,
-    3, 0x400032, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 8, 0x10005A, 0x7000000, 0, 0, 0, 0,
-    0x10000, 0, 3, 0x40008C, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 8, 0x10010E, 0x7000000, 0,
-    0, 0, 0, 0x20000, 0, 3, 0x400140, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 8, 0x100168,
-    0x7000000, 0, 0, 0, 0, 0x30000, 0, 3, 0x40019A, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0,
+PlaceRec AdvStatsPanel7[12] = {
+    { 4, 0, 0x1C2, 0, 0x56, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 5, 0xE1, 0x2C, 0, 0, 0, 0, 0, 0, NULL, 0, 0x1C, 4, 2 },
+    { 0xA, 0x1B2, 0x3C, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0xCA, 0x3065, 0 },
+    { 8, 0, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, 0x32, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits, 4, 0, 0, 0 },
+    { 8, 0x5A, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 1, 0 },
+    { 3, 0x8C, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits2, 4, 0, 0, 0 },
+    { 8, 0x10E, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 2, 0 },
+    { 3, 0x140, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits3, 4, 0, 0, 0 },
+    { 8, 0x168, 0x10, 0, 0x700, 0, 0, 0, 0, NULL, 0, 0, 3, 0 },
+    { 3, 0x19A, 0x40, 0, 0, 0, 0, 0, 0, &PauseDigits4, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 HudBox PauseMenuPanel = { 0x10008001, 0x7C, -1, 0, 0x204, -1, 0, 0, 0x8080 };
 s32 PauseMenuPanelUnused[2] = { 0x40004, 0x10008021 };
 u16 StatsPageWanted = 0;
 s32 ElapsedStart = 0;
 s32 WinCounterSize = 0;
-PauseRecord *PauseRec = 0;
-PauseRecord **PauseRecSet = 0;
+PlaceRec *PauseRec = 0;
+PlaceRec **PauseRecSet = 0;
 s32 PauseRecIndex = 0;
 s16 PauseMenuY = 0;
 u16 PauseToggles[4] = {0};

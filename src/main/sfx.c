@@ -703,6 +703,8 @@ HudEntry PauseDemoLabel[2] = {
     { 5, -0x8000, 0x14, 0x23, 0xD0FF, 0xFF, 0, 0 },
     { -1, 0, 0, 0, 0, 0, 0, 0 },
 };
-s32 HeroesOutPanel[27] = {
-    4, 0x1908000, 0x280000, 0, 0, 0, 0, 0, 0, 3, 0xC8000, 0, 0, 0, (s32)&PauseTextPressButtonToForceVictory, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec HeroesOutPanel[3] = {
+    { 4, -0x8000, 0x190, 0, 0x28, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, -0x8000, 0xC, 0, 0, 0, 0, 0, 0, &PauseTextPressButtonToForceVictory, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };

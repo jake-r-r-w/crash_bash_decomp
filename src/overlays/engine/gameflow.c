@@ -662,12 +662,12 @@ s32 CupCurrentArena(void) {
 
 void InitCupMenu(void) {
     CupMenuCompact = 0;
-    PlaceEngineSlot(0, (s32 *)CupMenuLabels);
+    PlaceEngineSlot(0, (PlaceRec *)CupMenuLabels);
     PlaceEngineSlot(2, CupMenuPanel);
-    PlaceEngineSlot(3, (s32 *)CupSlotPanel);
-    PlaceEngineSlot(4, (s32 *)CupSlotPanel);
-    PlaceEngineSlot(5, (s32 *)CupSlotPanel);
-    PlaceEngineSlot(6, (s32 *)CupSlotPanel);
+    PlaceEngineSlot(3, (PlaceRec *)CupSlotPanel);
+    PlaceEngineSlot(4, (PlaceRec *)CupSlotPanel);
+    PlaceEngineSlot(5, (PlaceRec *)CupSlotPanel);
+    PlaceEngineSlot(6, (PlaceRec *)CupSlotPanel);
     GameCup = 0;
 }
 
@@ -1115,7 +1115,7 @@ void UpdateSaveMenu(void) {
             if (HubSaveMenuHooks.unkC != NULL) {
                 HubSaveMenuHooks.unkC();
             }
-            PlaceEngineSlot(1, &CardPromptPanel);
+            PlaceEngineSlot(1, CardPromptPanel);
         } else {
             if (HubSaveMenuHooks.unk4 != NULL) {
                 HubSaveMenuHooks.unk4();
@@ -1143,7 +1143,7 @@ void UpdateSaveMenu(void) {
                 if (HubSaveMenuHooks.unkC != NULL) {
                     HubSaveMenuHooks.unkC();
                 }
-                PlaceEngineSlot(1, &CardPromptPanel);
+                PlaceEngineSlot(1, CardPromptPanel);
                 break;
             }
             case 2:
@@ -1325,7 +1325,7 @@ void ShowCardSlots(void) {
     ShowCardSlot(&p[1].state, 1, *(s32 *)p[1].summary == 0, 0x140, 0x1E);
     ShowCardSlot(&p[2].state, 2, *(s32 *)p[2].summary == 0, 0x28, 0x7C);
     ShowCardSlot(&p[3].state, 3, *(s32 *)p[3].summary == 0, 0x140, 0x7C);
-    PlaceEngineSlot(3, &CardSlotsPanel);
+    PlaceEngineSlot(3, CardSlotsPanel);
     ShowCardSlotStats((GameState *)((u8 *)pad + CardSlotIndex * sizeof(CardSlot)), *(s32 *)p[CardSlotIndex].summary == 0);
 }
 
@@ -1338,7 +1338,7 @@ void InitSaveMenu(void) {
     FontPage = 0;
     SaveMenuStep = 0;
     SaveMenuYesNo = 1;
-    PlaceEngineSlot(8, &SaveMenuPanel);
+    PlaceEngineSlot(8, SaveMenuPanel);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->entity = 0x2007;
@@ -1347,7 +1347,7 @@ void InitSaveMenu(void) {
         sub->entity = 0x201F;
         sub->u6C.dbase = &HeroModelBank[DB_AdventureItems];
     }
-    PlaceEngineSlot(1, &CardPromptPanel);
+    PlaceEngineSlot(1, CardPromptPanel);
     SaveMenuStage = 0;
     SaveMenuState = 0;
     SaveMenuStep = 1;
@@ -1362,7 +1362,7 @@ void InitCardPromptMenu(void) {
     FontPage = 0;
     SaveMenuStep = 0;
     SaveMenuYesNo = 1;
-    PlaceEngineSlot(8, &SaveMenuPanel);
+    PlaceEngineSlot(8, SaveMenuPanel);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->entity = 0x2007;
@@ -1371,7 +1371,7 @@ void InitCardPromptMenu(void) {
         sub->entity = 0x201F;
         sub->u6C.dbase = &HeroModelBank[DB_AdventureItems];
     }
-    PlaceEngineSlot(1, &CardPromptPanel);
+    PlaceEngineSlot(1, CardPromptPanel);
     CardPromptStep = 0;
     SaveMenuStep = 2;
 }
@@ -1380,7 +1380,7 @@ void ShowSaveScreen(void) {
     EXTengine *eng;
 
     ShowCardSlots();
-    PlaceEngineSlot(2, &SaveScreenPanel);
+    PlaceEngineSlot(2, SaveScreenPanel);
     GetEngineSlot(2)->unk10.x = 0x28;
     GetEngineSlot(2)->unk10.y = 0x1E;
     eng = GetEngineSlot(2);
@@ -1397,7 +1397,7 @@ void RefreshCardSlots(void) {
     EXTengine *eng;
 
     ShowCardSlots();
-    PlaceEngineSlot(2, &SaveScreenPanel);
+    PlaceEngineSlot(2, SaveScreenPanel);
     GetEngineSlot(2)->unk10.x = 0x28;
     GetEngineSlot(2)->unk10.y = 0x1E;
     eng = GetEngineSlot(2);
@@ -1469,7 +1469,7 @@ void InitCardMenu(void) {
     FontPage = 0;
     SaveMenuStep = 0;
     SaveMenuYesNo = 1;
-    PlaceEngineSlot(8, &SaveMenuPanel);
+    PlaceEngineSlot(8, SaveMenuPanel);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->entity = 0x2007;
@@ -1478,7 +1478,7 @@ void InitCardMenu(void) {
         sub->entity = 0x201F;
         sub->u6C.dbase = &HeroModelBank[DB_AdventureItems];
     }
-    PlaceEngineSlot(1, &CardPromptPanel);
+    PlaceEngineSlot(1, CardPromptPanel);
 }
 
 s32 GameExtra105(u8 *arg0) {
@@ -1915,7 +1915,7 @@ s32 IntroNextSfx = 0;
 s32 IntroSfxDelay = 0;
 _sfx_handler *IntroSfx[3] = {0};
 _sfx_handler *IntroSfxHandle = 0;
-s32 WarpReturnProcess[5] = { (s32)ReturnToWarpRoom, 0, 0, 0, 0 };
+process_info WarpReturnProcess = { ReturnToWarpRoom, NULL, NULL, NULL, NULL };
 s32 NextGameMode = 0;
 CupRound Cup0Arenas[4] = {
     { 1, 0, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2005 },
@@ -1965,67 +1965,29 @@ CupDef CupTable[7] = {
     { 3, Cup4Arenas, 4 }, { 3, Cup5Arenas, 4 },
     { 3, Cup6Arenas, 4 },
 };
-u8 CupMenuPanel[180] = {
-    4, 0, 0, 0, 0x32, 0, 0x36, 1, 0x58, 0, 0xD0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0x4A, 1, 0x4E, 2, 0x58, 0, 0xD0, 0, 4, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0x32, 0, 0x36, 1,
-    0xE0, 0, 0x58, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    4, 0, 0, 0, 0x4A, 1, 0x4E, 2, 0xE0, 0, 0x58, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec CupMenuPanel[5] = {
+    { 4, 0x32, 0x136, 0x58, 0xD0, 4, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 4, 0x14A, 0x24E, 0x58, 0xD0, 4, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 4, 0x32, 0x136, 0xE0, 0x158, 4, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 4, 0x14A, 0x24E, 0xE0, 0x158, 4, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 s32 LangTournamentSelect[1] = { (s32)&MenuTournamentSelect };
 s32 LangMenuLocked[1] = { (s32)&MenuLocked };
 s32 LangMenuPressButtonToSelect[1] = { (s32)&MenuPressButtonToSelect };
-TextPanelItem CupMenuLabels[12] = {
-    {
-        { 3, 0, 0, 0, 0, 0x80, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
-        { 2, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 0xE, 0, 0, 0, 0, 0x80, 0x38, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        (void *)&LangTournamentSelect, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 4, 0, 0, 0, 0, 0x80, 0x58, 2, 0x36, 0xFF, 0x5A, 0xFF, 1, 0, 0, 0, 0, 0, 0, 0 }, 0,
-        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 4, 0, 0, 0, 0, 0x80, 0x90, 1, 0x92, 0xFF, 0x5A, 0, 4, 0, 0, 0, 0, 0, 0, 0 }, 0,
-        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 6, 0, 0, 0, 0x60, 0xFF, 0x2E, 0, 0, 0, 0x66, 6, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
-        { 0, 0, 0, 0, 0xC7, 0 }, 0x2006, { 0, 0, 0, 0 },
-    },
-    {
-        { 0xE, 0, 0, 0, 0x32, 0x80, 0x9A, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        (void *)&LangMenuLocked, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 3, 0, 0, 0, 0x32, 0x80, 0xD8, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        (void *)&MenuInsertCardForUnlocked, { 4, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 0xE, 0, 0, 0, 0, 0x80, 0xA5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        (void *)&LangMenuPressButtonToSelect, { 4, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 3, 0, 0, 0, 0xF7, 0xFE, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        (void *)&MenuArrowLeft, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 3, 0, 0, 0, 0xF0, 0, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        (void *)&MenuArrowRight, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 4, 0, 0, 0, 0, 0x80, 0x58, 2, 0x9A, 0, 0xC0, 0, 1, 0, 0, 0, 0, 0, 0, 0 }, 0,
-        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
-    {
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
-        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
+PlaceRec CupMenuLabels[12] = {
+    { 3, -0x8000, 0x72, 0, 0, 0, 0, 0, 0, NULL, 2, 0, 0, 0 },
+    { 0xE, -0x8000, -0xC8, 0, 0, 0, 0, 0, 0, &LangTournamentSelect, 0, 0, 0, 0 },
+    { 4, -0x8000, 0x258, -0xCA, -0xA6, 1, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 4, -0x8000, 0x190, -0x6E, 0x5A, 4, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 6, -0xA0, 0x2E, 0, 0x666, 0, 0, 0, 0, NULL, 0, 0xC7, 0x2006, 0 },
+    { 0xE, -0x7FCE, -0x66, 0, 0, 0, 0, 0, 0, &LangMenuLocked, 0, 0, 0, 0 },
+    { 3, -0x7FCE, -0x28, 0, 0, 0, 0, 0, 0, &MenuInsertCardForUnlocked, 4, 0, 0, 0 },
+    { 0xE, -0x8000, 0xA5, 0, 0, 0, 0, 0, 0, &LangMenuPressButtonToSelect, 4, 0, 0, 0 },
+    { 3, -0x109, 0x72, 0, 0, 0, 0, 0, 0, &MenuArrowLeft, 0, 0, 0, 0 },
+    { 3, 0xF0, 0x72, 0, 0, 0, 0, 0, 0, &MenuArrowRight, 0, 0, 0, 0 },
+    { 4, -0x8000, 0x258, 0x9A, 0xC0, 1, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 s32 LangUnlockWithCard[1] = { (s32)&MenuUnlockWithCard };
 s32 LangInsertCardForUnlocked[1] = { (s32)&MenuInsertCardForUnlocked };
@@ -2036,15 +1998,9 @@ GfxViewport CupViewport0 = { 0x32, 0x58, 0x136, 0xD0, 0, 0, 0x280, 0x1E0, 0xB4, 
 GfxViewport CupViewport1 = { 0x14A, 0x58, 0x24E, 0xD0, 0, 0, 0x280, 0x1E0, 0x1CC, 0xF8, 0x380, 0x17F, 0, 0, 0, 0, 0 };
 GfxViewport CupViewport2 = { 0x32, 0xE0, 0x136, 0x158, 0, 0, 0x280, 0x1E0, 0xB4, 0x180, 0x500, 0x17F, 0, 0, 0, 0, 0 };
 GfxViewport CupViewport3 = { 0x14A, 0xE0, 0x24E, 0x158, 0, 0, 0x280, 0x1E0, 0x1CC, 0x180, 0x680, 0x17F, 0, 0, 0, 0, 0 };
-TextPanelItem CupSlotPanel[2] = {
-    {
-        { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xCC, 0xC, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
-        { 0, 0, 0, 0, 0xC8, 0 }, 0x2005, { 0, 0, 0, 0 },
-    },
-    {
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
-        { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
-    },
+PlaceRec CupSlotPanel[2] = {
+    { 7, 0, 0, 0, 0xCCC, 0, 0, 0, 0, NULL, 0, 0xC8, 0x2005, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 process_info TournamentSelect = { InitCupMenu, UpdateCupMenu, RenderCupMenu, QuitCupMenu, 0 };
 s32 CupMenuCompact = 0;
@@ -2129,13 +2085,17 @@ hub_info WarpRooms[10] = {
     { 0x27, WarpRoomBossItems, 0, NULL, 0 },
 };
 HubRing HubHeroRing = {0};
-s32 CardPromptPanel = 3;
-s32 CardPromptItems[44] = {  /* CardPromptPanel's records */
-    0x328000, 0, 0, 0, 0, 0, 0, 0, 3, 0x788000, 0, 0, 0, 0, 0, 0, 0, 4, 0x1B88000, 0x19A0072,
-    0, 0, 0, 0, 0, 0, 4, 0x2808000, 0x5A0028, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec CardPromptPanel[5] = {
+    { 3, -0x8000, 0x32, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, -0x8000, 0x78, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 4, -0x8000, 0x1B8, 0x72, 0x19A, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 4, -0x8000, 0x280, 0x28, 0x5A, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 SaveScreenPanel = 4;
-s32 SaveScreenItems[17] =  /* SaveScreenPanel's records */ { 0x1180000, 0x5A0000, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+PlaceRec SaveScreenPanel[2] = {
+    { 4, 0, 0x118, 0, 0x5A, 5, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+};
 void *LangConfirmOverwrite[1] = { (void *)&MenuConfirmOverwrite };
 void *LangPressButtonToOverwrite[1] = { (void *)&MenuPressButtonToOverwrite };
 void *LangPressButtonToLoad[1] = { (void *)&MenuPressButtonToLoad };
@@ -2158,40 +2118,51 @@ void *LangSaveFailedPressButtonToExit[1] = { (void *)&MenuSaveFailedPressButtonT
 void *LangFormatting[1] = { (void *)&MenuFormatting };
 void *LangPressButtonToExitWithoutLoading[1] = { (void *)&MenuPressButtonToExitWithoutLoading };
 void *LangEmpty[1] = { (void *)&MenuEmpty };
-s32 CardSlotsPanel = 4;
-s32 CardSlotsItems[143] = {  /* CardSlotsPanel's records */
-    0x2300000, 0x500000, 6, 0, 0, 0, 0, 0, 0xA, 0x260050, 0xB330000, 0x280000, 0, 0, 0,
-    0x2022001C, 2, 3, 0x320050, 0, 0, 0, (s32)&Menu01, 4, 0, 0, 0xA, 0x2600B4, 0xB330000,
-    0x280000, 0, 0, 0, 0x201F001C, 2, 3, 0x3200B4, 0, 0, 0, (s32)&Menu02, 4, 0, 0, 0xA,
-    0x260118, 0xB330000, 0x280000, 0, 0, 0, 0x201E001C, 2, 3, 0x320118, 0, 0, 0, (s32)&Menu03,
-    4, 0, 0, 0xA, 0x26017C, 0xB330000, 0x280000, 0, 0, 0, 0x2021001C, 2, 3, 0x32017C, 0, 0, 0,
-    (s32)&Menu04, 4, 0, 0, 0xA, 0x2601E0, 0xB330000, 0x280000, 0, 0, 0, 0x2020001C, 2, 3,
-    0x3201E0, 0, 0, 0, (s32)&Menu05, 4, 0, 0, 4, 0x2300000, 0xCE0056, 6, 0, 0, 0, 0, 0, 3,
-    0x608118, 0, 0, 0, 0, 0, 0, 0, 3, 0x8A8118, 0, 0, 0, 0, 4, 0, 0, 3, 0xAC8118, 0, 0, 0, 0,
-    4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+PlaceRec CardSlotsPanel[16] = {
+    { 4, 0, 0x230, 0, 0x50, 6, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 0xA, 0x50, 0x26, 0, 0xB33, 0, 0x28, 0, 0, NULL, 0, 0x1C, 0x2022, 2 },
+    { 3, 0x50, 0x32, 0, 0, 0, 0, 0, 0, &Menu01, 4, 0, 0, 0 },
+    { 0xA, 0xB4, 0x26, 0, 0xB33, 0, 0x28, 0, 0, NULL, 0, 0x1C, 0x201F, 2 },
+    { 3, 0xB4, 0x32, 0, 0, 0, 0, 0, 0, &Menu02, 4, 0, 0, 0 },
+    { 0xA, 0x118, 0x26, 0, 0xB33, 0, 0x28, 0, 0, NULL, 0, 0x1C, 0x201E, 2 },
+    { 3, 0x118, 0x32, 0, 0, 0, 0, 0, 0, &Menu03, 4, 0, 0, 0 },
+    { 0xA, 0x17C, 0x26, 0, 0xB33, 0, 0x28, 0, 0, NULL, 0, 0x1C, 0x2021, 2 },
+    { 3, 0x17C, 0x32, 0, 0, 0, 0, 0, 0, &Menu04, 4, 0, 0, 0 },
+    { 0xA, 0x1E0, 0x26, 0, 0xB33, 0, 0x28, 0, 0, NULL, 0, 0x1C, 0x2020, 2 },
+    { 3, 0x1E0, 0x32, 0, 0, 0, 0, 0, 0, &Menu05, 4, 0, 0, 0 },
+    { 4, 0, 0x230, 0x56, 0xCE, 6, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, -0x7EE8, 0x60, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, -0x7EE8, 0x8A, 0, 0, 0, 0, 0, 0, NULL, 4, 0, 0, 0 },
+    { 3, -0x7EE8, 0xAC, 0, 0, 0, 0, 0, 0, NULL, 4, 0, 0, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 s32 Slot3DigitSrc[4][5] = {
     { 0xB4, 0x118, 0x17C, -1, -1 }, { 0x82, 0xE6, 0x14A, 0x1AE, -1 },
     { 0x50, 0xB4, 0x118, 0x17C, 0x1E0 }, { -1, -1, -1, -1, -1 },
 };
-s32 CardSlotPanel[72] = {
-    4, 0x1180000, 0x5A0000, 6, 0, 0, 0, 0, 0, 3, 0x2000C, 0, 0, 0, (s32)&MenuNameWidth, 0, 0,
-    0, 3, 0x200BC, 0, 0, 0, (s32)&Menu200Percent, 0, 0, 0, 6, 0x24000C, 0x10000000, 0, 0, 0, 0,
-    0x3003001C, 0, 6, 0x240048, 0x10000000, 0, 0, 0, 0, 0x3003001C, 0, 6, 0x240084, 0x10000000,
-    0, 0, 0, 0, 0x3003001C, 0, 6, 0x2400C0, 0x10000000, 0, 0, 0, 0, 0x3003001C, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0,
+PlaceRec CardSlotPanel[8] = {
+    { 4, 0, 0x118, 0, 0x5A, 6, 0, 0, 0, NULL, 0, 0, 0, 0 },
+    { 3, 0xC, 2, 0, 0, 0, 0, 0, 0, &MenuNameWidth, 0, 0, 0, 0 },
+    { 3, 0xBC, 2, 0, 0, 0, 0, 0, 0, &Menu200Percent, 0, 0, 0, 0 },
+    { 6, 0xC, 0x24, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0x1C, 0x3003, 0 },
+    { 6, 0x48, 0x24, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0x1C, 0x3003, 0 },
+    { 6, 0x84, 0x24, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0x1C, 0x3003, 0 },
+    { 6, 0xC0, 0x24, 0, 0x1000, 0, 0, 0, 0, NULL, 0, 0x1C, 0x3003, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
 s32 CardSlotIndex = 0;
 GfxViewport SaveViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xDFF, 0, 0, 0, 0x10, 1 };
 GfxViewport SaveBackViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xD00, -0x80, 0, 0, 0, 1 };
-s32 SaveMenuPanel = 6;
-s32 SaveMenuItems[17] =  /* SaveMenuPanel's records */ { 0xFF9C, 0x100004C8, 0, 0, 0, 0, 0x200700C7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+PlaceRec SaveMenuPanel[2] = {
+    { 6, -0x64, 0, 0x4C8, 0x1000, 0, 0, 0, 0, NULL, 0, 0xC7, 0x2007, 0 },
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
+};
 void *SaveMenuAnims[6] = {
     (void *)&MenuCardCorrupt, (void *)InitCardMenu, (void *)UpdateSaveScreen,
     (void *)RenderSaveMenu, (void *)ClearEngineSlots, 0,
 };
 process_info SaveScreenProcess = { InitSaveMenu, UpdateSaveScreen, RenderSaveMenu, ClearEngineSlots, 0 };
-s32 SaveScreenProcess2[5] = { (s32)InitCardPromptMenu, (s32)UpdateSaveScreen, (s32)RenderSaveMenu, (s32)ClearEngineSlots, 0 };
+process_info SaveScreenProcess2 = { InitCardPromptMenu, UpdateSaveScreen, RenderSaveMenu, ClearEngineSlots, NULL };
 s32 SaveMenuStage = 0;
 /* the results screen's number texts, one buffer: +0, +3, +6, +9 three digits each, +12 the last */
 char CardStatsText[16] = {0};
