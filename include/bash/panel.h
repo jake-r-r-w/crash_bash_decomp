@@ -102,7 +102,6 @@ typedef struct PanelPrim {
     s32 unk8C, unk90, unk94, unk98;
     u8 pad9C[0xC];
 } PanelPrim; /* 0xA8 */
-extern PanelPrim D_8009986C[4][7];
 extern SWORD_XY HealthIconPos[4];
 extern u16 *pHeroHealth[4];
 
@@ -114,8 +113,6 @@ void UpdatePanel(void);
 void UpdateBigScore(void);
 void UpdateHealthIcons(void);
 void UpdatePowerIcons(void);
-extern u8 D_80099914[];
-extern u8 D_800999BC[];
 void UpdateTankWeaponIcons(void);
 void UpdateScoreIcons(void);
 void Cups_Update(void);

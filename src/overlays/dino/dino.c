@@ -8,11 +8,6 @@
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
-extern u8 D_800706C4[];
-extern u8 D_8007418C[];
-extern u8 D_8008000C[];
-extern u8 D_80080024[];
-extern u8 D_8008418C[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char DinoAnimRun[] = "RUN";

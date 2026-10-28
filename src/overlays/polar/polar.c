@@ -7,10 +7,8 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 /* engine.h declares it, but polar.c does not include that */
-extern u8 D_80044188[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
-extern u8 D_80074328[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char PolarAnimLight[] = "LIGHT";

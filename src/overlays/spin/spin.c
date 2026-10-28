@@ -9,17 +9,8 @@
 #include "bash/xtras.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8004419C[];
-extern u8 D_80044218[];
-extern u8 D_80044594[];
-extern u8 D_80044614[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
-extern u8 D_80070008[];
-extern u8 D_8007000C[];
-extern u8 D_80070070[];
-extern u8 D_800700D4[];
-extern u8 D_80070138[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char SpinAnimBreathe[] = "BREATHE";

@@ -63,12 +63,10 @@ typedef struct EngObj {
     void (*update)(struct EngObj *);
 } EngObj;
 extern EngObj **NasUpdateList;
-extern subengine D_8009A04C[];
 typedef struct IconSet { s32 *c; u8 pad[4]; s32 *a; s32 *b; } IconSet;
 extern IconSet Icon;
 extern s16 IconPos[];
 extern s32 GameTeams[];
-extern subengine D_8009A4E4;
 extern u32 Clock_Time;
 extern u16 Clock_flags;
 extern U16Pair Clock_offsets[];

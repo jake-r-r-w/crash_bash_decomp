@@ -7,9 +7,6 @@
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
-extern u8 D_80070098[];
-extern u8 D_800700FC[];
-extern u8 D_80070160[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char N2OAnimWin[] = "WIN";

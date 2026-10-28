@@ -4,12 +4,8 @@
 #include "bash/pogo.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_80030014[];
-extern u8 D_80034010[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
-extern u8 D_80070568[];
-extern u8 D_80074180[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char PogoAnimBreathe[] = "BREATHE";
