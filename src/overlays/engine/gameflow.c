@@ -306,7 +306,7 @@ void HandleLevelExit(void) {
 }
 
 s32 WarpRoomMode(void) {
-    return WarpRooms[GameWarpRoom][0];
+    return WarpRooms[GameWarpRoom].levnum;
 }
 
 void ReturnToWarpRoom(void) {
@@ -673,10 +673,10 @@ void InitCupMenu(void) {
 
 static inline s32 func_800900CC_find(s32 arg0) {
     s32 i;
-    s32 *p;
+    hub_info *p;
 
-    for (i = 0, p = WarpRooms[0]; (u32)i < 10; i++, p += 5) {
-        if (*p == arg0) {
+    for (i = 0, p = WarpRooms; (u32)i < 10; i++, p++) {
+        if (p->levnum == arg0) {
             return i;
         }
     }
@@ -687,20 +687,20 @@ s32 WarpRoomBestLevel(void) {
     s32 i;
     s32 j;
     s32 best;
-    s32 *t;
+    hub_info *t;
 
     best = -1;
     i = func_800900CC_find(GameMode);
     if (i < 0) {
         t = 0;
     } else {
-        t = WarpRooms[i];
+        t = &WarpRooms[i];
     }
-    if (t == 0) {
+    if (t == NULL) {
         return best;
     }
-    for (j = 0; j < t[2]; j++) {
-        if (((s32(*)(s32))ModeRequirementMet)(((u16 *)(t[3] + j * 8))[2]) != 0 && best < j) {
+    for (j = 0; j < t->num_warps; j++) {
+        if (ModeRequirementMet(t->warp[j].levnum) != 0 && best < j) {
             best = j;
         }
     }
@@ -709,31 +709,31 @@ s32 WarpRoomBestLevel(void) {
 
 static inline s32 func_800901B4_find(s32 arg0) {
     s32 i;
-    s32 *p;
+    hub_info *p;
 
-    for (i = 0, p = WarpRooms[0]; (u32)i < 10; i++, p += 5) {
-        if (*p == arg0) {
+    for (i = 0, p = WarpRooms; (u32)i < 10; i++, p++) {
+        if (p->levnum == arg0) {
             return i;
         }
     }
     return -1;
 }
 
-s32 *WarpRoomOfMode(s32 arg0) {
+hub_info *WarpRoomOfMode(s32 arg0) {
     s32 i = func_800901B4_find(arg0);
 
     if (i < 0) {
-        return 0;
+        return NULL;
     }
-    return WarpRooms[i];
+    return &WarpRooms[i];
 }
 
 s32 WarpRoomIndex(s32 arg0) {
     s32 i;
-    s32 *p;
+    hub_info *p;
 
-    for (i = 0, p = WarpRooms[0]; (u32)i < 10; i++, p += 5) {
-        if (*p == arg0) {
+    for (i = 0, p = WarpRooms; (u32)i < 10; i++, p++) {
+        if (p->levnum == arg0) {
             return i;
         }
     }
@@ -741,23 +741,23 @@ s32 WarpRoomIndex(s32 arg0) {
 }
 
 s32 GatewayMode(void) {
-    EngSub90248 *p;
+    HubTableEntry *p;
 
-    if (GameGateway < 0 || (p = HubGateways[GameGateway].unk14, p->unk2 != 2)) {
+    if (GameGateway < 0 || (p = HubGateways[GameGateway].table, p->gate_type != 2)) {
         return -1;
     }
-    return p->unk4;
+    return p->level;
 }
 
 void ResetWarpRooms(void) {
     s32 i;
-    EngEntry *e;
-    EngTable *t = (EngTable *)WarpRooms;
+    HubTableEntry *e;
+    hub_info *t = WarpRooms;
 
     for (i = 9; i != -1; i--) {
-        e = t->entries;
-        while (e->a != 0) {
-            e->flags &= ~8;
+        e = t->table;
+        while (e->gateway != 0) {
+            e->status &= ~8;
             e++;
         }
         t++;
@@ -2058,42 +2058,85 @@ EngRec24 CupSlotPanel[2] = {
 };
 process_info TournamentSelect = { InitCupMenu, UpdateCupMenu, RenderCupMenu, QuitCupMenu, 0 };
 s32 CupMenuCompact = 0;
-s32 WarpRoomBossItems[8] = { 0x20001, 0x3000A, 0x20002, 0x30013, 0x20003, 0x3000B, 0, 0 };
-s32 WarpRoom1Doors[8] = { 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24, 0x2016, 0x25 };
-s32 WarpRoom1Items[16] = {
-    0x20001, 0x3000E, 0x20002, 0x30013, 0x20003, 0x3000A, 0x20004, 0x30000, 0x20005, 0x30004,
-    0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
+HubTableEntry WarpRoomBossItems[4] = {
+    { 1, 2, 0xA, 3 },
+    { 2, 2, 0x13, 3 },
+    { 3, 2, 0xB, 3 },
+    { 0, 0, 0, 0 },
 };
-s32 WarpRoom2Doors[8] = { 0x200F, 0x21, 0x2013, 0x23, 0x2015, 0x24, 0x2017, 0x25 };
-s32 WarpRoom2Items[18] = {
-    0x20001, 0x3000F, 0x20002, 0x30012, 0x20003, 0x3000B, 0x20004, 0x30001, 0x20005, 0x30006,
-    0x20006, 0x30016, 0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
+hub_warp_info WarpRoom1Doors[4] = { { 0x2010, 0x22 }, { 0x2012, 0x23 }, { 0x2014, 0x24 }, { 0x2016, 0x25 } };
+HubTableEntry WarpRoom1Items[8] = {
+    { 1, 2, 0xE, 3 },
+    { 2, 2, 0x13, 3 },
+    { 3, 2, 0xA, 3 },
+    { 4, 2, 0, 3 },
+    { 5, 2, 4, 3 },
+    { 0xB, 5, 0, 3 },
+    { 0xC, 4, 0, 3 },
+    { 0, 0, 0, 0 },
 };
-s32 WarpRoom3Doors[8] = { 0x200E, 0x21, 0x2010, 0x22, 0x2014, 0x24, 0x2016, 0x25 };
-s32 WarpRoom3Items[20] = {
-    0x20001, 0x30010, 0x20002, 0x30014, 0x20003, 0x3000C, 0x20004, 0x30002, 0x20005, 0x30008,
-    0x20006, 0x30017, 0x20007, 0x30009, 0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
+hub_warp_info WarpRoom2Doors[4] = { { 0x200F, 0x21 }, { 0x2013, 0x23 }, { 0x2015, 0x24 }, { 0x2017, 0x25 } };
+HubTableEntry WarpRoom2Items[9] = {
+    { 1, 2, 0xF, 3 },
+    { 2, 2, 0x12, 3 },
+    { 3, 2, 0xB, 3 },
+    { 4, 2, 1, 3 },
+    { 5, 2, 6, 3 },
+    { 6, 2, 0x16, 3 },
+    { 0xB, 5, 0, 3 },
+    { 0xC, 4, 0, 3 },
+    { 0, 0, 0, 0 },
 };
-s32 WarpRoom4Doors[8] = { 0x200F, 0x21, 0x2011, 0x22, 0x2013, 0x23, 0x2017, 0x25 };
-s32 WarpRoom4Items[22] = {
-    0x20001, 0x30011, 0x20002, 0x30015, 0x20003, 0x3000D, 0x20004, 0x30003, 0x20005, 0x30007,
-    0x20006, 0x30018, 0x20007, 0x3001B, 0x20008, 0x3001F, 0x5000B, 0x30000, 0x4000C, 0x30000,
-    0, 0,
+hub_warp_info WarpRoom3Doors[4] = { { 0x200E, 0x21 }, { 0x2010, 0x22 }, { 0x2014, 0x24 }, { 0x2016, 0x25 } };
+HubTableEntry WarpRoom3Items[10] = {
+    { 1, 2, 0x10, 3 },
+    { 2, 2, 0x14, 3 },
+    { 3, 2, 0xC, 3 },
+    { 4, 2, 2, 3 },
+    { 5, 2, 8, 3 },
+    { 6, 2, 0x17, 3 },
+    { 7, 2, 9, 3 },
+    { 0xB, 5, 0, 3 },
+    { 0xC, 4, 0, 3 },
+    { 0, 0, 0, 0 },
 };
-s32 WarpRoom5Doors[8] = { 0x200E, 0x21, 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24 };
-s32 WarpRoom5Items[18] = {
-    0x20001, 0x30019, 0x20002, 0x3001C, 0x20003, 0x3001D, 0x20004, 0x30005, 0x20005, 0x3001E,
-    0x20006, 0x3001A, 0x5000B, 0x30000, 0x4000C, 0x30000, 0, 0,
+hub_warp_info WarpRoom4Doors[4] = { { 0x200F, 0x21 }, { 0x2011, 0x22 }, { 0x2013, 0x23 }, { 0x2017, 0x25 } };
+HubTableEntry WarpRoom4Items[11] = {
+    { 1, 2, 0x11, 3 },
+    { 2, 2, 0x15, 3 },
+    { 3, 2, 0xD, 3 },
+    { 4, 2, 3, 3 },
+    { 5, 2, 7, 3 },
+    { 6, 2, 0x18, 3 },
+    { 7, 2, 0x1B, 3 },
+    { 8, 2, 0x1F, 3 },
+    { 0xB, 5, 0, 3 },
+    { 0xC, 4, 0, 3 },
+    { 0, 0, 0, 0 },
 };
-s32 WarpRooms[10][5] = {
-    { 0x21, (s32)&WarpRoom1Items, 4, (s32)&WarpRoom1Doors, 0x5021 },
-    { 0x22, (s32)&WarpRoom2Items, 4, (s32)&WarpRoom2Doors, 0x502D },
-    { 0x23, (s32)&WarpRoom3Items, 4, (s32)&WarpRoom3Doors, 0x502E },
-    { 0x24, (s32)&WarpRoom4Items, 4, (s32)&WarpRoom4Doors, 0x502A },
-    { 0x25, (s32)&WarpRoom5Items, 4, (s32)&WarpRoom5Doors, 0x502D },
-    { 0x21, (s32)&WarpRoom1Items, 0, 0, 0 }, { 0x21, (s32)&WarpRoom1Items, 0, 0, 0 },
-    { 0x21, (s32)&WarpRoom1Items, 0, 0, 0 }, { 0x26, (s32)&WarpRoomBossItems, 0, 0, 0 },
-    { 0x27, (s32)&WarpRoomBossItems, 0, 0, 0 },
+hub_warp_info WarpRoom5Doors[4] = { { 0x200E, 0x21 }, { 0x2010, 0x22 }, { 0x2012, 0x23 }, { 0x2014, 0x24 } };
+HubTableEntry WarpRoom5Items[9] = {
+    { 1, 2, 0x19, 3 },
+    { 2, 2, 0x1C, 3 },
+    { 3, 2, 0x1D, 3 },
+    { 4, 2, 5, 3 },
+    { 5, 2, 0x1E, 3 },
+    { 6, 2, 0x1A, 3 },
+    { 0xB, 5, 0, 3 },
+    { 0xC, 4, 0, 3 },
+    { 0, 0, 0, 0 },
+};
+hub_info WarpRooms[10] = {
+    { 0x21, WarpRoom1Items, 4, WarpRoom1Doors, 0x5021 },
+    { 0x22, WarpRoom2Items, 4, WarpRoom2Doors, 0x502D },
+    { 0x23, WarpRoom3Items, 4, WarpRoom3Doors, 0x502E },
+    { 0x24, WarpRoom4Items, 4, WarpRoom4Doors, 0x502A },
+    { 0x25, WarpRoom5Items, 4, WarpRoom5Doors, 0x502D },
+    { 0x21, WarpRoom1Items, 0, NULL, 0 },
+    { 0x21, WarpRoom1Items, 0, NULL, 0 },
+    { 0x21, WarpRoom1Items, 0, NULL, 0 },
+    { 0x26, WarpRoomBossItems, 0, NULL, 0 },
+    { 0x27, WarpRoomBossItems, 0, NULL, 0 },
 };
 HubRing HubHeroRing = {0};
 s32 CardPromptPanel = 3;

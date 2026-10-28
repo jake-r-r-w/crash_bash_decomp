@@ -10,6 +10,7 @@
 #include "bash/main.h"
 #include "bash/nas.h"
 #include "bash/shell.h"   /* ClockInfo, ScoreInfo */
+#include "bash/hub.h"     /* hub_info, HubGateway: WarpRooms, HubGateways */
 
 
 extern u16 LangPanelModels[];
@@ -32,7 +33,7 @@ extern s32 CratePickupAst;
 
 void RequirementMet(s32 arg0);
 void RequirementMetAny(s32 arg0);
-void ModeRequirementMet(s32 arg0);
+s32 ModeRequirementMet(u16 mode);
 void RunLevelTriggers(void);
 void RenderLevel(void);
 void InitAmbience(Ambient_data *arg0);
@@ -236,21 +237,17 @@ extern EngRec24 CupMenuLabels[];
 extern EngRec24 CupSlotPanel[2];
 extern process_info TournamentSelect;   /* after CupSlotPanel's two records: the tournament select menu (TournamentChain) */
 extern s32 CupMenuCompact;
-typedef struct { u16 a, b, c, flags; } EngEntry;
-typedef struct { s32 unk0; EngEntry *entries; s32 unk8, unkC, unk10; } EngTable;
 /* The hub hero's place on the warp room's ring (HubPreMoveHero): its angle and its distance from
  * the centre, kept between path 2's limits (HubInitHero). */
 typedef struct { u16 unk0; s32 angle; s32 radius; s32 radiusMin; s32 radiusMax; } HubRing;
 extern HubRing HubHeroRing;
 extern s32 NextGameMode;
 extern u8 GameWarpRoom;
-extern s32 WarpRooms[][5];
 extern u16 ArenaRequirements[];
 extern u16 CpuHeroChoices[];
-typedef struct { u16 unk0; u16 unk2; u16 unk4; u16 unk6; } EngSub90248;
-typedef struct { s32 *unk0; s32 *unk4; s32 unk8; s32 unkC; s32 unk10; EngSub90248 *unk14; u8 *unk18; s32 unk1C; s32 unk20; s32 unk24; } EngRec90248;
+extern hub_info WarpRooms[];          /* by GameWarpRoom (hub.h: the prototype's types) */
 extern s8 GameGateway;
-extern EngRec90248 HubGateways[];
+extern HubGateway HubGateways[];       /* by HubTableEntry.gateway - 1 */
 
 void ArenaRequirementMetAny(s32 arg0);
 

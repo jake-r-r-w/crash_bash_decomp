@@ -707,8 +707,8 @@ void RequirementMetAny(s32 arg0) {
     LevelRequirementMet(arg0 & 0xFFFF);
 }
 
-void ModeRequirementMet(s32 arg0) {
-    LevelRequirementMet(arg0 & 0xFFFF, GameInfo);
+s32 ModeRequirementMet(u16 mode) {
+    return LevelRequirementMet(mode, GameInfo);
 }
 
 void RunLevelTriggers(void) {

@@ -92,30 +92,30 @@ const char HubTextDefeatPapu[] = "YOU MUST DEFEAT PAPU PAPU BEFORE\nYOU CAN GO T
 
 void HubInitGateways(void) {
     s32 i;
-    EngRec90248 *p;
+    HubGateway *p;
     u8 *o;
     u8 *obj;
-    EngSub90248 *e;
+    HubTableEntry *e;
     Vec3W ref;
     Vec3W d;
 
     for (i = 0; i < 12; i++) {
-        HubGateways[i].unk0 = NULL;
-        HubGateways[i].unk4 = NULL;
-        HubGateways[i].unk18 = NULL;
-        HubGateways[i].unk8 = 0;
-        HubGateways[i].unkC = 0;
-        HubGateways[i].unk10 = 0;
-        HubGateways[i].unk14 = NULL;
-        HubGateways[i].unk1C = 0;
-        HubGateways[i].unk20 = 0;
-        HubGateways[i].unk24 = 0;
+        HubGateways[i].spoke = NULL;
+        HubGateways[i].pad = NULL;
+        HubGateways[i].colour_map = NULL;
+        HubGateways[i].radius_inner = 0;
+        HubGateways[i].radius_outer = 0;
+        HubGateways[i].angle = 0;
+        HubGateways[i].table = NULL;
+        HubGateways[i].stood_on = 0;
+        HubGateways[i].on_pad = 0;
+        HubGateways[i].group = 0;
     }
     o = ((u8 *)MapScene->subs);
     for (;;) {
         s32 k;
         void *g;
-        EngRec90248 *q;
+        HubGateway *q;
 
         if (o == NULL) {
             break;
@@ -124,10 +124,10 @@ void HubInitGateways(void) {
         if ((u32)i < 12) {
             switch (o[0x64]) {
             case 1:
-                HubGateways[i].unk0 = (s32 *)o;
+                HubGateways[i].spoke = (s32 *)o;
                 break;
             case 2:
-                HubGateways[i].unk4 = (s32 *)o;
+                HubGateways[i].pad = (s32 *)o;
                 break;
             case 3:
                 break;
@@ -135,34 +135,34 @@ void HubInitGateways(void) {
                 break;
             case 4:
                 q = &HubGateways[i];
-                q->unk18 = o;
+                q->colour_map = o;
                 k = *(s32 *)o;
                 g = MapScene;
                 *(void **)(o + 0x54) = HubDrawObj;
                 *(s32 *)o = k & ~0x8000;
-                q->unk24 = entry_block_value(*(u16 *)(o + 0x74), *(EntryBlock **)(*(u8 **)g + 0xC));
+                q->group = entry_block_value(*(u16 *)(o + 0x74), *(EntryBlock **)(*(u8 **)g + 0xC));
                 break;
             }
         }
         o = *(u8 **)(o + 0x5C);
     }
-    for (e = (EngSub90248 *)WarpRooms[GameWarpRoom][1]; e->unk0 != 0; e++) {
-        i = e->unk0 - 1;
+    for (e = WarpRooms[GameWarpRoom].table; e->gateway != 0; e++) {
+        i = e->gateway - 1;
         p = &HubGateways[i];
-        p->unk14 = e;
-        if (e->unk6 & 1) {
-            if (p->unk0 != NULL) {
-                *p->unk0 |= 0x8000;
+        p->table = e;
+        if (e->status & 1) {
+            if (p->spoke != NULL) {
+                p->spoke->flags |= 0x8000;
             }
-            if (p->unk4 != NULL) {
-                *p->unk4 |= 0x8000;
+            if (p->pad != NULL) {
+                p->pad->flags |= 0x8000;
             }
         } else {
-            if (p->unk0 != NULL) {
-                *p->unk0 &= ~0x8000;
+            if (p->spoke != NULL) {
+                p->spoke->flags &= ~0x8000;
             }
-            if (p->unk4 != NULL) {
-                *p->unk4 &= ~0x8000;
+            if (p->pad != NULL) {
+                p->pad->flags &= ~0x8000;
             }
         }
     }
@@ -175,18 +175,18 @@ void HubInitGateways(void) {
             break;
         }
         p = &HubGateways[i];
-        if (p->unk14 != NULL) {
+        if (p->table != NULL) {
             obj = (u8 *)path_get(i + 0x65);
             if (obj != NULL) {
                 d = *(Vec3W *)(obj + 0x30);
                 d.a -= ref.a;
                 d.c -= ref.c;
-                p->unk8 = csqrt(d.a * d.a + d.c * d.c) >> 6;
-                p->unk10 = get_angle(d.a, d.c);
+                p->radius_inner = csqrt(d.a * d.a + d.c * d.c) >> 6;
+                p->angle = get_angle(d.a, d.c);
                 d = *(Vec3W *)(obj + 0x4C);
                 d.a -= ref.a;
                 d.c -= ref.c;
-                p->unkC = csqrt(d.a * d.a + d.c * d.c) >> 6;
+                p->radius_outer = csqrt(d.a * d.a + d.c * d.c) >> 6;
             }
         }
         i++;
@@ -198,10 +198,10 @@ void HubUpdateGateways(void) {
     s32 *o;
     s32 *q;
     char one;
-    EngRec90248 *p;
+    HubGateway *p;
 
     for (i = 0, one = 1, p = HubGateways; i < 12; i++, p++) {
-        q = &p->unk24;
+        q = &p->group;
         if (q[-4] != 0) {
             o = (s32 *)q[-3];
             if (o != NULL) {
@@ -246,7 +246,7 @@ void HubPreMoveHero(s32 arg0) {
     HubGameView *gv;
     EXTengine *eng;
     EXTheromove *mv;
-    EngRec90248 *p;
+    HubGateway *p;
     s32 ang;
     s32 step;
     s32 stop;
@@ -300,8 +300,8 @@ void HubPreMoveHero(s32 arg0) {
                 best = -1;
                 bestd = 0x1000;
                 for (i = 0; i < 12; i++) {
-                    if (HubGateways[i].unk14 != NULL && (HubGateways[i].unk14->unk6 & 2)) {
-                        d = angle_diff_abs(HubGateways[i].unk10, HubHeroRing.angle);
+                    if (HubGateways[i].table != NULL && (HubGateways[i].table->status & 2)) {
+                        d = angle_diff_abs(HubGateways[i].angle, HubHeroRing.angle);
                         if (d < bestd) {
                             bestd = d;
                             if ((u32)d < 0x81) {
@@ -311,9 +311,9 @@ void HubPreMoveHero(s32 arg0) {
                     }
                 }
                 if (best != -1) {
-                    HubHeroRing.angle = HubGateways[best].unk10;
+                    HubHeroRing.angle = HubGateways[best].angle;
                     ((HubGameView *)GameInfo)->unk63 = best;
-                    HubGateways[best].unk1C = 1;
+                    HubGateways[best].stood_on = 1;
                 } else {
                     HubHeroRing.radius = HubHeroRing.radiusMax;
                     stop++;
@@ -348,7 +348,7 @@ void HubPreMoveHero(s32 arg0) {
             mv->forward_speed = speed;
             t = HubHeroRing.radius + speed;
             HubHeroRing.radius = t;
-            lim = HubGateways[((HubGameView *)GameInfo)->unk63].unkC;
+            lim = HubGateways[((HubGameView *)GameInfo)->unk63].radius_outer;
             ang = HubHeroRing.angle + 0x800;
             if ((u32)lim < (u32)t) {
                 HubHeroRing.radius = lim;
@@ -366,14 +366,14 @@ void HubPreMoveHero(s32 arg0) {
         if ((u8)GameGateway >= 12) {
             goto done;
         }
-        old = HubGateways[GameGateway].unk20;
-        if ((u32)(HubGateways[GameGateway].unkC - HubHeroRing.radius) < 0x100) {
-            HubGateways[GameGateway].unk20 = 1;
+        old = HubGateways[GameGateway].on_pad;
+        if ((u32)(HubGateways[GameGateway].radius_outer - HubHeroRing.radius) < 0x100) {
+            HubGateways[GameGateway].on_pad = 1;
         } else {
-            HubGateways[GameGateway].unk20 = 0;
+            HubGateways[GameGateway].on_pad = 0;
         }
-        if (HubGateways[GameGateway].unk20 != old) {
-            if (HubGateways[GameGateway].unk20 != 0) {
+        if (HubGateways[GameGateway].on_pad != old) {
+            if (HubGateways[GameGateway].on_pad != 0) {
                 switch (((s32(*)(void))HubGatewayKind)()) {
                 case 2:
                     PlaySfx(0x399, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -404,13 +404,13 @@ void HubPreMoveHero(s32 arg0) {
         }
         p = HubGateways;
         g = (HubGameView *)GameInfo;
-        if ((u32)(p[g->unk63].unkC - HubHeroRing.radius) >= 0x100) {
+        if ((u32)(p[g->unk63].radius_outer - HubHeroRing.radius) >= 0x100) {
             goto done;
         }
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 5:
             n = HubSelectedLevel();
-            if (n >= 0 && ((s32(*)(s32))ModeRequirementMet)(n & 0xFFFF) == 1) {
+            if (n >= 0 && ModeRequirementMet(n & 0xFFFF) == 1) {
                 HubGoToMode(n);
                 SetHeroAction(0, 1);
                 if (Heroes[0].hero_shadow != NULL) {
@@ -422,8 +422,8 @@ void HubPreMoveHero(s32 arg0) {
             }
             break;
         case 2:
-            sel = p[g->unk63].unk14->unk4;
-            if ((g->unk4 & 0x2000) || ((g->unkE4[sel] != 0 || HubDoorChoice <= 0) && ((s32(*)(s32))ModeRequirementMet)(sel) == 1)) {
+            sel = p[g->unk63].table->level;
+            if ((g->unk4 & 0x2000) || ((g->unkE4[sel] != 0 || HubDoorChoice <= 0) && ModeRequirementMet(sel) == 1)) {
             mode = HubDoorChoice;
             if (mode != 4 || ((HubGameView *)GameInfo)->unk105[sel] != 0) {
             gv = (HubGameView *)GameInfo;
@@ -448,7 +448,7 @@ void HubPreMoveHero(s32 arg0) {
                 break;
             }
             HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
-            HubGoToMode(HubGateways[GameGateway].unk14->unk4);
+            HubGoToMode(HubGateways[GameGateway].table->level);
             SetHeroAction(0, 1);
             if (Heroes[0].hero_shadow != NULL) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
@@ -476,10 +476,10 @@ void HubPreMoveHero(s32 arg0) {
     }
 done:
     for (j = 11; j >= 0; j--) {
-        HubGateways[j].unk1C = 0;
+        HubGateways[j].stood_on = 0;
     }
     if (GameGateway != -1) {
-        HubGateways[GameGateway].unk1C = 1;
+        HubGateways[GameGateway].stood_on = 1;
     }
     mv->forward_angle = ang;
     if (Heroes[arg0].hero_aseq != 10 && HubHeroPressed != 0) {
@@ -560,7 +560,7 @@ void HubDoorMenuUpdate(void) {
     HubGameView *g = (HubGameView *)GameInfo;
     HubGameView *g2;
     HubGameView *g3;
-    EngSub90248 *rec;
+    HubTableEntry *rec;
     subengine *sub;
     s32 *recs;
     s32 i;
@@ -570,8 +570,8 @@ void HubDoorMenuUpdate(void) {
     u16 n;
 
     if (g->unk63 < 0 || HubDoorFade <= 0
-        || (rec = HubGateways[g->unk63].unk14, rec->unk2 != 2)
-        || (!(g->unk4 & 0x2000) && g->unkE4[rec->unk4] == 0)) {
+        || (rec = HubGateways[g->unk63].table, rec->gate_type != 2)
+        || (!(g->unk4 & 0x2000) && g->unkE4[rec->level] == 0)) {
         if (HubDoorChoice >= 0) {
             HubDoorChoice = -1;
             KillEngineSlot(1);
@@ -579,7 +579,7 @@ void HubDoorMenuUpdate(void) {
         }
     } else {
         if (HubDoorChoice == -1) {
-            HubOpenDoorMenu(HubGateways[GameGateway].unk14->unk4);
+            HubOpenDoorMenu(HubGateways[GameGateway].table->level);
         }
         sub = GetEngineSlot(1)->sub;
         if ((Pads[0].pressed & 0x80) && GameExitFlags != 0x8008 && HubDoorChoice > 0) {
@@ -598,9 +598,9 @@ void HubDoorMenuUpdate(void) {
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 2:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
-                n = HubGateways[((HubGameView *)GameInfo)->unk63].unk14->unk4;
+                n = HubGateways[((HubGameView *)GameInfo)->unk63].table->level;
                 g2 = (HubGameView *)GameInfo;
-                if (((s32(*)(s32))ModeRequirementMet)(n) == 1) {
+                if (ModeRequirementMet(n) == 1) {
                     if (g2->unkE4[n] != 0) {
                         PlaceEngineSlot(2, HubChallengePanels[g2->unk2C]);
                     } else {
@@ -626,7 +626,7 @@ void HubDoorMenuUpdate(void) {
         case 5:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
                 g3 = (HubGameView *)GameInfo;
-                if (g3->unk34 == 0x21 && ((s32(*)(s32))ModeRequirementMet)(0x22) == 0) {
+                if (g3->unk34 == 0x21 && ModeRequirementMet(0x22) == 0) {
                     recs = HubPapuPanels[g3->unk2C];
                 } else {
                     recs = HubWarpPanels[g3->unk2C];
@@ -650,27 +650,27 @@ void HubDoorMenuUpdate(void) {
 s32 HubSelectedLevel(void) {
     s32 r = 0;
     s32 v;
-    s32 *t;
+    hub_info *t;
     s32 k = 5;
 
     if (GameGateway >= 0) {
-        v = HubGateways[GameGateway].unk14->unk2;
+        v = HubGateways[GameGateway].table->gate_type;
     } else {
         v = 0;
     }
-    if (v == k && HubGateways[GameGateway].unk20 != 0) {
+    if (v == k && HubGateways[GameGateway].on_pad != 0) {
         r = 1;
     }
     if (r != 0) {
-        s32 (*base)[5];
+        hub_info *base;
         r = HubSelectedEntry;
         if (r < 0) {
             return -1;
         }
         base = WarpRooms;
-        t = base[GameWarpRoom];
-        if (r < t[2]) {
-            return ((s32 *)(t[3] + r * 8))[1];
+        t = &base[GameWarpRoom];
+        if (r < t->num_warps) {
+            return t->warp[r].levnum;
         }
         return -1;
     }
@@ -678,9 +678,9 @@ s32 HubSelectedLevel(void) {
 }
 
 void HubLevelSelect(void) {
-    s32 (*base)[5] = WarpRooms;
+    hub_info *base = WarpRooms;
     HubSelView *g = (HubSelView *)GameInfo;
-    HubSelEntry *ents = (HubSelEntry *)base[g->unk62][3];
+    hub_warp_info *ents = base[g->unk62].warp;
     s32 r;
     s32 v;
     s32 k;
@@ -692,17 +692,17 @@ void HubLevelSelect(void) {
         r = 0;
         k = 5;
         if (g->unk63 >= 0) {
-            v = HubGateways[g->unk63].unk14->unk2;
+            v = HubGateways[g->unk63].table->gate_type;
         } else {
             v = 0;
         }
-        if (v == k && HubGateways[GameGateway].unk20 != 0) {
+        if (v == k && HubGateways[GameGateway].on_pad != 0) {
             r = 1;
         }
         if (r != 0 && ((HubSelView *)GameInfo)->unk30 != 0x8008) {
             if ((Pads[0].pressed & 0x20)
-                && HubSelectedEntry < WarpRooms[((HubSelView *)GameInfo)->unk62][2] - 1
-                && ((s32(*)(s32))ModeRequirementMet)(ents[HubSelectedEntry + 1].unk4)) {
+                && HubSelectedEntry < WarpRooms[((HubSelView *)GameInfo)->unk62].num_warps - 1
+                && ModeRequirementMet(ents[HubSelectedEntry + 1].levnum)) {
                 PlaySfx(0x39F, NULL, NULL, 0x1000, 0x1E00, 0);
                 HubSelectedEntry++;
             }
@@ -713,19 +713,19 @@ void HubLevelSelect(void) {
             if (HubSelectedEntry < 0) {
                 HubSelectedEntry = WarpRoomBestLevel();
             }
-            if (HubSelectedEntry >= WarpRooms[GameWarpRoom][2]) {
-                n = WarpRooms[GameWarpRoom][2];
+            if (HubSelectedEntry >= WarpRooms[GameWarpRoom].num_warps) {
+                n = WarpRooms[GameWarpRoom].num_warps;
                 HubSelectedEntry = n - 1;
             }
             if (HubSelectSub != NULL) {
-                if (HubSelectedEntry >= 0 && ((s32(*)(s32))ModeRequirementMet)(ents[HubSelectedEntry].unk4)) {
-                    HubSelectSub->entity = ents[HubSelectedEntry].unk0;
+                if (HubSelectedEntry >= 0 && ModeRequirementMet(ents[HubSelectedEntry].levnum)) {
+                    HubSelectSub->entity = ents[HubSelectedEntry].frame;
                     return;
                 }
-                HubSelectSub->entity = WarpRooms[GameWarpRoom][4];
+                HubSelectSub->entity = WarpRooms[GameWarpRoom].blank_frame;
             }
         } else if (HubSelectSub != NULL) {
-            HubSelectSub->entity = WarpRooms[GameWarpRoom][4];
+            HubSelectSub->entity = WarpRooms[GameWarpRoom].blank_frame;
         }
         break;
     case 1:
@@ -740,7 +740,7 @@ void HubLevelSelect(void) {
             mapscene_release(MapScene);
             mapscene_load(MapScene, HubSelectTimer);
             g->unk62 = HubSelectFlag;
-            g->unk34 = base[g->unk62][0];
+            g->unk34 = base[g->unk62].levnum;
             InitialiseHUB();
             HubSelectState = 0;
             set_fade(p, -0x200, 0);
@@ -1053,11 +1053,11 @@ s32 HubGatewayIsKind(s32 arg0) {
     s32 v;
 
     if (GameGateway >= 0) {
-        v = HubGateways[GameGateway].unk14->unk2;
+        v = HubGateways[GameGateway].table->gate_type;
     } else {
         v = 0;
     }
-    if (v == arg0 && HubGateways[GameGateway].unk20 != 0) {
+    if (v == arg0 && HubGateways[GameGateway].on_pad != 0) {
         r = 1;
     }
     return r;
@@ -1065,7 +1065,7 @@ s32 HubGatewayIsKind(s32 arg0) {
 
 u16 HubGatewayKind(void) {
     if (GameGateway >= 0) {
-        return HubGateways[GameGateway].unk14->unk2;
+        return HubGateways[GameGateway].table->gate_type;
     }
     return 0;
 }
@@ -1365,7 +1365,7 @@ void HubInitHero(s32 arg0) {
 }
 
 s32 HubNearestGateway(void) {
-    EngRec90248 *p;
+    HubGateway *p;
     s32 i;
     s32 best;
     s32 bestDist;
@@ -1375,8 +1375,8 @@ s32 HubNearestGateway(void) {
     bestDist = 0x1000;
     for (i = 0; i < 12; i++) {
         p = &HubGateways[i];
-        if (p->unk14 != NULL && (p->unk14->unk6 & 2)) {
-            d = angle_diff_abs(p->unk10, HubHeroRing.angle);
+        if (p->table != NULL && (p->table->status & 2)) {
+            d = angle_diff_abs(p->angle, HubHeroRing.angle);
             if (d < bestDist) {
                 bestDist = d;
                 if ((u32)d < 0x81U) {
@@ -3136,7 +3136,7 @@ s32 HubPathAnimList[8] = {
     (s32)&HubPathSteps5, 0, 0,
 };
 ScriptInit HubPathScriptInit = { 0, (void *)&HubPathAnimList, 0x402 };
-EngRec90248 HubGateways[12] = {0};
+HubGateway HubGateways[12] = {0};
 s32 HubDoorChoice = 0;
 s32 HubSelectState = 0;
 u8 HubSelectFlag = 0;

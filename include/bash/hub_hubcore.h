@@ -570,13 +570,6 @@ typedef struct HubSelView {
     /* 0x62 */ u8 unk62;
     /* 0x63 */ s8 unk63;
 } HubSelView;
-/* 8-byte entries of WarpRooms[i][3]. */
-typedef struct HubSelEntry {
-    /* 0x0 */ u16 unk0;
-    /* 0x2 */ u16 unk2;
-    /* 0x4 */ u16 unk4;
-    /* 0x6 */ u16 unk6;
-} HubSelEntry;
 extern u8 HubSelectFlag;
 extern s32 HubSelectTimer;
 typedef struct {

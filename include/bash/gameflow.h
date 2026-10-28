@@ -484,7 +484,7 @@ void SetGameViewport(void);
 
 s32 CupCurrentArena(void);
 
-s32 *WarpRoomOfMode(s32 arg0);
+hub_info *WarpRoomOfMode(s32 arg0);
 
 void RenderSaveMenu(void);
 
