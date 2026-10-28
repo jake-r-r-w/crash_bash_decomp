@@ -386,12 +386,17 @@ load extract and are documented.
   labels gone. Then the labels inside objects (2026-10-28): `GameOptions` is one struct,
   the boss's record (`BossState`), the crate and pickup counts out of `HitSfx`'s tail,
   `AiPlayerSkill` one type for every unit (the boss's skill label is `[3].level`), and
-  103 more globals named. Left: 565 `D_` names (1260 uses) across the engine, the exe and
-  the overlays' references to them, and the functions whose C still does raw
-  byte-offset arithmetic (24 of the engine's 357, 100 of the exe's 575, 77 in the slot
-  overlays: `progress`'s typed figure). Some of the exe's are a heap block's own
-  arithmetic (`(u8 *)b + b->size * 4 + 0x18`) and stay; most of the engine's read
-  `GameInfo` by offset, which stays by the game state decision below.
+  more globals named. Then (2026-10-28, second pass): subengine +0x6C is a union (dbase, text)
+  and +0x74 the entity, the fx buffers (`FxDef`, `SubFx`), the script threads and the
+  thread table (`ScriptCommand`), and blobs split into their objects: the pause screens'
+  texts and HUD lists, the archive's `FileGroups`, the hero sequence records (113 named
+  `CRA_seq_breathe` ...), the cutscene records, the menu language tables. Left: 189 `D_`
+  names (390 uses), 63 of them never used by name (`GameInfo`'s gaps, read by offset), and
+  the functions whose C still does raw byte-offset arithmetic (24 of the engine's 357, 94
+  of the exe's 575, 77 in the slot overlays: `progress`'s typed figure). Some of the
+  exe's are a heap block's own arithmetic (`(u8 *)b + b->size * 4 + 0x18`) and stay;
+  most of the engine's read `GameInfo` by offset, which stays by the game state decision
+  below.
 - [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
   globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads
   `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff

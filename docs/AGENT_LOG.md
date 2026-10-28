@@ -23,7 +23,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   source-only, named, typed and shift-tested) are done. Phase 4 repeats
   the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
   Phase 5 does the engine and `main.exe`. Figures (`progress`,
-  2026-10-28): all 2537 game functions named, 2347 typed, 89.77% of the
+  2026-10-28): all 2537 game functions named, 2353 typed, 89.77% of the
   data is C (every slot overlay's, the engine's, and the exe's game
   `.data`).
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
@@ -63,15 +63,18 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. The engine's and exe's `D_` globals (565 left, 1260 uses, most used once or twice: `scratch/rank_d.py`
-   counts every `D_8001..D_800B32B4` use in src and include, externs aside). Read the
-   uses, name, `decomp.py rename --ovl engine --file F` for the engine's, sed plus a
-   `sym.main.txt` line for the exe's (`scratch/ren_main.sh`), `make check`.
-2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 24 engine, 100
-   exe, 77 overlay). Next groups: the subengine's +0x6C area (an fx buffer set, a
-   script's `script_control_info`, a model's dbase: a union in `subengine`), the
-   script threads (`update_model_thread` and co. take `script_thread_handler`), the
-   rumble state (`pad_set_rumble_*`), `draw_object_model`, `mapscene_place_subs`.
+1. The engine's and exe's `D_` globals (189 left, 390 uses: `scratch/rank_d.py` counts
+   every `D_8001..D_800B32B4` use in src and include, externs aside; 63 are never used by
+   name). Read the uses (`scratch/dview.py N` prints 30 with their functions), name,
+   `decomp.py rename --ovl engine --file F` for the engine's (it writes an exe address's
+   sym line to sym.engine.txt: move it), sed plus a `sym.main.txt` line for the exe's
+   (`scratch/ren_main.sh`), `make check`. Labels with no C definition are inside another
+   object: split the object or use the field.
+2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 24 engine, 94
+   exe, 77 overlay). Next groups: the rumble state (`pad_set_rumble_*`),
+   `draw_object_model`, `mapscene_place_subs`, the thread definitions in the script
+   files (still `u8 *def`), the video mode records (`vmode_512_ntsc` and the labels in
+   `D_8005B69C`).
 4. Keep naming: `decomp.py rename --file` (it writes sym.main.txt; move names at
    0x80078C90 and up to sym.engine.txt). `scratch/rank_d.py`-style counts of the `D_`
    uses left point at the next batch.
@@ -476,6 +479,17 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (Phase 5: globals and typing, second pass):** `tools/scripts/field_rename.py`
+  renames a struct field's uses by cc1's missing-member errors (names like `unk6C` that
+  many structs share). subengine +0x6C is `union u6C` (dbase / text / ptr), +0x74
+  `entity`; the fx buffers (`FxDef` for three views, `SubFx`); the script threads, the
+  pool inlines (four copies, one pair), `ScriptCommand`; `plot_script_nas` took a `NAS *`
+  but is a subengine's hook. Blobs split: the pause screens (`PauseTexts`, `LangMessages`,
+  19 `HudEntry` lists), `FileGroups[130]`, `HeroActionTable`'s tail (`HeroHitSfx`), the
+  credits' state. Names by family: 113 hero sequence records from `HeroSeqTables` and the
+  enum, 34 cutscene records from their model bank ids, 28 `Lang*` tables. 18 sequence
+  words data2c read as addresses are numbers. 565 -> 189 `D_` names.
 
 - **2026-10-28 (Phase 5: globals and typing):** labels inside objects typed: the boss's
   record (`BossState`), `GameOptions` (music, sfx, stereo, vibrate), the crate and
