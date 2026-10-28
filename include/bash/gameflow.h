@@ -20,10 +20,6 @@ extern GfxViewport CupViewport3;
 extern camera_info_tag TitlesCamera;
 void RenderTitlesBackdropAndMenu(void);
 
-typedef struct { s32 w[4]; } Blk16;
-typedef struct { Blk16 a[0x18]; s32 b[3]; } Blk18C;
-typedef struct { s32 w[3]; } Blk12;
-typedef struct { Blk12 a; s32 b; } Blk12p4;
 
 
 extern const char *LangUnlockWithCard[];
