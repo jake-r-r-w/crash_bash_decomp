@@ -480,7 +480,7 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-28 (Phase 5: the game state, main.exe's functions):** `GameInfo`'s bytes are
   globals around its labels (the user chose labels as globals of their own; ROADMAP);
   converting its constant-offset users to those globals changed code everywhere, so
-  they stay. Then 456 main.exe functions named from their code (2204 of 2537 now), the
+  they stay. Then 447 main.exe functions named from their code (2204 of 2537 now), the
   nine Sony ones by their ELF names, the script table's entries by function, and nine
   engine words data2c had read as offsets into functions (`&func_8008FF94 + 0x6C`) as
   the halfword pairs they are. Gotchas: a function the engine names by a `D_` label

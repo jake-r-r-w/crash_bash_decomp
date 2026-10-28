@@ -406,7 +406,7 @@ load extract and are documented.
   moves (Phase 6, Shift everything at once).
 - [ ] Name and type every function and global in the exe. Status (2026-10-28): the
   names, parameter types and struct names the demo discs leaked are applied
-  ([PROTOTYPES.md](PROTOTYPES.md)); 456 more game functions are named from their code
+  ([PROTOTYPES.md](PROTOTYPES.md)); 447 more game functions are named from their code
   (the shell, allocator, loader, dbase, renderer, scripts, NAS calls, textures, sound,
   music, card, modchip), in the leak's styles (`mal_*`, `dbase_*`, `*_thread`,
   CamelCase for the NAS calls). Left: 34 (18 empty stubs, 16 whose role isn't clear
