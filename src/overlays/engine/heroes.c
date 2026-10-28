@@ -776,7 +776,7 @@ void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     if (((GameState *)GameInfo)->levelFlags & 3) {
         v = 0;
     }
-    if (*(s32 *)(GameInfo + 4) & 1) {
+    if (GAME->cheats & 1) {
         return;
     }
     if (flags & 0x800) {
@@ -3015,13 +3015,13 @@ s32 UpdateHeroVictory(s32 arg0) {
 }
 
 void FinishLevel(void) {
-    u8 *p = GameInfo;
+    GameState *p = GAME;
 
-    if (*(s32 *)(p + 4) & 0x800) {
-        *(u16 *)(p + 0x30) |= 0x201;
+    if (p->cheats & 0x800) {
+        p->exitFlags |= 0x201;
         return;
     }
-    *(u16 *)(p + 0x30) |= 1;
+    p->exitFlags |= 1;
 }
 
 void HeroDrop(s32 arg0) {
