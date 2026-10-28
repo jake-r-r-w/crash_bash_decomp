@@ -94,10 +94,10 @@ typedef struct {
 } GameState;
 
 typedef struct { u8 pad[0x6C]; s32 f6C; } Sub3F0;
-extern s32 D_8009EA64[];
-extern s32 D_8009EA68[];
-extern s32 D_8009EA6C[];
-extern s32 D_8009EA70[];
+extern s32 LangUnlockWithCard[];
+extern s32 LangInsertCardForUnlocked[];
+extern s32 LangCheckingUnlocked[];
+extern s32 LangThereAreNoMoreUnlockedLevels[];
 s32 CountSavedWins(s32 arg0);
 
 /* Inlined copies used by CountSavedWins. */
@@ -262,7 +262,7 @@ void ShowCardSlots(void);
 
 void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern s32 D_8009F298[];
-extern void *D_8009F004[];
+extern void *LangEmpty[];
 extern char PercentText[][5];
 void ShowCardSlotStats(u8 *arg0, s32 arg1);
 extern char CardStatsText[];
@@ -388,11 +388,11 @@ typedef struct EngineModeView {
 } EngineModeView;
 extern s8 HeroSide[];
 extern process_info RetryProcess;
-extern void *D_8009EFCC[];
-extern void *D_8009EFD0[];
-extern void *D_8009EFD4[];
-extern void *D_8009EFD8[];
-extern void *D_8009EFDC[];
+extern void *LangMenuCheckingCard[];
+extern void *LangCardUnformatted[];
+extern void *LangNoCrashBashData[];
+extern void *LangLoadGame[];
+extern void *LangNoCard[];
 /* UpdateCardSlots: move the save slot cursor to slot (n) & 3 and redraw it. */
 #define SELECT_SLOT(n)                                \
     {                                                 \
@@ -411,22 +411,22 @@ extern void *D_8009EFDC[];
         CardSlotIndex = i_;                              \
         ShowCardSlotStats(a_, b_);                        \
     }
-extern void *D_8009EFB0[];
-extern void *D_8009EFB4[];
+extern void *LangPressButtonToOverwrite[];
+extern void *LangPressButtonToLoad[];
 extern void *D_8009EFB8[];
-extern void *D_8009EFC0[];
-extern void *D_8009EFC4[];
-extern void *D_8009EFC8[];
-extern void *D_8009F000[];
-extern void *D_8009EFAC[];
-extern void *D_8009EFE0[];
-extern void *D_8009EFE4[];
-extern void *D_8009EFE8[];
-extern void *D_8009EFEC[];
-extern void *D_8009EFF0[];
-extern void *D_8009EFF4[];
-extern void *D_8009EFF8[];
-extern void *D_8009EFFC[];
+extern void *LangSelectAGameSave[];
+extern void *LangPressButtonToExitWithoutSaving[];
+extern void *LangSelectGameToLoad[];
+extern void *LangPressButtonToExitWithoutLoading[];
+extern void *LangConfirmOverwrite[];
+extern void *LangFormatCard[];
+extern void *LangSaveGame[];
+extern void *LangCardFull[];
+extern void *LangNoCard2[];
+extern void *LangSaving[];
+extern void *LangSaveCompleted[];
+extern void *LangSaveFailedPressButtonToExit[];
+extern void *LangFormatting[];
 extern void *D_8009F454[];
 /* Optional callbacks used by the save menu (UpdateSaveMenu). */
 typedef struct {
@@ -444,7 +444,7 @@ extern s32 HubSaveChoice;
         u8 *g_;                                                                \
         e_ = GetEngineSlot(1);                                                 \
         e_->sub[1].u6C.ptr = (tbl)[*(s32 *)((g_ = GameInfo) + 0x2C)];          \
-        GetEngineSlot(1)->sub->u6C.ptr = D_8009EFE4[*(s32 *)(g_ + 0x2C)];        \
+        GetEngineSlot(1)->sub->u6C.ptr = LangSaveGame[*(s32 *)(g_ + 0x2C)];        \
         eng_render_subs((u8 *)GetEngineSlot(1));                                 \
     }
 extern s32 D_8009F63C;

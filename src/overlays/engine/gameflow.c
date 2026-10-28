@@ -418,12 +418,12 @@ void UpdateCardMessage(void) {
     s1 = (Sub3F0 *)(s0 + 0x3F0);
     if (CardStatus & 2) {
         if (CardStatus & 0x40) {
-            s1->f6C = D_8009EA6C[GameLanguage];
+            s1->f6C = LangCheckingUnlocked[GameLanguage];
             *(s32 *)(s0 + 0x3F0) |= 0x8000;
             return;
         } else if (CardStatus & 0x10) {
             if (CountSavedWins(0) != 0) {
-                s1->f6C = D_8009EA64[GameLanguage];
+                s1->f6C = LangUnlockWithCard[GameLanguage];
                 *(s32 *)(s0 + 0x3F0) |= 0x8000;
                 if (Pads[0].pressed & 0x2000) {
                     PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -431,7 +431,7 @@ void UpdateCardMessage(void) {
                 }
                 return;
             }
-            s1->f6C = D_8009EA70[GameLanguage];
+            s1->f6C = LangThereAreNoMoreUnlockedLevels[GameLanguage];
             *(s32 *)(s0 + 0x3F0) |= 0x8000;
             return;
         } else {
@@ -439,7 +439,7 @@ void UpdateCardMessage(void) {
         }
     } else {
 def:
-        tab = D_8009EA68;
+        tab = LangInsertCardForUnlocked;
     }
     s1->f6C = tab[GameLanguage];
     *(s32 *)(s0 + 0x3F0) |= 0x8000;
@@ -784,7 +784,7 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         e->sub[5].entity = 0;
         e->sub[6].entity = 0;
         e->sub[2].u6C.dbase = NULL;
-        e->sub[1].u6C.text = D_8009F004[GameLanguage];
+        e->sub[1].u6C.text = LangEmpty[GameLanguage];
         e->sub[1].unk04 = 0x8096;
         e->sub[1].unk08 = 0x1E;
         return;
@@ -868,8 +868,8 @@ void UpdateCardPrompt(void) {
         if (CardStatus & 2) {
             if (CardStatus & 0x40) {
                 e = GetEngineSlot(1);
-                e->sub[1].u6C.text = D_8009EFCC[*(s32 *)((g = GameInfo) + 0x2C)];
-                GetEngineSlot(1)->sub->u6C.text = D_8009EFD8[*(s32 *)(g + 0x2C)];
+                e->sub[1].u6C.text = LangMenuCheckingCard[*(s32 *)((g = GameInfo) + 0x2C)];
+                GetEngineSlot(1)->sub->u6C.text = LangLoadGame[*(s32 *)(g + 0x2C)];
                 eng_render_subs((u8 *)GetEngineSlot(1));
                 return;
             } else if (CardStatus & 0x10) {
@@ -905,11 +905,11 @@ void UpdateCardPrompt(void) {
                 return;
             } else {
                 if (CardStatus & 4) {
-                    GetEngineSlot(1)->sub[1].u6C.text = D_8009EFD0[GameLanguage];
+                    GetEngineSlot(1)->sub[1].u6C.text = LangCardUnformatted[GameLanguage];
                 } else {
-                    GetEngineSlot(1)->sub[1].u6C.text = D_8009EFD4[GameLanguage];
+                    GetEngineSlot(1)->sub[1].u6C.text = LangNoCrashBashData[GameLanguage];
                 }
-                GetEngineSlot(1)->sub->u6C.text = D_8009EFD8[GameLanguage];
+                GetEngineSlot(1)->sub->u6C.text = LangLoadGame[GameLanguage];
                 eng_render_subs((u8 *)GetEngineSlot(1));
                 return;
             }
@@ -917,8 +917,8 @@ void UpdateCardPrompt(void) {
         e = GetEngineSlot(1);
         {
             u8 *q;
-            e->sub[1].u6C.text = D_8009EFDC[*(s32 *)((q = GameInfo) + 0x2C)];
-            GetEngineSlot(1)->sub->u6C.text = D_8009EFD8[*(s32 *)(q + 0x2C)];
+            e->sub[1].u6C.text = LangNoCard[*(s32 *)((q = GameInfo) + 0x2C)];
+            GetEngineSlot(1)->sub->u6C.text = LangLoadGame[*(s32 *)(q + 0x2C)];
         }
         eng_render_subs((u8 *)GetEngineSlot(1));
         break;
@@ -1030,7 +1030,7 @@ void UpdateSaveMenu(void) {
         if (f & 2) {
             if (f & 0xC) {
                 if (f & 4) {
-                    SAVEMENU_SET_ANIM(D_8009EFE0);
+                    SAVEMENU_SET_ANIM(LangFormatCard);
                     if (Pads[0].pressed & 0x8000) {
                         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                         card_format();
@@ -1040,7 +1040,7 @@ void UpdateSaveMenu(void) {
                     SaveMenuState = 8;
                 }
             } else if (f & 0x40) {
-                SAVEMENU_SET_ANIM(D_8009EFCC);
+                SAVEMENU_SET_ANIM(LangMenuCheckingCard);
             } else if (f & 0x30) {
                 if (!(f & 0x10)) {
                     card_clear_slots();
@@ -1060,10 +1060,10 @@ void UpdateSaveMenu(void) {
                     }
                 }
             } else {
-                SAVEMENU_SET_ANIM(D_8009EFE8);
+                SAVEMENU_SET_ANIM(LangCardFull);
             }
         } else {
-            SAVEMENU_SET_ANIM(D_8009EFEC);
+            SAVEMENU_SET_ANIM(LangNoCard2);
         }
         if (Pads[0].pressed & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1077,7 +1077,7 @@ void UpdateSaveMenu(void) {
         break;
     case 7:
         if (CardStatus & 2) {
-            SAVEMENU_SET_ANIM(D_8009EFAC);
+            SAVEMENU_SET_ANIM(LangConfirmOverwrite);
             f = Pads[0].pressed;
             if (f & 0x8000) {
                 PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1099,10 +1099,10 @@ void UpdateSaveMenu(void) {
         } else if (!(f & 0x80)) {
             SaveMenuState = 5;
         }
-        SAVEMENU_SET_ANIM(D_8009EFF0);
+        SAVEMENU_SET_ANIM(LangSaving);
         break;
     case 5:
-        SAVEMENU_SET_ANIM(D_8009EFF4);
+        SAVEMENU_SET_ANIM(LangSaveCompleted);
         if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             GotoProcess(&RetryProcess, 0x200);
@@ -1111,7 +1111,7 @@ void UpdateSaveMenu(void) {
         }
         break;
     case 2:
-        SAVEMENU_SET_ANIM(D_8009EFF8);
+        SAVEMENU_SET_ANIM(LangSaveFailedPressButtonToExit);
         if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             card_reset();
@@ -1176,7 +1176,7 @@ void UpdateSaveMenu(void) {
         if (f & 0x100) {
             SaveMenuState = 2;
         } else if (f & 0x80) {
-            SAVEMENU_SET_ANIM(D_8009EFFC);
+            SAVEMENU_SET_ANIM(LangFormatting);
         } else {
             SaveMenuState = 0;
         }
@@ -1302,10 +1302,10 @@ void UpdateCardSlots(void) {
             if (*(s32 *)(idx + p) == 0) {
                 GetEngineSlot(3)->sub[13].u6C.dbase = 0;
             } else {
-                GetEngineSlot(3)->sub[13].u6C.text = D_8009EFB4[GameLanguage];
+                GetEngineSlot(3)->sub[13].u6C.text = LangPressButtonToLoad[GameLanguage];
             }
-            GetEngineSlot(3)->sub[12].u6C.text = D_8009EFC8[*(s32 *)((g = GameInfo) + 0x2C)];
-            GetEngineSlot(3)->sub[14].u6C.text = D_8009F000[*(s32 *)(g + 0x2C)];
+            GetEngineSlot(3)->sub[12].u6C.text = LangSelectGameToLoad[*(s32 *)((g = GameInfo) + 0x2C)];
+            GetEngineSlot(3)->sub[14].u6C.text = LangPressButtonToExitWithoutLoading[*(s32 *)(g + 0x2C)];
         }
         break;
     case 1:
@@ -1318,10 +1318,10 @@ void UpdateCardSlots(void) {
             if (*(s32 *)(idx + p) == 0) {
                 GetEngineSlot(3)->sub[13].u6C.text = D_8009EFB8[GameLanguage];
             } else {
-                GetEngineSlot(3)->sub[13].u6C.text = D_8009EFB0[GameLanguage];
+                GetEngineSlot(3)->sub[13].u6C.text = LangPressButtonToOverwrite[GameLanguage];
             }
-            GetEngineSlot(3)->sub[12].u6C.text = D_8009EFC0[*(s32 *)((g = GameInfo) + 0x2C)];
-            GetEngineSlot(3)->sub[14].u6C.text = D_8009EFC4[*(s32 *)(g + 0x2C)];
+            GetEngineSlot(3)->sub[12].u6C.text = LangSelectAGameSave[*(s32 *)((g = GameInfo) + 0x2C)];
+            GetEngineSlot(3)->sub[14].u6C.text = LangPressButtonToExitWithoutSaving[*(s32 *)(g + 0x2C)];
         }
         break;
     }
@@ -1967,9 +1967,9 @@ u8 D_8009E7F4[180] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009E8A8[1] = { (s32)&MenuTournamentSelect };
-s32 D_8009E8AC[1] = { (s32)&MenuLocked };
-s32 D_8009E8B0[1] = { (s32)&MenuPressButtonToSelect };
+s32 LangTournamentSelect[1] = { (s32)&MenuTournamentSelect };
+s32 LangMenuLocked[1] = { (s32)&MenuLocked };
+s32 LangMenuPressButtonToSelect[1] = { (s32)&MenuPressButtonToSelect };
 EngRec24 D_8009E8B4[12] = {
     {
         { 3, 0, 0, 0, 0, 0x80, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
@@ -1977,7 +1977,7 @@ EngRec24 D_8009E8B4[12] = {
     },
     {
         { 0xE, 0, 0, 0, 0, 0x80, 0x38, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        (void *)&D_8009E8A8, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+        (void *)&LangTournamentSelect, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
     {
         { 4, 0, 0, 0, 0, 0x80, 0x58, 2, 0x36, 0xFF, 0x5A, 0xFF, 1, 0, 0, 0, 0, 0, 0, 0 }, 0,
@@ -1993,7 +1993,7 @@ EngRec24 D_8009E8B4[12] = {
     },
     {
         { 0xE, 0, 0, 0, 0x32, 0x80, 0x9A, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        (void *)&D_8009E8AC, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+        (void *)&LangMenuLocked, { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
     {
         { 3, 0, 0, 0, 0x32, 0x80, 0xD8, 0xFF, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2001,7 +2001,7 @@ EngRec24 D_8009E8B4[12] = {
     },
     {
         { 0xE, 0, 0, 0, 0, 0x80, 0xA5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        (void *)&D_8009E8B0, { 4, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
+        (void *)&LangMenuPressButtonToSelect, { 4, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
     {
         { 3, 0, 0, 0, 0xF7, 0xFE, 0x72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -2020,10 +2020,10 @@ EngRec24 D_8009E8B4[12] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-s32 D_8009EA64[1] = { (s32)&MenuUnlockWithCard };
-s32 D_8009EA68[1] = { (s32)&MenuInsertCardForUnlocked };
-s32 D_8009EA6C[1] = { (s32)&MenuCheckingUnlocked };
-s32 D_8009EA70[1] = { (s32)&MenuThereAreNoMoreUnlockedLevels };
+s32 LangUnlockWithCard[1] = { (s32)&MenuUnlockWithCard };
+s32 LangInsertCardForUnlocked[1] = { (s32)&MenuInsertCardForUnlocked };
+s32 LangCheckingUnlocked[1] = { (s32)&MenuCheckingUnlocked };
+s32 LangThereAreNoMoreUnlockedLevels[1] = { (s32)&MenuThereAreNoMoreUnlockedLevels };
 GfxViewport D_8009EA74 = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0x800, 0x7FF, -0x80, 0, 0, 0, 1 };
 GfxViewport D_8009EA9C = { 0x32, 0x58, 0x136, 0xD0, 0, 0, 0x280, 0x1E0, 0xB4, 0xF8, 0x200, 0x17F, 0, 0, 0, 0, 0 };
 GfxViewport D_8009EAC4 = { 0x14A, 0x58, 0x24E, 0xD0, 0, 0, 0x280, 0x1E0, 0x1CC, 0xF8, 0x380, 0x17F, 0, 0, 0, 0, 0 };
@@ -2086,28 +2086,28 @@ s32 D_8009EEB4[44] = {
 };
 s32 D_8009EF64 = 4;
 s32 D_8009EF68[17] = { 0x1180000, 0x5A0000, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-void *D_8009EFAC[1] = { (void *)&MenuConfirmOverwrite };
-void *D_8009EFB0[1] = { (void *)&MenuPressButtonToOverwrite };
-void *D_8009EFB4[1] = { (void *)&MenuPressButtonToLoad };
+void *LangConfirmOverwrite[1] = { (void *)&MenuConfirmOverwrite };
+void *LangPressButtonToOverwrite[1] = { (void *)&MenuPressButtonToOverwrite };
+void *LangPressButtonToLoad[1] = { (void *)&MenuPressButtonToLoad };
 void *D_8009EFB8[2] = { (void *)&MenuPressButtonToSave, (void *)&MenuPressButtonToExitWithoutSaving };
-void *D_8009EFC0[1] = { (void *)&MenuSelectAGameSave };
-void *D_8009EFC4[1] = { (void *)&MenuPressButtonToExitWithoutSaving };
-void *D_8009EFC8[1] = { (void *)&MenuSelectGameToLoad };
-void *D_8009EFCC[1] = { (void *)&MenuCheckingCard };
-void *D_8009EFD0[1] = { (void *)&MenuCardUnformatted };
-void *D_8009EFD4[1] = { (void *)&MenuNoCrashBashData };
-void *D_8009EFD8[1] = { (void *)&MenuLoadGame };
-void *D_8009EFDC[1] = { (void *)&MenuNoCard };
-void *D_8009EFE0[1] = { (void *)&MenuFormatCard };
-void *D_8009EFE4[1] = { (void *)&MenuSaveGame };
-void *D_8009EFE8[1] = { (void *)&MenuCardFull };
-void *D_8009EFEC[1] = { (void *)&MenuNoCard2 };
-void *D_8009EFF0[1] = { (void *)&MenuSaving };
-void *D_8009EFF4[1] = { (void *)&MenuSaveCompleted };
-void *D_8009EFF8[1] = { (void *)&MenuSaveFailedPressButtonToExit };
-void *D_8009EFFC[1] = { (void *)&MenuFormatting };
-void *D_8009F000[1] = { (void *)&MenuPressButtonToExitWithoutLoading };
-void *D_8009F004[1] = { (void *)&MenuEmpty };
+void *LangSelectAGameSave[1] = { (void *)&MenuSelectAGameSave };
+void *LangPressButtonToExitWithoutSaving[1] = { (void *)&MenuPressButtonToExitWithoutSaving };
+void *LangSelectGameToLoad[1] = { (void *)&MenuSelectGameToLoad };
+void *LangMenuCheckingCard[1] = { (void *)&MenuCheckingCard };
+void *LangCardUnformatted[1] = { (void *)&MenuCardUnformatted };
+void *LangNoCrashBashData[1] = { (void *)&MenuNoCrashBashData };
+void *LangLoadGame[1] = { (void *)&MenuLoadGame };
+void *LangNoCard[1] = { (void *)&MenuNoCard };
+void *LangFormatCard[1] = { (void *)&MenuFormatCard };
+void *LangSaveGame[1] = { (void *)&MenuSaveGame };
+void *LangCardFull[1] = { (void *)&MenuCardFull };
+void *LangNoCard2[1] = { (void *)&MenuNoCard2 };
+void *LangSaving[1] = { (void *)&MenuSaving };
+void *LangSaveCompleted[1] = { (void *)&MenuSaveCompleted };
+void *LangSaveFailedPressButtonToExit[1] = { (void *)&MenuSaveFailedPressButtonToExit };
+void *LangFormatting[1] = { (void *)&MenuFormatting };
+void *LangPressButtonToExitWithoutLoading[1] = { (void *)&MenuPressButtonToExitWithoutLoading };
+void *LangEmpty[1] = { (void *)&MenuEmpty };
 s32 D_8009F008 = 4;
 s32 D_8009F00C[143] = {
     0x2300000, 0x500000, 6, 0, 0, 0, 0, 0, 0xA, 0x260050, 0xB330000, 0x280000, 0, 0, 0,
