@@ -1003,9 +1003,9 @@ static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, 
 
 void RequestHeroAnim(s32 arg0, u16 arg1) {
     if (HeroAnimDbaseA == 0) {
-        HeroAnimSlotSet(&HeroAnimHeroA, &HeroAnimSeqA, &HeroAnimNameA, &HeroAnimDbaseA, (volatile s32 *)((u8 *)&HeroAnimDbaseB - 12), arg0, arg1);
+        HeroAnimSlotSet(&HeroAnimHeroA, &HeroAnimSeqA, (volatile s32 *)&HeroAnimNameA, (volatile s32 *)&HeroAnimDbaseA, (volatile s32 *)((u8 *)&HeroAnimDbaseB - 12), arg0, arg1);
     } else if (ModeTypes[GameMode * 3] != 0x104) {
-        HeroAnimSlotSet(&HeroAnimHeroB, &HeroAnimSeqB, &HeroAnimNameB, &HeroAnimDbaseB, (volatile s32 *)((u8 *)&HeroAnimNameA + 16), arg0, arg1);
+        HeroAnimSlotSet(&HeroAnimHeroB, &HeroAnimSeqB, (volatile s32 *)&HeroAnimNameB, (volatile s32 *)&HeroAnimDbaseB, (volatile s32 *)((u8 *)&HeroAnimNameA + 16), arg0, arg1);
     }
 }
 
@@ -1017,7 +1017,7 @@ s32 CheckHeroAnim(s32 arg0) {
             return HeroAnimSeqA;
         }
         if (HeroAnimDbaseA != 0) {
-            if (dbase_mesh_anim_name_loaded((obj_dbase *)HeroAnimDbaseA, (u8 *)HeroAnimNameA) != 0) {
+            if (dbase_mesh_anim_name_loaded(HeroAnimDbaseA, HeroAnimNameA) != 0) {
                 SetHeroSeq(arg0, HeroAnimSeqA);
                 i = 3;
                 do {
@@ -1027,7 +1027,7 @@ s32 CheckHeroAnim(s32 arg0) {
         }
     }
     if (HeroAnimHeroB == arg0 && Heroes[arg0].hero_aseq != HeroAnimSeqB && HeroAnimDbaseB != 0) {
-        if (dbase_mesh_anim_name_loaded((obj_dbase *)HeroAnimDbaseB, (u8 *)HeroAnimNameB) != 0) {
+        if (dbase_mesh_anim_name_loaded(HeroAnimDbaseB, HeroAnimNameB) != 0) {
             SetHeroSeq(arg0, HeroAnimSeqB);
             i = 3;
             do {
@@ -1444,10 +1444,10 @@ void DefHeroBot(void) {
 
 void ReleaseHeroAnims(void) {
     if (HeroAnimDbaseA != 0) {
-        dbase_mesh_anim_name_release(HeroAnimDbaseA, HeroAnimNameA);
+        dbase_mesh_anim_name_release((u8 *)HeroAnimDbaseA, (u8 *)HeroAnimNameA);
     }
     if (HeroAnimDbaseB != 0) {
-        dbase_mesh_anim_name_release(HeroAnimDbaseB, HeroAnimNameB);
+        dbase_mesh_anim_name_release((u8 *)HeroAnimDbaseB, (u8 *)HeroAnimNameB);
     }
 }
 
@@ -6167,12 +6167,12 @@ u16 FinalHeroesTempo = 0;
 s32 HeroOrders[16][4] = {0};
 s16 HeroAnimHeroA = 0;
 u16 HeroAnimSeqA = 0;
-s32 HeroAnimNameA = 0;
-s32 HeroAnimDbaseA = 0;
+char *HeroAnimNameA = 0;      /* the animation the slot loads (VictorySeqs' name) */
+obj_dbase *HeroAnimDbaseA = 0; /* the hero's model it loads into */
 s16 HeroAnimHeroB = 0;
 u16 HeroAnimSeqB = 0;
-s32 HeroAnimNameB = 0;
-s32 HeroAnimDbaseB = 0;
+char *HeroAnimNameB = 0;
+obj_dbase *HeroAnimDbaseB = 0;
 AiSkill AiPlayerSkill[4] = {0};
 u8 DefaultAiBotTweaks[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
 u8 DefaultAiHumanTweaks[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };

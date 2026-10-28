@@ -60,7 +60,7 @@ void QuitLoadingScreen(void);
 
 void InitLoadingScreen(void);
 
-void GotoScriptScene(s32 arg0, process_info *arg1);
+void GotoScriptScene(ScriptScene *arg0, process_info *arg1);
 
 s32 SceneModelLoaded(void);
 
@@ -198,7 +198,7 @@ s32 CountPlaceRecs(s32 *rec);
 
 void InitLevelLoad(void);
 
-void SetupScriptScene(EngineStartArgs *arg0);
+void SetupScriptScene(ScriptScene *arg0);
 
 void UpdateLoadingScene(void);
 
@@ -224,7 +224,7 @@ void RenderScriptScene(void);
 
 s32 SceneVabReady(void);
 
-void SceneSoundInit(EngineStartArgs *arg0);
+void SceneSoundInit(ScriptScene *arg0);
 
 void ResetEnginePool(void);
 
@@ -232,7 +232,7 @@ void InitScriptScene(void);
 
 void UpdateSceneVabCues(void);
 
-s32 PickModeVariant(s32 arg0);
+ScriptScene *PickModeVariant(s32 arg0);
 
 s32 PlaceTextSub(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
 

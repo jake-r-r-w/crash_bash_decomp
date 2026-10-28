@@ -448,15 +448,9 @@ extern s32 HubSaveChoice;
     }
 extern s32 CardPromptRetry;
 void UpdateCardSlots(void);
-/* A step of the ending's messages (GotoScriptScene): two pointers and a time. */
-typedef struct MsgStep {
-    void *a;
-    void *b;
-    s32 time;
-} MsgStep;
-extern MsgStep LevelExitMsgsA[];
-extern MsgStep LevelExitMsgsB[];
-extern MsgStep LevelExitMsgsC[];
+extern ScriptScene LevelExitMsgsA[];
+extern ScriptScene LevelExitMsgsB[];
+extern ScriptScene LevelExitMsgsC[];
 
 s32 WarpRoomMode(void);
 

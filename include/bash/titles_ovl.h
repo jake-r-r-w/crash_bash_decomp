@@ -46,10 +46,9 @@ extern s32 MainMenuHintTimer;
 extern s8 AdventureHeadsSolo[];
 extern s8 AdventureHeadsTeam[];
 extern PlaceRec MainMenuPlace[];
-extern u8 IntroMovieMsgs[]; /* the intro movie's MsgSteps (levelload.c) */
+extern ScriptScene IntroMovieMsgs[]; /* the intro movie's scenes (levelload.c) */
 extern process_info WarpReturnProcess;
 extern u16 TitlesDemoModes[];
-void GotoScriptScene(s32 arg0, process_info *arg1);
 extern PlaceRec TitlesExtraPlace[];
 extern GfxViewport TitlesMenuView;
 extern camera_info_tag CharSelectCamera;

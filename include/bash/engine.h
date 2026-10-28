@@ -11,10 +11,10 @@
 #include "bash/nas.h"
 #include "bash/shell.h"   /* ClockInfo, ScoreInfo */
 
-extern s32 camera_frame_top[];
+
 extern u16 LangPanelModels[];
 extern s32 CamBoundTop;
-extern s32 camera_frame_right[];
+
 extern s32 CamBoundRight;
 typedef struct {
     s32 unk0;
@@ -24,9 +24,9 @@ typedef struct {
     s16 unkA;
     s16 unkC;
     s16 unkE;
-} D_800AD1EC_entry;
+} CamFrameEntry;  /* CameraFrameList: a thing the camera keeps in frame */
 extern s32 camera_frame_list_size;
-extern D_800AD1EC_entry CameraFrameList[];
+extern CamFrameEntry CameraFrameList[];
 extern s32 HealthAst;
 extern s32 CratePickupAst;
 
@@ -162,7 +162,7 @@ extern process_info SaveScreenProcess;
 extern struct Ambient_data *AmbienceDef; /* the level's (InitAmbience) */
 extern u16 AmbienceTimer;
 extern process_info ScriptSceneProcess;
-extern s32 SceneArgs;
+extern struct ScriptScene *SceneArgs;
 extern s32 SceneOldDbase;
 extern s32 SceneMarkCount;
 /* DrawSceneMarks's entries (SceneMarks, 0xC bytes) and the table they index (0x14 bytes). */
@@ -198,8 +198,6 @@ typedef struct EngineGameView {
     /* 0xE0 */ s32 unkE0;
 } EngineGameView;
 extern GfxViewport GameViewport;
-typedef struct { s32 key; s32 v[3]; } EngineKeyed16;
-extern EngineKeyed16 ModeVariants[];
 extern s32 GameSceneFade;
 typedef struct { s32 unk0; s32 unk4; s32 unk8; s32 unkC; } EngineEntry16Head;
 typedef struct { s32 unk0; EngineEntry16Head *unk4; s32 unk8; } EngineTable12;
@@ -214,10 +212,10 @@ s32 CountTrophies(u8 *arg0);
 void HubStartCredits(void);
 
 extern s32 IntroDbase;
-extern s32 HeroAnimNameA;
-extern s32 HeroAnimDbaseA;
-extern s32 HeroAnimNameB;
-extern s32 HeroAnimDbaseB;
+extern char *HeroAnimNameA;
+extern obj_dbase *HeroAnimDbaseA;
+extern char *HeroAnimNameB;
+extern obj_dbase *HeroAnimDbaseB;
 extern u8 LoadingSceneViewport[];
 extern s32 IntroStepIndex;
 extern s32 IntroStepTimer;
@@ -264,15 +262,19 @@ extern D_8009D90C_t ArenaGrid[400];
 
 int ASTTableCount(void);
 
+/* One of the camera frame's extreme points (CalcCameraFrame): the bottom and top ones set y
+ * and z, the left and right ones x and z. */
 typedef struct {
-    s32 unk0;
-    s32 unk4;
-    s32 unk8;
-} D_800AD2EC_t;
+    s32 x;
+    s32 y;
+    s32 z;
+} CamFramePoint;
 
-extern D_800AD2EC_t camera_frame_bottom;
+extern CamFramePoint camera_frame_bottom;
 extern s32 CamBoundBottom;
-extern D_800AD2EC_t camera_frame_left;
+extern CamFramePoint camera_frame_left;
+extern CamFramePoint camera_frame_top;
+extern CamFramePoint camera_frame_right;
 extern s32 CamBoundLeft;
 
 /* PadState (Pads) seen by PauseChooseYesNo: button flags at 0x44/0x48. */
@@ -298,12 +300,20 @@ typedef struct {
 } EngineVabCue;
 extern EngineVabCue *SceneVabCue;
 
-/* SetupScriptScene's argument. */
+/* A script scene (GotoScriptScene, SetupScriptScene): its marks (-> SceneMark), its sound cue
+ * list (-> SceneVabCue) and its frame rate (16.16 frames a tick). The ending's are lists of
+ * them; ModeScenes picks one per mode and team side. */
+typedef struct ScriptScene {
+    struct MarkCtx *marks;
+    EngineVabCue *cues;
+    s32 rate;
+} ScriptScene;
+/* A mode's scenes by GameInfo +0x44 (1, 2, 3: ModeScenes.scene[0..2]). */
 typedef struct {
-    void *unk0; /* -> SceneMark */
-    s32 unk4;   /* -> SceneVabCue */
-    s32 unk8;   /* frame rate scale */
-} EngineStartArgs;
+    s32 mode;
+    ScriptScene *scene[3];
+} ModeScenes;
+extern ModeScenes ModeVariants[];
 
 typedef struct Vec3W {
     s32 a, b, c;

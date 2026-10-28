@@ -18,7 +18,7 @@ s32 span_z(SLONG_XYZ *arg0, s32 arg1);
 
 void ScreenLabelsOff(void);
 
-s32 cam_frame_hit(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out);
+s32 cam_frame_hit(CamFramePoint *a, CamFramePoint *b, CamFramePoint *c, CamFramePoint *d, s32 *out);
 void CalcCameraFrame(void);
 void BuildCameraFrameList(void);
 

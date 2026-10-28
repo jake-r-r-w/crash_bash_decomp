@@ -541,7 +541,7 @@ void DrawSceneMarks(void) {
     }
 }
 
-void SetupScriptScene(EngineStartArgs *arg0) {
+void SetupScriptScene(ScriptScene *arg0) {
     s32 rate;
 
     while (loader_pending() != 0) {
@@ -552,13 +552,13 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     rate = 3;
     VSyncRate = rate;
     ScriptTimeStep = 0x1E0000 / (60 / rate);
-    ScriptTimeStep = arg0->unk8 * rate / 60;
+    ScriptTimeStep = arg0->rate * rate / 60;
     cam_init(&MainCamera);
     SceneOldDbase = 0;
     SceneStarting = 1;
     SceneMarkCount = 0;
-    ((EngineStartArgs *)&SceneMark)->unk0 = arg0->unk0;
-    SceneVabCue = (EngineVabCue *)arg0->unk4;
+    ((ScriptScene *)&SceneMark)->marks = arg0->marks;  /* as a field store: a plain one is scheduled apart */
+    SceneVabCue = arg0->cues;
     SceneVabSlot[0] = 0;
     SceneSoundHandle[0] = 0;
     sound_reinit();
@@ -594,7 +594,7 @@ void InitScriptScene(void) {
     prims_init(cfg->pools);
     dbase_init_all();
     init_scripts(0x20, 0x80);
-    SetupScriptScene((EngineStartArgs *)SceneArgs);
+    SetupScriptScene(SceneArgs);
 }
 
 void UpdateSceneVabCues(void) {
@@ -736,7 +736,7 @@ void UpdateScriptScene(void) {
     }
 }
 
-void GotoScriptScene(s32 arg0, process_info *arg1) {
+void GotoScriptScene(ScriptScene *arg0, process_info *arg1) {
     SceneSkipProcess = arg1;
     SceneArgs = arg0;
     set_fade(&ScreenFade, 0x200, 0);
@@ -842,8 +842,8 @@ s32 SceneVabReady(void) {
     return ~SfxBanks[SceneVabSlot[0]].id != 0;
 }
 
-void SceneSoundInit(EngineStartArgs *arg0) {
-    SceneVabCue = (EngineVabCue *)arg0->unk4;
+void SceneSoundInit(ScriptScene *arg0) {
+    SceneVabCue = arg0->cues;
     SceneVabSlot[0] = 0;
     SceneSoundHandle[0] = 0;
     sound_reinit();
@@ -858,21 +858,21 @@ void SceneSoundInit(EngineStartArgs *arg0) {
     VabCuePending = 0;
 }
 
-s32 PickModeVariant(s32 arg0) {
+ScriptScene *PickModeVariant(s32 arg0) {
     s32 i;
-    EngineKeyed16 *e = ModeVariants;
+    ModeScenes *e = ModeVariants;
     u8 *g;
 
     for (i = 0, g = GameInfo; i < 4; e++, i++) {
-        if (arg0 == e->key) {
+        if (arg0 == e->mode) {
             s16 m = *(s16 *)(g + 0x44);
             if (m == 1) {
-                return e->v[0];
+                return e->scene[0];
             }
             if (m == 3) {
-                return e->v[2];
+                return e->scene[2];
             }
-            return e->v[1];
+            return e->scene[1];
         }
     }
     return 0;
@@ -1496,19 +1496,19 @@ s32 SceneSharedAudio[36] = {
     (s32)&DatIndex[2 * 247], 0x79C, 0x255, (s32)&DatIndex[2 * 246], 0x79D, 0x255, (s32)&DatIndex[2 * 245], 0x79E,
     0x255, 0, 0, 0,
 };
-MsgStep IntroMovieMsgs[2] = {
+ScriptScene IntroMovieMsgs[2] = {
     { (void *)&IntroMovieMarks, (void *)&SceneSharedAudio, 0x1DFC40 },
     { (void *)&SceneTextIntromovieMarks, (void *)&SceneSharedAudio, 0x1E0000 },
 };
-MsgStep LevelExitMsgsA[2] = {
+ScriptScene LevelExitMsgsA[2] = {
     { (void *)&ExitAMarks, (void *)&ExitAAudio, 0x1E0000 },
     { (void *)&SceneTextGoodwinsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
 };
-MsgStep LevelExitMsgsB[2] = {
+ScriptScene LevelExitMsgsB[2] = {
     { (void *)&ExitBMarks, (void *)&ExitBAudio, 0x1E0000 },
     { (void *)&ExitBMarks, (void *)&SceneSharedAudio, 0x1E0000 },
 };
-MsgStep LevelExitMsgsC[4] = {
+ScriptScene LevelExitMsgsC[4] = {
     { (void *)&ExitCMarks, (void *)&ExitCAudio, 0x1E0000 },
     { (void *)&SceneTextMixteamwinsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
     { (void *)&SceneTextCreditsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
@@ -1519,43 +1519,43 @@ s32 SceneUkaData3Audio[6] = { (s32)&DatIndex[2 * 225], 0x3DA, 0, 0, 0, 0 };
 s32 SceneUkaData2Audio[6] = { (s32)&DatIndex[2 * 222], 0x3E3, 0, 0, 0, 0 };
 s32 SceneUkaDataAudio[6] = { (s32)&DatIndex[2 * 223], 0x3E0, 0, 0, 0, 0 };
 s32 SceneUkaData4Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData4], 0, 0, 0, 0, 0, 0 };
-s32 SceneUkaData4[3] = { (s32)&SceneUkaData4Marks, (s32)&SceneUkaData4Audio, 0x1E0000 };
+ScriptScene SceneUkaData4 = { (void *)&SceneUkaData4Marks, (void *)&SceneUkaData4Audio, 0x1E0000 };
 s32 SceneUkaData3Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData3], 0, 0, 0, 0, 0, 0 };
-s32 SceneUkaData3[3] = { (s32)&SceneUkaData3Marks, (s32)&SceneUkaData3Audio, 0x1E0000 };
+ScriptScene SceneUkaData3 = { (void *)&SceneUkaData3Marks, (void *)&SceneUkaData3Audio, 0x1E0000 };
 s32 SceneUkaDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData], 0, 0, 0, 0, 0, 0 };
-s32 SceneUkaData[3] = { (s32)&SceneUkaDataMarks, (s32)&SceneUkaDataAudio, 0x1E0000 };
+ScriptScene SceneUkaData = { (void *)&SceneUkaDataMarks, (void *)&SceneUkaDataAudio, 0x1E0000 };
 s32 SceneUkaData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData2], 0, 0, 0, 0, 0, 0 };
-s32 SceneUkaData2[3] = { (s32)&SceneUkaData2Marks, (s32)&SceneUkaData2Audio, 0x1E0000 };
+ScriptScene SceneUkaData2 = { (void *)&SceneUkaData2Marks, (void *)&SceneUkaData2Audio, 0x1E0000 };
 s32 SceneAkuData4Audio[6] = { (s32)&DatIndex[2 * 220], 0x3DC, 0, 0, 0, 0 };
 s32 SceneAkuData3Audio[6] = { (s32)&DatIndex[2 * 221], 0x3D9, 0, 0, 0, 0 };
 s32 SceneAkuData2Audio[6] = { (s32)&DatIndex[2 * 218], 0x3E2, 0, 0, 0, 0 };
 s32 SceneAkuDataAudio[6] = { (s32)&DatIndex[2 * 219], 0x3DF, 0, 0, 0, 0 };
 s32 SceneAkuData4Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData4], 0, 0, 0, 0, 0, 0 };
-s32 SceneAkuData4[3] = { (s32)&SceneAkuData4Marks, (s32)&SceneAkuData4Audio, 0x1E0000 };
+ScriptScene SceneAkuData4 = { (void *)&SceneAkuData4Marks, (void *)&SceneAkuData4Audio, 0x1E0000 };
 s32 SceneAkuData3Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData3], 0, 0, 0, 0, 0, 0 };
-s32 SceneAkuData3[3] = { (s32)&SceneAkuData3Marks, (s32)&SceneAkuData3Audio, 0x1E0000 };
+ScriptScene SceneAkuData3 = { (void *)&SceneAkuData3Marks, (void *)&SceneAkuData3Audio, 0x1E0000 };
 s32 SceneAkuDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData], 0, 0, 0, 0, 0, 0 };
-s32 SceneAkuData[3] = { (s32)&SceneAkuDataMarks, (s32)&SceneAkuDataAudio, 0x1E0000 };
+ScriptScene SceneAkuData = { (void *)&SceneAkuDataMarks, (void *)&SceneAkuDataAudio, 0x1E0000 };
 s32 SceneAkuData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData2], 0, 0, 0, 0, 0, 0 };
-s32 SceneAkuData2[3] = { (s32)&SceneAkuData2Marks, (s32)&SceneAkuData2Audio, 0x1E0000 };
+ScriptScene SceneAkuData2 = { (void *)&SceneAkuData2Marks, (void *)&SceneAkuData2Audio, 0x1E0000 };
 s32 SceneAkuUkaData2Audio[6] = { (s32)&DatIndex[2 * 214], 0x3E4, 0, 0, 0, 0 };
 s32 SceneAkuUkaDataAudio[6] = { (s32)&DatIndex[2 * 215], 0x3E1, 0, 0, 0, 0 };
 s32 SceneAkuUkaDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData], 0, 0, 0, 0, 0, 0 };
-s32 SceneAkuUkaData[3] = { (s32)&SceneAkuUkaDataMarks, (s32)&SceneAkuUkaDataAudio, 0x1E0000 };
+ScriptScene SceneAkuUkaData = { (void *)&SceneAkuUkaDataMarks, (void *)&SceneAkuUkaDataAudio, 0x1E0000 };
 s32 SceneAkuUkaData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData2], 0, 0, 0, 0, 0, 0 };
-s32 SceneAkuUkaData2[3] = { (s32)&SceneAkuUkaData2Marks, (s32)&SceneAkuUkaData2Audio, 0x1E0000 };
-EngineKeyed16 ModeVariants[4] = {
-    { 4, { (s32)&SceneAkuData3, (s32)&SceneUkaData3, (s32)&SceneAkuData3 } },
-    { 0x16, { (s32)&SceneAkuData4, (s32)&SceneUkaData4, (s32)&SceneAkuData4 } },
-    { 0x1F, { (s32)&SceneAkuData2, (s32)&SceneUkaData2, (s32)&SceneAkuUkaData2 } },
-    { 9, { (s32)&SceneAkuData, (s32)&SceneUkaData, (s32)&SceneAkuUkaData } },
+ScriptScene SceneAkuUkaData2 = { (void *)&SceneAkuUkaData2Marks, (void *)&SceneAkuUkaData2Audio, 0x1E0000 };
+ModeScenes ModeVariants[4] = {
+    { 4, { &SceneAkuData3, &SceneUkaData3, &SceneAkuData3 } },
+    { 0x16, { &SceneAkuData4, &SceneUkaData4, &SceneAkuData4 } },
+    { 0x1F, { &SceneAkuData2, &SceneUkaData2, &SceneAkuUkaData2 } },
+    { 9, { &SceneAkuData, &SceneUkaData, &SceneAkuUkaData } },
 };
 Blk32 SceneScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 SceneScriptPos = {0};
 GfxViewport SceneViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xDFF, 0, 0, 0, 0, 1 };
 process_info ScriptSceneProcess = { InitScriptScene, UpdateScriptScene, RenderScriptScene, QuitScriptScene, 0 };
 process_info *SceneSkipProcess = 0;
-s32 SceneArgs = 0;
+ScriptScene *SceneArgs = 0;
 EngineMarker SceneMarks[8] = {0};
 s32 SceneMarkCount = 0;
 subengine SceneMarkSub = {0};
