@@ -372,19 +372,18 @@ load extract and are documented.
   most-used globals are named (`GameInfo`, `HeroHooks`, `LevelSpecs`, `Pads`,
   `MainCamera`, the viewports and cameras typed, ...); 791 `D_` names are left across
   the engine and the exe, most of them fields of structs still untyped.
-- [ ] Type the game state: `GameInfo` is a byte array with its fields reached by
-  labels of their own (`GameMode` is `+0x34`, `GameTeams` `+0x6C`, `GameExitFlags`
-  `+0x30`, ...) and through each overlay's view (`HubGameView`, `BossGameView`, Tank's
-  and Pogo's, ...). One `GameState` struct with those labels as fields, the views
-  merged into it, checked use by use (Tank's `Heroes` labels show a field access can
-  change the code). Tried 2026-10-27 (reverted): `GameInfo` as a `GameState` struct with
-  the nine labels as fields and the byte users through a `u8 b[0x18C]` member (a member
-  array keeps `GameInfo[i + 0x50]`'s constant out of the symbol, where `((u8 *)&GameInfo)[..]`
-  folds it in) left only Pogo's `Tiles_PlayerIsStealing` different: in its loop `GameMode`
-  is reloaded by label, which a field can't give (MATCHING.md, Diff patterns). So the game
-  reached `GameMode` as an address constant, a global of its own or a macro over the byte
-  array (`*(s16 *)(GameInfo + 0x34)`); decide which before typing the rest. gameflow.h's
-  `GameState` is the fullest view (0x18C bytes, func_800926CC).
+- [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
+  globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads
+  `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff
+  patterns), and the rest of `GameInfo`'s 0x18C bytes are objects around them, every
+  label the code names by address defined in C: `GamePlayers` (+0x26), `GameArena`
+  (+0x36), `GameTeamLeader` (+0x48), `GameHeroOut` (+0x5C), `GameWinner` (+0x60), and
+  from +0x70 the adventure's progress, `GameAdventure` (`AdventureState`, laid out as
+  gameflow.h's `GameStateView`). `GameTeams` stays an array: as a scalar, Nox's
+  `PlotMineSFX` loads it ahead of a store through a pointer (scalars and struct fields
+  are different alias classes). Left: the views (`HubGameView` ..) and the byte-offset
+  users stay; turning a constant-offset user into the global at that offset changed the
+  code in every unit tried (2026-10-28), so the game read those through `GameInfo`.
 - [x] Name `EngineHooks`' fields (2026-10-27), from what the games put in each slot
   (`InitHero`, `HeroModels`, `RunSpeeds`, `PreMoveHero` .. `KeepInBounds`; `unk8` is
   always 0), in `EngineHooks` and in the overlays' views of `HeroHooks` (Bonk, Chase,
@@ -405,9 +404,13 @@ load extract and are documented.
   separate `u8[]` labels), the archive index's 8-byte entries (`DatIndex`, still
   one label per entry) and `D_80063BB8`'s table. They only matter once the exe
   moves (Phase 6, Shift everything at once).
-- [ ] Name and type every function and global in the exe. Status: the
+- [ ] Name and type every function and global in the exe. Status (2026-10-28): the
   names, parameter types and struct names the demo discs leaked are applied
-  ([PROTOTYPES.md](PROTOTYPES.md)); the rest is named from behaviour. For
+  ([PROTOTYPES.md](PROTOTYPES.md)); 456 more game functions are named from their code
+  (the shell, allocator, loader, dbase, renderer, scripts, NAS calls, textures, sound,
+  music, card, modchip), in the leak's styles (`mal_*`, `dbase_*`, `*_thread`,
+  CamelCase for the NAS calls). Left: 34 (18 empty stubs, 16 whose role isn't clear
+  yet) and the 131 Sony statics the converted objects carry no names for. For
   browsing cross-references across the whole binary, try Ghidra with a PSX
   loader by hand.
 

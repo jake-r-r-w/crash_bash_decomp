@@ -10,7 +10,7 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-27)
+## Current state (2026-10-28)
 
 - **Every game function matches**: all 2537 in `main.exe`, the engine and
   the 14 slot overlays (100% of game code bytes, 2026-10-26), and all 564
@@ -23,7 +23,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   source-only, named, typed and shift-tested) are done. Phase 4 repeats
   the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
   Phase 5 does the engine and `main.exe`. Figures (`progress`,
-  2026-10-27): 1756 of 2537 functions named, 2317 typed, 89.77% of the
+  2026-10-28): 2204 of 2537 functions named, 2317 typed, 89.77% of the
   data is C (every slot overlay's, the engine's, and the exe's game
   `.data`).
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
@@ -63,11 +63,8 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. Type the game state (the ROADMAP box). A first try (reverted) matched everywhere
-   but Pogo's `Tiles_PlayerIsStealing`, whose loop reloads `GameMode` by label: decide
-   whether the labels are globals of their own or macros over the byte array
-   (`*(s16 *)(GameInfo + 0x34)` gives the label's code) before typing the rest.
-   `CardSlots[i].unk8` is a copy of the whole 0x18C bytes.
+1. Name the engine's functions the same way (`scratch/main_unnamed.py`-style
+   summaries, then `decomp.py rename --file`). main.exe has 34 left (ROADMAP).
 2. The model bank as one `obj_dbase` array (283 records from `HeroModelBank` to
    0x8005683C; the slot labels as elements or an enum of indices: a naming choice
    for the user).
@@ -479,6 +476,16 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (Phase 5: the game state, main.exe's functions):** `GameInfo`'s bytes are
+  globals around its labels (the user chose labels as globals of their own; ROADMAP);
+  converting its constant-offset users to those globals changed code everywhere, so
+  they stay. Then 456 main.exe functions named from their code (2204 of 2537 now), the
+  nine Sony ones by their ELF names, the script table's entries by function, and nine
+  engine words data2c had read as offsets into functions (`&func_8008FF94 + 0x6C`) as
+  the halfword pairs they are. Gotchas: a function the engine names by a `D_` label
+  (`D_8001C7FC`) must be named as the function before a rename, or the link loses it;
+  the rename tool writes engine-range names to sym.main.txt (move them).
 
 - **2026-10-27 (Phase 5: the engine's and the exe's data as C):** the engine's
   data spliced, cut by file (`engine.c` .. `camera.c`, the world records with
