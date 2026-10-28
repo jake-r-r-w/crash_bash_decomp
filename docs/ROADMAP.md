@@ -418,9 +418,12 @@ load extract and are documented.
   and its extractor in `tools/scripts/`, documented in [ASSETS.md](ASSETS.md). Status
   (2026-10-28): texture sets done: their animated textures (`tail.bin`) come out as frame PNGs
   and tex.json fields (all 86 sets pack back), and the code reads the file through `TexFile`
-  and `TexImage`. Next: the model file's header (+0x1C entities, +0x28, +0x3C, +0x44 the
-  animations, +0x4C the scripts, +0x54 meshes) and the 27 mesh-less files (fonts, arenas: the
-  level data), the scripts' tracks, the map's path table, the mode text's data, the card image.
+  and `TexImage`. Model files: the code reads them through `ModelFile` (every header section
+  named, the maps through the prototype's `map_list`/`map_map`), `MeshHeader`, `MeshVerts`,
+  `ModelEntity`, `FileEntry` and `MeshAnimFrame` (2026-10-28; the exe's raw-offset functions 97 to
+  69). Next: mdl.py decodes the sections it keeps as bytes (the maps' paths, triggers and
+  placements, the map directory, the scripts), then the script tracks, the mode text's data and
+  the card image.
 - [x] `main.exe`'s rodata as C: its six INCLUDE_RODATA blocks (`data2c.py main
   --strings-only`, 2026-10-26); no INCLUDE_RODATA is left in `src/`.
 - [x] `main.exe`'s data and bss as C (2026-10-28): the game's .data cut by file in link

@@ -70,10 +70,11 @@ Sony objects. Next, none of them needing a playtest:
 2. The engine is done (ROADMAP's engine item closed 2026-10-28): every function and global
    typed, `GameInfo` one `GameState` read through `GAME`. The exe is partway (ROADMAP's exe
    item is closed). Now the asset formats item (ROADMAP Phase 5): texture sets done
-   (animated textures decoded; `TexFile`/`TexImage` in C). Next the model file: a header struct
-   for +0x1C/+0x28/+0x3C/+0x44/+0x4C/+0x54 from the code's raw reads (`map_entity_address`,
-   `draw_object_model`, `get_script_header`, `dbase_anim_frame`), then decode what mdl.py
-   keeps as bytes (the 27 mesh-less files: fonts and arenas; the script table at +0x4C).
+   (animated textures decoded; `TexFile`/`TexImage` in C); the model file's structs are in C
+   (`ModelFile` and the rest, docs/ASSETS.md). Next: decode in mdl.py what it keeps as bytes, from
+   those structs: an arena's maps (`map_map`: paths, triggers, placements; the prototype's types
+   in core.h), the map directory, the scripts (`script_header`, `script_thread`). Then the
+   remaining raw offsets (69 exe functions): mostly heap arithmetic and the export table.
    A sample retail-DAT reader for scratch scripts: scratch/retail.py (`each(fmt)`).
    `obj_texture`'s +0x18 block is its own struct, `info` (`GfxTexInfo`: VRAM rect, src,
    tpage, clut, uv0..3), since two functions take a pointer to it; GfxTexEntry is folded.
@@ -488,6 +489,14 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-28 (Phase 5: asset formats, model files):** `ModelFile` names every header section
+  the code reads; RelTable, UvTable, EntryBlock, FaceRuns, TexFaceRuns, ModelSet, ModelEntry and
+  MorphModel folded into it and `MeshHeader`; dbase.c, main.c, scripts.c (21 functions) and prims.c
+  read models by field. Mesh i is `&m->meshes[i - 1]` (gcc folds it to retail's `i * 0x34 +
+  0x24`). `mapscene_setup_tables` fills `map_enviroment` from the prototype's `map_list`/`map_map`:
+  the header's +0x18 is the maps, +0x1C the map directory. ASSETS.md corrected: the animation
+  entry's +0x10 is its name's hash, not a speed. `entry_block_value` needs the index first in its
+  sum (`(idx + base->e)->group`).
 - **2026-10-28 (Phase 5: asset formats, texture sets):** the exe's name-and-type item ticked.
   tex.py decodes the animated textures (tracks of frame PNGs, scrolls; all 86 sets byte for byte,
   1,137 frames; checked by eye on 068's electric arc). `TexFile`/`TexImage` give the code the
