@@ -1188,32 +1188,32 @@ EXTengine *GetEngineSlot(s32 arg0) {
     return &EnginePool[arg0];
 }
 
-void draw_animated_sub(u8 *arg0, u8 *arg1, s32 arg2) {
-    u8 *p;
+void draw_animated_sub(PlaceSub *arg0, u8 *arg1, s32 arg2) {
+    PlaceRec *p;
     u32 flags;
     u32 n;
     u32 m;
 
-    p = *(u8 **)(arg0 + 0x64);
-    flags = *(u32 *)(p + 0x20);
+    p = arg0->rec;
+    flags = p->unk20;
     if (flags & 1) {
-        *(u16 *)(arg0 + 0x10) += *(u16 *)(p + 0xC);
+        arg0->unk10 += p->unkC;
     }
     if (flags & 2) {
-        *(u16 *)(arg0 + 0x12) += *(u16 *)(p + 0xE);
+        arg0->unk12 += p->unkE;
     }
     if (flags & 4) {
-        *(u16 *)(arg0 + 0x14) += *(u16 *)(p + 0x10);
+        arg0->unk14 += p->unk10;
     }
     if (flags & 8) {
-        n = *(u32 *)(p + 0x18);
+        n = p->unk18;
         if (n != 0) {
             m = FrameCount % n + 1;
-            *(u16 *)(arg0 + 0x74) = *(u16 *)(p + 0x1E) + (*(u16 *)(p + 0x18) - m);
+            arg0->unk74 = p->unk1E + ((u16)p->unk18 - m);
         }
     }
-    *(u16 *)(arg0 + 0x52) = 1;
-    draw_object(arg0, arg1, arg2);
+    arg0->unk52 = 1;
+    draw_object((u8 *)arg0, arg1, arg2);
 }
 
 s32 PlaceFlashSub(PlaceSub *p, s32 a1, s32 a2, s32 a3, s32 a4) {

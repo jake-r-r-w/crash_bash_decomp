@@ -181,7 +181,7 @@ void LoadLoadingModel(void);
 
 void DrawSceneMarks(void);
 
-void draw_animated_sub(u8 *arg0, u8 *arg1, s32 arg2);
+void draw_animated_sub(struct PlaceSub *arg0, u8 *arg1, s32 arg2);
 
 s32 PlaceFlashSub(struct PlaceSub *p, s32 a1, s32 a2, s32 a3, s32 a4);
 
