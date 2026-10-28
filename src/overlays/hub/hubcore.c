@@ -2557,7 +2557,7 @@ void HubSaveMenuInit(void) {
         HubNameNext = (*new_var).unk8;
     }
     set_fade(&ScreenFade, -0x300, 0);
-    cam_init(HubSaveCamera);
+    cam_init((GfxCamera *)HubSaveCamera);
     PlaceEngineSlot(0, HubNameLetters);
     GetEngineSlot(0)->unk10.x = 0xC8;
     GetEngineSlot(0)->unk10.y = 0x6E;

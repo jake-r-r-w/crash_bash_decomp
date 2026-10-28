@@ -102,12 +102,12 @@ void LoadModeFiles(void) {
         dbase_load_textures_wait(&HeroModelBank[DB_Loading]);
     }
     RenderHook = RenderGameScene;
-    cam_init(MainCamera);
-    cam_init((u8 *)&MainGfxCamera);
-    cam_init((u8 *)&HudCamera);
+    cam_init((GfxCamera *)MainCamera);
+    cam_init(&MainGfxCamera);
+    cam_init(&HudCamera);
     MainGfxCamera.z = 0x2000;
-    cam_init((u8 *)&LoadingCamera);
-    *(s32 *)((u8 *)&LoadingCamera + 8) = 0xA24;
+    cam_init(&LoadingCamera);
+    LoadingCamera.unk8 = 0xA24;
     LoadingCamera.z = 0;
     q = (s32 *)&GameViewport;
     q[5] = 0x15E;
@@ -448,7 +448,7 @@ void RenderLoadingScene(void) {
 }
 
 void InitLoadingCamera(void) {
-    cam_init(MainCamera);
+    cam_init((GfxCamera *)MainCamera);
     D_800A02C0 = 0;
     D_800A02C4 = 0;
 }
@@ -515,7 +515,7 @@ void LoadLoadingModel(void) {
 }
 
 void DrawSceneMarks(void) {
-    s32 h = *(s32 *)(RenderState.cam->unk18);
+    s32 h = RenderState.cam->unk18;
     subengine *e = &D_800A0C74;
     EngineMarker *m;
     EngineMarkerPos *p;
@@ -537,7 +537,7 @@ void DrawSceneMarks(void) {
         e->unk68 = p->unkC;
         gte_SetGeomScreen(h);
         draw_object((u8 *)e, (u8 *)&RenderState.cam->view, 0x03008000);
-        gte_SetGeomScreen(*(s32 *)(RenderState.cam->unk18));
+        gte_SetGeomScreen(RenderState.cam->unk18);
     }
 }
 
@@ -553,7 +553,7 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     VSyncRate = rate;
     D_80058B64 = 0x1E0000 / (60 / rate);
     D_80058B64 = arg0->unk8 * rate / 60;
-    cam_init(MainCamera);
+    cam_init((GfxCamera *)MainCamera);
     SceneOldDbase = 0;
     D_800A0D38 = 1;
     SceneMarkCount = 0;

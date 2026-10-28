@@ -509,7 +509,7 @@ void TitlesInitLevel(void) {
     ResetWarpRooms();
     g = GameInfo;
     g[0x62] = 0;
-    cam_init((u8 *)&TitlesCamera);
+    cam_init(&TitlesCamera);
     *(s32 *)((u8 *)&TitlesCamera + 8) = 0x400;
     *(s32 *)((u8 *)&TitlesCamera + 0x18) = 0x190;
     PlaceEngineSlot(1, (s32 *)TitlesBackdropPlace);
@@ -1494,7 +1494,7 @@ void CharSelectInit(void) {
     s32 i;
     s32 off;
 
-    cam_init((u8 *)&CharSelectCamera);
+    cam_init(&CharSelectCamera);
     *(s32 *)((u8 *)&CharSelectCamera + 8) = 0x400;
     *(s32 *)((u8 *)&CharSelectCamera + 0x18) = 0x190;
     eng = GetEngineSlot(0);

@@ -2746,27 +2746,27 @@ void rotscale_update(void *arg0) {
     }
 }
 
-void cam_init(u8 *arg0) {
+void cam_init(GfxCamera *cam) {
     cam_ramp_overide_count = 0;
-    (*(s32*)((u8*)(arg0) + 100)) = 0x1000;
-    (*(s32*)((u8*)(arg0) + 104)) = 0x1000;
-    (*(s32*)((u8*)(arg0) + 108)) = 0x1000;
-    (*(s32*)((u8*)(arg0) + 8)) = 0x300;
-    (*(s32*)((u8*)(arg0) + 24)) = 0x140;
-    (*(s16*)((u8*)(arg0) + 84)) = 0;
-    (*(s16*)((u8*)(arg0) + 86)) = 0;
-    (*(s16*)((u8*)(arg0) + 88)) = 0;
-    (*(s32*)((u8*)(arg0) + 12)) = 0;
-    (*(s32*)((u8*)(arg0) + 16)) = 0;
-    (*(s32*)((u8*)(arg0) + 20)) = 0;
-    (*(s8*)((u8*)(arg0) + 149)) = 0;
-    (*(s8*)((u8*)(arg0) + 148)) = 1;
-    (*(s32*)((u8*)(arg0) + 0)) = 0;
-    (*(s32*)((u8*)(arg0) + 4)) = 0;
-    (*(s32*)((u8*)(arg0) + 8)) = 0;
-    (*(s32*)((u8*)(arg0) + 60)) = 0;
-    (*(s32*)((u8*)(arg0) + 56)) = 0;
-    (*(s32*)((u8*)(arg0) + 64)) = 0;
+    cam->unk54.scale.vx = 0x1000;
+    cam->unk54.scale.vy = 0x1000;
+    cam->unk54.scale.vz = 0x1000;
+    cam->unk8 = 0x300;
+    cam->unk18 = 0x140;
+    cam->unk54.angle.vx = 0;
+    cam->unk54.angle.vy = 0;
+    cam->unk54.angle.vz = 0;
+    cam->x = 0;
+    cam->y = 0;
+    cam->z = 0;
+    cam->unk95 = 0;
+    cam->unk94 = 1;
+    cam->unk0 = 0;
+    cam->unk4 = 0;
+    cam->unk8 = 0;
+    cam->unk3C = 0;
+    cam->unk38 = 0;
+    cam->unk40 = 0;
 }
 
 void cam_set_projection(s32 arg0, s32 arg1) {

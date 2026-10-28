@@ -179,7 +179,7 @@ void InitIntro(void) {
     D_8009E5B0 = -1;
     D_8009E5B4 = 0;
     subpool_init(0x200);
-    cam_init(MainCamera);
+    cam_init((GfxCamera *)MainCamera);
     FirstBootDone = 1;
 }
 
@@ -1395,11 +1395,11 @@ void ShowSaveScreen(void) {
     GetEngineSlot(2)->unk10.y = 0x1E;
     eng = GetEngineSlot(2);
     eng->flags |= 0x10000000;
-    cam_init((u8 *)&SaveCamera);
-    *(s32 *)((u8 *)&SaveCamera + 8) = 0x5DC;
-    cam_init((u8 *)&SaveBackCamera);
-    *(s32 *)((u8 *)&SaveBackCamera + 8) = 0x400;
-    *(s32 *)((u8 *)&SaveBackCamera + 0x18) = 0x190;
+    cam_init(&SaveCamera);
+    SaveCamera.unk8 = 0x5DC;
+    cam_init(&SaveBackCamera);
+    SaveBackCamera.unk8 = 0x400;
+    SaveBackCamera.unk18 = 0x190;
     set_fade(&ScreenFade, -0x200, 0);
 }
 
@@ -1839,9 +1839,9 @@ void UpdateGame(void) {
         RenderLevel();
     }
     MainGfxCamera.z = 0;
-    *(s32 *)((u8 *)&MainGfxCamera + 8) = 0x800;
+    MainGfxCamera.unk8 = 0x800;
     HudCamera.z = 0;
-    *(s32 *)((u8 *)&HudCamera + 8) = 0x40C;
+    HudCamera.unk8 = 0x40C;
     UpdateScreenLabels();
     scripts_update();
     process_control_update(&MenuProcessControl, &ScreenFade);

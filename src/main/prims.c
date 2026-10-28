@@ -918,7 +918,7 @@ void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam) {
     ((GfxOffset *)gs->unk28)->x = gs->ofx;
     ((GfxOffset *)gs->unk28)->y = gs->ofy;
     gte_SetGeomOffset(vp->ofx * ScreenRect->w / 640, vp->ofy / 2);
-    gte_SetGeomScreen(*(s32 *)(cam->unk18));
+    gte_SetGeomScreen(cam->unk18);
     gte_SetRotMatrix(&cam->view);
     gte_SetTransMatrix(&cam->view);
     gs->ot = (u32 *)cdb + vp->otIdx;
@@ -1820,12 +1820,12 @@ s32 bbox_visible(void *arg0) {
         if (r < 0x400) {
             cam = gs->cam;
             d = sz * 3 << 10;
-            e = r * cam->unk54.scale.vx * *(s32 *)cam->unk18 / d;
+            e = r * cam->unk54.scale.vx * cam->unk18 / d;
             if (c.vx + e < 0 || gs->clipX1 < c.vx - e) {
             culled:
                 return 0;
             }
-            ey = r * cam->unk54.scale.vy * *(s32 *)cam->unk18 / d;
+            ey = r * cam->unk54.scale.vy * cam->unk18 / d;
             if (c.vy + ey < 0 || gs->clipY1 < c.vy - ey) {
                 goto culled;
             }

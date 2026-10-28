@@ -312,18 +312,28 @@ typedef struct {
 
 /* At +0x54 of GfxCamera; gfx_object_matrix takes a pointer to it. */
 typedef struct {
-    u8 unk0[0x10];
-    VECTOR scale; /* 0x10: diagonal of the screen-aligned matrix */
+    SVECTOR angle; /* 0x00: cam_init zeroes vx, vy, vz */
+    u8 unk8[8];
+    VECTOR scale; /* 0x10: diagonal of the screen-aligned matrix (cam_init: 0x1000 each) */
 } GfxCamScale;
 
-/* The camera GfxState.cam points at (draw_map_object). */
+/* The camera GfxState.cam points at (draw_map_object); cam_init sets one up. */
 typedef struct GfxCamera {
-    u8 unk0[0xC];
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
     s32 x, y, z;    /* 0x0C */
-    u8 unk18[0x3C];
+    s32 unk18;      /* cam_init: 0x140 */
+    u8 unk1C[0x38 - 0x1C];
+    s32 unk38;
+    s32 unk3C;
+    s32 unk40;
+    u8 unk44[0x54 - 0x44];
     GfxCamScale unk54; /* 0x54 */
     MATRIX view;    /* 0x74 */
-    u8 unk94[4];
+    u8 unk94;       /* cam_init: 1 */
+    u8 unk95;
+    u8 unk96[2];
     MATRIX rot;     /* 0x98: rotation for screen-aligned objects */
 } GfxCamera;
 
@@ -764,7 +774,7 @@ void loadnode_free(u8 *arg0);
 u8 *loadlist_push(u8 *arg0);
 s32 loadlist_head(u8 *arg0);
 void set_joypad(u8 *arg0, u32 arg1);
-void cam_init(u8 *arg0);
+void cam_init(GfxCamera *cam);
 void cam_ramp_override(s32 arg0, s32 arg1);
 s32 *get_exe_exports(void);
 s32 angle_diff_abs(s32 arg0, s32 arg1);
