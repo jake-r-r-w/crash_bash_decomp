@@ -1255,7 +1255,6 @@ s32 PlaceTextSub(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 /* what the data points at that this file's headers don't declare */
-extern u8 D_800501C0[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 extern u8 D_80063ED8[];
@@ -1412,7 +1411,7 @@ u8 D_8009FA14[1516] = {
     0x80, 0x48, 0xFA, 4, 0x80, 0xA8, 1, 5, 0x80, 0xEC, 0x51, 5, 0x80, 0x20, 0xFA, 4, 0x80,
     0x18, 0xFA, 4, 0x80, 0xD8, 1, 5, 0x80, 0xD4, 0x50, 5, 0x80, 0x60, 0xFA, 4, 0x80,
 };
-s32 D_800A0000[5] = { (s32)&DatIndex[2 * 809], (s32)&D_800501C0, (s32)&HeroModelBank[DB_CharsSplashKong], (s32)&DatIndex[2 * 806], (s32)&DatIndex[2 * 805] };
+s32 D_800A0000[5] = { (s32)&DatIndex[2 * 809], (s32)&FileGroups[36], (s32)&HeroModelBank[DB_CharsSplashKong], (s32)&DatIndex[2 * 806], (s32)&DatIndex[2 * 805] };
 s32 D_800A0014[2] = {0};
 u8 *D_800A001C[45] = {
     (void *)&file_group_JUNGLE, (void *)&file_group_SPACE, (void *)&file_group_SNOW,

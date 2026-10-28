@@ -4,8 +4,6 @@
 #include "bash/arkenoid.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_80050100[];
-extern u8 D_8005010C[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 
@@ -51,10 +49,10 @@ s32 ArkNginFiles[27] = {
 };
 /* the four levels' files (modes 14..17; the engine's table at 0x800A0030): the exe's file group
  * and the model list; N. Gin's has more models */
-file_group_load_info file_group_BALLS = { D_8005010C, ArkFiles };
-file_group_load_info file_group_BEACHBALL = { D_8005010C, ArkFiles };
-file_group_load_info file_group_NGINBALL = { D_80050100, ArkNginFiles };
-file_group_load_info file_group_SKYBALL = { D_8005010C, ArkFiles };
+file_group_load_info file_group_BALLS = { &FileGroups[21], ArkFiles };
+file_group_load_info file_group_BEACHBALL = { &FileGroups[21], ArkFiles };
+file_group_load_info file_group_NGINBALL = { &FileGroups[20], ArkNginFiles };
+file_group_load_info file_group_SKYBALL = { &FileGroups[21], ArkFiles };
 u16 ArkLUPtab[4] = { 3, 0x1605, 0x1508, 0 };
 TrigLookUp ArkLUP = { ArkLUPtab, 3 };
 PreMap ARKENOID_PREMAP = { ArkPreLoadDB, ArkWorldInfo, &ArkLUP };

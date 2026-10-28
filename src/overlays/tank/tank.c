@@ -5,8 +5,6 @@
 #include "bash/tank.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_80050130[];
-extern u8 D_8005013C[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 
@@ -62,11 +60,11 @@ s32 TankSwampFiles[24] = {
 };
 /* The five arenas' files (modes 5..9; the engine's table at 0x800A0030): the exe's file group
  * (24 or 25) and the model list; the swamp's has the hover vehicle. */
-file_group_load_info file_group_TANKLAST = { D_80050130, TankSwampFiles };
-file_group_load_info file_group_TANKDESERT = { D_8005013C, TankFiles };
-file_group_load_info file_group_TANKJUNGLE = { D_8005013C, TankFiles };
-file_group_load_info file_group_TANKMETAL = { D_8005013C, TankFiles };
-file_group_load_info file_group_TANKBOSS = { D_8005013C, TankFiles };
+file_group_load_info file_group_TANKLAST = { &FileGroups[24], TankSwampFiles };
+file_group_load_info file_group_TANKDESERT = { &FileGroups[25], TankFiles };
+file_group_load_info file_group_TANKJUNGLE = { &FileGroups[25], TankFiles };
+file_group_load_info file_group_TANKMETAL = { &FileGroups[25], TankFiles };
+file_group_load_info file_group_TANKBOSS = { &FileGroups[25], TankFiles };
 u16 TankLUPtab[8] = { 3, 0x20D, 0x201, 0x20D, 0x1301, 0x1306, 0x1309, 0x130A };
 TrigLookUp TankLUP = { TankLUPtab, 8 };
 PreMap TANK_PREMAP = { TankPreLoadDB, TankWorldInfo, &TankLUP };

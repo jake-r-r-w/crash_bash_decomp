@@ -7,7 +7,6 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_800500C4[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 
@@ -355,10 +354,10 @@ s32 RaceFiles[27] = {
     (s32)&DatIndex[2 * 400], (s32)&HeroModelBank[DB_Masks], (s32)&DatIndex[2 * 399], (s32)&DatIndex[2 * 398], 0, 0,
 };
 /* the levels' files (the engine's per-mode table points at modes 0x17..0x1A's) */
-file_group_load_info file_group_DASH = { D_800500C4, RaceFiles };
-file_group_load_info file_group_TOXIC = { D_800500C4, RaceFiles };
-file_group_load_info file_group_WATER = { D_800500C4, RaceFiles };
-file_group_load_info file_group_LAVA = { D_800500C4, RaceFiles };
+file_group_load_info file_group_DASH = { &FileGroups[15], RaceFiles };
+file_group_load_info file_group_TOXIC = { &FileGroups[15], RaceFiles };
+file_group_load_info file_group_WATER = { &FileGroups[15], RaceFiles };
+file_group_load_info file_group_LAVA = { &FileGroups[15], RaceFiles };
 u16 RaceLUPtab[10] = { 3, 0x20D, 0x1601, 0x1603, 0x1605, 0x1607, 0x160A, 0x1619, 0x1703, 0 };
 TrigLookUp RaceLUP = { RaceLUPtab, 9 };
 PreMap RACE_PREMAP = { RacePreLoadDB, RaceWorldInfo, &RaceLUP };

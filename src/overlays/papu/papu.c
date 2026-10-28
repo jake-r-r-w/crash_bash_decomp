@@ -4,7 +4,6 @@
 #include "bash/papu.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_80050148[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 
@@ -296,7 +295,7 @@ s32 PapuFiles[27] = {
     (s32)&DatIndex[2 * 566], (s32)&HeroModelBank[DB_Minion], (s32)&DatIndex[2 * 565], (s32)&DatIndex[2 * 564], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 4's) */
-file_group_load_info file_group_PAPU = { D_80050148, PapuFiles };
+file_group_load_info file_group_PAPU = { &FileGroups[26], PapuFiles };
 WWInf PapuWorldInfo[1] = {
     { 0x2B, PapuAnims, PapuLevelDB, 1 },
 };

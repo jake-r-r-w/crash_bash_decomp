@@ -4,8 +4,6 @@
 #include "bash/xtras.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_80050154[];
-extern u8 D_80050160[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 
@@ -256,11 +254,11 @@ s32 BashSnowFiles[24] = {
 };
 /* the levels' files: the exe's file group and the model list (the engine's table at 0x800A001C
  * points at modes 0..3's and 0x20's) */
-file_group_load_info file_group_JUNGLE = { D_80050160, BashFiles };
-file_group_load_info file_group_SNOW = { D_80050154, BashSnowFiles };
-file_group_load_info file_group_SPACE = { D_80050160, BashFiles };
-file_group_load_info file_group_DRAINS = { D_80050160, BashFiles };
-file_group_load_info file_group_BASHMODE20 = { D_80050160, BashFiles };
+file_group_load_info file_group_JUNGLE = { &FileGroups[28], BashFiles };
+file_group_load_info file_group_SNOW = { &FileGroups[27], BashSnowFiles };
+file_group_load_info file_group_SPACE = { &FileGroups[28], BashFiles };
+file_group_load_info file_group_DRAINS = { &FileGroups[28], BashFiles };
+file_group_load_info file_group_BASHMODE20 = { &FileGroups[28], BashFiles };
 u16 BashLUPtab[4] = { 3, 0x201, 0x20D, 0x201 };
 TrigLookUp BashLUP = { BashLUPtab, 4 };
 PreMap BASH_PREMAP = { BashPreLoadDB, BashWorldInfo, &BashLUP };

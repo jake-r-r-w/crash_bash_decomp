@@ -6,7 +6,6 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8005007C[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 extern u8 D_800706C4[];
@@ -240,7 +239,7 @@ s32 DinoFiles[15] = {
     (s32)&DatIndex[2 * 345], (s32)&DatIndex[2 * 344], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1C's) */
-file_group_load_info file_group_DINO = { D_8005007C, DinoFiles };
+file_group_load_info file_group_DINO = { &FileGroups[9], DinoFiles };
 u16 DinoLUPtab[10] = { 3, 0x20D, 0x1601, 0x1603, 0x1605, 0x1607, 0x160A, 0x1619, 0x1703, 0 };
 TrigLookUp DinoLUP = { DinoLUPtab, 9 };
 PreMap DINO_PREMAP = { DinoPreLoadDB, DinoWorldInfo, &DinoLUP };

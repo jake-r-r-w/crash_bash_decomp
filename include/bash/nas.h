@@ -628,6 +628,13 @@ BASH_SIZE_CHECK(shell_setup, 0x28);
  * 0x800A0030 points at one per mode. group is an entry of the exe's file
  * groups table (0x80050010); files a list of {model slot, mdl entry, tex
  * entry} words ending in zeros (Tank's), loaded after the group. */
+typedef struct FileGroup {
+    /* 0x00 */ s32 first;   /* its first file in the archive */
+    /* 0x04 */ s32 count;
+    /* 0x08 */ s32 size;    /* bytes */
+} FileGroup;
+extern FileGroup FileGroups[];
+
 typedef struct file_group_load_info {
     /* 0x00 */ void *group;
     /* 0x04 */ void *files;

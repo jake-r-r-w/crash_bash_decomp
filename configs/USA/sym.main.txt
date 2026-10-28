@@ -1575,3 +1575,4 @@ CdSeekLoc = 0x8006EA14;
 CdReadLoc = 0x8006EA10;
 LevelLoadModel = 0x8005A650;
 CupMenuAnim = 0x8005A63C;
+FileGroups = 0x80050010;

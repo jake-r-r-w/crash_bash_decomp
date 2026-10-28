@@ -13,7 +13,6 @@ extern u8 D_8004419C[];
 extern u8 D_80044218[];
 extern u8 D_80044594[];
 extern u8 D_80044614[];
-extern u8 D_80050088[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 extern u8 D_80070008[];
@@ -184,7 +183,7 @@ s32 SpinFiles[21] = {
     (s32)&HeroModelBank[DB_RingObjects], (s32)&DatIndex[2 * 353], (s32)&DatIndex[2 * 352], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1B's) */
-file_group_load_info file_group_RING = { D_80050088, SpinFiles };
+file_group_load_info file_group_RING = { &FileGroups[10], SpinFiles };
 u16 SpinLUPtab[4] = { 3, 0x201, 0x20D, 0x201 };
 TrigLookUp SpinLUP = { SpinLUPtab, 4 };
 PreMap SPIN_PREMAP = { SpinPreLoadDB, SpinWorldInfo, &SpinLUP };

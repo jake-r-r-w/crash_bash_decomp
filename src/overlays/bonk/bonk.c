@@ -10,7 +10,6 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80034214[];
-extern u8 D_80050064[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 
@@ -288,7 +287,7 @@ s32 BonkFiles[18] = {
     0, 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1D's) */
-file_group_load_info file_group_BONK = { D_80050064, BonkFiles };
+file_group_load_info file_group_BONK = { &FileGroups[7], BonkFiles };
 u16 BonkLUPtab[4] = { 3, 0x20D, 0x201, 0x1A02 };
 TrigLookUp BonkLUP = { BonkLUPtab, 4 };
 PreMap BONK_PREMAP = { BonkPreLoadDB, BonkWorldInfo, &BonkLUP };

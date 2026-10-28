@@ -6,8 +6,6 @@
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80030014[];
 extern u8 D_80034010[];
-extern u8 D_80050118[];
-extern u8 D_80050124[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 extern u8 D_80070568[];
@@ -516,10 +514,10 @@ s32 PogoLocoFiles[18] = {
 };
 /* the four levels' files (modes 10..13; the engine's table at 0x800A0030): the exe's file group
  * and the model list; Loco's has one more model */
-file_group_load_info file_group_POGOPAINTER = { D_80050124, PogoFiles };
-file_group_load_info file_group_POGOAGOGO = { D_80050124, PogoFiles };
-file_group_load_info file_group_POGOLOCO = { D_80050118, PogoLocoFiles };
-file_group_load_info file_group_POGOBOUNCER = { D_80050124, PogoFiles };
+file_group_load_info file_group_POGOPAINTER = { &FileGroups[23], PogoFiles };
+file_group_load_info file_group_POGOAGOGO = { &FileGroups[23], PogoFiles };
+file_group_load_info file_group_POGOLOCO = { &FileGroups[22], PogoLocoFiles };
+file_group_load_info file_group_POGOBOUNCER = { &FileGroups[23], PogoFiles };
 u16 PogoLUPtab[4] = { 3, 0x20D, 0x201, 0 };
 TrigLookUp PogoLUP = { PogoLUPtab, 3 };
 PreMap POGO_PREMAP = { PogoPreLoadDB, PogoWorldInfo, &PogoLUP };

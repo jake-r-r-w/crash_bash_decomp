@@ -8,9 +8,6 @@
 /* the exe's data the tables point at, not declared in the headers yet */
 /* engine.h declares it, but polar.c does not include that */
 extern u8 D_80044188[];
-extern u8 D_800500D0[];
-extern u8 D_800500DC[];
-extern u8 D_800500E8[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 extern u8 D_80074328[];
@@ -602,15 +599,15 @@ s32 PolarBossFiles[24] = {
 /* the levels' files, in the leak's order (Day, Night, Cut, their challenges, End and its challenge,
  * the boss): the exe's file group and the model list; the engine's table at 0x800A0030 points at
  * modes 0x12..0x16's */
-file_group_load_info file_group_POLARDAY = { D_800500DC, PolarFiles };
-file_group_load_info file_group_POLARNGT = { D_800500DC, PolarFiles };
-file_group_load_info file_group_POLARCUT = { D_800500DC, PolarFiles };
-file_group_load_info file_group_POLARCHA = { D_800500DC, PolarFiles };
-file_group_load_info file_group_POLARCUC = { D_800500DC, PolarFiles };
-file_group_load_info file_group_POLARNGC = { D_800500DC, PolarFiles };
-file_group_load_info file_group_POLAREND = { D_800500E8, PolarEndFiles };
-file_group_load_info file_group_POLARENC = { D_800500E8, PolarEndFiles };
-file_group_load_info file_group_POLARBSS = { D_800500D0, PolarBossFiles };
+file_group_load_info file_group_POLARDAY = { &FileGroups[17], PolarFiles };
+file_group_load_info file_group_POLARNGT = { &FileGroups[17], PolarFiles };
+file_group_load_info file_group_POLARCUT = { &FileGroups[17], PolarFiles };
+file_group_load_info file_group_POLARCHA = { &FileGroups[17], PolarFiles };
+file_group_load_info file_group_POLARCUC = { &FileGroups[17], PolarFiles };
+file_group_load_info file_group_POLARNGC = { &FileGroups[17], PolarFiles };
+file_group_load_info file_group_POLAREND = { &FileGroups[18], PolarEndFiles };
+file_group_load_info file_group_POLARENC = { &FileGroups[18], PolarEndFiles };
+file_group_load_info file_group_POLARBSS = { &FileGroups[16], PolarBossFiles };
 u16 PolarLUPtab[8] = { 3, 0x20D, 0x1601, 0x1603, 0x1605, 0x1607, 0x160A, 0x1619 };
 TrigLookUp PolarLUP = { PolarLUPtab, 8 };
 PreMap POLAR_PREMAP = { PolarPreLoadDB, PolarWorldInfo, &PolarLUP };

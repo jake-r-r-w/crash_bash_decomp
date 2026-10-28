@@ -11,7 +11,6 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_8005004C[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 
@@ -40,7 +39,7 @@ s32 ChaseFiles[21] = {
     (s32)&HeroModelBank[DB_KegObjects], (s32)&DatIndex[2 * 305], (s32)&DatIndex[2 * 304], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1E's) */
-file_group_load_info file_group_CHASE = { D_8005004C, ChaseFiles };
+file_group_load_info file_group_CHASE = { &FileGroups[5], ChaseFiles };
 u16 ChaseLUPtab[8] = { 3, 0x20D, 0x201, 0x20D, 0x1301, 0x1306, 0x1309, 0x130A };
 TrigLookUp ChaseLUP = { ChaseLUPtab, 8 };
 PreMap CHASE_PREMAP = { ChasePreLoadDB, ChaseWorldInfo, &ChaseLUP };

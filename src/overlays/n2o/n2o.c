@@ -5,7 +5,6 @@
 #include "bash/arkenoid.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_80050058[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 extern u8 D_80070098[];
@@ -321,7 +320,7 @@ s32 N2OFiles[27] = {
     (s32)&DatIndex[2 * 320], (s32)&HeroModelBank[DB_Oxide], (s32)&DatIndex[2 * 317], (s32)&DatIndex[2 * 316], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1F's) */
-file_group_load_info file_group_N2O = { D_80050058, N2OFiles };
+file_group_load_info file_group_N2O = { &FileGroups[6], N2OFiles };
 u16 N2OLUPtab[6] = { 3, 0x1605, 0x1508, 0x1C06, 0x1C08, 0 };
 TrigLookUp N2OLUP = { N2OLUPtab, 5 };
 PreMap N2O_PREMAP = { N2OPreLoadDB, N2OWorldInfo, &N2OLUP };

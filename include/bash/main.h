@@ -814,7 +814,6 @@ extern s32 D_8006E9F4;
 extern s32 LoadPermanentBuf;
 extern u8 D_800527C4[];
 extern u8 LangModeTypeTexts[];
-extern u8 D_80050010[];
 void modchip_check_region(void);
 void modchip_step();
 extern s32 D_80064414;

@@ -7,7 +7,6 @@
 extern u8 GamePlayers;
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 D_800500B8[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 
@@ -143,7 +142,7 @@ s32 TitlesFiles[9] = {
     (s32)&DatIndex[2 * 394], 0, 0, 0,
 };
 /* the engine's table at 0x800A0030 points at it for the front end's modes */
-file_group_load_info file_group_TITLES = { D_800500B8, TitlesFiles };
+file_group_load_info file_group_TITLES = { &FileGroups[14], TitlesFiles };
 s16 TitlesPreLoadDB[2] = { -1, 0 };
 char *TitlesAnims[6] = {
     (char *)TitlesAnimBreathe, (char *)TitlesAnimTauntA, (char *)TitlesAnimSlide, (char *)TitlesAnimWin,
