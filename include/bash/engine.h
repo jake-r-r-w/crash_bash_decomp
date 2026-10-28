@@ -160,7 +160,7 @@ extern s32 SceneStep;
 extern GfxViewport MainViewport;
 extern GfxCamera MainGfxCamera;
 extern process_info SaveScreenProcess;
-extern void *AmbienceDef;
+extern struct Ambient_data *AmbienceDef; /* the level's (InitAmbience) */
 extern u16 AmbienceTimer;
 extern process_info ScriptSceneProcess;
 extern s32 SceneArgs;

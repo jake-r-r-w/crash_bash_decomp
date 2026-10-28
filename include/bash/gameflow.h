@@ -499,7 +499,7 @@ s32 GameExtra105(u8 *arg0);
 
 void QuitProcess(void);
 
-void AwardCupTrophies(void *arg0);
+void AwardCupTrophies(EngineTable12 *cup);
 
 s32 GatewayMode(void);
 
@@ -541,7 +541,7 @@ void UpdateCardMessage(void);
 
 void RenderCupMenu(void);
 
-s32 CountCupTrophies(void *arg0);
+s32 CountCupTrophies(EngineTable12 *cup);
 
 s32 WarpRoomBestLevel(void);
 

@@ -785,17 +785,15 @@ void DoAmbience(void) {
     if (AmbienceTimer != 0) {
         AmbienceTimer = AmbienceTimer - 1;
     } else {
-        u8 *p = AmbienceDef;
-        p += Random(8) * 2;
-        PlaySfx(*(u16*)(p + 8), 0, 0, 0x1000, 0x1E00, 0);
-        AmbienceTimer = (*(u16*)((u8*)AmbienceDef) + Random(*(u16*)((u8*)AmbienceDef + 2) - *(u16*)((u8*)AmbienceDef))) * 30;
+        PlaySfx(AmbienceDef->Random[Random(8)], 0, 0, 0x1000, 0x1E00, 0);
+        AmbienceTimer = (AmbienceDef->min_delay + Random(AmbienceDef->max_delay - AmbienceDef->min_delay)) * 30;
     }
 }
 
 void InitAmbience(Ambient_data *arg0) {
     AmbienceDef = arg0;
     AmbienceTimer = 0;
-    PlaySfx((*(u16*)((u8*)(arg0) + 4)), 0, 0, 0x1000, 0x1E00, 0);
+    PlaySfx(arg0->Background1, 0, 0, 0x1000, 0x1E00, 0);
 }
 
 void UpdateNasObjects(void) {
@@ -908,7 +906,7 @@ u16 CreditsStep = 0;
 u16 CreditsTimer = 0;
 u16 D_80098712 = 0;
 s32 CreditsActive = 0;
-void *AmbienceDef = 0;
+struct Ambient_data *AmbienceDef = 0;
 u16 AmbienceTimer = 0;
 /* the padding to the word asttable.c's table starts on: the engine links with SUBALIGN(2) */
 s16 EngineDataPad = 0;

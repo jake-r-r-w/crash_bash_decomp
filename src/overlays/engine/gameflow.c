@@ -537,7 +537,7 @@ void RenderCupMenu(void) {
 void QuitCupMenu(void) {
 }
 
-s32 CountCupTrophies(void *arg0) {
+s32 CountCupTrophies(EngineTable12 *cup) {
     s32 i;
     s32 j;
     s32 cnt;
@@ -548,10 +548,10 @@ s32 CountCupTrophies(void *arg0) {
     i = 0;
     tab = CardSlots[0].unk8;
     for (;;) {
-        if (i >= *(s32 *)((u8 *)arg0 + 8)) {
+        if (i >= cup->unk8) {
             goto done;
         }
-        obj = *(s32 *)((u8 *)(i * 16 + *(s32 *)((u8 *)arg0 + 4)) + 4);
+        obj = cup->unk4[i].unk4;
         if (LevelUnlockedIn(obj, GameInfo) == 0) {
             cnt = 0;
             j = cnt;
@@ -573,14 +573,14 @@ done:
     return 1;
 }
 
-void AwardCupTrophies(void *arg0) {
+void AwardCupTrophies(EngineTable12 *cup) {
     s32 i;
-    s32 n = *(s32 *)((u8 *)arg0 + 8);
+    s32 n = cup->unk8;
 
     for (i = 0; i < n; i++) {
-        u8 *e = *(u8 **)((u8 *)arg0 + 4);
-        GameInfo[*(s32 *)(e + i * 16 + 4) + 0xE4] = 1;
-        n = *(s32 *)((u8 *)arg0 + 8);
+        EngineEntry16Head *e = cup->unk4;
+        GameInfo[e[i].unk4 + 0xE4] = 1;
+        n = cup->unk8;
     }
 }
 
@@ -856,7 +856,7 @@ void UpdateCardPrompt(void) {
     switch (CardPromptStep) {
     case 0:
         pad = Pads;
-        if (*(s32 *)((u8 *)pad + 0x48) & 0x1000) {
+        if (pad->pressed & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
             CardPromptRetry = 1;
             GotoProcess(&RetryProcess, 0x200);
@@ -877,7 +877,7 @@ void UpdateCardPrompt(void) {
                 idx = CardSlotIndex * 0x194;
                 p = (u8 *)CardSlots;
                 if (*(s32 *)(idx + p) != 0
-                    && (*(s32 *)((u8 *)pad + 0x48) & 0x4000)) {
+                    && (pad->pressed & 0x4000)) {
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                     music_request(-1);
                     src = CardSlotIndex * 0x194 + p;
@@ -1263,19 +1263,19 @@ void UpdateCardSlots(void) {
         }
     }
     pad = Pads;
-    if (*(s32 *)((u8 *)pad + 0x48) & 0x10) {
+    if (pad->pressed & 0x10) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         SELECT_SLOT(CardSlotIndex - 2);
     }
-    if (*(s32 *)((u8 *)pad + 0x48) & 0x40) {
+    if (pad->pressed & 0x40) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         SELECT_SLOT(CardSlotIndex + 2);
     }
-    if (*(s32 *)((u8 *)pad + 0x48) & 0x80) {
+    if (pad->pressed & 0x80) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         SELECT_SLOT(CardSlotIndex - 1);
     }
-    if (*(s32 *)((u8 *)pad + 0x48) & 0x20) {
+    if (pad->pressed & 0x20) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         SELECT_SLOT(CardSlotIndex + 1);
     }
