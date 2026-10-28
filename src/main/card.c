@@ -68,6 +68,7 @@ void card_make_header(void) {
         k--;
         p--;
     } while (k >= 0);
+    /* the slots' saved states (CardSlots[n].state), by the card image's base */
     itoa_div_end(CardSaveTitle + 0xC, count_completion(CardBuffer + 0x208), 100);
     itoa_div_end(CardSaveTitle + 0x11, count_completion(CardBuffer + 0x208 + 0x194), 100);
     itoa_div_end(CardSaveTitle + 0x16, count_completion(CardBuffer + 0x208 + 0x194 * 2), 100);
