@@ -89,5 +89,40 @@ class Text(Base):
             txt.pack(out)
 
 
+def menu_file():
+    """text_file() with a menu: a pointer to a list of one text record (OBJECTIVE, centred) and
+    an end record."""
+    d = bytearray(text_file())
+    lst = len(d) + 4
+    d += struct.pack("<I", txt.BASE + lst)
+    d += struct.pack("<ihhhhhhhhIihhi", 3, -32768, 80, 0, 0, 0, 0, 0, 0, txt.BASE + 4, 7, 0, 0, 0)
+    d += bytes(txt.REC)                                          # type 0 ends the list
+    return bytes(d)
+
+
+class Menus(Base):
+    def test_read_round_trip_and_edit(self):
+        out = self.unpacked(txt, menu_file())
+        p = os.path.join(out, txt.MENUS)
+        m = txt.json.load(open(p))
+        r = m[0]["records"][0]
+        self.assertEqual((len(m), r["type"], r["x"], r["y"], r["data"], r["text"]), (1, 3, -32768, 80, "@0004", "OBJECTIVE"))
+        self.assertEqual(txt.pack(out), menu_file())
+        r["y"] = 100
+        r["data"] = "@0010"
+        txt.json.dump(m, open(p, "w"))
+        r2 = txt.menus(txt.pack(out))[0]["records"][0]
+        self.assertEqual((r2["y"], r2["data"], r2["text"]), (100, "@0010", "WIN BY\\r09BEING FIRST"))
+
+    def test_records_cant_be_added(self):
+        out = self.unpacked(txt, menu_file())
+        p = os.path.join(out, txt.MENUS)
+        m = txt.json.load(open(p))
+        m[0]["records"].append(m[0]["records"][0])
+        txt.json.dump(m, open(p, "w"))
+        with self.assertRaises(txt.Bad):
+            txt.pack(out)
+
+
 if __name__ == "__main__":
     unittest.main()
