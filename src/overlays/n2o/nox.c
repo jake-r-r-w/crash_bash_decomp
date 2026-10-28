@@ -579,7 +579,7 @@ void NoxStartPhase1(void)
   HeroHooks.CreateShadow = N2OInitShadow;
   HeroHooks.UpdateShadow = N2OUpdateShadow;
  ;
-  RenderHook = func_80093038;
+  RenderHook = RenderGameScene;
   N2OInitBoss();
 }
 
@@ -2324,7 +2324,7 @@ void NoxInitCamera(s32 arg0) {
     NoxCamera.unk3C = 0;
     NoxCamera.unk38 = 0;
     NoxCamera.unk40 = 0;
-    func_80093038();
+    RenderGameScene();
     gfx_set_viewport(&GameViewport, (GfxCamera *)&NoxCamera);
     RenderState.modelDp = ScreenFade.amount;
     func_8009440C();

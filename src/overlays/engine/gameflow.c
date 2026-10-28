@@ -5,7 +5,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2) {
+void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     s32 id;
     s32 obj;
 
@@ -55,7 +55,7 @@ void InitCrateExplode(NAS *arg0) {
     KillNAS(arg0);
 }
 
-void func_8008E5BC(void) {
+void UpdateIntro(void) {
     IntroStep *e;
     IntroStep *tbl;
     s32 type;
@@ -148,7 +148,7 @@ void func_8008E5BC(void) {
     }
 }
 
-void func_8008EAC8(void) {
+void QuitIntro(void) {
     s32 f;
     RECT *a;
     RECT *r;
@@ -164,7 +164,7 @@ void func_8008EAC8(void) {
     MoveImage2(a, r->x, r->y);
 }
 
-void func_8008EB3C(void) {
+void RenderIntro(void) {
     gfx_set_viewport(D_8009E498, MainCamera);
     if (D_800AEC5C != 0) {
         func_8009440C();
@@ -172,7 +172,7 @@ void func_8008EB3C(void) {
     scripts_render();
 }
 
-void func_8008EB8C(void) {
+void InitIntro(void) {
     IntroStepIndex = 0;
     D_8009E5A8 = 0;
     D_800AEC58 = 0;
@@ -185,7 +185,7 @@ void func_8008EB8C(void) {
     FirstBootDone = 1;
 }
 
-void func_8008EC00(void) {
+void LoadScreenImage(void) {
     u8 *a;
     u8 *b;
     s32 load_file_permanent();
@@ -199,7 +199,7 @@ void func_8008EC00(void) {
     mal_free(b, &MainHeap);
 }
 
-void func_8008EC94(void) {
+void CopyScreen(void) {
     s32 f = FrameCount;
     RECT *a = &ScreenRect[f & 1];
     RECT *r = &ScreenRect[(f + 1) & 1];
@@ -207,7 +207,7 @@ void func_8008EC94(void) {
     MoveImage2(a, r->x, r->y);
 }
 
-void func_8008ECE4(void) {
+void HandleLevelExit(void) {
     EngineModeView *g = (EngineModeView *)GameInfo;
     s32 msg;
     s32 res;
@@ -231,12 +231,12 @@ void func_8008ECE4(void) {
     flags = g->unk30;
     if ((flags & 0x8008) == 0x8008) {
         g->mode = NextGameMode;
-        res = func_800951D0((s16)NextGameMode);
+        res = PickModeVariant((s16)NextGameMode);
         if (res == 0) {
             ProcessControl.next_process = &LevelLoadProcess;
             return;
         }
-        func_80094D88(res, &LevelLoadProcess);
+        GotoScriptScene(res, &LevelLoadProcess);
         return;
     }
     w = ModeTypes[g->mode * 3];
@@ -250,7 +250,7 @@ void func_8008ECE4(void) {
             return;
         }
         if (flags == 0x8002) {
-            g->mode = func_8008EF70();
+            g->mode = WarpRoomMode();
         } else {
             g->mode = NextGameMode;
         }
@@ -266,17 +266,17 @@ void func_8008ECE4(void) {
         if (g->unk187 != 0 && (flags & 1)) {
             if (g->unk44 == 3) {
                 g->mode = 0x20;
-                func_80094D88((s32)D_800A0888, &LevelLoadProcess);
+                GotoScriptScene((s32)D_800A0888, &LevelLoadProcess);
             } else if (g->unk44 == 1) {
                 g->mode = 0x25;
-                func_80094D88((s32)D_800A0858, &LevelLoadProcess);
+                GotoScriptScene((s32)D_800A0858, &LevelLoadProcess);
             } else {
                 g->mode = 0x25;
-                func_80094D88((s32)D_800A0870, &LevelLoadProcess);
+                GotoScriptScene((s32)D_800A0870, &LevelLoadProcess);
             }
             return;
         }
-        GameMode = func_8008EF70();
+        GameMode = WarpRoomMode();
         return;
     case 0x20:
         g->mode = 0x25;
@@ -285,14 +285,14 @@ void func_8008ECE4(void) {
         } else {
             msg = (s32)D_800A0870;
         }
-        func_80094D88(msg, &LevelLoadProcess);
+        GotoScriptScene(msg, &LevelLoadProcess);
         return;
     }
     g = (EngineModeView *)GameInfo;
     switch (*(u8 *)&g->unk32) {
     case 2:
         if (g->unk30 & 1) {
-            g->mode = func_8008FF94();
+            g->mode = CupNextArena();
         } else {
             g->mode = 0x2A;
         }
@@ -301,23 +301,23 @@ void func_8008ECE4(void) {
         g->mode = 0x29;
         break;
     default:
-        g->mode = func_8008EF70();
+        g->mode = WarpRoomMode();
         break;
     }
     ProcessControl.next_process = &LevelLoadProcess;
 }
 
-s32 func_8008EF70(void) {
+s32 WarpRoomMode(void) {
     return WarpRooms[GameWarpRoom][0];
 }
 
-void func_8008EF9C(void) {
-    NextGameMode = func_8008EF70();
+void ReturnToWarpRoom(void) {
+    NextGameMode = WarpRoomMode();
     GameExitFlags = 0x8008;
-    func_8008ECE4();
+    HandleLevelExit();
 }
 
-void func_8008EFD4(void) {
+void UpdateExitDelay(void) {
     u8 *g = GameInfo;
 
     if (*(u16 *)(g + 0x30) & 0x8000) {
@@ -328,7 +328,7 @@ void func_8008EFD4(void) {
                     return;
                 }
             }
-            func_80092AF4(&LevelLoadProcess, 0x200);
+            GotoProcess(&LevelLoadProcess, 0x200);
             if (!(*(u16 *)(g + 0x30) & 0x200)) {
                 music_request(-1);
             }
@@ -336,12 +336,12 @@ void func_8008EFD4(void) {
     }
 }
 
-void func_8008F068(void) {
+void ExitToTitles(void) {
     NextGameMode = 0x28;
     GameExitFlags = 0x8008;
 }
 
-void func_8008F084(void) {
+void AnimateCupMenu(void) {
     EngineEntry16Head *p;
     EngineTable12 *base;
     EngineTable12 *t;
@@ -386,7 +386,7 @@ loop2:
     }
 }
 
-s32 func_8008F248(s32 arg0) {
+s32 CountSavedWins(s32 arg0) {
     s32 cnt;
     s32 i;
     u8 *tab;
@@ -411,7 +411,7 @@ s32 func_8008F248(s32 arg0) {
     return cnt;
 }
 
-void func_8008F41C(void) {
+void UpdateCardMessage(void) {
     u8 *s0;
     Sub3F0 *s1;
     s32 *tab;
@@ -424,12 +424,12 @@ void func_8008F41C(void) {
             *(s32 *)(s0 + 0x3F0) |= 0x8000;
             return;
         } else if (CardStatus & 0x10) {
-            if (func_8008F248(0) != 0) {
+            if (CountSavedWins(0) != 0) {
                 s1->f6C = D_8009EA64[GameLanguage];
                 *(s32 *)(s0 + 0x3F0) |= 0x8000;
                 if (Pads[0].pressed & 0x2000) {
                     PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
-                    func_8008F248(1);
+                    CountSavedWins(1);
                 }
                 return;
             }
@@ -447,14 +447,14 @@ def:
     *(s32 *)(s0 + 0x3F0) |= 0x8000;
 }
 
-void func_8008F554(void) {
+void UpdateCupMenu(void) {
     u8 *g;
     u8 *p;
     subengine *sub;
     s32 i;
 
     AnimateTitlesBackdrop();
-    func_8008F084();
+    AnimateCupMenu();
     if (D_8009EB98 != 0) {
         D_8009EB98--;
         prims_empty_back();
@@ -514,10 +514,10 @@ void func_8008F554(void) {
     sub->unk14 = rcossin_tbl[(((GameFrameCount * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
     sub->unk52 = 1;
     GetEngineSlot(0)->sub[5].flags |= 0x8000;
-    func_8008F41C();
+    UpdateCardMessage();
 }
 
-void func_8008FB48(void) {
+void RenderCupMenu(void) {
     gfx_set_viewport(&D_8009EA9C, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
     eng_render_subs((u8 *)GetEngineSlot(3));
@@ -539,7 +539,7 @@ void func_8008FB48(void) {
 void func_8008FC58(void) {
 }
 
-s32 func_8008FC60(void *arg0) {
+s32 CountCupTrophies(void *arg0) {
     s32 i;
     s32 j;
     s32 cnt;
@@ -575,7 +575,7 @@ done:
     return 1;
 }
 
-void func_8008FD40(void *arg0) {
+void AwardCupTrophies(void *arg0) {
     s32 i;
     s32 n = *(s32 *)((u8 *)arg0 + 8);
 
@@ -586,7 +586,7 @@ void func_8008FD40(void *arg0) {
     }
 }
 
-void func_8008FD94(void) {
+void CupMenuNext(void) {
     u8 *g = GameInfo;
     s32 n;
 
@@ -599,7 +599,7 @@ void func_8008FD94(void) {
     }
 }
 
-void func_8008FE00(void) {
+void CupMenuPrev(void) {
     u8 *g = GameInfo;
     s32 n;
 
@@ -612,7 +612,7 @@ void func_8008FE00(void) {
     }
 }
 
-s32 func_8008FE68(s32 arg0) {
+s32 CupUnlocked(s32 arg0) {
     EngineTable12 *base = CupTable;
     EngineTable12 *t;
     EngineEntry16Head *p;
@@ -636,7 +636,7 @@ s32 func_8008FE68(s32 arg0) {
     return 1;
 }
 
-s32 func_8008FF10(void) {
+s32 CupCurrentModeType(void) {
     u16 *wt = ModeTypes;
     EngineTable12 *tab = CupTable;
     u8 *g = GameInfo;
@@ -650,7 +650,7 @@ s32 func_8008FF10(void) {
     return *(s32 *)((u8 *)t + w * 4);
 }
 
-s32 func_8008FF94(void) {
+s32 CupNextArena(void) {
     if (GameInfo[0x29] < CupTable[GameInfo[0x28]].unk8 - 1) {
         GameInfo[0x29] = GameInfo[0x29] + 1;
         return CupTable[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
@@ -658,18 +658,18 @@ s32 func_8008FF94(void) {
     return 0x2B;
 }
 
-s32 func_80090008(void) {
+s32 CupCurrentArena(void) {
     return CupTable[GameInfo[0x28]].unk4[GameInfo[0x29]].unk4;
 }
 
-void func_80090048(void) {
+void InitCupMenu(void) {
     D_8009EB98 = 0;
-    func_80095BEC(0, (s32 *)D_8009E8B4);
-    func_80095BEC(2, D_8009E7F4);
-    func_80095BEC(3, (s32 *)D_8009EB3C);
-    func_80095BEC(4, (s32 *)D_8009EB3C);
-    func_80095BEC(5, (s32 *)D_8009EB3C);
-    func_80095BEC(6, (s32 *)D_8009EB3C);
+    PlaceEngineSlot(0, (s32 *)D_8009E8B4);
+    PlaceEngineSlot(2, D_8009E7F4);
+    PlaceEngineSlot(3, (s32 *)D_8009EB3C);
+    PlaceEngineSlot(4, (s32 *)D_8009EB3C);
+    PlaceEngineSlot(5, (s32 *)D_8009EB3C);
+    PlaceEngineSlot(6, (s32 *)D_8009EB3C);
     D_8005A63C = 0;
 }
 
@@ -721,7 +721,7 @@ static inline s32 func_800901B4_find(s32 arg0) {
     return -1;
 }
 
-s32 *func_800901B4(s32 arg0) {
+s32 *WarpRoomOfMode(s32 arg0) {
     s32 i = func_800901B4_find(arg0);
 
     if (i < 0) {
@@ -730,7 +730,7 @@ s32 *func_800901B4(s32 arg0) {
     return WarpRooms[i];
 }
 
-s32 func_8009020C(s32 arg0) {
+s32 WarpRoomIndex(s32 arg0) {
     s32 i;
     s32 *p;
 
@@ -742,7 +742,7 @@ s32 func_8009020C(s32 arg0) {
     return -1;
 }
 
-s32 func_80090248(void) {
+s32 GatewayMode(void) {
     EngSub90248 *p;
 
     if (GameGateway < 0 || (p = HubGateways[GameGateway].unk14, p->unk2 != 2)) {
@@ -751,7 +751,7 @@ s32 func_80090248(void) {
     return p->unk4;
 }
 
-void func_8009029C(void) {
+void ResetWarpRooms(void) {
     s32 i;
     EngEntry *e;
     EngTable *t = (EngTable *)WarpRooms;
@@ -769,13 +769,13 @@ void func_8009029C(void) {
     HubHeroRing.radius = 0x400;
 }
 
-void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     EXTengine *e;
     s32 n;
     s32 d;
     s32 r;
 
-    func_80095BEC(arg1 + 4, D_8009F298);
+    PlaceEngineSlot(arg1 + 4, D_8009F298);
     e = GetEngineSlot(arg1 + 4);
     e->unk10.x = arg3;
     e->unk10.y = arg4;
@@ -846,7 +846,7 @@ void func_80090564(u8 *arg0, s32 arg1) {
     }
 }
 
-void func_80090A10(void) {
+void UpdateCardPrompt(void) {
     PadState *pad;
     s32 idx;
     EXTengine *e;
@@ -861,7 +861,7 @@ void func_80090A10(void) {
         if (*(s32 *)((u8 *)pad + 0x48) & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
             D_8009F63C = 1;
-            func_80092AF4(&RetryProcess, 0x200);
+            GotoProcess(&RetryProcess, 0x200);
             {
                 u8 *q = GameInfo;
                 *(u16 *)(q + 0x30) |= 0x200;
@@ -875,7 +875,7 @@ void func_80090A10(void) {
                 eng_render_subs((u8 *)GetEngineSlot(1));
                 return;
             } else if (CardStatus & 0x10) {
-                func_8009196C();
+                UpdateCardSlots();
                 idx = CardSlotIndex * 0x194;
                 p = (u8 *)CardSlots;
                 if (*(s32 *)(idx + p) != 0
@@ -900,8 +900,8 @@ void func_80090A10(void) {
                         u8 *s = GameInfo;
                         *d = *(Blk12p4 *)(s + 0xD0);
                     }
-                    func_80091E58();
-                    func_80092AF4(&LevelLoadProcess, 0x200);
+                    ShowCardSlots();
+                    GotoProcess(&LevelLoadProcess, 0x200);
                     D_8009F638 = 3;
                 }
                 return;
@@ -934,7 +934,7 @@ void func_80090A10(void) {
     case 2:
         if (loader_pending() == 0) {
             u8 *q;
-            func_80092AF4(&RetryProcess, 0x200);
+            GotoProcess(&RetryProcess, 0x200);
             q = GameInfo;
             D_8009F638 = 3;
             *(u16 *)(q + 0x30) |= 0x200;
@@ -1022,7 +1022,7 @@ const char Menu200Percent[] = "200%";
 const char MenuCardCorrupt[] = "WARNING\nTHE MEMORY CARD IN\nMEMORY CARD SLOT 1\nIS CORRUPT. PLEASE INSERT\nANOTHER MEMORY CARD\nPRESS \376 BUTTON TO EXIT\nWITHOUT SAVING";
 const char MenuEmpty2[] = "";
 
-void func_80090E20(void) {
+void UpdateSaveMenu(void) {
     s32 f;
 
     RenderState.modelDp = ScreenFade.amount;
@@ -1047,7 +1047,7 @@ void func_80090E20(void) {
                 if (!(f & 0x10)) {
                     card_clear_slots();
                 }
-                func_8009196C();
+                UpdateCardSlots();
                 if (Pads[0].pressed & 0x4000) {
                     s32 idx = CardSlotIndex * 0x194;
                     u8 *p = (u8 *)CardSlots;
@@ -1069,7 +1069,7 @@ void func_80090E20(void) {
         }
         if (Pads[0].pressed & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_80092AF4(&RetryProcess, 0x200);
+            GotoProcess(&RetryProcess, 0x200);
             {
                 u8 *q = GameInfo;
                 SaveMenuState = 4;
@@ -1107,7 +1107,7 @@ void func_80090E20(void) {
         SAVEMENU_SET_ANIM(D_8009EFF4);
         if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_80092AF4(&RetryProcess, 0x200);
+            GotoProcess(&RetryProcess, 0x200);
             SaveMenuState = 4;
             *(u16 *)(GameInfo + 0x30) |= 0x200;
         }
@@ -1117,7 +1117,7 @@ void func_80090E20(void) {
         if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             card_reset();
-            func_80092198();
+            RefreshCardSlots();
             SaveMenuState = 0;
         }
         break;
@@ -1128,7 +1128,7 @@ void func_80090E20(void) {
             if (HubSaveMenuHooks.unkC != NULL) {
                 HubSaveMenuHooks.unkC();
             }
-            func_80095BEC(1, &D_8009EEB0);
+            PlaceEngineSlot(1, &D_8009EEB0);
         } else {
             if (HubSaveMenuHooks.unk4 != NULL) {
                 HubSaveMenuHooks.unk4();
@@ -1150,17 +1150,17 @@ void func_80090E20(void) {
                 dst->b[7] = q[0x5F];
                 *(Blk12p4 *)(q + 0xD0) = *(Blk12p4 *)GameOptions;
                 *(Blk18C *)dst->unk8 = *(Blk18C *)q;
-                func_80091E58();
+                ShowCardSlots();
                 card_save();
                 SaveMenuState = 1;
                 if (HubSaveMenuHooks.unkC != NULL) {
                     HubSaveMenuHooks.unkC();
                 }
-                func_80095BEC(1, &D_8009EEB0);
+                PlaceEngineSlot(1, &D_8009EEB0);
                 break;
             }
             case 2:
-                func_80092AF4(&RetryProcess, 0x200);
+                GotoProcess(&RetryProcess, 0x200);
                 SaveMenuState = 4;
                 {
                     u8 *q = GameInfo;
@@ -1195,7 +1195,7 @@ void func_80090E20(void) {
         if (SaveMenuState == 2) {
             card_reset();
         }
-        func_80092AF4(&RetryProcess, 0x200);
+        GotoProcess(&RetryProcess, 0x200);
         SaveMenuState = 4;
         {
             u8 *q = GameInfo;
@@ -1204,7 +1204,7 @@ void func_80090E20(void) {
     }
 }
 
-void func_800917B4(void) {
+void RenderSaveMenu(void) {
     EXTengine *e;
     subengine *s;
     s32 v;
@@ -1244,15 +1244,15 @@ void func_800917B4(void) {
         }
         break;
     case 1:
-        func_80090E20();
+        UpdateSaveMenu();
         break;
     case 2:
-        func_80090A10();
+        UpdateCardPrompt();
         break;
     }
 }
 
-void func_8009196C(void) {
+void UpdateCardSlots(void) {
     PadState *pad;
     EXTengine *e;
     EXTengine *e2;
@@ -1260,7 +1260,7 @@ void func_8009196C(void) {
     if (CardStatus & 2) {
         u8 *c = CardBuffer;
         if (*(s32 *)(c + 0x85C) != D_8009F4BC) {
-            func_80092198();
+            RefreshCardSlots();
             D_8009F4BC = *(s32 *)(c + 0x85C);
         }
     }
@@ -1329,28 +1329,28 @@ void func_8009196C(void) {
     }
 }
 
-void func_80091E58(void) {
+void ShowCardSlots(void) {
     u8 *p = (u8 *)CardSlots;
     u8 *pad = p + 8;
 
-    func_80090310(pad, 0,*(s32 *)CardSlots == 0, 0x28, 0x1E);
-    func_80090310(p + 0x19C, 1, *(s32 *)(p + 0x194) == 0, 0x140, 0x1E);
-    func_80090310(p + 0x330, 2, *(s32 *)(p + 0x328) == 0, 0x28, 0x7C);
-    func_80090310(p + 0x4C4, 3, *(s32 *)(p + 0x4BC) == 0, 0x140, 0x7C);
-    func_80095BEC(3, &D_8009F008);
+    ShowCardSlot(pad, 0,*(s32 *)CardSlots == 0, 0x28, 0x1E);
+    ShowCardSlot(p + 0x19C, 1, *(s32 *)(p + 0x194) == 0, 0x140, 0x1E);
+    ShowCardSlot(p + 0x330, 2, *(s32 *)(p + 0x328) == 0, 0x28, 0x7C);
+    ShowCardSlot(p + 0x4C4, 3, *(s32 *)(p + 0x4BC) == 0, 0x140, 0x7C);
+    PlaceEngineSlot(3, &D_8009F008);
     func_80090564(pad + CardSlotIndex * 0x194,*(s32 *)(p + CardSlotIndex * 0x194) == 0);
 }
 
-void func_80091F54(void) {
+void InitSaveMenu(void) {
     subengine *sub;
 
     CardSlotIndex = 0;
     D_8009F4BC = 0x4D2;
-    func_800920DC();
+    ShowSaveScreen();
     FontPage = 0;
     D_8009F630 = 0;
     D_8009F634 = 1;
-    func_80095BEC(8, &D_8009F40C);
+    PlaceEngineSlot(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->unk74 = 0x2007;
@@ -1359,7 +1359,7 @@ void func_80091F54(void) {
         sub->unk74 = 0x201F;
         sub->unk6C = AdventureItemsModel;
     }
-    func_80095BEC(1, &D_8009EEB0);
+    PlaceEngineSlot(1, &D_8009EEB0);
     D_8009F494 = 0;
     SaveMenuState = 0;
     D_8009F630 = 1;
@@ -1370,11 +1370,11 @@ void func_8009201C(void) {
 
     CardSlotIndex = 0;
     D_8009F4BC = 0x4D2;
-    func_800920DC();
+    ShowSaveScreen();
     FontPage = 0;
     D_8009F630 = 0;
     D_8009F634 = 1;
-    func_80095BEC(8, &D_8009F40C);
+    PlaceEngineSlot(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->unk74 = 0x2007;
@@ -1383,16 +1383,16 @@ void func_8009201C(void) {
         sub->unk74 = 0x201F;
         sub->unk6C = AdventureItemsModel;
     }
-    func_80095BEC(1, &D_8009EEB0);
+    PlaceEngineSlot(1, &D_8009EEB0);
     D_8009F638 = 0;
     D_8009F630 = 2;
 }
 
-void func_800920DC(void) {
+void ShowSaveScreen(void) {
     EXTengine *eng;
 
-    func_80091E58();
-    func_80095BEC(2, &D_8009EF64);
+    ShowCardSlots();
+    PlaceEngineSlot(2, &D_8009EF64);
     GetEngineSlot(2)->unk10.x = 0x28;
     GetEngineSlot(2)->unk10.y = 0x1E;
     eng = GetEngineSlot(2);
@@ -1405,18 +1405,18 @@ void func_800920DC(void) {
     set_fade(&ScreenFade, -0x200, 0);
 }
 
-void func_80092198(void) {
+void RefreshCardSlots(void) {
     EXTengine *eng;
 
-    func_80091E58();
-    func_80095BEC(2, &D_8009EF64);
+    ShowCardSlots();
+    PlaceEngineSlot(2, &D_8009EF64);
     GetEngineSlot(2)->unk10.x = 0x28;
     GetEngineSlot(2)->unk10.y = 0x1E;
     eng = GetEngineSlot(2);
     eng->flags |= 0x10000000;
 }
 
-void func_80092200(u8 *src) {
+void RestoreHeroChoice(u8 *src) {
     u8 *g = GameInfo;
 
     g[0x4C] = src[0];
@@ -1433,10 +1433,10 @@ void func_80092200(u8 *src) {
         u8 *s = GameInfo;
         *d = *(Blk12p4 *)(s + 0xD0);
     }
-    func_80091E58();
+    ShowCardSlots();
 }
 
-void func_800922FC(u8 *dst) {
+void SaveHeroChoice(u8 *dst) {
     u8 *g = GameInfo;
 
     dst[0] = g[0x4C];
@@ -1449,7 +1449,7 @@ void func_800922FC(u8 *dst) {
     dst[7] = g[0x5F];
     *(Blk16 *)(g + 0xD0) = *(Blk16 *)GameOptions;
     *(Blk18C *)(dst + 8) = *(Blk18C *)g;
-    func_80091E58();
+    ShowCardSlots();
 }
 
 s32 func_800923F0(s32 *arg0) {
@@ -1459,14 +1459,14 @@ s32 func_800923F0(s32 *arg0) {
 void func_800923FC(void) {
 }
 
-void func_80092404(void) {
-    func_80095A04(2);
-    func_80095A04(3);
-    func_80095A04(4);
-    func_80095A04(5);
-    func_80095A04(6);
-    func_80095A04(7);
-    func_80095A04(8);
+void ClearEngineSlots(void) {
+    KillEngineSlot(2);
+    KillEngineSlot(3);
+    KillEngineSlot(4);
+    KillEngineSlot(5);
+    KillEngineSlot(6);
+    KillEngineSlot(7);
+    KillEngineSlot(8);
     prims_empty_back();
     prims_empty();
     primpool_free();
@@ -1477,11 +1477,11 @@ void func_8009246C(void) {
 
     CardSlotIndex = 0;
     D_8009F4BC = 0x4D2;
-    func_800920DC();
+    ShowSaveScreen();
     FontPage = 0;
     D_8009F630 = 0;
     D_8009F634 = 1;
-    func_80095BEC(8, &D_8009F40C);
+    PlaceEngineSlot(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->unk74 = 0x2007;
@@ -1490,7 +1490,7 @@ void func_8009246C(void) {
         sub->unk74 = 0x201F;
         sub->unk6C = AdventureItemsModel;
     }
-    func_80095BEC(1, &D_8009EEB0);
+    PlaceEngineSlot(1, &D_8009EEB0);
 }
 
 s32 func_8009251C(u8 *arg0) {
@@ -1578,7 +1578,7 @@ void func_800925F0(s32 arg0) {
     } while (i < 5);
 }
 
-void func_800926CC(GameState *arg0) {
+void InitGameState(GameState *arg0) {
     s32 i;
     u8 t;
     u8 *p;
@@ -1680,7 +1680,7 @@ void func_800926CC(GameState *arg0) {
     arg0->unkD0 = *(Blk12p4 *)GameOptions;
 }
 
-void func_800928E8(void) {
+void InitGraphics(void) {
     EngineCfg *cfg = &D_8009F96C;
     u8 *g;
 
@@ -1691,7 +1691,7 @@ void func_800928E8(void) {
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
-    func_80095DBC();
+    ResetEnginePool();
     D_8004E0D4 = 0;
     D_8009F654 = 0;
     core_process = 0;
@@ -1702,20 +1702,20 @@ void func_800928E8(void) {
     GameOptions[0xD] = 1;
     GameOptions[0xE] = 1;
     GameOptions[0xF] = 1;
-    func_800926CC((GameState *)g);
+    InitGameState((GameState *)g);
     sound_init();
 }
 
-void func_800929D8(void) {
+void StartGame(void) {
     ProcessControl.process = NULL;
     process_control_init(&ProcessControl, NULL);
-    func_800928E8();
+    InitGraphics();
     ScreenFade.amount = 0x1000;
     ScreenFade.maxed = 3;
     ScreenFade.speed = 0x100;
     SetDispMask(1);
     FirstBootDone = 1;
-    func_80092AF4(&LevelLoadProcess, 0x200);
+    GotoProcess(&LevelLoadProcess, 0x200);
     fade_update(&ScreenFade);
     process_control_update(&ProcessControl, &ScreenFade);
     process_control_render(&ProcessControl);
@@ -1726,14 +1726,14 @@ void func_800929D8(void) {
     }
 }
 
-void func_80092AA8(process_info *arg0) {
+void GotoProcessFade(process_info *arg0) {
     if (ProcessControl.next_process != arg0) {
         ((void (*)(fade_info *))set_fade)(&ScreenFade);
         ProcessControl.next_process = arg0;
     }
 }
 
-void func_80092AF4(process_info *process, s32 speed) {
+void GotoProcess(process_info *process, s32 speed) {
     process_control_info *p = &ProcessControl;
 
     if (p->next_process != process) {
@@ -1742,7 +1742,7 @@ void func_80092AF4(process_info *process, s32 speed) {
     }
 }
 
-void func_80092B40(void) {
+void QuitProcess(void) {
     if (ProcessControl.process != NULL) {
         if (ProcessControl.process->quit != NULL) {
             ProcessControl.process->quit();
@@ -1750,11 +1750,11 @@ void func_80092B40(void) {
     }
 }
 
-void func_80092B7C(void) {
+void RenderProcess(void) {
     process_control_render(&ProcessControl);
 }
 
-void func_80092BA0(void) {
+void UpdateProcess(void) {
     fade_update(&ScreenFade);
     process_control_update(&ProcessControl, &ScreenFade);
 }
@@ -1762,20 +1762,20 @@ void func_80092BA0(void) {
 void func_80092BDC(void) {
     ProcessControl.process = NULL;
     process_control_init(&ProcessControl, NULL);
-    func_800928E8();
+    InitGraphics();
     ScreenFade.amount = 0x1000;
     ScreenFade.maxed = 3;
     ScreenFade.speed = 0x100;
     SetDispMask(1);
     FirstBootDone = 1;
-    func_80092AF4(&LevelLoadProcess, 0x200);
+    GotoProcess(&LevelLoadProcess, 0x200);
 }
 
-void func_80092C54(void) {
-    func_800926CC(GameInfo);
+void ResetGameState(void) {
+    InitGameState(GameInfo);
 }
 
-void func_80092C78(void) {
+void InitGameOptions(void) {
     s8 *p;
     *(s32 *)GameOptions = 0x46;
     p = GameOptions;
@@ -1812,24 +1812,24 @@ void func_80092CAC(void) {
     EngineBeginMode(1);
 }
 
-void func_80092E40(void) {
+void QuitGame(void) {
     scripts_kill_all();
     QuitLevel();
     sfx_delete_all();
     process_quit(&MenuProcessControl);
     prims_empty();
     primpool_free();
-    func_8008ECE4();
+    HandleLevelExit();
 }
 
-void func_80092E94(void) {
+void RenderGame(void) {
     RenderHook();
     RenderState.modelDp = ScreenFade.amount;
     RenderPause();
     process_control_render(&MenuProcessControl);
 }
 
-void func_80092EDC(void) {
+void UpdateGame(void) {
     if (UpdatePause() != 0) {
         u8 *g;
         GameFrameCount++;
@@ -1844,10 +1844,10 @@ void func_80092EDC(void) {
     *(s32 *)((u8 *)&MainGfxCamera + 8) = 0x800;
     HudCamera.z = 0;
     *(s32 *)((u8 *)&HudCamera + 8) = 0x40C;
-    func_80097C28();
+    UpdateScreenLabels();
     scripts_update();
     process_control_update(&MenuProcessControl, &ScreenFade);
-    func_8008EFD4();
+    UpdateExitDelay();
 }
 
 void func_80092F9C(void) {
@@ -1868,7 +1868,7 @@ void func_80092FB8(void) {
     }
 }
 
-void func_80093038(void) {
+void RenderGameScene(void) {
     gfx_set_viewport(&GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
     D_80056878 = 0;
@@ -1881,10 +1881,10 @@ void func_80093038(void) {
     gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     DrawLevelHud();
-    func_800984D4();
+    RenderScreenLabels();
 }
 
-void func_80093110(void) {
+void SetGameViewport(void) {
     gfx_set_viewport(&GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
 }
@@ -1916,7 +1916,7 @@ IntroStep IntroSteps[4] = {
 };
 Blk32 D_8009E560 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 D_8009E580 = {0};
-s32 D_8009E58C[6] = { (s32)func_8008EB8C, (s32)func_8008E5BC, (s32)func_8008EB3C, (s32)func_8008EAC8, 0, 0 };
+s32 D_8009E58C[6] = { (s32)InitIntro, (s32)UpdateIntro, (s32)RenderIntro, (s32)QuitIntro, 0, 0 };
 s32 IntroStepIndex = 0;
 s32 D_8009E5A8 = 0;
 u8 *D_8009E5AC = 0;
@@ -1924,7 +1924,7 @@ s32 D_8009E5B0 = 0;
 s32 D_8009E5B4 = 0;
 _sfx_handler *IntroSfx[3] = {0};
 _sfx_handler *D_8009E5C4 = 0;
-s32 D_8009E5C8[5] = { (s32)func_8008EF9C, 0, 0, 0, 0 };
+s32 D_8009E5C8[5] = { (s32)ReturnToWarpRoom, 0, 0, 0, 0 };
 s32 NextGameMode = 0;
 s32 D_8009E5E0[16] = {
     1, 0, (s32)&D_80055614, 0x2005, 1, 1, (s32)&D_80055614, 0x2006, 1, 2, (s32)&D_80055614,
@@ -2041,7 +2041,7 @@ EngRec24 D_8009EB3C[2] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-process_info TournamentSelect = { func_80090048, func_8008F554, func_8008FB48, func_8008FC58, 0 };
+process_info TournamentSelect = { InitCupMenu, UpdateCupMenu, RenderCupMenu, func_8008FC58, 0 };
 s32 D_8009EB98 = 0;
 s32 D_8009EB9C[8] = { 0x20001, 0x3000A, 0x20002, 0x30013, 0x20003, 0x3000B, 0, 0 };
 s32 D_8009EBBC[8] = { 0x2010, 0x22, 0x2012, 0x23, 0x2014, 0x24, 0x2016, 0x25 };
@@ -2140,10 +2140,10 @@ s32 D_8009F40C = 6;
 s32 D_8009F410[17] = { 0xFF9C, 0x100004C8, 0, 0, 0, 0, 0x200700C7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 void *D_8009F454[6] = {
     (void *)&MenuCardCorrupt, (void *)func_8009246C, (void *)func_800923FC,
-    (void *)func_800917B4, (void *)func_80092404, 0,
+    (void *)RenderSaveMenu, (void *)ClearEngineSlots, 0,
 };
-process_info SaveScreenProcess = { func_80091F54, func_800923FC, func_800917B4, func_80092404, 0 };
-s32 SaveScreenProcess2[5] = { (s32)func_8009201C, (s32)func_800923FC, (s32)func_800917B4, (s32)func_80092404, 0 };
+process_info SaveScreenProcess = { InitSaveMenu, func_800923FC, RenderSaveMenu, ClearEngineSlots, 0 };
+s32 SaveScreenProcess2[5] = { (s32)func_8009201C, (s32)func_800923FC, (s32)RenderSaveMenu, (s32)ClearEngineSlots, 0 };
 s32 D_8009F494 = 0;
 /* the results screen's number texts, one buffer: +0, +3, +6, +9 three digits each, +12 the last */
 char D_8009F498[16] = {0};
@@ -2165,7 +2165,7 @@ GfxViewport HudViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xD
 s32 D_8009F6CC[10] = { 0xF00140, 0x1E00280, 0xF00140, 0x1E00280, 0x1E0, 0x168, 0x200, 0x800, 0, 0x1000000 };
 GfxViewport GameViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0x15E, 0x200, 0xDFF, 0, 8, 0x30, 0x10, 0 };
 s32 D_8009F71C[1] = {0};
-process_info RetryProcess = { func_80092CAC, func_80092EDC, func_80092E94, func_80092E40, 0 };
+process_info RetryProcess = { func_80092CAC, UpdateGame, RenderGame, QuitGame, 0 };
 GfxCamera MainGfxCamera = {0};
 GfxCamera HudCamera = {0};
 process_control_info MenuProcessControl = {0};

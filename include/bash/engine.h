@@ -114,7 +114,7 @@ extern u8 D_800A0224[];
 extern void *D_800A0D2C;
 extern process_control_info MenuProcessControl;
 extern void (*RenderHook)(void);
-extern GfxViewport LoadingViewport;   /* the loading screen's (func_8009421C) */
+extern GfxViewport LoadingViewport;   /* the loading screen's (RenderLoadingScreen) */
 extern GfxCamera LoadingCamera;
 extern s32 D_800A0158;
 extern s8 D_80064C93;
@@ -143,7 +143,7 @@ extern s32 D_8009F634;
 extern s32 D_8009F638;
 extern s32 SaveMenuState;
 
-/* func_800936C4's level setup config (D_8005A5E4, or D_8009F96C if unset). */
+/* InitLevelLoad's level setup config (D_8005A5E4, or D_8009F96C if unset). */
 typedef struct EngineCfg {
     /* 0x00 */ u8 unk0[0xC];
     /* 0x0C */ s32 pools[3];       /* prims_init */
@@ -171,7 +171,7 @@ extern GfxCamera MainGfxCamera;
 extern process_info SaveScreenProcess;
 extern void *D_80098718;
 extern u16 D_8009871C;
-extern process_info D_800A0BF4;
+extern process_info ScriptSceneProcess;
 extern s32 D_800A0C0C;
 extern s32 D_800A0D30;
 extern s32 D_800A0C70;
@@ -234,7 +234,7 @@ extern s32 D_8009E5B0;
 extern s32 D_8009E5B4;
 extern s32 D_800AEC58;
 extern u8 D_8009E7F4[];
-/* A text-panel record func_80095BEC builds from (0x24 bytes): kind at 0, the text at 0x14. */
+/* A text-panel record PlaceEngineSlot builds from (0x24 bytes): kind at 0, the text at 0x14. */
 typedef struct EngRec24 {
     /* 0x00 */ u8 pad0[0x14];
     /* 0x14 */ void *text;
@@ -404,7 +404,7 @@ extern s16 HeroActWinner;
 extern s16 HeroActLoser;
 void QuitLevel(void);
 
-/* Object wobbled by func_80093270 (D_800A0290); unk5C is a linked one. */
+/* Object wobbled by AnimateLoadingIcon (D_800A0290); unk5C is a linked one. */
 typedef struct WobbleObj {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -472,9 +472,9 @@ static inline void EngineBeginMode(s32 arg) {
     GameViewport.b = 0;
     GameViewport.isbg = 0;
     g->unk30 &= 0xFDFF;
-    func_8009608C(arg);
+    UpdateCamera(arg);
     process_init(&MenuProcessControl);
-    func_80098570();
+    ResetScreenLabels();
     mode = g->mode;
     world = ModeTypes[mode * 3];
     if (world != 0x101) {

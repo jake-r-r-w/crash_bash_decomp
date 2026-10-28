@@ -550,7 +550,7 @@ typedef struct BossExt {
 
 extern ScriptInit NoxBossScriptInit;
 extern s32 NoxBossPathPos;
-void func_80093038(void);
+void RenderGameScene(void);
 void N2OPlaceHero(s32 arg0);
 
 void NoxStartPhase1(void);

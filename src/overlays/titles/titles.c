@@ -508,13 +508,13 @@ void TitlesInitLevel(void) {
     process_info **p;
     u8 *a1;
 
-    func_8009029C();
+    ResetWarpRooms();
     g = GameInfo;
     g[0x62] = 0;
     cam_init((u8 *)&TitlesCamera);
     *(s32 *)((u8 *)&TitlesCamera + 8) = 0x400;
     *(s32 *)((u8 *)&TitlesCamera + 0x18) = 0x190;
-    func_80095BEC(1, (s32 *)TitlesBackdropPlace);
+    PlaceEngineSlot(1, (s32 *)TitlesBackdropPlace);
     GetEngineSlot(1)->sub[4].flags &= ~0x8000;
     GetEngineSlot(1)->sub[5].flags &= ~0x8000;
     GetEngineSlot(1)->sub[6].flags &= ~0x8000;
@@ -524,7 +524,7 @@ void TitlesInitLevel(void) {
     switch (*(s16 *)(g + 0x34)) {
     case 0x28:
         core_process = 0;
-        func_80092C54();
+        ResetGameState();
         *(u16 *)(g + 0x32) |= 0x200;
         process_control_init(&MenuProcessControl, &MainMenu);
         break;
@@ -555,7 +555,7 @@ void TitlesCheckIdle(void) {
         f = D_8009F654;
         if (f & 1) {
             GameMode = 0x28;
-            func_80094D88((s32)D_800A0840, &LevelLoadProcess);
+            GotoScriptScene((s32)D_800A0840, &LevelLoadProcess);
         } else {
             u8 *g = GameInfo;
             u8 *t = (u8 *)TitlesDemoModes;
@@ -801,7 +801,7 @@ void NewLoadMenuUpdate(void) {
             break;
         case 1:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_80092AF4(&SaveScreenProcess2, 0x200);
+            GotoProcess(&SaveScreenProcess2, 0x200);
             break;
         }
     }
@@ -926,11 +926,11 @@ void OptionsUpdate(void) {
             switch (OptionsCursor) {
             case 0:
                 OptionsPage = 1;
-                func_80095BEC(4, (s32 *)OptionsSoundPlace);
+                PlaceEngineSlot(4, (s32 *)OptionsSoundPlace);
                 break;
             case 1:
                 OptionsPage = 2;
-                func_80095BEC(4, (s32 *)OptionsControllerPlace);
+                PlaceEngineSlot(4, (s32 *)OptionsControllerPlace);
                 break;
             case 2:
                 process_control_back(&MenuProcessControl);
@@ -1024,7 +1024,7 @@ void OptionsUpdate(void) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         OptionsPage = 0;
         OptionsCursor = 0;
-        func_80095BEC(4, (s32 *)OptionsPlace);
+        PlaceEngineSlot(4, (s32 *)OptionsPlace);
     }
 }
 
@@ -1106,7 +1106,7 @@ void RunGameUpdate(void) {
 }
 
 void RunGameInit(void) {
-    void func_8008EC00();
+    void LoadScreenImage();
     init_scripts(0x20, 0x20);
     if (D_8009E58C != NULL) {
         D_8009E58C();
@@ -1118,7 +1118,7 @@ void RunGameInit(void) {
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    func_8008EC00(&DatIndex[2 * 139]);
+    LoadScreenImage(&DatIndex[2 * 139]);
     sfx_table_clear();
     sfx_bank_load((s32)&DatIndex[2 * 274]);
     while (loader_pending() != 0) {
@@ -1132,7 +1132,7 @@ void OptionsQuit(void) {
 }
 
 void OptionsInit(void) {
-    func_80095BEC(4, (s32 *)OptionsPlace);
+    PlaceEngineSlot(4, (s32 *)OptionsPlace);
     OptionsCursor = 0;
     OptionsPage = 0;
 }
@@ -1182,7 +1182,7 @@ void BattleOptionsQuit(void) {
 }
 
 void BattleOptionsInit(void) {
-    func_80095BEC(0, (s32 *)BattleOptionsPlace);
+    PlaceEngineSlot(0, (s32 *)BattleOptionsPlace);
     BattleOptionsState = 2;
 }
 
@@ -1194,12 +1194,12 @@ void TitlesLeaveRender(void) {
 
 void TitlesLeaveInit(void) {
     set_fade(&ScreenFade, 0x200, 0);
-    func_80094D88((s32)D_800A0840, &D_8009E5C8);
+    GotoScriptScene((s32)D_800A0840, &D_8009E5C8);
 }
 
 void NewLoadMenuInit(void) {
     u8 *g;
-    func_80095BEC(0, (s32 *)NewLoadMenuPlace);
+    PlaceEngineSlot(0, (s32 *)NewLoadMenuPlace);
     NewLoadMenuCursor = 0;
     MainMenuCursor = 0;
     g = GameInfo;
@@ -1223,9 +1223,9 @@ void num_players_render(void) {
 
 void PlayersMenuInit(void) {
     if (GameLevelFlags & 4) {
-        func_80095BEC(0, (s32 *)PlayersMenuAdventurePlace);
+        PlaceEngineSlot(0, (s32 *)PlayersMenuAdventurePlace);
     } else {
-        func_80095BEC(0, (s32 *)PlayersMenuPlace);
+        PlaceEngineSlot(0, (s32 *)PlayersMenuPlace);
     }
     GamePlayers = PadRunEnd != 0;
 }
@@ -1233,12 +1233,12 @@ void PlayersMenuInit(void) {
 void MainMenuInit(void) {
     u8 *g;
     MainMenuCursor = 0;
-    func_80092C54();
+    ResetGameState();
     g = GameInfo;
     *(s16 *)(g + 0x34) = 0x28;
     MainMenuHintTimer = 0;
     *(u16 *)(g + 0x32) |= 0x200;
-    func_80095BEC(0, (s32 *)MainMenuPlace);
+    PlaceEngineSlot(0, (s32 *)MainMenuPlace);
 }
 
 void RenderTitlesBackdropAndMenu(void) {
@@ -1500,8 +1500,8 @@ void CharSelectInit(void) {
     *(s32 *)((u8 *)&CharSelectCamera + 8) = 0x400;
     *(s32 *)((u8 *)&CharSelectCamera + 0x18) = 0x190;
     eng = GetEngineSlot(0);
-    func_80095BEC(0, (s32 *)CharSelectPlace);
-    func_80095BEC(2, (s32 *)CharSelectModelsPlace);
+    PlaceEngineSlot(0, (s32 *)CharSelectPlace);
+    PlaceEngineSlot(2, (s32 *)CharSelectModelsPlace);
     i = 0;
     do {
         InitCharSelector(i);
@@ -1790,12 +1790,12 @@ void LevelSelectInit(void) {
     subengine *sub;
 
     LevelSelectReload = 0;
-    func_80095BEC(0, (s32 *)LevelSelectPlace);
-    func_80095BEC(2, (s32 *)LevelSelectPlace0);
-    func_80095BEC(3, (s32 *)LevelSelectPlace1);
-    func_80095BEC(4, (s32 *)LevelSelectPlace2);
-    func_80095BEC(5, (s32 *)LevelSelectPlace3);
-    func_80095BEC(6, (s32 *)LevelSelectPlace4);
+    PlaceEngineSlot(0, (s32 *)LevelSelectPlace);
+    PlaceEngineSlot(2, (s32 *)LevelSelectPlace0);
+    PlaceEngineSlot(3, (s32 *)LevelSelectPlace1);
+    PlaceEngineSlot(4, (s32 *)LevelSelectPlace2);
+    PlaceEngineSlot(5, (s32 *)LevelSelectPlace3);
+    PlaceEngineSlot(6, (s32 *)LevelSelectPlace4);
     GetEngineSlot(1)->sub[4].flags |= 0x8000;
     GetEngineSlot(1)->sub[5].flags |= 0x8000;
     GetEngineSlot(1)->sub[6].flags |= 0x8000;
@@ -2186,7 +2186,7 @@ void TeamModeUpdate(void) {
 }
 
 void team_mode_init(void) {
-    func_80095BEC(0, (s32 *)TeamModePlace);
+    PlaceEngineSlot(0, (s32 *)TeamModePlace);
     TeamModeRow = 0;
     TeamModePreset = 0;
 }
@@ -2204,7 +2204,7 @@ void MoveTeamBar(s32 arg0, s32 arg1) {
 }
 
 void TitlesShellScreenRender(void) {
-    func_800917B4();
+    RenderSaveMenu();
 }
 
 void TitlesShellScreenUpdate(void) {
@@ -2219,5 +2219,5 @@ void TitlesExtraScreenRender(void) {
 }
 
 void TitlesExtraScreenInit(void) {
-    func_80095BEC(2, (s32 *)TitlesExtraPlace);
+    PlaceEngineSlot(2, (s32 *)TitlesExtraPlace);
 }

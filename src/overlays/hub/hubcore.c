@@ -38,7 +38,7 @@ void InitialiseHUB(void) {
     eng->unk2C.z = size;
     eng->unk2C.y = size;
     eng->unk2C.x = size;
-    G6A->unk62 = func_8009020C(G6A->unk34);
+    G6A->unk62 = WarpRoomIndex(G6A->unk34);
     HubInitGateways();
     func_80095258(*(u8 **)MapScene);
     HubInitLevelSelect();
@@ -468,7 +468,7 @@ void HubPreMoveHero(s32 arg0) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
             }
             g->unk30 |= 0x200;
-            func_80092AF4(&SaveScreenProcess, 0x200);
+            GotoProcess(&SaveScreenProcess, 0x200);
             break;
         default:
             HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
@@ -518,7 +518,7 @@ void HubOpenDoorMenu(s32 arg0) {
     HubDoorMenuRecs[4].unk1E = ((HubGameView *)GameInfo)->unk147[arg0] ? 7 : 8;
     HubDoorMenuRecs[3].unk1E = ((HubGameView *)GameInfo)->unk126[arg0] ? 5 : 6;
     e = GetEngineSlot(1);
-    func_80095BEC(1, (s32 *)HubDoorMenuRecs);
+    PlaceEngineSlot(1, (s32 *)HubDoorMenuRecs);
     e->unk10.y = 200;
     e->unk10.x = 0;
     HubDoorChoice = 0;
@@ -575,8 +575,8 @@ void HubDoorMenuUpdate(void) {
         || (!(g->unk4 & 0x2000) && g->unkE4[rec->unk4] == 0)) {
         if (HubDoorChoice >= 0) {
             HubDoorChoice = -1;
-            func_80095A04(1);
-            func_80095A04(2);
+            KillEngineSlot(1);
+            KillEngineSlot(2);
         }
     } else {
         if (HubDoorChoice == -1) {
@@ -603,12 +603,12 @@ void HubDoorMenuUpdate(void) {
                 g2 = (HubGameView *)GameInfo;
                 if (((s32(*)(s32))func_8007A6D0)(n) == 1) {
                     if (g2->unkE4[n] != 0) {
-                        func_80095BEC(2, HubChallengePanels[g2->unk2C]);
+                        PlaceEngineSlot(2, HubChallengePanels[g2->unk2C]);
                     } else {
-                        func_80095BEC(2, HubStartPanels[g2->unk2C]);
+                        PlaceEngineSlot(2, HubStartPanels[g2->unk2C]);
                     }
                 } else {
-                    key = func_80090248();
+                    key = GatewayMode();
                     p = HubLockPanels;
                     for (i = 10; i != -1; i--) {
                         if (p->key == key) {
@@ -619,7 +619,7 @@ void HubDoorMenuUpdate(void) {
                     }
                     recs = NULL;
                 found:
-                    func_80095BEC(2, recs);
+                    PlaceEngineSlot(2, recs);
                 }
             }
             GetEngineSlot(2)->unk10.y = (HubDoorFade >> 4) - 200;
@@ -632,19 +632,19 @@ void HubDoorMenuUpdate(void) {
                 } else {
                     recs = HubWarpPanels[g3->unk2C];
                 }
-                func_80095BEC(2, recs);
+                PlaceEngineSlot(2, recs);
             }
             GetEngineSlot(2)->unk10.y = 0x280 - (HubDoorFade >> 4);
             break;
         case 4:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
-                func_80095BEC(2, HubSavePanels[GameLanguage]);
+                PlaceEngineSlot(2, HubSavePanels[GameLanguage]);
             }
             GetEngineSlot(2)->unk10.y = (HubDoorFade >> 4) - 200;
             break;
         }
     } else {
-        func_80095A04(2);
+        KillEngineSlot(2);
     }
 }
 
@@ -1072,8 +1072,8 @@ u16 HubGatewayKind(void) {
 }
 
 void HubDoorMenu2Quit(void) {
-    func_80095A04(1);
-    func_80095A04(2);
+    KillEngineSlot(1);
+    KillEngineSlot(2);
 }
 
 void HubDoorMenu2Render(void) {
@@ -1125,8 +1125,8 @@ void HubDoorMenuInit(void) {
 }
 
 void HubDoorMenuQuit(void) {
-    func_80095A04(1);
-    func_80095A04(2);
+    KillEngineSlot(1);
+    KillEngineSlot(2);
 }
 
 void HubShowSub(u8 *arg0, s32 arg1) {
@@ -1964,7 +1964,7 @@ void PodiumShowScores(void) {
         n = GameInfo[0xA2];
         PodiumScore4[1] = n % 10 + 0x30;
         PodiumScore4[0] = n / 10 % 10 + 0x30;
-        func_80095BEC(6, &PodiumScoreCount);
+        PlaceEngineSlot(6, &PodiumScoreCount);
         e->unk10.x = 0x28;
         e->unk10.y = 0x21C;
         e->flags |= 0x10008000;
@@ -2558,10 +2558,10 @@ void HubSaveMenuInit(void) {
     }
     set_fade(&ScreenFade, -0x300, 0);
     cam_init(HubSaveCamera);
-    func_80095BEC(0, HubNameLetters);
+    PlaceEngineSlot(0, HubNameLetters);
     GetEngineSlot(0)->unk10.x = 0xC8;
     GetEngineSlot(0)->unk10.y = 0x6E;
-    func_80095BEC(1, HubNamePanel);
+    PlaceEngineSlot(1, HubNamePanel);
     GetEngineSlot(1)->unk10.x = 0;
     GetEngineSlot(1)->unk10.y = 0;
 }
@@ -2594,8 +2594,8 @@ void HubSaveMenuRender(void) {
 }
 
 void HubSaveMenuQuit(void) {
-    func_80095A04(0);
-    func_80095A04(1);
+    KillEngineSlot(0);
+    KillEngineSlot(1);
 }
 
 void HubSaveMenuUpdate(void) {

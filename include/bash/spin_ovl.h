@@ -196,7 +196,7 @@ typedef struct SpinGlow {
     /* 0x1E */ s16 unk1E;
 } SpinGlow;
 s32 GravitateNas(NAS *nas);
-void func_8008E27C(s32 *arg0, void *arg1, s32 arg2);
+void PlayHitEffect(s32 *arg0, void *arg1, s32 arg2);
 
 void SpinHeroFlip(s32 arg0);
 

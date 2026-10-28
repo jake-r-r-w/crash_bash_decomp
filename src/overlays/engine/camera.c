@@ -5,7 +5,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-void func_8009608C(s32 arg0) {
+void UpdateCamera(s32 arg0) {
     CamView view[2];
     s32 *obj;
     EngCam *cam;
@@ -16,15 +16,15 @@ void func_8009608C(s32 arg0) {
         break;
     case 1:
         if (arg0 != 0) {
-            func_80097158(MainCamera);
+            CamFromPath1(MainCamera);
         }
-        func_80096F98(arg0);
+        CameraFrameHeroes(arg0);
         break;
     case 2:
         if (arg0 != 0) {
-            func_80097158(MainCamera);
+            CamFromPath1(MainCamera);
         }
-        func_80096F98(arg0);
+        CameraFrameHeroes(arg0);
         ((EngCam *)MainCamera)->rot.vx = -0x130;
         ((EngCam *)MainCamera)->rot.vy = 0;
         ((EngCam *)MainCamera)->rot.vz = 0x800;
@@ -66,7 +66,7 @@ void func_8009608C(s32 arg0) {
     }
 }
 
-s32 func_80096280(s32 *p0, s32 *p1, s32 *q0, s32 *q1, s32 *out) {
+s32 line_intersect_xz(s32 *p0, s32 *p1, s32 *q0, s32 *q1, s32 *out) {
     s32 denom, num, u, t;
     s32 dqz;
     s32 dpx;
@@ -214,7 +214,7 @@ s32 line_intersect_zy(VECTOR *p0, VECTOR *p1, VECTOR *q0, VECTOR *q1, VECTOR *ou
     return 1;
 }
 
-s32 func_800967E0(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out) {
+s32 cam_frame_hit(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out) {
     Vec3W hit;
     VECTOR sp28;
     s32 flags;
@@ -242,7 +242,7 @@ s32 func_800967E0(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out) {
     return flags;
 }
 
-void func_80096A08(void) {
+void CalcCameraFrame(void) {
     MATRIX m;
     VECTOR in;
     VECTOR out;
@@ -346,7 +346,7 @@ void func_80096A08(void) {
     }
 }
 
-void func_80096F98(s32 arg0) {
+void CameraFrameHeroes(s32 arg0) {
     s32 pos[4];
     s32 d[3];
     View *view;
@@ -356,8 +356,8 @@ void func_80096F98(s32 arg0) {
     s32 v;
 
     BuildCameraFrameList();
-    func_80096A08();
-    if (func_800967E0(&D_800AD2EC, D_800AD2F8, &D_800AD304, camera_frame_right, pos) != 0) {
+    CalcCameraFrame();
+    if (cam_frame_hit(&D_800AD2EC, D_800AD2F8, &D_800AD304, camera_frame_right, pos) != 0) {
         d[0] = ((View *)MainCamera)->pos.vx - pos[0];
     }
     d[1] = ((View *)MainCamera)->pos.vy - pos[1];
@@ -397,7 +397,7 @@ void func_80096F98(s32 arg0) {
     }
 }
 
-void func_80097158(u8 *p) {
+void CamFromPath1(u8 *p) {
     s32 *t = path_get(1);
     EngineGameView *g;
 
@@ -426,7 +426,7 @@ void func_80097158(u8 *p) {
     GameViewport.ofy = 0x15E;
 }
 
-void func_80097244(u8 *p) {
+void CamFromPath9(u8 *p) {
     s32 *t = path_get(9);
 
     if (t != NULL) {
@@ -448,7 +448,7 @@ void camera_count_bottom(s32 arg0, s32 arg1) {
     }
 }
 
-void func_80097334(s32 arg0, s32 arg1) {
+void CamBoundBottomPoint(s32 arg0, s32 arg1) {
     s32 v = arg0 + ((arg1 + 0x3000) * 0xF0) / ((EngCam *)MainCamera)->dist;
 
     if (v < CamBoundBottom) {
@@ -458,7 +458,7 @@ void func_80097334(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800973AC(s32 arg0, s32 arg1) {
+void CamBoundRightPoint(s32 arg0, s32 arg1) {
     s32 temp = arg0 - ((arg1 + 0x3000) * 0x140) / ((EngCam *)MainCamera)->dist;
 
     if (CamBoundRight < temp) {
@@ -468,7 +468,7 @@ void func_800973AC(s32 arg0, s32 arg1) {
     }
 }
 
-void func_80097424(s32 arg0, s32 arg1) {
+void CamBoundLeftPoint(s32 arg0, s32 arg1) {
     s32 v = arg0 + ((arg1 + 0x3000) * 0x140) / ((EngCam *)MainCamera)->dist;
 
     if (v < CamBoundLeft) {
@@ -493,7 +493,7 @@ void camera_add_frame_list(SLONG_XYZ *arg0, s16 arg1, s16 arg2, s16 arg3, s16 ar
     }
 }
 
-s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
+s32 CamEdgeIntersect(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     s32 sp18[3];
     s32 sp28[3];
     s32 d;
@@ -503,7 +503,7 @@ s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     sp18[2] = arg0->c - 0x3000;
     sp28[0] = arg1->a - d;
     sp28[2] = arg1->c - 0x3000;
-    if (func_80096280(arg0, sp18, arg1, sp28, arg2) != 0) {
+    if (line_intersect_xz(arg0, sp18, arg1, sp28, arg2) != 0) {
         return 1;
     }
     if (arg0->c < arg1->c) {
@@ -515,7 +515,7 @@ s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     return 1;
 }
 
-s32 func_80097608(VECTOR *arg0, VECTOR *arg1, s32 arg2) {
+s32 CamEdgeIntersectZY(VECTOR *arg0, VECTOR *arg1, s32 arg2) {
     VECTOR sp18;
     VECTOR sp28;
     s32 d = 0x2D0000 / ((EngCam *)MainCamera)->dist;
@@ -556,7 +556,7 @@ s32 func_800976A8(u8 *arg0, s32 arg1) {
 }
 
 extern s32 ScreenCount;
-void func_800976F8(void) {
+void InitScreenLabels(void) {
     EXTengine *eng;
     s32 v;
 
@@ -596,20 +596,20 @@ void func_800976F8(void) {
         D_800AD7AC[0].unk1E = v;
         D_800AD8CC[0].unk1E = v;
         if (GV->unk6C != 0) {
-            func_80095BEC(3, (s32 *)D_800AD7AC);
+            PlaceEngineSlot(3, (s32 *)D_800AD7AC);
             ScreenCount = 1;
         } else {
-            func_80095BEC(3, (s32 *)D_800AD8CC);
+            PlaceEngineSlot(3, (s32 *)D_800AD8CC);
             ScreenCount = 1;
         }
         break;
     case 0x40:
         D_800ADB54[0].unk1E = 0x201F;
-        func_80095BEC(3, (s32 *)D_800ADB54);
+        PlaceEngineSlot(3, (s32 *)D_800ADB54);
         goto end;
     case 0x80:
         D_800ADB54[0].unk1E = 0x201E;
-        func_80095BEC(3, (s32 *)D_800ADB54);
+        PlaceEngineSlot(3, (s32 *)D_800ADB54);
         goto end;
     case 0x10:
     default:
@@ -618,13 +618,13 @@ void func_800976F8(void) {
         D_800AD7AC[0].unk1E = 0x2022;
         D_800AD8CC[0].unk1E = 0x2022;
         if (GV->mode == 0x20) {
-            func_80095BEC(3, (s32 *)D_800AD9C8);
+            PlaceEngineSlot(3, (s32 *)D_800AD9C8);
             ScreenCount = 2;
         } else if (GV->unk6C != 0) {
-            func_80095BEC(3, (s32 *)D_800AD5D8);
+            PlaceEngineSlot(3, (s32 *)D_800AD5D8);
             ScreenCount = 2;
         } else {
-            func_80095BEC(3, (s32 *)D_800AD32C);
+            PlaceEngineSlot(3, (s32 *)D_800AD32C);
             ScreenCount = 4;
         }
         break;
@@ -636,7 +636,7 @@ end:
     GetEngineSlot(3)->flags &= 0xEFFFFFFF;
 }
 
-void func_80097AA4(subengine *s) {
+void BobSub(subengine *s) {
     TrigEntry *t;
     s32 f;
     TrigEntry *e;
@@ -656,7 +656,7 @@ void func_80097AA4(subengine *s) {
     s->unk52 = 1;
 }
 
-void func_80097C28(void) {
+void UpdateScreenLabels(void) {
     s32 *p = &D_800ADBC0;
     EXTengine *eng;
     subengine *s;
@@ -700,7 +700,7 @@ void func_80097C28(void) {
             u32 t = GameLevelFlags & 0xF0;
             if (t == 0x40 || t == 0x80) {
                 e->flags |= 0x8000;
-                func_80097AA4(e);
+                BobSub(e);
             } else {
                 e->flags &= ~0x8000;
             }
@@ -727,7 +727,7 @@ void func_80097C28(void) {
             u32 t = GameLevelFlags & 0xF0;
             if (t == 0x40 || t == 0x80) {
                 e->flags |= 0x8000;
-                func_80097AA4(e);
+                BobSub(e);
             } else {
                 e->flags &= ~0x8000;
             }
@@ -758,7 +758,7 @@ void func_80097C28(void) {
                 u32 t = GameLevelFlags & 0xF0;
                 if (t == 0x40 || t == 0x80) {
                     e->flags |= 0x8000;
-                    func_80097AA4(e);
+                    BobSub(e);
                 } else {
                     e->flags &= ~0x8000;
                 }
@@ -767,7 +767,7 @@ void func_80097C28(void) {
             {
                 subengine *e = GetEngineSlot(3)->sub;
                 e->flags |= 0x8000;
-                func_80097AA4(e);
+                BobSub(e);
             }
             {
                 s32 j;
@@ -791,7 +791,7 @@ void func_80097C28(void) {
         {
             subengine *e = GetEngineSlot(3)->sub;
             e->flags |= 0x8000;
-            func_80097AA4(e);
+            BobSub(e);
         }
         {
             s32 j;
@@ -805,24 +805,24 @@ void func_80097C28(void) {
     }
 }
 
-void func_80098278(void) {
+void ScreenLabelsOff(void) {
     D_800ADBC0 = 0;
 }
 
-void func_80098284(void) {
+void ScreenLabelsStart(void) {
     s32 *p;
     if (D_800ADBC0 == 0) {
         D_800ADBC0 = 1;
         p = &D_800ADBC0;
         p[1] = 0;
         p[2] = 0;
-        func_800976F8();
+        InitScreenLabels();
         PlaySfx(0x19D, NULL, NULL, 0x1000, 0x1E00, 0);
     }
 }
 
 extern s32 ScreenCount;
-void func_800982E0(void) {
+void HideScreenLabels(void) {
     s32 i;
     subengine *s = GetEngineSlot(3)->sub + 2;
     for (i = 0; i < ScreenCount; i++) {
@@ -831,7 +831,7 @@ void func_800982E0(void) {
     }
 }
 
-void func_80098344(void) {
+void ShowScreenLabels(void) {
     s32 i;
     subengine *s = GetEngineSlot(3)->sub + 2;
     for (i = 0; i < ScreenCount; i++) {
@@ -848,7 +848,7 @@ void func_80098344(void) {
 void anim_item(void) {
     subengine *s = GetEngineSlot(3)->sub;
     s->flags |= 0x8000;
-    func_80097AA4(s);
+    BobSub(s);
 }
 
 void func_80098464(void) {
@@ -856,13 +856,13 @@ void func_80098464(void) {
     u32 t = GameLevelFlags & 0xF0;
     if (t == 0x40 || t == 0x80) {
         s->flags |= 0x8000;
-        func_80097AA4(s);
+        BobSub(s);
     } else {
         s->flags &= ~0x8000;
     }
 }
 
-void func_800984D4(void) {
+void RenderScreenLabels(void) {
     s32 *s;
     s32 v;
     int new_var;
@@ -879,7 +879,7 @@ void func_800984D4(void) {
     }
 }
 
-void func_80098570(void) {
+void ResetScreenLabels(void) {
     s32 *p;
     D_800ADBC0 = 0;
     p = &D_800ADBC0;

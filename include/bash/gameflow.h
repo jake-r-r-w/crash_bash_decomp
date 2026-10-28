@@ -11,7 +11,7 @@
 extern s32 D_8005687C[];
 s32 UpdatePause(void);
 void UpdateLevel(void);
-void func_80097C28(void);
+void UpdateScreenLabels(void);
 extern u8 D_8005164C[];
 extern GfxViewport D_8009EA74;
 extern GfxViewport D_8009EA9C;
@@ -26,7 +26,7 @@ typedef struct { Blk16 a[0x18]; s32 b[3]; } Blk18C;
 typedef struct { s32 w[3]; } Blk12;
 typedef struct { Blk12 a; s32 b; } Blk12p4;
 
-/* game state block at GameInfo, reset by func_800926CC */
+/* game state block at GameInfo, reset by InitGameState */
 typedef struct {
     u8 pad0[8];
     s32 unk8;
@@ -98,9 +98,9 @@ extern s32 D_8009EA64[];
 extern s32 D_8009EA68[];
 extern s32 D_8009EA6C[];
 extern s32 D_8009EA70[];
-s32 func_8008F248(s32 arg0);
+s32 CountSavedWins(s32 arg0);
 
-/* Inlined copies used by func_8008F248. */
+/* Inlined copies used by CountSavedWins. */
 static inline s32 EngineTable_AllDone(EngineTable12 *t) {
     EngineEntry16Head *p;
     s32 n;
@@ -158,17 +158,17 @@ static inline void EngineTable_MarkDone(void *arg0) {
     }
 }
 
-void func_8008EB3C(void);
+void RenderIntro(void);
 
-void func_8008EB8C(void);
+void InitIntro(void);
 
-void func_8008F084(void);
+void AnimateCupMenu(void);
 
 void AnimateTitlesBackdrop(void);
 void MenuChainBack(void);
 void MenuChainNext(void);
 
-/* func_8008FD94's body, inlined by func_8008F554. */
+/* CupMenuNext's body, inlined by UpdateCupMenu. */
 static inline void EngineWorldNext(void) {
     u8 *g = GameInfo;
     s32 n;
@@ -182,7 +182,7 @@ static inline void EngineWorldNext(void) {
     }
 }
 
-/* func_8008FE00's body, inlined by func_8008F554. */
+/* CupMenuPrev's body, inlined by UpdateCupMenu. */
 static inline void EngineWorldPrev(void) {
     u8 *g = GameInfo;
     s32 n;
@@ -196,7 +196,7 @@ static inline void EngineWorldPrev(void) {
     }
 }
 
-/* func_8008FE68's body, inlined by func_8008F554. */
+/* CupUnlocked's body, inlined by UpdateCupMenu. */
 static inline s32 EngineTable_Unlocked(s32 arg0) {
     EngineTable12 *base = CupTable;
     EngineTable12 *t;
@@ -221,7 +221,7 @@ static inline s32 EngineTable_Unlocked(s32 arg0) {
     return 1;
 }
 
-/* func_8008FF10's body, inlined by func_8008F554. */
+/* CupCurrentModeType's body, inlined by UpdateCupMenu. */
 static inline s32 EngineCurWorldName(void) {
     u16 *wt = ModeTypes;
     EngineTable12 *tab = CupTable;
@@ -238,29 +238,29 @@ static inline s32 EngineCurWorldName(void) {
 
 void func_8008FC58(void);
 
-void func_80090048(void);
+void InitCupMenu(void);
 
-void func_80091F54(void);
+void InitSaveMenu(void);
 
 s32 func_800923F0(s32 *arg0);
 
 void func_800923FC(void);
 
-void func_80092404(void);
+void ClearEngineSlots(void);
 
-void func_800929D8(void);
+void StartGame(void);
 
-void func_80092B7C(void);
+void RenderProcess(void);
 
-void func_80092BA0(void);
+void UpdateProcess(void);
 
-void func_80092C54(void);
+void ResetGameState(void);
 
-void func_80092E40(void);
+void QuitGame(void);
 
-void func_80091E58(void);
+void ShowCardSlots(void);
 
-void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern s32 D_8009F298[];
 extern void *D_8009F004[];
 extern char D_8009F4A8[][5];
@@ -361,14 +361,14 @@ static inline void EngineSetSlot3Digits(s32 slot, s32 arg0) {
 
 void func_80090564(u8 *arg0, s32 arg1);
 
-void func_800920DC(void);
+void ShowSaveScreen(void);
 
-void func_80090A10(void);
+void UpdateCardPrompt(void);
 
-void func_80090E20(void);
+void UpdateSaveMenu(void);
 
-void func_8008ECE4(void);
-/* GameInfo as seen by func_8008ECE4. */
+void HandleLevelExit(void);
+/* GameInfo as seen by HandleLevelExit. */
 typedef struct EngineModeView {
     /* 0x00 */ u8 pad0[0x30];
     /* 0x30 */ u16 unk30;
@@ -393,7 +393,7 @@ extern void *D_8009EFD0[];
 extern void *D_8009EFD4[];
 extern void *D_8009EFD8[];
 extern void *D_8009EFDC[];
-/* func_8009196C: move the save slot cursor to slot (n) & 3 and redraw it. */
+/* UpdateCardSlots: move the save slot cursor to slot (n) & 3 and redraw it. */
 #define SELECT_SLOT(n)                                \
     {                                                 \
         s32 i_;                                       \
@@ -428,7 +428,7 @@ extern void *D_8009EFF4[];
 extern void *D_8009EFF8[];
 extern void *D_8009EFFC[];
 extern void *D_8009F454[];
-/* Optional callbacks used by the save menu (func_80090E20). */
+/* Optional callbacks used by the save menu (UpdateSaveMenu). */
 typedef struct {
     /* 0x0 */ void (*unk0)(void);
     /* 0x4 */ void (*unk4)(void);
@@ -437,7 +437,7 @@ typedef struct {
 } SaveMenuHooks;
 extern SaveMenuHooks HubSaveMenuHooks;
 extern s32 HubSaveChoice;
-/* func_80090E20: show slot 1's menu frames from tbl for the current mode. */
+/* UpdateSaveMenu: show slot 1's menu frames from tbl for the current mode. */
 #define SAVEMENU_SET_ANIM(tbl)                                                 \
     {                                                                          \
         EXTengine *e_;                                                         \
@@ -448,8 +448,8 @@ extern s32 HubSaveChoice;
         eng_render_subs((u8 *)GetEngineSlot(1));                                 \
     }
 extern s32 D_8009F63C;
-void func_8009196C(void);
-/* A step of the ending's messages (func_80094D88): two pointers and a time. */
+void UpdateCardSlots(void);
+/* A step of the ending's messages (GotoScriptScene): two pointers and a time. */
 typedef struct MsgStep {
     void *a;
     void *b;
@@ -459,23 +459,23 @@ extern MsgStep D_800A0858[];
 extern MsgStep D_800A0870[];
 extern MsgStep D_800A0888[];
 
-s32 func_8008EF70(void);
+s32 WarpRoomMode(void);
 
-void func_8008EF9C(void);
+void ReturnToWarpRoom(void);
 
-void func_8008F068(void);
+void ExitToTitles(void);
 
 void func_80092F9C(void);
 
-void func_8008EC94(void);
+void CopyScreen(void);
 
 s32 func_80092560(u8 *arg0);
 
-void func_8009029C(void);
+void ResetWarpRooms(void);
 
-void func_8008EAC8(void);
+void QuitIntro(void);
 
-s32 func_8009020C(s32 arg0);
+s32 WarpRoomIndex(s32 arg0);
 
 void func_80092CAC(void);
 
@@ -483,41 +483,41 @@ s32 func_80092598(u8 *arg0);
 
 s32 func_800925C4(u8 *arg0);
 
-void func_80092C78(void);
+void InitGameOptions(void);
 
-void func_80093038(void);
+void RenderGameScene(void);
 
-void func_80093110(void);
+void SetGameViewport(void);
 
-s32 func_80090008(void);
+s32 CupCurrentArena(void);
 
-s32 *func_800901B4(s32 arg0);
+s32 *WarpRoomOfMode(s32 arg0);
 
-void func_800917B4(void);
+void RenderSaveMenu(void);
 
 s32 func_8009251C(u8 *arg0);
 
-void func_80092B40(void);
+void QuitProcess(void);
 
-void func_8008FD40(void *arg0);
+void AwardCupTrophies(void *arg0);
 
-s32 func_80090248(void);
+s32 GatewayMode(void);
 
-void func_80092AA8(process_info *arg0);
+void GotoProcessFade(process_info *arg0);
 
-void func_80092AF4(process_info *process, s32 speed);
+void GotoProcess(process_info *process, s32 speed);
 
-void func_80092E94(void);
+void RenderGame(void);
 
-void func_8008FD94(void);
+void CupMenuNext(void);
 
-void func_8008FE00(void);
+void CupMenuPrev(void);
 
-s32 func_8008FF10(void);
+s32 CupCurrentModeType(void);
 
-s32 func_8008FF94(void);
+s32 CupNextArena(void);
 
-void func_80092198(void);
+void RefreshCardSlots(void);
 
 void func_80092BDC(void);
 
@@ -525,11 +525,11 @@ void func_80092FB8(void);
 
 void InitCrateExplode(NAS *arg0);
 
-void func_8008EC00(void);
+void LoadScreenImage(void);
 
-void func_8008EFD4(void);
+void UpdateExitDelay(void);
 
-s32 func_8008FE68(s32 arg0);
+s32 CupUnlocked(s32 arg0);
 
 void func_8009246C(void);
 
@@ -537,23 +537,23 @@ void func_8009201C(void);
 
 extern s32 D_8009F248[][5];
 
-void func_8008F41C(void);
+void UpdateCardMessage(void);
 
-void func_8008FB48(void);
+void RenderCupMenu(void);
 
-s32 func_8008FC60(void *arg0);
+s32 CountCupTrophies(void *arg0);
 
 s32 func_800900CC(void);
 
-void func_80092200(u8 *src);
+void RestoreHeroChoice(u8 *src);
 
-void func_800922FC(u8 *dst);
+void SaveHeroChoice(u8 *dst);
 
 void func_800925F0(s32 arg0);
 
-void func_800928E8(void);
+void InitGraphics(void);
 
-void func_80092EDC(void);
+void UpdateGame(void);
 
 typedef struct {
     void *unk0;
@@ -574,7 +574,7 @@ typedef struct {
     s32 other[4];
     s32 crate[4];
 } HitSfxTable;
-/* Intro/cutscene step script run by func_8008E5BC. */
+/* Intro/cutscene step script run by UpdateIntro. */
 typedef struct {
     /* 0x00 */ s32 type;   /* 1: picture, 2: model */
     /* 0x04 */ s32 *pic;
@@ -591,12 +591,12 @@ extern CamVec3 D_8009E580;
 extern u8 *D_8009E5AC;
 extern _sfx_handler *IntroSfx[3];
 extern _sfx_handler *D_8009E5C4;
-void func_8008E5BC(void);
+void UpdateIntro(void);
 void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2);
+void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2);
 
-void func_8008F554(void);
+void UpdateCupMenu(void);
 
-void func_800926CC(GameState *arg0);
+void InitGameState(GameState *arg0);
 
 #endif /* BASH_GAMEFLOW_H */

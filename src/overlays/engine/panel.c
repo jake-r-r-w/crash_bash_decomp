@@ -1521,7 +1521,7 @@ void CheckHeroesAllOut(void) {
             return;
         }
         e = GetEngineSlot(5);
-        func_80095BEC(5, D_8005A554);
+        PlaceEngineSlot(5, D_8005A554);
         PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
         e->unk10.y = 0x1F4;
         e->flags |= 0x10008000;
@@ -1676,7 +1676,7 @@ found:
                     CupWinner = FindTeamLeader();
                     if (CupWinner != -1) {
                         MODEV->unkCC[CupWinner]++;
-                        func_80098284();
+                        ScreenLabelsStart();
                     }
                 } else {
                     CupWinner = FindTeamLeader();
@@ -1687,7 +1687,7 @@ found:
                         if (t != -1) {
                             MODEV->unkCC[t] = MODEV->unkCC[r];
                         }
-                        func_80098284();
+                        ScreenLabelsStart();
                     }
                 }
                 CupMode = 1;
@@ -1928,7 +1928,7 @@ found:
                 MODEV->unkCC[3] = 0;
                 CupMode = 0xD;
             } else {
-                func_80098278();
+                ScreenLabelsOff();
                 RequestQuit();
                 MODEV->unk10 &= ~1;
             }
@@ -1971,7 +1971,7 @@ found:
                 break;
             case 2:
             default:
-                func_80098278();
+                ScreenLabelsOff();
                 RequestQuit();
                 MODEV->unk10 &= ~1;
                 break;
@@ -2021,7 +2021,7 @@ found:
                 MODEV->unkCC[3] = 0;
                 CupMode = 0xD;
             } else {
-                func_80098278();
+                ScreenLabelsOff();
                 RequestQuit();
                 MODEV->unk10 &= ~1;
             }
@@ -2034,12 +2034,12 @@ found:
             break;
         }
         MODEV->unk30 |= 0x8200;
-        func_80098278();
+        ScreenLabelsOff();
         music_duck_off();
     case 11:
     case 16:
         if (CupTimer == 0) {
-            func_80098278();
+            ScreenLabelsOff();
             RequestQuit();
         }
         break;

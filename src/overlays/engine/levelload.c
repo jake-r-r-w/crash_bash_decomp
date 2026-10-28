@@ -5,7 +5,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-s32 func_8009317C(void) {
+s32 LoadModeText(void) {
     EngineGameView *g;
     u8 *p;
     s32 **tab = D_8009F954;
@@ -25,7 +25,7 @@ s32 func_8009317C(void) {
     return (s32)(D_80098594 + *(s32 *)(p + 4));
 }
 
-void func_80093270(void) {
+void AnimateLoadingIcon(void) {
     TrigEntry *t;
     WobbleObj *o;
     s32 f;
@@ -82,7 +82,7 @@ void func_8009342C(void) {
     }
 }
 
-void func_80093588(void) {
+void LoadModeFiles(void) {
     u8 *p;
     s32 *q;
 
@@ -101,7 +101,7 @@ void func_80093588(void) {
     } else {
         dbase_load_textures_wait(LoadingModel);
     }
-    RenderHook = func_80093038;
+    RenderHook = RenderGameScene;
     cam_init(MainCamera);
     cam_init((u8 *)&MainGfxCamera);
     cam_init((u8 *)&HudCamera);
@@ -123,7 +123,7 @@ static inline void func_800936C4_heap(_mal_area *heap, s32 p) {
     smallnode_init();
 }
 
-void func_800936C4(void) {
+void InitLevelLoad(void) {
     s32 start;
     EngineCfg *cfg;
 
@@ -134,7 +134,7 @@ void func_800936C4(void) {
         vab_transfer_check();
     }
     func_800936C4_heap(&MainHeap, (s32)D_800D7144);
-    start = func_8009317C() + 7;
+    start = LoadModeText() + 7;
     start &= ~7;
     func_800936C4_heap(&MainHeap, start);
     SetupLevelSpecs(&D_80098F48);
@@ -284,7 +284,7 @@ void load_initial_dbases(void)
 }
 
 
-void func_80093BE8(void) {
+void UpdateLevelLoad(void) {
     EngStateView *g0;
     EngStateView *g;
     EngColor *c;
@@ -307,8 +307,8 @@ void func_80093BE8(void) {
             process_control_init(&LoadingControl, &LoadingProcess);
         }
         process_control_init(&MenuProcessControl, NULL);
-        func_80095DBC();
-        func_80093588();
+        ResetEnginePool();
+        LoadModeFiles();
         g0 = (EngStateView *)GameInfo;
         g0->unk42 = -1;
         g0->unkCC[0] = 0;
@@ -387,7 +387,7 @@ void func_80093BE8(void) {
         D_800A0158 = 7;
         break;
     case 7:
-        func_80092AF4(&RetryProcess, 0x300);
+        GotoProcess(&RetryProcess, 0x300);
         if (GameMode != 0x28) {
             music_request(-1);
         }
@@ -409,17 +409,17 @@ void realign_panel_dbase(void) {
     g->y = e->b;
 }
 
-void func_80094058(void) {
+void QuitLevelLoad(void) {
     process_quit(&LoadingControl);
 }
 
-void func_8009407C(void) {
+void RenderLevelLoad(void) {
     if (D_800A0158 >= 2) {
         process_control_render(&LoadingControl);
     }
 }
 
-void func_800940B0(s32 arg0, s32 arg1) {
+void LoadModeDbases(s32 arg0, s32 arg1) {
     s32 i;
     u8 *p = D_8009FA14;
 
@@ -447,18 +447,18 @@ void func_8009414C(void) {
     }
 }
 
-void func_800941BC(void) {
+void InitLoadingCamera(void) {
     cam_init(MainCamera);
     D_800A02C0 = 0;
     D_800A02C4 = 0;
 }
 
-void func_800941EC(void) {
+void QuitLoadingScreen(void) {
     eng_release_subs_sfx(D_800A0224);
     dbase_release(LoadingModel);
 }
 
-void func_8009421C(void) {
+void RenderLoadingScreen(void) {
     if (D_800A0158 >= 2) {
         gfx_set_viewport(&LoadingViewport, &LoadingCamera);
         RenderState.modelDp = ScreenFade.amount;
@@ -466,7 +466,7 @@ void func_8009421C(void) {
     }
 }
 
-void func_80094274(void) {
+void InitLoadingScreen(void) {
     EXTengine *eng = (EXTengine *)D_800A0224;
     subengine *sub;
     u16 *p;
@@ -506,7 +506,7 @@ void level_load_map(void) {
     mapscene_init(a, p);
 }
 
-void func_800943B8(void) {
+void LoadLoadingModel(void) {
     if (GameMode == 0x28 && FirstBootDone == 0) {
         dbase_load_textures_wait(D_800556F4);
     } else {
@@ -573,7 +573,7 @@ void func_800945C0(EngineStartArgs *arg0) {
     D_800654B4 = 0;
 }
 
-void func_80094754(void) {
+void InitScriptScene(void) {
     EngineCfg *cfg;
 
     sound_stop();
@@ -636,7 +636,7 @@ void func_80094860(void) {
     }
 }
 
-void func_80094A28(void) {
+void StartSceneScript(void) {
     MarkObj *o;
     MarkSrc *s;
     EngineMarker *m;
@@ -676,7 +676,7 @@ void func_80094A28(void) {
     D_800A0BCC.isbg = ((MarkCtx *)D_800A0D2C)->unkC;
 }
 
-void func_80094B38(void) {
+void UpdateScriptScene(void) {
     MarkObj *o;
     MarkObj *obj;
     s32 ok;
@@ -690,7 +690,7 @@ void func_80094B38(void) {
             }
             if (((MarkCtx *)D_800A0D2C)->obj == NULL && D_800A0D3C == 0) {
                 if (D_800A0C08 != 0) {
-                    func_80092AF4(D_800A0C08, 0x200);
+                    GotoProcess(D_800A0C08, 0x200);
                     D_800A0D3C += 1;
                 }
             } else {
@@ -710,7 +710,7 @@ void func_80094B38(void) {
                             goto end;
                         }
                     }
-                    func_80094A28();
+                    StartSceneScript();
                     D_800A0D2C = (MarkCtx *)D_800A0D2C + 1;
                     if (D_800A0D38 != 0) {
                         D_800654B0 = 1;
@@ -731,19 +731,19 @@ void func_80094B38(void) {
     }
     func_80094860();
     if ((Pads[0].pressed & 0x4000) && D_800A0D3C == 0 && D_800A0C08 != 0) {
-        func_80092AF4(D_800A0C08, 0x200);
+        GotoProcess(D_800A0C08, 0x200);
         D_800A0D3C += 1;
     }
 }
 
-void func_80094D88(s32 arg0, process_info *arg1) {
+void GotoScriptScene(s32 arg0, process_info *arg1) {
     D_800A0C08 = arg1;
     D_800A0C0C = arg0;
     set_fade(&ScreenFade, 0x200, 0);
-    ProcessControl.next_process = &D_800A0BF4;
+    ProcessControl.next_process = &ScriptSceneProcess;
 }
 
-void func_80094DD0(void) {
+void QuitScriptScene(void) {
     vab_transfer_wait();
     while (loader_pending() != 0) {
         loader_update();
@@ -767,7 +767,7 @@ void func_80094DD0(void) {
     D_8004E0E0 = 2;
 }
 
-void func_80094EB8(void) {
+void RenderScriptScene(void) {
     gfx_set_viewport(&D_800A0BCC, (GfxCamera *)MainCamera);
     RenderState.modelDp = ScreenFade.amount;
     scripts_render();
@@ -804,7 +804,7 @@ void func_80094FA8(void) {
 
 void func_80094FE0(void) {
     if (D_800A0C08 != 0) {
-        func_80092AF4(D_800A0C08, 0x200);
+        GotoProcess(D_800A0C08, 0x200);
         D_800A0D3C += 1;
     }
 }
@@ -858,7 +858,7 @@ void func_80095160(EngineStartArgs *arg0) {
     D_800654B4 = 0;
 }
 
-s32 func_800951D0(s32 arg0) {
+s32 PickModeVariant(s32 arg0) {
     s32 i;
     EngineKeyed16 *e = D_800A0B60;
     u8 *g;
@@ -914,7 +914,7 @@ void func_80095258(u8 *arg0) {
     }
 }
 
-void func_800952F8(subengine *sub, s32 *recs) {
+void ApplyPlaceRecs(subengine *sub, s32 *recs) {
     PlaceSub *s;
     PlaceRec *rec;
     s32 skip;
@@ -1097,7 +1097,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
     }
 }
 
-void func_80095A04(s32 arg0) {
+void KillEngineSlot(s32 arg0) {
     EXTengine *eng;
 
     eng = &EnginePool[arg0];
@@ -1105,7 +1105,7 @@ void func_80095A04(s32 arg0) {
     eng->flags &= 0xFFFF7FFF;
 }
 
-void func_80095A60(s32 arg0, s32 arg1) {
+void InitEngineSlot(s32 arg0, s32 arg1) {
     EXTengine *eng;
     subengine *subs;
     subengine *sub;
@@ -1132,7 +1132,7 @@ void func_80095A60(s32 arg0, s32 arg1) {
     }
 }
 
-void func_80095BEC(s32 arg0, s32 *recs) {
+void PlaceEngineSlot(s32 arg0, s32 *recs) {
     EXTengine *eng;
     subengine *subs;
     s32 *rec;
@@ -1157,14 +1157,14 @@ void func_80095BEC(s32 arg0, s32 *recs) {
         eng->flags |= 0x10000000;
         if (n > 0) {
             subs_init_array(eng, n, subs);
-            func_800952F8(eng->sub, recs);
+            ApplyPlaceRecs(eng->sub, recs);
         }
     }
 }
 
 /* Counts the 0x24-byte records before the first whose leading word is
  * below 2. */
-s32 func_80095D88(s32 *rec) {
+s32 CountPlaceRecs(s32 *rec) {
     s32 n;
 
     n = 0;
@@ -1175,7 +1175,7 @@ s32 func_80095D88(s32 *rec) {
     return n;
 }
 
-void func_80095DBC(void) {
+void ResetEnginePool(void) {
     s32 i;
 
     for (i = 0; i < 9; i++) {
@@ -1376,14 +1376,14 @@ EngineCfg D_8009F96C = {
     (void *)&D_80063BB8, 0x20, 0x400,
 };
 u16 D_8009F994[2] = { 0x2001, 0x2002 };
-process_info LoadingProcess = { func_80094274, func_80093270, func_8009421C, func_800941EC, 0 };
+process_info LoadingProcess = { InitLoadingScreen, AnimateLoadingIcon, RenderLoadingScreen, QuitLoadingScreen, 0 };
 u8 D_8009F9AC[40] = {
     0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0x40, 1, 0, 0, 0xF0, 0, 0, 0,
     0, 2, 0, 0, 0xFF, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 Blk32 D_8009F9D4 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 D_8009F9F4 = {0};
-process_info LoadingProcess2 = { func_800941BC, func_8009342C, func_8009414C, func_80094120, 0 };
+process_info LoadingProcess2 = { InitLoadingCamera, func_8009342C, func_8009414C, func_80094120, 0 };
 u8 D_8009FA14[1516] = {
     0x10, 6, 5, 0x80, 0x8C, 0x2A, 5, 0x80, 0, 0, 5, 0x80, 0xF8, 0xFF, 4, 0x80, 4, 6, 5, 0x80,
     0xC4, 0x2A, 5, 0x80, 0xF0, 0xFF, 4, 0x80, 0xE8, 0xFF, 4, 0x80, 0xF8, 5, 5, 0x80, 0xFC,
@@ -1493,7 +1493,7 @@ u8 *D_800A001C[45] = {
     (void *)&file_group_TITLES, (void *)&D_800A0014, (void *)&file_group_POLARDAY,
 };
 u16 D_800A00D0[6] = { 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0 };
-process_info LevelLoadProcess = { func_800936C4, func_80093BE8, func_8009407C, func_80094058, 0 };
+process_info LevelLoadProcess = { InitLevelLoad, UpdateLevelLoad, RenderLevelLoad, QuitLevelLoad, 0 };
 s32 map[26] = {0};
 s32 D_800A0158 = 0;
 process_control_info LoadingControl = {0};
@@ -1614,7 +1614,7 @@ EngineKeyed16 D_800A0B60[4] = {
 Blk32 D_800A0BA0 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 D_800A0BC0 = {0};
 GfxViewport D_800A0BCC = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xDFF, 0, 0, 0, 0, 1 };
-process_info D_800A0BF4 = { func_80094754, func_80094B38, func_80094EB8, func_80094DD0, 0 };
+process_info ScriptSceneProcess = { InitScriptScene, UpdateScriptScene, RenderScriptScene, QuitScriptScene, 0 };
 process_info *D_800A0C08 = 0;
 s32 D_800A0C0C = 0;
 EngineMarker D_800A0C10[8] = {0};

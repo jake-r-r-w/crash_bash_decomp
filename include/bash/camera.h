@@ -8,23 +8,23 @@
 #include "common.h"
 #include "bash/engine.h"
 
-void func_80096F98(s32 arg0);
+void CameraFrameHeroes(s32 arg0);
 
-void func_80097158(u8 *p);
+void CamFromPath1(u8 *p);
 
-s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2);
+s32 CamEdgeIntersect(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2);
 
 s32 func_800976A8(u8 *arg0, s32 arg1);
 
-void func_80098278(void);
+void ScreenLabelsOff(void);
 
-s32 func_800967E0(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out);
-void func_80096A08(void);
+s32 cam_frame_hit(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out);
+void CalcCameraFrame(void);
 void BuildCameraFrameList(void);
 
-void func_8009608C(s32 arg0);
+void UpdateCamera(s32 arg0);
 
-/* MainCamera as the engine camera (func_8009608C). */
+/* MainCamera as the engine camera (UpdateCamera). */
 typedef struct EngCam {
     /* 0x00 */ CamXYZ eye;
     /* 0x0C */ CamXYZ at;
@@ -36,9 +36,9 @@ typedef struct EngCam {
     /* 0x54 */ SVECTOR rot;
 } EngCam;
 
-s32 func_80096280(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4);
+s32 line_intersect_xz(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4);
 
-/* func_80097608's body, inlined by func_800967E0. */
+/* CamEdgeIntersectZY's body, inlined by cam_frame_hit. */
 static inline s32 EngCam_HitY(VECTOR *arg0, VECTOR *arg1, VECTOR *arg2) {
     VECTOR sp18;
     VECTOR sp28;
@@ -52,7 +52,7 @@ static inline s32 EngCam_HitY(VECTOR *arg0, VECTOR *arg1, VECTOR *arg2) {
     return line_intersect_zy(arg0, &sp18, arg1, &sp28, arg2) != 0;
 }
 
-/* func_800974EC's body, inlined by func_800967E0. */
+/* CamEdgeIntersect's body, inlined by cam_frame_hit. */
 static inline s32 EngCam_HitX(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     s32 sp18[4];
     s32 sp28[4];
@@ -62,7 +62,7 @@ static inline s32 EngCam_HitX(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     sp18[2] = arg0->c - 0x3000;
     sp28[0] = arg1->a - d;
     sp28[2] = arg1->c - 0x3000;
-    if (func_80096280(arg0, sp18, arg1, sp28, arg2) != 0) {
+    if (line_intersect_xz(arg0, sp18, arg1, sp28, arg2) != 0) {
         return 1;
     }
     if (arg0->c < arg1->c) {
@@ -75,43 +75,43 @@ static inline s32 EngCam_HitX(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
 }
 
 extern CamEase D_800AD0F4;
-void func_80097AA4(subengine *s);
+void BobSub(subengine *s);
 
 void TitlesCameraHook(u8 *cam, s32 arg1);
 void HubCameraFollow(u8 *cam, s32 arg1);
 void PodiumCamera(CamView *out, s32 arg1);
 void N2OCameraFollow(u8 *cam);
 
-void func_80098344(void);
+void ShowScreenLabels(void);
 
-void func_80098570(void);
+void ResetScreenLabels(void);
 
 void camera_count_bottom(s32 arg0, s32 arg1);
 
-void func_80097334(s32 arg0, s32 arg1);
+void CamBoundBottomPoint(s32 arg0, s32 arg1);
 
 void anim_item(void);
 
-void func_80097244(u8 *p);
+void CamFromPath9(u8 *p);
 
-void func_800973AC(s32 arg0, s32 arg1);
+void CamBoundRightPoint(s32 arg0, s32 arg1);
 
-void func_80097424(s32 arg0, s32 arg1);
+void CamBoundLeftPoint(s32 arg0, s32 arg1);
 
 void camera_add_frame_list(SLONG_XYZ *arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);
 
-void func_80098284(void);
+void ScreenLabelsStart(void);
 
-void func_800982E0(void);
+void HideScreenLabels(void);
 
 void func_80098464(void);
 
-s32 func_80097608(VECTOR *arg0, VECTOR *arg1, s32 arg2);
+s32 CamEdgeIntersectZY(VECTOR *arg0, VECTOR *arg1, s32 arg2);
 
-void func_800984D4(void);
+void RenderScreenLabels(void);
 
 
-/* GameInfo as seen by func_800976F8. */
+/* GameInfo as seen by InitScreenLabels. */
 typedef struct EngRecView {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;
@@ -139,6 +139,6 @@ extern EngRec24 D_800AD8CC[];
 extern EngRec24 D_800AD9C8[];
 extern EngRec24 D_800ADB54[];
 
-void func_800976F8(void);
+void InitScreenLabels(void);
 
 #endif /* BASH_CAMERA_H */

@@ -28932,7 +28932,7 @@
   "src": "src/overlays/engine/heroes.c"
  },
  "engine:8008E27C": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008E27C.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/PlayHitEffect.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -28943,7 +28943,7 @@
   "fp": "a85b41743edfad47",
   "fpn": "4dd9e06034efa2d4",
   "leaf": false,
-  "name": "func_8008E27C",
+  "name": "PlayHitEffect",
   "orig": "func_8008E27C",
   "rom": 87532,
   "seg": "overlays/engine/gameflow",
@@ -28970,7 +28970,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008E5BC": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008E5BC.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/UpdateIntro.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800101E0",
@@ -28992,7 +28992,7 @@
   "fp": "62b4e9b62a60dcb7",
   "fpn": "b3ffe3c43de05a4d",
   "leaf": false,
-  "name": "func_8008E5BC",
+  "name": "UpdateIntro",
   "orig": "func_8008E5BC",
   "rom": 88364,
   "seg": "overlays/engine/gameflow",
@@ -29000,7 +29000,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008EAC8": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008EAC8.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/QuitIntro.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80016F54",
@@ -29011,7 +29011,7 @@
   "fp": "d448af15394fdcca",
   "fpn": "ede61a3af9f08884",
   "leaf": false,
-  "name": "func_8008EAC8",
+  "name": "QuitIntro",
   "orig": "func_8008EAC8",
   "rom": 89656,
   "seg": "overlays/engine/gameflow",
@@ -29019,7 +29019,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008EB3C": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008EB3C.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/RenderIntro.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -29029,7 +29029,7 @@
   "fp": "788ff425f620707d",
   "fpn": "40ab31e7608fba07",
   "leaf": false,
-  "name": "func_8008EB3C",
+  "name": "RenderIntro",
   "orig": "func_8008EB3C",
   "rom": 89772,
   "seg": "overlays/engine/gameflow",
@@ -29037,7 +29037,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008EB8C": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008EB8C.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/InitIntro.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80014388",
@@ -29047,7 +29047,7 @@
   "fp": "e89430004e6b6213",
   "fpn": "86cbe644d11af875",
   "leaf": false,
-  "name": "func_8008EB8C",
+  "name": "InitIntro",
   "orig": "func_8008EB8C",
   "rom": 89852,
   "seg": "overlays/engine/gameflow",
@@ -29055,7 +29055,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008EC00": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008EC00.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/LoadScreenImage.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800110A8",
@@ -29067,7 +29067,7 @@
   "fp": "fa62813e9566b1bb",
   "fpn": "f6778b58ddba8111",
   "leaf": false,
-  "name": "func_8008EC00",
+  "name": "LoadScreenImage",
   "orig": "func_8008EC00",
   "rom": 89968,
   "seg": "overlays/engine/gameflow",
@@ -29075,7 +29075,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008EC94": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008EC94.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/CopyScreen.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8003165C"
@@ -29083,7 +29083,7 @@
   "fp": "17447becbcf1c5cc",
   "fpn": "8bd9b7644dd9101c",
   "leaf": false,
-  "name": "func_8008EC94",
+  "name": "CopyScreen",
   "orig": "func_8008EC94",
   "rom": 90116,
   "seg": "overlays/engine/gameflow",
@@ -29091,7 +29091,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008ECE4": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008ECE4.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/HandleLevelExit.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800793E8",
@@ -29103,7 +29103,7 @@
   "fp": "04abd0518b2cf55b",
   "fpn": "728f8839129f8175",
   "leaf": false,
-  "name": "func_8008ECE4",
+  "name": "HandleLevelExit",
   "orig": "func_8008ECE4",
   "rom": 90196,
   "seg": "overlays/engine/gameflow",
@@ -29111,13 +29111,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008EF70": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008EF70.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/WarpRoomMode.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "9a569405178b7e4f",
   "fpn": "9a569405178b7e4f",
   "leaf": true,
-  "name": "func_8008EF70",
+  "name": "WarpRoomMode",
   "orig": "func_8008EF70",
   "rom": 90848,
   "seg": "overlays/engine/gameflow",
@@ -29125,7 +29125,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008EF9C": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008EF9C.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/ReturnToWarpRoom.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008ECE4",
@@ -29134,7 +29134,7 @@
   "fp": "7b37c9e0efc597c2",
   "fpn": "30c78a72dddd87f3",
   "leaf": false,
-  "name": "func_8008EF9C",
+  "name": "ReturnToWarpRoom",
   "orig": "func_8008EF9C",
   "rom": 90892,
   "seg": "overlays/engine/gameflow",
@@ -29142,7 +29142,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008EFD4": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008EFD4.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/UpdateExitDelay.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8002C284",
@@ -29151,7 +29151,7 @@
   "fp": "7b277c82f55677b7",
   "fpn": "d9bbaa66089b8d6f",
   "leaf": false,
-  "name": "func_8008EFD4",
+  "name": "UpdateExitDelay",
   "orig": "func_8008EFD4",
   "rom": 90948,
   "seg": "overlays/engine/gameflow",
@@ -29159,13 +29159,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008F068": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008F068.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/ExitToTitles.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "80a4ffd7457f6ec0",
   "fpn": "0e274fc0bdcabde4",
   "leaf": true,
-  "name": "func_8008F068",
+  "name": "ExitToTitles",
   "orig": "func_8008F068",
   "rom": 91096,
   "seg": "overlays/engine/gameflow",
@@ -29173,7 +29173,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008F084": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008F084.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/AnimateCupMenu.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095E38",
@@ -29182,7 +29182,7 @@
   "fp": "66e691d5e7ee0304",
   "fpn": "1046720763b847fe",
   "leaf": false,
-  "name": "func_8008F084",
+  "name": "AnimateCupMenu",
   "orig": "func_8008F084",
   "rom": 91124,
   "seg": "overlays/engine/gameflow",
@@ -29190,7 +29190,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008F248": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008F248.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/CountSavedWins.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800B7EE4"
@@ -29198,7 +29198,7 @@
   "fp": "003edbb42568267d",
   "fpn": "53a3207389b053f9",
   "leaf": false,
-  "name": "func_8008F248",
+  "name": "CountSavedWins",
   "orig": "func_8008F248",
   "rom": 91576,
   "seg": "overlays/engine/gameflow",
@@ -29206,7 +29206,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008F41C": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008F41C.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/UpdateCardMessage.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -29216,7 +29216,7 @@
   "fp": "1c23a52bc60b8ca1",
   "fpn": "5bf315962e70208f",
   "leaf": false,
-  "name": "func_8008F41C",
+  "name": "UpdateCardMessage",
   "orig": "func_8008F41C",
   "rom": 92044,
   "seg": "overlays/engine/gameflow",
@@ -29224,7 +29224,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008F554": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008F554.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/UpdateCupMenu.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80011D28",
@@ -29241,7 +29241,7 @@
   "fp": "0d053acb0dc62029",
   "fpn": "75e7735cd81a0cdb",
   "leaf": false,
-  "name": "func_8008F554",
+  "name": "UpdateCupMenu",
   "orig": "func_8008F554",
   "rom": 92356,
   "seg": "overlays/engine/gameflow",
@@ -29249,7 +29249,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008FB48": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008FB48.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/RenderCupMenu.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -29260,7 +29260,7 @@
   "fp": "ccc496511e4943df",
   "fpn": "0faca3e40f6959e7",
   "leaf": false,
-  "name": "func_8008FB48",
+  "name": "RenderCupMenu",
   "orig": "func_8008FB48",
   "rom": 93880,
   "seg": "overlays/engine/gameflow",
@@ -29282,7 +29282,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008FC60": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008FC60.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/CountCupTrophies.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800B7EE4"
@@ -29290,7 +29290,7 @@
   "fp": "add48d744bce6d66",
   "fpn": "8b87083c8cf953ad",
   "leaf": false,
-  "name": "func_8008FC60",
+  "name": "CountCupTrophies",
   "orig": "func_8008FC60",
   "rom": 94160,
   "seg": "overlays/engine/gameflow",
@@ -29298,13 +29298,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008FD40": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008FD40.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/AwardCupTrophies.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "0ec79be2acf61ad9",
   "fpn": "9c0091e02da1214a",
   "leaf": true,
-  "name": "func_8008FD40",
+  "name": "AwardCupTrophies",
   "orig": "func_8008FD40",
   "rom": 94384,
   "seg": "overlays/engine/gameflow",
@@ -29312,7 +29312,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008FD94": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008FD94.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/CupMenuNext.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660"
@@ -29320,7 +29320,7 @@
   "fp": "95a44def176b7c42",
   "fpn": "71de2f6b76b5b4c8",
   "leaf": false,
-  "name": "func_8008FD94",
+  "name": "CupMenuNext",
   "orig": "func_8008FD94",
   "rom": 94468,
   "seg": "overlays/engine/gameflow",
@@ -29328,7 +29328,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008FE00": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008FE00.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/CupMenuPrev.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660"
@@ -29336,7 +29336,7 @@
   "fp": "0fc53af842f86105",
   "fpn": "186b36f0a330c877",
   "leaf": false,
-  "name": "func_8008FE00",
+  "name": "CupMenuPrev",
   "orig": "func_8008FE00",
   "rom": 94576,
   "seg": "overlays/engine/gameflow",
@@ -29344,7 +29344,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008FE68": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008FE68.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/CupUnlocked.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800B7EE4"
@@ -29352,7 +29352,7 @@
   "fp": "9a0a3bedc75c0ec8",
   "fpn": "3acfa259c47a91e2",
   "leaf": false,
-  "name": "func_8008FE68",
+  "name": "CupUnlocked",
   "orig": "func_8008FE68",
   "rom": 94680,
   "seg": "overlays/engine/gameflow",
@@ -29360,13 +29360,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008FF10": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008FF10.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/CupCurrentModeType.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "f3ed34a087f59bca",
   "fpn": "2752f7249422eaac",
   "leaf": true,
-  "name": "func_8008FF10",
+  "name": "CupCurrentModeType",
   "orig": "func_8008FF10",
   "rom": 94848,
   "seg": "overlays/engine/gameflow",
@@ -29374,13 +29374,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8008FF94": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8008FF94.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/CupNextArena.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "803c84cea27ffba3",
   "fpn": "288b8f6836ec3fc0",
   "leaf": true,
-  "name": "func_8008FF94",
+  "name": "CupNextArena",
   "orig": "func_8008FF94",
   "rom": 94980,
   "seg": "overlays/engine/gameflow",
@@ -29388,13 +29388,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80090008": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80090008.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/CupCurrentArena.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "09a1a20a7d6aeb50",
   "fpn": "ae435b6f75f5abad",
   "leaf": true,
-  "name": "func_80090008",
+  "name": "CupCurrentArena",
   "orig": "func_80090008",
   "rom": 95096,
   "seg": "overlays/engine/gameflow",
@@ -29402,7 +29402,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80090048": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80090048.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/InitCupMenu.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC"
@@ -29410,7 +29410,7 @@
   "fp": "126e794d1b0ee944",
   "fpn": "342e6d87702e9bfb",
   "leaf": false,
-  "name": "func_80090048",
+  "name": "InitCupMenu",
   "orig": "func_80090048",
   "rom": 95160,
   "seg": "overlays/engine/gameflow",
@@ -29434,13 +29434,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:800901B4": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_800901B4.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/WarpRoomOfMode.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "d4bb3b0d0739a7de",
   "fpn": "b16b779d8200e830",
   "leaf": true,
-  "name": "func_800901B4",
+  "name": "WarpRoomOfMode",
   "orig": "func_800901B4",
   "rom": 95524,
   "seg": "overlays/engine/gameflow",
@@ -29448,13 +29448,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8009020C": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8009020C.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/WarpRoomIndex.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "8bf7fc86111f995f",
   "fpn": "1b8855d2f1af6f25",
   "leaf": true,
-  "name": "func_8009020C",
+  "name": "WarpRoomIndex",
   "orig": "func_8009020C",
   "rom": 95612,
   "seg": "overlays/engine/gameflow",
@@ -29462,13 +29462,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80090248": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80090248.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/GatewayMode.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "82a89310c48a3aa6",
   "fpn": "a979570269a26b49",
   "leaf": true,
-  "name": "func_80090248",
+  "name": "GatewayMode",
   "orig": "func_80090248",
   "rom": 95672,
   "seg": "overlays/engine/gameflow",
@@ -29476,13 +29476,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8009029C": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8009029C.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/ResetWarpRooms.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "60810c64e57b9f47",
   "fpn": "df72e38893dd536a",
   "leaf": true,
-  "name": "func_8009029C",
+  "name": "ResetWarpRooms",
   "orig": "func_8009029C",
   "rom": 95756,
   "seg": "overlays/engine/gameflow",
@@ -29490,7 +29490,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80090310": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80090310.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/ShowCardSlot.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80010000",
@@ -29500,7 +29500,7 @@
   "fp": "27cdcdf2bce0f74e",
   "fpn": "91fe1bb1208323ae",
   "leaf": false,
-  "name": "func_80090310",
+  "name": "ShowCardSlot",
   "orig": "func_80090310",
   "rom": 95872,
   "seg": "overlays/engine/gameflow",
@@ -29527,7 +29527,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80090A10": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80090A10.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/UpdateCardPrompt.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80012FFC",
@@ -29542,7 +29542,7 @@
   "fp": "77edfca225f0c694",
   "fpn": "6809f369f322d151",
   "leaf": false,
-  "name": "func_80090A10",
+  "name": "UpdateCardPrompt",
   "orig": "func_80090A10",
   "rom": 97664,
   "seg": "overlays/engine/gameflow",
@@ -29550,7 +29550,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80090E20": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80090E20.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/UpdateSaveMenu.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001C2C0",
@@ -29569,7 +29569,7 @@
   "fp": "e512b236a90032f8",
   "fpn": "3014c5e5cc69f0b7",
   "leaf": false,
-  "name": "func_80090E20",
+  "name": "UpdateSaveMenu",
   "orig": "func_80090E20",
   "rom": 98704,
   "seg": "overlays/engine/gameflow",
@@ -29577,7 +29577,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:800917B4": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_800917B4.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/RenderSaveMenu.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -29590,7 +29590,7 @@
   "fp": "f6ce55a465fa0b6c",
   "fpn": "3660697bfc038c36",
   "leaf": false,
-  "name": "func_800917B4",
+  "name": "RenderSaveMenu",
   "orig": "func_800917B4",
   "rom": 101156,
   "seg": "overlays/engine/gameflow",
@@ -29598,7 +29598,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8009196C": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_8009196C.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/UpdateCardSlots.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001C2C0",
@@ -29610,7 +29610,7 @@
   "fp": "1de973a7bad833f8",
   "fpn": "ca2a918afcec9104",
   "leaf": false,
-  "name": "func_8009196C",
+  "name": "UpdateCardSlots",
   "orig": "func_8009196C",
   "rom": 101596,
   "seg": "overlays/engine/gameflow",
@@ -29618,7 +29618,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80091E58": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80091E58.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/ShowCardSlots.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80090310",
@@ -29628,7 +29628,7 @@
   "fp": "8bba0e14f6cbf687",
   "fpn": "f40227aafd0f0c58",
   "leaf": false,
-  "name": "func_80091E58",
+  "name": "ShowCardSlots",
   "orig": "func_80091E58",
   "rom": 102856,
   "seg": "overlays/engine/gameflow",
@@ -29636,7 +29636,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80091F54": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80091F54.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/InitSaveMenu.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800920DC",
@@ -29646,7 +29646,7 @@
   "fp": "8caf78fc53239421",
   "fpn": "687afd8c3c840680",
   "leaf": false,
-  "name": "func_80091F54",
+  "name": "InitSaveMenu",
   "orig": "func_80091F54",
   "rom": 103108,
   "seg": "overlays/engine/gameflow",
@@ -29672,7 +29672,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:800920DC": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_800920DC.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/ShowSaveScreen.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80014388",
@@ -29684,7 +29684,7 @@
   "fp": "b7ca34c25998fb72",
   "fpn": "6ea4080fde70c875",
   "leaf": false,
-  "name": "func_800920DC",
+  "name": "ShowSaveScreen",
   "orig": "func_800920DC",
   "rom": 103500,
   "seg": "overlays/engine/gameflow",
@@ -29692,7 +29692,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092198": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092198.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/RefreshCardSlots.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80091E58",
@@ -29702,7 +29702,7 @@
   "fp": "dce1f969739f9bc7",
   "fpn": "acf821dd52ed2206",
   "leaf": false,
-  "name": "func_80092198",
+  "name": "RefreshCardSlots",
   "orig": "func_80092198",
   "rom": 103688,
   "seg": "overlays/engine/gameflow",
@@ -29710,7 +29710,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092200": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092200.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/RestoreHeroChoice.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80091E58"
@@ -29718,7 +29718,7 @@
   "fp": "7c67e83d73aa4dc0",
   "fpn": "0742bb3a052db3bd",
   "leaf": false,
-  "name": "func_80092200",
+  "name": "RestoreHeroChoice",
   "orig": "func_80092200",
   "rom": 103792,
   "seg": "overlays/engine/gameflow",
@@ -29726,7 +29726,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:800922FC": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_800922FC.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/SaveHeroChoice.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80091E58"
@@ -29734,7 +29734,7 @@
   "fp": "72f4c66acf2fe2c8",
   "fpn": "b3aae55307cdc15c",
   "leaf": false,
-  "name": "func_800922FC",
+  "name": "SaveHeroChoice",
   "orig": "func_800922FC",
   "rom": 104044,
   "seg": "overlays/engine/gameflow",
@@ -29770,7 +29770,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092404": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092404.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/ClearEngineSlots.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80017640",
@@ -29781,7 +29781,7 @@
   "fp": "4bbbbbab1ded87f8",
   "fpn": "46c08cb04deeb012",
   "leaf": false,
-  "name": "func_80092404",
+  "name": "ClearEngineSlots",
   "orig": "func_80092404",
   "rom": 104308,
   "seg": "overlays/engine/gameflow",
@@ -29879,13 +29879,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:800926CC": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_800926CC.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/InitGameState.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "eda74fb8a500e21d",
   "fpn": "3af93f136702c340",
   "leaf": true,
-  "name": "func_800926CC",
+  "name": "InitGameState",
   "orig": "func_800926CC",
   "rom": 105020,
   "seg": "overlays/engine/gameflow",
@@ -29893,7 +29893,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:800928E8": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_800928E8.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/InitGraphics.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800170D4",
@@ -29908,7 +29908,7 @@
   "fp": "5042846aa17092e6",
   "fpn": "2b1a061a3821ae28",
   "leaf": false,
-  "name": "func_800928E8",
+  "name": "InitGraphics",
   "orig": "func_800928E8",
   "rom": 105560,
   "seg": "overlays/engine/gameflow",
@@ -29916,7 +29916,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:800929D8": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_800929D8.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/StartGame.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001E598",
@@ -29930,7 +29930,7 @@
   "fp": "38c42415cac83f3b",
   "fpn": "fbb6cd4ab8b8992a",
   "leaf": false,
-  "name": "func_800929D8",
+  "name": "StartGame",
   "orig": "func_800929D8",
   "rom": 105800,
   "seg": "overlays/engine/gameflow",
@@ -29938,7 +29938,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092AA8": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092AA8.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/GotoProcessFade.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001E588"
@@ -29946,7 +29946,7 @@
   "fp": "bded4220ff754a99",
   "fpn": "d290bb9b43dad65b",
   "leaf": false,
-  "name": "func_80092AA8",
+  "name": "GotoProcessFade",
   "orig": "func_80092AA8",
   "rom": 106008,
   "seg": "overlays/engine/gameflow",
@@ -29954,7 +29954,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092AF4": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092AF4.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/GotoProcess.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001E588"
@@ -29962,7 +29962,7 @@
   "fp": "d6b26f7e58acbdf4",
   "fpn": "984b9ecde567d84c",
   "leaf": false,
-  "name": "func_80092AF4",
+  "name": "GotoProcess",
   "orig": "func_80092AF4",
   "rom": 106084,
   "seg": "overlays/engine/gameflow",
@@ -29970,13 +29970,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092B40": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092B40.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/QuitProcess.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "e685ff8b8312e85a",
   "fpn": "5dae6d3a320689fd",
   "leaf": true,
-  "name": "func_80092B40",
+  "name": "QuitProcess",
   "orig": "func_80092B40",
   "rom": 106160,
   "seg": "overlays/engine/gameflow",
@@ -29984,7 +29984,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092B7C": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092B7C.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/RenderProcess.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001E898"
@@ -29992,7 +29992,7 @@
   "fp": "b05a02ff1ea53abb",
   "fpn": "ec1f3f44a38b4ff9",
   "leaf": false,
-  "name": "func_80092B7C",
+  "name": "RenderProcess",
   "orig": "func_80092B7C",
   "rom": 106220,
   "seg": "overlays/engine/gameflow",
@@ -30000,7 +30000,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092BA0": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092BA0.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/UpdateProcess.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001E598",
@@ -30009,7 +30009,7 @@
   "fp": "a4bfaddec4ec2202",
   "fpn": "96df0620e37b6eaf",
   "leaf": false,
-  "name": "func_80092BA0",
+  "name": "UpdateProcess",
   "orig": "func_80092BA0",
   "rom": 106256,
   "seg": "overlays/engine/gameflow",
@@ -30036,7 +30036,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092C54": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092C54.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/ResetGameState.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800926CC"
@@ -30044,7 +30044,7 @@
   "fp": "b05a02ff1ea53abb",
   "fpn": "ec1f3f44a38b4ff9",
   "leaf": false,
-  "name": "func_80092C54",
+  "name": "ResetGameState",
   "orig": "func_80092C54",
   "rom": 106436,
   "seg": "overlays/engine/gameflow",
@@ -30052,13 +30052,13 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092C78": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092C78.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/InitGameOptions.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "2b51317675fb31a8",
   "fpn": "78f86bff344e6b2e",
   "leaf": true,
-  "name": "func_80092C78",
+  "name": "InitGameOptions",
   "orig": "func_80092C78",
   "rom": 106472,
   "seg": "overlays/engine/gameflow",
@@ -30092,7 +30092,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092E40": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092E40.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/QuitGame.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800183DC",
@@ -30106,7 +30106,7 @@
   "fp": "a871ee50983e7ff8",
   "fpn": "0434bc19d5bcbed9",
   "leaf": false,
-  "name": "func_80092E40",
+  "name": "QuitGame",
   "orig": "func_80092E40",
   "rom": 106928,
   "seg": "overlays/engine/gameflow",
@@ -30114,7 +30114,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092E94": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092E94.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/RenderGame.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001E898",
@@ -30123,7 +30123,7 @@
   "fp": "cf1530e0e3056c28",
   "fpn": "efeb4edb2f473aad",
   "leaf": false,
-  "name": "func_80092E94",
+  "name": "RenderGame",
   "orig": "func_80092E94",
   "rom": 107012,
   "seg": "overlays/engine/gameflow",
@@ -30131,7 +30131,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80092EDC": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80092EDC.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/UpdateGame.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001DDB4",
@@ -30146,7 +30146,7 @@
   "fp": "1fbf83b6527a89f1",
   "fpn": "91c89e98d14eadfe",
   "leaf": false,
-  "name": "func_80092EDC",
+  "name": "UpdateGame",
   "orig": "func_80092EDC",
   "rom": 107084,
   "seg": "overlays/engine/gameflow",
@@ -30184,7 +30184,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80093038": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80093038.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/RenderGameScene.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -30197,7 +30197,7 @@
   "fp": "c530e62dcac3c82a",
   "fpn": "183cbb504fa35578",
   "leaf": false,
-  "name": "func_80093038",
+  "name": "RenderGameScene",
   "orig": "func_80093038",
   "rom": 107432,
   "seg": "overlays/engine/gameflow",
@@ -30205,7 +30205,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:80093110": {
-  "asm": "asm/nonmatchings/overlays/engine/gameflow/func_80093110.s",
+  "asm": "asm/nonmatchings/overlays/engine/gameflow/SetGameViewport.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08"
@@ -30213,7 +30213,7 @@
   "fp": "f6689b8e26798c60",
   "fpn": "d92623cdff509f3a",
   "leaf": false,
-  "name": "func_80093110",
+  "name": "SetGameViewport",
   "orig": "func_80093110",
   "rom": 107648,
   "seg": "overlays/engine/gameflow",
@@ -30221,7 +30221,7 @@
   "src": "src/overlays/engine/gameflow.c"
  },
  "engine:8009317C": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_8009317C.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/LoadModeText.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800134FC"
@@ -30229,7 +30229,7 @@
   "fp": "e68cff1e5fdcc183",
   "fpn": "3ce3ad30c2eacf3a",
   "leaf": false,
-  "name": "func_8009317C",
+  "name": "LoadModeText",
   "orig": "func_8009317C",
   "rom": 107756,
   "seg": "overlays/engine/levelload",
@@ -30237,13 +30237,13 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80093270": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80093270.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/AnimateLoadingIcon.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "9892c7c28f1451cf",
   "fpn": "92fc9d5aeb58c7e8",
   "leaf": true,
-  "name": "func_80093270",
+  "name": "AnimateLoadingIcon",
   "orig": "func_80093270",
   "rom": 108000,
   "seg": "overlays/engine/levelload",
@@ -30270,7 +30270,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80093588": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80093588.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/LoadModeFiles.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80010AE8",
@@ -30285,7 +30285,7 @@
   "fp": "57f527c07b24f054",
   "fpn": "2c47a9844aa234b9",
   "leaf": false,
-  "name": "func_80093588",
+  "name": "LoadModeFiles",
   "orig": "func_80093588",
   "rom": 108792,
   "seg": "overlays/engine/levelload",
@@ -30293,7 +30293,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:800936C4": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_800936C4.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/InitLevelLoad.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80010AE8",
@@ -30316,7 +30316,7 @@
   "fp": "f69f76575bd585eb",
   "fpn": "06c1465d0d833ea6",
   "leaf": false,
-  "name": "func_800936C4",
+  "name": "InitLevelLoad",
   "orig": "func_800936C4",
   "rom": 109108,
   "seg": "overlays/engine/levelload",
@@ -30356,7 +30356,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80093BE8": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80093BE8.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/UpdateLevelLoad.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80011410",
@@ -30389,7 +30389,7 @@
   "fp": "222a62e5f4c3f7d8",
   "fpn": "e23ca51ef0bfef6a",
   "leaf": false,
-  "name": "func_80093BE8",
+  "name": "UpdateLevelLoad",
   "orig": "func_80093BE8",
   "rom": 110424,
   "seg": "overlays/engine/levelload",
@@ -30411,7 +30411,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80094058": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80094058.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/QuitLevelLoad.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001E854"
@@ -30419,7 +30419,7 @@
   "fp": "b05a02ff1ea53abb",
   "fpn": "ec1f3f44a38b4ff9",
   "leaf": false,
-  "name": "func_80094058",
+  "name": "QuitLevelLoad",
   "orig": "func_80094058",
   "rom": 111560,
   "seg": "overlays/engine/levelload",
@@ -30427,7 +30427,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:8009407C": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_8009407C.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/RenderLevelLoad.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001E898"
@@ -30435,7 +30435,7 @@
   "fp": "68b1bb6c2aa7b5de",
   "fpn": "ee9a50db6b99d7bc",
   "leaf": false,
-  "name": "func_8009407C",
+  "name": "RenderLevelLoad",
   "orig": "func_8009407C",
   "rom": 111596,
   "seg": "overlays/engine/levelload",
@@ -30443,7 +30443,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:800940B0": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_800940B0.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/LoadModeDbases.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800129D0"
@@ -30451,7 +30451,7 @@
   "fp": "5c35c68c2154fe31",
   "fpn": "02370b3e95f9ebd0",
   "leaf": false,
-  "name": "func_800940B0",
+  "name": "LoadModeDbases",
   "orig": "func_800940B0",
   "rom": 111648,
   "seg": "overlays/engine/levelload",
@@ -30494,7 +30494,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:800941BC": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_800941BC.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/InitLoadingCamera.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80014388"
@@ -30502,7 +30502,7 @@
   "fp": "8392c06e4c8ae310",
   "fpn": "7f2a7558ba315810",
   "leaf": false,
-  "name": "func_800941BC",
+  "name": "InitLoadingCamera",
   "orig": "func_800941BC",
   "rom": 111916,
   "seg": "overlays/engine/levelload",
@@ -30510,7 +30510,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:800941EC": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_800941EC.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/QuitLoadingScreen.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80016F54",
@@ -30519,7 +30519,7 @@
   "fp": "f384c4cf5609bfe2",
   "fpn": "6adf32c51f71d346",
   "leaf": false,
-  "name": "func_800941EC",
+  "name": "QuitLoadingScreen",
   "orig": "func_800941EC",
   "rom": 111964,
   "seg": "overlays/engine/levelload",
@@ -30527,7 +30527,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:8009421C": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_8009421C.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/RenderLoadingScreen.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -30536,7 +30536,7 @@
   "fp": "cd3e22d357aafd5e",
   "fpn": "1e805fe19f67de61",
   "leaf": false,
-  "name": "func_8009421C",
+  "name": "RenderLoadingScreen",
   "orig": "func_8009421C",
   "rom": 112012,
   "seg": "overlays/engine/levelload",
@@ -30544,7 +30544,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80094274": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80094274.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/InitLoadingScreen.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018F3C"
@@ -30552,7 +30552,7 @@
   "fp": "fadb800445b8d802",
   "fpn": "8e2be932cbe43b14",
   "leaf": false,
-  "name": "func_80094274",
+  "name": "InitLoadingScreen",
   "orig": "func_80094274",
   "rom": 112100,
   "seg": "overlays/engine/levelload",
@@ -30576,7 +30576,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:800943B8": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_800943B8.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/LoadLoadingModel.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80016CA0"
@@ -30584,7 +30584,7 @@
   "fp": "d50142c0f426b3c2",
   "fpn": "04ea9e0795548299",
   "leaf": false,
-  "name": "func_800943B8",
+  "name": "LoadLoadingModel",
   "orig": "func_800943B8",
   "rom": 112424,
   "seg": "overlays/engine/levelload",
@@ -30629,7 +30629,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80094754": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80094754.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/InitScriptScene.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80010AE8",
@@ -30651,7 +30651,7 @@
   "fp": "3eac10208a0be3c2",
   "fpn": "bace780dd8fd5e09",
   "leaf": false,
-  "name": "func_80094754",
+  "name": "InitScriptScene",
   "orig": "func_80094754",
   "rom": 113348,
   "seg": "overlays/engine/levelload",
@@ -30678,7 +30678,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80094A28": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80094A28.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/StartSceneScript.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001FE80"
@@ -30686,7 +30686,7 @@
   "fp": "47c12c12316d4b17",
   "fpn": "e64c9f9d2b36a41c",
   "leaf": false,
-  "name": "func_80094A28",
+  "name": "StartSceneScript",
   "orig": "func_80094A28",
   "rom": 114072,
   "seg": "overlays/engine/levelload",
@@ -30694,7 +30694,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80094B38": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80094B38.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/UpdateScriptScene.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001612C",
@@ -30708,7 +30708,7 @@
   "fp": "b6831506b2540243",
   "fpn": "290551a997f4fe60",
   "leaf": false,
-  "name": "func_80094B38",
+  "name": "UpdateScriptScene",
   "orig": "func_80094B38",
   "rom": 114344,
   "seg": "overlays/engine/levelload",
@@ -30716,7 +30716,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80094D88": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80094D88.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/GotoScriptScene.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001E588"
@@ -30724,7 +30724,7 @@
   "fp": "8dfff42f8c0d4d02",
   "fpn": "44a4fa0bf66da887",
   "leaf": false,
-  "name": "func_80094D88",
+  "name": "GotoScriptScene",
   "orig": "func_80094D88",
   "rom": 114936,
   "seg": "overlays/engine/levelload",
@@ -30732,7 +30732,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80094DD0": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80094DD0.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/QuitScriptScene.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80010AE8",
@@ -30750,7 +30750,7 @@
   "fp": "1825973005f5c48b",
   "fpn": "2772e2eddf0ce53c",
   "leaf": false,
-  "name": "func_80094DD0",
+  "name": "QuitScriptScene",
   "orig": "func_80094DD0",
   "rom": 115008,
   "seg": "overlays/engine/levelload",
@@ -30758,7 +30758,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80094EB8": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80094EB8.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/RenderScriptScene.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -30768,7 +30768,7 @@
   "fp": "51c96662aa2e0ad6",
   "fpn": "d966f4cd6e2b6ee1",
   "leaf": false,
-  "name": "func_80094EB8",
+  "name": "RenderScriptScene",
   "orig": "func_80094EB8",
   "rom": 115240,
   "seg": "overlays/engine/levelload",
@@ -30894,13 +30894,13 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:800951D0": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_800951D0.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/PickModeVariant.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "60a73e93b382250e",
   "fpn": "6bdd5155626fdbc1",
   "leaf": true,
-  "name": "func_800951D0",
+  "name": "PickModeVariant",
   "orig": "func_800951D0",
   "rom": 116032,
   "seg": "overlays/engine/levelload",
@@ -30922,7 +30922,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:800952F8": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_800952F8.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/ApplyPlaceRecs.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80020CC4"
@@ -30930,7 +30930,7 @@
   "fp": "2e7fa3ac487de429",
   "fpn": "4667f64310e8fa02",
   "leaf": false,
-  "name": "func_800952F8",
+  "name": "ApplyPlaceRecs",
   "orig": "func_800952F8",
   "rom": 116328,
   "seg": "overlays/engine/levelload",
@@ -30938,7 +30938,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80095A04": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80095A04.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/KillEngineSlot.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001D334"
@@ -30946,7 +30946,7 @@
   "fp": "2d08fa84e4eff157",
   "fpn": "be874f2f7750d84f",
   "leaf": false,
-  "name": "func_80095A04",
+  "name": "KillEngineSlot",
   "orig": "func_80095A04",
   "rom": 118132,
   "seg": "overlays/engine/levelload",
@@ -30954,7 +30954,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80095A60": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80095A60.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/InitEngineSlot.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001D334",
@@ -30963,7 +30963,7 @@
   "fp": "8034523a3c25e279",
   "fpn": "0242e7298324bc79",
   "leaf": false,
-  "name": "func_80095A60",
+  "name": "InitEngineSlot",
   "orig": "func_80095A60",
   "rom": 118224,
   "seg": "overlays/engine/levelload",
@@ -30971,7 +30971,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80095BEC": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80095BEC.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/PlaceEngineSlot.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001D334",
@@ -30981,7 +30981,7 @@
   "fp": "acb069cd54690020",
   "fpn": "ca96593434488673",
   "leaf": false,
-  "name": "func_80095BEC",
+  "name": "PlaceEngineSlot",
   "orig": "func_80095BEC",
   "rom": 118620,
   "seg": "overlays/engine/levelload",
@@ -30989,13 +30989,13 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80095D88": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80095D88.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/CountPlaceRecs.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "3ec0602dcfed35cd",
   "fpn": "9ee4a8ddda1564f3",
   "leaf": true,
-  "name": "func_80095D88",
+  "name": "CountPlaceRecs",
   "orig": "func_80095D88",
   "rom": 119032,
   "seg": "overlays/engine/levelload",
@@ -31003,13 +31003,13 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:80095DBC": {
-  "asm": "asm/nonmatchings/overlays/engine/levelload/func_80095DBC.s",
+  "asm": "asm/nonmatchings/overlays/engine/levelload/ResetEnginePool.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "cffd9bc843a97ec3",
   "fpn": "ae9f95b55ed3bd91",
   "leaf": true,
-  "name": "func_80095DBC",
+  "name": "ResetEnginePool",
   "orig": "func_80095DBC",
   "rom": 119084,
   "seg": "overlays/engine/levelload",
@@ -31075,7 +31075,7 @@
   "src": "src/overlays/engine/levelload.c"
  },
  "engine:8009608C": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_8009608C.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/UpdateCamera.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80013F44",
@@ -31091,7 +31091,7 @@
   "fp": "49ed2d2a729fc4db",
   "fpn": "a3bb98c8c03f223b",
   "leaf": false,
-  "name": "func_8009608C",
+  "name": "UpdateCamera",
   "orig": "func_8009608C",
   "rom": 119804,
   "seg": "overlays/engine/camera",
@@ -31099,13 +31099,13 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80096280": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80096280.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/line_intersect_xz.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "0e568acb2607e204",
   "fpn": "b0fef959e8308c1c",
   "leaf": true,
-  "name": "func_80096280",
+  "name": "line_intersect_xz",
   "orig": "func_80096280",
   "rom": 120304,
   "seg": "overlays/engine/camera",
@@ -31127,7 +31127,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:800967E0": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_800967E0.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/cam_frame_hit.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80096280",
@@ -31136,7 +31136,7 @@
   "fp": "eb7cb20e7e43fa33",
   "fpn": "f8d02f60b9500fbb",
   "leaf": false,
-  "name": "func_800967E0",
+  "name": "cam_frame_hit",
   "orig": "func_800967E0",
   "rom": 121680,
   "seg": "overlays/engine/camera",
@@ -31144,7 +31144,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80096A08": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80096A08.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/CalcCameraFrame.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8003278C",
@@ -31153,7 +31153,7 @@
   "fp": "57e7c15f18633fac",
   "fpn": "61145dd0d2e8e949",
   "leaf": false,
-  "name": "func_80096A08",
+  "name": "CalcCameraFrame",
   "orig": "func_80096A08",
   "rom": 122232,
   "seg": "overlays/engine/camera",
@@ -31161,7 +31161,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80096F98": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80096F98.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/CameraFrameHeroes.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80078DD4",
@@ -31171,7 +31171,7 @@
   "fp": "038d1d276d7af385",
   "fpn": "7eb45b6615929b47",
   "leaf": false,
-  "name": "func_80096F98",
+  "name": "CameraFrameHeroes",
   "orig": "func_80096F98",
   "rom": 123656,
   "seg": "overlays/engine/camera",
@@ -31179,7 +31179,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80097158": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80097158.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/CamFromPath1.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -31188,7 +31188,7 @@
   "fp": "26fdc2605eaf3bc7",
   "fpn": "0777db71ed0667a7",
   "leaf": false,
-  "name": "func_80097158",
+  "name": "CamFromPath1",
   "orig": "func_80097158",
   "rom": 124104,
   "seg": "overlays/engine/camera",
@@ -31196,7 +31196,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80097244": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80097244.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/CamFromPath9.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -31205,7 +31205,7 @@
   "fp": "4c4a78c1c7b458ea",
   "fpn": "a3aa44e6ac4123b7",
   "leaf": false,
-  "name": "func_80097244",
+  "name": "CamFromPath9",
   "orig": "func_80097244",
   "rom": 124340,
   "seg": "overlays/engine/camera",
@@ -31227,13 +31227,13 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80097334": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80097334.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/CamBoundBottomPoint.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "69612a521fe5ce14",
   "fpn": "1a0c160af03c3f1a",
   "leaf": true,
-  "name": "func_80097334",
+  "name": "CamBoundBottomPoint",
   "orig": "func_80097334",
   "rom": 124580,
   "seg": "overlays/engine/camera",
@@ -31241,13 +31241,13 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:800973AC": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_800973AC.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/CamBoundRightPoint.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "fa31c4e5e5b1a4d8",
   "fpn": "4be7a2066979da92",
   "leaf": true,
-  "name": "func_800973AC",
+  "name": "CamBoundRightPoint",
   "orig": "func_800973AC",
   "rom": 124700,
   "seg": "overlays/engine/camera",
@@ -31255,13 +31255,13 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80097424": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80097424.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/CamBoundLeftPoint.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "c905061ce210fc3c",
   "fpn": "51a8f850b120dde5",
   "leaf": true,
-  "name": "func_80097424",
+  "name": "CamBoundLeftPoint",
   "orig": "func_80097424",
   "rom": 124820,
   "seg": "overlays/engine/camera",
@@ -31283,7 +31283,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:800974EC": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_800974EC.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/CamEdgeIntersect.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80096280"
@@ -31291,7 +31291,7 @@
   "fp": "5d70b96a8b765ffc",
   "fpn": "cbe60187990ba96c",
   "leaf": false,
-  "name": "func_800974EC",
+  "name": "CamEdgeIntersect",
   "orig": "func_800974EC",
   "rom": 125020,
   "seg": "overlays/engine/camera",
@@ -31299,7 +31299,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80097608": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80097608.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/CamEdgeIntersectZY.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80096530"
@@ -31307,7 +31307,7 @@
   "fp": "28e4fc2002e1bea7",
   "fpn": "93514a0f2c48c009",
   "leaf": false,
-  "name": "func_80097608",
+  "name": "CamEdgeIntersectZY",
   "orig": "func_80097608",
   "rom": 125304,
   "seg": "overlays/engine/camera",
@@ -31329,7 +31329,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:800976F8": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_800976F8.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/InitScreenLabels.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC",
@@ -31338,7 +31338,7 @@
   "fp": "baced4c4b6d0eb74",
   "fpn": "de995b7872990e62",
   "leaf": false,
-  "name": "func_800976F8",
+  "name": "InitScreenLabels",
   "orig": "func_800976F8",
   "rom": 125544,
   "seg": "overlays/engine/camera",
@@ -31346,13 +31346,13 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80097AA4": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80097AA4.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/BobSub.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "942f8956dd652b31",
   "fpn": "4985958d617af74d",
   "leaf": true,
-  "name": "func_80097AA4",
+  "name": "BobSub",
   "orig": "func_80097AA4",
   "rom": 126484,
   "seg": "overlays/engine/camera",
@@ -31360,7 +31360,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80097C28": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80097C28.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/UpdateScreenLabels.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800152A8",
@@ -31372,7 +31372,7 @@
   "fp": "a11eb442d9befc2a",
   "fpn": "840c6b40af839f74",
   "leaf": false,
-  "name": "func_80097C28",
+  "name": "UpdateScreenLabels",
   "orig": "func_80097C28",
   "rom": 126872,
   "seg": "overlays/engine/camera",
@@ -31380,13 +31380,13 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80098278": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80098278.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/ScreenLabelsOff.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "ad519239883ac4b9",
   "fpn": "ad519239883ac4b9",
   "leaf": true,
-  "name": "func_80098278",
+  "name": "ScreenLabelsOff",
   "orig": "func_80098278",
   "rom": 128488,
   "seg": "overlays/engine/camera",
@@ -31394,7 +31394,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80098284": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80098284.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/ScreenLabelsStart.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -31403,7 +31403,7 @@
   "fp": "75bb83612b1dfd24",
   "fpn": "62984263beb18d48",
   "leaf": false,
-  "name": "func_80098284",
+  "name": "ScreenLabelsStart",
   "orig": "func_80098284",
   "rom": 128500,
   "seg": "overlays/engine/camera",
@@ -31411,7 +31411,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:800982E0": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_800982E0.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/HideScreenLabels.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095E38"
@@ -31419,7 +31419,7 @@
   "fp": "c9a7f4488f493c81",
   "fpn": "5a1f3b53f579bb0a",
   "leaf": false,
-  "name": "func_800982E0",
+  "name": "HideScreenLabels",
   "orig": "func_800982E0",
   "rom": 128592,
   "seg": "overlays/engine/camera",
@@ -31427,7 +31427,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80098344": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80098344.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/ShowScreenLabels.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095E38"
@@ -31435,7 +31435,7 @@
   "fp": "4389e73e53a7bd0d",
   "fpn": "d5ee261135fab60f",
   "leaf": false,
-  "name": "func_80098344",
+  "name": "ShowScreenLabels",
   "orig": "func_80098344",
   "rom": 128692,
   "seg": "overlays/engine/camera",
@@ -31477,7 +31477,7 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:800984D4": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_800984D4.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/RenderScreenLabels.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -31487,7 +31487,7 @@
   "fp": "aa4484efbdd02551",
   "fpn": "e72b12dda483b994",
   "leaf": false,
-  "name": "func_800984D4",
+  "name": "RenderScreenLabels",
   "orig": "func_800984D4",
   "rom": 129092,
   "seg": "overlays/engine/camera",
@@ -31495,13 +31495,13 @@
   "src": "src/overlays/engine/camera.c"
  },
  "engine:80098570": {
-  "asm": "asm/nonmatchings/overlays/engine/camera/func_80098570.s",
+  "asm": "asm/nonmatchings/overlays/engine/camera/ResetScreenLabels.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "e350ad2d75bc789a",
   "fpn": "705a69947f35bcea",
   "leaf": true,
-  "name": "func_80098570",
+  "name": "ResetScreenLabels",
   "orig": "func_80098570",
   "rom": 129248,
   "seg": "overlays/engine/camera",

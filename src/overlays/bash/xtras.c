@@ -406,14 +406,14 @@ void PlotCrate(NAS *arg0) {
             case 3:
             case 4:
                 BC038Release(fux);
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 5:
             case 6:
             case 7:
                 BC038Release(fux);
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 1:
@@ -423,7 +423,7 @@ void PlotCrate(NAS *arg0) {
                 return;
             case 2:
                 BC038Release(fux);
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 fux->state = 0xE;
                 return;
             default:
@@ -435,7 +435,7 @@ void PlotCrate(NAS *arg0) {
             switch (type) {
             case 2:
                 BC038Release(fux);
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 fux->state = 0xE;
                 return;
             case 3:
@@ -444,7 +444,7 @@ void PlotCrate(NAS *arg0) {
             case 6:
             case 7:
                 BC038Release(fux);
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 1:
@@ -558,13 +558,13 @@ void PlotCrate(NAS *arg0) {
             switch (type) {
             case 3:
             case 4:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 5:
             case 6:
             case 7:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 1:
@@ -572,7 +572,7 @@ void PlotCrate(NAS *arg0) {
                 KillTriggerNas(arg0);
                 return;
             case 2:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 if (HeroHooks.KeepInBounds(eng) != 0) {
                     KillTriggerNas(arg0);
                     return;
@@ -591,7 +591,7 @@ void PlotCrate(NAS *arg0) {
         }
         if (fux->hit & 2) {
             fux->who = 6;
-            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
             KillTriggerNas(arg0);
             return;
         }
@@ -599,13 +599,13 @@ void PlotCrate(NAS *arg0) {
             switch (type) {
             case 3:
             case 4:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 5:
             case 6:
             case 7:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 1:
@@ -613,7 +613,7 @@ void PlotCrate(NAS *arg0) {
                 KillTriggerNas(arg0);
                 return;
             case 2:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 fux->state = 0xE;
                 return;
             default:
@@ -626,7 +626,7 @@ void PlotCrate(NAS *arg0) {
         switch (type) {
         case 1:
             BC038Release(fux);
-            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
             KillTriggerNas(arg0);
             return;
         case 2:
@@ -636,16 +636,16 @@ void PlotCrate(NAS *arg0) {
                 if (who == 0 || (OVLG->p2_active != 0 && who == 1)) {
                     Heroes[who].hero_health = 2;
                     fux->type = 6;
-                    func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+                    PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
                     return;
                 }
             }
-            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
             fux->state = 0xC;
             return;
         case 6:
             BC038Release(fux);
-            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
             KillTriggerNas(arg0);
             return;
         case 5:
@@ -740,20 +740,20 @@ void PlotCrate(NAS *arg0) {
                 case 3:
                 case 4:
                     BC038Release(fux);
-                    func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                    PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                     KillTriggerNas(arg0);
                     return;
                 case 5:
                 case 7:
                     BC038Release(fux);
-                    func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                    PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                     KillTriggerNas(arg0);
                     return;
                 }
             } else if (type < 5) {
                 if (type >= 3) {
                     BC038Release(fux);
-                    func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                    PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                     KillTriggerNas(arg0);
                     return;
                 }
@@ -763,11 +763,11 @@ void PlotCrate(NAS *arg0) {
             switch (type) {
             case 3:
             case 4:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
                 KillTriggerNas(arg0);
                 return;
             case 6:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
                 KillTriggerNas(arg0);
                 return;
             case 5:
@@ -788,7 +788,7 @@ void PlotCrate(NAS *arg0) {
             break;
         }
         BC038Release(fux);
-        func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+        PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 1);
         KillTriggerNas(arg0);
         return;
     case 0xC:
@@ -1052,7 +1052,7 @@ void PlotCrate(NAS *arg0) {
         if (fux->hit & 2) {
             switch (type) {
             case 6:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
                 KillTriggerNas(arg0);
                 return;
             case 5:
@@ -1089,7 +1089,7 @@ void PlotCrate(NAS *arg0) {
         }
     hit8:
         if ((fux->hit & 8) && type == 6) {
-            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
             KillTriggerNas(arg0);
             return;
         }
@@ -1099,7 +1099,7 @@ void PlotCrate(NAS *arg0) {
                 fux->type = 7;
                 PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             } else if (type == 6) {
-                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
                 KillTriggerNas(arg0);
                 return;
             }
@@ -1123,7 +1123,7 @@ void PlotCrate(NAS *arg0) {
             }
         } else {
             BC038Release(fux);
-            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
             KillTriggerNas(arg0);
         }
     }

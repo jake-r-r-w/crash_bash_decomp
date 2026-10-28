@@ -131,7 +131,7 @@ s32 UpdatePause(void) {
         if (PSV->unk14 != 0) {
             PSV->unk14--;
         } else {
-            func_8008F068();
+            ExitToTitles();
             PSV->unk68 = 0;
             PSV->flags &= ~0x02000000;
         }
@@ -327,7 +327,7 @@ found:
             if (PauseChooseYesNo(PausePad) != 0) {
                 switch (PauseChoice) {
                 case 0:
-                    func_8008F068();
+                    ExitToTitles();
                     break;
                 case 1:
                     PauseChoice = 0;
@@ -353,7 +353,7 @@ found:
                         r ^= 1;
                         if (r) {
                             PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
-                            func_80095A04(0);
+                            KillEngineSlot(0);
                             fl = PSV->flags;
                             if (fl & 0x200) {
                                 ret = 1;
@@ -393,7 +393,7 @@ found:
                     r ^= 1;
                     if (r) {
                         PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
-                        func_80095A04(0);
+                        KillEngineSlot(0);
                         D_8009AF00 = 1;
                         PauseChoice = 0;
                         PSV->flags &= ~0x80;
@@ -551,7 +551,7 @@ found:
                 break;
             case 3:
                 PSV->flags &= ~0x200;
-                func_8008F068();
+                ExitToTitles();
                 PausePad = 0;
                 PauseChoice = 0;
                 PSV->flags &= 0x04000010;
@@ -1014,31 +1014,31 @@ void DrawAdventureStats(s32 arg0) {
         D_8009AF58[0] = i % 10 + '0';
         if (SCV->unk4 & 0x2000) {
             if (SCV->flags & 8) {
-                func_80095BEC(4, D_8009B788);
+                PlaceEngineSlot(4, D_8009B788);
             } else {
-                func_80095BEC(4, D_8009B590);
+                PlaceEngineSlot(4, D_8009B590);
             }
         } else {
             switch (SCV->unkE0) {
             case 1:
                 if (SCV->flags & 8) {
-                    func_80095BEC(4, D_8009B3E0);
+                    PlaceEngineSlot(4, D_8009B3E0);
                 } else {
-                    func_80095BEC(4, D_8009B230);
+                    PlaceEngineSlot(4, D_8009B230);
                 }
                 break;
             case 2:
                 if (SCV->flags & 8) {
-                    func_80095BEC(4, D_8009B788);
+                    PlaceEngineSlot(4, D_8009B788);
                 } else {
-                    func_80095BEC(4, D_8009B590);
+                    PlaceEngineSlot(4, D_8009B590);
                 }
                 break;
             default:
                 if (GamePause & 8) {
-                    func_80095BEC(4, D_8009B0C8);
+                    PlaceEngineSlot(4, D_8009B0C8);
                 } else {
-                    func_80095BEC(4, D_8009AF60);
+                    PlaceEngineSlot(4, D_8009AF60);
                 }
                 break;
             }
@@ -1085,7 +1085,7 @@ void DrawAdventureStats(s32 arg0) {
         PauseDigits4[1] = i % 10 + '0';
         i /= 10;
         PauseDigits4[0] = i % 10 + '0';
-        func_80095BEC(4, D_8009B980);
+        PlaceEngineSlot(4, D_8009B980);
         e->unk10.x = 0x60;
         e->unk10.y = 0x1E0;
         sub = e->sub;
@@ -1116,7 +1116,7 @@ void DrawAdventureStats(s32 arg0) {
         PauseDigits4[1] = i % 10 + '0';
         i /= 10;
         PauseDigits4[0] = i % 10 + '0';
-        func_80095BEC(4, D_8009BB30);
+        PlaceEngineSlot(4, D_8009BB30);
         e->unk10.x = 0x60;
         e->unk10.y = 0x1E0;
         sub = e->sub;
@@ -1229,7 +1229,7 @@ void UpdatePauseSlide(s32 arg0) {
         if (e->unk10.y <= 0x1E0) {
             e->unk10.y += 0x20;
         } else {
-            func_80095A04(4);
+            KillEngineSlot(4);
             DrawAdventureStats(1);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1242,7 +1242,7 @@ void UpdatePauseSlide(s32 arg0) {
         if (e->unk10.y <= 0x1E0) {
             e->unk10.y += 0x20;
         } else {
-            func_80095A04(4);
+            KillEngineSlot(4);
             DrawAdventureStats(3);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1263,7 +1263,7 @@ void UpdatePauseSlide(s32 arg0) {
         if (e->unk10.y <= 0x1E0) {
             e->unk10.y += 0x20;
         } else {
-            func_80095A04(4);
+            KillEngineSlot(4);
             DrawAdventureStats(5);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1282,7 +1282,7 @@ void UpdatePauseSlide(s32 arg0) {
                 break;
             }
         }
-        func_80095A04(4);
+        KillEngineSlot(4);
         D_8009BD2C = 0;
         break;
     }
@@ -1363,7 +1363,7 @@ void StartWinSequence(s32 arg0) {
             rec = *set;
             PauseRecIndex = 0;
             PauseRec = rec;
-            func_80095BEC(0, &rec->kind);
+            PlaceEngineSlot(0, &rec->kind);
         }
         g->shown[g->mode] |= 0x80;
         PausePad = 0;
@@ -1381,7 +1381,7 @@ void StartWinSequence(s32 arg0) {
                 rec = *set;
                 PauseRecIndex = 0;
                 PauseRec = rec;
-                func_80095BEC(0, &rec->kind);
+                PlaceEngineSlot(0, &rec->kind);
             }
             g->shown[g->mode] |= 8;
             PausePad = 0;
@@ -1397,7 +1397,7 @@ void StartWinSequence(s32 arg0) {
                 rec = *set;
                 PauseRecIndex = 0;
                 PauseRec = rec;
-                func_80095BEC(0, &rec->kind);
+                PlaceEngineSlot(0, &rec->kind);
             }
             g->shown[g->mode] |= 0x20;
             PausePad = 0;
@@ -1415,7 +1415,7 @@ void StartWinSequence(s32 arg0) {
             rec = *set;
             PauseRecIndex = 0;
             PauseRec = rec;
-            func_80095BEC(0, &rec->kind);
+            PlaceEngineSlot(0, &rec->kind);
         }
         g->shown[g->mode] |= 0x40;
         PausePad = 0;
@@ -1433,7 +1433,7 @@ void StartWinSequence(s32 arg0) {
             rec = *set;
             PauseRecIndex = 0;
             PauseRec = rec;
-            func_80095BEC(0, &rec->kind);
+            PlaceEngineSlot(0, &rec->kind);
         }
         g2->shown[g2->mode] |= 0x10;
         PausePad = 0;
@@ -1670,7 +1670,7 @@ void PauseRecPrev(void) {
             rec = PauseRecSet[n];
             PauseRecIndex = n;
             PauseRec = rec;
-            func_80095BEC(0, &rec->kind);
+            PlaceEngineSlot(0, &rec->kind);
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
         }
     }
@@ -1684,7 +1684,7 @@ s32 PauseRecNext(void) {
         if (rec != NULL) {
             PauseRecIndex = PauseRecIndex + 1;
             PauseRec = rec;
-            func_80095BEC(0, &rec->kind);
+            PlaceEngineSlot(0, &rec->kind);
             return 1;
         }
     }
@@ -1741,7 +1741,7 @@ void SetPauseRecs(s32 arg0, s32 kind, s32 flag) {
         rec = *set;
         PauseRecIndex = 0;
         PauseRec = rec;
-        func_80095BEC(0, &rec->kind);
+        PlaceEngineSlot(0, &rec->kind);
     }
 }
 

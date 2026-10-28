@@ -49,7 +49,7 @@ extern PlaceRec MainMenuPlace[];
 extern u8 D_800A0840[];
 extern process_info D_8009E5C8;
 extern u16 TitlesDemoModes[];
-void func_80094D88(s32 arg0, process_info *arg1);
+void GotoScriptScene(s32 arg0, process_info *arg1);
 extern PlaceRec TitlesExtraPlace[];
 extern GfxViewport TitlesMenuView;
 extern GfxCamera CharSelectCamera;

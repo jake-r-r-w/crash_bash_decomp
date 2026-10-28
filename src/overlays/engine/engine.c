@@ -385,7 +385,7 @@ void UpdateLevel(void) {
         UpdateOutMessage();
     }
     UpdatePauseSlide(1);
-    func_8009608C(0);
+    UpdateCamera(0);
 }
 
 void DrawLevelHud(void) {

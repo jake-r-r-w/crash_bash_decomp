@@ -1160,12 +1160,12 @@ void PlotHazardType(NAS *nas) {
         switch (kind) {
         case 2:
             SpinDropHazard(fux);
-            func_8008E27C((s32 *)&eng->unk10, fux, 0);
+            PlayHitEffect((s32 *)&eng->unk10, fux, 0);
             fux->sub = 0xC;
             break;
         case 6:
             SpinDropHazard(fux);
-            func_8008E27C((s32 *)&eng->unk10, fux, 0);
+            PlayHitEffect((s32 *)&eng->unk10, fux, 0);
             KillTriggerNas(nas);
             break;
         case 5:
@@ -1314,7 +1314,7 @@ void PlotHazardType(NAS *nas) {
             }
         }
         if ((fux->hit & 8) && kind == 6) {
-            func_8008E27C((s32 *)&eng->unk10, fux, 0);
+            PlayHitEffect((s32 *)&eng->unk10, fux, 0);
             KillTriggerNas(nas);
         }
         break;

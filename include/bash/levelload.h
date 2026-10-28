@@ -46,21 +46,21 @@ typedef struct Tmpl1C {
 extern Tmpl1C D_800A0D44[];
 extern u8 *D_800A001C[];
 
-void func_80094058(void);
+void QuitLevelLoad(void);
 
-void func_8009407C(void);
+void RenderLevelLoad(void);
 
 void func_80094120(void);
 
 void func_8009414C(void);
 
-void func_800941BC(void);
+void InitLoadingCamera(void);
 
-void func_800941EC(void);
+void QuitLoadingScreen(void);
 
-void func_80094274(void);
+void InitLoadingScreen(void);
 
-void func_80094D88(s32 arg0, process_info *arg1);
+void GotoScriptScene(s32 arg0, process_info *arg1);
 
 s32 func_80094F30(void);
 
@@ -70,9 +70,9 @@ void func_80094FA8(void);
 
 void func_80094FE0(void);
 
-void func_80095A04(s32 arg0);
+void KillEngineSlot(s32 arg0);
 
-/* 0x24-byte placement record read by func_800952F8. */
+/* 0x24-byte placement record read by ApplyPlaceRecs. */
 typedef struct PlaceRec {
     /* 0x00 */ s32 type;
     /* 0x04 */ s16 x;
@@ -90,7 +90,7 @@ typedef struct PlaceRec {
     /* 0x20 */ s32 unk20;
 } PlaceRec;
 
-/* subengine as filled by func_800952F8. */
+/* subengine as filled by ApplyPlaceRecs. */
 typedef struct PlaceSub {
     /* 0x00 */ u32 flags;
     /* 0x04 */ s32 x;
@@ -128,7 +128,7 @@ typedef struct PlaceSub {
     /* 0x88 */ s32 unk88;
 } PlaceSub;
 
-/* GameInfo as seen by func_800952F8. */
+/* GameInfo as seen by ApplyPlaceRecs. */
 typedef struct PlaceGameView {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;
@@ -175,28 +175,28 @@ static inline void PlaceTmpl(PlaceSub *s, s32 x, s32 y, s32 z, s32 scale, s32 id
     }
 }
 
-void func_800952F8(subengine *sub, s32 *recs);
+void ApplyPlaceRecs(subengine *sub, s32 *recs);
 
-void func_80095BEC(s32 arg0, s32 *recs);
+void PlaceEngineSlot(s32 arg0, s32 *recs);
 
 EXTengine *GetEngineSlot(s32 arg0);
 
 void func_80095258(u8 *arg0);
 
-s32 func_8009317C(void);
+s32 LoadModeText(void);
 extern s32 *D_8009F954[];
 extern s32 D_8009F8E4[];
 extern u8 *D_80098598;
 
-void func_80093588(void);
+void LoadModeFiles(void);
 
-void func_800940B0(s32 arg0, s32 arg1);
+void LoadModeDbases(s32 arg0, s32 arg1);
 
-void func_8009421C(void);
+void RenderLoadingScreen(void);
 
-s32 func_80095D88(s32 *rec);
+s32 CountPlaceRecs(s32 *rec);
 
-void func_800936C4(void);
+void InitLevelLoad(void);
 
 void func_800945C0(EngineStartArgs *arg0);
 
@@ -204,7 +204,7 @@ void func_8009342C(void);
 
 void func_80095020(void);
 
-void func_800943B8(void);
+void LoadLoadingModel(void);
 
 void func_8009440C(void);
 
@@ -212,27 +212,27 @@ void func_80095E5C(u8 *arg0, u8 *arg1, s32 arg2);
 
 s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
 
-void func_80094DD0(void);
+void QuitScriptScene(void);
 
-void func_80093270(void);
+void AnimateLoadingIcon(void);
 
 void realign_panel_dbase(void);
 
 void level_load_map(void);
 
-void func_80094EB8(void);
+void RenderScriptScene(void);
 
 s32 func_800950FC(void);
 
 void func_80095160(EngineStartArgs *arg0);
 
-void func_80095DBC(void);
+void ResetEnginePool(void);
 
-void func_80094754(void);
+void InitScriptScene(void);
 
 void func_80094860(void);
 
-s32 func_800951D0(s32 arg0);
+s32 PickModeVariant(s32 arg0);
 
 s32 func_80095F88(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
 
@@ -260,7 +260,7 @@ extern Blk32 D_800A0BA0;
 extern CamVec3 D_800A0BC0;
 extern u8 *D_800A0D34;
 
-/* GameInfo as seen by func_80093BE8. */
+/* GameInfo as seen by UpdateLevelLoad. */
 typedef struct EngStateView {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;
@@ -290,14 +290,14 @@ extern process_info LoadingProcess2;
 extern process_info RetryProcess;
 void func_80093854(void);
 void load_initial_dbases(void);
-void func_80092AF4(process_info *process, s32 speed);
+void GotoProcess(process_info *process, s32 speed);
 
-void func_80093BE8(void);
+void UpdateLevelLoad(void);
 
-void func_80094A28(void);
+void StartSceneScript(void);
 
-void func_80094B38(void);
+void UpdateScriptScene(void);
 
-void func_80095A60(s32 arg0, s32 arg1);
+void InitEngineSlot(s32 arg0, s32 arg1);
 
 #endif /* BASH_LEVELLOAD_H */

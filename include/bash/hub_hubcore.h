@@ -158,7 +158,7 @@ typedef struct KeyedPair {
     s32 val[1];
 } KeyedPair;
 extern KeyedPair HubLockPanels[];
-/* Per-mode record tables for func_80095BEC, indexed by language/player. */
+/* Per-mode record tables for PlaceEngineSlot, indexed by language/player. */
 extern s32 *HubSavePanels[];
 extern s32 *HubStartPanels[];
 extern s32 *HubChallengePanels[];

@@ -246,12 +246,12 @@ void PlotPACrate(NAS *nas) {
             eng->unk10.y -= 0x20;
             switch (kind) {
             case 4:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
                 KillTriggerNas(nas);
                 return;
             case 5:
             case 7:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
                 KillTriggerNas(nas);
                 return;
             default:
@@ -266,12 +266,12 @@ void PlotPACrate(NAS *nas) {
             }
             switch (kind) {
             case 4:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
                 KillTriggerNas(nas);
                 return;
             case 5:
             case 7:
-                func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
                 KillTriggerNas(nas);
                 return;
             default:
@@ -376,13 +376,13 @@ void PlotPACrate(NAS *nas) {
                 switch (kind) {
                 case 4:
                     PapuReleaseObj(obj, obj->player);
-                    func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                    PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
                     KillTriggerNas(nas);
                     return;
                 case 5:
                 case 7:
                     PapuReleaseObj(obj, obj->player);
-                    func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                    PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
                     KillTriggerNas(nas);
                     return;
                 }
@@ -409,7 +409,7 @@ void PlotPACrate(NAS *nas) {
             break;
         }
         PapuReleaseObj(obj, obj->player);
-        func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+        PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
         KillTriggerNas(nas);
         return;
     case 0x63:
@@ -516,7 +516,7 @@ void PlotPACrate(NAS *nas) {
             }
         } else {
             PapuReleaseObj(obj, obj->player);
-            func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 0);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 0);
             KillTriggerNas(nas);
         }
     }

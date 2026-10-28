@@ -2772,7 +2772,7 @@ void PlotTumbler(NAS *nas) {
             }
         }
         if (Heroes[hero].hero_status & 0xFA00) {
-            func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
             KillTriggerNas(nas);
             return;
         }
@@ -2794,13 +2794,13 @@ void PlotTumbler(NAS *nas) {
             eng->unk10.y += 0x20;
             CrateCollide(eng, 0, -1, 0);
             eng->unk10.y -= 0x20;
-            func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 0);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 0);
             KillTriggerNas(nas);
             return;
         }
         if (CrateCollide(eng, 0, obj->unk16, 1) != 0) {
             eng->unk10.y += 0x80;
-            func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+            PlayHitEffect(&eng->unk10.x, (HitInfo *)obj, 1);
             KillTriggerNas(nas);
             return;
         }
@@ -3516,7 +3516,7 @@ void InitSnowGlint(NAS *nas) {
 
 void BashDrawView(void) {
     u8 *vp = (u8 *)&GameViewport;
-    func_80093038();
+    RenderGameScene();
     gfx_set_viewport((GfxViewport *)vp, (GfxCamera *)MainCamera);
     RenderState.modelDp = ScreenFade.amount;
     func_8009440C();

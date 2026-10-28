@@ -10,7 +10,7 @@ extern u8 D_80063BB8[];
 extern u8 D_80063EC8[];
 
 void HubRender(void) {
-    func_80093110();
+    SetGameViewport();
     if (GameMode == 0x25) {
         RenderAllNas();
         if (D_80098714 == 0) {
@@ -53,7 +53,7 @@ void HubStartCredits(void) {
         D_80098714 = one;
         CameraMode = 0;
         HubCreditsStart = D_8005A608;
-        func_80095A60(0, 0x1E);
+        InitEngineSlot(0, 0x1E);
         return;
     }
     HubEndCredits();
@@ -173,7 +173,7 @@ s32 HubCreditsScroll(void) {
         return 0;
     case 3:
         HubCreditsStart = D_8005A608;
-        func_80095A04(0);
+        KillEngineSlot(0);
         D_8009870E = 2;
         D_80098710 = 45;
         music_fade_out(45);
