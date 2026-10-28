@@ -320,7 +320,7 @@ extern HudEntry PauseDemoLabel[];
 extern s32 PauseLastChoice;
 extern s16 PauseMenuY;
 extern s16 PauseToggles[4];
-extern s32 PauseCanCheat;
+extern s32 PauseStatsAllowed;
 extern u16 StatsPageWanted;
 extern u16 StatsPageShown;
 extern s32 StatsHasPage1;

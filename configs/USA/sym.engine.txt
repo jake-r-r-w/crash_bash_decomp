@@ -936,4 +936,4 @@ ExitCAudio = 0x800A05E0;
 CameraEase = 0x800AD0F4;
 CameraFrameList = 0x800AD1EC;
 ScreenLabelShown = 0x800ADBC4;
-PauseCanCheat = 0x8009BD30;
+PauseStatsAllowed = 0x8009BD30;
