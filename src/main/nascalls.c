@@ -2823,7 +2823,7 @@ loop:
 void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
     PadRumble *p;
 
-    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && GameOptions.vibrate[pad] != 0 &&
+    if (GAME->heroOut[pad] == 0 && !(GAME->cheats & 0x80) && GameOptions.vibrate[pad] != 0 &&
         (Pads[pad].flags & 8)) {
         p = &Pads[pad].rumble;
         p->act[1] = arg2;
@@ -2835,7 +2835,7 @@ void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
 void pad_rumble_small(s32 pad, s32 arg1) {
     PadRumble *p;
 
-    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && pad < 4 && GameOptions.vibrate[pad] != 0 &&
+    if (GAME->heroOut[pad] == 0 && !(GAME->cheats & 0x80) && pad < 4 && GameOptions.vibrate[pad] != 0 &&
         (Pads[pad].flags & 8)) {
         p = &Pads[pad].rumble;
         p->act[0] = 1;

@@ -42,7 +42,7 @@ void music_play_level(s32 arg0, s32 arg1) {
     if (t >= 2U) {
         arg1 = t;
         for (i = 0; i < 4; i++) {
-            v = GameInfo[i + 0x50] - 1;
+            v = GAME->heroes[i] - 1;
             if (v < 8U) {
                 sfx_bank_load(LevelSfxBanks[arg1][v]);
             }
