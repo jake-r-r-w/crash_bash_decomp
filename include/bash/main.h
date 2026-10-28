@@ -209,13 +209,6 @@ typedef struct GfxTexInfo {
     /* 0x16 */ u16 uv3;
 } GfxTexInfo;
 
-/* At +0x10 of GfxModel (prim_write_uvs). */
-typedef struct {
-    s32 count;            /* 0x00: entries in tex */
-    u8 unk4[4];
-    struct obj_texture *tex; /* 0x08 */
-    struct TexClut *cluts; /* 0x0C */
-} GfxTexSet;
 
 /* A block with a table at a byte offset from its field at +0x24. */
 typedef struct {
@@ -223,11 +216,6 @@ typedef struct {
     s32 uvs; /* 0x24: byte offset from this field */
 } UvTable;
 
-typedef struct GfxModel {
-    u8 unk0[0xC];
-    RelTable *colors; /* 0x0C: u32 colours, indexed by a face's 13-bit indices */
-    GfxTexSet texs;   /* 0x10 */
-} GfxModel;
 
 /* Face data prim_write_uvs reads: per face a uv index (0x18), a run-length
  * texture index list (0x1C: bits 9-14 repeat count, bit 15 last texture, bits 0-8
@@ -255,7 +243,7 @@ typedef struct {
 typedef struct {
     u32 flags;               /* 0x00: 0x8000 visible */
     u8 unk4[0x68];
-    struct GfxModel *model;  /* 0x6C */
+    struct obj_dbase *model; /* 0x6C */
     u8 unk70[4];
     u16 index;               /* 0x74: passed to entity_address */
     u8 unk76[0x16];
@@ -276,7 +264,7 @@ typedef struct {
  * at buffers inside the struct itself, a block at +0x28 it passes to
  * gfx_setup_xform, and the ordering table that primitives are added to. */
 typedef struct {
-    struct GfxModel *unk0;
+    struct obj_dbase *dbase; /* 0x00: the dbase being drawn */
     void *unk4;
     s32 *farColor; /* 0x08: r, g, b for gte_ldfcdir */
     s32 dp;        /* 0x0C: depth-cue factor for gte_lddp */

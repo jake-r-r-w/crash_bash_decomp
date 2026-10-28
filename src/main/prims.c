@@ -204,7 +204,7 @@ void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
     gte_ldfcdir(RenderState.farColor[0], RenderState.farColor[1], RenderState.farColor[2]);
     gte_lddp(RenderState.dp);
     idx = (u16 *)((u8 *)&face->table + face->table);
-    colors = (u32 *)((u8 *)&RenderState.unk0->colors->table + RenderState.unk0->colors->table);
+    colors = (u32 *)((u8 *)&((RelTable *)RenderState.dbase->data)->table + ((RelTable *)RenderState.dbase->data)->table);
     c = &colors[idx[0] & 0x1FFF];
     gte_ldrgb(c);
     gte_dpcs();
@@ -235,7 +235,7 @@ void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
 }
 
 void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
-    GfxModel *model = RenderState.unk0;
+    obj_dbase *model = RenderState.dbase;
     TexFaceRuns *face = (TexFaceRuns *)arg0;
     POLY_GT4 *poly = arg1;
     u16 *idx;
@@ -249,13 +249,13 @@ void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
     GfxTexInfo *ti;
     u16 base;
     s32 t;
-    GfxTexSet *ts;
+    obj_textureset *ts;
 
     uvIdx = (u16 *)((u8 *)&face->uvIdx + face->uvIdx);
     idx = (u16 *)((u8 *)&face->table + face->table);
     tex = (u16 *)((u8 *)&face->texs + face->texs);
-    ts = &model->texs;
-    mc = model->colors;
+    ts = &model->textures;
+    mc = (RelTable *)model->data;
     colors = (u32 *)((u8 *)&mc->table + mc->table);
     uvs = (u16 *)((u8 *)&((UvTable *)mc)->uvs + ((UvTable *)mc)->uvs);
     c = &colors[*idx++ & 0x1FFF];
@@ -267,8 +267,8 @@ void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
     setPolyGT4(poly);
     t = *tex;
     if (t & 0x8000) {
-        ti = &ts->tex[ts->count - 1].info;
-        poly->clut = ts->cluts[t & 0x1FF].clut;
+        ti = &ts->tex[ts->nTex - 1].info;
+        poly->clut = ts->ent[t & 0x1FF].clut;
     } else {
         ti = &ts->tex[t & 0x1FF].info;
         poly->clut = ti->clut;
@@ -300,7 +300,7 @@ void faces_write_colors_dq(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) 
     gte_ldfcdir(RenderState.farColor[0], RenderState.farColor[1], RenderState.farColor[2]);
     gte_lddp(RenderState.dp);
     run = (u8 *)&faces->runs + faces->runs;
-    colors = (u32 *)((u8 *)&RenderState.unk0->colors->table + RenderState.unk0->colors->table);
+    colors = (u32 *)((u8 *)&((RelTable *)RenderState.dbase->data)->table + ((RelTable *)RenderState.dbase->data)->table);
     count = run + 1;
     for (;; count += 2, run += 2) {
         if (*count == 0xFF) {
@@ -375,7 +375,7 @@ void faces_write_colors(FaceRuns *faces, FacePrim *prim) {
 
     idx = (u16 *)((u8 *)&faces->table + faces->table);
     run = (u8 *)&faces->runs + faces->runs;
-    colors = (u32 *)((u8 *)&RenderState.unk0->colors->table + RenderState.unk0->colors->table);
+    colors = (u32 *)((u8 *)&((RelTable *)RenderState.dbase->data)->table + ((RelTable *)RenderState.dbase->data)->table);
     count = run + 1;
     for (;; count += 2, run += 2) {
         if (*count == 0xFF) {
@@ -423,7 +423,7 @@ void prim_write_uvs(faces, prim)
 {
     u8 *p;
     s32 n;
-    GfxTexSet *ts;
+    obj_textureset *ts;
     s32 left;
     u32 t;
     u16 *blend;
@@ -438,10 +438,10 @@ void prim_write_uvs(faces, prim)
     u16 base;
 
     left = 0;
-    ts = &RenderState.unk0->texs;
+    ts = &RenderState.dbase->textures;
     uvIdx = (u16 *)((u8 *)&faces->uvIdx + faces->uvIdx);
     tex = (u16 *)((u8 *)&faces->texs + faces->texs);
-    ut = (UvTable *)RenderState.unk0->colors;
+    ut = (UvTable *)RenderState.dbase->data;
     blend = (u16 *)((u8 *)&faces->table + faces->table);
     run = (u8 *)&faces->runs + faces->runs;
     uvs = (u16 *)((u8 *)&ut->uvs + ut->uvs);
@@ -470,9 +470,9 @@ void prim_write_uvs(faces, prim)
             } else {
                 v = t;
                 if (v & 0x8000) {
-                    ti = &ts->tex[ts->count - 1].info;
+                    ti = &ts->tex[ts->nTex - 1].info;
                     idx = v & 0x1FF;
-                    *(u16 *)(p + 14) = ts->cluts[idx].clut;
+                    *(u16 *)(p + 14) = ts->ent[idx].clut;
                 } else {
                     v = t & 0x1FF;
                     ti = &ts->tex[v].info;
@@ -1367,7 +1367,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
             otz = d->unk68;
         }
         if ((u32)otz < (u32)RenderState.otLen) {
-            texture_draw(&RenderState.unk0->texs.tex[a & 0xFFF],
+            texture_draw(&RenderState.dbase->textures.tex[a & 0xFFF],
                           (s32)e, otz, g);
         }
         return;
@@ -1379,7 +1379,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
 
 void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
     GteSetup s;
-    GfxModel *model;
+    obj_dbase *model;
     RelTable *colors;
     u16 n;
     GfxState *g;
@@ -1396,8 +1396,8 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
     if (n != 0 && (arg0->flags & 0x8000)) {
         model = arg0->u6C.dbase;
         if (model != NULL) {
-            RenderState.unk0 = model;
-            colors = model->colors;
+            RenderState.dbase = model;
+            colors = (RelTable *)model->data;
             if (colors != NULL) {
                 RenderState.unk84 = RenderState.unkCC;
                 RenderState.unk88 = RenderState.unk10C;
@@ -1677,7 +1677,7 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     if (!(obj->flags & 0x8000)) {
         return;
     }
-    colors = obj->model->colors;
+    colors = (RelTable *)obj->model->data;
     if (colors == NULL) {
         return;
     }
@@ -1688,14 +1688,14 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
         if (prim == NULL) {
             return;
         }
-        RenderState.unk0 = obj->model;
+        RenderState.dbase = obj->model;
         prim_create_entity_single(entity_address(obj->index, (u8 *)colors), prim);
     }
     t = entity_address(obj->index, (u8 *)colors);
     RenderState.dp = RenderState.modelDp;
-    RenderState.unk0 = obj->model;
+    RenderState.dbase = obj->model;
     prim_colour_poly((RelTable *)t, prim, (s32)RenderState.farColor, flags);
-    colors = obj->model->colors;
+    colors = (RelTable *)obj->model->data;
     t = draw_model_quad_setup(obj, arg1, flags, colors, entity_address(obj->index, (u8 *)colors));
     t += *(s32 *)(t + 0x10) + 0x10;
     gte_ldv0_t(t + 0x14);
@@ -2829,7 +2829,7 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
     MATRIX *mp;
 
     m = RenderState.cam->view;
-    RenderState.unk0 = ((subengine *)sub)->u6C.dbase = ((GfxModel *)MapScene->dbase);
+    RenderState.dbase = ((subengine *)sub)->u6C.dbase = ((obj_dbase *)MapScene->dbase);
     v.vx = ((subengine *)sub)->unk04 - RenderState.cam->at.x;
     v.vy = ((subengine *)sub)->unk08 - RenderState.cam->at.y;
     v.vz = ((subengine *)sub)->unk0C - RenderState.cam->at.z;

@@ -2491,6 +2491,6 @@ void InitNitroSmokeBoost(NAS *nas) {
             cur->unk1E = 4;
         }
     }
-    nas->Engine->sub->u6C.dbase = ((GfxModel *)MapScene->dbase);
+    nas->Engine->sub->u6C.dbase = ((obj_dbase *)MapScene->dbase);
     nas->UserInfo.user1 = 0;
 }

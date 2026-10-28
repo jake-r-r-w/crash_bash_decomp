@@ -2430,7 +2430,7 @@ void InitPapuColumn(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->u6C.dbase = ((GfxModel *)MapScene->dbase);
+        e->sub->u6C.dbase = ((obj_dbase *)MapScene->dbase);
         e->sub->entity = 0x200C;
         e->unk5D = 0;
         e->unk5C = 1;

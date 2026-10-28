@@ -980,8 +980,8 @@ void PolarInitScene(void) {
             break;
         }
         if (obj->flags & 0x8000) {
-            if (obj->model->colors != NULL) {
-                entity_address(obj->index, (u8 *)obj->model->colors);
+            if (obj->model->data != NULL) {
+                entity_address(obj->index, obj->model->data);
                 if (((GameState *)GameInfo)->mode == 0x12) {
                     if (!(((GameState *)GameInfo)->levelFlags & 0x80)) {
                         if (obj->index == 0x5001 || obj->index == 0x5004) {
@@ -9849,8 +9849,8 @@ void PolarInitDebug(void) {
             break;
         }
         if (obj->flags & 0x8000) {
-            if (obj->model->colors != NULL) {
-                u8 *p = entity_address(obj->index, (u8 *)obj->model->colors);
+            if (obj->model->data != NULL) {
+                u8 *p = entity_address(obj->index, obj->model->data);
                 if (p != NULL && *(s32 *)(p + 0x28) != 0) {
                     *out++ = obj;
                     i++;

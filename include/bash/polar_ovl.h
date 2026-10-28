@@ -58,7 +58,7 @@ typedef struct SceneObj {
     /* 0x54 */ u8 pad54[0x5C - 0x54];
     /* 0x5C */ struct SceneObj *next;
     /* 0x60 */ u8 pad60[0x6C - 0x60];
-    /* 0x6C */ GfxModel *model;
+    /* 0x6C */ obj_dbase *model;
     /* 0x70 */ u8 pad70[0x74 - 0x70];
     /* 0x74 */ u16 index;
 } SceneObj;

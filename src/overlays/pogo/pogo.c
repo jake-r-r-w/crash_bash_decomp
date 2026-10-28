@@ -7629,7 +7629,7 @@ void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags) {
     p1 = obj->slots[1].prim;
     if (p0 != NULL && p1 != NULL) {
         if (obj->unk8E != 0) {
-            ti = &obj->model->texs.tex[obj->unk8E & 0xFFF].info;
+            ti = &obj->model->textures.tex[obj->unk8E & 0xFFF].info;
             *(u16 *)&p0->u0 = ti->uv0;
             *(u16 *)&p0->u1 = ti->uv1;
             *(u16 *)&p0->u2 = ti->uv2;
