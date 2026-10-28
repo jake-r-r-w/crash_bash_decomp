@@ -177,7 +177,7 @@ void func_80083708(void) {
             h->hero_fx = fx;
             fx->unk10 = eng->unk10;
             fx->unk5D = 0;
-            func_8001D390(fx, 3);
+            eng_add_subs_n(fx, 3);
             sub = fx->sub;
             fxv = 0x2002;
             while (sub != NULL) {
@@ -1345,7 +1345,7 @@ s32 func_800864CC(s32 id, u32 flag) {
     if (eng->unk5E != 0) {
         rotscale_update(&eng->unk1C);
     }
-    func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+    gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
     i = 0;
     me = h;
     h = base;
@@ -3501,7 +3501,7 @@ void InitScriptFX(NAS *nas)
   sd->threadcount = *((s32 *) hdr);
   sd->subcount = *((s32 *) (hdr + 4));
   ent = (s32 *) (hdr + 0x1C);
-  if (func_80018F3C(new_var->Engine, sd->subcount) != sd->subcount)
+  if (eng_add_subs(new_var->Engine, sd->subcount) != sd->subcount)
   {
     for (i = 0; i < sd->threadcount; i++)
     {
@@ -4185,7 +4185,7 @@ void func_8008CFBC(EXTengine *eng) {
                 }
                 i++;
             }
-            func_8001D174(eng);
+            eng_release_subs_sfx(eng);
         }
     }
 }
@@ -4361,7 +4361,7 @@ void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         if (eng != NULL) {
             off = 0;
             if (arg3 >= 10) {
-                func_80018F3C(eng, 1);
+                eng_add_subs(eng, 1);
             }
             sub = eng->sub;
             if (sub != NULL) {

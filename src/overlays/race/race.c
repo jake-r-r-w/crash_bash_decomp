@@ -4083,7 +4083,7 @@ void SetRaceHeroWinner(s32 player) {
         return;
     }
     func_80085718(player, 1);
-    func_80017640();
+    prims_empty_back();
     mal_compact_step((u8 *)&MainHeap);
 }
 

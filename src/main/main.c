@@ -1524,7 +1524,7 @@ u8 *loader_alloc(u8 *arg0) {
         words = ((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 9;
         h = &MainHeap;
         if (mal_first_free(words, h->free) == NULL) {
-            func_80017640();
+            prims_empty_back();
             if (mal_first_free(words, h->free) == NULL) {
                 mal_compact_step((u8 *)h);
                 if (mal_first_free(words, h->free) == NULL) {
@@ -2255,7 +2255,7 @@ s32 mal_can_alloc(s32 arg0) {
     arg0 += 3;
     words = arg0 >> 2;
     if (mal_first_free(words, h->free) == NULL) {
-        func_80017640();
+        prims_empty_back();
         if (mal_first_free(words, h->free) == NULL) {
             mal_compact_step((u8 *)h);
             if (mal_first_free(words, h->free) == NULL) {
@@ -2895,47 +2895,47 @@ void export_exe_functions(void) {
     t[0x040 / 4] = music_fade_out;
     t[0x044 / 4] = path_find;
     t[0x048 / 4] = path_get;
-    t[0x04C / 4] = func_8001E21C;
-    t[0x050 / 4] = func_8001E41C;
-    t[0x054 / 4] = func_8001DAF8;
+    t[0x04C / 4] = key_interp_pos;
+    t[0x050 / 4] = key_find;
+    t[0x054 / 4] = draw_map_scene;
     t[0x058 / 4] = draw_map_sub;
     t[0x05C / 4] = map_update;
-    t[0x060 / 4] = func_8001DEF4;
-    t[0x064 / 4] = func_8001E054;
-    t[0x068 / 4] = func_8001DDD8;
-    t[0x06C / 4] = func_8001E0A8;
-    t[0x070 / 4] = func_80017164;
-    t[0x074 / 4] = func_800180BC;
-    t[0x078 / 4] = func_800184F0;
-    t[0x07C / 4] = func_80018694;
-    t[0x080 / 4] = func_8001888C;
-    t[0x084 / 4] = func_80017D90;
-    t[0x088 / 4] = func_80018728;
-    t[0x08C / 4] = func_80018430;
-    t[0x090 / 4] = func_800183DC;
+    t[0x060 / 4] = mapscene_init;
+    t[0x064 / 4] = mapscene_load;
+    t[0x068 / 4] = mapscene_release;
+    t[0x06C / 4] = mapscene_place_subs;
+    t[0x070 / 4] = prims_init;
+    t[0x074 / 4] = face_prim_alloc;
+    t[0x078 / 4] = primnode_alloc;
+    t[0x07C / 4] = primset_alloc;
+    t[0x080 / 4] = prims_empty;
+    t[0x084 / 4] = faces_write_colors;
+    t[0x088 / 4] = faces_write_uvs_colors;
+    t[0x08C / 4] = primpool_init;
+    t[0x090 / 4] = primpool_free;
     t[0x094 / 4] = release_sprim;
     t[0x098 / 4] = new_sprim;
-    t[0x09C / 4] = func_8001A0D8;
+    t[0x09C / 4] = draw_gouraud_quad;
     t[0x0A0 / 4] = func_8001A6D4;
     t[0x0A4 / 4] = sub_play_script;
-    t[0x0A8 / 4] = func_8001AA48;
-    t[0x0AC / 4] = func_8001C7FC;
-    t[0x0B0 / 4] = func_8001C690;
-    t[0x0B4 / 4] = func_8001A82C;
-    t[0x0B8 / 4] = func_8001C3D0;
+    t[0x0A8 / 4] = draw_model_quad;
+    t[0x0AC / 4] = draw_nas_model_flags;
+    t[0x0B0 / 4] = draw_nas_model;
+    t[0x0B4 / 4] = draw_text_nas;
+    t[0x0B8 / 4] = sub_use_quad_model;
     t[0x0BC / 4] = kill_sprim_sub;
     t[0x0C0 / 4] = func_800158E4;
     t[0x0C4 / 4] = func_80015870;
     t[0x0C8 / 4] = SetDrawArea;
     t[0x0CC / 4] = tga_convert;
-    t[0x0D0 / 4] = func_80018F3C;
-    t[0x0D4 / 4] = func_8001C270;
-    t[0x0D8 / 4] = func_8001C298;
-    t[0x0DC / 4] = func_8001D640;
-    t[0x0E0 / 4] = func_8001D390;
-    t[0x0E4 / 4] = func_8001D3B0;
+    t[0x0D0 / 4] = eng_add_subs;
+    t[0x0D4 / 4] = eng_kill;
+    t[0x0D8 / 4] = eng_render;
+    t[0x0DC / 4] = subpool_init;
+    t[0x0E0 / 4] = eng_add_subs_n;
+    t[0x0E4 / 4] = subs_init_array;
     t[0x0E8 / 4] = draw_init;
-    t[0x0EC / 4] = func_80018B08;
+    t[0x0EC / 4] = gfx_set_viewport;
     t[0x0F0 / 4] = entity_address;
     t[0x0F4 / 4] = init_dots;
     t[0x0F8 / 4] = plot_point_sprites;
@@ -2971,23 +2971,23 @@ void export_exe_functions(void) {
     t[0x170 / 4] = sortlist_sort;
     t[0x174 / 4] = load_file_to;
     t[0x178 / 4] = mal_update_deferred;
-    t[0x17C / 4] = func_8001C34C;
+    t[0x17C / 4] = sub_nth;
     t[0x180 / 4] = load_file_permanent;
     t[0x184 / 4] = load_file_direct;
-    t[0x188 / 4] = func_8001D6B4;
-    t[0x18C / 4] = func_8001DCD4;
+    t[0x188 / 4] = mapenv_place_subs;
+    t[0x18C / 4] = mapscene_find_sub;
     t[0x190 / 4] = func_80015984;
     t[0x194 / 4] = gte_rotate_point;
-    t[0x198 / 4] = func_8001E598;
+    t[0x198 / 4] = fade_update;
     t[0x19C / 4] = set_fade;
     t[0x1A0 / 4] = process_init;
-    t[0x1A4 / 4] = func_8001E610;
-    t[0x1A8 / 4] = func_8001E898;
+    t[0x1A4 / 4] = process_control_update;
+    t[0x1A8 / 4] = process_control_render;
     t[0x1AC / 4] = process_quit;
-    t[0x1B0 / 4] = func_8001E934;
-    t[0x1B4 / 4] = func_8001E848;
+    t[0x1B0 / 4] = process_control_init;
+    t[0x1B4 / 4] = process_control_goto;
     t[0x1B8 / 4] = process_interrupt;
-    t[0x1BC / 4] = func_8001E824;
+    t[0x1BC / 4] = process_control_back;
     t[0x1C0 / 4] = func_8002992C;
     t[0x1C4 / 4] = texture_release_loading_mem;
     t[0x1C8 / 4] = func_8002D274;
@@ -3007,14 +3007,14 @@ void export_exe_functions(void) {
     t[0x200 / 4] = get_script_header;
     t[0x204 / 4] = func_80021E44;
     t[0x208 / 4] = func_80021DD4;
-    t[0x20C / 4] = func_8001ACC0;
+    t[0x20C / 4] = gfx_object_matrix;
     t[0x210 / 4] = func_8001F604;
     t[0x214 / 4] = func_8002147C;
     t[0x218 / 4] = interp;
     t[0x21C / 4] = lerp_angle;
     t[0x220 / 4] = lerp_fix12;
-    t[0x224 / 4] = func_8001C584;
-    t[0x228 / 4] = func_8001C448;
+    t[0x224 / 4] = posdst_flash_at;
+    t[0x228 / 4] = posdst_flash;
     t[0x22C / 4] = D_8005B648;
     t[0x230 / 4] = D_8004DDBC;
     t[0x234 / 4] = func_8002D294;
@@ -3037,7 +3037,7 @@ void export_exe_functions(void) {
     t[0x278 / 4] = func_8002D4F4;
     t[0x27C / 4] = queue_group_load;
     t[0x280 / 4] = D_80050010;
-    t[0x284 / 4] = func_8001D604;
+    t[0x284 / 4] = subpool_free;
     t[0x288 / 4] = func_80021054;
     t[0x28C / 4] = func_80020F5C;
 }
@@ -3312,7 +3312,7 @@ FlagPoint *sub_find_point(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out)
             if (eng->unk5E != 0) {
                 rotscale_update(&eng->unk1C);
             }
-            func_8001CD04(sub, eng->unk3C, &eng->unk10);
+            gfx_load_xform(sub, eng->unk3C, &eng->unk10);
             gte_ldv0(p);
             gte_rt();
             gte_stlvl(out);
@@ -3397,7 +3397,7 @@ s32 map_entity_address(u16 arg0, u8 *arg1) {
     arg0--;
     t = arg0 & 0xFFF;
     base = arg1 + (*(s32 *)(arg1 + 0x1C) + 0x1C);
-    r = func_8001DD20((s32 *)(base + (t * 0xC + 4)));
+    r = rel_ptr((s32 *)(base + (t * 0xC + 4)));
     if (r == 0) {
         return 0;
     }

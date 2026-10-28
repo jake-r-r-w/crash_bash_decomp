@@ -9,7 +9,7 @@ static inline void func_80017164_clear(u8 *p) {
     *(s32 *)(p + 0x10) = 0;
 }
 
-void func_80017164(s32 *cfg) {
+void prims_init(s32 *cfg) {
     s32 cnt;
     u8 *p;
     u8 *q;
@@ -81,7 +81,7 @@ void func_80017164(s32 *cfg) {
 static inline void PrimList_Flush(ListNode18938 *arg0, s32 arg1) {
     arg0->f0 = 0;
     if (arg1 == 1) {
-        func_80018764(arg0->fC);
+        primnodes_free(arg0->fC);
     } else {
         *arg0->f8 = D_80056850;
         D_80056850 = arg0->fC;
@@ -113,7 +113,7 @@ static inline void PrimSet_Free(PrimSet *prev, PrimSet *set) {
     D_80056860 = (s32 *) set;
 }
 
-void func_80017388(void) {
+void prims_update(void) {
     PrimSet *set;
     PrimSet *prev;
     s32 off;
@@ -177,7 +177,7 @@ static inline void PrimList_Empty(ListNode18938 *arg0, u8 *node) {
     }
 }
 
-void func_80017640(void) {
+void prims_empty_back(void) {
     s32 idx;
     u8 *node;
 
@@ -286,7 +286,7 @@ void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
     *(u16 *)&poly->u3 = base | uv[2];
 }
 
-void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) {
+void faces_write_colors_dq(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) {
     u16 *idx;
     u8 *run;
     u8 *count;
@@ -365,7 +365,7 @@ void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) {
 done:;
 }
 
-void func_80017D90(FaceRuns *faces, FacePrim *prim) {
+void faces_write_colors(FaceRuns *faces, FacePrim *prim) {
     u16 *idx;
     u8 *run;
     u8 *count;
@@ -498,7 +498,7 @@ void prim_write_uvs(faces, prim)
     }
 }
 
-FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4) {
+FacePrim *face_prim_alloc(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4) {
     s32 *node;
     FacePrim *prim;
 
@@ -510,7 +510,7 @@ FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, Face
             list->f8 = (s32 **)node;
         }
         if (arg4 != 0) {
-            func_80017D90(faces, (FacePrim *)node[1]);
+            faces_write_colors(faces, (FacePrim *)node[1]);
         }
     } else {
         if (mal_first_free(*(u16 *)((u8 *)faces + 8) * 10, MainHeap.free) == NULL || (node = D_80056858) == NULL) {
@@ -525,12 +525,12 @@ FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, Face
         mal_alloc_owned_low(*(u16 *)((u8 *)faces + 8) * 0x28, (void **)(node + 1), (s32)&MainHeap, ((FrameCount & 1)?3:2));
         prim = (FacePrim *)node[1];
         prim_write_uvs(faces, prim);
-        func_80017D90(faces, prim);
+        faces_write_colors(faces, prim);
     }
     return (FacePrim *)node[1];
 }
 
-void func_8001828C(void) {
+void primpool_release_all(void) {
     NodePool *pool;
     PoolNode *node;
     PoolNode *prev;
@@ -563,7 +563,7 @@ void func_8001828C(void) {
     }
 }
 
-void func_8001830C(void) {
+void primpool_age(void) {
     PoolNode *next;
     PoolNode *prev;
     PoolNode *cur;
@@ -609,11 +609,11 @@ void *new_sprim(void) {
     return NULL;
 }
 
-void func_800183DC(void) {
+void primpool_free(void) {
     NodePool *pool;
 
     DrawSync(0);
-    func_8001828C();
+    primpool_release_all();
     pool = &PrimPool;
     if (pool->mem != NULL) {
         mal_free(pool->mem, &MainHeap);
@@ -621,7 +621,7 @@ void func_800183DC(void) {
     pool->mem = NULL;
 }
 
-void func_80018430(s32 count) {
+void primpool_init(s32 count) {
     PoolNode *p;
     PoolNode *n;
     s32 i;
@@ -642,7 +642,7 @@ void func_80018430(s32 count) {
     PrimPool.free = PrimPool.mem;
 }
 
-void func_800184D4(u8 **arg0) {
+void primset_invalidate(u8 **arg0) {
     u8 *temp_a0;
 
     temp_a0 = *arg0;
@@ -651,7 +651,7 @@ void func_800184D4(u8 **arg0) {
     }
 }
 
-s32 *func_800184F0(s32 arg0, s32 *arg1, s32 arg2, s32 arg3) {
+s32 *primnode_alloc(s32 arg0, s32 *arg1, s32 arg2, s32 arg3) {
     s32 *node;
     s32 *data;
 
@@ -667,11 +667,11 @@ s32 *func_800184F0(s32 arg0, s32 *arg1, s32 arg2, s32 arg3) {
     *node = arg1[1];
     arg1[1] = (s32) node;
     prim_write_uvs(arg3, data);
-    func_80017D90(arg3, data);
+    faces_write_colors(arg3, data);
     return data;
 }
 
-s32 *func_80018570(u8 *arg0) {
+s32 *primlist_pop(u8 *arg0) {
     s32 **temp_a1;
     s32 *temp_v1;
 
@@ -694,7 +694,7 @@ s32 *func_80018570(u8 *arg0) {
     return temp_v1;
 }
 
-s32 *func_800185F8(u8 *arg0) {
+s32 *primlist_pop_b(u8 *arg0) {
     s32 **temp_a1;
     s32 *temp_v1;
 
@@ -720,7 +720,7 @@ s32 *func_800185F8(u8 *arg0) {
     return temp_v1;
 }
 
-s32 *func_80018694(s32 **arg0, s32 arg1) {
+s32 *primset_alloc(s32 **arg0, s32 arg1) {
     s32 *p;
     s32 *next;
     void *prev;
@@ -760,12 +760,12 @@ s32 *func_80018694(s32 **arg0, s32 arg1) {
     return p;
 }
 
-void func_80018728(s32 arg0, s32 arg1) {
+void faces_write_uvs_colors(s32 arg0, s32 arg1) {
     prim_write_uvs();
-    func_80017D90(arg0, arg1);
+    faces_write_colors(arg0, arg1);
 }
 
-void func_80018764(s32 *arg0) {
+void primnodes_free(s32 *arg0) {
     s32 *temp_v1;
     s32 *var_a0;
     s32 *var_s0;
@@ -784,13 +784,13 @@ void func_80018764(s32 *arg0) {
     *var_a0 = temp_v1;
 }
 
-void func_800187D4(ListNode18938 *arg0, s32 arg1) {
+void primlist_reset(ListNode18938 *arg0, s32 arg1) {
     arg0->f10 = NULL;
     arg0->fC = (s32 *) arg0->f4;
     if (arg0->fC != NULL) {
         arg0->f0 = 0;
         if (arg1 == 1) {
-            func_80018764(arg0->fC);
+            primnodes_free(arg0->fC);
         } else {
             *arg0->f8 = D_80056850;
             D_80056850 = arg0->fC;
@@ -810,7 +810,7 @@ void func_800187D4(ListNode18938 *arg0, s32 arg1) {
     }
 }
 
-void func_8001888C(void) {
+void prims_empty(void) {
     u8 *var_s0;
 
     DrawSync(0);
@@ -822,19 +822,19 @@ void func_8001888C(void) {
     var_s0 = D_80056864;
     if (var_s0 != NULL) {
         do {
-            func_800187D4(var_s0 + 0x18, (*(u16*)((u8*)(var_s0) + 84)));
-            func_800187D4(var_s0 + 4, (*(u16*)((u8*)(var_s0) + 84)));
-            func_800187D4(var_s0 + 0x40, (*(u16*)((u8*)(var_s0) + 84)));
-            func_800187D4(var_s0 + 0x2C, (*(u16*)((u8*)(var_s0) + 84)));
+            primlist_reset(var_s0 + 0x18, (*(u16*)((u8*)(var_s0) + 84)));
+            primlist_reset(var_s0 + 4, (*(u16*)((u8*)(var_s0) + 84)));
+            primlist_reset(var_s0 + 0x40, (*(u16*)((u8*)(var_s0) + 84)));
+            primlist_reset(var_s0 + 0x2C, (*(u16*)((u8*)(var_s0) + 84)));
             var_s0 = (*(s32*)((u8*)(var_s0) + 0));
         } while (var_s0 != NULL);
     }
 }
 
-void func_80018938(ListNode18938 *arg0, s32 arg1) {
+void primlist_release(ListNode18938 *arg0, s32 arg1) {
     arg0->f0 = 0;
     if (arg1 == 1) {
-        func_80018764(arg0->fC);
+        primnodes_free(arg0->fC);
     } else {
         *arg0->f8 = D_80056850;
         D_80056850 = arg0->fC;
@@ -853,7 +853,7 @@ void func_80018938(ListNode18938 *arg0, s32 arg1) {
     arg0->f8 = arg0->f10;
 }
 
-void func_800189E0(u8 *arg0) {
+void primlist_clear(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 4)) = 0;
     (*(s32*)((u8*)(arg0) + 8)) = 0;
     (*(s32*)((u8*)(arg0) + 12)) = 0;
@@ -888,7 +888,7 @@ u8 *tga_convert(u8 *arg0, s32 w, s32 h) {
     return res;
 }
 
-void func_80018B08(GfxViewport *vp, GfxCamera *cam) {
+void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam) {
     DR_ENV *dr;
     DRAWENV *env;
     RECT *disp;
@@ -928,7 +928,7 @@ void func_80018B08(GfxViewport *vp, GfxCamera *cam) {
     gs->modelDp = 0;
 }
 
-s32 func_80018F3C(EXTengine *eng, s32 n) {
+s32 eng_add_subs(EXTengine *eng, s32 n) {
     s32 count;
     subengine *free;
     subengine *prev;
@@ -988,7 +988,7 @@ void *func_80019094(void *arg0, s32 arg1) {
     prim = NULL;
     if ((arg1 & 0x40000001) | RenderState.modelDp | (D_80056878 != 0 && (u32)prim < D_80056AC4)) {
         set = *(PrimSet **)arg0;
-        if (set != NULL || (set = (PrimSet *)func_80018694((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
+        if (set != NULL || (set = (PrimSet *)primset_alloc((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 1, &p->pairs[0].b, arg0, 0);
@@ -1015,14 +1015,14 @@ void *func_80019094(void *arg0, s32 arg1) {
                     gs->farColor = D_80056868;
                 }
             }
-            func_80017B08((FaceRuns *)arg0, prim, (s32)RenderState.farColor, arg1);
+            faces_write_colors_dq((FaceRuns *)arg0, prim, (s32)RenderState.farColor, arg1);
             RenderState.dp = dp;
         } else {
             return NULL;
         }
     } else {
         set = *(PrimSet **)arg0;
-        if (set != NULL || (set = (PrimSet *)func_80018694((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
+        if (set != NULL || (set = (PrimSet *)primset_alloc((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 0, &p->pairs[0].a, arg0, set->mode);
@@ -1140,7 +1140,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     }
 }
 
-void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg4) {
+void gfx_setup_xform(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg4) {
     GfxXform *obj = arg0;
     MATRIX *m = arg1;
     VECTOR *pos = arg2;
@@ -1215,7 +1215,7 @@ void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg4)
     }
 }
 
-void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
+void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
     u8 *e;
     void *p;
     s32 *anim;
@@ -1306,13 +1306,13 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
                 off = nx[0];
             }
             p = (u8 *)nx + off;
-            func_8001C0F0(n, (MorphModel *)e, (u16 *)ia,
+            morph_blend_verts(n, (MorphModel *)e, (u16 *)ia,
                           (u16 *)((u8 *)p + 0x14), (s16 (*)[3])verts);
         } else if (fr[2] != 0) {
-            func_8001C0F0(fr[2], (MorphModel *)e, (u16 *)ia,
+            morph_blend_verts(fr[2], (MorphModel *)e, (u16 *)ia,
                           (u16 *)((u8 *)(fr + 1) + fr[1] + 0x14), (s16 (*)[3])verts);
         } else {
-            func_8001C1E0(e, (u16 *)ia, verts, (u16 *)D_80056AC8);
+            morph_copy_verts(e, (u16 *)ia, verts, (u16 *)D_80056AC8);
         }
         ModelEntry_Draw(e, c, D_80056AC8);
         return;
@@ -1330,7 +1330,7 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
         }
     block:
         set = e + (*(s32 *)(e + 0x10) + 0x10);
-        if (!(c & 0x1000000) && !func_8001AF2C(set)) {
+        if (!(c & 0x1000000) && !bbox_visible(set)) {
             return;
         }
         p = func_80019094(e, c);
@@ -1375,7 +1375,7 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
     }
 }
 
-void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2) {
+void draw_object(u8 *arg0, u8 *arg1, s32 arg2) {
     GteSetup s;
     GfxModel *model;
     RelTable *colors;
@@ -1399,19 +1399,19 @@ void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2) {
             if (colors != NULL) {
                 RenderState.unk84 = RenderState.unkCC;
                 RenderState.unk88 = RenderState.unk10C;
-                func_8001965C(arg0, p1, p1 + 0x14, RenderState.unk28, &s);
+                gfx_setup_xform(arg0, p1, p1 + 0x14, RenderState.unk28, &s);
                 gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
                 if (s.trans != NULL) {
                     gte_SetTransVector(s.trans);
                 }
                 gte_SetRotMatrix(s.rot);
-                func_80019A60(n, (u8 *)colors, *(s32 *)arg0 | arg2, arg0);
+                draw_object_model(n, (u8 *)colors, *(s32 *)arg0 | arg2, arg0);
             }
         }
     }
 }
 
-s32 func_8001A0D8(void *arg0, u32 flags) {
+s32 draw_gouraud_quad(void *arg0, u32 flags) {
     ModePolyG4 *p;
     u32 otz;
 #define q ((ColorQuad *)arg0)
@@ -1496,7 +1496,7 @@ void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     q.c[1] = arg1;
     q.c[2] = arg1;
     q.c[3] = arg1;
-    func_8001A0D8(&q, arg2);
+    draw_gouraud_quad(&q, arg2);
     r = w + arg3;
     q.v[0].x = w;
     q.v[0].y = arg0[1];
@@ -1514,7 +1514,7 @@ void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     q.c[1] = arg1;
     q.c[2] = arg1;
     q.c[3] = arg1;
-    func_8001A0D8(&q, arg2);
+    draw_gouraud_quad(&q, arg2);
     q.v[0].x = l;
     q.v[0].y = arg0[1] - arg4;
     q.v[0].z = arg0[2];
@@ -1531,7 +1531,7 @@ void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     q.c[1] = arg1;
     q.c[2] = arg1;
     q.c[3] = arg1;
-    func_8001A0D8(&q, arg2);
+    draw_gouraud_quad(&q, arg2);
     q.v[0].x = l;
     q.v[0].y = arg0[4];
     q.v[0].z = arg0[2];
@@ -1548,7 +1548,7 @@ void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     q.c[1] = arg1;
     q.c[2] = arg1;
     q.c[3] = arg1;
-    func_8001A0D8(&q, arg2);
+    draw_gouraud_quad(&q, arg2);
 }
 
 void func_8001A6D4(void *arg0, u32 hidden) {
@@ -1593,7 +1593,7 @@ void func_8001A6D4(void *arg0, u32 hidden) {
             q.c[1] = c;
             q.c[2] = c;
             q.c[3] = c;
-            func_8001A0D8(&q, f);
+            draw_gouraud_quad(&q, f);
         } else {
             q.v[0].x = x;
             q.v[0].y = r[1];
@@ -1611,7 +1611,7 @@ void func_8001A6D4(void *arg0, u32 hidden) {
             q.c[1] = c;
             q.c[2] = c;
             q.c[3] = c;
-            func_8001A0D8(&q, f);
+            draw_gouraud_quad(&q, f);
         }
     }
     if (p[7] & 0x8000) {
@@ -1620,7 +1620,7 @@ void func_8001A6D4(void *arg0, u32 hidden) {
 #undef p
 }
 
-void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
+void draw_text_nas(TextNAS *t, s32 arg1, s32 arg2) {
     GteSetup s;
     s32 x;
 
@@ -1648,7 +1648,7 @@ void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
     }
     RenderState.unk84 = RenderState.unkCC;
     RenderState.unk88 = RenderState.unk10C;
-    func_8001965C(t, (u8 *)arg1, (u8 *)arg1 + 0x14, RenderState.unk28, &s);
+    gfx_setup_xform(t, (u8 *)arg1, (u8 *)arg1 + 0x14, RenderState.unk28, &s);
     gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
     if (s.trans != NULL) {
         gte_SetTransVector(s.trans);
@@ -1661,11 +1661,11 @@ void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
 }
 
 static inline u8 *func_8001AA48_setup(ModelObj *obj, void *arg1, s32 flags, RelTable *colors, u8 *t) {
-    func_8001D894(obj, arg1, flags, (s32)colors);
+    draw_map_object(obj, arg1, flags, (s32)colors);
     return t;
 }
 
-void func_8001AA48(ModelObj *obj, void *arg1, s32 flags) {
+void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     RelTable *colors;
     POLY_GT4 *prim;
     u8 *t;
@@ -1716,7 +1716,7 @@ void func_8001AA48(ModelObj *obj, void *arg1, s32 flags) {
     }
 }
 
-MATRIX *func_8001ACC0(GfxXform *obj) {
+MATRIX *gfx_object_matrix(GfxXform *obj) {
     GfxState *gs;
     u32 flags;
     MATRIX *view;
@@ -1792,7 +1792,7 @@ MATRIX *func_8001ACC0(GfxXform *obj) {
     return out;
 }
 
-s32 func_8001AF2C(void *arg0) {
+s32 bbox_visible(void *arg0) {
     BoundBox *box = arg0;
     DVECTOR sxy[8];
     DVECTOR c;
@@ -1955,7 +1955,7 @@ s32 func_8001AF2C(void *arg0) {
     return 1;
 }
 
-s32 func_8001B6D4(SVECTOR *v) {
+s32 tri_visible(SVECTOR *v) {
     s16 sxy[9][2];
     u32 sz[9];
     s32 behind;
@@ -2081,7 +2081,7 @@ s32 func_8001B6D4(SVECTOR *v) {
     return ret | 1;
 }
 
-void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
+void morph_light_colors(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
     SVECTOR *dst = D_80056AC8;
     u8 *run = (u8 *)&model->runs + model->runs;
     s32 r, g, b;
@@ -2109,7 +2109,7 @@ void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
     }
 }
 
-void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]) {
+void morph_blend_verts(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]) {
     SVECTOR *dst = D_80056AC8;
     u8 *run;
     u32 a;
@@ -2152,7 +2152,7 @@ void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]) 
     }
 }
 
-void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst) {
+void morph_copy_verts(u8 *arg0, u16 *src, u8 *tab, u16 *dst) {
     u8 *p;
     s32 n;
     s32 c;
@@ -2186,15 +2186,15 @@ void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst) {
     }
 }
 
-void func_8001C270(EXTengine *eng) {
+void eng_kill(EXTengine *eng) {
     eng->kill(eng);
 }
 
-void func_8001C298(EXTengine *eng) {
+void eng_render(EXTengine *eng) {
     eng->render(eng);
 }
 
-void func_8001C2C0(u8 *arg0) {
+void eng_render_subs(u8 *arg0) {
     s32 (*temp_v0)(u8 *, s32, s32);
     s32 temp_s1;
     s32 temp_s2;
@@ -2205,7 +2205,7 @@ void func_8001C2C0(u8 *arg0) {
     if (var_s0 != NULL) {
         temp_s1 = (*(s32*)((u8*)(arg0) + 12));
         if (temp_s1 & 0x8000) {
-            temp_s2 = func_8001ACC0(arg0 + 0xC);
+            temp_s2 = gfx_object_matrix(arg0 + 0xC);
 loop_3:
             if (var_s0 != NULL) {
                 temp_v0 = (*(s32*)((u8*)(var_s0) + 84));
@@ -2219,7 +2219,7 @@ loop_3:
     }
 }
 
-subengine *func_8001C34C(s32 n, subengine *sub) {
+subengine *sub_nth(s32 n, subengine *sub) {
     while (sub != NULL && n != 0) {
         sub = sub->next;
         n--;
@@ -2244,19 +2244,19 @@ void kill_sprim_sub(subengine *arg0) {
     }
 }
 
-void func_8001C3D0(u8 *arg0) {
+void sub_use_quad_model(u8 *arg0) {
     u8 *temp_v0;
     u16 temp_a0;
 
     temp_v0 = entity_address(*(u16*)(arg0 + 0x74), *(u8**)(*(u8**)(arg0 + 0x6C) + 0xC));
     temp_a0 = *(u16*)(temp_v0 + 8);
     if (temp_a0 == 2 && temp_v0[*(s32*)(temp_v0 + 0x14) + 0x15] == temp_a0) {
-        *(void**)(arg0 + 0x54) = func_8001AA48;
+        *(void**)(arg0 + 0x54) = draw_model_quad;
         *(void**)(arg0 + 0x58) = kill_sprim_sub;
     }
 }
 
-void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2) {
+void posdst_flash(PosDst *arg0, s32 arg1, s32 arg2) {
     PosEntry *e;
     s32 sp10;
     s32 sp14;
@@ -2284,10 +2284,10 @@ void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2) {
         arg0->z = sp14;
         break;
     }
-    func_8001A82C((TextNAS *)arg0, arg1, arg2);
+    draw_text_nas((TextNAS *)arg0, arg1, arg2);
 }
 
-void func_8001C584(PosDst *arg0, s32 arg1) {
+void posdst_flash_at(PosDst *arg0, s32 arg1) {
     PosEntry *e;
     s32 sp10;
     s32 sp14;
@@ -2317,7 +2317,7 @@ void func_8001C584(PosDst *arg0, s32 arg1) {
     }
 }
 
-void func_8001C690(NAS *nas, u8 *arg1) {
+void draw_nas_model(NAS *nas, u8 *arg1) {
     GteSetup s;
     u32 hidden;
 
@@ -2331,7 +2331,7 @@ void func_8001C690(NAS *nas, u8 *arg1) {
         if (!(nas->NASid & 0x10000000)) {
             RenderState.unk84 = RenderState.unkCC;
             RenderState.unk88 = RenderState.unk10C;
-            func_8001965C(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+            gfx_setup_xform(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
             gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
                 gte_SetTransVector(s.trans);
@@ -2342,7 +2342,7 @@ void func_8001C690(NAS *nas, u8 *arg1) {
     }
 }
 
-void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
+void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags) {
     GteSetup s;
     u32 f;
 
@@ -2356,7 +2356,7 @@ void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
         if (!(nas->NASid & 0x10000000)) {
             RenderState.unk84 = RenderState.unkCC;
             RenderState.unk88 = RenderState.unk10C;
-            func_8001965C(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+            gfx_setup_xform(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
             gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
                 gte_SetTransVector(s.trans);
@@ -2364,11 +2364,11 @@ void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
             gte_SetRotMatrix(s.rot);
         }
         f &= ~0x10000000;
-        func_8001A0D8(&nas->Type, f | nas->NASid);
+        draw_gouraud_quad(&nas->Type, f | nas->NASid);
     }
 }
 
-u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags) {
+u32 draw_nas_model_ret(NAS *nas, u8 *arg1, u32 flags) {
     GteSetup s;
 
     flags |= nas->NASid;
@@ -2380,7 +2380,7 @@ u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags) {
     if (!(nas->NASid & 0x10000000)) {
         RenderState.unk84 = RenderState.unkCC;
         RenderState.unk88 = RenderState.unk10C;
-        func_8001965C(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+        gfx_setup_xform(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
         gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
         if (s.trans != NULL) {
             gte_SetTransVector(s.trans);
@@ -2423,17 +2423,17 @@ void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2) {
     q.c[1] = arg1;
     q.c[2] = arg1;
     q.c[3] = arg1;
-    func_8001A0D8(&q, arg2);
+    draw_gouraud_quad(&q, arg2);
 }
 
-void func_8001CBD4(u32 arg0) {
+void calc_rgbcode_packed(u32 arg0) {
     calc_rgbcode((arg0 >> 0x10) & 0xFF, (arg0 >> 8) & 0xFF, arg0 & 0xFF);
 }
 
 void func_8001CC08(void) {
 }
 
-s32 func_8001CC10(void *arg0, s32 arg1) {
+s32 sub_alloc_prims(void *arg0, s32 arg1) {
     Func8001CC10Slot *slot;
     u16 want;
 
@@ -2454,17 +2454,17 @@ s32 func_8001CC10(void *arg0, s32 arg1) {
             }
             slot->size = *(u16 *)((u8 *)arg0 + 8);
         }
-        func_80018728((s32)arg0, (s32)slot->ptr);
+        faces_write_uvs_colors((s32)arg0, (s32)slot->ptr);
     }
     return (s32)slot->ptr;
 }
 
-void func_8001CD04(void *arg0, void *arg1, void *arg2) {
+void gfx_load_xform(void *arg0, void *arg1, void *arg2) {
     GteSetup s;
 
     RenderState.unk84 = RenderState.unkCC;
     RenderState.unk88 = RenderState.unk10C;
-    func_8001965C(arg0, arg1, arg2, RenderState.unk28, &s);
+    gfx_setup_xform(arg0, arg1, arg2, RenderState.unk28, &s);
     gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
     if (s.trans != NULL) {
         gte_SetTransVector(s.trans);
@@ -2472,7 +2472,7 @@ void func_8001CD04(void *arg0, void *arg1, void *arg2) {
     gte_SetRotMatrix(s.rot);
 }
 
-void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2) {
+void draw_model_set_entry(s32 arg0, ModelSet *set, s32 arg2) {
     void *p;
     u8 *blk;
     ModelEntry *e;
@@ -2481,7 +2481,7 @@ void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2) {
     if (*(s32 *)((u8 *)set + 0x54) >= arg0) {
         e = &set->entries[arg0];
         blk = (u8 *)&e->off + e->off;
-        if (!(arg2 & 0x1000000) && !func_8001AF2C(blk)) {
+        if (!(arg2 & 0x1000000) && !bbox_visible(blk)) {
             return;
         }
         do {
@@ -2493,7 +2493,7 @@ void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2) {
         }
     }
 }
-void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2) {
+void draw_map_entity(u16 arg0, u8 *arg1, s32 arg2) {
     void *p;
     u8 *blk;
     ModelEntry *e;
@@ -2503,7 +2503,7 @@ void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2) {
         return;
     }
     blk = (u8 *)&e->off + e->off;
-    if (!(arg2 & 0x1000000) && !func_8001AF2C(blk)) {
+    if (!(arg2 & 0x1000000) && !bbox_visible(blk)) {
         return;
     }
     p = func_80019094(e, arg2);
@@ -2513,14 +2513,14 @@ void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-void *func_8001CF50(ModelEntry *e, s32 arg1) {
+void *draw_model_entry(ModelEntry *e, s32 arg1) {
     u8 *blk;
     void *p;
     u8 *q;
 
     blk = (u8 *)&e->off + e->off;
     if ((arg1 & 0x1000000) == 0) {
-        if (func_8001AF2C(blk) == 0) {
+        if (bbox_visible(blk) == 0) {
             return NULL;
         }
     }
@@ -2532,7 +2532,7 @@ void *func_8001CF50(ModelEntry *e, s32 arg1) {
     return p;
 }
 
-void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2) {
+void *draw_morph_model(MorphModel *model, void *arg1, s32 arg2) {
     void *p;
 
     p = func_80019094(model, arg2);
@@ -2542,7 +2542,7 @@ void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2) {
     return p;
 }
 
-void func_8001D048(SVECTOR *v, POLY_GT4 *poly) {
+void project_quad(SVECTOR *v, POLY_GT4 *poly) {
     u32 otz;
     s32 xy;
     s32 z;
@@ -2570,7 +2570,7 @@ void func_8001D048(SVECTOR *v, POLY_GT4 *poly) {
     }
 }
 
-void func_8001D174(EXTengine *eng) {
+void eng_release_subs_sfx(EXTengine *eng) {
     void (*release)(subengine *);
     _sfx_handler *voice;
     subengine *next;
@@ -2606,7 +2606,7 @@ void func_8001D174(EXTengine *eng) {
     eng->num_subs = 0;
 }
 
-void func_8001D220(EXTengine *eng) {
+void eng_release_subs(EXTengine *eng) {
     void (*release)(subengine *);
     subengine *next;
     subengine *first;
@@ -2637,7 +2637,7 @@ void func_8001D220(EXTengine *eng) {
     eng->num_subs = 0;
 }
 
-void func_8001D2B4(subengine *first, subengine *last) {
+void subs_release(subengine *first, subengine *last) {
     void (*release)(subengine *);
     subengine *next;
     subengine *freeList;
@@ -2683,11 +2683,11 @@ void kill_subs(subengine *first) {
     }
 }
 
-s32 func_8001D390(EXTengine *eng, s32 n) {
-    return func_80018F3C(eng, n);
+s32 eng_add_subs_n(EXTengine *eng, s32 n) {
+    return eng_add_subs(eng, n);
 }
 
-void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub) {
+void subs_init_array(EXTengine *eng, s32 n, subengine *sub) {
     if (eng != NULL) {
         eng->sub = sub;
         eng->num_subs = n;
@@ -2705,7 +2705,7 @@ void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub) {
     sub->next = NULL;
 }
 
-s32 func_8001D48C(subengine **out_first, subengine **last, s32 n) {
+s32 subs_alloc_list(subengine **out_first, subengine **last, s32 n) {
     subengine *sub;
     subengine *prev;
     s32 count;
@@ -2759,14 +2759,14 @@ void draw_init(void) {
 }
 
 
-void func_8001D604(void) {
+void subpool_free(void) {
     if (D_80058AC8 != 0) {
         mal_free(D_80058AC8, &MainHeap);
         D_80058AC8 = 0;
     }
 }
 
-void func_8001D640(s32 n) {
+void subpool_init(s32 n) {
     subengine *sub;
     s32 i;
     u8 *p;
@@ -2787,7 +2787,7 @@ void func_8001D640(s32 n) {
     sub->next = NULL;
 }
 
-void func_8001D6B4(MapEnvHead *env) {
+void mapenv_place_subs(MapEnvHead *env) {
     subengine *sub;
     Placement *p;
     s32 n;
@@ -2820,7 +2820,7 @@ void func_8001D6B4(MapEnvHead *env) {
     }
 }
 
-void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3) {
+void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
     MATRIX m;
     VECTOR v;
     MATRIX *rot;
@@ -2855,7 +2855,7 @@ void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3) {
     gte_SetGeomOffset(RenderState.ofx * ScreenRect->w / 640, RenderState.ofy / 2);
 }
 
-void func_8001DAF8(GfxScene *scene) {
+void draw_map_scene(GfxScene *scene) {
     MATRIX m;
     MATRIX view;
     MATRIX *pv;
@@ -2881,7 +2881,7 @@ void func_8001DAF8(GfxScene *scene) {
     GfxSetSceneBg(&RenderState, scene);
 }
 
-subengine *func_8001DCD4(s32 i, s32 val) {
+subengine *mapscene_find_sub(s32 i, s32 val) {
     subengine *sub;
 
     for (sub = *(subengine **)((u8 *)MapScene + 0x1C); sub != NULL; sub = sub->next) {
@@ -2892,7 +2892,7 @@ subengine *func_8001DCD4(s32 i, s32 val) {
     return NULL;
 }
 
-s32 func_8001DD20(s32 *arg0) {
+s32 rel_ptr(s32 *arg0) {
     s32 v;
 
     v = ((s32 *)(arg0[1] + (s32)arg0))[1];
@@ -2903,7 +2903,7 @@ s32 func_8001DD20(s32 *arg0) {
 }
 
 
-extern void func_8001D894(void *a, void *b, s32 c, s32 d);
+extern void draw_map_object(void *a, void *b, s32 c, s32 d);
 void draw_map_sub(void *arg0, void *arg1) {
     s32 flags;
     s32 x;
@@ -2911,8 +2911,8 @@ void draw_map_sub(void *arg0, void *arg1) {
     flags = *(s32 *)arg0;
     x = *(s32 *)(*(u8 **)((u8 *)arg0 + 0x6C) + 0xC);
     if ((flags & 0x8000) && x != 0) {
-        func_8001D894(arg0, arg1, flags, x);
-        func_80019A60(*(u16 *)((u8 *)arg0 + 0x74), (u8 *)x, *(s32 *)arg0, arg0);
+        draw_map_object(arg0, arg1, flags, x);
+        draw_object_model(*(u16 *)((u8 *)arg0 + 0x74), (u8 *)x, *(s32 *)arg0, arg0);
     }
 }
 
@@ -2920,13 +2920,13 @@ void map_update(s32 *arg0) {
     func_80029100(*arg0 + 0x10);
 }
 
-void func_8001DDD8(u8 *arg0) {
+void mapscene_release(u8 *arg0) {
     dbase_release((*(s32*)((u8*)(arg0) + 0)));
     mal_free((*(s32*)((u8*)(arg0) + 28)), &MainHeap);
     (*(s32*)((u8*)(arg0) + 28)) = 0;
 }
 
-void func_8001DE18(arg0)
+void mapscene_setup_tables(arg0)
     s32 *arg0;
 {
     s32 *outer;
@@ -2960,7 +2960,7 @@ void func_8001DE18(arg0)
     *(s32 *)(*(s32 *)(u + 0x3C) + (s32)u + 0x48) = (s32)u;
 }
 
-void func_8001DEF4(s32 *arg0, s32 *arg1) {
+void mapscene_init(s32 *arg0, s32 *arg1) {
     u8 *p;
 
     arg0[0] = (s32)arg1;
@@ -2999,23 +2999,23 @@ void map_loaded_geo(s32 arg0, map_enviroment *env) {
     t->data = (u8 *)arg0;
     db = env->dbase;
     env->map_num = 0;
-    func_8001DE18(env);
+    mapscene_setup_tables(env);
     env->subs = NULL;
-    func_8001D6B4((MapEnvHead *)env);
+    mapenv_place_subs((MapEnvHead *)env);
     dbase_load_all_mesh_anims((s32 *)db);
 }
 
-void func_8001E054(u8 *arg0, s32 arg1) {
+void mapscene_load(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 0)) = arg1;
     (*(s32*)((u8*)(arg0) + 8)) = 0;
     MapScene = arg0;
-    func_8001DE18();
+    mapscene_setup_tables();
     (*(s32*)((u8*)(arg0) + 28)) = 0;
-    func_8001D6B4(arg0);
+    mapenv_place_subs(arg0);
     dbase_load_all_mesh_anims(arg1);
 }
 
-void func_8001E0A8(u8 *arg0) {
+void mapscene_place_subs(u8 *arg0) {
     u8 *dst;
     u8 *src;
     s32 n;
@@ -3072,7 +3072,7 @@ static inline KeyEntry *func_8001E21C_find(KeyBlock *arg0, s32 arg1) {
     return p - 1;
 }
 
-KeyEntry *func_8001E21C(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out) {
+KeyEntry *key_interp_pos(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out) {
     KeyEntry *p;
     SLONG_XYZ d;
     s32 span;
@@ -3102,7 +3102,7 @@ KeyEntry *func_8001E21C(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out) {
     return p;
 }
 
-KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1) {
+KeyEntry *key_find(KeyBlock *arg0, s32 arg1) {
     KeyEntry *p;
     KeyEntry *q;
 
@@ -3181,7 +3181,7 @@ void set_fade(fade_info *fade, s32 speed, s32 delay) {
     fade->maxed = 0;
 }
 
-s32 func_8001E598(fade_info *fade) {
+s32 fade_update(fade_info *fade) {
     s32 step;
     s32 level;
 
@@ -3205,14 +3205,14 @@ s32 func_8001E598(fade_info *fade) {
     return fade->amount;
 }
 
-void func_8001E610(process_control_info *pc, fade_info *fade) {
+void process_control_update(process_control_info *pc, fade_info *fade) {
     if (pc->next_process != NULL && fade != NULL && (fade->speed == 0 || fade->maxed >= 3)) {
         if (pc->process != NULL) {
             if (!(pc->flags & 1) && pc->process->quit != NULL) {
                 pc->process->quit();
             }
             if (fade != NULL && fade->speed != 0 && fade->maxed >= 3) {
-                func_8001888C();
+                prims_empty();
                 while (mal_update_deferred(&MainHeap) != NULL) {
                 }
                 mal_compact(&MainHeap);
@@ -3248,7 +3248,7 @@ void func_8001E610(process_control_info *pc, fade_info *fade) {
     }
 }
 
-void func_8001E824(process_control_info *pc) {
+void process_control_back(process_control_info *pc) {
     pc->flags = 2;
     pc->next_process = pc->last_process;
 }
@@ -3258,7 +3258,7 @@ void process_interrupt(process_control_info *pc, process_info *process) {
     pc->flags = 1;
 }
 
-void func_8001E848(process_control_info *pc, process_info *process) {
+void process_control_goto(process_control_info *pc, process_info *process) {
     pc->next_process = process;
     pc->flags = 0;
 }
@@ -3278,7 +3278,7 @@ void process_quit(process_control_info *pc) {
     }
 }
 
-void func_8001E898(process_control_info *pc) {
+void process_control_render(process_control_info *pc) {
     process_info *p;
     void (*fn)(void);
 
@@ -3308,15 +3308,15 @@ void process_init(process_control_info *pc) {
     }
 }
 
-void func_8001E934(process_control_info *pc, process_info *process) {
+void process_control_init(process_control_info *pc, process_info *process) {
     pc->process = process;
     pc->next_process = NULL;
     pc->last_process = NULL;
     pc->flags = 0;
 }
 
-void func_8001E948(void) {
-    func_8001888C();
+void prims_empty_and_compact(void) {
+    prims_empty();
     do {
 
     } while (mal_update_deferred(&MainHeap) != 0);

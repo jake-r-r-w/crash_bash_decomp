@@ -928,7 +928,7 @@ void ChaseInitHero(s32 arg0) {
     eng->unk5D = 1;
     eng->unk1E = 0x400;
     st = ChaseHeroState[arg0];
-    func_80018F3C(eng, 1);
+    eng_add_subs(eng, 1);
     sub = eng->sub;
     sub->unk51 = 1;
     sub->unk74 = ChaseHeroShadowModels[h->hero_name];
@@ -1261,7 +1261,7 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
                 }
-                func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+                gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
                 lo2 = eng->unk10.y + box->unk2;
                 hi2 = eng->unk10.y + box->height;
                 if (lo2 < hi2) {

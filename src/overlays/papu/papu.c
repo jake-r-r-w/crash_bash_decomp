@@ -1705,7 +1705,7 @@ s32 PapuHitHeroes(EXTengine *eng) {
         if (eng->unk5E != 0) {
             rotscale_update(&eng->unk1C);
         }
-        func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+        gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
         r = box->radius;
         top = eng->unk10.y + box->unk2;
         bot = eng->unk10.y + box->height;
@@ -1758,7 +1758,7 @@ s32 PapuHitHeroesFlag(EXTengine *eng, u32 flag) {
     if (eng->unk5E != 0) {
         rotscale_update(&eng->unk1C);
     }
-    func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+    gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
     r = box->radius;
     top = eng->unk10.y + box->unk2;
     bot = eng->unk10.y + box->height;
@@ -1809,7 +1809,7 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
         if (eng->unk5E != 0) {
             rotscale_update(&eng->unk1C);
         }
-        func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+        gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
         r = box->radius;
         new_var = box;
         top = eng->unk10.y + new_var->unk2;
@@ -1867,7 +1867,7 @@ NAS *PapuHitObjects(EXTengine *eng, s32 mask) {
     if (eng->unk5E != 0) {
         rotscale_update(&eng->unk1C);
     }
-    func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+    gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
     r = box->radius;
     top = eng->unk10.y + box->unk2;
     bot = eng->unk10.y + box->height;
@@ -2037,7 +2037,7 @@ void PapuInitTiles(void) {
     s32 dz;
 
     obj = *(PapuSceneObj **)((u8 *)MapScene + 0x1C);
-    func_80018430(0xC8);
+    primpool_init(0xC8);
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
             PapuTiles[j][i].tile = NULL;
@@ -2058,7 +2058,7 @@ void PapuInitTiles(void) {
             i = 7 - (s16)((s16)*id % 10);
             j = (s16)((s16)*id / 10) - 1;
             PapuTiles[j][i].tile = (PapuTile *)obj;
-            func_8001C3D0((u8 *)obj);
+            sub_use_quad_model((u8 *)obj);
             obj->flags |= 0x1000000;
         }
         j = *(s16 *)id - 100;

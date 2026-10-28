@@ -526,21 +526,21 @@ void TitlesInitLevel(void) {
         core_process = 0;
         func_80092C54();
         *(u16 *)(g + 0x32) |= 0x200;
-        func_8001E934(&MenuProcessControl, &MainMenu);
+        process_control_init(&MenuProcessControl, &MainMenu);
         break;
     case 0x29:
         p = BattleChainResume;
         g[0x27] = 4;
         a1 = (u8 *)*p;
         MenuChainPos = p;
-        func_8001E934(&MenuProcessControl, (process_info *)a1);
+        process_control_init(&MenuProcessControl, (process_info *)a1);
         break;
     case 0x2A:
         p = TournamentChainResume;
         g[0x27] = 4;
         a1 = (u8 *)*p;
         MenuChainPos = p;
-        func_8001E934(&MenuProcessControl, (process_info *)a1);
+        process_control_init(&MenuProcessControl, (process_info *)a1);
         break;
     }
     TitlesBackdropAnimator = ExtTemplate400;
@@ -867,12 +867,12 @@ void BattleOptionsRender(void) {
     *(s32 *)(p + 0xA8) &= 0xFFFF7FFF;
     p = (u8 *)GetEngineSlot(1)->sub;
     *(s32 *)(p + 0x150) &= 0xFFFF7FFF;
-    func_80018B08(&TitlesBackdropView, &TitlesCamera);
+    gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(1));
-    func_80018B08(&TitlesMenuView, &TitlesCamera);
+    eng_render_subs((u8 *)GetEngineSlot(1));
+    gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(0));
+    eng_render_subs((u8 *)GetEngineSlot(0));
 }
 
 void TitlesSetHeroMasks(void) {
@@ -933,14 +933,14 @@ void OptionsUpdate(void) {
                 func_80095BEC(4, (s32 *)OptionsControllerPlace);
                 break;
             case 2:
-                func_8001E824(&MenuProcessControl);
+                process_control_back(&MenuProcessControl);
                 break;
             }
             OptionsCursor = 0;
         }
         if (Pads[0].pressed & 0x1000) {
             PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_8001E824(&MenuProcessControl);
+            process_control_back(&MenuProcessControl);
         }
         return;
     case 1:
@@ -1078,13 +1078,13 @@ void OptionsRender(void) {
         }
         break;
     }
-    func_80018B08(&TitlesMenuView, &TitlesCamera);
-    func_8001C2C0((u8 *)GetEngineSlot(4));
+    gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
+    eng_render_subs((u8 *)GetEngineSlot(4));
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
-    func_80018B08(&TitlesBackdropView, &TitlesCamera);
+    gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(1));
+    eng_render_subs((u8 *)GetEngineSlot(1));
 }
 
 void RunGameQuit(void) {
@@ -1139,7 +1139,7 @@ void OptionsInit(void) {
 
 void MenuChainStart(process_info **chain) {
     MenuChainPos = chain;
-    func_8001E848(&MenuProcessControl, *chain);
+    process_control_goto(&MenuProcessControl, *chain);
 }
 
 void MenuChainStep(s32 n) {
@@ -1150,7 +1150,7 @@ void MenuChainStep(s32 n) {
     next = *p;
     MenuChainPos = p;
     if (next != NULL) {
-        func_8001E848(&MenuProcessControl, next);
+        process_control_goto(&MenuProcessControl, next);
     }
 }
 
@@ -1162,7 +1162,7 @@ void MenuChainBack(void) {
     next = *p;
     MenuChainPos = p;
     if (next != NULL) {
-        func_8001E848(&MenuProcessControl, next);
+        process_control_goto(&MenuProcessControl, next);
     }
 }
 
@@ -1174,7 +1174,7 @@ void MenuChainNext(void) {
     next = p[1];
     MenuChainPos = p + 1;
     if (next != NULL) {
-        func_8001E848(&MenuProcessControl, next);
+        process_control_goto(&MenuProcessControl, next);
     }
 }
 
@@ -1216,8 +1216,8 @@ void NewLoadMenuInit(void) {
 
 void num_players_render(void) {
     RenderState.modelDp = ScreenFade.amount;
-    func_80018B08(&TitlesMenuView, &TitlesCamera);
-    func_8001C2C0((u8 *)GetEngineSlot(0));
+    gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
+    eng_render_subs((u8 *)GetEngineSlot(0));
 }
 
 
@@ -1244,31 +1244,31 @@ void MainMenuInit(void) {
 void RenderTitlesBackdropAndMenu(void) {
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
-    func_80018B08(&TitlesBackdropView, &TitlesCamera);
+    gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(1));
-    func_80018B08(&TitlesMenuView, &TitlesCamera);
+    eng_render_subs((u8 *)GetEngineSlot(1));
+    gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(0));
+    eng_render_subs((u8 *)GetEngineSlot(0));
 }
 
 void RenderTitlesBackdrop(void) {
     GetEngineSlot(1)->sub[1].flags &= ~0x8000;
     GetEngineSlot(1)->sub[2].flags &= ~0x8000;
-    func_80018B08(&TitlesBackdropView, &TitlesCamera);
+    gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(1));
+    eng_render_subs((u8 *)GetEngineSlot(1));
 }
 
 void RenderTitlesMenu(void) {
     GetEngineSlot(1)->sub[1].flags |= 0x8000;
     GetEngineSlot(1)->sub[2].flags |= 0x8000;
-    func_80018B08(&TitlesMenuView, &TitlesCamera);
+    gfx_set_viewport(&TitlesMenuView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(0));
-    func_80018B08(&TitlesBackdropView, &TitlesCamera);
+    eng_render_subs((u8 *)GetEngineSlot(0));
+    gfx_set_viewport(&TitlesBackdropView, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(1));
+    eng_render_subs((u8 *)GetEngineSlot(1));
 }
 
 void SetupTitlesBackdrop(void) {
@@ -1654,9 +1654,9 @@ void CharSelectRender(void) {
     eng->unk10.x = -0x140;
     eng->unk10.y = -0xF0;
     RenderTitlesBackdropAndMenu();
-    func_80018B08(&TitlesMenuView, &CharSelectCamera);
+    gfx_set_viewport(&TitlesMenuView, &CharSelectCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(2));
+    eng_render_subs((u8 *)GetEngineSlot(2));
 }
 
 s8 adventure_mode_head(s32 a0) {
@@ -1904,7 +1904,7 @@ void LevelSelectUpdate(void) {
     TrigEntry *trig;
 
     if (LevelSelectReload != 0) {
-        func_80017640();
+        prims_empty_back();
         mal_compact_step((u8 *)&MainHeap);
         LevelSelectReload--;
     }
@@ -1990,27 +1990,27 @@ void LevelSelectRender(void) {
     s32 *cam = (s32 *)&TitlesCamera;
     s8 *m;
 
-    func_80018B08(&LevelSelectView0, &TitlesCamera);
+    gfx_set_viewport(&LevelSelectView0, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(2));
+    eng_render_subs((u8 *)GetEngineSlot(2));
     RenderTitlesBackdropAndMenu();
     m = (s8 *)GameInfo;
     cam[2] = (m[0x37] != 0) ? 0x400 : 0x578;
-    func_80018B08(&LevelSelectView1, &TitlesCamera);
+    gfx_set_viewport(&LevelSelectView1, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(3));
+    eng_render_subs((u8 *)GetEngineSlot(3));
     cam[2] = (m[0x37] != 1) ? 0x400 : 0x578;
-    func_80018B08(&LevelSelectView2, &TitlesCamera);
+    gfx_set_viewport(&LevelSelectView2, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(4));
+    eng_render_subs((u8 *)GetEngineSlot(4));
     cam[2] = (m[0x37] != 2) ? 0x400 : 0x578;
-    func_80018B08(&LevelSelectView3, &TitlesCamera);
+    gfx_set_viewport(&LevelSelectView3, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(5));
+    eng_render_subs((u8 *)GetEngineSlot(5));
     cam[2] = (m[0x37] != 3) ? 0x400 : 0x578;
-    func_80018B08(&LevelSelectView4, &TitlesCamera);
+    gfx_set_viewport(&LevelSelectView4, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(6));
+    eng_render_subs((u8 *)GetEngineSlot(6));
     cam[2] = 0x400;
 }
 
@@ -2215,7 +2215,7 @@ void TitlesShellScreenInit(void) {
 }
 
 void TitlesExtraScreenRender(void) {
-    func_8001C2C0((u8 *)GetEngineSlot(2));
+    eng_render_subs((u8 *)GetEngineSlot(2));
 }
 
 void TitlesExtraScreenInit(void) {

@@ -2333,7 +2333,7 @@ void BashSpaceInitTiles(void) {
     z = 0;
     x = 0;
     obj = (BashObj *)((GfxScene *)MapScene)->objs;
-    func_80018430(200);
+    primpool_init(200);
     if (obj != NULL) {
         base = BashSpaceTiles[0];
         do {
@@ -2344,7 +2344,7 @@ void BashSpaceInitTiles(void) {
                 j = (s16)(v / 10) - 1;
                 p = (BashCell *)(i * sizeof(BashCell) + j * sizeof(BashSpaceTiles[0]) + (u32)base);
                 p->obj = obj;
-                func_8001C3D0((u8 *)obj);
+                sub_use_quad_model((u8 *)obj);
                 obj->flags |= 0x1000000;
             }
             if (*(s16 *)id == 10) {
@@ -2697,7 +2697,7 @@ void InitTumbler(NAS *nas) {
         eng->unk10 = MapPoints[8].pos;
         eng->unk5D = 1;
         eng->unk5C = 1;
-        func_8001D390(eng, 1);
+        eng_add_subs_n(eng, 1);
         sub = sub->next;
         if (sub != NULL) {
             sub->unk6C = *(void **)MapScene;
@@ -3018,7 +3018,7 @@ void InitBash8way(NAS *nas) {
     if (eng != NULL) {
         nas->UserInfo.user1 = D_8009D754;
         nas->UserInfo.user2 = Heroes[D_8009D754].hero_move->facing_angle;
-        func_8001D390(eng, 7);
+        eng_add_subs_n(eng, 7);
         sub = eng->sub;
         eng->unk5D = 0;
         for (; sub != NULL; sub = sub->next) {
@@ -3119,7 +3119,7 @@ void InitBashHomer(NAS *nas) {
         nas->UserInfo.user2 = Heroes[D_8009D754].hero_move->facing_angle;
         eng->sub->unk6C = PowerupsModel;
         eng->sub->unk74 = 0x200F;
-        func_8001D390(eng, 1);
+        eng_add_subs_n(eng, 1);
         eng->unk5D = 0;
         eng->unk5C = 1;
         eng->flags |= 0x21;
@@ -3257,7 +3257,7 @@ void InitBashShox(NAS *nas) {
         x = AddExt(nas, 0x68, 0x20000000);
         if (x != NULL) {
             nas->FUX = (void *)x;
-            func_8001D390(eng, 6);
+            eng_add_subs_n(eng, 6);
             sub = eng->sub;
             eng->unk5D = 0;
             eng->unk5C = 1;
@@ -3492,7 +3492,7 @@ void InitSnowGlint(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         eng->sub->unk6C = *(s32 *)MapScene;
-        func_8001D390(eng, 9);
+        eng_add_subs_n(eng, 9);
         sub = nas->Engine->sub;
         g = AddExt(nas, 0x34, 0x20000002);
         if (g != NULL && sub != NULL) {
@@ -3517,7 +3517,7 @@ void InitSnowGlint(NAS *nas) {
 void BashDrawView(void) {
     u8 *vp = (u8 *)&GameViewport;
     func_80093038();
-    func_80018B08((GfxViewport *)vp, (GfxCamera *)MainCamera);
+    gfx_set_viewport((GfxViewport *)vp, (GfxCamera *)MainCamera);
     RenderState.modelDp = ScreenFade.amount;
     func_8009440C();
 }

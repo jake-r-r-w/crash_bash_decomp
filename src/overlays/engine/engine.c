@@ -160,7 +160,7 @@ void func_80079260(void) {
 
     g->flags &= 0xF4FF;
     func_80024AD8();
-    func_8001D6B4((MapEnvHead *)MapScene);
+    mapenv_place_subs((MapEnvHead *)MapScene);
     func_80026ECC();
     func_8002321C();
     func_80026D9C();
@@ -470,11 +470,11 @@ void func_800798A4(void) {
         }
     }
     if (countdown_eng != NULL) {
-        func_8001C298((EXTengine *)countdown_eng);
+        eng_render((EXTengine *)countdown_eng);
     }
     if (PanelCtrl & 0x1000) {
-        func_8001C298(&BigScore1);
-        func_8001C298(&BigScore2);
+        eng_render(&BigScore1);
+        eng_render(&BigScore2);
     }
     i = 0;
     do {
@@ -486,7 +486,7 @@ void func_800798A4(void) {
             if (D_8009AEF4 == i && (FrameCount & 8)) {
                 s->flags = v | 0x8000;
             }
-            func_8001C298(HUDPLAYERS[i]);
+            eng_render(HUDPLAYERS[i]);
         }
         if (PanelCtrl & 0x400) {
             if (Score[i].Ctrl != 0) {
@@ -537,8 +537,8 @@ void func_800798A4(void) {
         i++;
     } while (i < 4);
     if (!(GamePause & 1) && (PanelCtrl & 0x4000)) {
-        func_80018B08(&HudViewport, &HudCamera);
-        func_8001C2C0((u8 *)GetEngineSlot(5));
+        gfx_set_viewport(&HudViewport, &HudCamera);
+        eng_render_subs((u8 *)GetEngineSlot(5));
     }
 }
 
@@ -728,7 +728,7 @@ void func_8007A718(void) {
                 if (!(nas->Class & 0x2000)) {
                     eng->OldXYZ = eng->unk10;
                 }
-                func_8001C298(eng);
+                eng_render(eng);
                 eng = eng->Engine;
             } while (eng != NULL);
         }

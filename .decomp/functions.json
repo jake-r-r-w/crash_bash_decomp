@@ -2568,14 +2568,14 @@
   "src": "src/main/dbase.c"
  },
  "80017164": {
-  "asm": "asm/nonmatchings/main/prims/func_80017164.s",
+  "asm": "asm/nonmatchings/main/prims/prims_init.s",
   "calls": [
    "80011654"
   ],
   "fp": "0c377371f61ac409",
   "fpn": "82d02810d82339a5",
   "leaf": false,
-  "name": "func_80017164",
+  "name": "prims_init",
   "orig": "func_80017164",
   "rom": 31076,
   "seg": "main/prims",
@@ -2583,14 +2583,14 @@
   "src": "src/main/prims.c"
  },
  "80017388": {
-  "asm": "asm/nonmatchings/main/prims/func_80017388.s",
+  "asm": "asm/nonmatchings/main/prims/prims_update.s",
   "calls": [
    "80018764"
   ],
   "fp": "3ee3910570e5724d",
   "fpn": "dbac993c25bdb5dc",
   "leaf": false,
-  "name": "func_80017388",
+  "name": "prims_update",
   "orig": "func_80017388",
   "rom": 31624,
   "seg": "main/prims",
@@ -2598,7 +2598,7 @@
   "src": "src/main/prims.c"
  },
  "80017640": {
-  "asm": "asm/nonmatchings/main/prims/func_80017640.s",
+  "asm": "asm/nonmatchings/main/prims/prims_empty_back.s",
   "calls": [
    "80018764",
    "8002ED68"
@@ -2606,7 +2606,7 @@
   "fp": "14cee25c07397a8f",
   "fpn": "c14a95f4b7a543f5",
   "leaf": false,
-  "name": "func_80017640",
+  "name": "prims_empty_back",
   "orig": "func_80017640",
   "rom": 32320,
   "seg": "main/prims",
@@ -2640,12 +2640,12 @@
   "src": "src/main/prims.c"
  },
  "80017B08": {
-  "asm": "asm/nonmatchings/main/prims/func_80017B08.s",
+  "asm": "asm/nonmatchings/main/prims/faces_write_colors_dq.s",
   "calls": [],
   "fp": "13fc78e515ebcac6",
   "fpn": "f4ce6466784d77bc",
   "leaf": true,
-  "name": "func_80017B08",
+  "name": "faces_write_colors_dq",
   "orig": "func_80017B08",
   "rom": 33544,
   "seg": "main/prims",
@@ -2653,12 +2653,12 @@
   "src": "src/main/prims.c"
  },
  "80017D90": {
-  "asm": "asm/nonmatchings/main/prims/func_80017D90.s",
+  "asm": "asm/nonmatchings/main/prims/faces_write_colors.s",
   "calls": [],
   "fp": "b03004e1bad1690c",
   "fpn": "fa2eca2c3842f1d8",
   "leaf": true,
-  "name": "func_80017D90",
+  "name": "faces_write_colors",
   "orig": "func_80017D90",
   "rom": 34192,
   "seg": "main/prims",
@@ -2679,7 +2679,7 @@
   "src": "src/main/prims.c"
  },
  "800180BC": {
-  "asm": "asm/nonmatchings/main/prims/func_800180BC.s",
+  "asm": "asm/nonmatchings/main/prims/face_prim_alloc.s",
   "calls": [
    "800115D8",
    "80011C5C",
@@ -2689,7 +2689,7 @@
   "fp": "79a03d3e04deb22a",
   "fpn": "d3af9cc203b6d962",
   "leaf": false,
-  "name": "func_800180BC",
+  "name": "face_prim_alloc",
   "orig": "func_800180BC",
   "rom": 35004,
   "seg": "main/prims",
@@ -2697,12 +2697,12 @@
   "src": "src/main/prims.c"
  },
  "8001828C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001828C.s",
+  "asm": "asm/nonmatchings/main/prims/primpool_release_all.s",
   "calls": [],
   "fp": "2a93c4291fae7dae",
   "fpn": "ab602bec3284ecb4",
   "leaf": true,
-  "name": "func_8001828C",
+  "name": "primpool_release_all",
   "orig": "func_8001828C",
   "rom": 35468,
   "seg": "main/prims",
@@ -2710,12 +2710,12 @@
   "src": "src/main/prims.c"
  },
  "8001830C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001830C.s",
+  "asm": "asm/nonmatchings/main/prims/primpool_age.s",
   "calls": [],
   "fp": "9bb3020996c7018c",
   "fpn": "aedddf2a663cf5b8",
   "leaf": true,
-  "name": "func_8001830C",
+  "name": "primpool_age",
   "orig": "func_8001830C",
   "rom": 35596,
   "seg": "main/prims",
@@ -2749,7 +2749,7 @@
   "src": "src/main/prims.c"
  },
  "800183DC": {
-  "asm": "asm/nonmatchings/main/prims/func_800183DC.s",
+  "asm": "asm/nonmatchings/main/prims/primpool_free.s",
   "calls": [
    "800110A8",
    "8001828C",
@@ -2758,7 +2758,7 @@
   "fp": "4e56f038da8f6be2",
   "fpn": "394a1093db0f8e89",
   "leaf": false,
-  "name": "func_800183DC",
+  "name": "primpool_free",
   "orig": "func_800183DC",
   "rom": 35804,
   "seg": "main/prims",
@@ -2766,14 +2766,14 @@
   "src": "src/main/prims.c"
  },
  "80018430": {
-  "asm": "asm/nonmatchings/main/prims/func_80018430.s",
+  "asm": "asm/nonmatchings/main/prims/primpool_init.s",
   "calls": [
    "80011654"
   ],
   "fp": "ffccda2421218a8f",
   "fpn": "1c10b17b02928925",
   "leaf": false,
-  "name": "func_80018430",
+  "name": "primpool_init",
   "orig": "func_80018430",
   "rom": 35888,
   "seg": "main/prims",
@@ -2781,12 +2781,12 @@
   "src": "src/main/prims.c"
  },
  "800184D4": {
-  "asm": "asm/nonmatchings/main/prims/func_800184D4.s",
+  "asm": "asm/nonmatchings/main/prims/primset_invalidate.s",
   "calls": [],
   "fp": "ecdc6c202f329d03",
   "fpn": "dffbe4b5a6f28898",
   "leaf": true,
-  "name": "func_800184D4",
+  "name": "primset_invalidate",
   "orig": "func_800184D4",
   "rom": 36052,
   "seg": "main/prims",
@@ -2794,7 +2794,7 @@
   "src": "src/main/prims.c"
  },
  "800184F0": {
-  "asm": "asm/nonmatchings/main/prims/func_800184F0.s",
+  "asm": "asm/nonmatchings/main/prims/primnode_alloc.s",
   "calls": [
    "80017D90",
    "80017EE8"
@@ -2802,7 +2802,7 @@
   "fp": "a9ffeb2cbfe67d60",
   "fpn": "d9d7371b7273fb45",
   "leaf": false,
-  "name": "func_800184F0",
+  "name": "primnode_alloc",
   "orig": "func_800184F0",
   "rom": 36080,
   "seg": "main/prims",
@@ -2810,12 +2810,12 @@
   "src": "src/main/prims.c"
  },
  "80018570": {
-  "asm": "asm/nonmatchings/main/prims/func_80018570.s",
+  "asm": "asm/nonmatchings/main/prims/primlist_pop.s",
   "calls": [],
   "fp": "f480c8589a8cb314",
   "fpn": "2b5a07f93e82e600",
   "leaf": true,
-  "name": "func_80018570",
+  "name": "primlist_pop",
   "orig": "func_80018570",
   "rom": 36208,
   "seg": "main/prims",
@@ -2823,12 +2823,12 @@
   "src": "src/main/prims.c"
  },
  "800185F8": {
-  "asm": "asm/nonmatchings/main/prims/func_800185F8.s",
+  "asm": "asm/nonmatchings/main/prims/primlist_pop_b.s",
   "calls": [],
   "fp": "f14115cfe819947d",
   "fpn": "59f4a0a0448e8d8b",
   "leaf": true,
-  "name": "func_800185F8",
+  "name": "primlist_pop_b",
   "orig": "func_800185F8",
   "rom": 36344,
   "seg": "main/prims",
@@ -2836,12 +2836,12 @@
   "src": "src/main/prims.c"
  },
  "80018694": {
-  "asm": "asm/nonmatchings/main/prims/func_80018694.s",
+  "asm": "asm/nonmatchings/main/prims/primset_alloc.s",
   "calls": [],
   "fp": "efa179956cdec2d7",
   "fpn": "e653ad0174aa30e3",
   "leaf": true,
-  "name": "func_80018694",
+  "name": "primset_alloc",
   "orig": "func_80018694",
   "rom": 36500,
   "seg": "main/prims",
@@ -2849,7 +2849,7 @@
   "src": "src/main/prims.c"
  },
  "80018728": {
-  "asm": "asm/nonmatchings/main/prims/func_80018728.s",
+  "asm": "asm/nonmatchings/main/prims/faces_write_uvs_colors.s",
   "calls": [
    "80017D90",
    "80017EE8"
@@ -2857,7 +2857,7 @@
   "fp": "36eb0adc42da1862",
   "fpn": "a40a828d357eb08f",
   "leaf": false,
-  "name": "func_80018728",
+  "name": "faces_write_uvs_colors",
   "orig": "func_80018728",
   "rom": 36648,
   "seg": "main/prims",
@@ -2865,14 +2865,14 @@
   "src": "src/main/prims.c"
  },
  "80018764": {
-  "asm": "asm/nonmatchings/main/prims/func_80018764.s",
+  "asm": "asm/nonmatchings/main/prims/primnodes_free.s",
   "calls": [
    "800110A8"
   ],
   "fp": "bbd75329147f0f16",
   "fpn": "ae17ffd7ce7545f0",
   "leaf": false,
-  "name": "func_80018764",
+  "name": "primnodes_free",
   "orig": "func_80018764",
   "rom": 36708,
   "seg": "main/prims",
@@ -2880,14 +2880,14 @@
   "src": "src/main/prims.c"
  },
  "800187D4": {
-  "asm": "asm/nonmatchings/main/prims/func_800187D4.s",
+  "asm": "asm/nonmatchings/main/prims/primlist_reset.s",
   "calls": [
    "80018764"
   ],
   "fp": "f2a33a3afc8b5bb3",
   "fpn": "88a90d2de180e18f",
   "leaf": false,
-  "name": "func_800187D4",
+  "name": "primlist_reset",
   "orig": "func_800187D4",
   "rom": 36820,
   "seg": "main/prims",
@@ -2895,7 +2895,7 @@
   "src": "src/main/prims.c"
  },
  "8001888C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001888C.s",
+  "asm": "asm/nonmatchings/main/prims/prims_empty.s",
   "calls": [
    "800187D4",
    "8002775C",
@@ -2905,7 +2905,7 @@
   "fp": "5994ea00d988ed19",
   "fpn": "dffc8c5df7e4719e",
   "leaf": false,
-  "name": "func_8001888C",
+  "name": "prims_empty",
   "orig": "func_8001888C",
   "rom": 37004,
   "seg": "main/prims",
@@ -2913,14 +2913,14 @@
   "src": "src/main/prims.c"
  },
  "80018938": {
-  "asm": "asm/nonmatchings/main/prims/func_80018938.s",
+  "asm": "asm/nonmatchings/main/prims/primlist_release.s",
   "calls": [
    "80018764"
   ],
   "fp": "a16eef7e548ced8e",
   "fpn": "0007560519f6914d",
   "leaf": false,
-  "name": "func_80018938",
+  "name": "primlist_release",
   "orig": "func_80018938",
   "rom": 37176,
   "seg": "main/prims",
@@ -2928,12 +2928,12 @@
   "src": "src/main/prims.c"
  },
  "800189E0": {
-  "asm": "asm/nonmatchings/main/prims/func_800189E0.s",
+  "asm": "asm/nonmatchings/main/prims/primlist_clear.s",
   "calls": [],
   "fp": "12dde80ea57e950b",
   "fpn": "4400fbfad107156d",
   "leaf": true,
-  "name": "func_800189E0",
+  "name": "primlist_clear",
   "orig": "func_800189E0",
   "rom": 37344,
   "seg": "main/prims",
@@ -2956,7 +2956,7 @@
   "src": "src/main/prims.c"
  },
  "80018B08": {
-  "asm": "asm/nonmatchings/main/prims/func_80018B08.s",
+  "asm": "asm/nonmatchings/main/prims/gfx_set_viewport.s",
   "calls": [
    "80014540",
    "8002FBB4",
@@ -2965,7 +2965,7 @@
   "fp": "ad0e8bd68af71c5c",
   "fpn": "708b8ada0381448d",
   "leaf": false,
-  "name": "func_80018B08",
+  "name": "gfx_set_viewport",
   "orig": "func_80018B08",
   "rom": 37640,
   "seg": "main/prims",
@@ -2973,12 +2973,12 @@
   "src": "src/main/prims.c"
  },
  "80018F3C": {
-  "asm": "asm/nonmatchings/main/prims/func_80018F3C.s",
+  "asm": "asm/nonmatchings/main/prims/eng_add_subs.s",
   "calls": [],
   "fp": "4017a55cd8e1842e",
   "fpn": "171a3e8cc547afbc",
   "leaf": true,
-  "name": "func_80018F3C",
+  "name": "eng_add_subs",
   "orig": "func_80018F3C",
   "rom": 38716,
   "seg": "main/prims",
@@ -3017,7 +3017,7 @@
   "src": "src/main/prims.c"
  },
  "8001965C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001965C.s",
+  "asm": "asm/nonmatchings/main/prims/gfx_setup_xform.s",
   "calls": [
    "800142D4",
    "800330CC",
@@ -3026,7 +3026,7 @@
   "fp": "7925c6cc251298ce",
   "fpn": "0549d1b158a3076d",
   "leaf": false,
-  "name": "func_8001965C",
+  "name": "gfx_setup_xform",
   "orig": "func_8001965C",
   "rom": 40540,
   "seg": "main/prims",
@@ -3034,7 +3034,7 @@
   "src": "src/main/prims.c"
  },
  "80019A60": {
-  "asm": "asm/nonmatchings/main/prims/func_80019A60.s",
+  "asm": "asm/nonmatchings/main/prims/draw_object_model.s",
   "calls": [
    "800159C4",
    "80015AB0",
@@ -3050,7 +3050,7 @@
   "fp": "e92f827d87184556",
   "fpn": "6c59a195c77947ac",
   "leaf": false,
-  "name": "func_80019A60",
+  "name": "draw_object_model",
   "orig": "func_80019A60",
   "rom": 41568,
   "seg": "main/prims",
@@ -3058,7 +3058,7 @@
   "src": "src/main/prims.c"
  },
  "80019F1C": {
-  "asm": "asm/nonmatchings/main/prims/func_80019F1C.s",
+  "asm": "asm/nonmatchings/main/prims/draw_object.s",
   "calls": [
    "8001965C",
    "80019A60"
@@ -3066,7 +3066,7 @@
   "fp": "4b24ed461f81d25a",
   "fpn": "09ee6ac825646d87",
   "leaf": false,
-  "name": "func_80019F1C",
+  "name": "draw_object",
   "orig": "func_80019F1C",
   "rom": 42780,
   "seg": "main/prims",
@@ -3074,14 +3074,14 @@
   "src": "src/main/prims.c"
  },
  "8001A0D8": {
-  "asm": "asm/nonmatchings/main/prims/func_8001A0D8.s",
+  "asm": "asm/nonmatchings/main/prims/draw_gouraud_quad.s",
   "calls": [
    "8002A2EC"
   ],
   "fp": "0e814aa4bc8366ce",
   "fpn": "6b7c2081fdd91910",
   "leaf": false,
-  "name": "func_8001A0D8",
+  "name": "draw_gouraud_quad",
   "orig": "func_8001A0D8",
   "rom": 43224,
   "seg": "main/prims",
@@ -3120,7 +3120,7 @@
   "src": "src/main/prims.c"
  },
  "8001A82C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001A82C.s",
+  "asm": "asm/nonmatchings/main/prims/draw_text_nas.s",
   "calls": [
    "8001965C",
    "800243A0",
@@ -3129,7 +3129,7 @@
   "fp": "89bd4b86a6ee0f89",
   "fpn": "1e4e89d1bc4cae1d",
   "leaf": false,
-  "name": "func_8001A82C",
+  "name": "draw_text_nas",
   "orig": "func_8001A82C",
   "rom": 45100,
   "seg": "main/prims",
@@ -3137,7 +3137,7 @@
   "src": "src/main/prims.c"
  },
  "8001AA48": {
-  "asm": "asm/nonmatchings/main/prims/func_8001AA48.s",
+  "asm": "asm/nonmatchings/main/prims/draw_model_quad.s",
   "calls": [
    "80015A18",
    "800177F4",
@@ -3148,7 +3148,7 @@
   "fp": "16d9b98c2c6d610d",
   "fpn": "a9387c7fe8d9443f",
   "leaf": false,
-  "name": "func_8001AA48",
+  "name": "draw_model_quad",
   "orig": "func_8001AA48",
   "rom": 45640,
   "seg": "main/prims",
@@ -3156,7 +3156,7 @@
   "src": "src/main/prims.c"
  },
  "8001ACC0": {
-  "asm": "asm/nonmatchings/main/prims/func_8001ACC0.s",
+  "asm": "asm/nonmatchings/main/prims/gfx_object_matrix.s",
   "calls": [
    "800142D4",
    "800330CC",
@@ -3165,7 +3165,7 @@
   "fp": "3cc700bebdb93c2a",
   "fpn": "e1eb40cd48b38207",
   "leaf": false,
-  "name": "func_8001ACC0",
+  "name": "gfx_object_matrix",
   "orig": "func_8001ACC0",
   "rom": 46272,
   "seg": "main/prims",
@@ -3173,12 +3173,12 @@
   "src": "src/main/prims.c"
  },
  "8001AF2C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001AF2C.s",
+  "asm": "asm/nonmatchings/main/prims/bbox_visible.s",
   "calls": [],
   "fp": "9019e0cb28b0e644",
   "fpn": "02129f607aab0442",
   "leaf": true,
-  "name": "func_8001AF2C",
+  "name": "bbox_visible",
   "orig": "func_8001AF2C",
   "rom": 46892,
   "seg": "main/prims",
@@ -3186,12 +3186,12 @@
   "src": "src/main/prims.c"
  },
  "8001B6D4": {
-  "asm": "asm/nonmatchings/main/prims/func_8001B6D4.s",
+  "asm": "asm/nonmatchings/main/prims/tri_visible.s",
   "calls": [],
   "fp": "bfd8ac55645894c6",
   "fpn": "b23342044663ed06",
   "leaf": true,
-  "name": "func_8001B6D4",
+  "name": "tri_visible",
   "orig": "func_8001B6D4",
   "rom": 48852,
   "seg": "main/prims",
@@ -3199,12 +3199,12 @@
   "src": "src/main/prims.c"
  },
  "8001C008": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C008.s",
+  "asm": "asm/nonmatchings/main/prims/morph_light_colors.s",
   "calls": [],
   "fp": "7ae8a6bb7553f4b6",
   "fpn": "aeaab64675751c26",
   "leaf": true,
-  "name": "func_8001C008",
+  "name": "morph_light_colors",
   "orig": "func_8001C008",
   "rom": 51208,
   "seg": "main/prims",
@@ -3212,12 +3212,12 @@
   "src": "src/main/prims.c"
  },
  "8001C0F0": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C0F0.s",
+  "asm": "asm/nonmatchings/main/prims/morph_blend_verts.s",
   "calls": [],
   "fp": "b333711b2b93092c",
   "fpn": "f07f122a52334ee5",
   "leaf": true,
-  "name": "func_8001C0F0",
+  "name": "morph_blend_verts",
   "orig": "func_8001C0F0",
   "rom": 51440,
   "seg": "main/prims",
@@ -3225,12 +3225,12 @@
   "src": "src/main/prims.c"
  },
  "8001C1E0": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C1E0.s",
+  "asm": "asm/nonmatchings/main/prims/morph_copy_verts.s",
   "calls": [],
   "fp": "5bb31aee6a26415f",
   "fpn": "9b9a937c4799497f",
   "leaf": true,
-  "name": "func_8001C1E0",
+  "name": "morph_copy_verts",
   "orig": "func_8001C1E0",
   "rom": 51680,
   "seg": "main/prims",
@@ -3238,12 +3238,12 @@
   "src": "src/main/prims.c"
  },
  "8001C270": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C270.s",
+  "asm": "asm/nonmatchings/main/prims/eng_kill.s",
   "calls": [],
   "fp": "a94c88a5e0ffa96b",
   "fpn": "33e3b139153cc66e",
   "leaf": true,
-  "name": "func_8001C270",
+  "name": "eng_kill",
   "orig": "func_8001C270",
   "rom": 51824,
   "seg": "main/prims",
@@ -3251,12 +3251,12 @@
   "src": "src/main/prims.c"
  },
  "8001C298": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C298.s",
+  "asm": "asm/nonmatchings/main/prims/eng_render.s",
   "calls": [],
   "fp": "c7c41f47e24f1ad8",
   "fpn": "33e3b139153cc66e",
   "leaf": true,
-  "name": "func_8001C298",
+  "name": "eng_render",
   "orig": "func_8001C298",
   "rom": 51864,
   "seg": "main/prims",
@@ -3264,14 +3264,14 @@
   "src": "src/main/prims.c"
  },
  "8001C2C0": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C2C0.s",
+  "asm": "asm/nonmatchings/main/prims/eng_render_subs.s",
   "calls": [
    "8001ACC0"
   ],
   "fp": "349d0d11e941a58c",
   "fpn": "951b4bd3a2f1f09b",
   "leaf": false,
-  "name": "func_8001C2C0",
+  "name": "eng_render_subs",
   "orig": "func_8001C2C0",
   "rom": 51904,
   "seg": "main/prims",
@@ -3279,12 +3279,12 @@
   "src": "src/main/prims.c"
  },
  "8001C34C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C34C.s",
+  "asm": "asm/nonmatchings/main/prims/sub_nth.s",
   "calls": [],
   "fp": "e01ed337e861eacc",
   "fpn": "0d7447abf8c2dc2e",
   "leaf": true,
-  "name": "func_8001C34C",
+  "name": "sub_nth",
   "orig": "func_8001C34C",
   "rom": 52044,
   "seg": "main/prims",
@@ -3307,14 +3307,14 @@
   "src": "src/main/prims.c"
  },
  "8001C3D0": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C3D0.s",
+  "asm": "asm/nonmatchings/main/prims/sub_use_quad_model.s",
   "calls": [
    "80015A18"
   ],
   "fp": "90c3503fe807e26c",
   "fpn": "20241fe134e3472c",
   "leaf": false,
-  "name": "func_8001C3D0",
+  "name": "sub_use_quad_model",
   "orig": "func_8001C3D0",
   "rom": 52176,
   "seg": "main/prims",
@@ -3322,7 +3322,7 @@
   "src": "src/main/prims.c"
  },
  "8001C448": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C448.s",
+  "asm": "asm/nonmatchings/main/prims/posdst_flash.s",
   "calls": [
    "8001A82C",
    "80024214"
@@ -3330,7 +3330,7 @@
   "fp": "4bdbd80086f36339",
   "fpn": "00c9476a38bd5aff",
   "leaf": false,
-  "name": "func_8001C448",
+  "name": "posdst_flash",
   "orig": "func_8001C448",
   "rom": 52296,
   "seg": "main/prims",
@@ -3338,14 +3338,14 @@
   "src": "src/main/prims.c"
  },
  "8001C584": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C584.s",
+  "asm": "asm/nonmatchings/main/prims/posdst_flash_at.s",
   "calls": [
    "80024214"
   ],
   "fp": "c6268cd773a23bd8",
   "fpn": "91b9e2f77144f9fc",
   "leaf": false,
-  "name": "func_8001C584",
+  "name": "posdst_flash_at",
   "orig": "func_8001C584",
   "rom": 52612,
   "seg": "main/prims",
@@ -3353,7 +3353,7 @@
   "src": "src/main/prims.c"
  },
  "8001C690": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C690.s",
+  "asm": "asm/nonmatchings/main/prims/draw_nas_model.s",
   "calls": [
    "8001965C",
    "8001A6D4"
@@ -3361,7 +3361,7 @@
   "fp": "bd6b17ec23f3a014",
   "fpn": "6ca20c43cdf9446f",
   "leaf": false,
-  "name": "func_8001C690",
+  "name": "draw_nas_model",
   "orig": "func_8001C690",
   "rom": 52880,
   "seg": "main/prims",
@@ -3369,7 +3369,7 @@
   "src": "src/main/prims.c"
  },
  "8001C7FC": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C7FC.s",
+  "asm": "asm/nonmatchings/main/prims/draw_nas_model_flags.s",
   "calls": [
    "8001965C",
    "8001A0D8"
@@ -3377,7 +3377,7 @@
   "fp": "7e24f4c473b83b45",
   "fpn": "711acc3564fba194",
   "leaf": false,
-  "name": "func_8001C7FC",
+  "name": "draw_nas_model_flags",
   "orig": "func_8001C7FC",
   "rom": 53244,
   "seg": "main/prims",
@@ -3385,14 +3385,14 @@
   "src": "src/main/prims.c"
  },
  "8001C974": {
-  "asm": "asm/nonmatchings/main/prims/func_8001C974.s",
+  "asm": "asm/nonmatchings/main/prims/draw_nas_model_ret.s",
   "calls": [
    "8001965C"
   ],
   "fp": "a6ba5e95337d14eb",
   "fpn": "40eaa0150798c83c",
   "leaf": false,
-  "name": "func_8001C974",
+  "name": "draw_nas_model_ret",
   "orig": "func_8001C974",
   "rom": 53620,
   "seg": "main/prims",
@@ -3415,14 +3415,14 @@
   "src": "src/main/prims.c"
  },
  "8001CBD4": {
-  "asm": "asm/nonmatchings/main/prims/func_8001CBD4.s",
+  "asm": "asm/nonmatchings/main/prims/calc_rgbcode_packed.s",
   "calls": [
    "8002A2EC"
   ],
   "fp": "6e4fd46a68808c0d",
   "fpn": "cb08e8840c7860c5",
   "leaf": false,
-  "name": "func_8001CBD4",
+  "name": "calc_rgbcode_packed",
   "orig": "func_8001CBD4",
   "rom": 54228,
   "seg": "main/prims",
@@ -3443,7 +3443,7 @@
   "src": "src/main/prims.c"
  },
  "8001CC10": {
-  "asm": "asm/nonmatchings/main/prims/func_8001CC10.s",
+  "asm": "asm/nonmatchings/main/prims/sub_alloc_prims.s",
   "calls": [
    "800110A8",
    "800115D8",
@@ -3452,7 +3452,7 @@
   "fp": "0703e2c028f92ccd",
   "fpn": "04234889e8e802eb",
   "leaf": false,
-  "name": "func_8001CC10",
+  "name": "sub_alloc_prims",
   "orig": "func_8001CC10",
   "rom": 54288,
   "seg": "main/prims",
@@ -3460,14 +3460,14 @@
   "src": "src/main/prims.c"
  },
  "8001CD04": {
-  "asm": "asm/nonmatchings/main/prims/func_8001CD04.s",
+  "asm": "asm/nonmatchings/main/prims/gfx_load_xform.s",
   "calls": [
    "8001965C"
   ],
   "fp": "3867badcc80eb2df",
   "fpn": "18687312643d23cd",
   "leaf": false,
-  "name": "func_8001CD04",
+  "name": "gfx_load_xform",
   "orig": "func_8001CD04",
   "rom": 54532,
   "seg": "main/prims",
@@ -3475,7 +3475,7 @@
   "src": "src/main/prims.c"
  },
  "8001CE00": {
-  "asm": "asm/nonmatchings/main/prims/func_8001CE00.s",
+  "asm": "asm/nonmatchings/main/prims/draw_model_set_entry.s",
   "calls": [
    "80019094",
    "800193A8",
@@ -3484,7 +3484,7 @@
   "fp": "7ca7e82c2239f469",
   "fpn": "2f68a48977086b06",
   "leaf": false,
-  "name": "func_8001CE00",
+  "name": "draw_model_set_entry",
   "orig": "func_8001CE00",
   "rom": 54784,
   "seg": "main/prims",
@@ -3492,7 +3492,7 @@
   "src": "src/main/prims.c"
  },
  "8001CEB4": {
-  "asm": "asm/nonmatchings/main/prims/func_8001CEB4.s",
+  "asm": "asm/nonmatchings/main/prims/draw_map_entity.s",
   "calls": [
    "800159C4",
    "80019094",
@@ -3502,7 +3502,7 @@
   "fp": "9d5c5961e2d885ac",
   "fpn": "17b5205c7f3745c0",
   "leaf": false,
-  "name": "func_8001CEB4",
+  "name": "draw_map_entity",
   "orig": "func_8001CEB4",
   "rom": 54964,
   "seg": "main/prims",
@@ -3510,7 +3510,7 @@
   "src": "src/main/prims.c"
  },
  "8001CF50": {
-  "asm": "asm/nonmatchings/main/prims/func_8001CF50.s",
+  "asm": "asm/nonmatchings/main/prims/draw_model_entry.s",
   "calls": [
    "80019094",
    "800193A8",
@@ -3519,7 +3519,7 @@
   "fp": "b9f6d631d10a7ccf",
   "fpn": "b1742c4eba6de78a",
   "leaf": false,
-  "name": "func_8001CF50",
+  "name": "draw_model_entry",
   "orig": "func_8001CF50",
   "rom": 55120,
   "seg": "main/prims",
@@ -3527,7 +3527,7 @@
   "src": "src/main/prims.c"
  },
  "8001CFE8": {
-  "asm": "asm/nonmatchings/main/prims/func_8001CFE8.s",
+  "asm": "asm/nonmatchings/main/prims/draw_morph_model.s",
   "calls": [
    "80019094",
    "800193A8"
@@ -3535,7 +3535,7 @@
   "fp": "ce7aa992f0f653a8",
   "fpn": "f97a8446fba388d3",
   "leaf": false,
-  "name": "func_8001CFE8",
+  "name": "draw_morph_model",
   "orig": "func_8001CFE8",
   "rom": 55272,
   "seg": "main/prims",
@@ -3543,12 +3543,12 @@
   "src": "src/main/prims.c"
  },
  "8001D048": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D048.s",
+  "asm": "asm/nonmatchings/main/prims/project_quad.s",
   "calls": [],
   "fp": "63c33f0fda4305c8",
   "fpn": "efc455090b74cf09",
   "leaf": true,
-  "name": "func_8001D048",
+  "name": "project_quad",
   "orig": "func_8001D048",
   "rom": 55368,
   "seg": "main/prims",
@@ -3556,14 +3556,14 @@
   "src": "src/main/prims.c"
  },
  "8001D174": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D174.s",
+  "asm": "asm/nonmatchings/main/prims/eng_release_subs_sfx.s",
   "calls": [
    "800225C4"
   ],
   "fp": "833021e1ca6ed2c7",
   "fpn": "e9cd2213f83f5cea",
   "leaf": false,
-  "name": "func_8001D174",
+  "name": "eng_release_subs_sfx",
   "orig": "func_8001D174",
   "rom": 55668,
   "seg": "main/prims",
@@ -3571,12 +3571,12 @@
   "src": "src/main/prims.c"
  },
  "8001D220": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D220.s",
+  "asm": "asm/nonmatchings/main/prims/eng_release_subs.s",
   "calls": [],
   "fp": "8e97909fba2deb79",
   "fpn": "e2abd0110318afff",
   "leaf": true,
-  "name": "func_8001D220",
+  "name": "eng_release_subs",
   "orig": "func_8001D220",
   "rom": 55840,
   "seg": "main/prims",
@@ -3584,12 +3584,12 @@
   "src": "src/main/prims.c"
  },
  "8001D2B4": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D2B4.s",
+  "asm": "asm/nonmatchings/main/prims/subs_release.s",
   "calls": [],
   "fp": "eaf3c4c4b4b9e493",
   "fpn": "ecb4c676ef27bde1",
   "leaf": true,
-  "name": "func_8001D2B4",
+  "name": "subs_release",
   "orig": "func_8001D2B4",
   "rom": 55988,
   "seg": "main/prims",
@@ -3610,14 +3610,14 @@
   "src": "src/main/prims.c"
  },
  "8001D390": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D390.s",
+  "asm": "asm/nonmatchings/main/prims/eng_add_subs_n.s",
   "calls": [
    "80018F3C"
   ],
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_8001D390",
+  "name": "eng_add_subs_n",
   "orig": "func_8001D390",
   "rom": 56208,
   "seg": "main/prims",
@@ -3625,12 +3625,12 @@
   "src": "src/main/prims.c"
  },
  "8001D3B0": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D3B0.s",
+  "asm": "asm/nonmatchings/main/prims/subs_init_array.s",
   "calls": [],
   "fp": "7dd114f7cad685b0",
   "fpn": "0e46c806f1ecfeb0",
   "leaf": true,
-  "name": "func_8001D3B0",
+  "name": "subs_init_array",
   "orig": "func_8001D3B0",
   "rom": 56240,
   "seg": "main/prims",
@@ -3638,12 +3638,12 @@
   "src": "src/main/prims.c"
  },
  "8001D48C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D48C.s",
+  "asm": "asm/nonmatchings/main/prims/subs_alloc_list.s",
   "calls": [],
   "fp": "39b64ab24b14ba54",
   "fpn": "e61262707449cf8f",
   "leaf": true,
-  "name": "func_8001D48C",
+  "name": "subs_alloc_list",
   "orig": "func_8001D48C",
   "rom": 56460,
   "seg": "main/prims",
@@ -3664,14 +3664,14 @@
   "src": "src/main/prims.c"
  },
  "8001D604": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D604.s",
+  "asm": "asm/nonmatchings/main/prims/subpool_free.s",
   "calls": [
    "800110A8"
   ],
   "fp": "b4da3a03b4326bd1",
   "fpn": "e8d62fc924a6bb75",
   "leaf": false,
-  "name": "func_8001D604",
+  "name": "subpool_free",
   "orig": "func_8001D604",
   "rom": 56836,
   "seg": "main/prims",
@@ -3679,14 +3679,14 @@
   "src": "src/main/prims.c"
  },
  "8001D640": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D640.s",
+  "asm": "asm/nonmatchings/main/prims/subpool_init.s",
   "calls": [
    "80011654"
   ],
   "fp": "836fca9b95f7dfcd",
   "fpn": "d982c8e80673b5a0",
   "leaf": false,
-  "name": "func_8001D640",
+  "name": "subpool_init",
   "orig": "func_8001D640",
   "rom": 56896,
   "seg": "main/prims",
@@ -3694,7 +3694,7 @@
   "src": "src/main/prims.c"
  },
  "8001D6B4": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D6B4.s",
+  "asm": "asm/nonmatchings/main/prims/mapenv_place_subs.s",
   "calls": [
    "80011654",
    "8001D334"
@@ -3702,7 +3702,7 @@
   "fp": "f02831dbd8635e37",
   "fpn": "29efb1edfac0da21",
   "leaf": false,
-  "name": "func_8001D6B4",
+  "name": "mapenv_place_subs",
   "orig": "func_8001D6B4",
   "rom": 57012,
   "seg": "main/prims",
@@ -3710,7 +3710,7 @@
   "src": "src/main/prims.c"
  },
  "8001D894": {
-  "asm": "asm/nonmatchings/main/prims/func_8001D894.s",
+  "asm": "asm/nonmatchings/main/prims/draw_map_object.s",
   "calls": [
    "800142D4",
    "800330CC",
@@ -3719,7 +3719,7 @@
   "fp": "cab84ade897ecbb6",
   "fpn": "7dee2e687e4e2052",
   "leaf": false,
-  "name": "func_8001D894",
+  "name": "draw_map_object",
   "orig": "func_8001D894",
   "rom": 57492,
   "seg": "main/prims",
@@ -3727,7 +3727,7 @@
   "src": "src/main/prims.c"
  },
  "8001DAF8": {
-  "asm": "asm/nonmatchings/main/prims/func_8001DAF8.s",
+  "asm": "asm/nonmatchings/main/prims/draw_map_scene.s",
   "calls": [
    "8003278C",
    "8003325C"
@@ -3735,7 +3735,7 @@
   "fp": "d2a1746931097a77",
   "fpn": "dde24f62e1e81ea0",
   "leaf": false,
-  "name": "func_8001DAF8",
+  "name": "draw_map_scene",
   "orig": "func_8001DAF8",
   "rom": 58104,
   "seg": "main/prims",
@@ -3743,12 +3743,12 @@
   "src": "src/main/prims.c"
  },
  "8001DCD4": {
-  "asm": "asm/nonmatchings/main/prims/func_8001DCD4.s",
+  "asm": "asm/nonmatchings/main/prims/mapscene_find_sub.s",
   "calls": [],
   "fp": "1b08c832876e67a5",
   "fpn": "d433a1aa903c6775",
   "leaf": true,
-  "name": "func_8001DCD4",
+  "name": "mapscene_find_sub",
   "orig": "func_8001DCD4",
   "rom": 58580,
   "seg": "main/prims",
@@ -3756,12 +3756,12 @@
   "src": "src/main/prims.c"
  },
  "8001DD20": {
-  "asm": "asm/nonmatchings/main/prims/func_8001DD20.s",
+  "asm": "asm/nonmatchings/main/prims/rel_ptr.s",
   "calls": [],
   "fp": "9d0ffb19fbcbe552",
   "fpn": "665e14d415e0cf22",
   "leaf": true,
-  "name": "func_8001DD20",
+  "name": "rel_ptr",
   "orig": "func_8001DD20",
   "rom": 58656,
   "seg": "main/prims",
@@ -3800,7 +3800,7 @@
   "src": "src/main/prims.c"
  },
  "8001DDD8": {
-  "asm": "asm/nonmatchings/main/prims/func_8001DDD8.s",
+  "asm": "asm/nonmatchings/main/prims/mapscene_release.s",
   "calls": [
    "800110A8",
    "80016F54"
@@ -3808,7 +3808,7 @@
   "fp": "573b82c485f8b2aa",
   "fpn": "3b70ef1986019e2d",
   "leaf": false,
-  "name": "func_8001DDD8",
+  "name": "mapscene_release",
   "orig": "func_8001DDD8",
   "rom": 58840,
   "seg": "main/prims",
@@ -3816,12 +3816,12 @@
   "src": "src/main/prims.c"
  },
  "8001DE18": {
-  "asm": "asm/nonmatchings/main/prims/func_8001DE18.s",
+  "asm": "asm/nonmatchings/main/prims/mapscene_setup_tables.s",
   "calls": [],
   "fp": "e2693ba9d0d6ad14",
   "fpn": "2ffd59a06a649115",
   "leaf": true,
-  "name": "func_8001DE18",
+  "name": "mapscene_setup_tables",
   "orig": "func_8001DE18",
   "rom": 58904,
   "seg": "main/prims",
@@ -3829,7 +3829,7 @@
   "src": "src/main/prims.c"
  },
  "8001DEF4": {
-  "asm": "asm/nonmatchings/main/prims/func_8001DEF4.s",
+  "asm": "asm/nonmatchings/main/prims/mapscene_init.s",
   "calls": [
    "80013650",
    "8002AA8C"
@@ -3837,7 +3837,7 @@
   "fp": "776495fdce8f78c7",
   "fpn": "0fbe71114467093b",
   "leaf": false,
-  "name": "func_8001DEF4",
+  "name": "mapscene_init",
   "orig": "func_8001DEF4",
   "rom": 59124,
   "seg": "main/prims",
@@ -3881,7 +3881,7 @@
   "src": "src/main/prims.c"
  },
  "8001E054": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E054.s",
+  "asm": "asm/nonmatchings/main/prims/mapscene_load.s",
   "calls": [
    "8001682C",
    "8001D6B4",
@@ -3890,7 +3890,7 @@
   "fp": "0295c42577cc6bbe",
   "fpn": "43319502be0c79b8",
   "leaf": false,
-  "name": "func_8001E054",
+  "name": "mapscene_load",
   "orig": "func_8001E054",
   "rom": 59476,
   "seg": "main/prims",
@@ -3898,12 +3898,12 @@
   "src": "src/main/prims.c"
  },
  "8001E0A8": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E0A8.s",
+  "asm": "asm/nonmatchings/main/prims/mapscene_place_subs.s",
   "calls": [],
   "fp": "8b500bdf436b024d",
   "fpn": "938e61bdadd464aa",
   "leaf": true,
-  "name": "func_8001E0A8",
+  "name": "mapscene_place_subs",
   "orig": "func_8001E0A8",
   "rom": 59560,
   "seg": "main/prims",
@@ -3911,12 +3911,12 @@
   "src": "src/main/prims.c"
  },
  "8001E21C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E21C.s",
+  "asm": "asm/nonmatchings/main/prims/key_interp_pos.s",
   "calls": [],
   "fp": "b1b0c23f84caf4e3",
   "fpn": "4ae1b3e01f60b6b6",
   "leaf": true,
-  "name": "func_8001E21C",
+  "name": "key_interp_pos",
   "orig": "func_8001E21C",
   "rom": 59932,
   "seg": "main/prims",
@@ -3924,12 +3924,12 @@
   "src": "src/main/prims.c"
  },
  "8001E41C": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E41C.s",
+  "asm": "asm/nonmatchings/main/prims/key_find.s",
   "calls": [],
   "fp": "3c2f6d026176e821",
   "fpn": "edf9b87442b519fe",
   "leaf": true,
-  "name": "func_8001E41C",
+  "name": "key_find",
   "orig": "func_8001E41C",
   "rom": 60444,
   "seg": "main/prims",
@@ -3976,12 +3976,12 @@
   "src": "src/main/prims.c"
  },
  "8001E598": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E598.s",
+  "asm": "asm/nonmatchings/main/prims/fade_update.s",
   "calls": [],
   "fp": "627d107531c58938",
   "fpn": "2c2465462dc44901",
   "leaf": true,
-  "name": "func_8001E598",
+  "name": "fade_update",
   "orig": "func_8001E598",
   "rom": 60824,
   "seg": "main/prims",
@@ -3989,7 +3989,7 @@
   "src": "src/main/prims.c"
  },
  "8001E610": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E610.s",
+  "asm": "asm/nonmatchings/main/prims/process_control_update.s",
   "calls": [
    "80010AE8",
    "80011BF8",
@@ -4004,7 +4004,7 @@
   "fp": "4575a42a92628e58",
   "fpn": "794c06e192a08665",
   "leaf": false,
-  "name": "func_8001E610",
+  "name": "process_control_update",
   "orig": "func_8001E610",
   "rom": 60944,
   "seg": "main/prims",
@@ -4012,12 +4012,12 @@
   "src": "src/main/prims.c"
  },
  "8001E824": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E824.s",
+  "asm": "asm/nonmatchings/main/prims/process_control_back.s",
   "calls": [],
   "fp": "c59af689673c7c34",
   "fpn": "5d0975c64fc3f60f",
   "leaf": true,
-  "name": "func_8001E824",
+  "name": "process_control_back",
   "orig": "func_8001E824",
   "rom": 61476,
   "seg": "main/prims",
@@ -4038,12 +4038,12 @@
   "src": "src/main/prims.c"
  },
  "8001E848": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E848.s",
+  "asm": "asm/nonmatchings/main/prims/process_control_goto.s",
   "calls": [],
   "fp": "569dd7ec36962283",
   "fpn": "0c51b268d71c05d7",
   "leaf": true,
-  "name": "func_8001E848",
+  "name": "process_control_goto",
   "orig": "func_8001E848",
   "rom": 61512,
   "seg": "main/prims",
@@ -4064,12 +4064,12 @@
   "src": "src/main/prims.c"
  },
  "8001E898": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E898.s",
+  "asm": "asm/nonmatchings/main/prims/process_control_render.s",
   "calls": [],
   "fp": "86c021aa33d51875",
   "fpn": "2e9c805fbad8a351",
   "leaf": true,
-  "name": "func_8001E898",
+  "name": "process_control_render",
   "orig": "func_8001E898",
   "rom": 61592,
   "seg": "main/prims",
@@ -4090,12 +4090,12 @@
   "src": "src/main/prims.c"
  },
  "8001E934": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E934.s",
+  "asm": "asm/nonmatchings/main/prims/process_control_init.s",
   "calls": [],
   "fp": "d840006dc92f3316",
   "fpn": "25d86686290aee75",
   "leaf": true,
-  "name": "func_8001E934",
+  "name": "process_control_init",
   "orig": "func_8001E934",
   "rom": 61748,
   "seg": "main/prims",
@@ -4103,7 +4103,7 @@
   "src": "src/main/prims.c"
  },
  "8001E948": {
-  "asm": "asm/nonmatchings/main/prims/func_8001E948.s",
+  "asm": "asm/nonmatchings/main/prims/prims_empty_and_compact.s",
   "calls": [
    "80010AE8",
    "80011DB4",
@@ -4112,7 +4112,7 @@
   "fp": "593255217bdcd7ff",
   "fpn": "b8fe2f25ba4ecad8",
   "leaf": false,
-  "name": "func_8001E948",
+  "name": "prims_empty_and_compact",
   "orig": "func_8001E948",
   "rom": 61768,
   "seg": "main/prims",

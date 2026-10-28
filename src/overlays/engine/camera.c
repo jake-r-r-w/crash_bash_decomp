@@ -867,7 +867,7 @@ void func_800984D4(void) {
     s32 v;
     int new_var;
 
-    func_80018B08(&MainViewport, &MainGfxCamera);
+    gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     if (D_800ADBC4 != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;
@@ -875,7 +875,7 @@ void func_800984D4(void) {
         if ((GamePause & 0x240) != 0x240) {
             s[0xA8 / 4] |= 0x8000;
         }
-        func_8001C2C0((u8 *)GetEngineSlot(3));
+        eng_render_subs((u8 *)GetEngineSlot(3));
     }
 }
 

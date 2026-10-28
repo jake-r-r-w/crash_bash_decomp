@@ -203,7 +203,7 @@ s32 KillNAS(NAS *nas) {
             eng->platform->platform = NULL;
         }
         eng->platform = NULL;
-        func_8001C270(eng);
+        eng_kill(eng);
         eng = eng->Engine;
     }
 freed:
@@ -612,7 +612,7 @@ void SetNasDefaults(void) {
     SubEngineTemplate.unk20.y = 0x1000;
     SubEngineTemplate.unk20.x = 0x1000;
     SubEngineTemplate.unk51 = 4;
-    SubEngineTemplate.hook = (void (*)(subengine *, s32, u32)) func_80019F1C;
+    SubEngineTemplate.hook = (void (*)(subengine *, s32, u32)) draw_object;
     SubEngineTemplate.release = (void (*)(subengine *)) func_8001CC08;
     SubEngineTemplate.unk50 = 0;
     SubEngineTemplate.unk74 = 0;
@@ -635,7 +635,7 @@ void SetNasDefaults(void) {
     EngineTemplate.unk10.y = 0;
     EngineTemplate.unk10.x = 0;
     EngineTemplate.unk20 = 0;
-    EngineTemplate.render = func_8001C2C0;
+    EngineTemplate.render = eng_render_subs;
     EngineTemplate.unk1E = 0;
     EngineTemplate.unk1C = 0;
     EngineTemplate.unk5E = 1;
@@ -645,7 +645,7 @@ void SetNasDefaults(void) {
     EngineTemplate.unk2C.y = 0x1000;
     EngineTemplate.unk2C.x = 0x1000;
     EngineTemplate.num_subs = 0;
-    EngineTemplate.kill = func_8001D174;
+    EngineTemplate.kill = eng_release_subs_sfx;
     EngineTemplate.sub = NULL;
     EngineTemplate.last = NULL;
     EngineTemplate.OldXYZ.z = 0;
@@ -2069,7 +2069,7 @@ EXTengine *AddExtEngine(NAS *nas, s32 id) {
     if (eng != NULL) {
         nas->NASid |= 0x100;
         *eng = EngineTemplate;
-        if (func_8001D390(eng, 1) != 0) {
+        if (eng_add_subs_n(eng, 1) != 0) {
             prev = nas->Engine;
             if (prev == NULL) {
                 nas->Engine = eng;
@@ -2517,7 +2517,7 @@ void func_800272AC(s32 arg0) {
         ClearOTagR((u32 *)buf, 0x1000);
         *(s32 *)(buf + 0x4008) = *(s32 *)(buf + 0x4000);
     }
-    func_80017388();
+    prims_update();
 }
 
 void func_80027408(void) {

@@ -44,7 +44,6 @@ typedef struct Tmpl1C {
 } Tmpl1C;
 
 extern Tmpl1C D_800A0D44[];
-extern u8 D_8001C690[];
 extern u8 *D_800A001C[];
 
 void func_80094058(void);
@@ -144,7 +143,7 @@ typedef struct PlaceGameView {
 static inline void PlaceSprite(PlaceSub *s, s32 x, s32 y, s32 img, s32 clut) {
     if (s != NULL) {
         s->flags = 0x10008000;
-        s->hook = D_8001C448;
+        s->hook = posdst_flash;
         s->x = x;
         s->y = y;
         s->unk6C = img;
@@ -158,7 +157,7 @@ static inline void PlaceTmpl(PlaceSub *s, s32 x, s32 y, s32 z, s32 scale, s32 id
     if (s != NULL) {
         t = &D_800A0D44[idx];
         s->flags = t->f0 | 0x12008000;
-        s->hook = D_8001C690;
+        s->hook = draw_nas_model;
         if ((x & 0xC000) == 0x8000) {
             y = y * 640 / ScreenRect->w;
         }

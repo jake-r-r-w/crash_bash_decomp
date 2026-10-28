@@ -471,7 +471,7 @@ void ArkHeroEngineUpdate(s32 arg0) {
     if (e->unk5E != 0) {
         rotscale_update(&e->unk1C);
     }
-    func_8001CD04(e->sub, e->unk3C, &e->unk10);
+    gfx_load_xform(e->sub, e->unk3C, &e->unk10);
     r = func_80025A48(e, 1);
     if (r == NULL) goto next;
     {
@@ -1252,7 +1252,7 @@ void AR_InitHero(u32 arg0) {
     }
     e->unk5D = 0;
     s = h->hero_sub;
-    func_8001D390(e, 2);
+    eng_add_subs_n(e, 2);
     n = s->next;
     if (n != NULL) {
         n->unk6C = s->unk6C;
@@ -3363,7 +3363,7 @@ void InitBall(NAS *nas) {
                     i--;
                     ext--;
                 } while (i >= 0);
-                func_8001D390(e, 6);
+                eng_add_subs_n(e, 6);
                 for (sub = sub->next; sub != NULL; sub = sub->next) {
                     sub->unk51 = 0;
                     sub->unk50 = 1;
@@ -4687,7 +4687,7 @@ void Init_ArkDeadWall(NAS *nas)
             PlaySfx(0x591, &eng->sfx, 0, 0x1000, 0x1E00, 0);
         }
         ArkDeadWalls = 1;
-        func_80018F3C(eng, 5);
+        eng_add_subs(eng, 5);
         sub = eng->sub;
         off = 0;
         if (sub != 0) {
@@ -4756,7 +4756,7 @@ void Init_NGArkDeadWall(NAS *arg0) {
             PlaySfx(0x591, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
         }
         ArkDeadWalls = 1;
-        func_80018F3C(eng, 6);
+        eng_add_subs(eng, 6);
         sub = eng->sub;
         off = 0;
         if (sub != NULL) {
@@ -5217,7 +5217,7 @@ void Init_ArkLaserWall(NAS *nas)
         eng->unk5D = 2;
         eng->unk5E = 1;
         PlaySfx(0x5B7, &eng->sfx, 0, 0x1000, 0x1E00, 0);
-        func_80018F3C(eng, 5);
+        eng_add_subs(eng, 5);
         sub = eng->sub;
         off = 0;
         if (sub != 0) {
@@ -5363,7 +5363,7 @@ NAS *ArkHero2ObjectCollision(u32 arg0) {
         if (me->unk5E != 0) {
             rotscale_update(&me->unk1C);
         }
-        func_8001CD04(me->sub, me->unk3C, &me->unk10);
+        gfx_load_xform(me->sub, me->unk3C, &me->unk10);
         grab = fr;
     } else {
         grab = NULL;
@@ -5677,7 +5677,7 @@ void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
             if (eng->unk5E != 0) {
                 rotscale_update(&eng->unk1C);
             }
-            func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+            gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
             gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
         } else {
             sp10 = eng->unk10;
@@ -5733,7 +5733,7 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
             if (eng->unk5E != 0) {
                 rotscale_update(&eng->unk1C);
             }
-            func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+            gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
             gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
         } else {
             sp10 = eng->unk10;

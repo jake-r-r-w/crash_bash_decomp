@@ -1795,7 +1795,7 @@ void TA_InitHero(u32 player) {
     eng->unk10.x = (eng->unk10.x + 0x80) & ~0xFF;
     eng->unk10.z = (eng->unk10.z + 0x80) & ~0xFF;
     SetHeroAction(player, 0x6C);
-    func_80018F3C(eng, 2);
+    eng_add_subs(eng, 2);
     sub = eng->sub;
     eng->unk5D = 1;
     eng->unk1E = 0x400;
@@ -7256,7 +7256,7 @@ void InitMoeJoe(NAS *nas, s32 id) {
     ext = AddExt(nas, 0x38, 0x10000000);
     nas->FUX = (EXT *)ext;
     ext->Counter = 3;
-    func_80018F3C(eng, 2);
+    eng_add_subs(eng, 2);
     sub = eng->sub;
     s = sub->next;
     sub->unk51 = 1;
@@ -8686,7 +8686,7 @@ void InitPeriscope(NAS *nas) {
         s = eng->sub;
         s->flags = 0;
         s->unk6C = p;
-        if (func_80018F3C(eng, one) != 0) {
+        if (eng_add_subs(eng, one) != 0) {
             s = s->next;
             s->flags = 0;
             s->unk6C = *(void **)MapScene;
@@ -8952,7 +8952,7 @@ void InitSwirlyTA(NAS *nas) {
         sub->unk74 = 0x2038;
         sub->flags |= 0x20000000;
         eng->flags |= 0x21;
-        if (func_80018F3C(eng, 2) == 2) {
+        if (eng_add_subs(eng, 2) == 2) {
             sub = sub->next;
             sub->unk6C = TankObjectsModel;
             sub->unk74 = 0x2030;
@@ -9045,7 +9045,7 @@ void InitLaserBitTA(NAS *nas) {
     sub->unk6C = TankObjectsModel;
     sub->unk74 = 0x2021;
     eng->flags |= 0x21;
-    if (func_80018F3C(eng, 1) != 0) {
+    if (eng_add_subs(eng, 1) != 0) {
         sub = sub->next;
         sub->unk6C = TankObjectsModel;
         sub->unk74 = 0x2023;

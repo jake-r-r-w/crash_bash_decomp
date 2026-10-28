@@ -666,7 +666,7 @@ void N2OHeroEngineUpdate(s32 arg0) {
     if (e->unk5E != 0) {
         rotscale_update(&e->unk1C);
     }
-    func_8001CD04(e->sub, e->unk3C, &e->unk10);
+    gfx_load_xform(e->sub, e->unk3C, &e->unk10);
     r = func_80025A48(e, 1);
     if (r == NULL) goto next;
     {
@@ -735,7 +735,7 @@ void N2OInitHero(s32 i) {
     h = hb + i;
     eng->unk5D = 0;
     sub = h->hero_sub;
-    func_8001D390(eng, k);
+    eng_add_subs_n(eng, k);
     n = sub->next;
     if (n != NULL) {
         n->unk6C = sub->unk6C;
@@ -3240,7 +3240,7 @@ void InitN2ODeadWall(NAS *nas)
             PlaySfx(0x591, &eng->sfx, 0, 0x1000, 0x1E00, 0);
         }
         N2ODeadWallUp = 1;
-        func_80018F3C(eng, 5);
+        eng_add_subs(eng, 5);
         sub = eng->sub;
         off = 0;
         if (sub != 0) {
@@ -3415,7 +3415,7 @@ s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused) {
         if (me->unk5E != 0) {
             rotscale_update(&me->unk1C);
         }
-        func_8001CD04(me->sub, me->unk3C, &me->unk10);
+        gfx_load_xform(me->sub, me->unk3C, &me->unk10);
     }
     hy = Heroes[arg0].hero_eng->unk10.y;
     base = N2OHeroBoxes;
@@ -3738,7 +3738,7 @@ NAS *N2OBossPushObjects(void) {
             if (me->unk5E != 0) {
                 rotscale_update(&me->unk1C);
             }
-            func_8001CD04(me->sub, me->unk3C, &me->unk10);
+            gfx_load_xform(me->sub, me->unk3C, &me->unk10);
             r0 = rec->radius;
             gte_rotate_point((SVECTOR *)rec, (VECTOR *)&sp10);
             for (nas = HeadOfSolids; nas != NULL; nas = nas->Solid.Child) {

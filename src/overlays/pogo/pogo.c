@@ -3551,7 +3551,7 @@ spawn:
     }
     e->unk5E = 1;
     if (n >= 2) {
-        nas->UserInfo.flags = func_80018F3C(e, n - 1);
+        nas->UserInfo.flags = eng_add_subs(e, n - 1);
     }
     sub = e->sub;
     t = 0;
@@ -6126,7 +6126,7 @@ void Roo_FireRocket(EXTengine *eng) {
                 nas->UserInfo.status = angle;
                 sub->unk6C = PogoObjectsModel;
                 sub->unk74 = 0x200D;
-                func_80018F3C(e, 8);
+                eng_add_subs(e, 8);
                 for (s = sub->next; s != NULL; s = s->next) {
                     s->unk6C = PogoObjectsModel;
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
@@ -6209,7 +6209,7 @@ void Roo_FireProjectile(EXTengine *eng, s32 angle) {
                 nas->UserInfo.status = angle;
                 sub->unk6C = PogoObjectsModel;
                 sub->unk74 = 0x200D;
-                func_80018F3C(e, 8);
+                eng_add_subs(e, 8);
                 for (s = sub->next; s != NULL; s = s->next) {
                     s->unk6C = PogoObjectsModel;
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
@@ -6647,7 +6647,7 @@ void Create_PogoProjectile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
                 nas->UserInfo.flags = ((arg4 & 7) << 8) | 2;
                 sub->unk6C = PogoObjectsModel;
                 sub->unk74 = 0x200D;
-                func_80018F3C(e, 8);
+                eng_add_subs(e, 8);
                 for (s = sub->next; s != NULL; s = s->next) {
                     s->unk6C = PogoObjectsModel;
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
@@ -7604,19 +7604,19 @@ void POGOSetUp(void) {
     LevelSpecs.SpecTriggerFunc = 0;
     LevelSpecs.OnOffWindowTest = 0;
     LevelSpecs.GetContour = GetPogoContour;
-    func_8001E934(&MenuProcessControl, &PogoProcess);
+    process_control_init(&MenuProcessControl, &PogoProcess);
 }
 
 void pogo_kill(void) {
-    func_800183DC();
+    primpool_free();
 }
 
 void pogo_init(void) {
-    func_80018430(0x80);
+    primpool_init(0x80);
 }
 
 void psxpogo_init_tile_heap(s32 arg0) {
-    func_80018430(arg0 * 2);
+    primpool_init(arg0 * 2);
 }
 
 void psxpogo_init_tile(subengine *arg0) {
@@ -7630,7 +7630,7 @@ void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags) {
     POLY_GT4 *p1;
     GfxTexInfo *ti;
 
-    func_8001AA48(obj, arg1, flags);
+    draw_model_quad(obj, arg1, flags);
     p0 = obj->slots[0].prim;
     p1 = obj->slots[1].prim;
     if (p0 != NULL && p1 != NULL) {

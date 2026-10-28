@@ -923,7 +923,7 @@ void func_80020E9C(NAS *nas, u8 *arg1) {
             return;
         }
         saved = *(typeof(saved) *)RenderState.unk28;
-        func_8001965C(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+        gfx_setup_xform(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
         func_800201BC(sub, &s);
         *(typeof(saved) *)RenderState.unk28 = saved;
     }
@@ -1143,7 +1143,7 @@ void func_8002141C(u8 *arg0) {
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 12));
     if (temp_a0 != 0) {
-        func_8001D2B4(temp_a0, (*(s32*)((u8*)(arg0) + 16)));
+        subs_release(temp_a0, (*(s32*)((u8*)(arg0) + 16)));
         (*(s32*)((u8*)(arg0) + 12)) = 0;
     }
     temp_a0_2 = (*(s32*)((u8*)(arg0) + 20));
@@ -1202,7 +1202,7 @@ void func_80021604(u8 *arg0, u8 *arg1, s32 arg2) {
         *(s32 *)p = arg2;
         *(s32 *)(p + 0xC) = 0;
         *(s32 *)(p + 0x10) = 0;
-        *(s32 *)(p + 8) = func_8001D48C(p + 0xC, p + 0x10, *(s32 *)(e + 0x10));
+        *(s32 *)(p + 8) = subs_alloc_list(p + 0xC, p + 0x10, *(s32 *)(e + 0x10));
         q = *(u8 **)(p + 0xC);
         if (q != NULL) {
             do {
@@ -1255,7 +1255,7 @@ void func_80021708(u8 *arg0, u8 *arg1, s32 arg2) {
 }
 
 void render_entity_thread(script_thread_handler *th, geom_info *gi) {
-    func_80019F1C((u8 *)&th->type.entity.sub, gi->rot, th->type.entity.sub.flags);
+    draw_object((u8 *)&th->type.entity.sub, gi->rot, th->type.entity.sub.flags);
 }
 
 void func_80021798(u8 *arg0, u8 *arg1, s32 arg2) {
@@ -1345,7 +1345,7 @@ void func_80021940(s32 arg0, u8 *arg1, s32 arg2) {
 }
 
 void func_80021990(u8 *arg0, s32 *arg1) {
-    func_80019F1C(arg0 + 8, *arg1, (*(s32*)((u8*)(arg0) + 8)));
+    draw_object(arg0 + 8, *arg1, (*(s32*)((u8*)(arg0) + 8)));
 }
 
 s32 *func_800219B8(u8 *arg0, s32 arg1) {
@@ -1615,7 +1615,7 @@ void scripts_render(void) {
         if (var_s0 == NULL) {
             break;
         }
-        s.a = func_8001ACC0(var_s0 + 0x1C);
+        s.a = gfx_object_matrix(var_s0 + 0x1C);
         s.b = s.a + 0x14;
         s.c = *(u16 *)&gs->unk28[0];
         s.d = *(u16 *)&gs->unk28[4];

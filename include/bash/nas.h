@@ -279,7 +279,7 @@ struct EXTengtype {
     /* 0x22 */ u8 unk22[0x2C - 0x22];
     /* 0x2C */ SLONG_XYZ unk2C;
     /* 0x38 */ u8 unk38[0x3C - 0x38];
-    /* 0x3C */ u8 unk3C[0x5C - 0x3C];   /* passed to func_8001CD04 (GTE setup) */
+    /* 0x3C */ u8 unk3C[0x5C - 0x3C];   /* passed to gfx_load_xform (GTE setup) */
     /* 0x5C */ u8 unk5C;
     /* 0x5D */ u8 unk5D;
     /* 0x5E */ u16 unk5E;
@@ -299,9 +299,9 @@ struct EXTengtype {
 BASH_SIZE_CHECK(EXTengine, 0x9C);
 
 /* A node of an engine's subengine chain (EXTengine.sub .. last, linked
- * through next/prev). They come from one pool: func_80018F3C moves n of them
+ * through next/prev). They come from one pool: eng_add_subs moves n of them
  * from the free list (next_sub) onto an engine, copying the 0xA8-byte
- * template SubEngineTemplate over each; func_8001D174 returns them. Pogo's
+ * template SubEngineTemplate over each; eng_release_subs_sfx returns them. Pogo's
  * PogoSquare.sub (subengine * in the leak) points at these nodes. The
  * prototype fragment names the type but does not define it. */
 struct subengine {

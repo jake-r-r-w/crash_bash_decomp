@@ -1440,11 +1440,11 @@ void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
     } else if (d < 0x2000) {
         arg0->pos += 0x400;
     }
-    func_8001E21C(arg0->keys, arg0->pos, &pt);
+    key_interp_pos(arg0->keys, arg0->pos, &pt);
     arg1->eng->unk10.x += (pt.x - arg1->eng->unk10.x) >> 4;
     arg1->eng->unk10.z += (pt.z - arg1->eng->unk10.z) >> 4;
     arg1->eng->unk10.y += (pt.y - arg1->eng->unk10.y) >> 4;
-    p = (s32 *)func_8001E41C(arg0->keys, arg0->pos);
+    p = (s32 *)key_find(arg0->keys, arg0->pos);
     out = ang;
     if (p[5] & 0x2000) {
         p -= 7;
@@ -1482,7 +1482,7 @@ void InitNitroBoss(NAS *nas) {
         scene = MapScene;
         p = scene->unk2C;
         ext->keys = (KeyBlock *)(p + (*(s32 *)(p + 4) + 4));
-        func_8001E21C(ext->keys, ext->unk14, &nas->Engine->unk10);
+        key_interp_pos(ext->keys, ext->unk14, &nas->Engine->unk10);
         ext->unk18 = 0;
         ext->unk1C = 0;
         ext->unk20 = 0;
@@ -1535,7 +1535,7 @@ void PlotNitroBoss(NAS *nas) {
     switch (ext->unk18) {
     case 0:
         NoxBossFollowPath((BossPath *)ext, (BossObj *)nas);
-        k = ((u16 *)func_8001E41C(ext->keys, ext->unk14))[0xB];
+        k = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
         if (k == 2) {
             ext->unk18 = 1;
         }
@@ -1601,7 +1601,7 @@ void PlotNitroBoss(NAS *nas) {
             }
             ext->unk1C = 0x1E;
         }
-        k2 = ((u16 *)func_8001E41C(ext->keys, ext->unk14))[0xB];
+        k2 = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
         if (k2 == 3) {
             ext->unk18 = 0;
         }
@@ -1617,7 +1617,7 @@ void PlotNitroBoss(NAS *nas) {
             CreateNAS(e2->unk10.x, e2->unk10.y, e2->unk10.z, 0x1C05, 0x11);
             ext->unk20 = 3;
         }
-        k3 = ((u16 *)func_8001E41C(ext->keys, ext->unk14))[0xB];
+        k3 = ((u16 *)key_find(ext->keys, ext->unk14))[0xB];
         if (k3 == 3) {
             ext->unk18 = 0;
         }
@@ -2325,7 +2325,7 @@ void NoxInitCamera(s32 arg0) {
     NoxCamera.unk38 = 0;
     NoxCamera.unk40 = 0;
     func_80093038();
-    func_80018B08(&GameViewport, (GfxCamera *)&NoxCamera);
+    gfx_set_viewport(&GameViewport, (GfxCamera *)&NoxCamera);
     RenderState.modelDp = ScreenFade.amount;
     func_8009440C();
 }
@@ -2411,7 +2411,7 @@ void NoxInit(void) {
     NAS *nas;
     u8 *arg;
 
-    func_8001E0A8((u8 *)MapScene);
+    mapscene_place_subs((u8 *)MapScene);
     NoxInitAsteroids();
     NoxUpdateAsteroids();
     nas = CreateNAS(0, 0, 0, 0x1625, 0x11);

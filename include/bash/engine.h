@@ -83,7 +83,7 @@ extern u16 Clock_last_ping;
 extern s16 D_80099194;
 extern s32 D_80099700[];
 extern s32 D_8009AE78;
-extern u8 D_8001C7FC[];
+void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags);
 typedef struct EngineBox {
     s32 unk0;
     u8 pad4[0x50];
@@ -98,7 +98,6 @@ extern u16 Trophy_Cups;
 extern process_control_info ProcessControl;
 extern u8 D_8009FA14[];
 extern process_control_info LoadingControl;
-extern u8 D_8001C448[];
 extern EXTengine EnginePool[];
 extern HeroInfo Heroes[4];
 typedef struct HeroActionEntry {
@@ -147,7 +146,7 @@ extern s32 SaveMenuState;
 /* func_800936C4's level setup config (D_8005A5E4, or D_8009F96C if unset). */
 typedef struct EngineCfg {
     /* 0x00 */ u8 unk0[0xC];
-    /* 0x0C */ s32 pools[3];       /* func_80017164 */
+    /* 0x0C */ s32 pools[3];       /* prims_init */
     /* 0x18 */ VramArea *areas;    /* func_80028774 */
     /* 0x1C */ FreeNode *pool;
     /* 0x20 */ s32 npool;

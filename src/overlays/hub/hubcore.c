@@ -69,7 +69,7 @@ void InitialiseHUB(void) {
     }
     HubCamTarget();
     HubSelectSfx = 0;
-    func_8001E934(&MenuProcessControl, &HubDoorMenu);
+    process_control_init(&MenuProcessControl, &HubDoorMenu);
 }
 
 /* the strings (const arrays keep their retail order among the jump tables; data2c.py) */
@@ -738,8 +738,8 @@ void HubLevelSelect(void) {
     case 2:
         p = &ScreenFade;
         if (p->maxed >= 3) {
-            func_8001DDD8(MapScene);
-            func_8001E054(MapScene, HubSelectTimer);
+            mapscene_release(MapScene);
+            mapscene_load(MapScene, HubSelectTimer);
             g->unk62 = HubSelectFlag;
             g->unk34 = base[g->unk62][0];
             InitialiseHUB();
@@ -858,8 +858,8 @@ void PlotPathEffect(NAS *nas) {
     nas->Engine->unk5E = 1;
     switch (ext->state) {
     case 0:
-        func_8001E21C(ext->path, ext->pos, &nas->Engine->unk10);
-        old = func_8001E41C(ext->path, 0);
+        key_interp_pos(ext->path, ext->pos, &nas->Engine->unk10);
+        old = key_find(ext->path, 0);
         ext->key = old;
         if (ext->kind < 3) {
             ext->keyFlags = old->flags;
@@ -890,8 +890,8 @@ void PlotPathEffect(NAS *nas) {
         } else {
             ext->pos = ext->pos - ext->speed;
         }
-        func_8001E21C(ext->path, ext->pos, &nas->Engine->unk10);
-        k = func_8001E41C(ext->path, ext->pos);
+        key_interp_pos(ext->path, ext->pos, &nas->Engine->unk10);
+        k = key_find(ext->path, ext->pos);
         if (ext->dir == 0) {
             type = ((u16 *)&k->flags)[1];
             ext->key = k;
@@ -1044,7 +1044,7 @@ void HubPathAngles(s32 *arg0, s32 flag, s32 *out) {
 }
 
 void HubInitLevelSelect(void) {
-    HubSelectSub = func_8001DCD4(1, 0x14);
+    HubSelectSub = mapscene_find_sub(1, 0x14);
     HubSelectState = 0;
     HubSelectedEntry = -1;
 }
@@ -1079,18 +1079,18 @@ void HubDoorMenu2Quit(void) {
 void HubDoorMenu2Render(void) {
     EXTengine *e;
 
-    func_80018B08(&MainViewport, &MainGfxCamera);
+    gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
             e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
-            func_8001C2C0((u8 *)GetEngineSlot(1));
+            eng_render_subs((u8 *)GetEngineSlot(1));
         }
     }
     if (HubDoorFade != 0 && !(GamePause & 1)) {
-        func_8001C2C0((u8 *)GetEngineSlot(2));
+        eng_render_subs((u8 *)GetEngineSlot(2));
     }
 }
 
@@ -1105,18 +1105,18 @@ void HubDoorMenu2Init(void) {
 void HubDoorMenuRender(void) {
     EXTengine *e;
 
-    func_80018B08(&MainViewport, &MainGfxCamera);
+    gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     if (HubDoorChoice >= 0) {
         if (!(GamePause & 1)) {
             e = GetEngineSlot(1);
             e->flags |= 0x8000;
             e->unk10.y = 0x1D6 - (HubDoorFade >> 5);
-            func_8001C2C0((u8 *)GetEngineSlot(1));
+            eng_render_subs((u8 *)GetEngineSlot(1));
         }
     }
     if (HubDoorFade != 0 && !(GamePause & 1)) {
-        func_8001C2C0((u8 *)GetEngineSlot(2));
+        eng_render_subs((u8 *)GetEngineSlot(2));
     }
 }
 
@@ -1871,7 +1871,7 @@ void PodiumCamera(CamView *out, s32 arg1) {
         PodiumCamAt = *(CamXYZ *)(o + 0x30);
         PodiumCamTimer = t;
     }
-    func_8001E21C((KeyBlock *)o, PodiumCamTimer, &key);
+    key_interp_pos((KeyBlock *)o, PodiumCamTimer, &key);
     PodiumCamAt.x += (*(s32 *)(o + 0x30) - PodiumCamAt.x) >> 4;
     PodiumCamAt.y += (*(s32 *)(o + 0x34) - PodiumCamAt.y) >> 4;
     PodiumCamAt.z += (*(s32 *)(o + 0x38) - PodiumCamAt.z) >> 4;
@@ -1979,7 +1979,7 @@ void InitSparkGFX(NAS *arg0) {
     arg0->UserInfo.user1 = 0;
     arg0->Engine->unk5D = 0;
     arg0->Engine->unk5C = 1;
-    if (func_80018F3C(arg0->Engine, 12) != 12 || func_80015D70((u8 *)&HubSparkFxDef, (u8 *)arg0->Engine->sub) == 0) {
+    if (eng_add_subs(arg0->Engine, 12) != 12 || func_80015D70((u8 *)&HubSparkFxDef, (u8 *)arg0->Engine->sub) == 0) {
         KillNAS(arg0);
         return;
     }
@@ -2351,7 +2351,7 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
         if (k >= 2) {
             e = nas->Engine;
             if (e != NULL) {
-                func_80018F3C(e, 1);
+                eng_add_subs(e, 1);
                 s = e->sub;
                 if (s != NULL && (s = s->next, s != NULL)) {
                     s->unk6C = &D_8005572C;
@@ -2369,8 +2369,8 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
 
 void PodiumRenderScene(void) {
     func_8009440C();
-    func_80018B08(&MainViewport, &MainGfxCamera);
-    func_8001C2C0(GetEngineSlot(6));
+    gfx_set_viewport(&MainViewport, &MainGfxCamera);
+    eng_render_subs(GetEngineSlot(6));
 }
 
 void UpdatePodium(void) {
@@ -2531,7 +2531,7 @@ void HubSaveMenuInit(void) {
     HubNamePage = 0;
     i = 0;
     kill_subs(HubNameEngine.sub);
-    func_8001D3B0(&HubNameEngine, 0x21, HubNameSubs);
+    subs_init_array(&HubNameEngine, 0x21, HubNameSubs);
     s = HubNameSubs;
     list = (SubInitList *)HubNamePages;
     p = list->items;
@@ -2572,7 +2572,7 @@ void HubSaveMenuRender(void) {
     s32 *p;
     EXTengine *e;
 
-    func_80018B08(&HubSaveViewport, (GfxCamera *)HubSaveCamera);
+    gfx_set_viewport(&HubSaveViewport, (GfxCamera *)HubSaveCamera);
     RenderState.modelDp = ScreenFade.amount;
     e = GetEngineSlot(0);
     i = 0;
@@ -2588,9 +2588,9 @@ void HubSaveMenuRender(void) {
         p += 0x2A;
         i++;
     } while (i < 8);
-    func_8001C2C0((u8 *)GetEngineSlot(0));
-    func_8001C2C0((u8 *)GetEngineSlot(1));
-    func_8001C2C0((u8 *)&HubNameEngine);
+    eng_render_subs((u8 *)GetEngineSlot(0));
+    eng_render_subs((u8 *)GetEngineSlot(1));
+    eng_render_subs((u8 *)&HubNameEngine);
 }
 
 void HubSaveMenuQuit(void) {
@@ -2631,7 +2631,7 @@ void HubSaveMenuSubs(SubInitList *list) {
     kill_subs(HubNameEngine.sub);
     do {
         i = 0;
-        func_8001D3B0(&HubNameEngine, 0x21, HubNameSubs);
+        subs_init_array(&HubNameEngine, 0x21, HubNameSubs);
     } while (0);
     s = HubNameSubs;
     HubNameEngine.unk10.x = 0xC4;
@@ -2762,12 +2762,12 @@ void HubDrawObj(HubRenderObj *obj, void *arg1) {
     c = obj->sub->unkC;
     if ((obj->flags & 0x8000) && c != 0) {
         saved = RenderState.ot;
-        func_8001D894(obj, arg1, obj->flags, c);
+        draw_map_object(obj, arg1, obj->flags, c);
         RenderState.ot = (u32 *)(HubOtBuffer + ((FrameCount & 1) << 14));
         ClearOTagR(RenderState.ot, 0x138);
         obj->flags |= 0x2000000;
         obj->unk68 = -0x170;
-        func_80019A60(obj->unk74, (u8 *)c, obj->flags, obj);
+        draw_object_model(obj->unk74, (u8 *)c, obj->flags, obj);
         HubProjectObj(obj, sp10);
         d = sp10[3];
         y = sp10[1];

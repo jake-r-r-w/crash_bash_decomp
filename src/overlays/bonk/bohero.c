@@ -331,7 +331,7 @@ s32 BonkHeroKickCollision(s32 arg0) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
                 }
-                func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+                gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
                 lo2 = eng->unk10.y + box->unk2;
                 hi2 = eng->unk10.y + box->height;
                 if (lo2 < hi2) {

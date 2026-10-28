@@ -8,110 +8,110 @@
 #include "common.h"
 #include "bash/main.h"
 
-void func_8001828C(void);
-void func_800184D4(u8 * *arg0);
-s32 *func_80018570(u8 *arg0);
-s32 *func_800185F8(u8 *arg0);
-void func_80018728(s32 arg0, s32 arg1);
-void func_80018764(s32 *arg0);
-void func_8001888C(void);
-void func_800189E0(u8 *arg0);
-void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
-void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
-void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
-void func_8001CD04(void *arg0, void *arg1, void *arg2);
-void func_80019A60(s32 a, u8 *set, s32 c, void *d);
-void func_8001C2C0(u8 *arg0);
+void primpool_release_all(void);
+void primset_invalidate(u8 * *arg0);
+s32 *primlist_pop(u8 *arg0);
+s32 *primlist_pop_b(u8 *arg0);
+void faces_write_uvs_colors(s32 arg0, s32 arg1);
+void primnodes_free(s32 *arg0);
+void prims_empty(void);
+void primlist_clear(u8 *arg0);
+void morph_light_colors(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
+void morph_blend_verts(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
+void gfx_setup_xform(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
+void gfx_load_xform(void *arg0, void *arg1, void *arg2);
+void draw_object_model(s32 a, u8 *set, s32 c, void *d);
+void eng_render_subs(u8 *arg0);
 void kill_sprim_sub(subengine *arg0);
-void func_8001AA48(ModelObj *obj, void *arg1, s32 flags);
+void draw_model_quad(ModelObj *obj, void *arg1, s32 flags);
 void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode);
 void prim_create_entity_single(u8 *face, POLY_GT4 *poly);
-void func_8001CBD4(u32 arg0);
+void calc_rgbcode_packed(u32 arg0);
 void func_8001CC08(void);
-void func_8001D174(EXTengine *eng);
-void func_8001D220(EXTengine *eng);
-void func_8001D2B4(subengine *first, subengine *last);
+void eng_release_subs_sfx(EXTengine *eng);
+void eng_release_subs(EXTengine *eng);
+void subs_release(subengine *first, subengine *last);
 void kill_subs(subengine *first);
-s32 func_80018F3C(EXTengine *eng, s32 n);
-s32 func_8001D390(EXTengine *eng, s32 n);
-void func_8001D604(void);
+s32 eng_add_subs(EXTengine *eng, s32 n);
+s32 eng_add_subs_n(EXTengine *eng, s32 n);
+void subpool_free(void);
 void map_update(s32 *arg0);
-void func_8001DDD8(u8 *arg0);
+void mapscene_release(u8 *arg0);
 void map_loaded_textureset(u8 *arg0, u8 * *arg1);
-void func_8001E054(u8 *arg0, s32 arg1);
+void mapscene_load(u8 *arg0, s32 arg1);
 void set_fade(fade_info *fade, s32 speed, s32 delay);
-void func_8001E824(process_control_info *pc);
+void process_control_back(process_control_info *pc);
 void process_interrupt(process_control_info *pc, process_info *process);
-void func_8001E848(process_control_info *pc, process_info *process);
-void func_8001E898(process_control_info *pc);
-void func_8001E934(process_control_info *pc, process_info *process);
-void func_8001E948(void);
-void func_8001C270(EXTengine *eng);
-void func_80017388(void);
+void process_control_goto(process_control_info *pc, process_info *process);
+void process_control_render(process_control_info *pc);
+void process_control_init(process_control_info *pc, process_info *process);
+void prims_empty_and_compact(void);
+void eng_kill(EXTengine *eng);
+void prims_update(void);
 void func_8001A6D4(void *arg0, u32 hidden);
-s32 func_8001A0D8(void *arg0, u32 flags);
+s32 draw_gouraud_quad(void *arg0, u32 flags);
 void *func_80019094(void *arg0, s32 arg1);
-s32 func_8001AF2C(void *arg0);
+s32 bbox_visible(void *arg0);
 void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
-void func_80017164(s32 *cfg);
+void prims_init(s32 *cfg);
 void map_loaded_geo();
-void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub);
-void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
-void func_8001D048(SVECTOR *v, POLY_GT4 *poly);
-u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags);
-void func_8001C690(NAS *nas, u8 *arg1);
-void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2);
+void subs_init_array(EXTengine *eng, s32 n, subengine *sub);
+void morph_light_colors(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
+void project_quad(SVECTOR *v, POLY_GT4 *poly);
+u32 draw_nas_model_ret(NAS *nas, u8 *arg1, u32 flags);
+void draw_nas_model(NAS *nas, u8 *arg1);
+void *draw_morph_model(MorphModel *model, void *arg1, s32 arg2);
 void process_quit(process_control_info *pc);
 void process_init(process_control_info *pc);
-s32 func_8001E598(fade_info *fade);
-subengine *func_8001DCD4(s32 i, s32 val);
+s32 fade_update(fade_info *fade);
+subengine *mapscene_find_sub(s32 i, s32 val);
 void *new_sprim(void);
 void release_sprim(void *data);
-void func_800183DC(void);
-void func_8001C298(EXTengine *eng);
-subengine *func_8001C34C(s32 n, subengine *sub);
+void primpool_free(void);
+void eng_render(EXTengine *eng);
+subengine *sub_nth(s32 n, subengine *sub);
 void draw_init(void);
-s32 func_8001DD20(s32 *arg0);
-void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2);
-void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2);
-void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2);
-void func_8001830C(void);
-s32 *func_800184F0(s32 arg0, s32 *arg1, s32 arg2, s32 arg3);
-void func_8001C3D0(u8 *arg0);
-void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2);
-void func_8001C584(PosDst *arg0, s32 arg1);
-s32 func_8001CC10(void *arg0, s32 arg1);
-void func_8001D640(s32 n);
+s32 rel_ptr(s32 *arg0);
+void draw_model_set_entry(s32 arg0, ModelSet *set, s32 arg2);
+void draw_map_entity(u16 arg0, u8 *arg1, s32 arg2);
+void draw_text_nas(TextNAS *t, s32 arg1, s32 arg2);
+void primpool_age(void);
+s32 *primnode_alloc(s32 arg0, s32 *arg1, s32 arg2, s32 arg3);
+void sub_use_quad_model(u8 *arg0);
+void posdst_flash(PosDst *arg0, s32 arg1, s32 arg2);
+void posdst_flash_at(PosDst *arg0, s32 arg1);
+s32 sub_alloc_prims(void *arg0, s32 arg1);
+void subpool_init(s32 n);
 void draw_map_sub(void *arg0, void *arg1);
-void func_8001DEF4(s32 *arg0, s32 *arg1);
-KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1);
+void mapscene_init(s32 *arg0, s32 *arg1);
+KeyEntry *key_find(KeyBlock *arg0, s32 arg1);
 s32 path_find(u32 arg0);
-void func_80018430(s32 count);
-s32 *func_80018694(s32 * *arg0, s32 arg1);
-void func_800187D4(ListNode18938 *arg0, s32 arg1);
-void func_80018938(ListNode18938 *arg0, s32 arg1);
-void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
-void *func_8001CF50(ModelEntry *e, s32 arg1);
+void primpool_init(s32 count);
+s32 *primset_alloc(s32 * *arg0, s32 arg1);
+void primlist_reset(ListNode18938 *arg0, s32 arg1);
+void primlist_release(ListNode18938 *arg0, s32 arg1);
+void morph_copy_verts(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
+void *draw_model_entry(ModelEntry *e, s32 arg1);
 s32 *path_get(u32 arg0);
 void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2);
-void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3);
-MATRIX *func_8001ACC0(GfxXform *obj);
-s32 func_8001D48C(subengine * *out_first, subengine * *last, s32 n);
+void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3);
+MATRIX *gfx_object_matrix(GfxXform *obj);
+s32 subs_alloc_list(subengine * *out_first, subengine * *last, s32 n);
 u8 *tga_convert(u8 *arg0, s32 w, s32 h);
-void func_80017640(void);
-void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
-void func_80017D90(FaceRuns *faces, FacePrim *prim);
-void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2);
+void prims_empty_back(void);
+void faces_write_colors_dq(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
+void faces_write_colors(FaceRuns *faces, FacePrim *prim);
+void draw_object(u8 *arg0, u8 *arg1, s32 arg2);
 void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
-void func_8001E0A8(u8 *arg0);
-FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4);
-void func_80018B08(GfxViewport *vp, GfxCamera *cam);
-void func_8001DAF8(GfxScene *scene);
-void func_8001D6B4(MapEnvHead *env);
-s32 func_8001B6D4(SVECTOR *v);
-void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
-KeyEntry *func_8001E21C(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
-void func_8001E610(process_control_info *pc, fade_info *fade);
+void mapscene_place_subs(u8 *arg0);
+FacePrim *face_prim_alloc(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4);
+void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam);
+void draw_map_scene(GfxScene *scene);
+void mapenv_place_subs(MapEnvHead *env);
+s32 tri_visible(SVECTOR *v);
+void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags);
+KeyEntry *key_interp_pos(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
+void process_control_update(process_control_info *pc, fade_info *fade);
 
 
 
@@ -119,7 +119,7 @@ void func_8001E610(process_control_info *pc, fade_info *fade);
 
 
 
-/* Adds v to the translation GfxState.unk88 points at (func_8001965C). */
+/* Adds v to the translation GfxState.unk88 points at (gfx_setup_xform). */
 static inline void GfxAddTrans(VECTOR *v) {
     ((VECTOR *)RenderState.unk88)->vx += v->vx;
     ((VECTOR *)RenderState.unk88)->vy += v->vy;
@@ -127,7 +127,7 @@ static inline void GfxAddTrans(VECTOR *v) {
 }
 
 /* Copies a scene's background into the current viewport, faded by modelDp
- * (func_8001DAF8). */
+ * (draw_map_scene). */
 static inline void GfxSetSceneBg(GfxState *gs, GfxScene *scene) {
     GfxViewport *vp;
 
@@ -161,7 +161,7 @@ static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
     cam_build_view((u8 *)cam, &clip);
 }
 
-/* func_80019A60: draw model entry e with vertices v. */
+/* draw_object_model: draw model entry e with vertices v. */
 static inline void ModelEntry_Draw(u8 *e, s32 c, SVECTOR *v) {
     void *p = func_80019094(e, c);
 
@@ -170,7 +170,7 @@ static inline void ModelEntry_Draw(u8 *e, s32 c, SVECTOR *v) {
     }
 }
 
-/* Takes the node at the cursor fC of a list (func_800185F8's code). */
+/* Takes the node at the cursor fC of a list (primlist_pop_b's code). */
 static inline s32 *ListNode18938_Take(ListNode18938 *l) {
     s32 *n;
     s32 **tail;
@@ -214,7 +214,7 @@ static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, L
             list->fC = next;
             set = (PrimSet *)n[1];
         } else {
-            set = (PrimSet *)func_800180BC((s32)set, list, pool, (FaceRuns *)faces, flag);
+            set = (PrimSet *)face_prim_alloc((s32)set, list, pool, (FaceRuns *)faces, flag);
         }
     } else {
         n = list->fC;
@@ -223,13 +223,13 @@ static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, L
             list->f10 = (s32 **)n;
             set = (PrimSet *)(n + 1);
         } else {
-            set = (PrimSet *)func_800184F0((s32)set, (s32 *)list, (s32)pool, (s32)faces);
+            set = (PrimSet *)primnode_alloc((s32)set, (s32 *)list, (s32)pool, (s32)faces);
         }
     }
     return (FacePrim *)set;
 }
 
-/* func_8001D6B4: reuse the map's subengine array or allocate it. */
+/* mapenv_place_subs: reuse the map's subengine array or allocate it. */
 static inline subengine *MapEnv_GetSubs(MapEnvHead *env) {
     subengine *sub;
     subengine *t;

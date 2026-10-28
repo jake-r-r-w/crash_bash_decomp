@@ -157,7 +157,7 @@ void func_8008EAC8(void) {
         dbase_release((u8 *)D_800AEC5C);
     }
     func_80021FB0();
-    func_8001D604();
+    subpool_free();
     f = FrameCount;
     a = &ScreenRect[f & 1];
     r = &ScreenRect[(f + 1) & 1];
@@ -165,7 +165,7 @@ void func_8008EAC8(void) {
 }
 
 void func_8008EB3C(void) {
-    func_80018B08(D_8009E498, MainCamera);
+    gfx_set_viewport(D_8009E498, MainCamera);
     if (D_800AEC5C != 0) {
         func_8009440C();
     }
@@ -180,7 +180,7 @@ void func_8008EB8C(void) {
     func_8001E984(0x20, 0x80);
     D_8009E5B0 = -1;
     D_8009E5B4 = 0;
-    func_8001D640(0x200);
+    subpool_init(0x200);
     cam_init(MainCamera);
     FirstBootDone = 1;
 }
@@ -457,7 +457,7 @@ void func_8008F554(void) {
     func_8008F084();
     if (D_8009EB98 != 0) {
         D_8009EB98--;
-        func_80017640();
+        prims_empty_back();
         mal_compact_step((u8 *)&MainHeap);
     }
     if (Pads[0].pressed & 0x80) {
@@ -518,22 +518,22 @@ void func_8008F554(void) {
 }
 
 void func_8008FB48(void) {
-    func_80018B08(&D_8009EA9C, &TitlesCamera);
+    gfx_set_viewport(&D_8009EA9C, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(3));
-    func_80018B08(&D_8009EAC4, &TitlesCamera);
+    eng_render_subs((u8 *)GetEngineSlot(3));
+    gfx_set_viewport(&D_8009EAC4, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(4));
-    func_80018B08(&D_8009EAEC, &TitlesCamera);
+    eng_render_subs((u8 *)GetEngineSlot(4));
+    gfx_set_viewport(&D_8009EAEC, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(5));
-    func_80018B08(&D_8009EB14, &TitlesCamera);
+    eng_render_subs((u8 *)GetEngineSlot(5));
+    gfx_set_viewport(&D_8009EB14, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(6));
+    eng_render_subs((u8 *)GetEngineSlot(6));
     RenderTitlesBackdropAndMenu();
-    func_80018B08(&D_8009EA74, &TitlesCamera);
+    gfx_set_viewport(&D_8009EA74, &TitlesCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(2));
+    eng_render_subs((u8 *)GetEngineSlot(2));
 }
 
 void func_8008FC58(void) {
@@ -872,7 +872,7 @@ void func_80090A10(void) {
                 e = GetEngineSlot(1);
                 e->sub[1].unk6C = D_8009EFCC[*(s32 *)((g = GameInfo) + 0x2C)];
                 GetEngineSlot(1)->sub->unk6C = D_8009EFD8[*(s32 *)(g + 0x2C)];
-                func_8001C2C0((u8 *)GetEngineSlot(1));
+                eng_render_subs((u8 *)GetEngineSlot(1));
                 return;
             } else if (CardStatus & 0x10) {
                 func_8009196C();
@@ -912,7 +912,7 @@ void func_80090A10(void) {
                     GetEngineSlot(1)->sub[1].unk6C = D_8009EFD4[GameLanguage];
                 }
                 GetEngineSlot(1)->sub->unk6C = D_8009EFD8[GameLanguage];
-                func_8001C2C0((u8 *)GetEngineSlot(1));
+                eng_render_subs((u8 *)GetEngineSlot(1));
                 return;
             }
         }
@@ -922,7 +922,7 @@ void func_80090A10(void) {
             e->sub[1].unk6C = D_8009EFDC[*(s32 *)((q = GameInfo) + 0x2C)];
             GetEngineSlot(1)->sub->unk6C = D_8009EFD8[*(s32 *)(q + 0x2C)];
         }
-        func_8001C2C0((u8 *)GetEngineSlot(1));
+        eng_render_subs((u8 *)GetEngineSlot(1));
         break;
     case 1:
         if (loader_pending() == 0) {
@@ -1209,7 +1209,7 @@ void func_800917B4(void) {
     subengine *s;
     s32 v;
 
-    func_80018B08(&SaveBackViewport, &SaveBackCamera);
+    gfx_set_viewport(&SaveBackViewport, &SaveBackCamera);
     e = GetEngineSlot(8);
     s = e->sub;
     s->unk14 = FrameCount * 20;
@@ -1220,8 +1220,8 @@ void func_800917B4(void) {
     s->unk52 = 1;
     s->unk51 = 0;
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)e);
-    func_80018B08(&SaveViewport, &SaveCamera);
+    eng_render_subs((u8 *)e);
+    gfx_set_viewport(&SaveViewport, &SaveCamera);
     switch (D_8009F630) {
     case 0:
         if (Pads[0].pressed & 0xF0) {
@@ -1287,12 +1287,12 @@ void func_8009196C(void) {
     e2->unk10.y = e->unk10.y;
     e2->unk10.x = e->unk10.x;
     RenderState.modelDp = ScreenFade.amount;
-    func_8001C2C0((u8 *)GetEngineSlot(4));
-    func_8001C2C0((u8 *)GetEngineSlot(5));
-    func_8001C2C0((u8 *)GetEngineSlot(6));
-    func_8001C2C0((u8 *)GetEngineSlot(7));
-    func_8001C2C0((u8 *)GetEngineSlot(3));
-    func_8001C2C0((u8 *)GetEngineSlot(2));
+    eng_render_subs((u8 *)GetEngineSlot(4));
+    eng_render_subs((u8 *)GetEngineSlot(5));
+    eng_render_subs((u8 *)GetEngineSlot(6));
+    eng_render_subs((u8 *)GetEngineSlot(7));
+    eng_render_subs((u8 *)GetEngineSlot(3));
+    eng_render_subs((u8 *)GetEngineSlot(2));
     switch (D_8009F630) {
     case 2:
         {
@@ -1467,9 +1467,9 @@ void func_80092404(void) {
     func_80095A04(6);
     func_80095A04(7);
     func_80095A04(8);
-    func_80017640();
-    func_8001888C();
-    func_800183DC();
+    prims_empty_back();
+    prims_empty();
+    primpool_free();
 }
 
 void func_8009246C(void) {
@@ -1689,7 +1689,7 @@ void func_800928E8(void) {
     g = GameInfo;
     *(s32 *)(g + 4) = 0x80000000;
     func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
-    func_80017164(cfg->pools);
+    prims_init(cfg->pools);
     dbase_init_all();
     func_80095DBC();
     D_8004E0D4 = 0;
@@ -1708,7 +1708,7 @@ void func_800928E8(void) {
 
 void func_800929D8(void) {
     ProcessControl.process = NULL;
-    func_8001E934(&ProcessControl, NULL);
+    process_control_init(&ProcessControl, NULL);
     func_800928E8();
     ScreenFade.amount = 0x1000;
     ScreenFade.maxed = 3;
@@ -1716,9 +1716,9 @@ void func_800929D8(void) {
     SetDispMask(1);
     FirstBootDone = 1;
     func_80092AF4(&LevelLoadProcess, 0x200);
-    func_8001E598(&ScreenFade);
-    func_8001E610(&ProcessControl, &ScreenFade);
-    func_8001E898(&ProcessControl);
+    fade_update(&ScreenFade);
+    process_control_update(&ProcessControl, &ScreenFade);
+    process_control_render(&ProcessControl);
     if (ProcessControl.process != NULL) {
         if (ProcessControl.process->quit != NULL) {
             ProcessControl.process->quit();
@@ -1751,17 +1751,17 @@ void func_80092B40(void) {
 }
 
 void func_80092B7C(void) {
-    func_8001E898(&ProcessControl);
+    process_control_render(&ProcessControl);
 }
 
 void func_80092BA0(void) {
-    func_8001E598(&ScreenFade);
-    func_8001E610(&ProcessControl, &ScreenFade);
+    fade_update(&ScreenFade);
+    process_control_update(&ProcessControl, &ScreenFade);
 }
 
 void func_80092BDC(void) {
     ProcessControl.process = NULL;
-    func_8001E934(&ProcessControl, NULL);
+    process_control_init(&ProcessControl, NULL);
     func_800928E8();
     ScreenFade.amount = 0x1000;
     ScreenFade.maxed = 3;
@@ -1801,7 +1801,7 @@ void func_80092CAC(void) {
     if (func_8007A5E8((u8 *)g) >= 0x19 && g->unkE0 < 2) {
         g->unkE0 = 2;
     }
-    func_80017640();
+    prims_empty_back();
     mal_compact(&MainHeap);
     FirstBootDone = 0;
     if (GameExitFlags & 0x200) {
@@ -1817,8 +1817,8 @@ void func_80092E40(void) {
     func_8007AB28();
     sfx_delete_all();
     process_quit(&MenuProcessControl);
-    func_8001888C();
-    func_800183DC();
+    prims_empty();
+    primpool_free();
     func_8008ECE4();
 }
 
@@ -1826,7 +1826,7 @@ void func_80092E94(void) {
     RenderHook();
     RenderState.modelDp = ScreenFade.amount;
     func_80082590();
-    func_8001E898(&MenuProcessControl);
+    process_control_render(&MenuProcessControl);
 }
 
 void func_80092EDC(void) {
@@ -1846,7 +1846,7 @@ void func_80092EDC(void) {
     *(s32 *)((u8 *)&HudCamera + 8) = 0x40C;
     func_80097C28();
     scripts_update();
-    func_8001E610(&MenuProcessControl, &ScreenFade);
+    process_control_update(&MenuProcessControl, &ScreenFade);
     func_8008EFD4();
 }
 
@@ -1869,7 +1869,7 @@ void func_80092FB8(void) {
 }
 
 void func_80093038(void) {
-    func_80018B08(&GameViewport, (GfxCamera *)MainCamera);
+    gfx_set_viewport(&GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
     D_80056878 = 0;
     D_8005687C[0] = 0;
@@ -1877,15 +1877,15 @@ void func_80093038(void) {
     D_8005687C[2] = 0;
     scripts_render();
     func_8007A718();
-    func_8001DAF8((GfxScene *)MapScene);
-    func_80018B08(&MainViewport, &MainGfxCamera);
+    draw_map_scene((GfxScene *)MapScene);
+    gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     func_800798A4();
     func_800984D4();
 }
 
 void func_80093110(void) {
-    func_80018B08(&GameViewport, (GfxCamera *)MainCamera);
+    gfx_set_viewport(&GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
 }
 

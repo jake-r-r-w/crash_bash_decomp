@@ -605,7 +605,7 @@ NAS *BashHero2ObjectCollision(player, mask, unused, cone)
     if (me->unk5E != 0) {
         rotscale_update(&me->unk1C);
     }
-    func_8001CD04(me->sub, me->unk3C, &me->unk10);
+    gfx_load_xform(me->sub, me->unk3C, &me->unk10);
     bot = me->unk10.y + rec->unk2;
     top = me->unk10.y + rec->height;
     rad = rec->radius;
@@ -790,7 +790,7 @@ s32 BashHeroKickCollision(s32 arg0) {
                 if (eng->unk5E != 0) {
                     rotscale_update(&eng->unk1C);
                 }
-                func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+                gfx_load_xform(eng->sub, eng->unk3C, &eng->unk10);
                 lo2 = eng->unk10.y + box->unk2;
                 hi2 = eng->unk10.y + box->height;
                 if (lo2 < hi2) {
@@ -1021,11 +1021,11 @@ s32 BashHeroCarryCollision(s32 idx) {
                     rotscale_update(&eng->unk1C);
                     sub = eng->sub;
                     eng->sub = sub;
-                    func_8001CD04(sub, eng->unk3C, &eng->unk10);
+                    gfx_load_xform(sub, eng->unk3C, &eng->unk10);
                 } else {
                     sub = eng->sub;
                     eng->sub = sub;
-                    func_8001CD04(sub, eng->unk3C, &eng->unk10);
+                    gfx_load_xform(sub, eng->unk3C, &eng->unk10);
                 }
                 gte_rotate_point((SVECTOR *)box, &v);
             }

@@ -313,7 +313,7 @@ typedef struct ChaseHitFlags {
     /* 0x1E */ u16 unk1E;
 } ChaseHitFlags;
 extern NAS *HeadOfSolids;
-void func_8001CD04(void *arg0, void *arg1, void *arg2);
+void gfx_load_xform(void *arg0, void *arg1, void *arg2);
 void rotscale_update(void *arg0);
 void gte_rotate_point(SVECTOR *v, VECTOR *out);
 s32 Random(s32 n);

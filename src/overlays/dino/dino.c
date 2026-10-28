@@ -3709,7 +3709,7 @@ void InitDinoScratch(NAS *m) {
     EXTengine *eng;
     subengine *sub;
 
-    if (func_80018F3C(m->Engine, 0x10) != 0) {
+    if (eng_add_subs(m->Engine, 0x10) != 0) {
         eng = m->Engine;
         sub = eng->sub;
         eng->flags |= 0x200000;

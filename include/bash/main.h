@@ -188,7 +188,7 @@ typedef struct TexAnimEntry {
 } TexAnimEntry;
 
 
-/* Bounding box tested for visibility by func_8001AF2C: corners min/max and a
+/* Bounding box tested for visibility by bbox_visible: corners min/max and a
  * centre whose pad is a radius. */
 typedef struct {
     s16 min[3];     /* 0x00 */
@@ -196,8 +196,8 @@ typedef struct {
     SVECTOR center; /* 0x0C: center.pad = radius */
 } BoundBox;
 
-/* A model whose vertices are interpolated between two sets (func_8001C008,
- * func_8001C0F0). Only the run list is known. */
+/* A model whose vertices are interpolated between two sets (morph_light_colors,
+ * morph_blend_verts). Only the run list is known. */
 typedef struct {
     u8 unk0[0x14];
     s32 runs; /* 0x14: byte offset from this field to a list of (u8, u8 count)
@@ -217,7 +217,7 @@ typedef struct {
     s32 entries; /* 0x1C */
 } EntryBlock;
 
-/* A 0x28-byte primitive slot of func_80017B08: a textured triangle, or (run flag
+/* A 0x28-byte primitive slot of faces_write_colors_dq: a textured triangle, or (run flag
  * bit 0) a draw-mode packet followed by an untextured gouraud triangle. */
 typedef union {
     POLY_GT3 gt;
@@ -227,7 +227,7 @@ typedef union {
     } g;
 } FacePrim;
 
-/* Face data func_80017B08 reads: a run list (as MorphModel's: pairs of a flags
+/* Face data faces_write_colors_dq reads: a run list (as MorphModel's: pairs of a flags
  * byte and a count, ending in a count of 0xFF) and one u16 colour index per face
  * (bit 15: semi-transparent, bits 13-14: blend mode). */
 typedef struct {
@@ -291,7 +291,7 @@ typedef struct {
     s32 table; /* 0x20 */
 } TexFaceRuns;
 
-/* An object drawn as one textured quad (func_8001AA48, func_8001C3D0,
+/* An object drawn as one textured quad (draw_model_quad, sub_use_quad_model,
  * kill_sprim_sub): one primitive per frame buffer. */
 typedef struct {
     POLY_GT4 *prim; /* from new_sprim, freed with release_sprim */
@@ -310,13 +310,13 @@ typedef struct {
     ModelObjSlot slots[2];  /* 0x90: indexed by FrameCount & 1 */
 } ModelObj;
 
-/* At +0x54 of GfxCamera; func_8001ACC0 takes a pointer to it. */
+/* At +0x54 of GfxCamera; gfx_object_matrix takes a pointer to it. */
 typedef struct {
     u8 unk0[0x10];
     VECTOR scale; /* 0x10: diagonal of the screen-aligned matrix */
 } GfxCamScale;
 
-/* The camera GfxState.cam points at (func_8001D894). */
+/* The camera GfxState.cam points at (draw_map_object). */
 typedef struct GfxCamera {
     u8 unk0[0xC];
     s32 x, y, z;    /* 0x0C */
@@ -327,12 +327,12 @@ typedef struct GfxCamera {
     MATRIX rot;     /* 0x98: rotation for screen-aligned objects */
 } GfxCamera;
 
-/* The transform block func_8001ACC0 reads (at +0xC or +0x1C of its owner). */
+/* The transform block gfx_object_matrix reads (at +0xC or +0x1C of its owner). */
 typedef struct {
     u32 flags;      /* 0x00: 0x10000000 screen space, 0x20000000 screen-aligned */
     s32 x, y, z;    /* 0x04 */
     u8 unk10[0x10]; /* 0x10: passed to rotscale_update (0x20 bytes) */
-    s32 sx, sy, sz; /* 0x20: scale for screen-aligned (func_8001965C) */
+    s32 sx, sy, sz; /* 0x20: scale for screen-aligned (gfx_setup_xform) */
     u8 unk2C[4];
     MATRIX rot;     /* 0x30 */
     u8 unk50;       /* 0x50: nonzero: scale the screen-aligned matrix */
@@ -340,23 +340,23 @@ typedef struct {
     u16 unk52;      /* 0x52: nonzero: rot needs rebuilding */
 } GfxXform;
 
-/* The block at GfxState+0x28 (passed to func_8001965C). */
+/* The block at GfxState+0x28 (passed to gfx_setup_xform). */
 typedef struct {
     s32 x, y;  /* 0x0: screen offset */
     u16 otz;   /* 0x8: becomes GfxState.otzAdd */
 } GfxScreen;
 
 /* Graphics state at 0x80056998 (placeholder name; 161 references). Only the
- * fields func_8001CD04 and func_8001D048 use are known: two pointers it aims
+ * fields gfx_load_xform and project_quad use are known: two pointers it aims
  * at buffers inside the struct itself, a block at +0x28 it passes to
- * func_8001965C, and the ordering table that primitives are added to. */
+ * gfx_setup_xform, and the ordering table that primitives are added to. */
 typedef struct {
     struct GfxModel *unk0;
     void *unk4;
     s32 *farColor; /* 0x08: r, g, b for gte_ldfcdir */
     s32 dp;        /* 0x0C: depth-cue factor for gte_lddp */
-    void *viewport; /* 0x10: GfxViewport (func_80018B08) */
-    s32 modelDp;   /* 0x14: dp for ModelObj quads (func_8001AA48); the screen fade */
+    void *viewport; /* 0x10: GfxViewport (gfx_set_viewport) */
+    s32 modelDp;   /* 0x14: dp for ModelObj quads (draw_model_quad); the screen fade */
     u8 unk18[4];
     s16 clipX1;    /* 0x1C: viewport clip right/bottom on screen */
     s16 clipY1;
@@ -374,12 +374,12 @@ typedef struct {
     u8 *unk84; /* 0x84: = unkCC */
     u8 *unk88; /* 0x88: = unk10C */
     MATRIX unk8C; /* 0x8C: set to identity by draw_init */
-    MATRIX unkAC; /* 0xAC: object's local-to-screen matrix (func_8001ACC0) */
+    MATRIX unkAC; /* 0xAC: object's local-to-screen matrix (gfx_object_matrix) */
     u8 unkCC[0x40];
     u8 unk10C[0x20]; /* the struct ends at 0x12C: D_80056AC4 is the next global */
 } GfxState;
 
-/* A 0x1C-byte entry of a sorted table at +0x4C of a block (func_8001E41C). */
+/* A 0x1C-byte entry of a sorted table at +0x4C of a block (key_find). */
 typedef struct {
     SLONG_XYZ pos; /* 0x00 */
     s32 key;   /* 0x0C */
@@ -404,7 +404,7 @@ typedef struct {
 #define gte_ldv0_t(r0) __asm__ volatile (				"lw	$t0, %0;"					"lw	$t1, %1;"					"mtc2	$t0, $0;"					"mtc2	$t1, $1"					:								: "m"(((s32 *)(r0))[0]), "m"(((s32 *)(r0))[1])	: "$8", "$9" )
 
 /* Stores SXY0..2 at +0x10, +0x18, +0x20 of a primitive. None of Sony's
- * gte_stsxy3_* macros uses these offsets; draw_verts and func_8001A0D8
+ * gte_stsxy3_* macros uses these offsets; draw_verts and draw_gouraud_quad
  * store them straight off the primitive pointer. */
 #define gte_stsxy3_10(r0) __asm__ volatile (				"swc2	$12, 16( %0 );"					"swc2	$13, 24( %0 );"					"swc2	$14, 32( %0 )"					:								: "r"(r0)							: "memory" )
 
@@ -466,7 +466,7 @@ typedef struct {
     PointSpriteSet set; /* 0x6C */
 } PointSprites;
 
-/* Filled by func_8001965C for func_8001CD04, which loads it into the GTE. */
+/* Filled by gfx_setup_xform for gfx_load_xform, which loads it into the GTE. */
 typedef struct {
     MATRIX *rot;
     VECTOR *trans; /* may be NULL: translation left as it is */
@@ -528,7 +528,7 @@ typedef struct SlotList {
 /* PrimPool: entries come from free (new_sprim) and go back on done. */
 typedef struct NodePool {
     PoolNode *free;
-    void *mem;                        /* heap block, freed by func_800183DC */
+    void *mem;                        /* heap block, freed by primpool_free */
     PoolNode *done;
 } NodePool;
 
@@ -634,8 +634,8 @@ typedef struct LoaderState {
 
 /* A process (a game mode), its control block and the screen fade, from the
  * Jampack Winter 2000 demo's debug types (docs/PROTOTYPES.md).
- * A process's init runs when it starts (func_8001E610), update every frame,
- * render from func_8001E898 and quit when it ends; a non-NULL heap resets the
+ * A process's init runs when it starts (process_control_update), update every frame,
+ * render from process_control_render and quit when it ends; a non-NULL heap resets the
  * heap to start there. */
 typedef struct process_info {
     /* 0x00 */ void (*init)(void);
@@ -646,7 +646,7 @@ typedef struct process_info {
 } process_info;
 BASH_SIZE_CHECK(process_info, 0x14);
 
-/* func_8001E610 switches to next_process once the fade is done. */
+/* process_control_update switches to next_process once the fade is done. */
 typedef struct process_control_info {
     /* 0x00 */ process_info *process;
     /* 0x04 */ process_info *next_process;
@@ -656,7 +656,7 @@ typedef struct process_control_info {
 BASH_SIZE_CHECK(process_control_info, 0x10);
 
 /* amount steps by speed towards 0x1000 or 0; maxed counts the frames at the
- * end (func_8001E598). */
+ * end (fade_update). */
 typedef struct fade_info {
     /* 0x00 */ s32 amount;
     /* 0x04 */ s32 speed;
@@ -730,7 +730,7 @@ typedef struct {
     /* 0x14 */ BlockRef *block;
 } FileEntry;
 
-/* A per-frame-buffer allocation slot used by func_8001CC10. */
+/* A per-frame-buffer allocation slot used by sub_alloc_prims. */
 typedef struct {
     /* 0x0 */ void *ptr;
     /* 0x4 */ u16 size;
@@ -977,7 +977,7 @@ typedef struct D5A614View {
     /* 0x04 */ s32 unk4;
     /* 0x08 */ s32 unk8;    /* func_800235BC: a LevelInfo field by flags 0x80 */
     /* 0x0C */ u8 unkC[0x30 - 0xC];
-    /* 0x30 */ u16 unk30;   /* bit 0 cleared on a mode change (func_8001E610) */
+    /* 0x30 */ u16 unk30;   /* bit 0 cleared on a mode change (process_control_update) */
     /* 0x32 */ u16 flags;
     /* 0x34 */ s16 mode;
     /* 0x36 */ u8 unk36[0x50 - 0x36];
@@ -1117,7 +1117,7 @@ extern s32 D_800643F0;
 void *mal_trim_front(void *base, s32 offset, _mal_area *arg2);
 void cam_build_view(u8 *arg0, RECT *rect);
 extern GfxState RenderState;
-extern VECTOR D_8005688C; /* screen-space translation (func_8001965C) */
+extern VECTOR D_8005688C; /* screen-space translation (gfx_setup_xform) */
 
 /* The current draw buffer: primitives are allocated from the pointer at
  * +0x4008 (texture_draw). */
@@ -1128,7 +1128,7 @@ typedef struct {
     s32 x, y;
 } GfxOffset;
 
-/* A viewport func_80018B08 makes current (coordinates in 640-wide units). */
+/* A viewport gfx_set_viewport makes current (coordinates in 640-wide units). */
 typedef struct {
     s16 x0, y0, x1, y1;     /* 0x00: draw area */
     s16 cx0, cy0, cx1, cy1; /* 0x08: clip area (cam_build_view) */
@@ -1139,12 +1139,12 @@ typedef struct {
     u8 r, g, b, isbg;       /* 0x24: background */
 } GfxViewport;
 
-/* GfxViewport's background colour, copied as a block (func_8001DAF8). */
+/* GfxViewport's background colour, copied as a block (draw_map_scene). */
 typedef struct {
     s8 r, g, b;
 } GfxRgb8;
 
-/* The scene func_8001DAF8 sets up (MapScene points at it). */
+/* The scene draw_map_scene sets up (MapScene points at it). */
 typedef struct {
     u8 unk0[0x10];
     GfxViewport *viewport; /* 0x10 */
@@ -1204,13 +1204,13 @@ typedef struct {
     s32 c[4];
 } QuadVerts;
 
-/* func_8001A0D8's input: four vertices and four colours (bytes r, g, b). */
+/* draw_gouraud_quad's input: four vertices and four colours (bytes r, g, b). */
 typedef struct {
     SVECTOR v[4];
     u8 c[4][4];
 } ColorQuad;
 
-/* func_8001A0D8's primitive: a draw-mode word, then a POLY_G4 sharing the
+/* draw_gouraud_quad's primitive: a draw-mode word, then a POLY_G4 sharing the
  * tag (len 0xA, code 0x38 at +0xF). */
 typedef struct {
     u32 tag;
@@ -1235,7 +1235,7 @@ typedef struct {
     u8 unk0[0x24];
     ModelEntry entries[1]; /* 0x24, stride 0x34 */
 } ModelSet;
-extern s32 D_80056AC4; /* func_80019A60: the object's +0x8A */
+extern s32 D_80056AC4; /* draw_object_model: the object's +0x8A */
 extern s32 D_80056878;    /* func_80019094: with D_80056AC4, forces the depth-cued path */
 extern s32 D_80056868[3]; /* func_80019094: default far colour */
 
@@ -1286,8 +1286,8 @@ extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;
 extern s32 *D_80056850;
-extern s32 *D_8005683C;            /* pool sizes (func_80017164) */
-extern u8 *D_8005685C;             /* 0x58-byte nodes (func_80017164) */
+extern s32 *D_8005683C;            /* pool sizes (prims_init) */
+extern u8 *D_8005685C;             /* 0x58-byte nodes (prims_init) */
 extern u8 *D_80056840;             /* 0x54-byte nodes, free list in D_80056850 */
 extern u8 *D_80056854;             /* 8-byte nodes, free list in D_80056858 */
 typedef struct ListNode18938 {
@@ -1567,7 +1567,7 @@ typedef struct {
     s32 x; /* 0x78 */
     s32 idx; /* 0x7C */
 } PosDst;
-/* A text object func_8001A82C draws: a NAS-like header with the position at
+/* A text object draw_text_nas draws: a NAS-like header with the position at
  * +4 (x keeps func_800243A0's 0xC000 centring flags) and the text at +0x6C. */
 typedef struct {
     s32 NASid;   /* 0x00: 0x8000 drawn, 0x10000000 2D (no GTE setup) */
@@ -2033,7 +2033,7 @@ void cam_ease_to(CamView *cam, CamView *dst, CamEase *ease);
 
 
 /* Map placement record (map_enviroment.placements, 0xA0 bytes each),
- * copied into a subengine by func_8001D6B4. */
+ * copied into a subengine by mapenv_place_subs. */
 typedef struct { s32 w[8]; } PlacementBlk;
 typedef struct Placement {
     /* 0x00 */ u32 flags;
@@ -2048,7 +2048,7 @@ typedef struct Placement {
     /* 0x9C */ u16 unk9C;
     /* 0x9E */ u16 unk9E;
 } Placement;
-/* Head of map_enviroment (core.h) as func_8001D6B4 uses it. */
+/* Head of map_enviroment (core.h) as mapenv_place_subs uses it. */
 typedef struct MapEnvHead {
     /* 0x00 */ void *dbase;
     /* 0x04 */ u8 unk04[0x14 - 0x04];

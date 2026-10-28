@@ -445,7 +445,7 @@ extern s32 HubSaveChoice;
         e_ = GetEngineSlot(1);                                                 \
         e_->sub[1].unk6C = (tbl)[*(s32 *)((g_ = GameInfo) + 0x2C)];          \
         GetEngineSlot(1)->sub->unk6C = D_8009EFE4[*(s32 *)(g_ + 0x2C)];        \
-        func_8001C2C0((u8 *)GetEngineSlot(1));                                 \
+        eng_render_subs((u8 *)GetEngineSlot(1));                                 \
     }
 extern s32 D_8009F63C;
 void func_8009196C(void);

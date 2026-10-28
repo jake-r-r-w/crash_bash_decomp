@@ -14,11 +14,11 @@ void HubRender(void) {
     if (GameMode == 0x25) {
         func_8007A718();
         if (D_80098714 == 0) {
-            func_8001DAF8((GfxScene *)MapScene);
+            draw_map_scene((GfxScene *)MapScene);
         }
     } else {
         func_8007A718();
-        func_8001DAF8((GfxScene *)MapScene);
+        draw_map_scene((GfxScene *)MapScene);
     }
     if (GameMode == 0x2B) {
         PodiumRenderScene();
@@ -26,10 +26,10 @@ void HubRender(void) {
         HubRenderScene();
     }
     if (GameAdventure.unk74 != 0) {
-        func_80018B08(&MainViewport, &MainGfxCamera);
-        func_8001C2C0(GetEngineSlot(0));
+        gfx_set_viewport(&MainViewport, &MainGfxCamera);
+        eng_render_subs(GetEngineSlot(0));
     }
-    func_80018B08(&MainViewport, &MainGfxCamera);
+    gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     func_800798A4();
 }

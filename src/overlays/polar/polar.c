@@ -7624,7 +7624,7 @@ void InitSimpleExplosion(NAS *m) {
     ext = AddExt(m, 0x108, 0x10000000);
     if (ext != NULL) {
         sub = m->Engine->sub;
-        func_80018F3C(m->Engine, 0x10);
+        eng_add_subs(m->Engine, 0x10);
         if (sub != NULL) {
             i = 0;
             do {
@@ -7720,7 +7720,7 @@ void InitPackEffect(NAS *m) {
     ext = AddExt(m, 0x108, 0x10000000);
     if (ext != NULL) {
         sub = m->Engine->sub;
-        func_80018F3C(m->Engine, 0xC);
+        eng_add_subs(m->Engine, 0xC);
         if (sub != NULL) {
             i = 0;
             do {
@@ -9883,7 +9883,7 @@ void InitScratchMaster(NAS *m) {
     EXTengine *eng;
     subengine *sub;
 
-    if (func_80018F3C(m->Engine, 0x10) != 0) {
+    if (eng_add_subs(m->Engine, 0x10) != 0) {
         eng = m->Engine;
         sub = eng->sub;
         eng->flags |= 0x200000;

@@ -192,7 +192,7 @@ void InitBigScore(void) {
     BigScore1.unk10.x = 0x82;
     BigScore1.unk10.y = 0x8C;
     BigScore1.unk10.z = 0;
-    func_8001D3B0(&BigScore1, 1, &BigScoreParts1);
+    subs_init_array(&BigScore1, 1, &BigScoreParts1);
     func_80095F48((s32 *)&BigScoreParts1, -0x30, 0, left_score, 0);
     BigScore1.unk5D = 0;
     BigScore1.unk5C = 1;
@@ -202,7 +202,7 @@ void InitBigScore(void) {
     BigScore2.unk10.x = 0x1E0;
     BigScore2.unk10.y = 0x8C;
     BigScore2.unk10.z = 0;
-    func_8001D3B0(&BigScore2, 1, &BigScoreParts2);
+    subs_init_array(&BigScore2, 1, &BigScoreParts2);
     func_80095F48((s32 *)&BigScoreParts2, -0x30, 0, right_score, 0);
     BigScore2.unk5C = 1;
     BigScore2.unk5D = 0;
@@ -627,7 +627,7 @@ void func_8007BFA8(void) {
     for (i = 0; i < 4; i++) {
         ((EXTengine **)&Icon)[i] = &PanelTab[i];
         sub = IconParts[i];
-        func_8001D3B0(((EXTengine **)&Icon)[i], 7, sub);
+        subs_init_array(((EXTengine **)&Icon)[i], 7, sub);
         for (j = 0; j < 7; j++) {
             sub->unk6C = InterfaceModel;
             sub->flags = 0x10000000;
@@ -660,7 +660,7 @@ void func_8007C170(void) {
     for (i = 0; i < 2; i++) {
         ((EXTengine **)&Icon)[i] = &PanelTab[i];
         sub = IconParts[i];
-        func_8001D3B0(((EXTengine **)&Icon)[i], 7, sub);
+        subs_init_array(((EXTengine **)&Icon)[i], 7, sub);
         for (j = 0; j < 7; j++) {
             sub->unk6C = InterfaceModel;
             sub->flags = 0x10000000;
@@ -709,7 +709,7 @@ void InitHealthIcons(void) {
     y0 = 0x37;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
-    tex = D_8001C7FC;
+    tex = draw_nas_model_flags;
     y1 = 0x43;
     code = 0x12000000;
     n = 8;
@@ -805,7 +805,7 @@ void ClearHealthIcons(void) {
     y0 = 0x37;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
-    tex = D_8001C7FC;
+    tex = draw_nas_model_flags;
     y1 = 0x43;
     code = 0x12000000;
     n = 8;
@@ -901,7 +901,7 @@ void InitBossHealthIcons(void) {
     sub->unk74 = 0x2018;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
-    tex = D_8001C7FC;
+    tex = draw_nas_model_flags;
     y1 = 0x43;
     y0 = 0x37;
     code = 0x12000000;
@@ -985,7 +985,7 @@ void func_8007C830(s32 arg0, s32 arg1) {
     b = p + 1;
     x0 = (u16)HealthIconPos[2].x + 8;
     x1 = (u16)HealthIconPos[2].x + 0x48;
-    b->unk54 = D_8001C7FC;
+    b->unk54 = draw_nas_model_flags;
     b->u6C.s.unk6C = x0;
     b->u6C.s.unk6E = y0;
     b->unk70 = 0;
@@ -1005,7 +1005,7 @@ void func_8007C830(s32 arg0, s32 arg1) {
     p[1].unk0 = code;
     b->unk68 = n;
     q = b + 1;
-    q->unk54 = D_8001C7FC;
+    q->unk54 = draw_nas_model_flags;
     q->u6C.s.unk6C = x0;
     q->u6C.s.unk6E = y0;
     q->unk70 = 0;
@@ -1040,7 +1040,7 @@ void func_8007C830(s32 arg0, s32 arg1) {
     {
     PanelPrim *q;
     q = b + 7;
-    q->unk54 = D_8001C7FC;
+    q->unk54 = draw_nas_model_flags;
     q->u6C.s.unk6C = x0;
     q->u6C.s.unk6E = y0;
     q->unk70 = 0;
@@ -1063,7 +1063,7 @@ void func_8007C830(s32 arg0, s32 arg1) {
     {
     PanelPrim *q;
     q = b + 8;
-    q->unk54 = D_8001C7FC;
+    q->unk54 = draw_nas_model_flags;
     q->u6C.s.unk6C = x0;
     q->u6C.s.unk6E = y0;
     q->unk70 = 0;
@@ -1167,7 +1167,7 @@ void InitPowerIcons(void) {
     y0 = 0x37;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
-    tex = D_8001C7FC;
+    tex = draw_nas_model_flags;
     y1 = 0x43;
     code = 0x12000000;
     n = 8;
@@ -2101,7 +2101,7 @@ s32 StillTottingUpScore(void) {
 }
 
 void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b) {
-    p->unk54 = D_8001C7FC;
+    p->unk54 = draw_nas_model_flags;
     p->unk6E = y;
     p->unk76 = y;
     p->unk74 = x + 0x40;
@@ -2231,7 +2231,7 @@ void func_8007ED0C(void) {
     EXTengine *f;
 
     e = &PanelTab[5];
-    func_8001D3B0(e, 1, &D_8009AC04);
+    subs_init_array(e, 1, &D_8009AC04);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;
     e->sub->unk6C = InterfaceModel;
@@ -2242,7 +2242,7 @@ void func_8007ED0C(void) {
     e->unk2C.y = 0xE00;
     e->unk2C.z = 0xE00;
     e++;
-    func_8001D3B0(e, 1, &D_8009ACAC);
+    subs_init_array(e, 1, &D_8009ACAC);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;
     e->sub->unk6C = InterfaceModel;
