@@ -1463,7 +1463,7 @@ s32 D_800A040C[15] = {
     (s32)&DatIndex[2 * 262], 0x780, 0x4AD, (s32)&DatIndex[2 * 261], 0x781, 0x4AD, (s32)&DatIndex[2 * 260], 0x782,
     0x4AD, (s32)&DatIndex[2 * 259], 0x783, 0x4AD, 0, 0, 0,
 };
-s32 D_800A0448[14] = { 1, (s32)&HeroModelBank[DB_CutsceneTextGoodwins], 0, 1, 0, 0, 0, 0, (s32)&DatIndex[2 * 271], 0x76C, 0x4AD, 0, 0, 0 };
+s32 SceneTextGoodwinsMarks[14] = { 1, (s32)&HeroModelBank[DB_CutsceneTextGoodwins], 0, 1, 0, 0, 0, 0, (s32)&DatIndex[2 * 271], 0x76C, 0x4AD, 0, 0, 0 };
 s32 D_800A0480[40] = {
     1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot8], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot11], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot10], 0, 1, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot7], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot6], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot9], 0, 1, 1,
@@ -1473,7 +1473,7 @@ s32 D_800A0520[20] = {
     (s32)&DatIndex[2 * 258], 0x78A, 0x4AD, (s32)&DatIndex[2 * 257], 0x78B, 0x4AD, (s32)&DatIndex[2 * 256], 0x78C,
     0x4AD, 0, 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneTextEvilwins], 0, 0, 0, 0, 0, 0,
 };
-s32 D_800A0570[8] = { 1, (s32)&HeroModelBank[DB_CutsceneTextMixteamwins], 0, 1, 0, 0, 0, 0 };
+s32 SceneTextMixteamwinsMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneTextMixteamwins], 0, 1, 0, 0, 0, 0 };
 s32 D_800A0590[20] = {
     1, (s32)&HeroModelBank[DB_CutsceneLevel4], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevel3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevel2], 0, 1, 1,
     (s32)&HeroModelBank[DB_CutsceneLevel], 0, 1, 0, 0, 0, 0,
@@ -1482,8 +1482,8 @@ s32 D_800A05E0[12] = {
     (s32)&DatIndex[2 * 265], 0x776, 0x4AD, (s32)&DatIndex[2 * 264], 0x777, 0x4AD, (s32)&DatIndex[2 * 263], 0x778,
     0x4AD, 0, 0, 0,
 };
-s32 D_800A0610[16] = { 1, (s32)&HeroModelBank[DB_CutsceneTextCredits], 0, 1, 0, 0, 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneTextCredits], 0, 1, 0, 0, 0, 0 };
-s32 D_800A0650[8] = { 1, (s32)&HeroModelBank[DB_CutsceneTextIntromovie], 0, 1, 0, 0, 0, 0 };
+s32 SceneTextCreditsMarks[16] = { 1, (s32)&HeroModelBank[DB_CutsceneTextCredits], 0, 1, 0, 0, 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneTextCredits], 0, 1, 0, 0, 0, 0 };
+s32 SceneTextIntromovieMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneTextIntromovie], 0, 1, 0, 0, 0, 0 };
 s32 D_800A0670[80] = {
     1, (s32)&HeroModelBank[DB_CutsceneIntroLogo], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot19], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot18], 0, 0, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelShot17], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot16], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot15], 0, 0, 1,
@@ -1498,12 +1498,12 @@ s32 D_800A07B0[42] = {
     0x255, (s32)&DatIndex[2 * 252], 0x797, 0x255, (s32)&DatIndex[2 * 251], 0x798, 0x255, (s32)&DatIndex[2 * 250],
     0x799, 0x255, (s32)&DatIndex[2 * 249], 0x79A, 0x255, (s32)&DatIndex[2 * 248], 0x79B, 0x255,
     (s32)&DatIndex[2 * 247], 0x79C, 0x255, (s32)&DatIndex[2 * 246], 0x79D, 0x255, (s32)&DatIndex[2 * 245], 0x79E,
-    0x255, 0, 0, 0, (s32)&D_800A0670, (s32)&D_800A07B0, 0x1DFC40, (s32)&D_800A0650,
+    0x255, 0, 0, 0, (s32)&D_800A0670, (s32)&D_800A07B0, 0x1DFC40, (s32)&SceneTextIntromovieMarks,
     (s32)&D_800A07B0, 0x1E0000,
 };
 MsgStep D_800A0858[2] = {
     { (void *)&D_800A033C, (void *)&D_800A040C, 0x1E0000 },
-    { (void *)&D_800A0448, (void *)&D_800A07B0, 0x1E0000 },
+    { (void *)&SceneTextGoodwinsMarks, (void *)&D_800A07B0, 0x1E0000 },
 };
 MsgStep D_800A0870[2] = {
     { (void *)&D_800A0480, (void *)&D_800A0520, 0x1E0000 },
@@ -1511,45 +1511,45 @@ MsgStep D_800A0870[2] = {
 };
 MsgStep D_800A0888[4] = {
     { (void *)&D_800A0590, (void *)&D_800A05E0, 0x1E0000 },
-    { (void *)&D_800A0570, (void *)&D_800A07B0, 0x1E0000 },
-    { (void *)&D_800A0610, (void *)&D_800A07B0, 0x1E0000 },
-    { (void *)&D_800A0610, (void *)&D_800A07B0, 0x1E0000 },
+    { (void *)&SceneTextMixteamwinsMarks, (void *)&D_800A07B0, 0x1E0000 },
+    { (void *)&SceneTextCreditsMarks, (void *)&D_800A07B0, 0x1E0000 },
+    { (void *)&SceneTextCreditsMarks, (void *)&D_800A07B0, 0x1E0000 },
 };
-s32 D_800A08B8[6] = { (s32)&DatIndex[2 * 224], 0x3DD, 0, 0, 0, 0 };
-s32 D_800A08D0[6] = { (s32)&DatIndex[2 * 225], 0x3DA, 0, 0, 0, 0 };
-s32 D_800A08E8[6] = { (s32)&DatIndex[2 * 222], 0x3E3, 0, 0, 0, 0 };
-s32 D_800A0900[6] = { (s32)&DatIndex[2 * 223], 0x3E0, 0, 0, 0, 0 };
-s32 D_800A0918[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData4], 0, 0, 0, 0, 0, 0 };
-s32 D_800A0938[3] = { (s32)&D_800A0918, (s32)&D_800A08B8, 0x1E0000 };
-s32 D_800A0944[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData3], 0, 0, 0, 0, 0, 0 };
-s32 D_800A0964[3] = { (s32)&D_800A0944, (s32)&D_800A08D0, 0x1E0000 };
-s32 D_800A0970[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData], 0, 0, 0, 0, 0, 0 };
-s32 D_800A0990[3] = { (s32)&D_800A0970, (s32)&D_800A0900, 0x1E0000 };
-s32 D_800A099C[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData2], 0, 0, 0, 0, 0, 0 };
-s32 D_800A09BC[3] = { (s32)&D_800A099C, (s32)&D_800A08E8, 0x1E0000 };
-s32 D_800A09C8[6] = { (s32)&DatIndex[2 * 220], 0x3DC, 0, 0, 0, 0 };
-s32 D_800A09E0[6] = { (s32)&DatIndex[2 * 221], 0x3D9, 0, 0, 0, 0 };
-s32 D_800A09F8[6] = { (s32)&DatIndex[2 * 218], 0x3E2, 0, 0, 0, 0 };
-s32 D_800A0A10[6] = { (s32)&DatIndex[2 * 219], 0x3DF, 0, 0, 0, 0 };
-s32 D_800A0A28[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData4], 0, 0, 0, 0, 0, 0 };
-s32 D_800A0A48[3] = { (s32)&D_800A0A28, (s32)&D_800A09C8, 0x1E0000 };
-s32 D_800A0A54[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData3], 0, 0, 0, 0, 0, 0 };
-s32 D_800A0A74[3] = { (s32)&D_800A0A54, (s32)&D_800A09E0, 0x1E0000 };
-s32 D_800A0A80[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData], 0, 0, 0, 0, 0, 0 };
-s32 D_800A0AA0[3] = { (s32)&D_800A0A80, (s32)&D_800A0A10, 0x1E0000 };
-s32 D_800A0AAC[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData2], 0, 0, 0, 0, 0, 0 };
-s32 D_800A0ACC[3] = { (s32)&D_800A0AAC, (s32)&D_800A09F8, 0x1E0000 };
-s32 D_800A0AD8[6] = { (s32)&DatIndex[2 * 214], 0x3E4, 0, 0, 0, 0 };
-s32 D_800A0AF0[6] = { (s32)&DatIndex[2 * 215], 0x3E1, 0, 0, 0, 0 };
-s32 D_800A0B08[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData], 0, 0, 0, 0, 0, 0 };
-s32 D_800A0B28[3] = { (s32)&D_800A0B08, (s32)&D_800A0AF0, 0x1E0000 };
-s32 D_800A0B34[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData2], 0, 0, 0, 0, 0, 0 };
-s32 D_800A0B54[3] = { (s32)&D_800A0B34, (s32)&D_800A0AD8, 0x1E0000 };
+s32 SceneUkaData4Audio[6] = { (s32)&DatIndex[2 * 224], 0x3DD, 0, 0, 0, 0 };
+s32 SceneUkaData3Audio[6] = { (s32)&DatIndex[2 * 225], 0x3DA, 0, 0, 0, 0 };
+s32 SceneUkaData2Audio[6] = { (s32)&DatIndex[2 * 222], 0x3E3, 0, 0, 0, 0 };
+s32 SceneUkaDataAudio[6] = { (s32)&DatIndex[2 * 223], 0x3E0, 0, 0, 0, 0 };
+s32 SceneUkaData4Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData4], 0, 0, 0, 0, 0, 0 };
+s32 SceneUkaData4[3] = { (s32)&SceneUkaData4Marks, (s32)&SceneUkaData4Audio, 0x1E0000 };
+s32 SceneUkaData3Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData3], 0, 0, 0, 0, 0, 0 };
+s32 SceneUkaData3[3] = { (s32)&SceneUkaData3Marks, (s32)&SceneUkaData3Audio, 0x1E0000 };
+s32 SceneUkaDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData], 0, 0, 0, 0, 0, 0 };
+s32 SceneUkaData[3] = { (s32)&SceneUkaDataMarks, (s32)&SceneUkaDataAudio, 0x1E0000 };
+s32 SceneUkaData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData2], 0, 0, 0, 0, 0, 0 };
+s32 SceneUkaData2[3] = { (s32)&SceneUkaData2Marks, (s32)&SceneUkaData2Audio, 0x1E0000 };
+s32 SceneAkuData4Audio[6] = { (s32)&DatIndex[2 * 220], 0x3DC, 0, 0, 0, 0 };
+s32 SceneAkuData3Audio[6] = { (s32)&DatIndex[2 * 221], 0x3D9, 0, 0, 0, 0 };
+s32 SceneAkuData2Audio[6] = { (s32)&DatIndex[2 * 218], 0x3E2, 0, 0, 0, 0 };
+s32 SceneAkuDataAudio[6] = { (s32)&DatIndex[2 * 219], 0x3DF, 0, 0, 0, 0 };
+s32 SceneAkuData4Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData4], 0, 0, 0, 0, 0, 0 };
+s32 SceneAkuData4[3] = { (s32)&SceneAkuData4Marks, (s32)&SceneAkuData4Audio, 0x1E0000 };
+s32 SceneAkuData3Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData3], 0, 0, 0, 0, 0, 0 };
+s32 SceneAkuData3[3] = { (s32)&SceneAkuData3Marks, (s32)&SceneAkuData3Audio, 0x1E0000 };
+s32 SceneAkuDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData], 0, 0, 0, 0, 0, 0 };
+s32 SceneAkuData[3] = { (s32)&SceneAkuDataMarks, (s32)&SceneAkuDataAudio, 0x1E0000 };
+s32 SceneAkuData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData2], 0, 0, 0, 0, 0, 0 };
+s32 SceneAkuData2[3] = { (s32)&SceneAkuData2Marks, (s32)&SceneAkuData2Audio, 0x1E0000 };
+s32 SceneAkuUkaData2Audio[6] = { (s32)&DatIndex[2 * 214], 0x3E4, 0, 0, 0, 0 };
+s32 SceneAkuUkaDataAudio[6] = { (s32)&DatIndex[2 * 215], 0x3E1, 0, 0, 0, 0 };
+s32 SceneAkuUkaDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData], 0, 0, 0, 0, 0, 0 };
+s32 SceneAkuUkaData[3] = { (s32)&SceneAkuUkaDataMarks, (s32)&SceneAkuUkaDataAudio, 0x1E0000 };
+s32 SceneAkuUkaData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData2], 0, 0, 0, 0, 0, 0 };
+s32 SceneAkuUkaData2[3] = { (s32)&SceneAkuUkaData2Marks, (s32)&SceneAkuUkaData2Audio, 0x1E0000 };
 EngineKeyed16 D_800A0B60[4] = {
-    { 4, { (s32)&D_800A0A74, (s32)&D_800A0964, (s32)&D_800A0A74 } },
-    { 0x16, { (s32)&D_800A0A48, (s32)&D_800A0938, (s32)&D_800A0A48 } },
-    { 0x1F, { (s32)&D_800A0ACC, (s32)&D_800A09BC, (s32)&D_800A0B54 } },
-    { 9, { (s32)&D_800A0AA0, (s32)&D_800A0990, (s32)&D_800A0B28 } },
+    { 4, { (s32)&SceneAkuData3, (s32)&SceneUkaData3, (s32)&SceneAkuData3 } },
+    { 0x16, { (s32)&SceneAkuData4, (s32)&SceneUkaData4, (s32)&SceneAkuData4 } },
+    { 0x1F, { (s32)&SceneAkuData2, (s32)&SceneUkaData2, (s32)&SceneAkuUkaData2 } },
+    { 9, { (s32)&SceneAkuData, (s32)&SceneUkaData, (s32)&SceneAkuUkaData } },
 };
 Blk32 D_800A0BA0 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 D_800A0BC0 = {0};
