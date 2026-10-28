@@ -503,7 +503,7 @@ typedef struct {
  * mal and _mal_area are the C++ symbols' (mal_unlink__FP3malP9_mal_area). */
 typedef struct mal {
     /* 0x00 */ u16 unk0;
-    /* 0x02 */ u8 unk2[2];
+    /* 0x02 */ s16 ticks;                /* frames left on the deferred list (mal_free_later) */
     /* 0x04 */ void **owner;             /* cleared on free; (void **)-1 for none; NULL when free */
     /* 0x08 */ u32 size;                 /* in words, header not included */
     /* 0x0C */ struct mal *prev;    /* the block before it in memory */

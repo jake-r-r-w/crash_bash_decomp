@@ -279,7 +279,7 @@ void mal_update(_mal_area *heap) {
     q = heap->deferred;
     qprev = NULL;
     while (q != NULL) {
-        if (--*(s16 *)q->unk2 <= 0) {
+        if (--q->ticks <= 0) {
             if (qprev != NULL) {
                 qprev->nextFree = q->nextFree;
             } else {
@@ -360,7 +360,7 @@ void mal_update(_mal_area *heap) {
     q = heap->deferred;
     qprev = NULL;
     while (q != NULL) {
-        if (--*(s16 *)q->unk2 <= 0) {
+        if (--q->ticks <= 0) {
             if (qprev != NULL) {
                 qprev->nextFree = q->nextFree;
             } else {
@@ -847,7 +847,7 @@ void *mal_trim_front(void *base, s32 offset, _mal_area *arg2) {
     nb = (mal *)((u8 *)blk + (words * 4 + 0x18));
     nb->owner = blk->owner;
     nb->unk0 = ((mal *)base)[-1].unk0;
-    *(u16 *)nb->unk2 = *(u16 *)blk->unk2;
+    nb->ticks = blk->ticks;
     owner = nb->owner;
     if (owner != (void **)-1) {
         *owner = nb + 1;
@@ -973,7 +973,7 @@ void mal_free_later(u8 *arg0, _mal_area *heap, s32 arg2) {
     }
     mal_disown(arg0);
     blk->nextFree = heap->deferred;
-    *(s16 *)&blk->unk2 = arg2;
+    blk->ticks = arg2;
     heap->deferred = blk;
 }
 
@@ -1354,37 +1354,37 @@ void mal_compact_step(u8 *arg0) {
 }
 
 u8 *mal_update_deferred(_mal_area *arg0) {
-    u16 temp_v0;
-    u8 *var_a0;
-    u8 *var_s0;
-    u8 *var_s1;
+    u16 n;
+    mal *q;
+    mal *prev;
+    u8 *total;
 
-    var_s0 = NULL;
-    var_a0 = (*(s32*)((u8*)(arg0) + 16));
-    var_s1 = NULL;
-    if (var_a0 != NULL) {
+    prev = NULL;
+    q = arg0->deferred;
+    total = NULL;
+    if (q != NULL) {
         do {
-            temp_v0 = (*(u16*)((u8*)(var_a0) + 2)) - 1;
-            (*(u16*)((u8*)(var_a0) + 2)) = temp_v0;
-            if ((s16) temp_v0 <= 0) {
-                if (var_s0 != NULL) {
-                    (*(s32*)((u8*)(var_s0) + 20)) = (u8 *) (*(s32*)((u8*)(var_a0) + 20));
+            n = q->ticks - 1;
+            q->ticks = n;
+            if ((s16)n <= 0) {
+                if (prev != NULL) {
+                    prev->nextFree = q->nextFree;
                 } else {
-                    (*(s32*)((u8*)(arg0) + 16)) = (u8 *) (*(s32*)((u8*)(var_a0) + 20));
+                    arg0->deferred = q->nextFree;
                 }
-                mal_free(var_a0 + 0x18, &MainHeap);
-                var_a0 = NULL;
-                if (var_s0 != NULL) {
-                    var_a0 = (*(s32*)((u8*)(var_s0) + 20));
+                mal_free(q + 1, &MainHeap);
+                q = NULL;
+                if (prev != NULL) {
+                    q = prev->nextFree;
                 }
             } else {
-                var_s1 += (s16) temp_v0;
-                var_s0 = var_a0;
-                var_a0 = (*(s32*)((u8*)(var_a0) + 20));
+                total += (s16)n;
+                prev = q;
+                q = q->nextFree;
             }
-        } while (var_a0 != NULL);
+        } while (q != NULL);
     }
-    return var_s1;
+    return total;
 }
 
 mal *mal_next_movable(_mal_area *heap) {
