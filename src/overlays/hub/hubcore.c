@@ -846,7 +846,7 @@ void PlotPathEffect(NAS *nas) {
     if (ext == NULL) {
         return;
     }
-    angle = ((-(get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) - D_80051696) << 20) >> 20;
+    angle = ((-(get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) - ((GfxCamera *)MainCamera)->unk54.angle.vy) << 20) >> 20;
     if (ext->kind < 4) {
         if (abs(angle) > 0x400) {
             nas->Engine->sub->flags &= 0xFFFF7FFF;

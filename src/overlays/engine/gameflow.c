@@ -1834,7 +1834,7 @@ void UpdateGame(void) {
         g = GameInfo;
         *(s32 *)(g + 0xC) += 1;
         UpdateLevel();
-        ((void (*)(void *, u8 *))map_update)(MapScene, D_8005164C);
+        ((void (*)(void *, u8 *))map_update)(MapScene, (u8 *)&((GfxCamera *)MainCamera)->x);
     } else {
         RenderLevel();
     }

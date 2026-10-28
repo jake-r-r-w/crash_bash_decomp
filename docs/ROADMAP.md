@@ -391,8 +391,9 @@ load extract and are documented.
   thread table (`ScriptCommand`), and blobs split into their objects: the pause screens'
   texts and HUD lists, the archive's `FileGroups`, the hero sequence records (113 named
   `CRA_seq_breathe` ...), the cutscene records, the menu language tables, the screen modes. Three byte arrays held pointers (a shifted exe
-  would have kept the old addresses): now words with relocations. Left: 77 `D_` names (106
-  uses), 61 of them never used by name (`GameInfo`'s gaps, read by offset), and
+  would have kept the old addresses): now words with relocations. Then every `D_`
+  data name went (2026-10-28: `GameInfo`'s gaps as `Game*` globals, `ArenaDefs`, the
+  panels' item lists, unread objects as `*Unused`). Left:
   the functions whose C still does raw byte-offset arithmetic (11 of the engine's 357, 62
   of the exe's 575, 77 in the slot overlays: `progress`'s typed figure, 2408 typed). Most
   of the exe's left are a heap block's own arithmetic (`(u8 *)b + b->size * 4 + 0x18`) or

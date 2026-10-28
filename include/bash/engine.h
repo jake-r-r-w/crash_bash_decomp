@@ -110,7 +110,6 @@ extern void (*RenderHook)(void);
 extern GfxViewport LoadingViewport;   /* the loading screen's (RenderLoadingScreen) */
 extern GfxCamera LoadingCamera;
 extern s32 LevelLoadStage;
-extern s8 D_80064C93;
 extern Blk32 LoadingScriptRot;
 extern CamVec3 LoadingScriptPos;
 extern ASTEntry EngineASTTable[];

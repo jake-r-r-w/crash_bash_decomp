@@ -631,7 +631,6 @@ typedef struct PathRot {
     s32 x, y, z, pad;
 } PathRot;
 
-extern s16 D_80051696;
 
 void HubUpdateGateways(void);
 

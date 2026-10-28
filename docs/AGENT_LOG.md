@@ -63,13 +63,10 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. The engine's and exe's `D_` globals (77 left, 106 uses, 61 never used by name: `scratch/rank_d.py` counts
-   every `D_8001..D_800B32B4` use in src and include, externs aside; 63 are never used by
-   name). Read the uses (`scratch/dview.py N` prints 30 with their functions), name,
-   `decomp.py rename --ovl engine --file F` for the engine's (it writes an exe address's
-   sym line to sym.engine.txt: move it), sed plus a `sym.main.txt` line for the exe's
-   (`scratch/ren_main.sh`), `make check`. Labels with no C definition are inside another
-   object: split the object or use the field.
+1. Done 2026-10-28: no `D_` data name is left in any unit (the dashboard's data map has
+   no unnamed block). Objects nothing reads by name are `*Unused`; `GameInfo`'s gaps are
+   `Game*` globals named from their users. A new label inside an object: use the field or
+   element (`((GfxCamera *)MainCamera)->x`, `SfxTable[0x3C5][1]`), not a new `D_`.
 2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 11 engine, 62
    exe, 77 overlay). What's left in the exe is mostly the heap's block arithmetic and
    the files' self-relative offsets; typing those means file-format structs (the dbase's
@@ -479,6 +476,13 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (Phase 5: the last data names):** main.exe's 39 and the engine's 33 unnamed
+  blocks named: `GameInfo`'s gaps (`GameHeroes[4]`, `GameTeammates[4]`, `GameCupRound`, ...;
+  `CupMenuAnim` was `GameCup`), `NasBuildStamp` as its string, the card image's tail,
+  `ArenaDefs[22]` as `ArenaDef` rows, the panels' item lists, the screen tables, unread
+  objects as `*Unused`. The last four labels inside objects became field and element
+  expressions. The dashboard shows no unnamed data in any unit.
 
 - **2026-10-28 (Phase 5: raw-offset functions):** `tools/scripts/bytes_ptrs.py` (pointers
   left as bytes in C data; none now). Typed: MapScene as `map_enviroment *` (the

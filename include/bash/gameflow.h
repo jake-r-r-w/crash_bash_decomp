@@ -12,7 +12,6 @@ extern s32 GameSceneCounts[];
 s32 UpdatePause(void);
 void UpdateLevel(void);
 void UpdateScreenLabels(void);
-extern u8 D_8005164C[];
 extern GfxViewport CupMenuViewport;
 extern GfxViewport CupViewport0;
 extern GfxViewport CupViewport1;

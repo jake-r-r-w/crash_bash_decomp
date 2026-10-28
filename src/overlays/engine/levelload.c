@@ -61,7 +61,7 @@ void UpdateLoadingScene(void) {
 
     if (LevelLoadStage >= 2) {
         if (LoadingScenePlaying == 0 && *(s32 *)((b = (u8 *)HeroModelBank) + 0x2CAC) != 0 /* HeroModelBank[DB_CutsceneIntroLogo2].data */) {
-            if (D_80064C93 != -1) {
+            if (SfxTable[0x3C5][1] != -1) {
                 PlaySfx(0x3C5, NULL, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x3C6, NULL, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x3C7, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1257,7 +1257,6 @@ s32 PlaceTextSub(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
 /* what the data points at that this file's headers don't declare */
 extern s32 VramNodePool[];
 extern u8 VramAreas[];
-extern u8 D_80063ED8[];
 extern u8 file_group_BALLS[];
 extern u8 file_group_BASHMODE20[];
 extern u8 file_group_BEACHBALL[];
@@ -1450,7 +1449,7 @@ EngineMarkerPos SceneMarkPos[3] = {
 };
 EngineCfg SceneLevelConfig = {
     { 0, 0x10, 0, 0, 0x10, 0, 0, 0, 0, 0x10, 0, 0 }, { 0x80, 0x200, 0x20 },
-    (void *)&D_80063ED8, (void *)&VramNodePool, 0x10, 0x400,
+    (void *)(VramAreas + 0x10), (void *)&VramNodePool, 0x10, 0x400,
 };
 s32 ExitAMarks[52] = {
     1, (s32)&HeroModelBank[DB_CutsceneLevelEndingGoodShot3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot8], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot7], 0, 1, 1,
