@@ -870,30 +870,30 @@ u8 *SlotBase = (void *)&SlotOverlayId;
 u8 *ModeTextLoadAddr = (void *)&ModeTextBuffer;
 s32 ModeTextUnused[9] = {0};
 s32 ModeTextEmpty[12] = {0};
-s32 PauseMenuTexts[45] = {  /* the pause menu's texts in the mode text buffer */
-    (s32)(u8 *)&ModeTextBuffer + 0x3B44, (s32)(u8 *)&ModeTextBuffer + 0x3C1C,
-    (s32)(u8 *)&ModeTextBuffer + 0x3CF4, (s32)(u8 *)&ModeTextBuffer + 0x3DCC,
-    (s32)(u8 *)&ModeTextBuffer + 0x7B4, (s32)(u8 *)&ModeTextBuffer + 0x2C58,
-    (s32)(u8 *)&ModeTextBuffer + 0x2A48, (s32)(u8 *)&ModeTextBuffer + 0x2BA8,
-    (s32)(u8 *)&ModeTextBuffer + 0x2AF8, (s32)(u8 *)&ModeTextBuffer + 0x2CA0,
-    (s32)(u8 *)&ModeTextBuffer + 0x3808, (s32)(u8 *)&ModeTextBuffer + 0x38B8,
-    (s32)(u8 *)&ModeTextBuffer + 0x397C, (s32)(u8 *)&ModeTextBuffer + 0x3A40,
-    (s32)(u8 *)&ModeTextBuffer + 0x2178, (s32)(u8 *)&ModeTextBuffer + 0x2228,
-    (s32)(u8 *)&ModeTextBuffer + 0x22D8, (s32)(u8 *)&ModeTextBuffer + 0x2374,
-    (s32)(u8 *)&ModeTextBuffer + 0x26B0, (s32)(u8 *)&ModeTextBuffer + 0x2600,
-    (s32)(u8 *)&ModeTextBuffer + 0x2760, (s32)(u8 *)&ModeTextBuffer + 0x2820,
-    (s32)(u8 *)&ModeTextBuffer + 0x2868, (s32)(u8 *)&ModeTextBuffer + 0x1FB4,
-    (s32)(u8 *)&ModeTextBuffer + 0x2078, (s32)(u8 *)&ModeTextBuffer + 0x2200,
-    (s32)(u8 *)&ModeTextBuffer + 0x213C, (s32)(u8 *)&ModeTextBuffer + 0x1850,
-    (s32)(u8 *)&ModeTextBuffer + 0x1594, (s32)(u8 *)&ModeTextBuffer + 0x1828,
-    (s32)(u8 *)&ModeTextBuffer + 0x17DC, (s32)(u8 *)&ModeTextBuffer + 0x544,
-    (s32)(u8 *)&ModeTextBuffer + 0x3E24, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
+PlaceRec *** PauseMenuTexts[45] = {  /* the pause menu's texts in the mode text buffer */
+    (PlaceRec ***)(ModeTextBuffer + 0x3B44), (PlaceRec ***)(ModeTextBuffer + 0x3C1C),
+    (PlaceRec ***)(ModeTextBuffer + 0x3CF4), (PlaceRec ***)(ModeTextBuffer + 0x3DCC),
+    (PlaceRec ***)(ModeTextBuffer + 0x7B4), (PlaceRec ***)(ModeTextBuffer + 0x2C58),
+    (PlaceRec ***)(ModeTextBuffer + 0x2A48), (PlaceRec ***)(ModeTextBuffer + 0x2BA8),
+    (PlaceRec ***)(ModeTextBuffer + 0x2AF8), (PlaceRec ***)(ModeTextBuffer + 0x2CA0),
+    (PlaceRec ***)(ModeTextBuffer + 0x3808), (PlaceRec ***)(ModeTextBuffer + 0x38B8),
+    (PlaceRec ***)(ModeTextBuffer + 0x397C), (PlaceRec ***)(ModeTextBuffer + 0x3A40),
+    (PlaceRec ***)(ModeTextBuffer + 0x2178), (PlaceRec ***)(ModeTextBuffer + 0x2228),
+    (PlaceRec ***)(ModeTextBuffer + 0x22D8), (PlaceRec ***)(ModeTextBuffer + 0x2374),
+    (PlaceRec ***)(ModeTextBuffer + 0x26B0), (PlaceRec ***)(ModeTextBuffer + 0x2600),
+    (PlaceRec ***)(ModeTextBuffer + 0x2760), (PlaceRec ***)(ModeTextBuffer + 0x2820),
+    (PlaceRec ***)(ModeTextBuffer + 0x2868), (PlaceRec ***)(ModeTextBuffer + 0x1FB4),
+    (PlaceRec ***)(ModeTextBuffer + 0x2078), (PlaceRec ***)(ModeTextBuffer + 0x2200),
+    (PlaceRec ***)(ModeTextBuffer + 0x213C), (PlaceRec ***)(ModeTextBuffer + 0x1850),
+    (PlaceRec ***)(ModeTextBuffer + 0x1594), (PlaceRec ***)(ModeTextBuffer + 0x1828),
+    (PlaceRec ***)(ModeTextBuffer + 0x17DC), (PlaceRec ***)(ModeTextBuffer + 0x544),
+    (PlaceRec ***)(ModeTextBuffer + 0x3E24), (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
     (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
     (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
 };
-s32 PauseMenuSetsByLang[6] = {
-    (s32)&PauseMenuTexts, (s32)&PauseMenuTexts, (s32)&PauseMenuTexts, (s32)&PauseMenuTexts, (s32)&PauseMenuTexts,
-    (s32)&PauseMenuTexts,
+PlaceRec **** PauseMenuSetsByLang[6] = {
+    PauseMenuTexts, PauseMenuTexts, PauseMenuTexts, PauseMenuTexts, PauseMenuTexts,
+    PauseMenuTexts,
 };
 u16 CpuHeroChoices[32] = {
     4, 7, 6, 1, 3, 7, 2, 5, 2, 8, 1, 7, 6, 5, 3, 4, 5, 1, 8, 3, 8, 6, 7, 5, 1, 3, 4, 2, 4, 7,

@@ -141,7 +141,7 @@ void SetupSceneMarks(u8 *arg0);
 
 s32 LoadModeText(void);
 extern s32 *ModeTextTables[];
-extern s32 ModeTextFiles[];
+extern s32 *ModeTextFiles[];
 extern u8 *ModeTextLoadAddr;
 
 void LoadModeFiles(void);

@@ -22,7 +22,7 @@ typedef struct {
 extern u16 HeroSquashCycle[];
 extern u16 HeroSpinScale[];
 /* A victory sequence (HeroHooks.VictorySeqs, by hero): the animation's name, its sequence. */
-typedef struct {
+typedef struct VictorySeq {
     s32 name;
     u16 seq;
     u16 pad;

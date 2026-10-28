@@ -26,10 +26,10 @@ typedef struct { s32 w[3]; } Blk12;
 typedef struct { Blk12 a; s32 b; } Blk12p4;
 
 
-extern s32 LangUnlockWithCard[];
-extern s32 LangInsertCardForUnlocked[];
-extern s32 LangCheckingUnlocked[];
-extern s32 LangThereAreNoMoreUnlockedLevels[];
+extern const char *LangUnlockWithCard[];
+extern const char *LangInsertCardForUnlocked[];
+extern const char *LangCheckingUnlocked[];
+extern const char *LangThereAreNoMoreUnlockedLevels[];
 s32 CountSavedWins(s32 arg0);
 
 /* Inlined copies used by CountSavedWins. */

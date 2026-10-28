@@ -309,8 +309,8 @@ typedef struct Vec3W {
 typedef struct { s32 unk0; EngineRec32 *unk4; } EngineBootSrc;
 extern NAS *NasPoolLast;
 extern u8 *HeroNasList;
-extern s32 PauseMenuSets;
-extern s32 PauseMenuSetsByLang[];
+extern PlaceRec ****PauseMenuSets;
+extern PlaceRec ****PauseMenuSetsByLang[];
 extern s32 LevelRecIndex;
 extern u16 CameraMode;
 
@@ -355,7 +355,7 @@ typedef struct EngineHooks {
 } EngineHooks;
 extern EngineHooks HeroHooks;
 extern u8 DefaultHeroModels[];
-extern s32 DefaultVictorySeqs[];   /* {name, id} pairs: the default victory sequences (HeroHooks.VictorySeqs) */
+extern struct VictorySeq DefaultVictorySeqs[];   /* {name, id} pairs: the default victory sequences (HeroHooks.VictorySeqs) */
 extern u8 DefaultRunSpeeds[];
 extern u8 DefaultJumpEnts[];
 extern u8 DefaultAiBotTweaks[];

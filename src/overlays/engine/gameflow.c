@@ -418,12 +418,12 @@ void UpdateCardMessage(void) {
     s1 = &s0[6];
     if (CardStatus & 2) {
         if (CardStatus & 0x40) {
-            s1->u6C.text = (char *)LangCheckingUnlocked[GameLanguage];
+            s1->u6C.text = LangCheckingUnlocked[GameLanguage];
             s0[6].flags |= 0x8000;
             return;
         } else if (CardStatus & 0x10) {
             if (CountSavedWins(0) != 0) {
-                s1->u6C.text = (char *)LangUnlockWithCard[GameLanguage];
+                s1->u6C.text = LangUnlockWithCard[GameLanguage];
                 s0[6].flags |= 0x8000;
                 if (Pads[0].pressed & 0x2000) {
                     PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -431,7 +431,7 @@ void UpdateCardMessage(void) {
                 }
                 return;
             }
-            s1->u6C.text = (char *)LangThereAreNoMoreUnlockedLevels[GameLanguage];
+            s1->u6C.text = LangThereAreNoMoreUnlockedLevels[GameLanguage];
             s0[6].flags |= 0x8000;
             return;
         } else {
@@ -1972,9 +1972,9 @@ PlaceRec CupMenuPanel[5] = {
     { 4, 0x14A, 0x24E, 0xE0, 0x158, 4, 0, 0, 0, NULL, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 LangTournamentSelect[1] = { (s32)&MenuTournamentSelect };
-s32 LangMenuLocked[1] = { (s32)&MenuLocked };
-s32 LangMenuPressButtonToSelect[1] = { (s32)&MenuPressButtonToSelect };
+const char * LangTournamentSelect[1] = { MenuTournamentSelect };
+const char * LangMenuLocked[1] = { MenuLocked };
+const char * LangMenuPressButtonToSelect[1] = { MenuPressButtonToSelect };
 PlaceRec CupMenuLabels[12] = {
     { 3, -0x8000, 0x72, 0, 0, 0, 0, 0, 0, NULL, 2, 0, 0, 0 },
     { 0xE, -0x8000, -0xC8, 0, 0, 0, 0, 0, 0, &LangTournamentSelect, 0, 0, 0, 0 },
@@ -1989,10 +1989,10 @@ PlaceRec CupMenuLabels[12] = {
     { 4, -0x8000, 0x258, 0x9A, 0xC0, 1, 0, 0, 0, NULL, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0, 0, 0 },
 };
-s32 LangUnlockWithCard[1] = { (s32)&MenuUnlockWithCard };
-s32 LangInsertCardForUnlocked[1] = { (s32)&MenuInsertCardForUnlocked };
-s32 LangCheckingUnlocked[1] = { (s32)&MenuCheckingUnlocked };
-s32 LangThereAreNoMoreUnlockedLevels[1] = { (s32)&MenuThereAreNoMoreUnlockedLevels };
+const char * LangUnlockWithCard[1] = { MenuUnlockWithCard };
+const char * LangInsertCardForUnlocked[1] = { MenuInsertCardForUnlocked };
+const char * LangCheckingUnlocked[1] = { MenuCheckingUnlocked };
+const char * LangThereAreNoMoreUnlockedLevels[1] = { MenuThereAreNoMoreUnlockedLevels };
 GfxViewport CupMenuViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0x800, 0x7FF, -0x80, 0, 0, 0, 1 };
 GfxViewport CupViewport0 = { 0x32, 0x58, 0x136, 0xD0, 0, 0, 0x280, 0x1E0, 0xB4, 0xF8, 0x200, 0x17F, 0, 0, 0, 0, 0 };
 GfxViewport CupViewport1 = { 0x14A, 0x58, 0x24E, 0xD0, 0, 0, 0x280, 0x1E0, 0x1CC, 0xF8, 0x380, 0x17F, 0, 0, 0, 0, 0 };
@@ -2178,7 +2178,7 @@ s32 SaveMenuState = 0;
 fade_info ScreenFade = {0};
 s32 IdleFrames = 0;
 process_control_info ProcessControl = {0};
-s32 ScreenModesByWidth[5] = { (s32)&vmode_640_ntsc, (s32)&vmode_512_ntsc, (s32)&vmode_384_ntsc, (s32)&vmode_320_ntsc, (s32)&vmode_256_ntsc };
+ScreenMode * ScreenModesByWidth[5] = { &vmode_640_ntsc, &vmode_512_ntsc, &vmode_384_ntsc, &vmode_320_ntsc, &vmode_256_ntsc };
 GfxViewport MainViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0x200, -0x100, 0xF0, 0xF0, 0xF0, 0 };
 GfxViewport HudViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xDAC, 0, 0xF0, 0xF0, 0xF0, 0 };
 s32 ScreenSizes[10] = { 0xF00140, 0x1E00280, 0xF00140, 0x1E00280, 0x1E0, 0x168, 0x200, 0x800, 0, 0x1000000 };

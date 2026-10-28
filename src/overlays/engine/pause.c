@@ -1357,7 +1357,7 @@ void StartWinSequence(s32 arg0) {
         if (g->adventure.unk76[g->mode] & 0x80) {
             return;
         }
-        set = ((PlaceRec ****)PauseMenuSets)[g->mode][2];
+        set = PauseMenuSets[g->mode][2];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
@@ -1375,7 +1375,7 @@ void StartWinSequence(s32 arg0) {
             if (g->adventure.unk76[g->mode] & 8) {
                 return;
             }
-            set = ((PlaceRec ****)PauseMenuSets)[g->mode][8];
+            set = PauseMenuSets[g->mode][8];
             if (set != NULL) {
                 PauseRecSet = set;
                 rec = *set;
@@ -1391,7 +1391,7 @@ void StartWinSequence(s32 arg0) {
             if (g->adventure.unk76[g->mode] & 0x20) {
                 return;
             }
-            set = ((PlaceRec ****)PauseMenuSets)[g->mode][6];
+            set = PauseMenuSets[g->mode][6];
             if (set != NULL) {
                 PauseRecSet = set;
                 rec = *set;
@@ -1409,7 +1409,7 @@ void StartWinSequence(s32 arg0) {
         if (g->adventure.unk76[g->mode] & 0x40) {
             return;
         }
-        set = ((PlaceRec ****)PauseMenuSets)[g->mode][4];
+        set = PauseMenuSets[g->mode][4];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
@@ -1427,7 +1427,7 @@ void StartWinSequence(s32 arg0) {
         if (g2->adventure.unk76[g2->mode] & 0x10) {
             return;
         }
-        set = ((PlaceRec ****)PauseMenuSets)[g2->mode][0];
+        set = PauseMenuSets[g2->mode][0];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
@@ -1698,7 +1698,7 @@ void SetPauseRecs(s32 arg0, s32 kind, s32 flag) {
     PlaceRec **set;
     PlaceRec *rec;
 
-    t = ((PlaceRec ****)PauseMenuSets)[GameMode];
+    t = PauseMenuSets[GameMode];
     if (flag != 0) {
         switch (kind) {
         case 3:
@@ -1830,10 +1830,10 @@ s32 PausePad = 0;
 s32 PauseFlashItem = -1;
 s32 PauseUnused[2] = { 5, 0 };
 s32 PauseTextHold = 0;  /* frames the pause texts stay hidden after a choice */
-s32 ModeNames[13] = {
-    0, (s32)&ModeNameBattleMode, (s32)&ModeNameTournamentMode, (s32)&ModeNameAdventureTrophy,
-    (s32)&ModeNameAdventureGoldRelic, (s32)&ModeNameAdventurePlatRelic,
-    (s32)&ModeNameAdventureGem, (s32)&ModeNameAdventureChallenge, (s32)&ModeNameAdventureBoss,
+const char * ModeNames[13] = {
+    NULL, ModeNameBattleMode, ModeNameTournamentMode, ModeNameAdventureTrophy,
+    ModeNameAdventureGoldRelic, ModeNameAdventurePlatRelic,
+    ModeNameAdventureGem, ModeNameAdventureChallenge, ModeNameAdventureBoss,
     0x80007, 0x50000, 0x40009, 6,
 };
 u16 LevelKindKeys[7] =  /* GameLevelFlags & 0xFF per level kind (Cups_Update, UpdatePause) */ { 1, 2, 0x14, 0x24, 0x2C, 0x44, 0x84 };

@@ -1295,15 +1295,15 @@ extern u8 file_group_TOXIC[];
 extern u8 file_group_WATER[];
 
 GfxViewport LoadingViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0, 0x200, -0x100, 0, 0, 0, 1 };
-s32 ModeTextFiles[14] = {
-    (s32)&DatIndex[2 * 722], (s32)&DatIndex[2 * 721], (s32)&DatIndex[2 * 720], (s32)&DatIndex[2 * 728], (s32)&DatIndex[2 * 727],
-    (s32)&DatIndex[2 * 726], (s32)&DatIndex[2 * 725], (s32)&DatIndex[2 * 724], (s32)&DatIndex[2 * 487], (s32)&DatIndex[2 * 723],
-    (s32)&DatIndex[2 * 719], (s32)&DatIndex[2 * 717], (s32)&DatIndex[2 * 716], (s32)&DatIndex[2 * 718],
+s32 * ModeTextFiles[14] = {
+    &DatIndex[2 * 722], &DatIndex[2 * 721], &DatIndex[2 * 720], &DatIndex[2 * 728], &DatIndex[2 * 727],
+    &DatIndex[2 * 726], &DatIndex[2 * 725], &DatIndex[2 * 724], &DatIndex[2 * 487], &DatIndex[2 * 723],
+    &DatIndex[2 * 719], &DatIndex[2 * 717], &DatIndex[2 * 716], &DatIndex[2 * 718],
 };
-s32 ModeTextFilesLang[14] = {  /* ModeTextTables' per-language file list */
-    0, 0, (s32)&DatIndex[2 * 142], (s32)&DatIndex[2 * 151], (s32)&DatIndex[2 * 146], (s32)&DatIndex[2 * 141],
-    (s32)&DatIndex[2 * 145], (s32)&DatIndex[2 * 152], (s32)&DatIndex[2 * 144], (s32)&DatIndex[2 * 143], (s32)&DatIndex[2 * 148],
-    (s32)&DatIndex[2 * 147], (s32)&DatIndex[2 * 149], (s32)&DatIndex[2 * 150],
+s32 * ModeTextFilesLang[14] = {  /* ModeTextTables' per-language file list */
+    0, 0, &DatIndex[2 * 142], &DatIndex[2 * 151], &DatIndex[2 * 146], &DatIndex[2 * 141],
+    &DatIndex[2 * 145], &DatIndex[2 * 152], &DatIndex[2 * 144], &DatIndex[2 * 143], &DatIndex[2 * 148],
+    &DatIndex[2 * 147], &DatIndex[2 * 149], &DatIndex[2 * 150],
 };
 s32 *ModeTextTables[5] = {
     (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang,
