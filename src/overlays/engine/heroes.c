@@ -4231,20 +4231,20 @@ void emit_script_particle(subengine *arg0, partdata *arg1, EmitPart *arg2, s32 *
     arg4->particlesactive += 1;
 }
 
-u8 *script_track_keys(u8 *arg0, s32 *arg1) {
+u8 *script_track_keys(u8 *arg0, threaddata *t) {
     u8 *r;
 
-    r = get_script_track(arg0, arg1[0x24 / 4], arg1[1]);
+    r = get_script_track(arg0, t->scriptnumber, t->threadnumber);
     if (r != NULL) {
         return r + 0x24;
     }
     return NULL;
 }
 
-u8 *script_track_data(u8 *arg0, u8 *arg1) {
-    u8 *p = get_script_track(arg0, *(s32 *)(arg1 + 0x24), *(s32 *)(arg1 + 4));
+partdata *script_track_data(u8 *arg0, threaddata *t) {
+    u8 *p = get_script_track(arg0, t->scriptnumber, t->threadnumber);
     if (p != NULL) {
-        return p + 0x14;
+        return &((script_thread *)p)->type.particle;
     }
     return NULL;
 }

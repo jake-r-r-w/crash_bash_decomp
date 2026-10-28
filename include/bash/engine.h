@@ -198,7 +198,7 @@ extern s32 LevelUnlockedIn(s32, u8 *);
 extern u16 ModeTypes[];
 void process_init(process_control_info *pc);
 void InitialiseLevel(void);
-s32 CountTrophies(u8 *arg0);
+s32 CountTrophies(GameState *arg0);
 void HubStartCredits(void);
 
 extern s32 IntroDbase;

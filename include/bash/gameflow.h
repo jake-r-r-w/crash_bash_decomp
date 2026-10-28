@@ -197,49 +197,49 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern s32 CardSlotPanel[];
 extern void *LangEmpty[];
 extern char PercentText[][5];
-void ShowCardSlotStats(u8 *arg0, s32 arg1);
+void ShowCardSlotStats(GameState *arg0, s32 arg1);
 extern char CardStatsText[];
 
 extern s32 Slot3DigitSrc[][5];
 EXTengine *GetEngineSlot(s32 arg0);
 
 /* GameSum147's body, inlined by ShowCardSlotStats. */
-static inline s32 EngineSum147(u8 *arg0) {
+static inline s32 EngineSum147(GameState *arg0) {
     s32 n;
     s32 i;
 
     n = 0;
     i = 0;
     do {
-        n += (arg0 + i)[0x147];
+        n += arg0->adventure.unkE4[3][i];
         i++;
     } while (i < 0x21);
     return n;
 }
 
 /* GameSum126's body, inlined by ShowCardSlotStats. */
-static inline s32 EngineSum126(u8 *arg0) {
+static inline s32 EngineSum126(GameState *arg0) {
     s32 n;
     s32 i;
 
     n = 0;
     i = 0;
     do {
-        n += (arg0 + i)[0x126];
+        n += arg0->adventure.unkE4[2][i];
         i++;
     } while (i < 0x21);
     return n;
 }
 
 /* GameCount105's body, inlined by ShowCardSlotStats. */
-static inline s32 EngineCount105(u8 *arg0) {
+static inline s32 EngineCount105(GameState *arg0) {
     s32 n;
     s32 i;
 
     n = 0;
     i = 0;
     do {
-        if ((arg0 + i)[0x105] != 0) {
+        if (arg0->adventure.unkE4[1][i] != 0) {
             n++;
         }
         i++;
@@ -248,14 +248,14 @@ static inline s32 EngineCount105(u8 *arg0) {
 }
 
 /* GameExtra105's body, inlined by ShowCardSlotStats. */
-static inline s32 EngineExtra105(u8 *arg0) {
+static inline s32 EngineExtra105(GameState *arg0) {
     u8 *p;
     s32 i;
     s32 n;
 
     n = 0;
     for (i = 0; i < 0x21; i++) {
-        p = arg0 + i;
+        p = (u8 *)arg0 + i;  /* a byte walk: &unkE4[1][i] adds an instruction */
         if (p[0x105] >= 2) {
             n += p[0x105] - 1;
         }
@@ -292,7 +292,7 @@ static inline void EngineSetSlot3Digits(s32 slot, s32 arg0) {
     } while (i < 5);
 }
 
-void ShowCardSlotStats(u8 *arg0, s32 arg1);
+void ShowCardSlotStats(GameState *arg0, s32 arg1);
 
 void ShowSaveScreen(void);
 

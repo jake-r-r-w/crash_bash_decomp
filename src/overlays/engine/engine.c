@@ -680,11 +680,11 @@ NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2) {
     return NULL;
 }
 
-s32 CountTrophies(u8 *arg0) {
+s32 CountTrophies(GameState *arg0) {
     s32 sum = 0;
     s32 i = 0;
     do {
-        sum += (arg0 + i)[0xE4];
+        sum += arg0->adventure.unkE4[0][i];
         i++;
     } while (i < 0x21);
     return sum;

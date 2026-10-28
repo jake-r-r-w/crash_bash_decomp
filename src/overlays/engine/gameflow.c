@@ -799,7 +799,7 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     e->sub[2].u6C.text = PercentText[arg1];
 }
 
-void ShowCardSlotStats(u8 *arg0, s32 arg1) {
+void ShowCardSlotStats(GameState *arg0, s32 arg1) {
     EXTengine *e;
 
     e = GetEngineSlot(3);
@@ -820,7 +820,7 @@ void ShowCardSlotStats(u8 *arg0, s32 arg1) {
     e->sub[8].u6C.text = CardStatsText + 9;
     itoa_div_end(CardStatsText + 12, EngineExtra105(arg0), 10);
     e->sub[10].u6C.text = CardStatsText + 12;
-    switch (*(s32 *)(arg0 + 0xE0)) {
+    switch (arg0->adventure.unkE0) {
     case 1:
         EngineSetSlot3Digits(3, 1);
         break;
@@ -1785,7 +1785,7 @@ void InitRetry(void) {
         g->adventure.unkE0 = 1;
     }
     g = (GameState *)GameInfo;
-    if (CountTrophies((u8 *)g) >= 0x19 && g->adventure.unkE0 < 2) {
+    if (CountTrophies(g) >= 0x19 && g->adventure.unkE0 < 2) {
         g->adventure.unkE0 = 2;
     }
     prims_empty_back();
@@ -1850,7 +1850,7 @@ void UpdateSecretLevel(void) {
         a->adventure.unkE0 = 1;
     }
     g = (GameState *)GameInfo;
-    if (CountTrophies((u8 *)g) >= 0x19 && g->adventure.unkE0 < 2) {
+    if (CountTrophies(g) >= 0x19 && g->adventure.unkE0 < 2) {
         g->adventure.unkE0 = 2;
     }
 }
