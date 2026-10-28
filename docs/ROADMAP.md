@@ -381,13 +381,17 @@ load extract and are documented.
   named from their code (the level loop, panel, pause, heroes, game flow, loading,
   camera), the default hero actions from the leaked `HeroMode_nums` (`SetHeroIdle`
   .. `HeroKick`) and the process functions from their `process_info` slots. Every
-  engine function is named (2026-10-28). Left: 666 `D_` names (2034 uses) across the
-  engine, the exe and the overlays' references to them, and the functions whose C still does
-  raw byte-offset arithmetic (27 of the engine's 357, 128 of the exe's 575: `progress`'s
-  typed figure). The most-used are labels inside objects: `GameOptions + 4`
-  (`D_8005A608`), the arena object counts (`D_8009E46C`, `D_8009E25C`); they need their
-  structs typed first. The model bank is typed (2026-10-28): `obj_dbase HeroModelBank[283]`
-  with `enum DbaseIds` (ARCHITECTURE.md, The model bank), its 136 labels gone.
+  engine function is named (2026-10-28). The model bank is typed: `obj_dbase
+  HeroModelBank[283]` with `enum DbaseIds` (ARCHITECTURE.md, The model bank), its 136
+  labels gone. Then the labels inside objects (2026-10-28): `GameOptions` is one struct,
+  the boss's record (`BossState`), the crate and pickup counts out of `HitSfx`'s tail,
+  `AiPlayerSkill` one type for every unit (the boss's skill label is `[3].level`), and
+  60 more globals named. Left: 608 `D_` names (1516 uses) across the engine, the exe and
+  the overlays' references to them, and the functions whose C still does raw
+  byte-offset arithmetic (24 of the engine's 357, 100 of the exe's 575, 77 in the slot
+  overlays: `progress`'s typed figure). Some of the exe's are a heap block's own
+  arithmetic (`(u8 *)b + b->size * 4 + 0x18`) and stay; most of the engine's read
+  `GameInfo` by offset, which stays by the game state decision below.
 - [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
   globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads
   `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff

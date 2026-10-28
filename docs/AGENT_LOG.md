@@ -23,7 +23,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   source-only, named, typed and shift-tested) are done. Phase 4 repeats
   the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
   Phase 5 does the engine and `main.exe`. Figures (`progress`,
-  2026-10-28): all 2537 game functions named, 2317 typed, 89.77% of the
+  2026-10-28): all 2537 game functions named, 2347 typed, 89.77% of the
   data is C (every slot overlay's, the engine's, and the exe's game
   `.data`).
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
@@ -63,16 +63,15 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. The engine's and exe's `D_` globals (`scratch/rank_d.py`-style counts): the top ones
-   are labels inside objects (`GameOptions + 4`, the arena object counts), so type those
-   objects first, then name what's left.
-2. The model bank as one `obj_dbase` array (283 records from `HeroModelBank` to
-   0x8005683C; the slot labels as elements or an enum of indices: a naming choice
-   for the user).
-3. The exe's last data asm: `asm/data/5F1EC.data.s` is its `.bss` written into
-   the file (ARCHITECTURE.md, The exe's .bss). As C its globals are
-   uninitialised definitions; the link would have to write `.bss` into the
-   file. Try it on `nascalls.c`'s words first.
+1. The engine's and exe's `D_` globals (608 left, 1516 uses: `scratch/rank_d.py`
+   counts every `D_8001..D_800B32B4` use in src and include, externs aside). Read the
+   uses, name, `decomp.py rename --ovl engine --file F` for the engine's, sed plus a
+   `sym.main.txt` line for the exe's (`scratch/ren_main.sh`), `make check`.
+2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 24 engine, 100
+   exe, 77 overlay). Next groups: the subengine's +0x6C area (an fx buffer set, a
+   script's `script_control_info`, a model's dbase: a union in `subengine`), the
+   script threads (`update_model_thread` and co. take `script_thread_handler`), the
+   rumble state (`pad_set_rumble_*`), `draw_object_model`, `mapscene_place_subs`.
 4. Keep naming: `decomp.py rename --file` (it writes sym.main.txt; move names at
    0x80078C90 and up to sym.engine.txt). `scratch/rank_d.py`-style counts of the `D_`
    uses left point at the next batch.
@@ -477,6 +476,19 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (Phase 5: globals and typing):** labels inside objects typed: the boss's
+  record (`BossState`), `GameOptions` (music, sfx, stereo, vibrate), the crate and
+  pickup counts out of `HitSfx`'s tail, `AiPlayerSkill` one type (`bash/aiskill.h`;
+  four overlays had copies). 60 globals named. Typed off raw offsets: `GfxCamera` from
+  `cam_init`, the loader's queue (`LoaderState` head/tail, `PosList` was the same
+  type), `mal_alloc` and the mal tick count, the NAS list functions, the scripts
+  (`script_control_info`'s threads/flags/handle, `script_handler` lists), the prim
+  lists (`PrimList`), the collision box (`SetEngineMotion` is `SetEngineColBox`), the
+  dbase anim chunks (`DbaseAnim`). Engine 27 -> 24, exe 128 -> 100. Gotchas: a struct
+  for globals that were separate labels can shrink code (one `lui` for all the
+  fields: the hero anim slots stay eight globals); replacing a `(u8 *)p + 0x10` cast
+  with a struct pointer cast scales the offset (use `&p->field`).
 
 - **2026-10-28 (Phase 5: the game state, main.exe's functions):** `GameInfo`'s bytes are
   globals around its labels (the user chose labels as globals of their own; ROADMAP);
