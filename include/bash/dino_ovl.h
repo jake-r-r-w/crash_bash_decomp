@@ -144,24 +144,7 @@ typedef struct DinoObj {
     s32 b;                 /* 0x80 */
 } DinoObj;
 
-typedef struct DinoGame {
-    u8 pad0[0x32];
-    u16 flags; /* 0x32 */
-} DinoGame;
 
-/* DinoChooseWinnerTeam: GameInfo's team-game view. */
-typedef struct DinoTeamView {
-    /* 0x00 */ u8 unk0[0x30];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u8 unk32[0x48 - 0x32];
-    /* 0x48 */ s16 team0;
-    /* 0x4A */ s16 team1;
-    /* 0x4C */ u8 unk4C[0x5C - 0x4C];
-    /* 0x5C */ u8 out[4];
-    /* 0x60 */ u8 winner;
-    /* 0x61 */ u8 unk61[0x6C - 0x61];
-    /* 0x6C */ s32 teams;
-} DinoTeamView;
 
 /* DinoChooseWinnerTeam: the 0x10000000 extension of the spawned 0x1605 effect. */
 typedef struct DinoPuff {

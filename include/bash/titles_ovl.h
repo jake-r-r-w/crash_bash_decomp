@@ -258,11 +258,6 @@ typedef struct {
 extern s32 CharPickSfx[];
 extern s32 CharMoveSfx[];
 extern TitlesOff CharSelectorOffsets[];
-/* GameInfo as seen by ShuffleCharSelectors (unk26 is GamePlayers). */
-typedef struct {
-    u8 pad0[0x26];
-    u8 unk26;
-} TitlesModeView;
 
 void SetupTitlesBackdrop(void);
 
@@ -392,37 +387,12 @@ extern TitlesPreset TeamModePresets[];
         *(s16 *)(q_ + 0x76) = r_ + 0x78;                                      \
         *(s32 *)((u8 *)e_->sub + (i) * 0xA8 + 4) = *(s16 *)(q_ + 0x70) + 0x1A; \
     }
-/* GameInfo as seen by TeamModeShowPreset. */
-typedef struct {
-    u8 pad0[0x2C];
-    s32 unk2C;     /* 0x2C */
-    u8 pad30[0x48 - 0x30];
-    u16 unk48;     /* 0x48 */
-    u16 unk4A;     /* 0x4A */
-    u8 unk4C[8];   /* 0x4C: per player */
-    u8 unk54;
-    u8 unk55;
-    u8 unk56;
-    u8 unk57;
-    u8 pad58[0x6C - 0x58];
-    s32 unk6C;     /* 0x6C */
-} TitlesPresetView;
-#define O69PV ((TitlesPresetView *)GameInfo)
+#define O69PV ((GameState *)GameInfo)
 extern u16 TeamModeHeroFrames[];
 
 void TeamModeShowPreset(void);
 
-/* GameInfo as seen by BattleOptionsUpdate (option screen). */
-typedef struct {
-    u8 pad0[0x2C];
-    s32 unk2C;     /* 0x2C */
-    u8 pad30[0x32 - 0x30];
-    u16 unk32;     /* 0x32 */
-    u8 pad34[0x38 - 0x34];
-    s16 unk38;     /* 0x38 */
-    u16 unk3A;     /* 0x3A */
-} TitlesOptView;
-#define O69OV ((TitlesOptView *)GameInfo)
+#define O69OV ((GameState *)GameInfo)
 extern s32 TextDifficulties[][3];
 extern s32 TextBattleKinds[][2];
 
@@ -430,24 +400,7 @@ void MainMenuUpdate(void);
 
 void BattleOptionsUpdate(void);
 
-/* GameInfo as seen by PlayersMenuUpdate (player count menu). */
-typedef struct {
-    u8 pad0[0x26];
-    u8 unk26;      /* 0x26: chosen count */
-    u8 unk27;      /* 0x27: mode (GameMaxPlayers) */
-    u8 pad28[0x32 - 0x28];
-    u16 unk32;     /* 0x32 */
-    u8 pad34[0x54 - 0x34];
-    s8 unk54;
-    s8 unk55;
-    s8 unk56;
-    s8 unk57;
-    u8 pad58[0x5C - 0x58];
-    u8 unk5C[4];   /* 0x5C */
-    u8 pad60[0x6C - 0x60];
-    s32 unk6C;     /* 0x6C */
-} TitlesCountView;
-#define O69CV ((TitlesCountView *)GameInfo)
+#define O69CV ((GameState *)GameInfo)
 #define O69PAD ((PadState *)Pads)
 extern u8 GameMaxPlayers;
 void PlayersMenuUpdate(void);

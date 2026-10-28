@@ -992,7 +992,7 @@ void Bash_HeroBot(s32 arg0) {
         }
         r = HeroTestBox(arg0, 0x40);
         if (r != target && (Heroes[r].hero_immunity | Heroes[r].hero_frozen) == 0 &&
-            (OVLG->p2_active == 0 || r != mate) && Random(3) == 0) {
+            (OVLG->teams == 0 || r != mate) && Random(3) == 0) {
             ai->AIpad |= 0x8000;
         }
         fux = BashHeroObjectAhead(arg0, 3);
@@ -1729,7 +1729,7 @@ s32 BashAI_ChooseTarget(s32 player) {
         s32 wn = (s16)wNear;
         wRnd = (s16)wHero;
         if (i == player) continue;
-        if (OVLG->p2_active != 0 && i == mate) continue;
+        if (OVLG->teams != 0 && i == mate) continue;
         if (Heroes[i].hero_status & 0xFA00) continue;
         do {
             dx = px - Heroes[i].hero_eng->unk10.x;
@@ -1986,7 +1986,7 @@ void BashCrateMaster(void) {
     u8 **pp;
     BashEdgeSub *sub;
 
-    if (OVLG->pause & 0x801) {
+    if (OVLG->exitFlags & 0x801) {
         return;
     }
     if (BashCrateTimer != 0) {
@@ -2116,11 +2116,11 @@ void BashCrateMaster(void) {
             }
         }
     }
-    if (OVLG->mode == 0 && (OVLG->flags & 0x80)) {
+    if (OVLG->mode == 0 && (OVLG->levelFlags & 0x80)) {
         if (BashTumblerTimer != 0) {
             BashTumblerTimer--;
         } else {
-            if (!(OVLG->pause & 0x801)) {
+            if (!(OVLG->exitFlags & 0x801)) {
                 CreateNAS(0, 0, 0, 0x1107, 0x11);
             }
             BashTumblerTimer = Random(90) + 30;
@@ -2148,7 +2148,7 @@ void BashDropCrates(u16 arg0) {
             BashCrateMixPos = (BashCrateMixPos + 1) & 0x3F;
             t = c;
             if (t == 6) {
-                if (!(OVLG->flags & 0x80) || OVLG->mode != 1) {
+                if (!(OVLG->levelFlags & 0x80) || OVLG->mode != 1) {
                     if (CrateCounts[6] >= BashMaxNitro[HeroesInPlay - 1]) {
                         t = 4;
                     }
@@ -3152,7 +3152,7 @@ void InitBashHomer(NAS *nas) {
         bestd = 0x800;
         for (i = 0; i < 4; i++) {
             u1 = nas->UserInfo.user1;
-            if (i != u1 && (OVLG->p2_active == 0 || Heroes[i].hero_teammate != u1)) {
+            if (i != u1 && (OVLG->teams == 0 || Heroes[i].hero_teammate != u1)) {
                 d = angle_diff_abs(nas->UserInfo.user2,
                                   get_angle(eng->unk10.x - Heroes[i].hero_eng->unk10.x,
                                             eng->unk10.z - Heroes[i].hero_eng->unk10.z));
@@ -3754,7 +3754,7 @@ void BashSnowInitHeroMove(void) {
             m->x_acc = 8;
             m->z_dec = 4;
             m->x_dec = 4;
-            if ((OVLG->flags & 0x80) && (i == 0 || (OVLG->p2_active != 0 && i == 1))) {
+            if ((OVLG->levelFlags & 0x80) && (i == 0 || (OVLG->teams != 0 && i == 1))) {
                 m->z_acc = 4;
                 m->x_acc = 4;
                 m->z_dec = 1;

@@ -155,20 +155,7 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1);
 void BonkChooseWinnerTimed(s32 arg0, u16 arg1);
 void BonkChooseWinnerRank(s32 arg0, u16 arg1);
 
-/* GameInfo as seen by BonkChooseWinnerRank (the final ranking). */
-typedef struct BonkRankView {
-    /* 0x00 */ u8 unk0[0x30];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u8 unk32[0x48 - 0x32];
-    /* 0x48 */ s16 team[2];
-    /* 0x4C */ u8 unk4C[0x60 - 0x4C];
-    /* 0x60 */ u8 winner[2];
-    /* 0x62 */ u8 unk62[0x6C - 0x62];
-    /* 0x6C */ s32 teams;
-    /* 0x70 */ u8 unk70[0xA7 - 0x70];
-    /* 0xA7 */ u8 order[4];
-} BonkRankView;
-#define RANK66V ((BonkRankView *)GameInfo)
+#define RANK66V ((GameState *)GameInfo)
 
 /* BonkAI_FindClosest: keep the closest target found so far (both search loops). */
 #define BONK_SET_CLOSEST(best, found, d, p) \

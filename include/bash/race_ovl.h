@@ -223,29 +223,8 @@ s32 RaceBounceObject(RaceBounceObj *obj, RaceBouncer *b);
 s32 RaceDazeHeroNear(u8 *arg0);
 
 void RACESetUp(void);
-/* GameInfo as seen by UpdateRACE. */
-typedef struct RaceGameView {
-    /* 0x00 */ u8 unk0[0x10];
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 unk14[0x30 - 0x14];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 unk34;
-} RaceGameView;
-#define G63 ((RaceGameView *)GameInfo)
-/* GameInfo as seen by RaceMissileHitHeroes. */
-typedef struct RaceGameView2 {
-    /* 0x00 */ u8 unk0[4];
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ u8 unk8[0x30 - 0x8];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 unk34;
-    /* 0x36 */ u8 unk36[0x5C - 0x36];
-    /* 0x5C */ u8 unk5C[4];
-    /* 0x60 */ u8 unk60;
-} RaceGameView2;
-#define G63B ((RaceGameView2 *)GameInfo)
+#define G63 ((GameState *)GameInfo)
+#define G63B ((GameState *)GameInfo)
 
 /* One of four random voice sfx (SetRaceHeroDazed; as SFX4 in dino.h). */
 #define RACE_SFX4(a, b, c, d)                              \
@@ -851,18 +830,7 @@ void RaceInitBarrels(void);
 s32 RaceHeroTestOil(s32 arg0);
 
 void SetRaceHeroIdle(s32 player);
-/* GameInfo as seen by RaceExplodeHitHeroes. */
-typedef struct D5A614View63 {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ u8 unk8[0x30 - 0x8];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ u8 unk34[0x5C - 0x34];
-    /* 0x5C */ u8 unk5C[4];
-    /* 0x60 */ u8 unk60;
-} D5A614View63;
-#define MODE63 ((D5A614View63 *)GameInfo)
+#define MODE63 ((GameState *)GameInfo)
 
 extern u16 CameraMode;
 extern HeroInfo Heroes[4];
@@ -1213,36 +1181,21 @@ typedef struct RaceResultFux {
     /* 0x148 */ s32 unk148;
 } RaceResultFux;
 
-/* GameInfo as seen by RaceChooseWinner (round result). */
-typedef struct RaceResultView {
-    /* 0x00 */ u8 unk0[0x30];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u8 unk32[0x48 - 0x32];
-    /* 0x48 */ s16 unk48;
-    /* 0x4A */ s16 unk4A;
-    /* 0x4C */ u8 unk4C[0x60 - 0x4C];
-    /* 0x60 */ u8 unk60;
-    /* 0x61 */ u8 unk61;
-    /* 0x62 */ u8 unk62[0x6C - 0x62];
-    /* 0x6C */ s32 unk6C;
-    /* 0x70 */ u8 unk70[0xA7 - 0x70];
-    /* 0xA7 */ u8 unkA7[4];
-} RaceResultView;
-#define RV ((RaceResultView *)GameInfo)
+#define RV ((GameState *)GameInfo)
 
 /* RaceChooseWinner: a drawn round, counting with the caller's i. */
 #define RACE_DRAW_I(g, i, arg1)                                            \
-    (g)->unk60 = 0;                                                         \
-    (g)->unk30 |= (arg1);                                                   \
+    (g)->winner[0] = 0;                                                         \
+    (g)->exitFlags |= (arg1);                                                   \
     for (i = 0; i < 4; i++) {                                               \
         Heroes[i].hero_status |= 0x100;                                     \
     }
 
 /* RaceChooseWinner: team w wins by total, re-reading the team indices. */
 #define RACE_TEAM_WIN_BY(g, hb, w, l)                                      \
-    (g)->unk30 |= 0x800;                                                    \
-    (g)->unk60 = hb[w].hero_name;                                           \
-    (g)->unk61 = hb[hb[w].hero_teammate].hero_name;                         \
+    (g)->exitFlags |= 0x800;                                                    \
+    (g)->winner[0] = hb[w].hero_name;                                           \
+    (g)->winner[1] = hb[hb[w].hero_teammate].hero_name;                         \
     hb[w].hero_status |= 0x200;                                             \
     hb[hb[w].hero_teammate].hero_status |= 0x200;                           \
     hb[l].hero_status |= 0x400;                                             \

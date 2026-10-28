@@ -432,13 +432,13 @@ void InitialiseN2OFirst(void) {
     HeroActHit = 0x2A;
     HeroActDead = 0x2E;
     LevelSpecs.GetContour = (void *)GetN2OContour;
-    OVG->unk32 |= 0x100;
-    if (OVG->unk6C == 0) {
-        OVG->unk51 = 9;
+    OVG->levelFlags |= 0x100;
+    if (OVG->teams == 0) {
+        OVG->heroes[1] = 9;
     }
-    OVG->unk52 = 9;
-    OVG->unk53 = 9;
-    AiSkillTable = OVG->unk6C != 0 ? N2OAiSkillAlt : N2OAiSkill;
+    OVG->heroes[2] = 9;
+    OVG->heroes[3] = 9;
+    AiSkillTable = OVG->teams != 0 ? N2OAiSkillAlt : N2OAiSkill;
 }
 
 void InitialiseN2O(void) {
@@ -468,7 +468,7 @@ void InitialiseN2O(void) {
     N2OHeroPushTimer = 0;
     N2OBossAimDelay = 6;
     MapScene->map->clear = 1;
-    ((N2OPuck *)GameInfo)->unk32 &= ~0x800;
+    ((GameState *)GameInfo)->levelFlags &= ~0x800;
     for (i = 0; i < 4; i++) {
         h = &Heroes[i];
         mv = h->hero_move;
@@ -1681,8 +1681,8 @@ void PlotN2OBall(NAS *nas) {
         }
         switch (obj->status) {
         case 0:
-            if ((((N2OBallView *)GameInfo)->unk10 & 0x04000000) ||
-                (((N2OBallView *)GameInfo)->unk30 & 0x1000)) {
+            if ((((GameState *)GameInfo)->pause & 0x04000000) ||
+                (((GameState *)GameInfo)->exitFlags & 0x1000)) {
                 mot->Xvel = 0;
                 mot->Xacc = 0;
                 mot->Xdec = 0;
@@ -2039,9 +2039,9 @@ void N2OInitBoss(void) {
     InitBossHealthIcons();
     AiSkillTable = GameTeams[0] != 0 ? N2OBossAiSkillAlt : N2OBossAiSkill;
     for (i = 0; i < 4; i++) {
-        if (OVT->unk32 & 0x100) {
-            t = OVT->unkAB[OVT->unk34];
-            OVT->unk9B[i] = t;
+        if (OVT->levelFlags & 0x100) {
+            t = OVT->adventure.unkAB[OVT->mode];
+            OVT->adventure.unk9B[i] = t;
             AiPlayerSkill[i].level = ((u16 *)AiSkillTable)[t];
             AiPlayerSkill[i].quality = 0x10;
         }
@@ -2901,10 +2901,10 @@ void PlotN2Omissile(NAS *nas) {
             pos = &eng->unk10;
             SpawnModelFx(0, (s32 *)pos, 0);
             PlaySfx(N2OHitSfx[Random(4)], NULL, pos, 0x1000, 0x1E00, 0);
-            if (!(OVM->unk4 & 1)) {
+            if (!(OVM->cheats & 1)) {
                 if (!(Heroes[hit].hero_status & 0xFA00)) {
                     h = &Heroes[hit];
-                    if (OVM->unk6C != 0) {
+                    if (OVM->teams != 0) {
                         hp = h->hero_health - 0x28;
                     } else {
                         hp = h->hero_health - 0x18;
@@ -2988,10 +2988,10 @@ void PlotN2Ofirstmissile(NAS *nas) {
             pos = &eng->unk10;
             SpawnModelFx(0, (s32 *)pos, 0);
             PlaySfx(N2OHitSfx[Random(4)], NULL, pos, 0x1000, 0x1E00, 0);
-            if (!(OVM->unk4 & 1)) {
+            if (!(OVM->cheats & 1)) {
                 if (!(Heroes[hit].hero_status & 0xFA00)) {
                     h = &Heroes[hit];
-                    if (OVM->unk6C != 0) {
+                    if (OVM->teams != 0) {
                         hp = h->hero_health - 0x28;
                     } else {
                         hp = h->hero_health - 0x18;
@@ -3078,7 +3078,7 @@ void N2OInitSlots(void) {
 }
 
 void N2OUpdateSlots(void) {
-    N2OAim *pad;
+    GameState *pad;
     HeroInfo *heroes;
     N2OSlot *s;
     N2ORec *r;
@@ -3091,7 +3091,7 @@ void N2OUpdateSlots(void) {
     s32 z;
 
     i = 0;
-    pad = (N2OAim *)GameInfo;
+    pad = (GameState *)GameInfo;
     heroes = Heroes;
     s = N2OSlots;
     r = N2OSlotRecs;
@@ -3100,7 +3100,7 @@ loop:
         if (r->f16 != 0) {
             r->f16--;
         }
-        if (pad->unk30 & 0x801) {
+        if (pad->exitFlags & 0x801) {
             if (s->kind != 0) {
                 s->kind = 1;
             }
@@ -3131,11 +3131,11 @@ loop:
                 x = o->x;
                 z = o->z;
                 p1 = 1;
-                if (pad->unk6C == 0 || (p0 = heroes[0].hero_status, p0 &= 0xFA00, p0 = p0 != 0, heroes[1].hero_status & 0xFA00)) {
+                if (pad->teams == 0 || (p0 = heroes[0].hero_status, p0 &= 0xFA00, p0 = p0 != 0, heroes[1].hero_status & 0xFA00)) {
                     p0 = p1 = 0;
                 }
                 if (!(i & 1)) {
-                    if (pad->unk6C != 0) {
+                    if (pad->teams != 0) {
                         if (i != 0) {
                             x -= heroes[(u16)p1].hero_eng->unk10.x;
                             z -= heroes[(u16)p1].hero_eng->unk10.z;

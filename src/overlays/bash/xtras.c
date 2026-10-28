@@ -631,9 +631,9 @@ void PlotCrate(NAS *arg0) {
             return;
         case 2:
             BC038Release(fux);
-            if (OVLG->flags & 0x80) {
+            if (OVLG->levelFlags & 0x80) {
                 who = fux->who;
-                if (who == 0 || (OVLG->p2_active != 0 && who == 1)) {
+                if (who == 0 || (OVLG->teams != 0 && who == 1)) {
                     Heroes[who].hero_health = 2;
                     fux->type = 6;
                     PlayHitEffect(&eng->unk10.x, (HitInfo *)fux, 0);
@@ -1038,8 +1038,8 @@ void PlotCrate(NAS *arg0) {
                 fux->flags = (fux->flags & 0xFFFE) | 6;
                 if (type == 5) {
                     fux->count = 0x5A;
-                    if ((OVLG->flags & 0x80) && OVLG->mode == 1) {
-                        if (fux->who == 0 || (OVLG->p2_active != 0 && fux->who == OVLG->mode)) {
+                    if ((OVLG->levelFlags & 0x80) && OVLG->mode == 1) {
+                        if (fux->who == 0 || (OVLG->teams != 0 && fux->who == OVLG->mode)) {
                             fux->count = 0x1E;
                             fux->flags &= 0xFFFB;
                         }

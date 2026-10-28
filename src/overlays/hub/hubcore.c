@@ -22,14 +22,14 @@ void InitialiseHUB(void) {
     hero = Heroes;
     World_floor_level = 0;
     eng = hero->hero_eng;
-    G6A->unk32 |= 0x200;
+    G6A->levelFlags |= 0x200;
     eng->flags |= 0x8000;
     HeroHooks.TestJump = HubHeroTestJump;
     HeroHooks.TestKick = HubHeroTestKick;
     HeroHooks.TestAttack = HubHeroTestButton;
     HeroHooks.HeroSetIdle = HubHeroSetIdle;
     HubInitHero(0);
-    if (G6A->unk34 == 0x22) {
+    if (G6A->mode == 0x22) {
         HubSpawnEffects();
     }
     SetHeroAction(0, 0);
@@ -37,31 +37,31 @@ void InitialiseHUB(void) {
     eng->unk2C.z = size;
     eng->unk2C.y = size;
     eng->unk2C.x = size;
-    G6A->unk62 = WarpRoomIndex(G6A->unk34);
+    G6A->warpRoom = WarpRoomIndex(G6A->mode);
     HubInitGateways();
     SetupSceneMarks(((u8 *)MapScene->dbase));
     HubInitLevelSelect();
     HubDoorFade = 0;
-    if (G6A->unk34 == 0x25 && G6A->unk75 == 0) {
+    if (G6A->mode == 0x25 && G6A->adventure.unk75 == 0) {
         CAM6A->angle = 0xEBC;
-        G6A->unk63 = -1;
+        G6A->gateway = -1;
         CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
-    } else if (G6A->unk64 != 0) {
-        G6A->unk64 = 0;
-        CAM6A->angle = CAMTBL6A[G6A->unk63].unk10;
-        CAM6A->radius = (CAMTBL6A[G6A->unk63].unkC + CAMTBL6A[G6A->unk63].unk8) >> 1;
+    } else if (G6A->returnToHub != 0) {
+        G6A->returnToHub = 0;
+        CAM6A->angle = CAMTBL6A[G6A->gateway].unk10;
+        CAM6A->radius = (CAMTBL6A[G6A->gateway].unkC + CAMTBL6A[G6A->gateway].unk8) >> 1;
     } else {
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 5:
-            G6A->unk63 = -1;
+            G6A->gateway = -1;
             CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
             CAM6A->angle = CAMTBL6A[0].unk10;
             break;
         case 2:
-            CAM6A->radius = (CAMTBL6A[G6A->unk63].unkC + CAMTBL6A[G6A->unk63].unk8) >> 1;
+            CAM6A->radius = (CAMTBL6A[G6A->gateway].unkC + CAMTBL6A[G6A->gateway].unk8) >> 1;
             break;
         default:
-            G6A->unk63 = -1;
+            G6A->gateway = -1;
             CAM6A->radius = (CAM6A->radiusMin + CAM6A->radiusMax) >> 1;
             break;
         }
@@ -242,8 +242,8 @@ void HubUpdateGateways(void) {
 }
 
 void HubPreMoveHero(s32 arg0) {
-    HubGameView *g;
-    HubGameView *gv;
+    GameState *g;
+    GameState *gv;
     EXTengine *eng;
     EXTheromove *mv;
     HubGateway *p;
@@ -276,7 +276,7 @@ void HubPreMoveHero(s32 arg0) {
     }
     stop = 0;
     ang = eng->unk1E;
-    if (((HubGameView *)GameInfo)->unk74 != 0) {
+    if (((GameState *)GameInfo)->adventure.unk74 != 0) {
         eng->flags &= ~0x8000;
         if (Heroes[0].hero_shadow != NULL) {
             Heroes[0].hero_shadow->flags &= ~0x8000;
@@ -285,13 +285,13 @@ void HubPreMoveHero(s32 arg0) {
     }
     mv->forward_speed = 0;
     HubHeroTouchCount = 0;
-    if (((HubGameView *)GameInfo)->unk30 & 0x8008) {
+    if (((GameState *)GameInfo)->exitFlags & 0x8008) {
         return;
     }
     if (Heroes[arg0].hero_frozen != 0) {
         return;
     }
-    if (((HubGameView *)GameInfo)->unk63 == -1) {
+    if (((GameState *)GameInfo)->gateway == -1) {
         if (((PadState *)Pads)[arg0].dir & 0x10) {
             mv->forward_speed = speed;
             ang = HubHeroRing.angle + 0x800;
@@ -312,7 +312,7 @@ void HubPreMoveHero(s32 arg0) {
                 }
                 if (best != -1) {
                     HubHeroRing.angle = HubGateways[best].angle;
-                    ((HubGameView *)GameInfo)->unk63 = best;
+                    ((GameState *)GameInfo)->gateway = best;
                     HubGateways[best].stood_on = 1;
                 } else {
                     HubHeroRing.radius = HubHeroRing.radiusMax;
@@ -348,7 +348,7 @@ void HubPreMoveHero(s32 arg0) {
             mv->forward_speed = speed;
             t = HubHeroRing.radius + speed;
             HubHeroRing.radius = t;
-            lim = HubGateways[((HubGameView *)GameInfo)->unk63].radius_outer;
+            lim = HubGateways[((GameState *)GameInfo)->gateway].radius_outer;
             ang = HubHeroRing.angle + 0x800;
             if ((u32)lim < (u32)t) {
                 HubHeroRing.radius = lim;
@@ -403,8 +403,8 @@ void HubPreMoveHero(s32 arg0) {
             goto done;
         }
         p = HubGateways;
-        g = (HubGameView *)GameInfo;
-        if ((u32)(p[g->unk63].radius_outer - HubHeroRing.radius) >= 0x100) {
+        g = (GameState *)GameInfo;
+        if ((u32)(p[g->gateway].radius_outer - HubHeroRing.radius) >= 0x100) {
             goto done;
         }
         switch (((s32(*)(void))HubGatewayKind)()) {
@@ -422,29 +422,29 @@ void HubPreMoveHero(s32 arg0) {
             }
             break;
         case 2:
-            sel = p[g->unk63].table->level;
-            if ((g->unk4 & 0x2000) || ((g->unkE4[sel] != 0 || HubDoorChoice <= 0) && ModeRequirementMet(sel) == 1)) {
+            sel = p[g->gateway].table->level;
+            if ((g->cheats & 0x2000) || ((g->adventure.unkE4[0][sel] != 0 || HubDoorChoice <= 0) && ModeRequirementMet(sel) == 1)) {
             mode = HubDoorChoice;
-            if (mode != 4 || ((HubGameView *)GameInfo)->unk105[sel] != 0) {
-            gv = (HubGameView *)GameInfo;
-            v = gv->unk32 & 0xFF07;
-            gv->unk32 = v;
+            if (mode != 4 || ((GameState *)GameInfo)->adventure.unkE4[1][sel] != 0) {
+            gv = (GameState *)GameInfo;
+            v = gv->levelFlags & 0xFF07;
+            gv->levelFlags = v;
             switch (mode) {
             case 3:
             case 4:
-                gv->unk32 = v | 0x20;
+                gv->levelFlags = v | 0x20;
                 if (mode == 4) {
-                    gv->unk32 = v | 0x28;
+                    gv->levelFlags = v | 0x28;
                 }
                 break;
             case 2:
-                gv->unk32 = v | 0x80;
+                gv->levelFlags = v | 0x80;
                 break;
             case 1:
-                gv->unk32 = v | 0x40;
+                gv->levelFlags = v | 0x40;
                 break;
             default:
-                ((HubGameView *)GameInfo)->unk32 |= 0x10;
+                ((GameState *)GameInfo)->levelFlags |= 0x10;
                 break;
             }
             HubSpawnFlash(&Heroes[0].hero_eng->unk10.x, 9);
@@ -466,7 +466,7 @@ void HubPreMoveHero(s32 arg0) {
             if (Heroes[0].hero_shadow != NULL) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
             }
-            g->unk30 |= 0x200;
+            g->exitFlags |= 0x200;
             GotoProcess(&SaveScreenProcess, 0x200);
             break;
         default:
@@ -499,39 +499,39 @@ void HubOpenDoorMenu(s32 arg0) {
 
     HubDoorMenuRecs[5].unk1E = 4;
     HubDoorMenuRecs[6].unk1E = 4;
-    if (((HubGameView *)GameInfo)->unk105[arg0] != 0) {
+    if (((GameState *)GameInfo)->adventure.unkE4[1][arg0] != 0) {
         HubDoorMenuRecs[5].unk1E = 3;
-        if (((HubGameView *)GameInfo)->unk105[arg0] >= 2) {
+        if (((GameState *)GameInfo)->adventure.unkE4[1][arg0] >= 2) {
             HubDoorMenuRecs[6].unk1E = 2;
         }
     }
-    n = ((HubGameView *)GameInfo)->unkE0;
-    if (n >= 2 && ((HubGameView *)GameInfo)->unk105[arg0] == 0) {
+    n = ((GameState *)GameInfo)->adventure.unkE0;
+    if (n >= 2 && ((GameState *)GameInfo)->adventure.unkE4[1][arg0] == 0) {
         HubDoorChoices = 4;
     } else {
         HubDoorChoices = n + 3;
     }
-    if (((HubGameView *)GameInfo)->unk4 & 0x2000) {
-        HubDoorChoices = ((HubGameView *)GameInfo)->unkE0 + 3;
+    if (((GameState *)GameInfo)->cheats & 0x2000) {
+        HubDoorChoices = ((GameState *)GameInfo)->adventure.unkE0 + 3;
     }
-    HubDoorMenuRecs[4].unk1E = ((HubGameView *)GameInfo)->unk147[arg0] ? 7 : 8;
-    HubDoorMenuRecs[3].unk1E = ((HubGameView *)GameInfo)->unk126[arg0] ? 5 : 6;
+    HubDoorMenuRecs[4].unk1E = ((GameState *)GameInfo)->adventure.unkE4[3][arg0] ? 7 : 8;
+    HubDoorMenuRecs[3].unk1E = ((GameState *)GameInfo)->adventure.unkE4[2][arg0] ? 5 : 6;
     e = GetEngineSlot(1);
     PlaceEngineSlot(1, (PlaceRec *)HubDoorMenuRecs);
     e->unk10.y = 200;
     e->unk10.x = 0;
     HubDoorChoice = 0;
     e->flags = (e->flags & ~0x8000) | 0x10000000;
-    if (((HubGameView *)GameInfo)->unkE4[arg0] != 0) {
+    if (((GameState *)GameInfo)->adventure.unkE4[0][arg0] != 0) {
         HubDoorChoice = 1;
     }
-    if (((HubGameView *)GameInfo)->unk126[arg0] != 0) {
+    if (((GameState *)GameInfo)->adventure.unkE4[2][arg0] != 0) {
         HubDoorChoice = 2;
     }
-    if (((HubGameView *)GameInfo)->unk147[arg0] != 0 && ((HubGameView *)GameInfo)->unkE0 > 0) {
+    if (((GameState *)GameInfo)->adventure.unkE4[3][arg0] != 0 && ((GameState *)GameInfo)->adventure.unkE0 > 0) {
         HubDoorChoice = 3;
     }
-    if (((HubGameView *)GameInfo)->unk105[arg0] != 0 && ((HubGameView *)GameInfo)->unkE0 >= 2) {
+    if (((GameState *)GameInfo)->adventure.unkE4[1][arg0] != 0 && ((GameState *)GameInfo)->adventure.unkE0 >= 2) {
         HubDoorChoice = 4;
         n = 1;
     } else {
@@ -557,9 +557,9 @@ void HubOpenDoorMenu(s32 arg0) {
 }
 
 void HubDoorMenuUpdate(void) {
-    HubGameView *g = (HubGameView *)GameInfo;
-    HubGameView *g2;
-    HubGameView *g3;
+    GameState *g = (GameState *)GameInfo;
+    GameState *g2;
+    GameState *g3;
     HubTableEntry *rec;
     subengine *sub;
     s32 *recs;
@@ -569,9 +569,9 @@ void HubDoorMenuUpdate(void) {
     s16 v;
     u16 n;
 
-    if (g->unk63 < 0 || HubDoorFade <= 0
-        || (rec = HubGateways[g->unk63].table, rec->gate_type != 2)
-        || (!(g->unk4 & 0x2000) && g->unkE4[rec->level] == 0)) {
+    if (g->gateway < 0 || HubDoorFade <= 0
+        || (rec = HubGateways[g->gateway].table, rec->gate_type != 2)
+        || (!(g->cheats & 0x2000) && g->adventure.unkE4[0][rec->level] == 0)) {
         if (HubDoorChoice >= 0) {
             HubDoorChoice = -1;
             KillEngineSlot(1);
@@ -598,13 +598,13 @@ void HubDoorMenuUpdate(void) {
         switch (((s32(*)(void))HubGatewayKind)()) {
         case 2:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
-                n = HubGateways[((HubGameView *)GameInfo)->unk63].table->level;
-                g2 = (HubGameView *)GameInfo;
+                n = HubGateways[((GameState *)GameInfo)->gateway].table->level;
+                g2 = (GameState *)GameInfo;
                 if (ModeRequirementMet(n) == 1) {
-                    if (g2->unkE4[n] != 0) {
-                        PlaceEngineSlot(2, HubChallengePanels[g2->unk2C]);
+                    if (g2->adventure.unkE4[0][n] != 0) {
+                        PlaceEngineSlot(2, HubChallengePanels[g2->language]);
                     } else {
-                        PlaceEngineSlot(2, HubStartPanels[g2->unk2C]);
+                        PlaceEngineSlot(2, HubStartPanels[g2->language]);
                     }
                 } else {
                     key = GatewayMode();
@@ -625,11 +625,11 @@ void HubDoorMenuUpdate(void) {
             break;
         case 5:
             if (!(GetEngineSlot(2)->flags & 0x8000)) {
-                g3 = (HubGameView *)GameInfo;
-                if (g3->unk34 == 0x21 && ModeRequirementMet(0x22) == 0) {
-                    recs = HubPapuPanels[g3->unk2C];
+                g3 = (GameState *)GameInfo;
+                if (g3->mode == 0x21 && ModeRequirementMet(0x22) == 0) {
+                    recs = HubPapuPanels[g3->language];
                 } else {
-                    recs = HubWarpPanels[g3->unk2C];
+                    recs = HubWarpPanels[g3->language];
                 }
                 PlaceEngineSlot(2, recs);
             }
@@ -679,8 +679,8 @@ s32 HubSelectedLevel(void) {
 
 void HubLevelSelect(void) {
     hub_info *base = WarpRooms;
-    HubSelView *g = (HubSelView *)GameInfo;
-    hub_warp_info *ents = base[g->unk62].warp;
+    GameState *g = (GameState *)GameInfo;
+    hub_warp_info *ents = base[g->warpRoom].warp;
     s32 r;
     s32 v;
     s32 k;
@@ -691,17 +691,17 @@ void HubLevelSelect(void) {
     case 0:
         r = 0;
         k = 5;
-        if (g->unk63 >= 0) {
-            v = HubGateways[g->unk63].table->gate_type;
+        if (g->gateway >= 0) {
+            v = HubGateways[g->gateway].table->gate_type;
         } else {
             v = 0;
         }
         if (v == k && HubGateways[GameGateway].on_pad != 0) {
             r = 1;
         }
-        if (r != 0 && ((HubSelView *)GameInfo)->unk30 != 0x8008) {
+        if (r != 0 && ((GameState *)GameInfo)->exitFlags != 0x8008) {
             if ((Pads[0].pressed & 0x20)
-                && HubSelectedEntry < WarpRooms[((HubSelView *)GameInfo)->unk62].num_warps - 1
+                && HubSelectedEntry < WarpRooms[((GameState *)GameInfo)->warpRoom].num_warps - 1
                 && ModeRequirementMet(ents[HubSelectedEntry + 1].levnum)) {
                 PlaySfx(0x39F, NULL, NULL, 0x1000, 0x1E00, 0);
                 HubSelectedEntry++;
@@ -739,8 +739,8 @@ void HubLevelSelect(void) {
         if (p->maxed >= 3) {
             mapscene_release(MapScene);
             mapscene_load(MapScene, HubSelectTimer);
-            g->unk62 = HubSelectFlag;
-            g->unk34 = base[g->unk62].levnum;
+            g->warpRoom = HubSelectFlag;
+            g->mode = base[g->warpRoom].levnum;
             InitialiseHUB();
             HubSelectState = 0;
             set_fade(p, -0x200, 0);
@@ -1426,14 +1426,14 @@ void HubCullObjects(void) {
 }
 
 void InitialiseHUBFirst(void) {
-    ((HubGameView *)GameInfo)->unk51 = 9;
-    ((HubGameView *)GameInfo)->unk52 = 9;
-    ((HubGameView *)GameInfo)->unk53 = 9;
+    ((GameState *)GameInfo)->heroes[1] = 9;
+    ((GameState *)GameInfo)->heroes[2] = 9;
+    ((GameState *)GameInfo)->heroes[3] = 9;
     HeroHooks.InitHero = (s32)HubInitHero;
     HeroHooks.PreMoveHero = (void *)HubPreMoveHero;
     HeroHooks.HeroTouched = (void *)HubHeroTouched;
-    ((HubGameView *)GameInfo)->unk50 = ((HubGameView *)GameInfo)->unk4C;
-    ((HubGameView *)GameInfo)->unk32 |= 0x200;
+    ((GameState *)GameInfo)->heroes[0] = ((GameState *)GameInfo)->heroChoice[0];
+    ((GameState *)GameInfo)->levelFlags |= 0x200;
 }
 
 s32 HubLookup(s32 arg0) {
@@ -1473,16 +1473,16 @@ void InitialisePodiumFirst(void) {
         case 8: dbase_load_textures(&HeroModelBank[DB_CharsWarpRilla]); break;
         }
     }
-    ((HubGameView *)GameInfo)->unk50 = 9;
-    ((HubGameView *)GameInfo)->unk51 = 9;
-    ((HubGameView *)GameInfo)->unk52 = 9;
-    ((HubGameView *)GameInfo)->unk53 = 9;
+    ((GameState *)GameInfo)->heroes[0] = 9;
+    ((GameState *)GameInfo)->heroes[1] = 9;
+    ((GameState *)GameInfo)->heroes[2] = 9;
+    ((GameState *)GameInfo)->heroes[3] = 9;
     PodiumState = 0;
-    ((HubGameView *)GameInfo)->unk32 |= 0x200;
+    ((GameState *)GameInfo)->levelFlags |= 0x200;
     PodiumRankPlayers();
     PodiumFindTies();
-    *(s32 *)&LevelRecs[((HubGameView *)GameInfo)->unk8] = 0xCD;
-    ((HubGameView *)GameInfo)->unk3C = 0xCD;
+    *(s32 *)&LevelRecs[((GameState *)GameInfo)->levelRecIndex] = 0xCD;
+    ((GameState *)GameInfo)->levelLoadModel = 0xCD;
 }
 
 void InitialisePodium(void) {
@@ -2385,8 +2385,8 @@ void UpdatePodium(void) {
         PodiumState = 4;
     }
     if (PodiumState == 0x64) {
-        ((HubGameView *)GameInfo)->unk24 = 0;
-        ((HubGameView *)GameInfo)->unk30 = 0x8002;
+        ((GameState *)GameInfo)->exitDelay = 0;
+        ((GameState *)GameInfo)->exitFlags = 0x8002;
     }
     PodiumCheer();
 }

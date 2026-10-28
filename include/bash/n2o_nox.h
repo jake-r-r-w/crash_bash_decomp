@@ -191,34 +191,19 @@ typedef struct BossObj {
     /* 0x54 */ EXTengine *eng;
 } BossObj;
 
-/* GameInfo as seen by NoxBossFollowPath. */
-typedef struct BossGameView {
-    /* 0x00 */ u8 pad00[4];
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ u8 pad08[8];
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x30 - 0x14];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u8 pad32[0x6C - 0x32];
-    /* 0x6C */ s32 unk6C;
-    /* 0x70 */ u8 pad70[5];
-    /* 0x75 */ u8 unk75;
-    /* 0x76 */ u8 pad76[0xCA - 0x76];
-    /* 0xCA */ u8 unkCA;
-} BossGameView;
 
 s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *d);
 
 /* Mine damage by game-view level, as NoxFadeLevel. */
-static inline s32 MineDamage(BossGameView *g) {
+static inline s32 MineDamage(GameState *g) {
     s32 r;
 
-    if (g->unkCA < 10) {
+    if (g->adventure.unkAB[31] < 10) {
         r = 230;
-    } else if (g->unkCA >= 30) {
+    } else if (g->adventure.unkAB[31] >= 30) {
         r = 51;
     } else {
-        r = 230 - (g->unkCA - 10) * 179 / 20;
+        r = 230 - (g->adventure.unkAB[31] - 10) * 179 / 20;
     }
     return r;
 }
@@ -706,7 +691,7 @@ extern AstMineSlot NoxMines[];
 
 void NoxInitAsteroids(void);
 
-#define BGV ((BossGameView *)GameInfo)
+#define BGV ((GameState *)GameInfo)
 
 /* Squared distance from the asteroid's position (o + 1) to q. */
 static inline s32 AstDist(s32 *o, EXTengine *q) {
@@ -809,7 +794,7 @@ static inline void AstSpin(AstSceneObj *o, AstKind *k, u8 kind) {
 /* Runs body with e set to the engine of the hero NoxUpdateAsteroids tracks:
  * hero 0 in one-player games, else the first hero not out (status 0x2000). */
 #define AST_TRACKED_HERO(e, body)                          \
-    if (((BossGameView *)GameInfo)->unk6C == 0) {        \
+    if (((GameState *)GameInfo)->teams == 0) {        \
         e = Heroes[0].hero_eng;                            \
         body                                               \
     } else if (!(Heroes[0].hero_status & 0x2000)) {        \

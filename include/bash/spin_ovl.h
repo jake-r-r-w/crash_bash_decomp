@@ -39,33 +39,16 @@ typedef struct SpinCell {
 
 extern SpinCell SpinDropPoints[4][16];
 
-/* GameInfo as seen by the ranking code (SpinRankHeroes). */
-typedef struct SpinGame {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ u32 flags10;
-    /* 0x14 */ u8 pad14[0x30 - 0x14];
-    /* 0x30 */ u16 state;
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ u8 pad34[0x48 - 0x34];
-    /* 0x48 */ s16 team[2];
-    /* 0x4C */ u8 pad4C[0x5C - 0x4C];
-    /* 0x5C */ u8 cpu[4];
-    /* 0x60 */ u8 winner[2];
-    /* 0x62 */ u8 pad62[0x6C - 0x62];
-    /* 0x6C */ s32 teams;
-    /* 0x70 */ u8 pad70[0xA7 - 0x70];
-    /* 0xA7 */ u8 rank[4];
-} SpinGame;
 
 void InitBigScore(void);
 
-#define SPIN_GAME ((SpinGame *)GameInfo)
+#define SPIN_GAME ((GameState *)GameInfo)
 
 /* Sets the round's result to a draw: every hero still standing loses. */
 #define SPIN_DRAW(g, arg1, i)                          \
     do {                                                \
         (g)->winner[0] = 0;                             \
-        (g)->state |= (arg1);                           \
+        (g)->exitFlags |= (arg1);                           \
         for ((i) = 0; (i) < 4; (i)++) {                 \
             if (!(Heroes[i].hero_status & 0xFA00)) {    \
                 Heroes[i].hero_status |= 0x400;         \

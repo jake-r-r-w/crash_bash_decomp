@@ -730,9 +730,9 @@ void InitialiseCHASE(void) {
     ChaseRoundOver = 0;
     World_floor_level = 0;
     Init_Clock(0x140, 0x1E, 0);
-    if (((CoalChainGame *)GameInfo)->flags & 0x40) {
+    if (((GameState *)GameInfo)->levelFlags & 0x40) {
         a = 0x40;
-        if (((CoalChainGame *)GameInfo)->unk6C == 0) {
+        if (((GameState *)GameInfo)->teams == 0) {
             a = 0x100;
         }
     } else {
@@ -774,17 +774,17 @@ void InitialiseCHASE(void) {
     ChaseGeneratorB = CreateNAS((i + 0x800) & 0xFFF, 0, 0x700, 0x1D07, 0x11);
     CreateNAS(0, 0, 0, 0x1D03, 0x11);
     g = GameInfo;
-    if (((CoalChainGame *)g)->flags & 0x80) {
+    if (((GameState *)g)->levelFlags & 0x80) {
         CreateNAS(0, 0, 0, 0x1D08, 0x11);
     }
-    if (((CoalChainGame *)g)->flags & 0x40) {
+    if (((GameState *)g)->levelFlags & 0x40) {
         for (i = 0; i < 4; i++) {
             p = GameInfo;
             h = &Heroes[i];
             v = 0x78;
             if (p[i + 0x5C] == 0) {
                 v = 0x82;
-                if (((CoalChainGame *)p)->unk6C != 0) {
+                if (((GameState *)p)->teams != 0) {
                     v = 0x8C;
                 }
             }
@@ -2388,8 +2388,8 @@ s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
                     }
                     PlaySfx(ChaseChainSfx[id], NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
                 }
-                if (((CoalChainGame *)GameInfo)->flags & 0x40) {
-                    if (((CoalChainGame *)GameInfo)->unk6C != 0) {
+                if (((GameState *)GameInfo)->levelFlags & 0x40) {
+                    if (((GameState *)GameInfo)->teams != 0) {
                         h = &ChaseHeroes()[id];
                         if (h->hero_score >= pts) {
                             h->hero_score -= pts;
@@ -3204,8 +3204,8 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
 }
 
 void ChaseChooseWinnerRank(s32 arg0, u16 arg1) {
-    ChaseRankView *g;
-    ChaseRankView *p;
+    GameState *g;
+    GameState *p;
     HeroInfo *hb;
     HeroInfo *h;
     HeroInfo *top;
@@ -3233,16 +3233,16 @@ void ChaseChooseWinnerRank(s32 arg0, u16 arg1) {
                 best = j;
             }
         }
-        RANK68V->order[i] = best;
+        RANK68V->adventure.unkA7[i] = best;
         used |= 1 << best;
     }
     g = RANK68V;
     if (g->teams == 0) {
         h = Heroes;
-        top = &h[g->order[0]];
-        if (top->hero_score == h[g->order[1]].hero_score) {
+        top = &h[g->adventure.unkA7[0]];
+        if (top->hero_score == h[g->adventure.unkA7[1]].hero_score) {
             g->winner[0] = 0;
-            g->unk30 |= arg1;
+            g->exitFlags |= arg1;
             for (k = 0; k < 4; k++) {
                 Heroes[k].hero_status |= 0x100;
             }
@@ -3250,9 +3250,9 @@ void ChaseChooseWinnerRank(s32 arg0, u16 arg1) {
         }
         p = g;
         p->winner[0] = top->hero_name;
-        p->unk30 |= 0x800;
+        p->exitFlags |= 0x800;
         for (n = 0; n < 4; n++) {
-            if (p->order[0] == n) {
+            if (p->adventure.unkA7[0] == n) {
                 h[n].hero_status |= 0x200;
             } else {
                 h[n].hero_status |= 0x400;
@@ -3262,21 +3262,21 @@ void ChaseChooseWinnerRank(s32 arg0, u16 arg1) {
     }
     InitBigScore();
     hb = Heroes;
-    ta = &hb[g->team[0]];
-    b = &hb[g->team[1]];
+    ta = &hb[g->teamLeader[0]];
+    b = &hb[g->teamLeader[1]];
     am = &hb[ta->hero_teammate];
     bm = &hb[b->hero_teammate];
     sa = ta->hero_score + am->hero_score;
     sb = b->hero_score + bm->hero_score;
     if (sa == sb) {
         g->winner[0] = 0;
-        g->unk30 |= arg1;
+        g->exitFlags |= arg1;
         for (k = 0; k < 4; k++) {
             Heroes[k].hero_status |= 0x100;
         }
         return;
     }
-    g->unk30 |= 0x800;
+    g->exitFlags |= 0x800;
     if (sb < sa) {
         g->winner[0] = ta->hero_name;
         g->winner[1] = am->hero_name;

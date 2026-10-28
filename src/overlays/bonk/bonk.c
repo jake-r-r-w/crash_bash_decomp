@@ -1190,8 +1190,8 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
 }
 
 void BonkChooseWinnerRank(s32 arg0, u16 arg1) {
-    BonkRankView *g;
-    BonkRankView *p;
+    GameState *g;
+    GameState *p;
     HeroInfo *hb;
     HeroInfo *h;
     HeroInfo *top;
@@ -1219,16 +1219,16 @@ void BonkChooseWinnerRank(s32 arg0, u16 arg1) {
                 best = j;
             }
         }
-        RANK66V->order[i] = best;
+        RANK66V->adventure.unkA7[i] = best;
         used |= 1 << best;
     }
     g = RANK66V;
     if (g->teams == 0) {
         h = Heroes;
-        top = &h[g->order[0]];
-        if (top->hero_score == h[g->order[1]].hero_score) {
+        top = &h[g->adventure.unkA7[0]];
+        if (top->hero_score == h[g->adventure.unkA7[1]].hero_score) {
             g->winner[0] = 0;
-            g->unk30 |= arg1;
+            g->exitFlags |= arg1;
             for (k = 0; k < 4; k++) {
                 Heroes[k].hero_status |= 0x100;
             }
@@ -1236,9 +1236,9 @@ void BonkChooseWinnerRank(s32 arg0, u16 arg1) {
         }
         p = g;
         p->winner[0] = top->hero_name;
-        p->unk30 |= 0x800;
+        p->exitFlags |= 0x800;
         for (n = 0; n < 4; n++) {
-            if (p->order[0] == n) {
+            if (p->adventure.unkA7[0] == n) {
                 h[n].hero_status |= 0x200;
             } else {
                 h[n].hero_status |= 0x400;
@@ -1248,21 +1248,21 @@ void BonkChooseWinnerRank(s32 arg0, u16 arg1) {
     }
     InitBigScore();
     hb = Heroes;
-    ta = &hb[g->team[0]];
-    b = &hb[g->team[1]];
+    ta = &hb[g->teamLeader[0]];
+    b = &hb[g->teamLeader[1]];
     am = &hb[ta->hero_teammate];
     bm = &hb[b->hero_teammate];
     sa = ta->hero_score + am->hero_score;
     sb = b->hero_score + bm->hero_score;
     if (sa == sb) {
         g->winner[0] = 0;
-        g->unk30 |= arg1;
+        g->exitFlags |= arg1;
         for (k = 0; k < 4; k++) {
             Heroes[k].hero_status |= 0x100;
         }
         return;
     }
-    g->unk30 |= 0x800;
+    g->exitFlags |= 0x800;
     if (sb < sa) {
         g->winner[0] = ta->hero_name;
         g->winner[1] = am->hero_name;

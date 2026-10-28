@@ -1738,9 +1738,9 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
 
 void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
     HeroInfo *ha;
-    DinoTeamView *w;
-    DinoTeamView *q;
-    DinoTeamView *p;
+    GameState *w;
+    GameState *q;
+    GameState *p;
     HeroInfo *hb;
     HeroInfo *hc;
     HeroInfo *ta;
@@ -1752,29 +1752,29 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
     s32 found;
     s32 done;
     s32 i;
-    DinoTeamView *g;
+    GameState *g;
 
-    g = (DinoTeamView *)GameInfo;
+    g = (GameState *)GameInfo;
     found = -1;
     done = 0;
     if (g->teams != 0) {
         hb = Heroes;
-        ia = g->team0;
+        ia = g->teamLeader[0];
         ha = &hb[ia];
         ta = &hb[ha->hero_teammate];
-        ib = g->team1;
+        ib = g->teamLeader[1];
         hc = &hb[ib];
         tc = &hb[hc->hero_teammate];
         sa = ha->hero_score + ta->hero_score;
         sb = hc->hero_score + tc->hero_score;
         if (sa <= 0) {
             i = done;
-            if (g->out[ia] != 0) {
+            if (g->heroOut[ia] != 0) {
                 goto out;
             }
             q = g;
-            q->winner = ha->hero_name;
-            q->unk30 |= 0x800;
+            q->winner[0] = ha->hero_name;
+            q->exitFlags |= 0x800;
             Clock_flags |= 0x200;
             for (;; i++) {
                 s32 t_;
@@ -1797,8 +1797,8 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
                 goto out;
             }
             p = g;
-            p->winner = hc->hero_name;
-            p->unk30 |= 0x800;
+            p->winner[0] = hc->hero_name;
+            p->exitFlags |= 0x800;
             Clock_flags |= 0x200;
             for (;; i++) {
                 s32 t_;
@@ -1824,13 +1824,13 @@ void DinoChooseWinnerTeam(s32 arg0, u16 arg1) {
         }
         if (found != -1) {
             i = 0;
-            w = (DinoTeamView *)GameInfo;
-            if (w->out[found] != 0) {
+            w = (GameState *)GameInfo;
+            if (w->heroOut[found] != 0) {
                 goto out;
             }
             p = w;
-            p->winner = Heroes[found].hero_name;
-            p->unk30 |= 0x800;
+            p->winner[0] = Heroes[found].hero_name;
+            p->exitFlags |= 0x800;
             Clock_flags |= 0x200;
             for (;; i++) {
                 s32 t_;
@@ -1854,14 +1854,14 @@ out:
     done = 1;
 end:
     if (done || arg0 == -1) {
-        DinoTeamView *r;
-        DinoTeamView *x;
+        GameState *r;
+        GameState *x;
 
         i = 0;
-        r = (DinoTeamView *)GameInfo;
+        r = (GameState *)GameInfo;
         x = r;
-        x->winner = 0;
-        x->unk30 |= arg1;
+        x->winner[0] = 0;
+        x->exitFlags |= arg1;
         Clock_flags |= 0x200;
         for (;; i++) {
             s32 t_;
@@ -1930,7 +1930,7 @@ void DinoFindTargets(void) {
     DinoObj *o;
 
     for (o = ((DinoObj *)MapScene->subs); o != NULL; o = o->next) {
-        if (((DinoGame *)GameInfo)->flags & 0x80) {
+        if (((GameState *)GameInfo)->levelFlags & 0x80) {
             if (o->index == 0x5002) {
                 DinoGoal = o;
                 printf("found target\n");
@@ -2150,7 +2150,7 @@ void InitialiseDINO(void) {
             x->unkC = 0x1E;
             x->timer = 0;
             h->hero_score = 0;
-            if (((DinoGame *)GameInfo)->flags & 0x40) {
+            if (((GameState *)GameInfo)->levelFlags & 0x40) {
                 sc = GameInfo[i + 0x5C];
                 if (sc != 0) {
                     sc = 0xF;
@@ -2177,13 +2177,13 @@ void InitialiseDINO(void) {
         e->unkC = 7;
     }
     DinoGem1->Engine->sub->entity = 0x2002;
-    if (((DinoGame *)GameInfo)->flags & 0x80) {
+    if (((GameState *)GameInfo)->levelFlags & 0x80) {
         DinoGem1->Engine->sub->entity = 0x2002;
     }
     o = CreateNAS(0, -0x40, 0x200, 0x1901, 0x11);
     DinoGem2 = o;
     o->Engine->sub->entity = 0x2003;
-    if (((DinoGame *)GameInfo)->flags & 0x80) {
+    if (((GameState *)GameInfo)->levelFlags & 0x80) {
         o->Engine->sub->entity = 0x2003;
     }
     DinoGems[0] = (NAS *)DinoGem0;
@@ -2276,10 +2276,10 @@ void DinoScoreGems(void) {
         nas->Engine->unk10.x += ext->unkB4;
         nas->Engine->unk10.z += ext->unkD4;
         sign = 1;
-        if (((DinoGame *)GameInfo)->flags & 0x40) {
+        if (((GameState *)GameInfo)->levelFlags & 0x40) {
             sign = -1;
         }
-        if (((DinoGame *)GameInfo)->flags & 0x80) {
+        if (((GameState *)GameInfo)->levelFlags & 0x80) {
             if (GameInfo[ext->unk10 + 0x5C] == 0) {
                 PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
                 if (ext->unk90 == 5 && (DinoTargetTimer == 2 || DinoScoreTimer == 2)) {
@@ -2333,7 +2333,7 @@ void DinoScoreGems(void) {
             if (Heroes[ext->unk10].hero_score < 0) {
                 Heroes[ext->unk10].hero_score = 0;
             }
-            if (((DinoTeamView *)GameInfo)->teams != 0 && (((DinoGame *)GameInfo)->flags & 0x40) &&
+            if (((GameState *)GameInfo)->teams != 0 && (((GameState *)GameInfo)->levelFlags & 0x40) &&
                 Heroes[ext->unk10].hero_score == 0) {
                 Heroes[Heroes[ext->unk10].hero_teammate].hero_score += ext->unk90 * sign;
                 if (Heroes[Heroes[ext->unk10].hero_teammate].hero_score < 0) {

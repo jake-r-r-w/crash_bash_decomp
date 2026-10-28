@@ -224,20 +224,7 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1);
 void ChaseChooseWinnerRank(s32 arg0, u16 arg1);
 extern u8 GameInfo[];
 
-/* GameInfo as seen by ChaseChooseWinnerRank (the final ranking). */
-typedef struct ChaseRankView {
-    /* 0x00 */ u8 unk0[0x30];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u8 unk32[0x48 - 0x32];
-    /* 0x48 */ s16 team[2];
-    /* 0x4C */ u8 unk4C[0x60 - 0x4C];
-    /* 0x60 */ u8 winner[2];
-    /* 0x62 */ u8 unk62[0x6C - 0x62];
-    /* 0x6C */ s32 teams;
-    /* 0x70 */ u8 unk70[0xA7 - 0x70];
-    /* 0xA7 */ u8 order[4];
-} ChaseRankView;
-#define RANK68V ((ChaseRankView *)GameInfo)
+#define RANK68V ((GameState *)GameInfo)
 
 /* Hero jump parameters, 8 bytes per hero (HeroHooks.JumpEnts). */
 typedef struct ChaseJumpEnt {
@@ -475,7 +462,6 @@ typedef struct { u8 pad0[0x30]; s32 unk30; } CoalChainFux;
 typedef struct {
     u8 pad0[0x54]; CoalEng *eng; CoalChainFux *fux; u16 unk5C;
 } CoalChainNAS;
-typedef struct { u8 pad0[0x32]; u16 flags; u8 pad34[0x6C - 0x34]; s32 unk6C; } CoalChainGame;
 extern s32 ChaseChainSfx[];
 static inline HeroInfo *ChaseHeroes(void) {
     return Heroes;

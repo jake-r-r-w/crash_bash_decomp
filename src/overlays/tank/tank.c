@@ -682,7 +682,7 @@ s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai) {
         } while (0);
     } while (0);
     if (i >= 0) {
-    if (((TankModeView *)GameInfo)->mode == 5) {
+    if (((GameState *)GameInfo)->mode == 5) {
         te = Heroes[ai->Victim].hero_eng;
         a = get_angle(eng->unk10.x - te->unk10.x, eng->unk10.z - te->unk10.z);
         if ((u32)(((eng->unk1E - a) & 0xFFF) - 100) < 0xF39) {
@@ -695,7 +695,7 @@ s32 TankBotTryFire(s32 player, EXTengine *eng, TA_Bot *ai) {
                       eng->unk10.z + (-(rcossin_tbl[dir].unk2 << 9) >> 12)) != 0) {
         return 0;
     }
-    if (((TankGameView *)GameInfo)->w6C != 0 || ((TankModeView *)GameInfo)->mode == 9) {
+    if (((GameState *)GameInfo)->teams != 0 || ((GameState *)GameInfo)->mode == 9) {
         hb = Heroes;
         me = hb[hb[player].hero_teammate].hero_eng;
         ex = eng->unk10.x;
@@ -1255,7 +1255,7 @@ void TA_HeroBot(u32 player) {
     if (*(s32 *)(g + 0x10) & 0x04000000) {
         return;
     }
-    if (((TankModeView *)g)->mode == 5) {
+    if (((GameState *)g)->mode == 5) {
         TankBotSteer(player);
         return;
     }
@@ -1314,7 +1314,7 @@ void TA_PreInitLevel(void) {
     void **p4;
     void **p5;
     void *t;
-    TankGameView *g;
+    GameState *g;
 
     HeroHooks.HeroModels = TankHeroModels;
     HeroHooks.HeroBot = TA_HeroBot;
@@ -1392,20 +1392,20 @@ void TA_PreInitLevel(void) {
         AiTeamSkillTable = TankSwampAiTeamSkill;
         Heroes[2].hero_name = 9;
         Heroes[3].hero_name = 9;
-        g = (TankGameView *)GameInfo;
-        g->flags |= 0x100;
-        if (g->w6C == 0) {
+        g = (GameState *)GameInfo;
+        g->levelFlags |= 0x100;
+        if (g->teams == 0) {
             Heroes[1].hero_name = 9;
-            g->b51 = 9;
+            g->heroes[1] = 9;
         }
-        g->b52 = 9;
-        g->b53 = 9;
+        g->heroes[2] = 9;
+        g->heroes[3] = 9;
         return;
     }
 }
 
 void TA_InitLevel(void) {
-    TankSetupView *g;
+    GameState *g;
     u8 *src1;
     u8 *src2;
     u8 *p;
@@ -1428,9 +1428,9 @@ void TA_InitLevel(void) {
     TankPillarSfxDelay = 0;
     World_floor_level = 0;
     Init_Clock(0x140, 0x1E, 0);
-    g = (TankSetupView *)GameInfo;
-    if (g->flags & 0x40) {
-        if (g->w6C != 0) {
+    g = (GameState *)GameInfo;
+    if (g->levelFlags & 0x40) {
+        if (g->teams != 0) {
             switch (g->mode) {
             case 6:
                 Set_Clock(0x30, 0x81C0);
@@ -1555,15 +1555,15 @@ void TA_InitLevel(void) {
         TankArenaMaxZ = 0xD00;
         break;
     case 9:
-        g = (TankSetupView *)GameInfo;
-        if (g->w6C == 0) {
-            g->b51 = 9;
+        g = (GameState *)GameInfo;
+        if (g->teams == 0) {
+            g->heroes[1] = 9;
         }
-        g->b52 = 9;
-        g->b53 = 9;
+        g->heroes[2] = 9;
+        g->heroes[3] = 9;
         Heroes[2].hero_name = 9;
         Heroes[3].hero_name = 9;
-        if (g->w6C == 0) {
+        if (g->teams == 0) {
             Heroes[1].hero_name = 9;
         }
         CAM5F->xform.angle.vx = 0x192;
@@ -1657,7 +1657,7 @@ void TA_UpdateLevel(void) {
                 if (GameInfo[j + 0x5C] == 0) {
                     HeroesAllOut = 0;
                 }
-                if (((TankGameView *)GameInfo)->w6C != 0 && GameInfo[Heroes[j].hero_teammate + 0x5C] == 0) {
+                if (((GameState *)GameInfo)->teams != 0 && GameInfo[Heroes[j].hero_teammate + 0x5C] == 0) {
                     HeroesAllOut = 0;
                 }
             }
@@ -1717,7 +1717,7 @@ void DamageTankHero(s32 player, s32 damage) {
         return;
     }
     g = GameInfo;
-    if (((TankModeView *)g)->mode == 9 && (BossState.flags & 0x8000)) {
+    if (((GameState *)g)->mode == 9 && (BossState.flags & 0x8000)) {
         return;
     }
     if (damage < 400) {
@@ -1744,7 +1744,7 @@ void DamageTankHero(s32 player, s32 damage) {
     } else {
         SetHeroAction(player, 0x69);
     }
-    if (GameInfo[player + 0x5C] != 0 || (((TankGameView *)GameInfo)->w4 & 0x80000001) != 0x80000001) {
+    if (GameInfo[player + 0x5C] != 0 || (((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001) {
         ta->Energy -= damage;
     }
     if (ta->Energy <= 0) {
@@ -1752,7 +1752,7 @@ void DamageTankHero(s32 player, s32 damage) {
         SetTurretSFX(player, (s32)eng, 0);
         SetFireBreatherSFX(player, (s32)eng, 0);
         ta->Energy = 0;
-        if ((((TankGameView *)GameInfo)->w4 & 0x80000002) == 0x80000002) {
+        if ((((GameState *)GameInfo)->cheats & 0x80000002) == 0x80000002) {
             ta->Energy = 2;
         } else {
             Heroes[player].hero_status |= 0x2000;
@@ -1798,12 +1798,12 @@ void TA_InitHero(u32 player) {
     eng->unk5D = 1;
     eng->unk1E = 0x400;
     sub->unk51 = 1;
-    if (((TankModeView *)g)->mode == 5) {
+    if (((GameState *)g)->mode == 5) {
         sub->unk08 = 0x48;
     }
     sub = sub->next;
     sub->unk51 = 1;
-    if (((TankModeView *)g)->mode == 5) {
+    if (((GameState *)g)->mode == 5) {
         sub->u6C.dbase = &HeroModelBank[DB_TankVehicle];
         sub->entity = 0x2005;
         sub->unk08 = -0x100;
@@ -1853,7 +1853,7 @@ void TA_InitHero(u32 player) {
     ta->SpeedX = 0;
     ta->SpeedZ = 0;
     g1 = GameInfo;
-    if (((TankModeView *)g1)->mode == 5) {
+    if (((GameState *)g1)->mode == 5) {
         ta->Speed = ta->Speed * 3 / 2;
     }
     if (g1[player + 0x5C] != 0) {
@@ -1865,7 +1865,7 @@ void TA_InitHero(u32 player) {
     ta->PosZ = eng->unk10.z;
     ta->RequestQuickFinish = 0;
     ta->SubWeaponFireDelay = 0;
-    if (((TankModeView *)g1)->mode == 5 && (((TankModeView *)g1)->flags & 0x80)) {
+    if (((GameState *)g1)->mode == 5 && (((GameState *)g1)->levelFlags & 0x80)) {
         ta->SubWeaponRounds = 0;
     } else {
         ta->SubWeaponRounds = 3;
@@ -1916,7 +1916,7 @@ void TA_InitHero(u32 player) {
     pp->a = &ta->MainWeaponType;
     pp->b = &ta->MainWeaponRounds;
     pp->c = &ta->SubWeaponRounds;
-    if (((TankModeView *)g2)->mode == 5 && g2[player + 0x5C] == 0 && (((TankModeView *)g2)->flags & 0x80)) {
+    if (((GameState *)g2)->mode == 5 && g2[player + 0x5C] == 0 && (((GameState *)g2)->levelFlags & 0x80)) {
         if (player == 0) {
             nas = CreateNAS(0x880, 0, 0x880, 0x1322, 0x11);
         } else {
@@ -1970,8 +1970,8 @@ void TA_MoveHero(u32 player) {
             SetHullSFX(player, eng, 0);
         }
     }
-    if (((TankModeView *)GameInfo)->mode == 8 && GameInfo[player + 0x5C] == 0 &&
-        (((TankGameView *)GameInfo)->flags & 0x80) && ta->HangaboutTime >= 30 && TankLevelOver == 0 &&
+    if (((GameState *)GameInfo)->mode == 8 && GameInfo[player + 0x5C] == 0 &&
+        (((GameState *)GameInfo)->levelFlags & 0x80) && ta->HangaboutTime >= 30 && TankLevelOver == 0 &&
         TankDropDelay <= 0 && (eng->unk10.z > 0x400 || (u32)(eng->unk10.x - 0x301) < 0xDFF)) {
         nas = CreateNAS(eng->unk10.x, -0x8FC, eng->unk10.z, 0x1308, 0x11);
         if (nas != NULL) {
@@ -2046,10 +2046,10 @@ void ResetToBasicWeapon(s32 player) {
         }
         break;
     }
-    if (((TankModeView *)GameInfo)->mode == 5) {
+    if (((GameState *)GameInfo)->mode == 5) {
         sub->entity = 0x2005;
     }
-    if (((TankModeView *)GameInfo)->mode == 9) {
+    if (((GameState *)GameInfo)->mode == 9) {
         ta->MainWeaponRounds = 99999;
         if (GameInfo[player + 0x5C] != 0) {
             ta->MainWeaponType = 11;
@@ -2500,10 +2500,10 @@ void UpdateTankHeroWeapons(s32 player) {
         ta->SubWeaponFireDelay--;
     }
     if ((((PadState *)Pads)[player].dirPressed & 0x2000) &&
-        ((TankModeView *)GameInfo)->mode < 10 && ((TankModeView *)GameInfo)->mode >= 5) {
+        ((GameState *)GameInfo)->mode < 10 && ((GameState *)GameInfo)->mode >= 5) {
         if (ta->SubWeaponRounds != 0) {
             if (ta->SubWeaponFireDelay == 0) {
-                if (((TankModeView *)GameInfo)->mode == 5) {
+                if (((GameState *)GameInfo)->mode == 5) {
                     for (i = 0; i < 8; i++) {
                         if (TankMines[i] != NULL && TankMines[i]->UserInfo.user1 == player) {
                             goto subdone;
@@ -2541,7 +2541,7 @@ void UpdateTankHeroWeapons(s32 player) {
         }
     }
 subdone:
-    if (((TankModeView *)GameInfo)->mode == 5) {
+    if (((GameState *)GameInfo)->mode == 5) {
         if (ta->ForceFieldDelay != 0) {
             ta->ForceFieldDelay--;
         } else if (((PadState *)Pads)[player].dirPressed & 0x4000) {
@@ -2818,7 +2818,7 @@ void TankHeroSteerMove(s32 player) {
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -2897,7 +2897,7 @@ void TankHeroGridMove(s32 player) {
     if (dir == 0) {
         return;
     }
-    if (((TankModeView *)GameInfo)->mode == 7 && !(((TankModeView *)GameInfo)->flags & 0x80)) {
+    if (((GameState *)GameInfo)->mode == 7 && !(((GameState *)GameInfo)->levelFlags & 0x80)) {
         dx = TotemTop->Engine->unk10.x - eng->unk10.x;
         dz = TotemTop->Engine->unk10.z - eng->unk10.z;
         if (dx >= -0x15D) {
@@ -3007,7 +3007,7 @@ loop:
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -3559,7 +3559,7 @@ retry:
         }
         PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
     skip:
-        if (((TankModeView *)GameInfo)->mode == 5 && GameInfo[hit + 0x5C] != 0 &&
+        if (((GameState *)GameInfo)->mode == 5 && GameInfo[hit + 0x5C] != 0 &&
             TA_players[hit].ForceFieldDelay == 0 && HeroesAllOut == 0 &&
             (u32)Random(0x20) < AiPlayerSkill[hit].level) {
             TankBotForceField[hit] = 1;
@@ -3709,8 +3709,8 @@ void PlotFlubberTA(NAS *nas) {
         eng->unk10.y = -0x64;
         fux->SpeedY = -0x3C;
         eng->unk10.y -= 0x3C;
-        if (((TankModeView *)GameInfo)->mode == 5 ||
-            (((TankModeView *)GameInfo)->mode == 6 && (((TankModeView *)GameInfo)->flags & 0x80) &&
+        if (((GameState *)GameInfo)->mode == 5 ||
+            (((GameState *)GameInfo)->mode == 6 && (((GameState *)GameInfo)->levelFlags & 0x80) &&
              TankLevelsGridMapMiss[((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9)] != 0)) {
             switch ((u32)Random(4)) {
             case 0:
@@ -3961,7 +3961,7 @@ void PlotLobber_TA(NAS *nas)
       continue;
     }
     name = (*(&Heroes[j])).hero_name;
-    if ((name == 9) && (((((TankModeView *) GameInfo)->mode != name) || (TankBossStatus != 0)) || (((u32) (j - 2)) >= 2)))
+    if ((name == 9) && (((((GameState *) GameInfo)->mode != name) || (TankBossStatus != 0)) || (((u32) (j - 2)) >= 2)))
     {
       continue;
     }
@@ -4044,7 +4044,7 @@ void PlotLobber_TA(NAS *nas)
     for (hit = 0; hit < 4; hit++)
     {
       name = Heroes[hit].hero_name;
-      if ((name == 9) && (((((TankModeView *) GameInfo)->mode != name) || (TankBossStatus != 0)) || (((u32) (hit - 2)) >= 2)))
+      if ((name == 9) && (((((GameState *) GameInfo)->mode != name) || (TankBossStatus != 0)) || (((u32) (hit - 2)) >= 2)))
       {
         continue;
       }
@@ -4222,7 +4222,7 @@ void PlotRocketTA(NAS *nas)
     if (hit < 0 || hit == fux->Owner) {
         goto puff;
     }
-    if (((TankModeView *) GameInfo)->mode != 9 || fux->Owner == -1) {
+    if (((GameState *) GameInfo)->mode != 9 || fux->Owner == -1) {
         dmg = 0x3C;
     } else {
         dmg = (((GameInfo[0xB4] * 190) / 32 + 10) * 60) / 100;
@@ -4258,7 +4258,7 @@ void PlotMine(NAS *nas) {
 
     g = GameInfo;
     eng = nas->Engine;
-    if ((((TankModeView *)g)->mode == 8 &&
+    if ((((GameState *)g)->mode == 8 &&
          TankLevelsGridMapMiss[((eng->unk10.z >> 9) * TankMapWidth) + (eng->unk10.x >> 9)] != 0) ||
         --nas->UserInfo.status == 0) {
         PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -4275,7 +4275,7 @@ void PlotMine(NAS *nas) {
         for (i = 0; i < 4; i++) {
             name = Heroes[i].hero_name;
             if (name == 9 &&
-                (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+                (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
                  (u32)(i - 2) >= 2)) {
                 continue;
             }
@@ -4299,8 +4299,8 @@ void PlotMine(NAS *nas) {
         i = -1;
     found:
         if (i >= 0) {
-            if (((TankModeView *)GameInfo)->mode == 8 && GameInfo[i + 0x5C] == 0 &&
-                (((TankGameView *)GameInfo)->flags & 0x80)) {
+            if (((GameState *)GameInfo)->mode == 8 && GameInfo[i + 0x5C] == 0 &&
+                (((GameState *)GameInfo)->levelFlags & 0x80)) {
                 DamageTankHero(i, 0x4B0);
             } else {
                 DamageTankHero(i, 0x3C);
@@ -4313,8 +4313,8 @@ void PlotMine(NAS *nas) {
     if (t >= 4) {
         t = 3;
     }
-    mode = ((TankModeView *)g)->mode;
-    if ((mode == 8 && (((TankGameView *)g)->flags & 0x80)) || mode == 9) {
+    mode = ((GameState *)g)->mode;
+    if ((mode == 8 && (((GameState *)g)->levelFlags & 0x80)) || mode == 9) {
         nas->Engine->sub->entity = MineFramesBig[t].v;
     } else {
         nas->Engine->sub->entity = MineFrames[t].v;
@@ -4364,7 +4364,7 @@ void PlotWaterMine(NAS *nas) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -4401,7 +4401,7 @@ found:
             }
         }
         if (GameInfo[hit + 0x5C] == 0) {
-            if (((TankGameView *)GameInfo)->flags & 0x80) {
+            if (((GameState *)GameInfo)->levelFlags & 0x80) {
                 DamageTankHero(hit, 0x4B0);
             } else {
                 DamageTankHero(hit, 0x3C);
@@ -4573,7 +4573,7 @@ static inline s32 ShrapnelFindHero(s32 x, s32 z) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -4644,8 +4644,8 @@ found:
         PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         break;
     }
-    if (((TankModeView *)GameInfo)->mode == 8 && GameInfo[hit + 0x5C] == 0 &&
-        (((TankGameView *)GameInfo)->flags & 0x80)) {
+    if (((GameState *)GameInfo)->mode == 8 && GameInfo[hit + 0x5C] == 0 &&
+        (((GameState *)GameInfo)->levelFlags & 0x80)) {
         DamageTankHero(hit, 0x4B0);
     } else {
         DamageTankHero(hit, 0x3C);
@@ -4913,7 +4913,7 @@ void InitHelicopterTA(NAS *nas) {
 
 void PlotHelicopterTA(NAS *nas) {
     NAS **slot;
-    TankModeView *g;
+    GameState *g;
     EXTobject_TA *fux;
     EXTengine *eng;
     EXTengine *e2;
@@ -4979,7 +4979,7 @@ void PlotHelicopterTA(NAS *nas) {
         }
     }
     n = 0;
-    g = (TankModeView *)GameInfo;
+    g = (GameState *)GameInfo;
     slot = PU_TA_list;
 loop:
     if (n < 3) {
@@ -5282,8 +5282,8 @@ void PlotPickupTA(NAS *nas) {
     }
     switch (nas->UserInfo.status) {
     case 6:
-        if (((TankModeView *)GameInfo)->mode != 8 || GameInfo[hit + 0x5C] != 0 ||
-            !(((TankModeView *)GameInfo)->flags & 0x80)) {
+        if (((GameState *)GameInfo)->mode != 8 || GameInfo[hit + 0x5C] != 0 ||
+            !(((GameState *)GameInfo)->levelFlags & 0x80)) {
             v = 0x1E;
         } else {
             v = 0x4B0;
@@ -5776,7 +5776,7 @@ void PlotPillar(NAS *nas) {
         for (i = 0; i < 4; i++) {
             name = Heroes[i].hero_name;
             if (name == 9 &&
-                (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+                (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
                  (u32)(i - 2) >= 2)) {
                 continue;
             }
@@ -5876,7 +5876,7 @@ static inline s32 TotemFindHero(s32 x, s32 z, s32 r) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -5912,7 +5912,7 @@ void PlotTotemPole(NAS *nas) {
         if (--fux->Counter > 0) {
             return;
         }
-        if (((TankGameView *)GameInfo)->flags & 0x80) {
+        if (((GameState *)GameInfo)->levelFlags & 0x80) {
             fux->Status = 0x24;
             PlaySfx(0x502, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
             nas->UserInfo.user2 = 0x1E;
@@ -7567,11 +7567,11 @@ void MoeJoeMove(s32 player) {
     eng = Heroes[player].hero_eng;
     speed = ta->Speed;
     sub = eng->sub->next->next;
-    saved = ((TankGameView *)GameInfo)->w6C;
-    ((TankGameView *)GameInfo)->w6C = 1;
+    saved = ((GameState *)GameInfo)->teams;
+    ((GameState *)GameInfo)->teams = 1;
     ai = &TankBotAI[player];
     TA_HeroBot(player);
-    ((TankGameView *)GameInfo)->w6C = saved;
+    ((GameState *)GameInfo)->teams = saved;
     pad = ai->AIpad;
     dir = pad & 0xF0;
     if (dir == 0) {
@@ -7658,7 +7658,7 @@ loop:
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -9396,7 +9396,7 @@ s32 TankFindHeroNear(s32 x, s32 z, s32 r, s32 skip) {
         }
         name = Heroes[i].hero_name;
         if (name == nine &&
-            (((TankModeView *)g)->mode != name ||TankBossStatus != 0 || (u32)(i - 2) >= 2U)) {
+            (((GameState *)g)->mode != name ||TankBossStatus != 0 || (u32)(i - 2) >= 2U)) {
             continue;
         }
         if (Heroes[i].hero_status & 0xC000) {
@@ -9425,7 +9425,7 @@ s32 RocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }

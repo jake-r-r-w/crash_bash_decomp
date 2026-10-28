@@ -566,27 +566,27 @@ s32 RooWait = 0;
 
 void PogoInit_AIQuality(void) {
     AiBotTweakTable = &PogoAiBotTweak;
-    switch (((PogoModeView *)GameInfo)->mode) {
+    switch (((GameState *)GameInfo)->mode) {
     case 10:
-        AiSkillTable = ((PogoModeView *)GameInfo)->teams != 0 ? &PogoPainterAiSkillTeams : &PogoPainterAiSkill;
+        AiSkillTable = ((GameState *)GameInfo)->teams != 0 ? &PogoPainterAiSkillTeams : &PogoPainterAiSkill;
         AiHumanRoundTweakTable = GameTeams[0] != 0 ? PogoPainterAiRoundAlt : PogoPainterAiRound;
         AiHumanTweakTable = GameTeams[0] != 0 ? &PogoPainterAiHumanAlt : &PogoPainterAiHuman;
         AiTeamSkillTable = PogoPainterAiTeamSkill;
         break;
     case 11:
-        AiSkillTable = ((PogoModeView *)GameInfo)->teams != 0 ? &PogoAgogoAiSkillTeams : &PogoAgogoAiSkill;
+        AiSkillTable = ((GameState *)GameInfo)->teams != 0 ? &PogoAgogoAiSkillTeams : &PogoAgogoAiSkill;
         AiHumanRoundTweakTable = GameTeams[0] != 0 ? PogoAgogoAiRoundAlt : PogoAgogoAiRound;
         AiHumanTweakTable = GameTeams[0] != 0 ? &PogoAgogoAiHumanAlt : &PogoAgogoAiHuman;
         AiTeamSkillTable = PogoAgogoAiTeamSkill;
         break;
     case 12:
-        AiSkillTable = ((PogoModeView *)GameInfo)->teams != 0 ? &PogoLocoAiSkillTeams : &PogoLocoAiSkill;
+        AiSkillTable = ((GameState *)GameInfo)->teams != 0 ? &PogoLocoAiSkillTeams : &PogoLocoAiSkill;
         AiHumanRoundTweakTable = GameTeams[0] != 0 ? PogoLocoAiRoundAlt : PogoLocoAiRound;
         AiHumanTweakTable = GameTeams[0] != 0 ? &PogoLocoAiHumanAlt : &PogoLocoAiHuman;
         AiTeamSkillTable = PogoLocoAiTeamSkill;
         break;
     case 13:
-        AiSkillTable = ((PogoModeView *)GameInfo)->teams != 0 ? &PogoBouncerAiSkillTeams : &PogoBouncerAiSkill;
+        AiSkillTable = ((GameState *)GameInfo)->teams != 0 ? &PogoBouncerAiSkillTeams : &PogoBouncerAiSkill;
         AiHumanRoundTweakTable = GameTeams[0] != 0 ? PogoBouncerAiRoundAlt : PogoBouncerAiRound;
         AiHumanTweakTable = GameTeams[0] != 0 ? &PogoBouncerAiHumanAlt : &PogoBouncerAiHuman;
         AiTeamSkillTable = PogoBouncerAiTeamSkill;
@@ -705,12 +705,12 @@ void PogoInit_RelicChallenge(void) {
     s16 v;
     u32 snd;
 
-    if (SCORE60V->flags & 0x40) {
+    if (SCORE60V->levelFlags & 0x40) {
         switch (SCORE60V->mode) {
         case 10:
             for (i = 0; i < 4; i++) {
                 v = 60;
-                if (SCORE60V->out[i] == 0) {
+                if (SCORE60V->heroOut[i] == 0) {
                     v = 80;
                     if (SCORE60V->teams != 0) {
                         v = 90;
@@ -727,7 +727,7 @@ void PogoInit_RelicChallenge(void) {
         case 11:
             for (i = 0; i < 4; i++) {
                 v = 150;
-                if (SCORE60V->out[i] != 0) {
+                if (SCORE60V->heroOut[i] != 0) {
                     v = 90;
                 }
                 Heroes[i].hero_score_displayed = v;
@@ -737,7 +737,7 @@ void PogoInit_RelicChallenge(void) {
             break;
         case 12:
             for (i = 0; i < 4; i++) {
-                if (SCORE60V->out[i] != 0) {
+                if (SCORE60V->heroOut[i] != 0) {
                     v = 80;
                     if (SCORE60V->teams != 0) {
                         v = 90;
@@ -756,7 +756,7 @@ void PogoInit_RelicChallenge(void) {
         case 13:
             for (i = 0; i < 4; i++) {
                 v = 120;
-                if (SCORE60V->out[i] != 0) {
+                if (SCORE60V->heroOut[i] != 0) {
                     v = 90;
                 }
                 Heroes[i].hero_score_displayed = v;
@@ -907,36 +907,36 @@ loop:
 }
 
 void PogoQuality_Init(void) {
-    PogoModeView *g;
-    PogoModeView *h;
+    GameState *g;
+    GameState *h;
     PogoModeEntry *e;
     s32 i;
 
     e = NULL;
-    switch (((PogoModeView *)GameInfo)->mode) {
+    switch (((GameState *)GameInfo)->mode) {
     case 10:
-        if (((PogoModeView *)GameInfo)->teams != 0) {
+        if (((GameState *)GameInfo)->teams != 0) {
             e = &PogoPainterAiHumanAlt;
         } else {
             e = &PogoPainterAiHuman;
         }
         break;
     case 11:
-        if (((PogoModeView *)GameInfo)->teams != 0) {
+        if (((GameState *)GameInfo)->teams != 0) {
             e = &PogoAgogoAiHumanAlt;
         } else {
             e = &PogoAgogoAiHuman;
         }
         break;
     case 12:
-        if (((PogoModeView *)GameInfo)->teams != 0) {
+        if (((GameState *)GameInfo)->teams != 0) {
             e = &PogoLocoAiHumanAlt;
         } else {
             e = &PogoLocoAiHuman;
         }
         break;
     case 13:
-        if (((PogoModeView *)GameInfo)->teams != 0) {
+        if (((GameState *)GameInfo)->teams != 0) {
             e = &PogoBouncerAiHumanAlt;
         } else {
             e = &PogoBouncerAiHuman;
@@ -944,32 +944,32 @@ void PogoQuality_Init(void) {
         break;
     }
     if (e != NULL) {
-        g = (PogoModeView *)GameInfo;
+        g = (GameState *)GameInfo;
         switch (g->mode) {
         case 10:
-            e->unkE = PogoPainterAiQuality[g->unk38];
-            e->unk10 = PogoPainterAiQuality[g->unk38 + 3];
+            e->unkE = PogoPainterAiQuality[g->aiLevel];
+            e->unk10 = PogoPainterAiQuality[g->aiLevel + 3];
             break;
         case 11:
-            e->unkE = PogoAgogoAiQuality[g->unk38];
-            e->unk10 = PogoAgogoAiQuality[g->unk38 + 3];
+            e->unkE = PogoAgogoAiQuality[g->aiLevel];
+            e->unk10 = PogoAgogoAiQuality[g->aiLevel + 3];
             break;
         case 12:
-            e->unkE = PogoLocoAiQuality[g->unk38];
-            e->unk10 = PogoLocoAiQuality[g->unk38 + 3];
+            e->unkE = PogoLocoAiQuality[g->aiLevel];
+            e->unk10 = PogoLocoAiQuality[g->aiLevel + 3];
             break;
         case 13:
-            e->unkE = PogoBouncerAiQuality[g->unk38];
-            e->unk10 = PogoBouncerAiQuality[g->unk38 + 3];
+            e->unkE = PogoBouncerAiQuality[g->aiLevel];
+            e->unk10 = PogoBouncerAiQuality[g->aiLevel + 3];
             break;
         }
-        g = (PogoModeView *)GameInfo;
-        if ((g->flags & 1) || (g->flags & 2)) {
+        g = (GameState *)GameInfo;
+        if ((g->levelFlags & 1) || (g->levelFlags & 2)) {
             i = 0;
             h = g;
             for (; i < 4; i++) {
                 if (((u8 *)h)[i + 0x5C] == 0) {
-                    AiPlayerSkill[i].quality = *((h->flags & 2) ? &e->unk10 : &e->unkE);
+                    AiPlayerSkill[i].quality = *((h->levelFlags & 2) ? &e->unk10 : &e->unkE);
                 }
             }
         }
@@ -1168,9 +1168,9 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
 }
 
 void PogoWinner_Relic(s32 arg0, u16 arg1) {
-    PogoTeamView *g;
-    PogoTeamView *p;
-    PogoTeamView *q;
+    GameState *g;
+    GameState *p;
+    GameState *q;
     s32 sa;
     s32 sb;
     s32 found;
@@ -1179,19 +1179,19 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
 
     found = -1;
     done = 0;
-    g = (PogoTeamView *)GameInfo;
+    g = (GameState *)GameInfo;
     if (g->teams != 0) {
-        sa = PogoTeamScore(g->team0);
-        sb = PogoTeamScore(g->team1);
+        sa = PogoTeamScore(g->teamLeader[0]);
+        sb = PogoTeamScore(g->teamLeader[1]);
         if (sa == 0) {
-            if (g->out[g->team0] == 0) {
-                POGO_TEAM_LOST(g, g->team0, i, 0);
+            if (g->heroOut[g->teamLeader[0]] == 0) {
+                POGO_TEAM_LOST(g, g->teamLeader[0], i, 0);
             } else {
                 done = 1;
             }
         } else if (sb == 0) {
-            if (g->out[g->team1] == 0) {
-                POGO_TEAM_LOST_LATE(g, g->team1, i, 0);
+            if (g->heroOut[g->teamLeader[1]] == 0) {
+                POGO_TEAM_LOST_LATE(g, g->teamLeader[1], i, 0);
             } else {
                 done = 1;
             }
@@ -1203,8 +1203,8 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
             }
         }
         if (found != -1) {
-            p = (PogoTeamView *)GameInfo;
-            if (p->out[found] == 0) {
+            p = (GameState *)GameInfo;
+            if (p->heroOut[found] == 0) {
                 POGO_TEAM_LOST(p, found, i, 0);
             } else {
                 done = 1;
@@ -1213,10 +1213,10 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
     }
     if (done || arg0 == -1) {
         i = 0;
-        q = (PogoTeamView *)GameInfo;
+        q = (GameState *)GameInfo;
         p = q;
-        q->winner = 0;
-        q->unk30 |= arg1;
+        q->winner[0] = 0;
+        q->exitFlags |= arg1;
         Clock_flags |= 0x200;
         for (; i < 4; i++) {
             if (GameInfo[i + 0x5C] != 0) {
@@ -1345,8 +1345,8 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
 }
 
 void PogoWinner_Normal(s32 arg0, u16 arg1) {
-    PogoRankView *g;
-    PogoRankView *p;
+    GameState *g;
+    GameState *p;
     HeroInfo *hb;
     HeroInfo *h;
     HeroInfo *top;
@@ -1374,16 +1374,16 @@ void PogoWinner_Normal(s32 arg0, u16 arg1) {
                 best = j;
             }
         }
-        RANK60V->order[i] = best;
+        RANK60V->adventure.unkA7[i] = best;
         used |= 1 << best;
     }
     g = RANK60V;
     if (g->teams == 0) {
         h = Heroes;
-        top = &h[g->order[0]];
-        if (top->hero_score == h[g->order[1]].hero_score) {
+        top = &h[g->adventure.unkA7[0]];
+        if (top->hero_score == h[g->adventure.unkA7[1]].hero_score) {
             g->winner[0] = 0;
-            g->unk30 |= arg1;
+            g->exitFlags |= arg1;
             for (k = 0; k < 4; k++) {
                 Heroes[k].hero_status |= 0x100;
             }
@@ -1391,9 +1391,9 @@ void PogoWinner_Normal(s32 arg0, u16 arg1) {
         }
         p = g;
         p->winner[0] = top->hero_name;
-        p->unk30 |= 0x800;
+        p->exitFlags |= 0x800;
         for (n = 0; n < 4; n++) {
-            if (p->order[0] == n) {
+            if (p->adventure.unkA7[0] == n) {
                 h[n].hero_status |= 0x200;
             } else {
                 h[n].hero_status |= 0x400;
@@ -1403,21 +1403,21 @@ void PogoWinner_Normal(s32 arg0, u16 arg1) {
     }
     InitBigScore();
     hb = Heroes;
-    ta = &hb[g->team[0]];
-    b = &hb[g->team[1]];
+    ta = &hb[g->teamLeader[0]];
+    b = &hb[g->teamLeader[1]];
     am = &hb[ta->hero_teammate];
     bm = &hb[b->hero_teammate];
     sa = ta->hero_score + am->hero_score;
     sb = b->hero_score + bm->hero_score;
     if (sa == sb) {
         g->winner[0] = 0;
-        g->unk30 |= arg1;
+        g->exitFlags |= arg1;
         for (k = 0; k < 4; k++) {
             Heroes[k].hero_status |= 0x100;
         }
         return;
     }
-    g->unk30 |= 0x800;
+    g->exitFlags |= 0x800;
     if (sb < sa) {
         g->winner[0] = ta->hero_name;
         g->winner[1] = am->hero_name;
@@ -2334,16 +2334,16 @@ s32 Bank_Tiles(s32 arg0) {
 }
 
 void Handle_Score(u32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    PogoScoreView *g = SCORE60V;
+    GameState *g = SCORE60V;
     s32 score;
 
-    if (g->unk30 & 0x801) {
+    if (g->exitFlags & 0x801) {
         return;
     }
     if (arg3 != 0) {
         CreateFloatyPogoScore(arg0, arg1, arg2, arg3);
     }
-    if (g->flags & 0x40) {
+    if (g->levelFlags & 0x40) {
         if (g->teams != 0) {
             score = Heroes[arg0].hero_score;
             if (score < arg3) {
@@ -2353,7 +2353,7 @@ void Handle_Score(u32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             }
         }
         Heroes[arg0].hero_score -= arg3;
-    } else if ((g->flags & 0x80) && g->mode == 0xB) {
+    } else if ((g->levelFlags & 0x80) && g->mode == 0xB) {
         if (Heroes[arg0].hero_score < arg3) {
             Heroes[arg0].hero_score = arg3;
         }
@@ -2400,7 +2400,7 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2) {
 void Tile_Update(s32 arg0, s32 arg1) {
     s32 rnd;
     s32 anim;
-    PogoModeView *g = (PogoModeView *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     s32 row = g->mode - 10;
     u16 *tbl;
     PogoCell *c;
@@ -2424,7 +2424,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
     if ((u32)arg0 < 8 && (u32)arg1 < 8) {
         rnd = LevelSpecific_UnclaimedTile(arg0, arg1);
         anim = LevelSpecific_ClaimedTile(arg0, arg1);
-        if (g->flags & 0x80) {
+        if (g->levelFlags & 0x80) {
             tbl = TileFramesAlt[row];
         } else {
             tbl = TileFrames[row];
@@ -2469,7 +2469,7 @@ void Tile_Update(s32 arg0, s32 arg1) {
             base10 = PogoGrid[0];
             cell = (PogoCell *)(arg1 * sizeof(PogoCell) + arg0 * sizeof(PogoGrid[0]) + (u32)base10);
             if (cell->unkA != -1) {
-                CELL_SET_T(o, (MV->flags & 0x80) ? 0x3045 : 0x3031, tbl[cell->unkA]);
+                CELL_SET_T(o, (MV->levelFlags & 0x80) ? 0x3045 : 0x3031, tbl[cell->unkA]);
             }
             break;
         case 2:
@@ -2493,16 +2493,16 @@ void Tile_Update(s32 arg0, s32 arg1) {
             if (n >= 4) {
                 n = 3;
             }
-            fr5 = (MV->flags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
+            fr5 = (MV->levelFlags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
             o->anim = fr5;
-            fr5 = (MV->flags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
+            fr5 = (MV->levelFlags & 0x80) ? TileStepFramesAlt[n] : TileStepFrames[n];
             o->frame = CELL_FRAME(o, fr5 & 0xFFF)->unk26;
             break;
         case 7:
-            CELL_SET(o, (MV->flags & 0x80) ? 0x304A : 0x3040, (MV->flags & 0x80) ? 0x304A : 0x3040);
+            CELL_SET(o, (MV->levelFlags & 0x80) ? 0x304A : 0x3040, (MV->levelFlags & 0x80) ? 0x304A : 0x3040);
             break;
         case 6:
-            CELL_SET(o, (MV->flags & 0x80) ? 0x304F : 0x3045, (MV->flags & 0x80) ? 0x304F : 0x3045);
+            CELL_SET(o, (MV->levelFlags & 0x80) ? 0x304F : 0x3045, (MV->levelFlags & 0x80) ? 0x304F : 0x3045);
             break;
         }
     }
@@ -2580,9 +2580,9 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
             near = abs((arg1 << 9) - (((h->hero_eng->unk10.z + 0x800) >> 9) << 9)) < 0x300;
         }
         if (near && !(h->hero_status & 0x800)) {
-            if (((PogoModeView *)GameInfo)->mode == 0xC
-                && (((PogoModeView *)GameInfo)->flags & 0x80)
-                && ((PogoModeView *)GameInfo)->out[i] == 0) {
+            if (((GameState *)GameInfo)->mode == 0xC
+                && (((GameState *)GameInfo)->levelFlags & 0x80)
+                && ((GameState *)GameInfo)->heroOut[i] == 0) {
                 Player_SetPoisoned(i);
                 PlaySfx(0x529, NULL, (SLONG_XYZ *)&h->hero_eng->unk10, 0x1000, 0x1E00, 0);
             } else {
@@ -4581,7 +4581,7 @@ void PogoKerb_Poll(void) {
     s32 i;
     s32 j;
     HeroInfo *h;
-    PogoModeView *g;
+    GameState *g;
 
     if (PogoKerbObj == NULL) {
         return;
@@ -4653,7 +4653,7 @@ void PogoKerb_Poll(void) {
     Tile_Update(KerbTiles[pos[2]][0], KerbTiles[pos[2]][1]);
     Tile_Update(KerbTiles[pos[3]][0], KerbTiles[pos[3]][1]);
     i = 0;
-    g = (PogoModeView *)GameInfo;
+    g = (GameState *)GameInfo;
     h = Heroes;
 loop:
     if (i < 4) {
@@ -5315,7 +5315,7 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
                 if (f0 && PogoGrid[px][pz].unkA == i) {
                     goto found;
                 }
-            } else if (((PogoModeView *)GameInfo)->mode == 11 && f0 &&
+            } else if (((GameState *)GameInfo)->mode == 11 && f0 &&
                        PogoAI_RadialSearch_CheckKerbs(i, px, pz)) {
                 goto found;
             }
@@ -5332,7 +5332,7 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
                 if (f1 && PogoGrid[px][pz].unkA == i) {
                     goto found;
                 }
-            } else if (((PogoModeView *)GameInfo)->mode == 11 && f1 &&
+            } else if (((GameState *)GameInfo)->mode == 11 && f1 &&
                        PogoAI_RadialSearch_CheckKerbs(i, px, pz)) {
                 goto found;
             }
@@ -5349,7 +5349,7 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
                 if (f2 && PogoGrid[px][pz].unkA == i) {
                     goto found;
                 }
-            } else if (((PogoModeView *)GameInfo)->mode == 11 && f2 &&
+            } else if (((GameState *)GameInfo)->mode == 11 && f2 &&
                        PogoAI_RadialSearch_CheckKerbs(i, px, pz)) {
                 goto found;
             }

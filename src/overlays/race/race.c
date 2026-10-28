@@ -1028,11 +1028,11 @@ s32 arg0;
             ext->unk18 = RaceAI_ChasePickup;
             ext->unk14 = RaceAISpeeds[Heroes[arg0].hero_name];
         }
-        if (G63->unk34 != 0x17) {
+        if (G63->mode != 0x17) {
             RaceAI_SteerAtVictim(arg0);
         }
         ext->unk18(arg0);
-        if (G63->unk34 == 0x19) {
+        if (G63->mode == 0x19) {
             RaceAI_SpinnerBrake(arg0);
         } else {
             RaceAI_UseAimedWeapon(arg0);
@@ -1378,8 +1378,8 @@ void RaceInitSpinners(void) {
         if (obj == NULL) {
             return;
         }
-        if (G63->unk34 == 0x17) {
-            if (!(G63->unk32 & 0x80)) {
+        if (G63->mode == 0x17) {
+            if (!(G63->levelFlags & 0x80)) {
                 if (obj->index == 0x5001) {
                     obj->flags &= ~0x8000;
                 }
@@ -1395,10 +1395,10 @@ void RaceInitSpinners(void) {
                 }
             }
         }
-        if (G63->unk34 == 0x19 && obj->index == 0x5003) {
+        if (G63->mode == 0x19 && obj->index == 0x5003) {
             obj->flags &= ~0x8000;
         }
-        if (G63->unk34 == 0x1A) {
+        if (G63->mode == 0x1A) {
             if (obj->index == 0x5003) {
                 obj->flags &= ~0x8000;
             }
@@ -1407,13 +1407,13 @@ void RaceInitSpinners(void) {
                 RaceGlowObj = (RaceObj74 *)obj;
             }
         }
-        if (G63->unk34 == 0x18 && obj->model->unkC != NULL) {
+        if (G63->mode == 0x18 && obj->model->unkC != NULL) {
             r = entity_address(obj->index, obj->model->unkC);
             if (r != NULL && *(s32 *)(r + 0x28) != 0) {
                 obj->flags &= ~0x8000;
             }
         }
-        if (G63->unk34 == 0x19) {
+        if (G63->mode == 0x19) {
             if (obj->index == 0x5005) {
                 RaceSpinner = (RaceSpinObj *)obj;
             }
@@ -1984,12 +1984,12 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
                         pos.x += dx;
                         pos.z += dz;
                         out = n;
-                        if (!(G63->unk32 & 0x80)) {
-                            if (G63->unk34 == 0x17 && obj->index == 0x5003) {
+                        if (!(G63->levelFlags & 0x80)) {
+                            if (G63->mode == 0x17 && obj->index == 0x5003) {
                                 found = 1;
                             }
                         } else {
-                            if (G63->unk34 == 0x17 && obj->index == 0x5002) {
+                            if (G63->mode == 0x17 && obj->index == 0x5002) {
                                 found = 1;
                             }
                         }
@@ -2617,24 +2617,24 @@ void InitialiseRACE(void) {
     RaceAiExt *ai;
     EXTengine *eng;
     subengine *sub;
-    RaceGameView2 *g;
+    GameState *g;
     EXTheromove *move;
     EXTengine *he;
     s32 *scene;
 
     RaceStartDelay = 0x3C;
     Init_Clock(0x140, 0x28, 0);
-    if (G63->unk34 == 0x18) {
-        Set_Clock((G63->unk32 & 0x40) ? 0x115 : 0x130, 0x81C0);
+    if (G63->mode == 0x18) {
+        Set_Clock((G63->levelFlags & 0x40) ? 0x115 : 0x130, 0x81C0);
     }
-    if (G63->unk34 == 0x17) {
-        Set_Clock((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+    if (G63->mode == 0x17) {
+        Set_Clock((G63->levelFlags & 0x40) ? 0x100 : 0x130, 0x81C0);
     }
-    if (G63->unk34 == 0x19) {
-        Set_Clock((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+    if (G63->mode == 0x19) {
+        Set_Clock((G63->levelFlags & 0x40) ? 0x100 : 0x130, 0x81C0);
     }
-    if (G63->unk34 == 0x1A) {
-        Set_Clock((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+    if (G63->mode == 0x1A) {
+        Set_Clock((G63->levelFlags & 0x40) ? 0x100 : 0x130, 0x81C0);
     }
     RaceObjects = NULL;
     World_floor_level = -0x10;
@@ -2645,12 +2645,12 @@ void InitialiseRACE(void) {
     RaceInitSpinners();
     RaceOver = 0;
     g = G63B;
-    if (g->unk34 == 0x18) {
+    if (g->mode == 0x18) {
         RaceInitBarrels();
         CreateNAS(0, 0xC4, 0, 0x170B, 0x11);
         PlaySfx(0x42E, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if (g->unk34 == 0x19) {
+    if (g->mode == 0x19) {
         PlaySfx(0x672, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     RaceBarrelRollTimer = 0xB4;
@@ -2695,7 +2695,7 @@ void InitialiseRACE(void) {
         fux->unk38 = 0;
         fux->unk34 = 0;
         fux->unk168 = 0;
-        if ((G63B->unk32 & 0x40) && G63B->unk5C[i] != 0) {
+        if ((G63B->levelFlags & 0x40) && G63B->heroOut[i] != 0) {
             fux->unk34 = 2;
         }
         fux->unk170 = -1;
@@ -2733,8 +2733,8 @@ void InitialiseRACE(void) {
             eng->unk2C.z = 0x800;
         }
     }
-    if (G63->unk34 == 0x1A) {
-        if (G63->unk32 & 0x80) {
+    if (G63->mode == 0x1A) {
+        if (G63->levelFlags & 0x80) {
             CreateNAS(0, -0x400, 0, 0x170E, 0x11);
         } else {
             CreateNAS(0, 0, 0, 0x1707, 0x11);
@@ -2744,13 +2744,13 @@ void InitialiseRACE(void) {
 
 void UpdateRACE(void) {
     RaceTimer++;
-    if (G63->unk30 & 0x800) {
+    if (G63->exitFlags & 0x800) {
         RaceOver = 1;
     }
-    if (G63->unk30 & 1) {
+    if (G63->exitFlags & 1) {
         RaceOver = 1;
     }
-    if (G63->unk10 == 0) {
+    if (G63->pause == 0) {
         RaceStartDelay--;
     }
     if (RaceOver == 0) {
@@ -2759,16 +2759,16 @@ void UpdateRACE(void) {
         CameraMode = 1;
     }
     RacePickupMaster();
-    if (G63->unk34 != 0x19) {
+    if (G63->mode != 0x19) {
         RacePickupRespawn();
     }
-    if (G63->unk34 == 0x18) {
+    if (G63->mode == 0x18) {
         RaceUpdateBarrels();
     }
-    if (G63->unk34 == 0x19) {
+    if (G63->mode == 0x19) {
         MaintainCentre();
     }
-    if (G63->unk34 == 0x1A && !(G63->unk32 & 0x80)) {
+    if (G63->mode == 0x1A && !(G63->levelFlags & 0x80)) {
         RaceGlowObj->unk74 = (RaceGlowPhase >> 8) + 0x4000;
         if (RaceGlowMode == 0) {
             RaceGlowPhase += 0x80;
@@ -2853,7 +2853,7 @@ void RacePreMoveHero(s32 player) {
                     }
                     boost = 0;
                     if ((((PadState *)Pads)[player].dir & 0x8000) && fux->unk58 > 0) {
-                        if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
+                        if (G63B->mode == 0x18 && (G63B->levelFlags & 0x80) && G63B->heroOut[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
                             fux->unk13C >>= 3;
                             fux->unk140 >>= 3;
                         }
@@ -2861,7 +2861,7 @@ void RacePreMoveHero(s32 player) {
                         m->z_acc = fux->unk158;
                         m->x_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
                         m->z_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
-                        if (AiPlayerSkill[player].level >= 0x17 && G63B->unk5C[player] != 0) {
+                        if (AiPlayerSkill[player].level >= 0x17 && G63B->heroOut[player] != 0) {
                             fux->unk58 -= 0x180 - RaceSteerAngles[AiPlayerSkill[player].level - 0x16];
                         } else if (Heroes[player].hero_mode != 0x61) {
                             fux->unk58 -= 0x180;
@@ -2875,7 +2875,7 @@ void RacePreMoveHero(s32 player) {
                     if (boost == 0 && (((PadState *)Pads)[player].dir & 0x800)) {
                         m->x_acc = fux->unk15C;
                         m->z_acc = fux->unk15C;
-                        if (G63B->unk5C[player] != 0) {
+                        if (G63B->heroOut[player] != 0) {
                             if (AiPlayerSkill[player].level < 0x16) {
                                 m->x_acc = RaceAccel - ((0x10 - AiPlayerSkill[player].level) << 6);
                                 m->z_acc = RaceAccel - ((0x10 - AiPlayerSkill[player].level) << 6);
@@ -2890,7 +2890,7 @@ void RacePreMoveHero(s32 player) {
                                 m->z_acc = RaceAccel + RaceSteerSpeeds[AiPlayerSkill[player].level - 0x16];
                             }
                         }
-                        if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
+                        if (G63B->mode == 0x18 && (G63B->levelFlags & 0x80) && G63B->heroOut[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
                             fux->unk13C >>= 3;
                             fux->unk140 >>= 3;
                         }
@@ -3028,7 +3028,7 @@ void RaceMoveHero(s32 player) {
             }
         }
         eng->OldXYZ = eng->unk10;
-        if (G63->unk34 == 0x19) {
+        if (G63->mode == 0x19) {
             i = 0;
             while (1) {
                 if (i >= 6) {
@@ -3113,12 +3113,12 @@ void RaceMoveHero(s32 player) {
                     break;
                 }
                 if (b == 1) {
-                    if (G63->unk34 != 0x18 && G63->unk34 != 0x1A) {
+                    if (G63->mode != 0x18 && G63->mode != 0x1A) {
                         hit = RaceTrackCollide(&pos, &out, 200, 1, 0);
                     } else {
                         hit = Heroes[player].hero_eng->unk10.x * Heroes[player].hero_eng->unk10.x +
                                   Heroes[player].hero_eng->unk10.z * Heroes[player].hero_eng->unk10.z >
-                            (G63->unk34 == 0x1A ? 0xA90000 : 0x900000);
+                            (G63->mode == 0x1A ? 0xA90000 : 0x900000);
                     }
                     if (hit && Heroes[player].hero_mode != 0x61) {
                         SetHeroAction(player, 0x61);
@@ -3215,11 +3215,11 @@ void RaceHeroIdle(s32 player) {
     if (f == NULL) {
         return;
     }
-    if (G63B->unk34 == 0x18) {
+    if (G63B->mode == 0x18) {
         if (f->unk168 > 0) {
             f->unk168--;
         }
-        if ((G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
+        if ((G63B->levelFlags & 0x80) && G63B->heroOut[player] == 0) {
             if (f->unk16C-- < 0) {
                 f->unk16C = (150 - f->unk168) / 5;
             }
@@ -3297,7 +3297,7 @@ void RaceHeroIdle(s32 player) {
                     pos.y = h->hero_eng->unk10.y;
                 }
                 if (--f->unk48 == -1) {
-                    if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
+                    if (G63B->mode == 0x18 && (G63B->levelFlags & 0x80) && G63B->heroOut[player] == 0) {
                         if (f->unk168 > 0) {
                             CreateNAS(pos.x, pos.y, pos.z, 0x1710, 0x11);
                         } else {
@@ -3353,7 +3353,7 @@ void RaceHeroIdle(s32 player) {
                     pos.y = h->hero_eng->unk10.y;
                 }
                 if (--f->unk4C == -1) {
-                    if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
+                    if (G63B->mode == 0x18 && (G63B->levelFlags & 0x80) && G63B->heroOut[player] == 0) {
                         if (f->unk168 > 0) {
                             CreateNAS(pos.x, pos.y, pos.z, 0x170F, 0x11);
                         } else {
@@ -3390,16 +3390,16 @@ void RaceHeroIdle(s32 player) {
             f->unk4C = 3;
         }
     }
-    if (G63B->unk34 == 0x1A) {
+    if (G63B->mode == 0x1A) {
         RaceFloorLevel = -0xB4;
     }
     Heroes[player].hero_eng->unk10.y = RaceFloorLevel;
     RaceHeroUsePickup(player);
-    if (G63B->unk34 == 0x19) {
+    if (G63B->mode == 0x19) {
         RaceHeroTestJump(player);
     }
     TestRaceHeroWon(player);
-    if (G63B->unk34 != 0x19) {
+    if (G63B->mode != 0x19) {
         if (ProcessHeroAnim(player) != 0) {
             SetHeroSeq(player, 0x48);
         }
@@ -3451,13 +3451,13 @@ void SetRaceHeroOffTrack(s32 player) {
         }
         h->hero_eng->unk5E = 1;
         SetHeroSeq(player, 0x4B);
-        if (G63->unk34 == 0x19) {
+        if (G63->mode == 0x19) {
             SetHeroSeq(player, 0x54);
         }
         h->hero_shadow->sub->flags &= ~0x8000;
         h->hero_eng->sub->unk68 = 0x200;
         h->hero_eng->sub->flags |= 0x02000000;
-        if (G63->unk34 == 0x18 && (G63->unk32 & 0x80)) {
+        if (G63->mode == 0x18 && (G63->levelFlags & 0x80)) {
             f->unk168 = 150;
         }
     }
@@ -3529,7 +3529,7 @@ void RaceHeroOffTrack(s32 player) {
         }
         if (RaceBounceObject((RaceBounceObj *)h->hero_eng, &f->bounce) != 0 && ++f->unk88 >= 2) {
             SetHeroAction(player, 0x5B);
-            if (G63B->unk34 == 0x18 && G63B->unk5C[player] == 0 && (G63B->unk32 & 0x80)) {
+            if (G63B->mode == 0x18 && G63B->heroOut[player] == 0 && (G63B->levelFlags & 0x80)) {
                 PlaySfx(0x66A, NULL, NULL, 0x1000, 0x1E00, 0);
             }
             return;
@@ -3582,14 +3582,14 @@ void RaceHeroOffTrack(s32 player) {
         if (ProcessHeroAnim(player) != 0) {
             f->unk144 = 1;
             SetHeroSeq(player, 0x48);
-            if (G63->unk34 == 0x19) {
+            if (G63->mode == 0x19) {
                 SetHeroSeq(player, 0x52);
             }
             h->hero_eng->unk10.x -= rcossin_tbl[(f->unk54 - 0x400) & 0xFFF].unk2 * 512 >> 12;
             h->hero_eng->unk10.z -= rcossin_tbl[f->unk54 & 0xFFF].unk2 * 512 >> 12;
             h->hero_eng->unk10.y = -0x578;
             h->hero_eng->unk20 = 0;
-            if (G63->unk34 == 0x17) {
+            if (G63->mode == 0x17) {
                 RaceDiveSplash(&h->hero_eng->unk10, 9);
             }
             if (GameMode == 0x18) {
@@ -3671,7 +3671,7 @@ void SetRaceHeroDazed(s32 player) {
     s32 r;
 
     TestRaceHeroWon(player);
-    if (G63->unk34 != 0x19) {
+    if (G63->mode != 0x19) {
         SetHeroSeq(player, 0x4A);
     }
     pad_rumble_small(player, 0xA);
@@ -3687,7 +3687,7 @@ void SetRaceHeroDazed(s32 player) {
             m->jump_dec = 0x14;
             m->jump_vel = -0xA0;
         }
-        if (G63->unk34 != 0x19) {
+        if (G63->mode != 0x19) {
             switch (h->hero_name) {
             case 1:
                 RACE_SFX4(3, 4, 5, 6);
@@ -4193,19 +4193,19 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
 
 void RaceChooseWinner(s32 arg0, u16 arg1) {
     s32 i;
-    RaceResultView *g;
+    GameState *g;
     HeroInfo *hb;
-    RaceResultView *g0;
+    GameState *g0;
 
     g0 = RV;
-    if (!(g0->unk30 & 0x801) && arg0 == -1) {
+    if (!(g0->exitFlags & 0x801) && arg0 == -1) {
         for (i = 0; ; i++) {
             RaceResultFux *f;
 
             if (i >= 4) {
                 break;
             }
-            RV->unkA7[i] = i;
+            RV->adventure.unkA7[i] = i;
             f = (RaceResultFux *)Heroes[i].hero->FUX;
             if (f != NULL) {
                 if (f->unk128 != NULL) {
@@ -4234,28 +4234,28 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
                 if (j >= 4) {
                     break;
                 }
-                a = RV->unkA7[j - 1];
-                b = RV->unkA7[j];
+                a = RV->adventure.unkA7[j - 1];
+                b = RV->adventure.unkA7[j];
                 if (hp[a].hero_score > hp[b].hero_score) {
-                    RV->unkA7[j - 1] = b;
-                    RV->unkA7[j] = a;
+                    RV->adventure.unkA7[j - 1] = b;
+                    RV->adventure.unkA7[j] = a;
                 }
             }
         }
         }
         g = RV;
-        if (g->unk6C == 0) {
+        if (g->teams == 0) {
             HeroInfo *a;
 
             hb = Heroes;
-            a = &hb[g->unkA7[0]];
-            if (a->hero_score == hb[g->unkA7[1]].hero_score) {
+            a = &hb[g->adventure.unkA7[0]];
+            if (a->hero_score == hb[g->adventure.unkA7[1]].hero_score) {
                 RACE_DRAW_I(g, i, arg1);
             } else {
-                RV->unk60 = a->hero_name;
-                RV->unk30 |= 0x800;
+                RV->winner[0] = a->hero_name;
+                RV->exitFlags |= 0x800;
                 for (i = 0; i < 4; i++) {
-                    if (RV->unkA7[0] == i) {
+                    if (RV->adventure.unkA7[0] == i) {
                         hb[i].hero_status |= 0x200;
                     } else {
                         hb[i].hero_status |= 0x8400;
@@ -4276,29 +4276,29 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
             s32 ma;
             s32 n;
 
-            ia = g->unk48;
-            ib = g->unk4A;
+            ia = g->teamLeader[0];
+            ib = g->teamLeader[1];
             ita = Heroes[ia].hero_teammate;
             itb = Heroes[ib].hero_teammate;
             if (Heroes[ia].hero_score == 0) {
-                g->unk30 |= 0x800;
+                g->exitFlags |= 0x800;
                 RACE_TEAM_WIN(ia, ita, ib, itb);
             } else if (Heroes[ita].hero_score == 0) {
-                g->unk30 |= 0x800;
+                g->exitFlags |= 0x800;
                 RACE_TEAM_WIN(ia, ita, ib, itb);
             } else if (Heroes[ib].hero_score == 0) {
-                g->unk30 |= 0x800;
+                g->exitFlags |= 0x800;
                 RACE_TEAM_WIN(ib, itb, ia, ita);
             } else if (Heroes[itb].hero_score == 0) {
-                g->unk30 |= 0x800;
+                g->exitFlags |= 0x800;
                 RACE_TEAM_WIN(ib, itb, ia, ita);
             } else {
-                sa = (Heroes[g->unk48].hero_score << 12) + RaceFacing(ia);
-                sta = (Heroes[Heroes[g->unk48].hero_teammate].hero_score << 12)
-                    + RaceFacing(Heroes[g->unk48].hero_teammate);
-                sb = (Heroes[g->unk4A].hero_score << 12) + RaceFacing(g->unk4A);
-                stb = (Heroes[Heroes[g->unk4A].hero_teammate].hero_score << 12)
-                    + RaceFacing(Heroes[g->unk4A].hero_teammate);
+                sa = (Heroes[g->teamLeader[0]].hero_score << 12) + RaceFacing(ia);
+                sta = (Heroes[Heroes[g->teamLeader[0]].hero_teammate].hero_score << 12)
+                    + RaceFacing(Heroes[g->teamLeader[0]].hero_teammate);
+                sb = (Heroes[g->teamLeader[1]].hero_score << 12) + RaceFacing(g->teamLeader[1]);
+                stb = (Heroes[Heroes[g->teamLeader[1]].hero_teammate].hero_score << 12)
+                    + RaceFacing(Heroes[g->teamLeader[1]].hero_teammate);
                 for (n = 0; ; n++) {
                     RaceResultFux *f;
 
@@ -4326,9 +4326,9 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
                 if (ma == mb) {
                     RACE_DRAW_I(RV, i, arg1);
                 } else if (ma < mb) {
-                    RACE_TEAM_WIN_BY(RV, Heroes, RV->unk48, RV->unk4A);
+                    RACE_TEAM_WIN_BY(RV, Heroes, RV->teamLeader[0], RV->teamLeader[1]);
                 } else {
-                    RACE_TEAM_WIN_BY(RV, Heroes, RV->unk4A, RV->unk48);
+                    RACE_TEAM_WIN_BY(RV, Heroes, RV->teamLeader[1], RV->teamLeader[0]);
                 }
             }
         }
@@ -4622,16 +4622,16 @@ s32 RaceMissileHitHeroes(u8 *arg0, u32 arg1) {
                 if (Heroes[i].hero_mode != 0x5D) {
                     SetHeroAction(i, 0x5D);
                 }
-                if (G63B->unk34 == 0x17 && (G63B->unk32 & 0x80) && G63B->unk5C[i] == 0 && !(G63B->unk30 & 0x801)) {
+                if (G63B->mode == 0x17 && (G63B->levelFlags & 0x80) && G63B->heroOut[i] == 0 && !(G63B->exitFlags & 0x801)) {
                     f = 1;
-                    if (G63B->unk4 & 0x800) {
+                    if (G63B->cheats & 0x800) {
                         f = 0x201;
                     }
-                    G63B->unk30 |= f;
-                    G63B->unk60 = 0;
+                    G63B->exitFlags |= f;
+                    G63B->winner[0] = 0;
                     for (j = 0; j < 4; j++) {
                         Heroes[j].hero_status |= 0x100;
-                        if (G63B->unk5C[j] != 0) {
+                        if (G63B->heroOut[j] != 0) {
                             RemoveCamera(Heroes[j].hero);
                         }
                     }
@@ -5030,7 +5030,7 @@ void RacePickupMaster(void) {
     RaceFuxHeld *fux;
     RaceFuxHeld *hfux;
     EXTengine *eng;
-    RaceGameView *g;
+    GameState *g;
     s32 n;
     s32 big;
     s32 count;
@@ -5128,7 +5128,7 @@ heroes_done:
         }
         slot = Random(16);
         j = 0;
-        if (g->unk34 == 0x19) {
+        if (g->mode == 0x19) {
             dist = 0x5DC;
         }
         if (RacePickupCount == 0) {
@@ -5345,7 +5345,7 @@ heroes_done:
                 ext = FindExtension(spawned, 0x10000000);
                 if (ext != NULL) {
                     ext->unk44 = slot;
-                    if (G63->unk34 != 0x18) {
+                    if (G63->mode != 0x18) {
                         ext->unk38 = 0;
                     } else {
                         ext->unk38 = 5;
@@ -6072,20 +6072,20 @@ s32 RaceExplodeHitHeroes(SLONG_XYZ *pos) {
                 if (Heroes[i].hero_mode != 0x5D) {
                     SetHeroAction(i, 0x5D);
                 }
-                if (MODE63->flags & 0x80) {
-                    if (MODE63->unk5C[i] != 0) {
+                if (MODE63->levelFlags & 0x80) {
+                    if (MODE63->heroOut[i] != 0) {
                         hit = 1;
                         continue;
                     }
                     bits = 1;
-                    if (MODE63->unk4 & 0x800) {
+                    if (MODE63->cheats & 0x800) {
                         bits = 0x201;
                     }
-                    MODE63->unk60 = 0;
-                    MODE63->unk30 |= bits;
+                    MODE63->winner[0] = 0;
+                    MODE63->exitFlags |= bits;
                     for (j = 0; j < 4; j++) {
                         Heroes[j].hero_status |= 0x100;
-                        if (MODE63->unk5C[j] != 0) {
+                        if (MODE63->heroOut[j] != 0) {
                             RemoveCamera(Heroes[j].hero);
                         }
                     }

@@ -281,15 +281,15 @@ void InitialiseSPIN() {
         m->forward_angle = a;
         Heroes[i].hero->Camera.width = 0;
         Heroes[i].hero->Camera.look_ahead = 0;
-        if (((SpinGame *)GameInfo)->cpu[i] != 0) {
+        if (((GameState *)GameInfo)->heroOut[i] != 0) {
             Heroes[i].hero_move->run_walk = 2;
         }
     }
-    if (((SpinGame *)GameInfo)->flags & 0x80) {
+    if (((GameState *)GameInfo)->levelFlags & 0x80) {
         dbase_load_all_mesh_anims(&HeroModelBank[DB_Angel]);
     }
-    if (((SpinGame *)GameInfo)->flags & 0x40) {
-        if (((SpinGame *)GameInfo)->teams != 0) {
+    if (((GameState *)GameInfo)->levelFlags & 0x40) {
+        if (((GameState *)GameInfo)->teams != 0) {
             Heroes[0].hero_score = 0x28;
             Heroes[1].hero_score = 0;
             Heroes[2].hero_score = 0x1E;
@@ -488,11 +488,11 @@ void SpinTurnArena(void) {
 }
 
 s32 SpinRankHeroes(void) {
-    SpinGame *g;
+    GameState *g;
     HeroInfo *h;
     s32 j;
     s32 i;
-    SpinGame *gt;
+    GameState *gt;
     s32 a;
     s32 b;
     s32 mate;
@@ -513,23 +513,23 @@ s32 SpinRankHeroes(void) {
         p--;
     } while (j >= 0);
     i = 0;
-    g = (SpinGame *)GameInfo;
+    g = (GameState *)GameInfo;
     h = Heroes;
     while (1) {
         if (!(i < 4)) break;
         j = 0;
         while (1) {
             if (!(j < 3)) break;
-            if (g->flags & 0x40) {
-                if (h[g->rank[j]].hero_score > h[((u8 *)((k = j + 1) + (s32)g))[0xA7]].hero_score) {
-                    a = g->rank[j];
-                    g->rank[j] = ((u8 *)(k + (s32)g))[0xA7];
+            if (g->levelFlags & 0x40) {
+                if (h[g->adventure.unkA7[j]].hero_score > h[((u8 *)((k = j + 1) + (s32)g))[0xA7]].hero_score) {
+                    a = g->adventure.unkA7[j];
+                    g->adventure.unkA7[j] = ((u8 *)(k + (s32)g))[0xA7];
                     ((u8 *)(k + (s32)g))[0xA7] = a;
                 }
             } else {
-                if (h[g->rank[j]].hero_score < h[((u8 *)((m = j + 1) + (s32)g))[0xA7]].hero_score) {
-                    a = g->rank[j];
-                    g->rank[j] = ((u8 *)(m + (s32)g))[0xA7];
+                if (h[g->adventure.unkA7[j]].hero_score < h[((u8 *)((m = j + 1) + (s32)g))[0xA7]].hero_score) {
+                    a = g->adventure.unkA7[j];
+                    g->adventure.unkA7[j] = ((u8 *)(m + (s32)g))[0xA7];
                     ((u8 *)(m + (s32)g))[0xA7] = a;
                 }
             }
@@ -537,23 +537,23 @@ s32 SpinRankHeroes(void) {
         }
         i++;
     }
-    gt = (SpinGame *)GameInfo;
+    gt = (GameState *)GameInfo;
     if (gt->teams != 0) {
-        team0 = gt->team[0];
+        team0 = gt->teamLeader[0];
         mate = Heroes[team0].hero_teammate;
         score = Heroes[team0].hero_score;
         SpinBestScore = score;
         if (mate != 0) {
             SpinBestScore = score + Heroes[mate].hero_score;
         }
-        team1 = gt->team[1];
+        team1 = gt->teamLeader[1];
         mate1 = Heroes[team1].hero_teammate;
         score1 = Heroes[team1].hero_score;
         SpinBestHero = score1;
         if (mate1 != 0) {
             SpinBestHero = score1 + Heroes[mate1].hero_score;
         }
-        if (gt->flags & 0x40) {
+        if (gt->levelFlags & 0x40) {
             if (SpinBestScore < SpinBestHero) {
             ra:
                 return team0;
@@ -566,25 +566,25 @@ s32 SpinRankHeroes(void) {
         }
         goto rb;
     }
-    return gt->rank[0];
+    return gt->adventure.unkA7[0];
 }
 
 void SpinChooseWinner(s32 arg0, u16 arg1) {
     s32 found;
-    SpinGame *g;
-    SpinGame *game;
+    GameState *g;
+    GameState *game;
     HeroInfo *hb;
     HeroInfo *heroes;
     HeroInfo *h;
-    SpinGame *p;
+    GameState *p;
     s32 i;
     s32 mate;
 
-    if (SPIN_GAME->state & 0x801) {
+    if (SPIN_GAME->exitFlags & 0x801) {
         return;
     }
     found = 0;
-    if (SPIN_GAME->flags & 0x80) {
+    if (SPIN_GAME->levelFlags & 0x80) {
         for (i = 0; i < 4; i++) {
             if (!(Heroes[i].hero_status & 0xFA00) && (i == 0 || (SPIN_GAME->teams != 0 && i == 1))) {
                 found++;
@@ -595,18 +595,18 @@ void SpinChooseWinner(s32 arg0, u16 arg1) {
             return;
         }
     }
-    if (SPIN_GAME->flags & 0x40) {
+    if (SPIN_GAME->levelFlags & 0x40) {
         if (arg0 == -1) {
             SPIN_DRAW(SPIN_GAME, arg1, i);
             return;
         }
         found = -1;
         if (SPIN_GAME->teams != 0) {
-            if (Heroes[SPIN_GAME->team[0]].hero_score == 0) {
-                found = SPIN_GAME->team[0];
+            if (Heroes[SPIN_GAME->teamLeader[0]].hero_score == 0) {
+                found = SPIN_GAME->teamLeader[0];
             }
-            if (Heroes[SPIN_GAME->team[1]].hero_score == 0) {
-                found = SPIN_GAME->team[1];
+            if (Heroes[SPIN_GAME->teamLeader[1]].hero_score == 0) {
+                found = SPIN_GAME->teamLeader[1];
             }
         } else {
             for (i = 0; i < 4; i++) {
@@ -622,7 +622,7 @@ void SpinChooseWinner(s32 arg0, u16 arg1) {
                     Heroes[mate].hero_status |= 0x200;
                 }
                 SPIN_GAME->winner[0] = Heroes[found].hero_name;
-                SPIN_GAME->state |= arg1;
+                SPIN_GAME->exitFlags |= arg1;
                 for (i = 0; i < 4; i++) {
                     if (!(Heroes[i].hero_status & 0xFA00)) {
                         Heroes[i].hero_status |= 0x400;
@@ -638,8 +638,8 @@ void SpinChooseWinner(s32 arg0, u16 arg1) {
         return;
     }
     found = SpinRankHeroes();
-    g = (SpinGame *)GameInfo;
-    if ((g->flags & 0xE0) && found != 0) {
+    g = (GameState *)GameInfo;
+    if ((g->levelFlags & 0xE0) && found != 0) {
         if (g->teams != 0) {
             if (found == 1) {
                 goto decide;
@@ -650,19 +650,19 @@ void SpinChooseWinner(s32 arg0, u16 arg1) {
         return;
     }
 decide:
-    game = (SpinGame *)GameInfo;
+    game = (GameState *)GameInfo;
     if (game->teams != 0) {
         InitBigScore();
         if (SpinBestScore == SpinBestHero) {
             game->winner[0] = 0;
-            game->state |= arg1;
+            game->exitFlags |= arg1;
             for (i = 0; i < 4; i++) {
                 Heroes[i].hero_status |= 0x100;
             }
             return;
         }
-        game->state |= 0x800;
-        if (found == game->team[0]) {
+        game->exitFlags |= 0x800;
+        if (found == game->teamLeader[0]) {
             hb = Heroes;
             h = &hb[found];
             mate = h->hero_teammate;
@@ -678,31 +678,31 @@ decide:
                 game->winner[1] = hb[mate].hero_name;
                 hb[mate].hero_status |= 0x200;
             }
-            Heroes[SPIN_GAME->team[1]].hero_status |= 0x400;
-            mate = Heroes[SPIN_GAME->team[1]].hero_teammate;
+            Heroes[SPIN_GAME->teamLeader[1]].hero_status |= 0x400;
+            mate = Heroes[SPIN_GAME->teamLeader[1]].hero_teammate;
             if (mate != 0) {
                 Heroes[mate].hero_status |= 0x400;
             }
         } else {
-            game->winner[0] = Heroes[game->team[1]].hero_name;
-            Heroes[game->team[1]].hero_status |= 0x200;
-            mate = Heroes[game->team[1]].hero_teammate;
+            game->winner[0] = Heroes[game->teamLeader[1]].hero_name;
+            Heroes[game->teamLeader[1]].hero_status |= 0x200;
+            mate = Heroes[game->teamLeader[1]].hero_teammate;
             if (mate != 0) {
                 game->winner[1] = Heroes[mate].hero_name;
                 Heroes[mate].hero_status |= 0x200;
             }
-            Heroes[game->team[0]].hero_status |= 0x400;
-            mate = Heroes[game->team[0]].hero_teammate;
+            Heroes[game->teamLeader[0]].hero_status |= 0x400;
+            mate = Heroes[game->teamLeader[0]].hero_teammate;
             if (mate != 0) {
                 Heroes[mate].hero_status |= 0x400;
             }
         }
     } else {
         heroes = Heroes;
-        h = &heroes[game->rank[0]];
-        if (h->hero_score == heroes[game->rank[1]].hero_score) {
+        h = &heroes[game->adventure.unkA7[0]];
+        if (h->hero_score == heroes[game->adventure.unkA7[1]].hero_score) {
             game->winner[0] = 0;
-            game->state |= arg1;
+            game->exitFlags |= arg1;
             for (i = 0; i < 4; i++) {
                 Heroes[i].hero_status |= 0x100;
             }
@@ -710,9 +710,9 @@ decide:
         }
         p = game;
         p->winner[0] = h->hero_name;
-        p->state |= 0x800;
+        p->exitFlags |= 0x800;
         for (i = 0; i < 4; i++) {
-            if (p->rank[0] == i) {
+            if (p->adventure.unkA7[0] == i) {
                 heroes[i].hero_status |= 0x200;
             } else {
                 heroes[i].hero_status |= 0x400;
@@ -881,7 +881,7 @@ void SpinDropObjects(u16 count, s16 arg1) {
             if (kind >= 2) {
                 continue;
             }
-            if (((SpinGame *)GameInfo)->cpu[idx] == 0
+            if (((GameState *)GameInfo)->heroOut[idx] == 0
                 && (n = AiPlayerSkill[idx].level, n++, (u32)Clock_Time >> 8 < 0x120)) {
                 if (kind == 0) {
                     r = (u32)Random(n) < 9;
@@ -1448,7 +1448,7 @@ void PlotBalloon(NAS *nas) {
                                 }
                             } else {
                                 SetHeroAction(owner, (u16)HeroActHit);
-                                if (SPIN_GAME->flags & 0x80) {
+                                if (SPIN_GAME->levelFlags & 0x80) {
                                     owner = fux->owner;
                                     if (owner == 0 || (SPIN_GAME->teams != 0 && owner == 1)) {
                                         Heroes[owner].hero_health = 0;
@@ -1467,7 +1467,7 @@ void PlotBalloon(NAS *nas) {
                             }
                         } else {
                             SetHeroAction(owner, (u16)HeroActHit);
-                            if (SPIN_GAME->flags & 0x80) {
+                            if (SPIN_GAME->levelFlags & 0x80) {
                                 owner = fux->owner;
                                 if (owner == 0 || (SPIN_GAME->teams != 0 && owner == 1)) {
                                     Heroes[owner].hero_health = 0;
@@ -1924,7 +1924,7 @@ void Spin_HeroBot(s32 arg0) {
     s32 p;
     s32 k;
 
-    if (SPIN_GAME->flags10 & 0x04000000) {
+    if (SPIN_GAME->pause & 0x04000000) {
         return;
     }
     lvl = AiPlayerSkill[arg0].level;
@@ -2460,7 +2460,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
     }
     for (i = 0; i < 4; i++) {
         if (i == player) continue;
-        if (((SpinGame *)GameInfo)->teams != 0 && i == mate) continue;
+        if (((GameState *)GameInfo)->teams != 0 && i == mate) continue;
         if (Heroes[i].hero_status & 0xFA00) continue;
         dx = px - Heroes[i].hero_eng->unk10.x;
         dz = pz - Heroes[i].hero_eng->unk10.z;

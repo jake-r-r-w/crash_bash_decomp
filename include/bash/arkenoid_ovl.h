@@ -84,13 +84,6 @@ typedef struct ArkenoidGin {
     s16 unk22;
 } ArkenoidGin;
 
-/* GameInfo as seen by Plot_N_Gin. */
-typedef struct {
-    u8 pad0[0x32];
-    u16 unk32;
-    u8 pad34[0x6C - 0x34];
-    s32 unk6C;
-} ArkenoidGinView;
 
 extern ScriptInit NGinScriptInit;
 extern EXTengine *ArkBallSpawner;
@@ -238,14 +231,6 @@ typedef struct {
 extern ArkenoidDoor ArkDoorsA[];
 extern ArkenoidDoor ArkDoorsB[];
 
-typedef struct {
-    u8 pad0[0x30];
-    u16 unk30;
-    u16 unk32;
-    s16 unk34;
-    u8 pad36[0x6C - 0x36];
-    s32 unk6C;
-} ArkenoidModeView;
 
 /* AR_InitLevel (stage setup) */
 extern s32 HeadOfBalls2;
@@ -373,16 +358,7 @@ s32 ArkBallComingAtHero(s32 arg0);
 void ArkSpawnBall(void);
 
 
-/* GameInfo as seen by ArkCrateMaster. */
-typedef struct ArkenoidGameView {
-    u8 pad0[0x30];
-    u16 flags;
-    u16 pad_buttons;
-    s16 mode;
-    u8 pad36[0x6C - 0x36];
-    s32 unk6C;
-} ArkenoidGameView;
-#define O61GV ((ArkenoidGameView *)GameInfo)
+#define O61GV ((GameState *)GameInfo)
 
 extern u16 CrateMasterTimes[];
 extern u16 CrateMasterSpotsX[];
@@ -453,24 +429,6 @@ s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 void InitARKfloor(void);
 
 bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self);
-/* GameInfo as seen by PlotBall (unk34 is GameMode, the mode). */
-typedef struct {
-    u8 pad0[4];
-    u32 unk4;
-    u8 pad8[8];
-    u32 unk10;
-    u8 pad14[0x30 - 0x14];
-    u16 unk30;
-    u16 unk32;
-    s16 unk34;
-    u8 pad36[0x48 - 0x36];
-    s16 unk48;
-    s16 unk4A;
-    u8 pad4C[0x5C - 0x4C];
-    u8 unk5C[4];
-    u8 pad60[0x6C - 0x60];
-    s32 unk6C;
-} ArkenoidBallView;
 
 /* Extension 0x10000000: the ball's trail positions. */
 typedef struct {

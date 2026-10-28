@@ -705,7 +705,7 @@ void PlayersMenuUpdate(void) {
         s[0].unk08 = -0x40;
         s[1].unk08 = -0x1C;
     }
-    if (O69CV->unk27 == 2) {
+    if (O69CV->maxPlayers == 2) {
         s[2].flags &= ~0x8000;
         s[3].flags &= ~0x8000;
     }
@@ -713,48 +713,48 @@ void PlayersMenuUpdate(void) {
     if (n > 4) {
         n = 4;
     }
-    if (O69CV->unk27 < n) {
-        n = O69CV->unk27;
+    if (O69CV->maxPlayers < n) {
+        n = O69CV->maxPlayers;
     }
     for (i = 0; i < n; i++) {
         s[i].unk7C = 0;
     }
-    if (n < O69CV->unk26) {
-        O69CV->unk26 = n;
+    if (n < O69CV->players) {
+        O69CV->players = n;
     }
-    if (O69CV->unk26 != 0) {
-        s[O69CV->unk26 - 1].unk7C = 2;
+    if (O69CV->players != 0) {
+        s[O69CV->players - 1].unk7C = 2;
     } else {
-        O69CV->unk26 = n;
+        O69CV->players = n;
     }
     if (Pads[0].pressed & 0x10) {
-        if (O69CV->unk26 >= 2) {
-            O69CV->unk26--;
+        if (O69CV->players >= 2) {
+            O69CV->players--;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
     }
-    if ((Pads[0].pressed & 0x40) && O69CV->unk26 < n) {
-        O69CV->unk26++;
+    if ((Pads[0].pressed & 0x40) && O69CV->players < n) {
+        O69CV->players++;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((O69CV->unk32 & 4) && O69CV->unk26 == 2) {
-        O69CV->unk6C = 1;
-        O69CV->unk54 = 1;
-        O69CV->unk55 = 0;
-        O69CV->unk56 = 3;
-        O69CV->unk57 = O69CV->unk26;
+    if ((O69CV->levelFlags & 4) && O69CV->players == 2) {
+        O69CV->teams = 1;
+        O69CV->teammateChoice[0] = 1;
+        O69CV->teammateChoice[1] = 0;
+        O69CV->teammateChoice[2] = 3;
+        O69CV->teammateChoice[3] = O69CV->players;
     } else {
-        O69CV->unk6C = 0;
-        O69CV->unk54 = -1;
-        O69CV->unk55 = -1;
-        O69CV->unk56 = -1;
-        O69CV->unk57 = -1;
+        O69CV->teams = 0;
+        O69CV->teammateChoice[0] = -1;
+        O69CV->teammateChoice[1] = -1;
+        O69CV->teammateChoice[2] = -1;
+        O69CV->teammateChoice[3] = -1;
     }
-    c = O69CV->unk26;
-    O69CV->unk5C[0] = c < 1;
-    O69CV->unk5C[1] = c < 2;
-    O69CV->unk5C[2] = c < 3;
-    O69CV->unk5C[3] = c < 4;
+    c = O69CV->players;
+    O69CV->heroOut[0] = c < 1;
+    O69CV->heroOut[1] = c < 2;
+    O69CV->heroOut[2] = c < 3;
+    O69CV->heroOut[3] = c < 4;
     O69PAD[0].rumble.on = c < 1;
     O69PAD[1].rumble.on = c < 2;
     O69PAD[2].rumble.on = c < 3;
@@ -825,30 +825,30 @@ void BattleOptionsUpdate(void) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if (((PadState *)Pads)->pressed & 0x80) {
-        if (O69OV->unk3A >= 3) {
+        if (O69OV->battleWins >= 3) {
             PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-            O69OV->unk3A--;
+            O69OV->battleWins--;
         }
     }
-    if ((Pads[0].pressed & 0x20) && O69OV->unk3A < 7) {
-        O69OV->unk3A++;
+    if ((Pads[0].pressed & 0x20) && O69OV->battleWins < 7) {
+        O69OV->battleWins++;
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((Pads[0].pressed & 0x40) && O69OV->unk38 > 0) {
+    if ((Pads[0].pressed & 0x40) && O69OV->aiLevel > 0) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-        O69OV->unk38--;
+        O69OV->aiLevel--;
     }
-    if ((Pads[0].pressed & 0x10) && O69OV->unk38 < 2) {
+    if ((Pads[0].pressed & 0x10) && O69OV->aiLevel < 2) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
-        O69OV->unk38++;
+        O69OV->aiLevel++;
     }
-    *(u8 *)GetEngineSlot(0)->sub[2].u6C.dbase = O69OV->unk3A + '0';
-    GetEngineSlot(0)->sub[5].u6C.text = (void *)TextDifficulties[O69OV->unk2C][O69OV->unk38];
+    *(u8 *)GetEngineSlot(0)->sub[2].u6C.dbase = O69OV->battleWins + '0';
+    GetEngineSlot(0)->sub[5].u6C.text = (void *)TextDifficulties[O69OV->language][O69OV->aiLevel];
     p = &GetEngineSlot(0)->sub[8];
-    if (O69OV->unk32 & 1) {
-        p->u6C.text = (void *)TextBattleKinds[O69OV->unk2C][0];
+    if (O69OV->levelFlags & 1) {
+        p->u6C.text = (void *)TextBattleKinds[O69OV->language][0];
     } else {
-        p->u6C.text = (void *)TextBattleKinds[O69OV->unk2C][1];
+        p->u6C.text = (void *)TextBattleKinds[O69OV->language][1];
     }
     if (Pads[0].pressed & 0x4000) {
         GameExitFlags = 0x8008;
@@ -1454,7 +1454,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
         }
     }
     o->unk30 &= 7;
-    if ((o->unk4 < ((TitlesModeView *)GameInfo)->unk26 && (O69PAD[o->unk4].pressed & 0x4000) && still) || o->unk2C != 0) {
+    if ((o->unk4 < ((GameState *)GameInfo)->players && (O69PAD[o->unk4].pressed & 0x4000) && still) || o->unk2C != 0) {
         GetEngineSlot(0)->sub[20].flags &= 0xFFFF7FFF;
         GetEngineSlot(0)->sub[21].flags &= 0xFFFF7FFF;
         card = CharCards;
@@ -1535,7 +1535,7 @@ void ShuffleCharSelectors(void) {
             CharSelectors[i].dst->unk4 = CharCards[CharSelectors[i].idx].x + CharSelectorOffsets[i].x;
             CharSelectors[i].dst->unk8 = CharCards[CharSelectors[i].idx].y + CharSelectorOffsets[i].y;
             i++;
-        } while (i < ((TitlesModeView *)GameInfo)->unk26);
+        } while (i < ((GameState *)GameInfo)->players);
     }
 }
 
@@ -1606,7 +1606,7 @@ void CharSelectUpdate(void) {
     s2->unk14 = (rcossin_tbl[(((GameFrameCount * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
     s2->unk52 = 1;
     min = 0x7FFFFFFF;
-    for (i = 0; i < ((TitlesModeView *)GameInfo)->unk26; i++) {
+    for (i = 0; i < ((GameState *)GameInfo)->players; i++) {
         if (CharSelectors[i].pad10[5] < min) {
             min = CharSelectors[i].pad10[5];
         }
@@ -2116,10 +2116,10 @@ void TeamModeShowPreset(void) {
 
     s = (u8 *)GetEngineSlot(0)->sub;
     p = &TeamModePresets[TeamModePreset];
-    *(u16 *)(s + 0x74) = TeamModeHeroFrames[O69PV->unk4C[p->hero[0]]];
-    *(u16 *)(s + 0x11C) = TeamModeHeroFrames[O69PV->unk4C[p->hero[1]]];
-    *(u16 *)(s + 0x1C4) = TeamModeHeroFrames[O69PV->unk4C[p->hero[2]]];
-    *(u16 *)(s + 0x26C) = TeamModeHeroFrames[O69PV->unk4C[p->hero[3]]];
+    *(u16 *)(s + 0x74) = TeamModeHeroFrames[O69PV->heroChoice[p->hero[0]]];
+    *(u16 *)(s + 0x11C) = TeamModeHeroFrames[O69PV->heroChoice[p->hero[1]]];
+    *(u16 *)(s + 0x1C4) = TeamModeHeroFrames[O69PV->heroChoice[p->hero[2]]];
+    *(u16 *)(s + 0x26C) = TeamModeHeroFrames[O69PV->heroChoice[p->hero[3]]];
     *(s32 *)(s + 0x540) &= ~0x8000;
     *(s32 *)(s + 0x5E8) &= ~0x8000;
     *(s32 *)(s + 0x690) &= ~0x8000;
@@ -2132,14 +2132,14 @@ void TeamModeShowPreset(void) {
     TITLES_SETBAR(2, p->val[2]);
     TITLES_SETBAR(3, p->val[3]);
 
-    *(s32 *)(s + 0x8F4) = p->tbl[O69PV->unk2C];
-    O69PV->unk6C = p->unk30 != 0;
-    O69PV->unk48 = p->unk34;
-    O69PV->unk4A = p->unk38;
-    O69PV->unk54 = p->unk3C;
-    O69PV->unk55 = p->unk40;
-    O69PV->unk56 = p->unk44;
-    O69PV->unk57 = p->unk48;
+    *(s32 *)(s + 0x8F4) = p->tbl[O69PV->language];
+    O69PV->teams = p->unk30 != 0;
+    O69PV->teamLeader[0] = p->unk34;
+    O69PV->teamLeader[1] = p->unk38;
+    O69PV->teammateChoice[0] = p->unk3C;
+    O69PV->teammateChoice[1] = p->unk40;
+    O69PV->teammateChoice[2] = p->unk44;
+    O69PV->teammateChoice[3] = p->unk48;
 }
 
 void TeamModeUpdate(void) {

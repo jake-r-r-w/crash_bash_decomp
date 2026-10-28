@@ -110,41 +110,6 @@ extern u8 HubNameCursor[];
 extern GfxViewport HubSaveViewport;
 extern u8 HubSaveCamera[];
 
-/* GameInfo as this file sees it: per-player byte flags at 0xE4.. */
-typedef struct HubGameView {
-    /* 0x000 */ u8 pad0[4];
-    /* 0x004 */ s32 unk4;
-    /* 0x008 */ s32 unk8;
-    /* 0x00C */ u8 padC[0x24 - 0xC];
-    /* 0x024 */ s16 unk24;
-    /* 0x026 */ u8 pad26[0x2C - 0x26];
-    /* 0x02C */ s32 unk2C;
-    /* 0x030 */ u16 unk30;
-    /* 0x032 */ u16 unk32;
-    /* 0x034 */ s16 unk34;
-    /* 0x036 */ u8 pad36[0x3C - 0x36];
-    /* 0x03C */ u16 unk3C;
-    /* 0x03E */ u8 pad3E[0x4C - 0x3E];
-    /* 0x04C */ u8 unk4C;
-    /* 0x04D */ u8 pad4D[3];
-    /* 0x050 */ u8 unk50;
-    /* 0x051 */ u8 unk51;
-    /* 0x052 */ u8 unk52;
-    /* 0x053 */ u8 unk53;
-    /* 0x054 */ u8 pad54[0x62 - 0x54];
-    /* 0x062 */ u8 unk62;
-    /* 0x063 */ s8 unk63;
-    /* 0x064 */ s32 unk64;
-    /* 0x068 */ u8 pad68[0x74 - 0x68];
-    /* 0x074 */ u8 unk74;
-    /* 0x075 */ u8 unk75;
-    /* 0x076 */ u8 pad76[0xE0 - 0x76];
-    /* 0x0E0 */ s32 unkE0;
-    /* 0x0E4 */ u8 unkE4[0x21];
-    /* 0x105 */ u8 unk105[0x21];
-    /* 0x126 */ u8 unk126[0x21];
-    /* 0x147 */ u8 unk147[0x21];
-} HubGameView;
 typedef struct KeyedPair {
     s32 key;
     s32 val[1];
@@ -272,7 +237,7 @@ extern NAS *PodiumHeroNas[];
 extern u16 PodiumHeroAnims[];
 extern s32 PodiumHeroX[];
 
-#define G6A ((HubGameView *)GameInfo)
+#define G6A ((GameState *)GameInfo)
 
 /* HubHeroRing as seen by InitialiseHUB. */
 typedef struct {
@@ -554,16 +519,6 @@ extern ScriptInit PodiumScript6;
 extern ScriptInit PodiumScript7;
 
 void PodiumInitScript(s32 arg0, s32 arg1);
-/* GameInfo as seen by HubLevelSelect. */
-typedef struct HubSelView {
-    /* 0x00 */ u8 pad0[0x30];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ u16 unk34;
-    /* 0x36 */ u8 pad36[0x62 - 0x36];
-    /* 0x62 */ u8 unk62;
-    /* 0x63 */ s8 unk63;
-} HubSelView;
 extern u8 HubSelectFlag;
 extern s32 HubSelectTimer;
 typedef struct {

@@ -616,8 +616,8 @@ void AR_PreInitLevel(void) {
 }
 
 void AR_InitLevel(void) {
-    ArkenoidModeView *m;
-    ArkenoidModeView *m2;
+    GameState *m;
+    GameState *m2;
     HeroInfo *h;
     EXTengine *e;
     EXTheromove *mv;
@@ -653,7 +653,7 @@ void AR_InitLevel(void) {
     ArkFloorState = 30;
     ArkPickupBounce = 0;
 
-    for (i = 0, m = (ArkenoidModeView *)GameInfo; i < 4; i++) {
+    for (i = 0, m = (GameState *)GameInfo; i < 4; i++) {
         h = &Heroes[i];
         a = get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) + 0x7F;
         mv = h->hero_move;
@@ -663,15 +663,15 @@ void AR_InitLevel(void) {
         mv->facing_angle = a;
         mv->forward_angle = a;
         RemoveCamera(h->hero);
-        switch (m->unk34) {
+        switch (m->mode) {
         case 15:
             ArkPosts = ArkBeachPosts;
             ArkCircles = ArkBeachCircles;
             h->hero_score = 12;
             h->hero_health = 12;
             ArkBumpers = ArkBeachBumpers;
-            if (m->unk32 & 0x40) {
-                if (m->unk6C != 0) {
+            if (m->levelFlags & 0x40) {
+                if (m->teams != 0) {
                     Heroes[0].hero_score = 18;
                     Heroes[1].hero_score = 0;
                     Heroes[2].hero_score = 30;
@@ -690,8 +690,8 @@ void AR_InitLevel(void) {
             h->hero_score = 20;
             h->hero_health = 20;
             ArkBumpers = ArkNginBumpers;
-            if (m->unk32 & 0x40) {
-                if (m->unk6C != 0) {
+            if (m->levelFlags & 0x40) {
+                if (m->teams != 0) {
                     Heroes[0].hero_score = 30;
                     Heroes[1].hero_score = 0;
                     Heroes[2].hero_score = 40;
@@ -708,15 +708,15 @@ void AR_InitLevel(void) {
             ArkPosts = ArkSkyPosts;
             ArkCircles = ArkSkyCircles;
             ArkBumpers = ArkSkyBumpers;
-            if (m->unk32 & 0x80) {
+            if (m->levelFlags & 0x80) {
                 h->hero_score = 10;
                 h->hero_health = 10;
             } else {
                 h->hero_score = 20;
                 h->hero_health = 20;
             }
-            if (m->unk32 & 0x40) {
-                if (m->unk6C != 0) {
+            if (m->levelFlags & 0x40) {
+                if (m->teams != 0) {
                     Heroes[0].hero_score = 18;
                     Heroes[1].hero_score = 0;
                     Heroes[2].hero_score = 25;
@@ -736,8 +736,8 @@ void AR_InitLevel(void) {
             h->hero_score = 15;
             h->hero_health = 15;
             ArkBumpers = ArkBallsBumpers;
-            if (m->unk32 & 0x40) {
-                if (m->unk6C != 0) {
+            if (m->levelFlags & 0x40) {
+                if (m->teams != 0) {
                     Heroes[0].hero_score = Heroes[0].hero_score_displayed = 18;
                     Heroes[1].hero_score = Heroes[1].hero_score_displayed = 0;
                     Heroes[2].hero_score = Heroes[2].hero_score_displayed = 30;
@@ -757,8 +757,8 @@ void AR_InitLevel(void) {
         Heroes[3].hero_score_displayed = Heroes[3].hero_score;
         ArkHeroEngineUpdate(i);
     }
-    m2 = (ArkenoidModeView *)GameInfo;
-    if ((m2->unk32 & 0x40) && m2->unk6C != 0) {
+    m2 = (GameState *)GameInfo;
+    if ((m2->levelFlags & 0x40) && m2->teams != 0) {
         InitSharedScoreIcons();
     }
     switch (GameMode) {
@@ -2128,7 +2128,7 @@ void SetArkHeroDie(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     subengine *s;
-    ArkenoidModeView *m;
+    GameState *m;
     s32 i;
 
     h->hero_move->velocity_enable = 0;
@@ -2168,13 +2168,13 @@ void SetArkHeroDie(u32 arg0) {
     if (ArkDoorsA[i].sub != NULL) {
         ArkDoorsA[i].sub->unk74 = ArkDoorsA[i].unkE;
     }
-    m = (ArkenoidModeView *)GameInfo;
-    switch (m->unk34) {
+    m = (GameState *)GameInfo;
+    switch (m->mode) {
     case 16:
         CreateNAS(arg0, World_floor_level - 0x50, -0x20, 0x1506, 0x11);
         break;
     case 17:
-        if (m->unk30 & 0x801) {
+        if (m->exitFlags & 0x801) {
             ArkWallFlags = 0;
             if (ArkDieEngine.sfx != NULL) {
                 StopSfx(ArkDieEngine.sfx);
@@ -3451,8 +3451,8 @@ void PlotBall(NAS *nas) {
         switch (obj->status) {
         case 0:
             hide = 1;
-            if ((((ArkenoidBallView *)GameInfo)->unk10 & 0x04000000) ||
-                (((ArkenoidBallView *)GameInfo)->unk30 & 0x1000)) {
+            if ((((GameState *)GameInfo)->pause & 0x04000000) ||
+                (((GameState *)GameInfo)->exitFlags & 0x1000)) {
                 mot->Xvel = 0;
                 mot->Xacc = 0;
                 mot->Xdec = 0;
@@ -3496,7 +3496,7 @@ void PlotBall(NAS *nas) {
             mot->Za = (mot->Za + ((u16)ang - 0xE3)) & 0xFFF;
             obj->timer = 0x14;
             PlaySfx(0x5A0, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
-            switch (((ArkenoidBallView *)GameInfo)->unk34) {
+            switch (((GameState *)GameInfo)->mode) {
             case 17:
                 mot->Yvel = 0x40;
                 mot->Ymax = 0x50;
@@ -3579,7 +3579,7 @@ void PlotBall(NAS *nas) {
                     PlaySfx(BallFramesA[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
                     nas->UserInfo.flags |= 1;
                 }
-                if (((ArkenoidBallView *)GameInfo)->unk34 == 0x10) {
+                if (((GameState *)GameInfo)->mode == 0x10) {
                     mot->Yvel = mot->Yvel >> 2;
                 } else {
                     mot->Yvel = mot->Yvel >> 1;
@@ -3605,7 +3605,7 @@ void PlotBall(NAS *nas) {
                 }
                 if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 0) != 0) {
                     obj->countdown = 4;
-                    switch (((ArkenoidBallView *)GameInfo)->unk34) {
+                    switch (((GameState *)GameInfo)->mode) {
                     case 17:
                         obj->status = 0x63;
                         break;
@@ -3653,7 +3653,7 @@ void PlotBall(NAS *nas) {
             }
             if (((s32 (*)(EXTengine *, EXTobject *, s32))ArkTestOutOfBounds)(eng, obj, 0) != 0) {
                 obj->countdown = 8;
-                switch (((ArkenoidBallView *)GameInfo)->unk34) {
+                switch (((GameState *)GameInfo)->mode) {
                 case 17:
                     obj->countdown = 0x10;
                     obj->status = 0x63;
@@ -3754,7 +3754,7 @@ void PlotBall(NAS *nas) {
                     }
                 }
             }
-            if (((ArkenoidBallView *)GameInfo)->unk34 != 17) {
+            if (((GameState *)GameInfo)->mode != 17) {
                 mot->Xvel >>= 1;
                 mot->Xmax >>= 1;
             }
@@ -3792,13 +3792,13 @@ void PlotBall(NAS *nas) {
                     if (pl != -1) {
                         ArkBallCount = ArkPlayerSide(pl);
                     }
-                    if ((((ArkenoidBallView *)GameInfo)->unk4 & 0x80000001) != 0x80000001) {
-                        if ((((ArkenoidBallView *)GameInfo)->unk32 & 0x40) &&
-                            ((ArkenoidBallView *)GameInfo)->unk6C != 0) {
-                            if (((ArkenoidBallView *)GameInfo)->unk5C[obj->player] != 0) {
-                                obj->player = ((ArkenoidBallView *)GameInfo)->unk4A;
+                    if ((((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001) {
+                        if ((((GameState *)GameInfo)->levelFlags & 0x40) &&
+                            ((GameState *)GameInfo)->teams != 0) {
+                            if (((GameState *)GameInfo)->heroOut[obj->player] != 0) {
+                                obj->player = ((GameState *)GameInfo)->teamLeader[1];
                             } else {
-                                obj->player = ((ArkenoidBallView *)GameInfo)->unk48;
+                                obj->player = ((GameState *)GameInfo)->teamLeader[0];
                             }
                             if (Heroes[obj->player].hero_score != 0) {
                                 Heroes[obj->player].hero_score--;
@@ -3809,13 +3809,13 @@ void PlotBall(NAS *nas) {
                             Heroes[obj->player].hero_health--;
                             Heroes[obj->player].hero_score_displayed = Heroes[obj->player].hero_score;
                         }
-                        if ((((ArkenoidBallView *)GameInfo)->unk4 & 0x80000002) != 0x80000002 &&
+                        if ((((GameState *)GameInfo)->cheats & 0x80000002) != 0x80000002 &&
                             Heroes[obj->player].hero_score == 0) {
                             if (obj->player == ArkBallTimer) {
                                 ArkBallTimer = -1;
                             }
                             Heroes[obj->player].hero_status |= 0x2000;
-                            if (((ArkenoidBallView *)GameInfo)->unk32 & 0x40) {
+                            if (((GameState *)GameInfo)->levelFlags & 0x40) {
                                 pl = Heroes[obj->player].hero_teammate;
                                 if (pl != -1) {
                                     Heroes[pl].hero_status |= 0x2000;
@@ -4174,22 +4174,22 @@ void Plot_N_Gin(NAS *arg0) {
             gin->unk1A = 4;
             gin->unk22 = 0x96;
             gin->unk20 = Random(0xA) + 0xA;
-            if (((ArkenoidGinView *)GameInfo)->unk32 == 0) {
+            if (((GameState *)GameInfo)->levelFlags == 0) {
                 eng->unk5E = 1;
                 return;
             }
-            if (((ArkenoidGinView *)GameInfo)->unk6C != 0) {
+            if (((GameState *)GameInfo)->teams != 0) {
                 gin->unk22 = 0xD2;
             }
             break;
         case 4:
             eng->unk1E += 0x1C7;
-            if (((ArkenoidGinView *)GameInfo)->unk32 & 0x80) {
+            if (((GameState *)GameInfo)->levelFlags & 0x80) {
                 if (gin->unk20 != 0) {
                     gin->unk20--;
                 } else {
                     for (i = 0; i < 4; i++) {
-                        if ((i == 0 || (((ArkenoidGinView *)GameInfo)->unk6C != 0 && i == 1)) && !(Heroes[i].hero_status & 0xFA00)) {
+                        if ((i == 0 || (((GameState *)GameInfo)->teams != 0 && i == 1)) && !(Heroes[i].hero_status & 0xFA00)) {
                             if (angle_diff_abs(eng->unk1E, Heroes[i].hero_move->facing_angle & 0xFFF) < 0xE3) {
                                 ArkSpawnBall();
                                 gin->unk20 = Random(0xB) + 6;
@@ -4233,7 +4233,7 @@ void Plot_N_Gin(NAS *arg0) {
             eng->unk10.y = -0x1000;
             arg0->Class &= 0xFDFF;
             eng->flags &= 0xFFFF7FFF;
-            if (((ArkenoidModeView *)GameInfo)->unk30 & 0x801) {
+            if (((GameState *)GameInfo)->exitFlags & 0x801) {
                 eng->unk5E = 1;
                 return;
             }
@@ -4249,7 +4249,7 @@ end:
 }
 
 void ArkCrateMaster(void) {
-    ArkenoidGameView *g;
+    GameState *g;
     ArkenoidNode *n;
     NAS *nas;
     s32 gin;
@@ -4261,8 +4261,8 @@ void ArkCrateMaster(void) {
     s32 hero;
     s32 total;
 
-    g = (ArkenoidGameView *)GameInfo;
-    if (g->flags & 0x801) {
+    g = (GameState *)GameInfo;
+    if (g->exitFlags & 0x801) {
         return;
     }
     gin = 0;
@@ -4326,14 +4326,14 @@ void ArkCrateMaster(void) {
         }
     }
     ArkBotSkill = CrateMasterTimes[CrateMasterWordB];
-    if (O61GV->mode == 0xF && (O61GV->pad_buttons & 0x80)) {
+    if (O61GV->mode == 0xF && (O61GV->levelFlags & 0x80)) {
         if (CrateMasterState != 0) {
             CrateMasterState--;
         } else {
             if (++CrateMasterTimer >= 0x12) {
                 CrateMasterTimer = 0;
             }
-            if (O61GV->unk6C != 0) {
+            if (O61GV->teams != 0) {
                 hero = CrateMasterSpotsZ[CrateMasterTimer];
             } else {
                 hero = CrateMasterSpotsX[CrateMasterTimer];
@@ -4354,7 +4354,7 @@ void ArkCrateMaster(void) {
             if (++CrateMasterNext >= 0x12) {
                 CrateMasterNext = 0;
             }
-            if (O61GV->unk6C != 0) {
+            if (O61GV->teams != 0) {
                 i = CrateMasterSpotsZ[CrateMasterNext];
             } else {
                 i = CrateMasterSpotsX[CrateMasterNext];
@@ -4440,7 +4440,7 @@ void InitARKfloor(void) {
         if (k < 4) {
             LINK(ArkGoals)[k].a = obj;
             LINK(ArkGoals)[k].unk8 = obj->unk74;
-            switch (((ArkenoidModeView *)GameInfo)->unk34) {
+            switch (((GameState *)GameInfo)->mode) {
             case 14:
                 LINK(ArkGoals)[k].unkA = FloorFramesA[k];
                 break;
@@ -4454,7 +4454,7 @@ void InitARKfloor(void) {
         if (k < 4) {
             LINK(ArkGoals)[k].b = obj;
             LINK(ArkGoals)[k].unkC = obj->unk74;
-            switch (((ArkenoidModeView *)GameInfo)->unk34) {
+            switch (((GameState *)GameInfo)->mode) {
             case 14:
                 LINK(ArkGoals)[k].unkE = FloorFramesA[t - 26];
                 break;
@@ -4547,7 +4547,7 @@ void UpdateArkFloor(void)
         if (BLINK_D38[j].unk12 != 0) {
             BLINK_D38[j].unk12--;
         }
-        if ((p = FloorLinks[j].a) != NULL && ((ArkenoidModeView *)GameInfo)->unk34 == 14) {
+        if ((p = FloorLinks[j].a) != NULL && ((GameState *)GameInfo)->mode == 14) {
             if (FloorLinks[j].unk12 != 0) {
                 FloorLinks[j].unk10++;
                 p->unk74 = FloorLinks[j].unkA + (u16)(((FloorLinks[j].unk10 >> 2) & 3) + 1);
@@ -4557,7 +4557,7 @@ void UpdateArkFloor(void)
             }
         }
         if ((p = BLINK_E28[j].a) != NULL) {
-            switch (((ArkenoidModeView *)GameInfo)->unk34) {
+            switch (((GameState *)GameInfo)->mode) {
             case 14:
                 if (BLINK_E28[j].unk12 != 0) {
                     p->unk74 = BLINK_E28[j].unkA;

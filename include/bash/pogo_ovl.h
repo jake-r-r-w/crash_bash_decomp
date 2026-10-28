@@ -380,33 +380,9 @@ void PogoWinner_Normal(s32 arg0, u16 arg1);
 
 
 
-/* GameInfo as seen by PogoInit_RelicChallenge. */
-typedef struct PogoScoreView {
-    /* 0x00 */ u8 unk0[0x30];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 unk36[0x5C - 0x36];
-    /* 0x5C */ u8 out[4];
-    /* 0x60 */ u8 unk60[0x6C - 0x60];
-    /* 0x6C */ s32 teams;
-} PogoScoreView;
-#define SCORE60V ((PogoScoreView *)GameInfo)
+#define SCORE60V ((GameState *)GameInfo)
 
-/* GameInfo as seen by PogoWinner_Normal (the final ranking). */
-typedef struct PogoRankView {
-    /* 0x00 */ u8 unk0[0x30];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u8 unk32[0x48 - 0x32];
-    /* 0x48 */ s16 team[2];
-    /* 0x4C */ u8 unk4C[0x60 - 0x4C];
-    /* 0x60 */ u8 winner[2];
-    /* 0x62 */ u8 unk62[0x6C - 0x62];
-    /* 0x6C */ s32 teams;
-    /* 0x70 */ u8 unk70[0xA7 - 0x70];
-    /* 0xA7 */ u8 order[4];
-} PogoRankView;
-#define RANK60V ((PogoRankView *)GameInfo)
+#define RANK60V ((GameState *)GameInfo)
 
 /* PogoQuality_Init: per-mode entries picked by teams, with two values at 0xE/0x10. */
 typedef struct PogoModeEntry {
@@ -427,41 +403,16 @@ extern u16 PogoPainterAiQuality[];
 extern u16 PogoAgogoAiQuality[];
 extern u16 PogoLocoAiQuality[];
 extern u16 PogoBouncerAiQuality[];
-/* GameInfo as seen by PogoQuality_Init. */
-typedef struct PogoModeView {
-    /* 0x00 */ u8 unk0[0x32];
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 unk36[2];
-    /* 0x38 */ s16 unk38;
-    /* 0x3A */ u8 unk3A[0x5C - 0x3A];
-    /* 0x5C */ u8 out[4];
-    /* 0x60 */ u8 unk60[0x6C - 0x60];
-    /* 0x6C */ s32 teams;
-} PogoModeView;
 extern u16 Clock_flags;
-/* GameInfo as seen by PogoWinner_Relic (team end of round). */
-typedef struct PogoTeamView {
-    /* 0x00 */ u8 unk0[0x30];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u8 unk32[0x48 - 0x32];
-    /* 0x48 */ s16 team0;
-    /* 0x4A */ s16 team1;
-    /* 0x4C */ u8 unk4C[0x5C - 0x4C];
-    /* 0x5C */ u8 out[4];
-    /* 0x60 */ u8 winner;
-    /* 0x61 */ u8 unk61[0x6C - 0x61];
-    /* 0x6C */ s32 teams;
-} PogoTeamView;
 /* PogoWinner_Relic: hero idx's team is out of points (i starts at i0). */
 #define POGO_TEAM_LOST(g, idx, i, i0)                                   \
     {                                                                    \
-        PogoTeamView *g_;                                               \
+        GameState *g_;                                               \
                                                                          \
         i = (i0);                                                        \
         g_ = (g);                                                        \
-        g_->winner = Heroes[idx].hero_name;                              \
-        g_->unk30 |= 0x800;                                              \
+        g_->winner[0] = Heroes[idx].hero_name;                              \
+        g_->exitFlags |= 0x800;                                              \
         Clock_flags |= 0x200;                                             \
         for (; i < 4; i++) {                                             \
             if (((u8 *)g_)[i + 0x5C] != 0) {                             \
@@ -475,11 +426,11 @@ typedef struct PogoTeamView {
 /* PogoWinner_Relic: POGO_TEAM_LOST, g copied for the loop after the stores. */
 #define POGO_TEAM_LOST_LATE(g, idx, i, i0)                              \
     {                                                                    \
-        PogoTeamView *g_;                                               \
+        GameState *g_;                                               \
                                                                          \
         i = (i0);                                                        \
-        (g)->winner = Heroes[idx].hero_name;                             \
-        (g)->unk30 |= 0x800;                                             \
+        (g)->winner[0] = Heroes[idx].hero_name;                             \
+        (g)->exitFlags |= 0x800;                                             \
         Clock_flags |= 0x200;                                             \
         g_ = (g);                                                        \
         for (; i < 4; i++) {                                             \
@@ -494,7 +445,7 @@ typedef struct PogoTeamView {
 /* PogoWinner_Relic: the round ends with no winner. */
 #define POGO_ROUND_OVER(g, flag, i)                                     \
     do {                                                                 \
-        PogoTeamView *g_;                                               \
+        GameState *g_;                                               \
                                                                          \
         i = 0;                                                           \
         g_ = (g);                                                        \
@@ -622,7 +573,7 @@ typedef struct {
 } PogoCellObj;
 extern u16 TileFrames[][4];
 extern u16 TileFramesAlt[][4];
-#define MV ((PogoModeView *)GameInfo)
+#define MV ((GameState *)GameInfo)
 /* Set a cell object's animation and its frame (fr: an s32 temp of the caller). */
 #define CELL_SET(o, a, f) \
     ((o)->anim = (a), fr = (f), (o)->frame = CELL_FRAME(o, fr & 0xFFF)->unk26)

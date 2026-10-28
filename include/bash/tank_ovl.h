@@ -11,11 +11,6 @@
 #include "bash/tank.h"    /* TA_Bot, TA_player */
 #include "bash/core.h"    /* EXTscriptdata */
 
-typedef struct TankModeView {
-    /* 0x00 */ u8 pad0[0x32];
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-} TankModeView;
 
 extern s32 TankBossStatus;
 extern NAS *TankBossCrashTurrets[3];
@@ -245,19 +240,6 @@ extern u16 TankBossAiHumanTweak[];
 extern u16 TankBossAiHumanRoundTweak[];
 extern u16 TankBossAiSkillAlt[];
 extern u16 TankBossAiSkill[];
-/* GameInfo as seen by TA_PreInitLevel. */
-typedef struct TankGameView {
-    /* 0x00 */ u8 pad0[4];
-    /* 0x04 */ u32 w4;
-    /* 0x08 */ u8 pad8[0x32 - 8];
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ u8 pad34[0x51 - 0x34];
-    /* 0x51 */ u8 b51;
-    /* 0x52 */ u8 b52;
-    /* 0x53 */ u8 b53;
-    /* 0x54 */ u8 pad54[0x6C - 0x54];
-    /* 0x6C */ s32 w6C;
-} TankGameView;
 
 extern s32 TankTauntSfx[];
 extern s32 TankHullSfx[]; /* TA_MoveHero: hull sfx while moving, by player */
@@ -415,7 +397,7 @@ static inline s32 TankRocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -478,7 +460,7 @@ static inline s32 TankMoveFindHero(s32 player, s32 x, s32 z, s32 lim) {
         h = &Heroes[i];
         name = h->hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -680,7 +662,7 @@ static inline s32 PickupFindHero(s32 x, s32 z) {
     for (i = 0; i < 4; i++) {
         name = Heroes[i].hero_name;
         if (name == 9 &&
-            (((TankModeView *)GameInfo)->mode != name || TankBossStatus != 0 ||
+            (((GameState *)GameInfo)->mode != name || TankBossStatus != 0 ||
              (u32)(i - 2) >= 2)) {
             continue;
         }
@@ -755,18 +737,6 @@ void MoeJoeMove(s32 player);
 
 void PlotMoeJoeHero(NAS *nas, s32 id);
 
-/* TA_InitLevel: level setup */
-typedef struct TankSetupView {
-    /* 0x00 */ u8 pad0[0x32];
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 pad36[0x51 - 0x36];
-    /* 0x51 */ u8 b51;
-    /* 0x52 */ u8 b52;
-    /* 0x53 */ u8 b53;
-    /* 0x54 */ u8 pad54[0x6C - 0x54];
-    /* 0x6C */ s32 w6C;
-} TankSetupView;
 #define CAM5F (&MainCamera)
 typedef struct TankScreen {
     /* 0x00 */ u8 pad0[0x10];

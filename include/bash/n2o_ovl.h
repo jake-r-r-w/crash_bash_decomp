@@ -67,6 +67,7 @@ typedef struct N2OPuck {
     u16 unk32;
 } N2OPuck;
 
+
 extern u16 N2OBallHitSfx[];
 extern u16 N2OExplosionSfx[];
 extern s32 GameCheats;
@@ -186,13 +187,6 @@ typedef struct N2OSlotObj {
     /* 0x52 */ u16 unk52;
 } N2OSlotObj;
 
-/* GameInfo as seen by N2OUpdateSlots. */
-typedef struct N2OAim {
-    /* 0x00 */ u8 pad0[0x30];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u8 pad32[0x3A];
-    /* 0x6C */ s32 unk6C;
-} N2OAim;
 
 typedef struct N2OSlot {
     N2OSlotObj *src;
@@ -394,40 +388,13 @@ extern s32 GamePause;
 extern s32 HeroesAllOut;
 extern u32 DirPadBits[]; /* flags by angle octant */
 
-/* GameInfo as seen by InitialiseN2OFirst. */
-typedef struct N2OGame {
-    /* 0x00 */ u8 pad0[0x32];
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ u8 pad34[0x1D];
-    /* 0x51 */ u8 unk51;
-    /* 0x52 */ u8 unk52;
-    /* 0x53 */ u8 unk53;
-    /* 0x54 */ u8 pad54[0x18];
-    /* 0x6C */ s32 unk6C;
-} N2OGame;
-#define OVG ((N2OGame *)GameInfo)
+#define OVG ((GameState *)GameInfo)
 
-/* GameInfo as seen by PlotN2Omissile. */
-typedef struct N2OMissileView {
-    /* 0x00 */ u8 pad0[4];
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ u8 pad8[0x64];
-    /* 0x6C */ s32 unk6C;
-} N2OMissileView;
-#define OVM ((N2OMissileView *)GameInfo)
+#define OVM ((GameState *)GameInfo)
 extern u16 N2OMissileSfx[];
 extern u16 N2OHitSfx[];
 
-/* GameInfo as seen by N2OInitBoss. */
-typedef struct N2OTeams {
-    /* 0x00 */ u8 pad0[0x32];
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 unk34;
-    /* 0x36 */ u8 pad36[0x65];
-    /* 0x9B */ u8 unk9B[0x10];
-    /* 0xAB */ u8 unkAB[4];
-} N2OTeams;
-#define OVT ((N2OTeams *)GameInfo)
+#define OVT ((GameState *)GameInfo)
 extern u16 N2OBossAiSkill[];
 extern u16 N2OBossAiSkillAlt[];
 extern s16 N2OBossAnimTimer;
@@ -510,13 +477,6 @@ void N2OUpdateSlots(void);
 
 s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self);
 
-/* GameInfo as seen by PlotN2OBall. */
-typedef struct N2OBallView {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x1C];
-    /* 0x30 */ u16 unk30;
-} N2OBallView;
 extern HitSfxTable HitSfx;
 extern SLONG_XYZ N2OBallStarts[];
 extern u16 N2OBallBounceSfx[];

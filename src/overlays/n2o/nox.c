@@ -376,7 +376,7 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
     AstSlot *tb;
     AstSlot *tb1;
     HeroInfo *h;
-    BossGameView *g;
+    GameState *g;
     s32 d;
     s32 r;
 
@@ -390,11 +390,11 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
                 a->unk10 = 1;
                 AstBurst(arg0, 0);
                 AstSfx();
-                if ((BGV->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
+                if ((BGV->cheats & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
                     Heroes[0].hero_health -= MineDamage(BGV) >> 2;
                     SetHeroAction(0, 0x31);
                 }
-            } else if ((BGV->unk4 & 0x80000001) != 0x80000001) {
+            } else if ((BGV->cheats & 0x80000001) != 0x80000001) {
                 AstSfx();
                 a->unk10 = 1;
                 AstBurst(arg0, 4);
@@ -405,8 +405,8 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
             }
         }
     }
-    g = (BossGameView *)GameInfo;
-    if (g->unk6C != 0 && (h = Heroes, !(*(s32 *)&h[1].hero_teammate & 0x22000000))) {
+    g = (GameState *)GameInfo;
+    if (g->teams != 0 && (h = Heroes, !(*(s32 *)&h[1].hero_teammate & 0x22000000))) {
         d = AstDist(arg0, h[1].hero_eng);
         tb1 = NoxAsteroids;
         b = &tb1[arg1];
@@ -415,11 +415,11 @@ void NoxAsteroidHitHero(s32 *arg0, s32 arg1) {
                 b->unk10 = 1;
                 AstBurst(arg0, 0);
                 AstSfx();
-                if ((BGV->unk4 & 0x80000001) != 0x80000001 && Heroes[1].hero_mode != 0x31) {
+                if ((BGV->cheats & 0x80000001) != 0x80000001 && Heroes[1].hero_mode != 0x31) {
                     Heroes[1].hero_health -= MineDamage(BGV) >> 2;
                     SetHeroAction(1, 0x31);
                 }
-            } else if ((g->unk4 & 0x80000001) != 0x80000001) {
+            } else if ((g->cheats & 0x80000001) != 0x80000001) {
                 b->unk10 = 1;
                 AstBurst(arg0, 4);
                 AstSfx();
@@ -486,9 +486,9 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
     AstMineSlot *sb;
     AstMineSlot *slot;
     HeroInfo *h;
-    BossGameView *g;
+    GameState *g;
     HeroInfo *h2;
-    BossGameView *g2;
+    GameState *g2;
     s32 r;
     s32 dmg;
 
@@ -511,16 +511,16 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
             if (r == 3) {
                 PlaySfx(0x28E, 0, 0, 0x1000, 0x1E00, 0);
             }
-            g = (BossGameView *)GameInfo;
+            g = (GameState *)GameInfo;
             slot->unkC = 1;
-            if ((g->unk4 & 0x80000001) != 0x80000001 && h->hero_mode != 0x31) {
+            if ((g->cheats & 0x80000001) != 0x80000001 && h->hero_mode != 0x31) {
                 dmg = MineDamage(g);
                 Heroes[0].hero_health -= dmg;
                 SetHeroAction(0, 0x31);
             }
         }
-        g2 = (BossGameView *)GameInfo;
-        if (g2->unk6C != 0) {
+        g2 = (GameState *)GameInfo;
+        if (g2->teams != 0) {
             h2 = Heroes;
             if (!(*(s32 *)&h2[1].hero_teammate & 0x22000000) &&
             NoxBoxToSphere((SLONG_XYZ *)arg0, &h2[1].hero_eng->unk10, 1, &h2[1].hero_eng->unk10) != -1) {
@@ -538,7 +538,7 @@ void NoxMineHitHero(s32 *arg0, s32 arg1) {
                 PlaySfx(0x28E, 0, 0, 0x1000, 0x1E00, 0);
             }
             NoxMines[arg1].unkC = 1;
-            if ((g2->unk4 & 0x80000001) != 0x80000001 && h2[1].hero_mode != 0x31) {
+            if ((g2->cheats & 0x80000001) != 0x80000001 && h2[1].hero_mode != 0x31) {
                 dmg = MineDamage(g2);
                 Heroes[1].hero_health -= dmg;
                 SetHeroAction(1, 0x31);
@@ -627,7 +627,7 @@ void NoxUpdateAsteroids(void) {
                 }
                 Heroes[0].hero_eng->unk2C.y = Heroes[0].hero_eng->unk2C.x;
                 Heroes[0].hero_eng->unk2C.z = Heroes[0].hero_eng->unk2C.x;
-                if (((BossGameView *)GameInfo)->unk6C != 0) {
+                if (((GameState *)GameInfo)->teams != 0) {
                     Heroes[1].hero_eng->unk2C.x = Heroes[0].hero_eng->unk2C.x;
                     Heroes[1].hero_eng->unk2C.y = Heroes[0].hero_eng->unk2C.x;
                     Heroes[1].hero_eng->unk2C.z = Heroes[0].hero_eng->unk2C.x;
@@ -696,7 +696,7 @@ void NoxUpdateAsteroids(void) {
                         o->flags &= ~0x8000;
                     } else {
                         o->flags |= 0x8000;
-                        if (k->kind == 8 && ((BossGameView *)GameInfo)->unk6C != 0) {
+                        if (k->kind == 8 && ((GameState *)GameInfo)->teams != 0) {
                             o->flags &= ~0x8000;
                         }
                     }
@@ -733,7 +733,7 @@ void NoxUpdateAsteroids(void) {
                     })
             }
             if (o->flags & 0x8000) {
-                if (((BossGameView *)GameInfo)->unk6C == 0) {
+                if (((GameState *)GameInfo)->teams == 0) {
                     if (!(Heroes[0].hero_status & 0x2000)) {
                         AST_NEAR(o, Heroes[0].hero_eng)
                     }
@@ -761,10 +761,10 @@ void NoxUpdate(void) {
     NAS *first;
     NAS *nas;
 
-    if (((BossGameView *)GameInfo)->unk75 != 0 && (((BossGameView *)GameInfo)->unk30 & 1)) {
-        ((BossGameView *)GameInfo)->unk75 = 0;
+    if (((GameState *)GameInfo)->adventure.unk75 != 0 && (((GameState *)GameInfo)->exitFlags & 1)) {
+        ((GameState *)GameInfo)->adventure.unk75 = 0;
     }
-    if (((BossGameView *)GameInfo)->unk4 & 8) {
+    if (((GameState *)GameInfo)->cheats & 8) {
         BossState.flags |= 0x8000;
     }
     if (NoxStarted == 0) {
@@ -778,7 +778,7 @@ void NoxUpdate(void) {
             first->UserInfo.user1 = 0;
             AddCamera(first);
         }
-        if (((BossGameView *)GameInfo)->unk6C != 0) {
+        if (((GameState *)GameInfo)->teams != 0) {
             nas = CreateNAS(0, 0, 0, 0x1C03, 0x11);
             NoxCameraNasB = nas;
             if (nas != NULL) {
@@ -912,7 +912,7 @@ void NoxPreMoveHero(s32 arg0) {
             }
         }
     }
-    if (((BossGameView *)GameInfo)->unk10 == 0) {
+    if (((GameState *)GameInfo)->pause == 0) {
         spd = NoxSpeedScale;
         base2 = Heroes;
         hh = &base2[arg0];
@@ -928,7 +928,7 @@ void NoxPreMoveHero(s32 arg0) {
             NoxHeroSteer[arg0] = 0;
             e = hh->hero_eng;
             e->unk10.y += (-0xAF0 - e->unk10.y) >> 5;
-            if (((BossGameView *)GameInfo)->unk6C == 0) {
+            if (((GameState *)GameInfo)->teams == 0) {
                 e2 = hh->hero_eng;
                 e2->unk10.x -= e2->unk10.x >> 5;
             } else {
@@ -1243,8 +1243,8 @@ void PlotNitroMine(NAS *nas) {
     }
     if (!(*(s32 *)&Heroes[0].hero_teammate & 0x22000000) && dx * dx + dy * dy + dz * dz < 0x90000) {
         MineBurst(nas);
-        if ((((BossGameView *)GameInfo)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
-            Heroes[0].hero_health -= MineDamage((BossGameView *)GameInfo) >> 2;
+        if ((((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
+            Heroes[0].hero_health -= MineDamage((GameState *)GameInfo) >> 2;
             SetHeroAction(0, 0x31);
         }
         MineSfxV();
@@ -1256,9 +1256,9 @@ void PlotNitroMine(NAS *nas) {
             + (me->unk10.y - h[1].hero_eng->unk10.y) * (me->unk10.y - h[1].hero_eng->unk10.y)
             + (me->unk10.z - h[1].hero_eng->unk10.z) * (me->unk10.z - h[1].hero_eng->unk10.z) < 0x40000) {
             MineBurst(nas);
-            if ((((BossGameView *)GameInfo)->unk4 & 0x80000001) != 0x80000001
+            if ((((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001
                 && !(Heroes[1].hero_status & 0x2000) && Heroes[1].hero_mode != 0x31) {
-                Heroes[1].hero_health -= MineDamage((BossGameView *)GameInfo) >> 2;
+                Heroes[1].hero_health -= MineDamage((GameState *)GameInfo) >> 2;
                 SetHeroAction(1, 0x31);
             }
             MineSfxH();
@@ -1281,7 +1281,7 @@ void PlotNitroMissile(NAS *nas) {
     EXTengine *eng;
     EXTengine *he;
     SLONG_XYZ *pos;
-    BossGameView *g;
+    GameState *g;
     s32 dx;
     s32 dz;
     s32 dy;
@@ -1366,8 +1366,8 @@ void PlotNitroMissile(NAS *nas) {
                 n->InitDelete(n);
             }
         }
-        g = (BossGameView *)GameInfo;
-        if ((g->unk4 & 0x80000001) != 0x80000001) {
+        g = (GameState *)GameInfo;
+        if ((g->cheats & 0x80000001) != 0x80000001) {
             r = Random(4);
             if (r == 0) {
                 PlaySfx(0x2A7, 0, 0, 0x1000, 0x1E00, 0);
@@ -1403,7 +1403,7 @@ kill:
 
 void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
     BossObj *arg1 = obj;
-    BossGameView *g = (BossGameView *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     s32 d;
     EXTengine *target;
     EXTengine *e;
@@ -1418,11 +1418,11 @@ void NoxBossFollowPath(BossPath *arg0, BossObj *obj) {
     s32 dz;
     s32 *out;
 
-    if (g->unk10 != 0) {
+    if (g->pause != 0) {
         return;
     }
     do {
-        if (g->unk6C == 0) {
+        if (g->teams == 0) {
             target = Heroes[0].hero_eng;
         } else if (!(Heroes[0].hero_status & 0x2000)) {
             target = Heroes[0].hero_eng;
@@ -1710,7 +1710,7 @@ void PlotSpiralSat(NAS *nas) {
             if (f == NULL) {
                 continue;
             }
-            if (((BossGameView *)GameInfo)->unk6C == 0) {
+            if (((GameState *)GameInfo)->teams == 0) {
                 if (Heroes[0].hero_eng->unk10.z + 0x6000 < f->unk10.z) {
                     f->sub->flags &= ~0x8000;
                     if (ext->sat[i] != NULL) {
@@ -1763,13 +1763,13 @@ void PlotSpiralSat(NAS *nas) {
                         s->InitDelete(s);
                     }
                 }
-                if ((((BossGameView *)GameInfo)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x30) {
+                if ((((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x30) {
                     extern int SetHeroAction();
                     ((void (*)(s32, s32))SetHeroAction)(0, 0x30);
                 }
                 goto kill;
             }
-            if (((BossGameView *)GameInfo)->unk6C != 0 && !(Heroes[1].hero_status & 0x2000)) {
+            if (((GameState *)GameInfo)->teams != 0 && !(Heroes[1].hero_status & 0x2000)) {
                 g = ext->eng[i];
                 if ((g->unk10.x - Heroes[1].hero_eng->unk10.x) * (g->unk10.x - Heroes[1].hero_eng->unk10.x)
                     + (g->unk10.y - Heroes[1].hero_eng->unk10.y) * (g->unk10.y - Heroes[1].hero_eng->unk10.y)
@@ -1787,7 +1787,7 @@ void PlotSpiralSat(NAS *nas) {
                             s->InitDelete(s);
                         }
                     }
-                    if ((((BossGameView *)GameInfo)->unk4 & 0x80000001) != 0x80000001
+                    if ((((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001
                         && !(Heroes[1].hero_status & 0x2000) && Heroes[1].hero_mode != 0x30) {
                         SetHeroAction(1, 0x30);
                     }

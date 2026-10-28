@@ -29,16 +29,7 @@ extern s32 World_floor_level;
 extern HeroInfo Heroes[4];
 extern u8 GameInfo[];
 
-/* GameInfo as seen by BashSnowInitHeroMove. */
-typedef struct {
-    /* 0x00 */ u8 pad0[0x30];
-    /* 0x30 */ u16 pause;
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 pad36[0x6C - 0x36];
-    /* 0x6C */ s32 p2_active;
-} BashGameView;
-#define OVLG ((BashGameView *)GameInfo)
+#define OVLG ((GameState *)GameInfo)
 
 /* Index of the ASTTable entry with this id, or 0. */
 static inline s32 BashASTIndex(s32 id) {

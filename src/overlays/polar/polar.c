@@ -982,8 +982,8 @@ void PolarInitScene(void) {
         if (obj->flags & 0x8000) {
             if (obj->model->colors != NULL) {
                 entity_address(obj->index, (u8 *)obj->model->colors);
-                if (((PolarModeView *)GameInfo)->mode == 0x12) {
-                    if (!(((PolarModeView *)GameInfo)->flags & 0x80)) {
+                if (((GameState *)GameInfo)->mode == 0x12) {
+                    if (!(((GameState *)GameInfo)->levelFlags & 0x80)) {
                         if (obj->index == 0x5001 || obj->index == 0x5004) {
                             obj->flags |= 0x200000;
                         }
@@ -1000,7 +1000,7 @@ void PolarInitScene(void) {
                         }
                     }
                 }
-                if (((PolarModeView *)GameInfo)->mode == 0x16 &&obj->index == 0x5003) {
+                if (((GameState *)GameInfo)->mode == 0x16 &&obj->index == 0x5003) {
                     bossmapsub = (subengine *)obj;
                     obj->flags |= 0x200000;
                 }
@@ -1039,18 +1039,18 @@ void PolarUpdateScene(void)
   {
     PolarSceneTimer = (PolarSceneTimer + 0x20) & 0xFFF;
   }
-  if (((PolarGameView *) GameInfo)->unk10 != 0)
+  if (((GameState *) GameInfo)->pause != 0)
   {
     return;
   }
-  if ((((PolarModeView *) GameInfo)->mode == 0x12) || (((PolarModeView *) GameInfo)->mode == 0x16))
+  if ((((GameState *) GameInfo)->mode == 0x12) || (((GameState *) GameInfo)->mode == 0x16))
   {
     sx = 0;
     sz = 0;
-    if (((PolarModeView *) GameInfo)->mode == 0x12)
+    if (((GameState *) GameInfo)->mode == 0x12)
     {
       i = 0;
-      if (!(((PolarModeView *) GameInfo)->flags & 0x80))
+      if (!(((GameState *) GameInfo)->levelFlags & 0x80))
       {
 
         for (i = 0; i < 4; i++)
@@ -1088,7 +1088,7 @@ void PolarUpdateScene(void)
     else
     {
       n = 1;
-      if (((PolarGameView *) GameInfo)->unk6C != 0)
+      if (((GameState *) GameInfo)->teams != 0)
       {
         n = 2;
       }
@@ -1152,7 +1152,7 @@ void PolarUpdateScene(void)
     MapSceneRot.vy = 0;
     MapSceneRot.vx = PolarTiltX;
     MapSceneRot.vz = PolarTiltZ;
-    if ((((PolarModeView *) GameInfo)->flags & 0x80) && (((PolarModeView *) GameInfo)->mode == 0x12))
+    if ((((GameState *) GameInfo)->levelFlags & 0x80) && (((GameState *) GameInfo)->mode == 0x12))
     {
       a = (PolarSceneWord2 * rcossin_tbl[(PolarSceneWord0 - 0x400) & 0xFFF].unk2) >> 12;
       b = (PolarSceneWord2 * rcossin_tbl[PolarSceneWord0 & 0xFFF].unk2) >> 12;
@@ -1916,7 +1916,7 @@ const char PolarEmptyString[] = "";
 
 void InitialisePOLARFirst(void) {
     PolarHooks *h;
-    PolarInitView *g;
+    GameState *g;
     void **p;
     void **p2;
     void **p3;
@@ -1924,8 +1924,8 @@ void InitialisePOLARFirst(void) {
     void **p5;
     void *t;
     void *t4;
-    PolarInitView *g2;
-    PolarInitView *g3;
+    GameState *g2;
+    GameState *g3;
 
     h = &HeroHooks;
     h->unk8 = NULL;
@@ -1934,7 +1934,7 @@ void InitialisePOLARFirst(void) {
     BombMaster = NULL;
     PolarFirstFlag = 0;
     PolarArenaRadius2 = 0x400000;
-    if (((PolarInitView *)GameInfo)->mode != 0x15) {
+    if (((GameState *)GameInfo)->mode != 0x15) {
         h->CreateShadow = PolarInitShadow;
         h->UpdateShadow = PolarUpdateShadow;
     } else {
@@ -1943,7 +1943,7 @@ void InitialisePOLARFirst(void) {
         h->unk8 = PolarHeroModelsB;
         h->HeroModels = PolarHeroModels;
     }
-    g = (PolarInitView *)GameInfo;
+    g = (GameState *)GameInfo;
     if (g->mode == 0x14) {
         HeroHooks.HeroModels = PolarHeroModelsCut;
     }
@@ -2008,20 +2008,20 @@ void InitialisePOLARFirst(void) {
             t4 = PolarBossAiSkill;
         }
         *p4 = t4;
-        g2 = (PolarInitView *)GameInfo;
-        g2->flags |= 0x100;
-        if (g2->w6C == 0) {
-            g2->b51 = 9;
+        g2 = (GameState *)GameInfo;
+        g2->levelFlags |= 0x100;
+        if (g2->teams == 0) {
+            g2->heroes[1] = 9;
         }
-        g2->b52 = 9;
-        g2->b53 = 9;
+        g2->heroes[2] = 9;
+        g2->heroes[3] = 9;
         return;
     case 0x2C:
-        g3 = (PolarInitView *)GameInfo;
-        g3->flags |= 0x100;
-        g3->b51 = 9;
-        g3->b52 = 9;
-        g3->b53 = 9;
+        g3 = (GameState *)GameInfo;
+        g3->levelFlags |= 0x100;
+        g3->heroes[1] = 9;
+        g3->heroes[2] = 9;
+        g3->heroes[3] = 9;
         return;
     default:
         AiBotTweakTable = PolarDefaultAiBotTweak;
@@ -2212,7 +2212,7 @@ void PolarAI_StartAttack(s32 player) {
         }
         fux->target = (fux->target + 1) & 3;
         n++;
-        if (((PolarGameView *)GameInfo)->unk6C != 0 && n >= 3) {
+        if (((GameState *)GameInfo)->teams != 0 && n >= 3) {
             fux->state = 5;
             fux->func = PolarEmptyStub6;
             return;
@@ -2887,7 +2887,7 @@ void PolarAI_AvoidMelt(s32 player)
   s32 k;
   bestd = 0x7FFFFFFF;
   best = 0;
-  if (((PolarModeView *) GameInfo)->mode == 0x12)
+  if (((GameState *) GameInfo)->mode == 0x12)
   {
     PolarIceRadius = 0x9F4;
   }
@@ -2900,7 +2900,7 @@ void PolarAI_AvoidMelt(s32 player)
   }
   mv = h->hero_move;
   fux->unk24--;
-  if (((PolarModeView *) GameInfo)->mode == 0x15)
+  if (((GameState *) GameInfo)->mode == 0x15)
   {
     if (PolarHasBomb2(player))
     {
@@ -3261,7 +3261,7 @@ void PolarAI_DoIceWalk(s32 player) {
             goto loop;
         }
         fux->unk2C = best;
-        if (((PolarModeView *)GameInfo)->mode == 0x12 && PolarProximity != NULL) {
+        if (((GameState *)GameInfo)->mode == 0x12 && PolarProximity != NULL) {
             a = PolarProximity->eng;
             b = Heroes[player].hero_eng;
             dx = a->unk10.x - b->unk10.x;
@@ -3666,10 +3666,10 @@ s32 PolarAI_TeamChoice(s32 hero) {
     s32 r;
 
     r = Random(0x1000);
-    lead = ((PolarTeamView *)GameInfo)->team0;
+    lead = ((GameState *)GameInfo)->teamLeader[0];
     if (hero == lead || (mate = Heroes[lead].hero_teammate, hero == mate)) {
         if (r < 0x800) {
-            other = ((PolarTeamView *)GameInfo)->team1;
+            other = ((GameState *)GameInfo)->teamLeader[1];
             if (!(Heroes[other].hero_status & 0x2000)) {
                 return other;
             }
@@ -3679,7 +3679,7 @@ s32 PolarAI_TeamChoice(s32 hero) {
             }
             return mate;
         } else {
-            lead = ((PolarTeamView *)GameInfo)->team1;
+            lead = ((GameState *)GameInfo)->teamLeader[1];
             mate = Heroes[lead].hero_teammate;
             if (!(Heroes[mate].hero_status & 0x2000)) {
                 return mate;
@@ -3718,7 +3718,7 @@ void DoChooseNewAction(u32 player) {
     HeroInfo *me;
     s32 *fl;
     s32 *all;
-    PolarModeView *g;
+    GameState *g;
     PolarLink *l;
     PolarWanderFux *o;
     s32 one;
@@ -3739,7 +3739,7 @@ void DoChooseNewAction(u32 player) {
     }
     ext = FindExtension(h->hero, 0x20000000);
     if (ext != NULL) {
-        if (((PolarModeView *)GameInfo)->mode == 0x12) {
+        if (((GameState *)GameInfo)->mode == 0x12) {
             PolarArenaRadius2 = 1000000;
         }
         h->hero_ai->AImode = 1;
@@ -3751,7 +3751,7 @@ void DoChooseNewAction(u32 player) {
         if (fux->state != 1) {
             fux->unk58 = 0;
         }
-        g = (PolarModeView *)GameInfo;
+        g = (GameState *)GameInfo;
         one = 1;
         for (;; i++) {
             NAS *nas;
@@ -4069,7 +4069,7 @@ void InitialisePOLAR(void) {
     s32 i;
     s32 *speed;
     HeroInfo *h;
-    PolarView *v;
+    GameState *v;
     u8 *g;
     EXTheromove *move;
     PolarFux *fux;
@@ -4082,7 +4082,7 @@ void InitialisePOLAR(void) {
     u16 ang;
     s32 fast;
     s32 slow;
-    PolarView *w;
+    GameState *w;
     HeroInfo *hp;
     s32 j;
     void (*fn)(void);
@@ -4105,56 +4105,56 @@ void InitialisePOLAR(void) {
     cam->at.x = 0;
     cam->at.y = 0;
     cam->at.z = 0;
-    if (((PolarView *)GameInfo)->mode != 0x16) {
-        if (((PolarView *)GameInfo)->flags & 0x40) {
+    if (((GameState *)GameInfo)->mode != 0x16) {
+        if (((GameState *)GameInfo)->levelFlags & 0x40) {
             Set_Clock(0x45, 0x81C0);
         } else {
             Set_Clock(0x130, 0x81C0);
         }
-        if (((PolarView *)GameInfo)->mode == 0x13) {
-            if (((PolarView *)GameInfo)->flags & 0x40) {
+        if (((GameState *)GameInfo)->mode == 0x13) {
+            if (((GameState *)GameInfo)->levelFlags & 0x40) {
                 Set_Clock(0x100, 0x81C0);
             } else {
                 Set_Clock(0x130, 0x81C0);
             }
-            if (((PolarView *)GameInfo)->flags & 0x40) {
-                if (((PolarView *)GameInfo)->unk6C != 0) {
+            if (((GameState *)GameInfo)->levelFlags & 0x40) {
+                if (((GameState *)GameInfo)->teams != 0) {
                     Set_Clock(0x45, 0x81C0);
                 }
             }
         }
-        if (((PolarView *)GameInfo)->mode == 0x12) {
-            if (((PolarView *)GameInfo)->flags & 0x40) {
+        if (((GameState *)GameInfo)->mode == 0x12) {
+            if (((GameState *)GameInfo)->levelFlags & 0x40) {
                 Set_Clock(0x30, 0x81C0);
             } else {
                 Set_Clock(0x130, 0x81C0);
             }
-            if (((PolarView *)GameInfo)->unk6C != 0) {
-                if (((PolarView *)GameInfo)->flags & 0x40) {
+            if (((GameState *)GameInfo)->teams != 0) {
+                if (((GameState *)GameInfo)->levelFlags & 0x40) {
                     Set_Clock(0x25, 0x81C0);
                 }
             }
         }
-        if (((PolarView *)GameInfo)->mode == 0x14) {
-            if (((PolarView *)GameInfo)->flags & 0x40) {
+        if (((GameState *)GameInfo)->mode == 0x14) {
+            if (((GameState *)GameInfo)->levelFlags & 0x40) {
                 Set_Clock(0x25, 0x81C0);
             } else {
                 Set_Clock(0x130, 0x81C0);
             }
-            if (((PolarView *)GameInfo)->unk6C != 0) {
-                if (((PolarView *)GameInfo)->flags & 0x40) {
+            if (((GameState *)GameInfo)->teams != 0) {
+                if (((GameState *)GameInfo)->levelFlags & 0x40) {
                     Set_Clock(0x20, 0x81C0);
                 }
             }
         }
-        if (((PolarView *)GameInfo)->mode == 0x15) {
-            if (((PolarView *)GameInfo)->flags & 0x40) {
+        if (((GameState *)GameInfo)->mode == 0x15) {
+            if (((GameState *)GameInfo)->levelFlags & 0x40) {
                 Set_Clock(0x30, 0x81C0);
             } else {
                 Set_Clock(0x130, 0x81C0);
             }
-            if (((PolarView *)GameInfo)->unk6C != 0
-                && (((PolarView *)GameInfo)->flags & 0x40)) {
+            if (((GameState *)GameInfo)->teams != 0
+                && (((GameState *)GameInfo)->levelFlags & 0x40)) {
                 Set_Clock(0x25, 0x81C0);
             }
         }
@@ -4187,7 +4187,7 @@ void InitialisePOLAR(void) {
         hp++;
     } while (j < 4);
     i = 0;
-    v = (PolarView *)GameInfo;
+    v = (GameState *)GameInfo;
     fn = PolarEmptyStub6;
     h = Heroes;
     g = (u8 *)v;
@@ -4195,16 +4195,16 @@ loop:
     if (i < 4) {
         move = h->hero_move;
         if (move != NULL) {
-            if (((PolarView *)g)->unk50[0] == 9) {
+            if (((GameState *)g)->heroes[0] == 9) {
                 status = h->hero_status;
                 h->hero_status = status | 0x2000;
-                if (((PolarView *)g)->unk50[0] == 9) {
+                if (((GameState *)g)->heroes[0] == 9) {
                     h->hero_status = status | 0xA000;
                 }
             }
             PolarInitHeroMove(i);
             SetHeroAction(i, 0x49);
-            if (v->mode == 0x15 && (v->flags & 0x80) && ((PolarView *)g)->unk5C[0] == 0) {
+            if (v->mode == 0x15 && (v->levelFlags & 0x80) && ((GameState *)g)->heroOut[0] == 0) {
                 SetHeroAction(i, 0x54);
             }
             h->hero_eng->unk5C = 1;
@@ -4311,7 +4311,7 @@ loop:
             nas->UserInfo.user1 = 3;
         }
     }
-    w = (PolarView *)GameInfo;
+    w = (GameState *)GameInfo;
     if (w->mode == 0x15) {
         CreateNAS(0, 0, 0, 0x160E, 0x11);
     }
@@ -4322,7 +4322,7 @@ loop:
         CreateNAS(0, 0, 0, 0x1625, 0x11);
     }
     if (w->mode == 0x12) {
-        if (!(w->flags & 0x80)) {
+        if (!(w->levelFlags & 0x80)) {
             CreateNAS(0, 0, 0, 0x160C, 0x11);
         } else {
             PlaySfx(0x47E, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -4343,8 +4343,8 @@ void UpdatePOLAR(void) {
     EXTheromove *mv;
 
     dead = 0;
-    if (((PolarModeView *)GameInfo)->mode == 0x12
-        && (((PolarModeView *)GameInfo)->flags & 0x80)
+    if (((GameState *)GameInfo)->mode == 0x12
+        && (((GameState *)GameInfo)->levelFlags & 0x80)
         && PolarClock == 0) {
         if (PolarUpdateWord-- < 0) {
             n = Random(3);
@@ -4432,7 +4432,7 @@ void UpdatePOLAR(void) {
                 if (GameInfo[i + 0x5C] == 0) {
                     HeroesAllOut = 0;
                 }
-                if (((PolarGameView *)GameInfo)->unk6C != 0
+                if (((GameState *)GameInfo)->teams != 0
                     && GameInfo[Heroes[i].hero_teammate + 0x5C] == 0) {
                     HeroesAllOut = 0;
                 }
@@ -4976,16 +4976,16 @@ void InitTransmuterBeam(NAS *m) {
     if (n != NULL) {
         bx = FindExtension(n, 0x10000000);
         if (bx != NULL) {
-            if (((PolarModeView *)GameInfo)->mode == 0x12) {
+            if (((GameState *)GameInfo)->mode == 0x12) {
                 bx->unkC = 1;
                 bx->unk20 = 4;
                 goto tex1;
             }
-            if (((PolarModeView *)GameInfo)->flags & 0x80) {
-                if (((PolarModeView *)GameInfo)->mode == 0x13) {
+            if (((GameState *)GameInfo)->levelFlags & 0x80) {
+                if (((GameState *)GameInfo)->mode == 0x13) {
                     bx->unkC = 1;
                 }
-                if (((PolarModeView *)GameInfo)->mode != 0x15) {
+                if (((GameState *)GameInfo)->mode != 0x15) {
                     goto skip1;
                 }
             }
@@ -5005,16 +5005,16 @@ void InitTransmuterBeam(NAS *m) {
         n->Engine->flags |= 0x200000;
         bx = FindExtension(ext->bit2, 0x10000000);
         if (bx != NULL) {
-            if (((PolarModeView *)GameInfo)->mode == 0x12) {
+            if (((GameState *)GameInfo)->mode == 0x12) {
                 bx->unkC = 2;
                 bx->unk20 = 4;
                 goto tex2;
             }
-            if (((PolarModeView *)GameInfo)->flags & 0x80) {
-                if (((PolarModeView *)GameInfo)->mode == 0x13) {
+            if (((GameState *)GameInfo)->levelFlags & 0x80) {
+                if (((GameState *)GameInfo)->mode == 0x13) {
                     bx->unkC = 2;
                 }
-                if (((PolarModeView *)GameInfo)->mode != 0x15) {
+                if (((GameState *)GameInfo)->mode != 0x15) {
                     goto skip2;
                 }
             }
@@ -5147,7 +5147,7 @@ void PlotTransmuterBeam(NAS *m) {
         ext->bit2->Engine->flags &= ~0x8000;
     }
     if (TB_MODE13()) {
-        if (TBV->unk6C != 0 && ext->unk1DC == 0) {
+        if (TBV->teams != 0 && ext->unk1DC == 0) {
             t = BeamTarget;
             BeamTarget = t ^ 1;
             if (Heroes[t ^ 1].hero_status & 0x2000) {
@@ -5163,7 +5163,7 @@ void PlotTransmuterBeam(NAS *m) {
             ext->unk1DC--;
         }
     }
-    if (TB_MODE13() && TBV->unk10 == 0 && PolarClock == 0 && ext->unk14 == 1) {
+    if (TB_MODE13() && TBV->pause == 0 && PolarClock == 0 && ext->unk14 == 1) {
         if (++m->UserInfo.user1 == 0x3C) {
             e1 = m->Engine;
             n = CreateNAS(e1->unk10.x, 0x80, e1->unk10.z, 0x1605, 0x11);
@@ -5222,10 +5222,10 @@ void PlotTransmuterBeam(NAS *m) {
                 if (Heroes[i].hero_status & 0x2000) {
                     goto next1;
                 }
-                if (TBV->unk5C[i] != 0) {
+                if (TBV->heroOut[i] != 0) {
                     goto next1;
                 }
-                if (i == 1 && TBV->unk6C == 0) {
+                if (i == 1 && TBV->teams == 0) {
                     goto next1;
                 }
                 lx = m->Engine->unk10.x - Heroes[i].hero_eng->unk10.x;
@@ -5475,7 +5475,7 @@ void PlotTransmuterBeam(NAS *m) {
                     if (TBV->mode == 0x13) {
                         bx->unkC = 3;
                     }
-                    if (TBV->mode == 0x12 && (TBV->flags & 0x80)) {
+                    if (TBV->mode == 0x12 && (TBV->levelFlags & 0x80)) {
                         bx->unkC = 7;
                     }
                     bx->unk18 = 0x80;
@@ -5891,7 +5891,7 @@ void PlotTransmuterBeam(NAS *m) {
                         for (j = 0; j < 4; j++) {
                             h = &Heroes[j];
                             if (j != ext->unk6C && !(h->hero_status & 0x2000) && h->hero_mode != 0x50) {
-                                if (TBV->unk6C == 0 || TestForTeamMate(ext->unk6C, j) == 0) {
+                                if (TBV->teams == 0 || TestForTeamMate(ext->unk6C, j) == 0) {
                                     if (h->hero_mode != 0x4B) {
                                         SetHeroAction(j, 0x4B);
                                         ext->engs[ext->unk6C]->sub->flags &= ~0x8000;
@@ -7813,10 +7813,10 @@ void PlotPolarBoss(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    if (((PolarBossGame *)GameInfo)->teams != 0) {
+    if (((GameState *)GameInfo)->teams != 0) {
         h = Heroes;
-        if ((h[((PolarBossGame *)GameInfo)->lead].hero_status & 0x2000)
-            && (h[h[((PolarBossGame *)GameInfo)->lead].hero_teammate].hero_status & 0x2000)) {
+        if ((h[((GameState *)GameInfo)->teamLeader[0]].hero_status & 0x2000)
+            && (h[h[((GameState *)GameInfo)->teamLeader[0]].hero_teammate].hero_status & 0x2000)) {
             CameraMode = 0;
         }
     } else if (Heroes[0].hero_status & 0x2000) {
@@ -7836,10 +7836,10 @@ void PlotPolarBoss(NAS *m) {
     }
     mate = FindExtension(ext->unk84, 0x10000000);
     if (mate != NULL) {
-        if (((PolarBossGame *)GameInfo)->teams != 0) {
+        if (((GameState *)GameInfo)->teams != 0) {
             h = Heroes;
-            if ((h[((PolarBossGame *)GameInfo)->lead].hero_status & 0x2000)
-                && (h[h[((PolarBossGame *)GameInfo)->lead].hero_teammate].hero_status & 0x2000)
+            if ((h[((GameState *)GameInfo)->teamLeader[0]].hero_status & 0x2000)
+                && (h[h[((GameState *)GameInfo)->teamLeader[0]].hero_teammate].hero_status & 0x2000)
                 && ext->state != 9 && ext->unk90 == 0) {
                 ext->state = 9;
                 GotoLinkAnim(mate->anim, 7);
@@ -8489,17 +8489,17 @@ void PlotBearminator(NAS *m) {
         if (ext->unk1C == 6) {
             PlaySfx(0x23D, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        if (((PolarBearView *)GameInfo)->unk6C != 0) {
+        if (((GameState *)GameInfo)->teams != 0) {
             HeroInfo *hb = Heroes;
 
-            hi = &hb[((PolarBearView *)GameInfo)->lead];
+            hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
             if (hi->hero_status & 0x2000) {
                 ext->unkA0 = hi->hero_teammate;
             }
-            if (hb[hb[((PolarBearView *)GameInfo)->lead].hero_teammate].hero_status & 0x2000) {
-                ext->unkA0 = ((PolarBearView *)GameInfo)->lead;
+            if (hb[hb[((GameState *)GameInfo)->teamLeader[0]].hero_teammate].hero_status & 0x2000) {
+                ext->unkA0 = ((GameState *)GameInfo)->teamLeader[0];
             }
-            hi = &hb[((PolarBearView *)GameInfo)->lead];
+            hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
             if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
                 ext->unkC = 8;
                 GotoLinkAnim((EXTanimator *)ext->cursor, 3);
@@ -8575,17 +8575,17 @@ void PlotBearminator(NAS *m) {
             goto fall;
         }
         if (ext->unk14-- < 0) {
-            if (((PolarBearView *)GameInfo)->unk6C != 0) {
+            if (((GameState *)GameInfo)->teams != 0) {
                 HeroInfo *hb = Heroes;
 
-                hi = &hb[((PolarBearView *)GameInfo)->lead];
+                hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
                 if (hi->hero_status & 0x2000) {
                     ext->unkA0 = hi->hero_teammate;
                 }
-                if (hb[hb[((PolarBearView *)GameInfo)->lead].hero_teammate].hero_status & 0x2000) {
-                    ext->unkA0 = ((PolarBearView *)GameInfo)->lead;
+                if (hb[hb[((GameState *)GameInfo)->teamLeader[0]].hero_teammate].hero_status & 0x2000) {
+                    ext->unkA0 = ((GameState *)GameInfo)->teamLeader[0];
                 }
-                hi = &hb[((PolarBearView *)GameInfo)->lead];
+                hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
                 if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
                     ext->unkC = 8;
                     GotoLinkAnim((EXTanimator *)ext->cursor, 3);
@@ -8703,17 +8703,17 @@ void PlotBearminator(NAS *m) {
             return;
         }
         if (ext->unk14-- < 0) {
-            if (((PolarBearView *)GameInfo)->unk6C != 0) {
+            if (((GameState *)GameInfo)->teams != 0) {
                 HeroInfo *hb = Heroes;
 
-                hi = &hb[((PolarBearView *)GameInfo)->lead];
+                hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
                 if (hi->hero_status & 0x2000) {
                     ext->unkA0 = hi->hero_teammate;
                 }
-                if (hb[hb[((PolarBearView *)GameInfo)->lead].hero_teammate].hero_status & 0x2000) {
-                    ext->unkA0 = ((PolarBearView *)GameInfo)->lead;
+                if (hb[hb[((GameState *)GameInfo)->teamLeader[0]].hero_teammate].hero_status & 0x2000) {
+                    ext->unkA0 = ((GameState *)GameInfo)->teamLeader[0];
                 }
-                hi = &hb[((PolarBearView *)GameInfo)->lead];
+                hi = &hb[((GameState *)GameInfo)->teamLeader[0]];
                 if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
                     ext->unkC = 8;
                     GotoLinkAnim((EXTanimator *)ext->cursor, 3);
@@ -10928,7 +10928,7 @@ void PolarPreMoveHero(s32 player) {
     EXTheromove *m2;
     PadState *pad;
     PadState *p2;
-    PolarModeView *g;
+    GameState *g;
     s32 *spd;
 
     base = Heroes;
@@ -10954,12 +10954,12 @@ void PolarPreMoveHero(s32 player) {
                 m->z_max = (*spd * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
             }
         }
-        g = (PolarModeView *)GameInfo;
+        g = (GameState *)GameInfo;
         if (g->mode != 0x16) {
             m->x_max += ((m->mass * 3) >> 3) * rcossin_tbl[(PolarTiltZ - 0x400) & 0xFFF].unk2 >> 12;
             m->z_max -= ((m->mass * 3) >> 3) * rcossin_tbl[(PolarTiltX - 0x400) & 0xFFF].unk2 >> 12;
             if (g->mode == 0x12) {
-                if (g->flags & 0x80) {
+                if (g->levelFlags & 0x80) {
                     if (GameInfo[player + 0x5C] != 0) {
                         m->x_max += ((m->mass * 3) >> 4) * rcossin_tbl[(MapSceneRot.vz - 0x400) & 0xFFF].unk2 >> 12;
                         m->z_max -= ((m->mass * 3) >> 4) * rcossin_tbl[(MapSceneRot.vx - 0x400) & 0xFFF].unk2 >> 12;
@@ -11144,7 +11144,7 @@ void SetPolarHeroIdle(s32 player) {
         move->x_dec = 1;
         move->z_acc = 2;
         move->z_dec = 1;
-        if (((PolarModeView *)GameInfo)->mode == 0x16) {
+        if (((GameState *)GameInfo)->mode == 0x16) {
             move->x_acc = 4;
             move->z_acc = 4;
         }

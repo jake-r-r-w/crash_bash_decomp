@@ -75,20 +75,7 @@ extern SceneObj *PolarSceneB;
 extern s32 PolarSceneCount;
 extern s32 PolarSceneTimer;
 
-/* GameInfo as seen by PolarInitScene. */
-typedef struct PolarModeView {
-    /* 0x00 */ u8 pad0[0x32];
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-} PolarModeView;
 
-/* GameInfo as PolarAI_StartAttack reads it. */
-typedef struct PolarGameView {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x6C - 0x14];
-    /* 0x6C */ s32 unk6C;
-} PolarGameView;
 
 /* A value BearminatorEaseCam eases toward its target by a fixed step. */
 typedef struct PolarEase {
@@ -800,21 +787,9 @@ typedef struct TransBeamExt {
     /* 0x1DC */ s32 unk1DC;
 } TransBeamExt;
 
-/* GameInfo as PlotTransmuterBeam reads it. */
-typedef struct TransBeamView {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x32 - 0x14];
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 pad36[0x5C - 0x36];
-    /* 0x5C */ u8 unk5C[4];
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
-    /* 0x6C */ s32 unk6C;
-} TransBeamView;
 
-#define TBV ((TransBeamView *)GameInfo)
-#define TB_MODE13() ((TBV->flags & 0x80) && TBV->mode == 0x13)
+#define TBV ((GameState *)GameInfo)
+#define TB_MODE13() ((TBV->levelFlags & 0x80) && TBV->mode == 0x13)
 
 /* The beam kinds PlotTransmuterBeam picks from (Random(4)). */
 extern u32 BeamFrames[4];
@@ -949,15 +924,6 @@ void ResetHeroGlobals(void);
 
 extern NAS *polarbossnas;
 
-/* GameInfo as PlotPolarBoss reads it. */
-typedef struct PolarBossGame {
-    /* 0x00 */ u8 pad0[0x48];
-    /* 0x48 */ s16 lead;
-    /* 0x4A */ u8 pad4A[0x6C - 0x4A];
-    /* 0x6C */ s32 teams;
-    /* 0x70 */ u8 pad70[0xC1 - 0x70];
-    /* 0xC1 */ u8 level;
-} PolarBossGame;
 
 /* The 0x10000000 extension of the boss's partner (PlotPolarBoss). */
 typedef struct PolarBossAnimExt {
@@ -987,14 +953,14 @@ static inline s32 PolarRandSpread(s32 n) {
 static inline s32 PolarShardChance(void) {
     s32 k;
 
-    if (((PolarBossGame *)GameInfo)->level < 10) {
+    if (((GameState *)GameInfo)->adventure.unkAB[22] < 10) {
         return 0;
     }
-    if (((PolarBossGame *)GameInfo)->level >= 30) {
+    if (((GameState *)GameInfo)->adventure.unkAB[22] >= 30) {
         return 0xE66;
     }
     k = 0xB8;
-    return (((PolarBossGame *)GameInfo)->level - 9) * k;
+    return (((GameState *)GameInfo)->adventure.unkAB[22] - 9) * k;
 }
 
 s32 PolarAI_PickVictim(s32 arg0);
@@ -1235,12 +1201,6 @@ s32 PolarOfficeBox(s32 i);
 s32 PolarAI_RandomPause(s32 player);
 
 void PolarInitHeroMove(s32 arg0);
-/* GameInfo as seen by PolarAI_TeamChoice: the two team leaders. */
-typedef struct PolarTeamView {
-    /* 0x00 */ u8 pad0[0x48];
-    /* 0x48 */ s16 team0;
-    /* 0x4A */ s16 team1;
-} PolarTeamView;
 
 s32 PolarAI_TeamChoice(s32 hero);
 
@@ -1407,26 +1367,7 @@ typedef struct BearminatorExt {
 
 extern ScriptInit BearminatorScriptInit;
 
-/* GameInfo as PlotBearminator reads it. */
-typedef struct PolarBearView {
-    /* 0x00 */ u8 pad0[0x48];
-    /* 0x48 */ s16 lead;
-    /* 0x4A */ u8 pad4A[0x6C - 0x4A];
-    /* 0x6C */ s32 unk6C;
-} PolarBearView;
 
-/* GameInfo as seen by InitialisePOLARFirst. */
-typedef struct PolarInitView {
-    /* 0x00 */ u8 pad0[0x32];
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 pad36[0x51 - 0x36];
-    /* 0x51 */ u8 b51;
-    /* 0x52 */ u8 b52;
-    /* 0x53 */ u8 b53;
-    /* 0x54 */ u8 pad54[0x6C - 0x54];
-    /* 0x6C */ s32 w6C;
-} PolarInitView;
 
 /* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct PolarHooks {
@@ -1528,18 +1469,6 @@ static inline void PolarSpawnDrop(VECTOR *pos, s32 kind) {
 void SetPolarHeroDazed(s32 player);
 
 void SetPolarHeroChallenge(s32 player);
-/* GameInfo as InitialisePOLAR reads it. */
-typedef struct PolarView {
-    /* 0x00 */ u8 pad0[0x32];
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 pad36[0x50 - 0x36];
-    /* 0x50 */ u8 unk50[4];
-    /* 0x54 */ u8 pad54[0x5C - 0x54];
-    /* 0x5C */ u8 unk5C[4];
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
-    /* 0x6C */ s32 unk6C;
-} PolarView;
 
 /* The hero's FUX extension (0x60 bytes) InitialisePOLAR sets up. */
 typedef struct PolarFux {
