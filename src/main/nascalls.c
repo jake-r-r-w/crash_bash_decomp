@@ -3438,9 +3438,9 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
     s32 n;
     u8 *src;
     TexClut *e;
-    TexSrc2A84C *s;
+    TexImage *s;
     obj_texture *d;
-    u8 *b;
+    TexFile *b;
     s32 *p;
     s32 *r;
     s32 cnt;
@@ -3452,7 +3452,7 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
     n = arg0->nEnt;
     e = arg0->ent;
     b = arg0->base;
-    src = b + (*(s32 *)(b + 0x10) + 0x10);
+    src = (u8 *)&b->cluts + b->cluts;
     while (1) {
         u16 id;
         u8 *q;
@@ -3474,9 +3474,9 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
     n = arg0->nTex;
     d = arg0->tex;
     b = arg0->base;
-    s = (TexSrc2A84C *)(b + (*(s32 *)(b + 0xC) + 0xC));
+    s = (TexImage *)((u8 *)&b->images + b->images);
     while (1) {
-        u8 *b;
+        TexFile *b;
         u32 t;
         s32 u;
 
@@ -3486,34 +3486,34 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         b = arg0->base;
         d->info.vram = NULL;
         d->time = -1;
-        d->flag = *(u16 *)&s->wC & 1;
-        d->clut = (s->wC >> 1) & 0x7FFF;
-        d->flags = *(u16 *)((u8 *)s + 0xE);
-        d->frames = s->w10;
-        d->h = s->w2;
+        d->flag = s->eight;
+        d->clut = s->clut;
+        d->flags = s->flags;
+        d->frames = s->frames;
+        d->h = s->h;
         if (d->flag == 0) {
-            d->w = s->w0 << 2;
-            d->slot = &VramSlots[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
-            d->advance = (*(u8 *)s << 2) - 1;
+            d->w = s->w << 2;
+            d->slot = &VramSlots[vram_slot_class(s->w << 2, s->h, 0x10)];
+            d->advance = ((u8)s->w << 2) - 1;
         } else {
-            d->w = s->w0 << 1;
-            d->slot = &VramSlots[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
-            d->advance = (*(u8 *)s << 1) - 1;
+            d->w = s->w << 1;
+            d->slot = &VramSlots[vram_slot_class(s->w << 1, s->h, 0x100)];
+            d->advance = ((u8)s->w << 1) - 1;
         }
-        d->dv = *(u8 *)((u8 *)s + 2) - 1;
-        d->info.vramW = s->w0;
-        d->info.vramH = s->w2;
+        d->dv = (u8)s->h - 1;
+        d->info.vramW = s->w;
+        d->info.vramH = s->h;
         u = (s32)b - 0x14;
-        t = s->w8;
+        t = s->c;
         d->fC = t;
         d->pix = (s32)s - u;
         d++;
-        s = (TexSrc2A84C *)((u8 *)s + (s->w0 * s->w2 * 2 + 0x14));
+        s = (TexImage *)((u8 *)s + (s->w * s->h * 2 + 0x14));
     }
     b = arg0->base;
-    off = *(s32 *)(b + 0x1C);
+    off = b->extra;
     if (off != 0) {
-        p = (s32 *)(b + (off + 0x1C));
+        p = (s32 *)((u8 *)&b->extra + off);
         r = p + 1;
         cnt = *p;
         a = mal_alloc(cnt * 0x5A8, &MainHeap);
@@ -3527,8 +3527,8 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         arg0->nAnim = 0;
         arg0->anim = NULL;
     }
-    if (*(s32 *)(arg0->base + 0x18) != 0) {
-        arg0->anims = (AnimData *)(arg0->base + *(s32 *)(arg0->base + 0x18));
+    if (arg0->base->anims != 0) {
+        arg0->anims = (AnimData *)((u8 *)arg0->base + arg0->base->anims);
     } else {
         arg0->anims = NULL;
     }
@@ -3541,7 +3541,7 @@ static inline void Tex_UploadCluts(obj_textureset *set) {
     s32 n;
 
     e = set->ent;
-    base = set->base;
+    base = (u8 *)set->base;
     n = set->nEnt;
 
     for (;;) {
@@ -3599,7 +3599,7 @@ void textureset_upload(obj_textureset *arg0) {
     AnimData *p;
 
     t = arg0->tex;
-    base = arg0->base;
+    base = (u8 *)arg0->base;
     Tex_UploadCluts(arg0);
     n = arg0->nTex;
     while (n != 0) {
@@ -3856,13 +3856,13 @@ s32 calc_rgbcode(s32 r, s32 g, s32 b) {
 }
 
 void texture_release_loading_mem(obj_textureset *set) {
-    u8 *base;
+    TexFile *base;
     u8 *anims;
 
     if (set->anims != NULL) {
         base = set->base;
-        anims = mal_trim_front(base, *(s32 *)(base + 0x18), &MainHeap);
-        set->base = anims;
+        anims = mal_trim_front(base, base->anims, &MainHeap);
+        set->base = (TexFile *)anims;
         mal_set_owner(anims, (u8 **)&set->anims);
         set->base = NULL;
         return;
@@ -3878,7 +3878,7 @@ void textureset_upload_cluts(obj_textureset *arg0) {
     s32 n;
 
     e = arg0->ent;
-    base = arg0->base;
+    base = (u8 *)arg0->base;
     n = arg0->nEnt;
     for (;;) {
         n--;
@@ -3932,12 +3932,12 @@ loop:
 }
 
 void textureset_init(obj_textureset *set, u8 *file) {
-    set->base = file;
-    mal_alloc_owned_low(*(u16 *)(file + 8) * 0x38, (void **)&set->tex, (s32)&MainHeap, 0);
-    mal_alloc_owned_low(*(u16 *)(set->base + 0xA) * 0xC, (void **)&set->ent, (s32)&MainHeap, 0);
-    set->nTex = *(u16 *)(set->base + 8);
-    set->nEnt = *(u16 *)(set->base + 0xA);
-    set->f14 = *(s32 *)(set->base + 0x14);
+    set->base = (TexFile *)file;
+    mal_alloc_owned_low(((TexFile *)file)->nTex * 0x38, (void **)&set->tex, (s32)&MainHeap, 0);
+    mal_alloc_owned_low(set->base->nClut * 0xC, (void **)&set->ent, (s32)&MainHeap, 0);
+    set->nTex = set->base->nTex;
+    set->nEnt = set->base->nClut;
+    set->f14 = set->base->f14;
     texture_init_mem_textureset(set);
 }
 
@@ -4018,31 +4018,31 @@ void texsrc_init(u8 *src, u8 *out, s32 len) {
     *(u16 *)out = id;
 }
 
-void texture_init_entry(TexSrc2A84C *s, obj_texture *d, s32 n) {
+void texture_init_entry(TexImage *s, obj_texture *d, s32 n) {
     u32 t;
     s32 u;
 
     d->info.vram = NULL;
     d->time = -1;
-    d->flag = *(u16 *)&s->wC & 1;
-    d->clut = (s->wC >> 1) & 0x7FFF;
-    d->flags = *(u16 *)((u8 *)s + 0xE);
-    d->frames = s->w10;
-    d->h = s->w2;
+    d->flag = s->eight;
+    d->clut = s->clut;
+    d->flags = s->flags;
+    d->frames = s->frames;
+    d->h = s->h;
     if (d->flag == 0) {
-        d->w = s->w0 << 2;
-        d->slot = &VramSlots[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
-        d->advance = (*(u8 *)s << 2) - 1;
+        d->w = s->w << 2;
+        d->slot = &VramSlots[vram_slot_class(s->w << 2, s->h, 0x10)];
+        d->advance = ((u8)s->w << 2) - 1;
     } else {
-        d->w = s->w0 << 1;
-        d->slot = &VramSlots[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
-        d->advance = (*(u8 *)s << 1) - 1;
+        d->w = s->w << 1;
+        d->slot = &VramSlots[vram_slot_class(s->w << 1, s->h, 0x100)];
+        d->advance = ((u8)s->w << 1) - 1;
     }
-    d->dv = *(u8 *)((u8 *)s + 2) - 1;
-    d->info.vramW = s->w0;
-    d->info.vramH = s->w2;
+    d->dv = (u8)s->h - 1;
+    d->info.vramW = s->w;
+    d->info.vramH = s->h;
     u = n - 0x14;
-    t = s->w8;
+    t = s->c;
     d->pix = (s32)s - u;
     d->fC = t;
 }

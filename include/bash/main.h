@@ -1805,14 +1805,32 @@ void init_dots(subengine *arg0);
 
 extern Slot12 VramSlots[];
 
-typedef struct {
-    /* 0x00 */ u16 w0;
-    /* 0x02 */ u16 w2;
-    /* 0x04 */ u8 pad4[4];
-    /* 0x08 */ u32 w8;
-    /* 0x0C */ u32 wC;
-    /* 0x10 */ u32 w10;
-} TexSrc2A84C;
+/* A texture file's header (docs/ASSETS.md, Texture sets): the CLUTs (each a u32 count and its
+ * colours), the images (TexImage, each followed by its pixels), then the animated textures. */
+typedef struct TexFile {
+    /* 0x00 */ u32 type;   /* 8 */
+    /* 0x04 */ u32 size;
+    /* 0x08 */ u16 nTex;
+    /* 0x0A */ u16 nClut;
+    /* 0x0C */ s32 images; /* from here to the first TexImage */
+    /* 0x10 */ s32 cluts;  /* from here to the CLUTs */
+    /* 0x14 */ s32 f14;    /* copied to obj_textureset.f14 */
+    /* 0x18 */ s32 anims;  /* from the file's start to its AnimData, 0: none */
+    /* 0x1C */ s32 extra;  /* from here to a count and words for obj_textureset.anim, 0 in every file */
+} TexFile;
+
+/* An image's header in a texture file (docs/ASSETS.md, Texture sets); its pixels follow. */
+typedef struct TexImage {
+    /* 0x00 */ u16 w;          /* in VRAM units */
+    /* 0x02 */ u16 h;
+    /* 0x04 */ u16 a;
+    /* 0x06 */ u16 b;
+    /* 0x08 */ u32 c;          /* copied to obj_texture.fC */
+    /* 0x0C */ u16 eight : 1;  /* 8-bit (else 4-bit) */
+               u16 clut : 15;  /* its CLUT, 0x7FFF none */
+    /* 0x0E */ u16 flags;      /* 2: one frame per language from here */
+    /* 0x10 */ s32 frames;
+} TexImage;
 
 
 

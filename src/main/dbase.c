@@ -684,7 +684,7 @@ void dbase_set(obj_dbase *db, u8 *data, u8 *base) {
 
     ts = (u8 *)&db->textures;
     db->data = data;
-    db->textures.base = base;
+    db->textures.base = (TexFile *)base;
     textureset_init((obj_textureset *)ts, base);
     textureset_upload(ts);
 }
