@@ -2716,7 +2716,7 @@ void xa_mute(void) {
     xa_setvol(0);
 }
 
-void pad_read_packet(PadPacket *p, PadInput *in, s32 n) {
+void pad_read_packet(PadPacket *p, PadState *in, s32 n) {
     if (p->status == 0) {
         in->flags |= 1;
         in->flags |= PadRumble_update(&in->rumble, n);
@@ -2810,9 +2810,9 @@ loop:
         pad->buttons = 0;
         pad->flags = 0;
         pad->unk18 = on;
-        pad->unk1C = 0;
-        pad->rumbleFlags = 0;
-        pad->unk28 = 0;
+        pad->rumble.unk0 = 0;
+        pad->rumble.dirty = 0;
+        pad->rumble.reset = 0;
         pad++;
         goto loop;
     }
@@ -2821,26 +2821,26 @@ loop:
 }
 
 void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
-    u8 *p;
+    PadRumble *p;
 
     if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && GameOptions.vibrate[pad] != 0 &&
         (Pads[pad].flags & 8)) {
-        p = (u8 *)&Pads[pad] + 0x1C;
-        p[5] = arg2;
-        *(s16 *)(p + 0xA) = arg1 + 1;
-        *(u16 *)(p + 6) |= 1;
+        p = &Pads[pad].rumble;
+        p->act[1] = arg2;
+        p->time1 = arg1 + 1;
+        p->dirty |= 1;
     }
 }
 
 void pad_rumble_small(s32 pad, s32 arg1) {
-    u8 *p;
+    PadRumble *p;
 
     if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && pad < 4 && GameOptions.vibrate[pad] != 0 &&
         (Pads[pad].flags & 8)) {
-        p = (u8 *)&Pads[pad] + 0x1C;
-        p[4] = 1;
-        *(s16 *)(p + 8) = arg1 + 1;
-        *(u16 *)(p + 6) |= 1;
+        p = &Pads[pad].rumble;
+        p->act[0] = 1;
+        p->time0 = arg1 + 1;
+        p->dirty |= 1;
     }
 }
 
@@ -2870,7 +2870,7 @@ void pads_reset_rumble(void) {
 
     v = 1;
     for (i = 7; i >= 0; i--) {
-        Pads[i].unk28 = v;
+        Pads[i].rumble.reset = v;
     }
 }
 
@@ -2926,9 +2926,9 @@ void pad_input_reset(PadState *arg0) {
     arg0->buttons = 0;
     arg0->flags = 0;
     arg0->unk18 = 1;
-    arg0->unk1C = 0;
-    arg0->rumbleFlags = 0;
-    arg0->unk28 = 0;
+    arg0->rumble.unk0 = 0;
+    arg0->rumble.dirty = 0;
+    arg0->rumble.reset = 0;
 }
 
 FreeHdr *vram_take(u8 *arg0) {

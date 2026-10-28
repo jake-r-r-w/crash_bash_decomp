@@ -2629,27 +2629,27 @@ void pads_init(void) {
     joypad_idle_count = 0;
 }
 
-void pad_dpad_to_stick(s32 pad, u8 *out) {
+void pad_dpad_to_stick(s32 pad, PadState *out) {
     if (pad & 0xA0) {
         if (pad & 0x80) {
-            *(s32 *)(out + 0x10) = 0;
+            out->lx = 0;
         } else {
-            *(s32 *)(out + 0x10) = 0xFF;
+            out->lx = 0xFF;
         }
     } else {
-        *(s32 *)(out + 0x10) = 0x80;
+        out->lx = 0x80;
     }
     if (pad & 0x50) {
         if (pad & 0x10) {
-            *(s32 *)(out + 0x14) = 0;
+            out->ly = 0;
         } else {
-            *(s32 *)(out + 0x14) = 0xFF;
+            out->ly = 0xFF;
         }
     } else {
-        *(s32 *)(out + 0x14) = 0x80;
+        out->ly = 0x80;
     }
-    *(s32 *)(out + 8) = 0x80;
-    *(s32 *)(out + 0xC) = 0x80;
+    out->rx = 0x80;
+    out->ry = 0x80;
 }
 
 /* 4.12 product rounded away from zero */

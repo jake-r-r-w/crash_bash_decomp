@@ -137,7 +137,7 @@ void textureset_upload_cluts(u8 *arg0);
 void texture_scroll_step(u8 *arg0, u8 *arg1);
 void clut_upload(ClutUpload *arg0, s32 arg1);
 void texanims_release(s32 *arg0, s32 arg1);
-void pad_read_packet(PadPacket *p, PadInput *in, s32 n);
+void pad_read_packet(PadPacket *p, PadState *in, s32 n);
 s32 pad_rumble_send(PadRumble *r, s32 port);
 void texture_update_anims(obj_textureset *arg0);
 void texture_upload_list(TexUploadList *arg0, obj_textureset *arg1);

@@ -755,10 +755,10 @@ void PlayersMenuUpdate(void) {
     O69CV->unk5C[1] = c < 2;
     O69CV->unk5C[2] = c < 3;
     O69CV->unk5C[3] = c < 4;
-    O69PAD[0].unk2A = c < 1;
-    O69PAD[1].unk2A = c < 2;
-    O69PAD[2].unk2A = c < 3;
-    O69PAD[3].unk2A = c < 4;
+    O69PAD[0].rumble.on = c < 1;
+    O69PAD[1].rumble.on = c < 2;
+    O69PAD[2].rumble.on = c < 3;
+    O69PAD[3].rumble.on = c < 4;
     if (c != 0) {
         if (O69PAD->pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);

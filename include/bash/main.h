@@ -495,6 +495,16 @@ typedef struct IdEntry {
     /* 0x02 */ u8 unk2[0x16];
 } IdEntry;
 
+/* A pad's motors (PadState.rumble; pad_set_rumble_big and _small, pad_rumble_send). */
+typedef struct PadRumble {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ u8 act[2];  /* motor values passed to PadSetAct */
+    /* 0x06 */ u16 dirty;
+    /* 0x08 */ s16 time0;
+    /* 0x0A */ s16 time1;
+    /* 0x0C */ s16 reset;
+    /* 0x0E */ s16 on;      /* PlayersMenuUpdate: the pad's player takes part */
+} PadRumble;
 /* Per-pad state, 8 of them at Pads (pads_init_mtap resets them; pad_read fills it). */
 typedef struct PadState {
     /* 0x00 */ s32 flags;          /* 1: connected */
@@ -504,14 +514,7 @@ typedef struct PadState {
     /* 0x10 */ s32 lx;
     /* 0x14 */ s32 ly;
     /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
-    /* 0x20 */ u8 rumbleSmall;     /* the motors' settings (pad_rumble_small, pad_rumble_big) */
-    /* 0x21 */ u8 rumbleBig;
-    /* 0x22 */ u16 rumbleFlags;    /* 1: start */
-    /* 0x24 */ s16 rumbleSmallTime;
-    /* 0x26 */ s16 rumbleBigTime;
-    /* 0x28 */ s16 unk28;
-    /* 0x2A */ s16 unk2A;          /* PlayersMenuUpdate: the pad takes part */
+    /* 0x1C */ PadRumble rumble;
     /* 0x2C */ s32 forced;         /* set_joypad: 1 */
     /* 0x30 */ s32 forcedButtons;  /* set_joypad: the buttons */
     /* 0x34 */ s32 unk34;
@@ -1448,7 +1451,7 @@ void *dbase_anim_node(s32 *arg0, u8 *rec);
 
 
 
-void pad_dpad_to_stick(s32 pad, u8 *out);
+void pad_dpad_to_stick(s32 pad, PadState *out);
 
 
 
@@ -1795,15 +1798,6 @@ void *mal_take_low(s32 bytes, _mal_area *heap);
 
 extern u8 PadActAlign[];
 
-/* Pad rumble state (pad_rumble_send). */
-typedef struct PadRumble {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ u8 act[2];  /* motor values passed to PadSetAct */
-    /* 0x06 */ u16 dirty;
-    /* 0x08 */ s16 time0;
-    /* 0x0A */ s16 time1;
-    /* 0x0C */ s16 reset;
-} PadRumble;
 
 /* Raw controller packet read by pad_read_packet (status byte, type in the top nibble). */
 typedef struct PadPacket {
@@ -1816,17 +1810,6 @@ typedef struct PadPacket {
     /* 0x07 */ u8 ly;
 } PadPacket;
 
-/* PadState as written by pad_read_packet. */
-typedef struct PadInput {
-    /* 0x00 */ s32 flags;
-    /* 0x04 */ s32 buttons;
-    /* 0x08 */ s32 rx;
-    /* 0x0C */ s32 ry;
-    /* 0x10 */ s32 lx;
-    /* 0x14 */ s32 ly;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ PadRumble rumble;
-} PadInput;
 
 
 extern s32 PadLastRead;
