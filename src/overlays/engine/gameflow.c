@@ -884,8 +884,8 @@ void UpdateCardPrompt(void) {
                     *GAME = *(GameState *)(src + 8);
                     {
                         GameOptionSet *d = &GameOptions;
-                        u8 *s = GameInfo;
-                        *d = *(GameOptionSet *)(s + 0xD0);
+                        GameState *s = GAME;
+                        *d = *(GameOptionSet *)s->adventure.unkD0;
                     }
                     ShowCardSlots();
                     GotoProcess(&LevelLoadProcess, 0x200);
@@ -1417,8 +1417,8 @@ void RestoreHeroChoice(u8 *src) {
     *GAME = *(GameState *)(src + 8);
     {
         GameOptionSet *d = &GameOptions;
-        u8 *s = GameInfo;
-        *d = *(GameOptionSet *)(s + 0xD0);
+        GameState *s = GAME;
+        *d = *(GameOptionSet *)s->adventure.unkD0;
     }
     ShowCardSlots();
 }
