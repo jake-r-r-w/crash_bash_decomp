@@ -1516,15 +1516,15 @@ void mal_move_up(mal *arg0, _mal_area *arg1) {
     }
 }
 
-u8 *loader_alloc(u8 *arg0) {
+u8 *loader_alloc(LoadNode *arg0) {
     _mal_area *h;
     s32 words;
 
-    if (*(u8 **)(arg0 + 0x18) == NULL) {
-        if (*(s32 *)(arg0 + 0xC) == 0) {
-            return mal_alloc(((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 11, &MainHeap);
+    if (arg0->buf == NULL) {
+        if (arg0->mode == 0) {
+            return mal_alloc(((arg0->size + 0x7FF) / 0x800) << 11, &MainHeap);
         }
-        words = ((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 9;
+        words = ((arg0->size + 0x7FF) / 0x800) << 9;
         h = &MainHeap;
         if (mal_first_free(words, h->free) == NULL) {
             prims_empty_back();
@@ -1535,9 +1535,9 @@ u8 *loader_alloc(u8 *arg0) {
                 }
             }
         }
-        return mal_alloc_nocompact(((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 11, (u8 *)&MainHeap);
+        return mal_alloc_nocompact(((arg0->size + 0x7FF) / 0x800) << 11, (u8 *)&MainHeap);
     }
-    return *(u8 **)(arg0 + 0x18);
+    return arg0->buf;
 }
 
 s32 loader_update(void) {

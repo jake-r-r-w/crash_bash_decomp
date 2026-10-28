@@ -3668,17 +3668,17 @@ static inline void textureset_release_cluts(u8 *arg0, u8 *p) {
     }
 }
 
-void textureset_release(u8 *arg0) {
+void textureset_release(obj_textureset *arg0) {
     s32 n;
     u8 *d;
     s32 *q;
     s32 *r;
     u8 *b;
 
-    b = *(u8 **)(arg0 + 0xC);
+    b = arg0->ent;
     textureset_release_vram(arg0);
     textureset_release_cluts(arg0, b);
-    d = *(u8 **)(arg0 + 0x18);
+    d = arg0->anims;
     if (d != NULL) {
         if (*(s32 *)(d + 4) != 0) {
             q = (s32 *)(d + (*(s32 *)(d + 4) + 4));
@@ -3691,25 +3691,25 @@ void textureset_release(u8 *arg0) {
                 } while (--n != -1);
             }
         }
-        mal_free(*(void **)(arg0 + 0x18), &MainHeap);
-        *(s32 *)(arg0 + 0x18) = 0;
+        mal_free(arg0->anims, &MainHeap);
+        arg0->anims = 0;
     }
-    if (*(void **)(arg0 + 8) != NULL) {
-        mal_free(*(void **)(arg0 + 8), &MainHeap);
+    if (arg0->tex != NULL) {
+        mal_free(arg0->tex, &MainHeap);
     }
-    *(s32 *)(arg0 + 8) = 0;
-    if (*(void **)(arg0 + 0xC) != NULL) {
-        mal_free(*(void **)(arg0 + 0xC), &MainHeap);
+    arg0->tex = 0;
+    if (arg0->ent != NULL) {
+        mal_free(arg0->ent, &MainHeap);
     }
-    *(s32 *)(arg0 + 0xC) = 0;
-    if (*(void **)(arg0 + 0x20) != NULL) {
-        mal_free(*(void **)(arg0 + 0x20), &MainHeap);
+    arg0->ent = 0;
+    if (arg0->anim != NULL) {
+        mal_free(arg0->anim, &MainHeap);
     }
-    *(s32 *)(arg0 + 0x20) = 0;
-    *(s32 *)(arg0 + 0x1C) = 0;
-    if (*(void **)(arg0 + 0x10) != NULL) {
-        mal_free(*(void **)(arg0 + 0x10), &MainHeap);
-        *(s32 *)(arg0 + 0x10) = 0;
+    arg0->anim = 0;
+    arg0->nAnim = 0;
+    if (arg0->base != NULL) {
+        mal_free(arg0->base, &MainHeap);
+        arg0->base = 0;
     }
 }
 
@@ -3903,9 +3903,9 @@ void textureset_upload_cluts(u8 *arg0) {
 void texture_unused_d(void) {
 }
 
-void texture_upload_list(TexUploadList *arg0, u8 *arg1) {
+void texture_upload_list(TexUploadList *arg0, obj_textureset *arg1) {
     s32 n;
-    u8 *rec;
+    obj_texture *rec;
     s32 *ip;
     FreeHdr **pp;
     s32 base;
@@ -3917,16 +3917,16 @@ void texture_upload_list(TexUploadList *arg0, u8 *arg1) {
 loop:
     n--;
     if (n != -1) {
-        rec = *(u8 **)(arg1 + 8) + *ip * 0x38;
+        rec = &arg1->tex[*ip];
         ip += 4;
-        *pp = vram_take(*(u8 **)(rec + 4));
-        rect.w = *(u16 *)(rec + 0x1C);
-        rect.h = *(u16 *)(rec + 0x1E);
+        *pp = vram_take(rec->slot);
+        rect.w = rec->vramW;
+        rect.h = rec->vramH;
         rect.x = (*pp)->f0;
         rect.y = (*pp)->f2;
         pp += 4;
-        base = *(s32 *)(arg1 + 0x10);
-        LoadImage(&rect, (u_long *)(*(s32 *)(rec + 0x30) + base));
+        base = (s32)arg1->base;
+        LoadImage(&rect, (u_long *)(rec->f30 + base));
         goto loop;
     }
 }

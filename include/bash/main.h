@@ -1893,7 +1893,7 @@ typedef struct {
 
 void mal_move_down(mal *arg0, _mal_area *arg1);
 
-u8 *loader_alloc(u8 *arg0);
+u8 *loader_alloc(LoadNode *arg0);
 
 void pad_read(PadState *pad);
 

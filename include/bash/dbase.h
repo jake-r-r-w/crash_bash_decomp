@@ -41,7 +41,7 @@ void dbase_anim_release(obj_dbase *db, s32 i);
 s32 dbase_anim_ptr(u8 *arg0, s32 arg1);
 void dbase_group_textures_loaded(u8 *arg0, u8 *arg1);
 void slotlist_mark(SlotList *arg0);
-void dbase_release(u8 *arg0);
+void dbase_release(obj_dbase *arg0);
 void dbase_init_all(void);
 u8 *dbase_mesh_anim_find(u8 *arg0, u8 *arg1);
 u8 *dbase_mesh_anim_name_release(u8 *arg0, u8 *arg1);

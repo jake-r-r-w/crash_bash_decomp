@@ -621,14 +621,14 @@ void dbase_set_data(u8 *arg0, u8 *arg1) {
     mal_set_owner(arg0, arg1 + 0xC);
 }
 
-void dbase_release(u8 *arg0) {
+void dbase_release(obj_dbase *arg0) {
     s32 i;
     u8 *p;
     u8 *q;
 
-    if (*(u8 **)(arg0 + 0xC) != NULL) {
+    if (arg0->data != NULL) {
         dbase_release_all_mesh_anims();
-        p = *(u8 **)(arg0 + 0xC);
+        p = arg0->data;
         q = p + 0x58;
         i = *(s32 *)(p + 0x54);
         i--;
@@ -642,18 +642,18 @@ void dbase_release(u8 *arg0) {
                 q += 0x34;
             } while (i != -1);
         }
-        mal_free(*(void **)(arg0 + 0xC), &MainHeap);
-        *(s32 *)(arg0 + 0xC) = 0;
-        textureset_release(arg0 + 0x10);
-        *(s32 *)(arg0 + 8) = 0;
+        mal_free(arg0->data, &MainHeap);
+        arg0->data = 0;
+        textureset_release(&arg0->textures);
+        arg0->load = 0;
         return;
     }
-    if (*(s32 *)(arg0 + 8) != 0) {
-        if (*(s32 *)(arg0 + 0x18) != 0) {
-            textureset_release(arg0 + 0x10);
+    if (arg0->load != 0) {
+        if (arg0->textures.tex != 0) {
+            textureset_release(&arg0->textures);
         }
-        loader_cancel(*(void **)(arg0 + 8));
-        *(s32 *)(arg0 + 8) = 0;
+        loader_cancel(arg0->load);
+        arg0->load = 0;
     }
 }
 
