@@ -140,7 +140,7 @@ void HubInitGateways(void) {
                 g = MapScene;
                 *(void **)(o + 0x54) = HubDrawObj;
                 *(s32 *)o = k & ~0x8000;
-                q->group = entry_block_value(*(u16 *)(o + 0x74), *(EntryBlock **)(*(u8 **)g + 0xC));
+                q->group = entry_block_value(*(u16 *)(o + 0x74), *(ModelFile **)(*(u8 **)g + 0xC));
                 break;
             }
         }

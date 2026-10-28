@@ -155,17 +155,7 @@ typedef struct {
 } MorphModel;
 
 /* A block holding a table at a byte offset from its field at +0x20. */
-typedef struct {
-    u8 unk0[0x20];
-    s32 table; /* 0x20: byte offset from this field */
-} RelTable;
 
-/* A block with 12-byte entries at a byte offset from its field at +0x1C + 0x1C
- * (entry_block_value). */
-typedef struct {
-    u8 unk0[0x1C];
-    s32 entries; /* 0x1C */
-} EntryBlock;
 
 /* A 0x28-byte primitive slot of faces_write_colors_dq: a textured triangle, or (run flag
  * bit 0) a draw-mode packet followed by an untextured gouraud triangle. */
@@ -177,20 +167,51 @@ typedef union {
     } g;
 } FacePrim;
 
-/* Face data faces_write_colors_dq reads: a run list (as MorphModel's: pairs of a flags
- * byte and a count, ending in a count of 0xFF) and one u16 colour index per face
- * (bit 15: semi-transparent, bits 13-14: blend mode). */
-typedef struct {
-    s32 unk0;
-    s32 unk4;
-    u16 faces; /* 0x08 */
-    s16 unkA;
-    u32 flags; /* 0x0C */
-    s32 verts; /* 0x10: byte offset from this field */
-    s32 runs;  /* 0x14: byte offset from this field */
-    u8 unk18[8];
-    s32 table; /* 0x20: byte offset from this field */
-} FaceRuns;
+/* A mesh's header in a model file (docs/ASSETS.md, Model files): the header table's 0x34-byte
+ * records (ModelFile.meshes) and the entities'. Offsets are counted from their own field. */
+typedef struct MeshHeader {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u16 faces;
+    /* 0x0A */ s16 unkA;
+    /* 0x0C */ u32 flags;
+    /* 0x10 */ s32 verts;   /* a bounding box, then s16 x, y, z and a u16 a vertex */
+    /* 0x14 */ s32 runs;    /* the strips: a flags byte and a count byte each, ended by count 0xFF */
+    /* 0x18 */ s32 uvIdx;   /* a u16 UV table index a face */
+    /* 0x1C */ s32 texs;    /* texture runs: bits 9-14 repeat count, bit 15 last texture, bits 0-8 texture */
+    /* 0x20 */ s32 colors;  /* a u16 a face: its first colour, bit 15 semi-transparent, bits 13-14 blend */
+    /* 0x24 */ s32 end;
+    /* 0x28 */ s32 normals; /* 0: none */
+    /* 0x2C */ s32 points;  /* a PointList (sub_point_list), 0: none */
+    /* 0x30 */ u32 unk30;
+} MeshHeader;
+
+/* A model file's header (docs/ASSETS.md, Model files): the offsets are counted from their own
+ * field. A model id names a part of it: 0x2000 | i mesh i (from 1), 0x4000 | n << 7 | f frame f
+ * of mesh animation n, 0x5000 | i entity i (from 1). */
+typedef struct ModelFile {
+    /* 0x00 */ u32 tag;        /* 0x0C160029 */
+    /* 0x04 */ u32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 entities;   /* s32 count, then 12 bytes each: s32 to its MeshHeader (from itself), s32, s32 group */
+    /* 0x20 */ s32 colors;     /* u32 RGB + code, 3 a face */
+    /* 0x24 */ s32 uvs;        /* u16 u | v << 8 */
+    /* 0x28 */ s32 verts;      /* the animations' default vertex pool */
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ u32 unk30[3];
+    /* 0x3C */ s32 anims;      /* s32 count, then DbaseAnim: chunks loaded from the file on demand */
+    /* 0x40 */ s32 nMeshAnims;
+    /* 0x44 */ s32 meshAnims;  /* FileEntry each (by name hash) */
+    /* 0x48 */ s32 nScripts;
+    /* 0x4C */ s32 scripts;    /* s32 each, from itself to a script_header */
+    /* 0x50 */ u32 size;       /* the part kept in memory: the chunks' data follows */
+    /* 0x54 */ s32 nMeshes;
+    /* 0x58 */ MeshHeader meshes[1];
+} ModelFile;
 
 /* A texture entry's VRAM placement and the primitive words drawn with it: its own
  * struct at obj_texture +0x18 (prim_create_entity_single and Pogo's psxpogo_render_tile
@@ -210,28 +231,8 @@ typedef struct GfxTexInfo {
 } GfxTexInfo;
 
 
-/* A block with a table at a byte offset from its field at +0x24. */
-typedef struct {
-    u8 unk0[0x24];
-    s32 uvs; /* 0x24: byte offset from this field */
-} UvTable;
 
 
-/* Face data prim_write_uvs reads: per face a uv index (0x18), a run-length
- * texture index list (0x1C: bits 9-14 repeat count, bit 15 last texture, bits 0-8
- * texture), and a blend index (0x20). */
-typedef struct {
-    s32 unk0;
-    s32 unk4;
-    u16 faces; /* 0x08 */
-    s16 unkA;
-    u32 flags; /* 0x0C */
-    s32 verts; /* 0x10: byte offset from this field */
-    s32 runs;  /* 0x14: byte offset from this field */
-    s32 uvIdx; /* 0x18 */
-    s32 texs;  /* 0x1C */
-    s32 table; /* 0x20 */
-} TexFaceRuns;
 
 /* An object drawn as one textured quad (draw_model_quad, sub_use_quad_model,
  * kill_sprim_sub): one primitive per frame buffer. */
@@ -1454,7 +1455,7 @@ typedef struct {
 } PitchVoice;
 
 
-s32 entry_block_value(s32 i, EntryBlock *blk);
+s32 entry_block_value(s32 i, struct ModelFile *blk);
 
 void mal_free_later(u8 *arg0, _mal_area *heap, s32 arg2);
 

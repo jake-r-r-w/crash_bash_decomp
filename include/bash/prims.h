@@ -24,7 +24,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d);
 void eng_render_subs(EXTengine *e);
 void kill_sprim_sub(subengine *arg0);
 void draw_model_quad(ModelObj *obj, void *arg1, s32 flags);
-void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode);
+void prim_colour_poly(MeshHeader *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode);
 void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1);
 void calc_rgbcode_packed(u32 arg0);
 void sub_release_none(void);
@@ -99,12 +99,12 @@ MATRIX *gfx_object_matrix(GfxXform *obj);
 s32 subs_alloc_list(subengine * *out_first, subengine * *last, s32 n);
 u8 *tga_convert(u8 *arg0, s32 w, s32 h);
 void prims_empty_back(void);
-void faces_write_colors_dq(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
-void faces_write_colors(FaceRuns *faces, FacePrim *prim);
+void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode);
+void faces_write_colors(MeshHeader *faces, FacePrim *prim);
 void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2);
 void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 void mapscene_place_subs(map_enviroment *env);
-FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *faces, s32 arg4);
+FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *faces, s32 arg4);
 void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam);
 void draw_map_scene(map_enviroment *scene);
 void mapenv_place_subs(map_enviroment *env);
@@ -214,7 +214,7 @@ static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, P
             list->fC = next;
             set = (PrimSet *)n[1];
         } else {
-            set = (PrimSet *)face_prim_alloc((s32)set, list, pool, (FaceRuns *)faces, flag);
+            set = (PrimSet *)face_prim_alloc((s32)set, list, pool, (MeshHeader *)faces, flag);
         }
     } else {
         n = list->fC;

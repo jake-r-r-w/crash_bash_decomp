@@ -194,7 +194,7 @@ void prims_empty_back(void) {
     }
 }
 
-void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
+void prim_colour_poly(MeshHeader *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
     u16 *idx;
     u32 *colors;
     u32 *c;
@@ -203,8 +203,8 @@ void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
 
     gte_ldfcdir(RenderState.farColor[0], RenderState.farColor[1], RenderState.farColor[2]);
     gte_lddp(RenderState.dp);
-    idx = (u16 *)((u8 *)&face->table + face->table);
-    colors = (u32 *)((u8 *)&((RelTable *)RenderState.dbase->data)->table + ((RelTable *)RenderState.dbase->data)->table);
+    idx = (u16 *)((u8 *)&face->colors + face->colors);
+    colors = (u32 *)((u8 *)&RenderState.dbase->data->colors + RenderState.dbase->data->colors);
     c = &colors[idx[0] & 0x1FFF];
     gte_ldrgb(c);
     gte_dpcs();
@@ -236,12 +236,12 @@ void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
 
 void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
     obj_dbase *model = RenderState.dbase;
-    TexFaceRuns *face = (TexFaceRuns *)arg0;
+    MeshHeader *face = (MeshHeader *)arg0;
     POLY_GT4 *poly = arg1;
     u16 *idx;
     u16 *uvIdx;
     u16 *tex;
-    RelTable *mc;
+    ModelFile *mc;
     u32 *colors;
     u32 *c;
     u16 *uvs;
@@ -252,12 +252,12 @@ void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
     obj_textureset *ts;
 
     uvIdx = (u16 *)((u8 *)&face->uvIdx + face->uvIdx);
-    idx = (u16 *)((u8 *)&face->table + face->table);
+    idx = (u16 *)((u8 *)&face->colors + face->colors);
     tex = (u16 *)((u8 *)&face->texs + face->texs);
     ts = &model->textures;
-    mc = (RelTable *)model->data;
-    colors = (u32 *)((u8 *)&mc->table + mc->table);
-    uvs = (u16 *)((u8 *)&((UvTable *)mc)->uvs + ((UvTable *)mc)->uvs);
+    mc = model->data;
+    colors = (u32 *)((u8 *)&mc->colors + mc->colors);
+    uvs = (u16 *)((u8 *)&mc->uvs + mc->uvs);
     c = &colors[*idx++ & 0x1FFF];
     *(u32 *)&poly->r0 = *c++;
     *(u32 *)&poly->r1 = c[0];
@@ -286,7 +286,7 @@ void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
     *(u16 *)&poly->u3 = base | uv[2];
 }
 
-void faces_write_colors_dq(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) {
+void faces_write_colors_dq(MeshHeader *faces, FacePrim *prim, s32 arg2, s32 mode) {
     u16 *idx;
     u8 *run;
     u8 *count;
@@ -296,11 +296,11 @@ void faces_write_colors_dq(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) 
     s32 semi = mode & 1;
     s32 abr = mode & 0x60;
 
-    idx = (u16 *)((u8 *)&faces->table + faces->table);
+    idx = (u16 *)((u8 *)&faces->colors + faces->colors);
     gte_ldfcdir(RenderState.farColor[0], RenderState.farColor[1], RenderState.farColor[2]);
     gte_lddp(RenderState.dp);
     run = (u8 *)&faces->runs + faces->runs;
-    colors = (u32 *)((u8 *)&((RelTable *)RenderState.dbase->data)->table + ((RelTable *)RenderState.dbase->data)->table);
+    colors = (u32 *)((u8 *)&RenderState.dbase->data->colors + RenderState.dbase->data->colors);
     count = run + 1;
     for (;; count += 2, run += 2) {
         if (*count == 0xFF) {
@@ -365,7 +365,7 @@ void faces_write_colors_dq(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) 
 done:;
 }
 
-void faces_write_colors(FaceRuns *faces, FacePrim *prim) {
+void faces_write_colors(MeshHeader *faces, FacePrim *prim) {
     u16 *idx;
     u8 *run;
     u8 *count;
@@ -373,9 +373,9 @@ void faces_write_colors(FaceRuns *faces, FacePrim *prim) {
     u32 *c;
     s32 n;
 
-    idx = (u16 *)((u8 *)&faces->table + faces->table);
+    idx = (u16 *)((u8 *)&faces->colors + faces->colors);
     run = (u8 *)&faces->runs + faces->runs;
-    colors = (u32 *)((u8 *)&((RelTable *)RenderState.dbase->data)->table + ((RelTable *)RenderState.dbase->data)->table);
+    colors = (u32 *)((u8 *)&RenderState.dbase->data->colors + RenderState.dbase->data->colors);
     count = run + 1;
     for (;; count += 2, run += 2) {
         if (*count == 0xFF) {
@@ -418,7 +418,7 @@ done:;
 }
 
 void prim_write_uvs(faces, prim)
-    TexFaceRuns *faces;
+    MeshHeader *faces;
     FacePrim *prim;
 {
     u8 *p;
@@ -434,15 +434,15 @@ void prim_write_uvs(faces, prim)
     u32 v;
     u32 idx;
     GfxTexInfo *ti;
-    UvTable *ut;
+    ModelFile *ut;
     u16 base;
 
     left = 0;
     ts = &RenderState.dbase->textures;
     uvIdx = (u16 *)((u8 *)&faces->uvIdx + faces->uvIdx);
     tex = (u16 *)((u8 *)&faces->texs + faces->texs);
-    ut = (UvTable *)RenderState.dbase->data;
-    blend = (u16 *)((u8 *)&faces->table + faces->table);
+    ut = RenderState.dbase->data;
+    blend = (u16 *)((u8 *)&faces->colors + faces->colors);
     run = (u8 *)&faces->runs + faces->runs;
     uvs = (u16 *)((u8 *)&ut->uvs + ut->uvs);
     for (;;) {
@@ -498,7 +498,7 @@ void prim_write_uvs(faces, prim)
     }
 }
 
-FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *faces, s32 arg4) {
+FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *faces, s32 arg4) {
     s32 *node;
     FacePrim *prim;
 
@@ -988,7 +988,7 @@ void *model_prims_begin(void *arg0, s32 arg1) {
     prim = NULL;
     if ((arg1 & 0x40000001) | RenderState.modelDp | (PrimDepthTest != 0 && (u32)prim < PrimDepthLimit)) {
         set = *(PrimSet **)arg0;
-        if (set != NULL || (set = primset_alloc((PrimSet **)arg0, ((FaceRuns *)arg0)->faces >= 3)) != NULL) {
+        if (set != NULL || (set = primset_alloc((PrimSet **)arg0, ((MeshHeader *)arg0)->faces >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 1, &p->pairs[0].b, arg0, 0);
@@ -1015,14 +1015,14 @@ void *model_prims_begin(void *arg0, s32 arg1) {
                     gs->farColor = FarColor;
                 }
             }
-            faces_write_colors_dq((FaceRuns *)arg0, prim, (s32)RenderState.farColor, arg1);
+            faces_write_colors_dq((MeshHeader *)arg0, prim, (s32)RenderState.farColor, arg1);
             RenderState.dp = dp;
         } else {
             return NULL;
         }
     } else {
         set = *(PrimSet **)arg0;
-        if (set != NULL || (set = primset_alloc((PrimSet **)arg0, ((FaceRuns *)arg0)->faces >= 3)) != NULL) {
+        if (set != NULL || (set = primset_alloc((PrimSet **)arg0, ((MeshHeader *)arg0)->faces >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 0, &p->pairs[0].a, arg0, set->mode);
@@ -1380,7 +1380,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
 void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
     GteSetup s;
     obj_dbase *model;
-    RelTable *colors;
+    ModelFile *colors;
     u16 n;
     GfxState *g;
     MATRIX *p1 = arg1;
@@ -1397,7 +1397,7 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
         model = arg0->u6C.dbase;
         if (model != NULL) {
             RenderState.dbase = model;
-            colors = (RelTable *)model->data;
+            colors = model->data;
             if (colors != NULL) {
                 RenderState.unk84 = RenderState.unkCC;
                 RenderState.unk88 = RenderState.unk10C;
@@ -1662,13 +1662,13 @@ void draw_text_nas(TextNAS *t, MATRIX *arg1, s32 arg2) {
     SysPrintAt3d((SWORD_XYZ *)&s, t->str, t->c0, t->c1);
 }
 
-static inline u8 *draw_model_quad_setup(ModelObj *obj, void *arg1, s32 flags, RelTable *colors, u8 *t) {
+static inline u8 *draw_model_quad_setup(ModelObj *obj, void *arg1, s32 flags, ModelFile *colors, u8 *t) {
     draw_map_object(obj, arg1, flags, (s32)colors);
     return t;
 }
 
 void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
-    RelTable *colors;
+    ModelFile *colors;
     POLY_GT4 *prim;
     u8 *t;
     s32 xy, z;
@@ -1677,7 +1677,7 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     if (!(obj->flags & 0x8000)) {
         return;
     }
-    colors = (RelTable *)obj->model->data;
+    colors = obj->model->data;
     if (colors == NULL) {
         return;
     }
@@ -1694,8 +1694,8 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     t = entity_address(obj->index, (u8 *)colors);
     RenderState.dp = RenderState.modelDp;
     RenderState.dbase = obj->model;
-    prim_colour_poly((RelTable *)t, prim, (s32)RenderState.farColor, flags);
-    colors = (RelTable *)obj->model->data;
+    prim_colour_poly((MeshHeader *)t, prim, (s32)RenderState.farColor, flags);
+    colors = obj->model->data;
     t = draw_model_quad_setup(obj, arg1, flags, colors, entity_address(obj->index, (u8 *)colors));
     t += *(s32 *)(t + 0x10) + 0x10;
     gte_ldv0_t(t + 0x14);
@@ -2443,18 +2443,18 @@ s32 sub_alloc_prims(void *arg0, s32 arg1) {
 
     off = (FrameCount & 1) * 12 + 0x90;
     slot = (Func8001CC10Slot *)(arg1 + off);
-    want = ((FaceRuns *)arg0)->faces;
+    want = ((MeshHeader *)arg0)->faces;
     if (want != slot->size) {
         if (slot->size < want) {
             if (slot->ptr != 0) {
                 mal_free(slot, &MainHeap);
             }
-            mal_alloc_owned_low(((FaceRuns *)arg0)->faces * 0x28, slot, &MainHeap, ((FrameCount & 1)?3:2));
+            mal_alloc_owned_low(((MeshHeader *)arg0)->faces * 0x28, slot, &MainHeap, ((FrameCount & 1)?3:2));
             if (slot->ptr == 0) {
                 slot->size = 0;
                 return 0;
             }
-            slot->size = ((FaceRuns *)arg0)->faces;
+            slot->size = ((MeshHeader *)arg0)->faces;
         }
         faces_write_uvs_colors((s32)arg0, (s32)slot->ptr);
     }

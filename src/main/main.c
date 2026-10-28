@@ -3379,7 +3379,7 @@ s32 model_entry_texture(obj_dbase *arg0, s32 arg1) {
     return -1;
 }
 
-s32 entry_block_value(s32 i, EntryBlock *blk) {
+s32 entry_block_value(s32 i, ModelFile *blk) {
     s32 idx = i;
 
     u8 *base;
@@ -3387,7 +3387,7 @@ s32 entry_block_value(s32 i, EntryBlock *blk) {
     if (blk == NULL) {
         return -1;
     }
-    base = (u8 *)blk + (blk->entries + 0x1C);
+    base = (u8 *)&blk->entities + blk->entities;
     idx = (idx - 1) & 0xFFF;
     return *(s32 *)(base + idx * 12 + 0xC);
 }

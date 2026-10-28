@@ -30,7 +30,7 @@ struct obj_dbase {
     /* 0x00 */ s32 file;              /* &DatIndex[2 * N]: loaded into data once the textures are in */
     /* 0x04 */ s32 textureFile;       /* &DatIndex[2 * N]: loaded first, into textures */
     /* 0x08 */ s32 load;              /* the load in flight, or 0 */
-    /* 0x0C */ u8 *data;
+    /* 0x0C */ struct ModelFile *data;
     /* 0x10 */ obj_textureset textures;
     /* 0x34 */ s32 *keep;             /* name hashes of the blocks to keep (dbase_setup_blocks) */
 };
