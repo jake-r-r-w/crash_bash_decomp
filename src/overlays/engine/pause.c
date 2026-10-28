@@ -16,10 +16,10 @@ s32 PauseChooseYesNo(s32 pad) {
     }
     if ((((PadButtons *)Pads)[pad].held & 9) != 9 &&
         (((PadButtons *)Pads)[pad].pressed & 8)) {
-        s32 *p = (s32 *)GameInfo;
+        GameState *p = GAME;
         PausePad = 0;
         PauseChoice = 0;
-        p[4] &= 0x04000010;
+        p->pause &= 0x04000010;
         sound_resume();
         return 0;
     }
@@ -43,10 +43,10 @@ s32 PauseChooseUpDown(s32 pad, s32 max) {
     }
     if ((((PadButtons *)Pads)[pad].held & 9) != 9 &&
         (((PadButtons *)Pads)[pad].pressed & 8)) {
-        s32 *p = (s32 *)GameInfo;
+        GameState *p = GAME;
         PausePad = 0;
         PauseChoice = 0;
-        p[4] &= 0x04000010;
+        p->pause &= 0x04000010;
         sound_resume();
         return 0;
     }
@@ -1757,10 +1757,10 @@ s32 PauseExitPressed(void) {
 }
 
 void Unpause(void) {
-    s32 *p = (s32 *)GameInfo;
+    GameState *p = GAME;
     PausePad = 0;
     PauseChoice = 0;
-    p[4] &= 0x04000010;
+    p->pause &= 0x04000010;
     sound_resume();
 }
 

@@ -966,7 +966,7 @@ typedef struct GameState {
     /* 0x024 */ s16 exitDelay;
     /* 0x026 */ u8 players;
     /* 0x027 */ u8 maxPlayers;
-    /* 0x028 */ s8 cup;
+    /* 0x028 */ u8 cup;
     /* 0x029 */ u8 cupRound;
     /* 0x02A */ u8 unk2A;
     /* 0x02B */ u8 unk2B;
@@ -1339,7 +1339,7 @@ extern s32 ScriptFade;
 extern s32 ScriptTimeStep;
 extern s32 ScriptThreadPool;
 extern s32 ScriptPool;
-extern s8 GameCup;
+extern u8 GameCup;
 extern void *HeadOfBalls;
 extern void *PrimSetList;
 extern s32 *PrimSetFree;

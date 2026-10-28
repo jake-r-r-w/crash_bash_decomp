@@ -352,7 +352,7 @@ void AnimateCupMenu(void) {
     i = 0;
     trig = rcossin_tbl;
     base = CupTable;
-    t = base + (u8)GameCup;
+    t = base + GameCup;
     n = t->roundCount;
     p = t->rounds;
 loop:
@@ -468,7 +468,7 @@ void UpdateCupMenu(void) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
-    if (EngineTable_Unlocked(GameInfo[0x28]) && (Pads[0].pressed & 0x4000)) {
+    if (EngineTable_Unlocked(GAME->cup) && (Pads[0].pressed & 0x4000)) {
         g = GameInfo;
         ((GameState *)g)->levelFlags = (((GameState *)g)->levelFlags & 0xFF00) | 2;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -482,17 +482,17 @@ void UpdateCupMenu(void) {
         }
     }
     GetEngineSlot(0)->sub->u6C.dbase = (void *)EngineCurWorldName();
-    if (GameInfo[0x28] != 0) {
+    if (GAME->cup != 0) {
         GetEngineSlot(0)->sub[8].flags |= 0x8000;
     } else {
         GetEngineSlot(0)->sub[8].flags &= ~0x8000;
     }
-    if ((u8)GameCup < 6) {
+    if (GameCup < 6) {
         GetEngineSlot(0)->sub[9].flags |= 0x8000;
     } else {
         GetEngineSlot(0)->sub[9].flags &= ~0x8000;
     }
-    if (EngineTable_Unlocked(GameInfo[0x28])) {
+    if (EngineTable_Unlocked(GAME->cup)) {
         GetEngineSlot(0)->sub[7].flags |= 0x8000;
         GetEngineSlot(0)->sub[4].flags &= ~0x8000;
         GetEngineSlot(0)->sub[3].flags &= ~0x8000;
@@ -579,7 +579,7 @@ void AwardCupTrophies(CupDef *cup) {
 
     for (i = 0; i < n; i++) {
         CupRound *e = cup->rounds;
-        GameInfo[e[i].mode + 0xE4] = 1;
+        GAME->adventure.unkE4[0][e[i].mode] = 1;
         n = cup->roundCount;
     }
 }
@@ -649,15 +649,15 @@ s32 CupCurrentModeType(void) {
 }
 
 s32 CupNextArena(void) {
-    if (GAME->cupRound < CupTable[GameInfo[0x28]].roundCount - 1) {
+    if (GAME->cupRound < CupTable[GAME->cup].roundCount - 1) {
         GAME->cupRound = GAME->cupRound + 1;
-        return CupTable[GameInfo[0x28]].rounds[GAME->cupRound].mode;
+        return CupTable[GAME->cup].rounds[GAME->cupRound].mode;
     }
     return 0x2B;
 }
 
 s32 CupCurrentArena(void) {
-    return CupTable[GameInfo[0x28]].rounds[GAME->cupRound].mode;
+    return CupTable[GAME->cup].rounds[GAME->cupRound].mode;
 }
 
 void InitCupMenu(void) {
