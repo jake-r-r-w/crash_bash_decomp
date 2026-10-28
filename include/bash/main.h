@@ -1303,17 +1303,17 @@ extern s32 *D_8005683C;            /* pool sizes (prims_init) */
 extern u8 *D_8005685C;             /* 0x58-byte nodes (prims_init) */
 extern u8 *D_80056840;             /* 0x54-byte nodes, free list in PrimNodeFree */
 extern u8 *D_80056854;             /* 8-byte nodes, free list in D_80056858 */
-typedef struct ListNode18938 {
+typedef struct PrimList {
     s32 f0;
     s32 f4;
     s32 **f8;
     s32 *fC;
     s32 **f10;
-} ListNode18938;
+} PrimList;
 
 typedef struct {
-    ListNode18938 b; /* 0x00 */
-    ListNode18938 a; /* 0x14 */
+    PrimList b; /* 0x00 */
+    PrimList a; /* 0x14 */
 } PrimListPair;
 typedef struct PrimSet {
     struct PrimSet *next;  /* 0x00 */

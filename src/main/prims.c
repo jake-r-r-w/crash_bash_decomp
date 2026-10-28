@@ -78,7 +78,7 @@ void prims_init(s32 *cfg) {
     PrimSetFree = (s32 *)D_8005685C;
 }
 
-static inline void PrimList_Flush(ListNode18938 *arg0, s32 arg1) {
+static inline void PrimList_Flush(PrimList *arg0, s32 arg1) {
     arg0->f0 = 0;
     if (arg1 == 1) {
         primnodes_free(arg0->fC);
@@ -163,7 +163,7 @@ void prims_update(void) {
     }
 }
 
-static inline void PrimList_Empty(ListNode18938 *arg0, u8 *node) {
+static inline void PrimList_Empty(PrimList *arg0, u8 *node) {
     s32 kind;
 
     s32 *list;
@@ -188,8 +188,8 @@ void prims_empty_back(void) {
         if (node == NULL) {
             return;
         }
-        PrimList_Empty((ListNode18938 *) (node + idx * 0x28 + 0x18), node);
-        PrimList_Empty((ListNode18938 *) (node + idx * 0x28 + 4), node);
+        PrimList_Empty((PrimList *) (node + idx * 0x28 + 0x18), node);
+        PrimList_Empty((PrimList *) (node + idx * 0x28 + 4), node);
         node = *(u8 **) node;
     }
 }
@@ -498,11 +498,11 @@ void prim_write_uvs(faces, prim)
     }
 }
 
-FacePrim *face_prim_alloc(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4) {
+FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *faces, s32 arg4) {
     s32 *node;
     FacePrim *prim;
 
-    node = ListNode18938_Take(pool);
+    node = PrimList_Take(pool);
     if (node != NULL) {
         *node = list->f4;
         list->f4 = (s32)node;
@@ -671,53 +671,53 @@ s32 *primnode_alloc(s32 arg0, s32 *arg1, s32 arg2, s32 arg3) {
     return data;
 }
 
-s32 *primlist_pop(u8 *arg0) {
-    s32 **temp_a1;
-    s32 *temp_v1;
+s32 *primlist_pop(PrimList *l) {
+    s32 **tail;
+    s32 *n;
 
-    if ((arg0 == NULL) || (temp_v1 = (*(s32*)((u8*)(arg0) + 12)), (temp_v1 == NULL))) {
+    if (l == NULL || (n = l->fC) == NULL) {
         return NULL;
     }
-    temp_a1 = (*(s32*)((u8*)(arg0) + 16));
-    (*(s32*)((u8*)(arg0) + 12)) = (s32 *) *temp_v1;
-    if (temp_a1 != NULL) {
-        *temp_a1 = *temp_v1;
-        (*(s32*)((u8*)(arg0) + 12)) = (s32 *) *temp_v1;
-        if (*temp_v1 == NULL) {
-            (*(s32*)((u8*)(arg0) + 8)) = temp_a1;
+    tail = l->f10;
+    l->fC = (s32 *)*n;
+    if (tail != NULL) {
+        *tail = (s32 *)*n;
+        l->fC = (s32 *)*n;
+        if (*n == 0) {
+            l->f8 = tail;
         }
     } else {
-        (*(s32*)((u8*)(arg0) + 4)) = (s32 *) *temp_v1;
-        (*(s32*)((u8*)(arg0) + 12)) = (s32 *) *temp_v1;
-        *temp_v1 = NULL;
+        l->f4 = *n;
+        l->fC = (s32 *)*n;
+        *n = 0;
     }
-    return temp_v1;
+    return n;
 }
 
-s32 *primlist_pop_b(u8 *arg0) {
-    s32 **temp_a1;
-    s32 *temp_v1;
+s32 *primlist_pop_b(PrimList *l) {
+    s32 **tail;
+    s32 *n;
 
-    if ((arg0 == NULL) || (temp_v1 = (*(s32*)((u8*)(arg0) + 12)), (temp_v1 == NULL))) {
+    if (l == NULL || (n = l->fC) == NULL) {
         return NULL;
     }
-    temp_a1 = (*(s32*)((u8*)(arg0) + 16));
-    (*(s32*)((u8*)(arg0) + 12)) = (s32 *) *temp_v1;
-    if (temp_a1 != NULL) {
-        *temp_a1 = *temp_v1;
-        (*(s32*)((u8*)(arg0) + 12)) = (s32 *) *temp_v1;
-        if (*temp_v1 == NULL) {
-            (*(s32*)((u8*)(arg0) + 8)) = temp_a1;
+    tail = l->f10;
+    l->fC = (s32 *)*n;
+    if (tail != NULL) {
+        *tail = (s32 *)*n;
+        l->fC = (s32 *)*n;
+        if (*n == 0) {
+            l->f8 = tail;
         }
     } else {
-        if ((*(s32*)((u8*)(arg0) + 8)) == temp_v1) {
-            (*(s32*)((u8*)(arg0) + 8)) = NULL;
+        if (l->f8 == (s32 **)n) {
+            l->f8 = NULL;
         }
-        (*(s32*)((u8*)(arg0) + 4)) = (s32 *) *temp_v1;
-        (*(s32*)((u8*)(arg0) + 12)) = (s32 *) *temp_v1;
-        *temp_v1 = NULL;
+        l->f4 = *n;
+        l->fC = (s32 *)*n;
+        *n = 0;
     }
-    return temp_v1;
+    return n;
 }
 
 s32 *primset_alloc(s32 **arg0, s32 arg1) {
@@ -784,7 +784,7 @@ void primnodes_free(s32 *arg0) {
     *var_a0 = temp_v1;
 }
 
-void primlist_reset(ListNode18938 *arg0, s32 arg1) {
+void primlist_reset(PrimList *arg0, s32 arg1) {
     arg0->f10 = NULL;
     arg0->fC = (s32 *) arg0->f4;
     if (arg0->fC != NULL) {
@@ -811,7 +811,7 @@ void primlist_reset(ListNode18938 *arg0, s32 arg1) {
 }
 
 void prims_empty(void) {
-    u8 *var_s0;
+    PrimSet *set;
 
     DrawSync(0);
     printf("empty prims\n");
@@ -819,19 +819,19 @@ void prims_empty(void) {
         ClearOt(DrawBuffers);
         ClearOt(DrawBuffers + 0x400C);
     }
-    var_s0 = PrimSetList;
-    if (var_s0 != NULL) {
+    set = PrimSetList;
+    if (set != NULL) {
         do {
-            primlist_reset(var_s0 + 0x18, (*(u16*)((u8*)(var_s0) + 84)));
-            primlist_reset(var_s0 + 4, (*(u16*)((u8*)(var_s0) + 84)));
-            primlist_reset(var_s0 + 0x40, (*(u16*)((u8*)(var_s0) + 84)));
-            primlist_reset(var_s0 + 0x2C, (*(u16*)((u8*)(var_s0) + 84)));
-            var_s0 = (*(s32*)((u8*)(var_s0) + 0));
-        } while (var_s0 != NULL);
+            primlist_reset(&set->pairs[0].a, set->mode);
+            primlist_reset(&set->pairs[0].b, set->mode);
+            primlist_reset(&set->pairs[1].a, set->mode);
+            primlist_reset(&set->pairs[1].b, set->mode);
+            set = set->next;
+        } while (set != NULL);
     }
 }
 
-void primlist_release(ListNode18938 *arg0, s32 arg1) {
+void primlist_release(PrimList *arg0, s32 arg1) {
     arg0->f0 = 0;
     if (arg1 == 1) {
         primnodes_free(arg0->fC);
@@ -853,11 +853,11 @@ void primlist_release(ListNode18938 *arg0, s32 arg1) {
     arg0->f8 = arg0->f10;
 }
 
-void primlist_clear(u8 *arg0) {
-    (*(s32*)((u8*)(arg0) + 4)) = 0;
-    (*(s32*)((u8*)(arg0) + 8)) = 0;
-    (*(s32*)((u8*)(arg0) + 12)) = 0;
-    (*(s32*)((u8*)(arg0) + 16)) = 0;
+void primlist_clear(PrimList *l) {
+    l->f4 = 0;
+    l->f8 = NULL;
+    l->fC = NULL;
+    l->f10 = NULL;
 }
 
 u8 *tga_convert(u8 *arg0, s32 w, s32 h) {
@@ -2229,18 +2229,18 @@ subengine *sub_nth(s32 n, subengine *sub) {
 
 
 void kill_sprim_sub(subengine *arg0) {
-    s32 temp_a0;
-    s32 temp_a0_2;
+    s32 p;
+    s32 q;
 
-    temp_a0 = (*(s32*)((u8*)(arg0) + 144));
-    if (temp_a0 != 0) {
-        release_sprim(temp_a0);
-        (*(s32*)((u8*)(arg0) + 144)) = 0;
+    p = arg0->unk90;
+    if (p != 0) {
+        release_sprim((void *)p);
+        arg0->unk90 = 0;
     }
-    temp_a0_2 = (*(s32*)((u8*)(arg0) + 156));
-    if (temp_a0_2 != 0) {
-        release_sprim(temp_a0_2);
-        (*(s32*)((u8*)(arg0) + 156)) = 0;
+    q = arg0->unk9C;
+    if (q != 0) {
+        release_sprim((void *)q);
+        arg0->unk9C = 0;
     }
 }
 

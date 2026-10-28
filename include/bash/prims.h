@@ -10,12 +10,12 @@
 
 void primpool_release_all(void);
 void primset_invalidate(u8 * *arg0);
-s32 *primlist_pop(u8 *arg0);
-s32 *primlist_pop_b(u8 *arg0);
+s32 *primlist_pop(PrimList *l);
+s32 *primlist_pop_b(PrimList *l);
 void faces_write_uvs_colors(s32 arg0, s32 arg1);
 void primnodes_free(s32 *arg0);
 void prims_empty(void);
-void primlist_clear(u8 *arg0);
+void primlist_clear(PrimList *l);
 void morph_light_colors(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 void morph_blend_verts(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
 void gfx_setup_xform(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
@@ -88,8 +88,8 @@ KeyEntry *key_find(KeyBlock *arg0, s32 arg1);
 s32 path_find(u32 arg0);
 void primpool_init(s32 count);
 s32 *primset_alloc(s32 * *arg0, s32 arg1);
-void primlist_reset(ListNode18938 *arg0, s32 arg1);
-void primlist_release(ListNode18938 *arg0, s32 arg1);
+void primlist_reset(PrimList *arg0, s32 arg1);
+void primlist_release(PrimList *arg0, s32 arg1);
 void morph_copy_verts(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
 void *draw_model_entry(ModelEntry *e, s32 arg1);
 s32 *path_get(u32 arg0);
@@ -104,7 +104,7 @@ void faces_write_colors(FaceRuns *faces, FacePrim *prim);
 void draw_object(u8 *arg0, u8 *arg1, s32 arg2);
 void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 void mapscene_place_subs(u8 *arg0);
-FacePrim *face_prim_alloc(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4);
+FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *faces, s32 arg4);
 void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam);
 void draw_map_scene(GfxScene *scene);
 void mapenv_place_subs(MapEnvHead *env);
@@ -171,7 +171,7 @@ static inline void ModelEntry_Draw(u8 *e, s32 c, SVECTOR *v) {
 }
 
 /* Takes the node at the cursor fC of a list (primlist_pop_b's code). */
-static inline s32 *ListNode18938_Take(ListNode18938 *l) {
+static inline s32 *PrimList_Take(PrimList *l) {
     s32 *n;
     s32 **tail;
 
@@ -199,12 +199,12 @@ static inline s32 *ListNode18938_Take(ListNode18938 *l) {
 
 
 /* model_prims_begin: the next free primitive slot of list (refilled from pool). */
-static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, ListNode18938 *pool,
+static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, PrimList *pool,
                                          void *faces, s32 flag) {
     s32 *n;
     s32 *next;
     FacePrim *ret;
-    ListNode18938 *list =(ListNode18938 *)((u8 *)set + pairOff) + which;
+    PrimList *list =(PrimList *)((u8 *)set + pairOff) + which;
 
     if (set->mode == 1) {
         n = list->fC;
