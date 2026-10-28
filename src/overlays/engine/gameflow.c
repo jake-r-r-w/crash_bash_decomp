@@ -881,11 +881,11 @@ void UpdateCardPrompt(void) {
                         q[0x5E] = src[6];
                         q[0x5F] = src[7];
                     }
-                    *(Blk18C *)GameInfo = *(Blk18C *)(src + 8);
+                    *GAME = *(GameState *)(src + 8);
                     {
-                        Blk12p4 *d = (Blk12p4 *)&GameOptions;
+                        GameOptionSet *d = &GameOptions;
                         u8 *s = GameInfo;
-                        *d = *(Blk12p4 *)(s + 0xD0);
+                        *d = *(GameOptionSet *)(s + 0xD0);
                     }
                     ShowCardSlots();
                     GotoProcess(&LevelLoadProcess, 0x200);
@@ -1135,8 +1135,8 @@ void UpdateSaveMenu(void) {
                 dst->b[5] = q[0x5D];
                 dst->b[6] = q[0x5E];
                 dst->b[7] = q[0x5F];
-                *(Blk12p4 *)(q + 0xD0) = *(Blk12p4 *)&GameOptions;
-                *(Blk18C *)dst->unk8 = *(Blk18C *)q;
+                *(GameOptionSet *)(q + 0xD0) = GameOptions;
+                *(GameState *)dst->unk8 = *(GameState *)q;
                 ShowCardSlots();
                 card_save();
                 SaveMenuState = 1;
@@ -1414,11 +1414,11 @@ void RestoreHeroChoice(u8 *src) {
     g[0x5D] = src[5];
     g[0x5E] = src[6];
     g[0x5F] = src[7];
-    *(Blk18C *)GameInfo = *(Blk18C *)(src + 8);
+    *GAME = *(GameState *)(src + 8);
     {
-        Blk12p4 *d = (Blk12p4 *)&GameOptions;
+        GameOptionSet *d = &GameOptions;
         u8 *s = GameInfo;
-        *d = *(Blk12p4 *)(s + 0xD0);
+        *d = *(GameOptionSet *)(s + 0xD0);
     }
     ShowCardSlots();
 }
@@ -1434,8 +1434,8 @@ void SaveHeroChoice(u8 *dst) {
     dst[5] = g[0x5D];
     dst[6] = g[0x5E];
     dst[7] = g[0x5F];
-    *(Blk16 *)(g + 0xD0) = *(Blk16 *)&GameOptions;
-    *(Blk18C *)(dst + 8) = *(Blk18C *)g;
+    *(GameOptionSet *)(g + 0xD0) = GameOptions;
+    *(GameState *)(dst + 8) = *(GameState *)g;
     ShowCardSlots();
 }
 
@@ -1664,7 +1664,7 @@ void InitGameState(GameState *arg0) {
     arg0->teams = 0;
     arg0->adventure.unk70 = 0;
     arg0->language = GraphicsMode;
-    *(Blk12p4 *)arg0->adventure.unkD0 = *(Blk12p4 *)&GameOptions;
+    *(GameOptionSet *)arg0->adventure.unkD0 = GameOptions;
 }
 
 void InitGraphics(void) {
