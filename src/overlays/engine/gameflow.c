@@ -1915,7 +1915,7 @@ IntroStep IntroSteps[4] = {
 Blk32 IntroScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 IntroScriptPos = {0};
 process_info IntroProcess = { InitIntro, UpdateIntro, RenderIntro, QuitIntro, 0 };
-s32 D_8009E5A0 = 0;
+s32 IntroUnused = 0;
 s32 IntroStepIndex = 0;
 s32 IntroStepTimer = 0;
 script_handler *IntroScript = 0;
@@ -2095,12 +2095,12 @@ s32 WarpRooms[10][5] = {
 };
 HubRing HubHeroRing = {0};
 s32 CardPromptPanel = 3;
-s32 D_8009EEB4[44] = {
+s32 CardPromptItems[44] = {  /* CardPromptPanel's records */
     0x328000, 0, 0, 0, 0, 0, 0, 0, 3, 0x788000, 0, 0, 0, 0, 0, 0, 0, 4, 0x1B88000, 0x19A0072,
     0, 0, 0, 0, 0, 0, 4, 0x2808000, 0x5A0028, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 s32 SaveScreenPanel = 4;
-s32 D_8009EF68[17] = { 0x1180000, 0x5A0000, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+s32 SaveScreenItems[17] =  /* SaveScreenPanel's records */ { 0x1180000, 0x5A0000, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 void *LangConfirmOverwrite[1] = { (void *)&MenuConfirmOverwrite };
 void *LangPressButtonToOverwrite[1] = { (void *)&MenuPressButtonToOverwrite };
 void *LangPressButtonToLoad[1] = { (void *)&MenuPressButtonToLoad };
@@ -2124,7 +2124,7 @@ void *LangFormatting[1] = { (void *)&MenuFormatting };
 void *LangPressButtonToExitWithoutLoading[1] = { (void *)&MenuPressButtonToExitWithoutLoading };
 void *LangEmpty[1] = { (void *)&MenuEmpty };
 s32 CardSlotsPanel = 4;
-s32 D_8009F00C[143] = {
+s32 CardSlotsItems[143] = {  /* CardSlotsPanel's records */
     0x2300000, 0x500000, 6, 0, 0, 0, 0, 0, 0xA, 0x260050, 0xB330000, 0x280000, 0, 0, 0,
     0x2022001C, 2, 3, 0x320050, 0, 0, 0, (s32)&Menu01, 4, 0, 0, 0xA, 0x2600B4, 0xB330000,
     0x280000, 0, 0, 0, 0x201F001C, 2, 3, 0x3200B4, 0, 0, 0, (s32)&Menu02, 4, 0, 0, 0xA,
@@ -2150,7 +2150,7 @@ s32 CardSlotIndex = 0;
 GfxViewport SaveViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xDFF, 0, 0, 0, 0x10, 1 };
 GfxViewport SaveBackViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xD00, -0x80, 0, 0, 0, 1 };
 s32 SaveMenuPanel = 6;
-s32 D_8009F410[17] = { 0xFF9C, 0x100004C8, 0, 0, 0, 0, 0x200700C7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+s32 SaveMenuItems[17] =  /* SaveMenuPanel's records */ { 0xFF9C, 0x100004C8, 0, 0, 0, 0, 0x200700C7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 void *SaveMenuAnims[6] = {
     (void *)&MenuCardCorrupt, (void *)InitCardMenu, (void *)UpdateSaveScreen,
     (void *)RenderSaveMenu, (void *)ClearEngineSlots, 0,
@@ -2172,12 +2172,12 @@ s32 SaveMenuState = 0;
 fade_info ScreenFade = {0};
 s32 IdleFrames = 0;
 process_control_info ProcessControl = {0};
-s32 D_8009F668[5] = { (s32)&vmode_640_ntsc, (s32)&vmode_512_ntsc, (s32)&vmode_384_ntsc, (s32)&vmode_320_ntsc, (s32)&vmode_256_ntsc };
+s32 ScreenModesByWidth[5] = { (s32)&vmode_640_ntsc, (s32)&vmode_512_ntsc, (s32)&vmode_384_ntsc, (s32)&vmode_320_ntsc, (s32)&vmode_256_ntsc };
 GfxViewport MainViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0x200, -0x100, 0xF0, 0xF0, 0xF0, 0 };
 GfxViewport HudViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xDAC, 0, 0xF0, 0xF0, 0xF0, 0 };
-s32 D_8009F6CC[10] = { 0xF00140, 0x1E00280, 0xF00140, 0x1E00280, 0x1E0, 0x168, 0x200, 0x800, 0, 0x1000000 };
+s32 ScreenSizes[10] = { 0xF00140, 0x1E00280, 0xF00140, 0x1E00280, 0x1E0, 0x168, 0x200, 0x800, 0, 0x1000000 };
 GfxViewport GameViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0x15E, 0x200, 0xDFF, 0, 8, 0x30, 0x10, 0 };
-s32 D_8009F71C[1] = {0};
+s32 HubSetupFlag[1] = {0};
 process_info RetryProcess = { InitRetry, UpdateGame, RenderGame, QuitGame, 0 };
 GfxCamera MainGfxCamera = {0};
 GfxCamera HudCamera = {0};

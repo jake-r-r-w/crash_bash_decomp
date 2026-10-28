@@ -140,7 +140,7 @@ s32 UpdatePause(void) {
         s32 j;
         j = 0;
         key = GameLevelFlags & 0xFF;
-        tbl = D_8009AF38;
+        tbl = LevelKindKeys;
         do {
             if (key == *tbl) {
                 kind = j;
@@ -394,7 +394,7 @@ found:
                     if (r) {
                         PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
                         KillEngineSlot(0);
-                        D_8009AF00 = 1;
+                        PauseTextHold = 1;
                         PauseChoice = 0;
                         PSV->flags &= ~0x80;
                     } else {
@@ -657,7 +657,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 break;
             }
         case 0:
-            if (D_8009AF00 == 0) {
+            if (PauseTextHold == 0) {
                 DrawSysText(e->x, (s16)(e->y + arg1),
                               ((u8 **)LangMessages[g->level])[e->idx], e->a, e->b,
                               PauseChoice == n);
@@ -677,7 +677,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             }
             break;
         case 3:
-            if (D_8009AF00 == 0) {
+            if (PauseTextHold == 0) {
                 DrawSysText(e->x, (s16)(e->y + arg1), (u8 *)e->idx, e->a, e->b, 0);
             }
             break;
@@ -737,7 +737,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             PauseVolSubB.entity = 0;
             break;
         case 5:
-            if (D_8009AF00 != 0) {
+            if (PauseTextHold != 0) {
                 break;
             }
             DrawSysText(e->x, (s16)(e->y + arg1),
@@ -794,8 +794,8 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             break;
         }
     }
-    if (D_8009AF00 != 0) {
-        D_8009AF00--;
+    if (PauseTextHold != 0) {
+        PauseTextHold--;
     }
     eng = (HudEngView *)PanelTab;
     eng->on0 = 1;
@@ -1828,22 +1828,22 @@ s32 PauseLastChoice = 0;
 s32 PauseChoice = 0;
 s32 PausePad = 0;
 s32 PauseFlashItem = -1;
-s32 D_8009AEF8[2] = { 5, 0 };
-s32 D_8009AF00 = 0;
-s32 D_8009AF04[13] = {
+s32 PauseUnused[2] = { 5, 0 };
+s32 PauseTextHold = 0;  /* frames the pause texts stay hidden after a choice */
+s32 ModeNames[13] = {
     0, (s32)&ModeNameBattleMode, (s32)&ModeNameTournamentMode, (s32)&ModeNameAdventureTrophy,
     (s32)&ModeNameAdventureGoldRelic, (s32)&ModeNameAdventurePlatRelic,
     (s32)&ModeNameAdventureGem, (s32)&ModeNameAdventureChallenge, (s32)&ModeNameAdventureBoss,
     0x80007, 0x50000, 0x40009, 6,
 };
-u16 D_8009AF38[7] = { 1, 2, 0x14, 0x24, 0x2C, 0x44, 0x84 };
-s16 D_8009AF46 = 0x14;
+u16 LevelKindKeys[7] =  /* GameLevelFlags & 0xFF per level kind (Cups_Update, UpdatePause) */ { 1, 2, 0x14, 0x24, 0x2C, 0x44, 0x84 };
+s16 PauseUnused2 = 0x14;
 char PauseDigits[2] = { 0x31, 0x30 };
 char PauseDigits2[2] = { 0x32, 0x30 };
 char PauseDigits3[2] = { 0x33, 0x30 };
 char PauseDigits4[2] = { 0x34, 0x30 };
 char PauseDigits5[2] = { 0x35, 0x30 };
-u8 D_8009AF5C[4] = { 0x36, 0x30, 0, 0 };
+u8 PauseDigits6[4] = { 0x36, 0x30, 0, 0 };
 s32 AdvStatsPanel0[90] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C004B, 0, 0, 0, 0, 0, 0x5001C, 2, 0xA,
     0x3C01B2, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 5, 0x2C004B, 0, 0, 0, 0, 0, 0x4001C, 2, 3,
@@ -1922,7 +1922,7 @@ EngineRec24 **PauseRecSet = 0;
 s32 PauseRecIndex = 0;
 s16 PauseMenuY = 0;
 s16 PauseToggles[4] = {0};
-s16 D_8009BD24[4] = {0};
+s16 PauseTogglesUnused[4] = {0};
 u16 StatsPageShown = 0;
 s32 PauseStatsAllowed = 0;
 s32 StatsHasPage1 = 0;

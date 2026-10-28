@@ -211,7 +211,7 @@ typedef struct EngModeD9DC {
 #define MODEV ((EngModeD9DC *)GameInfo)
 
 extern s16 CupWinner;
-extern u16 D_8009AF38[7];
+extern u16 LevelKindKeys[7];
 extern s32 CupsDirty;
 
 

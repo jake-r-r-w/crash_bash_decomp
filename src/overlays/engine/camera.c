@@ -890,9 +890,9 @@ void ResetScreenLabels(void) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 CamEase CameraEase = { { 2, 2, 2 }, { 2, 2, 1 }, { 4, 4, 4 } };
-s32 D_800AD118[5] = { 1, 1, 1, 0, 0 };
+s32 CameraModeFlags[5] = { 1, 1, 1, 0, 0 };
 u16 CameraMode = 0;
-s16 D_800AD130[92] = {0};
+s16 CameraUnused[92] = {0};
 s32 camera_frame_list_size = 0;
 D_800AD1EC_entry CameraFrameList[16] = {0};
 D_800AD2EC_t camera_frame_bottom = {0};
@@ -1161,7 +1161,7 @@ EngRec24 ScreenLabelsNotice[3] = {
 };
 s32 ScreenLabelState = 0;
 s32 ScreenLabelShown = 0;
-s32 D_800ADBC8[1] = {0};
+s32 ScreenLabelFrame[1] = {0};  /* ScreenLabelState's [1]: -1 when off */
 s32 CupsDirty = 0;
-s32 D_800ADBD0[1] = {0};
+s32 ScreenLabelStep[1] = {0};  /* ScreenLabelState's [3] */
 s32 ScreenCount = 0;

@@ -1300,14 +1300,14 @@ s32 ModeTextFiles[14] = {
     (s32)&DatIndex[2 * 726], (s32)&DatIndex[2 * 725], (s32)&DatIndex[2 * 724], (s32)&DatIndex[2 * 487], (s32)&DatIndex[2 * 723],
     (s32)&DatIndex[2 * 719], (s32)&DatIndex[2 * 717], (s32)&DatIndex[2 * 716], (s32)&DatIndex[2 * 718],
 };
-s32 D_8009F91C[14] = {
+s32 ModeTextFilesLang[14] = {  /* ModeTextTables' per-language file list */
     0, 0, (s32)&DatIndex[2 * 142], (s32)&DatIndex[2 * 151], (s32)&DatIndex[2 * 146], (s32)&DatIndex[2 * 141],
     (s32)&DatIndex[2 * 145], (s32)&DatIndex[2 * 152], (s32)&DatIndex[2 * 144], (s32)&DatIndex[2 * 143], (s32)&DatIndex[2 * 148],
     (s32)&DatIndex[2 * 147], (s32)&DatIndex[2 * 149], (s32)&DatIndex[2 * 150],
 };
 s32 *ModeTextTables[5] = {
-    (void *)&D_8009F91C, (void *)&D_8009F91C, (void *)&D_8009F91C, (void *)&D_8009F91C,
-    (void *)&D_8009F91C,
+    (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang, (void *)&ModeTextFilesLang,
+    (void *)&ModeTextFilesLang,
 };
 s32 ModeTextLoaded = 0;
 EngineCfg DefaultLevelConfig = {
@@ -1411,8 +1411,8 @@ u8 ModeDbaseLists[1516] = {
     0x80, 0x48, 0xFA, 4, 0x80, 0xA8, 1, 5, 0x80, 0xEC, 0x51, 5, 0x80, 0x20, 0xFA, 4, 0x80,
     0x18, 0xFA, 4, 0x80, 0xD8, 1, 5, 0x80, 0xD4, 0x50, 5, 0x80, 0x60, 0xFA, 4, 0x80,
 };
-s32 D_800A0000[5] = { (s32)&DatIndex[2 * 809], (s32)&FileGroups[36], (s32)&HeroModelBank[DB_CharsSplashKong], (s32)&DatIndex[2 * 806], (s32)&DatIndex[2 * 805] };
-s32 D_800A0014[2] = {0};
+s32 AdvStatsFiles[5] =  /* DrawAdventureStats' and the save menu's loads */ { (s32)&DatIndex[2 * 809], (s32)&FileGroups[36], (s32)&HeroModelBank[DB_CharsSplashKong], (s32)&DatIndex[2 * 806], (s32)&DatIndex[2 * 805] };
+s32 FileGroupNone[2] = {0};
 u8 *ModeFileGroups[45] = {
     (void *)&file_group_JUNGLE, (void *)&file_group_SPACE, (void *)&file_group_SNOW,
     (void *)&file_group_DRAINS, (void *)&file_group_PAPU, (void *)&file_group_TANKLAST,
@@ -1429,7 +1429,7 @@ u8 *ModeFileGroups[45] = {
     (void *)&file_group_HUB, (void *)&file_group_HUB, (void *)&file_group_HUB,
     (void *)&file_group_HUB, (void *)&file_group_HUB, (void *)&file_group_HUB,
     (void *)&file_group_HUB, (void *)&file_group_TITLES, (void *)&file_group_TITLES,
-    (void *)&file_group_TITLES, (void *)&D_800A0014, (void *)&file_group_POLARDAY,
+    (void *)&file_group_TITLES, (void *)&FileGroupNone, (void *)&file_group_POLARDAY,
 };
 u16 LangPanelModels[6] = { 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0 };
 process_info LevelLoadProcess = { InitLevelLoad, UpdateLevelLoad, RenderLevelLoad, QuitLevelLoad, 0 };
@@ -1439,10 +1439,10 @@ process_control_info LoadingControl = {0};
 GfxCamera LoadingCamera = {0};
 u8 LoadingIconEngine[108] = {0};
 WobbleObj *LoadingIconObj = 0;
-s32 D_800A0294[11] = {0};
+s32 LevelLoadVars[11] = {0};
 s32 LoadingScenePlaying = 0;
 s32 LoadingSceneDelay = 0;
-s32 D_800A02C8[4] = {0};
+s32 LoadingUnused[4] = {0};
 EngineMarkerPos SceneMarkPos[3] = {
     { 0x7FB, 0x1FC3, 0xFA0, 0x7D0, { 0, 0, 0, 0, 0, 0 } },
     { 0x1FC3, 0xFA0, 0x7E4, 0x5DC, { 0, 0, 0, 0, 0, 0 } },
@@ -1571,7 +1571,7 @@ s32 SceneOldDbase = 0;
 script_handler *SceneScript = 0;
 s32 SceneStarting = 0;
 s32 SceneStep = 0;
-s32 D_800A0D40[1] = {0};
+s32 SceneUnused[1] = {0};
 Tmpl1C TextTemplates[11] = {
     { 0x8001, 0, 0x8021, 0x8080, 4, 0, 4, 0, 0x180, 0 },
     { 0x8001, 0, 0x8021, 0x8080, 4, 0, 4, 0, 0x100, 0 },

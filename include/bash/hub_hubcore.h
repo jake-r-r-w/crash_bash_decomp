@@ -300,7 +300,7 @@ typedef struct {
 } HubCamEntry;
 #define CAMTBL6A ((HubCamEntry *)HubGateways)
 
-extern s32 D_8009F71C;
+extern s32 HubSetupFlag;
 extern _sfx_handler *HubSelectSfx;
 extern u16 HubHeroSizes[10];
 extern char *HubHaveTexts[]; /* the "you already have" messages */

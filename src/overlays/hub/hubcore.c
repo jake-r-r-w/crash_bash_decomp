@@ -17,7 +17,7 @@ void InitialiseHUB(void) {
     u16 size;
 
     HubHeroPressed = 0;
-    D_8009F71C = 0;
+    HubSetupFlag = 0;
     HubHeroTouchCount = 0;
     hero = Heroes;
     World_floor_level = 0;

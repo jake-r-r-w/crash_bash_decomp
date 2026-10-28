@@ -457,10 +457,10 @@ typedef struct PauseView {
     /* 0x74 */ u8 unk74;
 } PauseView;
 #define PSV ((PauseView *)GameInfo)
-extern u16 D_8009AF38[];
+extern u16 LevelKindKeys[];
 #define HUDBOX ((HudBox *)PauseMenuPanel)
 #define HUDENG ((HudEngView *)PanelTab)
-extern s32 D_8009AF00;
+extern s32 PauseTextHold;
 extern s16 LangHudRows[][8];
 void DrawSpriteTriple();
 void DrawHudEntries(HudEntry *e, s32 arg1);

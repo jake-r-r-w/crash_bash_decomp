@@ -1636,7 +1636,7 @@ void Cups_Update(void) {
         s32 j;
         j = 0;
         key = GameLevelFlags & 0xFF;
-        p = D_8009AF38;
+        p = LevelKindKeys;
         do {
             if (key == *p) {
                 mode = j;
