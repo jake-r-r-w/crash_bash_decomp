@@ -75,8 +75,10 @@ Sony objects. Next, none of them needing a playtest:
    those structs: done for the maps' paths, triggers and placements (`mapdata.py`, map.json).
    The contours (map_map +0x14) are decoded too: arena walls/zones, edges from +0x3C (Dino's
    DinoSegObj view is right; Race's reads go through the same offsets); the cell list is empty in
-   every map. Next: the scripts' threads (`script_thread` in core.h), the mode text's data. Then the
-   remaining raw offsets (69 exe functions): mostly heap arithmetic and the export table.
+   every map. The scripts' threads, the mode text's menus and the card save are decoded too, and
+   the ROADMAP's asset formats item is closed (2026-10-28). Next (ROADMAP Phase 5): the shift
+   retests need the user; otherwise the exe's 69 raw-offset functions (heap arithmetic, the export
+   table), and the fields ASSETS.md lists as undecoded.
    A sample retail-DAT reader for scratch scripts: scratch/retail.py (`each(fmt)`).
    `obj_texture`'s +0x18 block is its own struct, `info` (`GfxTexInfo`: VRAM rect, src,
    tpage, clut, uv0..3), since two functions take a pointer to it; GfxTexEntry is folded.
@@ -491,6 +493,12 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-28 (Phase 5: asset formats closed):** mapdata.py decodes the scripts' six thread types
+  (3,333 threads, 12,605 keys; threads can share bytes, so pack writes only edited fields). txt.py
+  decodes the mode text's menus: `PlaceRec` lists (161, 2,058 records; an x of 0x8000 is a centring
+  flag, which hid them from a first survey). card.py reads and writes the memory-card save (a card
+  image's BASCUS-94570 block: header, icon, 4 `CardSlot`s named from `GameState`, the sum the game
+  checks). All round-trip; make disc-check passes.
 - **2026-10-28 (Phase 5: asset formats, collision):** the maps' contours decoded in mapdata.py
   (107 in 30 arena maps, 1,200 edges; each edge's length matches its points, all round-trip). The
   hubs have none: with no `LevelSpecs.GetContour` hook the ground is `World_floor_level` plus solid

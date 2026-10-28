@@ -35,7 +35,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   See [docs/PLAYING.md](docs/PLAYING.md).
 - Game data: `assets/` (ignored) holds the archive's files as editable formats
   (`dat.py extract`, run by `decomp.py extract`; formats in
-  [docs/ASSETS.md](docs/ASSETS.md)); `make disc` builds `CRASHBSH.DAT` from it.
+  [docs/ASSETS.md](docs/ASSETS.md)); `make disc` builds `CRASHBSH.DAT` from it. The save on a
+  memory card: `tools/scripts/card.py unpack CARD` / `pack DIR CARD OUT`.
   `build/` is disposable (`make clean` deletes it all); notes and drafts go in
   `scratch/`.
 - `make diff` / `decomp.py try` end with `STAGE NAME structure|instructions|registers n/total`:

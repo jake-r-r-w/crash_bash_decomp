@@ -412,8 +412,8 @@ load extract and are documented.
   (`InitHero`, `HeroModels`, `RunSpeeds`, `PreMoveHero` .. `KeepInBounds`; `unk8` is
   always 0), in `EngineHooks` and in the overlays' views of `HeroHooks` (Bonk, Chase,
   N2O, Pogo, Polar, Race, Spin). Left: merging the views into the one type.
-- [ ] Extract and document the asset formats the engine loads (models,
-  animation, level data, ...) that Phase 2's extractor still keeps as bytes. Each format gets a
+- [x] Extract and document the asset formats the engine loads (models,
+  animation, level data, ...) that Phase 2's extractor still keeps as bytes (closed 2026-10-28). Each format gets a
   C struct the code reads it through (the exe's raw file offsets, from the name-and-type item)
   and its extractor in `tools/scripts/`, documented in [ASSETS.md](ASSETS.md). Status
   (2026-10-28): texture sets done: their animated textures (`tail.bin`) come out as frame PNGs
@@ -422,8 +422,10 @@ load extract and are documented.
   named, the maps through the prototype's `map_list`/`map_map`), `MeshHeader`, `MeshVerts`,
   `ModelEntity`, `FileEntry` and `MeshAnimFrame` (2026-10-28; the exe's raw-offset functions 97 to
   69); mdl.py writes the level data to map.json (`mapdata.py`: paths, triggers and placements,
-  editable; the contours, the arenas' walls and zones, too; the map directory and scripts listed).
-  Next: the scripts' threads, the mode text's data and the card image.
+  editable; the contours, the arenas' walls and zones, too; the map directory listed); the
+  scripts' threads (six types, their keys), the mode text's menus (txt.py: `PlaceRec` lists in
+  menus.json) and the memory-card save (card.py) as well. Every file comes out editable; what is
+  left is fields no code names yet (docs/ASSETS.md, What isn't decoded).
 - [x] `main.exe`'s rodata as C: its six INCLUDE_RODATA blocks (`data2c.py main
   --strings-only`, 2026-10-26); no INCLUDE_RODATA is left in `src/`.
 - [x] `main.exe`'s data and bss as C (2026-10-28): the game's .data cut by file in link

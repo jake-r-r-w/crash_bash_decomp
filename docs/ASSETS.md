@@ -167,7 +167,26 @@ others blend the first list's towards the second's (1/3, 2/3: frames between two
   untextured face's average colour).
 - `map.json` (files with level data, 205): the maps (cell size, clear colour, paths with their keys,
   triggers, contours with their edges, placements), the map directory's entities (each one's mesh header offset and group)
-  and the scripts' headers (threads, subs, start, end and frame counts).
+  and the scripts (below).
+
+  A script (`script_header`: threads, subs, end, start and frame counts, then a self offset per
+  thread) runs threads of six types, each read by its own update function in `src/main/scripts.c`
+  (`ScriptCommands`). Every thread starts with s32 type, start frame, end frame, total frames, key
+  count; the keyed tracks then hold keys of s32 start, s32 len, ... ended by a key with len 0 (each
+  key starts where the one before ended):
+
+  | Type | Thread | After the header |
+  |---|---|---|
+  | 0 | model | 4 s32s (+0x18 flags ORed into the subengine's), then 0x50-byte keys from +0x24: position, rotation (a quaternion), scale, fade |
+  | 1 | emitter | the prototype's `partdata`: flags, position, particle counts, lifetimes, speeds, rotation and gravity ranges, fades, scale |
+  | 2 | camera | s32, s32 distance, then 0x28-byte keys from +0x1C: look-at point, eye |
+  | 3 | entity | a frame range (aframe, start, end, delay, prolong, sort priority), then 0x4C-byte keys from +0x30: position, rotation, scale, alpha |
+  | 4 | fade | start, end |
+  | 5 | sub-script | the script it plays, sort priority, 2 spares, 18 s32s (position, angles, scale) |
+
+  3,333 threads (2,877 model, 177 entity, 138 emitter, 83 camera, 44 fade, 14 sub-script), 12,605
+  keys. Threads can share bytes (a model track that starts inside another's keys), so pack writes
+  only the fields you change.
 - `model.glb`: the same as glTF (textures embedded; positions as the file's 16-bit integers,
   KHR_mesh_quantization, scaled 1/256), with each animation as morph targets (a keyframe each)
   and a weights track: Blender imports them as shape keys and actions. 30 frames a second (the
@@ -204,9 +223,22 @@ not move or grow past its slot (its start to the boundary after its terminator).
 button icons. Four files (`ring`, `dino`, `kegs`, `mallet`) hold, after "DECREASE SCORE TO ZERO",
 the tail of a string cut short in development ("9IN THE ALLOTTED TIME").
 
-`<id>.txt/` holds `data.bin` (the file as it is) and `text.txt` (`@offset: text` a line; `\n`,
-`\r`, `\xNN`, `\\` for the bytes above). An unchanged line keeps its slot byte for byte; a changed
-one is written in, zero-padded, and one too long for its slot is refused.
+The data after the strings is the mode's menus (the file loads at `ModeTextBuffer`,
+`0x800AEC60`): panel records (`PlaceRec`, 0x24 bytes: s32 type, s16 x, y, z, scale and four more,
+a pointer at +0x14 to the record's text or image, s32, two s16, s32) in lists that end at a type
+below 2, which `ApplyPlaceRecs` draws, reached through pointer tables (the engine's
+`PauseMenuTexts` gives each game mode's pause table: a pointer to a zero-separated array of list
+pointers per pause screen). Types 3, 11 and 14 place text or a sprite (14 picks its text by
+language), 4, 12, 16 and 18 a template, 13 shows or hides the records after it by the game's state
+(teams, paused, the level's flags in `unk20`). An x with 0x8000 set is centred. 161 lists, 2,058
+records in the 12 files, about 93% of their data; the rest is the pointer tables.
+
+`<id>.txt/` holds `data.bin` (the file as it is), `text.txt` (`@offset: text` a line; `\n`,
+`\r`, `\xNN`, `\\` for the bytes above) and `menus.json` (each list's records, a text pointer as
+`@offset` with its text beside it, another pointer as `&offset`). An unchanged line keeps its slot
+byte for byte; a changed one is written in, zero-padded, and one too long for its slot is refused.
+Pack writes the menu fields you change (move a panel, point it at another string); lists and
+records can't be added.
 
 ## Sound packs (`.sfx`)
 
@@ -231,6 +263,25 @@ and pack encodes it to ADPCM (filter and shift chosen per block for the least er
 dB SNR on the game's own samples), keeps its one-shot or loop shape, and rewrites the VH's size
 table and the offsets; an unchanged WAV keeps its original bytes. A pack may shrink, not grow.
 
+## The memory card (`BASCUS-94570`)
+
+Not on the disc: the game's save, one 8 KB block on a memory card. `tools/scripts/card.py` reads a
+128 KB card image (RetroArch's `.srm`, `.mcr`, `.mcd`) or the save alone, the layout as `card.c`
+reads it:
+
+| Offset | What |
+|---|---|
+| 0x000 | the PsyQ save header: `SC`, the icon's frame count (2) and type, blocks (1), the title (64 bytes of Shift-JIS: `ＣＲＡＳＨ　ＢＡＳＨ` and each slot's completion as `％NNN`), the icon's CLUT at 0x60, two 16x16 4-bit frames from 0x80 (the CB logo and Crash's face) |
+| 0x200 | 4 slots (`CardSlot`, 0x194 each): 8 summary bytes (the heroes picked and out), then the slot's `GameState` (`include/bash/nas.h`, the game state at `GameInfo`) |
+| 0x850 | `CardSaveFlags`: a word set to 1, then 8 bytes cleared with the slots |
+| 0x85C | `CardSaveSum`: the sum of the s32s from 0x200 to 0x850; a save whose sum doesn't match isn't loaded |
+| 0x860 | unused to the block's end |
+
+`card.py unpack CARD` writes `<name>.card/`: `save.bin`, `card.json` (the title, also as ASCII,
+the flags, whether the sum is right, and each slot's summary and every `GameState` field, named from
+the C struct through `struct_layout.py`) and `icon_0.png`, `icon_1.png`. `card.py pack DIR CARD
+OUT` writes the fields you change, works the sum out again and puts the save into a copy of CARD.
+
 ## What isn't decoded
 
 Every file comes out editable or viewable. What is kept only as bytes (exact, in the folders'
@@ -242,6 +293,6 @@ Every file comes out editable or viewable. What is kept only as bytes (exact, in
   unnamed words, the scripts' threads (`script_thread` records), the
   on-demand chunks.
 - Texture sets: the header word at 0x14, and the images' header words.
-- Mode text: the data after the strings (menus, layouts).
+- Mode text: the menu records' fields the code doesn't name (`unkC` ..), and the pointer tables.
 - Editing beyond the slots: a file can't grow (the DAT would have to be laid out again), and
   animations, texture coordinates and the mode data can't be edited yet.
