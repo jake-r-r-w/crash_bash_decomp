@@ -456,7 +456,7 @@ void UpdateCupMenu(void) {
     if (CupMenuCompact != 0) {
         CupMenuCompact--;
         prims_empty_back();
-        mal_compact_step((u8 *)&MainHeap);
+        mal_compact_step(&MainHeap);
     }
     if (Pads[0].pressed & 0x80) {
         EngineWorldPrev();

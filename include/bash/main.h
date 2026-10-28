@@ -756,7 +756,7 @@ u8 *mal_alloc(s32 arg0, _mal_area *arg1);
 u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1);
 void mal_unlink(mal *blk, _mal_area *area);
 void mal_compact_ptr(s32 arg0);
-void mal_compact_step(u8 *arg0);
+void mal_compact_step(_mal_area *heap);
 u8 *mal_update_deferred(_mal_area *arg0);
 void sortlist_sort(s32 arg0);
 void loader_unused_a(void);

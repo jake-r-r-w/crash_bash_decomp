@@ -4083,7 +4083,7 @@ void SetRaceHeroWinner(s32 player) {
     }
     RequestHeroAnim(player, 1);
     prims_empty_back();
-    mal_compact_step((u8 *)&MainHeap);
+    mal_compact_step(&MainHeap);
 }
 
 void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {

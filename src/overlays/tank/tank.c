@@ -6423,10 +6423,10 @@ void InitTankBoss(NAS *nas) {
             dbase_release(TANK_MODEL(59));
         }
         if (!TANK_MODEL_ON(base, 58)) {
-            dbase_asload_with_anims(TANK_MODEL(58), 0);
+            dbase_asload_with_anims(&HeroModelBank[DB_ArenaBossKomodoKomodo], 0);
         }
         if (!TANK_MODEL_ON(base, 57)) {
-            dbase_asload_with_anims(TANK_MODEL(57), 0);
+            dbase_asload_with_anims(&HeroModelBank[DB_ArenaBossKomodoArenaobjects], 0);
         }
         ext->Counter = 0x5A;
         TankBossStartStatus = 0x2C;
@@ -6441,7 +6441,7 @@ void InitTankBoss(NAS *nas) {
             dbase_release(TANK_MODEL(58));
         }
         if (!TANK_MODEL_ON(base, 57)) {
-            dbase_asload_with_anims(TANK_MODEL(57), 0);
+            dbase_asload_with_anims(&HeroModelBank[DB_ArenaBossKomodoArenaobjects], 0);
         }
         ext->Counter = 0x3C;
         SpawnTankBossTurrets();
@@ -6455,7 +6455,7 @@ void InitTankBoss(NAS *nas) {
             dbase_release(TANK_MODEL(57));
         }
         if (!TANK_MODEL_ON(base, 59)) {
-            dbase_asload_with_anims(TANK_MODEL(59), 0);
+            dbase_asload_with_anims(&HeroModelBank[DB_ArenaBossKomodoKomodotank], 0);
         }
         ext->Counter = 0x3C;
         break;
@@ -6607,7 +6607,7 @@ void PlotTankBoss(NAS *nas) {
             fux->Status = 0x3A;
             PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
             dbase_release(&HeroModelBank[DB_ArenaBossKomodoArenaobjects]);
-            dbase_asload_with_anims(((u8 *)&HeroModelBank[DB_ArenaBossKomodoArenaobjects]) + 0x70, 0);
+            dbase_asload_with_anims(&HeroModelBank[DB_ArenaBossKomodoKomodotank], 0);
         }
         break;
     case 0x3A:

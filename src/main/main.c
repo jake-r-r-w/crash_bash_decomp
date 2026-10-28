@@ -1338,19 +1338,20 @@ void mal_compact_ptr(s32 arg0) {
     mal_compact_from(arg0 - 0x18, &MainHeap);
 }
 
-void mal_compact_step(u8 *arg0) {
-    u16 *var_a0;
-    u8 *temp_v1;
+void mal_compact_step(_mal_area *heap) {
+    mal *next;
+    mal *low;
 
-    temp_v1 = (*(s32*)((u8*)(arg0) + 12));
-    var_a0 = NULL;
-    if ((temp_v1 != NULL) && ((var_a0 = temp_v1 + (((*(s32*)((u8*)(temp_v1) + 8)) * 4) + 0x18), ((*(s32*)((u8*)(var_a0) + 4)) == -1)) || ((*(s32*)((u8*)(var_a0) + 8)) == 0))) {
-        var_a0 = NULL;
+    low = heap->lowest;
+    next = NULL;
+    if (low != NULL && ((next = (mal *)((u8 *)low + (low->size * 4 + 0x18))),
+                        next->owner == (void **)-1 || next->size == 0)) {
+        next = NULL;
     }
-    if ((var_a0 != NULL) && (*var_a0 & 2)) {
-        var_a0 = NULL;
+    if (next != NULL && (next->unk0 & 2)) {
+        next = NULL;
     }
-    mal_compact_from(var_a0, arg0);
+    mal_compact_from(next, heap);
 }
 
 u8 *mal_update_deferred(_mal_area *arg0) {
@@ -1528,7 +1529,7 @@ u8 *loader_alloc(u8 *arg0) {
         if (mal_first_free(words, h->free) == NULL) {
             prims_empty_back();
             if (mal_first_free(words, h->free) == NULL) {
-                mal_compact_step((u8 *)h);
+                mal_compact_step(h);
                 if (mal_first_free(words, h->free) == NULL) {
                     return NULL;
                 }
@@ -2259,7 +2260,7 @@ s32 mal_can_alloc(s32 arg0) {
     if (mal_first_free(words, h->free) == NULL) {
         prims_empty_back();
         if (mal_first_free(words, h->free) == NULL) {
-            mal_compact_step((u8 *)h);
+            mal_compact_step(h);
             if (mal_first_free(words, h->free) == NULL) {
                 return 0;
             }

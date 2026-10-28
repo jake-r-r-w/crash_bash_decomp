@@ -1903,7 +1903,7 @@ void LevelSelectUpdate(void) {
 
     if (LevelSelectReload != 0) {
         prims_empty_back();
-        mal_compact_step((u8 *)&MainHeap);
+        mal_compact_step(&MainHeap);
         LevelSelectReload--;
     }
     AnimateTitlesBackdrop();

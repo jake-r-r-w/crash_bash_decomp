@@ -247,10 +247,10 @@ void load_initial_dbases(void)
     k = ((u8 *) g)[i + 0x50];
     if ((k - 1) < 8)
     {
-      dbase_asload_with_anims((u8 *) ((((u16 *) h->HeroModels)[k] * 0x38) + ((s32) b)), arg);
+      dbase_asload_with_anims((obj_dbase *) ((((u16 *) h->HeroModels)[k] * 0x38) + ((s32) b)), arg);
       if (h->unk8 != 0)
       {
-        dbase_asload_with_anims((u8 *) ((((u16 *) h->unk8)[k] * 0x38) + ((s32) b)), arg);
+        dbase_asload_with_anims((obj_dbase *) ((((u16 *) h->unk8)[k] * 0x38) + ((s32) b)), arg);
       }
     }
     i++;
@@ -725,7 +725,7 @@ void UpdateScriptScene(void) {
         if (SceneStep == 0) {
             obj = ((MarkCtx *)SceneMark)->obj;
             if (obj != NULL) {
-                dbase_asload_with_anims((u8 *)obj, 0);
+                dbase_asload_with_anims((obj_dbase *)obj, 0);
             }
         }
     }

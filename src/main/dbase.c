@@ -86,10 +86,10 @@ s32 dbase_texture_ptr(u8 *arg0, s32 arg1) {
     return 0;
 }
 
-void dbase_asload_with_anims(u8 *arg0, s32 arg1) {
-    if (((*(s32*)((u8*)(arg0) + 8)) == 0) && ((*(s32*)((u8*)(arg0) + 12)) == 0)) {
-        (*(s32*)((u8*)(arg0) + 52)) = arg1;
-        (*(s32*)((u8*)(arg0) + 8)) = load_file_cb((*(s32*)((u8*)(arg0) + 4)), dbase_asload_with_anims_texture_callback, arg0);
+void dbase_asload_with_anims(obj_dbase *db, s32 *keep) {
+    if (db->load == 0 && db->data == NULL) {
+        db->keep = keep;
+        db->load = load_file_cb(db->textureFile, dbase_asload_with_anims_texture_callback, db);
     }
 }
 

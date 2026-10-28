@@ -9,7 +9,7 @@
 #include "bash/main.h"
 
 s32 dbase_texture_ptr(u8 *arg0, s32 arg1);
-void dbase_asload_with_anims(u8 *arg0, s32 arg1);
+void dbase_asload_with_anims(obj_dbase *db, s32 *keep);
 void dbase_asload_with_anims_callback(u8 *arg0, u8 *arg1);
 void dbase_copy_block(u8 *arg0, s32 arg1);
 /* One of a .mdl's animations that load on their own (dbase_anim_load): its byte range in the
