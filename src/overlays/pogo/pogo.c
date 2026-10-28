@@ -785,7 +785,7 @@ void InitPogo_Tiles(void) {
     s16 v;
     PogoCell *base;
     PogoCell *base2;
-    u8 *g;
+    GameState *g;
     s32 rowOff;
     s32 off;
 
@@ -814,7 +814,7 @@ void InitPogo_Tiles(void) {
     PogoKerbObj = NULL;
     if (obj != NULL) {
     base2 = PogoGrid[0];
-    g = GameInfo;
+    g = GAME;
     do {
         id = (u16 *)model_entry_data(obj->model, obj->index);
         if ((u16)(*id - 10) < 78) {
@@ -826,7 +826,7 @@ void InitPogo_Tiles(void) {
             obj->flags |= 0x20000;
             psxpogo_init_tile((subengine *)obj);
         }
-        if (*(s16 *)(g + 0x34) == 11 && *(s16 *)id == 100) {
+        if (g->mode == 11 && *(s16 *)id == 100) {
             PogoKerbObj = obj;
         }
         obj = obj->next;
@@ -843,7 +843,7 @@ void UpdatePOGO(void) {
     PogoPlayer *slot;
     s32 i;
     s32 ok;
-    u8 *g;
+    GameState *g;
 
     PogoQuality_Update();
     Update_Occupancy();
@@ -870,12 +870,12 @@ loop:
     }
     PogoPickups_Poll();
     PogoPowerups_Poll();
-    g = GameInfo;
-    switch ((PogoMode)*(s16 *)(g + 0x34)) {
+    g = GAME;
+    switch ((PogoMode)g->mode) {
     case POGO_MODE_12:
         break;
     case POGO_MODE_10:
-        if (*(u16 *)(g + 0x32) & 0x80) {
+        if (g->levelFlags & 0x80) {
             switch ((u32)Clock_Time >> 8) {
             case 0x115:
                 ok = MushroomCount < 3;
@@ -1028,7 +1028,7 @@ void PogoWinner_Crystal(s32 arg0, u16 arg1) {
         if (found == -1) {
             break;
         }
-        if (GameInfo[found + 0x5C] != 0) {
+        if (GAME->heroOut[found] != 0) {
             return;
         }
         g = GameInfo;
@@ -1072,7 +1072,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GameInfo[j + 0xA7] = best;
+            GAME->adventure.unkA7[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -1083,10 +1083,10 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1095,10 +1095,10 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                 }
                 CameraMode = 1;
             } else {
-                GameInfo[0x60] = a->hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+                GAME->winner[0] = a->hero_name;
+                GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GameInfo[0xA7] == n) {
+                    if (GAME->adventure.unkA7[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1122,10 +1122,10 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
             sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
             sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
             if (sa == sb) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1133,29 +1133,29 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
                     }
                 }
             } else if ((sb < sa && g[ia + 0x5C] == 0) || (sa < sb && g[ib + 0x5C] == 0)) {
-                u8 *w = GameInfo;
+                GameState *w = GAME;
 
-                *(u16 *)(w + 0x30) |= 0x800;
-                if (w[ia + 0x5C] == 0) {
-                    w[0x60] = Heroes[ia].hero_name;
-                    w[0x61] = Heroes[ita].hero_name;
+                w->exitFlags |= 0x800;
+                if (w->heroOut[ia] == 0) {
+                    w->winner[0] = Heroes[ia].hero_name;
+                    w->winner[1] = Heroes[ita].hero_name;
                     Heroes[ia].hero_status |= 0x200;
                     Heroes[ita].hero_status |= 0x200;
                     Heroes[ib].hero_status |= 0x400;
                     Heroes[itb].hero_status |= 0x400;
                 } else {
-                    w[0x60] = Heroes[ib].hero_name;
-                    w[0x61] = Heroes[itb].hero_name;
+                    w->winner[0] = Heroes[ib].hero_name;
+                    w->winner[1] = Heroes[itb].hero_name;
                     Heroes[ib].hero_status |= 0x200;
                     Heroes[itb].hero_status |= 0x200;
                     Heroes[ia].hero_status |= 0x400;
                     Heroes[ita].hero_status |= 0x400;
                 }
             } else {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1219,7 +1219,7 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
         q->exitFlags |= arg1;
         Clock_flags |= 0x200;
         for (; i < 4; i++) {
-            if (GameInfo[i + 0x5C] != 0) {
+            if (GAME->heroOut[i] != 0) {
                 Heroes[i].hero_status |= 0x400;
                 RemoveCamera(Heroes[i].hero);
             } else {
@@ -1249,7 +1249,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GameInfo[j + 0xA7] = best;
+            GAME->adventure.unkA7[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -1260,10 +1260,10 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1272,10 +1272,10 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                 }
                 CameraMode = 1;
             } else {
-                GameInfo[0x60] = a->hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+                GAME->winner[0] = a->hero_name;
+                GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GameInfo[0xA7] == n) {
+                    if (GAME->adventure.unkA7[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1299,10 +1299,10 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
             sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
             sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
             if (sa == sb) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1310,29 +1310,29 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
                     }
                 }
             } else if ((sb < sa && g[ia + 0x5C] == 0) || (sa < sb && g[ib + 0x5C] == 0)) {
-                u8 *w = GameInfo;
+                GameState *w = GAME;
 
-                *(u16 *)(w + 0x30) |= 0x800;
-                if (w[ia + 0x5C] == 0) {
-                    w[0x60] = Heroes[ia].hero_name;
-                    w[0x61] = Heroes[ita].hero_name;
+                w->exitFlags |= 0x800;
+                if (w->heroOut[ia] == 0) {
+                    w->winner[0] = Heroes[ia].hero_name;
+                    w->winner[1] = Heroes[ita].hero_name;
                     Heroes[ia].hero_status |= 0x200;
                     Heroes[ita].hero_status |= 0x200;
                     Heroes[ib].hero_status |= 0x400;
                     Heroes[itb].hero_status |= 0x400;
                 } else {
-                    w[0x60] = Heroes[ib].hero_name;
-                    w[0x61] = Heroes[itb].hero_name;
+                    w->winner[0] = Heroes[ib].hero_name;
+                    w->winner[1] = Heroes[itb].hero_name;
                     Heroes[ib].hero_status |= 0x200;
                     Heroes[itb].hero_status |= 0x200;
                     Heroes[ia].hero_status |= 0x400;
                     Heroes[ita].hero_status |= 0x400;
                 }
             } else {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1458,7 +1458,7 @@ void PreMovePOGO(u32 arg0) {
     if (h->hero_frozen == 0) {
     pb = Pads;
     pad = &pb[arg0];
-    if ((pad->flags & 1) || GameInfo[arg0 + 0x5C] != 0) {
+    if ((pad->flags & 1) || GAME->heroOut[arg0] != 0) {
         bits = ((PadState *)pad)->dir;
         if (PogoPlay[arg0].status == 5 && !(bits & 0xF0)) {
             switch ((u16)move->forward_angle >> 10) {
@@ -1870,16 +1870,16 @@ void HeroPogoTazing(u32 arg0) {
 
 void HeroPogoWinner(u32 arg0) {
     EXTengine *eng;
-    u8 *g;
+    GameState *g;
 
     Heroes[arg0].hero_frozen = 2;
     Pickup_Lose(arg0);
     if (UpdateHeroVictory(arg0) != 0) {
-        g = GameInfo;
-        if (*(s32 *)(g + 4) & 0x800) {
-            *(u16 *)(g + 0x30) |= 0x201;
+        g = GAME;
+        if (g->cheats & 0x800) {
+            g->exitFlags |= 0x201;
         } else {
-            *(u16 *)(g + 0x30) |= 1;
+            g->exitFlags |= 1;
         }
     }
     switch (ProcessHeroAnim(arg0)) {
@@ -2631,7 +2631,7 @@ void ZapInDir(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
     u8 n;
     s16 t;
     s16 old;
-    u8 *g;
+    GameState *g;
 
     x = arg0;
     z = arg1;
@@ -2648,8 +2648,8 @@ void ZapInDir(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
             c->unk12 = 0;
             c->unkA = arg4;
             c->unk16 = old;
-            g = GameInfo;
-            if (*(s16 *)(g + 0x34) == 0xB) {
+            g = GAME;
+            if (g->mode == 0xB) {
                 if (x > 0) {
                     Tile_Update(x - 1, z);
                 }
@@ -3093,7 +3093,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         break;
     case 11:
         nas->UserInfo.status = 5;
-        if (GameInfo[arg2 + 0x5C] == 0 && !(*(u16 *)(GameInfo + 0x30) & 0x801)) {
+        if (GAME->heroOut[arg2] == 0 && !(GAME->exitFlags & 0x801)) {
             Player_SetPoisoned(arg2);
             PlaySfx(0x529, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
         }
@@ -3131,7 +3131,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PowerupAnim(arg2, 0x200D);
         number_of_powerups--;
         PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
-        if (GameInfo[arg2 + 0x5C] != 0) {
+        if (GAME->heroOut[arg2] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
         break;
@@ -3140,7 +3140,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PowerupAnim(arg2, 0x201B);
         number_of_powerups--;
         PlaySfx(0x438, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
-        if (GameInfo[arg2 + 0x5C] != 0) {
+        if (GAME->heroOut[arg2] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
         break;
@@ -3148,7 +3148,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PickupSet(arg2, 4);
         Pogo_PowerupAnim(arg2, 0x2040);
         PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
-        if (GameInfo[arg2 + 0x5C] != 0) {
+        if (GAME->heroOut[arg2] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
         number_of_powerups--;
@@ -3158,7 +3158,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
         Pogo_PowerupAnim(arg2, 0x2002);
         number_of_powerups--;
         PlaySfx(0x51E, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
-        if (GameInfo[arg2 + 0x5C] != 0) {
+        if (GAME->heroOut[arg2] != 0) {
             PogoAI_HeroClaimedPickup(arg2);
         }
         break;
@@ -5095,7 +5095,7 @@ void PogoAI_MoveTowardsTarget(u32 hero) {
 bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags) {
     PogoCell *p;
     HeroInfo *h;
-    u8 *g;
+    GameState *g;
     u16 t;
     u16 a;
 
@@ -5114,8 +5114,8 @@ bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flag
     if (p->unk10 != 0 && p->unk10 != arg0 + 1) {
         return 0;
     }
-    g = GameInfo;
-    if (g[arg0 + 0x5C] == 0 && !(flags & 1)) {
+    g = GAME;
+    if (g->heroOut[arg0] == 0 && !(flags & 1)) {
         goto one;
     }
     t = p->unk12;
@@ -5131,7 +5131,7 @@ bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flag
         if (a == 0xB) {
             return 0;
         }
-        if (*(s16 *)(g + 0x34) != 0xD) {
+        if (g->mode != 0xD) {
             goto one;
         }
         if (a == 0xA) {
@@ -5714,7 +5714,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
         if ((*(s32 *)(g + 0x30) & 0x800801) == 0x800000) {
             for (i = 0; i < 4; i++) {
                 near = 0;
-                if (GameInfo[i + 0x5C] == 0) {
+                if (GAME->heroOut[i] == 0) {
                     if (abs(e->unk10.x - Heroes[i].hero_eng->unk10.x) < 0x580) {
                         near = abs(e->unk10.z - Heroes[i].hero_eng->unk10.z) < 0x580;
                     }
@@ -5846,7 +5846,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
                         break;
                     }
                     near = 0;
-                    if (GameInfo[i + 0x5C] == 0) {
+                    if (GAME->heroOut[i] == 0) {
                         if (abs(e->unk10.x - Heroes[i].hero_eng->unk10.x) < 0x480) {
                             near = abs(e->unk10.z - Heroes[i].hero_eng->unk10.z) < 0x480;
                         }
@@ -6154,7 +6154,7 @@ void Roo_ShootAtHumans(NAS *nas) {
     x = (eng->unk10.x + 0x800) >> 9;
     z = (eng->unk10.z + 0x800) >> 9;
     for (; i < 4; i++) {
-        if (GameInfo[i + 0x5C] != 0 || Heroes[i].hero_mode == 0x3B) {
+        if (GAME->heroOut[i] != 0 || Heroes[i].hero_mode == 0x3B) {
             continue;
         }
         he = Heroes[i].hero_eng;
@@ -7414,10 +7414,10 @@ void SetHeroPogo(u32 arg0) {
 }
 
 void PogoHeroChooseWinner(s32 arg0, u16 arg1) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    if (!(*(u16 *)(g + 0x30) & 0x801)) {
-        u16 f = *(u16 *)(g + 0x32);
+    if (!(g->exitFlags & 0x801)) {
+        u16 f = g->levelFlags;
 
         if (f & 0x80) {
             PogoWinner_Crystal(arg0, (u16)arg1);
@@ -7459,11 +7459,11 @@ void PogoInit_GemChallenge(void) {
 }
 
 void PogoInit_CrystalChallenge(void) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
     s32 i;
 
-    if (*(u16 *)(g + 0x32) & 0x80) {
-        if (*(s16 *)(g + 0x34) == 10) {
+    if (g->levelFlags & 0x80) {
+        if (g->mode == 10) {
             MushroomCount = 0;
             for (i = 0; i < 2; i++) {
                 CreateNAS(0, 0, 0, 0x1407, 0x11);

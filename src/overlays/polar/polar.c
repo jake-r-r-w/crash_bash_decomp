@@ -1769,7 +1769,7 @@ void ResetMass(s32 player) {
     s32 *ext;
 
     if (move != NULL) {
-        switch (GameInfo[player + 0x50]) {
+        switch (GAME->heroes[player]) {
         case 1:
             move->mass = 0x100;
             break;
@@ -4429,7 +4429,7 @@ void UpdatePOLAR(void) {
         i = 0;
         do {
             if (!(Heroes[i].hero_status & 0xFA00)) {
-                if (GameInfo[i + 0x5C] == 0) {
+                if (GAME->heroOut[i] == 0) {
                     HeroesAllOut = 0;
                 }
                 if (((GameState *)GameInfo)->teams != 0
@@ -4867,13 +4867,13 @@ fail:
 }
 
 bool TestForTeamMate(u32 arg0, u32 arg1) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    if (*(s32 *)(g + 0x6C) != 0) {
+    if (g->teams != 0) {
         if (Heroes[arg1].hero_status & 0x2000) {
             return 0;
         }
-        if (arg0 == *(s16 *)(g + 0x48) && arg1 == Heroes[arg0].hero_teammate) {
+        if (arg0 == g->teamLeader[0] && arg1 == Heroes[arg0].hero_teammate) {
             return 1;
         }
         if (arg1 == GameTeamLeader[0] && arg0 == Heroes[arg1].hero_teammate) {
@@ -9618,17 +9618,17 @@ void InitRockProjectile(NAS *m) {
 }
 
 s32 PolarBossSpeedUp(void) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
     s32 k;
 
-    if (g[0xC1] < 10) {
+    if (g->adventure.unkAB[22] < 10) {
         return 0;
     }
     k = 0xB8;
-    if (g[0xC1] >= 30) {
+    if (g->adventure.unkAB[22] >= 30) {
         return 0xE66;
     }
-    return (g[0xC1] - 9) * k;
+    return (g->adventure.unkAB[22] - 9) * k;
 }
 
 void PlotBearBoss(NAS *m) {
@@ -10529,7 +10529,7 @@ void PolarHeroesCollide(s32 p1, s32 p2) {
     s32 b;
 
     if (m1 > 0 && m2 > 0) {
-        if (GameInfo[p1 + 0x5C] != 0) {
+        if (GAME->heroOut[p1] != 0) {
             if (AiPlayerSkill[p1].level < 9) {
                 m1 -= (9 - AiPlayerSkill[p1].level) << 5;
                 if (m1 < 0x11) {
@@ -10540,7 +10540,7 @@ void PolarHeroesCollide(s32 p1, s32 p2) {
                 m1 += (AiPlayerSkill[p1].level - 0x18) << 6;
             }
         }
-        if (GameInfo[p2 + 0x5C] != 0) {
+        if (GAME->heroOut[p2] != 0) {
             if (AiPlayerSkill[p2].level < 9) {
                 m2 -= (9 - AiPlayerSkill[p2].level) << 5;
                 if (m2 < 0x11) {
@@ -10669,13 +10669,13 @@ void PolarHeroBounceOff(s32 player, EXTheromove *other) {
 }
 
 void PolarInitShadow(s32 player) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
     HeroInfo *hero;
     EXTengine *shadow;
     EXTengine *eng;
     s32 *p;
 
-    if (*(s16 *)(g + 0x34) != 0x15 && g[player + 0x50] != 9) {
+    if (g->mode != 0x15 && g->heroes[player] != 9) {
         HeroInfo *base = Heroes;
         s32 *tbl;
 
@@ -10703,7 +10703,7 @@ void PolarInitShadow(s32 player) {
 }
 
 void PolarUpdateShadow(s32 player) {
-    u8 *g;
+    GameState *g;
     HeroInfo *h;
     s32 *ext;
     EXTengine *shadow;
@@ -10729,8 +10729,8 @@ void PolarUpdateShadow(s32 player) {
     if (ext == NULL) {
         return;
     }
-    g = GameInfo;
-    if (*(s16 *)(g + 0x34) == 0x15) {
+    g = GAME;
+    if (g->mode == 0x15) {
         return;
     }
     shadow = h->hero_shadow;
@@ -10741,7 +10741,7 @@ void PolarUpdateShadow(s32 player) {
     shadow->flags |= 0x200000;
     shadow->unk1E = eng->unk1E;
     shadow->unk5E = 1;
-    if (g[player + 0x50] == 9 || h->hero_mode == 0x4E || h->hero_mode == 0x50) {
+    if (g->heroes[player] == 9 || h->hero_mode == 0x4E || h->hero_mode == 0x50) {
         shadow->sub->flags &= ~0x8000;
         shadow->flags &= ~0x8000;
         return;
@@ -10960,7 +10960,7 @@ void PolarPreMoveHero(s32 player) {
             m->z_max -= ((m->mass * 3) >> 3) * rcossin_tbl[(PolarTiltX - 0x400) & 0xFFF].unk2 >> 12;
             if (g->mode == 0x12) {
                 if (g->levelFlags & 0x80) {
-                    if (GameInfo[player + 0x5C] != 0) {
+                    if (GAME->heroOut[player] != 0) {
                         m->x_max += ((m->mass * 3) >> 4) * rcossin_tbl[(MapSceneRot.vz - 0x400) & 0xFFF].unk2 >> 12;
                         m->z_max -= ((m->mass * 3) >> 4) * rcossin_tbl[(MapSceneRot.vx - 0x400) & 0xFFF].unk2 >> 12;
                     } else {
@@ -11888,7 +11888,7 @@ void SetPolarHeroOffice(s32 player) {
     HeroInfo *hero;
     PolarHitExt *ext;
     EXTheromove *move;
-    u8 *g;
+    GameState *g;
     u16 status;
     HeroInfo *base;
     HeroInfo *base2;
@@ -11931,9 +11931,9 @@ void SetPolarHeroOffice(s32 player) {
                     Heroes[player].hero_anim->Aindex = 0x21;
                 }
             }
-            g = GameInfo;
-            if (*(u16 *)(g + 0x32) & 0x80) {
-                if (g[player + 0x5C] == 0 && *(s16 *)(g + 0x34) == 0x14) {
+            g = GAME;
+            if (g->levelFlags & 0x80) {
+                if (g->heroOut[player] == 0 && g->mode == 0x14) {
                     Heroes[player].hero_anim->Aindex = 0x21;
                 }
             }
@@ -13189,10 +13189,10 @@ void PolarHeroInBeam(s32 player) {
 }
 
 void PolarHeroWeight(s32 player) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
     EXTheromove *mv;
 
-    if (*(s16 *)(g + 0x34) != 0x16) {
+    if (g->mode != 0x16) {
         PadState *b = Pads;
         PadState *p = &b[player];
         *(s32 *)((u8 *)p + 0x50) = 0;
@@ -13206,7 +13206,7 @@ void PolarHeroWeight(s32 player) {
         mv->x_vel = 0;
         mv->z_vel = 0;
     }
-    if (*(s16 *)(g + 0x34) != 0x16) {
+    if (g->mode != 0x16) {
         TestPolarHeroWon(player);
     }
 }

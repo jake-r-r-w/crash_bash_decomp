@@ -501,13 +501,13 @@ process_info TitlesExtraScreen = { TitlesExtraScreenInit, 0, TitlesExtraScreenRe
 process_info TitlesShellScreen = { TitlesShellScreenInit, TitlesShellScreenUpdate, TitlesShellScreenRender, 0, 0 };
 
 void TitlesInitLevel(void) {
-    u8 *g;
+    GameState *g;
     process_info **p;
     u8 *a1;
 
     ResetWarpRooms();
-    g = GameInfo;
-    g[0x62] = 0;
+    g = GAME;
+    g->warpRoom = 0;
     cam_init(&TitlesCamera);
     *(s32 *)((u8 *)&TitlesCamera + 8) = 0x400;
     *(s32 *)((u8 *)&TitlesCamera + 0x18) = 0x190;
@@ -518,23 +518,23 @@ void TitlesInitLevel(void) {
     GetEngineSlot(1)->sub[7].flags &= ~0x8000;
     GetEngineSlot(1)->sub[3].flags &= ~0x8000;
     joypad_idle_count = 0;
-    switch (*(s16 *)(g + 0x34)) {
+    switch (g->mode) {
     case 0x28:
         core_process = 0;
         ResetGameState();
-        *(u16 *)(g + 0x32) |= 0x200;
+        g->levelFlags |= 0x200;
         process_control_init(&MenuProcessControl, &MainMenu);
         break;
     case 0x29:
         p = BattleChainResume;
-        g[0x27] = 4;
+        g->maxPlayers = 4;
         a1 = (u8 *)*p;
         MenuChainPos = p;
         process_control_init(&MenuProcessControl, (process_info *)a1);
         break;
     case 0x2A:
         p = TournamentChainResume;
-        g[0x27] = 4;
+        g->maxPlayers = 4;
         a1 = (u8 *)*p;
         MenuChainPos = p;
         process_control_init(&MenuProcessControl, (process_info *)a1);
@@ -554,13 +554,13 @@ void TitlesCheckIdle(void) {
             GameMode = 0x28;
             GotoScriptScene(IntroMovieMsgs, &LevelLoadProcess);
         } else {
-            u8 *g = GameInfo;
+            GameState *g = GAME;
             u8 *t = (u8 *)TitlesDemoModes;
             u16 v = *(u16 *)(t + ((f * 2) & 0xC));
-            *(s32 *)(g + 0x68) = 1;
-            *(s32 *)(g + 0x14) = 0x384;
+            g->demo = 1;
+            g->demoTimer = 0x384;
             ProcessControl.next_process = &LevelLoadProcess;
-            *(u16 *)(g + 0x34) = v;
+            g->mode = v;
         }
         IdleFrames += 1;
     }
@@ -1195,20 +1195,20 @@ void TitlesLeaveInit(void) {
 }
 
 void NewLoadMenuInit(void) {
-    u8 *g;
+    GameState *g;
     PlaceEngineSlot(0, (PlaceRec *)NewLoadMenuPlace);
     NewLoadMenuCursor = 0;
     MainMenuCursor = 0;
-    g = GameInfo;
-    g[0x27] = 2;
-    *(s32 *)(g + 0x6C) = 1;
-    g[0x54] = 1;
-    *(s16 *)(g + 0x48) = 0;
-    *(s16 *)(g + 0x4A) = 2;
-    g[0x55] = 0;
-    g[0x56] = 3;
-    g[0x57] = 2;
-    *(u16 *)(g + 0x32) |= 4;
+    g = GAME;
+    g->maxPlayers = 2;
+    g->teams = 1;
+    g->teammateChoice[0] = 1;
+    g->teamLeader[0] = 0;
+    g->teamLeader[1] = 2;
+    g->teammateChoice[1] = 0;
+    g->teammateChoice[2] = 3;
+    g->teammateChoice[3] = 2;
+    g->levelFlags |= 4;
 }
 
 void num_players_render(void) {
@@ -1228,13 +1228,13 @@ void PlayersMenuInit(void) {
 }
 
 void MainMenuInit(void) {
-    u8 *g;
+    GameState *g;
     MainMenuCursor = 0;
     ResetGameState();
-    g = GameInfo;
-    *(s16 *)(g + 0x34) = 0x28;
+    g = GAME;
+    g->mode = 0x28;
     MainMenuHintTimer = 0;
-    *(u16 *)(g + 0x32) |= 0x200;
+    g->levelFlags |= 0x200;
     PlaceEngineSlot(0, (PlaceRec *)MainMenuPlace);
 }
 
@@ -1329,13 +1329,13 @@ void TitlesUpdateLevel(void) {
 }
 
 void TitlesPreInitLevel(void) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    g[0x50] = 9;
-    g[0x51] = 9;
-    g[0x52] = 9;
-    g[0x53] = 9;
-    *(u16 *)(g + 0x32) |= 0x200;
+    g->heroes[0] = 9;
+    g->heroes[1] = 9;
+    g->heroes[2] = 9;
+    g->heroes[3] = 9;
+    g->levelFlags |= 0x200;
 }
 
 void TitlesSetUp(void) {
@@ -1475,8 +1475,8 @@ void UpdateCharSelector(TitlesSlot *slot) {
             s->u6C.dbase = &HeroModelBank[card[o->unk30].model];
             s->flags |= 0x8000;
         }
-        GameInfo[o->unk4 + 0x50] = card[o->unk30].hero;
-        GameInfo[o->unk4 + 0x4C] = card[o->unk30].hero;
+        GAME->heroes[o->unk4] = card[o->unk30].hero;
+        GAME->heroChoice[o->unk4] = card[o->unk30].hero;
         PlaySfx(CharPickSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
         o->ext = ExtTemplate400;
         {
@@ -1540,7 +1540,7 @@ void ShuffleCharSelectors(void) {
 }
 
 s32 CpuPickCharacter(s32 a0) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
     s32 r;
     s32 i;
     s8 *t;
@@ -1548,16 +1548,16 @@ s32 CpuPickCharacter(s32 a0) {
     s32 w;
     CharCard *rec;
 
-    if (*(u16 *)(g + 0x32) & 4) {
-        if (g[0x26] == 1) {
+    if (g->levelFlags & 4) {
+        if (g->players == 1) {
             s8 *t = AdventureHeadsSolo;
             s32 v = Random(2) + (a0 - 1) * 2;
-            s32 w = (g[0x4C] - 1) * 6;
+            s32 w = (g->heroChoice[0] - 1) * 6;
             r = t[v + w];
         } else {
             s8 *t = AdventureHeadsTeam;
-            s32 v = Random(2) + (a0 - 2) * 2 + (g[0x4D] - 1) * 4;
-            s32 w = (g[0x4C] - 1) << 5;
+            s32 v = Random(2) + (a0 - 2) * 2 + (g->heroChoice[1] - 1) * 4;
+            s32 w = (g->heroChoice[0] - 1) << 5;
             r = t[v + w];
         }
         i = 0;
@@ -1657,17 +1657,17 @@ void CharSelectRender(void) {
 }
 
 s8 adventure_mode_head(s32 a0) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    if (g[0x26] == 1) {
+    if (g->players == 1) {
         s8 *t = AdventureHeadsSolo;
         s32 v = Random(2) + (a0 - 1) * 2;
-        s32 w = (g[0x4C] - 1) * 6;
+        s32 w = (g->heroChoice[0] - 1) * 6;
         return t[v + w];
     } else {
         s8 *t = AdventureHeadsTeam;
-        s32 v = Random(2) + (a0 - 2) * 2 + (g[0x4D] - 1) * 4;
-        s32 w = (g[0x4C] - 1) << 5;
+        s32 v = Random(2) + (a0 - 2) * 2 + (g->heroChoice[1] - 1) * 4;
+        s32 w = (g->heroChoice[0] - 1) << 5;
         return t[v + w];
     }
 }
@@ -1805,28 +1805,28 @@ void LevelSelectInit(void) {
 
 void LevelSelectInput(void) {
     s32 *tbl;
-    u8 *g;
+    GameState *g;
     EXTengine *e;
     s32 c;
 
-    if ((Pads[0].pressed & 0x80) && (s8)GameInfo[0x36] > 0) {
+    if ((Pads[0].pressed & 0x80) && (s8)GAME->arena > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         LevelSelectReload = 4;
-        GameInfo[0x36]--;
+        GAME->arena--;
     }
-    if ((Pads[0].pressed & 0x20) && (s8)GameInfo[0x36] < 6) {
+    if ((Pads[0].pressed & 0x20) && (s8)GAME->arena < 6) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         LevelSelectReload = 4;
-        GameInfo[0x36]++;
+        GAME->arena++;
     }
-    if ((Pads[0].pressed & 0x10) && (s8)GameInfo[0x37] > 0) {
+    if ((Pads[0].pressed & 0x10) && (s8)GAME->arenaLevel > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        GameInfo[0x37]--;
+        GAME->arenaLevel--;
     }
     if ((Pads[0].pressed & 0x40)
-        && (s8)GameInfo[0x37] < BattleArenas[(s8)GameInfo[0x36]].unk4 - 1) {
+        && (s8)GAME->arenaLevel < BattleArenas[(s8)GAME->arena].unk4 - 1) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-        GameInfo[0x37]++;
+        GAME->arenaLevel++;
     }
     if (((PadState *)Pads)->pressed & 0x1000) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1841,41 +1841,41 @@ void LevelSelectInput(void) {
         }
     }
     if (TitlesSlotOn()) {
-        GetEngineSlot(0)->sub->u6C.dbase = (void *)TitlesSlotRowI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
+        GetEngineSlot(0)->sub->u6C.dbase = (void *)TitlesSlotRowI((s8)GAME->arena, (s8)GAME->arenaLevel);
         GetEngineSlot(0)->sub->unk08 = 8;
-        GetEngineSlot(2)->sub->u6C.dbase = (void *)TitlesSlotModelI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
-        GetEngineSlot(2)->sub->entity = TitlesSlotCI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
+        GetEngineSlot(2)->sub->u6C.dbase = (void *)TitlesSlotModelI((s8)GAME->arena, (s8)GAME->arenaLevel);
+        GetEngineSlot(2)->sub->entity = TitlesSlotCI((s8)GAME->arena, (s8)GAME->arenaLevel);
         GetEngineSlot(0)->sub[4].flags |= 0x8000;
         GetEngineSlot(0)->sub[9].flags &= ~0x8000;
         return;
     }
     e = GetEngineSlot(0);
     tbl = LangLocked;
-    g = GameInfo;
-    e->sub->u6C.text = (void *)tbl[*(s32 *)(g + 0x2C)];
+    g = GAME;
+    e->sub->u6C.text = (void *)tbl[g->language];
     GetEngineSlot(2)->sub->entity = 0;
     GetEngineSlot(0)->sub[4].flags &= ~0x8000;
     GetEngineSlot(0)->sub->unk08 = 0x1C;
     GetEngineSlot(0)->sub[9].flags |= 0x8000;
-    if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + ((s8)GameInfo[0x37] << 4)))->type == 2)) {
+    if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + ((s8)GAME->arenaLevel << 4)))->type == 2)) {
         if (CardStatus & 2) {
             if (CardStatus & 0x40) {
-                GetEngineSlot(0)->sub[9].u6C.text = (void *)LangCheckingCard[*(s32 *)(GameInfo + 0x2C)];
+                GetEngineSlot(0)->sub[9].u6C.text = (void *)LangCheckingCard[GAME->language];
             } else if (CardStatus & 0x10) {
                 if (UnlockCardLevels(0) != 0) {
-                    *(s32 *)&GetEngineSlot(0)->sub[9].u6C.text = LangPressToUnlockLevels[*(s32 *)(GameInfo + 0x2C)];
+                    *(s32 *)&GetEngineSlot(0)->sub[9].u6C.text = LangPressToUnlockLevels[GAME->language];
                     if (Pads[0].pressed & 0x2000) {
                         PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
                         UnlockCardLevels(1);
                     }
                 } else {
-                    GetEngineSlot(0)->sub[9].u6C.text = (void *)LangNoMoreUnlocked[*(s32 *)(GameInfo + 0x2C)];
+                    GetEngineSlot(0)->sub[9].u6C.text = (void *)LangNoMoreUnlocked[GAME->language];
                 }
             } else {
-                GetEngineSlot(0)->sub[9].u6C.text = (void *)LangInsertCard[*(s32 *)(GameInfo + 0x2C)];
+                GetEngineSlot(0)->sub[9].u6C.text = (void *)LangInsertCard[GAME->language];
             }
         } else {
-            GetEngineSlot(0)->sub[9].u6C.text = (void *)LangInsertCard[*(s32 *)(GameInfo + 0x2C)];
+            GetEngineSlot(0)->sub[9].u6C.text = (void *)LangInsertCard[GAME->language];
         }
     } else {
         GetEngineSlot(0)->sub[9].u6C.dbase = NULL;
@@ -1896,7 +1896,7 @@ void LevelSelectUpdate(void) {
     s32 boff;
     s32 w;
     s32 c;
-    u8 *h;
+    GameState *h;
     BattleArena *tbl;
     TrigEntry *trig;
 
@@ -1914,13 +1914,13 @@ void LevelSelectUpdate(void) {
         LevelSelectInput();
     }
     e0 = GetEngineSlot(0);
-    boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + ((s8)GameInfo[0x37] << 4)))->idx;
+    boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + ((s8)GAME->arenaLevel << 4)))->idx;
     w = ModeTypes[boff * 3] - 0x101;
-    off = ((s32 **)LangModeTypeTexts)[*(s32 *)(GameInfo + 0x2C)][w];
+    off = ((s32 **)LangModeTypeTexts)[GAME->language][w];
     e0->sub[6].u6C.dbase = (void *)off;
     t = &GetEngineSlot(0)->sub[1];
     t->unk08 = lerp_fix12(t->unk08,
-        *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)GameInfo[0x37] + 4] + 0x72) + 0x32, 0x800);
+        *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)GAME->arenaLevel + 4] + 0x72) + 0x32, 0x800);
     i = 0;
     off = 0;
     for (;;) {
@@ -1930,13 +1930,13 @@ void LevelSelectUpdate(void) {
         s32 fl;
         EXTengine *e;
 
-        if (i >= (BattleArenas + (s8)GameInfo[0x36])->unk4) {
+        if (i >= (BattleArenas + (s8)GAME->arena)->unk4) {
             break;
         }
         GetEngineSlot(1)->sub[off + 4].flags |= 0x8000;
         e = GetEngineSlot(i + 3);
-        fl = *(s32 *)(GameInfo + 4) & 0x2000;
-        slot = &((BattleLevel *)BattleArenas[(s8)GameInfo[0x36]].unk0)[off];
+        fl = GAME->cheats & 0x2000;
+        slot = &((BattleLevel *)BattleArenas[(s8)GAME->arena].unk0)[off];
         idx = slot->idx;
         type = slot->type;
         s = e->sub;
@@ -1947,8 +1947,8 @@ void LevelSelectUpdate(void) {
             on = 0;
         }
         if (on) {
-            s->u6C.dbase = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + (off << 4)))->model;
-            c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + (off << 4)))->unkC;
+            s->u6C.dbase = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + (off << 4)))->model;
+            c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GAME->arena].unk0 + (off << 4)))->unkC;
             s->entity = c;
             s->unk10 = 0x7D;
             s->unk12 = 0;
@@ -1974,8 +1974,8 @@ void LevelSelectUpdate(void) {
         GetEngineSlot(1)->sub[i + 4].flags &= ~0x8000;
         GetEngineSlot(i + 3)->sub->entity = 0;
     }
-    h = GameInfo;
-    NextGameMode = ((BattleLevel *)((u8 *)BattleArenas[(s8)h[0x36]].unk0 + ((s8)h[0x37] << 4)))->idx;
+    h = GAME;
+    NextGameMode = ((BattleLevel *)((u8 *)BattleArenas[(s8)h->arena].unk0 + ((s8)h->arenaLevel << 4)))->idx;
     q = GetEngineSlot(2)->sub;
     q->unk10 = 0x7D;
     q->unk51 = 0;

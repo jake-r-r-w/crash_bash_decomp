@@ -1186,7 +1186,7 @@ void PlotHazardType(NAS *nas) {
         if (owner != -1) {
             a = AiPlayerSkill[owner].level;
             b = 0x20 - a;
-            if (GameInfo[owner + 0x5C] != 0) {
+            if (GAME->heroOut[owner] != 0) {
                 w = a;
                 o = b;
             } else {
@@ -1586,7 +1586,7 @@ void SpinScoreBalloon(SpinFux *arg0) {
         b = 0x20 - a;
         a = p[a];
         b = p[b];
-        if (GameInfo[idx + 0x5C] != 0) {
+        if (GAME->heroOut[idx] != 0) {
             w0 = a;
             w1 = a >> 1;
             w2 = b;
@@ -2847,7 +2847,7 @@ void SetSpinHeroFlip(s32 arg0) {
     e->platform = NULL;
     SetHeroSeq(arg0, 0x2C);
     idx = 0;
-    if (GameInfo[arg0 + 0x5C] == 0) {
+    if (GAME->heroOut[arg0] == 0) {
         idx = h->hero_name;
     }
     h->hero_move->jump_vel = HeroHooks.JumpEnts[idx].vel;

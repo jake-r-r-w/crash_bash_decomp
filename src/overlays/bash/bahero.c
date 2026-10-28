@@ -142,7 +142,7 @@ void BashHeroHold(s32 arg0) {
         goto rest;
     }
     if (o->can_do & 4) {
-        if (GameInfo[arg0 + 0x5C] != 0) {
+        if (GAME->heroOut[arg0] != 0) {
             m = ((PadState *)Pads)[arg0].dir & 0x2000;
         } else {
             m = ((PadState *)Pads)[arg0].dirPressed & 0x2000;
@@ -1181,7 +1181,7 @@ void SetBashHeroPickup(s32 arg0) {
 s32 BashSpacePadHook(s32 arg0) {
     u32 m;
 
-    if (GameInfo[arg0 + 0x5C] != 0) {
+    if (GAME->heroOut[arg0] != 0) {
         return 0;
     }
     m = Pads[arg0].dirPressed & 0x2000;

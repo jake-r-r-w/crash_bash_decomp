@@ -1054,7 +1054,7 @@ void RaceInitHeroAngle(s32 player) {
     if (h->hero_frozen == 0) {
         if (!(h->hero_ctrl & 1)) {
             h->hero_eng->unk1E += angle_diff(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
-            if (GameInfo[player + 0x5C] != 0) {
+            if (GAME->heroOut[player] != 0) {
                 h->hero_eng->unk20 += angle_diff(h->hero_eng->unk20, RaceSteer[player]) >> 3;
             } else {
                 h->hero_eng->unk20 += angle_diff(h->hero_eng->unk20, RaceSteer[player]) >> 2;
@@ -1067,8 +1067,8 @@ void RaceInitHeroAngle(s32 player) {
 
 void InitialiseRACEFirst(void) {
     RaceHooks *h;
-    u8 *g;
-    u8 *g2;
+    GameState *g;
+    GameState *g2;
     u16 flags;
     void **p;
     void *t;
@@ -1078,8 +1078,8 @@ void InitialiseRACEFirst(void) {
     h->HeroBot = Race_HeroBot;
     h->HeroModels = RaceHeroModels;
     do {} while (0);
-    g = GameInfo;
-    if (*(s16 *)(g + 0x34) == 0x19) {
+    g = GAME;
+    if (g->mode == 0x19) {
         h->HeroModels = RaceHeroModelsWater;
     }
     h->InitHero = (s32)RaceInitHero;
@@ -1088,7 +1088,7 @@ void InitialiseRACEFirst(void) {
     h->RunSpeeds = RaceJumpTable;
     h->CreateShadow = ModelCreateShadow;
     h->UpdateShadow = ModelUpdateShadow;
-    flags = *(u16 *)(g + 0x32);
+    flags = g->levelFlags;
     h->ChooseWinner = RaceChooseWinner;
     if (flags & 0x40) {
         h->ChooseWinner = RaceChooseWinnerTeam;
@@ -1100,10 +1100,10 @@ void InitialiseRACEFirst(void) {
         h->ChooseWinner = RaceChooseWinnerTeam;
     }
     h->VictorySeqs = RaceVictorySeqs;
-    *(u16 *)(g + 0x32) = flags | 0x800;
+    g->levelFlags = flags | 0x800;
     do {} while (0);
     p = &AiSkillTable;
-    if (*(s32 *)(g + 0x6C) != 0) {
+    if (g->teams != 0) {
         t = RaceDashAiSkillAlt;
     } else {
         t = RaceDashAiSkill;
@@ -1115,10 +1115,10 @@ void InitialiseRACEFirst(void) {
     AiTeamSkillTable = RaceDashAiTeamSkill;
     MainCamera.dist = 0x22B;
     do {} while (0);
-    g2 = GameInfo;
-    if (*(s16 *)(g2 + 0x34) == 0x18) {
+    g2 = GAME;
+    if (g2->mode == 0x18) {
         p = &AiSkillTable;
-        if (*(s32 *)(g2 + 0x6C) != 0) {
+        if (g2->teams != 0) {
             t = RaceToxicAiSkillAlt;
         } else {
             t = RaceToxicAiSkill;
@@ -1129,10 +1129,10 @@ void InitialiseRACEFirst(void) {
         AiHumanRoundTweakTable = RaceToxicAiHumanRoundTweak;
         AiTeamSkillTable = RaceToxicAiTeamSkill;
     }
-    g2 = GameInfo;
-    if (*(s16 *)(g2 + 0x34) == 0x1A) {
+    g2 = GAME;
+    if (g2->mode == 0x1A) {
         p = &AiSkillTable;
-        if (*(s32 *)(g2 + 0x6C) != 0) {
+        if (g2->teams != 0) {
             t = RaceLavaAiSkillAlt;
         } else {
             t = RaceLavaAiSkill;
@@ -1143,10 +1143,10 @@ void InitialiseRACEFirst(void) {
         AiHumanRoundTweakTable = RaceLavaAiHumanRoundTweak;
         AiTeamSkillTable = RaceLavaAiTeamSkill;
     }
-    g2 = GameInfo;
-    if (*(s16 *)(g2 + 0x34) == 0x19) {
+    g2 = GAME;
+    if (g2->mode == 0x19) {
         p = &AiSkillTable;
-        if (*(s32 *)(g2 + 0x6C) != 0) {
+        if (g2->teams != 0) {
             t = RaceWaterAiSkillAlt;
         } else {
             t = RaceWaterAiSkill;
@@ -4026,7 +4026,7 @@ s32 RaceHeroTestJump(s32 arg0) {
     s32 st;
 
     if (Heroes[arg0].hero->FUX != NULL) {
-        if (GameInfo[arg0 + 0x5C] != 0) {
+        if (GAME->heroOut[arg0] != 0) {
             b1 = (PadState *)Pads;
             p1 = &b1[arg0];
             st = p1->dir;
@@ -4104,7 +4104,7 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
                     }
                 }
             }
-            GameInfo[j + 0xA7] = best;
+            GAME->adventure.unkA7[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -4115,19 +4115,19 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
                     Heroes[k].hero_status |= 0x100;
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                     }
                 }
             } else {
-                GameInfo[0x60] = a->hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+                GAME->winner[0] = a->hero_name;
+                GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GameInfo[0xA7] == n) {
+                    if (GAME->adventure.unkA7[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x8400;
@@ -4148,37 +4148,37 @@ void RaceChooseWinnerTeam(s32 arg0, s32 arg1) {
             ib = *(s16 *)(g + 0x4A);
             ita = Heroes[ia].hero_teammate;
             itb = Heroes[ib].hero_teammate;
-            if (Heroes[ia].hero_score == 0 && GameInfo[ia + 0x5C] == 0) {
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+            if (Heroes[ia].hero_score == 0 && GAME->heroOut[ia] == 0) {
+                GAME->exitFlags |= 0x800;
                 RACE_TEAM_WIN(ia, ita, ib, itb);
-            } else if (Heroes[ita].hero_score == 0 && GameInfo[ia + 0x5C] == 0) {
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+            } else if (Heroes[ita].hero_score == 0 && GAME->heroOut[ia] == 0) {
+                GAME->exitFlags |= 0x800;
                 RACE_TEAM_WIN(ia, ita, ib, itb);
-            } else if (Heroes[ib].hero_score == 0 && GameInfo[ib + 0x5C] == 0) {
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+            } else if (Heroes[ib].hero_score == 0 && GAME->heroOut[ib] == 0) {
+                GAME->exitFlags |= 0x800;
                 RACE_TEAM_WIN(ib, itb, ia, ita);
-            } else if (Heroes[itb].hero_score == 0 && GameInfo[ib + 0x5C] == 0) {
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+            } else if (Heroes[itb].hero_score == 0 && GAME->heroOut[ib] == 0) {
+                GAME->exitFlags |= 0x800;
                 RACE_TEAM_WIN(ib, itb, ia, ita);
-            } else if (Heroes[ia].hero_score == 0 && GameInfo[ia + 0x5C] != 0) {
+            } else if (Heroes[ia].hero_score == 0 && GAME->heroOut[ia] != 0) {
                 RACE_DRAW(p, arg1);
-            } else if (Heroes[ita].hero_score == 0 && GameInfo[ia + 0x5C] != 0) {
+            } else if (Heroes[ita].hero_score == 0 && GAME->heroOut[ia] != 0) {
                 RACE_DRAW(p, arg1);
-            } else if (Heroes[ib].hero_score == 0 && GameInfo[ib + 0x5C] != 0) {
+            } else if (Heroes[ib].hero_score == 0 && GAME->heroOut[ib] != 0) {
                 RACE_DRAW(p, arg1);
-            } else if (Heroes[itb].hero_score == 0 && GameInfo[ib + 0x5C] != 0) {
+            } else if (Heroes[itb].hero_score == 0 && GAME->heroOut[ib] != 0) {
                 RACE_DRAW(p, arg1);
             } else {
                 sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
                 sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
                 if (sa == sb) {
                     RACE_DRAW(p, arg1);
-                } else if ((sa < sb && GameInfo[ia + 0x5C] == 0)
-                           || (sb < sa && GameInfo[ib + 0x5C] == 0)) {
-                    u8 *w = GameInfo;
+                } else if ((sa < sb && GAME->heroOut[ia] == 0)
+                           || (sb < sa && GAME->heroOut[ib] == 0)) {
+                    GameState *w = GAME;
 
-                    *(u16 *)(w + 0x30) |= 0x800;
-                    if (w[ia + 0x5C] == 0) {
+                    w->exitFlags |= 0x800;
+                    if (w->heroOut[ia] == 0) {
                         RACE_TEAM_WIN(ia, ita, ib, itb);
                     } else {
                         RACE_TEAM_WIN(ib, itb, ia, ita);

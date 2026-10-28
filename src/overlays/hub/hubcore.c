@@ -1201,11 +1201,11 @@ s32 HubDistXZ(u8 *arg0, u8 *arg1) {
 }
 
 void HubGoToMode(s32 arg0) {
-    u8 *p;
+    GameState *p;
     NextGameMode = arg0;
-    p = GameInfo;
-    *(u16 *)(p + 0x30) = 0x8008;
-    *(u16 *)(p + 0x24) = 0xA;
+    p = GAME;
+    p->exitFlags = 0x8008;
+    p->exitDelay = 0xA;
 }
 
 void HubCamFromPath(u8 *cam, s32 arg1) {
@@ -1439,11 +1439,11 @@ void InitialiseHUBFirst(void) {
 s32 HubLookup(s32 arg0) {
     KeyedPair *p = HubLockPanels;
     s32 i = 10;
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
     for (; i != -1; i--) {
         if (p->key == arg0) {
-            return p->val[*(s32 *)(g + 0x2C)];
+            return p->val[g->language];
         }
         p++;
     }
@@ -1462,7 +1462,7 @@ void InitialisePodiumFirst(void) {
     PodiumTrophyObj = NULL;
     for (i = 0; i < 4; i++) {
         PodiumHeroNas[i] = 0;
-        switch (GameInfo[i + 0x4C]) {
+        switch (GAME->heroChoice[i]) {
         case 1: dbase_load_textures(&HeroModelBank[DB_CharsWarpCrash]); break;
         case 2: dbase_load_textures(&HeroModelBank[DB_CharsWarpCoco]); break;
         case 3: dbase_load_textures(&HeroModelBank[DB_CharsWarpCortex]); break;
@@ -1497,8 +1497,8 @@ void InitialisePodium(void) {
     PodiumReady = 0;
     PodiumCheerTimer = 0x5A;
     for (i = 0; i < 4; i++) {
-        h = GameInfo[i + 0xA7];
-        name = GameInfo[h + 0x4C];
+        h = GAME->adventure.unkA7[i];
+        name = GAME->heroChoice[h];
         Heroes[h].hero_name = name;
         switch (name) {
         case 2: k = 0xD7; break;
@@ -1648,7 +1648,7 @@ void PodiumCheer(void) {
     s32 r;
     s32 x;
 
-    switch (GameInfo[GameInfo[0xA7] + 0x4C]) {
+    switch (GameInfo[GAME->adventure.unkA7[0] + 0x4C]) {
     case 3:
     case 4:
     case 6:
@@ -1843,7 +1843,7 @@ void PodiumCamera(CamView *out, s32 arg1) {
 
     if (arg1 != 0) {
         PodiumState = 0;
-        switch (GameInfo[GameInfo[0xA7] + 0x4C]) {
+        switch (GameInfo[GAME->adventure.unkA7[0] + 0x4C]) {
         case 1:
         case 2:
             PlaySfx(0x352, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1951,16 +1951,16 @@ void PodiumShowScores(void) {
 
     e = GetEngineSlot(6);
     if (e != NULL) {
-        n = GameInfo[0x9F];
+        n = GAME->adventure.unk9F[0];
         PodiumScore1[1] = n % 10 + 0x30;
         PodiumScore1[0] = n / 10 % 10 + 0x30;
-        n = GameInfo[0xA0];
+        n = GAME->adventure.unk9F[1];
         PodiumScore2[1] = n % 10 + 0x30;
         PodiumScore2[0] = n / 10 % 10 + 0x30;
-        n = GameInfo[0xA1];
+        n = GAME->adventure.unk9F[2];
         PodiumScore3[1] = n % 10 + 0x30;
         PodiumScore3[0] = n / 10 % 10 + 0x30;
-        n = GameInfo[0xA2];
+        n = GAME->adventure.unk9F[3];
         PodiumScore4[1] = n % 10 + 0x30;
         PodiumScore4[0] = n / 10 % 10 + 0x30;
         PlaceEngineSlot(6, &PodiumScoreCount);
@@ -2463,7 +2463,7 @@ void HubSaveMenuInput(void) {
             case 4:
                 e4 = &HubNamePages[HubNamePage];
                 if (HubNameLen < 8) {
-                    GameInfo[HubNameLen + 0x18] = 0x20;
+                    GAME->name[HubNameLen] = 0x20;
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                     if (HubNameLen < 7) {
                         HubNameLen += 1;
@@ -2479,7 +2479,7 @@ void HubSaveMenuInput(void) {
                 e = &HubNamePages[HubNamePage];
                 c = *k->unk4;
                 if (HubNameLen < 8) {
-                    GameInfo[HubNameLen + 0x18] = c;
+                    GAME->name[HubNameLen] = c;
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                     if (HubNameLen < 7) {
                         HubNameLen += 1;
@@ -2492,7 +2492,7 @@ void HubSaveMenuInput(void) {
                 }
                 break;
             case 3:
-                if (GameInfo[HubNameLen + 0x18] == 0x20) {
+                if (GAME->name[HubNameLen] == 0x20) {
                     if (HubNameLen > 0) {
                         HubNameLen -= 1;
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2500,7 +2500,7 @@ void HubSaveMenuInput(void) {
                         PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                 }
-                GameInfo[HubNameLen + 0x18] = 0x20;
+                GAME->name[HubNameLen] = 0x20;
                 break;
             case 1:
                 PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2547,7 +2547,7 @@ void HubSaveMenuInit(void) {
     }
     HubSaveChoice = 0;
     for (HubNameLen = 7; HubNameLen > 0; HubNameLen--) {
-        if (GameInfo[HubNameLen + 0x18] != 0x20) {
+        if (GAME->name[HubNameLen] != 0x20) {
             break;
         }
     }
@@ -2609,7 +2609,7 @@ void HubNameEntryKey(s8 arg0) {
 
     e = &HubNamePages[HubNamePage];
     if (HubNameLen < 8) {
-        GameInfo[HubNameLen + 0x18] = arg0;
+        GAME->name[HubNameLen] = arg0;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         if (HubNameLen < 7) {
             HubNameLen += 1;

@@ -372,11 +372,11 @@ void InitialisePAPUFirst(void) {
     HeroHooks.PostMoveHero = PapuHeroCheckPit;
     g = (GameState *)GameInfo;
     g->levelFlags |= 0x900;
-    if (*(s32 *)(GameInfo + 0x6C) == 0) {
-        GameInfo[0x51] = 9;
+    if (GAME->teams == 0) {
+        GAME->heroes[1] = 9;
     }
-    GameInfo[0x52] = 9;
-    GameInfo[0x53] = 9;
+    GAME->heroes[2] = 9;
+    GAME->heroes[3] = 9;
     HeroActHit = 0x15;
     HeroActPickup = 0x16;
     HeroActHold = 0x17;
@@ -385,7 +385,7 @@ void InitialisePAPUFirst(void) {
     HeroActDead = 0x1A;
     HeroActWinner = 0x1B;
     p = &AiSkillTable;
-    if (*(s32 *)(GameInfo + 0x6C) != 0) {
+    if (GAME->teams != 0) {
         v = PapuAiSkillAlt;
     } else {
         v = PapuAiSkill;
@@ -420,7 +420,7 @@ void InitialisePAPU(void) {
         move->facing_angle = angle;
         move->forward_angle = angle;
         Heroes[i].hero_ctrl |= 8;
-        if (GameInfo[0x51] == 9) {
+        if (GAME->heroes[1] == 9) {
             Heroes[i].hero_shadow->flags = 0;
         }
     }

@@ -2458,14 +2458,14 @@ s32 NoxPointInBox(s32 *arg0, s32 *arg1) {
 }
 
 s32 NoxFadeLevel(void) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
     s32 r;
 
-    if (g[0xCA] < 10) {
+    if (g->adventure.unkAB[31] < 10) {
         r = 230;
-    } else if (g[0xCA] < 30) {
-        return 230 - (g[0xCA] - 10) * 179 / 20;
+    } else if (g->adventure.unkAB[31] < 30) {
+        return 230 - (g->adventure.unkAB[31] - 10) * 179 / 20;
     } else {
         r = 51;
     }

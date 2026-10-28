@@ -72,14 +72,14 @@ void BonkPreMoveHero(s32 arg0) {
     if (Heroes[arg0].hero_frozen != 0) {
         ((PadState *)Pads)[arg0].dir &= 0x8000;
     }
-    if ((((PadState *)Pads)[arg0].flags & 1) || GameInfo[arg0 + 0x5C] != 0) {
+    if ((((PadState *)Pads)[arg0].flags & 1) || GAME->heroOut[arg0] != 0) {
         if (((PadState *)Pads)[arg0].dir & 0xF0) {
             m->forward_angle = ((PadState *)Pads)[arg0].angle.lo + 0x800;
             if (m->velocity_enable != 0) {
                 if (BonkSlots[arg0].f8 == 0) {
-                    m->forward_speed = GameInfo[arg0 + 0x5C] != 0 ? BonkSteerB[BonkSkill] : 0x50;
+                    m->forward_speed = GAME->heroOut[arg0] != 0 ? BonkSteerB[BonkSkill] : 0x50;
                 } else {
-                    m->forward_speed = GameInfo[arg0 + 0x5C] != 0 ? BonkSteerA[BonkSkill] : 0x2D;
+                    m->forward_speed = GAME->heroOut[arg0] != 0 ? BonkSteerA[BonkSkill] : 0x2D;
                 }
             }
         } else {
@@ -251,7 +251,7 @@ void BonkHeroSwing(s32 arg0) {
         }
         if (act == 8) {
             if (h->hero_last_mode == 0x44 || BonkSlots[arg0].f8 == 1 ||
-                (GameInfo[arg0 + 0x5C] != 0 && (((GameState *)GameInfo)->levelFlags & 0x80))) {
+                (GAME->heroOut[arg0] != 0 && (((GameState *)GameInfo)->levelFlags & 0x80))) {
                 BonkSpawnShockwave(arg0);
             }
             t = (BonkTgt2 *)BonkSlots[arg0].f0;

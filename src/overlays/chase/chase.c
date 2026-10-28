@@ -722,7 +722,7 @@ void InitialiseCHASE(void) {
     s32 y;
     u8 *g;
     u8 *p;
-    u8 *q;
+    GameState *q;
     HeroInfo *h;
     camera_info_tag *cam;
     ChaseScreen *scr;
@@ -805,8 +805,8 @@ void InitialiseCHASE(void) {
     for (i = 0; i < 4; i++) {
         h = &((HeroInfo *)v)[i];
         y = t * 60 / 100 + ((t * 60) & 3);
-        q = GameInfo;
-        if (q[i + 0x5C] == 0) {
+        q = GAME;
+        if (q->heroOut[i] == 0) {
             ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk0 = 0x23;
             ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk2 = 0x3C;
         } else {
@@ -1562,7 +1562,7 @@ void SetChaseHeroJump(s32 arg0) {
     e->platform = NULL;
     SetHeroSeq(arg0, 0x65);
     idx = 0;
-    if (GameInfo[arg0 + 0x5C] == 0) {
+    if (GAME->heroOut[arg0] == 0) {
         idx = h->hero_name;
     }
     h->hero_move->jump_vel = HeroHooks.JumpEnts[idx].vel;
@@ -2594,7 +2594,7 @@ void PlotEgg(NAS *nas) {
         if (sub->entity == 0x4012) {
             sub->entity = 0x4000;
             i = BarrelNearHero(eng->unk10.x, eng->unk10.z, 0x600);
-            if (i >= 0 && GameInfo[i + 0x5C] == 0) {
+            if (i >= 0 && GAME->heroOut[i] == 0) {
                 PlaySfx(0x759, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 fux->unk1C = get_angle(Heroes[i].hero_eng->unk10.x - eng->unk10.x,
                                        Heroes[i].hero_eng->unk10.z - eng->unk10.z);
@@ -2626,7 +2626,7 @@ void PlotEgg(NAS *nas) {
                         pad_rumble_big(i, 0xA, 0xF0);
                     }
                 }
-                if (GameInfo[i + 0x5C] == 0) {
+                if (GAME->heroOut[i] == 0) {
                     ChaseHeroState[i][0] = 0;
                 }
             }
@@ -2886,10 +2886,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
         }
     }
     if (free != -1) {
-        GameInfo[0x60] = 0;
-        *(u16 *)(GameInfo + 0x30) |= arg1;
+        GAME->winner[0] = 0;
+        GAME->exitFlags |= arg1;
         for (i = 0; i < 4; i++) {
-            if (GameInfo[i + 0x5C] != 0) {
+            if (GAME->heroOut[i] != 0) {
                 RemoveCamera(Heroes[i].hero);
                 Heroes[i].hero_status |= 0x400;
             } else if (i != free) {
@@ -2908,7 +2908,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GameInfo[j + 0xA7] = best;
+            GAME->adventure.unkA7[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -2919,10 +2919,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -2930,10 +2930,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             } else {
-                GameInfo[0x60] = a->hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+                GAME->winner[0] = a->hero_name;
+                GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GameInfo[0xA7] == n) {
+                    if (GAME->adventure.unkA7[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -2958,10 +2958,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
             sa = a->hero_score + ta->hero_score;
             sb = b->hero_score + tb->hero_score;
             if (sa == sb) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -2986,10 +2986,10 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                     ta->hero_status |= 0x400;
                 }
             } else {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3020,7 +3020,7 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GameInfo[j + 0xA7] = best;
+            GAME->adventure.unkA7[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -3031,10 +3031,10 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3042,10 +3042,10 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     }
                 }
             } else {
-                GameInfo[0x60] = a->hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+                GAME->winner[0] = a->hero_name;
+                GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GameInfo[0xA7] == n) {
+                    if (GAME->adventure.unkA7[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -3070,10 +3070,10 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
             sa = a->hero_score + ta->hero_score;
             sb = b->hero_score + tb->hero_score;
             if (sa == sb) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3098,10 +3098,10 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                     ta->hero_status |= 0x400;
                 }
             } else {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3137,11 +3137,11 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
         sb = b->hero_score + hb[b->hero_teammate].hero_score;
         if (sa == 0) {
             if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
-                GameInfo[0x60] = a->hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+                GAME->winner[0] = a->hero_name;
+                GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (GameInfo[i + 0x5C] != 0) {
+                    if (GAME->heroOut[i] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -3152,11 +3152,11 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
             }
         } else if (sb == 0) {
             if (g[*(s16 *)(g + 0x4A) + 0x5C] == 0) {
-                GameInfo[0x60] = b->hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+                GAME->winner[0] = b->hero_name;
+                GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (GameInfo[i + 0x5C] != 0) {
+                    if (GAME->heroOut[i] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -3173,12 +3173,12 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
             }
         }
         if (found != -1) {
-            if (GameInfo[found + 0x5C] == 0) {
-                GameInfo[0x60] = Heroes[found].hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+            if (GAME->heroOut[found] == 0) {
+                GAME->winner[0] = Heroes[found].hero_name;
+                GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (GameInfo[i + 0x5C] != 0) {
+                    if (GAME->heroOut[i] != 0) {
                         Heroes[i].hero_status |= 0x400;
                     } else {
                         Heroes[i].hero_status |= 0x200;
@@ -3190,11 +3190,11 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
         }
     }
     if (fail || arg0 == -1) {
-        GameInfo[0x60] = 0;
-        *(u16 *)(GameInfo + 0x30) |= arg1;
+        GAME->winner[0] = 0;
+        GAME->exitFlags |= arg1;
         Clock_flags |= 0x200;
         for (i = 0; i < 4; i++) {
-            if (GameInfo[i + 0x5C] != 0) {
+            if (GAME->heroOut[i] != 0) {
                 Heroes[i].hero_status |= 0x400;
             } else {
                 Heroes[i].hero_status |= 0x100;
@@ -3295,10 +3295,10 @@ void ChaseChooseWinnerRank(s32 arg0, u16 arg1) {
 }
 
 void ChaseChooseWinner(s32 arg0, s32 arg1) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    if (!(*(u16 *)(g + 0x30) & 0x801)) {
-        u16 f = *(u16 *)(g + 0x32);
+    if (!(g->exitFlags & 0x801)) {
+        u16 f = g->levelFlags;
 
         if (f & 0x80) {
             ChaseChooseWinnerScore(arg0, (u16)arg1);

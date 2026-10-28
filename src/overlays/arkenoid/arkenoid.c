@@ -506,7 +506,7 @@ next:
 }
 
 void AR_PreInitLevel(void) {
-    u8 *g;
+    GameState *g;
     void **p;
     void **p2;
     void **p3;
@@ -529,8 +529,8 @@ void AR_PreInitLevel(void) {
         ArkSidePlayer3 = 1;
     }
     ArkSidePlayer0 = 0;
-    g = GameInfo;
-    switch (*(s16 *)(g + 0x34)) {
+    g = GAME;
+    switch (g->mode) {
     case 15:
         HeroHooks.KeepInBounds = AR_KeepInBounds;
         HeroHooks.PreMoveHero = AR_PreMoveHero;
@@ -543,7 +543,7 @@ void AR_PreInitLevel(void) {
         AiHumanTweakTable = ArkBeachAiHumanTweak;
         AiHumanRoundTweakTable = ArkBeachAiHumanRoundTweak;
         p = &AiSkillTable;
-        if (*(s32 *)(g + 0x6C) != 0) {
+        if (g->teams != 0) {
             t = ArkBeachAiSkillAlt;
         } else {
             t = ArkBeachAiSkill;
@@ -563,7 +563,7 @@ void AR_PreInitLevel(void) {
         AiHumanTweakTable = ArkNginAiHumanTweak;
         AiHumanRoundTweakTable = ArkNginAiHumanRoundTweak;
         p2 = &AiSkillTable;
-        if (*(s32 *)(g + 0x6C) != 0) {
+        if (g->teams != 0) {
             t = ArkNginAiSkillAlt;
         } else {
             t = ArkNginAiSkill;
@@ -583,7 +583,7 @@ void AR_PreInitLevel(void) {
         AiHumanTweakTable = ArkSkyAiHumanTweak;
         AiHumanRoundTweakTable = ArkSkyAiHumanRoundTweak;
         p3 = &AiSkillTable;
-        if (*(s32 *)(g + 0x6C) != 0) {
+        if (g->teams != 0) {
             t = ArkSkyAiSkillAlt;
         } else {
             t = ArkSkyAiSkill;
@@ -1899,7 +1899,7 @@ void SetArkHeroTaunt(u32 arg0) {
     HeroInfo *base;
 
     SetHeroSeq(arg0, 0x1C);
-    if (Random(3) == 0 || GameInfo[arg0 + 0x5C] == 0) {
+    if (Random(3) == 0 || GAME->heroOut[arg0] == 0) {
         switch (Heroes[arg0].hero_name) {
         case 1:
             PlaySfx(7, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);

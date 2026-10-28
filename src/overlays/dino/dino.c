@@ -859,13 +859,13 @@ s32 DinoAI_RayToPlayer(s32 a, s32 b) {
 }
 
 s32 DinoTestTeamMate(s32 arg0, s32 arg1) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    if (*(s32 *)(g + 0x6C) != 0) {
+    if (g->teams != 0) {
         if (Heroes[arg1].hero_status & 0x2000) {
             return 0;
         }
-        if (arg0 == *(s16 *)(g + 0x48) && arg1 == Heroes[arg0].hero_teammate) {
+        if (arg0 == g->teamLeader[0] && arg1 == Heroes[arg0].hero_teammate) {
             return 1;
         }
         if (arg1 == GameTeamLeader[0] && arg0 == Heroes[arg1].hero_teammate) {
@@ -1283,7 +1283,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GameInfo[j + 0xA7] = best;
+            GAME->adventure.unkA7[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -1294,17 +1294,17 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
                     Heroes[k].hero_status |= 0x100;
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                     }
                 }
             } else {
-                GameInfo[0x60] = a->hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+                GAME->winner[0] = a->hero_name;
+                GAME->exitFlags |= 0x800;
                 n = 0;
                 for (;; n++) {
                     s32 t_;
@@ -1312,7 +1312,7 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     if (n >= 4) {
                         break;
                     }
-                    if (GameInfo[0xA7] == n) {
+                    if (GAME->adventure.unkA7[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x8400;
@@ -1331,28 +1331,28 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
             s32 p;
             s32 q;
 
-            u8 *t;
+            GameState *t;
 
-            t = GameInfo;
-            ia = *(s16 *)(t + 0x48);
-            ib = *(s16 *)(t + 0x4A);
+            t = GAME;
+            ia = t->teamLeader[0];
+            ib = t->teamLeader[1];
             ita = Heroes[ia].hero_teammate;
             itb = Heroes[ib].hero_teammate;
             sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
             sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
             if (sa == sb) {
-                t[0x60] = 0;
-                *(u16 *)(t + 0x30) |= arg1;
+                t->winner[0] = 0;
+                t->exitFlags |= arg1;
                 for (p = 0; p < 4; p++) {
                     Heroes[p].hero_status |= 0x100;
                 }
-            } else if ((sb < sa && t[ia + 0x5C] == 0) || (sa < sb && t[ib + 0x5C] == 0)) {
-                u8 *w = GameInfo;
+            } else if ((sb < sa && t->heroOut[ia] == 0) || (sa < sb && t->heroOut[ib] == 0)) {
+                GameState *w = GAME;
 
-                *(u16 *)(w + 0x30) |= 0x800;
-                if (w[ia + 0x5C] == 0) {
-                    w[0x60] = Heroes[ia].hero_name;
-                    w[0x61] = Heroes[ita].hero_name;
+                w->exitFlags |= 0x800;
+                if (w->heroOut[ia] == 0) {
+                    w->winner[0] = Heroes[ia].hero_name;
+                    w->winner[1] = Heroes[ita].hero_name;
                     Heroes[ia].hero_status |= 0x200;
                     Heroes[ita].hero_status |= 0x200;
                     Heroes[ib].hero_status |= 0x400;
@@ -1364,8 +1364,8 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     Heroes[itb].hero_shadow->sub->flags &= ~0x8000;
                     DINO_PUFF(&Heroes[itb]);
                 } else {
-                    w[0x60] = Heroes[ib].hero_name;
-                    w[0x61] = Heroes[itb].hero_name;
+                    w->winner[0] = Heroes[ib].hero_name;
+                    w->winner[1] = Heroes[itb].hero_name;
                     Heroes[ib].hero_status |= 0x200;
                     Heroes[itb].hero_status |= 0x200;
                     Heroes[ia].hero_status |= 0x400;
@@ -1378,8 +1378,8 @@ void DinoChooseWinnerScore(s32 arg0, u16 arg1) {
                     DINO_PUFF(&Heroes[ita]);
                 }
             } else {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (q = 0; q < 4; q++) {
                     Heroes[q].hero_status |= 0x100;
                 }
@@ -1407,7 +1407,7 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
                     }
                 }
             }
-            GameInfo[j + 0xA7] = best;
+            GAME->adventure.unkA7[j] = best;
             taken |= 1 << best;
         }
         g = GameInfo;
@@ -1418,20 +1418,20 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
 
             if (g[g[0xA7] + 0x5C] != 0
                 || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
                     Heroes[k].hero_status |= 0x100;
-                    if (GameInfo[k + 0x5C] != 0) {
+                    if (GAME->heroOut[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                     }
                 }
                 CameraMode = 1;
             } else {
-                GameInfo[0x60] = a->hero_name;
-                *(u16 *)(GameInfo + 0x30) |= 0x800;
+                GAME->winner[0] = a->hero_name;
+                GAME->exitFlags |= 0x800;
                 for (n = 0; n < 4; n++) {
-                    if (GameInfo[0xA7] == n) {
+                    if (GAME->adventure.unkA7[0] == n) {
                         hb[n].hero_status |= 0x200;
                     } else {
                         hb[n].hero_status |= 0x400;
@@ -1455,33 +1455,33 @@ void DinoChooseWinnerOther(s32 arg0, u16 arg1) {
             sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
             sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
             if (sa == sb) {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (p = 0; p < 4; p++) {
                     Heroes[p].hero_status |= 0x100;
                 }
             } else if ((sb < sa && g[ia + 0x5C] == 0) || (sa < sb && g[ib + 0x5C] == 0)) {
-                u8 *w = GameInfo;
+                GameState *w = GAME;
 
-                *(u16 *)(w + 0x30) |= 0x800;
-                if (w[ia + 0x5C] == 0) {
-                    w[0x60] = Heroes[ia].hero_name;
-                    w[0x61] = Heroes[ita].hero_name;
+                w->exitFlags |= 0x800;
+                if (w->heroOut[ia] == 0) {
+                    w->winner[0] = Heroes[ia].hero_name;
+                    w->winner[1] = Heroes[ita].hero_name;
                     Heroes[ia].hero_status |= 0x200;
                     Heroes[ita].hero_status |= 0x200;
                     Heroes[ib].hero_status |= 0x400;
                     Heroes[itb].hero_status |= 0x400;
                 } else {
-                    w[0x60] = Heroes[ib].hero_name;
-                    w[0x61] = Heroes[itb].hero_name;
+                    w->winner[0] = Heroes[ib].hero_name;
+                    w->winner[1] = Heroes[itb].hero_name;
                     Heroes[ib].hero_status |= 0x200;
                     Heroes[itb].hero_status |= 0x200;
                     Heroes[ia].hero_status |= 0x400;
                     Heroes[ita].hero_status |= 0x400;
                 }
             } else {
-                GameInfo[0x60] = 0;
-                *(u16 *)(GameInfo + 0x30) |= arg1;
+                GAME->winner[0] = 0;
+                GAME->exitFlags |= arg1;
                 for (q = 0; q < 4; q++) {
                     Heroes[q].hero_status |= 0x100;
                 }
@@ -1551,7 +1551,7 @@ void DinoChooseWinnerPuffs(s32 arg0, u16 arg1)
           {
             break;
           }
-          if (GameInfo[0xA7] == n)
+          if (GAME->adventure.unkA7[0] == n)
           {
             hb[n].hero_status |= 0x200;
           }
@@ -1869,7 +1869,7 @@ end:
             if (i >= 4) {
                 break;
             }
-            if (GameInfo[i + 0x5C] != 0) {
+            if (GAME->heroOut[i] != 0) {
                 Heroes[i].hero_status |= 0x8400;
                 DINO_PUFF(&Heroes[i]);
                 Heroes[i].hero_shadow->sub->flags &= ~0x8000;
@@ -1885,7 +1885,7 @@ void InitialiseDINOFirst(void) {
     void *v;
     void *f;
     void **p;
-    u8 *g;
+    GameState *g;
     HeroHooks.HeroBot = Dino_HeroBot;
     HeroHooks.HeroModels = DinoHeroModels;
     HeroHooks.InitHero = DinoInitHero;
@@ -1894,15 +1894,15 @@ void InitialiseDINOFirst(void) {
     HeroHooks.HeroFacing = DinoHeroFacing;
     f = DinoChooseWinner;
     HeroHooks.ChooseWinner = f;
-    g = GameInfo;
-    if (*(u16 *)(g + 0x32) & 0x40) {
+    g = GAME;
+    if (g->levelFlags & 0x40) {
         HeroHooks.ChooseWinner = DinoChooseWinnerTeam;
     }
     HeroHooks.VictorySeqs = DinoVictorySeqs;
     HeroHooks.CreateShadow = ModelCreateShadow;
     HeroHooks.UpdateShadow = ModelUpdateShadow;
     p = &AiSkillTable;
-    if (*(s32 *)(g + 0x6C) != 0) {
+    if (g->teams != 0) {
         v = DinoAiSkillAlt;
     } else {
         v = DinoAiSkill;
@@ -2069,21 +2069,21 @@ void InitialiseDINO(void) {
     u16 ang;
     s32 sc;
     s16 acc;
-    u8 *g;
+    GameState *g;
 
     Init_Clock(0x140, 0x28, 0);
     InitSharedScoreIcons();
-    g = GameInfo;
-    if (*(s32 *)(g + 0x6C) != 0) {
+    g = GAME;
+    if (g->teams != 0) {
         PanelCtrl |= 0x2000;
     }
-    if (*(s32 *)(g + 0x6C) == 0) {
-        sc = *(u16 *)(g + 0x32) & 0x40;
+    if (g->teams == 0) {
+        sc = g->levelFlags & 0x40;
         do {
             a = 0x100;
         } while (0);
     } else {
-        sc = *(u16 *)(g + 0x32) & 0x40;
+        sc = g->levelFlags & 0x40;
         do {
             a = 0x45;
         } while (0);
@@ -2151,7 +2151,7 @@ void InitialiseDINO(void) {
             x->timer = 0;
             h->hero_score = 0;
             if (((GameState *)GameInfo)->levelFlags & 0x40) {
-                sc = GameInfo[i + 0x5C];
+                sc = GAME->heroOut[i];
                 if (sc != 0) {
                     sc = 0xF;
                 } else {
@@ -2280,7 +2280,7 @@ void DinoScoreGems(void) {
             sign = -1;
         }
         if (((GameState *)GameInfo)->levelFlags & 0x80) {
-            if (GameInfo[ext->unk10 + 0x5C] == 0) {
+            if (GAME->heroOut[ext->unk10] == 0) {
                 PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
                 if (ext->unk90 == 5 && (DinoTargetTimer == 2 || DinoScoreTimer == 2)) {
                     PlaySfx(0x6BE, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2866,7 +2866,7 @@ void DinoPreMoveHero(s32 id) {
                     if (ext->unk14 == 0) {
                         m->forward_angle = (((PadState *)Pads)[id].angle.w + 0x800) & 0xFFF;
                         sc = DinoSteerMin;
-                        if (GameInfo[id + 0x5C] != 0) {
+                        if (GAME->heroOut[id] != 0) {
                             sc = DinoSteerTable[(s16)(u16)AiPlayerSkill[id].level >> 1];
                         }
                         m->x_max = (sc * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
@@ -3540,7 +3540,7 @@ void PlotDinoGem(NAS *m) {
     case 3:
         ext->unk84->sub->flags |= 0x8000;
         if (ext->unk88-- > 0
-            && (GameInfo[ext->unk10 + 0x5C] != 0 || (((PadState *)Pads)[ext->unk10].dir & 0x8000))) {
+            && (GAME->heroOut[ext->unk10] != 0 || (((PadState *)Pads)[ext->unk10].dir & 0x8000))) {
             ext->unk28 -= 0x1800;
             if (ext->unk28 < -0x6000) {
                 ext->unk28 = -0x6000;
@@ -3915,10 +3915,10 @@ void DinoRestartLevel(void) {
 }
 
 void DinoChooseWinner(s32 arg0, s32 arg1) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    if (!(*(u16 *)(g + 0x30) & 0x801)) {
-        u16 f = *(u16 *)(g + 0x32);
+    if (!(g->exitFlags & 0x801)) {
+        u16 f = g->levelFlags;
 
         if (f & 0x40) {
             DinoChooseWinnerTeam(arg0, (u16)arg1);

@@ -315,7 +315,7 @@ EXTengine *BashPenguinEng = 0;
 EXTobject *BashPenguinObj = 0;
 
 void InitialiseBASHFirst(void) {
-    u8 *g;
+    GameState *g;
     void **p;
     void **p2;
     void **p3;
@@ -334,14 +334,14 @@ void InitialiseBASHFirst(void) {
     BashInitCrateHooks();
     CratePickupAst = BashASTIndex(0x206);
     BashSfxEngine = EngineTemplate;
-    g = GameInfo;
-    switch (*(s16 *)(g + 0x34)) {
+    g = GAME;
+    switch (g->mode) {
     case 1:
         AiBotTweakTable = BashSpaceAiBotTweak;
         AiHumanTweakTable = BashSpaceAiHumanTweak;
         AiHumanRoundTweakTable = BashSpaceAiHumanRoundTweak;
         p = &AiSkillTable;
-        if (*(s32 *)(g + 0x6C) != 0) {
+        if (g->teams != 0) {
             t = BashSpaceAiSkillAlt;
         } else {
             t = BashSpaceAiSkill;
@@ -357,7 +357,7 @@ void InitialiseBASHFirst(void) {
         AiHumanTweakTable = BashSnowAiHumanTweak;
         AiHumanRoundTweakTable = BashSnowAiHumanRoundTweak;
         p2 = &AiSkillTable;
-        if (*(s32 *)(g + 0x6C) != 0) {
+        if (g->teams != 0) {
             t = BashSnowAiSkillAlt;
         } else {
             t = BashSnowAiSkill;
@@ -371,7 +371,7 @@ void InitialiseBASHFirst(void) {
         AiHumanTweakTable = BashDrainsAiHumanTweak;
         AiHumanRoundTweakTable = BashDrainsAiHumanRoundTweak;
         p3 = &AiSkillTable;
-        if (*(s32 *)(g + 0x6C) != 0) {
+        if (g->teams != 0) {
             t = BashDrainsAiSkillAlt;
         } else {
             t = BashDrainsAiSkill;
@@ -382,8 +382,8 @@ void InitialiseBASHFirst(void) {
         break;
     case 0x20:
         HeroHooks.TestAttack = BashFirePowerup;
-        g[0x52] = 9;
-        g[0x53] = 9;
+        g->heroes[2] = 9;
+        g->heroes[3] = 9;
         break;
     default:
         AiBotTweakTable = BashJungleAiBotTweak;
@@ -403,16 +403,16 @@ void InitialiseBASHFirst(void) {
 
 
 void InitialiseBASH(void) {
-    u8 *g;
+    GameState *g;
     s32 i;
     s16 a;
     EXTheromove *m;
 
     Init_Clock(0x140, 0x28, 0);
-    g = GameInfo;
-    if (*(u16 *)(g + 0x32) & 0x40) {
-        if (*(s32 *)(g + 0x6C) != 0) {
-            switch (*(s16 *)(g + 0x34)) {
+    g = GAME;
+    if (g->levelFlags & 0x40) {
+        if (g->teams != 0) {
+            switch (g->mode) {
             case 0:
                 Set_Clock(0x30, 0x81D0);
                 break;
@@ -427,7 +427,7 @@ void InitialiseBASH(void) {
                 break;
             }
         } else {
-            switch (*(s16 *)(g + 0x34)) {
+            switch (g->mode) {
             case 0:
                 Set_Clock(0x45, 0x81D0);
                 break;
@@ -1894,18 +1894,18 @@ s32 BashAI_NearestEnemy(s32 arg0) {
     s32 d;
     s32 min;
 
-    u8 *g;
+    GameState *g;
     s32 mate;
     s32 r;
 
     mate = Heroes[arg0].hero_teammate;
     min = 0x7FFFFF;
     i = 0;
-    g = GameInfo;
+    g = GAME;
     base = Heroes;
     h = &Heroes[arg0];
     for (i = 0; (u16)i < 4; i++) {
-        if ((u16)i != arg0 && (*(s32 *)(g + 0x6C) == 0 || (u16)i != mate)) {
+        if ((u16)i != arg0 && (g->teams == 0 || (u16)i != mate)) {
             o = (HeroInfo *)((u16)i * sizeof(HeroInfo) + (u32)base);
             if (!(o->hero_status & 0xFA00)) {
                 a = h->hero_eng;
@@ -3576,9 +3576,9 @@ void BashSpaceDropTile(s32 arg0) {
 void BashSpaceBreakTile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     BashCell *c;
     s32 x;
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    if (!(*(u16 *)(g + 0x30) & 0x801) && !(*(s32 *)(g + 4) & 0x1000) &&
+    if (!(g->exitFlags & 0x801) && !(g->cheats & 0x1000) &&
         arg1 == World_floor_level && arg5 < 8 && arg5 >= 5) {
         arg0 = (arg0 + 0x800) >> 9;
         arg2 = (arg2 + 0x800) >> 9;
