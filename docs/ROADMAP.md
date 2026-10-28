@@ -375,35 +375,27 @@ load extract and are documented.
   the disc like the slot's (ARCHITECTURE.md, The engine's .bss). The engine's
   slot words take their addresses from the overlays' links, so `shift.py`'s
   engine-data rewrite is gone. Left from it: the shift retests below (playtests).
-- [ ] Name and type every engine function and global. Status (2026-10-28): the
-  most-used globals are named (`GameInfo`, `HeroHooks`, `LevelSpecs`, `Pads`,
-  `MainCamera`, the viewports and cameras typed, ...); 231 more engine functions are
-  named from their code (the level loop, panel, pause, heroes, game flow, loading,
-  camera), the default hero actions from the leaked `HeroMode_nums` (`SetHeroIdle`
-  .. `HeroKick`) and the process functions from their `process_info` slots. Every
-  engine function is named (2026-10-28). The model bank is typed: `obj_dbase
-  HeroModelBank[283]` with `enum DbaseIds` (ARCHITECTURE.md, The model bank), its 136
-  labels gone. Then the labels inside objects (2026-10-28): `GameOptions` is one struct,
-  the boss's record (`BossState`), the crate and pickup counts out of `HitSfx`'s tail,
-  `AiPlayerSkill` one type for every unit (the boss's skill label is `[3].level`), and
-  more globals named. Then (2026-10-28, second pass): subengine +0x6C is a union (dbase, text)
-  and +0x74 the entity, the fx buffers (`FxDef`, `SubFx`), the script threads and the
-  thread table (`ScriptCommand`), and blobs split into their objects: the pause screens'
-  texts and HUD lists, the archive's `FileGroups`, the hero sequence records (113 named
-  `CRA_seq_breathe` ...), the cutscene records, the menu language tables, the screen modes. Three byte arrays held pointers (a shifted exe
-  would have kept the old addresses): now words with relocations. Then every `D_`
-  data name went (2026-10-28: `GameInfo`'s gaps as `Game*` globals, `ArenaDefs`, the
-  panels' item lists, unread objects as `*Unused`). Left:
-  the functions whose C still does raw byte-offset arithmetic (4 of the engine's 357, 62
-  of the exe's 575, 77 in the slot overlays: `progress`'s typed figure, 2415 typed). Most
-  of the exe's left are a heap block's own arithmetic (`(u8 *)b + b->size * 4 + 0x18`) or
-  a file's self-relative offsets (`(u8 *)q + *q`, the dbase, texture, path and script
-  files), which is how the data is laid out. The engine's four (2026-10-28: the other
-  seven typed) keep a byte form the code needs, each with a comment: a pointer stepped
-  down through a byte array (InitGameState, InitialiseHeroes' AI arrays), a counter
-  apart from the loop index (InitialiseHeroes' `m += 7`, `k += 3`), an int sum's operand
-  order (PickCpuHeroes), and InitScriptFX's self-relative offset to a `script_thread`. MapScene is a `map_enviroment *` in every unit (its
-  views folded), the subengine's +0x70 a union, SceneMark a `MarkCtx *` (2026-10-28).
+- [x] Name and type every engine function and global (closed 2026-10-28). Every engine
+  function and global is named, from their code, the leaked headers (`HeroMode_nums`, the
+  `process_info` slots) and the Oct 9 prototype's types; no `D_`, `func_` or address-named
+  type is left. The globals have their real types: the model bank (`obj_dbase
+  HeroModelBank[283]`, `enum DbaseIds`), `MainCamera` (the prototype's `camera_info_tag`),
+  `MapScene` (`map_enviroment *`), the warp rooms and gateways (the prototype's `hub_info`,
+  `HubTableEntry`, `hub_warp_info`, `HubGateway`), the panels (`PlaceRec` lists, which the
+  text panel items and pause records were too), the cutscenes (`ScriptScene`, `MarkCtx` and
+  `EngineVabCue` lists), the per-mode model loads (`ModeDbase`), the card slots
+  (`CardSlot`, a saved `GameState`), the pointer tables (texts, files, sequences, the
+  pause menus' `PlaceRec ****` sets). `GameInfo` is one `GameState` (main.h; each field the
+  global at that address), its 23 engine views folded and read through `GAME`; the labels
+  stay globals of their own (the game state decision below). Functions take typed
+  parameters (the weather `NAS *`, the script emitter's `EXTscriptdata`, `threaddata` and
+  `partdata`, `PlaceSub`, `camera_info_tag *`, ...). What still reads bytes keeps a comment
+  saying why: a pointer the matching needs (a byte walk, a separate counter, an address
+  added the other way round: InitialiseHeroes, InitGameState, PickCpuHeroes, SetTweakAi,
+  RecordWin, UpdatePause, RenderScreenLabels), a file record with no source type yet (the
+  map's paths and zones, the mode text header, InitScriptFX's offset to a thread: the asset
+  formats item), the subengine's variable tail (the prototype's `prim_` union, not in the
+  fragment: the HUD bars), or another unit's extension (Race's kart).
 - [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
   globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads
   `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff

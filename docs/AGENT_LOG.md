@@ -67,15 +67,18 @@ Sony objects. Next, none of them needing a playtest:
    no unnamed block). Objects nothing reads by name are `*Unused`; `GameInfo`'s gaps are
    `Game*` globals named from their users. A new label inside an object: use the field or
    element (`MainCamera.at`, `SfxTable[0x3C5][1]`), not a new `D_`.
-2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 4 engine (kept, with
-   comments), 62
-   exe, 77 overlay). What's left in the exe is mostly the heap's block arithmetic and
-   the files' self-relative offsets; typing those means file-format structs (the dbase's
-   table at +0x3C/+0x44/+0x4C, the script track records, the texture and path files).
-   MapScene's views are folded (2026-10-28): every unit reads it as `map_enviroment`.
-4. Keep naming: `decomp.py rename --file` (it writes sym.main.txt; move names at
-   0x80078C90 and up to sym.engine.txt). `scratch/rank_d.py`-style counts of the `D_`
-   uses left point at the next batch.
+2. The engine is done (ROADMAP's engine item closed 2026-10-28): every function and global
+   typed, `GameInfo` one `GameState` read through `GAME`. Next, the same for the exe: its
+   62 raw byte-offset functions (mostly the heap's block arithmetic and the files'
+   self-relative offsets: file-format structs for the dbase table at +0x3C/+0x44/+0x4C, the
+   script tracks, the texture and path files), its own GameInfo views (`HubGameView` ..
+   live in the overlays; the exe's are few), `obj_texture`/`TexDst2A84C`/`AnimEntry` (one
+   0x38-byte texture entry seen three ways), and the exe's address-named inlines
+   (`func_80012678_find` ..) and types (`D_800657C8_Slot` is done: `CardSlot`).
+3. The overlays' GameInfo views (`HubGameView`, `TankModeView`, `PolarModeView`, ...: 47
+   types) fold into `GameState` the same way (scratch/views_map.py + fold_views.py did the
+   engine's: map each view's fields onto GameState by offset, fold in rounds of
+   non-conflicting names, then fix the few sign and address-order differences by hand).
 
 Needing the user: the shift retests (ROADMAP Phase 5, last box): every
 overlay on the new engine link.
@@ -477,6 +480,21 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (Phase 5: the engine typed, item closed):** `GameState` (main.h) is GameInfo's
+  layout, each field the global at its address; the engine's 23 views folded (`GAME`). The
+  prototype's own types took over where they exist: `hub_info`/`HubTableEntry`/
+  `hub_warp_info`/`HubGateway` (WarpRooms; `ModeRequirementMet` takes a u16, which is why its
+  callers read a halfword), `threaddata`/`partdata`/`EXTscriptdata` (the script emitter),
+  `script_thread`, `sub_string_info` (TextTemplates). Data: `ModeDbaseLists` (96 records:
+  `AdvStatsFiles` was its tail; its pointers were bytes, `bytes_ptrs.py` now finds pointers
+  inside objects), the panels as `PlaceRec` lists (XPanel + XItems were one list; text panel
+  items and pause records are PlaceRec), the cutscene mark and cue lists (two arrays held the
+  next list), `LoadingIconEngine` one `EXTengine` (LoadingIconObj was its sub), the card
+  slots `CardSlot`, the pointer tables. Gotchas: a fold can turn a byte index into
+  `field[i]` that adds base and index the other way round (a register swap: keep
+  `((u8 *)g)[i + 0xNN]`); a `struct X` first named in a prototype has prototype scope;
+  `typedef struct { } X` has no tag for `struct X`.
 
 - **2026-10-28 (Phase 5: the engine's raw offsets):** 11 -> 4. Typed: `NasPoolLast` a `NAS *`,
   `CpuHeroChoices` read by row (`(&CpuHeroChoices[w * 4])[n]`: its rows overlap, n runs to 5),
