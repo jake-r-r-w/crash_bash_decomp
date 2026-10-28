@@ -45,7 +45,7 @@ s32 count_completion(u8 *arg0) {
 }
 
 void shell_init(void) {
-    D_8004E0E0 = 2;
+    VSyncRate = 2;
     mal_init(&MainHeap, HeapStart, 0x801FF000 - (s32)HeapStart);
     init_file();
     pads_init();
@@ -132,12 +132,12 @@ void shell_render_dcache(void) {
     }
     SetSp(0x1F8003FC);
     D_8004E0DC->unk8();
-    FlipScreen(D_8004E0E0);
+    FlipScreen(VSyncRate);
     SetSp(D_8006E9F4);
 }
 
 void shell_init_heap(void) {
-    D_8004E0E0 = 2;
+    VSyncRate = 2;
     mal_init(&MainHeap, HeapStart, 0x801FF000 - (s32)HeapStart);
     init_file();
     pads_init();
@@ -146,7 +146,7 @@ void shell_init_heap(void) {
 
 void shell_render(void) {
     D_8004E0DC->unk8();
-    FlipScreen(D_8004E0E0);
+    FlipScreen(VSyncRate);
 }
 
 void shell_update(void) {
@@ -3025,8 +3025,8 @@ void export_exe_functions(void) {
     t[0x248 / 4] = vab_loading;
     t[0x24C / 4] = vab_transfer_wait;
     t[0x250 / 4] = quat_slerp;
-    t[0x254 / 4] = (void *)D_800654B0;
-    t[0x258 / 4] = (void *)D_800654B4;
+    t[0x254 / 4] = (void *)VabCueTimer;
+    t[0x258 / 4] = (void *)VabCuePending;
     t[0x25C / 4] = itoa_div;
     t[0x260 / 4] = shell_run_spyro_demo;
     t[0x264 / 4] = dbase_texture_ptr;
@@ -3619,7 +3619,7 @@ s32 D_8004E0D0 = 0;
 s32 D_8004E0D4 = 0;
 s32 GameFrameCount = 0;
 VTable8 *D_8004E0DC = 0;
-s32 D_8004E0E0 = 0;
+s32 VSyncRate = 0;
 s32 D_8004E0E4 = 0;
 s32 D_8004E0E8 = 0;
 s32 D_8004E0EC = 0;

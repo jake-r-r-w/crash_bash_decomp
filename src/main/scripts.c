@@ -59,10 +59,10 @@ void update_model_thread(u8 *arg0, u8 *arg1) {
     lo = *(s32 *)(arg1 + 4);
     idx = *(s32 *)(arg0 + 0);
     v = *(s16 *)(arg1 + 0xE);
-    D_80058B7C = e;
+    ScriptTrackDbase = e;
     p = *(u8 **)(e + 0xC);
-    D_80058B80 = lo;
-    D_80058B84 = idx;
+    ScriptTrackIndex = lo;
+    ScriptTrackThread = idx;
     if (p == NULL) {
         r = NULL;
     } else {
@@ -137,10 +137,10 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     lo = ci->script;
     idx = th->thread_num;
     v = ci->time.h.frame;
-    D_80058B7C = (u8 *)e;
+    ScriptTrackDbase = (u8 *)e;
     p = e->data;
-    D_80058B80 = lo;
-    D_80058B84 = idx;
+    ScriptTrackIndex = lo;
+    ScriptTrackThread = idx;
     if (p == NULL) {
         r = NULL;
     } else {
@@ -206,10 +206,10 @@ void update_entity_thread(u8 *arg0, u8 *arg1) {
     lo = *(s32 *)(arg1 + 4);
     idx = *(s32 *)(arg0 + 0);
     v = *(s16 *)(arg1 + 0xE);
-    D_80058B7C = e;
+    ScriptTrackDbase = e;
     p = *(u8 **)(e + 0xC);
-    D_80058B80 = lo;
-    D_80058B84 = idx;
+    ScriptTrackIndex = lo;
+    ScriptTrackThread = idx;
     if (p == NULL) {
         r = NULL;
     } else {
@@ -279,10 +279,10 @@ void update_fade_thread(u8 *arg0, u8 *arg1) {
     lo = *(s32 *)(arg1 + 4);
     idx = *(s32 *)(arg0 + 0);
     v = *(s16 *)(arg1 + 0xE);
-    D_80058B7C = e;
+    ScriptTrackDbase = e;
     p = *(u8 **)(e + 0xC);
-    D_80058B80 = lo;
-    D_80058B84 = idx;
+    ScriptTrackIndex = lo;
+    ScriptTrackThread = idx;
     if (p == NULL) {
         r = NULL;
     } else {
@@ -373,10 +373,10 @@ void update_emitter_thread(u8 *arg0, u8 *arg1) {
     e = *(u8 **)(arg1 + 0);
     lo = *(s32 *)(arg1 + 4);
     idx = *(s32 *)(arg0 + 0);
-    D_80058B7C = e;
+    ScriptTrackDbase = e;
     p = *(u8 **)(e + 0xC);
-    D_80058B80 = lo;
-    D_80058B84 = idx;
+    ScriptTrackIndex = lo;
+    ScriptTrackThread = idx;
     if (p == NULL) {
         r = NULL;
     } else {
@@ -493,10 +493,10 @@ void update_sub_thread(u8 *arg0, u8 *arg1) {
     lo = *(s32 *)(arg1 + 4);
     idx = *(s32 *)(arg0 + 0);
     v = *(s16 *)(arg1 + 0xE);
-    D_80058B7C = e;
+    ScriptTrackDbase = e;
     p = *(u8 **)(e + 0xC);
-    D_80058B80 = lo;
-    D_80058B84 = idx;
+    ScriptTrackIndex = lo;
+    ScriptTrackThread = idx;
     if (p == NULL) {
         r = NULL;
     } else {
@@ -1426,10 +1426,10 @@ u8 *script_track_at(u8 *arg0, s32 arg1) {
     e = *(u8 **)(arg0 + 0);
     lo = *(s32 *)(arg0 + 4);
     v = *(s16 *)(arg0 + 0xE);
-    D_80058B84 = arg1;
-    D_80058B7C = e;
+    ScriptTrackThread = arg1;
+    ScriptTrackDbase = e;
     p = *(u8 **)(e + 0xC);
-    D_80058B80 = lo;
+    ScriptTrackIndex = lo;
     if (p == NULL) {
         r = NULL;
     } else {
@@ -1454,10 +1454,10 @@ u8 *get_script_track(u8 *arg0, s32 arg1, s32 arg2) {
     u8 *r;
     s32 *q;
 
-    D_80058B7C = arg0;
+    ScriptTrackDbase = arg0;
     p = *(u8 **)(arg0 + 0xC);
-    D_80058B80 = arg1;
-    D_80058B84 = arg2;
+    ScriptTrackIndex = arg1;
+    ScriptTrackThread = arg2;
     if (p == NULL) {
         r = NULL;
     } else {
@@ -1657,6 +1657,6 @@ s32 D_80058B6C = 0;
 void *ScriptList = 0;
 void *free_scripts = 0;
 void *active_scripts = 0;
-u8 *D_80058B7C = 0;
-s32 D_80058B80 = 0;
-s32 D_80058B84 = 0;
+u8 *ScriptTrackDbase = 0;
+s32 ScriptTrackIndex = 0;
+s32 ScriptTrackThread = 0;

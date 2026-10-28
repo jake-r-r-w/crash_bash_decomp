@@ -5,8 +5,8 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80050148[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 extern u8 D_8005408C[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
@@ -174,7 +174,7 @@ hero_seq KON_PA_seq_hold_throw[18] = {
 };
 /* the shell settings (engine world record 0x0105) */
 shell_setup papu_shell_info = {
-    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, D_80063EC8, D_80063BB8, 0x20, 0x400,
+    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x400,
 };
 s32 PapuFloorWave0[20] = {
     0x70001, 0x80006, -0x10000, 0, 0, 0x70003, 6, -0x10000, 0, 0, 0x70005, 0x80006, -0x10000,

@@ -555,3 +555,6 @@ CardStatsText = 0x8009F498;
 SceneMarkCount = 0x800A0C70;
 SceneMarks = 0x800A0C10;
 IntroDbase = 0x800AEC5C;
+SceneVabSlot = 0x800A0D20;
+SceneStep = 0x800A0D3C;
+SceneOldDbase = 0x800A0D30;

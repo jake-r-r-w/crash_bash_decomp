@@ -9,8 +9,8 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_800500A0[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 
 void InitialiseHUB(void) {
     HeroInfo *hero;

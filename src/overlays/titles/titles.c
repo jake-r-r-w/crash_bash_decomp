@@ -10,8 +10,8 @@ extern u8 GamePlayers;
 extern u8 D_800500B8[];
 extern u8 D_80055614[];
 extern u8 D_8005564C[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char TextAdventureHint[] = "complete each warp room to\nunlock further levels";
@@ -158,7 +158,7 @@ WWInf TitlesWorldInfo[3] = {
     { 0xC5, TitlesAnims, TitlesLevelDB, 3 },
 };
 shell_setup titles_shell_info = {
-    0x1800, 0x10, 0x100, 0x40, 0x100, 0x40, D_80063EC8, D_80063BB8, 0x20, 0x76C,
+    0x1800, 0x10, 0x100, 0x40, 0x100, 0x40, VramAreas, VramNodePool, 0x20, 0x76C,
 };
 u16 TitlesLUPtab[4] = { 3, 0x20D, 0x1001, 0x1002 };
 TrigLookUp TitlesLUP = { TitlesLUPtab, 4 };

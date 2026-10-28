@@ -6,8 +6,8 @@
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80050100[];
 extern u8 D_8005010C[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char ArkAnimBreathe[] = "BREATHE";
@@ -59,7 +59,7 @@ u16 ArkLUPtab[4] = { 3, 0x1605, 0x1508, 0 };
 TrigLookUp ArkLUP = { ArkLUPtab, 3 };
 PreMap ARKENOID_PREMAP = { ArkPreLoadDB, ArkWorldInfo, &ArkLUP };
 shell_setup arkenoid_shell_info = {
-    0x4000, 0x20, 0x1800, 0xC8, 0x2BC, 0x200, D_80063EC8, D_80063BB8, 0x20, 0x5DC,
+    0x4000, 0x20, 0x1800, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x5DC,
 };
 u16 ArkHeroModels[10] = { 0, 0x72, 0x73, 0x74, 0x75, 0x78, 0x79, 0x76, 0x77, 0 };
 u16 ArkBallsAiSkill[10] = { 9, 6, 3, 1, 8, 0x12, 0x10, 0x10, 0x10, 0x14 };

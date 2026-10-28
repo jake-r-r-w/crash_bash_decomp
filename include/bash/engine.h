@@ -165,7 +165,7 @@ extern ArenaDef D_80098F48;
 extern process_info RunGame;
 extern u8 vmode_512_ntsc[];
 extern u8 D_8005B744[];
-extern s32 D_800A0D3C;
+extern s32 SceneStep;
 extern GfxViewport MainViewport;
 extern GfxCamera MainGfxCamera;
 extern process_info SaveScreenProcess;
@@ -173,7 +173,7 @@ extern void *D_80098718;
 extern u16 D_8009871C;
 extern process_info ScriptSceneProcess;
 extern s32 D_800A0C0C;
-extern s32 D_800A0D30;
+extern s32 SceneOldDbase;
 extern s32 SceneMarkCount;
 /* DrawSceneMarks's entries (SceneMarks, 0xC bytes) and the table they index (0x14 bytes). */
 typedef struct EngineMarker {
@@ -190,7 +190,7 @@ extern EngineMarker SceneMarks[];
 extern EngineMarkerPos D_800A02D8[];
 extern subengine D_800A0C74;
 extern s32 SceneVabCue;
-extern s32 D_800A0D20[]; /* arrays: their stores must alias struct loads (gcc 2.7 sched) */
+extern s32 SceneVabSlot[]; /* arrays: their stores must alias struct loads (gcc 2.7 sched) */
 extern s32 D_800A0D24[];
 extern s32 D_800A0D28;
 extern s32 D_800A0D38;
@@ -303,7 +303,7 @@ void ArenaRequirementMet(s32 arg0);
 typedef struct {
     s32 vab;   /* machine_load_sfx's first argument; 0 ends the list */
     s32 sfx;   /* PlaySfx id */
-    s32 unk8;  /* -> D_800654B0 */
+    s32 unk8;  /* -> VabCueTimer */
 } EngineVabCue;
 
 /* SetupScriptScene's argument. */

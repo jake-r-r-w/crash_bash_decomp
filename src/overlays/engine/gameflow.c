@@ -123,7 +123,7 @@ void UpdateIntro(void) {
         D_8009E5A8 = e->delay;
         SetupSceneMarks(e->model);
         D_80058B64 = 0x10000;
-        D_8004E0E0 = type;
+        VSyncRate = type;
         D_8009E5AC = play_script(IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
                                    &D_8009E560, &D_8009E580, 4, (u8 **)&D_800AEC58);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {

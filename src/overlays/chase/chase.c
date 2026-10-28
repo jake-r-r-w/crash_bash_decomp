@@ -21,8 +21,8 @@ extern u8 AngelModel[];
 extern u8 InterfaceModel[];
 extern u8 LoadingModel[];
 extern u8 FontModel[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 extern u8 D_8007000C[];
 extern u8 D_800700D4[];
 extern u8 D_80070138[];
@@ -73,7 +73,7 @@ s32 ChaseFlameSfx[4] = { 0x741, 0x740, 0x73F, 0x73E };
 s32 ChaseChainSfx[4] = { 0x750, 0x751, 0x752, 0x753 };
 /* the shell settings (engine world record 0x010D) */
 shell_setup chase_shell_info = {
-    0x4000, 0x20, 0x1800, 0x80, 0x200, 0x100, D_80063EC8, D_80063BB8, 0x20, 0x5DC,
+    0x4000, 0x20, 0x1800, 0x80, 0x200, 0x100, VramAreas, VramNodePool, 0x20, 0x5DC,
 };
 ChaseSpawnOfs ChaseSpawnOffsets[8] = {
     { 0x82, -0x384, 0xDC },
@@ -1191,7 +1191,7 @@ s32 ChaseHeroTestDrop(s32 arg0) {
                 return 0;
             }
             if (World_floor_level < h->hero_eng->unk10.y + h->hero_sub->unk08) {
-                if (D_8005B5B8 == 0x7FFFFFFF) {
+                if (ContourHeight == 0x7FFFFFFF) {
                     SetHeroAction(arg0, 0x79);
                     return 1;
                 }
@@ -1619,7 +1619,7 @@ void ChaseHeroFall(s32 arg0) {
     } else if (!(h->hero_ctrl & 8)) {
         e = h->hero_eng;
         if (World_floor_level < e->unk10.y + h->hero_sub->unk08) {
-            if (D_8005B5B8 == 0x7FFFFFFF) {
+            if (ContourHeight == 0x7FFFFFFF) {
                 SetHeroAction(arg0, 0x79);
             } else {
                 e->unk10.y = World_floor_level;
@@ -1676,9 +1676,9 @@ void SetChaseHeroLand(s32 arg0) {
     h->hero_move->jump_max = 0;
     h->hero_sub->unk08 = 0;
     SetHeroSeq(arg0, 0x67);
-    if (D_8005AA9C != NULL) {
+    if (ContourPlatform != NULL) {
         e = h->hero_eng;
-        o = D_8005AA9C->Engine;
+        o = ContourPlatform->Engine;
         t = e->platform;
         if (t != NULL) {
             t->platform = NULL;
@@ -1691,7 +1691,7 @@ void SetChaseHeroLand(s32 arg0) {
         }
         e->platform = o;
         o->platform = e;
-        x = FindExtension(D_8005AA9C, 0x1000);
+        x = FindExtension(ContourPlatform, 0x1000);
         if (x != NULL && (*(u16 *)(x + 0x1C) & 8)) {
             *(u16 *)(x + 0x1E) |= 8;
         }

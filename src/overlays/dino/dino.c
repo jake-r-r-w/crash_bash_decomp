@@ -7,8 +7,8 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_8005007C[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 extern u8 D_800706C4[];
 extern u8 D_8007418C[];
 extern u8 D_8008000C[];
@@ -215,7 +215,7 @@ NAS *DinoGem2 = 0;
 NAS *DinoGems[3] = { NULL, NULL, NULL };
 /* the shell settings (engine world record 0x010B) */
 shell_setup dino_shell_info = {
-    0x1000, 0x10, 0x2000, 0xB4, 0xCE, 0x9C, D_80063EC8, D_80063BB8, 0x20, 0x514,
+    0x1000, 0x10, 0x2000, 0xB4, 0xCE, 0x9C, VramAreas, VramNodePool, 0x20, 0x514,
 };
 s16 DinoPreLoadDB[4] = { 0x1C, 0xC4, -1, 0 };
 char *DinoAnims[6] = {

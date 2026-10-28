@@ -6,8 +6,8 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_800500A0[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 
 void HubRender(void) {
     SetGameViewport();
@@ -297,7 +297,7 @@ s32 HubFiles[15] = {
 file_group_load_info file_group_HUB = { D_800500A0, HubFiles };
 /* the shell settings (engine world record 0x0102) */
 shell_setup hub_shell_info = {
-    0x3000, 0x10, 0x2000, 0xC8, 0x2BC, 0x200, D_80063EC8, D_80063BB8, 0x20, 0x600,
+    0x3000, 0x10, 0x2000, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x600,
 };
 s16 HubPreLoadDB[2] = { -1, 0 };
 WWInf HubWorldInfo[16] = {

@@ -8,8 +8,8 @@ extern u8 D_80030014[];
 extern u8 D_80034010[];
 extern u8 D_80050118[];
 extern u8 D_80050124[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 extern u8 D_80070568[];
 extern u8 D_80074180[];
 
@@ -524,7 +524,7 @@ u16 PogoLUPtab[4] = { 3, 0x20D, 0x201, 0 };
 TrigLookUp PogoLUP = { PogoLUPtab, 3 };
 PreMap POGO_PREMAP = { PogoPreLoadDB, PogoWorldInfo, &PogoLUP };
 shell_setup POGO_shell_info = {
-    0x2100, 0x10, 0x1000, 0x100, 0x200, 0x4B0, D_80063EC8, D_80063BB8, 0x20, 0x400,
+    0x2100, 0x10, 0x1000, 0x100, 0x200, 0x4B0, VramAreas, VramNodePool, 0x20, 0x400,
 };
 process_info PogoProcess = { pogo_init, 0, 0, pogo_kill, 0 };
 u16 PogoHeroModels[10] = { 0, 9, 0xA, 0xB, 0xC, 0xD, 0xF, 0xE, 0x10, 0 };

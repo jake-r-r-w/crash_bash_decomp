@@ -209,7 +209,7 @@ extern u16 SpinShadowModels[];
 void SpinHeroWinner(s32 arg0);
 extern u16 SpinBalloonAnims[];
 extern s32 World_floor_level;
-extern s32 D_8005B5B8;
+extern s32 ContourHeight;
 extern HeroInfo Heroes[4];
 
 /* PlotHazardType: let go of a hazard its owner is holding. */

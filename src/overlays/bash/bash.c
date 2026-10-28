@@ -6,8 +6,8 @@
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80050154[];
 extern u8 D_80050160[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char BashAnimBreathe[] = "BREATHE";
@@ -205,7 +205,7 @@ hero_seq KON_BA_seq_hold_throw[18] = {
 };
 /* the four worlds' shell settings (engine world records 0x0104, 0x0001..0x0003) */
 shell_setup bash_shell_info = {
-    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, D_80063EC8, D_80063BB8, 0x20, 0x400,
+    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x400,
 };
 s32 PenguinSteps0[6] = { (s32)0x80110000, 0x40150026, 0x424800B, 0x168011, (s32)0x80004000, 0 };
 s32 PenguinSteps1[15] = {

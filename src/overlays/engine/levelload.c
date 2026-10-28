@@ -550,16 +550,16 @@ void SetupScriptScene(EngineStartArgs *arg0) {
         vab_transfer_check();
     }
     rate = 3;
-    D_8004E0E0 = rate;
+    VSyncRate = rate;
     D_80058B64 = 0x1E0000 / (60 / rate);
     D_80058B64 = arg0->unk8 * rate / 60;
     cam_init(MainCamera);
-    D_800A0D30 = 0;
+    SceneOldDbase = 0;
     D_800A0D38 = 1;
     SceneMarkCount = 0;
     ((EngineStartArgs *)&SceneMark)->unk0 = arg0->unk0;
     SceneVabCue = arg0->unk4;
-    D_800A0D20[0] = 0;
+    SceneVabSlot[0] = 0;
     D_800A0D24[0] = 0;
     sound_reinit();
     SfxBanks[0].id = -1;
@@ -569,8 +569,8 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     SfxBanks[1].handle = 0;
     SfxBanks[1].head = NULL;
     D_800A0D28 = 0;
-    D_800654B0 = 0;
-    D_800654B4 = 0;
+    VabCueTimer = 0;
+    VabCuePending = 0;
 }
 
 void InitScriptScene(void) {
@@ -582,7 +582,7 @@ void InitScriptScene(void) {
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    D_800A0D3C = 0;
+    SceneStep = 0;
     sound_reinit();
     D_8009F968 = 0;
     mal_init(&MainHeap, D_80098594, 0x801FF000 - (s32)D_80098594);
@@ -606,21 +606,21 @@ void UpdateSceneVabCues(void) {
     if (SceneVabCue == 0) {
         return;
     }
-    if (D_800654B4 != 0) {
+    if (VabCuePending != 0) {
         if (((EngineVabCue *)SceneVabCue)->vab == 0) {
             ok = 1;
         } else {
-            ok = ~SfxBanks[D_800A0D20[0]].id != 0;
+            ok = ~SfxBanks[SceneVabSlot[0]].id != 0;
         }
         if (ok) {
             if (((EngineVabCue *)SceneVabCue)->vab == 0) {
                 return;
             }
             PlaySfx(((EngineVabCue *)SceneVabCue)->sfx, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_800654B4 -= 1;
-            n = (D_800A0D20[0] + 1) & 1;
-            D_800A0D20[0] = n;
-            D_800654B0 = ((EngineVabCue *)SceneVabCue)->unk8;
+            VabCuePending -= 1;
+            n = (SceneVabSlot[0] + 1) & 1;
+            SceneVabSlot[0] = n;
+            VabCueTimer = ((EngineVabCue *)SceneVabCue)->unk8;
             if (SfxBanks[n].id != -1) {
                 sfx_bank_close((s32 *)&SfxBanks[n]);
             }
@@ -629,9 +629,9 @@ void UpdateSceneVabCues(void) {
     }
     if (((EngineVabCue *)SceneVabCue)->vab != 0) {
         base = SfxBanks;
-        slot = &base[D_800A0D20[0]];
+        slot = &base[SceneVabSlot[0]];
         if (slot->head == NULL && slot->handle == 0 && loader_pending() == 0) {
-            machine_load_sfx(((EngineVabCue *)SceneVabCue)->vab, &base[D_800A0D20[0]]);
+            machine_load_sfx(((EngineVabCue *)SceneVabCue)->vab, &base[SceneVabSlot[0]]);
         }
     }
 }
@@ -650,7 +650,7 @@ void StartSceneScript(void) {
     play_script((u8 *)((MarkCtx *)SceneMark)->obj, ((MarkCtx *)SceneMark)->unk8, &D_800A0BA0, &D_800A0BC0, 4, &D_800A0D34);
     SceneMarkCount = 0;
     t = (s32)((MarkCtx *)SceneMark)->obj;
-    D_800A0D30 = t;
+    SceneOldDbase = t;
     o = (MarkObj *)t;
     if (o != NULL) {
         s = o->src;
@@ -685,13 +685,13 @@ void UpdateScriptScene(void) {
     scripts_update();
     if (SceneMark != NULL) {
         if (D_800A0D34 == NULL) {
-            if ((s32)((MarkCtx *)SceneMark)->obj != D_800A0D30 && D_800A0D30 != 0) {
-                dbase_release((u8 *)D_800A0D30);
+            if ((s32)((MarkCtx *)SceneMark)->obj != SceneOldDbase && SceneOldDbase != 0) {
+                dbase_release((u8 *)SceneOldDbase);
             }
-            if (((MarkCtx *)SceneMark)->obj == NULL && D_800A0D3C == 0) {
+            if (((MarkCtx *)SceneMark)->obj == NULL && SceneStep == 0) {
                 if (D_800A0C08 != 0) {
                     GotoProcess(D_800A0C08, 0x200);
-                    D_800A0D3C += 1;
+                    SceneStep += 1;
                 }
             } else {
                 o = ((MarkCtx *)SceneMark)->obj;
@@ -704,7 +704,7 @@ void UpdateScriptScene(void) {
                         if (SceneVabCue == 0 || ((EngineVabCue *)SceneVabCue)->vab == 0) {
                             ok = 1;
                         } else {
-                            ok = ~SfxBanks[D_800A0D20[0]].id != 0;
+                            ok = ~SfxBanks[SceneVabSlot[0]].id != 0;
                         }
                         if (!ok) {
                             goto end;
@@ -713,7 +713,7 @@ void UpdateScriptScene(void) {
                     StartSceneScript();
                     SceneMark = (MarkCtx *)SceneMark + 1;
                     if (D_800A0D38 != 0) {
-                        D_800654B0 = 1;
+                        VabCueTimer = 1;
                         D_800A0D38 = 0;
                         D_800A0D28 = 1;
                         set_fade(&ScreenFade, -0x800, 0);
@@ -722,7 +722,7 @@ void UpdateScriptScene(void) {
             }
         }
     end:
-        if (D_800A0D3C == 0) {
+        if (SceneStep == 0) {
             obj = ((MarkCtx *)SceneMark)->obj;
             if (obj != NULL) {
                 dbase_asload_with_anims((u8 *)obj, 0);
@@ -730,9 +730,9 @@ void UpdateScriptScene(void) {
         }
     }
     UpdateSceneVabCues();
-    if ((Pads[0].pressed & 0x4000) && D_800A0D3C == 0 && D_800A0C08 != 0) {
+    if ((Pads[0].pressed & 0x4000) && SceneStep == 0 && D_800A0C08 != 0) {
         GotoProcess(D_800A0C08, 0x200);
-        D_800A0D3C += 1;
+        SceneStep += 1;
     }
 }
 
@@ -763,8 +763,8 @@ void QuitScriptScene(void) {
     sound_reinit();
     ClearVram();
     SceneMarkCount = 0;
-    D_800A0D3C += 1;
-    D_8004E0E0 = 2;
+    SceneStep += 1;
+    VSyncRate = 2;
 }
 
 void RenderScriptScene(void) {
@@ -788,8 +788,8 @@ s32 SceneModelLoaded(void) {
 }
 
 void ReleaseOldSceneModel(void) {
-    if (((*(s32*)((u8*)(SceneMark) + 4)) != D_800A0D30) && (D_800A0D30 != 0)) {
-        dbase_release(D_800A0D30);
+    if (((*(s32*)((u8*)(SceneMark) + 4)) != SceneOldDbase) && (SceneOldDbase != 0)) {
+        dbase_release(SceneOldDbase);
     }
 }
 
@@ -805,7 +805,7 @@ void LoadSceneModel(void) {
 void SceneNextProcess(void) {
     if (D_800A0C08 != 0) {
         GotoProcess(D_800A0C08, 0x200);
-        D_800A0D3C += 1;
+        SceneStep += 1;
     }
 }
 
@@ -829,7 +829,7 @@ void UnloadScene(void) {
     sound_reinit();
     ClearVram();
     SceneMarkCount = 0;
-    D_800A0D3C += 1;
+    SceneStep += 1;
 }
 
 s32 SceneVabReady(void) {
@@ -839,12 +839,12 @@ s32 SceneVabReady(void) {
     if (*(s32 *)SceneVabCue == 0) {
         return 1;
     }
-    return ~SfxBanks[D_800A0D20[0]].id != 0;
+    return ~SfxBanks[SceneVabSlot[0]].id != 0;
 }
 
 void SceneSoundInit(EngineStartArgs *arg0) {
     SceneVabCue = arg0->unk4;
-    D_800A0D20[0] = 0;
+    SceneVabSlot[0] = 0;
     D_800A0D24[0] = 0;
     sound_reinit();
     SfxBanks[0].id = -1;
@@ -854,8 +854,8 @@ void SceneSoundInit(EngineStartArgs *arg0) {
     SfxBanks[1].handle = 0;
     SfxBanks[1].head = NULL;
     D_800A0D28 = 0;
-    D_800654B0 = 0;
-    D_800654B4 = 0;
+    VabCueTimer = 0;
+    VabCuePending = 0;
 }
 
 s32 PickModeVariant(s32 arg0) {
@@ -1316,8 +1316,8 @@ extern u8 D_8005675C[];
 extern u8 D_80056794[];
 extern u8 D_800567CC[];
 extern u8 D_80056804[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 extern u8 D_80063ED8[];
 extern u8 file_group_BALLS[];
 extern u8 file_group_BASHMODE20[];
@@ -1372,8 +1372,8 @@ s32 *D_8009F954[5] = {
 };
 s32 D_8009F968 = 0;
 EngineCfg D_8009F96C = {
-    { 0, 0x20, 0, 0, 0x10, 0, 0, 0, 0, 1, 0, 0 }, { 0x80, 0x200, 0x20 }, (void *)&D_80063EC8,
-    (void *)&D_80063BB8, 0x20, 0x400,
+    { 0, 0x20, 0, 0, 0x10, 0, 0, 0, 0, 1, 0, 0 }, { 0x80, 0x200, 0x20 }, (void *)&VramAreas,
+    (void *)&VramNodePool, 0x20, 0x400,
 };
 u16 D_8009F994[2] = { 0x2001, 0x2002 };
 process_info LoadingProcess = { InitLoadingScreen, AnimateLoadingIcon, RenderLoadingScreen, QuitLoadingScreen, 0 };
@@ -1511,7 +1511,7 @@ EngineMarkerPos D_800A02D8[3] = {
 };
 EngineCfg D_800A0314 = {
     { 0, 0x10, 0, 0, 0x10, 0, 0, 0, 0, 0x10, 0, 0 }, { 0x80, 0x200, 0x20 },
-    (void *)&D_80063ED8, (void *)&D_80063BB8, 0x10, 0x400,
+    (void *)&D_80063ED8, (void *)&VramNodePool, 0x10, 0x400,
 };
 s32 D_800A033C[52] = {
     1, (s32)&D_80056024, 0, 1, 1, (s32)&D_8005605C, 0, 1, 1, (s32)&D_80056094, 0, 1, 1,
@@ -1621,14 +1621,14 @@ EngineMarker SceneMarks[8] = {0};
 s32 SceneMarkCount = 0;
 subengine D_800A0C74 = {0};
 s32 SceneVabCue = 0;
-s32 D_800A0D20[1] = {0};
+s32 SceneVabSlot[1] = {0};
 s32 D_800A0D24[1] = {0};
 s32 D_800A0D28 = 0;
 void *SceneMark = 0;
-s32 D_800A0D30 = 0;
+s32 SceneOldDbase = 0;
 u8 *D_800A0D34 = 0;
 s32 D_800A0D38 = 0;
-s32 D_800A0D3C = 0;
+s32 SceneStep = 0;
 s32 D_800A0D40[1] = {0};
 Tmpl1C D_800A0D44[11] = {
     { 0x8001, 0, 0x8021, 0x8080, 4, 0, 4, 0, 0x180, 0 },

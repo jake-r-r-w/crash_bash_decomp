@@ -72,10 +72,10 @@ void prims_init(s32 *cfg) {
     func_80017164_clear(p + 0x18);
     func_80017164_clear(p + 0x2C);
     func_80017164_clear(p + 0x40);
-    D_80056864 = NULL;
+    PrimSetList = NULL;
     *(u8 **)p = NULL;
     PrimPool.mem = NULL;
-    D_80056860 = (s32 *)D_8005685C;
+    PrimSetFree = (s32 *)D_8005685C;
 }
 
 static inline void PrimList_Flush(ListNode18938 *arg0, s32 arg1) {
@@ -107,10 +107,10 @@ static inline void PrimSet_Free(PrimSet *prev, PrimSet *set) {
         prev->next = set->next;
     } else {
         next = set->next;
-        D_80056864 = next;
+        PrimSetList = next;
     }
-    set->next = (PrimSet *) D_80056860;
-    D_80056860 = (s32 *) set;
+    set->next = (PrimSet *) PrimSetFree;
+    PrimSetFree = (s32 *) set;
 }
 
 void prims_update(void) {
@@ -121,7 +121,7 @@ void prims_update(void) {
     PrimSet *q;
 
     off =(FrameCount & 1) * sizeof(PrimListPair);
-    set = D_80056864;
+    set = PrimSetList;
     prev = NULL;
     while (1) {
         p = (PrimSet *) ((u8 *) set + off);
@@ -154,7 +154,7 @@ void prims_update(void) {
             if (prev != NULL) {
                 set = prev->next;
             } else {
-                set = D_80056864;
+                set = PrimSetList;
             }
         } else {
             prev = set;
@@ -183,7 +183,7 @@ void prims_empty_back(void) {
 
     idx = (FrameCount & 1) ^ 1;
     DrawSync(0);
-    node = D_80056864;
+    node = PrimSetList;
     for (;;) {
         if (node == NULL) {
             return;
@@ -725,14 +725,14 @@ s32 *primset_alloc(s32 **arg0, s32 arg1) {
     s32 *next;
     void *prev;
 
-    p = D_80056860;
+    p = PrimSetFree;
     if (p == NULL) {
         return NULL;
     }
     *arg0 = p;
     next = (s32 *)p[0];
-    prev = D_80056864;
-    D_80056864 = p;
+    prev = PrimSetList;
+    PrimSetList = p;
     p[6] = 0;
     p[7] = 0;
     p[8] = 0;
@@ -755,7 +755,7 @@ s32 *primset_alloc(s32 **arg0, s32 arg1) {
     p[15] = 0;
     *(s16 *)(p + 21) = arg1;
     *((s16 *)(p + 21) + 1) = 0;
-    D_80056860 = next;
+    PrimSetFree = next;
     p[0] = (s32)prev;
     return p;
 }
@@ -819,7 +819,7 @@ void prims_empty(void) {
         ClearOt(DrawBuffers);
         ClearOt(DrawBuffers + 0x400C);
     }
-    var_s0 = D_80056864;
+    var_s0 = PrimSetList;
     if (var_s0 != NULL) {
         do {
             primlist_reset(var_s0 + 0x18, (*(u16*)((u8*)(var_s0) + 84)));
@@ -3331,8 +3331,8 @@ s32 *PrimNodeFree = 0;
 u8 *D_80056854 = 0;
 s32 *D_80056858 = 0;
 u8 *D_8005685C = 0;
-s32 *D_80056860 = 0;
-void *D_80056864 = 0;
+s32 *PrimSetFree = 0;
+void *PrimSetList = 0;
 s32 D_80056868[3] = {0};
 s32 D_80056874[1] = {0};
 s32 D_80056878 = 0;

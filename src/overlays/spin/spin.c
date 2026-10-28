@@ -14,8 +14,8 @@ extern u8 D_80044218[];
 extern u8 D_80044594[];
 extern u8 D_80044614[];
 extern u8 D_80050088[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 extern u8 D_80070008[];
 extern u8 D_8007000C[];
 extern u8 D_80070070[];
@@ -53,7 +53,7 @@ u16 SpinAiHumanTweak[10] = {
 };
 /* the shell settings (engine world record 0x0103) */
 shell_setup spin_shell_info = {
-    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, D_80063EC8, D_80063BB8, 0x20, 0x400,
+    0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x400,
 };
 SpinJumpEnt SpinJumpEnts[10] = {
     { 0x88, 0x88, 9, 0xB },
@@ -2877,7 +2877,7 @@ void SpinHeroFall(s32 arg0) {
     } else {
         eng = h->hero_eng;
         if (World_floor_level < eng->unk10.y + h->hero_sub->unk08) {
-            if (D_8005B5B8 == 0x7FFFFFFF) {
+            if (ContourHeight == 0x7FFFFFFF) {
                 SetHeroAction(arg0, 6);
             } else {
                 eng->unk10.y = World_floor_level;

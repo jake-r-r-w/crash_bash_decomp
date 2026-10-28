@@ -1701,7 +1701,7 @@ s32 ApplyContourMoved(EXTengine *eng) {
     } else {
         dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
-    D_8005B5B8 = dy;
+    ContourHeight = dy;
     if (dy == 0x7FFFFFFF) {
         return 0;
     }
@@ -1774,7 +1774,7 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
     s32 dy;
 
     nas = HeadOfSolids;
-    D_8005AA9C = NULL;
+    ContourPlatform = NULL;
     if (nas != NULL) {
         do {
             if (nas->Class & 0x100) {
@@ -1791,7 +1791,7 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
                             dy = eng->unk10.y - top;
                             if (abs(dy) < abs(y)) {
                                 y = dy;
-                                D_8005AA9C = nas;
+                                ContourPlatform = nas;
                             }
                         }
                     }
@@ -2133,7 +2133,7 @@ void AddSolid(NAS *nas, s32 bits) {
 }
 
 void RemoveCamera(NAS *nas) {
-    NAS **head = (NAS **)&D_8005AA34;
+    NAS **head = (NAS **)&HeadOfCameras;
 
     if (nas->Camera.Parent != NULL || nas->Camera.Child != NULL) {
         if (nas->Camera.Parent != NULL) {
@@ -2153,11 +2153,11 @@ void RemoveCamera(NAS *nas) {
 }
 
 void AddCamera(u8 *arg0) {
-    if (D_8005AA34 != NULL) {
-        (*(s32*)((u8*)(arg0) + 60)) = (u8 *) D_8005AA34;
-        (*(s32*)((u8*)(D_8005AA34) + 56)) = arg0;
+    if (HeadOfCameras != NULL) {
+        (*(s32*)((u8*)(arg0) + 60)) = (u8 *) HeadOfCameras;
+        (*(s32*)((u8*)(HeadOfCameras) + 56)) = arg0;
     }
-    D_8005AA34 = arg0;
+    HeadOfCameras = arg0;
 }
 
 s32 CountObjects(void) {
@@ -2346,7 +2346,7 @@ void BuildNASFreeList(void) {
 void ResetNasLists(void) {
     s32 i;
 
-    D_8005AA34 = NULL;
+    HeadOfCameras = NULL;
     HeadOfSolids = NULL;
     D_8005AA30 = NULL;
     HeadOfObjects = NULL;
@@ -4163,7 +4163,7 @@ void *HeadOfObjects = 0;
 void *HeadOfMissiles = 0;
 NAS *HeadOfSolids = 0;
 void *D_8005AA30 = 0;
-void *D_8005AA34 = 0;
+void *HeadOfCameras = 0;
 void *HeadOfBalls = 0;
 s32 D_8005AA3C[3] = {0};
 NASTrigger *HeadOfTriggers = 0;
@@ -4176,14 +4176,14 @@ s32 ASTCount = 0;
 s32 D_8005AA64[2] = {0};
 ASTEntry *ASTTable = 0;
 LevSpec LevelSpecs = {0};
-NAS *D_8005AA9C = 0;
+NAS *ContourPlatform = 0;
 s32 D_8005AAA0[5] = {0};
 s16 SysFontLookUp[512] = {0};
 s8 SysFontWidth[512] = {0};
 u8 SysFontFlags[512] = {0};
 s32 FontPage = 0;
 MapPoint MapPoints[32] = {0};
-s32 D_8005B5B8 = 0;
+s32 ContourHeight = 0;
 s32 ACMD[16][2] = {0};
 u8 *sysfont_dbase = 0;
 RECT D_8005B640 = { 0, 0, 0x1FF, 0x1FF };
@@ -4263,7 +4263,7 @@ u8 D_80063BA0[12] = { 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0xFF, 0xFF, 0, 0 };
 FreeNode *D_80063BAC = 0;
 FreeNode *D_80063BB0 = 0;
 void *D_80063BB4 = 0;
-u8 D_80063BB8[2096] = {
+u8 VramNodePool[2096] = {
     0, 3, 0x60, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0x61, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0x62, 1, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0x63, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

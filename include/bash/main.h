@@ -817,7 +817,7 @@ typedef struct {
 s32 rand_step(void);
 extern VTable8 *D_8004E0DC;
 extern VTable8 *D_8005B648;
-extern s32 D_8004E0E0;
+extern s32 VSyncRate;
 extern s32 D_8004E0E4;
 void mal_update(_mal_area *heap);
 extern u8 HeapStart[];
@@ -896,7 +896,7 @@ extern _mal_area MainHeap;
 extern s32 D_800637B0;
 extern u8 *D_8006E9FC;
 extern u8 FontModel[];
-extern void *D_8005AA34;
+extern void *HeadOfCameras;
 extern void *HeadOfObjects;
 extern music_midi CurrentMusic;
 extern LoaderState Loader;
@@ -907,7 +907,7 @@ extern MusicEntry MusicTable[];
 extern sfx_machine_bank_info SfxBanks[6];
 extern NodePool PrimPool;
 extern NAS *HeadOfSolids;
-extern NAS *D_8005AA9C;
+extern NAS *ContourPlatform;
 extern void *HeadOfMissiles;            /* tail of the HeadOfObjects list */
 extern void *D_8005AA30;            /* tail of the HeadOfSolids list */
 extern s32 VelocityCalc;
@@ -1282,7 +1282,7 @@ typedef struct AnimStep {
     s16 cmd;
     u16 arg;
 } AnimStep;
-extern s32 D_8005B5B8;
+extern s32 ContourHeight;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;
 extern s32 *PrimNodeFree;
@@ -1311,8 +1311,8 @@ typedef struct PrimSet {
 extern s32 *D_80056858;
 extern NAS *NASActiveHead;
 extern s32 num_sfx_banks;
-extern s32 D_800654B0;
-extern s32 D_800654B4;
+extern s32 VabCueTimer;
+extern s32 VabCuePending;
 extern s32 GameFrameCount;
 extern s32 D_8004E0D0; /* BCD of count_completion's count */
 extern s32 FirstBootDone;
@@ -1323,8 +1323,8 @@ extern s32 D_80058B68;
 extern s32 D_80058B6C;
 extern s8 D_8005A63C;
 extern void *HeadOfBalls;
-extern void *D_80056864;
-extern s32 *D_80056860;
+extern void *PrimSetList;
+extern s32 *PrimSetFree;
 /* An ordering table and the primitive area drawn through it (0x400C bytes;
  * DrawBuffers holds two). */
 typedef struct {
@@ -1336,9 +1336,9 @@ typedef struct {
 
 extern u8 DrawBuffers[];
 extern s32 VideoMode;
-extern u8 *D_80058B7C;
-extern s32 D_80058B80;
-extern s32 D_80058B84;
+extern u8 *ScriptTrackDbase;
+extern s32 ScriptTrackIndex;
+extern s32 ScriptTrackThread;
 
 /* update_emitter_thread: per-particle state, 0x28 bytes */
 typedef struct EmitPart {

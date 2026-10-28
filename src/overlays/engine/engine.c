@@ -44,7 +44,7 @@ void BuildCameraFrameList(void) {
     s32 r;
     s32 t;
 
-    nas = (NAS *)D_8005AA34;
+    nas = (NAS *)HeadOfCameras;
     camera_frame_list_size = 0;
     if (nas != NULL) {
         g = (EngineGameView *)GameInfo;

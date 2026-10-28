@@ -11,7 +11,7 @@
 typedef struct { s16 unk0; s16 unk2; } ChaseTrig;
 extern ChaseTrig rcossin_tbl[];
 
-extern NAS *D_8005AA9C;
+extern NAS *ContourPlatform;
 extern s32 VelocityCalc;
 
 typedef struct CoalFlameInner {
@@ -324,7 +324,7 @@ s32 csqrt(s32 x);
 
 void ChaseHeroWinner(s32 arg0);
 extern s32 World_floor_level;
-extern s32 D_8005B5B8;
+extern s32 ContourHeight;
 extern HeroInfo Heroes[4];
 void ApplyContour(EXTengine *eng);
 void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);

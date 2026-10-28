@@ -40,11 +40,11 @@ void sound_vsync_tick(void) {
     s32 temp_v0;
 
     num_sfx_banks += 1;
-    if (D_800654B0 > 0) {
-        temp_v0 = D_800654B0 - 1;
-        D_800654B0 = temp_v0;
+    if (VabCueTimer > 0) {
+        temp_v0 = VabCueTimer - 1;
+        VabCueTimer = temp_v0;
         if (temp_v0 == 0) {
-            D_800654B4 += 1;
+            VabCuePending += 1;
         }
     }
     if (D_80064414 == 0) {
@@ -447,8 +447,8 @@ u8 D_800644A8[24] = {0};
 sfx_machine_bank_info SfxBanks[6] = {0};
 s8 SfxTable[2002][2] = {0};
 s32 num_sfx_banks = 0;
-s32 D_800654B0 = 0;
-s32 D_800654B4 = 0;
+s32 VabCueTimer = 0;
+s32 VabCuePending = 0;
 s32 D_800654B8 = 0;
 s32 SfxBankCount = 0;
 VabFile *VabLoading = 0;

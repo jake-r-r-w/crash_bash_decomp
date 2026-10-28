@@ -227,7 +227,7 @@ struct NAStype {
     /* 0x1C */ GRPnode Group;
     /* 0x28 */ OBJnode Object;          /* list headed by HeadOfObjects (UnlinkObject unlinks) */
     /* 0x30 */ OBJnode Solid;           /* list headed by HeadOfSolids (AddSolid pushes) */
-    /* 0x38 */ CAMnode Camera;          /* list headed by D_8005AA34 (RemoveCamera unlinks) */
+    /* 0x38 */ CAMnode Camera;          /* list headed by HeadOfCameras (RemoveCamera unlinks) */
     /* 0x48 */ void (*InitDelete)(NAS *); /* AST Init: called once when spawned */
     /* 0x4C */ void (*Handler)(NAS *);  /* AST Plot */
     /* 0x50 */ NASTrigger *trigger;     /* the trigger it was built from, or NULL */

@@ -1776,7 +1776,7 @@ s32 HeroTestFall(s32 arg0) {
         } else if (!(h->hero_ctrl & 8)) {
             e = h->hero_eng;
             if (World_floor_level < e->unk10.y + h->hero_sub->unk08) {
-                if (D_8005B5B8 == 0x7FFFFFFF) {
+                if (ContourHeight == 0x7FFFFFFF) {
                     goto set6;
                 }
                 e->unk10.y = World_floor_level;
@@ -1810,7 +1810,7 @@ s32 HeroTestFall(s32 arg0) {
             base13 = Heroes;
             h13 = base13 + arg0;
             if (!(h13->hero_ctrl & 8) && World_floor_level < h13->hero_eng->unk10.y + h13->hero_sub->unk08) {
-                if (D_8005B5B8 == 0x7FFFFFFF) {
+                if (ContourHeight == 0x7FFFFFFF) {
                 set6:
                     SetHeroAction(arg0, 6);
                     return 1;
@@ -2085,7 +2085,7 @@ void HeroFall(s32 arg0) {
     } else if (!(h->hero_ctrl & 8)) {
         eng = (u8 *)h->hero_eng;
         if (World_floor_level < *(s32 *)(eng + 0x14) + *(s32 *)((u8 *)h->hero_sub + 8)) {
-            if (D_8005B5B8 == 0x7FFFFFFF) {
+            if (ContourHeight == 0x7FFFFFFF) {
                 SetHeroAction(arg0, 6);
             } else {
                 *(s32 *)(eng + 0x14) = World_floor_level;
@@ -2142,9 +2142,9 @@ void SetHeroLand(s32 arg0) {
     h->hero_move->jump_max = 0;
     h->hero_sub->unk08 = 0;
     SetHeroSeq(arg0, 8);
-    if (D_8005AA9C != NULL) {
+    if (ContourPlatform != NULL) {
         e = h->hero_eng;
-        o = D_8005AA9C->Engine;
+        o = ContourPlatform->Engine;
         t = e->platform;
         if (t != NULL) {
             t->platform = NULL;
@@ -2157,7 +2157,7 @@ void SetHeroLand(s32 arg0) {
         }
         e->platform = o;
         o->platform = e;
-        x = FindExtension(D_8005AA9C, 0x1000);
+        x = FindExtension(ContourPlatform, 0x1000);
         if (x != NULL && (*(u16 *)(x + 0x1C) & 8)) {
             *(u16 *)(x + 0x1E) |= 8;
         }

@@ -11,8 +11,8 @@
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80034214[];
 extern u8 D_80050064[];
-extern u8 D_80063BB8[];
-extern u8 D_80063EC8[];
+extern u8 VramNodePool[];
+extern u8 VramAreas[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char BonkAnimBreathe[] = "BREATHE";
@@ -294,7 +294,7 @@ TrigLookUp BonkLUP = { BonkLUPtab, 4 };
 PreMap BONK_PREMAP = { BonkPreLoadDB, BonkWorldInfo, &BonkLUP };
 /* the shell settings (engine world record 0x010E) */
 shell_setup bonk_shell_info = {
-    0x2000, 0x10, 0x1000, 0x80, 0x200, 0x190, D_80063EC8, D_80063BB8, 0x20, 0x400,
+    0x2000, 0x10, 0x1000, 0x80, 0x200, 0x190, VramAreas, VramNodePool, 0x20, 0x400,
 };
 u16 BonkHeroModels[10] = {
     0, 0x54, 0x55, 0x56, 0x57, 0x5A, 0x5B, 0x58, 0x59, 0,
