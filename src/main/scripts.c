@@ -846,7 +846,7 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
     void (*fn)(u8 *, script_control_info *, s32);
     u8 *base;
 
-    p = (script_control_info *)&sub->unk6C;
+    p = (script_control_info *)&sub->u6C.dbase;
     base = db->data;
     if (base == NULL) {
         e = NULL;

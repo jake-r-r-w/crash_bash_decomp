@@ -729,12 +729,12 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             if (ModeTypes[g->mode * 3] == 0x102) {
                 sfx = 0;
             }
-            D_8009AC04.unk74 = sfx;
-            D_8009ACAC.unk74 = sfx;
+            D_8009AC04.entity = sfx;
+            D_8009ACAC.entity = sfx;
             break;
         clear:
-            D_8009AC04.unk74 = 0;
-            D_8009ACAC.unk74 = 0;
+            D_8009AC04.entity = 0;
+            D_8009ACAC.entity = 0;
             break;
         case 5:
             if (D_8009AF00 != 0) {
@@ -812,8 +812,8 @@ void DrawPauseMenu(void) {
     if (MSGV->flags == 0) {
         return;
     }
-    D_8009AC04.unk74 = 0;
-    D_8009ACAC.unk74 = 0;
+    D_8009AC04.entity = 0;
+    D_8009ACAC.entity = 0;
     PanelCountCompletion();
     SetupCompletionDigits();
     PauseMenuY = 0x70;
@@ -1538,7 +1538,7 @@ void UpdateWinCounter(s32 arg0) {
     if (!(counter_sub.flags & 0x8000)) {
         switch (WinCounterState) {
         case 1:
-            counter_sub.unk74 = 0x2004;
+            counter_sub.entity = 0x2004;
             PauseDelay = 3;
             WinCounterAnim = 1;
             counter_sub.flags |= 0x8000;
@@ -1548,7 +1548,7 @@ void UpdateWinCounter(s32 arg0) {
             PlaySfx(0x1A6, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 2:
-            counter_sub.unk74 = 0x2003;
+            counter_sub.entity = 0x2003;
             PauseDelay = 3;
             WinCounterAnim = 1;
             counter_sub.flags |= 0x8000;
@@ -1558,7 +1558,7 @@ void UpdateWinCounter(s32 arg0) {
             PlaySfx(0x1A5, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 3:
-            counter_sub.unk74 = 0x2002;
+            counter_sub.entity = 0x2002;
             PauseDelay = 3;
             WinCounterAnim = 1;
             counter_sub.flags |= 0x8000;
@@ -1569,13 +1569,13 @@ void UpdateWinCounter(s32 arg0) {
             break;
         case 4:
             PauseDelay = 3;
-            counter_sub.unk74 = 0x2005;
+            counter_sub.entity = 0x2005;
             counter_sub.flags |= 0x8000;
             PlaySfx(0x1A7, NULL, NULL, 0x1000, 0x1E00, 0);
             ((EngineHintView *)GameInfo)->flags &= 0xFBFFFFFF;
             break;
         case 5:
-            counter_sub.unk74 = 0x2006;
+            counter_sub.entity = 0x2006;
             counter_sub.unk20.x = 0x100;
             counter_sub.unk20.y = 0x100;
             counter_sub.unk20.z = 0x100;
@@ -1585,7 +1585,7 @@ void UpdateWinCounter(s32 arg0) {
             counter_sub.flags |= 0x8000;
             break;
         case 6:
-            counter_sub.unk74 = 0x201B;
+            counter_sub.entity = 0x201B;
             counter_sub.unk20.x = 0x100;
             counter_sub.unk20.y = 0x100;
             counter_sub.unk20.z = 0x100;

@@ -679,7 +679,7 @@ void MainMenuUpdate(void) {
     if (MainMenuHintTimer != 0) {
         s[5].flags |= 0x8000;
         MainMenuHintTimer--;
-        s[5].unk6C = (void *)MainMenuHints[MainMenuCursor];
+        s[5].u6C.text = (void *)MainMenuHints[MainMenuCursor];
     } else {
         s[5].flags &= ~0x8000;
     }
@@ -843,13 +843,13 @@ void BattleOptionsUpdate(void) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         O69OV->unk38++;
     }
-    *(u8 *)GetEngineSlot(0)->sub[2].unk6C = O69OV->unk3A + '0';
-    GetEngineSlot(0)->sub[5].unk6C = (void *)TextDifficulties[O69OV->unk2C][O69OV->unk38];
+    *(u8 *)GetEngineSlot(0)->sub[2].u6C.dbase = O69OV->unk3A + '0';
+    GetEngineSlot(0)->sub[5].u6C.text = (void *)TextDifficulties[O69OV->unk2C][O69OV->unk38];
     p = &GetEngineSlot(0)->sub[8];
     if (O69OV->unk32 & 1) {
-        p->unk6C = (void *)TextBattleKinds[O69OV->unk2C][0];
+        p->u6C.text = (void *)TextBattleKinds[O69OV->unk2C][0];
     } else {
-        p->unk6C = (void *)TextBattleKinds[O69OV->unk2C][1];
+        p->u6C.text = (void *)TextBattleKinds[O69OV->unk2C][1];
     }
     if (Pads[0].pressed & 0x4000) {
         GameExitFlags = 0x8008;
@@ -1035,7 +1035,7 @@ void OptionsRender(void) {
     RenderState.modelDp = ScreenFade.amount;
     switch (OptionsPage) {
     case 1:
-        FormatPercent(sub[7].unk6C, GameOptions.music);
+        FormatPercent(sub[7].u6C.dbase, GameOptions.music);
         if (GameOptions.stereo != 0) {
             sub[5].flags &= ~0x8000;
             sub[4].flags |= 0x8000;
@@ -1043,7 +1043,7 @@ void OptionsRender(void) {
             sub[5].flags |= 0x8000;
             sub[4].flags &= ~0x8000;
         }
-        FormatPercent(sub[9].unk6C, GameOptions.sfx);
+        FormatPercent(sub[9].u6C.dbase, GameOptions.sfx);
         break;
     case 2:
         n = PadCount;
@@ -1473,7 +1473,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
         o->unk18 = 0;
         o->unk0 |= 1;
         {
-            s->unk6C = &HeroModelBank[card[o->unk30].model];
+            s->u6C.dbase = &HeroModelBank[card[o->unk30].model];
             s->flags |= 0x8000;
         }
         GameInfo[o->unk4 + 0x50] = card[o->unk30].hero;
@@ -1842,10 +1842,10 @@ void LevelSelectInput(void) {
         }
     }
     if (TitlesSlotOn()) {
-        GetEngineSlot(0)->sub->unk6C = (void *)TitlesSlotRowI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
+        GetEngineSlot(0)->sub->u6C.dbase = (void *)TitlesSlotRowI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
         GetEngineSlot(0)->sub->unk08 = 8;
-        GetEngineSlot(2)->sub->unk6C = (void *)TitlesSlotModelI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
-        GetEngineSlot(2)->sub->unk74 = TitlesSlotCI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
+        GetEngineSlot(2)->sub->u6C.dbase = (void *)TitlesSlotModelI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
+        GetEngineSlot(2)->sub->entity = TitlesSlotCI((s8)GameInfo[0x36], (s8)GameInfo[0x37]);
         GetEngineSlot(0)->sub[4].flags |= 0x8000;
         GetEngineSlot(0)->sub[9].flags &= ~0x8000;
         return;
@@ -1853,33 +1853,33 @@ void LevelSelectInput(void) {
     e = GetEngineSlot(0);
     tbl = LangLocked;
     g = GameInfo;
-    e->sub->unk6C = (void *)tbl[*(s32 *)(g + 0x2C)];
-    GetEngineSlot(2)->sub->unk74 = 0;
+    e->sub->u6C.text = (void *)tbl[*(s32 *)(g + 0x2C)];
+    GetEngineSlot(2)->sub->entity = 0;
     GetEngineSlot(0)->sub[4].flags &= ~0x8000;
     GetEngineSlot(0)->sub->unk08 = 0x1C;
     GetEngineSlot(0)->sub[9].flags |= 0x8000;
     if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + ((s8)GameInfo[0x37] << 4)))->type == 2)) {
         if (CardStatus & 2) {
             if (CardStatus & 0x40) {
-                GetEngineSlot(0)->sub[9].unk6C = (void *)LangCheckingCard[*(s32 *)(GameInfo + 0x2C)];
+                GetEngineSlot(0)->sub[9].u6C.text = (void *)LangCheckingCard[*(s32 *)(GameInfo + 0x2C)];
             } else if (CardStatus & 0x10) {
                 if (UnlockCardLevels(0) != 0) {
-                    *(s32 *)&GetEngineSlot(0)->sub[9].unk6C = LangPressToUnlockLevels[*(s32 *)(GameInfo + 0x2C)];
+                    *(s32 *)&GetEngineSlot(0)->sub[9].u6C.text = LangPressToUnlockLevels[*(s32 *)(GameInfo + 0x2C)];
                     if (Pads[0].pressed & 0x2000) {
                         PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
                         UnlockCardLevels(1);
                     }
                 } else {
-                    GetEngineSlot(0)->sub[9].unk6C = (void *)LangNoMoreUnlocked[*(s32 *)(GameInfo + 0x2C)];
+                    GetEngineSlot(0)->sub[9].u6C.text = (void *)LangNoMoreUnlocked[*(s32 *)(GameInfo + 0x2C)];
                 }
             } else {
-                GetEngineSlot(0)->sub[9].unk6C = (void *)LangInsertCard[*(s32 *)(GameInfo + 0x2C)];
+                GetEngineSlot(0)->sub[9].u6C.text = (void *)LangInsertCard[*(s32 *)(GameInfo + 0x2C)];
             }
         } else {
-            GetEngineSlot(0)->sub[9].unk6C = (void *)LangInsertCard[*(s32 *)(GameInfo + 0x2C)];
+            GetEngineSlot(0)->sub[9].u6C.text = (void *)LangInsertCard[*(s32 *)(GameInfo + 0x2C)];
         }
     } else {
-        GetEngineSlot(0)->sub[9].unk6C = NULL;
+        GetEngineSlot(0)->sub[9].u6C.dbase = NULL;
     }
 }
 
@@ -1918,7 +1918,7 @@ void LevelSelectUpdate(void) {
     boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + ((s8)GameInfo[0x37] << 4)))->idx;
     w = ModeTypes[boff * 3] - 0x101;
     off = ((s32 **)LangModeTypeTexts)[*(s32 *)(GameInfo + 0x2C)][w];
-    e0->sub[6].unk6C = (void *)off;
+    e0->sub[6].u6C.dbase = (void *)off;
     t = &GetEngineSlot(0)->sub[1];
     t->unk08 = lerp_fix12(t->unk08,
         *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)GameInfo[0x37] + 4] + 0x72) + 0x32, 0x800);
@@ -1948,17 +1948,17 @@ void LevelSelectUpdate(void) {
             on = 0;
         }
         if (on) {
-            s->unk6C = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + (off << 4)))->model;
+            s->u6C.dbase = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + (off << 4)))->model;
             c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + (off << 4)))->unkC;
-            s->unk74 = c;
+            s->entity = c;
             s->unk10 = 0x7D;
             s->unk12 = 0;
             s->unk14 = 0;
             s->unk04 = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
             s->unk08 = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
         } else {
-            s->unk6C = &HeroModelBank[DB_MainmenuModels];
-            s->unk74 = 0x2006;
+            s->u6C.dbase = &HeroModelBank[DB_MainmenuModels];
+            s->entity = 0x2006;
             s->unk10 = 0;
             s->unk12 = FrameCount * 50 + (i << 10);
             val = rcossin_tbl[(((GameFrameCount * 100 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2;
@@ -1973,7 +1973,7 @@ void LevelSelectUpdate(void) {
     }
     for (i = (GameArena + BattleArenas)->unk4; i < 4; i++) {
         GetEngineSlot(1)->sub[i + 4].flags &= ~0x8000;
-        GetEngineSlot(i + 3)->sub->unk74 = 0;
+        GetEngineSlot(i + 3)->sub->entity = 0;
     }
     h = GameInfo;
     NextGameMode = ((BattleLevel *)((u8 *)BattleArenas[(s8)h[0x36]].unk0 + ((s8)h[0x37] << 4)))->idx;

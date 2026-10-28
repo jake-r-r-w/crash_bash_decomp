@@ -358,8 +358,8 @@ void AnimateCupMenu(void) {
 loop:
     if (i < n) {
         sub = GetEngineSlot(i + 3)->sub;
-        sub->unk6C = (void *)p->unk8;
-        sub->unk74 = p->unkC;
+        sub->u6C.dbase = (void *)p->unk8;
+        sub->entity = p->unkC;
         if (p->unk0 == 1 || (p->unk0 == 2 && LevelUnlockedIn(p->unk4, GameInfo) != 0)) {
             sub->flags |= 0x8000;
         } else {
@@ -481,7 +481,7 @@ void UpdateCupMenu(void) {
             p[i + 0xA3] = 0;
         }
     }
-    GetEngineSlot(0)->sub->unk6C = (void *)EngineCurWorldName();
+    GetEngineSlot(0)->sub->u6C.dbase = (void *)EngineCurWorldName();
     if (GameInfo[0x28] != 0) {
         GetEngineSlot(0)->sub[8].flags |= 0x8000;
     } else {
@@ -505,8 +505,8 @@ void UpdateCupMenu(void) {
     sub = &GetEngineSlot(0)->sub[4];
     sub->flags |= 0x02008000;
     sub->unk68 = -0x80;
-    sub->unk6C = &HeroModelBank[DB_MainmenuModels];
-    sub->unk74 = 0x2006;
+    sub->u6C.dbase = &HeroModelBank[DB_MainmenuModels];
+    sub->entity = 0x2006;
     sub->unk12 = FrameCount * 50;
     sub->unk10 = 0;
     sub->unk14 = rcossin_tbl[(((GameFrameCount * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
@@ -779,21 +779,21 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     e->unk10.y = arg4;
     e->flags |= 0x10000000;
     if (arg2 != 0) {
-        e->sub[3].unk74 = 0;
-        e->sub[4].unk74 = 0;
-        e->sub[5].unk74 = 0;
-        e->sub[6].unk74 = 0;
-        e->sub[2].unk6C = NULL;
-        e->sub[1].unk6C = D_8009F004[GameLanguage];
+        e->sub[3].entity = 0;
+        e->sub[4].entity = 0;
+        e->sub[5].entity = 0;
+        e->sub[6].entity = 0;
+        e->sub[2].u6C.dbase = NULL;
+        e->sub[1].u6C.text = D_8009F004[GameLanguage];
         e->sub[1].unk04 = 0x8096;
         e->sub[1].unk08 = 0x1E;
         return;
     }
-    e->sub[3].unk74 = IconImage[arg0[0x4C]];
-    e->sub[4].unk74 = IconImage[arg0[0x4D]];
-    e->sub[5].unk74 = IconImage[arg0[0x4E]];
-    e->sub[6].unk74 = IconImage[arg0[0x4F]];
-    e->sub[1].unk6C = arg0 + 0x18;
+    e->sub[3].entity = IconImage[arg0[0x4C]];
+    e->sub[4].entity = IconImage[arg0[0x4D]];
+    e->sub[5].entity = IconImage[arg0[0x4E]];
+    e->sub[6].entity = IconImage[arg0[0x4F]];
+    e->sub[1].u6C.dbase = arg0 + 0x18;
     e->sub[1].unk04 = 0xC;
     e->sub[1].unk08 = 2;
     n = count_completion(arg0);
@@ -807,7 +807,7 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     PercentText[arg1][2] = r;
     PercentText[arg1][3] = '%';
     PercentText[arg1][4] = 0;
-    e->sub[2].unk6C = PercentText[arg1];
+    e->sub[2].u6C.text = PercentText[arg1];
 }
 
 void ShowCardSlotStats(u8 *arg0, s32 arg1) {
@@ -822,15 +822,15 @@ void ShowCardSlotStats(u8 *arg0, s32 arg1) {
         return;
     }
     itoa_div(CardStatsText, CountTrophies(arg0), 10);
-    e->sub[2].unk6C = CardStatsText;
+    e->sub[2].u6C.text = CardStatsText;
     itoa_div(CardStatsText + 3, EngineSum147(arg0), 10);
-    e->sub[6].unk6C = CardStatsText + 3;
+    e->sub[6].u6C.text = CardStatsText + 3;
     itoa_div(CardStatsText + 6, EngineSum126(arg0), 10);
-    e->sub[4].unk6C = CardStatsText + 6;
+    e->sub[4].u6C.text = CardStatsText + 6;
     itoa_div(CardStatsText + 9, EngineCount105(arg0), 10);
-    e->sub[8].unk6C = CardStatsText + 9;
+    e->sub[8].u6C.text = CardStatsText + 9;
     itoa_div_end(CardStatsText + 12, EngineExtra105(arg0), 10);
-    e->sub[10].unk6C = CardStatsText + 12;
+    e->sub[10].u6C.text = CardStatsText + 12;
     switch (*(s32 *)(arg0 + 0xE0)) {
     case 1:
         EngineSetSlot3Digits(3, 1);
@@ -868,8 +868,8 @@ void UpdateCardPrompt(void) {
         if (CardStatus & 2) {
             if (CardStatus & 0x40) {
                 e = GetEngineSlot(1);
-                e->sub[1].unk6C = D_8009EFCC[*(s32 *)((g = GameInfo) + 0x2C)];
-                GetEngineSlot(1)->sub->unk6C = D_8009EFD8[*(s32 *)(g + 0x2C)];
+                e->sub[1].u6C.text = D_8009EFCC[*(s32 *)((g = GameInfo) + 0x2C)];
+                GetEngineSlot(1)->sub->u6C.text = D_8009EFD8[*(s32 *)(g + 0x2C)];
                 eng_render_subs((u8 *)GetEngineSlot(1));
                 return;
             } else if (CardStatus & 0x10) {
@@ -905,11 +905,11 @@ void UpdateCardPrompt(void) {
                 return;
             } else {
                 if (CardStatus & 4) {
-                    GetEngineSlot(1)->sub[1].unk6C = D_8009EFD0[GameLanguage];
+                    GetEngineSlot(1)->sub[1].u6C.text = D_8009EFD0[GameLanguage];
                 } else {
-                    GetEngineSlot(1)->sub[1].unk6C = D_8009EFD4[GameLanguage];
+                    GetEngineSlot(1)->sub[1].u6C.text = D_8009EFD4[GameLanguage];
                 }
-                GetEngineSlot(1)->sub->unk6C = D_8009EFD8[GameLanguage];
+                GetEngineSlot(1)->sub->u6C.text = D_8009EFD8[GameLanguage];
                 eng_render_subs((u8 *)GetEngineSlot(1));
                 return;
             }
@@ -917,8 +917,8 @@ void UpdateCardPrompt(void) {
         e = GetEngineSlot(1);
         {
             u8 *q;
-            e->sub[1].unk6C = D_8009EFDC[*(s32 *)((q = GameInfo) + 0x2C)];
-            GetEngineSlot(1)->sub->unk6C = D_8009EFD8[*(s32 *)(q + 0x2C)];
+            e->sub[1].u6C.text = D_8009EFDC[*(s32 *)((q = GameInfo) + 0x2C)];
+            GetEngineSlot(1)->sub->u6C.text = D_8009EFD8[*(s32 *)(q + 0x2C)];
         }
         eng_render_subs((u8 *)GetEngineSlot(1));
         break;
@@ -1300,12 +1300,12 @@ void UpdateCardSlots(void) {
             idx = CardSlotIndex * 0x194;
             p = (u8 *)CardSlots;
             if (*(s32 *)(idx + p) == 0) {
-                GetEngineSlot(3)->sub[13].unk6C = 0;
+                GetEngineSlot(3)->sub[13].u6C.dbase = 0;
             } else {
-                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB4[GameLanguage];
+                GetEngineSlot(3)->sub[13].u6C.text = D_8009EFB4[GameLanguage];
             }
-            GetEngineSlot(3)->sub[12].unk6C = D_8009EFC8[*(s32 *)((g = GameInfo) + 0x2C)];
-            GetEngineSlot(3)->sub[14].unk6C = D_8009F000[*(s32 *)(g + 0x2C)];
+            GetEngineSlot(3)->sub[12].u6C.text = D_8009EFC8[*(s32 *)((g = GameInfo) + 0x2C)];
+            GetEngineSlot(3)->sub[14].u6C.text = D_8009F000[*(s32 *)(g + 0x2C)];
         }
         break;
     case 1:
@@ -1316,12 +1316,12 @@ void UpdateCardSlots(void) {
             idx = CardSlotIndex * 0x194;
             p = (u8 *)CardSlots;
             if (*(s32 *)(idx + p) == 0) {
-                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB8[GameLanguage];
+                GetEngineSlot(3)->sub[13].u6C.text = D_8009EFB8[GameLanguage];
             } else {
-                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB0[GameLanguage];
+                GetEngineSlot(3)->sub[13].u6C.text = D_8009EFB0[GameLanguage];
             }
-            GetEngineSlot(3)->sub[12].unk6C = D_8009EFC0[*(s32 *)((g = GameInfo) + 0x2C)];
-            GetEngineSlot(3)->sub[14].unk6C = D_8009EFC4[*(s32 *)(g + 0x2C)];
+            GetEngineSlot(3)->sub[12].u6C.text = D_8009EFC0[*(s32 *)((g = GameInfo) + 0x2C)];
+            GetEngineSlot(3)->sub[14].u6C.text = D_8009EFC4[*(s32 *)(g + 0x2C)];
         }
         break;
     }
@@ -1351,11 +1351,11 @@ void InitSaveMenu(void) {
     PlaceEngineSlot(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
-        sub->unk74 = 0x2007;
-        sub->unk6C = &HeroModelBank[DB_MainmenuModels];
+        sub->entity = 0x2007;
+        sub->u6C.dbase = &HeroModelBank[DB_MainmenuModels];
     } else {
-        sub->unk74 = 0x201F;
-        sub->unk6C = &HeroModelBank[DB_AdventureItems];
+        sub->entity = 0x201F;
+        sub->u6C.dbase = &HeroModelBank[DB_AdventureItems];
     }
     PlaceEngineSlot(1, &CardPromptPanel);
     D_8009F494 = 0;
@@ -1375,11 +1375,11 @@ void InitCardPromptMenu(void) {
     PlaceEngineSlot(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
-        sub->unk74 = 0x2007;
-        sub->unk6C = &HeroModelBank[DB_MainmenuModels];
+        sub->entity = 0x2007;
+        sub->u6C.dbase = &HeroModelBank[DB_MainmenuModels];
     } else {
-        sub->unk74 = 0x201F;
-        sub->unk6C = &HeroModelBank[DB_AdventureItems];
+        sub->entity = 0x201F;
+        sub->u6C.dbase = &HeroModelBank[DB_AdventureItems];
     }
     PlaceEngineSlot(1, &CardPromptPanel);
     CardPromptStep = 0;
@@ -1482,11 +1482,11 @@ void InitCardMenu(void) {
     PlaceEngineSlot(8, &D_8009F40C);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
-        sub->unk74 = 0x2007;
-        sub->unk6C = &HeroModelBank[DB_MainmenuModels];
+        sub->entity = 0x2007;
+        sub->u6C.dbase = &HeroModelBank[DB_MainmenuModels];
     } else {
-        sub->unk74 = 0x201F;
-        sub->unk6C = &HeroModelBank[DB_AdventureItems];
+        sub->entity = 0x201F;
+        sub->u6C.dbase = &HeroModelBank[DB_AdventureItems];
     }
     PlaceEngineSlot(1, &CardPromptPanel);
 }

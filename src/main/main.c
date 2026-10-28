@@ -3244,12 +3244,12 @@ PointList *sub_point_list(subengine *sub) {
     u8 *rec;
     s32 off;
 
-    flag = sub->unk74;
+    flag = sub->entity;
     if (flag != 0) {
-        if (sub->unk6C == NULL) {
+        if (sub->u6C.dbase == NULL) {
             return NULL;
         }
-        base = *(u8 **)((u8 *)sub->unk6C + 0xC);
+        base = *(u8 **)((u8 *)sub->u6C.dbase + 0xC);
         if (base == NULL) {
             return NULL;
         }

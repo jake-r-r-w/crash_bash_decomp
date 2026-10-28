@@ -615,9 +615,9 @@ void SetNasDefaults(void) {
     SubEngineTemplate.hook = (void (*)(subengine *, s32, u32)) draw_object;
     SubEngineTemplate.release = (void (*)(subengine *)) sub_release_none;
     SubEngineTemplate.unk50 = 0;
-    SubEngineTemplate.unk74 = 0;
+    SubEngineTemplate.entity = 0;
     SubEngineTemplate.unk70 = 0;
-    SubEngineTemplate.unk6C = NULL;
+    SubEngineTemplate.u6C.dbase = NULL;
     SubEngineTemplate.unk76 = 0;
     SubEngineTemplate.unk90 = 0;
     SubEngineTemplate.unk9C = 0;
@@ -1433,7 +1433,7 @@ s16 DoAnimCommand(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                     goto lnext;
                 l8006:
                     ret = ((s16 *)anim->Atable)[++anim->Aindex];
-                    frame = sub->unk74;
+                    frame = sub->entity;
                     goto lnext;
                 l8011:
                     anim->Seq_count = ((s16 *)anim->Atable)[++anim->Aindex] - 1;
@@ -1460,7 +1460,7 @@ s16 DoAnimCommand(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                     anim->Aspeed = ((s16 *)anim->Atable)[++anim->Aindex];
                     goto lnext;
                 l8010:
-                    sub->unk6C = &HeroModelBank[((s16 *)anim->Atable)[++anim->Aindex]];
+                    sub->u6C.dbase = &HeroModelBank[((s16 *)anim->Atable)[++anim->Aindex]];
                     goto lnext;
                 ldef:
                     i = frame >> 8;
@@ -1472,7 +1472,7 @@ s16 DoAnimCommand(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                 }
             }
         } while (frame < 0);
-        anim->Currentframe = sub->unk74 = frame;
+        anim->Currentframe = sub->entity = frame;
         if (held == 0) {
             anim->Aspeed = *(s16 *)anim->Atable;
         }
@@ -1530,7 +1530,7 @@ s16 DoAnimCommand2(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) 
                 cmd = 0;
                 goto next;
             l8006:
-                cmd = sub->unk74;
+                cmd = sub->entity;
             l8005:
                 ret = ((AnimStep *)anim->Atable)[anim->Aindex].arg;
                 goto next;
@@ -1547,7 +1547,7 @@ s16 DoAnimCommand2(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) 
                 PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, NULL, NULL, 0x1000, vol, 0);
                 goto next;
             l8010:
-                sub->unk6C = &HeroModelBank[((AnimStep *)anim->Atable)[anim->Aindex].arg];
+                sub->u6C.dbase = &HeroModelBank[((AnimStep *)anim->Atable)[anim->Aindex].arg];
                 goto next;
             ldef:
                 fn = (void (*)(NAS *, EXTanimator *, s16))hooks[((s16)cmd >> 8) & 0xF][1];
@@ -1557,7 +1557,7 @@ s16 DoAnimCommand2(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) 
             next:;
             }
         } while ((s16)cmd < 0);
-        sub->unk74 = cmd;
+        sub->entity = cmd;
         anim->Aspeed = ((AnimStep *)anim->Atable)[anim->Aindex].arg;
     }
     return ret;

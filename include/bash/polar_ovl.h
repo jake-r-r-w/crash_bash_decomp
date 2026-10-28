@@ -1144,7 +1144,7 @@ static inline void PolarMissileBlast(NAS *m, s32 kind) {
             x->unk18 = 0x100;
             if (anim != NULL) {
                 x->unk20 = 5;
-                nas->Engine->sub->unk6C = anim;
+                nas->Engine->sub->u6C.dbase = anim;
             } else {
                 x->unk20 = 1;
             }

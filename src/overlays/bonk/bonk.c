@@ -413,11 +413,11 @@ void PlotBonkStool(NAS *nas) {
             }
             e->flags &= 0xFFFF7FFF;
             if (BonkRoundTimer == 0) {
-                e->sub->unk74 = 0x2015;
+                e->sub->entity = 0x2015;
                 p = &BonkRoundTime;
                 BonkRoundTimer = p[++BonkRoundState];
             } else {
-                e->sub->unk74 = 0x2002;
+                e->sub->entity = 0x2002;
             }
         }
         break;
@@ -431,7 +431,7 @@ void PlotBonkStool(NAS *nas) {
             e->unk2C.y = 0;
             e->flags |= 0x8000;
             e->unk10.y = World_floor_level;
-            if (e->sub->unk74 == 0x2015) {
+            if (e->sub->entity == 0x2015) {
                 PlaySfx(0x72A, NULL, &e->unk10, 0x1000, 0x1E00, 0);
             } else {
                 PlaySfx(0x528, NULL, &e->unk10, 0x1000, 0x1E00, 0);
@@ -444,7 +444,7 @@ void PlotBonkStool(NAS *nas) {
             e->unk2C.y = 0xC00;
             nas->UserInfo.status = 12;
             nas->UserInfo.user1 = BonkStoolHeights[BonkCrateTimer] + Random(BonkStoolTable[BonkCrateTimer]);
-            if (e->sub->unk74 == 0x2015) {
+            if (e->sub->entity == 0x2015) {
                 pos = e->unk10;
                 pos.y -= 0x100;
                 Bonk_SpawnPuff((s32 *)&pos, 3, &HeroModelBank[DB_MalletObjects]);
@@ -583,8 +583,8 @@ void InitBonkCrate(NAS *nas) {
         s = e->sub;
         e->flags &= 0xFFFF7FFF;
         if (s != NULL) {
-            s->unk6C = &HeroModelBank[DB_MalletObjects];
-            s->unk74 = 0x200F;
+            s->u6C.dbase = &HeroModelBank[DB_MalletObjects];
+            s->entity = 0x200F;
         } else {
             nas->Failure = 1;
         }
@@ -785,7 +785,7 @@ void BonkHitTarget(s32 arg0, s32 arg1, BonkTgt2 *t) {
         e = p->eng;
         big = 0;
         if (e != NULL) {
-            big = ((subengine *)e->sub)->unk74 == 0x2015;
+            big = ((subengine *)e->sub)->entity == 0x2015;
         }
         if (arg0 >= 0) {
             switch (p->mode) {
@@ -1481,7 +1481,7 @@ void InitBonkFlag(NAS *nas) {
 
     if (e != NULL) {
         ScriptCursorFirst(nas, &BonkFlagScriptInit);
-        e->sub->unk6C = &HeroModelBank[DB_ArenaMedievalMalletArena];
+        e->sub->u6C.dbase = &HeroModelBank[DB_ArenaMedievalMalletArena];
     } else {
         nas->Failure = 1;
     }
@@ -1517,8 +1517,8 @@ void InitBonkShockwave(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = &HeroModelBank[DB_MalletObjects];
-        e->sub->unk74 = 0x2014;
+        e->sub->u6C.dbase = &HeroModelBank[DB_MalletObjects];
+        e->sub->entity = 0x2014;
         e->unk5C = 1;
         e->unk2C.y = 0x1000;
         e->unk5D = 0;
@@ -1579,8 +1579,8 @@ void InitBonkStool(NAS *nas) {
         s = e->sub;
         e->flags &= 0xFFFF7FFF;
         if (s != NULL) {
-            s->unk6C = &HeroModelBank[DB_MalletObjects];
-            s->unk74 = 0x2002;
+            s->u6C.dbase = &HeroModelBank[DB_MalletObjects];
+            s->entity = 0x2002;
         } else {
             nas->Failure = 1;
         }
@@ -1798,8 +1798,8 @@ void BonkHeroHitFlash(s32 arg0, s32 arg1) {
     case 0:
         BonkSlots[arg0].fC = 0xB4;
         if (s != NULL) {
-            s->unk6C = &HeroModelBank[DB_MalletObjects];
-            s->unk74 = 0x2013;
+            s->u6C.dbase = &HeroModelBank[DB_MalletObjects];
+            s->entity = 0x2013;
             s->flags |= 0x8000;
             e->flags |= 0x8000;
         }
@@ -1807,8 +1807,8 @@ void BonkHeroHitFlash(s32 arg0, s32 arg1) {
         break;
     case 1:
         if (s != NULL) {
-            s->unk6C = &HeroModelBank[DB_Powerups];
-            s->unk74 = 0x200C;
+            s->u6C.dbase = &HeroModelBank[DB_Powerups];
+            s->entity = 0x200C;
             s->flags |= 0x8000;
             e->flags |= 0x8000;
         }

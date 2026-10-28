@@ -737,13 +737,13 @@ void N2OInitHero(s32 i) {
     eng_add_subs_n(eng, k);
     n = sub->next;
     if (n != NULL) {
-        n->unk6C = sub->unk6C;
+        n->u6C.dbase = sub->u6C.dbase;
         n->flags |= 0x8000;
         h->hero_anim->sub = n;
         n = n->next;
         if (n != NULL) {
-            n->unk6C = &HeroModelBank[DB_PlayerVehicle];
-            n->unk74 = 0x2005;
+            n->u6C.dbase = &HeroModelBank[DB_PlayerVehicle];
+            n->entity = 0x2005;
             n->unk50 = 1;
             n->unk51 = 0;
             n->flags &= ~0x8000;
@@ -755,8 +755,8 @@ void N2OInitHero(s32 i) {
         return;
     }
     N2OHeroPlaced[i] = 0xF;
-    sub->unk6C = *(void **)MapScene;
-    sub->unk74 = 0x4000;
+    sub->u6C.dbase = *(void **)MapScene;
+    sub->entity = 0x4000;
     if ((u32)(i - 2) < 2) {
         sub->flags &= ~0x8000;
     }
@@ -844,12 +844,12 @@ void N2OPlaceHero(s32 i) {
         n->unk0C = 0;
         n->unk08 = 0;
         n->unk04 = 0;
-        n->unk6C = &HeroModelBank[z];
+        n->u6C.dbase = &HeroModelBank[z];
         h->hero_anim->sub = n;
         n = n->next;
         if (n != NULL) {
-            n->unk6C = &HeroModelBank[DB_PlayerVehicle];
-            n->unk74 = 0x2005;
+            n->u6C.dbase = &HeroModelBank[DB_PlayerVehicle];
+            n->entity = 0x2005;
             n->unk50 = 1;
             n->unk51 = 0;
             n->unk0C = 0;
@@ -858,9 +858,9 @@ void N2OPlaceHero(s32 i) {
             n->flags &= ~0x8000;
         }
     }
-    sub->unk6C = &HeroModelBank[DB_PlayerVehicle];
+    sub->u6C.dbase = &HeroModelBank[DB_PlayerVehicle];
     N2OHeroPlaced[i] = 0xF;
-    sub->unk74 = 0x2003;
+    sub->entity = 0x2003;
     sub->unk20.x = 0x1000;
     sub->unk20.y = 0x1000;
     sub->unk20.z = 0x1000;
@@ -1028,10 +1028,10 @@ void N2OMoveHero(s32 arg0) {
     }
     if (!(h->hero_status & 0xF800)) {
         if (h->hero_attack_timer != 0) {
-            h->hero_sub->unk74 = 0x2001;
+            h->hero_sub->entity = 0x2001;
             return;
         }
-        h->hero_sub->unk74 = 0x2003;
+        h->hero_sub->entity = 0x2003;
     }
 }
 
@@ -1114,7 +1114,7 @@ skip:
     s = Heroes[arg0].hero_sub;
     s = s->next;
     if (s != 0) {
-        s->unk74 = N2OUnusedRows[Heroes[arg0].hero_name][4] + N2OHeroPlaced[arg0];
+        s->entity = N2OUnusedRows[Heroes[arg0].hero_name][4] + N2OHeroPlaced[arg0];
         return 0;
     }
     return 1;
@@ -1153,14 +1153,14 @@ void N2OHeroEnter(s32 arg0) {
         if (n > 0x1E) {
             n = 0x1E;
         }
-        Heroes[arg0].hero_sub->unk74 = n + 0x3FFF;
+        Heroes[arg0].hero_sub->entity = n + 0x3FFF;
     } else {
         if (N2OPhaseObject != NULL) {
             *N2OPhaseObject &= 0xFFFF7FFF;
         }
         h->hero_eng->unk10.z = -0xA00;
         SetHeroAction(arg0, 0x27);
-        h->hero_sub->unk74 = 0x2003;
+        h->hero_sub->entity = 0x2003;
     }
 }
 
@@ -1459,7 +1459,7 @@ void N2OHeroKick(s32 arg0) {
     if (sub != 0) {
         s = sub->next;
         if (s != 0) {
-            s->unk74 = 0x2005;
+            s->entity = 0x2005;
             s->unk20.x = scale & 0xFFFF;
             s->unk20.y = scale & 0xFFFF;
             s->unk20.z = scale & 0xFFFF;
@@ -1547,9 +1547,9 @@ void N2OHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]];
+            h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]];
         } else {
-            h->hero_sub->unk6C = NULL;
+            h->hero_sub->u6C.dbase = NULL;
         }
     } else {
         HeroGhost(arg0);
@@ -1617,14 +1617,14 @@ void InitN2OBall(NAS *nas) {
             }
         }
         eng->unk5D = 2;
-        eng->sub->unk6C = &HeroModelBank[DB_BallsEffects];
-        eng->sub->unk74 = 0x2009;
+        eng->sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
+        eng->sub->entity = 0x2009;
         AddToGroup((u8 **)&HeadOfBalls, (u8 *)nas);
         e1 = AddExtEngine(nas, 1);
         if (e1 != NULL) {
             sub = e1->sub;
-            sub->unk6C = &HeroModelBank[DB_BallsEffects];
-            sub->unk74 = 0x200B;
+            sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
+            sub->entity = 0x200B;
             e1->flags |= 0x22000021;
             sub->flags |= 0x22000021;
             e1->flags &= 0xFFFF7FFF;
@@ -1709,7 +1709,7 @@ void PlotN2OBall(NAS *nas) {
                 break;
             }
             N2OBossAimDelay = 0x26 - skill;
-            eng->sub->unk74 = 0x2018;
+            eng->sub->entity = 0x2018;
             obj->whatami = 2;
             break;
         case 12:
@@ -2065,9 +2065,9 @@ void N2OInitBoss(void) {
     mv->forward_angle = ang;
     eng->unk5D = 0;
     anim = &HeroModelBank[DB_Oxide];
-    *(u8 **)&sub->unk6C = anim;
+    *(u8 **)&sub->u6C.dbase = anim;
     N2OBossAnimTimer = 0xF;
-    sub->unk74 = 0x2006;
+    sub->entity = 0x2006;
     sub->unk0C = 0;
     sub->unk08 = 0;
     sub->unk04 = 0;
@@ -2094,8 +2094,8 @@ void N2OInitBoss(void) {
     sub = sub->next;
     N2OBossStep = -1;
     if (sub != NULL) {
-        sub->unk6C = anim;
-        sub->unk74 = 0x4000;
+        sub->u6C.dbase = anim;
+        sub->entity = 0x4000;
         sub->unk0C = 0;
         sub->unk08 = 0;
         sub->unk04 = 0;
@@ -2103,8 +2103,8 @@ void N2OInitBoss(void) {
     }
     sub2 = sub->next;
     if (sub2 != NULL) {
-        sub2->unk6C = anim + 0x38;
-        sub2->unk74 = 0x2005;
+        sub2->u6C.dbase = anim + 0x38;
+        sub2->entity = 0x2005;
         sub2->unk50 = 1;
         sub2->unk51 = 0;
         sub2->flags &= ~0x8000;
@@ -2252,7 +2252,7 @@ void N2OUpdateBoss(void) {
             if (hs != NULL) {
                 sub = hs->next;
                 if (sub != NULL) {
-                    sub->unk74 = 0x2005;
+                    sub->entity = 0x2005;
                     sub->unk20.x = sc & 0xFFFF;
                     sub->unk20.y = sc & 0xFFFF;
                     sub->unk20.z = sc & 0xFFFF;
@@ -3244,8 +3244,8 @@ void InitN2ODeadWall(NAS *nas)
         off = 0;
         if (sub != 0) {
             do {
-                sub->unk6C = &HeroModelBank[DB_BallsEffects];
-                sub->unk74 = 0;
+                sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
+                sub->entity = 0;
                 sub->unk04 = off;
                 sub->flags |= 0x21;
                 sub = sub->next;
@@ -3904,7 +3904,7 @@ void PlotN2ODeadWall(NAS *arg0) {
         sub = eng->sub;
         if (sub != NULL) {
             do {
-                sub->unk74 = (GameFrameCount & 7) + 0x2001;
+                sub->entity = (GameFrameCount & 7) + 0x2001;
                 sub = sub->next;
             } while (sub != NULL);
         }
@@ -4006,8 +4006,8 @@ void InitN2OmissileExplode(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        sub->unk6C = &HeroModelBank[DB_Oxide];
-        sub->unk74 = 0x2005;
+        sub->u6C.dbase = &HeroModelBank[DB_Oxide];
+        sub->entity = 0x2005;
         sub->unk50 = 1;
         sub->unk51 = 0;
         eng->flags |= 0x21;
@@ -4039,8 +4039,8 @@ void InitN2Ofirstmissile(NAS *nas) {
     if (eng != NULL) {
         sub = eng->sub;
         eng->unk5D = 0;
-        sub->unk6C = &HeroModelBank[DB_Oxide];
-        sub->unk74 = 0x2004;
+        sub->u6C.dbase = &HeroModelBank[DB_Oxide];
+        sub->entity = 0x2004;
         sub->unk51 = 0;
         sub->unk68 = 0x100;
         sub->flags |= 0x02000000;
@@ -4073,8 +4073,8 @@ void InitN2Omissile(NAS *nas) {
     if (eng != NULL) {
         sub = eng->sub;
         eng->unk5D = 0;
-        sub->unk6C = &HeroModelBank[DB_Oxide];
-        sub->unk74 = 0x2004;
+        sub->u6C.dbase = &HeroModelBank[DB_Oxide];
+        sub->entity = 0x2004;
         sub->unk51 = 0;
         sub->flags |= 0x02000000;
         mot = AddMotion(nas);
@@ -4232,8 +4232,8 @@ void N2OInitShadow(s32 arg0) {
     HeroInfo *h = &base[arg0];
     EXTengine *s = h->hero_shadow;
 
-    s->sub->unk6C = &HeroModelBank[DB_PlayerVehicle];
-    s->sub->unk74 = 0x2006;
+    s->sub->u6C.dbase = &HeroModelBank[DB_PlayerVehicle];
+    s->sub->entity = 0x2006;
     s->unk10 = h->hero_eng->unk10;
     s->unk5D = 0;
     s->flags |= 0x8041;

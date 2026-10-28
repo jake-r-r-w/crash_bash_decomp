@@ -476,9 +476,9 @@ void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
                 if (fux->owner >= 0 && fux->owner != arg0) {
                     d *= 2;
                 }
-                if (eng->sub->unk74 == 0x2017) {
+                if (eng->sub->entity == 0x2017) {
                     d = d * 2 / 3;
-                } else if (eng->sub->unk74 == 0x2016) {
+                } else if (eng->sub->entity == 0x2016) {
                     d /= 2;
                 }
                 if (d < bestd) {
@@ -611,9 +611,9 @@ void Chase_HeroBot(s32 arg0) {
                     if (fux->owner >= 0 && fux->owner != arg0) {
                         d *= 2;
                     }
-                    if (e->sub->unk74 == 0x2017) {
+                    if (e->sub->entity == 0x2017) {
                         d = d * 2 / 3;
-                    } else if (e->sub->unk74 == 0x2016) {
+                    } else if (e->sub->entity == 0x2016) {
                         d /= 2;
                     }
                     if (d < bestd) {
@@ -927,9 +927,9 @@ void ChaseInitHero(s32 arg0) {
     eng_add_subs(eng, 1);
     sub = eng->sub;
     sub->unk51 = 1;
-    sub->unk74 = ChaseHeroShadowModels[h->hero_name];
+    sub->entity = ChaseHeroShadowModels[h->hero_name];
     FetchDefaultColBox(eng, 0x50);
-    sub->unk74 = ChaseHeroShadowSizes[h->hero_name];
+    sub->entity = ChaseHeroShadowSizes[h->hero_name];
     h->hero_score = 0;
     st[0] = 1;
     st[2] = 0xB4;
@@ -1163,7 +1163,7 @@ void ChaseMoveHero(s32 arg0) {
                 ext[6] = 0x100;
                 if (anim != NULL) {
                     ext[8] = 5;
-                    nas->Engine->sub->unk6C = anim;
+                    nas->Engine->sub->u6C.dbase = anim;
                 } else {
                     ext[8] = 1;
                 }
@@ -1850,9 +1850,9 @@ void ChaseHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = (s32)(&HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]]);
+            h->hero_sub->u6C.dbase = (s32)(&HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]]);
         } else {
-            h->hero_sub->unk6C = 0;
+            h->hero_sub->u6C.dbase = 0;
         }
     } else {
         HeroGhost(arg0);
@@ -1884,7 +1884,7 @@ void SetChaseHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
+    h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1955,7 +1955,7 @@ void SetChaseHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
+    h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1985,7 +1985,7 @@ void SetChaseHeroLose(s32 arg0) {
                 ext[6] = 0x100;
                 if (anim != NULL) {
                     ext[8] = 5;
-                    nas->Engine->sub->unk6C = anim;
+                    nas->Engine->sub->u6C.dbase = anim;
                 } else {
                     ext[8] = 1;
                 }
@@ -2128,14 +2128,14 @@ void InitBarrelCH(NAS *nas) {
     eng->unk2C.z = 0x3E8;
     eng->unk5C = 1;
     eng->unk10.y = 0;
-    sub->unk6C = &HeroModelBank[DB_KegObjects];
+    sub->u6C.dbase = &HeroModelBank[DB_KegObjects];
     n = ++ChaseBarrelCount;
     if ((n & 0x1F) == 0) {
-        sub->unk74 = 0x2016;
+        sub->entity = 0x2016;
     } else if ((n & 7) == 0) {
-        sub->unk74 = 0x2017;
+        sub->entity = 0x2017;
     } else {
-        sub->unk74 = 0x2001;
+        sub->entity = 0x2001;
     }
     nas->UserInfo.status = 0;
     if (nas->Failure != 0) {
@@ -2208,7 +2208,7 @@ void PlotBarrelCH(NAS *nas) {
                 ext[6] = 0x100;
                 if (anim != NULL) {
                     ext[8] = 5;
-                    n->Engine->sub->unk6C = anim;
+                    n->Engine->sub->u6C.dbase = anim;
                 } else {
                     ext[8] = 1;
                 }
@@ -2476,8 +2476,8 @@ void PlotCircleFire(NAS *nas) {
 
     eng = nas->Engine;
     sub = eng->sub;
-    if (++sub->unk74 >= 0x4014) {
-        sub->unk74 = 0x4000;
+    if (++sub->entity >= 0x4014) {
+        sub->entity = 0x4000;
     }
     nas->UserInfo.status = (nas->UserInfo.status + 0xC) & 0xFFF;
     eng->unk10.x = (rcossin_tbl[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
@@ -2553,7 +2553,7 @@ void PlotEgg(NAS *nas) {
                 ext->unk18 = 0x100;
                 if (p != 0) {
                     ext->unk20 = 5;
-                    n->Engine->sub->unk6C = (void *)p;
+                    n->Engine->sub->u6C.dbase = (void *)p;
                 } else {
                     ext->unk20 = 1;
                 }
@@ -2576,9 +2576,9 @@ void PlotEgg(NAS *nas) {
         eng->unk10.x += fux->unk10;
         fux->unk14 += 0xC;
         eng->unk10.y += fux->unk14;
-        if (++sub->unk74 == 0x4091) {
+        if (++sub->entity == 0x4091) {
             fux->unk30 = 0x29;
-            sub->unk74 = 0x4000;
+            sub->entity = 0x4000;
             eng->unk10.x = 0;
             eng->unk10.y = -0x12C;
         }
@@ -2594,14 +2594,14 @@ void PlotEgg(NAS *nas) {
         } else {
             sub->unk68 = -0x100;
         }
-        if (++sub->unk74 == 0x4006) {
+        if (++sub->entity == 0x4006) {
             PlaySfx(0x757, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
-        if (sub->unk74 == 0x400F) {
+        if (sub->entity == 0x400F) {
             PlaySfx(0x758, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
-        if (sub->unk74 == 0x4012) {
-            sub->unk74 = 0x4000;
+        if (sub->entity == 0x4012) {
+            sub->entity = 0x4000;
             i = BarrelNearHero(eng->unk10.x, eng->unk10.z, 0x600);
             if (i >= 0 && GameInfo[i + 0x5C] == 0) {
                 PlaySfx(0x759, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -2609,14 +2609,14 @@ void PlotEgg(NAS *nas) {
                                        Heroes[i].hero_eng->unk10.z - eng->unk10.z);
                 fux->unk30 = 0x27;
                 fux->unk14 = -0x64;
-                sub->unk74 = 0x4080;
+                sub->entity = 0x4080;
                 eng->unk5E = 1;
             }
         }
         break;
     case 0x27:
-        if (++sub->unk74 == 0x4091) {
-            sub->unk74 = 0x4090;
+        if (++sub->entity == 0x4091) {
+            sub->entity = 0x4090;
         }
         fux->unk14 += 0xC;
         eng->unk10.y += fux->unk14;
@@ -2673,7 +2673,7 @@ void PlotEgg(NAS *nas) {
                     ext->unk18 = 0x100;
                     if (p != 0) {
                         ext->unk20 = 5;
-                        n->Engine->sub->unk6C = (void *)p;
+                        n->Engine->sub->u6C.dbase = (void *)p;
                     } else {
                         ext->unk20 = 1;
                     }
@@ -2746,8 +2746,8 @@ void PlotPUGenerator_CH(NAS *nas) {
         if (pu != NULL) {
             ChasePickup[i] = pu;
             sub = pu->Engine->sub;
-            sub->unk6C = &HeroModelBank[DB_Powerups];
-            sub->unk74 = 0x200C;
+            sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+            sub->entity = 0x200C;
             pu->UserInfo.status = Random(2) + 1;
             return;
         }
@@ -2776,8 +2776,8 @@ void InitPickupCH(NAS *nas) {
         e->unk10.y = 0;
         e->unk10.z = eng->unk10.z;
         e->sub->unk51 = 2;
-        e->sub->unk6C = &HeroModelBank[DB_Powerups];
-        e->sub->unk74 = 0x2001;
+        e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+        e->sub->entity = 0x2001;
         e->sub->flags |= 0x40000041;
         e->sub->unk76 = 0x800;
         e->sub->unk50 = 1;
@@ -2860,8 +2860,8 @@ found:
         if (status < 3) {
             if (status != 0) {
                 if (sub != NULL) {
-                    sub->unk6C = &HeroModelBank[DB_Powerups];
-                    sub->unk74 = 0x200C;
+                    sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+                    sub->entity = 0x200C;
                     sub->flags |= 0x8000;
                     p->flags |= 0x8000;
                 }
@@ -3379,8 +3379,8 @@ void ChaseHeroHitFlash(s32 arg0, s32 arg1) {
     if (arg1 < 3) {
         if (arg1 > 0) {
             if (sub != NULL) {
-                sub->unk6C = &HeroModelBank[DB_Powerups];
-                sub->unk74 = 0x200C;
+                sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+                sub->entity = 0x200C;
                 sub->flags |= 0x8000;
                 p->flags |= 0x8000;
             }
@@ -3414,9 +3414,9 @@ void InitEgg(NAS *nas) {
     eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->unk5E = 1;
     scene = *MapScene;
-    sub->unk74 = 0x4080;
+    sub->entity = 0x4080;
     sub->unk68 = 0x3E7;
-    sub->unk6C = (void *)scene;
+    sub->u6C.dbase = (void *)scene;
     sub->flags |= 0x2000000;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -3439,8 +3439,8 @@ void InitCircleFire(NAS *nas) {
     eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->unk5E = 1;
     eng->unk10.y = 0;
-    sub->unk6C = &HeroModelBank[DB_KegObjects];
-    sub->unk74 = 0x4000;
+    sub->u6C.dbase = &HeroModelBank[DB_KegObjects];
+    sub->entity = 0x4000;
     if (nas->Failure != 0) {
         KillNAS(nas);
     }
@@ -3457,8 +3457,8 @@ void InitCoalFlame(NAS *nas) {
     nas->FUX = &ext->ext;
     ext->unk1C = -0xD;
     sub = eng->sub;
-    sub->unk6C = &HeroModelBank[DB_KegObjects];
-    sub->unk74 = 0x200E;
+    sub->u6C.dbase = &HeroModelBank[DB_KegObjects];
+    sub->entity = 0x200E;
     eng->unk5C = 1;
     eng->unk2C.x = 0x1000;
     eng->unk2C.y = 0x1000;
@@ -3505,8 +3505,8 @@ void InitCoal(NAS *nas) {
     nas->UserInfo.flags = 5;
     nas->UserInfo.user1 = 0;
     sub = eng->sub;
-    sub->unk6C = &HeroModelBank[DB_KegObjects];
-    sub->unk74 = 0x200F;
+    sub->u6C.dbase = &HeroModelBank[DB_KegObjects];
+    sub->entity = 0x200F;
     nas->UserInfo.status = 0x3C;
     if (nas->Failure != 0) {
         KillNAS(nas);

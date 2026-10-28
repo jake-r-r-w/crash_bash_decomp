@@ -521,7 +521,7 @@ static inline void TankSpawnBit1605(SLONG_XYZ *pos, s32 kind) {
             ext->speed = 0x100;
             if (p != NULL) {
                 ext->flags = 5;
-                nas->Engine->sub->unk6C = p;
+                nas->Engine->sub->u6C.dbase = p;
             } else {
                 ext->flags = 1;
             }
@@ -544,7 +544,7 @@ static inline NAS *TankSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
             ext->speed = 0x100;
             if (p != NULL) {
                 ext->flags = 5;
-                nas->Engine->sub->unk6C = p;
+                nas->Engine->sub->u6C.dbase = p;
             } else {
                 ext->flags = 1;
             }
@@ -570,7 +570,7 @@ static inline void TankSpawnBit1605B(SLONG_XYZ *pos, s32 kind) {
             ext->speed = 0x100;
             if (p != NULL) {
                 ext->flags = 5;
-                nas->Engine->sub->unk6C = p;
+                nas->Engine->sub->u6C.dbase = p;
             } else {
                 ext->flags = 1;
             }
@@ -623,7 +623,7 @@ static inline NAS *TankPeriscopePuff(SLONG_XYZ *pos, s32 kind) {
             ext->speed = 0x100;
             if (p != NULL) {
                 ext->flags = 5;
-                nas->Engine->sub->unk6C = p;
+                nas->Engine->sub->u6C.dbase = p;
             } else {
                 ext->flags = 1;
             }

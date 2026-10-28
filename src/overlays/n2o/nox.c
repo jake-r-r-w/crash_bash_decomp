@@ -1047,10 +1047,10 @@ void NoxHeroFly(s32 arg0) {
     x2 = (rcossin_tbl[(ang - 0x800) & 0xFFF].unk2 * 0x67) >> 10;
     z2 = (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 0x67) >> 10;
     sub = h->hero_sub;
-    if (sub->unk74 < 0x401D) {
-        sub->unk74++;
+    if (sub->entity < 0x401D) {
+        sub->entity++;
     }
-    if (sub->unk74 == 0x4007) {
+    if (sub->entity == 0x4007) {
         PlaySfx(0x2B7, 0, 0, 0x1000, 0x1E00, 0);
     }
     if ((Pads[arg0].unk54 & 0x8000) && NoxBossDead == 0) {
@@ -1156,7 +1156,7 @@ void InitAsteroidRoll(NAS *m) {
 
     ext = AddExt(m, 0x80, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = *(void **)MapScene;
+        m->Engine->sub->u6C.dbase = *(void **)MapScene;
         m->Engine->unk5D = 1;
         ext->arc[0] = 0xC;
         ext->bounces = 0;
@@ -1175,8 +1175,8 @@ void InitAsteroidRoll(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
-            e->sub->unk6C = &HeroModelBank[DB_Powerups];
-            e->sub->unk74 = 0x2001;
+            e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+            e->sub->entity = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
             e->unk10 = m->Engine->unk10;
@@ -1466,7 +1466,7 @@ void InitNitroBoss(NAS *nas) {
     u8 *p;
 
     if (ext != NULL) {
-        nas->Engine->sub->unk6C = *(void **)MapScene;
+        nas->Engine->sub->u6C.dbase = *(void **)MapScene;
         nas->Engine->unk2C.x = 0x1830;
         nas->Engine->unk2C.y = 0x1830;
         nas->Engine->unk2C.z = 0x1830;
@@ -1660,8 +1660,8 @@ void InitSpiralSat(NAS *nas) {
                 e->unk10.x = ext->c.x + ((ext->radius * rcossin_tbl[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
                 e->unk10.y = ext->c.y + ((ext->radius * rcossin_tbl[ext->ang[i] & 0xFFF].unk2) >> 12);
                 e->unk10.z = ext->c.z;
-                e->sub->unk6C = *(s32 *)MapScene;
-                e->sub->unk74 = 0x201A;
+                e->sub->u6C.dbase = *(s32 *)MapScene;
+                e->sub->entity = 0x201A;
                 e->sub->flags = 0x8000;
                 q =&e->unk10;
                 s = CreateNAS(q->x, q->y, q->z, 0x1605, 0x11);
@@ -1898,10 +1898,10 @@ void PlotLaserShoot(NAS *nas) {
     nas->Engine->unk10.z += rcossin_tbl[nas->Engine->unk1E & 0xFFF].unk2 * 1024 >> 12;
     nas->Engine->unk10.y -= rcossin_tbl[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 1024 >> 12;
     if (nas->UserInfo.user2 == 0) {
-        nas->Engine->sub->unk74 = 0x201D;
+        nas->Engine->sub->entity = 0x201D;
     }
     if (nas->UserInfo.user2 == 1) {
-        nas->Engine->sub->unk74 = 0x201E;
+        nas->Engine->sub->entity = 0x201E;
     }
     nas->Engine->unk5E = 1;
     nas->UserInfo.user1++;
@@ -2491,6 +2491,6 @@ void InitNitroSmokeBoost(NAS *nas) {
             cur->unk1E = 4;
         }
     }
-    nas->Engine->sub->unk6C = *(GfxModel **)MapScene;
+    nas->Engine->sub->u6C.dbase = *(GfxModel **)MapScene;
     nas->UserInfo.user1 = 0;
 }

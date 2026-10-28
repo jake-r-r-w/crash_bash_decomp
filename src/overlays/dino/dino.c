@@ -2182,15 +2182,15 @@ void InitialiseDINO(void) {
     if (e != NULL) {
         e->unkC = 7;
     }
-    DinoGem1->Engine->sub->unk74 = 0x2002;
+    DinoGem1->Engine->sub->entity = 0x2002;
     if (((DinoGame *)GameInfo)->flags & 0x80) {
-        DinoGem1->Engine->sub->unk74 = 0x2002;
+        DinoGem1->Engine->sub->entity = 0x2002;
     }
     o = CreateNAS(0, -0x40, 0x200, 0x1901, 0x11);
     DinoGem2 = o;
-    o->Engine->sub->unk74 = 0x2003;
+    o->Engine->sub->entity = 0x2003;
     if (((DinoGame *)GameInfo)->flags & 0x80) {
-        o->Engine->sub->unk74 = 0x2003;
+        o->Engine->sub->entity = 0x2003;
     }
     DinoGems[0] = (NAS *)DinoGem0;
     DinoGems[1] = DinoGem1;
@@ -3330,12 +3330,12 @@ void InitDinoGem(NAS *m) {
     ext = AddExt(m, 0xE8, 0x10000000);
     if (ext != NULL) {
         do {
-            m->Engine->sub->unk74 = 0x2001;
+            m->Engine->sub->entity = 0x2001;
         } while (0);
         if (GameLevelFlags & 0x80) {
-            m->Engine->sub->unk74 = 0x2001;
+            m->Engine->sub->entity = 0x2001;
         }
-        m->Engine->sub->unk6C = &HeroModelBank[DB_DragonObjects];
+        m->Engine->sub->u6C.dbase = &HeroModelBank[DB_DragonObjects];
         ext->unkC = 6;
         ext->unk10 = 5;
         ext->unk80 = 0;
@@ -3350,8 +3350,8 @@ void InitDinoGem(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk84 = e;
-            e->sub->unk6C = &HeroModelBank[DB_DragonObjects];
-            e->sub->unk74 = 0x2014;
+            e->sub->u6C.dbase = &HeroModelBank[DB_DragonObjects];
+            e->sub->entity = 0x2014;
             e->unk5C = 1;
             e->unk2C.x = 0x23E8;
             e->unk2C.y = 0x23E8;
@@ -3717,8 +3717,8 @@ void InitDinoScratch(NAS *m) {
         m->UserInfo.user2 = 0;
         if (sub != NULL) do {
             sub->flags = 0x40000000;
-            sub->unk6C = *(void **)MapScene;
-            sub->unk74 = 0x2003;
+            sub->u6C.dbase = *(void **)MapScene;
+            sub->entity = 0x2003;
             sub->unk51 = 2;
             sub->unk14 = 0;
             sub->unk12 = 0;
@@ -3880,7 +3880,7 @@ void InitDinoSmoke(NAS *arg0) {
     s16 *p;
 
     ScriptCursorFirst(arg0, &DinoSmokeScriptInit);
-    arg0->Engine->sub->unk6C = &HeroModelBank[DB_DragonObjects];
+    arg0->Engine->sub->u6C.dbase = &HeroModelBank[DB_DragonObjects];
     arg0->Engine->sub->flags |= 0x40000041;
     p = &GameMode;
     do {

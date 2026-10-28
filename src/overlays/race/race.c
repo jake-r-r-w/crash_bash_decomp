@@ -4651,8 +4651,8 @@ void InitRaceMissile(NAS *m) {
 
     ext = AddExt(m, 0x78, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk74 = 0x2011;
-        m->Engine->sub->unk6C = ((u8 *)&HeroModelBank[DB_Powerups]) + 0x2028;
+        m->Engine->sub->entity = 0x2011;
+        m->Engine->sub->u6C.dbase = ((u8 *)&HeroModelBank[DB_Powerups]) + 0x2028;
         m->Engine->unk5D = 2;
         m->Engine->unk5C = 1;
         m->Engine->sub->unk51 = 2;
@@ -4672,8 +4672,8 @@ void InitRaceMissile(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk5C = e;
-            e->sub->unk6C = &HeroModelBank[DB_Powerups];
-            e->sub->unk74 = 0x2001;
+            e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+            e->sub->entity = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
             e->unk10 = m->Engine->unk10;
@@ -4793,8 +4793,8 @@ void InitRacePickUp(NAS *m) {
     ext = AddExt(m, 0x50, 0x10000000);
     if (ext != NULL) {
         AddToGroup((u8 **)&RacePickups, (u8 *)m);
-        m->Engine->sub->unk74 = 0x2006;
-        m->Engine->sub->unk6C = &HeroModelBank[DB_CrateEffects];
+        m->Engine->sub->entity = 0x2006;
+        m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
         m->Engine->unk5D = 2;
         m->Engine->unk5C = 1;
         ext->unk10 = -0x2000;
@@ -4809,8 +4809,8 @@ void InitRacePickUp(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk3C = e;
-            e->sub->unk6C = (u8 *)&HeroModelBank[DB_CrateEffects] - 0x2028;
-            e->sub->unk74 = 0x2001;
+            e->sub->u6C.dbase = (u8 *)&HeroModelBank[DB_CrateEffects] - 0x2028;
+            e->sub->entity = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
             e->unk10 = m->Engine->unk10;
@@ -4852,27 +4852,27 @@ void PlotRacePickUp(NAS *m) {
         m->Engine->unk2C.x = s;
         m->Engine->unk2C.y = s;
         m->Engine->unk2C.z = s;
-        m->Engine->sub->unk74 = 0x2009;
-        m->Engine->sub->unk6C = &HeroModelBank[DB_CrateObjects];
+        m->Engine->sub->entity = 0x2009;
+        m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
         break;
     case 2:
-        m->Engine->sub->unk74 = 0x2005;
+        m->Engine->sub->entity = 0x2005;
         break;
     case 3:
-        m->Engine->sub->unk6C = &HeroModelBank[DB_CrateEffects];
+        m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
         m->Engine->sub->flags |= 0x20000000;
-        m->Engine->sub->unk74 = ext->unk48 + 0x2049;
+        m->Engine->sub->entity = ext->unk48 + 0x2049;
         if (++ext->unk48 >= 0xE) {
             ext->unk48 = 0;
         }
         break;
     case 5:
-        m->Engine->sub->unk74 = 0x2017;
+        m->Engine->sub->entity = 0x2017;
         break;
     case 0:
     case 4:
     case 6:
-        m->Engine->sub->unk74 = 0x2011;
+        m->Engine->sub->entity = 0x2011;
         break;
     }
     if (ext->unk40 == 0) {
@@ -5186,58 +5186,58 @@ held:
         eng->sub->flags &= ~0x8000;
         if (fux->unk18 == 1) {
             eng->sub->flags |= 0x8000;
-            eng->sub->unk74 = 0x2011;
-            eng->sub->unk6C = &HeroModelBank[DB_CrateEffects];
+            eng->sub->entity = 0x2011;
+            eng->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
         }
         if (fux->unk18 == 2) {
             eng->sub->flags |= 0x8000;
-            eng->sub->unk74 = 0x2009;
-            eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
+            eng->sub->entity = 0x2009;
+            eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
         }
         if (fux->unk18 == 4) {
             eng->sub->flags |= 0x8000;
-            eng->sub->unk74 = 0x2005;
-            eng->sub->unk6C = *(void **)MapScene;
+            eng->sub->entity = 0x2005;
+            eng->sub->u6C.dbase = *(void **)MapScene;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
         }
         if (fux->unk18 == 8) {
-            eng->sub->unk74 = 0x2002;
-            eng->sub->unk6C = *(void **)MapScene;
+            eng->sub->entity = 0x2002;
+            eng->sub->u6C.dbase = *(void **)MapScene;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
         }
         if (fux->unk18 == 0x10) {
             eng->sub->flags |= 0x8000;
-            eng->sub->unk74 = 0x2011;
+            eng->sub->entity = 0x2011;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
-            eng->sub->unk6C = *(void **)MapScene;
+            eng->sub->u6C.dbase = *(void **)MapScene;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
         }
         if (fux->unk18 == 0x20) {
             eng->sub->flags |= 0x8000;
-            eng->sub->unk74 = 0x2017;
+            eng->sub->entity = 0x2017;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
-            eng->sub->unk6C = &HeroModelBank[DB_CrateEffects];
+            eng->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
         }
         if (fux->unk18 == 0x40) {
             eng->sub->flags |= 0x8000;
-            eng->sub->unk74 = 0x2011;
+            eng->sub->entity = 0x2011;
             eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
-            eng->sub->unk6C = *(void **)MapScene;
+            eng->sub->u6C.dbase = *(void **)MapScene;
             eng->unk5E = 1;
             eng->unk1E += 0x80;
             eng->unk10 = Heroes[p].hero_eng->unk10;
@@ -5382,13 +5382,13 @@ void PlotTNTCrate(NAS *nas) {
         i = 0;
         if (nas->UserInfo.user1 < 90) {
             if (nas->UserInfo.user1 == 0) {
-                nas->Engine->sub->unk74 = 0x2012;
+                nas->Engine->sub->entity = 0x2012;
             }
             if (nas->UserInfo.user1 == 30) {
-                nas->Engine->sub->unk74 = 0x2011;
+                nas->Engine->sub->entity = 0x2011;
             }
             if (nas->UserInfo.user1 == 60) {
-                nas->Engine->sub->unk74 = 0x2010;
+                nas->Engine->sub->entity = 0x2010;
             }
             for (; i < 4; i++) {
             }
@@ -5426,7 +5426,7 @@ void PlotTNTCrate(NAS *nas) {
                         ext[6] = 0x100;
                         if (p != NULL) {
                             ext[8] = 5;
-                            spawned->Engine->sub->unk6C = p;
+                            spawned->Engine->sub->u6C.dbase = p;
                         } else {
                             ext[8] = status;
                         }
@@ -5467,8 +5467,8 @@ void InitDinoEgg(NAS *m) {
         ext->anim = (EXTanimator *)ScriptCursorFirst(m, &DinoEggScriptInit);
         m->Engine->unk5D = 0;
         m->Engine->unk5C = 1;
-        m->Engine->sub->unk74 = 0x2005;
-        m->Engine->sub->unk6C = *(s32 *)MapScene;
+        m->Engine->sub->entity = 0x2005;
+        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
         ext->NasStatus = 0;
         ext->angcounter = 0;
         ext->yang = 0;
@@ -5476,8 +5476,8 @@ void InitDinoEgg(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
-            e->sub->unk6C = &HeroModelBank[DB_Powerups];
-            e->sub->unk74 = 0x2001;
+            e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+            e->sub->entity = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
             e->unk10 = m->Engine->unk10;
@@ -5724,7 +5724,7 @@ loop2:
                     ext->unk18 = 0x100;
                     if (tex != NULL) {
                         ext->unk20 = 5;
-                        tag->Engine->sub->unk6C = tex;
+                        tag->Engine->sub->u6C.dbase = tex;
                     } else {
                         ext->unk20 = 1;
                     }
@@ -5773,8 +5773,8 @@ void InitRaceVolcano(NAS *nas) {
                 eng->sub->flags &= ~0x8000;
                 eng->unk5C = 1;
                 eng->unk5D = 2;
-                eng->sub->unk74 = 0x2019;
-                eng->sub->unk6C = *(void **)MapScene;
+                eng->sub->entity = 0x2019;
+                eng->sub->u6C.dbase = *(void **)MapScene;
                 ext->eng[0]->unk1E = Random(0x1000);
                 ext->eng[0]->unk20 = 0;
                 ext->unk144[0] = 0;
@@ -6105,8 +6105,8 @@ void InitBarrelRoll(NAS *m) {
 
     ext = AddExt(m, 0x80, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = *(s32 *)MapScene;
-        m->Engine->sub->unk74 = 0x2037;
+        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
+        m->Engine->sub->entity = 0x2037;
         m->Engine->unk5D = 1;
         ext->unkC = 0xC;
         ext->unk78 = 0;
@@ -6127,8 +6127,8 @@ void InitBarrelRoll(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
-            e->sub->unk6C = &HeroModelBank[DB_Powerups];
-            e->sub->unk74 = 0x2001;
+            e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+            e->sub->entity = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
             e->unk10 = m->Engine->unk10;
@@ -6186,8 +6186,8 @@ void InitTrackGlob(NAS *m) {
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &TrackGlobScriptInit);
         AddToGroup(&RaceObjects, (u8 *)m);
-        m->Engine->sub->unk6C = *(s32 *)MapScene;
-        m->Engine->sub->unk74 = 0x4100;
+        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
+        m->Engine->sub->entity = 0x4100;
         m->Engine->unk5D = 1;
         ext->unk10 = 0x10;
         ext->unk54 = 0x40;
@@ -6208,8 +6208,8 @@ void InitTrackGlob(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->eng = e;
-            e->sub->unk6C = &HeroModelBank[DB_Powerups];
-            e->sub->unk74 = 0x2001;
+            e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+            e->sub->entity = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;
             e->unk10 = m->Engine->unk10;
@@ -6328,7 +6328,7 @@ void InitDac(NAS *m) {
 
     ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = *(s32 *)MapScene;
+        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
         m->Engine->unk5C = 1;
         m->Engine->unk5D = 2;
         m->Engine->unk2C.x = 0x2000;
@@ -6351,8 +6351,8 @@ void InitDac(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
-            e->sub->unk6C = &HeroModelBank[DB_Powerups];
-            e->sub->unk74 = 0x2001;
+            e->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+            e->sub->entity = 0x2001;
             e->unk5C = 1;
             e->unk2C.x = 0x2000;
             e->unk2C.y = 0x2000;
@@ -6493,7 +6493,7 @@ void PlotRaceSmokeBoostWater(NAS *nas) {
 
 void InitRaceSmokeBoostWater(NAS *nas) {
     ScriptCursorFirst(nas, &RaceSmokeBoostWaterScriptInit);
-    nas->Engine->sub->unk6C = &HeroModelBank[DB_CrateEffects];
+    nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
     nas->UserInfo.user1 = 0;
 }
 
@@ -6524,7 +6524,7 @@ void InitGlob(NAS *m) {
     ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         ext->unk10 = ScriptCursorFirst(m, &GlobScriptInit);
-        m->Engine->sub->unk6C = *(s32 *)MapScene;
+        m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
         GotoLinkAnim((EXTanimator *)ext->unk10, 2);
         RunNasAnim(m);
         ext->unkC = 3;
@@ -6565,8 +6565,8 @@ void InitInnerRipple(NAS *m) {
         ext->max = 0x4000;
         ext->scale = 0;
         *(s32 *)&ext->unk18 = 0xC8;
-        m->Engine->sub->unk6C = &HeroModelBank[DB_CrateEffects];
-        m->Engine->sub->unk74 = 0x2018;
+        m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
+        m->Engine->sub->entity = 0x2018;
         m->Engine->sub->flags |= 0x40000000;
         m->Engine->unk5C = 1;
         m->Engine->unk5D = 0;
@@ -6607,12 +6607,12 @@ void InitRippled(NAS *m) {
         ext->max = 0x4000;
         ext->scale = 0;
         ext->unk18 = 0x190;
-        m->Engine->sub->unk6C = &HeroModelBank[DB_CrateEffects];
+        m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
         m->Engine->unk5C = 1;
         m->Engine->unk2C.x = 0x400;
         m->Engine->unk2C.y = 0x400;
         m->Engine->unk2C.z = 0x400;
-        m->Engine->sub->unk74 = 0x2018;
+        m->Engine->sub->entity = 0x2018;
         m->Engine->sub->flags = 0x40008000;
         m->Engine->unk5D = 0;
         m->Engine->unk5C = 1;
@@ -6627,7 +6627,7 @@ void PlotRaceGreenSmokeBoost(NAS *nas) {
 
 void InitRaceGreenSmokeBoost(NAS *nas) {
     ScriptCursorFirst(nas, &RaceGreenSmokeBoostScriptInit);
-    nas->Engine->sub->unk6C = &HeroModelBank[DB_CrateEffects];
+    nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
     nas->UserInfo.user1 = 0;
 }
 
@@ -6637,7 +6637,7 @@ void PlotRaceGreenSmokePoof(NAS *nas) {
 
 void InitRaceGreenSmokePoof(NAS *nas) {
     ScriptCursorFirst(nas, &RaceGreenSmokePoofScriptInit);
-    nas->Engine->sub->unk6C = &HeroModelBank[DB_CrateEffects];
+    nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
     nas->Engine->sub->flags |= 0x21;
     nas->UserInfo.user1 = 0;
 }
@@ -6648,7 +6648,7 @@ void PlotRaceSmokePoof(NAS *nas) {
 
 void InitRaceSmokePoof(NAS *nas) {
     ScriptCursorFirst(nas, &RaceSmokePoofScriptInit);
-    nas->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
+    nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
     nas->Engine->sub->flags |= 0x21;
     nas->UserInfo.user1 = 0;
 }
@@ -6740,8 +6740,8 @@ loop:
 void InitTNTCrate(NAS *m) {
     m->Engine->unk5D = 2;
     m->Engine->unk5C = 1;
-    m->Engine->sub->unk74 = 0x2009;
-    m->Engine->sub->unk6C = (s32)&HeroModelBank[DB_CrateObjects];
+    m->Engine->sub->entity = 0x2009;
+    m->Engine->sub->u6C.dbase = (s32)&HeroModelBank[DB_CrateObjects];
     m->UserInfo.status = 0;
     m->UserInfo.user1 = 0;
     m->UserInfo.user2 = 0;
@@ -6771,7 +6771,7 @@ void InitRaceSmokeBoost(NAS *nas) {
             cur->unk1E = 4;
         }
     }
-    nas->Engine->sub->unk6C = &HeroModelBank[DB_CrateEffects];
+    nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
     nas->UserInfo.user1 = 0;
 }
 

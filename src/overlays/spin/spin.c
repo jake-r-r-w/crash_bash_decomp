@@ -998,7 +998,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
           LinkObject((u8 *) nas);
           AddSolid(nas, 0x300);
           nas->FUX = (EXT *) fux;
-          eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
+          eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
           eng->unk5D = 1;
           fux->kind = c;
           CrateCounts[fux->kind]++;
@@ -1013,14 +1013,14 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
           switch (c)
           {
             case 2:
-              eng->sub->unk74 = 0x2014;
+              eng->sub->entity = 0x2014;
               fux->state = SpinHazardKinds[Random(2)];
               break;
 
             case 5:
             {
 
-              eng->sub->unk74 = 0x2009;
+              eng->sub->entity = 0x2009;
             }
               z = 0x5A;
               fux->timer = z;
@@ -1032,7 +1032,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
             case 6:
             {
 
-              eng->sub->unk74 = 0x2001;
+              eng->sub->entity = 0x2001;
             }
               mask = fux->mask;
               set_mask:
@@ -1044,7 +1044,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
             case 4:
 
             default:
-              eng->sub->unk74 = 0x2013;
+              eng->sub->entity = 0x2013;
               break;
 
           }
@@ -1184,7 +1184,7 @@ void PlotHazardType(NAS *nas) {
     case 12:
         fux->timer = 0x78;
         fux->mask &= 0xFFF4;
-        eng->sub->unk6C = &HeroModelBank[DB_RingObjects];
+        eng->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
         glow->unk18 = 0x60;
         glow->unk1E = 0xF0;
         glow->unk1C = 4;
@@ -1216,11 +1216,11 @@ void PlotHazardType(NAS *nas) {
         }
         switch (fux->state) {
         case 0x17:
-            eng->sub->unk74 = 0x2015;
+            eng->sub->entity = 0x2015;
             fux->sub = 0xD;
             break;
         case 0x13:
-            eng->sub->unk74 = 0x2014;
+            eng->sub->entity = 0x2014;
             fux->sub = 0xD;
             break;
         }
@@ -1285,15 +1285,15 @@ void PlotHazardType(NAS *nas) {
                     he = Heroes[fux->owner].hero_powerup;
                     PlaySfx(0x5F2, &he->sfx, &he->unk10, 0x1000, 0x1E00, 0);
                     Heroes[fux->owner].hero_pu_timer = 0x12C;
-                    Heroes[fux->owner].hero_powerup->sub->unk74 = 0x2015;
-                    Heroes[fux->owner].hero_powerup->sub->unk6C = &HeroModelBank[DB_RingObjects];
+                    Heroes[fux->owner].hero_powerup->sub->entity = 0x2015;
+                    Heroes[fux->owner].hero_powerup->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
                     break;
                 case 0x13:
                     he = Heroes[fux->owner].hero_powerup;
                     PlaySfx(0x5F3, &he->sfx, &he->unk10, 0x1000, 0x1E00, 0);
                     Heroes[fux->owner].hero_pu_timer = 0xF0;
-                    Heroes[fux->owner].hero_powerup->sub->unk74 = 0x2014;
-                    Heroes[fux->owner].hero_powerup->sub->unk6C = &HeroModelBank[DB_RingObjects];
+                    Heroes[fux->owner].hero_powerup->sub->entity = 0x2014;
+                    Heroes[fux->owner].hero_powerup->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
                     PlaySfx(0x41C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     break;
                 }
@@ -1350,7 +1350,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                     LinkObject((u8 *)nas);
                     AddSolid(nas, 0x300);
                     nas->FUX = (EXT *)fux;
-                    eng->sub->unk6C = &HeroModelBank[DB_RingObjects];
+                    eng->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
                     eng->unk5D = 1;
                     fux->kind = c;
                     CrateCounts[fux->kind]++;
@@ -1361,24 +1361,24 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                     }
                     switch (c) {
                     case 8:
-                        eng->sub->unk74 = 0x2003;
+                        eng->sub->entity = 0x2003;
                         fux->state = 1;
                         break;
                     case 9:
-                        eng->sub->unk74 = 0x2001;
+                        eng->sub->entity = 0x2001;
                         fux->state = 2;
                         break;
                     case 10:
-                        eng->sub->unk74 = 0x2002;
+                        eng->sub->entity = 0x2002;
                         fux->state = 3;
                         break;
                     case 11:
-                        eng->sub->unk74 = 0x2004;
+                        eng->sub->entity = 0x2004;
                         fux->state = 0;
                         break;
                     case 12:
                     default:
-                        eng->sub->unk74 = 0x2005;
+                        eng->sub->entity = 0x2005;
                         fux->state = Random(3) + 4;
                         break;
                     }
@@ -1389,8 +1389,8 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
             }
             shadow = AddExtEngine(nas, 2);
             if (shadow != NULL) {
-                shadow->sub->unk6C = &HeroModelBank[DB_Powerups];
-                shadow->sub->unk74 = 0x2001;
+                shadow->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+                shadow->sub->entity = 0x2001;
                 shadow->unk10 = eng->unk10;
                 shadow->flags |= 0x41;
                 shadow->sub->unk76 = 0x800;
@@ -1551,10 +1551,10 @@ void PlotBalloon(NAS *nas) {
         if ((u16)fux->state < 4) {
             t = SpinBalloonTimer;
             if (t != 0) {
-                eng->sub->unk74 = SpinBalloonModels[SpinBalloonOwner];
+                eng->sub->entity = SpinBalloonModels[SpinBalloonOwner];
                 if (t < 0x1E) {
                     if (t & 2) {
-                        eng->sub->unk74 = SpinBalloonModels[fux->state];
+                        eng->sub->entity = SpinBalloonModels[fux->state];
                         if (SpinBalloonFlag == 0) {
                             PlaySfx(0x5EF, NULL, NULL, 0x1000, 0x1E00, 0);
                         }
@@ -1564,7 +1564,7 @@ void PlotBalloon(NAS *nas) {
                     }
                 }
             } else {
-                eng->sub->unk74 = SpinBalloonModels[fux->state];
+                eng->sub->entity = SpinBalloonModels[fux->state];
             }
         }
         a = fux->angle + GameFrameCount * 16;
@@ -2941,9 +2941,9 @@ void SpinHeroDead(s32 arg0) {
         base2 = Heroes;
         h2 = &base2[arg0];
         if ((u32)(h2->hero_name - 1) < 8) {
-            h2->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h2->hero_name]];
+            h2->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h2->hero_name]];
         } else {
-            h2->hero_sub->unk6C = 0;
+            h2->hero_sub->u6C.dbase = 0;
         }
     } else {
         HeroGhost(arg0);
@@ -2975,7 +2975,7 @@ void SetSpinHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
+    h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -3047,7 +3047,7 @@ void SetSpinHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = (s32)HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
+    h->hero_sub->u6C.dbase = (s32)HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -3655,8 +3655,8 @@ void SpinCreateShadow(s32 arg0) {
     EXTengine *shadow = h->hero_shadow;
     EXTengine *eng;
 
-    shadow->sub->unk6C = &HeroModelBank[DB_RingObjects];
-    shadow->sub->unk74 = SpinShadowModels[arg0];
+    shadow->sub->u6C.dbase = &HeroModelBank[DB_RingObjects];
+    shadow->sub->entity = SpinShadowModels[arg0];
     eng = h->hero_eng;
     shadow->unk10 = eng->unk10;
     shadow->flags |= 0x8021;

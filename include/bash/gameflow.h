@@ -443,8 +443,8 @@ extern s32 HubSaveChoice;
         EXTengine *e_;                                                         \
         u8 *g_;                                                                \
         e_ = GetEngineSlot(1);                                                 \
-        e_->sub[1].unk6C = (tbl)[*(s32 *)((g_ = GameInfo) + 0x2C)];          \
-        GetEngineSlot(1)->sub->unk6C = D_8009EFE4[*(s32 *)(g_ + 0x2C)];        \
+        e_->sub[1].u6C.ptr = (tbl)[*(s32 *)((g_ = GameInfo) + 0x2C)];          \
+        GetEngineSlot(1)->sub->u6C.ptr = D_8009EFE4[*(s32 *)(g_ + 0x2C)];        \
         eng_render_subs((u8 *)GetEngineSlot(1));                                 \
     }
 extern s32 D_8009F63C;

@@ -1078,7 +1078,7 @@ static inline void RaceSpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
             ext[6] = 0x100;
             if (anim != NULL) {
                 ext[8] = 5;
-                nas->Engine->sub->unk6C = anim;
+                nas->Engine->sub->u6C.dbase = anim;
             } else {
                 ext[8] = 1;
             }

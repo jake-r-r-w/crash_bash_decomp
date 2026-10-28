@@ -720,13 +720,13 @@ void HubLevelSelect(void) {
             }
             if (HubSelectSub != NULL) {
                 if (HubSelectedEntry >= 0 && ((s32(*)(s32))ModeRequirementMet)(ents[HubSelectedEntry].unk4)) {
-                    HubSelectSub->unk74 = ents[HubSelectedEntry].unk0;
+                    HubSelectSub->entity = ents[HubSelectedEntry].unk0;
                     return;
                 }
-                HubSelectSub->unk74 = WarpRooms[GameWarpRoom][4];
+                HubSelectSub->entity = WarpRooms[GameWarpRoom][4];
             }
         } else if (HubSelectSub != NULL) {
-            HubSelectSub->unk74 = WarpRooms[GameWarpRoom][4];
+            HubSelectSub->entity = WarpRooms[GameWarpRoom][4];
         }
         break;
     case 1:
@@ -988,8 +988,8 @@ void InitPathEffect(NAS *nas) {
 
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(nas, &HubPathScriptInit);
-        nas->Engine->sub->unk6C = *(void **)MapScene;
-        nas->Engine->sub->unk74 = 0x2018;
+        nas->Engine->sub->u6C.dbase = *(void **)MapScene;
+        nas->Engine->sub->entity = 0x2018;
         nas->Engine->sub->flags &= 0xFEFFFFFF;
         nas->Engine->unk5D = 2;
         ext->unk18 = 0;
@@ -1344,8 +1344,8 @@ void HubCreateShadow(s32 arg0) {
     EXTengine *s = h->hero_shadow;
 
     if (s != NULL) {
-        s->sub->unk6C = &HeroModelBank[DB_AdventureItems];
-        s->sub->unk74 = 0x2020;
+        s->sub->u6C.dbase = &HeroModelBank[DB_AdventureItems];
+        s->sub->entity = 0x2020;
         s->unk10 = h->hero_eng->unk10;
         s->flags |= 0x8041;
         s->sub->unk76 = 0x800;
@@ -1991,24 +1991,24 @@ void InitSparkGFX(NAS *arg0) {
             s->unk51 = 0;
             nv = &HeroModelBank[DB_AdventureItems];
             s->unk50 = 1;
-            s->unk6C = nv;
+            s->u6C.dbase = nv;
             if (PodiumCheerKind == 0) {
-                s->unk74 = 0x2021;
+                s->entity = 0x2021;
             }
             if (PodiumCheerKind == 1) {
-                s->unk74 = 0x2025;
+                s->entity = 0x2025;
             }
             if (PodiumCheerKind == 2) {
-                s->unk74 = 0x2022;
+                s->entity = 0x2022;
             }
             if (PodiumCheerKind == 3) {
-                s->unk74 = 0x2024;
+                s->entity = 0x2024;
             }
             if (PodiumCheerKind == 4) {
-                s->unk74 = 0x2027;
+                s->entity = 0x2027;
             }
             if (PodiumCheerKind == 5) {
-                s->unk74 = 0x2026;
+                s->entity = 0x2026;
             }
             s->unk20.x = 0x1000;
             fl = 0x20000000;
@@ -2303,8 +2303,8 @@ void InitPodiumTrophy(NAS *arg0) {
     e = arg0->Engine;
     arg0->UserInfo.status = 0;
     if (e != NULL && (e->flags &= ~0x8000, s = e->sub, s != NULL)) {
-        s->unk6C = &HeroModelBank[DB_MainmenuModels2];
-        s->unk74 = 0x200A;
+        s->u6C.dbase = &HeroModelBank[DB_MainmenuModels2];
+        s->entity = 0x200A;
         s->unk51 = 0;
     } else {
         arg0->Failure = 1;
@@ -2354,10 +2354,10 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
                 eng_add_subs(e, 1);
                 s = e->sub;
                 if (s != NULL && (s = s->next, s != NULL)) {
-                    s->unk6C = &HeroModelBank[DB_MainmenuModels2];
+                    s->u6C.dbase = &HeroModelBank[DB_MainmenuModels2];
                     p = (u8 *)PodiumHeroAnims;
                     t = (k - 1) * 4;
-                    s->unk74 = *(u16 *)(p + t);
+                    s->entity = *(u16 *)(p + t);
                     s->flags |= 0x8000;
                     s = e->sub;
                     s->unk08 = -*(s32 *)((u8 *)PodiumHeroX + t);

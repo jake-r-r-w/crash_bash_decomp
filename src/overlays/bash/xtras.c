@@ -153,7 +153,7 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 LinkObject((u8 *)nas);
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
-                eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
+                eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
                 eng->unk5D = 1;
                 obj->unk14 = d;
                 CrateCounts[obj->unk14]++;
@@ -164,25 +164,25 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 }
                 switch (k) {
                 case 3:
-                    eng->sub->unk74 = 0x2008;
+                    eng->sub->entity = 0x2008;
                     break;
                 case 1:
-                    eng->sub->unk74 = 0x2014;
+                    eng->sub->entity = 0x2014;
                     break;
                 case 2:
-                    eng->sub->unk74 = 0x2014;
+                    eng->sub->entity = 0x2014;
                     break;
                 case 5:
-                    eng->sub->unk74 = 0x2009;
+                    eng->sub->entity = 0x2009;
                     obj->unk22 = 0x5A;
                     obj->unk1C |= 0x100;
                     break;
                 case 6:
-                    eng->sub->unk74 = 0x2001;
+                    eng->sub->entity = 0x2001;
                     obj->unk1C |= 0x100;
                     break;
                 default:
-                    eng->sub->unk74 = 0x2013;
+                    eng->sub->entity = 0x2013;
                     break;
                 }
                 switch ((u16)obj->unk1A) {
@@ -261,7 +261,7 @@ void InitCrate(NAS *arg0) {
                 }
             } while (again);
             eng->unk10.y = World_floor_level;
-            eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
+            eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
             eng->unk5D = 1;
             eng->unk5C = 1;
             obj->unk1A = 3;
@@ -271,25 +271,25 @@ void InitCrate(NAS *arg0) {
             CrateCounts[obj->unk14]++;
             switch (obj->unk14) {
             case 3:
-                eng->sub->unk74 = 0x2008;
+                eng->sub->entity = 0x2008;
                 break;
             case 1:
-                eng->sub->unk74 = 0x2014;
+                eng->sub->entity = 0x2014;
                 break;
             case 2:
-                eng->sub->unk74 = 0x2014;
+                eng->sub->entity = 0x2014;
                 break;
             case 5:
-                eng->sub->unk74 = 0x2009;
+                eng->sub->entity = 0x2009;
                 obj->unk22 = 0x5A;
                 obj->unk1C |= 0x100;
                 break;
             case 6:
-                eng->sub->unk74 = 0x2001;
+                eng->sub->entity = 0x2001;
                 obj->unk1C |= 0x100;
                 break;
             default:
-                eng->sub->unk74 = 0x2013;
+                eng->sub->entity = 0x2013;
                 break;
             }
             x = (eng->unk10.x >> 8) + 10;
@@ -795,7 +795,7 @@ void PlotCrate(NAS *arg0) {
         fux->count = 0x78;
         fux->flags &= 0xFFF4;
         BC038_SNAP(eng);
-        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         ext->unk18 = 0x60;
         ext->unk1E = 0xF0;
         ext->unk1A = 0;
@@ -805,19 +805,19 @@ void PlotCrate(NAS *arg0) {
         eng->unk20 = 0;
         switch (fux->kind) {
         case 0x19:
-            eng->sub->unk74 = 0x200B;
+            eng->sub->entity = 0x200B;
             fux->state = 0xD;
             break;
         case 0x1B:
-            eng->sub->unk74 = 0x200F;
+            eng->sub->entity = 0x200F;
             fux->state = 0xD;
             break;
         case 0x1C:
-            eng->sub->unk74 = 0x200C;
+            eng->sub->entity = 0x200C;
             fux->state = 0xD;
             break;
         case 0x11:
-            eng->sub->unk74 = Random(0xE) + 0x2018;
+            eng->sub->entity = Random(0xE) + 0x2018;
             eng->unk5D = 4;
             fux->state = 0xD;
             UnlinkObject(arg0);
@@ -912,7 +912,7 @@ void PlotCrate(NAS *arg0) {
         fux->count = 0x96;
         fux->flags &= 0xFFF4;
         BC038_SNAP(eng);
-        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         ext->unk18 = 0x80;
         ext->unk1E = 0x50;
         ext->unk1C = 4;
@@ -922,20 +922,20 @@ void PlotCrate(NAS *arg0) {
         eng->unk20 = 0;
         switch (fux->kind) {
         case 0x19:
-            eng->sub->unk74 = 0x200B;
+            eng->sub->entity = 0x200B;
             fux->state = 0xF;
             break;
         case 0x1B:
-            eng->sub->unk74 = 0x200F;
+            eng->sub->entity = 0x200F;
             fux->state = 0xF;
             break;
         case 0x1C:
-            eng->sub->unk74 = 0x200C;
+            eng->sub->entity = 0x200C;
             fux->state = 0xF;
             break;
         case 0x11:
             arg0->UserInfo.user2 = Random(0x1C);
-            eng->sub->unk74 = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
+            eng->sub->entity = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
             eng->unk5E = 1;
             eng->unk1E = 0;
             fux->state = 0xF;
@@ -959,7 +959,7 @@ void PlotCrate(NAS *arg0) {
         if (fux->kind == 0x11) {
             eng->unk1E = 0;
             arg0->UserInfo.user1++;
-            eng->sub->unk74 = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
+            eng->sub->entity = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
         } else {
             eng->unk1E += 0x71;
         }
@@ -1117,7 +1117,7 @@ void PlotCrate(NAS *arg0) {
     if (type == 7) {
         if (fux->count != 0) {
             fux->count--;
-            eng->sub->unk74 = BashTickingCrateModels[fux->count / 30];
+            eng->sub->entity = BashTickingCrateModels[fux->count / 30];
             if (fux->count % 30 == 0) {
                 PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
@@ -1141,9 +1141,9 @@ void InitCratePickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         r = Random(4);
-        eng->sub->unk74 = BashPickupModels[r];
+        eng->sub->entity = BashPickupModels[r];
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
             LinkObject((u8 *)arg0);
@@ -1193,8 +1193,8 @@ void InitShieldPickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
-        eng->sub->unk74 = 0x200D;
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+        eng->sub->entity = 0x200D;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
             LinkObject((u8 *)arg0);
@@ -1245,8 +1245,8 @@ void InitBootsPickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
-        eng->sub->unk74 = 0x200A;
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+        eng->sub->entity = 0x200A;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
             LinkObject((u8 *)arg0);
@@ -1297,8 +1297,8 @@ void InitAnvilPickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
-        eng->sub->unk74 = 0x2011;
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+        eng->sub->entity = 0x2011;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
             LinkObject((u8 *)arg0);
@@ -1349,8 +1349,8 @@ void InitSlowmoPickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
-        eng->sub->unk74 = 0x2009;
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+        eng->sub->entity = 0x2009;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
             LinkObject((u8 *)arg0);
@@ -1423,11 +1423,11 @@ void PlotPickup(NAS *arg0) {
         if (obj->player != -1 && obj->player < 5) {
             Heroes[obj->player].hero_pu = obj->whatami;
             Heroes[obj->player].hero_pu_timer = 0xB4;
-            Heroes[obj->player].hero_powerup->sub->unk74 = eng->sub->unk74;
+            Heroes[obj->player].hero_powerup->sub->entity = eng->sub->entity;
             switch (obj->whatami) {
             case 0x12:
                 Heroes[obj->player].hero_pu_timer = 0x12C;
-                Heroes[obj->player].hero_powerup->sub->unk74 = 0x200D;
+                Heroes[obj->player].hero_powerup->sub->entity = 0x200D;
                 PlaySfx(0x41B, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 h = &Heroes[obj->player];
                 h->hero_harm_Nas = NULL;
@@ -1437,18 +1437,18 @@ void PlotPickup(NAS *arg0) {
                 break;
             case 0x13:
                 Heroes[obj->player].hero_pu_timer = 0xF0;
-                Heroes[obj->player].hero_powerup->sub->unk74 = eng->sub->unk74;
+                Heroes[obj->player].hero_powerup->sub->entity = eng->sub->entity;
                 PlaySfx(0x41C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 break;
             case 0x14:
                 Heroes[obj->player].hero_pu_timer = 0xF0;
-                Heroes[obj->player].hero_powerup->sub->unk74 = 0x2011;
+                Heroes[obj->player].hero_powerup->sub->entity = 0x2011;
                 PlaySfx(0x452, &BashSfxEngine.sfx, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x41A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 break;
             default:
                 Heroes[obj->player].hero_pu_timer = 0xF0;
-                Heroes[obj->player].hero_powerup->sub->unk74 = eng->sub->unk74;
+                Heroes[obj->player].hero_powerup->sub->entity = eng->sub->entity;
                 PlaySfx(0x41D, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 break;
             }
@@ -1480,7 +1480,7 @@ void BashHeroesTouched(s32 arg0, s32 arg1) {
                     b->hero_pu_lock = 0x1E;
                     a->hero_pu = 0x1E;
                     a->hero_pu_timer = 0;
-                    b->hero_powerup->sub->unk74 = a->hero_powerup->sub->unk74;
+                    b->hero_powerup->sub->entity = a->hero_powerup->sub->entity;
                     PlaySfx(0x454, 0, 0, 0x1000, 0x1E00, 0);
                 }
                 break;

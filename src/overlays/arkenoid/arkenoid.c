@@ -1255,19 +1255,19 @@ void AR_InitHero(u32 arg0) {
     eng_add_subs_n(e, 2);
     n = s->next;
     if (n != NULL) {
-        n->unk6C = s->unk6C;
+        n->u6C.dbase = s->u6C.dbase;
         n->flags |= 0x8000;
         h->hero_anim->sub = n;
         n = n->next;
         if (n != NULL) {
-            n->unk6C = &HeroModelBank[DB_BallsVehicle];
-            n->unk74 = 0x2001;
+            n->u6C.dbase = &HeroModelBank[DB_BallsVehicle];
+            n->entity = 0x2001;
             n->unk50 = 1;
             n->unk51 = 0;
             n->flags &= ~0x8000;
         }
     }
-    s->unk6C = &HeroModelBank[DB_BallsVehicle];
+    s->u6C.dbase = &HeroModelBank[DB_BallsVehicle];
     if (arg0 == ArkSidePlayer0) {
         switch (Heroes[arg0].hero_name) {
         case 5:
@@ -1279,7 +1279,7 @@ void AR_InitHero(u32 arg0) {
         }
     }
     ArkHeroSpeed[arg0] = 0xF;
-    s->unk74 = 0x2004;
+    s->entity = 0x2004;
     FetchDefaultColBox(e, 0x50);
     if (e->unk10.x > 0x880) {
         e->unk10.x = 0x880;
@@ -1578,14 +1578,14 @@ void AR_MoveHero(u32 arg0) {
     h->hero_eng->unk5E = 1;
     if (!(h->hero_status & 0xF800)) {
         if (h->hero_mode == 0x21) {
-            h->hero_sub->unk74 = 0x2006;
+            h->hero_sub->entity = 0x2006;
             return;
         }
         if (h->hero_attack_timer != 0) {
-            h->hero_sub->unk74 = 0x2006;
+            h->hero_sub->entity = 0x2006;
             return;
         }
-        h->hero_sub->unk74 = 0x2004;
+        h->hero_sub->entity = 0x2004;
     }
 }
 
@@ -1652,14 +1652,14 @@ void AR_PI_MoveHero(u32 arg0) {
     h->hero_eng->unk5E = 1;
     if (!(h->hero_status & 0xF800)) {
         if (h->hero_mode == 0x21) {
-            h->hero_sub->unk74 = 0x2006;
+            h->hero_sub->entity = 0x2006;
             return;
         }
         if (h->hero_attack_timer != 0) {
-            h->hero_sub->unk74 = 0x2006;
+            h->hero_sub->entity = 0x2006;
             return;
         }
-        h->hero_sub->unk74 = 0x2004;
+        h->hero_sub->entity = 0x2004;
     }
 }
 
@@ -1818,7 +1818,7 @@ s32 arg0;
   s = s->next;
   if (s != 0)
   {
-    s->unk74 = ArkHeroSpeeds[Heroes[arg0].hero_name][4] + ArkHeroSpeed[arg0];
+    s->entity = ArkHeroSpeeds[Heroes[arg0].hero_name][4] + ArkHeroSpeed[arg0];
     return 0;
   }
   return 1;
@@ -2249,7 +2249,7 @@ void ArkHeroKick(u32 arg0) {
     if (sub != 0) {
         s = sub->next;
         if (s != 0) {
-            s->unk74 = 0x2001;
+            s->entity = 0x2001;
             s->unk20.x = scale & 0xFFFF;
             s->unk20.y = scale & 0xFFFF;
             s->unk20.z = scale & 0xFFFF;
@@ -2294,7 +2294,7 @@ void ArkHeroRedKick(u32 arg0) {
     if (a != NULL) {
         s = a->next;
         if (s != NULL) {
-            s->unk74 = 0x2007;
+            s->entity = 0x2007;
             s->unk20.x = v & 0xFFFF;
             s->unk20.y = v & 0xFFFF;
             s->unk20.z = v & 0xFFFF;
@@ -2336,7 +2336,7 @@ void ArkHeroGrab(u32 arg0) {
     if (a != NULL) {
         s = a->next;
         if (s != NULL) {
-            s->unk74 = 0x2003;
+            s->entity = 0x2003;
             s->flags |= 0x40008021;
             t = rcossin_tbl[(((GameFrameCount << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 13;
             s->unk52 = 1;
@@ -2445,9 +2445,9 @@ void ArkHeroDead(u32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]];
+            h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]];
         } else {
-            h->hero_sub->unk6C = NULL;
+            h->hero_sub->u6C.dbase = NULL;
         }
     } else {
         HeroGhost(arg0);
@@ -3323,21 +3323,21 @@ void InitBall(NAS *nas) {
     }
     eng->unk10.y = World_floor_level - 0x80;
     eng->unk5D = 2;
-    eng->sub->unk6C = &HeroModelBank[DB_BallsEffects];
+    eng->sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
     if (GameMode == 0xF) {
-        eng->sub->unk74 = 0x2017;
+        eng->sub->entity = 0x2017;
     } else {
-        eng->sub->unk74 = 0x2009;
+        eng->sub->entity = 0x2009;
     }
     AddToGroup((u8 **)&HeadOfBalls, (u8 *)nas);
     e1 = AddExtEngine(nas, 1);
     if (e1 != NULL) {
         sub = e1->sub;
-        sub->unk6C = &HeroModelBank[DB_BallsEffects];
+        sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
         if (GameMode == 0xF) {
-            sub->unk74 = 0x2016;
+            sub->entity = 0x2016;
         } else {
-            sub->unk74 = 0x200B;
+            sub->entity = 0x200B;
         }
         e1->flags |= 0x22000021;
         sub->flags |= 0x22000021;
@@ -3349,9 +3349,9 @@ void InitBall(NAS *nas) {
         e->unk5D = 0;
         e->unk5C = 0;
         e->flags &= 0xFFFF7FFF;
-        sub->unk6C = &HeroModelBank[DB_BallsEffects];
+        sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
         if (GameMode == 0xE) {
-            sub->unk74 = 0x200C;
+            sub->entity = 0x200C;
             sub->unk76 = 0xB00;
             sub->flags |= 0x42000021;
             ext = AddExt(nas, 0x74, 0x10000000);
@@ -3367,14 +3367,14 @@ void InitBall(NAS *nas) {
                 for (sub = sub->next; sub != NULL; sub = sub->next) {
                     sub->unk51 = 0;
                     sub->unk50 = 1;
-                    sub->unk6C = &HeroModelBank[DB_BallsEffects];
-                    sub->unk74 = 0x200D;
+                    sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
+                    sub->entity = 0x200D;
                     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x42000021;
                     sub->unk76 = 0xC00;
                 }
             }
         } else {
-            sub->unk74 = 0;
+            sub->entity = 0;
         }
     }
     }
@@ -4147,7 +4147,7 @@ void Plot_N_Gin(NAS *arg0) {
             gin->unk1C |= 0x90;
             PlaySfx(0x5BE, NULL, NULL, 0x1000, 0x1E00, 0);
             SpawnModelFx(0, &eng->unk10.x, (s32)&HeroModelBank[DB_Ngin]);
-            eng->sub->unk74 = 0x2001;
+            eng->sub->entity = 0x2001;
             break;
         case 2:
             eng->unk1E += 0x20;
@@ -4172,7 +4172,7 @@ void Plot_N_Gin(NAS *arg0) {
                 gin->unk22--;
                 break;
             }
-            eng->sub->unk74 = 0x2006;
+            eng->sub->entity = 0x2006;
             gin->unk1A = 4;
             gin->unk22 = 0x96;
             gin->unk20 = Random(0xA) + 0xA;
@@ -4692,8 +4692,8 @@ void Init_ArkDeadWall(NAS *nas)
         off = 0;
         if (sub != 0) {
             do {
-                sub->unk6C = &HeroModelBank[DB_BallsEffects];
-                sub->unk74 = 0;
+                sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
+                sub->entity = 0;
                 sub->unk04 = off;
                 sub->flags |= 0x21;
                 sub = sub->next;
@@ -4761,8 +4761,8 @@ void Init_NGArkDeadWall(NAS *arg0) {
         off = 0;
         if (sub != NULL) {
             do {
-                sub->unk6C = &HeroModelBank[DB_BallsEffects];
-                sub->unk74 = 0;
+                sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
+                sub->entity = 0;
                 sub->unk04 = off;
                 sub->flags |= 0x21;
                 sub = sub->next;
@@ -5222,9 +5222,9 @@ void Init_ArkLaserWall(NAS *nas)
         off = 0;
         if (sub != 0) {
             do {
-                sub->unk6C = *(s32 *)MapScene;
+                sub->u6C.dbase = *(s32 *)MapScene;
                 sub->flags |= 0x21;
-                sub->unk74 = 0x2019;
+                sub->entity = 0x2019;
                 sub->unk04 = off;
                 sub = sub->next;
                 off += 0x200;
@@ -5627,7 +5627,7 @@ bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
                                             break;
                                         case 0x11:
                                             if (arg2) {
-                                                o->sub->unk74 = 0x2018;
+                                                o->sub->entity = 0x2018;
                                                 *(u16 *)(t + 0x14) = 2;
                                                 *(s16 *)(e + 0xE) = *(u16 *)(e + 0x14) + 0x40;
                                                 *(u16 *)(e + 0x14) = 0x80;
@@ -5952,8 +5952,8 @@ void Init_RepulseRing(NAS *nas)
     sub = eng->sub;
     eng->flags |= 0x21;
     sub->unk51 = (new_var = 0);
-    sub->unk6C = &HeroModelBank[DB_BallsEffects];
-    sub->unk74 = 0x2014;
+    sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
+    sub->entity = 0x2014;
     sub->unk50 = 1;
     sub->unk08 = 0x80;
     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x21;
@@ -5996,7 +5996,7 @@ void Plot_ArkDeadWall(NAS *arg0) {
         sub = eng->sub;
         if (sub != NULL) {
             do {
-                sub->unk74 = (GameFrameCount & 7) + 0x2001;
+                sub->entity = (GameFrameCount & 7) + 0x2001;
                 sub = sub->next;
             } while (sub != NULL);
         }
@@ -6057,7 +6057,7 @@ void Init_seaweed(NAS *arg0) {
     EXTengine *eng = arg0->Engine;
     if (eng != NULL) {
         ScriptCursor *cur;
-        eng->sub->unk6C = *(s32*)MapScene;
+        eng->sub->u6C.dbase = *(s32*)MapScene;
         cur = ScriptCursorFirst(arg0, &SeaweedScriptInit);
         if (cur != NULL) {
             u8 *trig = (u8*)arg0->trigger;
@@ -6087,8 +6087,8 @@ void Init_N_Gin(NAS *nas) {
     if (eng != NULL) {
         ScriptCursorFirst(nas, &NGinScriptInit);
         ArkBallSpawner = eng;
-        eng->sub->unk6C = &HeroModelBank[DB_Ngin];
-        eng->sub->unk74 = 0x2001;
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Ngin];
+        eng->sub->entity = 0x2001;
         ArkNGin = obj = (ArkenoidGin *)AddObject(nas);
         if (obj != NULL) {
             LinkObject((u8 *)nas);
@@ -6275,8 +6275,8 @@ void AR_InitShadow(u32 arg0) {
     HeroInfo *h = &base[arg0];
     EXTengine *s = h->hero_shadow;
 
-    s->sub->unk6C = &HeroModelBank[DB_BallsVehicle];
-    s->sub->unk74 = 0x2002;
+    s->sub->u6C.dbase = &HeroModelBank[DB_BallsVehicle];
+    s->sub->entity = 0x2002;
     s->unk10 = h->hero_eng->unk10;
     s->unk5D = 0;
     s->flags |= 0x8041;

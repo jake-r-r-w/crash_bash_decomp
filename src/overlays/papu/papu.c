@@ -795,8 +795,8 @@ void InitPapuBoss(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         ResetHeroGlobals();
-        eng->sub->unk6C = &HeroModelBank[DB_Papu];
-        eng->sub->unk74 = 0x2001;
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Papu];
+        eng->sub->entity = 0x2001;
         eng->unk5C = 1;
         eng->unk5E = 1;
         FetchDefaultColBox(eng, 0x40);
@@ -1167,9 +1167,9 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
     eng = nas->Engine;
     if (eng != 0)
     {
-      eng->sub->unk6C = &HeroModelBank[DB_Minion];
+      eng->sub->u6C.dbase = &HeroModelBank[DB_Minion];
       eng->unk5D = 0;
-      eng->sub->unk74 = 0x2001;
+      eng->sub->entity = 0x2001;
       eng->flags &= 0xFFFF7FFF;
       FetchDefaultColBox(eng, 0x50);
       for (i = 0; i < 6; i++)
@@ -2431,8 +2431,8 @@ void InitPapuColumn(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = *(GfxModel **)MapScene;
-        e->sub->unk74 = 0x200C;
+        e->sub->u6C.dbase = *(GfxModel **)MapScene;
+        e->sub->entity = 0x200C;
         e->unk5D = 0;
         e->unk5C = 1;
     }
@@ -2705,22 +2705,22 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 LinkObject((u8 *)nas);
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
-                eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
+                eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
                 eng->unk5D = 1;
                 obj->unk14 = d;
                 CrateCounts[obj->unk14]++;
                 obj->unk1A = 7;
                 switch (k) {
                 case 4:
-                    eng->sub->unk74 = 0x2013;
+                    eng->sub->entity = 0x2013;
                     break;
                 case 5:
-                    eng->sub->unk74 = 0x2009;
+                    eng->sub->entity = 0x2009;
                     obj->unk22 = 0x5A;
                     obj->unk1C |= 0x100;
                     break;
                 default:
-                    eng->sub->unk74 = 0x2013;
+                    eng->sub->entity = 0x2013;
                     break;
                 }
                 eng->unk2C.x = 0x40;
@@ -2785,7 +2785,7 @@ void InitPACrate(NAS *arg0) {
                 }
             } while (again);
             eng->unk10.y = World_floor_level;
-            eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
+            eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
             eng->unk5D = 1;
             eng->unk5C = 1;
             obj->unk1A = 3;
@@ -2795,15 +2795,15 @@ void InitPACrate(NAS *arg0) {
             CrateCounts[obj->unk14]++;
             switch (obj->unk14) {
             case 4:
-                eng->sub->unk74 = 0x2013;
+                eng->sub->entity = 0x2013;
                 break;
             case 5:
-                eng->sub->unk74 = 0x2009;
+                eng->sub->entity = 0x2009;
                 obj->unk22 = 0x5A;
                 obj->unk1C |= 0x100;
                 break;
             default:
-                eng->sub->unk74 = 0x2013;
+                eng->sub->entity = 0x2013;
                 break;
             }
             x = (eng->unk10.x >> 8) + 10;

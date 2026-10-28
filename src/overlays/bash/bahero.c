@@ -317,7 +317,7 @@ void SetBashHeroBigWeight(s32 arg0) {
     SetHeroSeq(arg0, 1);
     p = h->hero_powerup;
     p->unk10 = h->hero_eng->unk10;
-    p->sub->unk74 = 0x2002;
+    p->sub->entity = 0x2002;
     p->flags |= 0x8000;
     p->unk10.x = (p->unk10.x & ~0xFF) + 0x80;
     p->unk10.z = (p->unk10.z & ~0xFF) + 0x80;
@@ -454,7 +454,7 @@ void SetBashHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
+    h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -530,7 +530,7 @@ void SetBashHeroLoser(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
+    h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1138,9 +1138,9 @@ void BashHeroDead(s32 arg0) {
         base = Heroes;
         h = base + arg0;
         if ((u16)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
+            h->hero_sub->u6C.dbase = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
         } else {
-            h->hero_sub->unk6C = NULL;
+            h->hero_sub->u6C.dbase = NULL;
         }
     } else {
         HeroGhost(arg0);

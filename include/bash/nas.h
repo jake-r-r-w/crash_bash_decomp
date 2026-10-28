@@ -328,9 +328,13 @@ struct subengine {
     /* 0x64 */ u8 unk64[0x68 - 0x64];
     /* 0x68 */ s16 unk68;
     /* 0x6A */ u8 unk6A[2];
-    /* 0x6C */ void *unk6C;
+    /* 0x6C */ union {
+        struct obj_dbase *dbase;     /* a model's: the record its entity is in */
+        char *text;                  /* a text panel's */
+        void *ptr;
+    } u6C;                           /* a script's control info and the fx buffers start here too */
     /* 0x70 */ s32 unk70;
-    /* 0x74 */ u16 unk74;
+    /* 0x74 */ u16 entity;           /* the entity in the dbase (entity_address) */
     /* 0x76 */ u16 unk76;
     /* 0x78 */ s32 unk78;
     /* 0x7C */ s32 unk7C;

@@ -481,9 +481,9 @@ void InitLoadingScreen(void) {
     p = D_8009F994;
     if (sub != NULL) {
         do {
-            sub->unk6C = &HeroModelBank[DB_Loading];
+            sub->u6C.dbase = &HeroModelBank[DB_Loading];
             sub->flags = 0x01008000;
-            sub->unk74 = *p;
+            sub->entity = *p;
             sub->unk04 = 0;
             sub->unk08 = 0;
             sub->unk0C = 0;
@@ -526,8 +526,8 @@ void DrawSceneMarks(void) {
         m = &SceneMarks[i];
         p = &D_800A02D8[m->idx];
         *e = SubEngineTemplate;
-        e->unk74 = m->unk0;
-        e->unk6C = m->unk8;
+        e->entity = m->unk0;
+        e->u6C.dbase = m->unk8;
         e->unk51 = 0;
         s = GameFrameCount;
         e->unk10 = (s * p->x) >> 12;

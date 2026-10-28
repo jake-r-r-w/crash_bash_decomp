@@ -684,8 +684,8 @@ loop:
                 u32 f = sub->flags;
 
                 f &= ~0x8000;
-                sub->unk6C = &HeroModelBank[DB_PogoObjects];
-                sub->unk74 = 0x200D;
+                sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+                sub->entity = 0x200D;
                 sub->flags = f;
                 e->flags &= ~0x8000;
             }
@@ -1530,7 +1530,7 @@ void PostMovePOGO(u32 i) {
     if ((u32)(name - 3) < 2) {
         sub = Heroes[i].hero_fx->sub;
         if (sub != NULL && sub_find_point(Heroes[i].hero_eng, Heroes[i].hero_sub, 0x200, &v) != NULL) {
-            sub->unk6C = &HeroModelBank[DB_PogoObjects];
+            sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
             sub->unk50 = 1;
             sub->flags |= 0x8000;
             Heroes[i].hero_fx->unk5D = 1;
@@ -1552,14 +1552,14 @@ void PostMovePOGO(u32 i) {
             switch (name) {
             case 3:
                 n = CortexSmokeFrame;
-                sub->unk74 = 0x2021;
+                sub->entity = 0x2021;
                 break;
             case 4:
                 n = BrioSmokeFrame;
-                sub->unk74 = 0x2021;
+                sub->entity = 0x2021;
                 break;
             default:
-                sub->unk74 = 0;
+                sub->entity = 0;
                 n = 0;
                 break;
             }
@@ -1750,7 +1750,7 @@ void HeroPogo(u32 arg0) {
         }
         break;
     }
-    Heroes[arg0].hero_eng->sub->unk74 = n;
+    Heroes[arg0].hero_eng->sub->entity = n;
 }
 
 void SetHeroPogoIdle(u32 arg0) {
@@ -1814,14 +1814,14 @@ void HeroPogoIdle(u32 arg0) {
     h = &base[arg0];
     switch (h->hero_name) {
     case 4:
-        v = h->hero_sub->unk74 - 0x4080;
+        v = h->hero_sub->entity - 0x4080;
         BrioSmokeFrame = v;
         if (v > 0x10) {
             BrioSmokeFrame = 0;
         }
         break;
     case 3:
-        v = h->hero_sub->unk74 - 0x4000;
+        v = h->hero_sub->entity - 0x4000;
         CortexSmokeFrame = v;
         if (v > 0x10) {
             CortexSmokeFrame = 0;
@@ -2180,7 +2180,7 @@ void AddDingoSmoke(u32 arg0) {
             eng->unk5E = 1;
             eng->unk1E = a;
             for (s = eng->sub; s != NULL; s = s->next) {
-                if (s->unk74 != 0x2022) {
+                if (s->entity != 0x2022) {
                     s->flags |= 0x20000000;
                 }
             }
@@ -3400,24 +3400,24 @@ void CreatePowerupOnTile(s32 arg0, s32 arg1, s32 arg2) {
         nas->UserInfo.flags = arg2;
         switch (arg2) {
         case 1:
-            e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-            e->sub->unk74 = 0x200D;
+            e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+            e->sub->entity = 0x200D;
             break;
         case 2:
-            e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-            e->sub->unk74 = 0x201B;
+            e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+            e->sub->entity = 0x201B;
             break;
         case 4:
-            e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-            e->sub->unk74 = 0x2040;
+            e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+            e->sub->entity = 0x2040;
             break;
         case 5:
-            e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-            e->sub->unk74 = 0x200C;
+            e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+            e->sub->entity = 0x200C;
             break;
         case 3:
-            e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-            e->sub->unk74 = 0x2002;
+            e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+            e->sub->entity = 0x2002;
             break;
         }
     }
@@ -3450,14 +3450,14 @@ void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     if (e != NULL) {
         switch (arg2) {
         case 7:
-            e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-            e->sub->unk74 = 0x2001;
+            e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+            e->sub->entity = 0x2001;
             nas->UserInfo.user1 = Random(4);
             nas->UserInfo.user2 = 0;
             break;
         case 8:
-            e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-            e->sub->unk74 = 0x200E;
+            e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+            e->sub->entity = 0x200E;
             nas->UserInfo.user1 = Random(4);
             nas->UserInfo.user2 = 0;
             break;
@@ -3558,8 +3558,8 @@ spawn:
     while (sub != NULL) {
         pos[0] += dx;
         pos[2] += dz;
-        sub->unk6C = &HeroModelBank[DB_PogoObjects];
-        sub->unk74 = 0x2005;
+        sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+        sub->entity = 0x2005;
         sub->unk04 = t;
         sub->flags |= 0x21;
         sub = sub->next;
@@ -3612,7 +3612,7 @@ next_sub:
     if (sub != NULL) {
         slot = slots;
         h = heroes;
-        sub->unk74 = ((GameFrameCount + n++) & 7) + 0x2003;
+        sub->entity = ((GameFrameCount + n++) & 7) + 0x2003;
         x = (eng->unk10.x + 0x800) >> 9;
         z = (eng->unk10.z + 0x800) >> 9;
     next_hero:
@@ -3744,8 +3744,8 @@ void Init_PogoPowerup(NAS *nas) {
 
     e = nas->Engine;
     if (e != NULL) {
-        e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-        e->sub->unk74 = 0x200B;
+        e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+        e->sub->entity = 0x200B;
         e->sub->unk68 = -0x10;
         e->sub->flags |= 0x02000000;
         e->unk10.y -= 0x1000;
@@ -3766,8 +3766,8 @@ void Init_PogoPowerup(NAS *nas) {
             e2->unk10.y = e->unk10.y;
             e2->unk10.z = e->unk10.z;
             if (sub != NULL) {
-                sub->unk6C = &HeroModelBank[DB_PogoObjects];
-                sub->unk74 = 0x2029;
+                sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+                sub->entity = 0x2029;
                 sub->unk51 = 2;
                 sub->unk50 = 1;
                 sub->unk76 = 0x800;
@@ -4476,7 +4476,7 @@ void Plot_PogoProjectile(NAS *arg0) {
         }
         if (k & 2) {
             if (sub != NULL) {
-                sub->unk74 = 0x2018;
+                sub->entity = 0x2018;
                 sub->flags |= 0x8000;
                 arg0->UserInfo.user1 |= 1 << j;
             }
@@ -5594,8 +5594,8 @@ void Init_PogoRipperRoo(NAS *nas) {
     if (e != NULL) {
         ScriptCursorFirst(nas, &RooScriptInit);
         dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_Roo]);
-        e->sub->unk6C = &HeroModelBank[DB_Roo];
-        e->sub->unk74 = 0x2001;
+        e->sub->u6C.dbase = &HeroModelBank[DB_Roo];
+        e->sub->entity = 0x2001;
         e->unk5D = 0;
         nas->UserInfo.status = 0;
         e->unk10.x = -0x100;
@@ -5617,8 +5617,8 @@ void Init_PogoRipperRoo(NAS *nas) {
             e2->unk10.y = e->unk10.y;
             e2->unk10.z = e->unk10.z;
             if (sub != NULL) {
-                sub->unk6C = &HeroModelBank[DB_PogoObjects];
-                sub->unk74 = 0x2029;
+                sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+                sub->entity = 0x2029;
                 sub->unk51 = 2;
                 sub->unk50 = 1;
                 sub->unk76 = 0x800;
@@ -5891,7 +5891,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
         }
         e->unk5E = 1;
         e->unk1E += 0x16;
-        if (e->sub->unk74 == 0x4012) {
+        if (e->sub->entity == 0x4012) {
             PlaySfx(0x522, NULL, &e->unk10, 0x1000, 0x1E00, 0);
             Roo_FireRocket(e);
         }
@@ -6124,11 +6124,11 @@ void Roo_FireRocket(EXTengine *eng) {
                 nas->UserInfo.flags = 0x502;
                 nas->UserInfo.user1 = 0;
                 nas->UserInfo.status = angle;
-                sub->unk6C = &HeroModelBank[DB_PogoObjects];
-                sub->unk74 = 0x200D;
+                sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+                sub->entity = 0x200D;
                 eng_add_subs(e, 8);
                 for (s = sub->next; s != NULL; s = s->next) {
-                    s->unk6C = &HeroModelBank[DB_PogoObjects];
+                    s->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
                     s->unk20.z = 0x1000;
                     s->unk20.y = 0x1000;
@@ -6137,7 +6137,7 @@ void Roo_FireRocket(EXTengine *eng) {
                     s->unk51 = 0;
                     s->unk04 = 0x90;
                 }
-                sub->unk74 = 0x200D;
+                sub->entity = 0x200D;
                 e->unk1E = (angle + 0xC00) % 0x1000;
                 e->unk5E = 1;
                 nas->UserInfo.flags |= 1;
@@ -6207,11 +6207,11 @@ void Roo_FireProjectile(EXTengine *eng, s32 angle) {
                 nas->UserInfo.flags = 0x502;
                 nas->UserInfo.user1 = 0;
                 nas->UserInfo.status = angle;
-                sub->unk6C = &HeroModelBank[DB_PogoObjects];
-                sub->unk74 = 0x200D;
+                sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+                sub->entity = 0x200D;
                 eng_add_subs(e, 8);
                 for (s = sub->next; s != NULL; s = s->next) {
-                    s->unk6C = &HeroModelBank[DB_PogoObjects];
+                    s->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
                     s->unk20.z = 0x1000;
                     s->unk20.y = 0x1000;
@@ -6220,7 +6220,7 @@ void Roo_FireProjectile(EXTengine *eng, s32 angle) {
                     s->unk51 = 0;
                     s->unk04 = 0x90;
                 }
-                sub->unk74 = 0x200D;
+                sub->entity = 0x200D;
                 e->unk1E = (angle + 0xC00) % 0x1000;
                 e->unk5E = 1;
                 nas->UserInfo.flags |= 1;
@@ -6237,8 +6237,8 @@ void Init_PogoPadlock(NAS *nas) {
 
     e = nas->Engine;
     if (e != NULL) {
-        e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-        e->sub->unk74 = 0x2041;
+        e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+        e->sub->entity = 0x2041;
         e->unk2C.z = 0x1000;
         e->unk2C.y = 0x1000;
         e->unk2C.x = 0x1000;
@@ -6252,9 +6252,9 @@ void Init_PogoPadlock(NAS *nas) {
             e2->unk10.z = e->unk10.z;
             e2->flags &= ~0x8000;
             if (sub != NULL) {
-                sub->unk74 = 0x2029;
+                sub->entity = 0x2029;
                 sub->unk51 = 2;
-                sub->unk6C = &HeroModelBank[DB_PogoObjects];
+                sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                 sub->unk50 = 1;
                 sub->unk76 = 0x800;
                 sub->flags |= 0x40008041;
@@ -6645,11 +6645,11 @@ void Create_PogoProjectile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
                 nas->UserInfo.user2 = arg0;
                 nas->UserInfo.status = arg5;
                 nas->UserInfo.flags = ((arg4 & 7) << 8) | 2;
-                sub->unk6C = &HeroModelBank[DB_PogoObjects];
-                sub->unk74 = 0x200D;
+                sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+                sub->entity = 0x200D;
                 eng_add_subs(e, 8);
                 for (s = sub->next; s != NULL; s = s->next) {
-                    s->unk6C = &HeroModelBank[DB_PogoObjects];
+                    s->u6C.dbase = &HeroModelBank[DB_PogoObjects];
                     s->flags = (s->flags & ~0x8000) | 0x20000041;
                     s->unk20.z = 0x1000;
                     s->unk20.y = 0x1000;
@@ -6660,13 +6660,13 @@ void Create_PogoProjectile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
                 }
                 switch (arg0) {
                 case 1:
-                    sub->unk74 = 0x200D;
+                    sub->entity = 0x200D;
                     break;
                 case 2:
-                    sub->unk74 = 0x201B;
+                    sub->entity = 0x201B;
                     break;
                 case 3:
-                    sub->unk74 = 0x2040;
+                    sub->entity = 0x2040;
                     break;
                 }
                 e->unk1E = (arg5 + 0xC00) % 0x1000;
@@ -6865,8 +6865,8 @@ void Init_PogoMushroom(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = &HeroModelBank[DB_ArenaPogoPainterCrystalarena];
-        e->sub->unk74 = 0x2007;
+        e->sub->u6C.dbase = &HeroModelBank[DB_ArenaPogoPainterCrystalarena];
+        e->sub->entity = 0x2007;
         e->flags &= ~0x8000;
     }
     nas->UserInfo.flags = 11;
@@ -6883,8 +6883,8 @@ void Init_PogoBanker(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-        e->sub->unk74 = 0x200B;
+        e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+        e->sub->entity = 0x200B;
         e->flags &= ~0x8000;
     }
     nas->UserInfo.flags = 10;
@@ -6900,8 +6900,8 @@ void Init_PogoPickup(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-        e->sub->unk74 = 0x200B;
+        e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+        e->sub->entity = 0x200B;
         e->sub->unk68 = -0x10;
         e->sub->flags |= 0x02000000;
     }
@@ -6917,8 +6917,8 @@ void Init_PogoTazer(NAS *nas) {
     EXTengine *e = nas->Engine;
 
     if (e != NULL) {
-        e->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-        e->sub->unk74 = 0x2005;
+        e->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+        e->sub->entity = 0x2005;
         e->unk5D = 2;
     }
     nas->UserInfo.flags = 0;
@@ -7566,8 +7566,8 @@ void PogoCreateShadow(u32 arg0) {
     EXTengine *s = h->hero_shadow;
 
     if (s != NULL) {
-        s->sub->unk6C = &HeroModelBank[DB_PogoObjects];
-        s->sub->unk74 = 0x2029;
+        s->sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+        s->sub->entity = 0x2029;
         s->unk10 = h->hero_eng->unk10;
         s->flags |= 0x8041;
         s->sub->unk76 = 0x800;

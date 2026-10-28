@@ -2802,8 +2802,8 @@ void mapenv_place_subs(MapEnvHead *env) {
         *(SLONG_XYZ *)&sub->unk04 = p->pos;
         *(PlacementBlk *)&sub->unk2C[4] = p->blk;
         sub->hook = (void *)draw_map_sub;
-        sub->unk6C = env->dbase;
-        sub->unk74 = p->unk88;
+        sub->u6C.dbase = env->dbase;
+        sub->entity = p->unk88;
         sub->unk8A = p->unk9E;
         sub->unk68 = p->unk9C;
         sub->unk64[0] = p->unk74[0];
@@ -2827,7 +2827,7 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
     MATRIX *mp;
 
     m = RenderState.cam->view;
-    RenderState.unk0 = ((subengine *)sub)->unk6C = *(GfxModel **)MapScene;
+    RenderState.unk0 = ((subengine *)sub)->u6C.dbase = *(GfxModel **)MapScene;
     v.vx = ((subengine *)sub)->unk04 - RenderState.cam->x;
     v.vy = ((subengine *)sub)->unk08 - RenderState.cam->y;
     v.vz = ((subengine *)sub)->unk0C - RenderState.cam->z;

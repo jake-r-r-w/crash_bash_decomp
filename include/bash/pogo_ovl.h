@@ -154,8 +154,8 @@ static inline void Pogo_PowerupAnim(s32 i, s32 anim) {
     subengine *sub = Heroes[i].hero_powerup->sub;
 
     if (sub != NULL) {
-        sub->unk6C = &HeroModelBank[DB_PogoObjects];
-        sub->unk74 = anim;
+        sub->u6C.dbase = &HeroModelBank[DB_PogoObjects];
+        sub->entity = anim;
     }
 }
 void ZapInDir(s32, s32, s32, s32, s32);

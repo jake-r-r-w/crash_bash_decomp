@@ -2510,7 +2510,7 @@ void PlotBashPenguin(NAS *nas) {
                     nas->UserInfo.user2 = ang;
                     eng->unk10.x = (r * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
                     eng->unk10.z = (r * rcossin_tbl[ang].unk2) >> 12;
-                    eng->sub->unk74 = 0x2002;
+                    eng->sub->entity = 0x2002;
                 } else {
                     GotoLinkAnim(anim, 2);
                     fux->state = 0;
@@ -2691,8 +2691,8 @@ void InitTumbler(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        sub->unk6C = *(void **)MapScene;
-        eng->sub->unk74 = 0x200A;
+        sub->u6C.dbase = *(void **)MapScene;
+        eng->sub->entity = 0x200A;
         eng->flags &= 0xFFFF7FFF;
         eng->unk10 = MapPoints[8].pos;
         eng->unk5D = 1;
@@ -2700,8 +2700,8 @@ void InitTumbler(NAS *nas) {
         eng_add_subs_n(eng, 1);
         sub = sub->next;
         if (sub != NULL) {
-            sub->unk6C = *(void **)MapScene;
-            sub->unk74 = 0x2001;
+            sub->u6C.dbase = *(void **)MapScene;
+            sub->entity = 0x2001;
             sub->flags |= 0x40008041;
             sub->unk50 = 1;
             sub->unk76 = 0xB00;
@@ -2836,17 +2836,17 @@ void BashGivePowerup(s32 arg0, u16 arg1) {
     (&Heroes[arg0])->hero_status |= 0x10;
     switch (arg1) {
     case 25:
-        (&Heroes[arg0])->hero_powerup->sub->unk74 = 0x200B;
+        (&Heroes[arg0])->hero_powerup->sub->entity = 0x200B;
         (&Heroes[arg0])->hero_weapon_count = 2;
         break;
     case 27:
-        (&Heroes[arg0])->hero_powerup->sub->unk74 = 0x200F;
+        (&Heroes[arg0])->hero_powerup->sub->entity = 0x200F;
         (&Heroes[arg0])->hero_weapon_count = 3;
         break;
     default:
         base2 = Heroes;
         h2 = base2 + arg0;
-        h2->hero_powerup->sub->unk74 = 0x200C;
+        h2->hero_powerup->sub->entity = 0x200C;
         h2->hero_weapon_count = 1;
         break;
     }
@@ -3023,8 +3023,8 @@ void InitBash8way(NAS *nas) {
         eng->unk5D = 0;
         for (; sub != NULL; sub = sub->next) {
             sub->unk51 = 0;
-            sub->unk6C = &HeroModelBank[DB_Powerups];
-            sub->unk74 = 0x200E;
+            sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+            sub->entity = 0x200E;
         }
         mot = AddMotion(nas);
         if (mot != NULL) {
@@ -3117,8 +3117,8 @@ void InitBashHomer(NAS *nas) {
         h = Heroes;
         nas->UserInfo.user1 = RoundWinner;
         nas->UserInfo.user2 = Heroes[RoundWinner].hero_move->facing_angle;
-        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
-        eng->sub->unk74 = 0x200F;
+        eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+        eng->sub->entity = 0x200F;
         eng_add_subs_n(eng, 1);
         eng->unk5D = 0;
         eng->unk5C = 1;
@@ -3131,8 +3131,8 @@ void InitBashHomer(NAS *nas) {
             sub->unk20.z = 0x4000;
             sub->unk50 = 1;
             sub->unk51 = 0;
-            sub->unk6C = &HeroModelBank[DB_Powerups];
-            sub->unk74 = 0x2010;
+            sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+            sub->entity = 0x2010;
             sub->flags |= 0x21;
             sub = sub->next;
             sub->unk52 = 1;
@@ -3267,8 +3267,8 @@ void InitBashShox(NAS *nas) {
                 do {
                     sub->unk51 = 0;
                     sub->unk50 = 1;
-                    sub->unk6C = &HeroModelBank[DB_CrateObjects];
-                    sub->unk74 = 0x2015;
+                    sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
+                    sub->entity = 0x2015;
                     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x21;
                     sub->unk08 = -0x100;
                     x->a[i] = i * 5;
@@ -3402,8 +3402,8 @@ void InitMissileExplode(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        sub->unk6C = &HeroModelBank[DB_Powerups];
-        sub->unk74 = 0x2010;
+        sub->u6C.dbase = &HeroModelBank[DB_Powerups];
+        sub->entity = 0x2010;
         sub->unk50 = 1;
         sub->unk51 = 0;
         eng->flags |= 0x21;
@@ -3445,7 +3445,7 @@ void InitBoing(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         eng->unk10.y -= 0x100;
-        eng->sub->unk6C = *(void **)MapScene;
+        eng->sub->u6C.dbase = *(void **)MapScene;
         eng->unk5D = 1;
         eng->unk5C = 1;
         ScriptCursorFirst(nas, &BoingScriptInit);
@@ -3463,8 +3463,8 @@ void InitBashPenguin(NAS *nas) {
     if (eng != NULL) {
         BashPenguinEng = eng;
         ScriptCursorFirst(nas, &PenguinScriptInit);
-        eng->sub->unk6C = (s32)&HeroModelBank[DB_Penguin];
-        eng->sub->unk74 = 0x2001;
+        eng->sub->u6C.dbase = (s32)&HeroModelBank[DB_Penguin];
+        eng->sub->entity = 0x2001;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {
             LinkObject((u8 *)nas);
@@ -3491,7 +3491,7 @@ void InitSnowGlint(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        eng->sub->unk6C = *(s32 *)MapScene;
+        eng->sub->u6C.dbase = *(s32 *)MapScene;
         eng_add_subs_n(eng, 9);
         sub = nas->Engine->sub;
         g = AddExt(nas, 0x34, 0x20000002);
@@ -3499,9 +3499,9 @@ void InitSnowGlint(NAS *nas) {
             i = 0;
             do {
                 s32 v = *(s32 *)MapScene;
-                sub->unk74 = 0x2001;
+                sub->entity = 0x2001;
                 sub->flags = (sub->flags | 0x21) & 0xFFFF7FFF;
-                sub->unk6C = v;
+                sub->u6C.dbase = v;
                 g->on[i] = 0;
                 g->timer[i] = Random(0xF);
                 sub = sub->next;
