@@ -23,7 +23,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   source-only, named, typed and shift-tested) are done. Phase 4 repeats
   the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
   Phase 5 does the engine and `main.exe`. Figures (`progress`,
-  2026-10-28): all 2537 game functions named, 2353 typed, 89.77% of the
+  2026-10-28): all 2537 game functions named, 2408 typed, 89.77% of the
   data is C (every slot overlay's, the engine's, and the exe's game
   `.data`).
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
@@ -70,11 +70,12 @@ Sony objects. Next, none of them needing a playtest:
    sym line to sym.engine.txt: move it), sed plus a `sym.main.txt` line for the exe's
    (`scratch/ren_main.sh`), `make check`. Labels with no C definition are inside another
    object: split the object or use the field.
-2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 24 engine, 94
-   exe, 77 overlay). Next groups: the rumble state (`pad_set_rumble_*`),
-   `draw_object_model`, `mapscene_place_subs`, the thread definitions in the script
-   files (still `u8 *def`), the video mode records (`vmode_512_ntsc` and the labels in
-   `D_8005B69C`).
+2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 11 engine, 62
+   exe, 77 overlay). What's left in the exe is mostly the heap's block arithmetic and
+   the files' self-relative offsets; typing those means file-format structs (the dbase's
+   table at +0x3C/+0x44/+0x4C, the script track records, the texture and path files).
+   The overlays' views of MapScene (`GfxScene`, `RaceScene`, `PolarScene`, `DinoScene`,
+   ...) can become `map_enviroment` fields now that MapScene is typed.
 4. Keep naming: `decomp.py rename --file` (it writes sym.main.txt; move names at
    0x80078C90 and up to sym.engine.txt). `scratch/rank_d.py`-style counts of the `D_`
    uses left point at the next batch.
@@ -479,6 +480,16 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (Phase 5: raw-offset functions):** `tools/scripts/bytes_ptrs.py` (pointers
+  left as bytes in C data; none now). Typed: MapScene as `map_enviroment *` (the
+  prototype's type; MapEnvHead was its head) and the map scene functions, the subengine's
+  +0x70 union (draw_object_model's blend and frame), SceneMark as `MarkCtx *`, the object
+  and camera list heads as `NAS *`, the rumble setters, the ambience (`Ambient_data`), the
+  cup trophy functions, the mal header helpers (`(mal *)p - 1`), the small node pool
+  (`BlockRef`), the dbase setters, PadState's 0x2C..0x40 words. Engine 24 -> 11, exe 94 ->
+  62. Gotcha: draw_object_model's flags word must stay a plain deref (`*(u32 *)d`): as an
+  in-struct field sched1 moves its load past the PrimDepthLimit store.
 
 - **2026-10-28 (Phase 5: globals and typing, second pass):** `tools/scripts/field_rename.py`
   renames a struct field's uses by cc1's missing-member errors (names like `unk6C` that

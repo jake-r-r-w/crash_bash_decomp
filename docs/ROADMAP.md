@@ -393,11 +393,13 @@ load extract and are documented.
   `CRA_seq_breathe` ...), the cutscene records, the menu language tables, the screen modes. Three byte arrays held pointers (a shifted exe
   would have kept the old addresses): now words with relocations. Left: 77 `D_` names (106
   uses), 61 of them never used by name (`GameInfo`'s gaps, read by offset), and
-  the functions whose C still does raw byte-offset arithmetic (24 of the engine's 357, 94
-  of the exe's 575, 77 in the slot overlays: `progress`'s typed figure). Some of the
-  exe's are a heap block's own arithmetic (`(u8 *)b + b->size * 4 + 0x18`) and stay;
-  most of the engine's read `GameInfo` by offset, which stays by the game state decision
-  below.
+  the functions whose C still does raw byte-offset arithmetic (11 of the engine's 357, 62
+  of the exe's 575, 77 in the slot overlays: `progress`'s typed figure, 2408 typed). Most
+  of the exe's left are a heap block's own arithmetic (`(u8 *)b + b->size * 4 + 0x18`) or
+  a file's self-relative offsets (`(u8 *)q + *q`, the dbase, texture, path and script
+  files), which is how the data is laid out; the engine's read `GameInfo` by offset,
+  which stays by the game state decision below. MapScene is a `map_enviroment *`, the
+  subengine's +0x70 a union, SceneMark a `MarkCtx *` (2026-10-28).
 - [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
   globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads
   `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff
