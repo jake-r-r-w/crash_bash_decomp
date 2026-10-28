@@ -1460,101 +1460,229 @@ EngineCfg SceneLevelConfig = {
     { 0, 0x10, 0, 0, 0x10, 0, 0, 0, 0, 0x10, 0, 0 }, { 0x80, 0x200, 0x20 },
     (void *)(VramAreas + 0x10), (void *)&VramNodePool, 0x10, 0x400,
 };
-s32 ExitAMarks[52] = {
-    1, (s32)&HeroModelBank[DB_CutsceneLevelEndingGoodShot3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot8], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot7], 0, 1, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelShot6], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingGoodShot2], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot5], 0, 1, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelShot4], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot2], 0, 1, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot1], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingGoodShot1], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntro], 0, 1, 0, 0, 0, 0,
+MarkCtx ExitAMarks[13] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingGoodShot3], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot8], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot7], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot6], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingGoodShot2], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot5], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot4], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot3], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot2], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingEvilShot1], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingGoodShot1], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntro], 0, 1 },
+    { 0 },
 };
-s32 ExitAAudio[15] = {
-    (s32)&DatIndex[2 * 262], 0x780, 0x4AD, (s32)&DatIndex[2 * 261], 0x781, 0x4AD, (s32)&DatIndex[2 * 260], 0x782,
-    0x4AD, (s32)&DatIndex[2 * 259], 0x783, 0x4AD, 0, 0, 0,
+EngineVabCue ExitAAudio[5] = {
+    { (s32)&DatIndex[2 * 262], 0x780, 0x4AD },
+    { (s32)&DatIndex[2 * 261], 0x781, 0x4AD },
+    { (s32)&DatIndex[2 * 260], 0x782, 0x4AD },
+    { (s32)&DatIndex[2 * 259], 0x783, 0x4AD },
+    { 0 },
 };
-s32 SceneTextGoodwinsMarks[14] = { 1, (s32)&HeroModelBank[DB_CutsceneTextGoodwins], 0, 1, 0, 0, 0, 0, (s32)&DatIndex[2 * 271], 0x76C, 0x4AD, 0, 0, 0 };
-s32 ExitBMarks[40] = {
-    1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot8], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot11], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot10], 0, 1, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot7], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot6], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot9], 0, 1, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot5], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot2], 0, 1, 0, 0, 0, 0,
+MarkCtx SceneTextGoodwinsMarks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneTextGoodwins], 0, 1 },
+    { 0 },
 };
-s32 ExitBAudio[20] = {
-    (s32)&DatIndex[2 * 258], 0x78A, 0x4AD, (s32)&DatIndex[2 * 257], 0x78B, 0x4AD, (s32)&DatIndex[2 * 256], 0x78C,
-    0x4AD, 0, 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneTextEvilwins], 0, 0, 0, 0, 0, 0,
+EngineVabCue SceneTextGoodwinsAudio[2] = {
+    { (s32)&DatIndex[2 * 271], 0x76C, 0x4AD },
+    { 0 },
 };
-s32 SceneTextMixteamwinsMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneTextMixteamwins], 0, 1, 0, 0, 0, 0 };
-s32 ExitCMarks[20] = {
-    1, (s32)&HeroModelBank[DB_CutsceneLevel4], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevel3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevel2], 0, 1, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevel], 0, 1, 0, 0, 0, 0,
+MarkCtx ExitBMarks[10] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingEvilShot8], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot11], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot10], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingEvilShot7], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingEvilShot6], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot9], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingEvilShot5], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingEvilShot3], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelEndingEvilShot2], 0, 1 },
+    { 0 },
 };
-s32 ExitCAudio[12] = {
-    (s32)&DatIndex[2 * 265], 0x776, 0x4AD, (s32)&DatIndex[2 * 264], 0x777, 0x4AD, (s32)&DatIndex[2 * 263], 0x778,
-    0x4AD, 0, 0, 0,
+EngineVabCue ExitBAudio[4] = {
+    { (s32)&DatIndex[2 * 258], 0x78A, 0x4AD },
+    { (s32)&DatIndex[2 * 257], 0x78B, 0x4AD },
+    { (s32)&DatIndex[2 * 256], 0x78C, 0x4AD },
+    { 0 },
 };
-s32 SceneTextCreditsMarks[16] = { 1, (s32)&HeroModelBank[DB_CutsceneTextCredits], 0, 1, 0, 0, 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneTextCredits], 0, 1, 0, 0, 0, 0 };
-s32 SceneTextIntromovieMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneTextIntromovie], 0, 1, 0, 0, 0, 0 };
-s32 IntroMovieMarks[80] = {
-    1, (s32)&HeroModelBank[DB_CutsceneIntroLogo], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot19], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot18], 0, 0, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelShot17], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot16], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot15], 0, 0, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelShot14], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntroCrashplain], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntroCortexlab], 0, 0, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelIntroShotWelcome3], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntroShotWelcome2], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntroShotWelcome], 0, 0, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil4], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil3], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot13], 0, 0, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil2], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot12], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil], 0, 0, 1,
-    (s32)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamgood], 0, 0, 0, 0, 0, 0,
+MarkCtx SceneTextEvilwinsMarks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneTextEvilwins], 0, 0 },
+    { 0 },
 };
-s32 SceneSharedAudio[36] = {
-    (s32)&DatIndex[2 * 255], 0x794, 0x255, (s32)&DatIndex[2 * 254], 0x795, 0x255, (s32)&DatIndex[2 * 253], 0x796,
-    0x255, (s32)&DatIndex[2 * 252], 0x797, 0x255, (s32)&DatIndex[2 * 251], 0x798, 0x255, (s32)&DatIndex[2 * 250],
-    0x799, 0x255, (s32)&DatIndex[2 * 249], 0x79A, 0x255, (s32)&DatIndex[2 * 248], 0x79B, 0x255,
-    (s32)&DatIndex[2 * 247], 0x79C, 0x255, (s32)&DatIndex[2 * 246], 0x79D, 0x255, (s32)&DatIndex[2 * 245], 0x79E,
-    0x255, 0, 0, 0,
+MarkCtx SceneTextMixteamwinsMarks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneTextMixteamwins], 0, 1 },
+    { 0 },
+};
+MarkCtx ExitCMarks[5] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevel4], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevel3], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevel2], 0, 1 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevel], 0, 1 },
+    { 0 },
+};
+EngineVabCue ExitCAudio[4] = {
+    { (s32)&DatIndex[2 * 265], 0x776, 0x4AD },
+    { (s32)&DatIndex[2 * 264], 0x777, 0x4AD },
+    { (s32)&DatIndex[2 * 263], 0x778, 0x4AD },
+    { 0 },
+};
+MarkCtx SceneTextCreditsMarks[4] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneTextCredits], 0, 1 },
+    { 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneTextCredits], 0, 1 },
+    { 0 },
+};
+MarkCtx SceneTextIntromovieMarks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneTextIntromovie], 0, 1 },
+    { 0 },
+};
+MarkCtx IntroMovieMarks[20] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneIntroLogo], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot19], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot18], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot17], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot16], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot15], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot14], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroCrashplain], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroCortexlab], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroShotWelcome3], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroShotWelcome2], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroShotWelcome], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil4], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil3], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot13], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil2], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelShot12], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil], 0, 0 },
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamgood], 0, 0 },
+    { 0 },
+};
+EngineVabCue SceneSharedAudio[12] = {
+    { (s32)&DatIndex[2 * 255], 0x794, 0x255 },
+    { (s32)&DatIndex[2 * 254], 0x795, 0x255 },
+    { (s32)&DatIndex[2 * 253], 0x796, 0x255 },
+    { (s32)&DatIndex[2 * 252], 0x797, 0x255 },
+    { (s32)&DatIndex[2 * 251], 0x798, 0x255 },
+    { (s32)&DatIndex[2 * 250], 0x799, 0x255 },
+    { (s32)&DatIndex[2 * 249], 0x79A, 0x255 },
+    { (s32)&DatIndex[2 * 248], 0x79B, 0x255 },
+    { (s32)&DatIndex[2 * 247], 0x79C, 0x255 },
+    { (s32)&DatIndex[2 * 246], 0x79D, 0x255 },
+    { (s32)&DatIndex[2 * 245], 0x79E, 0x255 },
+    { 0 },
 };
 ScriptScene IntroMovieMsgs[2] = {
-    { (void *)&IntroMovieMarks, (void *)&SceneSharedAudio, 0x1DFC40 },
-    { (void *)&SceneTextIntromovieMarks, (void *)&SceneSharedAudio, 0x1E0000 },
+    { IntroMovieMarks, SceneSharedAudio, 0x1DFC40 },
+    { SceneTextIntromovieMarks, SceneSharedAudio, 0x1E0000 },
 };
 ScriptScene LevelExitMsgsA[2] = {
-    { (void *)&ExitAMarks, (void *)&ExitAAudio, 0x1E0000 },
-    { (void *)&SceneTextGoodwinsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
+    { ExitAMarks, ExitAAudio, 0x1E0000 },
+    { SceneTextGoodwinsMarks, SceneSharedAudio, 0x1E0000 },
 };
 ScriptScene LevelExitMsgsB[2] = {
-    { (void *)&ExitBMarks, (void *)&ExitBAudio, 0x1E0000 },
-    { (void *)&ExitBMarks, (void *)&SceneSharedAudio, 0x1E0000 },
+    { ExitBMarks, ExitBAudio, 0x1E0000 },
+    { ExitBMarks, SceneSharedAudio, 0x1E0000 },
 };
 ScriptScene LevelExitMsgsC[4] = {
-    { (void *)&ExitCMarks, (void *)&ExitCAudio, 0x1E0000 },
-    { (void *)&SceneTextMixteamwinsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
-    { (void *)&SceneTextCreditsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
-    { (void *)&SceneTextCreditsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
+    { ExitCMarks, ExitCAudio, 0x1E0000 },
+    { SceneTextMixteamwinsMarks, SceneSharedAudio, 0x1E0000 },
+    { SceneTextCreditsMarks, SceneSharedAudio, 0x1E0000 },
+    { SceneTextCreditsMarks, SceneSharedAudio, 0x1E0000 },
 };
-s32 SceneUkaData4Audio[6] = { (s32)&DatIndex[2 * 224], 0x3DD, 0, 0, 0, 0 };
-s32 SceneUkaData3Audio[6] = { (s32)&DatIndex[2 * 225], 0x3DA, 0, 0, 0, 0 };
-s32 SceneUkaData2Audio[6] = { (s32)&DatIndex[2 * 222], 0x3E3, 0, 0, 0, 0 };
-s32 SceneUkaDataAudio[6] = { (s32)&DatIndex[2 * 223], 0x3E0, 0, 0, 0, 0 };
-s32 SceneUkaData4Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData4], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneUkaData4 = { (void *)&SceneUkaData4Marks, (void *)&SceneUkaData4Audio, 0x1E0000 };
-s32 SceneUkaData3Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData3], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneUkaData3 = { (void *)&SceneUkaData3Marks, (void *)&SceneUkaData3Audio, 0x1E0000 };
-s32 SceneUkaDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneUkaData = { (void *)&SceneUkaDataMarks, (void *)&SceneUkaDataAudio, 0x1E0000 };
-s32 SceneUkaData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneUkaData2], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneUkaData2 = { (void *)&SceneUkaData2Marks, (void *)&SceneUkaData2Audio, 0x1E0000 };
-s32 SceneAkuData4Audio[6] = { (s32)&DatIndex[2 * 220], 0x3DC, 0, 0, 0, 0 };
-s32 SceneAkuData3Audio[6] = { (s32)&DatIndex[2 * 221], 0x3D9, 0, 0, 0, 0 };
-s32 SceneAkuData2Audio[6] = { (s32)&DatIndex[2 * 218], 0x3E2, 0, 0, 0, 0 };
-s32 SceneAkuDataAudio[6] = { (s32)&DatIndex[2 * 219], 0x3DF, 0, 0, 0, 0 };
-s32 SceneAkuData4Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData4], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneAkuData4 = { (void *)&SceneAkuData4Marks, (void *)&SceneAkuData4Audio, 0x1E0000 };
-s32 SceneAkuData3Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData3], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneAkuData3 = { (void *)&SceneAkuData3Marks, (void *)&SceneAkuData3Audio, 0x1E0000 };
-s32 SceneAkuDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneAkuData = { (void *)&SceneAkuDataMarks, (void *)&SceneAkuDataAudio, 0x1E0000 };
-s32 SceneAkuData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuData2], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneAkuData2 = { (void *)&SceneAkuData2Marks, (void *)&SceneAkuData2Audio, 0x1E0000 };
-s32 SceneAkuUkaData2Audio[6] = { (s32)&DatIndex[2 * 214], 0x3E4, 0, 0, 0, 0 };
-s32 SceneAkuUkaDataAudio[6] = { (s32)&DatIndex[2 * 215], 0x3E1, 0, 0, 0, 0 };
-s32 SceneAkuUkaDataMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneAkuUkaData = { (void *)&SceneAkuUkaDataMarks, (void *)&SceneAkuUkaDataAudio, 0x1E0000 };
-s32 SceneAkuUkaData2Marks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneAkuUkaData2], 0, 0, 0, 0, 0, 0 };
-ScriptScene SceneAkuUkaData2 = { (void *)&SceneAkuUkaData2Marks, (void *)&SceneAkuUkaData2Audio, 0x1E0000 };
+EngineVabCue SceneUkaData4Audio[2] = {
+    { (s32)&DatIndex[2 * 224], 0x3DD, 0 },
+    { 0 },
+};
+EngineVabCue SceneUkaData3Audio[2] = {
+    { (s32)&DatIndex[2 * 225], 0x3DA, 0 },
+    { 0 },
+};
+EngineVabCue SceneUkaData2Audio[2] = {
+    { (s32)&DatIndex[2 * 222], 0x3E3, 0 },
+    { 0 },
+};
+EngineVabCue SceneUkaDataAudio[2] = {
+    { (s32)&DatIndex[2 * 223], 0x3E0, 0 },
+    { 0 },
+};
+MarkCtx SceneUkaData4Marks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneUkaData4], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneUkaData4 = { SceneUkaData4Marks, SceneUkaData4Audio, 0x1E0000 };
+MarkCtx SceneUkaData3Marks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneUkaData3], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneUkaData3 = { SceneUkaData3Marks, SceneUkaData3Audio, 0x1E0000 };
+MarkCtx SceneUkaDataMarks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneUkaData], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneUkaData = { SceneUkaDataMarks, SceneUkaDataAudio, 0x1E0000 };
+MarkCtx SceneUkaData2Marks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneUkaData2], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneUkaData2 = { SceneUkaData2Marks, SceneUkaData2Audio, 0x1E0000 };
+EngineVabCue SceneAkuData4Audio[2] = {
+    { (s32)&DatIndex[2 * 220], 0x3DC, 0 },
+    { 0 },
+};
+EngineVabCue SceneAkuData3Audio[2] = {
+    { (s32)&DatIndex[2 * 221], 0x3D9, 0 },
+    { 0 },
+};
+EngineVabCue SceneAkuData2Audio[2] = {
+    { (s32)&DatIndex[2 * 218], 0x3E2, 0 },
+    { 0 },
+};
+EngineVabCue SceneAkuDataAudio[2] = {
+    { (s32)&DatIndex[2 * 219], 0x3DF, 0 },
+    { 0 },
+};
+MarkCtx SceneAkuData4Marks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneAkuData4], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneAkuData4 = { SceneAkuData4Marks, SceneAkuData4Audio, 0x1E0000 };
+MarkCtx SceneAkuData3Marks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneAkuData3], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneAkuData3 = { SceneAkuData3Marks, SceneAkuData3Audio, 0x1E0000 };
+MarkCtx SceneAkuDataMarks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneAkuData], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneAkuData = { SceneAkuDataMarks, SceneAkuDataAudio, 0x1E0000 };
+MarkCtx SceneAkuData2Marks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneAkuData2], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneAkuData2 = { SceneAkuData2Marks, SceneAkuData2Audio, 0x1E0000 };
+EngineVabCue SceneAkuUkaData2Audio[2] = {
+    { (s32)&DatIndex[2 * 214], 0x3E4, 0 },
+    { 0 },
+};
+EngineVabCue SceneAkuUkaDataAudio[2] = {
+    { (s32)&DatIndex[2 * 215], 0x3E1, 0 },
+    { 0 },
+};
+MarkCtx SceneAkuUkaDataMarks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneAkuUkaData], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneAkuUkaData = { SceneAkuUkaDataMarks, SceneAkuUkaDataAudio, 0x1E0000 };
+MarkCtx SceneAkuUkaData2Marks[2] = {
+    { 1, (MarkObj *)&HeroModelBank[DB_CutsceneAkuUkaData2], 0, 0 },
+    { 0 },
+};
+ScriptScene SceneAkuUkaData2 = { SceneAkuUkaData2Marks, SceneAkuUkaData2Audio, 0x1E0000 };
 ModeScenes ModeVariants[4] = {
     { 4, { &SceneAkuData3, &SceneUkaData3, &SceneAkuData3 } },
     { 0x16, { &SceneAkuData4, &SceneUkaData4, &SceneAkuData4 } },

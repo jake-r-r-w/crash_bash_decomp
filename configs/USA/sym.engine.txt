@@ -968,3 +968,5 @@ ScreenLabelFrame = 0x800ADBC8;
 ScreenLabelStep = 0x800ADBD0;
 ArenaDefs = 0x80098F60;
 PauseMenuPanelUnused = 0x8009BCF8;
+SceneTextGoodwinsAudio = 0x800A0468;
+SceneTextEvilwinsMarks = 0x800A0550;
