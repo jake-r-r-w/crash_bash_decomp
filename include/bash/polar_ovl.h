@@ -13,7 +13,6 @@ extern const char PolarAnimWin[];
 
 extern u8 PolarObjectsModel[];
 extern u8 D_80052EEC[];
-extern s16 D_8005A65C[2];
 
 /* Per-character tables SetPolarHeroHit hangs on hero_eng->sub->unk6C. */
 extern u8 D_800547DC[];
@@ -1713,5 +1712,7 @@ extern u16 PolarBossAiSkillAlt[];
 extern u16 PolarHeroModels[];
 extern u16 PolarHeroModelsB[];
 extern u16 PolarHeroModelsCut[];
+
+extern s16 GameTeamLeader[2];
 
 #endif /* BASH_POLAR_OVL_H */

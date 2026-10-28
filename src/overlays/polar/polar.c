@@ -4881,13 +4881,13 @@ bool TestForTeamMate(u32 arg0, u32 arg1) {
         if (arg0 == *(s16 *)(g + 0x48) && arg1 == Heroes[arg0].hero_teammate) {
             return 1;
         }
-        if (arg1 == D_8005A65C[0] && arg0 == Heroes[arg1].hero_teammate) {
+        if (arg1 == GameTeamLeader[0] && arg0 == Heroes[arg1].hero_teammate) {
             return 1;
         }
-        if (arg0 == D_8005A65C[1] && arg1 == Heroes[arg0].hero_teammate) {
+        if (arg0 == GameTeamLeader[1] && arg1 == Heroes[arg0].hero_teammate) {
             return 1;
         }
-        if (arg1 == D_8005A65C[1] && arg0 == Heroes[arg1].hero_teammate) {
+        if (arg1 == GameTeamLeader[1] && arg0 == Heroes[arg1].hero_teammate) {
             return 1;
         }
     }

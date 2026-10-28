@@ -25,7 +25,7 @@ void HubRender(void) {
     } else {
         HubRenderScene();
     }
-    if (D_8005A688 != 0) {
+    if (GameAdventure.unk74 != 0) {
         func_80018B08(&MainViewport, &MainGfxCamera);
         func_8001C2C0(GetEngineSlot(0));
     }
@@ -257,7 +257,7 @@ int HubCountLines(unsigned char *s) {
 }
 
 void UpdateHUB(void) {
-    if (D_8005A688 != 0) {
+    if (GameAdventure.unk74 != 0) {
         HubCreditsScroll();
     }
     HubUpdateRoom();

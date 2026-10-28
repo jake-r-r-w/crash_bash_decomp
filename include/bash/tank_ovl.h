@@ -187,7 +187,6 @@ void TankBossRocketTurretFire(NAS *nas, EXTengine *eng);
 #define TANK_MODEL(n) (&HeroModelBank[(n) * 0x38])
 #define TANK_MODEL_ON(b, n) (*(s32 *)((b) + (n) * 0x38 + 0xC))
 extern s32 TankBossBob[16]; /* PlotTankBoss: per-frame height wobble */
-extern s8 D_8005A6C8;
 
 
 
@@ -841,5 +840,7 @@ extern s32 JoeScript7[];
 void UpdateTankHeroWeapons(s32 player);
 
 void PlotMoeJoe(NAS *nas, s32 id);
+
+extern AdventureState GameAdventure;
 
 #endif /* BASH_TANK_OVL_H */

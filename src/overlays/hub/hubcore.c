@@ -1262,7 +1262,7 @@ void HubHeroSetIdle(s32 arg0) {
 }
 
 s32 HubHeroTestButton(s32 arg0) {
-    if (D_8005A688 != 0) {
+    if (GameAdventure.unk74 != 0) {
         return 1;
     }
     if (((PadButtons *)Pads)[arg0].unk54 & 0x8000) {
@@ -1394,7 +1394,7 @@ void HubRenderScene(void) {
 }
 
 void HubUpdateRoom(void) {
-    if (D_8005A688 == 0) {
+    if (GameAdventure.unk74 == 0) {
         HubUpdateGateways();
         HubLevelSelect();
         func_800139A8();

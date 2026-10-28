@@ -280,7 +280,7 @@ void UpdateBigScore(void) {
     } while (0);
 
     hb = Heroes;
-    h = D_8005A65C[0];
+    h = GameTeamLeader[0];
     a = &hb[h];
     tm = a->hero_teammate;
     if (tm == -1) {
@@ -319,7 +319,7 @@ void UpdateBigScore(void) {
     }
 
     hb = Heroes;
-    h2 = D_8005A65C[1];
+    h2 = GameTeamLeader[1];
     a = &hb[h2];
     tm = a->hero_teammate;
     if (tm == -1) {
@@ -1604,7 +1604,7 @@ s16 func_8007D850(void) {
         }
     } else {
         for (i = 0; i < 4; i++) {
-            if (D_8005A674 == Heroes[i].hero_name) {
+            if (GameWinner[0] == Heroes[i].hero_name) {
                 r = i;
             }
         }

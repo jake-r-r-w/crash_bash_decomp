@@ -981,7 +981,7 @@ void ChasePreMoveHero(s32 arg0) {
     }
     pb = Pads;
     pad = pb + arg0;
-    if ((pad->unk0 & 1) || &D_8005A670 != NULL) {
+    if ((pad->unk0 & 1) || GameHeroOut != NULL) {
         if (pad->unk50 & 0xF0) {
             m->forward_angle = pad->unk38 + 0x800;
             if (m->velocity_enable != 0) {

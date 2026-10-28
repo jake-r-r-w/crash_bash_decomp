@@ -558,7 +558,7 @@ void NoxStartPhase1(void)
   unsigned char one = 1;
   void (*new_var)(s32 arg0);
   N2OBallPhase = one;
-  D_8005A6DE = 0;
+  GameAdventure.unkAB[0x1F] = 0;
   N2OShowPhaseObjects(one);
   Heroes[0].hero_eng->unk2C.x = 0x1000;
   Heroes[0].hero_eng->unk2C.y = 0x1000;

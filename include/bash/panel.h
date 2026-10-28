@@ -9,7 +9,6 @@
 #include "bash/engine.h"
 
 extern s32 D_8005A554[];
-extern u8 D_8005A674;
 
 typedef struct DigitEnt {
     u16 cmd;
@@ -155,7 +154,6 @@ extern u16 BigScore_teamA;
 extern u16 BigScore_teamB;
 extern u16 BigScore_Adelay;
 extern u16 BigScore_Bdelay;
-extern s16 D_8005A65C[2];
 
 void InitBigScore(void);
 
@@ -220,5 +218,8 @@ typedef struct EngModeD9DC {
 extern s16 CupWinner;
 extern u16 D_8009AF38[7];
 extern s32 D_800ADBCC;
+
+extern u8 GameWinner[2];
+extern s16 GameTeamLeader[2];
 
 #endif /* BASH_PANEL_H */

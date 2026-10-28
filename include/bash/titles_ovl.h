@@ -267,7 +267,7 @@ extern s32 CharPickSfx[];
 extern s32 CharMoveSfx[];
 extern u8 HeroModelBank[];
 extern TitlesOff CharSelectorOffsets[];
-/* GameInfo as seen by ShuffleCharSelectors (unk26 is D_8005A63A). */
+/* GameInfo as seen by ShuffleCharSelectors (unk26 is GamePlayers). */
 typedef struct {
     u8 pad0[0x26];
     u8 unk26;
@@ -373,7 +373,6 @@ s32 LevelListLevel(s32 a, s32 b);
 
 s32 AnyCardHasLevel(s32 idx);
 
-extern s8 D_8005A64A;
 
 void LevelSelectUpdate(void);
 
@@ -479,5 +478,7 @@ void MenuChainBack(void);
 void MenuChainNext(void);
 
 void CharSelectUpdate(void);
+
+extern s8 GameArena;
 
 #endif /* BASH_TITLES_OVL_H */

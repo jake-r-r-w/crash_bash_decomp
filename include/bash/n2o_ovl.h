@@ -405,7 +405,6 @@ void N2OInitShadow(s32 arg0);
 
 s32 N2OTestWalls(N2OVel *arg0, N2OOut *arg1, s32 arg2);
 
-extern s8 D_8005A689;
 
 s32 N2OHeroUpdateSpeed();
 extern u32 *N2OPhaseObject;
@@ -610,5 +609,7 @@ static inline s32 N2OBallOut(EXTengine *eng, EXTobject *obj, s32 wide) {
 }
 
 void PlotN2OBall(NAS *nas);
+
+extern AdventureState GameAdventure;
 
 #endif /* BASH_N2O_OVL_H */

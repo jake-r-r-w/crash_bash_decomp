@@ -6602,7 +6602,7 @@ void PlotTankBoss(NAS *nas) {
             KillNAS(TankBossRocketTurrets[0]);
             KillNAS(TankBossRocketTurrets[1]);
             TankBossStartStatus = 0x3A;
-            D_8005A6C8 = 0;
+            GameAdventure.unkAB[9] = 0;
             fux->Counter = 0x5A;
             fux->Status = 0x3A;
             PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);

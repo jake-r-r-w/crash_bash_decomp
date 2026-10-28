@@ -550,7 +550,6 @@ typedef struct BossExt {
 
 extern ScriptInit NoxBossScriptInit;
 extern s32 NoxBossPathPos;
-extern s8 D_8005A6DE;
 void func_80093038(void);
 void N2OPlaceHero(s32 arg0);
 
@@ -881,5 +880,7 @@ void PlotNitroMine(NAS *nas);
 void PlotNitroMissile(NAS *nas);
 
 void PlotSpiralSat(NAS *nas);
+
+extern AdventureState GameAdventure;
 
 #endif /* BASH_N2O_NOX_H */

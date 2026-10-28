@@ -102,7 +102,6 @@ typedef struct PapuGridPos {
     s32 y;
 } PapuGridPos;
 extern PapuGridPos PapuDropPoints[16][16];
-extern u8 D_8005A6C3;
 extern s16 PapuPickupRates[];
 extern u16 PapuPickupActive;
 extern u16 PapuPickupDelay;
@@ -472,5 +471,7 @@ extern u16 D_8009DC50[];
 void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16 n7, u16 n8);
 
 void PlotPapuMinion(NAS *nas);
+
+extern AdventureState GameAdventure;
 
 #endif /* BASH_PAPU_OVL_H */

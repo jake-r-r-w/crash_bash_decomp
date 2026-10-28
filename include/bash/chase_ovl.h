@@ -82,7 +82,6 @@ extern u16 ChaseHeroShadowModels[];
 extern u16 ChaseHeroShadowSizes[];
 extern s32 ChaseFlameTimer[];
 extern ChasePad Pads[];
-extern s32 D_8005A670;
 
 typedef struct CoalPosInner {
     s32 pad0[4];
@@ -611,5 +610,7 @@ extern u8 MainCamera[];
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
 void InitSharedScoreIcons(void);
+
+extern u8 GameHeroOut[4];
 
 #endif /* BASH_CHASE_OVL_H */

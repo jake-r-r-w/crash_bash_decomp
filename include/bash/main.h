@@ -966,6 +966,13 @@ extern s32 SfxBankCount;            /* slots of SfxBanks in use */
 extern char D_800654CC[];
 extern s32 D_8005A608;
 extern u8 GameInfo[];
+extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
+extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (views: numPlayers) */
+extern s8 GameArena;             /* GameInfo + 0x36: the BattleArenas entry */
+extern s16 GameTeamLeader[2];    /* GameInfo + 0x48: each team's leading hero */
+extern u8 GameHeroOut[4];        /* GameInfo + 0x5C: each hero out of the game */
+extern u8 GameWinner[2];         /* GameInfo + 0x60: the winners' hero names */
+
 /* GameInfo as seen by func_80022140. */
 typedef struct D5A614View {
     /* 0x00 */ s32 unk0;    /* func_800235BC: the arena's unk14 */
@@ -1035,7 +1042,6 @@ extern VabFile *VabLoading;  /* VAB being transferred to the SPU, or NULL */
 extern sfx_machine_bank_info *SfxBankLoading;  /* where its id goes */
 extern s32 D_800654C8;       /* the id from SsVabOpenHead */
 extern u8 D_800644A8[];
-extern u8 D_8005A688;
 extern s32 xa_count;
 extern s32 D_800654B8;
 extern s32 D_80064418[];       /* voice bit masks, by voice */

@@ -529,7 +529,7 @@ void PapuCrateMaster(void) {
     } else {
         PapuCrateTimer = PapuCrateTimer - 1;
     }
-    a1 = PapuPickupRates[D_8005A6C3];
+    a1 = PapuPickupRates[GameAdventure.unkAB[4]];
     if (a1 != 0) {
         if (PapuPickupTimer != 0) {
             PapuPickupTimer -= 1;
@@ -997,7 +997,7 @@ void PlotPapuBoss(NAS *nas) {
             PapuFloorTimer = 0;
             PapuBossCount = 0xC;
             PapuBossFlag = 1;
-            PapuBossRate = PapuBossRates[D_8005A6C3];
+            PapuBossRate = PapuBossRates[GameAdventure.unkAB[4]];
             if (PapuFloorObj != NULL) {
                 PapuFloorObj->flags |= 0x8000;
             }

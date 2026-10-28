@@ -4,6 +4,8 @@
 #include "bash/titles_ovl.h"
 #include "bash/titles.h"
 
+extern u8 GamePlayers;
+
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_800500B8[];
 extern u8 D_80055614[];
@@ -1218,7 +1220,6 @@ void num_players_render(void) {
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
 
-extern u8 D_8005A63A;
 
 void PlayersMenuInit(void) {
     if (GameLevelFlags & 4) {
@@ -1226,7 +1227,7 @@ void PlayersMenuInit(void) {
     } else {
         func_80095BEC(0, (s32 *)PlayersMenuPlace);
     }
-    D_8005A63A = PadRunEnd != 0;
+    GamePlayers = PadRunEnd != 0;
 }
 
 void MainMenuInit(void) {
@@ -1380,7 +1381,7 @@ void InitCharSelector(s32 arg0) {
     s->unk20.x = 0;
     s->unk20.y = 0;
     s->flags |= 0x02000000;
-    g = &D_8005A63A;
+    g = &GamePlayers;
     o->unk30 = arg0;
     do {
     } while (0);
@@ -1437,7 +1438,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
         o->unk24++;
         return;
     }
-    if (o->unk4 < D_8005A63A) {
+    if (o->unk4 < GamePlayers) {
         if (O69PAD[o->unk4].pressed & 0x80) {
             PlaySfx(CharMoveSfx[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
             o->unk30--;
@@ -1524,7 +1525,7 @@ void ShuffleCharSelectors(void) {
     s32 j;
 
     i = 0;
-    if (D_8005A63A != 0) {
+    if (GamePlayers != 0) {
         do {
             do {
                 CharSelectors[i].idx = Random(8);
@@ -1614,7 +1615,7 @@ void CharSelectUpdate(void) {
         }
     }
     if (min >= 0x10) {
-        for (i = D_8005A63A; ; i++) {
+        for (i = GamePlayers; ; i++) {
             s32 w;
 
             if (i >= 4) {
@@ -1972,7 +1973,7 @@ void LevelSelectUpdate(void) {
         s->unk51 = 0;
         s->unk52 = 1;
     }
-    for (i = (D_8005A64A + BattleArenas)->unk4; i < 4; i++) {
+    for (i = (GameArena + BattleArenas)->unk4; i < 4; i++) {
         GetEngineSlot(1)->sub[i + 4].flags &= ~0x8000;
         GetEngineSlot(i + 3)->sub->unk74 = 0;
     }
@@ -2048,7 +2049,7 @@ s32 IsLevelUnlocked(s32 arg0) {
 }
 
 s32 IsCardLevel(s32 arg0) {
-    s32 i = D_8005A64A;
+    s32 i = GameArena;
     u8 *s = (u8 *)BattleArenas[i].unk0;
     return *(s32 *)(s + (arg0 << 4)) == 2;
 }

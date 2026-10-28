@@ -1356,7 +1356,7 @@ void SetN2OHeroWinner(s32 arg0) {
     h->hero_pu_timer = 0;
     func_80085718(arg0, 0);
     func_80089FA4(arg0);
-    D_8005A689 = 0;
+    GameAdventure.unk75 = 0;
 }
 
 void N2OHeroWinner(s32 arg0) {

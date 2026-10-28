@@ -571,6 +571,25 @@ typedef struct PreMap {
 } PreMap;
 BASH_SIZE_CHECK(PreMap, 0x1C);
 
+/* GameInfo's last 0x11C bytes (0x8005A684..0x8005A7A0), the adventure's progress: per-level
+ * tables of 0x21 bytes. Field names are GameInfo offsets, as gameflow.h's GameStateView. */
+typedef struct AdventureState {
+    /* 0x070 */ s32 unk70;
+    /* 0x074 */ u8 unk74;
+    /* 0x075 */ s8 unk75;
+    /* 0x076 */ u8 unk76[0x21];
+    /* 0x097 */ u8 pad97[4];
+    /* 0x09B */ u8 unk9B[8];
+    /* 0x0A3 */ u8 padA3[4];
+    /* 0x0A7 */ u8 unkA7[4];
+    /* 0x0AB */ u8 unkAB[0x21];
+    /* 0x0CC */ u8 unkCC[4];
+    /* 0x0D0 */ s32 unkD0[4];
+    /* 0x0E0 */ s32 unkE0;
+    /* 0x0E4 */ u8 unkE4[5][0x21];
+} AdventureState;
+BASH_SIZE_CHECK(AdventureState, 0x11C);
+
 /* Each minigame's level hooks (TANKSpecifics, POGOSpecifics, ...). */
 typedef struct LevSpec {
     /* 0x00 */ void (*LevelPreInit)();
