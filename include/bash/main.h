@@ -146,13 +146,6 @@ typedef struct {
     SVECTOR center; /* 0x0C: center.pad = radius */
 } BoundBox;
 
-/* A model whose vertices are interpolated between two sets (morph_light_colors,
- * morph_blend_verts). Only the run list is known. */
-typedef struct {
-    u8 unk0[0x14];
-    s32 runs; /* 0x14: byte offset from this field to a list of (u8, u8 count)
-               * pairs ending in a count of 0xFF */
-} MorphModel;
 
 /* A block holding a table at a byte offset from its field at +0x20. */
 
@@ -420,6 +413,12 @@ typedef struct {
     s16 nRecs;
     FlagPoint pts[1]; /* [count], then nRecs FlagRecords */
 } PointList;
+
+/* A mesh's vertex block (MeshHeader.verts): its bounds, then the vertices. */
+typedef struct MeshVerts {
+    BoundBox box;
+    FlagPoint v[1];
+} MeshVerts;
 
 /* Header of a heap block, 0x18 bytes before the pointer the allocator hands
  * out; the next block follows its size words of data. Free blocks are on the
@@ -1179,17 +1178,6 @@ typedef struct {
 extern s32 FrameCount; /* frame counter: its low bit picks the frame buffer */
 extern s32 MalMoveVSyncs; /* VSync ticks spent compacting the heap (mal_update) */
 extern s32 MalMoveWords; /* words moved compacting the heap (mal_update) */
-typedef struct {
-    u8 unk0[0x10];
-    s32 off; /* 0x10: byte offset from this field to a block */
-    s32 runs; /* 0x14: see MorphModel */
-    u8 unk18[0x1C];
-} ModelEntry;
-
-typedef struct {
-    u8 unk0[0x24];
-    ModelEntry entries[1]; /* 0x24, stride 0x34 */
-} ModelSet;
 extern s32 PrimDepthLimit; /* draw_object_model: the object's +0x8A */
 extern s32 PrimDepthTest;    /* model_prims_begin: with PrimDepthLimit, forces the depth-cued path */
 extern s32 FarColor[3]; /* model_prims_begin: default far colour */

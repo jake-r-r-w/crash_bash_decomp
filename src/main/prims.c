@@ -1256,26 +1256,26 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
     case 0x1000:
     case 0x4000:
         entry = (a & 0xF80) >> 7;
-        if (entry >= *(s32 *)(set + 0x40)) {
+        if (entry >= ((ModelFile *)set)->nMeshAnims) {
             return;
         }
-        e = set + (*(s32 *)(set + 0x44) + 0x44) + entry * 0x18;
-        anim = dbase_anim_node((s32 *)a, e);
+        e = (u8 *)((FileEntry *)((u8 *)&((ModelFile *)set)->meshAnims + ((ModelFile *)set)->meshAnims) + entry);
+        anim = dbase_anim_node((s32 *)a, (FileEntry *)e);
         if (c < 0) {
             frame = d->u70.h.hi;
         } else {
             frame = a & 0x7F;
         }
-        if (frame >= *(s32 *)(e + 8)) {
+        if (frame >= ((FileEntry *)e)->frames) {
             return;
         }
         if (anim == NULL) {
             return;
         }
-        e += *(s32 *)(e + 0xC) + 0xC;
+        e = (u8 *)&((FileEntry *)e)->mesh + ((FileEntry *)e)->mesh;
         fr = (s32 *)((u8 *)anim + (frame * 16 + 4));
         if (c & 0x400000) {
-            e = set + ((d->unk8E & 0xFFF) * 0x34 + 0x24);
+            e = (u8 *)&((ModelFile *)set)->meshes[(d->unk8E & 0xFFF) - 1];
         }
         if (fr[0] == 0) {
             return;
@@ -1284,7 +1284,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         if (anim[0] != 0) {
             verts = (u8 *)anim + anim[0];
         } else {
-            verts = set + (*(s32 *)(set + 0x28) + 0x28);
+            verts = (u8 *)&((ModelFile *)set)->verts + ((ModelFile *)set)->verts;
         }
         if (c < 0 && (n = d->u70.h.lo) != 0) {
             s32 off;
@@ -1308,30 +1308,30 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
                 off = nx[0];
             }
             p = (u8 *)nx + off;
-            morph_blend_verts(n, (MorphModel *)e, (u16 *)ia,
+            morph_blend_verts(n, (MeshHeader *)e, (u16 *)ia,
                           (u16 *)((u8 *)p + 0x14), (s16 (*)[3])verts);
         } else if (fr[2] != 0) {
-            morph_blend_verts(fr[2], (MorphModel *)e, (u16 *)ia,
+            morph_blend_verts(fr[2], (MeshHeader *)e, (u16 *)ia,
                           (u16 *)((u8 *)(fr + 1) + fr[1] + 0x14), (s16 (*)[3])verts);
         } else {
-            morph_copy_verts(e, (u16 *)ia, verts, (u16 *)MorphVerts);
+            morph_copy_verts((MeshHeader *)e, (u16 *)ia, verts, (u16 *)MorphVerts);
         }
         ModelEntry_Draw(e, c, MorphVerts);
         return;
     case 0x2000:
         idx = a & 0xFFF;
-        if (*(s32 *)(set + 0x54) < idx) {
+        if (((ModelFile *)set)->nMeshes < idx) {
             return;
         }
-        e = set + (idx * 0x34 + 0x24);
+        e = (u8 *)&((ModelFile *)set)->meshes[idx - 1];
         goto block;
     case 0x5000:
-        e = (u8 *)map_entity_address(a, set);
+        e = (u8 *)map_entity_address(a, (ModelFile *)set);
         if (e == NULL) {
             return;
         }
     block:
-        set = e + (*(s32 *)(e + 0x10) + 0x10);
+        set = (u8 *)&((MeshHeader *)e)->verts + ((MeshHeader *)e)->verts;
         if (!(c & 0x1000000) && !bbox_visible(set)) {
             return;
         }
@@ -1339,7 +1339,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
         set += 0x14;
     draw:
         if (p != NULL) {
-            draw_verts(p, (SVECTOR *)set, e + (*(s32 *)(e + 0x14) + 0x14));
+            draw_verts(p, (SVECTOR *)set, (u8 *)&((MeshHeader *)e)->runs + ((MeshHeader *)e)->runs);
         }
         return;
     case 0x3000:
@@ -1689,23 +1689,23 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
             return;
         }
         RenderState.dbase = obj->model;
-        prim_create_entity_single(entity_address(obj->index, (u8 *)colors), prim);
+        prim_create_entity_single(entity_address(obj->index, colors), prim);
     }
-    t = entity_address(obj->index, (u8 *)colors);
+    t = entity_address(obj->index, colors);
     RenderState.dp = RenderState.modelDp;
     RenderState.dbase = obj->model;
     prim_colour_poly((MeshHeader *)t, prim, (s32)RenderState.farColor, flags);
     colors = obj->model->data;
-    t = draw_model_quad_setup(obj, arg1, flags, colors, entity_address(obj->index, (u8 *)colors));
-    t += *(s32 *)(t + 0x10) + 0x10;
-    gte_ldv0_t(t + 0x14);
+    t = draw_model_quad_setup(obj, arg1, flags, colors, entity_address(obj->index, colors));
+    t = (u8 *)&((MeshHeader *)t)->verts + ((MeshHeader *)t)->verts;
+    gte_ldv0_t(&((MeshVerts *)t)->v[0]);
     gte_rtps();
-    gte_ldv0_t(t + 0x1C);
+    gte_ldv0_t(&((MeshVerts *)t)->v[1]);
     gte_rtps();
-    gte_ldv0_t(t + 0x24);
+    gte_ldv0_t(&((MeshVerts *)t)->v[2]);
     gte_rtps();
-    xy = *(s32 *)(t + 0x2C);
-    z = *(s32 *)(t + 0x30);
+    xy = *(s32 *)&((MeshVerts *)t)->v[3].vx;
+    z = *(s32 *)&((MeshVerts *)t)->v[3].vz;
     gte_stsxy3_gt3(prim);
     gte_ldv0_w(xy, z);
     gte_rtps();
@@ -2083,7 +2083,7 @@ s32 tri_visible(SVECTOR *v) {
     return ret | 1;
 }
 
-void morph_light_colors(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
+void morph_light_colors(s32 p, MeshHeader *model, SVECTOR *src, SVECTOR *fc) {
     SVECTOR *dst = MorphVerts;
     u8 *run = (u8 *)&model->runs + model->runs;
     s32 r, g, b;
@@ -2111,7 +2111,7 @@ void morph_light_colors(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
     }
 }
 
-void morph_blend_verts(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]) {
+void morph_blend_verts(s32 p, MeshHeader *model, u16 *ia, u16 *ib, s16 (*verts)[3]) {
     SVECTOR *dst = MorphVerts;
     u8 *run;
     u32 a;
@@ -2154,7 +2154,7 @@ void morph_blend_verts(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[
     }
 }
 
-void morph_copy_verts(u8 *arg0, u16 *src, u8 *tab, u16 *dst) {
+void morph_copy_verts(MeshHeader *arg0, u16 *src, u8 *tab, u16 *dst) {
     u8 *p;
     s32 n;
     s32 c;
@@ -2162,7 +2162,7 @@ void morph_copy_verts(u8 *arg0, u16 *src, u8 *tab, u16 *dst) {
     u16 v;
     u16 *e;
 
-    s32 off = *(s32 *)(arg0 + 0x14);
+    s32 off = arg0->runs;
     u8 *b = (u8 *)off + (s32)arg0;
     p = b + 0x15;
     for (;;) {
@@ -2247,12 +2247,12 @@ void kill_sprim_sub(subengine *arg0) {
 }
 
 void sub_use_quad_model(subengine *arg0) {
-    u8 *temp_v0;
+    MeshHeader *temp_v0;
     u16 temp_a0;
 
-    temp_v0 = entity_address(arg0->entity, arg0->u6C.dbase->data);
-    temp_a0 = *(u16*)(temp_v0 + 8);
-    if (temp_a0 == 2 && temp_v0[*(s32*)(temp_v0 + 0x14) + 0x15] == temp_a0) {
+    temp_v0 = (MeshHeader *)entity_address(arg0->entity, arg0->u6C.dbase->data);
+    temp_a0 = temp_v0->faces;
+    if (temp_a0 == 2 && ((u8 *)&temp_v0->runs + temp_v0->runs)[1] == temp_a0) {
         arg0->hook = draw_model_quad;
         arg0->release = kill_sprim_sub;
     }
@@ -2474,15 +2474,15 @@ void gfx_load_xform(void *arg0, void *arg1, void *arg2) {
     gte_SetRotMatrix(s.rot);
 }
 
-void draw_model_set_entry(s32 arg0, ModelSet *set, s32 arg2) {
+void draw_model_set_entry(s32 arg0, ModelFile *set, s32 arg2) {
     void *p;
     u8 *blk;
-    ModelEntry *e;
+    MeshHeader *e;
 
     arg0 &= 0xFFF;
-    if (*(s32 *)((u8 *)set + 0x54) >= arg0) {
-        e = &set->entries[arg0];
-        blk = (u8 *)&e->off + e->off;
+    if (set->nMeshes >= arg0) {
+        e = &set->meshes[arg0 - 1];
+        blk = (u8 *)&e->verts + e->verts;
         if (!(arg2 & 0x1000000) && !bbox_visible(blk)) {
             return;
         }
@@ -2498,13 +2498,13 @@ void draw_model_set_entry(s32 arg0, ModelSet *set, s32 arg2) {
 void draw_map_entity(u16 arg0, u8 *arg1, s32 arg2) {
     void *p;
     u8 *blk;
-    ModelEntry *e;
+    MeshHeader *e;
 
-    e = (ModelEntry *)map_entity_address(arg0, arg1);
+    e = (MeshHeader *)map_entity_address(arg0, arg1);
     if (e == NULL) {
         return;
     }
-    blk = (u8 *)&e->off + e->off;
+    blk = (u8 *)&e->verts + e->verts;
     if (!(arg2 & 0x1000000) && !bbox_visible(blk)) {
         return;
     }
@@ -2515,12 +2515,12 @@ void draw_map_entity(u16 arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-void *draw_model_entry(ModelEntry *e, s32 arg1) {
+void *draw_model_entry(MeshHeader *e, s32 arg1) {
     u8 *blk;
     void *p;
     u8 *q;
 
-    blk = (u8 *)&e->off + e->off;
+    blk = (u8 *)&e->verts + e->verts;
     if ((arg1 & 0x1000000) == 0) {
         if (bbox_visible(blk) == 0) {
             return NULL;
@@ -2534,7 +2534,7 @@ void *draw_model_entry(ModelEntry *e, s32 arg1) {
     return p;
 }
 
-void *draw_morph_model(MorphModel *model, void *arg1, s32 arg2) {
+void *draw_morph_model(MeshHeader *model, void *arg1, s32 arg2) {
     void *p;
 
     p = model_prims_begin(model, arg2);
