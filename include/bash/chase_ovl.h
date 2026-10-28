@@ -8,6 +8,7 @@
 #include "common.h"
 #include "bash/nas.h"
 #include "bash/aiskill.h"
+#include "bash/core.h"   /* map_enviroment (MapScene) */
 
 typedef struct { s16 unk0; s16 unk2; } ChaseTrig;
 extern ChaseTrig rcossin_tbl[];
@@ -39,7 +40,7 @@ typedef struct CircleFireExt {
     u8 pad34[0x10];
 } CircleFireExt;
 
-extern s32 *MapScene;
+extern map_enviroment *MapScene;
 
 typedef struct EggExt {
     EXT ext;

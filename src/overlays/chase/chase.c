@@ -741,7 +741,7 @@ void InitialiseCHASE(void) {
     Set_Clock(a, 0x81C0);
     dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_KegObjects]);
     dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_KegObjects]) - 0xF88));
-    dbase_load_all_mesh_anims((s32 *)*MapScene);
+    dbase_load_all_mesh_anims((s32 *)MapScene->dbase);
     scr = (ChaseScreen *)GameViewport;
     scr->unk10 = 0x140;
     scr->unk14 = 0x15E;
@@ -2535,7 +2535,7 @@ void PlotEgg(NAS *nas) {
     if (Clock_Time == 0 || (GameExitFlags & 0x801)) {
         PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         pos = &eng->unk10;
-        p = *MapScene;
+        p = (s32)MapScene->dbase;
         n = CreateNAS(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
@@ -2655,7 +2655,7 @@ void PlotEgg(NAS *nas) {
                 i++;
             }
             at = &eng->unk10;
-            p = *MapScene;
+            p = (s32)MapScene->dbase;
             n = CreateNAS(eng->unk10.x, at->y, at->z, 0x1605, 0x11);
             if (n != NULL) {
                 ext = FindExtension(n, 0x10000000);
@@ -3404,7 +3404,7 @@ void InitEgg(NAS *nas) {
     eng->unk10.z = 0xA60;
     eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->unk5E = 1;
-    scene = *MapScene;
+    scene = (s32)MapScene->dbase;
     sub->entity = 0x4080;
     sub->unk68 = 0x3E7;
     sub->u6C.dbase = (void *)scene;
