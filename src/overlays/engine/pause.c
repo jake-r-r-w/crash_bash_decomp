@@ -429,7 +429,7 @@ found:
                         if (ActivePad()->pressed & 0xA0) {
                             PauseToggles[0] = on ^ 1;
                             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-                            if ((u16)PauseToggles[0] != 0) {
+                            if (PauseToggles[0] != 0) {
                                 GameOptions.stereo = s;
                                 sound_set_stereo();
                             } else {
@@ -761,7 +761,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
         case 10: case 11: case 12: case 13: case 14:
         case 15: case 16: case 17: case 18: case 19:
             k = e->type - 10;
-            if (((u16 *)PauseToggles)[k] != 1) {
+            if (PauseToggles[k] != 1) {
                 break;
             }
             if (PauseChoice != k) {
@@ -773,7 +773,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
         case 20: case 21: case 22: case 23: case 24:
         case 25: case 26: case 27: case 28: case 29:
             k = e->type - 20;
-            if (((u16 *)PauseToggles)[k] != 0) {
+            if (PauseToggles[k] != 0) {
                 break;
             }
             if (PauseChoice != k) {
@@ -785,7 +785,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
         case 30: case 31: case 32: case 33: case 34:
         case 35: case 36: case 37: case 38: case 39:
             k = e->type - 30;
-            if (((u16 *)PauseToggles)[k] != 9) {
+            if (PauseToggles[k] != 9) {
                 break;
             }
         draw:
@@ -1921,7 +1921,7 @@ EngineRec24 *PauseRec = 0;
 EngineRec24 **PauseRecSet = 0;
 s32 PauseRecIndex = 0;
 s16 PauseMenuY = 0;
-s16 PauseToggles[4] = {0};
+u16 PauseToggles[4] = {0};
 s16 PauseTogglesUnused[4] = {0};
 u16 StatsPageShown = 0;
 s32 PauseStatsAllowed = 0;

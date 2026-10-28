@@ -567,12 +567,6 @@ typedef struct {
     u16 unk14;
     s16 unk16;
 } HitInfo;
-typedef struct {
-    s32 hit[4];
-    s32 hit6[4];
-    s32 other[4];
-    s32 crate[4];
-} HitSfxTable;
 /* Intro/cutscene step script run by UpdateIntro. */
 typedef struct {
     /* 0x00 */ s32 type;   /* 1: picture, 2: model */

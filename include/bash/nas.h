@@ -647,4 +647,12 @@ typedef struct file_group_load_info {
 } file_group_load_info;
 BASH_SIZE_CHECK(file_group_load_info, 0x8);
 
+/* HitSfx: the hit sounds by kind, four of each (PlaySfx of one at random). */
+typedef struct {
+    s32 hit[4];
+    s32 hit6[4];
+    s32 other[4];
+    s32 crate[4];
+} HitSfxTable;
+
 #endif /* BASH_NAS_H */

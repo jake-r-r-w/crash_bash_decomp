@@ -531,7 +531,7 @@ typedef struct N2OBallView {
     /* 0x14 */ u8 pad14[0x1C];
     /* 0x30 */ u16 unk30;
 } N2OBallView;
-extern s32 HitSfx[];
+extern HitSfxTable HitSfx;
 extern SLONG_XYZ N2OBallStarts[];
 extern u16 N2OBallBounceSfx[];
 extern u16 N2OBallSfx[];

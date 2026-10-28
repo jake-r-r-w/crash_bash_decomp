@@ -14,26 +14,26 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     switch (arg1->unk14) {
     case 5:
     case 7:
-        PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(HitSfx.hit[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(1, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x208, 0xA0);
         break;
     case 6:
-        PlaySfx(((HitSfxTable *)HitSfx)->hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(HitSfx.hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(0, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x208, 0);
         break;
     case 2:
-        PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(HitSfx.crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(2, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         break;
     case 3:
-        PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(HitSfx.crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(4, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x203, 0xA0);
         break;
     default:
-        PlaySfx(((HitSfxTable *)HitSfx)->other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(HitSfx.other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(3, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x205, 0xA0);
         break;
@@ -47,7 +47,7 @@ void InitCrateExplode(NAS *arg0) {
     EXTengine *e = arg0->Engine;
 
     if (e != NULL) {
-        PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(HitSfx.crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(2, (s32 *)&e->unk10, &HeroModelBank[DB_CrateObjects]);
     }
     KillNAS(arg0);
@@ -1894,9 +1894,11 @@ extern ScreenMode vmode_320_ntsc;
 extern ScreenMode vmode_384_ntsc;
 extern ScreenMode vmode_640_ntsc;
 
-s32 HitSfx[16] = {
-    0x3EC, 0x3ED, 0x3EE, 0x3EF, 0x3F1, 0x3F1, 0x3F3, 0x3F4, 0x3E8, 0x3E8, 0x3EA, 0x3EB, 0x3F5,
-    0x3F5, 0x3F7, 0x3F8,
+HitSfxTable HitSfx = {
+    { 0x3EC, 0x3ED, 0x3EE, 0x3EF },
+    { 0x3F1, 0x3F1, 0x3F3, 0x3F4 },
+    { 0x3E8, 0x3E8, 0x3EA, 0x3EB },
+    { 0x3F5, 0x3F5, 0x3F7, 0x3F8 },
 };
 s32 CrateAstType = 0;
 s32 CrateAstType2 = 0;

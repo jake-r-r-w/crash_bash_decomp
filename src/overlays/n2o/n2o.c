@@ -1907,7 +1907,7 @@ void PlotN2OBall(NAS *nas) {
                     goto explode;
                 }
                 SpawnModelFx(0, &eng->unk10.x, 0);
-                PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(HitSfx.hit[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
                 BossState.health -= 0x20;
                 N2OBallsLost++;
                 if (BossState.health <= 0) {

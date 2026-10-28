@@ -27,11 +27,11 @@ s32 LoadModeText(void) {
 
 void AnimateLoadingIcon(void) {
     TrigEntry *t;
-    WobbleObj *o;
+    subengine *o;
     s32 f;
     s32 i;
 
-    if (LevelLoadStage >= 2 && (o = LoadingIconObj) != NULL) {
+    if (LevelLoadStage >= 2 && (o = LoadingIconEngine.sub) != NULL) {
         t = rcossin_tbl;
         o->unk51 = 0;
         o->unk12 += 0x20;
@@ -40,11 +40,11 @@ void AnimateLoadingIcon(void) {
         o->unk12 = *(s32 *)&t[(((f * 140) & 0xFFF) - 0x400) & 0xFFF] >> 21;
         o->unk14 = (t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF].unk2 +
                     t[(((f * 100) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 5;
-        o->unk4 = *(s32 *)&t[(((f * 35) & 0xFFF) - 0x400) & 0xFFF] >> 23;
-        o->unk8 = (t[(((f * 45) & 0xFFF) - 0x400) & 0xFFF].unk2 +
+        o->unk04 = *(s32 *)&t[(((f * 35) & 0xFFF) - 0x400) & 0xFFF] >> 23;
+        o->unk08 = (t[(((f * 45) & 0xFFF) - 0x400) & 0xFFF].unk2 +
                    t[(((f * 145) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 5;
         o->unk52 = 1;
-        o = o->unk5C;
+        o = o->next;
         if (o != NULL) {
             o->unk14 += 0x17;
             i = (-f * 10) & 0xFFF;
@@ -454,7 +454,7 @@ void InitLoadingCamera(void) {
 }
 
 void QuitLoadingScreen(void) {
-    eng_release_subs_sfx(LoadingIconEngine);
+    eng_release_subs_sfx(&LoadingIconEngine);
     dbase_release(&HeroModelBank[DB_Loading]);
 }
 
@@ -462,12 +462,12 @@ void RenderLoadingScreen(void) {
     if (LevelLoadStage >= 2) {
         gfx_set_viewport(&LoadingViewport, &LoadingCamera);
         RenderState.modelDp = ScreenFade.amount;
-        eng_render((EXTengine *)LoadingIconEngine);
+        eng_render(&LoadingIconEngine);
     }
 }
 
 void InitLoadingScreen(void) {
-    EXTengine *eng = (EXTengine *)LoadingIconEngine;
+    EXTengine *eng = &LoadingIconEngine;
     subengine *sub;
     u16 *p;
 
@@ -558,7 +558,7 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     SceneStarting = 1;
     SceneMarkCount = 0;
     ((EngineStartArgs *)&SceneMark)->unk0 = arg0->unk0;
-    SceneVabCue = arg0->unk4;
+    SceneVabCue = (EngineVabCue *)arg0->unk4;
     SceneVabSlot[0] = 0;
     SceneSoundHandle[0] = 0;
     sound_reinit();
@@ -607,31 +607,31 @@ void UpdateSceneVabCues(void) {
         return;
     }
     if (VabCuePending != 0) {
-        if (((EngineVabCue *)SceneVabCue)->vab == 0) {
+        if (SceneVabCue->vab == 0) {
             ok = 1;
         } else {
             ok = ~SfxBanks[SceneVabSlot[0]].id != 0;
         }
         if (ok) {
-            if (((EngineVabCue *)SceneVabCue)->vab == 0) {
+            if (SceneVabCue->vab == 0) {
                 return;
             }
-            PlaySfx(((EngineVabCue *)SceneVabCue)->sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(SceneVabCue->sfx, NULL, NULL, 0x1000, 0x1E00, 0);
             VabCuePending -= 1;
             n = (SceneVabSlot[0] + 1) & 1;
             SceneVabSlot[0] = n;
-            VabCueTimer = ((EngineVabCue *)SceneVabCue)->unk8;
+            VabCueTimer = SceneVabCue->unk8;
             if (SfxBanks[n].id != -1) {
                 sfx_bank_close((s32 *)&SfxBanks[n]);
             }
-            SceneVabCue += sizeof(EngineVabCue);
+            SceneVabCue++;
         }
     }
-    if (((EngineVabCue *)SceneVabCue)->vab != 0) {
+    if (SceneVabCue->vab != 0) {
         base = SfxBanks;
         slot = &base[SceneVabSlot[0]];
         if (slot->head == NULL && slot->handle == 0 && loader_pending() == 0) {
-            machine_load_sfx(((EngineVabCue *)SceneVabCue)->vab, &base[SceneVabSlot[0]]);
+            machine_load_sfx(SceneVabCue->vab, &base[SceneVabSlot[0]]);
         }
     }
 }
@@ -701,7 +701,7 @@ void UpdateScriptScene(void) {
                 }
                 if (ok) {
                     if (SceneStarting != 0) {
-                        if (SceneVabCue == 0 || ((EngineVabCue *)SceneVabCue)->vab == 0) {
+                        if (SceneVabCue == 0 || SceneVabCue->vab == 0) {
                             ok = 1;
                         } else {
                             ok = ~SfxBanks[SceneVabSlot[0]].id != 0;
@@ -843,7 +843,7 @@ s32 SceneVabReady(void) {
 }
 
 void SceneSoundInit(EngineStartArgs *arg0) {
-    SceneVabCue = arg0->unk4;
+    SceneVabCue = (EngineVabCue *)arg0->unk4;
     SceneVabSlot[0] = 0;
     SceneSoundHandle[0] = 0;
     sound_reinit();
@@ -1436,9 +1436,7 @@ s32 map[26] = {0};
 s32 LevelLoadStage = 0;
 process_control_info LoadingControl = {0};
 camera_info_tag LoadingCamera = {0};
-u8 LoadingIconEngine[108] = {0};
-WobbleObj *LoadingIconObj = 0;
-s32 LevelLoadVars[11] = {0};
+EXTengine LoadingIconEngine = {0};  /* the loading screen's icon (InitLoadingScreen) */
 s32 LoadingScenePlaying = 0;
 s32 LoadingSceneDelay = 0;
 s32 LoadingUnused[4] = {0};
@@ -1561,7 +1559,7 @@ s32 SceneArgs = 0;
 EngineMarker SceneMarks[8] = {0};
 s32 SceneMarkCount = 0;
 subengine SceneMarkSub = {0};
-s32 SceneVabCue = 0;
+EngineVabCue *SceneVabCue = 0;
 s32 SceneVabSlot[1] = {0};
 s32 SceneSoundHandle[1] = {0};
 s32 SceneStarted = 0;

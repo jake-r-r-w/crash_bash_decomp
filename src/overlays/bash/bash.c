@@ -3425,7 +3425,7 @@ void BashSpawnMissileExplode(s32 x, s32 y, s32 z, s32 arg3, s32 arg4) {
         } else if (Random(4) != 0) {
             goto set;
         }
-        PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(HitSfx.hit[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
 set:
         n->UserInfo.user2 = 0x208;
     }

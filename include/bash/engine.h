@@ -103,7 +103,7 @@ extern hero_seq **HeroSeqTables[]; /* by HeroInfo.hero_name (1-8): each characte
 extern s32 ElapsedStart;
 extern s32 LoadingScenePlaying;
 extern s32 LoadingSceneDelay;
-extern u8 LoadingIconEngine[];
+extern EXTengine LoadingIconEngine;
 extern struct MarkCtx *SceneMark; /* the scene's current mark record (levelload.h) */
 extern process_control_info MenuProcessControl;
 extern void (*RenderHook)(void);
@@ -179,7 +179,6 @@ typedef struct EngineMarkerPos {
 extern EngineMarker SceneMarks[];
 extern EngineMarkerPos SceneMarkPos[];
 extern subengine SceneMarkSub;
-extern s32 SceneVabCue;
 extern s32 SceneVabSlot[]; /* arrays: their stores must alias struct loads (gcc 2.7 sched) */
 extern s32 SceneSoundHandle[];
 extern s32 SceneStarted;
@@ -297,6 +296,7 @@ typedef struct {
     s32 sfx;   /* PlaySfx id */
     s32 unk8;  /* -> VabCueTimer */
 } EngineVabCue;
+extern EngineVabCue *SceneVabCue;
 
 /* SetupScriptScene's argument. */
 typedef struct {
@@ -396,22 +396,6 @@ extern s16 HeroActWinner;
 extern s16 HeroActLoser;
 void QuitLevel(void);
 
-/* Object wobbled by AnimateLoadingIcon (LoadingIconObj); unk5C is a linked one. */
-typedef struct WobbleObj {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s16 unk10;
-    /* 0x12 */ s16 unk12;
-    /* 0x14 */ s16 unk14;
-    /* 0x16 */ u8 pad16[0x51 - 0x16];
-    /* 0x51 */ u8 unk51;
-    /* 0x52 */ s16 unk52;
-    /* 0x54 */ u8 pad54[0x5C - 0x54];
-    /* 0x5C */ struct WobbleObj *unk5C;
-} WobbleObj;
-extern WobbleObj *LoadingIconObj;
 
 extern SWORD_XY ScoreIcon1Pos[4];
 extern s16 LevelLoadModel;
@@ -424,7 +408,7 @@ extern FxDef NoxSparkFxDef;
 
 extern FxDef WeatherFxDef; /* the weather's (InitWeatherNas) */
 
-extern s32 HitSfx[];
+extern HitSfxTable HitSfx;
 extern s32 CrateAstType;
 extern s32 CrateAstType2;
 extern u16 CrateCounts[];
