@@ -106,7 +106,7 @@ void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db) {
         dbase_load_textures(db);
     } else {
         set = &db->textures;
-        textureset_init((u8 *)set, arg0);
+        textureset_init(set, arg0);
         textureset_upload((u8 *)set);
         texture_release_loading_mem(set);
     }
@@ -582,7 +582,7 @@ void dbase_textures_loaded(u8 *data, u8 *rec) {
         *(s32 *)(rec + 8) = 0;
         dbase_load_textures(rec);
     } else {
-        textureset_init(rec + 0x10, data);
+        textureset_init((obj_textureset *)(rec + 0x10), data);
         textureset_upload(rec + 0x10);
         texture_release_loading_mem((obj_textureset *)(rec + 0x10));
     }
@@ -601,7 +601,7 @@ void dbase_group_textures_loaded(u8 *arg0, u8 *arg1) {
         dbase_load_textures(arg1);
     } else {
         arg1 += 0x10;
-        textureset_init(arg1, arg0);
+        textureset_init((obj_textureset *)arg1, arg0);
         textureset_upload(arg1);
         texture_release_loading_mem((obj_textureset *)arg1);
     }
@@ -612,7 +612,7 @@ void dbase_set_textures(obj_dbase *db, u8 *base) {
     u8 *ts;
 
     ts = (u8 *)&db->textures;
-    textureset_init(ts, base);
+    textureset_init((obj_textureset *)ts, base);
     textureset_upload(ts);
     db->textures.base = NULL;
 }
@@ -683,7 +683,7 @@ void dbase_set(obj_dbase *db, u8 *data, u8 *base) {
     ts = (u8 *)&db->textures;
     db->data = data;
     db->textures.base = base;
-    textureset_init(ts, base);
+    textureset_init((obj_textureset *)ts, base);
     textureset_upload(ts);
 }
 

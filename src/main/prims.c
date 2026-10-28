@@ -2986,7 +2986,7 @@ void map_loaded_textureset(u8 *arg0, u8 **arg1) {
     temp_s1 = *arg1;
     mal_set_owner(arg0, temp_s1 + 0x20);
     temp_s0 = temp_s1 + 0x10;
-    textureset_init(temp_s0, (*(s32*)((u8*)(temp_s0) + 16)));
+    textureset_init((obj_textureset *)temp_s0, *(u8 **)(temp_s0 + 0x10));
     textureset_upload(temp_s0);
     texture_release_loading_mem((obj_textureset *)temp_s0);
     (*(s32*)((u8*)(temp_s1) + 8)) = loader_queue((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), map_loaded_geo, arg1, 0, 0);

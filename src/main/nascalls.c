@@ -3384,50 +3384,50 @@ void texture_update_anims(obj_textureset *arg0) {
     s32 *p;
     s32 n;
     s32 i;
-    u8 *dst;
+    obj_texture *dst;
     s32 old;
     s32 pos;
     s32 *q;
-    s32 *r;
-    s32 *base;
+    texture_scroll *r;
+    TexFrameAnim *base;
 
     d = arg0->anims;
     if (d != NULL) {
         if (d->tracksOff != 0) {
             p = (s32 *)((u8 *)d + d->tracksOff);
             n = *p;
-            base = p + 1;
+            base = (TexFrameAnim *)(p + 1);
             while (1) {
                 if (--n == -1) {
                     break;
                 }
-                i = base[1];
-                pos = base[4] + base[3];
-                dst = (u8 *)&arg0->tex[i];
-                old = base[4] >> 8;
-                base[4] = pos;
-                if (base[3] < 0) {
+                i = base->tex;
+                pos = base->pos + base->speed;
+                dst = &arg0->tex[i];
+                old = base->pos >> 8;
+                base->pos = pos;
+                if (base->speed < 0) {
                     if (pos < 0) {
-                        base[4] = pos + (base[2] << 8);
+                        base->pos = pos + (base->count << 8);
                     }
-                } else if ((pos >> 8) >= base[2]) {
-                    base[4] = pos - (base[2] << 8);
+                } else if ((pos >> 8) >= base->count) {
+                    base->pos = pos - (base->count << 8);
                 }
-                if ((base[4] >> 8) != old) {
-                    q = (s32 *)((u8 *)base + *base) + (base[4] >> 8);
-                    LoadImage((RECT *)(dst + 0x18), (u32 *)((u8 *)q + *q));
+                if ((base->pos >> 8) != old) {
+                    q = (s32 *)((u8 *)base + base->frames) + (base->pos >> 8);
+                    LoadImage((RECT *)&dst->vramX, (u32 *)((u8 *)q + *q));
                 }
-                base += 5;
+                base++;
             }
         }
         if (d->subOff != 0) {
             p = (s32 *)((u8 *)d + (d->subOff + 4));
-            r = p + 1;
+            r = (texture_scroll *)(p + 1);
             n = *p;
             if (--n != -1) {
                 do {
                     texture_update_scroll(r, arg0);
-                    r += 4;
+                    r++;
                 } while (--n != -1);
             }
         }
@@ -3564,9 +3564,9 @@ static inline void Tex_UploadCluts(u8 *set) {
     }
 }
 
-static inline void Tex_UploadList(TexUploadList *arg0, u8 *arg1) {
+static inline void Tex_UploadList(TexUploadList *arg0, obj_textureset *arg1) {
     s32 n;
-    u8 *rec;
+    obj_texture *rec;
     s32 *ip;
     FreeHdr **pp;
     s32 base;
@@ -3578,16 +3578,16 @@ static inline void Tex_UploadList(TexUploadList *arg0, u8 *arg1) {
 loop:
     n--;
     if (n != -1) {
-        rec = *(u8 **)(arg1 + 8) + *ip * 0x38;
+        rec = &arg1->tex[*ip];
         ip += 4;
-        *pp = vram_take(*(u8 **)(rec + 4));
-        rect.w = *(u16 *)(rec + 0x1C);
-        rect.h = *(u16 *)(rec + 0x1E);
+        *pp = vram_take((u8 *)rec->slot);
+        rect.w = rec->vramW;
+        rect.h = rec->vramH;
         rect.x = (*pp)->f0;
         rect.y = (*pp)->f2;
         pp += 4;
-        base = *(s32 *)(arg1 + 0x10);
-        LoadImage(&rect, (u_long *)(*(s32 *)(rec + 0x30) + base));
+        base = (s32)arg1->base;
+        LoadImage(&rect, (u_long *)(rec->f30 + base));
         goto loop;
     }
 }
@@ -3596,7 +3596,7 @@ void textureset_upload(obj_textureset *arg0) {
     AnimTex *t;
     u8 *base;
     s32 n;
-    u8 *p;
+    AnimData *p;
 
     t = arg0->tex;
     base = arg0->base;
@@ -3613,8 +3613,8 @@ void textureset_upload(obj_textureset *arg0) {
         }
     }
     p = arg0->anims;
-    if (p != NULL && *(s32 *)(p + 4) != 0) {
-        Tex_UploadList((TexUploadList *)(p + 4 + *(s32 *)(p + 4)), arg0);
+    if (p != NULL && p->subOff != 0) {
+        Tex_UploadList((TexUploadList *)((u8 *)p + 4 + p->subOff), arg0);
     }
 }
 
@@ -3931,15 +3931,14 @@ loop:
     }
 }
 
-void textureset_init(u8 *a0, u8 *arg1) {
-    Func2A5A4Obj *arg0 = (Func2A5A4Obj *)a0;
-    arg0->src = arg1;
-    mal_alloc_owned_low(*(u16 *)(arg1 + 8) * 0x38, (void **)&arg0->f8, (s32)&MainHeap, 0);
-    mal_alloc_owned_low(*(u16 *)(arg0->src + 0xA) * 0xC, (void **)&arg0->fC, (s32)&MainHeap, 0);
-    arg0->f0 = *(u16 *)(arg0->src + 8);
-    arg0->f4 = *(u16 *)(arg0->src + 0xA);
-    arg0->f14 = *(s32 *)(arg0->src + 0x14);
-    texture_init_mem_textureset((obj_textureset *)arg0);
+void textureset_init(obj_textureset *set, u8 *file) {
+    set->base = file;
+    mal_alloc_owned_low(*(u16 *)(file + 8) * 0x38, (void **)&set->tex, (s32)&MainHeap, 0);
+    mal_alloc_owned_low(*(u16 *)(set->base + 0xA) * 0xC, (void **)&set->ent, (s32)&MainHeap, 0);
+    set->nTex = *(u16 *)(set->base + 8);
+    set->nEnt = *(u16 *)(set->base + 0xA);
+    set->f14 = *(s32 *)(set->base + 0x14);
+    texture_init_mem_textureset(set);
 }
 
 /* Size in bytes: 0xB0 plus +8 records of 0x38 and +0xA records of 0xC. */
@@ -3954,7 +3953,7 @@ s32 textureset_mem_size(u8 *arg0) {
 void texture_unused_e(void) {
 }
 
-void texture_scroll_step(u8 *arg0, obj_textureset *arg1) {
+void texture_scroll_step(TexFrameAnim *arg0, obj_textureset *arg1) {
     s32 old;
     s32 pos;
     s32 step;
@@ -3962,23 +3961,23 @@ void texture_scroll_step(u8 *arg0, obj_textureset *arg1) {
     s32 *p;
     obj_texture *rect;
 
-    rect = &arg1->tex[*(s32 *)(arg0 + 4)];
-    old = *(s32 *)(arg0 + 0x10) >> 8;
-    pos = *(s32 *)(arg0 + 0x10) + *(s32 *)(arg0 + 0xC);
-    *(s32 *)(arg0 + 0x10) = pos;
-    if (*(s32 *)(arg0 + 0xC) < 0) {
+    rect = &arg1->tex[arg0->tex];
+    old = arg0->pos >> 8;
+    pos = arg0->pos + arg0->speed;
+    arg0->pos = pos;
+    if (arg0->speed < 0) {
         if (pos < 0) {
-            *(s32 *)(arg0 + 0x10) = pos + (*(s32 *)(arg0 + 8) << 8);
+            arg0->pos = pos + (arg0->count << 8);
         }
     } else {
-        step = *(s32 *)(arg0 + 8);
+        step = arg0->count;
         if ((pos >> 8) >= step) {
-            *(s32 *)(arg0 + 0x10) = pos - (step << 8);
+            arg0->pos = pos - (step << 8);
         }
     }
-    idx = *(s32 *)(arg0 + 0x10) >> 8;
+    idx = arg0->pos >> 8;
     if (idx != old) {
-        p = (s32 *)(arg0 + *(s32 *)arg0 + idx * 4);
+        p = (s32 *)((u8 *)arg0 + arg0->frames + idx * 4);
         LoadImage((RECT *)&rect->vramX, (u_long *)((u8 *)p + *p));
     }
 }

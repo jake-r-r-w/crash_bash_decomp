@@ -17,7 +17,7 @@ typedef struct obj_textureset {
     /* 0x08 */ struct obj_texture *tex; /* nTex obj_textures */
     /* 0x0C */ struct TexEnt12 *ent;
     /* 0x10 */ u8 *base;
-    /* 0x14 */ u8 pad14[4];
+    /* 0x14 */ s32 f14;                /* the file header's word at 0x14 */
     /* 0x18 */ struct AnimData *anims; /* in base, or NULL */
     /* 0x1C */ s32 nAnim;
     /* 0x20 */ u8 *anim;

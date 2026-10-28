@@ -14,6 +14,16 @@ typedef struct AnimData {
     s32 subOff;    /* 0x04 */
 } AnimData;
 
+/* One texture's frame animation, in a texture file's anims block (texture_update_anims,
+ * texture_scroll_step). */
+typedef struct TexFrameAnim {
+    s32 frames; /* 0x00: offset from here to a table of offsets to each frame's image */
+    s32 tex;    /* 0x04: the texture set's texture it loads into */
+    s32 count;  /* 0x08: frames */
+    s32 speed;  /* 0x0C: added to pos each update (8.8 frames; negative runs backwards) */
+    s32 pos;    /* 0x10: the current frame, 8.8 */
+} TexFrameAnim;
+
 
 /* A scrolling track (texture_update_anims's sub list, 16 bytes each); the name is
  * the C++ symbols' (texture_update_scroll__FP14texture_scrollP14obj_textureset). */
@@ -1677,14 +1687,6 @@ void *mal_alloc_owned_low(s32 arg0, void * *arg1, s32 arg2, s32 arg3);
 
 struct obj_textureset;
 
-typedef struct {
-    s32 f0;
-    s32 f4;
-    u8 *f8;
-    u8 *fC;
-    u8 *src;
-    s32 f14;
-} Func2A5A4Obj;
 
 /* texture_upload_list: count at +0, then 0x10-byte entries from +4. */
 typedef struct {
