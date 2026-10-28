@@ -820,11 +820,11 @@ void BattleOptionsUpdate(void) {
     sub->unk20.x = 0x2800;
     sub->unk51 = 0;
     sub->unk52 = 1;
-    if (((PadButtons *)Pads)->pressed & 0x1000) {
+    if (((PadState *)Pads)->pressed & 0x1000) {
         MenuChainBack();
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if (((PadButtons *)Pads)->pressed & 0x80) {
+    if (((PadState *)Pads)->pressed & 0x80) {
         if (O69OV->unk3A >= 3) {
             PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
             O69OV->unk3A--;
@@ -909,7 +909,7 @@ void OptionsUpdate(void) {
     switch (OptionsPage) {
     case 0:
         sub[OptionsCursor + 3].unk7C = 0;
-        if ((((PadButtons *)Pads)->pressed & 0x40) && OptionsCursor < 2) {
+        if ((((PadState *)Pads)->pressed & 0x40) && OptionsCursor < 2) {
             OptionsCursor++;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -918,7 +918,7 @@ void OptionsUpdate(void) {
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         sub[OptionsCursor + 3].unk7C = 2;
-        if (((PadButtons *)Pads)->pressed & 0x4000) {
+        if (((PadState *)Pads)->pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             switch (OptionsCursor) {
             case 0:
@@ -1007,7 +1007,7 @@ void OptionsUpdate(void) {
             n = 4;
         }
         for (i = 0; i < n; i++) {
-            if (((PadButtons *)Pads)[i].pressed & 0x8000) {
+            if (((PadState *)Pads)[i].pressed & 0x8000) {
                 GameOptions.vibrate[i] ^= 1;
                 pad_rumble_small(i, 0xA);
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1281,11 +1281,11 @@ void SetupTitlesBackdrop(void) {
 }
 
 void MenuConfirmOrBack(void) {
-    if (((PadButtons *)Pads)->pressed & 0x4000) {
+    if (((PadState *)Pads)->pressed & 0x4000) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainNext();
     }
-    if (((PadButtons *)Pads)->pressed & 0x1000) {
+    if (((PadState *)Pads)->pressed & 0x1000) {
         PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
@@ -1828,11 +1828,11 @@ void LevelSelectInput(void) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         GameInfo[0x37]++;
     }
-    if (((PadButtons *)Pads)->pressed & 0x1000) {
+    if (((PadState *)Pads)->pressed & 0x1000) {
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         MenuChainBack();
     }
-    if (((PadButtons *)Pads)->pressed & 0x4000) {
+    if (((PadState *)Pads)->pressed & 0x4000) {
         if (TitlesSlotOn()) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             MenuChainNext();

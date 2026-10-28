@@ -196,7 +196,7 @@ static inline s32 HeroCheckPad1000(s32 arg0) {
     if (Heroes[arg0].hero_status & 0xFA00) {
         return 0;
     }
-    if (((PadButtons *)Pads)[arg0].unk50 & 0x1000) {
+    if (((PadState *)Pads)[arg0].dir & 0x1000) {
         SetHeroAction(arg0, 2);
         ret = 1;
     } else {

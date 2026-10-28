@@ -63,13 +63,6 @@ typedef struct DinoGem {
     u8 padD8[0xA];
     s16 unkE2;
 } DinoGem;
-typedef struct DinoPadAng {
-    u8 pad0[0x38];
-    s32 angle;
-    u8 pad3C[0x50 - 0x3C];
-    s32 buttons;
-    u8 pad54[4];
-} DinoPadAng;
 typedef struct DinoPhys {
     u8 pad0[0x20];
     s32 unk20;
@@ -120,11 +113,6 @@ typedef struct DinoExtB {
     NAS *unk18;
 } DinoExtB;
 
-typedef struct DinoPad {
-    u8 pad[0x50];
-    s32 unk50;
-    u8 pad2[4];
-} DinoPad;
 
 extern NAS *DinoGems[];
 

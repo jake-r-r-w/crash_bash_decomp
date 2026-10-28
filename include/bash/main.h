@@ -511,11 +511,11 @@ typedef struct PadState {
     /* 0x24 */ s16 rumbleSmallTime;
     /* 0x26 */ s16 rumbleBigTime;
     /* 0x28 */ s16 unk28;
-    /* 0x2A */ u8 unk2A[2];
+    /* 0x2A */ s16 unk2A;          /* PlayersMenuUpdate: the pad takes part */
     /* 0x2C */ s32 forced;         /* set_joypad: 1 */
     /* 0x30 */ s32 forcedButtons;  /* set_joypad: the buttons */
     /* 0x34 */ s32 unk34;
-    /* 0x38 */ s32 angle;          /* the left stick's */
+    /* 0x38 */ union { s32 w; s16 lo; } angle;  /* the left stick's (some games read the low half) */
     /* 0x3C */ s32 dist;
     /* 0x40 */ s32 lastHeld;       /* the buttons, for the next frame's edges */
     /* 0x44 */ s32 held;           /* buttons down */

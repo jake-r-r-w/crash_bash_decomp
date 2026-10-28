@@ -879,8 +879,8 @@ void N2OPreMoveHero(s32 arg0) {
     EXTheromove *m;
     HeroInfo *h;
     HeroInfo *c;
-    N2OPad *p;
-    N2OPad *pads;
+    PadState *p;
+    PadState *pads;
     s32 d;
     s32 max;
     s32 acc;
@@ -892,23 +892,23 @@ void N2OPreMoveHero(s32 arg0) {
     h = c + arg0;
     m = h->hero_move;
     h->hero_eng->flags |= 0x8000;
-    pads = (N2OPad *)Pads;
+    pads = (PadState *)Pads;
     p = pads + arg0;
     max = 0x68;
     acc = 0x22;
     fast = 0;
-    if ((p->unk0 & 1) || h->hero_ai->AImode != 0) {
-        if (p->unk50 & 0xF00) {
+    if ((p->flags & 1) || h->hero_ai->AImode != 0) {
+        if (p->dir & 0xF00) {
             max = 0xA0;
             acc = 0x38;
         }
-        if (p->unk50 & 0xA0) {
+        if (p->dir & 0xA0) {
             if (m->velocity_enable != 0) {
                 d = 0;
                 if (HeroHooks.KeepInBounds(h->hero_eng) != 0) {
                     fast = 1;
                 }
-                b = p->unk50;
+                b = p->dir;
                 if (b & 0x80) {
                     d = -acc;
                 }
@@ -1163,7 +1163,7 @@ void N2OHeroEnter(s32 arg0) {
 void N2OHeroIdle(s32 arg0) {
     s32 ret;
     u16 st;
-    N2OPadFlags *pad;
+    PadState *pad;
     HeroInfo *h;
     HeroInfo *hb;
     s32 mode;
@@ -1182,11 +1182,11 @@ void N2OHeroIdle(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        N2OPadFlags *base = (N2OPadFlags *)Pads;
+        PadState *base = (PadState *)Pads;
         pad = &base[arg0];
-        if (pad->unk54 & 0x8000) {
+        if (pad->dirPressed & 0x8000) {
             if (Heroes[arg0].hero_attack_timer != 0) {
-                pad->unk4C &= ~0x8000;
+                pad->lastDir &= ~0x8000;
             } else {
                 SetHeroAction(arg0, 0x2B);
             }
@@ -1224,7 +1224,7 @@ void SetN2OHeroHit(s32 arg0) {
 void N2OHeroHit(s32 arg0) {
     s32 r;
     u16 st;
-    N2OPadFlags *pad;
+    PadState *pad;
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
@@ -1237,11 +1237,11 @@ void N2OHeroHit(s32 arg0) {
         r = 0;
     }
     if (r == 0) {
-        N2OPadFlags *base = (N2OPadFlags *)Pads;
+        PadState *base = (PadState *)Pads;
         pad = &base[arg0];
-        if (pad->unk54 & 0x8000) {
+        if (pad->dirPressed & 0x8000) {
             if (Heroes[arg0].hero_attack_timer != 0) {
-                pad->unk4C &= ~0x8000;
+                pad->lastDir &= ~0x8000;
             } else {
                 SetHeroAction(arg0, 0x2B);
             }
@@ -1253,7 +1253,7 @@ void N2OHeroHit(s32 arg0) {
 void N2OHeroTaunt(s32 arg0) {
     s32 ret;
     u16 st;
-    N2OPadFlags *pad;
+    PadState *pad;
     HeroInfo *h;
     HeroInfo *hb;
     s32 mode;
@@ -1269,11 +1269,11 @@ void N2OHeroTaunt(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        N2OPadFlags *base = (N2OPadFlags *)Pads;
+        PadState *base = (PadState *)Pads;
         pad = &base[arg0];
-        if (pad->unk54 & 0x8000) {
+        if (pad->dirPressed & 0x8000) {
             if (Heroes[arg0].hero_attack_timer != 0) {
-                pad->unk4C &= ~0x8000;
+                pad->lastDir &= ~0x8000;
             } else {
                 SetHeroAction(arg0, 0x2B);
             }
@@ -1291,7 +1291,7 @@ void N2OHeroTaunt(s32 arg0) {
 void N2OHeroMove(s32 arg0) {
     s32 ret;
     u16 st;
-    N2OPadFlags *pad;
+    PadState *pad;
     HeroInfo *h;
     HeroInfo *hb;
     s32 mode;
@@ -1307,11 +1307,11 @@ void N2OHeroMove(s32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        N2OPadFlags *base = (N2OPadFlags *)Pads;
+        PadState *base = (PadState *)Pads;
         pad = &base[arg0];
-        if (pad->unk54 & 0x8000) {
+        if (pad->dirPressed & 0x8000) {
             if (Heroes[arg0].hero_attack_timer != 0) {
-                pad->unk4C &= ~0x8000;
+                pad->lastDir &= ~0x8000;
             } else {
                 SetHeroAction(arg0, 0x2B);
             }

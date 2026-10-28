@@ -1338,7 +1338,7 @@ void Bash_HeroBot(s32 arg0) {
 done:
     pad = &((PadState *)Pads)[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
-    pad->angle = ai->AIang;
+    pad->angle.w = ai->AIang;
 }
 
 void BashAI_ScanAhead(s32 arg0) {
@@ -2864,21 +2864,21 @@ void BashGivePowerup(s32 arg0, u16 arg1) {
 s32 BashFirePowerup(s32 arg0)
 {
     HeroInfo *h;
-    PadButtons *p;
+    PadState *p;
     NAS *n;
     u16 pu;
 
     HeroInfo *ht;
-    PadButtons *pt;
+    PadState *pt;
 
     ht = Heroes;
     h = &ht[arg0];
     if (h->hero_weapon_count != 0) {
-        pt = (PadButtons *)Pads;
+        pt = (PadState *)Pads;
         p = &pt[arg0];
-        if (p->unk50 & 0x8000) {
+        if (p->dir & 0x8000) {
             if (h->hero_attack_timer != 0) {
-                p->unk4C &= ~0x8000;
+                p->lastDir &= ~0x8000;
             } else {
             RoundWinner = arg0;
             switch (h->hero_pu) {

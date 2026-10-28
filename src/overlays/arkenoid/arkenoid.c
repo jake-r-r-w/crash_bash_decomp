@@ -1306,8 +1306,8 @@ void AR_PreMoveHero(u32 arg0) {
     EXTheromove *m;
     HeroInfo *h;
     HeroInfo *c;
-    PadButtons *p;
-    PadButtons *pads;
+    PadState *p;
+    PadState *pads;
     s32 mask;
     s32 d;
     s32 max;
@@ -1323,14 +1323,14 @@ void AR_PreMoveHero(u32 arg0) {
     m = h->hero_move;
     fast = 0;
     if (h->hero_frozen != 0) {
-        ((PadButtons *)Pads)[arg0].unk50 = 0;
-        ((PadButtons *)Pads)[arg0].unk54 = 0;
+        ((PadState *)Pads)[arg0].dir = 0;
+        ((PadState *)Pads)[arg0].dirPressed = 0;
     }
     if ((Pads[arg0].flags & 1) || h->hero_ai->AImode != 0) {
         if (arg0 == ArkSidePlayer3) {
             acc = 0x2A;
         }
-        if (((PadButtons *)Pads)[arg0].unk50 & 0xF00) {
+        if (((PadState *)Pads)[arg0].dir & 0xF00) {
             max = 0xA0;
             acc = 0x38;
         }
@@ -1339,22 +1339,22 @@ void AR_PreMoveHero(u32 arg0) {
         } else {
             mask = 0x50;
         }
-        pads = (PadButtons *)Pads;
+        pads = (PadState *)Pads;
         p = pads + arg0;
-        if (p->unk50 & mask) {
+        if (p->dir & mask) {
             if (m->velocity_enable != 0) {
                 d = 0;
                 if (((s32 (*)(EXTengine *))HeroHooks.KeepInBounds)(Heroes[arg0].hero_eng) != 0) {
                     fast = 1;
                 }
                 if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
-                    b = p->unk50;
+                    b = p->dir;
                     if (b & 0x80) {
                         d = -acc;
                     }
                     v = b & 0x20;
                 } else {
-                    b = p->unk50;
+                    b = p->dir;
                     if (b & 0x40) {
                         d = -acc;
                     }
@@ -1420,7 +1420,7 @@ void AR_PreMoveHero(u32 arg0) {
 void AR_PI_PreMoveHero(u32 arg0) {
     EXTheromove *mv;
     HeroInfo *h;
-    PadButtons *p;
+    PadState *p;
     s32 mask;
     s32 d;
     s32 hit;
@@ -1437,40 +1437,40 @@ void AR_PI_PreMoveHero(u32 arg0) {
     mv = h->hero_move;
     step = 0xD;
     if (h->hero_frozen != 0) {
-        HPADS[arg0].unk50 = 0;
-        HPADS[arg0].unk54 = 0;
+        HPADS[arg0].dir = 0;
+        HPADS[arg0].dirPressed = 0;
     }
-    if ((*(s32 *)HPADS[arg0].unk0 & 1) || h->hero_ai->AImode != 0) {
+    if ((HPADS[arg0].flags & 1) || h->hero_ai->AImode != 0) {
         if (arg0 == ArkSidePlayer3) {
             step = 0x15;
         }
-        if (HPADS[arg0].unk50 & 0xF00) {
+        if (HPADS[arg0].dir & 0xF00) {
             max = 0x48;
             step = 0x12;
         }
         mask = (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) ? 0xA0 : 0x50;
         {
-            PadButtons *b = HPADS;
+            PadState *b = HPADS;
             p = &b[arg0];
         }
-        if (p->unk50 & mask) {
+        if (p->dir & mask) {
             if (mv->velocity_enable != 0) {
                 d = 0;
                 if (HeroHooks.KeepInBounds(Heroes[arg0].hero_eng) != 0) {
                     hit = 1;
                 }
                 if (arg0 == ArkSidePlayer3 || arg0 == ArkSidePlayer0) {
-                    if (p->unk50 & 0x80) {
+                    if (p->dir & 0x80) {
                         d = -step;
                     }
-                    if (p->unk50 & 0x20) {
+                    if (p->dir & 0x20) {
                         d += step;
                     }
                 } else {
-                    if (p->unk50 & 0x40) {
+                    if (p->dir & 0x40) {
                         d = -step;
                     }
-                    if (p->unk50 & 0x10) {
+                    if (p->dir & 0x10) {
                         d += step;
                     }
                 }
@@ -1662,7 +1662,7 @@ void AR_PI_MoveHero(u32 arg0) {
 }
 
 s32 ArkHeroModeCheck(s32 arg0) {
-    PadButtons *p;
+    PadState *p;
     s32 act;
     s32 t;
     s32 f;
@@ -1680,7 +1680,7 @@ s32 ArkHeroModeCheck(s32 arg0) {
 l17:
         if (GAME->levelFlags & 0x80) {
             if (arg0 != 0 && (GAME->teams == 0 || arg0 != 1)) {
-                if (HPADS[arg0].unk54 & 0x2000) {
+                if (HPADS[arg0].dirPressed & 0x2000) {
                     act = 0x20;
                     goto call;
                 }
@@ -1688,17 +1688,17 @@ l17:
         }
     case 16:
         {
-            PadButtons *b = HPADS;
+            PadState *b = HPADS;
             p = &b[arg0];
         }
-        f = p->unk54 & 0x8000;
+        f = p->dirPressed & 0x8000;
         goto chk;
     case 15:
         {
-            PadButtons *b = HPADS;
+            PadState *b = HPADS;
             p = &b[arg0];
         }
-        t = p->unk54;
+        t = p->dirPressed;
         if (t & 0x4000) {
             act = 0x21;
             goto call;
@@ -1712,7 +1712,7 @@ call:
                 SetHeroAction(arg0, act);
                 return 1;
             }
-            p->unk4C &= ~0x8000;
+            p->lastDir &= ~0x8000;
         }
         return 0;
     default:
@@ -1828,7 +1828,7 @@ static inline s32 HeroCheckPad54(s32 arg0) {
     if (Heroes[arg0].hero_status & 0xFA00) {
         return 0;
     }
-    if (((PadButtons *)Pads)[arg0].unk54 & 0x1000) {
+    if (((PadState *)Pads)[arg0].dirPressed & 0x1000) {
         SetHeroAction(arg0, 0x1E);
         ret = 1;
     } else {
@@ -2351,7 +2351,7 @@ void ArkHeroGrab(u32 arg0) {
         w = h->hero_weapon_timer - 1;
         h->hero_weapon_timer = w;
         if (w < 0x91) {
-            if (!(HPADS[arg0].unk50 & 0x4000)) {
+            if (!(HPADS[arg0].dir & 0x4000)) {
                 f = 1;
                 if (GAME->heroOut[arg0] != 0) {
                     f = h->hero_ai->AItimer3 < 1U;
@@ -3155,7 +3155,7 @@ void Ark_HeroBot(u32 arg0) {
     }
     pad = &Pads[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
-    pad->angle = ai->AIang;
+    pad->angle.w = ai->AIang;
 }
 
 void FinishArkLevel(void) {

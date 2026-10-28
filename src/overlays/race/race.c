@@ -494,7 +494,7 @@ loop:
             h->hero_ai->AIpad &= ~0x20;
             h->hero_ai->AIpad |= 0x2000;
             h->hero_ai->AIpad |= 0x80;
-            ((RacePad *)Pads)[player].unk50 = h->hero_ai->AIpad;
+            ((PadState *)Pads)[player].dir = h->hero_ai->AIpad;
             return 1;
         }
         h++;
@@ -578,7 +578,7 @@ void RaceAI_SpinnerBrake(s32 player) {
                 p++;
                 if (!(r & 4)) {
                     h->hero_ai->AIpad |= 0x4000;
-                    ((RacePad *)Pads)[player].unk50 = h->hero_ai->AIpad;
+                    ((PadState *)Pads)[player].dir = h->hero_ai->AIpad;
                     return;
                 }
             } else {
@@ -662,7 +662,7 @@ loop:
                 h->hero_ai->AIpad |= 0x20;
             }
             h->hero_ai->AIpad &= ~0x8000;
-            ((RacePad *)Pads)[player].unk50 = h->hero_ai->AIpad;
+            ((PadState *)Pads)[player].dir = h->hero_ai->AIpad;
         }
     }
 }
@@ -729,7 +729,7 @@ void RaceAI_AvoidObjects(s32 player) {
                 h->hero_ai->AIpad |= 0x20;
             }
             h->hero_ai->AIpad &= ~0x8000;
-            ((RacePad *)Pads)[player].unk50 = h->hero_ai->AIpad;
+            ((PadState *)Pads)[player].dir = h->hero_ai->AIpad;
         }
     }
 }
@@ -814,7 +814,7 @@ s32 RaceAI_UseCloseWeapon(s32 player)
   s32 i;
   s32 dx;
   s32 dz;
-  RacePad *pad;
+  PadState *pad;
   HeroInfo *t;
   HeroInfo *base;
   base = Heroes;
@@ -829,7 +829,7 @@ s32 RaceAI_UseCloseWeapon(s32 player)
   }
   i = 0;
   h = t;
-  pad = (RacePad *) Pads;
+  pad = (PadState *) Pads;
   o = base;
   loop:
   if (i < 4)
@@ -848,7 +848,7 @@ s32 RaceAI_UseCloseWeapon(s32 player)
         do
         {
           h->hero_ai->AIpad |= 0x2000;
-          pad[player].unk50 = h->hero_ai->AIpad;
+          pad[player].dir = h->hero_ai->AIpad;
           return 1;
         }
         while (0);
@@ -867,7 +867,7 @@ s32 RaceAI_UseCloseWeapon(s32 player)
 s32 RaceAI_UseAimedWeapon(s32 player)
 {
     TrigEntry *trig;
-    RacePad *pad;
+    PadState *pad;
     HeroInfo *o;
     HeroInfo *h;
     HeroInfo *base;
@@ -886,7 +886,7 @@ s32 RaceAI_UseAimedWeapon(s32 player)
     i = 0;
     trig = rcossin_tbl;
     base = Heroes;
-    pad = (RacePad *) Pads;
+    pad = (PadState *) Pads;
     o = base;
 loop:
     if (i < 4) {
@@ -914,7 +914,7 @@ loop:
         rel[3] = 0x180;
         if (RaceRayHit(from, to, rel) != 0) {
             h->hero_ai->AIpad |= 0x2000;
-            pad[player].unk50 = h->hero_ai->AIpad;
+            pad[player].dir = h->hero_ai->AIpad;
             return 1;
         }
     next:
@@ -934,8 +934,8 @@ s32 RaceAI_SteerAtVictim(s32 player)
     HeroInfo *o;
     HeroInfo *base;
     HeroInfo *h;
-    RacePad *pad;
-    RacePad *pads;
+    PadState *pad;
+    PadState *pads;
     s32 ang;
     s32 x;
     s32 z;
@@ -943,7 +943,7 @@ s32 RaceAI_SteerAtVictim(s32 player)
     if (Heroes[player].hero->FUX != NULL) {
         i = 0;
         trig = rcossin_tbl;
-        pads = (RacePad *)Pads;
+        pads = (PadState *)Pads;
         base = Heroes;
         pad = pads + player;
         o = base;
@@ -981,7 +981,7 @@ s32 RaceAI_SteerAtVictim(s32 player)
                 }
                 do {
                     do {
-                        pad->unk50 = h->hero_ai->AIpad;
+                        pad->dir = h->hero_ai->AIpad;
                     } while (0);
                 } while (0);
             }
@@ -1292,7 +1292,7 @@ void RaceAI_SteerAhead(s32 player) {
             Heroes[player].hero_ai->AIpad |= 0x8000;
             Heroes[player].hero_ai->AIpad |= RaceAI_FollowTrack(player);
             Heroes[player].hero_ai->AIpad |= 0x800;
-            ((RacePad *)Pads)[player].unk50 = Heroes[player].hero_ai->AIpad;
+            ((PadState *)Pads)[player].dir = Heroes[player].hero_ai->AIpad;
         }
     }
 }
@@ -1315,7 +1315,7 @@ void RaceAI_SteerTo(s32 player, SLONG_XYZ *pos) {
         hero->hero_ai->AIpad &= ~0x20;
     }
     hero->hero_ai->AIpad |= 0x800;
-    ((RacePad *)Pads)[player].unk50 = hero->hero_ai->AIpad;
+    ((PadState *)Pads)[player].dir = hero->hero_ai->AIpad;
 }
 
 static inline NAS *RacePickupAheadInline(s32 arg0) {
@@ -2837,22 +2837,22 @@ void RacePreMoveHero(s32 player) {
                 pads = Pads;
                 pad = pads + player;
                 if ((pad->flags & 1) || h->hero_ai->AImode != 0) {
-                    if (((RacePad *)pad)->unk50 & 0xA0) {
+                    if (((PadState *)pad)->dir & 0xA0) {
                         speed = ((csqrt(fux->unk13C * fux->unk13C + fux->unk140 * fux->unk140) * 4 >> 8) * 0x3C8) / 100 >> 8;
                         if (speed > 0x3C8) {
                             speed = 0x3C8;
                         }
-                        if (((RacePad *)pad)->unk50 & 0x80) {
+                        if (((PadState *)pad)->dir & 0x80) {
                             m->forward_angle -= fux->unk160;
                             *steer = speed;
                         }
-                        if (((RacePad *)pad)->unk50 & 0x20) {
+                        if (((PadState *)pad)->dir & 0x20) {
                             m->forward_angle += fux->unk160;
                             *steer = -speed;
                         }
                     }
                     boost = 0;
-                    if ((((RacePad *)Pads)[player].unk50 & 0x8000) && fux->unk58 > 0) {
+                    if ((((PadState *)Pads)[player].dir & 0x8000) && fux->unk58 > 0) {
                         if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
                             fux->unk13C >>= 3;
                             fux->unk140 >>= 3;
@@ -2872,7 +2872,7 @@ void RacePreMoveHero(s32 player) {
                             boost = 0;
                         }
                     }
-                    if (boost == 0 && (((RacePad *)Pads)[player].unk50 & 0x800)) {
+                    if (boost == 0 && (((PadState *)Pads)[player].dir & 0x800)) {
                         m->x_acc = fux->unk15C;
                         m->z_acc = fux->unk15C;
                         if (G63B->unk5C[player] != 0) {
@@ -3197,8 +3197,8 @@ void RaceEulerToQuat(VECTOR *ang, Quat *q) {
 void RaceHeroIdle(s32 player) {
     HeroInfo *h;
     RaceSwimFux *f;
-    RacePad *pad;
-    RacePad *pb;
+    PadState *pad;
+    PadState *pb;
     EXTengine *e;
     SLONG_XYZ pos;
     HeroInfo *base;
@@ -3233,9 +3233,9 @@ void RaceHeroIdle(s32 player) {
     h2->hero_eng->unk5E = 1;
     spawned = 0;
     if (f->unk24 == 0) {
-        pb = (RacePad *)Pads;
+        pb = (PadState *)Pads;
         pad = &pb[player];
-        if (pad->unk50 & 0x8000) {
+        if (pad->dir & 0x8000) {
             if (f->unk58 > 0) {
                 if (f->unk8C == 0) {
                     if (GameMode == 0x19) {
@@ -3315,7 +3315,7 @@ void RaceHeroIdle(s32 player) {
                 if (f->unk128 != NULL) {
                     StopSfx(f->unk128);
                 }
-                pad->unk54 &= ~0x8000;
+                pad->dirPressed &= ~0x8000;
             }
         } else {
             if (f->unk128 != NULL) {
@@ -3324,7 +3324,7 @@ void RaceHeroIdle(s32 player) {
             f->unk8C = 0;
         }
         if (spawned == 0) {
-            if (((RacePad *)Pads)[player].unk50 & 0x800) {
+            if (((PadState *)Pads)[player].dir & 0x800) {
                 if (f->unk90 == 0) {
                     if (player == 0) {
                         PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -3535,7 +3535,7 @@ void RaceHeroOffTrack(s32 player) {
             return;
         }
         if (f->unk88 > 0) {
-            if (((RacePad *)Pads)[player].unk50 & 0x8000) {
+            if (((PadState *)Pads)[player].dir & 0x8000) {
                 if (f->unk90 == 0) {
                     if (player == 0) {
                         PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -3653,7 +3653,7 @@ void RaceHeroRun(s32 player) {
         }
         return;
     }
-    if (((RacePad *)Pads)[player].unk50 & 0x8000) {
+    if (((PadState *)Pads)[player].dir & 0x8000) {
         m->x_acc = 0xC;
         m->z_acc = 0xC;
         m->x_max = (RaceJumpVel * rcossin_tbl[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
@@ -3748,8 +3748,8 @@ void SetRaceHeroDazed(s32 player) {
 void RaceHeroDazed(s32 arg0) {
     HeroInfo *hero;
     EXTraceshield *fux;
-    RacePad *pad;
-    RacePad *pb;
+    PadState *pad;
+    PadState *pb;
     HeroInfo *base;
 
     TestRaceHeroWon(arg0);
@@ -3759,10 +3759,10 @@ void RaceHeroDazed(s32 arg0) {
     if (fux == NULL) {
         return;
     }
-    pb = (RacePad *)Pads;
+    pb = (PadState *)Pads;
     pad = &pb[arg0];
-    pad->unk50 = 0;
-    pad->unk54 = 0;
+    pad->dir = 0;
+    pad->dirPressed = 0;
     if (GameMode != 0x19) {
         ProcessHeroAnim(arg0);
     }
@@ -3937,8 +3937,8 @@ s32 RaceHeroUsePickup(s32 player) {
     HeroInfo *hero;
     HeroInfo *other;
     RaceSpawnFux *fux;
-    RacePad *pb;
-    RacePad *pad;
+    PadState *pb;
+    PadState *pad;
     EXTengine *eng;
     NAS *nas;
     RaceSpawnExt *ext;
@@ -3954,9 +3954,9 @@ s32 RaceHeroUsePickup(s32 player) {
     hero = &base[player];
     fux = (RaceSpawnFux *)hero->hero->FUX;
     if (fux != NULL) {
-        pb = (RacePad *)Pads;
+        pb = (PadState *)Pads;
         pad = &pb[player];
-        st = pad->unk50;
+        st = pad->dir;
         eng = hero->hero_eng;
         if (st & 0x2200) {
             t = fux->unk18;
@@ -4012,38 +4012,38 @@ s32 RaceHeroUsePickup(s32 player) {
                 return 1;
             }
         } else {
-            pad->unk50 = st & ~0x2000;
+            pad->dir = st & ~0x2000;
         }
     }
     return 0;
 }
 
 s32 RaceHeroTestJump(s32 arg0) {
-    RacePad *base;
-    RacePad *pad;
-    RacePad *b1;
-    RacePad *p1;
+    PadState *base;
+    PadState *pad;
+    PadState *b1;
+    PadState *p1;
     s32 st;
 
     if (Heroes[arg0].hero->FUX != NULL) {
         if (GameInfo[arg0 + 0x5C] != 0) {
-            b1 = (RacePad *)Pads;
+            b1 = (PadState *)Pads;
             p1 = &b1[arg0];
-            st = p1->unk50;
+            st = p1->dir;
             if (!(st & 0x4000)) {
-                p1->unk50 = st & ~0x4000;
+                p1->dir = st & ~0x4000;
                 return 0;
             }
             goto act;
         }
-        base = (RacePad *)Pads;
+        base = (PadState *)Pads;
         pad = &base[arg0];
-        if (pad->unk54 & 0x4000) {
+        if (pad->dirPressed & 0x4000) {
 act:
             SetHeroAction(arg0, 0x5E);
             return 1;
         }
-        pad->unk50 &= ~0x4000;
+        pad->dir &= ~0x4000;
         return 0;
     }
     return 0;
@@ -6880,7 +6880,7 @@ s32 RaceHeroBreatheFire(s32 arg0) {
     hero = &base[arg0];
     fux = (RaceFuxCount *)hero->hero->FUX;
     if (fux != NULL && fux->unk3C > 0 &&
-        (((RacePad *)Pads)[arg0].unk54 & 0x8000)) {
+        (((PadState *)Pads)[arg0].dirPressed & 0x8000)) {
         nas = CreateNAS(hero->hero_eng->unk10.x, hero->hero_eng->unk10.y,
                            hero->hero_eng->unk10.z, 0x1705, 0x11);
         if (nas != NULL) {
@@ -6895,7 +6895,7 @@ s32 RaceHeroBreatheFire(s32 arg0) {
 }
 
 s32 RaceHeroTestIdle(s32 arg0) {
-    if (((RacePad *)Pads)[arg0].unk50 & 0xF0) {
+    if (((PadState *)Pads)[arg0].dir & 0xF0) {
         return 0;
     }
     SetHeroAction(arg0, 0x5B);
@@ -6903,7 +6903,7 @@ s32 RaceHeroTestIdle(s32 arg0) {
 }
 
 s32 RaceHeroTestRun(s32 arg0) {
-    if (!(((RacePad *)Pads)[arg0].unk54 & 0x8000)) {
+    if (!(((PadState *)Pads)[arg0].dirPressed & 0x8000)) {
         return 0;
     }
     SetHeroAction(arg0, 0x5C);

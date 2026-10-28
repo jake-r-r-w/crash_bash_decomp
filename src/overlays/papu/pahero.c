@@ -872,7 +872,7 @@ void PAHeroHold(s32 arg0) {
             }
             goto rest;
         }
-        if ((o->can_do & 4) && (((PadButtons *)Pads)[arg0].unk50 & 0x2000)) {
+        if ((o->can_do & 4) && (((PadState *)Pads)[arg0].dir & 0x2000)) {
             SetHeroAction(arg0, (u16)HeroActThrow);
             return;
         }
@@ -929,7 +929,7 @@ void PAHeroCarry(s32 arg0) {
             }
             goto rest;
         }
-        if ((o->can_do & 4) && (((PadButtons *)Pads)[arg0].unk50 & 0x2000)) {
+        if ((o->can_do & 4) && (((PadState *)Pads)[arg0].dir & 0x2000)) {
             SetHeroAction(arg0, (u16)HeroActThrow);
             return;
         }

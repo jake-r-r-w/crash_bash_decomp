@@ -2240,7 +2240,7 @@ void Spin_HeroBot(s32 arg0) {
     }
     pad = &Pads[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
-    pad->angle = ai->AIang;
+    pad->angle.w = ai->AIang;
 }
 
 void SpinAI_ScanAhead(s32 arg0) {

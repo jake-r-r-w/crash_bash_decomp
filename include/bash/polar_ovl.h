@@ -199,33 +199,12 @@ typedef struct Ext20 {
 
 /* PadState (Pads) as PolarHeroFootIdle and PolarHeroInBeam use it: the
  * buttons at 0x50, a word at 0x54. */
-typedef struct PolarPad {
-    /* 0x00 */ u8 pad0[0x50];
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} PolarPad;
 
 void PolarHeroFootIdle(s32 player);
 
 /* PadState (Pads) as PolarAI_SteerToTarget writes it: stick angle at 0x38,
  * buttons at 0x50. */
-typedef struct PolarPadAng {
-    /* 0x00 */ u8 pad0[0x38];
-    /* 0x38 */ s32 angle;
-    /* 0x3C */ u8 pad3C[0x50 - 0x3C];
-    /* 0x50 */ s32 buttons;
-    /* 0x54 */ u8 pad54[0x58 - 0x54];
-} PolarPadAng;
 
-/* PadState (Pads) as PolarPreMoveHero reads it. */
-typedef struct PolarPadMove {
-    /* 0x00 */ s32 flags;
-    /* 0x04 */ u8 pad4[0x38 - 0x04];
-    /* 0x38 */ u16 angle;
-    /* 0x3A */ u8 pad3A[0x50 - 0x3A];
-    /* 0x50 */ s32 buttons;
-    /* 0x54 */ s32 unk54;
-} PolarPadMove;
 
 /* Inlined into PolarAI_SteerToTarget: the d-pad bits that steer from v toward p. */
 static inline u32 PolarPadToward(SLONG_XYZ *p, SLONG_XYZ *v) {
@@ -1220,7 +1199,7 @@ typedef struct SniperExt {
 extern u16 CameraMode;
 
 #define SNIPER_CAM (&MainCamera)
-#define SNIPER_PAD ((PolarPad *)Pads)
+#define SNIPER_PAD ((PadState *)Pads)
 
 /* Bear death extension (0x88 bytes, id 0x10000000). */
 typedef struct BearDeathExt {

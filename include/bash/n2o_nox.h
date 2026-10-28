@@ -175,13 +175,6 @@ extern s32 NoxHeroTiltA;
 extern s32 NoxHeroTiltB;
 extern s32 NoxHeroTiltC;
 extern s32 NoxHeroTiltD;
-/* PadState (Pads) as seen by NoxPreMoveHero. */
-typedef struct BossPad {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ u8 pad04[0x50 - 0x04];
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} BossPad;
 extern s32 NoxHeroBoost[];
 extern s32 NoxHeroSteer[];
 extern ScriptInit NoxSmokeScriptInit;

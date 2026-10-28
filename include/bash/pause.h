@@ -309,7 +309,7 @@ typedef struct HudBox {
     /* 0x14 */ s32 unk14;
 } HudBox;
 extern s32 HeroesInPlay;
-#define HPADS ((PadButtons *)Pads)
+#define HPADS ((PadState *)Pads)
 extern s32 HeroesSidelined;
 extern u16 FinalHeroesTempo;
 extern u16 HeroLastHarm[4];

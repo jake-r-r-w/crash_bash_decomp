@@ -6,16 +6,16 @@
 #include "bash/shell.h"
 
 s32 PauseChooseYesNo(s32 pad) {
-    if ((((PadButtons *)Pads)[pad].pressed & 0x80) && PauseChoice != 0) {
+    if ((((PadState *)Pads)[pad].pressed & 0x80) && PauseChoice != 0) {
         PauseChoice = 0;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((((PadButtons *)Pads)[pad].pressed & 0x20) && PauseChoice == 0) {
+    if ((((PadState *)Pads)[pad].pressed & 0x20) && PauseChoice == 0) {
         PauseChoice = 1;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((((PadButtons *)Pads)[pad].held & 9) != 9 &&
-        (((PadButtons *)Pads)[pad].pressed & 8)) {
+    if ((((PadState *)Pads)[pad].held & 9) != 9 &&
+        (((PadState *)Pads)[pad].pressed & 8)) {
         GameState *p = GAME;
         PausePad = 0;
         PauseChoice = 0;
@@ -23,15 +23,15 @@ s32 PauseChooseYesNo(s32 pad) {
         sound_resume();
         return 0;
     }
-    return ((PadButtons *)Pads)[pad].pressed & 0x4000;
+    return ((PadState *)Pads)[pad].pressed & 0x4000;
 }
 
 s32 PauseChooseUpDown(s32 pad, s32 max) {
-    if ((((PadButtons *)Pads)[pad].pressed & 0x10) && PauseChoice > 0) {
+    if ((((PadState *)Pads)[pad].pressed & 0x10) && PauseChoice > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         PauseChoice--;
     }
-    if ((((PadButtons *)Pads)[pad].pressed & 0x40) && PauseChoice < max) {
+    if ((((PadState *)Pads)[pad].pressed & 0x40) && PauseChoice < max) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         PauseChoice++;
     }
@@ -41,8 +41,8 @@ s32 PauseChooseUpDown(s32 pad, s32 max) {
     if (PauseChoice > max) {
         PauseChoice = max;
     }
-    if ((((PadButtons *)Pads)[pad].held & 9) != 9 &&
-        (((PadButtons *)Pads)[pad].pressed & 8)) {
+    if ((((PadState *)Pads)[pad].held & 9) != 9 &&
+        (((PadState *)Pads)[pad].pressed & 8)) {
         GameState *p = GAME;
         PausePad = 0;
         PauseChoice = 0;
@@ -50,15 +50,15 @@ s32 PauseChooseUpDown(s32 pad, s32 max) {
         sound_resume();
         return 0;
     }
-    return ((PadButtons *)Pads)[pad].pressed & 0x4000;
+    return ((PadState *)Pads)[pad].pressed & 0x4000;
 }
 
 s32 ProcessPauseUD(s32 pad, s32 max) {
-    if ((((PadButtons *)Pads)[pad].pressed & 0x10) && PauseChoice > 0) {
+    if ((((PadState *)Pads)[pad].pressed & 0x10) && PauseChoice > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         PauseChoice--;
     }
-    if ((((PadButtons *)Pads)[pad].pressed & 0x40) && PauseChoice < max) {
+    if ((((PadState *)Pads)[pad].pressed & 0x40) && PauseChoice < max) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         PauseChoice++;
     }
@@ -68,7 +68,7 @@ s32 ProcessPauseUD(s32 pad, s32 max) {
     if (PauseChoice > max) {
         PauseChoice = max;
     }
-    return ((PadButtons *)Pads)[pad].pressed & 0x4008;
+    return ((PadState *)Pads)[pad].pressed & 0x4008;
 }
 
 const char ModeNameBattleMode[] = "Battle Mode";
@@ -88,8 +88,8 @@ const char ModeNameAdventureChallenge[] = "Adventure - Challenge";
 const char ModeNameAdventureBoss[] = "Adventure - Boss";
 const char ModeNameEmpty[] = "";
 
-static inline PadButtons *ActivePad(void) {
-    PadButtons *base = HPADS;
+static inline PadState *ActivePad(void) {
+    PadState *base = HPADS;
 
     return &base[PausePad];
 }
@@ -108,7 +108,7 @@ s32 UpdatePause(void) {
     s32 hi;
     s32 on;
     s32 fl;
-    PadButtons *p;
+    PadState *p;
     u8 *g;
 
     ret = 1;
@@ -1136,7 +1136,7 @@ void DrawAdventureStats(s32 arg0) {
 void UpdatePauseSlide(s32 arg0) {
     EXTengine *e;
     s32 lim;
-    PadButtons *pads;
+    PadState *pads;
 
     lim = 0x15E;
     if (ModeTypes[GameMode * 3] == 0x102) {
@@ -1188,7 +1188,7 @@ void UpdatePauseSlide(s32 arg0) {
         if (e->unk10.y < lim) {
             e->unk10.y = lim;
         }
-        if (StatsHasPage3 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
+        if (StatsHasPage3 != 0 && (((PadState *)Pads)[PausePad].pressed & 0x1000)) {
             StatsPageWanted = 3;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1203,7 +1203,7 @@ void UpdatePauseSlide(s32 arg0) {
         if (StatsHasPage1 == 0 && StatsHasBonus == 0) {
             break;
         }
-        pads = (PadButtons *)Pads;
+        pads = (PadState *)Pads;
         if (HPADS[PausePad].pressed & 0x1000) {
             if (GameLevelFlags & 2) {
                 StatsPageWanted = 5;
@@ -1220,7 +1220,7 @@ void UpdatePauseSlide(s32 arg0) {
         if (e->unk10.y < lim) {
             e->unk10.y = lim;
         }
-        if (StatsHasPage3 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
+        if (StatsHasPage3 != 0 && (((PadState *)Pads)[PausePad].pressed & 0x1000)) {
             StatsPageWanted = 3;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1233,7 +1233,7 @@ void UpdatePauseSlide(s32 arg0) {
             DrawAdventureStats(1);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
-        if (StatsHasPage3 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
+        if (StatsHasPage3 != 0 && (((PadState *)Pads)[PausePad].pressed & 0x1000)) {
             StatsPageWanted = 3;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1249,7 +1249,7 @@ void UpdatePauseSlide(s32 arg0) {
         if (StatsHasPage1 == 0 && StatsHasBonus == 0) {
             break;
         }
-        pads = (PadButtons *)Pads;
+        pads = (PadState *)Pads;
         if (HPADS[PausePad].pressed & 0x1000) {
             if (GameLevelFlags & 2) {
                 StatsPageWanted = 5;
@@ -1267,7 +1267,7 @@ void UpdatePauseSlide(s32 arg0) {
             DrawAdventureStats(5);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
-        if (StatsHasPage3 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
+        if (StatsHasPage3 != 0 && (((PadState *)Pads)[PausePad].pressed & 0x1000)) {
             StatsPageWanted = 5;
             PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
         }
@@ -1746,8 +1746,8 @@ void SetPauseRecs(s32 arg0, s32 kind, s32 flag) {
 }
 
 s32 PauseExitPressed(void) {
-    PadButtons *base = (PadButtons *)Pads;
-    PadButtons *pad = &base[PausePad];
+    PadState *base = (PadState *)Pads;
+    PadState *pad = &base[PausePad];
     if ((pad->held & 9) != 9) {
         if (pad->pressed & 0x4008) {
             return 1;

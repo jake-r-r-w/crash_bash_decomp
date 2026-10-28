@@ -94,12 +94,6 @@ typedef struct PogoObj {
 extern PogoObj *PogoKerbObj;
 extern HeroInfo Heroes[4];
 
-/* PadState (Pads) as Fire_Rocket reads it: d-pad bits 0xF0 at 0x50. */
-typedef struct PogoPad {
-    /* 0x00 */ u8 unk0[0x50];
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} PogoPad;
 void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 extern s32 PogoBounceCount[];
 extern s16 PogoBounceHeights[];

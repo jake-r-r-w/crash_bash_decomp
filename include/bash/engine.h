@@ -264,15 +264,6 @@ extern CamFramePoint camera_frame_top;
 extern CamFramePoint camera_frame_right;
 extern s32 CamBoundLeft;
 
-/* PadState (Pads) seen by PauseChooseYesNo: button flags at 0x44/0x48. */
-typedef struct PadButtons {
-    /* 0x00 */ u8 unk0[0x44];
-    /* 0x44 */ s32 held;
-    /* 0x48 */ s32 pressed;
-    /* 0x4C */ s32 unk4C;
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} PadButtons;
 
 extern s32 PauseChoice;
 extern s32 PausePad;

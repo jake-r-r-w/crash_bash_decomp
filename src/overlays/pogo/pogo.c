@@ -1459,7 +1459,7 @@ void PreMovePOGO(u32 arg0) {
     pb = Pads;
     pad = &pb[arg0];
     if ((pad->flags & 1) || GameInfo[arg0 + 0x5C] != 0) {
-        bits = ((PogoPad *)pad)->unk50;
+        bits = ((PadState *)pad)->dir;
         if (PogoPlay[arg0].status == 5 && !(bits & 0xF0)) {
             switch ((u16)move->forward_angle >> 10) {
             case 0:
@@ -4286,7 +4286,7 @@ void Fire_Rocket(s32 arg0, s32 arg1) {
     PlayThrowNoise(arg0);
     move = Heroes[arg0].hero_move;
     if (move != NULL) {
-        buttons = ((PogoPad *)Pads)[arg0].unk50;
+        buttons = ((PadState *)Pads)[arg0].dir;
         angle = move->facing_angle;
         if (buttons & 0xF0) {
             if (buttons & 0x80) {

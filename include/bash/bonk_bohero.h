@@ -8,14 +8,6 @@
 #include "common.h"
 #include "bash/bonk_ovl.h"
 
-typedef struct BonkPadButtons {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ u8 unk4[0x38 - 0x04];
-    /* 0x38 */ u16 unk38;
-    /* 0x3A */ u8 unk3A[0x50 - 0x3A];
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} BonkPadButtons;
 
 extern HeroInfo Heroes[4];
 extern s32 BonkSteerB[];

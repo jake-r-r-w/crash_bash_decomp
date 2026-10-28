@@ -143,9 +143,9 @@ void BashHeroHold(s32 arg0) {
     }
     if (o->can_do & 4) {
         if (GameInfo[arg0 + 0x5C] != 0) {
-            m = ((PadButtons *)Pads)[arg0].unk50 & 0x2000;
+            m = ((PadState *)Pads)[arg0].dir & 0x2000;
         } else {
-            m = ((PadButtons *)Pads)[arg0].unk54 & 0x2000;
+            m = ((PadState *)Pads)[arg0].dirPressed & 0x2000;
         }
         if (m != 0) {
         action:
@@ -213,7 +213,7 @@ void BashHeroCarry(s32 arg0) {
         }
         goto rest;
     }
-    if ((o->can_do & 4) && (((PadButtons *)Pads)[arg0].unk50 & 0x2000)) {
+    if ((o->can_do & 4) && (((PadState *)Pads)[arg0].dir & 0x2000)) {
     action:
         SetHeroAction(arg0, (u16)HeroActThrow);
         return;

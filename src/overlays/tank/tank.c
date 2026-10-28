@@ -1778,8 +1778,8 @@ void TA_InitHero(u32 player) {
     u8 *g2;
     s32 n;
 
-    ((PadButtons *)Pads)[player].unk50 = 0;
-    ((PadButtons *)Pads)[player].unk54 = 0;
+    ((PadState *)Pads)[player].dir = 0;
+    ((PadState *)Pads)[player].dirPressed = 0;
     hb = Heroes;
     h = &hb[player];
     if (h->hero_name == 9) {
@@ -1964,7 +1964,7 @@ void TA_MoveHero(u32 player) {
             }
         }
     } else {
-        if (((PadButtons *)Pads)[player].unk50 & 0x800) {
+        if (((PadState *)Pads)[player].dir & 0x800) {
             SetHullSFX(player, eng, TankHoverSfx[player]);
         } else {
             SetHullSFX(player, eng, 0);
@@ -2090,7 +2090,7 @@ void AnimateTankTurret(s32 player) {
     sub = Heroes[player].hero_sub->next;
     sub2 = sub->next;
     if (GameMode == 5) {
-        pad = ((PadButtons *)Pads)[player].unk50;
+        pad = ((PadState *)Pads)[player].dir;
         if (pad & 0x800) {
             goto right;
         } else if (pad & 0x200) {
@@ -2263,7 +2263,7 @@ void UpdateTankHeroWeapons(s32 player) {
             ta->TurretReqdDir = -1;
         }
     } else if (GameMode != 5) {
-        pad = ((PadButtons *)Pads)[player].unk50;
+        pad = ((PadState *)Pads)[player].dir;
         if (pad & 0xA00) {
             eng->unk5E = 1;
             eng->unk1E = (eng->unk1E + 0x40) & 0xFFF;
@@ -2285,7 +2285,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     break;
                 }
             }
-            if (i < 3 && (((PadButtons *)Pads)[player].unk54 & 0x8000)) {
+            if (i < 3 && (((PadState *)Pads)[player].dirPressed & 0x8000)) {
                 switch (Random(4)) {
                 default:
                 case 0:
@@ -2486,7 +2486,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     break;
                 }
             } else if (GameInfo[player + 0x5C] == 0 &&
-                       (((PadButtons *)Pads)[player].unk54 & 0x8000)) {
+                       (((PadState *)Pads)[player].dirPressed & 0x8000)) {
                 PlaySfx(0x4F1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
         }
@@ -2499,7 +2499,7 @@ void UpdateTankHeroWeapons(s32 player) {
     if (ta->SubWeaponFireDelay != 0) {
         ta->SubWeaponFireDelay--;
     }
-    if ((((PadButtons *)Pads)[player].unk54 & 0x2000) &&
+    if ((((PadState *)Pads)[player].dirPressed & 0x2000) &&
         ((TankModeView *)GameInfo)->mode < 10 && ((TankModeView *)GameInfo)->mode >= 5) {
         if (ta->SubWeaponRounds != 0) {
             if (ta->SubWeaponFireDelay == 0) {
@@ -2544,7 +2544,7 @@ subdone:
     if (((TankModeView *)GameInfo)->mode == 5) {
         if (ta->ForceFieldDelay != 0) {
             ta->ForceFieldDelay--;
-        } else if (((PadButtons *)Pads)[player].unk54 & 0x4000) {
+        } else if (((PadState *)Pads)[player].dirPressed & 0x4000) {
             obj = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1321, 0x11);
             PlaySfx(TankForceFieldSfx[player], NULL, NULL, 0x1000, 0x1E00, 0);
             if (obj != NULL) {
@@ -2559,7 +2559,7 @@ subdone:
         }
     }
     if (ta->TauntDelay <= 0) {
-        if (((PadButtons *)Pads)[player].unk50 & 0x1000) {
+        if (((PadState *)Pads)[player].dir & 0x1000) {
             hb = Heroes;
             h = &hb[player];
             if (!(h->hero_status & 0xFA00)) {
@@ -2673,22 +2673,22 @@ void TankHeroTurn(u32 player) {
             SetHeroAction(player, 0x6E);
             switch (ta->MoveDir) {
             case 2:
-                if (((PadButtons *)Pads)[player].unk50 & 0x10) {
+                if (((PadState *)Pads)[player].dir & 0x10) {
                     eng->unk10.z += ta->Speed;
                 }
                 break;
             case 0:
-                if (((PadButtons *)Pads)[player].unk50 & 0x40) {
+                if (((PadState *)Pads)[player].dir & 0x40) {
                     eng->unk10.z -= ta->Speed;
                 }
                 break;
             case 3:
-                if (((PadButtons *)Pads)[player].unk50 & 0x20) {
+                if (((PadState *)Pads)[player].dir & 0x20) {
                     eng->unk10.x += ta->Speed;
                 }
                 break;
             case 1:
-                if (((PadButtons *)Pads)[player].unk50 & 0x80) {
+                if (((PadState *)Pads)[player].dir & 0x80) {
                     eng->unk10.x -= ta->Speed;
                 }
                 break;
@@ -2722,7 +2722,7 @@ void TankHeroSteerMove(s32 player) {
     ta = &TA_players[player];
     eng = Heroes[player].hero_eng;
     bank = ta->BankAngle;
-    pad = ((PadButtons *)Pads)[player].unk50 & 0xF0;
+    pad = ((PadState *)Pads)[player].dir & 0xF0;
     if (bank != 0) {
         eng->unk5E = 1;
         if (ta->BankAngle > 0) {
@@ -2756,7 +2756,7 @@ void TankHeroSteerMove(s32 player) {
         eng->unk1E &= 0xFFF;
     }
     eng->unk20 = ta->BankAngle & 0xFFF;
-    c = ((PadButtons *)Pads)[player].unk50;
+    c = ((PadState *)Pads)[player].dir;
     if (c & 0x800) {
         goto thrust;
     }
@@ -2888,7 +2888,7 @@ void TankHeroGridMove(s32 player) {
     s32 hit;
     s32 i;
 
-    pad = ((PadButtons *)Pads)[player].unk50;
+    pad = ((PadState *)Pads)[player].dir;
     ta = &TA_players[player];
     eng = Heroes[player].hero_eng;
     speed = ta->Speed;
@@ -3092,7 +3092,7 @@ void TankHeroMove(u32 player) {
             return;
         }
         half = (speed = ta->Speed) / 2;
-        pad = ((PadButtons *)Pads)[player].unk50;
+        pad = ((PadState *)Pads)[player].dir;
         x = eng->unk10.x;
         z = eng->unk10.z;
         dir = pad & 0xF0;
@@ -7907,8 +7907,8 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
             ai->AIsleep = 8;
         }
     }
-    ((PadButtons *)Pads)[p].unk50 = 0;
-    ((PadButtons *)Pads)[p].unk54 = 0;
+    ((PadState *)Pads)[p].dir = 0;
+    ((PadState *)Pads)[p].dirPressed = 0;
     eng = Heroes[p].hero_eng;
     eng->unk10.z = 0xF00;
     eng->unk10.x = (eng->unk10.x + 0x80) & ~0xFF;
@@ -8036,7 +8036,7 @@ void PlotMoeJoeHero(NAS *nas, s32 id) {
             }
         }
     }
-    if (((PadButtons *)Pads)[p].unk50 & 0x4800) {
+    if (((PadState *)Pads)[p].dir & 0x4800) {
         TANK_SET_HULL_SFX(p, eng, TankHoverSfx[p]);
     } else {
         TANK_SET_HULL_SFX(p, eng, 0);

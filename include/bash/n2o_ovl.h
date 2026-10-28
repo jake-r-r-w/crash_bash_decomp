@@ -28,21 +28,7 @@ extern u16 N2OWallsHit;
 extern s16 N2OHeroSpeed[];
 extern u16 N2OUnusedRows[][5];
 
-/* PadState (Pads) as N2OPreMoveHero reads it: the buttons at 0x50. */
-typedef struct N2OPad {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ u8 pad4[0x50 - 0x04];
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ u8 pad54[0x58 - 0x54];
-} N2OPad;
 
-/* PadState as N2OHeroHit reads it: flags at 0x4C and 0x54. */
-typedef struct N2OPadFlags {
-    /* 0x00 */ u8 pad0[0x4C];
-    /* 0x4C */ s32 unk4C;
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} N2OPadFlags;
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/n2o_nox.h"

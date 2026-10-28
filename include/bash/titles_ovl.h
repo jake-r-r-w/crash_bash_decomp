@@ -448,15 +448,7 @@ typedef struct {
     s32 unk6C;     /* 0x6C */
 } TitlesCountView;
 #define O69CV ((TitlesCountView *)GameInfo)
-/* PadState (Pads) as seen by PlayersMenuUpdate. */
-typedef struct {
-    u8 pad0[0x2A];
-    s16 unk2A;     /* 0x2A */
-    u8 pad2C[0x48 - 0x2C];
-    s32 pressed;   /* 0x48 */
-    u8 pad4C[0x58 - 0x4C];
-} TitlesPad;
-#define O69PAD ((TitlesPad *)Pads)
+#define O69PAD ((PadState *)Pads)
 extern u8 GameMaxPlayers;
 void PlayersMenuUpdate(void);
 

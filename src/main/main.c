@@ -2465,7 +2465,7 @@ void pad_read(PadState *pad) {
     x = PS->lx - 0x80;
     y = 0x80 - PS->ly;
     PS->dist = csqrt(x * x + y * y);
-    PS->angle = get_angle(x, y);
+    PS->angle.w = get_angle(x, y);
     {
         s32 oldBtn = PS->lastHeld;
         s32 oldDir = PS->lastDir;
@@ -2620,7 +2620,7 @@ void pads_init(void) {
         pad->buttons = 0;
         pad->held = 0;
         pad->pressed = 0;
-        pad->angle = 0;
+        pad->angle.w = 0;
         pad->dist = 0;
         pad->forcedButtons = 0;
         pad++;

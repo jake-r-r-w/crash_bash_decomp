@@ -292,7 +292,7 @@ void HubPreMoveHero(s32 arg0) {
         return;
     }
     if (((HubGameView *)GameInfo)->unk63 == -1) {
-        if (((HubPad *)Pads)[arg0].unk50 & 0x10) {
+        if (((PadState *)Pads)[arg0].dir & 0x10) {
             mv->forward_speed = speed;
             ang = HubHeroRing.angle + 0x800;
             HubHeroRing.radius += speed;
@@ -321,7 +321,7 @@ void HubPreMoveHero(s32 arg0) {
                 }
             }
         }
-        if (((HubPad *)Pads)[arg0].unk50 & 0x40) {
+        if (((PadState *)Pads)[arg0].dir & 0x40) {
             ang = HubHeroRing.angle;
             mv->forward_speed = speed;
             HubHeroRing.radius -= speed;
@@ -332,19 +332,19 @@ void HubPreMoveHero(s32 arg0) {
             }
         }
         if (stop == 0) {
-            if (((HubPad *)Pads)[arg0].unk50 & 0x80) {
+            if (((PadState *)Pads)[arg0].dir & 0x80) {
                 mv->forward_speed = speed;
                 ang = 0x400;
                 ang = (HubHeroRing.angle -= step % 0x1000) + ang;
             }
-            if (((HubPad *)Pads)[arg0].unk50 & 0x20) {
+            if (((PadState *)Pads)[arg0].dir & 0x20) {
                 mv->forward_speed = speed;
                 ang = (HubHeroRing.angle += step) - 0x400;
             }
             HubHeroRing.angle &= 0xFFF;
         }
     } else {
-        if (((HubPad *)Pads)[arg0].unk50 & 0x10) {
+        if (((PadState *)Pads)[arg0].dir & 0x10) {
             mv->forward_speed = speed;
             t = HubHeroRing.radius + speed;
             HubHeroRing.radius = t;
@@ -355,7 +355,7 @@ void HubPreMoveHero(s32 arg0) {
                 mv->forward_speed = 0;
             }
         }
-        if (((HubPad *)Pads)[arg0].unk50 & 0x40) {
+        if (((PadState *)Pads)[arg0].dir & 0x40) {
             ang = HubHeroRing.angle;
             mv->forward_speed = speed;
             HubHeroRing.radius -= speed;
@@ -399,7 +399,7 @@ void HubPreMoveHero(s32 arg0) {
                 }
             }
         }
-        if (!(((HubPad *)Pads)[arg0].unk54 & 0x4000)) {
+        if (!(((PadState *)Pads)[arg0].dirPressed & 0x4000)) {
             goto done;
         }
         p = HubGateways;
@@ -1264,7 +1264,7 @@ s32 HubHeroTestButton(s32 arg0) {
     if (GameAdventure.unk74 != 0) {
         return 1;
     }
-    if (((PadButtons *)Pads)[arg0].unk54 & 0x8000) {
+    if (((PadState *)Pads)[arg0].dirPressed & 0x8000) {
         if ((u32)(Heroes[arg0].hero_name - 1) >= 2U) {
             if (Heroes[arg0].hero_frozen == 0) {
                 Heroes[arg0].hero_frozen = 0xF;
@@ -2377,7 +2377,7 @@ void UpdatePodium(void) {
     s32 any = 0;
 
     for (i = 0; i < 4; i++) {
-        if (((PadButtons *)Pads)[i].unk54 & 0x4000) {
+        if (((PadState *)Pads)[i].dirPressed & 0x4000) {
             any = 1;
         }
     }
@@ -2425,7 +2425,7 @@ const char HubKeyBack[] = "<";
 
 void HubSaveMenuInput(void) {
     HubKey *k;
-    PadButtons *pad;
+    PadState *pad;
     HubEntry12 *e;
     HubEntry12 *e4;
     subengine *s;
@@ -2441,7 +2441,7 @@ void HubSaveMenuInput(void) {
         j = HubNamePage * sizeof(HubEntry12);
         cur->unk7C = 0;
         k = (HubKey *)((HubEntry12 *)((u8 *)HubNamePages + j))->unk0 + i;
-        pad = (PadButtons *)Pads;
+        pad = (PadState *)Pads;
         if (pad->pressed & 0x80) {
             HubNameNext += k->unkA;
             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);

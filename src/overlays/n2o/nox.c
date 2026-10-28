@@ -862,10 +862,10 @@ void NoxPreMoveHero(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTheromove *m;
-    BossPad *pad;
-    BossPad *pad2;
-    BossPad *pb;
-    BossPad *pb2;
+    PadState *pad;
+    PadState *pad2;
+    PadState *pb;
+    PadState *pb2;
     s32 *turn;
     s32 spd;
     s32 b;
@@ -878,10 +878,10 @@ void NoxPreMoveHero(s32 arg0) {
     HeroInfo *hh;
 
     if (h->hero_frozen != 0) {
-        pb = (BossPad *)Pads;
+        pb = (PadState *)Pads;
         pad = &pb[arg0];
-        pad->unk50 = 0;
-        pad->unk54 = 0;
+        pad->dir = 0;
+        pad->dirPressed = 0;
     }
     m = h->hero_move;
     if (m != NULL) {
@@ -891,22 +891,22 @@ void NoxPreMoveHero(s32 arg0) {
         m->jump_max = 0;
         NoxHeroBoost[arg0] = 0;
         turn = &NoxHeroSteer[arg0];
-        pb2 = (BossPad *)Pads;
+        pb2 = (PadState *)Pads;
         pad2 = &pb2[arg0];
         *turn = 0;
-        if ((pad2->unk0 & 1) || h->hero_ai->AImode != 0) {
-            b = pad2->unk50;
+        if ((pad2->flags & 1) || h->hero_ai->AImode != 0) {
+            b = pad2->dir;
             if (b & 0x80F0) {
                 if (b & 0x20) {
                     m->forward_angle = 0x980;
                 }
-                if (pad2->unk50 & 0x80) {
+                if (pad2->dir & 0x80) {
                     m->forward_angle = 0x680;
                 }
-                if (pad2->unk50 & 0x10) {
+                if (pad2->dir & 0x10) {
                     *turn = -0x180;
                 }
-                if (pad2->unk50 & 0x40) {
+                if (pad2->dir & 0x40) {
                     *turn = 0x180;
                 }
             }

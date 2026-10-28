@@ -347,8 +347,8 @@ void ProcessHeroes(void) {
         if (status & 0xFF00) {
             a->hero_immunity = 0;
             a->hero_eng->flags |= 0x8000;
-            HPADS[id].unk50 = 0;
-            HPADS[id].unk54 = 0;
+            HPADS[id].dir = 0;
+            HPADS[id].dirPressed = 0;
             goto reset;
         }
         if (GAME->cheats < 0 && (GAME->cheats & 4) &&
@@ -422,8 +422,8 @@ void ProcessHeroes(void) {
                 }
             }
             if (!(GAME->levelFlags & 0x1000)) {
-                HPADS[id].unk50 = 0;
-                HPADS[id].unk54 = 0;
+                HPADS[id].dir = 0;
+                HPADS[id].dirPressed = 0;
             }
         }
     reset:
@@ -472,8 +472,8 @@ void ProcessHeroes(void) {
         h = &Heroes[id];
         if (h->hero_pu != 0x15 || (GameFrameCount & 1)) {
             if (GAME->pause & 0x4000000) {
-                HPADS[id].unk50 = 0;
-                HPADS[id].unk54 = 0;
+                HPADS[id].dir = 0;
+                HPADS[id].dirPressed = 0;
             }
             ((void (*)(s32))HeroHooks.PreMoveHero)(id);
             HeroActionTable[h->hero_mode].update(id);
@@ -1238,7 +1238,7 @@ void HeroApplyJump(s32 arg0) {
     if (m->jump_dir != 0) {
         dec = m->jump_dec;
         if ((m->jump_ctrl & 1) && GAME->heroOut[arg0] == 0 &&
-            !(((PadButtons *)Pads)[arg0].unk50 & 0x4000) && m->jump_vel >= 0x41) {
+            !(((PadState *)Pads)[arg0].dir & 0x4000) && m->jump_vel >= 0x41) {
             dec = 0x28;
         }
         base = Heroes;
@@ -1703,10 +1703,10 @@ void ArenaGridReset(void) {
 s32 HeroTestActions(s32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
-    PadButtons *pads;
-    PadButtons *pad;
-    PadButtons *pads2;
-    PadButtons *pad2;
+    PadState *pads;
+    PadState *pad;
+    PadState *pads2;
+    PadState *pad2;
     s32 action;
 
     if (HeroHooks.TestAttack(arg0) != 0) {
@@ -1715,11 +1715,11 @@ s32 HeroTestActions(s32 arg0) {
     base = Heroes;
     h = base + arg0;
     if (!(h->hero_status & 0x10)) {
-        pads = (PadButtons *)Pads;
+        pads = (PadState *)Pads;
         pad = pads + arg0;
-        if (pad->unk54 & 0x8000) {
+        if (pad->dirPressed & 0x8000) {
             if (h->hero_attack_timer != 0) {
-                pad->unk4C &= ~0x8000;
+                pad->lastDir &= ~0x8000;
             } else {
                 switch (h->hero_name) {
                 case 1:
@@ -1742,14 +1742,14 @@ s32 HeroTestActions(s32 arg0) {
         }
     }
     if (GameMode != 0x1E) {
-        pads2 = (PadButtons *)Pads;
+        pads2 = (PadState *)Pads;
         pad2 = pads2 + arg0;
-        if (pad2->unk54 & 0x2000) {
+        if (pad2->dirPressed & 0x2000) {
             if (HeroHooks.HeroGrabObject(arg0, 0x280) != 0 || Heroes[arg0].hero_pick_delay == 0) {
                 SetHeroAction(arg0, (u16)HeroActPickup);
                 return 1;
             }
-            pad2->unk4C &= ~0x2000;
+            pad2->lastDir &= ~0x2000;
         } else {
             Heroes[arg0].hero_pick_delay = 5;
         }
@@ -1870,7 +1870,7 @@ void HeroIdle(s32 arg0) {
         HeroTestActions(arg0) == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
-        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
+        } else if (((PadState *)Pads)[arg0].dirPressed & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -1933,7 +1933,7 @@ void HeroTaunt(s32 arg0) {
         HeroTestActions(arg0) == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
-        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
+        } else if (((PadState *)Pads)[arg0].dirPressed & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -1961,7 +1961,7 @@ void HeroRun(s32 arg0) {
         HeroTestActions(arg0) == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
-        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
+        } else if (((PadState *)Pads)[arg0].dirPressed & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2182,7 +2182,7 @@ void HeroLand(s32 arg0) {
         s32 ret2;
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
-        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
+        } else if (((PadState *)Pads)[arg0].dirPressed & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2258,7 +2258,7 @@ void HeroSpin(s32 arg0) {
     if (ret == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
-        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
+        } else if (((PadState *)Pads)[arg0].dirPressed & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2341,7 +2341,7 @@ void HeroWhip(s32 arg0) {
     if (ret == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
-        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
+        } else if (((PadState *)Pads)[arg0].dirPressed & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2429,7 +2429,7 @@ void HeroShoot(s32 arg0) {
     if (ret == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
-        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
+        } else if (((PadState *)Pads)[arg0].dirPressed & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2440,7 +2440,7 @@ void HeroShoot(s32 arg0) {
                 ret3 = HeroHooks.TestKick(arg0);
             } else if (Heroes[arg0].hero_status & 0xFA00) {
                 ret3 = 0;
-            } else if (((PadButtons *)Pads)[arg0].unk50 & 0x1000) {
+            } else if (((PadState *)Pads)[arg0].dir & 0x1000) {
                 SetHeroAction(arg0, 2);
                 ret3 = 1;
             } else {
@@ -2549,7 +2549,7 @@ void HeroKick(s32 arg0) {
     if (ret == 0) {
         if (HeroHooks.TestJump != NULL) {
             ret2 = HeroHooks.TestJump(arg0);
-        } else if (((PadButtons *)Pads)[arg0].unk54 & 0x4000) {
+        } else if (((PadState *)Pads)[arg0].dirPressed & 0x4000) {
             SetHeroAction(arg0, 4);
             ret2 = 1;
         } else {
@@ -2560,7 +2560,7 @@ void HeroKick(s32 arg0) {
                 ret3 = HeroHooks.TestKick(arg0);
             } else if (Heroes[arg0].hero_status & 0xFA00) {
                 ret3 = 0;
-            } else if (((PadButtons *)Pads)[arg0].unk50 & 0x1000) {
+            } else if (((PadState *)Pads)[arg0].dir & 0x1000) {
                 SetHeroAction(arg0, 2);
                 ret3 = 1;
             } else {

@@ -2061,7 +2061,7 @@ s32 player;
     }
     h->hero_ai->AIpad |= PolarPadToward(&fux->pos, &fux->vel);
     if (h->hero_frozen == 0) {
-        ((PolarPadAng *)Pads)[player].buttons = h->hero_ai->AIpad;
+        ((PadState *)Pads)[player].dir = h->hero_ai->AIpad;
     }
     ai = h->hero_ai;
     t = ai->AItimer1--;
@@ -2097,7 +2097,7 @@ s32 player;
         h2->hero_ai->AItimer1 = fux->unk3C;
     }
     if (Heroes[player].hero_frozen == 0) {
-        ((PolarPadAng *)Pads)[player].angle = Heroes[player].hero_ai->AIang;
+        ((PadState *)Pads)[player].angle.w = Heroes[player].hero_ai->AIang;
     }
 }
 
@@ -9080,16 +9080,16 @@ void PlotSniper(NAS *m) {
             ext->unk54 = 0;
             ext->unk74 = 0;
             ext->unk18++;
-            if (SNIPER_PAD[ext->unk88].unk50 & 0x80) {
+            if (SNIPER_PAD[ext->unk88].dir & 0x80) {
                 ext->unk54 = 0xC4;
             }
-            if (SNIPER_PAD[ext->unk88].unk50 & 0x20) {
+            if (SNIPER_PAD[ext->unk88].dir & 0x20) {
                 ext->unk54 = -0xC4;
             }
-            if (SNIPER_PAD[ext->unk88].unk50 & 0x10) {
+            if (SNIPER_PAD[ext->unk88].dir & 0x10) {
                 ext->unk74 = 0xC4;
             }
-            if (SNIPER_PAD[ext->unk88].unk50 & 0x40) {
+            if (SNIPER_PAD[ext->unk88].dir & 0x40) {
                 ext->unk74 = -0xC4;
             }
             if (ext->unk84 == 0) {
@@ -9130,7 +9130,7 @@ void PlotSniper(NAS *m) {
                     s32 ay = ext->unk28 - 0x600;
                     ext->unk20->sub->unk08 = SNIPER_CAM->at.y + ay;
                 }
-                if (ext->unk84 == 0 && (SNIPER_PAD[ext->unk88].unk54 & 0x8000)) {
+                if (ext->unk84 == 0 && (SNIPER_PAD[ext->unk88].dirPressed & 0x8000)) {
                     ext->unk84 = 1;
                     ext->unk18 = 0xD2;
                     nas = CreateNAS(Heroes[ext->unk88].hero_eng->unk10.x,
@@ -10926,16 +10926,16 @@ void PolarPreMoveHero(s32 player) {
     HeroInfo *base;
     EXTheromove *m;
     EXTheromove *m2;
-    PolarPadMove *pad;
-    PolarPadMove *p2;
+    PadState *pad;
+    PadState *p2;
     PolarModeView *g;
     s32 *spd;
 
     base = Heroes;
     h = base + player;
     if (h->hero_frozen != 0) {
-        ((PolarPadMove *)Pads)[player].buttons = 0;
-        ((PolarPadMove *)Pads)[player].unk54 = 0;
+        ((PadState *)Pads)[player].dir = 0;
+        ((PadState *)Pads)[player].dirPressed = 0;
     }
     m = h->hero_move;
     if (m != NULL) {
@@ -10943,12 +10943,12 @@ void PolarPreMoveHero(s32 player) {
             m->x_max = 0;
             m->z_max = 0;
         }
-        pad = (PolarPadMove *)Pads;
+        pad = (PadState *)Pads;
         pad += player;
         p2 = pad;
         if ((p2->flags & 1) || h->hero_ai->AImode != 0) {
-            if (p2->buttons & 0xF0) {
-                m->forward_angle = (p2->angle + 0x800) & 0xFFF;
+            if (p2->dir & 0xF0) {
+                m->forward_angle = (p2->angle.lo + 0x800) & 0xFFF;
                 spd = &PolarHeroMass[player];
                 m->x_max = (*spd * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
                 m->z_max = (*spd * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
@@ -11239,7 +11239,7 @@ void PolarHeroIdle(s32 player) {
     PolarHeroCollisions(player);
     ProcessHeroAnim(player);
     ext2 = FindExtension(Heroes[player].hero, 0x20000000);
-    if (ext2 != NULL && (((PolarPad *)Pads)[player].unk50 & 0xF0)) {
+    if (ext2 != NULL && (((PadState *)Pads)[player].dir & 0xF0)) {
         if (ext2->state == 0) {
             SetHeroAction(player, 0x4A);
         }
@@ -11289,7 +11289,7 @@ void PolarHeroRun(s32 player) {
         }
     }
     ProcessHeroAnim(player);
-    if (!(((PolarPad *)Pads)[player].unk50 & 0xF0)) {
+    if (!(((PadState *)Pads)[player].dir & 0xF0)) {
         ext = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext != NULL) {
             if (ext->state == 0) {
@@ -11545,8 +11545,8 @@ void PolarHeroDazed(s32 player) {
                 }
             }
             if (move != NULL) {
-                ((PolarPad *)Pads)[player].unk50 = 0;
-                ((PolarPad *)Pads)[player].unk54 = 0;
+                ((PadState *)Pads)[player].dir = 0;
+                ((PadState *)Pads)[player].dirPressed = 0;
                 PolarHeroCollisions(player);
                 TestPolarHeroMelted(player);
                 PolarIceHit(&Heroes[player].hero_eng->unk10, player);
@@ -11794,8 +11794,8 @@ void PolarHeroChallenge(s32 player) {
                 }
             }
             if (move != NULL) {
-                ((PolarPad *)Pads)[player].unk50 = 0;
-                ((PolarPad *)Pads)[player].unk54 = 0;
+                ((PadState *)Pads)[player].dir = 0;
+                ((PadState *)Pads)[player].dirPressed = 0;
                 PolarHeroCollisions(player);
                 TestPolarHeroMelted(player);
                 PolarIceHit(&Heroes[player].hero_eng->unk10, player);
@@ -11870,8 +11870,8 @@ void PolarHeroTransmute(s32 player) {
         hero = &base[player];
         move = hero->hero_move;
         if (move != NULL) {
-            ((PolarPad *)Pads)[player].unk50 = 0;
-            ((PolarPad *)Pads)[player].unk54 = 0;
+            ((PadState *)Pads)[player].dir = 0;
+            ((PadState *)Pads)[player].dirPressed = 0;
             PolarHeroCollisions(player);
             TestPolarHeroMelted(player);
             PolarIceHit(&hero->hero_eng->unk10, player);
@@ -12028,7 +12028,7 @@ void PolarHeroOffice(s32 player) {
     move->z_max = 0;
     move->x_vel = 0;
     move->z_vel = 0;
-    if (((PolarPad *)Pads)[player].unk54 & 0x8000) {
+    if (((PadState *)Pads)[player].dirPressed & 0x8000) {
         ext->unk14++;
     }
     if (h->hero_anim->Aindex < 0x21) {
@@ -12129,23 +12129,23 @@ s32 PolarTestAttack(s32 player) {
     HeroInfo *base;
     HeroInfo *h;
     Ext20 *ext;
-    PolarPad *pads;
-    PolarPad *pad;
+    PadState *pads;
+    PadState *pad;
 
     base = Heroes;
     h = base + player;
     ext = FindExtension(h->hero, 0x20000000);
 
     if (ext != NULL && h->hero_move != NULL && ext->val >= PolarHeroAttackPower(player)) {
-        pads = (PolarPad *)Pads;
+        pads = (PadState *)Pads;
         pad = pads + player;
-        if (pad->unk54 & 0x8000) {
+        if (pad->dirPressed & 0x8000) {
             if (h->hero_mode != 0x51) {
                 SetHeroAction(player, 0x51);
             }
             return 1;
         } else {
-            pad->unk50 &= ~0x8000;
+            pad->dir &= ~0x8000;
             return 0;
         }
     }
@@ -12393,23 +12393,23 @@ s32 PolarTestSnowball(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *info = base + player;
     s32 *ext = FindExtension(info->hero, 0x20000000);
-    PolarPad *pads;
-    PolarPad *pad;
+    PadState *pads;
+    PadState *pad;
 
     if (ext != NULL) {
         if (ext[10] == 0) {
             return 0;
         }
         if (info->hero_move != NULL) {
-            pads = (PolarPad *)Pads;
+            pads = (PadState *)Pads;
             pad = pads + player;
-            if (pad->unk54 & 0x2000) {
+            if (pad->dirPressed & 0x2000) {
                 if (info->hero_mode != 0x53) {
                     SetHeroAction(player, 0x53);
                 }
                 return 1;
             }
-            pad->unk50 &= ~0x2000;
+            pad->dir &= ~0x2000;
             return 0;
         }
     }
@@ -12688,7 +12688,7 @@ void PolarHeroFootIdle(s32 player) {
         PolarHeroCollisions(player);
         ProcessHeroAnim(player);
         ext = FindExtension(Heroes[player].hero, 0x20000000);
-        if (ext != NULL && (((PolarPad *)Pads)[player].unk50 & 0xF0)) {
+        if (ext != NULL && (((PadState *)Pads)[player].dir & 0xF0)) {
             if (ext->state == 0) {
                 SetHeroAction(player, 0x4A);
             }
@@ -12739,7 +12739,7 @@ void PolarHeroFootRun(s32 player) {
             }
         }
         ProcessHeroAnim(player);
-        if (!(((PolarPad *)Pads)[player].unk50 & 0xF0)) {
+        if (!(((PadState *)Pads)[player].dir & 0xF0)) {
             ext = FindExtension(Heroes[player].hero, 0x20000000);
             if (ext != NULL) {
                 if (ext->state == 0) {
@@ -13179,12 +13179,12 @@ void PolarHeroPoll(s32 player) {
 
 void PolarHeroInBeam(s32 player) {
     PadState *base;
-    PolarPad *pad;
+    PadState *pad;
 
     base = Pads;
-    pad = (PolarPad *)(base + player);
-    pad->unk50 = 0;
-    pad->unk54 = 0;
+    pad = (PadState *)(base + player);
+    pad->dir = 0;
+    pad->dirPressed = 0;
     ProcessHeroAnim(player);
 }
 
@@ -13250,7 +13250,7 @@ void PolarHeroAddWeight(s32 arg0) {
 s32 TestPolarHeroStop(s32 player) {
     Ext20 *ext;
 
-    if (((PolarPad *)Pads)[player].unk50 & 0xF0) {
+    if (((PadState *)Pads)[player].dir & 0xF0) {
         return 0;
     }
     ext = FindExtension(Heroes[player].hero, 0x20000000);
@@ -13270,7 +13270,7 @@ s32 TestPolarHeroRun(s32 player) {
 
     ext = FindExtension(Heroes[player].hero, 0x20000000);
     if (ext != NULL) {
-        if (!(((PolarPad *)Pads)[player].unk50 & 0xF0)) {
+        if (!(((PadState *)Pads)[player].dir & 0xF0)) {
             return 0;
         }
         if (ext->state == 0) {

@@ -359,7 +359,7 @@ s32 id;
         }
         h->hero_ai->AIpad |= dir;
         if (h->hero_frozen == 0) {
-            ((DinoPadAng *)Pads)[id].buttons = h->hero_ai->AIpad;
+            ((PadState *)Pads)[id].dir = h->hero_ai->AIpad;
         }
         ai = h->hero_ai;
         t = ai->AItimer1--;
@@ -395,7 +395,7 @@ s32 id;
             h2->hero_ai->AItimer1 = 0;
         }
         if (Heroes[id].hero_frozen == 0) {
-            ((DinoPadAng *)Pads)[id].angle = Heroes[id].hero_ai->AIang;
+            ((PadState *)Pads)[id].angle.w = Heroes[id].hero_ai->AIang;
         }
     }
 }
@@ -577,7 +577,7 @@ void DinoAI_GuardGem(s32 id) {
         if (DinoAI_ShotBlocked(id) != 0) {
             h->hero_ai->AIpad |= 0x8000;
         }
-        ((PadButtons *)Pads)[id].unk50 = h->hero_ai->AIpad;
+        ((PadState *)Pads)[id].dir = h->hero_ai->AIpad;
         DinoAI_SteerToTarget(id);
     }
 }
@@ -633,7 +633,7 @@ void DinoAI_ShootGem(s32 id) {
         }
         if (hit != 0) {
             Heroes[id].hero_ai->AIpad |= 0x8000;
-            ((DinoPad *)Pads)[id].unk50 = Heroes[id].hero_ai->AIpad;
+            ((PadState *)Pads)[id].dir = Heroes[id].hero_ai->AIpad;
             c->unk28 = -1;
             c->unk30 = 8;
             c->fn = DinoUnusedStub;
@@ -699,7 +699,7 @@ void DinoAI_CarryGem(s32 id) {
         }
         if (hit != 0) {
             Heroes[id].hero_ai->AIpad |= 0x8000;
-            ((DinoPad *)Pads)[id].unk50 = Heroes[id].hero_ai->AIpad;
+            ((PadState *)Pads)[id].dir = Heroes[id].hero_ai->AIpad;
             c->unk28 = -1;
             c->unk30 = 8;
             c->fn = DinoUnusedStub;
@@ -2854,17 +2854,17 @@ void DinoPreMoveHero(s32 id) {
     h = &Heroes[id];
     if (ext != NULL) {
         if (h->hero_frozen != 0) {
-            ((PadButtons *)Pads)[id].unk50 = 0;
-            ((PadButtons *)Pads)[id].unk54 = 0;
+            ((PadState *)Pads)[id].dir = 0;
+            ((PadState *)Pads)[id].dirPressed = 0;
         }
         m = h->hero_move;
         if (m != NULL) {
             m->x_max = 0;
             m->z_max = 0;
             if ((Pads[id].flags & 1) || h->hero_ai->AImode != 0) {
-                if (h->hero_mode != 0x66 && (((PadButtons *)Pads)[id].unk50 & 0xF0)) {
+                if (h->hero_mode != 0x66 && (((PadState *)Pads)[id].dir & 0xF0)) {
                     if (ext->unk14 == 0) {
-                        m->forward_angle = (((DinoPadAng *)Pads)[id].angle + 0x800) & 0xFFF;
+                        m->forward_angle = (((PadState *)Pads)[id].angle.w + 0x800) & 0xFFF;
                         sc = DinoSteerMin;
                         if (GameInfo[id + 0x5C] != 0) {
                             sc = DinoSteerTable[(s16)(u16)AiPlayerSkill[id].level >> 1];
@@ -2873,7 +2873,7 @@ void DinoPreMoveHero(s32 id) {
                         m->z_max = (sc * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                     } else {
                         sc = DinoSteerMax;
-                        m->forward_angle = (((DinoPadAng *)Pads)[id].angle + 0x800) & 0xFFF;
+                        m->forward_angle = (((PadState *)Pads)[id].angle.w + 0x800) & 0xFFF;
                         m->x_max = (sc * rcossin_tbl[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
                         m->z_max = (sc * rcossin_tbl[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
                     }
@@ -3002,8 +3002,8 @@ void DinoHeroDazed(s32 id) {
         Heroes[id].hero_eng->unk1E += 0x80;
         DinoHeroCollide(id);
         Heroes[id].hero_frozen = 2;
-        ((PadButtons *)Pads)[id].unk50 = 0;
-        ((PadButtons *)Pads)[id].unk54 = 0;
+        ((PadState *)Pads)[id].dir = 0;
+        ((PadState *)Pads)[id].dirPressed = 0;
         if (ext->unkC-- < 0) {
             SetHeroAction(id, 0x63);
         }
@@ -3071,7 +3071,7 @@ s32 DinoHeroTestShoot(s32 arg0) {
         if (a->unk14 != 0) {
             b = FindExtension(a->unk18, 0x10000000);
             if (b != NULL && b->unk10 == arg0) {
-                if (((DinoPad *)Pads)[arg0].unk50 & 0x8000) {
+                if (((PadState *)Pads)[arg0].dir & 0x8000) {
                     SetHeroAction(arg0, 0x65);
                     b->unkC = 2;
                     a->unk14 = 0;
@@ -3081,7 +3081,7 @@ s32 DinoHeroTestShoot(s32 arg0) {
             return 0;
         }
         if (a->unk10 <= 0) {
-            if (((DinoPad *)Pads)[arg0].unk50 & 0x8000) {
+            if (((PadState *)Pads)[arg0].dir & 0x8000) {
                 a->unk10 = 0x1E;
                 SetHeroAction(arg0, 0x66);
                 return 1;
@@ -3540,7 +3540,7 @@ void PlotDinoGem(NAS *m) {
     case 3:
         ext->unk84->sub->flags |= 0x8000;
         if (ext->unk88-- > 0
-            && (GameInfo[ext->unk10 + 0x5C] != 0 || (((DinoPad *)Pads)[ext->unk10].unk50 & 0x8000))) {
+            && (GameInfo[ext->unk10 + 0x5C] != 0 || (((PadState *)Pads)[ext->unk10].dir & 0x8000))) {
             ext->unk28 -= 0x1800;
             if (ext->unk28 < -0x6000) {
                 ext->unk28 = -0x6000;
@@ -3752,7 +3752,7 @@ s32 DinoHeroTestStop(s32 arg0) {
 }
 
 s32 DinoHeroTestIdle(s32 arg0) {
-    if (((PadButtons *)Pads)[arg0].unk50 & 0xF0) {
+    if (((PadState *)Pads)[arg0].dir & 0xF0) {
         return 0;
     }
     SetHeroAction(arg0, 0x63);
@@ -3760,7 +3760,7 @@ s32 DinoHeroTestIdle(s32 arg0) {
 }
 
 s32 DinoHeroTestRun(s32 arg0) {
-    if (!(((PadButtons *)Pads)[arg0].unk50 & 0xF0)) {
+    if (!(((PadState *)Pads)[arg0].dir & 0xF0)) {
         return 0;
     }
     SetHeroAction(arg0, 0x64);

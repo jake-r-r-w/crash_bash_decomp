@@ -456,12 +456,6 @@ void MaintainCentre(void);
 void RaceUpdateBarrels(void);
 void RacePickupMaster(void);
 void RacePickupRespawn(void);
-/* PadState (Pads) as RaceHeroTestIdle reads it: d-pad bits 0xF0 at 0x50. */
-typedef struct RacePad {
-    /* 0x00 */ u8 unk0[0x50];
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} RacePad;
 /* Race missile extension (0x78 bytes, id 0x10000000). */
 typedef struct RaceMissileExt {
     /* 0x00 */ u8 pad0[0xC];
