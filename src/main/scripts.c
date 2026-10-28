@@ -480,7 +480,7 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
 void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
     u8 *p;
     u8 *r;
-    u8 *res;
+    script_thread *res;
     s32 *q;
     s32 lo;
     s32 idx;
@@ -506,30 +506,30 @@ void update_sub_thread(script_thread_handler *th, script_control_info *ci) {
     if (r == NULL) {
         res = NULL;
     } else {
-        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));
     }
     if (res != NULL) {
-        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+        if (v < res->start_frame || res->end_frame < v) {
             res = NULL;
         }
     }
     d = &th->type.subscript.sub;
-    if (res != NULL && ci->time.w >= (*(s32 *)(res + 4) << 16) &&
+    if (res != NULL && ci->time.w >= (res->start_frame << 16) &&
         !(th->type.subscript.sub.flags & 0x8000)) {
-        d->unk04 = *(s32 *)(res + 0x2C);
-        d->unk08 = *(s32 *)(res + 0x30);
-        d->unk0C = *(s32 *)(res + 0x34);
-        d->unk10 = *(u16 *)(res + 0x38);
-        d->unk12 = *(u16 *)(res + 0x3C);
-        d->unk14 = *(u16 *)(res + 0x40);
-        d->unk20.x = *(s32 *)(res + 0x60);
-        d->unk20.y = *(s32 *)(res + 0x64);
-        d->unk20.z = *(s32 *)(res + 0x68);
+        d->unk04 = res->type.subscript.key[2];
+        d->unk08 = res->type.subscript.key[3];
+        d->unk0C = res->type.subscript.key[4];
+        d->unk10 = *(u16 *)&res->type.subscript.key[5];
+        d->unk12 = *(u16 *)&res->type.subscript.key[6];
+        d->unk14 = *(u16 *)&res->type.subscript.key[7];
+        d->unk20.x = res->type.subscript.key[15];
+        d->unk20.y = res->type.subscript.key[16];
+        d->unk20.z = res->type.subscript.key[17];
         d->unk51 = 0;
-        t = *(u16 *)(res + 0x18);
+        t = *(u16 *)&res->type.subscript.sort_priority;
         d->unk52 = 1;
         d->unk68 = t;
-        sub_play_script(ci->dbase, *(s32 *)(res + 0x14), d, 0);
+        sub_play_script(ci->dbase, res->type.subscript.script_num, d, 0);
         th->type.subscript.sub.flags |= 0x8000;
     }
 }
