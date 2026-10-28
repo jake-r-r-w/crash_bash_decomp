@@ -63,7 +63,7 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. The engine's and exe's `D_` globals (189 left, 390 uses: `scratch/rank_d.py` counts
+1. The engine's and exe's `D_` globals (77 left, 106 uses, 61 never used by name: `scratch/rank_d.py` counts
    every `D_8001..D_800B32B4` use in src and include, externs aside; 63 are never used by
    name). Read the uses (`scratch/dview.py N` prints 30 with their functions), name,
    `decomp.py rename --ovl engine --file F` for the engine's (it writes an exe address's
@@ -489,7 +489,11 @@ Newest first, a few lines each. Details are in the commits.
   19 `HudEntry` lists), `FileGroups[130]`, `HeroActionTable`'s tail (`HeroHitSfx`), the
   credits' state. Names by family: 113 hero sequence records from `HeroSeqTables` and the
   enum, 34 cutscene records from their model bank ids, 28 `Lang*` tables. 18 sequence
-  words data2c read as addresses are numbers. 565 -> 189 `D_` names.
+  words data2c read as addresses are numbers. 565 -> 77 `D_` names. Gotchas: data2c can
+  leave a pointer as bytes in a u8 array (ShellModules, ComboSeqs, VramNodePool, LangModeTypeTexts):
+  `scratch/bytesptrs.py` scans every u8/s8 array for an aligned word equal to a symbol's
+  address; separate NTSC/PAL screen mode globals, like the hero anim slots, can't be one
+  array (a shared lui).
 
 - **2026-10-28 (Phase 5: globals and typing):** labels inside objects typed: the boss's
   record (`BossState`), `GameOptions` (music, sfx, stereo, vibrate), the crate and
