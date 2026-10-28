@@ -19,7 +19,7 @@ script_handler *script_alloc(void);
 void scripts_release(void);
 void scripts_kill_all(void);
 void scripts_update(void);
-void emit_particle(u8 *obj, EmitPart *part, u8 *def);
+void emit_particle(subengine *obj, EmitPart *part, partdata *def);
 void render_emitter_thread(script_thread_handler *th, s32 *arg1);
 u8 *offset_table_entry(OffsetTable *tbl, s32 i);
 script_thread_handler *script_list_pop(void);

@@ -306,7 +306,7 @@ void update_fade_thread(script_thread_handler *th, script_control_info *ci) {
     }
 }
 
-void emit_particle(u8 *obj, EmitPart *part, u8 *def) {
+void emit_particle(subengine *obj, EmitPart *part, partdata *def) {
     s32 speed;
     s32 n;
     s32 yaw;
@@ -314,55 +314,55 @@ void emit_particle(u8 *obj, EmitPart *part, u8 *def) {
     s32 radius;
     s32 r;
 
-    yaw = *(s32 *)(def + 0x30);
-    pitch = *(s32 *)(def + 0x38);
-    radius = *(s32 *)(def + 0x2C);
-    n = *(s32 *)(def + 0x24) - *(s32 *)(def + 0x20);
+    yaw = def->yrotmin;
+    pitch = def->xrotmin;
+    radius = def->emitterradius;
+    n = def->randomspeedflag - def->emitterspeed;
     if (n != 0) {
-        speed = *(s32 *)(def + 0x20) + Random(n);
+        speed = def->emitterspeed + Random(n);
     } else {
-        speed = *(s32 *)(def + 0x20);
+        speed = def->emitterspeed;
     }
     part->age = 0;
-    if (*(s32 *)(def + 0x68) != 0) {
-        *(s16 *)(obj + 0x14) = Random(0x1000);
+    if (def->zrot != 0) {
+        obj->unk14 = Random(0x1000);
     }
-    if (*(s32 *)(def + 0x34) < *(s32 *)(def + 0x30)) {
-        r = abs((*(s32 *)(def + 0x34) - *(s32 *)(def + 0x30)) << 20 >> 20);
+    if (def->yrotmax < def->yrotmin) {
+        r = abs((def->yrotmax - def->yrotmin) << 20 >> 20);
     } else {
-        r = *(s32 *)(def + 0x34) - *(s32 *)(def + 0x30);
+        r = def->yrotmax - def->yrotmin;
     }
     if (r != 0) {
-        yaw = (*(s32 *)(def + 0x30) + Random(r)) & 0xFFF;
+        yaw = (def->yrotmin + Random(r)) & 0xFFF;
     }
-    if (*(s32 *)(def + 0x3C) < *(s32 *)(def + 0x38)) {
-        r = abs((*(s32 *)(def + 0x3C) - *(s32 *)(def + 0x38)) << 20 >> 20);
+    if (def->xrotmax < def->xrotmin) {
+        r = abs((def->xrotmax - def->xrotmin) << 20 >> 20);
     } else {
-        r = *(s32 *)(def + 0x3C) - *(s32 *)(def + 0x38);
+        r = def->xrotmax - def->xrotmin;
     }
     if (r != 0) {
-        pitch = (*(s32 *)(def + 0x38) + Random(r)) & 0xFFF;
+        pitch = (def->xrotmin + Random(r)) & 0xFFF;
     }
     part->vel[0] = speed * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 4;
     part->vel[2] = speed * rcossin_tbl[yaw & 0xFFF].unk2 >> 4;
     part->vel[1] = -(speed * rcossin_tbl[pitch & 0xFFF].unk2 >> 4);
-    *(s32 *)(obj + 4) = (radius * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 12) + *(s32 *)(def + 4);
-    *(s32 *)(obj + 0xC) = (radius * rcossin_tbl[yaw & 0xFFF].unk2 >> 12) + *(s32 *)(def + 0xC);
-    *(s32 *)(obj + 8) = *(s32 *)(def + 8) - (radius * rcossin_tbl[pitch & 0xFFF].unk2 >> 12);
-    *(s32 *)(obj + 0) |= 0x8000;
+    obj->unk04 = (radius * rcossin_tbl[(yaw - 0x400) & 0xFFF].unk2 >> 12) + def->pos.x;
+    obj->unk0C = (radius * rcossin_tbl[yaw & 0xFFF].unk2 >> 12) + def->pos.z;
+    obj->unk08 = def->pos.y - (radius * rcossin_tbl[pitch & 0xFFF].unk2 >> 12);
+    obj->flags |= 0x8000;
 }
 
 void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
     u8 *p;
     u8 *r;
-    u8 *res;
+    script_thread *res;
     s32 *q;
     s32 lo;
     s32 idx;
     u8 *e;
     subengine *obj;
     EmitPart *part;
-    u8 *def;
+    partdata *def;
     s32 spawn;
     s32 a;
     s32 scale;
@@ -386,22 +386,22 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
     if (r == NULL) {
         res = NULL;
     } else {
-        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+        res = (script_thread *)(r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C));  /* the header's self-relative offset to the thread */
     }
     if (res == NULL) {
         return;
     }
-    def = res + 0x14;
-    if (ci->time.h.frame == *(s32 *)(res + 4)) {
-        th->type.particle.first = *(s32 *)(def + 0x10);
+    def = &res->type.particle;
+    if (ci->time.h.frame == res->start_frame) {
+        th->type.particle.first = def->maxparticlecount;
     }
-    if (*(s32 *)(res + 4) >= ci->time.h.frame) {
+    if (res->start_frame >= ci->time.h.frame) {
         return;
     }
-    if (th->type.particle.first != 0 || (spawn = 0, *(s32 *)(def + 0x6C) != 0)) {
-        spawn = *(s32 *)(def + 0x14);
+    if (th->type.particle.first != 0 || (spawn = 0, def->regenparticle != 0)) {
+        spawn = def->particlesperframe;
     }
-    if (*(s32 *)(def + 0x1C) < ci->time.h.frame) {
+    if (def->effecttime < ci->time.h.frame) {
         spawn = 0;
     }
     th->type.particle.first -= spawn;
@@ -422,34 +422,34 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
             if (part->vel[2] != 0) {
                 obj->unk0C += part->vel[2] >> 8;
             }
-            if (*(s32 *)(def + 0x40) != 0) {
-                part->vel[0] += *(s32 *)(def + 0x40);
+            if (def->gxmin != 0) {
+                part->vel[0] += def->gxmin;
             }
-            if (*(s32 *)(def + 0x48) != 0) {
-                part->vel[1] += *(s32 *)(def + 0x48);
+            if (def->gymin != 0) {
+                part->vel[1] += def->gymin;
             }
-            if (*(s32 *)(def + 0x50) != 0) {
-                part->vel[2] += *(s32 *)(def + 0x50);
+            if (def->gzmin != 0) {
+                part->vel[2] += def->gzmin;
             }
-            if (*(s32 *)(def + 0x44) != 0x100) {
-                part->vel[0] = (part->vel[0] * *(s32 *)(def + 0x44)) >> 8;
+            if (def->gxmax != 0x100) {
+                part->vel[0] = (part->vel[0] * def->gxmax) >> 8;
             }
-            if (*(s32 *)(def + 0x4C) != 0x100) {
-                part->vel[1] = (part->vel[1] * *(s32 *)(def + 0x4C)) >> 8;
+            if (def->gymax != 0x100) {
+                part->vel[1] = (part->vel[1] * def->gymax) >> 8;
             }
-            if (*(s32 *)(def + 0x54) != 0x100) {
-                part->vel[2] = (part->vel[2] * *(s32 *)(def + 0x54)) >> 8;
+            if (def->gzmax != 0x100) {
+                part->vel[2] = (part->vel[2] * def->gzmax) >> 8;
             }
-            obj->unk14 += *(u16 *)(def + 0x68);
+            obj->unk14 += *(u16 *)&def->zrot;  /* the spin speed's low half */
             obj->unk52 = 1;
-            if (*(s32 *)(def + 0x18) < part->age++) {
+            if (def->particlelifetime < part->age++) {
                 obj->flags &= ~0x8000;
             }
             if (obj->flags & 0x8000) {
-                in = *(s32 *)(def + 0x58);
+                in = def->fadeinend;
                 a = 0;
-                if (in != 0 || *(s32 *)(def + 0x5C) != 0) {
-                    a = EmitPart_Fade(in, *(s32 *)(def + 0x5C), part->age, *(s32 *)(def + 0x18), 0x1000, 0);
+                if (in != 0 || def->fadeoutstart != 0) {
+                    a = EmitPart_Fade(in, def->fadeoutstart, part->age, def->particlelifetime, 0x1000, 0);
                 }
                 if (a != 0) {
                     obj->flags |= 0x40000000;
@@ -457,10 +457,10 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
                     obj->flags &= ~0x40000000;
                 }
                 obj->unk76 = a;
-                in = *(s32 *)(def + 0x60);
+                in = def->scaleinend;
                 scale = 0x1000;
-                if (in != 0 || *(s32 *)(def + 0x64) != 0) {
-                    scale = EmitPart_Fade(in, *(s32 *)(def + 0x64), part->age, *(s32 *)(def + 0x18), 0, 0x1000);
+                if (in != 0 || def->scaleoutstart != 0) {
+                    scale = EmitPart_Fade(in, def->scaleoutstart, part->age, def->particlelifetime, 0, 0x1000);
                 }
                 obj->unk20.z = scale;
                 obj->unk20.y = scale;
@@ -471,7 +471,7 @@ void update_emitter_thread(script_thread_handler *th, script_control_info *ci) {
         }
         if (spawn != 0 && !(obj->flags & 0x8000)) {
             obj->flags |= 0x8000;
-            emit_particle((u8 *)obj, part, def);
+            emit_particle(obj, part, def);
             spawn--;
         }
     }
