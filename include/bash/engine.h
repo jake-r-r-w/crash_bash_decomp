@@ -104,7 +104,7 @@ extern s32 ElapsedStart;
 extern s32 LoadingScenePlaying;
 extern s32 LoadingSceneDelay;
 extern u8 LoadingIconEngine[];
-extern void *SceneMark;
+extern struct MarkCtx *SceneMark; /* the scene's current mark record (levelload.h) */
 extern process_control_info MenuProcessControl;
 extern void (*RenderHook)(void);
 extern GfxViewport LoadingViewport;   /* the loading screen's (RenderLoadingScreen) */

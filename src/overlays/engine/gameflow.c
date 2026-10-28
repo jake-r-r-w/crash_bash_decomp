@@ -48,7 +48,7 @@ void InitCrateExplode(NAS *arg0) {
 
     if (e != NULL) {
         PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(2, (u8 *)e + 0x10, &HeroModelBank[DB_CrateObjects]);
+        SpawnModelFx(2, (s32 *)&e->unk10, &HeroModelBank[DB_CrateObjects]);
     }
     KillNAS(arg0);
 }

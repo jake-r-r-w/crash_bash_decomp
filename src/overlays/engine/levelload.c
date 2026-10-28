@@ -647,9 +647,9 @@ void StartSceneScript(void) {
     s32 t;
     MarkSrcEnt *e;
 
-    play_script((obj_dbase *)((MarkCtx *)SceneMark)->obj, ((MarkCtx *)SceneMark)->unk8, &SceneScriptRot, &SceneScriptPos, 4, &SceneScript);
+    play_script((obj_dbase *)SceneMark->obj, SceneMark->unk8, &SceneScriptRot, &SceneScriptPos, 4, &SceneScript);
     SceneMarkCount = 0;
-    t = (s32)((MarkCtx *)SceneMark)->obj;
+    t = (s32)SceneMark->obj;
     SceneOldDbase = t;
     o = (MarkObj *)t;
     if (o != NULL) {
@@ -673,7 +673,7 @@ void StartSceneScript(void) {
             }
         }
     }
-    SceneViewport.isbg = ((MarkCtx *)SceneMark)->unkC;
+    SceneViewport.isbg = SceneMark->unkC;
 }
 
 void UpdateScriptScene(void) {
@@ -685,16 +685,16 @@ void UpdateScriptScene(void) {
     scripts_update();
     if (SceneMark != NULL) {
         if (SceneScript == NULL) {
-            if ((s32)((MarkCtx *)SceneMark)->obj != SceneOldDbase && SceneOldDbase != 0) {
+            if ((s32)SceneMark->obj != SceneOldDbase && SceneOldDbase != 0) {
                 dbase_release((u8 *)SceneOldDbase);
             }
-            if (((MarkCtx *)SceneMark)->obj == NULL && SceneStep == 0) {
+            if (SceneMark->obj == NULL && SceneStep == 0) {
                 if (SceneSkipProcess != 0) {
                     GotoProcess(SceneSkipProcess, 0x200);
                     SceneStep += 1;
                 }
             } else {
-                o = ((MarkCtx *)SceneMark)->obj;
+                o = SceneMark->obj;
                 ok = 0;
                 if (o != NULL) {
                     ok = o->src != NULL;
@@ -711,7 +711,7 @@ void UpdateScriptScene(void) {
                         }
                     }
                     StartSceneScript();
-                    SceneMark = (MarkCtx *)SceneMark + 1;
+                    SceneMark = SceneMark + 1;
                     if (SceneStarting != 0) {
                         VabCueTimer = 1;
                         SceneStarting = 0;
@@ -723,7 +723,7 @@ void UpdateScriptScene(void) {
         }
     end:
         if (SceneStep == 0) {
-            obj = ((MarkCtx *)SceneMark)->obj;
+            obj = SceneMark->obj;
             if (obj != NULL) {
                 dbase_asload_with_anims((obj_dbase *)obj, 0);
             }
@@ -779,7 +779,7 @@ s32 SceneModelLoaded(void) {
     s32 var_v0;
     u8 *temp_v1;
 
-    temp_v1 = (*(s32*)((u8*)(SceneMark) + 4));
+    temp_v1 = ((s32)SceneMark->obj);
     var_v0 = 0;
     if (temp_v1 != NULL) {
         var_v0 = (*(s32*)((u8*)(temp_v1) + 12)) != 0;
@@ -788,7 +788,7 @@ s32 SceneModelLoaded(void) {
 }
 
 void ReleaseOldSceneModel(void) {
-    if (((*(s32*)((u8*)(SceneMark) + 4)) != SceneOldDbase) && (SceneOldDbase != 0)) {
+    if ((((s32)SceneMark->obj) != SceneOldDbase) && (SceneOldDbase != 0)) {
         dbase_release(SceneOldDbase);
     }
 }
@@ -796,7 +796,7 @@ void ReleaseOldSceneModel(void) {
 void LoadSceneModel(void) {
     s32 temp_a0;
 
-    temp_a0 = (*(s32*)((u8*)(SceneMark) + 4));
+    temp_a0 = ((s32)SceneMark->obj);
     if (temp_a0 != 0) {
         dbase_asload_with_anims(temp_a0, 0);
     }
@@ -1566,7 +1566,7 @@ s32 SceneVabCue = 0;
 s32 SceneVabSlot[1] = {0};
 s32 SceneSoundHandle[1] = {0};
 s32 SceneStarted = 0;
-void *SceneMark = 0;
+MarkCtx *SceneMark = 0;
 s32 SceneOldDbase = 0;
 script_handler *SceneScript = 0;
 s32 SceneStarting = 0;
