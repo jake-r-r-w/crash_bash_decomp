@@ -179,7 +179,7 @@ goes in the ignored `ext/psyq47/` (`psyq-4.7-converted-full.7z` from
 ```sh
 mkdir -p disc ext/psyq47
 cp "/path/to/Crash Bash.bin" disc/CrashBash.bin     # and a .cue naming CrashBash.bin
-tar -xf psyq-4.7-converted-full.7z -C ext/psyq47
+tar -xf psyq-4.7-converted-full.7z -C ext/psyq47        # or: tools/get_psyq.sh (downloads and checks it)
 
 git config core.hooksPath tools/hooks                 # data guard + match gate
 tools/dk python3 tools/scripts/decomp.py extract disc/CrashBash.cue   # and the game data to assets/
