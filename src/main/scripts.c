@@ -4,38 +4,41 @@
 #include "bash/scripts.h"
 
 void init_scripts(s32 arg0, s32 arg1) {
-    u8 *p;
-    u8 *next;
+    script_handler *p;
+    script_handler *next;
+    script_thread_handler *q;
+    script_thread_handler *nq;
 
     if (arg0 != 0) {
-        ScriptPool = (s32)mal_alloc(arg0 * 0x7C, &MainHeap);
-        p = (u8 *)ScriptPool;
+        ScriptPool = (s32)mal_alloc(arg0 * sizeof(script_handler), &MainHeap);
+        p = (script_handler *)ScriptPool;
         for (; arg0 >= 2; arg0--) {
-            next = p + 0x7C;
-            *(u8 **)(p + 0x74) = next;
+            next = p + 1;
+            p->next = next;
             p = next;
         }
-        *(s32 *)(p + 0x74) = 0;
+        p->next = NULL;
     } else {
         ScriptPool = 0;
     }
     active_scripts = NULL;
     free_scripts = (void *)ScriptPool;
     if (arg1 != 0) {
-        ScriptThreadPool = (s32)mal_alloc(arg1 * 0xB8, &MainHeap);
-        p = (u8 *)ScriptThreadPool;
+        ScriptThreadPool = (s32)mal_alloc(arg1 * sizeof(script_thread_handler), &MainHeap);
+        q = (script_thread_handler *)ScriptThreadPool;
         for (; arg1 >= 2; arg1--) {
-            next = p + 0xB8;
-            *(u8 **)(p + 0xB4) = next;
-            p = next;
+            nq = q + 1;
+            q->next = nq;
+            q = nq;
         }
-        *(s32 *)(p + 0xB4) = 0;
+        q->next = NULL;
     } else {
         ScriptThreadPool = 0;
     }
     ScriptTimeStep = 0x10000;
     ScriptList = (void *)ScriptThreadPool;
 }
+
 
 void update_model_thread(script_thread_handler *th, script_control_info *ci) {
     u8 *p;
@@ -601,7 +604,7 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
 
 s32 update_script(script_control_info *ci) {
     script_thread_handler *s;
-    s32 *a;
+    script_header *a;
     u8 *c;
     void (*fn)(script_thread_handler *, script_control_info *);
     s32 idx;
@@ -622,15 +625,15 @@ s32 update_script(script_control_info *ci) {
         a = NULL;
     } else {
         s32 *t = (s32 *)(c + (*(s32 *)(c + 0x4C) + 0x4C) + idx * 4);
-        a = (s32 *)((u8 *)t + *t);
+        a = (script_header *)((u8 *)t + *t);
     }
-    if (ci->time.h.frame >= a[2]) {
+    if (ci->time.h.frame >= a->end_frame) {
         ci->flags |= 0x10;
         if (ci->flags & 8) {
-            ci->time.w = (a[2] - 1) << 16;
+            ci->time.w = (a->end_frame - 1) << 16;
         }
         if (ci->flags & 2) {
-            ci->time.h.frame = *(u16 *)(a + 3);
+            ci->time.h.frame = *(u16 *)&a->start_frame;
         }
         if (ci->flags & 4) {
             kill_script_threads(ci);
@@ -876,8 +879,8 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
         } while (++i < e->threadcount);
     }
     update_script(p);
-    *(void **)((u8 *)sub + 0x54) = plot_script_nas;
-    *(void **)((u8 *)sub + 0x58) = kill_nas_script;
+    sub->hook = (void (*)(subengine *, s32, u32))plot_script_nas;
+    sub->release = kill_nas_script;
 }
 
 void kill_nas_script(subengine *sub) {
