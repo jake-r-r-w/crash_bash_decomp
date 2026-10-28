@@ -1326,7 +1326,7 @@ void ShowCardSlots(void) {
     ShowCardSlot(&p[2].state, 2, *(s32 *)p[2].summary == 0, 0x28, 0x7C);
     ShowCardSlot(&p[3].state, 3, *(s32 *)p[3].summary == 0, 0x140, 0x7C);
     PlaceEngineSlot(3, CardSlotsPanel);
-    ShowCardSlotStats((GameState *)((u8 *)pad + CardSlotIndex * sizeof(CardSlot)), *(s32 *)p[CardSlotIndex].summary == 0);
+    ShowCardSlotStats(&CardSlots[CardSlotIndex].state, *(s32 *)p[CardSlotIndex].summary == 0);
 }
 
 void InitSaveMenu(void) {
