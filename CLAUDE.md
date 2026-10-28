@@ -85,7 +85,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `tools/scripts/rename_unit.py OLD NEW PREFIX` renames an overlay unit everywhere and
   `rename_file.py SEG NEW` one of its files (no byte
   changes); `field_rename.py OLD NEW` a struct field's uses after its struct (by cc1's
-  missing-member errors, so shared names like `unk6C` are safe). `tools/scripts/model_slots.py` lists each exe model slot with the archive files
+  missing-member errors, so shared names like `unk6C` are safe); `bytes_ptrs.py` byte and
+  halfword data arrays holding a symbol's address (pointers a shift would leave behind). `tools/scripts/model_slots.py` lists each exe model slot with the archive files
   every game loads into it. `tools/scripts/data2c.py OVL [--rodata SYM ...] [--strings-only]` writes an overlay's asm data as C
   (OVL `engine` or `main` for main.exe too; `--strings-only` for just the string blocks)
   definitions (docs/CONVENTIONS.md, Data as C). The engine's link gets the slot
