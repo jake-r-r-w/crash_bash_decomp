@@ -602,15 +602,7 @@ void HubTrailPoint(HubTrailDst *d, HubTrail *t, s32 idx);
 
 void HubDrawSparks(HubSparks *arg0, MATRIX *m);
 
-/* The warp room's sparks: their Init/Plot pair after three words; fx_alloc_buffers takes it. */
-typedef struct HubSparkFx {
-    s32 unk0;
-    s32 unk4;
-    s32 id;
-    void (*Init)(HubSparks *);
-    void (*Plot)(HubSparks *, MATRIX *);
-} HubSparkFx;
-extern HubSparkFx HubSparkFxDef;
+extern FxDef HubSparkFxDef; /* the warp room's sparks */
 
 void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1);
 

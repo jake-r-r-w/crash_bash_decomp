@@ -4083,7 +4083,7 @@ void PlotWeatherNas(u8 *arg0) {
         s32 v = *(s32 *)(arg0 + 0x64);
         switch (v) {
         case 0:
-            fx_alloc_buffers((u8 *)&D_8009E200, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
+            fx_alloc_buffers(&WeatherFxDef, *(subengine **)(*(u8 **)(arg0 + 0x54) + 0x6C));
             *(s32 *)(arg0 + 0x60) = 1;
             break;
         case 1:
@@ -4098,7 +4098,7 @@ void InitWeatherNas(u8 *arg0) {
     *(s32 *)(arg0 + 0x64) = 0;
     **(s32 **)(*(u8 **)(arg0 + 0x54) + 0x6C) = 0x20008000;
     if (GameMode == 0x1F) {
-        fx_alloc_buffers(NoxSparkFxDef, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
+        fx_alloc_buffers(&NoxSparkFxDef, *(subengine **)(*(u8 **)(arg0 + 0x54) + 0x6C));
     }
 }
 
@@ -6313,7 +6313,7 @@ ScriptInit D_8009E1E8 = { 0, (void *)&D_8009E1DC, 0x402 };
 s32 PolarTiltX = 0;
 s32 PolarTiltZ = 0;
 s32 D_8009E1FC = 0;
-WeatherFx D_8009E200 = { 0x100, 0x2800, 0x1800, PlotSparks, PlotFallParticles };
+FxDef WeatherFxDef = { 0x100, 0x2800, 0x1800, PlotSparks, PlotFallParticles };
 u16 D_8009E214[8] = { 0x1C5, 0x1C6, 0x1C7, 0x1C8, 0x1C9, 0x1CA, 0x1CB, 0x1CC };
 u16 D_8009E224[4] = { 1, 1, 2, 2 };
 s32 D_8009E22C[9] = {

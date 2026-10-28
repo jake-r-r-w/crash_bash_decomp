@@ -3233,7 +3233,7 @@ s32 PodiumUnused[106] = {
     0, 3, 0x4001FD, 0, 0, 0, (s32)&PodiumScore4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1000, 0,
     0x1000, 0, 0x1000, 0, 0, 0,
 };
-HubSparkFx HubSparkFxDef = { 0xC, 0xF00, 0xF00, HubInitSparks, HubDrawSparks };
+FxDef HubSparkFxDef = { 0xC, 0xF00, 0xF00, HubInitSparks, HubDrawSparks };
 NAS *PodiumHeroNas[4] = {0};
 PodiumObj *PodiumTrophyObj = 0;
 s32 PodiumRanks[4] = {0};

@@ -423,17 +423,9 @@ extern s32 map[];
 void PreInitLevel(void);
 
 /* N2O's star field (nox.c's NoxSparkFx; the engine's link takes it from the overlay's ELF) */
-extern u8 NoxSparkFxDef[];
+extern FxDef NoxSparkFxDef;
 
-/* The weather's Init/Plot pair after three words (InitWeatherNas; NoxSparkFx's shape). */
-typedef struct WeatherFx {
-    s32 unk0;
-    s32 unk4;
-    s32 id;
-    void (*Init)();
-    void (*Plot)();
-} WeatherFx;
-extern WeatherFx D_8009E200;
+extern FxDef WeatherFxDef; /* the weather's (InitWeatherNas) */
 
 extern s32 HitSfx[];
 extern s32 CrateAstType;

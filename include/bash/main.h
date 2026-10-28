@@ -781,8 +781,27 @@ s32 *get_exe_exports(void);
 s32 angle_diff_abs(s32 arg0, s32 arg1);
 s32 angle_diff(s32 arg0, s32 arg1);
 void SetRandomSeed(s32 arg0, s32 arg1);
-void fx_free_buffers(u8 *arg0);
-s32 fx_alloc_buffers_b(u8 *arg0, u8 *arg1);
+/* An effect run on a subengine (fx_alloc_buffers): the buffers it needs, and its Init (called
+ * with the subengine) and the subengine's hook. The weather's, the hub's sparks, N2O's stars. */
+typedef struct FxDef {
+    /* 0x00 */ s32 count;
+    /* 0x04 */ s32 size;              /* bytes of each of the two state buffers */
+    /* 0x08 */ s32 bufSize;           /* bytes of the work buffer */
+    /* 0x0C */ void (*init)();
+    /* 0x10 */ void (*hook)();
+} FxDef;
+
+/* An effect's view of its subengine's +0x6C (subengine.u6C on): the buffers fx_alloc_buffers
+ * takes and fx_free_buffers gives back. */
+typedef struct SubFx {
+    /* 0x00 */ void *buf;
+    /* 0x04 */ void *a;
+    /* 0x08 */ void *b;
+    /* 0x0C */ s32 count;
+} SubFx;
+
+void fx_free_buffers(subengine *sub);
+s32 fx_alloc_buffers_b(FxDef *def, SubFx *fx);
 typedef struct RotScale {
     /* 0x00 */ SVECTOR rot;
     /* 0x08 */ u8 pad8[8];
@@ -1881,7 +1900,7 @@ void pad_read(PadState *pad);
 
 void cam_set_projection(s32 arg0, s32 arg1);
 
-s32 fx_alloc_buffers(u8 *arg0, u8 *arg1);
+s32 fx_alloc_buffers(FxDef *def, subengine *sub);
 
 
 

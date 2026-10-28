@@ -636,14 +636,6 @@ typedef struct SparkObj {
 extern s32 NoxSparkAlpha;
 extern s32 NoxSparkScale;
 
-/* The star field's Init/Plot pair after three words; nothing names it in the code. */
-typedef struct NoxSparkFx {
-    s32 unk0;
-    s32 unk4;
-    s32 id;
-    void (*Init)(SparkObj *);
-    void (*Plot)(SparkObj *);
-} NoxSparkFx;
 
 void NoxInitSparks(SparkObj *arg0);
 
@@ -651,7 +643,7 @@ extern MATRIX NoxSparkMatrix;  /* spark view matrix */
 extern SVECTOR NoxSparkAngles; /* spark view rotation */
 
 void NoxDrawSparks(SparkObj *arg0);
-extern NoxSparkFx NoxSparkFxDef;
+extern FxDef NoxSparkFxDef; /* the star field (heroes.c's InitWeatherNas runs it in N2O) */
 
 /* Asteroid roll extension (id 0x10000000): a ballistic arc (ArcUpdate's
  * Arc, declared in bash/pause.h) at 0x0C. */

@@ -3499,72 +3499,72 @@ void plot_point_sprites(PointSprites *ps, MATRIX *m) {
         prim++;
     }
 }
-void fx_free_buffers(u8 *arg0) {
-    u8 *temp_s2;
+void fx_free_buffers(subengine *sub) {
+    SubFx *fx;
 
-    temp_s2 = arg0 + 0x6C;
-    mal_free_later((*(s32*)((u8*)(temp_s2) + 4)), &MainHeap, 2);
-    mal_free_later((*(s32*)((u8*)(temp_s2) + 8)), &MainHeap, 2);
-    mal_free((*(s32*)((u8*)(arg0) + 108)), &MainHeap);
+    fx = (SubFx *)&sub->u6C;
+    mal_free_later(fx->a, &MainHeap, 2);
+    mal_free_later(fx->b, &MainHeap, 2);
+    mal_free(sub->u6C.ptr, &MainHeap);
 }
 
-s32 fx_alloc_buffers(u8 *arg0, u8 *arg1) {
-    u8 *temp_s0;
-    u8 *temp_s4;
+s32 fx_alloc_buffers(FxDef *def, subengine *sub) {
+    SubFx *fx;
+    void **a;
     s32 var_v0;
 
-    temp_s4 = arg1 + 0x70;
-    temp_s0 = arg1 + 0x6C;
-    *(s32 *)(temp_s0 + 4) = 0;
-    *(s32 *)(temp_s0 + 8) = 0;
-    *(s32 *)(arg1 + 0x6C) = 0;
-    *(s32 *)(temp_s0 + 0xC) = 0;
-    mal_alloc_owned_low(*(s32 *)(arg0 + 4), (void **)temp_s4, (s32)&MainHeap, 2);
-    if (*(s32 *)(temp_s0 + 4) == 0) {
+    a = (void **)&((SubFx *)&sub->u6C)->a;
+    fx = (SubFx *)&sub->u6C;
+    fx->a = NULL;
+    fx->b = NULL;
+    sub->u6C.ptr = NULL;
+    fx->count = 0;
+    mal_alloc_owned_low(def->size, a, (s32)&MainHeap, 2);
+    if (fx->a == NULL) {
         var_v0 = 0;
     } else {
-        mal_alloc_owned_low(*(s32 *)(arg0 + 4), (void **)(arg1 + 0x74), (s32)&MainHeap, 3);
-        if (*(s32 *)(temp_s0 + 8) == 0) {
-            mal_free(temp_s4, &MainHeap);
+        mal_alloc_owned_low(def->size, &((SubFx *)&sub->u6C)->b, (s32)&MainHeap, 3);
+        if (fx->b == NULL) {
+            mal_free(a, &MainHeap);
             var_v0 = 0;
         } else {
-            mal_alloc_owned_low(*(s32 *)(arg0 + 8), (void **)temp_s0, (s32)&MainHeap, 3);
-            *(s32 *)(temp_s0 + 0xC) = *(s32 *)arg0;
-            var_v0 = *(s32 *)(arg1 + 0x6C);
+            mal_alloc_owned_low(def->bufSize, &fx->buf, (s32)&MainHeap, 3);
+            fx->count = def->count;
+            var_v0 = (s32)sub->u6C.ptr;
         }
     }
     if (var_v0 != 0) {
-        s32 temp_v1 = *(s32 *)(arg0 + 0x10);
-        *(void **)(arg1 + 0x58) = fx_free_buffers;
-        *(s32 *)(arg1 + 0x54) = temp_v1;
-        (*(void (**)(u8 *))(arg0 + 0xC))(arg1);
+        void (*hook)() = def->hook;
+        sub->release = fx_free_buffers;
+        sub->hook = (void (*)(subengine *, s32, u32))hook;
+        def->init(sub);
     } else {
-        *(s32 *)(arg1 + 0x54) = 0;
-        *(s32 *)(arg1 + 0x58) = 0;
+        sub->hook = NULL;
+        sub->release = NULL;
     }
-    return *(s32 *)(arg1 + 0x78);
+    return ((SubFx *)&sub->u6C)->count;
 }
 
-s32 fx_alloc_buffers_b(u8 *arg0, u8 *arg1) {
-    u8 *temp_s3;
+s32 fx_alloc_buffers_b(FxDef *def, SubFx *fx) {
+    void **a;
 
-    temp_s3 = arg1 + 4;
-    (*(s32*)((u8*)(arg1) + 4)) = 0;
-    (*(s32*)((u8*)(arg1) + 8)) = 0;
-    (*(s32*)((u8*)(arg1) + 0)) = 0;
-    (*(s32*)((u8*)(arg1) + 12)) = 0;
-    mal_alloc_owned_low((*(s32*)((u8*)(arg0) + 4)), temp_s3, &MainHeap, 2);
-    if ((*(s32*)((u8*)(arg1) + 4)) != 0) {
-        mal_alloc_owned_low((*(s32*)((u8*)(arg0) + 4)), arg1 + 8, &MainHeap, 3);
-        if ((*(s32*)((u8*)(arg1) + 8)) != 0) {
-            mal_alloc_owned_low((*(s32*)((u8*)(arg0) + 8)), arg1, &MainHeap, 3);
-            (*(s32*)((u8*)(arg1) + 12)) = (s32) (*(s32*)((u8*)(arg0) + 0));
-            return (*(s32*)((u8*)(arg1) + 0));
+    a = &fx->a;
+    fx->a = NULL;
+    fx->b = NULL;
+    fx->buf = NULL;
+    fx->count = 0;
+    mal_alloc_owned_low(def->size, a, (s32)&MainHeap, 2);
+    if (fx->a != NULL) {
+        mal_alloc_owned_low(def->size, &fx->b, (s32)&MainHeap, 3);
+        if (fx->b != NULL) {
+            mal_alloc_owned_low(def->bufSize, &fx->buf, (s32)&MainHeap, 3);
+            fx->count = def->count;
+            return (s32)fx->buf;
         }
-        mal_free(temp_s3, &MainHeap);
-        goto block_4;
+        mal_free(a, &MainHeap);
+        goto fail;
     }
-block_4:
+fail:
     return 0;
 }
 
