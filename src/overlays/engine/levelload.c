@@ -1452,38 +1452,38 @@ EngineCfg SceneLevelConfig = {
     { 0, 0x10, 0, 0, 0x10, 0, 0, 0, 0, 0x10, 0, 0 }, { 0x80, 0x200, 0x20 },
     (void *)&D_80063ED8, (void *)&VramNodePool, 0x10, 0x400,
 };
-s32 D_800A033C[52] = {
+s32 ExitAMarks[52] = {
     1, (s32)&HeroModelBank[DB_CutsceneLevelEndingGoodShot3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot8], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot7], 0, 1, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelShot6], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingGoodShot2], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot5], 0, 1, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelShot4], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot2], 0, 1, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot1], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingGoodShot1], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntro], 0, 1, 0, 0, 0, 0,
 };
-s32 D_800A040C[15] = {
+s32 ExitAAudio[15] = {
     (s32)&DatIndex[2 * 262], 0x780, 0x4AD, (s32)&DatIndex[2 * 261], 0x781, 0x4AD, (s32)&DatIndex[2 * 260], 0x782,
     0x4AD, (s32)&DatIndex[2 * 259], 0x783, 0x4AD, 0, 0, 0,
 };
 s32 SceneTextGoodwinsMarks[14] = { 1, (s32)&HeroModelBank[DB_CutsceneTextGoodwins], 0, 1, 0, 0, 0, 0, (s32)&DatIndex[2 * 271], 0x76C, 0x4AD, 0, 0, 0 };
-s32 D_800A0480[40] = {
+s32 ExitBMarks[40] = {
     1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot8], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot11], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot10], 0, 1, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot7], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot6], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot9], 0, 1, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot5], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevelEndingEvilShot2], 0, 1, 0, 0, 0, 0,
 };
-s32 D_800A0520[20] = {
+s32 ExitBAudio[20] = {
     (s32)&DatIndex[2 * 258], 0x78A, 0x4AD, (s32)&DatIndex[2 * 257], 0x78B, 0x4AD, (s32)&DatIndex[2 * 256], 0x78C,
     0x4AD, 0, 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneTextEvilwins], 0, 0, 0, 0, 0, 0,
 };
 s32 SceneTextMixteamwinsMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneTextMixteamwins], 0, 1, 0, 0, 0, 0 };
-s32 D_800A0590[20] = {
+s32 ExitCMarks[20] = {
     1, (s32)&HeroModelBank[DB_CutsceneLevel4], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevel3], 0, 1, 1, (s32)&HeroModelBank[DB_CutsceneLevel2], 0, 1, 1,
     (s32)&HeroModelBank[DB_CutsceneLevel], 0, 1, 0, 0, 0, 0,
 };
-s32 D_800A05E0[12] = {
+s32 ExitCAudio[12] = {
     (s32)&DatIndex[2 * 265], 0x776, 0x4AD, (s32)&DatIndex[2 * 264], 0x777, 0x4AD, (s32)&DatIndex[2 * 263], 0x778,
     0x4AD, 0, 0, 0,
 };
 s32 SceneTextCreditsMarks[16] = { 1, (s32)&HeroModelBank[DB_CutsceneTextCredits], 0, 1, 0, 0, 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneTextCredits], 0, 1, 0, 0, 0, 0 };
 s32 SceneTextIntromovieMarks[8] = { 1, (s32)&HeroModelBank[DB_CutsceneTextIntromovie], 0, 1, 0, 0, 0, 0 };
-s32 D_800A0670[80] = {
+s32 IntroMovieMarks[80] = {
     1, (s32)&HeroModelBank[DB_CutsceneIntroLogo], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot19], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot18], 0, 0, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelShot17], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot16], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot15], 0, 0, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelShot14], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntroCrashplain], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntroCortexlab], 0, 0, 1,
@@ -1492,27 +1492,30 @@ s32 D_800A0670[80] = {
     (s32)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil2], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelShot12], 0, 0, 1, (s32)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamevil], 0, 0, 1,
     (s32)&HeroModelBank[DB_CutsceneLevelIntroShotGroupTeamgood], 0, 0, 0, 0, 0, 0,
 };
-s32 D_800A07B0[42] = {
+s32 SceneSharedAudio[36] = {
     (s32)&DatIndex[2 * 255], 0x794, 0x255, (s32)&DatIndex[2 * 254], 0x795, 0x255, (s32)&DatIndex[2 * 253], 0x796,
     0x255, (s32)&DatIndex[2 * 252], 0x797, 0x255, (s32)&DatIndex[2 * 251], 0x798, 0x255, (s32)&DatIndex[2 * 250],
     0x799, 0x255, (s32)&DatIndex[2 * 249], 0x79A, 0x255, (s32)&DatIndex[2 * 248], 0x79B, 0x255,
     (s32)&DatIndex[2 * 247], 0x79C, 0x255, (s32)&DatIndex[2 * 246], 0x79D, 0x255, (s32)&DatIndex[2 * 245], 0x79E,
-    0x255, 0, 0, 0, (s32)&D_800A0670, (s32)&D_800A07B0, 0x1DFC40, (s32)&SceneTextIntromovieMarks,
-    (s32)&D_800A07B0, 0x1E0000,
+    0x255, 0, 0, 0,
+};
+MsgStep IntroMovieMsgs[2] = {
+    { (void *)&IntroMovieMarks, (void *)&SceneSharedAudio, 0x1DFC40 },
+    { (void *)&SceneTextIntromovieMarks, (void *)&SceneSharedAudio, 0x1E0000 },
 };
 MsgStep LevelExitMsgsA[2] = {
-    { (void *)&D_800A033C, (void *)&D_800A040C, 0x1E0000 },
-    { (void *)&SceneTextGoodwinsMarks, (void *)&D_800A07B0, 0x1E0000 },
+    { (void *)&ExitAMarks, (void *)&ExitAAudio, 0x1E0000 },
+    { (void *)&SceneTextGoodwinsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
 };
 MsgStep LevelExitMsgsB[2] = {
-    { (void *)&D_800A0480, (void *)&D_800A0520, 0x1E0000 },
-    { (void *)&D_800A0480, (void *)&D_800A07B0, 0x1E0000 },
+    { (void *)&ExitBMarks, (void *)&ExitBAudio, 0x1E0000 },
+    { (void *)&ExitBMarks, (void *)&SceneSharedAudio, 0x1E0000 },
 };
 MsgStep LevelExitMsgsC[4] = {
-    { (void *)&D_800A0590, (void *)&D_800A05E0, 0x1E0000 },
-    { (void *)&SceneTextMixteamwinsMarks, (void *)&D_800A07B0, 0x1E0000 },
-    { (void *)&SceneTextCreditsMarks, (void *)&D_800A07B0, 0x1E0000 },
-    { (void *)&SceneTextCreditsMarks, (void *)&D_800A07B0, 0x1E0000 },
+    { (void *)&ExitCMarks, (void *)&ExitCAudio, 0x1E0000 },
+    { (void *)&SceneTextMixteamwinsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
+    { (void *)&SceneTextCreditsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
+    { (void *)&SceneTextCreditsMarks, (void *)&SceneSharedAudio, 0x1E0000 },
 };
 s32 SceneUkaData4Audio[6] = { (s32)&DatIndex[2 * 224], 0x3DD, 0, 0, 0, 0 };
 s32 SceneUkaData3Audio[6] = { (s32)&DatIndex[2 * 225], 0x3DA, 0, 0, 0, 0 };

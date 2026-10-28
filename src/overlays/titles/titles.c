@@ -552,7 +552,7 @@ void TitlesCheckIdle(void) {
         f = IdleFrames;
         if (f & 1) {
             GameMode = 0x28;
-            GotoScriptScene((s32)D_800A0840, &LevelLoadProcess);
+            GotoScriptScene((s32)IntroMovieMsgs, &LevelLoadProcess);
         } else {
             u8 *g = GameInfo;
             u8 *t = (u8 *)TitlesDemoModes;
@@ -1191,7 +1191,7 @@ void TitlesLeaveRender(void) {
 
 void TitlesLeaveInit(void) {
     set_fade(&ScreenFade, 0x200, 0);
-    GotoScriptScene((s32)D_800A0840, &WarpReturnProcess);
+    GotoScriptScene((s32)IntroMovieMsgs, &WarpReturnProcess);
 }
 
 void NewLoadMenuInit(void) {

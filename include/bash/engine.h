@@ -26,7 +26,7 @@ typedef struct {
     s16 unkE;
 } D_800AD1EC_entry;
 extern s32 camera_frame_list_size;
-extern D_800AD1EC_entry D_800AD1EC[];
+extern D_800AD1EC_entry CameraFrameList[];
 extern s32 D_8009E29C;
 extern s32 D_8009E298;
 
@@ -115,7 +115,7 @@ extern Blk32 LoadingScriptRot;
 extern CamVec3 LoadingScriptPos;
 extern ASTEntry EngineASTTable[];
 extern fade_info ScreenFade;
-extern s32 D_800ADBC4;
+extern s32 ScreenLabelShown;
 extern process_info LevelLoadProcess;
 extern s32 GamePause;
 extern u8 PauseMenuPanel[];

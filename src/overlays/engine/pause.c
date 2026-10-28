@@ -842,7 +842,7 @@ void DrawPauseMenu(void) {
     case 0:
         if (MSGV->mode == 0x20) {
             DrawHudEntries(PauseMenuQuit, PauseMenuY);
-            D_8009BD30 = 0;
+            PauseCanCheat = 0;
             return;
         }
         if (MSGV->unk32 & 4) {
@@ -850,11 +850,11 @@ void DrawPauseMenu(void) {
         } else {
             DrawHudEntries(PauseMenuChangeArena, PauseMenuY);
         }
-        D_8009BD30 = 1;
+        PauseCanCheat = 1;
         break;
     case 8:
         DrawHudEntries(PauseMenuShort, PauseMenuY);
-        D_8009BD30 = 1;
+        PauseCanCheat = 1;
         break;
     case 0x8000:
         DrawHudEntries(PauseConfirmExit, PauseMenuY);
@@ -1143,7 +1143,7 @@ void UpdatePauseSlide(s32 arg0) {
         lim = 0x140;
     }
     e = GetEngineSlot(4);
-    if (D_8009BD30 == 0) {
+    if (PauseCanCheat == 0) {
         if (StatsPageShown != 0) {
             StatsPageShown = 9;
         }
@@ -1179,7 +1179,7 @@ void UpdatePauseSlide(s32 arg0) {
             break;
         }
     }
-    D_8009BD30 = 0;
+    PauseCanCheat = 0;
     switch (StatsPageShown) {
     case 1:
         if (e->unk10.y > lim) {
@@ -1924,7 +1924,7 @@ s16 PauseMenuY = 0;
 s16 PauseToggles[4] = {0};
 s16 D_8009BD24[4] = {0};
 u16 StatsPageShown = 0;
-s32 D_8009BD30 = 0;
+s32 PauseCanCheat = 0;
 s32 StatsHasPage1 = 0;
 s32 StatsHasPage3 = 0;
 s32 StatsHasBonus = 0;

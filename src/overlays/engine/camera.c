@@ -37,7 +37,7 @@ void UpdateCamera(s32 arg0) {
         break;
     case 4:
         PodiumCamera(view, arg0);
-        cam_ease_to((CamView *)MainCamera, view, &D_800AD0F4);
+        cam_ease_to((CamView *)MainCamera, view, &CameraEase);
         break;
     case 7:
         obj = path_get(1);
@@ -258,7 +258,7 @@ void CalcCameraFrame(void) {
     CamBoundTop = 0x80000000;
     CamBoundLeft = 0x7FFFFFFF;
     CamBoundRight = 0x80000000;
-    e = D_800AD1EC;
+    e = CameraFrameList;
     for (;;) {
         s32 z;
         s32 x;
@@ -482,7 +482,7 @@ void camera_add_frame_list(SLONG_XYZ *arg0, s16 arg1, s16 arg2, s16 arg3, s16 ar
     D_800AD1EC_entry *e;
 
     if (camera_frame_list_size < 0x10) {
-        e = &D_800AD1EC[camera_frame_list_size];
+        e = &CameraFrameList[camera_frame_list_size];
         e->unk0 = arg0;
         e->unk4 = arg1;
         e->unk6 = arg2;
@@ -869,7 +869,7 @@ void RenderScreenLabels(void) {
 
     gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
-    if (D_800ADBC4 != -1) {
+    if (ScreenLabelShown != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;
         s[new_var = 0xA8 / 4] &= 0xFFFF7FFF;
         if ((GamePause & 0x240) != 0x240) {
@@ -889,12 +889,12 @@ void ResetScreenLabels(void) {
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-CamEase D_800AD0F4 = { { 2, 2, 2 }, { 2, 2, 1 }, { 4, 4, 4 } };
+CamEase CameraEase = { { 2, 2, 2 }, { 2, 2, 1 }, { 4, 4, 4 } };
 s32 D_800AD118[5] = { 1, 1, 1, 0, 0 };
 u16 CameraMode = 0;
 s16 D_800AD130[92] = {0};
 s32 camera_frame_list_size = 0;
-D_800AD1EC_entry D_800AD1EC[16] = {0};
+D_800AD1EC_entry CameraFrameList[16] = {0};
 D_800AD2EC_t camera_frame_bottom = {0};
 s32 camera_frame_top[3] = {0};
 D_800AD2EC_t camera_frame_left = {0};
@@ -1160,7 +1160,7 @@ EngRec24 ScreenLabelsNotice[3] = {
     },
 };
 s32 ScreenLabelState = 0;
-s32 D_800ADBC4 = 0;
+s32 ScreenLabelShown = 0;
 s32 D_800ADBC8[1] = {0};
 s32 CupsDirty = 0;
 s32 D_800ADBD0[1] = {0};

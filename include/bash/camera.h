@@ -74,7 +74,7 @@ static inline s32 EngCam_HitX(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     return 1;
 }
 
-extern CamEase D_800AD0F4;
+extern CamEase CameraEase;
 void BobSub(subengine *s);
 
 void TitlesCameraHook(u8 *cam, s32 arg1);
