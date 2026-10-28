@@ -368,10 +368,14 @@ load extract and are documented.
   the disc like the slot's (ARCHITECTURE.md, The engine's .bss). The engine's
   slot words take their addresses from the overlays' links, so `shift.py`'s
   engine-data rewrite is gone. Left from it: the shift retests below (playtests).
-- [ ] Name and type every engine function and global. Status (2026-10-27): the
+- [ ] Name and type every engine function and global. Status (2026-10-28): the
   most-used globals are named (`GameInfo`, `HeroHooks`, `LevelSpecs`, `Pads`,
-  `MainCamera`, the viewports and cameras typed, ...); 791 `D_` names are left across
-  the engine and the exe, most of them fields of structs still untyped.
+  `MainCamera`, the viewports and cameras typed, ...); 231 more engine functions are
+  named from their code (the level loop, panel, pause, heroes, game flow, loading,
+  camera), the default hero actions from the leaked `HeroMode_nums` (`SetHeroIdle`
+  .. `HeroKick`) and the process functions from their `process_info` slots; 68 are
+  left (stubs and ones whose role isn't clear yet). Most `D_` globals left are fields
+  of structs still untyped.
 - [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
   globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads
   `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff

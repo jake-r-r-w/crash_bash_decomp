@@ -23,7 +23,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   source-only, named, typed and shift-tested) are done. Phase 4 repeats
   the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
   Phase 5 does the engine and `main.exe`. Figures (`progress`,
-  2026-10-28): 2204 of 2537 functions named, 2317 typed, 89.77% of the
+  2026-10-28): 2435 of 2537 functions named, 2317 typed, 89.77% of the
   data is C (every slot overlay's, the engine's, and the exe's game
   `.data`).
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
@@ -63,8 +63,8 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. Name the engine's functions the same way (`scratch/main_unnamed.py`-style
-   summaries, then `decomp.py rename --file`). main.exe has 34 left (ROADMAP).
+1. The 102 game functions still unnamed (34 in main.exe, 68 in the engine): most
+   need their callers read first; the empty stubs can stay.
 2. The model bank as one `obj_dbase` array (283 records from `HeroModelBank` to
    0x8005683C; the slot labels as elements or an enum of indices: a naming choice
    for the user).
@@ -485,7 +485,10 @@ Newest first, a few lines each. Details are in the commits.
   engine words data2c had read as offsets into functions (`&func_8008FF94 + 0x6C`) as
   the halfword pairs they are. Gotchas: a function the engine names by a `D_` label
   (`D_8001C7FC`) must be named as the function before a rename, or the link loses it;
-  the rename tool writes engine-range names to sym.main.txt (move them).
+  the rename tool writes engine-range data names to sym.main.txt (move them). Then 231
+  engine functions named (2435 of 2537): the default hero actions from the leaked
+  HeroMode_nums, the process functions by their process_info slots, the rest from
+  their code; the overlays' D_ references to engine functions (HeroNoJump ..) name them.
 
 - **2026-10-27 (Phase 5: the engine's and the exe's data as C):** the engine's
   data spliced, cut by file (`engine.c` .. `camera.c`, the world records with
