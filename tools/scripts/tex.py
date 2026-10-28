@@ -9,12 +9,17 @@ Runs inside the toolchain container (Pillow is in its image):
 The format (docs/ASSETS.md):
     0x00 u32 type (8)        0x04 u32 size of the file      0x08 u16 images, u16 CLUTs
     0x0C u32 bytes from 0x0C to the first image (the CLUTs' end)
-    0x10 16 bytes, kept as they are (CTR-tools: skip to palettes, unknown, the offset of the
-         animated textures, 0)
+    0x10 16 bytes, kept as they are: s32 0x10 (from 0x10 to the CLUTs), u32 (unknown, the game
+         copies it to obj_textureset.f14), u32 the animated textures' offset (0: none), u32 0
     0x20 CLUTs: u32 n (16 or 256), then n 16-bit colours
     images: u16 w (16-bit VRAM units), u16 h, u16 a, u16 b, u32 c, u32 d, u32 e (kept as they
             are), then w * h * 2 bytes of pixels
-    then the animated textures (u32 8, size, count, records) or zeros, kept as tail.bin
+    then the animated textures (anim_block) or zeros, kept as tail.bin
+
+The animated textures come out as anim_TT_FFF.png (track TT's frame FFF, in its texture's
+palette) and tex.json's "anims" (each track's texture, speed and pos, each scroll's texture,
+speed, pos and dst); pack writes them back into tail.bin's layout, so their counts and frame
+sizes stay.
 
 An image's s16 at +12 is its CLUT index << 1 | 1 for 8-bit (as CTR-tools reads it,
 github.com/DCxDemo/CTR-tools, formats/bash_tex.ksy); an image with no CLUT of its own (negative,
@@ -139,24 +144,84 @@ def png_indices(path, w, h, depth):
     return ix
 
 
+def anim_block(d, images):
+    """The animated textures at the file offset in the header's +0x18 (0: none), as the game reads
+    them (texture_update_anims): (tracks, scrolls). A track is (record offset, texture, speed,
+    pos, [frame offsets], frame size): records {s32 frames, tex, count, speed, pos}, `frames` an
+    offset from the record to `count` s32s, each an offset from itself to a frame's pixels (the
+    texture's size). A scroll is (record offset, texture, speed, pos, dst): records {s32 tex,
+    speed, pos, dst}. The block starts {s32 tracks, s32 scrolls}: offsets from the block and from
+    its +4 to a count and the records (0: none)."""
+    a = struct.unpack_from("<i", d, 0x18)[0]
+    if not a:
+        return [], []
+
+    def word(p):
+        if not 0 <= p <= len(d) - 4:
+            raise Bad(f"animated textures: 0x{p:X} past the end")
+        return struct.unpack_from("<i", d, p)[0]
+
+    tracks, scrolls = [], []
+    off = word(a)
+    if off:
+        p = a + off
+        for k in range(word(p)):
+            r = p + 4 + k * 20
+            fo, ti, n, speed, pos = (word(r + i * 4) for i in range(5))
+            if not 0 <= ti < len(images):
+                raise Bad(f"animated texture at 0x{r:X}: no image {ti}")
+            size = images[ti][0][0] * images[ti][0][1] * 2
+            frames = [r + fo + i * 4 + word(r + fo + i * 4) for i in range(n)]
+            if any(not 0 <= f <= len(d) - size for f in frames):
+                raise Bad(f"animated texture at 0x{r:X}: a frame past the end")
+            tracks.append((r, ti, speed, pos, frames, size))
+    off = word(a + 4)
+    if off:
+        p = a + 4 + off
+        for k in range(word(p)):
+            r = p + 4 + k * 16
+            scrolls.append((r,) + tuple(word(r + i * 4) for i in range(4)))
+    return tracks, scrolls
+
+
+def image_size(f):
+    depth = mode(f)[0]
+    return depth, f[0] * (16 // depth), f[1]
+
+
 def unpack(src, dest):
-    pre, cluts, images, tail = parse(open(src, "rb").read())
+    data = open(src, "rb").read()
+    pre, cluts, images, tail = parse(data)
+    tracks, scrolls = anim_block(data, images)
     os.makedirs(dest, exist_ok=True)
     meta = {"pre": pre.hex(), "cluts": [len(c) for c in cluts], "images": []}
     if cluts:
         width = max(len(c) for c in cluts)
         rows = b"".join(bytes(v for c in row + [0] * (width - len(row)) for v in to_rgba(c)) for row in cluts)
         Image.frombytes("RGBA", (width, len(cluts)), rows).save(os.path.join(dest, "cluts.png"))
+    def save(name, f, px):
+        depth, ci = mode(f)
+        im = Image.frombytes("P", image_size(f)[1:], to_indices(px, depth))
+        ok = 0 <= ci < len(cluts) and len(cluts[ci]) == 1 << depth
+        im.putpalette([v for c in cluts[ci] for v in to_rgba(c)[:3]] if ok else GREY)
+        im.save(os.path.join(dest, name))
+
     for i, (f, px) in enumerate(images):
         name = f"img_{i:03d}.png"
-        depth, ci = mode(f)
-        w, h = f[0] * (16 // depth), f[1]
+        w, h = image_size(f)[1:]
         if w and h:
-            im = Image.frombytes("P", (w, h), to_indices(px, depth))
-            ok = 0 <= ci < len(cluts) and len(cluts[ci]) == 1 << depth
-            im.putpalette([v for c in cluts[ci] for v in to_rgba(c)[:3]] if ok else GREY)
-            im.save(os.path.join(dest, name))
+            save(name, f, px)
         meta["images"].append({"file": name if w and h else None, "fields": f})
+    if tracks or scrolls:
+        meta["anims"] = {"tracks": [], "scrolls": []}
+        for t, (r, ti, speed, pos, frames, size) in enumerate(tracks):
+            names = []
+            for k, fo in enumerate(frames):
+                names.append(f"anim_{t:02d}_{k:03d}.png")
+                save(names[-1], images[ti][0], data[fo:fo + size])
+            meta["anims"]["tracks"].append({"tex": ti, "speed": speed, "pos": pos, "frames": names})
+        for r, ti, speed, pos, dst in scrolls:
+            meta["anims"]["scrolls"].append({"tex": ti, "speed": speed, "pos": pos, "dst": dst})
     if tail:
         with open(os.path.join(dest, "tail.bin"), "wb") as fh:
             fh.write(tail)
@@ -182,7 +247,30 @@ def pack(src):
         images.append((f, px))
     tp = os.path.join(src, "tail.bin")
     tail = open(tp, "rb").read() if os.path.exists(tp) else b""
-    return build(bytes.fromhex(meta["pre"]), cluts, images, tail)
+    out = build(bytes.fromhex(meta["pre"]), cluts, images, tail)
+    if "anims" not in meta:
+        return out
+    return patch_anims(bytearray(out), images, meta["anims"], src)
+
+
+def patch_anims(d, images, anims, src):
+    """d with tex.json's track and scroll fields and the frame PNGs written into the animated
+    textures' block (tail.bin keeps its layout: the counts can't change)."""
+    tracks, scrolls = anim_block(bytes(d), images)
+    if len(tracks) != len(anims["tracks"]) or len(scrolls) != len(anims["scrolls"]):
+        raise Bad("tex.json's anims don't match tail.bin's (tracks and scrolls can't be added)")
+    for (r, ti, _, _, frames, size), t in zip(tracks, anims["tracks"]):
+        f = images[t["tex"]][0] if 0 <= t["tex"] < len(images) else None
+        if f is None or f[0] * f[1] * 2 != size or len(t["frames"]) != len(frames):
+            raise Bad(f"track at 0x{r:X}: its texture must keep its frames' size and count")
+        struct.pack_into("<i", d, r + 4, t["tex"])
+        struct.pack_into("<ii", d, r + 12, t["speed"], t["pos"])
+        depth, w, h = image_size(f)
+        for name, fo in zip(t["frames"], frames):
+            d[fo:fo + size] = from_indices(png_indices(os.path.join(src, name), w, h, depth), depth)
+    for (r, *_), s in zip(scrolls, anims["scrolls"]):
+        struct.pack_into("<4i", d, r, s["tex"], s["speed"], s["pos"], s["dst"])
+    return bytes(d)
 
 
 def main():

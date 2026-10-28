@@ -48,18 +48,39 @@ byte for byte) and by eye (the PNGs show the game's textures in their colours).
 | 0x04 | u32 | size of the file |
 | 0x08 | u16, u16 | number of images, number of CLUTs |
 | 0x0C | u32 | bytes from 0x0C to the first image |
-| 0x10 | 16 | kept as they are (CTR-tools: skip to palettes, unknown, offset of the animated textures, 0) |
+| 0x10 | s32 | 0x10: from here to the CLUTs |
+| 0x14 | u32 | unknown (the game copies it to `obj_textureset.f14`) |
+| 0x18 | u32 | offset of the animated textures (0: none; 86 sets) |
+| 0x1C | u32 | 0 |
 | 0x20 | | CLUTs: u32 n (16 or 256), then n 16-bit colours |
 | | | images: u16 w (VRAM 16-bit units), u16 h, u32 (unknown; CTR-tools: margins/size bytes), u32 0, s16 CLUT << 1 \| 8-bit, s16 (0, 3 for some banners), u32 (1, 2, 8, 16), then w * h * 2 bytes of pixels |
-| | | then the animated textures (u32 8, size, count, records) or zeros: `tail.bin`, not decoded |
+| | | then the animated textures (below) or zeros: `tail.bin` |
 
 Pixels are 4-bit (low nibble = left pixel, width w * 4) or 8-bit (width w * 2). A negative CLUT
 index (the last image of some sets) means none of its own; such an image is shown in grey.
 
+The animated textures, as `texture_update_anims` reads them (records `TexFrameAnim` and
+`texture_scroll` in `include/bash/main.h`). Offsets are s32s; "self" counts from its own position:
+
+| Part | What |
+|---|---|
+| head | s32 tracks (from the block), s32 scrolls (self); 0: none |
+| tracks | s32 count, then 20-byte records: s32 frames (from the record to the frame table), s32 texture (image index), s32 count, s32 speed, s32 pos. Each update adds speed to pos (8.8 frames; negative runs backwards, wrapping at count) and loads the frame `pos >> 8` into the texture's VRAM rect |
+| frame tables | count self s32s, each to a frame's pixels: the texture's w * h * 2 bytes, in its depth and CLUT |
+| scrolls | s32 count, then 16-byte records: s32 texture, s32 speed, s32 pos, s32 dst (0 in the file: the VRAM node the game gives it). Each update adds speed to pos (8.8 rows) and copies the texture into dst rotated down by `pos >> 8` rows: a scrolling texture |
+
+65 sets have frame tracks (1,137 frames in all, most at speed 0x80: a frame every other update), 61
+have scrolls; 44 blocks end in 4 bytes of zero padding. Checked by eye: the Cortex lab intro's
+(`068`) electric arc and pulsing light.
+
 `<id>.tex/` holds `img_NNN.png` (indexed, its CLUT as the palette: edit the pixels; pack reads
 the indices only), `cluts.png` (one row per CLUT: edit colours here; r, g, b are 5-bit values
 times 8, alpha 255 = STP off, 128 = STP on, 0 = the colour 0x0000, transparent), `tex.json` (the
-fields above) and `tail.bin`. An image keeps its size and depth; at most 16 (or 256) colours.
+fields above, and `anims`: each track's texture, speed, pos and frame files, each scroll's
+texture, speed, pos and dst) and `tail.bin`. An animated set also has `anim_TT_FFF.png`, frame FFF
+of track TT, in its texture's palette. Pack writes the frames and the anims fields into `tail.bin`,
+which keeps its layout: tracks, scrolls and frames can't be added, and a track's texture can only
+change to one of the same size. An image keeps its size and depth; at most 16 (or 256) colours.
 
 ## Model files (`.mdl`)
 
@@ -174,7 +195,7 @@ Every file comes out editable or viewable. What is kept only as bytes (exact, in
 
 - Models: the animations' timing (the entry's u32 at +0x10), the vertices' and indices' flag
   bits, the header words not listed above, and the 27 mesh-less files' other sections.
-- Texture sets: the animated-texture records (`tail.bin`).
+- Texture sets: the header word at 0x14, and the images' header words.
 - Mode text: the data after the strings (menus, layouts).
 - Editing beyond the slots: a file can't grow (the DAT would have to be laid out again), and
   animations, texture coordinates and the mode data can't be edited yet.

@@ -96,5 +96,58 @@ class Files(unittest.TestCase):
             tex.pack(self.out)
 
 
+def animated():
+    """sample() with an animated-textures block: one track of two frames on image 0 (12 bytes
+    each) and one scroll of image 1."""
+    base = sample()
+    a = len(base)
+    rec = a + 12                                                    # the track's record
+    tab = rec + 20                                                  # its frame table
+    f0, f1 = tab + 8, tab + 8 + 12
+    blk = struct.pack("<ii", 8, f1 + 12 - (a + 4))                  # tracks at +8; scrolls after
+    blk += struct.pack("<i", 1) + struct.pack("<5i", tab - rec, 0, 2, 0x80, 0)
+    blk += struct.pack("<ii", f0 - tab, f1 - (tab + 4)) + bytes(range(12)) + bytes(range(12, 24))
+    blk += struct.pack("<i", 1) + struct.pack("<4i", 1, 0x40, 0, 0)
+    d = bytearray(base + blk)
+    struct.pack_into("<I", d, 4, len(d))
+    struct.pack_into("<i", d, 0x18, a)
+    return bytes(d)
+
+
+class Anims(unittest.TestCase):
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.bin = os.path.join(self.dir, "000.bin")
+        self.out = os.path.join(self.dir, "000.tex")
+        self.data = animated()
+        with open(self.bin, "wb") as f:
+            f.write(self.data)
+        tex.unpack(self.bin, self.out)
+
+    def tearDown(self):
+        shutil.rmtree(self.dir)
+
+    def test_block_is_read_as_the_game_reads_it(self):
+        _, _, images, _ = tex.parse(self.data)
+        tracks, scrolls = tex.anim_block(self.data, images)
+        self.assertEqual([(t[1], t[2], len(t[4]), t[5]) for t in tracks], [(0, 0x80, 2, 12)])
+        self.assertEqual([s[1:] for s in scrolls], [(1, 0x40, 0, 0)])
+        self.assertEqual(self.data[tracks[0][4][1]:tracks[0][4][1] + 12], bytes(range(12, 24)))
+
+    def test_frames_and_fields_round_trip_and_edit(self):
+        self.assertEqual(tex.pack(self.out), self.data)
+        p = os.path.join(self.out, "anim_00_001.png")
+        im = Image.open(p)
+        im.putpixel((0, 0), 15)
+        im.save(p)
+        j = os.path.join(self.out, "tex.json")
+        m = tex.json.load(open(j))
+        m["anims"]["tracks"][0]["speed"] = 0x40
+        tex.json.dump(m, open(j, "w"))
+        d = tex.pack(self.out)
+        tracks = tex.anim_block(d, tex.parse(d)[2])[0]
+        self.assertEqual((tracks[0][2], d[tracks[0][4][1]]), (0x40, 0x0F))
+
+
 if __name__ == "__main__":
     unittest.main()
