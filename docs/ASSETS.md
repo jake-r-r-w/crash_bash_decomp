@@ -186,7 +186,10 @@ others blend the first list's towards the second's (1/3, 2/3: frames between two
 
   3,333 threads (2,877 model, 177 entity, 138 emitter, 83 camera, 44 fade, 14 sub-script), 12,605
   keys. Threads can share bytes (a model track that starts inside another's keys), so pack writes
-  only the fields you change.
+  only the fields you change. Playtested 2026-10-28: shifting the Eurocom boot logo's model keys
+  (`07D`, `DB_CutsceneIntroEurocom`, boot step 2 in `IntroSteps`) 3,000 units right moved the logo
+  off-centre (300 wasn't noticeable: its pieces are about 1,500 apart). The `uka/` files are Uka
+  Uka's model with a short script of its own; the scenes are the `level_*` files.
 - `model.glb`: the same as glTF (textures embedded; positions as the file's 16-bit integers,
   KHR_mesh_quantization, scaled 1/256), with each animation as morph targets (a keyframe each)
   and a weights track: Blender imports them as shape keys and actions. 30 frames a second (the
@@ -238,7 +241,7 @@ records in the 12 files, about 93% of their data; the rest is the pointer tables
 `@offset` with its text beside it, another pointer as `&offset`). An unchanged line keeps its slot
 byte for byte; a changed one is written in, zero-padded, and one too long for its slot is refused.
 Pack writes the menu fields you change (move a panel, point it at another string); lists and
-records can't be added.
+records can't be added. Playtested 2026-10-28: Ballistix's pause "OBJECTIVE" title moved to y 140.
 
 ## Sound packs (`.sfx`)
 
@@ -281,6 +284,9 @@ reads it:
 the flags, whether the sum is right, and each slot's summary and every `GameState` field, named from
 the C struct through `struct_layout.py`) and `icon_0.png`, `icon_1.png`. `card.py pack DIR CARD
 OUT` writes the fields you change, works the sum out again and puts the save into a copy of CARD.
+Playtested 2026-10-28: clearing level 1's awards (`adventure.unkE4[0..3][0]`) in a 200% slot made
+the load screen show 194%. The completion counts `adventure.unkE4[5][33]`, five awards per level
+(`count_completion`: 1 each, the second counting 2 more at 2, the fifth 8).
 
 ## What isn't decoded
 

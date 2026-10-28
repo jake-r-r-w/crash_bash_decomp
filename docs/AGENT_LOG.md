@@ -498,7 +498,9 @@ Newest first, a few lines each. Details are in the commits.
   decodes the mode text's menus: `PlaceRec` lists (161, 2,058 records; an x of 0x8000 is a centring
   flag, which hid them from a first survey). card.py reads and writes the memory-card save (a card
   image's BASCUS-94570 block: header, icon, 4 `CardSlot`s named from `GameState`, the sum the game
-  checks). All round-trip; make disc-check passes.
+  checks). All round-trip; make disc-check passes. Playtested all three: a save edit (194%), a
+  menu panel move (Ballistix's pause title) and cutscene keys (the Eurocom logo, `07D`: shift by
+  thousands, its pieces are 1,500 apart; the `uka/` files aren't the scenes).
 - **2026-10-28 (Phase 5: asset formats, collision):** the maps' contours decoded in mapdata.py
   (107 in 30 arena maps, 1,200 edges; each edge's length matches its points, all round-trip). The
   hubs have none: with no `LevelSpecs.GetContour` hook the ground is `World_floor_level` plus solid
