@@ -74,11 +74,10 @@ Sony objects. Next, none of them needing a playtest:
    layouts: next is the asset formats item's file-format structs (the model file header at
    +0x28/+0x3C/+0x44/+0x4C/+0x54, mesh records, mesh anims, the texture file header at
    +0x08..+0x1C, script tracks, the map's path table, the card image).
-   Lead: `obj_texture` has a nested struct at +0x18 (RECT vram, src, tpage, clut, uv0..3):
-   `prim_create_entity_single` and Pogo's `psxpogo_render_tile` take a pointer to +0x18
-   (`GfxTexInfo`) and read through it; flattening it costs an `addiu`. Nest it in
-   obj_texture (field_rename.py for the vramX.. uses) to fold GfxTexInfo/GfxTexEntry.
-   GfxTexSet.cluts, TexEnt12 and AnimClut are three views of the 12-byte clut entry.
+   `obj_texture`'s +0x18 block is its own struct, `info` (`GfxTexInfo`: VRAM rect, src,
+   tpage, clut, uv0..3), since two functions take a pointer to it; GfxTexEntry is folded.
+   Lead: GfxTexSet.cluts, TexEnt12 and AnimClut are three views of the 12-byte clut entry,
+   and GfxTexSet/GfxModel views of obj_textureset/obj_dbase (fold once the clut entry is one).
 3. The overlays' GameInfo views (`HubGameView`, `TankModeView`, `PolarModeView`, ...: 47
    types) fold into `GameState` the same way (scratch/views_map.py + fold_views.py did the
    engine's: map each view's fields onto GameState by offset, fold in rounds of
@@ -491,7 +490,9 @@ Newest first, a few lines each. Details are in the commits.
   `textureset_init` (Func2A5A4Obj folded), `gfx_setup_xform` and its callers' parent `MATRIX`,
   `dbase_texture_ptr`/`_entry` (`TexEnt12.pos`). 106 to 97 functions; the rest are file
   formats, heap arithmetic and the export table. Folding GfxTexInfo flat into obj_texture
-  failed by one `addiu`: the original points at a nested struct at +0x18 (Open leads).
+  failed by one `addiu`: the original points at a nested struct at +0x18, so obj_texture
+  now nests it as `info` (field_rename.py with dotted new names; the lines where a prim's own
+  `tpage`/`clut` met it fixed by hand).
 - **2026-10-28 (Phase 5: the tools, then the overlays' GameInfo):** the scratch scripts are tools
   now: `struct_layout.py` (layouts from cc1 -g), `retype.py` (a byte pointer's offsets as fields;
   LEFT lines for arithmetic the type now scales or byte reads it left), `fold_views.py` (views
