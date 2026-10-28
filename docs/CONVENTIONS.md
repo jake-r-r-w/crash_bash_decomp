@@ -65,7 +65,8 @@ A file is finished when every function in it reaches level 4.
 
 ## Headers
 
-- Game headers live in `include/bash/`, one owner per declaration: a struct or
+- Game headers live in `include/bash/`, one owner per declaration (`tools/scripts/decl_dups.py`
+  lists a repeat; `make test-tools` fails on one): a struct or
   prototype is declared in exactly one header, included where needed.
 - Every source file has an **owned header** that declares the functions and data
   it defines: `bash/main.h` (`src/main/main.c`), `bash/engine.h` (the engine

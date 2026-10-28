@@ -21,7 +21,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   nothing natural matches.
 - Matching is by hand, one function per commit, through the validation gate
   `decomp.py done NAME --commit` ([docs/MATCHING.md](docs/MATCHING.md); skill
-  `/match-function`). `decomp.py auto` is retired.
+  `/match-function`). The bulk matcher (`decomp.py auto`) is removed.
 - Parallel matching: `node tools/swarm/swarm.mjs` (host Node; see
   [tools/swarm/README.md](tools/swarm/README.md)). Stop it with
   `node tools/swarm/swarm.mjs stop` (`--now` to kill). It commits only through
@@ -89,7 +89,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   missing-member errors, so shared names like `unk6C` are safe); `bytes_ptrs.py` data arrays of
   plain numbers holding an address, a symbol's or one inside a data object (pointers a shift would leave behind). `struct_layout.py TYPE` a
   struct's members by cc1's own layout, `retype.py FILE FUNC VAR TYPE` a byte pointer's offsets as fields,
-  `fold_views.py CANON VIEW...` view structs folded into one, `diff_funcs.py` every function that differs
+  `fold_views.py CANON VIEW...` view structs folded into one, `diff_funcs.py` every function that differs,
+  `decl_dups.py` declarations a header repeats (kept at zero by its test; `--views` lists the overlays' views)
   (docs/CONVENTIONS.md, Names). `tools/scripts/model_slots.py` lists each exe model slot with the archive files
   every game loads into it. `tools/scripts/data2c.py OVL [--rodata SYM ...] [--strings-only]` writes an overlay's asm data as C
   (OVL `engine` or `main` for main.exe too; `--strings-only` for just the string blocks)

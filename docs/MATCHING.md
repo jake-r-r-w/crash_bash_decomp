@@ -2,8 +2,8 @@
 
 Functions are matched by hand, by a person or an AI agent, **one function per
 commit**, and every commit goes through one validation gate, `decomp.py done`.
-The retired bulk matcher (`decomp.py auto`) left drafts that `next` still
-shows as a starting point.
+The bulk matcher that `decomp.py auto` used to be (removed 2026-10-29) left drafts that
+`next` still shows as a starting point.
 
 ```mermaid
 flowchart TD

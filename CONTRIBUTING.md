@@ -39,7 +39,7 @@ replaced by C, no other one is, and other functions' C changes only
 where it calls this one), lint (no m2c leftovers, no inline asm: only C), the function
 and a clean full build of every target. Only then does it record and commit
 `Match NAME (seg, N bytes)`. The pre-commit hook refuses matches committed any
-other way. The bulk matcher `decomp.py auto` is retired.
+other way. The old bulk matcher (`decomp.py auto`) is removed.
 
 Functions of about 600 bytes or more take several sessions; see Big
 functions in [docs/MATCHING.md](docs/MATCHING.md).

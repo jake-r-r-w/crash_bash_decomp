@@ -64,7 +64,8 @@ Phase 6 (ROADMAP.md). In rough order:
    every overlay against their new addresses instead of the fixed ones in `sym.main.txt` and
    `sym.engine.txt`. Every overlay's data is C now, which was its blocker. `make shift` and
    `shift.py` do one overlay today; this is the same for all units together.
-2. **Quality level 4**: the 113 untyped game functions (`progress`), the exe's 69 raw-offset
+2. **Quality level 4**: the 113 untyped game functions (`progress`), the overlays' 136 views of
+   engine globals (`decl_dups.py --views`: fold each into the one type), the exe's 69 raw-offset
    functions (mostly the heap's block arithmetic and `export_exe_functions`' slot offsets), and the
    `unkXX` fields (ASSETS.md, What isn't decoded, lists the file formats' ones).
 3. **A `NON_MATCHING` build with a current GCC for MIPS** (the final test's test 5).
@@ -471,6 +472,15 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-29 (housekeeping):** dead code out of tools/scripts (`decomp.py auto` and the six
+  helpers only it used, `sort_protos.py`, which also respaced headers, three unused functions,
+  seven constants, two imports: 300 lines); 113 repeated header declarations removed (60 inside
+  one header, 41 owned copies of a leaked header's, 12 conflicting pairs merged to the
+  definition's), and `decl_dups.py` with a test that keeps them at zero. The 136 names several
+  units' headers declare are the overlays' views of engine globals (`decl_dups.py --views`): typing
+  work. Docs checked for stale paths (none real), objdiff.json regenerated, stale build/shift and
+  build/retype.json removed. make check 16/16, disc-check, test-tools and the swarm tests pass.
 
 - **2026-10-28 (bookkeeping: Phase 5 closed):** the user dropped the shift retests (Phase 6's
   shift of everything covers them), which closed Phase 5. Phase 6's no-`INCLUDE_ASM` box (data
