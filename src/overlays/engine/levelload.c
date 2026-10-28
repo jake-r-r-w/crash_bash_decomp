@@ -287,7 +287,7 @@ void load_initial_dbases(void)
 void UpdateLevelLoad(void) {
     EngStateView *g0;
     EngStateView *g;
-    EngColor *c;
+    map_map *c;
     s32 *a;
     s32 *p;
 
@@ -379,9 +379,9 @@ void UpdateLevelLoad(void) {
         LevelLoadStage = 4;
         break;
     case 4:
-        ((EngColor *)&GameViewport)->code = ((EngColorSrc *)MapScene)->col->code;
-        c = ((EngColorSrc *)MapScene)->col;
-        ((EngColor *)&GameViewport)->rgb = c->rgb;
+        ((EngColor *)&GameViewport)->code = MapScene->map->clear;
+        c = MapScene->map;
+        ((EngColor *)&GameViewport)->rgb = *(EngRgb *)&c->clear_colour;
         ClearLevelNas();
         InitialiseEngine();
         LevelLoadStage = 7;

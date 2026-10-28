@@ -467,7 +467,7 @@ void InitialiseN2O(void) {
     N2OBossShooting = 0;
     N2OHeroPushTimer = 0;
     N2OBossAimDelay = 6;
-    ((N2OSceneRef *)MapScene)->unk10->unk27 = 1;
+    MapScene->map->clear = 1;
     ((N2OPuck *)GameInfo)->unk32 &= ~0x800;
     for (i = 0; i < 4; i++) {
         h = &Heroes[i];
@@ -3046,7 +3046,7 @@ void N2OInitSlots(void) {
         N2OSlots[i].f20 = 0;
         N2OSlots[i].f24 = 0;
     }
-    e = (N2OEnt *)((GfxScene *)MapScene)->objs;
+    e = (N2OEnt *)((u8 *)MapScene->subs);
     N2OPhaseObject = NULL;
     for (; e != NULL; e = e->next) {
         t = (s16 *)model_entry_data(e->key, e->id);
@@ -3912,7 +3912,7 @@ s32 GetN2OContour(u8 *arg0) {
 }
 
 void N2OShowPhaseObjects(u16 arg0) {
-    N2OFlagNode *n = ((N2OSceneRef *)MapScene)->unk1C;
+    N2OFlagNode *n = ((N2OFlagNode *)MapScene->subs);
     s16 *p;
 
     if (arg0) {

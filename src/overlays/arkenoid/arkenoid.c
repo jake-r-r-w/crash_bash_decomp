@@ -4423,7 +4423,7 @@ void InitARKfloor(void) {
         ArkWalls[i].f18 = 0;
         ArkWalls[i].f1A = 0;
     }
-    for (obj = (ArkenoidScnObj *)((GfxScene *)MapScene)->objs; obj != 0; obj = obj->next) {
+    for (obj = (ArkenoidScnObj *)((u8 *)MapScene->subs); obj != 0; obj = obj->next) {
         p = (s16 *)model_entry_data(obj->unk6C, obj->unk74);
         k = *p;
         if (k - 1 < 9) {

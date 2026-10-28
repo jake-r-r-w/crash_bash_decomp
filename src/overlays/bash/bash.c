@@ -2330,7 +2330,7 @@ void BashSpaceInitTiles(void) {
 
     z = 0;
     x = 0;
-    obj = (BashObj *)((GfxScene *)MapScene)->objs;
+    obj = (BashObj *)((u8 *)MapScene->subs);
     primpool_init(200);
     if (obj != NULL) {
         base = BashSpaceTiles[0];
@@ -2353,7 +2353,7 @@ void BashSpaceInitTiles(void) {
         } while (obj != NULL);
     }
     if (x | z) {
-        obj = (BashObj *)((GfxScene *)MapScene)->objs;
+        obj = (BashObj *)((u8 *)MapScene->subs);
         if (obj != NULL) {
             do {
                 if (*(s16 *)model_entry_data(obj->model, obj->index) == 5) {

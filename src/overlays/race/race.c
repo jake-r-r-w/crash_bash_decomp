@@ -1359,7 +1359,7 @@ void RaceInitSpinners(void) {
     RaceGlowObj = NULL;
     RaceGlowPhase = 0;
     RaceGlowMode = 0;
-    obj = ((RaceScene *)MapScene)->objs;
+    obj = ((RaceSceneObj *)MapScene->subs);
     for (i = 0; i < 6; i++) {
         RaceSpinnerBoxes[i] = 0;
         RacePistons[i].unk8 = 1;
@@ -1589,7 +1589,7 @@ void RaceInitBarrels(void) {
     s32 n;
 
     n = 0;
-    obj = ((RaceScene *)MapScene)->objs;
+    obj = ((RaceSceneObj *)MapScene->subs);
     memset(RaceBarrels, 0x3600, 0);
     while (obj != NULL) {
         if (obj->index == 0x5006) {
@@ -1925,7 +1925,7 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
 
     rad = 0xDC;
     found = 0;
-    obj = ((RaceScene *)MapScene)->objs;
+    obj = ((RaceSceneObj *)MapScene->subs);
     hit = 0;
     for (;;) {
         u8 *r;
@@ -2044,14 +2044,14 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
     found = 0;
     rad = radius;
     shift = 12;
-    bad = idx >= (((RaceSegScene *)MapScene)->unk0 ?
-                  *(s32 *)(*(s32 *)(((RaceSegScene *)MapScene)->data + 0x14) +
-                           (s32)((RaceSegScene *)MapScene)->data + 0x14) :
+    bad = idx >= (((s32)MapScene->dbase) ?
+                  *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
+                           (s32)((u8 *)MapScene->map) + 0x14) :
                   0);
     if (bad) {
         return 0;
     }
-    data = ((RaceSegScene *)MapScene)->data;
+    data = ((u8 *)MapScene->map);
     obj = (RaceSegObj *)((u8 *)&((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1] +
                           ((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1]);
     if (obj != NULL) {
@@ -2182,14 +2182,14 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     found = 0;
     rad = radius;
     one = 0x1000;
-    bad = idx > (((RaceSegScene *)MapScene)->unk0 ?
-                 *(s32 *)(*(s32 *)(((RaceSegScene *)MapScene)->data + 0x14) +
-                          (s32)((RaceSegScene *)MapScene)->data + 0x14) :
+    bad = idx > (((s32)MapScene->dbase) ?
+                 *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
+                          (s32)((u8 *)MapScene->map) + 0x14) :
                  0);
     if (bad) {
         return 0;
     }
-    data = ((RaceSegScene *)MapScene)->data;
+    data = ((u8 *)MapScene->map);
     tbl = (RaceSegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
     w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
                         (tbl2 = (RaceSegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
@@ -2341,14 +2341,14 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
     found = 0;
     rad = radius;
     one = 0x1000;
-    bad = idx > (((RaceSegScene *)MapScene)->unk0 ?
-                 *(s32 *)(*(s32 *)(((RaceSegScene *)MapScene)->data + 0x14) +
-                          (s32)((RaceSegScene *)MapScene)->data + 0x14) :
+    bad = idx > (((s32)MapScene->dbase) ?
+                 *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
+                          (s32)((u8 *)MapScene->map) + 0x14) :
                  0);
     if (bad) {
         return 0;
     }
-    data = ((RaceSegScene *)MapScene)->data;
+    data = ((u8 *)MapScene->map);
     tbl = (RaceSegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
     w = (RaceSegObj *)((u8 *)&tbl->offs[idx] +
                         ((RaceSegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);

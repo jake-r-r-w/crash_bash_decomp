@@ -13,11 +13,11 @@ void HubRender(void) {
     if (GameMode == 0x25) {
         RenderAllNas();
         if (CreditsActive == 0) {
-            draw_map_scene((GfxScene *)MapScene);
+            draw_map_scene(MapScene);
         }
     } else {
         RenderAllNas();
-        draw_map_scene((GfxScene *)MapScene);
+        draw_map_scene(MapScene);
     }
     if (GameMode == 0x2B) {
         PodiumRenderScene();

@@ -511,13 +511,6 @@ typedef struct RaceSegObj {
     /* 0x48 */ RaceSeg segs[1];
 } RaceSegObj;
 
-/* MapScene as RaceTrackCollide reads it. */
-typedef struct RaceSegScene {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ u8 pad4[0xC];
-    /* 0x10 */ u8 *data;
-} RaceSegScene;
-
 s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 flags);
 
 /* Heading a reflected off a wall of normal angle b (inline copy of RaceReflectAngle, PlotDinoEgg). */
@@ -823,12 +816,6 @@ typedef struct RaceNorm {
 } RaceNorm;
 
 s32 RaceTriHeight(SLONG_XYZ *pos, s16 *tri);
-
-/* MapScene as seen by RaceInitBarrels. */
-typedef struct RaceScene {
-    /* 0x00 */ u8 pad0[0x1C];
-    /* 0x1C */ RaceSceneObj *objs;
-} RaceScene;
 
 /* A barrel (0x6C bytes, 128 in RaceBarrels). */
 typedef struct RaceBarrelView {

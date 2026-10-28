@@ -2646,14 +2646,14 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
     found = 0;
     rad = radius;
     shift = 12;
-    bad = idx >= (((DinoScene *)MapScene)->unk0 ?
-                  *(s32 *)(*(s32 *)(((DinoScene *)MapScene)->data + 0x14) +
-                           (s32)((DinoScene *)MapScene)->data + 0x14) :
+    bad = idx >= (((s32)MapScene->dbase) ?
+                  *(s32 *)(*(s32 *)(((u8 *)MapScene->map) + 0x14) +
+                           (s32)((u8 *)MapScene->map) + 0x14) :
                   0);
     if (bad) {
         return 0;
     }
-    data = ((DinoScene *)MapScene)->data;
+    data = ((u8 *)MapScene->map);
     obj = (DinoSegObj *)((u8 *)&((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1] +
                           ((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1]);
     if (obj != NULL) {

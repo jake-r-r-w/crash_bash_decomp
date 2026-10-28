@@ -966,7 +966,7 @@ void PolarInitScene(void) {
     bossmapsub = NULL;
     PolarSceneA = NULL;
     PolarSceneTimer = 0;
-    obj =((const PolarScene *)MapScene)->objs;
+    obj =((SceneObj *)MapScene->subs);
     PolarSceneA = NULL;
     PolarSceneB = NULL;
     MapSceneRot.vx = 0;
@@ -4094,7 +4094,7 @@ void InitialisePOLAR(void) {
     PolarRoundState = 0;
     HeroHooks.RunSpeeds = PolarHeroSfx;
     PolarIceRadius = 0x658;
-    obj = ((PolarScene *)MapScene)->objs;
+    obj = ((SceneObj *)MapScene->subs);
     PolarInitWord = 0x800;
     while (obj != NULL) {
         obj->flags |= 0x1000000;

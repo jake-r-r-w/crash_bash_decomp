@@ -1174,14 +1174,6 @@ typedef struct {
     s8 r, g, b;
 } GfxRgb8;
 
-/* The scene draw_map_scene sets up (MapScene points at it). */
-typedef struct {
-    u8 unk0[0x10];
-    GfxViewport *viewport; /* 0x10 */
-    u8 unk14[8];
-    u8 *objs;              /* 0x1C: list linked at +0x5C, callback at +0x54 */
-} GfxScene;
-
 
 
 /* A texture: the 0x38-byte entries of a texture set's table, which

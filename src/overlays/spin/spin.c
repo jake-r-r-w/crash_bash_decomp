@@ -361,7 +361,7 @@ void SpinInitScene(void) {
     SpinSpeed = 1;
     SpinAngle = 0;
     SpinAngle2 = 0;
-    obj = ((SpinScene *)MapScene)->objs;
+    obj = ((SpinObj *)MapScene->subs);
     for (i = 9; i >= 0; i--) {
         SpinArenaObjs[i] = NULL;
     }

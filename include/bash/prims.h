@@ -106,7 +106,7 @@ void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 void mapscene_place_subs(map_enviroment *env);
 FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *faces, s32 arg4);
 void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam);
-void draw_map_scene(GfxScene *scene);
+void draw_map_scene(map_enviroment *scene);
 void mapenv_place_subs(map_enviroment *env);
 s32 tri_visible(SVECTOR *v);
 void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags);
@@ -128,21 +128,21 @@ static inline void GfxAddTrans(VECTOR *v) {
 
 /* Copies a scene's background into the current viewport, faded by modelDp
  * (draw_map_scene). */
-static inline void GfxSetSceneBg(GfxState *gs, GfxScene *scene) {
+static inline void GfxSetSceneBg(GfxState *gs, map_enviroment *scene) {
     GfxViewport *vp;
 
     vp = gs->viewport;
-    vp->isbg = scene->viewport->isbg;
+    vp->isbg = scene->map->clear;
     if (gs->modelDp != 0) {
         vp->isbg = 1;
     }
     if (vp->isbg != 0) {
         if (gs->modelDp != 0) {
-            vp->r = scene->viewport->r * (0x1000 - gs->modelDp) / 4096;
-            vp->g = scene->viewport->g * (0x1000 - gs->modelDp) / 4096;
-            vp->b = scene->viewport->b * (0x1000 - gs->modelDp) / 4096;
+            vp->r = scene->map->clear_colour.r * (0x1000 - gs->modelDp) / 4096;
+            vp->g = scene->map->clear_colour.g * (0x1000 - gs->modelDp) / 4096;
+            vp->b = scene->map->clear_colour.b * (0x1000 - gs->modelDp) / 4096;
         } else {
-            *(GfxRgb8 *)&vp->r = *(GfxRgb8 *)&scene->viewport->r;
+            *(GfxRgb8 *)&vp->r = *(GfxRgb8 *)&scene->map->clear_colour;
         }
     }
 }

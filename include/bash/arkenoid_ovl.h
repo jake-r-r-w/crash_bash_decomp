@@ -415,7 +415,7 @@ s32 ArkBotAimA(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle);
 
 s32 ArkBotAimB(s32 arg0, ArkenoidPos *from, ArkenoidPos *to, s32 angle);
 extern ArkenoidEdge ArkBotEdgesB[4];
-/* A scene object as InitARKfloor sorts it (list at GfxScene.objs). */
+/* A scene object as InitARKfloor sorts it (list at MapScene->subs). */
 typedef struct ArkenoidScnObj {
     u32 flags;
     u8 pad4[0x5C - 0x4];

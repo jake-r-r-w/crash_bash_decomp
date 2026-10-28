@@ -281,10 +281,6 @@ typedef struct EngColor {
     /* 0x24 */ EngRgb rgb;
     /* 0x27 */ u8 code;
 } EngColor;
-typedef struct EngColorSrc {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ EngColor *col;
-} EngColorSrc;
 extern process_info LoadingProcess;
 extern process_info LoadingProcess2;
 extern process_info RetryProcess;

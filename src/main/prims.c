@@ -2857,28 +2857,28 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
     gte_SetGeomOffset(RenderState.ofx * ScreenRect->w / 640, RenderState.ofy / 2);
 }
 
-void draw_map_scene(GfxScene *scene) {
+void draw_map_scene(map_enviroment *scene) {
     MATRIX m;
     MATRIX view;
     MATRIX *pv;
-    u8 *obj;
-    void (*fn)(u8 *, MATRIX *, s32);
+    subengine *sub;
+    void (*fn)(subengine *, s32, u32);
 
     MapScene = scene;
     RotMatrix(&MapSceneRot, &m);
     MulMatrix0(&RenderState.cam->view, &m, &MapSceneMatrix);
     pv = &view;
     view = RenderState.cam->view;
-    obj = scene->objs;
+    sub = scene->subs;
     while (1) {
-        if (obj == NULL) {
+        if (sub == NULL) {
             break;
         }
-        fn = *(void (**)(u8 *, MATRIX *, s32))(obj + 0x54);
+        fn = sub->hook;
         if (fn != NULL) {
-            fn(obj, pv, 0);
+            fn(sub, (s32)pv, 0);
         }
-        obj = *(u8 **)(obj + 0x5C);
+        sub = sub->next;
     }
     GfxSetSceneBg(&RenderState, scene);
 }

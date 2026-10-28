@@ -1875,7 +1875,7 @@ void RenderGameScene(void) {
     GameSceneCounts[2] = 0;
     scripts_render();
     RenderAllNas();
-    draw_map_scene((GfxScene *)MapScene);
+    draw_map_scene(MapScene);
     gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
     DrawLevelHud();

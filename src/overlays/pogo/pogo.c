@@ -810,7 +810,7 @@ void InitPogo_Tiles(void) {
         } while (++i < 8);
         rowOff += sizeof(PogoCell);
     }
-    obj = (PogoObj *)((GfxScene *)MapScene)->objs;
+    obj = (PogoObj *)((u8 *)MapScene->subs);
     PogoKerbObj = NULL;
     if (obj != NULL) {
     base2 = PogoGrid[0];

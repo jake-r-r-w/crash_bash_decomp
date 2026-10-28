@@ -26,11 +26,6 @@ typedef struct SpinObj {
     /* 0x74 */ u16 index;
 } SpinObj;
 
-typedef struct SpinScene {
-    /* 0x00 */ u8 pad0[0x1C];
-    /* 0x1C */ SpinObj *objs;
-} SpinScene;
-
 typedef struct SpinSlot {
     /* 0x00 */ SpinObj *obj;
     /* 0x04 */ s16 fixed[3]; /* used as is when nonzero */

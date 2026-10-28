@@ -430,12 +430,6 @@ typedef struct DinoSceneData {
     s32 off14;
 } DinoSceneData;
 
-typedef struct DinoScene {
-    s32 unk0;
-    u8 pad4[0xC];
-    u8 *data; /* 0x10 */
-} DinoScene;
-
 s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags);
 
 /* DinoScoreGems: DinoGoal (the swinging target) as it moves. */

@@ -153,11 +153,6 @@ typedef struct N2ORound {
     /* 0x3C */ s32 unk3C;
 } N2ORound;
 
-typedef struct N2OScene {
-    u8 pad0[0x27];
-    u8 unk27;
-} N2OScene;
-
 typedef struct N2OFlagNode {
     u32 flags;
     u8 pad4[0x58];
@@ -167,13 +162,6 @@ typedef struct N2OFlagNode {
     u8 pad70[4];
     u16 unk74;
 } N2OFlagNode;
-
-typedef struct N2OSceneRef {
-    u8 pad0[0x10];
-    N2OScene *unk10;
-    u8 pad14[8];
-    N2OFlagNode *unk1C;
-} N2OSceneRef;
 
 extern N2ORound N2OBossRound;
 extern s32 D_8005AA3C;

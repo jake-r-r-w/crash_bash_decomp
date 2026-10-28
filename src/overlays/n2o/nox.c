@@ -243,7 +243,7 @@ void NoxInitAsteroids(void) {
         "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!\n"
         "\0\x0B\x80\x82";
 
-    o = (AstSceneObj *)((GfxScene *)MapScene)->objs;
+    o = (AstSceneObj *)((u8 *)MapScene->subs);
     printf(NoxMsgInitAsteroids);
     nAst = 0;
     nMine = 0;
@@ -594,7 +594,7 @@ void NoxUpdateAsteroids(void) {
     s32 nAst;
 
     nMine = 0;
-    o = (AstSceneObj *)((GfxScene *)MapScene)->objs;
+    o = (AstSceneObj *)((u8 *)MapScene->subs);
     nAst = 0;
     if (GameTeams[0] != 0) {
         if ((Heroes[0].hero_status & 0x2000) && (Heroes[1].hero_status & 0x2000)) {

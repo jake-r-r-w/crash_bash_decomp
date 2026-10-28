@@ -75,12 +75,6 @@ extern SceneObj *PolarSceneB;
 extern s32 PolarSceneCount;
 extern s32 PolarSceneTimer;
 
-/* MapScene as seen by PolarInitScene. */
-typedef struct PolarScene {
-    /* 0x00 */ u8 pad0[0x1C];
-    /* 0x1C */ SceneObj *objs;
-} PolarScene;
-
 /* GameInfo as seen by PolarInitScene. */
 typedef struct PolarModeView {
     /* 0x00 */ u8 pad0[0x32];
