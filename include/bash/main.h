@@ -187,10 +187,10 @@ typedef struct ModelFile {
     /* 0x04 */ u32 unk4;
     /* 0x08 */ s32 unk8;
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
+    /* 0x10 */ s32 mapAnims;   /* the map's animations (map_enviroment.map_animations, from 8 past it) */
     /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 entities;   /* s32 count, then 12 bytes each: s32 to its MeshHeader (from itself), s32, s32 group */
+    /* 0x18 */ s32 maps;       /* a map_list: the level's maps (an arena's) */
+    /* 0x1C */ s32 entities;   /* the map directory: s32 count, then ModelEntity each */
     /* 0x20 */ s32 colors;     /* u32 RGB + code, 3 a face */
     /* 0x24 */ s32 uvs;        /* u16 u | v << 8 */
     /* 0x28 */ s32 verts;      /* the animations' default vertex pool */

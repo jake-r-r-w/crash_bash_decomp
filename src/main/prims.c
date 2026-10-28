@@ -2928,38 +2928,38 @@ void mapscene_release(map_enviroment *env) {
     env->subs = NULL;
 }
 
-void mapscene_setup_tables(arg0)
-    s32 *arg0;
+void mapscene_setup_tables(env)
+    map_enviroment *env;
 {
-    s32 *outer;
-    u8 *p;
-    u8 *q;
+    obj_dbase *outer;
+    ModelFile *p;
+    map_list *maps;
+    map_map *q;
     u8 *r;
-    u8 *s;
-    u8 *t;
-    u8 *u;
+    ModelFile *s;
+    ModelFile *t;
+    ModelFile *u;
     s32 idx;
 
-    outer = (s32 *)arg0[0];
-    idx = arg0[2] * 4;
-    p = (u8 *)outer[3];
-    p = p + (*(s32 *)(p + 0x18) + 0x18);
-    arg0[3] = (s32)p;
-    q = p + (idx + 4) + *(s32 *)(p + idx + 4);
-    arg0[4] = (s32)q;
-    r = q + (*(s32 *)(q + 0xC) + 0xC);
-    arg0[10] = (s32)r;
-    arg0[11] = (s32)(r + 4);
-    arg0[12] = (s32)(q + (*(s32 *)(q + 0x10) + 0x10));
-    arg0[5] = (s32)(q + (*(s32 *)(q + 0x20) + 0x20));
-    arg0[6] = *(s32 *)(q + 0x1C);
-    s = (u8 *)outer[3];
-    s = s + (*(s32 *)(s + 0x1C) + 0x1C);
-    arg0[8] = (s32)s;
-    t = (u8 *)outer[3];
-    arg0[9] = *(s32 *)(t + 0x10) + (s32)t + 0x18;
-    u = (u8 *)outer[3];
-    *(s32 *)(*(s32 *)(u + 0x3C) + (s32)u + 0x48) = (s32)u;
+    outer = env->dbase;
+    idx = env->map_num;
+    p = outer->data;
+    maps = (map_list *)((u8 *)&p->maps + p->maps);
+    env->maps = maps;
+    q = (map_map *)((u8 *)&maps->map_offset[idx] + maps->map_offset[idx]);
+    env->map = q;
+    r = (u8 *)&q->path_list + q->path_list;
+    env->path_list = r;
+    env->path = (u32 *)(r + 4);
+    env->triggers = (trigger_list *)((u8 *)&q->trigger_list + q->trigger_list);
+    env->placements = (struct Placement *)((u8 *)&q->placements + q->placements);
+    env->num_placements = q->num_placements;
+    s = outer->data;
+    env->map_directory = (u8 *)&s->entities + s->entities;
+    t = outer->data;
+    env->map_animations = (u8 *)&t->mapAnims + t->mapAnims + 8;
+    u = outer->data;
+    ((DbaseAnim *)((u8 *)&u->anims + u->anims + 4))->data = (u32 *)u;
 }
 
 void mapscene_init(s32 *arg0, s32 *arg1) {
