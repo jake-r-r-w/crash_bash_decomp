@@ -535,7 +535,7 @@ void func_80083E8C(void) {
         case 30:
             if (D_8009D758 + D_8009D75C < 3) {
                 D_8009D760 = 1;
-                func_8002C1C0(0x6E, 0xF0);
+                music_set_tempo(0x6E, 0xF0);
             }
             break;
         }
@@ -2760,8 +2760,8 @@ void func_80089FA4(s32 arg0) {
     EngineGameView *g;
 
     mate = Heroes[arg0].hero_teammate;
-    func_8002C1C0(100, 5);
-    func_8002C29C();
+    music_set_tempo(100, 5);
+    music_flag_restart();
     g = (EngineGameView *)GameInfo;
     if (g->mode == 0x20) {
         if (D_8004E0A4[GameInfo[0x60]] == 1) {
@@ -3877,7 +3877,7 @@ void PlotSmokePoof(NAS *m) {
         m->Engine->unk2C.y = u[1]->unk2C.y;
         m->Engine->unk2C.z = u[1]->unk2C.z;
     }
-    func_800250B0(m);
+    RunNasAnim(m);
 }
 
 s32 func_8008C4C8(s32 *arg0, s32 arg1) {
@@ -4555,7 +4555,7 @@ plot:
 }
 
 void PlotBigPoof(NAS *nas) {
-    func_800250B0(nas);
+    RunNasAnim(nas);
 }
 
 void InitBigPoof(NAS *nas) {

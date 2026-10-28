@@ -8,8 +8,8 @@
 #include "common.h"
 #include "bash/nas.h"
 
-void func_8002D488(void);
-void func_8002E000(s32 arg0);
+void modchip_check_region(void);
+void modchip_cd_reset(s32 arg0);
 
 /* CD command table, 4 bytes per command: command byte, parameter count, pad */
 extern u8 D_8006783C[];
@@ -22,9 +22,9 @@ extern u8 CdResult[]; /* CD response buffer */
 
 extern s32 D_80067898;
 
-s32 func_8002DE2C(s32 arg0);
-void func_8002E0F0(void);
-s32 func_8002D4F4(s32 arg0);
+s32 modchip_cd_wait(s32 arg0);
+void modchip_show_warning(void);
+s32 modchip_step(s32 arg0);
 
 extern s32 ModchipVSync; /* VSync count at the last step */
 extern s32 D_8006EA1C;

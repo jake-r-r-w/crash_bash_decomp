@@ -8,24 +8,24 @@
 #include "common.h"
 #include "bash/main.h"
 
-void func_8002C894(void);
-s32 func_8002C4B0(u8 arg0);
-void func_8002D134(s32 arg0);
-void func_8002D15C(void);
-void func_8002D254(void);
-void func_8002D274(void);
-void func_8002D33C(u8 *arg0);
-s32 func_8002C4B0(u8 arg0);
+void card_init(void);
+s32 ascii_to_sjis(u8 arg0);
+void card_request(s32 arg0);
+void card_reset(void);
+void card_stop(void);
+void card_poll(void);
+void card_clear_slot(u8 *arg0);
+s32 ascii_to_sjis(u8 arg0);
 void card_save(void);
 void card_format(void);
-s32 func_8002D094(void);
-s32 func_8002D360(u8 *arg0);
-s32 func_8002D178(void);
-SizeEntry *func_8002D1D4(void);
-void func_8002D294(void);
-void func_8002D394(u8 *arg0, s16 *arg1);
-void func_8002C5BC(void);
-void func_8002C97C(void);
+s32 card_saving(void);
+s32 card_checksum(u8 *arg0);
+s32 card_count_files(void);
+SizeEntry *card_find_file(void);
+void card_clear_slots(void);
+void card_sjis_title(u8 *arg0, s16 *arg1);
+void card_make_header(void);
+void card_update(void);
 
 static inline void McSetTitle(u8 *src, s16 *dst) {
     s16 fill;
@@ -39,15 +39,15 @@ static inline void McSetTitle(u8 *src, s16 *dst) {
     i = 0;
     done = 0;
     n = 0;
-    r2 = func_8002C4B0(0x20);
-    fill = ((r2 & 0xFF) << 8) | ((u32)(func_8002C4B0(0x20) & 0xFFFF) >> 8);
+    r2 = ascii_to_sjis(0x20);
+    fill = ((r2 & 0xFF) << 8) | ((u32)(ascii_to_sjis(0x20) & 0xFFFF) >> 8);
     do {
         if (done == 0) {
             c = src[i];
             i++;
             if (c >= 0x20U) {
-                r = func_8002C4B0(c);
-                dst[n] = ((r & 0xFF) << 8) | ((u32)(func_8002C4B0(c) & 0xFFFF) >> 8);
+                r = ascii_to_sjis(c);
+                dst[n] = ((r & 0xFF) << 8) | ((u32)(ascii_to_sjis(c) & 0xFFFF) >> 8);
             } else {
                 done = 1;
             }

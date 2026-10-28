@@ -4136,7 +4136,7 @@ void Plot_N_Gin(NAS *arg0) {
                     StopSfx(eng->sfx);
                 }
             }
-            func_800250B0(arg0);
+            RunNasAnim(arg0);
         }
         s = (u16)gin->unk1A;
         switch (s) {
@@ -4161,13 +4161,13 @@ void Plot_N_Gin(NAS *arg0) {
                 gin->unk22 = 0x5A;
                 gin->unk20 = 0x10;
             }
-            func_800250B0(arg0);
+            RunNasAnim(arg0);
             eng->unk5E = 1;
             return;
         case 3:
             eng->unk1E += gin->unk20;
             gin->unk20 += 4;
-            func_800250B0(arg0);
+            RunNasAnim(arg0);
             if (gin->unk22 != 0) {
                 gin->unk22--;
                 break;
@@ -6049,7 +6049,7 @@ void Init_ArkCameraFlash(NAS *arg0) {
 
 void Plot_seaweed(NAS *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
-        func_800250B0(arg0);
+        RunNasAnim(arg0);
     }
 }
 
@@ -6066,7 +6066,7 @@ void Init_seaweed(NAS *arg0) {
                 s32 n = *(s32*)(info + 4);
                 ((void (*)(EXTanimator*, s32))GotoLinkAnim)((EXTanimator*)cur, n);
                 if (n < 2) {
-                    func_800250B0(arg0);
+                    RunNasAnim(arg0);
                     *(u16*)((u8*)cur + 30) += Random(8);
                 }
                 eng->sub->flags |= 0x02000000;

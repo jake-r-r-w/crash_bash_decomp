@@ -87,7 +87,7 @@ void *FindExtension(NAS *nas, s32 id);
 NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags);
 s32 KillNAS(NAS *nas);
 FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
-s16 func_800250B0(NAS *nas);
+s16 RunNasAnim(NAS *nas);
 void GotoLinkAnim(EXTanimator *anim, s32 n);
 s32 textureset_mem_size(u8 *arg0);
 s32 pad_read_mtap(u8 *src, u8 *dst, s32 n);

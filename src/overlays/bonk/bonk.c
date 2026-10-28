@@ -1473,7 +1473,7 @@ s32 BonkDist2XZ(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 void PlotBonkFlag(NAS *nas) {
-    func_800250B0(nas);
+    RunNasAnim(nas);
 }
 
 void InitBonkFlag(NAS *nas) {

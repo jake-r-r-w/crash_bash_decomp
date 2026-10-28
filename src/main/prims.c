@@ -974,7 +974,7 @@ s32 eng_add_subs(EXTengine *eng, s32 n) {
     return count;
 }
 
-void *func_80019094(void *arg0, s32 arg1) {
+void *model_prims_begin(void *arg0, s32 arg1) {
     GfxState *gs;
     PrimSet *set;
     FacePrim *prim;
@@ -1333,7 +1333,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
         if (!(c & 0x1000000) && !bbox_visible(set)) {
             return;
         }
-        p = func_80019094(e, c);
+        p = model_prims_begin(e, c);
         set += 0x14;
     draw:
         if (p != NULL) {
@@ -2485,7 +2485,7 @@ void draw_model_set_entry(s32 arg0, ModelSet *set, s32 arg2) {
             return;
         }
         do {
-            p = func_80019094(e, arg2);
+            p = model_prims_begin(e, arg2);
         } while (0);
         blk += 0x14;
         if (p != NULL) {
@@ -2506,7 +2506,7 @@ void draw_map_entity(u16 arg0, u8 *arg1, s32 arg2) {
     if (!(arg2 & 0x1000000) && !bbox_visible(blk)) {
         return;
     }
-    p = func_80019094(e, arg2);
+    p = model_prims_begin(e, arg2);
     blk += 0x14;
     if (p != NULL) {
         draw_verts(p, (SVECTOR *)blk, (u8 *)&e->runs + e->runs);
@@ -2525,7 +2525,7 @@ void *draw_model_entry(ModelEntry *e, s32 arg1) {
         }
     }
     q = blk + 0x14;
-    p = func_80019094(e, arg1);
+    p = model_prims_begin(e, arg1);
     if (p != NULL) {
         draw_verts(p, (SVECTOR *)q,(u8 *)&e->runs + e->runs);
     }
@@ -2535,7 +2535,7 @@ void *draw_model_entry(ModelEntry *e, s32 arg1) {
 void *draw_morph_model(MorphModel *model, void *arg1, s32 arg2) {
     void *p;
 
-    p = func_80019094(model, arg2);
+    p = model_prims_begin(model, arg2);
     if (p != NULL) {
         draw_verts(p, arg1, (u8 *)&model->runs + model->runs);
     }
@@ -3222,11 +3222,11 @@ void process_control_update(process_control_info *pc, fade_info *fade) {
         pc->process = pc->next_process;
         pc->next_process = NULL;
         if (pc->process->heap != NULL) {
-            func_8002AC70();
+            sound_stop();
             while (loader_pending() != 0) {
                 loader_update();
                 mal_compact(&MainHeap);
-                func_8002BAE8();
+                vab_transfer_check();
             }
             mal_init(&MainHeap, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
             smallnode_init();

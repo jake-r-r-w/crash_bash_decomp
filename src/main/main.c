@@ -154,9 +154,9 @@ void shell_update(void) {
     pads_update();
     rand_step();
     sfx_update_all();
-    func_8002BEA8();
+    music_update();
     if (!(FrameCount & 1)) {
-        func_8002D274();
+        card_poll();
     }
     D_8004E0DC->unk4();
 }
@@ -1597,7 +1597,7 @@ s32 loader_update(void) {
     if (ls->state != 0) {
         return 0;
     }
-    if (func_8002BB80() != 0) {
+    if (vab_loading() != 0) {
         return 0;
     }
     head = (u8 *)ls->unkC;
@@ -2296,7 +2296,7 @@ s32 load_file_wait(s32 *arg0, u8 **arg1) {
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     mal_set_owner(D_8006E9FC, arg1);
     return size;
@@ -2308,7 +2308,7 @@ s32 load_file_part_wait(s32 arg0, s32 arg1, u8 **arg2, s32 arg3) {
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     mal_set_owner(D_8006E9FC, arg2);
     return 0;
@@ -2329,7 +2329,7 @@ s32 load_file_permanent(s32 *arg0) {
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     return D_8006E9F8;
 }
@@ -2340,7 +2340,7 @@ s32 load_file_to_wait(s32 arg0, s32 arg1, s32 arg2) {
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     return D_8006E9F8;
 }
@@ -2352,7 +2352,7 @@ s32 load_file_direct(u8 *a, u8 *b) {
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     D_800637B0 = 0;
     while (cd_read_poll() > 0) {
@@ -2880,15 +2880,15 @@ void export_exe_functions(void) {
     t[0x004 / 4] = &num_sfx_banks;
     t[0x008 / 4] = PlaySfx;
     t[0x00C / 4] = StopSfx;
-    t[0x010 / 4] = func_8002BD0C;
+    t[0x010 / 4] = sfx_bank_load;
     t[0x014 / 4] = sound_reinit;
     t[0x018 / 4] = sfx_delete_all;
     t[0x01C / 4] = func_800228A4;
-    t[0x020 / 4] = func_8002BCB0;
-    t[0x024 / 4] = func_8002AC40;
-    t[0x028 / 4] = func_8002AC18;
+    t[0x020 / 4] = sfx_bank_close;
+    t[0x024 / 4] = sound_pause;
+    t[0x028 / 4] = sound_resume;
     t[0x02C / 4] = music_play_level;
-    t[0x030 / 4] = func_8002C284;
+    t[0x030 / 4] = music_request;
     t[0x034 / 4] = sound_init;
     t[0x038 / 4] = sound_set_mono;
     t[0x03C / 4] = sound_set_stereo;
@@ -2990,13 +2990,13 @@ void export_exe_functions(void) {
     t[0x1BC / 4] = process_control_back;
     t[0x1C0 / 4] = texture_draw_quad;
     t[0x1C4 / 4] = texture_release_loading_mem;
-    t[0x1C8 / 4] = func_8002D274;
+    t[0x1C8 / 4] = card_poll;
     t[0x1CC / 4] = music_load_track;
     t[0x1D0 / 4] = texture_draw_3d;
     t[0x1D4 / 4] = SysPrintAt3d;
     t[0x1D8 / 4] = DrawSysText;
     t[0x1DC / 4] = card_save;
-    t[0x1E0 / 4] = func_8002D15C;
+    t[0x1E0 / 4] = card_reset;
     t[0x1E4 / 4] = quat_to_matrix;
     t[0x1E8 / 4] = init_scripts;
     t[0x1EC / 4] = scripts_update;
@@ -3017,13 +3017,13 @@ void export_exe_functions(void) {
     t[0x228 / 4] = posdst_flash;
     t[0x22C / 4] = D_8005B648;
     t[0x230 / 4] = D_8004DDBC;
-    t[0x234 / 4] = func_8002D294;
-    t[0x238 / 4] = func_8002C1C0;
+    t[0x234 / 4] = card_clear_slots;
+    t[0x238 / 4] = music_set_tempo;
     t[0x23C / 4] = music_restart;
-    t[0x240 / 4] = func_8002C29C;
+    t[0x240 / 4] = music_flag_restart;
     t[0x244 / 4] = music_duck_off;
-    t[0x248 / 4] = func_8002BB80;
-    t[0x24C / 4] = func_8002BA44;
+    t[0x248 / 4] = vab_loading;
+    t[0x24C / 4] = vab_transfer_wait;
     t[0x250 / 4] = quat_slerp;
     t[0x254 / 4] = (void *)D_800654B0;
     t[0x258 / 4] = (void *)D_800654B4;
@@ -3033,8 +3033,8 @@ void export_exe_functions(void) {
     t[0x268 / 4] = dbase_texture_entry;
     t[0x26C / 4] = card_format;
     t[0x270 / 4] = pads_reset_rumble;
-    t[0x274 / 4] = func_8002D488;
-    t[0x278 / 4] = func_8002D4F4;
+    t[0x274 / 4] = modchip_check_region;
+    t[0x278 / 4] = modchip_step;
     t[0x27C / 4] = queue_group_load;
     t[0x280 / 4] = D_80050010;
     t[0x284 / 4] = subpool_free;

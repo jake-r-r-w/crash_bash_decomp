@@ -5540,14 +5540,14 @@ void PlotDinoEgg(NAS *m) {
             ext->vel = 0;
             ext->NasStatus = 1;
             GotoLinkAnim(ext->anim, 0);
-            func_800250B0(m);
+            RunNasAnim(m);
         }
         break;
     case 1:
         m->Engine->unk10.x -= (rcossin_tbl[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x20) >> 12;
         m->Engine->unk10.z -= (rcossin_tbl[(u16)m->Engine->unk1E & 0xFFF].unk2 * 0x20) >> 12;
         ext->angcounter += 0x80;
-        func_800250B0(m);
+        RunNasAnim(m);
         if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0)
             ext->yang = RaceBounce(m->Engine->unk1E, hit.y);
         if (RaceTrackCollide(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
@@ -5992,12 +5992,12 @@ void PlotGlob(NAS *m) {
             if (++ext->unk18 == 0x3C) {
                 PlaySfx(0x666, NULL, NULL, 0x1000, 0x1E00, 0);
             }
-            if (func_800250B0(m) != 0) {
+            if (RunNasAnim(m) != 0) {
                 GotoLinkAnim((EXTanimator *)ext->unk10, 1);
                 ext->unkC = 1;
                 PlaySfx(0x667, NULL, NULL, 0x1000, 0x1E00, 0);
                 ext->unk18 = 0;
-                func_800250B0(m);
+                RunNasAnim(m);
             }
             break;
         case 1:
@@ -6024,17 +6024,17 @@ void PlotGlob(NAS *m) {
                     CreateNAS(pos.x, pos.y, pos.z, 0x170D, 0x11);
                 }
             }
-            if (func_800250B0(m) != 0) {
+            if (RunNasAnim(m) != 0) {
                 GotoLinkAnim((EXTanimator *)ext->unk10, 3);
-                func_800250B0(m);
+                RunNasAnim(m);
                 ext->unkC = 2;
                 PlaySfx(0x669, NULL, NULL, 0x1000, 0x1E00, 0);
             }
             break;
         case 2:
-            if (func_800250B0(m) != 0) {
+            if (RunNasAnim(m) != 0) {
                 GotoLinkAnim((EXTanimator *)ext->unk10, 2);
-                func_800250B0(m);
+                RunNasAnim(m);
                 ext->unkC = 3;
             }
             break;
@@ -6042,7 +6042,7 @@ void PlotGlob(NAS *m) {
             if (ext->unk14-- < 0 && RaceOver == 0) {
                 ext->unk14 = Random(0x96) + 0x1C2;
                 GotoLinkAnim((EXTanimator *)ext->unk10, 0);
-                func_800250B0(m);
+                RunNasAnim(m);
                 PlaySfx(0x665, NULL, NULL, 0x1000, 0x1E00, 0);
                 ext->unkC = 0;
                 ext->unk18 = 0;
@@ -6243,7 +6243,7 @@ void PlotTrackGlob(NAS *nas) {
         if (func_8008C5C4(&ext->pos.x, &ext->unk64, &ext->unk10, &nas->Engine->unk10.x) != 0) {
             ext->unkC = 1;
             GotoLinkAnim((EXTanimator *)ext->cursor, 0);
-            func_800250B0(nas);
+            RunNasAnim(nas);
             nas->Engine->unk10.y = 0;
         }
         break;
@@ -6267,14 +6267,14 @@ void PlotTrackGlob(NAS *nas) {
             i++;
             goto loop1;
         }
-        func_800250B0(nas);
+        RunNasAnim(nas);
         if (ext->unk84-- < 0) {
             ext->unkC = 2;
             ext->unk88 = Random(0x1000);
         }
         break;
     case 2:
-        func_800250B0(nas);
+        RunNasAnim(nas);
         angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
         angle += 0x400;
         angle &= 0xFFF;
@@ -6306,7 +6306,7 @@ void PlotTrackGlob(NAS *nas) {
         }
         break;
     case 3:
-        func_800250B0(nas);
+        RunNasAnim(nas);
         ext->unk88 = 0x800;
         nas->Engine->unk10.x -= 0x20 * rcossin_tbl[(ext->unk88 - 0x400) & 0xFFF].unk2 >> 12;
         nas->Engine->unk10.z -= 0x20 * rcossin_tbl[ext->unk88 & 0xFFF].unk2 >> 12;
@@ -6340,7 +6340,7 @@ void InitDac(NAS *m) {
         m->Engine->sub->unk68 = -0x300;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk10 = (s32)ScriptCursorFirst(m, &DacScriptInit);
-        func_800250B0(m);
+        RunNasAnim(m);
         m->Engine->unk1E = 0x800;
         m->Engine->unk5E = 1;
         ext->unkC = 0;
@@ -6382,7 +6382,7 @@ void PlotDac(NAS *nas) {
     if (ext == NULL) {
         return;
     }
-    func_800250B0(nas);
+    RunNasAnim(nas);
     nas->Engine->unk5E = 1;
     switch (ext->state) {
     found:
@@ -6489,7 +6489,7 @@ void RaceResetJumps(void) {
 }
 
 void PlotRaceSmokeBoostWater(NAS *nas) {
-    func_800250B0(nas);
+    RunNasAnim(nas);
 }
 
 void InitRaceSmokeBoostWater(NAS *nas) {
@@ -6527,7 +6527,7 @@ void InitGlob(NAS *m) {
         ext->unk10 = ScriptCursorFirst(m, &GlobScriptInit);
         m->Engine->sub->unk6C = *(s32 *)MapScene;
         GotoLinkAnim((EXTanimator *)ext->unk10, 2);
-        func_800250B0(m);
+        RunNasAnim(m);
         ext->unkC = 3;
         ext->unk14 = Random(0x5A) + 0xF0;
         ext->unk18 = 0;
@@ -6623,7 +6623,7 @@ void InitRippled(NAS *m) {
 }
 
 void PlotRaceGreenSmokeBoost(NAS *nas) {
-    func_800250B0(nas);
+    RunNasAnim(nas);
 }
 
 void InitRaceGreenSmokeBoost(NAS *nas) {
@@ -6633,7 +6633,7 @@ void InitRaceGreenSmokeBoost(NAS *nas) {
 }
 
 void PlotRaceGreenSmokePoof(NAS *nas) {
-    func_800250B0(nas);
+    RunNasAnim(nas);
 }
 
 void InitRaceGreenSmokePoof(NAS *nas) {
@@ -6644,7 +6644,7 @@ void InitRaceGreenSmokePoof(NAS *nas) {
 }
 
 void PlotRaceSmokePoof(NAS *nas) {
-    func_800250B0(nas);
+    RunNasAnim(nas);
 }
 
 void InitRaceSmokePoof(NAS *nas) {
@@ -6760,7 +6760,7 @@ s32 RaceToCell(s32 arg0) {
 }
 
 void PlotRaceSmokeBoost(NAS *nas) {
-    func_800250B0(nas);
+    RunNasAnim(nas);
 }
 
 void InitRaceSmokeBoost(NAS *nas) {

@@ -5,7 +5,7 @@ extern u8 D_BFC7FF52;
 extern s32 ModchipState;
 extern s32 MsgFontRom;
 
-void func_8002D488(void) {
+void modchip_check_region(void) {
     switch (D_BFC7FF52) {
     case 0x41:
         ModchipState = 1;
@@ -23,7 +23,7 @@ void func_8002D488(void) {
     }
 }
 
-s32 func_8002D4F4(s32 arg0) {
+s32 modchip_step(s32 arg0) {
     s32 ret;
 
     ret = 0;
@@ -31,48 +31,48 @@ loop:
     {
         switch (ModchipState) {
         case 1:
-            func_8002E000(1);
+            modchip_cd_reset(1);
             ModchipState = 2;
             ret = 1;
             break;
         case 2:
-            ret = func_8002DE2C(1);
+            ret = modchip_cd_wait(1);
             switch (ret) {
             case 0:
             default:
                 ret = 2;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = 2;
                 break;
             case 1:
                 ret = 2;
                 D_8006EA1C = CdResult[2];
-                func_8002E000(6);
+                modchip_cd_reset(6);
                 ModchipState = 3;
                 break;
             case -1:
-                func_8002E000(1);
+                modchip_cd_reset(1);
                 ret = 2;
                 break;
             }
             break;
         case 3:
-            ret = func_8002DE2C(6);
+            ret = modchip_cd_wait(6);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 CdParams[0] = (D_8006EA1C >= 2) * 2;
-                func_8002E000(2);
+                modchip_cd_reset(2);
                 ModchipState = 4;
             case 0:
             default:
@@ -81,13 +81,13 @@ loop:
             }
             break;
         case 4:
-            ret = func_8002DE2C(2);
+            ret = modchip_cd_wait(2);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
@@ -106,7 +106,7 @@ loop:
                 CdTimeBcd = cd_to_bcd(mm, mm);
                 mm = ((BcdTime *)&CdTimeBcd)->min;
                 ((BcdTime *)&CdTimeBcd)->sec = cd_to_bcd(ss, mm);
-                func_8002E000(0xC);
+                modchip_cd_reset(0xC);
                 ModchipState = 5;
             }
             case 0:
@@ -116,7 +116,7 @@ loop:
             }
             break;
         case 5:
-            ret = func_8002DE2C(0xC);
+            ret = modchip_cd_wait(0xC);
             switch (ret) {
             case -1: {
                 if (!(CdResult[0] & 1)) {
@@ -127,19 +127,19 @@ loop:
                     CdParams[0] = m;
                     CdParams[1] = s;
                     CdParams[2] = 0;
-                    func_8002E000(3);
+                    modchip_cd_reset(3);
                     ModchipState = 7;
                     ret = 5;
                 }
                 break;
             }
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
-                func_8002E000(0xD);
+                modchip_cd_reset(0xD);
                 ModchipState = 6;
             case 0:
             default:
@@ -148,13 +148,13 @@ loop:
             }
             break;
         case 6:
-            ret = func_8002DE2C(0xD);
+            ret = modchip_cd_wait(0xD);
             switch (ret) {
             case -1:
-                func_8002E0F0();
+                modchip_show_warning();
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
@@ -165,7 +165,7 @@ loop:
                 CdParams[1] = s;
                 CdParams[2] = 0;
             }
-                func_8002E000(3);
+                modchip_cd_reset(3);
                 ModchipState = 7;
             case 0:
             default:
@@ -174,19 +174,19 @@ loop:
             }
             break;
         case 7:
-            ret = func_8002DE2C(3);
+            ret = modchip_cd_wait(3);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 CdParams[0] = ret;
-                func_8002E000(5);
+                modchip_cd_reset(5);
                 ModchipState = 8;
             case 0:
             default:
@@ -195,13 +195,13 @@ loop:
             }
             break;
         case 8:
-            ret = func_8002DE2C(5);
+            ret = modchip_cd_wait(5);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
@@ -216,24 +216,24 @@ loop:
             break;
         case 9:
             if (VSync(-1) > ModchipVSync + 3) {
-                func_8002E000(4);
+                modchip_cd_reset(4);
                 ModchipState = 0xA;
             }
             ret = 9;
             break;
         case 10:
-            ret = func_8002DE2C(4);
+            ret = modchip_cd_wait(4);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
-                func_8002E000(7);
+                modchip_cd_reset(7);
                 ModchipState = 0xB;
             case 0:
             default:
@@ -242,18 +242,18 @@ loop:
             }
             break;
         case 11:
-            ret = func_8002DE2C(7);
+            ret = modchip_cd_wait(7);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
-                func_8002E000(8);
+                modchip_cd_reset(8);
                 ModchipState = 0xC;
             case 0:
             default:
@@ -262,19 +262,19 @@ loop:
             }
             break;
         case 12:
-            ret = func_8002DE2C(8);
+            ret = modchip_cd_wait(8);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 CdParams[0] = 4;
-                func_8002E000(9);
+                modchip_cd_reset(9);
                 ModchipState = 0xD;
             case 0:
             default:
@@ -283,13 +283,13 @@ loop:
             }
             break;
         case 13:
-            ret = func_8002DE2C(9);
+            ret = modchip_cd_wait(9);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
@@ -305,25 +305,25 @@ loop:
         case 14:
             if (VSync(-1) > ModchipVSync + 200) {
                 CdParams[0] = 5;
-                func_8002E000(0xA);
+                modchip_cd_reset(0xA);
                 ModchipState = 0xF;
             }
             ret = 0xE;
             break;
         case 15:
-            ret = func_8002DE2C(0xA);
+            ret = modchip_cd_wait(0xA);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 if (CdResult[1] != 0) {
-                    func_8002E000(0);
+                    modchip_cd_reset(0);
                     ModchipState = 0x10;
                 } else {
                     ModchipVSync = VSync(-1);
@@ -336,18 +336,18 @@ loop:
             }
             break;
         case 16:
-            ret = func_8002DE2C(0);
+            ret = modchip_cd_wait(0);
             switch (ret) {
             case -1:
                 ModchipState = 1;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
-                func_8002E0F0();
+                modchip_show_warning();
             case 0:
             default:
                 ret =0x10;
@@ -355,7 +355,7 @@ loop:
             }
             break;
         case 17:
-            ret = func_8002DE2C(0);
+            ret = modchip_cd_wait(0);
             switch (ret) {
             case -1:
                 ModchipState = 1;
@@ -369,16 +369,16 @@ loop:
                 ret = 0x10;
                 break;
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ret = 0x10;
                 break;
             }
             break;
         case 18:
-            ret = func_8002DE2C(0xB);
+            ret = modchip_cd_wait(0xB);
             switch (ret) {
             case -2:
-                func_8002E000(0);
+                modchip_cd_reset(0);
                 ModchipState = 0x11;
                 ret = -1;
                 break;
@@ -395,7 +395,7 @@ loop:
             break;
         case 19:
             if (VSync(-1) > ModchipVSync + 10) {
-                func_8002E000(0xB);
+                modchip_cd_reset(0xB);
                 ModchipState = 0x12;
             }
             ret = 0x13;
@@ -411,7 +411,7 @@ loop:
     return ret;
 }
 
-s32 func_8002DE2C(s32 arg0) {
+s32 modchip_cd_wait(s32 arg0) {
     s32 limit;
     s32 n;
     s32 t;
@@ -468,7 +468,7 @@ s32 func_8002DE2C(s32 arg0) {
     return 0;
 }
 
-void func_8002E000(s32 arg0) {
+void modchip_cd_reset(s32 arg0) {
     s32 i;
     s32 off;
 

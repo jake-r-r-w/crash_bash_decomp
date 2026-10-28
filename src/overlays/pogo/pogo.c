@@ -5662,7 +5662,7 @@ void Plot_PogoRipperRoo(NAS *nas) {
     if (anim == NULL) {
         return;
     }
-    func_800250B0(nas);
+    RunNasAnim(nas);
     if (e->flags & 0x8000) {
         e2 = e->Engine;
         if (e2 != NULL) {

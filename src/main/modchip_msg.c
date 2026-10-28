@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/modchip_msg.h"
 
-void func_8002E0F0(void) {
+void modchip_show_warning(void) {
     DRAWENV draw;
     DISPENV disp;
     DR_ENV env;
@@ -39,7 +39,7 @@ void func_8002E0F0(void) {
         pos.x = x + i;
         pos.y = y + i;
         i++;
-        func_8002E25C(D_8006789C[MsgFontRom].text, &pos, colour);
+        msg_print(D_8006789C[MsgFontRom].text, &pos, colour);
         colour = 0x8000;
     } while (i < 2);
     func_8002E618();
@@ -47,7 +47,7 @@ void func_8002E0F0(void) {
     exit();
 }
 
-void func_8002E25C(u8 *str, TextPos *pos, s32 arg2) {
+void msg_print(u8 *str, TextPos *pos, s32 arg2) {
     s32 len;
     u8 *base;
     s32 startX;
@@ -66,22 +66,22 @@ void func_8002E25C(u8 *str, TextPos *pos, s32 arg2) {
         } else if (MsgFontRom == 0) {
             u32 hi = *(volatile u8 *)str++;
             glyph = (u8 *)Krom2RawAdd(*(volatile u8 *)str | (hi << 8));
-            func_8002E3D0(pos, glyph, arg2, 7);
+            msg_draw_glyph(pos, glyph, arg2, 7);
             pos->x = pos->w + (s16)(pos->x + 1);
         } else if (c == ' ') {
             pos->x += 8;
         } else {
             w = (*(volatile u8 *)str - 0x21) * 15;
             glyph = w + (u8 *)0xBFC7F8DE;
-            w = func_8002E584(glyph);
+            w = msg_glyph_width(glyph);
             pos->w = w - ((u32)w >> 16) + 1;
-            func_8002E3D0(pos, glyph, arg2, w);
+            msg_draw_glyph(pos, glyph, arg2, w);
             pos->x = pos->w + (s16)(pos->x + 2);
         }
     }
 }
 
-void func_8002E3D0(TextPos *pos, u8 *glyph, s32 colour, s32 bits) {
+void msg_draw_glyph(TextPos *pos, u8 *glyph, s32 colour, s32 bits) {
     GlyphRow p;
     s32 x;
     s32 y;
@@ -132,7 +132,7 @@ void func_8002E3D0(TextPos *pos, u8 *glyph, s32 colour, s32 bits) {
     pos->y = y;
 }
 
-s32 func_8002E584(u8 *arg0) {
+s32 msg_glyph_width(u8 *arg0) {
     u16 max;
     u16 min;
     s32 i;

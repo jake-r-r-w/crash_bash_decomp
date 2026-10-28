@@ -50,7 +50,7 @@ void eng_kill(EXTengine *eng);
 void prims_update(void);
 void func_8001A6D4(void *arg0, u32 hidden);
 s32 draw_gouraud_quad(void *arg0, u32 flags);
-void *func_80019094(void *arg0, s32 arg1);
+void *model_prims_begin(void *arg0, s32 arg1);
 s32 bbox_visible(void *arg0);
 void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
 void prims_init(s32 *cfg);
@@ -163,7 +163,7 @@ static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
 
 /* draw_object_model: draw model entry e with vertices v. */
 static inline void ModelEntry_Draw(u8 *e, s32 c, SVECTOR *v) {
-    void *p = func_80019094(e, c);
+    void *p = model_prims_begin(e, c);
 
     if (p != NULL) {
         draw_verts(p, v, e + (*(s32 *)(e + 0x14) + 0x14));
@@ -198,7 +198,7 @@ static inline s32 *ListNode18938_Take(ListNode18938 *l) {
 }
 
 
-/* func_80019094: the next free primitive slot of list (refilled from pool). */
+/* model_prims_begin: the next free primitive slot of list (refilled from pool). */
 static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, ListNode18938 *pool,
                                          void *faces, s32 flag) {
     s32 *n;

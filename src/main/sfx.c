@@ -15,13 +15,13 @@ void music_play_level(s32 arg0, s32 arg1) {
 
     p = (D5A614View *)GameInfo;
     if (p->mode != 0x28) {
-        func_8002BBB4();
+        sfx_table_clear();
         if (p->flags & 0x80) {
             f = MusicTable[arg0].unkC;
         } else {
             f = MusicTable[arg0].unk8;
         }
-        func_8002BD0C(f);
+        sfx_bank_load(f);
     }
     do {
         q = &DatIndex[2 * 278];
@@ -37,14 +37,14 @@ void music_play_level(s32 arg0, s32 arg1) {
             f = (s32)q;
         }
     }
-    func_8002BD0C(f);
+    sfx_bank_load(f);
     t = arg1 - 0x101;
     if (t >= 2U) {
         arg1 = t;
         for (i = 0; i < 4; i++) {
             v = GameInfo[i + 0x50] - 1;
             if (v < 8U) {
-                func_8002BD0C(D_80058F0C[arg1][v]);
+                sfx_bank_load(D_80058F0C[arg1][v]);
             }
         }
     }
@@ -60,14 +60,14 @@ void sound_set_mono(void) {
 
 void sound_init(void) {
     SsInit();
-    func_8002C060();
+    music_init();
     sfx_voices_init();
 }
 
 void sound_reinit(void) {
-    func_8002BBEC();
+    sfx_banks_close();
     SsInit();
-    func_8002C44C();
+    music_free();
 }
 
 s32 sfx_update_voice(_sfx_handler *voice) {
@@ -86,7 +86,7 @@ s32 sfx_update_voice(_sfx_handler *voice) {
         voice->flags &= ~8;
         if (pos != NULL) {
             f |= 8;
-            tmp = func_8002B210((VECTOR *)pos);
+            tmp = sfx_position_volume((VECTOR *)pos);
             vol = tmp;
         } else {
             u16 t = voice->unk20;
@@ -103,22 +103,22 @@ s32 sfx_update_voice(_sfx_handler *voice) {
         }
         voice->flags &= ~4;
         if (f != 0) {
-            func_8002B52C((s16 *)slot, vol.a, vol.b);
+            sfx_set_voice_volume((s16 *)slot, vol.a, vol.b);
         }
         if (voice->flags & 1) {
-            func_8002B4D8((PitchVoice *)slot, voice->unk24);
+            sfx_change_pitch((PitchVoice *)slot, voice->unk24);
             voice->flags &= ~1;
         }
     } else {
         if (pos != NULL) {
-            tmp2 = func_8002B210((VECTOR *)pos);
+            tmp2 = sfx_position_volume((VECTOR *)pos);
             vol = tmp2;
         } else {
             u16 t = voice->unk20;
             vol.b = t;
             vol.a = t;
         }
-        voice->unk28 = func_8002B5B0(&voice->unk2C, voice->id, voice->unk24, vol.a, vol.b);
+        voice->unk28 = sfx_key_on(&voice->unk2C, voice->id, voice->unk24, vol.a, vol.b);
     }
     return voice->unk28 != -1;
 }
@@ -136,7 +136,7 @@ void sfx_delete_all(void) {
         if (v->owner != NULL) {
             *v->owner = 0;
         }
-        func_8002B8F4(&v->unk2C);
+        sfx_key_off(&v->unk2C);
         if (v->next != NULL) {
             v->next->prev = v->prev;
         }
@@ -156,7 +156,7 @@ void StopSfx(_sfx_handler *voice) {
         if (voice->owner != NULL) {
             *voice->owner = 0;
         }
-        func_8002B8F4(&voice->unk2C);
+        sfx_key_off(&voice->unk2C);
         if (voice->next != NULL) {
             voice->next->prev = voice->prev;
         }
@@ -249,7 +249,7 @@ void sfx_update_all(void) {
     _sfx_handler *next;
     _sfx_handler *voice;
 
-    func_8002AEE0();
+    vab_transfer_poll();
     voice = SfxVoicePool.active;
     if (voice != NULL) {
         do {
@@ -315,17 +315,17 @@ void sfx_voices_init(void) {
     v->next = NULL;
     SfxVoicePool.active = NULL;
     SfxVoicePool.free = SfxVoicePool.voices;
-    func_8002B9A4();
+    sfx_table_init();
 }
 
 
 void sfx_reset(void) {
-    func_8002BBB4();
+    sfx_table_clear();
     sfx_voices_init();
 }
 
 void music_load_track(s32 i) {
-    func_8002C488(MusicTable[i].file, MusicTable[i].reverb);
+    music_load(MusicTable[i].file, MusicTable[i].reverb);
 }
 
 static inline NAS *AllocNAS(void) {

@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/music.h"
 
-void func_8002BD98(music_midi *slot, s32 idx) {
+void music_open_seq(music_midi *slot, s32 idx) {
     s16 vol;
 
     if (slot->unk1C != -1) {
@@ -21,7 +21,7 @@ void func_8002BD98(music_midi *slot, s32 idx) {
     SsSetMute(0);
 }
 
-void func_8002BEA8(void) {
+void music_update(void) {
     music_midi *slot = &CurrentMusic;
     s32 next = D_8006559C;
     s32 cur = D_800655A4;
@@ -36,7 +36,7 @@ void func_8002BEA8(void) {
                 D_800655A8 = 0;
                 D_800655A0 = 0;
                 if (next != -1) {
-                    func_8002BD98(slot, next);
+                    music_open_seq(slot, next);
                 }
                 D_800655A4 = D_8006559C;
             }
@@ -60,7 +60,7 @@ void func_8002BEA8(void) {
     }
 }
 
-void func_8002C060(void) {
+void music_init(void) {
     CurrentMusic.data = 0;
     CurrentMusic.seq = -1;
     D_800655A4 = -1;
@@ -68,7 +68,7 @@ void func_8002C060(void) {
     D_800655B4 = 0;
 }
 
-void func_8002C090(music_midi *slot) {
+void music_close(music_midi *slot) {
     if (slot->seq >= 0) {
         SsSeqClose(slot->seq);
         SsSepStop(slot->seq, 0);
@@ -82,25 +82,25 @@ void continue_music(void) {
     }
 }
 
-void func_8002C11C(void) {
+void music_pause(void) {
     if (CurrentMusic.seq >= 0) {
         SsSeqPause(CurrentMusic.seq);
     }
 }
 
-void func_8002C158(u8 *arg0) {
+void music_replay(u8 *arg0) {
     if (*(s32 *)(arg0 + 4) >= 0) {
         SsSeqReplay(*(s32 *)(arg0 + 4));
     }
 }
 
-void func_8002C18C(u8 *arg0) {
+void music_pause_slot(u8 *arg0) {
     if (*(s32 *)(arg0 + 4) >= 0) {
         SsSeqPause(*(s32 *)(arg0 + 4));
     }
 }
 
-void func_8002C1C0(s32 arg0, s32 arg1) {
+void music_set_tempo(s32 arg0, s32 arg1) {
     if (CurrentMusic.seq >= 0) {
         SsSeqSetAccelerando((s16)CurrentMusic.seq, (MusicTable[GameMode].tempo * arg0) / 100, arg1);
     }
@@ -112,7 +112,7 @@ void music_fade_out(s32 arg0) {
     }
 }
 
-void func_8002C284(s32 arg0) {
+void music_request(s32 arg0) {
     D_8006559C = arg0;
 }
 
@@ -120,7 +120,7 @@ void music_duck_off(void) {
     D_800655AC = 0;
 }
 
-void func_8002C29C(void) {
+void music_flag_restart(void) {
     D_800655AC = 1;
 }
 
@@ -128,7 +128,7 @@ void music_restart(void) {
     D_800655A8 += 1;
 }
 
-void func_8002C2C4(music_midi *slot) {
+void music_setup_slot(music_midi *slot) {
     u8 *body;
     int new_var;
     u8 *head;
@@ -151,33 +151,33 @@ void func_8002C2C4(music_midi *slot) {
 }
 
 void music_dload_midi(s32 arg0, music_midi *slot, s32 type) {
-    asload_permanent_callback(arg0, func_8002C3F0, slot);
+    asload_permanent_callback(arg0, music_set_data, slot);
     SpuReserveReverbWorkArea(1);
     SsUtSetReverbType(type);
     SsUtSetReverbDepth(0, 0);
     func_800369FC();
 }
 
-void func_8002C3F0(s32 arg0, s32 *arg1) {
+void music_set_data(s32 arg0, s32 *arg1) {
     *arg1 = arg0;
-    func_8002C2C4(arg1);
+    music_setup_slot(arg1);
     D_800655A8 = 0;
     D_800655AC = 0;
     D_800655B0 = 0;
 }
 
-void func_8002C428(void) {
-    func_8002C090(&CurrentMusic);
+void music_stop(void) {
+    music_close(&CurrentMusic);
 }
 
-void func_8002C44C(void) {
+void music_free(void) {
     if (CurrentMusic.data != 0) {
         mal_free(CurrentMusic.data, &MainHeap);
         CurrentMusic.data = 0;
     }
 }
 
-void func_8002C488(s32 arg0, s32 type) {
+void music_load(s32 arg0, s32 type) {
     music_dload_midi(arg0, &CurrentMusic, type);
 }
 

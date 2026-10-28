@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/nas.h"
 
-/* The debug text printer's cursor (func_8002E25C). */
+/* The debug text printer's cursor (msg_print). */
 typedef struct TextPos {
     /* 0x00 */ s16 x;
     /* 0x02 */ s16 y;
@@ -16,7 +16,7 @@ typedef struct TextPos {
     /* 0x06 */ s16 unk6;
 } TextPos;
 
-/* LoadImage packet for one glyph row pair (func_8002E3D0) */
+/* LoadImage packet for one glyph row pair (msg_draw_glyph) */
 typedef struct GlyphRow {
     /* 0x00 */ u32 tag;
     /* 0x04 */ u32 cmd;
@@ -40,10 +40,10 @@ extern TextScreen D_8006789C[];
 
 extern s32 MsgFontRom; /* nonzero: ASCII from the BIOS ROM font, else Kanji (Krom2RawAdd) */
 
-void func_8002E0F0(void);
+void modchip_show_warning(void);
 
-void func_8002E25C(u8 *str, TextPos *pos, s32 arg2);
-void func_8002E3D0(TextPos *pos, u8 *glyph, s32 colour, s32 bits);
+void msg_print(u8 *str, TextPos *pos, s32 arg2);
+void msg_draw_glyph(TextPos *pos, u8 *glyph, s32 colour, s32 bits);
 void func_8002E618(void);
 
 #endif /* BASH_MODCHIP_MSG_H */

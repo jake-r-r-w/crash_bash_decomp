@@ -20,7 +20,7 @@ s32 func_8007EE2C(s32 pad) {
         PausePad = 0;
         PauseChoice = 0;
         p[4] &= 0x04000010;
-        func_8002AC18();
+        sound_resume();
         return 0;
     }
     return ((PadButtons *)Pads)[pad].pressed & 0x4000;
@@ -47,7 +47,7 @@ s32 func_8007EFC0(s32 pad, s32 max) {
         PausePad = 0;
         PauseChoice = 0;
         p[4] &= 0x04000010;
-        func_8002AC18();
+        sound_resume();
         return 0;
     }
     return ((PadButtons *)Pads)[pad].pressed & 0x4000;
@@ -166,10 +166,10 @@ found:
         if (toggle) {
             if (GamePause & 1) {
                 pads_reset_rumble();
-                func_8002AC40();
+                sound_pause();
                 PlaySfx(0x193, NULL, NULL, 0x1000, 0x1E00, 0);
             } else {
-                func_8002AC18();
+                sound_resume();
             }
         }
         PSV->flags &= ~0x01000000;
@@ -202,7 +202,7 @@ found:
                         PSV->flags &= 0x04000010;
                         PausePad = 0;
                         PauseChoice = 0;
-                        func_8002AC18();
+                        sound_resume();
                         break;
                     case 1:
                         func_80083334(PSV->mode, kind, 0);
@@ -229,7 +229,7 @@ found:
                         PausePad = 0;
                         PauseChoice = 0;
                         PSV->flags &= 0x04000010;
-                        func_8002AC18();
+                        sound_resume();
                         break;
                     case 1:
                         func_80083334(PSV->mode, kind, 0);
@@ -265,7 +265,7 @@ found:
                     PausePad = 0;
                     PauseChoice = 0;
                     PSV->flags &= 0x04000010;
-                    func_8002AC18();
+                    sound_resume();
                     break;
                 case 1:
                     PauseLastChoice = 0;
@@ -368,7 +368,7 @@ found:
                                 PSV->flags = t & keep;
                                 PausePad = 0;
                                 PauseChoice = 0;
-                                func_8002AC18();
+                                sound_resume();
                                 ret = 1;
                                 PauseChoice = 0;
                             }
@@ -465,7 +465,7 @@ found:
                 if (func_8007EFC0(PausePad, 3) != 0 || (ActivePad()->pressed & 0x1000)) {
                     PauseChoice = 0;
                     PauseLastChoice = 0;
-                    func_8002C11C();
+                    music_pause();
                     PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
                 break;
@@ -547,7 +547,7 @@ found:
                 PSV->flags = (PSV->flags & ~0x200) | 0x10;
                 PSV->unk30 |= 0x8002;
                 PSV->flags &= 0x04000010;
-                func_8002AC18();
+                sound_resume();
                 break;
             case 3:
                 PSV->flags &= ~0x200;
@@ -555,13 +555,13 @@ found:
                 PausePad = 0;
                 PauseChoice = 0;
                 PSV->flags &= 0x04000010;
-                func_8002AC18();
+                sound_resume();
                 break;
             default:
                 PausePad = 0;
                 PauseChoice = 0;
                 PSV->flags &= 0x04000010;
-                func_8002AC18();
+                sound_resume();
                 ret = 1;
                 CupTimer = 0;
                 break;
@@ -1761,7 +1761,7 @@ void func_800834E4(void) {
     PausePad = 0;
     PauseChoice = 0;
     p[4] &= 0x04000010;
-    func_8002AC18();
+    sound_resume();
 }
 
 void func_8008352C(void) {

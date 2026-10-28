@@ -1476,7 +1476,7 @@ void InitNitroBoss(NAS *nas) {
         ext->cursor = ScriptCursorFirst(nas, &NoxBossScriptInit);
         nas->Engine->unk5D = 2;
         nas->Engine->unk5C = 1;
-        func_800250B0(nas);
+        RunNasAnim(nas);
         nas->UserInfo.user1 = 0;
         ext->unk14 = 0x3200;
         scene = MapScene;
@@ -1630,7 +1630,7 @@ void PlotNitroBoss(NAS *nas) {
         fl[2] |= 0x8000;
         return;
     }
-    func_800250B0(nas);
+    RunNasAnim(nas);
 }
 
 void InitSpiralSat(NAS *nas) {
@@ -2479,7 +2479,7 @@ void NoxInitShadow(void) {
 }
 
 void PlotNitroSmokeBoost(NAS *nas) {
-    func_800250B0(nas);
+    RunNasAnim(nas);
 }
 
 void InitNitroSmokeBoost(NAS *nas) {

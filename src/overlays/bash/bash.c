@@ -2479,14 +2479,14 @@ void PlotBashPenguin(NAS *nas) {
                 eng->unk1E = 0xE3;
                 eng->unk10.x = 0;
                 eng->unk10.z = 0;
-                func_800250B0(nas);
+                RunNasAnim(nas);
                 break;
             case 2:
                 if (GameExitFlags & 0x801) {
                     GotoLinkAnim(anim, 0);
                     goto stop;
                 }
-                if (func_800250B0(nas) == 8) {
+                if (RunNasAnim(nas) == 8) {
                     fux->state = 3;
                     nas->UserInfo.user1 = 0x800;
                     PlaySfx(0x427, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -2518,14 +2518,14 @@ void PlotBashPenguin(NAS *nas) {
                     if (eng->sfx != NULL) {
                         StopSfx(eng->sfx);
                     }
-                    func_800250B0(nas);
+                    RunNasAnim(nas);
                 }
                 BashPenguinPush(eng);
                 eng->unk1E += 0x1C7;
                 break;
             case 4:
                 eng->unk1E = 0xE3;
-                func_800250B0(nas);
+                RunNasAnim(nas);
                 break;
             case 1:
             default:
@@ -2545,7 +2545,7 @@ void PlotBashPenguin(NAS *nas) {
                     BashRainCount = 0;
                     BashRainTimer += 0x258;
                 }
-                func_800250B0(nas);
+                RunNasAnim(nas);
                 break;
             }
         }
@@ -3435,7 +3435,7 @@ set:
 
 void PlotBoing(u8 *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
-        func_800250B0((NAS *)arg0);
+        RunNasAnim((NAS *)arg0);
     }
 }
 

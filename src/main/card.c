@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/card.h"
 
-s32 func_8002C4B0(u8 c) {
+s32 ascii_to_sjis(u8 c) {
     static const void *const tbl[31] = {
         &&l21, &&l22, &&l23, &&l24, &&l25, &&ldef, &&ldef, &&l28,
         &&l29, &&l2A, &&l2B, &&l2C, &&l2D, &&l2E, &&l2F, &&ldef,
@@ -43,7 +43,7 @@ l3F: return 0x8148;
 ldef: return 0x8140;
 }
 
-void func_8002C5BC(void) {
+void card_make_header(void) {
     RECT clut;
     RECT *rect;
     u8 *base;
@@ -101,7 +101,7 @@ void func_8002C5BC(void) {
     D_80065E24 = sum;
 }
 
-void func_8002C894(void) {
+void card_init(void) {
     u8 *p;
     s32 i;
     s32 *q;
@@ -153,7 +153,7 @@ const char CardSaveTitleFormat[] = "CRASH BASH %000 %000 %000 %000";
 
 const char CardFileName[] = "BASCUS-94570";
 
-void func_8002C97C(void) {
+void card_update(void) {
     static const char all[] = "*";
     static const void *const tbl[8] = {
         &&l0, &&l1, &&l2, &&l3, &&l4, &&l5, &&lend, &&l7
@@ -259,7 +259,7 @@ l3:
             CardStatus |= 0x100;
         }
         if (CardCommand != 6) {
-            func_8002C5BC();
+            card_make_header();
             MemCardWriteFile(CardChannel, CardFileName, (u32 *)CardBuffer, 0, 0x2000);
             CardCommand = 5;
             return;
@@ -312,7 +312,7 @@ l4_024:
 lend:;
 }
 
-s32 func_8002D094(void) {
+s32 card_saving(void) {
     if (CardRequest == 1 && (CardStatus & 0x80)) {
         return 1;
     }
@@ -340,19 +340,19 @@ void card_format(void) {
     CardStatus |= 0x80;
 }
 
-void func_8002D134(s32 arg0) {
+void card_request(s32 arg0) {
     card_command_delay = 1;
     CardRequest = arg0;
     CardStatus |= 0x80;
 }
 
-void func_8002D15C(void) {
+void card_reset(void) {
     CardRequest = 0;
     CardCommand = 0;
     CardStatus = 0;
 }
 
-s32 func_8002D178(void) {
+s32 card_count_files(void) {
     SizeEntry *p;
     s32 i;
     s32 sum;
@@ -374,7 +374,7 @@ s32 func_8002D178(void) {
     return 0x1E000 - sum;
 }
 
-SizeEntry *func_8002D1D4(void) {
+SizeEntry *card_find_file(void) {
     SizeEntry *p;
     s32 i;
 
@@ -393,15 +393,15 @@ SizeEntry *func_8002D1D4(void) {
     return NULL;
 }
 
-void func_8002D254(void) {
+void card_stop(void) {
     MemCardStop();
 }
 
-void func_8002D274(void) {
-    func_8002C97C();
+void card_poll(void) {
+    card_update();
 }
 
-void func_8002D294(void) {
+void card_clear_slots(void) {
     D_800657C8_Slot *s;
     u8 *p;
     s32 i;
@@ -444,7 +444,7 @@ void func_8002D294(void) {
     D_80065E24 = sum;
 }
 
-void func_8002D33C(u8 *arg0) {
+void card_clear_slot(u8 *arg0) {
     (*(s8*)((u8*)(arg0) + 0)) = 0;
     (*(s8*)((u8*)(arg0) + 1)) = 0;
     (*(s8*)((u8*)(arg0) + 2)) = 0;
@@ -455,7 +455,7 @@ void func_8002D33C(u8 *arg0) {
     (*(s8*)((u8*)(arg0) + 7)) = 0;
 }
 
-s32 func_8002D360(u8 *arg0) {
+s32 card_checksum(u8 *arg0) {
     u32 *p;
     u32 *end;
     s32 sum;
@@ -470,7 +470,7 @@ s32 func_8002D360(u8 *arg0) {
 }
 
 
-void func_8002D394(u8 *arg0, s16 *arg1) {
+void card_sjis_title(u8 *arg0, s16 *arg1) {
     s16 *end;
     s16 fill;
     s32 i;
@@ -479,8 +479,8 @@ void func_8002D394(u8 *arg0, s16 *arg1) {
     s32 r;
     s32 r2;
 
-    r2 = func_8002C4B0(0x20);
-    fill = ((r2 & 0xFF) << 8) | ((u32)(func_8002C4B0(0x20) & 0xFFFF) >> 8);
+    r2 = ascii_to_sjis(0x20);
+    fill = ((r2 & 0xFF) << 8) | ((u32)(ascii_to_sjis(0x20) & 0xFFFF) >> 8);
     i = 0;
     done = 0;
     end = arg1 + 0x20;
@@ -489,8 +489,8 @@ void func_8002D394(u8 *arg0, s16 *arg1) {
             c = arg0[i];
             i++;
             if (c >= 0x20U) {
-                r = func_8002C4B0(c);
-                *arg1 = ((r & 0xFF) << 8) | ((u32)(func_8002C4B0(c) & 0xFFFF) >> 8);
+                r = ascii_to_sjis(c);
+                *arg1 = ((r & 0xFF) << 8) | ((u32)(ascii_to_sjis(c) & 0xFFFF) >> 8);
             } else {
                 done = 1;
             }

@@ -74,7 +74,7 @@ typedef union {
 extern s32 GameLanguage;
 
 /* A viewpoint: its position (+0xC) is subtracted from world positions before
- * they go through the GTE (func_8002B6D0, func_8002B760). */
+ * they go through the GTE (view_project_volume, view_project). */
 typedef struct {
     s32 unk0[3];
     VECTOR pos; /* 0x0C */
@@ -363,7 +363,7 @@ typedef struct {
     s32 ofx;   /* 0x20: geometry offset x (scaled by the screen width / 640) */
     s32 ofy;   /* 0x24: geometry offset y (halved) */
     u8 unk28[0xC]; /* 0x28: a GfxScreen */
-    SVECTOR gteIn; /* 0x34: GTE scratch, a position relative to the view (func_8002B6D0) */
+    SVECTOR gteIn; /* 0x34: GTE scratch, a position relative to the view (view_project_volume) */
     u8 unk3C[4];
     u32 *ot;   /* 0x40 */
     s16 otzAdd; /* 0x44: added to the average Z before it is halved */
@@ -421,7 +421,7 @@ struct _sfx_handler {
     s32 unk20;               /* 0x20: PlaySfx's 4th argument (0x1000) */
     s32 unk24;               /* 0x24: PlaySfx's 5th argument (0x1E00) */
     s32 unk28;               /* 0x28: -1 when started */
-    s32 unk2C;               /* 0x2C: -1 when allocated; func_8002B8F4 stops it */
+    s32 unk2C;               /* 0x2C: -1 when allocated; sfx_key_off stops it */
     s32 unk30;
     s32 id;                  /* 0x34: the SfxTable id */
 };
@@ -435,7 +435,7 @@ typedef struct {
 } SfxPool;
 
 /* A VAB file in memory: the header and body as byte offsets from its start
- * (func_8002ADD4 opens it with SsVabOpenHead / SsVabTransBody). */
+ * (vab_loaded opens it with SsVabOpenHead / SsVabTransBody). */
 typedef struct {
     s32 body;
     s32 head;
@@ -589,9 +589,9 @@ typedef struct PadStick {
 /* Loaded sound data and the sequence opened from it (CurrentMusic); the name is
  * the C++ symbols' (music_dload_midi__FP4fileP10music_midil). */
 typedef struct music_midi {
-    /* 0x00 */ s32 data;                 /* heap block, freed by func_8002C44C */
+    /* 0x00 */ s32 data;                 /* heap block, freed by music_free */
     /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
-    /* 0x08 */ s32 p8;                   /* data + header offset (func_8002C2C4) */
+    /* 0x08 */ s32 p8;                   /* data + header offset (music_setup_slot) */
     /* 0x0C */ s32 pC;
     /* 0x10 */ s32 p10;
     /* 0x14 */ s32 p14;
@@ -599,7 +599,7 @@ typedef struct music_midi {
     /* 0x1C */ s32 unk1C;                /* set to -1 on close */
 } music_midi;
 
-/* Set both channels of slot's sequence volume (func_8002BEA8). */
+/* Set both channels of slot's sequence volume (music_update). */
 
 /* The offsets at the start of the loaded sound data. */
 typedef struct {
@@ -612,7 +612,7 @@ typedef struct {
     s32 o18;
 } SeqHdr;
 
-/* MusicTable: what music_load_track passes to func_8002C488 for an index. */
+/* MusicTable: what music_load_track passes to music_load for an index. */
 typedef struct MusicEntry {
     /* 0x00 */ s32 file;
     /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
@@ -798,8 +798,8 @@ extern u8 D_800527C4[];
 extern u8 HeroModelBank[];
 extern u8 D_8004DDBC[];
 extern u8 D_80050010[];
-void func_8002D488(void);
-void func_8002D4F4();
+void modchip_check_region(void);
+void modchip_step();
 extern s32 D_80064414;
 extern s32 D_8006559C;
 extern s32 D_800655A4;
@@ -861,7 +861,7 @@ extern const char CardSaveTitleFormat[];
 s32 count_completion(u8 *arg0);
 
 /* Writes up to 32 Shift-JIS characters of src (ASCII) to dst, padding with
- * full-width spaces (func_8002C5BC). */
+ * full-width spaces (card_make_header). */
 typedef struct {
     u8 b[8];
     u8 unk8[0x18C]; /* a copy of GameInfo from +0x60 (the hub's save), with the arena results */
@@ -883,15 +883,15 @@ extern const char CardFileName[];
 extern s32 D_8006782C;
 extern s32 D_80067830;
 
-/* The directory entry named CardFileName, or NULL (func_8002D1D4). */
+/* The directory entry named CardFileName, or NULL (card_find_file). */
 
-/* Clears the save's slots and flags and re-sums it (func_8002D294). */
+/* Clears the save's slots and flags and re-sums it (card_clear_slots). */
 
 /* McResetSave with the checksum in its own variable (allocates it apart from i). */
 
 /* Zeroes the 0x2000-byte save buffer. */
 
-/* Free bytes on the card (func_8002D178). */
+/* Free bytes on the card (card_count_files). */
 extern _mal_area MainHeap;
 extern s32 D_800637B0;
 extern u8 *D_8006E9FC;
@@ -1236,8 +1236,8 @@ typedef struct {
     ModelEntry entries[1]; /* 0x24, stride 0x34 */
 } ModelSet;
 extern s32 D_80056AC4; /* draw_object_model: the object's +0x8A */
-extern s32 D_80056878;    /* func_80019094: with D_80056AC4, forces the depth-cued path */
-extern s32 D_80056868[3]; /* func_80019094: default far colour */
+extern s32 D_80056878;    /* model_prims_begin: with D_80056AC4, forces the depth-cued path */
+extern s32 D_80056868[3]; /* model_prims_begin: default far colour */
 
 extern u8 TankObjects2Model[];
 typedef struct Words3 {
@@ -1647,7 +1647,7 @@ s32 lerp_snap(s32 a, s32 b, s32 t);
 
 
 
-s32 func_8002E584(u8 *arg0);
+s32 msg_glyph_width(u8 *arg0);
 
 typedef struct VelObj {
     /* 0x00 */ s32 flags;
@@ -1903,8 +1903,8 @@ void init_dots(subengine *arg0);
 
 extern s32 D_8005A60C;
 
-/* Inlined copies of func_8002B6D0, func_8002B760 and func_8002B7C8 (used by
- * func_8002B210). */
+/* Inlined copies of view_project_volume, view_project and sfx_pan (used by
+ * sfx_position_volume). */
 
 
 

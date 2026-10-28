@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/sound.h"
 
-void func_8002AAA0(void) {
+void sound_reset_counter(void) {
     D_80064414 = 0;
 }
 
@@ -10,7 +10,7 @@ void sound_critical(void) {
     D_80064414 = 1;
 }
 
-void func_8002AABC(void) {
+void machine_init_sound(void) {
     CurrentMusic.data = 0;
     SsInit();
     SsSetTableSize(D_800654CC, 1, 1);
@@ -18,15 +18,15 @@ void func_8002AABC(void) {
     SsUtSetReverbType(7);
     SsUtSetReverbDepth(100, 0);
     func_800369FC();
-    func_8002AAA0();
-    D_800643F8 = (void (*)())SsSetTickCallback(func_8002ABA8);
+    sound_reset_counter();
+    D_800643F8 = (void (*)())SsSetTickCallback(sound_vsync_tick);
     SsSetTickMode(1);
     SsStart();
 }
 
 void machine_quit_sound(void) {
     if (D_800643F8 != 0) {
-        func_8002C428();
+        music_stop();
         SsUtFlush();
         SsEnd();
         SsSetTickCallback(D_800643F8);
@@ -36,7 +36,7 @@ void machine_quit_sound(void) {
     }
 }
 
-void func_8002ABA8(void) {
+void sound_vsync_tick(void) {
     s32 temp_v0;
 
     num_sfx_banks += 1;
@@ -52,24 +52,24 @@ void func_8002ABA8(void) {
     }
 }
 
-void func_8002AC18(void) {
+void sound_resume(void) {
     continue_music();
     func_800227C0();
 }
 
-void func_8002AC40(void) {
-    func_8002C11C();
+void sound_pause(void) {
+    music_pause();
     func_800227FC();
     xa_mute();
 }
 
-void func_8002AC70(void) {
-    func_8002C428();
+void sound_stop(void) {
+    music_stop();
     sfx_delete_all();
     xa_mute();
 }
 
-void func_8002ACA0(s32 id, s32 arg1) {
+void vab_map_sfx(s32 id, s32 arg1) {
     ProgAtr prog;
     VagAtr vag;
     s32 i;
@@ -102,10 +102,10 @@ void func_8002ACA0(s32 id, s32 arg1) {
     next:;
     }
 done:
-    func_8002AAA0();
+    sound_reset_counter();
 }
 
-void func_8002ADD4(void *data, sfx_machine_bank_info *slot) {
+void vab_loaded(void *data, sfx_machine_bank_info *slot) {
     u8 *head;
     u8 *body;
     s16 id;
@@ -114,7 +114,7 @@ void func_8002ADD4(void *data, sfx_machine_bank_info *slot) {
     if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
         SfxBankLoading->id = D_800654C8;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
-        func_8002ACA0(SfxBankLoading->id, 0);
+        vab_map_sfx(SfxBankLoading->id, 0);
         VabLoading = NULL;
         SfxBankLoading = NULL;
     }
@@ -129,14 +129,14 @@ void func_8002ADD4(void *data, sfx_machine_bank_info *slot) {
     SfxBankLoading = slot;
 }
 
-void func_8002AEE0(void) {
+void vab_transfer_poll(void) {
     MATRIX *m;
 
     if (VabLoading != NULL || SfxBankLoading != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
             SfxBankLoading->id = D_800654C8;
             mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
-            func_8002ACA0(SfxBankLoading->id, 0);
+            vab_map_sfx(SfxBankLoading->id, 0);
             VabLoading = NULL;
             SfxBankLoading = NULL;
         }
@@ -150,7 +150,7 @@ void func_8002AEE0(void) {
     gte_SetGeomOffset(ScreenRect->w / 2, 175);
 }
 
-s32 func_8002B020(VECTOR *v, s32 *range) {
+s32 sfx_distance_volume(VECTOR *v, s32 *range) {
     s32 d[3];
     s32 r;
 
@@ -188,7 +188,7 @@ s32 func_8002B020(VECTOR *v, s32 *range) {
     return r;
 }
 
-S16Pair func_8002B210(VECTOR *pos) {
+S16Pair sfx_position_volume(VECTOR *pos) {
     S16Pair sxy;
     S16Pair ret;
     S16Pair tmp;
@@ -215,20 +215,20 @@ void sound_continue(void) {
     SsSeqCalledTbyT();
 }
 
-void func_8002B4D8(PitchVoice *arg0, s32 arg1) {
+void sfx_change_pitch(PitchVoice *arg0, s32 arg1) {
     PitchInfo *info = arg0->info;
 
     SsUtChangePitch(arg0->voice, info->note, ((s32)(info->fine << 24)) >> 28, 0x3C, 0,
                     (s32)(arg1 << 9) >> 16, arg1 & 0x7F);
 }
 
-void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2) {
+void sfx_set_voice_volume(s16 *arg0, s32 arg1, s32 arg2) {
     s32 vol = D_8005A608 * 0x7F;
 
     SsUtSetVVol(*arg0, (arg1 * vol) / 409600, (arg2 * vol) / 409600);
 }
 
-s32 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 *p = (s32 *)GameOptions;
     s8 *sfx = SfxTable[arg1];
     s16 v;
@@ -244,7 +244,7 @@ s32 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return v;
 }
 
-s32 func_8002B6D0(VECTOR *pos, View *view) {
+s32 view_project_volume(VECTOR *pos, View *view) {
     VECTOR *out = &RenderState.gteOut;
     s32 sxy;
     s32 *psxy = &sxy;
@@ -257,10 +257,10 @@ s32 func_8002B6D0(VECTOR *pos, View *view) {
     gte_rtps();
     gte_stlvl(out);
     gte_stsxy(psxy);
-    return func_8002B020(out, D_80064478);
+    return sfx_distance_volume(out, D_80064478);
 }
 
-void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy) {
+void view_project(VECTOR *pos, View *view, VECTOR *out, s32 *sxy) {
     SVECTOR *in = &RenderState.gteIn;
 
     in->vx = pos->vx - view->pos.vx;
@@ -272,7 +272,7 @@ void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy) {
     gte_stsxy(sxy);
 }
 
-S16Pair func_8002B7C8(s32 x, s32 v) {
+S16Pair sfx_pan(s32 x, s32 v) {
     S16Pair r;
     s32 lo = 0;
     s32 hi = 0x200;
@@ -295,7 +295,7 @@ S16Pair func_8002B7C8(s32 x, s32 v) {
     return r;
 }
 
-void func_8002B8F4(s32 *voice) {
+void sfx_key_off(s32 *voice) {
     if (*voice != -1) {
         SsUtKeyOffV(*voice);
         D_800654B8 &= ~D_80064418[*voice];
@@ -305,14 +305,14 @@ void func_8002B8F4(s32 *voice) {
 }
 
 
-void func_8002B96C(void) {
+void sfx_all_off(void) {
     SpuIsTransferCompleted(1);
     D_800654B8 = 0;
     SsSetVoiceMask(0);
     SsUtAllKeyOff(0);
 }
 
-void func_8002B9A4(void) {
+void sfx_table_init(void) {
     s8 *p;
     s32 i;
 
@@ -327,37 +327,37 @@ void func_8002B9A4(void) {
     VabLoading = NULL;
     SfxBankLoading = NULL;
     D_800654B8 = 0;
-    func_8002B96C();
+    sfx_all_off();
 }
 
 void machine_load_sfx(s32 arg0, sfx_machine_bank_info *slot) {
-    slot->handle = asload_permanent_callback(arg0, func_8002ADD4, slot);
+    slot->handle = asload_permanent_callback(arg0, vab_loaded, slot);
 }
 
-void func_8002BA44(void) {
+void vab_transfer_wait(void) {
     SpuIsTransferCompleted(1);
     if (VabLoading != NULL || SfxBankLoading != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
             SfxBankLoading->id = D_800654C8;
             mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
-            func_8002ACA0(SfxBankLoading->id, 0);
+            vab_map_sfx(SfxBankLoading->id, 0);
             VabLoading = NULL;
             SfxBankLoading = NULL;
         }
     }
 }
 
-void func_8002BAE8(void) {
+void vab_transfer_check(void) {
     if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(0) == 1) {
         SfxBankLoading->id = D_800654C8;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
-        func_8002ACA0(SfxBankLoading->id, 0);
+        vab_map_sfx(SfxBankLoading->id, 0);
         VabLoading = NULL;
         SfxBankLoading = NULL;
     }
 }
 
-s32 func_8002BB80(void) {
+s32 vab_loading(void) {
     if ((VabLoading != 0) || (SfxBankLoading != 0)) {
         return 1;
     }
@@ -365,7 +365,7 @@ s32 func_8002BB80(void) {
 }
 
 /* Empties the SfxBanks slots and clears SfxTable. */
-void func_8002BBB4(void) {
+void sfx_table_clear(void) {
     s8 *p;
     s32 i;
 
@@ -378,7 +378,7 @@ void func_8002BBB4(void) {
     }
 }
 
-void func_8002BBEC(void) {
+void sfx_banks_close(void) {
     sfx_machine_bank_info *slot;
     s32 new_var;
     s8 *p;
@@ -393,7 +393,7 @@ void func_8002BBEC(void) {
         slot = &SfxBanks[n];
         SfxBankCount = n;
         SpuIsTransferCompleted(1);
-        func_8002ACA0(slot->id, 1);
+        vab_map_sfx(slot->id, 1);
         SsVabClose(slot->id);
         mal_free(slot->head, &MainHeap);
         slot->head = NULL;
@@ -407,16 +407,16 @@ void func_8002BBEC(void) {
     }
 }
 
-void func_8002BCB0(s32 *arg0) {
+void sfx_bank_close(s32 *arg0) {
     SpuIsTransferCompleted(1);
-    func_8002ACA0(arg0[1], 1);
+    vab_map_sfx(arg0[1], 1);
     SsVabClose((s16)arg0[1]);
     mal_free((void *)arg0[0], &MainHeap);
     arg0[0] = 0;
     arg0[1] = -1;
 }
 
-void func_8002BD0C(s32 arg0) {
+void sfx_bank_load(s32 arg0) {
     if (SfxBankCount < 6) {
         machine_load_sfx(arg0, &SfxBanks[SfxBankCount]);
         SfxBankCount++;
@@ -424,7 +424,7 @@ void func_8002BD0C(s32 arg0) {
 }
 
 /* Clears SfxTable: no sound for any id. */
-void func_8002BD68(void) {
+void sfx_table_reset(void) {
     s8 *p;
     s32 i;
 

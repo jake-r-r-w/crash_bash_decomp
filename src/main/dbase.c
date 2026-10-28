@@ -558,7 +558,7 @@ void dbase_load_textures_wait(u8 *rec) {
         }
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
 done:
     DrawSync(0);

@@ -803,7 +803,7 @@ void InitPapuBoss(NAS *nas) {
         eng->unk5E = 1;
         FetchDefaultColBox(eng, 0x40);
         cur = ScriptCursorFirst(nas, &PapuBossScriptInit);
-        func_800250B0(nas);
+        RunNasAnim(nas);
         PapuBossCount = 0;
         PapuBossLast = 0;
         PapuWaveFlag = 0;
@@ -851,7 +851,7 @@ void PlotPapuBoss(NAS *nas) {
         return;
     }
     anim = FindExtension(nas, 0x400);
-    frame = func_800250B0(nas);
+    frame = RunNasAnim(nas);
     if (D_8009D6E0 & 0x200) {
         if (PapuBossCount != 0x1E) {
             PapuBossCount = 0x1E;
@@ -1298,7 +1298,7 @@ void PlotPapuMinion(NAS *nas)
   if (!hit) {
     fux->target = NULL;
   }
-  frame = func_800250B0(nas);
+  frame = RunNasAnim(nas);
   switch (fux->state) {
   case 5:
     move->speed = 0;

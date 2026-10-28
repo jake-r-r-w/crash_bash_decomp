@@ -92,7 +92,7 @@ void func_80093588(void) {
         while (loader_pending() != 0) {
             loader_update();
             mal_compact(&MainHeap);
-            func_8002BAE8();
+            vab_transfer_check();
         }
     }
     load_font();
@@ -127,11 +127,11 @@ void func_800936C4(void) {
     s32 start;
     EngineCfg *cfg;
 
-    func_8002AC70();
+    sound_stop();
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     func_800936C4_heap(&MainHeap, (s32)D_800D7144);
     start = func_8009317C() + 7;
@@ -294,7 +294,7 @@ void func_80093BE8(void) {
     if (D_800A0158 >= 2) {
         process_control_update(&LoadingControl, NULL);
     }
-    func_8002BA44();
+    vab_transfer_wait();
     mal_count_free(&MainHeap);
     if (loader_pending() != 0 || MainHeap.deferred != NULL) {
         return;
@@ -333,8 +333,8 @@ void func_80093BE8(void) {
             music_load_track(g->mode);
         }
         if (GameMode == 0x28 && FirstBootDone == 0) {
-            func_8002BBB4();
-            func_8002BD0C((s32)&DatIndex[2 * 273]);
+            sfx_table_clear();
+            sfx_bank_load((s32)&DatIndex[2 * 273]);
         }
         set_fade(&ScreenFade, -0x300, 0);
         D_800A0158 = 2;
@@ -355,9 +355,9 @@ void func_80093BE8(void) {
         break;
     case 2:
         if (GameMode == 0x28) {
-            func_8002C284(1);
+            music_request(1);
         } else {
-            func_8002C284(0);
+            music_request(0);
         }
     case 8:
         func_80093854();
@@ -389,7 +389,7 @@ void func_80093BE8(void) {
     case 7:
         func_80092AF4(&RetryProcess, 0x300);
         if (GameMode != 0x28) {
-            func_8002C284(-1);
+            music_request(-1);
         }
         D_800A0158 = 9;
         break;
@@ -547,7 +547,7 @@ void func_800945C0(EngineStartArgs *arg0) {
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     rate = 3;
     D_8004E0E0 = rate;
@@ -576,11 +576,11 @@ void func_800945C0(EngineStartArgs *arg0) {
 void func_80094754(void) {
     EngineCfg *cfg;
 
-    func_8002AC70();
+    sound_stop();
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     D_800A0D3C = 0;
     sound_reinit();
@@ -622,7 +622,7 @@ void func_80094860(void) {
             D_800A0D20[0] = n;
             D_800654B0 = ((EngineVabCue *)D_800A0D1C)->unk8;
             if (SfxBanks[n].id != -1) {
-                func_8002BCB0((s32 *)&SfxBanks[n]);
+                sfx_bank_close((s32 *)&SfxBanks[n]);
             }
             D_800A0D1C += sizeof(EngineVabCue);
         }
@@ -744,21 +744,21 @@ void func_80094D88(s32 arg0, process_info *arg1) {
 }
 
 void func_80094DD0(void) {
-    func_8002BA44();
+    vab_transfer_wait();
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     func_80094F60();
     scripts_kill_all();
-    func_8002BA44();
-    func_8002B96C();
+    vab_transfer_wait();
+    sfx_all_off();
     if (SfxBanks[0].id != -1) {
-        func_8002BCB0((s32 *)&SfxBanks[0]);
+        sfx_bank_close((s32 *)&SfxBanks[0]);
     }
     if (SfxBanks[1].id != -1) {
-        func_8002BCB0((s32 *)&SfxBanks[1]);
+        sfx_bank_close((s32 *)&SfxBanks[1]);
     }
     sound_reinit();
     ClearVram();
@@ -810,21 +810,21 @@ void func_80094FE0(void) {
 }
 
 void func_80095020(void) {
-    func_8002BA44();
+    vab_transfer_wait();
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     func_80094F60();
     scripts_kill_all();
-    func_8002BA44();
-    func_8002B96C();
+    vab_transfer_wait();
+    sfx_all_off();
     if (SfxBanks[0].id != -1) {
-        func_8002BCB0((s32 *)&SfxBanks[0]);
+        sfx_bank_close((s32 *)&SfxBanks[0]);
     }
     if (SfxBanks[1].id != -1) {
-        func_8002BCB0((s32 *)&SfxBanks[1]);
+        sfx_bank_close((s32 *)&SfxBanks[1]);
     }
     sound_reinit();
     ClearVram();

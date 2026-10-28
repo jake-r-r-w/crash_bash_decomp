@@ -7360,7 +7360,7 @@ void PlotPolarWalrus(NAS *m) {
         } else {
             m->Engine->sub->unk68 = 0;
         }
-        func_800250B0(m);
+        RunNasAnim(m);
         func_8008C5C4(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x);
         e2->unk20 = ext->unk48;
         e2->unk40 = ext->unk4C;
@@ -7375,7 +7375,7 @@ void PlotPolarWalrus(NAS *m) {
         m->Engine->sub->unk68 = 0;
         e2->unk20 = ext->unk48;
         e2->unk40 = ext->unk4C;
-        func_800250B0(m);
+        RunNasAnim(m);
         if (func_8008C5C4(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x) != 0) {
             r = Random(4);
             ext->state = 1;
@@ -7401,7 +7401,7 @@ void PlotPolarWalrus(NAS *m) {
     case 1:
         m->UserInfo.status = 1;
         m->Engine->sub->flags |= 0x8000;
-        if (func_800250B0(m)) {
+        if (RunNasAnim(m)) {
             ext->state = 5;
             ext->cursor->unk1E = 0;
             ext->cursor->unk1C = 0;
@@ -7417,7 +7417,7 @@ void PlotPolarWalrus(NAS *m) {
         }
         break;
     case 5:
-        func_800250B0(m);
+        RunNasAnim(m);
         if (ext->cursor->unk1E == 7) {
             PlaySfx(0x476, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -7456,7 +7456,7 @@ void PlotPolarWalrus(NAS *m) {
         }
         break;
     case 7:
-        if (func_800250B0(m)) {
+        if (RunNasAnim(m)) {
             ext->state = 6;
             PolarBeamTimer = 0;
         }
@@ -7544,7 +7544,7 @@ void PlotWalrusFish(NAS *m) {
         }
         break;
     case 2:
-        func_800250B0(m);
+        RunNasAnim(m);
         m->Engine->unk10.x += ext->vx;
         m->Engine->unk10.z += ext->vz;
         ext->spin >>= 1;
@@ -7755,7 +7755,7 @@ void InitPolarBoss(NAS *nas) {
         BearminatorNas = nas;
         ext->cursor = ScriptCursorFirst(nas, &PolarBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->cursor, 0);
-        func_800250B0(nas);
+        RunNasAnim(nas);
         ext->unk84 = CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1622, 0x11);
         s = CreateNAS(nas->Engine->unk10.x, 0, nas->Engine->unk10.z, 0x1620, 0x11);
         if (s != NULL) {
@@ -7828,7 +7828,7 @@ void PlotPolarBoss(NAS *m) {
         CameraMode = 0;
     }
     polarbossnas = m;
-    m->UserInfo.user1 = func_800250B0(m);
+    m->UserInfo.user1 = RunNasAnim(m);
     if (!(Heroes[0].hero_mode & 0x2000)) {
         ang = get_angle(m->Engine->unk10.x - Heroes[0].hero_eng->unk10.x,
                         m->Engine->unk10.z - Heroes[0].hero_eng->unk10.z) & 0xFFF;
@@ -7932,22 +7932,22 @@ void PlotPolarBoss(NAS *m) {
             if (ext->phase == 0) {
                 n = 1;
                 GotoLinkAnim((EXTanimator *)ext->cursor, n);
-                func_800250B0(m);
+                RunNasAnim(m);
             }
             if (ext->phase == 2) {
                 n = 2;
                 GotoLinkAnim((EXTanimator *)ext->cursor, 3);
-                func_800250B0(m);
+                RunNasAnim(m);
             }
             if (ext->phase == 4) {
                 GotoLinkAnim((EXTanimator *)ext->cursor, 5);
                 n = 3;
-                func_800250B0(m);
+                RunNasAnim(m);
             }
             if (ext->phase == 6) {
                 GotoLinkAnim((EXTanimator *)ext->cursor, 5);
                 n = 3;
-                func_800250B0(m);
+                RunNasAnim(m);
             }
             dz = 0;
             dx = dz;
@@ -8366,7 +8366,7 @@ void PlotBearminator(NAS *m) {
     if (cam == NULL) {
         return;
     }
-    done = func_800250B0(m);
+    done = RunNasAnim(m);
     p = PolarBears;
     for (;;) {
         EXTengine *n;
@@ -9639,7 +9639,7 @@ s32 PolarBossSpeedUp(void) {
 void PlotBearBoss(NAS *m) {
     if (FindExtension(m, 0x10000000) != NULL) {
         m->Engine->unk5E = 1;
-        func_800250B0(m);
+        RunNasAnim(m);
     }
 }
 
@@ -9654,7 +9654,7 @@ void InitBearBoss(NAS *m) {
         m->Engine->sub->unk6C = *(void **)MapScene;
         ext->unkC = (s32)ScriptCursorFirst(m, &BearBossScriptInit);
         GotoLinkAnim((EXTanimator *)ext->unkC, 0);
-        func_800250B0(m);
+        RunNasAnim(m);
     }
 }
 
@@ -9777,7 +9777,7 @@ void PlotBearDeath(NAS *m) {
 
     ext = FindExtension(m, 0x10000000);
     if (ext != NULL) {
-        func_800250B0(m);
+        RunNasAnim(m);
         m->Engine->unk1C += 0x100;
         m->Engine->unk5E = 1;
         if (ext->unk40 > 0) {

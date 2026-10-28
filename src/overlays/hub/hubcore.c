@@ -869,7 +869,7 @@ void PlotPathEffect(NAS *nas) {
             nas->Engine->unk1C = rot.x;
             ext->state = 2;
             ((void (*)(EXTanimator *, s32))GotoLinkAnim)(ext->anim, ext->kind * 2);
-            func_800250B0(nas);
+            RunNasAnim(nas);
         }
         if ((u32)(ext->kind - 3) < 2) {
             ext->fx = CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1627, 0x11);
@@ -915,11 +915,11 @@ void PlotPathEffect(NAS *nas) {
         PathFace(k, ext->dir, &rot);
         nas->Engine->unk1E = rot.y;
         nas->Engine->unk1C = rot.x;
-        func_800250B0(nas);
+        RunNasAnim(nas);
         return;
     case 3:
         if (ext->anim->Aindex != 0) {
-            func_800250B0(nas);
+            RunNasAnim(nas);
         }
         if (ext->timer-- < 0) {
             ((void (*)(EXTanimator *, s32))GotoLinkAnim)(ext->anim, ext->kind * 2);
@@ -927,7 +927,7 @@ void PlotPathEffect(NAS *nas) {
         }
         break;
     case 4:
-        func_800250B0(nas);
+        RunNasAnim(nas);
         if (ext->timer-- < 0) {
             if (Random(2) == 0) {
                 ext->dir = 0;
@@ -1741,7 +1741,7 @@ void PlotPodiumOdo(NAS *arg0) {
             }
         }
         if (eng->flags & 0x8000) {
-            func_800250B0(arg0);
+            RunNasAnim(arg0);
         }
     }
 }
@@ -1789,7 +1789,7 @@ void PodiumInitScript(s32 arg0, s32 arg1) {
                 break;
             }
             obj->unk64 = arg1;
-            func_800250B0((NAS *)obj);
+            RunNasAnim((NAS *)obj);
             mid->flags |= 0x8000;
         }
     }

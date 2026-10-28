@@ -1323,7 +1323,7 @@ void ScriptCursorNext(ScriptCursor *c) {
     c->unk2A = 0;
 }
 
-s16 func_800250B0(NAS *nas) {
+s16 RunNasAnim(NAS *nas) {
     EXTengine *eng;
     EXTanimator *anim;
     subengine *sub;
@@ -2449,7 +2449,7 @@ s32 machine_init(void) {
     __main();
     ResetCallback();
     ResetGraph(0);
-    func_8002D488();
+    modchip_check_region();
     SetGraphDebug(0);
     InitGeom();
     SsInit();
@@ -2459,7 +2459,7 @@ s32 machine_init(void) {
     DrawSync(0);
     ClearImage2(&D_8005B640, 0, 0, 0);
     DrawSync(0);
-    func_8002AABC();
+    machine_init_sound();
     debug_font_init2();
     shell_init();
     cd_read_wait();
@@ -2819,7 +2819,7 @@ loop:
         pad++;
         goto loop;
     }
-    func_8002C894();
+    card_init();
     PadStartCom();
 }
 

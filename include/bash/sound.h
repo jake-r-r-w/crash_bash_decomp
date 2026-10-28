@@ -8,39 +8,39 @@
 #include "common.h"
 #include "bash/main.h"
 
-void func_8002BAE8(void);
+void vab_transfer_check(void);
 void machine_load_sfx(s32 arg0, sfx_machine_bank_info *slot);
-void func_8002ADD4(void *data, sfx_machine_bank_info *slot);
-void func_8002AAA0(void);
+void vab_loaded(void *data, sfx_machine_bank_info *slot);
+void sound_reset_counter(void);
 void sound_critical(void);
 void machine_quit_sound(void);
-void func_8002ABA8(void);
-void func_8002AC18(void);
-void func_8002AC40(void);
-void func_8002AC70(void);
+void sound_vsync_tick(void);
+void sound_resume(void);
+void sound_pause(void);
+void sound_stop(void);
 void sound_continue(void);
-s32 func_8002B020(VECTOR *v, s32 *range);
-s32 func_8002B6D0(VECTOR *pos, View *view);
-void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy);
-void func_8002B96C(void);
-s32 func_8002BB80(void);
+s32 sfx_distance_volume(VECTOR *v, s32 *range);
+s32 view_project_volume(VECTOR *pos, View *view);
+void view_project(VECTOR *pos, View *view, VECTOR *out, s32 *sxy);
+void sfx_all_off(void);
+s32 vab_loading(void);
 /* by sound id; [1] == -1: no sound */
-void func_8002B8F4(s32 *voice);
-void func_8002ACA0(s32 id, s32 arg1);
-void func_8002AEE0(void);
-void func_8002AABC(void);
-void func_8002BD0C(s32 arg0);
-void func_8002BD68(void);
-void func_8002BBB4(void);
-void func_8002B9A4(void);
-void func_8002B4D8(PitchVoice *arg0, s32 arg1);
-void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2);
-void func_8002BA44(void);
-void func_8002BCB0(s32 *arg0);
-void func_8002BBEC(void);
-s32 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-S16Pair func_8002B7C8(s32 x, s32 v);
-S16Pair func_8002B210(VECTOR *pos);
+void sfx_key_off(s32 *voice);
+void vab_map_sfx(s32 id, s32 arg1);
+void vab_transfer_poll(void);
+void machine_init_sound(void);
+void sfx_bank_load(s32 arg0);
+void sfx_table_reset(void);
+void sfx_table_clear(void);
+void sfx_table_init(void);
+void sfx_change_pitch(PitchVoice *arg0, s32 arg1);
+void sfx_set_voice_volume(s16 *arg0, s32 arg1, s32 arg2);
+void vab_transfer_wait(void);
+void sfx_bank_close(s32 *arg0);
+void sfx_banks_close(void);
+s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+S16Pair sfx_pan(s32 x, s32 v);
+S16Pair sfx_position_volume(VECTOR *pos);
 
 static inline void ViewProject(VECTOR *pos, s32 *psxy) {
     VECTOR *out = &RenderState.gteOut;
@@ -88,7 +88,7 @@ static inline s32 ViewVolumeXY(VECTOR *pos, View *view, s32 *psxy) {
     gte_rtps();
     gte_stlvl(out);
     gte_stsxy(psxy);
-    return func_8002B020(out, D_80064478);
+    return sfx_distance_volume(out, D_80064478);
 }
 
 #endif /* BASH_SOUND_H */

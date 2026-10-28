@@ -44,7 +44,7 @@ void HubStartCredits(void) {
     HubSavedCamY = ((HubCam *)MainCamera)->y;
     HubSavedCamZ = ((HubCam *)MainCamera)->z;
     if (*(u16 *)&((EngMenuGame *)GameInfo)->unk74 == 0) {
-        func_8002C284(2);
+        music_request(2);
         ((EngMenuGame *)GameInfo)->unk74 = 1;
         one = 1;
         D_8009870E = one;
@@ -202,7 +202,7 @@ void HubEndCredits(void)
   int new_var;
   u8 *g;
   s32 i;
-  func_8002C284(1);
+  music_request(1);
   g = GameInfo;
   ((EngMenuGame *) g)->unk74 = 0;
   HubShowShadow(0);

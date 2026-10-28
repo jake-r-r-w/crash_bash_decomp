@@ -1116,15 +1116,15 @@ void RunGameInit(void) {
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
     func_8008EC00(&DatIndex[2 * 139]);
-    func_8002BBB4();
-    func_8002BD0C((s32)&DatIndex[2 * 274]);
+    sfx_table_clear();
+    sfx_bank_load((s32)&DatIndex[2 * 274]);
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
-        func_8002BAE8();
+        vab_transfer_check();
     }
 }
 

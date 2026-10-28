@@ -379,7 +379,7 @@ BASH_SIZE_CHECK(EXTmotion, 0x34);
 
 /* Extension id 0x400 | kind, 0x2C bytes, made by AllocExt400 (which also
  * sets 0x400 in NAS.NASid). It plays a hero_seq (Atable, set by SetHeroSeq);
- * func_800250B0 runs it: kind 1 with DoAnimCommand, kind 2 with
+ * RunNasAnim runs it: kind 1 with DoAnimCommand, kind 2 with
  * DoAnimCommand2. */
 typedef struct EXTanimator {
     /* 0x00 */ s32 EXTid;

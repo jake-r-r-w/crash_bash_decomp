@@ -2459,7 +2459,7 @@ void PlotDinoSmoke(NAS *m) {
         m->Engine->unk2C.y = u[1]->unk2C.y;
         m->Engine->unk2C.z = u[1]->unk2C.z;
     }
-    func_800250B0(m);
+    RunNasAnim(m);
 }
 
 s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {

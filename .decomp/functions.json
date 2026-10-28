@@ -2986,7 +2986,7 @@
   "src": "src/main/prims.c"
  },
  "80019094": {
-  "asm": "asm/nonmatchings/main/prims/func_80019094.s",
+  "asm": "asm/nonmatchings/main/prims/model_prims_begin.s",
   "calls": [
    "80017B08",
    "800180BC",
@@ -2996,7 +2996,7 @@
   "fp": "5eb071e8c4048bb0",
   "fpn": "7a3b87a31ef10bed",
   "leaf": false,
-  "name": "func_80019094",
+  "name": "model_prims_begin",
   "orig": "func_80019094",
   "rom": 39060,
   "seg": "main/prims",
@@ -5488,7 +5488,7 @@
   "src": "src/main/nascalls.c"
  },
  "800250B0": {
-  "asm": "asm/nonmatchings/main/nascalls/func_800250B0.s",
+  "asm": "asm/nonmatchings/main/nascalls/RunNasAnim.s",
   "calls": [
    "800251A8",
    "80025534"
@@ -5496,7 +5496,7 @@
   "fp": "b068064d5a78cbe7",
   "fpn": "9c054c3b7bcfd0e4",
   "leaf": false,
-  "name": "func_800250B0",
+  "name": "RunNasAnim",
   "orig": "func_800250B0",
   "rom": 88240,
   "seg": "main/nascalls",
@@ -7404,12 +7404,12 @@
   "src": "src/main/nascalls.c"
  },
  "8002AAA0": {
-  "asm": "asm/nonmatchings/main/sound/func_8002AAA0.s",
+  "asm": "asm/nonmatchings/main/sound/sound_reset_counter.s",
   "calls": [],
   "fp": "ad519239883ac4b9",
   "fpn": "ad519239883ac4b9",
   "leaf": true,
-  "name": "func_8002AAA0",
+  "name": "sound_reset_counter",
   "orig": "func_8002AAA0",
   "rom": 111264,
   "seg": "main/sound",
@@ -7430,7 +7430,7 @@
   "src": "src/main/sound.c"
  },
  "8002AABC": {
-  "asm": "asm/nonmatchings/main/sound/func_8002AABC.s",
+  "asm": "asm/nonmatchings/main/sound/machine_init_sound.s",
   "calls": [
    "8002AAA0",
    "8003342C",
@@ -7446,7 +7446,7 @@
   "fp": "7ac229cb3e64983d",
   "fpn": "0cbb0c225c688a9c",
   "leaf": false,
-  "name": "func_8002AABC",
+  "name": "machine_init_sound",
   "orig": "func_8002AABC",
   "rom": 111292,
   "seg": "main/sound",
@@ -7474,14 +7474,14 @@
   "src": "src/main/sound.c"
  },
  "8002ABA8": {
-  "asm": "asm/nonmatchings/main/sound/func_8002ABA8.s",
+  "asm": "asm/nonmatchings/main/sound/sound_vsync_tick.s",
   "calls": [
    "8002B4B8"
   ],
   "fp": "9f817d1798f27cb9",
   "fpn": "4a96643fcbd43d52",
   "leaf": false,
-  "name": "func_8002ABA8",
+  "name": "sound_vsync_tick",
   "orig": "func_8002ABA8",
   "rom": 111528,
   "seg": "main/sound",
@@ -7489,7 +7489,7 @@
   "src": "src/main/sound.c"
  },
  "8002AC18": {
-  "asm": "asm/nonmatchings/main/sound/func_8002AC18.s",
+  "asm": "asm/nonmatchings/main/sound/sound_resume.s",
   "calls": [
    "800227C0",
    "8002C0E0"
@@ -7497,7 +7497,7 @@
   "fp": "a70f686251b1dade",
   "fpn": "85eac85813c50a5a",
   "leaf": false,
-  "name": "func_8002AC18",
+  "name": "sound_resume",
   "orig": "func_8002AC18",
   "rom": 111640,
   "seg": "main/sound",
@@ -7505,7 +7505,7 @@
   "src": "src/main/sound.c"
  },
  "8002AC40": {
-  "asm": "asm/nonmatchings/main/sound/func_8002AC40.s",
+  "asm": "asm/nonmatchings/main/sound/sound_pause.s",
   "calls": [
    "800227FC",
    "80027A9C",
@@ -7514,7 +7514,7 @@
   "fp": "a68224ae87f77445",
   "fpn": "0e1eaf1301dfa995",
   "leaf": false,
-  "name": "func_8002AC40",
+  "name": "sound_pause",
   "orig": "func_8002AC40",
   "rom": 111680,
   "seg": "main/sound",
@@ -7522,7 +7522,7 @@
   "src": "src/main/sound.c"
  },
  "8002AC70": {
-  "asm": "asm/nonmatchings/main/sound/func_8002AC70.s",
+  "asm": "asm/nonmatchings/main/sound/sound_stop.s",
   "calls": [
    "80022504",
    "80027A9C",
@@ -7531,7 +7531,7 @@
   "fp": "a68224ae87f77445",
   "fpn": "0e1eaf1301dfa995",
   "leaf": false,
-  "name": "func_8002AC70",
+  "name": "sound_stop",
   "orig": "func_8002AC70",
   "rom": 111728,
   "seg": "main/sound",
@@ -7539,7 +7539,7 @@
   "src": "src/main/sound.c"
  },
  "8002ACA0": {
-  "asm": "asm/nonmatchings/main/sound/func_8002ACA0.s",
+  "asm": "asm/nonmatchings/main/sound/vab_map_sfx.s",
   "calls": [
    "8002AAA0",
    "8002AAAC",
@@ -7549,7 +7549,7 @@
   "fp": "b7d630e8796ac285",
   "fpn": "5f6113bf133e6e47",
   "leaf": false,
-  "name": "func_8002ACA0",
+  "name": "vab_map_sfx",
   "orig": "func_8002ACA0",
   "rom": 111776,
   "seg": "main/sound",
@@ -7557,7 +7557,7 @@
   "src": "src/main/sound.c"
  },
  "8002ADD4": {
-  "asm": "asm/nonmatchings/main/sound/func_8002ADD4.s",
+  "asm": "asm/nonmatchings/main/sound/vab_loaded.s",
   "calls": [
    "800112A4",
    "8002ACA0",
@@ -7568,7 +7568,7 @@
   "fp": "b88821433464609f",
   "fpn": "725c6fdfadf2046c",
   "leaf": false,
-  "name": "func_8002ADD4",
+  "name": "vab_loaded",
   "orig": "func_8002ADD4",
   "rom": 112084,
   "seg": "main/sound",
@@ -7576,7 +7576,7 @@
   "src": "src/main/sound.c"
  },
  "8002AEE0": {
-  "asm": "asm/nonmatchings/main/sound/func_8002AEE0.s",
+  "asm": "asm/nonmatchings/main/sound/vab_transfer_poll.s",
   "calls": [
    "800112A4",
    "80014540",
@@ -7587,7 +7587,7 @@
   "fp": "7a390db04759afbe",
   "fpn": "bff14dd9de72104f",
   "leaf": false,
-  "name": "func_8002AEE0",
+  "name": "vab_transfer_poll",
   "orig": "func_8002AEE0",
   "rom": 112352,
   "seg": "main/sound",
@@ -7595,14 +7595,14 @@
   "src": "src/main/sound.c"
  },
  "8002B020": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B020.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_distance_volume.s",
   "calls": [
    "80032490"
   ],
   "fp": "6f560b1f8356ea9f",
   "fpn": "a8db598a1cda373a",
   "leaf": false,
-  "name": "func_8002B020",
+  "name": "sfx_distance_volume",
   "orig": "func_8002B020",
   "rom": 112672,
   "seg": "main/sound",
@@ -7610,14 +7610,14 @@
   "src": "src/main/sound.c"
  },
  "8002B210": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B210.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_position_volume.s",
   "calls": [
    "8002B020"
   ],
   "fp": "42b338d7aae3bbd1",
   "fpn": "f57158f5a2ed85d3",
   "leaf": false,
-  "name": "func_8002B210",
+  "name": "sfx_position_volume",
   "orig": "func_8002B210",
   "rom": 113168,
   "seg": "main/sound",
@@ -7640,14 +7640,14 @@
   "src": "src/main/sound.c"
  },
  "8002B4D8": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B4D8.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_change_pitch.s",
   "calls": [
    "80037D4C"
   ],
   "fp": "b127d3a75c08d202",
   "fpn": "13953d543d22b323",
   "leaf": false,
-  "name": "func_8002B4D8",
+  "name": "sfx_change_pitch",
   "orig": "func_8002B4D8",
   "rom": 113880,
   "seg": "main/sound",
@@ -7655,14 +7655,14 @@
   "src": "src/main/sound.c"
  },
  "8002B52C": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B52C.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_set_voice_volume.s",
   "calls": [
    "8003725C"
   ],
   "fp": "31d9a388b0a64992",
   "fpn": "c86ae47a32752841",
   "leaf": false,
-  "name": "func_8002B52C",
+  "name": "sfx_set_voice_volume",
   "orig": "func_8002B52C",
   "rom": 113964,
   "seg": "main/sound",
@@ -7670,7 +7670,7 @@
   "src": "src/main/sound.c"
  },
  "8002B5B0": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B5B0.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_key_on.s",
   "calls": [
    "800373FC",
    "800374CC"
@@ -7678,7 +7678,7 @@
   "fp": "00a5c31ea1351a83",
   "fpn": "3e072823f9b3b1dc",
   "leaf": false,
-  "name": "func_8002B5B0",
+  "name": "sfx_key_on",
   "orig": "func_8002B5B0",
   "rom": 114096,
   "seg": "main/sound",
@@ -7686,14 +7686,14 @@
   "src": "src/main/sound.c"
  },
  "8002B6D0": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B6D0.s",
+  "asm": "asm/nonmatchings/main/sound/view_project_volume.s",
   "calls": [
    "8002B020"
   ],
   "fp": "03d184c0016ba8c2",
   "fpn": "12354b44e977ff66",
   "leaf": false,
-  "name": "func_8002B6D0",
+  "name": "view_project_volume",
   "orig": "func_8002B6D0",
   "rom": 114384,
   "seg": "main/sound",
@@ -7701,12 +7701,12 @@
   "src": "src/main/sound.c"
  },
  "8002B760": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B760.s",
+  "asm": "asm/nonmatchings/main/sound/view_project.s",
   "calls": [],
   "fp": "d9d6797ee57c9752",
   "fpn": "07d0baf27438cc67",
   "leaf": true,
-  "name": "func_8002B760",
+  "name": "view_project",
   "orig": "func_8002B760",
   "rom": 114528,
   "seg": "main/sound",
@@ -7714,12 +7714,12 @@
   "src": "src/main/sound.c"
  },
  "8002B7C8": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B7C8.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_pan.s",
   "calls": [],
   "fp": "e1edcd9903010b91",
   "fpn": "1b935a32804f3f73",
   "leaf": true,
-  "name": "func_8002B7C8",
+  "name": "sfx_pan",
   "orig": "func_8002B7C8",
   "rom": 114632,
   "seg": "main/sound",
@@ -7727,7 +7727,7 @@
   "src": "src/main/sound.c"
  },
  "8002B8F4": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B8F4.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_key_off.s",
   "calls": [
    "800371E8",
    "800373FC"
@@ -7735,7 +7735,7 @@
   "fp": "d2d5a4b7aaef165a",
   "fpn": "4bf08e7b1f76e8d3",
   "leaf": false,
-  "name": "func_8002B8F4",
+  "name": "sfx_key_off",
   "orig": "func_8002B8F4",
   "rom": 114932,
   "seg": "main/sound",
@@ -7743,7 +7743,7 @@
   "src": "src/main/sound.c"
  },
  "8002B96C": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B96C.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_all_off.s",
   "calls": [
    "800373FC",
    "80037F2C",
@@ -7752,7 +7752,7 @@
   "fp": "4d1c9867f48feb06",
   "fpn": "d8de0687fb4a347e",
   "leaf": false,
-  "name": "func_8002B96C",
+  "name": "sfx_all_off",
   "orig": "func_8002B96C",
   "rom": 115052,
   "seg": "main/sound",
@@ -7760,7 +7760,7 @@
   "src": "src/main/sound.c"
  },
  "8002B9A4": {
-  "asm": "asm/nonmatchings/main/sound/func_8002B9A4.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_table_init.s",
   "calls": [
    "8002B96C",
    "80037F2C"
@@ -7768,7 +7768,7 @@
   "fp": "a05d25f5fb55686b",
   "fpn": "44759516cc226fb4",
   "leaf": false,
-  "name": "func_8002B9A4",
+  "name": "sfx_table_init",
   "orig": "func_8002B9A4",
   "rom": 115108,
   "seg": "main/sound",
@@ -7791,7 +7791,7 @@
   "src": "src/main/sound.c"
  },
  "8002BA44": {
-  "asm": "asm/nonmatchings/main/sound/func_8002BA44.s",
+  "asm": "asm/nonmatchings/main/sound/vab_transfer_wait.s",
   "calls": [
    "800112A4",
    "8002ACA0",
@@ -7800,7 +7800,7 @@
   "fp": "d5f9f4a98840cc03",
   "fpn": "219bf0ad6cf0ec23",
   "leaf": false,
-  "name": "func_8002BA44",
+  "name": "vab_transfer_wait",
   "orig": "func_8002BA44",
   "rom": 115268,
   "seg": "main/sound",
@@ -7808,7 +7808,7 @@
   "src": "src/main/sound.c"
  },
  "8002BAE8": {
-  "asm": "asm/nonmatchings/main/sound/func_8002BAE8.s",
+  "asm": "asm/nonmatchings/main/sound/vab_transfer_check.s",
   "calls": [
    "800112A4",
    "8002ACA0",
@@ -7817,7 +7817,7 @@
   "fp": "65c12bc0b18018b3",
   "fpn": "96e701d1263d0294",
   "leaf": false,
-  "name": "func_8002BAE8",
+  "name": "vab_transfer_check",
   "orig": "func_8002BAE8",
   "rom": 115432,
   "seg": "main/sound",
@@ -7825,12 +7825,12 @@
   "src": "src/main/sound.c"
  },
  "8002BB80": {
-  "asm": "asm/nonmatchings/main/sound/func_8002BB80.s",
+  "asm": "asm/nonmatchings/main/sound/vab_loading.s",
   "calls": [],
   "fp": "abc13cc442b921fe",
   "fpn": "1826a82565af2653",
   "leaf": true,
-  "name": "func_8002BB80",
+  "name": "vab_loading",
   "orig": "func_8002BB80",
   "rom": 115584,
   "seg": "main/sound",
@@ -7838,12 +7838,12 @@
   "src": "src/main/sound.c"
  },
  "8002BBB4": {
-  "asm": "asm/nonmatchings/main/sound/func_8002BBB4.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_table_clear.s",
   "calls": [],
   "fp": "ea62b705e501aaac",
   "fpn": "3ea85732a17266af",
   "leaf": true,
-  "name": "func_8002BBB4",
+  "name": "sfx_table_clear",
   "orig": "func_8002BBB4",
   "rom": 115636,
   "seg": "main/sound",
@@ -7851,7 +7851,7 @@
   "src": "src/main/sound.c"
  },
  "8002BBEC": {
-  "asm": "asm/nonmatchings/main/sound/func_8002BBEC.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_banks_close.s",
   "calls": [
    "800110A8",
    "8002ACA0",
@@ -7861,7 +7861,7 @@
   "fp": "967216c4caffbd67",
   "fpn": "10ea9007266025aa",
   "leaf": false,
-  "name": "func_8002BBEC",
+  "name": "sfx_banks_close",
   "orig": "func_8002BBEC",
   "rom": 115692,
   "seg": "main/sound",
@@ -7869,7 +7869,7 @@
   "src": "src/main/sound.c"
  },
  "8002BCB0": {
-  "asm": "asm/nonmatchings/main/sound/func_8002BCB0.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_bank_close.s",
   "calls": [
    "800110A8",
    "8002ACA0",
@@ -7879,7 +7879,7 @@
   "fp": "6e2f03f197d12640",
   "fpn": "990733fe5b003a7a",
   "leaf": false,
-  "name": "func_8002BCB0",
+  "name": "sfx_bank_close",
   "orig": "func_8002BCB0",
   "rom": 115888,
   "seg": "main/sound",
@@ -7887,14 +7887,14 @@
   "src": "src/main/sound.c"
  },
  "8002BD0C": {
-  "asm": "asm/nonmatchings/main/sound/func_8002BD0C.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_bank_load.s",
   "calls": [
    "8002BA10"
   ],
   "fp": "af90f7ecef03b78e",
   "fpn": "499bf8b2ad23f84b",
   "leaf": false,
-  "name": "func_8002BD0C",
+  "name": "sfx_bank_load",
   "orig": "func_8002BD0C",
   "rom": 115980,
   "seg": "main/sound",
@@ -7902,12 +7902,12 @@
   "src": "src/main/sound.c"
  },
  "8002BD68": {
-  "asm": "asm/nonmatchings/main/sound/func_8002BD68.s",
+  "asm": "asm/nonmatchings/main/sound/sfx_table_reset.s",
   "calls": [],
   "fp": "b89294901192b153",
   "fpn": "34f2528152ed7b94",
   "leaf": true,
-  "name": "func_8002BD68",
+  "name": "sfx_table_reset",
   "orig": "func_8002BD68",
   "rom": 116072,
   "seg": "main/sound",
@@ -7915,7 +7915,7 @@
   "src": "src/main/sound.c"
  },
  "8002BD98": {
-  "asm": "asm/nonmatchings/main/music/func_8002BD98.s",
+  "asm": "asm/nonmatchings/main/music/music_open_seq.s",
   "calls": [
    "8003849C",
    "800388CC",
@@ -7928,7 +7928,7 @@
   "fp": "48b6e05feb673ce9",
   "fpn": "13ad4bb600df2acb",
   "leaf": false,
-  "name": "func_8002BD98",
+  "name": "music_open_seq",
   "orig": "func_8002BD98",
   "rom": 116120,
   "seg": "main/music",
@@ -7936,7 +7936,7 @@
   "src": "src/main/music.c"
  },
  "8002BEA8": {
-  "asm": "asm/nonmatchings/main/music/func_8002BEA8.s",
+  "asm": "asm/nonmatchings/main/music/music_update.s",
   "calls": [
    "8002BD98",
    "8002C248",
@@ -7945,7 +7945,7 @@
   "fp": "625d2fc3187c7ae5",
   "fpn": "5b439eaf18adceaa",
   "leaf": false,
-  "name": "func_8002BEA8",
+  "name": "music_update",
   "orig": "func_8002BEA8",
   "rom": 116392,
   "seg": "main/music",
@@ -7953,12 +7953,12 @@
   "src": "src/main/music.c"
  },
  "8002C060": {
-  "asm": "asm/nonmatchings/main/music/func_8002C060.s",
+  "asm": "asm/nonmatchings/main/music/music_init.s",
   "calls": [],
   "fp": "6d0870a492c08e92",
   "fpn": "78ebfd8d03fc9f68",
   "leaf": true,
-  "name": "func_8002C060",
+  "name": "music_init",
   "orig": "func_8002C060",
   "rom": 116832,
   "seg": "main/music",
@@ -7966,7 +7966,7 @@
   "src": "src/main/music.c"
  },
  "8002C090": {
-  "asm": "asm/nonmatchings/main/music/func_8002C090.s",
+  "asm": "asm/nonmatchings/main/music/music_close.s",
   "calls": [
    "80038FB4",
    "80039168"
@@ -7974,7 +7974,7 @@
   "fp": "ea26d53ffdb57270",
   "fpn": "e5e3240213f97a77",
   "leaf": false,
-  "name": "func_8002C090",
+  "name": "music_close",
   "orig": "func_8002C090",
   "rom": 116880,
   "seg": "main/music",
@@ -7997,14 +7997,14 @@
   "src": "src/main/music.c"
  },
  "8002C11C": {
-  "asm": "asm/nonmatchings/main/music/func_8002C11C.s",
+  "asm": "asm/nonmatchings/main/music/music_pause.s",
   "calls": [
    "80039288"
   ],
   "fp": "9db6f5901b82e04b",
   "fpn": "731a1020b2c4594c",
   "leaf": false,
-  "name": "func_8002C11C",
+  "name": "music_pause",
   "orig": "func_8002C11C",
   "rom": 117020,
   "seg": "main/music",
@@ -8012,14 +8012,14 @@
   "src": "src/main/music.c"
  },
  "8002C158": {
-  "asm": "asm/nonmatchings/main/music/func_8002C158.s",
+  "asm": "asm/nonmatchings/main/music/music_replay.s",
   "calls": [
    "80038638"
   ],
   "fp": "7be1c39679375590",
   "fpn": "b0d2d3323b212e88",
   "leaf": false,
-  "name": "func_8002C158",
+  "name": "music_replay",
   "orig": "func_8002C158",
   "rom": 117080,
   "seg": "main/music",
@@ -8027,14 +8027,14 @@
   "src": "src/main/music.c"
  },
  "8002C18C": {
-  "asm": "asm/nonmatchings/main/music/func_8002C18C.s",
+  "asm": "asm/nonmatchings/main/music/music_pause_slot.s",
   "calls": [
    "80039288"
   ],
   "fp": "7be1c39679375590",
   "fpn": "b0d2d3323b212e88",
   "leaf": false,
-  "name": "func_8002C18C",
+  "name": "music_pause_slot",
   "orig": "func_8002C18C",
   "rom": 117132,
   "seg": "main/music",
@@ -8042,14 +8042,14 @@
   "src": "src/main/music.c"
  },
  "8002C1C0": {
-  "asm": "asm/nonmatchings/main/music/func_8002C1C0.s",
+  "asm": "asm/nonmatchings/main/music/music_set_tempo.s",
   "calls": [
    "80038868"
   ],
   "fp": "29178561229fbc83",
   "fpn": "3dc868f1d140a1db",
   "leaf": false,
-  "name": "func_8002C1C0",
+  "name": "music_set_tempo",
   "orig": "func_8002C1C0",
   "rom": 117184,
   "seg": "main/music",
@@ -8072,12 +8072,12 @@
   "src": "src/main/music.c"
  },
  "8002C284": {
-  "asm": "asm/nonmatchings/main/music/func_8002C284.s",
+  "asm": "asm/nonmatchings/main/music/music_request.s",
   "calls": [],
   "fp": "379568001121d671",
   "fpn": "379568001121d671",
   "leaf": true,
-  "name": "func_8002C284",
+  "name": "music_request",
   "orig": "func_8002C284",
   "rom": 117380,
   "seg": "main/music",
@@ -8098,12 +8098,12 @@
   "src": "src/main/music.c"
  },
  "8002C29C": {
-  "asm": "asm/nonmatchings/main/music/func_8002C29C.s",
+  "asm": "asm/nonmatchings/main/music/music_flag_restart.s",
   "calls": [],
   "fp": "f9a6136d2299aaec",
   "fpn": "3bdb41083303167b",
   "leaf": true,
-  "name": "func_8002C29C",
+  "name": "music_flag_restart",
   "orig": "func_8002C29C",
   "rom": 117404,
   "seg": "main/music",
@@ -8124,7 +8124,7 @@
   "src": "src/main/music.c"
  },
  "8002C2C4": {
-  "asm": "asm/nonmatchings/main/music/func_8002C2C4.s",
+  "asm": "asm/nonmatchings/main/music/music_setup_slot.s",
   "calls": [
    "800112A4",
    "8003740C",
@@ -8134,7 +8134,7 @@
   "fp": "1a1c702ea9b94f59",
   "fpn": "3e5af42302d0253a",
   "leaf": false,
-  "name": "func_8002C2C4",
+  "name": "music_setup_slot",
   "orig": "func_8002C2C4",
   "rom": 117444,
   "seg": "main/music",
@@ -8161,14 +8161,14 @@
   "src": "src/main/music.c"
  },
  "8002C3F0": {
-  "asm": "asm/nonmatchings/main/music/func_8002C3F0.s",
+  "asm": "asm/nonmatchings/main/music/music_set_data.s",
   "calls": [
    "8002C2C4"
   ],
   "fp": "6575565372d504f5",
   "fpn": "d7e02f0bb39b283f",
   "leaf": false,
-  "name": "func_8002C3F0",
+  "name": "music_set_data",
   "orig": "func_8002C3F0",
   "rom": 117744,
   "seg": "main/music",
@@ -8176,14 +8176,14 @@
   "src": "src/main/music.c"
  },
  "8002C428": {
-  "asm": "asm/nonmatchings/main/music/func_8002C428.s",
+  "asm": "asm/nonmatchings/main/music/music_stop.s",
   "calls": [
    "8002C090"
   ],
   "fp": "b05a02ff1ea53abb",
   "fpn": "ec1f3f44a38b4ff9",
   "leaf": false,
-  "name": "func_8002C428",
+  "name": "music_stop",
   "orig": "func_8002C428",
   "rom": 117800,
   "seg": "main/music",
@@ -8191,14 +8191,14 @@
   "src": "src/main/music.c"
  },
  "8002C44C": {
-  "asm": "asm/nonmatchings/main/music/func_8002C44C.s",
+  "asm": "asm/nonmatchings/main/music/music_free.s",
   "calls": [
    "800110A8"
   ],
   "fp": "b4da3a03b4326bd1",
   "fpn": "e8d62fc924a6bb75",
   "leaf": false,
-  "name": "func_8002C44C",
+  "name": "music_free",
   "orig": "func_8002C44C",
   "rom": 117836,
   "seg": "main/music",
@@ -8206,14 +8206,14 @@
   "src": "src/main/music.c"
  },
  "8002C488": {
-  "asm": "asm/nonmatchings/main/music/func_8002C488.s",
+  "asm": "asm/nonmatchings/main/music/music_load.s",
   "calls": [
    "8002C394"
   ],
   "fp": "b87f744e2fe8109c",
   "fpn": "811f358c0305f1e0",
   "leaf": false,
-  "name": "func_8002C488",
+  "name": "music_load",
   "orig": "func_8002C488",
   "rom": 117896,
   "seg": "main/music",
@@ -8221,12 +8221,12 @@
   "src": "src/main/music.c"
  },
  "8002C4B0": {
-  "asm": "asm/nonmatchings/main/card/func_8002C4B0.s",
+  "asm": "asm/nonmatchings/main/card/ascii_to_sjis.s",
   "calls": [],
   "fp": "62d06299dbd4a687",
   "fpn": "56a564c8b9a2b51e",
   "leaf": true,
-  "name": "func_8002C4B0",
+  "name": "ascii_to_sjis",
   "orig": "func_8002C4B0",
   "rom": 117936,
   "seg": "main/card",
@@ -8234,7 +8234,7 @@
   "src": "src/main/card.c"
  },
  "8002C5BC": {
-  "asm": "asm/nonmatchings/main/card/func_8002C5BC.s",
+  "asm": "asm/nonmatchings/main/card/card_make_header.s",
   "calls": [
    "80010000",
    "8001517C",
@@ -8246,7 +8246,7 @@
   "fp": "158ceb8298f40e78",
   "fpn": "1646070af4d54dba",
   "leaf": false,
-  "name": "func_8002C5BC",
+  "name": "card_make_header",
   "orig": "func_8002C5BC",
   "rom": 118204,
   "seg": "main/card",
@@ -8254,7 +8254,7 @@
   "src": "src/main/card.c"
  },
  "8002C894": {
-  "asm": "asm/nonmatchings/main/card/func_8002C894.s",
+  "asm": "asm/nonmatchings/main/card/card_init.s",
   "calls": [
    "80039338",
    "8003ABAC"
@@ -8262,7 +8262,7 @@
   "fp": "3053a534613d246a",
   "fpn": "dd16c6d62a68f14f",
   "leaf": false,
-  "name": "func_8002C894",
+  "name": "card_init",
   "orig": "func_8002C894",
   "rom": 118932,
   "seg": "main/card",
@@ -8270,7 +8270,7 @@
   "src": "src/main/card.c"
  },
  "8002C97C": {
-  "asm": "asm/nonmatchings/main/card/func_8002C97C.s",
+  "asm": "asm/nonmatchings/main/card/card_update.s",
   "calls": [
    "8002C5BC",
    "800393E8",
@@ -8286,7 +8286,7 @@
   "fp": "4e05f0ab09b048ee",
   "fpn": "876fe246f8accc47",
   "leaf": false,
-  "name": "func_8002C97C",
+  "name": "card_update",
   "orig": "func_8002C97C",
   "rom": 119164,
   "seg": "main/card",
@@ -8294,12 +8294,12 @@
   "src": "src/main/card.c"
  },
  "8002D094": {
-  "asm": "asm/nonmatchings/main/card/func_8002D094.s",
+  "asm": "asm/nonmatchings/main/card/card_saving.s",
   "calls": [],
   "fp": "3ec64ba1de95af68",
   "fpn": "c9e07303964803b0",
   "leaf": true,
-  "name": "func_8002D094",
+  "name": "card_saving",
   "orig": "func_8002D094",
   "rom": 120980,
   "seg": "main/card",
@@ -8333,12 +8333,12 @@
   "src": "src/main/card.c"
  },
  "8002D134": {
-  "asm": "asm/nonmatchings/main/card/func_8002D134.s",
+  "asm": "asm/nonmatchings/main/card/card_request.s",
   "calls": [],
   "fp": "28c7fefc28ec7f9c",
   "fpn": "78ad198ca441c480",
   "leaf": true,
-  "name": "func_8002D134",
+  "name": "card_request",
   "orig": "func_8002D134",
   "rom": 121140,
   "seg": "main/card",
@@ -8346,12 +8346,12 @@
   "src": "src/main/card.c"
  },
  "8002D15C": {
-  "asm": "asm/nonmatchings/main/card/func_8002D15C.s",
+  "asm": "asm/nonmatchings/main/card/card_reset.s",
   "calls": [],
   "fp": "d0c7ce9574fec83f",
   "fpn": "d0c7ce9574fec83f",
   "leaf": true,
-  "name": "func_8002D15C",
+  "name": "card_reset",
   "orig": "func_8002D15C",
   "rom": 121180,
   "seg": "main/card",
@@ -8359,12 +8359,12 @@
   "src": "src/main/card.c"
  },
  "8002D178": {
-  "asm": "asm/nonmatchings/main/card/func_8002D178.s",
+  "asm": "asm/nonmatchings/main/card/card_count_files.s",
   "calls": [],
   "fp": "eef9b3bf8d2bfca9",
   "fpn": "71fad90dc06a89ca",
   "leaf": true,
-  "name": "func_8002D178",
+  "name": "card_count_files",
   "orig": "func_8002D178",
   "rom": 121208,
   "seg": "main/card",
@@ -8372,14 +8372,14 @@
   "src": "src/main/card.c"
  },
  "8002D1D4": {
-  "asm": "asm/nonmatchings/main/card/func_8002D1D4.s",
+  "asm": "asm/nonmatchings/main/card/card_find_file.s",
   "calls": [
    "8003ABFC"
   ],
   "fp": "d8e0004d3078e464",
   "fpn": "9d8a1112d4dbfebd",
   "leaf": false,
-  "name": "func_8002D1D4",
+  "name": "card_find_file",
   "orig": "func_8002D1D4",
   "rom": 121300,
   "seg": "main/card",
@@ -8387,14 +8387,14 @@
   "src": "src/main/card.c"
  },
  "8002D254": {
-  "asm": "asm/nonmatchings/main/card/func_8002D254.s",
+  "asm": "asm/nonmatchings/main/card/card_stop.s",
   "calls": [
    "800393A8"
   ],
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_8002D254",
+  "name": "card_stop",
   "orig": "func_8002D254",
   "rom": 121428,
   "seg": "main/card",
@@ -8402,14 +8402,14 @@
   "src": "src/main/card.c"
  },
  "8002D274": {
-  "asm": "asm/nonmatchings/main/card/func_8002D274.s",
+  "asm": "asm/nonmatchings/main/card/card_poll.s",
   "calls": [
    "8002C97C"
   ],
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_8002D274",
+  "name": "card_poll",
   "orig": "func_8002D274",
   "rom": 121460,
   "seg": "main/card",
@@ -8417,12 +8417,12 @@
   "src": "src/main/card.c"
  },
  "8002D294": {
-  "asm": "asm/nonmatchings/main/card/func_8002D294.s",
+  "asm": "asm/nonmatchings/main/card/card_clear_slots.s",
   "calls": [],
   "fp": "1522f15b55b695a1",
   "fpn": "4f7e9d7571ddee31",
   "leaf": true,
-  "name": "func_8002D294",
+  "name": "card_clear_slots",
   "orig": "func_8002D294",
   "rom": 121492,
   "seg": "main/card",
@@ -8430,12 +8430,12 @@
   "src": "src/main/card.c"
  },
  "8002D33C": {
-  "asm": "asm/nonmatchings/main/card/func_8002D33C.s",
+  "asm": "asm/nonmatchings/main/card/card_clear_slot.s",
   "calls": [],
   "fp": "c01c985f3323f764",
   "fpn": "2e6c1f28d4d68624",
   "leaf": true,
-  "name": "func_8002D33C",
+  "name": "card_clear_slot",
   "orig": "func_8002D33C",
   "rom": 121660,
   "seg": "main/card",
@@ -8443,12 +8443,12 @@
   "src": "src/main/card.c"
  },
  "8002D360": {
-  "asm": "asm/nonmatchings/main/card/func_8002D360.s",
+  "asm": "asm/nonmatchings/main/card/card_checksum.s",
   "calls": [],
   "fp": "c66d132ac9eab266",
   "fpn": "15e45075f025d716",
   "leaf": true,
-  "name": "func_8002D360",
+  "name": "card_checksum",
   "orig": "func_8002D360",
   "rom": 121696,
   "seg": "main/card",
@@ -8456,14 +8456,14 @@
   "src": "src/main/card.c"
  },
  "8002D394": {
-  "asm": "asm/nonmatchings/main/card/func_8002D394.s",
+  "asm": "asm/nonmatchings/main/card/card_sjis_title.s",
   "calls": [
    "8002C4B0"
   ],
   "fp": "c32adcb57ba621b3",
   "fpn": "845ddb4eb3b27634",
   "leaf": false,
-  "name": "func_8002D394",
+  "name": "card_sjis_title",
   "orig": "func_8002D394",
   "rom": 121748,
   "seg": "main/card",
@@ -8476,7 +8476,7 @@
   "fp": "ef9583463cf7a3d7",
   "fpn": "713d31a635676c45",
   "leaf": true,
-  "name": "func_8002D488",
+  "name": "modchip_check_region",
   "orig": "func_8002D488",
   "rom": 121992,
   "seg": "main/modchip",
@@ -8484,7 +8484,7 @@
   "src": "src/main/modchip.c"
  },
  "8002D4F4": {
-  "asm": "asm/nonmatchings/main/modchip/func_8002D4F4.s",
+  "asm": "asm/nonmatchings/main/modchip/modchip_step.s",
   "calls": [
    "8002DE2C",
    "8002E000",
@@ -8494,7 +8494,7 @@
   "fp": "7a29b2ef7ac6c171",
   "fpn": "8894cdc8d997b4a5",
   "leaf": false,
-  "name": "func_8002D4F4",
+  "name": "modchip_step",
   "orig": "func_8002D4F4",
   "rom": 122100,
   "seg": "main/modchip",
@@ -8507,7 +8507,7 @@
   "fp": "72708dd67338edcd",
   "fpn": "e18c08ac5ec1fc97",
   "leaf": true,
-  "name": "func_8002DE2C",
+  "name": "modchip_cd_wait",
   "orig": "func_8002DE2C",
   "rom": 124460,
   "seg": "main/modchip",
@@ -8520,7 +8520,7 @@
   "fp": "a75a41b6d2afb9ac",
   "fpn": "1ac090aa3be81150",
   "leaf": true,
-  "name": "func_8002E000",
+  "name": "modchip_cd_reset",
   "orig": "func_8002E000",
   "rom": 124928,
   "seg": "main/modchip",
@@ -8545,7 +8545,7 @@
   "fp": "831183fb4de7c20d",
   "fpn": "ecb3b4f71aa51193",
   "leaf": false,
-  "name": "func_8002E0F0",
+  "name": "modchip_show_warning",
   "orig": "func_8002E0F0",
   "rom": 125168,
   "seg": "main/modchip_msg",
@@ -8553,7 +8553,7 @@
   "src": "src/main/modchip_msg.c"
  },
  "8002E25C": {
-  "asm": "asm/nonmatchings/main/modchip_msg/func_8002E25C.s",
+  "asm": "asm/nonmatchings/main/modchip_msg/msg_print.s",
   "calls": [
    "8002E3D0",
    "8002E584",
@@ -8563,7 +8563,7 @@
   "fp": "75ff0390372984a8",
   "fpn": "4a0f0230523274fb",
   "leaf": false,
-  "name": "func_8002E25C",
+  "name": "msg_print",
   "orig": "func_8002E25C",
   "rom": 125532,
   "seg": "main/modchip_msg",
@@ -8578,7 +8578,7 @@
   "fp": "f670da257f7aee85",
   "fpn": "5c1f1fccce48e857",
   "leaf": false,
-  "name": "func_8002E3D0",
+  "name": "msg_draw_glyph",
   "orig": "func_8002E3D0",
   "rom": 125904,
   "seg": "main/modchip_msg",
@@ -8591,7 +8591,7 @@
   "fp": "5b8535e3889cc35f",
   "fpn": "7ccbd2482734a619",
   "leaf": true,
-  "name": "func_8002E584",
+  "name": "msg_glyph_width",
   "orig": "func_8002E584",
   "rom": 126340,
   "seg": "main/modchip_msg",

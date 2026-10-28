@@ -9,25 +9,25 @@
 #include "bash/main.h"
 
 void music_dload_midi(s32 arg0, music_midi *slot, s32 type);
-void func_8002C284(s32 arg0);
+void music_request(s32 arg0);
 void music_duck_off(void);
-void func_8002C29C(void);
+void music_flag_restart(void);
 void music_restart(void);
-void func_8002C3F0(s32 arg0, s32 *arg1);
-void func_8002C428(void);
-void func_8002BEA8(void);
-void func_8002C44C(void);
-void func_8002C488(s32 arg0, s32 type);
-void func_8002C158(u8 *arg0);
-void func_8002C18C(u8 *arg0);
+void music_set_data(s32 arg0, s32 *arg1);
+void music_stop(void);
+void music_update(void);
+void music_free(void);
+void music_load(s32 arg0, s32 type);
+void music_replay(u8 *arg0);
+void music_pause_slot(u8 *arg0);
 void continue_music(void);
-void func_8002C11C(void);
-void func_8002C060(void);
+void music_pause(void);
+void music_init(void);
 void music_fade_out(s32 arg0);
-void func_8002C090(music_midi *slot);
-void func_8002C1C0(s32 arg0, s32 arg1);
-void func_8002C2C4(music_midi *slot);
-void func_8002BD98(music_midi *slot, s32 idx);
+void music_close(music_midi *slot);
+void music_set_tempo(s32 arg0, s32 arg1);
+void music_setup_slot(music_midi *slot);
+void music_open_seq(music_midi *slot, s32 idx);
 
 static inline void SeqSlot_SetVol(music_midi *slot, s32 vol) {
     SsSeqSetVol((s16)slot->seq, (s16)vol, (s16)vol);

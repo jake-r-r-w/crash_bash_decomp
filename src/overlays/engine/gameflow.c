@@ -80,7 +80,7 @@ void func_8008E5BC(void) {
         D_800AEC5C = 0;
     }
     if (IntroStepIndex == 1 && D_8009E5A8 == IntroSteps[0].delay) {
-        func_8002D4F4(0);
+        modchip_step(0);
     }
     if (D_8009E5A8 < 0) {
         return;
@@ -134,7 +134,7 @@ void func_8008E5BC(void) {
             D_8009E5B0 = IntroSteps[IntroStepIndex].sfxNext;
         }
         if (IntroSteps[IntroStepIndex].unk10 != -1) {
-            func_8002C284(IntroSteps[IntroStepIndex].unk10);
+            music_request(IntroSteps[IntroStepIndex].unk10);
         }
         if (D_800AEC5C != 0) {
             dbase_release((u8 *)D_800AEC5C);
@@ -330,7 +330,7 @@ void func_8008EFD4(void) {
             }
             func_80092AF4(&LevelLoadProcess, 0x200);
             if (!(*(u16 *)(g + 0x30) & 0x200)) {
-                func_8002C284(-1);
+                music_request(-1);
             }
         }
     }
@@ -881,7 +881,7 @@ void func_80090A10(void) {
                 if (*(s32 *)(idx + p) != 0
                     && (*(s32 *)((u8 *)pad + 0x48) & 0x4000)) {
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-                    func_8002C284(-1);
+                    music_request(-1);
                     src = CardSlotIndex * 0x194 + p;
                     {
                         u8 *q = GameInfo;
@@ -1045,7 +1045,7 @@ void func_80090E20(void) {
                 SAVEMENU_SET_ANIM(D_8009EFCC);
             } else if (f & 0x30) {
                 if (!(f & 0x10)) {
-                    func_8002D294();
+                    card_clear_slots();
                 }
                 func_8009196C();
                 if (Pads[0].pressed & 0x4000) {
@@ -1116,7 +1116,7 @@ void func_80090E20(void) {
         SAVEMENU_SET_ANIM(D_8009EFF8);
         if (Pads[0].pressed & 0x4000) {
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_8002D15C();
+            card_reset();
             func_80092198();
             SaveMenuState = 0;
         }
@@ -1193,7 +1193,7 @@ void func_80090E20(void) {
     if ((SaveMenuState == 2 || SaveMenuState == 8) && (Pads[0].pressed & 0x1000)) {
         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
         if (SaveMenuState == 2) {
-            func_8002D15C();
+            card_reset();
         }
         func_80092AF4(&RetryProcess, 0x200);
         SaveMenuState = 4;
@@ -1807,7 +1807,7 @@ void func_80092CAC(void) {
     if (GameExitFlags & 0x200) {
         func_80079260();
     } else {
-        func_8002C284(1);
+        music_request(1);
     }
     EngineBeginMode(1);
 }

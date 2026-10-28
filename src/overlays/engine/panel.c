@@ -443,7 +443,7 @@ void Draw_Clock(void) {
     time = (u32)Clock_Time >> 8;
     if (Clock_flags & 0x400) {
         if (Clock_Time == 0x2000) {
-            func_8002C1C0(0x6E, 0xF0);
+            music_set_tempo(0x6E, 0xF0);
         }
     }
     if (Clock_flags & 0x200) {
@@ -1656,8 +1656,8 @@ found:
             MODEV->unk14 = 0;
             MODEV->unk10 |= 0x4000000;
             if (MODEV->unk60 == 0) {
-                func_8002C1C0(100, 5);
-                func_8002C29C();
+                music_set_tempo(100, 5);
+                music_flag_restart();
                 func_80082AC4();
                 CupWinner = -1;
                 CupMode = 0xC;
