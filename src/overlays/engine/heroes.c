@@ -3185,13 +3185,13 @@ s32 HeroTestMove(s32 arg0) {
 void DebugNasStatus(void) {
 }
 
-s32 UpdateFxEmitter(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
+s32 UpdateFxEmitter(EXTscriptdata *sd, subengine *arg1, threaddata *td, s32 *arg3) {
     volatile s32 t0;
     volatile s32 t1;
     EmitPart *part;
     s32 *st;
-    u8 *def;
-    u8 *obj;
+    partdata *def;
+    subengine *obj;
     u8 *p;
     s32 n;
     s32 i;
@@ -3200,96 +3200,96 @@ s32 UpdateFxEmitter(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
 
     obj = arg1;
     i = 0;
-    part = *(EmitPart **)(arg2 + 0x30);
-    st = *(s32 **)(arg2 + 0x34);
+    part = (EmitPart *)td->threadinfo;
+    st = (s32 *)td->threadcontrol;
     t0 = VSync(1);
     def = NULL;
-    p = get_script_track(((FxOwner *)arg0)->fx, ((FxEmitter *)arg2)->unk24, ((FxEmitter *)arg2)->unk4);
+    p = get_script_track((u8 *)sd->dbase, td->scriptnumber, td->threadnumber);
     if (p != NULL) {
-        def = p + 0x14;
+        def = &((script_thread *)p)->type.particle;
     }
     if (def != NULL) {
         n = 0;
-        if (*(s32 *)(arg2 + 0x2C) <= *(s32 *)(def + 0x10)) {
+        if (td->particlesactive <= def->maxparticlecount) {
             st[4] = 0;
             for (;;) {
                 s32 life;
 
-                if (n >= *(s32 *)(def + 0x14)) {
+                if (n >= def->particlesperframe) {
                     break;
                 }
-                if (!(*(s32 *)obj & 0x8000)) {
+                if (!(obj->flags & 0x8000)) {
                 emit_particle(obj, part, def);
-                life = *(s32 *)(def + 0x18);
+                life = def->particlelifetime;
                 if (life == 0) {
-                    life = *(s32 *)(arg2 + 0x20);
+                    life = td->framecount;
                 }
-                if (*(s32 *)(def + 0x58) != 0) {
-                    st[0] = 0x1000 / *(s32 *)(def + 0x58);
-                    *(s16 *)(obj + 0x76) = 0x1000;
+                if (def->fadeinend != 0) {
+                    st[0] = 0x1000 / def->fadeinend;
+                    *(s16 *)&obj->unk76 = 0x1000;
                 }
-                if (*(s32 *)(def + 0x5C) != 0) {
-                    st[1] = 0x1000 / (life - *(s32 *)(def + 0x5C));
+                if (def->fadeoutstart != 0) {
+                    st[1] = 0x1000 / (life - def->fadeoutstart);
                 }
-                if (*(s32 *)(def + 0x60) != 0) {
-                    st[2] = 0x1000 / *(s32 *)(def + 0x60);
-                    *(s32 *)(obj + 0x28) = 0;
-                    *(s32 *)(obj + 0x24) = 0;
-                    *(s32 *)(obj + 0x20) = 0;
+                if (def->scaleinend != 0) {
+                    st[2] = 0x1000 / def->scaleinend;
+                    obj->unk20.z = 0;
+                    obj->unk20.y = 0;
+                    obj->unk20.x = 0;
                 }
-                if (*(s32 *)(def + 0x64) != 0) {
-                    if (life != *(s32 *)(def + 0x64)) {
-                        st[3] = 0x1000 / (life - *(s32 *)(def + 0x64));
+                if (def->scaleoutstart != 0) {
+                    if (life != def->scaleoutstart) {
+                        st[3] = 0x1000 / (life - def->scaleoutstart);
                     } else {
                         st[3] = 0;
                     }
                 }
-                if (*(s32 *)(def + 0x68) != 0) {
-                    *(s16 *)(obj + 0x14) = Random(0x1000);
+                if (def->zrot != 0) {
+                    obj->unk14 = Random(0x1000);
                 }
                 n++;
-                *(s32 *)(arg2 + 0x2C) += 1;
+                td->particlesactive += 1;
                 }
-                obj = *(u8 **)(obj + 0x5C);
+                obj = obj->next;
                 part++;
             }
         }
-        part = *(EmitPart **)(arg2 + 0x30);
+        part = (EmitPart *)td->threadinfo;
         obj = arg1;
-        for (; i < *(s32 *)(def + 0x10); i++, obj = *(u8 **)(obj + 0x5C), part++) {
-            if (obj == NULL || !(*(s32 *)obj & 0x8000)) {
+        for (; i < def->maxparticlecount; i++, obj = obj->next, part++) {
+            if (obj == NULL || !(obj->flags & 0x8000)) {
                 continue;
             }
-            t = *(s32 *)(def + 0x58);
+            t = def->fadeinend;
             if (t != 0 && part->age < t) {
-                if ((*(s16 *)(obj + 0x76) -= st[0]) < 0) {
-                    *(s16 *)(obj + 0x76) = 0;
+                if ((*(s16 *)&obj->unk76 -= st[0]) < 0) {
+                    *(s16 *)&obj->unk76 = 0;
                 }
             }
-            t = *(s32 *)(def + 0x5C);
+            t = def->fadeoutstart;
             if (t != 0 && t < part->age) {
-                if ((*(s16 *)(obj + 0x76) += st[1]) > 0x1000) {
-                    *(s16 *)(obj + 0x76) = 0x1000;
+                if ((*(s16 *)&obj->unk76 += st[1]) > 0x1000) {
+                    *(s16 *)&obj->unk76 = 0x1000;
                 }
             }
-            t = *(s32 *)(def + 0x60);
+            t = def->scaleinend;
             if (t != 0 && t >= part->age) {
-                if ((*(s32 *)(obj + 0x20) += st[2]) <= 0) {
-                    *(s32 *)(obj + 0x20) = 0;
+                if ((obj->unk20.x += st[2]) <= 0) {
+                    obj->unk20.x = 0;
                 }
-                *(s32 *)(obj + 0x24) = *(s32 *)(obj + 0x28) = *(s32 *)(obj + 0x20);
+                obj->unk20.y = obj->unk20.z = obj->unk20.x;
             }
-            t = *(s32 *)(def + 0x64);
+            t = def->scaleoutstart;
             if (t != 0 && part->age >= t) {
-                if ((*(s32 *)(obj + 0x20) -= st[3]) <= 0) {
-                    *(s32 *)(obj + 0x20) = 0;
+                if ((obj->unk20.x -= st[3]) <= 0) {
+                    obj->unk20.x = 0;
                 }
-                *(s32 *)(obj + 0x24) = *(s32 *)(obj + 0x28) = *(s32 *)(obj + 0x20);
+                obj->unk20.y = obj->unk20.z = obj->unk20.x;
             }
             vel_update((VelObj *)obj, (VelParams *)def, (VelState *)part);
-            if (!(*(s32 *)obj & 0x8000) && *(s32 *)(def + 0x6C) != 0) {
-                if ((*(s32 *)(arg2 + 0x2C) -= 1) < 0) {
-                    *(s32 *)(arg2 + 0x2C) = 0;
+            if (!(obj->flags & 0x8000) && def->regenparticle != 0) {
+                if ((td->particlesactive -= 1) < 0) {
+                    td->particlesactive = 0;
                 }
                 part->age = 0;
             }
@@ -3301,18 +3301,18 @@ s32 UpdateFxEmitter(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
             s32 t;
     s32 r;
 
-            *(s32 *)obj &= ~0x8000;
-            *(s32 *)(obj + 0x20) = 0x1000;
-            *(s32 *)(obj + 0x28) = 0x1000;
-            *(s32 *)(obj + 0x24) = 0x1000;
-            *(s16 *)(obj + 0x76) = 0;
-            t = *(s32 *)(def + 0x14);
-            obj = *(u8 **)(obj + 0x5C);
-            *(s32 *)(arg2 + 0x2C) = t;
+            obj->flags &= ~0x8000;
+            obj->unk20.x = 0x1000;
+            obj->unk20.z = 0x1000;
+            obj->unk20.y = 0x1000;
+            *(s16 *)&obj->unk76 = 0;
+            t = def->particlesperframe;
+            obj = obj->next;
+            td->particlesactive = t;
         }
         *arg3 = 0;
     }
-    if (*(s32 *)(arg0 + 0x14) >= *(s32 *)(def + 0x1C) << 8) {
+    if (sd->timer >= def->effecttime << 8) {
         *arg3 = 2;
     }
     t1 = VSync(1);
@@ -3722,7 +3722,7 @@ void PlotScriptFX(NAS *nas) {
                 if (sd->timer >= sd->totalframes << 8) {
                     state = 1;
                 }
-                sub = (subengine *)UpdateFxEmitter((u8 *)sd, (u8 *)sub, (u8 *)t, &state);
+                sub = (subengine *)UpdateFxEmitter(sd, sub, t, &state);
                 if (nas->trigger == NULL && state == 2) {
                     j = 0;
                     while (1) {
@@ -4020,8 +4020,8 @@ void PlotSparks(SparkObj *obj) {
     }
 }
 
-void PlotFallParticles(u8 *arg0, MATRIX *m) {
-    FallParticles *fp = (FallParticles *)(arg0 + 0x6C);
+void PlotFallParticles(subengine *sub, MATRIX *m) {
+    FallParticles *fp = (FallParticles *)&sub->u6C;  /* the fx buffers' head */
     FallParticle *p;
     POLY_FT4 *prim;
     s32 n;
@@ -4078,27 +4078,27 @@ void PlotFallParticles(u8 *arg0, MATRIX *m) {
     }
 }
 
-void PlotWeatherNas(u8 *arg0) {
-    if (*(s32 *)(arg0 + 0x60) == 0) {
-        s32 v = *(s32 *)(arg0 + 0x64);
+void PlotWeatherNas(NAS *m) {
+    if (m->UserInfo.user1 == 0) {
+        s32 v = m->UserInfo.user2;
         switch (v) {
         case 0:
-            fx_alloc_buffers(&WeatherFxDef, *(subengine **)(*(u8 **)(arg0 + 0x54) + 0x6C));
-            *(s32 *)(arg0 + 0x60) = 1;
+            fx_alloc_buffers(&WeatherFxDef, m->Engine->sub);
+            m->UserInfo.user1 = 1;
             break;
         case 1:
-            *(s32 *)(arg0 + 0x60) = v;
+            m->UserInfo.user1 = v;
             break;
         }
     }
 }
 
-void InitWeatherNas(u8 *arg0) {
-    *(s32 *)(arg0 + 0x60) = 0;
-    *(s32 *)(arg0 + 0x64) = 0;
-    **(s32 **)(*(u8 **)(arg0 + 0x54) + 0x6C) = 0x20008000;
+void InitWeatherNas(NAS *m) {
+    m->UserInfo.user1 = 0;
+    m->UserInfo.user2 = 0;
+    m->Engine->sub->flags = 0x20008000;
     if (GameMode == 0x1F) {
-        fx_alloc_buffers(&NoxSparkFxDef, *(subengine **)(*(u8 **)(arg0 + 0x54) + 0x6C));
+        fx_alloc_buffers(&NoxSparkFxDef, m->Engine->sub);
     }
 }
 
@@ -4190,34 +4190,34 @@ void KillScriptFx(EXTengine *eng) {
     }
 }
 
-void emit_script_particle(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4) {
+void emit_script_particle(subengine *arg0, partdata *arg1, EmitPart *arg2, s32 *arg3, threaddata *arg4) {
     s32 life;
     s32 t;
     s32 r;
     s32 u;
 
     emit_particle(arg0, arg2, arg1);
-    life = *(s32 *)(arg1 + 0x18);
+    life = arg1->particlelifetime;
     if (life == 0) {
-        life = *(s32 *)(arg4 + 0x20);
+        life = arg4->framecount;
     }
-    t = *(s32 *)(arg1 + 0x58);
+    t = arg1->fadeinend;
     if (t != 0) {
         arg3[0] = 0x1000 / t;
-        *(s16 *)(arg0 + 0x76) = 0x1000;
+        *(s16 *)&arg0->unk76 = 0x1000;
     }
-    u = *(s32 *)(arg1 + 0x5C);
+    u = arg1->fadeoutstart;
     if (u != 0) {
         arg3[1] = 0x1000 / (life - u);
     }
-    t = *(s32 *)(arg1 + 0x60);
+    t = arg1->scaleinend;
     if (t != 0) {
         arg3[2] = 0x1000 / t;
-        *(s32 *)(arg0 + 0x28) = 0;
-        *(s32 *)(arg0 + 0x24) = 0;
-        *(s32 *)(arg0 + 0x20) = 0;
+        arg0->unk20.z = 0;
+        arg0->unk20.y = 0;
+        arg0->unk20.x = 0;
     }
-    u = *(s32 *)(arg1 + 0x64);
+    u = arg1->scaleoutstart;
     if (u != 0) {
         if (life != u) {
             arg3[3] = 0x1000 / (life - u);
@@ -4225,10 +4225,10 @@ void emit_script_particle(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg
             arg3[3] = 0;
         }
     }
-    if (*(s32 *)(arg1 + 0x68) != 0) {
-        *(s16 *)(arg0 + 0x14) = Random(0x1000);
+    if (arg1->zrot != 0) {
+        arg0->unk14 = Random(0x1000);
     }
-    *(s32 *)(arg4 + 0x2C) += 1;
+    arg4->particlesactive += 1;
 }
 
 u8 *script_track_keys(u8 *arg0, s32 *arg1) {
