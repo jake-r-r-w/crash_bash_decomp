@@ -2749,46 +2749,46 @@ void rotscale_update(void *arg0) {
     }
 }
 
-void cam_init(GfxCamera *cam) {
+void cam_init(camera_info_tag *cam) {
     cam_ramp_overide_count = 0;
-    cam->unk54.scale.vx = 0x1000;
-    cam->unk54.scale.vy = 0x1000;
-    cam->unk54.scale.vz = 0x1000;
-    cam->unk8 = 0x300;
-    cam->unk18 = 0x140;
-    cam->unk54.angle.vx = 0;
-    cam->unk54.angle.vy = 0;
-    cam->unk54.angle.vz = 0;
-    cam->x = 0;
-    cam->y = 0;
-    cam->z = 0;
+    cam->xform.scale.vx = 0x1000;
+    cam->xform.scale.vy = 0x1000;
+    cam->xform.scale.vz = 0x1000;
+    cam->eye.z = 0x300;
+    cam->dist = 0x140;
+    cam->xform.angle.vx = 0;
+    cam->xform.angle.vy = 0;
+    cam->xform.angle.vz = 0;
+    cam->at.x = 0;
+    cam->at.y = 0;
+    cam->at.z = 0;
     cam->unk95 = 0;
-    cam->unk94 = 1;
-    cam->unk0 = 0;
-    cam->unk4 = 0;
-    cam->unk8 = 0;
-    cam->unk3C = 0;
-    cam->unk38 = 0;
-    cam->unk40 = 0;
+    cam->scaled = 1;
+    cam->eye.x = 0;
+    cam->eye.y = 0;
+    cam->eye.z = 0;
+    cam->shakeAmp = 0;
+    cam->shakeTime = 0;
+    cam->flipY = 0;
 }
 
-void cam_set_projection(s32 arg0, s32 arg1) {
+void cam_set_projection(camera_info_tag *cam, RECT *rect) {
     s32 t;
     s32 v;
-    ((s32 *)arg0)[0x68 / 4] = 0x1000;
-    ((s32 *)arg0)[0x64 / 4] = (screen_aspect[1] << 12) / screen_aspect[0];
-    t = (((s32 *)arg0)[0x68 / 4] * *(s16 *)(arg1 + 6)) / 480;
-    ((s32 *)arg0)[0x68 / 4] = t;
+    cam->xform.scale.vy = 0x1000;
+    cam->xform.scale.vx = (screen_aspect[1] << 12) / screen_aspect[0];
+    t = (cam->xform.scale.vy * rect->h) / 480;
+    cam->xform.scale.vy = t;
     if (VideoMode == 1) {
         v = t * 0xF8;
     } else {
         v = t * 0xF0;
     }
-    ((s32 *)arg0)[0x68 / 4] = v / 240;
-    ((s32 *)arg0)[0x64 / 4] = (((s32 *)arg0)[0x64 / 4] * *(s16 *)(arg1 + 4)) / 480;
-    ((s32 *)arg0)[0x6C / 4] = 0x1000;
-    if (((s32 *)arg0)[0x40 / 4] != 0) {
-        ((s32 *)arg0)[0x68 / 4] = -((s32 *)arg0)[0x68 / 4];
+    cam->xform.scale.vy = v / 240;
+    cam->xform.scale.vx = (cam->xform.scale.vx * rect->w) / 480;
+    cam->xform.scale.vz = 0x1000;
+    if (cam->flipY != 0) {
+        cam->xform.scale.vy = -cam->xform.scale.vy;
     }
 }
 
@@ -2797,45 +2797,45 @@ void cam_ramp_override(s32 arg0, s32 arg1) {
     CamEaseOverride = arg0;
 }
 
-void cam_build_view(u8 *arg0, RECT *rect) {
+void cam_build_view(camera_info_tag *cam, RECT *rect) {
     s32 t;
     s32 y;
     u16 a;
     u16 b;
     u16 c;
 
-    t = *(s32*)(arg0 + 0x38);
+    t = cam->shakeTime;
     if (t != 0) {
-        *(s32*)(arg0 + 0x38) = t - 1;
+        cam->shakeTime = t - 1;
     }
-    cam_set_projection((s32)arg0, (s32)rect);
-    RotMatrix((SVECTOR*)(arg0 + 0x54), (MATRIX*)(arg0 + 0x74));
-    if (arg0[0x94] != 0) {
-        ScaleMatrixL((MATRIX*)(arg0 + 0x74), (VECTOR*)(arg0 + 0x64));
+    cam_set_projection(cam, rect);
+    RotMatrix(&cam->xform.angle, &cam->view);
+    if (cam->scaled != 0) {
+        ScaleMatrixL(&cam->view, &cam->xform.scale);
     }
-    a = *(u16*)(arg0 + 0x64);
-    b = *(u16*)(arg0 + 0x68);
-    c = *(u16*)(arg0 + 0x6C);
-    y = *(s32*)(arg0 + 8);
-    *(s32*)(arg0 + 0x88) = *(s32*)(arg0 + 0);
-    *(s16*)(arg0 + 0x9A) = 0;
-    *(s16*)(arg0 + 0x9C) = 0;
-    *(s16*)(arg0 + 0x9E) = 0;
-    *(s16*)(arg0 + 0xA2) = 0;
-    *(s32*)(arg0 + 0x8C) = *(s32*)(arg0 + 4);
-    *(s16*)(arg0 + 0xA4) = 0;
-    *(s16*)(arg0 + 0xA6) = 0;
-    *(s32*)(arg0 + 0xAC) = 0;
-    *(s32*)(arg0 + 0xB0) = 0;
-    *(s32*)(arg0 + 0xB4) = 0;
-    *(s32*)(arg0 + 0x88) = *(s32*)(arg0 + 0x88) * *(s32*)(arg0 + 0x64);
-    *(s32*)(arg0 + 0x8C) = *(s32*)(arg0 + 0x8C) * *(s32*)(arg0 + 0x68);
-    *(u16*)(arg0 + 0x98) = a;
-    *(u16*)(arg0 + 0xA0) = b;
-    *(u16*)(arg0 + 0xA8) = c;
-    *(s32*)(arg0 + 0x90) = y;
-    *(s32*)(arg0 + 0x88) = *(s32*)(arg0 + 0x88) >> 12;
-    *(s32*)(arg0 + 0x8C) = *(s32*)(arg0 + 0x8C) >> 12;
+    a = *(u16 *)&cam->xform.scale.vx;
+    b = *(u16 *)&cam->xform.scale.vy;
+    c = *(u16 *)&cam->xform.scale.vz;
+    y = cam->eye.z;
+    cam->view.t[0] = cam->eye.x;
+    cam->rot.m[0][1] = 0;
+    cam->rot.m[0][2] = 0;
+    cam->rot.m[1][0] = 0;
+    cam->rot.m[1][2] = 0;
+    cam->view.t[1] = cam->eye.y;
+    cam->rot.m[2][0] = 0;
+    cam->rot.m[2][1] = 0;
+    cam->rot.t[0] = 0;
+    cam->rot.t[1] = 0;
+    cam->rot.t[2] = 0;
+    cam->view.t[0] = cam->view.t[0] * cam->xform.scale.vx;
+    cam->view.t[1] = cam->view.t[1] * cam->xform.scale.vy;
+    cam->rot.m[0][0] = a;
+    cam->rot.m[1][1] = b;
+    cam->rot.m[2][2] = c;
+    cam->view.t[2] = y;
+    cam->view.t[0] = cam->view.t[0] >> 12;
+    cam->view.t[1] = cam->view.t[1] >> 12;
 }
 
 /* Angle of (x, z) in 0x1000 units per turn, from the 0x800-entry arctangent table */
@@ -3957,7 +3957,8 @@ s32 PadRunEnd = 0;
 s32 joypad_idle_count = 0;
 s32 ShellUnusedTable[12] = { 2, 2, 2, 2, 8, 2, 0x10, 1, 2, 1, 1, 4 };
 s32 screen_aspect[2] = { 4, 3 };
-u8 MainCamera[368] = {0};
+camera_info_tag MainCamera = {0};
+camera_info_tag MainCameraUnused = {0};  /* a second camera's room; read nowhere */
 s32 cam_ramp_overide_count = 0;
 s32 CamEaseOverride = 0;
 s32 RandomSeedA = 0xC587C1;

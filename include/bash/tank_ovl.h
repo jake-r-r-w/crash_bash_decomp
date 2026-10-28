@@ -767,20 +767,7 @@ typedef struct TankSetupView {
     /* 0x54 */ u8 pad54[0x6C - 0x54];
     /* 0x6C */ s32 w6C;
 } TankSetupView;
-typedef struct TankCam {
-    /* 0x00 */ s32 w0;
-    /* 0x04 */ s32 w4;
-    /* 0x08 */ s32 w8;
-    /* 0x0C */ s32 wC;
-    /* 0x10 */ s32 w10;
-    /* 0x14 */ s32 w14;
-    /* 0x18 */ s32 w18;
-    /* 0x1C */ u8 pad1C[0x54 - 0x1C];
-    /* 0x54 */ s16 h54;
-    /* 0x56 */ s16 h56;
-    /* 0x58 */ s16 h58;
-} TankCam;
-#define CAM5F ((TankCam *)MainCamera)
+#define CAM5F (&MainCamera)
 typedef struct TankScreen {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 w10;

@@ -3515,7 +3515,7 @@ void InitSnowGlint(NAS *nas) {
 void BashDrawView(void) {
     u8 *vp = (u8 *)&GameViewport;
     RenderGameScene();
-    gfx_set_viewport((GfxViewport *)vp, (GfxCamera *)MainCamera);
+    gfx_set_viewport((GfxViewport *)vp, &MainCamera);
     RenderState.modelDp = ScreenFade.amount;
     DrawSceneMarks();
 }

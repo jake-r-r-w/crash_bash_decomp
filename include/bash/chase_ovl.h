@@ -566,20 +566,6 @@ extern u16 Clock_flags;
 
 void PlotEgg(NAS *nas);
 
-/* InitialiseCHASE: the camera (MainCamera) and screen (GameViewport) it sets up. */
-typedef struct ChaseCam {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 pad1C[0x54 - 0x1C];
-    /* 0x54 */ s16 unk54;
-    /* 0x56 */ s16 unk56;
-    /* 0x58 */ s16 unk58;
-} ChaseCam;
 typedef struct ChaseScreen {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;
@@ -596,7 +582,7 @@ extern NAS *ChaseGenerator;
 extern NAS *ChaseGeneratorB;
 extern s32 PanelCtrl;
 extern u8 GameViewport[];
-extern u8 MainCamera[];
+extern camera_info_tag MainCamera;
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
 void InitSharedScoreIcons(void);

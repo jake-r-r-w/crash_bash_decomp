@@ -8,7 +8,7 @@
 void UpdateCamera(s32 arg0) {
     CamView view[2];
     s32 *obj;
-    EngCam *cam;
+    camera_info_tag *cam;
 
     switch (CameraMode) {
     case 0:
@@ -16,53 +16,53 @@ void UpdateCamera(s32 arg0) {
         break;
     case 1:
         if (arg0 != 0) {
-            CamFromPath1(MainCamera);
+            CamFromPath1(&MainCamera);
         }
         CameraFrameHeroes(arg0);
         break;
     case 2:
         if (arg0 != 0) {
-            CamFromPath1(MainCamera);
+            CamFromPath1(&MainCamera);
         }
         CameraFrameHeroes(arg0);
-        ((EngCam *)MainCamera)->rot.vx = -0x130;
-        ((EngCam *)MainCamera)->rot.vy = 0;
-        ((EngCam *)MainCamera)->rot.vz = 0x800;
+        MainCamera.xform.angle.vx = -0x130;
+        MainCamera.xform.angle.vy = 0;
+        MainCamera.xform.angle.vz = 0x800;
         break;
     case 3:
-        TitlesCameraHook(MainCamera, arg0);
+        TitlesCameraHook(&MainCamera, arg0);
         break;
     case 6:
-        HubCameraFollow(MainCamera, arg0);
+        HubCameraFollow(&MainCamera, arg0);
         break;
     case 4:
         PodiumCamera(view, arg0);
-        cam_ease_to((CamView *)MainCamera, view, &CameraEase);
+        cam_ease_to((CamView *)&MainCamera, view, &CameraEase);
         break;
     case 7:
         obj = path_get(1);
         if (obj != NULL) {
-            cam = (EngCam *)MainCamera;
+            cam = &MainCamera;
             cam->eye.x = 0;
             cam->eye.y = 0;
-            cam->eye.z = get_dist_angles(obj + 0x13, obj + 0xC, &cam->rot.vx);
+            cam->eye.z = get_dist_angles(obj + 0x13, obj + 0xC, &cam->xform.angle.vx);
             cam->at = *(CamXYZ *)(obj + 0xC);
             cam->dist = 0x200;
         }
         GameViewport.ofy = 0x15E;
         break;
     case 8:
-        N2OCameraFollow(MainCamera);
+        N2OCameraFollow(&MainCamera);
         GameViewport.ofy = 0x15E;
         break;
     }
-    if (GamePause == 0 && ((EngCam *)MainCamera)->shakeTime > 0) {
+    if (GamePause == 0 && MainCamera.shakeTime > 0) {
         if (GameFrameCount & 1) {
-            ((EngCam *)MainCamera)->at.y = ((EngCam *)MainCamera)->at.y + ((EngCam *)MainCamera)->shakeAmp;
+            MainCamera.at.y = MainCamera.at.y + MainCamera.shakeAmp;
         } else {
-            ((EngCam *)MainCamera)->at.y = ((EngCam *)MainCamera)->at.y - ((EngCam *)MainCamera)->shakeAmp;
+            MainCamera.at.y = MainCamera.at.y - MainCamera.shakeAmp;
         }
-        ((EngCam *)MainCamera)->shakeTime--;
+        MainCamera.shakeTime--;
     }
 }
 
@@ -248,11 +248,11 @@ void CalcCameraFrame(void) {
     VECTOR out;
     D_800AD1EC_entry *e;
     s32 n;
-    EngCam *cam;
+    camera_info_tag *cam;
     s32 z0;
 
-    cam = (EngCam *)MainCamera;
-    RotMatrix(&cam->rot, &m);
+    cam = &MainCamera;
+    RotMatrix(&cam->xform.angle, &m);
     n = camera_frame_list_size;
     CamBoundBottom = 0x7FFFFFFF;
     CamBoundTop = 0x80000000;
@@ -279,7 +279,7 @@ void CalcCameraFrame(void) {
 
         z0 = out.vz - e->unk8;
         x = out.vx - e->unk4;
-        v = x + (z0 + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
+        v = x + (z0 + 0x3000) * 320 / MainCamera.dist;
         if (v < CamBoundLeft) {
             CamBoundLeft = v;
             camera_frame_left.unk0 = x;
@@ -287,7 +287,7 @@ void CalcCameraFrame(void) {
         }
         z = out.vz - e->unk8;
         xr =out.vx + e->unk6;
-        v = xr - (z + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
+        v = xr - (z + 0x3000) * 320 / MainCamera.dist;
         if (v > CamBoundRight) {
             CamBoundRight = v;
             camera_frame_right[0] = xr;
@@ -295,7 +295,7 @@ void CalcCameraFrame(void) {
         }
         z = out.vz - e->unk8;
         xr = out.vy - e->unkC;
-        v = xr + (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
+        v = xr + (z + 0x3000) * 240 / MainCamera.dist;
         if (v < CamBoundBottom) {
             CamBoundBottom = v;
             camera_frame_bottom.unk4 = xr;
@@ -303,7 +303,7 @@ void CalcCameraFrame(void) {
         }
         z = out.vz - e->unk8;
         w = out.vy + e->unkC;
-        v = w - (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
+        v = w - (z + 0x3000) * 240 / MainCamera.dist;
         if (v > CamBoundTop) {
             CamBoundTop = v;
             ((D_800AD2EC_t *)camera_frame_top)->unk4 = w;
@@ -312,7 +312,7 @@ void CalcCameraFrame(void) {
 
         z = out.vz + e->unkA;
         xr = out.vx - e->unk4;
-        v = xr + (z + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
+        v = xr + (z + 0x3000) * 320 / MainCamera.dist;
         if (v < CamBoundLeft) {
             CamBoundLeft = v;
             camera_frame_left.unk0 = xr;
@@ -320,7 +320,7 @@ void CalcCameraFrame(void) {
         }
         z = out.vz + e->unkA;
         w = out.vx + e->unk6;
-        v = w - (z + 0x3000) * 320 / ((EngCam *)MainCamera)->dist;
+        v = w - (z + 0x3000) * 320 / MainCamera.dist;
         if (v > CamBoundRight) {
             CamBoundRight = v;
             camera_frame_right[0] = w;
@@ -328,7 +328,7 @@ void CalcCameraFrame(void) {
         }
         z = out.vz + e->unkA;
         w = out.vy - e->unkC;
-        v = w + (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
+        v = w + (z + 0x3000) * 240 / MainCamera.dist;
         if (v < CamBoundBottom) {
             CamBoundBottom = v;
             camera_frame_bottom.unk4 = w;
@@ -336,7 +336,7 @@ void CalcCameraFrame(void) {
         }
         w = out.vy + e->unkC;
         z = out.vz + e->unkA;
-        v = w - (z + 0x3000) * 240 / ((EngCam *)MainCamera)->dist;
+        v = w - (z + 0x3000) * 240 / MainCamera.dist;
         if (v > CamBoundTop) {
             CamBoundTop = v;
             ((D_800AD2EC_t *)camera_frame_top)->unk4 = w;
@@ -349,7 +349,7 @@ void CalcCameraFrame(void) {
 void CameraFrameHeroes(s32 arg0) {
     s32 pos[4];
     s32 d[3];
-    View *view;
+    camera_info_tag *view;
     EngineGameView *g;
     s32 z;
     s32 w;
@@ -358,11 +358,11 @@ void CameraFrameHeroes(s32 arg0) {
     BuildCameraFrameList();
     CalcCameraFrame();
     if (cam_frame_hit(&camera_frame_bottom, camera_frame_top, &camera_frame_left, camera_frame_right, pos) != 0) {
-        d[0] = ((View *)MainCamera)->pos.vx - pos[0];
+        d[0] = MainCamera.at.x - pos[0];
     }
-    d[1] = ((View *)MainCamera)->pos.vy - pos[1];
+    d[1] = MainCamera.at.y - pos[1];
     g = (EngineGameView *)GameInfo;
-    d[2] = ((View *)MainCamera)->pos.vz - pos[2];
+    d[2] = MainCamera.at.z - pos[2];
     if (!(g->unk30 & 0x801) && g->mode != 0x1F) {
         if (d[0] < -0x514) {
             d[0] = -0x514;
@@ -372,74 +372,74 @@ void CameraFrameHeroes(s32 arg0) {
         }
     }
     if (arg0 != 0) {
-        ((s32 *)MainCamera)[0] = d[0];
-        ((s32 *)MainCamera)[1] = d[1];
-        ((s32 *)MainCamera)[2] = d[2];
+        MainCamera.eye.x = d[0];
+        MainCamera.eye.y = d[1];
+        MainCamera.eye.z = d[2];
         return;
     }
-    view = (View *)MainCamera;
+    view = &MainCamera;
     w = d[2];
-    z = view->unk0[2];
+    z = view->eye.z;
     if (w < z) {
         if (GameMode != 0x1F) {
-            view->unk0[2] = z + ((w - z) >> 4);
-            view->unk0[0] += (d[0] - view->unk0[0]) >> 4;
-            view->unk0[1] += (d[1] - view->unk0[1]) >> 4;
+            view->eye.z = z + ((w - z) >> 4);
+            view->eye.x += (d[0] - view->eye.x) >> 4;
+            view->eye.y += (d[1] - view->eye.y) >> 4;
         } else {
-            view->unk0[2] = z + ((w - z) >> 2);
-            view->unk0[0] += (d[0] - view->unk0[0]) >> 2;
-            view->unk0[1] += (d[1] - view->unk0[1]) >> 2;
+            view->eye.z = z + ((w - z) >> 2);
+            view->eye.x += (d[0] - view->eye.x) >> 2;
+            view->eye.y += (d[1] - view->eye.y) >> 2;
         }
     } else {
-        view->unk0[2] = z + ((w - z) >> 2);
-        view->unk0[0] += (d[0] - view->unk0[0]) >> 2;
-        view->unk0[1] += (d[1] - view->unk0[1]) >> 2;
+        view->eye.z = z + ((w - z) >> 2);
+        view->eye.x += (d[0] - view->eye.x) >> 2;
+        view->eye.y += (d[1] - view->eye.y) >> 2;
     }
 }
 
-void CamFromPath1(u8 *p) {
+void CamFromPath1(camera_info_tag *cam) {
     s32 *t = path_get(1);
     EngineGameView *g;
 
     if (t != NULL) {
-        *(s16 *)(p + 0x54) = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;
-        *(s32 *)(p + 0x18) = 0x200;
+        cam->xform.angle.vx = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;
+        cam->dist = 0x200;
         g = (EngineGameView *)GameInfo;
-        *(s16 *)(p + 0x56) = 0;
-        *(s16 *)(p + 0x58) = 0;
+        cam->xform.angle.vy = 0;
+        cam->xform.angle.vz = 0;
         if (g->mode == 0x19) {
-            *(s32 *)(p + 0x18) = 0x258;
+            cam->dist = 0x258;
         }
         if (g->mode == 0x18) {
-            *(s32 *)(p + 0x18) = 0x22B;
+            cam->dist = 0x22B;
         }
         if (g->mode == 0x17) {
-            *(s32 *)(p + 0x18) = 0x22B;
+            cam->dist = 0x22B;
         }
         if (g->mode == 0x1A) {
-            *(s32 *)(p + 0x18) = 0x22B;
+            cam->dist = 0x22B;
         }
         if (g->mode == 0x1C) {
-            *(s32 *)(p + 0x18) = 0x258;
+            cam->dist = 0x258;
         }
     }
     GameViewport.ofy = 0x15E;
 }
 
-void CamFromPath9(u8 *p) {
+void CamFromPath9(camera_info_tag *cam) {
     s32 *t = path_get(9);
 
     if (t != NULL) {
-        *(s16 *)(p + 0x54) = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;
-        *(s16 *)(p + 0x56) = 0;
-        *(s16 *)(p + 0x58) = 0;
-        *(s32 *)(p + 0x18) = 0x200;
+        cam->xform.angle.vx = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;
+        cam->xform.angle.vy = 0;
+        cam->xform.angle.vz = 0;
+        cam->dist = 0x200;
     }
     GameViewport.ofy = 0x15E;
 }
 
 void camera_count_bottom(s32 arg0, s32 arg1) {
-    s32 temp = arg0 - ((arg1 + 0x3000) * 0xF0) / ((EngCam *)MainCamera)->dist;
+    s32 temp = arg0 - ((arg1 + 0x3000) * 0xF0) / MainCamera.dist;
 
     if (CamBoundTop < temp) {
         CamBoundTop = temp;
@@ -449,7 +449,7 @@ void camera_count_bottom(s32 arg0, s32 arg1) {
 }
 
 void CamBoundBottomPoint(s32 arg0, s32 arg1) {
-    s32 v = arg0 + ((arg1 + 0x3000) * 0xF0) / ((EngCam *)MainCamera)->dist;
+    s32 v = arg0 + ((arg1 + 0x3000) * 0xF0) / MainCamera.dist;
 
     if (v < CamBoundBottom) {
         CamBoundBottom = v;
@@ -459,7 +459,7 @@ void CamBoundBottomPoint(s32 arg0, s32 arg1) {
 }
 
 void CamBoundRightPoint(s32 arg0, s32 arg1) {
-    s32 temp = arg0 - ((arg1 + 0x3000) * 0x140) / ((EngCam *)MainCamera)->dist;
+    s32 temp = arg0 - ((arg1 + 0x3000) * 0x140) / MainCamera.dist;
 
     if (CamBoundRight < temp) {
         CamBoundRight = temp;
@@ -469,7 +469,7 @@ void CamBoundRightPoint(s32 arg0, s32 arg1) {
 }
 
 void CamBoundLeftPoint(s32 arg0, s32 arg1) {
-    s32 v = arg0 + ((arg1 + 0x3000) * 0x140) / ((EngCam *)MainCamera)->dist;
+    s32 v = arg0 + ((arg1 + 0x3000) * 0x140) / MainCamera.dist;
 
     if (v < CamBoundLeft) {
         CamBoundLeft = v;
@@ -498,7 +498,7 @@ s32 CamEdgeIntersect(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     s32 sp28[3];
     s32 d;
 
-    d = 0x3C0000 / ((EngCam *)MainCamera)->dist;
+    d = 0x3C0000 / MainCamera.dist;
     sp18[0] = arg0->a + d;
     sp18[2] = arg0->c - 0x3000;
     sp28[0] = arg1->a - d;
@@ -518,7 +518,7 @@ s32 CamEdgeIntersect(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
 s32 CamEdgeIntersectZY(VECTOR *arg0, VECTOR *arg1, s32 arg2) {
     VECTOR sp18;
     VECTOR sp28;
-    s32 d = 0x2D0000 / ((EngCam *)MainCamera)->dist;
+    s32 d = 0x2D0000 / MainCamera.dist;
     extern s32 line_intersect_zy(VECTOR *, VECTOR *, VECTOR *, VECTOR *, VECTOR *);
 
     sp18.vy = arg0->vy + d;

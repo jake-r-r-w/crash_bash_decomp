@@ -724,7 +724,7 @@ void InitialiseCHASE(void) {
     u8 *p;
     u8 *q;
     HeroInfo *h;
-    ChaseCam *cam;
+    camera_info_tag *cam;
     ChaseScreen *scr;
 
     ChaseRoundOver = 0;
@@ -745,17 +745,17 @@ void InitialiseCHASE(void) {
     scr = (ChaseScreen *)GameViewport;
     scr->unk10 = 0x140;
     scr->unk14 = 0x15E;
-    cam = (ChaseCam *)MainCamera;
-    cam->unk0 = 0;
-    cam->unk8 = 0xE98;
-    cam->unk54 = 0x1A8;
-    cam->unk18 = 0x200;
-    cam->unk10 = -0x110;
-    cam->unk4 = 0;
-    cam->unk56 = 0;
-    cam->unk58 = 0;
-    cam->unkC = 0;
-    cam->unk14 = -0x770;
+    cam = &MainCamera;
+    cam->eye.x = 0;
+    cam->eye.z = 0xE98;
+    cam->xform.angle.vx = 0x1A8;
+    cam->dist = 0x200;
+    cam->at.y = -0x110;
+    cam->eye.y = 0;
+    cam->xform.angle.vy = 0;
+    cam->xform.angle.vz = 0;
+    cam->at.x = 0;
+    cam->at.z = -0x770;
     for (i = 7; i >= 0; i--) {
         ChaseBarrels[i] = NULL;
     }

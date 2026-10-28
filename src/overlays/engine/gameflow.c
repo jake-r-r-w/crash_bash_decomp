@@ -163,7 +163,7 @@ void QuitIntro(void) {
 }
 
 void RenderIntro(void) {
-    gfx_set_viewport(IntroViewport, MainCamera);
+    gfx_set_viewport(IntroViewport, &MainCamera);
     if (IntroDbase != 0) {
         DrawSceneMarks();
     }
@@ -179,7 +179,7 @@ void InitIntro(void) {
     IntroNextSfx = -1;
     IntroSfxDelay = 0;
     subpool_init(0x200);
-    cam_init((GfxCamera *)MainCamera);
+    cam_init(&MainCamera);
     FirstBootDone = 1;
 }
 
@@ -1396,10 +1396,10 @@ void ShowSaveScreen(void) {
     eng = GetEngineSlot(2);
     eng->flags |= 0x10000000;
     cam_init(&SaveCamera);
-    SaveCamera.unk8 = 0x5DC;
+    SaveCamera.eye.z = 0x5DC;
     cam_init(&SaveBackCamera);
-    SaveBackCamera.unk8 = 0x400;
-    SaveBackCamera.unk18 = 0x190;
+    SaveBackCamera.eye.z = 0x400;
+    SaveBackCamera.dist = 0x190;
     set_fade(&ScreenFade, -0x200, 0);
 }
 
@@ -1834,14 +1834,14 @@ void UpdateGame(void) {
         g = GameInfo;
         *(s32 *)(g + 0xC) += 1;
         UpdateLevel();
-        ((void (*)(void *, u8 *))map_update)(MapScene, (u8 *)&((GfxCamera *)MainCamera)->x);
+        ((void (*)(void *, u8 *))map_update)(MapScene, (u8 *)&MainCamera.at.x);
     } else {
         RenderLevel();
     }
-    MainGfxCamera.z = 0;
-    MainGfxCamera.unk8 = 0x800;
-    HudCamera.z = 0;
-    HudCamera.unk8 = 0x40C;
+    MainGfxCamera.at.z = 0;
+    MainGfxCamera.eye.z = 0x800;
+    HudCamera.at.z = 0;
+    HudCamera.eye.z = 0x40C;
     UpdateScreenLabels();
     scripts_update();
     process_control_update(&MenuProcessControl, &ScreenFade);
@@ -1867,7 +1867,7 @@ void UpdateSecretLevel(void) {
 }
 
 void RenderGameScene(void) {
-    gfx_set_viewport(&GameViewport, (GfxCamera *)MainCamera);
+    gfx_set_viewport(&GameViewport, &MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - GameSceneFade) * (0x1000 - ScreenFade.amount) / 4096);
     PrimDepthTest = 0;
     GameSceneCounts[0] = 0;
@@ -1883,7 +1883,7 @@ void RenderGameScene(void) {
 }
 
 void SetGameViewport(void) {
-    gfx_set_viewport(&GameViewport, (GfxCamera *)MainCamera);
+    gfx_set_viewport(&GameViewport, &MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - GameSceneFade) * (0x1000 - ScreenFade.amount) / 4096);
 }
 
@@ -2162,8 +2162,8 @@ s32 SaveMenuStage = 0;
 char CardStatsText[16] = {0};
 char PercentText[4][5] = {0};
 s32 CardBufferStamp = 0;
-GfxCamera SaveCamera = {0};
-GfxCamera SaveBackCamera = {0};
+camera_info_tag SaveCamera = {0};
+camera_info_tag SaveBackCamera = {0};
 s32 SaveMenuStep = 0;
 s32 SaveMenuYesNo = 0;
 s32 CardPromptStep = 0;
@@ -2179,8 +2179,8 @@ s32 ScreenSizes[10] = { 0xF00140, 0x1E00280, 0xF00140, 0x1E00280, 0x1E0, 0x168, 
 GfxViewport GameViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0x15E, 0x200, 0xDFF, 0, 8, 0x30, 0x10, 0 };
 s32 HubSetupFlag[1] = {0};
 process_info RetryProcess = { InitRetry, UpdateGame, RenderGame, QuitGame, 0 };
-GfxCamera MainGfxCamera = {0};
-GfxCamera HudCamera = {0};
+camera_info_tag MainGfxCamera = {0};
+camera_info_tag HudCamera = {0};
 process_control_info MenuProcessControl = {0};
 void (*RenderHook)(void) = 0;
 s32 GameSceneFade = 0;

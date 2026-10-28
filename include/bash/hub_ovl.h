@@ -16,15 +16,6 @@ void InitialisePodiumFirst(void);
 void InitialisePodium(void);
 
 extern s32 CreditsActive;
-/* MainCamera as seen by HubEndCredits. */
-typedef struct {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 x;
-    /* 0x10 */ s32 y;
-    /* 0x14 */ s32 z;
-    /* 0x18 */ u8 pad18[0x56 - 0x18];
-    /* 0x56 */ u16 h;
-} HubCam;
 extern u16 CreditsStep;
 extern u16 CreditsTimer;
 extern s32 HubCreditsY;
@@ -75,17 +66,6 @@ extern OvlTextLine HubCreditsLines[];
             n = _cnt;                         \
         }                                     \
     }
-
-/* MainCamera as HubCreditsScroll sets it up. */
-typedef struct OvlTextView {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ u8 pad18[0x54 - 0x18];
-    /* 0x54 */ s16 unk54;
-    /* 0x56 */ s16 unk56;
-} OvlTextView;
 
 s32 HubCreditsScroll(void);
 

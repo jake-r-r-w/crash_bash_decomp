@@ -1485,14 +1485,14 @@ void TA_InitLevel(void) {
     dbase_load_all_mesh_anims(((s32 *)MapScene->dbase));
     GameViewport.ofx = 0x140;
     GameViewport.ofy = 0x15E;
-    CAM5F->w0 = 0;
-    CAM5F->w8 = 0xE98;
-    CAM5F->h54 = 0x200;
-    CAM5F->w18 = 0x200;
-    CAM5F->w4 = 0;
-    CAM5F->h56 = 0;
-    CAM5F->h58 = 0;
-    CAM5F->w10 = 0x90;
+    CAM5F->eye.x = 0;
+    CAM5F->eye.z = 0xE98;
+    CAM5F->xform.angle.vx = 0x200;
+    CAM5F->dist = 0x200;
+    CAM5F->eye.y = 0;
+    CAM5F->xform.angle.vy = 0;
+    CAM5F->xform.angle.vz = 0;
+    CAM5F->at.y = 0x90;
     for (i = 0; i < 4; i++) {
         SetHeroAction(i, 0x6C);
     }
@@ -1508,8 +1508,8 @@ void TA_InitLevel(void) {
         src1 = src2 = TankSwampMap;
         TankMapWidth = 9;
         TankMapHeight = 8;
-        CAM5F->wC = 0x930;
-        CAM5F->w14 = 0x1C0;
+        CAM5F->at.x = 0x930;
+        CAM5F->at.z = 0x1C0;
         TankArenaMaxX = 0x1100;
         TankArenaMaxZ = 0xF00;
         PlaySfx(0x50F, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1518,8 +1518,8 @@ void TA_InitLevel(void) {
         src2 = TankDesertMap;
         TankMapWidth = 8;
         TankMapHeight = 8;
-        CAM5F->wC = 0x800;
-        CAM5F->w14 = 0x2A0;
+        CAM5F->at.x = 0x800;
+        CAM5F->at.z = 0x2A0;
         TankArenaMaxX = 0xF00;
         TankArenaMaxZ = 0xF00;
         if (GameLevelFlags & 0x80) {
@@ -1535,18 +1535,18 @@ void TA_InitLevel(void) {
         src1 = src2 = TankJungleMap;
         TankMapWidth = 8;
         TankMapHeight = 8;
-        CAM5F->wC = 0x800;
-        CAM5F->w14 = 0x220;
-        CAM5F->h54 = 0x1EA;
-        CAM5F->w10 = 0;
+        CAM5F->at.x = 0x800;
+        CAM5F->at.z = 0x220;
+        CAM5F->xform.angle.vx = 0x1EA;
+        CAM5F->at.y = 0;
         TankArenaMaxX = 0xF00;
         TankArenaMaxZ = 0xF00;
         break;
     case 8:
         TankMapWidth = 9;
         TankMapHeight = 7;
-        CAM5F->wC = 0x930;
-        CAM5F->w14 = 0x1C0;
+        CAM5F->at.x = 0x930;
+        CAM5F->at.z = 0x1C0;
         PillarWave = 0;
         CreateNAS(0, 0, 0, 0x1310, 0x11);
         CreateNAS(0, 0, 0, 0x1309, 0x11);
@@ -1566,12 +1566,12 @@ void TA_InitLevel(void) {
         if (g->w6C == 0) {
             Heroes[1].hero_name = 9;
         }
-        CAM5F->h54 = 0x192;
+        CAM5F->xform.angle.vx = 0x192;
         TankMapWidth = 9;
         TankMapHeight = 8;
-        CAM5F->wC = 0x930;
-        CAM5F->w10 = -0x70;
-        CAM5F->w14 = 0x1C0;
+        CAM5F->at.x = 0x930;
+        CAM5F->at.y = -0x70;
+        CAM5F->at.z = 0x1C0;
         TankArenaMaxX = 0x1100;
         TankArenaMaxZ = 0xF00;
         CreateNAS(0x600, 0, 0x900, 0x131F, 0x11);

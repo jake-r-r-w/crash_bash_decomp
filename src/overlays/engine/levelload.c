@@ -102,13 +102,13 @@ void LoadModeFiles(void) {
         dbase_load_textures_wait(&HeroModelBank[DB_Loading]);
     }
     RenderHook = RenderGameScene;
-    cam_init((GfxCamera *)MainCamera);
+    cam_init(&MainCamera);
     cam_init(&MainGfxCamera);
     cam_init(&HudCamera);
-    MainGfxCamera.z = 0x2000;
+    MainGfxCamera.at.z = 0x2000;
     cam_init(&LoadingCamera);
-    LoadingCamera.unk8 = 0xA24;
-    LoadingCamera.z = 0;
+    LoadingCamera.eye.z = 0xA24;
+    LoadingCamera.at.z = 0;
     q = (s32 *)&GameViewport;
     q[5] = 0x15E;
     q[4] = 0x140;
@@ -439,7 +439,7 @@ void QuitLoadingScene(void) {
 void RenderLoadingScene(void) {
     if (LevelLoadStage >= 2) {
         GameFrameCount += 1;
-        gfx_set_viewport(LoadingSceneViewport, MainCamera);
+        gfx_set_viewport(LoadingSceneViewport, &MainCamera);
         if (LoadingScenePlaying != 0) {
             DrawSceneMarks();
         }
@@ -448,7 +448,7 @@ void RenderLoadingScene(void) {
 }
 
 void InitLoadingCamera(void) {
-    cam_init((GfxCamera *)MainCamera);
+    cam_init(&MainCamera);
     LoadingScenePlaying = 0;
     LoadingSceneDelay = 0;
 }
@@ -515,7 +515,7 @@ void LoadLoadingModel(void) {
 }
 
 void DrawSceneMarks(void) {
-    s32 h = RenderState.cam->unk18;
+    s32 h = RenderState.cam->dist;
     subengine *e = &SceneMarkSub;
     EngineMarker *m;
     EngineMarkerPos *p;
@@ -537,7 +537,7 @@ void DrawSceneMarks(void) {
         e->unk68 = p->unkC;
         gte_SetGeomScreen(h);
         draw_object((u8 *)e, (u8 *)&RenderState.cam->view, 0x03008000);
-        gte_SetGeomScreen(RenderState.cam->unk18);
+        gte_SetGeomScreen(RenderState.cam->dist);
     }
 }
 
@@ -553,7 +553,7 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     VSyncRate = rate;
     ScriptTimeStep = 0x1E0000 / (60 / rate);
     ScriptTimeStep = arg0->unk8 * rate / 60;
-    cam_init((GfxCamera *)MainCamera);
+    cam_init(&MainCamera);
     SceneOldDbase = 0;
     SceneStarting = 1;
     SceneMarkCount = 0;
@@ -768,7 +768,7 @@ void QuitScriptScene(void) {
 }
 
 void RenderScriptScene(void) {
-    gfx_set_viewport(&SceneViewport, (GfxCamera *)MainCamera);
+    gfx_set_viewport(&SceneViewport, &MainCamera);
     RenderState.modelDp = ScreenFade.amount;
     scripts_render();
     RenderState.modelDp = 0x1000 - (((0x1000 - ScriptFade) * (0x1000 - RenderState.modelDp)) >> 12);
@@ -1435,7 +1435,7 @@ process_info LevelLoadProcess = { InitLevelLoad, UpdateLevelLoad, RenderLevelLoa
 s32 map[26] = {0};
 s32 LevelLoadStage = 0;
 process_control_info LoadingControl = {0};
-GfxCamera LoadingCamera = {0};
+camera_info_tag LoadingCamera = {0};
 u8 LoadingIconEngine[108] = {0};
 WobbleObj *LoadingIconObj = 0;
 s32 LevelLoadVars[11] = {0};

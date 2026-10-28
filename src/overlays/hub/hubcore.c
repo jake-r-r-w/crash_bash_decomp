@@ -846,7 +846,7 @@ void PlotPathEffect(NAS *nas) {
     if (ext == NULL) {
         return;
     }
-    angle = ((-(get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) - ((GfxCamera *)MainCamera)->unk54.angle.vy) << 20) >> 20;
+    angle = ((-(get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) - MainCamera.xform.angle.vy) << 20) >> 20;
     if (ext->kind < 4) {
         if (abs(angle) > 0x400) {
             nas->Engine->sub->flags &= 0xFFFF7FFF;
@@ -1231,7 +1231,7 @@ void HubCamFromPath(u8 *cam, s32 arg1) {
     }
 }
 
-void HubCameraFollow(u8 *arg0, s32 arg1) {
+void HubCameraFollow(camera_info_tag *arg0, s32 arg1) {
     CamView *cam = (CamView *)arg0;
     struct {
         CamView v;
@@ -1402,17 +1402,17 @@ void HubUpdateRoom(void) {
 
 void HubCullObjects(void) {
     u8 *o;
-    u8 *cam;
+    camera_info_tag *cam;
     s32 a;
 
     o = ((u8 *)MapScene->subs);
-    cam = MainCamera;
+    cam = &MainCamera;
     for (;;) {
         if (o == 0) {
             return;
         }
         if (o[0x64] == 0) {
-            a = (-(get_angle(*(s32 *)(o + 4), *(s32 *)(o + 0xC)) & 0xFFF) - *(s16 *)(cam + 0x56)) << 20 >> 20;
+            a = (-(get_angle(*(s32 *)(o + 4), *(s32 *)(o + 0xC)) & 0xFFF) - cam->xform.angle.vy) << 20 >> 20;
             *(s32 *)o &= 0xFFFF7FFF;
             if (a >= 0x301) {
                 *(s32 *)o |= 0x8000;
@@ -2556,7 +2556,7 @@ void HubSaveMenuInit(void) {
         HubNameNext = (*new_var).unk8;
     }
     set_fade(&ScreenFade, -0x300, 0);
-    cam_init((GfxCamera *)HubSaveCamera);
+    cam_init((camera_info_tag *)HubSaveCamera);
     PlaceEngineSlot(0, HubNameLetters);
     GetEngineSlot(0)->unk10.x = 0xC8;
     GetEngineSlot(0)->unk10.y = 0x6E;
@@ -2571,7 +2571,7 @@ void HubSaveMenuRender(void) {
     s32 *p;
     EXTengine *e;
 
-    gfx_set_viewport(&HubSaveViewport, (GfxCamera *)HubSaveCamera);
+    gfx_set_viewport(&HubSaveViewport, (camera_info_tag *)HubSaveCamera);
     RenderState.modelDp = ScreenFade.amount;
     e = GetEngineSlot(0);
     i = 0;

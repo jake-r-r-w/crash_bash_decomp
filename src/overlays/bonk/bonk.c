@@ -1684,17 +1684,17 @@ void BonkSetClockC(void) {
 }
 
 void BonkInitCamera(void) {
-    BonkCam *cam = (BonkCam *)MainCamera;
-    cam->unk0 = 0;
-    cam->unk8 = 0xE98;
-    cam->unk54 = 0x192;
-    cam->unk18 = 0x200;
-    cam->unkC = 0x60;
-    cam->unk10 = 0x20;
-    cam->unk4 = 0;
-    cam->unk56 = 0;
-    cam->unk58 = 0;
-    cam->unk14 = -0x660;
+    camera_info_tag *cam = &MainCamera;
+    cam->eye.x = 0;
+    cam->eye.z = 0xE98;
+    cam->xform.angle.vx = 0x192;
+    cam->dist = 0x200;
+    cam->at.x = 0x60;
+    cam->at.y = 0x20;
+    cam->eye.y = 0;
+    cam->xform.angle.vy = 0;
+    cam->xform.angle.vz = 0;
+    cam->at.z = -0x660;
 }
 
 void InitialiseBONK(void) {

@@ -20,8 +20,8 @@ void sound_pause(void);
 void sound_stop(void);
 void sound_continue(void);
 s32 sfx_distance_volume(VECTOR *v, s32 *range);
-s32 view_project_volume(VECTOR *pos, View *view);
-void view_project(VECTOR *pos, View *view, VECTOR *out, s32 *sxy);
+s32 view_project_volume(VECTOR *pos, camera_info_tag *view);
+void view_project(VECTOR *pos, camera_info_tag *view, VECTOR *out, s32 *sxy);
 void sfx_all_off(void);
 s32 vab_loading(void);
 /* by sound id; [1] == -1: no sound */
@@ -45,11 +45,11 @@ S16Pair sfx_position_volume(VECTOR *pos);
 static inline void ViewProject(VECTOR *pos, s32 *psxy) {
     VECTOR *out = &RenderState.gteOut;
     SVECTOR *in = &RenderState.gteIn;
-    View *view = (View *)MainCamera;
+    camera_info_tag *view = &MainCamera;
 
-    in->vx = pos->vx - view->pos.vx;
-    in->vy = pos->vy - view->pos.vy;
-    in->vz = pos->vz - view->pos.vz;
+    in->vx = pos->vx - view->at.x;
+    in->vy = pos->vy - view->at.y;
+    in->vz = pos->vz - view->at.z;
     gte_ldv0(in);
     gte_rtps();
     gte_stlvl(out);
@@ -77,13 +77,13 @@ static inline S16Pair PanVolume(s32 x, s32 v) {
     }
     return r;
 }
-static inline s32 ViewVolumeXY(VECTOR *pos, View *view, s32 *psxy) {
+static inline s32 ViewVolumeXY(VECTOR *pos, camera_info_tag *view, s32 *psxy) {
     VECTOR *out = &RenderState.gteOut;
     SVECTOR *in = &RenderState.gteIn;
 
-    in->vx = pos->vx - view->pos.vx;
-    in->vy = pos->vy - view->pos.vy;
-    in->vz = pos->vz - view->pos.vz;
+    in->vx = pos->vx - view->at.x;
+    in->vy = pos->vy - view->at.y;
+    in->vz = pos->vz - view->at.z;
     gte_ldv0(in);
     gte_rtps();
     gte_stlvl(out);

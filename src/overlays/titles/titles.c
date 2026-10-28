@@ -274,7 +274,7 @@ s32 OptionsCursor = 0;
 s32 OptionsPage = 0;
 process_info OptionsScreen = { OptionsInit, OptionsUpdate, OptionsRender, OptionsQuit, 0 };
 process_info RunGame = { RunGameInit, RunGameUpdate, RunGameRender, RunGameQuit, 0 };
-GfxCamera TitlesCamera = {0};
+camera_info_tag TitlesCamera = {0};
 s32 MainMenuCursor = 0;
 Ext400 TitlesBackdropAnimator = {0};
 process_info **MenuChainPos = 0;
@@ -366,7 +366,7 @@ s32 CharSelectAnim5[6] = { (s32)&CharSelectSteps5, 0, 0, 0, (s32)&CharSelectAnim
 s32 CharSelectSteps6[3] = { (s32)0x80110000, 0x45000020, 0x8000 };
 s32 CharSelectAnim6[6] = { (s32)&CharSelectSteps6, 0, 0, 0, (s32)&CharSelectAnim6, 0x401 };
 s32 CharSelectAnim7[6] = { (s32)0x80110000, 0x45800020, 0x8000, (s32)&CharSelectAnim7, 0, 0 };
-GfxCamera CharSelectCamera = {0};
+camera_info_tag CharSelectCamera = {0};
 TitlesSlot CharSelectors[4] = {0};
 s32 LangPressToUnlockLevels[1] = { (s32)&TextPressToUnlockLevels };
 s32 LangNoMoreUnlocked[1] = { (s32)&TextNoMoreUnlocked };
@@ -1314,9 +1314,9 @@ void TitlesCamFromPath(u8 *cam, s32 arg1) {
     }
 }
 
-void TitlesCameraHook(u8 *cam, s32 arg1) {
+void TitlesCameraHook(camera_info_tag *cam, s32 arg1) {
     if (arg1 != 0) {
-        TitlesCamFromPath(cam, 1);
+        TitlesCamFromPath((u8 *)cam, 1);
     }
     GameViewport.ofy = 0xF0;
 }

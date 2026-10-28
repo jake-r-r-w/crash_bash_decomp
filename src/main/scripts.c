@@ -126,7 +126,7 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     s32 v;
     obj_dbase *e;
     CamKey *key;
-    CamState *cam;
+    camera_info_tag *cam;
     s32 len;
     s32 t;
     CamVec3 eye;
@@ -160,12 +160,12 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     track = res;
     if (track != NULL) {
         key = CamTrack_FindKey(track, ci->time.h.frame);
-        cam = (CamState *)MainCamera;
-        cam->unk8 = 0x800;
-        cam->unk0 = 0;
-        cam->unk4 = 0;
-        cam->pos = key->at;
-        cam->unk18 = *(s32 *)(track + 0x18);
+        cam = &MainCamera;
+        cam->eye.z = 0x800;
+        cam->eye.x = 0;
+        cam->eye.y = 0;
+        cam->at = *(CamXYZ *)&key->at;
+        cam->dist = *(s32 *)(track + 0x18);
         if (key->len != 0) {
             len = key->len << 8;
             t = (ci->time.w >> 8) - (key->start << 8);
@@ -175,11 +175,11 @@ void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
             eye = key->eye;
             at = key->at;
         }
-        get_dist_angles((s32 *)&eye, (s32 *)&at, cam->rot);
-        cam->pos = eye;
-        cam->unk8 = 0;
-        cam->unk0 = 0;
-        cam->unk4 = 0;
+        get_dist_angles((s32 *)&eye, (s32 *)&at, &cam->xform.angle.vx);
+        cam->at = *(CamXYZ *)&eye;
+        cam->eye.z = 0;
+        cam->eye.x = 0;
+        cam->eye.y = 0;
     }
 }
 

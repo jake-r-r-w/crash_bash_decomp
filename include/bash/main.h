@@ -75,10 +75,6 @@ extern s32 GameLanguage;
 
 /* A viewpoint: its position (+0xC) is subtracted from world positions before
  * they go through the GTE (view_project_volume, view_project). */
-typedef struct {
-    s32 unk0[3];
-    VECTOR pos; /* 0x0C */
-} View;
 
 typedef struct {
     s32 v[3];
@@ -98,16 +94,6 @@ typedef struct CamKey {
     /* 0x14 */ CamVec3 eye;
     /* 0x20 */ u8 unk20[8];
 } CamKey;
-
-typedef struct {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ CamVec3 pos;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 unk1C[0x38];
-    /* 0x54 */ s16 rot[3];
-} CamState;
 
 s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
@@ -310,32 +296,6 @@ typedef struct {
     ModelObjSlot slots[2];  /* 0x90: indexed by FrameCount & 1 */
 } ModelObj;
 
-/* At +0x54 of GfxCamera; gfx_object_matrix takes a pointer to it. */
-typedef struct {
-    SVECTOR angle; /* 0x00: cam_init zeroes vx, vy, vz */
-    u8 unk8[8];
-    VECTOR scale; /* 0x10: diagonal of the screen-aligned matrix (cam_init: 0x1000 each) */
-} GfxCamScale;
-
-/* The camera GfxState.cam points at (draw_map_object); cam_init sets one up. */
-typedef struct GfxCamera {
-    s32 unk0;
-    s32 unk4;
-    s32 unk8;
-    s32 x, y, z;    /* 0x0C */
-    s32 unk18;      /* cam_init: 0x140 */
-    u8 unk1C[0x38 - 0x1C];
-    s32 unk38;
-    s32 unk3C;
-    s32 unk40;
-    u8 unk44[0x54 - 0x44];
-    GfxCamScale unk54; /* 0x54 */
-    MATRIX view;    /* 0x74 */
-    u8 unk94;       /* cam_init: 1 */
-    u8 unk95;
-    u8 unk96[2];
-    MATRIX rot;     /* 0x98: rotation for screen-aligned objects */
-} GfxCamera;
 
 /* The block at GfxState+0x28 (passed to gfx_setup_xform). */
 typedef struct {
@@ -365,7 +325,7 @@ typedef struct {
     u32 *ot;   /* 0x40 */
     s16 otzAdd; /* 0x44: added to the average Z before it is halved */
     s16 otLen;  /* 0x46: entries in ot */
-    struct GfxCamera *cam; /* 0x48 */
+    struct camera_info_tag *cam; /* 0x48 */
     u8 unk4C[0x28];
     VECTOR gteOut; /* 0x74: gteIn rotated and translated */
     u8 *unk84; /* 0x84: = unkCC */
@@ -770,7 +730,7 @@ void loadnode_free(LoadNode *node);
 struct LoadNode *loadlist_push(LoaderState *ls);
 struct LoadNode *loadlist_head(LoaderState *ls);
 void set_joypad(PadState *pad, u32 buttons);
-void cam_init(GfxCamera *cam);
+void cam_init(camera_info_tag *cam);
 void cam_ramp_override(s32 arg0, s32 arg1);
 s32 *get_exe_exports(void);
 s32 angle_diff_abs(s32 arg0, s32 arg1);
@@ -1045,7 +1005,7 @@ extern GameOptionSet GameOptions;
 extern s32 card_command_delay;
 extern s32 GameFrames;
 extern s32 GlobalNAStatus;
-extern u8 MainCamera[];
+extern camera_info_tag MainCamera;
 extern s16 GameMode;
 extern u16 GameLevelFlags;
 extern s32 FontPage;
@@ -1145,7 +1105,7 @@ extern s32 DebugFontStream;
 extern s32 DebugFontTPage;
 extern s32 DebugFontClut;
 void *mal_trim_front(void *base, s32 offset, _mal_area *arg2);
-void cam_build_view(u8 *arg0, RECT *rect);
+void cam_build_view(camera_info_tag *cam, RECT *rect);
 extern GfxState RenderState;
 extern VECTOR ScreenTrans; /* screen-space translation (gfx_setup_xform) */
 
@@ -1887,7 +1847,7 @@ u8 *loader_alloc(u8 *arg0);
 
 void pad_read(PadState *pad);
 
-void cam_set_projection(s32 arg0, s32 arg1);
+void cam_set_projection(camera_info_tag *cam, RECT *rect);
 
 s32 fx_alloc_buffers(FxDef *def, subengine *sub);
 
@@ -1985,8 +1945,7 @@ void combo_check_all(void);
 
 
 
-/* cam_ease_to: camera eased towards a target view */
-typedef struct { s32 x, y, z; } CamXYZ;
+/* cam_ease_to: camera eased towards a target view (CamXYZ: core.h) */
 
 typedef struct CamView {
     /* 0x00 */ CamXYZ eye;

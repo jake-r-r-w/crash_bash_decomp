@@ -108,7 +108,7 @@ extern struct MarkCtx *SceneMark; /* the scene's current mark record (levelload.
 extern process_control_info MenuProcessControl;
 extern void (*RenderHook)(void);
 extern GfxViewport LoadingViewport;   /* the loading screen's (RenderLoadingScreen) */
-extern GfxCamera LoadingCamera;
+extern camera_info_tag LoadingCamera;
 extern s32 LevelLoadStage;
 extern Blk32 LoadingScriptRot;
 extern CamVec3 LoadingScriptPos;
@@ -122,12 +122,12 @@ extern ScriptInit BigPoofInit;
 extern ScriptInit SmokePoofInit;
 extern GfxViewport HudViewport;
 extern GfxViewport SceneViewport;
-extern GfxCamera HudCamera;
+extern camera_info_tag HudCamera;
 extern process_info *SceneSkipProcess;
 extern GfxViewport SaveViewport;
 extern GfxViewport SaveBackViewport;
-extern GfxCamera SaveCamera;
-extern GfxCamera SaveBackCamera;
+extern camera_info_tag SaveCamera;
+extern camera_info_tag SaveBackCamera;
 extern s32 SaveMenuStep;
 extern s32 SaveMenuYesNo;
 extern s32 CardPromptStep;
@@ -157,7 +157,7 @@ extern ScreenMode vmode_512_ntsc;
 extern ScreenMode vmode_512_pal;
 extern s32 SceneStep;
 extern GfxViewport MainViewport;
-extern GfxCamera MainGfxCamera;
+extern camera_info_tag MainGfxCamera;
 extern process_info SaveScreenProcess;
 extern struct Ambient_data *AmbienceDef; /* the level's (InitAmbience) */
 extern u16 AmbienceTimer;

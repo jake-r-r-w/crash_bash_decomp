@@ -105,7 +105,7 @@ void draw_object(u8 *arg0, u8 *arg1, s32 arg2);
 void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 void mapscene_place_subs(map_enviroment *env);
 FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *faces, s32 arg4);
-void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam);
+void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam);
 void draw_map_scene(map_enviroment *scene);
 void mapenv_place_subs(map_enviroment *env);
 s32 tri_visible(SVECTOR *v);
@@ -148,7 +148,7 @@ static inline void GfxSetSceneBg(GfxState *gs, map_enviroment *scene) {
 }
 
 /* Sets the clip area c (640-wide units) for cam. */
-static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
+static inline void GfxSetClip(GfxState *gs, RECT *c, camera_info_tag *cam) {
     RECT clip;
 
     clip.x = c->x * ScreenRect->w / 640;
@@ -158,7 +158,7 @@ static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
     gs->clipX1 = c->w * ScreenRect->w / 640;
     gs->clipY1 = c->h / 2;
     gs->cam = cam;
-    cam_build_view((u8 *)cam, &clip);
+    cam_build_view(cam, &clip);
 }
 
 /* draw_object_model: draw model entry e with vertices v. */

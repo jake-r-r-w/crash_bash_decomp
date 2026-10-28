@@ -4065,7 +4065,7 @@ void DoChooseNewAction(u32 player) {
 
 void InitialisePOLAR(void) {
     SceneObj *obj;
-    PolarCam *cam;
+    camera_info_tag *cam;
     s32 i;
     s32 *speed;
     HeroInfo *h;
@@ -4101,7 +4101,7 @@ void InitialisePOLAR(void) {
         obj = obj->next;
     }
     PolarRoundState = 0;
-    cam = (PolarCam *)MainCamera;
+    cam = &MainCamera;
     cam->at.x = 0;
     cam->at.y = 0;
     cam->at.z = 0;
@@ -9042,9 +9042,9 @@ void PlotSniper(NAS *m) {
                         SNIPER_CAM->eye.y = 0;
                         ext->unk14 = SNIPER_CAM->eye.z;
                         SNIPER_CAM->eye.z = 0x1A80;
-                        SNIPER_CAM->rotX = 0xDC;
-                        SNIPER_CAM->rotY = 0;
-                        SNIPER_CAM->rotZ = 0;
+                        SNIPER_CAM->xform.angle.vx = 0xDC;
+                        SNIPER_CAM->xform.angle.vy = 0;
+                        SNIPER_CAM->xform.angle.vz = 0;
                         m->Engine->sub->flags &= ~0x8000;
                         ext->unk10->sub->flags |= 0x8000;
                         ext->unkC = 1;
@@ -9989,16 +9989,16 @@ s32 PolarOfficeBox(s32 i) {
 }
 
 void PolarCamReset(void) {
-    ((PolarCam *)MainCamera)->at.x = -0x40;
-    ((PolarCam *)MainCamera)->at.y = -0x340;
-    ((PolarCam *)MainCamera)->at.z = -0x8E0;
-    ((PolarCam *)MainCamera)->rotX = 0xC6;
-    ((PolarCam *)MainCamera)->rotY = 0;
-    ((PolarCam *)MainCamera)->rotZ = 0;
-    ((PolarCam *)MainCamera)->eye.x = 0;
-    ((PolarCam *)MainCamera)->eye.z = 0x7FF;
-    ((PolarCam *)MainCamera)->eye.y = 0;
-    ((PolarCam *)MainCamera)->dist = 0x10F;
+    MainCamera.at.x = -0x40;
+    MainCamera.at.y = -0x340;
+    MainCamera.at.z = -0x8E0;
+    MainCamera.xform.angle.vx = 0xC6;
+    MainCamera.xform.angle.vy = 0;
+    MainCamera.xform.angle.vz = 0;
+    MainCamera.eye.x = 0;
+    MainCamera.eye.z = 0x7FF;
+    MainCamera.eye.y = 0;
+    MainCamera.dist = 0x10F;
 }
 
 void PolarEmptyStub3(void) {

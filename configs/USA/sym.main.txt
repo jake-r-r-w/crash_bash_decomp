@@ -1705,3 +1705,4 @@ map_frame_counter = 0x80058AFC;
 NasBuildStamp = 0x80059618;
 FntLoadPatch = 0x800335BC;
 ASTString = 0x8005AA64;
+MainCameraUnused = 0x800516F8;

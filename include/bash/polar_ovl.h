@@ -90,17 +90,6 @@ typedef struct PolarGameView {
     /* 0x6C */ s32 unk6C;
 } PolarGameView;
 
-/* MainCamera as the camera PolarCamReset sets up. */
-typedef struct PolarCam {
-    /* 0x00 */ CamXYZ eye;
-    /* 0x0C */ CamXYZ at;
-    /* 0x18 */ s32 dist;
-    /* 0x1C */ u8 pad1C[0x54 - 0x1C];
-    /* 0x54 */ s16 rotX;
-    /* 0x56 */ s16 rotY;
-    /* 0x58 */ s16 rotZ;
-} PolarCam;
-
 /* A value BearminatorEaseCam eases toward its target by a fixed step. */
 typedef struct PolarEase {
     /* 0x00 */ s32 cur;
@@ -1230,7 +1219,7 @@ typedef struct SniperExt {
 
 extern u16 CameraMode;
 
-#define SNIPER_CAM ((PolarCam *)MainCamera)
+#define SNIPER_CAM (&MainCamera)
 #define SNIPER_PAD ((PolarPad *)Pads)
 
 /* Bear death extension (0x88 bytes, id 0x10000000). */

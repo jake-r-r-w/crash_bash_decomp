@@ -1113,7 +1113,7 @@ void InitialiseRACEFirst(void) {
     AiHumanTweakTable = RaceDashAiHumanTweak;
     AiHumanRoundTweakTable = RaceDashAiHumanRoundTweak;
     AiTeamSkillTable = RaceDashAiTeamSkill;
-    *(s32 *)(MainCamera + 0x18) = 0x22B; /* the camera's dist (EngCam, camera.h) */
+    MainCamera.dist = 0x22B;
     do {} while (0);
     g2 = GameInfo;
     if (*(s16 *)(g2 + 0x34) == 0x18) {
@@ -1156,7 +1156,7 @@ void InitialiseRACEFirst(void) {
         AiHumanTweakTable = RaceWaterAiHumanTweak;
         AiHumanRoundTweakTable = RaceWaterAiHumanRoundTweak;
         AiTeamSkillTable = RaceWaterAiTeamSkill;
-        *(s32 *)(MainCamera + 0x18) = 0x252; /* the camera's dist (EngCam, camera.h) */
+        MainCamera.dist = 0x252;
     }
     RacePickups = NULL;
     RaceEggCount = 0;

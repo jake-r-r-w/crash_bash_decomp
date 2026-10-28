@@ -17,7 +17,7 @@ extern GfxViewport CupViewport0;
 extern GfxViewport CupViewport1;
 extern GfxViewport CupViewport2;
 extern GfxViewport CupViewport3;
-extern GfxCamera TitlesCamera;
+extern camera_info_tag TitlesCamera;
 void RenderTitlesBackdropAndMenu(void);
 
 typedef struct { s32 w[4]; } Blk16;

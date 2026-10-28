@@ -2070,19 +2070,19 @@ void NoxDrawSparks(SparkObj *arg0) {
 }
 
 void NoxCameraFollow(void) {
-    FollowCam *cam;
+    camera_info_tag *cam;
     EXTengine *e = Heroes->hero_eng;
     s32 y;
 
-    cam = (FollowCam *)MainCamera;
-    cam->x += (((e->unk10.x + Heroes[1].hero_eng->unk10.x) >> 1) - cam->x) >> 3;
-    cam->z = e->unk10.z;
+    cam = &MainCamera;
+    cam->at.x += (((e->unk10.x + Heroes[1].hero_eng->unk10.x) >> 1) - cam->at.x) >> 3;
+    cam->at.z = e->unk10.z;
     y = e->unk10.y;
-    cam->unk8 = 0x990;
-    cam->unk0 = 0;
-    cam->unk54 = 0x1A8;
-    cam->y = y;
-    cam->unk58 = e->unk20 >> 3;
+    cam->eye.z = 0x990;
+    cam->eye.x = 0;
+    cam->xform.angle.vx = 0x1A8;
+    cam->at.y = y;
+    cam->xform.angle.vz = e->unk20 >> 3;
 }
 
 void InitLaserShoot(LaserShoot *arg0) {
@@ -2325,7 +2325,7 @@ void NoxInitCamera(s32 arg0) {
     NoxCamera.unk38 = 0;
     NoxCamera.unk40 = 0;
     RenderGameScene();
-    gfx_set_viewport(&GameViewport, (GfxCamera *)&NoxCamera);
+    gfx_set_viewport(&GameViewport, (camera_info_tag *)&NoxCamera);
     RenderState.modelDp = ScreenFade.amount;
     DrawSceneMarks();
 }

@@ -54,16 +54,6 @@ void psxpogo_render_tile();
 void StartHeroVictory(s32 arg0);
 extern u16 CameraMode;
 
-/* MainCamera as the camera PogoInit_Camera sets up. */
-typedef struct PogoCam {
-    /* 0x00 */ s32 eyeX, eyeY, eyeZ;
-    /* 0x0C */ s32 atX, atY, atZ;
-    /* 0x18 */ s32 dist;
-    /* 0x1C */ u8 pad1C[0x54 - 0x1C];
-    /* 0x54 */ s16 rotX;
-    /* 0x56 */ s16 rotY;
-    /* 0x58 */ s16 rotZ;
-} PogoCam;
 /* What a board cell's unk4 points to (Plot_PogoBanker reads its x and z). */
 typedef struct {
     /* 0x00 */ s32 unk0;

@@ -10,7 +10,7 @@
 
 void CameraFrameHeroes(s32 arg0);
 
-void CamFromPath1(u8 *p);
+void CamFromPath1(camera_info_tag *cam);
 
 s32 CamEdgeIntersect(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2);
 
@@ -24,17 +24,6 @@ void BuildCameraFrameList(void);
 
 void UpdateCamera(s32 arg0);
 
-/* MainCamera as the engine camera (UpdateCamera). */
-typedef struct EngCam {
-    /* 0x00 */ CamXYZ eye;
-    /* 0x0C */ CamXYZ at;
-    /* 0x18 */ s32 dist;
-    /* 0x1C */ u8 pad1C[0x38 - 0x1C];
-    /* 0x38 */ s32 shakeTime;
-    /* 0x3C */ s32 shakeAmp;
-    /* 0x40 */ u8 pad40[0x54 - 0x40];
-    /* 0x54 */ SVECTOR rot;
-} EngCam;
 
 s32 line_intersect_xz(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4);
 
@@ -42,7 +31,7 @@ s32 line_intersect_xz(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4);
 static inline s32 EngCam_HitY(VECTOR *arg0, VECTOR *arg1, VECTOR *arg2) {
     VECTOR sp18;
     VECTOR sp28;
-    s32 d = 0x2D0000 / ((EngCam *)MainCamera)->dist;
+    s32 d = 0x2D0000 / MainCamera.dist;
     extern s32 line_intersect_zy(VECTOR *, VECTOR *, VECTOR *, VECTOR *, VECTOR *);
 
     sp18.vy = arg0->vy + d;
@@ -56,7 +45,7 @@ static inline s32 EngCam_HitY(VECTOR *arg0, VECTOR *arg1, VECTOR *arg2) {
 static inline s32 EngCam_HitX(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     s32 sp18[4];
     s32 sp28[4];
-    s32 d = 0x3C0000 / ((EngCam *)MainCamera)->dist;
+    s32 d = 0x3C0000 / MainCamera.dist;
 
     sp18[0] = arg0->a + d;
     sp18[2] = arg0->c - 0x3000;
@@ -77,10 +66,10 @@ static inline s32 EngCam_HitX(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
 extern CamEase CameraEase;
 void BobSub(subengine *s);
 
-void TitlesCameraHook(u8 *cam, s32 arg1);
-void HubCameraFollow(u8 *cam, s32 arg1);
+void TitlesCameraHook(camera_info_tag *cam, s32 arg1);
+void HubCameraFollow(camera_info_tag *cam, s32 arg1);
 void PodiumCamera(CamView *out, s32 arg1);
-void N2OCameraFollow(u8 *cam);
+void N2OCameraFollow(camera_info_tag *cam);
 
 void ShowScreenLabels(void);
 
@@ -92,7 +81,7 @@ void CamBoundBottomPoint(s32 arg0, s32 arg1);
 
 void anim_item(void);
 
-void CamFromPath9(u8 *p);
+void CamFromPath9(camera_info_tag *cam);
 
 void CamBoundRightPoint(s32 arg0, s32 arg1);
 

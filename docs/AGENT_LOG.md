@@ -66,7 +66,7 @@ Sony objects. Next, none of them needing a playtest:
 1. Done 2026-10-28: no `D_` data name is left in any unit (the dashboard's data map has
    no unnamed block). Objects nothing reads by name are `*Unused`; `GameInfo`'s gaps are
    `Game*` globals named from their users. A new label inside an object: use the field or
-   element (`((GfxCamera *)MainCamera)->x`, `SfxTable[0x3C5][1]`), not a new `D_`.
+   element (`MainCamera.at`, `SfxTable[0x3C5][1]`), not a new `D_`.
 2. The raw byte-offset functions (`decomp.py progress`'s typed figure; 11 engine, 62
    exe, 77 overlay). What's left in the exe is mostly the heap's block arithmetic and
    the files' self-relative offsets; typing those means file-format structs (the dbase's
@@ -476,6 +476,15 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (Phase 5: the camera's type):** `GfxCamera` is `camera_info_tag` (the Oct 9
+  prototype's name; 184 bytes), in core.h with its fields named (`eye`, `at`, `dist`,
+  `shakeTime`, `xform.angle`, `view`, `rot`, ...). `MainCamera` is one (`u8[368]` was two
+  cameras' room: `MainCameraUnused` after it), and the overlays' eleven views of it
+  (EngCam, PogoCam, PolarCam, BonkCam, ChaseCam, FollowCam, TankCam, HubCam, OvlTextView,
+  View, CamState) are gone. cam_build_view, cam_set_projection, CamFromPath1/9 and the
+  camera hooks take a `camera_info_tag *`. Gotcha: a view's `rot` (the angle at 0x54) still
+  compiles against the camera's `rot` matrix at 0x98; `make check` caught it.
 
 - **2026-10-28 (Phase 5: the last data names):** main.exe's 39 and the engine's 33 unnamed
   blocks named: `GameInfo`'s gaps (`GameHeroes[4]`, `GameTeammates[4]`, `GameCupRound`, ...;

@@ -37,11 +37,11 @@ void HubStartCredits(void) {
     s32 one;
     CreditsActive = 0;
     ((EngMenuGame *)GameInfo)->flags &= 0xFDC07013;
-    *(s32 *)&HubSavedCamH = (s16)((HubCam *)MainCamera)->h;
+    *(s32 *)&HubSavedCamH = (s16)MainCamera.xform.angle.vy;
     *(s32 *)&HubSavedFov = CameraMode;
-    HubSavedCamX = ((HubCam *)MainCamera)->x;
-    HubSavedCamY = ((HubCam *)MainCamera)->y;
-    HubSavedCamZ = ((HubCam *)MainCamera)->z;
+    HubSavedCamX = MainCamera.at.x;
+    HubSavedCamY = MainCamera.at.y;
+    HubSavedCamZ = MainCamera.at.z;
     if (*(u16 *)&((EngMenuGame *)GameInfo)->unk74 == 0) {
         music_request(2);
         ((EngMenuGame *)GameInfo)->unk74 = 1;
@@ -66,7 +66,7 @@ const char HubAnimJump[] = "JUMP";
 const char HubAnimKick[] = "KICK";
 
 s32 HubCreditsScroll(void) {
-    OvlTextView *view;
+    camera_info_tag *view;
     OvlTextLine *line;
     OvlTextLine *lines;
     subengine *sub;
@@ -76,12 +76,12 @@ s32 HubCreditsScroll(void) {
     s32 done;
     s32 ypos;
 
-    view = (OvlTextView *)MainCamera;
-    view->unk54 = 0xF0;
-    view->unk56 = 0;
-    view->unkC = 0;
-    view->unk10 = 0;
-    view->unk14 = 0x3AE;
+    view = &MainCamera;
+    view->xform.angle.vx = 0xF0;
+    view->xform.angle.vy = 0;
+    view->at.x = 0;
+    view->at.y = 0;
+    view->at.z = 0x3AE;
     HubCreditsEffects();
     switch (CreditsStep) {
     case 1:
@@ -221,11 +221,11 @@ void HubEndCredits(void)
   found:
   DeleteNas_AllAST(i);
 
-  ((HubCam *) MainCamera)->h = HubSavedCamH;
+  MainCamera.xform.angle.vy = HubSavedCamH;
   CameraMode = HubSavedFov;
-  ((HubCam *) MainCamera)->x = HubSavedCamX;
-  ((HubCam *) MainCamera)->y = HubSavedCamY;
-  ((HubCam *) MainCamera)->z = HubSavedCamZ;
+  MainCamera.at.x = HubSavedCamX;
+  MainCamera.at.y = HubSavedCamY;
+  MainCamera.at.z = HubSavedCamZ;
 }
 
 s32 *HubCreditsText(void) {

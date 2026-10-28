@@ -888,7 +888,7 @@ u8 *tga_convert(u8 *arg0, s32 w, s32 h) {
     return res;
 }
 
-void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam) {
+void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam) {
     DR_ENV *dr;
     DRAWENV *env;
     RECT *disp;
@@ -918,7 +918,7 @@ void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam) {
     ((GfxOffset *)gs->unk28)->x = gs->ofx;
     ((GfxOffset *)gs->unk28)->y = gs->ofy;
     gte_SetGeomOffset(vp->ofx * ScreenRect->w / 640, vp->ofy / 2);
-    gte_SetGeomScreen(cam->unk18);
+    gte_SetGeomScreen(cam->dist);
     gte_SetRotMatrix(&cam->view);
     gte_SetTransMatrix(&cam->view);
     gs->ot = (u32 *)cdb + vp->otIdx;
@@ -1734,7 +1734,7 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
     view = &gs->cam->view;
     gs->unk88 = gs->unk10C;
     out = &gs->unkAC;
-    cs = &gs->cam->unk54;
+    cs = &gs->cam->xform;
     if (flags & 0x10000000) {
         ((GfxScreen *)gs->unk28)->x = obj->x + gs->ofx;
         ((GfxScreen *)gs->unk28)->y = obj->y + gs->ofy;
@@ -1765,7 +1765,7 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
         } else {
             rot = &MapSceneMatrix;
         }
-        pos = &RenderState.cam->x;
+        pos = &RenderState.cam->at.x;
         v.vx = obj->x - pos[0];
         v.vy = obj->y - pos[1];
         v.vz = obj->z - pos[2];
@@ -1802,7 +1802,7 @@ s32 bbox_visible(void *arg0) {
     s32 flags;
     SVECTOR *in;
     GfxState *gs;
-    GfxCamera *cam;
+    camera_info_tag *cam;
     s32 r;
     s32 d;
     s32 e;
@@ -1822,12 +1822,12 @@ s32 bbox_visible(void *arg0) {
         if (r < 0x400) {
             cam = gs->cam;
             d = sz * 3 << 10;
-            e = r * cam->unk54.scale.vx * cam->unk18 / d;
+            e = r * cam->xform.scale.vx * cam->dist / d;
             if (c.vx + e < 0 || gs->clipX1 < c.vx - e) {
             culled:
                 return 0;
             }
-            ey = r * cam->unk54.scale.vy * cam->unk18 / d;
+            ey = r * cam->xform.scale.vy * cam->dist / d;
             if (c.vy + ey < 0 || gs->clipY1 < c.vy - ey) {
                 goto culled;
             }
@@ -2830,9 +2830,9 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
 
     m = RenderState.cam->view;
     RenderState.unk0 = ((subengine *)sub)->u6C.dbase = ((GfxModel *)MapScene->dbase);
-    v.vx = ((subengine *)sub)->unk04 - RenderState.cam->x;
-    v.vy = ((subengine *)sub)->unk08 - RenderState.cam->y;
-    v.vz = ((subengine *)sub)->unk0C - RenderState.cam->z;
+    v.vx = ((subengine *)sub)->unk04 - RenderState.cam->at.x;
+    v.vy = ((subengine *)sub)->unk08 - RenderState.cam->at.y;
+    v.vz = ((subengine *)sub)->unk0C - RenderState.cam->at.z;
     mp = &m;
     if (!(flags & 0x200000)) {
         rot = &RenderState.cam->view;

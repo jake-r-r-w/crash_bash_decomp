@@ -142,10 +142,10 @@ void vab_transfer_poll(void) {
         }
     }
     SpuGetAllKeysStatus(SpuKeyStatus);
-    cam_build_view(MainCamera, ScreenRect);
-    m = (MATRIX *)(MainCamera + 0x74);
+    cam_build_view(&MainCamera, ScreenRect);
+    m = &MainCamera.view;
     gte_SetRotMatrix(m);
-    gte_SetGeomScreen(*(s32 *)(MainCamera + 0x18));
+    gte_SetGeomScreen(MainCamera.dist);
     gte_SetTransMatrix(m);
     gte_SetGeomOffset(ScreenRect->w / 2, 175);
 }
@@ -195,7 +195,7 @@ S16Pair sfx_position_volume(VECTOR *pos) {
     s32 vol;
 
     ViewProject(pos, (s32 *)&sxy);
-    vol = ViewVolumeXY(pos, (View *)MainCamera, (s32 *)&ret);
+    vol = ViewVolumeXY(pos, &MainCamera, (s32 *)&ret);
     if (GameOptions.stereo != 0) {
         vol *= 0x1450;
         vol /= 4096;
@@ -244,15 +244,15 @@ s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return v;
 }
 
-s32 view_project_volume(VECTOR *pos, View *view) {
+s32 view_project_volume(VECTOR *pos, camera_info_tag *view) {
     VECTOR *out = &RenderState.gteOut;
     s32 sxy;
     s32 *psxy = &sxy;
     SVECTOR *in = &RenderState.gteIn;
 
-    in->vx = pos->vx - view->pos.vx;
-    in->vy = pos->vy - view->pos.vy;
-    in->vz = pos->vz - view->pos.vz;
+    in->vx = pos->vx - view->at.x;
+    in->vy = pos->vy - view->at.y;
+    in->vz = pos->vz - view->at.z;
     gte_ldv0(in);
     gte_rtps();
     gte_stlvl(out);
@@ -260,12 +260,12 @@ s32 view_project_volume(VECTOR *pos, View *view) {
     return sfx_distance_volume(out, SfxDistanceCurve);
 }
 
-void view_project(VECTOR *pos, View *view, VECTOR *out, s32 *sxy) {
+void view_project(VECTOR *pos, camera_info_tag *view, VECTOR *out, s32 *sxy) {
     SVECTOR *in = &RenderState.gteIn;
 
-    in->vx = pos->vx - view->pos.vx;
-    in->vy = pos->vy - view->pos.vy;
-    in->vz = pos->vz - view->pos.vz;
+    in->vx = pos->vx - view->at.x;
+    in->vy = pos->vy - view->at.y;
+    in->vz = pos->vz - view->at.z;
     gte_ldv0(in);
     gte_rtps();
     gte_stlvl(out);

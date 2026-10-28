@@ -52,7 +52,7 @@ extern u16 TitlesDemoModes[];
 void GotoScriptScene(s32 arg0, process_info *arg1);
 extern PlaceRec TitlesExtraPlace[];
 extern GfxViewport TitlesMenuView;
-extern GfxCamera CharSelectCamera;
+extern camera_info_tag CharSelectCamera;
 extern process_info **MenuChainPos;
 extern PlaceRec BattleOptionsPlace[];
 extern s32 BattleOptionsState;
@@ -281,7 +281,7 @@ void MoveTeamBar(s32 arg0, s32 arg1);
 /* OptionsRender */
 #include "bash/main.h"
 void FormatPercent(u8 *arg0, s32 arg1);
-extern GfxCamera TitlesCamera;
+extern camera_info_tag TitlesCamera;
 extern GfxViewport TitlesMenuView;
 extern GfxViewport TitlesBackdropView;
 extern GfxViewport LevelSelectView0;

@@ -3945,7 +3945,7 @@ void N2OShowPhaseObjects(u16 arg0) {
 void N2OCameraFollow(void) {
     s32 *t;
     s32 z;
-    CamState *cam;
+    camera_info_tag *cam;
     EXTengine *eng;
     s32 d;
 
@@ -3961,14 +3961,14 @@ void N2OCameraFollow(void) {
         }
     }
     if ((!(Heroes[0].hero_status & 0xFA00) || !(Heroes[1].hero_status & 0xFA00)) && t != NULL) {
-        cam = (CamState *)MainCamera;
-        cam->unk0 = 0;
-        cam->unk4 = 0;
-        cam->unk8 = get_dist_angles(t + 0x13, t + 0xC, cam->rot);
-        cam->pos = *(CamVec3 *)(t + 0xC);
-        cam->unk18 = 0x200;
-        d = -0xA00 - cam->pos.v[2];
-        cam->pos.v[2] = z - d;
+        cam = &MainCamera;
+        cam->eye.x = 0;
+        cam->eye.y = 0;
+        cam->eye.z = get_dist_angles(t + 0x13, t + 0xC, &cam->xform.angle.vx);
+        cam->at = *(CamXYZ *)(t + 0xC);
+        cam->dist = 0x200;
+        d = -0xA00 - cam->at.z;
+        cam->at.z = z - d;
     }
 }
 

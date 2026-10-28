@@ -366,8 +366,9 @@ result fits retail's uses of that label: `first_joypad` and `joypad_idle_count` 
 rest of the candidates land on labels nothing references yet.
 
 **Left.**
-- `cam_init(camera_info_tag *)`: the camera globals are byte arrays seen
-  through several structs (CamView, EngCam, ...); merge them first.
+- `cam_init(camera_info_tag *)`: done 2026-10-28. The views are merged into
+  `camera_info_tag`, and `MainCamera` is one; `CamView` remains as the head that
+  cam_ease_to eases to.
 - 11 prototypes `proto_types.py` can't write: a function pointer parameter
   (`asload_permanent_callback`), a parameter count that differs
   (`camera_count_bottom`, `draw_map_sub`, `map_update`, `HeroQuiet`,

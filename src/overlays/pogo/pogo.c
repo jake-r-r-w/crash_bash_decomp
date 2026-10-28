@@ -7502,16 +7502,16 @@ void PogoInit_AllChallenges(void) {
 }
 
 void PogoInit_Camera(void) {
-    ((PogoCam *)MainCamera)->eyeX = 0;
-    ((PogoCam *)MainCamera)->eyeZ = 0xE98;
-    ((PogoCam *)MainCamera)->rotX = 0x1BE;
-    ((PogoCam *)MainCamera)->dist = 0x200;
-    ((PogoCam *)MainCamera)->eyeY = 0;
-    ((PogoCam *)MainCamera)->rotY = 0;
-    ((PogoCam *)MainCamera)->rotZ = 0;
-    ((PogoCam *)MainCamera)->atX = 0;
-    ((PogoCam *)MainCamera)->atY = 0;
-    ((PogoCam *)MainCamera)->atZ = -0x650;
+    MainCamera.eye.x = 0;
+    MainCamera.eye.z = 0xE98;
+    MainCamera.xform.angle.vx = 0x1BE;
+    MainCamera.dist = 0x200;
+    MainCamera.eye.y = 0;
+    MainCamera.xform.angle.vy = 0;
+    MainCamera.xform.angle.vz = 0;
+    MainCamera.at.x = 0;
+    MainCamera.at.y = 0;
+    MainCamera.at.z = -0x650;
 }
 
 void PogoInit_SetClock(u32 arg0) {
