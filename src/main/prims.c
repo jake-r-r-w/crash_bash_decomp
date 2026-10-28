@@ -2,11 +2,11 @@
 #include "bash/main.h"
 #include "bash/prims.h"
 
-static inline void prims_pool_clear(u8 *p) {
-    *(s32 *)(p + 4) = 0;
-    *(s32 *)(p + 8) = 0;
-    *(s32 *)(p + 0xC) = 0;
-    *(s32 *)(p + 0x10) = 0;
+static inline void prims_pool_clear(PrimList *l) {
+    l->f4 = 0;
+    l->f8 = NULL;
+    l->fC = NULL;
+    l->f10 = NULL;
 }
 
 void prims_init(s32 *cfg) {
@@ -60,20 +60,20 @@ void prims_init(s32 *cfg) {
         if (n == end) {
             break;
         }
-        np = p + 0x58;
-        *(u8 **)p = np;
-        prims_pool_clear(p + 4);
-        prims_pool_clear(p + 0x18);
-        prims_pool_clear(p + 0x2C);
-        prims_pool_clear(p + 0x40);
+        np = (u8 *)((PrimSet *)p + 1);
+        ((PrimSet *)p)->next = (PrimSet *)np;
+        prims_pool_clear(&((PrimSet *)p)->pairs[0].b);
+        prims_pool_clear(&((PrimSet *)p)->pairs[0].a);
+        prims_pool_clear(&((PrimSet *)p)->pairs[1].b);
+        prims_pool_clear(&((PrimSet *)p)->pairs[1].a);
         p = np;
     }
-    prims_pool_clear(p + 4);
-    prims_pool_clear(p + 0x18);
-    prims_pool_clear(p + 0x2C);
-    prims_pool_clear(p + 0x40);
+    prims_pool_clear(&((PrimSet *)p)->pairs[0].b);
+    prims_pool_clear(&((PrimSet *)p)->pairs[0].a);
+    prims_pool_clear(&((PrimSet *)p)->pairs[1].b);
+    prims_pool_clear(&((PrimSet *)p)->pairs[1].a);
     PrimSetList = NULL;
-    *(u8 **)p = NULL;
+    ((PrimSet *)p)->next = NULL;
     PrimPool.mem = NULL;
     PrimSetFree = (s32 *)PrimSetPool;
 }
@@ -163,13 +163,13 @@ void prims_update(void) {
     }
 }
 
-static inline void PrimList_Empty(PrimList *arg0, u8 *node) {
+static inline void PrimList_Empty(PrimList *arg0, PrimSet *node) {
     s32 kind;
 
     s32 *list;
 
     list = (s32 *) arg0->f4;
-    kind = *(u16 *) (node + 0x54);
+    kind = node->mode;
     arg0->f10 = NULL;
     arg0->fC = list;
     if (arg0->fC != NULL) {
@@ -179,18 +179,18 @@ static inline void PrimList_Empty(PrimList *arg0, u8 *node) {
 
 void prims_empty_back(void) {
     s32 idx;
-    u8 *node;
+    PrimSet *node;
 
     idx = (FrameCount & 1) ^ 1;
     DrawSync(0);
-    node = PrimSetList;
+    node = (PrimSet *)PrimSetList;
     for (;;) {
         if (node == NULL) {
             return;
         }
-        PrimList_Empty((PrimList *) (node + idx * 0x28 + 0x18), node);
-        PrimList_Empty((PrimList *) (node + idx * 0x28 + 4), node);
-        node = *(u8 **) node;
+        PrimList_Empty(&node->pairs[idx].a, node);
+        PrimList_Empty(&node->pairs[idx].b, node);
+        node = node->next;
     }
 }
 

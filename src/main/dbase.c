@@ -716,13 +716,6 @@ void dbase_init(obj_dbase *db) {
     textureset_clear(&db->textures);
 }
 
-static inline void prims_pool_clear(u8 *p) {
-    *(s32 *)(p + 4) = 0;
-    *(s32 *)(p + 8) = 0;
-    *(s32 *)(p + 0xC) = 0;
-    *(s32 *)(p + 0x10) = 0;
-}
-
 /* data, in address order (tools/scripts/data2c.py) */
 /* what the data points at that this file's headers don't declare */
 
