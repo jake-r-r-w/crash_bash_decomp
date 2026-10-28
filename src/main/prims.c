@@ -817,7 +817,7 @@ void prims_empty(void) {
     printf("empty prims\n");
     if (ScreenRect != 0) {
         ClearOt(DrawBuffers);
-        ClearOt(DrawBuffers + 0x400C);
+        ClearOt(&DrawBuffers[1]);
     }
     set = PrimSetList;
     if (set != NULL) {
@@ -900,7 +900,7 @@ void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam) {
     if (cdb == DrawBuffers) {
         disp += 1;
     }
-    env = (*(DRAWENV **)(cdb + 0x4008))++;
+    env = (*(DRAWENV **)&cdb->prim)++;
     SetDefDrawEnv(env, vp->x0 * ScreenRect->w / 640 + disp->x, vp->y0 / 2 + disp->y,
                   (vp->x1 - vp->x0) * ScreenRect->w / 640, (vp->y1 - vp->y0) / 2);
     env->dfe = 1;
@@ -911,9 +911,9 @@ void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam) {
     env->b0 = vp->bg.b;
     env->ofs[0] = disp->x;
     env->ofs[1] = disp->y;
-    dr = (*(DR_ENV **)(cdb + 0x4008))++;
+    dr = (*(DR_ENV **)&cdb->prim)++;
     SetDrawEnv(dr, env);
-    addPrim((u32 *)cdb + vp->otIdx + vp->otLen - 1, dr);
+    addPrim(cdb->ot + vp->otIdx + vp->otLen - 1, dr);
     *(GfxOffset *)&gs->ofx = *(GfxOffset *)&vp->ofx;
     ((GfxOffset *)gs->unk28)->x = gs->ofx;
     ((GfxOffset *)gs->unk28)->y = gs->ofy;
@@ -921,7 +921,7 @@ void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam) {
     gte_SetGeomScreen(cam->dist);
     gte_SetRotMatrix(&cam->view);
     gte_SetTransMatrix(&cam->view);
-    gs->ot = (u32 *)cdb + vp->otIdx;
+    gs->ot = cdb->ot + vp->otIdx;
     gs->otLen = vp->otLen - 1;
     ((GfxOffset *)gs->unk28)[1].x = vp->unk20;
     gs->otzAdd = 0;
@@ -1418,9 +1418,9 @@ s32 draw_gouraud_quad(void *arg0, u32 flags) {
     u32 otz;
 #define q ((ColorQuad *)arg0)
 
-    p =*(ModePolyG4 **)(cdb + 0x4008);
+    p =*(ModePolyG4 **)&cdb->prim;
     otz = 0;
-    *(ModePolyG4 **)(cdb + 0x4008) = p + 1;
+    *(ModePolyG4 **)&cdb->prim = p + 1;
     if (!(flags & 0x8000)) {
         return 0;
     }

@@ -1139,7 +1139,15 @@ extern VECTOR ScreenTrans; /* screen-space translation (gfx_setup_xform) */
 
 /* The current draw buffer: primitives are allocated from the pointer at
  * +0x4008 (texture_draw). */
-extern u8 *cdb;
+/* A frame's draw buffer (DrawBuffers, two; cdb is the one being built): its ordering table,
+ * drawn from the last entry (DrawOTag), and its primitive area (AllocPrimBuffers). */
+typedef struct DrawBuffer {
+    /* 0x0000 */ u32 ot[0x1000];
+    /* 0x4000 */ u8 *primStart;
+    /* 0x4004 */ u8 *primEnd;
+    /* 0x4008 */ u8 *prim;        /* the next free primitive */
+} DrawBuffer;
+extern DrawBuffer *cdb;
 
 /* A screen offset pair, copied as one struct. */
 typedef struct {
@@ -1352,7 +1360,7 @@ typedef struct {
     u8 *cur;  /* 0x4008 */
 } OtBuf;
 
-extern u8 DrawBuffers[];
+extern DrawBuffer DrawBuffers[2];
 extern s32 VideoMode;
 extern u8 *ScriptTrackDbase;
 extern s32 ScriptTrackIndex;

@@ -81,7 +81,7 @@ EXTmotion *AddMotion(NAS *nas);
 EXTengine *AddExtEngine(NAS *nas, s32 id);
 s32 ApplyContourMoved(EXTengine *eng);
 void *AddExt(NAS *owner, s32 size, s32 id);
-void ClearOt(u8 *arg0);
+void ClearOt(DrawBuffer *arg0);
 s32 list_count(u8 * *arg0);
 void *FindExtension(NAS *nas, s32 id);
 NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags);

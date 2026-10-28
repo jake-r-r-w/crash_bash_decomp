@@ -2479,7 +2479,7 @@ void FlipScreen(s32 arg0) {
     DISPENV sp10;
     RECT *r = ScreenRect;
     RECT *src;
-    u8 *buf;
+    DrawBuffer *buf;
 
     FntFlush(DebugFontStream);
     DrawSync(0);
@@ -2504,15 +2504,15 @@ void FlipScreen(s32 arg0) {
         LastFlipVSync = VSync(1);
         VSync(arg0);
         PutDispEnv(&sp10);
-        DrawOTag((u32 *)(cdb + 0x3FFC));
+        DrawOTag((u32 *)&cdb->ot[0xFFF]);
         buf = DrawBuffers;
         if (cdb == buf) {
-            buf += 0x400C;
+            buf++;
         }
         cdb = buf;
         FrameCount += 1;
-        ClearOTagR((u32 *)buf, 0x1000);
-        *(s32 *)(buf + 0x4008) = *(s32 *)(buf + 0x4000);
+        ClearOTagR((u32 *)buf->ot, 0x1000);
+        buf->prim = buf->primStart;
     }
     prims_update();
 }
@@ -2604,20 +2604,20 @@ void ResetScreen(void) {
 }
 
 void AllocPrimBuffers(s32 *arg0) {
-    u8 *g;
+    DrawBuffer *g;
     u8 *t;
 
     t = mal_alloc(*arg0 + 0x1800, &MainHeap);
     g = DrawBuffers;
-    *(u8 **)(g + 0x4000) = t;
-    *(s32 *)(g + 0x4004) = *(s32 *)(g + 0x4000) + *arg0 + 0x1800;
-    *(u8 **)((g += 0x8000) + 0xC) = mal_alloc(*arg0 + 0x1800, &MainHeap);
-    *(s32 *)(g + 0x10) = *(s32 *)(g + 0xC) + *arg0 + 0x1800;
+    g[0].primStart = t;
+    g[0].primEnd = g[0].primStart + *arg0 + 0x1800;
+    g[1].primStart = mal_alloc(*arg0 + 0x1800, &MainHeap);
+    g[1].primEnd = g[1].primStart + *arg0 + 0x1800;
 }
 
-void ClearOt(u8 *arg0) {
-    ClearOTagR((u_long *)arg0, 0x1000);
-    *(s32 *)(arg0 + 0x4008) = *(s32 *)(arg0 + 0x4000);
+void ClearOt(DrawBuffer *arg0) {
+    ClearOTagR((u_long *)arg0->ot, 0x1000);
+    arg0->prim = arg0->primStart;
 }
 
 s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
@@ -3369,14 +3369,14 @@ void texture_update_scroll(texture_scroll *s, obj_textureset *o) {
     r.y = s->dst[1] + y;
     r.w = e->vramW;
     r.h = e->vramH - y;
-    p = (*(DR_MOVE **)(cdb + 0x4008))++;
+    p = (*(DR_MOVE **)&cdb->prim)++;
     SetDrawMove(p, &r, e->src[0], e->src[1]);
-    addPrim(cdb + 0x3FFC, p);
+    addPrim(&cdb->ot[0xFFF], p);
     r.y = s->dst[1];
     r.h = y;
-    p = (*(DR_MOVE **)(cdb + 0x4008))++;
+    p = (*(DR_MOVE **)&cdb->prim)++;
     SetDrawMove(p, &r, e->src[0], e->src[1] + e->vramH - y);
-    addPrim(cdb + 0x3FFC, p);
+    addPrim(&cdb->ot[0xFFF], p);
 }
 
 void texture_update_anims(obj_textureset *arg0) {
@@ -3722,8 +3722,8 @@ s32 texture_draw_quad(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u
         return 0;
     }
     v.s.x = (s16)xy * ScreenRect->w / 640;
-    p = *(POLY_GT4 **)(cdb + 0x4008);
-    *(POLY_GT4 **)(cdb + 0x4008) = p + 1;
+    p = *(POLY_GT4 **)&cdb->prim;
+    *(POLY_GT4 **)&cdb->prim = p + 1;
     v.s.y = (s16)(xy >> 16) / 2;
     gs = &RenderState;
     *(u32 *)&p->r0 = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
@@ -3757,8 +3757,8 @@ s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color) {
         return 0;
     }
     v.s.x = (s16)xy * ScreenRect->w / 640;
-    p = *(POLY_FT4 **)(cdb + 0x4008);
-    *(POLY_FT4 **)(cdb + 0x4008) = p + 1;
+    p = *(POLY_FT4 **)&cdb->prim;
+    *(POLY_FT4 **)&cdb->prim = p + 1;
     v.s.y = (s16)(xy >> 16) / 2;
     *(u32 *)&p->r0 = FadeColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
     setPolyFT4(p);
@@ -3789,8 +3789,8 @@ s32 texture_draw_3d(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     if (ScreenRect == NULL) {
         return 0;
     }
-    p = *(POLY_GT4 **)(cdb + 0x4008);
-    *(POLY_GT4 **)(cdb + 0x4008) = p + 1;
+    p = *(POLY_GT4 **)&cdb->prim;
+    *(POLY_GT4 **)&cdb->prim = p + 1;
     gs = &RenderState;
     t = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
     *(u32 *)&p->r0 = t;
@@ -3825,7 +3825,7 @@ s32 texture_draw_3d(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     gte_rtps();
     gte_stsxy(&p->x3);
     setSemiTrans(p, (s32)c0 < 0);
-    addPrim((u32 *)cdb + otz, p);
+    addPrim(cdb->ot + otz, p);
     return f->advance * 640 / ScreenRect->w;
 }
 
@@ -4193,7 +4193,7 @@ s32 EaseCurves[16] = {  /* two easing curves (0..0x7B8, 0..0x1EE); read nowhere 
     0, 0x200, 0x400, 0x580, 0x680, 0x720, 0x780, 0x7B8, 0, 0x80, 0x100, 0x160, 0x1A0, 0x1C8,
     0x1E0, 0x1EE,
 };
-u8 *cdb = (void *)&DrawBuffers;
+DrawBuffer *cdb = DrawBuffers;
 s32 FrameCount = 0;
 s32 ScreenSetFrame = 0;
 RECT *ScreenRect = 0;
@@ -4209,7 +4209,7 @@ ScreenMode vmode_512_pal = { { 0, 0, 0x200, 0x100 }, { 0, 0x100, 0x200, 0x100 },
 ScreenMode vmode_640_ntsc = { { 0, 0, 0x280, 0xF0 }, { 0, 0x100, 0x280, 0xF0 }, { 0, 0 } };
 ScreenMode vmode_640_pal = { { 0, 0, 0x280, 0x100 }, { 0, 0x100, 0x280, 0x100 }, { 0, 0 } };
 s32 ScreenSetFlag = 0;
-u8 DrawBuffers[32792] = {0};
+DrawBuffer DrawBuffers[2] = {0};
 s32 VideoMode = 0;
 s32 CdUnused[1] = {0};
 s32 LoadDirectBusy = 0;
