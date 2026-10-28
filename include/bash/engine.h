@@ -35,14 +35,14 @@ extern s32 D_8009E298;
 void func_8007A688(s32 arg0);
 void func_8007A6B0(s32 arg0);
 void func_8007A6D0(s32 arg0);
-void func_8007A6F8(void);
-void func_8007A7C0(void);
+void RunLevelTriggers(void);
+void RenderLevel(void);
 void InitAmbience(Ambient_data *arg0);
-void func_8007AAF0(void);
+void RenderNas(void);
 void func_8007AB20(void);
 void func_8007AB6C(void);
-void func_8007AB8C(void);
-void func_8007ABC4(void);
+void ResetASTTable(void);
+void ClearLevelNas(void);
 extern s32 D_8009EF64;
 extern s32 D_8009F008;
 extern s32 CardSlotIndex;
@@ -218,8 +218,8 @@ extern u8 GameInfo[];
 extern s32 LevelUnlockedIn(s32, u8 *);
 extern u16 ModeTypes[];
 void process_init(process_control_info *pc);
-void func_80079260(void);
-s32 func_8007A5E8(u8 *arg0);
+void InitialiseLevel(void);
+s32 CountTrophies(u8 *arg0);
 void HubStartCredits(void);
 
 extern s32 D_800AEC5C;
@@ -271,7 +271,7 @@ typedef struct {
 } D_8009D90C_t;
 extern D_8009D90C_t ArenaGrid[400];
 
-int func_8007AC00(void);
+int ASTTableCount(void);
 
 typedef struct {
     s32 unk0;
@@ -284,7 +284,7 @@ extern s32 CamBoundBottom;
 extern D_800AD2EC_t D_800AD304;
 extern s32 CamBoundLeft;
 
-/* PadState (Pads) seen by func_8007EE2C: button flags at 0x44/0x48. */
+/* PadState (Pads) seen by PauseChooseYesNo: button flags at 0x44/0x48. */
 typedef struct PadButtons {
     /* 0x00 */ u8 unk0[0x44];
     /* 0x44 */ s32 held;
@@ -348,7 +348,7 @@ typedef struct HeroJumpEnt {
     u16 vel, max, acc, dec;
 } HeroJumpEnt;
 
-/* Engine callback table filled by func_80083550 (0x54 is HeroHooks.HeroKickCollision). */
+/* Engine callback table filled by SetDefaultHeroHooks (0x54 is HeroHooks.HeroKickCollision). */
 typedef struct EngineHooks {
     /* 0x00 */ s32 InitHero;
     /* 0x04 */ u16 *HeroModels;
@@ -402,7 +402,7 @@ extern s16 HeroActThrow;
 extern s16 HeroActDead;
 extern s16 HeroActWinner;
 extern s16 HeroActLoser;
-void func_8007AB28(void);
+void QuitLevel(void);
 
 /* Object wobbled by func_80093270 (D_800A0290); unk5C is a linked one. */
 typedef struct WobbleObj {
@@ -425,7 +425,7 @@ extern SWORD_XY ScoreIcon1Pos[4];
 extern s16 D_8005A650;
 extern s32 map[];
 
-void func_8007A8C4(void);
+void PreInitLevel(void);
 
 /* N2O's star field (nox.c's NoxSparkFx; the engine's link takes it from the overlay's ELF) */
 extern u8 NoxSparkFxDef[];
@@ -442,13 +442,13 @@ extern WeatherFx D_8009E200;
 
 extern s32 HitSfx[];
 extern u8 CrateObjectsModel[];
-NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2);
+NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2);
 
-void func_8007A718(void);
+void RenderAllNas(void);
 
 extern s16 D_8006BBD6[];
 
-NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2);
+NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, s32 arg2);
 
 void DoAmbience(void);
 
@@ -484,16 +484,16 @@ static inline void EngineBeginMode(s32 arg) {
             }
         } else {
             g->unk30 |= 0x1000;
-            func_800826F8(mode);
+            StartWinSequence(mode);
         }
     }
 }
 
-void func_8007A808(void);
+void InitialiseEngine(void);
 
-void func_8007AA18(void);
+void UpdateNasObjects(void);
 
-/* D_8004DEE0 rows (10 bytes) and the object func_8007A164 totals over. */
+/* D_8004DEE0 rows (10 bytes) and the object LevelRequirementMet totals over. */
 typedef struct { u16 min0, min2, min4, min6, off; } EngineReq;
 extern EngineReq D_8004DEE0[];
 typedef struct {
@@ -513,7 +513,7 @@ typedef struct {
 
 void InitialiseNasSystem(void);
 
-void func_8007906C(void);
+void UpdateAllNas(void);
 
 void func_800793E8(void);
 
@@ -545,7 +545,7 @@ extern s16 D_8005A3A4[];
 
 void func_80079554(void);
 
-/* GameInfo as seen by func_800798A4. */
+/* GameInfo as seen by DrawLevelHud. */
 typedef struct EngHudGame {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 flags;
@@ -556,7 +556,7 @@ typedef struct EngHudGame {
 #define HUDGAME ((EngHudGame *)GameInfo)
 #define HUDPLAYERS ((EXTengine **)&Icon)
 extern s32 D_8009AEF4;
-void func_800798A4(void);
+void DrawLevelHud(void);
 
 extern u8 D_8005B3A8[];
 extern u8 D_8005B3D8[];

@@ -2420,7 +2420,7 @@ void SetArkHeroDead(u32 arg0) {
     temp_s0_2 = &base2[arg0];
     temp_v0 = temp_s0_2->hero_eng;
     sp18 = temp_v0->unk10;
-    func_8007A524(0, (s32 *)&sp18, (s32) &BallsEffectsModel);
+    SpawnModelFx(0, (s32 *)&sp18, (s32) &BallsEffectsModel);
     PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->unk10, 0x1000, 0x1E00, 0);
     func_800898EC(arg0);
 }
@@ -4146,7 +4146,7 @@ void Plot_N_Gin(NAS *arg0) {
             gin->unk22 = 0xA;
             gin->unk1C |= 0x90;
             PlaySfx(0x5BE, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_8007A524(0, &eng->unk10.x, (s32)NginModel);
+            SpawnModelFx(0, &eng->unk10.x, (s32)NginModel);
             eng->sub->unk74 = 0x2001;
             break;
         case 2:
@@ -4220,7 +4220,7 @@ void Plot_N_Gin(NAS *arg0) {
                 StopSfx(eng->sfx);
             }
             PlaySfx(0x5C0, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_8007A524(0, &eng->unk10.x, (s32)NginModel);
+            SpawnModelFx(0, &eng->unk10.x, (s32)NginModel);
             gin->unk1C = 0;
             eng->unk10.y = -0x1000;
             eng->flags &= 0xFFFF7FFF;
@@ -5033,7 +5033,7 @@ void Create_ArkPickup(void)
 
   pos = MapPoints[s + 4].pos;
   ArkGoals[nas->UserInfo.user1].unk10 = 1;
-  tgt = func_8007A464(1, (s32 *) (&pos), *((s32 *) MapScene));
+  tgt = SpawnModelFxOnce(1, (s32 *) (&pos), *((s32 *) MapScene));
   if (tgt != 0)
   {
     AppendExtension((u8 *) nas, (u8 *) tgt);

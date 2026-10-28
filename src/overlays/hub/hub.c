@@ -12,12 +12,12 @@ extern u8 D_80063EC8[];
 void HubRender(void) {
     func_80093110();
     if (GameMode == 0x25) {
-        func_8007A718();
+        RenderAllNas();
         if (D_80098714 == 0) {
             draw_map_scene((GfxScene *)MapScene);
         }
     } else {
-        func_8007A718();
+        RenderAllNas();
         draw_map_scene((GfxScene *)MapScene);
     }
     if (GameMode == 0x2B) {
@@ -31,7 +31,7 @@ void HubRender(void) {
     }
     gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_800798A4();
+    DrawLevelHud();
 }
 
 void HubStartCredits(void) {

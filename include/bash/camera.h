@@ -20,7 +20,7 @@ void func_80098278(void);
 
 s32 func_800967E0(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out);
 void func_80096A08(void);
-void func_80078DD4(void);
+void BuildCameraFrameList(void);
 
 void func_8009608C(s32 arg0);
 

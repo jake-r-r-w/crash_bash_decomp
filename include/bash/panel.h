@@ -24,19 +24,19 @@ typedef struct DigitSrc {
 extern DigitEnt D_800996E0[4];
 extern DigitSrc D_80099198[];
 
-void func_8007D5EC(void);
+void CheckHeroesAllOut(void);
 
-void func_8007E7A4(void);
+void PanelCountCompletion(void);
 
 s32 CalcElapsedTime(void);
 
-void func_8007E874(void);
+void StartPanelCountdown(void);
 
-void func_8007E9FC(u16 arg0, s16 arg1);
+void SetPanelHeroIconB(u16 arg0, s16 arg1);
 
 void Clock_Off(void);
 
-void func_8007E7F4(void);
+void InitTrophyCups(void);
 
 s32 StillTottingUpScore(void);
 
@@ -44,7 +44,7 @@ void InitScore2Icons(void);
 
 void InitScore1Icons(void);
 
-void func_8007EAC0(void);
+void InitCompletionCounter(void);
 
 void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b);
 
@@ -58,14 +58,14 @@ void InitSharedScoreIcons(void);
 
 void Init_Panel(void);
 
-void func_8007ED0C(void);
+void InitBossHealthBar(void);
 
-void func_8007E93C(u16 arg0, s16 arg1, s16 arg2);
+void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2);
 
 /* PANEL.CPP's engines: Init_Panel sets up all seven, 0x9C bytes each, which
  * run to Clock_XYZ (Jampack records five of its smaller ones). The icons use
- * 0..3, the countdown 4 (InitCountdown); 5 and 6 are the two func_8007ED0C
- * builds, which func_80082590 draws. */
+ * 0..3, the countdown 4 (InitCountdown); 5 and 6 are the two InitBossHealthBar
+ * builds, which RenderPause draws. */
 extern EXTengine PanelTab[7];
 extern subengine IconParts[4][7];
 extern u16 D_800991D8[4];
@@ -75,7 +75,7 @@ extern u16 IconImage[];
 typedef struct { s16 x, y; } EngXY;
 extern EngXY D_80099240[4];
 
-void func_8007BFA8(void);
+void InitIcons4(void);
 
 extern subengine *countdown_eng;
 extern subengine counter_sub;
@@ -106,17 +106,17 @@ extern PanelPrim D_8009986C[4][7];
 extern SWORD_XY HealthIconPos[4];
 extern u16 *pHeroHealth[4];
 
-void func_8007C170(void);
+void InitIcons2(void);
 
 void InitPowerIcons(void);
 
-void func_8007AF3C(void);
+void UpdatePanel(void);
 void UpdateBigScore(void);
 void UpdateHealthIcons(void);
 void UpdatePowerIcons(void);
 extern u8 D_80099914[];
 extern u8 D_800999BC[];
-void func_8007D2F4(void);
+void UpdateTankWeaponIcons(void);
 void UpdateScoreIcons(void);
 void Cups_Update(void);
 extern s32 GameCheats;
@@ -132,15 +132,15 @@ typedef struct { void *a; void *b; s32 *c; } EngPtr3;
 extern EngPtr3 D_8009AE40[4];
 extern u8 TankObjectsModel[];
 
-void func_8007BE84(void);
+void SetupCompletionDigits(void);
 
 void InitBossHealthIcons(void);
 
-void func_8007D208(void);
+void InitTankWeaponIcons(void);
 
-void func_8007D6D0(void);
+void UpdateOutMessage(void);
 
-s16 func_8007D850(void);
+s16 FindTeamLeader(void);
 
 s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
 extern char *left_score;
@@ -157,7 +157,7 @@ extern u16 BigScore_Bdelay;
 
 void InitBigScore(void);
 
-void func_8007C830(s32 arg0, s32 arg1);
+void InitPowerupIcons(s32 arg0, s32 arg1);
 
 /* GameInfo as seen by Setup_panel. */
 typedef struct EngineSlotView {

@@ -53,9 +53,9 @@ extern u16 D_8009D872;
 
 
 
-void func_80082590(void);
+void RenderPause(void);
 
-void func_800826F8(s32 arg0);
+void StartWinSequence(s32 arg0);
 
 
 extern s16 D_8009D864;
@@ -66,40 +66,23 @@ extern u16 D_8009D872;
 
 
 
-s32 func_8007EE2C(s32 pad);
+s32 PauseChooseYesNo(s32 pad);
 
 
 
 
 
-void func_800831C4(s32 arg0);
+void SetPauseY(s32 arg0);
 
-void func_8008352C(void);
-
-
-
-
-
-void func_800834E4(void);
-
-s16 func_800831F0(void);
+void RequestQuit(void);
 
 
 
 
 
+void Unpause(void);
 
-
-
-
-
-
-void func_80083550(void);
-
-void func_80082590(void);
-
-
-s32 func_80083488(void);
+s16 PauseRecValue(void);
 
 
 
@@ -108,9 +91,26 @@ s32 func_80083488(void);
 
 
 
-void func_80083244(void);
 
-s32 func_800832BC(void);
+
+
+void SetDefaultHeroHooks(void);
+
+void RenderPause(void);
+
+
+s32 PauseExitPressed(void);
+
+
+
+
+
+
+
+
+void PauseRecPrev(void);
+
+s32 PauseRecNext(void);
 
 
 
@@ -153,7 +153,7 @@ extern s32 D_8009BD08;
 extern s32 D_8009BD40;
 extern s32 D_8009BD44;
 extern s32 PauseDelay;
-/* GameInfo as seen by func_800826F8. */
+/* GameInfo as seen by StartWinSequence. */
 typedef struct EngineHintView {
     /* 0x00 */ u8 unk0[0x10];
     /* 0x10 */ s32 flags;
@@ -169,13 +169,13 @@ typedef struct EngineHintView {
     /* 0x76 */ u8 shown[1];
 } EngineHintView;
 
-s32 func_8007EFC0(s32 pad, s32 max);
+s32 PauseChooseUpDown(s32 pad, s32 max);
 
-s32 func_8007F1A8(s32 pad, s32 max);
+s32 ProcessPauseUD(s32 pad, s32 max);
 
-void func_80082C34(void);
+void AnimateWinCounter(void);
 
-void func_80083334(s32 arg0, s32 kind, s32 flag);
+void SetPauseRecs(s32 arg0, s32 kind, s32 flag);
 
 
 
@@ -189,7 +189,7 @@ void func_80083334(s32 arg0, s32 kind, s32 flag);
 
 extern u8 DragonObjectsModel[];
 
-void func_80082AC4(void);
+void RecordWin(void);
 
 
 
@@ -246,7 +246,7 @@ typedef struct {
 extern D_8009E0E8_t D_8009E0E8[3][4];
 extern u8 AngelModel[];
 
-void func_80082D90(s32 arg0);
+void UpdateWinCounter(s32 arg0);
 
 
 
@@ -270,7 +270,7 @@ typedef struct {
 } FallParticles;
 
 
-/* GameInfo as seen by func_80080FBC. */
+/* GameInfo as seen by DrawPauseMenu. */
 typedef struct EngineMsgView {
     /* 0x00 */ u8 unk0[0xC];
     /* 0x0C */ s32 unkC;
@@ -284,7 +284,7 @@ typedef struct EngineMsgView {
     /* 0x34 */ s16 mode;
 } EngineMsgView;
 #define MSGV ((EngineMsgView *)GameInfo)
-/* GameOptions as seen by func_80080FBC. */
+/* GameOptions as seen by DrawPauseMenu. */
 typedef struct EngineOptView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -342,8 +342,8 @@ extern u16 D_8009BD2C;
 extern s32 D_8009BD34;
 extern s32 D_8009BD38;
 extern s32 D_8009BD3C;
-void func_80081470(s32 arg0);
-/* GameInfo as seen by func_80081470. */
+void DrawAdventureStats(s32 arg0);
+/* GameInfo as seen by DrawAdventureStats. */
 typedef struct ScoreView {
     /* 0x00 */ u8 unk0[4];
     /* 0x04 */ s32 unk4;
@@ -377,7 +377,7 @@ extern s32 D_8009B590[];
 extern s32 D_8009B788[];
 extern s32 D_8009B980[];
 extern s32 D_8009BB30[];
-/* func_800809A0: one 0x18-byte HUD script entry; the list ends at type -1. */
+/* DrawHudEntries: one 0x18-byte HUD script entry; the list ends at type -1. */
 typedef struct HudEntry {
     /* 0x00 */ s16 type;
     /* 0x02 */ s16 x;
@@ -388,7 +388,7 @@ typedef struct HudEntry {
     /* 0x10 */ s32 c;
     /* 0x14 */ s32 d;
 } HudEntry;
-/* GameInfo as seen by func_800809A0. */
+/* GameInfo as seen by DrawHudEntries. */
 typedef struct HudGameView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u32 state;
@@ -400,7 +400,7 @@ typedef struct HudGameView {
     /* 0x32 */ u16 unk32;
     /* 0x34 */ s16 mode;
 } HudGameView;
-/* D_8009BCE0 as seen by func_800809A0. */
+/* D_8009BCE0 as seen by DrawHudEntries. */
 typedef struct HudBox {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s16 unk4;
@@ -412,7 +412,7 @@ typedef struct HudBox {
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
 } HudBox;
-/* PanelTab as seen by func_800809A0. */
+/* PanelTab as seen by DrawHudEntries. */
 typedef struct HudEngView {
     /* 0x000 */ u8 pad0[0x31C];
     /* 0x31C */ s32 x0;
@@ -466,7 +466,7 @@ extern s32 D_8009D75C;
 extern u16 D_8009D760;
 extern u16 D_8009D6E0;
 extern u16 D_8009D524[4];
-/* GameInfo as seen by func_8007F314 (the pause menu). */
+/* GameInfo as seen by UpdatePause (the pause menu). */
 typedef struct PauseView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 state;
@@ -491,11 +491,11 @@ extern u16 D_8009AF38[];
 extern s32 D_8009AF00;
 extern s16 D_8009AE98[][8];
 void func_800248A0();
-void func_800809A0(HudEntry *e, s32 arg1);
+void DrawHudEntries(HudEntry *e, s32 arg1);
 
-void func_80080FBC(void);
+void DrawPauseMenu(void);
 
-void func_80081F64(s32 arg0);
+void UpdatePauseSlide(s32 arg0);
 
 
 

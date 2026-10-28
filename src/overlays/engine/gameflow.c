@@ -15,26 +15,26 @@ void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2) {
     case 5:
     case 7:
         PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(1, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(1, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x208, 0xA0);
         break;
     case 6:
         PlaySfx(((HitSfxTable *)HitSfx)->hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(0, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(0, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x208, 0);
         break;
     case 2:
         PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(2, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(2, arg0, (s32)CrateObjectsModel);
         break;
     case 3:
         PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(4, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(4, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x203, 0xA0);
         break;
     default:
         PlaySfx(((HitSfxTable *)HitSfx)->other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(3, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(3, arg0, (s32)CrateObjectsModel);
         func_8008DEC8(obj, 0x280, id, 0x205, 0xA0);
         break;
     }
@@ -50,7 +50,7 @@ void InitCrateExplode(NAS *arg0) {
     if (e != NULL) {
         t = (u8 *)HitSfx;
         PlaySfx(*(s32 *)(t + Random(4) * 4 + 0x30), NULL, NULL, 0x1000, 0x1E00, 0);
-        func_8007A524(2, (u8 *)e + 0x10, CrateObjectsModel);
+        SpawnModelFx(2, (u8 *)e + 0x10, CrateObjectsModel);
     }
     KillNAS(arg0);
 }
@@ -823,7 +823,7 @@ void func_80090564(u8 *arg0, s32 arg1) {
         EngineSetSlot3Digits(3, 3);
         return;
     }
-    itoa_div(D_8009F498, func_8007A5E8(arg0), 10);
+    itoa_div(D_8009F498, CountTrophies(arg0), 10);
     e->sub[2].unk6C = D_8009F498;
     itoa_div(D_8009F498 + 3, EngineSum147(arg0), 10);
     e->sub[6].unk6C = D_8009F498 + 3;
@@ -1798,14 +1798,14 @@ void func_80092CAC(void) {
         g->unkE0 = 1;
     }
     g = (EngineGameView *)GameInfo;
-    if (func_8007A5E8((u8 *)g) >= 0x19 && g->unkE0 < 2) {
+    if (CountTrophies((u8 *)g) >= 0x19 && g->unkE0 < 2) {
         g->unkE0 = 2;
     }
     prims_empty_back();
     mal_compact(&MainHeap);
     FirstBootDone = 0;
     if (GameExitFlags & 0x200) {
-        func_80079260();
+        InitialiseLevel();
     } else {
         music_request(1);
     }
@@ -1814,7 +1814,7 @@ void func_80092CAC(void) {
 
 void func_80092E40(void) {
     scripts_kill_all();
-    func_8007AB28();
+    QuitLevel();
     sfx_delete_all();
     process_quit(&MenuProcessControl);
     prims_empty();
@@ -1825,20 +1825,20 @@ void func_80092E40(void) {
 void func_80092E94(void) {
     RenderHook();
     RenderState.modelDp = ScreenFade.amount;
-    func_80082590();
+    RenderPause();
     process_control_render(&MenuProcessControl);
 }
 
 void func_80092EDC(void) {
-    if (func_8007F314() != 0) {
+    if (UpdatePause() != 0) {
         u8 *g;
         GameFrameCount++;
         g = GameInfo;
         *(s32 *)(g + 0xC) += 1;
-        func_8007976C();
+        UpdateLevel();
         ((void (*)(void *, u8 *))map_update)(MapScene, D_8005164C);
     } else {
-        func_8007A7C0();
+        RenderLevel();
     }
     MainGfxCamera.z = 0;
     *(s32 *)((u8 *)&MainGfxCamera + 8) = 0x800;
@@ -1863,7 +1863,7 @@ void func_80092FB8(void) {
         a->unkE0 = 1;
     }
     g = (EngineGameView *)GameInfo;
-    if (func_8007A5E8((u8 *)g) >= 0x19 && g->unkE0 < 2) {
+    if (CountTrophies((u8 *)g) >= 0x19 && g->unkE0 < 2) {
         g->unkE0 = 2;
     }
 }
@@ -1876,11 +1876,11 @@ void func_80093038(void) {
     D_8005687C[1] = 0;
     D_8005687C[2] = 0;
     scripts_render();
-    func_8007A718();
+    RenderAllNas();
     draw_map_scene((GfxScene *)MapScene);
     gfx_set_viewport(&MainViewport, &MainGfxCamera);
     RenderState.modelDp = ScreenFade.amount;
-    func_800798A4();
+    DrawLevelHud();
     func_800984D4();
 }
 

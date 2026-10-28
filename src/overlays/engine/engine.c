@@ -32,7 +32,7 @@ void InitialiseNasSystem(void) {
     D_8005AAB0 = D_800986A4[v->unk2C];
 }
 
-void func_80078DD4(void) {
+void BuildCameraFrameList(void) {
     NAS *nas;
     EXTengine *eng;
     EngineGameView *g;
@@ -111,7 +111,7 @@ void func_80078DD4(void) {
     }
 }
 
-void func_8007906C(void) {
+void UpdateAllNas(void) {
     s32 i;
     s32 n;
     NAS *nas;
@@ -151,7 +151,7 @@ void func_8007906C(void) {
     GlobalNAStatus = 0;
 }
 
-void func_80079260(void) {
+void InitialiseLevel(void) {
     EngineGameView *g = (EngineGameView *)GameInfo;
     s32 r;
     s32 i;
@@ -164,17 +164,17 @@ void func_80079260(void) {
     ClearAllNasPool();
     ResetNasHeap();
     ResetNasLists();
-    func_80083550();
+    SetDefaultHeroHooks();
     func_8008688C();
     if (LevelSpecs.LevelPreInit != NULL) {
         LevelSpecs.LevelPreInit();
     }
     GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
-    ASTCount = func_8007AC00();
+    ASTCount = ASTTableCount();
     func_80083708();
     SetTweakAi();
-    func_8007A6F8();
+    RunLevelTriggers();
     {
         s32 w1 = 0x206;
         for (r = 0; r < ASTCount; r++) {
@@ -356,7 +356,7 @@ void func_80079554(void) {
     D_8005A3A4[3] = y;
 }
 
-void func_8007976C(void) {
+void UpdateLevel(void) {
     s32 i;
     EngObj *o;
 
@@ -365,7 +365,7 @@ void func_8007976C(void) {
     if (GameCheats & 0x10) {
         FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", D_8004E104, D_8004E10C);
     }
-    func_8007906C();
+    UpdateAllNas();
     func_80083E8C();
     GlobalNAStatus = 2;
     i = 0;
@@ -380,15 +380,15 @@ void func_8007976C(void) {
     }
     GlobalNAStatus = 0;
     Draw_Clock();
-    func_8007AF3C();
+    UpdatePanel();
     if (PanelCtrl & 0x4000) {
-        func_8007D6D0();
+        UpdateOutMessage();
     }
-    func_80081F64(1);
+    UpdatePauseSlide(1);
     func_8009608C(0);
 }
 
-void func_800798A4(void) {
+void DrawLevelHud(void) {
     s32 show;
     s32 i;
     s32 n;
@@ -542,7 +542,7 @@ void func_800798A4(void) {
     }
 }
 
-s32 func_8007A164(arg0, arg1)
+s32 LevelRequirementMet(arg0, arg1)
 s32 arg0;
 EngineReqObj *arg1;
 {
@@ -634,7 +634,7 @@ s32 GravitateNas(NAS *nas) {
     return 1;
 }
 
-NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2) {
+NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, s32 arg2) {
     NAS *nas;
     s32 *ext;
 
@@ -658,7 +658,7 @@ NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2) {
     return NULL;
 }
 
-NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2) {
+NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2) {
     NAS *nas;
     s32 *ext;
 
@@ -682,7 +682,7 @@ NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2) {
     return NULL;
 }
 
-s32 func_8007A5E8(u8 *arg0) {
+s32 CountTrophies(u8 *arg0) {
     s32 sum = 0;
     s32 i = 0;
     do {
@@ -694,30 +694,30 @@ s32 func_8007A5E8(u8 *arg0) {
 
 void func_8007A614(s32 arg0) {
     u8 *p = GameInfo;
-    func_8007A164(D_800986FC[arg0 & 0xFFFF], p);
+    LevelRequirementMet(D_800986FC[arg0 & 0xFFFF], p);
 }
 
 void func_8007A650(s32 arg0) {
-    func_8007A164(D_800986FC[arg0 & 0xFFFF]);
+    LevelRequirementMet(D_800986FC[arg0 & 0xFFFF]);
 }
 
 void func_8007A688(s32 arg0) {
-    func_8007A164(arg0 & 0xFFFF, GameInfo);
+    LevelRequirementMet(arg0 & 0xFFFF, GameInfo);
 }
 
 void func_8007A6B0(s32 arg0) {
-    func_8007A164(arg0 & 0xFFFF);
+    LevelRequirementMet(arg0 & 0xFFFF);
 }
 
 void func_8007A6D0(s32 arg0) {
-    func_8007A164(arg0 & 0xFFFF, GameInfo);
+    LevelRequirementMet(arg0 & 0xFFFF, GameInfo);
 }
 
-void func_8007A6F8(void) {
+void RunLevelTriggers(void) {
     RunTriggers();
 }
 
-void func_8007A718(void) {
+void RenderAllNas(void) {
     NAS *nas;
     EXTengine *eng;
 
@@ -735,26 +735,26 @@ void func_8007A718(void) {
     }
 }
 
-void func_8007A7C0(void) {
+void RenderLevel(void) {
     mal_count_free(&MainHeap);
     func_80079554();
     GlobalNAStatus = 4;
-    func_8007AF3C();
+    UpdatePanel();
     GlobalNAStatus = 0;
-    func_80081F64(0);
+    UpdatePauseSlide(0);
 }
 
-void func_8007A808(void) {
+void InitialiseEngine(void) {
     s32 i;
     s32 r;
     s32 want;
 
     GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
-    ASTCount = func_8007AC00();
+    ASTCount = ASTTableCount();
     func_80083708();
     SetTweakAi();
-    func_8007A6F8();
+    RunLevelTriggers();
     want = 0x20C;
     for (i = 0; i < ASTCount; i++) {
         if (ASTTable[i].id == want) {
@@ -770,11 +770,11 @@ found:
     }
 }
 
-void func_8007A8C4(void) {
+void PreInitLevel(void) {
     EngineGameView *g = (EngineGameView *)GameInfo;
 
     g->flags &= 0xF4FF;
-    func_80083550();
+    SetDefaultHeroHooks();
     func_8008688C();
     if (LevelSpecs.LevelPreInit != NULL) {
         LevelSpecs.LevelPreInit();
@@ -798,7 +798,7 @@ void InitAmbience(Ambient_data *arg0) {
     PlaySfx((*(u16*)((u8*)(arg0) + 4)), 0, 0, 0x1000, 0x1E00, 0);
 }
 
-void func_8007AA18(void) {
+void UpdateNasObjects(void) {
     s32 i;
     EngObj *o;
 
@@ -815,22 +815,22 @@ void func_8007AA18(void) {
     }
     GlobalNAStatus = 0;
     Draw_Clock();
-    func_8007AF3C();
+    UpdatePanel();
     if (PanelCtrl & 0x4000) {
-        func_8007D6D0();
+        UpdateOutMessage();
     }
 }
 
-void func_8007AAF0(void) {
+void RenderNas(void) {
     GlobalNAStatus = 4;
-    func_8007AF3C();
+    UpdatePanel();
     GlobalNAStatus = 0;
 }
 
 void func_8007AB20(void) {
 }
 
-void func_8007AB28(void) {
+void QuitLevel(void) {
     GlobalNAStatus = 0;
     if (D_8005AA80 != NULL) {
         D_8005AA80();
@@ -840,16 +840,16 @@ void func_8007AB28(void) {
 }
 
 void func_8007AB6C(void) {
-    func_8007A6F8();
+    RunLevelTriggers();
 }
 
-void func_8007AB8C(void) {
+void ResetASTTable(void) {
     GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
-    ASTCount = func_8007AC00();
+    ASTCount = ASTTableCount();
 }
 
-void func_8007ABC4(void) {
+void ClearLevelNas(void) {
     GlobalNAStatus = 0;
     HeadOfTriggers = 0;
     InitTriggers();
@@ -857,7 +857,7 @@ void func_8007ABC4(void) {
     ResetNasLists();
 }
 
-int func_8007AC00(void) {
+int ASTTableCount(void) {
     unsigned int i;
 
     for (i = 0; i < 0xAE; i++) {

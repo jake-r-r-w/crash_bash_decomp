@@ -489,7 +489,7 @@ void InitialiseN2O(void) {
     dbase_load_all_mesh_anims((s32 *)(BallsEffectsModel - 0x1500));
     dbase_load_all_mesh_anims((s32 *)(BallsEffectsModel - 0x658));
     dbase_load_all_mesh_anims((s32 *)(BallsEffectsModel - 0x620));
-    func_8007E9FC(0x5C, 0x3088);
+    SetPanelHeroIconB(0x5C, 0x3088);
     N2OBossRound.unk0 = 0;
     N2OBossRound.unk22 = i + 10;
     N2OBossRound.unk4 = 0;
@@ -1526,7 +1526,7 @@ void SetN2OHeroDead(s32 arg0) {
     temp_s0_2 = &base2[arg0];
     temp_v0 = temp_s0_2->hero_eng;
     sp18 = temp_v0->unk10;
-    func_8007A524(0, (s32 *)&sp18, (s32) &PlayerVehicleModel);
+    SpawnModelFx(0, (s32 *)&sp18, (s32) &PlayerVehicleModel);
     PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->unk10, 0x1000, 0x1E00, 0);
     func_800898EC(arg0);
 }
@@ -1911,7 +1911,7 @@ void PlotN2OBall(NAS *nas) {
                 if (obj->player != 3) {
                     goto explode;
                 }
-                func_8007A524(0, &eng->unk10.x, 0);
+                SpawnModelFx(0, &eng->unk10.x, 0);
                 PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
                 D_8009D6DC[3] -= 0x20;
                 N2OBallsLost++;
@@ -1944,7 +1944,7 @@ void PlotN2OBall(NAS *nas) {
             }
             if (obj->player != 0) {
                 if (obj->player == 3) {
-                    func_8007A524(0, (s32 *)&eng->unk10, 0);
+                    SpawnModelFx(0, (s32 *)&eng->unk10, 0);
                     PlaySfx(N2OHitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
                     D_8009D6DC[3] -= 0x20;
                     if (D_8009D6DC[3] <= 0) {
@@ -2181,7 +2181,7 @@ void N2OUpdateBoss(void) {
         if (Heroes[3].hero_attack_timer == 0) {
             Heroes[3].hero_eng->flags = 0;
             PlaySfx(0x586, NULL, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
-            func_8007A524(0, &eng->unk10.x, (s32)BallsEffectsModel);
+            SpawnModelFx(0, &eng->unk10.x, (s32)BallsEffectsModel);
             D_8009D6DC[2] |= 0x8000;
         }
     } else {
@@ -2904,7 +2904,7 @@ void PlotN2Omissile(NAS *nas) {
                 goto alive;
             }
             pos = &eng->unk10;
-            func_8007A524(0, (s32 *)pos, 0);
+            SpawnModelFx(0, (s32 *)pos, 0);
             PlaySfx(N2OHitSfx[Random(4)], NULL, pos, 0x1000, 0x1E00, 0);
             if (!(OVM->unk4 & 1)) {
                 if (!(Heroes[hit].hero_status & 0xFA00)) {
@@ -2991,7 +2991,7 @@ void PlotN2Ofirstmissile(NAS *nas) {
                 goto alive;
             }
             pos = &eng->unk10;
-            func_8007A524(0, (s32 *)pos, 0);
+            SpawnModelFx(0, (s32 *)pos, 0);
             PlaySfx(N2OHitSfx[Random(4)], NULL, pos, 0x1000, 0x1E00, 0);
             if (!(OVM->unk4 & 1)) {
                 if (!(Heroes[hit].hero_status & 0xFA00)) {

@@ -7963,8 +7963,8 @@ void MoeJoeBecomeHero(NAS *nas, s32 id) {
     t->AIpad = 0;
     t->FirePercentChance = 0;
     if (MoeState == 0x3B && JoeState == MoeState) {
-        func_8007E93C(0x3B, 0x300E, 0x300F);
-        func_8007C830((s32)&Heroes[2].hero_health, (s32)&Heroes[3].hero_health);
+        SetPanelHeroIconA(0x3B, 0x300E, 0x300F);
+        InitPowerupIcons((s32)&Heroes[2].hero_health, (s32)&Heroes[3].hero_health);
     }
 }
 

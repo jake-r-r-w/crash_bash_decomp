@@ -1844,7 +1844,7 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
 
 void CrateBreak(EXTengine *eng, T_BC038Fux *fux) {
     PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-    func_8007A524(2, (s32 *)((u8 *)eng + 0x10), (s32)CrateObjectsModel);
+    SpawnModelFx(2, (s32 *)((u8 *)eng + 0x10), (s32)CrateObjectsModel);
     if ((HeroHooks.KeepInBounds(eng) ^ 1) != 0) {
         CreateNAS(((s32 *)eng)[4], ((s32 *)eng)[5], ((s32 *)eng)[6], 0x206, 0x11);
     }

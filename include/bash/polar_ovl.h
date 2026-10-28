@@ -1670,7 +1670,7 @@ extern u16 PolarHeroSfx[];
 extern s32 PolarInitWord;
 extern s32 PolarBeamTimer;
 extern u16 CameraMode;
-void func_8007E9FC(u16 arg0, s16 arg1);
+void SetPanelHeroIconB(u16 arg0, s16 arg1);
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
 void InitBossHealthIcons(void);

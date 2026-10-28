@@ -355,7 +355,7 @@ void func_80096F98(s32 arg0) {
     s32 w;
     s32 v;
 
-    func_80078DD4();
+    BuildCameraFrameList();
     func_80096A08();
     if (func_800967E0(&D_800AD2EC, D_800AD2F8, &D_800AD304, camera_frame_right, pos) != 0) {
         d[0] = ((View *)MainCamera)->pos.vx - pos[0];

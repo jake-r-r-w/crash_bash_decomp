@@ -25534,7 +25534,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:80078DD4": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_80078DD4.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/BuildCameraFrameList.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8009749C"
@@ -25542,7 +25542,7 @@
   "fp": "2ef79d20cc68860c",
   "fpn": "a7db1395c340311d",
   "leaf": false,
-  "name": "func_80078DD4",
+  "name": "BuildCameraFrameList",
   "orig": "func_80078DD4",
   "rom": 324,
   "seg": "overlays/engine/engine",
@@ -25550,13 +25550,13 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007906C": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007906C.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/UpdateAllNas.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "2697a576ff05258b",
   "fpn": "967cdae373d677a3",
   "leaf": true,
-  "name": "func_8007906C",
+  "name": "UpdateAllNas",
   "orig": "func_8007906C",
   "rom": 988,
   "seg": "overlays/engine/engine",
@@ -25564,7 +25564,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:80079260": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_80079260.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/InitialiseLevel.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001D6B4",
@@ -25582,7 +25582,7 @@
   "fp": "76c24cbca75c6459",
   "fpn": "05e77ae62c46a108",
   "leaf": false,
-  "name": "func_80079260",
+  "name": "InitialiseLevel",
   "orig": "func_80079260",
   "rom": 1488,
   "seg": "overlays/engine/engine",
@@ -25618,7 +25618,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007976C": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007976C.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/UpdateLevel.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80011410",
@@ -25635,7 +25635,7 @@
   "fp": "4e5c2c71e0f47a3c",
   "fpn": "ea77fd823a1df10a",
   "leaf": false,
-  "name": "func_8007976C",
+  "name": "UpdateLevel",
   "orig": "func_8007976C",
   "rom": 2780,
   "seg": "overlays/engine/engine",
@@ -25643,7 +25643,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:800798A4": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_800798A4.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/DrawLevelHud.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -25655,7 +25655,7 @@
   "fp": "12071cf8c1038ae1",
   "fpn": "6176f1afc547e5c6",
   "leaf": false,
-  "name": "func_800798A4",
+  "name": "DrawLevelHud",
   "orig": "func_800798A4",
   "rom": 3092,
   "seg": "overlays/engine/engine",
@@ -25663,13 +25663,13 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A164": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A164.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/LevelRequirementMet.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "5168d711b175e8cb",
   "fpn": "6b8a4fa064991f66",
   "leaf": true,
-  "name": "func_8007A164",
+  "name": "LevelRequirementMet",
   "orig": "func_8007A164",
   "rom": 5332,
   "seg": "overlays/engine/engine",
@@ -25694,7 +25694,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A464": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A464.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/SpawnModelFxOnce.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022A3C",
@@ -25703,7 +25703,7 @@
   "fp": "92f0e62b7ad6b89e",
   "fpn": "2c560fdafaefd56e",
   "leaf": false,
-  "name": "func_8007A464",
+  "name": "SpawnModelFxOnce",
   "orig": "func_8007A464",
   "rom": 6100,
   "seg": "overlays/engine/engine",
@@ -25711,7 +25711,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A524": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A524.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/SpawnModelFx.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022A3C",
@@ -25720,7 +25720,7 @@
   "fp": "5ce5de7ef0797d7c",
   "fpn": "d029aeff81b689c5",
   "leaf": false,
-  "name": "func_8007A524",
+  "name": "SpawnModelFx",
   "orig": "func_8007A524",
   "rom": 6292,
   "seg": "overlays/engine/engine",
@@ -25728,13 +25728,13 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A5E8": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A5E8.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/CountTrophies.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "14336a9d87e59e86",
   "fpn": "558022a19360bbe7",
   "leaf": true,
-  "name": "func_8007A5E8",
+  "name": "CountTrophies",
   "orig": "func_8007A5E8",
   "rom": 6488,
   "seg": "overlays/engine/engine",
@@ -25822,7 +25822,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A6F8": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A6F8.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/RunLevelTriggers.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8002617C"
@@ -25830,7 +25830,7 @@
   "fp": "7f693e46b2295478",
   "fpn": "63ec6e92390484cb",
   "leaf": false,
-  "name": "func_8007A6F8",
+  "name": "RunLevelTriggers",
   "orig": "func_8007A6F8",
   "rom": 6760,
   "seg": "overlays/engine/engine",
@@ -25838,7 +25838,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A718": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A718.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/RenderAllNas.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001C298"
@@ -25846,7 +25846,7 @@
   "fp": "ab1bdd130ad249cd",
   "fpn": "9abd6c4b02ab8cde",
   "leaf": false,
-  "name": "func_8007A718",
+  "name": "RenderAllNas",
   "orig": "func_8007A718",
   "rom": 6792,
   "seg": "overlays/engine/engine",
@@ -25854,7 +25854,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A7C0": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A7C0.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/RenderLevel.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80011410",
@@ -25865,7 +25865,7 @@
   "fp": "03540f941f6a32cc",
   "fpn": "bb5b2e9a23000777",
   "leaf": false,
-  "name": "func_8007A7C0",
+  "name": "RenderLevel",
   "orig": "func_8007A7C0",
   "rom": 6960,
   "seg": "overlays/engine/engine",
@@ -25873,7 +25873,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A808": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A808.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/InitialiseEngine.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8007A6F8",
@@ -25884,7 +25884,7 @@
   "fp": "c27d183cda815ad4",
   "fpn": "4bbd50c30a1c0d60",
   "leaf": false,
-  "name": "func_8007A808",
+  "name": "InitialiseEngine",
   "orig": "func_8007A808",
   "rom": 7032,
   "seg": "overlays/engine/engine",
@@ -25892,7 +25892,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007A8C4": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007A8C4.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/PreInitLevel.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80083550",
@@ -25901,7 +25901,7 @@
   "fp": "8a3f5a1ca950b196",
   "fpn": "d51f5dca761df5a3",
   "leaf": false,
-  "name": "func_8007A8C4",
+  "name": "PreInitLevel",
   "orig": "func_8007A8C4",
   "rom": 7220,
   "seg": "overlays/engine/engine",
@@ -25942,7 +25942,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007AA18": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007AA18.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/UpdateNasObjects.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8007AF3C",
@@ -25952,7 +25952,7 @@
   "fp": "e7dcb34f0d9916c8",
   "fpn": "442917a032673a9f",
   "leaf": false,
-  "name": "func_8007AA18",
+  "name": "UpdateNasObjects",
   "orig": "func_8007AA18",
   "rom": 7560,
   "seg": "overlays/engine/engine",
@@ -25960,7 +25960,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007AAF0": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007AAF0.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/RenderNas.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8007AF3C"
@@ -25968,7 +25968,7 @@
   "fp": "2989f32558979c69",
   "fpn": "9a111c50c94d5b15",
   "leaf": false,
-  "name": "func_8007AAF0",
+  "name": "RenderNas",
   "orig": "func_8007AAF0",
   "rom": 7776,
   "seg": "overlays/engine/engine",
@@ -25990,7 +25990,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007AB28": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007AB28.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/QuitLevel.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80026FCC",
@@ -25999,7 +25999,7 @@
   "fp": "2d80a869ee01cbec",
   "fpn": "47efe8c6257dd292",
   "leaf": false,
-  "name": "func_8007AB28",
+  "name": "QuitLevel",
   "orig": "func_8007AB28",
   "rom": 7832,
   "seg": "overlays/engine/engine",
@@ -26023,7 +26023,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007AB8C": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007AB8C.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/ResetASTTable.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8007AC00"
@@ -26031,7 +26031,7 @@
   "fp": "86c526c4fe3a703d",
   "fpn": "437380b310ae07f0",
   "leaf": false,
-  "name": "func_8007AB8C",
+  "name": "ResetASTTable",
   "orig": "func_8007AB8C",
   "rom": 7932,
   "seg": "overlays/engine/engine",
@@ -26039,7 +26039,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007ABC4": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007ABC4.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/ClearLevelNas.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80024AD8",
@@ -26049,7 +26049,7 @@
   "fp": "ac35e55a3d1c9b7c",
   "fpn": "9854c566722cb59a",
   "leaf": false,
-  "name": "func_8007ABC4",
+  "name": "ClearLevelNas",
   "orig": "func_8007ABC4",
   "rom": 7988,
   "seg": "overlays/engine/engine",
@@ -26057,13 +26057,13 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8007AC00": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8007AC00.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/ASTTableCount.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "88f775c6d544da6d",
   "fpn": "c750837a8b58f15c",
   "leaf": true,
-  "name": "func_8007AC00",
+  "name": "ASTTableCount",
   "orig": "func_8007AC00",
   "rom": 8048,
   "seg": "overlays/engine/engine",
@@ -26098,7 +26098,7 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007AF3C": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007AF3C.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/UpdatePanel.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80033C04",
@@ -26113,7 +26113,7 @@
   "fp": "5fc54e305255a3dc",
   "fpn": "c9e5ac7cc2408dfb",
   "leaf": false,
-  "name": "func_8007AF3C",
+  "name": "UpdatePanel",
   "orig": "func_8007AF3C",
   "rom": 8876,
   "seg": "overlays/engine/panel",
@@ -26184,13 +26184,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007BE84": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007BE84.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/SetupCompletionDigits.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "e860a732dfba9afa",
   "fpn": "c69f156f69c02390",
   "leaf": true,
-  "name": "func_8007BE84",
+  "name": "SetupCompletionDigits",
   "orig": "func_8007BE84",
   "rom": 12788,
   "seg": "overlays/engine/panel",
@@ -26198,7 +26198,7 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007BFA8": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007BFA8.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/InitIcons4.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001D3B0"
@@ -26206,7 +26206,7 @@
   "fp": "be205fe06f02dcf8",
   "fpn": "5db5705babd5e626",
   "leaf": false,
-  "name": "func_8007BFA8",
+  "name": "InitIcons4",
   "orig": "func_8007BFA8",
   "rom": 13080,
   "seg": "overlays/engine/panel",
@@ -26214,7 +26214,7 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007C170": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007C170.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/InitIcons2.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001D3B0"
@@ -26222,7 +26222,7 @@
   "fp": "8b0051d20933c8c2",
   "fpn": "5db5705babd5e626",
   "leaf": false,
-  "name": "func_8007C170",
+  "name": "InitIcons2",
   "orig": "func_8007C170",
   "rom": 13536,
   "seg": "overlays/engine/panel",
@@ -26272,13 +26272,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007C830": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007C830.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/InitPowerupIcons.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "d5df5263476445b6",
   "fpn": "946d57af169b0114",
   "leaf": true,
-  "name": "func_8007C830",
+  "name": "InitPowerupIcons",
   "orig": "func_8007C830",
   "rom": 15264,
   "seg": "overlays/engine/panel",
@@ -26386,13 +26386,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007D208": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007D208.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/InitTankWeaponIcons.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "cb1ba509c9f18c79",
   "fpn": "a4e51dbc05a96547",
   "leaf": true,
-  "name": "func_8007D208",
+  "name": "InitTankWeaponIcons",
   "orig": "func_8007D208",
   "rom": 17784,
   "seg": "overlays/engine/panel",
@@ -26400,13 +26400,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007D2F4": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007D2F4.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/UpdateTankWeaponIcons.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "30aac7620a33e49e",
   "fpn": "fe6cc536e21d0202",
   "leaf": true,
-  "name": "func_8007D2F4",
+  "name": "UpdateTankWeaponIcons",
   "orig": "func_8007D2F4",
   "rom": 18020,
   "seg": "overlays/engine/panel",
@@ -26428,7 +26428,7 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007D5EC": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007D5EC.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/CheckHeroesAllOut.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -26438,7 +26438,7 @@
   "fp": "4a509c3fe9490b77",
   "fpn": "93f50fdf20d40e57",
   "leaf": false,
-  "name": "func_8007D5EC",
+  "name": "CheckHeroesAllOut",
   "orig": "func_8007D5EC",
   "rom": 18780,
   "seg": "overlays/engine/panel",
@@ -26446,7 +26446,7 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007D6D0": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007D6D0.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/UpdateOutMessage.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -26455,7 +26455,7 @@
   "fp": "fcd2f95a0f8de9c4",
   "fpn": "04d7214644d797e0",
   "leaf": false,
-  "name": "func_8007D6D0",
+  "name": "UpdateOutMessage",
   "orig": "func_8007D6D0",
   "rom": 19008,
   "seg": "overlays/engine/panel",
@@ -26463,13 +26463,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007D850": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007D850.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/FindTeamLeader.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "71cce50a18cb2bb0",
   "fpn": "d1dd00a3a079c451",
   "leaf": true,
-  "name": "func_8007D850",
+  "name": "FindTeamLeader",
   "orig": "func_8007D850",
   "rom": 19392,
   "seg": "overlays/engine/panel",
@@ -26506,7 +26506,7 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007E7A4": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007E7A4.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/PanelCountCompletion.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80010000"
@@ -26514,7 +26514,7 @@
   "fp": "b05a02ff1ea53abb",
   "fpn": "ec1f3f44a38b4ff9",
   "leaf": false,
-  "name": "func_8007E7A4",
+  "name": "PanelCountCompletion",
   "orig": "func_8007E7A4",
   "rom": 23316,
   "seg": "overlays/engine/panel",
@@ -26536,13 +26536,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007E7F4": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007E7F4.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/InitTrophyCups.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "6d186327c96958b1",
   "fpn": "bc348e7c9885a4f1",
   "leaf": true,
-  "name": "func_8007E7F4",
+  "name": "InitTrophyCups",
   "orig": "func_8007E7F4",
   "rom": 23396,
   "seg": "overlays/engine/panel",
@@ -26550,13 +26550,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007E874": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007E874.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/StartPanelCountdown.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "e3f59e9fce638c88",
   "fpn": "66d656a5fe9fa327",
   "leaf": true,
-  "name": "func_8007E874",
+  "name": "StartPanelCountdown",
   "orig": "func_8007E874",
   "rom": 23524,
   "seg": "overlays/engine/panel",
@@ -26592,13 +26592,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007E93C": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007E93C.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/SetPanelHeroIconA.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "9221902628a9c602",
   "fpn": "8f85f4936f7bb086",
   "leaf": true,
-  "name": "func_8007E93C",
+  "name": "SetPanelHeroIconA",
   "orig": "func_8007E93C",
   "rom": 23724,
   "seg": "overlays/engine/panel",
@@ -26606,13 +26606,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007E9FC": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007E9FC.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/SetPanelHeroIconB.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "83bb3c941d85161b",
   "fpn": "c1dbae0715afbc5a",
   "leaf": true,
-  "name": "func_8007E9FC",
+  "name": "SetPanelHeroIconB",
   "orig": "func_8007E9FC",
   "rom": 23916,
   "seg": "overlays/engine/panel",
@@ -26620,13 +26620,13 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007EAC0": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007EAC0.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/InitCompletionCounter.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "70900b269947dbfe",
   "fpn": "9a0f83926ddf2ded",
   "leaf": true,
-  "name": "func_8007EAC0",
+  "name": "InitCompletionCounter",
   "orig": "func_8007EAC0",
   "rom": 24112,
   "seg": "overlays/engine/panel",
@@ -26692,7 +26692,7 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007ED0C": {
-  "asm": "asm/nonmatchings/overlays/engine/panel/func_8007ED0C.s",
+  "asm": "asm/nonmatchings/overlays/engine/panel/InitBossHealthBar.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001D3B0"
@@ -26700,7 +26700,7 @@
   "fp": "06001d0afdcb0c0e",
   "fpn": "c5fefb1a7f828d4c",
   "leaf": false,
-  "name": "func_8007ED0C",
+  "name": "InitBossHealthBar",
   "orig": "func_8007ED0C",
   "rom": 24700,
   "seg": "overlays/engine/panel",
@@ -26708,7 +26708,7 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007EE2C": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_8007EE2C.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/PauseChooseYesNo.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -26717,7 +26717,7 @@
   "fp": "966d1af7a6c3bb09",
   "fpn": "76a2c64afde72055",
   "leaf": false,
-  "name": "func_8007EE2C",
+  "name": "PauseChooseYesNo",
   "orig": "func_8007EE2C",
   "rom": 24988,
   "seg": "overlays/engine/pause",
@@ -26725,7 +26725,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:8007EFC0": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_8007EFC0.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/PauseChooseUpDown.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -26734,7 +26734,7 @@
   "fp": "8eee2788e727e535",
   "fpn": "85e39f34a936cdd8",
   "leaf": false,
-  "name": "func_8007EFC0",
+  "name": "PauseChooseUpDown",
   "orig": "func_8007EFC0",
   "rom": 25392,
   "seg": "overlays/engine/pause",
@@ -26742,7 +26742,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:8007F1A8": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_8007F1A8.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/ProcessPauseUD.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660"
@@ -26750,7 +26750,7 @@
   "fp": "e3251d2291a9c6d6",
   "fpn": "aee7723674fc68ae",
   "leaf": false,
-  "name": "func_8007F1A8",
+  "name": "ProcessPauseUD",
   "orig": "func_8007F1A8",
   "rom": 25880,
   "seg": "overlays/engine/pause",
@@ -26758,7 +26758,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:8007F314": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_8007F314.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/UpdatePause.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800222BC",
@@ -26786,7 +26786,7 @@
   "fp": "db181af0cb6d1170",
   "fpn": "a4c3c160a90e3ae8",
   "leaf": false,
-  "name": "func_8007F314",
+  "name": "UpdatePause",
   "orig": "func_8007F314",
   "rom": 26244,
   "seg": "overlays/engine/pause",
@@ -26794,7 +26794,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:800809A0": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_800809A0.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/DrawHudEntries.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800243A0",
@@ -26803,7 +26803,7 @@
   "fp": "fb1f44f5766a2340",
   "fpn": "6395d22e9f2db74f",
   "leaf": false,
-  "name": "func_800809A0",
+  "name": "DrawHudEntries",
   "orig": "func_800809A0",
   "rom": 32016,
   "seg": "overlays/engine/pause",
@@ -26811,7 +26811,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80080FBC": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80080FBC.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/DrawPauseMenu.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8007BE84",
@@ -26823,7 +26823,7 @@
   "fp": "c3d1fde61a5f16a1",
   "fpn": "2625297d452e7138",
   "leaf": false,
-  "name": "func_80080FBC",
+  "name": "DrawPauseMenu",
   "orig": "func_80080FBC",
   "rom": 33580,
   "seg": "overlays/engine/pause",
@@ -26831,7 +26831,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80081470": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80081470.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/DrawAdventureStats.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC",
@@ -26840,7 +26840,7 @@
   "fp": "61907d32962eb397",
   "fpn": "6fa070ea25c59831",
   "leaf": false,
-  "name": "func_80081470",
+  "name": "DrawAdventureStats",
   "orig": "func_80081470",
   "rom": 34784,
   "seg": "overlays/engine/pause",
@@ -26848,7 +26848,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80081F64": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80081F64.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/UpdatePauseSlide.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -26859,7 +26859,7 @@
   "fp": "22cb1e695888ecbb",
   "fpn": "115b7987d3305b17",
   "leaf": false,
-  "name": "func_80081F64",
+  "name": "UpdatePauseSlide",
   "orig": "func_80081F64",
   "rom": 37588,
   "seg": "overlays/engine/pause",
@@ -26867,7 +26867,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80082590": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80082590.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/RenderPause.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -26879,7 +26879,7 @@
   "fp": "c470cfe164b2762b",
   "fpn": "2e4790848c0a6078",
   "leaf": false,
-  "name": "func_80082590",
+  "name": "RenderPause",
   "orig": "func_80082590",
   "rom": 39168,
   "seg": "overlays/engine/pause",
@@ -26887,7 +26887,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:800826F8": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_800826F8.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/StartWinSequence.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC"
@@ -26895,7 +26895,7 @@
   "fp": "4fc0ba610699cdba",
   "fpn": "fe11a52f0cd3d055",
   "leaf": false,
-  "name": "func_800826F8",
+  "name": "StartWinSequence",
   "orig": "func_800826F8",
   "rom": 39528,
   "seg": "overlays/engine/pause",
@@ -26903,13 +26903,13 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80082AC4": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80082AC4.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/RecordWin.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "c55af0e5471d3c8f",
   "fpn": "6497abc71d08a565",
   "leaf": true,
-  "name": "func_80082AC4",
+  "name": "RecordWin",
   "orig": "func_80082AC4",
   "rom": 40500,
   "seg": "overlays/engine/pause",
@@ -26917,13 +26917,13 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80082C34": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80082C34.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/AnimateWinCounter.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "f72a9378e6630d13",
   "fpn": "e39061558aabd5e0",
   "leaf": true,
-  "name": "func_80082C34",
+  "name": "AnimateWinCounter",
   "orig": "func_80082C34",
   "rom": 40868,
   "seg": "overlays/engine/pause",
@@ -26931,7 +26931,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80082D90": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80082D90.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/UpdateWinCounter.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -26940,7 +26940,7 @@
   "fp": "a8cf28e8a671c746",
   "fpn": "5d70107816ce405d",
   "leaf": false,
-  "name": "func_80082D90",
+  "name": "UpdateWinCounter",
   "orig": "func_80082D90",
   "rom": 41216,
   "seg": "overlays/engine/pause",
@@ -26948,7 +26948,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:800831C4": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_800831C4.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/SetPauseY.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095E38"
@@ -26956,7 +26956,7 @@
   "fp": "75f721fadca33017",
   "fpn": "0207aa50f8f29e7e",
   "leaf": false,
-  "name": "func_800831C4",
+  "name": "SetPauseY",
   "orig": "func_800831C4",
   "rom": 42292,
   "seg": "overlays/engine/pause",
@@ -26964,13 +26964,13 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:800831F0": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_800831F0.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/PauseRecValue.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "4263bba76c16dc3a",
   "fpn": "b6b30da373478787",
   "leaf": true,
-  "name": "func_800831F0",
+  "name": "PauseRecValue",
   "orig": "func_800831F0",
   "rom": 42336,
   "seg": "overlays/engine/pause",
@@ -26978,7 +26978,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80083244": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80083244.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/PauseRecPrev.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -26987,7 +26987,7 @@
   "fp": "398201c77d37f539",
   "fpn": "6a8736ebcc27e1e8",
   "leaf": false,
-  "name": "func_80083244",
+  "name": "PauseRecPrev",
   "orig": "func_80083244",
   "rom": 42420,
   "seg": "overlays/engine/pause",
@@ -26995,7 +26995,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:800832BC": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_800832BC.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/PauseRecNext.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC"
@@ -27003,7 +27003,7 @@
   "fp": "a5d7c6cb6ba41f39",
   "fpn": "4a798759d54d6914",
   "leaf": false,
-  "name": "func_800832BC",
+  "name": "PauseRecNext",
   "orig": "func_800832BC",
   "rom": 42540,
   "seg": "overlays/engine/pause",
@@ -27011,7 +27011,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80083334": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80083334.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/SetPauseRecs.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC"
@@ -27019,7 +27019,7 @@
   "fp": "42524620e3acaba0",
   "fpn": "a0707c042615b51f",
   "leaf": false,
-  "name": "func_80083334",
+  "name": "SetPauseRecs",
   "orig": "func_80083334",
   "rom": 42660,
   "seg": "overlays/engine/pause",
@@ -27027,13 +27027,13 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80083488": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80083488.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/PauseExitPressed.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "7ab5b84857b6394e",
   "fpn": "056b092facb93dd0",
   "leaf": true,
-  "name": "func_80083488",
+  "name": "PauseExitPressed",
   "orig": "func_80083488",
   "rom": 43000,
   "seg": "overlays/engine/pause",
@@ -27041,7 +27041,7 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:800834E4": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_800834E4.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/Unpause.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8002AC18"
@@ -27049,7 +27049,7 @@
   "fp": "7e2bfea2a5a6f8cd",
   "fpn": "3fde8355ebfce492",
   "leaf": false,
-  "name": "func_800834E4",
+  "name": "Unpause",
   "orig": "func_800834E4",
   "rom": 43092,
   "seg": "overlays/engine/pause",
@@ -27057,13 +27057,13 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:8008352C": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_8008352C.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/RequestQuit.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "0f22546beecf4e9f",
   "fpn": "8be028bc131dd126",
   "leaf": true,
-  "name": "func_8008352C",
+  "name": "RequestQuit",
   "orig": "func_8008352C",
   "rom": 43164,
   "seg": "overlays/engine/pause",
@@ -27071,13 +27071,13 @@
   "src": "src/overlays/engine/pause.c"
  },
  "engine:80083550": {
-  "asm": "asm/nonmatchings/overlays/engine/pause/func_80083550.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/SetDefaultHeroHooks.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "e2fef49bdf3c9945",
   "fpn": "c96d6fff52c171c2",
   "leaf": true,
-  "name": "func_80083550",
+  "name": "SetDefaultHeroHooks",
   "orig": "func_80083550",
   "rom": 43200,
   "seg": "overlays/engine/pause",

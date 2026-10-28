@@ -1466,7 +1466,7 @@ void PlotBalloon(NAS *nas) {
                                     }
                                 }
                             }
-                            func_8007A524(SpinBalloonAnims[SpinBalloonOwner], &eng->unk10.x, (s32)RingObjectsModel);
+                            SpawnModelFx(SpinBalloonAnims[SpinBalloonOwner], &eng->unk10.x, (s32)RingObjectsModel);
                             goto sfx;
                         }
                         if (fux->state == owner) {
@@ -1486,7 +1486,7 @@ void PlotBalloon(NAS *nas) {
                             }
                         }
                     }
-                    func_8007A524(SpinBalloonAnims[fux->state], &eng->unk10.x, (s32)RingObjectsModel);
+                    SpawnModelFx(SpinBalloonAnims[fux->state], &eng->unk10.x, (s32)RingObjectsModel);
                 sfx:
                     PlaySfx(SpinBalloonSfx[kind - 8][Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     o = fux->owner;
@@ -1506,7 +1506,7 @@ void PlotBalloon(NAS *nas) {
                             StopSfx(Heroes[fux->owner].hero_eng->sfx);
                         }
                     }
-                    func_8007A524(4, &eng->unk10.x, (s32)RingObjectsModel);
+                    SpawnModelFx(4, &eng->unk10.x, (s32)RingObjectsModel);
                     goto kill;
                 }
             case 3:
@@ -3104,7 +3104,7 @@ void SpinHeroLose(s32 arg0) {
             h->hero_eng->unk2C.y = v;
             h->hero_eng->unk2C.z = v;
         } else {
-            func_8007A524(SpinBalloonAnims[arg0], &e->unk10.x, (s32)&RingObjectsModel);
+            SpawnModelFx(SpinBalloonAnims[arg0], &e->unk10.x, (s32)&RingObjectsModel);
             h->hero_status |= 0x8000;
         }
     }

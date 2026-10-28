@@ -4322,7 +4322,7 @@ loop:
     }
     if (w->mode == 0x16) {
         dbase_load_all_mesh_anims((s32 *)RoboPolarModel);
-        func_8007E9FC(0x82, 0x3031);
+        SetPanelHeroIconB(0x82, 0x3031);
         InitBossHealthIcons();
         CreateNAS(0, 0, 0, 0x1625, 0x11);
     }

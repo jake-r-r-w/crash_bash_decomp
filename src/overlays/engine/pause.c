@@ -5,7 +5,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-s32 func_8007EE2C(s32 pad) {
+s32 PauseChooseYesNo(s32 pad) {
     if ((((PadButtons *)Pads)[pad].pressed & 0x80) && PauseChoice != 0) {
         PauseChoice = 0;
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -26,7 +26,7 @@ s32 func_8007EE2C(s32 pad) {
     return ((PadButtons *)Pads)[pad].pressed & 0x4000;
 }
 
-s32 func_8007EFC0(s32 pad, s32 max) {
+s32 PauseChooseUpDown(s32 pad, s32 max) {
     if ((((PadButtons *)Pads)[pad].pressed & 0x10) && PauseChoice > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         PauseChoice--;
@@ -53,7 +53,7 @@ s32 func_8007EFC0(s32 pad, s32 max) {
     return ((PadButtons *)Pads)[pad].pressed & 0x4000;
 }
 
-s32 func_8007F1A8(s32 pad, s32 max) {
+s32 ProcessPauseUD(s32 pad, s32 max) {
     if ((((PadButtons *)Pads)[pad].pressed & 0x10) && PauseChoice > 0) {
         PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
         PauseChoice--;
@@ -94,7 +94,7 @@ static inline PadButtons *ActivePad(void) {
     return &base[PausePad];
 }
 
-s32 func_8007F314(void) {
+s32 UpdatePause(void) {
     s32 ret;
     s32 kind;
     s32 max;
@@ -194,7 +194,7 @@ found:
                 ret = 0;
                 break;
             }
-            if (func_8007EFC0(PausePad, max) != 0) {
+            if (PauseChooseUpDown(PausePad, max) != 0) {
                 PSV->flags &= 0xFFC070D3;
                 if (PSV->unk32 & 4) {
                     switch (PauseChoice) {
@@ -205,7 +205,7 @@ found:
                         sound_resume();
                         break;
                     case 1:
-                        func_80083334(PSV->mode, kind, 0);
+                        SetPauseRecs(PSV->mode, kind, 0);
                         PSV->flags |= 0x80;
                         break;
                     case 2:
@@ -232,7 +232,7 @@ found:
                         sound_resume();
                         break;
                     case 1:
-                        func_80083334(PSV->mode, kind, 0);
+                        SetPauseRecs(PSV->mode, kind, 0);
                         PSV->flags |= 0x80;
                         break;
                     case 2:
@@ -259,7 +259,7 @@ found:
             ret = 0;
             break;
         case 8:
-            if (func_8007EFC0(PausePad, max - 1) != 0) {
+            if (PauseChooseUpDown(PausePad, max - 1) != 0) {
                 switch (PauseChoice) {
                 case 0:
                     PausePad = 0;
@@ -286,7 +286,7 @@ found:
             ret = 0;
             break;
         case 0x8000:
-            if (func_8007EE2C(PausePad) != 0) {
+            if (PauseChooseYesNo(PausePad) != 0) {
                 switch (PauseChoice) {
                 case 0:
                     hi = 0;
@@ -324,7 +324,7 @@ found:
             break;
         case 4:
         case 0xC:
-            if (func_8007EE2C(PausePad) != 0) {
+            if (PauseChooseYesNo(PausePad) != 0) {
                 switch (PauseChoice) {
                 case 0:
                     func_8008F068();
@@ -349,7 +349,7 @@ found:
                    case 0's 0x7000 exit to it (MATCHING.md, Cross-jumping) */
                 if ((p->held & 9) != 9) {
                     if (p->pressed & 0x4000) {
-                        r = func_800832BC();
+                        r = PauseRecNext();
                         r ^= 1;
                         if (r) {
                             PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -377,7 +377,7 @@ found:
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                     if (ActivePad()->pressed & 0x1000) {
-                        func_80083244();
+                        PauseRecPrev();
                     }
                     ret = 0;
                 } else {
@@ -389,7 +389,7 @@ found:
             p = ActivePad();
             if ((p->held & 9) != 9) {
                 if (p->pressed & 0x4000) {
-                    r = func_800832BC();
+                    r = PauseRecNext();
                     r ^= 1;
                     if (r) {
                         PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -402,7 +402,7 @@ found:
                     }
                 }
                 if (ActivePad()->pressed & 0x1000) {
-                    func_80083244();
+                    PauseRecPrev();
                 }
                 ret = 0;
             } else {
@@ -414,7 +414,7 @@ found:
                 PSV->unk14 = 0;
             }
             ret = 1;
-            func_80080FBC();
+            DrawPauseMenu();
             break;
         case 0x100:
         case 0x108:
@@ -462,7 +462,7 @@ found:
                         break;
                     }
                 }
-                if (func_8007EFC0(PausePad, 3) != 0 || (ActivePad()->pressed & 0x1000)) {
+                if (PauseChooseUpDown(PausePad, 3) != 0 || (ActivePad()->pressed & 0x1000)) {
                     PauseChoice = 0;
                     PauseLastChoice = 0;
                     music_pause();
@@ -477,14 +477,14 @@ found:
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                 }
-                if (func_8007EFC0(PausePad, 0) != 0 || (ActivePad()->pressed & 0x1000)) {
+                if (PauseChooseUpDown(PausePad, 0) != 0 || (ActivePad()->pressed & 0x1000)) {
                     PauseChoice = 1;
                     PauseLastChoice = 0;
                     PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
                 break;
             default:
-                if (func_8007EFC0(PausePad, 2) != 0) {
+                if (PauseChooseUpDown(PausePad, 2) != 0) {
                     if (PauseChoice == 2) {
                         PauseLastChoice = 0;
                         PSV->flags &= ~0x100;
@@ -528,17 +528,17 @@ found:
             ret = 0;
             break;
         case 0x200:
-            if (func_8007F1A8(0, 3) == 0) {
+            if (ProcessPauseUD(0, 3) == 0) {
                 ret = 1;
-                func_80080FBC();
+                DrawPauseMenu();
                 break;
             }
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
             switch (PauseChoice) {
             case 1:
-                func_80083334(PSV->mode, kind, 0);
+                SetPauseRecs(PSV->mode, kind, 0);
                 ret = 1;
-                func_800831C4(PauseMenuY);
+                SetPauseY(PauseMenuY);
                 PSV->flags |= 0x40;
                 break;
             case 2:
@@ -591,7 +591,7 @@ found:
                 PSV->flags &= ~0x21;
             } else {
                 ret = 1;
-                func_80080FBC();
+                DrawPauseMenu();
             }
             break;
         default:
@@ -603,7 +603,7 @@ found:
         }
         /* in both branches: when neither runs, the hook doesn't either */
         if (GameExitFlags & 0x1000) {
-            func_80082D90(ret);
+            UpdateWinCounter(ret);
         }
     } else if (!(PSV->flags & 0x04000000) || (PSV->unk30 & 0x1000)) {
         n = 1;
@@ -624,22 +624,22 @@ found:
                         PSV->flags |= 9;
                     }
                     D_8009BD00 = 1;
-                    func_80081470(1);
+                    DrawAdventureStats(1);
                     ret = 0;
                 }
             }
         }
         if (GameExitFlags & 0x1000) {
-            func_80082D90(ret);
+            UpdateWinCounter(ret);
         }
     }
     if (ret == 0) {
-        func_80080FBC();
+        DrawPauseMenu();
     }
     return ret;
 }
 
-void func_800809A0(HudEntry *e, s32 arg1) {
+void DrawHudEntries(HudEntry *e, s32 arg1) {
     s32 n;
     HudGameView *g;
     HudEngView *eng;
@@ -804,7 +804,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
     eng->rot1 += 0x40;
 }
 
-void func_80080FBC(void) {
+void DrawPauseMenu(void) {
     u8 *e;
     s32 i;
     s32 sel;
@@ -814,8 +814,8 @@ void func_80080FBC(void) {
     }
     D_8009AC04.unk74 = 0;
     D_8009ACAC.unk74 = 0;
-    func_8007E7A4();
-    func_8007BE84();
+    PanelCountCompletion();
+    SetupCompletionDigits();
     PauseMenuY = 0x70;
     e = D_8009BCE0;
     *(s16 *)(e + 6) = -1;
@@ -826,51 +826,51 @@ void func_80080FBC(void) {
     }
     if (MSGV->flags & 0x7000) {
         if (MSGV->flags & 0x2000) {
-            func_800809A0(D_8005A4DC, 0x70);
+            DrawHudEntries(D_8005A4DC, 0x70);
             return;
         }
         if (MSGV->flags & 0x1000) {
-            func_800809A0(D_8005A494, 0x70);
+            DrawHudEntries(D_8005A494, 0x70);
             return;
         }
         if (MSGV->flags & 0x4000) {
-            func_800809A0(D_8005A3A4, 0x70);
+            DrawHudEntries(D_8005A3A4, 0x70);
             return;
         }
     }
     switch (MSGV->flags & 0x023F8FEC) {
     case 0:
         if (MSGV->mode == 0x20) {
-            func_800809A0(D_8005981C, PauseMenuY);
+            DrawHudEntries(D_8005981C, PauseMenuY);
             D_8009BD30 = 0;
             return;
         }
         if (MSGV->unk32 & 4) {
-            func_800809A0(D_8005975C, PauseMenuY);
+            DrawHudEntries(D_8005975C, PauseMenuY);
         } else {
-            func_800809A0(D_800598DC, PauseMenuY);
+            DrawHudEntries(D_800598DC, PauseMenuY);
         }
         D_8009BD30 = 1;
         break;
     case 8:
-        func_800809A0(D_800599B4, PauseMenuY);
+        DrawHudEntries(D_800599B4, PauseMenuY);
         D_8009BD30 = 1;
         break;
     case 0x8000:
-        func_800809A0(D_80059C24, PauseMenuY);
+        DrawHudEntries(D_80059C24, PauseMenuY);
         break;
     case 4:
     case 0xC:
-        func_800809A0(D_80059ABC, PauseMenuY);
+        DrawHudEntries(D_80059ABC, PauseMenuY);
         break;
     case 0x40:
     case 0x240:
-        func_800809A0(D_80059A5C, PauseMenuY);
-        func_800831C4(PauseMenuY);
+        DrawHudEntries(D_80059A5C, PauseMenuY);
+        SetPauseY(PauseMenuY);
         break;
     case 0x80:
-        func_800809A0(D_80059A8C, PauseMenuY);
-        func_800831C4(PauseMenuY);
+        DrawHudEntries(D_80059A8C, PauseMenuY);
+        SetPauseY(PauseMenuY);
         break;
     case 0x100:
     case 0x108:
@@ -882,7 +882,7 @@ void func_80080FBC(void) {
             D_8009BD1C[0] = OPTV->unk8 != 0;
             func_8008D488(D_80059748[MSGV->level]->unkBC, OPTV->unk0);
             func_8008D488(D_80059748[MSGV->level]->unkC0, OPTV->unk4);
-            func_800809A0(D_80059D2C, PauseMenuY);
+            DrawHudEntries(D_80059D2C, PauseMenuY);
             break;
         case 2:
             for (i = 0; i < MSGV->numPlayers; i++) {
@@ -895,31 +895,31 @@ void func_80080FBC(void) {
             for (; i < 4; i++) {
                 D_8009BD1C[i] = 9;
             }
-            func_800809A0(D_80059E4C, PauseMenuY);
+            DrawHudEntries(D_80059E4C, PauseMenuY);
             break;
         default:
-            func_800809A0(D_80059C9C, PauseMenuY);
+            DrawHudEntries(D_80059C9C, PauseMenuY);
             break;
         }
         break;
     case 0x200:
-        func_800809A0(D_8005A14C, PauseMenuY);
+        DrawHudEntries(D_8005A14C, PauseMenuY);
         break;
     case 0x20:
-        func_800809A0(D_8005A1C4, PauseMenuY);
+        DrawHudEntries(D_8005A1C4, PauseMenuY);
         break;
     case 0x400:
-        func_800809A0(D_8005A20C, PauseMenuY);
+        DrawHudEntries(D_8005A20C, PauseMenuY);
         break;
     case 0x2000000:
         if (MSGV->unkC & 0x10) {
-            func_800809A0(D_8005A524, PauseMenuY);
+            DrawHudEntries(D_8005A524, PauseMenuY);
         }
         break;
     }
 }
 
-void func_80081470(s32 arg0) {
+void DrawAdventureStats(s32 arg0) {
     u16 mode;
     s32 n[4];
     s32 c0, c1, c2, c3, c4;
@@ -1133,7 +1133,7 @@ void func_80081470(s32 arg0) {
     }
 }
 
-void func_80081F64(s32 arg0) {
+void UpdatePauseSlide(s32 arg0) {
     EXTengine *e;
     s32 lim;
     PadButtons *pads;
@@ -1230,7 +1230,7 @@ void func_80081F64(s32 arg0) {
             e->unk10.y += 0x20;
         } else {
             func_80095A04(4);
-            func_80081470(1);
+            DrawAdventureStats(1);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
         if (D_8009BD38 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
@@ -1243,7 +1243,7 @@ void func_80081F64(s32 arg0) {
             e->unk10.y += 0x20;
         } else {
             func_80095A04(4);
-            func_80081470(3);
+            DrawAdventureStats(3);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
         if (D_8009BD34 == 0 && D_8009BD3C == 0) {
@@ -1264,7 +1264,7 @@ void func_80081F64(s32 arg0) {
             e->unk10.y += 0x20;
         } else {
             func_80095A04(4);
-            func_80081470(5);
+            DrawAdventureStats(5);
             PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
         }
         if (D_8009BD38 != 0 && (((PadButtons *)Pads)[PausePad].pressed & 0x1000)) {
@@ -1288,7 +1288,7 @@ void func_80081F64(s32 arg0) {
     }
 }
 
-void func_80082590(void) {
+void RenderPause(void) {
     GfxState *gs;
     u8 *e;
 
@@ -1327,7 +1327,7 @@ void func_80082590(void) {
     }
 }
 
-void func_800826F8(s32 arg0) {
+void StartWinSequence(s32 arg0) {
     EngineHintView *g;
     EngineHintView *g2;
     EngineRec24 **set;
@@ -1443,7 +1443,7 @@ void func_800826F8(s32 arg0) {
     }
 }
 
-void func_80082AC4(void) {
+void RecordWin(void) {
     s32 i;
     u8 *p;
     u8 *g;
@@ -1487,7 +1487,7 @@ void func_80082AC4(void) {
     D_8009BD40 = 5;
 }
 
-void func_80082C34(void) {
+void AnimateWinCounter(void) {
     s32 t;
     s32 r;
     s32 u;
@@ -1529,7 +1529,7 @@ void func_80082C34(void) {
     }
 }
 
-void func_80082D90(s32 arg0) {
+void UpdateWinCounter(s32 arg0) {
     SLONG_XYZ pos;
     s32 d;
     s32 t;
@@ -1606,7 +1606,7 @@ void func_80082D90(s32 arg0) {
         if (PauseDelay > 0) {
             PauseDelay--;
         } else {
-            func_80082C34();
+            AnimateWinCounter();
             D_8009BD08--;
         }
     }
@@ -1638,11 +1638,11 @@ void func_80082D90(s32 arg0) {
     }
 }
 
-void func_800831C4(s32 arg0) {
+void SetPauseY(s32 arg0) {
     GetEngineSlot(0)->unk10.y = arg0;
 }
 
-s16 func_800831F0(void) {
+s16 PauseRecValue(void) {
     EngineRec24 *p = PauseRec;
 
     if (p != NULL) {
@@ -1660,7 +1660,7 @@ s16 func_800831F0(void) {
     return 0;
 }
 
-void func_80083244(void) {
+void PauseRecPrev(void) {
     EngineRec24 *rec;
     s32 n;
 
@@ -1676,7 +1676,7 @@ void func_80083244(void) {
     }
 }
 
-s32 func_800832BC(void) {
+s32 PauseRecNext(void) {
     EngineRec24 *rec;
 
     if (PauseRecSet != NULL) {
@@ -1693,7 +1693,7 @@ s32 func_800832BC(void) {
     return 0;
 }
 
-void func_80083334(s32 arg0, s32 kind, s32 flag) {
+void SetPauseRecs(s32 arg0, s32 kind, s32 flag) {
     EngineRec24 ***t;
     EngineRec24 **set;
     EngineRec24 *rec;
@@ -1745,7 +1745,7 @@ void func_80083334(s32 arg0, s32 kind, s32 flag) {
     }
 }
 
-s32 func_80083488(void) {
+s32 PauseExitPressed(void) {
     PadButtons *base = (PadButtons *)Pads;
     PadButtons *pad = &base[PausePad];
     if ((pad->held & 9) != 9) {
@@ -1756,7 +1756,7 @@ s32 func_80083488(void) {
     return 0;
 }
 
-void func_800834E4(void) {
+void Unpause(void) {
     s32 *p = (s32 *)GameInfo;
     PausePad = 0;
     PauseChoice = 0;
@@ -1764,7 +1764,7 @@ void func_800834E4(void) {
     sound_resume();
 }
 
-void func_8008352C(void) {
+void RequestQuit(void) {
     u8 *p = GameInfo;
     s32 a = *(s32 *)(p + 0x10);
     u16 b = *(u16 *)(p + 0x30);
@@ -1772,7 +1772,7 @@ void func_8008352C(void) {
     *(u16 *)(p + 0x30) = b | 0x8002;
 }
 
-void func_80083550(void) {
+void SetDefaultHeroHooks(void) {
     HeroHooks.InitHero = 0;
     HeroHooks.HeroModels = D_8009D2E4;
     HeroHooks.RunSpeeds = D_8009D318;

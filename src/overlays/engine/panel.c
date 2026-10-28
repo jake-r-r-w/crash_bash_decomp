@@ -33,32 +33,32 @@ void Setup_panel(void) {
         D_800991D8[2] = 2;
         D_800991D8[3] = 3;
     }
-    func_8007EAC0();
+    InitCompletionCounter();
     if (ModeTypes[GameMode * 3] != 0x101 && ModeTypes[GameMode * 3] != 0x102) {
         switch (GameMode) {
         case 14:
         case 15:
         case 16:
         case 17:
-            func_8007BFA8();
+            InitIcons4();
             InitScore1Icons();
             InitCountdown();
-            func_8007E874();
+            StartPanelCountdown();
             break;
         case 10:
         case 11:
         case 12:
-            func_8007BFA8();
+            InitIcons4();
             InitScore3Icons();
             InitCountdown();
             break;
         case 13:
-            func_8007BFA8();
+            InitIcons4();
             InitScore3Icons();
             InitCountdown();
             break;
         case 29:
-            func_8007BFA8();
+            InitIcons4();
             InitScore3Icons();
             InitCountdown();
             break;
@@ -66,40 +66,40 @@ void Setup_panel(void) {
         case 6:
         case 7:
         case 8:
-            func_8007BFA8();
+            InitIcons4();
             InitHealthIcons();
             InitCountdown();
-            func_8007E874();
-            func_8007D208();
+            StartPanelCountdown();
+            InitTankWeaponIcons();
             break;
         case 9:
-            func_8007BFA8();
+            InitIcons4();
             InitHealthIcons();
             InitCountdown();
-            func_8007D208();
+            InitTankWeaponIcons();
             break;
         case 30:
-            func_8007BFA8();
+            InitIcons4();
             InitScore3Icons();
             InitCountdown();
-            func_8007E874();
+            StartPanelCountdown();
             break;
         case 0:
         case 1:
         case 2:
         case 3:
-            func_8007BFA8();
+            InitIcons4();
             InitHealthIcons();
             InitCountdown();
-            func_8007E874();
+            StartPanelCountdown();
             break;
         case 4:
-            func_8007BFA8();
+            InitIcons4();
             InitHealthIcons();
             InitCountdown();
             break;
         case 32:
-            func_8007C170();
+            InitIcons2();
             InitHealthIcons();
             InitCountdown();
             break;
@@ -107,23 +107,23 @@ void Setup_panel(void) {
         case 24:
         case 25:
         case 26:
-            func_8007BFA8();
+            InitIcons4();
             InitCountdown();
             InitScore2Icons();
             InitPowerIcons();
             break;
         case 28:
-            func_8007BFA8();
+            InitIcons4();
             InitScore3Icons();
             InitCountdown();
             break;
         case 27:
-            func_8007BFA8();
+            InitIcons4();
             InitScore3Icons();
             InitCountdown();
             break;
         case 22:
-            func_8007BFA8();
+            InitIcons4();
             InitPowerIcons();
             InitCountdown();
             break;
@@ -131,29 +131,29 @@ void Setup_panel(void) {
         case 19:
         case 20:
         case 21:
-            func_8007BFA8();
+            InitIcons4();
             InitPowerIcons();
             InitCountdown();
-            func_8007E874();
+            StartPanelCountdown();
             break;
         case 31:
-            func_8007BFA8();
+            InitIcons4();
             InitHealthIcons();
             InitCountdown();
             break;
         default:
-            func_8007BFA8();
+            InitIcons4();
             InitCountdown();
             break;
         }
     }
-    func_8007E7F4();
+    InitTrophyCups();
     PauseRecSet = 0;
     PauseRec = 0;
     PauseRecIndex = 0;
 }
 
-void func_8007AF3C(void) {
+void UpdatePanel(void) {
     u16 *t;
 
     if (PanelCtrl & 8) {
@@ -169,10 +169,10 @@ void func_8007AF3C(void) {
         UpdateBigScore();
     }
     if (PanelCtrl & 0x8000) {
-        func_8007D5EC();
+        CheckHeroesAllOut();
     }
     if (PanelCtrl & 0x100000) {
-        func_8007D2F4();
+        UpdateTankWeaponIcons();
     }
     Cups_Update();
     if (GameCheats & 0x400) {
@@ -582,7 +582,7 @@ join:
     }
 }
 
-void func_8007BE84(void) {
+void SetupCompletionDigits(void) {
     DigitEnt *e;
     s32 v;
     s32 n = 0;
@@ -619,7 +619,7 @@ void func_8007BE84(void) {
     D_800996E0[0].arg = *(u16 *)(n * 16 + (u8 *)D_80099198);
 }
 
-void func_8007BFA8(void) {
+void InitIcons4(void) {
     s32 i;
     s32 j;
     subengine *sub;
@@ -652,7 +652,7 @@ void func_8007BFA8(void) {
     PanelCtrl |= 2;
 }
 
-void func_8007C170(void) {
+void InitIcons2(void) {
     s32 i;
     s32 j;
     subengine *sub;
@@ -953,7 +953,7 @@ void InitBossHealthIcons(void) {
     PanelCtrl |= 8;
 }
 
-void func_8007C830(s32 arg0, s32 arg1) {
+void InitPowerupIcons(s32 arg0, s32 arg1) {
     s16 x0;
     s16 x1;
     s32 yb;
@@ -1374,7 +1374,7 @@ void InitSharedScoreIcons(void) {
     }
 }
 
-void func_8007D208(void) {
+void InitTankWeaponIcons(void) {
     s32 i;
     s32 off;
     PanelPrim *p;
@@ -1410,7 +1410,7 @@ void func_8007D208(void) {
     PanelCtrl |= 0x100000;
 }
 
-void func_8007D2F4(void) {
+void UpdateTankWeaponIcons(void) {
     s32 i;
     PanelPrim *p;
 
@@ -1510,7 +1510,7 @@ void UpdateScoreIcons(void) {
     } while ((s32)q < (s32)end + 0x20);
 }
 
-void func_8007D5EC(void) {
+void CheckHeroesAllOut(void) {
     EngineGameView *g = (EngineGameView *)GameInfo;
     EXTengine *e;
     EXTengine *f;
@@ -1529,7 +1529,7 @@ void func_8007D5EC(void) {
     }
 }
 
-void func_8007D6D0(void) {
+void UpdateOutMessage(void) {
     EXTengine *e;
     EXTengine *f;
     s32 i;
@@ -1573,7 +1573,7 @@ void func_8007D6D0(void) {
     }
 }
 
-s16 func_8007D850(void) {
+s16 FindTeamLeader(void) {
     u8 *g = GameInfo;
     s16 r = -1;
     s16 i;
@@ -1658,12 +1658,12 @@ found:
             if (MODEV->unk60 == 0) {
                 music_set_tempo(100, 5);
                 music_flag_restart();
-                func_80082AC4();
+                RecordWin();
                 CupWinner = -1;
                 CupMode = 0xC;
                 CupTimer = 0x78;
             } else if (MODEV->unk32 & 0x100) {
-                CupWinner = func_8007D850();
+                CupWinner = FindTeamLeader();
                 slot = MODEV->unk34;
                 if (CupWinner != -1) {
                     MODEV->unk168[slot] = 1;
@@ -1673,13 +1673,13 @@ found:
                 CupTimer = 0x78;
             } else {
                 if (MODEV->unk34 == 0x20) {
-                    CupWinner = func_8007D850();
+                    CupWinner = FindTeamLeader();
                     if (CupWinner != -1) {
                         MODEV->unkCC[CupWinner]++;
                         func_80098284();
                     }
                 } else {
-                    CupWinner = func_8007D850();
+                    CupWinner = FindTeamLeader();
                     if (CupWinner != -1) {
                         MODEV->unkCC[CupWinner]++;
                         r = CupWinner;
@@ -1929,7 +1929,7 @@ found:
                 CupMode = 0xD;
             } else {
                 func_80098278();
-                func_8008352C();
+                RequestQuit();
                 MODEV->unk10 &= ~1;
             }
         }
@@ -1972,7 +1972,7 @@ found:
             case 2:
             default:
                 func_80098278();
-                func_8008352C();
+                RequestQuit();
                 MODEV->unk10 &= ~1;
                 break;
             }
@@ -1983,7 +1983,7 @@ found:
         {
             s32 ok = func_8008A200(-1) ^ 1;
             if (ok) {
-                func_80082D90(0);
+                UpdateWinCounter(0);
                 break;
             }
         }
@@ -2004,7 +2004,7 @@ found:
             MODEV->unk10 |= 0x401;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
             CupMode = 0xF;
-            func_80080FBC();
+            DrawPauseMenu();
             break;
         default:
             CupMode = 0xE;
@@ -2022,13 +2022,13 @@ found:
                 CupMode = 0xD;
             } else {
                 func_80098278();
-                func_8008352C();
+                RequestQuit();
                 MODEV->unk10 &= ~1;
             }
         }
         CupTimer++;
     case 14:
-        func_80082D90(0);
+        UpdateWinCounter(0);
     case 13:
         if (CupTimer != 0) {
             break;
@@ -2040,13 +2040,13 @@ found:
     case 16:
         if (CupTimer == 0) {
             func_80098278();
-            func_8008352C();
+            RequestQuit();
         }
         break;
     }
 }
 
-void func_8007E7A4(void) {
+void PanelCountCompletion(void) {
     count_completion(GameInfo);
 }
 
@@ -2060,7 +2060,7 @@ s32 CalcElapsedTime(void) {
     return var_v0;
 }
 
-void func_8007E7F4(void) {
+void InitTrophyCups(void) {
     u8 *p;
     u16 f;
 
@@ -2084,7 +2084,7 @@ void func_8007E7F4(void) {
     }
 }
 
-void func_8007E874(void) {
+void StartPanelCountdown(void) {
     D_8009AE78 = 0xF0;
     PanelCtrl |= 0x8000;
 }
@@ -2122,7 +2122,7 @@ void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b) {
     p->unk98 = b;
 }
 
-void func_8007E93C(u16 arg0, s16 arg1, s16 arg2) {
+void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2) {
     if (PanelCtrl & 2) {
         void *p = &HeroModelBank[arg0 * 0x38];
         subengine *s = IconParts[2];
@@ -2140,7 +2140,7 @@ void func_8007E93C(u16 arg0, s16 arg1, s16 arg2) {
     }
 }
 
-void func_8007E9FC(u16 arg0, s16 arg1) {
+void SetPanelHeroIconB(u16 arg0, s16 arg1) {
     if (PanelCtrl & 2) {
         subengine *s = IconParts[3];
         s->unk6C = &HeroModelBank[arg0 * 0x38];
@@ -2156,7 +2156,7 @@ void func_8007E9FC(u16 arg0, s16 arg1) {
     }
 }
 
-void func_8007EAC0(void) {
+void InitCompletionCounter(void) {
     D_8004E0D0 = 0;
     D_80099194 = 0;
     D_80099700[0] = 0x138;
@@ -2223,10 +2223,10 @@ void Init_Panel(void) {
         ((s32 *)&Icon)[i] = 0;
         i++;
     } while (i < 4);
-    func_8007ED0C();
+    InitBossHealthBar();
 }
 
-void func_8007ED0C(void) {
+void InitBossHealthBar(void) {
     EXTengine *e;
     EXTengine *f;
 

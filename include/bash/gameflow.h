@@ -9,8 +9,8 @@
 #include "bash/engine.h"
 
 extern s32 D_8005687C[];
-s32 func_8007F314(void);
-void func_8007976C(void);
+s32 UpdatePause(void);
+void UpdateLevel(void);
 void func_80097C28(void);
 extern u8 D_8005164C[];
 extern GfxViewport D_8009EA74;

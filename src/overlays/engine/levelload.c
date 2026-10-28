@@ -328,7 +328,7 @@ void func_80093BE8(void) {
         init_scripts(0x20, 0x20);
         process_init(&LoadingControl);
         InitialiseNasSystem();
-        func_8007A8C4();
+        PreInitLevel();
         if (g->mode != 0x28 || FirstBootDone == 0) {
             music_load_track(g->mode);
         }
@@ -382,8 +382,8 @@ void func_80093BE8(void) {
         ((EngColor *)&GameViewport)->code = ((EngColorSrc *)MapScene)->col->code;
         c = ((EngColorSrc *)MapScene)->col;
         ((EngColor *)&GameViewport)->rgb = c->rgb;
-        func_8007ABC4();
-        func_8007A808();
+        ClearLevelNas();
+        InitialiseEngine();
         D_800A0158 = 7;
         break;
     case 7:

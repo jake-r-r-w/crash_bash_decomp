@@ -428,7 +428,7 @@ void InitialisePAPU(void) {
         }
     }
     Clock_Off();
-    func_8007E9FC(0x2C, 0x300A);
+    SetPanelHeroIconB(0x2C, 0x300A);
     InitBossHealthIcons();
     PapuInitMinionSlots();
     PapuInitTiles();
@@ -1308,7 +1308,7 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0;
     if (fux->unk22 == 0) {
       PlaySfx(0x1FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-      func_8007A524(0, &eng->unk10.x, (s32)MinionModel);
+      SpawnModelFx(0, &eng->unk10.x, (s32)MinionModel);
       fux->unk22 = 5;
       fux->state = 2;
     } else {
@@ -1531,7 +1531,7 @@ void PlotPapuMinion(NAS *nas)
     }
     PapuMinionSlots[slot].unk0 = 0;
     PlaySfx(0x1FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-    func_8007A524(0, &eng->unk10.x, (s32)MinionModel);
+    SpawnModelFx(0, &eng->unk10.x, (s32)MinionModel);
     KillNAS(nas);
     return;
   default:
