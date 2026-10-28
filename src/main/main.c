@@ -51,8 +51,8 @@ void shell_init(void) {
     pads_init();
     pads_update();
     load_file_direct(&DatIndex[2 * 991], HeapStart);
-    D_8004E0DC = (VTable8 *)HeapStart;
-    RunVTables(D_8004E0B8);
+    EngineModule = (ModuleEntry *)HeapStart;
+    RunModules(D_8004E0B8);
 }
 
 const char LevNameJungleBash[] = "JUNGLE BASH";
@@ -131,7 +131,7 @@ void shell_render_dcache(void) {
         D_8006E9F4 = GetSp();
     }
     SetSp(0x1F8003FC);
-    D_8004E0DC->unk8();
+    EngineModule->render();
     FlipScreen(VSyncRate);
     SetSp(D_8006E9F4);
 }
@@ -145,7 +145,7 @@ void shell_init_heap(void) {
 }
 
 void shell_render(void) {
-    D_8004E0DC->unk8();
+    EngineModule->render();
     FlipScreen(VSyncRate);
 }
 
@@ -158,11 +158,11 @@ void shell_update(void) {
     if (!(FrameCount & 1)) {
         card_poll();
     }
-    D_8004E0DC->unk4();
+    EngineModule->update();
 }
 
 void shell_start_engine(void) {
-    u8 *p = D_8004E0DC->unk10;
+    u8 *p = EngineModule->heap;
 
     if (p != NULL) {
         mal_init(&MainHeap, p, 0x801FF000 - (s32)p);
@@ -170,7 +170,7 @@ void shell_start_engine(void) {
     }
     sound_init();
     SetNasDefaults();
-    D_8004E0DC->unk0();
+    EngineModule->init();
 }
 
 static inline void func_800107C8_merge(mal *a, _mal_area *arg1, s32 m1) {
@@ -3015,7 +3015,7 @@ void export_exe_functions(void) {
     t[0x220 / 4] = lerp_fix12;
     t[0x224 / 4] = posdst_flash_at;
     t[0x228 / 4] = posdst_flash;
-    t[0x22C / 4] = D_8005B648;
+    t[0x22C / 4] = CurrentModule;
     t[0x230 / 4] = D_8004DDBC;
     t[0x234 / 4] = card_clear_slots;
     t[0x238 / 4] = music_set_tempo;
@@ -3618,7 +3618,7 @@ s16 core_process = 0;
 s32 D_8004E0D0 = 0;
 s32 D_8004E0D4 = 0;
 s32 GameFrameCount = 0;
-VTable8 *D_8004E0DC = 0;
+ModuleEntry *EngineModule = 0;
 s32 VSyncRate = 0;
 s32 D_8004E0E4 = 0;
 s32 D_8004E0E8 = 0;

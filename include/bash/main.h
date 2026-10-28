@@ -807,16 +807,18 @@ extern s32 D_800655A0;
 extern s32 D_800655B4;
 extern s32 D_800655AC;
 extern void *D_80051240;
-typedef struct {
-    void (*unk0)(void);
-    void (*unk4)(void);
-    void (*unk8)(void);
-    u8 unkC[4];
-    u8 *unk10;
-} VTable8;
+/* A module's entry table, the first bytes of its image: the engine's (entry.c) is what the
+ * shell runs (EngineModule), and RunModules runs one until it hands over (CurrentModule). */
+typedef struct ModuleEntry {
+    void (*init)(void);
+    void (*update)(void);
+    void (*render)(void);
+    void (*quit)(void);
+    u8 *heap; /* where the heap starts once it is loaded */
+} ModuleEntry;
 s32 rand_step(void);
-extern VTable8 *D_8004E0DC;
-extern VTable8 *D_8005B648;
+extern ModuleEntry *EngineModule;
+extern ModuleEntry *CurrentModule;
 extern s32 VSyncRate;
 extern s32 D_8004E0E4;
 void mal_update(_mal_area *heap);

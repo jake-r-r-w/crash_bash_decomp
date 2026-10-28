@@ -2430,18 +2430,18 @@ void KillTriggerNas(NAS *nas) {
     KillNAS(nas);
 }
 
-void RunVTables(u8 *a) {
-    VTable8 *p;
+void RunModules(u8 *a) {
+    ModuleEntry *p;
 
-    p = (VTable8 *)a;
+    p = (ModuleEntry *)a;
     while (p != NULL) {
-        D_8005B648 = p;
-        p->unk0();
-        while (D_8005B648 == p) {
-            p->unk4();
-            p->unk8();
+        CurrentModule = p;
+        p->init();
+        while (CurrentModule == p) {
+            p->update();
+            p->render();
         }
-        p = D_8005B648;
+        p = CurrentModule;
     }
 }
 
@@ -4187,7 +4187,7 @@ s32 ContourHeight = 0;
 s32 ACMD[16][2] = {0};
 u8 *sysfont_dbase = 0;
 RECT D_8005B640 = { 0, 0, 0x1FF, 0x1FF };
-VTable8 *D_8005B648 = 0;
+ModuleEntry *CurrentModule = 0;
 s32 D_8005B64C[16] = {
     0, 0x200, 0x400, 0x580, 0x680, 0x720, 0x780, 0x7B8, 0, 0x80, 0x100, 0x160, 0x1A0, 0x1C8,
     0x1E0, 0x1EE,

@@ -558,3 +558,5 @@ IntroDbase = 0x800AEC5C;
 SceneVabSlot = 0x800A0D20;
 SceneStep = 0x800A0D3C;
 SceneOldDbase = 0x800A0D30;
+SlotHeapStart = 0x800D7144;
+EngineEntry = 0x80078C90;

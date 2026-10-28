@@ -362,10 +362,11 @@ load extract and are documented.
   eight files are final; a file hiding inside one of them stays merged.
 - [x] The engine's rodata as C: all 59 INCLUDE_RODATA blocks are `const char` arrays where
   they were (2026-10-26), and its 176 strings are named from their text.
-- [ ] The engine's 0x14-byte header as C: it is still a `textbin` blob
-  (`engine_header`), the engine's entry table the exe calls through (`shell_start_engine`'s
-  `D_8004E0DC`): `RestartGame`, `UpdateProcess`, `RenderProcess`, `QuitProcess`, then the end
-  of the slot (`0x800D7144`). As C it needs a data object linked ahead of the engine's .text.
+- [x] The engine's 0x14-byte header as C (2026-10-28): `entry.c`'s `EngineEntry`, a
+  `ModuleEntry` (`init` `RestartGame`, `update`, `render`, `quit`, `heap` `SlotHeapStart`)
+  in `.text` ahead of the code; the exe runs it as `EngineModule` (`RunModules` runs a
+  module until it hands over to the next, `CurrentModule`). No data asm is left in the
+  engine; its two memory images (the .bss and the slot) are Phase 6's decision.
 - [x] The engine's data as C (2026-10-27). `slot_refs.py` named the overlay symbol
   behind all 1086 slot words and `data2c.py engine` wrote the 515 objects, cut by
   file in link order (engine.c, asttable.c with the world records, panel.c from

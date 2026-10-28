@@ -133,7 +133,7 @@ void InitLevelLoad(void) {
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    func_800936C4_heap(&MainHeap, (s32)D_800D7144);
+    func_800936C4_heap(&MainHeap, (s32)SlotHeapStart);
     start = LoadModeText() + 7;
     start &= ~7;
     func_800936C4_heap(&MainHeap, start);

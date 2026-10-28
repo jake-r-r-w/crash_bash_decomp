@@ -53,7 +53,7 @@ segments:
     align: 4
     vram: 0x80078C90
     subsegments:
-      - [0x0, textbin, overlays/engine/engine_header]   # entry pointers + image end, read by the exe's loader
+      - [0x0, c, overlays/engine/entry]         # the module entry table the exe runs the engine through
       - [0x14, c, overlays/engine/engine]
       # file starts proven by switch-table parity (ARCHITECTURE.md, Files inside the engine);
       # each cut is the latest point the rodata, data tables and calls allow in its proven range,

@@ -156,7 +156,7 @@ extern s32 D_8009F654;
 extern s16 core_process;
 extern u8 *D_80098594;
 extern s32 D_8009F968;
-extern u8 D_800D7144[];
+extern u8 SlotHeapStart[];
 extern ArenaDef D_80098F48;
 extern process_info RunGame;
 extern u8 vmode_512_ntsc[];

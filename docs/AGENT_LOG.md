@@ -503,7 +503,9 @@ Newest first, a few lines each. Details are in the commits.
   data asm: bios_1.o's .data as C, the $gp word and the .bss in their files, the file padded
   to 0x69800; data is 100% C. Gotcha: cc1 2.8.1 emits a file's variables in the order of
   their *first declaration*, so a header that declares two globals in the other order swaps
-  them (main.h had `D_8006E9F8` before `D_8006E9F4`).
+  them (main.h had `D_8006E9F8` before `D_8006E9F4`). Then the engine split closed (no more
+  evidence will come) and the engine's 0x14-byte header as C (`entry.c`'s `EngineEntry`,
+  a `ModuleEntry` in `.text` by section attribute, ahead of `engine.c`).
 
 - **2026-10-27 (Phase 5: the engine's and the exe's data as C):** the engine's
   data spliced, cut by file (`engine.c` .. `camera.c`, the world records with
