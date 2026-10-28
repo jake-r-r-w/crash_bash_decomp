@@ -2787,7 +2787,7 @@ void subpool_init(s32 n) {
     sub->next = NULL;
 }
 
-void mapenv_place_subs(MapEnvHead *env) {
+void mapenv_place_subs(map_enviroment *env) {
     subengine *sub;
     Placement *p;
     s32 n;
@@ -2920,10 +2920,10 @@ void map_update(s32 *arg0) {
     texture_update_anims(*arg0 + 0x10);
 }
 
-void mapscene_release(u8 *arg0) {
-    dbase_release((*(s32*)((u8*)(arg0) + 0)));
-    mal_free((*(s32*)((u8*)(arg0) + 28)), &MainHeap);
-    (*(s32*)((u8*)(arg0) + 28)) = 0;
+void mapscene_release(map_enviroment *env) {
+    dbase_release((u8 *)env->dbase);
+    mal_free(env->subs, &MainHeap);
+    env->subs = NULL;
 }
 
 void mapscene_setup_tables(arg0)
@@ -3001,52 +3001,52 @@ void map_loaded_geo(s32 arg0, map_enviroment *env) {
     env->map_num = 0;
     mapscene_setup_tables(env);
     env->subs = NULL;
-    mapenv_place_subs((MapEnvHead *)env);
+    mapenv_place_subs(env);
     dbase_load_all_mesh_anims((s32 *)db);
 }
 
-void mapscene_load(u8 *arg0, s32 arg1) {
-    (*(s32*)((u8*)(arg0) + 0)) = arg1;
-    (*(s32*)((u8*)(arg0) + 8)) = 0;
-    MapScene = arg0;
+void mapscene_load(map_enviroment *env, s32 db) {
+    env->dbase = (obj_dbase *)db;
+    env->map_num = 0;
+    MapScene = env;
     mapscene_setup_tables();
-    (*(s32*)((u8*)(arg0) + 28)) = 0;
-    mapenv_place_subs(arg0);
-    dbase_load_all_mesh_anims(arg1);
+    env->subs = NULL;
+    mapenv_place_subs(env);
+    dbase_load_all_mesh_anims(db);
 }
 
-void mapscene_place_subs(u8 *arg0) {
-    u8 *dst;
-    u8 *src;
+void mapscene_place_subs(map_enviroment *env) {
+    subengine *dst;
+    Placement *src;
     s32 n;
     s32 end;
 
-    dst = *(u8 **)(arg0 + 0x1C);
-    src = *(u8 **)(arg0 + 0x14);
-    n = *(s32 *)(arg0 + 0x18);
+    dst = env->subs;
+    src = env->placements;
+    n = env->num_placements;
     n--;
     if (n != -1) do {
-        *(subengine *)dst = SubEngineTemplate;
-        *(s32 *)(dst + 0) = *(s32 *)(src + 0);
-        *(Words3 *)(dst + 4) = *(Words3 *)(src + 4);
-        *(Words4 *)(dst + 0x30) = *(Words4 *)(src + 0x28);
-        *(Words4 *)(dst + 0x40) = *(Words4 *)(src + 0x38);
-        *(void **)(dst + 0x54) = draw_map_sub;
-        *(s32 *)(dst + 0x6C) = *(s32 *)arg0;
-        *(u16 *)(dst + 0x74) = *(u16 *)(src + 0x88);
-        *(u16 *)(dst + 0x8A) = *(u16 *)(src + 0x9E);
-        *(u16 *)(dst + 0x68) = *(u16 *)(src + 0x9C);
-        *(u8 *)(dst + 0x64) = *(u8 *)(src + 0x74);
-        *(u8 *)(dst + 0x65) = *(u8 *)(src + 0x75);
-        *(u8 *)(dst + 0x66) = *(u8 *)(src + 0x76);
-        *(u8 *)(dst + 0x67) = *(u8 *)(src + 0x77);
+        *dst = SubEngineTemplate;
+        dst->flags = src->flags;
+        *(Words3 *)&dst->unk04 = *(Words3 *)&src->pos;
+        *(Words4 *)&dst->unk2C[4] = *(Words4 *)&src->blk.w[0];
+        *(Words4 *)&dst->unk2C[0x14] = *(Words4 *)&src->blk.w[4];
+        dst->hook = (void (*)(subengine *, s32, u32))draw_map_sub;
+        dst->u6C.dbase = env->dbase;
+        dst->entity = src->unk88;
+        dst->unk8A = src->unk9E;
+        dst->unk68 = src->unk9C;
+        dst->unk64[0] = src->unk74[0];
+        dst->unk64[1] = src->unk74[1];
+        dst->unk64[2] = src->unk74[2];
+        dst->unk64[3] = src->unk74[3];
         if (n > 0) {
-            *(u8 **)(dst + 0x5C) = dst + 0xA8;
+            dst->next = dst + 1;
         } else {
-            *(u8 **)(dst + 0x5C) = NULL;
+            dst->next = NULL;
         }
-        src += 0xA0;
-        dst += 0xA8;
+        src++;
+        dst++;
         n--;
         end = -1;
     } while (n != end);

@@ -2027,14 +2027,6 @@ typedef struct Placement {
     /* 0x9C */ u16 unk9C;
     /* 0x9E */ u16 unk9E;
 } Placement;
-/* Head of map_enviroment (core.h) as mapenv_place_subs uses it. */
-typedef struct MapEnvHead {
-    /* 0x00 */ void *dbase;
-    /* 0x04 */ u8 unk04[0x14 - 0x04];
-    /* 0x14 */ Placement *placements;
-    /* 0x18 */ s32 num_placements;
-    /* 0x1C */ subengine *subs;
-} MapEnvHead;
 
 
 

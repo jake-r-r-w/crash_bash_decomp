@@ -292,7 +292,7 @@ struct map_enviroment {
     /* 0x08 */ u32 map_num;
     /* 0x0C */ map_list *maps;
     /* 0x10 */ map_map *map;
-    /* 0x14 */ void *placements;
+    /* 0x14 */ struct Placement *placements;
     /* 0x18 */ s32 num_placements;
     /* 0x1C */ subengine *subs;
     /* 0x20 */ void *map_directory;

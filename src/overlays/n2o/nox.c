@@ -2411,7 +2411,7 @@ void NoxInit(void) {
     NAS *nas;
     u8 *arg;
 
-    mapscene_place_subs((u8 *)MapScene);
+    mapscene_place_subs(MapScene);
     NoxInitAsteroids();
     NoxUpdateAsteroids();
     nas = CreateNAS(0, 0, 0, 0x1625, 0x11);

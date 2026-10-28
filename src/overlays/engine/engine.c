@@ -160,7 +160,7 @@ void InitialiseLevel(void) {
 
     g->flags &= 0xF4FF;
     InitTriggers();
-    mapenv_place_subs((MapEnvHead *)MapScene);
+    mapenv_place_subs(MapScene);
     ClearAllNasPool();
     ResetNasHeap();
     ResetNasLists();

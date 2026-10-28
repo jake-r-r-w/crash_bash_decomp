@@ -36,9 +36,9 @@ s32 eng_add_subs(EXTengine *eng, s32 n);
 s32 eng_add_subs_n(EXTengine *eng, s32 n);
 void subpool_free(void);
 void map_update(s32 *arg0);
-void mapscene_release(u8 *arg0);
+void mapscene_release(map_enviroment *env);
 void map_loaded_textureset(u8 *arg0, u8 * *arg1);
-void mapscene_load(u8 *arg0, s32 arg1);
+void mapscene_load(map_enviroment *env, s32 db);
 void set_fade(fade_info *fade, s32 speed, s32 delay);
 void process_control_back(process_control_info *pc);
 void process_interrupt(process_control_info *pc, process_info *process);
@@ -103,11 +103,11 @@ void faces_write_colors_dq(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
 void faces_write_colors(FaceRuns *faces, FacePrim *prim);
 void draw_object(u8 *arg0, u8 *arg1, s32 arg2);
 void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
-void mapscene_place_subs(u8 *arg0);
+void mapscene_place_subs(map_enviroment *env);
 FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *faces, s32 arg4);
 void gfx_set_viewport(GfxViewport *vp, GfxCamera *cam);
 void draw_map_scene(GfxScene *scene);
-void mapenv_place_subs(MapEnvHead *env);
+void mapenv_place_subs(map_enviroment *env);
 s32 tri_visible(SVECTOR *v);
 void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags);
 KeyEntry *key_interp_pos(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
@@ -230,7 +230,7 @@ static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, P
 }
 
 /* mapenv_place_subs: reuse the map's subengine array or allocate it. */
-static inline subengine *MapEnv_GetSubs(MapEnvHead *env) {
+static inline subengine *MapEnv_GetSubs(map_enviroment *env) {
     subengine *sub;
     subengine *t;
 
