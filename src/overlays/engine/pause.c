@@ -292,8 +292,8 @@ found:
                     hi = 0;
                     if (GAME->levelFlags & 0x10) {
                         for (i = 0; i < 4; i++) {
-                            if (hi < GameInfo[i + 0xCC]) {
-                                hi = GameInfo[i + 0xCC];
+                            if (hi < GAME->adventure.unkCC[i]) {
+                                hi = GAME->adventure.unkCC[i];
                             }
                         }
                         if (hi >= 2) {

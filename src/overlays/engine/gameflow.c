@@ -1838,7 +1838,7 @@ void UpdateGame(void) {
 }
 
 void SetReturnGateway(void) {
-    GameInfo[0x63] = 0xA;
+    GAME->gateway = 0xA;
     GAME->returnToHub = 1;
 }
 

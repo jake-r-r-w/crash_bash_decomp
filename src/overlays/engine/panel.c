@@ -1562,7 +1562,7 @@ void UpdateOutMessage(void) {
         if (i >= 4) {
             return;
         }
-        if (GameInfo[i + 0x5C] == 0 && (((PadStick *)Pads)[i].pressed & 0x4000)) {
+        if (GAME->heroOut[i] == 0 && (((PadStick *)Pads)[i].pressed & 0x4000)) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
             if (LevelSpecs.FinishQuick != NULL) {
                 LevelSpecs.FinishQuick();

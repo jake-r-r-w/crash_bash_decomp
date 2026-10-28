@@ -785,7 +785,7 @@ void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
         v = HitDamage[flags & 0xF][v];
     }
     if (!(((GameState *)GameInfo)->levelFlags & 3)) {
-        if (GameInfo[player + 0x5C] != 0 && (u32)(dist -= 0x18) < 9) {
+        if (GAME->heroOut[player] != 0 && (u32)(dist -= 0x18) < 9) {
             v = HitFalloff[v >> 8][dist];
         }
     }
@@ -1090,7 +1090,7 @@ void DefPreMoveHero(s32 arg0) {
                 m->forward_speed = speed;
             }
         } else {
-            if (GameInfo[arg0 + 0x5C] != 0) {
+            if (GAME->heroOut[arg0] != 0) {
                 if (pad->dirHeld2 & 0x100) {
                     m->forward_angle -= 0x100;
                 }
@@ -1237,7 +1237,7 @@ void HeroApplyJump(s32 arg0) {
     }
     if (m->jump_dir != 0) {
         dec = m->jump_dec;
-        if ((m->jump_ctrl & 1) && GameInfo[arg0 + 0x5C] == 0 &&
+        if ((m->jump_ctrl & 1) && GAME->heroOut[arg0] == 0 &&
             !(((PadButtons *)Pads)[arg0].unk50 & 0x4000) && m->jump_vel >= 0x41) {
             dec = 0x28;
         }
@@ -1585,7 +1585,7 @@ s32 AdjustAiSkill(s32 arg0) {
             v = arg0 * 3;
             arg0 = v / 4;
         }
-        if (GameInfo[GAME->mode + 0xAB] == 3) {
+        if (GAME->adventure.unkAB[GAME->mode] == 3) {
             arg0 *= 2;
         }
         idx = GAME->cupLeader;
@@ -2032,7 +2032,7 @@ void SetHeroJump(s32 arg0) {
     e->platform = NULL;
     SetHeroSeq(arg0, 6);
     idx = 0;
-    if (GameInfo[arg0 + 0x5C] == 0) {
+    if (GAME->heroOut[arg0] == 0) {
         idx = h->hero_name;
     }
     h->hero_move->jump_vel = ((HeroJumpEnt *)HeroHooks.JumpEnts)[idx].vel;
@@ -3325,7 +3325,7 @@ void ModelCreateShadow(s32 idx) {
     EXTengine *s;
     EXTengine *e;
 
-    if (GameInfo[idx + 0x50] != 9) {
+    if (GAME->heroes[idx] != 9) {
         s = Heroes[idx].hero_shadow;
         if (((GameState *)GameInfo)->mode != 0x1C) {
             s->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
@@ -3359,7 +3359,7 @@ void ModelUpdateShadow(s32 idx) {
     EXTengine *s;
     EXTengine *e;
 
-    if (GameInfo[idx + 0x50] != 9) {
+    if (GAME->heroes[idx] != 9) {
         HeroInfo *base = Heroes;
         h = base + idx;
         s = h->hero_shadow;
@@ -4536,7 +4536,7 @@ plot:
     if (obj->will_do & 8) {
         p = obj->player;
         if (p != -1 && p < 5 && !(Heroes[p].hero_status & 0xFA00)) {
-            if (GameInfo[p + 0x5C] != 0) {
+            if (GAME->heroOut[p] != 0) {
                 n = 3 - GAME->adventure.unk9B[0];
             } else {
                 n = 0;
