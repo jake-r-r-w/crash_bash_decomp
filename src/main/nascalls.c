@@ -2623,7 +2623,7 @@ void ClearOt(u8 *arg0) {
     *(s32 *)(arg0 + 0x4008) = *(s32 *)(arg0 + 0x4000);
 }
 
-s32 cd_read(u8 *a, s32 b, u8 *c, s32 d) {
+s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
     s32 r;
     s32 s;
     r = CdReadStatus;
@@ -2640,7 +2640,7 @@ s32 cd_read(u8 *a, s32 b, u8 *c, s32 d) {
     if (s > 0) {
         return -1;
     }
-    CdIntToPos(*(s32 *)a + b + D_800637B8, &D_8006EA10);
+    CdIntToPos(*a + b + D_800637B8, &D_8006EA10);
     if (CdControl(2, (u8 *)&D_8006EA10, 0) == 0 || CdRead(d, (u_long *)c, 0x80) == 0) {
         return -1;
     }

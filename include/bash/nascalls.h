@@ -61,7 +61,7 @@ void texture_release_vram(u8 *arg0);
 void textureset_clear(u8 *arg0);
 void RunModules(u8 *a);
 void FlipScreen(s32 arg0);
-s32 cd_read(u8 *a, s32 b, u8 *c, s32 d);
+s32 cd_read(s32 *file, s32 b, u8 *c, s32 d);
 extern FreeHdr *vram_take(u8 *);
 /* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
  * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */

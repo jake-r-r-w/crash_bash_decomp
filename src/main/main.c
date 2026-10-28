@@ -1567,14 +1567,14 @@ s32 loader_update(void) {
             buf = (u8 *)ls->unk4;
             goto free;
         } else {
-            node = (LoadNode *)ls->unkC;
-            ls->unkC = (s32)node->next;
+            node = ls->head;
+            ls->head = node->next;
             node->next = LoadNodeFree;
             LoadNodeFree = node;
-            if (ls->unkC != 0) {
-                ((LoadNode *)ls->unkC)->prev = NULL;
+            if (ls->head != NULL) {
+                (ls->head)->prev = NULL;
             } else {
-                ls->unk10 = 0;
+                ls->tail = NULL;
             }
             buf = (u8 *)ls->unk4;
             ls->unk4 = 0;
@@ -1600,7 +1600,7 @@ s32 loader_update(void) {
     if (vab_loading() != 0) {
         return 0;
     }
-    head = (u8 *)ls->unkC;
+    head = (u8 *)ls->head;
     if (head == NULL) {
         return 0;
     }
@@ -1655,32 +1655,32 @@ end:
     return NULL;
 }
 
-PosNode *loadlist_sort_by_sector(PosList *arg0) {
-    PosNode *cur;
-    PosNode *nxt;
-    PosNode *t;
+LoadNode *loadlist_sort_by_sector(LoaderState *ls) {
+    LoadNode *cur;
+    LoadNode *nxt;
+    LoadNode *t;
 
-    cur = arg0->head;
+    cur = ls->head;
 loop:
     if (cur != NULL) {
         nxt = cur->next;
         if (nxt == NULL) {
             goto end;
         }
-        if (*nxt->base + nxt->off / 2048 < *cur->base + cur->off / 2048) {
+        if (*nxt->file + nxt->offset / 2048 < *cur->file + cur->offset / 2048) {
             t = cur->prev;
             nxt->prev = t;
             if (t != NULL) {
                 t->next = nxt;
             } else {
-                arg0->head = nxt;
+                ls->head = nxt;
             }
             t = nxt->next;
             cur->next = t;
             if (t != NULL) {
                 t->prev = cur;
             } else {
-                arg0->tail = cur;
+                ls->tail = cur;
             }
             nxt->next = cur;
             cur->prev = nxt;
@@ -1866,27 +1866,27 @@ u8 *queue_dbase_load(u8 *arg0, s32 arg1) {
     if (p != NULL) {
         next = p->next;
         p->next = NULL;
-        p->prev = (LoadNode *)ls->unk10;
+        p->prev = ls->tail;
         LoadNodeFree = next;
-        tail = (LoadNode *)ls->unk10;
+        tail = ls->tail;
         if (tail != NULL) {
             tail->next = p;
         } else {
-            ls->unkC = (s32)p;
+            ls->head = p;
         }
-        ls->unk10 = (s32)p;
+        ls->tail = p;
     }
     q = (u8 *)p;
     if (q == NULL) {
         printf(MsgTooManyLoadsInQueue);
     }
-    *(s32 *)(q + 0) = a;
-    *(s32 *)(q + 4) = 0;
-    *(s32 *)(q + 0xC) = 1;
-    *(s32 *)(q + 8) = b;
-    *(void **)(q + 0x10) = fn;
-    *(u8 **)(q + 0x14) = arg0;
-    *(s32 *)(q + 0x18) = 0;
+    p->file = (s32 *)a;
+    p->offset = 0;
+    p->mode = 1;
+    p->size = b;
+    p->fn = fn;
+    p->arg = arg0;
+    p->buf = NULL;
     return q;
 }
 
@@ -1914,27 +1914,27 @@ u8 *queue_group_load(u8 *arg0) {
     if (p != NULL) {
         next = p->next;
         p->next = NULL;
-        p->prev = (LoadNode *)ls->unk10;
+        p->prev = ls->tail;
         LoadNodeFree = next;
-        tail = (LoadNode *)ls->unk10;
+        tail = ls->tail;
         if (tail != NULL) {
             tail->next = p;
         } else {
-            ls->unkC = (s32)p;
+            ls->head = p;
         }
-        ls->unk10 = (s32)p;
+        ls->tail = p;
     }
     q = (u8 *)p;
     if (q == NULL) {
         printf(MsgTooManyLoadsInQueue);
     }
-    *(s32 *)(q + 0) = a;
-    *(s32 *)(q + 4) = 0;
-    *(s32 *)(q + 0xC) = 1;
-    *(s32 *)(q + 8) = b;
-    *(void **)(q + 0x10) = fn;
-    *(u8 **)(q + 0x14) = arg0;
-    *(s32 *)(q + 0x18) = 0;
+    p->file = (s32 *)a;
+    p->offset = 0;
+    p->mode = 1;
+    p->size = b;
+    p->fn = fn;
+    p->arg = arg0;
+    p->buf = NULL;
     return q;
 }
 
@@ -2092,8 +2092,8 @@ void init_file(void) {
     Loader.state = 3;
     Loader.unk4 = 0;
     Loader.unk8 = 0;
-    Loader.unkC = 0;
-    Loader.unk10 = 0;
+    Loader.head = NULL;
+    Loader.tail = NULL;
     LoadNodeFree = LoadNodePool;
     do {
         LoadNode *next = (LoadNode *)((u8 *)node + 0x24);
@@ -2110,7 +2110,7 @@ void loader_cancel(LoadNode *arg0) {
     LoadNode *prev;
     void *temp_v1;
 
-    if ((s32)arg0 == Loader.unkC && Loader.unk4 != 0) {
+    if (arg0 == Loader.head && Loader.unk4 != 0) {
         *(s32 *)arg0 = 0;
         return;
     }
@@ -2119,11 +2119,11 @@ void loader_cancel(LoadNode *arg0) {
     if (prev != NULL) {
         prev->next = arg0->next;
     } else {
-        ls->unkC = (s32)arg0->next;
+        ls->head = arg0->next;
     }
     arg0->next->prev = prev->next;
-    if ((s32)arg0 == ls->unk10) {
-        ls->unk10 = (s32)prev;
+    if (arg0 == ls->tail) {
+        ls->tail = prev;
     }
     temp_v1 = LoadNodeFree;
     LoadNodeFree = arg0;
@@ -2145,17 +2145,17 @@ void loadnode_unlink(LoadNode *arg0) {
     if (prev != NULL) {
         prev->next = arg0->next;
     } else {
-        ls->unkC = (s32)arg0->next;
+        ls->head = arg0->next;
     }
     arg0->next->prev = prev->next;
-    if ((s32)arg0 == ls->unk10) {
-        ls->unk10 = (s32)prev;
+    if (arg0 == ls->tail) {
+        ls->tail = prev;
     }
 }
 
 s32 loader_pending(void) {
     LoaderState *p = &Loader;
-    s32 a = p->unkC != 0;
+    s32 a = p->head != NULL;
     s32 b = p->unk4;
     s32 s = p->state;
     int new_var;
@@ -2177,71 +2177,71 @@ s32 loader_queue(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg
     if (p != NULL) {
         next = p->next;
         p->next = NULL;
-        p->prev = (LoadNode *)ls->unk10;
+        p->prev = ls->tail;
         LoadNodeFree = next;
-        tail = (LoadNode *)ls->unk10;
+        tail = ls->tail;
         if (tail != NULL) {
             tail->next = p;
         } else {
-            ls->unkC = (s32)p;
+            ls->head = p;
         }
-        ls->unk10 = (s32)p;
+        ls->tail = p;
     }
     q = (u8 *)p;
     if (q == NULL) {
         printf(MsgTooManyLoadsInQueue);
     }
-    *(s32 *)(q + 0) = arg0;
-    *(s32 *)(q + 4) = arg1;
-    *(s32 *)(q + 0xC) = arg5;
-    *(s32 *)(q + 8) = arg2;
-    *(void **)(q + 0x10) = done;
-    *(u8 **)(q + 0x14) = arg4;
-    *(s32 *)(q + 0x18) = arg6;
+    p->file = (s32 *)arg0;
+    p->offset = arg1;
+    p->mode = arg5;
+    p->size = arg2;
+    p->fn = done;
+    p->arg = arg4;
+    p->buf = (u8 *)arg6;
     return (s32)q;
 }
 
-u8 *loadlist_push(u8 *arg0) {
-    u8 *temp_a1;
-    u8 *temp_v0;
-    u8 *temp_v1;
+LoadNode *loadlist_push(LoaderState *ls) {
+    LoadNode *p;
+    LoadNode *tail;
+    LoadNode *next;
 
-    temp_a1 = LoadNodeFree;
-    if (temp_a1 != NULL) {
-        temp_v1 = (*(s32*)((u8*)(temp_a1) + 28));
-        (*(s32*)((u8*)(temp_a1) + 28)) = NULL;
-        (*(s32*)((u8*)(temp_a1) + 32)) = (u8 *) (*(s32*)((u8*)(arg0) + 16));
-        temp_v0 = (*(s32*)((u8*)(arg0) + 16));
-        LoadNodeFree = temp_v1;
-        if (temp_v0 != NULL) {
-            (*(s32*)((u8*)(temp_v0) + 28)) = temp_a1;
+    p = LoadNodeFree;
+    if (p != NULL) {
+        next = p->next;
+        p->next = NULL;
+        p->prev = ls->tail;
+        tail = ls->tail;
+        LoadNodeFree = next;
+        if (tail != NULL) {
+            tail->next = p;
         } else {
-            (*(s32*)((u8*)(arg0) + 12)) = temp_a1;
+            ls->head = p;
         }
-        (*(s32*)((u8*)(arg0) + 16)) = temp_a1;
+        ls->tail = p;
     }
-    return temp_a1;
+    return p;
 }
 
-s32 loadlist_head(u8 *arg0) {
-    return (*(s32*)((u8*)(arg0) + 12));
+LoadNode *loadlist_head(LoaderState *ls) {
+    return ls->head;
 }
 
-u8 *loadlist_pop(u8 *arg0) {
-    u8 *node;
-    u8 *next;
-    u8 *head;
+LoadNode *loadlist_pop(LoaderState *ls) {
+    LoadNode *node;
+    LoadNode *next;
+    LoadNode *head;
 
     head = LoadNodeFree;
-    node = *(u8 **)(arg0 + 12);
-    *(u8 **)(arg0 + 12) = *(u8 **)(node + 28);
-    *(u8 **)(node + 28) = head;
-    next = *(u8 **)(arg0 + 12);
+    node = ls->head;
+    ls->head = node->next;
+    node->next = head;
+    next = ls->head;
     LoadNodeFree = node;
     if (next != NULL) {
-        *(u8 **)(next + 32) = NULL;
+        next->prev = NULL;
     } else {
-        *(u8 **)(arg0 + 16) = NULL;
+        ls->tail = NULL;
     }
     return node;
 }
@@ -2270,8 +2270,8 @@ void loader_reset(void) {
     Loader.state = 3;
     Loader.unk4 = 0;
     Loader.unk8 = 0;
-    Loader.unkC = 0;
-    Loader.unk10 = 0;
+    Loader.head = NULL;
+    Loader.tail = NULL;
 }
 
 void loadnode_init(void) {
@@ -2345,7 +2345,7 @@ s32 load_file_to_wait(s32 arg0, s32 arg1, s32 arg2) {
     return D_8006E9F8;
 }
 
-s32 load_file_direct(u8 *a, u8 *b) {
+s32 load_file_direct(s32 *a, u8 *b) {
     s32 r;
     s32 n;
     printf("load file start\n");
@@ -2359,7 +2359,7 @@ s32 load_file_direct(u8 *a, u8 *b) {
     }
     do {
         for (;;) {
-            n = *(s32 *)(a + 4);
+            n = a[1];
             if (cd_read(a, 0, b, (n + 0x7FF) / 2048) >= 0) {
                 break;
             }

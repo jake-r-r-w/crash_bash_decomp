@@ -633,13 +633,14 @@ typedef struct MusicEntry {
     /* 0x12 */ u8 unk12[0x14 - 0x12];
 } MusicEntry;
 
-/* Loader: file loader state (loader_reset resets it). Only these fields are known. */
+/* Loader: file loader state (loader_reset resets it), with its queue of loads
+ * (loadlist_push / loadlist_pop, nodes from LoadNodePool). */
 typedef struct LoaderState {
     /* 0x00 */ s32 state;                /* 3 after a reset */
     /* 0x04 */ s32 unk4;
     /* 0x08 */ s32 unk8;
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
+    /* 0x0C */ struct LoadNode *head;
+    /* 0x10 */ struct LoadNode *tail;
 } LoaderState;
 
 /* A process (a game mode), its control block and the screen fade, from the
@@ -676,7 +677,7 @@ typedef struct fade_info {
 BASH_SIZE_CHECK(fade_info, 0x10);
 
 typedef struct LoadNode {
-    /* 0x00 */ u8 *file;                 /* file table entry; NULL once cancelled mid-load (loader_cancel) */
+    /* 0x00 */ s32 *file;                /* archive entry {sector, size}; NULL once cancelled mid-load (loader_cancel) */
     /* 0x04 */ s32 offset;               /* bytes into the file */
     /* 0x08 */ s32 size;                 /* bytes */
     /* 0x0C */ s32 mode;                 /* 1: mal_set_owner after the load */
@@ -771,8 +772,8 @@ s32 loader_queue(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg
 s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx);
 void loader_unused_b(void);
 void loadnode_free(u8 *arg0);
-u8 *loadlist_push(u8 *arg0);
-s32 loadlist_head(u8 *arg0);
+struct LoadNode *loadlist_push(LoaderState *ls);
+struct LoadNode *loadlist_head(LoaderState *ls);
 void set_joypad(u8 *arg0, u32 arg1);
 void cam_init(GfxCamera *cam);
 void cam_ramp_override(s32 arg0, s32 arg1);
@@ -835,7 +836,7 @@ void mal_update(_mal_area *heap);
 extern u8 HeapStart[];
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);
 extern u8 D_8004E0B8[];
-s32 load_file_direct(u8 *a, u8 *b);
+s32 load_file_direct(s32 *file, u8 *buf);
 void init_file(void);
 extern s32 D_8004E0B4;
 extern void *LoadNodeFree;
@@ -1507,7 +1508,7 @@ void pads_update(void);
 s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u32 **arg2, s32 arg3);
 
 
-u8 *loadlist_pop(u8 *arg0);
+LoadNode *loadlist_pop(LoaderState *ls);
 
 s32 load_file_to(s32 *arg0, u8 *arg1);
 
@@ -1724,20 +1725,8 @@ typedef struct {
 
 SortNode *sortlist_bubble(SortList *arg0);
 
-typedef struct PosNode {
-    s32 *base;         /* 0x00 */
-    s32 off;           /* 0x04 */
-    u8 pad8[0x14];
-    struct PosNode *next; /* 0x1C */
-    struct PosNode *prev; /* 0x20 */
-} PosNode;
-typedef struct PosList {
-    u8 pad0[0xC];
-    PosNode *head;     /* 0x0C */
-    PosNode *tail;     /* 0x10 */
-} PosList;
 
-PosNode *loadlist_sort_by_sector(PosList *arg0);
+LoadNode *loadlist_sort_by_sector(LoaderState *ls);
 
 s32 mal_can_alloc(s32 arg0);
 
