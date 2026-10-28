@@ -63,7 +63,7 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. The engine's and exe's `D_` globals (608 left, 1516 uses: `scratch/rank_d.py`
+1. The engine's and exe's `D_` globals (565 left, 1260 uses, most used once or twice: `scratch/rank_d.py`
    counts every `D_8001..D_800B32B4` use in src and include, externs aside). Read the
    uses, name, `decomp.py rename --ovl engine --file F` for the engine's, sed plus a
    `sym.main.txt` line for the exe's (`scratch/ren_main.sh`), `make check`.
@@ -480,7 +480,7 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-28 (Phase 5: globals and typing):** labels inside objects typed: the boss's
   record (`BossState`), `GameOptions` (music, sfx, stereo, vibrate), the crate and
   pickup counts out of `HitSfx`'s tail, `AiPlayerSkill` one type (`bash/aiskill.h`;
-  four overlays had copies). 60 globals named. Typed off raw offsets: `GfxCamera` from
+  four overlays had copies). 103 globals named (664 -> 565 left). Typed off raw offsets: `GfxCamera` from
   `cam_init`, the loader's queue (`LoaderState` head/tail, `PosList` was the same
   type), `mal_alloc` and the mal tick count, the NAS list functions, the scripts
   (`script_control_info`'s threads/flags/handle, `script_handler` lists), the prim

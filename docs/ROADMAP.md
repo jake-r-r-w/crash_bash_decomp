@@ -386,7 +386,7 @@ load extract and are documented.
   labels gone. Then the labels inside objects (2026-10-28): `GameOptions` is one struct,
   the boss's record (`BossState`), the crate and pickup counts out of `HitSfx`'s tail,
   `AiPlayerSkill` one type for every unit (the boss's skill label is `[3].level`), and
-  60 more globals named. Left: 608 `D_` names (1516 uses) across the engine, the exe and
+  103 more globals named. Left: 565 `D_` names (1260 uses) across the engine, the exe and
   the overlays' references to them, and the functions whose C still does raw
   byte-offset arithmetic (24 of the engine's 357, 100 of the exe's 575, 77 in the slot
   overlays: `progress`'s typed figure). Some of the exe's are a heap block's own
