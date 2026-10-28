@@ -3983,7 +3983,7 @@ void texture_scroll_step(u8 *arg0, obj_textureset *arg1) {
     }
 }
 
-void clut_release(u8 *arg0) {
+void clut_release(obj_textureset *arg0) {
     s32 temp_a0;
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 4));
@@ -4068,7 +4068,7 @@ void texanims_release(s32 *arg0, s32 arg1) {
     }
 }
 
-void texture_release_vram(u8 *arg0) {
+void texture_release_vram(obj_textureset *arg0) {
     s32 temp_a0;
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 32));

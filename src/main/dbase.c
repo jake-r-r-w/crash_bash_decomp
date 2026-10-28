@@ -173,7 +173,7 @@ void dbase_anim_load(obj_dbase *db, s32 i) {
     }
 }
 
-s32 dbase_anim_ptr(u8 *arg0, s32 arg1) {
+s32 dbase_anim_ptr(obj_dbase *arg0, s32 arg1) {
     u8 *temp_s0;
     u8 *temp_v0;
 
@@ -183,7 +183,7 @@ s32 dbase_anim_ptr(u8 *arg0, s32 arg1) {
 }
 
 
-u8 *dbase_mesh_anim_name_release(u8 *arg0, u8 *arg1) {
+u8 *dbase_mesh_anim_name_release(obj_dbase *arg0, u8 *arg1) {
     u8 *tbl;
     u8 *p;
     s32 n;
@@ -191,7 +191,7 @@ u8 *dbase_mesh_anim_name_release(u8 *arg0, u8 *arg1) {
     u8 *res;
     u8 *blk;
 
-    tbl = *(u8 **)(arg0 + 0xC);
+    tbl = arg0->data;
     if (tbl == NULL) {
         res = NULL;
     } else {
@@ -254,7 +254,7 @@ found:
     return 0;
 }
 
-u8 *dbase_mesh_anim_name_load(u8 *arg0, u8 *arg1) {
+u8 *dbase_mesh_anim_name_load(obj_dbase *arg0, u8 *arg1) {
     u8 *tbl;
     u8 *p;
     s32 n;
@@ -265,7 +265,7 @@ u8 *dbase_mesh_anim_name_load(u8 *arg0, u8 *arg1) {
     s32 start;
     s32 h;
 
-    tbl = *(u8 **)(arg0 + 0xC);
+    tbl = arg0->data;
     if (tbl == NULL) {
         res = NULL;
     } else {
@@ -292,7 +292,7 @@ found:
             if (node != NULL) {
                 start = *(s32 *)res;
                 *(u8 **)(res + 0x14) = node;
-                h = asload_chunk_relocatable(*(s32 *)arg0, start, node, *(s32 *)(res + 4) - start);
+                h = asload_chunk_relocatable(arg0->file, start, node, *(s32 *)(res + 4) - start);
                 *(s32 *)(node + 4) = h;
                 if (h == 0) {
                     smallnode_free(node);
@@ -306,7 +306,7 @@ found:
     return NULL;
 }
 
-s32 dbase_mesh_anim_name_size(u8 *arg0, u8 *arg1) {
+s32 dbase_mesh_anim_name_size(obj_dbase *arg0, u8 *arg1) {
     u8 *tbl;
     u8 *p;
     s32 n;
@@ -315,7 +315,7 @@ s32 dbase_mesh_anim_name_size(u8 *arg0, u8 *arg1) {
 
     u8 *res;
 
-    tbl = *(u8 **)(arg0 + 0xC);
+    tbl = arg0->data;
     if (tbl == NULL) {
         res = NULL;
     } else {
@@ -434,12 +434,12 @@ u8 *a;
     }
 }
 
-u8 *dbase_mesh_anim_release(u8 *arg0, s32 arg1) {
+u8 *dbase_mesh_anim_release(obj_dbase *arg0, s32 arg1) {
     u8 *base;
     u8 *e;
     void **item;
 
-    base = *(u8 **)(arg0 + 0xC);
+    base = arg0->data;
     if (base != NULL) {
         if (arg1 < *(s32 *)(base + 0x40)) {
             e = base + (*(s32 *)(base + 0x44) + 0x44);
@@ -507,11 +507,11 @@ static inline u8 *dbase_mesh_anim_load_one(s32 *arg0, u8 *arg1) {
     return cur;
 }
 
-u8 *dbase_mesh_anim_load(u8 *arg0, s32 arg1) {
+u8 *dbase_mesh_anim_load(obj_dbase *arg0, s32 arg1) {
     u8 *base;
     u8 *e;
 
-    base = *(u8 **)(arg0 + 0xC);
+    base = arg0->data;
     if (base == NULL || arg1 >= *(s32 *)(base + 0x40)) {
         return NULL;
     }
