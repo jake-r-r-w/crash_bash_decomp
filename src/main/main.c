@@ -3240,8 +3240,9 @@ s32 rand_step(void) {
 
 PointList *sub_point_list(subengine *sub) {
     s32 flag;
-    u8 *base;
-    u8 *rec;
+    ModelFile *base;
+    MeshHeader *rec;
+    MeshAnimFrame *fr;
     s32 off;
 
     flag = sub->entity;
@@ -3249,7 +3250,7 @@ PointList *sub_point_list(subengine *sub) {
         if (sub->u6C.dbase == NULL) {
             return NULL;
         }
-        base = *(u8 **)((u8 *)sub->u6C.dbase + 0xC);
+        base = sub->u6C.dbase->data;
         if (base == NULL) {
             return NULL;
         }
@@ -3257,28 +3258,28 @@ PointList *sub_point_list(subengine *sub) {
         case 0x3000:
             break;
         case 0x4000:
-            rec = dbase_anim_frame(flag, base + (*(s32 *)(base + 0x44) + 0x44) + ((flag & 0xF80) >> 7) * 0x18);
-            if (rec != NULL) {
-                off = *(s32 *)(rec + 0xC);
+            fr = dbase_anim_frame(flag, (FileEntry *)((u8 *)&base->meshAnims + base->meshAnims) + ((flag & 0xF80) >> 7));
+            if (fr != NULL) {
+                off = fr->points;
                 if (off == 0) {
                     break;
                 }
-                return (PointList *)(rec + (off + 0xC));
+                return (PointList *)((u8 *)&fr->points + off);
             }
             return NULL;
         case 0x5000:
-            rec = (u8 *)map_entity_address(flag & 0xFFF, base);
+            rec = map_entity_address(flag & 0xFFF, base);
         tail:
-            off = *(s32 *)(rec + 0x2C);
+            off = rec->points;
             if (off != 0) {
                 goto found;
             }
             return NULL;
         case 0x2000:
-            rec = base + ((flag & 0xFFF) * 0x34 + 0x24);
+            rec = &base->meshes[(flag & 0xFFF) - 1];
             goto tail;
         found:
-            return (PointList *)(rec + (off + 0x2C));
+            return (PointList *)((u8 *)&rec->points + off);
         default:
             return NULL;
         }
@@ -3329,30 +3330,30 @@ none:
 }
 
 u8 *model_entry_data(obj_dbase *arg0, s32 arg1) {
-    u8 *base;
-    u8 *rec;
+    ModelFile *base;
+    MeshHeader *rec;
 
     base = arg0->data;
     switch (arg1 & 0x7000) {
     case 0x5000:
-        rec = (u8 *)map_entity_address(arg1 & 0xFFF, base);
+        rec = map_entity_address(arg1 & 0xFFF, base);
         break;
     case 0x2000:
-        rec = base + ((arg1 & 0xFFF) * 0x34 + 0x24);
+        rec = &base->meshes[(arg1 & 0xFFF) - 1];
         break;
     default:
         rec = NULL;
         break;
     }
     if (rec != NULL) {
-        return rec + 0xC;
+        return (u8 *)&rec->flags;
     }
     return NULL;
 }
 
 s32 model_entry_texture(obj_dbase *arg0, s32 arg1) {
-    u8 *base;
-    u8 *p;
+    ModelFile *base;
+    MeshHeader *p;
     s32 k;
     u16 v;
 
@@ -3360,17 +3361,17 @@ s32 model_entry_texture(obj_dbase *arg0, s32 arg1) {
     k = arg1 & 0x7000;
     switch (k) {
     case 0x5000:
-        p = (u8 *)map_entity_address(arg1 & 0xFFF, base);
+        p = map_entity_address(arg1 & 0xFFF, base);
         break;
     case 0x2000:
-        p = base + ((arg1 & 0xFFF) * 0x34 + 0x24);
+        p = &base->meshes[(arg1 & 0xFFF) - 1];
         break;
     default:
         p = NULL;
         break;
     }
     if (p != NULL) {
-        v = *(u16 *)(*(s32 *)(p + 0x1C) + (s32)p + 0x1C);
+        v = *(u16 *)((u8 *)&p->texs + p->texs);
         if (!(v & 0x8000)) {
             return (v & 0x1FF) | 0x3000;
         }
@@ -3382,32 +3383,32 @@ s32 model_entry_texture(obj_dbase *arg0, s32 arg1) {
 s32 entry_block_value(s32 i, ModelFile *blk) {
     s32 idx = i;
 
-    u8 *base;
+    EntityTable *base;
 
     if (blk == NULL) {
         return -1;
     }
-    base = (u8 *)&blk->entities + blk->entities;
+    base = (EntityTable *)((u8 *)&blk->entities + blk->entities);
     idx = (idx - 1) & 0xFFF;
-    return *(s32 *)(base + idx * 12 + 0xC);
+    return (idx + base->e)->group; /* index first: base->e[idx] adds the other way round */
 }
 
-s32 map_entity_address(u16 arg0, u8 *arg1) {
-    u8 *base;
+MeshHeader *map_entity_address(u16 arg0, ModelFile *arg1) {
+    EntityTable *base;
     s32 t;
     s32 r;
 
     arg0--;
     t = arg0 & 0xFFF;
-    base = arg1 + (*(s32 *)(arg1 + 0x1C) + 0x1C);
-    r = rel_ptr((s32 *)(base + (t * 0xC + 4)));
+    base = (EntityTable *)((u8 *)&arg1->entities + arg1->entities);
+    r = rel_ptr(&base->e[t].mesh);
     if (r == 0) {
-        return 0;
+        return NULL;
     }
-    return r;
+    return (MeshHeader *)r;
 }
 
-u8 *entity_address(u32 arg0, u8 *arg1) {
+u8 *entity_address(u32 arg0, ModelFile *arg1) {
     s32 k;
 
     k = arg0 & 0x7000;
@@ -3417,32 +3418,32 @@ u8 *entity_address(u32 arg0, u8 *arg1) {
         }
         return NULL;
     }
-    return arg1 + ((arg0 & 0xFFF) * 0x34 + 0x24);
+    return (u8 *)&arg1->meshes[(arg0 & 0xFFF) - 1];
 }
 
-u8 *dbase_anim_frame(s32 i, u8 *rec) {
-    void **node;
+MeshAnimFrame *dbase_anim_frame(s32 i, FileEntry *rec) {
+    BlockRef *node;
     u8 *data;
 
-    node = *(void ***)(rec + 0x14);
+    node = rec->block;
     data = NULL;
     if (node != NULL) {
-        data = *node;
+        data = node->ptr;
     }
     if (data == NULL) {
         return NULL;
     }
-    return data + ((i & 0x7F) * 0x10 + 4);
+    return (MeshAnimFrame *)(data + 4) + (i & 0x7F);
 }
 
-void *dbase_anim_node(s32 *arg0, u8 *rec) {
-    void **node;
+void *dbase_anim_node(s32 *arg0, FileEntry *rec) {
+    BlockRef *node;
 
-    node = *(void ***)(rec + 0x14);
+    node = rec->block;
     if (node == NULL) {
         return NULL;
     }
-    return *node;
+    return node->ptr;
 }
 
 void init_dots(subengine *arg0) {

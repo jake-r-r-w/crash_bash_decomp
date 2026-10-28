@@ -213,6 +213,26 @@ typedef struct ModelFile {
     /* 0x58 */ MeshHeader meshes[1];
 } ModelFile;
 
+/* ModelFile.entities: a count, then one of these each. */
+typedef struct ModelEntity {
+    /* 0x00 */ s32 mesh;  /* from here to its MeshHeader, 0: none */
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 group; /* entry_block_value */
+} ModelEntity;
+
+typedef struct EntityTable {
+    s32 count;
+    ModelEntity e[1];
+} EntityTable;
+
+/* A frame of a mesh animation (FileEntry's data: an s32, then 16 bytes a frame). */
+typedef struct MeshAnimFrame {
+    /* 0x00 */ s32 list;   /* from here to an index list */
+    /* 0x04 */ s32 list2;  /* from here to the one it blends towards */
+    /* 0x08 */ s32 blend;  /* 0..0x1000, 0: a keyframe */
+    /* 0x0C */ s32 points; /* from here to a PointList, 0: none */
+} MeshAnimFrame;
+
 /* A texture entry's VRAM placement and the primitive words drawn with it: its own
  * struct at obj_texture +0x18 (prim_create_entity_single and Pogo's psxpogo_render_tile
  * take a pointer to it). */
@@ -1362,7 +1382,7 @@ s32 bit_count(u32 x);
 
 s32 lerp_fix12(s32 a, s32 b, s32 t);
 
-void *dbase_anim_node(s32 *arg0, u8 *rec);
+void *dbase_anim_node(s32 *arg0, FileEntry *rec);
 
 
 
@@ -1391,7 +1411,7 @@ typedef struct TexClut {
 } TexClut;
 
 
-u8 *dbase_anim_frame(s32 i, u8 *rec);
+MeshAnimFrame *dbase_anim_frame(s32 i, FileEntry *rec);
 
 void BSwapEndian(u8 *p, u32 n);
 
@@ -1472,7 +1492,7 @@ void toggle_widescreen(void);
 
 void pads_init(void);
 
-s32 map_entity_address(u16 arg0, u8 *arg1);
+MeshHeader *map_entity_address(u16 arg0, ModelFile *arg1);
 
 
 
@@ -1483,7 +1503,7 @@ s32 map_entity_address(u16 arg0, u8 *arg1);
 
 
 
-u8 *entity_address(u32 arg0, u8 *arg1);
+u8 *entity_address(u32 arg0, ModelFile *arg1);
 
 
 
