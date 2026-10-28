@@ -13,4 +13,5 @@
 | 9 | Re-read the leak and prototype docs | `docs/PROTOTYPES.md`, `docs/ARCHITECTURE.md` (Leaked source) | Describing the sources is fine; make sure nothing quotes the leaked files at length. | [ ] |
 | 10 | Decide on `tools/reference/` (26 MB GCC source) | `tools/reference/` | Keep it (GPL, its COPYING files are present) or replace it with a fetch script for smaller clones. | [ ] |
 | 11 | Final check | repo root | Run `git status` for nothing untracked; check that `.gitignore` still lists `disc/`, `protos/`, `asm/`, `assets/`, `ext/`, `build/`, `linkers/`; check the history again for binaries. | [ ] |
-| 12 | Switch the GitHub repo to public | GitHub settings | Last, after 1 to 11. | [ ] |
+| 12 | Switch the GitHub repo to public | GitHub settings | After 1 to 11. | [ ] |
+| 13 | List the project on recomp.fyi | `.recomp.json` (repo root) | Add a `.recomp.json` with at least `"game": "Crash Bash"`, `"system": "PS1"`, `"type": "decomp"` (optional: `status`, `toolchain`, `notes`, `links`, ...). Keep it under 8 KB and never mention a ROM, an ISO or where to get one, or it is refused. The board reads it daily; to be listed at once, submit the repo through the manifest form at https://recomp.fyi/add. | [ ] |
