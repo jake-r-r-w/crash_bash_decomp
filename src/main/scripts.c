@@ -538,7 +538,7 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
                             script_handler **arg5) {
     script_handler *p;
     u8 *e;
-    u8 *hdr;
+    script_header *hdr;
     s32 *t;
     s32 *q;
     s32 i;
@@ -572,21 +572,21 @@ script_handler *play_script(obj_dbase *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg
         hdr = NULL;
         if (e != NULL) {
             s32 *r = (s32 *)(e + (*(s32 *)(e + 0x4C) + 0x4C)) + arg1;
-            hdr = (u8 *)r + *r;
+            hdr = (script_header *)((u8 *)r + *r);
         }
         p->info.flags = arg4;
         p->info.dbase = arg0;
         p->info.script = arg1;
         p->info.threads = NULL;
         p->info.time.w = 0;
-        p->info.time.h.frame = *(s16 *)(hdr + 0xC);
-        p->info.unk10 = *(s32 *)(hdr + 0x8);
+        p->info.time.h.frame = *(s16 *)&hdr->start_frame;
+        p->info.unk10 = hdr->end_frame;
         p->info.handle = (s32 *)arg5;
         if (arg5 != NULL) {
             *arg5 = p;
         }
-        t = (s32 *)(hdr + 0x1C);
-        for (i = 0; i < *(s32 *)hdr; i++) {
+        t = (s32 *)hdr->threaddata;
+        for (i = 0; i < hdr->threadcount; i++) {
             q = (s32 *)((u8 *)t + *t);
             fn = ScriptCommands[*q].init;
             if (fn != NULL) {
@@ -840,7 +840,7 @@ s16 cos_half(s32 arg0) {
 
 void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
     script_control_info *p;
-    u8 *e;
+    script_header *e;
     s32 *s;
     s32 *q;
     s32 i;
@@ -853,19 +853,19 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
         e = NULL;
     } else {
         s = (s32 *)(base + (*(s32 *)(base + 0x4C) + 0x4C)) + arg1;
-        e = (u8 *)s + *s;
+        e = (script_header *)((u8 *)s + *s);
     }
     p->flags = arg3;
     p->dbase = db;
     p->script = arg1;
     p->threads = NULL;
     p->time.w = 0;
-    p->time.h.frame = *(u16 *)(e + 0xC);
-    q = (s32 *)(e + 0x1C);
-    p->unk10 = *(s32 *)(e + 8);
+    p->time.h.frame = *(u16 *)&e->start_frame;
+    q = (s32 *)e->threaddata;
+    p->unk10 = e->end_frame;
     p->handle = NULL;
     i = 0;
-    if (*(s32 *)e > 0) {
+    if (e->threadcount > 0) {
         do {
             u8 *a = (u8 *)q + *q;
             fn = ScriptCommands[*(s32 *)a].init;
@@ -873,7 +873,7 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
                 fn(a, p, i);
             }
             q++;
-        } while (++i < *(s32 *)e);
+        } while (++i < e->threadcount);
     }
     update_script(p);
     *(void **)((u8 *)sub + 0x54) = plot_script_nas;
@@ -1006,7 +1006,7 @@ void kill_script_threads(script_control_info *ci) {
 void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg3,
                    script_control_info **arg4) {
     u8 *e;
-    u8 *hdr;
+    script_header *hdr;
     s32 *t;
     s32 *q;
     s32 i;
@@ -1015,7 +1015,7 @@ void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg
     e = arg0->data;
     if (e != NULL) {
         s32 *p = (s32 *)(e + (*(s32 *)(e + 0x4C) + 0x4C)) + arg1;
-        hdr = (u8 *)p + *p;
+        hdr = (script_header *)((u8 *)p + *p);
     } else {
         hdr = NULL;
     }
@@ -1024,14 +1024,14 @@ void script_attach(obj_dbase *arg0, s32 arg1, script_control_info *arg2, s32 arg
     arg2->script = arg1;
     arg2->threads = NULL;
     arg2->time.w = 0;
-    arg2->time.h.frame = *(s16 *)(hdr + 0xC);
-    arg2->unk10 = *(s32 *)(hdr + 0x8);
+    arg2->time.h.frame = *(s16 *)&hdr->start_frame;
+    arg2->unk10 = hdr->end_frame;
     arg2->handle = (s32 *)arg4;
     if (arg4 != NULL) {
         *arg4 = arg2;
     }
-    t = (s32 *)(hdr + 0x1C);
-    for (i = 0; i < *(s32 *)hdr; i++) {
+    t = (s32 *)hdr->threaddata;
+    for (i = 0; i < hdr->threadcount; i++) {
         q = (s32 *)((u8 *)t + *t);
         fn = ScriptCommands[*q].init;
         if (fn != NULL) {
@@ -1192,29 +1192,29 @@ void vel_update(VelObj *obj, VelParams *p, VelState *s) {
     }
 }
 
-void init_emitter_thread(u8 *def, script_control_info *ci, s32 num) {
+void init_emitter_thread(script_thread *def, script_control_info *ci, s32 num) {
     script_thread_handler *p;
-    u8 *e;
+    partdata *e;
     subengine *q;
     obj_dbase *v;
     u16 w;
 
     p = ThreadPush(ci);
     if (p != NULL) {
-        e = def + 0x14;
+        e = &def->type.particle;
         p->thread_type = 1;
         p->thread_num = num;
         p->type.particle.subs = NULL;
         p->type.particle.last_sub = NULL;
         p->type.particle.num_subs = subs_alloc_list(&p->type.particle.subs, &p->type.particle.last_sub,
-                                                    *(s32 *)(e + 0x10));
+                                                    e->maxparticlecount);
         q = p->type.particle.subs;
         if (q != NULL) {
             do {
                 q->flags = 0;
                 v = ci->dbase;
                 q->u6C.dbase = v;
-                w = *(u16 *)(def + 0x3C);
+                w = *(u16 *)&def->type.particle.frame;
                 q->unk51 = 0;
                 q->unk52 = 1;
                 q->entity = w;
@@ -1222,19 +1222,19 @@ void init_emitter_thread(u8 *def, script_control_info *ci, s32 num) {
             } while (q != NULL);
         }
         p->type.particle.mdata = NULL;
-        mal_alloc_owned_low(*(s32 *)(e + 0x10) * 0x28, (void **)&p->type.particle.mdata, (s32)&MainHeap, 0);
+        mal_alloc_owned_low(e->maxparticlecount * 0x28, (void **)&p->type.particle.mdata, (s32)&MainHeap, 0);
     }
 }
 
-void init_fade_thread(u8 *def, script_control_info *ci, s32 num) {
+void init_fade_thread(script_thread *def, script_control_info *ci, s32 num) {
     script_thread_handler *p;
 
     p = ThreadPush(ci);
     if (p != NULL) {
         p->thread_type = 4;
         p->thread_num = num;
-        p->type.fade.start = *(s32 *)(def + 0x14);
-        p->type.fade.end = *(s32 *)(def + 0x18);
+        p->type.fade.start = def->type.fade.start;
+        p->type.fade.end = def->type.fade.end;
     }
 }
 
@@ -1242,7 +1242,7 @@ void render_entity_thread(script_thread_handler *th, geom_info *gi) {
     draw_object((u8 *)&th->type.entity.sub, gi->rot, th->type.entity.sub.flags);
 }
 
-void init_entity_thread(u8 *def, script_control_info *ci, s32 num) {
+void init_entity_thread(script_thread *def, script_control_info *ci, s32 num) {
     script_thread_handler *p;
     subengine *sub;
     obj_dbase *v;
@@ -1257,7 +1257,7 @@ void init_entity_thread(u8 *def, script_control_info *ci, s32 num) {
         sub->entity = 0;
         sub->flags = 0;
         sub->u6C.dbase = v;
-        w = *(u16 *)(def + 0x28);
+        w = *(u16 *)&def->type.entity[5];
         sub->unk68 = w;
         if ((w << 16) != 0) {
             sub->flags |= 0x2000000;
@@ -1324,7 +1324,7 @@ s32 *find_range_24(u8 *arg0, s32 arg1) {
     return p;
 }
 
-void init_model_thread(u8 *def, script_control_info *ci, s32 num) {
+void init_model_thread(script_thread *def, script_control_info *ci, s32 num) {
     script_thread_handler *p;
     subengine *sub;
     obj_dbase *v;
@@ -1339,7 +1339,7 @@ void init_model_thread(u8 *def, script_control_info *ci, s32 num) {
         sub->entity = 0;
         sub->flags = 0;
         sub->u6C.dbase = v;
-        w = *(u16 *)(def + 0x1C);
+        w = *(u16 *)&def->type.entity[2];
         sub->unk68 = w;
         if ((w << 16) != 0) {
             sub->flags |= 0x2000000;
