@@ -76,8 +76,11 @@ Sony objects. Next, none of them needing a playtest:
    +0x08..+0x1C, script tracks, the map's path table, the card image).
    `obj_texture`'s +0x18 block is its own struct, `info` (`GfxTexInfo`: VRAM rect, src,
    tpage, clut, uv0..3), since two functions take a pointer to it; GfxTexEntry is folded.
-   Lead: GfxTexSet.cluts, TexEnt12 and AnimClut are three views of the 12-byte clut entry,
-   and GfxTexSet/GfxModel views of obj_textureset/obj_dbase (fold once the clut entry is one).
+   One clut entry, `TexClut` (TexEnt12, ClutUpload, AnimClut, GfxClutEntry folded); AnimTex
+   and TexAnimEntry folded into obj_texture (`clut`, `dv`, `flags`, `frames`, `pix`, `time`,
+   `info.vram` the VRAM node); GfxModel/GfxTexSet folded into obj_dbase/obj_textureset, and
+   `RenderState.dbase`. The model file read through `dbase->data` is still cast to the
+   RelTable/UvTable views: that is the model file struct of the asset formats item.
 3. The overlays' GameInfo views (`HubGameView`, `TankModeView`, `PolarModeView`, ...: 47
    types) fold into `GameState` the same way (scratch/views_map.py + fold_views.py did the
    engine's: map each view's fields onto GameState by offset, fold in rounds of
@@ -484,6 +487,11 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-28 (Phase 5: the texture views):** obj_texture nests its +0x18 block (`info`,
+  GfxTexInfo); four clut entry views are `TexClut`; AnimTex, TexAnimEntry, GfxTexEntry,
+  GfxModel and GfxTexSet folded. field_rename.py takes dotted new names (`info.vramX`); where a
+  primitive's own `tpage`/`clut` met the renamed field on one line both got renamed (fixed by
+  hand). texture_update_scroll reads the VRAM node's x, y signed: `(s16)` casts.
 - **2026-10-28 (Phase 5: the exe's raw offsets):** typed with retype.py and by hand, each
   checked by its callers: the prim set pool and `primset_alloc` (`PrimSet`), the music slot's
   `songs[5]`, the large clut list (`FreeNode`), `TexFrameAnim`/`texture_scroll` walks,
