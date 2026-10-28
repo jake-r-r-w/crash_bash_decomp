@@ -1925,39 +1925,53 @@ _sfx_handler *IntroSfx[3] = {0};
 _sfx_handler *IntroSfxHandle = 0;
 s32 WarpReturnProcess[5] = { (s32)ReturnToWarpRoom, 0, 0, 0, 0 };
 s32 NextGameMode = 0;
-s32 D_8009E5E0[16] = {
-    1, 0, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2005, 1, 1, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2006, 1, 2, (s32)&HeroModelBank[DB_MainmenuArenaModels2],
-    0x2007, 1, 3, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2008,
+EngineEntry16Head Cup0Arenas[4] = {
+    { 1, 0, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2005 },
+    { 1, 1, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2006 },
+    { 1, 2, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2007 },
+    { 1, 3, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2008 },
 };
-s32 D_8009E620[16] = {
-    1, 0x13, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2005, 1, 0x12, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2006, 1, 0x14,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2007, 1, 0x15, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2008,
+EngineEntry16Head Cup1Arenas[4] = {
+    { 1, 0x13, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2005 },
+    { 1, 0x12, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2006 },
+    { 1, 0x14, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2007 },
+    { 1, 0x15, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2008 },
 };
-s32 D_8009E660[16] = {
-    1, 0xA, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001, 1, 0xB, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2002, 1, 0xC,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2003, 1, 0xD, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001,
+EngineEntry16Head Cup2Arenas[4] = {
+    { 1, 0xA, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001 },
+    { 1, 0xB, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2002 },
+    { 1, 0xC, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2003 },
+    { 1, 0xD, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001 },
 };
-s32 D_8009E6A0[16] = {
-    1, 0xE, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2001, 1, 0xF, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2002, 1, 0x10,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2003, 1, 0x11, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2004,
+EngineEntry16Head Cup3Arenas[4] = {
+    { 1, 0xE, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2001 },
+    { 1, 0xF, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2002 },
+    { 1, 0x10, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2003 },
+    { 1, 0x11, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2004 },
 };
-s32 D_8009E6E0[16] = {
-    2, 6, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2009, 2, 8, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200A, 2, 7, (s32)&HeroModelBank[DB_MainmenuArenaModels1],
-    0x200B, 2, 5, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200C,
+EngineEntry16Head Cup4Arenas[4] = {
+    { 2, 6, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2009 },
+    { 2, 8, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200A },
+    { 2, 7, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200B },
+    { 2, 5, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200C },
 };
-s32 D_8009E720[16] = {
-    2, 0x17, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2009, 2, 0x18, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200A, 2, 0x1A,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200B, 2, 0x19, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200C,
+EngineEntry16Head Cup5Arenas[4] = {
+    { 2, 0x17, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2009 },
+    { 2, 0x18, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200A },
+    { 2, 0x1A, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200B },
+    { 2, 0x19, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200C },
 };
-s32 D_8009E760[16] = {
-    2, 0x1B, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200D, 2, 0x1C, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200E, 2, 0x1D,
-    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200F, 2, 0x1E, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2010,
+EngineEntry16Head Cup6Arenas[4] = {
+    { 2, 0x1B, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200D },
+    { 2, 0x1C, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200E },
+    { 2, 0x1D, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200F },
+    { 2, 0x1E, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2010 },
 };
 EngineTable12 CupTable[7] = {
-    { 1, (void *)&D_8009E5E0, 4 }, { 1, (void *)&D_8009E620, 4 },
-    { 1, (void *)&D_8009E660, 4 }, { 1, (void *)&D_8009E6A0, 4 },
-    { 3, (void *)&D_8009E6E0, 4 }, { 3, (void *)&D_8009E720, 4 },
-    { 3, (void *)&D_8009E760, 4 },
+    { 1, Cup0Arenas, 4 }, { 1, Cup1Arenas, 4 },
+    { 1, Cup2Arenas, 4 }, { 1, Cup3Arenas, 4 },
+    { 3, Cup4Arenas, 4 }, { 3, Cup5Arenas, 4 },
+    { 3, Cup6Arenas, 4 },
 };
 u8 CupMenuPanel[180] = {
     4, 0, 0, 0, 0x32, 0, 0x36, 1, 0x58, 0, 0xD0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
