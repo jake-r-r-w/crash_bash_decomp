@@ -1216,42 +1216,42 @@ void draw_animated_sub(u8 *arg0, u8 *arg1, s32 arg2) {
     draw_object(arg0, arg1, arg2);
 }
 
-s32 PlaceFlashSub(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4) {
+s32 PlaceFlashSub(PlaceSub *p, s32 a1, s32 a2, s32 a3, s32 a4) {
     if (p == NULL) {
         return 0;
     }
-    p[0] = 0x10008000;
-    p[0x54 / 4] = (s32)posdst_flash;
-    p[1] = a1;
-    p[2] = a2;
-    p[0x6C / 4] = a3;
-    p[0x7C / 4] = a4;
-    return p[0x5C / 4];
+    p->flags = 0x10008000;
+    p->hook = posdst_flash;
+    p->x = a1;
+    p->y = a2;
+    p->unk6C = a3;
+    p->unk7C = a4;
+    return (s32)p->next;
 }
 
-s32 PlaceTextSub(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
-    Tmpl1C *t;
+s32 PlaceTextSub(PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
+    sub_string_info *t;
     if (p == NULL) {
         return 0;
     }
     t = &TextTemplates[idx];
-    *(s32 *)p = t->f0 | 0x12008000;
-    *(s32 *)(p + 0x54) = (s32)draw_nas_model;
+    p->flags = t->f0 | 0x12008000;
+    p->hook = draw_nas_model;
     if ((a1 & 0xC000) == 0x8000) {
         a2 = a2 * 0x280 / ScreenRect->w;
     }
-    *(s32 *)(p + 0x6C) = t->f0;
-    *(s16 *)(p + 0x70) = a1;
-    *(s16 *)(p + 0x76) = a2;
-    *(s16 *)(p + 0x72) = a3;
-    *(s16 *)(p + 0x78) = a4;
-    *(s32 *)(p + 0x7C) = t->f4;
-    *(u16 *)(p + 0x84) = t->f10;
-    *(u16 *)(p + 0x86) = t->f14;
-    *(s32 *)(p + 0x80) = t->fC;
-    *(s32 *)(p + 0x88) = t->f8;
-    *(u16 *)(p + 0x68) = t->f18;
-    return *(s32 *)(p + 0x5C);
+    p->unk6C = t->f0;
+    p->unk70 = a1;
+    p->unk76 = a2;
+    p->unk72 = a3;
+    p->unk78 = a4;
+    p->unk7C = t->f4;
+    p->unk84 = t->f10;
+    p->unk86 = t->f14;
+    p->unk80 = t->fC;
+    p->unk88 = t->f8;
+    p->unk68 = t->f18;
+    return (s32)p->next;
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
@@ -1570,7 +1570,7 @@ script_handler *SceneScript = 0;
 s32 SceneStarting = 0;
 s32 SceneStep = 0;
 s32 SceneUnused[1] = {0};
-Tmpl1C TextTemplates[11] = {
+sub_string_info TextTemplates[11] = {
     { 0x8001, 0, 0x8021, 0x8080, 4, 0, 4, 0, 0x180, 0 },
     { 0x8001, 0, 0x8021, 0x8080, 4, 0, 4, 0, 0x100, 0 },
     { 0x8000, 0, 0x8000, 0xC0C0, 4, 0, 4, 0, 0x180, 0 },

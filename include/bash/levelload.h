@@ -12,7 +12,9 @@ extern u16 LoadingEntities[];
 
 
 
-typedef struct Tmpl1C {
+/* A text panel's template (TextTemplates; the Oct 9 prototype's sub_string_info, 0x1C bytes):
+ * PlaceTextSub copies it into the panel's subengine. */
+struct sub_string_info {
     s32 f0;
     s32 f4;
     s32 f8;
@@ -23,9 +25,9 @@ typedef struct Tmpl1C {
     u16 pad16;
     u16 f18;
     u16 pad1A;
-} Tmpl1C;
+};
 
-extern Tmpl1C TextTemplates[];
+extern sub_string_info TextTemplates[];
 extern u8 *ModeFileGroups[];
 
 void QuitLevelLoad(void);
@@ -123,7 +125,7 @@ static inline void PlaceSprite(PlaceSub *s, s32 x, s32 y, s32 img, s32 clut) {
 }
 
 static inline void PlaceTmpl(PlaceSub *s, s32 x, s32 y, s32 z, s32 scale, s32 idx) {
-    Tmpl1C *t;
+    sub_string_info *t;
 
     if (s != NULL) {
         t = &TextTemplates[idx];
@@ -181,7 +183,7 @@ void DrawSceneMarks(void);
 
 void draw_animated_sub(u8 *arg0, u8 *arg1, s32 arg2);
 
-s32 PlaceFlashSub(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
+s32 PlaceFlashSub(struct PlaceSub *p, s32 a1, s32 a2, s32 a3, s32 a4);
 
 void QuitScriptScene(void);
 
@@ -205,7 +207,7 @@ void UpdateSceneVabCues(void);
 
 ScriptScene *PickModeVariant(s32 arg0);
 
-s32 PlaceTextSub(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
+s32 PlaceTextSub(struct PlaceSub *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
 
 typedef struct MarkSrcEnt {
     /* 0x00 */ s16 val;

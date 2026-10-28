@@ -193,7 +193,7 @@ void InitBigScore(void) {
     BigScore1.unk10.y = 0x8C;
     BigScore1.unk10.z = 0;
     subs_init_array(&BigScore1, 1, &BigScoreParts1);
-    PlaceFlashSub((s32 *)&BigScoreParts1, -0x30, 0, left_score, 0);
+    PlaceFlashSub((PlaceSub *)&BigScoreParts1, -0x30, 0, left_score, 0);
     BigScore1.unk5D = 0;
     BigScore1.unk5C = 1;
     BigScoreParts1.flags &= ~0x10000000;
@@ -203,7 +203,7 @@ void InitBigScore(void) {
     BigScore2.unk10.y = 0x8C;
     BigScore2.unk10.z = 0;
     subs_init_array(&BigScore2, 1, &BigScoreParts2);
-    PlaceFlashSub((s32 *)&BigScoreParts2, -0x30, 0, right_score, 0);
+    PlaceFlashSub((PlaceSub *)&BigScoreParts2, -0x30, 0, right_score, 0);
     BigScore2.unk5C = 1;
     BigScore2.unk5D = 0;
     BigScore_scale = 0x10;

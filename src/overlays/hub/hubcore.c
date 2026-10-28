@@ -2539,7 +2539,7 @@ void HubSaveMenuInit(void) {
     HubNameEngine.flags |= 0x10000000;
     if (i < list->count) {
         do {
-            PlaceFlashSub((s32 *)s, p->a, p->b, p->c, 0);
+            PlaceFlashSub((PlaceSub *)s, p->a, p->b, p->c, 0);
             p++;
             s++;
             i++;
@@ -2639,7 +2639,7 @@ void HubSaveMenuSubs(SubInitList *list) {
     p = list->items;
     if (list->count > 0) {
         do {
-            PlaceFlashSub((s32 *)s, p->a, p->b, p->c, 0);
+            PlaceFlashSub((PlaceSub *)s, p->a, p->b, p->c, 0);
             p++;
             s++;
             i++;

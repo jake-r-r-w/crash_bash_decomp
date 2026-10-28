@@ -134,15 +134,15 @@ s32 HubCreditsScroll(void) {
             ypos = y - HubCreditsY - 50;
             switch (line->kind) {
             case 1:
-                PlaceFlashSub((s32 *)sub, 0x8000, ypos, (s32)line->text, 7);
+                PlaceFlashSub((PlaceSub *)sub, 0x8000, ypos, (s32)line->text, 7);
                 y += n * 40;
                 break;
             case 0:
-                PlaceFlashSub((s32 *)sub, 0x8000, ypos, (s32)line->text, 0);
+                PlaceFlashSub((PlaceSub *)sub, 0x8000, ypos, (s32)line->text, 0);
                 y += n * 40;
                 break;
             case 2:
-                PlaceFlashSub((s32 *)sub, 0x8000, ypos, (s32)line->text, 4);
+                PlaceFlashSub((PlaceSub *)sub, 0x8000, ypos, (s32)line->text, 4);
                 y += n * 20;
                 break;
             case 3:
