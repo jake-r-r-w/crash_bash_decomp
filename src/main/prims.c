@@ -75,7 +75,7 @@ void prims_init(s32 *cfg) {
     PrimSetList = NULL;
     ((PrimSet *)p)->next = NULL;
     PrimPool.mem = NULL;
-    PrimSetFree = (s32 *)PrimSetPool;
+    PrimSetFree = (PrimSet *)PrimSetPool;
 }
 
 static inline void PrimList_Flush(PrimList *arg0, s32 arg1) {
@@ -109,8 +109,8 @@ static inline void PrimSet_Free(PrimSet *prev, PrimSet *set) {
         next = set->next;
         PrimSetList = next;
     }
-    set->next = (PrimSet *) PrimSetFree;
-    PrimSetFree = (s32 *) set;
+    set->next = PrimSetFree;
+    PrimSetFree = set;
 }
 
 void prims_update(void) {
@@ -183,7 +183,7 @@ void prims_empty_back(void) {
 
     idx = (FrameCount & 1) ^ 1;
     DrawSync(0);
-    node = (PrimSet *)PrimSetList;
+    node = PrimSetList;
     for (;;) {
         if (node == NULL) {
             return;
@@ -720,43 +720,43 @@ s32 *primlist_pop_b(PrimList *l) {
     return n;
 }
 
-s32 *primset_alloc(s32 **arg0, s32 arg1) {
-    s32 *p;
-    s32 *next;
-    void *prev;
+PrimSet *primset_alloc(PrimSet **out, s32 mode) {
+    PrimSet *p;
+    PrimSet *next;
+    PrimSet *prev;
 
     p = PrimSetFree;
     if (p == NULL) {
         return NULL;
     }
-    *arg0 = p;
-    next = (s32 *)p[0];
+    *out = p;
+    next = p->next;
     prev = PrimSetList;
     PrimSetList = p;
-    p[6] = 0;
-    p[7] = 0;
-    p[8] = 0;
-    p[9] = 0;
-    p[10] = 0;
-    p[16] = 0;
-    p[17] = 0;
-    p[18] = 0;
-    p[19] = 0;
-    p[20] = 0;
-    p[1] = 0;
-    p[2] = 0;
-    p[3] = 0;
-    p[4] = 0;
-    p[5] = 0;
-    p[11] = 0;
-    p[12] = 0;
-    p[13] = 0;
-    p[14] = 0;
-    p[15] = 0;
-    *(s16 *)(p + 21) = arg1;
-    *((s16 *)(p + 21) + 1) = 0;
+    p->pairs[0].a.f0 = 0;
+    p->pairs[0].a.f4 = 0;
+    p->pairs[0].a.f8 = NULL;
+    p->pairs[0].a.fC = NULL;
+    p->pairs[0].a.f10 = NULL;
+    p->pairs[1].a.f0 = 0;
+    p->pairs[1].a.f4 = 0;
+    p->pairs[1].a.f8 = NULL;
+    p->pairs[1].a.fC = NULL;
+    p->pairs[1].a.f10 = NULL;
+    p->pairs[0].b.f0 = 0;
+    p->pairs[0].b.f4 = 0;
+    p->pairs[0].b.f8 = NULL;
+    p->pairs[0].b.fC = NULL;
+    p->pairs[0].b.f10 = NULL;
+    p->pairs[1].b.f0 = 0;
+    p->pairs[1].b.f4 = 0;
+    p->pairs[1].b.f8 = NULL;
+    p->pairs[1].b.fC = NULL;
+    p->pairs[1].b.f10 = NULL;
+    p->mode = mode;
+    p->dead = 0;
     PrimSetFree = next;
-    p[0] = (s32)prev;
+    p->next = prev;
     return p;
 }
 
@@ -988,7 +988,7 @@ void *model_prims_begin(void *arg0, s32 arg1) {
     prim = NULL;
     if ((arg1 & 0x40000001) | RenderState.modelDp | (PrimDepthTest != 0 && (u32)prim < PrimDepthLimit)) {
         set = *(PrimSet **)arg0;
-        if (set != NULL || (set = (PrimSet *)primset_alloc((s32 **)arg0, ((FaceRuns *)arg0)->faces >= 3)) != NULL) {
+        if (set != NULL || (set = primset_alloc((PrimSet **)arg0, ((FaceRuns *)arg0)->faces >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 1, &p->pairs[0].b, arg0, 0);
@@ -1022,7 +1022,7 @@ void *model_prims_begin(void *arg0, s32 arg1) {
         }
     } else {
         set = *(PrimSet **)arg0;
-        if (set != NULL || (set = (PrimSet *)primset_alloc((s32 **)arg0, ((FaceRuns *)arg0)->faces >= 3)) != NULL) {
+        if (set != NULL || (set = primset_alloc((PrimSet **)arg0, ((FaceRuns *)arg0)->faces >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 0, &p->pairs[0].a, arg0, set->mode);
@@ -3333,8 +3333,8 @@ s32 *PrimNodeFree = 0;
 u8 *PrimLinkPool = 0;
 s32 *PrimLinkFree = 0;
 u8 *PrimSetPool = 0;
-s32 *PrimSetFree = 0;
-void *PrimSetList = 0;
+PrimSet *PrimSetFree = 0;
+PrimSet *PrimSetList = 0;
 s32 FarColor[3] = {0};
 s32 PrimUnused[1] = {0};
 s32 PrimDepthTest = 0;

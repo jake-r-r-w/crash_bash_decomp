@@ -3207,14 +3207,14 @@ dec:
     return r;
 }
 
-void *clut_alloc_large(void) {
-    u8 *cur;
+ClutPos *clut_alloc_large(void) {
+    FreeNode *cur;
 
     cur = ClutLargeList;
     if (cur != NULL) {
-        ClutLargeList = *(void **)(cur + 4);
+        ClutLargeList = cur->next;
     }
-    return cur;
+    return (ClutPos *)cur;
 }
 
 FreeNode *vram_alloc_node(void) {
@@ -4260,7 +4260,7 @@ s32 VramReq128[6] = { 0, 0, 0x80, 0, 0x40, 0 };
 u8 VramReqEnd[12] = { 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0xFF, 0xFF, 0, 0 };
 FreeNode *ClutFreeSmall = 0;
 FreeNode *ClutUsedSmall = 0;
-void *ClutLargeList = 0;
+FreeNode *ClutLargeList = 0;
 s32 VramNodePool[524] = {
     0x1600300, 0, 0, 0, 0, 0,
     0x1610300, 0, 0, 0, 0, 0,

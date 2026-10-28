@@ -543,11 +543,7 @@ typedef struct PadState {
 typedef struct music_midi {
     /* 0x00 */ s32 data;                 /* heap block, freed by music_free */
     /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
-    /* 0x08 */ s32 p8;                   /* data + header offset (music_setup_slot) */
-    /* 0x0C */ s32 pC;
-    /* 0x10 */ s32 p10;
-    /* 0x14 */ s32 p14;
-    /* 0x18 */ s32 p18;
+    /* 0x08 */ s32 songs[5];             /* each song's SEQ data: data + its header offset (music_setup_slot) */
     /* 0x1C */ s32 unk1C;                /* set to -1 on close */
 } music_midi;
 
@@ -925,7 +921,7 @@ extern u8 VramSmallReq[];
 extern u8 VramReqEnd[];
 extern FreeNode *ClutFreeSmall;
 extern FreeNode *ClutUsedSmall;
-extern void *ClutLargeList;        /* list walked by clut_alloc_large (next at +4) */
+extern FreeNode *ClutLargeList;    /* the large cluts' free list (clut_alloc_large) */
 extern s32 MalFreeBytes;            /* mal_count_free: free bytes */
 extern s32 MalFreeBlocks;            /* mal_count_free: free blocks */
 extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N at [2 * N] */
@@ -1301,6 +1297,8 @@ typedef struct PrimSet {
     u16 mode;              /* 0x54 */
     u16 dead;              /* 0x56 */
 } PrimSet;
+extern PrimSet *PrimSetList;
+extern PrimSet *PrimSetFree;
 extern s32 *PrimLinkFree;
 extern NAS *NASActiveHead;
 extern s32 num_sfx_banks;
@@ -1316,8 +1314,6 @@ extern s32 ScriptThreadPool;
 extern s32 ScriptPool;
 extern u8 GameCup;
 extern void *HeadOfBalls;
-extern void *PrimSetList;
-extern s32 *PrimSetFree;
 /* An ordering table and the primitive area drawn through it (0x400C bytes;
  * DrawBuffers holds two). */
 typedef struct {

@@ -94,7 +94,7 @@ s32 pad_read_mtap(u8 *src, u8 *dst, s32 n);
 s32 CountObjects(void);
 void ReAdoptChild(NAS *list, NAS *nas);
 void texsrc_init(u8 *src, u8 *out, s32 len);
-void *clut_alloc_large(void);
+ClutPos *clut_alloc_large(void);
 ClutPos *clut_alloc_small(void);
 void AddSolid(NAS *nas, s32 bits);
 void pads_init_mtap(void);

@@ -87,7 +87,7 @@ void mapscene_init(s32 *arg0, s32 *arg1);
 KeyEntry *key_find(KeyBlock *arg0, s32 arg1);
 s32 path_find(u32 arg0);
 void primpool_init(s32 count);
-s32 *primset_alloc(s32 * *arg0, s32 arg1);
+PrimSet *primset_alloc(PrimSet **out, s32 mode);
 void primlist_reset(PrimList *arg0, s32 arg1);
 void primlist_release(PrimList *arg0, s32 arg1);
 void morph_copy_verts(u8 *arg0, u16 *src, u8 *tab, u16 *dst);

@@ -11,7 +11,7 @@ void music_open_seq(music_midi *slot, s32 idx) {
             SsSepStop((s16)slot->seq, 0);
         }
     }
-    SsSeqOpen(*(s32 *)(((u8 *)slot + 8) - (-(idx * 4))), (s16)slot->seq);
+    SsSeqOpen(slot->songs[idx], (s16)slot->seq);
     slot->unk1C = idx;
     SsSetMVol(0x7F, 0x7F);
     SsSeqPlay((s16)slot->seq, 1, 0);
@@ -137,13 +137,13 @@ void music_setup_slot(music_midi *slot) {
 
     head = (u8 *)h + h->head;
     body = (u8 *)h + h->body;
-    slot->p8 = (s32)h + h->o8;
-    slot->pC = slot->data + ((SeqHdr *)slot->data)->oC;
-    slot->p10 = slot->data + ((SeqHdr *)slot->data)->o10;
-    slot->p14 = slot->data + ((SeqHdr *)slot->data)->o14;
+    slot->songs[0] = (s32)h + h->o8;
+    slot->songs[1] = slot->data + ((SeqHdr *)slot->data)->oC;
+    slot->songs[2] = slot->data + ((SeqHdr *)slot->data)->o10;
+    slot->songs[3] = slot->data + ((SeqHdr *)slot->data)->o14;
     new_var = slot->data + ((SeqHdr *)slot->data)->o18;
     slot->unk1C = -1;
-    slot->p18 = new_var;
+    slot->songs[4] = new_var;
     slot->seq = SsVabOpenHead(head, -1);
     SsVabTransBody(body, (s16)slot->seq);
     SpuIsTransferCompleted(1);
