@@ -96,6 +96,112 @@ def layout(d):
     return out
 
 
+# ---- scripts: their headers and threads, as (name, offset, struct format) specs
+
+SCRIPT_HEAD = [("threads", 0, "i"), ("subs", 4, "i"), ("end_frame", 8, "i"), ("start_frame", 0xC, "i"),
+               ("frames", 0x10, "i"), ("spare", 0x14, "2i")]
+THREAD_HEAD = [("start_frame", 4, "i"), ("end_frame", 8, "i"), ("total_frames", 0xC, "i"),
+               ("key_frame_count", 0x10, "i")]
+OBJ_KEY = [("start", 0, "i"), ("len", 4, "i"), ("unk8", 8, "h"), ("unkA", 0xA, "h"), ("pos", 0xC, "3i"),
+           ("unk18", 0x18, "3i"), ("rot", 0x24, "4i"), ("unk34", 0x34, "3i"), ("scale", 0x40, "3i"),
+           ("fade", 0x4C, "i")]
+CAM_KEY = [("start", 0, "i"), ("len", 4, "i"), ("at", 8, "3i"), ("eye", 0x14, "3i"), ("unk20", 0x20, "2i")]
+ANIM_KEY = [("start", 0, "i"), ("len", 4, "i"), ("pos", 8, "3i"), ("unk14", 0x14, "3i"), ("rot", 0x20, "4i"),
+            ("unk30", 0x30, "3i"), ("scale", 0x3C, "3i"), ("alpha", 0x48, "i")]
+PARTDATA = ["flags", "pos", "maxparticlecount", "particlesperframe", "particlelifetime", "effecttime",
+            "emitterspeed", "randomspeedflag", "frame", "emitterradius", "yrotmin", "yrotmax", "xrotmin",
+            "xrotmax", "gxmin", "gxmax", "gymin", "gymax", "gzmin", "gzmax", "fadeinend", "fadeoutstart",
+            "scaleinend", "scaleoutstart", "zrot", "regenparticle"]
+# type: (name, fields, (keys at, key size, key fields) or None); the update functions in
+# src/main/scripts.c read them (ScriptCommands), the names are the Oct 9 prototype's where it has them
+THREADS = {
+    0: ("model", [("unk14", 0x14, "i"), ("flags", 0x18, "i"), ("unk1C", 0x1C, "i"), ("unk20", 0x20, "i")],
+        (0x24, 0x50, OBJ_KEY)),
+    1: ("emitter", [(n, 0x14 + off, "3i" if n == "pos" else "i")     # partdata: flags, pos, then words
+                    for n, off in zip(PARTDATA, [0, 4] + [0x10 + 4 * k for k in range(len(PARTDATA) - 2)])], None),
+    2: ("camera", [("unk14", 0x14, "i"), ("dist", 0x18, "i")], (0x1C, 0x28, CAM_KEY)),
+    3: ("entity", [("aframe", 0x14, "i"), ("start_aframe", 0x18, "i"), ("end_aframe", 0x1C, "i"),
+                   ("delay", 0x20, "i"), ("prolong", 0x24, "i"), ("sort_priority", 0x28, "i"), ("spare", 0x2C, "i")],
+        (0x30, 0x4C, ANIM_KEY)),
+    4: ("fade", [("start", 0x14, "i"), ("end", 0x18, "i")], None),
+    5: ("subscript", [("script_num", 0x14, "i"), ("sort_priority", 0x18, "i"), ("spare1", 0x1C, "i"),
+                      ("spare2", 0x20, "i"), ("key", 0x24, "18i")], None),
+}
+
+
+def _get(d, o, fmt):
+    if not 0 <= o <= len(d) - struct.calcsize("<" + fmt):
+        raise Bad(f"scripts: 0x{o:X} past the end")
+    v = struct.unpack_from("<" + fmt, d, o)
+    return list(v) if len(v) > 1 else v[0]
+
+
+def script_items(d):
+    """[(path, offset, format)] of every script field, and the threads' (path, type) list. A path
+    is a tuple of keys into read()'s "scripts"."""
+    items, kinds = [], []
+    for si, s in enumerate(layout(d)["scripts"]):
+        for name, off, fmt in SCRIPT_HEAD:
+            items.append(((si, name), s + off, fmt))
+        for ti in range(_get(d, s, "i")):
+            t = s + 0x1C + 4 * ti + _get(d, s + 0x1C + 4 * ti, "i")
+            ty = _get(d, t, "i")
+            if ty not in THREADS:
+                raise Bad(f"scripts: thread at 0x{t:X} has type {ty}")
+            name, fields, keys = THREADS[ty]
+            kinds.append(((si, "thread_list", ti), name, t))
+            for fname, off, fmt in THREAD_HEAD + fields:
+                items.append(((si, "thread_list", ti, fname), t + off, fmt))
+            if keys:
+                at, size, kf = keys
+                k, ki = t + at, 0
+                while True:
+                    for fname, off, fmt in kf:
+                        items.append(((si, "thread_list", ti, "keys", ki, fname), k + off, fmt))
+                    if _get(d, k + 4, "i") == 0:              # len 0 ends the track
+                        break
+                    k, ki = k + size, ki + 1
+    return items, kinds
+
+
+def _scripts(d):
+    items, kinds = script_items(d)
+    out = []
+    for path, off, fmt in items:
+        node = out
+        for key in path[:-1]:                         # an int key indexes a list of dicts
+            if isinstance(key, int):
+                while len(node) <= key:
+                    node.append({})
+                node = node[key]
+            else:
+                node = node.setdefault(key, [])
+        node[path[-1]] = _get(d, off, fmt)
+    for s in out:
+        s.setdefault("thread_list", [])
+    for path, name, t in kinds:
+        th = out[path[0]]["thread_list"][path[2]]
+        th["type"] = name
+        th["at"] = f"0x{t:X}"
+    return out
+
+
+def _write_scripts(d, scripts):
+    """Write the fields that differ from the file's: threads may share bytes (a thread that starts
+    inside another's keys), so only an edited field is written."""
+    items, _ = script_items(bytes(d))
+    for path, off, fmt in items:
+        node = scripts
+        try:
+            for key in path:
+                node = node[key]
+        except (IndexError, KeyError, TypeError):
+            raise Bad(f"scripts: {'/'.join(map(str, path))} is missing (threads and keys can't be added or removed)")
+        if node != _get(d, off, fmt):
+            v = node if isinstance(node, list) else [node]
+            struct.pack_into("<" + fmt, d, off, *v)
+
+
 def read(d):
     """The level data as JSON-ready dicts, or None if the file has none."""
     lay = layout(d)
@@ -135,9 +241,7 @@ def read(d):
                      "paths": paths, "triggers": trigs, "contours": contours, "placements": places})
     ents = [{"mesh": None if m is None else f"0x{m:X}", "unk4": _w(d, r + 4), "group": _w(d, r + 8)}
             for r, m in lay["entities"]]
-    scripts = [dict(zip(("threads", "subs", "end_frame", "start_frame", "frames"),
-                        struct.unpack_from("<5i", d, s))) for s in lay["scripts"]]
-    return {"maps": maps, "entities": ents, "scripts": scripts}
+    return {"maps": maps, "entities": ents, "scripts": _scripts(d)}
 
 
 def write(d, meta):
@@ -190,4 +294,6 @@ def write(d, meta):
             d[o + 0x74:o + 0x78] = bytes(jp["unk74"])
             struct.pack_into("<H", d, o + 0x88, jp["model"])
             struct.pack_into("<HH", d, o + 0x9C, jp["unk9C"], jp["unk9E"])
+    if "scripts" in meta:
+        _write_scripts(d, meta["scripts"])
     return d
