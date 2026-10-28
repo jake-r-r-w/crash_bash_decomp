@@ -73,9 +73,6 @@ static inline void Bonk_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
 extern s32 BonkEntCur;
 extern u16 BonkAIRange[];
 extern ScriptInit BonkFlagScriptInit;
-extern u8 D_80053C0C[];
-extern u8 MalletObjectsModel[];
-extern u8 PowerupsModel[];
 extern s32 GameTeams[];
 extern s32 PanelCtrl;
 extern void *AiSkillTable;

@@ -227,7 +227,6 @@ typedef struct PapuBossState {
 } PapuBossState;
 
 extern PapuBossState PapuBoss;
-extern u8 PapuModel[];
 extern ScriptInit PapuBossScriptInit;
 extern s16 PapuBossCount;
 extern s16 PapuBossLast;
@@ -259,7 +258,6 @@ typedef struct PapuStep {
 } PapuStep;
 
 extern PapuStep *PapuMinionWaves[];
-extern u8 MinionModel[];
 extern ScriptInit PapuMinionScriptInit;
 NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d);
 

@@ -15,26 +15,26 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
     case 5:
     case 7:
         PlaySfx(HitSfx[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(1, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(1, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x208, 0xA0);
         break;
     case 6:
         PlaySfx(((HitSfxTable *)HitSfx)->hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(0, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(0, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x208, 0);
         break;
     case 2:
         PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(2, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(2, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         break;
     case 3:
         PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(4, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(4, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x203, 0xA0);
         break;
     default:
         PlaySfx(((HitSfxTable *)HitSfx)->other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(3, arg0, (s32)CrateObjectsModel);
+        SpawnModelFx(3, arg0, (s32)&HeroModelBank[DB_CrateObjects]);
         HurtHeroesInRadius(obj, 0x280, id, 0x205, 0xA0);
         break;
     }
@@ -50,7 +50,7 @@ void InitCrateExplode(NAS *arg0) {
     if (e != NULL) {
         t = (u8 *)HitSfx;
         PlaySfx(*(s32 *)(t + Random(4) * 4 + 0x30), NULL, NULL, 0x1000, 0x1E00, 0);
-        SpawnModelFx(2, (u8 *)e + 0x10, CrateObjectsModel);
+        SpawnModelFx(2, (u8 *)e + 0x10, &HeroModelBank[DB_CrateObjects]);
     }
     KillNAS(arg0);
 }
@@ -507,7 +507,7 @@ void UpdateCupMenu(void) {
     sub = &GetEngineSlot(0)->sub[4];
     sub->flags |= 0x02008000;
     sub->unk68 = -0x80;
-    sub->unk6C = D_800555DC;
+    sub->unk6C = &HeroModelBank[DB_MainmenuModels];
     sub->unk74 = 0x2006;
     sub->unk12 = FrameCount * 50;
     sub->unk10 = 0;
@@ -1354,10 +1354,10 @@ void InitSaveMenu(void) {
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->unk74 = 0x2007;
-        sub->unk6C = D_800555DC;
+        sub->unk6C = &HeroModelBank[DB_MainmenuModels];
     } else {
         sub->unk74 = 0x201F;
-        sub->unk6C = AdventureItemsModel;
+        sub->unk6C = &HeroModelBank[DB_AdventureItems];
     }
     PlaceEngineSlot(1, &D_8009EEB0);
     D_8009F494 = 0;
@@ -1378,10 +1378,10 @@ void InitCardPromptMenu(void) {
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->unk74 = 0x2007;
-        sub->unk6C = D_800555DC;
+        sub->unk6C = &HeroModelBank[DB_MainmenuModels];
     } else {
         sub->unk74 = 0x201F;
-        sub->unk6C = AdventureItemsModel;
+        sub->unk6C = &HeroModelBank[DB_AdventureItems];
     }
     PlaceEngineSlot(1, &D_8009EEB0);
     D_8009F638 = 0;
@@ -1485,10 +1485,10 @@ void InitCardMenu(void) {
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->unk74 = 0x2007;
-        sub->unk6C = D_800555DC;
+        sub->unk6C = &HeroModelBank[DB_MainmenuModels];
     } else {
         sub->unk74 = 0x201F;
-        sub->unk6C = AdventureItemsModel;
+        sub->unk6C = &HeroModelBank[DB_AdventureItems];
     }
     PlaceEngineSlot(1, &D_8009EEB0);
 }
@@ -1891,9 +1891,6 @@ void SetGameViewport(void) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 /* what the data points at that this file's headers don't declare */
-extern u8 D_80055614[];
-extern u8 D_8005564C[];
-extern u8 D_800556BC[];
 extern u8 D_8005B69C[];
 extern u8 D_8005B6CC[];
 extern u8 D_8005B6FC[];
@@ -1911,8 +1908,8 @@ u8 D_8009E498[40] = {
 IntroStep IntroSteps[4] = {
     { 1, (void *)&DatIndex[2 * 139], 0, 0, -1, { 0x3B6, 0x3B7, 0x3B8 }, 0x3B9, 0x5A },
     { 1, (void *)&DatIndex[2 * 138], 0, 0, -1, { 0x3BB, 0x3BC, 0x3BD }, 0x3BE, 0x8C },
-    { 2, 0, (void *)&D_800556BC, 0, -1, { 0x3C0, 0x3C1, 0x3C2 }, 0x3C3, 0x14 },
-    { 2, 0, (void *)&D_800556F4, 0, 1, { 0x3C5, 0x3C6, 0x3C7 }, 0x3C8, 0x14 },
+    { 2, 0, (void *)&HeroModelBank[DB_CutsceneIntroEurocom], 0, -1, { 0x3C0, 0x3C1, 0x3C2 }, 0x3C3, 0x14 },
+    { 2, 0, (void *)&HeroModelBank[DB_CutsceneIntroLogo2], 0, 1, { 0x3C5, 0x3C6, 0x3C7 }, 0x3C8, 0x14 },
 };
 Blk32 D_8009E560 = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 D_8009E580 = {0};
@@ -1927,32 +1924,32 @@ _sfx_handler *D_8009E5C4 = 0;
 s32 D_8009E5C8[5] = { (s32)ReturnToWarpRoom, 0, 0, 0, 0 };
 s32 NextGameMode = 0;
 s32 D_8009E5E0[16] = {
-    1, 0, (s32)&D_80055614, 0x2005, 1, 1, (s32)&D_80055614, 0x2006, 1, 2, (s32)&D_80055614,
-    0x2007, 1, 3, (s32)&D_80055614, 0x2008,
+    1, 0, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2005, 1, 1, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2006, 1, 2, (s32)&HeroModelBank[DB_MainmenuArenaModels2],
+    0x2007, 1, 3, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2008,
 };
 s32 D_8009E620[16] = {
-    1, 0x13, (s32)&D_8005564C, 0x2005, 1, 0x12, (s32)&D_8005564C, 0x2006, 1, 0x14,
-    (s32)&D_8005564C, 0x2007, 1, 0x15, (s32)&D_8005564C, 0x2008,
+    1, 0x13, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2005, 1, 0x12, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2006, 1, 0x14,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2007, 1, 0x15, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2008,
 };
 s32 D_8009E660[16] = {
-    1, 0xA, (s32)&D_8005564C, 0x2001, 1, 0xB, (s32)&D_8005564C, 0x2002, 1, 0xC,
-    (s32)&D_8005564C, 0x2003, 1, 0xD, (s32)&D_8005564C, 0x2001,
+    1, 0xA, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001, 1, 0xB, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2002, 1, 0xC,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2003, 1, 0xD, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001,
 };
 s32 D_8009E6A0[16] = {
-    1, 0xE, (s32)&D_80055614, 0x2001, 1, 0xF, (s32)&D_80055614, 0x2002, 1, 0x10,
-    (s32)&D_80055614, 0x2003, 1, 0x11, (s32)&D_80055614, 0x2004,
+    1, 0xE, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2001, 1, 0xF, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2002, 1, 0x10,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2003, 1, 0x11, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2004,
 };
 s32 D_8009E6E0[16] = {
-    2, 6, (s32)&D_8005564C, 0x2009, 2, 8, (s32)&D_8005564C, 0x200A, 2, 7, (s32)&D_8005564C,
-    0x200B, 2, 5, (s32)&D_8005564C, 0x200C,
+    2, 6, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2009, 2, 8, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200A, 2, 7, (s32)&HeroModelBank[DB_MainmenuArenaModels1],
+    0x200B, 2, 5, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200C,
 };
 s32 D_8009E720[16] = {
-    2, 0x17, (s32)&D_80055614, 0x2009, 2, 0x18, (s32)&D_80055614, 0x200A, 2, 0x1A,
-    (s32)&D_80055614, 0x200B, 2, 0x19, (s32)&D_80055614, 0x200C,
+    2, 0x17, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2009, 2, 0x18, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200A, 2, 0x1A,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200B, 2, 0x19, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200C,
 };
 s32 D_8009E760[16] = {
-    2, 0x1B, (s32)&D_80055614, 0x200D, 2, 0x1C, (s32)&D_80055614, 0x200E, 2, 0x1D,
-    (s32)&D_80055614, 0x200F, 2, 0x1E, (s32)&D_80055614, 0x2010,
+    2, 0x1B, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200D, 2, 0x1C, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200E, 2, 0x1D,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200F, 2, 0x1E, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2010,
 };
 EngineTable12 CupTable[7] = {
     { 1, (void *)&D_8009E5E0, 4 }, { 1, (void *)&D_8009E620, 4 },

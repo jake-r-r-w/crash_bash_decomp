@@ -17,10 +17,6 @@ extern u8 D_80034180[];
 extern u8 D_8004410C[];
 extern u8 D_80044110[];
 extern u8 D_8005004C[];
-extern u8 AngelModel[];
-extern u8 InterfaceModel[];
-extern u8 LoadingModel[];
-extern u8 FontModel[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 extern u8 D_8007000C[];
@@ -46,10 +42,10 @@ WWInf ChaseWorldInfo[2] = {
     { 0x60, ChaseAnims, ChaseLevelDB, 0 },
 };
 s32 ChaseFiles[21] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 315], (s32)&DatIndex[2 * 314], (s32)&LoadingModel, (s32)&DatIndex[2 * 311],
-    (s32)&DatIndex[2 * 310], (s32)&InterfaceModel, (s32)&DatIndex[2 * 313], (s32)&DatIndex[2 * 312], (s32)&PowerupsModel,
-    (s32)&DatIndex[2 * 309], (s32)&DatIndex[2 * 308], (s32)&AngelModel, (s32)&DatIndex[2 * 307], (s32)&DatIndex[2 * 306],
-    (s32)&KegObjectsModel, (s32)&DatIndex[2 * 305], (s32)&DatIndex[2 * 304], 0, 0,
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 315], (s32)&DatIndex[2 * 314], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 311],
+    (s32)&DatIndex[2 * 310], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 313], (s32)&DatIndex[2 * 312], (s32)&HeroModelBank[DB_Powerups],
+    (s32)&DatIndex[2 * 309], (s32)&DatIndex[2 * 308], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 307], (s32)&DatIndex[2 * 306],
+    (s32)&HeroModelBank[DB_KegObjects], (s32)&DatIndex[2 * 305], (s32)&DatIndex[2 * 304], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1E's) */
 file_group_load_info file_group_CHASE = { D_8005004C, ChaseFiles };
@@ -752,8 +748,8 @@ void InitialiseCHASE(void) {
         a = 0x130;
     }
     Set_Clock(a, 0x81C0);
-    dbase_load_all_mesh_anims((s32 *)KegObjectsModel);
-    dbase_load_all_mesh_anims((s32 *)(KegObjectsModel - 0xF88));
+    dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_KegObjects]);
+    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_KegObjects]) - 0xF88));
     dbase_load_all_mesh_anims((s32 *)*MapScene);
     scr = (ChaseScreen *)GameViewport;
     scr->unk10 = 0x140;
@@ -849,7 +845,7 @@ loop:
         i++;
         goto loop;
     }
-    g = HeroModelBank;
+    g = (u8 *)HeroModelBank;
     if (*(s32 *)(g + 0x1544) != 0) {
         texture_update_anims(g + 0x1548);
     }
@@ -857,7 +853,7 @@ loop:
     do {
         n--;
     } while (n >= 0);
-    h = KegObjectsModel;
+    h = &HeroModelBank[DB_KegObjects];
     texture_update_anims(h + 0x10);
     ChaseUpdateStub(ChaseUpdateState);
 }
@@ -1158,7 +1154,7 @@ void ChaseMoveHero(s32 arg0) {
         ChaseHidePowerup(arg0);
         CoalChainHit(e0->unk10.x, e0->unk10.z, arg0, 0, 0x380, 0);
         ChaseHitHeroesNear(e0->unk10.x, e0->unk10.z, arg0, 0x380);
-        anim = KegObjectsModel;
+        anim = &HeroModelBank[DB_KegObjects];
         nas = CreateNAS(e0->unk10.x, v->y, v->z, 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -1854,7 +1850,7 @@ void ChaseHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = (s32)(HeroModelBank + HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name] * 0x38);
+            h->hero_sub->unk6C = (s32)(&HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]]);
         } else {
             h->hero_sub->unk6C = 0;
         }
@@ -1888,7 +1884,7 @@ void SetChaseHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1959,7 +1955,7 @@ void SetChaseHeroLose(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1980,7 +1976,7 @@ void SetChaseHeroLose(s32 arg0) {
         g->hero_pu_timer = 0;
         SetHeroSeq(arg0, 0x61);
         v = &g->hero_eng->unk10;
-        anim = KegObjectsModel;
+        anim = &HeroModelBank[DB_KegObjects];
         nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -2132,7 +2128,7 @@ void InitBarrelCH(NAS *nas) {
     eng->unk2C.z = 0x3E8;
     eng->unk5C = 1;
     eng->unk10.y = 0;
-    sub->unk6C = KegObjectsModel;
+    sub->unk6C = &HeroModelBank[DB_KegObjects];
     n = ++ChaseBarrelCount;
     if ((n & 0x1F) == 0) {
         sub->unk74 = 0x2016;
@@ -2203,7 +2199,7 @@ void PlotBarrelCH(NAS *nas) {
     if (nas->UserInfo.status != 0) {
         v = &eng->unk10;
         PlaySfx(ChaseBarrelSfx[Random(4)], 0, v, 0x1000, 0x1E00, 0);
-        anim = KegObjectsModel;
+        anim = &HeroModelBank[DB_KegObjects];
         n = CreateNAS(eng->unk10.x, v->y, v->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
@@ -2750,7 +2746,7 @@ void PlotPUGenerator_CH(NAS *nas) {
         if (pu != NULL) {
             ChasePickup[i] = pu;
             sub = pu->Engine->sub;
-            sub->unk6C = PowerupsModel;
+            sub->unk6C = &HeroModelBank[DB_Powerups];
             sub->unk74 = 0x200C;
             pu->UserInfo.status = Random(2) + 1;
             return;
@@ -2780,7 +2776,7 @@ void InitPickupCH(NAS *nas) {
         e->unk10.y = 0;
         e->unk10.z = eng->unk10.z;
         e->sub->unk51 = 2;
-        e->sub->unk6C = PowerupsModel;
+        e->sub->unk6C = &HeroModelBank[DB_Powerups];
         e->sub->unk74 = 0x2001;
         e->sub->flags |= 0x40000041;
         e->sub->unk76 = 0x800;
@@ -2864,7 +2860,7 @@ found:
         if (status < 3) {
             if (status != 0) {
                 if (sub != NULL) {
-                    sub->unk6C = PowerupsModel;
+                    sub->unk6C = &HeroModelBank[DB_Powerups];
                     sub->unk74 = 0x200C;
                     sub->flags |= 0x8000;
                     p->flags |= 0x8000;
@@ -3383,7 +3379,7 @@ void ChaseHeroHitFlash(s32 arg0, s32 arg1) {
     if (arg1 < 3) {
         if (arg1 > 0) {
             if (sub != NULL) {
-                sub->unk6C = PowerupsModel;
+                sub->unk6C = &HeroModelBank[DB_Powerups];
                 sub->unk74 = 0x200C;
                 sub->flags |= 0x8000;
                 p->flags |= 0x8000;
@@ -3443,7 +3439,7 @@ void InitCircleFire(NAS *nas) {
     eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
     eng->unk5E = 1;
     eng->unk10.y = 0;
-    sub->unk6C = KegObjectsModel;
+    sub->unk6C = &HeroModelBank[DB_KegObjects];
     sub->unk74 = 0x4000;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -3461,7 +3457,7 @@ void InitCoalFlame(NAS *nas) {
     nas->FUX = &ext->ext;
     ext->unk1C = -0xD;
     sub = eng->sub;
-    sub->unk6C = KegObjectsModel;
+    sub->unk6C = &HeroModelBank[DB_KegObjects];
     sub->unk74 = 0x200E;
     eng->unk5C = 1;
     eng->unk2C.x = 0x1000;
@@ -3509,7 +3505,7 @@ void InitCoal(NAS *nas) {
     nas->UserInfo.flags = 5;
     nas->UserInfo.user1 = 0;
     sub = eng->sub;
-    sub->unk6C = KegObjectsModel;
+    sub->unk6C = &HeroModelBank[DB_KegObjects];
     sub->unk74 = 0x200F;
     nas->UserInfo.status = 0x3C;
     if (nas->Failure != 0) {

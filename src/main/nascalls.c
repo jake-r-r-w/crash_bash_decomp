@@ -1156,7 +1156,7 @@ void DrawSpriteTriple(x, y, c0, c1, n)
     pos.f.x = x;
     tbl = D_8005A5C0;
     ids = tbl[n];
-    base = InterfaceModel;
+    base = &HeroModelBank[DB_Interface];
     texture_draw_quad((obj_texture *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
     pos.f.x = x + 0x9D80 / ScreenRect->w;
     texture_draw_quad((obj_texture *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
@@ -1460,7 +1460,7 @@ s16 DoAnimCommand(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                     anim->Aspeed = ((s16 *)anim->Atable)[++anim->Aindex];
                     goto lnext;
                 l8010:
-                    sub->unk6C = &HeroModelBank[((s16 *)anim->Atable)[++anim->Aindex] * 0x38];
+                    sub->unk6C = &HeroModelBank[((s16 *)anim->Atable)[++anim->Aindex]];
                     goto lnext;
                 ldef:
                     i = frame >> 8;
@@ -1547,7 +1547,7 @@ s16 DoAnimCommand2(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) 
                 PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, NULL, NULL, 0x1000, vol, 0);
                 goto next;
             l8010:
-                sub->unk6C = &HeroModelBank[((AnimStep *)anim->Atable)[anim->Aindex].arg * 0x38];
+                sub->unk6C = &HeroModelBank[((AnimStep *)anim->Atable)[anim->Aindex].arg];
                 goto next;
             ldef:
                 fn = (void (*)(NAS *, EXTanimator *, s16))hooks[((s16)cmd >> 8) & 0xF][1];
@@ -1928,7 +1928,7 @@ s16 TextWidth(s32 x, u8 *s) {
 void InitSysFontModel(void) {
     InitSysFont();
     FontPage = 0;
-    sysfont_dbase = FontModel;
+    sysfont_dbase = &HeroModelBank[DB_Font];
 }
 
 s32 SysGetLen(char *s) {

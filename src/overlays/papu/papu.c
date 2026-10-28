@@ -7,7 +7,6 @@
 extern u8 D_80050148[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
-extern u8 D_8005408C[];
 
 /* rodata: the strings (const arrays keep their retail order; see data2c.py) */
 const char PapuAnimBreathe[] = "BREATHE";
@@ -227,7 +226,7 @@ s32 PapuBossSteps3[2] = { (s32)0x80010000, 0 };
 s32 PapuBossSteps4[6] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80014109, 0 };
 s32 PapuBossSteps5[7] = { (s32)0x80110000, 0x4100000A, 0x1FD800D, 0x248011, (s32)0x80054109, (s32)0x80010008, 0 };
 s32 PapuBossSteps6[9] = {
-    (s32)0x80110000, 0x4080000D, 0x1F4800D, 0xA8011, (s32)&D_8005408C, (s32)0x8011000C,
+    (s32)0x80110000, 0x4080000D, 0x1F4800D, 0xA8011, (s32)0x8005408C, (s32)0x8011000C,
     0x4097001A, 0x88005, 0x8001,
 };
 s32 PapuBossSteps7[2] = { (s32)0x80010000, 0 };
@@ -290,11 +289,11 @@ char *PapuAnims[12] = {
 };
 s16 PapuLevelDB[2] = { -1, 0 };
 s32 PapuFiles[27] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 579], (s32)&DatIndex[2 * 578], (s32)&LoadingModel, (s32)&DatIndex[2 * 575],
-    (s32)&DatIndex[2 * 574], (s32)&InterfaceModel, (s32)&DatIndex[2 * 577], (s32)&DatIndex[2 * 576], (s32)&PowerupsModel,
-    (s32)&DatIndex[2 * 573], (s32)&DatIndex[2 * 572], (s32)&AngelModel, (s32)&DatIndex[2 * 571], (s32)&DatIndex[2 * 570],
-    (s32)&CrateObjectsModel, (s32)&DatIndex[2 * 569], (s32)&DatIndex[2 * 568], (s32)&PapuModel, (s32)&DatIndex[2 * 567],
-    (s32)&DatIndex[2 * 566], (s32)&MinionModel, (s32)&DatIndex[2 * 565], (s32)&DatIndex[2 * 564], 0, 0,
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 579], (s32)&DatIndex[2 * 578], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 575],
+    (s32)&DatIndex[2 * 574], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 577], (s32)&DatIndex[2 * 576], (s32)&HeroModelBank[DB_Powerups],
+    (s32)&DatIndex[2 * 573], (s32)&DatIndex[2 * 572], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 571], (s32)&DatIndex[2 * 570],
+    (s32)&HeroModelBank[DB_CrateObjects], (s32)&DatIndex[2 * 569], (s32)&DatIndex[2 * 568], (s32)&HeroModelBank[DB_Papu], (s32)&DatIndex[2 * 567],
+    (s32)&DatIndex[2 * 566], (s32)&HeroModelBank[DB_Minion], (s32)&DatIndex[2 * 565], (s32)&DatIndex[2 * 564], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 4's) */
 file_group_load_info file_group_PAPU = { D_80050148, PapuFiles };
@@ -796,7 +795,7 @@ void InitPapuBoss(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         ResetHeroGlobals();
-        eng->sub->unk6C = PapuModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Papu];
         eng->sub->unk74 = 0x2001;
         eng->unk5C = 1;
         eng->unk5E = 1;
@@ -1168,7 +1167,7 @@ NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d)
     eng = nas->Engine;
     if (eng != 0)
     {
-      eng->sub->unk6C = &MinionModel;
+      eng->sub->unk6C = &HeroModelBank[DB_Minion];
       eng->unk5D = 0;
       eng->sub->unk74 = 0x2001;
       eng->flags &= 0xFFFF7FFF;
@@ -1307,7 +1306,7 @@ void PlotPapuMinion(NAS *nas)
     move->speed = 0;
     if (fux->unk22 == 0) {
       PlaySfx(0x1FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-      SpawnModelFx(0, &eng->unk10.x, (s32)MinionModel);
+      SpawnModelFx(0, &eng->unk10.x, (s32)&HeroModelBank[DB_Minion]);
       fux->unk22 = 5;
       fux->state = 2;
     } else {
@@ -1530,7 +1529,7 @@ void PlotPapuMinion(NAS *nas)
     }
     PapuMinionSlots[slot].unk0 = 0;
     PlaySfx(0x1FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-    SpawnModelFx(0, &eng->unk10.x, (s32)MinionModel);
+    SpawnModelFx(0, &eng->unk10.x, (s32)&HeroModelBank[DB_Minion]);
     KillNAS(nas);
     return;
   default:
@@ -2706,7 +2705,7 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 LinkObject((u8 *)nas);
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
-                eng->sub->unk6C = CrateObjectsModel;
+                eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
                 eng->unk5D = 1;
                 obj->unk14 = d;
                 D_8009E46C[obj->unk14]++;
@@ -2786,7 +2785,7 @@ void InitPACrate(NAS *arg0) {
                 }
             } while (again);
             eng->unk10.y = World_floor_level;
-            eng->sub->unk6C = CrateObjectsModel;
+            eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
             eng->unk5D = 1;
             eng->unk5C = 1;
             obj->unk1A = 3;

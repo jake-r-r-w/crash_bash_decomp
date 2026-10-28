@@ -242,16 +242,16 @@ WWInf BashWorldInfo[9] = {
     { 0x2A, BashAnims, BashLevelDB0, 1 },
 };
 s32 BashFiles[21] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 605], (s32)&DatIndex[2 * 604], (s32)&LoadingModel, (s32)&DatIndex[2 * 601],
-    (s32)&DatIndex[2 * 600], (s32)&InterfaceModel, (s32)&DatIndex[2 * 603], (s32)&DatIndex[2 * 602], (s32)&PowerupsModel,
-    (s32)&DatIndex[2 * 599], (s32)&DatIndex[2 * 598], (s32)&AngelModel, (s32)&DatIndex[2 * 597], (s32)&DatIndex[2 * 596],
-    (s32)&CrateObjectsModel, (s32)&DatIndex[2 * 595], (s32)&DatIndex[2 * 594], 0, 0, 0,
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 605], (s32)&DatIndex[2 * 604], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 601],
+    (s32)&DatIndex[2 * 600], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 603], (s32)&DatIndex[2 * 602], (s32)&HeroModelBank[DB_Powerups],
+    (s32)&DatIndex[2 * 599], (s32)&DatIndex[2 * 598], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 597], (s32)&DatIndex[2 * 596],
+    (s32)&HeroModelBank[DB_CrateObjects], (s32)&DatIndex[2 * 595], (s32)&DatIndex[2 * 594], 0, 0, 0,
 };
 s32 BashSnowFiles[24] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 593], (s32)&DatIndex[2 * 592], (s32)&LoadingModel, (s32)&DatIndex[2 * 589],
-    (s32)&DatIndex[2 * 588], (s32)&InterfaceModel, (s32)&DatIndex[2 * 591], (s32)&DatIndex[2 * 590], (s32)&PowerupsModel,
-    (s32)&DatIndex[2 * 587], (s32)&DatIndex[2 * 586], (s32)&AngelModel, (s32)&DatIndex[2 * 585], (s32)&DatIndex[2 * 584],
-    (s32)&CrateObjectsModel, (s32)&DatIndex[2 * 583], (s32)&DatIndex[2 * 582], (s32)&PenguinModel, (s32)&DatIndex[2 * 581],
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 593], (s32)&DatIndex[2 * 592], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 589],
+    (s32)&DatIndex[2 * 588], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 591], (s32)&DatIndex[2 * 590], (s32)&HeroModelBank[DB_Powerups],
+    (s32)&DatIndex[2 * 587], (s32)&DatIndex[2 * 586], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 585], (s32)&DatIndex[2 * 584],
+    (s32)&HeroModelBank[DB_CrateObjects], (s32)&DatIndex[2 * 583], (s32)&DatIndex[2 * 582], (s32)&HeroModelBank[DB_Penguin], (s32)&DatIndex[2 * 581],
     (s32)&DatIndex[2 * 580], 0, 0,
 };
 /* the levels' files: the exe's file group and the model list (the engine's table at 0x800A001C
@@ -3023,7 +3023,7 @@ void InitBash8way(NAS *nas) {
         eng->unk5D = 0;
         for (; sub != NULL; sub = sub->next) {
             sub->unk51 = 0;
-            sub->unk6C = PowerupsModel;
+            sub->unk6C = &HeroModelBank[DB_Powerups];
             sub->unk74 = 0x200E;
         }
         mot = AddMotion(nas);
@@ -3117,7 +3117,7 @@ void InitBashHomer(NAS *nas) {
         h = Heroes;
         nas->UserInfo.user1 = D_8009D754;
         nas->UserInfo.user2 = Heroes[D_8009D754].hero_move->facing_angle;
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         eng->sub->unk74 = 0x200F;
         eng_add_subs_n(eng, 1);
         eng->unk5D = 0;
@@ -3131,7 +3131,7 @@ void InitBashHomer(NAS *nas) {
             sub->unk20.z = 0x4000;
             sub->unk50 = 1;
             sub->unk51 = 0;
-            sub->unk6C = PowerupsModel;
+            sub->unk6C = &HeroModelBank[DB_Powerups];
             sub->unk74 = 0x2010;
             sub->flags |= 0x21;
             sub = sub->next;
@@ -3267,7 +3267,7 @@ void InitBashShox(NAS *nas) {
                 do {
                     sub->unk51 = 0;
                     sub->unk50 = 1;
-                    sub->unk6C = CrateObjectsModel;
+                    sub->unk6C = &HeroModelBank[DB_CrateObjects];
                     sub->unk74 = 0x2015;
                     sub->flags = (sub->flags & 0xFFFF7FFF) | 0x21;
                     sub->unk08 = -0x100;
@@ -3402,7 +3402,7 @@ void InitMissileExplode(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        sub->unk6C = &PowerupsModel;
+        sub->unk6C = &HeroModelBank[DB_Powerups];
         sub->unk74 = 0x2010;
         sub->unk50 = 1;
         sub->unk51 = 0;
@@ -3463,7 +3463,7 @@ void InitBashPenguin(NAS *nas) {
     if (eng != NULL) {
         BashPenguinEng = eng;
         ScriptCursorFirst(nas, &PenguinScriptInit);
-        eng->sub->unk6C = (s32)PenguinModel;
+        eng->sub->unk6C = (s32)&HeroModelBank[DB_Penguin];
         eng->sub->unk74 = 0x2001;
         obj = (EXTobject *)AddObject(nas);
         if (obj != NULL) {

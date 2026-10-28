@@ -1219,6 +1219,19 @@ Also called often but not named yet, because their roles aren't proven:
 entry through `eng->sub`), `func_80026980` (63, unlinks from a list at
 `D_8005AA34`), `func_800250B0`, `func_80095BEC`, `func_80025FAC`.
 
+## The model bank
+
+`HeroModelBank` (`0x80052A54`, main.exe's data, `src/main/dbase.c`) is one array of 283
+dbase records (`obj_dbase`, 0x38 bytes: the archive entries of a `.mdl` and its `.tex`, the
+load in flight, the loaded data and its texture set). Every model any game draws is one of
+them: the heroes per game (`models\chars\<game>\<hero>.mdl`, the first eight after an empty
+record 0), each arena, the shared sets (`powerups15`, `interface22` six times, `angel10`,
+`font22`), the hub's warp rooms, the cutscene shots. Each record names its default files; a
+game's file list (the `*Files` tables) can load others into it. `bash/modelbank.h` names
+them all in `enum DbaseIds` (`DB_Powerups`, `DB_CharsPogoCrash`, ...): the slots the code
+had names for keep them, the rest are named from their default `.mdl`. The hero tables
+(`HeroHooks.HeroModels`) and the scripts hold indices into it.
+
 ## Core globals
 
 Descriptive names (the leak doesn't name these), with types in `bash/main.h`,

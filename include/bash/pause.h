@@ -187,7 +187,6 @@ void SetPauseRecs(s32 arg0, s32 kind, s32 flag);
 
 
 
-extern u8 DragonObjectsModel[];
 
 void RecordWin(void);
 
@@ -244,7 +243,6 @@ typedef struct {
     s16 unkC;
 } D_8009E0E8_t;
 extern D_8009E0E8_t D_8009E0E8[3][4];
-extern u8 AngelModel[];
 
 void UpdateWinCounter(s32 arg0);
 
@@ -563,7 +561,6 @@ typedef struct {
     SparkSet set;
 } SparkObj;
 
-extern u8 *D_80054944;
 
 
 /* A script keyframe (0x50 bytes): get_script_track + 0x24 starts the array (InitScriptFX, PlotScriptFX). */

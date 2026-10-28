@@ -201,9 +201,6 @@ void PlayHitEffect(s32 *arg0, void *arg1, s32 arg2);
 void SpinHeroFlip(s32 arg0);
 
 extern LevSpec LevelSpecs; /* the level's hooks */
-extern u8 RingObjectsModel[];
-extern u8 CrateObjectsModel[];
-extern u8 PowerupsModel[];
 extern u16 SpinShadowModels[];
 
 void SpinHeroWinner(s32 arg0);
@@ -407,7 +404,6 @@ extern u16 SpinUnused1;
 extern u16 SpinBalloonOwner;
 extern s32 SpinBalloonFlag;
 extern EXTengine SpinSfxEngine;
-extern s32 AngelModel;
 
 void SpinTurnArena(void);
 

@@ -6,7 +6,7 @@
 #include "bash/shell.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */
-extern u8 PowerupsModel[]; /* engine.h declares it, but polar.c does not include that */
+/* engine.h declares it, but polar.c does not include that */
 extern u8 D_80044188[];
 extern u8 D_800500D0[];
 extern u8 D_800500DC[];
@@ -582,21 +582,21 @@ WWInf PolarWorldInfo[10] = {
     { 0x98, PolarAnims, PolarLevelDB1, 1 },
 };
 s32 PolarEndFiles[15] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 445], (s32)&DatIndex[2 * 444], (s32)&LoadingModel, (s32)&DatIndex[2 * 441],
-    (s32)&DatIndex[2 * 440], (s32)&InterfaceModel, (s32)&DatIndex[2 * 443], (s32)&DatIndex[2 * 442], (s32)&PolarObjectsModel,
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 445], (s32)&DatIndex[2 * 444], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 441],
+    (s32)&DatIndex[2 * 440], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 443], (s32)&DatIndex[2 * 442], (s32)&HeroModelBank[DB_PolarObjects],
     (s32)&DatIndex[2 * 439], (s32)&DatIndex[2 * 438], 0, 0, 0,
 };
 s32 PolarFiles[18] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 437], (s32)&DatIndex[2 * 436], (s32)&LoadingModel, (s32)&DatIndex[2 * 433],
-    (s32)&DatIndex[2 * 432], (s32)&InterfaceModel, (s32)&DatIndex[2 * 435], (s32)&DatIndex[2 * 434], (s32)&PolarObjectsModel,
-    (s32)&DatIndex[2 * 431], (s32)&DatIndex[2 * 430], (s32)&PolarModel, (s32)&DatIndex[2 * 429], (s32)&DatIndex[2 * 428],
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 437], (s32)&DatIndex[2 * 436], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 433],
+    (s32)&DatIndex[2 * 432], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 435], (s32)&DatIndex[2 * 434], (s32)&HeroModelBank[DB_PolarObjects],
+    (s32)&DatIndex[2 * 431], (s32)&DatIndex[2 * 430], (s32)&HeroModelBank[DB_Polar], (s32)&DatIndex[2 * 429], (s32)&DatIndex[2 * 428],
     0, 0, 0,
 };
 s32 PolarBossFiles[24] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 427], (s32)&DatIndex[2 * 426], (s32)&LoadingModel, (s32)&DatIndex[2 * 423],
-    (s32)&DatIndex[2 * 422], (s32)&InterfaceModel, (s32)&DatIndex[2 * 425], (s32)&DatIndex[2 * 424], (s32)&PolarObjectsModel,
-    (s32)&DatIndex[2 * 421], (s32)&DatIndex[2 * 420], (s32)&PolarModel, (s32)&DatIndex[2 * 419], (s32)&DatIndex[2 * 418],
-    (s32)&RoboPolarModel, (s32)&DatIndex[2 * 417], (s32)&DatIndex[2 * 416], (s32)&PowerupsModel, (s32)&DatIndex[2 * 415],
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 427], (s32)&DatIndex[2 * 426], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 423],
+    (s32)&DatIndex[2 * 422], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 425], (s32)&DatIndex[2 * 424], (s32)&HeroModelBank[DB_PolarObjects],
+    (s32)&DatIndex[2 * 421], (s32)&DatIndex[2 * 420], (s32)&HeroModelBank[DB_Polar], (s32)&DatIndex[2 * 419], (s32)&DatIndex[2 * 418],
+    (s32)&HeroModelBank[DB_RoboPolar], (s32)&DatIndex[2 * 417], (s32)&DatIndex[2 * 416], (s32)&HeroModelBank[DB_Powerups], (s32)&DatIndex[2 * 415],
     (s32)&DatIndex[2 * 414], 0, 0,
 };
 /* the levels' files, in the leak's order (Day, Night, Cut, their challenges, End and its challenge,
@@ -1504,7 +1504,7 @@ void InitPolarBomb(NAS *m) {
     ext = AddExt(m, 0x84, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x201A;
-        m->Engine->sub->unk6C = PolarObjectsModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         m->Engine->unk5D = 2;
         m->Engine->sub->flags |= 0x02000000;
         ext->unk30 = 2;
@@ -1516,7 +1516,7 @@ void InitPolarBomb(NAS *m) {
         m->FUX = NULL;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
-            e->sub->unk6C = PolarObjectsModel;
+            e->sub->unk6C = &HeroModelBank[DB_PolarObjects];
             e->sub->unk74 = 0x202F;
             e->Engine->unk5C = 1;
             e->Engine->unk5D = 0;
@@ -1881,7 +1881,7 @@ void PolarSpawnObjects(void) {
             pos.x = hero->hero_eng->unk10.x;
             pos.y = hero->hero_eng->unk10.y - 0x80;
             pos.z = hero->hero_eng->unk10.z;
-            tex = PolarObjectsModel;
+            tex = &HeroModelBank[DB_PolarObjects];
             p = &pos;
             nas = CreateNAS(pos.x, p->y, p->z, 0x1605, 0x11);
             n = 5;
@@ -4165,7 +4165,7 @@ void InitialisePOLAR(void) {
         }
     }
     PolarInitDebug();
-    dbase_load_all_mesh_anims((s32 *)PolarModel);
+    dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_Polar]);
     j = 0;
     fast = 0x1000;
     slow = 0x2000;
@@ -4220,10 +4220,10 @@ loop:
             eng->unk2C.y = 0x1000;
             eng->unk2C.x = 0x1000;
             if (v->mode == 0x12) {
-                dbase_load_all_mesh_anims((s32 *)D_8005476C);
+                dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_ArenaPolarTiltSeal]);
             }
             if (v->mode == 0x15) {
-                dbase_load_all_mesh_anims((s32 *)PolarObjectsModel);
+                dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_PolarObjects]);
             }
             ResetMass(i);
             eng2 = h->hero_eng;
@@ -4321,7 +4321,7 @@ loop:
         CreateNAS(0, 0, 0, 0x160E, 0x11);
     }
     if (w->mode == 0x16) {
-        dbase_load_all_mesh_anims((s32 *)RoboPolarModel);
+        dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_RoboPolar]);
         SetPanelHeroIconB(0x82, 0x3031);
         InitBossHealthIcons();
         CreateNAS(0, 0, 0, 0x1625, 0x11);
@@ -4997,7 +4997,7 @@ void InitTransmuterBeam(NAS *m) {
             bx->unk20 = 4;
             bx->unkC = 4;
         tex1:
-            ext->bit1->Engine->sub->unk6C = PolarObjectsModel;
+            ext->bit1->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         skip1:
             bx->unk18 = 0x100;
             bx->unk20 |= 8;
@@ -5026,14 +5026,14 @@ void InitTransmuterBeam(NAS *m) {
             bx->unk20 = 4;
             bx->unkC = 3;
         tex2:
-            ext->bit2->Engine->sub->unk6C = PolarObjectsModel;
+            ext->bit2->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         skip2:
             bx->unk18 = 0x100;
             ext->bit2->InitDelete(ext->bit2);
             ext->unkAC = 0;
         }
     }
-    m->Engine->sub->unk6C = PolarObjectsModel;
+    m->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
     m->Engine->sub->unk74 = 0x2013;
     m->Engine->unk5D = 2;
     m->Engine->flags |= 0x200000;
@@ -5041,7 +5041,7 @@ void InitTransmuterBeam(NAS *m) {
     e = AddExtEngine(m, 2);
     if (e != NULL) {
         ext->eng = e;
-        e->sub->unk6C = PolarObjectsModel;
+        e->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         e->sub->unk74 = 0x2003;
         e->sub->unk51 = 0;
         s2 = e->sub;
@@ -5060,7 +5060,7 @@ void InitTransmuterBeam(NAS *m) {
         e = AddExtEngine(m, i + 3);
         if (e != NULL) {
             ext->engs[i] = e;
-            e->sub->unk6C = PolarObjectsModel;
+            e->sub->unk6C = &HeroModelBank[DB_PolarObjects];
             e->sub->unk74 = 0x2019;
             e->sub->unk51 = 0;
             s2 = e->sub;
@@ -5179,7 +5179,7 @@ void PlotTransmuterBeam(NAS *m) {
                     bx->unk18 = 0x200;
                     bx->unkC = 0;
                     bx->unk20 = 5;
-                    n->Engine->sub->unk6C = PolarObjectsModel;
+                    n->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
                     n->Engine->flags |= 0x200000;
                     bx->unk28 = 6;
                 }
@@ -6202,7 +6202,7 @@ void InitIceBerg(NAS *m) {
         info = m->trigger->InfoStruct;
         m->UserInfo.user1 = info->val1;
         m->UserInfo.user2 = info->val2;
-        m->Engine->sub->unk6C = PolarObjectsModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         if (GameMode == 0x12) {
             if (m->UserInfo.user1 == 0) {
                 m->Engine->sub->unk74 = 0x200D;
@@ -6528,7 +6528,7 @@ void InitUkaPolarMask(NAS *m) {
             bx->unkC = 3;
             bx->unk18 = 0x100;
             bx->unk20 = 4;
-            ext->bit->Engine->sub->unk6C = PolarObjectsModel;
+            ext->bit->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
             ext->bit->InitDelete(ext->bit);
             ext->unkAC = 0;
         }
@@ -6536,7 +6536,7 @@ void InitUkaPolarMask(NAS *m) {
     e = AddExtEngine(m, 2);
     if (e != NULL) {
         ext->eng = e;
-        e->sub->unk6C = PolarObjectsModel;
+        e->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         e->sub->unk74 = 0x2003;
         e->sub->unk51 = 0;
         s2 = e->sub;
@@ -7268,7 +7268,7 @@ void InitPolarWalrus(NAS *m) {
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &WalrusScriptInit);
         m->FUX = (EXT *)ext;
-        m->Engine->sub->unk6C = D_8005476C;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_ArenaPolarTiltSeal];
         m->Engine->sub->unk74 = 0x4000;
         m->UserInfo.status = 0;
         AddToGroup(&PolarBears, (u8 *)m);
@@ -7498,7 +7498,7 @@ void InitWalrusFish(NAS *m) {
         m->Engine->unk10.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.y = 0x400;
-        m->Engine->sub->unk6C = D_8005476C;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_ArenaPolarTiltSeal];
         m->Engine->sub->unk74 = 0x2002;
         m->Engine->unk5C = 1;
         m->Engine->unk5D = 0;
@@ -7629,7 +7629,7 @@ void InitSimpleExplosion(NAS *m) {
             i = 0;
             do {
                 sub->unk74 = 0x2034;
-                sub->unk6C = PolarObjectsModel;
+                sub->unk6C = &HeroModelBank[DB_PolarObjects];
                 ext->vel[i].x = Random(0x4C) - Random(0x4C);
                 ext->vel[i].z = Random(0x4C) - Random(0x4C);
                 ext->vel[i].y = Random(0x4C) - Random(0x4C);
@@ -7725,7 +7725,7 @@ void InitPackEffect(NAS *m) {
             i = 0;
             do {
                 sub->unk74 = 0x2033;
-                sub->unk6C = PolarObjectsModel;
+                sub->unk6C = &HeroModelBank[DB_PolarObjects];
                 ext->vel[i].x = Random(0x38) - Random(0x38);
                 ext->vel[i].z = Random(0x38) - Random(0x38);
                 ext->vel[i].y = Random(0x38) - Random(0x38);
@@ -8104,7 +8104,7 @@ void PlotPolarBoss(NAS *m) {
                 pos.x = 0;
                 pos.z = 0;
                 p = &pos;
-                tex = PolarObjectsModel;
+                tex = &HeroModelBank[DB_PolarObjects];
                 nas = CreateNAS(p->x, p->y, p->z, 0x1605, 0x11);
                 if (nas != NULL) {
                     ExtSpawn5910 *sp = FindExtension(nas, 0x10000000);
@@ -8273,7 +8273,7 @@ void InitBearminator(NAS *m) {
         PlaySfx(0x22E, NULL, NULL, 0x1000, 0x1E00, 0);
         e2 = AddExt(m, 0x54, 0x20000000);
         if (e2 != NULL) {
-            m->Engine->sub->unk6C = RoboPolarModel;
+            m->Engine->sub->unk6C = &HeroModelBank[DB_RoboPolar];
             n = CreateNAS(m->Engine->unk10.x, 0, m->Engine->unk10.z, 0x1620, 0x11);
             if (n != NULL) {
                 ext->unk98 = n;
@@ -8315,7 +8315,7 @@ void InitBearminator(NAS *m) {
             m->FUX = NULL;
             e = AddExtEngine(m, 2);
             if (e != NULL) {
-                e->sub->unk6C = RoboPolarModel;
+                e->sub->unk6C = &HeroModelBank[DB_RoboPolar];
                 e->sub->unk74 = 0x4000;
                 e->sub->unk68 = 0x80;
                 e->sub->flags |= 0x02000000;
@@ -8336,7 +8336,7 @@ void InitBearminator(NAS *m) {
             ext->unk9C = NULL;
             f = AddExtEngine(m, 3);
             if (f != NULL) {
-                f->sub->unk6C = RoboPolarModel;
+                f->sub->unk6C = &HeroModelBank[DB_RoboPolar];
                 f->sub->unk74 = 0x2006;
                 f->unk10 = m->Engine->unk10;
                 f->unk5D = 0;
@@ -8912,7 +8912,7 @@ void InitSniper(NAS *m) {
     ext = AddExt(m, 0x9C, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2006;
-        m->Engine->sub->unk6C = RoboPolarModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_RoboPolar];
         ext->unk8C = 8;
         ext->unk90 = 0;
         ext->unk98 = 0;
@@ -8971,7 +8971,7 @@ void InitSniper(NAS *m) {
         f = AddExtEngine(m, 4);
         if (f != NULL) {
             ext->unk94 = f;
-            f->sub->unk6C = RoboPolarModel;
+            f->sub->unk6C = &HeroModelBank[DB_RoboPolar];
             f->sub->unk74 = 0x2006;
             f->sub->flags |= 0x02000000;
             f->unk10 = m->Engine->unk10;
@@ -9452,7 +9452,7 @@ void InitSniperMissile(NAS *m) {
     ext = AddExt(m, 0x38, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2006;
-        m->Engine->sub->unk6C = RoboPolarModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_RoboPolar];
         ext->unkC = 0;
         m->Engine->unk5C = 1;
         m->Engine->unk2C.x = 0x2AF8;
@@ -9473,7 +9473,7 @@ void InitBigMissile(NAS *m) {
         m->Engine->unk5D = 2;
         m->Engine->unk5C = 1;
         m->Engine->sub->unk74 = 0x201A;
-        m->Engine->sub->unk6C = PolarObjectsModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         m->Engine->unk2C.x = 0x2000;
         m->Engine->unk2C.y = 0x2000;
         m->Engine->unk2C.z = 0x2000;
@@ -9512,7 +9512,7 @@ void InitPolarMissile(NAS *m) {
     ext = AddExt(m, 0x70, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2006;
-        m->Engine->sub->unk6C = RoboPolarModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_RoboPolar];
         m->Engine->unk5D = 2;
         m->Engine->unk5C = 1;
         m->Engine->sub->unk51 = 2;
@@ -9692,7 +9692,7 @@ void PlotCortexPack(NAS *m) {
 }
 
 void InitCortexPack(NAS *m) {
-    m->Engine->sub->unk6C = D_80052EEC;
+    m->Engine->sub->unk6C = &HeroModelBank[DB_CharsPolar2Dingo];
     m->Engine->sub->unk74 = 0x2003;
     m->Engine->unk5D = 2;
     m->Engine->unk5C = 1;
@@ -9702,7 +9702,7 @@ void InitCortexPack(NAS *m) {
 
 void InitBrioPack(NAS *m) {
     m->Engine->flags |= 0x200000;
-    m->Engine->sub->unk6C = PolarObjectsModel;
+    m->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
     m->Engine->sub->unk74 = 0x2031;
     m->Engine->unk5D = 2;
     m->Engine->unk5C = 1;
@@ -9714,7 +9714,7 @@ void InitBrioPack(NAS *m) {
 
 void InitDingoTail(NAS *m) {
     m->Engine->flags |= 0x200000;
-    m->Engine->sub->unk6C = (s32)D_80052EEC;
+    m->Engine->sub->unk6C = (s32)&HeroModelBank[DB_CharsPolar2Dingo];
     m->Engine->sub->unk74 = 0x2003;
     m->Engine->unk5D = 2;
     m->Engine->unk5C = 1;
@@ -9756,7 +9756,7 @@ void InitSmokeTrail(NAS *m) {
 
     ext = AddExt(m, 0x30, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = PolarObjectsModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         m->Engine->sub->unk74 = 0x2020;
         m->Engine->sub->flags |= 0x40000041;
         m->Engine->sub->unk76 = 0x1000;
@@ -9891,7 +9891,7 @@ void InitScratchMaster(NAS *m) {
         m->UserInfo.user2 = 0;
         while (sub != NULL) {
             sub->flags = 0x40000000;
-            sub->unk6C = PolarObjectsModel;
+            sub->unk6C = &HeroModelBank[DB_PolarObjects];
             sub->unk74 = 0x2002;
             sub->unk51 = 2;
             sub->unk14 = 0;
@@ -9942,7 +9942,7 @@ void InitGravityObject(NAS *m) {
     g = AddExt(m, 0x34, 0x10000000);
     if (g != NULL) {
         m->Engine->sub->unk74 = 0x200C;
-        m->Engine->sub->unk6C = PolarObjectsModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         m->Engine->sub->flags |= 0x02000000;
         g->vx = (rcossin_tbl[0xE00].unk2 * 27) >> 11;
         t = rcossin_tbl[0x200].unk2;
@@ -9962,7 +9962,7 @@ void InitWeightDeath(NAS *m) {
 
     ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
-        m->Engine->sub->unk6C = PolarObjectsModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         m->Engine->sub->unk74 = 0x2003;
         ext->unk10 = 0x40;
         ext->unk14 = 8;
@@ -10410,14 +10410,14 @@ void InitBombGFX(NAS *m) {
     ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2018;
-        m->Engine->sub->unk6C = PolarObjectsModel;
+        m->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         ext->unkC = 0;
         m->Engine->unk5C = 1;
         AddToGroup((u8 **)&PolarBomb, (u8 *)m);
         m->FUX = NULL;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
-            e->sub->unk6C = PolarObjectsModel;
+            e->sub->unk6C = &HeroModelBank[DB_PolarObjects];
             e->sub->unk74 = 0x202F;
             e->unk5D = 0;
             e->unk10 = m->Engine->unk10;
@@ -10691,7 +10691,7 @@ void PolarInitShadow(s32 player) {
             shadow->flags = 0x8000;
             shadow->unk5C = 1;
             if (eng != NULL) {
-                shadow->sub->unk6C = PolarModel;
+                shadow->sub->unk6C = &HeroModelBank[DB_Polar];
                 tbl = PolarShadowState;
                 p = &tbl[player];
                 *p = 0x4000;
@@ -10782,12 +10782,12 @@ void PolarUpdateShadow(s32 player) {
     }
     if (h2->hero_mode != 0x51) {
         if (h2->hero_mode != 0x58) {
-            shadow->sub->unk6C = PolarModel;
+            shadow->sub->unk6C = &HeroModelBank[DB_Polar];
             shadow->sub->flags = 0x8000;
             p = &PolarShadowState[player];
             shadow->sub->unk74 = *p + (anim->Aindex - 1);
             if (h2->hero_mode == 0x4B || h2->hero_mode == 0x4C) {
-                shadow->sub->unk6C = PolarModel;
+                shadow->sub->unk6C = &HeroModelBank[DB_Polar];
                 shadow->sub->unk74 = 0x4000;
                 *p = 0x4000;
             }
@@ -10806,7 +10806,7 @@ void PolarUpdateShadow(s32 player) {
         }
     }
     {
-        shadow->sub->unk6C = PolarModel;
+        shadow->sub->unk6C = &HeroModelBank[DB_Polar];
         shadow->unk10 = eng->unk10;
         shadow->sub->flags = 0x8000;
         switch (Heroes[player].hero_name) {
@@ -10839,7 +10839,7 @@ mode58:
     base3 = Heroes;
     h3 = &base3[player];
     if (h3->hero_mode == 0x58) {
-        shadow->sub->unk6C = PolarModel;
+        shadow->sub->unk6C = &HeroModelBank[DB_Polar];
         shadow->unk10 = eng->unk10;
         shadow->sub->flags = 0x8000;
         switch (h3->hero_name) {
@@ -11156,53 +11156,53 @@ void SetPolarHeroIdle(s32 player) {
     }
     if (GameMode != 0x14) {
         if (Heroes[player].hero_name == 1) {
-            Heroes[player].hero_eng->sub->unk6C = D_80052E0C;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Crash];
         }
         if (Heroes[player].hero_name == 2) {
-            Heroes[player].hero_eng->sub->unk6C = D_80052E44;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Coco];
         }
         if (Heroes[player].hero_name == 5) {
-            Heroes[player].hero_eng->sub->unk6C = D_80052EB4;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Tiny];
         }
         if (Heroes[player].hero_name == 3) {
-            Heroes[player].hero_eng->sub->unk6C = D_80052E7C;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Cortex];
         }
         if (Heroes[player].hero_name == 7) {
-            Heroes[player].hero_eng->sub->unk6C = D_80052EEC;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Dingo];
         }
         if (Heroes[player].hero_name == 8) {
-            Heroes[player].hero_eng->sub->unk6C = D_80054A44;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Rilla];
         }
         if (Heroes[player].hero_name == 4) {
-            Heroes[player].hero_eng->sub->unk6C = D_80052F24;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Brio];
         }
         if (Heroes[player].hero_name == 6) {
-            Heroes[player].hero_eng->sub->unk6C = D_800549D4;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Kong];
         }
     } else {
         if (Heroes[player].hero_name == 1) {
-            Heroes[player].hero_eng->sub->unk6C = D_80054BCC;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarCrash];
         }
         if (Heroes[player].hero_name == 2) {
-            Heroes[player].hero_eng->sub->unk6C = D_80054C04;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarCoco];
         }
         if (Heroes[player].hero_name == 5) {
-            Heroes[player].hero_eng->sub->unk6C = D_80054C74;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarTiny];
         }
         if (Heroes[player].hero_name == 3) {
-            Heroes[player].hero_eng->sub->unk6C = D_80054C3C;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarCortex];
         }
         if (Heroes[player].hero_name == 7) {
-            Heroes[player].hero_eng->sub->unk6C = D_80054CAC;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarDingo];
         }
         if (Heroes[player].hero_name == 8) {
-            Heroes[player].hero_eng->sub->unk6C = D_80054D1C;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarRilla];
         }
         if (Heroes[player].hero_name == 4) {
-            Heroes[player].hero_eng->sub->unk6C = D_80054CE4;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarBrio];
         }
         if (Heroes[player].hero_name == 6) {
-            Heroes[player].hero_eng->sub->unk6C = D_80054D54;
+            Heroes[player].hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarKong];
         }
     }
     SetHeroSeq(player, 0x3A);
@@ -11367,7 +11367,7 @@ void SetPolarHeroDazed(s32 player) {
                         fux[0x18 / 4] = 0x200;
                         fux[0xC / 4] = 0;
                         fux[0x20 / 4] = 5;
-                        nas->Engine->sub->unk6C = PolarObjectsModel;
+                        nas->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
                         nas->Engine->flags |= 0x200000;
                         fux[0x28 / 4] = 6;
                     }
@@ -12338,7 +12338,7 @@ void PolarHeroAttackThrow(s32 player) {
                 if (nas != NULL) {
                     nas->UserInfo.user1 = (s32)hero;
                     if (GameMode == 0x14) {
-                        ext->unkA4->Engine->sub->unk6C = D_80054CAC;
+                        ext->unkA4->Engine->sub->unk6C = &HeroModelBank[DB_CharsPolarDingo];
                         ext->unkA4->Engine->sub->unk74 = 0x2002;
                     }
                 }
@@ -12361,9 +12361,9 @@ void PolarHeroAttackThrow(s32 player) {
                 if (nas != NULL) {
                     nas->UserInfo.user1 = (s32)hero;
                     if (GameMode == 0x14) {
-                        ext->unkA4->Engine->sub->unk6C = D_80054D1C;
+                        ext->unkA4->Engine->sub->unk6C = &HeroModelBank[DB_CharsPolarRilla];
                     } else {
-                        ext->unkA4->Engine->sub->unk6C = D_80054A44;
+                        ext->unkA4->Engine->sub->unk6C = &HeroModelBank[DB_CharsPolar2Rilla];
                     }
                     ext->unkA4->Engine->sub->unk74 = 0x2003;
                 }
@@ -12622,30 +12622,30 @@ void SetPolarHeroFootIdle(s32 player) {
         move->z_dec = 2;
     }
     if (info->hero_name == 1) {
-        info->hero_eng->sub->unk6C = D_800547DC;
+        info->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Crash];
     }
     if (info->hero_name == 2) {
-        info->hero_eng->sub->unk6C = D_80054814;
+        info->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Coco];
     }
     if (info->hero_name == 5) {
-        info->hero_eng->sub->unk6C = D_80054884;
+        info->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Tiny];
     }
     if (info->hero_name == 3) {
-        info->hero_eng->sub->unk6C = D_8005484C;
+        info->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Cortex];
     }
     if (info->hero_name == 7) {
-        info->hero_eng->sub->unk6C = D_800548BC;
+        info->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Dingo];
     }
     if (info->hero_name == 4) {
-        info->hero_eng->sub->unk6C = D_800548F4;
+        info->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Brio];
     }
     base = (u8 *)Heroes;
     if (info->hero_name == 6) {
-        info->hero_eng->sub->unk6C = D_80054AEC;
+        info->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Kong];
     }
     h = (HeroInfo *)(base + off);
     if (h->hero_name == 8) {
-        h->hero_eng->sub->unk6C = D_80054AB4;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Rilla];
     }
     SetHeroSeq(player, 0x42);
     if (rnd == 0) {
@@ -12769,28 +12769,28 @@ void SetPolarHeroHit(s32 player) {
 
     h = &base[player];
     if (h->hero_name == 1) {
-        h->hero_eng->sub->unk6C = D_800547DC;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Crash];
     }
     if (h->hero_name == 2) {
-        h->hero_eng->sub->unk6C = D_80054814;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Coco];
     }
     if (h->hero_name == 5) {
-        h->hero_eng->sub->unk6C = D_80054884;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Tiny];
     }
     if (h->hero_name == 3) {
-        h->hero_eng->sub->unk6C = D_8005484C;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Cortex];
     }
     if (h->hero_name == 7) {
-        h->hero_eng->sub->unk6C = D_800548BC;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Dingo];
     }
     if (h->hero_name == 4) {
-        h->hero_eng->sub->unk6C = D_800548F4;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Brio];
     }
     if (h->hero_name == 6) {
-        h->hero_eng->sub->unk6C = D_80054AEC;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Kong];
     }
     if (h->hero_name == 8) {
-        h->hero_eng->sub->unk6C = D_80054AB4;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Rilla];
     }
     h->hero_eng->sub->flags &= 0xFFBFFFFF;
     ext = FindExtension(h->hero, 0x20000000);
@@ -12823,7 +12823,7 @@ void SetPolarHeroDead(s32 arg0) {
             h->hero_status = status | 0x2000;
         }
         h->hero_eng->sub->flags |= 0x8000;
-        h->hero_eng->sub->unk6C = PolarObjectsModel;
+        h->hero_eng->sub->unk6C = &HeroModelBank[DB_PolarObjects];
         h->hero_eng->sub->unk74 = 0x202D;
         eng = h->hero_eng;
         CreateNAS(eng->unk10.x + 0x80, eng->unk10.y - 0x200, eng->unk10.z, 0x1613, 0x11);
@@ -12945,79 +12945,79 @@ void SetPolarHeroWinner(s32 player) {
     if (ext->state == 0) {
         if (GameMode != 0x14) {
             if (h->hero_name == 1) {
-                h->hero_eng->sub->unk6C = D_80052E0C;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Crash];
             }
             if (h->hero_name == 2) {
-                h->hero_eng->sub->unk6C = D_80052E44;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Coco];
             }
             if (h->hero_name == 5) {
-                h->hero_eng->sub->unk6C = D_80052EB4;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Tiny];
             }
             if (h->hero_name == 3) {
-                h->hero_eng->sub->unk6C = D_80052E7C;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Cortex];
             }
             if (h->hero_name == 7) {
-                h->hero_eng->sub->unk6C = D_80052EEC;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Dingo];
             }
             if (h->hero_name == 8) {
-                h->hero_eng->sub->unk6C = D_80054A44;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Rilla];
             }
             if (h->hero_name == 4) {
-                h->hero_eng->sub->unk6C = D_80052F24;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Brio];
             }
             if (h->hero_name == 6) {
-                h->hero_eng->sub->unk6C = D_800549D4;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolar2Kong];
             }
         } else {
             if (h->hero_name == 1) {
-                h->hero_eng->sub->unk6C = D_80054BCC;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarCrash];
             }
             if (h->hero_name == 2) {
-                h->hero_eng->sub->unk6C = D_80054C04;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarCoco];
             }
             if (h->hero_name == 5) {
-                h->hero_eng->sub->unk6C = D_80054C74;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarTiny];
             }
             if (h->hero_name == 3) {
-                h->hero_eng->sub->unk6C = D_80054C3C;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarCortex];
             }
             if (h->hero_name == 7) {
-                h->hero_eng->sub->unk6C = D_80054CAC;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarDingo];
             }
             if (h->hero_name == 8) {
-                h->hero_eng->sub->unk6C = D_80054D1C;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarRilla];
             }
             if (h->hero_name == 4) {
-                h->hero_eng->sub->unk6C = D_80054CE4;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarBrio];
             }
             if (h->hero_name == 6) {
-                h->hero_eng->sub->unk6C = D_80054D54;
+                h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsPolarKong];
             }
         }
     } else {
         if (h->hero_name == 1) {
-            h->hero_eng->sub->unk6C = D_800547DC;
+            h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Crash];
         }
         if (h->hero_name == 2) {
-            h->hero_eng->sub->unk6C = D_80054814;
+            h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Coco];
         }
         if (h->hero_name == 5) {
-            h->hero_eng->sub->unk6C = D_80054884;
+            h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Tiny];
         }
         if (h->hero_name == 3) {
-            h->hero_eng->sub->unk6C = D_8005484C;
+            h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Cortex];
         }
         if (h->hero_name == 7) {
-            h->hero_eng->sub->unk6C = D_800548BC;
+            h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Dingo];
         }
         if (h->hero_name == 4) {
-            h->hero_eng->sub->unk6C = D_800548F4;
+            h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Brio];
         }
         if (h->hero_name == 6) {
-            h->hero_eng->sub->unk6C = D_80054AEC;
+            h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Kong];
         }
         if (h->hero_name == 8) {
-            h->hero_eng->sub->unk6C = D_80054AB4;
+            h->hero_eng->sub->unk6C = &HeroModelBank[DB_CharsCrate2Rilla];
         }
     }
     lost = TestPolarHeroMelted(player) ^ 1;

@@ -8,8 +8,6 @@ extern u8 GamePlayers;
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_800500B8[];
-extern u8 D_80055614[];
-extern u8 D_8005564C[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 
@@ -141,7 +139,7 @@ PlaceRec BattleOptionsPlace[12] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 s32 TitlesFiles[9] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 397], (s32)&DatIndex[2 * 396], (s32)&InterfaceModel, (s32)&DatIndex[2 * 395],
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 397], (s32)&DatIndex[2 * 396], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 395],
     (s32)&DatIndex[2 * 394], 0, 0, 0,
 };
 /* the engine's table at 0x800A0030 points at it for the front end's modes */
@@ -376,32 +374,32 @@ s32 LangNoMoreUnlocked[1] = { (s32)&TextNoMoreUnlocked };
 s32 LangInsertCard[1] = { (s32)&TextInsertCard };
 s32 LangLocked[1] = { (s32)&TextLocked };
 s32 BattleLevelsBash[16] = {
-    1, 0, (s32)&D_80055614, 0x2005, 1, 1, (s32)&D_80055614, 0x2006, 1, 2, (s32)&D_80055614,
-    0x2007, 1, 3, (s32)&D_80055614, 0x2008,
+    1, 0, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2005, 1, 1, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2006, 1, 2, (s32)&HeroModelBank[DB_MainmenuArenaModels2],
+    0x2007, 1, 3, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2008,
 };
 s32 BattleLevelsPolar[16] = {
-    1, 0x13, (s32)&D_8005564C, 0x2005, 1, 0x12, (s32)&D_8005564C, 0x2006, 1, 0x14,
-    (s32)&D_8005564C, 0x2007, 1, 0x15, (s32)&D_8005564C, 0x2008,
+    1, 0x13, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2005, 1, 0x12, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2006, 1, 0x14,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2007, 1, 0x15, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2008,
 };
 s32 BattleLevelsPogo[16] = {
-    1, 0xA, (s32)&D_8005564C, 0x2001, 1, 0xB, (s32)&D_8005564C, 0x2002, 1, 0xC,
-    (s32)&D_8005564C, 0x2003, 1, 0xD, (s32)&D_8005564C, 0x2004,
+    1, 0xA, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2001, 1, 0xB, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2002, 1, 0xC,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2003, 1, 0xD, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2004,
 };
 s32 BattleLevelsArkenoid[16] = {
-    1, 0xE, (s32)&D_80055614, 0x2001, 1, 0xF, (s32)&D_80055614, 0x2002, 1, 0x10,
-    (s32)&D_80055614, 0x2003, 1, 0x11, (s32)&D_80055614, 0x2004,
+    1, 0xE, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2001, 1, 0xF, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2002, 1, 0x10,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2003, 1, 0x11, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2004,
 };
 s32 BattleLevelsTank[16] = {
-    2, 6, (s32)&D_8005564C, 0x2009, 2, 8, (s32)&D_8005564C, 0x200A, 2, 7, (s32)&D_8005564C,
-    0x200B, 2, 5, (s32)&D_8005564C, 0x200C,
+    2, 6, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x2009, 2, 8, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200A, 2, 7, (s32)&HeroModelBank[DB_MainmenuArenaModels1],
+    0x200B, 2, 5, (s32)&HeroModelBank[DB_MainmenuArenaModels1], 0x200C,
 };
 s32 BattleLevelsRace[16] = {
-    2, 0x17, (s32)&D_80055614, 0x2009, 2, 0x18, (s32)&D_80055614, 0x200A, 2, 0x1A,
-    (s32)&D_80055614, 0x200B, 2, 0x19, (s32)&D_80055614, 0x200C,
+    2, 0x17, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2009, 2, 0x18, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200A, 2, 0x1A,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200B, 2, 0x19, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200C,
 };
 s32 BattleLevelsDino[16] = {
-    2, 0x1B, (s32)&D_80055614, 0x200D, 2, 0x1C, (s32)&D_80055614, 0x200E, 2, 0x1D,
-    (s32)&D_80055614, 0x200F, 2, 0x1E, (s32)&D_80055614, 0x2010,
+    2, 0x1B, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200D, 2, 0x1C, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200E, 2, 0x1D,
+    (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x200F, 2, 0x1E, (s32)&HeroModelBank[DB_MainmenuArenaModels2], 0x2010,
 };
 BattleArena BattleArenas[7] = {
     { (s32)&BattleLevelsBash, 4 }, { (s32)&BattleLevelsPolar, 4 }, { (s32)&BattleLevelsPogo, 4 },
@@ -1475,7 +1473,7 @@ void UpdateCharSelector(TitlesSlot *slot) {
         o->unk18 = 0;
         o->unk0 |= 1;
         {
-            s->unk6C = HeroModelBank + card[o->unk30].model * 0x38;
+            s->unk6C = &HeroModelBank[card[o->unk30].model];
             s->flags |= 0x8000;
         }
         GameInfo[o->unk4 + 0x50] = card[o->unk30].hero;
@@ -1909,7 +1907,7 @@ void LevelSelectUpdate(void) {
         LevelSelectReload--;
     }
     AnimateTitlesBackdrop();
-    a = D_800555DC;
+    a = &HeroModelBank[DB_MainmenuModels];
     texture_update_anims((obj_textureset *)(a + 0x10));
     texture_update_anims((obj_textureset *)(a + 0x48));
     val = LevelSelectBusy;
@@ -1959,7 +1957,7 @@ void LevelSelectUpdate(void) {
             s->unk04 = rcossin_tbl[(((GameFrameCount * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
             s->unk08 = (rcossin_tbl[(((GameFrameCount * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
         } else {
-            s->unk6C = D_800555DC;
+            s->unk6C = &HeroModelBank[DB_MainmenuModels];
             s->unk74 = 0x2006;
             s->unk10 = 0;
             s->unk12 = FrameCount * 50 + (i << 10);

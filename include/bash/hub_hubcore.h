@@ -103,14 +103,6 @@ extern u32 PodiumState;
 extern s32 PodiumCamState;
 extern s32 PodiumCamTimer;
 extern CamXYZ PodiumCamAt;
-extern u8 D_80055924[];
-extern u8 D_8005595C[];
-extern u8 D_80055994[];
-extern u8 D_800559CC[];
-extern u8 D_80055A04[];
-extern u8 D_80055A3C[];
-extern u8 D_80055A74[];
-extern u8 D_80055AAC[];
 void PodiumRankPlayers(void);
 extern s32 PodiumReady;
 extern s32 PodiumRanks[];
@@ -277,7 +269,6 @@ typedef struct PodiumObj {
 } PodiumObj;
 
 extern PodiumObj *PodiumTrophyObj;
-extern char D_8005572C;
 
 typedef struct HubSpawnEnt {
     /* 0x0 */ s32 x;

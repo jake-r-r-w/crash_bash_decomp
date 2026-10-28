@@ -134,7 +134,7 @@ void InitialiseHeroes(void) {
         h->hero_anim = AllocExt400(h->hero);
         name = h->hero_name;
         if ((u32)(name - 1) < 8) {
-            h->hero_sub->unk6C = HeroModelBank + ((u16 *)HeroHooks.HeroModels)[name] * 0x38;
+            h->hero_sub->unk6C = (u8 *)HeroModelBank + ((u16 *)HeroHooks.HeroModels)[name] * 0x38;
         } else {
             h->hero_sub->unk6C = NULL;
         }
@@ -151,7 +151,7 @@ void InitialiseHeroes(void) {
             if (HeroHooks.CreateShadow != NULL) {
                 ((void (*)(s32))HeroHooks.CreateShadow)(i);
             } else {
-                e->sub->unk6C = PowerupsModel;
+                e->sub->unk6C = &HeroModelBank[DB_Powerups];
                 e->sub->unk74 = 0x2001;
                 e->unk10 = eng->unk10;
                 e->flags |= 0x8041;
@@ -166,7 +166,7 @@ void InitialiseHeroes(void) {
             sub = fx->sub;
             fx->unk5D = 0;
             if (sub != NULL) {
-                sub->unk6C = PowerupsModel;
+                sub->unk6C = &HeroModelBank[DB_Powerups];
                 sub->unk74 = 0;
                 mask = ~0x8000;
                 sub->flags &= mask;
@@ -186,7 +186,7 @@ void InitialiseHeroes(void) {
                 sub->flags &= fxmask;
                 sub->unk50 = 1;
                 sub->unk51 = 0;
-                sub->unk6C = HeroModelBank + idx * 0x38;
+                sub->unk6C = &HeroModelBank[idx];
                 if (name == 3) {
                     sub->unk74 = fxv;
                 } else if (name == 4) {
@@ -855,7 +855,7 @@ s32 player;
                 } while (0);
                 break;
             case 0x8006:
-                h->hero_sub->unk6C = &HeroModelBank[((s16 *)anim->Atable)[++anim->Aindex] * 0x38];
+                h->hero_sub->unk6C = &HeroModelBank[((s16 *)anim->Atable)[++anim->Aindex]];
                 break;
             case 0x8007:
                 anim->Seq_count = ((s16 *)anim->Atable)[++anim->Aindex] - 1;
@@ -2610,7 +2610,7 @@ void HeroBecomeAngel(s32 arg0) {
     subengine *s;
     s32 i;
 
-    h->hero_sub->unk6C = AngelModel;
+    h->hero_sub->unk6C = &HeroModelBank[DB_Angel];
     e = h->hero_eng;
     s = h->hero_sub;
     e->flags |= 0x8021;
@@ -2647,7 +2647,7 @@ void HeroBecomeAngel(s32 arg0) {
     h->hero_move->z_vel = 0;
     h->hero_move->z_max = 0;
     h->hero_move->jump_ctrl = 0;
-    s->unk6C = AngelModel;
+    s->unk6C = &HeroModelBank[DB_Angel];
     s->unk74 = 0x2002;
     e->unk2C.x = 0x1000;
     e->unk2C.y = 0x1000;
@@ -2663,7 +2663,7 @@ void HeroBecomeAngel(s32 arg0) {
         s->unk04 = 0;
         s->unk08 = 0;
         s->unk0C = 0;
-        s->unk6C = AngelModel;
+        s->unk6C = &HeroModelBank[DB_Angel];
         s->unk74 = 0x2003;
         s->flags = (s->flags | 0x60000021) & ~0x8000;
     }
@@ -3328,10 +3328,10 @@ void ModelCreateShadow(s32 idx) {
     if (GameInfo[idx + 0x50] != 9) {
         s = Heroes[idx].hero_shadow;
         if (((EngineGameView *)GameInfo)->mode != 0x1C) {
-            s->sub->unk6C = PolarObjectsModel;
+            s->sub->unk6C = &HeroModelBank[DB_PolarObjects];
             s->sub->unk74 = 0x202F;
         } else {
-            s->sub->unk6C = DragonObjectsModel;
+            s->sub->unk6C = &HeroModelBank[DB_DragonObjects];
             s->sub->unk74 = 0x2014;
         }
         e = Heroes[idx].hero_eng;
@@ -3976,7 +3976,7 @@ void PlotSparks(SparkObj *obj) {
     p0 = ss->polys0;
     p1 = ss->polys1;
     s = obj->set.sparks;
-    tex = (SparkTex *)(D_80054944 + 0xAF0);
+    tex = (SparkTex *)((u8 *)HeroModelBank[DB_ArenaBossBearArena].textures.tex + 0xAF0);
     if (GameMode == 0x22) {
         tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)MapScene + 0x18) + 0x2BF8);
     }
@@ -4148,7 +4148,7 @@ void InitParticleEffect(void) {
 
 void InitSmokePoof(NAS *nas) {
     ScriptCursorFirst(nas, &D_8009E1E8);
-    nas->Engine->sub->unk6C = PolarObjectsModel;
+    nas->Engine->sub->unk6C = &HeroModelBank[DB_PolarObjects];
     nas->Engine->sub->flags |= 0x40000041;
     nas->UserInfo.user1 = 0;
     if (((EngineGameView *)GameInfo)->mode == 0x1C) {
@@ -4366,7 +4366,7 @@ void CreateFloatyScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             sub = eng->sub;
             if (sub != NULL) {
                 while (sub != NULL) {
-                    sub->unk6C = InterfaceModel;
+                    sub->unk6C = &HeroModelBank[DB_Interface];
                     sub->unk04 = off;
                     sub->unk74 = arg3 % 10 + 0x200E;
                     sub = sub->next;
@@ -4438,7 +4438,7 @@ void Init_HealthPU(NAS *nas) {
 
     eng = nas->Engine;
     if (eng != NULL) {
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         nas->UserInfo.user2 = GameFrameCount;
         eng->sub->unk74 = Random(0xE) + 0x2018;
         obj = (EXTobject *)AddObject(nas);
@@ -4464,7 +4464,7 @@ void Init_HealthPU(NAS *nas) {
             }
             e2 = AddExtEngine(nas, 1);
             if (e2 != NULL) {
-                e2->sub->unk6C = PowerupsModel;
+                e2->sub->unk6C = &HeroModelBank[DB_Powerups];
                 e2->sub->unk74 = 0x2001;
                 e2->unk10 = nas->Engine->unk10;
                 e2->flags |= 0x8041;
@@ -4562,7 +4562,7 @@ void InitBigPoof(NAS *nas) {
     EXTengine *eng = nas->Engine;
 
     if (eng != NULL) {
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         eng->sub->unk74 = 0;
         ScriptCursorFirst(nas, &D_8009E250);
         eng->flags |= 0x21;
@@ -4587,7 +4587,7 @@ void AddPowerupFloat(NAS *nas) {
     }
     eng = AddExtEngine(nas, 1);
     if (eng != NULL) {
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         eng->sub->unk74 = 0x2001;
         src = nas->Engine;
         eng->unk10 = src->unk10;

@@ -6,7 +6,6 @@
 
 /* the exe's data the tables point at, not declared in the headers yet */
 extern u8 D_80050058[];
-extern u8 AngelModel[];
 extern u8 VramNodePool[];
 extern u8 VramAreas[];
 extern u8 D_80070098[];
@@ -315,11 +314,11 @@ WWInf N2OWorldInfo[1] = {
     { 0x5C, N2OAnims, N2OLevelDB, 1 },
 };
 s32 N2OFiles[27] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 331], (s32)&DatIndex[2 * 330], (s32)&LoadingModel, (s32)&DatIndex[2 * 327],
-    (s32)&DatIndex[2 * 326], (s32)&InterfaceModel, (s32)&DatIndex[2 * 329], (s32)&DatIndex[2 * 328], (s32)&PowerupsModel,
-    (s32)&DatIndex[2 * 325], (s32)&DatIndex[2 * 324], (s32)&AngelModel, (s32)&DatIndex[2 * 323], (s32)&DatIndex[2 * 322],
-    (s32)&PlayerVehicleModel, (s32)&DatIndex[2 * 319], (s32)&DatIndex[2 * 318], (s32)&BallsEffectsModel, (s32)&DatIndex[2 * 321],
-    (s32)&DatIndex[2 * 320], (s32)&OxideModel, (s32)&DatIndex[2 * 317], (s32)&DatIndex[2 * 316], 0, 0,
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 331], (s32)&DatIndex[2 * 330], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 327],
+    (s32)&DatIndex[2 * 326], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 329], (s32)&DatIndex[2 * 328], (s32)&HeroModelBank[DB_Powerups],
+    (s32)&DatIndex[2 * 325], (s32)&DatIndex[2 * 324], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 323], (s32)&DatIndex[2 * 322],
+    (s32)&HeroModelBank[DB_PlayerVehicle], (s32)&DatIndex[2 * 319], (s32)&DatIndex[2 * 318], (s32)&HeroModelBank[DB_BallsEffects], (s32)&DatIndex[2 * 321],
+    (s32)&DatIndex[2 * 320], (s32)&HeroModelBank[DB_Oxide], (s32)&DatIndex[2 * 317], (s32)&DatIndex[2 * 316], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1F's) */
 file_group_load_info file_group_N2O = { D_80050058, N2OFiles };
@@ -485,10 +484,10 @@ void InitialiseN2O(void) {
         }
         N2OPillarList = N2OPillars;
     }
-    dbase_load_all_mesh_anims((s32 *)BallsEffectsModel);
-    dbase_load_all_mesh_anims((s32 *)(BallsEffectsModel - 0x1500));
-    dbase_load_all_mesh_anims((s32 *)(BallsEffectsModel - 0x658));
-    dbase_load_all_mesh_anims((s32 *)(BallsEffectsModel - 0x620));
+    dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_BallsEffects]);
+    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_BallsEffects]) - 0x1500));
+    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_BallsEffects]) - 0x658));
+    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_BallsEffects]) - 0x620));
     SetPanelHeroIconB(0x5C, 0x3088);
     N2OBossRound.unk0 = 0;
     N2OBossRound.unk22 = i + 10;
@@ -743,7 +742,7 @@ void N2OInitHero(s32 i) {
         h->hero_anim->sub = n;
         n = n->next;
         if (n != NULL) {
-            n->unk6C = PlayerVehicleModel;
+            n->unk6C = &HeroModelBank[DB_PlayerVehicle];
             n->unk74 = 0x2005;
             n->unk50 = 1;
             n->unk51 = 0;
@@ -845,11 +844,11 @@ void N2OPlaceHero(s32 i) {
         n->unk0C = 0;
         n->unk08 = 0;
         n->unk04 = 0;
-        n->unk6C = HeroModelBank + z * 0x38;
+        n->unk6C = &HeroModelBank[z];
         h->hero_anim->sub = n;
         n = n->next;
         if (n != NULL) {
-            n->unk6C = HeroModelBank + 0x1490;
+            n->unk6C = &HeroModelBank[DB_PlayerVehicle];
             n->unk74 = 0x2005;
             n->unk50 = 1;
             n->unk51 = 0;
@@ -859,7 +858,7 @@ void N2OPlaceHero(s32 i) {
             n->flags &= ~0x8000;
         }
     }
-    sub->unk6C = PlayerVehicleModel;
+    sub->unk6C = &HeroModelBank[DB_PlayerVehicle];
     N2OHeroPlaced[i] = 0xF;
     sub->unk74 = 0x2003;
     sub->unk20.x = 0x1000;
@@ -1526,7 +1525,7 @@ void SetN2OHeroDead(s32 arg0) {
     temp_s0_2 = &base2[arg0];
     temp_v0 = temp_s0_2->hero_eng;
     sp18 = temp_v0->unk10;
-    SpawnModelFx(0, (s32 *)&sp18, (s32) &PlayerVehicleModel);
+    SpawnModelFx(0, (s32 *)&sp18, (s32) &HeroModelBank[DB_PlayerVehicle]);
     PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->unk10, 0x1000, 0x1E00, 0);
     HeroBecomeAngel(arg0);
 }
@@ -1548,7 +1547,7 @@ void N2OHeroDead(s32 arg0) {
         base = Heroes;
         h = &base[arg0];
         if ((u32)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name] * 0x38;
+            h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h->hero_name]];
         } else {
             h->hero_sub->unk6C = NULL;
         }
@@ -1618,13 +1617,13 @@ void InitN2OBall(NAS *nas) {
             }
         }
         eng->unk5D = 2;
-        eng->sub->unk6C = BallsEffectsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_BallsEffects];
         eng->sub->unk74 = 0x2009;
         AddToGroup((u8 **)&HeadOfBalls, (u8 *)nas);
         e1 = AddExtEngine(nas, 1);
         if (e1 != NULL) {
             sub = e1->sub;
-            sub->unk6C = BallsEffectsModel;
+            sub->unk6C = &HeroModelBank[DB_BallsEffects];
             sub->unk74 = 0x200B;
             e1->flags |= 0x22000021;
             sub->flags |= 0x22000021;
@@ -2065,7 +2064,7 @@ void N2OInitBoss(void) {
     mv->facing_angle = ang;
     mv->forward_angle = ang;
     eng->unk5D = 0;
-    anim = OxideModel;
+    anim = &HeroModelBank[DB_Oxide];
     *(u8 **)&sub->unk6C = anim;
     N2OBossAnimTimer = 0xF;
     sub->unk74 = 0x2006;
@@ -2181,7 +2180,7 @@ void N2OUpdateBoss(void) {
         if (Heroes[3].hero_attack_timer == 0) {
             Heroes[3].hero_eng->flags = 0;
             PlaySfx(0x586, NULL, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
-            SpawnModelFx(0, &eng->unk10.x, (s32)BallsEffectsModel);
+            SpawnModelFx(0, &eng->unk10.x, (s32)&HeroModelBank[DB_BallsEffects]);
             D_8009D6DC[2] |= 0x8000;
         }
     } else {
@@ -3245,7 +3244,7 @@ void InitN2ODeadWall(NAS *nas)
         off = 0;
         if (sub != 0) {
             do {
-                sub->unk6C = BallsEffectsModel;
+                sub->unk6C = &HeroModelBank[DB_BallsEffects];
                 sub->unk74 = 0;
                 sub->unk04 = off;
                 sub->flags |= 0x21;
@@ -4007,7 +4006,7 @@ void InitN2OmissileExplode(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         sub = eng->sub;
-        sub->unk6C = &OxideModel;
+        sub->unk6C = &HeroModelBank[DB_Oxide];
         sub->unk74 = 0x2005;
         sub->unk50 = 1;
         sub->unk51 = 0;
@@ -4040,7 +4039,7 @@ void InitN2Ofirstmissile(NAS *nas) {
     if (eng != NULL) {
         sub = eng->sub;
         eng->unk5D = 0;
-        sub->unk6C = &OxideModel;
+        sub->unk6C = &HeroModelBank[DB_Oxide];
         sub->unk74 = 0x2004;
         sub->unk51 = 0;
         sub->unk68 = 0x100;
@@ -4074,7 +4073,7 @@ void InitN2Omissile(NAS *nas) {
     if (eng != NULL) {
         sub = eng->sub;
         eng->unk5D = 0;
-        sub->unk6C = &OxideModel;
+        sub->unk6C = &HeroModelBank[DB_Oxide];
         sub->unk74 = 0x2004;
         sub->unk51 = 0;
         sub->flags |= 0x02000000;
@@ -4233,7 +4232,7 @@ void N2OInitShadow(s32 arg0) {
     HeroInfo *h = &base[arg0];
     EXTengine *s = h->hero_shadow;
 
-    s->sub->unk6C = PlayerVehicleModel;
+    s->sub->unk6C = &HeroModelBank[DB_PlayerVehicle];
     s->sub->unk74 = 0x2006;
     s->unk10 = h->hero_eng->unk10;
     s->unk5D = 0;

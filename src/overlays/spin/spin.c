@@ -178,10 +178,10 @@ WWInf SpinWorldInfo[2] = {
     { 0x7E, SpinAnims, SpinLevelDB1, 7 },
 };
 s32 SpinFiles[21] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 363], (s32)&DatIndex[2 * 362], (s32)&LoadingModel, (s32)&DatIndex[2 * 359],
-    (s32)&DatIndex[2 * 358], (s32)&InterfaceModel, (s32)&DatIndex[2 * 361], (s32)&DatIndex[2 * 360], (s32)&PowerupsModel,
-    (s32)&DatIndex[2 * 357], (s32)&DatIndex[2 * 356], (s32)&CrateObjectsModel, (s32)&DatIndex[2 * 355], (s32)&DatIndex[2 * 354],
-    (s32)&RingObjectsModel, (s32)&DatIndex[2 * 353], (s32)&DatIndex[2 * 352], 0, 0,
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 363], (s32)&DatIndex[2 * 362], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 359],
+    (s32)&DatIndex[2 * 358], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 361], (s32)&DatIndex[2 * 360], (s32)&HeroModelBank[DB_Powerups],
+    (s32)&DatIndex[2 * 357], (s32)&DatIndex[2 * 356], (s32)&HeroModelBank[DB_CrateObjects], (s32)&DatIndex[2 * 355], (s32)&DatIndex[2 * 354],
+    (s32)&HeroModelBank[DB_RingObjects], (s32)&DatIndex[2 * 353], (s32)&DatIndex[2 * 352], 0, 0,
 };
 /* the level's files (the engine's per-mode table points at mode 0x1B's) */
 file_group_load_info file_group_RING = { D_80050088, SpinFiles };
@@ -296,7 +296,7 @@ void InitialiseSPIN() {
         }
     }
     if (((SpinGame *)GameInfo)->flags & 0x80) {
-        dbase_load_all_mesh_anims(&AngelModel);
+        dbase_load_all_mesh_anims(&HeroModelBank[DB_Angel]);
     }
     if (((SpinGame *)GameInfo)->flags & 0x40) {
         if (((SpinGame *)GameInfo)->teams != 0) {
@@ -998,7 +998,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
           LinkObject((u8 *) nas);
           AddSolid(nas, 0x300);
           nas->FUX = (EXT *) fux;
-          eng->sub->unk6C = CrateObjectsModel;
+          eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
           eng->unk5D = 1;
           fux->kind = c;
           D_8009E46C[fux->kind]++;
@@ -1184,7 +1184,7 @@ void PlotHazardType(NAS *nas) {
     case 12:
         fux->timer = 0x78;
         fux->mask &= 0xFFF4;
-        eng->sub->unk6C = RingObjectsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_RingObjects];
         glow->unk18 = 0x60;
         glow->unk1E = 0xF0;
         glow->unk1C = 4;
@@ -1286,14 +1286,14 @@ void PlotHazardType(NAS *nas) {
                     PlaySfx(0x5F2, &he->sfx, &he->unk10, 0x1000, 0x1E00, 0);
                     Heroes[fux->owner].hero_pu_timer = 0x12C;
                     Heroes[fux->owner].hero_powerup->sub->unk74 = 0x2015;
-                    Heroes[fux->owner].hero_powerup->sub->unk6C = RingObjectsModel;
+                    Heroes[fux->owner].hero_powerup->sub->unk6C = &HeroModelBank[DB_RingObjects];
                     break;
                 case 0x13:
                     he = Heroes[fux->owner].hero_powerup;
                     PlaySfx(0x5F3, &he->sfx, &he->unk10, 0x1000, 0x1E00, 0);
                     Heroes[fux->owner].hero_pu_timer = 0xF0;
                     Heroes[fux->owner].hero_powerup->sub->unk74 = 0x2014;
-                    Heroes[fux->owner].hero_powerup->sub->unk6C = RingObjectsModel;
+                    Heroes[fux->owner].hero_powerup->sub->unk6C = &HeroModelBank[DB_RingObjects];
                     PlaySfx(0x41C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     break;
                 }
@@ -1350,7 +1350,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                     LinkObject((u8 *)nas);
                     AddSolid(nas, 0x300);
                     nas->FUX = (EXT *)fux;
-                    eng->sub->unk6C = RingObjectsModel;
+                    eng->sub->unk6C = &HeroModelBank[DB_RingObjects];
                     eng->unk5D = 1;
                     fux->kind = c;
                     D_8009E46C[fux->kind]++;
@@ -1389,7 +1389,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
             }
             shadow = AddExtEngine(nas, 2);
             if (shadow != NULL) {
-                shadow->sub->unk6C = PowerupsModel;
+                shadow->sub->unk6C = &HeroModelBank[DB_Powerups];
                 shadow->sub->unk74 = 0x2001;
                 shadow->unk10 = eng->unk10;
                 shadow->flags |= 0x41;
@@ -1466,7 +1466,7 @@ void PlotBalloon(NAS *nas) {
                                     }
                                 }
                             }
-                            SpawnModelFx(SpinBalloonAnims[SpinBalloonOwner], &eng->unk10.x, (s32)RingObjectsModel);
+                            SpawnModelFx(SpinBalloonAnims[SpinBalloonOwner], &eng->unk10.x, (s32)&HeroModelBank[DB_RingObjects]);
                             goto sfx;
                         }
                         if (fux->state == owner) {
@@ -1486,7 +1486,7 @@ void PlotBalloon(NAS *nas) {
                             }
                         }
                     }
-                    SpawnModelFx(SpinBalloonAnims[fux->state], &eng->unk10.x, (s32)RingObjectsModel);
+                    SpawnModelFx(SpinBalloonAnims[fux->state], &eng->unk10.x, (s32)&HeroModelBank[DB_RingObjects]);
                 sfx:
                     PlaySfx(SpinBalloonSfx[kind - 8][Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     o = fux->owner;
@@ -1506,7 +1506,7 @@ void PlotBalloon(NAS *nas) {
                             StopSfx(Heroes[fux->owner].hero_eng->sfx);
                         }
                     }
-                    SpawnModelFx(4, &eng->unk10.x, (s32)RingObjectsModel);
+                    SpawnModelFx(4, &eng->unk10.x, (s32)&HeroModelBank[DB_RingObjects]);
                     goto kill;
                 }
             case 3:
@@ -2941,7 +2941,7 @@ void SpinHeroDead(s32 arg0) {
         base2 = Heroes;
         h2 = &base2[arg0];
         if ((u32)(h2->hero_name - 1) < 8) {
-            h2->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[*(volatile u16 *)&h2->hero_name] * 0x38;
+            h2->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[*(volatile u16 *)&h2->hero_name]];
         } else {
             h2->hero_sub->unk6C = 0;
         }
@@ -2975,7 +2975,7 @@ void SetSpinHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -3104,7 +3104,7 @@ void SpinHeroLose(s32 arg0) {
             h->hero_eng->unk2C.y = v;
             h->hero_eng->unk2C.z = v;
         } else {
-            SpawnModelFx(SpinBalloonAnims[arg0], &e->unk10.x, (s32)&RingObjectsModel);
+            SpawnModelFx(SpinBalloonAnims[arg0], &e->unk10.x, (s32)&HeroModelBank[DB_RingObjects]);
             h->hero_status |= 0x8000;
         }
     }
@@ -3655,7 +3655,7 @@ void SpinCreateShadow(s32 arg0) {
     EXTengine *shadow = h->hero_shadow;
     EXTengine *eng;
 
-    shadow->sub->unk6C = &RingObjectsModel;
+    shadow->sub->unk6C = &HeroModelBank[DB_RingObjects];
     shadow->sub->unk74 = SpinShadowModels[arg0];
     eng = h->hero_eng;
     shadow->unk10 = eng->unk10;

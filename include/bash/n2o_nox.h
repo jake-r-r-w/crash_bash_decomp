@@ -673,7 +673,6 @@ typedef struct AsteroidExt {
     /* 0x7C */ EXTengine *shadow;
 } AsteroidExt;
 
-extern u8 PowerupsModel[];
 
 s32 ArcUpdate(s32 *from, s32 *to, void *arc, s32 *pos);
 

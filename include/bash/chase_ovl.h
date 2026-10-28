@@ -38,8 +38,6 @@ typedef struct CircleFireExt {
     u8 pad34[0x10];
 } CircleFireExt;
 
-extern u8 HeroModelBank[];
-extern u8 KegObjectsModel[];
 extern s32 *MapScene;
 
 typedef struct EggExt {
@@ -193,7 +191,6 @@ typedef struct PickupCHExt {
 
 extern u8 ChaseHeroSlots[];
 extern s32 ChaseHeroState[][21];
-extern u8 PowerupsModel[];
 extern s32 ChaseGrid[];
 
 /* Per-level spawn offsets read by ChaseSpawnCoal: radius, angle, height. */
@@ -223,7 +220,6 @@ extern s32 ChaseArenaShrink;
 extern s32 ChaseHitSfx[][4];
 void ChaseHidePowerup(s32 arg0);
 extern s16 HeroActHit;
-extern u8 HeroModelBank[];
 extern u16 CameraMode;
 
 void ChaseChooseWinner(s32 arg0, s32 arg1);

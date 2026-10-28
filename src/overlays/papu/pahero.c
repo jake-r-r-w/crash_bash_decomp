@@ -1074,7 +1074,7 @@ void SetPAHeroWinner(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
+    h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
     h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))ApplyContour)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
@@ -1607,7 +1607,7 @@ void PAHeroDead(s32 arg0) {
         base = Heroes;
         h = base + arg0;
         if ((u16)(h->hero_name - 1) < 8) {
-            h->hero_sub->unk6C = HeroModelBank + HeroHooks.HeroModels[h->hero_name] * 0x38;
+            h->hero_sub->unk6C = &HeroModelBank[HeroHooks.HeroModels[h->hero_name]];
         } else {
             h->hero_sub->unk6C = NULL;
         }

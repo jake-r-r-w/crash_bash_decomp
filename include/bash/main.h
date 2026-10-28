@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 #include "bash/core.h"   /* the Oct 9 records' types (map_enviroment, script_thread_handler, ...) */
 
-typedef struct {
+typedef struct AnimData {
     s32 tracksOff; /* 0x00 */
     s32 subOff;    /* 0x04 */
 } AnimData;
@@ -795,7 +795,6 @@ typedef struct { s32 v[4]; } Quat;
 extern s32 D_80064478[];
 extern s32 D_8006E9F8;
 extern u8 D_800527C4[];
-extern u8 HeroModelBank[];
 extern u8 D_8004DDBC[];
 extern u8 D_80050010[];
 void modchip_check_region(void);
@@ -895,7 +894,6 @@ extern s32 D_80067830;
 extern _mal_area MainHeap;
 extern s32 D_800637B0;
 extern u8 *D_8006E9FC;
-extern u8 FontModel[];
 extern void *HeadOfCameras;
 extern void *HeadOfObjects;
 extern music_midi CurrentMusic;
@@ -1011,10 +1009,8 @@ extern s32 D_80058F0C[][8];       /* music_play_level */
 extern s8 GameOptions[];
 extern s32 card_command_delay;
 extern s32 D_8005A620;
-extern u8 D_800556F4[];
 extern s32 GlobalNAStatus;
 extern u8 MainCamera[];
-extern u8 LoadingModel[];
 extern s16 GameMode;
 extern u16 GameLevelFlags;
 extern s32 FontPage;
@@ -1104,7 +1100,6 @@ typedef struct ComboSeq {
 extern MATRIX MapSceneMatrix;
 extern SVECTOR MapSceneRot;
 extern u8 D_800512A8[]; /* ComboSeq table, 0x90 bytes per entry */
-extern u8 D_800536CC[];
 extern CdlLOC D_8006EA14;
 extern RECT *ScreenRect;
 extern s32 D_8005B694;
@@ -1239,7 +1234,6 @@ extern s32 D_80056AC4; /* draw_object_model: the object's +0x8A */
 extern s32 D_80056878;    /* model_prims_begin: with D_80056AC4, forces the depth-cued path */
 extern s32 D_80056868[3]; /* model_prims_begin: default far colour */
 
-extern u8 TankObjects2Model[];
 typedef struct Words3 {
     s32 w0;
     s32 w4;
@@ -1921,7 +1915,7 @@ typedef struct {
     /* 0x10 */ u32 w10;
 } TexSrc2A84C;
 
-typedef struct {
+typedef struct TexDst2A84C {
     /* 0x00 */ u16 flag;
     /* 0x02 */ s16 f2;
     /* 0x04 */ Slot12 *slot;
@@ -1941,42 +1935,13 @@ typedef struct {
     /* 0x34 */ s32 f34;
 } TexDst2A84C;
 
-typedef struct {
+typedef struct TexEnt12 {
     /* 0x00 */ u16 id;
     /* 0x02 */ u8 pad2[2];
     /* 0x04 */ s32 f4;
     /* 0x08 */ s32 off;
 } TexEnt12;
 
-/* A texture set (a dbase's, at +0x10): its textures and their scroll
- * animations. The name is the C++ symbols'
- * (texture_init_mem_textureset__FP14obj_textureset). */
-typedef struct obj_textureset {
-    /* 0x00 */ s32 nTex;
-    /* 0x04 */ s32 nEnt;
-    /* 0x08 */ TexDst2A84C *tex;      /* nTex obj_textures */
-    /* 0x0C */ TexEnt12 *ent;
-    /* 0x10 */ u8 *base;
-    /* 0x14 */ u8 pad14[4];
-    /* 0x18 */ AnimData *anims;       /* in base, or NULL */
-    /* 0x1C */ s32 nAnim;
-    /* 0x20 */ u8 *anim;
-} obj_textureset;
-
-/* A dbase: one of the 0x38-byte records at HeroModelBank (load_initial_dbases'
- * pool), a loaded file and its textures (dbase_asload_with_anims loads it, the callbacks
- * below fill it). The name is the C++ symbols'
- * (dbase_mesh_anim_name_loaded__FP10_obj_dbasePc; the Oct 9 records' tag is
- * obj_dbase, whose typedef is in bash/core.h); the fields are from the code. */
-struct obj_dbase {
-    /* 0x00 */ s32 file;              /* loaded into data once the textures are in */
-    /* 0x04 */ s32 textureFile;       /* loaded first, into textures (dbase_asload_with_anims) */
-    /* 0x08 */ s32 load;              /* the load in flight, or 0 */
-    /* 0x0C */ u8 *data;
-    /* 0x10 */ obj_textureset textures;
-    /* 0x34 */ s32 *keep;             /* name hashes of the blocks to keep (dbase_setup_blocks) */
-};
-BASH_SIZE_CHECK(obj_dbase, 0x38);
 
 void mal_compact_from(mal *arg0, _mal_area *arg1);
 
@@ -2061,7 +2026,6 @@ typedef struct MapEnvHead {
 
 
 /* DrawSpriteTriple: three 0x38-byte sprite records drawn side by side */
-extern u8 InterfaceModel[];
 extern u16 D_8005A5C0[][3];
 
 mal *mal_next_movable(_mal_area *heap);

@@ -1175,7 +1175,7 @@ void InitAsteroidRoll(NAS *m) {
         e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
-            e->sub->unk6C = PowerupsModel;
+            e->sub->unk6C = &HeroModelBank[DB_Powerups];
             e->sub->unk74 = 0x2001;
             e->unk5C = 1;
             e->unk5D = 0;

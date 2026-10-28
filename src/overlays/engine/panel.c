@@ -629,12 +629,12 @@ void InitIcons4(void) {
         sub = IconParts[i];
         subs_init_array(((EXTengine **)&Icon)[i], 7, sub);
         for (j = 0; j < 7; j++) {
-            sub->unk6C = InterfaceModel;
+            sub->unk6C = &HeroModelBank[DB_Interface];
             sub->flags = 0x10000000;
             sub++;
         }
         sub = IconParts[i];
-        sub->unk6C = InterfaceModel;
+        sub->unk6C = &HeroModelBank[DB_Interface];
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
         ((EXTengine **)&Icon)[i]->unk10.x = D_800991E0[D_800991D8[i]][0];
@@ -642,7 +642,7 @@ void InitIcons4(void) {
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->unk74 = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
-        sub->unk6C = InterfaceModel;
+        sub->unk6C = &HeroModelBank[DB_Interface];
         sub->flags = 0;
         sub->unk04 = D_80099240[i].x;
         sub->unk08 = D_80099240[i].y;
@@ -662,12 +662,12 @@ void InitIcons2(void) {
         sub = IconParts[i];
         subs_init_array(((EXTengine **)&Icon)[i], 7, sub);
         for (j = 0; j < 7; j++) {
-            sub->unk6C = InterfaceModel;
+            sub->unk6C = &HeroModelBank[DB_Interface];
             sub->flags = 0x10000000;
             sub++;
         }
         sub = IconParts[i];
-        sub->unk6C = InterfaceModel;
+        sub->unk6C = &HeroModelBank[DB_Interface];
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
         ((EXTengine **)&Icon)[i]->unk10.x = D_800991F0[D_800991D8[i]][0];
@@ -675,7 +675,7 @@ void InitIcons2(void) {
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->unk74 = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
-        sub->unk6C = InterfaceModel;
+        sub->unk6C = &HeroModelBank[DB_Interface];
         sub->flags = 0;
         sub->unk04 = D_80099240[i].x;
         sub->unk08 = D_80099240[i].y;
@@ -705,7 +705,7 @@ void InitHealthIcons(void) {
     s16 n;
 
     i = 0;
-    tim = PowerupsModel;
+    tim = &HeroModelBank[DB_Powerups];
     y0 = 0x37;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
@@ -801,7 +801,7 @@ void ClearHealthIcons(void) {
     s16 n;
 
     i = 0;
-    tim = PowerupsModel;
+    tim = &HeroModelBank[DB_Powerups];
     y0 = 0x37;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
@@ -896,7 +896,7 @@ void InitBossHealthIcons(void) {
     pHeroHealth[3] = (s32)&D_8009D6DC[3];
     sub = ((PanelPrim (*)[7])&IconParts[0][2])[3];
     b = sub + 1;
-    sub->u6C.ptr = PowerupsModel;
+    sub->u6C.ptr = &HeroModelBank[DB_Powerups];
     sub->unk0 = 0x10008000;
     sub->unk74 = 0x2018;
     c0 = 0x3FFF7F;
@@ -967,7 +967,7 @@ void InitPowerupIcons(s32 arg0, s32 arg1) {
     s32 code;
     s16 n;
 
-    tim = PowerupsModel;
+    tim = &HeroModelBank[DB_Powerups];
 
     pHeroHealth[2] = arg0;
     p = ((PanelPrim (*)[7])&IconParts[0][2])[2];
@@ -1163,7 +1163,7 @@ void InitPowerIcons(void) {
     s16 n;
 
     i = 0;
-    tim = InterfaceModel;
+    tim = &HeroModelBank[DB_Interface];
     y0 = 0x37;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
@@ -1392,7 +1392,7 @@ void InitTankWeaponIcons(void) {
             p = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][5])[0][0]);
             p->unk4 = 0x2E;
             p->unk8 = 0x38;
-            p->u6C.ptr = TankObjectsModel;
+            p->u6C.ptr = &HeroModelBank[DB_TankObjects];
             p->unk0 = 0x10000000;
             p->unkC = 0;
             p->unk74 = 0x3029;
@@ -1400,7 +1400,7 @@ void InitTankWeaponIcons(void) {
             D_8009AE40[i].b = &TA_players[i].MainWeaponRounds;
             p->unk4 = 0xA;
             p->unk8 = 0x39;
-            p->u6C.ptr = TankObjectsModel;
+            p->u6C.ptr = &HeroModelBank[DB_TankObjects];
             p->unk0 = 0x10000000;
             p->unkC = 0;
             p->unk74 = 0x302B;
@@ -2124,7 +2124,7 @@ void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b) {
 
 void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2) {
     if (PanelCtrl & 2) {
-        void *p = &HeroModelBank[arg0 * 0x38];
+        void *p = &HeroModelBank[arg0];
         subengine *s = IconParts[2];
         s->unk6C = p;
         s->unk74 = arg1;
@@ -2143,7 +2143,7 @@ void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2) {
 void SetPanelHeroIconB(u16 arg0, s16 arg1) {
     if (PanelCtrl & 2) {
         subengine *s = IconParts[3];
-        s->unk6C = &HeroModelBank[arg0 * 0x38];
+        s->unk6C = &HeroModelBank[arg0];
         s->unk74 = arg1;
         Icon.b[4] = D_80099208[2];
         Icon.b[5] = D_80099208[3];
@@ -2193,7 +2193,7 @@ void InitCountdown(void) {
     sub = &counter_sub;
     if (sub != NULL) {
         *sub = SubEngineTemplate;
-        sub->unk6C = InterfaceModel;
+        sub->unk6C = &HeroModelBank[DB_Interface];
         sub->unk74 = 0x2004;
         sub->flags = 0x11000000;
         sub->unk04 = 0x140;
@@ -2234,7 +2234,7 @@ void InitBossHealthBar(void) {
     subs_init_array(e, 1, &D_8009AC04);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;
-    e->sub->unk6C = InterfaceModel;
+    e->sub->unk6C = &HeroModelBank[DB_Interface];
     e->sub->unk74 = 0x2022;
     e->unk5D = 0;
     e->unk5C = 1;
@@ -2245,7 +2245,7 @@ void InitBossHealthBar(void) {
     subs_init_array(e, 1, &D_8009ACAC);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;
-    e->sub->unk6C = InterfaceModel;
+    e->sub->unk6C = &HeroModelBank[DB_Interface];
     e->sub->unk74 = 0x2022;
     e->unk5D = 0;
     e->unk5C = 1;

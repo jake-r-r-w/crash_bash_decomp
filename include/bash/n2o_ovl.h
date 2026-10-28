@@ -24,7 +24,6 @@ void InitialiseN2OFirst(void);
 void InitialiseN2O(void);
 
 
-extern u8 OxideModel[];
 extern u16 CameraMode;
 extern u16 N2OKickSfx[];
 extern s16 N2OExplodeScales[][3];
@@ -60,7 +59,6 @@ void N2OUpdateShadow(s32 arg0);
 extern HeroInfo Heroes[4];
 
 void SetN2OHeroDead(s32 arg0);
-extern char PlayerVehicleModel[];
 s32 csqrt(s32 x);
 
 NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2);
@@ -275,7 +273,6 @@ typedef struct N2ORec {
     s32 f24;
 } N2ORec;
 extern N2ORec N2OSlotRecs[];
-extern char BallsEffectsModel[];
 extern s16 N2OBallClock;
 extern s16 N2OBallCount;
 extern s16 N2OBallDelay;

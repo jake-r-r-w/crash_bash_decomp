@@ -63,9 +63,9 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. The engine's and exe's `D_` globals (773 left, `scratch/rank_d.py`-style counts):
-   the top ones are labels inside objects (model bank records, `GameOptions + 4`, the
-   arena object counts), so type those objects first, then name what's left.
+1. The engine's and exe's `D_` globals (`scratch/rank_d.py`-style counts): the top ones
+   are labels inside objects (`GameOptions + 4`, the arena object counts), so type those
+   objects first, then name what's left.
 2. The model bank as one `obj_dbase` array (283 records from `HeroModelBank` to
    0x8005683C; the slot labels as elements or an enum of indices: a naming choice
    for the user).
@@ -494,7 +494,12 @@ Newest first, a few lines each. Details are in the commits.
   globals named (WinCounterState .., HeadOfCameras, VramAreas ..), and 31 hero sequence
   words data2c had read as addresses (`&D_800A0000` is HEROcmd_SFXhandled, 0) written as
   numbers. Gotcha: `decomp.py rename` failed on main.exe data names for no clear reason;
-  sed over src/include plus a sym.main.txt line, then `make check`, did it.
+  sed over src/include plus a sym.main.txt line, then `make check`, did it. Then the model
+  bank as `obj_dbase HeroModelBank[DB_COUNT]` with `enum DbaseIds` (bash/modelbank.h,
+  included by nas.h; the dbase types moved there): 136 slot labels are `&HeroModelBank[DB_x]`.
+  Gotchas: a label inside a record can be a pointer *field* read (`D_80054944` was
+  `textures.tex`) or a sequence word that only looks like an address (Papu's `0x8005408C`);
+  a macro that did byte arithmetic (`TANK_MODEL`) has to stay a `u8 *`.
 
 - **2026-10-27 (Phase 5: the engine's and the exe's data as C):** the engine's
   data spliced, cut by file (`engine.c` .. `camera.c`, the world records with

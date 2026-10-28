@@ -11,35 +11,10 @@
 /* defined later in polar.c than the data that points at it */
 extern const char PolarAnimWin[];
 
-extern u8 PolarObjectsModel[];
-extern u8 D_80052EEC[];
 
 /* Per-character tables SetPolarHeroHit hangs on hero_eng->sub->unk6C. */
-extern u8 D_800547DC[];
-extern u8 D_80054814[];
-extern u8 D_8005484C[];
-extern u8 D_80054884[];
-extern u8 D_800548BC[];
-extern u8 D_800548F4[];
-extern u8 D_80054AB4[];
-extern u8 D_80054AEC[];
 
 /* Per-character tables SetPolarHeroIdle hangs on hero_eng->sub->unk6C. */
-extern u8 D_80052E0C[];
-extern u8 D_80052E44[];
-extern u8 D_80052E7C[];
-extern u8 D_80052EB4[];
-extern u8 D_80052F24[];
-extern u8 D_800549D4[];
-extern u8 D_80054A44[];
-extern u8 D_80054BCC[];
-extern u8 D_80054C04[];
-extern u8 D_80054C3C[];
-extern u8 D_80054C74[];
-extern u8 D_80054CAC[];
-extern u8 D_80054CE4[];
-extern u8 D_80054D1C[];
-extern u8 D_80054D54[];
 
 void InitialisePOLARFirst(void);
 void UpdatePOLAR(void);
@@ -298,7 +273,6 @@ typedef struct ExtSimpleExplosion {
     /* 0x104 */ s32 unk104;
 } ExtSimpleExplosion;
 
-extern u8 PolarObjectsModel[];
 
 /* The object PlotBrioPack follows (its NAS.UserInfo.user1). */
 typedef struct BrioAnim {
@@ -973,7 +947,6 @@ typedef struct PolarWalrusExt2 {
 extern ScriptInit WalrusScriptInit;
 extern ScriptInit WalrusFishScriptInit;
 extern s32 WalrusState;
-extern u8 D_8005476C[];
 
 s32 ArcUpdate(s32 *from, s32 *to, void *arc, s32 *pos);
 
@@ -1133,7 +1106,6 @@ typedef struct PolarMissileExt {
     /* 0x64 */ SLONG_XYZ pos;
 } PolarMissileExt;
 
-extern u8 RoboPolarModel[];
 
 /* Index of the first live hero within 0x7BC4 of pos (knocked back and a
  * sound played), or -1 (PlotPolarMissile). */
@@ -1172,7 +1144,7 @@ static inline void PolarMissileBlast(NAS *m, s32 kind) {
     ExtSpawn5910 *x;
 
     pos = &m->Engine->unk10;
-    anim = RoboPolarModel;
+    anim = &HeroModelBank[DB_RoboPolar];
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         x = FindExtension(nas, 0x10000000);
@@ -1210,7 +1182,6 @@ typedef struct PolarBombExt {
 
 s32 PolarBombHitHeroes(NAS *nas, s32 dist);
 
-extern u8 RoboPolarModel[];
 
 /* Big missile extension (0x7C bytes, id 0x10000000). */
 typedef struct BigMissileExt {
@@ -1306,7 +1277,6 @@ void SetPolarHeroSquashed(s32 arg0);
 /* Per-hero speed table (declared in bash/pause.h, not included here). */
 extern s32 PolarHeroMass[];
 extern s32 PolarShadowState[];
-extern u8 PolarModel[];
 
 s32 PolarOfficeBox(s32 i);
 

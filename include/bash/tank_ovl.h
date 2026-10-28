@@ -29,7 +29,6 @@ extern RockTblEnt RockFrames[];
 extern RockTblEnt MineFrames[]; /* PlotMine: frame by countdown */
 extern RockTblEnt MineFramesBig[]; /* PlotMine: frame by countdown, modes 8/9 */
 
-extern u8 TankVehicleModel[];
 extern s32 TankHeroSpeeds[]; /* TA_InitHero: tank speed by hero_name - 1 */
 extern u16 TankMetalAiBotTweak[];
 extern u16 TankMetalAiHumanTweak[];
@@ -80,8 +79,6 @@ extern NAS *TotemPole;
 extern NAS *TotemTop;
 extern NAS *TotemBot;
 
-extern u8 TankObjectsModel[];
-extern u8 D_800537AC[];
 extern s32 TotemTargets[][2];
 
 extern s32 TotemAnim0D[];
@@ -176,7 +173,6 @@ extern s32 TankBossSightedHero;
 extern NAS *TankObjects[8];    /* objects AddTankObject adds and RemoveTankObject removes; FindTankObjectNear tests their distance */
 extern NAS *TankMines[8];
 
-extern u8 D_80053704[];
 extern NAS *TankBossNas;       /* InitTankBoss's NAS */
 extern EXTengine *TankBossEng; /* and its engine */
 extern s32 TankBossRocketDelay;
@@ -184,7 +180,7 @@ s32 TankBossTurretFindTarget(EXTengine *eng);
 void TankBossCortexTurretFire(EXTengine *eng);
 void TankBossRocketTurretFire(NAS *nas, EXTengine *eng);
 /* Field 0xC of the 0x38-byte model record N at HeroModelBank (D_800536CC is record 57). */
-#define TANK_MODEL(n) (&HeroModelBank[(n) * 0x38])
+#define TANK_MODEL(n) ((u8 *)&HeroModelBank[n])
 #define TANK_MODEL_ON(b, n) (*(s32 *)((b) + (n) * 0x38 + 0xC))
 extern s32 TankBossBob[16]; /* PlotTankBoss: per-frame height wobble */
 
@@ -516,7 +512,7 @@ static inline void TankSpawnBit1605(SLONG_XYZ *pos, s32 kind) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    p = TankObjectsModel;
+    p = &HeroModelBank[DB_TankObjects];
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -539,7 +535,7 @@ static inline NAS *TankSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    p = TankObjectsModel;
+    p = &HeroModelBank[DB_TankObjects];
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -565,7 +561,7 @@ static inline void TankSpawnBit1605B(SLONG_XYZ *pos, s32 kind) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    p = D_800536CC;
+    p = &HeroModelBank[DB_ArenaBossKomodoArenaobjects];
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -805,7 +801,6 @@ extern u8 TankJungleMap[];
 extern u8 TankMetalMap[];
 extern u8 TankBossMap[];
 extern u8 TankSwampMap[];
-extern u8 TankObjectsModel[];
 void Clock_Off(void);
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
@@ -818,7 +813,6 @@ typedef struct ModelRec {
     /* 0x10 */ u8 unk10[0x38 - 0x10];
 } ModelRec;
 
-extern u8 D_8005373C[];
 /* PlotMoeJoe: anim scripts, Moe (0x131E) and Joe */
 extern s32 MoeScript0[];
 extern s32 MoeScript1[];

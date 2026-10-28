@@ -2952,7 +2952,7 @@ void export_exe_functions(void) {
     t[0x124 / 4] = dbase_init;
     t[0x128 / 4] = dbase_load_textures_wait;
     t[0x12C / 4] = dbase_init_all;
-    t[0x130 / 4] = HeroModelBank;
+    t[0x130 / 4] = (u8 *)HeroModelBank;
     t[0x134 / 4] = MulMatrix;
     t[0x138 / 4] = pad_rumble_small;
     t[0x13C / 4] = pad_rumble_big;

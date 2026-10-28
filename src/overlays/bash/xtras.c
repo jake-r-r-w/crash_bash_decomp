@@ -153,7 +153,7 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 LinkObject((u8 *)nas);
                 AddSolid(nas, 0x300);
                 nas->FUX = (EXT *)obj;
-                eng->sub->unk6C = CrateObjectsModel;
+                eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
                 eng->unk5D = 1;
                 obj->unk14 = d;
                 D_8009E46C[obj->unk14]++;
@@ -261,7 +261,7 @@ void InitCrate(NAS *arg0) {
                 }
             } while (again);
             eng->unk10.y = World_floor_level;
-            eng->sub->unk6C = CrateObjectsModel;
+            eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
             eng->unk5D = 1;
             eng->unk5C = 1;
             obj->unk1A = 3;
@@ -795,7 +795,7 @@ void PlotCrate(NAS *arg0) {
         fux->count = 0x78;
         fux->flags &= 0xFFF4;
         BC038_SNAP(eng);
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         ext->unk18 = 0x60;
         ext->unk1E = 0xF0;
         ext->unk1A = 0;
@@ -912,7 +912,7 @@ void PlotCrate(NAS *arg0) {
         fux->count = 0x96;
         fux->flags &= 0xFFF4;
         BC038_SNAP(eng);
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         ext->unk18 = 0x80;
         ext->unk1E = 0x50;
         ext->unk1C = 4;
@@ -1141,7 +1141,7 @@ void InitCratePickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         r = Random(4);
         eng->sub->unk74 = BashPickupModels[r];
         obj = (EXTobject *)AddObject(arg0);
@@ -1193,7 +1193,7 @@ void InitShieldPickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         eng->sub->unk74 = 0x200D;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
@@ -1245,7 +1245,7 @@ void InitBootsPickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         eng->sub->unk74 = 0x200A;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
@@ -1297,7 +1297,7 @@ void InitAnvilPickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         eng->sub->unk74 = 0x2011;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
@@ -1349,7 +1349,7 @@ void InitSlowmoPickup(NAS *arg0) {
     if (eng != NULL) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
-        eng->sub->unk6C = PowerupsModel;
+        eng->sub->unk6C = &HeroModelBank[DB_Powerups];
         eng->sub->unk74 = 0x2009;
         obj = (EXTobject *)AddObject(arg0);
         if (obj != NULL) {
@@ -1844,7 +1844,7 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask) {
 
 void CrateBreak(EXTengine *eng, T_BC038Fux *fux) {
     PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-    SpawnModelFx(2, (s32 *)((u8 *)eng + 0x10), (s32)CrateObjectsModel);
+    SpawnModelFx(2, (s32 *)((u8 *)eng + 0x10), (s32)&HeroModelBank[DB_CrateObjects]);
     if ((HeroHooks.KeepInBounds(eng) ^ 1) != 0) {
         CreateNAS(((s32 *)eng)[4], ((s32 *)eng)[5], ((s32 *)eng)[6], 0x206, 0x11);
     }

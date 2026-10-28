@@ -1157,7 +1157,7 @@ void HubSpawnFlash(s32 *arg0, s32 arg1) {
     EXTengine *eng;
     u8 *p;
 
-    p = AdventureItemsModel;
+    p = &HeroModelBank[DB_AdventureItems];
     nas = CreateNAS(arg0[0], arg0[1], arg0[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -1344,7 +1344,7 @@ void HubCreateShadow(s32 arg0) {
     EXTengine *s = h->hero_shadow;
 
     if (s != NULL) {
-        s->sub->unk6C = AdventureItemsModel;
+        s->sub->unk6C = &HeroModelBank[DB_AdventureItems];
         s->sub->unk74 = 0x2020;
         s->unk10 = h->hero_eng->unk10;
         s->flags |= 0x8041;
@@ -1464,14 +1464,14 @@ void InitialisePodiumFirst(void) {
     for (i = 0; i < 4; i++) {
         PodiumHeroNas[i] = 0;
         switch (GameInfo[i + 0x4C]) {
-        case 1: dbase_load_textures(D_80055924); break;
-        case 2: dbase_load_textures(D_8005595C); break;
-        case 3: dbase_load_textures(D_80055994); break;
-        case 4: dbase_load_textures(D_800559CC); break;
-        case 5: dbase_load_textures(D_80055A04); break;
-        case 6: dbase_load_textures(D_80055A3C); break;
-        case 7: dbase_load_textures(D_80055A74); break;
-        case 8: dbase_load_textures(D_80055AAC); break;
+        case 1: dbase_load_textures(&HeroModelBank[DB_CharsWarpCrash]); break;
+        case 2: dbase_load_textures(&HeroModelBank[DB_CharsWarpCoco]); break;
+        case 3: dbase_load_textures(&HeroModelBank[DB_CharsWarpCortex]); break;
+        case 4: dbase_load_textures(&HeroModelBank[DB_CharsWarpBrio]); break;
+        case 5: dbase_load_textures(&HeroModelBank[DB_CharsWarpTiny]); break;
+        case 6: dbase_load_textures(&HeroModelBank[DB_CharsWarpKong]); break;
+        case 7: dbase_load_textures(&HeroModelBank[DB_CharsWarpDingo]); break;
+        case 8: dbase_load_textures(&HeroModelBank[DB_CharsWarpRilla]); break;
         }
     }
     ((HubGameView *)GameInfo)->unk50 = 9;
@@ -1513,7 +1513,7 @@ void InitialisePodium(void) {
         default: k = 0xD6; break;
         }
         for (j = 0; (&PodiumAnimName)[j] != NULL;) {
-            dbase_mesh_anim_name_load(HeroModelBank + k * 0x38, (&PodiumAnimName)[j++]);
+            dbase_mesh_anim_name_load(&HeroModelBank[k], (&PodiumAnimName)[j++]);
         }
         PodiumSpawnHero(i, &((HubSpawnEnt (*)[4])PodiumSpawns)[PodiumTies][i]);
         PodiumInitScript(i, name);
@@ -1756,35 +1756,35 @@ void PodiumInitScript(s32 arg0, s32 arg1) {
         if (mid != NULL) {
             switch (arg1) {
             case 1:
-                mid->inner->script = D_80055924;
+                mid->inner->script = &HeroModelBank[DB_CharsWarpCrash];
                 ScriptCursorFirst((NAS *)obj, &PodiumScript2);
                 break;
             case 2:
-                mid->inner->script = D_8005595C;
+                mid->inner->script = &HeroModelBank[DB_CharsWarpCoco];
                 ScriptCursorFirst((NAS *)obj, &PodiumScript1);
                 break;
             case 3:
-                mid->inner->script = D_80055994;
+                mid->inner->script = &HeroModelBank[DB_CharsWarpCortex];
                 ScriptCursorFirst((NAS *)obj, &PodiumScript3);
                 break;
             case 4:
-                mid->inner->script = D_800559CC;
+                mid->inner->script = &HeroModelBank[DB_CharsWarpBrio];
                 ScriptCursorFirst((NAS *)obj, &PodiumScript0);
                 break;
             case 5:
-                mid->inner->script = D_80055A04;
+                mid->inner->script = &HeroModelBank[DB_CharsWarpTiny];
                 ScriptCursorFirst((NAS *)obj, &PodiumScript6);
                 break;
             case 6:
-                mid->inner->script = D_80055A3C;
+                mid->inner->script = &HeroModelBank[DB_CharsWarpKong];
                 ScriptCursorFirst((NAS *)obj, &PodiumScript7);
                 break;
             case 7:
-                mid->inner->script = D_80055A74;
+                mid->inner->script = &HeroModelBank[DB_CharsWarpDingo];
                 ScriptCursorFirst((NAS *)obj, &PodiumScript4);
                 break;
             case 8:
-                mid->inner->script = D_80055AAC;
+                mid->inner->script = &HeroModelBank[DB_CharsWarpRilla];
                 ScriptCursorFirst((NAS *)obj, &PodiumScript5);
                 break;
             }
@@ -1989,7 +1989,7 @@ void InitSparkGFX(NAS *arg0) {
         u32 fl;
         do {
             s->unk51 = 0;
-            nv = AdventureItemsModel;
+            nv = &HeroModelBank[DB_AdventureItems];
             s->unk50 = 1;
             s->unk6C = nv;
             if (PodiumCheerKind == 0) {
@@ -2041,7 +2041,7 @@ void HubInitSparks(HubSparks *arg0) {
     src = set->src;
     dst = set->dst;
     row = arg0->set.rows;
-    g = AdventureItemsModel;
+    g = &HeroModelBank[DB_AdventureItems];
     sel = PodiumCheerKind;
     if (sel == 0) {
         tex = (HubTex *)(*(u8 **)(g + 0x18) + 0x188);
@@ -2303,7 +2303,7 @@ void InitPodiumTrophy(NAS *arg0) {
     e = arg0->Engine;
     arg0->UserInfo.status = 0;
     if (e != NULL && (e->flags &= ~0x8000, s = e->sub, s != NULL)) {
-        s->unk6C = &D_8005572C;
+        s->unk6C = &HeroModelBank[DB_MainmenuModels2];
         s->unk74 = 0x200A;
         s->unk51 = 0;
     } else {
@@ -2354,7 +2354,7 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
                 eng_add_subs(e, 1);
                 s = e->sub;
                 if (s != NULL && (s = s->next, s != NULL)) {
-                    s->unk6C = &D_8005572C;
+                    s->unk6C = &HeroModelBank[DB_MainmenuModels2];
                     p = (u8 *)PodiumHeroAnims;
                     t = (k - 1) * 4;
                     s->unk74 = *(u16 *)(p + t);

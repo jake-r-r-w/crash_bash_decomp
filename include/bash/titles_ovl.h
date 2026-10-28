@@ -265,7 +265,6 @@ typedef struct {
 } TitlesTrig;
 extern s32 CharPickSfx[];
 extern s32 CharMoveSfx[];
-extern u8 HeroModelBank[];
 extern TitlesOff CharSelectorOffsets[];
 /* GameInfo as seen by ShuffleCharSelectors (unk26 is GamePlayers). */
 typedef struct {

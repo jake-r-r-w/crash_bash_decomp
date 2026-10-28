@@ -47,17 +47,17 @@ WWInf TankWorldInfo[9] = {
     { 0x36, TankAnims, TankLevelDB3 },
 };
 s32 TankFiles[24] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 563], (s32)&DatIndex[2 * 562], (s32)&LoadingModel, (s32)&DatIndex[2 * 559],
-    (s32)&DatIndex[2 * 558], (s32)&InterfaceModel, (s32)&DatIndex[2 * 561], (s32)&DatIndex[2 * 560], (s32)&PowerupsModel,
-    (s32)&DatIndex[2 * 557], (s32)&DatIndex[2 * 556], (s32)&AngelModel, (s32)&DatIndex[2 * 555], (s32)&DatIndex[2 * 554],
-    (s32)&TankObjectsModel, (s32)&DatIndex[2 * 553], (s32)&DatIndex[2 * 552], (s32)&TankObjects2Model, (s32)&DatIndex[2 * 551],
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 563], (s32)&DatIndex[2 * 562], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 559],
+    (s32)&DatIndex[2 * 558], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 561], (s32)&DatIndex[2 * 560], (s32)&HeroModelBank[DB_Powerups],
+    (s32)&DatIndex[2 * 557], (s32)&DatIndex[2 * 556], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 555], (s32)&DatIndex[2 * 554],
+    (s32)&HeroModelBank[DB_TankObjects], (s32)&DatIndex[2 * 553], (s32)&DatIndex[2 * 552], (s32)&HeroModelBank[DB_TankObjects2], (s32)&DatIndex[2 * 551],
     (s32)&DatIndex[2 * 550], 0, 0, 0,
 };
 s32 TankSwampFiles[24] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 549], (s32)&DatIndex[2 * 548], (s32)&LoadingModel, (s32)&DatIndex[2 * 545],
-    (s32)&DatIndex[2 * 544], (s32)&InterfaceModel, (s32)&DatIndex[2 * 547], (s32)&DatIndex[2 * 546], (s32)&PowerupsModel,
-    (s32)&DatIndex[2 * 543], (s32)&DatIndex[2 * 542], (s32)&AngelModel, (s32)&DatIndex[2 * 541], (s32)&DatIndex[2 * 540],
-    (s32)&TankObjectsModel, (s32)&DatIndex[2 * 539], (s32)&DatIndex[2 * 538], (s32)&TankVehicleModel, (s32)&DatIndex[2 * 537],
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 549], (s32)&DatIndex[2 * 548], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 545],
+    (s32)&DatIndex[2 * 544], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 547], (s32)&DatIndex[2 * 546], (s32)&HeroModelBank[DB_Powerups],
+    (s32)&DatIndex[2 * 543], (s32)&DatIndex[2 * 542], (s32)&HeroModelBank[DB_Angel], (s32)&DatIndex[2 * 541], (s32)&DatIndex[2 * 540],
+    (s32)&HeroModelBank[DB_TankObjects], (s32)&DatIndex[2 * 539], (s32)&DatIndex[2 * 538], (s32)&HeroModelBank[DB_TankVehicle], (s32)&DatIndex[2 * 537],
     (s32)&DatIndex[2 * 536], 0, 0, 0,
 };
 /* The five arenas' files (modes 5..9; the engine's table at 0x800A0030): the exe's file group
@@ -1475,15 +1475,15 @@ void TA_InitLevel(void) {
         Set_Clock(0x130, 0x81C0);
     }
     if (GameMode == 5) {
-        dbase_load_all_mesh_anims((s32 *)TankVehicleModel);
+        dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_TankVehicle]);
     } else {
-        dbase_load_all_mesh_anims((s32 *)TankObjects2Model);
+        dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_TankObjects2]);
     }
     if (GameMode == 7) {
-        dbase_load_all_mesh_anims((s32 *)D_800537AC);
+        dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_ArenaTankJungleObjects]);
     }
-    dbase_load_all_mesh_anims((s32 *)TankObjectsModel);
-    dbase_load_all_mesh_anims((s32 *)(TankObjectsModel - 0x658));
+    dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_TankObjects]);
+    dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_TankObjects]) - 0x658));
     dbase_load_all_mesh_anims(*(s32 **)MapScene);
     GameViewport.ofx = 0x140;
     GameViewport.ofy = 0x15E;
@@ -1642,14 +1642,14 @@ void TA_UpdateLevel(void) {
         PlaySfx(TankPendingSfx, NULL, NULL, 0x1000, 0x1E00, 0);
         TankPendingSfx = 0;
     }
-    base = HeroModelBank;
+    base = (u8 *)HeroModelBank;
     if (TANK_MODEL_ON(base, 56)) {
         texture_update_anims((obj_textureset *)(TANK_MODEL(56) + 0x10));
     }
     if (GameMode == 5 && TANK_MODEL_ON(base, 60)) {
         texture_update_anims((obj_textureset *)(TANK_MODEL(60) + 0x10));
     }
-    if (GameMode == 9 && TANK_MODEL_ON(b2 = HeroModelBank, 57)) {
+    if (GameMode == 9 && TANK_MODEL_ON(b2 = (u8 *)HeroModelBank, 57)) {
         texture_update_anims((obj_textureset *)(b2 + 57 * 0x38 + 0x10));
     }
     if (HeroesAllOut == 0) {
@@ -1806,20 +1806,20 @@ void TA_InitHero(u32 player) {
     sub = sub->next;
     sub->unk51 = 1;
     if (((TankModeView *)g)->mode == 5) {
-        sub->unk6C = TankVehicleModel;
+        sub->unk6C = &HeroModelBank[DB_TankVehicle];
         sub->unk74 = 0x2005;
         sub->unk08 = -0x100;
     } else {
-        sub->unk6C = TankObjects2Model;
+        sub->unk6C = &HeroModelBank[DB_TankObjects2];
         sub->unk74 = 0x2009;
     }
     sub = sub->next;
     sub->unk51 = 1;
     if (GameMode == 5) {
-        sub->unk6C = TankVehicleModel;
+        sub->unk6C = &HeroModelBank[DB_TankVehicle];
         sub->unk74 = 0x2001;
     } else {
-        sub->unk6C = TankObjects2Model;
+        sub->unk6C = &HeroModelBank[DB_TankObjects2];
         sub->unk74 = 0x4300;
     }
     SetTankHeroIdle(player);
@@ -3407,7 +3407,7 @@ void TankHeroDie(u32 arg0) {
     if (ok == 0 && ProcessHeroAnim(arg0) != 0) {
         eng = Heroes[arg0].hero_eng;
         pos = (s32 *)&eng->unk10;
-        p = TankObjectsModel;
+        p = &HeroModelBank[DB_TankObjects];
         nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -3880,7 +3880,7 @@ void PlotShell(NAS *nas) {
         fux->SpeedY = -0x54;
         eng->unk10.y -= 0x54;
         pos = &eng->unk10;
-        p = TankObjectsModel;
+        p = &HeroModelBank[DB_TankObjects];
         puff = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
         if (puff != NULL) {
             ext = FindExtension(puff, 0x10000000);
@@ -4476,7 +4476,7 @@ void PlotTorpedo(NAS *nas) {
     }
     pos = &eng->unk10;
     PlaySfx(0x4EA, NULL, pos, 0x1000, 0x1E00, 0);
-    p = TankObjectsModel;
+    p = &HeroModelBank[DB_TankObjects];
     n = CreateNAS(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
     if (n != NULL) {
         ext = FindExtension(n, 0x10000000);
@@ -4529,7 +4529,7 @@ void CreateMineShrapnelBits(NAS *nas) {
     case 2:
     case 4:
         pos = &eng->unk10;
-        p = TankObjectsModel;
+        p = &HeroModelBank[DB_TankObjects];
         n = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
@@ -4748,13 +4748,13 @@ void PlotPickupGenerator_TA(NAS *nas)
         switch (r)
         {
           case 0:
-            p->Engine->sub->unk6C = TankObjects2Model;
+            p->Engine->sub->unk6C = &HeroModelBank[DB_TankObjects2];
             p->Engine->sub->unk74 = 0x2013;
             r = 5;
             break;
 
           case 1:
-            eng->sub->unk6C = PowerupsModel;
+            eng->sub->unk6C = &HeroModelBank[DB_Powerups];
             eng->sub->unk74 = 0x2018;
             r = 4;
             break;
@@ -4821,16 +4821,16 @@ void PlotPickupGenerator_TA(NAS *nas)
         {
           eng = p->Engine;
           p->UserInfo.status = 4;
-          eng->sub->unk6C = PowerupsModel;
+          eng->sub->unk6C = &HeroModelBank[DB_Powerups];
           eng->sub->unk74 = 0x2018;
           eng->sub->flags |= 0x20000000;
           eng = eng->Engine;
-          eng->sub->unk6C = PowerupsModel;
+          eng->sub->unk6C = &HeroModelBank[DB_Powerups];
           eng->sub->unk74 = 0x2001;
           return;
         }
         p->UserInfo.status = 5;
-        p->Engine->sub->unk6C = TankObjects2Model;
+        p->Engine->sub->unk6C = &HeroModelBank[DB_TankObjects2];
         p->Engine->sub->unk74 = 0x2013;
         return;
       }
@@ -4886,7 +4886,7 @@ void InitHelicopterTA(NAS *nas) {
             eng->unk10.z = HelicopterZBoss[Random(4)];
             break;
         }
-        p = TankObjects2Model;
+        p = &HeroModelBank[DB_TankObjects2];
         sub = eng->sub;
         sub->unk6C = p;
         sub->unk74 = 0x4080;
@@ -5083,7 +5083,7 @@ void InitPickupTA(NAS *nas) {
     if (ext != NULL) {
         ext->SpeedY = 0;
         nas->FUX = ext;
-        p = TankObjectsModel;
+        p = &HeroModelBank[DB_TankObjects];
         eng = nas->Engine;
         sub = eng->sub;
         sub->unk6C = p;
@@ -5220,9 +5220,9 @@ void PlotPickupTA(NAS *nas) {
         eng->unk20 = 0;
         switch (nas->UserInfo.status) {
         case 2:
-            eng->sub->unk6C = TankObjects2Model;
+            eng->sub->unk6C = &HeroModelBank[DB_TankObjects2];
             eng->sub->unk74 = 0x2007;
-            eng->Engine->sub->unk6C = TankObjects2Model;
+            eng->Engine->sub->unk6C = &HeroModelBank[DB_TankObjects2];
             eng->Engine->sub->unk74 = 0x200F;
             eng->Engine->unk1E = eng->unk1E + 0x400;
             eng->Engine->sub->unk20.x = 0x20;
@@ -5241,21 +5241,21 @@ void PlotPickupTA(NAS *nas) {
             return;
         case 5:
         default:
-            eng->sub->unk6C = TankObjects2Model;
+            eng->sub->unk6C = &HeroModelBank[DB_TankObjects2];
             eng->sub->unk74 = 0x2013;
-            eng->Engine->sub->unk6C = TankObjects2Model - 0x738;
+            eng->Engine->sub->unk6C = ((u8 *)&HeroModelBank[DB_TankObjects2]) - 0x738;
             eng->Engine->sub->unk74 = 0x2001;
             break;
         case 3:
             eng->sub->unk74 = 0x200C;
-            eng->Engine->sub->unk6C = PowerupsModel;
+            eng->Engine->sub->unk6C = &HeroModelBank[DB_Powerups];
             eng->Engine->sub->unk74 = 0x2001;
             break;
         case 4:
-            eng->sub->unk6C = PowerupsModel;
+            eng->sub->unk6C = &HeroModelBank[DB_Powerups];
             eng->sub->unk74 = 0x2018;
             eng->sub->flags |= 0x20000000;
-            eng->Engine->sub->unk6C = PowerupsModel;
+            eng->Engine->sub->unk6C = &HeroModelBank[DB_Powerups];
             eng->Engine->sub->unk74 = 0x2001;
             break;
         }
@@ -5390,7 +5390,7 @@ static inline void SpawnPuff1605(SLONG_XYZ *pos, s32 kind) {
     NAS *nas;
     EXTscriptdata *ext;
 
-    p = TankObjectsModel;
+    p = &HeroModelBank[DB_TankObjects];
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -5694,7 +5694,7 @@ void PlotBoatField(NAS *nas) {
     case 9:
     case 14:
         pos = (s32 *)&dst->unk10;
-        p = TankVehicleModel;
+        p = &HeroModelBank[DB_TankVehicle];
         n = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
@@ -5991,7 +5991,7 @@ void InitTotemBit(NAS *nas, s32 id) {
     sub = eng->sub;
     eng->unk5D = 0;
     eng->unk1E = 0;
-    sub->unk6C = D_800537AC;
+    sub->unk6C = &HeroModelBank[DB_ArenaTankJungleObjects];
     if (id == 0x131B) {
         sub->unk74 = 0x4180;
         ext->TargetIndex = 0;
@@ -6033,7 +6033,7 @@ void TotemBitExplode(EXTengine *arg0) {
     saved = arg0->unk10.y;
     arg0->unk10.y = 0x12C;
     pos = &arg0->unk10;
-    p = D_800537AC;
+    p = &HeroModelBank[DB_ArenaTankJungleObjects];
     nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -6132,7 +6132,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
             if (n != NULL) {
                 ne = n->Engine;
                 nx = (EXTobject_TA *)n->FUX;
-                ne->sub->unk6C = D_800537AC;
+                ne->sub->unk6C = &HeroModelBank[DB_ArenaTankJungleObjects];
                 ne->sub->unk74 = 0x2006;
                 nx->Owner = v;
                 ne->unk10.x += -(rcossin_tbl[(eng->unk1E - 0x400) & 0xFFF].unk2 * 300) >> 12;
@@ -6418,7 +6418,7 @@ void InitTankBoss(NAS *nas) {
     TankBossStatus = TankBossStartStatus;
     switch (TankBossStartStatus) {
     case 1:
-        base = HeroModelBank;
+        base = (u8 *)HeroModelBank;
         if (TANK_MODEL_ON(base, 59)) {
             dbase_release(TANK_MODEL(59));
         }
@@ -6433,7 +6433,7 @@ void InitTankBoss(NAS *nas) {
         SpawnTankBossTurrets();
         break;
     case 0x2C:
-        base = HeroModelBank;
+        base = (u8 *)HeroModelBank;
         if (TANK_MODEL_ON(base, 59)) {
             dbase_release(TANK_MODEL(59));
         }
@@ -6447,7 +6447,7 @@ void InitTankBoss(NAS *nas) {
         SpawnTankBossTurrets();
         break;
     case 0x3A:
-        base = HeroModelBank;
+        base = (u8 *)HeroModelBank;
         if (TANK_MODEL_ON(base, 58)) {
             dbase_release(TANK_MODEL(58));
         }
@@ -6606,8 +6606,8 @@ void PlotTankBoss(NAS *nas) {
             fux->Counter = 0x5A;
             fux->Status = 0x3A;
             PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
-            dbase_release(D_800536CC);
-            dbase_asload_with_anims(D_800536CC + 0x70, 0);
+            dbase_release(&HeroModelBank[DB_ArenaBossKomodoArenaobjects]);
+            dbase_asload_with_anims(((u8 *)&HeroModelBank[DB_ArenaBossKomodoArenaobjects]) + 0x70, 0);
         }
         break;
     case 0x3A:
@@ -7245,7 +7245,7 @@ void InitMoeJoe(NAS *nas, s32 id) {
     eng = nas->Engine;
     nas->UserInfo.flags = 0;
     sub = eng->sub;
-    sub->unk6C = D_80053704;
+    sub->unk6C = &HeroModelBank[DB_ArenaBossKomodoKomodo];
     if (id == 0x131F) {
         sub->unk74 = 0x4180;
     } else {
@@ -7262,12 +7262,12 @@ void InitMoeJoe(NAS *nas, s32 id) {
     sub->unk51 = 1;
     s2 = s->next;
     s->unk51 = 1;
-    s->unk6C = TankObjects2Model;
+    s->unk6C = &HeroModelBank[DB_TankObjects2];
     s->unk74 = 0x2011;
     s->unk68 = 0x100;
     s->flags = (s->flags & 0xFFFF7FFF) | 0x02000000;
     s2->unk51 = 1;
-    s2->unk6C = TankObjects2Model;
+    s2->unk6C = &HeroModelBank[DB_TankObjects2];
     s2->unk74 = 0x4300;
     s2->unk68 = 0x100;
     s2->flags = (s2->flags & 0xFFFF7FFF) | 0x02000000;
@@ -7800,7 +7800,7 @@ void MoeJoeDie(s32 arg0) {
     if (val == 0) {
         eng = Heroes[arg0].hero_eng;
         pos = (s32 *)&eng->unk10;
-        p = TankObjectsModel;
+        p = &HeroModelBank[DB_TankObjects];
         nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -8070,7 +8070,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         return;
     }
     if (TankBossStatus == 0) {
-        sub->unk6C = D_8005373C;
+        sub->unk6C = &HeroModelBank[DB_ArenaBossKomodoKomodotank];
         eng->unk2C.x = 0x1266;
         eng->unk2C.y = 0x1266;
         eng->unk2C.z = 0x1266;
@@ -8119,7 +8119,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
     }
     if (TankBossStatus == 0x3A) {
         fux->Status = 4;
-        sub->unk6C = D_8005373C;
+        sub->unk6C = &HeroModelBank[DB_ArenaBossKomodoKomodotank];
         eng->unk10.y = 0x480;
         if (id == 0x131E) {
             eng->unk10.x = 0xD00;
@@ -8229,7 +8229,7 @@ void PlotMoeJoe(NAS *nas, s32 id) {
                 fux->pAnimList = JoeScript0;
                 eng->unk10.x = 0x810;
             }
-            m = (ModelRec *)D_800536CC;
+            m = (ModelRec *)&HeroModelBank[DB_ArenaBossKomodoArenaobjects];
             sub->unk6C = m;
             sub->unk74 = anim;
             if (m[1].on == 0) {
@@ -8439,7 +8439,7 @@ void InitTankBossRocketTurret(NAS *nas) {
     eng->unk5D = 0;
     eng->unk10.z += 0x258;
     eng->unk10.y += 0xC8;
-    sub->unk6C = D_800536CC;
+    sub->unk6C = &HeroModelBank[DB_ArenaBossKomodoArenaobjects];
     if (nas->UserInfo.flags == 0) {
         sub->unk74 = 0x2024;
     } else {
@@ -8458,7 +8458,7 @@ void InitTankBossCortexTurret(NAS *nas) {
     eng = nas->Engine;
     eng->unk5D = 1;
     sub = eng->sub;
-    sub->unk6C = D_800536CC;
+    sub->unk6C = &HeroModelBank[DB_ArenaBossKomodoArenaobjects];
     sub->unk74 = 0x2004;
     sub->unk68 = 0x100;
     sub->flags |= 0x02000000;
@@ -8477,7 +8477,7 @@ void InitTankBossCrashTurret(NAS *nas) {
     nas->UserInfo.flags = v;
     nas->UserInfo.user2 = 0x168;
     nas->UserInfo.status = 4;
-    sub->unk6C = D_800536CC;
+    sub->unk6C = &HeroModelBank[DB_ArenaBossKomodoArenaobjects];
     sub->unk74 = 0x2003;
     sub->unk68 = v;
     sub->unk51 = 0;
@@ -8654,7 +8654,7 @@ void InitBoatWake(NAS *nas) {
 
     nas->UserInfo.status = 0;
     sub = nas->Engine->sub;
-    sub->unk6C = TankVehicleModel;
+    sub->unk6C = &HeroModelBank[DB_TankVehicle];
     sub->unk74 = 0x2007;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8763,7 +8763,7 @@ void InitShellExplosion(NAS *nas) {
     eng = nas->Engine;
     eng->flags |= 0x21;
     sub = eng->sub;
-    sub->unk6C = TankObjects2Model;
+    sub->unk6C = &HeroModelBank[DB_TankObjects2];
     sub->unk74 = 0x2019;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8772,7 +8772,7 @@ void InitShellExplosion(NAS *nas) {
 
 void InitShrapnelBit(NAS *nas) {
     subengine *sub = nas->Engine->sub;
-    sub->unk6C = TankObjectsModel;
+    sub->unk6C = &HeroModelBank[DB_TankObjects];
     sub->unk74 = ShrapnelFrames[Random(3)].v;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8794,7 +8794,7 @@ void InitMineBall(NAS *nas) {
     eng = nas->Engine;
     eng->flags |= 0x21;
     sub = eng->sub;
-    sub->unk6C = TankObjects2Model;
+    sub->unk6C = &HeroModelBank[DB_TankObjects2];
     sub->unk74 = 0x2019;
     nas->UserInfo.status = 0;
     if (nas->Failure != 0) {
@@ -8852,7 +8852,7 @@ void InitMine(NAS *nas) {
     eng = nas->Engine;
     eng->unk10.y = -0x14;
     sub = eng->sub;
-    sub->unk6C = TankObjects2Model;
+    sub->unk6C = &HeroModelBank[DB_TankObjects2];
     sub->unk74 = 0x2005;
     nas->UserInfo.status = 0x78;
     nas->UserInfo.user1 = -1;
@@ -8879,7 +8879,7 @@ void InitRocketTA(NAS *nas) {
     }
     nas->FUX = (EXT *)ext;
     sub = nas->Engine->sub;
-    sub->unk6C = TankObjects2Model;
+    sub->unk6C = &HeroModelBank[DB_TankObjects2];
     sub->unk74 = 0x2007;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -8895,7 +8895,7 @@ void InitLobber_TA(NAS *nas) {
         return;
     }
     eng = nas->Engine;
-    eng->sub->unk6C = TankObjectsModel;
+    eng->sub->unk6C = &HeroModelBank[DB_TankObjects];
     eng->sub->unk74 = 0x200C;
     eng->unk5D = 1;
     e2 = AddExtEngine(nas, 1);
@@ -8903,7 +8903,7 @@ void InitLobber_TA(NAS *nas) {
         e2->unk10.x = eng->unk10.x;
         e2->unk10.y = 0;
         e2->unk10.z = eng->unk10.z;
-        e2->sub->unk6C = TankObjectsModel - 0x700;
+        e2->sub->unk6C = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
         e2->sub->unk74 = 0x2001;
         e2->sub->flags |= 0x40000041;
         e2->sub->unk76 = 0x800;
@@ -8919,7 +8919,7 @@ void InitShell(NAS *nas) {
         return;
     }
     eng = nas->Engine;
-    eng->sub->unk6C = TankObjectsModel;
+    eng->sub->unk6C = &HeroModelBank[DB_TankObjects];
     eng->sub->unk74 = 0x200C;
     eng->unk5D = 1;
     e2 = AddExtEngine(nas, 1);
@@ -8927,7 +8927,7 @@ void InitShell(NAS *nas) {
         e2->unk10.x = eng->unk10.x;
         e2->unk10.y = 0;
         e2->unk10.z = eng->unk10.z;
-        e2->sub->unk6C = TankObjectsModel - 0x700;
+        e2->sub->unk6C = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
         e2->sub->unk74 = 0x2001;
         e2->sub->flags |= 0x40000041;
         e2->sub->unk76 = 0x800;
@@ -8943,7 +8943,7 @@ void InitSwirlyTA(NAS *nas) {
     ext = AddExt(nas, 0x38, 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
-        p = TankObjectsModel;
+        p = &HeroModelBank[DB_TankObjects];
         ext->maxloops = 0x87;
         eng = nas->Engine;
         sub = eng->sub;
@@ -8954,10 +8954,10 @@ void InitSwirlyTA(NAS *nas) {
         eng->flags |= 0x21;
         if (eng_add_subs(eng, 2) == 2) {
             sub = sub->next;
-            sub->unk6C = TankObjectsModel;
+            sub->unk6C = &HeroModelBank[DB_TankObjects];
             sub->unk74 = 0x2030;
             sub = sub->next;
-            sub->unk6C = TankObjectsModel;
+            sub->unk6C = &HeroModelBank[DB_TankObjects];
             sub->unk74 = 0x2030;
         }
         if (nas->Failure == 0) {
@@ -8979,7 +8979,7 @@ void InitFlubberTA(NAS *nas) {
         nas->FUX = (EXT *)ext;
         ext->maxloops = 0x4B;
         ext->timer = -0x1E;
-        p = TankObjectsModel;
+        p = &HeroModelBank[DB_TankObjects];
         eng = nas->Engine;
         sub = eng->sub;
         sub->unk6C = p;
@@ -8991,7 +8991,7 @@ void InitFlubberTA(NAS *nas) {
             e2->unk10.y = 0;
             e2->unk10.z = eng->unk10.z;
             e2->sub->unk51 = 2;
-            e2->sub->unk6C = TankObjectsModel - 0x700;
+            e2->sub->unk6C = ((u8 *)&HeroModelBank[DB_TankObjects]) - 0x700;
             e2->sub->unk74 = 0x2001;
             e2->sub->flags |= 0x40000041;
             e2->sub->unk76 = 0x800;
@@ -9020,7 +9020,7 @@ void InitFlamerBitTA(NAS *nas) {
     eng->unk5D = 1;
     sub = eng->sub;
     eng->flags |= 0x21;
-    sub->unk6C = TankObjectsModel;
+    sub->unk6C = &HeroModelBank[DB_TankObjects];
     sub->unk74 = 0x202F;
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -9042,12 +9042,12 @@ void InitLaserBitTA(NAS *nas) {
     eng = nas->Engine;
     sub = eng->sub;
     eng->unk5D = 0;
-    sub->unk6C = TankObjectsModel;
+    sub->unk6C = &HeroModelBank[DB_TankObjects];
     sub->unk74 = 0x2021;
     eng->flags |= 0x21;
     if (eng_add_subs(eng, 1) != 0) {
         sub = sub->next;
-        sub->unk6C = TankObjectsModel;
+        sub->unk6C = &HeroModelBank[DB_TankObjects];
         sub->unk74 = 0x2023;
         eng->flags |= 0x21;
     }

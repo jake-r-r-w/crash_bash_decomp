@@ -14,6 +14,7 @@
  * Members named unkXX are known only by offset and width. */
 
 #include "common.h"
+#include "bash/modelbank.h"
 
 /* The leak uses bool but never defines it. It is 32 bits: the callees of the
  * leak's bool parameters (ArkHeroRad2ObjectCollision, FreeGrabbedObject) read

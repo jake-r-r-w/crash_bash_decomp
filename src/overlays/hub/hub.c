@@ -289,8 +289,8 @@ s16 HubLevelDB[4] = { 0xD5, 0x1C, -1, 0 };
 char *HubNoAnims[1] = { NULL };
 s16 HubLevelDB2[4] = { 0x17, 0x1C, -1, 0 };
 s32 HubFiles[15] = {
-    (s32)&FontModel, (s32)&DatIndex[2 * 373], (s32)&DatIndex[2 * 372], (s32)&InterfaceModel, (s32)&DatIndex[2 * 375],
-    (s32)&DatIndex[2 * 374], (s32)&LoadingModel, (s32)&DatIndex[2 * 371], (s32)&DatIndex[2 * 370], (s32)&AdventureItemsModel,
+    (s32)&HeroModelBank[DB_Font], (s32)&DatIndex[2 * 373], (s32)&DatIndex[2 * 372], (s32)&HeroModelBank[DB_Interface], (s32)&DatIndex[2 * 375],
+    (s32)&DatIndex[2 * 374], (s32)&HeroModelBank[DB_Loading], (s32)&DatIndex[2 * 371], (s32)&DatIndex[2 * 370], (s32)&HeroModelBank[DB_AdventureItems],
     (s32)&DatIndex[2 * 377], (s32)&DatIndex[2 * 376], 0, 0,
 };
 /* the warp rooms' files (the engine's per-mode table points at modes 0x21..0x27's) */
