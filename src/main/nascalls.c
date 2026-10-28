@@ -3592,16 +3592,16 @@ loop:
     }
 }
 
-void textureset_upload(u8 *arg0) {
+void textureset_upload(obj_textureset *arg0) {
     AnimTex *t;
     u8 *base;
     s32 n;
     u8 *p;
 
-    t = *(AnimTex **)(arg0 + 8);
-    base = *(u8 **)(arg0 + 0x10);
+    t = arg0->tex;
+    base = arg0->base;
     Tex_UploadCluts(arg0);
-    n = *(s32 *)arg0;
+    n = arg0->nTex;
     while (n != 0) {
         texture_upload_anim(t, (s32)base, (AnimTexSet *)arg0);
         if (t->flags & 2) {
@@ -3612,7 +3612,7 @@ void textureset_upload(u8 *arg0) {
             n--;
         }
     }
-    p = *(u8 **)(arg0 + 0x18);
+    p = arg0->anims;
     if (p != NULL && *(s32 *)(p + 4) != 0) {
         Tex_UploadList((TexUploadList *)(p + 4 + *(s32 *)(p + 4)), arg0);
     }
@@ -3871,15 +3871,15 @@ void texture_release_loading_mem(obj_textureset *set) {
     set->base = NULL;
 }
 
-void textureset_upload_cluts(u8 *arg0) {
+void textureset_upload_cluts(obj_textureset *arg0) {
     RECT rect;
     ClutUpload *e;
     u8 *base;
     s32 n;
 
-    e = *(ClutUpload **)(arg0 + 0xC);
-    base = *(u8 **)(arg0 + 0x10);
-    n = *(s32 *)(arg0 + 4);
+    e = arg0->ent;
+    base = arg0->base;
+    n = arg0->nEnt;
     for (;;) {
         n--;
         if (n == -1) {
@@ -3954,15 +3954,15 @@ s32 textureset_mem_size(u8 *arg0) {
 void texture_unused_e(void) {
 }
 
-void texture_scroll_step(u8 *arg0, u8 *arg1) {
+void texture_scroll_step(u8 *arg0, obj_textureset *arg1) {
     s32 old;
     s32 pos;
     s32 step;
     s32 idx;
     s32 *p;
-    u8 *rect;
+    obj_texture *rect;
 
-    rect = *(u8 **)(arg1 + 8) + *(s32 *)(arg0 + 4) * 0x38;
+    rect = &arg1->tex[*(s32 *)(arg0 + 4)];
     old = *(s32 *)(arg0 + 0x10) >> 8;
     pos = *(s32 *)(arg0 + 0x10) + *(s32 *)(arg0 + 0xC);
     *(s32 *)(arg0 + 0x10) = pos;
@@ -3979,7 +3979,7 @@ void texture_scroll_step(u8 *arg0, u8 *arg1) {
     idx = *(s32 *)(arg0 + 0x10) >> 8;
     if (idx != old) {
         p = (s32 *)(arg0 + *(s32 *)arg0 + idx * 4);
-        LoadImage((RECT *)(rect + 0x18), (u_long *)((u8 *)p + *p));
+        LoadImage((RECT *)&rect->vramX, (u_long *)((u8 *)p + *p));
     }
 }
 

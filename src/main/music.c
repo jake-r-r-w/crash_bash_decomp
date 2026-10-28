@@ -88,15 +88,15 @@ void music_pause(void) {
     }
 }
 
-void music_replay(u8 *arg0) {
-    if (*(s32 *)(arg0 + 4) >= 0) {
-        SsSeqReplay(*(s32 *)(arg0 + 4));
+void music_replay(music_midi *arg0) {
+    if (arg0->seq >= 0) {
+        SsSeqReplay(arg0->seq);
     }
 }
 
-void music_pause_slot(u8 *arg0) {
-    if (*(s32 *)(arg0 + 4) >= 0) {
-        SsSeqPause(*(s32 *)(arg0 + 4));
+void music_pause_slot(music_midi *arg0) {
+    if (arg0->seq >= 0) {
+        SsSeqPause(arg0->seq);
     }
 }
 

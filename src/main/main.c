@@ -2278,16 +2278,16 @@ void loader_reset(void) {
 }
 
 void loadnode_init(void) {
-    u8 *p;
+    LoadNode *p;
     s32 i;
 
     p = LoadNodePool;
     LoadNodeFree = p;
     for (i = 62; i != -1; i--) {
-        *(u8 **)(p + 0x1C) = p + 0x24;
-        p += 0x24;
+        p->next = p + 1;
+        p++;
     }
-    *(u8 **)(p + 0x1C) = NULL;
+    p->next = NULL;
 }
 
 s32 load_file_wait(s32 *arg0, u8 **arg1) {
@@ -3350,13 +3350,13 @@ u8 *model_entry_data(u8 *arg0, s32 arg1) {
     return NULL;
 }
 
-s32 model_entry_texture(u8 *arg0, s32 arg1) {
+s32 model_entry_texture(obj_dbase *arg0, s32 arg1) {
     u8 *base;
     u8 *p;
     s32 k;
     u16 v;
 
-    base = *(u8 **)(arg0 + 0xC);
+    base = arg0->data;
     k = arg1 & 0x7000;
     switch (k) {
     case 0x5000:

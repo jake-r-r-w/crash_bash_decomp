@@ -1177,7 +1177,8 @@ typedef struct obj_texture {
     /* 0x11 */ s8 f11;       /* h - 1 */
     /* 0x12 */ u16 f12;
     /* 0x14 */ u32 f14;
-    /* 0x18 */ u8 pad18[4];
+    /* 0x18 */ s16 vramX;    /* its VRAM rect: x, y, vramW, vramH */
+    /* 0x1A */ s16 vramY;
     /* 0x1C */ u16 vramW;    /* in VRAM units */
     /* 0x1E */ s16 vramH;
     /* 0x20 */ s16 *src;     /* a scrolling texture's source x, y (texture_update_scroll) */
@@ -1742,7 +1743,7 @@ s32 get_dist_angles(s32 *a, s32 *b, s16 *out);
 
 u8 *model_entry_data(u8 *arg0, s32 arg1);
 
-s32 model_entry_texture(u8 *arg0, s32 arg1);
+s32 model_entry_texture(obj_dbase *arg0, s32 arg1);
 
 
 

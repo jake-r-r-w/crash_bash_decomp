@@ -9,7 +9,7 @@
 #include "bash/main.h"
 
 void texture_update_scroll(texture_scroll *, obj_textureset *);
-void textureset_upload(u8 *arg0);
+void textureset_upload(obj_textureset *arg0);
 void textureset_init(u8 *arg0, u8 *arg1);
 void SetNasDefaults(void);
 void SetEngineColBox(EXTengine *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6);
@@ -133,8 +133,8 @@ void pad_rumble_big(s32 pad, s32 arg1, s8 arg2);
 void pad_rumble_small(s32 pad, s32 arg1);
 FreeNode *vram_alloc_node(void);
 void vram_free_node(BufNode *arg0);
-void textureset_upload_cluts(u8 *arg0);
-void texture_scroll_step(u8 *arg0, u8 *arg1);
+void textureset_upload_cluts(obj_textureset *arg0);
+void texture_scroll_step(u8 *arg0, obj_textureset *arg1);
 void clut_upload(ClutUpload *arg0, s32 arg1);
 void texanims_release(s32 *arg0, s32 arg1);
 void pad_read_packet(PadPacket *p, PadState *in, s32 n);

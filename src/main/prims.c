@@ -1377,7 +1377,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
     }
 }
 
-void draw_object(u8 *arg0, u8 *arg1, s32 arg2) {
+void draw_object(subengine *arg0, u8 *arg1, s32 arg2) {
     GteSetup s;
     GfxModel *model;
     RelTable *colors;
@@ -1385,16 +1385,16 @@ void draw_object(u8 *arg0, u8 *arg1, s32 arg2) {
     GfxState *g;
     u8 *p1 = arg1;
 
-    n = *(u16 *)(arg0 + 0x74);
-    if (*(s32 *)arg0 & 0x02000000) {
+    n = arg0->entity;
+    if (arg0->flags & 0x02000000) {
         GfxState *g1 = &RenderState;
-        g1->otzAdd = ((GfxScreen *)g1->unk28)->otz + *(u16 *)(arg0 + 0x68);
+        g1->otzAdd = ((GfxScreen *)g1->unk28)->otz + arg0->unk68;
     } else {
         g = &RenderState;
         g->otzAdd = ((GfxScreen *)g->unk28)->otz;
     }
-    if (n != 0 && (*(s32 *)arg0 & 0x8000)) {
-        model = *(GfxModel **)(arg0 + 0x6C);
+    if (n != 0 && (arg0->flags & 0x8000)) {
+        model = arg0->u6C.dbase;
         if (model != NULL) {
             RenderState.unk0 = model;
             colors = model->colors;
@@ -1407,7 +1407,7 @@ void draw_object(u8 *arg0, u8 *arg1, s32 arg2) {
                     gte_SetTransVector(s.trans);
                 }
                 gte_SetRotMatrix(s.rot);
-                draw_object_model(n, (u8 *)colors, *(s32 *)arg0 | arg2, arg0);
+                draw_object_model(n, (u8 *)colors, arg0->flags | arg2, arg0);
             }
         }
     }
@@ -2246,15 +2246,15 @@ void kill_sprim_sub(subengine *arg0) {
     }
 }
 
-void sub_use_quad_model(u8 *arg0) {
+void sub_use_quad_model(subengine *arg0) {
     u8 *temp_v0;
     u16 temp_a0;
 
-    temp_v0 = entity_address(*(u16*)(arg0 + 0x74), *(u8**)(*(u8**)(arg0 + 0x6C) + 0xC));
+    temp_v0 = entity_address(arg0->entity, arg0->u6C.dbase->data);
     temp_a0 = *(u16*)(temp_v0 + 8);
     if (temp_a0 == 2 && temp_v0[*(s32*)(temp_v0 + 0x14) + 0x15] == temp_a0) {
-        *(void**)(arg0 + 0x54) = draw_model_quad;
-        *(void**)(arg0 + 0x58) = kill_sprim_sub;
+        arg0->hook = draw_model_quad;
+        arg0->release = kill_sprim_sub;
     }
 }
 
