@@ -46,7 +46,7 @@ void UpdateCamera(s32 arg0) {
             cam->eye.x = 0;
             cam->eye.y = 0;
             cam->eye.z = get_dist_angles(obj + 0x13, obj + 0xC, &cam->xform.angle.vx);
-            cam->at = *(CamXYZ *)(obj + 0xC);
+            cam->at = *(CamXYZ *)(obj + 0xC);  /* a path record (map file): its position */
             cam->dist = 0x200;
         }
         GameViewport.ofy = 0x15E;
@@ -402,7 +402,7 @@ void CamFromPath1(camera_info_tag *cam) {
     GameState *g;
 
     if (t != NULL) {
-        cam->xform.angle.vx = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;
+        cam->xform.angle.vx = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;  /* the path record's two points (+0x34, +0x50) */
         cam->dist = 0x200;
         g = (GameState *)GameInfo;
         cam->xform.angle.vy = 0;
@@ -430,7 +430,7 @@ void CamFromPath9(camera_info_tag *cam) {
     s32 *t = path_get(9);
 
     if (t != NULL) {
-        cam->xform.angle.vx = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;
+        cam->xform.angle.vx = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;  /* as CamFromPath1 */
         cam->xform.angle.vy = 0;
         cam->xform.angle.vz = 0;
         cam->dist = 0x200;
@@ -871,7 +871,7 @@ void RenderScreenLabels(void) {
     RenderState.modelDp = ScreenFade.amount;
     if (ScreenLabelShown != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;
-        s[new_var = 0xA8 / 4] &= 0xFFFF7FFF;
+        s[new_var = 0xA8 / 4] &= 0xFFFF7FFF;  /* the next subengine's flags: as s[1].flags the branches change */
         if ((GamePause & 0x240) != 0x240) {
             s[0xA8 / 4] |= 0x8000;
         }

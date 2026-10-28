@@ -1124,7 +1124,7 @@ void UpdateHealthIcons(void) {
             BarLength = 0x1F;
         }
         sub = ((u8 *)&IconParts[0][3]) + i * 0x498;
-        len = BarLength * 2 + *(s16 *)(sub + 0x6C);
+        len = BarLength * 2 + *(s16 *)(sub + 0x6C);  /* the bar's quad in the subengine's tail (the prototype's prim_ union, not in the fragment) */
         *(s16 *)(sub + 0x74) = len;
         *(s16 *)(sub + 0x84) = len;
         if (BarLength != 0) {
@@ -1262,7 +1262,7 @@ loop:
                     } else {
                         e = FindExtension(h->hero, 0x10000000);
                         if (e != NULL) {
-                            BarLength = *(s32 *)(e + 0x58) >> 10;
+                            BarLength = *(s32 *)(e + 0x58) >> 10;  /* the game's own extension (Race's kart: its speed) */
                         } else {
                             BarLength = 0;
                         }
@@ -1270,7 +1270,7 @@ loop:
                 } else {
                     e = FindExtension(h->hero, 0x20000000);
                     if (e != NULL) {
-                        BarLength = *(s32 *)(e + 0x20) >> 2;
+                        BarLength = *(s32 *)(e + 0x20) >> 2;  /* the game's own extension */
                     } else {
                         BarLength = 0;
                     }
@@ -1280,7 +1280,7 @@ loop:
                 BarLength = 0x3F;
             }
             sub = ((u8 *)&IconParts[0][3]) + off;
-            len = BarLength + *(s16 *)(sub + 0x6C);
+            len = BarLength + *(s16 *)(sub + 0x6C);  /* as UpdateHealthIcons */
             *(s16 *)(sub + 0x74) = len;
             *(s16 *)(sub + 0x84) = len;
             if (BarLength != 0) {

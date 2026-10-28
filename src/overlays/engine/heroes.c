@@ -1392,7 +1392,7 @@ s32 HeroTestBox(s32 id, u32 flag) {
 s32 HeroCopyPosStub(s32 *arg0) {
     s32 buf[4];
 
-    *(Vec3W *)(buf + 1) = *(Vec3W *)(arg0 + 4);
+    *(Vec3W *)(buf + 1) = *(Vec3W *)(arg0 + 4);  /* an unused stub: what arg0 points at is unknown */
     return 0;
 }
 
@@ -3893,7 +3893,7 @@ s32 PointInZone(s32 *arg0, s32 arg1) {
     s32 ang;
 
     base = ((u8 *)MapScene->map);
-    off = *(s32 *)(base + 0x14);
+    off = *(s32 *)(base + 0x14);  /* the map file's zone records */
     p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
     if (p != NULL) {
         i = 0;

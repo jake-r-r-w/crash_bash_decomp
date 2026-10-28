@@ -22,7 +22,7 @@ s32 LoadModeText(void) {
         load_file_direct(p, SlotBase);
         ModeTextLoaded = (s32)p;
     }
-    return (s32)(SlotBase + *(s32 *)(p + 4));
+    return (s32)(SlotBase + *(s32 *)(p + 4));  /* the mode text file's header: +4 its data's offset */
 }
 
 void AnimateLoadingIcon(void) {

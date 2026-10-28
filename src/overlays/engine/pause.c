@@ -297,7 +297,7 @@ found:
                             }
                         }
                         if (hi >= 2) {
-                            g = &GameInfo[GAME->mode];
+                            g = &GameInfo[GAME->mode];  /* the mode's bytes of the per-mode tables (+0xAB, +0xE4) */
                             if (g[0xE4] == 0) {
                                 g[0xAB]++;
                                 g = &GameInfo[GAME->mode];
@@ -1454,7 +1454,7 @@ void RecordWin(void) {
     g = GameInfo;
     if (*(u16 *)(g + 0x32) & 0x100) {
         (g + *(s16 *)(g + 0x34))[0xAB] += 2;
-        p = g + *(s16 *)(g + 0x34);
+        p = g + *(s16 *)(g + 0x34);  /* as UpdatePause: the mode's bytes */
         if (p[0xAB] >= 0x20) {
             p[0xAB] = 0x1F;
         }
