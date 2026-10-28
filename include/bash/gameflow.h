@@ -453,9 +453,9 @@ s32 CountCupTrophies(CupDef *cup);
 
 s32 WarpRoomBestLevel(void);
 
-void RestoreHeroChoice(u8 *src);
+void RestoreHeroChoice(CardSlot *src);
 
-void SaveHeroChoice(u8 *dst);
+void SaveHeroChoice(CardSlot *dst);
 
 void GameSetSlot3Digits(s32 arg0);
 

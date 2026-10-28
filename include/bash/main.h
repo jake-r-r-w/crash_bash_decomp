@@ -1033,13 +1033,6 @@ extern s32 SubPoolCount;
 extern s32 LevelConfig;
 extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
 extern s32 LevelSfxBanks[][8];       /* music_play_level */
-/* The player's options, saved with the game: volumes in percent, stereo, a pad's vibration. */
-typedef struct GameOptionSet {
-    /* 0x00 */ s32 music;
-    /* 0x04 */ s32 sfx;
-    /* 0x08 */ s32 stereo;
-    /* 0x0C */ s8 vibrate[4];
-} GameOptionSet;
 extern GameOptionSet GameOptions;
 extern s32 card_command_delay;
 extern s32 GameFrames;

@@ -885,7 +885,7 @@ void UpdateCardPrompt(void) {
                     {
                         GameOptionSet *d = &GameOptions;
                         GameState *s = GAME;
-                        *d = *(GameOptionSet *)s->adventure.unkD0;
+                        *d = s->adventure.options;
                     }
                     ShowCardSlots();
                     GotoProcess(&LevelLoadProcess, 0x200);
@@ -1135,7 +1135,7 @@ void UpdateSaveMenu(void) {
                 dst->summary[5] = q->heroOut[1];
                 dst->summary[6] = q->heroOut[2];
                 dst->summary[7] = q->heroOut[3];
-                *(GameOptionSet *)q->adventure.unkD0 = GameOptions;
+                q->adventure.options = GameOptions;
                 dst->state = *q;
                 ShowCardSlots();
                 card_save();
@@ -1404,39 +1404,39 @@ void RefreshCardSlots(void) {
     eng->flags |= 0x10000000;
 }
 
-void RestoreHeroChoice(u8 *src) {
+void RestoreHeroChoice(CardSlot *src) {
     GameState *g = GAME;
 
-    g->heroChoice[0] = src[0];
-    g->heroChoice[1] = src[1];
-    g->heroChoice[2] = src[2];
-    g->heroChoice[3] = src[3];
-    g->heroOut[0] = src[4];
-    g->heroOut[1] = src[5];
-    g->heroOut[2] = src[6];
-    g->heroOut[3] = src[7];
-    *GAME = *(GameState *)(src + 8);
+    g->heroChoice[0] = src->summary[0];
+    g->heroChoice[1] = src->summary[1];
+    g->heroChoice[2] = src->summary[2];
+    g->heroChoice[3] = src->summary[3];
+    g->heroOut[0] = src->summary[4];
+    g->heroOut[1] = src->summary[5];
+    g->heroOut[2] = src->summary[6];
+    g->heroOut[3] = src->summary[7];
+    *GAME = src->state;
     {
         GameOptionSet *d = &GameOptions;
         GameState *s = GAME;
-        *d = *(GameOptionSet *)s->adventure.unkD0;
+        *d = s->adventure.options;
     }
     ShowCardSlots();
 }
 
-void SaveHeroChoice(u8 *dst) {
-    u8 *g = GameInfo;
+void SaveHeroChoice(CardSlot *dst) {
+    GameState *g = GAME;
 
-    dst[0] = g[0x4C];
-    dst[1] = g[0x4D];
-    dst[2] = g[0x4E];
-    dst[3] = g[0x4F];
-    dst[4] = g[0x5C];
-    dst[5] = g[0x5D];
-    dst[6] = g[0x5E];
-    dst[7] = g[0x5F];
-    *(GameOptionSet *)(g + 0xD0) = GameOptions;
-    *(GameState *)(dst + 8) = *(GameState *)g;
+    dst->summary[0] = g->heroChoice[0];
+    dst->summary[1] = g->heroChoice[1];
+    dst->summary[2] = g->heroChoice[2];
+    dst->summary[3] = g->heroChoice[3];
+    dst->summary[4] = g->heroOut[0];
+    dst->summary[5] = g->heroOut[1];
+    dst->summary[6] = g->heroOut[2];
+    dst->summary[7] = g->heroOut[3];
+    g->adventure.options = GameOptions;
+    dst->state = *g;
     ShowCardSlots();
 }
 
@@ -1665,7 +1665,7 @@ void InitGameState(GameState *arg0) {
     arg0->teams = 0;
     arg0->adventure.unk70 = 0;
     arg0->language = GraphicsMode;
-    *(GameOptionSet *)arg0->adventure.unkD0 = GameOptions;
+    arg0->adventure.options = GameOptions;
 }
 
 void InitGraphics(void) {

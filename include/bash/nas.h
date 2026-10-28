@@ -582,6 +582,13 @@ typedef struct PreMap {
 } PreMap;
 BASH_SIZE_CHECK(PreMap, 0x1C);
 
+/* The player's options, saved with the game: volumes in percent, stereo, a pad's vibration. */
+typedef struct GameOptionSet {
+    /* 0x00 */ s32 music;
+    /* 0x04 */ s32 sfx;
+    /* 0x08 */ s32 stereo;
+    /* 0x0C */ s8 vibrate[4];
+} GameOptionSet;
 /* GameInfo's last 0x11C bytes (0x8005A684..0x8005A7A0), the adventure's progress: per-level
  * tables of 0x21 bytes. Field names are GameInfo offsets, as gameflow.h's GameStateView. */
 typedef struct AdventureState {
@@ -596,7 +603,7 @@ typedef struct AdventureState {
     /* 0x0A7 */ u8 unkA7[4];
     /* 0x0AB */ u8 unkAB[0x21];
     /* 0x0CC */ u8 unkCC[4];
-    /* 0x0D0 */ s32 unkD0[4];
+    /* 0x0D0 */ GameOptionSet options; /* GameOptions when the game was saved */
     /* 0x0E0 */ s32 unkE0;
     /* 0x0E4 */ u8 unkE4[5][0x21];
 } AdventureState;
