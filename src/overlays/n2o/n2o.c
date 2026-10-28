@@ -4196,15 +4196,15 @@ s32 N2OHeroTestMove(s32 arg0) {
 }
 
 s32 N2OHeroTestKick(s32 arg0) {
-    PadStick *base = (PadStick *)Pads;
-    PadStick *pad = &base[arg0];
+    PadState *base = (PadState *)Pads;
+    PadState *pad = &base[arg0];
 
     if (pad->dirPressed & 0x8000) {
         if (Heroes[arg0].hero_attack_timer == 0) {
             SetHeroAction(arg0, 0x2B);
             return 1;
         }
-        pad->dirHeld &= 0xFFFF7FFF;
+        pad->lastDir &= 0xFFFF7FFF;
     }
     return 0;
 }

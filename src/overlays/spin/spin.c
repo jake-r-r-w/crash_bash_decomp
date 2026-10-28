@@ -2240,7 +2240,7 @@ void Spin_HeroBot(s32 arg0) {
     }
     pad = &Pads[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
-    pad->unk38 = ai->AIang;
+    pad->angle = ai->AIang;
 }
 
 void SpinAI_ScanAhead(s32 arg0) {
@@ -2687,11 +2687,11 @@ void SPINSetUp(void) {
 void SpinPreMoveHero(s32 arg0) {
     HeroInfo *h;
     EXTheromove *m;
-    PadStick *pad;
+    PadState *pad;
     HeroInfo *hb;
     HeroInfo *hb2;
     HeroInfo *h2;
-    PadStick *pb;
+    PadState *pb;
     u16 *row;
     s32 speed;
     u16 rw;
@@ -2703,13 +2703,13 @@ void SpinPreMoveHero(s32 arg0) {
     speed = (HeroHooks.RunSpeeds + h->hero_name * 3)[1] + (AiPlayerSkill[arg0].level >> 2);
     (HeroHooks.RunSpeeds + h->hero_name * 3)[2] = speed;
     if (h->hero_frozen != 0) {
-        ((PadStick *)Pads)[arg0].dirHeld2 = 0;
-        ((PadStick *)Pads)[arg0].dirPressed = 0;
+        ((PadState *)Pads)[arg0].dir = 0;
+        ((PadState *)Pads)[arg0].dirPressed = 0;
     }
-    pb = (PadStick *)Pads;
+    pb = (PadState *)Pads;
     pad = pb + arg0;
     if ((pad->flags & 1) || h->hero_ai->AImode != 0) {
-        if (pad->dirHeld2 & 0xF0) {
+        if (pad->dir & 0xF0) {
             m->forward_angle = *(u16 *)&pad->angle + 0x800;
             if (m->velocity_enable != 0) {
                 rw = m->run_walk;
@@ -2725,10 +2725,10 @@ void SpinPreMoveHero(s32 arg0) {
                 m->forward_speed = speed;
             }
         } else {
-            if (pad->dirHeld2 & 0x100) {
+            if (pad->dir & 0x100) {
                 m->forward_angle -= 0x100;
             }
-            if (pad->dirHeld2 & 0x200) {
+            if (pad->dir & 0x200) {
                 m->forward_angle += 0x100;
             }
             m->x_max = 0;
@@ -3654,7 +3654,7 @@ void SpinCreateShadow(s32 arg0) {
 }
 
 s32 SpinHeroTestFlip(s32 arg0) {
-    if (!(Pads[arg0].unk54 & 0x4000)) {
+    if (!(Pads[arg0].dirPressed & 0x4000)) {
         return 0;
     }
     SetHeroAction(arg0, 0x34);

@@ -2786,8 +2786,8 @@ void pads_read(void) {
     pad += PadCount;
     if (count > 0) {
         do {
-            pad->unk4 = 0;
-            pad->unk0 = 0;
+            pad->buttons = 0;
+            pad->flags = 0;
             pad->unk18 = 1;
             pad++;
         } while (--count > 0);
@@ -2807,11 +2807,11 @@ void pads_init_mtap(void) {
 loop:
     if (i < 8) {
         i++;
-        pad->unk4 = 0;
-        pad->unk0 = 0;
+        pad->buttons = 0;
+        pad->flags = 0;
         pad->unk18 = on;
         pad->unk1C = 0;
-        pad->unk22 = 0;
+        pad->rumbleFlags = 0;
         pad->unk28 = 0;
         pad++;
         goto loop;
@@ -2824,7 +2824,7 @@ void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
     u8 *p;
 
     if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && GameOptions.vibrate[pad] != 0 &&
-        (Pads[pad].unk0 & 8)) {
+        (Pads[pad].flags & 8)) {
         p = (u8 *)&Pads[pad] + 0x1C;
         p[5] = arg2;
         *(s16 *)(p + 0xA) = arg1 + 1;
@@ -2836,7 +2836,7 @@ void pad_rumble_small(s32 pad, s32 arg1) {
     u8 *p;
 
     if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && pad < 4 && GameOptions.vibrate[pad] != 0 &&
-        (Pads[pad].unk0 & 8)) {
+        (Pads[pad].flags & 8)) {
         p = (u8 *)&Pads[pad] + 0x1C;
         p[4] = 1;
         *(s16 *)(p + 8) = arg1 + 1;
@@ -2923,11 +2923,11 @@ s32 pad_rumble_send(PadRumble *r, s32 port) {
 }
 
 void pad_input_reset(PadState *arg0) {
-    arg0->unk4 = 0;
-    arg0->unk0 = 0;
+    arg0->buttons = 0;
+    arg0->flags = 0;
     arg0->unk18 = 1;
     arg0->unk1C = 0;
-    arg0->unk22 = 0;
+    arg0->rumbleFlags = 0;
     arg0->unk28 = 0;
 }
 

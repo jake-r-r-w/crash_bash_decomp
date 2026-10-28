@@ -1041,10 +1041,10 @@ s32 CheckHeroAnim(s32 arg0) {
 void DefPreMoveHero(s32 arg0) {
     HeroInfo *hb;
     HeroInfo *hb2;
-    PadStick *pb;
+    PadState *pb;
     HeroInfo *h;
     EXTheromove *m;
-    PadStick *pad;
+    PadState *pad;
     u16 *row;
     u16 speed;
     HeroInfo *h2;
@@ -1056,13 +1056,13 @@ void DefPreMoveHero(s32 arg0) {
     m = h->hero_move;
     m->forward_speed = 0;
     if (h->hero_frozen != 0) {
-        ((PadStick *)Pads)[arg0].dirHeld2 = 0;
-        ((PadStick *)Pads)[arg0].dirPressed = 0;
+        ((PadState *)Pads)[arg0].dir = 0;
+        ((PadState *)Pads)[arg0].dirPressed = 0;
     }
-    pb = (PadStick *)Pads;
+    pb = (PadState *)Pads;
     pad = pb + arg0;
     if ((pad->flags & 1) || h->hero_ai->AImode != 0) {
-        if (pad->dirHeld2 & 0xF0) {
+        if (pad->dir & 0xF0) {
             m->forward_angle = *(u16 *)&pad->angle + 0x800;
             if (m->velocity_enable != 0) {
                 rw = m->run_walk;
@@ -1091,10 +1091,10 @@ void DefPreMoveHero(s32 arg0) {
             }
         } else {
             if (GAME->heroOut[arg0] != 0) {
-                if (pad->dirHeld2 & 0x100) {
+                if (pad->dir & 0x100) {
                     m->forward_angle -= 0x100;
                 }
-                if (pad->dirHeld2 & 0x200) {
+                if (pad->dir & 0x200) {
                     m->forward_angle += 0x100;
                 }
             }
@@ -3089,8 +3089,8 @@ s32 HeroNoJump(s32 arg0) {
     PadState *base = Pads;
     PadState *pad = &base[arg0];
 
-    pad->unk50 &= ~0x4000;
-    pad->unk54 &= ~0x4000;
+    pad->dir &= ~0x4000;
+    pad->dirPressed &= ~0x4000;
     return 0;
 }
 

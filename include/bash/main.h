@@ -495,52 +495,35 @@ typedef struct IdEntry {
     /* 0x02 */ u8 unk2[0x16];
 } IdEntry;
 
-/* Per-pad state, 8 of them at Pads (pads_init_mtap resets them). */
+/* Per-pad state, 8 of them at Pads (pads_init_mtap resets them; pad_read fills it). */
 typedef struct PadState {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ u8 unk8[0x18 - 0x08];
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
-    /* 0x20 */ u8 unk20[2];
-    /* 0x22 */ s16 unk22;
-    /* 0x24 */ u8 unk24[4];
-    /* 0x28 */ s16 unk28;
-    /* 0x2A */ u8 unk2A[2];
-    /* 0x2C */ s32 unk2C;     /* set_joypad: 1 */
-    /* 0x30 */ s32 unk30;     /* set_joypad: the buttons */
-    /* 0x34 */ s32 unk34;
-    /* 0x38 */ s32 unk38;
-    /* 0x3C */ s32 unk3C;
-    /* 0x40 */ s32 unk40;
-    /* 0x44 */ s32 held;      /* buttons down */
-    /* 0x48 */ s32 pressed;   /* buttons down this frame and not the last */
-    /* 0x4C */ s32 unk4C;
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} PadState;
-
-/* Analog/edge view of a PadState (pad_read). */
-typedef struct PadStick {
-    /* 0x00 */ s32 flags;
+    /* 0x00 */ s32 flags;          /* 1: connected */
     /* 0x04 */ s32 buttons;
-    /* 0x08 */ s32 rx;
+    /* 0x08 */ s32 rx;             /* sticks, 0..0xFF (the d-pad's 0, 0x80, 0xFF without) */
     /* 0x0C */ s32 ry;
     /* 0x10 */ s32 lx;
     /* 0x14 */ s32 ly;
-    /* 0x18 */ u8 unk18[0x2C - 0x18];
-    /* 0x2C */ s32 forced;
-    /* 0x30 */ s32 forcedButtons;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ u8 rumbleSmall;     /* the motors' settings (pad_rumble_small, pad_rumble_big) */
+    /* 0x21 */ u8 rumbleBig;
+    /* 0x22 */ u16 rumbleFlags;    /* 1: start */
+    /* 0x24 */ s16 rumbleSmallTime;
+    /* 0x26 */ s16 rumbleBigTime;
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ u8 unk2A[2];
+    /* 0x2C */ s32 forced;         /* set_joypad: 1 */
+    /* 0x30 */ s32 forcedButtons;  /* set_joypad: the buttons */
     /* 0x34 */ s32 unk34;
-    /* 0x38 */ s32 angle;
+    /* 0x38 */ s32 angle;          /* the left stick's */
     /* 0x3C */ s32 dist;
-    /* 0x40 */ s32 held;
-    /* 0x44 */ s32 held2;
-    /* 0x48 */ s32 pressed;
-    /* 0x4C */ s32 dirHeld;
-    /* 0x50 */ s32 dirHeld2;
+    /* 0x40 */ s32 lastHeld;       /* the buttons, for the next frame's edges */
+    /* 0x44 */ s32 held;           /* buttons down */
+    /* 0x48 */ s32 pressed;        /* buttons down this frame and not the last */
+    /* 0x4C */ s32 lastDir;
+    /* 0x50 */ s32 dir;            /* the d-pad, or the stick as one */
     /* 0x54 */ s32 dirPressed;
-} PadStick;
+} PadState;
 
 /* Loaded sound data and the sequence opened from it (CurrentMusic); the name is
  * the C++ symbols' (music_dload_midi__FP4fileP10music_midil). */

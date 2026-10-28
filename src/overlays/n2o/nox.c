@@ -1053,7 +1053,7 @@ void NoxHeroFly(s32 arg0) {
     if (sub->entity == 0x4007) {
         PlaySfx(0x2B7, 0, 0, 0x1000, 0x1E00, 0);
     }
-    if ((Pads[arg0].unk54 & 0x8000) && NoxBossDead == 0) {
+    if ((Pads[arg0].dirPressed & 0x8000) && NoxBossDead == 0) {
         nas = CreateNAS(h->hero_eng->unk10.x + x1, h->hero_eng->unk10.y + 0x80,
                            h->hero_eng->unk10.z + z1, 0x1C07, 0x11);
         if (nas != NULL) {

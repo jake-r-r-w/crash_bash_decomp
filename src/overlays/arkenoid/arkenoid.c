@@ -1326,7 +1326,7 @@ void AR_PreMoveHero(u32 arg0) {
         ((PadButtons *)Pads)[arg0].unk50 = 0;
         ((PadButtons *)Pads)[arg0].unk54 = 0;
     }
-    if ((Pads[arg0].unk0 & 1) || h->hero_ai->AImode != 0) {
+    if ((Pads[arg0].flags & 1) || h->hero_ai->AImode != 0) {
         if (arg0 == ArkSidePlayer3) {
             acc = 0x2A;
         }
@@ -3155,7 +3155,7 @@ void Ark_HeroBot(u32 arg0) {
     }
     pad = &Pads[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
-    pad->unk38 = ai->AIang;
+    pad->angle = ai->AIang;
 }
 
 void FinishArkLevel(void) {

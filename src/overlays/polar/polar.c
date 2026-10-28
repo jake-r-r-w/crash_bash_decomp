@@ -4399,7 +4399,7 @@ void UpdatePOLAR(void) {
             }
         }
     }
-    if (GameMode == 0x2C && (Pads[0].unk54 & 0x2000)) {
+    if (GameMode == 0x2C && (Pads[0].dirPressed & 0x2000)) {
         ScriptFxOn ^= 1;
     }
     if (PolarBeamOwner != NULL) {

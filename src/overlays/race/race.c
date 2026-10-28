@@ -2836,7 +2836,7 @@ void RacePreMoveHero(s32 player) {
             if (h->hero_mode != 0x60 && (m = h->hero_move) != NULL && h->hero_frozen == 0) {
                 pads = Pads;
                 pad = pads + player;
-                if ((pad->unk0 & 1) || h->hero_ai->AImode != 0) {
+                if ((pad->flags & 1) || h->hero_ai->AImode != 0) {
                     if (((RacePad *)pad)->unk50 & 0xA0) {
                         speed = ((csqrt(fux->unk13C * fux->unk13C + fux->unk140 * fux->unk140) * 4 >> 8) * 0x3C8) / 100 >> 8;
                         if (speed > 0x3C8) {

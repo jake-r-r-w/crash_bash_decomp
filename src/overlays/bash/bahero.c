@@ -1184,6 +1184,6 @@ s32 BashSpacePadHook(s32 arg0) {
     if (GameInfo[arg0 + 0x5C] != 0) {
         return 0;
     }
-    m = Pads[arg0].unk54 & 0x2000;
+    m = Pads[arg0].dirPressed & 0x2000;
     return m != 0;
 }

@@ -1050,7 +1050,7 @@ void OptionsRender(void) {
             n = 4;
         }
         for (i = 0; i < n; i++) {
-            if (Pads[i].unk0 & 8) {
+            if (Pads[i].flags & 8) {
                 sub[i * 3 + 5].unk7C = 0;
                 if (GameOptions.vibrate[i] != 0) {
                     sub[i * 3 + 4].flags |= 0x8000;

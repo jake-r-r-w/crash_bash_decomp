@@ -326,7 +326,7 @@ void CheckControllers(void) {
             lv2 = levels;
             g2 = (GameState *)GameInfo;
             do {
-                if (!(Pads[i].unk0 & 1)) {
+                if (!(Pads[i].flags & 1)) {
                     if (lv2[g2->mode * 3] == 0x102) {
                         g2->pause |= 0x4009;
                     } else {

@@ -1458,7 +1458,7 @@ void PreMovePOGO(u32 arg0) {
     if (h->hero_frozen == 0) {
     pb = Pads;
     pad = &pb[arg0];
-    if ((pad->unk0 & 1) || GameInfo[arg0 + 0x5C] != 0) {
+    if ((pad->flags & 1) || GameInfo[arg0 + 0x5C] != 0) {
         bits = ((PogoPad *)pad)->unk50;
         if (PogoPlay[arg0].status == 5 && !(bits & 0xF0)) {
             switch ((u16)move->forward_angle >> 10) {
@@ -7380,7 +7380,7 @@ bool TestHeroPogoShootCancel(u32 arg0) {
 }
 
 bool TestHeroPogoShoot(u32 arg0) {
-    if (Pads[arg0].unk54 & 0x8000) {
+    if (Pads[arg0].dirPressed & 0x8000) {
         switch (PogoPlay[arg0].status) {
         case 1:
             Fire_Rocket(arg0, 0);

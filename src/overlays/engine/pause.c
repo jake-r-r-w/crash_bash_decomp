@@ -471,7 +471,7 @@ found:
                 break;
             case 2:
                 for (i = 0; i < GAME->players; i++) {
-                    if ((HPADS[i].pressed & 0x8000) && (((PadStick *)Pads)[i].flags & 8)) {
+                    if ((HPADS[i].pressed & 0x8000) && (((PadState *)Pads)[i].flags & 8)) {
                         GameOptions.vibrate[i] = GameOptions.vibrate[i] == 0;
                         pad_rumble_small(i, 10);
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -886,7 +886,7 @@ void DrawPauseMenu(void) {
             break;
         case 2:
             for (i = 0; i < GAME->players; i++) {
-                if (Pads[i].unk0 & 8) {
+                if (Pads[i].flags & 8) {
                     PauseToggles[i] = GameOptions.vibrate[i] != 0;
                 } else {
                     PauseToggles[i] = 9;

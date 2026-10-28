@@ -2861,7 +2861,7 @@ void DinoPreMoveHero(s32 id) {
         if (m != NULL) {
             m->x_max = 0;
             m->z_max = 0;
-            if ((Pads[id].unk0 & 1) || h->hero_ai->AImode != 0) {
+            if ((Pads[id].flags & 1) || h->hero_ai->AImode != 0) {
                 if (h->hero_mode != 0x66 && (((PadButtons *)Pads)[id].unk50 & 0xF0)) {
                     if (ext->unk14 == 0) {
                         m->forward_angle = (((DinoPadAng *)Pads)[id].angle + 0x800) & 0xFFF;

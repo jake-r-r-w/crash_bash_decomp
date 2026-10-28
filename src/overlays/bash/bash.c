@@ -729,7 +729,7 @@ void Bash_HeroBot(s32 arg0) {
     EXTobject *fux;
     EXTobject *nfux;
     EXTobject *obj;
-    PadStick *pad;
+    PadState *pad;
     s32 mate;
     s32 dist;
     s32 target;
@@ -933,7 +933,7 @@ void Bash_HeroBot(s32 arg0) {
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
         }
-        ((PadStick *)Pads)[arg0].held &= ~0x2000;
+        ((PadState *)Pads)[arg0].lastHeld &= ~0x2000;
         switch (fux->whatami) {
         case 3:
         case 4:
@@ -1004,7 +1004,7 @@ void Bash_HeroBot(s32 arg0) {
             ai->AIpad |= t[(ang >> 9) & 7];
             goto done;
         }
-        ((PadStick *)Pads)[arg0].held &= ~0x2000;
+        ((PadState *)Pads)[arg0].lastHeld &= ~0x2000;
         if (((NAS **)fux)[-1] == nas) {
             switch (fux->whatami) {
             case 2:
@@ -1336,7 +1336,7 @@ void Bash_HeroBot(s32 arg0) {
         break;
     }
 done:
-    pad = &((PadStick *)Pads)[arg0];
+    pad = &((PadState *)Pads)[arg0];
     set_joypad((u8 *)pad, ai->AIpad);
     pad->angle = ai->AIang;
 }

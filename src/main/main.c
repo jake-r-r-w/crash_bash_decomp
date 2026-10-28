@@ -2392,7 +2392,7 @@ s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx) {
     return loader_queue(arg0, 0, ((s32 *)arg0)[1], done, ctx, 0, 0);
 }
 
-#define PS ((PadStick *)pad)
+#define PS ((PadState *)pad)
 
 void pad_read(PadState *pad) {
     s32 btn;
@@ -2467,14 +2467,14 @@ void pad_read(PadState *pad) {
     PS->dist = csqrt(x * x + y * y);
     PS->angle = get_angle(x, y);
     {
-        s32 oldBtn = PS->held;
-        s32 oldDir = PS->dirHeld;
+        s32 oldBtn = PS->lastHeld;
+        s32 oldDir = PS->lastDir;
         s32 t;
         s32 u;
+        PS->lastHeld = btn;
         PS->held = btn;
-        PS->held2 = btn;
-        PS->dirHeld2 = dir;
-        PS->dirHeld = dir;
+        PS->dir = dir;
+        PS->lastDir = dir;
         u = btn ^ oldBtn;
         t = u & btn;
         PS->pressed = t;
@@ -2498,16 +2498,16 @@ void pads_update(void) {
     first_joypad = -1;
     for (i = 0; i < 8; pad++, i++) {
         pad_read(pad);
-        if (pad->unk0 & 1) {
+        if (pad->flags & 1) {
             if (first_joypad < 0) {
                 first_joypad = i;
             }
             if (PadRunEnd == i) {
                 PadRunEnd = i + 1;
             }
-            any |= pad->unk4;
+            any |= pad->buttons;
         } else {
-            pad->unk4 = 0;
+            pad->buttons = 0;
         }
     }
     if (any != 0) {
@@ -2529,8 +2529,8 @@ void combo_check_all(void) {
             goto done;
         }
         m = c->steps[c->step];
-        if (m != 0 && (((PadStick *)Pads)->pressed & 0xFFFF)) {
-            if ((((PadStick *)Pads)->pressed & m) == m) {
+        if (m != 0 && (((PadState *)Pads)->pressed & 0xFFFF)) {
+            if ((((PadState *)Pads)->pressed & m) == m) {
                 if (c->step == 0) {
                     c->startTime = FrameCount;
                 }
@@ -2544,7 +2544,7 @@ void combo_check_all(void) {
                 }
             } else {
                 m = c->steps[0];
-                if ((((PadStick *)Pads)->pressed & m) == m) {
+                if ((((PadState *)Pads)->pressed & m) == m) {
                     c->step = 1;
                     c->startTime = FrameCount;
                 } else {
@@ -2605,8 +2605,8 @@ void cheat_menu_enable(void) {
 }
 
 void set_joypad(PadState *pad, u32 buttons) {
-    pad->unk30 = buttons;
-    pad->unk2C = 1;
+    pad->forcedButtons = buttons;
+    pad->forced = 1;
 }
 
 void pads_init(void) {
@@ -2616,13 +2616,13 @@ void pads_init(void) {
     pad = Pads;
     i = 7;
     do {
-        pad->unk0 = 0;
-        pad->unk4 = 0;
+        pad->flags = 0;
+        pad->buttons = 0;
         pad->held = 0;
         pad->pressed = 0;
-        pad->unk38 = 0;
-        pad->unk3C = 0;
-        pad->unk30 = 0;
+        pad->angle = 0;
+        pad->dist = 0;
+        pad->forcedButtons = 0;
         pad++;
     } while (--i != -1);
     first_joypad = -1;
