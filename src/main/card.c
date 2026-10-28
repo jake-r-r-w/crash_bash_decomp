@@ -118,14 +118,14 @@ void card_init(void) {
     CardRequest = 0;
     for (;;) {
         if (i < 4) {
-            CardSlots[i].b[0] = 0;
-            CardSlots[i].b[1] = 0;
-            CardSlots[i].b[2] = 0;
-            CardSlots[i].b[3] = 0;
-            CardSlots[i].b[4] = 0;
-            CardSlots[i].b[5] = 0;
-            CardSlots[i].b[6] = 0;
-            CardSlots[i].b[7] = 0;
+            CardSlots[i].summary[0] = 0;
+            CardSlots[i].summary[1] = 0;
+            CardSlots[i].summary[2] = 0;
+            CardSlots[i].summary[3] = 0;
+            CardSlots[i].summary[4] = 0;
+            CardSlots[i].summary[5] = 0;
+            CardSlots[i].summary[6] = 0;
+            CardSlots[i].summary[7] = 0;
             i++;
         } else {
             break;
@@ -402,7 +402,7 @@ void card_poll(void) {
 }
 
 void card_clear_slots(void) {
-    D_800657C8_Slot *s;
+    CardSlot *s;
     u8 *p;
     s32 i;
     s32 *q;
@@ -413,14 +413,14 @@ void card_clear_slots(void) {
     i = 0;
     for (;;) {
         if (i < 4) {
-            CardSlots[i].b[0] = 0;
-            CardSlots[i].b[1] = 0;
-            CardSlots[i].b[2] = 0;
-            CardSlots[i].b[3] = 0;
-            CardSlots[i].b[4] = 0;
-            CardSlots[i].b[5] = 0;
-            CardSlots[i].b[6] = 0;
-            CardSlots[i].b[7] = 0;
+            CardSlots[i].summary[0] = 0;
+            CardSlots[i].summary[1] = 0;
+            CardSlots[i].summary[2] = 0;
+            CardSlots[i].summary[3] = 0;
+            CardSlots[i].summary[4] = 0;
+            CardSlots[i].summary[5] = 0;
+            CardSlots[i].summary[6] = 0;
+            CardSlots[i].summary[7] = 0;
             i++;
         } else {
             break;
@@ -444,15 +444,15 @@ void card_clear_slots(void) {
     CardSaveSum = sum;
 }
 
-void card_clear_slot(D_800657C8_Slot *slot) {
-    slot->b[0] = 0;
-    slot->b[1] = 0;
-    slot->b[2] = 0;
-    slot->b[3] = 0;
-    slot->b[4] = 0;
-    slot->b[5] = 0;
-    slot->b[6] = 0;
-    slot->b[7] = 0;
+void card_clear_slot(CardSlot *slot) {
+    slot->summary[0] = 0;
+    slot->summary[1] = 0;
+    slot->summary[2] = 0;
+    slot->summary[3] = 0;
+    slot->summary[4] = 0;
+    slot->summary[5] = 0;
+    slot->summary[6] = 0;
+    slot->summary[7] = 0;
 }
 
 s32 card_checksum(u8 *arg0) {
@@ -512,7 +512,7 @@ s32 CardStatus = 0;
 s32 CardRequest = 0;
 u8 CardBuffer[128] = {0};
 u8 CardIconFrames[384] = {0};
-D_800657C8_Slot CardSlots[4] = {0};
+CardSlot CardSlots[4] = {0};
 s32 CardSaveFlags[3] = {0};  /* CardBuffer + 0x850: the save's flags */
 s32 CardSaveSum = 0;
 s32 CardSaveRest[1512] = {0};  /* CardBuffer + 0x860 to the block's end */

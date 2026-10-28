@@ -389,7 +389,7 @@ s32 CountSavedWins(s32 arg0) {
     s32 i;
     u8 *tab;
 
-    tab = CardSlots[0].unk8;
+    tab = (u8 *)&CardSlots[0].state;
     cnt = 0;
     i = 0;
     for (;;) {
@@ -546,7 +546,7 @@ s32 CountCupTrophies(CupDef *cup) {
     u8 *tab;
 
     i = 0;
-    tab = CardSlots[0].unk8;
+    tab = (u8 *)&CardSlots[0].state;
     for (;;) {
         if (i >= cup->roundCount) {
             goto done;
@@ -1125,18 +1125,18 @@ void UpdateSaveMenu(void) {
             }
             switch (HubSaveChoice) {
             case 1: {
-                D_800657C8_Slot *dst = &CardSlots[CardSlotIndex];
+                CardSlot *dst = &CardSlots[CardSlotIndex];
                 u8 *q = GameInfo;
-                dst->b[0] = q[0x4C];
-                dst->b[1] = q[0x4D];
-                dst->b[2] = q[0x4E];
-                dst->b[3] = q[0x4F];
-                dst->b[4] = q[0x5C];
-                dst->b[5] = q[0x5D];
-                dst->b[6] = q[0x5E];
-                dst->b[7] = q[0x5F];
+                dst->summary[0] = q[0x4C];
+                dst->summary[1] = q[0x4D];
+                dst->summary[2] = q[0x4E];
+                dst->summary[3] = q[0x4F];
+                dst->summary[4] = q[0x5C];
+                dst->summary[5] = q[0x5D];
+                dst->summary[6] = q[0x5E];
+                dst->summary[7] = q[0x5F];
                 *(GameOptionSet *)(q + 0xD0) = GameOptions;
-                *(GameState *)dst->unk8 = *(GameState *)q;
+                dst->state = *(GameState *)q;
                 ShowCardSlots();
                 card_save();
                 SaveMenuState = 1;

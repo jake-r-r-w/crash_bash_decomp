@@ -850,11 +850,6 @@ s32 count_completion(u8 *arg0);
 
 /* Writes up to 32 Shift-JIS characters of src (ASCII) to dst, padding with
  * full-width spaces (card_make_header). */
-typedef struct {
-    u8 b[8];
-    u8 unk8[0x18C]; /* a copy of GameInfo from +0x60 (the hub's save), with the arena results */
-} D_800657C8_Slot;
-extern D_800657C8_Slot CardSlots[];
 extern s32 CardSaveSum;
 extern s32 CardRequest;
 extern s32 CardCommand;
@@ -998,6 +993,13 @@ typedef struct GameState {
     /* 0x070 */ AdventureState adventure;
 } GameState;
 #define GAME ((GameState *)GameInfo)
+/* A save slot as the card menus show it (CardSlots): the heroes picked and out (GameInfo +0x4C
+ * and +0x5C), then the saved game state. */
+typedef struct CardSlot {
+    u8 summary[8];
+    GameState state;
+} CardSlot;
+extern CardSlot CardSlots[];
 extern u8 GameInfo[];
 extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
 extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (views: numPlayers) */

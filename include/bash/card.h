@@ -14,7 +14,7 @@ void card_request(s32 arg0);
 void card_reset(void);
 void card_stop(void);
 void card_poll(void);
-void card_clear_slot(D_800657C8_Slot *slot);
+void card_clear_slot(CardSlot *slot);
 s32 ascii_to_sjis(u8 arg0);
 void card_save(void);
 void card_format(void);
@@ -90,14 +90,14 @@ static inline void McResetSave(void) {
     i = 0;
     for (;;) {
         if (i < 4) {
-            CardSlots[i].b[0] = 0;
-            CardSlots[i].b[1] = 0;
-            CardSlots[i].b[2] = 0;
-            CardSlots[i].b[3] = 0;
-            CardSlots[i].b[4] = 0;
-            CardSlots[i].b[5] = 0;
-            CardSlots[i].b[6] = 0;
-            CardSlots[i].b[7] = 0;
+            CardSlots[i].summary[0] = 0;
+            CardSlots[i].summary[1] = 0;
+            CardSlots[i].summary[2] = 0;
+            CardSlots[i].summary[3] = 0;
+            CardSlots[i].summary[4] = 0;
+            CardSlots[i].summary[5] = 0;
+            CardSlots[i].summary[6] = 0;
+            CardSlots[i].summary[7] = 0;
             i++;
         } else {
             break;
@@ -131,14 +131,14 @@ static inline void McResetSaveSum(void) {
     i = 0;
     for (;;) {
         if (i < 4) {
-            CardSlots[i].b[0] = 0;
-            CardSlots[i].b[1] = 0;
-            CardSlots[i].b[2] = 0;
-            CardSlots[i].b[3] = 0;
-            CardSlots[i].b[4] = 0;
-            CardSlots[i].b[5] = 0;
-            CardSlots[i].b[6] = 0;
-            CardSlots[i].b[7] = 0;
+            CardSlots[i].summary[0] = 0;
+            CardSlots[i].summary[1] = 0;
+            CardSlots[i].summary[2] = 0;
+            CardSlots[i].summary[3] = 0;
+            CardSlots[i].summary[4] = 0;
+            CardSlots[i].summary[5] = 0;
+            CardSlots[i].summary[6] = 0;
+            CardSlots[i].summary[7] = 0;
             i++;
         } else {
             break;
