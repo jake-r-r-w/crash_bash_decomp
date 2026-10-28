@@ -45,11 +45,9 @@ void PlayHitEffect(s32 *arg0, HitInfo *arg1, s32 arg2) {
 
 void InitCrateExplode(NAS *arg0) {
     EXTengine *e = arg0->Engine;
-    u8 *t;
 
     if (e != NULL) {
-        t = (u8 *)HitSfx;
-        PlaySfx(*(s32 *)(t + Random(4) * 4 + 0x30), NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(((HitSfxTable *)HitSfx)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
         SpawnModelFx(2, (u8 *)e + 0x10, &HeroModelBank[DB_CrateObjects]);
     }
     KillNAS(arg0);

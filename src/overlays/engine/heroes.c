@@ -3089,8 +3089,8 @@ s32 HeroNoJump(s32 arg0) {
     PadState *base = Pads;
     PadState *pad = &base[arg0];
 
-    *(s32 *)((u8 *)pad + 0x50) &= ~0x4000;
-    *(s32 *)((u8 *)pad + 0x54) &= ~0x4000;
+    pad->unk50 &= ~0x4000;
+    pad->unk54 &= ~0x4000;
     return 0;
 }
 
@@ -4131,13 +4131,13 @@ FlagPoint *SubFindFlagPoint(subengine *sub, s32 idx, s32 mask) {
     return NULL;
 }
 
-s32 DistXZSq(u8 *arg0, u8 *arg1) {
-    s32 temp_v0;
-    s32 temp_v0_2;
+s32 DistXZSq(SLONG_XYZ *a, SLONG_XYZ *b) {
+    s32 dx;
+    s32 dz;
 
-    temp_v0 = (*(s32*)((u8*)(arg0) + 0)) - (*(s32*)((u8*)(arg1) + 0));
-    temp_v0_2 = (*(s32*)((u8*)(arg0) + 8)) - (*(s32*)((u8*)(arg1) + 8));
-    return (temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2);
+    dx = a->x - b->x;
+    dz = a->z - b->z;
+    return (dx * dx) + (dz * dz);
 }
 
 void PlotParticleEffect(void) {
@@ -4329,19 +4329,19 @@ void FormatPercent(u8 *arg0, s32 arg1) {
     }
 }
 
-void InitFloatyScore(u8 *arg0) {
-    u8 *temp_v1;
+void InitFloatyScore(NAS *nas) {
+    EXTengine *e;
 
-    temp_v1 = (*(s32*)((u8*)(arg0) + 84));
-    if (temp_v1 != NULL) {
-        (*(s16*)((u8*)(arg0) + 94)) = 0x1E;
-        (*(s16*)((u8*)(arg0) + 92)) = 0;
-        (*(s32*)((u8*)(arg0) + 96)) = 0;
-        (*(s32*)((u8*)(arg0) + 100)) = (s32) ((*(s32*)((u8*)(temp_v1) + 20)) - 0x1A0);
-        (*(s8*)((u8*)(temp_v1) + 93)) = 2;
+    e = nas->Engine;
+    if (e != NULL) {
+        nas->UserInfo.flags = 0x1E;
+        nas->UserInfo.status = 0;
+        nas->UserInfo.user1 = 0;
+        nas->UserInfo.user2 = e->unk10.y - 0x1A0;
+        e->unk5D = 2;
     }
-    if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        KillNAS((NAS *)arg0);
+    if (nas->Failure != 0) {
+        KillNAS(nas);
     }
 }
 

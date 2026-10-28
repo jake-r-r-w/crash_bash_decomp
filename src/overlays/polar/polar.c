@@ -2122,7 +2122,7 @@ void PolarAI_TryAttack(s32 player) {
     if (TestForTeamMate(player, fux->target) != 0) {
         return;
     }
-    DistXZSq((u8 *)&base[fux->target].hero_eng->unk10, (u8 *)&h->hero_eng->unk10);
+    DistXZSq((SLONG_XYZ *)&base[fux->target].hero_eng->unk10, (SLONG_XYZ *)&h->hero_eng->unk10);
     if (PolarAI_ShotBlocked(player) == 0) {
         return;
     }
@@ -2237,7 +2237,7 @@ loop:
             min = 0x07FFFFFF;
             if (i != player && TestForTeamMate(player, i) == 0 && !(h->hero_status & 0x2000)) {
                 pos = h->hero_eng->unk10;
-                if (DistXZSq((u8 *)&pos, (u8 *)&me->hero_eng->unk10) < min) {
+                if (DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10) < min) {
                     best = i;
                 }
             }
@@ -2286,7 +2286,7 @@ void PolarAI_DoAttack(s32 player) {
                     && Heroes[fux->target].hero_immunity == 0
                     && TestForTeamMate(player, i) == 0) {
                     pos = Heroes[i].hero_eng->unk10;
-                    d = DistXZSq((u8 *)&pos, (u8 *)&Heroes[player].hero_eng->unk10);
+                    d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&Heroes[player].hero_eng->unk10);
                     if (d < dist) {
                         dist = d;
                         best = i;
@@ -2329,7 +2329,7 @@ void PolarAI_DoAttack(s32 player) {
                 if (i != player && !(Heroes[i].hero_status & 0x2000) && !skip
                     && Heroes[i].hero_mode != 0x50) {
                     pos = Heroes[i].hero_eng->unk10;
-                    d = DistXZSq((u8 *)&pos, (u8 *)&Heroes[player].hero_eng->unk10);
+                    d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&Heroes[player].hero_eng->unk10);
                     if (d < dist) {
                         dist = d;
                         best = i;
@@ -2351,7 +2351,7 @@ void PolarAI_DoAttack(s32 player) {
                         && Heroes[fux->target].hero_immunity == 0
                         && TestForTeamMate(player, i) == 0) {
                         pos = Heroes[i].hero_eng->unk10;
-                        d = DistXZSq((u8 *)&pos, (u8 *)&Heroes[player].hero_eng->unk10);
+                        d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&Heroes[player].hero_eng->unk10);
                         if (d < dist) {
                             dist = d;
                             best = i;
@@ -2541,7 +2541,7 @@ loop:
         do {
             if (i != player && !(o->hero_status & 0x2000)) {
                 pos = o->hero_eng->unk10;
-                d = DistXZSq((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+                d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
                 if (d < dist) {
                     dist = d;
                     best = i;
@@ -2760,7 +2760,7 @@ loop:
     if (i < 4) {
         if (i != self && !((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
             pos = h->hero_eng->unk10;
-            d = DistXZSq((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+            d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
             if (d < min) {
                 min = d;
                 best = i;
@@ -2815,7 +2815,7 @@ loop:
         if (i < 4) {
             if (i != self && !((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
                 pos = h->hero_eng->unk10;
-                d = DistXZSq((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+                d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
                 if (d < min) {
                     min = d;
                     best = i;
@@ -2929,7 +2929,7 @@ void PolarAI_AvoidMelt(s32 player)
           if (((i != player) && (!((st = o->hero_status) & 0x2000))) && (!(st & 0x8000)))
           {
             pos.v = o->hero_eng->unk10;
-            dd = DistXZSq((u8 *) (&pos.v), (u8 *) (&me->hero_eng->unk10));
+            dd = DistXZSq((SLONG_XYZ *)(&pos.v), (SLONG_XYZ *)(&me->hero_eng->unk10));
             if (dd < min)
             {
               min = dd;
@@ -3004,7 +3004,7 @@ void PolarAI_AvoidMelt(s32 player)
         if ((i != player) && (!(o->hero_status & 0x2000)))
         {
           pos.v = o->hero_eng->unk10;
-          dd = DistXZSq((u8 *) (&pos.v), (u8 *) (&me1->hero_eng->unk10));
+          dd = DistXZSq((SLONG_XYZ *)(&pos.v), (SLONG_XYZ *)(&me1->hero_eng->unk10));
           if (dd < bestd)
           {
             bestd = dd;
@@ -3254,7 +3254,7 @@ void PolarAI_DoIceWalk(s32 player) {
                 s32 dist;
                 if (i != player && !(o->hero_status & 0x2000)) {
                     pos.v = o->hero_eng->unk10;
-                    dist = DistXZSq((u8 *)&pos.v, (u8 *)&me->hero_eng->unk10);
+                    dist = DistXZSq((SLONG_XYZ *)&pos.v, (SLONG_XYZ *)&me->hero_eng->unk10);
                     if (dist < bestd) {
                         bestd = dist;
                         best = i;
@@ -3830,7 +3830,7 @@ void DoChooseNewAction(u32 player) {
             goto stop;
         }
         if (eng != NULL) {
-            if (PolarArenaRadius2 < DistXZSq((u8 *)&PolarCentre, (u8 *)&eng->unk10)) {
+            if (PolarArenaRadius2 < DistXZSq((SLONG_XYZ *)&PolarCentre, (SLONG_XYZ *)&eng->unk10)) {
                 PolarAIFlags[player] |= 1;
             }
             if (PolarBeamOwner != NULL && (l = PolarBeamOwner->unk58) != NULL) {
@@ -6638,7 +6638,7 @@ void PlotUkaPolarMask(NAS *m) {
             if (h->hero_status & 0x2000) {
                 continue;
             }
-            if (DistXZSq((u8 *)&m->Engine->unk10, (u8 *)&h->hero_eng->unk10) > 0x18FFF) {
+            if (DistXZSq((SLONG_XYZ *)&m->Engine->unk10, (SLONG_XYZ *)&h->hero_eng->unk10) > 0x18FFF) {
                 continue;
             }
             {
@@ -9547,7 +9547,7 @@ s32 PolarBossDazeHero(u8 *arg0) {
 loop:
     if (i < n) {
         if (!(hero->hero_mode & 0x2000) &&
-            DistXZSq(arg0, (u8 *)hero->hero_eng + 0x10) < 0x7BC4) {
+            DistXZSq(arg0, &hero->hero_eng->unk10) < 0x7BC4) {
             if (hero->hero_mode != 0x4B) {
                 SetHeroAction(i, 0x4B);
             }
@@ -10187,7 +10187,7 @@ loop:
     if (i < 4) {
         if (i != self &&!((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
             pos = h->hero_eng->unk10;
-            d = DistXZSq((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+            d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
             if (d < min) {
                 min = d;
                 do {

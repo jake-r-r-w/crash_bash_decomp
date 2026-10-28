@@ -216,7 +216,7 @@ void RaceMovesSwap(EXTheromove *a, EXTheromove *b);
 extern HeroInfo Heroes[4];
 void SetHeroAction(s32 player, s32 action);
 s32 PointInZone(s32 *arg0, s32 arg1);
-s32 DistXZSq(u8 *arg0, u8 *arg1);
+s32 DistXZSq(SLONG_XYZ *a, SLONG_XYZ *b);
 
 s32 RaceBounceObject(RaceBounceObj *obj, RaceBouncer *b);
 
@@ -566,7 +566,7 @@ loop:
         s32 dist;
 
         do {
-            dist = DistXZSq(pos, (u8 *)hero->hero_eng + 0x10);
+            dist = DistXZSq(pos, &hero->hero_eng->unk10);
         } while (0);
         if (dist < 0x6184) {
             if (hero->hero_mode != 0x5D) {

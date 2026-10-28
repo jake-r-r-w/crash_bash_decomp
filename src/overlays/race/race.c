@@ -1015,7 +1015,7 @@ s32 arg0;
         nas = RaceNearestPickup(arg0);
         found = NULL;
         if (nas != NULL) {
-            if (DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+            if (DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&hero->hero_eng->unk10) <= 0x270FFF) {
                 angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
                 if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
                     found = nas;
@@ -1327,7 +1327,7 @@ static inline NAS *RacePickupAheadInline(s32 arg0) {
     nas = RaceNearestPickup(arg0);
     if (nas != NULL) {
         hero = &Heroes[arg0];
-        if (DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+        if (DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&hero->hero_eng->unk10) <= 0x270FFF) {
             angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
             if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
                 return nas;
@@ -3912,7 +3912,7 @@ void RaceHeroKick(s32 arg0) {
 loop:
     found = -1;
     if (i < 4) {
-        if (i == arg0 || DistXZSq((u8 *)pos, (u8 *)&other->hero_eng->unk10) >= lim) {
+        if (i == arg0 || DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&other->hero_eng->unk10) >= lim) {
             other++;
             i++;
             goto loop;
@@ -3987,7 +3987,7 @@ s32 RaceHeroUsePickup(s32 player) {
             loop:
                 found = -1;
                 if (i < 4) {
-                    if (i == player || DistXZSq((u8 *)pp, (u8 *)&other->hero_eng->unk10) >= lim) {
+                    if (i == player || DistXZSq((SLONG_XYZ *)pp, (SLONG_XYZ *)&other->hero_eng->unk10) >= lim) {
                         other++;
                         i++;
                         goto loop;
@@ -4615,7 +4615,7 @@ s32 RaceMissileHitHeroes(u8 *arg0, u32 arg1) {
             return -1;
         }
         if (i != arg1 && Heroes[i].hero_mode != 0x61) {
-            d = DistXZSq(arg0, (u8 *)Heroes[i].hero_eng + 0x10);
+            d = DistXZSq(arg0, &Heroes[i].hero_eng->unk10);
             if (abs(*(s32 *)(arg0 + 4) - *(s32 *)((u8 *)Heroes[i].hero_eng + 0x14)) > 0x180) {
                 break;
             }
@@ -4882,7 +4882,7 @@ void PlotRacePickUp(NAS *m) {
     loop:
         if (i < 4) {
             do {
-                d = DistXZSq((u8 *)pos, (u8 *)&h->hero_eng->unk10);
+                d = DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&h->hero_eng->unk10);
                 lim = 0x24000;
                 if (d < lim) {
                     if (abs(pos->y - h->hero_eng->unk10.y) < 0x200) {
@@ -5440,7 +5440,7 @@ void PlotTNTCrate(NAS *nas) {
             h = Heroes;
         loop:
             if (i < 4) {
-                if (DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&h->hero_eng->unk10) < 0x40000 &&
+                if (DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&h->hero_eng->unk10) < 0x40000 &&
                     h->hero_mode != 0x5D) {
                     SetHeroAction(i, 0x5D);
                 }
@@ -5639,7 +5639,7 @@ void PlotRaceShield(NAS *nas) {
                 found = -1;
                 break;
             }
-            if (i != me && DistXZSq((u8 *)pos, (u8 *)&other->hero_eng->unk10) < lim) {
+            if (i != me && DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&other->hero_eng->unk10) < lim) {
                 found = i;
                 break;
             }
@@ -6724,7 +6724,7 @@ s32 RaceDazeHeroNear(u8 *arg0) {
     hero = Heroes;
 loop:
     if (i < 4) {
-        if (DistXZSq(arg0, (u8 *)hero->hero_eng + 0x10) < 0x6184) {
+        if (DistXZSq(arg0, &hero->hero_eng->unk10) < 0x6184) {
             if (hero->hero_mode != 0x5D) {
                 SetHeroAction(i, 0x5D);
             }
@@ -6783,7 +6783,7 @@ s32 RaceHeroNear(u8 *arg0, s32 arg1) {
     hero = Heroes;
 loop:
     if (i < 4) {
-        if (DistXZSq(arg0, (u8 *)hero->hero_eng + 0x10) < arg1 * arg1) {
+        if (DistXZSq(arg0, &hero->hero_eng->unk10) < arg1 * arg1) {
             if (abs(((s32 *)arg0)[1] - hero->hero_eng->unk10.y) < 0x200) {
                 return i;
             }
@@ -6929,7 +6929,7 @@ s32 RaceOtherHeroNear(u8 *arg0, u32 arg1, s32 arg2) {
 loop:
     if (i < 4) {
         if (i != arg1) {
-            if (DistXZSq(arg0, (u8 *)hero->hero_eng + 0x10) < arg2 * arg2) {
+            if (DistXZSq(arg0, &hero->hero_eng->unk10) < arg2 * arg2) {
                 return i;
             }
         }
@@ -7107,7 +7107,7 @@ NAS *RaceNearestPickup(s32 arg0) {
     hero = base + arg0;
 loop:
     if (nas != NULL) {
-        dist = DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10);
+        dist = DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&hero->hero_eng->unk10);
         do {
             if (dist < min) {
                 min = dist;
@@ -7165,7 +7165,7 @@ NAS *RacePickupAhead(s32 arg0) {
     if (nas != NULL) {
         base = Heroes;
         hero = base + arg0;
-        if (DistXZSq((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+        if (DistXZSq((SLONG_XYZ *)&nas->Engine->unk10, (SLONG_XYZ *)&hero->hero_eng->unk10) <= 0x270FFF) {
             angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
             if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
                 return nas;

@@ -916,7 +916,7 @@ s32 DinoAI_ShotBlocked(s32 id)
         if (!(st & 0x8000))
         {
           pos = *((Vec3W *) (&Heroes[i].hero_eng->unk10));
-          d = DistXZSq((u8 *) (&pos), (u8 *) (&Heroes[id].hero_eng->unk10));
+          d = DistXZSq((SLONG_XYZ *)(&pos), (SLONG_XYZ *)(&Heroes[id].hero_eng->unk10));
           if (d < bestd)
           {
             bestd = d;
@@ -1091,7 +1091,7 @@ void DinoAI_Wander(s32 arg0) {
         }
         if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
             pos.v = Heroes[i].hero_eng->unk10;
-            dist = DistXZSq((u8 *)&pos.v, (u8 *)&Heroes[arg0].hero_eng->unk10);
+            dist = DistXZSq((SLONG_XYZ *)&pos.v, (SLONG_XYZ *)&Heroes[arg0].hero_eng->unk10);
             if (dist < bestd) {
                 bestd = dist;
                 best = i;
@@ -4002,7 +4002,7 @@ loop:
     if (i < 4) {
         if (i != self &&!((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
             pos = h->hero_eng->unk10;
-            d = DistXZSq((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+            d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
             if (d < min) {
                 min = d;
                 do {

@@ -487,7 +487,7 @@ loop:
         do {
             if (i != self && !((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
                 pos = h->hero_eng->unk10;
-                d = DistXZSq((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+                d = DistXZSq((SLONG_XYZ *)&pos, (SLONG_XYZ *)&me->hero_eng->unk10);
                 if (d < min) {
                     min = d;
                     best = i;
@@ -580,7 +580,7 @@ static inline void RollPolarOdds(s32 player, Ext20 *ext) {
     }
 }
 
-s32 DistXZSq(u8 *arg0, u8 *arg1);
+s32 DistXZSq(SLONG_XYZ *a, SLONG_XYZ *b);
 s32 PolarAI_ShotBlocked(s32 arg0);
 s32 PolarAI_TeamChoice(s32 player);
 s32 PolarHeroAttackPower(s32 arg0);
@@ -1124,7 +1124,7 @@ static inline s32 PolarMissileHitHero(SLONG_XYZ *pos) {
         }
         h = &Heroes[i];
         if (!(h->hero_mode & 0x2000)
-            && DistXZSq((u8 *)pos, (u8 *)&h->hero_eng->unk10) < 0x7BC4) {
+            && DistXZSq((SLONG_XYZ *)pos, (SLONG_XYZ *)&h->hero_eng->unk10) < 0x7BC4) {
             if (h->hero_mode != 0x4B) {
                 SetHeroAction(i, 0x4B);
             }
