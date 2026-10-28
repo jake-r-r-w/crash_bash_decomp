@@ -134,11 +134,14 @@ recipe, as done for Tank (`tank`, 2026-10-26):
    `make split`, and move splat's now-stale `asm/data/...data.s` and the block's `D_*.s`
    out of `asm/` (they would keep the dashboard counting the data as asm).
 5. `make check` is the test; a short build means an object came out smaller than its slot.
-6. `tools/scripts/bytes_ptrs.py` (after `make`) finds a pointer left as bytes: a u8/s8/u16/s16
-   array with an aligned word equal to a symbol's address in its unit's ELF. Those match
-   but don't move in a shifted build; rewrite the array as words with `(s32)&SYM` (or its
-   real type). It found four in the exe (ShellModules, ComboSeqs, VramNodePool,
-   LangModeTypeTexts, 2026-10-28) and none in the engine or the slot overlays.
+6. `tools/scripts/bytes_ptrs.py` (after `make`) finds a pointer left as numbers: a byte,
+   halfword or word array of plain numbers with an aligned word equal to a symbol's address
+   in its unit's ELF, or inside a data object (`SYM+0xNN`: the symbols carry no sizes, so an
+   object runs to the next symbol). Those match but don't move in a shifted build; rewrite
+   the array as words with `(s32)&SYM` (or its real type). It found four in the exe
+   (ShellModules, ComboSeqs, VramNodePool, LangModeTypeTexts, 2026-10-28), and with interior
+   pointers the engine's ModeDbaseLists (FileGroups, HeroModelBank and DatIndex entries);
+   none left (Papu's PapuUnusedSeq word 0x80070000 is a coincidence).
 
 How the tool writes things, and why:
 - Bytes come from the retail binary, not splat's directives (splat reads small words as

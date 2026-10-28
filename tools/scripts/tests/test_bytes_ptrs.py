@@ -29,6 +29,11 @@ class BytesPtrsTest(unittest.TestCase):
     def test_numbers_that_are_not_symbols(self):
         self.assertEqual(bytes_ptrs.scan([0, 0, 7, 0x80], 1, 0x80050000, SYMS), [])
 
+    def test_inside_an_object(self):
+        objs = [(0x8004E110, 0x1F00, "DatIndex")]
+        hits = bytes_ptrs.scan([0x8004E120, 0x8004E110, 0x80060000], 4, 0x80050000, {0x8004E110: "DatIndex"}, objects=objs)
+        self.assertEqual([s for o, w, s in hits], ["DatIndex+0x10", "DatIndex"])
+
     def test_values(self):
         self.assertEqual(bytes_ptrs.values("{ 1, -2, 0x10 }, { 'a', 0 }"), [1, -2, 16, 97, 0])
         self.assertIsNone(bytes_ptrs.values("1, Foo, 2"))
