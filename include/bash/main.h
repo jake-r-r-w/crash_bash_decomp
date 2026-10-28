@@ -2098,4 +2098,11 @@ typedef struct HudEntry {
     /* 0x14 */ s32 d;
 } HudEntry;
 
+/* A screen mode for one TV standard: its two display buffers' areas. */
+typedef struct ScreenMode {
+    RECT buf0;
+    RECT buf1;
+    s32 unk10[2];
+} ScreenMode;
+
 #endif /* BASH_MAIN_H */

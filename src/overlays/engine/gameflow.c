@@ -1683,7 +1683,7 @@ void InitGraphics(void) {
     u8 *g;
 
     AllocOtBuffers((s32 *)cfg);
-    ((void (*)(u8 *))ResetScreen)(VideoMode == 0 ? vmode_512_ntsc : D_8005B744);
+    ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
     g = GameInfo;
     *(s32 *)(g + 4) = 0x80000000;
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
@@ -1889,10 +1889,10 @@ void SetGameViewport(void) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 /* what the data points at that this file's headers don't declare */
-extern u8 D_8005B69C[];
-extern u8 D_8005B6CC[];
-extern u8 D_8005B6FC[];
-extern u8 D_8005B75C[];
+extern ScreenMode vmode_256_ntsc;
+extern ScreenMode vmode_320_ntsc;
+extern ScreenMode vmode_384_ntsc;
+extern ScreenMode vmode_640_ntsc;
 
 s32 HitSfx[16] = {
     0x3EC, 0x3ED, 0x3EE, 0x3EF, 0x3F1, 0x3F1, 0x3F3, 0x3F4, 0x3E8, 0x3E8, 0x3EA, 0x3EB, 0x3F5,
@@ -2172,7 +2172,7 @@ s32 SaveMenuState = 0;
 fade_info ScreenFade = {0};
 s32 IdleFrames = 0;
 process_control_info ProcessControl = {0};
-s32 D_8009F668[5] = { (s32)&D_8005B75C, (s32)&vmode_512_ntsc, (s32)&D_8005B6FC, (s32)&D_8005B6CC, (s32)&D_8005B69C };
+s32 D_8009F668[5] = { (s32)&vmode_640_ntsc, (s32)&vmode_512_ntsc, (s32)&vmode_384_ntsc, (s32)&vmode_320_ntsc, (s32)&vmode_256_ntsc };
 GfxViewport MainViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0x200, -0x100, 0xF0, 0xF0, 0xF0, 0 };
 GfxViewport HudViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xDAC, 0, 0xF0, 0xF0, 0xF0, 0 };
 s32 D_8009F6CC[10] = { 0xF00140, 0x1E00280, 0xF00140, 0x1E00280, 0x1E0, 0x168, 0x200, 0x800, 0, 0x1000000 };

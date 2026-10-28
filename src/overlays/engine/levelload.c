@@ -143,7 +143,7 @@ void InitLevelLoad(void) {
         cfg = &DefaultLevelConfig;
     }
     AllocOtBuffers((s32 *)cfg);
-    ((void (*)(u8 *))ResetScreen)(VideoMode == 0 ? vmode_512_ntsc : D_8005B744);
+    ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
     GameInfo[0x60] = 0;
     GameInfo[0x61] = 0;
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
@@ -589,7 +589,7 @@ void InitScriptScene(void) {
     smallnode_init();
     cfg = &SceneLevelConfig;
     AllocOtBuffers((s32 *)cfg);
-    ((void (*)(u8 *))ResetScreen)(VideoMode == 0 ? vmode_512_ntsc : D_8005B744);
+    ((void (*)(u8 *))ResetScreen)((u8 *)(VideoMode == 0 ? &vmode_512_ntsc : &vmode_512_pal));
     vram_init(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     prims_init(cfg->pools);
     dbase_init_all();
