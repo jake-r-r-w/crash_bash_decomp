@@ -363,7 +363,7 @@ void UpdateLevel(void) {
     mal_count_free(&MainHeap);
     CheckControllers();
     if (GameCheats & 0x10) {
-        FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", D_8004E104, D_8004E10C);
+        FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", MalFreeBytes, D_8004E10C);
     }
     UpdateAllNas();
     ProcessHeroes();
@@ -870,7 +870,7 @@ int ASTTableCount(void) {
 extern u8 ModeTextBuffer[];
 extern u8 SlotOverlayId[];
 
-u8 *D_80098594 = (void *)&SlotOverlayId;
+u8 *SlotBase = (void *)&SlotOverlayId;
 u8 *D_80098598 = (void *)&ModeTextBuffer;
 s32 D_8009859C[9] = {0};
 s32 ModeTextEmpty[12] = {0};

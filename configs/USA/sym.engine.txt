@@ -608,3 +608,7 @@ AmbienceTimer = 0x8009871C;
 AmbienceDef = 0x80098718;
 CardPromptPanel = 0x8009EEB0;
 CardBufferStamp = 0x8009F4BC;
+SlotBase = 0x80098594;
+IntroNextSfx = 0x8009E5B0;
+IntroSfxDelay = 0x8009E5B4;
+CupSlotPanel = 0x8009EB3C;

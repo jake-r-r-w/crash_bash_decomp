@@ -19,10 +19,10 @@ s32 LoadModeText(void) {
     }
     p = (u8 *)D_8009F8E4[ModeTypes[g->mode * 3] - 0x101];
     if ((s32)p != D_8009F968) {
-        load_file_direct(p, D_80098594);
+        load_file_direct(p, SlotBase);
         D_8009F968 = (s32)p;
     }
-    return (s32)(D_80098594 + *(s32 *)(p + 4));
+    return (s32)(SlotBase + *(s32 *)(p + 4));
 }
 
 void AnimateLoadingIcon(void) {
@@ -585,7 +585,7 @@ void InitScriptScene(void) {
     SceneStep = 0;
     sound_reinit();
     D_8009F968 = 0;
-    mal_init(&MainHeap, D_80098594, 0x801FF000 - (s32)D_80098594);
+    mal_init(&MainHeap, SlotBase, 0x801FF000 - (s32)SlotBase);
     smallnode_init();
     cfg = &D_800A0314;
     AllocOtBuffers((s32 *)cfg);

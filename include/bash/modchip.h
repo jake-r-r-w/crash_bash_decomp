@@ -15,8 +15,8 @@ void modchip_cd_reset(s32 arg0);
 extern u8 D_8006783C[];
 extern volatile u8 *CdRegIndex; /* CD index/status register */
 extern volatile u8 *D_80067878; /* CD command register */
-extern volatile u8 *D_8006787C; /* CD parameter FIFO */
-extern volatile u8 *D_80067880; /* CD interrupt flag register */
+extern volatile u8 *CdParamFifo; /* CD parameter FIFO */
+extern volatile u8 *CdIntFlagReg; /* CD interrupt flag register */
 extern u8 CdParams[];
 extern u8 CdResult[]; /* CD response buffer */
 

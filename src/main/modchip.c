@@ -420,8 +420,8 @@ s32 modchip_cd_wait(s32 arg0) {
 
     limit = D_8006783C[arg0 * 4 + 3];
     *CdRegIndex = 1;
-    t = *D_80067880 & 7;
-    if (t != (*D_80067880 & 7)) {
+    t = *CdIntFlagReg & 7;
+    if (t != (*CdIntFlagReg & 7)) {
         return 0;
     }
     n = t;
@@ -429,7 +429,7 @@ s32 modchip_cd_wait(s32 arg0) {
         i = 0;
         D_80067898 += (u8)n;
         *CdRegIndex = 1;
-        *D_80067880 = 7;
+        *CdIntFlagReg = 7;
         do {
             *(s32 *)0 = i;
             i++;
@@ -444,7 +444,7 @@ s32 modchip_cd_wait(s32 arg0) {
             CdResult[0] = *src;
             CdResult[1] = *src;
             *CdRegIndex = 1;
-            *D_8006787C = 0x1F;
+            *CdParamFifo = 0x1F;
             if (!(CdResult[0] & 0x10)) {
                 return -1;
             }
@@ -459,7 +459,7 @@ s32 modchip_cd_wait(s32 arg0) {
             } while (t < D_8006783C[off + 2]);
         }
         *CdRegIndex = 1;
-        *D_8006787C = 0x1F;
+        *CdParamFifo = 0x1F;
         if (arg0 == 10 || (t = CdResult[0], t &= 0x10, !t)) {
             return 1;
         }
@@ -474,19 +474,19 @@ void modchip_cd_reset(s32 arg0) {
 
     i = 0;
     *CdRegIndex = 1;
-    *D_80067880 = 7;
+    *CdIntFlagReg = 7;
     do {
         *(s32 *)0 = i;
         i++;
     } while (i < 4);
     *CdRegIndex = 1;
-    *D_8006787C = 0x18;
+    *CdParamFifo = 0x18;
     *CdRegIndex = 0;
     off = arg0 * 4;
     i = 0;
     if (D_8006783C[off + 1] != 0) {
         do {
-            *D_8006787C = CdParams[i];
+            *CdParamFifo = CdParams[i];
             i++;
         } while (i < D_8006783C[off + 1]);
     }
@@ -502,8 +502,8 @@ u8 D_8006783C[56] = {
 };
 volatile u8 *CdRegIndex = (void *)0x1F801800;
 volatile u8 *D_80067878 = (void *)0x1F801801;
-volatile u8 *D_8006787C = (void *)0x1F801802;
-volatile u8 *D_80067880 = (void *)0x1F801803;
+volatile u8 *CdParamFifo = (void *)0x1F801802;
+volatile u8 *CdIntFlagReg = (void *)0x1F801803;
 u8 CdParams[8] = {0};
 u8 CdResult[8] = {0};
 s32 ModchipState = 1;

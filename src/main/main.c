@@ -893,14 +893,14 @@ s32 mal_count_free(_mal_area *heap) {
     bytes = 0;
     blk = heap->free;
     D_8004E108 = 0;
-    D_8004E104 = 0;
+    MalFreeBytes = 0;
     for (; blk != NULL; blk = blk->nextFree) {
         bytes = blk->size * 4;
         D_8004E108++;
-        D_8004E104 += bytes;
+        MalFreeBytes += bytes;
     }
     D_8004E10C = bytes;
-    return D_8004E104;
+    return MalFreeBytes;
 }
 
 void mal_print_free(void) {
@@ -3627,7 +3627,7 @@ s32 D_8004E0E4 = 0;
 s32 D_8004E0E8 = 0;
 s32 D_8004E0EC = 0;
 _mal_area MainHeap = {0};
-s32 D_8004E104 = 0;
+s32 MalFreeBytes = 0;
 s32 D_8004E108 = 0;
 s32 D_8004E10C = 0;
 /* The archive's index: {first sector, size in bytes} for each of CRASHBSH.DAT's 992 files,

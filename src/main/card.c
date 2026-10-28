@@ -68,10 +68,10 @@ void card_make_header(void) {
         k--;
         p--;
     } while (k >= 0);
-    itoa_div_end(D_800655BC + 0xC, count_completion(CardBuffer + 0x208), 100);
-    itoa_div_end(D_800655BC + 0x11, count_completion(CardBuffer + 0x208 + 0x194), 100);
-    itoa_div_end(D_800655BC + 0x16, count_completion(CardBuffer + 0x208 + 0x194 * 2), 100);
-    itoa_div_end(D_800655BC + 0x1B, count_completion(CardBuffer + 0x208 + 0x194 * 3), 100);
+    itoa_div_end(CardSaveTitle + 0xC, count_completion(CardBuffer + 0x208), 100);
+    itoa_div_end(CardSaveTitle + 0x11, count_completion(CardBuffer + 0x208 + 0x194), 100);
+    itoa_div_end(CardSaveTitle + 0x16, count_completion(CardBuffer + 0x208 + 0x194 * 2), 100);
+    itoa_div_end(CardSaveTitle + 0x1B, count_completion(CardBuffer + 0x208 + 0x194 * 3), 100);
     McSetTitle(CardSaveTitleFormat, ((McHeader *)CardBuffer)->title);
     rect = (RECT *)(dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306B) + 0x18);
     if (rect->w == 4) {
@@ -507,7 +507,7 @@ fillit:
 
 /* data, in address order (tools/scripts/data2c.py) */
 s32 CardChannel = 0;
-char *D_800655BC = (void *)&CardSaveTitleFormat;
+char *CardSaveTitle = (void *)&CardSaveTitleFormat;
 s32 CardStatus = 0;
 s32 CardRequest = 0;
 u8 CardBuffer[128] = {0};

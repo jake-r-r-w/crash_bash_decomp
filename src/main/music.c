@@ -23,22 +23,22 @@ void music_open_seq(music_midi *slot, s32 idx) {
 
 void music_update(void) {
     music_midi *slot = &CurrentMusic;
-    s32 next = D_8006559C;
-    s32 cur = D_800655A4;
+    s32 next = MusicNext;
+    s32 cur = MusicCur;
     s32 vol;
 
-    if (next != cur || D_800655A8 != 0) {
+    if (next != cur || MusicRestart != 0) {
         s32 t = MusicStopDelay;
 
         if (t != 0 || cur == -1) {
             MusicStopDelay = t - 1;
             if (MusicStopDelay == 0 || cur == -1) {
-                D_800655A8 = 0;
+                MusicRestart = 0;
                 MusicStopDelay = 0;
                 if (next != -1) {
                     music_open_seq(slot, next);
                 }
-                D_800655A4 = D_8006559C;
+                MusicCur = MusicNext;
             }
         } else {
             MusicStopDelay = 10;
@@ -63,8 +63,8 @@ void music_update(void) {
 void music_init(void) {
     CurrentMusic.data = 0;
     CurrentMusic.seq = -1;
-    D_800655A4 = -1;
-    D_8006559C = -1;
+    MusicCur = -1;
+    MusicNext = -1;
     MusicVolCur = 0;
 }
 
@@ -113,7 +113,7 @@ void music_fade_out(s32 arg0) {
 }
 
 void music_request(s32 arg0) {
-    D_8006559C = arg0;
+    MusicNext = arg0;
 }
 
 void music_duck_off(void) {
@@ -125,7 +125,7 @@ void music_flag_restart(void) {
 }
 
 void music_restart(void) {
-    D_800655A8 += 1;
+    MusicRestart += 1;
 }
 
 void music_setup_slot(music_midi *slot) {
@@ -161,7 +161,7 @@ void music_dload_midi(s32 arg0, music_midi *slot, s32 type) {
 void music_set_data(s32 arg0, s32 *arg1) {
     *arg1 = arg0;
     music_setup_slot(arg1);
-    D_800655A8 = 0;
+    MusicRestart = 0;
     MusicDuck = 0;
     MusicDuckCur = 0;
 }
@@ -182,10 +182,10 @@ void music_load(s32 arg0, s32 type) {
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-s32 D_8006559C = 0;
+s32 MusicNext = 0;
 s32 MusicStopDelay = 0;
-s32 D_800655A4 = 0;
-s32 D_800655A8 = 0;
+s32 MusicCur = 0;
+s32 MusicRestart = 0;
 s32 MusicDuck = 0;
 s32 MusicDuckCur = 0;
 s32 MusicVolCur = 0;

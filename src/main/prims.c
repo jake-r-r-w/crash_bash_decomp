@@ -1312,9 +1312,9 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
             morph_blend_verts(fr[2], (MorphModel *)e, (u16 *)ia,
                           (u16 *)((u8 *)(fr + 1) + fr[1] + 0x14), (s16 (*)[3])verts);
         } else {
-            morph_copy_verts(e, (u16 *)ia, verts, (u16 *)D_80056AC8);
+            morph_copy_verts(e, (u16 *)ia, verts, (u16 *)MorphVerts);
         }
-        ModelEntry_Draw(e, c, D_80056AC8);
+        ModelEntry_Draw(e, c, MorphVerts);
         return;
     case 0x2000:
         idx = a & 0xFFF;
@@ -2082,7 +2082,7 @@ s32 tri_visible(SVECTOR *v) {
 }
 
 void morph_light_colors(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
-    SVECTOR *dst = D_80056AC8;
+    SVECTOR *dst = MorphVerts;
     u8 *run = (u8 *)&model->runs + model->runs;
     s32 r, g, b;
     s32 i;
@@ -2110,7 +2110,7 @@ void morph_light_colors(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
 }
 
 void morph_blend_verts(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]) {
-    SVECTOR *dst = D_80056AC8;
+    SVECTOR *dst = MorphVerts;
     u8 *run;
     u32 a;
     u32 b;
@@ -3347,7 +3347,7 @@ PosEntry D_8005689C[9] = {
 };
 GfxState RenderState = {0};
 s32 D_80056AC4 = 0;
-SVECTOR D_80056AC8[1024] = {0};
+SVECTOR MorphVerts[1024] = {0};
 s32 D_80058AC8 = 0;
 subengine *next_sub = 0;
 void *MapScene = 0;

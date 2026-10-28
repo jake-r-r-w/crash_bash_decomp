@@ -2484,7 +2484,7 @@ void FlipScreen(s32 arg0) {
     RECT *src;
     u8 *buf;
 
-    FntFlush(D_800643E8);
+    FntFlush(DebugFontStream);
     DrawSync(0);
     mal_update(&MainHeap);
     if (r != NULL) {
@@ -2783,8 +2783,8 @@ void pads_read(void) {
 
     pad = Pads;
     PadCount = 0;
-    PadCount += func_80027D90_read(D_80063A90[0], (u8 *)pad, 0);
-    PadCount += func_80027D90_read(D_80063A90[1], (u8 *)&pad[PadCount], 0x10);
+    PadCount += func_80027D90_read(PadMtapBuf[0], (u8 *)pad, 0);
+    PadCount += func_80027D90_read(PadMtapBuf[1], (u8 *)&pad[PadCount], 0x10);
     count = 8 - PadCount;
     pad += PadCount;
     if (count > 0) {
@@ -2803,7 +2803,7 @@ void pads_init_mtap(void) {
     s32 on;
 
     PadCount = 0;
-    PadInitMtap(D_80063A90[0], D_80063A90[1]);
+    PadInitMtap(PadMtapBuf[0], PadMtapBuf[1]);
     i = 0;
     on = 1;
     pad = Pads;
@@ -3175,7 +3175,7 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     }
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
-    D_800643E8 = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
+    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
 }
@@ -3296,7 +3296,7 @@ s32 list_count(u8 **arg0) {
 void debug_font_init(void) {
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
-    D_800643E8 = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
+    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
 }
@@ -3304,7 +3304,7 @@ void debug_font_init(void) {
 void debug_font_init2(void) {
     D_800335BC = 0x2626001F;
     FntLoad(0x380, 0x100);
-    D_800643E8 = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
+    DebugFontStream = FntOpen(0x10, 0x10, ScreenRect->w - 8, 0xE0, 0, 0x800);
     D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
     D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
 }
@@ -4242,7 +4242,7 @@ s32 xa_count = 0;
 s32 D_80063A80[1] = {0};
 u8 D_80063A84[8] = { 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0 };
 s32 D_80063A8C = 0;
-u8 D_80063A90[2][52] = {0};
+u8 PadMtapBuf[2][52] = {0};
 u32 D_80063AF8[8] = {
     0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000,
     0xFFFF0000,
@@ -4362,11 +4362,11 @@ u8 VramNodePool[2096] = {
     0xF0, 1, 0x40, 0x3B, 6, 0x80, 0xF8, 1, 0xF0, 1, 0x88, 0x3B, 6, 0x80, 0xFF, 0xFF, 0xFF,
     0xFF,
 };
-s32 D_800643E8 = 0;
+s32 DebugFontStream = 0;
 s32 D_800643EC = 0;
 s32 D_800643F0 = 0;
 u8 *D_800643F4 = 0;
-void (*D_800643F8)() = 0x4D2;
+void (*SsTickSaved)() = 0x4D2;
 s32 D_800643FC[6] = {0};
 
 /* the .bss (main.c's comes first) */

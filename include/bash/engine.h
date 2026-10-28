@@ -153,7 +153,7 @@ extern EngineCfg D_800A0314;
 extern s32 D_8004E0D4;
 extern s32 D_8009F654;
 extern s16 core_process;
-extern u8 *D_80098594;
+extern u8 *SlotBase;
 extern s32 D_8009F968;
 extern u8 SlotHeapStart[];
 extern ArenaDef D_80098F48;
@@ -225,8 +225,8 @@ extern s32 HeroAnimDbaseB;
 extern u8 D_8009F9AC[];
 extern s32 IntroStepIndex;
 extern s32 IntroStepTimer;
-extern s32 D_8009E5B0;
-extern s32 D_8009E5B4;
+extern s32 IntroNextSfx;
+extern s32 IntroSfxDelay;
 extern s32 D_800AEC58;
 extern u8 D_8009E7F4[];
 /* A text-panel record PlaceEngineSlot builds from (0x24 bytes): kind at 0, the text at 0x14. */
@@ -239,8 +239,8 @@ typedef struct EngRec24 {
 } EngRec24;
 
 extern EngRec24 D_8009E8B4[];
-extern EngRec24 D_8009EB3C[2];
-extern process_info TournamentSelect;   /* after D_8009EB3C's two records: the tournament select menu (TournamentChain) */
+extern EngRec24 CupSlotPanel[2];
+extern process_info TournamentSelect;   /* after CupSlotPanel's two records: the tournament select menu (TournamentChain) */
 extern s32 CupMenuCompact;
 typedef struct { u16 a, b, c, flags; } EngEntry;
 typedef struct { s32 unk0; EngEntry *entries; s32 unk8, unkC, unk10; } EngTable;

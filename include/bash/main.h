@@ -798,7 +798,7 @@ PointList *sub_point_list(subengine *sub);
 FlagPoint *sub_find_point(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
 void func_800369FC(void);
 
-extern SVECTOR D_80056AC8[];
+extern SVECTOR MorphVerts[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
 extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
 /* A 4.12 fixed-point quaternion (quat_slerp slerps two of them). */
@@ -812,8 +812,8 @@ extern u8 D_80050010[];
 void modchip_check_region(void);
 void modchip_step();
 extern s32 D_80064414;
-extern s32 D_8006559C;
-extern s32 D_800655A4;
+extern s32 MusicNext;
+extern s32 MusicCur;
 extern s32 MusicStopDelay;
 extern s32 MusicVolCur;
 extern s32 MusicDuck;
@@ -855,7 +855,7 @@ typedef struct {
 } D_80058B00_Entry;
 extern D_80058B00_Entry ScriptCommands[];
 extern s32 World_floor_level;
-extern s32 D_800655A8;
+extern s32 MusicRestart;
 extern s32 CardChannel;
 extern s32 CardStatus;
 extern u8 CardBuffer[];
@@ -867,7 +867,7 @@ typedef struct {
     u32 blocks : 8;  /* 0x03 */
     s16 title[32];   /* 0x04 Shift-JIS */
 } McHeader;
-extern char *D_800655BC;
+extern char *CardSaveTitle;
 extern u8 D_80065648[]; /* the header's icon frames (CardBuffer + 0x80) */
 extern const char CardSaveTitleFormat[];
 s32 count_completion(u8 *arg0);
@@ -927,7 +927,7 @@ extern s32 PadCount;
 extern s32 first_joypad;            /* first pad with flag 1 set, or -1 */
 extern s32 PadRunEnd;            /* pads 0..n-1 all have flag 1 */
 extern s32 joypad_idle_count;            /* frames with no button down */
-extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
+extern u8 PadMtapBuf[2][0x34];    /* PadInitMtap buffers */
 extern PadState Pads[8];
 typedef struct FreeHdr { u16 f0; u16 f2; } FreeHdr;
 typedef struct FreeNode {
@@ -967,7 +967,7 @@ extern u8 D_80063BA0[];
 extern FreeNode *ClutFreeSmall;
 extern FreeNode *ClutUsedSmall;
 extern void *ClutLargeList;        /* list walked by clut_alloc_large (next at +4) */
-extern s32 D_8004E104;            /* mal_count_free: free bytes */
+extern s32 MalFreeBytes;            /* mal_count_free: free bytes */
 extern s32 D_8004E108;            /* mal_count_free: free blocks */
 extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N at [2 * N] */
 extern s32 D_8004E10C;            /* mal_count_free: largest free block, bytes */
@@ -1125,7 +1125,7 @@ extern s32 D_8005B694;
 extern s32 D_8005B78C;
 extern s32 D_800335BC;
 extern u32 D_80063AF8[];
-extern s32 D_800643E8;
+extern s32 DebugFontStream;
 extern s32 D_800643EC;
 extern s32 D_800643F0;
 void *mal_trim_front(void *base, s32 offset, _mal_area *arg2);
@@ -1296,7 +1296,7 @@ typedef struct AnimStep {
     u16 arg;
 } AnimStep;
 extern s32 ContourHeight;
-extern void (*D_800643F8)();
+extern void (*SsTickSaved)();
 extern NAS *NASActiveTail;
 extern s32 *PrimNodeFree;
 extern s32 *D_8005683C;            /* pool sizes (prims_init) */

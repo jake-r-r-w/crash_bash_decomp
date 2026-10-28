@@ -65,9 +65,9 @@ void UpdateIntro(void) {
         shell_run_spyro_demo();
     }
     scripts_update();
-    if (D_8009E5B4 != 0) {
-        if (--D_8009E5B4 == 0) {
-            PlaySfx(D_8009E5B0, &D_8009E5C4, NULL, 0x1000, 0x1E00, 0);
+    if (IntroSfxDelay != 0) {
+        if (--IntroSfxDelay == 0) {
+            PlaySfx(IntroNextSfx, &D_8009E5C4, NULL, 0x1000, 0x1E00, 0);
         }
     }
     if (D_800AEC58 != 0) {
@@ -113,8 +113,8 @@ void UpdateIntro(void) {
             PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
             PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &IntroSfx[1], NULL, 0x1000, 0x1E00, 0);
             PlaySfx(IntroSteps[IntroStepIndex].sfx[2], &IntroSfx[2], NULL, 0x1000, 0x1E00, 0);
-            D_8009E5B4 = 6;
-            D_8009E5B0 = IntroSteps[IntroStepIndex].sfxNext;
+            IntroSfxDelay = 6;
+            IntroNextSfx = IntroSteps[IntroStepIndex].sfxNext;
         }
         break;
     case 2:
@@ -128,8 +128,8 @@ void UpdateIntro(void) {
             PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
             PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &IntroSfx[1], NULL, 0x1000, 0x1E00, 0);
             PlaySfx(IntroSteps[IntroStepIndex].sfx[2], &IntroSfx[2], NULL, 0x1000, 0x1E00, 0);
-            D_8009E5B4 = 0x16;
-            D_8009E5B0 = IntroSteps[IntroStepIndex].sfxNext;
+            IntroSfxDelay = 0x16;
+            IntroNextSfx = IntroSteps[IntroStepIndex].sfxNext;
         }
         if (IntroSteps[IntroStepIndex].unk10 != -1) {
             music_request(IntroSteps[IntroStepIndex].unk10);
@@ -176,8 +176,8 @@ void InitIntro(void) {
     D_800AEC58 = 0;
     IntroDbase = 0;
     init_scripts(0x20, 0x80);
-    D_8009E5B0 = -1;
-    D_8009E5B4 = 0;
+    IntroNextSfx = -1;
+    IntroSfxDelay = 0;
     subpool_init(0x200);
     cam_init((GfxCamera *)MainCamera);
     FirstBootDone = 1;
@@ -664,10 +664,10 @@ void InitCupMenu(void) {
     CupMenuCompact = 0;
     PlaceEngineSlot(0, (s32 *)D_8009E8B4);
     PlaceEngineSlot(2, D_8009E7F4);
-    PlaceEngineSlot(3, (s32 *)D_8009EB3C);
-    PlaceEngineSlot(4, (s32 *)D_8009EB3C);
-    PlaceEngineSlot(5, (s32 *)D_8009EB3C);
-    PlaceEngineSlot(6, (s32 *)D_8009EB3C);
+    PlaceEngineSlot(3, (s32 *)CupSlotPanel);
+    PlaceEngineSlot(4, (s32 *)CupSlotPanel);
+    PlaceEngineSlot(5, (s32 *)CupSlotPanel);
+    PlaceEngineSlot(6, (s32 *)CupSlotPanel);
     D_8005A63C = 0;
 }
 
@@ -1918,8 +1918,8 @@ s32 D_8009E58C[6] = { (s32)InitIntro, (s32)UpdateIntro, (s32)RenderIntro, (s32)Q
 s32 IntroStepIndex = 0;
 s32 IntroStepTimer = 0;
 u8 *D_8009E5AC = 0;
-s32 D_8009E5B0 = 0;
-s32 D_8009E5B4 = 0;
+s32 IntroNextSfx = 0;
+s32 IntroSfxDelay = 0;
 _sfx_handler *IntroSfx[3] = {0};
 _sfx_handler *D_8009E5C4 = 0;
 s32 D_8009E5C8[5] = { (s32)ReturnToWarpRoom, 0, 0, 0, 0 };
@@ -2029,7 +2029,7 @@ GfxViewport D_8009EA9C = { 0x32, 0x58, 0x136, 0xD0, 0, 0, 0x280, 0x1E0, 0xB4, 0x
 GfxViewport D_8009EAC4 = { 0x14A, 0x58, 0x24E, 0xD0, 0, 0, 0x280, 0x1E0, 0x1CC, 0xF8, 0x380, 0x17F, 0, 0, 0, 0, 0 };
 GfxViewport D_8009EAEC = { 0x32, 0xE0, 0x136, 0x158, 0, 0, 0x280, 0x1E0, 0xB4, 0x180, 0x500, 0x17F, 0, 0, 0, 0, 0 };
 GfxViewport D_8009EB14 = { 0x14A, 0xE0, 0x24E, 0x158, 0, 0, 0x280, 0x1E0, 0x1CC, 0x180, 0x680, 0x17F, 0, 0, 0, 0, 0 };
-EngRec24 D_8009EB3C[2] = {
+EngRec24 CupSlotPanel[2] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xCC, 0xC, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0xC8, 0 }, 0x2005, { 0, 0, 0, 0 },

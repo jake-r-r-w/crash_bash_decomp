@@ -19,20 +19,20 @@ void machine_init_sound(void) {
     SsUtSetReverbDepth(100, 0);
     func_800369FC();
     sound_reset_counter();
-    D_800643F8 = (void (*)())SsSetTickCallback(sound_vsync_tick);
+    SsTickSaved = (void (*)())SsSetTickCallback(sound_vsync_tick);
     SsSetTickMode(1);
     SsStart();
 }
 
 void machine_quit_sound(void) {
-    if (D_800643F8 != 0) {
+    if (SsTickSaved != 0) {
         music_stop();
         SsUtFlush();
         SsEnd();
-        SsSetTickCallback(D_800643F8);
+        SsSetTickCallback(SsTickSaved);
         SsQuit();
         VSync(3);
-        D_800643F8 = 0;
+        SsTickSaved = 0;
     }
 }
 
