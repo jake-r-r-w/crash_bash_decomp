@@ -1765,7 +1765,7 @@ s32 load_file_part_wait(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
 
 s32 get_dist_angles(s32 *a, s32 *b, s16 *out);
 
-u8 *model_entry_data(u8 *arg0, s32 arg1);
+u8 *model_entry_data(obj_dbase *arg0, s32 arg1);
 
 s32 model_entry_texture(obj_dbase *arg0, s32 arg1);
 

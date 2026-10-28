@@ -3653,10 +3653,10 @@ static inline void textureset_release_vram(u8 *arg0) {
     }
 }
 
-static inline void textureset_release_cluts(u8 *arg0, u8 *p) {
+static inline void textureset_release_cluts(obj_textureset *arg0, u8 *p) {
     s32 n;
 
-    n = *(s32 *)(arg0 + 4);
+    n = arg0->nEnt;
     p -= 0xC;
     for (;;) {
         n--;

@@ -3328,11 +3328,11 @@ none:
     return NULL;
 }
 
-u8 *model_entry_data(u8 *arg0, s32 arg1) {
+u8 *model_entry_data(obj_dbase *arg0, s32 arg1) {
     u8 *base;
     u8 *rec;
 
-    base = *(u8 **)(arg0 + 0xC);
+    base = arg0->data;
     switch (arg1 & 0x7000) {
     case 0x5000:
         rec = (u8 *)map_entity_address(arg1 & 0xFFF, base);
