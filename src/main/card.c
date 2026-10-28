@@ -444,15 +444,15 @@ void card_clear_slots(void) {
     CardSaveSum = sum;
 }
 
-void card_clear_slot(u8 *arg0) {
-    (*(s8*)((u8*)(arg0) + 0)) = 0;
-    (*(s8*)((u8*)(arg0) + 1)) = 0;
-    (*(s8*)((u8*)(arg0) + 2)) = 0;
-    (*(s8*)((u8*)(arg0) + 3)) = 0;
-    (*(s8*)((u8*)(arg0) + 4)) = 0;
-    (*(s8*)((u8*)(arg0) + 5)) = 0;
-    (*(s8*)((u8*)(arg0) + 6)) = 0;
-    (*(s8*)((u8*)(arg0) + 7)) = 0;
+void card_clear_slot(D_800657C8_Slot *slot) {
+    slot->b[0] = 0;
+    slot->b[1] = 0;
+    slot->b[2] = 0;
+    slot->b[3] = 0;
+    slot->b[4] = 0;
+    slot->b[5] = 0;
+    slot->b[6] = 0;
+    slot->b[7] = 0;
 }
 
 s32 card_checksum(u8 *arg0) {

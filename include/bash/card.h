@@ -14,7 +14,7 @@ void card_request(s32 arg0);
 void card_reset(void);
 void card_stop(void);
 void card_poll(void);
-void card_clear_slot(u8 *arg0);
+void card_clear_slot(D_800657C8_Slot *slot);
 s32 ascii_to_sjis(u8 arg0);
 void card_save(void);
 void card_format(void);

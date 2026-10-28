@@ -3327,7 +3327,7 @@ void InitBall(NAS *nas) {
     } else {
         eng->sub->entity = 0x2009;
     }
-    AddToGroup((u8 **)&HeadOfBalls, (u8 *)nas);
+    AddToGroup((NAS **)&HeadOfBalls, nas);
     e1 = AddExtEngine(nas, 1);
     if (e1 != NULL) {
         sub = e1->sub;

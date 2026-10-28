@@ -769,7 +769,7 @@ void N2OInitHero(s32 i) {
     FetchDefaultColBox(eng, 0x50);
     hb2 = Heroes;
     h2 = hb2 + i;
-    AddToGroup((u8 **)&N2OHeroList, (u8 *)h2->hero);
+    AddToGroup((NAS **)&N2OHeroList, h2->hero);
     SetHeroAction(i, 0x2F);
     h2->hero_eng->unk10.y = -0x480;
     h2->hero_weapon_count = one;
@@ -1615,7 +1615,7 @@ void InitN2OBall(NAS *nas) {
         eng->unk5D = 2;
         eng->sub->u6C.dbase = &HeroModelBank[DB_BallsEffects];
         eng->sub->entity = 0x2009;
-        AddToGroup((u8 **)&HeadOfBalls, (u8 *)nas);
+        AddToGroup((NAS **)&HeadOfBalls, nas);
         e1 = AddExtEngine(nas, 1);
         if (e1 != NULL) {
             sub = e1->sub;

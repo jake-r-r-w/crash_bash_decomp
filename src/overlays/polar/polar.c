@@ -7266,7 +7266,7 @@ void InitPolarWalrus(NAS *m) {
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_ArenaPolarTiltSeal];
         m->Engine->sub->entity = 0x4000;
         m->UserInfo.status = 0;
-        AddToGroup(&PolarBears, (u8 *)m);
+        AddToGroup((NAS **)&PolarBears, (NAS *)m);
         m->Engine->unk10.x = (rcossin_tbl[(WalrusState - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x307) >> 10;
         m->Engine->unk10.y = 0x400;
@@ -8282,7 +8282,7 @@ void InitBearminator(NAS *m) {
             m->Engine->unk2C.z = 0x1F40;
             m->Engine->unk5E = 1;
             m->Engine->flags |= 0x200000;
-            AddToGroup(&PolarBears, (u8 *)m);
+            AddToGroup((NAS **)&PolarBears, (NAS *)m);
             ext->cursor = ScriptCursorFirst(m, &BearminatorScriptInit);
             ext->unkC = 3;
             e2->unk20 = 0;
@@ -10408,7 +10408,7 @@ void InitBombGFX(NAS *m) {
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         ext->unkC = 0;
         m->Engine->unk5C = 1;
-        AddToGroup((u8 **)&PolarBomb, (u8 *)m);
+        AddToGroup((NAS **)&PolarBomb, m);
         m->FUX = NULL;
         e = AddExtEngine(m, 2);
         if (e != NULL) {

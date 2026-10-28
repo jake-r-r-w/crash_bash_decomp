@@ -2091,7 +2091,7 @@ void InitLaserShoot(LaserShoot *arg0) {
     arg0->obj->unk1E = 0;
     arg0->obj->unk5D = 2;
     arg0->unk60 = 0;
-    AddToGroup(&NoxLasers, (u8 *)arg0);
+    AddToGroup((NAS **)&NoxLasers, (NAS *)arg0);
 }
 
 void InitMineSFX(MineSFX *arg0) {

@@ -4791,7 +4791,7 @@ void InitRacePickUp(NAS *m) {
 
     ext = AddExt(m, 0x50, 0x10000000);
     if (ext != NULL) {
-        AddToGroup((u8 **)&RacePickups, (u8 *)m);
+        AddToGroup((NAS **)&RacePickups, m);
         m->Engine->sub->entity = 0x2006;
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
         m->Engine->unk5D = 2;
@@ -6184,7 +6184,7 @@ void InitTrackGlob(NAS *m) {
     ext = AddExt(m, 0x8C, 0x10000000);
     if (ext != NULL) {
         ext->cursor = ScriptCursorFirst(m, &TrackGlobScriptInit);
-        AddToGroup(&RaceObjects, (u8 *)m);
+        AddToGroup((NAS **)&RaceObjects, (NAS *)m);
         m->Engine->sub->u6C.dbase = *(s32 *)MapScene;
         m->Engine->sub->entity = 0x4100;
         m->Engine->unk5D = 1;

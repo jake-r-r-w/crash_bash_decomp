@@ -2221,16 +2221,16 @@ void RemoveFromGroup(NAS *nas) {
     nas->Group.Head = NULL;
 }
 
-void AddToGroup(u8 **arg0, u8 *arg1) {
-    u8 *temp_v0;
+void AddToGroup(NAS **head, NAS *nas) {
+    NAS *first;
 
-    temp_v0 = *arg0;
-    if (temp_v0 != NULL) {
-        (*(s32*)((u8*)(arg1) + 32)) = temp_v0;
-        (*(s32*)((u8*)(temp_v0) + 28)) = arg1;
+    first = *head;
+    if (first != NULL) {
+        nas->Group.Child = first;
+        first->Group.Parent = nas;
     }
-    *arg0 = arg1;
-    (*(s32*)((u8*)(arg1) + 36)) = arg0;
+    *head = nas;
+    nas->Group.Head = head;
 }
 
 void ReAdoptChild(NAS *list, NAS *nas) {
@@ -2407,19 +2407,19 @@ void KillEveryNas(void) {
     }
 }
 
-void DeleteNas_AllAST(s32 arg0) {
-    u8 *temp_s0;
-    u8 *var_a0;
+void DeleteNas_AllAST(s32 type) {
+    NAS *next;
+    NAS *nas;
 
-    var_a0 = NASActiveHead;
-    if (var_a0 != NULL) {
+    nas = NASActiveHead;
+    if (nas != NULL) {
         do {
-            temp_s0 = (*(s32*)((u8*)(var_a0) + 16));
-            if (((*(s32*)((u8*)(var_a0) + 0)) & 1) && ((*(u16*)((u8*)(var_a0) + 108)) == (arg0 & 0xFFFF))) {
-                KillNAS(var_a0);
+            next = nas->Tag.Child;
+            if ((nas->NASid & 1) && nas->Type == (type & 0xFFFF)) {
+                KillNAS(nas);
             }
-            var_a0 = temp_s0;
-        } while (var_a0 != NULL);
+            nas = next;
+        } while (nas != NULL);
     }
 }
 
@@ -2874,16 +2874,16 @@ void pads_reset_rumble(void) {
     }
 }
 
-void pad_set_rumble_big(u8 *arg0, s32 arg1, s8 arg2) {
-    (*(s8*)((u8*)(arg0) + 5)) = arg2;
-    (*(s16*)((u8*)(arg0) + 10)) = (s16) (arg1 + 1);
-    (*(u16*)((u8*)(arg0) + 6)) = (u16) ((*(u16*)((u8*)(arg0) + 6)) | 1);
+void pad_set_rumble_big(PadRumble *r, s32 time, s8 level) {
+    r->act[1] = level;
+    r->time1 = time + 1;
+    r->dirty |= 1;
 }
 
-void pad_set_rumble_small(u8 *arg0, s32 arg1) {
-    (*(s8*)((u8*)(arg0) + 4)) = 1;
-    (*(s16*)((u8*)(arg0) + 8)) = (s16) (arg1 + 1);
-    (*(u16*)((u8*)(arg0) + 6)) = (u16) ((*(u16*)((u8*)(arg0) + 6)) | 1);
+void pad_set_rumble_small(PadRumble *r, s32 time) {
+    r->act[0] = 1;
+    r->time0 = time + 1;
+    r->dirty |= 1;
 }
 
 s32 pad_rumble_send(PadRumble *r, s32 port) {
