@@ -940,3 +940,4 @@ PauseStatsAllowed = 0x8009BD30;
 CratePickupAst = 0x8009E298;
 HealthAst = 0x8009E29C;
 IntroScriptHandle = 0x800AEC58;
+ElapsedStart = 0x8009BD04;

@@ -1915,7 +1915,7 @@ u8 PauseMenuPanel[32] = {
     0x80, 0, 0, 4, 0, 4, 0, 0x21, 0x80, 0, 0x10,
 };
 u16 StatsPageWanted = 0;
-s32 D_8009BD04 = 0;
+s32 ElapsedStart = 0;
 s32 WinCounterSize = 0;
 EngineRec24 *PauseRec = 0;
 EngineRec24 **PauseRecSet = 0;

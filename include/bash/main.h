@@ -1035,7 +1035,7 @@ typedef struct GameOptionSet {
 } GameOptionSet;
 extern GameOptionSet GameOptions;
 extern s32 card_command_delay;
-extern s32 D_8005A620;
+extern s32 GameFrames;
 extern s32 GlobalNAStatus;
 extern u8 MainCamera[];
 extern s16 GameMode;

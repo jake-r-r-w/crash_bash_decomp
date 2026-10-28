@@ -100,7 +100,7 @@ typedef struct HeroActionEntry {
 } HeroActionEntry;
 extern HeroActionEntry HeroActionTable[];
 extern hero_seq **HeroSeqTables[]; /* by HeroInfo.hero_name (1-8): each character's sequences, by id */
-extern s32 D_8009BD04;
+extern s32 ElapsedStart;
 extern s32 LoadingScenePlaying;
 extern s32 LoadingSceneDelay;
 extern u8 LoadingIconEngine[];

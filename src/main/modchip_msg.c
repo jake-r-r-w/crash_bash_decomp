@@ -175,7 +175,7 @@ const char ModchipMsg[] = "     SOFTWARE TERMINATED\nCONSOLE MAY HAVE BEEN MODIF
 const char ModchipMsgJapanese[] = "\213\255\220\247\217I\227\271\202\265\202\334\202\265\202\275\201B\n\226{\221\314\202\252\211\374\221\242\202\263\202\352\202\304\202\242\202\351\n\202\250\202\273\202\352\202\252\202\240\202\350\202\334\202\267\201B";
 
 void msg_draw_emblem(void) {
-    extern u8 D_800678B4[][2];
+    extern u8 EmblemScale[][2];
     extern void DrawPrim(void *);
     s32 prim[6];
     s32 i;
@@ -193,8 +193,8 @@ void msg_draw_emblem(void) {
             do {
                 s32 idx = (j + 2) >> 2;
                 s32 x = i + (j & 1);
-                prim[j + 2] = ((d[k][1] * D_800678B4[16 - x][idx] + 0x78) << 16) |
-                              (d[k][0] * D_800678B4[x][idx] + 0xA0);
+                prim[j + 2] = ((d[k][1] * EmblemScale[16 - x][idx] + 0x78) << 16) |
+                              (d[k][0] * EmblemScale[x][idx] + 0xA0);
                 j++;
             } while (j < 4);
             DrawPrim(prim);
@@ -214,7 +214,7 @@ TextScreen ModchipMsgScreens[2] = {
     { 2, 0xA, 0x10, 3, 0x50, 0x5C, (void *)&ModchipMsgJapanese },
     { 1, 0x1F, 8, 3, 0x24, 0x5C, (void *)&ModchipMsg },
 };
-u8 D_800678B4[24][2] = {
+u8 EmblemScale[24][2] = {
     { 0, 0 }, { 6, 5 }, { 0xC, 0xA }, { 0x12, 0xF }, { 0x18, 0x14 }, { 0x1E, 0x19 },
     { 0x23, 0x1E }, { 0x28, 0x22 }, { 0x2D, 0x26 }, { 0x31, 0x29 }, { 0x35, 0x2C },
     { 0x38, 0x2F }, { 0x3B, 0x31 }, { 0x3D, 0x33 }, { 0x3E, 0x34 }, { 0x3F, 0x35 },

@@ -2053,7 +2053,7 @@ void PanelCountCompletion(void) {
 s32 CalcElapsedTime(void) {
     s32 var_v0;
 
-    var_v0 = D_8005A620 - D_8009BD04;
+    var_v0 = GameFrames - ElapsedStart;
     if (var_v0 < 0) {
         var_v0 = 0;
     }
