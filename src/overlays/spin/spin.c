@@ -756,7 +756,7 @@ void SpinDropMaster(void) {
         }
         i++;
     } while (i < 4);
-    if (D_8009E46C[2] == 0 && hero == -1) {
+    if (CrateCounts[2] == 0 && hero == -1) {
         if (SpinDropTimer != 0) {
             SpinDropTimer--;
         } else {
@@ -764,7 +764,7 @@ void SpinDropMaster(void) {
             SpinDropTimer = Random(0x3C) + 0x5A;
         }
     }
-    if (D_8009E46C[12] == 0) {
+    if (CrateCounts[12] == 0) {
         if (SpinDropDelay != 0) {
             SpinDropDelay--;
         } else {
@@ -772,7 +772,7 @@ void SpinDropMaster(void) {
             SpinDropTimer = Random(0x3C) + 0x5A;
         }
     }
-    SpinDropCount = D_8009E46C[8] + D_8009E46C[9] + D_8009E46C[10] + D_8009E46C[11];
+    SpinDropCount = CrateCounts[8] + CrateCounts[9] + CrateCounts[10] + CrateCounts[11];
     if (SpinBigDrop != 0) {
         SpinBigDrop--;
     } else if (SpinDropCount < max) {
@@ -806,7 +806,7 @@ void SpinCountObjects(void) {
     s32 x0, x1, z0, z1;
 
     i = 12;
-    p = D_8009E46C;
+    p = CrateCounts;
     p += 12;
     do {
         *p = 0;
@@ -814,7 +814,7 @@ void SpinCountObjects(void) {
         p--;
     } while (i >= 0);
     for (j = 12; j >= 0; j--) {
-        D_8009E25C[j] = 0;
+        PickupCounts[j] = 0;
     }
     for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
         e = n->Engine;
@@ -849,8 +849,8 @@ void SpinCountObjects(void) {
             case 3:
             case 6:
             case 7:
-                D_8009E46C[0]++;
-                D_8009E46C[f->kind]++;
+                CrateCounts[0]++;
+                CrateCounts[f->kind]++;
                 break;
             }
         }
@@ -886,7 +886,7 @@ void SpinDropObjects(u16 count, s16 arg1) {
             idx = SpinNextSlot();
             t = SpinDropKinds[idx];
             b = p->b;
-            kind = D_8009E46C[t];
+            kind = CrateCounts[t];
             id = t;
             if (kind >= 2) {
                 continue;
@@ -1001,7 +1001,7 @@ NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d)
           eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
           eng->unk5D = 1;
           fux->kind = c;
-          D_8009E46C[fux->kind]++;
+          CrateCounts[fux->kind]++;
           if (d >= 0)
           {
             fux->sub = d;
@@ -1353,7 +1353,7 @@ NAS *CreateBalloon(s32 a, s32 b, u16 c, s16 d) {
                     eng->sub->unk6C = &HeroModelBank[DB_RingObjects];
                     eng->unk5D = 1;
                     fux->kind = c;
-                    D_8009E46C[fux->kind]++;
+                    CrateCounts[fux->kind]++;
                     if (d >= 0) {
                         fux->sub = d;
                     } else {

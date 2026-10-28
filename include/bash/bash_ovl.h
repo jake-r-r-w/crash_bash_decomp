@@ -93,7 +93,7 @@ extern u16 BashCrateMixPos;
 extern u16 BashDropPos;
 extern u16 BashMaxNitro[];
 extern u16 BashMaxCrates[];
-extern u16 D_8009E46C[];
+extern u16 CrateCounts[];
 extern s32 HeroesInPlay;
 BashPair *BashFindDropPoint(u16 *arg0);
 
@@ -168,8 +168,8 @@ void BashRestartLevel(void);
 
 extern s16 BashExplodeScales[][3];
 extern u16 RoundWinner;
-extern s32 D_8009E464;
-extern s32 D_8009E468;
+extern s32 CrateAstType;
+extern s32 CrateAstType2;
 extern u8 D_8009E3B4[];
 extern u8 D_8009E3DC[];
 extern s16 BashAIVictim;

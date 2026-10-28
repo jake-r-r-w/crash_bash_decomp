@@ -53,13 +53,10 @@ extern s32 ArkHeroStarts[4][3];
 extern u16 ArkWallFlags;
 
 extern u16 RoundWinner;
-typedef struct ArkenoidCnt {
-    u16 n;
-} ArkenoidCnt;
 
-extern ArkenoidCnt D_8009E25C;
+extern u16 PickupCounts[];
 extern s32 ArkBallTimer;
-extern u16 D_8009E46C[];
+extern u16 CrateCounts[];
 
 typedef struct ArkenoidFuxType {
     u8 pad0[0x14];

@@ -85,7 +85,7 @@ void BashCountObjects(void) {
     T_BB7E8Fux *f;
 
     i = 12;
-    p = D_8009E46C;
+    p = CrateCounts;
     p += 12;
     do {
         *p = 0;
@@ -93,7 +93,7 @@ void BashCountObjects(void) {
         p--;
     } while (i >= 0);
     for (j = 12; j >= 0; j--) {
-        D_8009E25C[j] = 0;
+        PickupCounts[j] = 0;
     }
     n = HeadOfObjects;
     for (;;) {
@@ -111,13 +111,13 @@ void BashCountObjects(void) {
             if (z < 0) z = 0;
             ArenaGrid[z * 20 + x].unk0 = t;
             if ((u16)(f->type - 1) < 12) {
-                D_8009E46C[0]++;
-                D_8009E46C[f->type]++;
+                CrateCounts[0]++;
+                CrateCounts[f->type]++;
             } else if ((u16)(f->type - 0x11) < 12) {
-                D_8009E25C[0]++;
-                D_8009E25C[f->type - 0x10]++;
+                PickupCounts[0]++;
+                PickupCounts[f->type - 0x10]++;
                 if ((u16)(f->type - 0x12) < 4) {
-                    D_8009E46C[1]++;
+                    CrateCounts[1]++;
                 }
             }
         } else {
@@ -156,7 +156,7 @@ u8 *CreateCrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
                 eng->unk5D = 1;
                 obj->unk14 = d;
-                D_8009E46C[obj->unk14]++;
+                CrateCounts[obj->unk14]++;
                 if ((s16)e >= 0) {
                     obj->unk1A = e;
                 } else {
@@ -246,7 +246,7 @@ void InitCrate(NAS *arg0) {
                 eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
                 eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
                 while (nas != NULL) {
-                    if (nas->Type == D_8009E464) {
+                    if (nas->Type == CrateAstType) {
                         other = nas->Engine;
                         if (other != NULL && other->unk10.x == eng->unk10.x && other->unk10.z == eng->unk10.z) {
                             eng->unk10.x = Random(0xC00) - 0x600;
@@ -268,7 +268,7 @@ void InitCrate(NAS *arg0) {
             if (arg0->trigger != NULL) {
                 obj->unk14 = arg0->trigger->InfoStruct->val1;
             }
-            D_8009E46C[obj->unk14]++;
+            CrateCounts[obj->unk14]++;
             switch (obj->unk14) {
             case 3:
                 eng->sub->unk74 = 0x2008;
@@ -1906,7 +1906,7 @@ void CrateFindFreeSpot(EXTengine *eng) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
         while (nas != NULL) {
-            if (nas->Type == D_8009E464) {
+            if (nas->Type == CrateAstType) {
                 other = nas->Engine;
                 if (other != NULL && other->unk10.x == eng->unk10.x && other->unk10.z == eng->unk10.z) {
                     eng->unk10.x = Random(0xC00) - 0x600;

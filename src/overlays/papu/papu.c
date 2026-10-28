@@ -518,7 +518,7 @@ void PapuCrateMaster(void) {
         return;
     }
     if (PapuCrateTimer == 0) {
-        if (D_8009E46C[0] < PapuMaxCrates) {
+        if (CrateCounts[0] < PapuMaxCrates) {
             PapuCrateTimer = Random(15) + 15;
             PapuDropCrates(1);
         } else {
@@ -553,7 +553,7 @@ void PapuCrateMaster(void) {
             PapuPickupDelay = Random(4) + 2;
         }
     } else if (PapuPickupTimer == 0) {
-        if (D_8009E25C[0] < a1) {
+        if (PickupCounts[0] < a1) {
             PapuPickupActive = a1;
             PapuPickupTimer = (Random(10) + 10) * 30;
             return;
@@ -2492,7 +2492,7 @@ void PapuDropFirstCrates(void)
       t = PapuCrateMix[PapuCrateMixPos];
       PapuCrateMixPos = (PapuCrateMixPos + 1) & 0x3F;
       type = t;
-      if ((type == 6) && (D_8009E46C[6] >= 4))
+      if ((type == 6) && (CrateCounts[6] >= 4))
       {
         type = 4;
       }
@@ -2525,7 +2525,7 @@ void PapuDropCrates(u16 arg0) {
             t = PapuCrateMix[PapuCrateMixPos];
             PapuCrateMixPos = (PapuCrateMixPos + 1) & 0x3F;
             v = t;
-            if (v == 6 && D_8009E46C[6] >= 4) {
+            if (v == 6 && CrateCounts[6] >= 4) {
                 v = 4;
             }
             CreatePACrate(a, 0, b, v, -1);        }
@@ -2558,8 +2558,8 @@ void PAPUSetUp(void) {
 }
 
 void PapuInitCrateHooks(void) {
-    D_8009E464 = PapuASTIndex(0x203);
-    D_8009E468 = PapuASTIndex(0x204);
+    CrateAstType = PapuASTIndex(0x203);
+    CrateAstType2 = PapuASTIndex(0x204);
     HitHooks.unk4 = D_8009E3B4;
     HitHooks.unk8 = NULL;
     HitHooks.unkC = 0;
@@ -2635,7 +2635,7 @@ void PapuCountObjects(void) {
     T_B80B0Fux *f;
 
     i = 12;
-    p = D_8009E46C;
+    p = CrateCounts;
     p += 12;
     do {
         *p = 0;
@@ -2643,7 +2643,7 @@ void PapuCountObjects(void) {
         p--;
     } while (i >= 0);
     for (j = 12; j >= 0; j--) {
-        D_8009E25C[j] = 0;
+        PickupCounts[j] = 0;
     }
     n = HeadOfObjects;
     for (;;) {
@@ -2661,13 +2661,13 @@ void PapuCountObjects(void) {
             if (z < 0) z = 0;
             ArenaGrid[z * 20 + x].unk0 = t;
             if ((u16)(f->type - 1) < 12) {
-                D_8009E46C[0]++;
-                D_8009E46C[f->type]++;
+                CrateCounts[0]++;
+                CrateCounts[f->type]++;
             } else if ((u16)(f->type - 0x11) < 12) {
-                D_8009E25C[0]++;
-                D_8009E25C[f->type - 0x10]++;
+                PickupCounts[0]++;
+                PickupCounts[f->type - 0x10]++;
                 if ((u16)(f->type - 0x12) < 4) {
-                    D_8009E46C[1]++;
+                    CrateCounts[1]++;
                 }
             }
         } else {
@@ -2708,7 +2708,7 @@ NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 eng->sub->unk6C = &HeroModelBank[DB_CrateObjects];
                 eng->unk5D = 1;
                 obj->unk14 = d;
-                D_8009E46C[obj->unk14]++;
+                CrateCounts[obj->unk14]++;
                 obj->unk1A = 7;
                 switch (k) {
                 case 4:
@@ -2770,7 +2770,7 @@ void InitPACrate(NAS *arg0) {
                 eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
                 eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
                 while (nas != NULL) {
-                    if (nas->Type == D_8009E464) {
+                    if (nas->Type == CrateAstType) {
                         other = nas->Engine;
                         if (other != NULL && other->unk10.x == eng->unk10.x && other->unk10.z == eng->unk10.z) {
                             eng->unk10.x = Random(0xC00) - 0x600;
@@ -2792,7 +2792,7 @@ void InitPACrate(NAS *arg0) {
             if (arg0->trigger != NULL) {
                 obj->unk14 = arg0->trigger->InfoStruct->val1;
             }
-            D_8009E46C[obj->unk14]++;
+            CrateCounts[obj->unk14]++;
             switch (obj->unk14) {
             case 4:
                 eng->sub->unk74 = 0x2013;

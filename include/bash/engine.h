@@ -436,6 +436,9 @@ typedef struct WeatherFx {
 extern WeatherFx D_8009E200;
 
 extern s32 HitSfx[];
+extern s32 CrateAstType;
+extern s32 CrateAstType2;
+extern u16 CrateCounts[];
 NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2);
 
 void RenderAllNas(void);

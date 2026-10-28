@@ -181,7 +181,7 @@ typedef struct {
     u8 unk1;
 } SpinMapCell;
 extern SpinMapCell ArenaGrid[400];
-extern u16 D_8009E25C[13];
+extern u16 PickupCounts[13];
 
 void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero);
 
@@ -283,7 +283,7 @@ static inline u16 SpinNextSlot(void) {
     return SpinSlotPos;
 }
 extern s16 SpinDropKinds[];
-extern u16 D_8009E46C[];
+extern u16 CrateCounts[];
 extern u32 Clock_Time;
 extern u16 SpinHazardKinds[];
 NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d);

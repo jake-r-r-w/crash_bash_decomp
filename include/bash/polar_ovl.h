@@ -68,8 +68,8 @@ extern SceneObj *PolarIceObjects[80];
 extern const char PolarMsgFoundColSubs[];
 
 /* Scene objects PolarInitScene picks out by index. */
-extern s32 D_8009E1F4;
-extern s32 D_8009E1F8;
+extern s32 PolarTiltX;
+extern s32 PolarTiltZ;
 extern SceneObj *PolarSceneA;
 extern SceneObj *PolarSceneB;
 extern s32 PolarSceneCount;

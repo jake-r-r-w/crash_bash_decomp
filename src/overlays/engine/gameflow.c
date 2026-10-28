@@ -1896,10 +1896,13 @@ extern u8 D_8005B6CC[];
 extern u8 D_8005B6FC[];
 extern u8 D_8005B75C[];
 
-s32 HitSfx[25] = {
+s32 HitSfx[16] = {
     0x3EC, 0x3ED, 0x3EE, 0x3EF, 0x3F1, 0x3F1, 0x3F3, 0x3F4, 0x3E8, 0x3E8, 0x3EA, 0x3EB, 0x3F5,
-    0x3F5, 0x3F7, 0x3F8, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0x3F5, 0x3F7, 0x3F8,
 };
+s32 CrateAstType = 0;
+s32 CrateAstType2 = 0;
+u16 CrateCounts[14] = {0};
 HitCallbacks HitHooks = {0};
 u8 D_8009E498[40] = {
     0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0x40, 1, 0, 0, 0xF0, 0, 0, 0,

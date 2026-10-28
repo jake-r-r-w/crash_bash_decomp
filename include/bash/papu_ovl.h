@@ -49,8 +49,8 @@ typedef struct PapuObj {
     /* 0x1E */ u8 pad1E[0x22 - 0x1E];
     /* 0x22 */ s16 unk22;
 } PapuObj;
-extern s32 D_8009E464;
-extern u16 D_8009E46C[];
+extern s32 CrateAstType;
+extern u16 CrateCounts[];
 typedef struct PapuTile {
     s32 unk0;
     s32 unk4;
@@ -277,7 +277,7 @@ void PapuRestartLevel(void);
 
 void UpdatePAPU(void);
 
-extern s32 D_8009E468;
+extern s32 CrateAstType2;
 extern u8 D_8009E3B4[];
 extern u8 D_8009E3DC[];
 
@@ -325,7 +325,7 @@ s32 PapuPickTarget(void);
 void PlotPapuColumn(NAS *nas);
 
 void PapuInitCrateHooks(void);
-extern u16 D_8009E25C[13];
+extern u16 PickupCounts[13];
 typedef struct {
     u8 pad0[0x14];
     u16 type;
@@ -339,7 +339,7 @@ typedef struct {
     u8 pad16[4];
     u16 status;
 } T_B4B9CFux;
-extern u16 D_8009E46C[];
+extern u16 CrateCounts[];
 extern u16 PapuCrateMixPos;
 extern u16 PapuFirstCrates;
 extern u16 PapuDropPos;

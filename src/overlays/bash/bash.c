@@ -1994,9 +1994,9 @@ void BashCrateMaster(void) {
     if (BashCrateTimer != 0) {
         BashCrateTimer--;
     } else {
-        if (D_8009E46C[0] < BashMaxCrates[HeroesInPlay - 1]) {
+        if (CrateCounts[0] < BashMaxCrates[HeroesInPlay - 1]) {
             n = BashMaxCrates[HeroesInPlay - 1];
-            left = n - D_8009E46C[0];
+            left = n - CrateCounts[0];
             r = 4;
             if ((u16)n < 4) {
                 r = n;
@@ -2016,7 +2016,7 @@ void BashCrateMaster(void) {
     if (BashRainTimer != 0) {
         BashRainTimer--;
     }
-    if (D_8009E25C[0] < 3) {
+    if (PickupCounts[0] < 3) {
         if (BashPickupTimer != 0) {
             BashPickupTimer--;
         } else {
@@ -2043,7 +2043,7 @@ void BashCrateMaster(void) {
                 }
             }
         } else if (BashRainTimer == 0) {
-            if (D_8009E25C[0] < 5) {
+            if (PickupCounts[0] < 5) {
                 BashRainCount = Random(4) + 6;
                 BashRainTimer = (Random(20) + 30) * 30;
             } else {
@@ -2054,7 +2054,7 @@ void BashCrateMaster(void) {
     if (GameMode == 1 || GameMode == 2) {
         if (BashPowerupTimer != 0) {
             BashPowerupTimer--;
-        } else if (D_8009E25C[18] + D_8009E25C[19] + D_8009E25C[20] + D_8009E25C[21] == 0) {
+        } else if (PickupCounts[18] + PickupCounts[19] + PickupCounts[20] + PickupCounts[21] == 0) {
             pu = Random(4) + 18;
             for (i = 0; i < 4; i++) {
                 if (Heroes[i].hero_pu == pu) {
@@ -2094,7 +2094,7 @@ void BashCrateMaster(void) {
     if (GameMode == 3) {
         if (BashPowerupTimer != 0) {
             BashPowerupTimer--;
-        } else if (D_8009E46C[2] == 0) {
+        } else if (CrateCounts[2] == 0) {
             s = (Random(12) << 8) - 0x580;
             BashDrainsEdges[0] = BashSpawnEdge(-s, -0x700, 1, 0);
             BashDrainsEdges[1] = BashSpawnEdge(s, 0x600, 1, 0);
@@ -2151,7 +2151,7 @@ void BashDropCrates(u16 arg0) {
             t = c;
             if (t == 6) {
                 if (!(OVLG->flags & 0x80) || OVLG->mode != 1) {
-                    if (D_8009E46C[6] >= BashMaxNitro[HeroesInPlay - 1]) {
+                    if (CrateCounts[6] >= BashMaxNitro[HeroesInPlay - 1]) {
                         t = 4;
                     }
                 }
@@ -3786,8 +3786,8 @@ void BASHSetUp(void) {
 }
 
 void BashInitCrateHooks(void) {
-    D_8009E464 = BashASTIndex(0x201);
-    D_8009E468 = BashASTIndex(0x202);
+    CrateAstType = BashASTIndex(0x201);
+    CrateAstType2 = BashASTIndex(0x202);
     HitHooks.unk4 = D_8009E3B4;
     HitHooks.unk8 = NULL;
     HitHooks.unkC = 0;

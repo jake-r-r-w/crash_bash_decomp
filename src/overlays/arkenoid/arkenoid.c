@@ -808,7 +808,7 @@ void AR_UpdateLevel(void) {
         }
     }
     {
-        u16 *p = (u16 *)&D_8009E25C;
+        u16 *p = PickupCounts;
         p += 12;
         do {
             *p = 0;
@@ -819,12 +819,12 @@ void AR_UpdateLevel(void) {
     for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
         f = (ArkenoidFuxType *)n->FUX;
         if (f != NULL && (u16)(f->type - 0x11) < 0xC) {
-            D_8009E25C.n++;
+            PickupCounts[0]++;
             k = f->type - 0x10;
-            cnt = (u16 *)&D_8009E25C;
+            cnt = PickupCounts;
             cnt[k]++;
             if ((u16)(f->type - 0x12) < 4) {
-                c2 = D_8009E46C;
+                c2 = CrateCounts;
                 c2[1]++;
             }
         }
@@ -4271,7 +4271,7 @@ void ArkCrateMaster(void) {
     if (ArkNGin != NULL) {
         gin = (u16)ArkNGin->unk1A != 0;
     }
-    if (g->mode == 0x10 && D_8009E25C.n == 0) {
+    if (g->mode == 0x10 && PickupCounts[0] == 0) {
         if (CrateMasterWordC != 0) {
             CrateMasterWordC--;
         } else {
@@ -5022,7 +5022,7 @@ void Create_ArkPickup(void)
         }
 
         eng->flags = 0;
-        D_8009E25C.n++;
+        PickupCounts[0]++;
         obj->unk24 = k;
         nas->UserInfo.user1 = s;
         nas->UserInfo.user2 = 0xB4;
@@ -5157,7 +5157,7 @@ void Plot_RepulseRing(NAS *arg0) {
     s->unk76 = t + 0x600;
     e->unk5E = 1;
     ArkHeroRad2ObjectRepel(arg0->UserInfo.user1, 0x800);
-    D_8009E25C.n += 1;
+    PickupCounts[0] += 1;
     if (arg0->UserInfo.user2 != 0) {
         arg0->UserInfo.user2 = arg0->UserInfo.user2 - 1;
         return;
@@ -5960,7 +5960,7 @@ void Init_RepulseRing(NAS *nas)
     PlaySfx(0x5D6, 0, 0, 0x1000, 0x1E00, new_var);
     PlaySfx(0x5D7, &eng->sfx, 0, 0x1000, 0x1E00, 0);
     nas->UserInfo.user2 = 0xF0;
-    D_8009E25C.n += 1;
+    PickupCounts[0] += 1;
   }
   if (nas->Failure != 0)
   {

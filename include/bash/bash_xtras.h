@@ -38,7 +38,7 @@ typedef struct {
     /* 0x32 */ s16 unk32;
 } ExtCurve;
 
-extern u16 D_8009E25C[13];
+extern u16 PickupCounts[13];
 typedef struct {
     u8 pad0[0x14];
     u16 type;

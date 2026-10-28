@@ -714,7 +714,7 @@ void PACrateFindFreeSpot(EXTengine *eng) {
         eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
         eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
         while (nas != NULL) {
-            if (nas->Type == D_8009E464) {
+            if (nas->Type == CrateAstType) {
                 other = nas->Engine;
                 if (other != NULL && other->unk10.x == eng->unk10.x && other->unk10.z == eng->unk10.z) {
                     eng->unk10.x = Random(0xC00) - 0x600;
