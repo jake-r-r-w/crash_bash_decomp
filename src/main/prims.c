@@ -1140,7 +1140,7 @@ void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     }
 }
 
-void gfx_setup_xform(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg4) {
+void gfx_setup_xform(void *arg0, MATRIX *arg1, VECTOR *arg2, u8 *arg3, GteSetup *arg4) {
     GfxXform *obj = arg0;
     MATRIX *m = arg1;
     VECTOR *pos = arg2;
@@ -1377,13 +1377,13 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
     }
 }
 
-void draw_object(subengine *arg0, u8 *arg1, s32 arg2) {
+void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
     GteSetup s;
     GfxModel *model;
     RelTable *colors;
     u16 n;
     GfxState *g;
-    u8 *p1 = arg1;
+    MATRIX *p1 = arg1;
 
     n = arg0->entity;
     if (arg0->flags & 0x02000000) {
@@ -1401,7 +1401,7 @@ void draw_object(subengine *arg0, u8 *arg1, s32 arg2) {
             if (colors != NULL) {
                 RenderState.unk84 = RenderState.unkCC;
                 RenderState.unk88 = RenderState.unk10C;
-                gfx_setup_xform(arg0, p1, p1 + 0x14, RenderState.unk28, &s);
+                gfx_setup_xform(arg0, p1, (VECTOR *)p1->t, RenderState.unk28, &s);
                 gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
                 if (s.trans != NULL) {
                     gte_SetTransVector(s.trans);
@@ -1622,7 +1622,7 @@ void draw_panel_rect(void *arg0, u32 hidden) {
 #undef p
 }
 
-void draw_text_nas(TextNAS *t, s32 arg1, s32 arg2) {
+void draw_text_nas(TextNAS *t, MATRIX *arg1, s32 arg2) {
     GteSetup s;
     s32 x;
 
@@ -1650,7 +1650,7 @@ void draw_text_nas(TextNAS *t, s32 arg1, s32 arg2) {
     }
     RenderState.unk84 = RenderState.unkCC;
     RenderState.unk88 = RenderState.unk10C;
-    gfx_setup_xform(t, (u8 *)arg1, (u8 *)arg1 + 0x14, RenderState.unk28, &s);
+    gfx_setup_xform(t, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
     gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
     if (s.trans != NULL) {
         gte_SetTransVector(s.trans);
@@ -2258,7 +2258,7 @@ void sub_use_quad_model(subengine *arg0) {
     }
 }
 
-void posdst_flash(PosDst *arg0, s32 arg1, s32 arg2) {
+void posdst_flash(PosDst *arg0, MATRIX *arg1, s32 arg2) {
     PosEntry *e;
     s32 sp10;
     s32 sp14;
@@ -2319,7 +2319,7 @@ void posdst_flash_at(PosDst *arg0, s32 arg1) {
     }
 }
 
-void draw_nas_model(NAS *nas, u8 *arg1) {
+void draw_nas_model(NAS *nas, MATRIX *arg1) {
     GteSetup s;
     u32 hidden;
 
@@ -2333,7 +2333,7 @@ void draw_nas_model(NAS *nas, u8 *arg1) {
         if (!(nas->NASid & 0x10000000)) {
             RenderState.unk84 = RenderState.unkCC;
             RenderState.unk88 = RenderState.unk10C;
-            gfx_setup_xform(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+            gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
             gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
                 gte_SetTransVector(s.trans);
@@ -2344,7 +2344,7 @@ void draw_nas_model(NAS *nas, u8 *arg1) {
     }
 }
 
-void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags) {
+void draw_nas_model_flags(NAS *nas, MATRIX *arg1, u32 flags) {
     GteSetup s;
     u32 f;
 
@@ -2358,7 +2358,7 @@ void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags) {
         if (!(nas->NASid & 0x10000000)) {
             RenderState.unk84 = RenderState.unkCC;
             RenderState.unk88 = RenderState.unk10C;
-            gfx_setup_xform(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+            gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
             gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
                 gte_SetTransVector(s.trans);
@@ -2370,7 +2370,7 @@ void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags) {
     }
 }
 
-u32 draw_nas_model_ret(NAS *nas, u8 *arg1, u32 flags) {
+u32 draw_nas_model_ret(NAS *nas, MATRIX *arg1, u32 flags) {
     GteSetup s;
 
     flags |= nas->NASid;
@@ -2382,7 +2382,7 @@ u32 draw_nas_model_ret(NAS *nas, u8 *arg1, u32 flags) {
     if (!(nas->NASid & 0x10000000)) {
         RenderState.unk84 = RenderState.unkCC;
         RenderState.unk88 = RenderState.unk10C;
-        gfx_setup_xform(nas, arg1, arg1 + 0x14, RenderState.unk28, &s);
+        gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
         gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
         if (s.trans != NULL) {
             gte_SetTransVector(s.trans);

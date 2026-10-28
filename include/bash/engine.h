@@ -77,7 +77,7 @@ extern u16 Clock_last_ping;
 extern s16 CompletionShown;
 extern s32 CompletionPos[];
 extern s32 HeroesOutTimer;
-void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags);
+void draw_nas_model_flags(NAS *nas, MATRIX *arg1, u32 flags);
 typedef struct EngineBox {
     s32 unk0;
     u8 pad4[0x50];

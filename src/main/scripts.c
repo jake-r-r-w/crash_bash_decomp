@@ -915,7 +915,7 @@ void kill_nas_script(subengine *sub) {
     }
 }
 
-void plot_script_nas(subengine *sub, u8 *arg1) {
+void plot_script_nas(subengine *sub, MATRIX *arg1) {
     struct { s32 a; s32 b; } saved;
     GteSetup s;
     script_control_info *ci;
@@ -927,7 +927,7 @@ void plot_script_nas(subengine *sub, u8 *arg1) {
             return;
         }
         saved = *(typeof(saved) *)RenderState.unk28;
-        gfx_setup_xform(sub, arg1, arg1 + 0x14, RenderState.unk28, &s);
+        gfx_setup_xform(sub, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
         render_script(ci, &s);
         *(typeof(saved) *)RenderState.unk28 = saved;
     }
@@ -1311,7 +1311,7 @@ void init_camera_thread(s32 def, script_control_info *ci, s32 num) {
 }
 
 void render_model_thread(script_thread_handler *th, s32 *arg1) {
-    draw_object((u8 *)&th->type.anim.sub, (u8 *)*arg1, th->type.anim.sub.flags);
+    draw_object((u8 *)&th->type.anim.sub, (MATRIX *)*arg1, th->type.anim.sub.flags);
 }
 
 s32 *find_range_24(u8 *arg0, s32 arg1) {
