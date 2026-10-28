@@ -4147,7 +4147,7 @@ void InitParticleEffect(void) {
 }
 
 void InitSmokePoof(NAS *nas) {
-    ScriptCursorFirst(nas, &D_8009E1E8);
+    ScriptCursorFirst(nas, &SmokePoofInit);
     nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
     nas->Engine->sub->flags |= 0x40000041;
     nas->UserInfo.user1 = 0;
@@ -4520,7 +4520,7 @@ void Plot_HealthPU(NAS *nas) {
         mot = FindExtension(nas, 0x800);
         if (mot != NULL && GravitateNas(nas) != 0) {
             if (obj->status == 4) {
-                PlaySfx(D_8009E214[Random(8)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                PlaySfx(HealthPickupSfx[Random(8)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
             obj->status = 1;
             mot->Ydec = 8;
@@ -4544,7 +4544,7 @@ plot:
             if (HeroesAllOut != 0) {
                 n = 0;
             }
-            Heroes[obj->player].hero_health += D_8009E224[n];
+            Heroes[obj->player].hero_health += HealthPickupAmounts[n];
             if (Heroes[obj->player].hero_health > 20) {
                 Heroes[obj->player].hero_health = 20;
             }
@@ -4564,7 +4564,7 @@ void InitBigPoof(NAS *nas) {
     if (eng != NULL) {
         eng->sub->u6C.dbase = &HeroModelBank[DB_Powerups];
         eng->sub->entity = 0;
-        ScriptCursorFirst(nas, &D_8009E250);
+        ScriptCursorFirst(nas, &BigPoofInit);
         eng->flags |= 0x21;
     }
     if (nas->Failure != 0) {
@@ -6288,23 +6288,23 @@ s16 HeroActLoser = 0;
 D_8009E0E8_t AngelSparkles[3][4] = {0};
 s16 D_8009E190[2] = {0};
 s32 ScriptFxOn = 1;
-s32 D_8009E198[17] = {
+s32 SmokePoofScript[17] = {
     0x201B, 0x1201B, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021, 0x2022, 0x2023, 0x2024, 0x2025,
     0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x8003,
 };
-s32 D_8009E1DC[3] = { (s32)&D_8009E198, 0, 0 };
-ScriptInit D_8009E1E8 = { 0, (void *)&D_8009E1DC, 0x402 };
+s32 SmokePoofScripts[3] = { (s32)&SmokePoofScript, 0, 0 };
+ScriptInit SmokePoofInit = { 0, (void *)&SmokePoofScripts, 0x402 };
 s32 PolarTiltX = 0;
 s32 PolarTiltZ = 0;
 s32 D_8009E1FC = 0;
 FxDef WeatherFxDef = { 0x100, 0x2800, 0x1800, PlotSparks, PlotFallParticles };
-u16 D_8009E214[8] = { 0x1C5, 0x1C6, 0x1C7, 0x1C8, 0x1C9, 0x1CA, 0x1CB, 0x1CC };
-u16 D_8009E224[4] = { 1, 1, 2, 2 };
-s32 D_8009E22C[9] = {
+u16 HealthPickupSfx[8] = { 0x1C5, 0x1C6, 0x1C7, 0x1C8, 0x1C9, 0x1CA, 0x1CB, 0x1CC };
+u16 HealthPickupAmounts[4] = { 1, 1, 2, 2 };
+s32 BigPoofScript[9] = {
     0x20260000, 0x20282027, 0x202A2029, 0x202C202B, 0x202E202D, 0x2030202F, 0x20322031,
     0x20342033, (s32)0x80042035,
 };
-ScriptInit D_8009E250 = { (s32)&D_8009E22C, 0, 0x401 };
+ScriptInit BigPoofInit = { (s32)&BigPoofScript, 0, 0x401 };
 s32 PickupCounts[15] = {0};
 s32 D_8009E298 = 0;
 s32 D_8009E29C = 0;

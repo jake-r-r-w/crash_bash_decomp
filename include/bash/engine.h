@@ -119,8 +119,8 @@ extern s32 D_800ADBC4;
 extern process_info LevelLoadProcess;
 extern s32 GamePause;
 extern u8 PauseMenuPanel[];
-extern ScriptInit D_8009E250;
-extern ScriptInit D_8009E1E8;
+extern ScriptInit BigPoofInit;
+extern ScriptInit SmokePoofInit;
 extern GfxViewport HudViewport;
 extern GfxViewport D_800A0BCC;
 extern GfxCamera HudCamera;
@@ -185,7 +185,7 @@ extern s32 SceneVabSlot[]; /* arrays: their stores must alias struct loads (gcc 
 extern s32 D_800A0D24[];
 extern s32 D_800A0D28;
 extern s32 SceneStarting;
-extern u8 D_8009E498[];
+extern u8 IntroViewport[];
 /* GameInfo as seen by InitRetry. */
 typedef struct EngineGameView {
     /* 0x00 */ u8 unk0[4];

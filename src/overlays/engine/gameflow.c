@@ -163,7 +163,7 @@ void QuitIntro(void) {
 }
 
 void RenderIntro(void) {
-    gfx_set_viewport(D_8009E498, MainCamera);
+    gfx_set_viewport(IntroViewport, MainCamera);
     if (IntroDbase != 0) {
         DrawSceneMarks();
     }
@@ -1902,7 +1902,7 @@ s32 CrateAstType = 0;
 s32 CrateAstType2 = 0;
 u16 CrateCounts[14] = {0};
 HitCallbacks HitHooks = {0};
-u8 D_8009E498[40] = {
+u8 IntroViewport[40] = {
     0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0x40, 1, 0, 0, 0xF0, 0, 0, 0,
     0, 2, 0, 0, 0xFF, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
@@ -1914,7 +1914,8 @@ IntroStep IntroSteps[4] = {
 };
 Blk32 IntroScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 IntroScriptPos = {0};
-s32 IntroProcess[6] = { (s32)InitIntro, (s32)UpdateIntro, (s32)RenderIntro, (s32)QuitIntro, 0, 0 };
+process_info IntroProcess = { InitIntro, UpdateIntro, RenderIntro, QuitIntro, 0 };
+s32 D_8009E5A0 = 0;
 s32 IntroStepIndex = 0;
 s32 IntroStepTimer = 0;
 script_handler *IntroScript = 0;

@@ -220,8 +220,8 @@ s32 csqrt(s32 x);
 
 
 
-extern u16 D_8009E214[];
-extern u16 D_8009E224[];
+extern u16 HealthPickupSfx[];
+extern u16 HealthPickupAmounts[];
 
 
 

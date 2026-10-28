@@ -1085,28 +1085,28 @@ void OptionsRender(void) {
 }
 
 void RunGameQuit(void) {
-    if (D_8009E598 != NULL) {
-        D_8009E598();
+    if (IntroProcess.quit != NULL) {
+        IntroProcess.quit();
     }
 }
 
 void RunGameRender(void) {
-    if (D_8009E594 != NULL) {
-        D_8009E594();
+    if (IntroProcess.render != NULL) {
+        IntroProcess.render();
     }
 }
 
 void RunGameUpdate(void) {
-    if (D_8009E590 != NULL) {
-        D_8009E590();
+    if (IntroProcess.update != NULL) {
+        IntroProcess.update();
     }
 }
 
 void RunGameInit(void) {
     void LoadScreenImage();
     init_scripts(0x20, 0x20);
-    if (IntroProcess != NULL) {
-        IntroProcess();
+    if (IntroProcess.init != NULL) {
+        IntroProcess.init();
     }
     sound_init();
     music_load_track(GameMode);
