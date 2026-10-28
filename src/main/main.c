@@ -996,70 +996,72 @@ void *mal_alloc_owned_low(s32 arg0, void **arg1, s32 arg2, s32 arg3) {
 }
 
 u8 *mal_alloc(s32 arg0, _mal_area *arg1) {
-    u16 *var_a0_2;
-    u8 *temp_v1;
-    u8 *var_a0;
-    u8 *var_v1;
+    mal *next;
+    mal *low;
+    mal *b;
+    u8 *data;
 
     mal_compact(arg1);
-    var_v1 = mal_take_high(arg0, arg1);
-    var_a0 = var_v1 + 0x18;
-    if (var_v1 == NULL) {
-        temp_v1 = (*(s32*)((u8*)(arg1) + 12));
-        var_a0_2 = NULL;
-        if ((temp_v1 != NULL) && ((var_a0_2 = temp_v1 + (((*(s32*)((u8*)(temp_v1) + 8)) * 4) + 0x18), ((*(s32*)((u8*)(var_a0_2) + 4)) == -1)) || ((*(s32*)((u8*)(var_a0_2) + 8)) == 0))) {
-            var_a0_2 = NULL;
+    b = mal_take_high(arg0, arg1);
+    data = (u8 *)(b + 1);
+    if (b == NULL) {
+        low = arg1->lowest;
+        next = NULL;
+        if (low != NULL && ((next = (mal *)((u8 *)low + (low->size * 4 + 0x18))),
+                            next->owner == (void **)-1 || next->size == 0)) {
+            next = NULL;
         }
-        if ((var_a0_2 != NULL) && (*var_a0_2 & 2)) {
-            var_a0_2 = NULL;
+        if (next != NULL && (next->unk0 & 2)) {
+            next = NULL;
         }
-        mal_compact_from(var_a0_2, arg1);
-        var_v1 = mal_take_high(arg0, arg1);
-        var_a0 = var_v1 + 0x18;
-        if (var_v1 == NULL) {
+        mal_compact_from(next, arg1);
+        b = mal_take_high(arg0, arg1);
+        data = (u8 *)(b + 1);
+        if (b == NULL) {
             mal_print_free();
-            var_a0 = NULL;
+            data = NULL;
         } else {
-            goto block_10;
+            goto set;
         }
     } else {
-block_10:
-        (*(s32*)((u8*)(var_v1) + 4)) = -1;
-        (*(u16*)((u8*)(var_v1) + 0)) = 0;
+set:
+        b->owner = (void **)-1;
+        b->unk0 = 0;
     }
-    return var_a0;
+    return data;
 }
 
-u8 *mal_alloc_nocompact(s32 arg0, u8 *arg1) {
-    u16 *var_a0_2;
-    u8 *temp_v1;
-    u8 *var_a0;
-    u8 *var_v0;
+u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1) {
+    mal *next;
+    mal *low;
+    mal *b;
+    u8 *data;
 
-    var_a0 = mal_take_high();
-    var_v0 = var_a0 + 0x18;
-    if (var_a0 == NULL) {
-        temp_v1 = (*(s32*)((u8*)(arg1) + 12));
-        var_a0_2 = NULL;
-        if ((temp_v1 != NULL) && ((var_a0_2 = temp_v1 + (((*(s32*)((u8*)(temp_v1) + 8)) * 4) + 0x18), ((*(s32*)((u8*)(var_a0_2) + 4)) == -1)) || ((*(s32*)((u8*)(var_a0_2) + 8)) == 0))) {
-            var_a0_2 = NULL;
+    b = mal_take_high(); /* arg0 and arg1 pass through */
+    data = (u8 *)(b + 1);
+    if (b == NULL) {
+        low = arg1->lowest;
+        next = NULL;
+        if (low != NULL && ((next = (mal *)((u8 *)low + (low->size * 4 + 0x18))),
+                            next->owner == (void **)-1 || next->size == 0)) {
+            next = NULL;
         }
-        if ((var_a0_2 != NULL) && (*var_a0_2 & 2)) {
-            var_a0_2 = NULL;
+        if (next != NULL && (next->unk0 & 2)) {
+            next = NULL;
         }
-        mal_compact_from(var_a0_2, arg1);
-        var_a0 = mal_take_high(arg0, arg1);
-        var_v0 = var_a0 + 0x18;
-        if (var_a0 == NULL) {
+        mal_compact_from(next, arg1);
+        b = mal_take_high(arg0, arg1);
+        data = (u8 *)(b + 1);
+        if (b == NULL) {
             mal_print_free();
             return NULL;
         }
-        goto block_10;
+        goto set;
     }
-block_10:
-    (*(s32*)((u8*)(var_a0) + 4)) = -1;
-    (*(u16*)((u8*)(var_a0) + 0)) = 0;
-    return var_v0;
+set:
+    b->owner = (void **)-1;
+    b->unk0 = 0;
+    return data;
 }
 
 void *mal_split_ptr(void *ptr, s32 bytes) {

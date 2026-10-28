@@ -961,7 +961,7 @@ void PlotPapuBoss(NAS *nas) {
         if (frame == 0xC) {
             o = CreateNAS(eng->unk10.x, eng->unk10.y - 0x800, eng->unk10.z, 0x1203, 0x11);
             if (o != NULL) {
-                AppendExtension((u8 *)nas, (u8 *)o);
+                AppendExtension((NAS *)nas, (NAS *)o);
             }
         }
         break;

@@ -2249,67 +2249,67 @@ void ReAdoptChild(NAS *list, NAS *nas) {
 }
 
 void RemoveFamily(NAS *arg0) {
-    u8 *temp_v1;
-    u8 *temp_v1_2;
+    NAS *prev;
+    NAS *next;
 
-    temp_v1 = (*(s32*)((u8*)(arg0) + 20));
-    if (temp_v1 != NULL) {
-        (*(s32*)((u8*)(temp_v1) + 24)) = (u8 *) (*(s32*)((u8*)(arg0) + 24));
+    prev = arg0->Family.Parent;
+    if (prev != NULL) {
+        prev->Family.Child = arg0->Family.Child;
     }
-    temp_v1_2 = (*(s32*)((u8*)(arg0) + 24));
-    if (temp_v1_2 != NULL) {
-        (*(s32*)((u8*)(temp_v1_2) + 20)) = (u8 *) (*(s32*)((u8*)(arg0) + 20));
+    next = arg0->Family.Child;
+    if (next != NULL) {
+        next->Family.Parent = arg0->Family.Parent;
     }
-    (*(s32*)((u8*)(arg0) + 20)) = NULL;
-    (*(s32*)((u8*)(arg0) + 24)) = NULL;
+    arg0->Family.Parent = NULL;
+    arg0->Family.Child = NULL;
 }
 
-void AppendExtension(u8 *arg0, u8 *arg1) {
-    u8 *var_a0;
+void AppendExtension(NAS *arg0, NAS *arg1) {
+    NAS *last;
 
-    var_a0 = arg0;
-    if ((*(s32*)((u8*)(var_a0) + 24)) != 0) {
+    last = arg0;
+    if (last->Family.Child != NULL) {
         do {
-            var_a0 = (*(s32*)((u8*)(var_a0) + 24));
-        } while ((*(s32*)((u8*)(var_a0) + 24)) != 0);
+            last = last->Family.Child;
+        } while (last->Family.Child != NULL);
     }
-    (*(s32*)((u8*)(var_a0) + 24)) = arg1;
-    (*(s32*)((u8*)(arg1) + 20)) = var_a0;
+    last->Family.Child = arg1;
+    arg1->Family.Parent = last;
 }
 
 void InsertNasTag(NAS *arg0, NAS *arg1) {
-    u8 *temp_v0;
+    NAS *before;
 
-    temp_v0 = (*(s32*)((u8*)(arg1) + 12));
-    if (temp_v0 != NULL) {
-        (*(s32*)((u8*)(temp_v0) + 16)) = arg0;
-        (*(s32*)((u8*)(arg0) + 12)) = temp_v0;
-        (*(s32*)((u8*)(arg0) + 16)) = arg1;
-        (*(s32*)((u8*)(arg1) + 12)) = arg0;
+    before = arg1->Tag.Parent;
+    if (before != NULL) {
+        before->Tag.Child = arg0;
+        arg0->Tag.Parent = before;
+        arg0->Tag.Child = arg1;
+        arg1->Tag.Parent = arg0;
     }
 }
 
-void MoveChildren(u8 *arg0, u8 *arg1) {
-    u8 *temp_a2;
-    u8 *temp_v1;
-    u8 *temp_v1_2;
+void MoveChildren(NAS *arg0, NAS *arg1) {
+    NAS *before;
+    NAS *prev;
+    NAS *next;
 
-    temp_a2 = (*(s32*)((u8*)(arg1) + 12));
-    if (temp_a2 != NULL) {
-        temp_v1 = (*(s32*)((u8*)(arg0) + 12));
-        if (temp_v1 != NULL) {
-            (*(s32*)((u8*)(temp_v1) + 16)) = (u8 *) (*(s32*)((u8*)(arg0) + 16));
-            temp_v1_2 = (*(s32*)((u8*)(arg0) + 16));
-            if (temp_v1_2 != NULL) {
-                (*(s32*)((u8*)(temp_v1_2) + 12)) = (u8 *) (*(s32*)((u8*)(arg0) + 12));
+    before = arg1->Tag.Parent;
+    if (before != NULL) {
+        prev = arg0->Tag.Parent;
+        if (prev != NULL) {
+            prev->Tag.Child = arg0->Tag.Child;
+            next = arg0->Tag.Child;
+            if (next != NULL) {
+                next->Tag.Parent = arg0->Tag.Parent;
             } else {
-                NASActiveTail = (*(s32*)((u8*)(arg0) + 12));
+                NASActiveTail = arg0->Tag.Parent;
             }
         }
-        (*(s32*)((u8*)(temp_a2) + 16)) = arg0;
-        (*(s32*)((u8*)(arg0) + 12)) = temp_a2;
-        (*(s32*)((u8*)(arg0) + 16)) = arg1;
-        (*(s32*)((u8*)(arg1) + 12)) = arg0;
+        before->Tag.Child = arg0;
+        arg0->Tag.Parent = before;
+        arg0->Tag.Child = arg1;
+        arg1->Tag.Parent = arg0;
     }
 }
 

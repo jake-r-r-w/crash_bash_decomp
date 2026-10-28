@@ -2708,7 +2708,7 @@ void InitTumbler(NAS *nas) {
         }
         puff = BashSpawnPuff(&MapPoints[8].pos);
         if (puff != NULL) {
-            AppendExtension((u8 *)nas, (u8 *)puff);
+            AppendExtension((NAS *)nas, (NAS *)puff);
         }
         obj = (TumblerObj *)AddObject(nas);
         if (obj != NULL) {

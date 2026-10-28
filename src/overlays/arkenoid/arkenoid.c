@@ -5036,7 +5036,7 @@ void Create_ArkPickup(void)
   tgt = SpawnModelFxOnce(1, (s32 *) (&pos), *((s32 *) MapScene));
   if (tgt != 0)
   {
-    AppendExtension((u8 *) nas, (u8 *) tgt);
+    AppendExtension((NAS *)nas, (NAS *)tgt);
   }
   if (nas->Failure != 0)
   {
