@@ -3083,8 +3083,8 @@ void vram_release(FreeNode *n) {
 
     a = n->fC;
     if (a == NULL) {
-        n->next = D_80063BB4;
-        D_80063BB4 = n;
+        n->next = ClutLargeList;
+        ClutLargeList = n;
         return;
     }
     n->next = a->f10;
@@ -3134,7 +3134,7 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     s32 i;
 
     D_800643F4 = mal_alloc(nbuf * 0x18, &MainHeap);
-    D_80063BB4 = pool;
+    ClutLargeList = pool;
     n = pool;
     i = npool - 2;
     while (i != -1) {
@@ -3155,7 +3155,7 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     }
     b->next = NULL;
     for (i = 11; i >= 0; i--) {
-        *(s32 *)&D_80063B1C[i] = 0;
+        *(s32 *)&VramSlots[i] = 0;
     }
     while ((s16)areas->hdr.f0 != -1) {
         b = (BufNode *)FreeBufNodes;
@@ -3213,9 +3213,9 @@ dec:
 void *clut_alloc_large(void) {
     u8 *cur;
 
-    cur = D_80063BB4;
+    cur = ClutLargeList;
     if (cur != NULL) {
-        D_80063BB4 = *(void **)(cur + 4);
+        ClutLargeList = *(void **)(cur + 4);
     }
     return cur;
 }
@@ -3496,11 +3496,11 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         d->fA = s->w2;
         if (d->flag == 0) {
             d->f8 = s->w0 << 2;
-            d->slot = &D_80063B1C[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
+            d->slot = &VramSlots[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
             d->f10 = (*(u8 *)s << 2) - 1;
         } else {
             d->f8 = s->w0 << 1;
-            d->slot = &D_80063B1C[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
+            d->slot = &VramSlots[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
             d->f10 = (*(u8 *)s << 1) - 1;
         }
         d->f11 = *(u8 *)((u8 *)s + 2) - 1;
@@ -4035,11 +4035,11 @@ void texture_init_entry(TexSrc2A84C *s, TexDst2A84C *d, s32 n) {
     d->fA = s->w2;
     if (d->flag == 0) {
         d->f8 = s->w0 << 2;
-        d->slot = &D_80063B1C[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
+        d->slot = &VramSlots[vram_slot_class(s->w0 << 2, s->w2, 0x10)];
         d->f10 = (*(u8 *)s << 2) - 1;
     } else {
         d->f8 = s->w0 << 1;
-        d->slot = &D_80063B1C[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
+        d->slot = &VramSlots[vram_slot_class(s->w0 << 1, s->w2, 0x100)];
         d->f10 = (*(u8 *)s << 1) - 1;
     }
     d->f11 = *(u8 *)((u8 *)s + 2) - 1;
@@ -4248,7 +4248,7 @@ u32 D_80063AF8[8] = {
     0xFFFF0000,
 };
 FreeNode *FreeBufNodes = 0;
-Slot12 D_80063B1C[3] = {
+Slot12 VramSlots[3] = {
     { { 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 } }, { { 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0 } },
     { { 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0 } },
 };
@@ -4259,7 +4259,7 @@ s32 D_80063B88[6] = { 0, 0, 0x80, 0, 0x40, 0 };
 u8 D_80063BA0[12] = { 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0xFF, 0xFF, 0, 0 };
 FreeNode *ClutFreeSmall = 0;
 FreeNode *ClutUsedSmall = 0;
-void *D_80063BB4 = 0;
+void *ClutLargeList = 0;
 u8 VramNodePool[2096] = {
     0, 3, 0x60, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0x61, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0x62, 1, 0, 0, 0, 0, 0,

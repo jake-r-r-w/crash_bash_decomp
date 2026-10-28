@@ -24,7 +24,7 @@ void prims_init(s32 *cfg) {
     D_8005685C = mal_alloc((u32)(cnt * 0x2C0) >> 3, &MainHeap);
     D_80056840 = mal_alloc((u32)(cfg[2] * 0x2A0) >> 3, &MainHeap);
     q = mal_alloc((u32)(cfg[1] << 6) >> 3, &MainHeap);
-    D_80056854 = q;
+    PrimLinkPool = q;
     p = D_8005685C;
     next = D_80056840;
     PrimNodeFree = (s32 *)next;
@@ -52,7 +52,7 @@ void prims_init(s32 *cfg) {
     *(u8 **)q = NULL;
     end = -1;
     n = cfg[0] + end;
-    D_80056858 = (s32 *)D_80056854;
+    PrimLinkFree = (s32 *)PrimLinkPool;
     for (;;) {
         u8 *np;
 
@@ -513,10 +513,10 @@ FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *fa
             faces_write_colors(faces, (FacePrim *)node[1]);
         }
     } else {
-        if (mal_first_free(*(u16 *)((u8 *)faces + 8) * 10, MainHeap.free) == NULL || (node = D_80056858) == NULL) {
+        if (mal_first_free(*(u16 *)((u8 *)faces + 8) * 10, MainHeap.free) == NULL || (node = PrimLinkFree) == NULL) {
             return NULL;
         }
-        D_80056858 = (s32 *)*node;
+        PrimLinkFree = (s32 *)*node;
         if (list->f4 == 0) {
             list->f8 = (s32 **)node;
         }
@@ -779,8 +779,8 @@ void primnodes_free(s32 *arg0) {
             var_s0 = (*(s32*)((u8*)(var_a0) + 0));
         } while (var_s0 != NULL);
     }
-    temp_v1 = D_80056858;
-    D_80056858 = arg0;
+    temp_v1 = PrimLinkFree;
+    PrimLinkFree = arg0;
     *var_a0 = temp_v1;
 }
 
@@ -3328,8 +3328,8 @@ s32 *D_8005683C = 0;
 u8 *D_80056840 = 0;
 NodePool PrimPool = {0};
 s32 *PrimNodeFree = 0;
-u8 *D_80056854 = 0;
-s32 *D_80056858 = 0;
+u8 *PrimLinkPool = 0;
+s32 *PrimLinkFree = 0;
 u8 *D_8005685C = 0;
 s32 *PrimSetFree = 0;
 void *PrimSetList = 0;

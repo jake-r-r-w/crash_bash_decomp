@@ -1126,7 +1126,7 @@ void UpdateSaveMenu(void) {
             if (HubSaveMenuHooks.unkC != NULL) {
                 HubSaveMenuHooks.unkC();
             }
-            PlaceEngineSlot(1, &D_8009EEB0);
+            PlaceEngineSlot(1, &CardPromptPanel);
         } else {
             if (HubSaveMenuHooks.unk4 != NULL) {
                 HubSaveMenuHooks.unk4();
@@ -1154,7 +1154,7 @@ void UpdateSaveMenu(void) {
                 if (HubSaveMenuHooks.unkC != NULL) {
                     HubSaveMenuHooks.unkC();
                 }
-                PlaceEngineSlot(1, &D_8009EEB0);
+                PlaceEngineSlot(1, &CardPromptPanel);
                 break;
             }
             case 2:
@@ -1257,9 +1257,9 @@ void UpdateCardSlots(void) {
 
     if (CardStatus & 2) {
         u8 *c = CardBuffer;
-        if (*(s32 *)(c + 0x85C) != D_8009F4BC) {
+        if (*(s32 *)(c + 0x85C) != CardBufferStamp) {
             RefreshCardSlots();
-            D_8009F4BC = *(s32 *)(c + 0x85C);
+            CardBufferStamp = *(s32 *)(c + 0x85C);
         }
     }
     pad = Pads;
@@ -1343,7 +1343,7 @@ void InitSaveMenu(void) {
     subengine *sub;
 
     CardSlotIndex = 0;
-    D_8009F4BC = 0x4D2;
+    CardBufferStamp = 0x4D2;
     ShowSaveScreen();
     FontPage = 0;
     SaveMenuStep = 0;
@@ -1357,7 +1357,7 @@ void InitSaveMenu(void) {
         sub->unk74 = 0x201F;
         sub->unk6C = &HeroModelBank[DB_AdventureItems];
     }
-    PlaceEngineSlot(1, &D_8009EEB0);
+    PlaceEngineSlot(1, &CardPromptPanel);
     D_8009F494 = 0;
     SaveMenuState = 0;
     SaveMenuStep = 1;
@@ -1367,7 +1367,7 @@ void InitCardPromptMenu(void) {
     subengine *sub;
 
     CardSlotIndex = 0;
-    D_8009F4BC = 0x4D2;
+    CardBufferStamp = 0x4D2;
     ShowSaveScreen();
     FontPage = 0;
     SaveMenuStep = 0;
@@ -1381,7 +1381,7 @@ void InitCardPromptMenu(void) {
         sub->unk74 = 0x201F;
         sub->unk6C = &HeroModelBank[DB_AdventureItems];
     }
-    PlaceEngineSlot(1, &D_8009EEB0);
+    PlaceEngineSlot(1, &CardPromptPanel);
     CardPromptStep = 0;
     SaveMenuStep = 2;
 }
@@ -1474,7 +1474,7 @@ void InitCardMenu(void) {
     subengine *sub;
 
     CardSlotIndex = 0;
-    D_8009F4BC = 0x4D2;
+    CardBufferStamp = 0x4D2;
     ShowSaveScreen();
     FontPage = 0;
     SaveMenuStep = 0;
@@ -1488,7 +1488,7 @@ void InitCardMenu(void) {
         sub->unk74 = 0x201F;
         sub->unk6C = &HeroModelBank[DB_AdventureItems];
     }
-    PlaceEngineSlot(1, &D_8009EEB0);
+    PlaceEngineSlot(1, &CardPromptPanel);
 }
 
 s32 GameExtra105(u8 *arg0) {
@@ -2079,7 +2079,7 @@ s32 WarpRooms[10][5] = {
     { 0x27, (s32)&D_8009EB9C, 0, 0, 0 },
 };
 HubRing HubHeroRing = {0};
-s32 D_8009EEB0 = 3;
+s32 CardPromptPanel = 3;
 s32 D_8009EEB4[44] = {
     0x328000, 0, 0, 0, 0, 0, 0, 0, 3, 0x788000, 0, 0, 0, 0, 0, 0, 0, 4, 0x1B88000, 0x19A0072,
     0, 0, 0, 0, 0, 0, 4, 0x2808000, 0x5A0028, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -2146,7 +2146,7 @@ s32 D_8009F494 = 0;
 /* the results screen's number texts, one buffer: +0, +3, +6, +9 three digits each, +12 the last */
 char CardStatsText[16] = {0};
 char PercentText[4][5] = {0};
-s32 D_8009F4BC = 0;
+s32 CardBufferStamp = 0;
 GfxCamera SaveCamera = {0};
 GfxCamera SaveBackCamera = {0};
 s32 SaveMenuStep = 0;

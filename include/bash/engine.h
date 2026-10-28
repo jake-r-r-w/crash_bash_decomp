@@ -46,10 +46,10 @@ void ClearLevelNas(void);
 extern s32 D_8009EF64;
 extern s32 D_8009F008;
 extern s32 CardSlotIndex;
-extern s32 D_8009F4BC;
+extern s32 CardBufferStamp;
 extern s32 D_8009F494;
 extern s32 D_8009F40C;
-extern s32 D_8009EEB0;
+extern s32 CardPromptPanel;
 extern subengine D_800A13F4[][32]; /* 32 subengines per EnginePool slot */
 
 typedef struct { u16 a, b; } U16Pair;
@@ -164,8 +164,8 @@ extern s32 SceneStep;
 extern GfxViewport MainViewport;
 extern GfxCamera MainGfxCamera;
 extern process_info SaveScreenProcess;
-extern void *D_80098718;
-extern u16 D_8009871C;
+extern void *AmbienceDef;
+extern u16 AmbienceTimer;
 extern process_info ScriptSceneProcess;
 extern s32 D_800A0C0C;
 extern s32 SceneOldDbase;
@@ -323,7 +323,7 @@ typedef struct {
     /* 0x3C */ u16 unk3C;
 } EngineBootView;
 extern u8 *D_8005AA20;
-extern u8 *D_8005AA44;
+extern u8 *HeroNasList;
 extern s32 PauseMenuSets;
 extern s32 D_800986A4[];
 extern s32 D_8005A61C;

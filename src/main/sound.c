@@ -112,7 +112,7 @@ void vab_loaded(void *data, sfx_machine_bank_info *slot) {
 
     SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
     if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
-        SfxBankLoading->id = D_800654C8;
+        SfxBankLoading->id = VabHeadId;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         vab_map_sfx(SfxBankLoading->id, 0);
         VabLoading = NULL;
@@ -124,7 +124,7 @@ void vab_loaded(void *data, sfx_machine_bank_info *slot) {
     body = (u8 *)data + ((VabFile *)data)->body;
     id = SsVabOpenHead(slot->head, -1);
     SsVabTransBody(body, id);
-    D_800654C8 = id;
+    VabHeadId = id;
     VabLoading = data;
     SfxBankLoading = slot;
 }
@@ -134,7 +134,7 @@ void vab_transfer_poll(void) {
 
     if (VabLoading != NULL || SfxBankLoading != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
-            SfxBankLoading->id = D_800654C8;
+            SfxBankLoading->id = VabHeadId;
             mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
             vab_map_sfx(SfxBankLoading->id, 0);
             VabLoading = NULL;
@@ -338,7 +338,7 @@ void vab_transfer_wait(void) {
     SpuIsTransferCompleted(1);
     if (VabLoading != NULL || SfxBankLoading != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
-            SfxBankLoading->id = D_800654C8;
+            SfxBankLoading->id = VabHeadId;
             mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
             vab_map_sfx(SfxBankLoading->id, 0);
             VabLoading = NULL;
@@ -349,7 +349,7 @@ void vab_transfer_wait(void) {
 
 void vab_transfer_check(void) {
     if ((VabLoading != NULL || SfxBankLoading != NULL) && SpuIsTransferCompleted(0) == 1) {
-        SfxBankLoading->id = D_800654C8;
+        SfxBankLoading->id = VabHeadId;
         mal_trim_front(VabLoading, VabLoading->head, &MainHeap);
         vab_map_sfx(SfxBankLoading->id, 0);
         VabLoading = NULL;
@@ -453,6 +453,6 @@ s32 SfxVoiceMask = 0;
 s32 SfxBankCount = 0;
 VabFile *VabLoading = 0;
 sfx_machine_bank_info *SfxBankLoading = 0;
-s32 D_800654C8 = 0;
+s32 VabHeadId = 0;
 char D_800654CC[176] = {0};
 music_midi CurrentMusic = {0};

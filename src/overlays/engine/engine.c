@@ -26,7 +26,7 @@ void InitialiseNasSystem(void) {
     NasUpdateList = (EngObj **)mal_alloc(NasPoolUsed * 4, &MainHeap);
     *NasUpdateList = NULL;
     p = mal_alloc(NasPoolUsed * 4, &MainHeap);
-    D_8005AA44 = p;
+    HeroNasList = p;
     *(s32 *)p = 0;
     InitSysFontModel();
     PauseMenuSets = D_800986A4[v->unk2C];
@@ -119,15 +119,15 @@ void UpdateAllNas(void) {
 
     GlobalNAStatus = 1;
     *NasUpdateList = NULL;
-    *(s32 *)D_8005AA44 = 0;
+    *(s32 *)HeroNasList = 0;
     i = 0;
     if (D_8005AA7C != NULL) {
         D_8005AA7C();
     }
     do {
         if (Heroes[i].hero->Class & 0x1000) {
-            n = ++*(s32 *)D_8005AA44;
-            ((NAS **)D_8005AA44)[n] = Heroes[i].hero;
+            n = ++*(s32 *)HeroNasList;
+            ((NAS **)HeroNasList)[n] = Heroes[i].hero;
         }
         i++;
     } while (i < 4);
@@ -143,8 +143,8 @@ void UpdateAllNas(void) {
                 NasUpdateList[n] = (EngObj *)nas;
             }
             if (cls & 0x1000) {
-                n = ++*(s32 *)D_8005AA44;
-                ((NAS **)D_8005AA44)[n] = nas;
+                n = ++*(s32 *)HeroNasList;
+                ((NAS **)HeroNasList)[n] = nas;
             }
         }
     }
@@ -782,19 +782,19 @@ void PreInitLevel(void) {
 }
 
 void DoAmbience(void) {
-    if (D_8009871C != 0) {
-        D_8009871C = D_8009871C - 1;
+    if (AmbienceTimer != 0) {
+        AmbienceTimer = AmbienceTimer - 1;
     } else {
-        u8 *p = D_80098718;
+        u8 *p = AmbienceDef;
         p += Random(8) * 2;
         PlaySfx(*(u16*)(p + 8), 0, 0, 0x1000, 0x1E00, 0);
-        D_8009871C = (*(u16*)((u8*)D_80098718) + Random(*(u16*)((u8*)D_80098718 + 2) - *(u16*)((u8*)D_80098718))) * 30;
+        AmbienceTimer = (*(u16*)((u8*)AmbienceDef) + Random(*(u16*)((u8*)AmbienceDef + 2) - *(u16*)((u8*)AmbienceDef))) * 30;
     }
 }
 
 void InitAmbience(Ambient_data *arg0) {
-    D_80098718 = arg0;
-    D_8009871C = 0;
+    AmbienceDef = arg0;
+    AmbienceTimer = 0;
     PlaySfx((*(u16*)((u8*)(arg0) + 4)), 0, 0, 0x1000, 0x1E00, 0);
 }
 
@@ -904,7 +904,7 @@ u16 D_800986BC[32] = {
     6, 1,
 };
 u16 D_800986FC[14] = { 0, 0x13, 0xA, 0xE, 6, 0x17, 0x17, 0x17, 0x17, 0, 0, 0, 0, 0 };
-void *D_80098718 = 0;
-u16 D_8009871C = 0;
+void *AmbienceDef = 0;
+u16 AmbienceTimer = 0;
 /* the padding to the word asttable.c's table starts on: the engine links with SUBALIGN(2) */
 s16 EngineDataPad = 0;

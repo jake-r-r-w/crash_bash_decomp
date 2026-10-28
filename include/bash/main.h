@@ -966,7 +966,7 @@ extern u8 D_80063B58[];
 extern u8 D_80063BA0[];
 extern FreeNode *ClutFreeSmall;
 extern FreeNode *ClutUsedSmall;
-extern void *D_80063BB4;        /* list walked by clut_alloc_large (next at +4) */
+extern void *ClutLargeList;        /* list walked by clut_alloc_large (next at +4) */
 extern s32 D_8004E104;            /* mal_count_free: free bytes */
 extern s32 D_8004E108;            /* mal_count_free: free blocks */
 extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N at [2 * N] */
@@ -1053,7 +1053,7 @@ struct ExtBlk {
 extern ExtBlk *D_8005A7AC;
 extern VabFile *VabLoading;  /* VAB being transferred to the SPU, or NULL */
 extern sfx_machine_bank_info *SfxBankLoading;  /* where its id goes */
-extern s32 D_800654C8;       /* the id from SsVabOpenHead */
+extern s32 VabHeadId;       /* the id from SsVabOpenHead */
 extern u8 D_800644A8[];
 extern s32 xa_count;
 extern s32 SfxVoiceMask;
@@ -1302,7 +1302,7 @@ extern s32 *PrimNodeFree;
 extern s32 *D_8005683C;            /* pool sizes (prims_init) */
 extern u8 *D_8005685C;             /* 0x58-byte nodes (prims_init) */
 extern u8 *D_80056840;             /* 0x54-byte nodes, free list in PrimNodeFree */
-extern u8 *D_80056854;             /* 8-byte nodes, free list in D_80056858 */
+extern u8 *PrimLinkPool;             /* 8-byte nodes, free list in PrimLinkFree */
 typedef struct PrimList {
     s32 f0;
     s32 f4;
@@ -1321,7 +1321,7 @@ typedef struct PrimSet {
     u16 mode;              /* 0x54 */
     u16 dead;              /* 0x56 */
 } PrimSet;
-extern s32 *D_80056858;
+extern s32 *PrimLinkFree;
 extern NAS *NASActiveHead;
 extern s32 num_sfx_banks;
 extern s32 VabCueTimer;
@@ -1910,7 +1910,7 @@ void init_dots(subengine *arg0);
 
 
 typedef struct { u8 pad[0xC]; } Slot12;
-extern Slot12 D_80063B1C[];
+extern Slot12 VramSlots[];
 
 typedef struct {
     /* 0x00 */ u16 w0;
