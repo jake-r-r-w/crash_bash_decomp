@@ -20,7 +20,7 @@ void morph_light_colors(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 void morph_blend_verts(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
 void gfx_setup_xform(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
 void gfx_load_xform(void *arg0, void *arg1, void *arg2);
-void draw_object_model(s32 a, u8 *set, s32 c, void *d);
+void draw_object_model(s32 a, u8 *set, s32 c, subengine *d);
 void eng_render_subs(u8 *arg0);
 void kill_sprim_sub(subengine *arg0);
 void draw_model_quad(ModelObj *obj, void *arg1, s32 flags);

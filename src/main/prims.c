@@ -1215,7 +1215,7 @@ void gfx_setup_xform(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg
     }
 }
 
-void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
+void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
     u8 *e;
     void *p;
     s32 *anim;
@@ -1237,13 +1237,15 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
     s32 otz;
     u32 fog = 0x40000000;
 
-    depth = *(s16 *)((u8 *)d + 0x8A);
+    depth = d->unk8A;
     {
+        /* d->flags read as a plain word: as a field (in-struct) sched1 moves it past the
+         * PrimDepthLimit store */
         s32 on = (*(u32 *)d | c) & fog;
         PrimDepthLimit = depth;
         if (on) {
-            s32 dp = *(s16 *)((u8 *)d + 0x76);
-            RenderState.farColor = (s32 *)((u8 *)d + 0x78);
+            s32 dp = (s16)d->unk76;
+            RenderState.farColor = &d->unk78;
             RenderState.dp = dp;
         }
     }
@@ -1260,7 +1262,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
         e = set + (*(s32 *)(set + 0x44) + 0x44) + entry * 0x18;
         anim = dbase_anim_node((s32 *)a, e);
         if (c < 0) {
-            frame = *(s16 *)((u8 *)d + 0x72);
+            frame = d->u70.h.hi;
         } else {
             frame = a & 0x7F;
         }
@@ -1273,7 +1275,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
         e += *(s32 *)(e + 0xC) + 0xC;
         fr = (s32 *)((u8 *)anim + (frame * 16 + 4));
         if (c & 0x400000) {
-            e = set + ((*(u16 *)((u8 *)d + 0x8E) & 0xFFF) * 0x34 + 0x24);
+            e = set + ((d->unk8E & 0xFFF) * 0x34 + 0x24);
         }
         if (fr[0] == 0) {
             return;
@@ -1284,7 +1286,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
         } else {
             verts = set + (*(s32 *)(set + 0x28) + 0x28);
         }
-        if (c < 0 && (n = *(u16 *)((u8 *)d + 0x70)) != 0) {
+        if (c < 0 && (n = d->u70.h.lo) != 0) {
             s32 off;
             s32 *nx = (s32 *)((u8 *)anim + (frame * 16 + 0x14));
             s32 end = fr[6];
@@ -1347,13 +1349,13 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
         q = xy;
         gte_stsxy(q);
         x = xy[0] * 640 / ScreenRect->w;
-        flags = *(u32 *)d;
+        flags = d->flags;
         g = ((flags & 0x21) != 0) << 31;
         g |= (((s32)flags >> 5) & 3) << 24;
         e = (u8 *)(x & 0xFFFF);
         e = (u8 *)((s32)e | ((u16)q[1] << 17));
         if (flags & fog) {
-            idx = *(u16 *)((u8 *)d + 0x76) >> 4;
+            idx = d->unk76 >> 4;
             idx &= 0xFF;
             col = idx | (idx << 8) | (idx << 16);
         } else {
@@ -1362,7 +1364,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
         g |= col;
         otz = 1;
         if (c & 0x2000000) {
-            otz = *(s16 *)((u8 *)d + 0x68);
+            otz = d->unk68;
         }
         if ((u32)otz < (u32)RenderState.otLen) {
             texture_draw((obj_texture *)(*(u8 **)((u8 *)RenderState.unk0 + 0x18) + (a & 0xFFF) * 0x38),

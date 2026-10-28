@@ -616,7 +616,7 @@ void SetNasDefaults(void) {
     SubEngineTemplate.release = (void (*)(subengine *)) sub_release_none;
     SubEngineTemplate.unk50 = 0;
     SubEngineTemplate.entity = 0;
-    SubEngineTemplate.unk70 = 0;
+    SubEngineTemplate.u70.w = 0;
     SubEngineTemplate.u6C.dbase = NULL;
     SubEngineTemplate.unk76 = 0;
     SubEngineTemplate.unk90 = 0;

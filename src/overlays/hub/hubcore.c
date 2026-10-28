@@ -590,8 +590,8 @@ void HubDoorMenuUpdate(void) {
             PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
             HubDoorChoice++;
         }
-        v = lerp_fix12(*(s16 *)&sub->unk70, HubDoorAngles[HubDoorChoice], 2000);
-        *(s16 *)&sub->unk70 = v;
+        v = lerp_fix12(*(s16 *)&sub->u70.w, HubDoorAngles[HubDoorChoice], 2000);
+        *(s16 *)&sub->u70.w = v;
         sub->unk76 = v + 90;
     }
     if (HubDoorFade != 0) {

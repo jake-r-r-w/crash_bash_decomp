@@ -333,7 +333,13 @@ struct subengine {
         char *text;                  /* a text panel's */
         void *ptr;
     } u6C;                           /* a script's control info and the fx buffers start here too */
-    /* 0x70 */ s32 unk70;
+    /* 0x70 */ union {
+        s32 w;
+        struct {
+            u16 lo;                  /* a model's morph blend (draw_object_model) */
+            s16 hi;                  /* its frame, when the flags' sign bit is set */
+        } h;
+    } u70;
     /* 0x74 */ u16 entity;           /* the entity in the dbase (entity_address) */
     /* 0x76 */ u16 unk76;
     /* 0x78 */ s32 unk78;
