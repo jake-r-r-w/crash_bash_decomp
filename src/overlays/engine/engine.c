@@ -29,7 +29,7 @@ void InitialiseNasSystem(void) {
     HeroNasList = p;
     *(s32 *)p = 0;
     InitSysFontModel();
-    PauseMenuSets = D_800986A4[v->unk2C];
+    PauseMenuSets = PauseMenuSetsByLang[v->unk2C];
 }
 
 void BuildCameraFrameList(void) {
@@ -261,7 +261,7 @@ void PickCpuHeroes(void) {
                 if (found == 0) {
                     break;
                 }
-                v = *(u16 *)((u8 *)D_800986BC + (n * 2 + w * 8));
+                v = *(u16 *)((u8 *)CpuHeroChoices + (n * 2 + w * 8));
                 n++;
                 found = 0;
                 for (j = 0; j < 4; j++) {
@@ -694,11 +694,11 @@ s32 CountTrophies(u8 *arg0) {
 
 void ArenaRequirementMet(s32 arg0) {
     u8 *p = GameInfo;
-    LevelRequirementMet(D_800986FC[arg0 & 0xFFFF], p);
+    LevelRequirementMet(ArenaRequirements[arg0 & 0xFFFF], p);
 }
 
 void ArenaRequirementMetAny(s32 arg0) {
-    LevelRequirementMet(D_800986FC[arg0 & 0xFFFF]);
+    LevelRequirementMet(ArenaRequirements[arg0 & 0xFFFF]);
 }
 
 void RequirementMet(s32 arg0) {
@@ -871,7 +871,7 @@ extern u8 ModeTextBuffer[];
 extern u8 SlotOverlayId[];
 
 u8 *SlotBase = (void *)&SlotOverlayId;
-u8 *D_80098598 = (void *)&ModeTextBuffer;
+u8 *ModeTextLoadAddr = (void *)&ModeTextBuffer;
 s32 D_8009859C[9] = {0};
 s32 ModeTextEmpty[12] = {0};
 s32 D_800985F0[45] = {
@@ -895,15 +895,19 @@ s32 D_800985F0[45] = {
     (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
     (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty, (s32)&ModeTextEmpty,
 };
-s32 D_800986A4[6] = {
+s32 PauseMenuSetsByLang[6] = {
     (s32)&D_800985F0, (s32)&D_800985F0, (s32)&D_800985F0, (s32)&D_800985F0, (s32)&D_800985F0,
     (s32)&D_800985F0,
 };
-u16 D_800986BC[32] = {
+u16 CpuHeroChoices[32] = {
     4, 7, 6, 1, 3, 7, 2, 5, 2, 8, 1, 7, 6, 5, 3, 4, 5, 1, 8, 3, 8, 6, 7, 5, 1, 3, 4, 2, 4, 7,
     6, 1,
 };
-u16 D_800986FC[14] = { 0, 0x13, 0xA, 0xE, 6, 0x17, 0x17, 0x17, 0x17, 0, 0, 0, 0, 0 };
+u16 ArenaRequirements[9] = { 0, 0x13, 0xA, 0xE, 6, 0x17, 0x17, 0x17, 0x17 };
+u16 CreditsStep = 0;
+u16 CreditsTimer = 0;
+u16 D_80098712 = 0;
+s32 CreditsActive = 0;
 void *AmbienceDef = 0;
 u16 AmbienceTimer = 0;
 /* the padding to the word asttable.c's table starts on: the engine links with SUBALIGN(2) */

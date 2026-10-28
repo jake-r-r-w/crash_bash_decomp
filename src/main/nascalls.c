@@ -244,7 +244,7 @@ void InitNasHeap(s32 arg0) {
     u8 *res;
 
     size = (arg0 + 3) & ~3;
-    D_8006EA04 = size;
+    NasHeapBytes = size;
     res = mal_alloc(size, &MainHeap);
     *pb = (s32)res;
     if (res != NULL) {
@@ -282,7 +282,7 @@ void ResetNasHeap(void) {
     u32 flag;
     u32 words;
 
-    size = D_8006EA04;
+    size = NasHeapBytes;
     if (NasHeapMem != 0) {
         base = (s32 *)NasHeapMem;
         flag = size | 2;
@@ -4371,7 +4371,7 @@ s32 D_800643FC[6] = {0};
 
 /* the .bss (main.c's comes first) */
 s32 NasHeapMem __attribute__((section(".bss")));
-u32 D_8006EA04 __attribute__((section(".bss")));
+u32 NasHeapBytes __attribute__((section(".bss")));
 u8 CdControlResult[8] __attribute__((section(".bss")));   /* CdControl's result */
 CdlLOC CdReadLoc __attribute__((section(".bss")));
 CdlLOC CdSeekLoc __attribute__((section(".bss")));

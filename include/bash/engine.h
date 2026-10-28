@@ -249,8 +249,8 @@ extern HubRing HubHeroRing;
 extern s32 NextGameMode;
 extern u8 GameWarpRoom;
 extern s32 WarpRooms[][5];
-extern u16 D_800986FC[];
-extern u16 D_800986BC[];
+extern u16 ArenaRequirements[];
+extern u16 CpuHeroChoices[];
 typedef struct { u16 unk0; u16 unk2; u16 unk4; u16 unk6; } EngSub90248;
 typedef struct { s32 *unk0; s32 *unk4; s32 unk8; s32 unkC; s32 unk10; EngSub90248 *unk14; u8 *unk18; s32 unk1C; s32 unk20; s32 unk24; } EngRec90248;
 extern s8 GameGateway;
@@ -323,7 +323,7 @@ typedef struct {
 extern u8 *NasPoolLast;
 extern u8 *HeroNasList;
 extern s32 PauseMenuSets;
-extern s32 D_800986A4[];
+extern s32 PauseMenuSetsByLang[];
 extern s32 LevelRecIndex;
 extern u16 CameraMode;
 

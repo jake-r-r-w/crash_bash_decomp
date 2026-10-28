@@ -186,7 +186,7 @@ void SetupSceneMarks(u8 *arg0);
 s32 LoadModeText(void);
 extern s32 *D_8009F954[];
 extern s32 D_8009F8E4[];
-extern u8 *D_80098598;
+extern u8 *ModeTextLoadAddr;
 
 void LoadModeFiles(void);
 

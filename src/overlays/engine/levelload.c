@@ -15,7 +15,7 @@ s32 LoadModeText(void) {
     rp =&tab[*(s32 *)(GameInfo + 0x2C)];
     p = (u8 *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
     if (p != NULL) {
-        load_file_direct(p, D_80098598);
+        load_file_direct(p, ModeTextLoadAddr);
     }
     p = (u8 *)D_8009F8E4[ModeTypes[g->mode * 3] - 0x101];
     if ((s32)p != D_8009F968) {

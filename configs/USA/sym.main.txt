@@ -1635,3 +1635,7 @@ PadLastRead = 0x80063A8C;
 VramSmallReq = 0x80063B58;
 VramBufNodes = 0x800643F4;
 SoundCritical = 0x80064414;
+SsTable = 0x800654CC;
+SavedSp = 0x8006E9F4;
+NasHeapBytes = 0x8006EA04;
+ModchipCdStatus = 0x8006EA1C;

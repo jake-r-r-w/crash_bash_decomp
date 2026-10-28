@@ -13,7 +13,7 @@ void sound_critical(void) {
 void machine_init_sound(void) {
     CurrentMusic.data = 0;
     SsInit();
-    SsSetTableSize(D_800654CC, 1, 1);
+    SsSetTableSize(SsTable, 1, 1);
     SpuReserveReverbWorkArea(1);
     SsUtSetReverbType(7);
     SsUtSetReverbDepth(100, 0);
@@ -454,5 +454,5 @@ s32 SfxBankCount = 0;
 VabFile *VabLoading = 0;
 sfx_machine_bank_info *SfxBankLoading = 0;
 s32 VabHeadId = 0;
-char D_800654CC[176] = {0};
+char SsTable[176] = {0};
 music_midi CurrentMusic = {0};

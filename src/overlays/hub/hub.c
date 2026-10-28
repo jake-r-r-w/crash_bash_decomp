@@ -12,7 +12,7 @@ void HubRender(void) {
     SetGameViewport();
     if (GameMode == 0x25) {
         RenderAllNas();
-        if (D_80098714 == 0) {
+        if (CreditsActive == 0) {
             draw_map_scene((GfxScene *)MapScene);
         }
     } else {
@@ -35,7 +35,7 @@ void HubRender(void) {
 
 void HubStartCredits(void) {
     s32 one;
-    D_80098714 = 0;
+    CreditsActive = 0;
     ((EngMenuGame *)GameInfo)->flags &= 0xFDC07013;
     *(s32 *)&HubSavedCamH = (s16)((HubCam *)MainCamera)->h;
     *(s32 *)&HubSavedFov = CameraMode;
@@ -46,10 +46,10 @@ void HubStartCredits(void) {
         music_request(2);
         ((EngMenuGame *)GameInfo)->unk74 = 1;
         one = 1;
-        D_8009870E = one;
-        D_80098710 = 0;
+        CreditsStep = one;
+        CreditsTimer = 0;
         HubCreditsY = 0;
-        D_80098714 = one;
+        CreditsActive = one;
         CameraMode = 0;
         HubCreditsStart = GameOptions.sfx;
         InitEngineSlot(0, 0x1E);
@@ -83,7 +83,7 @@ s32 HubCreditsScroll(void) {
     view->unk10 = 0;
     view->unk14 = 0x3AE;
     HubCreditsEffects();
-    switch (D_8009870E) {
+    switch (CreditsStep) {
     case 1:
         i = 0;
         y = 0;
@@ -163,7 +163,7 @@ s32 HubCreditsScroll(void) {
         HubCreditsY += 2;
         goto clear;
     end:
-        D_8009870E = 3;
+        CreditsStep = 3;
     clear:
         while (sub != NULL) {
             sub->flags &= ~0x8000;
@@ -173,18 +173,18 @@ s32 HubCreditsScroll(void) {
     case 3:
         HubCreditsStart = GameOptions.sfx;
         KillEngineSlot(0);
-        D_8009870E = 2;
-        D_80098710 = 45;
+        CreditsStep = 2;
+        CreditsTimer = 45;
         music_fade_out(45);
         set_fade(&ScreenFade, 0x200, 0);
         return 0;
     case 2:
-        if (D_80098710 == 0) {
+        if (CreditsTimer == 0) {
             GameOptions.sfx = HubCreditsStart;
             HubEndCredits();
             return 1;
         }
-        D_80098710--;
+        CreditsTimer--;
         {
             GameOptionSet *opt = &GameOptions;
             if (opt->sfx > 0) {
@@ -205,7 +205,7 @@ void HubEndCredits(void)
   g = GameInfo;
   ((EngMenuGame *) g)->unk74 = 0;
   HubShowShadow(0);
-  D_80098714 = 0;
+  CreditsActive = 0;
   set_fade(&ScreenFade, -0x200, 0);
   new_var = 0x1628;
   *((u8 *) (g + 0x75)) = 1;

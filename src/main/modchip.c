@@ -49,7 +49,7 @@ loop:
                 break;
             case 1:
                 ret = 2;
-                D_8006EA1C = CdResult[2];
+                ModchipCdStatus = CdResult[2];
                 modchip_cd_reset(6);
                 ModchipState = 3;
                 break;
@@ -71,7 +71,7 @@ loop:
                 ret = -1;
                 break;
             case 1:
-                CdParams[0] = (D_8006EA1C >= 2) * 2;
+                CdParams[0] = (ModchipCdStatus >= 2) * 2;
                 modchip_cd_reset(2);
                 ModchipState = 4;
             case 0:
@@ -511,5 +511,5 @@ s32 ModchipWaitCount = 0;
 
 /* the .bss */
 s32 ModchipVSync __attribute__((section(".bss")));
-s32 D_8006EA1C __attribute__((section(".bss")));
+s32 ModchipCdStatus __attribute__((section(".bss")));
 volatile u8 CdTimeBcd __attribute__((section(".bss")));

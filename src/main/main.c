@@ -128,12 +128,12 @@ void shell_run_spyro_demo(void) {
 void shell_render_dcache(void) {
     if (DcacheReady == 0) {
         DcacheReady = 1;
-        D_8006E9F4 = GetSp();
+        SavedSp = GetSp();
     }
     SetSp(0x1F8003FC);
     EngineModule->render();
     FlipScreen(VSyncRate);
-    SetSp(D_8006E9F4);
+    SetSp(SavedSp);
 }
 
 void shell_init_heap(void) {
@@ -4118,6 +4118,6 @@ void (*ExportsInit)(void) __attribute__((section(".sdata"))) = export_exe_functi
 
 /* the .bss, in link order: written into the file as zeros, as the original link did */
 s32 StartupRa __attribute__((section(".bss")));   /* where the startup code saves $ra */
-s32 D_8006E9F4 __attribute__((section(".bss")));
+s32 SavedSp __attribute__((section(".bss")));
 s32 LoadPermanentBuf __attribute__((section(".bss")));
 u8 *LoadWaitBuf __attribute__((section(".bss")));

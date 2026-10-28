@@ -27,7 +27,7 @@ void modchip_show_warning(void);
 s32 modchip_step(s32 arg0);
 
 extern s32 ModchipVSync; /* VSync count at the last step */
-extern s32 D_8006EA1C;
+extern s32 ModchipCdStatus;
 typedef struct {
     u8 min;
     u8 sec;

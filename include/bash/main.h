@@ -810,7 +810,7 @@ extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
 /* A 4.12 fixed-point quaternion (quat_slerp slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
 extern s32 D_80064478[];
-extern s32 D_8006E9F4;
+extern s32 SavedSp;
 extern s32 LoadPermanentBuf;
 extern u8 ExportTable[];
 extern u8 LangModeTypeTexts[];
@@ -980,7 +980,7 @@ extern s32 MalFreeBlocks;            /* mal_count_free: free blocks */
 extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N at [2 * N] */
 extern s32 MalLargestFree;            /* mal_count_free: largest free block, bytes */
 extern s32 SfxBankCount;            /* slots of SfxBanks in use */
-extern char D_800654CC[];
+extern char SsTable[];
 extern u8 GameInfo[];
 extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
 extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (views: numPlayers) */
@@ -1046,7 +1046,7 @@ extern u8 SysFontFlags[];
 extern u8 *sysfont_dbase;
 extern s16 SysFontLookUp[];
 extern s32 NasHeapMem;
-extern u32 D_8006EA04;
+extern u32 NasHeapBytes;
 extern s32 ExtHeap[];
 typedef struct ExtBlk ExtBlk;
 struct ExtBlk {

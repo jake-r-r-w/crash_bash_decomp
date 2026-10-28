@@ -15,7 +15,7 @@ void InitialiseHUBFirst(void);
 void InitialisePodiumFirst(void);
 void InitialisePodium(void);
 
-extern s32 D_80098714;
+extern s32 CreditsActive;
 /* MainCamera as seen by HubEndCredits. */
 typedef struct {
     /* 0x00 */ u8 pad0[0xC];
@@ -25,8 +25,8 @@ typedef struct {
     /* 0x18 */ u8 pad18[0x56 - 0x18];
     /* 0x56 */ u16 h;
 } HubCam;
-extern u16 D_8009870E;
-extern u16 D_80098710;
+extern u16 CreditsStep;
+extern u16 CreditsTimer;
 extern s32 HubCreditsY;
 extern s32 HubCreditsStart;
 extern u16 HubSavedCamH;
