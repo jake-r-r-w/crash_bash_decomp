@@ -32,10 +32,10 @@ void dbase_init(obj_dbase *db);
 void dbase_textures_loaded();
 void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db);
 void dbase_set_data(u8 *arg0, u8 *arg1);
-u8 *dbase_mesh_anim_rec_release(s32 *arg0, u8 *rec);
+struct FileEntry *dbase_mesh_anim_rec_release(s32 *arg0, struct FileEntry *rec);
 struct TexClut *dbase_texture_entry(obj_dbase *db, s32 i);
 s32 name_list_find(s32 *list, u8 *arg1);
-void dbase_load_all_mesh_anims(s32 *arg0);
+void dbase_load_all_mesh_anims(obj_dbase *arg0);
 void dbase_load_textures_wait(u8 *rec);
 void dbase_anim_release(obj_dbase *db, s32 i);
 s32 dbase_anim_ptr(obj_dbase *arg0, s32 arg1);
@@ -49,8 +49,8 @@ s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1);
 u8 *dbase_mesh_anim_name_load(obj_dbase *arg0, u8 *arg1);
 s32 dbase_mesh_anim_name_size(obj_dbase *arg0, u8 *arg1);
 u8 *dbase_mesh_anim_release(obj_dbase *arg0, s32 arg1);
-u8 *dbase_mesh_anim_load(obj_dbase *arg0, s32 arg1);
-void dbase_setup_blocks(u8 *arg0, s32 *arg1);
+struct BlockRef *dbase_mesh_anim_load(obj_dbase *arg0, s32 arg1);
+void dbase_setup_blocks(struct ModelFile *arg0, s32 *arg1);
 
 
 #endif /* BASH_DBASE_H */

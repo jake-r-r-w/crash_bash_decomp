@@ -170,7 +170,7 @@ typedef union {
 /* A mesh's header in a model file (docs/ASSETS.md, Model files): the header table's 0x34-byte
  * records (ModelFile.meshes) and the entities'. Offsets are counted from their own field. */
 typedef struct MeshHeader {
-    /* 0x00 */ s32 unk0;
+    /* 0x00 */ struct PrimSet *set; /* its prims while drawn (primset_alloc), marked dead on release */
     /* 0x04 */ s32 unk4;
     /* 0x08 */ u16 faces;
     /* 0x0A */ s16 unkA;
@@ -627,10 +627,11 @@ typedef struct BlockRef {
 
 /* An entry of the 0x18-byte table at +0x44 (+ offset at +0x44) of a file
  * loaded by dbase_asload_with_anims_callback (dbase_setup_blocks). */
-typedef struct {
+typedef struct FileEntry {
     /* 0x00 */ s32 start;
     /* 0x04 */ s32 end;
-    /* 0x08 */ u8 unk8[8];
+    /* 0x08 */ s32 frames;
+    /* 0x0C */ s32 mesh;   /* from here to the MeshHeader it moves */
     /* 0x10 */ s32 hash;   /* string_hash of its name */
     /* 0x14 */ BlockRef *block;
 } FileEntry;

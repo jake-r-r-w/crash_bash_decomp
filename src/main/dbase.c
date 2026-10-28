@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/dbase.h"
 
-void dbase_setup_blocks(u8 *arg0, s32 *arg1) {
+void dbase_setup_blocks(ModelFile *arg0, s32 *arg1) {
     FileEntry *tbl;
     FileEntry *e;
     FileEntry *next;
@@ -12,8 +12,8 @@ void dbase_setup_blocks(u8 *arg0, s32 *arg1) {
     BlockRef *old;
     s32 i;
 
-    i = *(s32 *)(arg0 + 0x40) - 1;
-    tbl = (FileEntry *)(arg0 + (*(s32 *)(arg0 + 0x44) + 0x44));
+    i = arg0->nMeshAnims - 1;
+    tbl = (FileEntry *)((u8 *)&arg0->meshAnims + arg0->meshAnims);
     next = (FileEntry *)(i * sizeof(FileEntry) + (u32)tbl);
     for (;;) {
         if (i < 0) {
@@ -22,7 +22,7 @@ void dbase_setup_blocks(u8 *arg0, s32 *arg1) {
         e = next;
         blk = smallnode_alloc();
         e->block = blk;
-        blk->ptr = mal_split_ptr(arg0, e->start);
+        blk->ptr = mal_split_ptr((u8 *)arg0, e->start);
         i--;
         mal_set_owner(blk->ptr, &blk->ptr);
         mal_trim(blk->ptr, e->end - e->start, &MainHeap);
@@ -31,7 +31,7 @@ void dbase_setup_blocks(u8 *arg0, s32 *arg1) {
 second:
     if (arg1 != NULL) {
         e = tbl;
-        i = *(s32 *)(arg0 + 0x40);
+        i = arg0->nMeshAnims;
         for (;;) {
             if (i == 0) {
                 goto end;
@@ -117,7 +117,7 @@ void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db) {
 
 void dbase_asload_with_anims_callback(u8 *data, obj_dbase *db) {
     mal_set_owner(data, (void **)&db->data);
-    dbase_setup_blocks(data, db->keep);
+    dbase_setup_blocks((ModelFile *)data, db->keep);
 }
 
 s32 name_list_find(s32 *list, u8 *arg1) {
@@ -148,10 +148,10 @@ void dbase_copy_block(FileEntry *e, s32 base) {
 
 void dbase_anim_release(obj_dbase *db, s32 i) {
     DbaseAnim *a;
-    u8 *d;
+    ModelFile *d;
 
     d = db->data;
-    a = (DbaseAnim *)(d + (*(s32 *)(d + 0x3C) + 0x3C) + (i * 0x10 + 4));
+    a = (DbaseAnim *)((u8 *)&d->anims + d->anims + 4) + i;
     if (a->data != NULL) {
         mal_free(a->data, &MainHeap);
         a->load = 0;
@@ -165,10 +165,10 @@ void dbase_anim_release(obj_dbase *db, s32 i) {
 void dbase_anim_load(obj_dbase *db, s32 i) {
     s32 start;
     DbaseAnim *a;
-    u8 *d;
+    ModelFile *d;
 
     d = db->data;
-    a = (DbaseAnim *)(d + (*(s32 *)(d + 0x3C) + 0x3C) + (i * 0x10 + 4));
+    a = (DbaseAnim *)((u8 *)&d->anims + d->anims + 4) + i;
     if (a->data == NULL && a->load == 0) {
         start = a->start;
         a->load = asload_chunk_relocatable(db->file, start, &a->data, a->end - start);
@@ -176,33 +176,33 @@ void dbase_anim_load(obj_dbase *db, s32 i) {
 }
 
 s32 dbase_anim_ptr(obj_dbase *arg0, s32 arg1) {
-    u8 *temp_s0;
-    u8 *temp_v0;
+    DbaseAnim *a;
+    ModelFile *d;
 
-    temp_v0 = (arg0->data);
-    temp_s0 = temp_v0 + ((*(s32*)((u8*)(temp_v0) + 60)) + 0x3C) + ((arg1 * 0x10) + 4);
-    return (*(s32*)((u8*)(temp_s0) + 8));
+    d = arg0->data;
+    a = (DbaseAnim *)((u8 *)&d->anims + d->anims + 4) + arg1;
+    return (s32)a->data;
 }
 
 
 u8 *dbase_mesh_anim_name_release(obj_dbase *arg0, u8 *arg1) {
-    u8 *tbl;
-    u8 *p;
+    ModelFile *tbl;
+    FileEntry *p;
     s32 n;
     s32 key;
-    u8 *res;
-    u8 *blk;
+    FileEntry *res;
+    BlockRef *blk;
 
     tbl = arg0->data;
     if (tbl == NULL) {
         res = NULL;
     } else {
         key = string_hash(arg1);
-        p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
-        n = *(s32 *)(tbl + 0x40);
+        p = (FileEntry *)((u8 *)&tbl->meshAnims + tbl->meshAnims);
+        n = tbl->nMeshAnims;
         n--;
-        for (; n != -1; n--, p += 0x18) {
-            if (*(s32 *)(p + 0x10) == key) {
+        for (; n != -1; n--, p++) {
+            if (p->hash == key) {
                 res = p;
                 goto found;
             }
@@ -211,38 +211,38 @@ u8 *dbase_mesh_anim_name_release(obj_dbase *arg0, u8 *arg1) {
     }
 found:
     if (res != NULL) {
-        blk = *(u8 **)(res + 0x14);
+        blk = res->block;
         if (blk != NULL) {
-            if (*(void **)blk != NULL) {
-                mal_free(*(void **)blk, &MainHeap);
+            if (blk->ptr != NULL) {
+                mal_free(blk->ptr, &MainHeap);
             } else {
-                loader_cancel(*(LoadNode **)(blk + 4));
+                loader_cancel((LoadNode *)blk->load);
             }
-            smallnode_free(blk);
-            *(u8 **)(res + 0x14) = NULL;
-            return res;
+            smallnode_free((u8 *)blk);
+            res->block = NULL;
+            return (u8 *)res;
         }
     }
     return NULL;
 }
 
 s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1) {
-    u8 *tbl;
-    u8 *p;
+    ModelFile *tbl;
+    FileEntry *p;
     s32 n;
     s32 key;
-    u8 *res;
+    FileEntry *res;
 
     tbl = db->data;
     if (tbl == NULL) {
         res = NULL;
     } else {
         key = string_hash(arg1);
-        p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
-        n = *(s32 *)(tbl + 0x40);
+        p = (FileEntry *)((u8 *)&tbl->meshAnims + tbl->meshAnims);
+        n = tbl->nMeshAnims;
         n--;
-        for (; n != -1; n--, p += 0x18) {
-            if (*(s32 *)(p + 0x10) == key) {
+        for (; n != -1; n--, p++) {
+            if (p->hash == key) {
                 res = p;
                 goto found;
             }
@@ -251,19 +251,19 @@ s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1) {
     }
 found:
     if (res != NULL) {
-        return **(s32 **)(res + 0x14);
+        return (s32)res->block->ptr;
     }
     return 0;
 }
 
 u8 *dbase_mesh_anim_name_load(obj_dbase *arg0, u8 *arg1) {
-    u8 *tbl;
-    u8 *p;
+    ModelFile *tbl;
+    FileEntry *p;
     s32 n;
     s32 key;
-    u8 *res;
-    u8 *node;
-    u8 *cur;
+    FileEntry *res;
+    BlockRef *node;
+    BlockRef *cur;
     s32 start;
     s32 h;
 
@@ -272,11 +272,11 @@ u8 *dbase_mesh_anim_name_load(obj_dbase *arg0, u8 *arg1) {
         res = NULL;
     } else {
         key = string_hash(arg1);
-        p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
-        n = *(s32 *)(tbl + 0x40);
+        p = (FileEntry *)((u8 *)&tbl->meshAnims + tbl->meshAnims);
+        n = tbl->nMeshAnims;
         n--;
-        for (; n != -1; n--, p += 0x18) {
-            if (*(s32 *)(p + 0x10) == key) {
+        for (; n != -1; n--, p++) {
+            if (p->hash == key) {
                 res = p;
                 goto found;
             }
@@ -285,22 +285,22 @@ u8 *dbase_mesh_anim_name_load(obj_dbase *arg0, u8 *arg1) {
     }
 found:
     if (res != NULL) {
-        cur = *(u8 **)(res + 0x14);
+        cur = res->block;
         if (cur != NULL) {
-            return cur;
+            return (u8 *)cur;
         }
         {
             node = smallnode_alloc();
             if (node != NULL) {
-                start = *(s32 *)res;
-                *(u8 **)(res + 0x14) = node;
-                h = asload_chunk_relocatable(arg0->file, start, node, *(s32 *)(res + 4) - start);
-                *(s32 *)(node + 4) = h;
+                start = res->start;
+                res->block = node;
+                h = asload_chunk_relocatable(arg0->file, start, (u32 **)node, res->end - start);
+                node->load = h;
                 if (h == 0) {
-                    smallnode_free(node);
+                    smallnode_free((u8 *)node);
                     return NULL;
                 }
-                return node;
+                return (u8 *)node;
             }
             return NULL;
         }
@@ -309,24 +309,24 @@ found:
 }
 
 s32 dbase_mesh_anim_name_size(obj_dbase *arg0, u8 *arg1) {
-    u8 *tbl;
-    u8 *p;
+    ModelFile *tbl;
+    FileEntry *p;
     s32 n;
     s32 key;
     s32 d;
 
-    u8 *res;
+    FileEntry *res;
 
     tbl = arg0->data;
     if (tbl == NULL) {
         res = NULL;
     } else {
         key = string_hash(arg1);
-        p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
-        n = *(s32 *)(tbl + 0x40);
+        p = (FileEntry *)((u8 *)&tbl->meshAnims + tbl->meshAnims);
+        n = tbl->nMeshAnims;
         n--;
-        for (; n != -1; n--, p += 0x18) {
-            if (*(s32 *)(p + 0x10) == key) {
+        for (; n != -1; n--, p++) {
+            if (p->hash == key) {
                 res = p;
                 goto found;
             }
@@ -334,7 +334,7 @@ s32 dbase_mesh_anim_name_size(obj_dbase *arg0, u8 *arg1) {
         res = NULL;
     }
 found:
-    d = *(s32 *)(res + 4) - *(s32 *)res;
+    d = res->end - res->start;
     return ((d + 0x7FF) / 0x800) * 0x800;
 }
 
@@ -358,36 +358,36 @@ u8 *dbase_mesh_anim_find(u8 *arg0, u8 *arg1) {
     return NULL;
 }
 
-void dbase_load_all_mesh_anims(s32 *arg0) {
-    u8 *tbl;
-    u8 *t;
-    u8 *rec;
-    u8 *node;
+void dbase_load_all_mesh_anims(obj_dbase *arg0) {
+    ModelFile *tbl;
+    ModelFile *t;
+    FileEntry *rec;
+    BlockRef *node;
     s32 n;
     s32 i;
     s32 start;
     s32 handle;
 
-    tbl = *(u8 **)(arg0 + 3);
+    tbl = arg0->data;
     if (tbl != NULL) {
-        n = *(s32 *)(tbl + 0x40);
+        n = tbl->nMeshAnims;
         for (i = 0;; i++) {
             if (i >= n) {
                 return;
             }
-            t = *(u8 **)(arg0 + 3);
-            if (t != NULL && i < *(s32 *)(t + 0x40)) {
-                rec = t + (*(s32 *)(t + 0x44) + 0x44);
-                rec += i * 0x18;
-                if (*(u8 **)(rec + 0x14) == NULL) {
+            t = arg0->data;
+            if (t != NULL && i < t->nMeshAnims) {
+                rec = (FileEntry *)((u8 *)&t->meshAnims + t->meshAnims);
+                rec += i;
+                if (rec->block == NULL) {
                     node = smallnode_alloc();
                     if (node != NULL) {
-                        start = *(s32 *)rec;
-                        *(u8 **)(rec + 0x14) = node;
-                        handle = asload_chunk_relocatable(*arg0, start, node, *(s32 *)(rec + 4) - start);
-                        *(s32 *)(node + 4) = handle;
+                        start = rec->start;
+                        rec->block = node;
+                        handle = asload_chunk_relocatable(arg0->file, start, (u32 **)node, rec->end - start);
+                        node->load = handle;
                         if (handle == 0) {
-                            smallnode_free(node);
+                            smallnode_free((u8 *)node);
                         }
                     }
                 }
@@ -397,36 +397,36 @@ void dbase_load_all_mesh_anims(s32 *arg0) {
 }
 
 void dbase_release_all_mesh_anims(a)
-u8 *a;
+obj_dbase *a;
 {
-    u8 **slot;
-    u8 *e;
-    u8 *p;
+    FileEntry *slot;
+    BlockRef *e;
+    ModelFile *p;
     s32 off;
     s32 n;
     s32 i;
-    u8 *arg0;
+    obj_dbase *arg0;
 
     arg0 = a;
     i = 0;
-    if (*(u8 **)(arg0 + 0xC) != NULL) {
-        n = *(s32 *)(*(u8 **)(arg0 + 0xC) + 0x40);
+    if (arg0->data != NULL) {
+        n = arg0->data->nMeshAnims;
         off = 0;
     again:
         if (i < n) {
-            p = *(u8 **)(arg0 + 0xC);
-            if (p != NULL && i < *(s32 *)(p + 0x40)) {
-                slot = (u8 **)(p + (*(s32 *)(p + 0x44) + 0x44));
-                slot = (u8 **)((u8 *)slot + off);
-                e = slot[5];
+            p = arg0->data;
+            if (p != NULL && i < p->nMeshAnims) {
+                slot = (FileEntry *)((u8 *)&p->meshAnims + p->meshAnims);
+                slot = (FileEntry *)((u8 *)slot + off);
+                e = slot->block;
                 if (e != NULL) {
-                    if (*(void **)e != NULL) {
-                        mal_free(*(void **)e, &MainHeap);
+                    if (e->ptr != NULL) {
+                        mal_free(e->ptr, &MainHeap);
                     } else {
-                        loader_cancel(*(void **)(e + 4));
+                        loader_cancel((void *)e->load);
                     }
-                    smallnode_free(e);
-                    slot[5] = NULL;
+                    smallnode_free((u8 *)e);
+                    slot->block = NULL;
                 }
             }
             off += 0x18;
@@ -437,25 +437,25 @@ u8 *a;
 }
 
 u8 *dbase_mesh_anim_release(obj_dbase *arg0, s32 arg1) {
-    u8 *base;
-    u8 *e;
-    void **item;
+    ModelFile *base;
+    FileEntry *e;
+    BlockRef *item;
 
     base = arg0->data;
     if (base != NULL) {
-        if (arg1 < *(s32 *)(base + 0x40)) {
-            e = base + (*(s32 *)(base + 0x44) + 0x44);
-            e += arg1 * 0x18;
-            item = *(void ***)(e + 0x14);
+        if (arg1 < base->nMeshAnims) {
+            e = (FileEntry *)((u8 *)&base->meshAnims + base->meshAnims);
+            e += arg1;
+            item = e->block;
             if (item != NULL) {
-                if (item[0] != NULL) {
-                    mal_free(item[0], &MainHeap);
+                if (item->ptr != NULL) {
+                    mal_free(item->ptr, &MainHeap);
                 } else {
-                    loader_cancel(item[1]);
+                    loader_cancel((void *)item->load);
                 }
                 smallnode_free((u8 *)item);
-                *(s32 *)(e + 0x14) = 0;
-                return e;
+                e->block = NULL;
+                return (u8 *)e;
             }
         }
     }
@@ -464,43 +464,43 @@ u8 *dbase_mesh_anim_release(obj_dbase *arg0, s32 arg1) {
 
 /* Unloads what dbase_mesh_anim_rec_load loaded: the record's node at +0x14 holds a heap
  * block or (if that is NULL) a handle at +4. */
-u8 *dbase_mesh_anim_rec_release(s32 *arg0, u8 *rec) {
-    u8 *node;
+FileEntry *dbase_mesh_anim_rec_release(s32 *arg0, FileEntry *rec) {
+    BlockRef *node;
 
-    node = *(u8 **)(rec + 0x14);
+    node = rec->block;
     if (node == NULL) {
         return NULL;
     }
-    if (*(void **)node != NULL) {
-        mal_free(*(void **)node, &MainHeap);
+    if (node->ptr != NULL) {
+        mal_free(node->ptr, &MainHeap);
     } else {
-        loader_cancel(*(void **)(node + 4));
+        loader_cancel((void *)node->load);
     }
-    smallnode_free(node);
-    *(u8 **)(rec + 0x14) = NULL;
+    smallnode_free((u8 *)node);
+    rec->block = NULL;
     return rec;
 }
 
 /* Inlined copy of dbase_mesh_anim_rec_load (load a record's node); being an inline call
  * is what puts arg1 in v1 and the table in a1. */
-static inline u8 *dbase_mesh_anim_load_one(s32 *arg0, u8 *arg1) {
-    u8 *cur;
-    u8 *node;
+static inline BlockRef *dbase_mesh_anim_load_one(s32 *arg0, FileEntry *arg1) {
+    BlockRef *cur;
+    BlockRef *node;
     s32 start;
     s32 h;
 
-    cur = *(u8 **)(arg1 + 0x14);
+    cur = arg1->block;
     if (cur == NULL) {
         node = smallnode_alloc();
         if (node != NULL) {
-            start = *(s32 *)arg1;
-            *(u8 **)(arg1 + 0x14) = node;
-            h = asload_chunk_relocatable(*arg0, start, node, *(s32 *)(arg1 + 4) - start);
-            *(s32 *)(node + 4) = h;
+            start = arg1->start;
+            arg1->block = node;
+            h = asload_chunk_relocatable(*arg0, start, (u32 **)node, arg1->end - start);
+            node->load = h;
             if (h != 0) {
                 goto ok;
             }
-            smallnode_free(node);
+            smallnode_free((u8 *)node);
         }
         return NULL;
     ok:
@@ -509,16 +509,16 @@ static inline u8 *dbase_mesh_anim_load_one(s32 *arg0, u8 *arg1) {
     return cur;
 }
 
-u8 *dbase_mesh_anim_load(obj_dbase *arg0, s32 arg1) {
-    u8 *base;
-    u8 *e;
+BlockRef *dbase_mesh_anim_load(obj_dbase *arg0, s32 arg1) {
+    ModelFile *base;
+    FileEntry *e;
 
     base = arg0->data;
-    if (base == NULL || arg1 >= *(s32 *)(base + 0x40)) {
+    if (base == NULL || arg1 >= base->nMeshAnims) {
         return NULL;
     }
-    e = base + (*(s32 *)(base + 0x44) + 0x44);
-    e += arg1 * 0x18;
+    e = (FileEntry *)((u8 *)&base->meshAnims + base->meshAnims);
+    e += arg1;
     return dbase_mesh_anim_load_one((s32 *)arg0, e);
 }
 
@@ -625,23 +625,23 @@ void dbase_set_data(u8 *arg0, u8 *arg1) {
 
 void dbase_release(obj_dbase *arg0) {
     s32 i;
-    u8 *p;
-    u8 *q;
+    ModelFile *p;
+    MeshHeader *q;
 
     if (arg0->data != NULL) {
         dbase_release_all_mesh_anims();
         p = arg0->data;
-        q = p + 0x58;
-        i = *(s32 *)(p + 0x54);
+        q = p->meshes;
+        i = p->nMeshes;
         i--;
         if (i != -1) {
             do {
-                u8 *e = *(u8 **)q;
+                PrimSet *e = q->set;
                 if (e != NULL) {
-                    *(s16 *)(e + 0x56) = 1;
+                    e->dead = 1;
                 }
                 i--;
-                q += 0x34;
+                q++;
             } while (i != -1);
         }
         mal_free(arg0->data, &MainHeap);
