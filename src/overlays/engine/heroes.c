@@ -6289,19 +6289,19 @@ s32 SmokePoofScript[17] = {
     0x201B, 0x1201B, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021, 0x2022, 0x2023, 0x2024, 0x2025,
     0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x8003,
 };
-s32 SmokePoofScripts[3] = { (s32)&SmokePoofScript, 0, 0 };
-ScriptInit SmokePoofInit = { 0, (void *)&SmokePoofScripts, 0x402 };
+s32 *SmokePoofScripts[3] = { SmokePoofScript, NULL, NULL };
+ScriptInit SmokePoofInit = { 0, (void *)SmokePoofScripts, 0x402 };
 s32 PolarTiltX = 0;
 s32 PolarTiltZ = 0;
 s32 PolarTiltUnused = 0;
 FxDef WeatherFxDef = { 0x100, 0x2800, 0x1800, PlotSparks, PlotFallParticles };
 u16 HealthPickupSfx[8] = { 0x1C5, 0x1C6, 0x1C7, 0x1C8, 0x1C9, 0x1CA, 0x1CB, 0x1CC };
 u16 HealthPickupAmounts[4] = { 1, 1, 2, 2 };
-s32 BigPoofScript[9] = {
-    0x20260000, 0x20282027, 0x202A2029, 0x202C202B, 0x202E202D, 0x2030202F, 0x20322031,
-    0x20342033, (s32)0x80042035,
+u16 BigPoofScript[18] = {  /* frames, then the end (0x8000 | 4) */
+    0, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x202F, 0x2030,
+    0x2031, 0x2032, 0x2033, 0x2034, 0x2035, 0x8004,
 };
-ScriptInit BigPoofInit = { (s32)&BigPoofScript, 0, 0x401 };
+ScriptInit BigPoofInit = { (s32)BigPoofScript, 0, 0x401 };
 s32 PickupCounts[15] = {0};
 s32 CratePickupAst = 0;
 s32 HealthAst = 0;
