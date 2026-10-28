@@ -1574,32 +1574,32 @@ void UpdateOutMessage(void) {
 }
 
 s16 FindTeamLeader(void) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
     s16 r = -1;
     s16 i;
     s16 t;
     HeroInfo *h;
     HeroInfo *h2;
 
-    if (*(s32 *)(g + 0x6C) != 0 && *(s16 *)(g + 0x34) != 0x20) {
+    if (g->teams != 0 && g->mode != 0x20) {
         HeroInfo *H = Heroes;
-        s16 a = *(s16 *)(g + 0x48);
+        s16 a = g->teamLeader[0];
         s16 b;
         h = &H[a];
         t = h->hero_teammate;
         if (t == -1) {
-            t = *(u16 *)(g + 0x48);
+            t = g->teamLeader[0];
         }
-        if (g[0x60] == h->hero_name || g[0x60] == Heroes[t].hero_name) {
+        if (g->winner[0] == h->hero_name || g->winner[0] == Heroes[t].hero_name) {
             return a;
         }
-        b = *(s16 *)(g + 0x4A);
+        b = g->teamLeader[1];
         h2 = &Heroes[b];
         t = h2->hero_teammate;
         if (t == -1) {
-            t = *(u16 *)(g + 0x4A);
+            t = g->teamLeader[1];
         }
-        if (g[0x60] == h2->hero_name || g[0x60] == Heroes[t].hero_name) {
+        if (g->winner[0] == h2->hero_name || g->winner[0] == Heroes[t].hero_name) {
             return b;
         }
     } else {
@@ -2061,16 +2061,16 @@ s32 CalcElapsedTime(void) {
 }
 
 void InitTrophyCups(void) {
-    u8 *p;
+    GameState *p;
     u16 f;
 
     CupMode = 0;
     CupTimer = 0;
     Trophy_Cups = 3;
-    p = GameInfo;
-    f = *(u16 *)(p + 0x32);
+    p = GAME;
+    f = p->levelFlags;
     if (f & 3) {
-        Trophy_Cups = *(u16 *)(p + 0x3A);
+        Trophy_Cups = p->battleWins;
     }
     if (f & 0x20) {
         if (f & 8) {

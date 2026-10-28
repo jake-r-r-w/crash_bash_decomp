@@ -1564,19 +1564,19 @@ void SetTweakAi(void) {
 
 s32 AdjustAiSkill(s32 arg0) {
     s32 v;
-    u8 *g;
+    GameState *g;
     s32 idx;
 
     if (arg0 < 0) {
         return -1;
     }
-    g = GameInfo;
-    idx = *(s16 *)(g + 0x42);
-    if (idx == 0 ||*(s32 *)(g + 0x6C) != 0 || !(*(u16 *)(g + 0x32) & 0x10)) {
+    g = GAME;
+    idx = g->cupLeader;
+    if (idx == 0 ||g->teams != 0 || !(g->levelFlags & 0x10)) {
         return -1;
     }
     {
-        u8 t = g[*(s16 *)(g + 0x34) + 0xAB];
+        u8 t = g->adventure.unkAB[g->mode];
 
         if (t == 0) {
             arg0 = arg0 / 2;

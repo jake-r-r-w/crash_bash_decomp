@@ -862,11 +862,11 @@ void SceneSoundInit(ScriptScene *arg0) {
 ScriptScene *PickModeVariant(s32 arg0) {
     s32 i;
     ModeScenes *e = ModeVariants;
-    u8 *g;
+    GameState *g;
 
-    for (i = 0, g = GameInfo; i < 4; e++, i++) {
+    for (i = 0, g = GAME; i < 4; e++, i++) {
         if (arg0 == e->mode) {
-            s16 m = *(s16 *)(g + 0x44);
+            s16 m = g->teamSide[0];
             if (m == 1) {
                 return e->scene[0];
             }

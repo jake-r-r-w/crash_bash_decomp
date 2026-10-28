@@ -1765,11 +1765,11 @@ void Unpause(void) {
 }
 
 void RequestQuit(void) {
-    u8 *p = GameInfo;
-    s32 a = *(s32 *)(p + 0x10);
-    u16 b = *(u16 *)(p + 0x30);
-    *(s32 *)(p + 0x10) = a | 0x10;
-    *(u16 *)(p + 0x30) = b | 0x8002;
+    GameState *p = GAME;
+    s32 a = p->pause;
+    u16 b = p->exitFlags;
+    p->pause = a | 0x10;
+    p->exitFlags = b | 0x8002;
 }
 
 void SetDefaultHeroHooks(void) {

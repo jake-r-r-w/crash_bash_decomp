@@ -958,7 +958,7 @@ typedef struct GameState {
     /* 0x020 */ u8 unk20;
     /* 0x021 */ s8 unk21;
     /* 0x022 */ u8 pad22[2];
-    /* 0x024 */ s16 exitDelay;
+    /* 0x024 */ u16 exitDelay;
     /* 0x026 */ u8 players;
     /* 0x027 */ u8 maxPlayers;
     /* 0x028 */ u8 cup;

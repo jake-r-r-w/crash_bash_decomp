@@ -316,18 +316,18 @@ void ReturnToWarpRoom(void) {
 }
 
 void UpdateExitDelay(void) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
 
-    if (*(u16 *)(g + 0x30) & 0x8000) {
+    if (g->exitFlags & 0x8000) {
         if (ProcessControl.next_process == NULL) {
-            if (*(u16 *)(g + 0x24) != 0) {
-                *(u16 *)(g + 0x24) -= 1;
-                if (*(u16 *)(g + 0x24) != 0) {
+            if (g->exitDelay != 0) {
+                g->exitDelay -= 1;
+                if (g->exitDelay != 0) {
                     return;
                 }
             }
             GotoProcess(&LevelLoadProcess, 0x200);
-            if (!(*(u16 *)(g + 0x30) & 0x200)) {
+            if (!(g->exitFlags & 0x200)) {
                 music_request(-1);
             }
         }
@@ -585,28 +585,28 @@ void AwardCupTrophies(CupDef *cup) {
 }
 
 void CupMenuNext(void) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
     s32 n;
 
     CupMenuCompact = 4;
-    n = g[0x28];
+    n = g->cup;
     if (n < 6) {
         n++;
         PlaySfx(0x190, 0, 0, 0x1000, 0x1E00, 0);
-        g[0x28] = n;
+        g->cup = n;
     }
 }
 
 void CupMenuPrev(void) {
-    u8 *g = GameInfo;
+    GameState *g = GAME;
     s32 n;
 
     CupMenuCompact = 4;
-    n = g[0x28];
+    n = g->cup;
     if (n > 0) {
         n--;
         PlaySfx(0x190, 0, 0, 0x1000, 0x1E00, 0);
-        g[0x28] = n;
+        g->cup = n;
     }
 }
 
@@ -637,14 +637,14 @@ s32 CupUnlocked(s32 arg0) {
 s32 CupCurrentModeType(void) {
     u16 *wt = ModeTypes;
     CupDef *tab = CupTable;
-    u8 *g = GameInfo;
-    CupRound *e = tab[g[0x28]].rounds;
-    s32 idx = e[g[0x29]].mode;
+    GameState *g = GAME;
+    CupRound *e = tab[g->cup].rounds;
+    s32 idx = e[g->cupRound].mode;
     s32 **tbl;
     s32 w = wt[idx * 3] - 0x101;
     s32 *t;
     tbl = (s32 **)LangModeTypeTexts;
-    t = tbl[*(s32 *)(g + 0x2C)];
+    t = tbl[g->language];
     return t[w];
 }
 
@@ -1818,10 +1818,10 @@ void RenderGame(void) {
 
 void UpdateGame(void) {
     if (UpdatePause() != 0) {
-        u8 *g;
+        GameState *g;
         GameFrameCount++;
-        g = GameInfo;
-        *(s32 *)(g + 0xC) += 1;
+        g = GAME;
+        g->frames += 1;
         UpdateLevel();
         ((void (*)(void *, u8 *))map_update)(MapScene, (u8 *)&MainCamera.at.x);
     } else {
