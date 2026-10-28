@@ -373,16 +373,17 @@ typedef struct HudGameView {
     /* 0x32 */ u16 unk32;
     /* 0x34 */ s16 mode;
 } HudGameView;
-/* PauseMenuPanel as seen by DrawHudEntries. */
+/* A panel rectangle, draw_panel_rect's record (PauseMenuPanel: the highlight behind the pause
+ * menu's selected line, DrawHudEntries). -1 in top hides it. */
 typedef struct HudBox {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s16 unk4;
-    /* 0x06 */ s16 unk6;
-    /* 0x08 */ s16 unk8;
-    /* 0x0A */ s16 unkA;
-    /* 0x0C */ s16 unkC;
+    /* 0x00 */ u32 flags;     /* 0x8000 drawn */
+    /* 0x04 */ s16 x;         /* 0x8000 | n: centred on n (0: the screen) */
+    /* 0x06 */ s16 top;
+    /* 0x08 */ s16 z;
+    /* 0x0A */ s16 width;
+    /* 0x0C */ s16 bottom;
     /* 0x0E */ s16 unkE;
-    /* 0x10 */ s32 unk10;
+    /* 0x10 */ s32 colour;
     /* 0x14 */ s32 unk14;
 } HudBox;
 /* PanelTab as seen by DrawHudEntries. */
@@ -458,7 +459,7 @@ typedef struct PauseView {
 } PauseView;
 #define PSV ((PauseView *)GameInfo)
 extern u16 LevelKindKeys[];
-#define HUDBOX ((HudBox *)PauseMenuPanel)
+#define HUDBOX (&PauseMenuPanel)
 #define HUDENG ((HudEngView *)PanelTab)
 extern s32 PauseTextHold;
 extern s16 LangHudRows[][8];

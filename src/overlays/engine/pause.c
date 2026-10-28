@@ -665,15 +665,15 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             n++;
             break;
         case 2:
-            HUDBOX->unk10 = e->a;
+            HUDBOX->colour = e->a;
             HUDBOX->unk14 = e->c;
-            HUDBOX->unk6 = e->x + arg1;
-            HUDBOX->unk4 = 0x7C;
-            HUDBOX->unkA = 0x204;
+            HUDBOX->top = e->x + arg1;
+            HUDBOX->x = 0x7C;
+            HUDBOX->width = 0x204;
             if ((g->state & 0x80010000) != 0x80010000) {
-                HUDBOX->unkC = arg1 + (e->x + e->y);
+                HUDBOX->bottom = arg1 + (e->x + e->y);
             } else {
-                HUDBOX->unkC = arg1 + (e->x + e->idx);
+                HUDBOX->bottom = arg1 + (e->x + e->idx);
             }
             break;
         case 3:
@@ -747,15 +747,15 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             FontPage = e->x;
             break;
         case 7:
-            HUDBOX->unk10 = e->a;
+            HUDBOX->colour = e->a;
             HUDBOX->unk14 = e->c;
-            HUDBOX->unk6 = e->x + arg1;
-            HUDBOX->unk4 = 0x40;
-            HUDBOX->unkA = 0x240;
+            HUDBOX->top = e->x + arg1;
+            HUDBOX->x = 0x40;
+            HUDBOX->width = 0x240;
             if ((g->state & 0x80010000) != 0x80010000) {
-                HUDBOX->unkC = arg1 + (e->x + e->y);
+                HUDBOX->bottom = arg1 + (e->x + e->y);
             } else {
-                HUDBOX->unkC = arg1 + (e->x + e->idx);
+                HUDBOX->bottom = arg1 + (e->x + e->idx);
             }
             break;
         case 10: case 11: case 12: case 13: case 14:
@@ -805,7 +805,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
 }
 
 void DrawPauseMenu(void) {
-    u8 *e;
+    HudBox *e;
     s32 i;
     s32 sel;
 
@@ -817,9 +817,9 @@ void DrawPauseMenu(void) {
     PanelCountCompletion();
     SetupCompletionDigits();
     PauseMenuY = 0x70;
-    e = PauseMenuPanel;
-    *(s16 *)(e + 6) = -1;
-    *(s16 *)(e + 0xC) = -1;
+    e = &PauseMenuPanel;
+    e->top = -1;
+    e->bottom = -1;
     FontPage = 0;
     if (MSGV->flags & 0x08000002) {
         return;
@@ -1290,15 +1290,15 @@ void UpdatePauseSlide(s32 arg0) {
 
 void RenderPause(void) {
     GfxState *gs;
-    u8 *e;
+    HudBox *e;
 
     if (GamePause & 0x7000) {
         gs = &RenderState;
         *(s32 *)&gs->unk28[0] = 0;
         *(s32 *)&gs->unk28[4] = 0;
         if (GamePause & 0x4000) {
-            e = PauseMenuPanel;
-            if (*(s16 *)(e + 0xC) != -1) {
+            e = &PauseMenuPanel;
+            if (e->bottom != -1) {
                 gfx_set_viewport(&MainViewport, &MainGfxCamera);
                 gs->otzAdd = 0x200;
                 gs->modelDp = *(s32 *)&ScreenFade;   /* a scalar read: scheduled above the otzAdd store */
@@ -1310,8 +1310,8 @@ void RenderPause(void) {
         *(s32 *)&gs->unk28[0] = 0;
         *(s32 *)&gs->unk28[4] = 0;
         if (!(GamePause & 0x40)) {
-            e = PauseMenuPanel;
-            if (*(s16 *)(e + 0xC) != -1) {
+            e = &PauseMenuPanel;
+            if (e->bottom != -1) {
                 gfx_set_viewport(&MainViewport, &MainGfxCamera);
                 gs->otzAdd = 0x200;
                 gs->modelDp = *(s32 *)&ScreenFade;
@@ -1910,10 +1910,8 @@ s32 AdvStatsPanel7[108] = {
     0x7000000, 0, 0, 0, 0, 0x30000, 0, 3, 0x40019A, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0,
 };
-u8 PauseMenuPanel[32] = {
-    1, 0x80, 0, 0x10, 0x7C, 0, 0xFF, 0xFF, 0, 0, 4, 2, 0xFF, 0xFF, 0, 0, 0, 0, 0, 0, 0x80,
-    0x80, 0, 0, 4, 0, 4, 0, 0x21, 0x80, 0, 0x10,
-};
+HudBox PauseMenuPanel = { 0x10008001, 0x7C, -1, 0, 0x204, -1, 0, 0, 0x8080 };
+s32 PauseMenuPanelUnused[2] = { 0x40004, 0x10008021 };
 u16 StatsPageWanted = 0;
 s32 ElapsedStart = 0;
 s32 WinCounterSize = 0;

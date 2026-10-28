@@ -117,7 +117,7 @@ extern fade_info ScreenFade;
 extern s32 ScreenLabelShown;
 extern process_info LevelLoadProcess;
 extern s32 GamePause;
-extern u8 PauseMenuPanel[];
+extern struct HudBox PauseMenuPanel;
 extern ScriptInit BigPoofInit;
 extern ScriptInit SmokePoofInit;
 extern GfxViewport HudViewport;
