@@ -6306,8 +6306,8 @@ s32 BigPoofScript[9] = {
 };
 ScriptInit BigPoofInit = { (s32)&BigPoofScript, 0, 0x401 };
 s32 PickupCounts[15] = {0};
-s32 D_8009E298 = 0;
-s32 D_8009E29C = 0;
+s32 CratePickupAst = 0;
+s32 HealthAst = 0;
 s32 D_8009E2A0[5] = { 0x20112010, 0x20122012, 0x20122012, 0x20122012, 0x2012 };
 s32 PlayerHitSfx[4] = { 0x442, 0x443, 0x444, 0x445 };
 s32 HitShape0[6] = { 0x800060, 0x20000, 0x500020, 0x60000, 0xFFFF, 0 };

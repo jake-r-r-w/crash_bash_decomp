@@ -27,8 +27,8 @@ typedef struct {
 } D_800AD1EC_entry;
 extern s32 camera_frame_list_size;
 extern D_800AD1EC_entry CameraFrameList[];
-extern s32 D_8009E29C;
-extern s32 D_8009E298;
+extern s32 HealthAst;
+extern s32 CratePickupAst;
 
 void RequirementMet(s32 arg0);
 void RequirementMetAny(s32 arg0);
@@ -223,7 +223,7 @@ extern s32 IntroStepIndex;
 extern s32 IntroStepTimer;
 extern s32 IntroNextSfx;
 extern s32 IntroSfxDelay;
-extern s32 D_800AEC58;
+extern s32 IntroScriptHandle;
 extern u8 CupMenuPanel[];
 /* A text-panel record PlaceEngineSlot builds from (0x24 bytes): kind at 0, the text at 0x14. */
 typedef struct EngRec24 {

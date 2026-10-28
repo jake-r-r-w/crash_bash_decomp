@@ -971,7 +971,7 @@ typedef struct FreePool {
 } FreePool;
 extern FreeNode *FreeBufNodes;
 extern u8 VramSmallReq[];
-extern u8 D_80063BA0[];
+extern u8 VramReqEnd[];
 extern FreeNode *ClutFreeSmall;
 extern FreeNode *ClutUsedSmall;
 extern void *ClutLargeList;        /* list walked by clut_alloc_large (next at +4) */

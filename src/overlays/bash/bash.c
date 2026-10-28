@@ -332,7 +332,7 @@ void InitialiseBASHFirst(void) {
     HeroHooks.HeroCarryCollision = BashHeroCarryCollision;
     BashCrateList = NULL;
     BashInitCrateHooks();
-    D_8009E298 = BashASTIndex(0x206);
+    CratePickupAst = BashASTIndex(0x206);
     BashSfxEngine = EngineTemplate;
     g = GameInfo;
     switch (*(s16 *)(g + 0x34)) {

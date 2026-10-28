@@ -70,7 +70,7 @@ void UpdateIntro(void) {
             PlaySfx(IntroNextSfx, &IntroSfxHandle, NULL, 0x1000, 0x1E00, 0);
         }
     }
-    if (D_800AEC58 != 0) {
+    if (IntroScriptHandle != 0) {
         return;
     }
     if (IntroDbase != 0) {
@@ -123,7 +123,7 @@ void UpdateIntro(void) {
         ScriptTimeStep = 0x10000;
         VSyncRate = type;
         IntroScript = play_script((obj_dbase *)IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
-                                   &IntroScriptRot, &IntroScriptPos, 4, (script_handler **)&D_800AEC58);
+                                   &IntroScriptRot, &IntroScriptPos, 4, (script_handler **)&IntroScriptHandle);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
             PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
             PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &IntroSfx[1], NULL, 0x1000, 0x1E00, 0);
@@ -173,7 +173,7 @@ void RenderIntro(void) {
 void InitIntro(void) {
     IntroStepIndex = 0;
     IntroStepTimer = 0;
-    D_800AEC58 = 0;
+    IntroScriptHandle = 0;
     IntroDbase = 0;
     init_scripts(0x20, 0x80);
     IntroNextSfx = -1;

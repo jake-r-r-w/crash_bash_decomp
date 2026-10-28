@@ -937,3 +937,6 @@ CameraEase = 0x800AD0F4;
 CameraFrameList = 0x800AD1EC;
 ScreenLabelShown = 0x800ADBC4;
 PauseStatsAllowed = 0x8009BD30;
+CratePickupAst = 0x8009E298;
+HealthAst = 0x8009E29C;
+IntroScriptHandle = 0x800AEC58;

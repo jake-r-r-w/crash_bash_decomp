@@ -185,7 +185,7 @@ void InitialiseLevel(void) {
         r = 0;
     }
 found1:
-    D_8009E298 = r;
+    CratePickupAst = r;
     want = 0x20C;
     i = 0;
     if (ASTCount > 0) {
@@ -205,7 +205,7 @@ found1:
     }
     r = 0;
 found2:
-    D_8009E29C = r;
+    HealthAst = r;
     if (LevelSpecs.LevelInit != NULL) {
         LevelSpecs.LevelInit();
     }
@@ -764,7 +764,7 @@ void InitialiseEngine(void) {
     }
     r = 0;
 found:
-    D_8009E29C = r;
+    HealthAst = r;
     if (LevelSpecs.LevelInit != NULL) {
         LevelSpecs.LevelInit();
     }

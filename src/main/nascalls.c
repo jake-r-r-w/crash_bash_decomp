@@ -2952,7 +2952,7 @@ FreeHdr *vram_take(u8 *arg0) {
         }
         return &a3->hdr;
     }
-    if ((u8 *)pool < D_80063BA0) {
+    if ((u8 *)pool < VramReqEnd) {
         p = vram_take((u8 *)(pool + 1));
         a2 = FreeBufNodes;
         FreeBufNodes = a2->next;
@@ -4246,11 +4246,11 @@ Slot12 VramSlots[3] = {
     { { 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 } }, { { 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0 } },
     { { 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0 } },
 };
-s32 D_80063B40[6] = { 0, 0, 0x10, 0, 8, 0 };
+s32 VramReq16[6] = { 0, 0, 0x10, 0, 8, 0 };
 u8 VramSmallReq[24] = { 0, 0, 0, 0, 0, 0, 0, 0, 0x20, 0, 0, 0, 0, 0, 0, 0, 0x10, 0, 0, 0, 0, 0, 0, 0 };
-s32 D_80063B70[6] = { 0, 0, 0x40, 0, 0x20, 0 };
-s32 D_80063B88[6] = { 0, 0, 0x80, 0, 0x40, 0 };
-u8 D_80063BA0[12] = { 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0xFF, 0xFF, 0, 0 };
+s32 VramReq64[6] = { 0, 0, 0x40, 0, 0x20, 0 };
+s32 VramReq128[6] = { 0, 0, 0x80, 0, 0x40, 0 };
+u8 VramReqEnd[12] = { 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0xFF, 0xFF, 0, 0 };
 FreeNode *ClutFreeSmall = 0;
 FreeNode *ClutUsedSmall = 0;
 void *ClutLargeList = 0;
@@ -4287,62 +4287,62 @@ s32 VramNodePool[524] = {
     0x17D0300, 0, 0, 0, 0, 0,
     0x17E0300, 0, 0, 0, 0, 0,
     0x17F0300, 0, 0, 0, 0, 0,
-    (s32)&D_80063BA0, 0x180, (s32)&D_80063BA0, 0x1000180, (s32)&D_80063BA0, 0x200,
-    (s32)&D_80063BA0, 0x1000200, (s32)&D_80063BA0, 0x280, (s32)&D_80063BA0, 0x1000280,
-    (s32)&D_80063BA0, 0x300, (s32)&D_80063BA0, 0x380, (s32)&D_80063B88, 0x1800300,
-    (s32)&D_80063B88, 0x1800340, (s32)&D_80063B88, 0x1800380, (s32)&D_80063B88, 0x18003C0,
-    (s32)&D_80063B70, 0x1000300, (s32)&D_80063B70, 0x1000320, (s32)&D_80063B70, 0x1000340,
-    (s32)&D_80063B70, 0x1000360, (s32)&D_80063B70, 0x10003A0, (s32)&D_80063B70, 0x10003C0,
-    (s32)&D_80063B70, 0x10003E0, (s32)&VramSmallReq, 0x1200380, (s32)&VramSmallReq, 0x1200390,
+    (s32)&VramReqEnd, 0x180, (s32)&VramReqEnd, 0x1000180, (s32)&VramReqEnd, 0x200,
+    (s32)&VramReqEnd, 0x1000200, (s32)&VramReqEnd, 0x280, (s32)&VramReqEnd, 0x1000280,
+    (s32)&VramReqEnd, 0x300, (s32)&VramReqEnd, 0x380, (s32)&VramReq128, 0x1800300,
+    (s32)&VramReq128, 0x1800340, (s32)&VramReq128, 0x1800380, (s32)&VramReq128, 0x18003C0,
+    (s32)&VramReq64, 0x1000300, (s32)&VramReq64, 0x1000320, (s32)&VramReq64, 0x1000340,
+    (s32)&VramReq64, 0x1000360, (s32)&VramReq64, 0x10003A0, (s32)&VramReq64, 0x10003C0,
+    (s32)&VramReq64, 0x10003E0, (s32)&VramSmallReq, 0x1200380, (s32)&VramSmallReq, 0x1200390,
     (s32)&VramSmallReq, 0x1400300, (s32)&VramSmallReq, 0x1400310, (s32)&VramSmallReq, 0x1400320,
     (s32)&VramSmallReq, 0x1400330, (s32)&VramSmallReq, 0x1400340, (s32)&VramSmallReq, 0x1400350,
     (s32)&VramSmallReq, 0x1400360, (s32)&VramSmallReq, 0x1400370, (s32)&VramSmallReq, 0x1400380,
     (s32)&VramSmallReq, 0x1400390, (s32)&VramSmallReq, 0x14003A0, (s32)&VramSmallReq, 0x14003B0,
     (s32)&VramSmallReq, 0x14003C0, (s32)&VramSmallReq, 0x14003D0, (s32)&VramSmallReq, 0x14003E0,
-    (s32)&VramSmallReq, 0x14003F0, (s32)&D_80063B40, 0xF00000, (s32)&D_80063B40, 0xF00008,
-    (s32)&D_80063B40, 0xF00010, (s32)&D_80063B40, 0xF00018, (s32)&D_80063B40, 0xF00020,
-    (s32)&D_80063B40, 0xF00028, (s32)&D_80063B40, 0xF00030, (s32)&D_80063B40, 0xF00038,
-    (s32)&D_80063B40, 0xF00040, (s32)&D_80063B40, 0xF00048, (s32)&D_80063B40, 0xF00050,
-    (s32)&D_80063B40, 0xF00058, (s32)&D_80063B40, 0xF00060, (s32)&D_80063B40, 0xF00068,
-    (s32)&D_80063B40, 0xF00070, (s32)&D_80063B40, 0xF00078, (s32)&D_80063B40, 0xF00080,
-    (s32)&D_80063B40, 0xF00088, (s32)&D_80063B40, 0xF00090, (s32)&D_80063B40, 0xF00098,
-    (s32)&D_80063B40, 0xF000A0, (s32)&D_80063B40, 0xF000A8, (s32)&D_80063B40, 0xF000B0,
-    (s32)&D_80063B40, 0xF000B8, (s32)&D_80063B40, 0xF000C0, (s32)&D_80063B40, 0xF000C8,
-    (s32)&D_80063B40, 0xF000D0, (s32)&D_80063B40, 0xF000D8, (s32)&D_80063B40, 0xF000E0,
-    (s32)&D_80063B40, 0xF000E8, (s32)&D_80063B40, 0xF000F0, (s32)&D_80063B40, 0xF000F8,
-    (s32)&D_80063B40, 0xF00100, (s32)&D_80063B40, 0xF00108, (s32)&D_80063B40, 0xF00110,
-    (s32)&D_80063B40, 0xF00118, (s32)&D_80063B40, 0xF00120, (s32)&D_80063B40, 0xF00128,
-    (s32)&D_80063B40, 0xF00130, (s32)&D_80063B40, 0xF00138, (s32)&D_80063B40, 0xF00140,
-    (s32)&D_80063B40, 0xF00148, (s32)&D_80063B40, 0xF00150, (s32)&D_80063B40, 0xF00158,
-    (s32)&D_80063B40, 0xF00160, (s32)&D_80063B40, 0xF00168, (s32)&D_80063B40, 0xF00170,
-    (s32)&D_80063B40, 0xF00178, (s32)&D_80063B40, 0xF00180, (s32)&D_80063B40, 0xF00188,
-    (s32)&D_80063B40, 0xF00190, (s32)&D_80063B40, 0xF00198, (s32)&D_80063B40, 0xF001A0,
-    (s32)&D_80063B40, 0xF001A8, (s32)&D_80063B40, 0xF001B0, (s32)&D_80063B40, 0xF001B8,
-    (s32)&D_80063B40, 0xF001C0, (s32)&D_80063B40, 0xF001C8, (s32)&D_80063B40, 0xF001D0,
-    (s32)&D_80063B40, 0xF001D8, (s32)&D_80063B40, 0xF001E0, (s32)&D_80063B40, 0xF001E8,
-    (s32)&D_80063B40, 0xF001F0, (s32)&D_80063B40, 0xF001F8, (s32)&D_80063B40, 0x1F00000,
-    (s32)&D_80063B40, 0x1F00008, (s32)&D_80063B40, 0x1F00010, (s32)&D_80063B40, 0x1F00018,
-    (s32)&D_80063B40, 0x1F00020, (s32)&D_80063B40, 0x1F00028, (s32)&D_80063B40, 0x1F00030,
-    (s32)&D_80063B40, 0x1F00038, (s32)&D_80063B40, 0x1F00040, (s32)&D_80063B40, 0x1F00048,
-    (s32)&D_80063B40, 0x1F00050, (s32)&D_80063B40, 0x1F00058, (s32)&D_80063B40, 0x1F00060,
-    (s32)&D_80063B40, 0x1F00068, (s32)&D_80063B40, 0x1F00070, (s32)&D_80063B40, 0x1F00078,
-    (s32)&D_80063B40, 0x1F00080, (s32)&D_80063B40, 0x1F00088, (s32)&D_80063B40, 0x1F00090,
-    (s32)&D_80063B40, 0x1F00098, (s32)&D_80063B40, 0x1F000A0, (s32)&D_80063B40, 0x1F000A8,
-    (s32)&D_80063B40, 0x1F000B0, (s32)&D_80063B40, 0x1F000B8, (s32)&D_80063B40, 0x1F000C0,
-    (s32)&D_80063B40, 0x1F000C8, (s32)&D_80063B40, 0x1F000D0, (s32)&D_80063B40, 0x1F000D8,
-    (s32)&D_80063B40, 0x1F000E0, (s32)&D_80063B40, 0x1F000E8, (s32)&D_80063B40, 0x1F000F0,
-    (s32)&D_80063B40, 0x1F000F8, (s32)&D_80063B40, 0x1F00100, (s32)&D_80063B40, 0x1F00108,
-    (s32)&D_80063B40, 0x1F00110, (s32)&D_80063B40, 0x1F00118, (s32)&D_80063B40, 0x1F00120,
-    (s32)&D_80063B40, 0x1F00128, (s32)&D_80063B40, 0x1F00130, (s32)&D_80063B40, 0x1F00138,
-    (s32)&D_80063B40, 0x1F00140, (s32)&D_80063B40, 0x1F00148, (s32)&D_80063B40, 0x1F00150,
-    (s32)&D_80063B40, 0x1F00158, (s32)&D_80063B40, 0x1F00160, (s32)&D_80063B40, 0x1F00168,
-    (s32)&D_80063B40, 0x1F00170, (s32)&D_80063B40, 0x1F00178, (s32)&D_80063B40, 0x1F00180,
-    (s32)&D_80063B40, 0x1F00188, (s32)&D_80063B40, 0x1F00190, (s32)&D_80063B40, 0x1F00198,
-    (s32)&D_80063B40, 0x1F001A0, (s32)&D_80063B40, 0x1F001A8, (s32)&D_80063B40, 0x1F001B0,
-    (s32)&D_80063B40, 0x1F001B8, (s32)&D_80063B40, 0x1F001C0, (s32)&D_80063B40, 0x1F001C8,
-    (s32)&D_80063B40, 0x1F001D0, (s32)&D_80063B40, 0x1F001D8, (s32)&D_80063B40, 0x1F001E0,
-    (s32)&D_80063B40, 0x1F001E8, (s32)&D_80063B40, 0x1F001F0, (s32)&D_80063B40, 0x1F001F8,
-    (s32)&D_80063B88, (s32)0xFFFFFFFF,
+    (s32)&VramSmallReq, 0x14003F0, (s32)&VramReq16, 0xF00000, (s32)&VramReq16, 0xF00008,
+    (s32)&VramReq16, 0xF00010, (s32)&VramReq16, 0xF00018, (s32)&VramReq16, 0xF00020,
+    (s32)&VramReq16, 0xF00028, (s32)&VramReq16, 0xF00030, (s32)&VramReq16, 0xF00038,
+    (s32)&VramReq16, 0xF00040, (s32)&VramReq16, 0xF00048, (s32)&VramReq16, 0xF00050,
+    (s32)&VramReq16, 0xF00058, (s32)&VramReq16, 0xF00060, (s32)&VramReq16, 0xF00068,
+    (s32)&VramReq16, 0xF00070, (s32)&VramReq16, 0xF00078, (s32)&VramReq16, 0xF00080,
+    (s32)&VramReq16, 0xF00088, (s32)&VramReq16, 0xF00090, (s32)&VramReq16, 0xF00098,
+    (s32)&VramReq16, 0xF000A0, (s32)&VramReq16, 0xF000A8, (s32)&VramReq16, 0xF000B0,
+    (s32)&VramReq16, 0xF000B8, (s32)&VramReq16, 0xF000C0, (s32)&VramReq16, 0xF000C8,
+    (s32)&VramReq16, 0xF000D0, (s32)&VramReq16, 0xF000D8, (s32)&VramReq16, 0xF000E0,
+    (s32)&VramReq16, 0xF000E8, (s32)&VramReq16, 0xF000F0, (s32)&VramReq16, 0xF000F8,
+    (s32)&VramReq16, 0xF00100, (s32)&VramReq16, 0xF00108, (s32)&VramReq16, 0xF00110,
+    (s32)&VramReq16, 0xF00118, (s32)&VramReq16, 0xF00120, (s32)&VramReq16, 0xF00128,
+    (s32)&VramReq16, 0xF00130, (s32)&VramReq16, 0xF00138, (s32)&VramReq16, 0xF00140,
+    (s32)&VramReq16, 0xF00148, (s32)&VramReq16, 0xF00150, (s32)&VramReq16, 0xF00158,
+    (s32)&VramReq16, 0xF00160, (s32)&VramReq16, 0xF00168, (s32)&VramReq16, 0xF00170,
+    (s32)&VramReq16, 0xF00178, (s32)&VramReq16, 0xF00180, (s32)&VramReq16, 0xF00188,
+    (s32)&VramReq16, 0xF00190, (s32)&VramReq16, 0xF00198, (s32)&VramReq16, 0xF001A0,
+    (s32)&VramReq16, 0xF001A8, (s32)&VramReq16, 0xF001B0, (s32)&VramReq16, 0xF001B8,
+    (s32)&VramReq16, 0xF001C0, (s32)&VramReq16, 0xF001C8, (s32)&VramReq16, 0xF001D0,
+    (s32)&VramReq16, 0xF001D8, (s32)&VramReq16, 0xF001E0, (s32)&VramReq16, 0xF001E8,
+    (s32)&VramReq16, 0xF001F0, (s32)&VramReq16, 0xF001F8, (s32)&VramReq16, 0x1F00000,
+    (s32)&VramReq16, 0x1F00008, (s32)&VramReq16, 0x1F00010, (s32)&VramReq16, 0x1F00018,
+    (s32)&VramReq16, 0x1F00020, (s32)&VramReq16, 0x1F00028, (s32)&VramReq16, 0x1F00030,
+    (s32)&VramReq16, 0x1F00038, (s32)&VramReq16, 0x1F00040, (s32)&VramReq16, 0x1F00048,
+    (s32)&VramReq16, 0x1F00050, (s32)&VramReq16, 0x1F00058, (s32)&VramReq16, 0x1F00060,
+    (s32)&VramReq16, 0x1F00068, (s32)&VramReq16, 0x1F00070, (s32)&VramReq16, 0x1F00078,
+    (s32)&VramReq16, 0x1F00080, (s32)&VramReq16, 0x1F00088, (s32)&VramReq16, 0x1F00090,
+    (s32)&VramReq16, 0x1F00098, (s32)&VramReq16, 0x1F000A0, (s32)&VramReq16, 0x1F000A8,
+    (s32)&VramReq16, 0x1F000B0, (s32)&VramReq16, 0x1F000B8, (s32)&VramReq16, 0x1F000C0,
+    (s32)&VramReq16, 0x1F000C8, (s32)&VramReq16, 0x1F000D0, (s32)&VramReq16, 0x1F000D8,
+    (s32)&VramReq16, 0x1F000E0, (s32)&VramReq16, 0x1F000E8, (s32)&VramReq16, 0x1F000F0,
+    (s32)&VramReq16, 0x1F000F8, (s32)&VramReq16, 0x1F00100, (s32)&VramReq16, 0x1F00108,
+    (s32)&VramReq16, 0x1F00110, (s32)&VramReq16, 0x1F00118, (s32)&VramReq16, 0x1F00120,
+    (s32)&VramReq16, 0x1F00128, (s32)&VramReq16, 0x1F00130, (s32)&VramReq16, 0x1F00138,
+    (s32)&VramReq16, 0x1F00140, (s32)&VramReq16, 0x1F00148, (s32)&VramReq16, 0x1F00150,
+    (s32)&VramReq16, 0x1F00158, (s32)&VramReq16, 0x1F00160, (s32)&VramReq16, 0x1F00168,
+    (s32)&VramReq16, 0x1F00170, (s32)&VramReq16, 0x1F00178, (s32)&VramReq16, 0x1F00180,
+    (s32)&VramReq16, 0x1F00188, (s32)&VramReq16, 0x1F00190, (s32)&VramReq16, 0x1F00198,
+    (s32)&VramReq16, 0x1F001A0, (s32)&VramReq16, 0x1F001A8, (s32)&VramReq16, 0x1F001B0,
+    (s32)&VramReq16, 0x1F001B8, (s32)&VramReq16, 0x1F001C0, (s32)&VramReq16, 0x1F001C8,
+    (s32)&VramReq16, 0x1F001D0, (s32)&VramReq16, 0x1F001D8, (s32)&VramReq16, 0x1F001E0,
+    (s32)&VramReq16, 0x1F001E8, (s32)&VramReq16, 0x1F001F0, (s32)&VramReq16, 0x1F001F8,
+    (s32)&VramReq128, (s32)0xFFFFFFFF,
 };
 s32 DebugFontStream = 0;
 s32 DebugFontTPage = 0;

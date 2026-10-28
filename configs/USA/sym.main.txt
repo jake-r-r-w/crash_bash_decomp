@@ -1655,3 +1655,7 @@ vmode_384_pal = 0x8005B714;
 vmode_512_pal = 0x8005B744;
 vmode_640_ntsc = 0x8005B75C;
 vmode_640_pal = 0x8005B774;
+VramReq16 = 0x80063B40;
+VramReq64 = 0x80063B70;
+VramReq128 = 0x80063B88;
+VramReqEnd = 0x80063BA0;
