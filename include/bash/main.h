@@ -877,7 +877,7 @@ typedef struct {
     s16 title[32];   /* 0x04 Shift-JIS */
 } McHeader;
 extern char *CardSaveTitle;
-extern u8 D_80065648[]; /* the header's icon frames (CardBuffer + 0x80) */
+extern u8 CardIconFrames[]; /* the header's icon frames (CardBuffer + 0x80) */
 extern const char CardSaveTitleFormat[];
 s32 count_completion(u8 *arg0);
 
@@ -1085,8 +1085,8 @@ typedef struct {
 } EngineRec32;
 extern EngineRec32 *LevelRecs;
 extern s32 D_800637B8;
-extern u8 D_8006EA08[8];
-extern CdlLOC D_8006EA10;
+extern u8 CdControlResult[8];
+extern CdlLOC CdReadLoc;
 void func_80034AEC(void);
 extern NASTrigger *HeadOfTriggers;
 extern s32 TriggerCount;
@@ -1128,7 +1128,7 @@ typedef struct ComboSeq {
 extern MATRIX MapSceneMatrix;
 extern SVECTOR MapSceneRot;
 extern u8 D_800512A8[]; /* ComboSeq table, 0x90 bytes per entry */
-extern CdlLOC D_8006EA14;
+extern CdlLOC CdSeekLoc;
 extern RECT *ScreenRect;
 extern s32 D_8005B694;
 extern s32 D_8005B78C;
@@ -1336,14 +1336,14 @@ extern s32 num_sfx_banks;
 extern s32 VabCueTimer;
 extern s32 VabCuePending;
 extern s32 GameFrameCount;
-extern s32 D_8004E0D0; /* BCD of count_completion's count */
+extern s32 CompletionBcd; /* BCD of count_completion's count */
 extern s32 FirstBootDone;
 extern subengine *next_sub;
 extern s32 ScriptFade;
 extern s32 ScriptTimeStep;
 extern s32 ScriptThreadPool;
 extern s32 ScriptPool;
-extern s8 D_8005A63C;
+extern s8 CupMenuAnim;
 extern void *HeadOfBalls;
 extern void *PrimSetList;
 extern s32 *PrimSetFree;

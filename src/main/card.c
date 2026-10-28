@@ -77,9 +77,9 @@ void card_make_header(void) {
     if (rect->w == 4) {
         h = rect->h;
         if (h == 0x10) {
-            StoreImage(rect, (u_long *)D_80065648);
+            StoreImage(rect, (u_long *)CardIconFrames);
             img = (u8 *)dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306C);
-            StoreImage((RECT *)(img + 0x18), (u_long *)(D_80065648 + 0x80));
+            StoreImage((RECT *)(img + 0x18), (u_long *)(CardIconFrames + 0x80));
             pal = dbase_texture_entry(&HeroModelBank[DB_Font], *(u16 *)(img + 2));
             clut.x = (*(u16 **)(pal + 4))[0];
             clut.y = (*(u16 **)(pal + 4))[1];
@@ -87,7 +87,7 @@ void card_make_header(void) {
             if (w == h) {
                 clut.w = w;
                 clut.h = 1;
-                StoreImage(&clut, (u_long *)(D_80065648 - 0x20));
+                StoreImage(&clut, (u_long *)(CardIconFrames - 0x20));
             }
         }
     }
@@ -511,7 +511,7 @@ char *CardSaveTitle = (void *)&CardSaveTitleFormat;
 s32 CardStatus = 0;
 s32 CardRequest = 0;
 u8 CardBuffer[128] = {0};
-u8 D_80065648[384] = {0};
+u8 CardIconFrames[384] = {0};
 D_800657C8_Slot CardSlots[4] = {0};
 s32 D_80065E18[3] = {0};
 s32 CardSaveSum = 0;

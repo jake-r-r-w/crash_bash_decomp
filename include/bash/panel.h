@@ -73,7 +73,7 @@ extern s16 D_800991E0[][2];
 extern s16 D_800991F0[][2];
 extern u16 IconImage[];
 typedef struct { s16 x, y; } EngXY;
-extern EngXY D_80099240[4];
+extern EngXY PanelIconOffset[4];
 
 void InitIcons4(void);
 

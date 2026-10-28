@@ -60,21 +60,21 @@ void UpdateLoadingScene(void) {
     u8 *b;
 
     if (LevelLoadStage >= 2) {
-        if (D_800A02C0 == 0 && *(s32 *)((b = (u8 *)HeroModelBank) + 0x2CAC) != 0) {
+        if (LoadingScenePlaying == 0 && *(s32 *)((b = (u8 *)HeroModelBank) + 0x2CAC) != 0) {
             if (D_80064C93 != -1) {
                 PlaySfx(0x3C5, NULL, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x3C6, NULL, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x3C7, NULL, NULL, 0x1000, 0x1E00, 0);
                 p = b + 0x2CA0;
-                D_800A02C4 = 6;
+                LoadingSceneDelay = 6;
                 SetupSceneMarks(p);
-                D_800A02C0 += 1;
+                LoadingScenePlaying += 1;
                 play_script((obj_dbase *)p, 0, &D_8009F9D4, &D_8009F9F4, 8, NULL);
             }
         }
-        if (D_800A02C4 != 0) {
-            D_800A02C4 -= 1;
-            if (D_800A02C4 == 0) {
+        if (LoadingSceneDelay != 0) {
+            LoadingSceneDelay -= 1;
+            if (LoadingSceneDelay == 0) {
                 PlaySfx(0x3C8, NULL, NULL, 0x1000, 0x1E00, 0);
             }
         }
@@ -345,8 +345,8 @@ void UpdateLevelLoad(void) {
         }
         load_initial_dbases();
         a = map;
-        if (D_8005A650 >= 0) {
-            p = (s32 *)(&HeroModelBank[D_8005A650]);
+        if (LevelLoadModel >= 0) {
+            p = (s32 *)(&HeroModelBank[LevelLoadModel]);
         } else {
             p = NULL;
         }
@@ -369,8 +369,8 @@ void UpdateLevelLoad(void) {
         break;
     case 3:
         a = map;
-        if (D_8005A650 >= 0) {
-            p = (s32 *)(&HeroModelBank[D_8005A650]);
+        if (LevelLoadModel >= 0) {
+            p = (s32 *)(&HeroModelBank[LevelLoadModel]);
         } else {
             p = NULL;
         }
@@ -440,7 +440,7 @@ void RenderLoadingScene(void) {
     if (LevelLoadStage >= 2) {
         GameFrameCount += 1;
         gfx_set_viewport(D_8009F9AC, MainCamera);
-        if (D_800A02C0 != 0) {
+        if (LoadingScenePlaying != 0) {
             DrawSceneMarks();
         }
         scripts_render();
@@ -449,8 +449,8 @@ void RenderLoadingScene(void) {
 
 void InitLoadingCamera(void) {
     cam_init((GfxCamera *)MainCamera);
-    D_800A02C0 = 0;
-    D_800A02C4 = 0;
+    LoadingScenePlaying = 0;
+    LoadingSceneDelay = 0;
 }
 
 void QuitLoadingScreen(void) {
@@ -498,8 +498,8 @@ void level_load_map(void) {
     s32 *a = map;
     s32 *p;
 
-    if (D_8005A650 >= 0) {
-        p = (s32 *)(&HeroModelBank[D_8005A650]);
+    if (LevelLoadModel >= 0) {
+        p = (s32 *)(&HeroModelBank[LevelLoadModel]);
     } else {
         p = NULL;
     }
@@ -1441,8 +1441,8 @@ GfxCamera LoadingCamera = {0};
 u8 D_800A0224[108] = {0};
 WobbleObj *D_800A0290 = 0;
 s32 D_800A0294[11] = {0};
-s32 D_800A02C0 = 0;
-s32 D_800A02C4 = 0;
+s32 LoadingScenePlaying = 0;
+s32 LoadingSceneDelay = 0;
 s32 D_800A02C8[4] = {0};
 EngineMarkerPos D_800A02D8[3] = {
     { 0x7FB, 0x1FC3, 0xFA0, 0x7D0, { 0, 0, 0, 0, 0, 0 } },

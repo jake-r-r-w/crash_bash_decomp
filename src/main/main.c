@@ -40,7 +40,7 @@ s32 count_completion(u8 *arg0) {
     i /= 10;
     d = i - (i / 10) * 10;
     i /= 10;
-    D_8004E0D0 = (n - q * 10) | (t << 4) | (d << 8) | ((i % 10) << 12);
+    CompletionBcd = (n - q * 10) | (t << 4) | (d << 8) | ((i % 10) << 12);
     return n;
 }
 
@@ -3618,7 +3618,7 @@ u16 ModeTypes[370] = {
 s32 D_8004E0B4 = 0;
 u8 D_8004E0B8[20] = { 0x10, 4, 1, 0x80, 0x94, 3, 1, 0x80, 0x78, 2, 1, 0x80, 0, 0, 0, 0, 0, 0, 0, 0 };
 s16 core_process = 0;
-s32 D_8004E0D0 = 0;
+s32 CompletionBcd = 0;
 s32 D_8004E0D4 = 0;
 s32 GameFrameCount = 0;
 ModuleEntry *EngineModule = 0;

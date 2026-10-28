@@ -12,15 +12,15 @@ void modchip_check_region(void);
 void modchip_cd_reset(s32 arg0);
 
 /* CD command table, 4 bytes per command: command byte, parameter count, pad */
-extern u8 D_8006783C[];
+extern u8 ModchipCdCmds[];
 extern volatile u8 *CdRegIndex; /* CD index/status register */
-extern volatile u8 *D_80067878; /* CD command register */
+extern volatile u8 *CdCmdReg; /* CD command register */
 extern volatile u8 *CdParamFifo; /* CD parameter FIFO */
 extern volatile u8 *CdIntFlagReg; /* CD interrupt flag register */
 extern u8 CdParams[];
 extern u8 CdResult[]; /* CD response buffer */
 
-extern s32 D_80067898;
+extern s32 ModchipWaitCount;
 
 s32 modchip_cd_wait(s32 arg0);
 void modchip_show_warning(void);

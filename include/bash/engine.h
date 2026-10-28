@@ -105,8 +105,8 @@ typedef struct HeroActionEntry {
 extern HeroActionEntry HeroActionTable[];
 extern hero_seq **HeroSeqTables[]; /* by HeroInfo.hero_name (1-8): each character's sequences, by id */
 extern s32 D_8009BD04;
-extern s32 D_800A02C0;
-extern s32 D_800A02C4;
+extern s32 LoadingScenePlaying;
+extern s32 LoadingSceneDelay;
 extern u8 D_800A0224[];
 extern void *SceneMark;
 extern process_control_info MenuProcessControl;
@@ -122,7 +122,7 @@ extern fade_info ScreenFade;
 extern s32 D_800ADBC4;
 extern process_info LevelLoadProcess;
 extern s32 GamePause;
-extern u8 D_8009BCE0[];
+extern u8 PauseMenuPanel[];
 extern ScriptInit D_8009E250;
 extern ScriptInit D_8009E1E8;
 extern GfxViewport HudViewport;
@@ -417,7 +417,7 @@ typedef struct WobbleObj {
 extern WobbleObj *D_800A0290;
 
 extern SWORD_XY ScoreIcon1Pos[4];
-extern s16 D_8005A650;
+extern s16 LevelLoadModel;
 extern s32 map[];
 
 void PreInitLevel(void);

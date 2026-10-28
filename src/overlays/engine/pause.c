@@ -817,7 +817,7 @@ void DrawPauseMenu(void) {
     PanelCountCompletion();
     SetupCompletionDigits();
     PauseMenuY = 0x70;
-    e = D_8009BCE0;
+    e = PauseMenuPanel;
     *(s16 *)(e + 6) = -1;
     *(s16 *)(e + 0xC) = -1;
     FontPage = 0;
@@ -1297,7 +1297,7 @@ void RenderPause(void) {
         *(s32 *)&gs->unk28[0] = 0;
         *(s32 *)&gs->unk28[4] = 0;
         if (GamePause & 0x4000) {
-            e = D_8009BCE0;
+            e = PauseMenuPanel;
             if (*(s16 *)(e + 0xC) != -1) {
                 gfx_set_viewport(&MainViewport, &MainGfxCamera);
                 gs->otzAdd = 0x200;
@@ -1310,7 +1310,7 @@ void RenderPause(void) {
         *(s32 *)&gs->unk28[0] = 0;
         *(s32 *)&gs->unk28[4] = 0;
         if (!(GamePause & 0x40)) {
-            e = D_8009BCE0;
+            e = PauseMenuPanel;
             if (*(s16 *)(e + 0xC) != -1) {
                 gfx_set_viewport(&MainViewport, &MainGfxCamera);
                 gs->otzAdd = 0x200;
@@ -1910,7 +1910,7 @@ s32 D_8009BB30[108] = {
     0x7000000, 0, 0, 0, 0, 0x30000, 0, 3, 0x40019A, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0,
 };
-u8 D_8009BCE0[32] = {
+u8 PauseMenuPanel[32] = {
     1, 0x80, 0, 0x10, 0x7C, 0, 0xFF, 0xFF, 0, 0, 4, 2, 0xFF, 0xFF, 0, 0, 0, 0, 0, 0, 0x80,
     0x80, 0, 0, 4, 0, 4, 0, 0x21, 0x80, 0, 0x10,
 };

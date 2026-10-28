@@ -588,7 +588,7 @@ void SetupCompletionDigits(void) {
     s32 n = 0;
     s32 i;
 
-    v = D_8004E0D0;
+    v = CompletionBcd;
     CompletionDigits[0].flags = 0x10008000;
     CompletionDigits[0].cmd = 0x3014;
     for (i = 1; i < 4; i++) {
@@ -644,8 +644,8 @@ void InitIcons4(void) {
         sub = &IconParts[i][1];
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
         sub->flags = 0;
-        sub->unk04 = D_80099240[i].x;
-        sub->unk08 = D_80099240[i].y;
+        sub->unk04 = PanelIconOffset[i].x;
+        sub->unk08 = PanelIconOffset[i].y;
         sub->unk0C = 0;
         sub->entity = 0x3026;
     }
@@ -677,8 +677,8 @@ void InitIcons2(void) {
         sub = &IconParts[i][1];
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
         sub->flags = 0;
-        sub->unk04 = D_80099240[i].x;
-        sub->unk08 = D_80099240[i].y;
+        sub->unk04 = PanelIconOffset[i].x;
+        sub->unk08 = PanelIconOffset[i].y;
         sub->unk0C = 0;
         sub->entity = 0x3026;
     }
@@ -2157,7 +2157,7 @@ void SetPanelHeroIconB(u16 arg0, s16 arg1) {
 }
 
 void InitCompletionCounter(void) {
-    D_8004E0D0 = 0;
+    CompletionBcd = 0;
     D_80099194 = 0;
     CompletionPos[0] = 0x138;
     CompletionPos[1] = 0x20;
@@ -2274,7 +2274,7 @@ char *right_score = (void *)&PanelDigits456;
 s16 IconPos[8] = { 0x64, 0x18, 0x1CC, 0x18, 0x190, 0x18, 0x208, 0x18 };
 u16 IconImage[10] = { 0, 0x3003, 0x3002, 0x3004, 0x3006, 0x3007, 0x3008, 0x3005, 0x3016, 0 };
 u16 HeroNameText[10] = { 0, 0x2008, 0x2007, 0x2009, 0x200B, 0x200C, 0x200D, 0x200A, 0x201D, 0 };
-EngXY D_80099240[4] = { { -2, -4 }, { -2, -4 }, { -2, -4 }, { -2, -4 } };
+EngXY PanelIconOffset[4] = { { -2, -4 }, { -2, -4 }, { -2, -4 }, { -2, -4 } };
 SWORD_XY HealthIconPos[4] = { { -8, 0x45 }, { -8, 0x45 }, { -8, 0x45 }, { -8, 0x45 } };
 SWORD_XY ScoreIcon3Pos[4] = { { 0x34, 0x32 }, { 0x34, 0x32 }, { 0x34, 0x32 }, { 0x34, 0x32 } };
 SWORD_XY ScoreIcon2Pos[4] = { { 0x26, 0x46 }, { 0x26, 0x46 }, { 0x26, 0x46 }, { 0x26, 0x46 } };

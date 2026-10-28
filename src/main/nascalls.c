@@ -2630,7 +2630,7 @@ s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
     if (r > 0) {
         CdReadStatus = CdReadSync(1, 0);
         if (CdReadStatus == 0) {
-            CdControl(1, 0, D_8006EA08);
+            CdControl(1, 0, CdControlResult);
             func_80034AEC();
         }
         s = CdReadStatus;
@@ -2640,23 +2640,23 @@ s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
     if (s > 0) {
         return -1;
     }
-    CdIntToPos(*a + b + D_800637B8, &D_8006EA10);
-    if (CdControl(2, (u8 *)&D_8006EA10, 0) == 0 || CdRead(d, (u_long *)c, 0x80) == 0) {
+    CdIntToPos(*a + b + D_800637B8, &CdReadLoc);
+    if (CdControl(2, (u8 *)&CdReadLoc, 0) == 0 || CdRead(d, (u_long *)c, 0x80) == 0) {
         return -1;
     }
     CdReadStatus = 1;
     CdReadStatus = CdReadSync(1, 0);
     if (CdReadStatus == 0) {
-        CdControl(1, 0, D_8006EA08);
+        CdControl(1, 0, CdControlResult);
         func_80034AEC();
     }
     return CdReadStatus;
 }
 
 void cd_seek(s32 *arg0, s32 arg1) {
-    CdIntToPos(*arg0 + arg1, &D_8006EA14);
-    CdControlF(CdlSetloc, (u8 *)&D_8006EA14);
-    CdControlF(CdlSeekL, (u8 *)&D_8006EA14);
+    CdIntToPos(*arg0 + arg1, &CdSeekLoc);
+    CdControlF(CdlSetloc, (u8 *)&CdSeekLoc);
+    CdControlF(CdlSeekL, (u8 *)&CdSeekLoc);
 }
 
 void cd_read_wait(void) {
@@ -2671,7 +2671,7 @@ s32 cd_read_poll(void) {
     if (r > 0) {
         CdReadStatus = CdReadSync(1, 0);
         if (CdReadStatus == 0) {
-            CdControl(1, 0, D_8006EA08);
+            CdControl(1, 0, CdControlResult);
             func_80034AEC();
         }
         r = CdReadStatus;
@@ -4109,7 +4109,7 @@ s32 D_8005A628[4] = {0};
 s16 D_8005A638 = 0;
 u8 GamePlayers = 0;
 u8 D_8005A63B = 0;
-s8 D_8005A63C = 0;
+s8 CupMenuAnim = 0;
 u8 D_8005A63D = 0;
 u8 D_8005A63E = 0;
 u8 D_8005A63F = 0;
@@ -4120,7 +4120,7 @@ s16 GameMode = 0;
 s8 GameArena = 0;
 s8 D_8005A64B = 0;
 s16 D_8005A64C[2] = {0};
-s16 D_8005A650 = 0;
+s16 LevelLoadModel = 0;
 s16 D_8005A652 = 0;
 s16 D_8005A654[4] = {0};
 s16 GameTeamLeader[2] = {0};
@@ -4372,6 +4372,6 @@ s32 D_800643FC[6] = {0};
 /* the .bss (main.c's comes first) */
 s32 NasHeapMem __attribute__((section(".bss")));
 u32 D_8006EA04 __attribute__((section(".bss")));
-u8 D_8006EA08[8] __attribute__((section(".bss")));   /* CdControl's result */
-CdlLOC D_8006EA10 __attribute__((section(".bss")));
-CdlLOC D_8006EA14 __attribute__((section(".bss")));
+u8 CdControlResult[8] __attribute__((section(".bss")));   /* CdControl's result */
+CdlLOC CdReadLoc __attribute__((section(".bss")));
+CdlLOC CdSeekLoc __attribute__((section(".bss")));

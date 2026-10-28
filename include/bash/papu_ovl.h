@@ -461,7 +461,7 @@ typedef struct MinionMove {
 } MinionMove;
 
 extern s32 GameTeams[];
-extern u16 D_8009DC38[];
+extern u16 HeroSquashCycle[];
 extern u16 D_8009DC50[];
 
 void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16 n7, u16 n8);

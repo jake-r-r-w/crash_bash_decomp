@@ -2271,9 +2271,9 @@ void HeroSpin(s32 arg0) {
                 h->hero_eng->unk1E -= 0x155;
                 idx = (s16)((h->hero_eng->unk1E & 0xFFF) / 341);
                 idx = (s16)(idx % 12);
-                h->hero_eng->unk2C.x = D_8009DC38[idx];
+                h->hero_eng->unk2C.x = HeroSquashCycle[idx];
                 h->hero_eng->unk2C.y = D_8009DC50[idx];
-                h->hero_eng->unk2C.z = D_8009DC38[idx];
+                h->hero_eng->unk2C.z = HeroSquashCycle[idx];
                 h->hero_ctrl |= 5;
                 id = HeroTestBox(arg0, 0x400);
                 if (id != -1) {
@@ -6207,7 +6207,7 @@ void *AiHumanRoundTweakTable = 0;
 s32 HeroesAllOut = 0;
 D_8009D90C_t ArenaGrid[400] = {0};
 u16 D_8009DC2C[6] = { 0x456, 0x457, 0x458, 0x459, 0x45A, 0x45B };
-u16 D_8009DC38[12] = { 0xE66, 0xEFF, 0xF99, 0x1032, 0x10CC, 0x1165, 0x1200, 0x1165, 0x10CC, 0x1032, 0xF99, 0xEFF };
+u16 HeroSquashCycle[12] = { 0xE66, 0xEFF, 0xF99, 0x1032, 0x10CC, 0x1165, 0x1200, 0x1165, 0x10CC, 0x1032, 0xF99, 0xEFF };
 u16 D_8009DC50[12] = { 0x1000, 0xF66, 0xECC, 0xE33, 0xD99, 0xD00, 0xC66, 0xD00, 0xD99, 0xE33, 0xECC, 0xF66 };
 s16 D_8009DC68[9][3] = {
     { 0x5000, 0x5000, 0x5000 }, { 0x4000, 0x2000, 0x4000 }, { 0x1800, 0x1000, 0x1800 },

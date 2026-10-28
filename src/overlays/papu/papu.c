@@ -1358,9 +1358,9 @@ void PlotPapuMinion(NAS *nas)
       eng->unk2C.z = 0x1000;
     } else {
       eng->unk5C = 1;
-      eng->unk2C.x = D_8009DC38[i];
+      eng->unk2C.x = HeroSquashCycle[i];
       eng->unk2C.y = D_8009DC50[i];
-      eng->unk2C.z = D_8009DC38[i];
+      eng->unk2C.z = HeroSquashCycle[i];
     }
     who = PapuHitHeroesFlag(eng, 0x400);
     if (who != -1) {

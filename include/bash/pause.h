@@ -19,7 +19,7 @@ typedef struct {
     /* 0x1E */ u16 unk1E;
 } FuxFlags;
 /* Hero engine scale tables, 12 steps (HeroSpin). */
-extern u16 D_8009DC38[];
+extern u16 HeroSquashCycle[];
 extern u16 D_8009DC50[];
 typedef struct {
     s32 a;
@@ -384,7 +384,7 @@ typedef struct HudGameView {
     /* 0x32 */ u16 unk32;
     /* 0x34 */ s16 mode;
 } HudGameView;
-/* D_8009BCE0 as seen by DrawHudEntries. */
+/* PauseMenuPanel as seen by DrawHudEntries. */
 typedef struct HudBox {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s16 unk4;
@@ -469,7 +469,7 @@ typedef struct PauseView {
 } PauseView;
 #define PSV ((PauseView *)GameInfo)
 extern u16 D_8009AF38[];
-#define HUDBOX ((HudBox *)D_8009BCE0)
+#define HUDBOX ((HudBox *)PauseMenuPanel)
 #define HUDENG ((HudEngView *)PanelTab)
 extern s32 D_8009AF00;
 extern s16 D_8009AE98[][8];
