@@ -90,7 +90,15 @@ extern u16 CupMode;
 extern s32 CupTimer;
 extern u16 Trophy_Cups;
 extern process_control_info ProcessControl;
-extern u8 ModeDbaseLists[];
+/* A model a mode loads (ModeDbaseLists, 16 bytes; queue_dbase_load): the file group it comes in,
+ * the bank record it loads into, its model's and its textures' archive entries. */
+typedef struct ModeDbase {
+    FileGroup *group;
+    obj_dbase *dbase;
+    s32 *file;
+    s32 *textureFile;
+} ModeDbase;
+extern ModeDbase ModeDbaseLists[];
 extern process_control_info LoadingControl;
 extern EXTengine EnginePool[];
 extern HeroInfo Heroes[4];

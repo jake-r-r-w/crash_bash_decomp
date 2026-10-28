@@ -963,7 +963,6 @@ ScreenModesByWidth = 0x8009F668;
 ScreenSizes = 0x8009F6CC;
 HubSetupFlag = 0x8009F71C;
 ModeTextFilesLang = 0x8009F91C;
-AdvStatsFiles = 0x800A0000;
 FileGroupNone = 0x800A0014;
 LoadingUnused = 0x800A02C8;
 SceneUnused = 0x800A0D40;
