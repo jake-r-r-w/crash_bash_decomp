@@ -821,3 +821,7 @@ CreditsActive = 0x80098714;
 PauseMenuSetsByLang = 0x800986A4;
 CpuHeroChoices = 0x800986BC;
 ModeTextLoadAddr = 0x80098598;
+DefaultArenaDef = 0x80098F48;
+CompletionDigitSrc = 0x80099198;
+IconPos4 = 0x800991E0;
+CompletionShown = 0x80099194;

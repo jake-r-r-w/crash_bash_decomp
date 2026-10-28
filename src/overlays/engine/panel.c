@@ -614,9 +614,9 @@ void SetupCompletionDigits(void) {
     } while (i >= 2);
     i = 1;
     for (; i < 4; i++) {
-        CompletionDigits[i].arg = *(u16 *)((u8 *)D_80099198 + n * 16 + i * 4);
+        CompletionDigits[i].arg = *(u16 *)((u8 *)CompletionDigitSrc + n * 16 + i * 4);
     }
-    CompletionDigits[0].arg = *(u16 *)(n * 16 + (u8 *)D_80099198);
+    CompletionDigits[0].arg = *(u16 *)(n * 16 + (u8 *)CompletionDigitSrc);
 }
 
 void InitIcons4(void) {
@@ -637,8 +637,8 @@ void InitIcons4(void) {
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
-        ((EXTengine **)&Icon)[i]->unk10.x = D_800991E0[PanelHeroOrder[i]][0];
-        ((EXTengine **)&Icon)[i]->unk10.y = D_800991E0[PanelHeroOrder[i]][1];
+        ((EXTengine **)&Icon)[i]->unk10.x = IconPos4[PanelHeroOrder[i]][0];
+        ((EXTengine **)&Icon)[i]->unk10.y = IconPos4[PanelHeroOrder[i]][1];
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->entity = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
@@ -2158,7 +2158,7 @@ void SetPanelHeroIconB(u16 arg0, s16 arg1) {
 
 void InitCompletionCounter(void) {
     CompletionBcd = 0;
-    D_80099194 = 0;
+    CompletionShown = 0;
     CompletionPos[0] = 0x138;
     CompletionPos[1] = 0x20;
     CompletionPos[2] = 0;
@@ -2260,14 +2260,14 @@ s32 PanelCtrl = 0;
 u32 Clock_Time = 0;
 u16 Clock_flags = 0;
 U16Pair Clock_offsets[5] = { { 0xFFE2, 0xFFFF }, { 0x19, 0 }, { 0xFFF7, 0xFFFF }, { 0xFFC9, 0xFFFF }, { 0xFFBF, 0xFFFF } };
-s16 D_80099194 = 0;
-DigitSrc D_80099198[16] = {
+s16 CompletionShown = 0;
+DigitSrc CompletionDigitSrc[16] = {
     { 5, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0xB, 0 }, { 0xFFEA, 0xFFFF }, { 0, 0 }, { 0, 0 },
     { 0x1E, 0 }, { 0xFFF5, 0xFFFF }, { 0xFFD4, 0xFFFF }, { 0, 0 }, { 0x28, 0 }, { 7, 0 },
     { 0xFFE6, 0xFFFF }, { 0xFFC5, 0xFFFF },
 };
 u16 PanelHeroOrder[4] = { 1, 0, 3, 2 };
-s16 D_800991E0[4][2] = { { 0x28, 0x18 }, { 0xA0, 0x18 }, { 0x190, 0x18 }, { 0x208, 0x18 } };
+s16 IconPos4[4][2] = { { 0x28, 0x18 }, { 0xA0, 0x18 }, { 0x190, 0x18 }, { 0x208, 0x18 } };
 s16 D_800991F0[4][2] = { { 0x64, 0x18 }, { 0x1CC, 0x18 }, { -0x258, 0 }, { 0x258, 0 } };
 char *left_score = (void *)&PanelDigits123;
 char *right_score = (void *)&PanelDigits456;

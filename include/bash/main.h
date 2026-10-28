@@ -809,7 +809,7 @@ typedef struct { s16 unk0; s16 unk2; } TrigEntry;
 extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
 /* A 4.12 fixed-point quaternion (quat_slerp slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
-extern s32 D_80064478[];
+extern s32 SfxDistanceCurve[];
 extern s32 SavedSp;
 extern s32 LoadPermanentBuf;
 extern u8 ExportTable[];
@@ -1062,10 +1062,10 @@ extern ExtBlk *ExtFreeList;
 extern VabFile *VabLoading;  /* VAB being transferred to the SPU, or NULL */
 extern sfx_machine_bank_info *SfxBankLoading;  /* where its id goes */
 extern s32 VabHeadId;       /* the id from SsVabOpenHead */
-extern u8 D_800644A8[];
+extern u8 SpuKeyStatus[];
 extern s32 xa_count;
 extern s32 SfxVoiceMask;
-extern s32 D_80064418[];       /* voice bit masks, by voice */
+extern s32 SfxVoiceBits[];       /* voice bit masks, by voice */
 extern s32 MusicDuckCur;
 extern s32 ASTCount;            /* entries in ASTTable */
 extern ASTEntry *ASTTable;      /* the AST table in use */

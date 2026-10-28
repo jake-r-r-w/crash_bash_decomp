@@ -385,7 +385,7 @@ extern u8 race_shell_info[];
 extern u8 spin_shell_info[];
 extern u8 titles_shell_info[];
 
-ArenaDef D_80098F48 = {
+ArenaDef DefaultArenaDef = {
     0x104, 0x1A, 0, 0x12, 0x69, { 0, 0 }, (void *)&BASH_PREMAP, (s32)&bash_shell_info,
     (s32)&BASHSetUp,
 };

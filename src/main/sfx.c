@@ -79,7 +79,7 @@ s32 sfx_update_voice(_sfx_handler *voice) {
     s32 *slot = &voice->unk2C;
 
     if (voice->unk28 != -1) {
-        if (D_800644A8[voice->unk2C] != 1) {
+        if (SpuKeyStatus[voice->unk2C] != 1) {
             return 0;
         }
         f = voice->flags & 0xE;

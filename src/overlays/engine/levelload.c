@@ -137,7 +137,7 @@ void InitLevelLoad(void) {
     start = LoadModeText() + 7;
     start &= ~7;
     func_800936C4_heap(&MainHeap, start);
-    SetupLevelSpecs(&D_80098F48);
+    SetupLevelSpecs(&DefaultArenaDef);
     cfg = (EngineCfg *)LevelConfig;
     if (cfg == NULL) {
         cfg = &D_8009F96C;

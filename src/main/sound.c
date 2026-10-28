@@ -141,7 +141,7 @@ void vab_transfer_poll(void) {
             SfxBankLoading = NULL;
         }
     }
-    SpuGetAllKeysStatus(D_800644A8);
+    SpuGetAllKeysStatus(SpuKeyStatus);
     cam_build_view(MainCamera, ScreenRect);
     m = (MATRIX *)(MainCamera + 0x74);
     gte_SetRotMatrix(m);
@@ -238,7 +238,7 @@ s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     arg0[0] = v;
     arg0[1] = (s32)sfx;
     if (v != -1) {
-        SfxVoiceMask |= D_80064418[v];
+        SfxVoiceMask |= SfxVoiceBits[v];
         SsSetVoiceMask(SfxVoiceMask);
     }
     return v;
@@ -257,7 +257,7 @@ s32 view_project_volume(VECTOR *pos, View *view) {
     gte_rtps();
     gte_stlvl(out);
     gte_stsxy(psxy);
-    return sfx_distance_volume(out, D_80064478);
+    return sfx_distance_volume(out, SfxDistanceCurve);
 }
 
 void view_project(VECTOR *pos, View *view, VECTOR *out, s32 *sxy) {
@@ -298,7 +298,7 @@ S16Pair sfx_pan(s32 x, s32 v) {
 void sfx_key_off(s32 *voice) {
     if (*voice != -1) {
         SsUtKeyOffV(*voice);
-        SfxVoiceMask &= ~D_80064418[*voice];
+        SfxVoiceMask &= ~SfxVoiceBits[*voice];
         SsSetVoiceMask(SfxVoiceMask);
         *voice = -1;
     }
@@ -438,12 +438,12 @@ void sfx_table_reset(void) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 s32 SoundCritical = 0;
-s32 D_80064418[24] = {
+s32 SfxVoiceBits[24] = {
     1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000, 0x2000, 0x4000,
     0x8000, 0x10000, 0x20000, 0x40000, 0x80000, 0x100000, 0x200000, 0x400000, 0x800000,
 };
-s32 D_80064478[12] = { 0x400, 0x1000, 0xF00, 0xA00, 0x1200, 0x2800, 0x800, 0x1000, 0xF00, 0xA00, 0x1200, 0x1C00 };
-u8 D_800644A8[24] = {0};
+s32 SfxDistanceCurve[12] = { 0x400, 0x1000, 0xF00, 0xA00, 0x1200, 0x2800, 0x800, 0x1000, 0xF00, 0xA00, 0x1200, 0x1C00 };
+u8 SpuKeyStatus[24] = {0};
 sfx_machine_bank_info SfxBanks[6] = {0};
 s8 SfxTable[2002][2] = {0};
 s32 num_sfx_banks = 0;

@@ -88,7 +88,7 @@ static inline s32 ViewVolumeXY(VECTOR *pos, View *view, s32 *psxy) {
     gte_rtps();
     gte_stlvl(out);
     gte_stsxy(psxy);
-    return sfx_distance_volume(out, D_80064478);
+    return sfx_distance_volume(out, SfxDistanceCurve);
 }
 
 #endif /* BASH_SOUND_H */

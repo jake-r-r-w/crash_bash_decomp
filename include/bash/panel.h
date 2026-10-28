@@ -22,7 +22,7 @@ typedef struct DigitSrc {
 } DigitSrc;
 
 extern DigitEnt CompletionDigits[4];
-extern DigitSrc D_80099198[];
+extern DigitSrc CompletionDigitSrc[];
 
 void CheckHeroesAllOut(void);
 
@@ -69,7 +69,7 @@ void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2);
 extern EXTengine PanelTab[7];
 extern subengine IconParts[4][7];
 extern u16 PanelHeroOrder[4];
-extern s16 D_800991E0[][2];
+extern s16 IconPos4[][2];
 extern s16 D_800991F0[][2];
 extern u16 IconImage[];
 typedef struct { s16 x, y; } EngXY;
