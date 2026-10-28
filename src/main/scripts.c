@@ -598,57 +598,57 @@ u8 *play_script(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 **a
     return p;
 }
 
-s32 update_script(u8 *arg0) {
-    u8 *s;
+s32 update_script(script_control_info *ci) {
+    script_thread_handler *s;
     s32 *a;
     u8 *c;
-    void (*fn)(u8 *, u8 *);
+    void (*fn)(script_thread_handler *, script_control_info *);
     s32 idx;
 
-    s = *(u8 **)(arg0 + 8);
+    s = ci->threads;
     D_80058B60 = 0;
     while (s != NULL) {
-        fn = (void (*)(u8 *, u8 *))ScriptCommands[*(s32 *)(s + 4)].unk4;
+        fn = (void (*)(script_thread_handler *, script_control_info *))ScriptCommands[s->thread_type].unk4;
         if (fn != NULL) {
-            fn(s, arg0);
+            fn(s, ci);
         }
-        s = *(u8 **)(s + 0xB4);
+        s = s->next;
     }
-    *(s32 *)(arg0 + 0xC) = *(s32 *)(arg0 + 0xC) + D_80058B64;
-    c = *(u8 **)(*(u8 **)arg0 + 0xC);
-    idx = *(s32 *)(arg0 + 4);
+    ci->time.w = ci->time.w + D_80058B64;
+    c = ci->dbase->data;
+    idx = ci->script;
     if (c == NULL) {
         a = NULL;
     } else {
         s32 *t = (s32 *)(c + (*(s32 *)(c + 0x4C) + 0x4C) + idx * 4);
         a = (s32 *)((u8 *)t + *t);
     }
-    if (*(s16 *)(arg0 + 0xE) >= a[2]) {
-        *(s32 *)(arg0 + 0x14) |= 0x10;
-        if (*(s32 *)(arg0 + 0x14) & 8) {
-            *(s32 *)(arg0 + 0xC) = (a[2] - 1) << 16;
+    if (ci->time.h.frame >= a[2]) {
+        ci->flags |= 0x10;
+        if (ci->flags & 8) {
+            ci->time.w = (a[2] - 1) << 16;
         }
-        if (*(s32 *)(arg0 + 0x14) & 2) {
-            *(s16 *)(arg0 + 0xE) = *(u16 *)(a + 3);
+        if (ci->flags & 2) {
+            ci->time.h.frame = *(u16 *)(a + 3);
         }
-        if (*(s32 *)(arg0 + 0x14) & 4) {
-            kill_script_threads(arg0);
+        if (ci->flags & 4) {
+            kill_script_threads(ci);
             return 0;
         }
     }
     return 1;
 }
 
-void render_script(u8 *arg0, GteSetup *arg1) {
+void render_script(script_control_info *ci, GteSetup *arg1) {
     MATRIX m;
     GteSetup out;
     s32 dp;
-    u8 *p;
+    script_thread_handler *p;
     GfxState *gs;
-    void (*fn)(u8 *, GteSetup *);
+    void (*fn)(script_thread_handler *, GteSetup *);
 
     dp = RenderState.modelDp;
-    p = *(u8 **)(arg0 + 8);
+    p = ci->threads;
     RenderState.modelDp =0x1000 - (((0x1000 - D_80058B60) * (0x1000 - dp)) >> 12);
     m = *arg1->rot;
     m.t[0] = arg1->trans->vx;
@@ -662,11 +662,11 @@ void render_script(u8 *arg0, GteSetup *arg1) {
         gs = &RenderState;
         ((GfxScreen *)gs->unk28)->x = arg1->ofx;
         ((GfxScreen *)gs->unk28)->y = arg1->ofy;
-        fn = (void (*)(u8 *, GteSetup *))ScriptCommands[*(s32 *)(p + 4)].unk8;
+        fn = (void (*)(script_thread_handler *, GteSetup *))ScriptCommands[p->thread_type].unk8;
         if (fn != NULL) {
             fn(p, &out);
         }
-        p = *(u8 **)(p + 0xB4);
+        p = p->next;
     }
     RenderState.modelDp = dp;
 }
@@ -838,15 +838,15 @@ s16 cos_half(s32 arg0) {
 }
 
 void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
-    u8 *p;
+    script_control_info *p;
     u8 *e;
     s32 *s;
     s32 *q;
     s32 i;
-    void (*fn)(u8 *, u8 *, s32);
+    void (*fn)(u8 *, script_control_info *, s32);
     u8 *base;
 
-    p = (u8 *)sub + 0x6C;
+    p = (script_control_info *)&sub->unk6C;
     base = db->data;
     if (base == NULL) {
         e = NULL;
@@ -854,20 +854,20 @@ void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
         s = (s32 *)(base + (*(s32 *)(base + 0x4C) + 0x4C)) + arg1;
         e = (u8 *)s + *s;
     }
-    *(s32 *)(p + 0x14) = arg3;
-    *(obj_dbase **)p = db;
-    *(s32 *)(p + 4) = arg1;
-    *(s32 *)(p + 8) = 0;
-    *(s32 *)(p + 0xC) = 0;
-    *(u16 *)(p + 0xE) = *(u16 *)(e + 0xC);
+    p->flags = arg3;
+    p->dbase = db;
+    p->script = arg1;
+    p->threads = NULL;
+    p->time.w = 0;
+    p->time.h.frame = *(u16 *)(e + 0xC);
     q = (s32 *)(e + 0x1C);
-    *(s32 *)(p + 0x10) = *(s32 *)(e + 8);
-    *(s32 *)(p + 0x18) = 0;
+    p->unk10 = *(s32 *)(e + 8);
+    p->handle = NULL;
     i = 0;
     if (*(s32 *)e > 0) {
         do {
             u8 *a = (u8 *)q + *q;
-            fn = (void (*)(u8 *, u8 *, s32))ScriptCommands[*(s32 *)a].unk0;
+            fn = (void (*)(u8 *, script_control_info *, s32))ScriptCommands[*(s32 *)a].unk0;
             if (fn != NULL) {
                 fn(a, p, i);
             }
@@ -929,18 +929,18 @@ void plot_script_nas(NAS *nas, u8 *arg1) {
     }
 }
 
-void kill_script(u8 *arg0) {
+void kill_script(script_handler *s) {
     s32 *p;
-    u8 *cur;
-    u8 *next;
+    script_thread_handler *cur;
+    script_thread_handler *next;
     void *head;
-    u8 *prev;
-    u8 *nxt;
-    void *head2;
-    void (*fn)(u8 *, u8 *);
+    script_handler *prev;
+    script_handler *nxt;
+    script_handler *head2;
+    void (*fn)(script_thread_handler *, script_control_info *);
 
-    p = *(s32 **)(arg0 + 0x18);
-    cur = *(u8 **)(arg0 + 8);
+    p = s->info.handle;
+    cur = s->info.threads;
     if (p != NULL) {
         *p = 0;
     }
@@ -948,41 +948,41 @@ void kill_script(u8 *arg0) {
         if (cur == NULL) {
             goto unlink;
         }
-        fn = ScriptCommands[*(s32 *)(cur + 4)].unkC;
-        next = *(u8 **)(cur + 0xB4);
+        fn = (void (*)(script_thread_handler *, script_control_info *))ScriptCommands[cur->thread_type].unkC;
+        next = cur->next;
         if (fn != NULL) {
-            fn(cur, arg0);
+            fn(cur, &s->info);
         }
         head = ScriptList;
         ScriptList = cur;
-        *(void **)(cur + 0xB4) = head;
+        cur->next = head;
         cur = next;
     }
 unlink:
-    prev = *(u8 **)(arg0 + 0x70);
+    prev = s->last;
     if (prev != NULL) {
-        *(s32 *)(prev + 0x74) = *(s32 *)(arg0 + 0x74);
+        prev->next = s->next;
     } else {
-        active_scripts = *(void **)(arg0 + 0x74);
+        active_scripts = s->next;
     }
-    nxt = *(u8 **)(arg0 + 0x74);
+    nxt = s->next;
     if (nxt != NULL) {
-        *(s32 *)(nxt + 0x70) = *(s32 *)(arg0 + 0x70);
+        nxt->last = s->last;
     }
     head2 = free_scripts;
-    free_scripts = arg0;
-    *(void **)(arg0 + 0x74) = head2;
+    free_scripts = s;
+    s->next = head2;
 }
 
-void kill_script_threads(u8 *arg0) {
+void kill_script_threads(script_control_info *ci) {
     s32 *p;
-    u8 *cur;
-    u8 *next;
+    script_thread_handler *cur;
+    script_thread_handler *next;
     void *head;
-    void (*fn)(u8 *, u8 *);
+    void (*fn)(script_thread_handler *, script_control_info *);
 
-    p = *(s32 **)(arg0 + 0x18);
-    cur = *(u8 **)(arg0 + 8);
+    p = ci->handle;
+    cur = ci->threads;
     if (p != NULL) {
         *p = 0;
     }
@@ -990,14 +990,14 @@ void kill_script_threads(u8 *arg0) {
         if (cur == NULL) {
             return;
         }
-        fn = ScriptCommands[*(s32 *)(cur + 4)].unkC;
-        next = *(u8 **)(cur + 0xB4);
+        fn = (void (*)(script_thread_handler *, script_control_info *))ScriptCommands[cur->thread_type].unkC;
+        next = cur->next;
         if (fn != NULL) {
-            fn(cur, arg0);
+            fn(cur, ci);
         }
         head = ScriptList;
         ScriptList = cur;
-        *(void **)(cur + 0xB4) = head;
+        cur->next = head;
         cur = next;
     }
 }
@@ -1137,19 +1137,19 @@ s32 interp_window(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     return arg1;
 }
 
-void kill_emitter_thread(u8 *arg0) {
-    s32 temp_a0;
-    s32 temp_a0_2;
+void kill_emitter_thread(script_thread_handler *th) {
+    subengine *subs;
+    partmotdata *mdata;
 
-    temp_a0 = (*(s32*)((u8*)(arg0) + 12));
-    if (temp_a0 != 0) {
-        subs_release(temp_a0, (*(s32*)((u8*)(arg0) + 16)));
-        (*(s32*)((u8*)(arg0) + 12)) = 0;
+    subs = th->type.particle.subs;
+    if (subs != NULL) {
+        subs_release(subs, th->type.particle.last_sub);
+        th->type.particle.subs = NULL;
     }
-    temp_a0_2 = (*(s32*)((u8*)(arg0) + 20));
-    if (temp_a0_2 != 0) {
-        mal_free(temp_a0_2, &MainHeap);
-        (*(s32*)((u8*)(arg0) + 20)) = 0;
+    mdata = th->type.particle.mdata;
+    if (mdata != NULL) {
+        mal_free(mdata, &MainHeap);
+        th->type.particle.mdata = NULL;
     }
 }
 
@@ -1397,10 +1397,10 @@ void interp3_s16(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
     arg2[2] = interp(arg0[2], arg1[2], arg3, arg4);
 }
 
-void interp3(u8 *arg0, u8 *arg1, u8 *arg2, s32 arg3, s32 arg4) {
-    (*(s32*)((u8*)(arg2) + 0)) = interp((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg1) + 0)), arg3, arg4);
-    (*(s32*)((u8*)(arg2) + 4)) = interp((*(s32*)((u8*)(arg0) + 4)), (*(s32*)((u8*)(arg1) + 4)), arg3, arg4);
-    (*(s32*)((u8*)(arg2) + 8)) = interp((*(s32*)((u8*)(arg0) + 8)), (*(s32*)((u8*)(arg1) + 8)), arg3, arg4);
+void interp3(s32 *arg0, s32 *arg1, s32 *arg2, s32 arg3, s32 arg4) {
+    arg2[0] = interp(arg0[0], arg1[0], arg3, arg4);
+    arg2[1] = interp(arg0[1], arg1[1], arg3, arg4);
+    arg2[2] = interp(arg0[2], arg1[2], arg3, arg4);
 }
 
 s32 *find_range(s32 *arg0, s32 arg1, s32 arg2) {
@@ -1525,55 +1525,55 @@ void *script_list_pop(void) {
     return cur;
 }
 
-void script_unlink(u8 *arg0) {
-    u8 *temp_v1;
-    u8 *temp_v1_2;
-    u8 *temp_v1_3;
+void script_unlink(script_handler *s) {
+    script_handler *prev;
+    script_handler *next;
+    script_handler *head;
 
-    temp_v1 = (*(s32*)((u8*)(arg0) + 112));
-    if (temp_v1 != NULL) {
-        (*(s32*)((u8*)(temp_v1) + 116)) = (u8 *) (*(s32*)((u8*)(arg0) + 116));
+    prev = s->last;
+    if (prev != NULL) {
+        prev->next = s->next;
     } else {
-        active_scripts = (*(s32*)((u8*)(arg0) + 116));
+        active_scripts = s->next;
     }
-    temp_v1_2 = (*(s32*)((u8*)(arg0) + 116));
-    if (temp_v1_2 != NULL) {
-        (*(s32*)((u8*)(temp_v1_2) + 112)) = (u8 *) (*(s32*)((u8*)(arg0) + 112));
+    next = s->next;
+    if (next != NULL) {
+        next->last = s->last;
     }
-    temp_v1_3 = free_scripts;
-    free_scripts = arg0;
-    (*(s32*)((u8*)(arg0) + 116)) = temp_v1_3;
+    head = free_scripts;
+    free_scripts = s;
+    s->next = head;
 }
 
-u8 *script_alloc(void) {
-    u8 *temp_v0;
-    u8 *temp_v1;
+script_handler *script_alloc(void) {
+    script_handler *s;
+    script_handler *head;
 
-    temp_v1 = free_scripts;
-    if (temp_v1 != NULL) {
-        free_scripts = (*(s32*)((u8*)(temp_v1) + 116));
+    s = free_scripts;
+    if (s != NULL) {
+        free_scripts = s->next;
         if (active_scripts != NULL) {
-            (*(s32*)((u8*)(active_scripts) + 112)) = temp_v1;
+            active_scripts->last = s;
         }
-        temp_v0 = active_scripts;
-        (*(s32*)((u8*)(temp_v1) + 112)) = 0;
-        active_scripts = temp_v1;
-        (*(s32*)((u8*)(temp_v1) + 116)) = temp_v0;
+        head = active_scripts;
+        s->last = NULL;
+        active_scripts = s;
+        s->next = head;
     }
-    return temp_v1;
+    return s;
 }
 
 void scripts_release(void) {
-    u8 *temp_s0;
-    u8 *var_a0;
+    script_handler *next;
+    script_handler *s;
 
-    var_a0 = active_scripts;
-    if (var_a0 != NULL) {
+    s = active_scripts;
+    if (s != NULL) {
         do {
-            temp_s0 = (*(s32*)((u8*)(var_a0) + 116));
-            kill_script(var_a0);
-            var_a0 = temp_s0;
-        } while (var_a0 != NULL);
+            next = s->next;
+            kill_script(s);
+            s = next;
+        } while (s != NULL);
     }
     if (D_80058B6C != 0) {
         mal_free(D_80058B6C, &MainHeap);
@@ -1584,16 +1584,16 @@ void scripts_release(void) {
 }
 
 void scripts_kill_all(void) {
-    u8 *temp_s0;
-    u8 *var_a0;
+    script_handler *next;
+    script_handler *s;
 
-    var_a0 = active_scripts;
-    if (var_a0 != NULL) {
+    s = active_scripts;
+    if (s != NULL) {
         do {
-            temp_s0 = (*(s32*)((u8*)(var_a0) + 116));
-            kill_script(var_a0);
-            var_a0 = temp_s0;
-        } while (var_a0 != NULL);
+            next = s->next;
+            kill_script(s);
+            s = next;
+        } while (s != NULL);
     }
 }
 
@@ -1604,39 +1604,39 @@ void scripts_render(void) {
         u16 c;
         u16 d;
     } s;
-    u8 *var_s0;
+    script_handler *sc;
     GfxState *gs;
 
-    var_s0 = active_scripts;
+    sc = active_scripts;
     gs = &RenderState;
     for (;;) {
         /* block-scope declaration, as the implicit one was: keeps the loop unrotated */
-        extern void render_script(u8 *, GteSetup *);
-        if (var_s0 == NULL) {
+        extern void render_script(script_control_info *, GteSetup *);
+        if (sc == NULL) {
             break;
         }
-        s.a = gfx_object_matrix(var_s0 + 0x1C);
+        s.a = gfx_object_matrix((GfxXform *)sc->xyzrf);
         s.b = s.a + 0x14;
         s.c = *(u16 *)&gs->unk28[0];
         s.d = *(u16 *)&gs->unk28[4];
-        render_script(var_s0, &s);
-        var_s0 = *(u8 **)(var_s0 + 0x74);
+        render_script(&sc->info, &s);
+        sc = sc->next;
     }
 }
 
 void scripts_update(void) {
-    u8 *temp_s1;
-    u8 *var_s0;
+    script_handler *next;
+    script_handler *s;
 
-    var_s0 = active_scripts;
-    if (var_s0 != NULL) {
+    s = active_scripts;
+    if (s != NULL) {
         do {
-            temp_s1 = (*(s32*)((u8*)(var_s0) + 116));
-            if (update_script(var_s0) == 0) {
-                script_unlink(var_s0);
+            next = s->next;
+            if (update_script(&s->info) == 0) {
+                script_unlink(s);
             }
-            var_s0 = temp_s1;
-        } while (var_s0 != NULL);
+            s = next;
+        } while (s != NULL);
     }
 }
 
@@ -1655,8 +1655,8 @@ s32 D_80058B64 = 0;
 s32 D_80058B68 = 0;
 s32 D_80058B6C = 0;
 void *ScriptList = 0;
-void *free_scripts = 0;
-void *active_scripts = 0;
+script_handler *free_scripts = 0;
+script_handler *active_scripts = 0;
 u8 *ScriptTrackDbase = 0;
 s32 ScriptTrackIndex = 0;
 s32 ScriptTrackThread = 0;

@@ -1081,9 +1081,9 @@ extern CdlLOC D_8006EA10;
 void func_80034AEC(void);
 extern NASTrigger *HeadOfTriggers;
 extern s32 TriggerCount;
-extern void *active_scripts;
+extern script_handler *active_scripts;
 extern RECT D_8005B640;
-extern void *free_scripts;
+extern script_handler *free_scripts;
 extern void *MapScene;
 /* A map trigger record (InitTriggers): position, then a word whose low 2
  * bits are the cast and the rest the offset from +0xC to its info. */

@@ -203,7 +203,7 @@ BASH_SIZE_CHECK(script_thread_handler, 0xB8);
 struct script_control_info {
     /* 0x00 */ obj_dbase *dbase;
     /* 0x04 */ s32 script;             /* index into the dbase's script table */
-    /* 0x08 */ s32 unk8;
+    /* 0x08 */ script_thread_handler *threads; /* the threads it runs, linked by next */
     /* 0x0C */ union {
         s32 w;                         /* 16.16 frames */
         struct {
@@ -212,8 +212,8 @@ struct script_control_info {
         } h;
     } time;
     /* 0x10 */ s32 unk10;              /* the script header's +8 */
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
+    /* 0x14 */ s32 flags;              /* 2: loop, 4: kill at the end, 8: hold the last frame, 0x10: ended */
+    /* 0x18 */ s32 *handle;            /* the owner's word, zeroed when the threads go */
 };
 BASH_SIZE_CHECK(script_control_info, 0x1C);
 
