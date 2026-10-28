@@ -23,7 +23,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   source-only, named, typed and shift-tested) are done. Phase 4 repeats
   the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
   Phase 5 does the engine and `main.exe`. Figures (`progress`,
-  2026-10-28): 2435 of 2537 functions named, 2317 typed, 89.77% of the
+  2026-10-28): all 2537 game functions named, 2317 typed, 89.77% of the
   data is C (every slot overlay's, the engine's, and the exe's game
   `.data`).
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
@@ -63,8 +63,8 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. The 102 game functions still unnamed (34 in main.exe, 68 in the engine): most
-   need their callers read first; the empty stubs can stay.
+1. Every game function is named; the `*_unused` ones are empty and called by nothing.
+   Next: the engine's and exe's `D_` globals (most are struct fields: type the structs).
 2. The model bank as one `obj_dbase` array (283 records from `HeroModelBank` to
    0x8005683C; the slot labels as elements or an enum of indices: a naming choice
    for the user).
@@ -489,6 +489,7 @@ Newest first, a few lines each. Details are in the commits.
   engine functions named (2435 of 2537): the default hero actions from the leaked
   HeroMode_nums, the process functions by their process_info slots, the rest from
   their code; the overlays' D_ references to engine functions (HeroNoJump ..) name them.
+  Then the last 102 from their callers and tables: every game function is named.
 
 - **2026-10-27 (Phase 5: the engine's and the exe's data as C):** the engine's
   data spliced, cut by file (`engine.c` .. `camera.c`, the world records with

@@ -373,9 +373,9 @@ load extract and are documented.
   `MainCamera`, the viewports and cameras typed, ...); 231 more engine functions are
   named from their code (the level loop, panel, pause, heroes, game flow, loading,
   camera), the default hero actions from the leaked `HeroMode_nums` (`SetHeroIdle`
-  .. `HeroKick`) and the process functions from their `process_info` slots; 68 are
-  left (stubs and ones whose role isn't clear yet). Most `D_` globals left are fields
-  of structs still untyped.
+  .. `HeroKick`) and the process functions from their `process_info` slots. Every
+  engine function is named (2026-10-28). Left: the `D_` globals, most of them fields of
+  structs still untyped.
 - [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
   globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads
   `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff
@@ -413,8 +413,9 @@ load extract and are documented.
   ([PROTOTYPES.md](PROTOTYPES.md)); 447 more game functions are named from their code
   (the shell, allocator, loader, dbase, renderer, scripts, NAS calls, textures, sound,
   music, card, modchip), in the leak's styles (`mal_*`, `dbase_*`, `*_thread`,
-  CamelCase for the NAS calls). Left: 34 (18 empty stubs, 16 whose role isn't clear
-  yet) and the 131 Sony statics the converted objects carry no names for. For
+  CamelCase for the NAS calls); the last ones from their callers, every game function
+  named (2537 of 2537, 2026-10-28; empty ones nothing calls are `*_unused`). Left: the
+  globals, and the 131 Sony statics the converted objects carry no names for. For
   browsing cross-references across the whole binary, try Ghidra with a PSX
   loader by hand.
 
