@@ -16,15 +16,15 @@ update.
 Preparation goes in the phase that first needs it. When later work turns up
 something new to do, add it to the phase it blocks, not to an earlier one.
 
-## Current focus: every slot overlay the same way
+## Current focus: Phase 6, the finish
 
-Every game function matches (2026-10-26), so what is left is what makes the
-source source-only: data as C, names and types, and the proof that the code
-works as code, a shifted build that still plays. Phase 3 did all of it for
-one overlay, Tank, end to end, and built the tooling on the way
-(finished 2026-10-26). Phase 4 now repeats it overlay by overlay with the
-recipe in [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md), the other leaked
-minigames first, and Phase 5 does the same for the engine and `main.exe`.
+Every game function matches (2026-10-26), and Phases 1 to 5 are done (2026-10-28): every slot
+overlay, the engine and `main.exe` are source-only (no `INCLUDE_ASM`, `INCLUDE_RODATA` or data
+asm anywhere; the data is 100% C), split into their files, named and typed, and every format the
+game loads extracts to editable files (docs/ASSETS.md). What is left is Phase 6: the proofs that
+the source works as source (every overlay, the engine and `main.exe` shifted at once and played;
+a build with a current GCC), the last of the typing (quality level 4 everywhere), and
+ARCHITECTURE.md as a description of the game's systems.
 
 Any build of ours can be played: `tools/dk make disc` packs `build/main.exe`
 and the overlays into `build/CrashBash.bin`/`.cue`, which boots in an
@@ -341,7 +341,7 @@ build.
   (`make shift OVL=titles PAD=0x40`, the route in PLAYING.md). Left for
   Phase 5: its views of the game-state struct (`Titles*View`).
 
-## Phase 5 - The engine and `main.exe` to source-only
+## Phase 5 - The engine and `main.exe` to source-only (done 2026-10-28)
 
 The same recipe for the two units that stay in place: the engine overlay
 (its types are the vocabulary the minigames are written in) and the
@@ -463,7 +463,9 @@ load extract and are documented.
   functions read GameInfo by field. For browsing cross-references across the whole binary, try Ghidra with a PSX
   loader by hand.
 
-- [ ] Shift-test again (playtests): Bash, Arkenoid and Pogo were shift-tested
+- [x] Shift-test again (playtests): dropped (decided 2026-10-28). Phase 6's shift of everything
+  at once, and the final test's shifted build, play every overlay shifted anyway. The note as it
+  stood: Bash, Arkenoid and Pogo were shift-tested
   before the overlay links took splat's labels as PROVIDEs (they had 7, 6 and 1
   pinned labels); Polar before its skating sequences (`*_seq_breathe_ft` ..) were
   split out, so 32 engine words into it didn't move then; and every overlay once
@@ -473,8 +475,9 @@ load extract and are documented.
 
 **Done when** every test in [The final test](#the-final-test) passes.
 
-- [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere: none since 2026-10-26 (every
-  function C, every string block C); the box closes with the data.
+- [x] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere (closed 2026-10-28): none since 2026-10-26
+  (every function C, every string block C), and no data asm is left in any unit (`decomp.py
+  progress`: data 100%).
 - [ ] The memory images: the slot's and the engine's .bss stay files read from
   the user's disc (build-machine leftovers, not source); decide whether a
   source build may write zeros there instead (the game shouldn't read them
@@ -482,8 +485,12 @@ load extract and are documented.
   written into its file too (zeros, after one two-word function list;
   ARCHITECTURE.md, The exe's .bss): as C, uninitialised definitions in each file
   and a link that writes `.bss` out, or the same memory-image treatment.
-- [ ] Every remaining disc file (music, movies, anything not covered above)
-  extracts, and the formats are documented.
+- [x] Every remaining disc file (music, movies, anything not covered above)
+  extracts, and the formats are documented (closed 2026-10-28): every `CRASHBSH.DAT` entry
+  decodes to editable files (texture sets, models with their animations, level data and scripts,
+  title screens, mode text and menus, sound packs with the music as SEQ and MIDI), and the save
+  on a memory card too (`card.py`). The disc has no movies: `BASHY.` is 30 MB of zeros, and
+  `SPYRO3/` is the bundled Spyro 3 demo, not Crash Bash's (docs/ASSETS.md).
 - [ ] Shift everything at once: pad `main.exe` and the engine too, and relink
   every overlay against their new addresses instead of the fixed ones in
   `configs/USA/sym.main.txt` and `sym.engine.txt`. This needs every overlay's

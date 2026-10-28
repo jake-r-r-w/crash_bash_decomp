@@ -18,14 +18,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `.data` too, except `bios_1.o`'s: `configs/USA/psyq/data_keep.txt`).
   `make check` and `make disc-check` OK. Live figures: `decomp.py progress`
   / `docs/index.html`.
-- [ROADMAP.md](ROADMAP.md) (restructured 2026-10-26): Phase 1 (types and
-  names), Phase 2 (matching) and Phase 3 (the **Tank pilot**: `tank`
-  source-only, named, typed and shift-tested) are done. Phase 4 repeats
-  the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
-  Phase 5 does the engine and `main.exe`. Figures (`progress`,
-  2026-10-28): all 2537 game functions named, 2408 typed, 89.77% of the
-  data is C (every slot overlay's, the engine's, and the exe's game
-  `.data`).
+- [ROADMAP.md](ROADMAP.md): Phases 1 to 5 are done (2026-10-28): matching, the
+  Tank pilot, every slot overlay, the engine and `main.exe` source-only, and
+  every asset format extracted (the shift retests were dropped by decision:
+  Phase 6's shift of everything covers them). Phase 6 is next. Figures
+  (`progress`, 2026-10-28): all 2537 game functions named, 2424 typed, data
+  100% C, nothing parked.
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
   steering C counts as matched, inline asm is refused by the gate. One
   recorded exception (2026-10-26): `draw_verts` (`func_800193A8`,
@@ -49,51 +47,32 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `include/bash/`, every overlay is identified, and the demo discs' names
   and prototypes are applied (PROTOTYPES.md; the discs are in the
   git-ignored `protos/`).
-- Game data (2026-10-16): every `CRASHBSH.DAT` entry but the 15 code
-  overlays extracts to editable files in `assets/CRASHBSH/` and packs back
-  byte for byte (docs/ASSETS.md).
+- Game data: every `CRASHBSH.DAT` entry but the 15 code overlays extracts to
+  editable files in `assets/CRASHBSH/` and packs back byte for byte, the
+  level data, scripts and menus included (2026-10-28), and `card.py` reads
+  and writes the memory-card save (docs/ASSETS.md). Edits to placements,
+  menus, cutscene keys and saves are playtested.
 - Dashboard: `docs/index.html` is `tools/scripts/dashboard.html` plus the
   data (`progress` takes ~2.5 s warm). The swarm (tools/swarm/README.md)
   has nothing left to queue.
 
 ## Next
 
-Phase 5 (ROADMAP.md) is under way. Done: the engine's rodata and data (cut by
-file, its slot words linked from the overlays, so `shift.py` no longer rewrites
-anything), the exe's rodata and game `.data` (cut by file), and the data-only
-Sony objects. Next, none of them needing a playtest:
+Phase 6 (ROADMAP.md). In rough order:
 
-1. Done 2026-10-28: no `D_` data name is left in any unit (the dashboard's data map has
-   no unnamed block). Objects nothing reads by name are `*Unused`; `GameInfo`'s gaps are
-   `Game*` globals named from their users. A new label inside an object: use the field or
-   element (`MainCamera.at`, `SfxTable[0x3C5][1]`), not a new `D_`.
-2. The engine is done (ROADMAP's engine item closed 2026-10-28): every function and global
-   typed, `GameInfo` one `GameState` read through `GAME`. The exe is partway (ROADMAP's exe
-   item is closed). Now the asset formats item (ROADMAP Phase 5): texture sets done
-   (animated textures decoded; `TexFile`/`TexImage` in C); the model file's structs are in C
-   (`ModelFile` and the rest, docs/ASSETS.md). Next: decode in mdl.py what it keeps as bytes, from
-   those structs: done for the maps' paths, triggers and placements (`mapdata.py`, map.json).
-   The contours (map_map +0x14) are decoded too: arena walls/zones, edges from +0x3C (Dino's
-   DinoSegObj view is right; Race's reads go through the same offsets); the cell list is empty in
-   every map. The scripts' threads, the mode text's menus and the card save are decoded too, and
-   the ROADMAP's asset formats item is closed (2026-10-28). Next (ROADMAP Phase 5): the shift
-   retests need the user; otherwise the exe's 69 raw-offset functions (heap arithmetic, the export
-   table), and the fields ASSETS.md lists as undecoded.
-   A sample retail-DAT reader for scratch scripts: scratch/retail.py (`each(fmt)`).
-   `obj_texture`'s +0x18 block is its own struct, `info` (`GfxTexInfo`: VRAM rect, src,
-   tpage, clut, uv0..3), since two functions take a pointer to it; GfxTexEntry is folded.
-   One clut entry, `TexClut` (TexEnt12, ClutUpload, AnimClut, GfxClutEntry folded); AnimTex
-   and TexAnimEntry folded into obj_texture (`clut`, `dv`, `flags`, `frames`, `pix`, `time`,
-   `info.vram` the VRAM node); GfxModel/GfxTexSet folded into obj_dbase/obj_textureset, and
-   `RenderState.dbase`. The model file read through `dbase->data` is still cast to the
-   RelTable/UvTable views: that is the model file struct of the asset formats item.
-3. The overlays' GameInfo views (`HubGameView`, `TankModeView`, `PolarModeView`, ...: 47
-   types) fold into `GameState` the same way (scratch/views_map.py + fold_views.py did the
-   engine's: map each view's fields onto GameState by offset, fold in rounds of
-   non-conflicting names, then fix the few sign and address-order differences by hand).
+1. **Shift everything at once** (the big proof): pad `main.exe` and the engine too, and relink
+   every overlay against their new addresses instead of the fixed ones in `sym.main.txt` and
+   `sym.engine.txt`. Every overlay's data is C now, which was its blocker. `make shift` and
+   `shift.py` do one overlay today; this is the same for all units together.
+2. **Quality level 4**: the 113 untyped game functions (`progress`), the exe's 69 raw-offset
+   functions (mostly the heap's block arithmetic and `export_exe_functions`' slot offsets), and the
+   `unkXX` fields (ASSETS.md, What isn't decoded, lists the file formats' ones).
+3. **A `NON_MATCHING` build with a current GCC for MIPS** (the final test's test 5).
+4. **ARCHITECTURE.md** as a description of the game's systems.
 
-Needing the user: the shift retests (ROADMAP Phase 5, last box): every
-overlay on the new engine link.
+Needing the user: the memory-image question (ROADMAP Phase 6: may a source build write zeros
+where the slot's and the engine's .bss hold build-machine leftovers?).
+A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
@@ -492,6 +471,12 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-28 (bookkeeping: Phase 5 closed):** the user dropped the shift retests (Phase 6's
+  shift of everything covers them), which closed Phase 5. Phase 6's no-`INCLUDE_ASM` box (data
+  100% C) and its remaining-disc-files box (every DAT entry and the card save decode; no movies on
+  the disc) are ticked; ROADMAP's Current focus and this log's Next point at Phase 6. scratch/ was
+  cleaned (RetroArch's `card/` and `ra/` folders and five helpers kept).
 
 - **2026-10-28 (Phase 5: asset formats closed):** mapdata.py decodes the scripts' six thread types
   (3,333 threads, 12,605 keys; threads can share bytes, so pack writes only edited fields). txt.py
