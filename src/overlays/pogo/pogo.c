@@ -7630,12 +7630,12 @@ void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags) {
     if (p0 != NULL && p1 != NULL) {
         if (obj->unk8E != 0) {
             ti = &obj->model->texs.tex[obj->unk8E & 0xFFF].info;
-            *(u16 *)&p0->u0 = ti->uv;
+            *(u16 *)&p0->u0 = ti->uv0;
             *(u16 *)&p0->u1 = ti->uv1;
             *(u16 *)&p0->u2 = ti->uv2;
             *(u16 *)&p0->u3 = ti->uv3;
             p0->tpage = ti->tpage;
-            *(u16 *)&p1->u0 = ti->uv;
+            *(u16 *)&p1->u0 = ti->uv0;
             *(u16 *)&p1->u1 = ti->uv1;
             *(u16 *)&p1->u2 = ti->uv2;
             *(u16 *)&p1->u3 = ti->uv3;

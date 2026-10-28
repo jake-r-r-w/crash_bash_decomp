@@ -231,22 +231,22 @@ typedef struct {
     s32 table; /* 0x20: byte offset from this field */
 } FaceRuns;
 
-/* The part of a 0x38-byte texture entry from +0x18 (prim_write_uvs). */
-typedef struct {
-    u8 unk0[0xC];
-    u16 tpage; /* 0x0C */
-    u16 clut;  /* 0x0E */
-    u16 uv;    /* 0x10: ORed into each vertex's uv */
-    u16 uv1;   /* 0x12: uv of vertices 1-3 (Pogo's psxpogo_render_tile) */
-    u16 uv2;   /* 0x14 */
-    u16 uv3;   /* 0x16 */
+/* A texture entry's VRAM placement and the primitive words drawn with it: its own
+ * struct at obj_texture +0x18 (prim_create_entity_single and Pogo's psxpogo_render_tile
+ * take a pointer to it). */
+typedef struct GfxTexInfo {
+    /* 0x00 */ s16 vramX;    /* its VRAM rect: x, y, vramW, vramH */
+    /* 0x02 */ s16 vramY;
+    /* 0x04 */ u16 vramW;    /* in VRAM units */
+    /* 0x06 */ s16 vramH;
+    /* 0x08 */ s16 *src;     /* a scrolling texture's source x, y (texture_update_scroll) */
+    /* 0x0C */ u16 tpage;
+    /* 0x0E */ u16 clut;
+    /* 0x10 */ u16 uv0;      /* ORed into each vertex's uv */
+    /* 0x12 */ u16 uv1;      /* uv of vertices 1-3 */
+    /* 0x14 */ u16 uv2;
+    /* 0x16 */ u16 uv3;
 } GfxTexInfo;
-
-typedef struct {
-    u8 unk0[0x18];
-    GfxTexInfo info; /* 0x18 */
-    u8 unk30[0x8];
-} GfxTexEntry;
 
 typedef struct {
     u8 unk0[2];
@@ -258,7 +258,7 @@ typedef struct {
 typedef struct {
     s32 count;            /* 0x00: entries in tex */
     u8 unk4[4];
-    GfxTexEntry *tex;     /* 0x08 */
+    struct obj_texture *tex; /* 0x08 */
     GfxClutEntry *cluts;  /* 0x0C */
 } GfxTexSet;
 
@@ -1158,17 +1158,7 @@ typedef struct obj_texture {
     /* 0x11 */ s8 f11;       /* h - 1 */
     /* 0x12 */ u16 f12;
     /* 0x14 */ u32 f14;
-    /* 0x18 */ s16 vramX;    /* its VRAM rect: x, y, vramW, vramH */
-    /* 0x1A */ s16 vramY;
-    /* 0x1C */ u16 vramW;    /* in VRAM units */
-    /* 0x1E */ s16 vramH;
-    /* 0x20 */ s16 *src;     /* a scrolling texture's source x, y (texture_update_scroll) */
-    /* 0x24 */ u16 tpage;
-    /* 0x26 */ u16 clut;
-    /* 0x28 */ u16 uv0;
-    /* 0x2A */ u16 uv1;
-    /* 0x2C */ u16 uv2;
-    /* 0x2E */ u16 uv3;
+    /* 0x18 */ GfxTexInfo info;
     /* 0x30 */ s32 f30;
     /* 0x34 */ s32 f34;
 } obj_texture;

@@ -74,13 +74,13 @@ void card_make_header(void) {
     itoa_div_end(CardSaveTitle + 0x16, count_completion(CardBuffer + 0x208 + 0x194 * 2), 100);
     itoa_div_end(CardSaveTitle + 0x1B, count_completion(CardBuffer + 0x208 + 0x194 * 3), 100);
     McSetTitle(CardSaveTitleFormat, ((McHeader *)CardBuffer)->title);
-    rect = (RECT *)&dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306B)->vramX;
+    rect = (RECT *)&dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306B)->info.vramX;
     if (rect->w == 4) {
         h = rect->h;
         if (h == 0x10) {
             StoreImage(rect, (u_long *)CardIconFrames);
             img = dbase_texture_ptr(&HeroModelBank[DB_Font], 0x306C);
-            StoreImage((RECT *)&img->vramX, (u_long *)(CardIconFrames + 0x80));
+            StoreImage((RECT *)&img->info.vramX, (u_long *)(CardIconFrames + 0x80));
             pal = dbase_texture_entry(&HeroModelBank[DB_Font], (u16)img->f2);
             clut.x = pal->pos->f0;
             clut.y = pal->pos->f2;

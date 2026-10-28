@@ -3358,24 +3358,24 @@ void texture_update_scroll(texture_scroll *s, obj_textureset *o) {
     pos = s->pos + s->speed;
     s->pos = pos;
     if (s->speed > 0) {
-        if ((pos >> 8) >= e->vramH) {
-            s->pos = pos - (e->vramH << 8);
+        if ((pos >> 8) >= e->info.vramH) {
+            s->pos = pos - (e->info.vramH << 8);
         }
     } else if (pos < 0) {
-        s->pos = pos + (e->vramH << 8);
+        s->pos = pos + (e->info.vramH << 8);
     }
     y = s->pos >> 8;
     r.x = s->dst[0];
     r.y = s->dst[1] + y;
-    r.w = e->vramW;
-    r.h = e->vramH - y;
+    r.w = e->info.vramW;
+    r.h = e->info.vramH - y;
     p = (*(DR_MOVE **)&cdb->prim)++;
-    SetDrawMove(p, &r, e->src[0], e->src[1]);
+    SetDrawMove(p, &r, e->info.src[0], e->info.src[1]);
     addPrim(&cdb->ot[0xFFF], p);
     r.y = s->dst[1];
     r.h = y;
     p = (*(DR_MOVE **)&cdb->prim)++;
-    SetDrawMove(p, &r, e->src[0], e->src[1] + e->vramH - y);
+    SetDrawMove(p, &r, e->info.src[0], e->info.src[1] + e->info.vramH - y);
     addPrim(&cdb->ot[0xFFF], p);
 }
 
@@ -3415,7 +3415,7 @@ void texture_update_anims(obj_textureset *arg0) {
                 }
                 if ((base->pos >> 8) != old) {
                     q = (s32 *)((u8 *)base + base->frames) + (base->pos >> 8);
-                    LoadImage((RECT *)&dst->vramX, (u32 *)((u8 *)q + *q));
+                    LoadImage((RECT *)&dst->info.vramX, (u32 *)((u8 *)q + *q));
                 }
                 base++;
             }
@@ -3484,7 +3484,7 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
             break;
         }
         b = arg0->base;
-        d->src = NULL;
+        d->info.src = NULL;
         d->f34 = -1;
         d->flag = *(u16 *)&s->wC & 1;
         d->f2 = (s->wC >> 1) & 0x7FFF;
@@ -3501,8 +3501,8 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
             d->advance = (*(u8 *)s << 1) - 1;
         }
         d->f11 = *(u8 *)((u8 *)s + 2) - 1;
-        d->vramW = s->w0;
-        d->vramH = s->w2;
+        d->info.vramW = s->w0;
+        d->info.vramH = s->w2;
         u = (s32)b - 0x14;
         t = s->w8;
         d->fC = t;
@@ -3581,8 +3581,8 @@ loop:
         rec = &arg1->tex[*ip];
         ip += 4;
         *pp = vram_take((u8 *)rec->slot);
-        rect.w = rec->vramW;
-        rect.h = rec->vramH;
+        rect.w = rec->info.vramW;
+        rect.h = rec->info.vramH;
         rect.x = (*pp)->f0;
         rect.y = (*pp)->f2;
         pp += 4;
@@ -3732,12 +3732,12 @@ s32 texture_draw_quad(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u
     *(u32 *)&p->r3 = FadeColorGs(gs, (c3 >> 16) & 0xFF, (c3 >> 8) & 0xFF, c3 & 0xFF);
     setPolyGT4(p);
     setSemiTrans(p, (s32)c0 < 0);
-    *(u16 *)&p->u0 = f->uv0;
-    *(u16 *)&p->u1 = f->uv1;
-    *(u16 *)&p->u2 = f->uv2;
-    *(u16 *)&p->u3 = f->uv3;
-    p->tpage = (f->tpage & 0xFF9F) | ((c0 >> 19) & 0x60);
-    p->clut = f->clut;
+    *(u16 *)&p->u0 = f->info.uv0;
+    *(u16 *)&p->u1 = f->info.uv1;
+    *(u16 *)&p->u2 = f->info.uv2;
+    *(u16 *)&p->u3 = f->info.uv3;
+    p->tpage = (f->info.tpage & 0xFF9F) | ((c0 >> 19) & 0x60);
+    p->clut = f->info.clut;
     *(s32 *)&p->x0 = v.w;
     v.s.x += f->w - 1;
     *(s32 *)&p->x1 = v.w;
@@ -3763,12 +3763,12 @@ s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color) {
     *(u32 *)&p->r0 = FadeColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
     setPolyFT4(p);
     setSemiTrans(p, (s32)color < 0);
-    *(u16 *)&p->u0 = f->uv0;
-    *(u16 *)&p->u1 = f->uv1;
-    *(u16 *)&p->u2 = f->uv2;
-    *(u16 *)&p->u3 = f->uv3;
-    p->tpage = (f->tpage & 0xFF9F) | ((color >> 19) & 0x60);
-    p->clut = f->clut;
+    *(u16 *)&p->u0 = f->info.uv0;
+    *(u16 *)&p->u1 = f->info.uv1;
+    *(u16 *)&p->u2 = f->info.uv2;
+    *(u16 *)&p->u3 = f->info.uv3;
+    p->tpage = (f->info.tpage & 0xFF9F) | ((color >> 19) & 0x60);
+    p->clut = f->info.clut;
     *(s32 *)&p->x0 = v.w;
     v.s.x += f->w - 1;
     *(s32 *)&p->x1 = v.w;
@@ -3800,12 +3800,12 @@ s32 texture_draw_3d(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     *(u32 *)&p->r2 = t;
     *(u32 *)&p->r3 = t;
     setcode(p, 0x3C);
-    *(u16 *)&p->u0 = f->uv0;
-    *(u16 *)&p->u1 = f->uv1;
-    *(u16 *)&p->u2 = f->uv2;
-    *(u16 *)&p->u3 = f->uv3;
-    p->tpage = (f->tpage & 0xFF9F) | ((c0 >> 19) & 0x60);
-    p->clut = f->clut;
+    *(u16 *)&p->u0 = f->info.uv0;
+    *(u16 *)&p->u1 = f->info.uv1;
+    *(u16 *)&p->u2 = f->info.uv2;
+    *(u16 *)&p->u3 = f->info.uv3;
+    p->tpage = (f->info.tpage & 0xFF9F) | ((c0 >> 19) & 0x60);
+    p->clut = f->info.clut;
     setSemiTrans(p, (s32)c0 < 0);
     v.vx = pos->x - 0x80;
     v.vy = pos->y - 0x80;
@@ -3920,8 +3920,8 @@ loop:
         rec = &arg1->tex[*ip];
         ip += 4;
         *pp = vram_take(rec->slot);
-        rect.w = rec->vramW;
-        rect.h = rec->vramH;
+        rect.w = rec->info.vramW;
+        rect.h = rec->info.vramH;
         rect.x = (*pp)->f0;
         rect.y = (*pp)->f2;
         pp += 4;
@@ -3978,7 +3978,7 @@ void texture_scroll_step(TexFrameAnim *arg0, obj_textureset *arg1) {
     idx = arg0->pos >> 8;
     if (idx != old) {
         p = (s32 *)((u8 *)arg0 + arg0->frames + idx * 4);
-        LoadImage((RECT *)&rect->vramX, (u_long *)((u8 *)p + *p));
+        LoadImage((RECT *)&rect->info.vramX, (u_long *)((u8 *)p + *p));
     }
 }
 
@@ -4022,7 +4022,7 @@ void texture_init_entry(TexSrc2A84C *s, obj_texture *d, s32 n) {
     u32 t;
     s32 u;
 
-    d->src = NULL;
+    d->info.src = NULL;
     d->f34 = -1;
     d->flag = *(u16 *)&s->wC & 1;
     d->f2 = (s->wC >> 1) & 0x7FFF;
@@ -4039,8 +4039,8 @@ void texture_init_entry(TexSrc2A84C *s, obj_texture *d, s32 n) {
         d->advance = (*(u8 *)s << 1) - 1;
     }
     d->f11 = *(u8 *)((u8 *)s + 2) - 1;
-    d->vramW = s->w0;
-    d->vramH = s->w2;
+    d->info.vramW = s->w0;
+    d->info.vramH = s->w2;
     u = n - 0x14;
     t = s->w8;
     d->f30 = (s32)s - u;

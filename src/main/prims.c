@@ -277,7 +277,7 @@ void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
         *(u32 *)&poly->r0 |= 0x02000000;
     }
     poly->tpage = ti->tpage | 0x20;
-    base = ti->uv;
+    base = ti->uv0;
     uv = &uvs[*uvIdx++];
     *(u16 *)&poly->u0 = base | uv[0];
     *(u16 *)&poly->u1 = base | uv[1];
@@ -478,7 +478,7 @@ void prim_write_uvs(faces, prim)
                     ti = &ts->tex[v].info;
                     *(u16 *)(p + 14) = ti->clut;
                 }
-                base = ti->uv;
+                base = ti->uv0;
                 *(u16 *)(p + 0x1A) = (ti->tpage & 0xFF9F) | ((*blend >> 8) & 0x60);
                 {
                     uv = &uvs[*uvIdx];
@@ -1367,7 +1367,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
             otz = d->unk68;
         }
         if ((u32)otz < (u32)RenderState.otLen) {
-            texture_draw((obj_texture *)&RenderState.unk0->texs.tex[a & 0xFFF],
+            texture_draw(&RenderState.unk0->texs.tex[a & 0xFFF],
                           (s32)e, otz, g);
         }
         return;
