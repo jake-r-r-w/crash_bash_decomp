@@ -297,8 +297,6 @@ typedef struct Vec3W {
     s32 a, b, c;
 } Vec3W;
 
-/* The level's trigger file (LevelTriggerData): its records at 4 (LevelRecs). */
-typedef struct { s32 unk0; EngineRec32 *recs; } LevelTriggerHead;
 extern NAS *NasPoolLast;
 extern u8 *HeroNasList;
 extern PlaceRec ****PauseMenuSets;

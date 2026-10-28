@@ -554,7 +554,7 @@ void SetupLevelSpecs(ArenaDef *arg0) {
         SubPoolCount = e->unk8;
         LevelConfig = e->unk10;
         ((GameState *)GameInfo)->boot = e->unk14;
-        LevelTriggerData = e->unkC;
+        LevelTriggerData = (LevelTriggerHead *)e->unkC;
         if (((GameState *)GameInfo)->levelFlags & 0x80) {
             ((GameState *)GameInfo)->levelRecIndex = ((LevelInfo *)ModeTypes)[((GameState *)GameInfo)->mode].unk4;
         } else {
@@ -1074,15 +1074,15 @@ void DrawSysText(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                         oy = xy >> 16;
                         xy &= 0xFFFF;
                         xy |= (oy - 7) << 16;
-                        texture_draw((obj_texture *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                        texture_draw((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], xy, 0, 0x808080);
                         oy = xy >> 16;
                         xy &= 0xFFFF;
                         xy |= (oy + 7) << 16;
                     } else {
-                        texture_draw((obj_texture *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                        texture_draw((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], xy, 0, 0x808080);
                     }
                 } else {
-                    texture_draw_quad((obj_texture *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, arg3, arg3, arg4, arg4);
+                    texture_draw_quad((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], xy, 0, arg3, arg3, arg4, arg4);
                 }
             }
             col += w;
@@ -1129,7 +1129,7 @@ void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
         do {
             s32 g = *(s16 *)(c * 2 + (FontPage << 9) + tab);
             if (g != -1) {
-                texture_draw_3d(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38, &pos, 0, arg2, arg3);
+                texture_draw_3d((obj_texture *)&sysfont_dbase->textures.tex[g & 0xFFF], &pos, 0, arg2, arg3);
             }
             pos.x += (s32)((u8)SysFontWidth[c + (FontPage << 8)] << 24) >> 20;
             c = *s++;
@@ -1178,7 +1178,7 @@ void InitTriggers(void) {
     s32 idx;
 
     tmp = EngineTemplate;
-    tbl = *(U16Table **)((u8 *)LevelTriggerData + 8);
+    tbl = LevelTriggerData->tbl;
     types = tbl->data;
     ntypes = tbl->count;
     if ((TriggerCount = (((s32)MapScene->dbase) != 0) ? *((s32 *)MapScene->triggers) : 0) == 0) {
@@ -1868,8 +1868,8 @@ ScriptCursor *CreateScriptCursor(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init)
             *(s32 *)c = (*(s32 *)c & ~0xFF) | flags;
             c->cur = init->cur;
             c->tbl = init->tbl;
-            *(s32 *)c->pad14 = arg1;
-            *(s32 *)(c->pad14 + 4) = arg2;
+            c->unk14 = arg1;
+            c->unk18 = arg2;
             ScriptCursorNext(c);
             return c;
         }
@@ -4092,7 +4092,7 @@ u16 SpriteTripleUVs[4][3] = {
 };
 s32 World_floor_level = 0;
 s32 VelocityCalc = 0;
-void *LevelTriggerData = 0;
+LevelTriggerHead *LevelTriggerData = 0;
 s32 LevelConfig = 0;
 EngineRec32 *LevelRecs = 0;
 s32 LevelUnused[6] = {0};
@@ -4186,7 +4186,7 @@ s32 FontPage = 0;
 MapPoint MapPoints[32] = {0};
 s32 ContourHeight = 0;
 s32 ACMD[16][2] = {0};
-u8 *sysfont_dbase = 0;
+obj_dbase *sysfont_dbase = 0;
 RECT VramRect = { 0, 0, 0x1FF, 0x1FF };
 ModuleEntry *CurrentModule = 0;
 s32 EaseCurves[16] = {  /* two easing curves (0..0x7B8, 0..0x1EE); read nowhere */

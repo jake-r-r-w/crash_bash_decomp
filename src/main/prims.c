@@ -513,7 +513,7 @@ FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *fa
             faces_write_colors(faces, (FacePrim *)node[1]);
         }
     } else {
-        if (mal_first_free(*(u16 *)((u8 *)faces + 8) * 10, MainHeap.free) == NULL || (node = PrimLinkFree) == NULL) {
+        if (mal_first_free(faces->faces * 10, MainHeap.free) == NULL || (node = PrimLinkFree) == NULL) {
             return NULL;
         }
         PrimLinkFree = (s32 *)*node;
@@ -522,7 +522,7 @@ FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, FaceRuns *fa
         }
         *node = list->f4;
         list->f4 = (s32)node;
-        mal_alloc_owned_low(*(u16 *)((u8 *)faces + 8) * 0x28, (void **)(node + 1), (s32)&MainHeap, ((FrameCount & 1)?3:2));
+        mal_alloc_owned_low(faces->faces * 0x28, (void **)(node + 1), (s32)&MainHeap, ((FrameCount & 1)?3:2));
         prim = (FacePrim *)node[1];
         prim_write_uvs(faces, prim);
         faces_write_colors(faces, prim);
@@ -988,7 +988,7 @@ void *model_prims_begin(void *arg0, s32 arg1) {
     prim = NULL;
     if ((arg1 & 0x40000001) | RenderState.modelDp | (PrimDepthTest != 0 && (u32)prim < PrimDepthLimit)) {
         set = *(PrimSet **)arg0;
-        if (set != NULL || (set = (PrimSet *)primset_alloc((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
+        if (set != NULL || (set = (PrimSet *)primset_alloc((s32 **)arg0, ((FaceRuns *)arg0)->faces >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 1, &p->pairs[0].b, arg0, 0);
@@ -1022,7 +1022,7 @@ void *model_prims_begin(void *arg0, s32 arg1) {
         }
     } else {
         set = *(PrimSet **)arg0;
-        if (set != NULL || (set = (PrimSet *)primset_alloc((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
+        if (set != NULL || (set = (PrimSet *)primset_alloc((s32 **)arg0, ((FaceRuns *)arg0)->faces >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
             p = (PrimSet *)(off + (s32)set);
             prim = PrimSet_NextPrim(set, off + 4, 0, &p->pairs[0].a, arg0, set->mode);
@@ -2443,18 +2443,18 @@ s32 sub_alloc_prims(void *arg0, s32 arg1) {
 
     off = (FrameCount & 1) * 12 + 0x90;
     slot = (Func8001CC10Slot *)(arg1 + off);
-    want = *(u16 *)((u8 *)arg0 + 8);
+    want = ((FaceRuns *)arg0)->faces;
     if (want != slot->size) {
         if (slot->size < want) {
             if (slot->ptr != 0) {
                 mal_free(slot, &MainHeap);
             }
-            mal_alloc_owned_low(*(u16 *)((u8 *)arg0 + 8) * 0x28, slot, &MainHeap, ((FrameCount & 1)?3:2));
+            mal_alloc_owned_low(((FaceRuns *)arg0)->faces * 0x28, slot, &MainHeap, ((FrameCount & 1)?3:2));
             if (slot->ptr == 0) {
                 slot->size = 0;
                 return 0;
             }
-            slot->size = *(u16 *)((u8 *)arg0 + 8);
+            slot->size = ((FaceRuns *)arg0)->faces;
         }
         faces_write_uvs_colors((s32)arg0, (s32)slot->ptr);
     }

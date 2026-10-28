@@ -9,7 +9,7 @@ void InitialiseNasSystem(void) {
     GameState *v;
     u8 *p;
 
-    rec = ((LevelTriggerHead *)LevelTriggerData)->recs;
+    rec = LevelTriggerData->recs;
     LevelRecs = rec;
     if (rec != NULL) {
         GameState *w = (GameState *)GameInfo;

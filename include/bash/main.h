@@ -210,7 +210,12 @@ typedef union {
  * byte and a count, ending in a count of 0xFF) and one u16 colour index per face
  * (bit 15: semi-transparent, bits 13-14: blend mode). */
 typedef struct {
-    u8 unk0[0x14];
+    s32 unk0;
+    s32 unk4;
+    u16 faces; /* 0x08 */
+    s16 unkA;
+    u32 flags; /* 0x0C */
+    s32 verts; /* 0x10: byte offset from this field */
     s32 runs;  /* 0x14: byte offset from this field */
     u8 unk18[8];
     s32 table; /* 0x20: byte offset from this field */
@@ -263,7 +268,12 @@ typedef struct GfxModel {
  * texture index list (0x1C: bits 9-14 repeat count, bit 15 last texture, bits 0-8
  * texture), and a blend index (0x20). */
 typedef struct {
-    u8 unk0[0x14];
+    s32 unk0;
+    s32 unk4;
+    u16 faces; /* 0x08 */
+    s16 unkA;
+    u32 flags; /* 0x0C */
+    s32 verts; /* 0x10: byte offset from this field */
     s32 runs;  /* 0x14: byte offset from this field */
     s32 uvIdx; /* 0x18 */
     s32 texs;  /* 0x1C */
@@ -1040,7 +1050,7 @@ extern u16 GameLevelFlags;
 extern s32 FontPage;
 extern s8 SysFontWidth[];
 extern u8 SysFontFlags[];
-extern u8 *sysfont_dbase;
+extern obj_dbase *sysfont_dbase;
 extern s16 SysFontLookUp[];
 extern s32 NasHeapMem;
 extern u32 NasHeapBytes;
@@ -1109,7 +1119,13 @@ typedef struct U16Table {
     /* 0x00 */ u16 *data;
     /* 0x04 */ u16 count;
 } U16Table;
-extern void *LevelTriggerData;
+/* The level's trigger file (LevelTriggerData): its records (LevelRecs) and its trigger table. */
+typedef struct LevelTriggerHead {
+    /* 0x00 */ s16 *unk0;
+    /* 0x04 */ EngineRec32 *recs;
+    /* 0x08 */ U16Table *tbl;
+} LevelTriggerHead;
+extern struct LevelTriggerHead *LevelTriggerData;
 extern MapPoint MapPoints[32];
 /* A button-combo sequence: steps[] are pad masks, 0-terminated. */
 typedef struct ComboSeq {
@@ -1852,7 +1868,8 @@ typedef struct ScriptCursor {
     /* 0x01 */ u8 pad1[0xB];
     /* 0x0C */ s32 cur;
     /* 0x10 */ s32 *tbl;
-    /* 0x14 */ u8 pad14[8];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
     /* 0x1C */ s16 unk1C;
     /* 0x1E */ s16 unk1E;
     /* 0x20 */ s16 idx;

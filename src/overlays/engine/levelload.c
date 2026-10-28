@@ -258,7 +258,7 @@ void load_initial_dbases(void)
   }
   while (i < 4);
 
-  p = *((s16 **) LevelTriggerData);
+  p = LevelTriggerData->unk0;
   v = *p;
   if (v >= 0)
   {
