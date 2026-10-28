@@ -590,7 +590,8 @@ typedef struct AdventureState {
     /* 0x075 */ s8 unk75;
     /* 0x076 */ u8 unk76[0x21];
     /* 0x097 */ u8 pad97[4];
-    /* 0x09B */ u8 unk9B[8];
+    /* 0x09B */ u8 unk9B[4];
+    /* 0x09F */ u8 unk9F[4];
     /* 0x0A3 */ u8 padA3[4];
     /* 0x0A7 */ u8 unkA7[4];
     /* 0x0AB */ u8 unkAB[0x21];

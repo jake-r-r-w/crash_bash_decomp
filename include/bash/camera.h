@@ -100,25 +100,10 @@ s32 CamEdgeIntersectZY(VECTOR *arg0, VECTOR *arg1, s32 arg2);
 void RenderScreenLabels(void);
 
 
-/* GameInfo as seen by InitScreenLabels. */
-typedef struct EngRecView {
-    /* 0x00 */ u8 pad0[0x32];
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 pad36[0x48 - 0x36];
-    /* 0x48 */ s16 unk48;
-    /* 0x4A */ s16 unk4A;
-    /* 0x4C */ u8 pad4C[4];
-    /* 0x50 */ u8 unk50[4];
-    /* 0x54 */ u8 pad54[0x6C - 0x54];
-    /* 0x6C */ s32 unk6C;
-    /* 0x70 */ u8 pad70[0xCC - 0x70];
-    /* 0xCC */ u8 unkCC[4];
-} EngRecView;
 
 /* Read through a cast, not a local: sched then sees the base as the symbol and
  * moves these loads past the record stores, as the target does. */
-#define GV ((EngRecView *)GameInfo)
+#define GV ((GameState *)GameInfo)
 
 extern u16 HeroNameText[];
 extern TextPanelItem ScreenLabels4P[];

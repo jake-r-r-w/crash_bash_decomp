@@ -251,7 +251,7 @@ void BonkHeroSwing(s32 arg0) {
         }
         if (act == 8) {
             if (h->hero_last_mode == 0x44 || BonkSlots[arg0].f8 == 1 ||
-                (GameInfo[arg0 + 0x5C] != 0 && (((D5A614View *)GameInfo)->flags & 0x80))) {
+                (GameInfo[arg0 + 0x5C] != 0 && (((GameState *)GameInfo)->levelFlags & 0x80))) {
                 BonkSpawnShockwave(arg0);
             }
             t = (BonkTgt2 *)BonkSlots[arg0].f0;
@@ -565,7 +565,7 @@ s32 BonkHeroTestLose(s32 arg0) {
 void BonkHeroWinner(s32 idx) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + idx;
-    D5A614View *g;
+    GameState *g;
 
     h->hero_frozen = 2;
     if (h->hero_move != NULL) {
@@ -574,11 +574,11 @@ void BonkHeroWinner(s32 idx) {
     }
     ProcessHeroAnim(idx);
     if (UpdateHeroVictory(idx) != 0) {
-        g = (D5A614View *)GameInfo;
-        if (g->unk4 & 0x800) {
-            g->unk30 = g->unk30 | 0x201;
+        g = (GameState *)GameInfo;
+        if (g->cheats & 0x800) {
+            g->exitFlags = g->exitFlags | 0x201;
         } else {
-            g->unk30 = g->unk30 | 1;
+            g->exitFlags = g->exitFlags | 1;
         }
     }
 }

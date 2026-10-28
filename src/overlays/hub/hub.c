@@ -36,15 +36,15 @@ void HubRender(void) {
 void HubStartCredits(void) {
     s32 one;
     CreditsActive = 0;
-    ((EngMenuGame *)GameInfo)->flags &= 0xFDC07013;
+    ((GameState *)GameInfo)->pause &= 0xFDC07013;
     *(s32 *)&HubSavedCamH = (s16)MainCamera.xform.angle.vy;
     *(s32 *)&HubSavedFov = CameraMode;
     HubSavedCamX = MainCamera.at.x;
     HubSavedCamY = MainCamera.at.y;
     HubSavedCamZ = MainCamera.at.z;
-    if (*(u16 *)&((EngMenuGame *)GameInfo)->unk74 == 0) {
+    if (*(u16 *)&((GameState *)GameInfo)->adventure.unk74 == 0) {
         music_request(2);
-        ((EngMenuGame *)GameInfo)->unk74 = 1;
+        ((GameState *)GameInfo)->adventure.unk74 = 1;
         one = 1;
         CreditsStep = one;
         CreditsTimer = 0;
@@ -203,7 +203,7 @@ void HubEndCredits(void)
   s32 i;
   music_request(1);
   g = GameInfo;
-  ((EngMenuGame *) g)->unk74 = 0;
+  ((GameState *) g)->adventure.unk74 = 0;
   HubShowShadow(0);
   CreditsActive = 0;
   set_fade(&ScreenFade, -0x200, 0);

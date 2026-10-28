@@ -19,7 +19,7 @@ void InitialiseHeroes(void) {
     EXTheromove *mv;
     EXTbotai *ai;
     AiSkill *c;
-    HeroSetupView *g;
+    GameState *g;
     u8 *p;
     u8 *q;
     s32 m;
@@ -45,7 +45,7 @@ void InitialiseHeroes(void) {
     HeroesInPlay = 4;
     HeroesSidelined = 4;
     FinalHeroesTempo = 0;
-    HSV->unk30 &= 0xF7FF;
+    HSV->exitFlags &= 0xF7FF;
     hb = Heroes;
     while (1) {
         if (i >= 4) {
@@ -78,8 +78,8 @@ void InitialiseHeroes(void) {
         h->hero_object = NULL;
         h->hero_health = 0x14;
         g = HSV;
-        g->unk10 = 0;
-        g = (HeroSetupView *)((u8 *)g + i);  /* indexing unk50/unk58 by i adds two insns */
+        g->pause = 0;
+        g = (GameState *)((u8 *)g + i);  /* indexing unk50/unk58 by i adds two insns */
         h->hero_status = 0;
         h->hero_strength = 0x14;
         h->hero_immunity = 0;
@@ -87,7 +87,7 @@ void InitialiseHeroes(void) {
         h->hero_hit = 0;
         h->hero_last_mode = 0;
         h->hero_mode = 0;
-        tm = g->unk58[0];
+        tm = g->teammates[0];
         h->hero_idle_count = 600;
         h->hero_harm_player = -1;
         h->hero_pick_delay = 0;
@@ -112,7 +112,7 @@ void InitialiseHeroes(void) {
         h->hero_weapon_timer = 0;
         h->hero_attack_counter = 0;
         HeroLastHarm[i] = 0;
-        h->hero_name = g->unk50[0];
+        h->hero_name = g->heroes[0];
         c = (AiSkill *)((s16 *)AiPlayerSkill + k);  /* &AiPlayerSkill[i] drops the k counter */
         c->level = 0x10;
         c->unk2 = 0x10;
@@ -351,7 +351,7 @@ void ProcessHeroes(void) {
             HPADS[id].unk54 = 0;
             goto reset;
         }
-        if (HLV->state < 0 && (HLV->state & 4) &&
+        if (HLV->cheats < 0 && (HLV->cheats & 4) &&
             (pad = PadCount - 1, HPADS[pad].held & 0x400)) {
             a->hero_status = status | 0x2000;
             SetHeroAction(id, (u16)HeroActDead);
@@ -412,7 +412,7 @@ void ProcessHeroes(void) {
         if (h->hero_hit != 0) {
             if (--h->hero_hit == 0) {
                 if (h->hero_health <= 0) {
-                    if (!(HLV->state & 2)) {
+                    if (!(HLV->cheats & 2)) {
                         h->hero_status |= 0x2000;
                         SetHeroAction(id, (u16)HeroActDead);
                         h->hero_immunity = 0;
@@ -421,7 +421,7 @@ void ProcessHeroes(void) {
                     h->hero_immunity = 0x28;
                 }
             }
-            if (!(HLV->unk32 & 0x1000)) {
+            if (!(HLV->levelFlags & 0x1000)) {
                 HPADS[id].unk50 = 0;
                 HPADS[id].unk54 = 0;
             }
@@ -441,7 +441,7 @@ void ProcessHeroes(void) {
         if (!(st & 0x2000)) {
             last = id;
             HeroesInPlay++;
-        } else if (HLV->unk30 & 0x800) {
+        } else if (HLV->exitFlags & 0x800) {
             RemoveCamera(c->hero);
         } else {
             HeroesSidelined++;
@@ -466,12 +466,12 @@ void ProcessHeroes(void) {
         if (sub != NULL) {
             sub->flags &= ~0x8000;
         }
-        if (!(HLV->state & 0x100) && HLV->out[id] != 0) {
+        if (!(HLV->cheats & 0x100) && HLV->heroOut[id] != 0) {
             ((void (*)(s32))HeroHooks.HeroBot)(id);
         }
         h = &Heroes[id];
         if (h->hero_pu != 0x15 || (GameFrameCount & 1)) {
-            if (HLV->flags & 0x4000000) {
+            if (HLV->pause & 0x4000000) {
                 HPADS[id].unk50 = 0;
                 HPADS[id].unk54 = 0;
             }
@@ -489,11 +489,11 @@ void ProcessHeroes(void) {
         }
     next:;
     }
-    if (HLV->unk32 & 0x100) {
+    if (HLV->levelFlags & 0x100) {
         if (!(BossState.flags & 0x8000)) {
             if (!(BossState.flags & 0x2000)) {
                 HeroesInPlay++;
-            } else if (!(HLV->unk30 & 0x800)) {
+            } else if (!(HLV->exitFlags & 0x800)) {
                 HeroesSidelined++;
             }
             pc = (u16 *)&BossState;
@@ -502,19 +502,19 @@ void ProcessHeroes(void) {
             }
         }
     }
-    if (!(HLV->state & 0x20)) {
+    if (!(HLV->cheats & 0x20)) {
         bits = 1;
-        if (HLV->state & 0x800) {
+        if (HLV->cheats & 0x800) {
             bits = 0x201;
         }
-        if (!(HLV->unk32 & 0x200)) {
+        if (!(HLV->levelFlags & 0x200)) {
             ((void (*)(s32, s32))HeroHooks.ChooseWinner)(last, bits);
         }
-        if (HLV->unk32 & 0x400) {
-            HLV->unk30 |= bits;
+        if (HLV->levelFlags & 0x400) {
+            HLV->exitFlags |= bits;
         }
     }
-    if (!(HLV->unk30 & 0x801) && FinalHeroesTempo == 0) {
+    if (!(HLV->exitFlags & 0x801) && FinalHeroesTempo == 0) {
         switch (HLV->mode) {
         case 0:
         case 1:
@@ -549,13 +549,13 @@ void DefChooseWinner(s32 idx, u16 arg1) {
     s32 n;
     s32 best;
 
-    if (WINV->flags & 0x801) {
+    if (WINV->exitFlags & 0x801) {
         return;
     }
-    if (WINV->unk32 & 0xE0) {
+    if (WINV->levelFlags & 0xE0) {
         if (idx == -1) {
-            WINV->winner = 0;
-            WINV->flags |= arg1;
+            WINV->winner[0] = 0;
+            WINV->exitFlags |= arg1;
             for (i = 0; i < 4; i++) {
                 h = &Heroes[i];
                 if (!(h->hero_status & 0xFA00)) {
@@ -566,13 +566,13 @@ void DefChooseWinner(s32 idx, u16 arg1) {
             n = 0;
             for (i = 0; i < 4; i++) {
                 h = &Heroes[i];
-                if (!(h->hero_status & 0xF800) && WINV->out[i] == 0) {
+                if (!(h->hero_status & 0xF800) && WINV->heroOut[i] == 0) {
                     n++;
                 }
             }
             if (n == 0) {
-                WINV->winner = 0;
-                WINV->flags |= arg1;
+                WINV->winner[0] = 0;
+                WINV->exitFlags |= arg1;
                 for (i = 0; i < 4; i++) {
                     h = &Heroes[i];
                     if (!(h->hero_status & 0xFA00)) {
@@ -581,14 +581,14 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                 }
                 return;
             }
-            if (WINV->out[idx] != 0) {
+            if (WINV->heroOut[idx] != 0) {
                 return;
             }
         }
     }
     best = 0;
     if (idx == -1) {
-        if (!(WINV->unk32 & 0xE0)) {
+        if (!(WINV->levelFlags & 0xE0)) {
             switch (WINV->mode) {
             case 0:
             case 1:
@@ -606,7 +606,7 @@ void DefChooseWinner(s32 idx, u16 arg1) {
             case 32:
                 if (WINV->teams != 0 && WINV->mode != 0x20) {
                     HeroInfo *hb = Heroes;
-                    s32 t0 = WINV->team0;
+                    s32 t0 = WINV->teamLeader[0];
                     s32 t1;
                     s32 dead0, dead1;
                     u16 mate0, mate1;
@@ -623,7 +623,7 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                     if (!(h->hero_status & 0xF800)) {
                         h0 += h->hero_health;
                     }
-                    t1 = WINV->team1;
+                    t1 = WINV->teamLeader[1];
                     h = &Heroes[t1];
                     dead1 = h->hero_status & 0xF800;
                     h1 = 0;
@@ -678,15 +678,15 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                         m->hero_status |= 0x200;
                     }
                 }
-                WINV->winner = Heroes[idx].hero_name;
-                WINV->flags |= 0x800;
+                WINV->winner[0] = Heroes[idx].hero_name;
+                WINV->exitFlags |= 0x800;
             } else {
-                WINV->winner = 0;
-                WINV->flags |= arg1;
+                WINV->winner[0] = 0;
+                WINV->exitFlags |= arg1;
             }
         }
     } else {
-        WinnerView *g;
+        GameState *g;
         HeroInfo *base = Heroes;
 
         h = &base[idx];
@@ -699,20 +699,20 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                 if (m->hero_status & 0xA000) {
                     if (idx < 2) {
                         h->hero_status |= 0x200;
-                        g->winner = h->hero_name;
-                        g->flags |= 0x800;
+                        g->winner[0] = h->hero_name;
+                        g->exitFlags |= 0x800;
                     }
                 } else {
                     h->hero_status |= 0x200;
                     m->hero_status |= 0x200;
-                    g->winner = h->hero_name;
-                    g->flags |= 0x800;
+                    g->winner[0] = h->hero_name;
+                    g->exitFlags |= 0x800;
                 }
             }
         } else if (HeroesInPlay < 2) {
             Heroes[idx].hero_status |= 0x200;
-            WINV->winner = Heroes[idx].hero_name;
-            WINV->flags |= 0x800;
+            WINV->winner[0] = Heroes[idx].hero_name;
+            WINV->exitFlags |= 0x800;
         }
     }
     if (GameExitFlags & 0x800) {
@@ -728,10 +728,10 @@ void DefChooseWinner(s32 idx, u16 arg1) {
         for (i = 0; i < 4; i++) {
             h = &Heroes[i];
             if (!(h->hero_status & 0xFA00)) {
-                if (WINV->out[i] == 0) {
+                if (WINV->heroOut[i] == 0) {
                     HeroesAllOut = 0;
                 }
-                if (WINV->teams != 0 && WINV->out[h->hero_teammate] == 0) {
+                if (WINV->teams != 0 && WINV->heroOut[h->hero_teammate] == 0) {
                     HeroesAllOut = 0;
                 }
             }
@@ -773,7 +773,7 @@ void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     if (v >= 4) {
         v = 3;
     }
-    if (((EngineGameView *)GameInfo)->flags & 3) {
+    if (((GameState *)GameInfo)->levelFlags & 3) {
         v = 0;
     }
     if (*(s32 *)(GameInfo + 4) & 1) {
@@ -784,7 +784,7 @@ void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     } else {
         v = HitDamage[flags & 0xF][v];
     }
-    if (!(((EngineGameView *)GameInfo)->flags & 3)) {
+    if (!(((GameState *)GameInfo)->levelFlags & 3)) {
         if (GameInfo[player + 0x5C] != 0 && (u32)(dist -= 0x18) < 9) {
             v = HitFalloff[v >> 8][dist];
         }
@@ -2757,12 +2757,12 @@ s32 arg0;
 
 void StartHeroVictory(s32 arg0) {
     u16 mate;
-    EngineGameView *g;
+    GameState *g;
 
     mate = Heroes[arg0].hero_teammate;
     music_set_tempo(100, 5);
     music_flag_restart();
-    g = (EngineGameView *)GameInfo;
+    g = (GameState *)GameInfo;
     if (g->mode == 0x20) {
         if (HeroSide[GameInfo[0x60]] == 1) {
             WinSeqTimer = 0xF;
@@ -2775,7 +2775,7 @@ void StartHeroVictory(s32 arg0) {
             WinSeqDelay = 0x1E;
             WinSeqHero = arg0;
         }
-    } else if (g->flags & 0x1E0) {
+    } else if (g->levelFlags & 0x1E0) {
         if ((s16)mate != -1) {
             if (Heroes[(s16)mate].hero_status & 0x200) {
                 if (!(arg0 & 1)) {
@@ -3327,7 +3327,7 @@ void ModelCreateShadow(s32 idx) {
 
     if (GameInfo[idx + 0x50] != 9) {
         s = Heroes[idx].hero_shadow;
-        if (((EngineGameView *)GameInfo)->mode != 0x1C) {
+        if (((GameState *)GameInfo)->mode != 0x1C) {
             s->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
             s->sub->entity = 0x202F;
         } else {
@@ -3339,16 +3339,16 @@ void ModelCreateShadow(s32 idx) {
         s->flags |= 0x8041;
         s->sub->unk76 = 0x400;
         s->sub->flags |= 0x40000000;
-        if (((EngineGameView *)GameInfo)->mode == 0x17) {
+        if (((GameState *)GameInfo)->mode == 0x17) {
             s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
         }
-        if (((EngineGameView *)GameInfo)->mode == 0x19) {
+        if (((GameState *)GameInfo)->mode == 0x19) {
             s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
         }
-        if (((EngineGameView *)GameInfo)->mode == 0x1A) {
+        if (((GameState *)GameInfo)->mode == 0x1A) {
             s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
         }
-        if (((EngineGameView *)GameInfo)->mode == 0x18) {
+        if (((GameState *)GameInfo)->mode == 0x18) {
             s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
         }
     }
@@ -3365,16 +3365,16 @@ void ModelUpdateShadow(s32 idx) {
         s = h->hero_shadow;
         e = h->hero_eng;
         s->unk10 = e->unk10;
-        if (((EngineGameView *)GameInfo)->mode == 0x17) {
+        if (((GameState *)GameInfo)->mode == 0x17) {
             s->unk10.y = 0;
         }
-        if (((EngineGameView *)GameInfo)->mode == 0x19) {
+        if (((GameState *)GameInfo)->mode == 0x19) {
             s->unk10.y = 0;
         }
-        if (((EngineGameView *)GameInfo)->mode == 0x1A) {
+        if (((GameState *)GameInfo)->mode == 0x1A) {
             s->unk10.y = 0;
         }
-        if (((EngineGameView *)GameInfo)->mode == 0x18) {
+        if (((GameState *)GameInfo)->mode == 0x18) {
             s->unk10.y = 0;
         }
         s->unk1E = h->hero_eng->unk1E;
@@ -3703,7 +3703,7 @@ void PlotScriptFX(NAS *nas) {
     s32 first;
 
     t0 = VSync(1);
-    if (((EngineGameView *)GameInfo)->mode == 0x2C && ScriptFxOn != 0) {
+    if (((GameState *)GameInfo)->mode == 0x2C && ScriptFxOn != 0) {
         return;
     }
     sd = (EXTscriptdata *)nas->FUX;
@@ -3829,7 +3829,7 @@ void PlotScriptFX(NAS *nas) {
                         sub->unk20.y = 0x1000;
                         sub->unk76 = 0;
                         sub->unk52 = 1;
-                        if (((EngineGameView *)GameInfo)->mode == 0x2C) {
+                        if (((GameState *)GameInfo)->mode == 0x2C) {
                             sub->flags &= ~0x8000;
                         }
                         t->keyindex = 0;
@@ -3842,7 +3842,7 @@ void PlotScriptFX(NAS *nas) {
         }
         if (sd->timer >= sd->totalframes << 8) {
             sd->timer = 0;
-            if (((EngineGameView *)GameInfo)->mode == 0x2C) {
+            if (((GameState *)GameInfo)->mode == 0x2C) {
                 ScriptFxOn = 1;
             }
         }
@@ -4151,10 +4151,10 @@ void InitSmokePoof(NAS *nas) {
     nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
     nas->Engine->sub->flags |= 0x40000041;
     nas->UserInfo.user1 = 0;
-    if (((EngineGameView *)GameInfo)->mode == 0x1C) {
+    if (((GameState *)GameInfo)->mode == 0x1C) {
         nas->Engine->sub->flags = 0x40008021;
     }
-    if (((EngineGameView *)GameInfo)->mode == 0x17) {
+    if (((GameState *)GameInfo)->mode == 0x17) {
         nas->Engine->unk2C.x = 0x800;
         nas->Engine->unk2C.y = 0x800;
         nas->Engine->unk2C.z = 0x800;

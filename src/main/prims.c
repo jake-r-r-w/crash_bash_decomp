@@ -3233,7 +3233,7 @@ void process_control_update(process_control_info *pc, fade_info *fade) {
             mal_init(&MainHeap, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
             smallnode_init();
         }
-        ((D5A614View *)GameInfo)->unk30 &= ~1;
+        ((GameState *)GameInfo)->exitFlags &= ~1;
         if (!(pc->flags & 2)) {
             if (pc->flags & 0x10) {
                 pc->flags = 0;

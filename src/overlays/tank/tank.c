@@ -3376,10 +3376,10 @@ void TankHeroVictory(u32 arg0) {
     ProcessHeroAnim(arg0);
     CheckHeroAnim(arg0);
     if (UpdateHeroVictory(arg0) != 0) {
-        if (HLV->state & 0x800) {
-            HLV->unk30 |= 0x201;
+        if (HLV->cheats & 0x800) {
+            HLV->exitFlags |= 0x201;
         } else {
-            HLV->unk30 |= 1;
+            HLV->exitFlags |= 1;
         }
     }
 }

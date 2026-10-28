@@ -206,27 +206,27 @@ void CopyScreen(void) {
 }
 
 void HandleLevelExit(void) {
-    EngineModeView *g = (EngineModeView *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     ScriptScene *msg;
     ScriptScene *res;
     u16 flags;
     u16 w;
 
-    if (!(g->unk30 & 0x8000)) {
+    if (!(g->exitFlags & 0x8000)) {
         return;
     }
-    g->unk50[0] = g->unk4C[0];
-    g->unk50[1] = g->unk4C[1];
-    g->unk50[2] = g->unk4C[2];
-    g->unk50[3] = g->unk4C[3];
-    g->unk58[0] = g->unk54[0];
-    g->unk58[1] = g->unk54[1];
-    g->unk58[2] = g->unk54[2];
-    g->unk58[3] = g->unk54[3];
-    if (g->unk32 & 0x20) {
+    g->heroes[0] = g->heroChoice[0];
+    g->heroes[1] = g->heroChoice[1];
+    g->heroes[2] = g->heroChoice[2];
+    g->heroes[3] = g->heroChoice[3];
+    g->teammates[0] = g->teammateChoice[0];
+    g->teammates[1] = g->teammateChoice[1];
+    g->teammates[2] = g->teammateChoice[2];
+    g->teammates[3] = g->teammateChoice[3];
+    if (g->levelFlags & 0x20) {
         PickCpuHeroes();
     }
-    flags = g->unk30;
+    flags = g->exitFlags;
     if ((flags & 0x8008) == 0x8008) {
         g->mode = NextGameMode;
         res = PickModeVariant((s16)NextGameMode);
@@ -261,11 +261,11 @@ void HandleLevelExit(void) {
     }
     switch (g->mode) {
     case 0x1F:
-        if (g->unk187 != 0 && (flags & 1)) {
-            if (g->unk44 == 3) {
+        if (g->adventure.unkE4[4][31] != 0 && (flags & 1)) {
+            if (g->teamSide[0] == 3) {
                 g->mode = 0x20;
                 GotoScriptScene(LevelExitMsgsC, &LevelLoadProcess);
-            } else if (g->unk44 == 1) {
+            } else if (g->teamSide[0] == 1) {
                 g->mode = 0x25;
                 GotoScriptScene(LevelExitMsgsA, &LevelLoadProcess);
             } else {
@@ -278,7 +278,7 @@ void HandleLevelExit(void) {
         return;
     case 0x20:
         g->mode = 0x25;
-        if (HeroSide[g->unk60] == 1) {
+        if (HeroSide[g->winner[0]] == 1) {
             msg = LevelExitMsgsA;
         } else {
             msg = LevelExitMsgsB;
@@ -286,10 +286,10 @@ void HandleLevelExit(void) {
         GotoScriptScene(msg, &LevelLoadProcess);
         return;
     }
-    g = (EngineModeView *)GameInfo;
-    switch (*(u8 *)&g->unk32) {
+    g = (GameState *)GameInfo;
+    switch (*(u8 *)&g->levelFlags) {
     case 2:
-        if (g->unk30 & 1) {
+        if (g->exitFlags & 1) {
             g->mode = CupNextArena();
         } else {
             g->mode = 0x2A;
@@ -470,7 +470,7 @@ void UpdateCupMenu(void) {
     }
     if (EngineTable_Unlocked(GameInfo[0x28]) && (Pads[0].pressed & 0x4000)) {
         g = GameInfo;
-        ((EngineModeView *)g)->unk32 = (((EngineModeView *)g)->unk32 & 0xFF00) | 2;
+        ((GameState *)g)->levelFlags = (((GameState *)g)->levelFlags & 0xFF00) | 2;
         PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
         g[0x29] = 0;
         NextGameMode = CupTable[g[0x28]].rounds->mode;
@@ -1572,13 +1572,13 @@ void InitGameState(GameState *arg0) {
     s16 j;
     s16 k;
 
-    arg0->unk34 = 0x28;
-    arg0->unk36 = 0;
-    arg0->unk37 = 0;
-    arg0->unk63 = -1;
-    arg0->unk64 = 0;
-    arg0->unk36 = 0;
-    arg0->unk37 = 0;
+    arg0->mode = 0x28;
+    arg0->arena = 0;
+    arg0->arenaLevel = 0;
+    arg0->gateway = -1;
+    arg0->returnToHub = 0;
+    arg0->arena = 0;
+    arg0->arenaLevel = 0;
     k = ' ';
     for (i = 7, p = (u8 *)arg0 + i; i >= 0; i--, p--) {  /* unk18[i] loses the stepped pointer p */
         p[0x18] = k;
@@ -1587,84 +1587,84 @@ void InitGameState(GameState *arg0) {
     do {
         j = 1;
     } while (0);
-    arg0->unk32 = 0x14;
+    arg0->levelFlags = 0x14;
     arg0->unk3E = 0x200;
     arg0->unk20 = 0;
-    arg0->unkE0 = 0;
-    arg0->unk8 = 0;
-    arg0->unkC = 0;
-    arg0->unk38 = j;
-    arg0->unk24 = 0;
-    arg0->unk30 = 0;
-    arg0->unk10 = 0;
+    arg0->adventure.unkE0 = 0;
+    arg0->levelRecIndex = 0;
+    arg0->frames = 0;
+    arg0->aiLevel = j;
+    arg0->exitDelay = 0;
+    arg0->exitFlags = 0;
+    arg0->pause = 0;
     if (VideoMode == 1) {
         t = 0x32;
     }
     arg0->unk21 = t;
-    arg0->unk4C = j;
-    arg0->unk3A = 3;
-    arg0->unk4D[0] = 3;
-    arg0->unk4D[1] = 5;
-    arg0->unk4D[2] = 7;
-    arg0->unk44 = 1;
-    arg0->unk54[0] = -1;
-    arg0->unk54[1] = -1;
-    arg0->unk54[2] = -1;
-    arg0->unk54[3] = -1;
-    arg0->unk14 = 0;
-    arg0->unk68 = 0;
-    arg0->unk60 = 0;
-    arg0->unk61 = 0;
-    arg0->unk5C[0] = 0;
-    arg0->unk5C[1] = 0;
-    arg0->unk5C[2] = 0;
-    arg0->unk5C[3] = 0;
-    arg0->unk46 = 2;
-    arg0->unk48 = 0;
-    arg0->unk4A = 2;
-    arg0->unk50 = arg0->unk4C;
-    arg0->unk51[0] = arg0->unk4D[0];
-    arg0->unk51[1] = arg0->unk4D[1];
-    arg0->unk51[2] = arg0->unk4D[2];
-    arg0->unk58[0] = arg0->unk54[0];
-    arg0->unk58[1] = arg0->unk54[1];
-    arg0->unk74 = 0;
-    arg0->unk75 = 0;
-    arg0->unk58[2] = arg0->unk54[2];
-    arg0->unk58[3] = arg0->unk54[3];
+    arg0->heroChoice[0] = j;
+    arg0->battleWins = 3;
+    arg0->heroChoice[1] = 3;
+    arg0->heroChoice[2] = 5;
+    arg0->heroChoice[3] = 7;
+    arg0->teamSide[0] = 1;
+    arg0->teammateChoice[0] = -1;
+    arg0->teammateChoice[1] = -1;
+    arg0->teammateChoice[2] = -1;
+    arg0->teammateChoice[3] = -1;
+    arg0->demoTimer = 0;
+    arg0->demo = 0;
+    arg0->winner[0] = 0;
+    arg0->winner[1] = 0;
+    arg0->heroOut[0] = 0;
+    arg0->heroOut[1] = 0;
+    arg0->heroOut[2] = 0;
+    arg0->heroOut[3] = 0;
+    arg0->teamSide[1] = 2;
+    arg0->teamLeader[0] = 0;
+    arg0->teamLeader[1] = 2;
+    arg0->heroes[0] = arg0->heroChoice[0];
+    arg0->heroes[1] = arg0->heroChoice[1];
+    arg0->heroes[2] = arg0->heroChoice[2];
+    arg0->heroes[3] = arg0->heroChoice[3];
+    arg0->teammates[0] = arg0->teammateChoice[0];
+    arg0->teammates[1] = arg0->teammateChoice[1];
+    arg0->adventure.unk74 = 0;
+    arg0->adventure.unk75 = 0;
+    arg0->teammates[2] = arg0->teammateChoice[2];
+    arg0->teammates[3] = arg0->teammateChoice[3];
     for (i = 0; i < 0x21; i++) {
-        arg0->unkAB[i] = 0;
-        arg0->unk76[i] = 0;
-        arg0->unkE4[i] = 0;
-        arg0->unk126[i] = 0;
-        arg0->unk105[i] = 0;
-        arg0->unk147[i] = 0;
-        arg0->unk168[i] = 0;
+        arg0->adventure.unkAB[i] = 0;
+        arg0->adventure.unk76[i] = 0;
+        arg0->adventure.unkE4[0][i] = 0;
+        arg0->adventure.unkE4[2][i] = 0;
+        arg0->adventure.unkE4[1][i] = 0;
+        arg0->adventure.unkE4[3][i] = 0;
+        arg0->adventure.unkE4[4][i] = 0;
     }
     t = 1;
-    arg0->unkA9 = 2;
-    arg0->unkAA = 3;
-    arg0->unk9B[0] = 0;
-    arg0->unk9B[1] = 0;
-    arg0->unk9B[2] = 0;
-    arg0->unk9B[3] = 0;
-    arg0->unkCC[0] = 0;
-    arg0->unkCC[1] = 0;
-    arg0->unkCC[2] = 0;
-    arg0->unkCC[3] = 0;
-    arg0->unk9B[4] = 0;
-    arg0->unk9B[5] = 0;
-    arg0->unk9B[6] = 0;
-    arg0->unk9B[7] = 0;
-    arg0->unkA7 = 0;
-    arg0->unkA8 = t;
-    arg0->unk26 = t;
-    arg0->unk27 = 0;
-    arg0->unk42 = -1;
-    arg0->unk6C = 0;
-    arg0->unk70 = 0;
-    arg0->unk2C = GraphicsMode;
-    arg0->unkD0 = *(Blk12p4 *)&GameOptions;
+    arg0->adventure.unkA7[2] = 2;
+    arg0->adventure.unkA7[3] = 3;
+    arg0->adventure.unk9B[0] = 0;
+    arg0->adventure.unk9B[1] = 0;
+    arg0->adventure.unk9B[2] = 0;
+    arg0->adventure.unk9B[3] = 0;
+    arg0->adventure.unkCC[0] = 0;
+    arg0->adventure.unkCC[1] = 0;
+    arg0->adventure.unkCC[2] = 0;
+    arg0->adventure.unkCC[3] = 0;
+    arg0->adventure.unk9F[0] = 0;
+    arg0->adventure.unk9F[1] = 0;
+    arg0->adventure.unk9F[2] = 0;
+    arg0->adventure.unk9F[3] = 0;
+    arg0->adventure.unkA7[0] = 0;
+    arg0->adventure.unkA7[1] = t;
+    arg0->players = t;
+    arg0->maxPlayers = 0;
+    arg0->cupLeader = -1;
+    arg0->teams = 0;
+    arg0->adventure.unk70 = 0;
+    arg0->language = GraphicsMode;
+    *(Blk12p4 *)arg0->adventure.unkD0 = *(Blk12p4 *)&GameOptions;
 }
 
 void InitGraphics(void) {
@@ -1775,18 +1775,18 @@ void InitGameOptions(void) {
 }
 
 void InitRetry(void) {
-    EngineGameView *g;
+    GameState *g;
 
-    g = (EngineGameView *)GameInfo;
-    g->unk30 &= 0x7FF8;
+    g = (GameState *)GameInfo;
+    g->exitFlags &= 0x7FF8;
     set_fade(&ScreenFade, -0x300, 0);
     GameSceneFade = 0;
-    if (g->mode == 0x24 && g->unkE0 <= 0) {
-        g->unkE0 = 1;
+    if (g->mode == 0x24 && g->adventure.unkE0 <= 0) {
+        g->adventure.unkE0 = 1;
     }
-    g = (EngineGameView *)GameInfo;
-    if (CountTrophies((u8 *)g) >= 0x19 && g->unkE0 < 2) {
-        g->unkE0 = 2;
+    g = (GameState *)GameInfo;
+    if (CountTrophies((u8 *)g) >= 0x19 && g->adventure.unkE0 < 2) {
+        g->adventure.unkE0 = 2;
     }
     prims_empty_back();
     mal_compact(&MainHeap);
@@ -1843,15 +1843,15 @@ void SetReturnGateway(void) {
 }
 
 void UpdateSecretLevel(void) {
-    EngineGameView *a = (EngineGameView *)GameInfo;
-    EngineGameView *g;
+    GameState *a = (GameState *)GameInfo;
+    GameState *g;
 
-    if (a->mode == 0x24 && a->unkE0 <= 0) {
-        a->unkE0 = 1;
+    if (a->mode == 0x24 && a->adventure.unkE0 <= 0) {
+        a->adventure.unkE0 = 1;
     }
-    g = (EngineGameView *)GameInfo;
-    if (CountTrophies((u8 *)g) >= 0x19 && g->unkE0 < 2) {
-        g->unkE0 = 2;
+    g = (GameState *)GameInfo;
+    if (CountTrophies((u8 *)g) >= 0x19 && g->adventure.unkE0 < 2) {
+        g->adventure.unkE0 = 2;
     }
 }
 

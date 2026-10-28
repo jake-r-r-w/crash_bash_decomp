@@ -185,19 +185,6 @@ extern s32 SceneSoundHandle[];
 extern s32 SceneStarted;
 extern s32 SceneStarting;
 extern u8 IntroViewport[];
-/* GameInfo as seen by InitRetry. */
-typedef struct EngineGameView {
-    /* 0x00 */ u8 unk0[4];
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ u8 unk8[8];
-    /* 0x10 */ s32 pause;  /* GamePause */
-    /* 0x14 */ u8 unk14[0x30 - 0x14];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 unk36[0xE0 - 0x36];
-    /* 0xE0 */ s32 unkE0;
-} EngineGameView;
 extern GfxViewport GameViewport;
 extern s32 GameSceneFade;
 /* A round of a cup (CupDef.rounds): the arena's mode at 4. */
@@ -320,15 +307,6 @@ typedef struct Vec3W {
 } Vec3W;
 
 typedef struct { s32 unk0; EngineRec32 *unk4; } EngineBootSrc;
-typedef struct {
-    /* 0x00 */ void (*unk0)();
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ u8 unkC[0x20];
-    /* 0x2C */ s32 unk2C;
-    /* 0x30 */ u8 unk30[0xC];
-    /* 0x3C */ u16 unk3C;
-} EngineBootView;
 extern NAS *NasPoolLast;
 extern u8 *HeroNasList;
 extern s32 PauseMenuSets;
@@ -442,7 +420,7 @@ void DoAmbience(void);
 /* Needs prototypes from the unit headers above. */
 /* InitRetry's tail: resets state, then starts the mode by its ModeTypes world. */
 static inline void EngineBeginMode(s32 arg) {
-    EngineGameView *g = (EngineGameView *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     s32 mode;
     u16 world;
 
@@ -450,7 +428,7 @@ static inline void EngineBeginMode(s32 arg) {
     GameViewport.g = 0;
     GameViewport.b = 0;
     GameViewport.isbg = 0;
-    g->unk30 &= 0xFDFF;
+    g->exitFlags &= 0xFDFF;
     UpdateCamera(arg);
     process_init(&MenuProcessControl);
     ResetScreenLabels();
@@ -462,7 +440,7 @@ static inline void EngineBeginMode(s32 arg) {
                 HubStartCredits();
             }
         } else {
-            g->unk30 |= 0x1000;
+            g->exitFlags |= 0x1000;
             StartWinSequence(mode);
         }
     }
@@ -475,20 +453,6 @@ void UpdateNasObjects(void);
 /* LevelRequirements rows (10 bytes) and the object LevelRequirementMet totals over. */
 typedef struct { u16 min0, min2, min4, min6, off; } EngineReq;
 extern EngineReq LevelRequirements[];
-typedef struct {
-    u8 pad0[4];
-    u32 flags;
-    u8 pad8[0xE4 - 8];
-    u8 a[0x21];
-    u8 pad105[0x105 - 0xE4 - 0x21];
-    u8 b[0x21];
-    u8 pad126[0x126 - 0x105 - 0x21];
-    u8 c[0x21];
-    u8 pad147[0x147 - 0x126 - 0x21];
-    u8 d[0x21];
-    u8 pad168[0x168 - 0x147 - 0x21];
-    u8 e[1];
-} EngineReqObj;
 
 void InitialiseNasSystem(void);
 
@@ -498,33 +462,12 @@ void PickCpuHeroes(void);
 
 s32 GravitateNas(NAS *nas);
 
-/* GameInfo as seen by CheckControllers. */
-typedef struct EngMenuGame {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 flags;
-    /* 0x14 */ u8 pad14[0x26 - 0x14];
-    /* 0x26 */ u8 count;
-    /* 0x27 */ u8 pad27[0x34 - 0x27];
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 pad36[0x68 - 0x36];
-    /* 0x68 */ s32 unk68;
-    /* 0x6C */ u8 pad6C[0x74 - 0x6C];
-    /* 0x74 */ u8 unk74;
-} EngMenuGame;
 extern HudEntry PauseUnpluggedMenu[];
 extern HudEntry PausePadMessage[];
 
 void CheckControllers(void);
 
-/* GameInfo as seen by DrawLevelHud. */
-typedef struct EngHudGame {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 flags;
-    /* 0x14 */ u8 pad14[0x32 - 0x14];
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 mode;
-} EngHudGame;
-#define HUDGAME ((EngHudGame *)GameInfo)
+#define HUDGAME ((GameState *)GameInfo)
 #define HUDPLAYERS ((EXTengine **)&Icon)
 extern s32 PauseFlashItem;
 void DrawLevelHud(void);

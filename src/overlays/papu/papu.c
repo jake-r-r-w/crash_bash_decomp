@@ -358,7 +358,7 @@ s16 PapuWaveFlag = 0;
 s16 PapuDataPad = 0;
 
 void InitialisePAPUFirst(void) {
-    EngineGameView *g;
+    GameState *g;
     u8 *v;
     void **p;
 
@@ -370,8 +370,8 @@ void InitialisePAPUFirst(void) {
     PapuInitCrateHooks();
     LevelSpecs.GetContour = GetPapuContour;
     HeroHooks.PostMoveHero = PapuHeroCheckPit;
-    g = (EngineGameView *)GameInfo;
-    g->flags |= 0x900;
+    g = (GameState *)GameInfo;
+    g->levelFlags |= 0x900;
     if (*(s32 *)(GameInfo + 0x6C) == 0) {
         GameInfo[0x51] = 9;
     }

@@ -3,7 +3,7 @@
 #include "bash/sfx.h"
 
 void music_play_level(s32 arg0, s32 arg1) {
-    D5A614View *p;
+    GameState *p;
     u8 *q;
     u32 t8;
     u32 t;
@@ -13,10 +13,10 @@ void music_play_level(s32 arg0, s32 arg1) {
     u32 c;
     u16 *d;
 
-    p = (D5A614View *)GameInfo;
+    p = (GameState *)GameInfo;
     if (p->mode != 0x28) {
         sfx_table_clear();
-        if (p->flags & 0x80) {
+        if (p->levelFlags & 0x80) {
             f = MusicTable[arg0].unkC;
         } else {
             f = MusicTable[arg0].unk8;
@@ -28,12 +28,12 @@ void music_play_level(s32 arg0, s32 arg1) {
         t8 = (u32)(q - 8);
     } while (0);
     d = ModeTypes;
-    f = ((D5A614View *)GameInfo)->mode;
+    f = ((GameState *)GameInfo)->mode;
     c = d[f * 3] - 0x101;
     f = (s32)(q - 0x10);
     if (c >= 2U) {
         f = (s32)t8;
-        if (!(((D5A614View *)GameInfo)->flags & 0x1E0)) {
+        if (!(((GameState *)GameInfo)->levelFlags & 0x1E0)) {
             f = (s32)q;
         }
     }

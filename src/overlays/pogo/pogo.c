@@ -1033,7 +1033,7 @@ void PogoWinner_Crystal(s32 arg0, u16 arg1) {
         }
         g = GameInfo;
         g[0x60] = 0;
-        ((D5A614View *)g)->unk30 |= arg1;
+        ((GameState *)g)->exitFlags |= arg1;
         for (i = 0; i < 4; i++) {
             if (g[i + 0x5C] != 0) {
                 RemoveCamera(Heroes[i].hero);
@@ -3034,7 +3034,7 @@ void PogoFour_UnfreezeMyTiles(s32 arg0) {
             if ((u16)c->unk12 == 10 && c->unkA == arg0) {
                 c->unk12 = 1;
                 c->unkA = arg0;
-                if (((D5A614View *)GameInfo)->mode == 0xB) {
+                if (((GameState *)GameInfo)->mode == 0xB) {
                     if (i > 0) {
                         Tile_Update(i - 1, j);
                     }
@@ -3178,7 +3178,7 @@ void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void PogoPickups_Poll(void) {
-    D5A614View *g = (D5A614View *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     s32 idx = g->mode - 10;
     s32 x, z;
 
@@ -3212,14 +3212,14 @@ void PogoPickups_Poll(void) {
 }
 
 void PogoPowerups_Poll(void) {
-    D5A614View *g = (D5A614View *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     s32 idx = g->mode - 10;
     s32 x, z;
     u32 r;
-    D5A614View *g2;
+    GameState *g2;
 
     if (powerup_spawn_time == -1) {
-        if (g->mode == 13 && (g->flags & 0x80)) {
+        if (g->mode == 13 && (g->levelFlags & 0x80)) {
             if (number_of_powerups < 4) {
                 powerup_spawn_time = Random(60) + 60;
             }
@@ -3258,7 +3258,7 @@ void PogoPowerups_Poll(void) {
                     }
                     break;
                 case 13:
-                    if (g->flags & 0x80) {
+                    if (g->levelFlags & 0x80) {
                         CreatePowerupOnTile(x, z, 4);
                     } else if (Random(2) == 0) {
                         CreatePowerupOnTile(x, z, 4);
@@ -3269,8 +3269,8 @@ void PogoPowerups_Poll(void) {
                     break;
                 }
             }
-            g2 = (D5A614View *)GameInfo;
-            if (g2->mode == 13 && (g2->flags & 0x80)) {
+            g2 = (GameState *)GameInfo;
+            if (g2->mode == 13 && (g2->levelFlags & 0x80)) {
                 if (number_of_powerups >= 7) {
                     powerup_spawn_time = -1;
                 } else {
@@ -4162,7 +4162,7 @@ done:
 }
 
 s32 LevelSpecific_ClaimedTile(s32 x, s32 z) {
-    D5A614View *g = (D5A614View *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     s32 id;
     s32 mask;
     s32 n;
@@ -4208,13 +4208,13 @@ s32 LevelSpecific_ClaimedTile(s32 x, s32 z) {
     switch (g->mode) {
     case 12:
         r = 0x304E;
-        if (g->flags & 0x80) {
+        if (g->levelFlags & 0x80) {
             r = 0x3058;
         }
         return r;
     case 13:
         r = 0x3026;
-        if (g->flags & 0x80) {
+        if (g->levelFlags & 0x80) {
             r = 0x3044;
         }
         return r;
@@ -4722,9 +4722,9 @@ void PogoAI_Poll(u32 arg0) {
     EXTbotai *ai;
     s32 r;
 
-    D5A614View *g = (D5A614View *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
 
-    if (!(*(s32 *)&g->unkC[4] & 0x04000000)) {
+    if (!(g->pause & 0x04000000)) {
         ai = Heroes[arg0].hero_ai;
         if (ai != NULL) {
             ai->AIpad = 0;
@@ -6782,25 +6782,25 @@ u32 PogoDistanceToDestination(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 s32 LevelSpecific_UnclaimedTile(s32 x, s32 z) {
-    D5A614View *g = (D5A614View *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     s32 v;
 
     switch (g->mode) {
     case 10:
         v = 0x303C;
-        if (g->flags & 0x80) {
+        if (g->levelFlags & 0x80) {
             v = 0x3033;
         }
         return v;
     case 11:
         v = 0x3052;
-        if (g->flags & 0x80) {
+        if (g->levelFlags & 0x80) {
             v = 0x301B;
         }
         return v;
     case 12:
         v = 0x3035;
-        if (g->flags & 0x80) {
+        if (g->levelFlags & 0x80) {
             v = 0x303F;
         }
         return v;
@@ -6843,12 +6843,12 @@ void Tiles_MakeUpIslandMap(s32 *arg0, s32 arg1) {
 void Tiles_CheckForIslands(s32 arg0) {
     s32 grid[64];
 
-    if (((D5A614View *)GameInfo)->mode != 10 && ((D5A614View *)GameInfo)->mode != 13) {
+    if (((GameState *)GameInfo)->mode != 10 && ((GameState *)GameInfo)->mode != 13) {
         Tiles_MakeUpIslandMap(grid, arg0);
         Tiles_FloodFillIslandMap(grid, arg0);
         if (Tiles_CountUnflagged(grid, arg0, 1) != 0) {
             PlaySfx(0x51D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
-            if (((D5A614View *)GameInfo)->mode == 11) {
+            if (((GameState *)GameInfo)->mode == 11) {
                 Bank_Tiles(arg0);
             }
         }
@@ -6943,10 +6943,10 @@ bool SetTile_PogoFour(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
     PogoCell *base;
     PogoCell *p;
 
-    if (((D5A614View *)g)->mode != 13) {
+    if (((GameState *)g)->mode != 13) {
         return 0;
     }
-    if ((((D5A614View *)g)->flags & 0x80) && g[arg0 + 0x5C] == 0) {
+    if ((((GameState *)g)->levelFlags & 0x80) && g[arg0 + 0x5C] == 0) {
         return 1;
     }
     base = PogoGrid[0];

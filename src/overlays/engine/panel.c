@@ -7,23 +7,23 @@
 #include "bash/tank.h"   /* TA_players: the Tank HUD reads its weapon and rounds */
 
 void Setup_panel(void) {
-    EngineSlotView *v;
+    GameState *v;
     s32 i;
 
     PanelCtrl = (PanelCtrl | 0x80000000) & 0xFFFE2FFF;
-    v = (EngineSlotView *)GameInfo;
-    if (v->unk6C != 0) {
-        i = v->unk48;
+    v = (GameState *)GameInfo;
+    if (v->teams != 0) {
+        i = v->teamLeader[0];
         PanelHeroOrder[0] = i;
         PanelHeroOrder[1] = i;
-        i = v->unk58[i];
+        i = v->teammates[i];
         if (i != -1) {
             PanelHeroOrder[1] = i;
         }
-        i = v->unk4A;
+        i = v->teamLeader[1];
         PanelHeroOrder[2] = i;
         PanelHeroOrder[3] = i;
-        i = v->unk58[i];
+        i = v->teammates[i];
         if (i != -1) {
             PanelHeroOrder[3] = i;
         }
@@ -420,7 +420,7 @@ void Set_Clock(u16 time, u16 flags) {
 }
 
 void Draw_Clock(void) {
-    EngineClockView *v;
+    GameState *v;
     u32 time;
     u32 t;
     u32 e;
@@ -477,8 +477,8 @@ void Draw_Clock(void) {
             Clock_flags = 0x8000;
         }
     }
-    v = (EngineClockView *)GameInfo;
-    if (!(v->unk4 & 0x40) && !(v->unk10 & 0x04000000)) {
+    v = (GameState *)GameInfo;
+    if (!(v->cheats & 0x40) && !(v->pause & 0x04000000)) {
         if (Clock_flags & 0x20) {
             u32 bf;
             u32 bs;
@@ -526,7 +526,7 @@ void Draw_Clock(void) {
             f -= 2;
             if (f < 0) {
                 sec--;
-                f += ((EngineClockView *)GameInfo)->unk21;
+                f += ((GameState *)GameInfo)->unk21;
             }
             if (sec < 0) {
                 min--;
@@ -1101,7 +1101,7 @@ void UpdateHealthIcons(void) {
         t = c >> 1;
         BarLength = 0;
         if (pHeroHealth[i] != 0) {
-            switch (((EngineGameView *)GameInfo)->mode) {
+            switch (((GameState *)GameInfo)->mode) {
             case 5:
             case 6:
             case 7:
@@ -1511,11 +1511,11 @@ void UpdateScoreIcons(void) {
 }
 
 void CheckHeroesAllOut(void) {
-    EngineGameView *g = (EngineGameView *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     EXTengine *e;
     EXTengine *f;
 
-    if (!(g->unk30 & 0x8801) && *(s32 *)(GameInfo + 0x68) == 0 && HeroesAllOut != 0) {
+    if (!(g->exitFlags & 0x8801) && *(s32 *)(GameInfo + 0x68) == 0 && HeroesAllOut != 0) {
         if (HeroesOutTimer != 0) {
             HeroesOutTimer -= 1;
             return;
@@ -1533,9 +1533,9 @@ void UpdateOutMessage(void) {
     EXTengine *e;
     EXTengine *f;
     s32 i;
-    EngineGameView *g;
+    GameState *g;
 
-    g =(EngineGameView *)GameInfo;
+    g =(GameState *)GameInfo;
     if (g->pause & 1) {
         return;
     }
@@ -1548,7 +1548,7 @@ void UpdateOutMessage(void) {
         }
         return;
     }
-    if (g->unk30 & 0x8801) {
+    if (g->exitFlags & 0x8801) {
         PanelCtrl |= 0x10000;
         return;
     }
@@ -1652,40 +1652,40 @@ void Cups_Update(void) {
 found:
     switch ((u16)CupMode) {
     case 0:
-        if ((MODEV->unk30 & 1) && !(MODEV->unk30 & 0x8000)) {
-            MODEV->unk14 = 0;
-            MODEV->unk10 |= 0x4000000;
-            if (MODEV->unk60 == 0) {
+        if ((MODEV->exitFlags & 1) && !(MODEV->exitFlags & 0x8000)) {
+            MODEV->demoTimer = 0;
+            MODEV->pause |= 0x4000000;
+            if (MODEV->winner[0] == 0) {
                 music_set_tempo(100, 5);
                 music_flag_restart();
                 RecordWin();
                 CupWinner = -1;
                 CupMode = 0xC;
                 CupTimer = 0x78;
-            } else if (MODEV->unk32 & 0x100) {
+            } else if (MODEV->levelFlags & 0x100) {
                 CupWinner = FindTeamLeader();
-                slot = MODEV->unk34;
+                slot = MODEV->mode;
                 if (CupWinner != -1) {
-                    MODEV->unk168[slot] = 1;
+                    MODEV->adventure.unkE4[4][slot] = 1;
                     SetReturnGateway();
                 }
                 CupMode = 0x10;
                 CupTimer = 0x78;
             } else {
-                if (MODEV->unk34 == 0x20) {
+                if (MODEV->mode == 0x20) {
                     CupWinner = FindTeamLeader();
                     if (CupWinner != -1) {
-                        MODEV->unkCC[CupWinner]++;
+                        MODEV->adventure.unkCC[CupWinner]++;
                         ScreenLabelsStart();
                     }
                 } else {
                     CupWinner = FindTeamLeader();
                     if (CupWinner != -1) {
-                        MODEV->unkCC[CupWinner]++;
+                        MODEV->adventure.unkCC[CupWinner]++;
                         r = CupWinner;
                         t = Heroes[r].hero_teammate;
                         if (t != -1) {
-                            MODEV->unkCC[t] = MODEV->unkCC[r];
+                            MODEV->adventure.unkCC[t] = MODEV->adventure.unkCC[r];
                         }
                         ScreenLabelsStart();
                     }
@@ -1707,30 +1707,30 @@ found:
         }
         CupMode = 0xD;
         CupTimer = 0x1E;
-        if (MODEV->unk42 == -1) {
-            MODEV->unk42 = CupWinner;
-        } else if (MODEV->unkCC[CupWinner] > MODEV->unkCC[MODEV->unk42]) {
-            MODEV->unk42 = CupWinner;
+        if (MODEV->cupLeader == -1) {
+            MODEV->cupLeader = CupWinner;
+        } else if (MODEV->adventure.unkCC[CupWinner] > MODEV->adventure.unkCC[MODEV->cupLeader]) {
+            MODEV->cupLeader = CupWinner;
         }
         printf("mode%x\n", mode);
         switch (mode) {
         case 2:
-            if (MODEV->unkCC[CupWinner] < Trophy_Cups) {
+            if (MODEV->adventure.unkCC[CupWinner] < Trophy_Cups) {
                 break;
             }
-            if ((MODEV->unk4 & 0x800) || (MODEV->unk30 & 0x200)) {
-                MODEV->unkCC[CupWinner] = Trophy_Cups;
+            if ((MODEV->cheats & 0x800) || (MODEV->exitFlags & 0x200)) {
+                MODEV->adventure.unkCC[CupWinner] = Trophy_Cups;
                 t = Heroes[CupWinner].hero_teammate;
                 if (t != -1) {
-                    MODEV->unkCC[t] = MODEV->unkCC[CupWinner];
+                    MODEV->adventure.unkCC[t] = MODEV->adventure.unkCC[CupWinner];
                 }
                 break;
             }
-            if (MODEV->unk6C != 0) {
-                MODEV->unkA7[2] = (CupWinner & 2) ? 0 : 2;
-                MODEV->unkA7[0] = CupWinner & 2;
-                MODEV->unkA7[1] = CupWinner ^ 1;
-                MODEV->unkA7[3] = (CupWinner & 2) ? 1 : 3;
+            if (MODEV->teams != 0) {
+                MODEV->adventure.unkA7[2] = (CupWinner & 2) ? 0 : 2;
+                MODEV->adventure.unkA7[0] = CupWinner & 2;
+                MODEV->adventure.unkA7[1] = CupWinner ^ 1;
+                MODEV->adventure.unkA7[3] = (CupWinner & 2) ? 1 : 3;
             } else {
                 n = 0;
                 num = 3;
@@ -1744,8 +1744,8 @@ found:
                         if (i >= 4) {
                             break;
                         }
-                        if (MODEV->unkCC[i] == num && !((used >> i) & 1)) {
-                            MODEV->unkA7[n] = i;
+                        if (MODEV->adventure.unkCC[i] == num && !((used >> i) & 1)) {
+                            MODEV->adventure.unkA7[n] = i;
                             used |= 1 << i;
                             n++;
                         }
@@ -1755,77 +1755,77 @@ found:
                 }
             }
             CupMode = 5;
-            slot = MODEV->unk34;
-            if (MODEV->unk5C[CupWinner] == 0) {
-                MODEV->unkE4[slot] = 1;
+            slot = MODEV->mode;
+            if (MODEV->heroOut[CupWinner] == 0) {
+                MODEV->adventure.unkE4[0][slot] = 1;
             }
-            if (MODEV->unkE4[slot] != 0) {
-                MODEV->unkAB[slot] = 0;
+            if (MODEV->adventure.unkE4[0][slot] != 0) {
+                MODEV->adventure.unkAB[slot] = 0;
             } else {
-                v = ++MODEV->unkAB[slot];
+                v = ++MODEV->adventure.unkAB[slot];
                 if (v >= 4) {
-                    MODEV->unkAB[slot] = 3;
+                    MODEV->adventure.unkAB[slot] = 3;
                 }
             }
             break;
         case 3:
-            if (MODEV->unkCC[0] < Trophy_Cups) {
+            if (MODEV->adventure.unkCC[0] < Trophy_Cups) {
                 break;
             }
-            slot = MODEV->unk34;
-            if (MODEV->unk5C[CupWinner] == 0) {
-                MODEV->unk105[slot] = 1;
+            slot = MODEV->mode;
+            if (MODEV->heroOut[CupWinner] == 0) {
+                MODEV->adventure.unkE4[1][slot] = 1;
             }
             CupMode = 6;
             break;
         case 4:
-            if (MODEV->unkCC[0] < Trophy_Cups) {
+            if (MODEV->adventure.unkCC[0] < Trophy_Cups) {
                 break;
             }
-            slot = MODEV->unk34;
-            if (MODEV->unk5C[CupWinner] == 0) {
-                MODEV->unk105[slot] = 2;
+            slot = MODEV->mode;
+            if (MODEV->heroOut[CupWinner] == 0) {
+                MODEV->adventure.unkE4[1][slot] = 2;
             }
             CupMode = 6;
             break;
         case 5:
-            if (MODEV->unkCC[0] == 0) {
+            if (MODEV->adventure.unkCC[0] == 0) {
                 break;
             }
-            slot = MODEV->unk34;
-            if (MODEV->unk5C[CupWinner] == 0) {
-                MODEV->unk126[slot] = 1;
+            slot = MODEV->mode;
+            if (MODEV->heroOut[CupWinner] == 0) {
+                MODEV->adventure.unkE4[2][slot] = 1;
             }
             CupMode = 7;
             break;
         case 6:
-            if (MODEV->unkCC[0] == 0) {
+            if (MODEV->adventure.unkCC[0] == 0) {
                 break;
             }
-            slot = MODEV->unk34;
-            if (MODEV->unk5C[CupWinner] == 0) {
-                MODEV->unk147[slot] = 1;
+            slot = MODEV->mode;
+            if (MODEV->heroOut[CupWinner] == 0) {
+                MODEV->adventure.unkE4[3][slot] = 1;
             }
             CupMode = 8;
             break;
         case 0:
         case 1:
-            if (MODEV->unkCC[CupWinner] < Trophy_Cups) {
+            if (MODEV->adventure.unkCC[CupWinner] < Trophy_Cups) {
                 break;
             }
-            if ((MODEV->unk4 & 0x800) || (MODEV->unk30 & 0x200)) {
-                MODEV->unkCC[CupWinner] = Trophy_Cups;
+            if ((MODEV->cheats & 0x800) || (MODEV->exitFlags & 0x200)) {
+                MODEV->adventure.unkCC[CupWinner] = Trophy_Cups;
                 t = Heroes[CupWinner].hero_teammate;
                 if (t != -1) {
-                    MODEV->unkCC[t] = MODEV->unkCC[CupWinner];
+                    MODEV->adventure.unkCC[t] = MODEV->adventure.unkCC[CupWinner];
                 }
                 break;
             }
-            if (MODEV->unk6C != 0) {
-                MODEV->unkA7[2] = (CupWinner & 2) ? 0 : 2;
-                MODEV->unkA7[0] = CupWinner & 2;
-                MODEV->unkA7[1] = CupWinner ^ 1;
-                MODEV->unkA7[3] = (CupWinner & 2) ? 1 : 3;
+            if (MODEV->teams != 0) {
+                MODEV->adventure.unkA7[2] = (CupWinner & 2) ? 0 : 2;
+                MODEV->adventure.unkA7[0] = CupWinner & 2;
+                MODEV->adventure.unkA7[1] = CupWinner ^ 1;
+                MODEV->adventure.unkA7[3] = (CupWinner & 2) ? 1 : 3;
             } else {
                 n = 0;
                 num = 3;
@@ -1839,8 +1839,8 @@ found:
                         if (i >= 4) {
                             break;
                         }
-                        if (MODEV->unkCC[i] == num && !((used >> i) & 1)) {
-                            MODEV->unkA7[n] = i;
+                        if (MODEV->adventure.unkCC[i] == num && !((used >> i) & 1)) {
+                            MODEV->adventure.unkA7[n] = i;
                             used |= 1 << i;
                             n++;
                         }
@@ -1853,25 +1853,25 @@ found:
                 CupMode = 4;
             } else {
                 CupMode = 0xB;
-                MODEV->unk9F[0] += MODEV->unkCC[0];
-                MODEV->unk9F[1] += MODEV->unkCC[1];
-                MODEV->unk9F[2] += MODEV->unkCC[2];
-                MODEV->unk9F[3] += MODEV->unkCC[3];
+                MODEV->adventure.unk9F[0] += MODEV->adventure.unkCC[0];
+                MODEV->adventure.unk9F[1] += MODEV->adventure.unkCC[1];
+                MODEV->adventure.unk9F[2] += MODEV->adventure.unkCC[2];
+                MODEV->adventure.unk9F[3] += MODEV->adventure.unkCC[3];
             }
             break;
         }
         break;
     case 5:
-        if (MODEV->unk5C[CupWinner] != 0) {
+        if (MODEV->heroOut[CupWinner] != 0) {
             CupsDirty = 1;
             PauseChoice = 0;
             CupTimer = 900;
-            MODEV->unk10 |= 0x21;
+            MODEV->pause |= 0x21;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
             CupMode = 9;
             break;
         }
-        if (MODEV->unk34 != 0x20) {
+        if (MODEV->mode != 0x20) {
             CupsDirty = 1;
             CupTimer = 0x78;
         }
@@ -1900,7 +1900,7 @@ found:
         CupsDirty = 1;
         PauseChoice = 0;
         CupTimer = 900;
-        MODEV->unk10 |= 0x201;
+        MODEV->pause |= 0x201;
         PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
         CupMode = 0xA;
         break;
@@ -1921,16 +1921,16 @@ found:
         }
         if (CupTimer == 0) {
             if (PauseChoice == 0) {
-                MODEV->unk42 = -1;
-                MODEV->unkCC[0] = 0;
-                MODEV->unkCC[1] = 0;
-                MODEV->unkCC[2] = 0;
-                MODEV->unkCC[3] = 0;
+                MODEV->cupLeader = -1;
+                MODEV->adventure.unkCC[0] = 0;
+                MODEV->adventure.unkCC[1] = 0;
+                MODEV->adventure.unkCC[2] = 0;
+                MODEV->adventure.unkCC[3] = 0;
                 CupMode = 0xD;
             } else {
                 ScreenLabelsOff();
                 RequestQuit();
-                MODEV->unk10 &= ~1;
+                MODEV->pause &= ~1;
             }
         }
         CupTimer++;
@@ -1953,27 +1953,27 @@ found:
         if (CupTimer == 0) {
             switch (PauseChoice) {
             case 0:
-                MODEV->unk42 = -1;
-                MODEV->unkCC[0] = 0;
-                MODEV->unkCC[1] = 0;
-                MODEV->unkCC[2] = 0;
-                MODEV->unkCC[3] = 0;
+                MODEV->cupLeader = -1;
+                MODEV->adventure.unkCC[0] = 0;
+                MODEV->adventure.unkCC[1] = 0;
+                MODEV->adventure.unkCC[2] = 0;
+                MODEV->adventure.unkCC[3] = 0;
                 CupMode = 0xD;
-                MODEV->unk10 &= ~1;
+                MODEV->pause &= ~1;
                 break;
             case 1:
-                MODEV->unk10 |= 0x40;
+                MODEV->pause |= 0x40;
                 break;
             case 3:
                 NextGameMode = 0x28;
-                MODEV->unk30 = 0x8008;
-                MODEV->unk10 &= ~0x21;
+                MODEV->exitFlags = 0x8008;
+                MODEV->pause &= ~0x21;
                 break;
             case 2:
             default:
                 ScreenLabelsOff();
                 RequestQuit();
-                MODEV->unk10 &= ~1;
+                MODEV->pause &= ~1;
                 break;
             }
         }
@@ -1994,14 +1994,14 @@ found:
         case 6:
             PauseChoice = 0;
             CupTimer = 900;
-            MODEV->unk10 |= 0x401;
+            MODEV->pause |= 0x401;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
             CupMode = 0xF;
             break;
         case 7:
             PauseChoice = 0;
             CupTimer = 900;
-            MODEV->unk10 |= 0x401;
+            MODEV->pause |= 0x401;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
             CupMode = 0xF;
             DrawPauseMenu();
@@ -2014,16 +2014,16 @@ found:
     case 15:
         if (CupTimer == 0) {
             if (PauseChoice == 0) {
-                MODEV->unk42 = -1;
-                MODEV->unkCC[0] = 0;
-                MODEV->unkCC[1] = 0;
-                MODEV->unkCC[2] = 0;
-                MODEV->unkCC[3] = 0;
+                MODEV->cupLeader = -1;
+                MODEV->adventure.unkCC[0] = 0;
+                MODEV->adventure.unkCC[1] = 0;
+                MODEV->adventure.unkCC[2] = 0;
+                MODEV->adventure.unkCC[3] = 0;
                 CupMode = 0xD;
             } else {
                 ScreenLabelsOff();
                 RequestQuit();
-                MODEV->unk10 &= ~1;
+                MODEV->pause &= ~1;
             }
         }
         CupTimer++;
@@ -2033,7 +2033,7 @@ found:
         if (CupTimer != 0) {
             break;
         }
-        MODEV->unk30 |= 0x8200;
+        MODEV->exitFlags |= 0x8200;
         ScreenLabelsOff();
         music_duck_off();
     case 11:

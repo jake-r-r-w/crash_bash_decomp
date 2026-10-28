@@ -148,21 +148,6 @@ extern s32 WinCounterSize;
 extern s32 WinCounterState;
 extern s32 WinCounterAnim;
 extern s32 PauseDelay;
-/* GameInfo as seen by StartWinSequence. */
-typedef struct EngineHintView {
-    /* 0x00 */ u8 unk0[0x10];
-    /* 0x10 */ s32 flags;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ u8 unk18[0x32 - 0x18];
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 unk36[0x5C - 0x36];
-    /* 0x5C */ u8 unk5C[4];
-    /* 0x60 */ u8 unk60[0x68 - 0x60];
-    /* 0x68 */ s32 unk68;
-    /* 0x6C */ u8 unk6C[0x76 - 0x6C];
-    /* 0x76 */ u8 shown[1];
-} EngineHintView;
 
 s32 PauseChooseUpDown(s32 pad, s32 max);
 
@@ -263,20 +248,7 @@ typedef struct {
 } FallParticles;
 
 
-/* GameInfo as seen by DrawPauseMenu. */
-typedef struct EngineMsgView {
-    /* 0x00 */ u8 unk0[0xC];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ u32 flags;
-    /* 0x14 */ u8 unk14[0x26 - 0x14];
-    /* 0x26 */ u8 numPlayers;
-    /* 0x27 */ u8 unk27[0x2C - 0x27];
-    /* 0x2C */ s32 level;
-    /* 0x30 */ u8 unk30[2];
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 mode;
-} EngineMsgView;
-#define MSGV ((EngineMsgView *)GameInfo)
+#define MSGV ((GameState *)GameInfo)
 typedef struct EngineLevelInfo {
     /* 0x00 */ u8 unk0[0xBC];
     /* 0xBC */ u8 *unkBC;
@@ -328,26 +300,7 @@ extern s32 StatsHasPage1;
 extern s32 StatsHasPage3;
 extern s32 StatsHasBonus;
 void DrawAdventureStats(s32 arg0);
-/* GameInfo as seen by DrawAdventureStats. */
-typedef struct ScoreView {
-    /* 0x00 */ u8 unk0[4];
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ u8 unk8[0x10 - 0x8];
-    /* 0x10 */ s32 flags;
-    /* 0x14 */ u8 unk14[0x32 - 0x14];
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ u8 unk34[0x9F - 0x34];
-    /* 0x9F */ u8 bonus[4];
-    /* 0xA3 */ u8 unkA3[0xCC - 0xA3];
-    /* 0xCC */ u8 score[4];
-    /* 0xD0 */ u8 unkD0[0xE0 - 0xD0];
-    /* 0xE0 */ s32 unkE0;
-    /* 0xE4 */ u8 got0[0x21];
-    /* 0x105 */ u8 got2[0x21];
-    /* 0x126 */ u8 got1[0x21];
-    /* 0x147 */ u8 got3[0x21];
-} ScoreView;
-#define SCV ((ScoreView *)GameInfo)
+#define SCV ((GameState *)GameInfo)
 /* Two-digit text fields (tens, units) of the score panel. */
 extern char PauseDigits[2];
 extern char PauseDigits2[2];
@@ -362,18 +315,6 @@ extern s32 AdvStatsPanel4[];
 extern s32 AdvStatsPanel5[];
 extern s32 AdvStatsPanel6[];
 extern s32 AdvStatsPanel7[];
-/* GameInfo as seen by DrawHudEntries. */
-typedef struct HudGameView {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ u32 state;
-    /* 0x08 */ u8 unk8[0x10 - 0x8];
-    /* 0x10 */ u32 flags;
-    /* 0x14 */ u8 unk14[0x2C - 0x14];
-    /* 0x2C */ s32 level;
-    /* 0x30 */ u8 unk30[2];
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 mode;
-} HudGameView;
 /* A panel rectangle, draw_panel_rect's record (PauseMenuPanel: the highlight behind the pause
  * menu's selected line, DrawHudEntries). -1 in top hides it. */
 typedef struct HudBox {
@@ -404,61 +345,15 @@ typedef struct HudEngView {
     /* 0x3C8 */ u8 pad3C8[0x406 - 0x3C8];
     /* 0x406 */ s16 on1;
 } HudEngView;
-#define HUDG ((HudGameView *)GameInfo)
-/* GameInfo as seen by DefChooseWinner. */
-typedef struct WinnerView {
-    /* 0x00 */ u8 unk0[0x30];
-    /* 0x30 */ u16 flags;
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 unk36[0x48 - 0x36];
-    /* 0x48 */ s16 team0;
-    /* 0x4A */ s16 team1;
-    /* 0x4C */ u8 unk4C[0x5C - 0x4C];
-    /* 0x5C */ u8 out[4];
-    /* 0x60 */ u8 winner;
-    /* 0x61 */ u8 unk61[0x6C - 0x61];
-    /* 0x6C */ s32 teams;
-} WinnerView;
-#define WINV ((WinnerView *)GameInfo)
+#define HUDG ((GameState *)GameInfo)
+#define WINV ((GameState *)GameInfo)
 extern s32 HeroesInPlay;
-/* GameInfo as seen by ProcessHeroes. */
-typedef struct HeroLoopView {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 state;
-    /* 0x08 */ u8 unk8[0x10 - 0x8];
-    /* 0x10 */ s32 flags;
-    /* 0x14 */ u8 unk14[0x30 - 0x14];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 unk36[0x5C - 0x36];
-    /* 0x5C */ u8 out[4];
-} HeroLoopView;
-#define HLV ((HeroLoopView *)GameInfo)
+#define HLV ((GameState *)GameInfo)
 #define HPADS ((PadButtons *)Pads)
 extern s32 HeroesSidelined;
 extern u16 FinalHeroesTempo;
 extern u16 HeroLastHarm[4];
-/* GameInfo as seen by UpdatePause (the pause menu). */
-typedef struct PauseView {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 state;
-    /* 0x08 */ u8 unk8[0x10 - 0x8];
-    /* 0x10 */ s32 flags;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ u8 unk18[0x26 - 0x18];
-    /* 0x26 */ u8 numPlayers;
-    /* 0x27 */ u8 unk27[0x30 - 0x27];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 unk36[0x68 - 0x36];
-    /* 0x68 */ s32 unk68;
-    /* 0x6C */ u8 unk6C[0x74 - 0x6C];
-    /* 0x74 */ u8 unk74;
-} PauseView;
-#define PSV ((PauseView *)GameInfo)
+#define PSV ((GameState *)GameInfo)
 extern u16 LevelKindKeys[];
 #define HUDBOX (&PauseMenuPanel)
 #define HUDENG ((HudEngView *)PanelTab)
@@ -482,17 +377,7 @@ extern s32 HeroesInPlay;
 extern s32 HeroesSidelined;
 extern u16 HeroEntities[];
 
-/* GameInfo as seen by InitialiseHeroes. */
-typedef struct HeroSetupView {
-    /* 0x00 */ u8 unk0[0x10];
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 unk14[0x30 - 0x14];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u8 unk32[0x50 - 0x32];
-    /* 0x50 */ u8 unk50[8];
-    /* 0x58 */ s8 unk58[8];
-} HeroSetupView;
-#define HSV ((HeroSetupView *)GameInfo)
+#define HSV ((GameState *)GameInfo)
 
 
 /* A particle PlotSparks scatters (0x18 bytes). */

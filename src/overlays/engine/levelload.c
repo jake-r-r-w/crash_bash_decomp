@@ -6,12 +6,12 @@
 #include "bash/shell.h"
 
 s32 LoadModeText(void) {
-    EngineGameView *g;
+    GameState *g;
     u8 *p;
     s32 **tab = ModeTextTables;
     s32 **rp;
 
-    g = (EngineGameView *)GameInfo;
+    g = (GameState *)GameInfo;
     rp =&tab[*(s32 *)(GameInfo + 0x2C)];
     p = (u8 *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
     if (p != NULL) {
@@ -153,14 +153,14 @@ void InitLevelLoad(void) {
     sound_init();
     draw_init();
     LevelLoadStage = 0;
-    if (((D5A614View *)GameInfo)->mode == 0x28 && FirstBootDone != 0) {
+    if (((GameState *)GameInfo)->mode == 0x28 && FirstBootDone != 0) {
         ProcessControl.flags = 0x1D;
         ProcessControl.next_process = &RunGame;
     }
 }
 
 void QueueHeroModels(void) {
-    View939FC *g;
+    GameState *g;
     s32 arg;
     s32 i;
     EngineHooks *tbl;
@@ -168,12 +168,12 @@ void QueueHeroModels(void) {
     u8 *base;
     s32 j;
     s32 e;
-    View939FC *a = (View939FC *)GameInfo;
+    GameState *a = (GameState *)GameInfo;
 
     i = 0;
-    arg = LevelRecs[a->unk8].unk4;
+    arg = LevelRecs[a->levelRecIndex].unk4;
     {
-        s32 n = LangPanelModels[a->unk2C];
+        s32 n = LangPanelModels[a->language];
         obj_dbase *b = HeroModelBank;
         obj_dbase *t = &b[n];
         b[DB_Interface].file = t->file;  /* the language's panel models */
@@ -217,7 +217,7 @@ loop:
 void load_initial_dbases(void)
 {
   s32 i;
-  View939FC *g;
+  GameState *g;
   s32 arg;
   u8 *b;
   u8 *t;
@@ -233,13 +233,13 @@ void load_initial_dbases(void)
   new_var = LangPanelModels;
   i = 0;
   tg = GameInfo;
-  idx = ((View939FC *) tg)->unk8;
-  g = (View939FC *) tg;
+  idx = ((GameState *) tg)->levelRecIndex;
+  g = (GameState *) tg;
   tg = (u8 *) LevelRecs;
   arg = *((s32 *) (((u8 *) (&((EngineRec32 *) tg)[idx])) + 4));
   t = (u8 *)HeroModelBank;
   h = &HeroHooks;
-  src = (s32 *) (&((obj_dbase *) t)[new_var[g->unk2C]]);
+  src = (s32 *) (&((obj_dbase *) t)[new_var[g->language]]);
   ((obj_dbase *) t)[DB_Interface].file = src[0];
   b = t;
   ((obj_dbase *) b)[DB_Interface].textureFile = src[1];
@@ -286,8 +286,8 @@ void load_initial_dbases(void)
 
 
 void UpdateLevelLoad(void) {
-    EngStateView *g0;
-    EngStateView *g;
+    GameState *g0;
+    GameState *g;
     map_map *c;
     s32 *a;
     s32 *p;
@@ -310,20 +310,20 @@ void UpdateLevelLoad(void) {
         process_control_init(&MenuProcessControl, NULL);
         ResetEnginePool();
         LoadModeFiles();
-        g0 = (EngStateView *)GameInfo;
-        g0->unk42 = -1;
-        g0->unkCC[0] = 0;
-        g0->unkCC[1] = 0;
-        g0->unkCC[2] = 0;
-        g0->unkCC[3] = 0;
+        g0 = (GameState *)GameInfo;
+        g0->cupLeader = -1;
+        g0->adventure.unkCC[0] = 0;
+        g0->adventure.unkCC[1] = 0;
+        g0->adventure.unkCC[2] = 0;
+        g0->adventure.unkCC[3] = 0;
         LevelLoadStage = 1;
-        g0->unk30 &= ~0x200;
+        g0->exitFlags &= ~0x200;
         break;
     case 1:
         SetNasDefaults();
-        g = (EngStateView *)GameInfo;
-        g->unk30 = 0;
-        g->unk10 = 0;
+        g = (GameState *)GameInfo;
+        g->exitFlags = 0;
+        g->pause = 0;
         InitNasHeap(NasHeapSize);
         subpool_init(SubPoolCount);
         init_scripts(0x20, 0x20);
@@ -934,35 +934,35 @@ void ApplyPlaceRecs(subengine *sub, s32 *recs) {
                 skip = 0;
                 break;
             case 0x20:
-                skip = ((PlaceGameView *)GameInfo)->unk6C == 0;
+                skip = ((GameState *)GameInfo)->teams == 0;
                 break;
             case 0x10:
-                skip = ((PlaceGameView *)GameInfo)->unk6C;
+                skip = ((GameState *)GameInfo)->teams;
                 break;
             case 0x30:
-                skip = ((PlaceGameView *)GameInfo)->unk10 ^ 1;
+                skip = ((GameState *)GameInfo)->pause ^ 1;
                 skip &= 1;
                 break;
             case 0x40:
-                skip = ((PlaceGameView *)GameInfo)->unk10 & 1;
+                skip = ((GameState *)GameInfo)->pause & 1;
                 break;
             case 0x60:
                 skip = 0;
-                if (!(((PlaceGameView *)GameInfo)->unk10 & 1) ||
-                    !(((PlaceGameView *)GameInfo)->unk32 & 0x10)) {
+                if (!(((GameState *)GameInfo)->pause & 1) ||
+                    !(((GameState *)GameInfo)->levelFlags & 0x10)) {
                     skip = 1;
                 }
                 break;
             case 0x50:
                 skip = 0;
-                if (((PlaceGameView *)GameInfo)->unk10 & 1) {
-                    skip = (u32)skip < (((PlaceGameView *)GameInfo)->unk32 & 0x10);
+                if (((GameState *)GameInfo)->pause & 1) {
+                    skip = (u32)skip < (((GameState *)GameInfo)->levelFlags & 0x10);
                 }
                 break;
             case 0x70:
                 skip = 0;
-                if (!(((PlaceGameView *)GameInfo)->unk10 & 1) ||
-                    !(((PlaceGameView *)GameInfo)->unk32 & 0xE0)) {
+                if (!(((GameState *)GameInfo)->pause & 1) ||
+                    !(((GameState *)GameInfo)->levelFlags & 0xE0)) {
                     skip = 1;
                 }
                 break;
@@ -974,7 +974,7 @@ void ApplyPlaceRecs(subengine *sub, s32 *recs) {
             if (skip == 0) {
                 if (rec->type == 14) {
                     PlaceSprite(s, rec->x, rec->y,
-                                ((s32 *)rec->unk14)[((PlaceGameView *)GameInfo)->unk2C],
+                                ((s32 *)rec->unk14)[((GameState *)GameInfo)->language],
                                 rec->unk18);
                 } else {
                     PlaceSprite(s, rec->x, rec->y, rec->unk14, rec->unk18);
@@ -992,7 +992,7 @@ void ApplyPlaceRecs(subengine *sub, s32 *recs) {
             if (skip == 0) {
                 if (rec->type == 18) {
                     PlaceTmpl(s, rec->x,
-                              ((s32 *)rec->unk14)[((PlaceGameView *)GameInfo)->unk2C],
+                              ((s32 *)rec->unk14)[((GameState *)GameInfo)->language],
                               rec->z, rec->scale, rec->unkC);
                 } else {
                     PlaceTmpl(s, rec->x, rec->y, rec->z, rec->scale, rec->unkC);

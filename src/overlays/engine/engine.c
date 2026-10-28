@@ -6,18 +6,18 @@
 
 void InitialiseNasSystem(void) {
     EngineRec32 *rec;
-    EngineBootView *v;
+    GameState *v;
     u8 *p;
 
     rec = ((EngineBootSrc *)LevelTriggerData)->unk4;
     LevelRecs = rec;
     if (rec != NULL) {
-        EngineBootView *w = (EngineBootView *)GameInfo;
-        w->unk3C = *(u16 *)&rec[w->unk8];
+        GameState *w = (GameState *)GameInfo;
+        w->levelLoadModel = *(u16 *)&rec[w->levelRecIndex];
     }
-    v = (EngineBootView *)GameInfo;
-    if (v->unk0 != NULL) {
-        v->unk0(rec);
+    v = (GameState *)GameInfo;
+    if (v->boot != NULL) {
+        v->boot(rec);
     }
     SetNasDefaults();
     Init_Panel();
@@ -29,13 +29,13 @@ void InitialiseNasSystem(void) {
     HeroNasList = p;
     *(s32 *)p = 0;
     InitSysFontModel();
-    PauseMenuSets = PauseMenuSetsByLang[v->unk2C];
+    PauseMenuSets = PauseMenuSetsByLang[v->language];
 }
 
 void BuildCameraFrameList(void) {
     NAS *nas;
     EXTengine *eng;
-    EngineGameView *g;
+    GameState *g;
     s32 ang;
     s32 dx;
     s32 dz;
@@ -47,13 +47,13 @@ void BuildCameraFrameList(void) {
     nas = (NAS *)HeadOfCameras;
     camera_frame_list_size = 0;
     if (nas != NULL) {
-        g = (EngineGameView *)GameInfo;
+        g = (GameState *)GameInfo;
         do {
             eng = nas->Engine;
             if (eng != NULL && (nas->Camera.flags & 0x8000)) {
                 w = nas->Camera.width;
                 r = w;
-                if (!(g->unk30 & 0x801)) {
+                if (!(g->exitFlags & 0x801)) {
                     ang = eng->unk1E & 0xFFF;
                     dx = -rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * nas->Camera.look_ahead >> 12;
                     dz = -rcossin_tbl[ang].unk2 * nas->Camera.look_ahead >> 12;
@@ -94,16 +94,16 @@ void BuildCameraFrameList(void) {
         } while (nas != NULL);
     }
     {
-        EngineGameView *g1 = (EngineGameView *)GameInfo;
-        if ((g1->unk4 & 0x200) && !(g1->unk30 & 0x801)) {
+        GameState *g1 = (GameState *)GameInfo;
+        if ((g1->cheats & 0x200) && !(g1->exitFlags & 0x801)) {
             camera_add_frame_list((s32)&MapPoints[10], 0x80, 0x80, 0, 0, 0x80);
             camera_add_frame_list((s32)&MapPoints[11], 0x80, 0x80, 0, 0, 0x80);
         }
     }
     {
-        EngineGameView *g2 = (EngineGameView *)GameInfo;
-        if (g2->flags & 0x800) {
-            if (!(g2->unk30 & 0x800)) {
+        GameState *g2 = (GameState *)GameInfo;
+        if (g2->levelFlags & 0x800) {
+            if (!(g2->exitFlags & 0x800)) {
                 camera_add_frame_list((s32)&MapPoints[12], 0x80, 0x80, 0, 0, 0x80);
                 camera_add_frame_list((s32)&MapPoints[13], 0x80, 0x80, 0, 0, 0x80);
             }
@@ -152,13 +152,13 @@ void UpdateAllNas(void) {
 }
 
 void InitialiseLevel(void) {
-    EngineGameView *g = (EngineGameView *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     s32 r;
     s32 i;
     s32 want;
     s32 n;
 
-    g->flags &= 0xF4FF;
+    g->levelFlags &= 0xF4FF;
     InitTriggers();
     mapenv_place_subs(MapScene);
     ClearAllNasPool();
@@ -278,13 +278,13 @@ void PickCpuHeroes(void) {
 }
 
 void CheckControllers(void) {
-    EngMenuGame *g = (EngMenuGame *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
     HudEntry *item;
     u16 *levels;
     s32 i;
     s16 y;
 
-    if (g->unk74 != 0 || g->unk68 != 0) {
+    if (g->adventure.unk74 != 0 || g->demo != 0) {
         return;
     }
     levels = ModeTypes;
@@ -292,23 +292,23 @@ void CheckControllers(void) {
         return;
     }
     item = PauseUnpluggedMenu;
-    g->flags &= ~0x4000;
+    g->pause &= ~0x4000;
     item[1].type = -1;
     item[2].type = -1;
     item[3].type = -1;
     item[4].type = -1;
     y = 0x72;
-    if (PadCount < g->count) {
+    if (PadCount < g->players) {
         i = 0;
-        if (g->count != 0) {
+        if (g->players != 0) {
             u16 *lv = levels;
-            EngMenuGame *g1 = (EngMenuGame *)GameInfo;
+            GameState *g1 = (GameState *)GameInfo;
 
             do {
                 if (lv[g1->mode * 3] == 0x102) {
-                    g1->flags |= 0x4009;
+                    g1->pause |= 0x4009;
                 } else {
-                    g1->flags |= 0x4001;
+                    g1->pause |= 0x4001;
                 }
                 PausePad = 0;
                 item->type = 5;
@@ -316,25 +316,25 @@ void CheckControllers(void) {
                 item++;
                 y += 0x12;
                 i++;
-            } while (i < g1->count);
+            } while (i < g1->players);
         }
     } else {
         i = 0;
-        if (g->count != 0) {
+        if (g->players != 0) {
             u16 *lv2;
-            EngMenuGame *g2;
+            GameState *g2;
             lv2 = levels;
-            g2 = (EngMenuGame *)GameInfo;
+            g2 = (GameState *)GameInfo;
             do {
                 if (!(Pads[i].unk0 & 1)) {
                     if (lv2[g2->mode * 3] == 0x102) {
-                        g2->flags |= 0x4009;
+                        g2->pause |= 0x4009;
                     } else {
-                        g2->flags |= 0x4001;
+                        g2->pause |= 0x4001;
                     }
                     item->type = 5;
                     PausePad = 0;
-                    if (g2->count < 3) {
+                    if (g2->players < 3) {
                         if (PadCount < 3) {
                             item->idx = i + 0x1A;
                         } else {
@@ -347,7 +347,7 @@ void CheckControllers(void) {
                     y += 0x12;
                 }
                 i++;
-            } while (i < g2->count);
+            } while (i < g2->players);
         }
     }
     item->idx = 0x20;
@@ -399,9 +399,9 @@ void DrawLevelHud(void) {
 
     if (ModeTypes[HUDGAME->mode * 3] == 0x102) {
         show = 1;
-        if (!(HUDGAME->flags & 1)) {
+        if (!(HUDGAME->pause & 1)) {
             show = 0;
-        } else if (HUDGAME->flags & 0x0A007662) {
+        } else if (HUDGAME->pause & 0x0A007662) {
             show = 0;
         }
         if (GameLevelFlags & 3) {
@@ -436,7 +436,7 @@ void DrawLevelHud(void) {
     } else if (GamePause & 0x0A007662) {
         show = 0;
     }
-    if (HUDGAME->unk32 & 3) {
+    if (HUDGAME->levelFlags & 3) {
         show = 0;
     }
     if (show) {
@@ -458,7 +458,7 @@ void DrawLevelHud(void) {
         c0 = 0xD0FF;
         c1 = 0xFF;
         pos.f.y = Clock_XYZ[1];
-        if (!(Clock_flags & 2) && (HUDGAME->flags & 1)) {
+        if (!(Clock_flags & 2) && (HUDGAME->pause & 1)) {
             Clock[0].Ctrl |= 0x8000;
         }
         for (i = 0; i < 4; i++) {
@@ -544,14 +544,14 @@ void DrawLevelHud(void) {
 
 s32 LevelRequirementMet(arg0, arg1)
 s32 arg0;
-EngineReqObj *arg1;
+GameState *arg1;
 {
     s32 sa, sb, sc, sd;
     s32 i;
     EngineReq *r;
     EngineReq *tab;
 
-    if ((arg1->flags & 0x80002000) == 0x80002000) {
+    if ((arg1->cheats & 0x80002000) == 0x80002000) {
         return 1;
     }
     sd = 0;
@@ -560,10 +560,10 @@ EngineReqObj *arg1;
     sa = 0;
     i = 0;
     do {
-        sa += arg1->a[i];
-        sc += arg1->c[i];
-        sb += arg1->b[i];
-        sd += arg1->d[i];
+        sa += arg1->adventure.unkE4[0][i];
+        sc += arg1->adventure.unkE4[2][i];
+        sb += arg1->adventure.unkE4[1][i];
+        sd += arg1->adventure.unkE4[3][i];
         i++;
     } while (i < 0x21);
     tab = LevelRequirements;
@@ -571,7 +571,7 @@ EngineReqObj *arg1;
     if (sa < r->min0 || sc < r->min4 || sb < r->min2 || sd < r->min6) {
         return 0;
     }
-    if (r->off != 0 && arg1->e[r->off] == 0) {
+    if (r->off != 0 && arg1->adventure.unkE4[4][r->off] == 0) {
         return 0;
     }
     return 1;
@@ -769,9 +769,9 @@ found:
 }
 
 void PreInitLevel(void) {
-    EngineGameView *g = (EngineGameView *)GameInfo;
+    GameState *g = (GameState *)GameInfo;
 
-    g->flags &= 0xF4FF;
+    g->levelFlags &= 0xF4FF;
     SetDefaultHeroHooks();
     SetLevelCameraMode();
     if (LevelSpecs.LevelPreInit != NULL) {

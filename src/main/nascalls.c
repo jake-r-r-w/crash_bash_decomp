@@ -553,12 +553,12 @@ void SetupLevelSpecs(ArenaDef *arg0) {
         NasHeapSize = e->unk6 << 10;
         SubPoolCount = e->unk8;
         LevelConfig = e->unk10;
-        ((D5A614View *)GameInfo)->unk0 = e->unk14;
+        ((GameState *)GameInfo)->boot = e->unk14;
         LevelTriggerData = e->unkC;
-        if (((D5A614View *)GameInfo)->flags & 0x80) {
-            ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)ModeTypes)[((D5A614View *)GameInfo)->mode].unk4;
+        if (((GameState *)GameInfo)->levelFlags & 0x80) {
+            ((GameState *)GameInfo)->levelRecIndex = ((LevelInfo *)ModeTypes)[((GameState *)GameInfo)->mode].unk4;
         } else {
-            ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)ModeTypes)[((D5A614View *)GameInfo)->mode].unk2;
+            ((GameState *)GameInfo)->levelRecIndex = ((LevelInfo *)ModeTypes)[((GameState *)GameInfo)->mode].unk2;
         }
     }
     if (e == NULL || LevelTriggerData == NULL) {

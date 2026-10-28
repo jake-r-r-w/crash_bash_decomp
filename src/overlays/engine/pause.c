@@ -112,10 +112,10 @@ s32 UpdatePause(void) {
     u8 *g;
 
     ret = 1;
-    if (PSV->flags & 0x10) {
+    if (PSV->pause & 0x10) {
         return 0;
     }
-    if ((PSV->unk30 & 0x8008) && ModeTypes[PSV->mode * 3] != 0x102) {
+    if ((PSV->exitFlags & 0x8008) && ModeTypes[PSV->mode * 3] != 0x102) {
         return 0;
     }
     if (ModeTypes[PSV->mode * 3] == 0x101 || PSV->mode == 0x2B) {
@@ -124,16 +124,16 @@ s32 UpdatePause(void) {
     ret1:
         return 1;
     }
-    if (PSV->unk74 != 0) {
+    if (PSV->adventure.unk74 != 0) {
         goto ret1;
     }
-    if (PSV->unk68 != 0) {
-        if (PSV->unk14 != 0) {
-            PSV->unk14--;
+    if (PSV->demo != 0) {
+        if (PSV->demoTimer != 0) {
+            PSV->demoTimer--;
         } else {
             ExitToTitles();
-            PSV->unk68 = 0;
-            PSV->flags &= ~0x02000000;
+            PSV->demo = 0;
+            PSV->pause &= ~0x02000000;
         }
     }
     if (!(GameLevelFlags & 0x100)) {
@@ -172,53 +172,53 @@ found:
                 sound_resume();
             }
         }
-        PSV->flags &= ~0x01000000;
+        PSV->pause &= ~0x01000000;
     }
-    if (PSV->flags & 1) {
-        PSV->flags |= 0x01000000;
+    if (PSV->pause & 1) {
+        PSV->pause |= 0x01000000;
     }
-    if (PSV->flags & 0x08000000) {
+    if (PSV->pause & 0x08000000) {
         return 0;
     }
     max = 4;
-    if (PSV->unk32 & max) {
+    if (PSV->levelFlags & max) {
         max = 3;
     }
-    if (PSV->state < 0 && (PSV->state & 0x10000)) {
+    if (PSV->cheats < 0 && (PSV->cheats & 0x10000)) {
         max++;
     }
-    if (PSV->flags & 0x02007001) {
-        switch ((u32)PSV->flags & 0x023F8FEC) {
+    if (PSV->pause & 0x02007001) {
+        switch ((u32)PSV->pause & 0x023F8FEC) {
         case 0:
-            if (PSV->flags & 0x7000) {
+            if (PSV->pause & 0x7000) {
                 ret = 0;
                 break;
             }
             if (PauseChooseUpDown(PausePad, max) != 0) {
-                PSV->flags &= 0xFFC070D3;
-                if (PSV->unk32 & 4) {
+                PSV->pause &= 0xFFC070D3;
+                if (PSV->levelFlags & 4) {
                     switch (PauseChoice) {
                     case 0:
-                        PSV->flags &= 0x04000010;
+                        PSV->pause &= 0x04000010;
                         PausePad = 0;
                         PauseChoice = 0;
                         sound_resume();
                         break;
                     case 1:
                         SetPauseRecs(PSV->mode, kind, 0);
-                        PSV->flags |= 0x80;
+                        PSV->pause |= 0x80;
                         break;
                     case 2:
-                        PSV->flags |= 0x100;
+                        PSV->pause |= 0x100;
                         PauseChoice = 0;
                         PauseLastChoice = 0;
                         break;
                     case 3:
                         if (PSV->mode == 0x20) {
-                            PSV->flags |= 4;
+                            PSV->pause |= 4;
                             PauseChoice = 1;
                         } else {
-                            PSV->flags |= 0x8000;
+                            PSV->pause |= 0x8000;
                             PauseChoice = 1;
                         }
                         break;
@@ -228,24 +228,24 @@ found:
                     case 0:
                         PausePad = 0;
                         PauseChoice = 0;
-                        PSV->flags &= 0x04000010;
+                        PSV->pause &= 0x04000010;
                         sound_resume();
                         break;
                     case 1:
                         SetPauseRecs(PSV->mode, kind, 0);
-                        PSV->flags |= 0x80;
+                        PSV->pause |= 0x80;
                         break;
                     case 2:
                         PauseChoice = 0;
                         PauseLastChoice = 0;
-                        PSV->flags |= 0x100;
+                        PSV->pause |= 0x100;
                         break;
                     case 3:
-                        PSV->flags |= 0x8000;
+                        PSV->pause |= 0x8000;
                         PauseChoice = 1;
                         break;
                     case 4:
-                        PSV->flags |= 4;
+                        PSV->pause |= 4;
                         PauseChoice = 1;
                         break;
                     }
@@ -264,21 +264,21 @@ found:
                 case 0:
                     PausePad = 0;
                     PauseChoice = 0;
-                    PSV->flags &= 0x04000010;
+                    PSV->pause &= 0x04000010;
                     sound_resume();
                     break;
                 case 1:
                     PauseLastChoice = 0;
                     PauseChoice = 0;
-                    PSV->flags |= 0x100;
+                    PSV->pause |= 0x100;
                     break;
                 case 2:
                     PauseChoice = 1;
-                    PSV->flags |= 4;
+                    PSV->pause |= 4;
                     break;
                 case 3:
                     PauseChoice = 0;
-                    PSV->flags |= 0x10000;
+                    PSV->pause |= 0x10000;
                     break;
                 }
                 PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -290,7 +290,7 @@ found:
                 switch (PauseChoice) {
                 case 0:
                     hi = 0;
-                    if (PSV->unk32 & 0x10) {
+                    if (PSV->levelFlags & 0x10) {
                         for (i = 0; i < 4; i++) {
                             if (hi < GameInfo[i + 0xCC]) {
                                 hi = GameInfo[i + 0xCC];
@@ -307,18 +307,18 @@ found:
                             }
                         }
                     }
-                    PSV->flags |= 0x10;
-                    PSV->unk30 |= 0x8002;
+                    PSV->pause |= 0x10;
+                    PSV->exitFlags |= 0x8002;
                     break;
                 case 1:
                     PauseChoice = 0;
-                    PSV->flags &= ~0x8000;
+                    PSV->pause &= ~0x8000;
                     break;
                 }
             }
             if (ActivePad()->pressed & 0x1000) {
                 PauseChoice = 0;
-                PSV->flags &= ~0x8000;
+                PSV->pause &= ~0x8000;
             }
             ret = 0;
             break;
@@ -331,13 +331,13 @@ found:
                     break;
                 case 1:
                     PauseChoice = 0;
-                    PSV->flags &= ~4;
+                    PSV->pause &= ~4;
                     break;
                 }
             }
             if (ActivePad()->pressed & 0x1000) {
                 PauseChoice = 0;
-                PSV->flags &= ~4;
+                PSV->pause &= ~4;
             }
             ret = 0;
             break;
@@ -354,10 +354,10 @@ found:
                         if (r) {
                             PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
                             KillEngineSlot(0);
-                            fl = PSV->flags;
+                            fl = PSV->pause;
                             if (fl & 0x200) {
                                 ret = 1;
-                                PSV->flags = fl & ~0x40;
+                                PSV->pause = fl & ~0x40;
                                 PauseChoice = 0;
                             } else {
                                 /* the mask set first and the cleared bit in its own
@@ -365,7 +365,7 @@ found:
                                 s32 keep = 0x04000010;
                                 s32 t = fl & ~0x40;
 
-                                PSV->flags = t & keep;
+                                PSV->pause = t & keep;
                                 PausePad = 0;
                                 PauseChoice = 0;
                                 sound_resume();
@@ -396,7 +396,7 @@ found:
                         KillEngineSlot(0);
                         PauseTextHold = 1;
                         PauseChoice = 0;
-                        PSV->flags &= ~0x80;
+                        PSV->pause &= ~0x80;
                     } else {
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
@@ -411,7 +411,7 @@ found:
             break;
         case 0x02000000:
             if (joypad_idle_count <= 0) {
-                PSV->unk14 = 0;
+                PSV->demoTimer = 0;
             }
             ret = 1;
             DrawPauseMenu();
@@ -470,7 +470,7 @@ found:
                 }
                 break;
             case 2:
-                for (i = 0; i < PSV->numPlayers; i++) {
+                for (i = 0; i < PSV->players; i++) {
                     if ((HPADS[i].pressed & 0x8000) && (((PadStick *)Pads)[i].flags & 8)) {
                         GameOptions.vibrate[i] = GameOptions.vibrate[i] == 0;
                         pad_rumble_small(i, 10);
@@ -487,7 +487,7 @@ found:
                 if (PauseChooseUpDown(PausePad, 2) != 0) {
                     if (PauseChoice == 2) {
                         PauseLastChoice = 0;
-                        PSV->flags &= ~0x100;
+                        PSV->pause &= ~0x100;
                     } else {
                         PauseLastChoice = PauseChoice + 1;
                     }
@@ -499,7 +499,7 @@ found:
                 }
                 if (ActivePad()->pressed & 0x1000) {
                     PauseChoice = 0;
-                    PSV->flags &= ~0x100;
+                    PSV->pause &= ~0x100;
                 }
                 break;
             }
@@ -509,20 +509,20 @@ found:
         case 0x20008:
             if (ActivePad()->pressed & 8) {
                 PauseChoice = 0;
-                PSV->flags = (PSV->flags & ~0x20000) | 0x10000;
+                PSV->pause = (PSV->pause & ~0x20000) | 0x10000;
             }
             ret = 0;
             break;
         case 0x40000:
         case 0x40008:
             if (ActivePad()->pressed & 1) {
-                PSV->unk30 = 0x8008;
+                PSV->exitFlags = 0x8008;
                 PausePad = 2;
                 NextGameMode = PSV->mode;
-                PSV->flags &= 0xFFFBFFFE;
+                PSV->pause &= 0xFFFBFFFE;
             }
             if (ActivePad()->pressed & 0x1008) {
-                PSV->flags = (PSV->flags & ~0x40000) | 0x10000;
+                PSV->pause = (PSV->pause & ~0x40000) | 0x10000;
                 PauseChoice = 2;
             }
             ret = 0;
@@ -539,28 +539,28 @@ found:
                 SetPauseRecs(PSV->mode, kind, 0);
                 ret = 1;
                 SetPauseY(PauseMenuY);
-                PSV->flags |= 0x40;
+                PSV->pause |= 0x40;
                 break;
             case 2:
                 PausePad = 0;
                 PauseChoice = 0;
-                PSV->flags = (PSV->flags & ~0x200) | 0x10;
-                PSV->unk30 |= 0x8002;
-                PSV->flags &= 0x04000010;
+                PSV->pause = (PSV->pause & ~0x200) | 0x10;
+                PSV->exitFlags |= 0x8002;
+                PSV->pause &= 0x04000010;
                 sound_resume();
                 break;
             case 3:
-                PSV->flags &= ~0x200;
+                PSV->pause &= ~0x200;
                 ExitToTitles();
                 PausePad = 0;
                 PauseChoice = 0;
-                PSV->flags &= 0x04000010;
+                PSV->pause &= 0x04000010;
                 sound_resume();
                 break;
             default:
                 PausePad = 0;
                 PauseChoice = 0;
-                PSV->flags &= 0x04000010;
+                PSV->pause &= 0x04000010;
                 sound_resume();
                 ret = 1;
                 CupTimer = 0;
@@ -588,7 +588,7 @@ found:
                 ret = 1;
                 CupTimer = 0;
                 PausePad = 0;
-                PSV->flags &= ~0x21;
+                PSV->pause &= ~0x21;
             } else {
                 ret = 1;
                 DrawPauseMenu();
@@ -598,19 +598,19 @@ found:
             ret = 0;
             PausePad = 0;
             PauseChoice = 0;
-            PSV->flags |= 1;
+            PSV->pause |= 1;
             break;
         }
         /* in both branches: when neither runs, the hook doesn't either */
         if (GameExitFlags & 0x1000) {
             UpdateWinCounter(ret);
         }
-    } else if (!(PSV->flags & 0x04000000) || (PSV->unk30 & 0x1000)) {
+    } else if (!(PSV->pause & 0x04000000) || (PSV->exitFlags & 0x1000)) {
         n = 1;
         PausePad = 0;
         PauseFlashItem = -1;
         if (ModeTypes[PSV->mode * 3] != 0x102) {
-            n = PSV->numPlayers;
+            n = PSV->players;
         }
         for (i = 0; i < n; i++) {
             if ((HPADS[i].held & 9) != 9 && (HPADS[i].pressed & 8)) {
@@ -618,10 +618,10 @@ found:
                     PausePad = i;
                     PauseFlashItem = i;
                     PauseChoice = 0;
-                    PSV->flags |= 1;
+                    PSV->pause |= 1;
                     i = 99;
                     if (ModeTypes[PSV->mode * 3] == 0x102) {
-                        PSV->flags |= 9;
+                        PSV->pause |= 9;
                     }
                     StatsPageWanted = 1;
                     DrawAdventureStats(1);
@@ -641,7 +641,7 @@ found:
 
 void DrawHudEntries(HudEntry *e, s32 arg1) {
     s32 n;
-    HudGameView *g;
+    GameState *g;
     HudEngView *eng;
     s16 *row;
     s16 *row2;
@@ -650,16 +650,16 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
     s32 sfx;
 
     for (n = 0; e->type != -1; e++) {
-        g = (HudGameView *)GameInfo;
+        g = (GameState *)GameInfo;
         switch (e->type) {
         case 1:
-            if ((g->state & 0x80010000) != 0x80010000) {
+            if ((g->cheats & 0x80010000) != 0x80010000) {
                 break;
             }
         case 0:
             if (PauseTextHold == 0) {
                 DrawSysText(e->x, (s16)(e->y + arg1),
-                              ((u8 **)LangMessages[g->level])[e->idx], e->a, e->b,
+                              ((u8 **)LangMessages[g->language])[e->idx], e->a, e->b,
                               PauseChoice == n);
             }
             n++;
@@ -670,7 +670,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             HUDBOX->top = e->x + arg1;
             HUDBOX->x = 0x7C;
             HUDBOX->width = 0x204;
-            if ((g->state & 0x80010000) != 0x80010000) {
+            if ((g->cheats & 0x80010000) != 0x80010000) {
                 HUDBOX->bottom = arg1 + (e->x + e->y);
             } else {
                 HUDBOX->bottom = arg1 + (e->x + e->idx);
@@ -682,22 +682,22 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             }
             break;
         case 4:
-            if (ModeTypes[g->mode * 3] == 0x102 && (g->flags & 0x40)) {
+            if (ModeTypes[g->mode * 3] == 0x102 && (g->pause & 0x40)) {
                 goto clear;
             }
             DrawSpriteTriple(e->x, (s16)(e->y + arg1), e->a, e->b, e->idx);
-            if (!(g->flags & 0xC0)) {
+            if (!(g->pause & 0xC0)) {
                 goto clear;
             }
-            if (g->flags & 0x40) {
-                row = LangHudRows[g->level];
+            if (g->pause & 0x40) {
+                row = LangHudRows[g->language];
                 i = arg1 + e->y;
                 HUDENG->x0 = row[0] + 0x140;
                 HUDENG->y0 = i + row[1];
                 HUDENG->x1 = row[2] + 0x140;
                 HUDENG->y1 = i + row[3];
             } else {
-                row2 = LangHudRows[g->level];
+                row2 = LangHudRows[g->language];
                 i = arg1 + e->y;
                 HUDENG->x0 = row2[4] + 0x140;
                 HUDENG->y0 = i + row2[5];
@@ -705,25 +705,25 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 HUDENG->y1 = i + row2[7];
             }
             sfx = 0;
-            if (g->unk32 & 0x10) {
+            if (g->levelFlags & 0x10) {
                 sfx = 0x2022;
             }
-            if (g->unk32 & 0x80) {
+            if (g->levelFlags & 0x80) {
                 sfx = 0x201E;
             }
-            if (g->unk32 & 0x40) {
+            if (g->levelFlags & 0x40) {
                 sfx = 0x201F;
             }
-            if (g->unk32 & 0x20) {
+            if (g->levelFlags & 0x20) {
                 sfx = 0x2021;
-                if (g->unk32 & 8) {
+                if (g->levelFlags & 8) {
                     sfx = 0x2020;
                 }
             }
             if (g->mode == 0x20) {
                 sfx = 0;
             }
-            if (g->unk32 & 0x100) {
+            if (g->levelFlags & 0x100) {
                 sfx = 0;
             }
             if (ModeTypes[g->mode * 3] == 0x102) {
@@ -741,7 +741,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 break;
             }
             DrawSysText(e->x, (s16)(e->y + arg1),
-                          ((u8 **)LangMessages[g->level])[e->idx], e->a, e->b, 0);
+                          ((u8 **)LangMessages[g->language])[e->idx], e->a, e->b, 0);
             break;
         case 6:
             FontPage = e->x;
@@ -752,7 +752,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             HUDBOX->top = e->x + arg1;
             HUDBOX->x = 0x40;
             HUDBOX->width = 0x240;
-            if ((g->state & 0x80010000) != 0x80010000) {
+            if ((g->cheats & 0x80010000) != 0x80010000) {
                 HUDBOX->bottom = arg1 + (e->x + e->y);
             } else {
                 HUDBOX->bottom = arg1 + (e->x + e->idx);
@@ -768,7 +768,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 goto draw;
             }
             DrawSysText(e->x, (s16)(e->y + arg1),
-                          ((u8 **)LangMessages[g->level])[e->idx], e->c, e->d, 0);
+                          ((u8 **)LangMessages[g->language])[e->idx], e->c, e->d, 0);
             break;
         case 20: case 21: case 22: case 23: case 24:
         case 25: case 26: case 27: case 28: case 29:
@@ -780,7 +780,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 goto draw;
             }
             DrawSysText(e->x, (s16)(e->y + arg1),
-                          ((u8 **)LangMessages[g->level])[e->idx], e->c, e->d, 0);
+                          ((u8 **)LangMessages[g->language])[e->idx], e->c, e->d, 0);
             break;
         case 30: case 31: case 32: case 33: case 34:
         case 35: case 36: case 37: case 38: case 39:
@@ -790,7 +790,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             }
         draw:
             DrawSysText(e->x, (s16)(e->y + arg1),
-                          ((u8 **)LangMessages[g->level])[e->idx], e->a, e->b, 0);
+                          ((u8 **)LangMessages[g->language])[e->idx], e->a, e->b, 0);
             break;
         }
     }
@@ -809,7 +809,7 @@ void DrawPauseMenu(void) {
     s32 i;
     s32 sel;
 
-    if (MSGV->flags == 0) {
+    if (MSGV->pause == 0) {
         return;
     }
     PauseVolSubA.entity = 0;
@@ -821,31 +821,31 @@ void DrawPauseMenu(void) {
     e->top = -1;
     e->bottom = -1;
     FontPage = 0;
-    if (MSGV->flags & 0x08000002) {
+    if (MSGV->pause & 0x08000002) {
         return;
     }
-    if (MSGV->flags & 0x7000) {
-        if (MSGV->flags & 0x2000) {
+    if (MSGV->pause & 0x7000) {
+        if (MSGV->pause & 0x2000) {
             DrawHudEntries(PauseBlankB, 0x70);
             return;
         }
-        if (MSGV->flags & 0x1000) {
+        if (MSGV->pause & 0x1000) {
             DrawHudEntries(PauseBlankA, 0x70);
             return;
         }
-        if (MSGV->flags & 0x4000) {
+        if (MSGV->pause & 0x4000) {
             DrawHudEntries(PausePadMessage, 0x70);
             return;
         }
     }
-    switch (MSGV->flags & 0x023F8FEC) {
+    switch (MSGV->pause & 0x023F8FEC) {
     case 0:
         if (MSGV->mode == 0x20) {
             DrawHudEntries(PauseMenuQuit, PauseMenuY);
             PauseStatsAllowed = 0;
             return;
         }
-        if (MSGV->unk32 & 4) {
+        if (MSGV->levelFlags & 4) {
             DrawHudEntries(PauseMenuExitArena, PauseMenuY);
         } else {
             DrawHudEntries(PauseMenuChangeArena, PauseMenuY);
@@ -880,12 +880,12 @@ void DrawPauseMenu(void) {
             PauseToggles[1] = sel;
             PauseToggles[2] = sel;
             PauseToggles[0] = GameOptions.stereo != 0;
-            FormatPercent(LangMessages[MSGV->level]->unkBC, GameOptions.music);
-            FormatPercent(LangMessages[MSGV->level]->unkC0, GameOptions.sfx);
+            FormatPercent(LangMessages[MSGV->language]->unkBC, GameOptions.music);
+            FormatPercent(LangMessages[MSGV->language]->unkC0, GameOptions.sfx);
             DrawHudEntries(PauseSoundMenu, PauseMenuY);
             break;
         case 2:
-            for (i = 0; i < MSGV->numPlayers; i++) {
+            for (i = 0; i < MSGV->players; i++) {
                 if (Pads[i].unk0 & 8) {
                     PauseToggles[i] = GameOptions.vibrate[i] != 0;
                 } else {
@@ -912,7 +912,7 @@ void DrawPauseMenu(void) {
         DrawHudEntries(PauseEndAdventureMenu, PauseMenuY);
         break;
     case 0x2000000:
-        if (MSGV->unkC & 0x10) {
+        if (MSGV->frames & 0x10) {
             DrawHudEntries(PauseDemoLabel, PauseMenuY);
         }
         break;
@@ -934,26 +934,26 @@ void DrawAdventureStats(s32 arg0) {
     c1 = 0;
     c0 = 0;
     for (i = 0; i < 0x21; i++) {
-        if (SCV->got0[i] != 0) {
+        if (SCV->adventure.unkE4[0][i] != 0) {
             c0++;
         }
-        if (SCV->got1[i] != 0) {
+        if (SCV->adventure.unkE4[2][i] != 0) {
             c1++;
         }
-        if (SCV->got2[i] != 0) {
+        if (SCV->adventure.unkE4[1][i] != 0) {
             c2++;
         }
-        if (SCV->got2[i] == 2) {
+        if (SCV->adventure.unkE4[1][i] == 2) {
             c4++;
         }
-        if (SCV->got3[i] != 0) {
+        if (SCV->adventure.unkE4[3][i] != 0) {
             c3++;
         }
     }
     for (i = 0; i < 4; i++) {
-        n[i] = SCV->score[i];
-        if (mode == 5 && (SCV->unk32 & 2)) {
-            n[i] += SCV->bonus[i];
+        n[i] = SCV->adventure.unkCC[i];
+        if (mode == 5 && (SCV->levelFlags & 2)) {
+            n[i] += SCV->adventure.unk9F[i];
         }
     }
     if (GameLevelFlags & 0xC0) {
@@ -961,13 +961,13 @@ void DrawAdventureStats(s32 arg0) {
     } else {
         StatsHasPage3 = 1;
     }
-    if (SCV->flags & 8) {
+    if (SCV->pause & 8) {
         StatsHasPage3 = 0;
     }
-    if (SCV->unk32 & 0x100) {
+    if (SCV->levelFlags & 0x100) {
         StatsHasPage3 = 0;
     }
-    if (SCV->unk32 & 3) {
+    if (SCV->levelFlags & 3) {
         StatsHasPage1 = 0;
     } else {
         StatsHasPage1 = 1;
@@ -1012,23 +1012,23 @@ void DrawAdventureStats(s32 arg0) {
         PauseDigits5[1] = i % 10 + '0';
         i /= 10;
         PauseDigits5[0] = i % 10 + '0';
-        if (SCV->unk4 & 0x2000) {
-            if (SCV->flags & 8) {
+        if (SCV->cheats & 0x2000) {
+            if (SCV->pause & 8) {
                 PlaceEngineSlot(4, AdvStatsPanel5);
             } else {
                 PlaceEngineSlot(4, AdvStatsPanel4);
             }
         } else {
-            switch (SCV->unkE0) {
+            switch (SCV->adventure.unkE0) {
             case 1:
-                if (SCV->flags & 8) {
+                if (SCV->pause & 8) {
                     PlaceEngineSlot(4, AdvStatsPanel3);
                 } else {
                     PlaceEngineSlot(4, AdvStatsPanel2);
                 }
                 break;
             case 2:
-                if (SCV->flags & 8) {
+                if (SCV->pause & 8) {
                     PlaceEngineSlot(4, AdvStatsPanel5);
                 } else {
                     PlaceEngineSlot(4, AdvStatsPanel4);
@@ -1046,19 +1046,19 @@ void DrawAdventureStats(s32 arg0) {
         e->unk10.x = 0x60;
         e->unk10.y = 0x1F4;
         sub = e->sub;
-        if (SCV->unk32 & 0x10) {
+        if (SCV->levelFlags & 0x10) {
             sub[1].unk04 = sub[3].unk04;
         }
-        if (SCV->unk32 & 0x40) {
+        if (SCV->levelFlags & 0x40) {
             sub[1].unk04 = sub[5].unk04;
         }
-        if (SCV->unk32 & 0x80) {
+        if (SCV->levelFlags & 0x80) {
             sub[1].unk04 = sub[7].unk04;
         }
-        if (SCV->unk32 & 0x20) {
+        if (SCV->levelFlags & 0x20) {
             sub[1].unk04 = sub[9].unk04;
         }
-        if (SCV->unk32 & 8) {
+        if (SCV->levelFlags & 8) {
             sub[1].unk04 = sub[11].unk04;
         }
         if (StatsHasPage3 != 0) {
@@ -1328,8 +1328,8 @@ void RenderPause(void) {
 }
 
 void StartWinSequence(s32 arg0) {
-    EngineHintView *g;
-    EngineHintView *g2;
+    GameState *g;
+    GameState *g2;
     PauseRecord **set;
     PauseRecord *rec;
 
@@ -1339,22 +1339,22 @@ void StartWinSequence(s32 arg0) {
     WinCounterSize = 0x19;
     WinCounterState = 0;
     WinCounterAnim = 1;
-    g = (EngineHintView *)GameInfo;
-    g->flags &= 0xFDC07013;
+    g = (GameState *)GameInfo;
+    g->pause &= 0xFDC07013;
     PauseDelay = 3;
-    g->flags |= 0x04000000;
-    if (g->unk68 != 0) {
-        g->flags |= 0x02000000;
-        g->unk14 = 0x384;
-        g->unk5C[0] = 1;
-        g->unk5C[1] = 1;
-        g->unk5C[2] = 1;
-        g->unk5C[3] = 1;
+    g->pause |= 0x04000000;
+    if (g->demo != 0) {
+        g->pause |= 0x02000000;
+        g->demoTimer = 0x384;
+        g->heroOut[0] = 1;
+        g->heroOut[1] = 1;
+        g->heroOut[2] = 1;
+        g->heroOut[3] = 1;
         return;
     }
-    switch (g->unk32 & 0xE0) {
+    switch (g->levelFlags & 0xE0) {
     case 0x80:
-        if (g->shown[g->mode] & 0x80) {
+        if (g->adventure.unk76[g->mode] & 0x80) {
             return;
         }
         set = ((PauseRecord ****)PauseMenuSets)[g->mode][2];
@@ -1365,14 +1365,14 @@ void StartWinSequence(s32 arg0) {
             PauseRec = rec;
             PlaceEngineSlot(0, &rec->kind);
         }
-        g->shown[g->mode] |= 0x80;
+        g->adventure.unk76[g->mode] |= 0x80;
         PausePad = 0;
-        g->flags |= 0x41;
+        g->pause |= 0x41;
         WinCounterSize >>= 1;
         return;
     case 0x20:
-        if (g->unk32 & 8) {
-            if (g->shown[g->mode] & 8) {
+        if (g->levelFlags & 8) {
+            if (g->adventure.unk76[g->mode] & 8) {
                 return;
             }
             set = ((PauseRecord ****)PauseMenuSets)[g->mode][8];
@@ -1383,12 +1383,12 @@ void StartWinSequence(s32 arg0) {
                 PauseRec = rec;
                 PlaceEngineSlot(0, &rec->kind);
             }
-            g->shown[g->mode] |= 8;
+            g->adventure.unk76[g->mode] |= 8;
             PausePad = 0;
-            g->flags |= 0x41;
+            g->pause |= 0x41;
             WinCounterSize >>= 1;
         } else {
-            if (g->shown[g->mode] & 0x20) {
+            if (g->adventure.unk76[g->mode] & 0x20) {
                 return;
             }
             set = ((PauseRecord ****)PauseMenuSets)[g->mode][6];
@@ -1399,14 +1399,14 @@ void StartWinSequence(s32 arg0) {
                 PauseRec = rec;
                 PlaceEngineSlot(0, &rec->kind);
             }
-            g->shown[g->mode] |= 0x20;
+            g->adventure.unk76[g->mode] |= 0x20;
             PausePad = 0;
-            g->flags |= 0x41;
+            g->pause |= 0x41;
             WinCounterSize >>= 1;
         }
         return;
     case 0x40:
-        if (g->shown[g->mode] & 0x40) {
+        if (g->adventure.unk76[g->mode] & 0x40) {
             return;
         }
         set = ((PauseRecord ****)PauseMenuSets)[g->mode][4];
@@ -1417,14 +1417,14 @@ void StartWinSequence(s32 arg0) {
             PauseRec = rec;
             PlaceEngineSlot(0, &rec->kind);
         }
-        g->shown[g->mode] |= 0x40;
+        g->adventure.unk76[g->mode] |= 0x40;
         PausePad = 0;
-        g->flags |= 0x41;
+        g->pause |= 0x41;
         WinCounterSize >>= 1;
         return;
     default:
-        g2 = (EngineHintView *)GameInfo;
-        if (g2->shown[g2->mode] & 0x10) {
+        g2 = (GameState *)GameInfo;
+        if (g2->adventure.unk76[g2->mode] & 0x10) {
             return;
         }
         set = ((PauseRecord ****)PauseMenuSets)[g2->mode][0];
@@ -1435,9 +1435,9 @@ void StartWinSequence(s32 arg0) {
             PauseRec = rec;
             PlaceEngineSlot(0, &rec->kind);
         }
-        g2->shown[g2->mode] |= 0x10;
+        g2->adventure.unk76[g2->mode] |= 0x10;
         PausePad = 0;
-        g2->flags |= 0x41;
+        g2->pause |= 0x41;
         WinCounterSize >>= 1;
         return;
     }
@@ -1572,7 +1572,7 @@ void UpdateWinCounter(s32 arg0) {
             counter_sub.entity = 0x2005;
             counter_sub.flags |= 0x8000;
             PlaySfx(0x1A7, NULL, NULL, 0x1000, 0x1E00, 0);
-            ((EngineHintView *)GameInfo)->flags &= 0xFBFFFFFF;
+            ((GameState *)GameInfo)->pause &= 0xFBFFFFFF;
             break;
         case 5:
             counter_sub.entity = 0x2006;

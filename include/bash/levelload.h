@@ -10,15 +10,6 @@
 
 extern u16 LoadingEntities[];
 
-/* GameInfo as seen by load_initial_dbases. */
-typedef struct View939FC {
-    /* 0x00 */ u8 pad0[8];
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ u8 padC[0x20];
-    /* 0x2C */ s32 unk2C;
-    /* 0x30 */ u8 pad30[0x20];
-    /* 0x50 */ u8 unk50[4];
-} View939FC;
 
 
 typedef struct Tmpl1C {
@@ -119,17 +110,6 @@ typedef struct PlaceSub {
     /* 0x88 */ s32 unk88;
 } PlaceSub;
 
-/* GameInfo as seen by ApplyPlaceRecs. */
-typedef struct PlaceGameView {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x2C - 0x14];
-    /* 0x2C */ s32 unk2C;
-    /* 0x30 */ u16 pad30;
-    /* 0x32 */ u16 unk32;
-    /* 0x34 */ u8 pad34[0x6C - 0x34];
-    /* 0x6C */ s32 unk6C;
-} PlaceGameView;
 
 static inline void PlaceSprite(PlaceSub *s, s32 x, s32 y, s32 img, s32 clut) {
     if (s != NULL) {
@@ -251,19 +231,6 @@ extern Blk32 SceneScriptRot;
 extern CamVec3 SceneScriptPos;
 extern script_handler *SceneScript;
 
-/* GameInfo as seen by UpdateLevelLoad. */
-typedef struct EngStateView {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x30 - 0x14];
-    /* 0x30 */ u16 unk30;
-    /* 0x32 */ u16 pad32;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 pad36[0x42 - 0x36];
-    /* 0x42 */ s16 unk42;
-    /* 0x44 */ u8 pad44[0xCC - 0x44];
-    /* 0xCC */ u8 unkCC[4];
-} EngStateView;
 typedef struct EngRgb {
     u8 r, g, b;
 } EngRgb;

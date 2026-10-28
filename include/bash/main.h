@@ -949,6 +949,54 @@ extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N a
 extern s32 MalLargestFree;            /* mal_count_free: largest free block, bytes */
 extern s32 SfxBankCount;            /* slots of SfxBanks in use */
 extern char SsTable[];
+/* GameInfo's 0x18C bytes as one record (the views' fold): each field is the global of the same
+ * name at that address (GameMode is .mode, GameHeroes .heroes, ...). The code reads it both ways:
+ * by the globals and through a GameState * at GameInfo (or a card's saved copy of it). */
+typedef struct GameState {
+    /* 0x000 */ void (*boot)(void *);   /* InitialiseNasSystem calls it with the level's records */
+    /* 0x004 */ s32 cheats;
+    /* 0x008 */ s32 levelRecIndex;
+    /* 0x00C */ s32 frames;
+    /* 0x010 */ u32 pause;
+    /* 0x014 */ s32 demoTimer;
+    /* 0x018 */ char name[8];     /* InitGameState: spaces */
+    /* 0x020 */ u8 unk20;
+    /* 0x021 */ s8 unk21;
+    /* 0x022 */ u8 pad22[2];
+    /* 0x024 */ s16 exitDelay;
+    /* 0x026 */ u8 players;
+    /* 0x027 */ u8 maxPlayers;
+    /* 0x028 */ s8 cup;
+    /* 0x029 */ u8 cupRound;
+    /* 0x02A */ u8 unk2A;
+    /* 0x02B */ u8 unk2B;
+    /* 0x02C */ s32 language;
+    /* 0x030 */ u16 exitFlags;
+    /* 0x032 */ u16 levelFlags;
+    /* 0x034 */ s16 mode;
+    /* 0x036 */ s8 arena;
+    /* 0x037 */ s8 arenaLevel;
+    /* 0x038 */ s16 aiLevel;
+    /* 0x03A */ s16 battleWins;
+    /* 0x03C */ s16 levelLoadModel;
+    /* 0x03E */ s16 unk3E;
+    /* 0x040 */ s16 unk40;
+    /* 0x042 */ s16 cupLeader;
+    /* 0x044 */ s16 teamSide[2];
+    /* 0x048 */ s16 teamLeader[2];
+    /* 0x04C */ u8 heroChoice[4];
+    /* 0x050 */ u8 heroes[4];
+    /* 0x054 */ s8 teammateChoice[4];
+    /* 0x058 */ s8 teammates[4];
+    /* 0x05C */ u8 heroOut[4];
+    /* 0x060 */ u8 winner[2];
+    /* 0x062 */ u8 warpRoom;
+    /* 0x063 */ s8 gateway;
+    /* 0x064 */ s32 returnToHub;
+    /* 0x068 */ s32 demo;
+    /* 0x06C */ s32 teams;
+    /* 0x070 */ AdventureState adventure;
+} GameState;
 extern u8 GameInfo[];
 extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
 extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (views: numPlayers) */
@@ -957,18 +1005,6 @@ extern s16 GameTeamLeader[2];    /* GameInfo + 0x48: each team's leading hero */
 extern u8 GameHeroOut[4];        /* GameInfo + 0x5C: each hero out of the game */
 extern u8 GameWinner[2];         /* GameInfo + 0x60: the winners' hero names */
 
-/* GameInfo as seen by music_play_level. */
-typedef struct D5A614View {
-    /* 0x00 */ s32 unk0;    /* SetupLevelSpecs: the arena's unk14 */
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;    /* SetupLevelSpecs: a LevelInfo field by flags 0x80 */
-    /* 0x0C */ u8 unkC[0x30 - 0xC];
-    /* 0x30 */ u16 unk30;   /* bit 0 cleared on a mode change (process_control_update) */
-    /* 0x32 */ u16 flags;
-    /* 0x34 */ s16 mode;
-    /* 0x36 */ u8 unk36[0x50 - 0x36];
-    /* 0x50 */ u8 unk50[4];
-} D5A614View;
 extern u16 ModeTypes[];          /* music_play_level: 6-byte entries indexed by GameInfo+0x34 */
 /* ModeTypes as 6-byte entries indexed by level (SetupLevelSpecs). */
 typedef struct LevelInfo {
