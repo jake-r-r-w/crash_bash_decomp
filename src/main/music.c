@@ -17,7 +17,7 @@ void music_open_seq(music_midi *slot, s32 idx) {
     SsSeqPlay((s16)slot->seq, 1, 0);
     vol = (GameOptions.music * 0x7F) / 100;
     SsSeqSetVol((s16)slot->seq, vol, vol);
-    D_800655B4 = (GameOptions.music * 0x7F) / 100;
+    MusicVolCur = (GameOptions.music * 0x7F) / 100;
     SsSetMute(0);
 }
 
@@ -47,16 +47,16 @@ void music_update(void) {
     } else {
         if (slot->seq >= 0) {
             vol = (GameOptions.music * 0x7F) / 100;
-            if (D_800655B4 != vol || D_800655AC != D_800655B0) {
-                if (D_800655AC != 0) {
+            if (MusicVolCur != vol || MusicDuck != MusicDuckCur) {
+                if (MusicDuck != 0) {
                     SeqSlot_SetVol(slot, (GameOptions.music * 0x55) / 100);
                 } else {
                     SeqSlot_SetVol(slot, vol);
                 }
             }
         }
-        D_800655B0 = D_800655AC;
-        D_800655B4 = (GameOptions.music * 0x7F) / 100;
+        MusicDuckCur = MusicDuck;
+        MusicVolCur = (GameOptions.music * 0x7F) / 100;
     }
 }
 
@@ -65,7 +65,7 @@ void music_init(void) {
     CurrentMusic.seq = -1;
     D_800655A4 = -1;
     D_8006559C = -1;
-    D_800655B4 = 0;
+    MusicVolCur = 0;
 }
 
 void music_close(music_midi *slot) {
@@ -117,11 +117,11 @@ void music_request(s32 arg0) {
 }
 
 void music_duck_off(void) {
-    D_800655AC = 0;
+    MusicDuck = 0;
 }
 
 void music_flag_restart(void) {
-    D_800655AC = 1;
+    MusicDuck = 1;
 }
 
 void music_restart(void) {
@@ -162,8 +162,8 @@ void music_set_data(s32 arg0, s32 *arg1) {
     *arg1 = arg0;
     music_setup_slot(arg1);
     D_800655A8 = 0;
-    D_800655AC = 0;
-    D_800655B0 = 0;
+    MusicDuck = 0;
+    MusicDuckCur = 0;
 }
 
 void music_stop(void) {
@@ -186,6 +186,6 @@ s32 D_8006559C = 0;
 s32 D_800655A0 = 0;
 s32 D_800655A4 = 0;
 s32 D_800655A8 = 0;
-s32 D_800655AC = 0;
-s32 D_800655B0 = 0;
-s32 D_800655B4 = 0;
+s32 MusicDuck = 0;
+s32 MusicDuckCur = 0;
+s32 MusicVolCur = 0;

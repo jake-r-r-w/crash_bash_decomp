@@ -35,13 +35,13 @@ void InitialiseHeroes(void) {
     i = 0;
     m = 0;
     k = 0;
-    D_8009D864 = -1;
-    D_8009D866 = 0;
-    D_8009D872 = 0;
-    D_8009D868 = 0;
-    D_8009D874 = 0;
-    D_8009D86C = 0;
-    D_8009D878 = 0;
+    HeroAnimHeroA = -1;
+    HeroAnimSeqA = 0;
+    HeroAnimSeqB = 0;
+    HeroAnimNameA = 0;
+    HeroAnimNameB = 0;
+    HeroAnimDbaseA = 0;
+    HeroAnimDbaseB = 0;
     HeroesInPlay = 4;
     HeroesSidelined = 4;
     FinalHeroesTempo = 0;
@@ -1002,23 +1002,23 @@ static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, 
 }
 
 void RequestHeroAnim(s32 arg0, u16 arg1) {
-    if (D_8009D86C == 0) {
-        HeroAnimSlotSet(&D_8009D864, &D_8009D866, &D_8009D868, &D_8009D86C, (volatile s32 *)((u8 *)&D_8009D878 - 12), arg0, arg1);
+    if (HeroAnimDbaseA == 0) {
+        HeroAnimSlotSet(&HeroAnimHeroA, &HeroAnimSeqA, &HeroAnimNameA, &HeroAnimDbaseA, (volatile s32 *)((u8 *)&HeroAnimDbaseB - 12), arg0, arg1);
     } else if (ModeTypes[GameMode * 3] != 0x104) {
-        HeroAnimSlotSet(&D_8009D870, &D_8009D872, &D_8009D874, &D_8009D878, (volatile s32 *)((u8 *)&D_8009D868 + 16), arg0, arg1);
+        HeroAnimSlotSet(&HeroAnimHeroB, &HeroAnimSeqB, &HeroAnimNameB, &HeroAnimDbaseB, (volatile s32 *)((u8 *)&HeroAnimNameA + 16), arg0, arg1);
     }
 }
 
 s32 CheckHeroAnim(s32 arg0) {
     s32 i;
 
-    if (D_8009D864 == arg0) {
-        if (Heroes[arg0].hero_aseq == D_8009D866) {
-            return D_8009D866;
+    if (HeroAnimHeroA == arg0) {
+        if (Heroes[arg0].hero_aseq == HeroAnimSeqA) {
+            return HeroAnimSeqA;
         }
-        if (D_8009D86C != 0) {
-            if (dbase_mesh_anim_name_loaded((obj_dbase *)D_8009D86C, (u8 *)D_8009D868) != 0) {
-                SetHeroSeq(arg0, D_8009D866);
+        if (HeroAnimDbaseA != 0) {
+            if (dbase_mesh_anim_name_loaded((obj_dbase *)HeroAnimDbaseA, (u8 *)HeroAnimNameA) != 0) {
+                SetHeroSeq(arg0, HeroAnimSeqA);
                 i = 3;
                 do {
                     i -= 1;
@@ -1026,9 +1026,9 @@ s32 CheckHeroAnim(s32 arg0) {
             }
         }
     }
-    if (D_8009D870 == arg0 && Heroes[arg0].hero_aseq != D_8009D872 && D_8009D878 != 0) {
-        if (dbase_mesh_anim_name_loaded((obj_dbase *)D_8009D878, (u8 *)D_8009D874) != 0) {
-            SetHeroSeq(arg0, D_8009D872);
+    if (HeroAnimHeroB == arg0 && Heroes[arg0].hero_aseq != HeroAnimSeqB && HeroAnimDbaseB != 0) {
+        if (dbase_mesh_anim_name_loaded((obj_dbase *)HeroAnimDbaseB, (u8 *)HeroAnimNameB) != 0) {
+            SetHeroSeq(arg0, HeroAnimSeqB);
             i = 3;
             do {
                 i -= 1;
@@ -1443,11 +1443,11 @@ void DefHeroBot(void) {
 }
 
 void ReleaseHeroAnims(void) {
-    if (D_8009D86C != 0) {
-        dbase_mesh_anim_name_release(D_8009D86C, D_8009D868);
+    if (HeroAnimDbaseA != 0) {
+        dbase_mesh_anim_name_release(HeroAnimDbaseA, HeroAnimNameA);
     }
-    if (D_8009D878 != 0) {
-        dbase_mesh_anim_name_release(D_8009D878, D_8009D874);
+    if (HeroAnimDbaseB != 0) {
+        dbase_mesh_anim_name_release(HeroAnimDbaseB, HeroAnimNameB);
     }
 }
 
@@ -1460,7 +1460,7 @@ void ResetHeroGlobals(void) {
 }
 
 void SetLevelCameraMode(void) {
-    CameraMode = D_8005A5E8[D_8005A61C].unkC;
+    CameraMode = LevelRecs[D_8005A61C].unkC;
 }
 
 void SetHeroAction(s32 player, s32 action) {
@@ -6182,14 +6182,14 @@ s32 HeroesInPlay = 0;
 s32 HeroesSidelined = 0;
 u16 FinalHeroesTempo = 0;
 s32 D_8009D764[16][4] = {0};
-s16 D_8009D864 = 0;
-u16 D_8009D866 = 0;
-s32 D_8009D868 = 0;
-s32 D_8009D86C = 0;
-s16 D_8009D870 = 0;
-u16 D_8009D872 = 0;
-s32 D_8009D874 = 0;
-s32 D_8009D878 = 0;
+s16 HeroAnimHeroA = 0;
+u16 HeroAnimSeqA = 0;
+s32 HeroAnimNameA = 0;
+s32 HeroAnimDbaseA = 0;
+s16 HeroAnimHeroB = 0;
+u16 HeroAnimSeqB = 0;
+s32 HeroAnimNameB = 0;
+s32 HeroAnimDbaseB = 0;
 D_8009D87C_t AiPlayerSkill[4] = {0};
 u8 D_8009D894[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
 u8 D_8009D8A8[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };

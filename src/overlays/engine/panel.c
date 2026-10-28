@@ -1384,10 +1384,10 @@ void InitTankWeaponIcons(void) {
         if (i >= 4) {
             break;
         }
-        D_8009AE40[i].a = NULL;
-        D_8009AE40[i].b = NULL;
+        TankHudWeapons[i].a = NULL;
+        TankHudWeapons[i].b = NULL;
         if (Heroes[i].hero_name != 9) {
-            D_8009AE40[i].a = &TA_players[i].MainWeaponType;   /* Tank's, linked from tank (slot_syms.py) */
+            TankHudWeapons[i].a = &TA_players[i].MainWeaponType;   /* Tank's, linked from tank (slot_syms.py) */
             off = i * sizeof(((PanelPrim (*)[7])&IconParts[0][5])[0]);
             p = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][5])[0][0]);
             p->unk4 = 0x2E;
@@ -1397,7 +1397,7 @@ void InitTankWeaponIcons(void) {
             p->unkC = 0;
             p->unk74 = 0x3029;
             p = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][5])[0][1]);
-            D_8009AE40[i].b = &TA_players[i].MainWeaponRounds;
+            TankHudWeapons[i].b = &TA_players[i].MainWeaponRounds;
             p->unk4 = 0xA;
             p->unk8 = 0x39;
             p->u6C.ptr = &HeroModelBank[DB_TankObjects];
@@ -1417,10 +1417,10 @@ void UpdateTankWeaponIcons(void) {
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_name != 9) {
             p = &((PanelPrim (*)[7])&IconParts[0][5])[i][0];
-            switch (*(s32 *)D_8009AE40[i].a) {
+            switch (*(s32 *)TankHudWeapons[i].a) {
             case 3:
                 p->unk0 |= 0x8000;
-                switch (*(s32 *)D_8009AE40[i].b) {
+                switch (*(s32 *)TankHudWeapons[i].b) {
                 case 1:
                     p->unk74 = 0x3029;
                     break;
@@ -1434,7 +1434,7 @@ void UpdateTankWeaponIcons(void) {
                 break;
             case 2:
                 p->unk0 |= 0x8000;
-                switch (*(s32 *)D_8009AE40[i].b) {
+                switch (*(s32 *)TankHudWeapons[i].b) {
                 case 0:
                     p->unk0 &= ~0x8000;
                     break;
@@ -1454,7 +1454,7 @@ void UpdateTankWeaponIcons(void) {
                 break;
             }
             p = &((PanelPrim (*)[7])&IconParts[0][5])[i][1];
-            switch (*D_8009AE40[i].c) {
+            switch (*TankHudWeapons[i].c) {
             case 0:
                 p->unk0 &= ~0x8000;
                 break;
@@ -2295,7 +2295,7 @@ ClockInfo Clock[4] = {0};
 ScoreInfo Score[4] = {0};
 subengine counter_sub = {0};
 s32 CupTimer = 0;
-EngPtr3 D_8009AE40[4] = {0};
+EngPtr3 TankHudWeapons[4] = {0};
 u16 CupMode = 0;
 s16 CupWinner = 0;
 u16 Trophy_Cups = 0;

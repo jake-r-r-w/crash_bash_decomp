@@ -170,7 +170,7 @@ void QueueHeroModels(void) {
     View939FC *a = (View939FC *)GameInfo;
 
     i = 0;
-    arg = D_8005A5E8[a->unk8].unk4;
+    arg = LevelRecs[a->unk8].unk4;
     {
         s32 n = D_800A00D0[a->unk2C];
         u8 *b = (u8 *)HeroModelBank;
@@ -234,7 +234,7 @@ void load_initial_dbases(void)
   tg = GameInfo;
   idx = ((View939FC *) tg)->unk8;
   g = (View939FC *) tg;
-  tg = (u8 *) D_8005A5E8;
+  tg = (u8 *) LevelRecs;
   arg = *((s32 *) (((u8 *) (&((EngineRec32 *) tg)[idx])) + 4));
   t = (u8 *)HeroModelBank;
   h = &HeroHooks;
@@ -269,7 +269,7 @@ void load_initial_dbases(void)
     }
     while (v >= 0);
   }
-  p = *((s16 **) (((u8 *) (&D_8005A5E8[D_8005A61C])) + 8));
+  p = *((s16 **) (((u8 *) (&LevelRecs[D_8005A61C])) + 8));
   v = *p;
   if (v >= 0)
   {
@@ -551,8 +551,8 @@ void SetupScriptScene(EngineStartArgs *arg0) {
     }
     rate = 3;
     VSyncRate = rate;
-    D_80058B64 = 0x1E0000 / (60 / rate);
-    D_80058B64 = arg0->unk8 * rate / 60;
+    ScriptTimeStep = 0x1E0000 / (60 / rate);
+    ScriptTimeStep = arg0->unk8 * rate / 60;
     cam_init((GfxCamera *)MainCamera);
     SceneOldDbase = 0;
     D_800A0D38 = 1;
@@ -771,7 +771,7 @@ void RenderScriptScene(void) {
     gfx_set_viewport(&D_800A0BCC, (GfxCamera *)MainCamera);
     RenderState.modelDp = ScreenFade.amount;
     scripts_render();
-    RenderState.modelDp = 0x1000 - (((0x1000 - D_80058B60) * (0x1000 - RenderState.modelDp)) >> 12);
+    RenderState.modelDp = 0x1000 - (((0x1000 - ScriptFade) * (0x1000 - RenderState.modelDp)) >> 12);
     DrawSceneMarks();
 }
 

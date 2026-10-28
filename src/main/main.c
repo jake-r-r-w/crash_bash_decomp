@@ -2294,26 +2294,26 @@ s32 load_file_wait(s32 *arg0, u8 **arg1) {
     s32 size;
 
     size = arg0[1];
-    D_8006E9FC = NULL;
-    loader_queue((s32)arg0, 0, size, NULL, (u8 *)&D_8006E9FC, 1, 0);
+    LoadWaitBuf = NULL;
+    loader_queue((s32)arg0, 0, size, NULL, (u8 *)&LoadWaitBuf, 1, 0);
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    mal_set_owner(D_8006E9FC, arg1);
+    mal_set_owner(LoadWaitBuf, arg1);
     return size;
 }
 
 s32 load_file_part_wait(s32 arg0, s32 arg1, u8 **arg2, s32 arg3) {
-    D_8006E9FC = NULL;
-    loader_queue(arg0, arg1, arg3, NULL, (u8 *)&D_8006E9FC, 1, 0);
+    LoadWaitBuf = NULL;
+    loader_queue(arg0, arg1, arg3, NULL, (u8 *)&LoadWaitBuf, 1, 0);
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    mal_set_owner(D_8006E9FC, arg2);
+    mal_set_owner(LoadWaitBuf, arg2);
     return 0;
 }
 
@@ -2327,25 +2327,25 @@ s32 load_file_permanent(s32 *arg0) {
     if (a2 == -1) {
         return 0;
     }
-    D_8006E9F8 = 0;
-    loader_queue((s32)arg0, 0, a2, NULL, (u8 *)&D_8006E9F8, 0, 0);
+    LoadPermanentBuf = 0;
+    loader_queue((s32)arg0, 0, a2, NULL, (u8 *)&LoadPermanentBuf, 0, 0);
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    return D_8006E9F8;
+    return LoadPermanentBuf;
 }
 
 s32 load_file_to_wait(s32 arg0, s32 arg1, s32 arg2) {
-    D_8006E9F8 = 0;
-    loader_queue(arg0, arg1, arg2, NULL, (u8 *)&D_8006E9F8, 0, 0);
+    LoadPermanentBuf = 0;
+    loader_queue(arg0, arg1, arg2, NULL, (u8 *)&LoadPermanentBuf, 0, 0);
     while (loader_pending() != 0) {
         loader_update();
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    return D_8006E9F8;
+    return LoadPermanentBuf;
 }
 
 s32 load_file_direct(s32 *a, u8 *b) {
@@ -4135,5 +4135,5 @@ void (*ExportsInit)(void) __attribute__((section(".sdata"))) = export_exe_functi
 /* the .bss, in link order: written into the file as zeros, as the original link did */
 s32 StartupRa __attribute__((section(".bss")));   /* where the startup code saves $ra */
 s32 D_8006E9F4 __attribute__((section(".bss")));
-s32 D_8006E9F8 __attribute__((section(".bss")));
-u8 *D_8006E9FC __attribute__((section(".bss")));
+s32 LoadPermanentBuf __attribute__((section(".bss")));
+u8 *LoadWaitBuf __attribute__((section(".bss")));

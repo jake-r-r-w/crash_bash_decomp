@@ -2998,7 +2998,7 @@ ClutPos *clut_alloc_small(void) {
     s32 cnt;
     FreeNode *u;
 
-    a =D_80063BAC;
+    a =ClutFreeSmall;
     if (a == NULL) {
         head = FreeBufNodes;
         FreeBufNodes = head->next;
@@ -3023,7 +3023,7 @@ ClutPos *clut_alloc_small(void) {
         a->fC = src;
         a->f8 = 0;
         a->next = NULL;
-        D_80063BAC = a;
+        ClutFreeSmall = a;
     }
     ret = a->f10;
     cnt = a->f14;
@@ -3033,16 +3033,16 @@ ClutPos *clut_alloc_small(void) {
     a->f10 = u;
     if (cnt == 0) {
         t = a->next;
-        D_80063BAC = t;
+        ClutFreeSmall = t;
         if (t != NULL) {
             t->f8 = 0;
         }
-        a->next = D_80063BB0;
-        if (D_80063BB0 != NULL) {
-            D_80063BB0->f8 = (s32)a;
+        a->next = ClutUsedSmall;
+        if (ClutUsedSmall != NULL) {
+            ClutUsedSmall->f8 = (s32)a;
         }
         a->f8 = 0;
-        D_80063BB0 = a;
+        ClutUsedSmall = a;
     }
     return ret;
 }
@@ -3093,17 +3093,17 @@ void vram_release(FreeNode *n) {
         if ((FreeNode *)a->f8 != NULL) {
             ((FreeNode *)a->f8)->next = a->next;
         } else {
-            D_80063BB0 = a->next;
+            ClutUsedSmall = a->next;
         }
         if (a->next != NULL) {
             a->next->f8 = a->f8;
         }
-        a->next = D_80063BAC;
-        if (D_80063BAC != NULL) {
-            D_80063BAC->f8 = (s32)a;
+        a->next = ClutFreeSmall;
+        if (ClutFreeSmall != NULL) {
+            ClutFreeSmall->f8 = (s32)a;
         }
         a->f8 = 0;
-        D_80063BAC = a;
+        ClutFreeSmall = a;
     }
     a->f14++;
     if (a->f14 == 0x20) {
@@ -3116,7 +3116,7 @@ void vram_release(FreeNode *n) {
         if ((FreeNode *)a->f8 != NULL) {
             ((FreeNode *)a->f8)->next = a->next;
         } else {
-            D_80063BAC = a->next;
+            ClutFreeSmall = a->next;
         }
         if (a->next != NULL) {
             a->next->f8 = a->f8;
@@ -3144,8 +3144,8 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
         n++;
     }
     n->next = NULL;
-    D_80063BAC = NULL;
-    D_80063BB0 = NULL;
+    ClutFreeSmall = NULL;
+    ClutUsedSmall = NULL;
     FreeBufNodes = (FreeNode *)(b = (BufNode *)D_800643F4);
     i = nbuf - 2;
     while (i != -1) {
@@ -4097,7 +4097,7 @@ s32 World_floor_level = 0;
 s32 VelocityCalc = 0;
 void *D_8005A5E0 = 0;
 s32 D_8005A5E4 = 0;
-EngineRec32 *D_8005A5E8 = 0;
+EngineRec32 *LevelRecs = 0;
 s32 D_8005A5EC[6] = {0};
 GameOptionSet GameOptions = {0};
 u8 GameInfo[4] = {0};
@@ -4257,8 +4257,8 @@ u8 D_80063B58[24] = { 0, 0, 0, 0, 0, 0, 0, 0, 0x20, 0, 0, 0, 0, 0, 0, 0, 0x10, 0
 s32 D_80063B70[6] = { 0, 0, 0x40, 0, 0x20, 0 };
 s32 D_80063B88[6] = { 0, 0, 0x80, 0, 0x40, 0 };
 u8 D_80063BA0[12] = { 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0xFF, 0xFF, 0, 0 };
-FreeNode *D_80063BAC = 0;
-FreeNode *D_80063BB0 = 0;
+FreeNode *ClutFreeSmall = 0;
+FreeNode *ClutUsedSmall = 0;
 void *D_80063BB4 = 0;
 u8 VramNodePool[2096] = {
     0, 3, 0x60, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0x61, 1,

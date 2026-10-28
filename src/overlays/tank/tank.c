@@ -1913,7 +1913,7 @@ void TA_InitHero(u32 player) {
     }
     pnl = D_80099A64[player];
     pnl->unk0 |= 0x8000;
-    pb = D_8009AE40;
+    pb = TankHudWeapons;
     pp = &pb[player];
     pp->a = &ta->MainWeaponType;
     pp->b = &ta->MainWeaponRounds;

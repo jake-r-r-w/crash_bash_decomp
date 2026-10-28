@@ -11,7 +11,7 @@
 #include "bash/nas.h"
 #include "bash/shell.h"   /* ClockInfo, ScoreInfo */
 
-extern s32 D_800AD2F8[];
+extern s32 camera_frame_top[];
 extern u16 D_800A00D0[];
 extern s32 CamBoundTop;
 extern s32 camera_frame_right[];
@@ -218,10 +218,10 @@ s32 CountTrophies(u8 *arg0);
 void HubStartCredits(void);
 
 extern s32 IntroDbase;
-extern s32 D_8009D868;
-extern s32 D_8009D86C;
-extern s32 D_8009D874;
-extern s32 D_8009D878;
+extern s32 HeroAnimNameA;
+extern s32 HeroAnimDbaseA;
+extern s32 HeroAnimNameB;
+extern s32 HeroAnimDbaseB;
 extern u8 D_8009F9AC[];
 extern s32 IntroStepIndex;
 extern s32 IntroStepTimer;
@@ -274,9 +274,9 @@ typedef struct {
     s32 unk8;
 } D_800AD2EC_t;
 
-extern D_800AD2EC_t D_800AD2EC;
+extern D_800AD2EC_t camera_frame_bottom;
 extern s32 CamBoundBottom;
-extern D_800AD2EC_t D_800AD304;
+extern D_800AD2EC_t camera_frame_left;
 extern s32 CamBoundLeft;
 
 /* PadState (Pads) seen by PauseChooseYesNo: button flags at 0x44/0x48. */

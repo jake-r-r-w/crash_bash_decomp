@@ -10,7 +10,7 @@ void InitialiseNasSystem(void) {
     u8 *p;
 
     rec = ((EngineBootSrc *)D_8005A5E0)->unk4;
-    D_8005A5E8 = rec;
+    LevelRecs = rec;
     if (rec != NULL) {
         EngineBootView *w = (EngineBootView *)GameInfo;
         w->unk3C = *(u16 *)&rec[w->unk8];

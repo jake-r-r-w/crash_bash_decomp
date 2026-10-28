@@ -805,7 +805,7 @@ extern TrigEntry rcossin_tbl[]; /* libgte's sine/cosine table (cstbl.o) */
 typedef struct { s32 v[4]; } Quat;
 extern s32 D_80064478[];
 extern s32 D_8006E9F4;
-extern s32 D_8006E9F8;
+extern s32 LoadPermanentBuf;
 extern u8 D_800527C4[];
 extern u8 D_8004DDBC[];
 extern u8 D_80050010[];
@@ -815,8 +815,8 @@ extern s32 D_80064414;
 extern s32 D_8006559C;
 extern s32 D_800655A4;
 extern s32 D_800655A0;
-extern s32 D_800655B4;
-extern s32 D_800655AC;
+extern s32 MusicVolCur;
+extern s32 MusicDuck;
 extern void *D_80051240;
 /* A module's entry table, the first bytes of its image: the engine's (entry.c) is what the
  * shell runs (EngineModule), and RunModules runs one until it hands over (CurrentModule). */
@@ -892,8 +892,8 @@ typedef struct {
 } SizeEntry;
 extern SizeEntry D_800675D4[];
 extern const char CardFileName[];
-extern s32 D_8006782C;
-extern s32 D_80067830;
+extern s32 CardSyncCmd;
+extern s32 CardSyncResult;
 
 /* The directory entry named CardFileName, or NULL (card_find_file). */
 
@@ -906,7 +906,7 @@ extern s32 D_80067830;
 /* Free bytes on the card (card_count_files). */
 extern _mal_area MainHeap;
 extern s32 D_800637B0;
-extern u8 *D_8006E9FC;
+extern u8 *LoadWaitBuf;
 extern void *HeadOfCameras;
 extern void *HeadOfObjects;
 extern music_midi CurrentMusic;
@@ -964,8 +964,8 @@ typedef struct FreePool {
 extern FreeNode *FreeBufNodes;
 extern u8 D_80063B58[];
 extern u8 D_80063BA0[];
-extern FreeNode *D_80063BAC;
-extern FreeNode *D_80063BB0;
+extern FreeNode *ClutFreeSmall;
+extern FreeNode *ClutUsedSmall;
 extern void *D_80063BB4;        /* list walked by clut_alloc_large (next at +4) */
 extern s32 D_8004E104;            /* mal_count_free: free bytes */
 extern s32 D_8004E108;            /* mal_count_free: free blocks */
@@ -1056,9 +1056,9 @@ extern sfx_machine_bank_info *SfxBankLoading;  /* where its id goes */
 extern s32 D_800654C8;       /* the id from SsVabOpenHead */
 extern u8 D_800644A8[];
 extern s32 xa_count;
-extern s32 D_800654B8;
+extern s32 SfxVoiceMask;
 extern s32 D_80064418[];       /* voice bit masks, by voice */
-extern s32 D_800655B0;
+extern s32 MusicDuckCur;
 extern s32 ASTCount;            /* entries in ASTTable */
 extern ASTEntry *ASTTable;      /* the AST table in use */
 extern s32 D_80058AC8;
@@ -1066,7 +1066,7 @@ extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2];
 extern s32 CdReadStatus;
 
-/* 32-byte records of D_8005A5E8, indexed by D_8005A61C (SetLevelCameraMode). */
+/* 32-byte records of LevelRecs, indexed by D_8005A61C (SetLevelCameraMode). */
 typedef struct {
     /* 0x00 */ u8 unk0[4];
     /* 0x04 */ s32 unk4; /* passed to queue_dbase_load by QueueHeroModels */
@@ -1074,7 +1074,7 @@ typedef struct {
     /* 0x0C */ u16 unkC;
     /* 0x0E */ u8 unkE[0x12];
 } EngineRec32;
-extern EngineRec32 *D_8005A5E8;
+extern EngineRec32 *LevelRecs;
 extern s32 D_800637B8;
 extern u8 D_8006EA08[8];
 extern CdlLOC D_8006EA10;
@@ -1330,10 +1330,10 @@ extern s32 GameFrameCount;
 extern s32 D_8004E0D0; /* BCD of count_completion's count */
 extern s32 FirstBootDone;
 extern subengine *next_sub;
-extern s32 D_80058B60;
-extern s32 D_80058B64;
-extern s32 D_80058B68;
-extern s32 D_80058B6C;
+extern s32 ScriptFade;
+extern s32 ScriptTimeStep;
+extern s32 ScriptThreadPool;
+extern s32 ScriptPool;
 extern s8 D_8005A63C;
 extern void *HeadOfBalls;
 extern void *PrimSetList;

@@ -36,7 +36,7 @@ typedef struct TextScreen {
     /* 0x08 */ u8 *text;
 } TextScreen;
 
-extern TextScreen D_8006789C[];
+extern TextScreen ModchipMsgScreens[];
 
 extern s32 MsgFontRom; /* nonzero: ASCII from the BIOS ROM font, else Kanji (Krom2RawAdd) */
 

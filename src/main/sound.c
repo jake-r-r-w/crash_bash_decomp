@@ -238,8 +238,8 @@ s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     arg0[0] = v;
     arg0[1] = (s32)sfx;
     if (v != -1) {
-        D_800654B8 |= D_80064418[v];
-        SsSetVoiceMask(D_800654B8);
+        SfxVoiceMask |= D_80064418[v];
+        SsSetVoiceMask(SfxVoiceMask);
     }
     return v;
 }
@@ -298,8 +298,8 @@ S16Pair sfx_pan(s32 x, s32 v) {
 void sfx_key_off(s32 *voice) {
     if (*voice != -1) {
         SsUtKeyOffV(*voice);
-        D_800654B8 &= ~D_80064418[*voice];
-        SsSetVoiceMask(D_800654B8);
+        SfxVoiceMask &= ~D_80064418[*voice];
+        SsSetVoiceMask(SfxVoiceMask);
         *voice = -1;
     }
 }
@@ -307,7 +307,7 @@ void sfx_key_off(s32 *voice) {
 
 void sfx_all_off(void) {
     SpuIsTransferCompleted(1);
-    D_800654B8 = 0;
+    SfxVoiceMask = 0;
     SsSetVoiceMask(0);
     SsUtAllKeyOff(0);
 }
@@ -326,7 +326,7 @@ void sfx_table_init(void) {
     SfxBankCount = 0;
     VabLoading = NULL;
     SfxBankLoading = NULL;
-    D_800654B8 = 0;
+    SfxVoiceMask = 0;
     sfx_all_off();
 }
 
@@ -449,7 +449,7 @@ s8 SfxTable[2002][2] = {0};
 s32 num_sfx_banks = 0;
 s32 VabCueTimer = 0;
 s32 VabCuePending = 0;
-s32 D_800654B8 = 0;
+s32 SfxVoiceMask = 0;
 s32 SfxBankCount = 0;
 VabFile *VabLoading = 0;
 sfx_machine_bank_info *SfxBankLoading = 0;

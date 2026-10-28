@@ -8,8 +8,8 @@ void init_scripts(s32 arg0, s32 arg1) {
     u8 *next;
 
     if (arg0 != 0) {
-        D_80058B6C = (s32)mal_alloc(arg0 * 0x7C, &MainHeap);
-        p = (u8 *)D_80058B6C;
+        ScriptPool = (s32)mal_alloc(arg0 * 0x7C, &MainHeap);
+        p = (u8 *)ScriptPool;
         for (; arg0 >= 2; arg0--) {
             next = p + 0x7C;
             *(u8 **)(p + 0x74) = next;
@@ -17,13 +17,13 @@ void init_scripts(s32 arg0, s32 arg1) {
         }
         *(s32 *)(p + 0x74) = 0;
     } else {
-        D_80058B6C = 0;
+        ScriptPool = 0;
     }
     active_scripts = NULL;
-    free_scripts = (void *)D_80058B6C;
+    free_scripts = (void *)ScriptPool;
     if (arg1 != 0) {
-        D_80058B68 = (s32)mal_alloc(arg1 * 0xB8, &MainHeap);
-        p = (u8 *)D_80058B68;
+        ScriptThreadPool = (s32)mal_alloc(arg1 * 0xB8, &MainHeap);
+        p = (u8 *)ScriptThreadPool;
         for (; arg1 >= 2; arg1--) {
             next = p + 0xB8;
             *(u8 **)(p + 0xB4) = next;
@@ -31,10 +31,10 @@ void init_scripts(s32 arg0, s32 arg1) {
         }
         *(s32 *)(p + 0xB4) = 0;
     } else {
-        D_80058B68 = 0;
+        ScriptThreadPool = 0;
     }
-    D_80058B64 = 0x10000;
-    ScriptList = (void *)D_80058B68;
+    ScriptTimeStep = 0x10000;
+    ScriptList = (void *)ScriptThreadPool;
 }
 
 void update_model_thread(u8 *arg0, u8 *arg1) {
@@ -299,7 +299,7 @@ void update_fade_thread(u8 *arg0, u8 *arg1) {
             res = NULL;
         }
         if (res != NULL) {
-            D_80058B60 = interp(*(s32 *)(arg0 + 8), *(s32 *)(arg0 + 0xC),
+            ScriptFade = interp(*(s32 *)(arg0 + 8), *(s32 *)(arg0 + 0xC),
                                        (*(s32 *)(res + 8) - *(s32 *)(res + 4)) << 8,
                                        (*(s32 *)(arg1 + 0xC) >> 8) - (*(s32 *)(res + 4) << 8));
         }
@@ -606,7 +606,7 @@ s32 update_script(script_control_info *ci) {
     s32 idx;
 
     s = ci->threads;
-    D_80058B60 = 0;
+    ScriptFade = 0;
     while (s != NULL) {
         fn = (void (*)(script_thread_handler *, script_control_info *))ScriptCommands[s->thread_type].unk4;
         if (fn != NULL) {
@@ -614,7 +614,7 @@ s32 update_script(script_control_info *ci) {
         }
         s = s->next;
     }
-    ci->time.w = ci->time.w + D_80058B64;
+    ci->time.w = ci->time.w + ScriptTimeStep;
     c = ci->dbase->data;
     idx = ci->script;
     if (c == NULL) {
@@ -649,7 +649,7 @@ void render_script(script_control_info *ci, GteSetup *arg1) {
 
     dp = RenderState.modelDp;
     p = ci->threads;
-    RenderState.modelDp =0x1000 - (((0x1000 - D_80058B60) * (0x1000 - dp)) >> 12);
+    RenderState.modelDp =0x1000 - (((0x1000 - ScriptFade) * (0x1000 - dp)) >> 12);
     m = *arg1->rot;
     m.t[0] = arg1->trans->vx;
     m.t[1] = arg1->trans->vy;
@@ -1056,11 +1056,11 @@ void render_sub_thread(u8 *arg0, s32 *arg1) {
     sub = (subengine *)(arg0 + 8);
     flags = *(u32 *)(arg0 + 8);
     val = *arg1;
-    saved = D_80058B60;
+    saved = ScriptFade;
     if (flags & 0x8000) {
         sub->hook(sub, val, flags);
     }
-    D_80058B60 = saved;
+    ScriptFade = saved;
 }
 
 static inline u8 *Pop4(void) {
@@ -1575,11 +1575,11 @@ void scripts_release(void) {
             s = next;
         } while (s != NULL);
     }
-    if (D_80058B6C != 0) {
-        mal_free(D_80058B6C, &MainHeap);
+    if (ScriptPool != 0) {
+        mal_free(ScriptPool, &MainHeap);
     }
-    if (D_80058B68 != 0) {
-        mal_free(D_80058B68, &MainHeap);
+    if (ScriptThreadPool != 0) {
+        mal_free(ScriptThreadPool, &MainHeap);
     }
 }
 
@@ -1650,10 +1650,10 @@ D_80058B00_Entry ScriptCommands[6] = {
     { (s32)init_fade_thread, (s32)update_fade_thread, 0, 0 },
     { (s32)init_sub_thread, (s32)update_sub_thread, (s32)render_sub_thread, kill_sub_thread },
 };
-s32 D_80058B60 = 0;
-s32 D_80058B64 = 0;
-s32 D_80058B68 = 0;
-s32 D_80058B6C = 0;
+s32 ScriptFade = 0;
+s32 ScriptTimeStep = 0;
+s32 ScriptThreadPool = 0;
+s32 ScriptPool = 0;
 void *ScriptList = 0;
 script_handler *free_scripts = 0;
 script_handler *active_scripts = 0;

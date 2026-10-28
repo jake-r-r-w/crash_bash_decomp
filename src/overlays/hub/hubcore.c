@@ -1482,7 +1482,7 @@ void InitialisePodiumFirst(void) {
     ((HubGameView *)GameInfo)->unk32 |= 0x200;
     PodiumRankPlayers();
     PodiumFindTies();
-    *(s32 *)&D_8005A5E8[((HubGameView *)GameInfo)->unk8] = 0xCD;
+    *(s32 *)&LevelRecs[((HubGameView *)GameInfo)->unk8] = 0xCD;
     ((HubGameView *)GameInfo)->unk3C = 0xCD;
 }
 

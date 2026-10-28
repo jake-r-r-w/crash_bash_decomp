@@ -30,16 +30,16 @@ void modchip_show_warning(void) {
     DrawPrim(clear);
     colour = 0xFFFF;
     i = 0;
-    w = D_8006789C[MsgFontRom].w;
+    w = ModchipMsgScreens[MsgFontRom].w;
     pos.unk6 = 1;
     pos.w = w;
     do {
-        x = D_8006789C[MsgFontRom].x;
-        y = D_8006789C[MsgFontRom].y;
+        x = ModchipMsgScreens[MsgFontRom].x;
+        y = ModchipMsgScreens[MsgFontRom].y;
         pos.x = x + i;
         pos.y = y + i;
         i++;
-        msg_print(D_8006789C[MsgFontRom].text, &pos, colour);
+        msg_print(ModchipMsgScreens[MsgFontRom].text, &pos, colour);
         colour = 0x8000;
     } while (i < 2);
     msg_draw_emblem();
@@ -105,7 +105,7 @@ void msg_draw_glyph(TextPos *pos, u8 *glyph, s32 colour, s32 bits) {
     do {
         out = p.data;
         i = 0;
-        if (D_8006789C[MsgFontRom].rowBytes != 0) {
+        if (ModchipMsgScreens[MsgFontRom].rowBytes != 0) {
             do {
                 for (b = lo; b >= hi; b--) {
                     dst = out++;
@@ -118,7 +118,7 @@ void msg_draw_glyph(TextPos *pos, u8 *glyph, s32 colour, s32 bits) {
                 }
                 i++;
                 glyph++;
-            } while (i < D_8006789C[MsgFontRom].rowBytes);
+            } while (i < ModchipMsgScreens[MsgFontRom].rowBytes);
         }
         for (i = 0; i < 2; i++) {
             p.xy = *(s32 *)pos;
@@ -210,7 +210,7 @@ void msg_draw_emblem(void) {
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-TextScreen D_8006789C[2] = {
+TextScreen ModchipMsgScreens[2] = {
     { 2, 0xA, 0x10, 3, 0x50, 0x5C, (void *)&ModchipMsgJapanese },
     { 1, 0x1F, 8, 3, 0x24, 0x5C, (void *)&ModchipMsg },
 };

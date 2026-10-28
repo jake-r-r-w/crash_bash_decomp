@@ -171,7 +171,7 @@ void card_update(void) {
     s32 sum;
     u32 s;
 
-    if (MemCardSync(1, &D_8006782C, &D_80067830) == 0) {
+    if (MemCardSync(1, &CardSyncCmd, &CardSyncResult) == 0) {
         return;
     }
     s = CardCommand;
@@ -186,7 +186,7 @@ l0:
     CardCommand = i;
     return;
 l1:
-    switch (D_80067830) {
+    switch (CardSyncResult) {
     case 1:
         CardCommand = 0;
         CardStatus = 0;
@@ -203,7 +203,7 @@ l1:
     goto lend;
 l2:
     McResetSave();
-    s = D_80067830;
+    s = CardSyncResult;
     if (s < 5) {
         goto *tbl2[s];
     }
@@ -268,7 +268,7 @@ l3:
     }
     goto lend;
 l4:
-    s = D_80067830;
+    s = CardSyncResult;
     if (s < 5) {
         goto *tbl4[s];
     }
@@ -279,7 +279,7 @@ l4_13:
     return;
 l5:
     if (CardRequest == 1) {
-        if (D_80067830 == 0) {
+        if (CardSyncResult == 0) {
             CardStatus = 0x12;
             CardCommand = 3;
             CardRequest = 0;
@@ -291,7 +291,7 @@ l5:
     }
     goto lend;
 l7:
-    if (D_80067830 == 0) {
+    if (CardSyncResult == 0) {
         p = CardBuffer;
         q = (s32 *)(p + 0x200);
         end = (s32 *)(p + 0x850);
@@ -520,6 +520,6 @@ s32 card_command_delay = 0;
 s32 CardCommand = 0;
 s32 D_800675D0 = 0;
 SizeEntry D_800675D4[15] = {0};
-s32 D_8006782C = 0;
-s32 D_80067830 = 0;
+s32 CardSyncCmd = 0;
+s32 CardSyncResult = 0;
 s32 D_80067834[2] = { 0x1C7350, 0x3200000 };

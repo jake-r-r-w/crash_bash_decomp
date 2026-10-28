@@ -27,10 +27,10 @@ typedef struct {
     u16 pad;
 } D_8009D6FC_t;
 /* Per-hero run speed rows: 3 u16 per hero_name (DefPreMoveHero). */
-extern s16 D_8009D864;
-extern u16 D_8009D866;
-extern s16 D_8009D870;
-extern u16 D_8009D872;
+extern s16 HeroAnimHeroA;
+extern u16 HeroAnimSeqA;
+extern s16 HeroAnimHeroB;
+extern u16 HeroAnimSeqB;
 
 
 
@@ -58,10 +58,10 @@ void RenderPause(void);
 void StartWinSequence(s32 arg0);
 
 
-extern s16 D_8009D864;
-extern u16 D_8009D866;
-extern s16 D_8009D870;
-extern u16 D_8009D872;
+extern s16 HeroAnimHeroA;
+extern u16 HeroAnimSeqA;
+extern s16 HeroAnimHeroB;
+extern u16 HeroAnimSeqB;
 
 
 

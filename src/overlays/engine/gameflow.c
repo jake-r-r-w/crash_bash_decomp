@@ -120,7 +120,7 @@ void UpdateIntro(void) {
     case 2:
         IntroStepTimer = e->delay;
         SetupSceneMarks(e->model);
-        D_80058B64 = 0x10000;
+        ScriptTimeStep = 0x10000;
         VSyncRate = type;
         D_8009E5AC = play_script(IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
                                    &D_8009E560, &D_8009E580, 4, (u8 **)&D_800AEC58);

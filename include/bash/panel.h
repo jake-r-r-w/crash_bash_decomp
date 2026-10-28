@@ -129,7 +129,7 @@ void ClearHealthIcons(void);
 
 extern PanelPrim D_80099A64[4][7];
 typedef struct { void *a; void *b; s32 *c; } EngPtr3;
-extern EngPtr3 D_8009AE40[4];
+extern EngPtr3 TankHudWeapons[4];
 
 void SetupCompletionDigits(void);
 
