@@ -434,10 +434,15 @@ load extract and are documented.
   PadInput and 14 overlay pad views folded, the rumble a `PadRumble`); `DrawBuffer` for
   DrawBuffers/cdb; the script threads read `script_thread`, `script_header` and `partdata`
   fields; texture sets, dbases, load nodes, music slots, subengines and the trigger file's head
-  typed where functions took bytes. Left: 106 exe functions with raw offsets (438), mostly
+  typed where functions took bytes; the prim set pool (`PrimSet` lists), the music slot's
+  `songs[5]`, the large clut list (`FreeNode`), the texture file's frame and scroll animations
+  (`TexFrameAnim`, `texture_scroll`), `textureset_init` on its `obj_textureset`, the draw
+  functions' parent `MATRIX` (its `t` the translation) and `dbase_texture_ptr`/`_entry`
+  (`obj_texture`, `TexEnt12.pos`). Left: 97 exe functions with raw offsets (399), all
   the heap's and pools' own block arithmetic and the files' self-relative layouts (the model
   file's header and mesh records, the mesh animations, the texture file, the card image, the
-  script table at +0x4C), which want the file-format structs of the asset formats item; the
+  script table at +0x4C, the map's path table), which want the file-format structs of the asset
+  formats item, and `export_exe_functions`' 164 slot offsets; the
   131 Sony statics the converted objects carry no names for. The overlays' 43 GameInfo views are
   folded into `GameState` (now in nas.h; `tools/scripts/fold_views.py`), and 106 overlay
   functions read GameInfo by field. For browsing cross-references across the whole binary, try Ghidra with a PSX
