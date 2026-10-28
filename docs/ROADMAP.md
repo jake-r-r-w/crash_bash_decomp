@@ -421,14 +421,14 @@ load extract and are documented.
   the game's copy differs from 4.7), the word at `$gp` and the game's .bss in their files,
   and the file padded to its size (ARCHITECTURE.md, The exe's .bss). No data asm is left in
   the exe; the dashboard's data figure is 100%.
-- [ ] Name and type every function and global in the exe. Status (2026-10-28): the
+- [x] Name and type every function and global in the exe (closed 2026-10-28). The
   names, parameter types and struct names the demo discs leaked are applied
   ([PROTOTYPES.md](PROTOTYPES.md)); 447 more game functions are named from their code
   (the shell, allocator, loader, dbase, renderer, scripts, NAS calls, textures, sound,
   music, card, modchip), in the leak's styles (`mal_*`, `dbase_*`, `*_thread`,
   CamelCase for the NAS calls); the last ones from their callers, every game function
   named (2537 of 2537, 2026-10-28; empty ones nothing calls are `*_unused`). Then
-  (2026-10-28, in progress): no placeholder name is left (four PsyQ functions by their SDK
+  (2026-10-28): no placeholder name is left (four PsyQ functions by their SDK
   names, the address-named inlines by what they inline); one `obj_texture` for the texture
   entry (TexDst2A84C and AnimEntry folded); `PadState` for every unit's pads (PadStick,
   PadInput and 14 overlay pad views folded, the rumble a `PadRumble`); `DrawBuffer` for
@@ -438,7 +438,10 @@ load extract and are documented.
   `songs[5]`, the large clut list (`FreeNode`), the texture file's frame and scroll animations
   (`TexFrameAnim`, `texture_scroll`), `textureset_init` on its `obj_textureset`, the draw
   functions' parent `MATRIX` (its `t` the translation) and `dbase_texture_ptr`/`_entry`
-  (`obj_texture`, `TexEnt12.pos`). Left: 97 exe functions with raw offsets (399), all
+  (`obj_texture`, `TexClut.pos`); obj_texture nests its +0x18 `info`, and the texture, clut
+  and dbase views (AnimTex, TexAnimEntry, GfxTexEntry, the four clut entries, GfxModel,
+  GfxTexSet) are folded. What is left raw moves to the asset formats item: 97 exe functions
+  with raw offsets (399), all
   the heap's and pools' own block arithmetic and the files' self-relative layouts (the model
   file's header and mesh records, the mesh animations, the texture file, the card image, the
   script table at +0x4C, the map's path table), which want the file-format structs of the asset
