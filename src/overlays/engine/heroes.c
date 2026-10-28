@@ -2764,7 +2764,7 @@ void StartHeroVictory(s32 arg0) {
     music_flag_restart();
     g = (EngineGameView *)GameInfo;
     if (g->mode == 0x20) {
-        if (D_8004E0A4[GameInfo[0x60]] == 1) {
+        if (HeroSide[GameInfo[0x60]] == 1) {
             WinSeqTimer = 0xF;
             WinSeqStep = 0xF;
             WinSeqDelay = 0x1E;

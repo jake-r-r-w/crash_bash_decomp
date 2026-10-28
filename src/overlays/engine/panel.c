@@ -1863,7 +1863,7 @@ found:
         break;
     case 5:
         if (MODEV->unk5C[CupWinner] != 0) {
-            D_800ADBCC = 1;
+            CupsDirty = 1;
             PauseChoice = 0;
             CupTimer = 900;
             MODEV->unk10 |= 0x21;
@@ -1872,23 +1872,23 @@ found:
             break;
         }
         if (MODEV->unk34 != 0x20) {
-            D_800ADBCC = 1;
+            CupsDirty = 1;
             CupTimer = 0x78;
         }
         CupMode = 0xB;
         break;
     case 6:
-        D_800ADBCC = 1;
+        CupsDirty = 1;
         CupTimer = 0x78;
         CupMode = 0xB;
         break;
     case 8:
-        D_800ADBCC = 1;
+        CupsDirty = 1;
         CupTimer = 0x78;
         CupMode = 0xB;
         break;
     case 7:
-        D_800ADBCC = 1;
+        CupsDirty = 1;
         CupTimer = 0x78;
         CupMode = 0xB;
         break;
@@ -1897,7 +1897,7 @@ found:
         CupMode = 0xB;
         break;
     case 4:
-        D_800ADBCC = 1;
+        CupsDirty = 1;
         PauseChoice = 0;
         CupTimer = 900;
         MODEV->unk10 |= 0x201;

@@ -2051,19 +2051,19 @@ void loader_unused_a(void) {
 void smallnode_free(u8 *arg0) {
     u8 *temp_v1;
 
-    temp_v1 = D_80051240;
-    D_80051240 = arg0;
+    temp_v1 = SmallNodeFree;
+    SmallNodeFree = arg0;
     (*(s32*)((u8*)(arg0) + 8)) = temp_v1;
 }
 
 void *smallnode_alloc(void) {
     u8 *p;
 
-    p = D_80051240;
+    p = SmallNodeFree;
     if (p != NULL) {
         *(s32 *)(p + 0) = 0;
         *(s32 *)(p + 4) = 0;
-        D_80051240 = *(u8 **)(p + 8);
+        SmallNodeFree = *(u8 **)(p + 8);
     }
     return p;
 }
@@ -2074,7 +2074,7 @@ void smallnode_init(void) {
     s32 i;
 
     p = D_80050F40;
-    D_80051240 = p;
+    SmallNodeFree = p;
     for (i = 62; i != -1; i--) {
         *(u8 **)(p + 8) = p + 0xC;
         p += 0xC;
@@ -3019,7 +3019,7 @@ void export_exe_functions(void) {
     t[0x224 / 4] = posdst_flash_at;
     t[0x228 / 4] = posdst_flash;
     t[0x22C / 4] = CurrentModule;
-    t[0x230 / 4] = D_8004DDBC;
+    t[0x230 / 4] = LangModeTypeTexts;
     t[0x234 / 4] = card_clear_slots;
     t[0x238 / 4] = music_set_tempo;
     t[0x23C / 4] = music_restart;
@@ -3593,7 +3593,7 @@ s32 D_8004DD84[14] = {
     (s32)&LevNameCrashDash, (s32)&LevNameMedievalMayhem, 0, (s32)&LevNameMedievalMayhem,
     (s32)&LevNameMedievalMayhem,
 };
-u8 D_8004DDBC[20] = {
+u8 LangModeTypeTexts[20] = {
     0x84, 0xDD, 4, 0x80, 0x84, 0xDD, 4, 0x80, 0x84, 0xDD, 4, 0x80, 0x84, 0xDD, 4, 0x80, 0x84,
     0xDD, 4, 0x80,
 };
@@ -3950,7 +3950,7 @@ LoaderState Loader = {0};
 u8 LoadNodePool[2304] = {0};
 void *LoadNodeFree = 0;
 u8 D_80050F40[768] = {0};
-void *D_80051240 = 0;
+void *SmallNodeFree = 0;
 s32 DirPadBits[24] = {
     0x10, 0x30, 0x20, 0x60, 0x40, 0xC0, 0x80, 0x90, 0, 0, 0x400, 0x200, 0x800, 0, 0x600, 0,
     0xC00, 0xE00, 0, 0, 0xA00, 0, 0, 0,

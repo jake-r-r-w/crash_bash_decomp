@@ -278,7 +278,7 @@ void HandleLevelExit(void) {
         return;
     case 0x20:
         g->mode = 0x25;
-        if (D_8004E0A4[g->unk60] == 1) {
+        if (HeroSide[g->unk60] == 1) {
             msg = (s32)D_800A0858;
         } else {
             msg = (s32)D_800A0870;
@@ -643,7 +643,7 @@ s32 CupCurrentModeType(void) {
     s32 **tbl;
     s32 w = wt[idx * 3] - 0x101;
     s32 *t;
-    tbl = (s32 **)D_8004DDBC;
+    tbl = (s32 **)LangModeTypeTexts;
     t = tbl[*(s32 *)(g + 0x2C)];
     return *(s32 *)((u8 *)t + w * 4);
 }
@@ -797,17 +797,17 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     e->sub[1].unk04 = 0xC;
     e->sub[1].unk08 = 2;
     n = count_completion(arg0);
-    D_8009F4A8[arg1][0] = n / 100 + '0';
+    PercentText[arg1][0] = n / 100 + '0';
     n %= 100;
     d = n / 10;
     r = n - d * 10;
     d += '0';
     r += '0';
-    D_8009F4A8[arg1][1] = d;
-    D_8009F4A8[arg1][2] = r;
-    D_8009F4A8[arg1][3] = '%';
-    D_8009F4A8[arg1][4] = 0;
-    e->sub[2].unk6C = D_8009F4A8[arg1];
+    PercentText[arg1][1] = d;
+    PercentText[arg1][2] = r;
+    PercentText[arg1][3] = '%';
+    PercentText[arg1][4] = 0;
+    e->sub[2].unk6C = PercentText[arg1];
 }
 
 void ShowCardSlotStats(u8 *arg0, s32 arg1) {
@@ -853,7 +853,7 @@ void UpdateCardPrompt(void) {
     u8 *p;
 
     RenderState.modelDp = ScreenFade.amount;
-    switch (D_8009F638) {
+    switch (CardPromptStep) {
     case 0:
         pad = Pads;
         if (*(s32 *)((u8 *)pad + 0x48) & 0x1000) {
@@ -900,7 +900,7 @@ void UpdateCardPrompt(void) {
                     }
                     ShowCardSlots();
                     GotoProcess(&LevelLoadProcess, 0x200);
-                    D_8009F638 = 3;
+                    CardPromptStep = 3;
                 }
                 return;
             } else {
@@ -925,7 +925,7 @@ void UpdateCardPrompt(void) {
     case 1:
         if (loader_pending() == 0) {
             u8 *q = GameInfo;
-            D_8009F638 = 2;
+            CardPromptStep = 2;
             q[0x50] = q[0x4C];
         }
         break;
@@ -934,7 +934,7 @@ void UpdateCardPrompt(void) {
             u8 *q;
             GotoProcess(&RetryProcess, 0x200);
             q = GameInfo;
-            D_8009F638 = 3;
+            CardPromptStep = 3;
             *(u16 *)(q + 0x30) |= 0x200;
         }
         break;
@@ -1236,7 +1236,7 @@ void RenderSaveMenu(void) {
                 SaveMenuState = 0;
                 SaveMenuStep = SaveMenuYesNo;
             } else {
-                D_8009F638 = 0;
+                CardPromptStep = 0;
                 SaveMenuStep = 2;
             }
         }
@@ -1382,7 +1382,7 @@ void InitCardPromptMenu(void) {
         sub->unk6C = &HeroModelBank[DB_AdventureItems];
     }
     PlaceEngineSlot(1, &D_8009EEB0);
-    D_8009F638 = 0;
+    CardPromptStep = 0;
     SaveMenuStep = 2;
 }
 
@@ -2145,13 +2145,13 @@ s32 SaveScreenProcess2[5] = { (s32)InitCardPromptMenu, (s32)UpdateSaveScreen, (s
 s32 D_8009F494 = 0;
 /* the results screen's number texts, one buffer: +0, +3, +6, +9 three digits each, +12 the last */
 char CardStatsText[16] = {0};
-char D_8009F4A8[4][5] = {0};
+char PercentText[4][5] = {0};
 s32 D_8009F4BC = 0;
 GfxCamera SaveCamera = {0};
 GfxCamera SaveBackCamera = {0};
 s32 SaveMenuStep = 0;
 s32 SaveMenuYesNo = 0;
-s32 D_8009F638 = 0;
+s32 CardPromptStep = 0;
 s32 D_8009F63C = 0;
 s32 SaveMenuState = 0;
 fade_info ScreenFade = {0};

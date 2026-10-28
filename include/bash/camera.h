@@ -132,12 +132,12 @@ typedef struct EngRecView {
 #define GV ((EngRecView *)GameInfo)
 
 extern u16 HeroNameText[];
-extern EngRec24 D_800AD32C[];
-extern EngRec24 D_800AD5D8[];
-extern EngRec24 D_800AD7AC[];
-extern EngRec24 D_800AD8CC[];
-extern EngRec24 D_800AD9C8[];
-extern EngRec24 D_800ADB54[];
+extern EngRec24 ScreenLabels4P[];
+extern EngRec24 ScreenLabelsTeams[];
+extern EngRec24 ScreenLabelsPair[];
+extern EngRec24 ScreenLabelsOne[];
+extern EngRec24 ScreenLabels2P[];
+extern EngRec24 ScreenLabelsNotice[];
 
 void InitScreenLabels(void);
 

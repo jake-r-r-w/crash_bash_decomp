@@ -28,20 +28,20 @@ void music_update(void) {
     s32 vol;
 
     if (next != cur || D_800655A8 != 0) {
-        s32 t = D_800655A0;
+        s32 t = MusicStopDelay;
 
         if (t != 0 || cur == -1) {
-            D_800655A0 = t - 1;
-            if (D_800655A0 == 0 || cur == -1) {
+            MusicStopDelay = t - 1;
+            if (MusicStopDelay == 0 || cur == -1) {
                 D_800655A8 = 0;
-                D_800655A0 = 0;
+                MusicStopDelay = 0;
                 if (next != -1) {
                     music_open_seq(slot, next);
                 }
                 D_800655A4 = D_8006559C;
             }
         } else {
-            D_800655A0 = 10;
+            MusicStopDelay = 10;
             music_fade_out(20);
         }
     } else {
@@ -183,7 +183,7 @@ void music_load(s32 arg0, s32 type) {
 
 /* data, in address order (tools/scripts/data2c.py) */
 s32 D_8006559C = 0;
-s32 D_800655A0 = 0;
+s32 MusicStopDelay = 0;
 s32 D_800655A4 = 0;
 s32 D_800655A8 = 0;
 s32 MusicDuck = 0;

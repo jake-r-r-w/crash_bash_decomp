@@ -231,7 +231,7 @@ static inline s32 EngineCurWorldName(void) {
     s32 **tbl;
     s32 w = wt[idx * 3] - 0x101;
     s32 *t;
-    tbl = (s32 **)D_8004DDBC;
+    tbl = (s32 **)LangModeTypeTexts;
     t = tbl[*(s32 *)(g + 0x2C)];
     return *(s32 *)((u8 *)t + w * 4);
 }
@@ -263,7 +263,7 @@ void ShowCardSlots(void);
 void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern s32 D_8009F298[];
 extern void *D_8009F004[];
-extern char D_8009F4A8[][5];
+extern char PercentText[][5];
 void ShowCardSlotStats(u8 *arg0, s32 arg1);
 extern char CardStatsText[];
 
@@ -386,7 +386,7 @@ typedef struct EngineModeView {
     /* 0x61 */ u8 pad61[0x187 - 0x61];
     /* 0x187 */ u8 unk187;
 } EngineModeView;
-extern s8 D_8004E0A4[];
+extern s8 HeroSide[];
 extern process_info RetryProcess;
 extern void *D_8009EFCC[];
 extern void *D_8009EFD0[];

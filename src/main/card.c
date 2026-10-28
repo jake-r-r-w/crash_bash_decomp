@@ -98,7 +98,7 @@ void card_make_header(void) {
     while (q < end) {
         sum += *q++;
     }
-    D_80065E24 = sum;
+    CardSaveSum = sum;
 }
 
 void card_init(void) {
@@ -146,7 +146,7 @@ void card_init(void) {
     while (q < end) {
         sum += *q++;
     }
-    D_80065E24 = sum;
+    CardSaveSum = sum;
 }
 
 const char CardSaveTitleFormat[] = "CRASH BASH %000 %000 %000 %000";
@@ -217,7 +217,7 @@ l2_4:
     CardCommand = 3;
     goto lend;
 l2_03:
-    if (MemCardGetDirentry(CardChannel, (char *)all,(struct DIRENTRY *)D_800675D4, &D_800675D0, 0, 0xF) != 0) {
+    if (MemCardGetDirentry(CardChannel, (char *)all,(struct DIRENTRY *)CardDir, &CardDirCount, 0, 0xF) != 0) {
         CardCommand = 0;
     }
     if (McFindSave() != NULL) {
@@ -357,11 +357,11 @@ s32 card_count_files(void) {
     s32 i;
     s32 sum;
 
-    i = D_800675D0;
+    i = CardDirCount;
     if (i >= 0xF) {
         return 0;
     }
-    p = D_800675D4;
+    p = CardDir;
     i--;
     sum = 0;
     if (i != -1) {
@@ -378,8 +378,8 @@ SizeEntry *card_find_file(void) {
     SizeEntry *p;
     s32 i;
 
-    i = D_800675D0;
-    p = D_800675D4;
+    i = CardDirCount;
+    p = CardDir;
     i--;
     if (i != -1) {
         do {
@@ -441,7 +441,7 @@ void card_clear_slots(void) {
     while (q < end) {
         sum += *q++;
     }
-    D_80065E24 = sum;
+    CardSaveSum = sum;
 }
 
 void card_clear_slot(u8 *arg0) {
@@ -514,12 +514,12 @@ u8 CardBuffer[128] = {0};
 u8 D_80065648[384] = {0};
 D_800657C8_Slot CardSlots[4] = {0};
 s32 D_80065E18[3] = {0};
-s32 D_80065E24 = 0;
+s32 CardSaveSum = 0;
 s32 D_80065E28[1512] = {0};
 s32 card_command_delay = 0;
 s32 CardCommand = 0;
-s32 D_800675D0 = 0;
-SizeEntry D_800675D4[15] = {0};
+s32 CardDirCount = 0;
+SizeEntry CardDir[15] = {0};
 s32 CardSyncCmd = 0;
 s32 CardSyncResult = 0;
 s32 D_80067834[2] = { 0x1C7350, 0x3200000 };

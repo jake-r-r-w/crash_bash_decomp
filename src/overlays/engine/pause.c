@@ -659,7 +659,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
         case 0:
             if (D_8009AF00 == 0) {
                 DrawSysText(e->x, (s16)(e->y + arg1),
-                              ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b,
+                              ((u8 **)LangMessages[g->level])[e->idx], e->a, e->b,
                               PauseChoice == n);
             }
             n++;
@@ -741,7 +741,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 break;
             }
             DrawSysText(e->x, (s16)(e->y + arg1),
-                          ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b, 0);
+                          ((u8 **)LangMessages[g->level])[e->idx], e->a, e->b, 0);
             break;
         case 6:
             FontPage = e->x;
@@ -768,7 +768,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 goto draw;
             }
             DrawSysText(e->x, (s16)(e->y + arg1),
-                          ((u8 **)D_80059748[g->level])[e->idx], e->c, e->d, 0);
+                          ((u8 **)LangMessages[g->level])[e->idx], e->c, e->d, 0);
             break;
         case 20: case 21: case 22: case 23: case 24:
         case 25: case 26: case 27: case 28: case 29:
@@ -780,7 +780,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 goto draw;
             }
             DrawSysText(e->x, (s16)(e->y + arg1),
-                          ((u8 **)D_80059748[g->level])[e->idx], e->c, e->d, 0);
+                          ((u8 **)LangMessages[g->level])[e->idx], e->c, e->d, 0);
             break;
         case 30: case 31: case 32: case 33: case 34:
         case 35: case 36: case 37: case 38: case 39:
@@ -790,7 +790,7 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
             }
         draw:
             DrawSysText(e->x, (s16)(e->y + arg1),
-                          ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b, 0);
+                          ((u8 **)LangMessages[g->level])[e->idx], e->a, e->b, 0);
             break;
         }
     }
@@ -880,8 +880,8 @@ void DrawPauseMenu(void) {
             PauseToggles[1] = sel;
             PauseToggles[2] = sel;
             PauseToggles[0] = GameOptions.stereo != 0;
-            FormatPercent(D_80059748[MSGV->level]->unkBC, GameOptions.music);
-            FormatPercent(D_80059748[MSGV->level]->unkC0, GameOptions.sfx);
+            FormatPercent(LangMessages[MSGV->level]->unkBC, GameOptions.music);
+            FormatPercent(LangMessages[MSGV->level]->unkC0, GameOptions.sfx);
             DrawHudEntries(D_80059D2C, PauseMenuY);
             break;
         case 2:
@@ -1357,7 +1357,7 @@ void StartWinSequence(s32 arg0) {
         if (g->shown[g->mode] & 0x80) {
             return;
         }
-        set = ((EngineRec24 ****)D_8005AAB0)[g->mode][2];
+        set = ((EngineRec24 ****)PauseMenuSets)[g->mode][2];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
@@ -1375,7 +1375,7 @@ void StartWinSequence(s32 arg0) {
             if (g->shown[g->mode] & 8) {
                 return;
             }
-            set = ((EngineRec24 ****)D_8005AAB0)[g->mode][8];
+            set = ((EngineRec24 ****)PauseMenuSets)[g->mode][8];
             if (set != NULL) {
                 PauseRecSet = set;
                 rec = *set;
@@ -1391,7 +1391,7 @@ void StartWinSequence(s32 arg0) {
             if (g->shown[g->mode] & 0x20) {
                 return;
             }
-            set = ((EngineRec24 ****)D_8005AAB0)[g->mode][6];
+            set = ((EngineRec24 ****)PauseMenuSets)[g->mode][6];
             if (set != NULL) {
                 PauseRecSet = set;
                 rec = *set;
@@ -1409,7 +1409,7 @@ void StartWinSequence(s32 arg0) {
         if (g->shown[g->mode] & 0x40) {
             return;
         }
-        set = ((EngineRec24 ****)D_8005AAB0)[g->mode][4];
+        set = ((EngineRec24 ****)PauseMenuSets)[g->mode][4];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
@@ -1427,7 +1427,7 @@ void StartWinSequence(s32 arg0) {
         if (g2->shown[g2->mode] & 0x10) {
             return;
         }
-        set = ((EngineRec24 ****)D_8005AAB0)[g2->mode][0];
+        set = ((EngineRec24 ****)PauseMenuSets)[g2->mode][0];
         if (set != NULL) {
             PauseRecSet = set;
             rec = *set;
@@ -1698,7 +1698,7 @@ void SetPauseRecs(s32 arg0, s32 kind, s32 flag) {
     EngineRec24 **set;
     EngineRec24 *rec;
 
-    t = ((EngineRec24 ****)D_8005AAB0)[GameMode];
+    t = ((EngineRec24 ****)PauseMenuSets)[GameMode];
     if (flag != 0) {
         switch (kind) {
         case 3:

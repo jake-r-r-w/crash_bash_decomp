@@ -881,14 +881,14 @@ void TitlesSetHeroMasks(void) {
     if (*(s32 *)(g + 0x6C) == 1) {
         i = *(s16 *)(g + 0x48);
         k = ((s8 *)(g + i))[0x54];
-        *(s16 *)(g + 0x44) = (s8)((u8)D_8004E0A4[g[i + 0x4C]] | (u8)D_8004E0A4[g[k + 0x4C]]);
+        *(s16 *)(g + 0x44) = (s8)((u8)HeroSide[g[i + 0x4C]] | (u8)HeroSide[g[k + 0x4C]]);
         i = *(s16 *)(g + 0x4A);
         k = ((s8 *)(g + i))[0x54];
-        *(s16 *)(g + 0x46) = (s8)((u8)D_8004E0A4[g[i + 0x4C]] | (u8)D_8004E0A4[g[k + 0x4C]]);
+        *(s16 *)(g + 0x46) = (s8)((u8)HeroSide[g[i + 0x4C]] | (u8)HeroSide[g[k + 0x4C]]);
         return;
     }
     i = *(s16 *)(g + 0x48);
-    *(s16 *)(g + 0x44) = (s8)D_8004E0A4[g[i + 0x4C]];
+    *(s16 *)(g + 0x44) = (s8)HeroSide[g[i + 0x4C]];
 }
 
 void OptionsUpdate(void) {
@@ -1917,7 +1917,7 @@ void LevelSelectUpdate(void) {
     e0 = GetEngineSlot(0);
     boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + ((s8)GameInfo[0x37] << 4)))->idx;
     w = ModeTypes[boff * 3] - 0x101;
-    off = ((s32 **)D_8004DDBC)[*(s32 *)(GameInfo + 0x2C)][w];
+    off = ((s32 **)LangModeTypeTexts)[*(s32 *)(GameInfo + 0x2C)][w];
     e0->sub[6].unk6C = (void *)off;
     t = &GetEngineSlot(0)->sub[1];
     t->unk08 = lerp_fix12(t->unk08,
@@ -2058,7 +2058,7 @@ void TitlesEmptyStub(void) {
 s32 LevelListName(s32 arg0, s32 arg1) {
     s32 idx = *(s32 *)(BattleArenas[arg0].unk0 + (arg1 << 4) + 4);
     s32 w = ModeTypes[idx * 3] - 0x101;
-    s32 **tbl = (s32 **)D_8004DDBC;
+    s32 **tbl = (s32 **)LangModeTypeTexts;
     return tbl[GameLanguage][w];
 }
 

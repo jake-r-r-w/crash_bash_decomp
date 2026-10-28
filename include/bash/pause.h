@@ -142,7 +142,7 @@ extern s16 WinSeqTimer;
 extern s16 WinSeqStep;
 extern s16 WinSeqHero;
 extern s16 WinSeqDelay;
-extern s8 D_8004E0A4[];
+extern s8 HeroSide[];
 extern s32 WinCounterSize;
 extern s32 WinCounterState;
 extern s32 WinCounterAnim;
@@ -299,7 +299,7 @@ typedef struct FxOwner {
     /* 0x018 */ u8 pad18[0x3A0];
     /* 0x3B8 */ u8 *fx;
 } FxOwner;
-extern EngineLevelInfo *D_80059748[];
+extern EngineLevelInfo *LangMessages[];
 extern s16 D_8005975C[];
 extern s16 D_8005981C[];
 extern s16 D_800598DC[];

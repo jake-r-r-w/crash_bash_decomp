@@ -807,17 +807,17 @@ extern s32 D_80064478[];
 extern s32 D_8006E9F4;
 extern s32 LoadPermanentBuf;
 extern u8 D_800527C4[];
-extern u8 D_8004DDBC[];
+extern u8 LangModeTypeTexts[];
 extern u8 D_80050010[];
 void modchip_check_region(void);
 void modchip_step();
 extern s32 D_80064414;
 extern s32 D_8006559C;
 extern s32 D_800655A4;
-extern s32 D_800655A0;
+extern s32 MusicStopDelay;
 extern s32 MusicVolCur;
 extern s32 MusicDuck;
-extern void *D_80051240;
+extern void *SmallNodeFree;
 /* A module's entry table, the first bytes of its image: the engine's (entry.c) is what the
  * shell runs (EngineModule), and RunModules runs one until it hands over (CurrentModule). */
 typedef struct ModuleEntry {
@@ -840,7 +840,7 @@ s32 load_file_direct(s32 *file, u8 *buf);
 void init_file(void);
 extern s32 D_8004E0B4;
 extern void *LoadNodeFree;
-extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in D_80051240 */
+extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in SmallNodeFree */
 extern u8 LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
 extern s32 cam_ramp_overide_count;
 extern s32 D_800517B4;
@@ -879,18 +879,18 @@ typedef struct {
     u8 unk8[0x18C]; /* a copy of GameInfo from +0x60 (the hub's save), with the arena results */
 } D_800657C8_Slot;
 extern D_800657C8_Slot CardSlots[];
-extern s32 D_80065E24;
+extern s32 CardSaveSum;
 extern s32 CardRequest;
 extern s32 CardCommand;
-extern s32 D_800675D0;
+extern s32 CardDirCount;
 
-/* 0x28-byte entries starting at 0x800675D4; D_800675D0 is the count. */
+/* 0x28-byte entries starting at 0x800675D4; CardDirCount is the count. */
 typedef struct {
     u8 unk0[0x18];
     s32 size; /* 0x18 */
     u8 unk1C[0xC];
 } SizeEntry;
-extern SizeEntry D_800675D4[];
+extern SizeEntry CardDir[];
 extern const char CardFileName[];
 extern s32 CardSyncCmd;
 extern s32 CardSyncResult;

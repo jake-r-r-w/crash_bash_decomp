@@ -65,8 +65,8 @@ static inline SizeEntry *McFindSave(void) {
     SizeEntry *p;
     s32 i;
 
-    i = D_800675D0;
-    p = D_800675D4;
+    i = CardDirCount;
+    p = CardDir;
     i--;
     if (i != -1) {
         do {
@@ -118,7 +118,7 @@ static inline void McResetSave(void) {
     while (q < end) {
         i += *q++;
     }
-    D_80065E24 = i;
+    CardSaveSum = i;
 }
 static inline void McResetSaveSum(void) {
     u8 *p;
@@ -159,7 +159,7 @@ static inline void McResetSaveSum(void) {
     while (q < end) {
         sum += *q++;
     }
-    D_80065E24 = sum;
+    CardSaveSum = sum;
 }
 static inline void McClearSave(void) {
     s32 *q;
@@ -178,11 +178,11 @@ static inline s32 McFreeBytes(void) {
     s32 i;
     s32 sum;
 
-    i = D_800675D0;
+    i = CardDirCount;
     if (i >= 0xF) {
         return 0;
     }
-    p = D_800675D4;
+    p = CardDir;
     i--;
     sum = 0;
     if (i != -1) {

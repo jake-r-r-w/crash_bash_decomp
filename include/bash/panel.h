@@ -216,7 +216,7 @@ typedef struct EngModeD9DC {
 
 extern s16 CupWinner;
 extern u16 D_8009AF38[7];
-extern s32 D_800ADBCC;
+extern s32 CupsDirty;
 
 
 #endif /* BASH_PANEL_H */

@@ -561,70 +561,70 @@ void InitScreenLabels(void) {
     s32 v;
 
     eng = GetEngineSlot(3);
-    D_800AD32C[6].unk1E = HeroNameText[GV->unk50[0]];
-    D_800AD32C[7].unk1E = HeroNameText[GV->unk50[1]];
-    D_800AD32C[8].unk1E = HeroNameText[GV->unk50[2]];
-    D_800AD32C[9].unk1E = HeroNameText[GV->unk50[3]];
-    D_800AD32C[10].unk1E = GV->unkCC[0] + 0x200E;
-    D_800AD32C[11].unk1E = GV->unkCC[1] + 0x200E;
-    D_800AD32C[12].unk1E = GV->unkCC[2] + 0x200E;
-    D_800AD32C[13].unk1E = GV->unkCC[3] + 0x200E;
-    D_800AD5D8[4].unk1E = HeroNameText[GV->unk50[0]];
-    D_800AD5D8[5].unk1E = HeroNameText[GV->unk50[1]];
-    D_800AD5D8[6].unk1E = HeroNameText[GV->unk50[2]];
-    D_800AD5D8[7].unk1E = HeroNameText[GV->unk50[3]];
-    D_800AD5D8[8].unk1E = GV->unkCC[GV->unk48] + 0x200E;
-    D_800AD5D8[9].unk1E = GV->unkCC[GV->unk4A] + 0x200E;
+    ScreenLabels4P[6].unk1E = HeroNameText[GV->unk50[0]];
+    ScreenLabels4P[7].unk1E = HeroNameText[GV->unk50[1]];
+    ScreenLabels4P[8].unk1E = HeroNameText[GV->unk50[2]];
+    ScreenLabels4P[9].unk1E = HeroNameText[GV->unk50[3]];
+    ScreenLabels4P[10].unk1E = GV->unkCC[0] + 0x200E;
+    ScreenLabels4P[11].unk1E = GV->unkCC[1] + 0x200E;
+    ScreenLabels4P[12].unk1E = GV->unkCC[2] + 0x200E;
+    ScreenLabels4P[13].unk1E = GV->unkCC[3] + 0x200E;
+    ScreenLabelsTeams[4].unk1E = HeroNameText[GV->unk50[0]];
+    ScreenLabelsTeams[5].unk1E = HeroNameText[GV->unk50[1]];
+    ScreenLabelsTeams[6].unk1E = HeroNameText[GV->unk50[2]];
+    ScreenLabelsTeams[7].unk1E = HeroNameText[GV->unk50[3]];
+    ScreenLabelsTeams[8].unk1E = GV->unkCC[GV->unk48] + 0x200E;
+    ScreenLabelsTeams[9].unk1E = GV->unkCC[GV->unk4A] + 0x200E;
     ScreenCount = 0;
-    D_800AD7AC[3].unk1E = HeroNameText[GV->unk50[0]];
-    D_800AD7AC[4].unk1E = HeroNameText[GV->unk50[1]];
-    D_800AD7AC[5].unk1E = GV->unkCC[0] + 0x200E;
-    D_800AD9C8[4].unk1E = HeroNameText[GV->unk50[0]];
-    D_800AD9C8[5].unk1E = HeroNameText[GV->unk50[1]];
-    D_800AD9C8[6].unk1E = GV->unkCC[0] + 0x200E;
-    D_800AD9C8[7].unk1E = GV->unkCC[1] + 0x200E;
-    D_800AD8CC[3].unk1E = HeroNameText[GV->unk50[0]];
-    D_800AD8CC[4].unk1E = GV->unkCC[0] + 0x200E;
+    ScreenLabelsPair[3].unk1E = HeroNameText[GV->unk50[0]];
+    ScreenLabelsPair[4].unk1E = HeroNameText[GV->unk50[1]];
+    ScreenLabelsPair[5].unk1E = GV->unkCC[0] + 0x200E;
+    ScreenLabels2P[4].unk1E = HeroNameText[GV->unk50[0]];
+    ScreenLabels2P[5].unk1E = HeroNameText[GV->unk50[1]];
+    ScreenLabels2P[6].unk1E = GV->unkCC[0] + 0x200E;
+    ScreenLabels2P[7].unk1E = GV->unkCC[1] + 0x200E;
+    ScreenLabelsOne[3].unk1E = HeroNameText[GV->unk50[0]];
+    ScreenLabelsOne[4].unk1E = GV->unkCC[0] + 0x200E;
     switch (GV->flags & 0xF0) {
     case 0x20:
         v = 0x2021;
         if (GV->flags & 8) {
             v = 0x2020;
         }
-        D_800AD32C[0].unk1E = v;
-        D_800AD5D8[0].unk1E = v;
-        D_800AD7AC[0].unk1E = v;
-        D_800AD8CC[0].unk1E = v;
+        ScreenLabels4P[0].unk1E = v;
+        ScreenLabelsTeams[0].unk1E = v;
+        ScreenLabelsPair[0].unk1E = v;
+        ScreenLabelsOne[0].unk1E = v;
         if (GV->unk6C != 0) {
-            PlaceEngineSlot(3, (s32 *)D_800AD7AC);
+            PlaceEngineSlot(3, (s32 *)ScreenLabelsPair);
             ScreenCount = 1;
         } else {
-            PlaceEngineSlot(3, (s32 *)D_800AD8CC);
+            PlaceEngineSlot(3, (s32 *)ScreenLabelsOne);
             ScreenCount = 1;
         }
         break;
     case 0x40:
-        D_800ADB54[0].unk1E = 0x201F;
-        PlaceEngineSlot(3, (s32 *)D_800ADB54);
+        ScreenLabelsNotice[0].unk1E = 0x201F;
+        PlaceEngineSlot(3, (s32 *)ScreenLabelsNotice);
         goto end;
     case 0x80:
-        D_800ADB54[0].unk1E = 0x201E;
-        PlaceEngineSlot(3, (s32 *)D_800ADB54);
+        ScreenLabelsNotice[0].unk1E = 0x201E;
+        PlaceEngineSlot(3, (s32 *)ScreenLabelsNotice);
         goto end;
     case 0x10:
     default:
-        D_800AD32C[0].unk1E = 0x2022;
-        D_800AD5D8[0].unk1E = 0x2022;
-        D_800AD7AC[0].unk1E = 0x2022;
-        D_800AD8CC[0].unk1E = 0x2022;
+        ScreenLabels4P[0].unk1E = 0x2022;
+        ScreenLabelsTeams[0].unk1E = 0x2022;
+        ScreenLabelsPair[0].unk1E = 0x2022;
+        ScreenLabelsOne[0].unk1E = 0x2022;
         if (GV->mode == 0x20) {
-            PlaceEngineSlot(3, (s32 *)D_800AD9C8);
+            PlaceEngineSlot(3, (s32 *)ScreenLabels2P);
             ScreenCount = 2;
         } else if (GV->unk6C != 0) {
-            PlaceEngineSlot(3, (s32 *)D_800AD5D8);
+            PlaceEngineSlot(3, (s32 *)ScreenLabelsTeams);
             ScreenCount = 2;
         } else {
-            PlaceEngineSlot(3, (s32 *)D_800AD32C);
+            PlaceEngineSlot(3, (s32 *)ScreenLabels4P);
             ScreenCount = 4;
         }
         break;
@@ -903,7 +903,7 @@ s32 CamBoundBottom = 0;
 s32 CamBoundTop = 0;
 s32 CamBoundLeft = 0;
 s32 CamBoundRight = 0;
-EngRec24 D_800AD32C[19] = {
+EngRec24 ScreenLabels4P[19] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0x2022, { 0, 0, 0, 0 },
@@ -981,7 +981,7 @@ EngRec24 D_800AD32C[19] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 D_800AD5D8[13] = {
+EngRec24 ScreenLabelsTeams[13] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },
@@ -1035,7 +1035,7 @@ EngRec24 D_800AD5D8[13] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 D_800AD7AC[8] = {
+EngRec24 ScreenLabelsPair[8] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },
@@ -1069,7 +1069,7 @@ EngRec24 D_800AD7AC[8] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 D_800AD8CC[7] = {
+EngRec24 ScreenLabelsOne[7] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },
@@ -1099,7 +1099,7 @@ EngRec24 D_800AD8CC[7] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 D_800AD9C8[11] = {
+EngRec24 ScreenLabels2P[11] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },
@@ -1145,7 +1145,7 @@ EngRec24 D_800AD9C8[11] = {
         { 0, 0, 0, 0, 0, 0 }, 0, { 0, 0, 0, 0 },
     },
 };
-EngRec24 D_800ADB54[3] = {
+EngRec24 ScreenLabelsNotice[3] = {
     {
         { 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1C, 0, 0, 0, 0, 0, 0, 0, 0 }, 0,
         { 0, 0, 0, 0, 0x1C, 0 }, 0, { 0, 0, 0, 0 },
@@ -1162,6 +1162,6 @@ EngRec24 D_800ADB54[3] = {
 s32 ScreenLabelState = 0;
 s32 D_800ADBC4 = 0;
 s32 D_800ADBC8[1] = {0};
-s32 D_800ADBCC = 0;
+s32 CupsDirty = 0;
 s32 D_800ADBD0[1] = {0};
 s32 ScreenCount = 0;

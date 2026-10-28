@@ -29,7 +29,7 @@ void InitialiseNasSystem(void) {
     D_8005AA44 = p;
     *(s32 *)p = 0;
     InitSysFontModel();
-    D_8005AAB0 = D_800986A4[v->unk2C];
+    PauseMenuSets = D_800986A4[v->unk2C];
 }
 
 void BuildCameraFrameList(void) {
