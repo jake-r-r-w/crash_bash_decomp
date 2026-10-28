@@ -2131,7 +2131,7 @@ void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2) {
         Icon.a[4] = IconPos[4];
         Icon.a[5] = IconPos[5];
         Icon.a[6] = 0;
-        s = (subengine *)((u8 *)s + 0x498);
+        s += 7;
         s->u6C.dbase = p;
         s->entity = arg2;
         Icon.b[4] = IconPos[6];

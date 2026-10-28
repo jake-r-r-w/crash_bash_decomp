@@ -60,7 +60,7 @@ void UpdateLoadingScene(void) {
     u8 *b;
 
     if (LevelLoadStage >= 2) {
-        if (LoadingScenePlaying == 0 && *(s32 *)((b = (u8 *)HeroModelBank) + 0x2CAC) != 0) {
+        if (LoadingScenePlaying == 0 && *(s32 *)((b = (u8 *)HeroModelBank) + 0x2CAC) != 0 /* HeroModelBank[DB_CutsceneIntroLogo2].data */) {
             if (D_80064C93 != -1) {
                 PlaySfx(0x3C5, NULL, NULL, 0x1000, 0x1E00, 0);
                 PlaySfx(0x3C6, NULL, NULL, 0x1000, 0x1E00, 0);

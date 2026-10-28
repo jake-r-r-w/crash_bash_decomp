@@ -528,12 +528,12 @@ s32 CamEdgeIntersectZY(VECTOR *arg0, VECTOR *arg1, s32 arg2) {
     return line_intersect_zy(arg0, &sp18, arg1, &sp28, (VECTOR *)arg2) != 0;
 }
 
-s32 span_z(u8 *arg0, s32 arg1) {
+s32 span_z(SLONG_XYZ *arg0, s32 arg1) {
     s32 temp_v1;
     s32 var_a2;
     s32 var_a3;
     s32 var_t0;
-    u8 *var_a0;
+    SLONG_XYZ *var_a0;
 
     var_a0 = arg0;
     var_t0 = 0x80000000;
@@ -541,7 +541,7 @@ s32 span_z(u8 *arg0, s32 arg1) {
     var_a2 = 0;
     if (arg1 > 0) {
         do {
-            temp_v1 = (*(s32*)((u8*)(var_a0) + 8));
+            temp_v1 = var_a0->z;
             if (var_t0 < temp_v1) {
                 var_t0 = temp_v1;
             }
@@ -549,7 +549,7 @@ s32 span_z(u8 *arg0, s32 arg1) {
                 var_a3 = temp_v1;
             }
             var_a2 += 1;
-            var_a0 += 0xC;
+            var_a0++;
         } while (var_a2 < arg1);
     }
     return var_t0 - var_a3;
