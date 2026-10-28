@@ -128,12 +128,12 @@ void func_800101E0(void) {
 void shell_render_dcache(void) {
     if (D_8004E0B4 == 0) {
         D_8004E0B4 = 1;
-        D_8006E9F4 = func_800320CC();
+        D_8006E9F4 = GetSp();
     }
-    func_800320DC(0x1F8003FC);
+    SetSp(0x1F8003FC);
     D_8004E0DC->unk8();
     func_800272AC(D_8004E0E0);
-    func_800320DC(D_8006E9F4);
+    SetSp(D_8006E9F4);
 }
 
 void func_800102F8(void) {

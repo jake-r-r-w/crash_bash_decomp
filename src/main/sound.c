@@ -30,7 +30,7 @@ void machine_quit_sound(void) {
         SsUtFlush();
         SsEnd();
         SsSetTickCallback(D_800643F8);
-        func_800366FC();
+        SsQuit();
         VSync(3);
         D_800643F8 = 0;
     }
@@ -239,7 +239,7 @@ s32 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     arg0[1] = (s32)sfx;
     if (v != -1) {
         D_800654B8 |= D_80064418[v];
-        func_800373FC(D_800654B8);
+        SsSetVoiceMask(D_800654B8);
     }
     return v;
 }
@@ -299,7 +299,7 @@ void func_8002B8F4(s32 *voice) {
     if (*voice != -1) {
         SsUtKeyOffV(*voice);
         D_800654B8 &= ~D_80064418[*voice];
-        func_800373FC(D_800654B8);
+        SsSetVoiceMask(D_800654B8);
         *voice = -1;
     }
 }
@@ -308,7 +308,7 @@ void func_8002B8F4(s32 *voice) {
 void func_8002B96C(void) {
     SpuIsTransferCompleted(1);
     D_800654B8 = 0;
-    func_800373FC(0);
+    SsSetVoiceMask(0);
     SsUtAllKeyOff(0);
 }
 

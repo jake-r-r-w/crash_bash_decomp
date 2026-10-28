@@ -827,8 +827,6 @@ s32 func_800134FC(u8 *a, u8 *b);
 void init_file(void);
 extern s32 D_8004E0B4;
 extern s32 D_8006E9F4;
-s32 func_800320CC(void);
-void func_800320DC(s32 arg0);
 extern void *LoadNodeFree;
 extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in D_80051240 */
 extern u8 LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
@@ -1063,7 +1061,6 @@ typedef struct {
 } EngineRec32;
 extern EngineRec32 *D_8005A5E8;
 extern s32 D_800637B8;
-void func_80034C4C(s32, s32);
 extern u8 D_8006EA08;
 extern CdlLOC D_8006EA10;
 void func_80034AEC(void);

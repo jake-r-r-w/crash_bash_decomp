@@ -2455,7 +2455,7 @@ s32 func_8002718C(void) {
     SsInit();
     D_800637A8 = 0;
     func_80027F00();
-    func_8003351C(D_800637A8);
+    SetVideoMode(D_800637A8);
     DrawSync(0);
     ClearImage2(&D_8005B640, 0, 0, 0);
     DrawSync(0);
@@ -2685,7 +2685,7 @@ void func_800279A4(void) {
     do {
         CdInit();
     } while (CdDiskReady(1) != 2);
-    func_80034C4C(0, 0);
+    CdSync(0, 0);
     D_800637B4 = 0;
     while (CdSearchFile(&file, "\\CRASHBSH\\CRASHBSH.DAT;1") == NULL) {
         printf("Cant find CRASHBSH.DAT");

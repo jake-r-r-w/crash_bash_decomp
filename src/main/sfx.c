@@ -51,11 +51,11 @@ void func_80022140(s32 arg0, s32 arg1) {
 }
 
 void func_800222BC(void) {
-    func_8003347C();
+    SsSetStereo();
 }
 
 void func_800222DC(void) {
-    func_8003346C();
+    SsSetMono();
 }
 
 void func_800222FC(void) {
