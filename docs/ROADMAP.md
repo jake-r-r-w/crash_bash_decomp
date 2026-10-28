@@ -353,12 +353,13 @@ every function and global in them is named and typed, `build/engine.bin`
 and `build/main.exe` still match, and the formats the engine and the exe
 load extract and are documented.
 
-- [ ] Split the engine into its original translation units. Status: split
+- [x] Split the engine into its original translation units (closed 2026-10-28). Split
   at every start the binary proves (switch-table parity; ARCHITECTURE.md,
   Files inside the engine), and Jampack's records name two of the files
   (`panel` is `PANEL.CPP`, `pause` `PAUSE.CPP`); more files may hide inside
   those units. Rechecked 2026-10-28: no further start is proven (ARCHITECTURE.md, Files
-  inside the engine); what is left needs new evidence (a prototype's line or file records).
+  inside the engine). No more evidence will turn up (every prototype is scanned), so the
+  eight files are final; a file hiding inside one of them stays merged.
 - [x] The engine's rodata as C: all 59 INCLUDE_RODATA blocks are `const char` arrays where
   they were (2026-10-26), and its 176 strings are named from their text.
 - [ ] The engine's 0x14-byte header as C: it is still a `textbin` blob
