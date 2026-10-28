@@ -1129,7 +1129,7 @@ typedef struct ComboSeq {
     /* 0x04 */ s32 maxTime;
     /* 0x08 */ s32 step;
     /* 0x0C */ s32 startTime;
-    /* 0x10 */ s32 steps[1];
+    /* 0x10 */ s32 steps[32];    /* 0-terminated */
 } ComboSeq;
 
 extern MATRIX MapSceneMatrix;

@@ -2552,7 +2552,7 @@ void combo_check_all(void) {
                 }
             }
         }
-        c = (ComboSeq *)((u8 *)c + 0x90);
+        c++;
     }
 done:;
 }

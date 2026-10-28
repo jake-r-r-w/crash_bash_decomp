@@ -9,7 +9,7 @@
 #include "bash/main.h"
 
 void primpool_release_all(void);
-void primset_invalidate(u8 * *arg0);
+void primset_invalidate(PrimSet **arg0);
 s32 *primlist_pop(PrimList *l);
 s32 *primlist_pop_b(PrimList *l);
 void faces_write_uvs_colors(s32 arg0, s32 arg1);
@@ -82,7 +82,7 @@ void posdst_flash(PosDst *arg0, s32 arg1, s32 arg2);
 void posdst_flash_at(PosDst *arg0, s32 arg1);
 s32 sub_alloc_prims(void *arg0, s32 arg1);
 void subpool_init(s32 n);
-void draw_map_sub(void *arg0, void *arg1);
+void draw_map_sub(subengine *sub, void *arg1);
 void mapscene_init(s32 *arg0, s32 *arg1);
 KeyEntry *key_find(KeyBlock *arg0, s32 arg1);
 s32 path_find(u32 arg0);

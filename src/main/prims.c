@@ -642,12 +642,12 @@ void primpool_init(s32 count) {
     PrimPool.free = PrimPool.mem;
 }
 
-void primset_invalidate(u8 **arg0) {
-    u8 *temp_a0;
+void primset_invalidate(PrimSet **arg0) {
+    PrimSet *set;
 
-    temp_a0 = *arg0;
-    if (temp_a0 != NULL) {
-        (*(s16*)((u8*)(temp_a0) + 86)) = 1;
+    set = *arg0;
+    if (set != NULL) {
+        set->dead = 1;
     }
 }
 
@@ -774,9 +774,9 @@ void primnodes_free(s32 *arg0) {
     var_a0 = NULL;
     if (arg0 != NULL) {
         do {
-            mal_free((*(s32*)((u8*)(var_s0) + 4)), &MainHeap);
+            mal_free((void *)var_s0[1], &MainHeap);
             var_a0 = var_s0;
-            var_s0 = (*(s32*)((u8*)(var_a0) + 0));
+            var_s0 = (s32 *)var_a0[0];
         } while (var_s0 != NULL);
     }
     temp_v1 = PrimLinkFree;
@@ -2780,7 +2780,7 @@ void subpool_init(s32 n) {
     next_sub = sub;
     if (i > 0) {
         do {
-            subengine *nx = (subengine *)((u8 *)sub + 0xA8);
+            subengine *nx = sub + 1;
             sub->next = nx;
             i--;
             sub = nx;
@@ -2906,15 +2906,15 @@ s32 rel_ptr(s32 *arg0) {
 
 
 extern void draw_map_object(void *a, void *b, s32 c, s32 d);
-void draw_map_sub(void *arg0, void *arg1) {
+void draw_map_sub(subengine *sub, void *arg1) {
     s32 flags;
     s32 x;
 
-    flags = *(s32 *)arg0;
-    x = *(s32 *)(*(u8 **)((u8 *)arg0 + 0x6C) + 0xC);
+    flags = sub->flags;
+    x = (s32)sub->u6C.dbase->data;
     if ((flags & 0x8000) && x != 0) {
-        draw_map_object(arg0, arg1, flags, x);
-        draw_object_model(*(u16 *)((u8 *)arg0 + 0x74), (u8 *)x, *(s32 *)arg0, arg0);
+        draw_map_object(sub, arg1, flags, x);
+        draw_object_model(sub->entity, (u8 *)x, sub->flags, sub);
     }
 }
 
