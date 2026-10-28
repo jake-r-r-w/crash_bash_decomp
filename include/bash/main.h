@@ -816,7 +816,7 @@ extern u8 ExportTable[];
 extern u8 LangModeTypeTexts[];
 void modchip_check_region(void);
 void modchip_step();
-extern s32 D_80064414;
+extern s32 SoundCritical;
 extern s32 MusicNext;
 extern s32 MusicCur;
 extern s32 MusicStopDelay;
@@ -913,7 +913,7 @@ extern s32 CardSyncResult;
 
 /* Free bytes on the card (card_count_files). */
 extern _mal_area MainHeap;
-extern s32 D_800637B0;
+extern s32 LoadDirectBusy;
 extern u8 *LoadWaitBuf;
 extern void *HeadOfCameras;
 extern void *HeadOfObjects;
@@ -961,7 +961,7 @@ typedef struct {
     BufNode **head;
     FreeHdr hdr;
 } VramArea;
-extern u8 *D_800643F4; /* the BufNode pool (vram_init) */
+extern u8 *VramBufNodes; /* the BufNode pool (vram_init) */
 typedef struct FreePool {
     FreeNode *head;
     u16 w;
@@ -970,7 +970,7 @@ typedef struct FreePool {
     u16 padA;
 } FreePool;
 extern FreeNode *FreeBufNodes;
-extern u8 D_80063B58[];
+extern u8 VramSmallReq[];
 extern u8 D_80063BA0[];
 extern FreeNode *ClutFreeSmall;
 extern FreeNode *ClutUsedSmall;
@@ -1021,8 +1021,8 @@ typedef struct ArenaDef {
     /* 0x14 */ s32 unk14;
 } ArenaDef;
 extern LevSpec LevelSpecs; /* the level's hooks */
-extern s32 D_8005AA50;
-extern s32 D_8005AA54;
+extern s32 NasHeapSize;
+extern s32 SubPoolCount;
 extern s32 LevelConfig;
 extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
 extern s32 LevelSfxBanks[][8];       /* music_play_level */
@@ -1058,7 +1058,7 @@ struct ExtBlk {
     EXT *owner;
     EXT ext;
 };
-extern ExtBlk *D_8005A7AC;
+extern ExtBlk *ExtFreeList;
 extern VabFile *VabLoading;  /* VAB being transferred to the SPU, or NULL */
 extern sfx_machine_bank_info *SfxBankLoading;  /* where its id goes */
 extern s32 VabHeadId;       /* the id from SsVabOpenHead */
@@ -1083,14 +1083,14 @@ typedef struct {
     /* 0x0E */ u8 unkE[0x12];
 } EngineRec32;
 extern EngineRec32 *LevelRecs;
-extern s32 D_800637B8;
+extern s32 ArchiveSector;
 extern u8 CdControlResult[8];
 extern CdlLOC CdReadLoc;
 void func_80034AEC(void);
 extern NASTrigger *HeadOfTriggers;
 extern s32 TriggerCount;
 extern script_handler *active_scripts;
-extern RECT D_8005B640;
+extern RECT VramRect;
 extern script_handler *free_scripts;
 extern void *MapScene;
 /* A map trigger record (InitTriggers): position, then a word whose low 2
@@ -1129,7 +1129,7 @@ extern SVECTOR MapSceneRot;
 extern u8 ComboSeqs[]; /* ComboSeq table, 0x90 bytes per entry */
 extern CdlLOC CdSeekLoc;
 extern RECT *ScreenRect;
-extern s32 D_8005B694;
+extern s32 ScreenSetFrame;
 extern s32 D_8005B78C;
 extern s32 D_800335BC;
 extern u32 DebugFontClutData[];
@@ -1800,7 +1800,7 @@ void *mal_take_low(s32 bytes, _mal_area *heap);
 
 
 
-extern u8 D_80063A84[];
+extern u8 PadActAlign[];
 
 /* Pad rumble state (pad_rumble_send). */
 typedef struct PadRumble {
@@ -1836,7 +1836,7 @@ typedef struct PadInput {
 } PadInput;
 
 
-extern s32 D_80063A8C;
+extern s32 PadLastRead;
 
 /* pad_rumble_send's body, inlined into pad_read_packet. */
 

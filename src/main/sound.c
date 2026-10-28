@@ -3,11 +3,11 @@
 #include "bash/sound.h"
 
 void sound_reset_counter(void) {
-    D_80064414 = 0;
+    SoundCritical = 0;
 }
 
 void sound_critical(void) {
-    D_80064414 = 1;
+    SoundCritical = 1;
 }
 
 void machine_init_sound(void) {
@@ -47,7 +47,7 @@ void sound_vsync_tick(void) {
             VabCuePending += 1;
         }
     }
-    if (D_80064414 == 0) {
+    if (SoundCritical == 0) {
         sound_continue();
     }
 }
@@ -437,7 +437,7 @@ void sfx_table_reset(void) {
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-s32 D_80064414 = 0;
+s32 SoundCritical = 0;
 s32 D_80064418[24] = {
     1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x100, 0x200, 0x400, 0x800, 0x1000, 0x2000, 0x4000,
     0x8000, 0x10000, 0x20000, 0x40000, 0x80000, 0x100000, 0x200000, 0x400000, 0x800000,

@@ -320,7 +320,7 @@ typedef struct {
     /* 0x30 */ u8 unk30[0xC];
     /* 0x3C */ u16 unk3C;
 } EngineBootView;
-extern u8 *D_8005AA20;
+extern u8 *NasPoolLast;
 extern u8 *HeroNasList;
 extern s32 PauseMenuSets;
 extern s32 D_800986A4[];

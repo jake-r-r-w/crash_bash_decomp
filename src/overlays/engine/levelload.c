@@ -323,8 +323,8 @@ void UpdateLevelLoad(void) {
         g = (EngStateView *)GameInfo;
         g->unk30 = 0;
         g->unk10 = 0;
-        InitNasHeap(D_8005AA50);
-        subpool_init(D_8005AA54);
+        InitNasHeap(NasHeapSize);
+        subpool_init(SubPoolCount);
         init_scripts(0x20, 0x20);
         process_init(&LoadingControl);
         InitialiseNasSystem();

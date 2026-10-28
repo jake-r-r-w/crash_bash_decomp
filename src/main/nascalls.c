@@ -327,7 +327,7 @@ void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl) {
 
     want = (size + 3) & ~3;
     total = (size + 0x1B) & ~3;
-    n = D_8005A7AC;
+    n = ExtFreeList;
     for (;;) {
         if (n == NULL) {
             goto fail;
@@ -550,8 +550,8 @@ void SetupLevelSpecs(ArenaDef *arg0) {
     if (e != NULL) {
         FirstNas = e->unk4 + 4;
         NasPoolSlots = NasPoolUsed = e->unk2 + 4;
-        D_8005AA50 = e->unk6 << 10;
-        D_8005AA54 = e->unk8;
+        NasHeapSize = e->unk6 << 10;
+        SubPoolCount = e->unk8;
         LevelConfig = e->unk10;
         ((D5A614View *)GameInfo)->unk0 = e->unk14;
         LevelTriggerData = e->unkC;
@@ -2457,7 +2457,7 @@ s32 machine_init(void) {
     pads_init_mtap();
     SetVideoMode(VideoMode);
     DrawSync(0);
-    ClearImage2(&D_8005B640, 0, 0, 0);
+    ClearImage2(&VramRect, 0, 0, 0);
     DrawSync(0);
     machine_init_sound();
     debug_font_init2();
@@ -2474,7 +2474,7 @@ s32 machine_init(void) {
 
 void ClearVram(void) {
     DrawSync(0);
-    ClearImage2(&D_8005B640, 0, 0, 0);
+    ClearImage2(&VramRect, 0, 0, 0);
     DrawSync(0);
 }
 
@@ -2585,7 +2585,7 @@ RECT *arg0;
     DrawSync(0);
     D_8005B78C = 0;
     if (arg0 != NULL) {
-        D_8005B694 = FrameCount + 1;
+        ScreenSetFrame = FrameCount + 1;
         if (ScreenRect == NULL) {
             u8 *g = DrawBuffers;
             u8 *h;
@@ -2640,7 +2640,7 @@ s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
     if (s > 0) {
         return -1;
     }
-    CdIntToPos(*a + b + D_800637B8, &CdReadLoc);
+    CdIntToPos(*a + b + ArchiveSector, &CdReadLoc);
     if (CdControl(2, (u8 *)&CdReadLoc, 0) == 0 || CdRead(d, (u_long *)c, 0x80) == 0) {
         return -1;
     }
@@ -2690,7 +2690,7 @@ void cd_init(void) {
     while (CdSearchFile(&file, "\\CRASHBSH\\CRASHBSH.DAT;1") == NULL) {
         printf("Cant find CRASHBSH.DAT");
     }
-    D_800637B8 = CdPosToInt(&file.pos);
+    ArchiveSector = CdPosToInt(&file.pos);
 }
 
 void xa_setvol(s32 vol) {
@@ -2723,10 +2723,10 @@ void pad_read_packet(PadPacket *p, PadInput *in, s32 n) {
     if (p->status == 0) {
         in->flags |= 1;
         in->flags |= PadRumble_update(&in->rumble, n);
-        if (FrameCount > D_80063A8C + 10 &&(in->flags & 8) && in->unk18 != 0
+        if (FrameCount > PadLastRead + 10 &&(in->flags & 8) && in->unk18 != 0
             && PadGetState(n) == 6 && PadSetMainMode(n, 1, 2) == 1) {
             in->unk18 = 0;
-            D_80063A8C = FrameCount;
+            PadLastRead = FrameCount;
         }
         in->flags &= ~6;
         switch (*(u16 *)p >> 12) {
@@ -2918,7 +2918,7 @@ s32 pad_rumble_send(PadRumble *r, s32 port) {
     }
     if (r->dirty != 0) {
         PadSetAct(port, r->act, 2);
-        if (PadSetActAlign(port, D_80063A84) == 1) {
+        if (PadSetActAlign(port, PadActAlign) == 1) {
             r->dirty = 0;
         }
     }
@@ -3002,7 +3002,7 @@ ClutPos *clut_alloc_small(void) {
     if (a == NULL) {
         head = FreeBufNodes;
         FreeBufNodes = head->next;
-        src = vram_take(D_80063B58);
+        src = vram_take(VramSmallReq);
         prev = NULL;
         h = *src;
         i = 0x1F;
@@ -3133,7 +3133,7 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     BufNode *first;
     s32 i;
 
-    D_800643F4 = mal_alloc(nbuf * 0x18, &MainHeap);
+    VramBufNodes = mal_alloc(nbuf * 0x18, &MainHeap);
     ClutLargeList = pool;
     n = pool;
     i = npool - 2;
@@ -3146,7 +3146,7 @@ void vram_init(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
     n->next = NULL;
     ClutFreeSmall = NULL;
     ClutUsedSmall = NULL;
-    FreeBufNodes = (FreeNode *)(b = (BufNode *)D_800643F4);
+    FreeBufNodes = (FreeNode *)(b = (BufNode *)VramBufNodes);
     i = nbuf - 2;
     while (i != -1) {
         b->next = b + 1;
@@ -3231,7 +3231,7 @@ FreeNode *vram_alloc_node(void) {
 
     head = FreeBufNodes;
     FreeBufNodes = head->next;
-    src = vram_take(D_80063B58);
+    src = vram_take(VramSmallReq);
     prev = NULL;
     h = *src;
     i = 0x1F;
@@ -4138,7 +4138,7 @@ s16 D_8005A678[4] = {0};
 s32 GameTeams[1] = {0};
 AdventureState GameAdventure = {0};
 s32 ExtHeap[3] = {0};
-ExtBlk *D_8005A7AC = 0;
+ExtBlk *ExtFreeList = 0;
 s32 D_8005A7B0[4] = {0};
 NAS NASTemplate = {0};
 subengine SubEngineTemplate = {0};
@@ -4155,7 +4155,7 @@ u16 NasPoolSlots = 0;
 u16 NasPoolUsed = 0;
 s16 D_8005AA18[2] = {0};
 NAS *NasPool = 0;
-u8 *D_8005AA20 = 0;
+u8 *NasPoolLast = 0;
 void *HeadOfObjects = 0;
 void *HeadOfMissiles = 0;
 NAS *HeadOfSolids = 0;
@@ -4165,8 +4165,8 @@ void *HeadOfBalls = 0;
 s32 D_8005AA3C[3] = {0};
 NASTrigger *HeadOfTriggers = 0;
 s32 TriggerCount = 0;
-s32 D_8005AA50 = 0;
-s32 D_8005AA54 = 0;
+s32 NasHeapSize = 0;
+s32 SubPoolCount = 0;
 s32 GlobalNAStatus = 0;
 s32 D_8005AA5C[1] = {0};
 s32 ASTCount = 0;
@@ -4183,7 +4183,7 @@ MapPoint MapPoints[32] = {0};
 s32 ContourHeight = 0;
 s32 ACMD[16][2] = {0};
 u8 *sysfont_dbase = 0;
-RECT D_8005B640 = { 0, 0, 0x1FF, 0x1FF };
+RECT VramRect = { 0, 0, 0x1FF, 0x1FF };
 ModuleEntry *CurrentModule = 0;
 s32 D_8005B64C[16] = {
     0, 0x200, 0x400, 0x580, 0x680, 0x720, 0x780, 0x7B8, 0, 0x80, 0x100, 0x160, 0x1A0, 0x1C8,
@@ -4191,7 +4191,7 @@ s32 D_8005B64C[16] = {
 };
 u8 *cdb = (void *)&DrawBuffers;
 s32 FrameCount = 0;
-s32 D_8005B694 = 0;
+s32 ScreenSetFrame = 0;
 RECT *ScreenRect = 0;
 u8 D_8005B69C[144] = {
     0, 0, 0, 0, 0, 1, 0xF0, 0, 0, 0, 0, 1, 0, 1, 0xF0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -4211,9 +4211,9 @@ s32 D_8005B78C = 0;
 u8 DrawBuffers[32792] = {0};
 s32 VideoMode = 0;
 s32 D_800637AC[1] = {0};
-s32 D_800637B0 = 0;
+s32 LoadDirectBusy = 0;
 s32 CdReadStatus = 0;
-s32 D_800637B8 = 0;
+s32 ArchiveSector = 0;
 s32 D_800637BC[176] = {
     0x13F0199, 0x16D0128, 0x1CE0136, 0x18A0178, 0x10801A2, 0xFE00C5, 0xF100E4, 0x12B010C,
     0x10B00F1, 0xE000E2, 0x10300FB, 0x12E0126, 0x1610115, 0x12D0124, 0x1400138, 0x12B0112,
@@ -4240,8 +4240,8 @@ s32 D_800637BC[176] = {
 };
 s32 xa_count = 0;
 s32 D_80063A80[1] = {0};
-u8 D_80063A84[8] = { 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0 };
-s32 D_80063A8C = 0;
+u8 PadActAlign[8] = { 0, 1, 0xFF, 0xFF, 0xFF, 0xFF, 0, 0 };
+s32 PadLastRead = 0;
 u8 PadMtapBuf[2][52] = {0};
 u32 DebugFontClutData[8] = {
     0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000, 0xFFFF0000,
@@ -4253,7 +4253,7 @@ Slot12 VramSlots[3] = {
     { { 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0 } },
 };
 s32 D_80063B40[6] = { 0, 0, 0x10, 0, 8, 0 };
-u8 D_80063B58[24] = { 0, 0, 0, 0, 0, 0, 0, 0, 0x20, 0, 0, 0, 0, 0, 0, 0, 0x10, 0, 0, 0, 0, 0, 0, 0 };
+u8 VramSmallReq[24] = { 0, 0, 0, 0, 0, 0, 0, 0, 0x20, 0, 0, 0, 0, 0, 0, 0, 0x10, 0, 0, 0, 0, 0, 0, 0 };
 s32 D_80063B70[6] = { 0, 0, 0x40, 0, 0x20, 0 };
 s32 D_80063B88[6] = { 0, 0, 0x80, 0, 0x40, 0 };
 u8 D_80063BA0[12] = { 0, 0, 0, 0, 0xFF, 0xFF, 0, 0, 0xFF, 0xFF, 0, 0 };
@@ -4365,7 +4365,7 @@ u8 VramNodePool[2096] = {
 s32 DebugFontStream = 0;
 s32 DebugFontTPage = 0;
 s32 DebugFontClut = 0;
-u8 *D_800643F4 = 0;
+u8 *VramBufNodes = 0;
 void (*SsTickSaved)() = 0x4D2;
 s32 D_800643FC[6] = {0};
 

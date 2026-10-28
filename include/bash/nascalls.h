@@ -225,7 +225,7 @@ static inline s32 PadRumble_update(PadRumble *r, s32 port) {
     }
     if (r->dirty != 0) {
         PadSetAct(port, r->act, 2);
-        if (PadSetActAlign(port, D_80063A84) == 1) {
+        if (PadSetActAlign(port, PadActAlign) == 1) {
             r->dirty = 0;
         }
     }

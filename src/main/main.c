@@ -2357,7 +2357,7 @@ s32 load_file_direct(s32 *a, u8 *b) {
         mal_compact(&MainHeap);
         vab_transfer_check();
     }
-    D_800637B0 = 0;
+    LoadDirectBusy = 0;
     while (cd_read_poll() > 0) {
     }
     do {
@@ -2371,7 +2371,7 @@ s32 load_file_direct(s32 *a, u8 *b) {
             r = cd_read_poll();
         } while (r > 0);
     } while (r < 0);
-    D_800637B0 = 1;
+    LoadDirectBusy = 1;
     printf("done loading\n");
     return 0;
 }

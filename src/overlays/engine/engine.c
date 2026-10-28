@@ -22,7 +22,7 @@ void InitialiseNasSystem(void) {
     SetNasDefaults();
     Init_Panel();
     NasPool = (NAS *)mal_alloc(NasPoolUsed * 0x70, &MainHeap);
-    D_8005AA20 = (u8 *)NasPool + (NasPoolUsed * 0x70 - 0x70);
+    NasPoolLast = (u8 *)NasPool + (NasPoolUsed * 0x70 - 0x70);
     NasUpdateList = (EngObj **)mal_alloc(NasPoolUsed * 4, &MainHeap);
     *NasUpdateList = NULL;
     p = mal_alloc(NasPoolUsed * 4, &MainHeap);
