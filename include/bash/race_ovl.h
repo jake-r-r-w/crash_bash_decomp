@@ -1317,7 +1317,7 @@ void PlotDac(NAS *nas);
 
 extern const char RaceMsgError[];
 
-/* RaceTrackCollideB: wall segments of a scene collision object (as dino's func_800B9020). */
+/* RaceTrackCollideB: wall segments of a scene collision object (as dino's DinoTrackCollide). */
 typedef struct RaceVec {
     s32 vx, vy, vz;
 } RaceVec;

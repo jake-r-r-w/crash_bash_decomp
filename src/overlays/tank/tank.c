@@ -9274,7 +9274,7 @@ void TA_StopHeroSfx(void) {
 }
 
 /* Empty, defined right after TA_SetUp, where Arkenoid's leaked header puts AR_RestartLevel
- * (its empty func_800C0B8C sits in the same place). */
+ * (its empty AR_RestartLevel sits in the same place). */
 void TA_RestartLevel(void) {
 }
 

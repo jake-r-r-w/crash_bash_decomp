@@ -301,7 +301,7 @@ void Roo_UpdatePosition(EXTengine *);
 void Roo_UpdateVelocities(EXTengine *);
 void Roo_FireRocket(EXTengine *);
 void Roo_ShootAtHumans(NAS *);
-/* the leak also declares void Roo_FireRocket(EXTengine *, s32): func_800C02AC (pogo) */
+/* the leak also declares void Roo_FireRocket(EXTengine *, s32): Roo_FireProjectile (pogo) */
 bool SquareIsFreeForRoo(s32, s32);
 void Create_PogoProjectile(s32, s32, s32, s32, s32, s32);
 void Init_PogoProjectile(NAS *);

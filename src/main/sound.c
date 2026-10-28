@@ -17,7 +17,7 @@ void machine_init_sound(void) {
     SpuReserveReverbWorkArea(1);
     SsUtSetReverbType(7);
     SsUtSetReverbDepth(100, 0);
-    func_800369FC();
+    SsUtReverbOn();
     sound_reset_counter();
     SsTickSaved = (void (*)())SsSetTickCallback(sound_vsync_tick);
     SsSetTickMode(1);

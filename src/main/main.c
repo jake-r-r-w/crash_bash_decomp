@@ -173,7 +173,7 @@ void shell_start_engine(void) {
     EngineModule->init();
 }
 
-static inline void func_800107C8_merge(mal *a, _mal_area *arg1, s32 m1) {
+static inline void mal_merge_from(mal *a, _mal_area *arg1, s32 m1) {
     s32 m2;
     mal *b;
     s32 new_var2;
@@ -346,7 +346,7 @@ void mal_update(_mal_area *heap) {
         if (budget <= 0) break;
         t = VSync(1);
         MalMoveWords += p->size;
-        func_800107C8_merge(heap->lowest, heap, m1);
+        mal_merge_from(heap->lowest, heap, m1);
         t = VSync(1) - t;
         ret = Heap_NextLowest(heap, m1);
         p = ret;
@@ -390,7 +390,7 @@ void mal_compact_from(mal *arg0, _mal_area *arg1) {
         if (arg0 == NULL) {
             return;
         }
-        func_800107C8_merge(arg1->lowest, arg1, m1);
+        mal_merge_from(arg1->lowest, arg1, m1);
         nx = arg1->lowest;
         if (nx == NULL || (nx = (mal *)((u8 *)nx + (nx->size * 4 + 0x18)),
                            nx->owner == (void **)m1) || nx->size == 0) {
@@ -461,7 +461,7 @@ void mal_compact_high(_mal_area *heap) {
     }
 }
 
-static inline mal *func_80010AE8_next(_mal_area *heap) {
+static inline mal *mal_compact_next(_mal_area *heap) {
     mal *blk;
     mal *next;
 
@@ -476,7 +476,7 @@ static inline mal *func_80010AE8_next(_mal_area *heap) {
     return next;
 }
 
-static inline void func_80010AE8_merge(mal *arg0, _mal_area *arg1) {
+static inline void mal_compact_merge(mal *arg0, _mal_area *arg1) {
     s32 m1;
     mal *next;
     s32 new_var2;
@@ -523,8 +523,8 @@ static inline void func_80010AE8_merge(mal *arg0, _mal_area *arg1) {
 
 void mal_compact(_mal_area *heap) {
     DrawSync(0);
-    while (func_80010AE8_next(heap) != NULL) {
-        func_80010AE8_merge(heap->lowest, heap);
+    while (mal_compact_next(heap) != NULL) {
+        mal_compact_merge(heap->lowest, heap);
     }
 }
 
@@ -1696,7 +1696,7 @@ end:
     return NULL;
 }
 
-static inline s32 func_80012678_find(s32 *arg0, s32 *arg1) {
+static inline s32 load_group_find(s32 *arg0, s32 *arg1) {
     s32 *base;
     s32 *p;
     s32 n;
@@ -1728,7 +1728,7 @@ static inline s32 func_80012678_find(s32 *arg0, s32 *arg1) {
     return -1;
 }
 
-static inline void func_80012678_loop(u8 *arg0, s32 *arg1) {
+static inline void load_group_loop(u8 *arg0, s32 *arg1) {
     s32 first = arg1[0];
     s32 n = arg1[1];
     s32 *s2 = &DatIndex[first * 2];
@@ -1758,7 +1758,7 @@ void load_group_done(u8 *arg0, u8 *a1) {
     if (c == NULL) {
         return;
     }
-    func_80012678_loop(arg0, *(s32 **)a1);
+    load_group_loop(arg0, *(s32 **)a1);
     if (c == NULL) {
         return;
     }
@@ -1769,17 +1769,17 @@ void load_group_done(u8 *arg0, u8 *a1) {
         *(s32 *)((u8 *)*c + 0x34) = 0;
         e = *(s32 **)a1;
         h = (u8 *)c[0];
-        i = func_80012678_find(c[2], e);
+        i = load_group_find(c[2], e);
         i <<= 11;
         dbase_group_textures_loaded(arg0 + i, h);
-        i = func_80012678_find(c[1], e);
+        i = load_group_find(c[1], e);
         i <<= 11;
         dbase_asload_with_anims_callback(arg0 + i, h);
         c += 3;
     }
 }
 
-static inline s32 func_80012840_find(s32 *arg0, s32 *arg1) {
+static inline s32 load_dbase_find(s32 *arg0, s32 *arg1) {
     s32 *base;
     s32 *p;
     s32 n;
@@ -1812,7 +1812,7 @@ loop:
     return end;
 }
 
-static inline void func_80012840_loop(u8 *arg0, s32 *arg1) {
+static inline void load_dbase_loop(u8 *arg0, s32 *arg1) {
     s32 first = arg1[0];
     s32 n = arg1[1];
     s32 *s2 = &DatIndex[first * 2];
@@ -1838,14 +1838,14 @@ void load_dbase_done(u8 *arg0, u8 *a1) {
     u8 *h;
     s32 i;
 
-    func_80012840_loop(arg0, *(s32 **)a1);
+    load_dbase_loop(arg0, *(s32 **)a1);
     c = (s32 **)(a1 + 4);
     e = *(s32 **)a1;
     h = *(u8 **)(a1 + 4);
-    i = func_80012840_find(c[2], e);
+    i = load_dbase_find(c[2], e);
     i <<= 11;
     dbase_group_textures_loaded(arg0 + i, h);
-    i = func_80012840_find(c[1], e);
+    i = load_dbase_find(c[1], e);
     i <<= 11;
     dbase_asload_with_anims_callback(arg0 + i, h);
 }
@@ -1941,7 +1941,7 @@ u8 *queue_group_load(u8 *arg0) {
     return q;
 }
 
-static inline s32 func_80012BC8_find(s32 *arg0, s32 *arg1) {
+static inline s32 dbase_files_find(s32 *arg0, s32 *arg1) {
     s32 *base;
     s32 *p;
     s32 n;
@@ -1978,10 +1978,10 @@ void dbase_files_loaded(s32 **arg0, s32 *arg1, u8 *arg2) {
     u8 *s2 = (u8 *)arg0[0];
     s32 i;
 
-    i = func_80012BC8_find(arg0[2], arg1);
+    i = dbase_files_find(arg0[2], arg1);
     i <<= 11;
     dbase_group_textures_loaded(arg2 + i, s2);
-    i = func_80012BC8_find(arg0[1], arg1);
+    i = dbase_files_find(arg0[1], arg1);
     i <<= 11;
     dbase_asload_with_anims_callback(arg2 + i, s2);
 }

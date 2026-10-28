@@ -481,7 +481,7 @@ u8 *dbase_mesh_anim_rec_release(s32 *arg0, u8 *rec) {
 
 /* Inlined copy of dbase_mesh_anim_rec_load (load a record's node); being an inline call
  * is what puts arg1 in v1 and the table in a1. */
-static inline u8 *func_80016B48_load(s32 *arg0, u8 *arg1) {
+static inline u8 *dbase_mesh_anim_load_one(s32 *arg0, u8 *arg1) {
     u8 *cur;
     u8 *node;
     s32 start;
@@ -517,7 +517,7 @@ u8 *dbase_mesh_anim_load(u8 *arg0, s32 arg1) {
     }
     e = base + (*(s32 *)(base + 0x44) + 0x44);
     e += arg1 * 0x18;
-    return func_80016B48_load((s32 *)arg0, e);
+    return dbase_mesh_anim_load_one((s32 *)arg0, e);
 }
 
 BlockRef *dbase_mesh_anim_rec_load(s32 *file, FileEntry *e) {
@@ -716,7 +716,7 @@ void dbase_init(obj_dbase *db) {
     textureset_clear(&db->textures);
 }
 
-static inline void func_80017164_clear(u8 *p) {
+static inline void prims_pool_clear(u8 *p) {
     *(s32 *)(p + 4) = 0;
     *(s32 *)(p + 8) = 0;
     *(s32 *)(p + 0xC) = 0;

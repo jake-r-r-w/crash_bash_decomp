@@ -8,6 +8,6 @@
 #include "common.h"
 #include "bash/nas.h"
 
-void *func_8003E0EC(void);
+void *CdLastPos(void);
 
 #endif /* BASH_8003E0EC_H */

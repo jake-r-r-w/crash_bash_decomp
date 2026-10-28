@@ -706,7 +706,7 @@ NAS *BashHeroGrabObject(idx, cone)
     return NULL;
 }
 
-static inline void func_800C1A30_bounce(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, s16 mb) {
+static inline void BashHeroKickCollision_bounce(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, s16 mb) {
     s32 total;
     s32 r;
     s32 q;
@@ -733,7 +733,7 @@ static inline void func_800C1A30_bounce(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, 
 }
 
 #define BOUNCE(m1, m2) \
-    func_800C1A30_bounce(&(m1)->x_vel, &(m1)->z_vel, (m1)->mass, &(m2)->x_vel, &(m2)->z_vel, (m2)->mass)
+    BashHeroKickCollision_bounce(&(m1)->x_vel, &(m1)->z_vel, (m1)->mass, &(m2)->x_vel, &(m2)->z_vel, (m2)->mass)
 
 s32 BashHeroKickCollision(s32 arg0) {
     VECTOR pos;

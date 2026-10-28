@@ -516,7 +516,7 @@ const char PauseTextP4[] = "P4";
 const char PauseTextPressButtonToForceVictory[] = "PRESS \374 BUTTON TO FORCE VICTORY";
 const char PauseTextEmpty2[] = "";
 
-static inline ArenaDef *func_800235BC_find(ArenaDef *p, s32 id) {
+static inline ArenaDef *ArenaDefFind(ArenaDef *p, s32 id) {
     while (p != NULL) {
         if (p->id == id) {
             return p;
@@ -543,9 +543,9 @@ void SetupLevelSpecs(ArenaDef *arg0) {
     LevelSpecs.OnOffWindowTest = 0;
     LevelSpecs.GetContour = 0;
     LevelSpecs.FinishQuick = 0;
-    e = func_800235BC_find(arg0, GameMode);
+    e = ArenaDefFind(arg0, GameMode);
     if (e == NULL) {
-        e = func_800235BC_find(arg0, ModeTypes[GameMode * 3]);
+        e = ArenaDefFind(arg0, ModeTypes[GameMode * 3]);
     }
     if (e != NULL) {
         FirstNas = e->unk4 + 4;
@@ -1563,7 +1563,7 @@ s16 DoAnimCommand2(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) 
     return ret;
 }
 
-static inline FlagRecord *func_80025A48_inline(EXTengine *eng, u32 flag) {
+static inline FlagRecord *FindCollisionBoxIn(EXTengine *eng, u32 flag) {
     PointList *list;
     FlagRecord *rec;
     s32 n;
@@ -1602,7 +1602,7 @@ s32 CheckSolidCollision(NAS *nas) {
     eng = nas->Engine;
     it = HeadOfSolids;
     hit = 0;
-    if (eng != NULL && (box = func_80025A48_inline(eng, 0x50)) != NULL) {
+    if (eng != NULL && (box = FindCollisionBoxIn(eng, 0x50)) != NULL) {
         top = eng->unk10.y + box->unk2;
         bot = eng->unk10.y + box->height;
         do {
@@ -1614,7 +1614,7 @@ s32 CheckSolidCollision(NAS *nas) {
             if (it->Class & 0x200) {
                 other = it->Engine;
                 if (other != NULL && other != eng) {
-                    rec = func_80025A48_inline(other, 0x50);
+                    rec = FindCollisionBoxIn(other, 0x50);
                     if (rec != NULL) {
                         lo = other->unk10.y + rec->unk2;
                         hi = other->unk10.y + rec->height;
@@ -2628,7 +2628,7 @@ s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
         CdReadStatus = CdReadSync(1, 0);
         if (CdReadStatus == 0) {
             CdControl(1, 0, CdControlResult);
-            func_80034AEC();
+            CdStatus();
         }
         s = CdReadStatus;
     } else {
@@ -2645,7 +2645,7 @@ s32 cd_read(s32 *a, s32 b, u8 *c, s32 d) {
     CdReadStatus = CdReadSync(1, 0);
     if (CdReadStatus == 0) {
         CdControl(1, 0, CdControlResult);
-        func_80034AEC();
+        CdStatus();
     }
     return CdReadStatus;
 }
@@ -2669,7 +2669,7 @@ s32 cd_read_poll(void) {
         CdReadStatus = CdReadSync(1, 0);
         if (CdReadStatus == 0) {
             CdControl(1, 0, CdControlResult);
-            func_80034AEC();
+            CdStatus();
         }
         r = CdReadStatus;
     }
@@ -2754,7 +2754,7 @@ void pad_read_packet(PadPacket *p, PadInput *in, s32 n) {
     }
 }
 
-static inline s32 func_80027D90_read(u8 *src, u8 *dst, s32 n) {
+static inline s32 pads_read_port(u8 *src, u8 *dst, s32 n) {
     s32 count;
 
     if ((*(u16 *)src & 0xF000) == 0x8000) {
@@ -2780,8 +2780,8 @@ void pads_read(void) {
 
     pad = Pads;
     PadCount = 0;
-    PadCount += func_80027D90_read(PadMtapBuf[0], (u8 *)pad, 0);
-    PadCount += func_80027D90_read(PadMtapBuf[1], (u8 *)&pad[PadCount], 0x10);
+    PadCount += pads_read_port(PadMtapBuf[0], (u8 *)pad, 0);
+    PadCount += pads_read_port(PadMtapBuf[1], (u8 *)&pad[PadCount], 0x10);
     count = 8 - PadCount;
     pad += PadCount;
     if (count > 0) {
@@ -3618,7 +3618,7 @@ void textureset_upload(u8 *arg0) {
     }
 }
 
-static inline void func_8002AA50_i(u8 *arg0) {
+static inline void texture_release_vram_one(u8 *arg0) {
     s32 temp_a0;
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 32));
@@ -3628,7 +3628,7 @@ static inline void func_8002AA50_i(u8 *arg0) {
     }
 }
 
-static inline void func_8002A740_i(u8 *arg0) {
+static inline void clut_release_one(u8 *arg0) {
     s32 temp_a0;
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 4));
@@ -3638,7 +3638,7 @@ static inline void func_8002A740_i(u8 *arg0) {
     }
 }
 
-static inline void func_80029790_a(u8 *arg0) {
+static inline void textureset_release_vram(u8 *arg0) {
     s32 n;
     u8 *p;
 
@@ -3649,11 +3649,11 @@ static inline void func_80029790_a(u8 *arg0) {
         if (n == -1) {
             return;
         }
-        func_8002AA50_i(p);
+        texture_release_vram_one(p);
     }
 }
 
-static inline void func_80029790_b(u8 *arg0, u8 *p) {
+static inline void textureset_release_cluts(u8 *arg0, u8 *p) {
     s32 n;
 
     n = *(s32 *)(arg0 + 4);
@@ -3664,7 +3664,7 @@ static inline void func_80029790_b(u8 *arg0, u8 *p) {
         if (n == -1) {
             return;
         }
-        func_8002A740_i(p);
+        clut_release_one(p);
     }
 }
 
@@ -3676,8 +3676,8 @@ void textureset_release(u8 *arg0) {
     u8 *b;
 
     b = *(u8 **)(arg0 + 0xC);
-    func_80029790_a(arg0);
-    func_80029790_b(arg0, b);
+    textureset_release_vram(arg0);
+    textureset_release_cluts(arg0, b);
     d = *(u8 **)(arg0 + 0x18);
     if (d != NULL) {
         if (*(s32 *)(d + 4) != 0) {

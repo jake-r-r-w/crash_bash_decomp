@@ -8,6 +8,6 @@
 #include "common.h"
 #include "bash/nas.h"
 
-s32 func_80033530(void);
+s32 GetVideoMode(void);
 
 #endif /* BASH_8003351C_H */

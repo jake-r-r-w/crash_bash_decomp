@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/prims.h"
 
-static inline void func_80017164_clear(u8 *p) {
+static inline void prims_pool_clear(u8 *p) {
     *(s32 *)(p + 4) = 0;
     *(s32 *)(p + 8) = 0;
     *(s32 *)(p + 0xC) = 0;
@@ -62,16 +62,16 @@ void prims_init(s32 *cfg) {
         }
         np = p + 0x58;
         *(u8 **)p = np;
-        func_80017164_clear(p + 4);
-        func_80017164_clear(p + 0x18);
-        func_80017164_clear(p + 0x2C);
-        func_80017164_clear(p + 0x40);
+        prims_pool_clear(p + 4);
+        prims_pool_clear(p + 0x18);
+        prims_pool_clear(p + 0x2C);
+        prims_pool_clear(p + 0x40);
         p = np;
     }
-    func_80017164_clear(p + 4);
-    func_80017164_clear(p + 0x18);
-    func_80017164_clear(p + 0x2C);
-    func_80017164_clear(p + 0x40);
+    prims_pool_clear(p + 4);
+    prims_pool_clear(p + 0x18);
+    prims_pool_clear(p + 0x2C);
+    prims_pool_clear(p + 0x40);
     PrimSetList = NULL;
     *(u8 **)p = NULL;
     PrimPool.mem = NULL;
@@ -1662,7 +1662,7 @@ void draw_text_nas(TextNAS *t, s32 arg1, s32 arg2) {
     SysPrintAt3d((SWORD_XYZ *)&s, t->str, t->c0, t->c1);
 }
 
-static inline u8 *func_8001AA48_setup(ModelObj *obj, void *arg1, s32 flags, RelTable *colors, u8 *t) {
+static inline u8 *draw_model_quad_setup(ModelObj *obj, void *arg1, s32 flags, RelTable *colors, u8 *t) {
     draw_map_object(obj, arg1, flags, (s32)colors);
     return t;
 }
@@ -1696,7 +1696,7 @@ void draw_model_quad(ModelObj *obj, void *arg1, s32 flags) {
     RenderState.unk0 = obj->model;
     prim_colour_poly((RelTable *)t, prim, (s32)RenderState.farColor, flags);
     colors = obj->model->colors;
-    t = func_8001AA48_setup(obj, arg1, flags, colors, entity_address(obj->index, (u8 *)colors));
+    t = draw_model_quad_setup(obj, arg1, flags, colors, entity_address(obj->index, (u8 *)colors));
     t += *(s32 *)(t + 0x10) + 0x10;
     gte_ldv0_t(t + 0x14);
     gte_rtps();
@@ -3054,7 +3054,7 @@ void mapscene_place_subs(map_enviroment *env) {
     } while (n != end);
 }
 
-static inline KeyEntry *func_8001E21C_find(KeyBlock *arg0, s32 arg1) {
+static inline KeyEntry *key_interp_find(KeyBlock *arg0, s32 arg1) {
     KeyEntry *p;
     KeyEntry *q;
 
@@ -3080,7 +3080,7 @@ KeyEntry *key_interp_pos(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out) {
     s32 span;
     s32 dt;
 
-    p = func_8001E21C_find(arg0, arg1);
+    p = key_interp_find(arg0, arg1);
     if (p != NULL) {
         if (p->flags & 0x2000) {
             *out = p->pos;

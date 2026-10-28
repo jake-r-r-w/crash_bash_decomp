@@ -381,7 +381,6 @@ void PogoWinner_Normal(s32 arg0, u16 arg1);
 
 
 
-void PogoInit_Camera(void);
 
 
 

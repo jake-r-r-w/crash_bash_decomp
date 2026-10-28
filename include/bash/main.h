@@ -770,7 +770,6 @@ void quat_to_matrix(SVECTOR *rot, MATRIX *m);
 void rotscale_update(void *arg0);
 PointList *sub_point_list(subengine *sub);
 FlagPoint *sub_find_point(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
-void func_800369FC(void);
 
 extern SVECTOR MorphVerts[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
@@ -1105,7 +1104,6 @@ extern EngineRec32 *LevelRecs;
 extern s32 ArchiveSector;
 extern u8 CdControlResult[8];
 extern CdlLOC CdReadLoc;
-void func_80034AEC(void);
 extern NASTrigger *HeadOfTriggers;
 extern s32 TriggerCount;
 extern script_handler *active_scripts;

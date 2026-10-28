@@ -155,7 +155,7 @@ void music_dload_midi(s32 arg0, music_midi *slot, s32 type) {
     SpuReserveReverbWorkArea(1);
     SsUtSetReverbType(type);
     SsUtSetReverbDepth(0, 0);
-    func_800369FC();
+    SsUtReverbOn();
 }
 
 void music_set_data(s32 arg0, s32 *arg1) {

@@ -1706,3 +1706,7 @@ NasBuildStamp = 0x80059618;
 FntLoadPatch = 0x800335BC;
 ASTString = 0x8005AA64;
 MainCameraUnused = 0x800516F8;
+GetVideoMode = 0x80033530; // type:func
+CdStatus = 0x80034AEC; // type:func
+SsUtReverbOn = 0x800369FC; // type:func
+CdLastPos = 0x8003E0EC; // type:func
