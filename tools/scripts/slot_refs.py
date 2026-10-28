@@ -22,7 +22,6 @@ sys.path.insert(0, os.path.dirname(__file__))
 import shift  # noqa: E402
 import slot_syms  # noqa: E402
 
-ENGINE_VRAM = 0x80078C90
 
 
 def overlay_symbols(elfs):

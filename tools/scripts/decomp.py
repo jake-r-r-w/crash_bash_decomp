@@ -515,7 +515,6 @@ def is_branch(w):
     return op in (1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23) or (op == 0 and (w & 0x3F) in (8, 9))
 
 
-STAGES = ("structure", "instructions", "registers", "match")
 
 
 def diff_stage(tw, cw, diffs, ops, nt, nc):
@@ -2676,85 +2675,7 @@ def commit_match(items, trailers, title=None):
 
 # ---------------------------------------------------------------- auto: match trivial functions without the model
 
-MEM_OP = re.compile(r"^(lw|lh|lhu|lb|lbu|sw|sh|sb)\s+\$\w+,\s*(?:%lo\((\w+)\)|(-?0x[0-9A-Fa-f]+|-?\d+))\(\$\w+\)")
-EXTERN_LINE = re.compile(r"^extern\s+(.+?)\s*(\**)\s*(\w+)\s*(\[\d*\])?\s*;\s*$")
 FUNC_DECL_LINE = re.compile(r"^[A-Za-z_?][\w \t*?]*\b\w+\s*\([^;{}]*\)\s*;\s*(/\*.*\*/)?\s*$")
-
-
-def mem_widths(texts):
-    """offset -> load/store ops, symbol -> ops, from a function's instructions."""
-    offs, syms = defaultdict(set), defaultdict(set)
-    for t in texts:
-        m = MEM_OP.match(t)
-        if m:
-            (syms[m.group(2)] if m.group(2) else offs[int(m.group(3), 0)]).add(m.group(1))
-    return offs, syms
-
-
-def width_type(ops):
-    sizes = {"w" if o in ("lw", "sw") else "h" if o in ("lh", "lhu", "sh") else "b" for o in ops}
-    if len(sizes) != 1:
-        return None
-    s = sizes.pop()
-    return {"w": "s32", "h": "u16" if "lhu" in ops else "s16", "b": "u8" if "lbu" in ops else "s8"}[s]
-
-
-def sanitize_draft(draft, texts):
-    """Turn an m2c draft into compilable C, typing `->unkN` / `D_x.unkN` / `extern ?` from the
-    asm's load/store widths. Returns (extern lines, function text) or None if it can't."""
-    if "M2C_ERROR" in draft:
-        return None
-    offs, syms = mem_widths(texts)
-
-    def field(base, off_s):
-        off = int(off_s, 16)
-        t = width_type(offs.get(off, set()))
-        if not t:
-            raise ValueError
-        return f"(*({t}*)((u8*)({base}) + {off}))"
-
-    externs, body = [], []
-    for line in draft.splitlines():
-        # m2c's own declarations of called functions (`s32 func_x(?); /* extern */`): drop them. The
-        # call then uses C's implicit declaration (same code), and prototypes.h supplies the real
-        # signature once that function is matched - a stale `s32 f();` here would clash with it.
-        if FUNC_DECL_LINE.match(line):
-            continue
-        m = EXTERN_LINE.match(line)
-        (externs if m else body).append(m if m else line)
-    text = "\n".join(body).strip() + "\n"
-    out_ext = []
-    try:
-        for m in externs:
-            typ, stars, name, arr = m.group(1), m.group(2), m.group(3), m.group(4)
-            if "?" not in typ:
-                out_ext.append(m.group(0).strip())
-                continue
-            if name.startswith("func_"):     # a function whose address is taken (a callback)
-                out_ext.append(f"void {name}();")
-                text = re.sub(rf"&{name}\b", name, text)
-                continue
-            if re.search(rf"\b{name}\.unk", text) or re.search(rf"&{name}\b", text) or name not in syms:
-                out_ext.append(f"extern u8 {name}[];")
-                text = re.sub(rf"\b{name}\.unk(-?[0-9A-Fa-f]+)\b", lambda mm: field(name, mm.group(1)), text)
-                text = re.sub(rf"&{name}\b", name, text)
-            else:
-                t = width_type(syms[name])
-                if not t:
-                    return None
-                out_ext.append(f"extern {t} {stars}{name};")
-        text = re.sub(r"M2C_FIELD\(([^,()]+), ([^,()]+), (-?0x[0-9A-Fa-f]+|-?\d+)\)",
-                      r"(*(\2)((u8*)(\1) + \3))", text)
-        text = re.sub(r"\b(\w+)->unk(-?[0-9A-Fa-f]+)\b", lambda mm: field(mm.group(1), mm.group(2)), text)
-    except ValueError:
-        return None
-    text = re.sub(r"(?m)^(\s*)\?(\s)", r"\1s32\2", text)          # `? temp_v0;`, `? func(...)`
-    text = text.replace("(?)", "()")                                # unknown parameter list
-    text = re.sub(r"([(,]\s*)\?(?=\s|[),])", r"\1s32", text)      # `(? arg0, ? arg1)`, `(s32, ?)`
-    text = text.replace("void *", "u8 *")                           # so pointer arithmetic is bytewise
-    if "M2C" in text or ".unk" in text or re.search(r"(^|[\s(,])\?(\s|[),])", text):
-        return None
-    return out_ext, text
 
 
 def src_includes(src):
@@ -2926,45 +2847,7 @@ def top_level(lines):
         depth = max(0, depth + code.count("{") - code.count("}"))
 
 
-def compile_alone(src, decls, ftext, name, cfg, tag="t"):
-    """Compile one function with its file's headers; return (words, relocs) or None.
-    `tag` names the scratch files, so parallel workers don't collide."""
-    os.makedirs("build/auto", exist_ok=True)
-    incs = src_includes(src)
-    c, o = f"build/auto/{tag}.c", f"build/auto/{tag}.o"
-    write(c, "\n".join(incs + decls) + "\n\n" + ftext)
-    cfg = unit_cfg(cfg, src)
-    g = int(cfg.get("GVAL", "0"))
-    cmd = pipeline(c, o, cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')}".strip(), g,
-                   re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
-    # pipefail: without it a cc1 error is hidden and `as` still writes an object from partial output
-    if run("set -o pipefail; " + cmd).returncode:
-        return None
-    w, _, rel = obj_func(o, name)
-    return (w, rel) if w else None
-
-
-def auto_try(job):
-    """One auto candidate (runs in a worker thread): (key, reason or None, decls, ftext, ndiff)."""
-    k, e, name, src, ctx, cfg, proj = job
-    r = run(["python3", M2C, "-t", "mipsel-gcc-c", *(["--context", ctx] if ctx else []), e["asm"]])
-    if r.returncode:
-        return k, "m2c", None, None, None
-    res = sanitize_draft(r.stdout, parse_asm(e["asm"])[3])
-    if res is None:
-        return k, "types", None, None, None
-    decls, ftext = res
-    got = compile_alone(src, decls, ftext, name, cfg, tag=f"w_{k}")
-    if got is None:
-        return k, "compile", None, None, None
-    diffs = compare(target_words(e, proj), got[0], got[1], key_vram(k))[0]
-    if diffs:
-        return k, "diff", decls, ftext, len(diffs)   # keep the draft: next shows it, --permute starts from it
-    return k, None, decls, ftext, 0
-
-
 FUNC_DEF = re.compile(r"^(?!static\b|typedef\b|extern\b)([A-Za-z_][\w \t]*?[\s*]+)(\w+)\s*\(([^;{}()]*)\)\s*\{", re.M)
-NOT_FUNCS = {"if", "while", "for", "switch", "return", "else", "sizeof", "do"}
 
 
 def ensure_include(src, header):
@@ -2977,123 +2860,6 @@ def ensure_include(src, header):
     last = max((i for i, l in enumerate(lines) if l.lstrip().startswith("#include")), default=-1)
     lines.insert(last + 1, inc + "\n")
     write(src, "".join(lines))
-
-
-def auto_permute(a, funcs, stat, st, proj, syms, cfg, jobs, skip):
-    """Run decomp-permuter on auto's near-misses (saved drafts few instructions off).
-    Returns candidates whose permuted version matches in isolation."""
-    near = []
-    for k, e in funcs.items():
-        rec = st.get(k, {})
-        if stat.get(k) != "todo" or k in skip or rec.get("auto_failed") != "diff":
-            continue
-        if rec.get("auto_diff", 1 << 30) > a.max_diff or e["size"] > a.max_size:
-            continue
-        if not (re.search(a.seg, e["seg"]) if a.seg else not is_lib(e, proj)):
-            continue
-        if "permuted" in rec and not a.retry:
-            continue
-        d = auto_draft(k)
-        if d:
-            near.append((rec["auto_diff"], e["size"], k, e, d))
-    near.sort(key=lambda t: t[:3])
-    near = near[:a.permute_limit]
-    if not near:
-        print("  permute: no near-misses to try")
-        return []
-    print(f"  permute: {len(near)} near-misses (<= {a.max_diff} instructions off), up to {a.permute_seconds}s each")
-    found = []
-    for i, (nd, _, k, e, d) in enumerate(near, 1):
-        name = cur_name(k, e, syms)
-        src = e.get("src") or locate_def(name)
-        print(f"    [{i}/{len(near)}] {name} ({nd} off)...")
-        base = permuter_base(src, d["decls"], d["ftext"], f"auto_{name}")
-        if base is None:
-            st.setdefault(k, {})["permuted"] = -1
-            continue
-        best, path, base_score, log = permute_run(f"build/permuter/auto_{name}", name, e, base, cfg, jobs,
-                                                  a.permute_seconds, mode="auto", unit=src)
-        if base_score is None and best is None:
-            # the permuter didn't start (toolchain or setup problem): say so once, don't mark anything
-            print(f"  permute: the permuter failed to run on {name}, stopping:\n{tail(log, 4)}")
-            break
-        st.setdefault(k, {})["permuted"] = best if best is not None else base_score
-        if best != 0:
-            continue
-        body = extract_function(read(f"{path}/source.c"), name)
-        got = compile_alone(src, d["decls"], body, name, cfg, tag=f"p_{k}") if body else None
-        if got and not compare(target_words(e, proj), got[0], got[1], key_vram(k))[0]:
-            print(f"    permuter matched {name} (was {nd} off)")
-            found.append((k, e, name, src, d["decls"], body))
-    print(f"  permute: {len(found)} matched")
-    return found
-
-
-def cmd_auto(a):
-    if not a.legacy:
-        die("auto is retired: functions are matched by hand, one per commit (docs/MATCHING.md). "
-            "--legacy runs it anyway")
-    proj, funcs = need_proj(), need_funcs()
-    stat, st = statuses(funcs)
-    syms, cfg = sym_names(), mk_config()
-    pool = [(k, e) for k, e in funcs.items() if stat[k] == "todo" and e["size"] <= a.max_size
-            and (re.search(a.seg, e["seg"]) if a.seg else not is_lib(e, proj))
-            and (a.retry or not st.get(k, {}).get("auto_failed")) and os.path.exists(e.get("asm", ""))]
-    pool.sort(key=lambda ke: (ke[1]["size"], ke[0]))
-    pool = pool[:a.limit]
-    if not pool and not a.permute:
-        die("no candidates (all small functions matched or already tried; --retry or a larger --max-size)")
-    jobs = a.jobs or max(1, (os.cpu_count() or 2) - 1)
-    srcs = sorted(glob.glob("src/**/*.c", recursive=True))
-    protos = not a.no_protos
-    print(f"auto: trying {len(pool)} functions <= {a.max_size} bytes on {jobs} workers")
-    # m2c context: one preprocessed header set per source file, shared by that file's candidates
-    os.makedirs("build/auto", exist_ok=True)
-    ctxs, work = {}, []
-    for k, e in pool:
-        name = cur_name(k, e, syms)
-        src = e.get("src") or locate_def(name)
-        if src not in ctxs:
-            ctxs[src] = f"build/auto/ctx_{len(ctxs)}.c"
-            write(ctxs[src], build_ctx(src))
-        work.append((k, e, name, src, ctxs[src], cfg, proj))
-    info = {w[0]: (w[1], w[2], w[3]) for w in work}
-    cands, reasons = [], defaultdict(int)
-    os.makedirs(AUTO_DRAFTS, exist_ok=True)
-    with ThreadPoolExecutor(max_workers=jobs) as ex:
-        for k, why, decls, ftext, nd in ex.map(auto_try, work):
-            rec = st.setdefault(k, {})
-            if why:
-                reasons[why] += 1
-                rec["auto_failed"] = why
-            else:
-                e, name, src = info[k]
-                cands.append((k, e, name, src, decls, ftext))
-            if why == "diff":
-                rec["auto_diff"] = nd
-                jsave(f"{AUTO_DRAFTS}/{k}.json", {"decls": decls, "ftext": ftext})
-            else:
-                rec.pop("auto_diff", None)
-    shutil.rmtree("build/auto", ignore_errors=True)
-    jsave(P_STATE, st)
-    print(f"  {len(cands)} match in isolation; skipped: " + (", ".join(f"{v} {r}" for r, v in sorted(reasons.items())) or "none"))
-    if a.permute:
-        cands += auto_permute(a, funcs, stat, st, proj, syms, cfg, jobs, {c[0] for c in cands})
-        jsave(P_STATE, st)
-    good = land(cands, funcs, proj, st, protos) if cands else []
-    if good is None:
-        sys.exit(1)
-    if good:
-        record_matches([(k, e, name) for k, e, name, *_ in good], funcs, via="auto")
-    # copies of everything matched so far (including what just landed) in other overlays/files
-    copies = [] if a.no_propagate else propagate(funcs, proj)
-    good += copies
-    if not good:
-        return
-    cmd_progress(a)
-    if a.commit:
-        commit_match([(k, e, name) for k, e, name, *_ in good], a.trailer or [],
-                     title=f"Auto-match {len(good)} functions ({sum(c[1]['size'] for c in good)} bytes)")
 
 
 def land(cands, funcs, proj, st, protos=True, tag="auto_failed"):
@@ -4126,12 +3892,6 @@ def opcode_seqs(funcs):
     return seqs
 
 
-def seq_ratio(a, b):
-    """How much of two opcode sequences lines up in order (difflib ratio, 0-1): unlike the 4-gram
-    Dice score it stays high for a small function with a few changed instructions."""
-    return difflib.SequenceMatcher(None, a, b, autojunk=False).ratio()
-
-
 def best_lookalike(key, funcs, seqs, stat, proj, floor=0.0, among=None):
     """(ratio, key) of the matched function (of `among`, default all) whose opcode sequence lines
     up best with key's (game code only, sizes within 2/3..3/2), or (0, None)."""
@@ -4728,20 +4488,6 @@ def cmd_block(a):
     cmd_progress(a)  # the dashboard counts parked functions
 
 
-def split_functions(text):
-    """name -> definition with its body, for every function TEXT defines (one pass)."""
-    out = {}
-    for m in DEFS.finditer(text):
-        depth, i = 0, m.end() - 1
-        while i < len(text):
-            depth += (text[i] == "{") - (text[i] == "}")
-            if depth == 0:
-                break
-            i += 1
-        out.setdefault(m.group(1), text[m.start():i + 1])
-    return out
-
-
 def cmd_unblock(a):
     """Unpark functions so `next`/`queue` (and the swarm) offer them again; the park note
     stays as the function's note, which `next` and the swarm's workers see."""
@@ -5153,7 +4899,6 @@ def summary(funcs, stat, proj):
             "copies_b": copies, "data": data_summary(funcs, stat, proj)}
 
 
-CODE_TYPES = {"c", "asm", "hasm"}
 DATA_TYPES = {"data", ".data", "rodata", ".rodata", "sdata", ".sdata", "bss", ".bss", "sbss", ".sbss",
               "bin", "textbin"}
 
@@ -5660,22 +5405,6 @@ def main():
     p.add_argument("--jobs", type=int)
     p.add_argument("--apply", action="store_true", help="write the best grouping into the source")
     p.set_defaults(fn=cmd_splitvars)
-    p = sub.add_parser("auto", help="match small functions from m2c drafts without the model")
-    p.add_argument("--max-size", type=int, default=32, help="largest function to try, in bytes")
-    p.add_argument("--limit", type=int, default=200)
-    p.add_argument("--seg", help="regex of segments (default: all non-lib)")
-    p.add_argument("--retry", action="store_true", help="also retry functions auto already failed on")
-    p.add_argument("--jobs", type=int, help="parallel workers (default: CPUs - 1)")
-    p.add_argument("--permute", action="store_true", help="then run decomp-permuter on near-misses")
-    p.add_argument("--max-diff", type=int, default=4, help="near-miss: at most this many instructions differ")
-    p.add_argument("--permute-seconds", type=int, default=60, help="permuter time per function")
-    p.add_argument("--permute-limit", type=int, default=20, help="most near-misses to permute per run")
-    p.add_argument("--no-protos", action="store_true", help="do not declare landed functions in their owned headers")
-    p.add_argument("--no-propagate", action="store_true", help="do not copy matches to identical functions")
-    p.add_argument("--legacy", action="store_true", help="run the retired bulk matcher anyway")
-    p.add_argument("--commit", action="store_true")
-    p.add_argument("--trailer", action="append")
-    p.set_defaults(fn=cmd_auto)
     p = sub.add_parser("split-lib", help="cut the PsyQ segment into one file per library object")
     p.add_argument("--yaml", help="configs/USA yaml holding the segment (default: the exe's)")
     p.add_argument("--seg", default="lib/psyq")

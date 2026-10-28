@@ -41,16 +41,6 @@ def text_functions(ovl):
     return out
 
 
-def lis_prefix(seq):
-    """lis[k]: longest strictly increasing subsequence of seq[:k]."""
-    tails, out = [], [0]
-    for v in seq:
-        i = bisect.bisect_left(tails, v)
-        tails[i:i + 1] = [v]
-        out.append(len(tails))
-    return out
-
-
 def lis_table(seq):
     """t[i][j]: longest strictly increasing subsequence of seq[i:j]."""
     n = len(seq)

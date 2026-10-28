@@ -17,7 +17,6 @@ that fit, best first:
 """
 import os
 import re
-import struct
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
