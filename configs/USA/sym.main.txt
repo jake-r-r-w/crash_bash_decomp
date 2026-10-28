@@ -1642,3 +1642,7 @@ ModchipCdStatus = 0x8006EA1C;
 SfxVoiceBits = 0x80064418;
 SfxDistanceCurve = 0x80064478;
 SpuKeyStatus = 0x800644A8;
+LevelNames = 0x8004DCBC;
+LangLevelNames = 0x8004DD70;
+ModeTypeNames = 0x8004DD84;
+LevelRequirements = 0x8004DEE0;

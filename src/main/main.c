@@ -3569,7 +3569,7 @@ fail:
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-s32 D_8004DCBC[50] = {
+s32 LevelNames[45] = {
     (s32)&LevNameJungleBash, (s32)&LevNameSpaceBash, (s32)&LevNameSnowBash,
     (s32)&LevNameDrainBash, (s32)&LevNamePapuPummel, (s32)&LevNameSwampFox,
     (s32)&LevNameDesertFox, (s32)&LevNameJungleFox, (s32)&LevNameMetalFox,
@@ -3584,36 +3584,38 @@ s32 D_8004DCBC[50] = {
     (s32)&LevNameWarpRoom1, (s32)&LevNameWarpRoom2, (s32)&LevNameWarpRoom3,
     (s32)&LevNameWarpRoom4, (s32)&LevNameSecretWarpRoom, (s32)&LevNameDemoHub,
     (s32)&LevNameDemoHub, (s32)&LevNameTitles, (s32)&LevNameEmpty, (s32)&LevNameEmpty,
-    (s32)&LevNamePodium, (s32)&LevNameScriptStuff, (s32)&D_8004DCBC, (s32)&D_8004DCBC,
-    (s32)&D_8004DCBC, (s32)&D_8004DCBC, (s32)&D_8004DCBC,
+    (s32)&LevNamePodium, (s32)&LevNameScriptStuff,
 };
-s32 D_8004DD84[14] = {
+s32 *LangLevelNames[5] = { LevelNames, LevelNames, LevelNames, LevelNames, LevelNames };
+s32 ModeTypeNames[14] = {
     0, 0, (s32)&LevNameMedievalMayhem, (s32)&LevNameCrateCrush, 0, (s32)&LevNameTankWars,
     (s32)&LevNamePogoPandemonium, (s32)&LevNameBallistix, (s32)&LevNamePolarPush,
     (s32)&LevNameCrashDash, (s32)&LevNameMedievalMayhem, 0, (s32)&LevNameMedievalMayhem,
     (s32)&LevNameMedievalMayhem,
 };
-u8 LangModeTypeTexts[20] = {
-    0x84, 0xDD, 4, 0x80, 0x84, 0xDD, 4, 0x80, 0x84, 0xDD, 4, 0x80, 0x84, 0xDD, 4, 0x80, 0x84,
-    0xDD, 4, 0x80,
-};
-u16 ModeTypes[370] = {
+s32 *LangModeTypeTexts[5] = { ModeTypeNames, ModeTypeNames, ModeTypeNames, ModeTypeNames, ModeTypeNames };
+u16 ModeTypes[136] = {
     0x104, 0, 4, 0x104, 1, 5, 0x104, 2, 6, 0x104, 3, 7, 0x105, 0, 0, 0x106, 0, 5, 0x106, 1, 6,
     0x106, 2, 7, 0x106, 3, 8, 0x106, 4, 4, 0x107, 0, 4, 0x107, 1, 5, 0x107, 2, 6, 0x107, 3, 7,
     0x108, 0, 4, 0x108, 1, 5, 0x108, 2, 6, 0x108, 3, 7, 0x109, 0, 6, 0x109, 1, 9, 0x109, 2, 8,
     0x109, 3, 7, 0x109, 4, 4, 0x10A, 0, 6, 0x10A, 1, 4, 0x10A, 2, 7, 0x10A, 3, 5, 0x103, 0, 1,
     0x10B, 0, 1, 0x10E, 0, 1, 0x10D, 0, 1, 0x10C, 0, 1, 0x104, 8, 8, 0x102, 0, 0, 0x102, 1, 1,
-    0x102, 2, 2, 0x102, 3, 3, 0x102, 4, 4, 0x102, 0xD, 0xD, 0x102, 0xE, 0xE, 0x101, 0, 0,
-    0x101, 0, 0, 0x101, 0, 0, 0x102, 3, 3, 0x109, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0x17, 0x1F, 0, 0, 0, 0, 4, 0, 0, 0, 0, 4,
-    0, 0, 0, 0, 4, 0xF, 0, 0xA, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 6, 3, 0, 0, 0, 0, 0, 0x16, 0, 0, 0, 0, 0x16, 0,
-    0x11, 0, 0, 0x16, 0x1B, 0, 0, 0, 0x16, 0, 0, 0, 0, 9, 0, 0, 0, 0x13, 0x1F, 0, 0x15, 0, 0,
-    0x1F, 0, 0, 0x19, 0, 0x1F, 0x16, 0, 0xF, 0xC, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    4, 0, 0, 0, 0, 0x16, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0x1F, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1FF, 0x201,
-    0x102, 0x102, 2, 0, 0, 0,
+    0x102, 2, 2, 0x102, 3, 3, 0x102, 4, 4, 0x102, 0xD, 0xD, 0x102, 0xE, 0xE, 0x101, 0, 0, 0x101, 0, 0,
+    0x101, 0, 0, 0x102, 3, 3, 0x109, 5, 5, 0,
+};
+u16 LevelRequirements[234] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    4, 0, 0, 0, 0, 0, 0, 0, 0x17, 0x1F, 0, 0, 0, 0, 4, 0, 0, 0, 0, 4,
+    0, 0, 0, 0, 4, 0xF, 0, 0xA, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 6, 3, 0, 0, 0, 0, 0, 0x16,
+    0, 0, 0, 0, 0x16, 0, 0x11, 0, 0, 0x16, 0x1B, 0, 0, 0, 0x16, 0, 0, 0, 0, 9,
+    0, 0, 0, 0x13, 0x1F, 0, 0x15, 0, 0, 0x1F, 0, 0, 0x19, 0, 0x1F, 0x16, 0, 0xF, 0xC, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0x16,
+    0, 0, 0, 0, 9, 0, 0, 0, 0, 0x1F, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0x1FF, 0x201, 0x102, 0x102, 2, 0, 0, 0,
 };
 s32 DcacheReady = 0;
 u8 ShellModules[20] = { 0x10, 4, 1, 0x80, 0x94, 3, 1, 0x80, 0x78, 2, 1, 0x80, 0, 0, 0, 0, 0, 0, 0, 0 };

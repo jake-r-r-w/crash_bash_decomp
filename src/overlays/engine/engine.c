@@ -568,7 +568,7 @@ EngineReqObj *arg1;
         sb += p[0x105];
         sd += p[0x147];
     } while (i < 0x21);
-    tab = D_8004DEE0;
+    tab = LevelRequirements;
     r = &tab[arg0 & 0xFFFF];
     if (sa < r->min0 || sc < r->min4 || sb < r->min2 || sd < r->min6) {
         return 0;

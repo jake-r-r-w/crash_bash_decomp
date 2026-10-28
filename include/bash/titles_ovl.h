@@ -109,12 +109,12 @@ static inline s32 TitlesSlotCI(s32 a, s32 b) {
     return *(s32 *)(BattleArenas[a].unk0 + (b << 4) + 0xC);
 }
 
-extern s32 *D_8004DD70[];
+extern s32 *LangLevelNames[];
 
 static inline s32 TitlesSlotRowI(s32 a, s32 b) {
     s32 base = BattleArenas[a].unk0;
     s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
-    s32 *row = D_8004DD70[*(s32 *)(GameInfo + 0x2C)];
+    s32 *row = LangLevelNames[*(s32 *)(GameInfo + 0x2C)];
     return row[idx];
 }
 
@@ -273,7 +273,7 @@ int ApproachSpeed(int a0, int a1, int a2, int a3, int a4);
 
 s32 LevelListCount(s32 arg0);
 
-extern s32 *D_8004DD70[];
+extern s32 *LangLevelNames[];
 
 s32 LevelListText(s32 a, s32 b);
 

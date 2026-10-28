@@ -431,7 +431,6 @@ NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2);
 
 void RenderAllNas(void);
 
-extern s16 D_8006BBD6[];
 
 NAS *SpawnModelFxOnce(s32 arg0, s32 *arg1, s32 arg2);
 
@@ -478,9 +477,9 @@ void InitialiseEngine(void);
 
 void UpdateNasObjects(void);
 
-/* D_8004DEE0 rows (10 bytes) and the object LevelRequirementMet totals over. */
+/* LevelRequirements rows (10 bytes) and the object LevelRequirementMet totals over. */
 typedef struct { u16 min0, min2, min4, min6, off; } EngineReq;
-extern EngineReq D_8004DEE0[];
+extern EngineReq LevelRequirements[];
 typedef struct {
     u8 pad0[4];
     u32 flags;

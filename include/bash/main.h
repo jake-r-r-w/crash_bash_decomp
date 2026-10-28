@@ -813,7 +813,7 @@ extern s32 SfxDistanceCurve[];
 extern s32 SavedSp;
 extern s32 LoadPermanentBuf;
 extern u8 ExportTable[];
-extern u8 LangModeTypeTexts[];
+extern s32 *LangModeTypeTexts[];
 void modchip_check_region(void);
 void modchip_step();
 extern s32 SoundCritical;

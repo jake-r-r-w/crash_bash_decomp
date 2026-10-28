@@ -1909,7 +1909,7 @@ void TA_InitHero(u32 player) {
         bot->AIpad = 0;
         bot->FirePercentChance = 0;
     }
-    pnl = D_80099A64[player];
+    pnl = (PanelPrim *)&IconParts[player][5];
     pnl->unk0 |= 0x8000;
     pb = TankHudWeapons;
     pp = &pb[player];

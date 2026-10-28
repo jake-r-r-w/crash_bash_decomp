@@ -2076,7 +2076,7 @@ s32 LevelListCount(s32 arg0) {
 s32 LevelListText(s32 a, s32 b) {
     s32 base = BattleArenas[a].unk0;
     s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
-    s32 *row = D_8004DD70[GameLanguage];
+    s32 *row = LangLevelNames[GameLanguage];
     return row[idx];
 }
 

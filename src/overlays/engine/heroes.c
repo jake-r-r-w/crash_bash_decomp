@@ -4267,7 +4267,7 @@ void PlotFloatyScore(NAS *nas) {
             break;
         case 1:
             eng->unk10.y -= 0x20;
-            if (nas->UserInfo.user2 - (D_8006BBD6[0] * 3 >> 7) >= eng->unk10.y) {
+            if (nas->UserInfo.user2 - (rcossin_tbl[0xC00].unk2 * 3 >> 7) >= eng->unk10.y) {
                 nas->UserInfo.status = 2;
                 nas->UserInfo.flags = 0x1E;
             }
