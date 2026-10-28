@@ -2559,10 +2559,10 @@ void PAPUSetUp(void) {
 void PapuInitCrateHooks(void) {
     CrateAstType = PapuASTIndex(0x203);
     CrateAstType2 = PapuASTIndex(0x204);
-    HitHooks.unk4 = D_8009E3B4;
+    HitHooks.unk4 = CrateHitShapes;
     HitHooks.unk8 = NULL;
     HitHooks.unkC = 0;
-    HitHooks.unk0 = D_8009E3DC;
+    HitHooks.unk0 = CrateHitShapes2;
 }
 
 void PACrateAimAtGrid(T_B7F14_A *a, T_B7F14_B *b) {

@@ -608,7 +608,7 @@ found:
     } else if (!(PSV->flags & 0x04000000) || (PSV->unk30 & 0x1000)) {
         n = 1;
         PausePad = 0;
-        D_8009AEF4 = -1;
+        PauseFlashItem = -1;
         if (ModeTypes[PSV->mode * 3] != 0x102) {
             n = PSV->numPlayers;
         }
@@ -616,7 +616,7 @@ found:
             if ((HPADS[i].held & 9) != 9 && (HPADS[i].pressed & 8)) {
                 if (!(Heroes[i].hero_status & 0xF800) || ModeTypes[PSV->mode * 3] == 0x102 || i == 0) {
                     PausePad = i;
-                    D_8009AEF4 = i;
+                    PauseFlashItem = i;
                     PauseChoice = 0;
                     PSV->flags |= 1;
                     i = 99;
@@ -690,14 +690,14 @@ void DrawHudEntries(HudEntry *e, s32 arg1) {
                 goto clear;
             }
             if (g->flags & 0x40) {
-                row = D_8009AE98[g->level];
+                row = LangHudRows[g->level];
                 i = arg1 + e->y;
                 HUDENG->x0 = row[0] + 0x140;
                 HUDENG->y0 = i + row[1];
                 HUDENG->x1 = row[2] + 0x140;
                 HUDENG->y1 = i + row[3];
             } else {
-                row2 = D_8009AE98[g->level];
+                row2 = LangHudRows[g->level];
                 i = arg1 + e->y;
                 HUDENG->x0 = row2[4] + 0x140;
                 HUDENG->y0 = i + row2[5];
@@ -1014,31 +1014,31 @@ void DrawAdventureStats(s32 arg0) {
         PauseDigits5[0] = i % 10 + '0';
         if (SCV->unk4 & 0x2000) {
             if (SCV->flags & 8) {
-                PlaceEngineSlot(4, D_8009B788);
+                PlaceEngineSlot(4, AdvStatsPanel5);
             } else {
-                PlaceEngineSlot(4, D_8009B590);
+                PlaceEngineSlot(4, AdvStatsPanel4);
             }
         } else {
             switch (SCV->unkE0) {
             case 1:
                 if (SCV->flags & 8) {
-                    PlaceEngineSlot(4, D_8009B3E0);
+                    PlaceEngineSlot(4, AdvStatsPanel3);
                 } else {
-                    PlaceEngineSlot(4, D_8009B230);
+                    PlaceEngineSlot(4, AdvStatsPanel2);
                 }
                 break;
             case 2:
                 if (SCV->flags & 8) {
-                    PlaceEngineSlot(4, D_8009B788);
+                    PlaceEngineSlot(4, AdvStatsPanel5);
                 } else {
-                    PlaceEngineSlot(4, D_8009B590);
+                    PlaceEngineSlot(4, AdvStatsPanel4);
                 }
                 break;
             default:
                 if (GamePause & 8) {
-                    PlaceEngineSlot(4, D_8009B0C8);
+                    PlaceEngineSlot(4, AdvStatsPanel1);
                 } else {
-                    PlaceEngineSlot(4, D_8009AF60);
+                    PlaceEngineSlot(4, AdvStatsPanel0);
                 }
                 break;
             }
@@ -1085,7 +1085,7 @@ void DrawAdventureStats(s32 arg0) {
         PauseDigits4[1] = i % 10 + '0';
         i /= 10;
         PauseDigits4[0] = i % 10 + '0';
-        PlaceEngineSlot(4, D_8009B980);
+        PlaceEngineSlot(4, AdvStatsPanel6);
         e->unk10.x = 0x60;
         e->unk10.y = 0x1E0;
         sub = e->sub;
@@ -1116,7 +1116,7 @@ void DrawAdventureStats(s32 arg0) {
         PauseDigits4[1] = i % 10 + '0';
         i /= 10;
         PauseDigits4[0] = i % 10 + '0';
-        PlaceEngineSlot(4, D_8009BB30);
+        PlaceEngineSlot(4, AdvStatsPanel7);
         e->unk10.x = 0x60;
         e->unk10.y = 0x1E0;
         sub = e->sub;
@@ -1817,7 +1817,7 @@ void SetDefaultHeroHooks(void) {
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-s16 D_8009AE98[5][8] = {
+s16 LangHudRows[5][8] = {
     { -0x96, 0x23, 0x96, 0x23, -0xAA, 0x23, 0xAA, 0x23 },
     { -0xAA, 0x23, 0xAA, 0x23, -0xAA, 0x23, 0xAA, 0x23 },
     { -0xAA, 0x23, 0xAA, 0x23, -0xAA, 0x23, 0xAA, 0x23 },
@@ -1827,7 +1827,7 @@ s16 D_8009AE98[5][8] = {
 s32 PauseLastChoice = 0;
 s32 PauseChoice = 0;
 s32 PausePad = 0;
-s32 D_8009AEF4 = -1;
+s32 PauseFlashItem = -1;
 s32 D_8009AEF8[2] = { 5, 0 };
 s32 D_8009AF00 = 0;
 s32 D_8009AF04[13] = {
@@ -1844,21 +1844,21 @@ char PauseDigits3[2] = { 0x33, 0x30 };
 char PauseDigits4[2] = { 0x34, 0x30 };
 char PauseDigits5[2] = { 0x35, 0x30 };
 u8 D_8009AF5C[4] = { 0x36, 0x30, 0, 0 };
-s32 D_8009AF60[90] = {
+s32 AdvStatsPanel0[90] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C004B, 0, 0, 0, 0, 0, 0x5001C, 2, 0xA,
     0x3C01B2, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 5, 0x2C004B, 0, 0, 0, 0, 0, 0x4001C, 2, 3,
     0x400050, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x1001C, 2, 3,
     0x4000E6, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C0177, 0, 0, 0, 0, 0, 0x1C, 2, 3,
     0x40017C, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009B0C8[90] = {
+s32 AdvStatsPanel1[90] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x3C01B2, 0x10000000, 0, 0, 0, 0, 0xD5, 0,
     0xA, 0x3C01B2, 0x10000000, 0, 0, 0, 0, 0xD5, 0, 5, 0x2C004B, 0, 0, 0, 0, 0, 0xD5, 2, 3,
     0x400050, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x500D5, 2, 3,
     0x4000E6, 0, 0, 0, (s32)&PauseDigits2, 4, 0, 0, 5, 0x2C0177, 0, 0, 0, 0, 0, 0x700D5, 2, 3,
     0x40017C, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009B230[108] = {
+s32 AdvStatsPanel2[108] = {
     4, 0x1C00000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C0038, 0, 0, 0, 0, 0, 0x5001C, 2, 0xA,
     0x3C01B0, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 5, 0x2C0038, 0, 0, 0, 0, 0, 0x4001C, 2, 3,
     0x40003D, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C00A8, 0, 0, 0, 0, 0, 0x1001C, 2, 3,
@@ -1866,7 +1866,7 @@ s32 D_8009B230[108] = {
     0x40011D, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 5, 0x2C0188, 0, 0, 0, 0, 0, 0x3001C, 2, 3,
     0x40018D, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009B3E0[108] = {
+s32 AdvStatsPanel3[108] = {
     4, 0x1C00000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x3C0140, 0x10000000, 0, 0, 0, 0, 0xD5, 0,
     0xA, 0x3C01B0, 0x10000000, 0, 0, 0, 0, 0xD5, 0, 5, 0x2C0038, 0, 0, 0, 0, 0, 0xD5, 2, 3,
     0x40003D, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C00A8, 0, 0, 0, 0, 0, 0x500D5, 2, 3,
@@ -1874,7 +1874,7 @@ s32 D_8009B3E0[108] = {
     0x40011D, 0, 0, 0, (s32)&PauseDigits3, 4, 0, 0, 5, 0x2C0188, 0, 0, 0, 0, 0, 0x300D5, 2, 3,
     0x40018D, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009B590[126] = {
+s32 AdvStatsPanel4[126] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C002D, 0, 0, 0, 0, 0, 0x5001C, 2, 0xA,
     0x3C01B2, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 5, 0x2C002D, 0, 0, 0, 0, 0, 0x4001C, 2, 3,
     0x400032, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C0087, 0, 0, 0, 0, 0, 0x1001C, 2, 3,
@@ -1883,7 +1883,7 @@ s32 D_8009B590[126] = {
     0x400140, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 5, 0x2C0195, 0, 0, 0, 0, 0, 0x2001C, 2, 3,
     0x40019A, 0, 0, 0, (s32)&PauseDigits5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009B788[126] = {
+s32 AdvStatsPanel5[126] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x3C00FE, 0x10000000, 0, 0, 0, 0, 0xD5, 0,
     0xA, 0x3C01B2, 0x10000000, 0, 0, 0, 0, 0xD5, 0, 5, 0x2C002D, 0, 0, 0, 0, 0, 0xD5, 2, 3,
     0x400032, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 5, 0x2C0087, 0, 0, 0, 0, 0, 0x500D5, 2, 3,
@@ -1892,7 +1892,7 @@ s32 D_8009B788[126] = {
     0x400140, 0, 0, 0, (s32)&PauseDigits4, 4, 0, 0, 5, 0x2C0195, 0, 0, 0, 0, 0, 0x200D5, 2, 3,
     0x40019A, 0, 0, 0, (s32)&PauseDigits5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009B980[108] = {
+s32 AdvStatsPanel6[108] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 0xA, 0x4000E1, 0x18000000, (s32)0xFF800100, 0, 0,
     0, 0x2001001C, 2, 0xA, 0x3C01B2, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 8, 0x100000,
     0x7000000, 0, 0, 0, 0, 0, 0, 3, 0x400032, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 8, 0x10005A,
@@ -1901,7 +1901,7 @@ s32 D_8009B980[108] = {
     0, 0, 8, 0x100168, 0x7000000, 0, 0, 0, 0, 0x30000, 0, 3, 0x40019A, 0, 0, 0,
     (s32)&PauseDigits4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009BB30[108] = {
+s32 AdvStatsPanel7[108] = {
     4, 0x1C20000, 0x560000, 0, 0, 0, 0, 0, 0, 5, 0x2C00E1, 0, 0, 0, 0, 0, 0x4001C, 2, 0xA,
     0x3C01B2, 0x10000000, 0, 0, 0, 0, 0x306500CA, 0, 8, 0x100000, 0x7000000, 0, 0, 0, 0, 0, 0,
     3, 0x400032, 0, 0, 0, (s32)&PauseDigits, 4, 0, 0, 8, 0x10005A, 0x7000000, 0, 0, 0, 0,

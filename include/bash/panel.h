@@ -70,7 +70,7 @@ extern EXTengine PanelTab[7];
 extern subengine IconParts[4][7];
 extern u16 PanelHeroOrder[4];
 extern s16 IconPos4[][2];
-extern s16 D_800991F0[][2];
+extern s16 IconPos2[][2];
 extern u16 IconImage[];
 typedef struct { s16 x, y; } EngXY;
 extern EngXY PanelIconOffset[4];

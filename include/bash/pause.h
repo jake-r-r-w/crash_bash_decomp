@@ -353,14 +353,14 @@ extern char PauseDigits2[2];
 extern char PauseDigits3[2];
 extern char PauseDigits4[2];
 extern char PauseDigits5[2];
-extern s32 D_8009AF60[];
-extern s32 D_8009B0C8[];
-extern s32 D_8009B230[];
-extern s32 D_8009B3E0[];
-extern s32 D_8009B590[];
-extern s32 D_8009B788[];
-extern s32 D_8009B980[];
-extern s32 D_8009BB30[];
+extern s32 AdvStatsPanel0[];
+extern s32 AdvStatsPanel1[];
+extern s32 AdvStatsPanel2[];
+extern s32 AdvStatsPanel3[];
+extern s32 AdvStatsPanel4[];
+extern s32 AdvStatsPanel5[];
+extern s32 AdvStatsPanel6[];
+extern s32 AdvStatsPanel7[];
 /* GameInfo as seen by DrawHudEntries. */
 typedef struct HudGameView {
     /* 0x00 */ s32 unk0;
@@ -461,7 +461,7 @@ extern u16 D_8009AF38[];
 #define HUDBOX ((HudBox *)PauseMenuPanel)
 #define HUDENG ((HudEngView *)PanelTab)
 extern s32 D_8009AF00;
-extern s16 D_8009AE98[][8];
+extern s16 LangHudRows[][8];
 void DrawSpriteTriple();
 void DrawHudEntries(HudEntry *e, s32 arg1);
 

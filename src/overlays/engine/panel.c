@@ -670,8 +670,8 @@ void InitIcons2(void) {
         sub->u6C.dbase = &HeroModelBank[DB_Interface];
         ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
-        ((EXTengine **)&Icon)[i]->unk10.x = D_800991F0[PanelHeroOrder[i]][0];
-        ((EXTengine **)&Icon)[i]->unk10.y = D_800991F0[PanelHeroOrder[i]][1];
+        ((EXTengine **)&Icon)[i]->unk10.x = IconPos2[PanelHeroOrder[i]][0];
+        ((EXTengine **)&Icon)[i]->unk10.y = IconPos2[PanelHeroOrder[i]][1];
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->entity = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
@@ -1516,8 +1516,8 @@ void CheckHeroesAllOut(void) {
     EXTengine *f;
 
     if (!(g->unk30 & 0x8801) && *(s32 *)(GameInfo + 0x68) == 0 && HeroesAllOut != 0) {
-        if (D_8009AE78 != 0) {
-            D_8009AE78 -= 1;
+        if (HeroesOutTimer != 0) {
+            HeroesOutTimer -= 1;
             return;
         }
         e = GetEngineSlot(5);
@@ -2085,7 +2085,7 @@ void InitTrophyCups(void) {
 }
 
 void StartPanelCountdown(void) {
-    D_8009AE78 = 0xF0;
+    HeroesOutTimer = 0xF0;
     PanelCtrl |= 0x8000;
 }
 
@@ -2268,7 +2268,7 @@ DigitSrc CompletionDigitSrc[16] = {
 };
 u16 PanelHeroOrder[4] = { 1, 0, 3, 2 };
 s16 IconPos4[4][2] = { { 0x28, 0x18 }, { 0xA0, 0x18 }, { 0x190, 0x18 }, { 0x208, 0x18 } };
-s16 D_800991F0[4][2] = { { 0x64, 0x18 }, { 0x1CC, 0x18 }, { -0x258, 0 }, { 0x258, 0 } };
+s16 IconPos2[4][2] = { { 0x64, 0x18 }, { 0x1CC, 0x18 }, { -0x258, 0 }, { 0x258, 0 } };
 char *left_score = (void *)&PanelDigits123;
 char *right_score = (void *)&PanelDigits456;
 s16 IconPos[8] = { 0x64, 0x18, 0x1CC, 0x18, 0x190, 0x18, 0x208, 0x18 };
@@ -2300,7 +2300,7 @@ u16 CupMode = 0;
 s16 CupWinner = 0;
 u16 Trophy_Cups = 0;
 u16 Clock_last_ping = 0;
-s32 D_8009AE78 = 0;
+s32 HeroesOutTimer = 0;
 u16 BigScore_scale = 0;
 u16 BigScore_teamA = 0;
 u16 BigScore_teamB = 0;

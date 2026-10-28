@@ -277,8 +277,8 @@ void PapuRestartLevel(void);
 void UpdatePAPU(void);
 
 extern s32 CrateAstType2;
-extern u8 D_8009E3B4[];
-extern u8 D_8009E3DC[];
+extern s32 *CrateHitShapes[];
+extern s32 *CrateHitShapes2[];
 
 /* Index of the ASTTable entry with this id, or 0. */
 static inline s32 PapuASTIndex(s32 id) {

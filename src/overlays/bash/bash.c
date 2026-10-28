@@ -3786,10 +3786,10 @@ void BASHSetUp(void) {
 void BashInitCrateHooks(void) {
     CrateAstType = BashASTIndex(0x201);
     CrateAstType2 = BashASTIndex(0x202);
-    HitHooks.unk4 = D_8009E3B4;
+    HitHooks.unk4 = CrateHitShapes;
     HitHooks.unk8 = NULL;
     HitHooks.unkC = 0;
-    HitHooks.unk0 = D_8009E3DC;
+    HitHooks.unk0 = CrateHitShapes2;
 }
 
 void BashTumblerAim(BashTumbler *arg0, BashTumbleMove *arg1, s32 arg2) {

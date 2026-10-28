@@ -75,7 +75,7 @@ extern s32 Clock_XYZ[3];
 extern u16 Clock_last_ping;
 extern s16 CompletionShown;
 extern s32 CompletionPos[];
-extern s32 D_8009AE78;
+extern s32 HeroesOutTimer;
 void draw_nas_model_flags(NAS *nas, u8 *arg1, u32 flags);
 typedef struct EngineBox {
     s32 unk0;
@@ -532,7 +532,7 @@ typedef struct EngHudGame {
 } EngHudGame;
 #define HUDGAME ((EngHudGame *)GameInfo)
 #define HUDPLAYERS ((EXTengine **)&Icon)
-extern s32 D_8009AEF4;
+extern s32 PauseFlashItem;
 void DrawLevelHud(void);
 
 

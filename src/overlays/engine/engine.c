@@ -483,7 +483,7 @@ void DrawLevelHud(void) {
             subengine *s = (subengine *)((u8 *)&IconParts[0][1] + i * sizeof(IconParts[0]));
             u32 v = s->flags & ~0x8000;
             s->flags = v;
-            if (D_8009AEF4 == i && (FrameCount & 8)) {
+            if (PauseFlashItem == i && (FrameCount & 8)) {
                 s->flags = v | 0x8000;
             }
             eng_render(HUDPLAYERS[i]);
