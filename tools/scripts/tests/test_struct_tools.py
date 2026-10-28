@@ -57,6 +57,11 @@ class RetypeTest(unittest.TestCase):
         self.assertIn("p->b = p->a;", out)
         self.assertIn("q = p->in.y;", out)
 
+    def test_parenthesised_byte_casts(self):
+        out = retype.rewrite("void f(u8 *p) {\n    q = (*(s32*)((u8*)(p) + 0));\n}\n", "p", "Out", self.lv, log=lambda m: None)
+        self.assertIn("q = (p->a);", out)
+        self.assertEqual(retype.leftovers("    r = *(s32 *)((u8 *)(p) + 0x40);", "p"), ["r = *(s32 *)((u8 *)(p) + 0x40);"])
+
     def test_narrow_read_of_a_wider_field(self):
         out = retype.rewrite("void f(u8 *p) {\n    q = *(u8 *)p;\n}\n", "p", "Out", self.lv, log=lambda m: None)
         self.assertIn("q = *(u8 *)&p->a;", out)

@@ -61,7 +61,7 @@ def rewrite(body, var, ty, lv, prefer=None, log=print):
         log("  unmapped %s+0x%X as %s%s" % (var, off, cast, " *" if ptr else ""))
         return whole
 
-    body = re.sub(r"\*\(\s*(\w+)\s*(\*+)\)\s*\(\s*(?:\(u8 ?\*\)\s*)?%s \+ (0x[0-9A-Fa-f]+|\d+)\)" % var,
+    body = re.sub(r"\*\(\s*(\w+)\s*(\*+)\)\s*\(\s*(?:\(u8 ?\*\)\s*)?\(?%s\)?\s*\+\s*(0x[0-9A-Fa-f]+|\d+)\s*\)" % var,
                   lambda q: field(q.group(1), len(q.group(2)) > 1, int(q.group(3), 0), q.group(0)), body)
     body = re.sub(r"\*\(\s*(\w+)\s*(\*+)\)\s*%s\b(?!\s*[+\[])" % var,
                   lambda q: field(q.group(1), len(q.group(2)) > 1, 0, q.group(0)), body)
@@ -74,8 +74,9 @@ def rewrite(body, var, ty, lv, prefer=None, log=print):
 
 
 def leftovers(body, var):
-    """lines still adding to VAR (scaled by the new type now)."""
-    return [l.strip() for l in body.split("\n") if re.search(r"\b%s \+|\+ %s\b|\b%s\[" % (var, var, var), l)]
+    """lines still adding to VAR (scaled by the new type now) or reading it as bytes."""
+    return [l.strip() for l in body.split("\n")
+            if re.search(r"\b%s\)?\s*\+|\+ %s\b|\b%s\[|\(u8 ?\*\)\s*\(?%s\b" % (var, var, var, var), l)]
 
 
 def func_span(t, fn):

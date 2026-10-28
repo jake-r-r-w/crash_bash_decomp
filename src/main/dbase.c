@@ -177,7 +177,7 @@ s32 dbase_anim_ptr(obj_dbase *arg0, s32 arg1) {
     u8 *temp_s0;
     u8 *temp_v0;
 
-    temp_v0 = (*(s32*)((u8*)(arg0) + 12));
+    temp_v0 = (arg0->data);
     temp_s0 = temp_v0 + ((*(s32*)((u8*)(temp_v0) + 60)) + 0x3C) + ((arg1 * 0x10) + 4);
     return (*(s32*)((u8*)(temp_s0) + 8));
 }
