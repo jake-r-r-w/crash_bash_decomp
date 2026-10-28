@@ -86,7 +86,10 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `rename_file.py SEG NEW` one of its files (no byte
   changes); `field_rename.py OLD NEW` a struct field's uses after its struct (by cc1's
   missing-member errors, so shared names like `unk6C` are safe); `bytes_ptrs.py` data arrays of
-  plain numbers holding an address, a symbol's or one inside a data object (pointers a shift would leave behind). `tools/scripts/model_slots.py` lists each exe model slot with the archive files
+  plain numbers holding an address, a symbol's or one inside a data object (pointers a shift would leave behind). `struct_layout.py TYPE` a
+  struct's members by cc1's own layout, `retype.py FILE FUNC VAR TYPE` a byte pointer's offsets as fields,
+  `fold_views.py CANON VIEW...` view structs folded into one, `diff_funcs.py` every function that differs
+  (docs/CONVENTIONS.md, Names). `tools/scripts/model_slots.py` lists each exe model slot with the archive files
   every game loads into it. `tools/scripts/data2c.py OVL [--rodata SYM ...] [--strings-only]` writes an overlay's asm data as C
   (OVL `engine` or `main` for main.exe too; `--strings-only` for just the string blocks)
   definitions (docs/CONVENTIONS.md, Data as C). The engine's link gets the slot

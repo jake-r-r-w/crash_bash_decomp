@@ -29,6 +29,17 @@ A file is finished when every function in it reaches level 4.
   and rolls back if the build stops matching. A struct field is renamed in its struct by
   hand, then `tools/scripts/field_rename.py OLD NEW` renames its uses: the lines where cc1
   reports the old member missing, so a name other structs share (`unk6C`) is safe.
+- Typing by the compiler's layout (tools/scripts; no byte changes, check with `make check`):
+  `struct_layout.py TYPE [--leaves]` prints a struct's members (or every reachable leaf by
+  offset) from cc1's own -g output. `retype.py FILE FUNC VAR TYPE[:MEMBER]` turns a byte
+  pointer's `*(T *)(VAR + N)` into `VAR->field` and fixes the prototype; every `LEFT` line it
+  prints is arithmetic the new type now scales, to fix by hand (`--revert` undoes it).
+  `fold_views.py CANON VIEW...` folds view structs into the one they view (by offset, in rounds,
+  clashing names through `t_NAME` temporaries; `--dry` first; `--rename OLD=NEW ...` for the
+  rename passes alone). `diff_funcs.py [UNIT]` lists every function whose bytes differ, where
+  `decomp.py verify` stops at the first. Two things to watch after a retype: a cast like
+  `*(s16 *)&x.f` is a different alias class from a field of that type (the schedule can change:
+  give the struct the field instead), and a load's sign follows the member's type.
 - PsyQ names come from the signature scan and Sony's objects; do not rename them.
 
 ## Source layout
