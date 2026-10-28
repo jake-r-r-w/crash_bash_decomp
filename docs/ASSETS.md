@@ -130,6 +130,8 @@ each: the arenas, hubs and menus; 217 paths, 473 triggers, 2,689 placements):
 |---|---|
 | paths | s32 count, then a self offset each to a path (`path_get` finds one by id): s32 keys, s32 frames (the last key's), s32, s32 id, 8 s32s (0 in most), then 0x1C-byte keys: s32 x, y, z, s32 frame (0 first), s32, u32 flags (0x2000 on the last key, and only it), s32. The game moves cameras and hub objects along them (`key_interp_pos`) |
 | triggers | u32 count, then 16 bytes each: s32 x, y, z, then a word whose bits 0-1 are the cast and the rest a self offset to its info: u16 type (into the level's trigger types), u16 flags (0x4000: a point, `MapPoints[slot]`, not a NAS), s32 slot, s32 rotation x, y, z (`InitTriggers`) |
+| contours | s32 count, then a self offset each to a contour: s32 min x, y, z, max x, y, z (its bounds), 7 s32s, s32 at +0x34, s32 edges, then 0x38-byte edges: 3 s32s (the first ±0x3FFFFFFF), s32 p0 x, y, z, p1 x, y, z (y 0 in all 1,200), s32 length (p0 to p1 in x, z), s32 angle, 3 s32s. The arenas' walls and zones: `PointInZone` tests which side of each edge a point is, Dino collides with them (`DinoTrackCollide`), Race and Polar look edges up by angle. 107 contours in 30 maps; the hubs and menus have none |
+| cell list | +0x18: empty (a 0 count) in every map |
 | placements | 0xA0 bytes each, one subengine each (`mapenv_place_subs`): u32 flags, s32 x, y, z, +0x28 a `MATRIX` (rotation: every row has length 4096; its t is the position), +0x74 4 bytes, +0x88 u16 the model id it draws (`0x5000 \| i` an entity, or `0x4000 \| ...` a mesh animation frame), +0x9C u16 (the subengine's +0x68), +0x9E u16; the rest not read |
 
 A mesh header: u32 0 (the game's pointer to its prims while drawn), u32 0, s16 faces, s16 (4..7), u32 (flags), then self offsets at +0x10 to
@@ -164,7 +166,7 @@ others blend the first list's towards the second's (1/3, 2/3: frames between two
   a material each (the texture set's image, a recoloured copy for a bit-15 face, or the
   untextured face's average colour).
 - `map.json` (files with level data, 205): the maps (cell size, clear colour, paths with their keys,
-  triggers, placements), the map directory's entities (each one's mesh header offset and group)
+  triggers, contours with their edges, placements), the map directory's entities (each one's mesh header offset and group)
   and the scripts' headers (threads, subs, start, end and frame counts).
 - `model.glb`: the same as glTF (textures embedded; positions as the file's 16-bit integers,
   KHR_mesh_quantization, scaled 1/256), with each animation as morph targets (a keyframe each)
@@ -175,10 +177,12 @@ others blend the first list's towards the second's (1/3, 2/3: frames between two
 keeping each mesh's count and order (Blender: Split > Keep Vert Order). Texture coordinates,
 materials, colours and the animations are for viewing: pack ignores them, and they stay as they
 are in `model.bin`. Edit the textures in the texture set's PNGs. `make disc` also writes
-`map.json`'s map fields into `model.bin`: move or turn placements, triggers and path keys, change
+`map.json`'s map fields into `model.bin`: move or turn placements, triggers, path keys and contour
+edges (an edge's length and angle are stored, not worked out: keep them matching its points), change
 their ids and flags (playtested 2026-10-28: raising Warp Room 1's 81 placements by 400 raised its
 floor and scenery, so the room's geometry is placed objects, while Crash stayed at his old height:
-his ground comes from the map's collision, not the placements); the counts stay (nothing can be
+the hubs have no ground in the file: with no level `GetContour` hook the game stands everything on
+the flat `World_floor_level` and on solid objects, `AddPlatformContour`); the counts stay (nothing can be
 added or removed), and two triggers that share
 one info record must keep the same values. The entities and scripts are for viewing.
 
@@ -234,8 +238,8 @@ Every file comes out editable or viewable. What is kept only as bytes (exact, in
 
 - Models: the animations' timing (not in the entry: +0x10 is the name's hash), the vertices' and
   indices' flag bits, the header words not read by the exe, and every file's sections other than
-  the meshes, animations and maps: the maps' contour grids and cell lists (collision), the
-  placements' words the exe doesn't read, the scripts' threads (`script_thread` records), the
+  the meshes, animations and maps: the placements' words the exe doesn't read, the contours'
+  unnamed words, the scripts' threads (`script_thread` records), the
   on-demand chunks.
 - Texture sets: the header word at 0x14, and the images' header words.
 - Mode text: the data after the strings (menus, layouts).

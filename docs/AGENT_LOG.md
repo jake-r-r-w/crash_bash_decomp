@@ -73,8 +73,9 @@ Sony objects. Next, none of them needing a playtest:
    (animated textures decoded; `TexFile`/`TexImage` in C); the model file's structs are in C
    (`ModelFile` and the rest, docs/ASSETS.md). Next: decode in mdl.py what it keeps as bytes, from
    those structs: done for the maps' paths, triggers and placements (`mapdata.py`, map.json).
-   Next: the maps' collision (map_map +0x14 contour grids, +0x18 cell list: find the code that
-   reads them), the scripts' threads (`script_thread` in core.h), the mode text's data. Then the
+   The contours (map_map +0x14) are decoded too: arena walls/zones, edges from +0x3C (Dino's
+   DinoSegObj view is right; Race's reads go through the same offsets); the cell list is empty in
+   every map. Next: the scripts' threads (`script_thread` in core.h), the mode text's data. Then the
    remaining raw offsets (69 exe functions): mostly heap arithmetic and the export table.
    A sample retail-DAT reader for scratch scripts: scratch/retail.py (`each(fmt)`).
    `obj_texture`'s +0x18 block is its own struct, `info` (`GfxTexInfo`: VRAM rect, src,
@@ -490,6 +491,10 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-28 (Phase 5: asset formats, collision):** the maps' contours decoded in mapdata.py
+  (107 in 30 arena maps, 1,200 edges; each edge's length matches its points, all round-trip). The
+  hubs have none: with no `LevelSpecs.GetContour` hook the ground is `World_floor_level` plus solid
+  objects (`AddPlatformContour`), which is why Crash stayed put when Warp Room 1's placements moved.
 - **2026-10-28 (Phase 5: asset formats, level data):** `mapdata.py` (used by mdl.py) reads and
   writes the maps: paths (a 0x30-byte header, not the runtime KeyBlock view: keys from +0x30),
   triggers, placements (a rotation MATRIX and a model id each); all 205 files with level data

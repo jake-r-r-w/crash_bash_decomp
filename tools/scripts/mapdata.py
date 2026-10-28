@@ -17,6 +17,11 @@ position.
     triggers                       u32 count, then 16 bytes each: s32 x, y, z, then a word: bits
                                    0-1 the cast, the rest a self offset to its info (u16 type, u16
                                    flags, s32 slot, s32 rot x, y, z)
+    contours (+0x14)               s32 count, then a self offset each: s32 min x, y, z, max x, y, z,
+                                   7 s32s, s32 (+0x34), s32 edges, then 0x38-byte edges: 3 s32s
+                                   (+-0x3FFFFFFF, ...), s32 p0 x, y, z, p1 x, y, z, s32 length,
+                                   s32 angle, 3 s32s. An arena's walls and zones (PointInZone,
+                                   DinoTrackCollide); the cell list (+0x18) is empty in every map
     placements (0xA0 each)         u32 flags, s32 x, y, z, ..., +0x28 a MATRIX (s16 m[3][3], s16,
                                    s32 t[3]), ..., +0x74 4 bytes, ..., +0x88 u16 model id, ...,
                                    +0x9C u16, +0x9E u16
@@ -36,6 +41,8 @@ KEY = 0x1C
 TRIG = 0x10
 PLACE = 0xA0
 PLACE_AT = 0x34
+CONTOUR_HEAD = 0x3C
+EDGE = 0x38
 
 
 class Bad(Exception):
@@ -71,8 +78,13 @@ def layout(d):
         for k in range(_w(d, tl)):
             r = tl + 4 + k * TRIG
             trigs.append((r, r + 0xC + (_w(d, r + 0xC) & ~3)))
+        cg = _self(d, mp + 0x14)
+        contours = []
+        for i in range(_w(d, cg)):
+            c = _self(d, cg + 4 + 4 * i)
+            contours.append((c, [c + CONTOUR_HEAD + k * EDGE for k in range(_w(d, c + 0x38))]))
         pp = _self(d, mp + 0x20)
-        out["maps"].append({"at": mp, "paths": paths, "triggers": trigs,
+        out["maps"].append({"at": mp, "paths": paths, "triggers": trigs, "contours": contours,
                             "placements": [pp + i * PLACE for i in range(_w(d, mp + 0x1C))]})
     el = _self(d, 0x1C)
     for i in range(_w(d, el)):
@@ -111,9 +123,16 @@ def read(d):
                            "matrix": [list(m[0:3]), list(m[3:6]), list(m[6:9])], "t": list(m[10:13]),
                            "model": _w(d, o + 0x88, "<H"), "unk74": list(d[o + 0x74:o + 0x78]),
                            "unk9C": _w(d, o + 0x9C, "<H"), "unk9E": _w(d, o + 0x9E, "<H")})
+        contours = []
+        for c, edges in mp["contours"]:
+            contours.append({"min": xyz(c), "max": xyz(c + 0xC), "unk18": list(struct.unpack_from("<7i", d, c + 0x18)),
+                             "unk34": _w(d, c + 0x34),
+                             "edges": [{"unk0": list(struct.unpack_from("<3i", d, k)), "p0": xyz(k + 0xC),
+                                        "p1": xyz(k + 0x18), "len": _w(d, k + 0x24), "ang": _w(d, k + 0x28),
+                                        "unk2C": list(struct.unpack_from("<3i", d, k + 0x2C))} for k in edges]})
         r, g, b, clear = d[a + 0x24:a + 0x28]
         maps.append({"cell_size": xyz(a), "clear_colour": [r, g, b], "clear": clear,
-                     "paths": paths, "triggers": trigs, "placements": places})
+                     "paths": paths, "triggers": trigs, "contours": contours, "placements": places})
     ents = [{"mesh": None if m is None else f"0x{m:X}", "unk4": _w(d, r + 4), "group": _w(d, r + 8)}
             for r, m in lay["entities"]]
     scripts = [dict(zip(("threads", "subs", "end_frame", "start_frame", "frames"),
@@ -152,6 +171,17 @@ def write(d, meta):
             if infos.setdefault(info, val) != val:
                 raise Bad(f"{where}: two triggers share one info at 0x{info:X}; give them the same values")
             struct.pack_into("<HHi3i", d, info, jt["type"], jt["flags"], jt["slot"], *jt["rot"])
+        jcs = mm.get("contours")
+        if jcs is not None:
+            if len(jcs) != len(mp["contours"]):
+                raise Bad(f"{where}: contours can't be added or removed")
+            for (c, edges), jc in zip(mp["contours"], jcs):
+                if len(jc["edges"]) != len(edges):
+                    raise Bad(f"{where}: a contour's edges can't be added or removed")
+                struct.pack_into("<3i3i7ii", d, c, *jc["min"], *jc["max"], *jc["unk18"], jc["unk34"])
+                for k, je in zip(edges, jc["edges"]):
+                    struct.pack_into("<3i3i3iii3i", d, k, *je["unk0"], *je["p0"], *je["p1"], je["len"], je["ang"],
+                                     *je["unk2C"])
         for o, jp in zip(mp["placements"], mm["placements"]):
             struct.pack_into("<I3i", d, o, jp["flags"], *jp["pos"])
             m = [v for row in jp["matrix"] for v in row]

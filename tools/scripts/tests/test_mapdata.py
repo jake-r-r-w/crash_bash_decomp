@@ -55,6 +55,15 @@ def model():
     struct.pack_into("<iii", d, el + 4, mesh - (el + 4), 0, 5)
     struct.pack_into("<i", d, sc, sh - sc)
     struct.pack_into("<5i", d, sh, 2, 0, 100, 0, 100)
+    cg = len(d)                                # contours: count, offset; a head, two edges
+    con = cg + 8
+    d += bytes(8 + 0x3C + 2 * 0x38)
+    struct.pack_into("<i", d, mp + 0x14, cg - (mp + 0x14))
+    struct.pack_into("<ii", d, cg, 1, con - (cg + 4))
+    struct.pack_into("<6i", d, con, -10, 0, -10, 10, 0, 10)
+    struct.pack_into("<ii", d, con + 0x34, -64, 2)
+    for k in range(2):
+        struct.pack_into("<3i3i3iii", d, con + 0x3C + k * 0x38, 0x3FFFFFFF, 1, 2, -10, 0, k, 10, 0, k, 20, 0x400)
     return bytes(d), mesh
 
 
@@ -74,15 +83,20 @@ class MapData(unittest.TestCase):
         self.assertEqual((p["pos"], p["t"], p["model"], p["matrix"][1]), ([10, 20, 30], [10, 20, 30], 0x5001, [0, 4096, 0]))
         self.assertEqual(self.m["entities"], [{"mesh": f"0x{self.mesh:X}", "unk4": 0, "group": 5}])
         self.assertEqual(self.m["scripts"][0]["threads"], 2)
+        c = mm["contours"][0]
+        self.assertEqual((c["min"], c["unk34"], len(c["edges"])), ([-10, 0, -10], -64, 2))
+        self.assertEqual((c["edges"][1]["p0"], c["edges"][1]["len"], c["edges"][1]["ang"]), ([-10, 0, 1], 20, 0x400))
 
     def test_round_trip_and_edit(self):
         m = json.loads(json.dumps(self.m))
         self.assertEqual(bytes(mapdata.write(bytearray(self.d), m)), self.d)
         m["maps"][0]["placements"][0]["pos"] = [-1, -2, -3]
         m["maps"][0]["paths"][0]["keys"][1]["frame"] = 90
+        m["maps"][0]["contours"][0]["edges"][0]["p1"] = [99, 0, 0]
         out = bytes(mapdata.write(bytearray(self.d), m))
         mm = mapdata.read(out)["maps"][0]
         self.assertEqual(mm["placements"][0]["pos"], [-1, -2, -3])
+        self.assertEqual(mm["contours"][0]["edges"][0]["p1"], [99, 0, 0])
         lay = mapdata.layout(out)["maps"][0]["paths"][0][0]
         self.assertEqual(struct.unpack_from("<i", out, lay + 4)[0], 90)   # frames follows the last key
 

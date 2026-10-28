@@ -422,8 +422,8 @@ load extract and are documented.
   named, the maps through the prototype's `map_list`/`map_map`), `MeshHeader`, `MeshVerts`,
   `ModelEntity`, `FileEntry` and `MeshAnimFrame` (2026-10-28; the exe's raw-offset functions 97 to
   69); mdl.py writes the level data to map.json (`mapdata.py`: paths, triggers and placements,
-  editable; the map directory and scripts listed). Next: the maps' collision (contour grids, cell
-  lists), the scripts' threads, the mode text's data and the card image.
+  editable; the contours, the arenas' walls and zones, too; the map directory and scripts listed).
+  Next: the scripts' threads, the mode text's data and the card image.
 - [x] `main.exe`'s rodata as C: its six INCLUDE_RODATA blocks (`data2c.py main
   --strings-only`, 2026-10-26); no INCLUDE_RODATA is left in `src/`.
 - [x] `main.exe`'s data and bss as C (2026-10-28): the game's .data cut by file in link
