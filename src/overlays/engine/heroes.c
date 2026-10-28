@@ -1460,7 +1460,7 @@ void ResetHeroGlobals(void) {
 }
 
 void SetLevelCameraMode(void) {
-    CameraMode = LevelRecs[D_8005A61C].unkC;
+    CameraMode = LevelRecs[LevelRecIndex].unkC;
 }
 
 void SetHeroAction(s32 player, s32 action) {

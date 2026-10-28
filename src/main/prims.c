@@ -20,13 +20,13 @@ void prims_init(s32 *cfg) {
     s32 end1;
 
     cnt = cfg[0];
-    D_8005683C = cfg;
+    PrimsConfig = cfg;
     PrimSetPool = mal_alloc((u32)(cnt * 0x2C0) >> 3, &MainHeap);
-    D_80056840 = mal_alloc((u32)(cfg[2] * 0x2A0) >> 3, &MainHeap);
+    PrimNodePool = mal_alloc((u32)(cfg[2] * 0x2A0) >> 3, &MainHeap);
     q = mal_alloc((u32)(cfg[1] << 6) >> 3, &MainHeap);
     PrimLinkPool = q;
     p = PrimSetPool;
-    next = D_80056840;
+    next = PrimNodePool;
     PrimNodeFree = (s32 *)next;
     n = cfg[2] - 2;
     if (n != -1) {
@@ -986,7 +986,7 @@ void *model_prims_begin(void *arg0, s32 arg1) {
     s32 c[3];
 
     prim = NULL;
-    if ((arg1 & 0x40000001) | RenderState.modelDp | (D_80056878 != 0 && (u32)prim < D_80056AC4)) {
+    if ((arg1 & 0x40000001) | RenderState.modelDp | (PrimDepthTest != 0 && (u32)prim < PrimDepthLimit)) {
         set = *(PrimSet **)arg0;
         if (set != NULL || (set = (PrimSet *)primset_alloc((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
             off = (FrameCount & 1) * sizeof(PrimListPair);
@@ -1012,7 +1012,7 @@ void *model_prims_begin(void *arg0, s32 arg1) {
                     gs->farColor = c;
                     c[2] >>= 12;
                 } else {
-                    gs->farColor = D_80056868;
+                    gs->farColor = FarColor;
                 }
             }
             faces_write_colors_dq((FaceRuns *)arg0, prim, (s32)RenderState.farColor, arg1);
@@ -1154,8 +1154,8 @@ void gfx_setup_xform(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg
         GfxState *gs;
 
         out->trans = NULL;
-        D_8005688C.vz = pos->vz + obj->z;
-        out->trans = &D_8005688C;
+        ScreenTrans.vz = pos->vz + obj->z;
+        out->trans = &ScreenTrans;
         gs = &RenderState;
         out->ofx = ((GfxScreen *)gs->unk28)->x + obj->x;
         out->ofy = ((GfxScreen *)gs->unk28)->y + obj->y;
@@ -1240,7 +1240,7 @@ void draw_object_model(s32 a, u8 *set, s32 c, void *d) {
     depth = *(s16 *)((u8 *)d + 0x8A);
     {
         s32 on = (*(u32 *)d | c) & fog;
-        D_80056AC4 = depth;
+        PrimDepthLimit = depth;
         if (on) {
             s32 dp = *(s16 *)((u8 *)d + 0x76);
             RenderState.farColor = (s32 *)((u8 *)d + 0x78);
@@ -2261,7 +2261,7 @@ void posdst_flash(PosDst *arg0, s32 arg1, s32 arg2) {
     s32 sp10;
     s32 sp14;
 
-    e = &D_8005689C[arg0->idx];
+    e = &PosFlashes[arg0->idx];
     switch (e->mode) {
     case 1:
         if (FrameCount & 4) {
@@ -2292,7 +2292,7 @@ void posdst_flash_at(PosDst *arg0, s32 arg1) {
     s32 sp10;
     s32 sp14;
 
-    e = &D_8005689C[arg1];
+    e = &PosFlashes[arg1];
     switch (e->mode) {
     case 1:
         if (FrameCount & 4) {
@@ -3324,8 +3324,8 @@ void prims_empty_and_compact(void) {
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-s32 *D_8005683C = 0;
-u8 *D_80056840 = 0;
+s32 *PrimsConfig = 0;
+u8 *PrimNodePool = 0;
 NodePool PrimPool = {0};
 s32 *PrimNodeFree = 0;
 u8 *PrimLinkPool = 0;
@@ -3333,12 +3333,12 @@ s32 *PrimLinkFree = 0;
 u8 *PrimSetPool = 0;
 s32 *PrimSetFree = 0;
 void *PrimSetList = 0;
-s32 D_80056868[3] = {0};
+s32 FarColor[3] = {0};
 s32 D_80056874[1] = {0};
-s32 D_80056878 = 0;
-s32 D_8005687C[4] = {0};
-VECTOR D_8005688C = { 0, 0, 0x680, 0 };
-PosEntry D_8005689C[9] = {
+s32 PrimDepthTest = 0;
+s32 GameSceneCounts[4] = {0};
+VECTOR ScreenTrans = { 0, 0, 0x680, 0 };
+PosEntry PosFlashes[9] = {
     { { 0, 0xD0FF, 0xFF }, 0, { 0, 0, 0 } }, { { 0, 0x808080, 0x808080 }, 0, { 0, 0, 0 } },
     { { 0, 0xD0FF, 0xFF }, 2, { 0, 0, 0 } }, { { 0, 0x606060, 0x606060 }, 0, { 0, 0, 0 } },
     { { 1, 0xD0FF, 0xFF }, 0, { 0, 0, 0 } }, { { 0, 0xFF, 0xFF }, 0, { 0, 0, 0 } },
@@ -3346,7 +3346,7 @@ PosEntry D_8005689C[9] = {
     { { 1, 0xFFFFFF, 0xFFFF }, 0, { 0, 0, 0 } },
 };
 GfxState RenderState = {0};
-s32 D_80056AC4 = 0;
+s32 PrimDepthLimit = 0;
 SVECTOR MorphVerts[1024] = {0};
 s32 SubPool = 0;
 subengine *next_sub = 0;

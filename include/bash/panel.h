@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/engine.h"
 
-extern s32 D_8005A554[];
+extern s32 HeroesOutPanel[];
 
 typedef struct DigitEnt {
     u16 cmd;

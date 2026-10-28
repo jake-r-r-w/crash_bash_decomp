@@ -1674,7 +1674,7 @@ void InitGameState(GameState *arg0) {
     arg0->unk42 = -1;
     arg0->unk6C = 0;
     arg0->unk70 = 0;
-    arg0->unk2C = D_8004E0D4;
+    arg0->unk2C = GraphicsMode;
     arg0->unkD0 = *(Blk12p4 *)&GameOptions;
 }
 
@@ -1690,7 +1690,7 @@ void InitGraphics(void) {
     prims_init(cfg->pools);
     dbase_init_all();
     ResetEnginePool();
-    D_8004E0D4 = 0;
+    GraphicsMode = 0;
     D_8009F654 = 0;
     core_process = 0;
     GameOptions.music = 0x46;
@@ -1869,10 +1869,10 @@ void UpdateSecretLevel(void) {
 void RenderGameScene(void) {
     gfx_set_viewport(&GameViewport, (GfxCamera *)MainCamera);
     RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
-    D_80056878 = 0;
-    D_8005687C[0] = 0;
-    D_8005687C[1] = 0;
-    D_8005687C[2] = 0;
+    PrimDepthTest = 0;
+    GameSceneCounts[0] = 0;
+    GameSceneCounts[1] = 0;
+    GameSceneCounts[2] = 0;
     scripts_render();
     RenderAllNas();
     draw_map_scene((GfxScene *)MapScene);

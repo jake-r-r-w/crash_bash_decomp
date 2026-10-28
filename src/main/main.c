@@ -52,7 +52,7 @@ void shell_init(void) {
     pads_update();
     load_file_direct(&DatIndex[2 * 991], HeapStart);
     EngineModule = (ModuleEntry *)HeapStart;
-    RunModules(D_8004E0B8);
+    RunModules(ShellModules);
 }
 
 const char LevNameJungleBash[] = "JUNGLE BASH";
@@ -126,8 +126,8 @@ void shell_run_spyro_demo(void) {
 }
 
 void shell_render_dcache(void) {
-    if (D_8004E0B4 == 0) {
-        D_8004E0B4 = 1;
+    if (DcacheReady == 0) {
+        DcacheReady = 1;
         D_8006E9F4 = GetSp();
     }
     SetSp(0x1F8003FC);
@@ -243,7 +243,7 @@ void mal_update(_mal_area *heap) {
         budget -= p->size;
         if (budget <= 0) break;
         t = VSync(1);
-        D_8004E0EC += p->size;
+        MalMoveWords += p->size;
         a = heap->lowest;
         mal_unlink(a, heap);
         size = a->size;
@@ -274,7 +274,7 @@ void mal_update(_mal_area *heap) {
         mal_free(b + 1, heap);
         t = VSync(1) - t;
         p = Heap_NextToMove(heap);
-        D_8004E0E8 += t;
+        MalMoveVSyncs += t;
     } while (1);
     q = heap->deferred;
     qprev = NULL;
@@ -345,7 +345,7 @@ void mal_update(_mal_area *heap) {
         budget -= p->size;
         if (budget <= 0) break;
         t = VSync(1);
-        D_8004E0EC += p->size;
+        MalMoveWords += p->size;
         func_800107C8_merge(heap->lowest, heap, m1);
         t = VSync(1) - t;
         ret = Heap_NextLowest(heap, m1);
@@ -355,7 +355,7 @@ void mal_update(_mal_area *heap) {
                 p = NULL;
             }
         }
-        D_8004E0E8 += t;
+        MalMoveVSyncs += t;
     } while (1);
     q = heap->deferred;
     qprev = NULL;
@@ -892,14 +892,14 @@ s32 mal_count_free(_mal_area *heap) {
 
     bytes = 0;
     blk = heap->free;
-    D_8004E108 = 0;
+    MalFreeBlocks = 0;
     MalFreeBytes = 0;
     for (; blk != NULL; blk = blk->nextFree) {
         bytes = blk->size * 4;
-        D_8004E108++;
+        MalFreeBlocks++;
         MalFreeBytes += bytes;
     }
-    D_8004E10C = bytes;
+    MalLargestFree = bytes;
     return MalFreeBytes;
 }
 
@@ -2073,7 +2073,7 @@ void smallnode_init(void) {
     u8 *p;
     s32 i;
 
-    p = D_80050F40;
+    p = SmallNodePool;
     SmallNodeFree = p;
     for (i = 62; i != -1; i--) {
         *(u8 **)(p + 8) = p + 0xC;
@@ -2523,7 +2523,7 @@ void combo_check_all(void) {
     s32 i;
     s32 m;
 
-    c = (ComboSeq *)D_800512A8;
+    c = (ComboSeq *)ComboSeqs;
     for (i = 0;; i++) {
         if (i > 0) {
             goto done;
@@ -2587,13 +2587,13 @@ void combo_check(ComboSeq *c) {
 }
 
 void toggle_widescreen(void) {
-    if (D_800512A4 != 0) {
-        D_800512A4 = 0;
+    if (WideScreen != 0) {
+        WideScreen = 0;
         screen_aspect[0] = 4;
         screen_aspect[1] = 3;
         return;
     }
-    D_800512A4 = 1;
+    WideScreen = 1;
     screen_aspect[0] = 0x10;
     screen_aspect[1] = 9;
 }
@@ -2697,7 +2697,7 @@ void quat_to_matrix(SVECTOR *rot, MATRIX *m) {
 void cam_ease_to(CamView *cam, CamView *dst, CamEase *ease) {
     if (ease != NULL) {
         if (cam_ramp_overide_count != 0) {
-            ease = (CamEase *)D_800517B4;
+            ease = (CamEase *)CamEaseOverride;
             cam_ramp_overide_count--;
         }
         cam->dist += (dst->dist - cam->dist + 4) >> 2;
@@ -2794,7 +2794,7 @@ void cam_set_projection(s32 arg0, s32 arg1) {
 
 void cam_ramp_override(s32 arg0, s32 arg1) {
     cam_ramp_overide_count = arg1;
-    D_800517B4 = arg0;
+    CamEaseOverride = arg0;
 }
 
 void cam_build_view(u8 *arg0, RECT *rect) {
@@ -2877,7 +2877,7 @@ s32 get_angle(s32 x, s32 z) {
 }
 
 void export_exe_functions(void) {
-    void **t = (void **)D_800527C4;
+    void **t = (void **)ExportTable;
 
     t[0x000 / 4] = InitDisplay;
     t[0x004 / 4] = &num_sfx_banks;
@@ -3137,7 +3137,7 @@ s32 bit_count(u32 x) {
 }
 
 s32 *get_exe_exports(void) {
-    return D_800527C4;
+    return ExportTable;
 }
 
 s32 get_dist_angles(s32 *a, s32 *b, s16 *out) {
@@ -3615,21 +3615,21 @@ u16 ModeTypes[370] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x1FF, 0x201,
     0x102, 0x102, 2, 0, 0, 0,
 };
-s32 D_8004E0B4 = 0;
-u8 D_8004E0B8[20] = { 0x10, 4, 1, 0x80, 0x94, 3, 1, 0x80, 0x78, 2, 1, 0x80, 0, 0, 0, 0, 0, 0, 0, 0 };
+s32 DcacheReady = 0;
+u8 ShellModules[20] = { 0x10, 4, 1, 0x80, 0x94, 3, 1, 0x80, 0x78, 2, 1, 0x80, 0, 0, 0, 0, 0, 0, 0, 0 };
 s16 core_process = 0;
 s32 CompletionBcd = 0;
-s32 D_8004E0D4 = 0;
+s32 GraphicsMode = 0;
 s32 GameFrameCount = 0;
 ModuleEntry *EngineModule = 0;
 s32 VSyncRate = 0;
-s32 D_8004E0E4 = 0;
-s32 D_8004E0E8 = 0;
-s32 D_8004E0EC = 0;
+s32 LastFlipVSync = 0;
+s32 MalMoveVSyncs = 0;
+s32 MalMoveWords = 0;
 _mal_area MainHeap = {0};
 s32 MalFreeBytes = 0;
-s32 D_8004E108 = 0;
-s32 D_8004E10C = 0;
+s32 MalFreeBlocks = 0;
+s32 MalLargestFree = 0;
 /* The archive's index: {first sector, size in bytes} for each of CRASHBSH.DAT's 992 files,
  * file N at DatIndex[2 * N] (group_file_offset). */
 s32 DatIndex[2 * 992] = {
@@ -3933,14 +3933,14 @@ FileGroup FileGroups[130] = {
 LoaderState Loader = {0};
 u8 LoadNodePool[2304] = {0};
 void *LoadNodeFree = 0;
-u8 D_80050F40[768] = {0};
+u8 SmallNodePool[768] = {0};
 void *SmallNodeFree = 0;
 s32 DirPadBits[24] = {
     0x10, 0x30, 0x20, 0x60, 0x40, 0xC0, 0x80, 0x90, 0, 0, 0x400, 0x200, 0x800, 0, 0x600, 0,
     0xC00, 0xE00, 0, 0, 0xA00, 0, 0, 0,
 };
-s32 D_800512A4 = 0;
-u8 D_800512A8[144] = {
+s32 WideScreen = 0;
+u8 ComboSeqs[144] = {
     0x24, 0x3C, 1, 0x80, 0x3C, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x20, 0, 0, 0, 0x80, 0, 0, 0,
     0x80, 0, 0, 0, 0x20, 0, 0, 0, 0x80, 0, 0, 0, 0x80, 0, 0, 0, 0x20, 0, 0, 0, 0x80, 0, 0, 0,
     0x80, 0, 0, 0, 0x20, 0, 0, 0, 0x80, 0, 0, 0, 0x80, 0, 0, 0, 0x80, 0, 0, 0, 0x20, 0, 0, 0,
@@ -3957,7 +3957,7 @@ s32 D_80051608[12] = { 2, 2, 2, 2, 8, 2, 0x10, 1, 2, 1, 1, 4 };
 s32 screen_aspect[2] = { 4, 3 };
 u8 MainCamera[368] = {0};
 s32 cam_ramp_overide_count = 0;
-s32 D_800517B4 = 0;
+s32 CamEaseOverride = 0;
 s32 RandomSeedA = 0xC587C1;
 s32 RandomSeedB = 0x573CEC9;
 s16 AtanTable[2050] = {
@@ -4110,7 +4110,7 @@ s16 AtanTable[2050] = {
     0x1FC, 0x1FD, 0x1FD, 0x1FD, 0x1FD, 0x1FD, 0x1FD, 0x1FE, 0x1FE, 0x1FE, 0x1FE, 0x1FE, 0x1FE,
     0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x200, 0x200, 0x200, 0x200, 0,
 };
-u8 D_800527C4[656] = {0};
+u8 ExportTable[656] = {0};
 
 /* After every object's .data (main.yaml's .sdata entry): the startup code (2MBYTE.OBJ) points
  * $gp here and clears what follows up to HeapStart, the .bss. */

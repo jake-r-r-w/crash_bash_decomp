@@ -1521,7 +1521,7 @@ void CheckHeroesAllOut(void) {
             return;
         }
         e = GetEngineSlot(5);
-        PlaceEngineSlot(5, D_8005A554);
+        PlaceEngineSlot(5, HeroesOutPanel);
         PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
         e->unk10.y = 0x1F4;
         e->flags |= 0x10008000;

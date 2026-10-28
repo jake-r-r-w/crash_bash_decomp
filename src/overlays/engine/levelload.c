@@ -138,7 +138,7 @@ void InitLevelLoad(void) {
     start &= ~7;
     func_800936C4_heap(&MainHeap, start);
     SetupLevelSpecs(&D_80098F48);
-    cfg = (EngineCfg *)D_8005A5E4;
+    cfg = (EngineCfg *)LevelConfig;
     if (cfg == NULL) {
         cfg = &D_8009F96C;
     }
@@ -269,7 +269,7 @@ void load_initial_dbases(void)
     }
     while (v >= 0);
   }
-  p = *((s16 **) (((u8 *) (&LevelRecs[D_8005A61C])) + 8));
+  p = *((s16 **) (((u8 *) (&LevelRecs[LevelRecIndex])) + 8));
   v = *p;
   if (v >= 0)
   {

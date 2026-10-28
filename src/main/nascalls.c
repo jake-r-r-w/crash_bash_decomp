@@ -552,7 +552,7 @@ void SetupLevelSpecs(ArenaDef *arg0) {
         NasPoolSlots = NasPoolUsed = e->unk2 + 4;
         D_8005AA50 = e->unk6 << 10;
         D_8005AA54 = e->unk8;
-        D_8005A5E4 = e->unk10;
+        LevelConfig = e->unk10;
         ((D5A614View *)GameInfo)->unk0 = e->unk14;
         LevelTriggerData = e->unkC;
         if (((D5A614View *)GameInfo)->flags & 0x80) {
@@ -1154,7 +1154,7 @@ void DrawSpriteTriple(x, y, c0, c1, n)
     }
     pos.f.y = y;
     pos.f.x = x;
-    tbl = D_8005A5C0;
+    tbl = SpriteTripleUVs;
     ids = tbl[n];
     base = &HeroModelBank[DB_Interface];
     texture_draw_quad((obj_texture *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
@@ -2504,7 +2504,7 @@ void FlipScreen(s32 arg0) {
         sp10.screen.h = (VideoMode == 0) ? 0xF0 : 0x100;
         sp10.isinter = ((u8 *)r)[0x14];
         sp10.isrgb24 = ((u8 *)r)[0x10];
-        D_8004E0E4 = VSync(1);
+        LastFlipVSync = VSync(1);
         VSync(arg0);
         PutDispEnv(&sp10);
         DrawOTag((u32 *)(cdb + 0x3FFC));
@@ -4089,20 +4089,20 @@ void textureset_clear(obj_textureset *ts) {
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
-u16 D_8005A5C0[4][3] = {
+u16 SpriteTripleUVs[4][3] = {
     { 0x3027, 0x3028, 0x3029 }, { 0x302A, 0x302B, 0x302C }, { 0x302A, 0x302B, 0x302C },
     { 0x302A, 0x302B, 0x302C },
 };
 s32 World_floor_level = 0;
 s32 VelocityCalc = 0;
 void *LevelTriggerData = 0;
-s32 D_8005A5E4 = 0;
+s32 LevelConfig = 0;
 EngineRec32 *LevelRecs = 0;
 s32 D_8005A5EC[6] = {0};
 GameOptionSet GameOptions = {0};
 u8 GameInfo[4] = {0};
 s32 GameCheats = 0;
-s32 D_8005A61C = 0;
+s32 LevelRecIndex = 0;
 s32 D_8005A620 = 0;
 s32 GamePause = 0;
 s32 D_8005A628[4] = {0};

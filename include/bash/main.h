@@ -373,7 +373,7 @@ typedef struct {
     MATRIX unk8C; /* 0x8C: set to identity by draw_init */
     MATRIX unkAC; /* 0xAC: object's local-to-screen matrix (gfx_object_matrix) */
     u8 unkCC[0x40];
-    u8 unk10C[0x20]; /* the struct ends at 0x12C: D_80056AC4 is the next global */
+    u8 unk10C[0x20]; /* the struct ends at 0x12C: PrimDepthLimit is the next global */
 } GfxState;
 
 /* A 0x1C-byte entry of a sorted table at +0x4C of a block (key_find). */
@@ -812,7 +812,7 @@ typedef struct { s32 v[4]; } Quat;
 extern s32 D_80064478[];
 extern s32 D_8006E9F4;
 extern s32 LoadPermanentBuf;
-extern u8 D_800527C4[];
+extern u8 ExportTable[];
 extern u8 LangModeTypeTexts[];
 void modchip_check_region(void);
 void modchip_step();
@@ -836,19 +836,19 @@ s32 rand_step(void);
 extern ModuleEntry *EngineModule;
 extern ModuleEntry *CurrentModule;
 extern s32 VSyncRate;
-extern s32 D_8004E0E4;
+extern s32 LastFlipVSync;
 void mal_update(_mal_area *heap);
 extern u8 HeapStart[];
 mal *mal_init(_mal_area *heap, u8 *start, s32 size);
-extern u8 D_8004E0B8[];
+extern u8 ShellModules[];
 s32 load_file_direct(s32 *file, u8 *buf);
 void init_file(void);
-extern s32 D_8004E0B4;
+extern s32 DcacheReady;
 extern void *LoadNodeFree;
-extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in SmallNodeFree */
+extern u8 SmallNodePool[]; /* 63 x 0xC pool, free list in SmallNodeFree */
 extern u8 LoadNodePool[]; /* 63 x 0x24 pool, free list in LoadNodeFree */
 extern s32 cam_ramp_overide_count;
-extern s32 D_800517B4;
+extern s32 CamEaseOverride;
 extern s32 RandomSeedA;
 extern s32 RandomSeedB;
 extern script_thread_handler *ScriptList;
@@ -976,9 +976,9 @@ extern FreeNode *ClutFreeSmall;
 extern FreeNode *ClutUsedSmall;
 extern void *ClutLargeList;        /* list walked by clut_alloc_large (next at +4) */
 extern s32 MalFreeBytes;            /* mal_count_free: free bytes */
-extern s32 D_8004E108;            /* mal_count_free: free blocks */
+extern s32 MalFreeBlocks;            /* mal_count_free: free blocks */
 extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N at [2 * N] */
-extern s32 D_8004E10C;            /* mal_count_free: largest free block, bytes */
+extern s32 MalLargestFree;            /* mal_count_free: largest free block, bytes */
 extern s32 SfxBankCount;            /* slots of SfxBanks in use */
 extern char D_800654CC[];
 extern u8 GameInfo[];
@@ -1023,9 +1023,9 @@ typedef struct ArenaDef {
 extern LevSpec LevelSpecs; /* the level's hooks */
 extern s32 D_8005AA50;
 extern s32 D_8005AA54;
-extern s32 D_8005A5E4;
+extern s32 LevelConfig;
 extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
-extern s32 D_80058F0C[][8];       /* music_play_level */
+extern s32 LevelSfxBanks[][8];       /* music_play_level */
 /* The player's options, saved with the game: volumes in percent, stereo, a pad's vibration. */
 typedef struct GameOptionSet {
     /* 0x00 */ s32 music;
@@ -1074,7 +1074,7 @@ extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2];
 extern s32 CdReadStatus;
 
-/* 32-byte records of LevelRecs, indexed by D_8005A61C (SetLevelCameraMode). */
+/* 32-byte records of LevelRecs, indexed by LevelRecIndex (SetLevelCameraMode). */
 typedef struct {
     /* 0x00 */ u8 unk0[4];
     /* 0x04 */ s32 unk4; /* passed to queue_dbase_load by QueueHeroModels */
@@ -1126,7 +1126,7 @@ typedef struct ComboSeq {
 
 extern MATRIX MapSceneMatrix;
 extern SVECTOR MapSceneRot;
-extern u8 D_800512A8[]; /* ComboSeq table, 0x90 bytes per entry */
+extern u8 ComboSeqs[]; /* ComboSeq table, 0x90 bytes per entry */
 extern CdlLOC CdSeekLoc;
 extern RECT *ScreenRect;
 extern s32 D_8005B694;
@@ -1139,7 +1139,7 @@ extern s32 DebugFontClut;
 void *mal_trim_front(void *base, s32 offset, _mal_area *arg2);
 void cam_build_view(u8 *arg0, RECT *rect);
 extern GfxState RenderState;
-extern VECTOR D_8005688C; /* screen-space translation (gfx_setup_xform) */
+extern VECTOR ScreenTrans; /* screen-space translation (gfx_setup_xform) */
 
 /* The current draw buffer: primitives are allocated from the pointer at
  * +0x4008 (texture_draw). */
@@ -1244,8 +1244,8 @@ typedef struct {
     } v[4];    /* 0x0C */
 } ModePolyG4;
 extern s32 FrameCount; /* frame counter: its low bit picks the frame buffer */
-extern s32 D_8004E0E8; /* VSync ticks spent compacting the heap (mal_update) */
-extern s32 D_8004E0EC; /* words moved compacting the heap (mal_update) */
+extern s32 MalMoveVSyncs; /* VSync ticks spent compacting the heap (mal_update) */
+extern s32 MalMoveWords; /* words moved compacting the heap (mal_update) */
 typedef struct {
     u8 unk0[0x10];
     s32 off; /* 0x10: byte offset from this field to a block */
@@ -1257,9 +1257,9 @@ typedef struct {
     u8 unk0[0x24];
     ModelEntry entries[1]; /* 0x24, stride 0x34 */
 } ModelSet;
-extern s32 D_80056AC4; /* draw_object_model: the object's +0x8A */
-extern s32 D_80056878;    /* model_prims_begin: with D_80056AC4, forces the depth-cued path */
-extern s32 D_80056868[3]; /* model_prims_begin: default far colour */
+extern s32 PrimDepthLimit; /* draw_object_model: the object's +0x8A */
+extern s32 PrimDepthTest;    /* model_prims_begin: with PrimDepthLimit, forces the depth-cued path */
+extern s32 FarColor[3]; /* model_prims_begin: default far colour */
 
 typedef struct Words3 {
     s32 w0;
@@ -1307,9 +1307,9 @@ extern s32 ContourHeight;
 extern void (*SsTickSaved)();
 extern NAS *NASActiveTail;
 extern s32 *PrimNodeFree;
-extern s32 *D_8005683C;            /* pool sizes (prims_init) */
+extern s32 *PrimsConfig;            /* pool sizes (prims_init) */
 extern u8 *PrimSetPool;             /* 0x58-byte nodes (prims_init) */
-extern u8 *D_80056840;             /* 0x54-byte nodes, free list in PrimNodeFree */
+extern u8 *PrimNodePool;             /* 0x54-byte nodes, free list in PrimNodeFree */
 extern u8 *PrimLinkPool;             /* 8-byte nodes, free list in PrimLinkFree */
 typedef struct PrimList {
     s32 f0;
@@ -1379,7 +1379,7 @@ extern NAS NASTemplate;            /* copied over each spawned NAS */
 extern EXTengine EngineTemplate;   /* copied over each new engine */
 extern s16 AtanTable[];            /* get_angle */
 extern u16 GameExitFlags;
-extern s32 D_800512A4;
+extern s32 WideScreen;
 extern s32 screen_aspect[2];
 
 
@@ -1601,7 +1601,7 @@ typedef struct {
     u32 c1;      /* 0x74 */
     s32 font;    /* 0x78: into FontPage */
 } TextNAS;
-extern PosEntry D_8005689C[];
+extern PosEntry PosFlashes[];
 void shell_init(void);
 
 void shell_render_dcache(void);
@@ -2040,7 +2040,7 @@ typedef struct MapEnvHead {
 
 
 /* DrawSpriteTriple: three 0x38-byte sprite records drawn side by side */
-extern u16 D_8005A5C0[][3];
+extern u16 SpriteTripleUVs[][3];
 
 mal *mal_next_movable(_mal_area *heap);
 

@@ -136,7 +136,7 @@ extern s32 SaveMenuYesNo;
 extern s32 CardPromptStep;
 extern s32 SaveMenuState;
 
-/* InitLevelLoad's level setup config (D_8005A5E4, or D_8009F96C if unset). */
+/* InitLevelLoad's level setup config (LevelConfig, or D_8009F96C if unset). */
 typedef struct EngineCfg {
     /* 0x00 */ u8 unk0[0xC];
     /* 0x0C */ s32 pools[3];       /* prims_init */
@@ -148,7 +148,7 @@ typedef struct EngineCfg {
 
 extern EngineCfg D_8009F96C;
 extern EngineCfg D_800A0314;
-extern s32 D_8004E0D4;
+extern s32 GraphicsMode;
 extern s32 D_8009F654;
 extern s16 core_process;
 extern u8 *SlotBase;
@@ -324,7 +324,7 @@ extern u8 *D_8005AA20;
 extern u8 *HeroNasList;
 extern s32 PauseMenuSets;
 extern s32 D_800986A4[];
-extern s32 D_8005A61C;
+extern s32 LevelRecIndex;
 extern u16 CameraMode;
 
 typedef struct EngineRec24 {

@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/engine.h"
 
-extern s32 D_8005687C[];
+extern s32 GameSceneCounts[];
 s32 UpdatePause(void);
 void UpdateLevel(void);
 void UpdateScreenLabels(void);
