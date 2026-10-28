@@ -410,29 +410,29 @@ s32 CountSavedWins(s32 arg0) {
 }
 
 void UpdateCardMessage(void) {
-    u8 *s0;
-    Sub3F0 *s1;
+    subengine *s0;
+    subengine *s1;
     s32 *tab;
 
-    s0 = (u8 *)GetEngineSlot(0)->sub;
-    s1 = (Sub3F0 *)(s0 + 0x3F0);
+    s0 = GetEngineSlot(0)->sub;
+    s1 = &s0[6];
     if (CardStatus & 2) {
         if (CardStatus & 0x40) {
-            s1->f6C = LangCheckingUnlocked[GameLanguage];
-            *(s32 *)(s0 + 0x3F0) |= 0x8000;
+            s1->u6C.text = (char *)LangCheckingUnlocked[GameLanguage];
+            s0[6].flags |= 0x8000;
             return;
         } else if (CardStatus & 0x10) {
             if (CountSavedWins(0) != 0) {
-                s1->f6C = LangUnlockWithCard[GameLanguage];
-                *(s32 *)(s0 + 0x3F0) |= 0x8000;
+                s1->u6C.text = (char *)LangUnlockWithCard[GameLanguage];
+                s0[6].flags |= 0x8000;
                 if (Pads[0].pressed & 0x2000) {
                     PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
                     CountSavedWins(1);
                 }
                 return;
             }
-            s1->f6C = LangThereAreNoMoreUnlockedLevels[GameLanguage];
-            *(s32 *)(s0 + 0x3F0) |= 0x8000;
+            s1->u6C.text = (char *)LangThereAreNoMoreUnlockedLevels[GameLanguage];
+            s0[6].flags |= 0x8000;
             return;
         } else {
             goto def;
@@ -441,8 +441,8 @@ void UpdateCardMessage(void) {
 def:
         tab = LangInsertCardForUnlocked;
     }
-    s1->f6C = tab[GameLanguage];
-    *(s32 *)(s0 + 0x3F0) |= 0x8000;
+    s1->u6C.text = (char *)tab[GameLanguage];
+    s0[6].flags |= 0x8000;
 }
 
 void UpdateCupMenu(void) {

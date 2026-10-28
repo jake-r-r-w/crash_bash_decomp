@@ -26,7 +26,6 @@ typedef struct { s32 w[3]; } Blk12;
 typedef struct { Blk12 a; s32 b; } Blk12p4;
 
 
-typedef struct { u8 pad[0x6C]; s32 f6C; } Sub3F0;
 extern s32 LangUnlockWithCard[];
 extern s32 LangInsertCardForUnlocked[];
 extern s32 LangCheckingUnlocked[];
