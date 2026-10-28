@@ -337,19 +337,6 @@ typedef struct GfxCamera {
     MATRIX rot;     /* 0x98: rotation for screen-aligned objects */
 } GfxCamera;
 
-/* The transform block gfx_object_matrix reads (at +0xC or +0x1C of its owner). */
-typedef struct {
-    u32 flags;      /* 0x00: 0x10000000 screen space, 0x20000000 screen-aligned */
-    s32 x, y, z;    /* 0x04 */
-    u8 unk10[0x10]; /* 0x10: passed to rotscale_update (0x20 bytes) */
-    s32 sx, sy, sz; /* 0x20: scale for screen-aligned (gfx_setup_xform) */
-    u8 unk2C[4];
-    MATRIX rot;     /* 0x30 */
-    u8 unk50;       /* 0x50: nonzero: scale the screen-aligned matrix */
-    u8 unk51;       /* 0x51: 4: no transform */
-    u16 unk52;      /* 0x52: nonzero: rot needs rebuilding */
-} GfxXform;
-
 /* The block at GfxState+0x28 (passed to gfx_setup_xform). */
 typedef struct {
     s32 x, y;  /* 0x0: screen offset */

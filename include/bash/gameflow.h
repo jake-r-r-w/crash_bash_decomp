@@ -588,7 +588,7 @@ typedef struct {
 extern IntroStep IntroSteps[];
 extern Blk32 D_8009E560;
 extern CamVec3 D_8009E580;
-extern u8 *D_8009E5AC;
+extern script_handler *IntroScript;
 extern _sfx_handler *IntroSfx[3];
 extern _sfx_handler *D_8009E5C4;
 void UpdateIntro(void);

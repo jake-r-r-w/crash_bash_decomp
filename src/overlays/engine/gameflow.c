@@ -122,8 +122,8 @@ void UpdateIntro(void) {
         SetupSceneMarks(e->model);
         ScriptTimeStep = 0x10000;
         VSyncRate = type;
-        D_8009E5AC = play_script(IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
-                                   &D_8009E560, &D_8009E580, 4, (u8 **)&D_800AEC58);
+        IntroScript = play_script((obj_dbase *)IntroSteps[IntroStepIndex].model, IntroSteps[IntroStepIndex].unkC,
+                                   &D_8009E560, &D_8009E580, 4, (script_handler **)&D_800AEC58);
         if (IntroSteps[IntroStepIndex].sfx[0] != -1) {
             PlaySfx(IntroSteps[IntroStepIndex].sfx[0], &IntroSfx[0], NULL, 0x1000, 0x1E00, 0);
             PlaySfx(IntroSteps[IntroStepIndex].sfx[1], &IntroSfx[1], NULL, 0x1000, 0x1E00, 0);
@@ -1917,7 +1917,7 @@ CamVec3 D_8009E580 = {0};
 s32 D_8009E58C[6] = { (s32)InitIntro, (s32)UpdateIntro, (s32)RenderIntro, (s32)QuitIntro, 0, 0 };
 s32 IntroStepIndex = 0;
 s32 IntroStepTimer = 0;
-u8 *D_8009E5AC = 0;
+script_handler *IntroScript = 0;
 s32 IntroNextSfx = 0;
 s32 IntroSfxDelay = 0;
 _sfx_handler *IntroSfx[3] = {0};

@@ -69,7 +69,7 @@ void UpdateLoadingScene(void) {
                 D_800A02C4 = 6;
                 SetupSceneMarks(p);
                 D_800A02C0 += 1;
-                play_script(p, 0, &D_8009F9D4, &D_8009F9F4, 8, NULL);
+                play_script((obj_dbase *)p, 0, &D_8009F9D4, &D_8009F9F4, 8, NULL);
             }
         }
         if (D_800A02C4 != 0) {
@@ -647,7 +647,7 @@ void StartSceneScript(void) {
     s32 t;
     MarkSrcEnt *e;
 
-    play_script((u8 *)((MarkCtx *)SceneMark)->obj, ((MarkCtx *)SceneMark)->unk8, &D_800A0BA0, &D_800A0BC0, 4, &D_800A0D34);
+    play_script((obj_dbase *)((MarkCtx *)SceneMark)->obj, ((MarkCtx *)SceneMark)->unk8, &D_800A0BA0, &D_800A0BC0, 4, &SceneScript);
     SceneMarkCount = 0;
     t = (s32)((MarkCtx *)SceneMark)->obj;
     SceneOldDbase = t;
@@ -684,7 +684,7 @@ void UpdateScriptScene(void) {
     GameFrameCount += 1;
     scripts_update();
     if (SceneMark != NULL) {
-        if (D_800A0D34 == NULL) {
+        if (SceneScript == NULL) {
             if ((s32)((MarkCtx *)SceneMark)->obj != SceneOldDbase && SceneOldDbase != 0) {
                 dbase_release((u8 *)SceneOldDbase);
             }
@@ -1566,7 +1566,7 @@ s32 D_800A0D24[1] = {0};
 s32 D_800A0D28 = 0;
 void *SceneMark = 0;
 s32 SceneOldDbase = 0;
-u8 *D_800A0D34 = 0;
+script_handler *SceneScript = 0;
 s32 D_800A0D38 = 0;
 s32 SceneStep = 0;
 s32 D_800A0D40[1] = {0};

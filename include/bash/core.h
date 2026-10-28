@@ -217,9 +217,22 @@ struct script_control_info {
 };
 BASH_SIZE_CHECK(script_control_info, 0x1C);
 
+/* The transform block gfx_object_matrix reads (at +0xC or +0x1C of its owner). */
+typedef struct {
+    u32 flags;      /* 0x00: 0x10000000 screen space, 0x20000000 screen-aligned */
+    s32 x, y, z;    /* 0x04 */
+    u8 unk10[0x10]; /* 0x10: passed to rotscale_update (0x20 bytes) */
+    s32 sx, sy, sz; /* 0x20: scale for screen-aligned (gfx_setup_xform) */
+    u8 unk2C[4];
+    MATRIX rot;     /* 0x30 */
+    u8 unk50;       /* 0x50: nonzero: scale the screen-aligned matrix */
+    u8 unk51;       /* 0x51: 4: no transform */
+    u16 unk52;      /* 0x52: nonzero: rot needs rebuilding */
+} GfxXform;
+
 struct script_handler {
     /* 0x00 */ script_control_info info;
-    /* 0x1C */ s32 xyzrf[21]; /* struct ._319 (0x54 bytes), not in the fragment */
+    /* 0x1C */ GfxXform xyzrf;  /* struct ._319 in the fragment (0x54 bytes) */
     /* 0x70 */ script_handler *last;
     /* 0x74 */ script_handler *next;
     /* 0x78 */ script_handler **owner;

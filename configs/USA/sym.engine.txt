@@ -612,3 +612,5 @@ SlotBase = 0x80098594;
 IntroNextSfx = 0x8009E5B0;
 IntroSfxDelay = 0x8009E5B4;
 CupSlotPanel = 0x8009EB3C;
+IntroScript = 0x8009E5AC;
+SceneScript = 0x800A0D34;
