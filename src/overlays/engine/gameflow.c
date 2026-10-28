@@ -896,7 +896,7 @@ void UpdateCardPrompt(void) {
                     }
                     *(Blk18C *)GameInfo = *(Blk18C *)(src + 8);
                     {
-                        Blk12p4 *d = (Blk12p4 *)GameOptions;
+                        Blk12p4 *d = (Blk12p4 *)&GameOptions;
                         u8 *s = GameInfo;
                         *d = *(Blk12p4 *)(s + 0xD0);
                     }
@@ -1148,7 +1148,7 @@ void UpdateSaveMenu(void) {
                 dst->b[5] = q[0x5D];
                 dst->b[6] = q[0x5E];
                 dst->b[7] = q[0x5F];
-                *(Blk12p4 *)(q + 0xD0) = *(Blk12p4 *)GameOptions;
+                *(Blk12p4 *)(q + 0xD0) = *(Blk12p4 *)&GameOptions;
                 *(Blk18C *)dst->unk8 = *(Blk18C *)q;
                 ShowCardSlots();
                 card_save();
@@ -1429,7 +1429,7 @@ void RestoreHeroChoice(u8 *src) {
     g[0x5F] = src[7];
     *(Blk18C *)GameInfo = *(Blk18C *)(src + 8);
     {
-        Blk12p4 *d = (Blk12p4 *)GameOptions;
+        Blk12p4 *d = (Blk12p4 *)&GameOptions;
         u8 *s = GameInfo;
         *d = *(Blk12p4 *)(s + 0xD0);
     }
@@ -1447,7 +1447,7 @@ void SaveHeroChoice(u8 *dst) {
     dst[5] = g[0x5D];
     dst[6] = g[0x5E];
     dst[7] = g[0x5F];
-    *(Blk16 *)(g + 0xD0) = *(Blk16 *)GameOptions;
+    *(Blk16 *)(g + 0xD0) = *(Blk16 *)&GameOptions;
     *(Blk18C *)(dst + 8) = *(Blk18C *)g;
     ShowCardSlots();
 }
@@ -1677,7 +1677,7 @@ void InitGameState(GameState *arg0) {
     arg0->unk6C = 0;
     arg0->unk70 = 0;
     arg0->unk2C = D_8004E0D4;
-    arg0->unkD0 = *(Blk12p4 *)GameOptions;
+    arg0->unkD0 = *(Blk12p4 *)&GameOptions;
 }
 
 void InitGraphics(void) {
@@ -1695,13 +1695,13 @@ void InitGraphics(void) {
     D_8004E0D4 = 0;
     D_8009F654 = 0;
     core_process = 0;
-    *(s32 *)GameOptions = 0x46;
-    *(s32 *)(GameOptions + 4) = 0x64;
-    *(s32 *)(GameOptions + 8) = 1;
-    GameOptions[0xC] = 1;
-    GameOptions[0xD] = 1;
-    GameOptions[0xE] = 1;
-    GameOptions[0xF] = 1;
+    GameOptions.music = 0x46;
+    GameOptions.sfx = 0x64;
+    GameOptions.stereo = 1;
+    GameOptions.vibrate[0] = 1;
+    GameOptions.vibrate[1] = 1;
+    GameOptions.vibrate[2] = 1;
+    GameOptions.vibrate[3] = 1;
     InitGameState((GameState *)g);
     sound_init();
 }
@@ -1776,15 +1776,15 @@ void ResetGameState(void) {
 }
 
 void InitGameOptions(void) {
-    s8 *p;
-    *(s32 *)GameOptions = 0x46;
-    p = GameOptions;
-    *(s32 *)(p + 4) = 0x64;
-    *(s32 *)(p + 8) = 1;
-    p[0xC] = 1;
-    p[0xD] = 1;
-    p[0xE] = 1;
-    p[0xF] = 1;
+    GameOptionSet *p;
+    GameOptions.music = 0x46;
+    p = &GameOptions;
+    p->sfx = 0x64;
+    p->stereo = 1;
+    p->vibrate[0] = 1;
+    p->vibrate[1] = 1;
+    p->vibrate[2] = 1;
+    p->vibrate[3] = 1;
 }
 
 void InitRetry(void) {

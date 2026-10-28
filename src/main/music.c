@@ -15,9 +15,9 @@ void music_open_seq(music_midi *slot, s32 idx) {
     slot->unk1C = idx;
     SsSetMVol(0x7F, 0x7F);
     SsSeqPlay((s16)slot->seq, 1, 0);
-    vol = (*(s32 *)GameOptions * 0x7F) / 100;
+    vol = (GameOptions.music * 0x7F) / 100;
     SsSeqSetVol((s16)slot->seq, vol, vol);
-    D_800655B4 = (*(s32 *)GameOptions * 0x7F) / 100;
+    D_800655B4 = (GameOptions.music * 0x7F) / 100;
     SsSetMute(0);
 }
 
@@ -46,17 +46,17 @@ void music_update(void) {
         }
     } else {
         if (slot->seq >= 0) {
-            vol = (*(s32 *)GameOptions * 0x7F) / 100;
+            vol = (GameOptions.music * 0x7F) / 100;
             if (D_800655B4 != vol || D_800655AC != D_800655B0) {
                 if (D_800655AC != 0) {
-                    SeqSlot_SetVol(slot, (*(s32 *)GameOptions * 0x55) / 100);
+                    SeqSlot_SetVol(slot, (GameOptions.music * 0x55) / 100);
                 } else {
                     SeqSlot_SetVol(slot, vol);
                 }
             }
         }
         D_800655B0 = D_800655AC;
-        D_800655B4 = (*(s32 *)GameOptions * 0x7F) / 100;
+        D_800655B4 = (GameOptions.music * 0x7F) / 100;
     }
 }
 

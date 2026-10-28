@@ -2826,7 +2826,7 @@ loop:
 void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
     u8 *p;
 
-    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && GameOptions[pad + 0xC] != 0 &&
+    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && GameOptions.vibrate[pad] != 0 &&
         (Pads[pad].unk0 & 8)) {
         p = (u8 *)&Pads[pad] + 0x1C;
         p[5] = arg2;
@@ -2838,7 +2838,7 @@ void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
 void pad_rumble_small(s32 pad, s32 arg1) {
     u8 *p;
 
-    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && pad < 4 && GameOptions[pad + 0xC] != 0 &&
+    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && pad < 4 && GameOptions.vibrate[pad] != 0 &&
         (Pads[pad].unk0 & 8)) {
         p = (u8 *)&Pads[pad] + 0x1C;
         p[4] = 1;
@@ -4099,10 +4099,7 @@ void *D_8005A5E0 = 0;
 s32 D_8005A5E4 = 0;
 EngineRec32 *D_8005A5E8 = 0;
 s32 D_8005A5EC[6] = {0};
-s8 GameOptions[4] = {0};
-s32 D_8005A608 = 0;
-s32 D_8005A60C = 0;
-s32 D_8005A610[1] = {0};
+GameOptionSet GameOptions = {0};
 u8 GameInfo[4] = {0};
 s32 GameCheats = 0;
 s32 D_8005A61C = 0;

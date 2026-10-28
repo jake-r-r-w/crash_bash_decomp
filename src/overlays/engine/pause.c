@@ -424,32 +424,32 @@ found:
                 {
                     switch (PauseChoice) {
                     case 0:
-                        on = OPTV->unk8 != 0;
+                        on = GameOptions.stereo != 0;
                         PauseToggles[0] = on;
                         if (ActivePad()->pressed & 0xA0) {
                             PauseToggles[0] = on ^ 1;
                             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
                             if ((u16)PauseToggles[0] != 0) {
-                                OPTV->unk8 = s;
+                                GameOptions.stereo = s;
                                 sound_set_stereo();
                             } else {
-                                OPTV->unk8 = 0;
+                                GameOptions.stereo = 0;
                                 sound_set_mono();
                             }
                         }
                         break;
                     case 1:
-                        v = OPTV->unk0;
+                        v = GameOptions.music;
                         if (v > 0 && (ActivePad()->pressed & 0x80)) {
                             v -= 5;
                         }
                         if (v < 100 && (ActivePad()->pressed & 0x20)) {
                             v += 5;
                         }
-                        OPTV->unk0 = v;
+                        GameOptions.music = v;
                         break;
                     case 2:
-                        v = D_8005A608;
+                        v = GameOptions.sfx;
                         if (v > 0 && (ActivePad()->pressed & 0x80)) {
                             v -= 5;
                             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -458,7 +458,7 @@ found:
                             v += 5;
                             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
                         }
-                        D_8005A608 = v;
+                        GameOptions.sfx = v;
                         break;
                     }
                 }
@@ -472,7 +472,7 @@ found:
             case 2:
                 for (i = 0; i < PSV->numPlayers; i++) {
                     if ((HPADS[i].pressed & 0x8000) && (((PadStick *)Pads)[i].flags & 8)) {
-                        OPTV->unkC[i] = OPTV->unkC[i] == 0;
+                        GameOptions.vibrate[i] = GameOptions.vibrate[i] == 0;
                         pad_rumble_small(i, 10);
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
@@ -879,15 +879,15 @@ void DrawPauseMenu(void) {
         case 1:
             PauseToggles[1] = sel;
             PauseToggles[2] = sel;
-            PauseToggles[0] = OPTV->unk8 != 0;
-            FormatPercent(D_80059748[MSGV->level]->unkBC, OPTV->unk0);
-            FormatPercent(D_80059748[MSGV->level]->unkC0, OPTV->unk4);
+            PauseToggles[0] = GameOptions.stereo != 0;
+            FormatPercent(D_80059748[MSGV->level]->unkBC, GameOptions.music);
+            FormatPercent(D_80059748[MSGV->level]->unkC0, GameOptions.sfx);
             DrawHudEntries(D_80059D2C, PauseMenuY);
             break;
         case 2:
             for (i = 0; i < MSGV->numPlayers; i++) {
                 if (Pads[i].unk0 & 8) {
-                    PauseToggles[i] = OPTV->unkC[i] != 0;
+                    PauseToggles[i] = GameOptions.vibrate[i] != 0;
                 } else {
                     PauseToggles[i] = 9;
                 }

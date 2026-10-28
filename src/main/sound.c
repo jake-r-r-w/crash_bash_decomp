@@ -196,7 +196,7 @@ S16Pair sfx_position_volume(VECTOR *pos) {
 
     ViewProject(pos, (s32 *)&sxy);
     vol = ViewVolumeXY(pos, (View *)MainCamera, (s32 *)&ret);
-    if (D_8005A60C != 0) {
+    if (GameOptions.stereo != 0) {
         vol *= 0x1450;
         vol /= 4096;
         if (vol > 0x1000) {
@@ -223,18 +223,18 @@ void sfx_change_pitch(PitchVoice *arg0, s32 arg1) {
 }
 
 void sfx_set_voice_volume(s16 *arg0, s32 arg1, s32 arg2) {
-    s32 vol = D_8005A608 * 0x7F;
+    s32 vol = GameOptions.sfx * 0x7F;
 
     SsUtSetVVol(*arg0, (arg1 * vol) / 409600, (arg2 * vol) / 409600);
 }
 
 s32 sfx_key_on(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    s32 *p = (s32 *)GameOptions;
+    GameOptionSet *p = &GameOptions;
     s8 *sfx = SfxTable[arg1];
     s16 v;
 
     v = SsUtKeyOn(sfx[0], (s32)(((u8 *)sfx)[1] << 24) >> 28, ((u8 *)sfx)[1] & 0xF, (s32)(arg2 << 9) >> 16,
-                  arg2 & 0x7F, (arg3 * ((p[1] << 7) - p[1])) / 409600, (arg4 * ((p[1] << 7) - p[1])) / 409600);
+                  arg2 & 0x7F, (arg3 * ((p->sfx << 7) - p->sfx)) / 409600, (arg4 * ((p->sfx << 7) - p->sfx)) / 409600);
     arg0[0] = v;
     arg0[1] = (s32)sfx;
     if (v != -1) {

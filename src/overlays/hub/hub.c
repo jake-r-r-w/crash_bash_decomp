@@ -52,7 +52,7 @@ void HubStartCredits(void) {
         HubCreditsY = 0;
         D_80098714 = one;
         CameraMode = 0;
-        HubCreditsStart = D_8005A608;
+        HubCreditsStart = GameOptions.sfx;
         InitEngineSlot(0, 0x1E);
         return;
     }
@@ -172,7 +172,7 @@ s32 HubCreditsScroll(void) {
         }
         return 0;
     case 3:
-        HubCreditsStart = D_8005A608;
+        HubCreditsStart = GameOptions.sfx;
         KillEngineSlot(0);
         D_8009870E = 2;
         D_80098710 = 45;
@@ -181,15 +181,15 @@ s32 HubCreditsScroll(void) {
         return 0;
     case 2:
         if (D_80098710 == 0) {
-            D_8005A608 = HubCreditsStart;
+            GameOptions.sfx = HubCreditsStart;
             HubEndCredits();
             return 1;
         }
         D_80098710--;
         {
-            s32 *opt = (s32 *)GameOptions;
-            if (opt[1] > 0) {
-                opt[1] -= opt[1] >> 2;
+            GameOptionSet *opt = &GameOptions;
+            if (opt->sfx > 0) {
+                opt->sfx -= opt->sfx >> 2;
             }
         }
         return 0;

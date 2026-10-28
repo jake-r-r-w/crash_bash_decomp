@@ -960,11 +960,11 @@ void OptionsUpdate(void) {
         switch (OptionsCursor) {
         case 0:
             if (Pads[0].pressed & 0xA0) {
-                s32 *opt = (s32 *)GameOptions;
+                GameOptionSet *opt = &GameOptions;
 
-                opt[2] ^= 1;
+                opt->stereo ^= 1;
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
-                if (opt[2] != 0) {
+                if (opt->stereo != 0) {
                     sound_set_stereo();
                 } else {
                     sound_set_mono();
@@ -975,19 +975,19 @@ void OptionsUpdate(void) {
             sub[5].unk7C = 2;
             break;
         case 1:
-            v = *(s32 *)GameOptions;
+            v = GameOptions.music;
             if (v > 0 && (Pads[0].pressed & 0x80)) {
                 v -= 5;
             }
             if (v < 100 && (Pads[0].pressed & 0x20)) {
                 v += 5;
             }
-            *(s32 *)GameOptions = v;
+            GameOptions.music = v;
             sub[6].unk7C = 2;
             sub[7].unk7C = 2;
             break;
         case 2:
-            v = D_8005A608;
+            v = GameOptions.sfx;
             if (v > 0 && (Pads[0].pressed & 0x80)) {
                 v -= 5;
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -996,7 +996,7 @@ void OptionsUpdate(void) {
                 v += 5;
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
             }
-            D_8005A608 = v;
+            GameOptions.sfx = v;
             sub[8].unk7C = 2;
             sub[9].unk7C = 2;
             break;
@@ -1009,7 +1009,7 @@ void OptionsUpdate(void) {
         }
         for (i = 0; i < n; i++) {
             if (((PadButtons *)Pads)[i].pressed & 0x8000) {
-                ((TitlesOpt *)GameOptions)->unkC[i] ^= 1;
+                GameOptions.vibrate[i] ^= 1;
                 pad_rumble_small(i, 0xA);
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
             }
@@ -1035,15 +1035,15 @@ void OptionsRender(void) {
     RenderState.modelDp = ScreenFade.amount;
     switch (OptionsPage) {
     case 1:
-        FormatPercent(sub[7].unk6C, *(s32 *)GameOptions);
-        if (((s32 *)GameOptions)[2] != 0) {
+        FormatPercent(sub[7].unk6C, GameOptions.music);
+        if (GameOptions.stereo != 0) {
             sub[5].flags &= ~0x8000;
             sub[4].flags |= 0x8000;
         } else {
             sub[5].flags |= 0x8000;
             sub[4].flags &= ~0x8000;
         }
-        FormatPercent(sub[9].unk6C, D_8005A608);
+        FormatPercent(sub[9].unk6C, GameOptions.sfx);
         break;
     case 2:
         n = PadCount;
@@ -1053,7 +1053,7 @@ void OptionsRender(void) {
         for (i = 0; i < n; i++) {
             if (Pads[i].unk0 & 8) {
                 sub[i * 3 + 5].unk7C = 0;
-                if (GameOptions[i + 0xC] != 0) {
+                if (GameOptions.vibrate[i] != 0) {
                     sub[i * 3 + 4].flags |= 0x8000;
                     sub[i * 3 + 5].flags &= ~0x8000;
                     sub[i * 3 + 6].flags &= ~0x8000;

@@ -59,13 +59,6 @@ extern s32 BattleOptionsState;
 extern PlaceRec OptionsPlace[];
 extern s32 OptionsCursor;
 extern s32 OptionsPage;
-/* GameOptions as OptionsUpdate edits it (options menu). */
-typedef struct TitlesOpt {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
-    /* 0x08 */ s32 unk8;
-    /* 0x0C */ u8 unkC[4];
-} TitlesOpt;
 extern PlaceRec OptionsSoundPlace[];
 extern PlaceRec OptionsControllerPlace[];
 extern PlaceRec TeamModePlace[];

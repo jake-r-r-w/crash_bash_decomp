@@ -962,7 +962,6 @@ extern s32 DatIndex[];         /* the archive's {sector, size} entries, file N a
 extern s32 D_8004E10C;            /* mal_count_free: largest free block, bytes */
 extern s32 SfxBankCount;            /* slots of SfxBanks in use */
 extern char D_800654CC[];
-extern s32 D_8005A608;
 extern u8 GameInfo[];
 extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
 extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (views: numPlayers) */
@@ -1008,7 +1007,14 @@ extern s32 D_8005AA54;
 extern s32 D_8005A5E4;
 extern const char MsgFatalMetricsError[];         /* "FATAL METRICS ERROR ..." */
 extern s32 D_80058F0C[][8];       /* music_play_level */
-extern s8 GameOptions[];
+/* The player's options, saved with the game: volumes in percent, stereo, a pad's vibration. */
+typedef struct GameOptionSet {
+    /* 0x00 */ s32 music;
+    /* 0x04 */ s32 sfx;
+    /* 0x08 */ s32 stereo;
+    /* 0x0C */ s8 vibrate[4];
+} GameOptionSet;
+extern GameOptionSet GameOptions;
 extern s32 card_command_delay;
 extern s32 D_8005A620;
 extern s32 GlobalNAStatus;
@@ -1897,7 +1903,6 @@ void init_dots(subengine *arg0);
 
 
 
-extern s32 D_8005A60C;
 
 /* Inlined copies of view_project_volume, view_project and sfx_pan (used by
  * sfx_position_volume). */
