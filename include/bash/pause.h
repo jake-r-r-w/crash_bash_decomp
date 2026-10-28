@@ -20,7 +20,7 @@ typedef struct {
 } FuxFlags;
 /* Hero engine scale tables, 12 steps (HeroSpin). */
 extern u16 HeroSquashCycle[];
-extern u16 D_8009DC50[];
+extern u16 HeroSpinScale[];
 typedef struct {
     s32 a;
     u16 b;
@@ -129,14 +129,14 @@ s32 PauseRecNext(void);
 
 
 
-extern s32 D_8009D764[16][4];
+extern s32 HeroOrders[16][4];
 
 
 
 /* HeroTakeHit: harm tables. */
-extern u16 D_8009D3B8[][4];
-extern u16 D_8009D400[][9];
-extern u16 D_8009D4A4[];
+extern u16 HitDamage[][4];
+extern u16 HitFalloff[][9];
+extern u16 HitScale[];
 
 extern s16 WinSeqTimer;
 extern s16 WinSeqStep;
@@ -194,7 +194,7 @@ void RecordWin(void);
 
 
 
-extern u16 D_8009DC2C[];
+extern u16 HeroIdleSfx[];
 
 
 
@@ -245,7 +245,7 @@ void UpdateWinCounter(s32 arg0);
 
 
 /* HeroShoot: per weapon-timer step, an s16 triple. */
-extern s16 D_8009DC68[][3];
+extern s16 ThrowArcs[][3];
 
 /* PlotFallParticles: one falling particle, drawn as a quad between two points */
 typedef struct {
@@ -437,7 +437,7 @@ typedef struct HeroLoopView {
 #define HPADS ((PadButtons *)Pads)
 extern s32 HeroesSidelined;
 extern u16 FinalHeroesTempo;
-extern u16 D_8009D524[4];
+extern u16 HeroLastHarm[4];
 /* GameInfo as seen by UpdatePause (the pause menu). */
 typedef struct PauseView {
     /* 0x00 */ s32 unk0;
@@ -478,7 +478,7 @@ void UpdatePauseSlide(s32 arg0);
 /* InitialiseHeroes: hero setup. */
 extern s32 HeroesInPlay;
 extern s32 HeroesSidelined;
-extern u16 D_8009D3A4[];
+extern u16 HeroEntities[];
 
 /* GameInfo as seen by InitialiseHeroes. */
 typedef struct HeroSetupView {
@@ -549,7 +549,7 @@ typedef struct ScriptKey {
     /* 0x40 */ s32 sx, sy, sz;
     /* 0x4C */ s32 fade;
 } ScriptKey;
-extern s32 D_8009E194;
+extern s32 ScriptFxOn;
 
 
 #endif /* BASH_PAUSE_H */

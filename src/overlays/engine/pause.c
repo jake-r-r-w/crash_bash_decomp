@@ -1774,10 +1774,10 @@ void RequestQuit(void) {
 
 void SetDefaultHeroHooks(void) {
     HeroHooks.InitHero = 0;
-    HeroHooks.HeroModels = D_8009D2E4;
-    HeroHooks.RunSpeeds = D_8009D318;
-    HeroHooks.JumpEnts = D_8009D354;
-    HeroHooks.VictorySeqs = D_8009D2F8;
+    HeroHooks.HeroModels = DefaultHeroModels;
+    HeroHooks.RunSpeeds = DefaultRunSpeeds;
+    HeroHooks.JumpEnts = DefaultJumpEnts;
+    HeroHooks.VictorySeqs = DefaultVictorySeqs;
     HeroHooks.PreMoveHero = DefPreMoveHero;
     HeroHooks.MoveHero = DefMoveHero;
     HeroHooks.HeroFacing = DefHeroFacing;
@@ -1800,11 +1800,11 @@ void SetDefaultHeroHooks(void) {
     HeroHooks.HeroExtraEffects = 0;
     HeroHooks.HeroCarryCollision = 0;
     HeroHooks.KeepInBounds = DefKeepInBounds;
-    AiBotTweakTable = D_8009D894;
-    AiHumanTweakTable = D_8009D8A8;
-    AiSkillTable = D_8009D8BC;
-    AiHumanRoundTweakTable = D_8009D8DC;
-    AiTeamSkillTable = D_8009D8D0;
+    AiBotTweakTable = DefaultAiBotTweaks;
+    AiHumanTweakTable = DefaultAiHumanTweaks;
+    AiSkillTable = DefaultAiSkills;
+    AiHumanRoundTweakTable = DefaultAiHumanRoundTweaks;
+    AiTeamSkillTable = DefaultAiTeamSkills;
     HeroesAllOut = 0;
     HeroActHit = 0xD;
     HeroActPickup = 0xE;

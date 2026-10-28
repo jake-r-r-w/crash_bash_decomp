@@ -111,7 +111,7 @@ void InitialiseHeroes(void) {
         h->hero_weapon_count = 0;
         h->hero_weapon_timer = 0;
         h->hero_attack_counter = 0;
-        D_8009D524[i] = 0;
+        HeroLastHarm[i] = 0;
         h->hero_name = g->unk50[0];
         c = (AiSkill *)((s16 *)AiPlayerSkill + k);
         c->level = 0x10;
@@ -138,7 +138,7 @@ void InitialiseHeroes(void) {
         } else {
             h->hero_sub->u6C.dbase = NULL;
         }
-        sub->entity = D_8009D3A4[name];
+        sub->entity = HeroEntities[name];
         FetchDefaultColBox(eng, 0x50);
         if (HeroHooks.InitHero != 0) {
             ((void (*)(s32))HeroHooks.InitHero)(i);
@@ -333,7 +333,7 @@ void ProcessHeroes(void) {
         if (i >= 4) {
             break;
         }
-        id = D_8009D764[r][i];
+        id = HeroOrders[r][i];
         a = &Heroes[id];
         status = a->hero_status;
         if (status & 0x1080) {
@@ -390,7 +390,7 @@ void ProcessHeroes(void) {
                 h->hero_pu_timer = 0;
                 SetHeroAction(id, (u16)HeroActHit);
             } else {
-                D_8009D524[id] = h->hero_harm_value;
+                HeroLastHarm[id] = h->hero_harm_value;
                 h->hero_health -= h->hero_harm_value >> 8;
                 h->hero_health -= h->hero_harm_fraction >> 8;
                 h->hero_harm_fraction = (u8)h->hero_harm_fraction;
@@ -760,7 +760,7 @@ void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
         v = 0x1F;
     }
     if (g[0x5C] == 0) {
-        v = D_8009D4A4[v] - base[0x9B];
+        v = HitScale[v] - base[0x9B];
     } else {
         v = 0;
     }
@@ -782,11 +782,11 @@ void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     if (flags & 0x800) {
         v = flags & 0xFF;
     } else {
-        v = D_8009D3B8[flags & 0xF][v];
+        v = HitDamage[flags & 0xF][v];
     }
     if (!(((EngineGameView *)GameInfo)->flags & 3)) {
         if (GameInfo[player + 0x5C] != 0 && (u32)(dist -= 0x18) < 9) {
-            v = D_8009D400[v >> 8][dist];
+            v = HitFalloff[v >> 8][dist];
         }
     }
     if (flags & 0x1000) {
@@ -953,7 +953,7 @@ void ClearHeroAnimSlots(void) {
     s32 r;
 
     i = 0;
-    tab = (s32)D_8009D764;
+    tab = (s32)HeroOrders;
     off = 0;
     do {
         j = 0;
@@ -1891,7 +1891,7 @@ void HeroIdle(s32 arg0) {
                     if (h->hero_aseq != 1) {
                         goto idle_done;
                     }
-                    PlaySfx(D_8009DC2C[Random(6)], &h->hero_eng->sfx, NULL,
+                    PlaySfx(HeroIdleSfx[Random(6)], &h->hero_eng->sfx, NULL,
                             0x1000, 0x1E00, 0);
                     SetHeroSeq(arg0, 0xE);
                 } else if (h->hero_aseq == 0xE) {
@@ -2272,7 +2272,7 @@ void HeroSpin(s32 arg0) {
                 idx = (s16)((h->hero_eng->unk1E & 0xFFF) / 341);
                 idx = (s16)(idx % 12);
                 h->hero_eng->unk2C.x = HeroSquashCycle[idx];
-                h->hero_eng->unk2C.y = D_8009DC50[idx];
+                h->hero_eng->unk2C.y = HeroSpinScale[idx];
                 h->hero_eng->unk2C.z = HeroSquashCycle[idx];
                 h->hero_ctrl |= 5;
                 id = HeroTestBox(arg0, 0x400);
@@ -2487,7 +2487,7 @@ void HeroShoot(s32 arg0) {
                     if (i < 0) {
                         self->hero_weapon_timer = t + 1;
                     } else {
-                        tbl = D_8009DC68;
+                        tbl = ThrowArcs;
                         p = tbl[i];
                         if (*p != 0) {
                             s->unk20.x = p[0];
@@ -3703,7 +3703,7 @@ void PlotScriptFX(NAS *nas) {
     s32 first;
 
     t0 = VSync(1);
-    if (((EngineGameView *)GameInfo)->mode == 0x2C && D_8009E194 != 0) {
+    if (((EngineGameView *)GameInfo)->mode == 0x2C && ScriptFxOn != 0) {
         return;
     }
     sd = (EXTscriptdata *)nas->FUX;
@@ -3843,7 +3843,7 @@ void PlotScriptFX(NAS *nas) {
         if (sd->timer >= sd->totalframes << 8) {
             sd->timer = 0;
             if (((EngineGameView *)GameInfo)->mode == 0x2C) {
-                D_8009E194 = 1;
+                ScriptFxOn = 1;
             }
         }
     }
@@ -6117,30 +6117,30 @@ hero_seq **HeroSeqTables[18] = {
     (void *)&HeroNameCortex, (void *)&HeroNameBrio, (void *)&HeroNameTiny,
     (void *)&HeroNameKong, (void *)&HeroNameDingodile, (void *)&HeroNameKanga,
 };
-u8 D_8009D2E4[20] = { 0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 0, 0 };
-s32 D_8009D2F8[8] = {
+u8 DefaultHeroModels[20] = { 0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0, 0, 0 };
+s32 DefaultVictorySeqs[8] = {
     (s32)&HeroAnimWin, 0xD, (s32)&HeroAnimWin, 0xD, (s32)&HeroAnimWin, 0xD, (s32)&HeroAnimWin,
     0xD,
 };
-u8 D_8009D318[60] = {
+u8 DefaultRunSpeeds[60] = {
     0, 0, 0, 0, 0, 0, 0x1E, 0, 0x2D, 0, 0x14, 0, 0x1E, 0, 0x2D, 0, 0x14, 0, 0x1E, 0, 0x2D, 0,
     0x14, 0, 0x1E, 0, 0x2D, 0, 0x14, 0, 0x28, 0, 0x2D, 0, 0x14, 0, 0x28, 0, 0x2D, 0, 0x14, 0,
     0x28, 0, 0x2D, 0, 0x14, 0, 0x28, 0, 0x2D, 0, 0x14, 0, 0, 0, 0, 0, 0, 0,
 };
-u8 D_8009D354[80] = {
+u8 DefaultJumpEnts[80] = {
     0x6C, 0, 0x72, 0, 8, 0, 0xA, 0, 0x6C, 0, 0x72, 0, 8, 0, 0xA, 0, 0x6C, 0, 0x72, 0, 8, 0,
     0xA, 0, 0x6C, 0, 0x72, 0, 8, 0, 0xA, 0, 0x6C, 0, 0x72, 0, 8, 0, 0xA, 0, 0x48, 0, 0x72, 0,
     0xA, 0, 6, 0, 0x48, 0, 0x72, 0, 0xA, 0, 6, 0, 0x48, 0, 0x72, 0, 0xA, 0, 6, 0, 0x48, 0,
     0x72, 0, 0xA, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-u16 D_8009D3A4[10] = { 0, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0 };
-u16 D_8009D3B8[9][4] = {
+u16 HeroEntities[10] = { 0, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0x2001, 0 };
+u16 HitDamage[9][4] = {
     { 0, 0, 0, 0 }, { 0x100, 0x100, 0x100, 0x100 }, { 0x200, 0x200, 0x200, 0x200 },
     { 0x300, 0x200, 0x200, 0x100 }, { 0x400, 0x400, 0x400, 0x400 },
     { 0x500, 0x400, 0x300, 0x200 }, { 0x600, 0x600, 0x600, 0x600 },
     { 0x700, 0x700, 0x700, 0x700 }, { 0x800, 0x700, 0x600, 0x500 },
 };
-u16 D_8009D400[9][9] = {
+u16 HitFalloff[9][9] = {
     { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100, 0x100 },
     { 0x200, 0x1C0, 0x180, 0x140, 0x100, 0xC0, 0x80, 0x40, 0x40 },
@@ -6151,12 +6151,12 @@ u16 D_8009D400[9][9] = {
     { 0x700, 0x6C0, 0x680, 0x640, 0x600, 0x5C0, 0x580, 0x540, 0x500 },
     { 0x800, 0x7C0, 0x780, 0x740, 0x700, 0x6C0, 0x680, 0x640, 0x600 },
 };
-u16 D_8009D4A4[64] = {
+u16 HitScale[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0,
 };
-u16 D_8009D524[4] = {0};
+u16 HeroLastHarm[4] = {0};
 HeroInfo Heroes[4] = {0};
 BossRecord BossState = {0};
 EngineHooks HeroHooks = {0};
@@ -6164,7 +6164,7 @@ s32 RoundWinner[1] = {0};
 s32 HeroesInPlay = 0;
 s32 HeroesSidelined = 0;
 u16 FinalHeroesTempo = 0;
-s32 D_8009D764[16][4] = {0};
+s32 HeroOrders[16][4] = {0};
 s16 HeroAnimHeroA = 0;
 u16 HeroAnimSeqA = 0;
 s32 HeroAnimNameA = 0;
@@ -6174,11 +6174,11 @@ u16 HeroAnimSeqB = 0;
 s32 HeroAnimNameB = 0;
 s32 HeroAnimDbaseB = 0;
 AiSkill AiPlayerSkill[4] = {0};
-u8 D_8009D894[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_8009D8A8[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_8009D8BC[20] = { 0x18, 0, 0x14, 0, 0x10, 0, 0xC, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
-u8 D_8009D8D0[12] = { 8, 0, 0x10, 0, 0x18, 0, 8, 0, 0x10, 0, 0x18, 0 };
-u8 D_8009D8DC[24] = {
+u8 DefaultAiBotTweaks[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
+u8 DefaultAiHumanTweaks[20] = { 8, 0, 8, 0, 8, 0, 8, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
+u8 DefaultAiSkills[20] = { 0x18, 0, 0x14, 0, 0x10, 0, 0xC, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0, 0x10, 0 };
+u8 DefaultAiTeamSkills[12] = { 8, 0, 0x10, 0, 0x18, 0, 8, 0, 0x10, 0, 0x18, 0 };
+u8 DefaultAiHumanRoundTweaks[24] = {
     0x10, 0, 0x18, 0, 0x20, 0, 0x10, 0, 0x16, 0, 0x1C, 0, 0x10, 0, 0x14, 0, 0x18, 0, 0x10, 0,
     0x12, 0, 0x14, 0,
 };
@@ -6189,10 +6189,10 @@ void *AiTeamSkillTable = 0;
 void *AiHumanRoundTweakTable = 0;
 s32 HeroesAllOut = 0;
 D_8009D90C_t ArenaGrid[400] = {0};
-u16 D_8009DC2C[6] = { 0x456, 0x457, 0x458, 0x459, 0x45A, 0x45B };
+u16 HeroIdleSfx[6] = { 0x456, 0x457, 0x458, 0x459, 0x45A, 0x45B };
 u16 HeroSquashCycle[12] = { 0xE66, 0xEFF, 0xF99, 0x1032, 0x10CC, 0x1165, 0x1200, 0x1165, 0x10CC, 0x1032, 0xF99, 0xEFF };
-u16 D_8009DC50[12] = { 0x1000, 0xF66, 0xECC, 0xE33, 0xD99, 0xD00, 0xC66, 0xD00, 0xD99, 0xE33, 0xECC, 0xF66 };
-s16 D_8009DC68[9][3] = {
+u16 HeroSpinScale[12] = { 0x1000, 0xF66, 0xECC, 0xE33, 0xD99, 0xD00, 0xC66, 0xD00, 0xD99, 0xE33, 0xECC, 0xF66 };
+s16 ThrowArcs[9][3] = {
     { 0x5000, 0x5000, 0x5000 }, { 0x4000, 0x2000, 0x4000 }, { 0x1800, 0x1000, 0x1800 },
     { 0x800, 0xA00, 0x800 }, { 0x200, 0x200, 0x200 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
     { 0, 0, 0 },
@@ -6287,7 +6287,7 @@ s16 HeroActWinner = 0;
 s16 HeroActLoser = 0;
 D_8009E0E8_t AngelSparkles[3][4] = {0};
 s16 D_8009E190[2] = {0};
-s32 D_8009E194 = 1;
+s32 ScriptFxOn = 1;
 s32 D_8009E198[17] = {
     0x201B, 0x1201B, 0x201D, 0x201E, 0x201F, 0x2020, 0x2021, 0x2022, 0x2023, 0x2024, 0x2025,
     0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x8003,

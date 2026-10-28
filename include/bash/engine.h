@@ -370,15 +370,15 @@ typedef struct EngineHooks {
     /* 0x68 */ s32 (*KeepInBounds)(EXTengine *);
 } EngineHooks;
 extern EngineHooks HeroHooks;
-extern u8 D_8009D2E4[];
-extern s32 D_8009D2F8[];   /* {name, id} pairs: the default victory sequences (HeroHooks.VictorySeqs) */
-extern u8 D_8009D318[];
-extern u8 D_8009D354[];
-extern u8 D_8009D894[];
-extern u8 D_8009D8A8[];
-extern u8 D_8009D8BC[];
-extern u8 D_8009D8D0[];
-extern u8 D_8009D8DC[];
+extern u8 DefaultHeroModels[];
+extern s32 DefaultVictorySeqs[];   /* {name, id} pairs: the default victory sequences (HeroHooks.VictorySeqs) */
+extern u8 DefaultRunSpeeds[];
+extern u8 DefaultJumpEnts[];
+extern u8 DefaultAiBotTweaks[];
+extern u8 DefaultAiHumanTweaks[];
+extern u8 DefaultAiSkills[];
+extern u8 DefaultAiTeamSkills[];
+extern u8 DefaultAiHumanRoundTweaks[];
 extern void *AiBotTweakTable;
 extern void *AiHumanTweakTable;
 extern void *AiSkillTable;

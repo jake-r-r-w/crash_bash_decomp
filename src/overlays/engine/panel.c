@@ -179,7 +179,7 @@ void UpdatePanel(void) {
         FntPrint("   HEALTH %2d   HEALTH %2d              HEALTH %2d    HEALTH %2d\n",
                  Heroes[0].hero_health, Heroes[1].hero_health, Heroes[2].hero_health,
                  Heroes[3].hero_health);
-        t = D_8009D524;
+        t = HeroLastHarm;
         FntPrint("   LAST %d.%2d   LAST %d.%2d              LAST %d.%2d    LAST %d.%2d\n",
                  t[0] >> 8, (t[0] & 0xFF) * 100 / 256, t[1] >> 8, (t[1] & 0xFF) * 100 / 256,
                  t[2] >> 8, (t[2] & 0xFF) * 100 / 256, t[3] >> 8, (t[3] & 0xFF) * 100 / 256);

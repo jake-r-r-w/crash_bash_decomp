@@ -1542,7 +1542,7 @@ typedef struct PolarDropExt {
 } PolarDropExt;
 
 extern s32 PolarUpdateWord;
-extern s32 D_8009E194;
+extern s32 ScriptFxOn;
 void PolarUpdateScene(void);
 
 /* One drop of UpdatePOLAR's shower (like tank's TankSpawnBit1605). */

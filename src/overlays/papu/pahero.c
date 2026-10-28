@@ -991,7 +991,7 @@ void PAHeroThrow(s32 arg0) {
         h->hero_fx->unk10 = h->hero_eng->unk10;
         t = h->hero_weapon_timer;
         if (t >= 0) {
-            tbl = D_8009DC68;
+            tbl = ThrowArcs;
             w = tbl[t];
             if (w[0] == 0) {
                 goto clear;

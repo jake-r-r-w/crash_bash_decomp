@@ -4400,7 +4400,7 @@ void UpdatePOLAR(void) {
         }
     }
     if (GameMode == 0x2C && (Pads[0].unk54 & 0x2000)) {
-        D_8009E194 ^= 1;
+        ScriptFxOn ^= 1;
     }
     if (PolarBeamOwner != NULL) {
         l = PolarBeamOwner->unk58;

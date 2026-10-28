@@ -117,7 +117,7 @@ void UpdateTankWeaponIcons(void);
 void UpdateScoreIcons(void);
 void Cups_Update(void);
 extern s32 GameCheats;
-extern u16 D_8009D524[4];
+extern u16 HeroLastHarm[4];
 s32 FntPrint();
 
 void InitHealthIcons(void);
