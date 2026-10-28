@@ -42,11 +42,11 @@ void UpdateLevelTriggers(void);
 void ResetASTTable(void);
 void ClearLevelNas(void);
 extern s32 SaveScreenPanel;
-extern s32 D_8009F008;
+extern s32 CardSlotsPanel;
 extern s32 CardSlotIndex;
 extern s32 CardBufferStamp;
-extern s32 D_8009F494;
-extern s32 D_8009F40C;
+extern s32 SaveMenuStage;
+extern s32 SaveMenuPanel;
 extern s32 CardPromptPanel;
 extern subengine D_800A13F4[][32]; /* 32 subengines per EnginePool slot */
 
@@ -89,7 +89,7 @@ extern u16 CupMode;
 extern s32 CupTimer;
 extern u16 Trophy_Cups;
 extern process_control_info ProcessControl;
-extern u8 D_8009FA14[];
+extern u8 ModeDbaseLists[];
 extern process_control_info LoadingControl;
 extern EXTengine EnginePool[];
 extern HeroInfo Heroes[4];
@@ -134,7 +134,7 @@ extern s32 SaveMenuYesNo;
 extern s32 CardPromptStep;
 extern s32 SaveMenuState;
 
-/* InitLevelLoad's level setup config (LevelConfig, or D_8009F96C if unset). */
+/* InitLevelLoad's level setup config (LevelConfig, or DefaultLevelConfig if unset). */
 typedef struct EngineCfg {
     /* 0x00 */ u8 unk0[0xC];
     /* 0x0C */ s32 pools[3];       /* prims_init */
@@ -144,13 +144,13 @@ typedef struct EngineCfg {
     /* 0x24 */ s32 nbuf;
 } EngineCfg;
 
-extern EngineCfg D_8009F96C;
+extern EngineCfg DefaultLevelConfig;
 extern EngineCfg D_800A0314;
 extern s32 GraphicsMode;
-extern s32 D_8009F654;
+extern s32 IdleFrames;
 extern s16 core_process;
 extern u8 *SlotBase;
-extern s32 D_8009F968;
+extern s32 ModeTextLoaded;
 extern u8 SlotHeapStart[];
 extern ArenaDef DefaultArenaDef;
 extern process_info RunGame;
@@ -200,7 +200,7 @@ typedef struct EngineGameView {
 extern GfxViewport GameViewport;
 typedef struct { s32 key; s32 v[3]; } EngineKeyed16;
 extern EngineKeyed16 D_800A0B60[];
-extern s32 D_8009F8B8;
+extern s32 GameSceneFade;
 typedef struct { s32 unk0; s32 unk4; s32 unk8; s32 unkC; } EngineEntry16Head;
 typedef struct { s32 unk0; EngineEntry16Head *unk4; s32 unk8; } EngineTable12;
 extern EngineTable12 CupTable[];
@@ -218,7 +218,7 @@ extern s32 HeroAnimNameA;
 extern s32 HeroAnimDbaseA;
 extern s32 HeroAnimNameB;
 extern s32 HeroAnimDbaseB;
-extern u8 D_8009F9AC[];
+extern u8 LoadingSceneViewport[];
 extern s32 IntroStepIndex;
 extern s32 IntroStepTimer;
 extern s32 IntroNextSfx;

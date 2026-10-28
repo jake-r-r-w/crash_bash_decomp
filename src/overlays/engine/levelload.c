@@ -8,7 +8,7 @@
 s32 LoadModeText(void) {
     EngineGameView *g;
     u8 *p;
-    s32 **tab = D_8009F954;
+    s32 **tab = ModeTextTables;
     s32 **rp;
 
     g = (EngineGameView *)GameInfo;
@@ -17,10 +17,10 @@ s32 LoadModeText(void) {
     if (p != NULL) {
         load_file_direct(p, ModeTextLoadAddr);
     }
-    p = (u8 *)D_8009F8E4[ModeTypes[g->mode * 3] - 0x101];
-    if ((s32)p != D_8009F968) {
+    p = (u8 *)ModeTextFiles[ModeTypes[g->mode * 3] - 0x101];
+    if ((s32)p != ModeTextLoaded) {
         load_file_direct(p, SlotBase);
-        D_8009F968 = (s32)p;
+        ModeTextLoaded = (s32)p;
     }
     return (s32)(SlotBase + *(s32 *)(p + 4));
 }
@@ -86,7 +86,7 @@ void LoadModeFiles(void) {
     u8 *p;
     s32 *q;
 
-    p = D_800A001C[GameMode];
+    p = ModeFileGroups[GameMode];
     if (p != NULL) {
         queue_group_load(p);
         while (loader_pending() != 0) {
@@ -140,7 +140,7 @@ void InitLevelLoad(void) {
     SetupLevelSpecs(&DefaultArenaDef);
     cfg = (EngineCfg *)LevelConfig;
     if (cfg == NULL) {
-        cfg = &D_8009F96C;
+        cfg = &DefaultLevelConfig;
     }
     AllocOtBuffers((s32 *)cfg);
     ((void (*)(u8 *))ResetScreen)(VideoMode == 0 ? vmode_512_ntsc : D_8005B744);
@@ -187,7 +187,7 @@ loop:
             c = ((u8 *)g)[i + 0x50];
             if ((u32)(c - 1) < 8) {
                 {
-                    u8 *p = D_8009FA14;
+                    u8 *p = ModeDbaseLists;
                     e = ((u16 *)tbl->HeroModels)[c] * 0x38 + (s32)base;
                     for (j = 0; j < 0x60; j++) {
                         if (e == *(s32 *)(p + 4)) {
@@ -197,7 +197,7 @@ loop:
                     }
                 }
                 if (tbl->unk8 != NULL) {
-                    u8 *p = D_8009FA14;
+                    u8 *p = ModeDbaseLists;
                     e = ((u16 *)tbl->unk8)[c] * 0x38 + (s32)base;
                     for (j = 0; j < 0x60; j++) {
                         if (e == *(s32 *)(p + 4)) {
@@ -421,7 +421,7 @@ void RenderLevelLoad(void) {
 
 void LoadModeDbases(s32 arg0, s32 arg1) {
     s32 i;
-    u8 *p = D_8009FA14;
+    u8 *p = ModeDbaseLists;
 
     for (i = 0; i < 0x60; i++) {
         if (arg0 == *(s32 *)(p + 4)) {
@@ -439,7 +439,7 @@ void QuitLoadingScene(void) {
 void RenderLoadingScene(void) {
     if (LevelLoadStage >= 2) {
         GameFrameCount += 1;
-        gfx_set_viewport(D_8009F9AC, MainCamera);
+        gfx_set_viewport(LoadingSceneViewport, MainCamera);
         if (LoadingScenePlaying != 0) {
             DrawSceneMarks();
         }
@@ -478,7 +478,7 @@ void InitLoadingScreen(void) {
     eng->flags |= 0x10000000;
     eng_add_subs(eng, 2);
     sub = eng->sub;
-    p = D_8009F994;
+    p = LoadingEntities;
     if (sub != NULL) {
         do {
             sub->u6C.dbase = &HeroModelBank[DB_Loading];
@@ -584,7 +584,7 @@ void InitScriptScene(void) {
     }
     SceneStep = 0;
     sound_reinit();
-    D_8009F968 = 0;
+    ModeTextLoaded = 0;
     mal_init(&MainHeap, SlotBase, 0x801FF000 - (s32)SlotBase);
     smallnode_init();
     cfg = &D_800A0314;
@@ -1295,7 +1295,7 @@ extern u8 file_group_TOXIC[];
 extern u8 file_group_WATER[];
 
 GfxViewport LoadingViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0, 0x200, -0x100, 0, 0, 0, 1 };
-s32 D_8009F8E4[14] = {
+s32 ModeTextFiles[14] = {
     (s32)&DatIndex[2 * 722], (s32)&DatIndex[2 * 721], (s32)&DatIndex[2 * 720], (s32)&DatIndex[2 * 728], (s32)&DatIndex[2 * 727],
     (s32)&DatIndex[2 * 726], (s32)&DatIndex[2 * 725], (s32)&DatIndex[2 * 724], (s32)&DatIndex[2 * 487], (s32)&DatIndex[2 * 723],
     (s32)&DatIndex[2 * 719], (s32)&DatIndex[2 * 717], (s32)&DatIndex[2 * 716], (s32)&DatIndex[2 * 718],
@@ -1305,25 +1305,25 @@ s32 D_8009F91C[14] = {
     (s32)&DatIndex[2 * 145], (s32)&DatIndex[2 * 152], (s32)&DatIndex[2 * 144], (s32)&DatIndex[2 * 143], (s32)&DatIndex[2 * 148],
     (s32)&DatIndex[2 * 147], (s32)&DatIndex[2 * 149], (s32)&DatIndex[2 * 150],
 };
-s32 *D_8009F954[5] = {
+s32 *ModeTextTables[5] = {
     (void *)&D_8009F91C, (void *)&D_8009F91C, (void *)&D_8009F91C, (void *)&D_8009F91C,
     (void *)&D_8009F91C,
 };
-s32 D_8009F968 = 0;
-EngineCfg D_8009F96C = {
+s32 ModeTextLoaded = 0;
+EngineCfg DefaultLevelConfig = {
     { 0, 0x20, 0, 0, 0x10, 0, 0, 0, 0, 1, 0, 0 }, { 0x80, 0x200, 0x20 }, (void *)&VramAreas,
     (void *)&VramNodePool, 0x20, 0x400,
 };
-u16 D_8009F994[2] = { 0x2001, 0x2002 };
+u16 LoadingEntities[2] = { 0x2001, 0x2002 };
 process_info LoadingProcess = { InitLoadingScreen, AnimateLoadingIcon, RenderLoadingScreen, QuitLoadingScreen, 0 };
-u8 D_8009F9AC[40] = {
+u8 LoadingSceneViewport[40] = {
     0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0, 0, 0, 0, 0x80, 2, 0xE0, 1, 0x40, 1, 0, 0, 0xF0, 0, 0, 0,
     0, 2, 0, 0, 0xFF, 0xD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 Blk32 LoadingScriptRot = { { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 } };
 CamVec3 LoadingScriptPos = {0};
 process_info LoadingProcess2 = { InitLoadingCamera, UpdateLoadingScene, RenderLoadingScene, QuitLoadingScene, 0 };
-u8 D_8009FA14[1516] = {
+u8 ModeDbaseLists[1516] = {
     0x10, 6, 5, 0x80, 0x8C, 0x2A, 5, 0x80, 0, 0, 5, 0x80, 0xF8, 0xFF, 4, 0x80, 4, 6, 5, 0x80,
     0xC4, 0x2A, 5, 0x80, 0xF0, 0xFF, 4, 0x80, 0xE8, 0xFF, 4, 0x80, 0xF8, 5, 5, 0x80, 0xFC,
     0x2A, 5, 0x80, 0xE0, 0xFF, 4, 0x80, 0xD8, 0xFF, 4, 0x80, 0xEC, 5, 5, 0x80, 0x34, 0x2B, 5,
@@ -1413,7 +1413,7 @@ u8 D_8009FA14[1516] = {
 };
 s32 D_800A0000[5] = { (s32)&DatIndex[2 * 809], (s32)&FileGroups[36], (s32)&HeroModelBank[DB_CharsSplashKong], (s32)&DatIndex[2 * 806], (s32)&DatIndex[2 * 805] };
 s32 D_800A0014[2] = {0};
-u8 *D_800A001C[45] = {
+u8 *ModeFileGroups[45] = {
     (void *)&file_group_JUNGLE, (void *)&file_group_SPACE, (void *)&file_group_SNOW,
     (void *)&file_group_DRAINS, (void *)&file_group_PAPU, (void *)&file_group_TANKLAST,
     (void *)&file_group_TANKDESERT, (void *)&file_group_TANKJUNGLE,

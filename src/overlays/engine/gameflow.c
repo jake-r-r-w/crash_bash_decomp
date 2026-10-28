@@ -773,7 +773,7 @@ void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 d;
     s32 r;
 
-    PlaceEngineSlot(arg1 + 4, D_8009F298);
+    PlaceEngineSlot(arg1 + 4, CardSlotPanel);
     e = GetEngineSlot(arg1 + 4);
     e->unk10.x = arg3;
     e->unk10.y = arg4;
@@ -858,7 +858,7 @@ void UpdateCardPrompt(void) {
         pad = Pads;
         if (*(s32 *)((u8 *)pad + 0x48) & 0x1000) {
             PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009F63C = 1;
+            CardPromptRetry = 1;
             GotoProcess(&RetryProcess, 0x200);
             {
                 u8 *q = GameInfo;
@@ -1185,7 +1185,7 @@ void UpdateSaveMenu(void) {
         if (!(CardStatus & 0xE)) {
             SaveMenuState = 0;
         }
-        SAVEMENU_SET_ANIM(D_8009F454);
+        SAVEMENU_SET_ANIM(SaveMenuAnims);
         break;
     }
     if ((SaveMenuState == 2 || SaveMenuState == 8) && (Pads[0].pressed & 0x1000)) {
@@ -1316,7 +1316,7 @@ void UpdateCardSlots(void) {
             idx = CardSlotIndex * 0x194;
             p = (u8 *)CardSlots;
             if (*(s32 *)(idx + p) == 0) {
-                GetEngineSlot(3)->sub[13].u6C.text = D_8009EFB8[GameLanguage];
+                GetEngineSlot(3)->sub[13].u6C.text = LangSaveOrExit[GameLanguage];
             } else {
                 GetEngineSlot(3)->sub[13].u6C.text = LangPressButtonToOverwrite[GameLanguage];
             }
@@ -1335,7 +1335,7 @@ void ShowCardSlots(void) {
     ShowCardSlot(p + 0x19C, 1, *(s32 *)(p + 0x194) == 0, 0x140, 0x1E);
     ShowCardSlot(p + 0x330, 2, *(s32 *)(p + 0x328) == 0, 0x28, 0x7C);
     ShowCardSlot(p + 0x4C4, 3, *(s32 *)(p + 0x4BC) == 0, 0x140, 0x7C);
-    PlaceEngineSlot(3, &D_8009F008);
+    PlaceEngineSlot(3, &CardSlotsPanel);
     ShowCardSlotStats(pad + CardSlotIndex * 0x194,*(s32 *)(p + CardSlotIndex * 0x194) == 0);
 }
 
@@ -1348,7 +1348,7 @@ void InitSaveMenu(void) {
     FontPage = 0;
     SaveMenuStep = 0;
     SaveMenuYesNo = 1;
-    PlaceEngineSlot(8, &D_8009F40C);
+    PlaceEngineSlot(8, &SaveMenuPanel);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->entity = 0x2007;
@@ -1358,7 +1358,7 @@ void InitSaveMenu(void) {
         sub->u6C.dbase = &HeroModelBank[DB_AdventureItems];
     }
     PlaceEngineSlot(1, &CardPromptPanel);
-    D_8009F494 = 0;
+    SaveMenuStage = 0;
     SaveMenuState = 0;
     SaveMenuStep = 1;
 }
@@ -1372,7 +1372,7 @@ void InitCardPromptMenu(void) {
     FontPage = 0;
     SaveMenuStep = 0;
     SaveMenuYesNo = 1;
-    PlaceEngineSlot(8, &D_8009F40C);
+    PlaceEngineSlot(8, &SaveMenuPanel);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->entity = 0x2007;
@@ -1479,7 +1479,7 @@ void InitCardMenu(void) {
     FontPage = 0;
     SaveMenuStep = 0;
     SaveMenuYesNo = 1;
-    PlaceEngineSlot(8, &D_8009F40C);
+    PlaceEngineSlot(8, &SaveMenuPanel);
     sub = GetEngineSlot(8)->sub;
     if (GameMode == 0x28) {
         sub->entity = 0x2007;
@@ -1556,7 +1556,7 @@ void GameSetSlot3Digits(s32 arg0) {
     src = (s32 *)(arg0 * 4);
     src = (s32 *)((s32)src + arg0);
     src = (s32 *)((s32)src * 4);
-    src = (s32 *)((s32)src + (s32)D_8009F248);
+    src = (s32 *)((s32)src + (s32)Slot3DigitSrc);
     base = (s32 *)GetEngineSlot(3)->sub;
     p = base + 0xA8 / 4;
     i = 0;
@@ -1679,7 +1679,7 @@ void InitGameState(GameState *arg0) {
 }
 
 void InitGraphics(void) {
-    EngineCfg *cfg = &D_8009F96C;
+    EngineCfg *cfg = &DefaultLevelConfig;
     u8 *g;
 
     AllocOtBuffers((s32 *)cfg);
@@ -1691,7 +1691,7 @@ void InitGraphics(void) {
     dbase_init_all();
     ResetEnginePool();
     GraphicsMode = 0;
-    D_8009F654 = 0;
+    IdleFrames = 0;
     core_process = 0;
     GameOptions.music = 0x46;
     GameOptions.sfx = 0x64;
@@ -1791,7 +1791,7 @@ void InitRetry(void) {
     g = (EngineGameView *)GameInfo;
     g->unk30 &= 0x7FF8;
     set_fade(&ScreenFade, -0x300, 0);
-    D_8009F8B8 = 0;
+    GameSceneFade = 0;
     if (g->mode == 0x24 && g->unkE0 <= 0) {
         g->unkE0 = 1;
     }
@@ -1868,7 +1868,7 @@ void UpdateSecretLevel(void) {
 
 void RenderGameScene(void) {
     gfx_set_viewport(&GameViewport, (GfxCamera *)MainCamera);
-    RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
+    RenderState.modelDp = 0x1000 - ((0x1000 - GameSceneFade) * (0x1000 - ScreenFade.amount) / 4096);
     PrimDepthTest = 0;
     GameSceneCounts[0] = 0;
     GameSceneCounts[1] = 0;
@@ -1884,7 +1884,7 @@ void RenderGameScene(void) {
 
 void SetGameViewport(void) {
     gfx_set_viewport(&GameViewport, (GfxCamera *)MainCamera);
-    RenderState.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - ScreenFade.amount) / 4096);
+    RenderState.modelDp = 0x1000 - ((0x1000 - GameSceneFade) * (0x1000 - ScreenFade.amount) / 4096);
 }
 
 /* data, in address order (tools/scripts/data2c.py) */
@@ -2104,7 +2104,7 @@ s32 D_8009EF68[17] = { 0x1180000, 0x5A0000, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 void *LangConfirmOverwrite[1] = { (void *)&MenuConfirmOverwrite };
 void *LangPressButtonToOverwrite[1] = { (void *)&MenuPressButtonToOverwrite };
 void *LangPressButtonToLoad[1] = { (void *)&MenuPressButtonToLoad };
-void *D_8009EFB8[2] = { (void *)&MenuPressButtonToSave, (void *)&MenuPressButtonToExitWithoutSaving };
+void *LangSaveOrExit[2] = { (void *)&MenuPressButtonToSave, (void *)&MenuPressButtonToExitWithoutSaving };
 void *LangSelectAGameSave[1] = { (void *)&MenuSelectAGameSave };
 void *LangPressButtonToExitWithoutSaving[1] = { (void *)&MenuPressButtonToExitWithoutSaving };
 void *LangSelectGameToLoad[1] = { (void *)&MenuSelectGameToLoad };
@@ -2123,7 +2123,7 @@ void *LangSaveFailedPressButtonToExit[1] = { (void *)&MenuSaveFailedPressButtonT
 void *LangFormatting[1] = { (void *)&MenuFormatting };
 void *LangPressButtonToExitWithoutLoading[1] = { (void *)&MenuPressButtonToExitWithoutLoading };
 void *LangEmpty[1] = { (void *)&MenuEmpty };
-s32 D_8009F008 = 4;
+s32 CardSlotsPanel = 4;
 s32 D_8009F00C[143] = {
     0x2300000, 0x500000, 6, 0, 0, 0, 0, 0, 0xA, 0x260050, 0xB330000, 0x280000, 0, 0, 0,
     0x2022001C, 2, 3, 0x320050, 0, 0, 0, (s32)&Menu01, 4, 0, 0, 0xA, 0x2600B4, 0xB330000,
@@ -2135,11 +2135,11 @@ s32 D_8009F00C[143] = {
     0x608118, 0, 0, 0, 0, 0, 0, 0, 3, 0x8A8118, 0, 0, 0, 0, 4, 0, 0, 3, 0xAC8118, 0, 0, 0, 0,
     4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-s32 D_8009F248[4][5] = {
+s32 Slot3DigitSrc[4][5] = {
     { 0xB4, 0x118, 0x17C, -1, -1 }, { 0x82, 0xE6, 0x14A, 0x1AE, -1 },
     { 0x50, 0xB4, 0x118, 0x17C, 0x1E0 }, { -1, -1, -1, -1, -1 },
 };
-s32 D_8009F298[72] = {
+s32 CardSlotPanel[72] = {
     4, 0x1180000, 0x5A0000, 6, 0, 0, 0, 0, 0, 3, 0x2000C, 0, 0, 0, (s32)&MenuNameWidth, 0, 0,
     0, 3, 0x200BC, 0, 0, 0, (s32)&Menu200Percent, 0, 0, 0, 6, 0x24000C, 0x10000000, 0, 0, 0, 0,
     0x3003001C, 0, 6, 0x240048, 0x10000000, 0, 0, 0, 0, 0x3003001C, 0, 6, 0x240084, 0x10000000,
@@ -2149,15 +2149,15 @@ s32 D_8009F298[72] = {
 s32 CardSlotIndex = 0;
 GfxViewport SaveViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0xDFF, 0, 0, 0, 0x10, 1 };
 GfxViewport SaveBackViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0x140, 0xF0, 0x200, 0xD00, -0x80, 0, 0, 0, 1 };
-s32 D_8009F40C = 6;
+s32 SaveMenuPanel = 6;
 s32 D_8009F410[17] = { 0xFF9C, 0x100004C8, 0, 0, 0, 0, 0x200700C7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-void *D_8009F454[6] = {
+void *SaveMenuAnims[6] = {
     (void *)&MenuCardCorrupt, (void *)InitCardMenu, (void *)UpdateSaveScreen,
     (void *)RenderSaveMenu, (void *)ClearEngineSlots, 0,
 };
 process_info SaveScreenProcess = { InitSaveMenu, UpdateSaveScreen, RenderSaveMenu, ClearEngineSlots, 0 };
 s32 SaveScreenProcess2[5] = { (s32)InitCardPromptMenu, (s32)UpdateSaveScreen, (s32)RenderSaveMenu, (s32)ClearEngineSlots, 0 };
-s32 D_8009F494 = 0;
+s32 SaveMenuStage = 0;
 /* the results screen's number texts, one buffer: +0, +3, +6, +9 three digits each, +12 the last */
 char CardStatsText[16] = {0};
 char PercentText[4][5] = {0};
@@ -2167,10 +2167,10 @@ GfxCamera SaveBackCamera = {0};
 s32 SaveMenuStep = 0;
 s32 SaveMenuYesNo = 0;
 s32 CardPromptStep = 0;
-s32 D_8009F63C = 0;
+s32 CardPromptRetry = 0;
 s32 SaveMenuState = 0;
 fade_info ScreenFade = {0};
-s32 D_8009F654 = 0;
+s32 IdleFrames = 0;
 process_control_info ProcessControl = {0};
 s32 D_8009F668[5] = { (s32)&D_8005B75C, (s32)&vmode_512_ntsc, (s32)&D_8005B6FC, (s32)&D_8005B6CC, (s32)&D_8005B69C };
 GfxViewport MainViewport = { 0, 0, 0x280, 0x1E0, 0, 0, 0x280, 0x1E0, 0, 0, 0, 0x200, -0x100, 0xF0, 0xF0, 0xF0, 0 };
@@ -2183,4 +2183,4 @@ GfxCamera MainGfxCamera = {0};
 GfxCamera HudCamera = {0};
 process_control_info MenuProcessControl = {0};
 void (*RenderHook)(void) = 0;
-s32 D_8009F8B8 = 0;
+s32 GameSceneFade = 0;

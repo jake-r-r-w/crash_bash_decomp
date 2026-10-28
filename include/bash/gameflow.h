@@ -261,13 +261,13 @@ void QuitGame(void);
 void ShowCardSlots(void);
 
 void ShowCardSlot(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-extern s32 D_8009F298[];
+extern s32 CardSlotPanel[];
 extern void *LangEmpty[];
 extern char PercentText[][5];
 void ShowCardSlotStats(u8 *arg0, s32 arg1);
 extern char CardStatsText[];
 
-extern s32 D_8009F248[][5];
+extern s32 Slot3DigitSrc[][5];
 EXTengine *GetEngineSlot(s32 arg0);
 
 /* GameSum147's body, inlined by ShowCardSlotStats. */
@@ -338,7 +338,7 @@ static inline void EngineSetSlot3Digits(s32 slot, s32 arg0) {
     s32 *base;
     s32 *tbl;
 
-    tbl = (s32 *)D_8009F248 + arg0 * 5;
+    tbl = (s32 *)Slot3DigitSrc + arg0 * 5;
     base = (s32 *)GetEngineSlot(slot)->sub;
     src = tbl;
     p = base + 0xA8 / 4;
@@ -413,7 +413,7 @@ extern void *LangNoCard[];
     }
 extern void *LangPressButtonToOverwrite[];
 extern void *LangPressButtonToLoad[];
-extern void *D_8009EFB8[];
+extern void *LangSaveOrExit[];
 extern void *LangSelectAGameSave[];
 extern void *LangPressButtonToExitWithoutSaving[];
 extern void *LangSelectGameToLoad[];
@@ -427,7 +427,7 @@ extern void *LangSaving[];
 extern void *LangSaveCompleted[];
 extern void *LangSaveFailedPressButtonToExit[];
 extern void *LangFormatting[];
-extern void *D_8009F454[];
+extern void *SaveMenuAnims[];
 /* Optional callbacks used by the save menu (UpdateSaveMenu). */
 typedef struct {
     /* 0x0 */ void (*unk0)(void);
@@ -447,7 +447,7 @@ extern s32 HubSaveChoice;
         GetEngineSlot(1)->sub->u6C.ptr = LangSaveGame[*(s32 *)(g_ + 0x2C)];        \
         eng_render_subs((u8 *)GetEngineSlot(1));                                 \
     }
-extern s32 D_8009F63C;
+extern s32 CardPromptRetry;
 void UpdateCardSlots(void);
 /* A step of the ending's messages (GotoScriptScene): two pointers and a time. */
 typedef struct MsgStep {
@@ -535,7 +535,7 @@ void InitCardMenu(void);
 
 void InitCardPromptMenu(void);
 
-extern s32 D_8009F248[][5];
+extern s32 Slot3DigitSrc[][5];
 
 void UpdateCardMessage(void);
 

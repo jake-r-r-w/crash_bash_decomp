@@ -549,7 +549,7 @@ void TitlesCheckIdle(void) {
     if (joypad_idle_count >= 0x385) {
         joypad_idle_count = 0;
         set_fade(&ScreenFade, 0x200, 0);
-        f = D_8009F654;
+        f = IdleFrames;
         if (f & 1) {
             GameMode = 0x28;
             GotoScriptScene((s32)D_800A0840, &LevelLoadProcess);
@@ -562,7 +562,7 @@ void TitlesCheckIdle(void) {
             ProcessControl.next_process = &LevelLoadProcess;
             *(u16 *)(g + 0x34) = v;
         }
-        D_8009F654 += 1;
+        IdleFrames += 1;
     }
 }
 

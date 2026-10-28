@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/engine.h"
 
-extern u16 D_8009F994[];
+extern u16 LoadingEntities[];
 
 /* 0x38-byte records at HeroModelBank (load_initial_dbases). */
 /* GameInfo as seen by load_initial_dbases. */
@@ -44,7 +44,7 @@ typedef struct Tmpl1C {
 } Tmpl1C;
 
 extern Tmpl1C D_800A0D44[];
-extern u8 *D_800A001C[];
+extern u8 *ModeFileGroups[];
 
 void QuitLevelLoad(void);
 
@@ -184,8 +184,8 @@ EXTengine *GetEngineSlot(s32 arg0);
 void SetupSceneMarks(u8 *arg0);
 
 s32 LoadModeText(void);
-extern s32 *D_8009F954[];
-extern s32 D_8009F8E4[];
+extern s32 *ModeTextTables[];
+extern s32 ModeTextFiles[];
 extern u8 *ModeTextLoadAddr;
 
 void LoadModeFiles(void);
