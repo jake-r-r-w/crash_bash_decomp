@@ -210,7 +210,7 @@ void HubUpdateGateways(void) {
                 o[2] = v * 0x20 >> 12;
             }
             if (q[-2] == one) {
-                if (q[0] == 0 || (dbase_anim_load(*(u8 **)MapScene, q[0]), q[0] == 0) ||
+                if (q[0] == 0 || (dbase_anim_load(*(obj_dbase **)MapScene, q[0]), q[0] == 0) ||
                     dbase_anim_ptr(*(u8 **)MapScene, q[0]) != 0) {
                     if (q[-1] == one) {
                         if (o != NULL) {
@@ -235,7 +235,7 @@ void HubUpdateGateways(void) {
                     o[0] &= ~0x8000;
                 }
                 if (q[0] != 0) {
-                    dbase_anim_release(*(u8 **)MapScene, q[0]);
+                    dbase_anim_release(*(obj_dbase **)MapScene, q[0]);
                 }
             }
         }

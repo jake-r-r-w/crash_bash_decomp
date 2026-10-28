@@ -103,7 +103,7 @@ void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db) {
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         mal_free(arg0, heap);
         db->load = 0;
-        dbase_load_textures((u8 *)db);
+        dbase_load_textures(db);
     } else {
         set = &db->textures;
         textureset_init((u8 *)set, arg0);
@@ -144,32 +144,32 @@ void dbase_copy_block(u8 *arg0, s32 arg1) {
     memcpy(*temp_v0, arg1 + (*(s32*)((u8*)(arg0) + 0)), temp_s0);
 }
 
-void dbase_anim_release(u8 *arg0, s32 arg1) {
-    u8 *temp_s0;
-    u8 *temp_v0;
+void dbase_anim_release(obj_dbase *db, s32 i) {
+    DbaseAnim *a;
+    u8 *d;
 
-    temp_v0 = (*(s32*)((u8*)(arg0) + 12));
-    temp_s0 = temp_v0 + ((*(s32*)((u8*)(temp_v0) + 60)) + 0x3C) + ((arg1 * 0x10) + 4);
-    if ((*(s32*)((u8*)(temp_s0) + 8)) != 0) {
-        mal_free((void *)(*(s32*)((u8*)(temp_s0) + 8)), &MainHeap);
-        (*(s32*)((u8*)(temp_s0) + 12)) = 0;
-    } else if ((*(s32*)((u8*)(temp_s0) + 12)) != 0) {
-        loader_cancel((void *)(*(s32*)((u8*)(temp_s0) + 12)));
-        (*(s32*)((u8*)(temp_s0) + 12)) = 0;
+    d = db->data;
+    a = (DbaseAnim *)(d + (*(s32 *)(d + 0x3C) + 0x3C) + (i * 0x10 + 4));
+    if (a->data != NULL) {
+        mal_free(a->data, &MainHeap);
+        a->load = 0;
+    } else if (a->load != 0) {
+        loader_cancel((LoadNode *)a->load);
+        a->load = 0;
     }
 }
 
 
-void dbase_anim_load(u8 *arg0, s32 arg1) {
-    s32 temp_a1;
-    u8 *temp_s0;
-    u8 *temp_v1;
+void dbase_anim_load(obj_dbase *db, s32 i) {
+    s32 start;
+    DbaseAnim *a;
+    u8 *d;
 
-    temp_v1 = (*(s32*)((u8*)(arg0) + 12));
-    temp_s0 = temp_v1 + ((*(s32*)((u8*)(temp_v1) + 60)) + 0x3C) + ((arg1 * 0x10) + 4);
-    if (((*(s32*)((u8*)(temp_s0) + 8)) == 0) && ((*(s32*)((u8*)(temp_s0) + 12)) == 0)) {
-        temp_a1 = (*(s32*)((u8*)(temp_s0) + 0));
-        (*(s32*)((u8*)(temp_s0) + 12)) = asload_chunk_relocatable((*(s32*)((u8*)(arg0) + 0)), temp_a1, temp_s0 + 8, (*(s32*)((u8*)(temp_s0) + 4)) - temp_a1);
+    d = db->data;
+    a = (DbaseAnim *)(d + (*(s32 *)(d + 0x3C) + 0x3C) + (i * 0x10 + 4));
+    if (a->data == NULL && a->load == 0) {
+        start = a->start;
+        a->load = asload_chunk_relocatable(db->file, start, &a->data, a->end - start);
     }
 }
 
@@ -566,9 +566,9 @@ done:
     }
 }
 
-void dbase_load_textures(u8 *arg0) {
-    if (((*(s32*)((u8*)(arg0) + 8)) == 0) && ((*(s32*)((u8*)(arg0) + 12)) == 0)) {
-        (*(s32*)((u8*)(arg0) + 8)) = load_file_cb((*(s32*)((u8*)(arg0) + 4)), dbase_textures_loaded, arg0);
+void dbase_load_textures(obj_dbase *db) {
+    if (db->load == 0 && db->data == NULL) {
+        db->load = load_file_cb(db->textureFile, dbase_textures_loaded, db);
     }
 }
 
