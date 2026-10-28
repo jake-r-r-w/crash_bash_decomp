@@ -1475,7 +1475,7 @@ void SetHeroAction(s32 player, s32 action) {
 
 void SetTweakAi(void) {
     AiSkill *t;
-    u8 *g;
+    GameState *g;
     s32 ret;
     s32 i;
     u16 flags;
@@ -1483,24 +1483,24 @@ void SetTweakAi(void) {
     s32 n;
 
     ret = -1;
-    g = GameInfo;
+    g = GAME;
     t = AiPlayerSkill;
     for (i = 0; i < 4; i++) {
-        flags = *(u16 *)(g + 0x32);
+        flags = g->levelFlags;
         if (flags & 0x100) {
-            c = g[*(s16 *)(g + 0x34) + 0xAB];
-            g[i + 0x9B] = c;
+            c = ((u8 *)g)[g->mode + 0xAB];  /* bytes from the state: unkAB[mode] adds the other way round */
+            g->adventure.unk9B[i] = c;
             t[i].level = ((u16 *)AiSkillTable)[c];
             t[i].quality = 0x10;
         } else if (flags & 1) {
-            t[i].level = ((u16 *)AiTeamSkillTable)[*(s16 *)(g + 0x38)];
+            t[i].level = ((u16 *)AiTeamSkillTable)[g->aiLevel];
             t[i].quality = 0x10;
         } else if (flags & 2) {
-            t[i].level = ((u16 *)AiTeamSkillTable)[*(s16 *)(g + 0x38) + 3];
+            t[i].level = ((u16 *)AiTeamSkillTable)[g->aiLevel + 3];
             t[i].quality = 0x10;
         } else if (flags & 0x40) {
             t[i].level = ((u16 *)AiSkillTable)[4];
-            if (g[i + 0x5C] != 0) {
+            if (g->heroOut[i] != 0) {
                 ret = t[i].quality = ((u16 *)AiBotTweakTable)[4];
             } else {
                 t[i].quality = ((u16 *)AiHumanTweakTable)[4];
@@ -1508,14 +1508,14 @@ void SetTweakAi(void) {
         } else if (flags & 0x20) {
             if (flags & 8) {
                 t[i].level = ((u16 *)AiSkillTable)[9];
-                if (g[i + 0x5C] != 0) {
+                if (g->heroOut[i] != 0) {
                     ret = t[i].quality = ((u16 *)AiBotTweakTable)[9];
                 } else {
                     t[i].quality = ((u16 *)AiHumanTweakTable)[9];
                 }
             } else {
                 t[i].level = ((u16 *)AiSkillTable)[5];
-                if (g[i + 0x5C] != 0) {
+                if (g->heroOut[i] != 0) {
                     ret = t[i].quality = ((u16 *)AiBotTweakTable)[5];
                 } else {
                     t[i].quality = ((u16 *)AiHumanTweakTable)[5];
@@ -1523,29 +1523,29 @@ void SetTweakAi(void) {
             }
         } else if (flags & 0x80) {
             t[i].level = ((u16 *)AiSkillTable)[6];
-            if (g[i + 0x5C] != 0) {
+            if (g->heroOut[i] != 0) {
                 ret = t[i].quality = ((u16 *)AiBotTweakTable)[6];
             } else {
                 t[i].quality = ((u16 *)AiHumanTweakTable)[6];
             }
         } else if (flags & 0x10) {
-            if (*(s32 *)(g + 0x70) != 0) {
-                c = g[*(s16 *)(g + 0x34) + 0xAB];
-                g[i + 0x9B] = c;
+            if (g->adventure.unk70 != 0) {
+                c = ((u8 *)g)[g->mode + 0xAB];
+                g->adventure.unk9B[i] = c;
                 t[i].level = ((u16 *)AiSkillTable)[3];
-                if (g[i + 0x5C] != 0) {
+                if (g->heroOut[i] != 0) {
                     ret = t[i].quality = ((u16 *)AiBotTweakTable)[3];
                 } else {
                     t[i].quality = ((u16 *)AiHumanRoundTweakTable)[9];
                 }
             } else {
-                c = g[*(s16 *)(g + 0x34) + 0xAB];
-                g[i + 0x9B] = c;
+                c = ((u8 *)g)[g->mode + 0xAB];
+                g->adventure.unk9B[i] = c;
                 t[i].level = ((u16 *)AiSkillTable)[c];
-                if (g[i + 0x5C] != 0) {
-                    ret = t[i].quality = ((u16 *)AiBotTweakTable)[g[0x9B]];
+                if (g->heroOut[i] != 0) {
+                    ret = t[i].quality = ((u16 *)AiBotTweakTable)[g->adventure.unk9B[0]];
                 } else {
-                    n = g[i + 0xCC];
+                    n = g->adventure.unkCC[i];
                     if (n >= 3) {
                         n = 2;
                     }
