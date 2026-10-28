@@ -94,21 +94,41 @@ fonts and 5 arenas (e.g. `tank_jungle/arena.mdl`) have none in this table. Check
 Uka's mask textured and talking (`001`, `043`), Oxide's hovercraft (`13F`), the menu's arena
 pieces (`07F`).
 
-Offsets marked "self" are s32s counted from their own position.
+Offsets marked "self" are s32s counted from their own position. The game reads the file through
+`ModelFile`, `MeshHeader`, `MeshVerts`, `ModelEntity`, `FileEntry` and `MeshAnimFrame` in
+`include/bash/main.h`, and an arena's maps through the Oct 9 prototype's own types (`map_list`,
+`map_map`, `trigger_list`, `Placement` in `include/bash/core.h`; `mapscene_setup_tables`). A model
+id picks a part: `0x2000 | i` mesh i (from 1), `0x5000 | i` entity i (from 1), `0x4000 | n << 7 |
+f` frame f of mesh animation n.
 
 | Offset | Size | Field |
 |---|---|---|
 | 0x00 | u32 | tag (`0x0C160029`; `0x09160026` in one file) |
+| 0x04 .. 0x0C | | not read by the exe (0x08 self, 0x0C a count) |
+| 0x10 | self | the map's animations (`map_enviroment.map_animations` is 8 bytes past it) |
+| 0x14 | u32 | 0, 1 in arenas |
+| 0x18 | self | the maps: a `map_list` (u32 count, then a self offset each to a `map_map`) |
+| 0x1C | self | the map directory: s32 count, then 12-byte entities (s32 self offset to a mesh header, s32, s32 group) |
 | 0x20 | self | the colour table: u32 RGB + code, 3 per face (one a corner: Gouraud) |
 | 0x24 | self | the UV table: u16 `u \| v << 8` |
 | 0x28 | self | the default vertex pool for animations (s16 x, y, z) |
-| 0x40, 0x44 | u32, self | the animations: count, then 0x18-byte entries (below) |
-| 0x54 | u32 | number of meshes (0 in the fonts; then 0x1C + [0x20] = 0x54) |
+| 0x2C | self | not read by the exe |
+| 0x3C | self | chunks loaded on demand: s32 count, then 16 bytes each (u32 start, u32 end, then the loaded data's pointer and load handle, 0 in the file) |
+| 0x40, 0x44 | u32, self | the mesh animations: count, then 0x18-byte entries (below) |
+| 0x48, 0x4C | u32, self | the scripts: count, then a self offset each to a `script_header` (the prototype's: thread count, sub count, end, start, frames, then a self offset per thread) |
+| 0x50 | u32 | the size of the part kept in memory (the file's size, or where the animations' data starts) |
+| 0x54 | u32 | number of meshes (0 in the fonts) |
 | 0x58 | 0x34 each | mesh headers |
 
-A mesh header: u32 0, u32 0, s16 faces, s16 (4..7), u32 (flags), then self offsets at +0x10 to
+A map (`map_map`, 0x40 bytes): s32 cell size x, y, z, then self offsets at +0x0C to the paths (a
+count, then the paths), +0x10 the triggers (`trigger_list`), +0x14 the contour grids, +0x18 the
+cell list, s32 at +0x1C the number of placements and a self offset at +0x20 to them, an RGB clear
+colour and a clear flag at +0x24.
+
+A mesh header: u32 0 (the game's pointer to its prims while drawn), u32 0, s16 faces, s16 (4..7), u32 (flags), then self offsets at +0x10 to
 the vertices, +0x14 the strips, +0x18 the UV indices, +0x1C the texture runs, +0x20 the colour
-indices, +0x24 the end, +0x28 the normals (0: none), and two u32.
+indices, +0x24 the end, +0x28 the normals (0: none), +0x2C its attachment points (a
+`PointList`: s16 count, s16, then s16 x, y, z and u16 flags each; 0: none), and a u32.
 
 | Block | What |
 |---|---|
@@ -119,11 +139,12 @@ indices, +0x24 the end, +0x28 the normals (0: none), and two u32.
 | texture runs | u16 entries, each for 1 + bits 9-14 faces: bits 0-8 the texture (image N of the texture set before the model in the DAT); bit 15: the set's last image with CLUT bits 0-8 instead (half of all faces) |
 | colour indices | u16 a face: bits 0-12 the first of its 3 colours, bit 15 semi-transparent, bits 13-14 the blend mode |
 
-Animation entry (0x18 bytes): u32 start and end (offsets of its data in the file), u32 frames,
-s32 offset from +0xC to the mesh header it moves, u32 (a speed? 0x1333), u32 0 (the loader's
-pointer). Its data: s32 offset to its own vertex pool (0: the file's), then 16 bytes a frame:
-s32 offset from the frame to an index list, s32 offset from +4 to a second one, s32 blend
-(0..0x1000), u32. An index list is a 0x14-byte bounding box, then a u16 per mesh vertex
+Animation entry (0x18 bytes): u32 start and end (offsets of its data in the file, loaded on
+demand), u32 frames, s32 offset from +0xC to the mesh header it moves, u32 the `string_hash` of
+its name (the game finds animations by name: `dbase_mesh_anim_name_load`), u32 0 (the loader's
+node). Its data: s32 offset to its own vertex pool (0: the file's), then 16 bytes a frame: s32
+offset from the frame to an index list, s32 offset from +4 to a second one, s32 blend
+(0..0x1000), s32 self offset to the frame's attachment points (0: none). An index list is a 0x14-byte bounding box, then a u16 per mesh vertex
 (`pool index << 2 \| flags`). A frame with blend 0 is a keyframe (its list's positions); the
 others blend the first list's towards the second's (1/3, 2/3: frames between two keyframes).
 1,037 animations in 225 files, 49,151 frames of which 13,648 keyframes.
@@ -195,8 +216,11 @@ table and the offsets; an unchanged WAV keeps its original bytes. A pack may shr
 Every file comes out editable or viewable. What is kept only as bytes (exact, in the folders'
 `.bin` files):
 
-- Models: the animations' timing (the entry's u32 at +0x10), the vertices' and indices' flag
-  bits, the header words not listed above, and the 27 mesh-less files' other sections.
+- Models: the animations' timing (not in the entry: +0x10 is the name's hash), the vertices' and
+  indices' flag bits, the header words not read by the exe, and every file's sections other than
+  the meshes and animations: the maps (an arena's level data), the map directory's entities, the
+  scripts, the on-demand chunks. Their layouts are known from the code and the prototype's types
+  (above); mdl.py doesn't decode them yet.
 - Texture sets: the header word at 0x14, and the images' header words.
 - Mode text: the data after the strings (menus, layouts).
 - Editing beyond the slots: a file can't grow (the DAT would have to be laid out again), and
