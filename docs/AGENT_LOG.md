@@ -63,8 +63,9 @@ file, its slot words linked from the overlays, so `shift.py` no longer rewrites
 anything), the exe's rodata and game `.data` (cut by file), and the data-only
 Sony objects. Next, none of them needing a playtest:
 
-1. Every game function is named; the `*_unused` ones are empty and called by nothing.
-   Next: the engine's and exe's `D_` globals (most are struct fields: type the structs).
+1. The engine's and exe's `D_` globals (773 left, `scratch/rank_d.py`-style counts):
+   the top ones are labels inside objects (model bank records, `GameOptions + 4`, the
+   arena object counts), so type those objects first, then name what's left.
 2. The model bank as one `obj_dbase` array (283 records from `HeroModelBank` to
    0x8005683C; the slot labels as elements or an enum of indices: a naming choice
    for the user).
@@ -489,7 +490,11 @@ Newest first, a few lines each. Details are in the commits.
   engine functions named (2435 of 2537): the default hero actions from the leaked
   HeroMode_nums, the process functions by their process_info slots, the rest from
   their code; the overlays' D_ references to engine functions (HeroNoJump ..) name them.
-  Then the last 102 from their callers and tables: every game function is named.
+  Then the last 102 from their callers and tables: every game function is named. Then 39
+  globals named (WinCounterState .., HeadOfCameras, VramAreas ..), and 31 hero sequence
+  words data2c had read as addresses (`&D_800A0000` is HEROcmd_SFXhandled, 0) written as
+  numbers. Gotcha: `decomp.py rename` failed on main.exe data names for no clear reason;
+  sed over src/include plus a sym.main.txt line, then `make check`, did it.
 
 - **2026-10-27 (Phase 5: the engine's and the exe's data as C):** the engine's
   data spliced, cut by file (`engine.c` .. `camera.c`, the world records with

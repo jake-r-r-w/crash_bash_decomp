@@ -374,8 +374,10 @@ load extract and are documented.
   named from their code (the level loop, panel, pause, heroes, game flow, loading,
   camera), the default hero actions from the leaked `HeroMode_nums` (`SetHeroIdle`
   .. `HeroKick`) and the process functions from their `process_info` slots. Every
-  engine function is named (2026-10-28). Left: the `D_` globals, most of them fields of
-  structs still untyped.
+  engine function is named (2026-10-28). Left: 773 `D_` names (2254 uses) across the
+  engine and the exe. The most-used are labels inside objects: the model bank's records
+  (`D_80055614` is `LoadingModel`'s third record), `GameOptions + 4` (`D_8005A608`), the
+  arena object counts (`D_8009E46C`, `D_8009E25C`); they need their structs typed first.
 - [x] Type the game state (2026-10-28). `GameMode`, `GameTeams` and the other labels are
   globals of their own (the user's choice: Pogo's `Tiles_PlayerIsStealing` reloads
   `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff
