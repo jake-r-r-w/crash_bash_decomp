@@ -210,8 +210,8 @@ class Build:
 
     def main_script(self):
         t = open("build/main.full.ld", encoding="utf-8").read()
-        t = pad_first(t, r"build/src/main/\w+\.c\.o", self.pad("main"))
-        t = self.move_sections(t, "main", ".main")
+        t = pad_first(t, r"build/src/main/(?!header\.)\w+\.c\.o", self.pad("main"))
+        t = self.move_sections(t, "main", ".main", ".header")
         startup = f"{OUT}/2mbyte.s.o"
         run(["mipsel-linux-gnu-as", "-march=r3000", "-mtune=r3000", "-no-pad-sections", "-O0", "-G0", "-EL",
              "-o", startup, write(f"{OUT}/2mbyte.s", STARTUP)])
@@ -253,7 +253,7 @@ class Build:
 
     # ---- linking until the addresses settle
 
-    PADDED = {"main": r"build/src/main/\w+\.c\.o", "engine": r"build/src/overlays/engine/(?!entry\.)\w+\.c\.o"}
+    PADDED = {"main": r"build/src/main/(?!header\.)\w+\.c\.o", "engine": r"build/src/overlays/engine/(?!entry\.)\w+\.c\.o"}
 
     def points(self, b):
         """The retail addresses where binary b's pads go: its first padded C input of each section
@@ -399,10 +399,12 @@ class Build:
             sys.exit(f"shift_all: the exe is {size:#x} bytes, more than its {EXE_FILE_SIZE:#x} on the disc")
         with open(exe, "ab") as f:
             f.write(bytes(EXE_FILE_SIZE - size))
-        # the header's initial PC (asm/header.s, a constant) is the entry point, which moved
-        with open(exe, "r+b") as f:
+        # the header's initial PC (src/main/header.c) links to the entry point, wherever it moved
+        with open(exe, "rb") as f:
             f.seek(0x10)
-            f.write(defined(f"{OUT}/main.elf")["__SN_ENTRY_POINT"].to_bytes(4, "little"))
+            pc0 = int.from_bytes(f.read(4), "little")
+        if pc0 != defined(f"{OUT}/main.elf")["__SN_ENTRY_POINT"]:
+            sys.exit(f"shift_all: the header's pc0 {pc0:#x} isn't __SN_ENTRY_POINT")
         for b in ["engine"] + self.slots:
             run([OBJCOPY, "-O", "binary", f"{OUT}/{b}.elf", f"{OUT}/{b}.bin"])
         return exe

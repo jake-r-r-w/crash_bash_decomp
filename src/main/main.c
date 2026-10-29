@@ -219,7 +219,6 @@ static inline void mal_merge_from(mal *a, _mal_area *arg1, s32 m1) {
     mal_free(b + 1, arg1);
 }
 
-#ifndef NON_MATCHING
 void mal_update(_mal_area *heap) {
     u32 size;
     s32 size2;
@@ -298,88 +297,6 @@ void mal_update(_mal_area *heap) {
         }
     }
 }
-#else
-static inline mal *Heap_NextLowest(_mal_area *heap, s32 m1) {
-    mal *blk;
-    mal *next;
-
-    blk = heap->lowest;
-    if (blk == NULL) {
-        return NULL;
-    }
-    next = MAL_AFTER(blk, blk->size);
-    if (next->owner == (void **)m1 || next->size == 0) {
-        return NULL;
-    }
-    return next;
-}
-
-void mal_update(_mal_area *heap) {
-    s32 m1;
-    mal *lo;
-    mal *nx;
-    mal *ret;
-    mal *p;
-    mal *q;
-    mal *qprev;
-    s32 budget;
-
-    lo = heap->lowest;
-    if (lo == NULL || (nx = MAL_AFTER(lo, lo->size),
-                       nx->owner == (void **)-1) || nx->size == 0) {
-        ret = NULL;
-    } else {
-        ret = nx;
-    }
-    p = ret;
-    if (p != NULL) {
-        if ((p->unk0 & 2) && (p->unk0 & 1) == (FrameCount & 1)) {
-            p = NULL;
-        }
-    }
-    budget = (0x1FE - VSync(1)) * 0x70;
-    m1 = -1;
-    do {
-        s32 t;
-
-        if (p == NULL) break;
-        budget -= p->size;
-        if (budget <= 0) break;
-        t = VSync(1);
-        MalMoveWords += p->size;
-        mal_merge_from(heap->lowest, heap, m1);
-        t = VSync(1) - t;
-        ret = Heap_NextLowest(heap, m1);
-        p = ret;
-        if (p != NULL) {
-            if ((p->unk0 & 2) && (p->unk0 & 1) == (FrameCount & 1)) {
-                p = NULL;
-            }
-        }
-        MalMoveVSyncs += t;
-    } while (1);
-    q = heap->deferred;
-    qprev = NULL;
-    while (q != NULL) {
-        if (--q->ticks <= 0) {
-            if (qprev != NULL) {
-                qprev->nextFree = q->nextFree;
-            } else {
-                heap->deferred = q->nextFree;
-            }
-            mal_free(q + 1, &MainHeap);
-            if (qprev != NULL) {
-                q = qprev->nextFree;
-            } else {
-                q = NULL;
-            }
-        } else {
-            qprev = q;
-            q = q->nextFree;
-        }
-    }
-}
-#endif
 
 void mal_compact_from(mal *arg0, _mal_area *arg1) {
     s32 m1 = -1;

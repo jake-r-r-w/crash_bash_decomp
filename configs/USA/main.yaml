@@ -52,8 +52,11 @@ options:
   # include_asm_macro_style: maspsx_hack
 segments:
   - name: header
-    type: header
+    type: code
     start: 0x0
+    vram: 0x8000F800                  # where it would sit, just before the body; nothing reads it there
+    subsegments:
+      - [0x0, .data, main/header]   # the PS-X EXE header as C (not loaded)
 
   - name: main
     type: code
