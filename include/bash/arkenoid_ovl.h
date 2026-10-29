@@ -11,7 +11,6 @@
 #include "bash/pause.h"
 #include "bash/heroes.h"
 
-extern HeroInfo Heroes[4];
 
 typedef struct ArkenoidHeroBox {
     s32 a, b, c, d;
@@ -53,7 +52,6 @@ extern u16 RoundWinner;
 
 extern u16 PickupCounts[];
 extern s32 ArkBallTimer;
-extern u16 CrateCounts[];
 
 typedef struct ArkenoidFuxType {
     u8 pad0[0x14];

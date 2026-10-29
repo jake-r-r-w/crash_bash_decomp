@@ -309,7 +309,6 @@ typedef struct DinoBox2 {
     DinoBoxHalf hi;
 } DinoBox2;
 
-s32 csqrt(s32 x);
 
 /* XZBoxToSphere's push: sets up the object's rotation and passes v through. */
 static inline s32 DinoBoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
@@ -366,8 +365,6 @@ void PlotDinoGem(NAS *m);
 
 #endif /* BASH_DINO_OVL_H */
 
-void ModelCreateShadow(s32 idx);
-void ModelUpdateShadow(s32 idx);
 extern s32 DinoVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern DinoObj *DinoTargetD, *DinoTargetE;
 extern s32 DinoTargetTimer, DinoTargetDelay, DinoTargetStep, DinoScoreTimer, DinoTargetFlag;

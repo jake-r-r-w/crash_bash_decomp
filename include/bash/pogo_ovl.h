@@ -9,18 +9,13 @@
 #include "bash/nas.h"
 #include "bash/pogo.h" /* PogoPlayer, PogoPlay */
 
-s32 HeroNoJump(s32 arg0);
 extern u16 PogoHeroModels[];
 extern u8 PogoHookTableC[];
 
-extern EngineHooks HeroHooks;
 extern process_info PogoProcess;
-extern process_control_info MenuProcessControl;
 
 void psxpogo_render_tile();
 
-void StartHeroVictory(s32 arg0);
-extern u16 CameraMode;
 
 /* What a board cell's unk4 points to (Plot_PogoBanker reads its x and z). */
 typedef struct {
@@ -60,7 +55,6 @@ typedef struct PogoObj {
     /* 0x74 */ u16 index;
 } PogoObj;
 extern PogoObj *PogoKerbObj;
-extern HeroInfo Heroes[4];
 
 extern s32 PogoBounceCount[];
 extern s16 PogoBounceHeights[];
@@ -151,8 +145,6 @@ static inline void Pogo_ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 extern ScriptInit RooScriptInit;
 extern s32 RooFrame;
-extern s32 GameTeams[];
-extern u8 GameInfo[];
 extern NAS *PogoPadlockNas;
 extern s32 BrioSmokeFrame;
 /* The padlock's moves at each level before it levels up (Plot_PogoPadlock;
@@ -285,7 +277,6 @@ extern s32 DirPadBits[]; /* pad flags by direction octant */
 
 
 extern s32 MushroomCount;
-extern u32 Clock_Time;
 extern s32 RooTileX;
 extern s32 RooTileZ;
 extern s32 RooSpeedX;
@@ -361,7 +352,6 @@ extern u16 PogoPainterAiQuality[];
 extern u16 PogoAgogoAiQuality[];
 extern u16 PogoLocoAiQuality[];
 extern u16 PogoBouncerAiQuality[];
-extern u16 Clock_flags;
 /* PogoWinner_Relic: hero idx's team is out of points (i starts at i0). */
 #define POGO_TEAM_LOST(g, idx, i, i0)                                   \
     {                                                                    \
@@ -427,11 +417,6 @@ static inline s32 PogoTeamScore(s32 idx) {
     return h->hero_score + hb[h->hero_teammate].hero_score;
 }
 /* PogoInit_AIQuality: the engine's per-mode table pointers. */
-extern void *AiBotTweakTable;
-extern void *AiHumanTweakTable;
-extern void *AiSkillTable;
-extern void *AiTeamSkillTable;
-extern void *AiHumanRoundTweakTable;
 extern PogoModeEntry PogoAiBotTweak;
 extern PogoModeEntry PogoPainterAiSkill;
 extern PogoModeEntry PogoPainterAiSkillTeams;
@@ -453,9 +438,6 @@ extern PogoModeEntry PogoBouncerAiSkillTeams;
 extern u16 PogoBouncerAiTeamSkill[6];
 extern u16 PogoBouncerAiRound[12];
 extern u16 PogoBouncerAiRoundAlt[12];
-void Set_Clock(u16 time, u16 flags);
-void InitSharedScoreIcons(void);
-extern s32 PanelCtrl;
 
 
 

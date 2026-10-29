@@ -10,10 +10,7 @@
 #include "bash/aiskill.h"
 #include "bash/core.h"   /* map_enviroment (MapScene) */
 
-extern TrigEntry rcossin_tbl[];
 
-extern NAS *ContourPlatform;
-extern s32 VelocityCalc;
 
 typedef struct CoalFlameInner {
     s32 pad0[3];
@@ -39,7 +36,6 @@ typedef struct CircleFireExt {
     u8 pad34[0x10];
 } CircleFireExt;
 
-extern map_enviroment *MapScene;
 
 typedef struct EggExt {
     EXT ext;
@@ -53,8 +49,6 @@ typedef struct EggExt {
     u8 pad34[0x10];
 } EggExt;
 
-extern u32 Clock_Time;
-extern u16 GameExitFlags;
 
 /* Extension 0x10000000 of the NAS 0x1605 puff PlotEgg spawns. */
 typedef struct EggPuffExt {
@@ -71,7 +65,6 @@ typedef struct EggPuffExt {
 extern u16 ChaseHeroShadowModels[];
 extern u16 ChaseHeroShadowSizes[];
 extern s32 ChaseFlameTimer[];
-extern PadState Pads[];
 
 typedef struct CoalPosInner {
     s32 pad0[4];
@@ -86,7 +79,6 @@ typedef struct CoalGridObj {
 } CoalGridObj;
 
 extern u32 DirPadBits[];
-extern s32 HeroesAllOut;
 
 typedef struct ChaseOut {
     s32 unk0;
@@ -167,8 +159,6 @@ void FirstTriggersCHASE(void);
 void ChaseTriggers(void);
 void ChaseStopHeroSfx(void);
 void ChaseResetSlot(s32 arg0);
-extern LevSpec LevelSpecs; /* the level's hooks */
-extern s32 DatIndex[]; /* the archive index (main.h) */
 void InitialiseCHASEFirst(void);
 void InitialiseCHASE(void);
 void UpdateCHASE(void);
@@ -201,28 +191,16 @@ extern s32 ChaseArenaRadius;
 extern s32 ChaseArenaShrink;
 extern s32 ChaseHitSfx[][4];
 void ChaseHidePowerup(s32 arg0);
-extern s16 HeroActHit;
-extern u16 CameraMode;
 
 void ChaseChooseWinner(s32 arg0, s32 arg1);
 void ChaseChooseWinnerScore(s32 arg0, u16 arg1);
 void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1);
 void ChaseChooseWinnerTimed(s32 arg0, u16 arg1);
 void ChaseChooseWinnerRank(s32 arg0, u16 arg1);
-extern u8 GameInfo[];
 
 #define RANK68V ((GameState *)GameInfo)
 
 
-extern EngineHooks HeroHooks;
-extern void *AiBotTweakTable;
-extern void *AiHumanTweakTable;
-extern void *AiSkillTable;
-extern void *AiTeamSkillTable;
-extern void *AiHumanRoundTweakTable;
-extern s16 HeroActDead;
-extern s16 HeroActWinner;
-extern s16 HeroActLoser;
 extern u16 ChaseHeroModels[];
 extern s32 ChaseVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern u16 ChaseAiSkill[];
@@ -245,26 +223,9 @@ typedef struct ChaseHitFlags {
     /* 0x1C */ u16 unk1C;
     /* 0x1E */ u16 unk1E;
 } ChaseHitFlags;
-extern NAS *HeadOfSolids;
-void gfx_load_xform(void *arg0, void *arg1, void *arg2);
-void rotscale_update(void *arg0);
-void gte_rotate_point(SVECTOR *v, VECTOR *out);
-s32 Random(s32 n);
-void *FindExtension(NAS *nas, s32 id);
-s32 get_angle(s32 x, s32 z);
-FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
-s32 csqrt(s32 x);
 
 void ChaseHeroWinner(s32 arg0);
-extern s32 World_floor_level;
-extern s32 ContourHeight;
-extern HeroInfo Heroes[4];
-void ApplyContour(EXTengine *eng);
-void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
 
-s32 CheckHeroAnim();
-s32 UpdateHeroVictory(s32 arg0);
-void FinishLevel(void);
 
 void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1);
 
@@ -369,8 +330,6 @@ s32 ChaseFindHeroAt(s32 x, s32 z, s32 range);
  * 40x40 grid of fire NASes (128 units a cell, centred on 0). */
 typedef struct { s32 x; s32 z; } CircleFireOfs;
 extern CircleFireOfs CircleFireOffsets[8];
-NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags);
-s32 KillNAS(NAS *nas);
 typedef struct { u8 pad0[0x2C]; s32 unk2C; } CircleFireFux;
 void PlotCircleFire(NAS *nas);
 
@@ -421,7 +380,6 @@ extern s32 ChaseChainSfx[];
 static inline HeroInfo *ChaseHeroes(void) {
     return Heroes;
 }
-void CreateFloatyScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 /* ChaseHeroSlots: one 0x30-byte record per player (id). */
 typedef struct { u8 pad0[0x20]; s32 unk20; u8 pad24[0xC]; } CoalPlayerRec;
 void ChaseHeroIdle(s32 arg0);
@@ -464,9 +422,6 @@ typedef struct ChaseAiState {
     /* 0x2C */ s32 unk2C;
 } ChaseAiState;
 
-extern s32 ASTCount;
-extern ASTEntry *ASTTable;
-extern s32 GamePause;
 
 /* Index of the ASTTable entry with this id, or 0. */
 static inline s32 ChaseASTIndex(s32 id) {
@@ -505,7 +460,6 @@ static inline NAS *ChaseNearPickup(s32 x, s32 z) {
     return NULL;
 }
 
-extern u16 Clock_flags;
 
 void PlotEgg(NAS *nas);
 
@@ -523,12 +477,6 @@ typedef struct ChasePct {
 extern u16 ChaseRunSpeeds[];
 extern NAS *ChaseGenerator;
 extern NAS *ChaseGeneratorB;
-extern s32 PanelCtrl;
-extern camera_info_tag MainCamera;
-void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
-void Set_Clock(u16 time, u16 flags);
-void InitSharedScoreIcons(void);
 
-extern u8 GameHeroOut[4];
 
 #endif /* BASH_CHASE_OVL_H */

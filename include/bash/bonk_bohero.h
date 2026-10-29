@@ -9,7 +9,6 @@
 #include "bash/bonk_ovl.h"
 
 
-extern HeroInfo Heroes[4];
 extern s32 BonkSteerB[];
 extern s32 BonkSteerA[];
 
@@ -39,7 +38,6 @@ typedef struct BonkTarget {
 } BonkTarget;
 
 extern BonkSlot BonkSlots[];
-extern u16 CameraMode;
 
 extern s32 BonkBackswingSfx[];
 extern s32 BonkShockwaveSfx[];

@@ -13,7 +13,6 @@
 
 void BashHeroWinner(s32 arg0);
 
-s32 SetHeroSeq(s32 player, s32 seq);
 
 void BashHeroDead(s32 arg0);
 void BashHeroBigWeight(s32 arg0);

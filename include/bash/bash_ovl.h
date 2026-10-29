@@ -23,10 +23,7 @@ typedef struct BashCell {
 } BashCell;
 
 extern BashCell BashSpaceTiles[8][8];
-extern u8 GameInfo[];
-extern s32 World_floor_level;
 
-extern HeroInfo Heroes[4];
 
 #define OVLG ((GameState *)GameInfo)
 
@@ -82,8 +79,6 @@ extern u16 BashCrateMixPos;
 extern u16 BashDropPos;
 extern u16 BashMaxNitro[];
 extern u16 BashMaxCrates[];
-extern u16 CrateCounts[];
-extern s32 HeroesInPlay;
 BashPair *BashFindDropPoint(u16 *arg0);
 
 /* A scene object in the list at MapScene->subs (BashSpaceInitTiles). */
@@ -157,17 +152,12 @@ void BashRestartLevel(void);
 
 extern s16 BashExplodeScales[][3];
 extern u16 RoundWinner;
-extern s32 CrateAstType;
-extern s32 CrateAstType2;
 extern s32 *CrateHitShapes[];
 extern s32 *CrateHitShapes2[];
 extern s16 BashAIVictim;
 s32 BashAI_PickVictim(s32 arg0);
 void BashCrateMaster(void);
 void BashCountObjects(void);
-void DoAmbience(void);
-void MarkHeroesOnGrid(void);
-void ArenaGridClear(void);
 void BashSpaceTileEdges(void);
 void BashSpaceMarkHoles(void);
 
@@ -409,8 +399,5 @@ extern CrateVelocity *BashSnowKickVels[];
 extern u16 BashSnowRunSpeeds[];
 extern Ambient_data BashJungleAmbience;
 extern Ambient_data BashDrainsAmbience;
-void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
-void Set_Clock(u16 time, u16 flags);
-void SetupSceneMarks(u8 *arg0);
 
 #endif /* BASH_BASH_OVL_H */

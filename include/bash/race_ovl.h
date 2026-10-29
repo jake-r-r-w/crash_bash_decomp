@@ -8,7 +8,6 @@
 #include "common.h"
 #include "bash/nas.h"
 
-extern HeroInfo Heroes[4];
 
 void PlotRaceSmokeBoostWater(NAS *nas);
 void PlotRaceGreenSmokeBoost(NAS *nas);
@@ -211,9 +210,6 @@ typedef struct RaceBounceObj {
 
 void RaceMovesSwap(EXTheromove *a, EXTheromove *b);
 
-void SetHeroAction(s32 player, s32 action);
-s32 PointInZone(s32 *arg0, s32 arg1);
-s32 DistXZSq(SLONG_XYZ *a, SLONG_XYZ *b);
 
 s32 RaceBounceObject(RaceBounceObj *obj, RaceBouncer *b);
 
@@ -239,8 +235,6 @@ void RACESetUp(void);
         PlaySfx(d, NULL, NULL, 0x1000, 0x1E00, 0);          \
     }
 
-void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
-void Set_Clock(u16 time, u16 flags);
 extern s32 RacePickupTimer;
 extern s32 RaceUnused1;
 
@@ -386,7 +380,6 @@ extern RaceObj74 *RaceGlowObj;
 extern s32 RaceGlowPhase;
 extern s32 RaceGlowMode;
 extern s32 RaceStartDelay;
-extern u16 CameraMode;
 
 /* Spinning object MaintainCentre updates: rotation at 0x10, its matrix at 0x30. */
 typedef struct RaceSpinObj {
@@ -1080,7 +1073,6 @@ typedef struct RaceLapFux {
     /* 0x170 */ s32 side;
 } RaceLapFux;
 
-extern s32 GameCheats;
 
 void RaceInitSpinners(void);
 
@@ -1113,16 +1105,8 @@ typedef struct RaceShieldFxExt {
 
 void PlotRaceShield(NAS *nas);
 
-extern EngineHooks HeroHooks;
-extern void *AiBotTweakTable;
-extern void *AiHumanTweakTable;
-extern void *AiSkillTable;
-extern void *AiTeamSkillTable;
-extern void *AiHumanRoundTweakTable;
 
 /* Tables InitialiseRACEFirst hooks into the engine. */
-void ModelCreateShadow(s32 idx);
-void ModelUpdateShadow(s32 idx);
 extern s32 RaceVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1);
 

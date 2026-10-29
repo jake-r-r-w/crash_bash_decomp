@@ -40,7 +40,6 @@ typedef struct SpinCell {
 extern SpinCell SpinDropPoints[4][16];
 
 
-void InitBigScore(void);
 
 #define SPIN_GAME ((GameState *)GameInfo)
 
@@ -153,7 +152,6 @@ typedef struct SpinFux {
 /* balloon chance weights, indexed by score and 0x20 - score (SpinScoreBalloon) */
 extern u16 SpinBalloonWeights[];
 
-extern ArenaCell ArenaGrid[400];
 extern u16 PickupCounts[13];
 
 void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero);
@@ -168,18 +166,13 @@ typedef struct SpinGlow {
     /* 0x1C */ s16 unk1C;
     /* 0x1E */ s16 unk1E;
 } SpinGlow;
-s32 GravitateNas(NAS *nas);
 
 void SpinHeroFlip(s32 arg0);
 
-extern LevSpec LevelSpecs; /* the level's hooks */
 extern u16 SpinShadowModels[];
 
 void SpinHeroWinner(s32 arg0);
 extern u16 SpinBalloonAnims[];
-extern s32 World_floor_level;
-extern s32 ContourHeight;
-extern HeroInfo Heroes[4];
 
 /* PlotHazardType: let go of a hazard its owner is holding. */
 static inline void SpinDropHazard(SpinFux *fux) {
@@ -201,19 +194,11 @@ static inline void SpinDropHazard(SpinFux *fux) {
         }
     }
 }
-extern u16 CameraMode;
-FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
 
-void ApplyContour(EXTengine *eng);
-void *FindExtension(NAS *nas, s32 id);
 
-s32 CheckHeroAnim();
-s32 UpdateHeroVictory(s32 arg0);
-void FinishLevel(void);
 
 s32 SpinAI_HazardAhead(s32 arg0);
 
-extern NAS *HeadOfSolids;
 
 void SpinInitScene(void);
 
@@ -225,9 +210,6 @@ extern u16 SpinBigDrop;
 void SpinHero_ExtraEffects(s32 arg0);
 
 void SpinHeroDead(s32 arg0);
-extern NAS *HeadOfObjects;
-s32 get_angle(s32 x, s32 z);
-s32 angle_diff_abs(s32 arg0, s32 arg1);
 
 void SetSpinHeroFall(s32 arg0);
 
@@ -253,8 +235,6 @@ static inline u16 SpinNextSlot(void) {
     return SpinSlotPos;
 }
 extern s16 SpinDropKinds[];
-extern u16 CrateCounts[];
-extern u32 Clock_Time;
 extern u16 SpinHazardKinds[];
 NAS *CreateHazard(s32 a, s32 b, u16 c, s16 d);
 
@@ -263,10 +243,7 @@ void SpinDropObject(u16 arg0, u16 arg1);
 void SpinHeroLose(s32 arg0);
 extern u16 SpinHitSfx[];
 extern u16 SpinHitDone[];
-extern s32 GameCheats;
 s32 ProcessHeroAnim();
-s32 HeroTestFall(s32 arg0);
-s32 SetHeroSeq(s32 player, s32 seq);
 
 void SpinShuffleDropPoints(void);
 
@@ -281,21 +258,10 @@ void SpinHeroFall(s32 arg0);
 void SetSpinHeroWinner(s32 arg0);
 
 void SetSpinHeroLose(s32 arg0);
-extern u8 GameInfo[];
 
 
-extern EngineHooks HeroHooks;
 
 s32 SpinAI_NearestEnemy(s32 arg0);
-extern void *AiBotTweakTable;
-extern void *AiHumanTweakTable;
-extern void *AiSkillTable;
-extern void *AiTeamSkillTable;
-extern void *AiHumanRoundTweakTable;
-extern s16 HeroActHit;
-extern s16 HeroActDead;
-extern s16 HeroActWinner;
-extern s16 HeroActLoser;
 extern u16 SpinAiSkill[];
 extern u16 SpinAiSkillAlt[];
 extern u16 SpinAiTeamSkill[];
@@ -366,7 +332,5 @@ void SpinAI_ScanAhead(s32 arg0);
 
 /* Spin_HeroBot */
 extern u32 DirPadBits[]; /* pad flags by angle octant */
-s32 csqrt(s32 x);
-s32 HeroTestBox(s32 id, u32 flag);
 
 #endif /* BASH_SPIN_OVL_H */

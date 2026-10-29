@@ -1,7 +1,7 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/tank_ovl.h"
-#include "bash/engine.h"
 #include "bash/tank.h"
 
 /* the exe's data the tables point at, not declared in the headers yet */

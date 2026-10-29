@@ -41,7 +41,6 @@ typedef struct MixObj {
 } MixObj;
 
 extern SetupCam NoxCamera;
-extern fade_info ScreenFade;
 
 typedef struct MineSrc {
     /* 0x00 */ u8 pad00[0x18];
@@ -512,7 +511,6 @@ typedef struct BossExt {
 
 extern ScriptInit NoxBossScriptInit;
 extern s32 NoxBossPathPos;
-void RenderGameScene(void);
 void N2OPlaceHero(s32 arg0);
 
 void NoxStartPhase1(void);
@@ -586,7 +584,6 @@ extern MATRIX NoxSparkMatrix;  /* spark view matrix */
 extern SVECTOR NoxSparkAngles; /* spark view rotation */
 
 void NoxDrawSparks(SparkObj *arg0);
-extern FxDef NoxSparkFxDef; /* the star field (heroes.c's InitWeatherNas runs it in N2O) */
 
 /* Asteroid roll extension (id 0x10000000): a ballistic arc (ArcUpdate's
  * Arc, declared in bash/pause.h) at 0x0C. */
@@ -788,7 +785,6 @@ void NoxHeroFly(s32 arg0);
 
 void PlotNitroBoss(NAS *nas);
 
-extern HeroInfo Heroes[4];
 
 /* NoxPreMoveHero's tail: steer the hero's pitch and yaw toward their targets. */
 static inline void BossHeroSteer(s32 i) {

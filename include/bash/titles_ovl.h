@@ -134,7 +134,6 @@ static inline s32 TitlesSlotOn(void) {
 }
 
 void TitlesCheckIdle(void);
-void AnimateTitlesBackdrop(void);
 
 extern s32 MainMenuHints[];
 extern process_info OptionsScreen;
@@ -271,8 +270,6 @@ s32 LevelListText(s32 a, s32 b);
 void MoveTeamBar(s32 arg0, s32 arg1);
 /* OptionsRender */
 #include "bash/main.h"
-void FormatPercent(u8 *arg0, s32 arg1);
-extern camera_info_tag TitlesCamera;
 extern GfxViewport TitlesBackdropView;
 extern GfxViewport LevelSelectView0;
 extern GfxViewport LevelSelectView1;
@@ -403,8 +400,6 @@ void PlayersMenuUpdate(void);
 
 void OptionsUpdate(void);
 
-void MenuChainBack(void);
-void MenuChainNext(void);
 
 void CharSelectUpdate(void);
 

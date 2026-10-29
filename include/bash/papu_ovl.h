@@ -48,8 +48,6 @@ typedef struct PapuObj {
     /* 0x1E */ u8 pad1E[0x22 - 0x1E];
     /* 0x22 */ s16 unk22;
 } PapuObj;
-extern s32 CrateAstType;
-extern u16 CrateCounts[];
 typedef struct PapuTile {
     s32 unk0;
     s32 unk4;
@@ -276,7 +274,6 @@ void PapuRestartLevel(void);
 
 void UpdatePAPU(void);
 
-extern s32 CrateAstType2;
 extern s32 *CrateHitShapes[];
 extern s32 *CrateHitShapes2[];
 
@@ -452,9 +449,6 @@ typedef struct MinionMove {
     /* 0x2A */ s16 push_angle;
 } MinionMove;
 
-extern s32 GameTeams[];
-extern u16 HeroSquashCycle[];
-extern u16 HeroSpinScale[];
 
 void PapuSetCrateMix(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16 n7, u16 n8);
 

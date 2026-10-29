@@ -127,7 +127,6 @@ typedef struct {
 extern TankPoint TankBossTargets[];
 extern s32 TankLevelOver;
 extern s32 TankBossSightedHero;
-s32 get_angle(s32 x, s32 z);
 
 /* TankBossTurretFindTarget: can the turret at (x, z) facing ang see target i? Records state. */
 static inline s32 TankTurretSees(s32 i, s32 state, s32 x, s32 z, s32 ang) {
@@ -378,7 +377,6 @@ static inline NAS *TankRocketNear(s32 x, s32 z, s32 dist) {
     }
     return NULL;
 }
-extern HeroInfo Heroes[4];
 /* PlotRocketTA: RocketFindHero inlined. */
 static inline s32 TankRocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     s32 i;
@@ -749,9 +747,6 @@ extern u8 TankJungleMap[];
 extern u8 TankMetalMap[];
 extern u8 TankBossMap[];
 extern u8 TankSwampMap[];
-void Clock_Off(void);
-void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
-void Set_Clock(u16 time, u16 flags);
 
 
 /* A 0x38-byte model record of HeroModelBank (see TANK_MODEL). */

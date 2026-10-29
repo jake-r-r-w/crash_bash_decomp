@@ -47,7 +47,6 @@ typedef struct { s32 a, b, c; } BonkEnt;
 extern BonkEnt BonkEnts[];
 extern s32 BonkCrateFrames[];
 extern s32 BonkStoolSfx[];
-extern s32 GamePause;
 /* PlotBonkCrate's puff of smoke at pos (type 0x1605, flags 0x11). */
 static inline void Bonk_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
     NAS *obj;
@@ -73,11 +72,6 @@ static inline void Bonk_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
 extern s32 BonkEntCur;
 extern u16 BonkAIRange[];
 extern ScriptInit BonkFlagScriptInit;
-extern s32 GameTeams[];
-extern s32 PanelCtrl;
-extern void *AiSkillTable;
-extern void *AiTeamSkillTable;
-extern void *AiHumanRoundTweakTable;
 extern u16 BonkAiSkill[];
 extern u16 BonkAiSkillAlt[];
 extern u16 BonkAiTeamSkill[];
@@ -109,13 +103,7 @@ extern s32 BonkStoolHeights[];
 extern s32 BonkStoolTable[];
 
 int BonkAI_Closest(int a0, int *out);
-extern EngineHooks HeroHooks;
-extern s16 HeroActHit;
-extern s16 HeroActWinner;
-extern s16 HeroActLoser;
-s32 HeroNoKick(void);
 extern u16 BonkHeroModels[];
-s32 HeroNoJump(s32 arg0);
 void BonkHeroFacing(s32 arg0);
 s32 BONK_KeepInBounds(EXTengine *eng);
 void BonkPreMoveHero(s32 arg0);
@@ -176,10 +164,8 @@ void BonkInitCamera(void);
 
 void BonkKnockBack(s32 arg0, EXTengine *p, s32 arg2);
 
-extern u16 Clock_flags;
 
 extern u16 HeroHitSfx[][4];
-void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
 
 void PlotBonkCrate(NAS *nas);
 

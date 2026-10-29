@@ -16,7 +16,6 @@ void InitialiseN2OFirst(void);
 void InitialiseN2O(void);
 
 
-extern u16 CameraMode;
 extern u16 N2OKickSfx[];
 extern s16 N2OExplodeScales[][3];
 extern u16 N2OBallPhase;
@@ -33,13 +32,9 @@ extern s16 N2OHeroSpeed[];
 #include "bash/n2o_nox.h"
 
 void N2OUpdateShadow(s32 arg0);
-extern HeroInfo Heroes[4];
 
 void SetN2OHeroDead(s32 arg0);
-s32 csqrt(s32 x);
 
-NAS *SpawnModelFx(s32 arg0, s32 *arg1, s32 arg2);
-void HeroBecomeAngel(s32 arg0);
 
 void N2OLineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
 
@@ -69,8 +64,6 @@ typedef struct N2OPuck {
 
 extern u16 N2OBallHitSfx[];
 extern u16 N2OExplosionSfx[];
-extern s32 GameCheats;
-extern s32 GameTeams[];
 
 s32 N2OHeroBallCollision(s32 arg0, EXTengine *unused);
 
@@ -378,8 +371,6 @@ void N2OBlendDirection(N2OBlend *p);
 s32 PickN2OPlayer(s32 arg0);
 
 /* N2O_HeroBot */
-extern s32 GamePause;
-extern s32 HeroesAllOut;
 extern u32 DirPadBits[]; /* flags by angle octant */
 
 #define OVG ((GameState *)GameInfo)
@@ -393,13 +384,7 @@ extern u16 N2OBossAiSkill[];
 extern u16 N2OBossAiSkillAlt[];
 extern s16 N2OBossAnimTimer;
 extern s32 N2OBossClock;
-void InitBossHealthIcons(void);
-void ResetHeroGlobals(void);
 
-extern EngineHooks HeroHooks;
-extern void *AiSkillTable;
-extern s16 HeroActHit;
-extern s16 HeroActDead;
 extern s32 NoxBossDead;
 extern s32 NoxStarted;
 extern u16 N2OHeroModels[];
@@ -456,7 +441,6 @@ void N2OUpdateSlots(void);
 
 s32 TestN2OObjectObstacles(EXTengine *eng, N2OFuxF *self);
 
-extern HitSfxTable HitSfx;
 extern SLONG_XYZ N2OBallStarts[];
 extern u16 N2OBallBounceSfx[];
 extern u16 N2OBallSfx[];

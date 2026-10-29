@@ -211,7 +211,6 @@ static inline u32 PolarPadToward(SLONG_XYZ *p, SLONG_XYZ *v) {
     return flags;
 }
 
-extern HeroInfo Heroes[4];
 
 /* Extension 0x10000000 made by InitSimpleExplosion: a velocity per sub-engine. */
 typedef struct ExtSimpleExplosion {
@@ -239,7 +238,6 @@ typedef struct BrioOwner {
 
 /* Head of a list linked through +0x20 (counted by CountBears). */
 extern u8 *PolarBears;
-extern s32 GameTeams[];
 
 /* TestPolarHeroMelted's ending: put the hero into action 0x4E unless status bit
  * 0x200 is set. */
@@ -488,7 +486,6 @@ void PolarAI_DoAttack(s32 player);
 
 extern s32 PolarAttackOdds[];
 extern s32 PolarRollOdds[];
-extern s32 HeroesAllOut;
 
 extern s32 PolarIceRadius;
 s32 PolarRayHit(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out);
@@ -515,7 +512,6 @@ static inline void RollPolarOdds(s32 player, Ext20 *ext) {
     }
 }
 
-s32 DistXZSq(SLONG_XYZ *a, SLONG_XYZ *b);
 s32 PolarAI_ShotBlocked(s32 arg0);
 s32 PolarHeroAttackPower(s32 arg0);
 
@@ -907,7 +903,6 @@ typedef struct PolarBossExt {
 
 extern NAS *BearminatorNas;
 extern ScriptInit PolarBossScriptInit;
-void ResetHeroGlobals(void);
 
 extern NAS *polarbossnas;
 
@@ -1148,7 +1143,6 @@ typedef struct SniperExt {
     /* 0x98 */ s32 unk98;
 } SniperExt;
 
-extern u16 CameraMode;
 
 #define SNIPER_CAM (&MainCamera)
 #define SNIPER_PAD ((PadState *)Pads)
@@ -1354,16 +1348,8 @@ extern ScriptInit BearminatorScriptInit;
 
 
 
-extern EngineHooks HeroHooks;
-extern void *AiBotTweakTable;
-extern void *AiHumanTweakTable;
-extern void *AiSkillTable;
-extern void *AiTeamSkillTable;
-extern void *AiHumanRoundTweakTable;
 extern s32 PolarFirstFlag;
 extern s32 PolarArenaRadius2;
-void ModelCreateShadow(s32 idx);
-void ModelUpdateShadow(s32 idx);
 extern s32 PolarVictorySeqs[]; /* {name, 0x5C} x4: the victory sequences (the engine's hook 0x14) */
 s32 PolarIceHit(SLONG_XYZ *pos, s32 player);
 
@@ -1400,7 +1386,6 @@ typedef struct PolarDropExt {
 } PolarDropExt;
 
 extern s32 PolarUpdateWord;
-extern s32 ScriptFxOn;
 void PolarUpdateScene(void);
 
 /* One drop of UpdatePOLAR's shower (like tank's TankSpawnBit1605). */
@@ -1475,10 +1460,6 @@ typedef struct PolarGame {
 
 extern u16 PolarHeroSfx[];
 extern s32 PolarInitWord;
-void SetPanelHeroIconB(u16 arg0, s16 arg1);
-void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
-void Set_Clock(u16 time, u16 flags);
-void InitBossHealthIcons(void);
 
 void PolarAI_DoIceWalk(s32 player);
 
