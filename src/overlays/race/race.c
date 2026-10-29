@@ -2679,10 +2679,10 @@ void InitialiseRACE(void) {
         ai = AddExt(Heroes[i].hero, 0x20, 0x20000000);
         if (ai != NULL) {
             ai->unkC = 0;
-            ai->unk10 = Heroes[i].hero_move->forward_angle;
+            ai->angle = Heroes[i].hero_move->forward_angle;
             ai->unk18 = RaceAI_SteerAhead;
             ai->unk1C = 0;
-            ai->unk14 = RaceAISpeeds[Heroes[i].hero_name];
+            ai->speed = RaceAISpeeds[Heroes[i].hero_name];
         }
         Heroes[i].hero->FUX = (EXT *)fux;
         fux->unkC = 0;
@@ -4657,7 +4657,7 @@ void InitRaceMissile(NAS *m) {
         m->Engine->xform.hasScale = 1;
         m->Engine->sub->xform.order = 2;
         m->Engine->sub->flags |= 0x02000000;
-        ext->unk64 = 0x8C;
+        ext->speed = 0x8C;
         ext->unk34 = 0x3000;
         ext->unk40 = 0x700;
         ext->unk54 = 4;
@@ -4667,7 +4667,7 @@ void InitRaceMissile(NAS *m) {
         ext->unk4C = 0;
         ext->unk50 = 0x100;
         ext->unk5C = NULL;
-        ext->unk68 = 0;
+        ext->timer = 0;
         ext->unk58 = ext->unk34;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
@@ -4700,26 +4700,26 @@ void PlotRaceMissile(NAS *m) {
     }
     switch (ext->unk10) {
     case 0:
-        RaceToPolar(&m->Engine->XYZ, &ext->unk14);
-        if ((Heroes[ext->unkC].hero_eng->xform.rot.vy - ext->unk18) << 20 > 0) {
-            ext->unk1C = -(ext->unk64 << 8) / ext->unk14;
+        RaceToPolar(&m->Engine->XYZ, &ext->radius);
+        if ((Heroes[ext->owner].hero_eng->xform.rot.vy - ext->angle) << 20 > 0) {
+            ext->angVel = -(ext->speed << 8) / ext->radius;
         } else {
-            ext->unk1C = (ext->unk64 << 8) / ext->unk14;
+            ext->angVel = (ext->speed << 8) / ext->radius;
         }
-        m->Engine->xform.rot.vy = Heroes[ext->unkC].hero_eng->xform.rot.vy;
-        ext->pos = Heroes[ext->unkC].hero_eng->XYZ;
+        m->Engine->xform.rot.vy = Heroes[ext->owner].hero_eng->xform.rot.vy;
+        ext->pos = Heroes[ext->owner].hero_eng->XYZ;
         ext->unk10 = 1;
         break;
     case 1:
-        if (--ext->unk68 == -1) {
+        if (--ext->timer == -1) {
             RaceSpawnPuff(&m->Engine->XYZ, 0, &HeroModelBank[DB_CrateEffects]);
-            ext->unk68 = 2;
+            ext->timer = 2;
         }
         break;
     }
-    ext->pos.x -= (ext->unk64 * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
-    ext->pos.z -= (ext->unk64 * rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
-    if (RaceMissileHitHeroes((u8 *)&ext->pos, ext->unkC) != -1) {
+    ext->pos.x -= (ext->speed * rcossin_tbl[(m->Engine->xform.rot.vy - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->speed * rcossin_tbl[(u16)m->Engine->xform.rot.vy & 0xFFF].unk2) >> 12;
+    if (RaceMissileHitHeroes((u8 *)&ext->pos, ext->owner) != -1) {
         RaceSpawnPuff(&m->Engine->XYZ, 1, &HeroModelBank[DB_CrateEffects]);
         PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
         if (m->Engine->sfx != NULL) {

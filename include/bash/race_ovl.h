@@ -286,8 +286,8 @@ typedef struct RaceFux {
 typedef struct RaceAiExt {
     /* 0x00 */ s32 unk0[3];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 unk14;
+    /* 0x10 */ s32 angle;  /* the hero's forward_angle when it started */
+    /* 0x14 */ s32 speed;  /* RaceAISpeeds for the hero */
     /* 0x18 */ void (*unk18)(s32 player);
     /* 0x1C */ s32 unk1C;
 } RaceAiExt;
@@ -429,11 +429,11 @@ void RacePickupRespawn(void);
 /* Race missile extension (0x78 bytes, id 0x10000000). */
 typedef struct RaceMissileExt {
     /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;
+    /* 0x0C */ s32 owner;  /* the hero who fired it */
     /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
+    /* 0x14 */ s32 radius;  /* with angle, its polar position (RaceToPolar) */
+    /* 0x18 */ s32 angle;
+    /* 0x1C */ s32 angVel;  /* speed over radius, signed by the side */
     /* 0x20 */ s32 unk20;
     /* 0x24 */ u8 pad24[0x34 - 0x24];
     /* 0x34 */ s32 unk34;
@@ -446,8 +446,8 @@ typedef struct RaceMissileExt {
     /* 0x58 */ s32 unk58;
     /* 0x5C */ EXTengine *unk5C;
     /* 0x60 */ s32 unk60;
-    /* 0x64 */ s32 unk64;
-    /* 0x68 */ s32 unk68;
+    /* 0x64 */ s32 speed;
+    /* 0x68 */ s32 timer;
     /* 0x6C */ SLONG_XYZ pos;
 } RaceMissileExt;
 
