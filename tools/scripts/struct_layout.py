@@ -126,7 +126,10 @@ def header_of(ty, root="include"):
         if not f.endswith(".h"):
             continue
         t = open(os.path.join(root, "bash", f), encoding="utf-8").read()
-        if re.search(r"^\} %s;" % re.escape(ty), t, re.M) or re.search(r"typedef struct \{[^}]*\} %s;" % re.escape(ty), t):
+        e = re.escape(ty)
+        if (re.search(r"^\} %s;" % e, t, re.M) or re.search(r"typedef struct \{[^}]*\} %s;" % e, t)
+                or re.search(r"^typedef struct (\w+) %s;" % e, t, re.M)
+                and re.search(r"^struct %s \{" % re.search(r"^typedef struct (\w+) %s;" % e, t, re.M).group(1), t, re.M)):
             return "bash/" + f
     return None
 

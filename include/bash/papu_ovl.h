@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/papu.h"   /* PapuSquare, PapuFloor_info, PapuMinion_info */
 #include "bash/engine.h"
 
 typedef struct PapuSpot {
@@ -56,18 +57,8 @@ typedef struct PapuTile {
     u16 unk74;
 } PapuTile;
 
-typedef struct PapuCell {
-    PapuTile *tile;
-    s32 pad4;
-    s16 pad8;
-    u16 unkA;
-    u16 unkC;
-    u16 unkE;
-    u16 unk10;
-    s16 unk12;
-} PapuCell;
 
-extern PapuCell PapuTiles[8][8];
+extern PapuSquare PapuTiles[8][8];
 
 /* A scene object in the list at MapScene->subs (PapuInitTiles). */
 typedef struct PapuSceneObj {
@@ -183,20 +174,9 @@ typedef struct B5E44Slot {
 
 extern u16 PapuMinionSfx[];
 
-typedef struct PapuKey {
-    /* 0x00 */ u16 a;
-    /* 0x02 */ u16 b;
-    /* 0x04 */ u16 pad4;
-    /* 0x06 */ u16 c;
-    /* 0x08 */ u16 pad8[2];
-    /* 0x0C */ u16 d;
-    /* 0x0E */ u16 e;
-    /* 0x10 */ u16 f;
-    /* 0x12 */ u16 g;
-} PapuKey;
 
-extern PapuKey *PapuFloorWaves[];
-extern PapuKey *PapuFloorWaveCur;
+extern PapuFloor_info *PapuFloorWaves[];
+extern PapuFloor_info *PapuFloorWaveCur;
 extern s16 PapuWaveFlag;
 
 typedef struct PapuBossState {
@@ -246,15 +226,8 @@ typedef struct PapuMsg {
 PapuMsg *PapuFindDropPoint(u16 *arg0);
 NAS *CreatePACrate(s32 a, s32 b, s32 c, s32 d, s32 e);
 void PapuDropCrates(u16 arg0);
-typedef struct PapuStep {
-    s32 a;
-    s32 b;
-    s32 c;
-    s16 d;
-    s16 pad;
-} PapuStep;
 
-extern PapuStep *PapuMinionWaves[];
+extern PapuMinion_info *PapuMinionWaves[];
 extern ScriptInit PapuMinionScriptInit;
 NAS *CreatePapuMinion(s32 a, s32 b, s32 c, u16 d);
 

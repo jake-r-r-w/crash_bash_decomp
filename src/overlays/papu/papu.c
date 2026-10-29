@@ -195,14 +195,14 @@ s32 PapuFloorWave3[35] = {
     0, 0x70001, 6, -0xFFFF, 0, 0, 0x70003, 0x60006, -0xFFFF, 0, 0, 0x70005, 0xC0006, -0xFFFF,
     0, 0, 0, 0, 0, 0, 0,
 };
-PapuKey *PapuFloorWaves[4] = { (void *)&PapuFloorWave0, (void *)&PapuFloorWave1, (void *)&PapuFloorWave2, (void *)&PapuFloorWave3 };
+PapuFloor_info *PapuFloorWaves[4] = { (void *)&PapuFloorWave0, (void *)&PapuFloorWave1, (void *)&PapuFloorWave2, (void *)&PapuFloorWave3 };
 s32 PapuMinionWave0[8] = { -0x600, -0x300, 0x300, 0, 0, 0, 0, 0xFFFF };
 s32 PapuMinionWave1[8] = { 0x600, -0x300, 0x200, 0, 0, 0, 0, 0xFFFF };
 s32 PapuMinionWave2[12] = { -0x600, -0x300, 0x400, 0, 0x600, -0x300, 0x200, 0x14, 0, 0, 0, 0xFFFF };
 s32 PapuMinionWave3[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x200, 0x14, 0, 0, 0, 0xFFFF };
 s32 PapuMinionWave4[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x400, 0x14, 0, 0, 0, 0xFFFF };
 s32 PapuMinionWave5[12] = { -0x600, -0x300, 0x100, 0, 0x600, -0x300, 0x400, 0x1E, 0, 0, 0, 0xFFFF };
-PapuStep *PapuMinionWaves[6] = {
+PapuMinion_info *PapuMinionWaves[6] = {
     (void *)&PapuMinionWave0, (void *)&PapuMinionWave1, (void *)&PapuMinionWave2, (void *)&PapuMinionWave3,
     (void *)&PapuMinionWave4, (void *)&PapuMinionWave5,
 };
@@ -336,14 +336,14 @@ s16 PapuUnused2[2] = {0};
 u16 PapuCrateCounts[4] = {0};
 s16 PapuUnused3[8] = {0};
 u8 PapuCrateMix[64] = {0};
-PapuCell PapuTiles[8][8] = {0};
+PapuSquare PapuTiles[8][8] = {0};
 PapuGridPos PapuDropPoints[16][16] = {0};
 PapuEntry PapuColumns[20] = {0};
 EXTengine PapuSfxEngine = {0};
 PapuSceneObj *PapuFloorObj = 0;
 s16 PapuFloorSink = 0;
 s16 PapuBossRate = 0;
-PapuKey *PapuFloorWaveCur = 0;
+PapuFloor_info *PapuFloorWaveCur = 0;
 u16 PapuAttackPos = 0;
 u16 PapuAttackDelay = 0;
 u16 PapuAttackWave = 0;
@@ -2038,7 +2038,7 @@ void PapuInitTiles(void) {
     primpool_init(0xC8);
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            PapuTiles[j][i].tile = NULL;
+            PapuTiles[j][i].sub = NULL;
         }
     }
     for (j = 0; j < 6; j++) {
@@ -2055,7 +2055,7 @@ void PapuInitTiles(void) {
         if ((u32)(*id - 10) < 78) {
             i = 7 - (s16)((s16)*id % 10);
             j = (s16)((s16)*id / 10) - 1;
-            PapuTiles[j][i].tile = (PapuTile *)obj;
+            PapuTiles[j][i].sub = (PapuTile *)obj;
             sub_use_quad_model((u8 *)obj);
             obj->flags |= 0x1000000;
         }
@@ -2081,33 +2081,33 @@ void PapuInitTiles(void) {
     PapuUnused5 = 0;
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            obj = (PapuSceneObj *)PapuTiles[j][i].tile;
+            obj = (PapuSceneObj *)PapuTiles[j][i].sub;
             if (obj != NULL) {
-                PapuTiles[j][i].unkA = 0;
-                PapuTiles[j][i].unk10 = obj->index;
-                PapuTiles[j][i].pad8 = 0;
-                PapuTiles[j][i].unk12 = obj->unk8;
-                PapuTiles[j][i].unkE = 0;
+                PapuTiles[j][i].status = 0;
+                PapuTiles[j][i].frame = obj->index;
+                PapuTiles[j][i].flags = 0;
+                PapuTiles[j][i].yoffset = obj->unk8;
+                PapuTiles[j][i].anim = 0;
                 dx = obj->x;
                 dz = obj->z - 0x600;
-                PapuTiles[j][i].unkC = csqrt(dx * dx + dz * dz) >> 6;
+                PapuTiles[j][i].dist = csqrt(dx * dx + dz * dz) >> 6;
             }
         }
     }
 }
 
 void PapuFloorWave(void) {
-    PapuKey *k;
+    PapuFloor_info *k;
     s32 first;
     s32 v;
     s32 t;
 
     first = 1;
-    if (PapuFloorWaveCur != NULL && PapuFloorWaveCur->b != 0) {
+    if (PapuFloorWaveCur != NULL && PapuFloorWaveCur->z_master != 0) {
         k = PapuFloorWaveCur;
         do {
-            if (k->g != 0) {
-                t = k->f;
+            if (k->status != 0) {
+                t = k->delay;
                 if (t != 0) {
                     v = t - 1;
                 } else {
@@ -2115,23 +2115,23 @@ void PapuFloorWave(void) {
                         PlaySfx(0x1F6, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                     first = 0;
-                    if (k->g != 0) {
-                        PapuTiles[(s16)k->d][(s16)k->e].unkE = 1;
+                    if (k->status != 0) {
+                        PapuTiles[(s16)k->x][(s16)k->z].anim = 1;
                     }
-                    k->d += k->pad8[0];
-                    k->e += k->pad8[1];
-                    if (k->d >= 7U) {
-                        k->g = 0;
+                    k->x += k->xstep;
+                    k->z += k->zstep;
+                    if (k->x >= 7U) {
+                        k->status = 0;
                     }
-                    if ((u16)(k->e - 1) >= 7U) {
-                        k->g = 0;
+                    if ((u16)(k->z - 1) >= 7U) {
+                        k->status = 0;
                     }
-                    v = k->pad4;
+                    v = k->delay_master;
                 }
-                k->f = v;
+                k->delay = v;
             }
             k++;
-        } while (k->b != 0);
+        } while (k->z_master != 0);
     }
 }
 
@@ -2190,25 +2190,25 @@ void PapuUpdateFloor(void) {
         for (i = 1; i < 8; i++) {
             j = 0;
             for (; j < 7; j++) {
-                tile = PapuTiles[j][i].tile;
+                tile = PapuTiles[j][i].sub;
                 if (tile != NULL) {
-                    a = PapuTiles[j][i].unkC;
+                    a = PapuTiles[j][i].dist;
                     u = PapuFloorDepth + a;
                     a >>= 7;
                     w = PapuFloorState[a];
-                    tile->unk8 = PapuTiles[j][i].unk12;
+                    tile->unk8 = PapuTiles[j][i].yoffset;
                     k = ((u & 0xFFF) - 0x400) & 0xFFF;
                     tile->unk8 += (w * rcossin_tbl[k].unk2) >> 12;
-                    if (PapuTiles[j][i].unkE != 0) {
-                        PapuTiles[j][i].unkA |= 0x100;
-                        tile->unk74 = PapuTileModels[PapuTiles[j][i].unkE];
-                        PapuTiles[j][i].unkE++;
-                        if (PapuTileModels[PapuTiles[j][i].unkE] == 0) {
-                            PapuTiles[j][i].unkE = 0;
+                    if (PapuTiles[j][i].anim != 0) {
+                        PapuTiles[j][i].status |= 0x100;
+                        tile->unk74 = PapuTileModels[PapuTiles[j][i].anim];
+                        PapuTiles[j][i].anim++;
+                        if (PapuTileModels[PapuTiles[j][i].anim] == 0) {
+                            PapuTiles[j][i].anim = 0;
                         }
                     } else {
-                        tile->unk74 = PapuTiles[j][i].unk10;
-                        PapuTiles[j][i].unkA &= ~0x100;
+                        tile->unk74 = PapuTiles[j][i].frame;
+                        PapuTiles[j][i].status &= ~0x100;
                     }
                 }
             }
@@ -2228,11 +2228,11 @@ s32 PapuHeroOverPit(s32 arg0) {
     iz = (eng->unk10.z + 0x700) >> 9;
     if ((u32)ix < 7U && (u32)iz < 7U) {
         y = eng->unk10.y - World_floor_level;
-        t = PapuTiles[ix][iz].tile;
+        t = PapuTiles[ix][iz].sub;
         if (t != NULL) {
             y -= t->unk8;
         }
-        if (abs(y) < 0x20 && (PapuTiles[ix][iz + 1].unkA & 0x100)) {
+        if (abs(y) < 0x20 && (PapuTiles[ix][iz + 1].status & 0x100)) {
             return 1;
         }
     }
@@ -2251,7 +2251,7 @@ s32 GetPapuContour(EXTengine *eng) {
     if ((u32)ix >= 7U || (u32)iz >= 7U) {
         return y - 0x800;
     }
-    t = PapuTiles[ix][iz].tile;
+    t = PapuTiles[ix][iz].sub;
     if (t != NULL) {
         y -= t->unk8;
     }
@@ -2259,21 +2259,21 @@ s32 GetPapuContour(EXTengine *eng) {
 }
 
 void PapuStartFloorWave(s32 arg0) {
-    PapuKey *src;
-    PapuKey *dst;
+    PapuFloor_info *src;
+    PapuFloor_info *dst;
 
     src = PapuFloorWaves[arg0];
     PapuFloorWaveCur = src;
-    if (src->b != 0) {
+    if (src->z_master != 0) {
         dst = src;
         do {
-            dst->d = src->a;
-            dst->e = dst->b;
-            dst->f = dst->c;
-            dst->g = 1;
+            dst->x = src->x_master;
+            dst->z = dst->z_master;
+            dst->delay = dst->wait;
+            dst->status = 1;
             dst++;
             src++;
-        } while (dst->b != 0);
+        } while (dst->z_master != 0);
     }
     PapuWaveFlag = 2;
 }
@@ -2366,10 +2366,10 @@ s32 PapuPickTarget(void) {
 }
 
 void PapuSpawnMinions(u16 arg0) {
-    PapuStep *s = PapuMinionWaves[arg0];
+    PapuMinion_info *s = PapuMinionWaves[arg0];
 
-    while (s->d >= 0) {
-        CreatePapuMinion(s->a, s->b, s->c, s->d);
+    while (s->delay >= 0) {
+        CreatePapuMinion(s->x, s->y, s->z, s->delay);
         s++;
     }
 }
@@ -2461,7 +2461,7 @@ void PapuMarkHoles(void) {
 
     for (j = 2; j < 18; j++) {
         for (i = 2; i < 18; i++) {
-            if (PapuTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
+            if (PapuTiles[(j - 2) >> 1][7 - ((i - 2) >> 1)].status == 0) {
                 ArenaGrid[i * 20 + j].flags = 0xFF;
             }
         }
