@@ -824,7 +824,7 @@ s32 RaceAI_UseCloseWeapon(s32 player)
   {
     return 0;
   }
-  if (((RaceFux18 *) t->hero->FUX)->mode != 0x20)
+  if (((RaceFux *) t->hero->FUX)->mode != 0x20)
   {
     return 0;
   }
@@ -881,7 +881,7 @@ s32 RaceAI_UseAimedWeapon(s32 player)
     if (Heroes[player].hero->FUX == 0) {
         return 0;
     }
-    if (((RaceFux18 *) Heroes[player].hero->FUX)->mode != 1) {
+    if (((RaceFux *) Heroes[player].hero->FUX)->mode != 1) {
         return 0;
     }
     i = 0;
@@ -1220,7 +1220,7 @@ s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2)
 u32 RaceAI_FollowTrack(s32 player) {
     HeroInfo *h;
     s32 *ext;
-    RaceVelFux *fux;
+    RaceFux *fux;
     s32 d;
     SLONG_XYZ pos;
     HeroInfo *base;
@@ -1229,7 +1229,7 @@ u32 RaceAI_FollowTrack(s32 player) {
     h = base + player;
     ext = FindExtension(h->hero, 0x20000000);
     if (ext != NULL) {
-        fux = (RaceVelFux *)h->hero->FUX;
+        fux = (RaceFux *)h->hero->FUX;
         if (fux != NULL) {
             d = (((csqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) * 0x180) / 80;
             if (d < 0) {
@@ -1275,12 +1275,12 @@ u32 RaceAI_FollowTrack(s32 player) {
 }
 
 void RaceAI_SteerAhead(s32 player) {
-    RaceVelFux *fux;
+    RaceFux *fux;
     SLONG_XYZ pos;
     s32 d;
 
     if (FindExtension(Heroes[player].hero, 0x20000000) != NULL) {
-        fux = (RaceVelFux *)Heroes[player].hero->FUX;
+        fux = (RaceFux *)Heroes[player].hero->FUX;
         if (fux != NULL) {
             d = (((csqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) << 10) / 80;
             if (d < 0) {
@@ -2687,19 +2687,19 @@ void InitialiseRACE(void) {
         Heroes[i].hero->FUX = (EXT *)fux;
         fux->unkC = 0;
         fux->unk14 = 0;
-        fux->unk18 = 0;
+        fux->mode = 0;
         fux->eng = NULL;
         fux->unk20 = 0;
         fux->unk24 = 0;
-        fux->unk2C = 0;
-        fux->unk30 = 0;
+        fux->timer = 0;
+        fux->cross = 0;
         fux->unk38 = 0;
-        fux->unk34 = 0;
+        fux->laps = 0;
         fux->unk168 = 0;
         if ((G63B->levelFlags & 0x40) && G63B->heroOut[i] != 0) {
-            fux->unk34 = 2;
+            fux->laps = 2;
         }
-        fux->unk170 = -1;
+        fux->side = -1;
         RacePickupTimer = 0;
         fux->unk3C = 1;
         fux->unk40 = 0;
@@ -2709,10 +2709,10 @@ void InitialiseRACE(void) {
         fux->unk50 = 0;
         fux->steer = 0;
         fux->unk130 = 0;
-        fux->unk134 = 0;
+        fux->shield = 0;
         fux->vx = 0;
         fux->vz = 0;
-        fux->unk148 = 0;
+        fux->started = 0;
         RaceUnused1 = 0;
         Heroes[i].hero_eng->XYZ.y = RaceFloorLevel;
         fux->decel = RaceDecel;
@@ -3197,7 +3197,7 @@ void RaceEulerToQuat(VECTOR *ang, Quat *q) {
 
 void RaceHeroIdle(s32 player) {
     HeroInfo *h;
-    RaceSwimFux *f;
+    RaceFux *f;
     PadState *pad;
     PadState *pb;
     EXTengine *e;
@@ -3212,7 +3212,7 @@ void RaceHeroIdle(s32 player) {
     base = Heroes;
     h1 = &base[player];
     h1->hero_eng->xform.rot.vx -= h1->hero_eng->xform.rot.vx >> 1;
-    f = (RaceSwimFux *)h1->hero->FUX;
+    f = (RaceFux *)h1->hero->FUX;
     if (f == NULL) {
         return;
     }
@@ -3237,7 +3237,7 @@ void RaceHeroIdle(s32 player) {
         pb = (PadState *)Pads;
         pad = &pb[player];
         if (pad->dir & 0x8000) {
-            if (f->unk58 > 0) {
+            if (f->steer > 0) {
                 if (f->unk8C == 0) {
                     if (GameMode == 0x19) {
                         if (player == 0) {
@@ -3272,16 +3272,16 @@ void RaceHeroIdle(s32 player) {
                         }
                     }
                     if (player == 0) {
-                        PlaySfx(0x648, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x648, &f->sfx, &f->sfxPos, 0x1000, 0x1E00, 0);
                     }
                     if (player == 1) {
-                        PlaySfx(0x649, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x649, &f->sfx, &f->sfxPos, 0x1000, 0x1E00, 0);
                     }
                     if (player == 2) {
-                        PlaySfx(0x64A, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x64A, &f->sfx, &f->sfxPos, 0x1000, 0x1E00, 0);
                     }
                     if (player == 3) {
-                        PlaySfx(0x64B, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x64B, &f->sfx, &f->sfxPos, 0x1000, 0x1E00, 0);
                     }
                     f->unk8C = 1;
                 }
@@ -3313,14 +3313,14 @@ void RaceHeroIdle(s32 player) {
                     f->unk48 = 4;
                 }
             } else {
-                if (f->unk128 != NULL) {
-                    StopSfx(f->unk128);
+                if (f->sfx != NULL) {
+                    StopSfx(f->sfx);
                 }
                 pad->dirPressed &= ~0x8000;
             }
         } else {
-            if (f->unk128 != NULL) {
-                StopSfx(f->unk128);
+            if (f->sfx != NULL) {
+                StopSfx(f->sfx);
             }
             f->unk8C = 0;
         }
@@ -3411,7 +3411,7 @@ void RaceHeroIdle(s32 player) {
 
 void SetRaceHeroOffTrack(s32 player) {
     HeroInfo *h;
-    RaceResetFux *f;
+    RaceFux *f;
     HeroInfo *base;
 
     base = Heroes;
@@ -3419,25 +3419,25 @@ void SetRaceHeroOffTrack(s32 player) {
     h->hero_eng->xform.rot.vx = 0;
     h->hero_eng->xform.dirty = 1;
     TestRaceHeroWon(player);
-    f = (RaceResetFux *)h->hero->FUX;
+    f = (RaceFux *)h->hero->FUX;
     if (f != NULL) {
-        f->unk54 = get_angle(h->hero_eng->XYZ.x, h->hero_eng->XYZ.z) & 0xFFF;
-        f->unk6C = 0x300;
-        f->unk60 = 0;
-        f->unk80 = 2;
-        f->unk7C = 100;
-        f->unk88 = 0;
+        f->angle = get_angle(h->hero_eng->XYZ.x, h->hero_eng->XYZ.z) & 0xFFF;
+        f->bounce.accel = 0x300;
+        f->bounce.vel = 0;
+        f->bounce.flags = 2;
+        f->bounce.damp = 100;
+        f->bounces = 0;
         f->unk24 = 0;
         f->unk90 = 0;
         f->unk144 = 0;
-        f->unk78 = RaceFloorLevel;
+        f->bounce.limit = RaceFloorLevel;
         if (h->hero_eng->sfx != NULL) {
             StopSfx(h->hero_eng->sfx);
         }
-        if (f->unk128 != NULL) {
-            StopSfx(f->unk128);
+        if (f->sfx != NULL) {
+            StopSfx(f->sfx);
         }
-        f->unk18 = 0;
+        f->mode = 0;
         if (player == 0) {
             PlaySfx(0x650, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -3474,7 +3474,7 @@ static inline void RaceDiveSplash(SLONG_XYZ *pos, s32 kind) {
         x = FindExtension(fx, 0x10000000);
         if (x != NULL) {
             x->unkC = kind;
-            x->unk18 = 0x100;
+            x->mode = 0x100;
             x->unk20 = 1;
             x->unk28 = 0;
             fx->InitDelete(fx);
@@ -3484,7 +3484,7 @@ static inline void RaceDiveSplash(SLONG_XYZ *pos, s32 kind) {
 
 void RaceHeroOffTrack(s32 player) {
     HeroInfo *h;
-    RaceDiveFux *f;
+    RaceFux *f;
     EXTheromove *m;
     EXTengine *e;
     SLONG_XYZ sp;
@@ -3497,7 +3497,7 @@ void RaceHeroOffTrack(s32 player) {
     }
     base = Heroes;
     h = &base[player];
-    f = (RaceDiveFux *)h->hero->FUX;
+    f = (RaceFux *)h->hero->FUX;
     if (f == NULL) {
         return;
     }
@@ -3507,15 +3507,15 @@ void RaceHeroOffTrack(s32 player) {
         m->z_max = 0;
         m->x_vel = 0;
         m->z_vel = 0;
-        f->unk13C = 0;
-        f->unk140 = 0;
+        f->vx = 0;
+        f->vz = 0;
     }
     if (f->unk144 != 0) {
         h->hero_shadow->sub->flags |= 0x8000;
         h->hero_eng->sub->unk68 = 0;
         ProcessHeroAnim(player);
-        h->hero_move->forward_angle = ((f->unk54 - 0x200) << 20) >> 20;
-        h->hero_eng->xform.rot.vy = ((f->unk54 - 0x200) << 20) >> 20;
+        h->hero_move->forward_angle = ((f->angle - 0x200) << 20) >> 20;
+        h->hero_eng->xform.rot.vy = ((f->angle - 0x200) << 20) >> 20;
         h->hero_eng->xform.rot.vz = 0;
         h->hero_frozen = 2;
         h->hero_eng->xform.rot.vx -= h->hero_eng->xform.rot.vx >> 1;
@@ -3525,17 +3525,17 @@ void RaceHeroOffTrack(s32 player) {
             m->z_max = 0;
             m->x_vel = 0;
             m->z_vel = 0;
-            f->unk13C = 0;
-            f->unk140 = 0;
+            f->vx = 0;
+            f->vz = 0;
         }
-        if (RaceBounceObject((RaceBounceObj *)h->hero_eng, &f->bounce) != 0 && ++f->unk88 >= 2) {
+        if (RaceBounceObject((RaceBounceObj *)h->hero_eng, &f->bounce) != 0 && ++f->bounces >= 2) {
             SetHeroAction(player, 0x5B);
             if (G63B->mode == 0x18 && G63B->heroOut[player] == 0 && (G63B->levelFlags & 0x80)) {
                 PlaySfx(0x66A, NULL, NULL, 0x1000, 0x1E00, 0);
             }
             return;
         }
-        if (f->unk88 > 0) {
+        if (f->bounces > 0) {
             if (((PadState *)Pads)[player].dir & 0x8000) {
                 if (f->unk90 == 0) {
                     if (player == 0) {
@@ -3577,8 +3577,8 @@ void RaceHeroOffTrack(s32 player) {
             m->z_max = 0;
             m->x_vel = 0;
             m->z_vel = 0;
-            f->unk13C = 0;
-            f->unk140 = 0;
+            f->vx = 0;
+            f->vz = 0;
         }
         if (ProcessHeroAnim(player) != 0) {
             f->unk144 = 1;
@@ -3586,8 +3586,8 @@ void RaceHeroOffTrack(s32 player) {
             if (G63->mode == 0x19) {
                 SetHeroSeq(player, 0x52);
             }
-            h->hero_eng->XYZ.x -= rcossin_tbl[(f->unk54 - 0x400) & 0xFFF].unk2 * 512 >> 12;
-            h->hero_eng->XYZ.z -= rcossin_tbl[f->unk54 & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->XYZ.x -= rcossin_tbl[(f->angle - 0x400) & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->XYZ.z -= rcossin_tbl[f->angle & 0xFFF].unk2 * 512 >> 12;
             h->hero_eng->XYZ.y = -0x578;
             h->hero_eng->xform.rot.vz = 0;
             if (G63->mode == 0x17) {
@@ -3610,14 +3610,14 @@ void RaceHeroOffTrack(s32 player) {
 
 void SetRaceHeroRun(s32 player) {
     HeroInfo *h;
-    RaceFux40 *f;
+    RaceFux *f;
     EXTheromove *m;
     HeroInfo *base;
     u16 spd;
 
     base = Heroes;
     h = &base[player];
-    f = (RaceFux40 *)h->hero->FUX;
+    f = (RaceFux *)h->hero->FUX;
     if (f != NULL) {
         m = h->hero_move;
         if (m != NULL) {
@@ -3631,14 +3631,14 @@ void SetRaceHeroRun(s32 player) {
 
 void RaceHeroRun(s32 player) {
     HeroInfo *h;
-    RaceFux40 *f;
+    RaceFux *f;
     EXTheromove *m;
     HeroInfo *base;
 
     base = Heroes;
     h = &base[player];
     h->hero_eng->XYZ.y = 0;
-    f = (RaceFux40 *)h->hero->FUX;
+    f = (RaceFux *)h->hero->FUX;
     if (f == NULL) {
         return;
     }
@@ -3783,16 +3783,16 @@ void RaceHeroDazed(s32 arg0) {
 
 void SetRaceHeroJump(s32 player) {
     HeroInfo *h;
-    RaceFux138 *f;
+    RaceFux *f;
     EXTheromove *m;
     SLONG_XYZ pos;
     HeroInfo *base;
 
     base = Heroes;
     h = &base[player];
-    f = (RaceFux138 *)h->hero->FUX;
+    f = (RaceFux *)h->hero->FUX;
     if (f != NULL) {
-        f->unk138 = 0;
+        f->phase = 0;
         m = h->hero_move;
         if (m != NULL) {
             pos.x = h->hero_eng->XYZ.x + (rcossin_tbl[(h->hero_eng->xform.rot.vy - 0x400) & 0xFFF].unk2 * 25 >> 9);
@@ -3820,7 +3820,7 @@ void SetRaceHeroJump(s32 player) {
 }
 
 void RaceHeroJump(s32 player) {
-    RaceJumpFux *fux;
+    RaceFux *fux;
     EXTheromove *move;
 
     ProcessHeroAnim();
@@ -3828,7 +3828,7 @@ void RaceHeroJump(s32 player) {
     if (move == NULL) {
         return;
     }
-    fux = (RaceJumpFux *)Heroes[player].hero->FUX;
+    fux = (RaceFux *)Heroes[player].hero->FUX;
     if (fux == NULL) {
         return;
     }
@@ -3843,14 +3843,14 @@ void RaceHeroJump(s32 player) {
 }
 
 void RaceHeroOiled(s32 arg0) {
-    RaceFuxTimer *fux;
+    RaceFux *fux;
     HeroInfo *hero;
     EXTheromove *move;
     HeroInfo *base;
 
     base = Heroes;
     hero = &base[arg0];
-    fux = (RaceFuxTimer *)hero->hero->FUX;
+    fux = (RaceFux *)hero->hero->FUX;
     if (fux == NULL) {
         return;
     }
@@ -3937,7 +3937,7 @@ s32 RaceHeroUsePickup(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
     HeroInfo *other;
-    RaceSpawnFux *fux;
+    RaceFux *fux;
     PadState *pb;
     PadState *pad;
     EXTengine *eng;
@@ -3953,17 +3953,17 @@ s32 RaceHeroUsePickup(s32 player) {
 
     base = Heroes;
     hero = &base[player];
-    fux = (RaceSpawnFux *)hero->hero->FUX;
+    fux = (RaceFux *)hero->hero->FUX;
     if (fux != NULL) {
         pb = (PadState *)Pads;
         pad = &pb[player];
         st = pad->dir;
         eng = hero->hero_eng;
         if (st & 0x2200) {
-            t = fux->unk18;
+            t = fux->mode;
             if (t == 1) {
                 RaceFireMissile(player);
-                fux->unk18 &= ~1;
+                fux->mode &= ~1;
                 return 1;
             } else if (t == 0x20) {
                 nas = CreateNAS(eng->XYZ.x, eng->XYZ.y + 0x60, eng->XYZ.z, 0x1708, 0x11);
@@ -3974,7 +3974,7 @@ s32 RaceHeroUsePickup(s32 player) {
                         ext->unk14 = player;
                     }
                 }
-                fux->unk18 &= ~0x20;
+                fux->mode &= ~0x20;
                 return 1;
             } else if (t == 2) {
                 pp = &pos;
@@ -3998,7 +3998,7 @@ s32 RaceHeroUsePickup(s32 player) {
                 }
                 if (found == -1) {
                     CreateNAS(pos.x, 0, pos.z, 0x1703, 0x11);
-                    fux->unk18 &= ~2;
+                    fux->mode &= ~2;
                     return 1;
                 }
             } else if (t == 4) {
@@ -4009,7 +4009,7 @@ s32 RaceHeroUsePickup(s32 player) {
                         ext->unkC = player;
                     }
                 }
-                fux->unk18 &= ~4;
+                fux->mode &= ~4;
                 return 1;
             }
         } else {
@@ -4201,16 +4201,16 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
     g0 = RV;
     if (!(g0->exitFlags & 0x801) && arg0 == -1) {
         for (i = 0; ; i++) {
-            RaceResultFux *f;
+            RaceFux *f;
 
             if (i >= 4) {
                 break;
             }
             RV->adventure.rank[i] = i;
-            f = (RaceResultFux *)Heroes[i].hero->FUX;
+            f = (RaceFux *)Heroes[i].hero->FUX;
             if (f != NULL) {
-                if (f->unk128 != NULL) {
-                    StopSfx(f->unk128);
+                if (f->sfx != NULL) {
+                    StopSfx(f->sfx);
                 }
                 if (Heroes[i].hero_eng->sfx != NULL) {
                     StopSfx(Heroes[i].hero_eng->sfx);
@@ -4301,24 +4301,24 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
                 stb = (Heroes[Heroes[g->teamLeader[1]].hero_teammate].hero_score << 12)
                     + RaceFacing(Heroes[g->teamLeader[1]].hero_teammate);
                 for (n = 0; ; n++) {
-                    RaceResultFux *f;
+                    RaceFux *f;
 
                     if (n >= 4) {
                         break;
                     }
-                    f = (RaceResultFux *)Heroes[n].hero->FUX;
+                    f = (RaceFux *)Heroes[n].hero->FUX;
                     if (f != NULL) {
                         if (n == 0) {
-                            sa -= f->unk148 << 12;
+                            sa -= f->started << 12;
                         }
                         if (n == 1) {
-                            sta -= f->unk148 << 12;
+                            sta -= f->started << 12;
                         }
                         if (n == 2) {
-                            sb -= f->unk148 << 12;
+                            sb -= f->started << 12;
                         }
                         if (n == 3) {
-                            stb -= f->unk148 << 12;
+                            stb -= f->started << 12;
                         }
                     }
                 }
@@ -4337,7 +4337,7 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
 }
 
 void RaceBarrelBump(s32 player, RaceBarrel *b) {
-    RaceFuxView *f;
+    RaceFux *f;
     s32 ma;
     s32 mb;
     s32 xa;
@@ -4350,20 +4350,20 @@ void RaceBarrelBump(s32 player, RaceBarrel *b) {
     ma = Heroes[player].hero_move->mass;
     mb = b->move.mass;
     if (ma > 0 && mb > 0) {
-        f = (RaceFuxView *)Heroes[player].hero->FUX;
+        f = (RaceFux *)Heroes[player].hero->FUX;
         if (f != NULL) {
-            xa = f->unk13C >> 8;
+            xa = f->vx >> 8;
             xb = b->move.x_vel >> 8;
             d = -((xa - xb) << 8);
             xb = (ma * xa + mb * xb) << 8;
             q = (d * mb + xb) / (total = mb + ma);
-            xa = f->unk140 >> 8;
+            xa = f->vz >> 8;
             xb = b->move.z_vel >> 8;
             d = -((xa - xb) << 8);
             r = (d * mb + ((ma * xa + mb * xb) << 8)) / total;
-            f->unk13C = q;
+            f->vx = q;
             b->move.x_vel = q;
-            f->unk140 = r;
+            f->vz = r;
             b->move.z_vel = r - d;
         }
     }
@@ -4384,8 +4384,8 @@ void RaceBarrelBump(s32 player, RaceBarrel *b) {
     }
 
 void RaceHeroesBump(s32 pa, s32 pb) {
-    RaceFuxView *fa;
-    RaceFuxView *fb;
+    RaceFux *fa;
+    RaceFux *fb;
     s32 ma;
     s32 mb;
     s32 e;
@@ -4403,15 +4403,15 @@ void RaceHeroesBump(s32 pa, s32 pb) {
     ma = Heroes[pa].hero_move->mass;
     mb = Heroes[pb].hero_move->mass;
     if (ma > 0 && mb > 0) {
-        fa = (RaceFuxView *)Heroes[pa].hero->FUX;
+        fa = (RaceFux *)Heroes[pa].hero->FUX;
         if (fa != NULL) {
-            fb = (RaceFuxView *)Heroes[pb].hero->FUX;
+            fb = (RaceFux *)Heroes[pb].hero->FUX;
             e = fa->unk164;
             if (fb != NULL) {
-                pa = fa->unk13C;
-                az = fa->unk140;
-                pb = fb->unk13C;
-                bz = fb->unk140;
+                pa = fa->vx;
+                az = fa->vz;
+                pb = fb->vx;
+                bz = fb->vz;
                 RACE_CLAMP_SPEED(pa, lim);
                 RACE_CLAMP_SPEED(az, lim);
                 RACE_CLAMP_SPEED(pb, lim);
@@ -4434,11 +4434,11 @@ void RaceHeroesBump(s32 pa, s32 pb) {
                 pb = q - d;
                 d = -az;
                 r = (d * mb + r) / pa;
-                fa->unk13C = q;
-                fb->unk13C = pb;
+                fa->vx = q;
+                fb->vx = pb;
                 pb = r - d;
-                fa->unk140 = r;
-                fb->unk140 = pb;
+                fa->vz = r;
+                fb->vz = pb;
             }
         }
     }
@@ -4449,8 +4449,8 @@ s32 RaceHeroCollide(s32 player)
 {
   s32 other;
   EXTengine *eng;
-  RaceBumpFux *a;
-  RaceBumpFux *b;
+  RaceFux *a;
+  RaceFux *b;
   s32 dist;
   s32 dz;
   s32 dx;
@@ -4509,13 +4509,13 @@ s32 RaceHeroCollide(s32 player)
       eng->XYZ.x -= (dist * rcossin_tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
       eng->XYZ.z -= (dist * rcossin_tbl[ang].unk2) >> 12;
       RaceHeroesBump(player, i);
-      a = (RaceBumpFux *) Heroes[player].hero->FUX;
+      a = (RaceFux *) Heroes[player].hero->FUX;
       hit = 1;
       if (a == 0)
       {
         continue;
       }
-      b = (RaceBumpFux *) Heroes[i].hero->FUX;
+      b = (RaceFux *) Heroes[i].hero->FUX;
       if (b == 0)
       {
         continue;
@@ -4581,19 +4581,19 @@ s32 RaceHeroCollide(s32 player)
       }
 
       done = 0;
-      if (((a->item == 0x10) && (RaceTagTime > 0)) && (b->timer == 0))
+      if (((a->mode == 0x10) && (RaceTagTime > 0)) && (b->timer == 0))
       {
-        b->item = a->item;
-        a->item = 0;
+        b->mode = a->mode;
+        a->mode = 0;
         a->timer = 0xF;
         b->timer = 0;
         PlaySfx(0x454, 0, 0, 0x1000, 0x1E00, 0);
         done = 1;
       }
-      if ((((done == 0) && (b->item == 0x10)) && (RaceTagTime > 0)) && (a->timer == 0))
+      if ((((done == 0) && (b->mode == 0x10)) && (RaceTagTime > 0)) && (a->timer == 0))
       {
-        a->item = b->item;
-        b->item = 0;
+        a->mode = b->mode;
+        b->mode = 0;
         b->timer = 0xF;
         PlaySfx(0x454, 0, 0, 0x1000, 0x1E00, 0);
         a->timer = 0;
@@ -4827,7 +4827,7 @@ const char RaceEmptyString[] = "";
 
 void PlotRacePickUp(NAS *m) {
     RacePickUpExt *ext;
-    RaceFuxState *fux;
+    RaceFux *fux;
     HeroInfo *h;
     SLONG_XYZ *pos;
     EXTengine *e;
@@ -4898,40 +4898,40 @@ void PlotRacePickUp(NAS *m) {
         found = -1;
     done:
         if (found != -1) {
-            fux = (RaceFuxState *)Heroes[found].hero->FUX;
-            if (fux != NULL && fux->unk130 == 0 && fux->unk18 != 0x10) {
+            fux = (RaceFux *)Heroes[found].hero->FUX;
+            if (fux != NULL && fux->unk130 == 0 && fux->mode != 0x10) {
                 switch (ext->unk38) {
                 case 0:
-                    fux->unk18 = 1;
+                    fux->mode = 1;
                     PlaySfx(0x51F, NULL, NULL, 0x1000, 0x1E00, 0);
                     RacePickupSlots[ext->unk44].used = 0;
                     break;
                 case 1:
-                    fux->unk18 = 2;
+                    fux->mode = 2;
                     break;
                 case 2:
-                    fux->unk18 = 4;
+                    fux->mode = 4;
                     break;
                 case 5:
-                    fux->unk18 = 0x20;
+                    fux->mode = 0x20;
                     PlaySfx(0x439, NULL, NULL, 0x1000, 0x1E00, 0);
                     RacePickupSlots[ext->unk44].used = 0;
                     break;
                 case 6:
-                    fux->unk18 = 0;
+                    fux->mode = 0;
                     fux->unk24 = 0x5A;
                     RacePickupSlots[ext->unk44].used = 0;
                     break;
                 case 3:
-                    fux->unk58 += 0x2000;
-                    if (fux->unk58 > 0x10000) {
-                        fux->unk58 = 0x10000;
+                    fux->steer += 0x2000;
+                    if (fux->steer > 0x10000) {
+                        fux->steer = 0x10000;
                     }
                     RacePickupSlots[ext->unk44].used = 0;
                     PlaySfx(0x1C2, NULL, NULL, 0x1000, 0x1E00, 0);
                     break;
                 case 4:
-                    fux->unk18 = 0x10;
+                    fux->mode = 0x10;
                     CreateNAS(Heroes[found].hero_eng->XYZ.x, Heroes[found].hero_eng->XYZ.y,
                                  Heroes[found].hero_eng->XYZ.z, 0x1706, 0x11);
                     break;
@@ -4954,7 +4954,7 @@ void PlotRacePickUp(NAS *m) {
 void RaceCountLaps(s32 player) {
     HeroInfo *base;
     HeroInfo *hero;
-    RaceLapFux *fux;
+    RaceFux *fux;
     EXTengine *e;
     s32 one;
     s32 flags;
@@ -4963,7 +4963,7 @@ void RaceCountLaps(s32 player) {
     if (!(GameExitFlags & 0x801)) {
         base = Heroes;
         hero = base + player;
-        fux = (RaceLapFux *)hero->hero->FUX;
+        fux = (RaceFux *)hero->hero->FUX;
         if (fux != NULL) {
             get_angle(hero->hero_eng->XYZ.x, hero->hero_eng->XYZ.z);
             e = hero->hero_eng;
@@ -5028,8 +5028,8 @@ void RacePickupMaster(void) {
     RacePickUpExt *ext;
     RacePickUpSlot *s;
     s32 k;
-    RaceFuxHeld *fux;
-    RaceFuxHeld *hfux;
+    RaceFux *fux;
+    RaceFux *hfux;
     EXTengine *eng;
     GameState *g;
     s32 n;
@@ -5090,9 +5090,9 @@ heroes_loop:
         if (p >= 4) {
             goto heroes_done;
         }
-        hfux = (RaceFuxHeld *)Heroes[p].hero->FUX;
+        hfux = (RaceFux *)Heroes[p].hero->FUX;
         if (hfux != NULL) {
-            state = hfux->unk18;
+            state = hfux->mode;
             if (state != 0) {
                 if (state == 0x10) {
                     big = 1;
@@ -5175,16 +5175,16 @@ held:
         if (p >= 4) {
             return;
         }
-        fux = (RaceFuxHeld *)Heroes[p].hero->FUX;
+        fux = (RaceFux *)Heroes[p].hero->FUX;
         if (fux == NULL) {
             continue;
         }
-        eng = fux->unk1C;
+        eng = fux->eng;
         if (eng == NULL) {
             continue;
         }
         eng->sub->flags &= ~0x8000;
-        if (fux->unk18 == 1) {
+        if (fux->mode == 1) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateEffects];
@@ -5192,7 +5192,7 @@ held:
             eng->xform.rot.vy += 0x80;
             eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
-        if (fux->unk18 == 2) {
+        if (fux->mode == 2) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2009;
             eng->sub->u6C.dbase = &HeroModelBank[DB_CrateObjects];
@@ -5200,7 +5200,7 @@ held:
             eng->xform.rot.vy += 0x80;
             eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
-        if (fux->unk18 == 4) {
+        if (fux->mode == 4) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2005;
             eng->sub->u6C.dbase = MapScene->dbase;
@@ -5208,14 +5208,14 @@ held:
             eng->xform.rot.vy += 0x80;
             eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
-        if (fux->unk18 == 8) {
+        if (fux->mode == 8) {
             eng->sub->entity = 0x2002;
             eng->sub->u6C.dbase = MapScene->dbase;
             eng->xform.dirty = 1;
             eng->xform.rot.vy += 0x80;
             eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
-        if (fux->unk18 == 0x10) {
+        if (fux->mode == 0x10) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
             eng->sub->xform.scale.vx = eng->sub->xform.scale.vy = eng->sub->xform.scale.vz = 0x200;
@@ -5224,7 +5224,7 @@ held:
             eng->xform.rot.vy += 0x80;
             eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
-        if (fux->unk18 == 0x20) {
+        if (fux->mode == 0x20) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2017;
             eng->sub->xform.scale.vx = eng->sub->xform.scale.vy = eng->sub->xform.scale.vz = 0x200;
@@ -5233,7 +5233,7 @@ held:
             eng->xform.rot.vy += 0x80;
             eng->XYZ = Heroes[p].hero_eng->XYZ;
         }
-        if (fux->unk18 == 0x40) {
+        if (fux->mode == 0x40) {
             eng->sub->flags |= 0x8000;
             eng->sub->entity = 0x2011;
             eng->sub->xform.scale.vx = eng->sub->xform.scale.vy = eng->sub->xform.scale.vz = 0x200;
@@ -5253,7 +5253,7 @@ void RacePickupRespawn(void) {
     NAS *spawned;
     RacePickUpExt *ext;
     RacePickUpExt *pick;
-    RaceFuxState *fux;
+    RaceFux *fux;
     s32 count;
     s32 heroes;
     s32 extra;
@@ -5291,9 +5291,9 @@ heroes_loop:
         if (p >= 4) {
             goto heroes_done;
         }
-        fux = (RaceFuxState *)Heroes[p].hero->FUX;
+        fux = (RaceFux *)Heroes[p].hero->FUX;
         if (fux != NULL) {
-            state = fux->unk18;
+            state = fux->mode;
             if (state != 0) {
                 if (state == 1) {
                     heroes++;
@@ -5591,8 +5591,8 @@ static inline NAS *SpawnShieldFx(SLONG_XYZ *pos) {
 void PlotRaceShield(NAS *nas) {
     EXTraceshield *ext;
     HeroInfo *hero;
-    RaceShieldFux *fux;
-    RaceShieldFux *fux2;
+    RaceFux *fux;
+    RaceFux *fux2;
     SLONG_XYZ *pos;
     HeroInfo *other;
     HeroInfo *h;
@@ -5614,7 +5614,7 @@ void PlotRaceShield(NAS *nas) {
     }
     base = Heroes;
     hero = &base[ext->unk14[0]];
-    fux = (RaceShieldFux *)hero->hero->FUX;
+    fux = (RaceFux *)hero->hero->FUX;
     if (fux == NULL) {
         return;
     }
@@ -5654,10 +5654,10 @@ void PlotRaceShield(NAS *nas) {
             angle = get_angle(eng->XYZ.x - eng2->XYZ.x, eng->XYZ.z - eng2->XYZ.z);
             c = rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 * 8;
             s = rcossin_tbl[angle & 0xFFF].unk2 * 8;
-            fux2 = (RaceShieldFux *)h->hero->FUX;
+            fux2 = (RaceFux *)h->hero->FUX;
             if (fux2 != NULL) {
-                fux2->unk13C = -c;
-                fux2->unk140 = -s;
+                fux2->vx = -c;
+                fux2->vz = -s;
                 h->hero_move->x_max = 0;
                 h->hero_move->z_max = 0;
                 h->hero_move->x_max = 0;
@@ -5677,8 +5677,8 @@ void PlotRaceTag(NAS *m) {
     s32 i;
     HeroInfo *h1;
     HeroInfo *h;
-    RaceTagFux *fux1;
-    RaceTagFux *fux;
+    RaceFux *fux1;
+    RaceFux *fux;
     SLONG_XYZ pos;
     u8 *tex;
     SLONG_XYZ *pp;
@@ -5690,9 +5690,9 @@ void PlotRaceTag(NAS *m) {
     h1 = Heroes;
 loop1:
     if (i < 4) {
-        fux1 = (RaceTagFux *)h1->hero->FUX;
-        if (fux1 != NULL && fux1->unk2C > 0) {
-            fux1->unk2C--;
+        fux1 = (RaceFux *)h1->hero->FUX;
+        if (fux1 != NULL && fux1->timer > 0) {
+            fux1->timer--;
         }
         h1++;
         i++;
@@ -5707,11 +5707,11 @@ loop1:
         h = Heroes;
 loop2:
         if (i < 4) {
-            fux = (RaceTagFux *)h->hero->FUX;
+            fux = (RaceFux *)h->hero->FUX;
             if (fux == NULL) {
                 goto next;
             }
-            if (fux->unk18 == 0x10) {
+            if (fux->mode == 0x10) {
                 goto clear;
             }
             pos = h->hero_eng->XYZ;
@@ -5742,7 +5742,7 @@ loop2:
             }
             goto next;
         clear:
-            fux->unk18 = 0;
+            fux->mode = 0;
         next:
             h++;
             i++;
@@ -6872,14 +6872,14 @@ s32 TestRaceHeroWon(s32 arg0) {
 
 s32 RaceHeroBreatheFire(s32 arg0) {
     HeroInfo *hero;
-    RaceFuxCount *fux;
+    RaceFux *fux;
     EXTraceshield *ext;
     NAS *nas;
     HeroInfo *base;
 
     base = Heroes;
     hero = &base[arg0];
-    fux = (RaceFuxCount *)hero->hero->FUX;
+    fux = (RaceFux *)hero->hero->FUX;
     if (fux != NULL && fux->unk3C > 0 &&
         (((PadState *)Pads)[arg0].dirPressed & 0x8000)) {
         nas = CreateNAS(hero->hero_eng->XYZ.x, hero->hero_eng->XYZ.y,
@@ -6942,14 +6942,14 @@ loop:
 
 void SetRaceHeroOiled(s32 player) {
     HeroInfo *hero;
-    RaceSpinFux *fux;
+    RaceFux *fux;
     EXTheromove *move;
     s32 a;
     s32 b;
     HeroInfo *base = Heroes;
 
     hero = &base[player];
-    fux = (RaceSpinFux *)hero->hero->FUX;
+    fux = (RaceFux *)hero->hero->FUX;
     if (fux != NULL) {
         move = hero->hero_move;
         if (move != NULL) {
@@ -6965,7 +6965,7 @@ void SetRaceHeroOiled(s32 player) {
 
 void SetRaceHeroIdle(s32 player) {
     EXTheromove *move;
-    RaceHeroFux *fux;
+    RaceFux *fux;
 
     SetHeroSeq(player, 0x48);
     if (GameMode == 0x19) {
@@ -6976,7 +6976,7 @@ void SetRaceHeroIdle(s32 player) {
         move->z_max = 0;
         move->x_max = 0;
     }
-    fux = (RaceHeroFux *)Heroes[player].hero->FUX;
+    fux = (RaceFux *)Heroes[player].hero->FUX;
     if (fux != NULL) {
         fux->unk8C = 0;
         fux->unk90 = 0;

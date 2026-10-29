@@ -38,23 +38,7 @@ extern const char RaceMsgPlayerAngle[];
 void RaceAI_SteerAhead(s32 player);
 u32 RaceAI_FollowTrack(s32 player);
 
-/* A hero's FUX as RaceAI_SteerAhead reads it: a 2D velocity at 0x13C. */
-typedef struct RaceVelFux {
-    /* 0x000 */ u8 pad0[0x13C];
-    /* 0x13C */ s32 vx;
-    /* 0x140 */ s32 vz;
-} RaceVelFux;
 
-/* A hero's FUX as RaceHeroCollide reads it: held item, timer, velocity. */
-typedef struct RaceBumpFux {
-    /* 0x000 */ u8 pad0[0x18];
-    /* 0x018 */ s32 item;
-    /* 0x01C */ u8 pad1C[0x10];
-    /* 0x02C */ s32 timer;
-    /* 0x030 */ u8 pad30[0x10C];
-    /* 0x13C */ s32 vx;
-    /* 0x140 */ s32 vz;
-} RaceBumpFux;
 void RaceHeroesBump(s32 a, s32 b);
 
 /* Extension 0x20000000 as RaceAI_Think drives it. */
@@ -102,59 +86,14 @@ typedef struct EXTraceshield {
     /* 0x1C */ s32 unk1C;
 } EXTraceshield;
 
-/* A hero's FUX as RaceAI_UseCloseWeapon reads it: a mode word at 0x18. */
-typedef struct RaceFux18 {
-    /* 0x00 */ u8 pad0[0x18];
-    /* 0x18 */ s32 mode;
-} RaceFux18;
 
-/* A hero's FUX as SetRaceHeroIdle clears it. */
-typedef struct RaceHeroFux {
-    /* 0x00 */ u8 pad0[0x8C];
-    /* 0x8C */ s32 unk8C;
-    /* 0x90 */ s32 unk90;
-} RaceHeroFux;
 
-/* A hero's FUX as SetRaceHeroRun clears it: a word at 0x40. */
-typedef struct RaceFux40 {
-    /* 0x00 */ u8 pad0[0x40];
-    /* 0x40 */ s32 unk40;
-} RaceFux40;
 
-/* A hero's FUX as SetRaceHeroJump clears it: a word at 0x138. */
-typedef struct RaceFux138 {
-    /* 0x000 */ u8 pad0[0x138];
-    /* 0x138 */ s32 unk138;
-} RaceFux138;
 
 /* Per-hero run speed rows: 3 u16 per hero_name. */
 
-/* A hero's FUX as RaceHeroBreatheFire reads it: a count at 0x3C. */
-typedef struct RaceFuxCount {
-    /* 0x00 */ u8 pad0[0x3C];
-    /* 0x3C */ s32 unk3C;
-} RaceFuxCount;
-/* A hero's FUX as SetRaceHeroOiled fills it. */
-typedef struct RaceSpinFux {
-    /* 0x00 */ u8 pad0[0x20];
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
-    /* 0x28 */ s32 unk28;
-} RaceSpinFux;
 
-/* A hero's FUX as RaceHeroOiled counts it down: a timer at 0x24. */
-typedef struct RaceFuxTimer {
-    /* 0x00 */ u8 pad0[0x24];
-    /* 0x24 */ s32 unk24;
-} RaceFuxTimer;
 
-/* Hero FUX pending-spawn flags, as seen by RaceHeroUsePickup. */
-typedef struct RaceSpawnFux {
-    /* 0x000 */ u8 pad0[0x18];
-    /* 0x018 */ s32 unk18;
-    /* 0x01C */ u8 pad1C[0x130 - 0x1C];
-    /* 0x130 */ s32 unk130;
-} RaceSpawnFux;
 
 /* Extension 0x10000000 of the NAS spawned by RaceHeroUsePickup. */
 typedef struct RaceSpawnExt {
@@ -245,14 +184,14 @@ typedef struct RaceFux {
     /* 0x00C */ s32 unkC;
     /* 0x010 */ s32 pad10;
     /* 0x014 */ s32 unk14;
-    /* 0x018 */ s32 unk18;
+    /* 0x018 */ s32 mode;           /* flags: 0x10 diving, 0x20 bumped, 2, 4 (the Fux views' item/mode) */
     /* 0x01C */ EXTengine *eng;
     /* 0x020 */ s32 unk20;
     /* 0x024 */ s32 unk24;
     /* 0x028 */ s32 unk28;
-    /* 0x02C */ s32 unk2C;
-    /* 0x030 */ s32 unk30;
-    /* 0x034 */ s32 unk34;
+    /* 0x02C */ s32 timer;
+    /* 0x030 */ s32 cross;          /* the lap line's crossing state */
+    /* 0x034 */ s32 laps;
     /* 0x038 */ s32 unk38;
     /* 0x03C */ s32 unk3C;
     /* 0x040 */ s32 unk40;
@@ -260,16 +199,24 @@ typedef struct RaceFux {
     /* 0x048 */ s32 unk48;
     /* 0x04C */ s32 unk4C;
     /* 0x050 */ s32 unk50;
-    /* 0x054 */ s32 pad54;
+    /* 0x054 */ s32 angle;          /* the dive's direction */
     /* 0x058 */ s32 steer;  /* the steering turn, less each frame */
-    /* 0x05C */ u8 pad5C[0x130 - 0x5C];
+    /* 0x05C */ RaceBouncer bounce;
+    /* 0x088 */ s32 bounces;        /* bounces so far (RaceBounceObject) */
+    /* 0x08C */ s32 unk8C;
+    /* 0x090 */ s32 unk90;
+    /* 0x094 */ u8 pad94[0xA4 - 0x94];
+    /* 0x0A4 */ SLONG_XYZ sfxPos;   /* where its sounds play from */
+    /* 0x0B0 */ u8 padB0[0x128 - 0xB0];
+    /* 0x128 */ _sfx_handler *sfx;
+    /* 0x12C */ u8 pad12C[4];
     /* 0x130 */ s32 unk130;
-    /* 0x134 */ s32 unk134;
-    /* 0x138 */ s32 pad138;
+    /* 0x134 */ NAS *shield;
+    /* 0x138 */ s32 phase;
     /* 0x13C */ s32 vx;  /* its velocity; speed is their length */
     /* 0x140 */ s32 vz;
-    /* 0x144 */ s32 pad144;
-    /* 0x148 */ s32 unk148;
+    /* 0x144 */ s32 unk144;
+    /* 0x148 */ s32 started;        /* the lap count has started */
     /* 0x14C */ s32 jumpVel;  /* RaceJumpVel */
     /* 0x150 */ s32 decel;  /* RaceDecel */
     /* 0x154 */ s32 maxSpeed;  /* along the yaw (the motion's x_max/z_max) */
@@ -279,7 +226,7 @@ typedef struct RaceFux {
     /* 0x164 */ s32 unk164;
     /* 0x168 */ s32 unk168;
     /* 0x16C */ s32 unk16C;
-    /* 0x170 */ s32 unk170;
+    /* 0x170 */ s32 side;
 } RaceFux;
 
 /* Extension 0x20000000 as InitialiseRACE sets it up. */
@@ -292,71 +239,8 @@ typedef struct RaceAiExt {
     /* 0x1C */ s32 unk1C;
 } RaceAiExt;
 
-/* hero->FUX as reset by SetRaceHeroOffTrack. */
-typedef struct RaceResetFux {
-    /* 0x000 */ u8 pad0[0x18];
-    /* 0x018 */ s32 unk18;
-    /* 0x01C */ u8 pad1C[0x24 - 0x1C];
-    /* 0x024 */ s32 unk24;
-    /* 0x028 */ u8 pad28[0x54 - 0x28];
-    /* 0x054 */ s32 unk54;
-    /* 0x058 */ u8 pad58[0x60 - 0x58];
-    /* 0x060 */ s32 unk60;
-    /* 0x064 */ u8 pad64[0x6C - 0x64];
-    /* 0x06C */ s32 unk6C;
-    /* 0x070 */ u8 pad70[0x78 - 0x70];
-    /* 0x078 */ s32 unk78;
-    /* 0x07C */ s32 unk7C;
-    /* 0x080 */ s32 unk80;
-    /* 0x084 */ u8 pad84[0x88 - 0x84];
-    /* 0x088 */ s32 unk88;
-    /* 0x08C */ u8 pad8C[0x90 - 0x8C];
-    /* 0x090 */ s32 unk90;
-    /* 0x094 */ u8 pad94[0x128 - 0x94];
-    /* 0x128 */ _sfx_handler *unk128;
-    /* 0x12C */ u8 pad12C[0x144 - 0x12C];
-    /* 0x144 */ s32 unk144;
-    /* 0x148 */ u8 pad148[0x168 - 0x148];
-    /* 0x168 */ s32 unk168;
-} RaceResetFux;
 
-/* hero->FUX as RaceHeroOffTrack (the dive) reads it. */
-typedef struct RaceDiveFux {
-    /* 0x000 */ u8 pad0[0x48];
-    /* 0x048 */ s32 unk48;
-    /* 0x04C */ u8 pad4C[0x54 - 0x4C];
-    /* 0x054 */ s32 unk54;
-    /* 0x058 */ s32 pad58;
-    /* 0x05C */ RaceBouncer bounce;
-    /* 0x088 */ s32 unk88;
-    /* 0x08C */ s32 pad8C;
-    /* 0x090 */ s32 unk90;
-    /* 0x094 */ u8 pad94[0x13C - 0x94];
-    /* 0x13C */ s32 unk13C;
-    /* 0x140 */ s32 unk140;
-    /* 0x144 */ s32 unk144;
-} RaceDiveFux;
 
-/* hero->FUX as RaceHeroIdle (the swim) reads it. */
-typedef struct RaceSwimFux {
-    /* 0x000 */ u8 pad0[0x24];
-    /* 0x024 */ s32 unk24;
-    /* 0x028 */ u8 pad28[0x48 - 0x28];
-    /* 0x048 */ s32 unk48;
-    /* 0x04C */ s32 unk4C;
-    /* 0x050 */ u8 pad50[0x58 - 0x50];
-    /* 0x058 */ s32 unk58;
-    /* 0x05C */ u8 pad5C[0x8C - 0x5C];
-    /* 0x08C */ s32 unk8C;
-    /* 0x090 */ s32 unk90;
-    /* 0x094 */ u8 pad94[0xA4 - 0x94];
-    /* 0x0A4 */ SLONG_XYZ unkA4;
-    /* 0x0B0 */ u8 padB0[0x128 - 0xB0];
-    /* 0x128 */ _sfx_handler *unk128;
-    /* 0x12C */ u8 pad12C[0x168 - 0x12C];
-    /* 0x168 */ s32 unk168;
-    /* 0x16C */ s32 unk16C;
-} RaceSwimFux;
 
 extern s32 RaceTimer;
 extern s32 RaceOver;
@@ -572,24 +456,7 @@ extern RacePickUpSlot RacePickupSlots[16];
 extern s32 RacePickupHeroCount;
 extern s32 RacePickupCount;
 
-/* A hero's FUX as RacePickupMaster reads it: a held pick-up and its engine. */
-typedef struct RaceFuxHeld {
-    /* 0x00 */ u8 pad0[0x18];
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ EXTengine *unk1C;
-} RaceFuxHeld;
 
-/* A hero's FUX as RacePickupRespawn reads it: a state at 0x18. */
-typedef struct RaceFuxState {
-    /* 0x00 */ u8 pad0[0x18];
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 pad1C[0x24 - 0x1C];
-    /* 0x24 */ s32 unk24;
-    /* 0x28 */ u8 pad28[0x58 - 0x28];
-    /* 0x58 */ s32 unk58;
-    /* 0x5C */ u8 pad5C[0x130 - 0x5C];
-    /* 0x130 */ s32 unk130;
-} RaceFuxState;
 /* A volcano rock's arc, passed to ArcUpdate (0x54 bytes). */
 typedef struct RaceVolcArc {
     /* 0x00 */ s32 unk0;
@@ -764,14 +631,6 @@ s32 RaceTriHeight(SLONG_XYZ *pos, s16 *tri);
 extern RaceBarrel RaceBarrels[128];
 extern s32 RaceBarrelCount;
 
-/* A hero's NAS.FUX as RaceBarrelBump sees it (velocities). */
-typedef struct RaceFuxView {
-    /* 0x000 */ u8 pad0[0x13C];
-    /* 0x13C */ s32 unk13C;
-    /* 0x140 */ s32 unk140;
-    /* 0x144 */ u8 pad144[0x164 - 0x144];
-    /* 0x164 */ s32 unk164; /* bounce factor, 8.8 (0x100 at setup) */
-} RaceFuxView;
 
 void RaceBarrelBump(s32 player, RaceBarrel *b);
 
@@ -896,11 +755,6 @@ void InitTrackGlob(NAS *m);
 
 void RaceResetJumps(void);
 
-/* A hero's FUX as RaceHeroJump reads it: a jump phase at 0x138. */
-typedef struct RaceJumpFux {
-    /* 0x000 */ u8 pad0[0x138];
-    /* 0x138 */ s32 phase;
-} RaceJumpFux;
 
 /* 4.12 fixed-point product rounded to nearest (RaceEulerToQuat). */
 static inline s32 RaceFixMul(s32 a, s32 b) {
@@ -987,15 +841,6 @@ s32 RaceAI_DodgeSpinners(s32 player);
 
 void SetRaceHeroOffTrack(s32 player);
 
-/* A hero's FUX as PlotRaceTag counts it down. */
-typedef struct RaceTagFux {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ u8 pad10[0x8];
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 pad1C[0x10];
-    /* 0x2C */ s32 unk2C;
-} RaceTagFux;
 
 /* The 0x10000000 extension of the 0x1605 tag spawned by PlotRaceTag. */
 typedef struct RaceTagExt {
@@ -1023,16 +868,6 @@ void PlotBarrelRoll(NAS *nas);
 
 void InitRaceSmokeBoost(NAS *nas);
 
-/* A hero's FUX as RaceCountLaps counts laps in it. */
-typedef struct RaceLapFux {
-    /* 0x000 */ u8 pad0[0x30];
-    /* 0x030 */ s32 cross;
-    /* 0x034 */ s32 laps;
-    /* 0x038 */ u8 pad38[0x148 - 0x38];
-    /* 0x148 */ s32 started;
-    /* 0x14C */ u8 pad14C[0x170 - 0x14C];
-    /* 0x170 */ s32 side;
-} RaceLapFux;
 
 
 void RaceInitSpinners(void);
@@ -1041,15 +876,6 @@ void RaceCountLaps(s32 player);
 
 void PlotGlob(NAS *m);
 
-/* A hero's FUX as PlotRaceShield drives it: flags, the shield NAS, velocity. */
-typedef struct RaceShieldFux {
-    /* 0x000 */ u8 pad0[0x130];
-    /* 0x130 */ s32 unk130;
-    /* 0x134 */ NAS *shield;
-    /* 0x138 */ s32 pad138;
-    /* 0x13C */ s32 unk13C;
-    /* 0x140 */ s32 unk140;
-} RaceShieldFux;
 
 /* Extension 0x10000000 of the effect NAS PlotRaceShield spawns. */
 typedef struct RaceShieldFxExt {
@@ -1080,13 +906,6 @@ void SetRaceHeroDazed(s32 player);
 void RaceChooseWinner(s32 arg0, u16 arg1);
 void RaceChooseWinnerTeam();
 
-/* hero->FUX as RaceChooseWinner (round result) reads it. */
-typedef struct RaceResultFux {
-    /* 0x000 */ u8 pad0[0x128];
-    /* 0x128 */ _sfx_handler *unk128;
-    /* 0x12C */ u8 pad12C[0x148 - 0x12C];
-    /* 0x148 */ s32 unk148;
-} RaceResultFux;
 
 #define RV ((GameState *)GameInfo)
 
