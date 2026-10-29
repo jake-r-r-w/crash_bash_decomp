@@ -720,3 +720,7 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
 
   The one change: the four places that said where the prototype discs are archived now just name the
   discs, so nothing points to where to get game images.
+- [x] 5.10 `tools/reference/` stays (decided 2026-10-29). It's the GPL source of GCC 2.8.1 and 2.7.2.3
+  (27 MB), with its COPYING files, and LICENSE and the README already say it's GPL. The matching
+  docs, the match-function skill and `jtrace.py` read it. A fetch script wouldn't shrink clones,
+  because the history keeps it, and the whole repo packs to 18 MB anyway.
