@@ -57,13 +57,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-ROADMAP-B.md, Part 4 onwards:
+ROADMAP-B.md, Part 5 onwards:
 
-1. **The final test** (Part 4):
-   - a clean rebuild from a fresh clone (4.1; passed 2026-10-29);
-   - the "nothing hidden" scan (4.2; passed 2026-10-29, `make hidden`);
-   - every minigame to a win on the shifted build (4.3; passed 2026-10-29, `tools/playtest/`);
-   - a side-by-side run against retail (4.4).
+1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
 2. **Release** (Part 5), then **the PC port** (Part 6).
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
@@ -444,6 +440,8 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B Part 4 done):** 4.4 is closed by the user's decision (they watched the shifted
+  build play and judged it the same game). The final test is complete; Part 5 (release) is next.
 - **2026-10-29 (ROADMAP-B 4.3 passes):**
   - `tools/playtest/playtest.mjs` plays all 33 minigame modes to a win on the shifted build,
     in about 5 minutes, by RetroArch RAM reads and writes with no screenshots.

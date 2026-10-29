@@ -7,15 +7,6 @@ The work already done is in [ROADMAP-A.md](ROADMAP-A.md).
 When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 `tools/dk make progress` so the roadmap badge updates.
 
-## Part 4 - The final test
-
-The decomp is done when all four pass (4.1 to 4.3 passed 2026-10-29: ROADMAP-A, Part 4). The
-modern-compiler test moved to the PC port (6.1).
-
-| # | Test | Proves | Status | Done |
-|---|------|--------|--------|------|
-| 4.4 | Same game: the shifted build, side by side with retail over the same route, behaves the same | It behaves like the original | Not run | [ ] |
-
 ## Part 5 - Release
 
 Before making the repo public.

@@ -659,3 +659,10 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   - **Hand check.** The user watched the runs, and the games played normally.
   - **What the shifted build's boot turned up:** a stray "load this mode" flag paused one level. That
     was a harness race, not the game: the fix resets the flags after each load.
+- [x] 4.4 Same game (closed 2026-10-29, by decision). The user watched the shifted build play every
+  minigame during 4.3's runs and judged it to behave as retail does, so a recorded side-by-side run
+  wasn't made. If it's ever wanted: `tools/playtest/playtest.mjs` can log hero positions, scores and the
+  clock every N frames on both builds (each build's maps give the addresses) and compare them value
+  for value.
+
+The final test is done: 4.1 to 4.4 (2026-10-29).
