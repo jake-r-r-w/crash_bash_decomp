@@ -759,3 +759,13 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
   - The README's first line no longer says "work-in-progress".
 - [x] 5.14 The GitHub repo is public (2026-10-29, switched by the user; `gh repo view` reports PUBLIC):
   https://github.com/jake-r-r-w/crash_bash_decomp
+- [x] 5.15 The recomp.fyi listing (2026-10-29): `.recomp.json` in the repo root, 900 bytes, in the
+  board's v1 format:
+  - Crash Bash, PS1, decomp; USA `SCUS-94570`;
+  - status complete, toolchain Splat, started 2026-10-10;
+  - the approach, the notes, three tags and the maintainer.
+
+  It doesn't mention a ROM, an ISO or where to get the game. The board reads it daily, or at once
+  through https://recomp.fyi/add.
+
+The release is done: 5.1 to 5.15 (2026-10-29).

@@ -7,14 +7,6 @@ The work already done is in [ROADMAP-A.md](ROADMAP-A.md).
 When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 `tools/dk make progress` so the dashboard updates.
 
-## Part 5 - Release
-
-Before making the repo public.
-
-| # | Task | Where | Notes | Done |
-|---|------|-------|-------|------|
-| 5.15 | List the project on recomp.fyi | `.recomp.json` | At least `"game": "Crash Bash"`, `"system": "PS1"`, `"type": "decomp"`. Under 8 KB; never mention a ROM, an ISO or where to get one. Listed daily, or at once through https://recomp.fyi/add. | [ ] |
-
 ## Part 6 - The PC port
 
 After the final test. PsyQ stays linked from Sony's objects in the PS1 build (decided
