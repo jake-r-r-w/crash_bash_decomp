@@ -467,7 +467,7 @@ s32 RaceSmokeBoostWaterSteps[17] = {
 };
 s32 RaceSmokeBoostWaterAnimList[3] = { (s32)&RaceSmokeBoostWaterSteps, 0, 0 };
 ScriptInit RaceSmokeBoostWaterScriptInit = { 0, (void *)&RaceSmokeBoostWaterAnimList, 0x402 };
-RaceBarrelView RaceBarrels[128] = {0};
+RaceBarrel RaceBarrels[128] = {0};
 s32 RaceSteer[4] = {0};
 s32 RaceSpinnerBoxes[6] = {0};
 RacePiston RacePistons[6] = {0};
@@ -595,9 +595,9 @@ void RaceAI_AvoidBarrels(s32 player) {
     s32 b[3];
     s32 a[3];
     s16 c[8];
-    RaceBarrelView *p;
-    RaceSceneObj *o;
-    RaceBarrelView *best;
+    RaceBarrel *p;
+    subengine *o;
+    RaceBarrel *best;
     HeroInfo *hp;
     HeroInfo *h;
     HeroInfo *base;
@@ -620,10 +620,10 @@ void RaceAI_AvoidBarrels(s32 player) {
     do {
 loop:
     if (i < RaceBarrelCount) {
-        o = p->obj;
-        if (p->unk58 == 1) {
-            x = o->pos.x;
-            z = o->pos.z;
+        o = p->sub;
+        if (p->bStatus == 1) {
+            x = o->unk04;
+            z = o->unk0C;
             if ((((get_angle(x, z) & 0xFFF) - 0x400) & 0xFFF) >= ang) {
                 x -= hp->hero_eng->unk10.x;
                 z -= hp->hero_eng->unk10.z;
@@ -648,12 +648,12 @@ loop:
         b[1] = 0;
         b[2] = rcossin_tbl[h->hero_eng->unk1E & 0xFFF].unk2;
         best = &RaceBarrels[besti];
-        c[0] = best->obj->pos.x - h->hero_eng->unk10.x;
-        c[2] = best->obj->pos.z - h->hero_eng->unk10.z;
+        c[0] = best->sub->unk04 - h->hero_eng->unk10.x;
+        c[2] = best->sub->unk0C - h->hero_eng->unk10.z;
         c[3] = 0x180;
         if (RaceRayHit(a, b, c) != 0) {
-            x = best->obj->pos.x;
-            z = best->obj->pos.z;
+            x = best->sub->unk04;
+            z = best->sub->unk0C;
             d = x * x + z * z;
             if (d < 0x400000) {
                 h->hero_ai->AIpad &= ~0x20;
@@ -1353,14 +1353,14 @@ void RaceAI_ChasePickup(s32 arg0) {
 }
 
 void RaceInitSpinners(void) {
-    RaceSceneObj *obj;
+    subengine *obj;
     s32 i;
     u8 *r;
 
     RaceGlowObj = NULL;
     RaceGlowPhase = 0;
     RaceGlowMode = 0;
-    obj = ((RaceSceneObj *)MapScene->subs);
+    obj = ((subengine *)MapScene->subs);
     for (i = 0; i < 6; i++) {
         RaceSpinnerBoxes[i] = 0;
         RacePistons[i].unk8 = 1;
@@ -1381,47 +1381,47 @@ void RaceInitSpinners(void) {
         }
         if (G63->mode == 0x17) {
             if (!(G63->levelFlags & 0x80)) {
-                if (obj->index == 0x5001) {
+                if (obj->entity == 0x5001) {
                     obj->flags &= ~0x8000;
                 }
-                if (obj->index == 0x5003) {
+                if (obj->entity == 0x5003) {
                     obj->flags &= ~0x8000;
                 }
             } else {
-                if (obj->index == 0x5001) {
+                if (obj->entity == 0x5001) {
                     obj->flags &= ~0x8000;
                 }
-                if (obj->index == 0x5002) {
+                if (obj->entity == 0x5002) {
                     obj->flags &= ~0x8000;
                 }
             }
         }
-        if (G63->mode == 0x19 && obj->index == 0x5003) {
+        if (G63->mode == 0x19 && obj->entity == 0x5003) {
             obj->flags &= ~0x8000;
         }
         if (G63->mode == 0x1A) {
-            if (obj->index == 0x5003) {
+            if (obj->entity == 0x5003) {
                 obj->flags &= ~0x8000;
             }
-            if (obj->index == 0x4000) {
+            if (obj->entity == 0x4000) {
                 printf("found lava\n");
                 RaceGlowObj = (RaceObj74 *)obj;
             }
         }
-        if (G63->mode == 0x18 && obj->model->unkC != NULL) {
-            r = entity_address(obj->index, obj->model->unkC);
+        if (G63->mode == 0x18 && obj->u6C.dbase->data != NULL) {
+            r = entity_address(obj->entity, obj->u6C.dbase->data);
             if (r != NULL && *(s32 *)(r + 0x28) != 0) {
                 obj->flags &= ~0x8000;
             }
         }
         if (G63->mode == 0x19) {
-            if (obj->index == 0x5005) {
+            if (obj->entity == 0x5005) {
                 RaceSpinner = (RaceSpinObj *)obj;
             }
-            if (obj->index == 0x4000) {
+            if (obj->entity == 0x4000) {
                 RaceSpinnerBoxes[i] = (s32)obj;
                 RacePistons[i].unkC = (s32)obj;
-                obj->angle = i * 0x2AA;
+                obj->unk12 = i * 0x2AA;
                 i++;
             }
         }
@@ -1585,29 +1585,29 @@ loop:
 }
 
 void RaceInitBarrels(void) {
-    RaceBarrelView *b;
-    RaceSceneObj *obj;
+    RaceBarrel *b;
+    subengine *obj;
     s32 n;
 
     n = 0;
-    obj = ((RaceSceneObj *)MapScene->subs);
+    obj = ((subengine *)MapScene->subs);
     memset(RaceBarrels, 0x3600, 0);
     while (obj != NULL) {
-        if (obj->index == 0x5006) {
+        if (obj->entity == 0x5006) {
             b = &RaceBarrels[n];
-            b->obj = obj;
+            b->sub = obj;
             obj->unk51 = 2;
-            b->unk4E = 0x80;
-            b->unk20 = 0;
-            b->unk40 = 0;
-            b->unk48 = 0x500;
-            b->unk28 = 0x500;
-            b->unk4A = 0x500;
-            b->unk2A = 0x500;
-            b->unk24 = 0;
-            b->unk44 = 0;
-            b->pos = obj->pos;
-            b->unk58 = 1;
+            b->move.mass = 0x80;
+            b->move.x_vel = 0;
+            b->move.z_vel = 0;
+            b->move.z_acc = 0x500;
+            b->move.x_acc = 0x500;
+            b->move.z_dec = 0x500;
+            b->move.x_dec = 0x500;
+            b->move.x_max = 0;
+            b->move.z_max = 0;
+            b->startpos = *(SLONG_XYZ *)&obj->unk04;
+            b->bStatus = 1;
             n++;
         }
         obj = obj->next;
@@ -1659,9 +1659,9 @@ void RaceEaseCamStep(RaceEaseCam *c, s32 *pos) {
     pos[3] += c->z.cur >> 8;
 }
 
-s32 RaceBarrelHitHero(RaceBarrelView *b) {
+s32 RaceBarrelHitHero(RaceBarrel *b) {
     EXTengine *e;
-    RaceSceneObj *obj;
+    subengine *obj;
     s32 hit;
     s32 i;
     s32 dx;
@@ -1671,14 +1671,14 @@ s32 RaceBarrelHitHero(RaceBarrelView *b) {
     s32 r;
 
     hit = 0;
-    obj = b->obj;
+    obj = b->sub;
     for (i = 0;; i++) {
         if (i >= 4) {
             return hit;
         }
         e = Heroes[i].hero_eng;
-        dx = e->unk10.x - obj->pos.x;
-        dz = e->unk10.z - obj->pos.z;
+        dx = e->unk10.x - obj->unk04;
+        dz = e->unk10.z - obj->unk0C;
         d = dx * dx + dz * dz;
         if (d < 0x24000) {
             d = csqrt(d) >> 6;
@@ -1704,10 +1704,10 @@ s32 RaceBarrelHitHero(RaceBarrelView *b) {
     }
 }
 
-s32 RaceBarrelSpaceFree(RaceBarrelView *self) {
-    RaceBarrelView *b;
-    RaceSceneObj *obj;
-    RaceSceneObj *o;
+s32 RaceBarrelSpaceFree(RaceBarrel *self) {
+    RaceBarrel *b;
+    subengine *obj;
+    subengine *o;
     s32 i;
     s32 dx;
     s32 dz;
@@ -1716,62 +1716,62 @@ s32 RaceBarrelSpaceFree(RaceBarrelView *self) {
 
     b = RaceBarrels;
     i = 0;
-    obj = self->obj;
+    obj = self->sub;
     for (;; i++, b++) {
         if (i >= RaceBarrelCount) {
             return 1;
         }
-        o = b->obj;
-        if (b != self && b->unk58 == 1) {
-            dx = obj->pos.x - o->pos.x;
-            dz = obj->pos.z - o->pos.z;
+        o = b->sub;
+        if (b != self && b->bStatus == 1) {
+            dx = obj->unk04 - o->unk04;
+            dz = obj->unk0C - o->unk0C;
             d = dx * dx + dz * dz;
             if (d < 0x24000) {
                 d = csqrt(d) >> 6;
                 angle = get_angle(dx, dz) & 0xFFF;
                 d = 0x180 - d;
-                obj->pos.x += d * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
-                obj->pos.z += d * rcossin_tbl[angle].unk2 >> 12;
+                obj->unk04 += d * rcossin_tbl[(angle - 0x400) & 0xFFF].unk2 >> 12;
+                obj->unk0C += d * rcossin_tbl[angle].unk2 >> 12;
             }
         }
     }
 }
 
 void RaceUpdateBarrels(void) {
-    RaceBarrelView *b;
+    RaceBarrel *b;
     SLONG_XYZ pos;
     s32 i;
 
     b = RaceBarrels;
     for (i = 0;; b++, i++) {
-        RaceSceneObj *obj;
+        subengine *obj;
 
         if (i >= RaceBarrelCount) {
             break;
         }
-        obj = b->obj;
-        switch (b->unk58) {
+        obj = b->sub;
+        switch (b->bStatus) {
         case 1:
-            b->unk24 = 0;
-            b->unk44 = 0;
+            b->move.x_max = 0;
+            b->move.z_max = 0;
             if (RaceBarrelHitHero(b) != 0) {
-                pos = obj->pos;
+                pos = *(SLONG_XYZ *)&obj->unk04;
                 pos.y = -0xD2;
-                b->unk58 = 0;
-                b->unk68 = Random(0x3C) + 0xB4;
+                b->bStatus = 0;
+                b->waittime = Random(0x3C) + 0xB4;
                 obj->flags &= ~0x8000;
                 RaceSpawnPuff(&pos, 1, &HeroModelBank[DB_CrateEffects]);
             }
             break;
         case 2:
-            pos = obj->pos;
+            pos = *(SLONG_XYZ *)&obj->unk04;
             pos.y = 0;
-            if (b->unk68 == 4) {
+            if (b->waittime == 4) {
                 RaceSpawnPuff(&pos, 9, NULL);
             }
-            if (b->unk68-- < 0) {
+            if (b->waittime-- < 0) {
                 obj->flags |= 0x8000;
-                b->unk58 = 1;
+                b->bStatus = 1;
             }
             break;
         }
@@ -1913,7 +1913,7 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
     SLONG_XYZ pos;
     RaceNorm n;
     s32 hit;
-    RaceSceneObj *obj;
+    subengine *obj;
     u8 *grp;
     s16 *tri;
     RaceNorm *nrm;
@@ -1926,7 +1926,7 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
 
     rad = 0xDC;
     found = 0;
-    obj = ((RaceSceneObj *)MapScene->subs);
+    obj = ((subengine *)MapScene->subs);
     hit = 0;
     for (;;) {
         u8 *r;
@@ -1934,8 +1934,8 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
         if (obj == NULL) {
             break;
         }
-        if (!(obj->flags & 0x8000) && obj->model->unkC != NULL) {
-            r = entity_address(obj->index, obj->model->unkC);
+        if (!(obj->flags & 0x8000) && obj->u6C.dbase->data != NULL) {
+            r = entity_address(obj->entity, obj->u6C.dbase->data);
             if (r != NULL && *(s32 *)(r + 0x28) != 0) {
                 pos = *arg0;
                 grp = r + (*(s32 *)(r + 0x14) + 0x14);
@@ -1986,11 +1986,11 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
                         pos.z += dz;
                         out = n;
                         if (!(G63->levelFlags & 0x80)) {
-                            if (G63->mode == 0x17 && obj->index == 0x5003) {
+                            if (G63->mode == 0x17 && obj->entity == 0x5003) {
                                 found = 1;
                             }
                         } else {
-                            if (G63->mode == 0x17 && obj->index == 0x5002) {
+                            if (G63->mode == 0x17 && obj->entity == 0x5002) {
                                 found = 1;
                             }
                         }
@@ -4336,7 +4336,7 @@ void RaceChooseWinner(s32 arg0, u16 arg1) {
     }
 }
 
-void RaceBarrelBump(s32 player, RaceBarrelView *b) {
+void RaceBarrelBump(s32 player, RaceBarrel *b) {
     RaceFuxView *f;
     s32 ma;
     s32 mb;
@@ -4348,23 +4348,23 @@ void RaceBarrelBump(s32 player, RaceBarrelView *b) {
     s32 total;
 
     ma = Heroes[player].hero_move->mass;
-    mb = b->unk4E;
+    mb = b->move.mass;
     if (ma > 0 && mb > 0) {
         f = (RaceFuxView *)Heroes[player].hero->FUX;
         if (f != NULL) {
             xa = f->unk13C >> 8;
-            xb = b->unk20 >> 8;
+            xb = b->move.x_vel >> 8;
             d = -((xa - xb) << 8);
             xb = (ma * xa + mb * xb) << 8;
             q = (d * mb + xb) / (total = mb + ma);
             xa = f->unk140 >> 8;
-            xb = b->unk40 >> 8;
+            xb = b->move.z_vel >> 8;
             d = -((xa - xb) << 8);
             r = (d * mb + ((ma * xa + mb * xb) << 8)) / total;
             f->unk13C = q;
-            b->unk20 = q;
+            b->move.x_vel = q;
             f->unk140 = r;
-            b->unk40 = r - d;
+            b->move.z_vel = r - d;
         }
     }
 }

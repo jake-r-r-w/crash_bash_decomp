@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/race.h"   /* RaceBarrel */
 
 
 void PlotRaceSmokeBoostWater(NAS *nas);
@@ -749,27 +750,7 @@ void InitGlob(NAS *m);
 s32 RaceHeroTestRun(s32 arg0);
 
 s32 RaceJumpUp(s32 player);
-/* A scene object in the list at MapScene->subs (RaceInitBarrels). */
-typedef struct RaceSceneObj {
-    /* 0x00 */ u32 flags;
-    /* 0x04 */ SLONG_XYZ pos;
-    /* 0x10 */ u8 pad10[2];
-    /* 0x12 */ s16 angle; /* set by RaceInitSpinners */
-    /* 0x14 */ u8 pad14[0x51 - 0x14];
-    /* 0x51 */ u8 unk51;
-    /* 0x52 */ u8 pad52[0x5C - 0x52];
-    /* 0x5C */ struct RaceSceneObj *next;
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
-    /* 0x6C */ struct RaceSceneModel *model;
-    /* 0x70 */ u8 pad70[4];
-    /* 0x74 */ u16 index;
-} RaceSceneObj;
 
-/* An RaceSceneObj's model as RaceInitSpinners reads it. */
-typedef struct RaceSceneModel {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ u8 *unkC; /* passed to entity_address */
-} RaceSceneModel;
 extern s32 RaceSpinTimer;
 
 /* A collision normal (8 bytes, copied whole) read by RaceFloorHeight. */
@@ -779,28 +760,8 @@ typedef struct RaceNorm {
 
 s32 RaceTriHeight(SLONG_XYZ *pos, s16 *tri);
 
-/* A barrel (0x6C bytes, 128 in RaceBarrels). */
-typedef struct RaceBarrelView {
-    /* 0x00 */ u8 pad0[0x20];
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
-    /* 0x28 */ s16 unk28;
-    /* 0x2A */ s16 unk2A;
-    /* 0x2C */ u8 pad2C[0x40 - 0x2C];
-    /* 0x40 */ s32 unk40;
-    /* 0x44 */ s32 unk44;
-    /* 0x48 */ s16 unk48;
-    /* 0x4A */ s16 unk4A;
-    /* 0x4C */ u8 pad4C[2];
-    /* 0x4E */ s16 unk4E;
-    /* 0x50 */ u8 pad50[4];
-    /* 0x54 */ RaceSceneObj *obj;
-    /* 0x58 */ s32 unk58;
-    /* 0x5C */ SLONG_XYZ pos;
-    /* 0x68 */ s32 unk68;
-} RaceBarrelView;
 
-extern RaceBarrelView RaceBarrels[128];
+extern RaceBarrel RaceBarrels[128];
 extern s32 RaceBarrelCount;
 
 /* A hero's NAS.FUX as RaceBarrelBump sees it (velocities). */
@@ -812,7 +773,7 @@ typedef struct RaceFuxView {
     /* 0x164 */ s32 unk164; /* bounce factor, 8.8 (0x100 at setup) */
 } RaceFuxView;
 
-void RaceBarrelBump(s32 player, RaceBarrelView *b);
+void RaceBarrelBump(s32 player, RaceBarrel *b);
 
 void RaceInitBarrels(void);
 
@@ -923,7 +884,7 @@ void RaceAI_SpinnerBrake(s32 player);
 
 void RaceInitHeroAngle(s32 player);
 
-s32 RaceBarrelHitHero(RaceBarrelView *b);
+s32 RaceBarrelHitHero(RaceBarrel *b);
 
 void SetRaceHeroJump(s32 player);
 
@@ -1052,7 +1013,7 @@ extern s32 RaceTagTimer;
 
 s32 RaceFindNode(s32 *arg0, s32 arg1, s32 *arg2);
 
-s32 RaceBarrelSpaceFree(RaceBarrelView *self);
+s32 RaceBarrelSpaceFree(RaceBarrel *self);
 
 void RaceInitStub(void);
 
