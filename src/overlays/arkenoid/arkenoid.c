@@ -1900,7 +1900,7 @@ void SetArkHeroTaunt(u32 arg0) {
     HeroInfo *base;
 
     SetHeroSeq(arg0, 0x1C);
-    if (Random(3) == 0 || GAME->heroOut[arg0] == 0) {
+    if (Random(3) == 0 || GAME->heroCpu[arg0] == 0) {
         switch (Heroes[arg0].hero_name) {
         case 1:
             PlaySfx(7, NULL, &Heroes[arg0].hero_eng->XYZ, 0x1000, 0x1E00, 0);
@@ -2354,7 +2354,7 @@ void ArkHeroGrab(u32 arg0) {
         if (w < 0x91) {
             if (!(HPADS[arg0].dir & 0x4000)) {
                 f = 1;
-                if (GAME->heroOut[arg0] != 0) {
+                if (GAME->heroCpu[arg0] != 0) {
                     f = h->hero_ai->AItimer3 < 1U;
                 }
                 if (f != 0) {
@@ -3796,7 +3796,7 @@ void PlotBall(NAS *nas) {
                     if ((((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001) {
                         if ((((GameState *)GameInfo)->levelFlags & 0x40) &&
                             ((GameState *)GameInfo)->teams != 0) {
-                            if (((GameState *)GameInfo)->heroOut[obj->player] != 0) {
+                            if (((GameState *)GameInfo)->heroCpu[obj->player] != 0) {
                                 obj->player = ((GameState *)GameInfo)->teamLeader[1];
                             } else {
                                 obj->player = ((GameState *)GameInfo)->teamLeader[0];

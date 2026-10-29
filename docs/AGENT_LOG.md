@@ -451,8 +451,7 @@ Newest first, a few lines each. Details are in the commits.
     - The rules pages need Cross from the network RetroPad. They accept it even though every
       hero is a CPU.
     - Time boss fights in game frames: at about 9x, wall-clock waits are far too long.
-    - `GameState.heroOut` means "is a computer player", whatever its name says. It's worth
-      a rename.
+    - `GameState.heroOut` meant "is a computer player": renamed `heroCpu` (with `GameHeroCpu`).
 - **2026-10-29 (ROADMAP-B 4.2 passes):**
   - `make hidden` is the scan, and it passes.
   - The exe header is C (`src/main/header.c`), and `mal_update`'s stale `#else` draft is gone.

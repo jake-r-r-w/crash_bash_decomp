@@ -1654,7 +1654,7 @@ void TA_UpdateLevel(void) {
         HeroesAllOut = 1;
         for (j = 0; j < 4; j++) {
             if (!(Heroes[j].hero_status & 0xFA00)) {
-                if (GAME->heroOut[j] == 0) {
+                if (GAME->heroCpu[j] == 0) {
                     HeroesAllOut = 0;
                 }
                 if (((GameState *)GameInfo)->teams != 0 && GameInfo[Heroes[j].hero_teammate + 0x5C] == 0) {
@@ -1744,7 +1744,7 @@ void DamageTankHero(s32 player, s32 damage) {
     } else {
         SetHeroAction(player, 0x69);
     }
-    if (GAME->heroOut[player] != 0 || (((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001) {
+    if (GAME->heroCpu[player] != 0 || (((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001) {
         ta->Energy -= damage;
     }
     if (ta->Energy <= 0) {
@@ -1879,7 +1879,7 @@ void TA_InitHero(u32 player) {
     ta->TauntDelay = 0;
     ta->ForceFieldDelay = 0;
     ResetToBasicWeapon(player);
-    if (GAME->heroOut[player] != 0) {
+    if (GAME->heroCpu[player] != 0) {
         ta->MainWeaponFireDelay = 0x96;
     } else {
         ta->MainWeaponFireDelay = 0;
@@ -1970,7 +1970,7 @@ void TA_MoveHero(u32 player) {
             SetHullSFX(player, eng, 0);
         }
     }
-    if (((GameState *)GameInfo)->mode == 8 && GAME->heroOut[player] == 0 &&
+    if (((GameState *)GameInfo)->mode == 8 && GAME->heroCpu[player] == 0 &&
         (((GameState *)GameInfo)->levelFlags & 0x80) && ta->HangaboutTime >= 30 && TankLevelOver == 0 &&
         TankDropDelay <= 0 && (eng->XYZ.z > 0x400 || (u32)(eng->XYZ.x - 0x301) < 0xDFF)) {
         nas = CreateNAS(eng->XYZ.x, -0x8FC, eng->XYZ.z, 0x1308, 0x11);
@@ -1984,7 +1984,7 @@ void TA_MoveHero(u32 player) {
 }
 
 void AnimateTank(u32 player) {
-    if (GAME->heroOut[player] != 0) {
+    if (GAME->heroCpu[player] != 0) {
         if (++TA_players[player].IdleAnimCt >= 0x50 && TankLevelOver == 0) {
             TA_players[player].IdleAnimCt = Random(0x1E);
             SetHeroSeq(player, 0x5A);
@@ -2051,7 +2051,7 @@ void ResetToBasicWeapon(s32 player) {
     }
     if (((GameState *)GameInfo)->mode == 9) {
         ta->MainWeaponRounds = 99999;
-        if (GAME->heroOut[player] != 0) {
+        if (GAME->heroCpu[player] != 0) {
             ta->MainWeaponType = 11;
             sub->entity = 0x2011;
             return;
@@ -2485,7 +2485,7 @@ void UpdateTankHeroWeapons(s32 player) {
                     ta->MainWeaponRounds--;
                     break;
                 }
-            } else if (GAME->heroOut[player] == 0 &&
+            } else if (GAME->heroCpu[player] == 0 &&
                        (((PadState *)Pads)[player].dirPressed & 0x8000)) {
                 PlaySfx(0x4F1, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
@@ -2533,10 +2533,10 @@ void UpdateTankHeroWeapons(s32 player) {
                     ta->SubWeaponRounds--;
                     SetHeroSeq(player, 0x5B);
                 }
-            } else if (GAME->heroOut[player] == 0) {
+            } else if (GAME->heroCpu[player] == 0) {
                 PlaySfx(0x4F1, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
             }
-        } else if (GAME->heroOut[player] == 0) {
+        } else if (GAME->heroCpu[player] == 0) {
             PlaySfx(0x4F2, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         }
     }
@@ -2551,7 +2551,7 @@ subdone:
                 obj->UserInfo.user1 = player;
             }
             Heroes[player].hero_immunity = 0xA;
-            if (GAME->heroOut[player] == 0) {
+            if (GAME->heroCpu[player] == 0) {
                 ta->ForceFieldDelay = 0x3C;
             } else {
                 ta->ForceFieldDelay = (0x20 - AiPlayerSkill[player].level) * 0x3C / 32 + 0xF;
@@ -3559,7 +3559,7 @@ retry:
         }
         PlaySfx(sfx, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
     skip:
-        if (((GameState *)GameInfo)->mode == 5 && GAME->heroOut[hit] != 0 &&
+        if (((GameState *)GameInfo)->mode == 5 && GAME->heroCpu[hit] != 0 &&
             TA_players[hit].ForceFieldDelay == 0 && HeroesAllOut == 0 &&
             (u32)Random(0x20) < AiPlayerSkill[hit].level) {
             TankBotForceField[hit] = 1;
@@ -4299,7 +4299,7 @@ void PlotMine(NAS *nas) {
         i = -1;
     found:
         if (i >= 0) {
-            if (((GameState *)GameInfo)->mode == 8 && GAME->heroOut[i] == 0 &&
+            if (((GameState *)GameInfo)->mode == 8 && GAME->heroCpu[i] == 0 &&
                 (((GameState *)GameInfo)->levelFlags & 0x80)) {
                 DamageTankHero(i, 0x4B0);
             } else {
@@ -4400,7 +4400,7 @@ found:
                 break;
             }
         }
-        if (GAME->heroOut[hit] == 0) {
+        if (GAME->heroCpu[hit] == 0) {
             if (((GameState *)GameInfo)->levelFlags & 0x80) {
                 DamageTankHero(hit, 0x4B0);
             } else {
@@ -4644,7 +4644,7 @@ found:
         PlaySfx(sfx, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
         break;
     }
-    if (((GameState *)GameInfo)->mode == 8 && GAME->heroOut[hit] == 0 &&
+    if (((GameState *)GameInfo)->mode == 8 && GAME->heroCpu[hit] == 0 &&
         (((GameState *)GameInfo)->levelFlags & 0x80)) {
         DamageTankHero(hit, 0x4B0);
     } else {
@@ -5282,7 +5282,7 @@ void PlotPickupTA(NAS *nas) {
     }
     switch (nas->UserInfo.status) {
     case 6:
-        if (((GameState *)GameInfo)->mode != 8 || GAME->heroOut[hit] != 0 ||
+        if (((GameState *)GameInfo)->mode != 8 || GAME->heroCpu[hit] != 0 ||
             !(((GameState *)GameInfo)->levelFlags & 0x80)) {
             v = 0x1E;
         } else {
@@ -5542,7 +5542,7 @@ void PlotPeriscope(NAS *nas) {
             break;
         }
         for (i = 0; i < 4; i++) {
-            if (Heroes[i].hero_name != 9 && !(Heroes[i].hero_status & 0xFA00) && GAME->heroOut[i] == 0) {
+            if (Heroes[i].hero_name != 9 && !(Heroes[i].hero_status & 0xFA00) && GAME->heroCpu[i] == 0) {
                 e = Heroes[i].hero_eng;
                 if ((u32)(((eng->xform.rot.vy - get_angle(eng->XYZ.x - e->XYZ.x, eng->XYZ.z - e->XYZ.z)) & 0xFFF) - 0x15) >= 0xFD7U) {
                     fux->Status = 10;
@@ -5953,7 +5953,7 @@ void PlotTotemPole(NAS *nas) {
             if (Heroes[i].hero_status & 0xFA00) {
                 continue;
             }
-            if (GAME->heroOut[i] != 0) {
+            if (GAME->heroCpu[i] != 0) {
                 continue;
             }
             e = Heroes[i].hero_eng;

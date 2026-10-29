@@ -102,7 +102,7 @@ How it runs:
   it arrives too early, so the harness measures the speed from `FrameCount` and toggles until it is well
   above 60 vsyncs a second (about 550 on the machine it was written on).
 - **Starting a mode.** From the titles, it writes what the menus would leave: four CPU heroes
-  (`heroOut`, which the bot hook runs for), `NextGameMode`, and `exitFlags` 0x8008, which is
+  (`heroCpu`, which the bot hook runs for), `NextGameMode`, and `exitFlags` 0x8008, which is
   `HandleLevelExit`'s "load this mode".
 - **After the load.** It resets `exitFlags` to what a clean load leaves (the intro's 0x1000). At this
   speed the previous level can move on before the 0x8008 lands, and a stray 0x8008 keeps the new level

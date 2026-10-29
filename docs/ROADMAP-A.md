@@ -372,7 +372,7 @@ load extract and are documented.
   `GameMode` by label in a loop, which a struct field can't give; MATCHING.md, Diff
   patterns), and the rest of `GameInfo`'s 0x18C bytes are objects around them, every
   label the code names by address defined in C: `GamePlayers` (+0x26), `GameArena`
-  (+0x36), `GameTeamLeader` (+0x48), `GameHeroOut` (+0x5C), `GameWinner` (+0x60), and
+  (+0x36), `GameTeamLeader` (+0x48), `GameHeroCpu` (+0x5C), `GameWinner` (+0x60), and
   from +0x70 the adventure's progress, `GameAdventure` (`AdventureState`, laid out as
   gameflow.h's `GameStateView`). `GameTeams` stays an array: as a scalar, Nox's
   `PlotMineSFX` loads it ahead of a store through a pointer (scalars and struct fields

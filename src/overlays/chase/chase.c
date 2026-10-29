@@ -807,7 +807,7 @@ void InitialiseCHASE(void) {
         h = &((HeroInfo *)v)[i];
         y = t * 60 / 100 + ((t * 60) & 3);
         q = GAME;
-        if (q->heroOut[i] == 0) {
+        if (q->heroCpu[i] == 0) {
             ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk0 = 0x23;
             ((ChasePct *)ChaseRunSpeeds)[h->hero_name].unk2 = 0x3C;
         } else {
@@ -967,7 +967,7 @@ void ChasePreMoveHero(s32 arg0) {
     }
     pb = Pads;
     pad = pb + arg0;
-    if ((pad->flags & 1) || GameHeroOut != NULL) {
+    if ((pad->flags & 1) || GameHeroCpu != NULL) {
         if (pad->dir & 0xF0) {
             m->forward_angle = pad->angle.lo + 0x800;
             if (m->velocity_enable != 0) {
@@ -1561,7 +1561,7 @@ void SetChaseHeroJump(s32 arg0) {
     e->platform = NULL;
     SetHeroSeq(arg0, 0x65);
     idx = 0;
-    if (GAME->heroOut[arg0] == 0) {
+    if (GAME->heroCpu[arg0] == 0) {
         idx = h->hero_name;
     }
     h->hero_move->jump_vel = HeroHooks.JumpEnts[idx].vel;
@@ -1756,7 +1756,7 @@ void SetChaseHeroHit(s32 arg0) {
 void ChaseHeroHit(s32 arg0) {
     GameState *g;
 
-    if (ProcessHeroAnim() == 8 && ((g = (GameState *)GameInfo), (g->levelFlags & 0x80)) && g->heroOut[arg0] == 0 &&
+    if (ProcessHeroAnim() == 8 && ((g = (GameState *)GameInfo), (g->levelFlags & 0x80)) && g->heroCpu[arg0] == 0 &&
         !(g->cheats & 2)) {
         HeroInfo *base = Heroes;
         HeroInfo *h = &base[arg0];
@@ -2593,7 +2593,7 @@ void PlotEgg(NAS *nas) {
         if (sub->entity == 0x4012) {
             sub->entity = 0x4000;
             i = BarrelNearHero(eng->XYZ.x, eng->XYZ.z, 0x600);
-            if (i >= 0 && GAME->heroOut[i] == 0) {
+            if (i >= 0 && GAME->heroCpu[i] == 0) {
                 PlaySfx(0x759, NULL, &eng->XYZ, 0x1000, 0x1E00, 0);
                 fux->angle = get_angle(Heroes[i].hero_eng->XYZ.x - eng->XYZ.x,
                                        Heroes[i].hero_eng->XYZ.z - eng->XYZ.z);
@@ -2625,7 +2625,7 @@ void PlotEgg(NAS *nas) {
                         ((void (*)())pad_rumble_big)(i, 0xA, 0xF0);  /* matching: Chase called it unprototyped, so 0xF0 goes as an int, not the s8 -16 */
                     }
                 }
-                if (GAME->heroOut[i] == 0) {
+                if (GAME->heroCpu[i] == 0) {
                     ChaseHeroState[i][0] = 0;
                 }
             }
@@ -2888,7 +2888,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
         GAME->winner[0] = 0;
         GAME->exitFlags |= arg1;
         for (i = 0; i < 4; i++) {
-            if (GAME->heroOut[i] != 0) {
+            if (GAME->heroCpu[i] != 0) {
                 RemoveCamera(Heroes[i].hero);
                 Heroes[i].hero_status |= 0x400;
             } else if (i != free) {
@@ -2916,12 +2916,12 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
             HeroInfo *a;
             s32 n;
 
-            if (g->heroOut[g->adventure.rank[0]] != 0
+            if (g->heroCpu[g->adventure.rank[0]] != 0
                 || (hb = Heroes, a = &hb[g->adventure.rank[0]], a->hero_score == hb[g->adventure.rank[1]].hero_score)) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -2960,7 +2960,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -2969,7 +2969,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                 }
             } else if (sb < sa) {
                 g->exitFlags |= 0x800;
-                if (g->heroOut[g->teamLeader[0]] == 0) {
+                if (g->heroCpu[g->teamLeader[0]] == 0) {
                     g->winner[0] = a->hero_name;
                     g->winner[1] = ta->hero_name;
                     a->hero_status |= 0x200;
@@ -2988,7 +2988,7 @@ void ChaseChooseWinnerScore(s32 arg0, u16 arg1) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3028,12 +3028,12 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
             HeroInfo *a;
             s32 n;
 
-            if (g->heroOut[g->adventure.rank[0]] != 0
+            if (g->heroCpu[g->adventure.rank[0]] != 0
                 || (hb = Heroes, a = &hb[g->adventure.rank[0]], a->hero_score == hb[g->adventure.rank[1]].hero_score)) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3072,7 +3072,7 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3081,7 +3081,7 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 }
             } else if (sb < sa) {
                 g->exitFlags |= 0x800;
-                if (g->heroOut[g->teamLeader[0]] == 0) {
+                if (g->heroCpu[g->teamLeader[0]] == 0) {
                     g->winner[0] = a->hero_name;
                     g->winner[1] = ta->hero_name;
                     a->hero_status |= 0x200;
@@ -3100,7 +3100,7 @@ void ChaseChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -3135,12 +3135,12 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
         sa = a->hero_score + ta->hero_score;
         sb = b->hero_score + hb[b->hero_teammate].hero_score;
         if (sa == 0) {
-            if (g->heroOut[g->teamLeader[0]] == 0) {
+            if (g->heroCpu[g->teamLeader[0]] == 0) {
                 GAME->winner[0] = a->hero_name;
                 GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (GAME->heroOut[i] != 0) {
+                    if (GAME->heroCpu[i] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -3150,12 +3150,12 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
                 fail = 1;
             }
         } else if (sb == 0) {
-            if (g->heroOut[g->teamLeader[1]] == 0) {
+            if (g->heroCpu[g->teamLeader[1]] == 0) {
                 GAME->winner[0] = b->hero_name;
                 GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (GAME->heroOut[i] != 0) {
+                    if (GAME->heroCpu[i] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -3172,12 +3172,12 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
             }
         }
         if (found != -1) {
-            if (GAME->heroOut[found] == 0) {
+            if (GAME->heroCpu[found] == 0) {
                 GAME->winner[0] = Heroes[found].hero_name;
                 GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (GAME->heroOut[i] != 0) {
+                    if (GAME->heroCpu[i] != 0) {
                         Heroes[i].hero_status |= 0x400;
                     } else {
                         Heroes[i].hero_status |= 0x200;
@@ -3193,7 +3193,7 @@ void ChaseChooseWinnerTimed(s32 arg0, u16 arg1) {
         GAME->exitFlags |= arg1;
         Clock_flags |= 0x200;
         for (i = 0; i < 4; i++) {
-            if (GAME->heroOut[i] != 0) {
+            if (GAME->heroCpu[i] != 0) {
                 Heroes[i].hero_status |= 0x400;
             } else {
                 Heroes[i].hero_status |= 0x100;

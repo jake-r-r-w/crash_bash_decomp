@@ -751,10 +751,10 @@ void PlayersMenuUpdate(void) {
         O69CV->teammateChoice[3] = -1;
     }
     c = O69CV->players;
-    O69CV->heroOut[0] = c < 1;
-    O69CV->heroOut[1] = c < 2;
-    O69CV->heroOut[2] = c < 3;
-    O69CV->heroOut[3] = c < 4;
+    O69CV->heroCpu[0] = c < 1;
+    O69CV->heroCpu[1] = c < 2;
+    O69CV->heroCpu[2] = c < 3;
+    O69CV->heroCpu[3] = c < 4;
     O69PAD[0].rumble.on = c < 1;
     O69PAD[1].rumble.on = c < 2;
     O69PAD[2].rumble.on = c < 3;

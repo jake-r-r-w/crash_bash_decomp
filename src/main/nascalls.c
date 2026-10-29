@@ -2823,7 +2823,7 @@ loop:
 void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
     PadRumble *p;
 
-    if (GAME->heroOut[pad] == 0 && !(GAME->cheats & 0x80) && GameOptions.vibrate[pad] != 0 &&
+    if (GAME->heroCpu[pad] == 0 && !(GAME->cheats & 0x80) && GameOptions.vibrate[pad] != 0 &&
         (Pads[pad].flags & 8)) {
         p = &Pads[pad].rumble;
         p->act[1] = arg2;
@@ -2835,7 +2835,7 @@ void pad_rumble_big(s32 pad, s32 arg1, s8 arg2) {
 void pad_rumble_small(s32 pad, s32 arg1) {
     PadRumble *p;
 
-    if (GAME->heroOut[pad] == 0 && !(GAME->cheats & 0x80) && pad < 4 && GameOptions.vibrate[pad] != 0 &&
+    if (GAME->heroCpu[pad] == 0 && !(GAME->cheats & 0x80) && pad < 4 && GameOptions.vibrate[pad] != 0 &&
         (Pads[pad].flags & 8)) {
         p = &Pads[pad].rumble;
         p->act[0] = 1;
@@ -4128,7 +4128,7 @@ u8 GameHeroChoice[4] = {0};  /* +0x4C: the heroes picked (saved with the game) *
 u8 GameHeroes[4] = {0};  /* +0x50: each player's hero (HeroInfo.hero_name; 9 none) */
 s8 GameTeammateChoice[4] = {0};
 s8 GameTeammates[4] = {0};  /* +0x58: each player's teammate, -1 none */
-u8 GameHeroOut[4] = {0};
+u8 GameHeroCpu[4] = {0};
 u8 GameWinner[2] = {0};
 u8 GameWarpRoom = 0;
 s8 GameGateway = 0;

@@ -875,10 +875,10 @@ void UpdateCardPrompt(void) {
                         q->heroChoice[1] = src[1];
                         q->heroChoice[2] = src[2];
                         q->heroChoice[3] = src[3];
-                        q->heroOut[0] = src[4];
-                        q->heroOut[1] = src[5];
-                        q->heroOut[2] = src[6];
-                        q->heroOut[3] = src[7];
+                        q->heroCpu[0] = src[4];
+                        q->heroCpu[1] = src[5];
+                        q->heroCpu[2] = src[6];
+                        q->heroCpu[3] = src[7];
                     }
                     *GAME = ((CardSlot *)src)->state;
                     {
@@ -1130,10 +1130,10 @@ void UpdateSaveMenu(void) {
                 dst->summary[1] = q->heroChoice[1];
                 dst->summary[2] = q->heroChoice[2];
                 dst->summary[3] = q->heroChoice[3];
-                dst->summary[4] = q->heroOut[0];
-                dst->summary[5] = q->heroOut[1];
-                dst->summary[6] = q->heroOut[2];
-                dst->summary[7] = q->heroOut[3];
+                dst->summary[4] = q->heroCpu[0];
+                dst->summary[5] = q->heroCpu[1];
+                dst->summary[6] = q->heroCpu[2];
+                dst->summary[7] = q->heroCpu[3];
                 q->adventure.options = GameOptions;
                 dst->state = *q;
                 ShowCardSlots();
@@ -1410,10 +1410,10 @@ void RestoreHeroChoice(CardSlot *src) {
     g->heroChoice[1] = src->summary[1];
     g->heroChoice[2] = src->summary[2];
     g->heroChoice[3] = src->summary[3];
-    g->heroOut[0] = src->summary[4];
-    g->heroOut[1] = src->summary[5];
-    g->heroOut[2] = src->summary[6];
-    g->heroOut[3] = src->summary[7];
+    g->heroCpu[0] = src->summary[4];
+    g->heroCpu[1] = src->summary[5];
+    g->heroCpu[2] = src->summary[6];
+    g->heroCpu[3] = src->summary[7];
     *GAME = src->state;
     {
         GameOptionSet *d = &GameOptions;
@@ -1430,10 +1430,10 @@ void SaveHeroChoice(CardSlot *dst) {
     dst->summary[1] = g->heroChoice[1];
     dst->summary[2] = g->heroChoice[2];
     dst->summary[3] = g->heroChoice[3];
-    dst->summary[4] = g->heroOut[0];
-    dst->summary[5] = g->heroOut[1];
-    dst->summary[6] = g->heroOut[2];
-    dst->summary[7] = g->heroOut[3];
+    dst->summary[4] = g->heroCpu[0];
+    dst->summary[5] = g->heroCpu[1];
+    dst->summary[6] = g->heroCpu[2];
+    dst->summary[7] = g->heroCpu[3];
     g->adventure.options = GameOptions;
     dst->state = *g;
     ShowCardSlots();
@@ -1615,10 +1615,10 @@ void InitGameState(GameState *arg0) {
     arg0->demo = 0;
     arg0->winner[0] = 0;
     arg0->winner[1] = 0;
-    arg0->heroOut[0] = 0;
-    arg0->heroOut[1] = 0;
-    arg0->heroOut[2] = 0;
-    arg0->heroOut[3] = 0;
+    arg0->heroCpu[0] = 0;
+    arg0->heroCpu[1] = 0;
+    arg0->heroCpu[2] = 0;
+    arg0->heroCpu[3] = 0;
     arg0->teamSide[1] = 2;
     arg0->teamLeader[0] = 0;
     arg0->teamLeader[1] = 2;

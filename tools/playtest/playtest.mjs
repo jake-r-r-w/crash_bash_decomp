@@ -6,7 +6,7 @@
 //   node tools/playtest/playtest.mjs [--build build/shiftall] [--modes 0-32] [--minutes 10] [--keep]
 //
 // It reads the build's link maps for the addresses, boots the disc with fast-forward on, waits for
-// the titles, then for each mode writes what the menus would leave: four CPU heroes (heroOut, which
+// the titles, then for each mode writes what the menus would leave: four CPU heroes (heroCpu, which
 // the bot hook runs for), NextGameMode, and exitFlags 0x8008, HandleLevelExit's "load this mode".
 // Once the level has loaded it resets exitFlags to what a clean load leaves (the intro's 0x1000):
 // at this speed the previous level can move on before the 0x8008 lands, and a stray 0x8008 keeps the
@@ -29,7 +29,7 @@ const PAD_PORT = 55400;  // the network RetroPad, player 1
 const CROSS = 0;         // RETRO_DEVICE_ID_JOYPAD_B, the PlayStation's Cross
 
 // GameState (GameInfo) offsets, include/bash/nas.h
-const GS = { frames: 0x0C, exitFlags: 0x30, mode: 0x34, heroChoice: 0x4C, heroOut: 0x5C, winner: 0x60 };
+const GS = { frames: 0x0C, exitFlags: 0x30, mode: 0x34, heroChoice: 0x4C, heroCpu: 0x5C, winner: 0x60 };
 // the boss fights. Each boss is beaten its own way (Papu: crates thrown at him and his minions'
 // waves), which the bots don't play, and each then sets BossState.flags 0x8000, which the engine's
 // hero code takes as the boss out of play (heroes.c, ProcessHeroes): from there the level ends as a
@@ -157,7 +157,7 @@ async function runMode(ra, s, mode, minutes) {
   const start = Date.now();
   // what the menus leave behind for a 4-CPU battle: the heroes, all of them computer players
   ra.write(G + GS.heroChoice, [1, 2, 3, 4]);
-  ra.write(G + GS.heroOut, [1, 1, 1, 1]);
+  ra.write(G + GS.heroCpu, [1, 1, 1, 1]);
   ra.write(s.NextGameMode, u32(mode));
   ra.write(G + GS.exitFlags, u16(0x8008));
   let st = await waitFor(ra, s, st => st.mode === mode && st.process === s.RetryProcess && st.next === 0, 180000,
@@ -174,7 +174,7 @@ async function runMode(ra, s, mode, minutes) {
   let last = -1, still = Date.now(), taps = 0, fight0 = null;
   const end = Date.now() + minutes * 60000;
   while (true) {
-    ra.write(G + GS.heroOut, [1, 1, 1, 1]);
+    ra.write(G + GS.heroCpu, [1, 1, 1, 1]);
     if (boss) {
       for (let i = 0; i < 4; i++) ra.write(s.Heroes + i * HERO_SIZE + HERO_HEALTH, s16(heroHealth[i]));
       const bf = await ra.read(s.BossState + BOSS_FLAGS, 2);

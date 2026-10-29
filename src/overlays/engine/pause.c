@@ -1346,10 +1346,10 @@ void StartWinSequence(s32 arg0) {
     if (g->demo != 0) {
         g->pause |= 0x02000000;
         g->demoTimer = 0x384;
-        g->heroOut[0] = 1;
-        g->heroOut[1] = 1;
-        g->heroOut[2] = 1;
-        g->heroOut[3] = 1;
+        g->heroCpu[0] = 1;
+        g->heroCpu[1] = 1;
+        g->heroCpu[2] = 1;
+        g->heroCpu[3] = 1;
         return;
     }
     switch (g->levelFlags & 0xE0) {

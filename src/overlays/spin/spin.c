@@ -282,7 +282,7 @@ void InitialiseSPIN() {
         m->forward_angle = a;
         Heroes[i].hero->Camera.width = 0;
         Heroes[i].hero->Camera.look_ahead = 0;
-        if (((GameState *)GameInfo)->heroOut[i] != 0) {
+        if (((GameState *)GameInfo)->heroCpu[i] != 0) {
             Heroes[i].hero_move->run_walk = 2;
         }
     }
@@ -882,7 +882,7 @@ void SpinDropObjects(u16 count, s16 arg1) {
             if (kind >= 2) {
                 continue;
             }
-            if (((GameState *)GameInfo)->heroOut[idx] == 0
+            if (((GameState *)GameInfo)->heroCpu[idx] == 0
                 && (n = AiPlayerSkill[idx].level, n++, (u32)Clock_Time >> 8 < 0x120)) {
                 if (kind == 0) {
                     r = (u32)Random(n) < 9;
@@ -1187,7 +1187,7 @@ void PlotHazardType(NAS *nas) {
         if (owner != -1) {
             a = AiPlayerSkill[owner].level;
             b = 0x20 - a;
-            if (GAME->heroOut[owner] != 0) {
+            if (GAME->heroCpu[owner] != 0) {
                 w = a;
                 o = b;
             } else {
@@ -1587,7 +1587,7 @@ void SpinScoreBalloon(EXTobject *arg0) {
         b = 0x20 - a;
         a = p[a];
         b = p[b];
-        if (GAME->heroOut[idx] != 0) {
+        if (GAME->heroCpu[idx] != 0) {
             w0 = a;
             w1 = a >> 1;
             w2 = b;
@@ -2848,7 +2848,7 @@ void SetSpinHeroFlip(s32 arg0) {
     e->platform = NULL;
     SetHeroSeq(arg0, 0x2C);
     idx = 0;
-    if (GAME->heroOut[arg0] == 0) {
+    if (GAME->heroCpu[arg0] == 0) {
         idx = h->hero_name;
     }
     h->hero_move->jump_vel = HeroHooks.JumpEnts[idx].vel;

@@ -4205,7 +4205,7 @@ loop:
             }
             PolarInitHeroMove(i);
             SetHeroAction(i, 0x49);
-            if (v->mode == 0x15 && (v->levelFlags & 0x80) && ((GameState *)g)->heroOut[0] == 0) {
+            if (v->mode == 0x15 && (v->levelFlags & 0x80) && ((GameState *)g)->heroCpu[0] == 0) {
                 SetHeroAction(i, 0x54);
             }
             h->hero_eng->xform.hasScale = 1;
@@ -4430,7 +4430,7 @@ void UpdatePOLAR(void) {
         i = 0;
         do {
             if (!(Heroes[i].hero_status & 0xFA00)) {
-                if (GAME->heroOut[i] == 0) {
+                if (GAME->heroCpu[i] == 0) {
                     HeroesAllOut = 0;
                 }
                 if (((GameState *)GameInfo)->teams != 0
@@ -5223,7 +5223,7 @@ void PlotTransmuterBeam(NAS *m) {
                 if (Heroes[i].hero_status & 0x2000) {
                     goto next1;
                 }
-                if (TBV->heroOut[i] != 0) {
+                if (TBV->heroCpu[i] != 0) {
                     goto next1;
                 }
                 if (i == 1 && TBV->teams == 0) {
@@ -10530,7 +10530,7 @@ void PolarHeroesCollide(s32 p1, s32 p2) {
     s32 b;
 
     if (m1 > 0 && m2 > 0) {
-        if (GAME->heroOut[p1] != 0) {
+        if (GAME->heroCpu[p1] != 0) {
             if (AiPlayerSkill[p1].level < 9) {
                 m1 -= (9 - AiPlayerSkill[p1].level) << 5;
                 if (m1 < 0x11) {
@@ -10541,7 +10541,7 @@ void PolarHeroesCollide(s32 p1, s32 p2) {
                 m1 += (AiPlayerSkill[p1].level - 0x18) << 6;
             }
         }
-        if (GAME->heroOut[p2] != 0) {
+        if (GAME->heroCpu[p2] != 0) {
             if (AiPlayerSkill[p2].level < 9) {
                 m2 -= (9 - AiPlayerSkill[p2].level) << 5;
                 if (m2 < 0x11) {
@@ -10961,7 +10961,7 @@ void PolarPreMoveHero(s32 player) {
             m->z_max -= ((m->mass * 3) >> 3) * rcossin_tbl[(PolarTiltX - 0x400) & 0xFFF].unk2 >> 12;
             if (g->mode == 0x12) {
                 if (g->levelFlags & 0x80) {
-                    if (GAME->heroOut[player] != 0) {
+                    if (GAME->heroCpu[player] != 0) {
                         m->x_max += ((m->mass * 3) >> 4) * rcossin_tbl[(MapSceneRot.vz - 0x400) & 0xFFF].unk2 >> 12;
                         m->z_max -= ((m->mass * 3) >> 4) * rcossin_tbl[(MapSceneRot.vx - 0x400) & 0xFFF].unk2 >> 12;
                     } else {
@@ -11934,7 +11934,7 @@ void SetPolarHeroOffice(s32 player) {
             }
             g = GAME;
             if (g->levelFlags & 0x80) {
-                if (g->heroOut[player] == 0 && g->mode == 0x14) {
+                if (g->heroCpu[player] == 0 && g->mode == 0x14) {
                     Heroes[player].hero_anim->Aindex = 0x21;
                 }
             }

@@ -466,7 +466,7 @@ void ProcessHeroes(void) {
         if (sub != NULL) {
             sub->flags &= ~0x8000;
         }
-        if (!(GAME->cheats & 0x100) && GAME->heroOut[id] != 0) {
+        if (!(GAME->cheats & 0x100) && GAME->heroCpu[id] != 0) {
             ((void (*)(s32))HeroHooks.HeroBot)(id);
         }
         h = &Heroes[id];
@@ -566,7 +566,7 @@ void DefChooseWinner(s32 idx, u16 arg1) {
             n = 0;
             for (i = 0; i < 4; i++) {
                 h = &Heroes[i];
-                if (!(h->hero_status & 0xF800) && GAME->heroOut[i] == 0) {
+                if (!(h->hero_status & 0xF800) && GAME->heroCpu[i] == 0) {
                     n++;
                 }
             }
@@ -581,7 +581,7 @@ void DefChooseWinner(s32 idx, u16 arg1) {
                 }
                 return;
             }
-            if (GAME->heroOut[idx] != 0) {
+            if (GAME->heroCpu[idx] != 0) {
                 return;
             }
         }
@@ -728,10 +728,10 @@ void DefChooseWinner(s32 idx, u16 arg1) {
         for (i = 0; i < 4; i++) {
             h = &Heroes[i];
             if (!(h->hero_status & 0xFA00)) {
-                if (GAME->heroOut[i] == 0) {
+                if (GAME->heroCpu[i] == 0) {
                     HeroesAllOut = 0;
                 }
-                if (GAME->teams != 0 && GAME->heroOut[h->hero_teammate] == 0) {
+                if (GAME->teams != 0 && GAME->heroCpu[h->hero_teammate] == 0) {
                     HeroesAllOut = 0;
                 }
             }
@@ -785,7 +785,7 @@ void HeroTakeHit(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
         v = HitDamage[flags & 0xF][v];
     }
     if (!(((GameState *)GameInfo)->levelFlags & 3)) {
-        if (GAME->heroOut[player] != 0 && (u32)(dist -= 0x18) < 9) {
+        if (GAME->heroCpu[player] != 0 && (u32)(dist -= 0x18) < 9) {
             v = HitFalloff[v >> 8][dist];
         }
     }
@@ -1090,7 +1090,7 @@ void DefPreMoveHero(s32 arg0) {
                 m->forward_speed = speed;
             }
         } else {
-            if (GAME->heroOut[arg0] != 0) {
+            if (GAME->heroCpu[arg0] != 0) {
                 if (pad->dir & 0x100) {
                     m->forward_angle -= 0x100;
                 }
@@ -1237,7 +1237,7 @@ void HeroApplyJump(s32 arg0) {
     }
     if (m->jump_dir != 0) {
         dec = m->jump_dec;
-        if ((m->jump_ctrl & 1) && GAME->heroOut[arg0] == 0 &&
+        if ((m->jump_ctrl & 1) && GAME->heroCpu[arg0] == 0 &&
             !(((PadState *)Pads)[arg0].dir & 0x4000) && m->jump_vel >= 0x41) {
             dec = 0x28;
         }
@@ -1500,7 +1500,7 @@ void SetTweakAi(void) {
             t[i].quality = 0x10;
         } else if (flags & 0x40) {
             t[i].level = ((u16 *)AiSkillTable)[4];
-            if (g->heroOut[i] != 0) {
+            if (g->heroCpu[i] != 0) {
                 ret = t[i].quality = ((u16 *)AiBotTweakTable)[4];
             } else {
                 t[i].quality = ((u16 *)AiHumanTweakTable)[4];
@@ -1508,14 +1508,14 @@ void SetTweakAi(void) {
         } else if (flags & 0x20) {
             if (flags & 8) {
                 t[i].level = ((u16 *)AiSkillTable)[9];
-                if (g->heroOut[i] != 0) {
+                if (g->heroCpu[i] != 0) {
                     ret = t[i].quality = ((u16 *)AiBotTweakTable)[9];
                 } else {
                     t[i].quality = ((u16 *)AiHumanTweakTable)[9];
                 }
             } else {
                 t[i].level = ((u16 *)AiSkillTable)[5];
-                if (g->heroOut[i] != 0) {
+                if (g->heroCpu[i] != 0) {
                     ret = t[i].quality = ((u16 *)AiBotTweakTable)[5];
                 } else {
                     t[i].quality = ((u16 *)AiHumanTweakTable)[5];
@@ -1523,7 +1523,7 @@ void SetTweakAi(void) {
             }
         } else if (flags & 0x80) {
             t[i].level = ((u16 *)AiSkillTable)[6];
-            if (g->heroOut[i] != 0) {
+            if (g->heroCpu[i] != 0) {
                 ret = t[i].quality = ((u16 *)AiBotTweakTable)[6];
             } else {
                 t[i].quality = ((u16 *)AiHumanTweakTable)[6];
@@ -1533,7 +1533,7 @@ void SetTweakAi(void) {
                 c = ((u8 *)g)[g->mode + 0xAB];
                 g->adventure.aiSkill[i] = c;
                 t[i].level = ((u16 *)AiSkillTable)[3];
-                if (g->heroOut[i] != 0) {
+                if (g->heroCpu[i] != 0) {
                     ret = t[i].quality = ((u16 *)AiBotTweakTable)[3];
                 } else {
                     t[i].quality = ((u16 *)AiHumanRoundTweakTable)[9];
@@ -1542,7 +1542,7 @@ void SetTweakAi(void) {
                 c = ((u8 *)g)[g->mode + 0xAB];
                 g->adventure.aiSkill[i] = c;
                 t[i].level = ((u16 *)AiSkillTable)[c];
-                if (g->heroOut[i] != 0) {
+                if (g->heroCpu[i] != 0) {
                     ret = t[i].quality = ((u16 *)AiBotTweakTable)[g->adventure.aiSkill[0]];
                 } else {
                     n = g->adventure.roundPoints[i];
@@ -2032,7 +2032,7 @@ void SetHeroJump(s32 arg0) {
     e->platform = NULL;
     SetHeroSeq(arg0, 6);
     idx = 0;
-    if (GAME->heroOut[arg0] == 0) {
+    if (GAME->heroCpu[arg0] == 0) {
         idx = h->hero_name;
     }
     h->hero_move->jump_vel = HeroHooks.JumpEnts[idx].vel;
@@ -4536,7 +4536,7 @@ plot:
     if (obj->will_do & 8) {
         p = obj->player;
         if (p != -1 && p < 5 && !(Heroes[p].hero_status & 0xFA00)) {
-            if (GAME->heroOut[p] != 0) {
+            if (GAME->heroCpu[p] != 0) {
                 n = 3 - GAME->adventure.aiSkill[0];
             } else {
                 n = 0;

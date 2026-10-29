@@ -640,7 +640,7 @@ typedef struct GameState {
     /* 0x050 */ u8 heroes[4];
     /* 0x054 */ s8 teammateChoice[4];
     /* 0x058 */ s8 teammates[4];
-    /* 0x05C */ u8 heroOut[4];
+    /* 0x05C */ u8 heroCpu[4];             /* a computer player: HeroHooks.HeroBot drives it, no rumble */
     /* 0x060 */ u8 winner[2];
     /* 0x062 */ u8 warpRoom;
     /* 0x063 */ s8 gateway;

@@ -920,7 +920,7 @@ extern AdventureState GameAdventure;   /* GameInfo + 0x70 */
 extern u8 GamePlayers;           /* GameInfo + 0x26: the players in play (GameState.players) */
 extern s8 GameArena;             /* GameInfo + 0x36: the BattleArenas entry */
 extern s16 GameTeamLeader[2];    /* GameInfo + 0x48: each team's leading hero */
-extern u8 GameHeroOut[4];        /* GameInfo + 0x5C: each hero out of the game */
+extern u8 GameHeroCpu[4];        /* GameInfo + 0x5C: each hero a computer player (its bot hook runs) */
 extern u8 GameWinner[2];         /* GameInfo + 0x60: the winners' hero names */
 
 extern s32 DirPadBits[24];         /* pad direction bits by angle octant */

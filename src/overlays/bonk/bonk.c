@@ -904,12 +904,12 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
             HeroInfo *a;
             s32 n;
 
-            if (g->heroOut[g->adventure.rank[0]] != 0
+            if (g->heroCpu[g->adventure.rank[0]] != 0
                 || (hb = Heroes, a = &hb[g->adventure.rank[0]], a->hero_score == hb[g->adventure.rank[1]].hero_score)) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -948,7 +948,7 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -957,7 +957,7 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
                 }
             } else if (sb < sa) {
                 g->exitFlags |= 0x800;
-                if (g->heroOut[g->teamLeader[0]] == 0) {
+                if (g->heroCpu[g->teamLeader[0]] == 0) {
                     g->winner[0] = a->hero_name;
                     g->winner[1] = ta->hero_name;
                     a->hero_status |= 0x200;
@@ -976,7 +976,7 @@ void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1016,12 +1016,12 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
             HeroInfo *a;
             s32 n;
 
-            if (g->heroOut[g->adventure.rank[0]] != 0
+            if (g->heroCpu[g->adventure.rank[0]] != 0
                 || (hb = Heroes, a = &hb[g->adventure.rank[0]], a->hero_score == hb[g->adventure.rank[1]].hero_score)) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1060,7 +1060,7 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1069,7 +1069,7 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 }
             } else if (sb < sa) {
                 g->exitFlags |= 0x800;
-                if (g->heroOut[g->teamLeader[0]] == 0) {
+                if (g->heroCpu[g->teamLeader[0]] == 0) {
                     g->winner[0] = a->hero_name;
                     g->winner[1] = ta->hero_name;
                     a->hero_status |= 0x200;
@@ -1088,7 +1088,7 @@ void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
                 GAME->winner[0] = 0;
                 GAME->exitFlags |= arg1;
                 for (k = 0; k < 4; k++) {
-                    if (GAME->heroOut[k] != 0) {
+                    if (GAME->heroCpu[k] != 0) {
                         RemoveCamera(Heroes[k].hero);
                         Heroes[k].hero_status |= 0x400;
                     } else {
@@ -1123,12 +1123,12 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
         sa = a->hero_score + ta->hero_score;
         sb = b->hero_score + hb[b->hero_teammate].hero_score;
         if (sa == 0) {
-            if (g->heroOut[g->teamLeader[0]] == 0) {
+            if (g->heroCpu[g->teamLeader[0]] == 0) {
                 GAME->winner[0] = a->hero_name;
                 GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (GAME->heroOut[i] != 0) {
+                    if (GAME->heroCpu[i] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -1138,12 +1138,12 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
                 fail = 1;
             }
         } else if (sb == 0) {
-            if (g->heroOut[g->teamLeader[1]] == 0) {
+            if (g->heroCpu[g->teamLeader[1]] == 0) {
                 GAME->winner[0] = b->hero_name;
                 GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (GAME->heroOut[i] != 0) {
+                    if (GAME->heroCpu[i] != 0) {
                         hb[i].hero_status |= 0x400;
                     } else {
                         hb[i].hero_status |= 0x200;
@@ -1160,12 +1160,12 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
             }
         }
         if (found != -1) {
-            if (GAME->heroOut[found] == 0) {
+            if (GAME->heroCpu[found] == 0) {
                 GAME->winner[0] = Heroes[found].hero_name;
                 GAME->exitFlags |= 0x800;
                 Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
-                    if (GAME->heroOut[i] != 0) {
+                    if (GAME->heroCpu[i] != 0) {
                         Heroes[i].hero_status |= 0x400;
                     } else {
                         Heroes[i].hero_status |= 0x200;
@@ -1181,7 +1181,7 @@ void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
         GAME->exitFlags |= arg1;
         Clock_flags |= 0x200;
         for (i = 0; i < 4; i++) {
-            if (GAME->heroOut[i] != 0) {
+            if (GAME->heroCpu[i] != 0) {
                 Heroes[i].hero_status |= 0x400;
             } else {
                 Heroes[i].hero_status |= 0x100;
@@ -1615,7 +1615,7 @@ void BonkUpdateSkill(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        if (GAME->heroOut[i] != 0) {
+        if (GAME->heroCpu[i] != 0) {
             BonkSkill = AiPlayerSkill[i].level;
         }
     }
@@ -1661,7 +1661,7 @@ void BonkInitScores(void) {
         h = g;
         for (; i < 4; i++) {
             v = 0x3C;
-            if (((u8 *)h)[i + 0x5C] == 0) {  /* matching: h + i first; heroOut[i] adds the other way round */
+            if (((u8 *)h)[i + 0x5C] == 0) {  /* matching: h + i first; heroCpu[i] adds the other way round */
                 v = 0x50;
                 if (h->teams != 0) {
                     v = 0x5A;
