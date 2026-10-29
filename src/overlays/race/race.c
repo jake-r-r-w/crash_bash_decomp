@@ -2688,7 +2688,7 @@ void InitialiseRACE(void) {
         fux->unkC = 0;
         fux->unk14 = 0;
         fux->unk18 = 0;
-        fux->unk1C = NULL;
+        fux->eng = NULL;
         fux->unk20 = 0;
         fux->unk24 = 0;
         fux->unk2C = 0;
@@ -2707,25 +2707,25 @@ void InitialiseRACE(void) {
         fux->unk48 = 0;
         fux->unk4C = 0;
         fux->unk50 = 0;
-        fux->unk58 = 0;
+        fux->steer = 0;
         fux->unk130 = 0;
         fux->unk134 = 0;
-        fux->unk13C = 0;
-        fux->unk140 = 0;
+        fux->vx = 0;
+        fux->vz = 0;
         fux->unk148 = 0;
         RaceUnused1 = 0;
         Heroes[i].hero_eng->XYZ.y = RaceFloorLevel;
-        fux->unk150 = RaceDecel;
-        fux->unk154 = RaceMoveTune5;
-        fux->unk14C = RaceJumpVel;
-        fux->unk158 = RaceMoveTune1;
-        fux->unk15C = RaceAccel;
-        fux->unk160 = RaceMoveTune4;
+        fux->decel = RaceDecel;
+        fux->maxSpeed = RaceMoveTune5;
+        fux->jumpVel = RaceJumpVel;
+        fux->tune1 = RaceMoveTune1;
+        fux->accel = RaceAccel;
+        fux->turnRate = RaceMoveTune4;
         fux->unk164 = 0x100;
         RaceTimer = 0;
         eng = AddExtEngine(Heroes[i].hero, 8);
         if (eng != NULL) {
-            fux->unk1C = eng;
+            fux->eng = eng;
             eng->sub->flags &= ~0x8000;
             eng->xform.hasScale = 1;
             eng->xform.order = 0;
@@ -2839,43 +2839,43 @@ void RacePreMoveHero(s32 player) {
                 pad = pads + player;
                 if ((pad->flags & 1) || h->hero_ai->AImode != 0) {
                     if (((PadState *)pad)->dir & 0xA0) {
-                        speed = ((csqrt(fux->unk13C * fux->unk13C + fux->unk140 * fux->unk140) * 4 >> 8) * 0x3C8) / 100 >> 8;
+                        speed = ((csqrt(fux->vx * fux->vx + fux->vz * fux->vz) * 4 >> 8) * 0x3C8) / 100 >> 8;
                         if (speed > 0x3C8) {
                             speed = 0x3C8;
                         }
                         if (((PadState *)pad)->dir & 0x80) {
-                            m->forward_angle -= fux->unk160;
+                            m->forward_angle -= fux->turnRate;
                             *steer = speed;
                         }
                         if (((PadState *)pad)->dir & 0x20) {
-                            m->forward_angle += fux->unk160;
+                            m->forward_angle += fux->turnRate;
                             *steer = -speed;
                         }
                     }
                     boost = 0;
-                    if ((((PadState *)Pads)[player].dir & 0x8000) && fux->unk58 > 0) {
+                    if ((((PadState *)Pads)[player].dir & 0x8000) && fux->steer > 0) {
                         if (G63B->mode == 0x18 && (G63B->levelFlags & 0x80) && G63B->heroOut[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
-                            fux->unk13C >>= 3;
-                            fux->unk140 >>= 3;
+                            fux->vx >>= 3;
+                            fux->vz >>= 3;
                         }
-                        m->x_acc = fux->unk158;
-                        m->z_acc = fux->unk158;
-                        m->x_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max = fux->unk154 * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
+                        m->x_acc = fux->tune1;
+                        m->z_acc = fux->tune1;
+                        m->x_max = fux->maxSpeed * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->maxSpeed * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
                         if (AiPlayerSkill[player].level >= 0x17 && G63B->heroOut[player] != 0) {
-                            fux->unk58 -= 0x180 - RaceSteerAngles[AiPlayerSkill[player].level - 0x16];
+                            fux->steer -= 0x180 - RaceSteerAngles[AiPlayerSkill[player].level - 0x16];
                         } else if (Heroes[player].hero_mode != 0x61) {
-                            fux->unk58 -= 0x180;
+                            fux->steer -= 0x180;
                         }
                         boost = 1;
-                        if (fux->unk58 < 0) {
-                            fux->unk58 = 0;
+                        if (fux->steer < 0) {
+                            fux->steer = 0;
                             boost = 0;
                         }
                     }
                     if (boost == 0 && (((PadState *)Pads)[player].dir & 0x800)) {
-                        m->x_acc = fux->unk15C;
-                        m->z_acc = fux->unk15C;
+                        m->x_acc = fux->accel;
+                        m->z_acc = fux->accel;
                         if (G63B->heroOut[player] != 0) {
                             if (AiPlayerSkill[player].level < 0x16) {
                                 m->x_acc = RaceAccel - ((0x10 - AiPlayerSkill[player].level) << 6);
@@ -2892,11 +2892,11 @@ void RacePreMoveHero(s32 player) {
                             }
                         }
                         if (G63B->mode == 0x18 && (G63B->levelFlags & 0x80) && G63B->heroOut[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
-                            fux->unk13C >>= 3;
-                            fux->unk140 >>= 3;
+                            fux->vx >>= 3;
+                            fux->vz >>= 3;
                         }
-                        m->x_max = fux->unk14C * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
-                        m->z_max = fux->unk14C * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
+                        m->x_max = fux->jumpVel * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->jumpVel * rcossin_tbl[(Heroes[player].hero_eng->xform.rot.vy + 0x800) & 0xFFF].unk2 >> 12;
                     }
                 }
             }
@@ -2905,8 +2905,8 @@ void RacePreMoveHero(s32 player) {
                 m->z_dir = 0;
                 m->x_max = 0;
                 m->z_max = 0;
-                fux->unk13C = 0;
-                fux->unk140 = 0;
+                fux->vx = 0;
+                fux->vz = 0;
             }
             angle_diff(m->forward_angle, m->facing_angle);
             m->facing_angle = m->forward_angle;
@@ -2980,15 +2980,15 @@ void RaceMoveHero(s32 player) {
     fux = (RaceFux *)h->hero->FUX;
     if (fux != NULL) {
         pos = h->hero_eng->XYZ;
-        vx = fux->unk13C;
-        vz = fux->unk140;
+        vx = fux->vx;
+        vz = fux->vz;
         eng = h->hero_eng;
         move = h->hero_move;
         a = move->x_max << 8;
         b = move->z_max << 8;
         xacc = move->x_acc;
         zacc = move->z_acc;
-        step = fux->unk150;
+        step = fux->decel;
         pos.y = RaceFloorLevel;
         RaceFloorHeight(&pos, &ang0);
         if (move->velocity_calc != 3) {
@@ -3056,8 +3056,8 @@ void RaceMoveHero(s32 player) {
         if (vz > 0xC800) {
             vz = 0xC800;
         }
-        fux->unk13C = vx;
-        fux->unk140 = vz;
+        fux->vx = vx;
+        fux->vz = vz;
         dx = vx >> 8;
         pos.x += dx;
         dz = vz >> 8;
@@ -3074,11 +3074,11 @@ void RaceMoveHero(s32 player) {
                 }
                 dist = csqrt(vx * vx + vz * vz) >> 6;
                 dist = dist * 200 >> 8;
-                fux->unk13C = dist * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
-                fux->unk140 = dist * rcossin_tbl[a & 0xFFF].unk2 >> 12;
+                fux->vx = dist * rcossin_tbl[(a - 0x400) & 0xFFF].unk2 >> 12;
+                fux->vz = dist * rcossin_tbl[a & 0xFFF].unk2 >> 12;
                 Heroes[player].hero_move->forward_angle = a + 0x800;
                 a = Random(4);
-                if (fux->unk13C != 0 || fux->unk140 != 0) {
+                if (fux->vx != 0 || fux->vz != 0) {
                     lim = 0x600;
                     if (b > lim) {
                         if (b < 0xA00) {

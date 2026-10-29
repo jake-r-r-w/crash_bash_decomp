@@ -246,7 +246,7 @@ typedef struct RaceFux {
     /* 0x010 */ s32 unk10;
     /* 0x014 */ s32 unk14;
     /* 0x018 */ s32 unk18;
-    /* 0x01C */ EXTengine *unk1C;
+    /* 0x01C */ EXTengine *eng;
     /* 0x020 */ s32 unk20;
     /* 0x024 */ s32 unk24;
     /* 0x028 */ s32 unk28;
@@ -261,21 +261,21 @@ typedef struct RaceFux {
     /* 0x04C */ s32 unk4C;
     /* 0x050 */ s32 unk50;
     /* 0x054 */ s32 unk54;
-    /* 0x058 */ s32 unk58;
+    /* 0x058 */ s32 steer;  /* the steering turn, less each frame */
     /* 0x05C */ u8 pad5C[0x130 - 0x5C];
     /* 0x130 */ s32 unk130;
     /* 0x134 */ s32 unk134;
     /* 0x138 */ s32 unk138;
-    /* 0x13C */ s32 unk13C;
-    /* 0x140 */ s32 unk140;
+    /* 0x13C */ s32 vx;  /* its velocity; speed is their length */
+    /* 0x140 */ s32 vz;
     /* 0x144 */ s32 unk144;
     /* 0x148 */ s32 unk148;
-    /* 0x14C */ s32 unk14C;
-    /* 0x150 */ s32 unk150;
-    /* 0x154 */ s32 unk154;
-    /* 0x158 */ s32 unk158;
-    /* 0x15C */ s32 unk15C;
-    /* 0x160 */ s32 unk160;
+    /* 0x14C */ s32 jumpVel;  /* RaceJumpVel */
+    /* 0x150 */ s32 decel;  /* RaceDecel */
+    /* 0x154 */ s32 maxSpeed;  /* along the yaw (the motion's x_max/z_max) */
+    /* 0x158 */ s32 tune1;  /* RaceMoveTune1, the motion's z_acc */
+    /* 0x15C */ s32 accel;  /* RaceAccel, the motion's x_acc */
+    /* 0x160 */ s32 turnRate;  /* added to or taken from forward_angle */
     /* 0x164 */ s32 unk164;
     /* 0x168 */ s32 unk168;
     /* 0x16C */ s32 unk16C;
