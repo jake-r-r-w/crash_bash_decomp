@@ -11,7 +11,7 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 1.4 | Name the `unkXX` fields | Including the file formats' (ASSETS.md, What isn't decoded). Started 2026-10-29: the prototype's `xyzrf` block (`XYZ`, a `RotScale` `xform`) named in EXTengine, subengine and GfxXform; uses of `unkXX` down from 12,440 to 5,066 (`grep -rhoE '(->|\.)unk[0-9A-Fa-f]+' src`). Next: the overlays' extension structs (race_ovl.h, polar_ovl.h hold the most) | [ ] |
+| 1.4 | Name the `unkXX` fields | Including the file formats' (ASSETS.md, What isn't decoded). Started 2026-10-29: the prototype's `xyzrf` block (`XYZ`, a `RotScale` `xform`) named in EXTengine, subengine and GfxXform; the shared engine and exe structs next (collision boxes, heaps, hit hooks, arena and level records, the adventure's progress, panel prims). `unkXX` uses down from 12,440 to 4,619, declarations from 1,471 to 1,326. `field_uses.py STRUCT` lists a struct's exact uses. Next: the overlays' extension structs (race_ovl.h, polar_ovl.h hold the most) |\.)unk[0-9A-Fa-f]+' src`). Next: the overlays' extension structs (race_ovl.h, polar_ovl.h hold the most) | [ ] |
 | 1.5 | Structs for Spin, Dino and N2O | Enums only so far; `field_survey.py` | [ ] |
 | 1.6 | The prototype types' 34 lost-page fields | Word or byte arrays now; retype where code shows the fields | [ ] |
 | 1.7 | `func_800115D8` takes `_mal_area *` | Not `void **`, once its callers allow | [ ] |

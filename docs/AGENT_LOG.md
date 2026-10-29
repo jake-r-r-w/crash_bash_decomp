@@ -482,6 +482,18 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 1.4, more names):** `field_uses.py` (new, tested) lists every use of a
+  struct's fields. It renames them all in the header for one syntax compile and reads cc1's
+  missing-member errors, so shared names like `unk10` don't mix in other structs' uses. Named:
+  - `FlagRecord`'s offsets; `_mal_area`'s first and end blocks; `HitCallbacks`;
+  - `ArenaDef`; `EngineRec32`'s hero load and camera mode;
+  - the adventure's progress (`won[5][0x21]`: only [0], trophies, is settled);
+  - `PanelPrim` (with `EngineBox` folded in) on `subengine`'s head.
+
+  `unkXX` uses are at 4,619. Gotcha: rename every struct of a pair before running field_rename
+  and a line is renamed for the wrong one (`LevelRecs[].firstNas`). Rename one struct, run,
+  then the next. Fields only cleared in an init are left unnamed: nothing shows what they hold.
+
 - **2026-10-29 (ROADMAP-B 1.4 started, field names):** the prototype's `xyzrf` (struct ._319,
   0x54 bytes) is flags, a position and a `RotScale` (rotation, pad, scale, matrix, has-scale,
   order, dirty: what `rotscale_update` takes). It begins `subengine`, sits at +0xC of
