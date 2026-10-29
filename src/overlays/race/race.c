@@ -2061,7 +2061,7 @@ s32 RaceTrackCollide(SLONG_XYZ *pos, RaceVec4 *out, s32 radius, s32 idx, s32 fla
         w = obj;
         n = obj->count;
         r2 = rad * rad;
-        for (;; i++, w = (RaceSegObj *)((u8 *)w + sizeof(RaceSeg))) {
+        for (;; i++, w = (RaceSegObj *)((RaceSeg *)w + 1)) {
             s32 lt;
 
             if (i >= n) {
@@ -2206,8 +2206,8 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
         rv.vz = 0;
         RotMatrix(&rv, &m);
         ApplyMatrixLV(&m, pos, &lp);
-        for (;; i++, w = (RaceSegObj *)((u8 *)w + sizeof(RaceSeg)),
-                w2 = (RaceSegObj *)((u8 *)w2 + sizeof(RaceSeg))) {
+        for (;; i++, w = (RaceSegObj *)((RaceSeg *)w + 1),
+                w2 = (RaceSegObj *)((RaceSeg *)w2 + 1)) {
             s32 gt;
 
             if (i >= n) {
@@ -2364,7 +2364,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
         rv.vz = -rot->vz;
         RotMatrix(&rv, &m);
         ApplyMatrixLV(&m, pos, &lp);
-        for (;; i++, w = (RaceSegObj *)((u8 *)w + sizeof(RaceSeg))) {
+        for (;; i++, w = (RaceSegObj *)((RaceSeg *)w + 1)) {
             s32 gt;
 
             if (i >= n) {

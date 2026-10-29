@@ -2663,7 +2663,7 @@ s32 DinoTrackCollide(DinoVec *pos, DinoVec *out, s32 radius, s32 idx, s32 flags)
         w = obj;
         n = obj->count;
         r2 = rad * rad;
-        for (;; i++, w = (DinoSegObj *)((u8 *)w + sizeof(DinoSeg))) {
+        for (;; i++, w = (DinoSegObj *)((DinoSeg *)w + 1)) {
             s32 lt;
 
             if (i >= n) {

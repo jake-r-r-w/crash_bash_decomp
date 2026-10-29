@@ -9863,14 +9863,14 @@ void PolarInitDebug(void) {
 }
 
 void PlotIceBerg(NAS *arg0) {
-    u8 *temp_a1;
-    u8 *temp_v1;
+    EXTengine *temp_a1;
+    EXTengine *temp_v1;
 
     temp_a1 = (arg0->Engine);
-    (*(s32*)((u8*)(temp_a1) + 16)) = (s32) ((*(s32*)((u8*)(temp_a1) + 16)) + ((s32) (arg0->UserInfo.user2) >> 8));
+    (temp_a1->unk10.x) = (s32) ((temp_a1->unk10.x) + ((s32) (arg0->UserInfo.user2) >> 8));
     temp_v1 = (arg0->Engine);
-    if ((*(s32*)((u8*)(temp_v1) + 16)) >= 0x1AF5) {
-        (*(s32*)((u8*)(temp_v1) + 16)) = -0x1C84;
+    if ((temp_v1->unk10.x) >= 0x1AF5) {
+        (temp_v1->unk10.x) = -0x1C84;
     }
 }
 
