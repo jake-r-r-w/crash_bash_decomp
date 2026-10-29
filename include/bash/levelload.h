@@ -218,10 +218,8 @@ extern script_handler *SceneScript;
 
 extern process_info LoadingProcess;
 extern process_info LoadingProcess2;
-extern process_info RetryProcess;
 void QueueHeroModels(void);
 void load_initial_dbases(void);
-void GotoProcess(process_info *process, s32 speed);
 
 void UpdateLevelLoad(void);
 

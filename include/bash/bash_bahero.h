@@ -42,7 +42,6 @@ void SetBashHeroPickup(s32 arg0);
 s32 BashSpacePadHook(s32 arg0);
 
 extern u8 BashPickupScales[];
-s32 ProcessHeroAnim();
 
 void BashHeroHit(s32 arg0);
 

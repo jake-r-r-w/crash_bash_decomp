@@ -139,7 +139,6 @@ typedef struct N2OFlagNode {
 } N2OFlagNode;
 
 extern N2ORound N2OBossRound;
-extern s32 HeadOfBalls2;
 extern s32 N2OHeroList;
 extern NAS *N2OBossNas;
 typedef struct {
@@ -371,7 +370,6 @@ void N2OBlendDirection(N2OBlend *p);
 s32 PickN2OPlayer(s32 arg0);
 
 /* N2O_HeroBot */
-extern u32 DirPadBits[]; /* flags by angle octant */
 
 #define OVG ((GameState *)GameInfo)
 

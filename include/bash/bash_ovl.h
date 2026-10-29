@@ -152,8 +152,6 @@ void BashRestartLevel(void);
 
 extern s16 BashExplodeScales[][3];
 extern u16 RoundWinner;
-extern s32 *CrateHitShapes[];
-extern s32 *CrateHitShapes2[];
 extern s16 BashAIVictim;
 s32 BashAI_PickVictim(s32 arg0);
 void BashCrateMaster(void);

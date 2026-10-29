@@ -77,7 +77,6 @@ extern u16 Clock_last_ping;
 extern s16 CompletionShown;
 extern s32 CompletionPos[];
 extern s32 HeroesOutTimer;
-void draw_nas_model_flags(NAS *nas, MATRIX *arg1, u32 flags);
 typedef struct EngineBox {
     s32 unk0;
     u8 pad4[0x50];
@@ -201,10 +200,7 @@ typedef struct { s32 unk0; s32 mode; s32 unk8; s32 unkC; } CupRound;
 typedef struct { s32 unk0; CupRound *rounds; s32 roundCount; } CupDef;
 extern CupDef CupTable[];
 /* Also in main.h; repeated for overlays that include engine.h first. */
-extern u8 GameInfo[];
 extern s32 LevelUnlockedIn(s32, u8 *);
-extern u16 ModeTypes[];
-void process_init(process_control_info *pc);
 void InitialiseLevel(void);
 s32 CountTrophies(GameState *arg0);
 void HubStartCredits(void);
@@ -404,8 +400,8 @@ void DoAmbience(void);
 #include "bash/panel.h"
 #include "bash/pause.h"
 #include "bash/heroes.h"
-#include "bash/gameflow.h"
 #include "bash/levelload.h"
+#include "bash/gameflow.h"
 #include "bash/camera.h"
 
 /* Needs prototypes from the unit headers above. */

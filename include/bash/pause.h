@@ -132,7 +132,6 @@ extern s16 WinSeqTimer;
 extern s16 WinSeqStep;
 extern s16 WinSeqHero;
 extern s16 WinSeqDelay;
-extern s8 HeroSide[];
 extern s32 WinCounterSize;
 extern s32 WinCounterState;
 extern s32 WinCounterAnim;
@@ -301,8 +300,7 @@ extern s32 HeroesInPlay;
 #define HPADS ((PadState *)Pads)
 extern s32 HeroesSidelined;
 extern u16 FinalHeroesTempo;
-extern u16 HeroLastHarm[4];
-extern u16 LevelKindKeys[];
+extern u16 LevelKindKeys[7];
 #define HUDBOX (&PauseMenuPanel)
 extern s32 PauseTextHold;
 extern s16 LangHudRows[][8];

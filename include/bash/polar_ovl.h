@@ -632,7 +632,6 @@ void PolarAI_AvoidBomber();
 void PolarAI_DoChaseBomber();
 
 s32 PolarAI_AnyBusy(void);
-s32 ProcessHeroAnim();
 
 s32 PolarAI_NoneBusy(s32 arg0);
 

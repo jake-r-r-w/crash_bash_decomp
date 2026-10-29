@@ -6302,7 +6302,7 @@ u16 BigPoofScript[18] = {  /* frames, then the end (0x8000 | 4) */
     0x2031, 0x2032, 0x2033, 0x2034, 0x2035, 0x8004,
 };
 ScriptInit BigPoofInit = { (s32)BigPoofScript, 0, 0x401 };
-s32 PickupCounts[15] = {0};
+u16 PickupCounts[30] = {0};  /* per-pickup counts (the overlays read halfwords) */
 s32 CratePickupAst = 0;
 s32 HealthAst = 0;
 s32 HitTextCodes[5] = { 0x20112010, 0x20122012, 0x20122012, 0x20122012, 0x2012 };

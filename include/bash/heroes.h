@@ -31,6 +31,13 @@ void AddPowerupFloat(NAS *nas);
 s32 HeroStubFalse(void);
 s32 SetHeroSeq(s32 player, s32 seq);
 void SetHeroAction(s32 player, s32 action);
+extern u16 HeroLastHarm[4];
+extern s32 *CrateHitShapes[];
+extern s32 *CrateHitShapes2[];
+extern u16 HeroHitSfx[][4];
+extern u16 PickupCounts[30];
+extern s32 PlayerHitSfx[];
+s32 ProcessHeroAnim();            /* defined K&R style (heroes.c) */
 void ArenaGridReset(void);
 u8 *script_track_keys(u8 *arg0, threaddata *t);
 s32 HeroTestActions(s32 arg0);

@@ -46,7 +46,7 @@ void CrateAimAtGrid(T_BB64C_A *a, T_BB64C_B *b) {
     z += 0x80;
     b->unk16 = x;
     b->unk2A = z;
-    b->dir = DirPadBits[((u16)a->ang >> 7) & 0x1C];
+    b->dir = *(u8 *)FILE_AT(DirPadBits, ((u16)a->ang >> 7) & 0x1C);
     x -= a->x;
     z -= a->z;
     sum = csqrt(x * x + z * z) >> 6;

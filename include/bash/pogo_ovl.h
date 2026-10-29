@@ -236,7 +236,6 @@ typedef struct {
 extern PogoMove PogoAIPlay[];
 extern PogoOffset EncloseStepsOdd[];
 extern PogoOffset EncloseStepsEven[];
-extern s32 DirPadBits[]; /* pad flags by direction octant */
 
 
 
@@ -292,7 +291,6 @@ typedef enum PogoMode {
     POGO_MODE_11 = 11,
     POGO_MODE_12 = 12
 } PogoMode;
-s32 ProcessHeroAnim();
 
 
 

@@ -96,7 +96,6 @@ typedef struct MineOffset {
 } MineOffset;
 extern MineOffset MineShrapnelOffsets[4];
 void SetMoeJoeDead(s32 hero, s32 last_mode);
-s32 ProcessHeroAnim();
 extern s32 *MoeAnimPtr;
 extern s32 *JoeAnimPtr;
 extern s32 MoeMoveAnim[];
@@ -622,7 +621,6 @@ static inline void TankPuffSetAngle(NAS *puff, s32 angle) {
         s->flags |= 0x20000000;
     }
 }
-extern s32 DirPadBits[]; /* flags by angle octant */
 void TankBotDodgeFrom(s32 player, s32 x, s32 z, EXTengine *eng, TA_Bot *ai);
 s32 TankBotAvoidMines(s32 player, EXTengine *eng, TA_Bot *ai);
 

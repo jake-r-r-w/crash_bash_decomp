@@ -274,8 +274,6 @@ void PapuRestartLevel(void);
 
 void UpdatePAPU(void);
 
-extern s32 *CrateHitShapes[];
-extern s32 *CrateHitShapes2[];
 
 /* Index of the ASTTable entry with this id, or 0. */
 static inline s32 PapuASTIndex(s32 id) {
@@ -320,7 +318,6 @@ s32 PapuPickTarget(void);
 void PlotPapuColumn(NAS *nas);
 
 void PapuInitCrateHooks(void);
-extern u16 PickupCounts[13];
 typedef struct {
     u8 pad0[0x14];
     u16 type;
@@ -352,7 +349,6 @@ extern u16 PapuAiSkill[];
 extern u16 PapuAiSkillAlt[];
 
 s32 PapuPickSpawnPoint(PapuPos *arg0);
-extern u8 DirPadBits[];
 
 typedef struct {
     u8 pad0[0x10];

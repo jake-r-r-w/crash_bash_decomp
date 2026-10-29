@@ -38,7 +38,6 @@ typedef struct {
     /* 0x32 */ s16 unk32;
 } ExtCurve;
 
-extern u16 PickupCounts[13];
 typedef struct {
     u8 pad0[0x14];
     u16 type;
@@ -70,7 +69,6 @@ void BashHeroesTouched(s32 arg0, s32 arg1);
 
 void CrateFindFreeSpot(EXTengine *eng);
 
-extern u16 HeroHitSfx[][4];
 
 void InitAnvilPickup(NAS *arg0);
 
@@ -80,7 +78,6 @@ s32 CrateHitHeroes(EXTengine *eng, HitFlags *flags, u32 mask);
 
 void SetBashHeroHit(s32 arg0);
 
-extern u8 DirPadBits[];
 
 typedef struct {
     u8 pad0[0x10];
@@ -202,7 +199,6 @@ static inline void BC038Release(T_BC038Fux *fux) {
 void CrateBreak(EXTengine *eng, T_BC038Fux *fux);
 
 extern u16 BashTickingCrateModels[];
-extern s32 PlayerHitSfx[];
 void PlotCrate(NAS *arg0);
 
 /* data defined in xtras.c */

@@ -78,7 +78,6 @@ typedef struct CoalGridObj {
     CoalPosInner *pos;
 } CoalGridObj;
 
-extern u32 DirPadBits[];
 
 typedef struct ChaseOut {
     s32 unk0;

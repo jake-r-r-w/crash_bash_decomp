@@ -165,7 +165,6 @@ void BonkInitCamera(void);
 void BonkKnockBack(s32 arg0, EXTengine *p, s32 arg2);
 
 
-extern u16 HeroHitSfx[][4];
 
 void PlotBonkCrate(NAS *nas);
 
@@ -176,7 +175,6 @@ typedef struct BonkHit {
     /* 0x00 */ s32 kind;
     /* 0x04 */ NAS *nas;
 } BonkHit;
-extern u32 DirPadBits[]; /* pad flags by angle octant */
 
 /* Squared ground distance from (x0,z0) to (x1,z1), as Bonk_HeroBot uses it. */
 static inline s32 bonk_sq(s32 x0, s32 z0, s32 x1, s32 z1)

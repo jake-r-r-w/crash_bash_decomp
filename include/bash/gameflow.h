@@ -196,7 +196,6 @@ void ShowCardSlotStats(GameState *arg0, s32 arg1);
 extern char CardStatsText[];
 
 extern s32 Slot3DigitSrc[][5];
-EXTengine *GetEngineSlot(s32 arg0);
 
 /* GameSum147's body, inlined by ShowCardSlotStats. */
 static inline s32 EngineSum147(GameState *arg0) {

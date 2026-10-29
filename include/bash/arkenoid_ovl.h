@@ -50,7 +50,6 @@ extern s32 ArkHeroStarts[4][3];
 
 extern u16 RoundWinner;
 
-extern u16 PickupCounts[];
 extern s32 ArkBallTimer;
 
 typedef struct ArkenoidFuxType {
@@ -224,7 +223,6 @@ extern ArkenoidDoor ArkDoorsB[];
 
 
 /* AR_InitLevel (stage setup) */
-extern s32 HeadOfBalls2;
 extern s16 ArkInitWord0;
 extern s16 ArkInitWord1;
 extern s16 ArkInitWord2;
@@ -478,7 +476,6 @@ typedef struct ArkenoidAiNode {
     ArkenoidAiFux *fux;
 } ArkenoidAiNode;
 
-extern u32 DirPadBits[];
 extern s16 ArkBotWaits[];
 
 #endif /* BASH_ARKENOID_OVL_H */

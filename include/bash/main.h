@@ -944,6 +944,8 @@ extern s16 GameTeamLeader[2];    /* GameInfo + 0x48: each team's leading hero */
 extern u8 GameHeroOut[4];        /* GameInfo + 0x5C: each hero out of the game */
 extern u8 GameWinner[2];         /* GameInfo + 0x60: the winners' hero names */
 
+extern s32 DirPadBits[24];         /* pad direction bits by angle octant */
+extern void *HeadOfBalls2;       /* reset with HeadOfBalls (Arkenoid, N2O) */
 extern u16 ModeTypes[];          /* music_play_level: 6-byte entries indexed by GameInfo+0x34 */
 /* ModeTypes as 6-byte entries indexed by level (SetupLevelSpecs). */
 typedef struct LevelInfo {

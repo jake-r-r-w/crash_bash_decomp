@@ -32,7 +32,6 @@ typedef struct {
 
 void PAHeroWinner(s32 arg0);
 
-extern u16 HeroHitSfx[][4];
 void PACrateFindFreeSpot(EXTengine *eng);
 
 /* past the end of the overlay, at a fixed address (configs/USA/undefined_syms_manual.txt) */
@@ -113,7 +112,6 @@ typedef struct PapuSlide {
 #define PAPU_SLOT_DYN(i) ((B5E44Dyn *)PapuMinionSlots[i].pad4[4])
 #define PAPU_SLOT_OBJ(i) (PapuMinionSlots[i].pad4[6])
 
-extern s32 PlayerHitSfx[];
 
 void PlotPACrate(NAS *nas);
 

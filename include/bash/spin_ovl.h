@@ -152,7 +152,6 @@ typedef struct SpinFux {
 /* balloon chance weights, indexed by score and 0x20 - score (SpinScoreBalloon) */
 extern u16 SpinBalloonWeights[];
 
-extern u16 PickupCounts[13];
 
 void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero);
 
@@ -243,7 +242,6 @@ void SpinDropObject(u16 arg0, u16 arg1);
 void SpinHeroLose(s32 arg0);
 extern u16 SpinHitSfx[];
 extern u16 SpinHitDone[];
-s32 ProcessHeroAnim();
 
 void SpinShuffleDropPoints(void);
 
@@ -331,6 +329,5 @@ void PlotBalloon(NAS *nas);
 void SpinAI_ScanAhead(s32 arg0);
 
 /* Spin_HeroBot */
-extern u32 DirPadBits[]; /* pad flags by angle octant */
 
 #endif /* BASH_SPIN_OVL_H */
