@@ -71,8 +71,11 @@ build all:
 	@$(MAKE) --no-print-directory -j1 $(LD_SCRIPT) $(OVL_LDS)
 	@$(MAKE) --no-print-directory $(TARGET) $(OVL_BINS)
 
+# splat's output less the lost-symbol notices this project expects (an overlay's references to
+# main.exe's and the engine's symbols); anything else it can't place still prints
+SPLAT_QUIET = $(PYTHON) tools/scripts/splat_quiet.py
 split: | $(EXTRACTED) $(PSYQ_SDK)/lib
-	@for y in $(YAML) $(OVL_YAMLS); do $(PYTHON) -m splat split $$y || exit 1; done
+	@for y in $(YAML) $(OVL_YAMLS); do $(PYTHON) -m splat split $$y 2>&1 | $(SPLAT_QUIET) $$y || exit 1; done
 
 # Your disc and your PsyQ are all a build needs (README, Getting started). The first build unpacks the
 # .cue in disc/ (decomp.py extract: the exe, the code overlays and the game data in assets/), then
@@ -88,12 +91,12 @@ $(PSYQ_SDK)/lib:
 # splat leaves an unchanged linker script alone, so without the touch it stays older than its
 # inputs and every build re-runs every split
 $(LD_SCRIPT): $(YAML) $(CFG)/sym.main.txt $(CFG)/rel.main.txt | $(EXTRACTED) $(PSYQ_SDK)/lib
-	$(PYTHON) -m splat split $(YAML)
+	$(PYTHON) -m splat split $(YAML) 2>&1 | $(SPLAT_QUIET) $(YAML)
 	@touch $@
 
 # an overlay's yaml reads sym.main.txt, sym.engine.txt and its own sym.<ovl>.txt
 linkers/%.ld: $(CFG)/overlays/%.yaml $(CFG)/sym.main.txt $(CFG)/sym.engine.txt $(CFG)/sym.%.txt | $(EXTRACTED)
-	$(PYTHON) -m splat split $<
+	$(PYTHON) -m splat split $< 2>&1 | $(SPLAT_QUIET) $<
 	@touch $@
 
 # .i is kept next to the object so decomp.py can show the line a compile error refers to.

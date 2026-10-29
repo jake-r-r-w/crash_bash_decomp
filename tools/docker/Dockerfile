@@ -36,7 +36,7 @@ RUN pin() { mkdir -p "$2" && git -C "$2" init -q && git -C "$2" fetch -q --depth
  && pin https://github.com/mkst/maspsx /opt/maspsx e85ecb373828aabea96d7e6400974d4f91ce8c74 \
  && pin https://github.com/matt-kempster/m2c /opt/m2c 708d2d2cb2698f091a92492b328f73b24209f72d \
  && pin https://github.com/simonlindholm/decomp-permuter /opt/permuter 8556c81d80d1c1af98a858c8f4dc951357f29139 \
- && pip3 install "splat64[mips]" pycparser graphviz toml Levenshtein pyyaml
+ && pip3 install "splat64[mips]==0.50.1" pycparser graphviz toml Levenshtein pyyaml
 
 # dumpsxiso / mkpsxiso for disc extraction (and optional disc rebuild)
 RUN git clone --depth 1 --recursive https://github.com/Lameguy64/mkpsxiso /tmp/mkpsxiso \

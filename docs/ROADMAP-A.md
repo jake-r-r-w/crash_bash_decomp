@@ -732,3 +732,18 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
 
   So every tool the image fetches still installs and gives the same output. That closes the one gap
   4.1 left.
+- [x] 5.12 `make split` prints no errors (2026-10-29). The three names 4.1 saw were only the ones whose
+  names contain "Error". The real notice was bigger: every overlay's yaml reads main.exe's and the
+  engine's symbol files (for its references to them), so splat listed all of those as "Unable to
+  determine a segment": 1,455 for the engine, 2,427 for Tank. They still name and link correctly.
+  - Marking them `absolute:True` drops them from the undefined-symbol lists the links,
+    `shift.py`, `shift_all.py` and `proto_scan.py` read, so that route was backed out.
+  - Instead `tools/scripts/splat_quiet.py` (with a test) filters the Makefile's splat output. It
+    drops a listed symbol only when another binary's symbol file defines it, so anything else
+    still prints, and it drops the known `EngineEntry`/`HeapStart` overlap.
+  - `BiosRegion` is `absolute:True`, since it's outside every segment.
+  - splat is pinned to 0.50.1 in the Dockerfile, because a later splat may turn the notice into an
+    error.
+
+  A split from nothing prints no notice. The clean rebuild, the tests, `make hidden`, disc-check and
+  shift-all all pass on the rebuilt image.

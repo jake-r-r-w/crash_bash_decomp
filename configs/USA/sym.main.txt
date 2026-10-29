@@ -1710,4 +1710,4 @@ GetVideoMode = 0x80033530; // type:func
 CdStatus = 0x80034AEC; // type:func
 SsUtReverbOn = 0x800369FC; // type:func
 CdLastPos = 0x8003E0EC; // type:func
-BiosRegion = 0xBFC7FF52; // the BIOS ROM's region byte
+BiosRegion = 0xBFC7FF52; // absolute:True (the BIOS ROM's region byte, outside every segment)

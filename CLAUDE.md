@@ -95,7 +95,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   struct's members by cc1's own layout, `retype.py FILE FUNC VAR TYPE` a byte pointer's offsets as fields,
   `fold_views.py CANON VIEW...` view structs folded into one, `diff_funcs.py` every function that differs,
   `raw_offsets.py [--src DIR]` byte-pointer reads the typed check misses (the exe by default),
-  `hidden.py` (`make hidden`) the final test's nothing-hidden scan (every linked object from src/,
+  `splat_quiet.py` (the Makefile pipes splat through it: it drops the lost-symbol notices for
+  other binaries' symbols an overlay's yaml reads, and keeps anything else), `hidden.py` (`make hidden`) the final test's nothing-hidden scan (every linked object from src/,
   PsyQ or a listed exception; no asm include, parked draft or address name), `decl_dups.py` declarations a header repeats (kept at zero by its test; `--views` lists the overlays' views)
   (docs/CONVENTIONS.md, Names). `tools/scripts/model_slots.py` lists each exe model slot with the archive files
   every game loads into it. `tools/scripts/data2c.py OVL [--rodata SYM ...] [--strings-only]` writes an overlay's asm data as C
