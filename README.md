@@ -249,6 +249,27 @@ tools/dk make permute FUNC=NAME                          # if stuck at the regis
 tools/dk python3 tools/scripts/decomp.py done NAME --commit --note "what made it match"
 ```
 
+## Credits
+
+This project stands on other people's work:
+
+| Who / what | For |
+|---|---|
+| [splat](https://github.com/ethteck/splat) (ethteck and contributors) | Splitting the executable and the overlays into code, data and link scripts |
+| [maspsx](https://github.com/mkst/maspsx) (mkst) | Making GCC's output assemble the way Sony's ASPSX did |
+| [old-gcc](https://github.com/decompals/old-gcc) (decompals) | The GCC 2.7.2 and 2.8.1 PlayStation compilers the game was matched with |
+| [m2c](https://github.com/matt-kempster/m2c) (matt-kempster and contributors) | First drafts of C from the assembly |
+| [decomp-permuter](https://github.com/simonlindholm/decomp-permuter) (simonlindholm) | Searching C variants for register and ordering matches |
+| [objdiff](https://github.com/encounter/objdiff) (encounter) | Comparing our objects with the original's |
+| [mkpsxiso](https://github.com/Lameguy64/mkpsxiso) (Lameguy64) | Unpacking and rebuilding the disc image (`dumpsxiso`, `mkpsxiso`) |
+| GCC and binutils (the Free Software Foundation and the GNU project) | The compilers' source in `tools/reference/`, and the assembler and linker |
+| The converted PsyQ 4.7 libraries (`psyq-4.7-converted-full`, hosted by [psx.arthus.net](http://psx.arthus.net/sdk/Psy-Q/)) | Linking Sony's own library objects in place |
+| [CTR-tools](https://github.com/DCxDemo/CTR-tools) (DCxDemo) | The archive's file names, and a check on the file formats |
+| [Pillow](https://python-pillow.org) | Writing and reading the textures as PNG |
+| RetroArch and PCSX ReARMed | Playing and testing the builds |
+
+And Eurocom, who made Crash Bash.
+
 ## License
 
 The MIT licence in [LICENSE](LICENSE) covers this project's own tooling only. Each part of the

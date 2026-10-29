@@ -690,3 +690,11 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
 - [x] 5.4 The README's Getting started (2026-10-29), near the top: Docker and git, clone, your disc in
   `disc/`, `tools/get_psyq.sh`, `tools/dk make disc`, then play `build/CrashBash.cue`. The rest of the
   commands are in a More commands table.
+- [x] 5.5 Credits (2026-10-29): the README's Credits table. It names each tool and source with what it
+  was used for:
+  - splat, maspsx, old-gcc, m2c, decomp-permuter, objdiff and mkpsxiso;
+  - GCC and binutils;
+  - the converted PsyQ libraries;
+  - CTR-tools and Pillow;
+  - RetroArch and PCSX ReARMed;
+  - and Eurocom.
