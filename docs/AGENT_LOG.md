@@ -446,7 +446,7 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-29 (ROADMAP-B 4.1 passes):**
   - The fresh GitHub clone went through the Quick Start (extract, split, check, disc-check).
     All 16 binaries match, the disc is identical to retail, and the tree stays clean.
-  - The clone is at `../crash_bash_fresh` (disc and assets included); delete it when done.
+  - The test clone was deleted afterwards.
 - **2026-10-29 (ROADMAP-B Part 3 done, docs refreshed):**
   - ARCHITECTURE.md opens with How the game works.
   - The reference docs' `func_` addresses are names now. For shared slot addresses,
