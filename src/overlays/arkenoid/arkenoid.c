@@ -6061,15 +6061,15 @@ void Init_seaweed(NAS *arg0) {
         if (cur != NULL) {
             u8 *trig = (u8*)arg0->trigger;
             if (trig != NULL) {
-                u8 *info = (u8*)*(s32*)(trig + 16);
-                s32 n = *(s32*)(info + 4);
+                MapTriggerInfo *info = ((NASTrigger *)trig)->InfoStruct;
+                s32 n = info->val1;
                 ((void (*)(EXTanimator*, s32))GotoLinkAnim)((EXTanimator*)cur, n);
                 if (n < 2) {
                     RunNasAnim(arg0);
                     *(u16 *)&cur->frame += Random(8);
                 }
                 eng->sub->flags |= 0x02000000;
-                eng->sub->otz = *(u16*)(info + 8);
+                eng->sub->otz = *(u16 *)&info->val2;
             }
         }
     }

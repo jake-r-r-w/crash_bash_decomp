@@ -1938,8 +1938,8 @@ s32 RaceFloorHeight(SLONG_XYZ *arg0, s32 *arg1) {
             r = entity_address(obj->entity, obj->u6C.dbase->data);
             if (r != NULL && ((MeshHeader *)r)->normals != 0) {
                 pos = *arg0;
-                grp = r + (*(s32 *)(r + 0x14) + 0x14);
-                tri = (s16 *)(*(s32 *)(r + 0x10) + (s32)r + 0x24);
+                grp = r + (((MeshHeader *)r)->runs + 0x14);  /* its runs' self offset */
+                tri = (s16 *)(((MeshHeader *)r)->verts + (s32)r + 0x24);
                 nrm = (RaceNorm *)(r + (*(s32 *)(r + 0x28) + 0x28));
                 for (;;) {
                     s32 count;

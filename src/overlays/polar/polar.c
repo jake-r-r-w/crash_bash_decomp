@@ -11315,7 +11315,7 @@ void PolarHeroRun(s32 player) {
 void SetPolarHeroDazed(s32 player) {
     PolarAi *ext;
     NAS *nas;
-    s32 *fux;
+    EXTscriptdata *fux;
     EXTengine *eng;
     EXTheromove *move;
     s32 sfx;
@@ -11358,14 +11358,14 @@ void SetPolarHeroDazed(s32 player) {
                 nas = CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1605, 0x11);
                 if (nas != NULL) {
                     nas->Engine->flags |= 0x200000;
-                    fux = (s32 *)nas->FUX;
+                    fux = (EXTscriptdata *)nas->FUX;
                     if (fux != NULL) {
-                        fux[0x18 / 4] = 0x200;
-                        fux[0xC / 4] = 0;
-                        fux[0x20 / 4] = 5;
+                        fux->speed = 0x200;
+                        fux->scriptnumber = 0;
+                        fux->flags = 5;
                         nas->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
                         nas->Engine->flags |= 0x200000;
-                        fux[0x28 / 4] = 6;
+                        fux->maxloops = 6;
                     }
                     nas->InitDelete(nas);
                 }
@@ -11477,7 +11477,7 @@ void PolarHeroDazed(s32 player) {
     EXTheromove *move;
     PolarAi *ext;
     PolarAi *ext2;
-    s32 *p;
+    EXTsmoketrail *p;
     NAS *nas;
     EXTengine *eng;
     s32 x;
@@ -11522,26 +11522,26 @@ void PolarHeroDazed(s32 player) {
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
                     if (p != NULL) {
-                        p[0x1C / 4] = 0xA;
-                        p[0xC / 4] = 0x100;
-                        p[0x10 / 4] = 0x50;
-                        p[0x14 / 4] = -0x40;
-                        p[0x24 / 4] = 0x20;
-                        p[0x28 / 4] = 1;
-                        p[0x18 / 4] |= 1;
+                        p->yvel = 0xA;
+                        p->fadeuprate = 0x100;
+                        p->fadedownrate = 0x50;
+                        p->scalerate = -0x40;
+                        p->amp = 0x20;
+                        p->ampdec = 1;
+                        p->flag |= 1;
                     }
                 }
                 nas = CreateNAS(x - 0x60, y - 0x180, z, 0x1612, 0x11);
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
                     if (p != NULL) {
-                        p[0x1C / 4] = 0xA;
-                        p[0xC / 4] = 0x100;
-                        p[0x10 / 4] = 0x50;
-                        p[0x14 / 4] = -0x40;
-                        p[0x24 / 4] = 0x20;
-                        p[0x28 / 4] = 1;
-                        p[0x18 / 4] |= 1;
+                        p->yvel = 0xA;
+                        p->fadeuprate = 0x100;
+                        p->fadedownrate = 0x50;
+                        p->scalerate = -0x40;
+                        p->amp = 0x20;
+                        p->ampdec = 1;
+                        p->flag |= 1;
                     }
                 }
             }
@@ -11750,7 +11750,7 @@ void PolarHeroChallenge(s32 player) {
     EXTheromove *move;
     PolarAi *ext;
     PolarAi *ext2;
-    s32 *p;
+    EXTsmoketrail *p;
     NAS *nas;
     EXTengine *eng;
     s32 x;
@@ -11771,26 +11771,26 @@ void PolarHeroChallenge(s32 player) {
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
                     if (p != NULL) {
-                        p[0x1C / 4] = 0xA;
-                        p[0xC / 4] = 0x100;
-                        p[0x10 / 4] = 0x50;
-                        p[0x14 / 4] = -0x40;
-                        p[0x24 / 4] = 0x20;
-                        p[0x28 / 4] = 1;
-                        p[0x18 / 4] |= 1;
+                        p->yvel = 0xA;
+                        p->fadeuprate = 0x100;
+                        p->fadedownrate = 0x50;
+                        p->scalerate = -0x40;
+                        p->amp = 0x20;
+                        p->ampdec = 1;
+                        p->flag |= 1;
                     }
                 }
                 nas = CreateNAS(x - 0x60, y - 0x180, z, 0x1612, 0x11);
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
                     if (p != NULL) {
-                        p[0x1C / 4] = 0xA;
-                        p[0xC / 4] = 0x100;
-                        p[0x10 / 4] = 0x50;
-                        p[0x14 / 4] = -0x40;
-                        p[0x24 / 4] = 0x20;
-                        p[0x28 / 4] = 1;
-                        p[0x18 / 4] |= 1;
+                        p->yvel = 0xA;
+                        p->fadeuprate = 0x100;
+                        p->fadedownrate = 0x50;
+                        p->scalerate = -0x40;
+                        p->amp = 0x20;
+                        p->ampdec = 1;
+                        p->flag |= 1;
                     }
                 }
             }
@@ -12830,7 +12830,7 @@ void PolarHeroDead(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + player;
     PolarAi *ext;
-    s32 *p;
+    EXTsmoketrail *p;
     EXTheromove *move;
     EXTengine *eng;
     NAS *nas;
@@ -12869,26 +12869,26 @@ void PolarHeroDead(s32 player) {
             if (nas != NULL) {
                 p = FindExtension(nas, 0x10000000);
                 if (p != NULL) {
-                    p[0x1C / 4] = 0xA;
-                    p[0xC / 4] = 0x400;
-                    p[0x10 / 4] = 0x50;
-                    p[0x14 / 4] = -0x40;
-                    p[0x24 / 4] = 0x20;
-                    p[0x28 / 4] = 1;
-                    p[0x18 / 4] |= 1;
+                    p->yvel = 0xA;
+                    p->fadeuprate = 0x400;
+                    p->fadedownrate = 0x50;
+                    p->scalerate = -0x40;
+                    p->amp = 0x20;
+                    p->ampdec = 1;
+                    p->flag |= 1;
                 }
             }
             nas = CreateNAS(x - 0x40, y - 0x40, z, 0x1612, 0x11);
             if (nas != NULL) {
                 p = FindExtension(nas, 0x10000000);
                 if (p != NULL) {
-                    p[0x1C / 4] = 0xA;
-                    p[0xC / 4] = 0x258;
-                    p[0x10 / 4] = 0x50;
-                    p[0x14 / 4] = -0x40;
-                    p[0x24 / 4] = 0x20;
-                    p[0x28 / 4] = 1;
-                    p[0x18 / 4] |= 1;
+                    p->yvel = 0xA;
+                    p->fadeuprate = 0x258;
+                    p->fadedownrate = 0x50;
+                    p->scalerate = -0x40;
+                    p->amp = 0x20;
+                    p->ampdec = 1;
+                    p->flag |= 1;
                 }
             }
         }

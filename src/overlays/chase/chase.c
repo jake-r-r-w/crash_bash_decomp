@@ -402,7 +402,7 @@ void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1) {
     s32 hx, hz;
     s32 a;
     s32 dx, dz;
-    u8 *p;
+    ChaseAiState *p;
 
     hx = Heroes[arg0].hero_eng->XYZ.x;
     hz = Heroes[arg0].hero_eng->XYZ.z;
@@ -421,10 +421,10 @@ void ChaseAI_AngleTo(s32 arg0, EXTengine *arg1) {
     dx = (rcossin_tbl[(a - 0x400) & 0xFFF].unk2 * 256) >> 12;
     dz = (rcossin_tbl[a].unk2 * 256) >> 12;
     get_angle(arg1->XYZ.x + dx - hx, arg1->XYZ.z + dz - hz);
-    p = (arg0 * 0x30) + ChaseHeroSlots;
-    *(s32 *)(p + 0xC) = arg1->XYZ.x + dx;
-    *(s32 *)(p + 0x10) = arg1->XYZ.z + dz;
-    *(s32 *)(p + 0x14) = get_angle(*(s32 *)(p + 0xC) - hx, *(s32 *)(p + 0x10) - hz);
+    p = (ChaseAiState *)((arg0 * 0x30) + ChaseHeroSlots);
+    p->x = arg1->XYZ.x + dx;
+    p->z = arg1->XYZ.z + dz;
+    p->angle = get_angle(p->x - hx, p->z - hz);
 }
 
 void ChaseAI_ChooseTarget(s32 arg0, EXTengine *arg1, ChaseAiState *arg2) {
