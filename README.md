@@ -11,8 +11,25 @@ place. The game's files (textures, models and their animations, sounds, music,
 text) come out of your disc as editable files and go back byte for byte
 ([docs/ASSETS.md](docs/ASSETS.md)).
 
-The repository holds no game files, SDK files or compiler binaries. You need
-your own copy of the game.
+## Notice
+
+This is a preservation and research project: it records how Crash Bash was built, as source code
+that compiles back to the original bytes, for study and to keep the game playable and modifiable
+on its own terms.
+
+- **No game files are included.** The repository holds no disc image, executable, archive, texture,
+  model, sound or music from the game, and no Sony SDK files or compiler binaries. (The one thing from
+  the game's files is text: four original headers recovered from its archive, `include/bash/arkenoid.h`,
+  `pogo.h`, `polar.h`, `tank.h`; License, below.) Everything the
+  build needs from the game is read from your own disc, and the libraries from your own copy of
+  Sony's PsyQ SDK.
+- **You need your own retail copy** of Crash Bash (USA, `SCUS_945.70`) to build anything. The
+  split refuses an executable whose SHA-1 isn't retail's (`configs/USA/main.yaml`).
+- **Don't share game files here.** Issues and pull requests that hold disc images, extracted game
+  data or SDK files, or links to them, are refused; the pre-commit hook refuses them in commits too.
+- **Not affiliated.** This project has no connection with, and isn't endorsed by, Eurocom, Sony
+  Interactive Entertainment or Activision. Crash Bash and Crash Bandicoot are trademarks of their
+  respective owners.
 
 ## Target
 

@@ -13,7 +13,6 @@ Before making the repo public.
 
 | # | Task | Where | Notes | Done |
 |---|------|-------|-------|------|
-| 5.3 | Preservation and research notice | `README.md` | No game files included; you need your own retail copy to build. | [ ] |
 | 5.4 | Getting-started steps | `README.md` | Your disc in `disc/`, `tools/get_psyq.sh`, then `tools/dk make` / `make check`. | [ ] |
 | 5.5 | Credits | `README.md` | splat, maspsx, m2c, decomp-permuter, objdiff, the PsyQ conversion, GCC. | [ ] |
 | 5.6 | Remove the local RetroArch path | `CLAUDE.md` | A generic launch line, or a pointer to `docs/PLAYING.md`. | [ ] |

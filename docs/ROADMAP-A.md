@@ -681,3 +681,9 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
   - `src/` and `include/` are the game's (Eurocom / Sony), and nothing grants any right to it;
   - `tools/reference/` and `tools/cc1/patches/` are GPL;
   - the third-party tools the Docker image fetches keep their own licences.
+- [x] 5.3 The README's preservation and research notice (2026-10-29), right after the goal:
+  - what the project is for;
+  - no game, SDK or compiler files are included, and the build reads them from your own disc and SDK;
+  - you need your own retail copy, whose executable the split checks against retail's SHA-1;
+  - game files aren't accepted in issues or pull requests;
+  - no affiliation with Eurocom, Sony or Activision.
