@@ -1128,18 +1128,18 @@ void HubDoorMenuQuit(void) {
     KillEngineSlot(2);
 }
 
-void HubShowSub(u8 *arg0, s32 arg1) {
-    u8 *temp_a2;
+void HubShowSub(NAS *arg0, s32 arg1) {
+    EXTengine *temp_a2;
 
-    temp_a2 = (*(s32*)((u8*)(arg0) + 84));
+    temp_a2 = (arg0->Engine);
     if (temp_a2 != NULL) {
         if (arg1 != 0) {
-            (*(s32*)((u8*)(temp_a2) + 12)) = (s32) ((*(s32*)((u8*)(temp_a2) + 12)) | 0x8000);
-            (*(s16*)((u8*)(arg0) + 92)) = 1;
+            (temp_a2->flags) = (s32) ((temp_a2->flags) | 0x8000);
+            (arg0->UserInfo.status) = 1;
             return;
         }
-        (*(s32*)((u8*)(temp_a2) + 12)) = (s32) ((*(s32*)((u8*)(temp_a2) + 12)) & 0xFFFF7FFF);
-        (*(s16*)((u8*)(arg0) + 92)) = 0;
+        (temp_a2->flags) = (s32) ((temp_a2->flags) & 0xFFFF7FFF);
+        (arg0->UserInfo.status) = 0;
     }
 }
 

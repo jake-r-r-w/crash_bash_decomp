@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 
 
-s32 GetN2OContour(u8 *arg0);
+s32 GetN2OContour(EXTengine *arg0);
 NAS *N2OFreeBallSlot(void);
 void UpdateN2O(void);
 void InitialiseN2OFirst(void);

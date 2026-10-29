@@ -2681,7 +2681,7 @@ void N2O_HeroBot(u16 *arg0) {
         t = ((N2ONode *)d)->target;
         if (t != NULL && n->unk58 != NULL && n->unk58->unk1A == 1) {
             ext = FindExtension((NAS *)n, 0x800);
-            if (ext != NULL && N2OBotAimA(3, (N2OPos *)&t->x, &pos, *(u16 *)((u8 *)ext + 0x16)) != 0) {
+            if (ext != NULL && N2OBotAimA(3, (N2OPos *)&t->x, &pos, (u16)((EXTmotion *)ext)->Xa) != 0) {
                 dx = t->x - pos.x;
                 dz = t->z - pos.z;
                 d = dx * dx + dz * dz;
@@ -3907,8 +3907,8 @@ void PlotN2ODeadWall(NAS *arg0) {
     }
 }
 
-s32 GetN2OContour(u8 *arg0) {
-    return (*(s32*)((u8*)(arg0) + 20)) - World_floor_level;
+s32 GetN2OContour(EXTengine *arg0) {
+    return (arg0->unk10.y) - World_floor_level;
 }
 
 void N2OShowPhaseObjects(u16 arg0) {

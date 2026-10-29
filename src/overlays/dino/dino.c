@@ -851,8 +851,8 @@ s32 DinoAI_RayToPlayer(s32 a, s32 b) {
     v1[2] = (DinoArenaRadius * rcossin_tbl[yaw & 0xFFF].unk2) >> 12;
     v2[0] = 0;
     v2[2] = 0;
-    d[0] = *(u16 *)((u8 *)eb + 0x10) - *(u16 *)((u8 *)ea + 0x10);
-    d[2] = *(u16 *)((u8 *)eb + 0x18) - *(u16 *)((u8 *)ea + 0x18);
+    d[0] = *(u16 *)&eb->unk10.x - *(u16 *)&ea->unk10.x;
+    d[2] = *(u16 *)&eb->unk10.z - *(u16 *)&ea->unk10.z;
     d[1] = 0;
     d[3] = 0xC8;
     return DinoRayHit(v2, v1, d, ea) == 1;

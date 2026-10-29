@@ -321,7 +321,7 @@ void HubDoorMenuInit(void);
 
 void HubDoorMenuQuit(void);
 
-void HubShowSub(u8 *arg0, s32 arg1);
+void HubShowSub(NAS *arg0, s32 arg1);
 
 void PlotGatewayTrophy(void);
 

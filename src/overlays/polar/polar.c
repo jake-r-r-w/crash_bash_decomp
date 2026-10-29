@@ -10008,13 +10008,13 @@ void POLARtriggers(NASTrigger *arg0, s32 arg1) {
 }
 
 void FirstTriggersPOLAR(void) {
-    u8 *var_v1;
+    subengine *var_v1;
 
     var_v1 = ((s32)MapScene->subs);
     if (var_v1 != NULL) {
         do {
-            (*(s32*)((u8*)(var_v1) + 0)) = (s32) ((*(s32*)((u8*)(var_v1) + 0)) | 0x01000000);
-            var_v1 = (*(s32*)((u8*)(var_v1) + 92));
+            (var_v1->flags) = (s32) ((var_v1->flags) | 0x01000000);
+            var_v1 = (var_v1->next);
         } while (var_v1 != NULL);
     }
 }
@@ -13195,8 +13195,8 @@ void PolarHeroWeight(s32 player) {
     if (g->mode != 0x16) {
         PadState *b = Pads;
         PadState *p = &b[player];
-        *(s32 *)((u8 *)p + 0x50) = 0;
-        *(s32 *)((u8 *)p + 0x54) = 0;
+        p->dir = 0;
+        p->dirPressed = 0;
     }
     mv = Heroes[player].hero_move;
     if (mv != NULL) {

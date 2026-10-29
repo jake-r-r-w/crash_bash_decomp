@@ -503,6 +503,8 @@ typedef struct ChaseAiState {
     /* 0x1C */ NAS *pickup;
     /* 0x20 */ s32 unk20;
     /* 0x24 */ s32 unk24;
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ s32 unk2C;
 } ChaseAiState;
 
 extern s32 ASTCount;

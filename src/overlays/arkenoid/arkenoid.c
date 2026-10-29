@@ -4090,7 +4090,7 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
         o = n->Engine;
         if (o != NULL && o != arg0) {
             t = FindExtension(n, 0x1000);
-            if (t != NULL && *(u16 *)((u8 *)t + 0x1A) == 2) {
+            if (t != NULL && ((EXTobject *)t)->status == 2) {
                 dx = o->unk10.x - arg0->unk10.x;
                 dz = o->unk10.z - arg0->unk10.z;
                 if (dx * dx + dz * dz < rr) {
@@ -4108,7 +4108,7 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
                     arg1->Xa = a1;
                     t = FindExtension(n, 0x800);
                     if (t != NULL) {
-                        *(s16 *)((u8 *)t + 0x16) = a2;
+                        ((EXTmotion *)t)->Xa = a2;
                     }
                 }
             }

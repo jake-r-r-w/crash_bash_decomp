@@ -7408,7 +7408,7 @@ void SetHeroPogo(u32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 0;
     Heroes[arg0].hero_move->jump_ctrl &= 0xFE;
     slot = &PogoPlay[arg0];
-    *(s16 *)((u8 *)slot + 0x16) = 0;
+    slot->forward_frame = 0;
     slot->forward_quick = (u16)slot->status == 5;
     Set_Tile_Under_Player(arg0, 0);
 }
@@ -7614,9 +7614,9 @@ void psxpogo_init_tile_heap(s32 arg0) {
 }
 
 void psxpogo_init_tile(subengine *arg0) {
-    (*(s32*)((u8*)(arg0) + 84)) = psxpogo_render_tile;
-    (*(s32*)((u8*)(arg0) + 88)) = kill_sprim_sub;
-    (*(s32*)((u8*)(arg0) + 0)) = (s32) ((*(s32*)((u8*)(arg0) + 0)) | 0x01000000);
+    (arg0->hook) = psxpogo_render_tile;
+    (arg0->release) = kill_sprim_sub;
+    (arg0->flags) = (s32) ((arg0->flags) | 0x01000000);
 }
 
 void psxpogo_render_tile(ModelObj *obj, void *arg1, s32 flags) {
