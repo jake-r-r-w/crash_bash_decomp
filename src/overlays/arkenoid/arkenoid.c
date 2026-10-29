@@ -5657,10 +5657,10 @@ void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
     SLONG_XYZ sp10;
     EXTengine *eng;
     FlagRecord *rec;
-    u8 *n;
-    u8 *t;
-    u8 *o;
-    u8 *e;
+    NAS *n;
+    EXTobject *t;
+    EXTengine *o;
+    EXTmotion *e;
     s32 dx;
     s32 dz;
     s32 d;
@@ -5686,25 +5686,25 @@ void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
         n = HeadOfBalls;
         if (n != NULL) {
             do {
-                t = *(u8 **)(n + 0x58);
-                if (t != NULL && *(u16 *)(t + 0x1A) == 1) {
-                    o = *(u8 **)(n + 0x54);
+                t = n->FUX;
+                if (t != NULL && t->status == 1) {
+                    o = n->Engine;
                     if (o != NULL) {
-                        dx = *(s32 *)(o + 0x10) - sp10.x;
-                        dz = *(s32 *)(o + 0x18) - sp10.z;
+                        dx = o->XYZ.x - sp10.x;
+                        dz = o->XYZ.z - sp10.z;
                         d = dx * dx + dz * dz;
                         if (d < lim) {
                             d = csqrt(d) >> 6;
                             ang = get_angle(-dx, -dz) & 0xFFF;
                             d = r - d;                            e = FindExtension((NAS *)n, 0x800);
                             if (e != NULL) {
-                                *(s16 *)(e + 0x2A) = ang;
-                                *(s16 *)(e + 0x22) = d >> 4;
+                                e->Za = ang;
+                                e->Zvel = d >> 4;
                             }
                         }
                     }
                 }
-                n = *(u8 **)(n + 0x20);
+                n = n->Group.Child;
             } while (n != NULL);
         }
     }
@@ -5714,9 +5714,9 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
     SLONG_XYZ sp10;
     EXTengine *eng;
     FlagRecord *rec;
-    u8 *n;
-    u8 *o;
-    u8 *e;
+    NAS *n;
+    EXTengine *o;
+    EXTmotion *e;
     s32 dx;
     s32 dz;
     s32 d;
@@ -5742,29 +5742,29 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
         n = HeadOfBalls;
         if (n != NULL) {
             do {
-                o = *(u8 **)(n + 0x54);
+                o = n->Engine;
                 if (o != NULL) {
-                    dx = *(s32 *)(o + 0x10) - sp10.x;
-                    dz = *(s32 *)(o + 0x18) - sp10.z;
+                    dx = o->XYZ.x - sp10.x;
+                    dz = o->XYZ.z - sp10.z;
                     d = dx * dx + dz * dz;
                     if (d < lim) {
                         e = FindExtension((NAS *)n, 0x800);
                         if (e != NULL) {
                             ang = get_angle(dx, dz) & 0xFFF;
-                            a = angle_diff_abs(ang, *(s16 *)(e + 0x16));
+                            a = angle_diff_abs(ang, e->Xa);
                             if (a < 0x300) {
                                 s32 s = csqrt(d);
                                 d = s >> 6;
                                 if (a < (s >> 8)) {
                                     d = r - d;
-                                    *(s16 *)(e + 0x2A) = ang;
-                                    *(s16 *)(e + 0x22) = d >> 4;
+                                    e->Za = ang;
+                                    e->Zvel = d >> 4;
                                 }
                             }
                         }
                     }
                 }
-                n = *(u8 **)(n + 0x20);
+                n = n->Group.Child;
             } while (n != NULL);
         }
     }

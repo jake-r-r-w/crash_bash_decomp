@@ -895,7 +895,7 @@ void ChaseInitHero(s32 arg0) {
     subengine *sub;
     s32 *st;
     u8 *g;
-    u8 *p;
+    ChaseAiState *p;
     NAS *nas;
 
     Pads[arg0].dir = 0;
@@ -931,16 +931,16 @@ void ChaseInitHero(s32 arg0) {
     ChaseFlameTimer[arg0] = (s32)nas->Engine;
     ChaseFlameObj[arg0] = 0;
     if (g[0x5C] != 0) {
-        p = (arg0 * 0x30) + ChaseHeroSlots;
-        *(s32 *)(p + 0) = 1;
-        *(s32 *)(p + 4) = 1;
-        *(s32 *)(p + 8) = 0;
-        *(s32 *)(p + 24) = 0;
-        *(s32 *)(p + 28) = 0;
-        *(s32 *)(p + 32) = 0;
-        *(s32 *)(p + 36) = 0;
-        *(s32 *)(p + 40) = 0x8000;
-        *(s32 *)(p + 44) = 0x8000;
+        p = (ChaseAiState *)((arg0 * 0x30) + ChaseHeroSlots);
+        p->state = 1;
+        p->timer = 1;
+        p->flags = 0;
+        p->target = 0;
+        p->pickup = 0;
+        p->timer2 = 0;
+        p->flag = 0;
+        p->reach = 0x8000;
+        p->reach2 = 0x8000;
     }
 }
 
@@ -1655,7 +1655,7 @@ void SetChaseHeroLand(s32 arg0) {
     EXTengine *e;
     EXTengine *o;
     EXTengine *t;
-    u8 *x;
+    EXTobject *x;
 
     h = base + arg0;
     h->hero_move->velocity_enable = 1;
@@ -1678,8 +1678,8 @@ void SetChaseHeroLand(s32 arg0) {
         e->platform = o;
         o->platform = e;
         x = FindExtension(ContourPlatform, 0x1000);
-        if (x != NULL && (*(u16 *)(x + 0x1C) & 8)) {
-            *(u16 *)(x + 0x1E) |= 8;
+        if (x != NULL && (x->can_do & 8)) {
+            x->will_do |= 8;
         }
     }
 }

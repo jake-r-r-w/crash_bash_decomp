@@ -1219,7 +1219,7 @@ NAS *PapuHeroGrabObject(idx, arg1)
     s32 lim = 0x10000;
     EXTengine *he;
     EXTengine *e;
-    u8 *fux;
+    EXTobject *fux;
     u16 ang;
     s32 hx, hz, dx, dz;
 
@@ -1229,9 +1229,9 @@ NAS *PapuHeroGrabObject(idx, arg1)
     hx = he->XYZ.x - (rcossin_tbl[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
     hz = he->XYZ.z - (rcossin_tbl[ang & 0xFFF].unk2 * 1024 >> 14);
     for (; n != NULL; n = n->Object.Child) {
-        fux = (u8 *)n->FUX;
+        fux = (EXTobject *)n->FUX;
         if (fux == NULL) continue;
-        if (!(*(u16 *)(fux + 0x1C) & 1)) continue;
+        if (!(fux->can_do & 1)) continue;
         e = n->Engine;
         if (e == NULL) continue;
         if (e->platform != NULL) continue;
@@ -1242,8 +1242,8 @@ NAS *PapuHeroGrabObject(idx, arg1)
             angle_diff_abs(Heroes[idx2].hero_move->forward_angle,
                           get_angle(e->XYZ.x - he->XYZ.x, e->XYZ.z - he->XYZ.z) ^ 0x800) < arg1) {
             do {
-                *(s16 *)(fux + 0x16) = idx;
-                *(u16 *)(fux + 0x1E) |= 1;
+                fux->player = idx;
+                fux->will_do |= 1;
                 return n;
             } while (0);
         }

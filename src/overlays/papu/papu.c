@@ -1645,26 +1645,26 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
 
 void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
     s32 ang;
-    u8 *n = HeadOfObjects;
+    NAS *n = HeadOfObjects;
     s32 lim = 0x10000;
     Slot40 *b = PapuMinionSlots;
     Slot40 *s = &b[arg0];
-    u8 *o = (u8*)s->pad4[0];
-    u8 *a = (u8*)s->pad4[4];
-    s32 px = *(s32*)(o + 0x10) - (rcossin_tbl[(*(s16*)(a + 0x16) - 0x400) & 0xFFF].unk2 * 256 >> 12);
-    s32 pz = *(s32*)(o + 0x18) - (rcossin_tbl[*(u16*)(a + 0x16) & 0xFFF].unk2 * 256 >> 12);
+    EXTengine *o = (u8*)s->pad4[0];
+    EXTmotion *a = (u8*)s->pad4[4];
+    s32 px = o->XYZ.x - (rcossin_tbl[(a->Xa - 0x400) & 0xFFF].unk2 * 256 >> 12);
+    s32 pz = o->XYZ.z - (rcossin_tbl[a->Xa & 0xFFF].unk2 * 256 >> 12);
     Slot40 *q;
 
     if (n != NULL) {
         ang = arg1 & 0xFFFF;
         q = s;
         do {
-            u8 *f = *(u8**)(n + 0x58);
-            if (f != NULL && (*(u16*)(f + 0x1C) & 1)) {
-                u8 *e = *(u8**)(n + 0x54);
-                if (e != NULL && *(s32*)(e + 0x80) == 0) {
-                    s32 ex = *(s32*)(e + 0x10);
-                    s32 ez = *(s32*)(e + 0x18);
+            EXTobject *f = n->FUX;
+            if (f != NULL && (f->can_do & 1)) {
+                EXTengine *e = n->Engine;
+                if (e != NULL && e->platform == 0) {
+                    s32 ex = e->XYZ.x;
+                    s32 ez = e->XYZ.z;
                     s32 dx = ex - px;
                     s32 dz = ez - pz;
                     if (dx * dx + dz * dz < lim) {
@@ -1672,13 +1672,13 @@ void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
                             return n;
                         }
                         if (angle_diff_abs(*(s16*)((u8*)q->pad4[4] + 0x16),
-                                          get_angle(ex - *(s32*)(o + 0x10), ez - *(s32*)(o + 0x18)) ^ 0x800) < ang) {
+                                          get_angle(ex - o->XYZ.x, ez - o->XYZ.z) ^ 0x800) < ang) {
                             return n;
                         }
                     }
                 }
             }
-            n = *(u8**)(n + 0x2C);
+            n = n->Object.Child;
         } while (n != NULL);
     }
     return NULL;
@@ -1793,7 +1793,7 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
     FlagRecord *box;
     FlagRecord *rec;
     NAS *n;
-    u8 *x;
+    EXTobject *x;
     s32 r;
     s32 top;
     s32 bot;
@@ -1832,9 +1832,9 @@ NAS *PapuHitSolids(EXTengine *eng, u32 mask, s32 unused, s32 add) {
                 unused = o->XYZ.z - pos.vz;
                 if (dx * dx + unused * unused < (rec->radius + r) * (rec->radius + r)) {
                     x = FindExtension(n, 0x1000);
-                    if (x != NULL && (*(u16 *)(x + 0x1C) & mask)) {
-                        *(s16 *)(x + 0x16) = add + 0x14;
-                        *(u16 *)(x + 0x1E) |= mask;
+                    if (x != NULL && (x->can_do & mask)) {
+                        x->player = add + 0x14;
+                        x->will_do |= mask;
                         return n;
                     }
                 }
