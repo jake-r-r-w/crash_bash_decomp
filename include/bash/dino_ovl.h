@@ -16,11 +16,22 @@ s32 DinoTestTeamMate(s32 arg0, s32 arg1);
 
 s32 DinoGetLevelPoint(s32 *arg0, s32 arg1);
 
+typedef struct DinoPhys {
+    u8 pad0[0x20];
+    s32 unk20;
+    u8 pad24[0x1C];
+    s32 unk40;
+    u8 pad44[0xA];
+    s16 unk4E;
+} DinoPhys;
+/* Extension 0x10000000 (FindExtension): a gem's or hero's physics record sits at +0x94. */
 typedef struct DinoExt {
     u8 pad[0xC];
     s32 unkC;
     s32 unk10;
     s32 unk14;
+    u8 pad18[0x94 - 0x18];
+    /* 0x94 */ DinoPhys phys;
 } DinoExt;
 
 typedef struct DinoChase {
@@ -63,14 +74,6 @@ typedef struct DinoGem {
     u8 padD8[0xA];
     s16 unkE2;
 } DinoGem;
-typedef struct DinoPhys {
-    u8 pad0[0x20];
-    s32 unk20;
-    u8 pad24[0x1C];
-    s32 unk40;
-    u8 pad44[0xA];
-    s16 unk4E;
-} DinoPhys;
 
 typedef struct DinoPos {
     u8 pad[4];

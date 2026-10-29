@@ -250,15 +250,15 @@ void InitialiseHeroes(void) {
                 ai->TargetXYZ.x = 0;
                 ai->AIinitial_delay = Random(0x3C) + 0x1E;
                 ai->AIsleep = 8;
-                j = 7;  /* AIforward_left[j] loses the stepped pointer p */
-                p = (u8 *)ai + j;
+                j = 7;
+                p = (u8 *)ai + j;  /* matching: AIforward_left[j] loses the stepped pointer p */
                 do {
                     p[0x34] = 0;
                     j--;
                     p--;
                 } while (j >= 0);
                 j = 7;
-                q = (u8 *)ai + j;
+                q = (u8 *)ai + j;  /* matching: as above, for the next array */
                 do {
                     q[0x3C] = 0;
                     j--;

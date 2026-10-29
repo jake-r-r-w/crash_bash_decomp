@@ -3295,8 +3295,8 @@ void DinoGemPhysics(NAS *arg0) {
             if (r == 3) {
                 PlaySfx(0x6C3, NULL, NULL, 0x1000, 0x1E00, 0);
             }
-            pa = (DinoPhys *)((u8 *)e + 0x94);
-            pb = (DinoPhys *)((u8 *)o + 0x94);
+            pa = &e->phys;
+            pb = &o->phys;
             ma = pa->unk4E;
             mb = pb->unk4E;
             if (ma > 0 && mb > 0) {

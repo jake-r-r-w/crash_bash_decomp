@@ -2980,16 +2980,16 @@ void mapscene_init(s32 *arg0, s32 *arg1) {
 }
 
 void map_loaded_textureset(u8 *arg0, u8 **arg1) {
-    u8 *temp_s0;
-    u8 *temp_s1;
+    obj_textureset *ts;
+    obj_dbase *db;
 
-    temp_s1 = *arg1;
-    mal_set_owner(arg0, temp_s1 + 0x20);
-    temp_s0 = temp_s1 + 0x10;
-    textureset_init((obj_textureset *)temp_s0, *(u8 **)(temp_s0 + 0x10));
-    textureset_upload(temp_s0);
-    texture_release_loading_mem((obj_textureset *)temp_s0);
-    (*(s32*)((u8*)(temp_s1) + 8)) = loader_queue((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), map_loaded_geo, arg1, 0, 0);
+    db = ((map_enviroment *)arg1)->dbase;
+    mal_set_owner(arg0, (void **)&db->textures.base);
+    ts = &db->textures;
+    textureset_init(ts, (u8 *)ts->base);
+    textureset_upload(ts);
+    texture_release_loading_mem(ts);
+    db->load = loader_queue(db->file, 0, db->textures.f14, map_loaded_geo, (u8 *)arg1, 0, 0);
 }
 
 void map_loaded_geo(s32 arg0, map_enviroment *env) {

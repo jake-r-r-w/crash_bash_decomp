@@ -6389,7 +6389,7 @@ void UkaMaskInitRisers(void) {
         v = up;
         vp = &v;
         obj = UkaMaskObjects[i];
-        ApplyMatrixLV((MATRIX *)((u8 *)obj + 0x30), vp, vp);
+        ApplyMatrixLV((MATRIX *)&((subengine *)obj)->unk2C[4], vp, vp);
         i++;
         UkaMaskRisers[(((get_angle(v.vx, vp->vz) + 1) & 0xFFF) >> 8) - 1 & 0xF] = (PolarRiserObj *)obj;
     }

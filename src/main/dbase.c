@@ -143,7 +143,7 @@ void dbase_copy_block(FileEntry *e, s32 base) {
     size = e->end - e->start;
     mal_can_alloc(size);
     mal_alloc_owned_low(size, (void **)node, (s32)&MainHeap, 0);
-    memcpy(node->ptr, (u8 *)(base + e->start), size);
+    memcpy(node->ptr, FILE_AT(base, e->start), size);
 }
 
 void dbase_anim_release(obj_dbase *db, s32 i) {

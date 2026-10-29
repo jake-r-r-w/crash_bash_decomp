@@ -2953,7 +2953,7 @@ FreeHdr *vram_take(u8 *arg0) {
         return &a3->hdr;
     }
     if ((u8 *)pool < VramReqEnd) {
-        p = vram_take((u8 *)(pool + 1));
+        p = vram_take((u8 *)&pool[1]);
         a2 = FreeBufNodes;
         FreeBufNodes = a2->next;
         a3 = FreeBufNodes;
