@@ -915,15 +915,15 @@ void gfx_set_viewport(GfxViewport *vp, camera_info_tag *cam) {
     SetDrawEnv(dr, env);
     addPrim(cdb->ot + vp->otIdx + vp->otLen - 1, dr);
     *(GfxOffset *)&gs->ofx = *(GfxOffset *)&vp->ofx;
-    ((GfxOffset *)gs->unk28)->x = gs->ofx;
-    ((GfxOffset *)gs->unk28)->y = gs->ofy;
+    ((GfxOffset *)gs->screen)->x = gs->ofx;
+    ((GfxOffset *)gs->screen)->y = gs->ofy;
     gte_SetGeomOffset(vp->ofx * ScreenRect->w / 640, vp->ofy / 2);
     gte_SetGeomScreen(cam->dist);
     gte_SetRotMatrix(&cam->view);
     gte_SetTransMatrix(&cam->view);
     gs->ot = cdb->ot + vp->otIdx;
     gs->otLen = vp->otLen - 1;
-    ((GfxOffset *)gs->unk28)[1].x = vp->unk20;
+    ((GfxOffset *)gs->screen)[1].x = vp->ofs2;
     gs->otzAdd = 0;
     gs->modelDp = 0;
 }
@@ -1157,55 +1157,55 @@ void gfx_setup_xform(void *arg0, MATRIX *arg1, VECTOR *arg2, u8 *arg3, GteSetup 
         ScreenTrans.vz = pos->vz + obj->XYZ.z;
         out->trans = &ScreenTrans;
         gs = &RenderState;
-        out->ofx = ((GfxScreen *)gs->unk28)->x + obj->XYZ.x;
-        out->ofy = ((GfxScreen *)gs->unk28)->y + obj->XYZ.y;
+        out->ofx = ((GfxScreen *)gs->screen)->x + obj->XYZ.x;
+        out->ofy = ((GfxScreen *)gs->screen)->y + obj->XYZ.y;
     } else {
         GfxState *gs = &RenderState;
-        out->ofx = ((GfxScreen *)gs->unk28)->x;
-        out->ofy = ((GfxScreen *)gs->unk28)->y;
+        out->ofx = ((GfxScreen *)gs->screen)->x;
+        out->ofy = ((GfxScreen *)gs->screen)->y;
     }
     if (!(flags & 0x10010000)) {
         if (flags & 0x80000) {
-            ApplyMatrixLV(&RenderState.cam->view, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.unk88);
-            ((VECTOR *)RenderState.unk88)->vx += ((VECTOR *)RenderState.cam)->vx;
-            ((VECTOR *)RenderState.unk88)->vy += ((VECTOR *)RenderState.cam)->vy;
-            ((VECTOR *)RenderState.unk88)->vz += ((VECTOR *)RenderState.cam)->vz;
+            ApplyMatrixLV(&RenderState.cam->view, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.localPos);
+            ((VECTOR *)RenderState.localPos)->vx += ((VECTOR *)RenderState.cam)->vx;
+            ((VECTOR *)RenderState.localPos)->vy += ((VECTOR *)RenderState.cam)->vy;
+            ((VECTOR *)RenderState.localPos)->vz += ((VECTOR *)RenderState.cam)->vz;
         } else {
-            ApplyMatrixLV(m, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.unk88);
+            ApplyMatrixLV(m, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.localPos);
             GfxAddTrans(pos);
         }
-        out->trans = (VECTOR *)RenderState.unk88;
+        out->trans = (VECTOR *)RenderState.localPos;
     }
     if (obj->xform.order != 4) {
         if (obj->xform.dirty != 0) {
             rotscale_update(&obj->xform);
         }
         if (flags & 0x40000) {
-            MulMatrix0(&RenderState.cam->view, &obj->xform.mtx, (MATRIX *)RenderState.unk84);
+            MulMatrix0(&RenderState.cam->view, &obj->xform.mtx, (MATRIX *)RenderState.localMtx);
         } else if (flags & 0x20000000) {
             if (obj->xform.hasScale != 0) {
-                RenderState.unk84 = (u8 *)&RenderState.unk8C;
-                RenderState.unk8C.m[0][0] = (RenderState.cam->rot.m[0][0] * obj->xform.scale.vx) >> 12;
-                RenderState.unk8C.m[1][1] = (RenderState.cam->rot.m[1][1] * obj->xform.scale.vy) >> 12;
-                RenderState.unk8C.m[2][2] = (RenderState.cam->rot.m[2][2] * obj->xform.scale.vz) >> 12;
+                RenderState.localMtx = (u8 *)&RenderState.alignMtx;
+                RenderState.alignMtx.m[0][0] = (RenderState.cam->rot.m[0][0] * obj->xform.scale.vx) >> 12;
+                RenderState.alignMtx.m[1][1] = (RenderState.cam->rot.m[1][1] * obj->xform.scale.vy) >> 12;
+                RenderState.alignMtx.m[2][2] = (RenderState.cam->rot.m[2][2] * obj->xform.scale.vz) >> 12;
             } else {
-                RenderState.unk84 = (u8 *)&RenderState.cam->rot;
+                RenderState.localMtx = (u8 *)&RenderState.cam->rot;
             }
         } else {
-            MulMatrix0(m, &obj->xform.mtx, (MATRIX *)RenderState.unk84);
+            MulMatrix0(m, &obj->xform.mtx, (MATRIX *)RenderState.localMtx);
         }
         if ((flags & 0x10010000) == 0x10000) {
-            ApplyMatrixLV((MATRIX *)RenderState.unk84, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.unk88);
+            ApplyMatrixLV((MATRIX *)RenderState.localMtx, (VECTOR *)&obj->XYZ, (VECTOR *)RenderState.localPos);
             if (flags & 0x80000) {
-                ((VECTOR *)RenderState.unk88)->vx += ((VECTOR *)RenderState.cam)->vx;
-                ((VECTOR *)RenderState.unk88)->vy += ((VECTOR *)RenderState.cam)->vy;
-                ((VECTOR *)RenderState.unk88)->vz += ((VECTOR *)RenderState.cam)->vz;
+                ((VECTOR *)RenderState.localPos)->vx += ((VECTOR *)RenderState.cam)->vx;
+                ((VECTOR *)RenderState.localPos)->vy += ((VECTOR *)RenderState.cam)->vy;
+                ((VECTOR *)RenderState.localPos)->vz += ((VECTOR *)RenderState.cam)->vz;
             } else {
                 GfxAddTrans(pos);
             }
-            out->trans = (VECTOR *)RenderState.unk88;
+            out->trans = (VECTOR *)RenderState.localPos;
         }
-        out->rot = (MATRIX *)RenderState.unk84;
+        out->rot = (MATRIX *)RenderState.localMtx;
     } else if (flags & 0x20000000) {
         out->rot = &RenderState.cam->rot;
     } else if (flags & 0x40000) {
@@ -1388,10 +1388,10 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
     n = arg0->entity;
     if (arg0->flags & 0x02000000) {
         GfxState *g1 = &RenderState;
-        g1->otzAdd = ((GfxScreen *)g1->unk28)->otz + arg0->unk68;
+        g1->otzAdd = ((GfxScreen *)g1->screen)->otz + arg0->unk68;
     } else {
         g = &RenderState;
-        g->otzAdd = ((GfxScreen *)g->unk28)->otz;
+        g->otzAdd = ((GfxScreen *)g->screen)->otz;
     }
     if (n != 0 && (arg0->flags & 0x8000)) {
         model = arg0->u6C.dbase;
@@ -1399,9 +1399,9 @@ void draw_object(subengine *arg0, MATRIX *arg1, s32 arg2) {
             RenderState.dbase = model;
             colors = model->data;
             if (colors != NULL) {
-                RenderState.unk84 = RenderState.unkCC;
-                RenderState.unk88 = RenderState.unk10C;
-                gfx_setup_xform(arg0, p1, (VECTOR *)p1->t, RenderState.unk28, &s);
+                RenderState.localMtx = RenderState.mtxBuf;
+                RenderState.localPos = RenderState.posBuf;
+                gfx_setup_xform(arg0, p1, (VECTOR *)p1->t, RenderState.screen, &s);
                 gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
                 if (s.trans != NULL) {
                     gte_SetTransVector(s.trans);
@@ -1438,7 +1438,7 @@ s32 draw_gouraud_quad(void *arg0, u32 flags) {
     }
     if (flags & 0x10000000) {
         GfxState *gs = &RenderState;
-#define s ((GfxScreen *)gs->unk28)
+#define s ((GfxScreen *)gs->screen)
 
         p->v[0].x = ((s->x + q->v[0].vx) * ScreenRect->w) / 640;
         p->v[0].y = (s->y + q->v[0].vy) / 2;
@@ -1478,7 +1478,7 @@ void draw_panel_frame(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     x = (s16) arg0[0];
     if ((x & 0xC000) == 0x8000) {
         x = 0x140 - (w / 2);
-        x -= ((GfxScreen *)RenderState.unk28)->x;
+        x -= ((GfxScreen *)RenderState.screen)->x;
         w += x;
     }
     l = x - arg3;
@@ -1574,7 +1574,7 @@ void draw_panel_rect(void *arg0, u32 hidden) {
                 x = (x & 0xFFFF3FFF) - (w / 2);
             } else {
                 x = 0x140 - (w / 2);
-                x -= ((GfxScreen *)RenderState.unk28)->x;
+                x -= ((GfxScreen *)RenderState.screen)->x;
             }
             w += x;
         }
@@ -1639,18 +1639,18 @@ void draw_text_nas(TextNAS *t, MATRIX *arg1, s32 arg2) {
             x &= ~0xC000;
             x <<= 14;
             x >>= 14;
-            x += ((GfxScreen *)RenderState.unk28)->x;
+            x += ((GfxScreen *)RenderState.screen)->x;
             x &= ~0xC000;
             x |= 0x8000;
         } else {
-            x = ((GfxScreen *)RenderState.unk28)->x + t->x;
+            x = ((GfxScreen *)RenderState.screen)->x + t->x;
         }
-        DrawSysText(x, (s16)(*(s16 *)&((GfxScreen *)RenderState.unk28)->y + t->y), t->str, t->c0, t->c1, 0);
+        DrawSysText(x, (s16)(*(s16 *)&((GfxScreen *)RenderState.screen)->y + t->y), t->str, t->c0, t->c1, 0);
         return;
     }
-    RenderState.unk84 = RenderState.unkCC;
-    RenderState.unk88 = RenderState.unk10C;
-    gfx_setup_xform(t, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
+    RenderState.localMtx = RenderState.mtxBuf;
+    RenderState.localPos = RenderState.posBuf;
+    gfx_setup_xform(t, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
     gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
     if (s.trans != NULL) {
         gte_SetTransVector(s.trans);
@@ -1730,14 +1730,14 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
 
     gs = &RenderState;
     flags = obj->flags;
-    gs->unk84 = gs->unkCC;
+    gs->localMtx = gs->mtxBuf;
     view = &gs->cam->view;
-    gs->unk88 = gs->unk10C;
-    out = &gs->unkAC;
+    gs->localPos = gs->posBuf;
+    out = &gs->objMtx;
     cs = &gs->cam->xform;
     if (flags & 0x10000000) {
-        ((GfxScreen *)gs->unk28)->x = obj->XYZ.x + gs->ofx;
-        ((GfxScreen *)gs->unk28)->y = obj->XYZ.y + gs->ofy;
+        ((GfxScreen *)gs->screen)->x = obj->XYZ.x + gs->ofx;
+        ((GfxScreen *)gs->screen)->y = obj->XYZ.y + gs->ofy;
         if (flags & 0x20000000) {
             out->m[0][0] = cs->scale.vx;
             out->m[0][1] = 0;
@@ -1758,8 +1758,8 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
         out->t[1] = view->t[1];
         out->t[2] = view->t[2];
     } else {
-        ((GfxScreen *)gs->unk28)->x = gs->ofx;
-        ((GfxScreen *)gs->unk28)->y = gs->ofy;
+        ((GfxScreen *)gs->screen)->x = gs->ofx;
+        ((GfxScreen *)gs->screen)->y = gs->ofy;
         if (!(flags & 0x200000)) {
             rot = view;
         } else {
@@ -1790,7 +1790,7 @@ MATRIX *gfx_object_matrix(GfxXform *obj) {
             MulMatrix0(rot, &obj->xform.mtx, out);
         }
     }
-    RenderState.otzAdd = ((GfxScreen *)RenderState.unk28)->otz;
+    RenderState.otzAdd = ((GfxScreen *)RenderState.screen)->otz;
     return out;
 }
 
@@ -2331,9 +2331,9 @@ void draw_nas_model(NAS *nas, MATRIX *arg1) {
             RenderState.otzAdd = 0;
         }
         if (!(nas->NASid & 0x10000000)) {
-            RenderState.unk84 = RenderState.unkCC;
-            RenderState.unk88 = RenderState.unk10C;
-            gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
+            RenderState.localMtx = RenderState.mtxBuf;
+            RenderState.localPos = RenderState.posBuf;
+            gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
             gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
                 gte_SetTransVector(s.trans);
@@ -2356,9 +2356,9 @@ void draw_nas_model_flags(NAS *nas, MATRIX *arg1, u32 flags) {
             RenderState.otzAdd = 0;
         }
         if (!(nas->NASid & 0x10000000)) {
-            RenderState.unk84 = RenderState.unkCC;
-            RenderState.unk88 = RenderState.unk10C;
-            gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
+            RenderState.localMtx = RenderState.mtxBuf;
+            RenderState.localPos = RenderState.posBuf;
+            gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
             gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
             if (s.trans != NULL) {
                 gte_SetTransVector(s.trans);
@@ -2380,9 +2380,9 @@ u32 draw_nas_model_ret(NAS *nas, MATRIX *arg1, u32 flags) {
         RenderState.otzAdd = 0;
     }
     if (!(nas->NASid & 0x10000000)) {
-        RenderState.unk84 = RenderState.unkCC;
-        RenderState.unk88 = RenderState.unk10C;
-        gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
+        RenderState.localMtx = RenderState.mtxBuf;
+        RenderState.localPos = RenderState.posBuf;
+        gfx_setup_xform(nas, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
         gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
         if (s.trans != NULL) {
             gte_SetTransVector(s.trans);
@@ -2405,7 +2405,7 @@ void draw_flat_rect(u16 *arg0, s32 arg1, u32 arg2) {
             x = (x & ~0xC000) - (w / 2);
         } else {
             x = 0x140 - (w / 2);
-            x -= ((GfxScreen *)RenderState.unk28)->x;
+            x -= ((GfxScreen *)RenderState.screen)->x;
         }
         w += x;
     }
@@ -2464,9 +2464,9 @@ s32 sub_alloc_prims(void *arg0, s32 arg1) {
 void gfx_load_xform(void *arg0, void *arg1, void *arg2) {
     GteSetup s;
 
-    RenderState.unk84 = RenderState.unkCC;
-    RenderState.unk88 = RenderState.unk10C;
-    gfx_setup_xform(arg0, arg1, arg2, RenderState.unk28, &s);
+    RenderState.localMtx = RenderState.mtxBuf;
+    RenderState.localPos = RenderState.posBuf;
+    gfx_setup_xform(arg0, arg1, arg2, RenderState.screen, &s);
     gte_SetGeomOffset(s.ofx * ScreenRect->w / 640, s.ofy / 2);
     if (s.trans != NULL) {
         gte_SetTransVector(s.trans);
@@ -2749,15 +2749,15 @@ s32 subs_alloc_list(subengine **out_first, subengine **last, s32 n) {
 }
 
 void draw_init(void) {
-    RenderState.unk8C.m[0][0] = 0x1000;
-    RenderState.unk8C.m[0][1] = 0;
-    RenderState.unk8C.m[0][2] = 0;
-    RenderState.unk8C.m[1][0] = 0;
-    RenderState.unk8C.m[1][1] = 0x1000;
-    RenderState.unk8C.m[1][2] = 0;
-    RenderState.unk8C.m[2][0] = 0;
-    RenderState.unk8C.m[2][1] = 0;
-    RenderState.unk8C.m[2][2] = 0x1000;
+    RenderState.alignMtx.m[0][0] = 0x1000;
+    RenderState.alignMtx.m[0][1] = 0;
+    RenderState.alignMtx.m[0][2] = 0;
+    RenderState.alignMtx.m[1][0] = 0;
+    RenderState.alignMtx.m[1][1] = 0x1000;
+    RenderState.alignMtx.m[1][2] = 0;
+    RenderState.alignMtx.m[2][0] = 0;
+    RenderState.alignMtx.m[2][1] = 0;
+    RenderState.alignMtx.m[2][2] = 0x1000;
 }
 
 
@@ -2805,7 +2805,7 @@ void mapenv_place_subs(map_enviroment *env) {
         *(PlacementBlk *)&sub->xform.mtx = p->blk;
         sub->hook = (void *)draw_map_sub;
         sub->u6C.dbase = env->dbase;
-        sub->entity = p->unk88;
+        sub->entity = p->entity;
         sub->unk8A = p->unk9E;
         sub->unk68 = p->unk9C;
         sub->unk64[0] = p->unk74[0];
@@ -2853,7 +2853,7 @@ void draw_map_object(void *sub, void *arg1, s32 flags, s32 arg3) {
         gte_SetRotMatrix(mp);
     }
     gte_SetTransMatrix(mp);
-    RenderState.otzAdd = *(u16 *)(RenderState.unk28 + 8) + ((subengine *)sub)->unk68;
+    RenderState.otzAdd = *(u16 *)(RenderState.screen + 8) + ((subengine *)sub)->unk68;
     gte_SetGeomOffset(RenderState.ofx * ScreenRect->w / 640, RenderState.ofy / 2);
 }
 
@@ -3035,7 +3035,7 @@ void mapscene_place_subs(map_enviroment *env) {
         *(Words4 *)&dst->xform.mtx.m[2][2] = *(Words4 *)&src->blk.w[4];
         dst->hook = (void (*)(subengine *, s32, u32))draw_map_sub;
         dst->u6C.dbase = env->dbase;
-        dst->entity = src->unk88;
+        dst->entity = src->entity;
         dst->unk8A = src->unk9E;
         dst->unk68 = src->unk9C;
         dst->unk64[0] = src->unk74[0];

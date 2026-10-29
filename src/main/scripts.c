@@ -93,10 +93,10 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
             len = f << 8;
             t = (ci->time.w >> 8) - (key->start << 8);
             CamVec3_Lerp((CamVec3 *)&d->XYZ.x, &key->pos, &key[1].pos, len, t);
-            quat_slerp_ex_frac((s32)&key->rot, (s32)&key[1].rot, (s32)&d->xform.rot.vx, len, t, (s32)key->unk34);
+            quat_slerp_ex_frac((s32)&key->rot, (s32)&key[1].rot, (s32)&d->xform.rot.vx, len, t, (s32)key->frac);
             d->xform.dirty = 1;
             CamVec3_Lerp((CamVec3 *)&d->xform.scale, &key->scale, &key[1].scale, len, t);
-            w = interp(key->unk4C, key[1].unk4C, len, t);
+            w = interp(key->weight, key[1].weight, len, t);
         } else {
             *(CamVec3 *)&d->XYZ.x = key->pos;
             d->xform.dirty = 1;
@@ -104,7 +104,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
             d->xform.scale.vx = key->scale.v[0];
             d->xform.scale.vy = key->scale.v[1];
             d->xform.scale.vz = key->scale.v[2];
-            w = key->unk4C;
+            w = key->weight;
         }
         w = 0x1000 - w;
         d->flags |= track->type.entity[1] | 0x8000;
@@ -113,7 +113,7 @@ void update_model_thread(script_thread_handler *th, script_control_info *ci) {
             d->flags |= 0x40000000;
         }
         d->xform.hasScale = 1;
-        d->entity = key->unk8;
+        d->entity = key->entity;
     } else {
         th->type.anim.sub.flags &= ~0x8000;
     }
@@ -242,7 +242,7 @@ void update_entity_thread(script_thread_handler *th, script_control_info *ci) {
         if (len != 0) {
             len <<= 8;
             t = (ci->time.w >> 8) - (key->start << 8);
-            quat_slerp_ex_frac((s32)key->rot, (s32)key[1].rot, (s32)pose->rot, len, t, (s32)key->unk30);
+            quat_slerp_ex_frac((s32)key->rot, (s32)key[1].rot, (s32)pose->rot, len, t, (s32)key->frac);
             CamVec3_Lerp(&pose->pos, &key->pos, &key[1].pos, len, t);
             CamVec3_Lerp(&pose->scale, &key->scale, &key[1].scale, len, t);
             a = interp(key->alpha, key[1].alpha, len << 8, t);
@@ -664,8 +664,8 @@ void render_script(script_control_info *ci, GteSetup *arg1) {
     out.ofy = arg1->ofy;
     for (; p != NULL;) {
         gs = &RenderState;
-        ((GfxScreen *)gs->unk28)->x = arg1->ofx;
-        ((GfxScreen *)gs->unk28)->y = arg1->ofy;
+        ((GfxScreen *)gs->screen)->x = arg1->ofx;
+        ((GfxScreen *)gs->screen)->y = arg1->ofy;
         fn = ScriptCommands[p->thread_type].render;
         if (fn != NULL) {
             fn(p, &out);
@@ -926,10 +926,10 @@ void plot_script_nas(subengine *sub, MATRIX *arg1) {
             sub->flags &= ~0x8000;
             return;
         }
-        saved = *(typeof(saved) *)RenderState.unk28;
-        gfx_setup_xform(sub, arg1, (VECTOR *)arg1->t, RenderState.unk28, &s);
+        saved = *(typeof(saved) *)RenderState.screen;
+        gfx_setup_xform(sub, arg1, (VECTOR *)arg1->t, RenderState.screen, &s);
         render_script(ci, &s);
-        *(typeof(saved) *)RenderState.unk28 = saved;
+        *(typeof(saved) *)RenderState.screen = saved;
     }
 }
 
@@ -1573,8 +1573,8 @@ void scripts_render(void) {
         }
         s.a = gfx_object_matrix(&sc->xyzrf);
         s.b = s.a + 0x14;
-        s.c = *(u16 *)&gs->unk28[0];
-        s.d = *(u16 *)&gs->unk28[4];
+        s.c = *(u16 *)&gs->screen[0];
+        s.d = *(u16 *)&gs->screen[4];
         render_script(&sc->info, &s);
         sc = sc->next;
     }

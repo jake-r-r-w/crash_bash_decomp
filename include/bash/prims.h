@@ -129,9 +129,9 @@ void process_control_update(process_control_info *pc, fade_info *fade);
 
 /* Adds v to the translation GfxState.unk88 points at (gfx_setup_xform). */
 static inline void GfxAddTrans(VECTOR *v) {
-    ((VECTOR *)RenderState.unk88)->vx += v->vx;
-    ((VECTOR *)RenderState.unk88)->vy += v->vy;
-    ((VECTOR *)RenderState.unk88)->vz += v->vz;
+    ((VECTOR *)RenderState.localPos)->vx += v->vx;
+    ((VECTOR *)RenderState.localPos)->vy += v->vy;
+    ((VECTOR *)RenderState.localPos)->vz += v->vz;
 }
 
 /* Copies a scene's background into the current viewport, faded by modelDp

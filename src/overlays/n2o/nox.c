@@ -2488,7 +2488,7 @@ void InitNitroSmokeBoost(NAS *nas) {
     cur = ScriptCursorFirst(nas, &NoxSmokeScriptInit);
     if (GameMode == 0x1F) {
         if (cur != NULL) {
-            cur->unk1E = 4;
+            cur->frame = 4;
         }
     }
     nas->Engine->sub->u6C.dbase = ((obj_dbase *)MapScene->dbase);

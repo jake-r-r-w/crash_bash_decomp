@@ -87,7 +87,7 @@ typedef struct AnimKey {
     /* 0x08 */ CamVec3 pos;
     /* 0x14 */ s32 pad14[3];
     /* 0x20 */ s32 rot[4];
-    /* 0x30 */ s32 unk30[3];
+    /* 0x30 */ s32 frac[3];  /* quat_slerp_ex_frac's table */
     /* 0x3C */ CamVec3 scale;
     /* 0x48 */ s32 alpha;
 } AnimKey;
@@ -106,14 +106,14 @@ typedef struct {
 typedef struct ObjKey {
     /* 0x00 */ s32 start;
     /* 0x04 */ s32 len; /* 0 ends the track */
-    /* 0x08 */ s16 unk8;
+    /* 0x08 */ s16 entity;
     /* 0x0A */ s16 padA;
     /* 0x0C */ CamVec3 pos;
     /* 0x18 */ s32 pad18[3];
     /* 0x24 */ ObjQuat rot;
-    /* 0x34 */ s32 unk34[3];
+    /* 0x34 */ s32 frac[3];  /* quat_slerp_ex_frac's table */
     /* 0x40 */ CamVec3 scale;
-    /* 0x4C */ s32 unk4C;
+    /* 0x4C */ s32 weight;  /* interpolated between keys */
 } ObjKey;
 
 
@@ -298,7 +298,7 @@ typedef struct {
     s16 clipY1;
     s32 ofx;   /* 0x20: geometry offset x (scaled by the screen width / 640) */
     s32 ofy;   /* 0x24: geometry offset y (halved) */
-    u8 unk28[0xC]; /* 0x28: a GfxScreen */
+    u8 screen[0xC];  /* a GfxScreen */
     SVECTOR gteIn; /* 0x34: GTE scratch, a position relative to the view (view_project_volume) */
     u8 pad3C[4];
     u32 *ot;   /* 0x40 */
@@ -307,12 +307,12 @@ typedef struct {
     struct camera_info_tag *cam; /* 0x48 */
     u8 pad4C[0x28];
     VECTOR gteOut; /* 0x74: gteIn rotated and translated */
-    u8 *unk84; /* 0x84: = unkCC */
-    u8 *unk88; /* 0x88: = unk10C */
-    MATRIX unk8C; /* 0x8C: set to identity by draw_init */
-    MATRIX unkAC; /* 0xAC: object's local-to-screen matrix (gfx_object_matrix) */
-    u8 unkCC[0x40];
-    u8 unk10C[0x20]; /* the struct ends at 0x12C: PrimDepthLimit is the next global */
+    u8 *localMtx;  /* points at mtxBuf */
+    u8 *localPos;  /* points at posBuf */
+    MATRIX alignMtx;  /* the screen-aligned matrix (identity from draw_init) */
+    MATRIX objMtx;  /* the object's local-to-screen matrix */
+    u8 mtxBuf[0x40];
+    u8 posBuf[0x20]; /* the struct ends at 0x12C: PrimDepthLimit is the next global */
 } GfxState;
 
 /* A 0x1C-byte entry of a sorted table at +0x4C of a block (key_find). */
@@ -354,10 +354,10 @@ struct _sfx_handler {
     struct _sfx_handler *prev;   /* 0x14: active list */
     struct _sfx_handler *next;   /* 0x18: active list, or the free list */
     s32 flags;               /* 0x1C: PlaySfx's 6th argument */
-    s32 unk20;               /* 0x20: PlaySfx's 4th argument (0x1000) */
-    s32 unk24;               /* 0x24: PlaySfx's 5th argument (0x1E00) */
-    s32 unk28;               /* 0x28: -1 when started */
-    s32 unk2C;               /* 0x2C: -1 when allocated; sfx_key_off stops it */
+    s32 volume;  /* PlaySfx's 4th argument (0x1000) */
+    s32 pitch;  /* PlaySfx's 5th argument (0x1E00) */
+    s32 voice;  /* sfx_key_on's voice, -1 when not playing */
+    s32 slot;  /* its SPU slot, -1 when allocated; sfx_key_off stops it */
     s32 pad30;
     s32 id;                  /* 0x34: the SfxTable id */
 };
@@ -434,7 +434,7 @@ typedef struct MeshVerts {
  * heap's free list, sorted by size (mal_free frees and merges). The names
  * mal and _mal_area are the C++ symbols' (mal_unlink__FP3malP9_mal_area). */
 typedef struct mal {
-    /* 0x00 */ u16 unk0;
+    /* 0x00 */ u16 flags;  /* 2 deferred, 1 the frame parity it was freed on */
     /* 0x02 */ s16 ticks;                /* frames left on the deferred list (mal_free_later) */
     /* 0x04 */ void **owner;             /* cleared on free; (void **)-1 for none; NULL when free */
     /* 0x08 */ u32 size;                 /* in words, header not included */
@@ -534,7 +534,7 @@ typedef struct music_midi {
     /* 0x00 */ s32 data;                 /* heap block, freed by music_free */
     /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
     /* 0x08 */ s32 songs[5];             /* each song's SEQ data: data + its header offset (music_setup_slot) */
-    /* 0x1C */ s32 unk1C;                /* set to -1 on close */
+    /* 0x1C */ s32 handle;  /* -1 when closed */
 } music_midi;
 
 /* Set both channels of slot's sequence volume (music_update). */
@@ -555,8 +555,8 @@ typedef struct MusicEntry {
     /* 0x00 */ s32 file;
     /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
     /* 0x06 */ u8 pad6[2];
-    /* 0x08 */ s32 unk8;                 /* music_play_level: music file */
-    /* 0x0C */ s32 unkC;                 /* music_play_level: alt music file (flag 0x80) */
+    /* 0x08 */ s32 file2;  /* its music file (music_play_level) */
+    /* 0x0C */ s32 altFile;  /* the alternative music file (flag 0x80) */
     /* 0x10 */ s16 tempo;
     /* 0x12 */ u8 pad12[0x14 - 0x12];
 } MusicEntry;
@@ -648,7 +648,7 @@ static inline mal *Heap_NextToMove(_mal_area *heap) {
     mal *p;
 
     p = Heap_AfterLowest(heap);
-    if (p != NULL && (p->unk0 & 2) && (p->unk0 & 1) == (FrameCount & 1)) {
+    if (p != NULL && (p->flags & 2) && (p->flags & 1) == (FrameCount & 1)) {
         return NULL;
     }
     return p;
@@ -925,13 +925,13 @@ typedef struct PlaceRec {
     /* 0x06 */ s16 y;
     /* 0x08 */ s16 z;
     /* 0x0A */ s16 scale;
-    /* 0x0C */ s16 unkC;
-    /* 0x0E */ s16 unkE;
-    /* 0x10 */ s16 unk10;
+    /* 0x0C */ s16 rx;  /* copied to the sub's rotation */
+    /* 0x0E */ s16 ry;
+    /* 0x10 */ s16 rz;
     /* 0x12 */ s16 pad12;
     /* 0x14 */ void *data;   /* a text table (by language), or a sprite's image */
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s16 unk1C;
+    /* 0x18 */ s32 frame;  /* PlaceSprite's frame */
+    /* 0x1C */ s16 model;  /* its HeroModelBank index */
     /* 0x1E */ s16 player;  /* a hero's index */
     /* 0x20 */ s32 flags;
 } PlaceRec;
@@ -949,8 +949,8 @@ extern u16 ModeTypes[];          /* music_play_level: 6-byte entries indexed by 
 /* ModeTypes as 6-byte entries indexed by level (SetupLevelSpecs). */
 typedef struct LevelInfo {
     /* 0x00 */ u16 world;
-    /* 0x02 */ u16 unk2;
-    /* 0x04 */ u16 unk4;
+    /* 0x02 */ u16 levelRec;  /* its LevelRecs index */
+    /* 0x04 */ u16 levelRecAlt;  /* the index for its other variant */
 } LevelInfo;
 /* An arena definition (SetupLevelSpecs): 0x18 bytes, a table ends at id 999. */
 typedef struct ArenaDef {
@@ -1051,7 +1051,7 @@ typedef struct U16Table {
 } U16Table;
 /* The level's trigger file (LevelTriggerData): its records (LevelRecs) and its trigger table. */
 typedef struct LevelTriggerHead {
-    /* 0x00 */ s16 *unk0;
+    /* 0x00 */ s16 *types;
     /* 0x04 */ EngineRec32 *recs;
     /* 0x08 */ U16Table *tbl;
 } LevelTriggerHead;
@@ -1107,7 +1107,7 @@ typedef struct {
     s32 ofx, ofy;           /* 0x10: geometry offset */
     s32 otIdx;              /* 0x18: first ot entry in cdb */
     s32 otLen;              /* 0x1C */
-    s32 unk20;
+    s32 ofs2;  /* the second geometry offset's x */
     UBYTE_RGB bg;           /* 0x24: background (the map's clear colour) */
     u8 isbg;                /* 0x27: clear to it (the map's clear) */
 } GfxViewport;
@@ -1198,7 +1198,7 @@ typedef struct Words3 {
 
 typedef struct SortKey {
     s32 pad0;
-    s32 unk4;
+    s32 depth;  /* sorted by */
 } SortKey;
 typedef struct SortNode {
     SortKey *key;      /* 0x00 */
@@ -1772,7 +1772,7 @@ typedef struct ScriptCursor {
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
     /* 0x1C */ s16 unk1C;
-    /* 0x1E */ s16 unk1E;
+    /* 0x1E */ s16 frame;  /* the animation's frame */
     /* 0x20 */ s16 idx;
     /* 0x22 */ u8 pad22[6];
     /* 0x28 */ s16 unk28;
@@ -1916,7 +1916,7 @@ typedef struct Placement {
     /* 0x48 */ u8 pad48[0x74 - 0x48];
     /* 0x74 */ u8 unk74[4];
     /* 0x78 */ u8 pad78[0x88 - 0x78];
-    /* 0x88 */ u16 unk88;
+    /* 0x88 */ u16 entity;  /* copied to the sub's entity */
     /* 0x8A */ u8 pad8A[0x9C - 0x8A];
     /* 0x9C */ u16 unk9C;
     /* 0x9E */ u16 unk9E;

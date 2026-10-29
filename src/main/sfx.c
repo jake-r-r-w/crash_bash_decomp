@@ -17,9 +17,9 @@ void music_play_level(s32 arg0, s32 arg1) {
     if (p->mode != 0x28) {
         sfx_table_clear();
         if (p->levelFlags & 0x80) {
-            f = MusicTable[arg0].unkC;
+            f = MusicTable[arg0].altFile;
         } else {
-            f = MusicTable[arg0].unk8;
+            f = MusicTable[arg0].file2;
         }
         sfx_bank_load(f);
     }
@@ -76,10 +76,10 @@ s32 sfx_update_voice(_sfx_handler *voice) {
     S16Pair tmp2;
     s32 f;
     SLONG_XYZ *pos = voice->pos;
-    s32 *slot = &voice->unk2C;
+    s32 *slot = &voice->slot;
 
-    if (voice->unk28 != -1) {
-        if (SpuKeyStatus[voice->unk2C] != 1) {
+    if (voice->voice != -1) {
+        if (SpuKeyStatus[voice->slot] != 1) {
             return 0;
         }
         f = voice->flags & 0xE;
@@ -89,7 +89,7 @@ s32 sfx_update_voice(_sfx_handler *voice) {
             tmp = sfx_position_volume((VECTOR *)pos);
             vol = tmp;
         } else {
-            u16 t = voice->unk20;
+            u16 t = voice->volume;
             vol.b = t;
             vol.a = t;
         }
@@ -106,7 +106,7 @@ s32 sfx_update_voice(_sfx_handler *voice) {
             sfx_set_voice_volume((s16 *)slot, vol.a, vol.b);
         }
         if (voice->flags & 1) {
-            sfx_change_pitch((PitchVoice *)slot, voice->unk24);
+            sfx_change_pitch((PitchVoice *)slot, voice->pitch);
             voice->flags &= ~1;
         }
     } else {
@@ -114,13 +114,13 @@ s32 sfx_update_voice(_sfx_handler *voice) {
             tmp2 = sfx_position_volume((VECTOR *)pos);
             vol = tmp2;
         } else {
-            u16 t = voice->unk20;
+            u16 t = voice->volume;
             vol.b = t;
             vol.a = t;
         }
-        voice->unk28 = sfx_key_on(&voice->unk2C, voice->id, voice->unk24, vol.a, vol.b);
+        voice->voice = sfx_key_on(&voice->slot, voice->id, voice->pitch, vol.a, vol.b);
     }
-    return voice->unk28 != -1;
+    return voice->voice != -1;
 }
 
 void sfx_delete_all(void) {
@@ -136,7 +136,7 @@ void sfx_delete_all(void) {
         if (v->owner != NULL) {
             *v->owner = 0;
         }
-        sfx_key_off(&v->unk2C);
+        sfx_key_off(&v->slot);
         if (v->next != NULL) {
             v->next->prev = v->prev;
         }
@@ -156,7 +156,7 @@ void StopSfx(_sfx_handler *voice) {
         if (voice->owner != NULL) {
             *voice->owner = 0;
         }
-        sfx_key_off(&voice->unk2C);
+        sfx_key_off(&voice->slot);
         if (voice->next != NULL) {
             voice->next->prev = voice->prev;
         }
@@ -191,18 +191,18 @@ _sfx_handler *PlaySfx(s32 id, _sfx_handler **handle, SLONG_XYZ *pos, s32 arg3, s
             }
             voice = v;
             voice->owner = NULL;
-            voice->unk28 = -1;
-            voice->unk2C = -1;
+            voice->voice = -1;
+            voice->slot = -1;
         }
         if (voice != NULL) {
             voice->next = SfxVoicePool.active;
             voice->prev = NULL;
             SfxVoicePool.active = voice;
             voice->id = id;
-            voice->unk20 = arg3;
-            voice->unk24 = arg4;
+            voice->volume = arg3;
+            voice->pitch = arg4;
             voice->flags = flags;
-            voice->unk28 = -1;
+            voice->voice = -1;
             if (handle != NULL) {
                 if (*handle != NULL) {
                     StopSfx(*handle);
@@ -264,7 +264,7 @@ void sfx_update_all(void) {
 
 void sfx_set_pitch(_sfx_handler *voice, s32 arg1) {
     if (voice != NULL) {
-        voice->unk24 = arg1;
+        voice->pitch = arg1;
         voice->flags |= 1;
     }
 }
@@ -298,8 +298,8 @@ _sfx_handler *sfx_voice_alloc(void) {
     }
     r = v;
     r->owner = NULL;
-    r->unk28 = -1;
-    r->unk2C = -1;
+    r->voice = -1;
+    r->slot = -1;
     return r;
 }
 

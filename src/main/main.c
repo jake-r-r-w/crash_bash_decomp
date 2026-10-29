@@ -211,7 +211,7 @@ static inline void mal_merge_from(mal *a, _mal_area *arg1, s32 m1) {
     end->prev = b;
     b->size = new_var2;
     b->owner = (void **)m1;
-    b->unk0 = 0;
+    b->flags = 0;
     b->prev = a;
     if (a == arg1->lowest) {
         arg1->lowest = mal_next_free_block(b);
@@ -267,7 +267,7 @@ void mal_update(_mal_area *heap) {
         end->prev = b;
         b->size = size2;
         b->owner = (void **)-1;
-        b->unk0 = 0;
+        b->flags = 0;
         b->prev = a;
         if (a == heap->lowest) {
             heap->lowest = mal_next_free_block(b);
@@ -401,7 +401,7 @@ void mal_compact_from(mal *arg0, _mal_area *arg1) {
         }
         p = ret;
         if (p != NULL) {
-            if ((p->unk0 & 2) && (p->unk0 & 1) == (FrameCount & 1)) {
+            if ((p->flags & 2) && (p->flags & 1) == (FrameCount & 1)) {
                 p = NULL;
             }
         }
@@ -514,7 +514,7 @@ static inline void mal_compact_merge(mal *arg0, _mal_area *arg1) {
     end->prev = next;
     next->size = new_var2;
     next->owner = (void **)-1;
-    next->unk0 = 0;
+    next->flags = 0;
     next->prev = arg0;
     if (arg0 == arg1->lowest) {
         arg1->lowest = mal_next_free_block(next);
@@ -706,7 +706,7 @@ void *mal_take_low(bytes, heap)
         nb = MAL_AFTER(blk, words);
         nb->prev = blk;
         nb->owner = NULL;
-        nb->unk0 = 0;
+        nb->flags = 0;
         nb->size = sz;
         blk->size = words;
         MEMBLOCK_NEXT(nb)->prev = nb;
@@ -778,12 +778,12 @@ void mal_free(void *ptr, _mal_area *heap) {
             next->nextFree->prevFree = next->prevFree;
         }
         blk->size += 6 + next->size;
-        blk->unk0 = 0;
+        blk->flags = 0;
         MEMBLOCK_NEXT(blk)->prev = blk;
     }
     if (prev != NULL && prev->owner == NULL) {
         prev->size += 6 + blk->size;
-        prev->unk0 = 0;
+        prev->flags = 0;
         MEMBLOCK_NEXT(blk)->prev = prev;
         if (prev->prevFree != NULL) {
             prev->prevFree->nextFree = prev->nextFree;
@@ -847,7 +847,7 @@ void *mal_trim_front(void *base, s32 offset, _mal_area *arg2) {
     prev = blk->prev;
     nb = MAL_AFTER(blk, words);
     nb->owner = blk->owner;
-    nb->unk0 = ((mal *)base)[-1].unk0;
+    nb->flags = ((mal *)base)[-1].flags;
     nb->ticks = blk->ticks;
     owner = nb->owner;
     if (owner != (void **)-1) {
@@ -930,7 +930,7 @@ u8 *mal_trim(u8 *arg0, s32 arg1, _mal_area *arg2) {
         new_blk = MAL_AFTER(blk, words);
         new_blk->owner = neg1;
         new_blk->size = rest;
-        new_blk->unk0 = 0;
+        new_blk->flags = 0;
         new_blk->prev = blk;
         MAL_END(blk, old)->prev = new_blk;
         mal_free((u8 *)MAL_DATA(new_blk), heap);
@@ -944,7 +944,7 @@ s32 mal_is_unowned(void *p) {
 
 void mal_disown(void *p) {
     ((mal *)p - 1)->owner = (void **)-1;
-    ((mal *)p - 1)->unk0 = 4;
+    ((mal *)p - 1)->flags = 4;
 }
 
 void mal_set_owner(void *p, void **owner) {
@@ -956,13 +956,13 @@ void mal_set_owner(void *p, void **owner) {
     if (old != (void **)-1) {
         *old = NULL;
     }
-    ((mal *)p - 1)->unk0 = 0;
+    ((mal *)p - 1)->flags = 0;
     b->owner = owner;
     *owner = p;
 }
 
 s16 mal_get_flags(void *p) {
-    return ((mal *)p - 1)->unk0;
+    return ((mal *)p - 1)->flags;
 }
 
 void mal_free_later(u8 *arg0, _mal_area *heap, s32 arg2) {
@@ -992,7 +992,7 @@ void *mal_alloc_owned_low(s32 arg0, void **arg1, s32 arg2, s32 arg3) {
     ret = (u8 *)MAL_DATA(blk);
     blk->owner = arg1;
     *arg1 = ret;
-    blk->unk0 = arg3;
+    blk->flags = arg3;
     return ret;
 }
 
@@ -1012,7 +1012,7 @@ u8 *mal_alloc(s32 arg0, _mal_area *arg1) {
                             next->owner == (void **)-1 || next->size == 0)) {
             next = NULL;
         }
-        if (next != NULL && (next->unk0 & 2)) {
+        if (next != NULL && (next->flags & 2)) {
             next = NULL;
         }
         mal_compact_from(next, arg1);
@@ -1027,7 +1027,7 @@ u8 *mal_alloc(s32 arg0, _mal_area *arg1) {
     } else {
 set:
         b->owner = (void **)-1;
-        b->unk0 = 0;
+        b->flags = 0;
     }
     return data;
 }
@@ -1047,7 +1047,7 @@ u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1) {
                             next->owner == (void **)-1 || next->size == 0)) {
             next = NULL;
         }
-        if (next != NULL && (next->unk0 & 2)) {
+        if (next != NULL && (next->flags & 2)) {
             next = NULL;
         }
         mal_compact_from(next, arg1);
@@ -1061,7 +1061,7 @@ u8 *mal_alloc_nocompact(s32 arg0, _mal_area *arg1) {
     }
 set:
     b->owner = (void **)-1;
-    b->unk0 = 0;
+    b->flags = 0;
     return data;
 }
 
@@ -1075,7 +1075,7 @@ void *mal_split_ptr(void *ptr, s32 bytes) {
     words = bytes >> 2;
     split = (mal *)((u32 *)blk + words);
     next = (mal *)((u32 *)(blk + 1) + blk->size);
-    split->unk0 = 4;
+    split->flags = 4;
     split->owner = (void **)-1;
     split->size = blk->size - words;
     split->prev = blk;
@@ -1092,7 +1092,7 @@ mal *mal_split(mal *blk, s32 words) {
 
     split = (mal *)((u32 *)blk + words);
     next = (mal *)((u32 *)(blk + 1) + blk->size);
-    split->unk0 = 4;
+    split->flags = 4;
     split->owner = (void **)-1;
     split->size = blk->size - words;
     split->prev = blk;
@@ -1120,7 +1120,7 @@ mal *mal_take_low_from(mal *blk, s32 words, _mal_area *heap) {
     split = MAL_AFTER(blk, words);
     split->prev = blk;
     split->owner = NULL;
-    split->unk0 = 0;
+    split->flags = 0;
     split->size = sz;
     blk->size = words;
     MEMBLOCK_NEXT(split)->prev = split;
@@ -1295,14 +1295,14 @@ mal *mal_init(_mal_area *heap, u8 *start, s32 size) {
     blk = (mal *)start;
     blk->size = ((u32)(size + 3) >> 2) - 12;
     blk->owner = NULL;
-    blk->unk0 = 0;
+    blk->flags = 0;
     blk->prev = NULL;
     blk->nextFree = NULL;
     blk->prevFree = NULL;
     end = (mal *)((u32 *)(blk + 1) + blk->size);
     end->size = 0;
     end->owner = (void **)-1;
-    end->unk0 = 0;
+    end->flags = 0;
     end->prev = blk;
     heap->first = blk;
     heap->free = blk;
@@ -1349,7 +1349,7 @@ void mal_compact_step(_mal_area *heap) {
                         next->owner == (void **)-1 || next->size == 0)) {
         next = NULL;
     }
-    if (next != NULL && (next->unk0 & 2)) {
+    if (next != NULL && (next->flags & 2)) {
         next = NULL;
     }
     mal_compact_from(next, heap);
@@ -1394,7 +1394,7 @@ mal *mal_next_movable(_mal_area *heap) {
 
     next = Heap_AfterLowest(heap);
     if (next != NULL) {
-        if (next->unk0 & 2) {
+        if (next->flags & 2) {
             return NULL;
         }
     }
@@ -1418,7 +1418,7 @@ mal *mal_next_movable_now(_mal_area *heap) {
         }
     }
     if (ret != NULL) {
-        if ((ret->unk0 & 2) && (ret->unk0 & 1) == (FrameCount & 1)) {
+        if ((ret->flags & 2) && (ret->flags & 1) == (FrameCount & 1)) {
             return NULL;
         }
     }
@@ -1476,7 +1476,7 @@ void mal_move_down(mal *arg0, _mal_area *arg1) {
     end->prev = next;
     next->size = new_var2;
     next->owner = (void **)-1;
-    next->unk0 = 0;
+    next->flags = 0;
     next->prev = arg0;
     if (arg0 == arg1->lowest) {
         arg1->lowest = mal_next_free_block(next);
@@ -1633,7 +1633,7 @@ loop:
         if (nxt == NULL) {
             goto end;
         }
-        if (cur->key->unk4 < nxt->key->unk4) {
+        if (cur->key->depth < nxt->key->depth) {
             t = cur->prev;
             nxt->prev = t;
             if (t != NULL) {

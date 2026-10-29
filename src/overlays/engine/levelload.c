@@ -258,7 +258,7 @@ void load_initial_dbases(void)
   }
   while (i < 4);
 
-  p = LevelTriggerData->unk0;
+  p = LevelTriggerData->types;
   v = *p;
   if (v >= 0)
   {
@@ -975,9 +975,9 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 if (rec->type == 14) {
                     PlaceSprite(s, rec->x, rec->y,
                                 ((s32 *)rec->data)[((GameState *)GameInfo)->language],
-                                rec->unk18);
+                                rec->frame);
                 } else {
-                    PlaceSprite(s, rec->x, rec->y, rec->data, rec->unk18);
+                    PlaceSprite(s, rec->x, rec->y, rec->data, rec->frame);
                 }
                 if (rec->type == 11) {
                     s->z = 0;
@@ -993,15 +993,15 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 if (rec->type == 18) {
                     PlaceTmpl(s, rec->x,
                               ((s32 *)rec->data)[((GameState *)GameInfo)->language],
-                              rec->z, rec->scale, rec->unkC);
+                              rec->z, rec->scale, rec->rx);
                 } else {
-                    PlaceTmpl(s, rec->x, rec->y, rec->z, rec->scale, rec->unkC);
+                    PlaceTmpl(s, rec->x, rec->y, rec->z, rec->scale, rec->rx);
                 }
                 if (rec->type == 12) {
                     s->flags &= 0xEFFFFFFF;
                     s->unk84 *= 8;
                     s->unk86 *= 8;
-                    s->z = rec->unkE;
+                    s->z = rec->ry;
                 }
                 if (rec->type == 16) {
                     s->unk68 = 200;
@@ -1035,7 +1035,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                s->unk6C = (s32)(&HeroModelBank[rec->unk1C]);
+                s->unk6C = (s32)(&HeroModelBank[rec->model]);
                 s->unk74 = rec->player;
             }
             break;
@@ -1074,10 +1074,10 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->unk51 = 0;
                 s->unk50 = 1;
                 s->sx = s->sy = s->sz = rec->scale;
-                s->unk10 = rec->unkC;
-                s->unk12 = rec->unkE;
-                s->unk14 = rec->unk10;
-                s->unk6C = (s32)(&HeroModelBank[rec->unk1C]);
+                s->unk10 = rec->rx;
+                s->unk12 = rec->ry;
+                s->unk14 = rec->rz;
+                s->unk6C = (s32)(&HeroModelBank[rec->model]);
                 s->unk74 = rec->player;
             }
             break;
@@ -1087,7 +1087,7 @@ void ApplyPlaceRecs(subengine *sub, PlaceRec *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                sub_play_script((obj_dbase *)(&HeroModelBank[rec->unk1C]), rec->player, (subengine *)s, rec->flags);
+                sub_play_script((obj_dbase *)(&HeroModelBank[rec->model]), rec->player, (subengine *)s, rec->flags);
             }
             break;
         case 2:
@@ -1197,19 +1197,19 @@ void draw_animated_sub(PlaceSub *arg0, u8 *arg1, s32 arg2) {
     p = arg0->rec;
     flags = p->flags;
     if (flags & 1) {
-        arg0->unk10 += p->unkC;
+        arg0->unk10 += p->rx;
     }
     if (flags & 2) {
-        arg0->unk12 += p->unkE;
+        arg0->unk12 += p->ry;
     }
     if (flags & 4) {
-        arg0->unk14 += p->unk10;
+        arg0->unk14 += p->rz;
     }
     if (flags & 8) {
-        n = p->unk18;
+        n = p->frame;
         if (n != 0) {
             m = FrameCount % n + 1;
-            arg0->unk74 = p->player + ((u16)p->unk18 - m);
+            arg0->unk74 = p->player + ((u16)p->frame - m);
         }
     }
     arg0->unk52 = 1;

@@ -5,14 +5,14 @@
 void music_open_seq(music_midi *slot, s32 idx) {
     s16 vol;
 
-    if (slot->unk1C != -1) {
+    if (slot->handle != -1) {
         if (slot->seq != -1) {
             SsSeqClose((s16)slot->seq);
             SsSepStop((s16)slot->seq, 0);
         }
     }
     SsSeqOpen(slot->songs[idx], (s16)slot->seq);
-    slot->unk1C = idx;
+    slot->handle = idx;
     SsSetMVol(0x7F, 0x7F);
     SsSeqPlay((s16)slot->seq, 1, 0);
     vol = (GameOptions.music * 0x7F) / 100;
@@ -73,7 +73,7 @@ void music_close(music_midi *slot) {
         SsSeqClose(slot->seq);
         SsSepStop(slot->seq, 0);
     }
-    slot->unk1C = -1;
+    slot->handle = -1;
 }
 
 void continue_music(void) {
@@ -142,7 +142,7 @@ void music_setup_slot(music_midi *slot) {
     slot->songs[2] = slot->data + ((SeqHdr *)slot->data)->o10;
     slot->songs[3] = slot->data + ((SeqHdr *)slot->data)->o14;
     new_var = slot->data + ((SeqHdr *)slot->data)->o18;
-    slot->unk1C = -1;
+    slot->handle = -1;
     slot->songs[4] = new_var;
     slot->seq = SsVabOpenHead(head, -1);
     SsVabTransBody(body, (s16)slot->seq);

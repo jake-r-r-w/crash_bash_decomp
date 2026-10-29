@@ -1294,8 +1294,8 @@ void RenderPause(void) {
 
     if (GamePause & 0x7000) {
         gs = &RenderState;
-        *(s32 *)&gs->unk28[0] = 0;
-        *(s32 *)&gs->unk28[4] = 0;
+        *(s32 *)&gs->screen[0] = 0;
+        *(s32 *)&gs->screen[4] = 0;
         if (GamePause & 0x4000) {
             e = &PauseMenuPanel;
             if (e->bottom != -1) {
@@ -1307,8 +1307,8 @@ void RenderPause(void) {
         }
     } else if (GamePause & 1) {
         gs = &RenderState;
-        *(s32 *)&gs->unk28[0] = 0;
-        *(s32 *)&gs->unk28[4] = 0;
+        *(s32 *)&gs->screen[0] = 0;
+        *(s32 *)&gs->screen[4] = 0;
         if (!(GamePause & 0x40)) {
             e = &PauseMenuPanel;
             if (e->bottom != -1) {

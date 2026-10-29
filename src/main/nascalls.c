@@ -556,9 +556,9 @@ void SetupLevelSpecs(ArenaDef *arg0) {
         ((GameState *)GameInfo)->boot = e->boot;
         LevelTriggerData = (LevelTriggerHead *)e->triggers;
         if (((GameState *)GameInfo)->levelFlags & 0x80) {
-            ((GameState *)GameInfo)->levelRecIndex = ((LevelInfo *)ModeTypes)[((GameState *)GameInfo)->mode].unk4;
+            ((GameState *)GameInfo)->levelRecIndex = ((LevelInfo *)ModeTypes)[((GameState *)GameInfo)->mode].levelRecAlt;
         } else {
-            ((GameState *)GameInfo)->levelRecIndex = ((LevelInfo *)ModeTypes)[((GameState *)GameInfo)->mode].unk2;
+            ((GameState *)GameInfo)->levelRecIndex = ((LevelInfo *)ModeTypes)[((GameState *)GameInfo)->mode].levelRec;
         }
     }
     if (e == NULL || LevelTriggerData == NULL) {
@@ -1296,7 +1296,7 @@ void ScriptCursorNext(ScriptCursor *c) {
             } while (e == 0);
             c->cur = e;
         }
-        c->unk1E = 0;
+        c->frame = 0;
         c->unk1C = -1;
         c->unk28 = 0;
         break;
@@ -1312,7 +1312,7 @@ void ScriptCursorNext(ScriptCursor *c) {
             } while (e == 0);
             c->cur = e;
         }
-        c->unk1E = -1;
+        c->frame = -1;
         c->unk1C = -1;
         c->unk28 = 0;
         break;

@@ -7360,9 +7360,9 @@ void PlotPolarWalrus(NAS *m) {
         ArcUpdate(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->XYZ.x);
         e2->x_vel = ext->unk48;
         e2->z_vel = ext->unk4C;
-        if (ext->cursor->unk1E == 0x18) {
+        if (ext->cursor->frame == 0x18) {
             ext->state = 4;
-            ext->cursor->unk1E = 0;
+            ext->cursor->frame = 0;
             ext->cursor->unk1C = 0;
             ext->cursor->cur = (s32)WalrusSteps0;
         }
@@ -7376,7 +7376,7 @@ void PlotPolarWalrus(NAS *m) {
             r = Random(4);
             ext->state = 1;
             ext->timer = 0x96;
-            ext->cursor->unk1E = 0;
+            ext->cursor->frame = 0;
             ext->cursor->unk1C = 0;
             ext->cursor->cur = (s32)WalrusSteps1;
             PlaySfx(0x475, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -7399,7 +7399,7 @@ void PlotPolarWalrus(NAS *m) {
         m->Engine->sub->flags |= 0x8000;
         if (RunNasAnim(m)) {
             ext->state = 5;
-            ext->cursor->unk1E = 0;
+            ext->cursor->frame = 0;
             ext->cursor->unk1C = 0;
             ext->cursor->cur = (s32)WalrusSteps2;
             ext->timer = 0;
@@ -7414,10 +7414,10 @@ void PlotPolarWalrus(NAS *m) {
         break;
     case 5:
         RunNasAnim(m);
-        if (ext->cursor->unk1E == 7) {
+        if (ext->cursor->frame == 7) {
             PlaySfx(0x476, NULL, NULL, 0x1000, 0x1E00, 0);
         }
-        if (ext->cursor->unk1E == 0xD) {
+        if (ext->cursor->frame == 0xD) {
             PlaySfx(0x477, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         m->Engine->xform.rot.vy -= (s32)((m->Engine->xform.rot.vy - ext->angle) << 20) >> 24;
@@ -7444,7 +7444,7 @@ void PlotPolarWalrus(NAS *m) {
         e2->z_vel = 0;
         if ((CheckMelted(&pos, 0) ^ 1) != 0) {
             ext->state = 7;
-            ext->cursor->unk1E = 0;
+            ext->cursor->frame = 0;
             ext->cursor->unk1C = 0;
             ext->cursor->cur = (s32)WalrusSteps3;
             m->Engine->sub->unk68 = 0x19C;
@@ -7473,7 +7473,7 @@ void PlotPolarWalrus(NAS *m) {
         ext->to.y = 0;
         ext->to.z = (rcossin_tbl[WalrusState & 0xFFF].unk2 * 0x7D) >> 8;
         m->Engine->xform.rot.vy = get_angle(m->Engine->XYZ.x, m->Engine->XYZ.z) & 0xFFF;
-        ext->cursor->unk1E = 0;
+        ext->cursor->frame = 0;
         ext->cursor->unk1C = 0;
         ext->cursor->cur = (s32)WalrusFrames;
         ext->arc[0] = 0x10;
