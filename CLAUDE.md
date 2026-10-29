@@ -32,9 +32,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `make disc-check` (byte-identical to retail), `make shift OVL=tank PAD=0x40`
   (a disc with that overlay's addresses all moved, `build/shift/CrashBash.cue`), `make shift-all PAD=0x40`
   (the exe, the engine and every overlay moved at once, `build/shiftall/CrashBash.cue`; `--pad-main`/
-  `--pad-engine`/`--pad-slot` of shift_all.py bisect a crash). To show the user, launch it on the host: `C:/RetroArch-Win64/retroarch.exe -L
-  C:/RetroArch-Win64/cores/pcsx_rearmed_libretro.dll build/CrashBash.cue`.
-  See [docs/PLAYING.md](docs/PLAYING.md). `node tools/playtest/playtest.mjs --build build/shiftall`
+  `--pad-engine`/`--pad-slot` of shift_all.py bisect a crash). To show the user, launch the
+  `.cue` in RetroArch with the PCSX ReARMed core on the host ([docs/PLAYING.md](docs/PLAYING.md),
+  Playing it). `node tools/playtest/playtest.mjs --build build/shiftall`
   (host Node) plays every minigame to a win by RetroArch RAM reads and writes (PLAYING.md, Playing
   every minigame automatically).
 - Game data: `assets/` (ignored) holds the archive's files as editable formats

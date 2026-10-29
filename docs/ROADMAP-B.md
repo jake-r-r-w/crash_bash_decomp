@@ -13,7 +13,6 @@ Before making the repo public.
 
 | # | Task | Where | Notes | Done |
 |---|------|-------|-------|------|
-| 5.6 | Remove the local RetroArch path | `CLAUDE.md` | A generic launch line, or a pointer to `docs/PLAYING.md`. | [ ] |
 | 5.7 | Tidy the agent log | `docs/AGENT_LOG.md` | Trim the Session log, or say in the README that it's the working log. | [ ] |
 | 5.8 | Commit the progress history | `.decomp/history.json` | With each docs update, so it stops showing as modified. | [ ] |
 | 5.9 | Re-read the leak and prototype docs | `docs/PROTOTYPES.md`, `docs/ARCHITECTURE.md` | Describing the sources is fine; nothing may quote the leaked files at length. | [ ] |

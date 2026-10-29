@@ -46,6 +46,9 @@ winget install --id Libretro.RetroArch -e
 "C:/RetroArch-Win64/retroarch.exe" -L "C:/RetroArch-Win64/cores/pcsx_rearmed_libretro.dll" build/CrashBash.cue
 ```
 
+That's RetroArch's default Windows folder; for another one, use your own paths (the playtest
+harness reads them from `RETROARCH` and `RETROARCH_CORE`).
+
 Keys: arrows (d-pad), Z (cross), X (circle), A (square), S (triangle), Enter (start), right
 Shift (select), Q/W (L1/R1), F1 (menu), Esc twice (quit). A pad works without setup. Any other
 emulator works too; DuckStation needs a real BIOS dump.

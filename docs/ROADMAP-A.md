@@ -698,3 +698,6 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
   - CTR-tools and Pillow;
   - RetroArch and PCSX ReARMed;
   - and Eurocom.
+- [x] 5.6 No local RetroArch path in CLAUDE.md (2026-10-29). It points to PLAYING.md (Playing it), which
+  gives RetroArch's default Windows folder as the example, and names the `RETROARCH` /
+  `RETROARCH_CORE` variables the playtest harness reads for another install.
