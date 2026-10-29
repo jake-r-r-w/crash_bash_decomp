@@ -1494,7 +1494,7 @@ s32 PolarBombOwnerEngine(NAS *nas)
 }
 
 void InitPolarBomb(NAS *m) {
-    PolarBombExt *ext;
+    EXTpolarbomb *ext;
     EXTengine *e;
 
     ext = AddExt(m, 0x84, 0x10000000);
@@ -1503,12 +1503,12 @@ void InitPolarBomb(NAS *m) {
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         m->Engine->xform.order = 2;
         m->Engine->sub->flags |= 0x02000000;
-        ext->unk30 = 2;
-        ext->unk74 = 0x56;
-        ext->unk34 = 0;
-        ext->unk48 = 0;
-        ext->unk10 = 0;
-        ext->unkC = 0;
+        ext->grav.gravity = 2;
+        ext->grav.magvelocity = 0x56;
+        ext->grav.initflag = 0;
+        ext->grav.floorheight = 0;
+        ext->timer = 0;
+        ext->NasStatus = 0;
         m->FUX = NULL;
         e = AddExtEngine(m, 2);
         if (e != NULL) {
@@ -1529,7 +1529,7 @@ void InitPolarBomb(NAS *m) {
 }
 
 void PlotPolarBomb(NAS *m) {
-    PolarBombExt *ext;
+    EXTpolarbomb *ext;
     NAS *nas;
     NAS *smoke;
     ExtSpawn5910 *fx;
@@ -1539,18 +1539,18 @@ void PlotPolarBomb(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    switch (ext->unkC) {
+    switch (ext->NasStatus) {
     case 0:
         if ((CheckMelted(&m->Engine->XYZ, 0) ^ 1) != 0) {
-            ext->unk48 = 0x100;
+            ext->grav.floorheight = 0x100;
             m->Engine->sub->unk68 = 0x200;
-            if (m->Engine->XYZ.y >= ext->unk48) {
+            if (m->Engine->XYZ.y >= ext->grav.floorheight) {
                 PlaySfx(0x494, NULL, NULL, 0x1000, 0x1E00, 0);
                 KillNAS(m);
                 break;
             }
         }
-        if (ArcUpdate(ext->from, ext->to, &ext->unk30, &m->Engine->XYZ.x) != 0) {
+        if (ArcUpdate(&ext->startpoint.x, &ext->aimpoint.x, &ext->grav.gravity, &m->Engine->XYZ.x) != 0) {
             PlaySfx((CheckMelted(&m->Engine->XYZ, 0) ^ 1) != 0 ? 0x494 : 0x48F, NULL, NULL, 0x1000, 0x1E00, 0);
             nas = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1605, 0x11);
             if (nas != NULL) {
@@ -1564,11 +1564,11 @@ void PlotPolarBomb(NAS *m) {
                 }
                 nas->InitDelete(nas);
             }
-            ext->unk10 = 0;
-            ext->unkC = 1;
+            ext->timer = 0;
+            ext->NasStatus = 1;
             break;
         }
-        if (ext->unk10-- < 0) {
+        if (ext->timer-- < 0) {
             smoke = CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1612, 0x11);
             if (smoke != NULL) {
                 smoke->Engine->xform.scale.vx = 0x5DC;
@@ -1581,7 +1581,7 @@ void PlotPolarBomb(NAS *m) {
                     bx[5] = 0x10;
                 }
             }
-            ext->unk10 = Random(2);
+            ext->timer = Random(2);
         }
         if (m->FUX != NULL) {
             ((EXTengine *)m->FUX)->XYZ = m->Engine->XYZ;
@@ -1594,8 +1594,8 @@ void PlotPolarBomb(NAS *m) {
         m->Engine->xform.rot.vx += 0x100;
         m->Engine->xform.dirty = 1;
         if (PolarBombHitHeroes(m, 0x15F90) != 0) {
-            ext->unkC = 1;
-            ext->unk10 = 0;
+            ext->NasStatus = 1;
+            ext->timer = 0;
         }
         break;
     case 1:
@@ -1603,12 +1603,12 @@ void PlotPolarBomb(NAS *m) {
         if (m->FUX != NULL) {
             ((EXTengine *)m->FUX)->sub->flags &= ~0x8000;
         }
-        if (ext->unk10 == 0) {
+        if (ext->timer == 0) {
             CreateNAS(m->Engine->XYZ.x, m->Engine->XYZ.y, m->Engine->XYZ.z, 0x1614, 0x11);
             PolarBombHitHeroes(m, 0x35EE4);
         }
-        ext->unk10++;
-        if (ext->unk10 >= 0x1F) {
+        ext->timer++;
+        if (ext->timer >= 0x1F) {
             KillNAS(m);
         }
         break;
@@ -5118,7 +5118,7 @@ void PlotTransmuterBeam(NAS *m) {
     ExtSpawn5910 *bx;
     PolarAi *ai;
     PolarAi *a1x;
-    WeightDeathExt *wx;
+    EXTbeardeath *wx;
     s32 i;
     s32 j;
     s32 best;
@@ -5801,8 +5801,8 @@ void PlotTransmuterBeam(NAS *m) {
                                 if (dn != NULL) {
                                     wx = FindExtension(dn, 0x10000000);
                                     if (wx != NULL) {
-                                        wx->unkC = hq->XYZ.y;
-                                        wx->unk1C = ext->itplayer;
+                                        wx->NasStatus = hq->XYZ.y;
+                                        wx->aimpoint.z = ext->itplayer;
                                     }
                                 }
                             }
@@ -5952,7 +5952,7 @@ void PlotTransmuterBeam(NAS *m) {
 }
 
 void PlotWeightDeath(NAS *m) {
-    WeightDeathExt *ext;
+    EXTbeardeath *ext;
     HeroInfo *h;
     HeroInfo *base;
     HeroInfo *p;
@@ -5962,45 +5962,45 @@ void PlotWeightDeath(NAS *m) {
     if (ext == NULL) {
         return;
     }
-    if (ext->unk24-- >= 0) {
+    if (ext->startpoint.y-- >= 0) {
         return;
     }
-    m->Engine->XYZ.y += ext->unk10;
-    ext->unk10 += ext->unk14;
-    if (ext->unkC < m->Engine->XYZ.y) {
-        m->Engine->XYZ.y -= abs(m->Engine->XYZ.y - ext->unkC);
-        if (++ext->unk18 < 5) {
-            ext->unk10 = -ext->unk10 >> 3;
-            if (ext->unk18 == 1) {
+    m->Engine->XYZ.y += ext->ydir;
+    ext->ydir += ext->aimpoint.x;
+    if (ext->NasStatus < m->Engine->XYZ.y) {
+        m->Engine->XYZ.y -= abs(m->Engine->XYZ.y - ext->NasStatus);
+        if (++ext->aimpoint.y < 5) {
+            ext->ydir = -ext->ydir >> 3;
+            if (ext->aimpoint.y == 1) {
                 PlaySfx(0x455, NULL, NULL, 0x1000, 0x1E00, 0);
             }
         }
     }
-    if (ext->unk20 > 0x3C) {
+    if (ext->startpoint.x > 0x3C) {
         HeroInfo *b = Heroes;
 
-        q = &b[ext->unk1C];
+        q = &b[ext->aimpoint.z];
         if (!(q->hero_status & 0x200)) {
             q->hero_status |= 0x2000;
         }
         m->Engine->sub->flags &= ~0x8000;
     }
-    if (ext->unk20 > 0x78) {
+    if (ext->startpoint.x > 0x78) {
         base = Heroes;
-        p = &base[ext->unk1C];
+        p = &base[ext->aimpoint.z];
         if (!(p->hero_status & 0x200)) {
             p->hero_status |= 0x2000;
-            base[ext->unk1C].hero_status |= 0x8000;
+            base[ext->aimpoint.z].hero_status |= 0x8000;
         }
     } else {
-        ext->unk20++;
+        ext->startpoint.x++;
     }
-    if (ext->unk20 > 0xF) {
+    if (ext->startpoint.x > 0xF) {
         base = Heroes;
-        h = &base[ext->unk1C];
+        h = &base[ext->aimpoint.z];
         if (!(h->hero_status & 0x200)) {
             h->hero_eng->flags &= ~0x8000;
-            base[ext->unk1C].hero_shadow->flags &= ~0x8000;
+            base[ext->aimpoint.z].hero_shadow->flags &= ~0x8000;
         }
     }
 }
@@ -9954,17 +9954,17 @@ void InitGravityObject(NAS *m) {
 }
 
 void InitWeightDeath(NAS *m) {
-    WeightDeathExt *ext;
+    EXTbeardeath *ext;
 
     ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->u6C.dbase = &HeroModelBank[DB_PolarObjects];
         m->Engine->sub->entity = 0x2003;
-        ext->unk10 = 0x40;
-        ext->unk14 = 8;
-        ext->unk18 = 0;
-        ext->unk20 = 0;
-        ext->unk24 = 0;
+        ext->ydir = 0x40;
+        ext->aimpoint.x = 8;
+        ext->aimpoint.y = 0;
+        ext->startpoint.x = 0;
+        ext->startpoint.y = 0;
         PlaySfx(0x453, NULL, NULL, 0x1000, 0x1E00, 0);
     }
 }

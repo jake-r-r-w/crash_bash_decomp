@@ -845,17 +845,6 @@ static inline s32 PolarShardChance(void) {
 
 s32 PolarAI_PickVictim(s32 arg0);
 
-/* Weight death extension (0x28 bytes, id 0x10000000). */
-typedef struct WeightDeathExt {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ s32 unk18;
-    /* 0x1C */ s32 unk1C;
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
-} WeightDeathExt;
 
 /* Sniper missile extension (0x38 bytes, id 0x10000000). */
 typedef struct SniperMissileExt {
@@ -960,22 +949,6 @@ static inline void PolarMissileBlast(NAS *m, s32 kind) {
     }
 }
 
-/* Polar bomb extension (0x84 bytes, id 0x10000000). */
-typedef struct PolarBombExt {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x18 - 0x14];
-    /* 0x18 */ s32 to[3];   /* ArcUpdate target */
-    /* 0x24 */ s32 from[3]; /* ArcUpdate start */
-    /* 0x30 */ s32 unk30;   /* arc state from here */
-    /* 0x34 */ s32 unk34;
-    /* 0x38 */ u8 pad38[0x48 - 0x38];
-    /* 0x48 */ s32 unk48;
-    /* 0x4C */ u8 pad4C[0x74 - 0x4C];
-    /* 0x74 */ s32 unk74;
-    /* 0x78 */ u8 pad78[0x84 - 0x78];
-} PolarBombExt;
 
 s32 PolarBombHitHeroes(NAS *nas, s32 dist);
 
