@@ -65,18 +65,17 @@ ROADMAP-B.md, Part 1 onwards. In rough order:
    engine globals (`decl_dups.py --views`: fold each into the one type), the exe's 69 raw-offset
    functions (mostly the heap's block arithmetic and `export_exe_functions`' slot offsets), and the
    `unkXX` fields (ASSETS.md, What isn't decoded, lists the file formats' ones).
-3. Shelved 2026-10-29 by decision: **a `NON_MATCHING` build with a current GCC for MIPS** (the
-   final test's test 5). A PC port would replace the PsyQ libraries anyway, so the PS1 link work
-   doesn't carry over. Where it stopped is in the Open leads.
+3. Dropped 2026-10-29 by decision: **a PS1 build with a current GCC**. The PC port's first step
+   (ROADMAP-B 6.1) compiles the same C with a modern compiler instead.
 4. **ARCHITECTURE.md** as a description of the game's systems.
 
 Decided 2026-10-29: source builds write zeros in the memory images (ROADMAP-A 1.1); zeroing the
-engine's .bss is ROADMAP-B 3.5.
+engine's .bss is ROADMAP-B 2.5.
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
 
-- **The GCC 12 PS1 build (shelved).** Every game file compiles with mipsel GCC 12
+- **The GCC 12 PS1 build (dropped; for reference only).** Every game file compiles with mipsel GCC 12
   (`-march=r3000 -msoft-float -mno-abicalls -fno-pic -G0 -O2 -fno-builtin -ffreestanding
   -fno-strict-aliasing -fno-common -fno-toplevel-reorder -fno-zero-initialized-in-bss -std=gnu89
   -DNON_MATCHING`). The linker is `scratch/modern/modern.py`, a `shift_all.Build` subclass. It
@@ -487,7 +486,9 @@ Newest first, a few lines each. Details are in the commits.
   work (Phases 1 to 5, and Phase 6's three done items). ROADMAP-B.md holds everything open, in
   numbered parts with a table each: decisions, typing, loose ends, docs, the final test, release
   (RELEASE_TODO.md merged in) and afterwards. `decomp.py`'s roadmap badge reads both files and
-  counts table rows ending in `[ ]`. Decided: PsyQ stays linked (no PsyQ-as-C task; Sony's
+  counts table rows ending in `[ ]`. Decided: source builds write zeros in the memory images; no
+  PS1 build with a modern compiler (the PC port's 6.1 does that test, so the final test is four
+  tests); PsyQ stays linked (no PsyQ-as-C task; Sony's
   unnamed statics dropped with it). The `SfxActiveVoices` lead was stale: that name is already
   gone from `sym.main.txt`.
 

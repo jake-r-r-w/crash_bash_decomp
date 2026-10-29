@@ -467,7 +467,12 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   pinned PsyQ and engine .bss sections, the exe header's entry point, Sony's startup code
   (`2MBYTE.OBJ`, raw words: the tool assembles a copy that names what it uses), and the mode
   text files' pointers into the engine (docs/PLAYING.md, The fully shifted build).
-- [x] 1.1 The memory images (decided 2026-10-29): source builds write zeros where the engine's .bss
+- [x] Decision: the memory images (2026-10-29): source builds write zeros where the engine's .bss
   and the slot hold the build machine's leftovers; the matching build keeps reading them from the
   disc. The slot's zeros are already playtested (every shift build); the engine's .bss is
-  ROADMAP-B's 3.5. The exe's .bss is zeros already (`objcopy --pad-to`).
+  ROADMAP-B's 2.5. The exe's .bss is zeros already (`objcopy --pad-to`).
+- [x] Decision: no PS1 build with a modern compiler (2026-10-29). Every game file compiles with
+  GCC 12, but the link boots to a black screen because Sony's libsnd `.bss` order differs from
+  retail's, and fixing that is PS1-only work. The PC port compiles the same C with a modern
+  compiler and finds the same bugs (ROADMAP-B 6.1), so the final test's modern-compiler test moved
+  there. The shelved link is `scratch/modern/modern.py` (AGENT_LOG, Open leads).
