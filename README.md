@@ -1,7 +1,8 @@
 # crash_bash_decomp
 
-Work-in-progress matching decompilation of Crash Bash (USA, `SCUS_945.70`) for
-the PlayStation.
+A matching decompilation of Crash Bash (USA, `SCUS_945.70`) for the PlayStation. Every function
+and all the data are C that rebuilds the retail disc byte for byte; a PC port is next
+([docs/ROADMAP-B.md](docs/ROADMAP-B.md)).
 
 **Goal: a source-only Crash Bash.** Every function in the executable and its 15
 code overlays becomes C that compiles back to the retail bytes, the data

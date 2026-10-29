@@ -13,7 +13,6 @@ Before making the repo public.
 
 | # | Task | Where | Notes | Done |
 |---|------|-------|-------|------|
-| 5.13 | Final check | repo root | `git status` clean; `.gitignore` lists `disc/`, `protos/`, `asm/`, `assets/`, `ext/`, `build/`, `linkers/`; no binaries in the history. | [ ] |
 | 5.14 | Switch the GitHub repo to public | GitHub settings | After 5.1 to 5.13. | [ ] |
 | 5.15 | List the project on recomp.fyi | `.recomp.json` | At least `"game": "Crash Bash"`, `"system": "PS1"`, `"type": "decomp"`. Under 8 KB; never mention a ROM, an ISO or where to get one. Listed daily, or at once through https://recomp.fyi/add. | [ ] |
 

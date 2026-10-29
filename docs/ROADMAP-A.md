@@ -747,3 +747,13 @@ The final test is done: 4.1 to 4.4 (2026-10-29).
 
   A split from nothing prints no notice. The clean rebuild, the tests, `make hidden`, disc-check and
   shift-all all pass on the rebuilt image.
+- [x] 5.13 The final check (2026-10-29):
+  - `git status` is clean.
+  - `.gitignore` lists `disc/`, `protos/`, `asm/`, `assets/`, `ext/`, `build/` and `linkers/`.
+  - Across all 3,282 commits:
+    - no binary file was ever committed; the largest blobs are the progress JSON files, about 2 MB;
+    - no file from an ignored folder;
+    - no key, token or password;
+    - no username, email or local path.
+  - Every author email is GitHub's noreply address.
+  - The README's first line no longer says "work-in-progress".
