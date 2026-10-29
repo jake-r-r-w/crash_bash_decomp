@@ -30,7 +30,7 @@ typedef struct ObjKey {
     /* 0x08 */ s16 entity;
     /* 0x0A */ s16 padA;
     /* 0x0C */ CamVec3 pos;
-    /* 0x18 */ s32 pad18[3];
+    /* 0x18 */ s32 ang[3];    /* its rotation (InitScriptFX reads halfwords) */
     /* 0x24 */ ObjQuat rot;
     /* 0x34 */ s32 frac[3];  /* quat_slerp_ex_frac's table */
     /* 0x40 */ CamVec3 scale;

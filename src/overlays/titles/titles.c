@@ -2111,27 +2111,27 @@ s32 LevelUnlockedIn(s32 idx, u8 *base) {
 
 void TeamModeShowPreset(void) {
     TitlesPreset *p;
-    u8 *s;
+    subengine *s;     /* the slot's subs, one after another */
 
-    s = (u8 *)GetEngineSlot(0)->sub;
+    s = GetEngineSlot(0)->sub;
     p = &TeamModePresets[TeamModePreset];
-    *(u16 *)(s + 0x74) = TeamModeHeroFrames[O69PV->heroChoice[p->hero[0]]];
-    *(u16 *)(s + 0x11C) = TeamModeHeroFrames[O69PV->heroChoice[p->hero[1]]];
-    *(u16 *)(s + 0x1C4) = TeamModeHeroFrames[O69PV->heroChoice[p->hero[2]]];
-    *(u16 *)(s + 0x26C) = TeamModeHeroFrames[O69PV->heroChoice[p->hero[3]]];
-    *(s32 *)(s + 0x540) &= ~0x8000;
-    *(s32 *)(s + 0x5E8) &= ~0x8000;
-    *(s32 *)(s + 0x690) &= ~0x8000;
-    *(s32 *)(s + 0x540) |= p->flags[0];
-    *(s32 *)(s + 0x5E8) |= p->flags[1];
-    *(s32 *)(s + 0x690) |= p->flags[2];
+    s[0].entity = TeamModeHeroFrames[O69PV->heroChoice[p->hero[0]]];
+    s[1].entity = TeamModeHeroFrames[O69PV->heroChoice[p->hero[1]]];
+    s[2].entity = TeamModeHeroFrames[O69PV->heroChoice[p->hero[2]]];
+    s[3].entity = TeamModeHeroFrames[O69PV->heroChoice[p->hero[3]]];
+    s[8].flags &= ~0x8000;
+    s[9].flags &= ~0x8000;
+    s[10].flags &= ~0x8000;
+    s[8].flags |= p->flags[0];
+    s[9].flags |= p->flags[1];
+    s[10].flags |= p->flags[2];
 
     TITLES_SETBAR(0, p->val[0]);
     TITLES_SETBAR(1, p->val[1]);
     TITLES_SETBAR(2, p->val[2]);
     TITLES_SETBAR(3, p->val[3]);
 
-    *(s32 *)(s + 0x8F4) = p->tbl[O69PV->language];
+    s[13].u6C.ptr = (void *)p->tbl[O69PV->language];
     O69PV->teams = p->flag != 0;
     O69PV->teamLeader[0] = p->leader0;
     O69PV->teamLeader[1] = p->leader1;

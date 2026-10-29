@@ -3389,14 +3389,14 @@ void InitScriptFX(NAS *nas)
 {
   u32 id;
   EXTscriptdata *sd;
-  u8 *dbase;
-  u8 *scripts;
-  u8 *hdr;
+  obj_dbase *dbase;
+  ModelFile *scripts;
+  script_header *hdr;
   NAS *new_var;
   script_thread *th;
-  u8 *r;
-  u8 *k;
-  u8 *kf;
+  script_thread *r;
+  partdata *k;
+  ObjKey *kf;
   s32 *ent;
   threaddata *t;
   subengine *sub;
@@ -3453,17 +3453,17 @@ void InitScriptFX(NAS *nas)
 
   }
 
-  scripts = new_var->Engine->sub->u6C.dbase;
+  scripts = (ModelFile *)new_var->Engine->sub->u6C.dbase;
   if (scripts == 0)
   {
     printf("script dbase NULL (probably not loaded)\n");
     goto kill;
   }
 
-  dbase = scripts;
+  dbase = (obj_dbase *)scripts;
 
   sd->dbase = (obj_dbase *) dbase;
-  scripts = *((u8 **) (dbase + 0xC));
+  scripts = dbase->data;
   if (scripts == 0)
   {
     return;
@@ -3486,21 +3486,21 @@ void InitScriptFX(NAS *nas)
   }
 
   sd->timer = 0;
-  if ((*((s32 *) (scripts + 0x48))) == 0)
+  if (scripts->nScripts == 0)
   {
     return;
   }
-  if (sd->scriptnumber >= (*((s32 *) (scripts + 0x48))))
+  if (sd->scriptnumber >= scripts->nScripts)
   {
     printf("requested script %d out of range\n", sd->scriptnumber);
     goto kill;
   }
 
-  hdr = (scripts + ((*((s32 *) (scripts + 0x4C))) + 0x4C)) + (sd->scriptnumber * 4);
-  hdr += *((s32 *) hdr);
-  sd->threadcount = *((s32 *) hdr);
-  sd->subcount = *((s32 *) (hdr + 4));
-  ent = (s32 *) (hdr + 0x1C);
+  hdr = (script_header *)(((u8 *)scripts + (scripts->scripts + 0x4C)) + (sd->scriptnumber * 4));  /* the table's self offsets */
+  hdr = (script_header *)SELF_REL((s32 *)hdr);
+  sd->threadcount = hdr->threadcount;
+  sd->subcount = hdr->subcount;
+  ent = (s32 *)hdr->threaddata;
   if (eng_add_subs(new_var->Engine, sd->subcount) != sd->subcount)
   {
     for (i = 0; i < sd->threadcount; i++)
@@ -3582,62 +3582,62 @@ void InitScriptFX(NAS *nas)
         sub->xform.order = 2;
       }
         sub->xform.hasScale = 1;
-        r = get_script_track(dbase, t->scriptnumber, t->threadnumber);
+        r = (script_thread *)get_script_track((u8 *)dbase, t->scriptnumber, t->threadnumber);
         kf = 0;
         if (r != 0)
       {
-        kf = r + 0x24;
+        kf = &r->type.entity.key;
       }
         if (kf == 0)
       {
         break;
       }
-        sub->xform.rot.vx = *((u16 *) (kf + 0x18));
-        sub->xform.rot.vy = *((u16 *) (kf + 0x1C));
-        sub->xform.rot.vz = *((u16 *) (kf + 0x20));
-        sub->XYZ.x = *((s32 *) (kf + 0xC));
-        sub->XYZ.y = *((s32 *) (kf + 0x10));
-        sub->XYZ.z = *((s32 *) (kf + 0x14));
-        sub->xform.scale.vx = *((s32 *) (kf + 0x40));
-        sub->xform.scale.vy = *((s32 *) (kf + 0x44));
-        sub->xform.scale.vz = *((s32 *) (kf + 0x48));
-        sub->entity = *((u16 *) (kf + 0x8));
+        sub->xform.rot.vx = *(u16 *)&kf->ang[0];
+        sub->xform.rot.vy = *(u16 *)&kf->ang[1];
+        sub->xform.rot.vz = *(u16 *)&kf->ang[2];
+        sub->XYZ.x = kf->pos.v[0];
+        sub->XYZ.y = kf->pos.v[1];
+        sub->XYZ.z = kf->pos.v[2];
+        sub->xform.scale.vx = kf->scale.v[0];
+        sub->xform.scale.vy = kf->scale.v[1];
+        sub->xform.scale.vz = kf->scale.v[2];
+        sub->entity = kf->entity;
         sub->xform.dirty = 1;
         sub = sub->next;
         break;
 
       case 1:
-        r = get_script_track(dbase, t->scriptnumber, t->threadnumber);
+        r = (script_thread *)get_script_track((u8 *)dbase, t->scriptnumber, t->threadnumber);
         k = 0;
         if (r != 0)
       {
-        k = r + 0x14;
+        k = &r->type.particle;
       }
         if (k == 0)
       {
         break;
       }
-        if (mal_first_free(((u32) ((*((s32 *) (k + 0x10))) * 0x28)) >> 2, MainHeap.free) == 0)
+        if (mal_first_free(((u32) (k->maxparticlecount * 0x28)) >> 2, MainHeap.free) == 0)
       {
         goto kill;
       }
-        mal_alloc_owned_low((*((s32 *) (k + 0x10))) * 0x28, &t->threadinfo, (s32) (&MainHeap), 0);
+        mal_alloc_owned_low(k->maxparticlecount * 0x28, &t->threadinfo, &MainHeap, 0);
         if (mal_first_free(0xA, MainHeap.free) == 0)
       {
         goto kill;
       }
-        mal_alloc_owned_low(0x28, &t->threadcontrol, (s32) (&MainHeap), 0);
-        t->particlesactive = *((s32 *) (k + 0x14));
+        mal_alloc_owned_low(0x28, &t->threadcontrol, &MainHeap, 0);
+        t->particlesactive = k->particlesperframe;
         ((pcontrol *) t->threadcontrol)->freqcounter = 0;
         j = 1;
-        if ((*((s32 *) (k + 0x10))) > 0)
+        if (k->maxparticlecount > 0)
       {
         do
         {
           if (sub != 0)
           {
             sub->flags = 0x42000000;
-            if ((*((u32 *) k)) & 0x20000000)
+            if ((u32)k->flags & 0x20000000)
             {
               sub->flags = 0x62000000;
             }
@@ -3656,7 +3656,7 @@ void InitScriptFX(NAS *nas)
             sub->XYZ.x = 0;
             sub->XYZ.y = 0;
             sub->XYZ.z = 0;
-            sub->entity = *((u16 *) (k + 0x28));
+            sub->entity = *(u16 *)&k->frame;
             sub->xform.scale.vx = 0x1000;
             sub->xform.scale.vz = 0x1000;
             sub->xform.scale.vy = 0x1000;
@@ -3664,7 +3664,7 @@ void InitScriptFX(NAS *nas)
           }
           sub = sub->next;
         }
-        while ((j++) < (*((s32 *) (k + 0x10))));
+        while ((j++) < k->maxparticlecount);
       }
         ((pcontrol *) t->threadcontrol)->lastsub = sub;
         break;
