@@ -13,7 +13,7 @@ The decomp is done when all four pass. The modern-compiler test moved to the PC 
 
 | # | Test | Proves | Status | Done |
 |---|------|--------|--------|------|
-| 4.1 | Clean rebuild: a fresh clone, the user's disc and `make check` match every binary; the packed disc matches retail | Nothing outside the repo is needed | Passes in the working checkout; not run from a fresh clone | [ ] |
+| 4.1 | Clean rebuild: a fresh clone, the user's disc and `make check` match every binary; the packed disc matches retail | Nothing outside the repo is needed | Passed 2026-10-29 from a fresh GitHub clone (ROADMAP-A, The final test) | [x] |
 | 4.2 | Nothing hidden: no asm, `INCLUDE_RODATA`, `.incbin`, parked function or `func_`/`D_` name | Everything is source | Source side clean (2026-10-29): no asm include, parked function or `func_`/`D_` name in `src/`; the exe header, `2MBYTE.OBJ` and the two memory images still come from the disc | [ ] |
 | 4.3 | The fully shifted build plays every minigame through to a win | No address is hard-coded | `make shift-all` plays (2026-10-29); not every minigame to a win yet | [ ] |
 | 4.4 | Same game: the shifted build, side by side with retail over the same route, behaves the same | It behaves like the original | Not run | [ ] |

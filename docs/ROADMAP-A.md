@@ -605,3 +605,23 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
     - `LoadModeText` is `LoadModeOverlay`: it also loads the minigame overlay, and its "header"
       read is the overlay's `file.size`.
     - The BIOS region byte is `BiosRegion`, the last `D_` name in `src/`.
+
+## The final test (ROADMAP-B Part 4)
+
+- [x] 4.1, the clean rebuild (2026-10-29). The repo was cloned fresh from GitHub at `ec9a1cdc`
+  into a separate folder and run through the README's Quick Start exactly:
+  - the disc and its `.cue` went in `disc/`;
+  - PsyQ 4.7 went in `ext/psyq47/` (copied from an unpacked archive, every file checked against
+    `configs/USA/psyq/sdk.sha256`, as `tools/get_psyq.sh` does);
+  - then the hooks, `decomp.py extract` (6 min), `make split`, `make check` and `make disc-check`.
+
+  The results:
+  - All 16 binaries match, and the packed disc is identical to the retail image.
+  - The clone's tree stays clean after the build, and `make test-tools` passes (357 tests).
+
+  Two limits:
+  - The Docker image was the existing one, built from the same Dockerfile (its tag is the
+    Dockerfile's hash), so the image build itself wasn't rerun.
+  - `make split` prints three splat "Unable to determine a segment" notices, for
+    `funcEvSpError`, `funcEvSpErrorx` and `MsgFatalMetricsError`. They are harmless: the split
+    and the build are unaffected.
