@@ -979,7 +979,7 @@ void mal_free_later(u8 *arg0, _mal_area *heap, s32 arg2) {
 }
 
 void *mal_alloc_owned_low(s32 arg0, void **arg1, s32 arg2, s32 arg3) {
-    u8 *blk;
+    mal *blk;
     u8 *ret;
 
     blk = mal_take_low(arg0, arg2);
@@ -989,10 +989,10 @@ void *mal_alloc_owned_low(s32 arg0, void **arg1, s32 arg2, s32 arg3) {
             return NULL;
         }
     }
-    ret = blk + 0x18;
-    *(void **)(blk + 4) = arg1;
+    ret = (u8 *)MAL_DATA(blk);
+    blk->owner = arg1;
     *arg1 = ret;
-    *(s16 *)blk = arg3;
+    blk->unk0 = arg3;
     return ret;
 }
 
@@ -1749,17 +1749,17 @@ static inline void load_group_loop(u8 *arg0, s32 *arg1) {
     }
 }
 
-void load_group_done(u8 *arg0, u8 *a1) {
+void load_group_done(u8 *arg0, file_group_load_info *a1) {
     s32 **c;
     s32 *e;
     u8 *h;
     s32 i;
 
-    c = *(s32 ***)(a1 + 4);
+    c = a1->files;
     if (c == NULL) {
         return;
     }
-    load_group_loop(arg0, *(s32 **)a1);
+    load_group_loop(arg0, a1->group);
     if (c == NULL) {
         return;
     }
@@ -1768,7 +1768,7 @@ void load_group_done(u8 *arg0, u8 *a1) {
             return;
         }
         *(s32 *)((u8 *)*c + 0x34) = 0;
-        e = *(s32 **)a1;
+        e = a1->group;
         h = (u8 *)c[0];
         i = load_group_find(c[2], e);
         i <<= 11;
@@ -1833,16 +1833,16 @@ static inline void load_dbase_loop(u8 *arg0, s32 *arg1) {
     }
 }
 
-void load_dbase_done(u8 *arg0, u8 *a1) {
+void load_dbase_done(u8 *arg0, ModeDbase *a1) {
     s32 *e;
     s32 **c;
     u8 *h;
     s32 i;
 
-    load_dbase_loop(arg0, *(s32 **)a1);
-    c = (s32 **)(a1 + 4);
-    e = *(s32 **)a1;
-    h = *(u8 **)(a1 + 4);
+    load_dbase_loop(arg0, a1->group);
+    c = (s32 **)&a1->dbase;
+    e = a1->group;
+    h = a1->dbase;
     i = load_dbase_find(c[2], e);
     i <<= 11;
     dbase_group_textures_loaded(arg0 + i, h);
@@ -1851,7 +1851,7 @@ void load_dbase_done(u8 *arg0, u8 *a1) {
     dbase_asload_with_anims_callback(arg0 + i, h);
 }
 
-u8 *queue_dbase_load(u8 *arg0, s32 arg1) {
+u8 *queue_dbase_load(ModeDbase *arg0, s32 arg1) {
     LoadNode *p;
     LoadNode *next;
     LoadNode *tail;
@@ -1861,11 +1861,11 @@ u8 *queue_dbase_load(u8 *arg0, s32 arg1) {
     void (*fn)(u8 *, u8 *);
     LoaderState *ls;
 
-    a = (s32)DatIndex + **(s32 **)arg0 * 8;
-    *(s32 *)(*(u8 **)(arg0 + 4) + 0x34) = arg1;
+    a = (s32)DatIndex + arg0->group->first * 8;
+    *(s32 *)&arg0->dbase->keep = arg1;
     fn = load_dbase_done;
     ls = &Loader;
-    b = *(s32 *)(*(u8 **)arg0 + 8);
+    b = arg0->group->size;
     p = LoadNodeFree;
     if (p != NULL) {
         next = p->next;
@@ -1894,7 +1894,7 @@ u8 *queue_dbase_load(u8 *arg0, s32 arg1) {
     return q;
 }
 
-u8 *queue_group_load(u8 *arg0) {
+u8 *queue_group_load(file_group_load_info *arg0) {
     LoadNode *p;
     LoadNode *next;
     LoadNode *tail;
@@ -1904,16 +1904,16 @@ u8 *queue_group_load(u8 *arg0) {
     void (*fn)(u8 *, u8 *);
     LoaderState *ls;
 
-    if (*(u8 **)arg0 == NULL) {
+    if (arg0->group == NULL) {
         return NULL;
     }
-    if (*(s32 *)(arg0 + 4) == 0) {
+    if (arg0->files == 0) {
         return NULL;
     }
-    a = (s32)DatIndex + **(s32 **)arg0 * 8;
+    a = (s32)DatIndex + arg0->group->first * 8;
     fn = load_group_done;
     ls = &Loader;
-    b = *(s32 *)(*(u8 **)arg0 + 8);
+    b = arg0->group->size;
     p = LoadNodeFree;
     if (p != NULL) {
         next = p->next;

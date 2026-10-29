@@ -700,7 +700,7 @@ typedef struct FileGroup {
 extern FileGroup FileGroups[];
 
 typedef struct file_group_load_info {
-    /* 0x00 */ void *group;
+    /* 0x00 */ FileGroup *group;
     /* 0x04 */ void *files;
 } file_group_load_info;
 BASH_SIZE_CHECK(file_group_load_info, 0x8);

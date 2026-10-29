@@ -549,9 +549,9 @@ fail:
     return ret;
 }
 
-void dbase_load_textures_wait(u8 *rec) {
-    if (*(s32 *)(rec + 8) == 0 && *(s32 *)(rec + 0xC) == 0) {
-        *(s32 *)(rec + 8) = load_file_cb(*(s32 *)(rec + 4), dbase_textures_loaded, rec);
+void dbase_load_textures_wait(obj_dbase *rec) {
+    if (rec->load == 0 && rec->data == 0) {
+        rec->load = load_file_cb(rec->textureFile, dbase_textures_loaded, rec);
     }
     for (;;) {
         if (loader_pending() == 0) {
@@ -573,7 +573,7 @@ void dbase_load_textures(obj_dbase *db) {
     }
 }
 
-void dbase_textures_loaded(u8 *data, u8 *rec) {
+void dbase_textures_loaded(u8 *data, obj_dbase *rec) {
     _mal_area *heap;
     s32 size;
 
@@ -581,17 +581,17 @@ void dbase_textures_loaded(u8 *data, u8 *rec) {
     heap = &MainHeap;
     if (mal_first_free((size + 3) >> 2, heap->free) == NULL) {
         mal_free(data, heap);
-        *(s32 *)(rec + 8) = 0;
+        rec->load = 0;
         dbase_load_textures(rec);
     } else {
-        textureset_init((obj_textureset *)(rec + 0x10), data);
-        textureset_upload(rec + 0x10);
-        texture_release_loading_mem((obj_textureset *)(rec + 0x10));
+        textureset_init(&rec->textures, data);
+        textureset_upload(&rec->textures);
+        texture_release_loading_mem(&rec->textures);
     }
-    *(s32 *)(rec + 8) = loader_queue(*(s32 *)(rec + 0), 0, *(s32 *)(rec + 0x24), dbase_set_data, rec, 1, 0);
+    rec->load = loader_queue(rec->file, 0, rec->textures.f14, dbase_set_data, rec, 1, 0);
 }
 
-void dbase_group_textures_loaded(u8 *arg0, u8 *arg1) {
+void dbase_group_textures_loaded(u8 *arg0, obj_dbase *arg1) {
     _mal_area *heap;
     s32 n;
 
@@ -599,13 +599,12 @@ void dbase_group_textures_loaded(u8 *arg0, u8 *arg1) {
     heap = &MainHeap;
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         mal_free(arg0, heap);
-        *(s32 *)(arg1 + 8) = 0;
+        arg1->load = 0;
         dbase_load_textures(arg1);
     } else {
-        arg1 += 0x10;
-        textureset_init((obj_textureset *)arg1, arg0);
-        textureset_upload(arg1);
-        texture_release_loading_mem((obj_textureset *)arg1);
+        textureset_init(&arg1->textures, arg0);
+        textureset_upload(&arg1->textures);
+        texture_release_loading_mem(&arg1->textures);
     }
 }
 

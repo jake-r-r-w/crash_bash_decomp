@@ -9,6 +9,15 @@
 #include "bash/nas.h"
 #include "bash/core.h"   /* the Oct 9 records' types (map_enviroment, script_thread_handler, ...) */
 
+/* A model a mode loads (ModeDbaseLists, 16 bytes; queue_dbase_load): the file group it comes in,
+ * the bank record it loads into, its model's and its textures' archive entries. */
+typedef struct ModeDbase {
+    FileGroup *group;
+    obj_dbase *dbase;
+    s32 *file;
+    s32 *textureFile;
+} ModeDbase;
+
 typedef struct AnimData {
     s32 tracksOff; /* 0x00 */
     s32 subOff;    /* 0x04 */
@@ -847,8 +856,8 @@ extern NAS *HeadOfObjects;
 extern music_midi CurrentMusic;
 extern LoaderState Loader;
 extern const char MsgTooManyLoadsInQueue[];
-void load_dbase_done(u8 *arg0, u8 *a1);
-void load_group_done(u8 *arg0, u8 *a1);
+void load_dbase_done(u8 *arg0, ModeDbase *a1);
+void load_group_done(u8 *arg0, file_group_load_info *a1);
 extern MusicEntry MusicTable[];
 extern sfx_machine_bank_info SfxBanks[6];
 extern NodePool PrimPool;
@@ -1747,9 +1756,9 @@ void mal_take_high_from(mal *arg0, s32 arg1, _mal_area *arg2);
 
 void mal_move_up(mal *arg0, _mal_area *arg1);
 
-u8 *queue_dbase_load(u8 *arg0, s32 arg1);
+u8 *queue_dbase_load(ModeDbase *arg0, s32 arg1);
 
-u8 *queue_group_load(u8 *arg0);
+u8 *queue_group_load(file_group_load_info *arg0);
 
 void dbase_files_loaded(s32 * *arg0, s32 *arg1, u8 *arg2);
 
@@ -1930,6 +1939,7 @@ extern u16 SpriteTripleUVs[][3];
 mal *mal_next_movable(_mal_area *heap);
 
 void export_exe_functions(void);
+
 
 
 
