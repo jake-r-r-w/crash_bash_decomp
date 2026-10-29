@@ -666,3 +666,12 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   for value.
 
 The final test is done: 4.1 to 4.4 (2026-10-29).
+
+## Part 5 - Release (done so far; the rest is in ROADMAP-B)
+
+- [x] 5.1 A licence for our own work (2026-10-29). `LICENSE` is MIT, "the crash_bash_decomp
+  contributors". Its second half says what it covers: the tools, the build files (Makefile,
+  configs/), the tests and the docs. It also says what it doesn't cover:
+  - `src/` and `include/`, which reconstruct the game (the recovered original headers included);
+  - `tools/reference/` (GCC's source, GPL);
+  - `tools/cc1/patches/` (changes to GCC, GPL).

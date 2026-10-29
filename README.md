@@ -208,5 +208,6 @@ how to play it and edit the game data: [docs/PLAYING.md](docs/PLAYING.md)),
 
 ## License
 
-No license has been chosen yet. Game code and data remain the property of
-their respective owners; this repository contains only reimplementation source.
+The project's own work (the tools, build files and docs) is MIT-licensed: [LICENSE](LICENSE), which
+also lists what it doesn't cover. Game code and data remain the property of their respective owners;
+this repository contains only reimplementation source.

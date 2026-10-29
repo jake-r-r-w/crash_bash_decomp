@@ -13,7 +13,6 @@ Before making the repo public.
 
 | # | Task | Where | Notes | Done |
 |---|------|-------|-------|------|
-| 5.1 | Add a licence for our own work | `LICENSE` | MIT (or CC0) for the tools, scripts, Makefile and docs; not the game's code or data. | [ ] |
 | 5.2 | Say what the licence covers | `README.md` | Our tooling only. The decompiled C and data reconstruct the copyrighted game (Eurocom / Sony). `tools/reference/` and the `tools/cc1/` patches stay GPL. | [ ] |
 | 5.3 | Preservation and research notice | `README.md` | No game files included; you need your own retail copy to build. | [ ] |
 | 5.4 | Getting-started steps | `README.md` | Your disc in `disc/`, `tools/get_psyq.sh`, then `tools/dk make` / `make check`. | [ ] |
