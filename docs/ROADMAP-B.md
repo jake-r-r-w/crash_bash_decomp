@@ -34,7 +34,6 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 | 3.2 | The demo discs' last symbols | `cam_init`, 11 more, classes with no stand-in, `ProcessPauseUD` (PROTOTYPES.md, Left) | [ ] |
 | 3.3 | The ambiguous names | ARCHITECTURE.md, Functions reached from the AST pairs | [ ] |
 | 3.4 | Did both gcc 2.7.2 units use `-fno-rerun-cse-after-loop`? | `main/modchip`, `main/modchip_msg` | [ ] |
-| 3.5 | Sony's 131 unnamed statics | The converted objects carry no names | [ ] |
 
 ## Part 4 - Documentation
 
@@ -76,9 +75,9 @@ Before making the repo public.
 
 ## Part 7 - Afterwards
 
-Planned once the final test passes.
+Planned once the final test passes. PsyQ stays linked from Sony's objects (decided 2026-10-29):
+much of it was hand-written asm, and the PC port replaces it.
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 7.1 | Native PC port | Assets from the extracted files; PC replacements for the CD, GPU and GTE, SPU and pads | [ ] |
-| 7.2 | PsyQ as C | C that compiles to Sony's objects; the PC port replaces most of it, so decide after 7.1 | [ ] |
+| 7.1 | Native PC port | Assets from the extracted files; PC replacements for the CD, GPU and GTE, SPU and pads. Libsnd's sequencer (and any GTE maths needed bit for bit) as plain non-matching C, checked against the linked originals. | [ ] |

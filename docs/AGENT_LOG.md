@@ -487,7 +487,8 @@ Newest first, a few lines each. Details are in the commits.
   work (Phases 1 to 5, and Phase 6's three done items). ROADMAP-B.md holds everything open, in
   numbered parts with a table each: decisions, typing, loose ends, docs, the final test, release
   (RELEASE_TODO.md merged in) and afterwards. `decomp.py`'s roadmap badge reads both files and
-  counts table rows ending in `[ ]`. The `SfxActiveVoices` lead was stale: that name is already
+  counts table rows ending in `[ ]`. Decided: PsyQ stays linked (no PsyQ-as-C task; Sony's
+  unnamed statics dropped with it). The `SfxActiveVoices` lead was stale: that name is already
   gone from `sym.main.txt`.
 
 - **2026-10-29 (GCC 12 build, shelved):** every game file builds with GCC 12, and
