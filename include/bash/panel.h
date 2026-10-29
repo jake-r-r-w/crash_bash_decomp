@@ -46,7 +46,7 @@ void InitScore1Icons(void);
 
 void InitCompletionCounter(void);
 
-void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b);
+void MakeSubBar(PanelPrim *p, s16 x, s16 y, u32 a, u32 b);
 
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 
@@ -83,25 +83,6 @@ extern subengine PauseVolSubA;
 extern subengine PauseVolSubB;
 
 void InitCountdown(void);
-typedef struct PanelPrim {
-    s32 unk0;
-    s32 unk4;
-    s32 unk8;
-    s32 unkC;
-    u8 pad10[0x44];
-    void *unk54;
-    u8 pad58[0x10];
-    s16 unk68, pad6A;
-    union {
-        void *ptr;
-        struct {
-            s16 unk6C, unk6E;
-        } s;
-    } u6C;
-    s16 unk70, pad72, unk74, unk76, unk78, pad7A, unk7C, unk7E, unk80, pad82, unk84, unk86, unk88, pad8A;
-    s32 unk8C, unk90, unk94, unk98;
-    u8 pad9C[0xC];
-} PanelPrim; /* 0xA8 */
 extern SWORD_XY HealthIconPos[4];
 extern u16 *pHeroHealth[4];
 

@@ -77,14 +77,25 @@ extern u16 Clock_last_ping;
 extern s16 CompletionShown;
 extern s32 CompletionPos[];
 extern s32 HeroesOutTimer;
-typedef struct EngineBox {
-    s32 unk0;
-    u8 pad4[0x50];
-    void *unk54;
+/* A panel's view of a subengine (0xA8): subengine's head (flags, XYZ, hook), then the halfwords
+ * the panels keep in the node's tail. */
+typedef struct PanelPrim {
+    u32 flags;
+    SLONG_XYZ XYZ;
+    u8 pad10[0x44];
+    void *hook;                     /* its draw function, or a texture */
     u8 pad58[0x10];
-    s16 unk68, pad6A, unk6C, unk6E, unk70, pad72, unk74, unk76, unk78, pad7A, unk7C, unk7E, unk80, pad82, unk84, unk86, unk88, pad8A;
-    s32 unk8C, unk90, unk94, unk98;
-} EngineBox;
+    s16 unk68, pad6A;
+    union {
+        void *ptr;
+        struct {
+            s16 unk6C, unk6E;
+        } s;
+    } u6C;
+    s16 unk70, pad72, unk74, unk76, unk78, pad7A, unk7C, unk7E, unk80, pad82, unk84, unk86, unk88, pad8A;
+    s32 unk8C, unk90, unk94, color;
+    u8 pad9C[0xC];
+} PanelPrim; /* 0xA8 */
 extern u16 CupMode;
 extern s32 CupTimer;
 extern u16 Trophy_Cups;

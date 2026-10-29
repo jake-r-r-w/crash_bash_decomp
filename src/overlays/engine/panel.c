@@ -723,17 +723,17 @@ void InitHealthIcons(void) {
             pHeroHealth[i] = (s32)&Heroes[i].hero_health;
             p = ((PanelPrim (*)[7])&IconParts[0][2])[i];
             p->u6C.ptr = tim;
-            p->unk0 = 0x10008000;
-            p->unk4 = HealthIconPos[i].x + 0x10;
+            p->flags = 0x10008000;
+            p->XYZ.x = HealthIconPos[i].x + 0x10;
             yb = HealthIconPos[i].y;
             p->unk74 = 0x2018;
             off = i * sizeof(((PanelPrim (*)[7])&IconParts[0][2])[0]);
             b = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][2])[0][1]);
-            p->unkC = 0;
-            p->unk8 = yb + 0x10;
+            p->XYZ.z = 0;
+            p->XYZ.y = yb + 0x10;
             x0 = HealthIconPos[i].x + 0x1C;
             x1 = HealthIconPos[i].x + 0x5C;
-            b->unk54 = tex;
+            b->hook = tex;
             b->u6C.s.unk6E = y0;
             b->unk70 = 0;
             b->unk76 = y0;
@@ -745,8 +745,8 @@ void InitHealthIcons(void) {
             b->unk8C = c0;
             b->unk90 = c0;
             b->unk94 = c1;
-            b->unk98 = c1;
-            b->unk0 = code;
+            b->color = c1;
+            b->flags = code;
             b->unk68 = n;
             b->u6C.s.unk6C = x0;
             b->unk74 = x1;
@@ -755,7 +755,7 @@ void InitHealthIcons(void) {
             x0 = HealthIconPos[i].x + 0x1C;
             x1 = HealthIconPos[i].x + 0x5C;
             q = &((PanelPrim (*)[7])&IconParts[0][2])[i][2];
-            q->unk54 = tex;
+            q->hook = tex;
             q->u6C.s.unk6E = y0;
             q->u6C.s.unk6C = x0;
             q->unk70 = 0;
@@ -772,8 +772,8 @@ void InitHealthIcons(void) {
             q->unk8C = col;
             q->unk90 = col;
             q->unk94 = col;
-            q->unk98 = col;
-            q->unk0 = code;
+            q->color = col;
+            q->flags = code;
             q->unk68 = n;
         }
         i++;
@@ -819,17 +819,17 @@ void ClearHealthIcons(void) {
             pHeroHealth[i] = (s32)&Heroes[i].hero_health;
             p = ((PanelPrim (*)[7])&IconParts[0][2])[i];
             p->u6C.ptr = tim;
-            p->unk0 = 0x10008000;
-            p->unk4 = HealthIconPos[i].x;
+            p->flags = 0x10008000;
+            p->XYZ.x = HealthIconPos[i].x;
             yb = HealthIconPos[i].y;
             p->unk74 = 0x2018;
             off = i * sizeof(((PanelPrim (*)[7])&IconParts[0][2])[0]);
             b = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][2])[0][1]);
-            p->unkC = 0;
-            p->unk8 = yb + 0x10;
+            p->XYZ.z = 0;
+            p->XYZ.y = yb + 0x10;
             x0 = HealthIconPos[i].x + 8;
             x1 = HealthIconPos[i].x + 0x48;
-            b->unk54 = tex;
+            b->hook = tex;
             b->u6C.s.unk6E = y0;
             b->unk70 = 0;
             b->unk76 = y0;
@@ -841,8 +841,8 @@ void ClearHealthIcons(void) {
             b->unk8C = c0;
             b->unk90 = c0;
             b->unk94 = c1;
-            b->unk98 = c1;
-            b->unk0 = code;
+            b->color = c1;
+            b->flags = code;
             b->unk68 = n;
             b->u6C.s.unk6C = x0;
             b->unk74 = x1;
@@ -851,7 +851,7 @@ void ClearHealthIcons(void) {
             x0 = HealthIconPos[i].x + 8;
             x1 = HealthIconPos[i].x + 0x48;
             q = &((PanelPrim (*)[7])&IconParts[0][2])[i][2];
-            q->unk54 = tex;
+            q->hook = tex;
             q->u6C.s.unk6E = y0;
             q->u6C.s.unk6C = x0;
             q->unk70 = 0;
@@ -868,8 +868,8 @@ void ClearHealthIcons(void) {
             q->unk8C = col;
             q->unk90 = col;
             q->unk94 = col;
-            q->unk98 = col;
-            q->unk0 = code;
+            q->color = col;
+            q->flags = code;
             q->unk68 = n;
         }
         i++;
@@ -897,7 +897,7 @@ void InitBossHealthIcons(void) {
     sub = ((PanelPrim (*)[7])&IconParts[0][2])[3];
     b = sub + 1;
     sub->u6C.ptr = &HeroModelBank[DB_Powerups];
-    sub->unk0 = 0x10008000;
+    sub->flags = 0x10008000;
     sub->unk74 = 0x2018;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
@@ -905,10 +905,10 @@ void InitBossHealthIcons(void) {
     y1 = 0x43;
     y0 = 0x37;
     code = 0x12000000;
-    sub->unkC = 0;
+    sub->XYZ.z = 0;
     b->unk8C = c0;
     b->unk90 = c0;
-    b->unk54 = tex;
+    b->hook = tex;
     b->u6C.s.unk6E = y0;
     b->unk70 = 0;
     b->unk76 = y0;
@@ -918,16 +918,16 @@ void InitBossHealthIcons(void) {
     b->unk86 = y1;
     b->unk88 = 0;
     b->unk94 = c1;
-    b->unk98 = c1;
-    sub[1].unk0 = code;
+    b->color = c1;
+    sub[1].flags = code;
     b->unk68 = 8;
     s = &HealthIconPos[i];
     q = sub + 2;
-    q->unk54 = tex;
+    q->hook = tex;
     q->u6C.s.unk6E = y0;
     q->unk70 = 0;
-    sub->unk4 = s->x;
-    sub->unk8 = s->y + 0x10;
+    sub->XYZ.x = s->x;
+    sub->XYZ.y = s->y + 0x10;
     x0 = (u16)s->x + 8;
     x1 = (u16)s->x + 0x48;
     b->u6C.s.unk6C = x0;
@@ -947,8 +947,8 @@ void InitBossHealthIcons(void) {
     q->unk8C = 0xBF;
     q->unk90 = 0xBF;
     q->unk94 = 0xBF;
-    q->unk98 = 0xBF;
-    q->unk0 = code;
+    q->color = 0xBF;
+    q->flags = code;
     q->unk68 = 8;
     PanelCtrl |= 8;
 }
@@ -972,20 +972,20 @@ void InitPowerupIcons(s32 arg0, s32 arg1) {
     pHeroHealth[2] = arg0;
     p = ((PanelPrim (*)[7])&IconParts[0][2])[2];
     p->u6C.ptr = tim;
-    p->unk0 = 0x10008000;
+    p->flags = 0x10008000;
     y0 = 0x37;
     y1 = 0x43;
     code = 0x12000000;
     n = 8;
-    p->unk4 = HealthIconPos[2].x;
+    p->XYZ.x = HealthIconPos[2].x;
     yb = HealthIconPos[2].y;
-    p->unkC = 0;
+    p->XYZ.z = 0;
     p->unk74 = 0x2018;
-    p->unk8 = yb + 0x10;
+    p->XYZ.y = yb + 0x10;
     b = p + 1;
     x0 = (u16)HealthIconPos[2].x + 8;
     x1 = (u16)HealthIconPos[2].x + 0x48;
-    b->unk54 = draw_nas_model_flags;
+    b->hook = draw_nas_model_flags;
     b->u6C.s.unk6C = x0;
     b->u6C.s.unk6E = y0;
     b->unk70 = 0;
@@ -1001,11 +1001,11 @@ void InitPowerupIcons(s32 arg0, s32 arg1) {
     b->unk8C = 0x3FFF7F;
     b->unk90 = 0x3FFF7F;
     b->unk94 = 0xF4F2F;
-    b->unk98 = 0xF4F2F;
-    p[1].unk0 = code;
+    b->color = 0xF4F2F;
+    p[1].flags = code;
     b->unk68 = n;
     q = b + 1;
-    q->unk54 = draw_nas_model_flags;
+    q->hook = draw_nas_model_flags;
     q->u6C.s.unk6C = x0;
     q->u6C.s.unk6E = y0;
     q->unk70 = 0;
@@ -1022,25 +1022,25 @@ void InitPowerupIcons(s32 arg0, s32 arg1) {
     q->unk8C = col;
     q->unk90 = col;
     q->unk94 = col;
-    q->unk98 = col;
-    p[2].unk0 = code;
+    q->color = col;
+    p[2].flags = code;
     q->unk68 = n;
 
     pHeroHealth[3] = arg1;
     p = p + 7;
     p->u6C.ptr = tim;
-    p->unk0 = 0x10008000;
-    p->unk4 = HealthIconPos[3].x;
+    p->flags = 0x10008000;
+    p->XYZ.x = HealthIconPos[3].x;
     yb = HealthIconPos[3].y;
-    p->unkC = 0;
+    p->XYZ.z = 0;
     p->unk74 = 0x2018;
-    p->unk8 = yb + 0x10;
+    p->XYZ.y = yb + 0x10;
     x0 = (u16)HealthIconPos[3].x + 8;
     x1 = (u16)HealthIconPos[3].x + 0x48;
     {
     PanelPrim *q;
     q = b + 7;
-    q->unk54 = draw_nas_model_flags;
+    q->hook = draw_nas_model_flags;
     q->u6C.s.unk6C = x0;
     q->u6C.s.unk6E = y0;
     q->unk70 = 0;
@@ -1056,14 +1056,14 @@ void InitPowerupIcons(s32 arg0, s32 arg1) {
     q->unk8C = 0x3FFF7F;
     q->unk90 = 0x3FFF7F;
     q->unk94 = 0xF4F2F;
-    q->unk98 = 0xF4F2F;
-    b[7].unk0 = code;
+    q->color = 0xF4F2F;
+    b[7].flags = code;
     q->unk68 = n;
     }
     {
     PanelPrim *q;
     q = b + 8;
-    q->unk54 = draw_nas_model_flags;
+    q->hook = draw_nas_model_flags;
     q->u6C.s.unk6C = x0;
     q->u6C.s.unk6E = y0;
     q->unk70 = 0;
@@ -1079,8 +1079,8 @@ void InitPowerupIcons(s32 arg0, s32 arg1) {
     q->unk8C = col;
     q->unk90 = col;
     q->unk94 = col;
-    q->unk98 = col;
-    b[8].unk0 = code;
+    q->color = col;
+    b[8].flags = code;
     q->unk68 = n;
     }
     PanelCtrl |= 8;
@@ -1180,17 +1180,17 @@ void InitPowerIcons(void) {
         if (Heroes[i].hero_name != 9) {
             p = ((PanelPrim (*)[7])&IconParts[0][2])[i];
             p->u6C.ptr = tim;
-            p->unk0 = 0x10008000;
-            p->unk4 = HealthIconPos[i].x - 0xE;
+            p->flags = 0x10008000;
+            p->XYZ.x = HealthIconPos[i].x - 0xE;
             yb = HealthIconPos[i].y;
             p->unk74 = 0x3021;
             off = i * sizeof(((PanelPrim (*)[7])&IconParts[0][2])[0]);
             b = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][2])[0][1]);
-            p->unkC = 0;
-            p->unk8 = yb - 0x10;
+            p->XYZ.z = 0;
+            p->XYZ.y = yb - 0x10;
             x0 = HealthIconPos[3].x + 0x10;
             x1 = HealthIconPos[3].x + 0x50;
-            b->unk54 = tex;
+            b->hook = tex;
             b->u6C.s.unk6E = y0;
             b->unk70 = 0;
             b->unk76 = y0;
@@ -1202,8 +1202,8 @@ void InitPowerIcons(void) {
             b->unk8C = c0;
             b->unk90 = c0;
             b->unk94 = c1;
-            b->unk98 = c1;
-            b->unk0 = code;
+            b->color = c1;
+            b->flags = code;
             b->unk68 = n;
             b->u6C.s.unk6C = x0;
             b->unk74 = x1;
@@ -1212,7 +1212,7 @@ void InitPowerIcons(void) {
             x0 = HealthIconPos[3].x + 0x10;
             x1 = HealthIconPos[3].x + 0x50;
             q = &((PanelPrim (*)[7])&IconParts[0][2])[i][2];
-            q->unk54 = tex;
+            q->hook = tex;
             q->u6C.s.unk6E = y0;
             q->unk70 = 0;
             q->u6C.s.unk6C = x0;
@@ -1229,8 +1229,8 @@ void InitPowerIcons(void) {
             q->unk8C = col;
             q->unk90 = col;
             q->unk94 = col;
-            q->unk98 = col;
-            q->unk0 = code;
+            q->color = col;
+            q->flags = code;
             q->unk68 = n;
         }
         i++;
@@ -1390,19 +1390,19 @@ void InitTankWeaponIcons(void) {
             TankHudWeapons[i].a = &TA_players[i].MainWeaponType;   /* Tank's, linked from tank (slot_syms.py) */
             off = i * sizeof(((PanelPrim (*)[7])&IconParts[0][5])[0]);
             p = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][5])[0][0]);
-            p->unk4 = 0x2E;
-            p->unk8 = 0x38;
+            p->XYZ.x = 0x2E;
+            p->XYZ.y = 0x38;
             p->u6C.ptr = &HeroModelBank[DB_TankObjects];
-            p->unk0 = 0x10000000;
-            p->unkC = 0;
+            p->flags = 0x10000000;
+            p->XYZ.z = 0;
             p->unk74 = 0x3029;
             p = (PanelPrim *)(off + (u8 *)&((PanelPrim (*)[7])&IconParts[0][5])[0][1]);
             TankHudWeapons[i].b = &TA_players[i].MainWeaponRounds;
-            p->unk4 = 0xA;
-            p->unk8 = 0x39;
+            p->XYZ.x = 0xA;
+            p->XYZ.y = 0x39;
             p->u6C.ptr = &HeroModelBank[DB_TankObjects];
-            p->unk0 = 0x10000000;
-            p->unkC = 0;
+            p->flags = 0x10000000;
+            p->XYZ.z = 0;
             p->unk74 = 0x302B;
         }
         i++;
@@ -1419,7 +1419,7 @@ void UpdateTankWeaponIcons(void) {
             p = &((PanelPrim (*)[7])&IconParts[0][5])[i][0];
             switch (*(s32 *)TankHudWeapons[i].a) {
             case 3:
-                p->unk0 |= 0x8000;
+                p->flags |= 0x8000;
                 switch (*(s32 *)TankHudWeapons[i].b) {
                 case 1:
                     p->unk74 = 0x3029;
@@ -1433,10 +1433,10 @@ void UpdateTankWeaponIcons(void) {
                 }
                 break;
             case 2:
-                p->unk0 |= 0x8000;
+                p->flags |= 0x8000;
                 switch (*(s32 *)TankHudWeapons[i].b) {
                 case 0:
-                    p->unk0 &= ~0x8000;
+                    p->flags &= ~0x8000;
                     break;
                 case 1:
                     p->unk74 = 0x3030;
@@ -1450,25 +1450,25 @@ void UpdateTankWeaponIcons(void) {
                 }
                 break;
             default:
-                p->unk0 &= ~0x8000;
+                p->flags &= ~0x8000;
                 break;
             }
             p = &((PanelPrim (*)[7])&IconParts[0][5])[i][1];
             switch (*TankHudWeapons[i].c) {
             case 0:
-                p->unk0 &= ~0x8000;
+                p->flags &= ~0x8000;
                 break;
             case 1:
                 p->unk74 = 0x302B;
-                p->unk0 |= 0x8000;
+                p->flags |= 0x8000;
                 break;
             case 2:
                 p->unk74 = 0x302A;
-                p->unk0 |= 0x8000;
+                p->flags |= 0x8000;
                 break;
             default:
                 p->unk74 = 0x3028;
-                p->unk0 |= 0x8000;
+                p->flags |= 0x8000;
                 break;
             }
         }
@@ -2100,13 +2100,13 @@ s32 StillTottingUpScore(void) {
     return 0;
 }
 
-void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b) {
-    p->unk54 = draw_nas_model_flags;
-    p->unk6E = y;
+void MakeSubBar(PanelPrim *p, s16 x, s16 y, u32 a, u32 b) {
+    p->hook = draw_nas_model_flags;
+    p->u6C.s.unk6E = y;
     p->unk76 = y;
     p->unk74 = x + 0x40;
     p->unk84 = x + 0x40;
-    p->unk6C = x;
+    p->u6C.s.unk6C = x;
     p->unk70 = 0;
     p->unk78 = 0;
     p->unk7C = x;
@@ -2116,10 +2116,10 @@ void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b) {
     p->unk88 = 0;
     p->unk8C = a;
     p->unk90 = a;
-    p->unk0 = 0x12000000;
+    p->flags = 0x12000000;
     p->unk68 = 8;
     p->unk94 = b;
-    p->unk98 = b;
+    p->color = b;
 }
 
 void SetPanelHeroIconA(u16 arg0, s16 arg1, s16 arg2) {
