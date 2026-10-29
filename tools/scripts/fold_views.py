@@ -102,8 +102,9 @@ def drop_typedef(v, headers):
     for p in headers:
         L = rd(p).split("\n")
         o = list(L)
-        while "} %s;" % v in L:
-            e = L.index("} %s;" % v)
+        end = re.compile(r"\} %s;\s*(/\*.*\*/)?$" % re.escape(v))   # a trailing comment too
+        while any(end.match(x) for x in L):
+            e = next(i for i, x in enumerate(L) if end.match(x))
             s = e
             while not L[s].startswith("typedef struct"):
                 s -= 1

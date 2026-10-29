@@ -482,6 +482,18 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B 1.2, stand-ins):** the stand-ins with a recovered type are folded
+  (ROADMAP-A lists them).
+  - Tools: `struct_layout.header_of` finds a `typedef struct X X;` + `struct X {}` type (the
+    recovered headers' form), and `fold_views.drop_typedef` drops a view whose closing line
+    carries a comment (`test_fold_views.py`).
+  - Gotcha: fold_views' leaves walk into a struct's pointer members (`EXTengtype light_eng[4]`
+    mapped as `light_eng[0].EXTid`), so check the `--dry` mapping past a pointer and map by
+    hand with `--rename`.
+  - Gotcha: two adjacent u16 fields tested together (`flags & 0x10 && occupied == 0`) are
+    combined into one word test as fields but not through a cast read (`Update_Tiles`, kept
+    `/* matching:`).
+
 - **2026-10-29 (ROADMAP-B 1.2, views):** the overlays' views of engine globals are folded
   (ROADMAP-A has the list). Gotchas:
   - A failed compile left an object behind: the pipeline's `as -o` creates it before

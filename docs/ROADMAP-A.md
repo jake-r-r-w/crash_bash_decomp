@@ -494,3 +494,17 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
   read through a cast. `decl_dups.py --views` is at zero, and its test keeps it there. The
   Makefile now deletes an object whose compile failed (`.DELETE_ON_ERROR`): before, a failed
   cc1 still left the assembler's empty object behind.
+- [x] The slot overlays' stand-in structs as the recovered headers' types, where one exists
+  (2026-10-29; ROADMAP-B's 1.2). Folded, each still byte-identical:
+  - Pogo: `PogoCell`/`PogoMove` are `PogoSquare`/`PogoAIPlayer`;
+  - Papu: `PapuCell`/`PapuKey`/`PapuStep` are `PapuSquare`/`PapuFloor_info`/`PapuMinion_info`;
+  - Polar: `PolarSector` and `UkaMaskSeg` are `psector`, `ExtSmokeTrail` is `EXTsmoketrail`,
+    `BombMakerExt` is `EXTbombmaker`, and `TransBeamExt` is `EXTtransmuter`;
+  - Race: `RaceBarrelView` is `RaceBarrel`, and the `RaceSceneObj` its `sub` points at is a
+    `subengine`.
+
+  Not in this build (no code reads them): Polar's `bdata`/`barrierdata` and Pogo's `PogoKerb`
+  and `EXTPogoShockwaveInfo`. Bash's crate stats (`T_BC038Stats`, 0x12 bytes of `s16`) aren't
+  the recovered `CrateVelocity` (0x16 bytes of `u16`). The other stand-ins have no recovered
+  type and keep their names. A layout-only search (`scratch/pair2.py`) finds no more: generic
+  word arrays fit anything.

@@ -646,6 +646,7 @@ first. Rows that need inline asm are not allowed (only C).
 | quotient temps land in a1/a0 instead of a0/a1 with u8 locals | make the digit temps s32 and mask with & 0xFF where compared | `func_8008D488` |
 | andi/li swapped in a final compare block | insert do { } while (0); before the first store in the block | `func_8008D488` |
 | else branch of `if (a < s->f && g != K)` reloads a and s->f from memory | load both into locals before the if (`dz = a; z = s->f; if (dz < z && ...)`) | `func_80096F98` |
+| one `lw` and a 0xFFFF0010 mask in ours where the target tests two halfwords | combine merged two adjacent u16 field tests into one word; read the first through a cast (`*(u16 *)&p->flags`) so it isn't a field access | `Update_Tiles` |
 | a constant argument sign-extended (`li a2,-16`) where the target passes it whole (`0xF0`) | the original called it with no prototype in scope, so no narrowing to the parameter's `s8`: call through `((void (*)())f)(...)` | Chase's `pad_rumble_big` |
 | a call vanished, cross-jumped into an identical call elsewhere | the original's call was through an `int ()` declaration, a `call_value` insn that jump2 doesn't merge with the `void` calls: `((s32 (*)(s32, s32))f)(...)` | Nox's `SetHeroAction` |
 | a load comes after a struct store in ours, before it in the target | the target's load isn't an aggregate access: gcc 2.8's alias check lets a plain `*(s32 *)` read pass a MEM_IN_STRUCT store but not an array element or field; keep the scalar deref (`N2OInitBoss`'s `N2OHeroStarts + 0x2C`) | `N2OInitBoss` |
