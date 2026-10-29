@@ -123,7 +123,7 @@ A file is finished when every function in it reaches level 4.
   (`register int x asm("$20")`) or empty `asm("")` barriers, in the body or in a
   macro or static inline it uses; `decomp.py done` refuses them. Two
   exceptions: the SDK's `gte_*` macros (GTE coprocessor instructions C can't
-  express), and `draw_verts`'s (`func_800193A8`, main.exe) three register
+  express), and `draw_verts`'s (`draw_verts`, main.exe) three register
   variables, which are the original's (decided 2026-10-26). gcc reaches its
   `$18`-`$20` with `$16`/`$17` unused only through those pins (AGENT_LOG.md,
   Open leads), and they emit no instructions of their own. No other

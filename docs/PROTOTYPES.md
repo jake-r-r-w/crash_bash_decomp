@@ -156,54 +156,54 @@ such a shift itself. The addresses below are the records'.
   code, but no function records for it. `PANEL.CPP` has no line records.
 
 **PANEL.CPP in retail.** All 23 below are renamed (with Euro Demo 65's
-engine names: `renames_engine_all.txt`). `Setup_panel` is `func_8007AC20`, the first function
+engine names: `renames_engine_all.txt`). `Setup_panel` is the first function
 of the engine unit `8007ac20`, so that unit is `PANEL.CPP` (renamed `panel`). All 23 retail
 functions are already matched; the names are for readability.
 
 | Demo name | Retail | Similarity |
 |---|---|---|
-| `Setup_panel__Fv` | `func_8007AC20` | 0.82 |
-| `InitBigScore__Fv` | `func_8007B120` | 0.95 |
-| `UpdateBigScore__Fv` | `func_8007B330` | 0.99 |
-| `Set_Clock__FUsUs` | `func_8007B7FC` | 1.00 |
-| `Draw_Clock__Fv` | `func_8007B8D4` | 1.00 |
-| `InitHealthIcons__Fv` | `func_8007C338` | 1.00 |
-| `ClearHealthIcons__Fv` | `func_8007C514` | 1.00 |
-| `InitBossHealthIcons__Fv` | `func_8007C6EC` | 1.00 |
-| `UpdateHealthIcons__Fv` | `func_8007CA70` | 1.00 |
-| `InitPowerIcons__Fv` | `func_8007CC80` | 1.00 |
-| `UpdatePowerIcons__Fv` | `func_8007CE50` | 0.78 |
-| `InitScore3Icons__Fv` | `func_8007CFAC` | 1.00 (three identical; by order) |
-| `InitScore2Icons__Fv` | `func_8007D034` | 1.00 (by order) |
-| `InitScore1Icons__Fv` | `func_8007D0BC` | 1.00 (by order) |
-| `InitSharedScoreIcons__Fv` | `func_8007D144` | 1.00 |
-| `UpdateScoreIcons__Fv` | `func_8007D4D0` | 1.00 |
-| `Cups_Update__Fv` | `func_8007D9DC` | 0.92 |
-| `StillTottingUpScore__Fv` | `func_8007E894` | 1.00 |
-| `MakeSubBar__FP9subenginessUiUi` | `func_8007E8D0` | 1.00 |
-| `Clock_Off__Fv` | `func_8007EB04` | 1.00 |
-| `Init_Clock__Fiii` | `func_8007EB1C` | 1.00 |
-| `InitCountdown__Fv` | `func_8007EB68` | 0.95 |
-| `Init_Panel__Fv` | `func_8007EC48` | 0.98 |
+| `Setup_panel__Fv` | `Setup_panel` | 0.82 |
+| `InitBigScore__Fv` | `InitBigScore` | 0.95 |
+| `UpdateBigScore__Fv` | `UpdateBigScore` | 0.99 |
+| `Set_Clock__FUsUs` | `Set_Clock` | 1.00 |
+| `Draw_Clock__Fv` | `Draw_Clock` | 1.00 |
+| `InitHealthIcons__Fv` | `InitHealthIcons` | 1.00 |
+| `ClearHealthIcons__Fv` | `ClearHealthIcons` | 1.00 |
+| `InitBossHealthIcons__Fv` | `InitBossHealthIcons` | 1.00 |
+| `UpdateHealthIcons__Fv` | `UpdateHealthIcons` | 1.00 |
+| `InitPowerIcons__Fv` | `InitPowerIcons` | 1.00 |
+| `UpdatePowerIcons__Fv` | `UpdatePowerIcons` | 0.78 |
+| `InitScore3Icons__Fv` | `InitScore3Icons` | 1.00 (three identical; by order) |
+| `InitScore2Icons__Fv` | `InitScore2Icons` | 1.00 (by order) |
+| `InitScore1Icons__Fv` | `InitScore1Icons` | 1.00 (by order) |
+| `InitSharedScoreIcons__Fv` | `InitSharedScoreIcons` | 1.00 |
+| `UpdateScoreIcons__Fv` | `UpdateScoreIcons` | 1.00 |
+| `Cups_Update__Fv` | `Cups_Update` | 0.92 |
+| `StillTottingUpScore__Fv` | `StillTottingUpScore` | 1.00 |
+| `MakeSubBar__FP9subenginessUiUi` | `MakeSubBar` | 1.00 |
+| `Clock_Off__Fv` | `Clock_Off` | 1.00 |
+| `Init_Clock__Fiii` | `Init_Clock` | 1.00 |
+| `InitCountdown__Fv` | `InitCountdown` | 0.95 |
+| `Init_Panel__Fv` | `Init_Panel` | 0.98 |
 
 Not placed, and closed (2026-10-23): the code changed after the demo, so
 nothing better than position will place them. `InitIcons`, `InitSplatIcons`
-and `InitBorderIcons` sit where `func_8007BE84`, `func_8007BFA8` and
-`func_8007C170` do (similarity 0.51); `InitBossIcon`, `FetchWinner`,
+and `InitBorderIcons` sit where `SetupCompletionDigits`, `InitIcons4` and
+`InitIcons2` do (similarity 0.51); `InitBossIcon`, `FetchWinner`,
 `Cups_Init` and `Draw_Panel` have no match. Retail-only functions in the
-unit: `func_8007AF3C`, `C830`, `D208`, `D2F4`, `D5EC`, `D6D0`, `D850`,
+unit: `UpdatePanel`, `C830`, `D208`, `D2F4`, `D5EC`, `D6D0`, `D850`,
 `E7A4`, `E7C8`, `E7F4`, `E874`, `E93C`, `E9FC`, `EAC0`, `ED0C`. Euro Demo 65
 names `E7C8`: `CalcElapsedTime`.
 
 The last functions in the file (from `Cups_Init` on in the demo) come in
 reverse line order; the ones placed in retail keep that order.
 
-**PAUSE.CPP.** Placed: it is the engine unit `pause`, `func_8007EE2C` to
-`func_80083550`, and a new file starts at `func_80083708` (ARCHITECTURE.md,
+**PAUSE.CPP.** Placed: it is the engine unit `pause`, `PauseChooseYesNo` to
+`SetDefaultHeroHooks`, and a new file starts at `InitialiseHeroes` (ARCHITECTURE.md,
 Files inside the engine). Its early functions were rewritten after the demo
-(the pause menu, `func_8007F314`, matches its demo copy at 0.28), but its
+(the pause menu, `UpdatePause`, matches its demo copy at 0.28), but its
 last ones match in order and the line table ends right before the demo copy
-of `func_80083708`.
+of `InitialiseHeroes`.
 
 **Applied.**
 - Signatures and locals: the parameter types (Euro Demo 65, Applied) and
@@ -273,11 +273,11 @@ links.
 | Module | Matched (0.9+ / 0.75+) | Examples |
 |---|---|---|
 | `main.exe` | 116 / 124 | `mal_update`, `mal_free`, ... (the allocator), `init_file`, `load_file_permanent`, `set_joypad`, `cam_init`, `interp`, `BSwapEndian`, `map_entity_address`, `init_dots`, `dbase_asload_with_anims_texture_callback`, `get_script_header`, `texture_draw`, PsyQ functions |
-| engine | 22 / 27 | `InitialiseNasSystem` (`func_80078CA4`, the engine's first function), `GravitateNas`, `DoAmbience`, `CalcElapsedTime` (`func_8007E7C8`, in `PANEL.CPP`), `DefHero2ObjectCollision`, `HeroGhost`, `PrintNasPos` |
+| engine | 22 / 27 | `InitialiseNasSystem` (the engine's first function), `GravitateNas`, `DoAmbience`, `CalcElapsedTime` (in `PANEL.CPP`), `DefHero2ObjectCollision`, `HeroGhost`, `PrintNasPos` |
 | slot overlays | 11 / 12 | `UpdatePAPU`, `PAHeroHit`, `SetPAHeroCarry` (`papu`), `DoGetBomb`, `TestBeamChance` (`polar`), `PlotTotemBit`, `TankBossCortexTurretFire` (`tank`), `MaintainCentre` (`race`), `team_mode_init`, `adventure_mode_head` (`titles`) |
 
 Checks: the `PANEL.CPP` names agree with the Jampack mapping
-(`InitBossHealthIcons` is `func_8007C6EC` in both), and names the repo got
+(`InitBossHealthIcons` in both), and names the repo got
 from the leaks agree (`InitSmokePoof`, `PlotSmokePoof`; `TA_HeroBot` and
 `InitialisePOLARFirst` are the best, if weak, matches of their labels). Some
 names the repo gave itself ("Name 15 core engine functions") had their
@@ -391,7 +391,7 @@ rest of the candidates land on labels nothing references yet.
   `PadState`, `UPOLY_GT3` and `lPOLY_GT4` are `POLY_GT3` and `POLY_GT4`, and `prim_` is the sprite prim
   `release_sprim` frees. `file` and `tga_header` keep their own names.
 - `PrintNasPos` is never referenced, so it can't be placed.
-- `ProcessPauseUD(int, int)` is `func_8007F1A8`, named (`src/overlays/engine/pause.c`).
+- `ProcessPauseUD(int, int)` is `ProcessPauseUD`, named (`src/overlays/engine/pause.c`).
   `Do_SelectorMenu()` and `PreUpdateStats(u16)` are `PAUSE.CPP`-area labels that match nothing in
   retail.
 - The 0x38-byte texture entry has one type, `obj_texture`; `AnimEntry` and `TexDst2A84C` are folded
@@ -409,7 +409,7 @@ twin in another overlay shows too). The discs carry no debug records for
 most of these functions, but comparing the compiles of successive builds
 shows when a pattern appeared, and with it which source change made it.
 
-`func_8007F314` (the pause menu) across the builds, roughly oldest first (the Euro
+`UpdatePause` (the pause menu) across the builds, roughly oldest first (the Euro
 disc is dated 2000-10-09, but its code is older than the Oct 9 prototype's):
 
 | Build | Similarity | Size | What it showed |
@@ -431,37 +431,37 @@ differs. A 1.000 is the same compile as US retail.
 
 | Function | Ovl | Size | Aug 23 | Jampack | Sep 14 | Euro | Oct 9 | PAL | JP |
 |---|---|---|---|---|---|---|---|---|---|
-| `func_800BC038` | 5d | 8600 | 0.937 -656 | 0.910 -920 | 0.959 -316 | 0.937 -656 | 0.997 +4 | 0.993 +8 | 0.992 +8 |
-| `func_800B4AB0` | 5d | 4984 | 0.983 -60 | 0.909 +520 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
-| `func_800B87A0` | 5e | 5844 | 0.936 +488 | 0.931 +456 | 0.940 +564 | 0.936 +528 | 0.998 -4 | 0.998 -4 | 1.000 |
-| `func_800B77E8` | 5f | 5852 | 0.898 -652 | 0.890 -632 | 0.952 -380 | 0.898 -636 | 0.989 -40 | 0.989 -40 | 1.000 |
+| `PlotCrate` | 5d | 8600 | 0.937 -656 | 0.910 -920 | 0.959 -316 | 0.937 -656 | 0.997 +4 | 0.993 +8 | 0.992 +8 |
+| `Bash_HeroBot` | 5d | 4984 | 0.983 -60 | 0.909 +520 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `PlotPACrate` | 5e | 5844 | 0.936 +488 | 0.931 +456 | 0.940 +564 | 0.936 +528 | 0.998 -4 | 0.998 -4 | 1.000 |
+| `UpdateTankHeroWeapons` | 5f | 5852 | 0.898 -652 | 0.890 -632 | 0.952 -380 | 0.898 -636 | 0.989 -40 | 0.989 -40 | 1.000 |
 | `Plot_PogoPadlock` | 60 | 1400 | 1.000 | 0.960 | 1.000 | 1.000 | 0.967 +96 | 0.967 +96 | 1.000 |
 | `Plot_PogoRipperRoo` | 60 | 2624 | 0.992 -36 | 0.970 -120 | 1.000 | 0.992 -36 | 0.980 +84 | 0.980 +84 | 1.000 |
 | `PlotTransmuterBeam` | 62 | 9244 | 0.979 -268 | 0.976 -272 | 0.997 -48 | 0.970 -76 | 0.989 +152 | 0.989 +152 | 0.987 +132 |
 | `PlotUkaPolarMask` | 62 | 6472 | 0.989 -80 | 0.988 -80 | 0.989 -80 | 0.989 -80 | 1.000 | 1.000 | 0.982 +124 |
-| `func_800B7508` | 64 | 3468 | 0.699 +884 | 0.582 +300 | 1.000 | 0.838 +860 | 0.995 | 0.995 | 1.000 |
-| `func_800BE914` | 63 | 684 | 0.746 -256 | 0.615 -280 | 0.746 -256 | 0.746 -256 | 1.000 | 0.944 -72 | 0.944 -72 |
-| `func_800B5E28` | 5d | 784 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
-| `func_800B8294` | 64 | 784 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
-| `func_800B4048` | 68 | 1020 | 0.374 | 0.349 | 0.658 | 0.362 | 0.963 -12 | 0.963 -12 | 1.000 |
+| `Spin_HeroBot` | 64 | 3468 | 0.699 +884 | 0.582 +300 | 1.000 | 0.838 +860 | 0.995 | 0.995 | 1.000 |
+| `RaceHeroesBump` | 63 | 684 | 0.746 -256 | 0.615 -280 | 0.746 -256 | 0.746 -256 | 1.000 | 0.944 -72 | 0.944 -72 |
+| `BashAI_ScanAhead` | 5d | 784 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `SpinAI_ScanAhead` | 64 | 784 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `InitialiseCHASE` | 68 | 1020 | 0.374 | 0.349 | 0.658 | 0.362 | 0.963 -12 | 0.963 -12 | 1.000 |
 | `PogoAI_MoveTowardsTarget` | 60 | 1320 | 1.000 | 0.764 -264 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
-| `func_800B7D94` | 63 | 1384 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.746 -120 | 0.746 -120 |
-| `func_800B980C` | 63 | 1604 | 0.917 -32 | 0.885 -116 | 0.917 -32 | 0.917 -32 | 0.931 +92 | 0.931 +92 | 0.983 +16 |
+| `RaceTrackCollideC` | 63 | 1384 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.746 -120 | 0.746 -120 |
+| `RaceMoveHero` | 63 | 1604 | 0.917 -32 | 0.885 -116 | 0.917 -32 | 0.917 -32 | 0.931 +92 | 0.931 +92 | 0.983 +16 |
 | `CheckMineToBoss` | 5f | 1620 | 1.000 | 0.410 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
-| `func_800B6708` | 62 | 1644 | 0.979 -68 | 0.979 -68 | 0.979 -68 | 0.979 -68 | 1.000 | 1.000 | 1.000 |
-| `func_800B76A4` | 63 | 1776 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.618 -512 | 0.618 -512 |
+| `PolarAI_DoAttack` | 62 | 1644 | 0.979 -68 | 0.979 -68 | 0.979 -68 | 0.979 -68 | 1.000 | 1.000 | 1.000 |
+| `RaceTrackCollideB` | 63 | 1776 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.618 -512 | 0.618 -512 |
 
 Under 0.8 the closest function may be a different one. What the table shows:
 - The Oct 9 prototype (the PAL review build) has PAL retail's minigame
   code in 15 of the 19. US retail equals JP in 12 and PAL in 7. In
-  `func_800BE914`, `func_800B7D94` and `func_800B76A4` US keeps the
+  `RaceHeroesBump`, `RaceTrackCollideC` and `RaceTrackCollideB` US keeps the
   prototypes' version, while PAL and JP share a revised one.
 - Each of the five biggest has a build within a few instructions of
-  retail's size: Oct 9's `func_800BC038` is one instruction longer and its
-  `func_800B87A0` one shorter, Sep 14's `PlotTransmuterBeam` 12 shorter,
-  Oct 9's `func_800B77E8` 10 shorter, and the older builds'
+  retail's size: Oct 9's `PlotCrate` is one instruction longer and its
+  `PlotPACrate` one shorter, Sep 14's `PlotTransmuterBeam` 12 shorter,
+  Oct 9's `UpdateTankHeroWeapons` 10 shorter, and the older builds'
   `PlotUkaPolarMask` 20 shorter.
-- `func_800B4AB0` is matched (2026-10-23). Its Aug 23 copy gave the
+- `Bash_HeroBot` is matched (2026-10-23). Its Aug 23 copy gave the
   first test's shape, `ok = (fux->status == 1)`, the way in to its last
   register choices (MATCHING.md, Diff patterns).
 - `PogoAI_MoveTowardsTarget` is matched (2026-10-23). Jampack's copy is
@@ -482,7 +482,7 @@ Under 0.8 the closest function may be a different one. What the table shows:
   Diff patterns). None of them changes the spawn read at 0xc14, which
   only a dead test's hidden use of the base fixed (MATCHING.md, the
   unfolded-base row).
-- `func_800B5E28` and `func_800B8294` are exact opcode twins (bash and
+- `BashAI_ScanAhead` and `SpinAI_ScanAhead` are exact opcode twins (bash and
   spin), unchanged in every build, and `CheckMineToBoss` is the same in
   every build but Jampack's: their history adds nothing.
 

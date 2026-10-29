@@ -87,8 +87,8 @@ change to one of the same size. An image keeps its size and depth; at most 16 (o
 ## Model files (`.mdl`)
 
 `tools/scripts/mdl.py` and `gltf.py`. The mesh reading starts from CTR-tools' (`BashMesh.cs`);
-the rest comes from the game's own code, matched in `src/main/main.c`: `func_80017EE8` (texture
-coordinates), `func_80017D90` (colours), `func_800193A8` (drawing), `func_8001C0F0` and the draw
+the rest comes from the game's own code, matched in `src/main/main.c`: `prim_write_uvs` (texture
+coordinates), `faces_write_colors` (colours), `draw_verts` (drawing), `morph_blend_verts` and the draw
 switch around it (animation). All 400 files pack back byte for byte; 373 have meshes, the 22
 fonts and 5 arenas (e.g. `tank_jungle/arena.mdl`) have none in this table. Checked by eye: Uka
 Uka's mask textured and talking (`001`, `043`), Oxide's hovercraft (`13F`), the menu's arena

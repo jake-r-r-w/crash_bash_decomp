@@ -10,67 +10,61 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-28)
+## Current state (2026-10-29)
 
-- **Every game function matches**: all 2537 in `main.exe`, the engine and
-  the 14 slot overlays (100% of game code bytes, 2026-10-26), and all 564
-  PsyQ functions are Sony's own objects (281, plus `2MBYTE.OBJ`; their
-  `.data` too, except `bios_1.o`'s: `configs/USA/psyq/data_keep.txt`).
-  `make check` and `make disc-check` OK. Live figures: `decomp.py progress`
-  / `docs/index.html`.
-- [ROADMAP-A.md](ROADMAP-A.md) and [ROADMAP-B.md](ROADMAP-B.md): Phases 1 to 5 are done (2026-10-28): matching, the
-  Tank pilot, every slot overlay, the engine and `main.exe` source-only, and
-  every asset format extracted (the shift retests were dropped by decision:
-  Phase 6's shift of everything covers them). Phase 6 is next. Figures
-  (`progress`, 2026-10-28): all 2537 game functions named, 2424 typed, data
-  100% C, nothing parked.
-- Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
-  steering C counts as matched, inline asm is refused by the gate. One
-  recorded exception (2026-10-26): `draw_verts` (`func_800193A8`,
-  `src/main/prims.c`) keeps its three original register pins
-  (`register s32 xy asm("$20")`, ...; CONVENTIONS.md). The
-  last three matches (`func_800B4048`, `PlotTransmuterBeam`,
-  `func_800BE914`) are steering; their natural forms are Open leads.
-- Files: `main/main` is nine files since 2026-10-23 (`main`, `dbase`,
-  `80017164`, `scripts`, `sfx`, `80022a3c`, `sound`, `music`, `card`;
-  ARCHITECTURE.md, Files inside `main/main`); the main segment links with
-  `SUBALIGN(4)`. The engine is seven files (`panel` and `pause` named from
-  Jampack's records), `bash` three, and `papu`, `bonk`, `n2o`, `hub`
-  two each (ARCHITECTURE.md, Files inside the engine / the slot overlays).
-  Every slot overlay's id word is its own rodata unit.
-- Compiler: gcc 2.8.1-psx `-O2 -G0 -fno-builtin`, maspsx
-  `--aspsx-version=2.86`; two exe units are gcc 2.7.2 + ASPSX
-  (`aspsx_fill.py`). That cc1 is decompals/old-gcc's build of FSF 2.8.1 for
-  the PlayStation; `tools/cc1/` rebuilds it from source byte for byte, for
-  analysis variants only (`localtie`, `keeplive`, `copysplit`).
-- Every type and AST id in the Oct 9 prototype's debug fragment is in
-  `include/bash/`, every overlay is identified, and the demo discs' names
-  and prototypes are applied (PROTOTYPES.md; the discs are in the
-  git-ignored `protos/`).
-- Game data: every `CRASHBSH.DAT` entry but the 15 code overlays extracts to
-  editable files in `assets/CRASHBSH/` and packs back byte for byte, the
-  level data, scripts and menus included (2026-10-28), and `card.py` reads
-  and writes the memory-card save (docs/ASSETS.md). Edits to placements,
-  menus, cutscene keys and saves are playtested.
-- Dashboard: `docs/index.html` is `tools/scripts/dashboard.html` plus the
-  data (`progress` takes ~2.5 s warm). The swarm (tools/swarm/README.md)
-  has nothing left to queue.
+- **Every game function matches**: all 2537 in `main.exe`, the engine and the 14 slot overlays
+  (100% of game code bytes, 2026-10-26). All 564 PsyQ functions are Sony's own objects (281,
+  plus `2MBYTE.OBJ`), and so is their `.data`, except `bios_1.o`'s, which is C.
+  `make check` and `make disc-check` are OK. Live figures: `decomp.py progress` /
+  `docs/index.html`.
+- **The source is complete.** Every function, all rodata and all data are C. Every function is
+  named, and all but one are typed (`progress`: 2536/2537). Nothing is parked, and no `func_`
+  or `D_` name is left in `src/`.
+  - What still comes from the disc: the exe's header (`asm/header.s`), `2MBYTE.OBJ` and the
+    engine's two memory images (zeros in source builds).
+- **The roadmap.** [ROADMAP-A.md](ROADMAP-A.md) holds the done work: the old Phases 1-5 and
+  ROADMAP-B Parts 1-3 (typing, names and loose ends, documentation; 2026-10-29).
+  [ROADMAP-B.md](ROADMAP-B.md) has what is left: Part 4 (the final test), Part 5 (release),
+  Part 6 (the PC port).
+- **Matching rules.** Matches are C only, natural C first (CONVENTIONS.md, Matching rules).
+  - Steering C counts as matched, and the gate refuses inline asm.
+  - One recorded exception (2026-10-26): `draw_verts` (`src/main/prims.c`) keeps its three
+    original register pins (CONVENTIONS.md).
+  - Three matches stay steering: `InitialiseCHASE`, `RaceHeroesBump` and `PlotTransmuterBeam`
+    (ROADMAP-A, Names and loose ends).
+- **Files.**
+  - `main/main` is nine files: `main`, `dbase`, `prims`, `scripts`, `sfx`, `nascalls`,
+    `sound`, `music`, `card`. Then come `modchip` and `modchip_msg` (gcc 2.7.2) and
+    `psyq/bios_1`.
+  - The engine is nine files: `engine`, `panel`, `pause`, `heroes`, `gameflow`,
+    `levelload`, `camera`, `asttable`, `entry`.
+  - `bash` is three files, and `papu`, `bonk`, `n2o`, `hub` two each. Every slot overlay's id
+    word is its own unit.
+  - Evidence: ARCHITECTURE.md, Files inside `main/main`, the engine, the slot overlays.
+- **The compiler.** gcc 2.8.1-psx `-O2 -G0 -fno-builtin` and maspsx `--aspsx-version=2.86`.
+  The two gcc 2.7.2 + ASPSX units share one setting (`-fno-rerun-cse-after-loop`, ROADMAP-A
+  2.4). `tools/cc1/` rebuilds the cc1 from source byte for byte, for analysis variants only.
+- **Docs.** ARCHITECTURE.md opens with How the game works: boot, processes, objects, heroes,
+  drawing, maps, scripts, loading, sound, card. The prototype and demo discs' findings are in
+  PROTOTYPES.md, and the asset formats in ASSETS.md.
+- **Game data.** Every `CRASHBSH.DAT` entry but the 15 code overlays extracts to editable files
+  in `assets/CRASHBSH/` and packs back byte for byte, and `card.py` reads and writes the
+  memory-card save (docs/ASSETS.md). Edits to placements, menus, cutscene keys and saves are
+  playtested.
+- **Shifted builds.** `make shift-all` (every binary moved, the memory images zeroed) boots and
+  plays, playtested by hand on 2026-10-29.
 
 ## Next
 
-ROADMAP-B.md, Part 1 onwards. In rough order:
+ROADMAP-B.md, Part 4 onwards:
 
-1. Done 2026-10-29: **everything shifted at once** (`make shift-all`; it boots and plays).
-2. Done 2026-10-29: **Quality level 4** (ROADMAP-B Part 1; every function typed and the overlays' views folded since 2026-10-29): the overlays' 136 views of
-   engine globals (`decl_dups.py --views`: fold each into the one type), the exe's 69 raw-offset
-   functions (mostly the heap's block arithmetic and `export_exe_functions`' slot offsets), and the
-   `unkXX` fields (ASSETS.md, What isn't decoded, lists the file formats' ones).
-3. Dropped 2026-10-29 by decision: **a PS1 build with a current GCC**. The PC port's first step
-   (ROADMAP-B 6.1) compiles the same C with a modern compiler instead.
-4. **ARCHITECTURE.md** as a description of the game's systems.
+1. **The final test** (Part 4):
+   - a clean rebuild from a fresh clone (4.1);
+   - the "nothing hidden" scan (4.2), whose source side is now clean;
+   - every minigame to a win on the shifted build (4.3);
+   - a side-by-side run against retail (4.4).
+2. **Release** (Part 5), then **the PC port** (Part 6).
 
-Decided 2026-10-29: source builds write zeros in the memory images (ROADMAP-A 1.1); zeroing the
-engine's .bss is ROADMAP-B 2.5.
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 ## Open leads
@@ -87,34 +81,29 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   `0x80077330`, not `0x80077334`, and `_snd_ev_flag` is at `0x80077340`, not `0x80076b30`. So in
   retail those variables were commons that psylink placed, and the object's own order is wrong.
   Next, if it's picked up again: place libsnd's .bss names by retail's list (as the matching link
-  does), then bisect main, engine and slot with `scratch/boottest.ps1`.
-
-- **`draw_verts` (`func_800193A8`) needs its register pins** (proved
-  2026-10-26; kept as a recorded exception to only-C, CONVENTIONS.md). The target is a leaf that saves only s2-s4 (frame 24: two
-  locals at 0/4, then s2, s3, s4) and keeps `xy`, `z`, `flags` in
-  `$20`/`$19`/`$18`, while `$15` and `$25` are never used. mips.h has no
-  `REG_ALLOC_ORDER`, so global.c's `find_reg` takes the lowest free
-  register; a pseudo reaches `$20` with `$16`/`$17` free only through a
-  hard-register preference, which needs `$20` in the RTL, and in C only
-  `register ... asm("$20")` puts it there. Anything that took `$16`/`$17`
-  away (a pseudo, a clobber) would make them live and saved, which the
-  target doesn't. Without the pins it builds with t-registers and no frame
-  (structure 171/173). The original was almost certainly written with
-  these register variables (Sony-style GTE code).
-- **The steering matches** (`func_800B4048`, `func_800BE914`, `PlotTransmuterBeam`) are kept
-  as steering (ROADMAP-A, Names and loose ends). Their rows in MATCHING.md hold the analysis.
-- **Typing pass for the overlays with no struct coverage** (spin, dino,
-  n2o: enums only), with `field_survey.py`.
-- The gcc 2.7.2 units (`main/modchip`, `main/modchip_msg`): their toolchain
-  differences are all in the Makefile and `aspsx_fill.py` (ASPSX's slot
-  filling and load expansion; both built with `-fno-rerun-cse-after-loop`
-  since 2026-10-29, `msg_print` in its plainest form; `refill_from_jump`
-  redoes one slot fill where Sony's reorg differs from FSF 2.7.2's).
-- Prototype debug types: the fragment's bodiless structs the code shows are typed (2026-10-29).
-  Left as word arrays: `script_key_anim.quat`/`quat_interp` (a quaternion and its slerp table:
-  arrays are their shape) and Polar's `ang[2]` (struct ._23; nothing reads it).
-- Sound voices: `func_80022504` is "stop all" (`StopSfx` inlined in a loop), `func_800228C4`
-  unlinks without stopping, `func_80022924` allocates, `func_80022984` inits the pool.
+  does), then bisect main, engine and slot with `scratch/boottest.ps1`. The PC port (ROADMAP-B
+  6.1) meets the same C with a modern compiler.
+- **`draw_verts` needs its register pins** (proved 2026-10-26; kept as a recorded exception to
+  only-C, CONVENTIONS.md).
+  - The target is a leaf that saves only s2-s4 (frame 24: two locals at 0/4, then s2, s3, s4).
+    It keeps `xy`, `z` and `flags` in `$20`/`$19`/`$18`, and never uses `$15` or `$25`.
+  - mips.h has no `REG_ALLOC_ORDER`, so global.c's `find_reg` takes the lowest free register.
+    A pseudo reaches `$20` while `$16`/`$17` are free only through a hard-register preference,
+    which needs `$20` in the RTL. In C, only `register ... asm("$20")` puts it there.
+  - Anything that took `$16`/`$17` away (a pseudo, a clobber) would make them live and saved,
+    which the target doesn't do. Without the pins it builds with t-registers and no frame
+    (structure 171/173).
+  - The original was almost certainly written with these register variables (Sony-style GTE
+    code).
+- **The steering matches** (`InitialiseCHASE`, `RaceHeroesBump`, `PlotTransmuterBeam`) are
+  kept as steering (ROADMAP-A, Names and loose ends). Their rows in MATCHING.md hold the
+  analysis.
+- **`shell_setup`'s fields** (each overlay's world record's second pointer) aren't decoded. It
+  holds the VRAM areas and pool sizes, and may be the same layout as `EngineCfg`.
+- **Whether `modchip` and `modchip_msg` are one file** is open. They share a compiler and flags.
+- **Prototype debug types.** The fragment's bodiless structs that the code shows are typed
+  (2026-10-29). Two stay word arrays: `script_key_anim.quat`/`quat_interp` (a quaternion and its
+  slerp table, whose shape is an array) and Polar's `ang[2]` (struct ._23, which nothing reads).
 
 ## Gotchas
 
@@ -454,6 +443,13 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B Part 3 done, docs refreshed):**
+  - ARCHITECTURE.md opens with How the game works.
+  - The reference docs' `func_` addresses are names now. For shared slot addresses,
+    `git blame` the line, then take the match commit nearest before it.
+  - Stale notes are fixed, and the current state is rewritten.
+  - Found on the way: `LoadModeText` is `LoadModeOverlay` (it loads the slot overlay),
+    and `D_BFC7FF52` is `BiosRegion`.
 - **2026-10-29 (ROADMAP-B Part 2 done):**
   - The demos' `file` class types the archive index and every loader.
     `DatIndex` is a `file[992]`, and the lists are `GroupFile` triples.

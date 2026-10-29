@@ -1,8 +1,234 @@
 # Architecture
 
-How `SCUS_945.70` and its code overlays are laid out and how this repository
-rebuilds them. The evidence behind each boundary is kept as comments next to it
-in `configs/USA/main.yaml` and `configs/USA/overlays/*.yaml`.
+This file has two parts:
+- **How the game works** describes the game's systems: what runs, in what order, and where each
+  piece lives in `src/`.
+- **Where everything is**, from Disc onwards, covers how `SCUS_945.70` and its code overlays are
+  laid out, the evidence behind each file boundary and name, and how this repository rebuilds
+  them. The evidence for each boundary is also kept as comments next to it in
+  `configs/USA/main.yaml` and `configs/USA/overlays/*.yaml`.
+
+The names are the original ones where a source gives them: the leaked headers, the demos' symbols
+and the Oct 9 prototype's debug types (PROTOTYPES.md). Everything else is descriptive (Core engine
+functions).
+
+## How the game works
+
+Crash Bash is three layers of code. Only one minigame is in memory at a time.
+
+| Layer | Where | Loaded | Holds |
+|---|---|---|---|
+| The shell | `SCUS_945.70`, `src/main/` | at boot, `0x80010000` | the heap, CD loading, pads, the object system (NAS), drawing, maps, scripts, sound, music, the memory card, PsyQ |
+| The engine | DAT entry 991 (`gameeng.bin`), `src/overlays/engine/` | once, by the shell, at `HeapStart` (`0x80078C90`) | the game flow (processes), level loading, heroes, the camera, the HUD (`panel`), the pause menu, the AST table |
+| A slot overlay | DAT entries 487 and 716..728, `src/overlays/<game>/` | per mode, into the slot (`0x800B32B4`) | one minigame's rules and objects, or the titles, or the warp rooms (`hub`) |
+
+The original was C++ (the demos' symbols are mangled), built per subsystem from the
+`CORE\NASCORE`, `CORE\SHELL`, `GAMEENG` and `GAMESPEC` directories (Files inside `main/main`).
+
+### Boot and the main loop
+
+- The startup code (`2MBYTE.OBJ`) clears the `.bss` and calls `machine_init` (`nascalls.c`).
+  That sets up PsyQ (graphics, GTE, libsnd, the multitap and the video mode), then runs the
+  mod-chip check (`modchip_check_region`; `modchip_msg.c` draws its warning screen).
+- `shell_init` (`main.c`) puts the whole free RAM up to `0x801FF000` into one heap
+  (`MainHeap`). It reads the engine from the disc to `HeapStart` and runs the shell's module:
+  `RunModules(&ShellModules)`.
+- A module (`ModuleEntry`) is `{init, update, render, quit, heap}`, and `RunModules` loops
+  update then render until something switches `CurrentModule`. The shell's module wraps the
+  engine's (`EngineEntry`, `entry.c`).
+  - Init is `shell_start_engine`: it restarts the heap after the engine and calls the engine's
+    `RestartGame`.
+  - Update is `shell_update`, every frame: the CD loader, the pads, the random seeds, sound,
+    music, and the memory card every other frame, then the engine's `UpdateProcess`.
+  - Render is `shell_render_dcache`: the engine's `RenderProcess` with the stack in the
+    scratchpad, then `FlipScreen`.
+- The game runs at 30 fps (`VSyncRate` 2).
+- `shell_run_spyro_demo` shuts everything down and runs the disc's Spyro 3 demo.
+
+### Processes: the game flow
+
+The engine's flow is a chain of processes (`process_info`: `{init, update, render, quit,
+heap}`).
+- A `process_control_info` runs one process at a time. `GotoProcess(p, speed)` starts a fade
+  out, and when the screen is dark the controller quits the old process and inits the new one
+  (`process_control_update`, `prims.c`).
+- `ProcessControl` is the main chain. `MenuProcessControl` runs a menu over the game, and
+  `LoadingControl` runs the loading screen during a load.
+
+The main chain:
+
+1. `RestartGame` (`gameflow.c`) fades in and goes to `LevelLoadProcess` (`levelload.c`), which
+   loads a mode in stages (`UpdateLevelLoad`):
+   - It resets the heap and calls `LoadModeOverlay`, which loads the mode's text into
+     `ModeTextBuffer` and the mode's overlay into the slot. The heap restarts after the overlay.
+   - It sets up the OT, VRAM, prim pools and model records from the mode's `EngineCfg`.
+   - It reads the mode's file group, starts the music, sets up the map, and loads the heroes'
+     models.
+   - It calls the level hooks (below) and goes to `RetryProcess`.
+2. `RetryProcess` is the game itself: `UpdateGame` / `RenderGame` (`gameflow.c`).
+3. The rest are the intro (`IntroProcess`), the cutscenes (`ScriptSceneProcess`), the save
+   screen, the tournament menu and the return to the warp room. The titles overlay adds the
+   front-end menus (`MainMenu`, `CharSelect`, `LevelSelect`, `BattleOptions`, ...), and the hub
+   adds its door menu.
+
+What a mode is:
+- The mode number (`GameState.mode`, `GameMode`) picks a row of `ModeTypes` (`main.c`).
+- Its first halfword, the mode type (0x101..), picks the overlay (`ModeOverlayFiles`), the text
+  (`ModeTextTables`) and the engine's world record (`asttable.c`).
+- A world record points at three things in the overlay:
+  - its `<GAME>_PREMAP` (`HUB_PREMAP`, ...): the models to preload and the per-arena world
+    info;
+  - its `shell_setup`: memory settings, with its VRAM areas among them;
+  - its set-up function (`HUBSetUp`, `TA_SetUp`, ...).
+- The set-up function fills the 11 level hooks (`LevelSpecs`, the leak's `LevSpec`):
+  `LevelPreInit`, `LevelInit`, `LevelRestartInit`, `LevelRoutine` (every frame),
+  `LevelExit`, the trigger hooks, `GetContour` (the floor test) and `FinishQuick`. It may
+  replace `RenderHook` too (`HubRender`).
+- `ModeFileGroups[mode]` names the archive files the mode reads in one go (`GroupFile` triples:
+  a model record and its `.mdl` and `.tex`).
+
+### One frame of a game
+
+`UpdateGame`:
+- `UpdatePause` (`pause.c`) runs the pause menu, and while it is up the level isn't updated.
+- Otherwise `UpdateLevel` (`engine.c`) runs:
+  - the level's `LevelRoutine`;
+  - every active object's Plot (`UpdateAllNas`, by class);
+  - the four heroes (`ProcessHeroes`, `heroes.c`);
+  - the objects that asked for a late update (`NasUpdateList`);
+  - the clock and the HUD (`Draw_Clock`, `UpdatePanel`, `panel.c`) and the camera
+    (`UpdateCamera`, `camera.c`).
+- Then come the map's texture animations (`map_update`), the screen labels, the scripts
+  (`scripts_update`) and the menu chain.
+
+`RenderGame` calls `RenderHook`, usually `RenderGameScene`:
+- It sets the viewport from `MainCamera`.
+- It draws the scripts, then every object's engines (`RenderAllNas`: `eng_render` per engine,
+  `prims.c`), then the map (`draw_map_scene`).
+- Then the HUD goes through a second, fixed camera (`MainGfxCamera`), then the pause menu and
+  the menus.
+
+### Objects: NAS, extensions, engines
+
+Every live thing (a hero, a crate, a missile, a particle effect) is a `NAS` (`NAStype`, 0x70
+bytes; `nas.h`, Engine types below).
+- Objects come from a fixed pool (`NasPool`, sized per mode) with an active list and a free
+  list.
+- `CreateNAS(x, y, z, id, ...)` or a map trigger (`TriggerNas`) finds the id in the AST table
+  (`ASTTable`: `{id, Init, Plot}`, the engine's `EngineASTTable` with every game's entries).
+  The new object's `InitDelete` and `Handler` are the entry's Init and Plot, and Init runs at
+  once.
+- The id's high byte names the game (`0x13` Tank, `0x14` Pogo, `0x16` Polar, ...; Overlays,
+  Which game is which).
+
+An object's data hangs off it as **extensions** (`EXT`: an id and a parent/child link, allocated
+from the NAS heap by `AddExt`), found again with `FindExtension(nas, id)`.
+- The common ones are the **engine** (`EXTengine`, id `0x100 | n`, 0x9C bytes): a position, a
+  rotation and scale, a sound, and a chain of **subengines** (0xA8 bytes each, from the
+  `next_sub` pool). A subengine is one drawable (a model, a sprite, a string, a map piece) whose
+  `hook` draws it.
+- Others are the motion (`EXTmotion`), the collision object (`EXTobject`), the animator
+  (`EXTanimator`) and each game's own (`EXTtransmuter`, `EXTbotai`, ...).
+- `KillNAS` frees them all.
+
+### Heroes
+
+The four players are `Heroes[4]` (`HeroInfo`, `heroes.c`), each built from NAS pool entries:
+- the hero's NAS and engine, plus its shadow, power-up and effect engines;
+- its movement (`EXTheromove`), its animator, which plays a `hero_seq` (`SetHeroSeq`), and its
+  AI (`EXTbotai`), for a computer player.
+
+A hero is a state machine:
+- `SetHeroAction(player, action)` switches between the `{SetMode, Action}` pairs of
+  `HeroActionTable` (the engine's shared states, then each game's: `SetArkHeroKick`,
+  `TankHeroTurn`, ...).
+- Each game changes what the shared code does through `HeroHooks` (`EngineHooks`: the models
+  per character, the collision and kick tests, the jump table, ...), set to defaults by
+  `SetDefaultHeroHooks` before `LevelPreInit`.
+- The AI per game (`PogoAI_*`, `BonkAI_*`, `PolarAI_*`) fills a pad's buttons for a bot hero
+  (`set_joypad`), so the hero code can't tell a bot from a human.
+
+### Drawing
+
+- Drawing is PsyQ's GPU and GTE through ordering tables (`AllocOtBuffers`, double-buffered;
+  `FlipScreen` swaps them).
+- `prims.c` keeps pools of primitives, and each subengine's hook writes its polygons
+  (`draw_object_model`, `draw_verts` and the `prim_*` writers).
+- The model records (`HeroModelBank`, The model bank) hold the loaded `.mdl` data and their
+  texture sets. Textures go to VRAM through `vram_init`'s areas and the `texture_*` code
+  (`nascalls.c`), which also scrolls and animates them.
+- The fonts are the font model's glyphs (`InitSysFontModel`), and the debug font is the BIOS ROM's
+  (`modchip_msg.c`).
+
+### Maps, paths and the camera
+
+- A level's map (`map_enviroment`, `MapScene`; `prims.c`'s `map_*`) is a model record with
+  meshes and entities. It also holds:
+  - the contours (`MapContour`/`MapEdge`, through the `GetContour` hook), which are the floor
+    and wall outlines that collision tests;
+  - the paths (`MapPath`: keyed positions, `path_get`), which the camera flights and the hub's
+    gateways follow;
+  - the triggers, which place the level's objects at load (`RunLevelTriggers`).
+- `camera.c` runs the game camera (`MainCamera`, a `camera_info_tag`). Its mode comes from the
+  level record (`CameraMode`). It frames the heroes (`BuildCameraFrameList`) or follows a path,
+  and eases to its target (`cam_ease_to`).
+
+### Scripts and cutscenes
+
+`scripts.c` runs keyframed scripts from a model file's script table (`sub_play_script`). Each
+script runs as threads of six kinds, each with its own init, update, render and kill:
+- model, camera, entity, fade, emitter (particles) and sub (a subengine).
+
+The cutscenes (`ScriptSceneProcess`), the intro and the in-game effects (`InitScriptFX`) are
+scripts.
+
+### Loading and memory
+
+- **The archive.** `CRASHBSH.DAT` has no header. The exe's `DatIndex` holds `{sector, size}`
+  for each of its 992 files (`file`, the demos' class).
+- **The loader.** `loader_queue` (`main.c`) queues asynchronous CD reads (`LoadNode`, sorted
+  by sector), and `loader_update` drives them one at a time.
+- **File groups.** A file group (`FileGroups`, `queue_group_load`) is a run of neighbouring
+  files read in one go, then split into each file's block (`group_split_buffer`, `mal_trim`).
+- **The heap.** `MainHeap` (`_mal_area`, the `mal_*` code in `main.c`) is a compacting heap.
+  - Each block records the pointer that owns it (`mal_set_owner`).
+  - `mal_compact` slides blocks down and rewrites their owners, so the game compacts between
+    loads (every wait loop calls it) instead of fragmenting.
+  - `mal_free_later` frees a block only after a number of frames (`deferred`, `ticks`).
+- **Small pools.** The NAS heap, the subengine pool and the small nodes (`smallnode_alloc`)
+  are fixed pools inside it.
+
+### Sound and music
+
+- **Sound effects** (`sfx.c`, `sound.c`) are libsnd VAB banks: up to six loaded at once
+  (`sfx_bank_load`, `machine_load_sfx`), the level's chosen per mode and hero
+  (`music_play_level`, `LevelSfxBanks`).
+- **Voices.** `PlaySfx(id, ...)` looks the id up in `SfxTable` and takes a voice from a pool
+  (`_sfx_handler`). An engine can own one, so a sound follows its object.
+- **Music** (`music.c`) is SEQ (`music_dload_midi`, `SsSeqOpen`), one track per mode
+  (`MusicTable`). `music_request` names the next track, and `music_update` switches to it after a
+  short stop delay.
+- **CD audio.** `xa_setvol` sets the SPU's CD input volume. Nothing traced so far plays XA.
+
+### Pads, the memory card and the game state
+
+- **Pads.** `pads_update` reads up to eight pads through the multitap (`PadState` each). The
+  vibration goes through `PadSetAct`.
+- **The game state.** `GameInfo` (`GameState`) is the whole game state: the mode, the
+  language, the players and their characters, the adventure's progress (`AdventureState`) and
+  the cheats. The options are `GameOptions`.
+- **The memory card.** `card.c` saves and loads the game state to a memory card slot with a
+  checksum (`card_save`, `card_poll`'s state machine). The save's format is in ASSETS.md, and
+  `tools/scripts/card.py` reads and writes it.
+
+### Where to look next
+
+- The data formats (models, textures, maps, scripts, menus, saves) are in ASSETS.md.
+- The object and hero types are below (Engine types).
+- The game-specific objects of each overlay are under Overlays, Functions reached from the AST
+  pairs.
+
+# Where everything is
 
 ## Disc
 
@@ -29,8 +255,8 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 | `0x8004CEFC..0x8004DCBC` | `0x3D6FC` | `.rodata` | PsyQ, per object (`.rdata` of the linked objects) |
 | `0x8004DCBC..0x800678E4` | `0x3E4BC` | `.data` | game data, C in each of the eleven files (main.c .. modchip_msg.c) |
 | `0x800678E4..0x8006E9EC` | `0x580E4` | `.data` | PsyQ: 39 Sony objects' `.data` linked from the objects; `bios_1.o`'s as C (`src/main/psyq/bios_1.c`) |
-| `0x8006E9EC..0x80079000` | `0x5F1EC` | `.bss` | written into the file as zeros: The exe's .bss |
-| `0x80079000..` | | `.bss` | not yet measured |
+| `0x8006E9EC..0x80078C90` | `0x5F1EC` | `.bss` | written into the file as zeros (to `0x80079000`, the file's end): The exe's .bss |
+| `0x80078C90..0x801FF000` | | heap | `MainHeap`, from `HeapStart`; the engine loads at its start (How the game works) |
 
 The engine module loads at `0x80078C90`, over the last `0x370` bytes of the
 exe's `.data` (zeros in the file).
@@ -62,19 +288,20 @@ How the boundaries were found:
 - **`main/modchip`** (`0x8002D488..0x8002E0F0`, rodata `0x8004CE0C..0x8004CE5C`):
   every global store is `lui $at` + `sw`, and `j`/`jr` slots are filled by the
   assembler, which `main.c`'s gcc 2.8.1 never produces. gcc 2.7.2-psx through
-  ASPSX does: `func_8002D488` (the region byte at `0xBFC7FF52`) matches with it.
+  ASPSX does: `modchip_check_region` (the region byte at `0xBFC7FF52`) matches with it.
 - **`main/modchip_msg`** (`0x8002E0F0..0x8002E7A8`) is 2.7.2 + ASPSX too, not
-  2.8.1 as first thought: `func_8002E0F0` has a `lui $at` store and an
-  indexed load expanded through its destination register, `func_8002E25C`
-  a `bne; nop` whose slot 2.8.1's reorg would fill, and `func_8002E618`
+  2.8.1 as first thought: `modchip_show_warning` has a `lui $at` store and an
+  indexed load expanded through its destination register, `msg_print`
+  a `bne; nop` whose slot 2.8.1's reorg would fill, and `msg_draw_emblem`
   matches only under 2.7.2. So 2.7.2 code runs from `0x8002D488` to the
-  start of PsyQ; whether the two units are one file is still open.
+  start of PsyQ. The two units take the same compiler and flags (2026-10-29); whether they
+  are one file is still open.
   - Its indexed loads from a symbol (`lbu $2,D_X($3)`) are expanded through
     the load's own register (`lui $2; addu $2,$2,$3; lbu $2,%lo(D_X)($2)`),
     or through `$at` when that register is also the index: GNU as's rule,
     and ASPSX's. maspsx always uses `$at`, so `aspsx_fill.py` rewrites it.
-  - `func_8002E0F0` is a fatal text screen: it resets the GPU, clears the
-    screen, prints one message twice with `func_8002E25C` (the debug text
+  - `modchip_show_warning` is a fatal text screen: it resets the GPU, clears the
+    screen, prints one message twice with `msg_print` (the debug text
     printer; colour `0xFFFF`, then `0x8000` one pixel down-right) and calls
     `exit()`. The message comes from a table of 12-byte entries at
     `0x8006789C` indexed by `D_8006EA24` (the font mode): `+2` u8, `+4`/`+6`
@@ -89,11 +316,11 @@ How the boundaries were found:
   - Style: all 2.8.1, no change of compiler inside the unit.
   - String literals: no duplicates across functions, and gcc 2.8 pools
     identical literals per file, so each shared literal ties its users to one
-    file: `func_800129D0`, `func_80012AC4`, `func_80013034` ("too many loads
-    in queue", `0x8004C83C`) and `func_8002C97C`, `func_8002D1D4`
+    file: `queue_dbase_load`, `queue_group_load`, `loader_queue` ("too many loads
+    in queue", `0x8004C83C`) and `card_update`, `card_find_file`
     (`0x8004CDAC`). The second "rodata goes back" candidate of `decomp.py
     units` is this sharing, not a boundary.
-  - `func_800134FC`'s two strings (`0x8004C818`, `0x8004C82C`) come before
+  - `load_file_direct`'s two strings (`0x8004C818`, `0x8004C82C`) come before
     `0x8004C83C`, though its text comes after the three users above. gcc
     2.8.1 emits a literal at its first use (a `static inline` helper's at
     the helper's definition, tested), and the linker keeps `.text` and
@@ -253,11 +480,11 @@ How the boundaries were found:
     | `dbase` | 136..169: `dbase_*` | 134 creates the dots subengine (the three blocks at +0x6C that `init_dots` fills, 133 its destructor, 132 its renderer, all three in one handler table) and 135 is the same allocation on a bare point-sprite set; 136 loads a dbase's file table and only 141, the dbase load callback, calls it | none |
     | `prims` | 170..274: `prim_*`, sprims, `tga_convert`, draw, subengines, `map_*`, `path_*`, fade, process | 164 releases mesh animations and 168/169 set up the 0x38-byte records at `D_80052A54` (`load_initial_dbases`' pool), before the prim data block; 170 allocates the prim and sprim pools and is the first user of that block (`0x8005683C..0x80058AC7`) | `0x8004C8A8` ("empty prims", right after `main`'s last jump table) |
     | `scripts` | 275..331: `sub_play_script`, `get_script_header`, `scripts_*`, the threads | the scripts' data block `0x80058B00..0x80058B87` (thread table `D_80058B00`, six types each pairing an update function from 276..282 with init and render ones from 298..313; `D_80058B68..B84`, `free_scripts`) is used only by 275..331, so the zones after 288-291 and 294-325 hold no cut; 275 allocates the 0x7C-byte script slots and is the block's first user, while 266..274 are the process manager (266 switches modes, 267-272 queue, interrupt, quit and init them, 273 sets it up, 274 flushes the heap as 266 does) | none |
-    | `sfx` | 332..349: `sfx_delete_all`, `StopSfx`, `PlaySfx`, ... | 331 (`scripts_update`) is the last script function; 332 restarts the sound system and loads the level's sfx bank (`func_8002BBB4`, `func_8002BD0C`) through `D_80058B88`, the sfx code's own data that 349 uses too | none |
+    | `sfx` | 332..349: `sfx_delete_all`, `StopSfx`, `PlaySfx`, ... | 331 (`scripts_update`) is the last script function; 332 restarts the sound system and loads the level's sfx bank (`sfx_table_clear`, `sfx_bank_load`) through `D_80058B88`, the sfx code's own data that 349 uses too | none |
     | `nascalls` | 350..496: `CreateNAS`, the NAS calls, `xa_setvol`, rumble, `texture_*` | 348 restarts the sound system and the sfx voice pool; 349 loads a music track through the music loader with `D_80058B88`, which lies in the sfx code's data block (before `0x80058F0C`), while the NAS calls' own data starts at `0x8005A5C0`: each file's `.data` is one block in code order, so 349 is sfx | `0x8004C8D0` (0 mod 8, as the switch-table parity requires: a file starts after 95 and by 370) |
-    | `sound` | 497..528: `sound_critical`, `machine_load_sfx`, ... | 495 releases a texture (`func_80028AE4`) and 496 clears a texture set (the map code calls it right before `map_loaded_textureset`); 497 resets `D_80064414`, a flag only the sound code uses | none |
+    | `sound` | 497..528: `sound_critical`, `machine_load_sfx`, ... | 495 releases a texture (`vram_free_node`) and 496 clears a texture set (the map code calls it right before `map_loaded_textureset`); 497 resets `D_80064414`, a flag only the sound code uses | none |
     | `music` | 529..548: `continue_music`, `music_dload_midi`, ... | 527 loads sfx banks (`machine_load_sfx`), 528 fills `SfxTable`; 529 opens and plays a SEQ (`SsSeqOpen`, `SsSeqPlay`) and sets the music volume | none |
-    | `card` | 549..565: `func_8002C4B0` (ASCII to Shift-JIS for save titles: Euro's `card_ascii2sjis`), `card_save` | the one exact cut: music ends by 548, the memory card starts by 554, and no other gap may hold a boundary; no zone after 548, so it is one file | `0x8004CD10` (549's jump table) |
+    | `card` | 549..565: `ascii_to_sjis` (ASCII to Shift-JIS for save titles: Euro's `card_ascii2sjis`), `card_save` | the one exact cut: music ends by 548, the memory card starts by 554, and no other gap may hold a boundary; no zone after 548, so it is one file | `0x8004CD10` (549's jump table) |
 - **`.data` start** `0x8004DCBC`: the first game table (pointers to the game's
   own strings) after the last LIBMCRD string; the lowest stored-to address is
   `0x8004E0B4`.
@@ -304,11 +531,11 @@ code finds 15 code files; nothing else on the disc holds code.
   |---|---|---|---|
   | `engine` | `InitialiseNasSystem` (0) | - | `0x800ADBD8` |
   | `panel` (`PANEL.CPP`) | `Setup_panel` (33) | 7..33: function 6's string stays before | `0x800ADC2C` |
-  | `pause` (`PAUSE.CPP`) | `func_8007EE2C` (74) | 60..77; fewest call ties at 74 | `0x800ADDB0`: the mode names `D_8009AF00` (used by 77, 78) points to |
-  | `heroes` | `func_80083708` (96) | exact, from Jampack's line table (below) | `0x800ADF60` (proven: the build matches) |
-  | `gameflow` | `func_8008E27C` (208) | 176..208: function 175's strings can't straddle; no call ties from 192 | `0x800AE464` |
-  | `levelload` | `func_8009317C` (282) | 248..289: the memory-card text tables are used up to 247; no call ties 273..282 | `0x800AEBC8` |
-  | `camera` | `func_8009608C` (330) | 321..330; no call ties from 328 | `0x800AEC34` |
+  | `pause` (`PAUSE.CPP`) | `PauseChooseYesNo` (74) | 60..77; fewest call ties at 74 | `0x800ADDB0`: the mode names `D_8009AF00` (used by 77, 78) points to |
+  | `heroes` | `InitialiseHeroes` (96) | exact, from Jampack's line table (below) | `0x800ADF60` (proven: the build matches) |
+  | `gameflow` | `PlayHitEffect` (208) | 176..208: function 175's strings can't straddle; no call ties from 192 | `0x800AE464` |
+  | `levelload` | `LoadModeOverlay` (282) | 248..289: the memory-card text tables are used up to 247; no call ties 273..282 | `0x800AEBC8` |
+  | `camera` | `UpdateCamera` (330) | 321..330; no call ties from 328 | `0x800AEC34` |
 
   A start can still move earlier inside its range, and a unit can hide more
   starts where the parity doesn't change. Rechecked 2026-10-28 with `decomp.py units
@@ -325,15 +552,15 @@ code finds 15 code files; nothing else on the disc holds code.
   `PAUSE.CPP`'s extent (2026-10-23): Jampack's 1021 line records cover the
   demo's code from just after `Init_Panel` to `0x8007A080`. Its early
   functions were rewritten for release (they match nothing), but the last
-  ones match retail in order (`func_80082C34` 0.90, `func_80082D90` 0.97,
-  `func_800831C4` 1.00, `func_8008352C` 1.00, `func_80083550` 0.98), and the
-  demo function right after the file matches `func_80083708` (0.87):
-  `func_80083550` ends where `func_80083708` starts, so a file starts there.
+  ones match retail in order (`AnimateWinCounter` 0.90, `UpdateWinCounter` 0.97,
+  `SetPauseY` 1.00, `RequestQuit` 1.00, `SetDefaultHeroHooks` 0.98), and the
+  demo function right after the file matches `InitialiseHeroes` (0.87):
+  `SetDefaultHeroHooks` ends where `InitialiseHeroes` starts, so a file starts there.
   The two sides use no rodata item in common (`0x800ADE50..0x800ADF48`
   against `0x800ADFB0..`), and the build matches with the second file's
-  rodata from `0x800ADF60`. `func_8007ED0C`, between `Init_Panel` and
-  `func_8007EE2C`, builds two engines from PANEL's data and only PANEL calls
-  it, so `PAUSE.CPP` starts at `func_8007EE2C`, the parity start.
+  rodata from `0x800ADF60`. `InitBossHealthBar`, between `Init_Panel` and
+  `PauseChooseYesNo`, builds two engines from PANEL's data and only PANEL calls
+  it, so `PAUSE.CPP` starts at `PauseChooseYesNo`, the parity start.
 
   The Euro Demo 65 link groups can't place a file inside the engine: they
   name whole sections (`_core_*`, `_engine_start`/`_engine_end`, the engine
@@ -362,16 +589,15 @@ code finds 15 code files; nothing else on the disc holds code.
   named for what they hold too: `heroes`, `gameflow`, `levelload`, `camera`
   (engine) and `prims`, `nascalls`, `modchip`, `modchip_msg` (exe; the two
   gcc 2.7.2 units are the mod-chip check: the BIOS region byte, then the
-  "CONSOLE MAY HAVE BEEN MODIFIED" screen). The PsyQ objects not identified
-  yet (`main/psyq/unknown/*`) keep their addresses.
+  "CONSOLE MAY HAVE BEEN MODIFIED" screen). Every PsyQ object is identified (PsyQ, below).
 
   | Overlay | Later files start at (function number, name) | Proven range | Rodata from |
   |---|---|---|---|
   | `bash` | 59 `CrateAimAtGrid` (`xtras.c`); 80 `BashHeroHit` (`bahero.c`) | 22..62 (fewest call ties at 59); 73..80 (none from 77) | `0x800B3734`; `0x800B3A18` |
-  | `papu` | 50 `func_800B87A0` (`pahero.c`) | 15..50 (fewest call ties at 44..50) | `0x800B33FC` |
-  | `bonk` | 45 `func_800B6EFC` (`bohero.c`) | 15..50 (fewest call ties at 44, 45) | `0x800B3364` |
-  | `n2o` | 75 `func_800BBDB8` (`nox.c`) | 36..75 | `0x800B336C` (`D_800B336C`, used by 75, 78, 129) |
-  | `hub` | 8 `func_800B4EAC` (`hubcore.c`) | 3..9 (fewest call ties at 8) | `0x800B330C` |
+  | `papu` | 50 `PlotPACrate` (`pahero.c`) | 15..50 (fewest call ties at 44..50) | `0x800B33FC` |
+  | `bonk` | 45 `BonkSpawnShockwave` (`bohero.c`) | 15..50 (fewest call ties at 44, 45) | `0x800B3364` |
+  | `n2o` | 75 `NoxBoxToSphere` (`nox.c`) | 36..75 | `0x800B336C` (`D_800B336C`, used by 75, 78, 129) |
+  | `hub` | 8 `InitialiseHUB` (`hubcore.c`) | 3..9 (fewest call ties at 8) | `0x800B330C` |
 
   `tank`..`dino`, `chase` have tables but no parity change; `titles` has
   none. The other positive signs are absent everywhere too (checked
@@ -408,10 +634,10 @@ code finds 15 code files; nothing else on the disc holds code.
   Arkenoid (12, in 2..76) and Polar (15, in 1..107); Pogo's (117) is in a
   possible cut zone, unproven. So no new file start is proven: Pogo and
   Arkenoid read as one file each, and so do Polar's functions 1..154 (the
-  tail ends at `DoNowt`). Polar's 155..216 are all `func_` names with no
-  place in the header (36 of its declarations, the bear AI's `Test*` and
-  `Do*` among them, are not matched to a function yet), so they can be
-  placed once they are named. The overlays with no leaked header have no
+  tail ends at `DoNowt`). Polar's 155..216 (the bear AI's `Test*` and `Do*`
+  states among them, named since) come after the last function the header
+  places, so the header can't say whether they start a file (rechecked
+  2026-10-29: 81 declarations matched, a second file still explains only +5). The overlays with no leaked header have no
   further evidence: their jump tables show no other parity change, and the
   data only ties functions together (`units --data` lists possible cut
   zones, none proven).
@@ -467,14 +693,14 @@ code finds 15 code files; nothing else on the disc holds code.
   also serve `AST_SpecialFX`. The Plot of `PACrate`/`PACrateType`
   (`0x800B87A0`) is `papu`'s `PlotPACrate`, not a function in `bash`. The crate breaks
   through `CrateBreak(eng, fux)` (four paths in `PlotCrate`): a random crate sfx, a type-2 effect at its position
-  (`func_8007A524`), then an `AST_CratePickup` (`0x206`) there unless the
+  (`SpawnModelFx`), then an `AST_CratePickup` (`0x206`) there unless the
   hook `D_8009D750` returns 1.
 
 ### The engine's .bss
 
 The engine's last 0x465C bytes before the slot (`0x800AEC58..0x800B32B4`, after all its
 rodata) are uninitialised memory, not data any file defines: two `gameflow.c` words
-(`D_800AEC58`, `D_800AEC5C`) and `ModeTextBuffer` (`0x800AEC60`), where `func_800134FC` loads
+(`D_800AEC58`, `D_800AEC5C`) and `ModeTextBuffer` (`0x800AEC60`), where `load_file_direct` loads
 the current mode's text file (`levelload.c`; the text files' absolute pointers start at
 `0x800AEC64`, ASSETS.md). The engine's first two data words are the two load destinations:
 `D_80098594` the slot, `D_80098598` this buffer. The image holds the build machine's leftovers
@@ -509,9 +735,8 @@ So the slot image stays a file read from the user's disc, like the assets, and
 is never committed (it holds the leak and copies of the game's files). The
 dashboard and `decomp.py progress` count it apart from the data to turn into C
 (`SLOT_IMAGES` in `decomp.py`; the Data in C tile notes it). The matching build
-keeps it byte for byte; the shiftable `NON_MATCHING` build replaces it with the
-id word and zeros (ROADMAP-A.md, Phase 3), and Tank's shift test shows whether
-the game cares.
+keeps it byte for byte. The source builds (`make shift`, `make shift-all`) replace it with the
+id word and zeros, and every one of them is playtested (PLAYING.md).
 
 ### Leaked source
 
@@ -671,23 +896,22 @@ signature alone is not enough.
     `EXTmotion`), `FreeGrabbedObject(player, bool)` (`0x800BB674`) and
     `AlignGrabBall(eng, motion, object)` (`0x800BB924`, called by `PlotBall`
     with `nas->Engine`, the 0x800 extension and `nas->FUX`).
-  - `PlotBall` calls three hooks that `func_800B36CC` sets per mode:
-    `D_800C1C8C` (`func_800B4880` or `func_800B4AE8`: an `s16` angle or -1,
+  - `PlotBall` calls three hooks that `AR_PreInitLevel` sets per mode:
+    `D_800C1C8C` (`AR_BA_BounceOnBounds` or `AR_PI_BounceOnBounds`: an `s16` angle or -1,
     like the leak's `s16 AR_*_BounceOnBounds(EXTengine *, s32)`; the
-    match needs the `s16` return), `D_800C1C90` (`func_800C0A74`,
-    `func_800C096C`, `func_800B4D9C`: `AR_*_TestOutOfBounds(EXTengine *,
-    EXTobject *, bool)`) and `D_800C1C94` (`func_800B4EFC`, `func_800C08C8`:
+    match needs the `s16` return), `D_800C1C90` (`AR_BA_TestOutOfBounds`,
+    `AR_NG_TestOutOfBounds`, `AR_PI_TestOutOfBounds`: `AR_*_TestOutOfBounds(EXTengine *,
+    EXTobject *, bool)`) and `D_800C1C94` (`AR_BA_TestLaunchBounds`, `AR_PI_TestLaunchBounds`:
     `AR_*_TestLaunchBounds(EXTengine *, EXTobject *)`).
     `AR_PreInitLevel`'s mode 17 installs the `AR_PI_` movers, so its hooks
-    are `AR_PI_BounceOnBounds` (`func_800B4AE8`: named in notes only; with
-    the leak's `s16` return it gains a sign extension, so it keeps `s32` and
-    its address name), `AR_PI_TestOutOfBounds` and `AR_PI_TestLaunchBounds`,
+    are `AR_PI_BounceOnBounds` (with the leak's `s16` return it gains a sign
+    extension, so it returns `s32`), `AR_PI_TestOutOfBounds` and `AR_PI_TestLaunchBounds`,
     and its `GetContour` is `GetArkPIContour`; the other modes use
     `GetArkContour`. The leak has only BA and PI launch tests, so the other
     one is `AR_BA_TestLaunchBounds`. Mode 16 spawns N. Gin (0x1507), so its
     out-of-bounds hook is `AR_NG_TestOutOfBounds`; the default mode (and 15)
-    uses `AR_BA_TestOutOfBounds` and the BA bounce `func_800B4880` (named in
-    notes only: the leak's `s16` return changes its code, like PI's). No
+    uses `AR_BA_TestOutOfBounds` and the BA bounce `AR_BA_BounceOnBounds` (`s32`
+    too: the leak's `s16` return changes its code, like PI's). No
     mode installs an SE function: the leak's SE variants are not in the
     build. These take the leak's
     `EXTengine *` / `EXTobject *` (the out-of-bounds test writes
@@ -704,9 +928,9 @@ signature alone is not enough.
     (eng, u16 radius)` (against every hero's collision radius) and
     `TestArkObjectObstacles(eng, obj)` (from `PlotBall`; its flag word is
     `EXTobject.can_do`). Not placed: `TestArkenoidStop` / `TestForMove`
-    (`func_800B60FC` maps fire buttons to kick/red kick/grab,
-    `func_800B649C` steps the walk animation: neither fits), `DangerBalls`
-    (`func_800B8964` finds a ball ahead but returns a bool, not a NAS).
+    (`ArkHeroModeCheck` maps fire buttons to kick/red kick/grab,
+    `ArkHeroUpdateSpeed` steps the walk animation: neither fits), `DangerBalls`
+    (`ArkBallComingAtHero` finds a ball ahead but returns a bool, not a NAS).
     `Create_ArkPickup` is the only spawner of `AST_AR_PU` (0x1502, at a
     corner); `ArkCrateMaster` (every frame from `AR_UpdateLevel`) times and
     calls it. `InitARKfloor` (from `AR_InitLevel`, clears the floor/wall
@@ -730,7 +954,7 @@ signature alone is not enough.
   `hero_immunity`), 0x6A Die (`tankdie`; the Do spawns the explosion, then
   0x6B), 0x6B Dead (health 0, the same engine calls as `SetArkHeroDead` /
   `ArkHeroDead`), 0x6C Idle (`tankidle`, random `hero_idle_count`), 0x6E Move
-  (the Do is the 3 KB driving code), 0x6F Turn (`func_800C7E68`/`EB0` enter it
+  (the Do is the 3 KB driving code), 0x6F Turn (`TankHeroTurnClockwise`/`EB0` enter it
   with a +-0x80 turn speed; the Do turns for `ModeCounter` frames, then back
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
@@ -930,7 +1154,7 @@ signature alone is not enough.
   select, team battle, battle options, options, `RunGame` around the game's
   own hooks at `0x8009E58C..98`); a screen places its sprites, texts and
   models from a list of the engine's 0x24-byte `PlaceRec`s
-  (`func_80095BEC(slot, list)`). The menus run along chains of process
+  (`PlaceEngineSlot(slot, list)`). The menus run along chains of process
   pointers (`AdventureChain`, `BattleChain`, `TournamentChain`):
   `MenuChainNext`/`Back` step `MenuChainPos`, and backing out of a chain's
   first screen lands on the main menu stored before it. Mode 0x28 starts at
@@ -1071,7 +1295,7 @@ signature alone is not enough.
     `GetSandbagValueTank(x, z)` / `GetSandbagValueMiss(x, z)` read the two
     byte maps `D_800CACFC` / `D_800CACB4` (one cell per 0x200 units, row
     width `D_800CAFF4`): the first is checked ahead of a tank's facing
-    (`func_800B3F44`), the second on the AI's lines of fire; they follow
+    (`TankBotTryFire`), the second on the AI's lines of fire; they follow
     `TA_CreateShadow` in code as in the leak. With the leak's `u32` return
     the callers' `s32 (*)(s32, s32)` casts went.
   - Polar: `InitialisePOLARFirst`, `InitialisePOLAR`, `UpdatePOLAR`;
@@ -1080,16 +1304,16 @@ signature alone is not enough.
     bots in a state (player unused; its caller had cast it to the two-arg
     form), `TestChaseChance` picks a live target and starts a chase. The
     other `Test*Chance` functions (`TestBeamChance` at `0x800B9398`, named
-    from Euro Demo 65, and `B94B8`, `B9600`,
-    `B9714`, `B98AC`) each roll against a per-hero table at `D_800D4E0C` and
-    start an AI state, but the states have no names yet: left unnamed.
+    from Euro Demo 65, then `TestAttackChance`, `TestHuntChance`,
+    `TestWanderChance` and `TestBombChance`) each roll against a per-hero
+    table at `D_800D4E0C` and start that AI state.
     `FindClosetPlayer(p, &dist)` (the leak's spelling) returns the nearest
     live opponent; `IsBombAvailable()` the first bomb object in
     `D_800D5294`'s list whose extension is still free.
     `ResetMass(p)` sets the hero's `mass` (0x180 for heroes 5-8, less 0x46
     with extension 0x20000000); `TestForTeamMate(src, dst)` is true in team
     games when they are team-mates; `Player2PlayerRayTest(p, target)` casts
-    the facing ray at the target through `func_800BFEE0`.
+    the facing ray at the target through `PolarRayHit`.
     `IsPlayerInRange(p, target)` (no team-mates, distance under ~2000, charge
     `unk54 >= 0x1F`, then `Player2PlayerRayTest`; sets the fire bit in
     `AIpad`) is the only two-player range check, and precedes the ray test
@@ -1126,11 +1350,12 @@ signature alone is not enough.
   (`PogoWinner_Relic` 0x40, `PogoWinner_Gem` 0x20, `PogoWinner_Normal` the
   fallback), both giving 0x20 = gem. Also `PogoInit_Camera`,
   `PogoInit_AllHeros` (per-hero setup) and `InitPogo_Tiles` (clears the
-  board). `UpdatePOGO` runs `PogoQuality_Update` (`func_800C2EE0`, every
+  board). `UpdatePOGO` runs `PogoQuality_Update` (every
   frame), `Update_Occupancy` (rebuilds `PogoSquare.occupied` from the heroes
   and the Roo) and `Update_Tiles` (tile timers: TNT fuse, Nitro, locks).
-  `func_800B3FF0` (per-mode table, ends with `PogoQuality_Update`) is
-  `PogoInit_AIQuality` or `PogoQuality_Init`: left unnamed.
+  `PogoQuality_Init` (per-mode table, ends with `PogoQuality_Update`) could be
+  either of the leak's `PogoInit_AIQuality` and `PogoQuality_Init`; it takes
+  the second.
 - **Pogo pickups** (pogo): `UpdatePOGO` runs `PogoPickups_Poll` and
   `PogoPowerups_Poll`, which drop `AST_PogoPickup` (0x1401) through
   `CreatePickupOnTile` and `AST_PogoPowerup` (0x1402) through
@@ -1220,7 +1445,7 @@ originals turn up. Call counts are `jal` sites across all binaries.
 | `get_angle(x, z)` | `0x8001463C` | 300 | Arctangent through the table at `D_800517C0`, giving a 12-bit angle; used as `get_angle(x, z) & 4095` as in the leak. |
 | `GetEngineSlot(i)` | `0x80095E38` | 237 | `&D_800A0E78[i]` with 0x9C-byte entries (`sizeof(EXTengine)`); its sibling copies the engine template into one. |
 | `KillNAS(nas)` | `0x80022FD4` | 225 | Frees the engines and extensions, unlinks from the active list (`D_8005AA08`), clears `flags`, pushes onto the free list (`D_8005AA0C`). |
-| `StopSfx(voice)` | `0x800225C4` | 173 | Stops the voice (`func_8002B8F4(voice+0x2C)`) and returns it to `PlaySfx`'s pool. |
+| `StopSfx(voice)` | `0x800225C4` | 173 | Stops the voice (`sfx_key_off(voice+0x2C)`) and returns it to `PlaySfx`'s pool. |
 | `SetHeroSeq(player, seq)` | `0x800854C0` | 133 | Picks the per-character table from `D_8009D29C` by `hero+0x2E` (1-8, the leak's eight `hero_seq` prefixes) and sets `hero+0x56`. |
 | `AddExt(nas, size, id)` | `0x8002689C` | 75 | `AllocExtension` with no template. |
 | `AddExtEngine(nas, id)` | `0x8002672C` | 44 | 0x9C-byte engine from a template, first one in `NAS.Engine`. |
@@ -1230,10 +1455,10 @@ originals turn up. Call counts are `jal` sites across all binaries.
 | `AllocExtension(owner, size, id, tmpl)` | `0x800232B0` | - | The heap allocator behind the extension calls. |
 | `FreeExtension(ext)` | `0x80023404` | - | Range-checks against the heap, unlinks from the chain, frees the block. |
 
-Also called often but not named yet, because their roles aren't proven:
-`func_8008502C` (116, the `hero_seq` interpreter's 27-case switch), `func_80025A48` (94, looks up a flagged
-entry through `eng->sub`), `func_80026980` (63, unlinks from a list at
-`D_8005AA34`), `func_800250B0`, `func_80095BEC`, `func_80025FAC`.
+Also called often, with descriptive names:
+`ProcessHeroAnim` (116, the `hero_seq` interpreter's 27-case switch), `FindCollisionBox` (94, looks up a flagged
+entry through `eng->sub`), `RemoveCamera` (63, unlinks from a list at
+`D_8005AA34`), `RunNasAnim`, `PlaceEngineSlot`, `GotoLinkAnim`.
 
 ## The model bank
 
@@ -1255,21 +1480,21 @@ Descriptive names (the leak doesn't name these), with types in `bash/main.h`,
 
 | Name | Address | Type | Evidence |
 |---|---|---|---|
-| `ASTTable` | `0x8005AA6C` | `ASTEntry *` | The engine's `func_8007AB8C` points it at `EngineASTTable`; the spawners index it by id with 12-byte steps. |
-| `ASTCount` | `0x8005AA60` | `s32` | Set from `func_8007AC00` (which counts the entries); the bound of every `ASTTable` search. |
+| `ASTTable` | `0x8005AA6C` | `ASTEntry *` | The engine's `ResetASTTable` points it at `EngineASTTable`; the spawners index it by id with 12-byte steps. |
+| `ASTCount` | `0x8005AA60` | `s32` | Set from `ASTTableCount` (which counts the entries); the bound of every `ASTTable` search. |
 | `EngineASTTable` | `0x80098720` | `ASTEntry[]` | The engine's table (`{id, Init, Plot}`, see Overlays). |
 | `NASActiveHead` / `NASActiveTail` | `0x8005AA04` / `0x8005AA08` | `NAS *` | Head and tail of the active list: `TriggerNas` appends, `KillNAS` unlinks. |
 | `NASFreeList` | `0x8005AA0C` | `NAS *` | Spawners pop from it, `KillNAS` pushes onto it (linked through `+0x10`). |
 | `NASTemplate` | `0x8005A7C0` | `NAS` | Copied over each spawned `NAS` (0x70 bytes). |
-| `EngineTemplate` | `0x8005A8D8` | `EXTengine` | Copied over each new engine by `AddExtEngine` and `func_80095BEC`. |
+| `EngineTemplate` | `0x8005A8D8` | `EXTengine` | Copied over each new engine by `AddExtEngine` and `PlaceEngineSlot`. |
 | `EnginePool` | `0x800A0E78` | `EXTengine[]` | `GetEngineSlot(i)` returns `&EnginePool[i]`. |
-| `Heroes` | `0x8009D52C` | `HeroInfo[4]` | The player/hero array (see Engine types); used by 822 functions. `func_80083708` sets up all four. |
+| `Heroes` | `0x8009D52C` | `HeroInfo[4]` | The player/hero array (see Engine types); used by 822 functions. `InitialiseHeroes` sets up all four. |
 | `HeroActionTable` | `0x8009DCA0` | not typed yet | 8-byte entries; `SetHeroAction` calls entry `action`'s handler. |
 | `HeroSeqTables` | `0x8009D29C` | `hero_seq **[]` | One table of sequences per character; `SetHeroSeq` indexes it by `HeroInfo.hero_name`, then by the sequence id. |
 | `RandomSeedA` / `RandomSeedB` | `0x800517B8` / `0x800517BC` | `s32` | `Random`'s state; `SetRandomSeed(a, b)` (`0x800155E8`) sets both. |
 | `AtanTable` | `0x800517C0` | `s16[]` | `get_angle`'s lookup table. |
 | `SfxTable` | `0x80064508` | not typed yet | 2-byte entries per sound id, read by `PlaySfx`. |
-| `LevelSpec` | `0x8005AA70` | the leak's `LevSpec` (declared `s32[11]`) | 11 words of level hooks, the size and order of `LevSpec`: main.exe calls `[3]` (`D_8005AA7C`), `[5]` (`D_8005AA84`) and `[6]` (`D_8005AA88`), the engine `[10]` (`FinishQuick`), and `func_80025F44` calls `[9]` (`D_8005AA94`, `GetContour`) when it's set. Arkenoid's `func_800B36CC` sets `[9]` to `func_800BFD9C` and `PlotBall` calls it. |
+| `LevelSpec` | `0x8005AA70` | the leak's `LevSpec` (declared `s32[11]`) | 11 words of level hooks, the size and order of `LevSpec`: main.exe calls `[3]` (`D_8005AA7C`), `[5]` (`D_8005AA84`) and `[6]` (`D_8005AA88`), the engine `[10]` (`FinishQuick`), and `ApplyContour` calls `[9]` (`D_8005AA94`, `GetContour`) when it's set. Arkenoid's `AR_PreInitLevel` sets `[9]` to `GetArkContour` and `PlotBall` calls it. |
 | `SfxVoicePool` / `SfxActiveVoices` | `0x800590D0` / `0x80059614` | not typed yet | The voice pool: free list at `+0x540`, active list at `+0x544` (`SfxActiveVoices`). |
 
 ## Engine types
@@ -1332,14 +1557,14 @@ keep code-derived names (`unkXX` where only offset and width are known).
     are filled from this same constructor, which confirms the type.
   - `sub`/`last` are the first and last of the engine's `subengine`s,
     `num_subs` their count, and `sfx` a playing sound (`_sfx_handler`, the
-    repo's former `SfxVoice`) that `func_8001D174` stops when it frees them.
+    repo's former `SfxVoice`) that `eng_release_subs_sfx` stops when it frees them.
     `platform` pairs two engines; `KillNAS` clears it both ways.
-- **subengine (0xA8 bytes).** `func_80018F3C(eng, n)` (through
-  `func_8001D390`) moves `n` nodes from the free list `next_sub` (`0x80058ACC`) onto the
+- **subengine (0xA8 bytes).** `eng_add_subs(eng, n)` (through
+  `eng_add_subs_n`) moves `n` nodes from the free list `next_sub` (`0x80058ACC`) onto the
   engine, copying the 0xA8-byte template `D_8005A830` over each, and links them
-  through `+0x5C` (next) and `+0x60` (prev). `func_8001D174` and its siblings
+  through `+0x5C` (next) and `+0x60` (prev). `eng_release_subs_sfx` and its siblings
   call each node's `+0x58` callback with the node and return the chain to the
-  free list. Pogo's grid setup (`func_800B3C44`) stores each node of such a
+  free list. Pogo's grid setup (`InitPogo_Tiles`) stores each node of such a
   chain in `PogoSquare.sub`, which the leak types `subengine *`.
 - **EXTmotion (0x34 bytes, id 0x800)** and **EXTobject (0x2C bytes, id
   0x1000)** come from `AddMotion` and `AddObject` (see Core engine functions).
@@ -1349,16 +1574,16 @@ keep code-derived names (`unkXX` where only offset and width are known).
   `AR_*_TestOutOfBounds(EXTengine *, EXTobject *, bool)` hooks and to
   `AlignGrabBall`. `FUX` holds other extension types in other objects, so it
   is an `EXT *`.
-- **hero_seq** is one halfword. The sequence interpreter (`func_8008502C`)
+- **hero_seq** is one halfword. The sequence interpreter (`ProcessHeroAnim`)
   reads `seq[pos]` with a 2-byte stride; `0x8000 | n` is command `n` (27 of
   them, some with halfword operands; the prototype's `HEROcmds`) and other
   values are frames.
-- **HeroInfo (0x6C bytes).** `func_80083708` sets up the four `Heroes`: `hero`
+- **HeroInfo (0x6C bytes).** `InitialiseHeroes` sets up the four `Heroes`: `hero`
   from a pool at `D_8005AA1C` (AST index 3), `hero_eng = AddExtEngine(nas, 1)`,
   `hero_sub = hero_eng->sub`, three more engines (`AddExtEngine` ids 2, 3, 3:
   `hero_shadow`, `hero_powerup`, `hero_fx`), `hero_move` (0x54-byte
   `EXTheromove`), `hero_anim` (the 0x2C-byte id-0x400 `EXTanimator` from
-  `func_800265DC`, which plays the current `hero_seq`; `SetHeroSeq` sets its
+  `AllocExt400`, which plays the current `hero_seq`; `SetHeroSeq` sets its
   `Atable`) and `hero_ai` (0x44-byte `EXTbotai`). `SetHeroAction` sets
   `hero_mode` and keeps the old one in `hero_last_mode`; `hero_name` (1-8)
   picks the character's sequence table. The prototype's sizes for the three
@@ -1366,9 +1591,10 @@ keep code-derived names (`unkXX` where only offset and width are known).
 - **bool is 32 bits.** `ArkHeroRad2ObjectCollision` and `FreeGrabbedObject`
   keep their `bool` argument in its home slot and reload it with `lw`, with no
   truncation; gcc would narrow a `char` or `short` parameter on entry.
-- **Still unknown.** The layouts of `subengine`, `EXTengine.xyzrf` and
-  `_sfx_handler` (the fragment names them but does not define them), and of
-  the shell types (`shell_setup`, `file_group_load_info`).
+- **Recovered since from the code.** `subengine` (0xA8 bytes, `nas.h`), `EXTengine.xyzrf`
+  (`XYZ` and `xform` at `0x04..0x54` of a subengine, `0x0C..0x60` of an engine), `_sfx_handler`
+  (`main.h`) and `file_group_load_info` (a `FileGroup` and its `GroupFile` list). Still opaque:
+  `shell_setup`'s fields (VRAM areas and pool sizes among them).
 
 ## Toolchain: the assembler checked against Sony's ASPSX
 
@@ -1383,7 +1609,7 @@ matched C (`tools/scripts/aspsx_compare.py`; binaries in the ignored
 - **gcc 2.8.1 files: identical.** Every matched function in `main.c`, the
   engine and the slot overlays (about 1,700) assembles to the same words,
   with every ASPSX version from 2.56 to 2.86, except one.
-- **The exception is not ASPSX.** `func_800C0F5C`'s frame-only epilogue
+- **The exception is not ASPSX.** `RaceInitStub`'s frame-only epilogue
   (`addiu sp,-24; jr ra; addiu sp,24` in retail): no ASPSX version fills the
   `j $31` slot; all write `addu sp; jr ra; nop`, as maspsx does. So retail's
   form comes from the game's compiler, presumably Sony's build of gcc 2.8.1
@@ -1433,8 +1659,8 @@ address the exe uses. `configs/USA/psyq/`:
 - `symbols.ld` - symbols psylink placed differently from the objects' own
   layout; read last so they win.
 
-`func_80032F3C` is `abs` (`ABS_0.OBJ`; `labs` in `ABS_1.OBJ` is identical
-code).
+`abs` (`0x80032F3C`) is `ABS_0.OBJ`'s; `labs` in `ABS_1.OBJ` is identical
+code.
 
 ## Build pipeline
 
@@ -1457,16 +1683,19 @@ with `-fno-rerun-cse-after-loop`: without that second cse pass, a global array
 read or written at several offsets keeps one `la` base, as retail does
 (`modchip_cd_wait`, `modchip_step`). `modchip_msg` matches with or without it,
 and with it `msg_print` takes its plainest form (`glyph = (u8 *)0xBFC7F8DE +
-(c - 0x21) * 15`), so one setting covers both files (2026-10-29). Every unit is built with `-fno-builtin` (`EXTRA_CC1FLAGS`): the
+(c - 0x21) * 15`, now `ROM_ASCII_FONT`), so one setting covers both files (2026-10-29).
+Every unit is built with `-fno-builtin` (`EXTRA_CC1FLAGS`): the
 game calls `abs`, which gcc 2.8.1 would otherwise inline. FSF GCC 2.7.2.3's
 source is in `tools/reference/gcc-2.7.2.3/`.
 
 Every game function is C (2026-10-26). While one wasn't, it stayed in its C
 file as `INCLUDE_ASM(...)`, which pulls `asm/nonmatchings/<seg>/<func>.s`
-into the compiled object, so the build matched at every step. Rodata not yet
-in C is still pulled in the same way (`INCLUDE_RODATA`), and the data and bss
-come from splat's `asm/data/` until they are C (ROADMAP-A.md). splat (`make split`) regenerates `asm/` and `linkers/`
-from the retail executable; it never overwrites existing `src/` files.
+into the compiled object, so the build matched at every step. Rodata and data
+were pulled in the same way (`INCLUDE_RODATA`, splat's `asm/data/`) until they
+were C (2026-10-28, ROADMAP-A.md). What still comes from the disc is the
+exe's header (`asm/header.s`), the engine's two memory images (The engine's
+.bss, The engine's slot image) and the hand-written `2MBYTE.OBJ`. splat (`make split`) regenerates `asm/` and
+`linkers/` from the retail executable; it never overwrites existing `src/` files.
 
 Overlays (registered with `decomp.py add-overlay`) get their own
 `configs/USA/overlays/<ovl>.yaml`, are cut from their archive to

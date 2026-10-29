@@ -22,7 +22,7 @@ your own copy of the game.
 | Executable | `SCUS_945.70` (in `disc/`, extracted from your bin/cue) |
 | SHA-1 | `c4a06208612ff2625b9083596d36fdf60b01be5f` |
 | Entry PC | `0x8002E7B0` |
-| Text VRAM | `0x80010000..0x80079000` |
+| Loads at | `0x80010000..0x80079000` (the file's body) |
 
 ## Progress
 
@@ -46,15 +46,15 @@ byte-identical.
 
 ## How functions are matched
 
-Each function starts as assembly (`INCLUDE_ASM`) and is replaced with C by
-hand, by a person or an AI agent, one function per commit. Every match goes
+Every game function is matched (2026-10-26). Each started as assembly (`INCLUDE_ASM`) and was
+replaced with C by hand, by a person or an AI agent, one function per commit. Every match went
 through one gate, `decomp.py done`, which checks the change, the function's
 words and a clean rebuild of every binary before it commits. The process and
 its diagram are in [docs/MATCHING.md](docs/MATCHING.md), the order of work in
 [docs/ROADMAP-B.md](docs/ROADMAP-B.md) (what is left; [done](docs/ROADMAP-A.md)), and the rules in
 [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/CONVENTIONS.md](docs/CONVENTIONS.md).
-Agents use the `/match-function` skill, or the [swarm](tools/swarm/README.md)
-for many functions at once.
+The same route stays for reworking a function: agents use the `/match-function` skill, or the
+[swarm](tools/swarm/README.md) for many functions at once.
 
 ## Names, types and files
 
@@ -71,11 +71,13 @@ boundary is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 PsyQ 4.7 libraries, then `.rodata` and `.data`. Most game code is in overlays
 inside `CRASHBSH/CRASHBSH.DAT`: the engine (`0x80078C90`) and 14 minigame and
 mode overlays sharing one slot (`0x800B32B4`). Each overlay is its own build
-target. Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+target. How the game's systems work, and the layout in detail:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 From your disc image to a rebuilt disc. All of its code comes from this repository's build:
-our C (every game function is C), plus the rodata and data not yet in C, which splat cuts
-from the disc. Its game data comes from `assets/`
+our C (every function, all rodata and data), Sony's PsyQ objects, and what splat cuts from the
+disc: the exe's header, `2MBYTE.OBJ` and the engine's two memory images (build-machine
+leftovers). Its game data comes from `assets/`
 ([docs/ASSETS.md](docs/ASSETS.md)), and `make disc-check` proves the result is the retail disc
 byte for byte ([docs/PLAYING.md](docs/PLAYING.md)).
 
@@ -83,7 +85,7 @@ byte for byte ([docs/PLAYING.md](docs/PLAYING.md)).
 flowchart TD
     src["src/ : our C"]
     disc[("Your disc image")]
-    disc -- "make split" --> asm["asm/ : data not in C yet"]
+    disc -- "make split" --> asm["asm/ : the exe header, memory images, 2MBYTE.OBJ"]
     disc -- "decomp.py extract" --> assets["assets/ : game data you edit"]
     disc -- "decomp.py extract" --> files["disc/files : other disc files"]
     src --> make["make"]
@@ -109,14 +111,13 @@ flowchart TD
 Purple is code, green is game data. `main.exe` becomes the disc's boot file (`SCUS_945.70`);
 the engine and the 14 minigame overlays go into `CRASHBSH.DAT` with the game data from
 `assets/`; the other files (`SYSTEM.CNF`, the licence data, the `BASHY.` filler, the bundled
-Spyro 3 demo) come from the disc as they are. As data is turned into C it moves from `asm/` to
-`src/`, as the functions did; the disc stays identical throughout.
+Spyro 3 demo) come from the disc as they are. The functions, then the data, moved from `asm/` to
+`src/` as they were turned into C, and the disc stayed identical throughout.
 
 ## Layout
 
-- `src/main/` - the executable's game code, split into its files: named by
-  what they hold where that is known (`dbase.c`, `scripts.c`, `sound.c`,
-  `card.c`, ...), by their first function's address until then (`80017164.c`).
+- `src/main/` - the executable's game code, split into its files, each named
+  for what it holds (`dbase.c`, `scripts.c`, `sound.c`, `card.c`, ...).
 - `src/overlays/<overlay>/` - one directory per overlay (`engine`,
   `bash`..`hub`), split the same way where the binary or a leak proves a
   file starts (`panel.c` is `PANEL.CPP`, `pause.c` `PAUSE.CPP`).
@@ -166,7 +167,7 @@ the image with the repository at `/work`, building the image on first use.
 
 The compiler profile is in `configs/USA/project.mk` (GCC 2.8.1, `-O2 -G0`,
 maspsx `--aspsx-version=2.86`); change it with `decomp.py config`. Two units of
-the executable (`src/main/modchip.c`, `8002e0f0.c`) were built with GCC 2.7.2
+the executable (`src/main/modchip.c`, `modchip_msg.c`) were built with GCC 2.7.2
 and Sony's assembler: their settings are per unit in the Makefile, and
 `tools/scripts/aspsx_fill.py` reproduces what that assembler (and Sony's build
 of the compiler) did to the code. The source of GCC 2.8.1 and 2.7.2.3 is kept in
@@ -192,9 +193,9 @@ Matching one function (every game function is matched; this is the route for rew
 
 ```sh
 tools/dk python3 tools/scripts/decomp.py next            # pick a function: asm + draft
-tools/dk make diff FUNC=func_80012345                    # after writing its C
-tools/dk make permute FUNC=func_80012345                 # if stuck at the registers stage
-tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit --note "what made it match"
+tools/dk make diff FUNC=NAME                             # after writing its C
+tools/dk make permute FUNC=NAME                          # if stuck at the registers stage
+tools/dk python3 tools/scripts/decomp.py done NAME --commit --note "what made it match"
 ```
 
 Other targets: `make verify` (clean rebuild + check), `make progress`,

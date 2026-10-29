@@ -4,10 +4,10 @@ Read [docs/AGENT_LOG.md](docs/AGENT_LOG.md) first (latest state and next
 steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 [docs/CONVENTIONS.md](docs/CONVENTIONS.md).
 
-- Every game function matches (2026-10-26). The work now is naming, typing,
-  data to C and file splits (docs/ROADMAP-B.md; done work in ROADMAP-A.md); each such change is an
-  ordinary commit once `tools/dk make check` prints `OK`. The matching tools
-  below stay for reworking a function.
+- Every game function matches (2026-10-26), and the source is complete: named, typed, all data
+  in C (2026-10-29). What is left is in docs/ROADMAP-B.md (the final test, release, the PC port;
+  done work in ROADMAP-A.md). A change to the C is an ordinary commit once `tools/dk make check`
+  prints `OK`. The matching tools below stay for reworking a function.
 - Everything runs through `tools/dk` (Docker); the host has no Python.
 - This repo follows the `psx-matching-decomp` skill with different paths:
   `tools/scripts/decomp.py` (not `tools/decomp.py`), `configs/USA/` (not
@@ -92,7 +92,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   plain numbers holding an address, a symbol's or one inside a data object (pointers a shift would leave behind). `struct_layout.py TYPE` a
   struct's members by cc1's own layout, `retype.py FILE FUNC VAR TYPE` a byte pointer's offsets as fields,
   `fold_views.py CANON VIEW...` view structs folded into one, `diff_funcs.py` every function that differs,
-  `raw_offsets.py` the exe's byte-pointer reads the typed check misses, `decl_dups.py` declarations a header repeats (kept at zero by its test; `--views` lists the overlays' views)
+  `raw_offsets.py [--src DIR]` byte-pointer reads the typed check misses (the exe by default), `decl_dups.py` declarations a header repeats (kept at zero by its test; `--views` lists the overlays' views)
   (docs/CONVENTIONS.md, Names). `tools/scripts/model_slots.py` lists each exe model slot with the archive files
   every game loads into it. `tools/scripts/data2c.py OVL [--rodata SYM ...] [--strings-only]` writes an overlay's asm data as C
   (OVL `engine` or `main` for main.exe too; `--strings-only` for just the string blocks)

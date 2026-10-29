@@ -156,7 +156,7 @@ the engine's `InitWeatherNas` used N2O's star field by its `D_` address (a `PROV
 0x1F only). `make shift` now prints a warning for each such engine name; give the engine's C
 the overlay's name and its link takes the address from the overlay's ELF. The same goes
 for functions: the hub's black screen on loading a save (2026-10-26) was `camera.c` calling
-`func_800B8098` (`HubCameraFollow`), which `linkers/engine_undefined_funcs_auto.txt` pins
+`HubCameraFollow` by its address name, which `linkers/engine_undefined_funcs_auto.txt` pins
 to its retail address; the warning covers that list too. Before the shift test, `nm -u` the
 engine's objects: no `func_800B`/`func_800C` or `D_800B`/`D_800C` name should be left.
 

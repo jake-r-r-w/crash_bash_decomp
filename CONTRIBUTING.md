@@ -20,8 +20,8 @@
 
 Every game function matches (2026-10-26), so this is now the route for
 reworking one (a natural form for a steering match) and the record of how
-the matching was done; the work now is naming, typing and data
-([docs/ROADMAP-B.md](docs/ROADMAP-B.md); done work in [ROADMAP-A.md](docs/ROADMAP-A.md)). Functions were matched by hand (by a person or an AI agent), **one function per
+the matching was done. What is left is in [docs/ROADMAP-B.md](docs/ROADMAP-B.md) (done work in
+[ROADMAP-A.md](docs/ROADMAP-A.md)). Functions were matched by hand (by a person or an AI agent), **one function per
 commit**, through the validation gate described in
 [docs/MATCHING.md](docs/MATCHING.md). All commands run through `tools/dk`:
 
@@ -29,9 +29,9 @@ commit**, through the validation gate described in
 tools/dk python3 tools/scripts/decomp.py next            # target, asm listing and draft
 # check the asm's style fits the file's compiler (docs/MATCHING.md, step 2)
 # replace its INCLUDE_ASM line in src/... with C
-tools/dk make diff FUNC=func_80012345                    # diff; last line: STAGE structure/instructions/registers
-tools/dk make permute FUNC=func_80012345                 # only at the registers stage, if stuck
-tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit --note "what made it match"
+tools/dk make diff FUNC=NAME                             # diff; last line: STAGE structure/instructions/registers
+tools/dk make permute FUNC=NAME                          # only at the registers stage, if stuck
+tools/dk python3 tools/scripts/decomp.py done NAME --commit --note "what made it match"
 ```
 
 `done` is the gate. It checks scope (this function's `INCLUDE_ASM` is

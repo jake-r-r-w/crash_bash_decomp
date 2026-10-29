@@ -588,3 +588,20 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
 - [x] Source builds write zeros in the engine's .bss (2.5). `shift_all.py` zeros the image as it
   does the slot (playtested by hand 2026-10-29). The game clears the intro's two words before reading them, and fills the mode
   text buffer before reading it. The zeroed build boots and loads the mode text there.
+
+## Documentation (ROADMAP-B Part 3, done 2026-10-29)
+
+- [x] ARCHITECTURE.md describes the game's systems (3.1). It opens with How the game works: the
+  three layers (shell, engine, slot overlay), boot and the main loop, the process chain, what a
+  mode is (`ModeTypes`, world records, `LevSpec`), one frame, the NAS object system, heroes,
+  drawing, maps and the camera, scripts, loading and the compacting heap, sound and music, pads,
+  the game state and the memory card. The layout and evidence follow as Where everything is.
+- [x] The docs brought up to date with the code:
+  - 1,500 `func_` addresses in the reference docs are now names. Slot addresses that several
+    overlays share were resolved by the commit that wrote each line.
+  - The stale notes are rewritten: unnamed functions, unknown layouts, `asm/data`, the address
+    file names, Polar's leak-order recheck, and the agent log's current state.
+  - Two names were fixed on the way:
+    - `LoadModeText` is `LoadModeOverlay`: it also loads the minigame overlay, and its "header"
+      read is the overlay's `file.size`.
+    - The BIOS region byte is `BiosRegion`, the last `D_` name in `src/`.
