@@ -36,10 +36,6 @@
   ],
   "links": [
     {
-      "label": "Roadmap",
-      "url": "https://github.com/jake-r-r-w/crash_bash_decomp/blob/main/docs/ROADMAP-B.md"
-    },
-    {
       "label": "How the game works",
       "url": "https://github.com/jake-r-r-w/crash_bash_decomp/blob/main/docs/ARCHITECTURE.md"
     }
