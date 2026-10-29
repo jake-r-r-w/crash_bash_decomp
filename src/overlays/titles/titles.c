@@ -873,21 +873,21 @@ void BattleOptionsRender(void) {
 }
 
 void TitlesSetHeroMasks(void) {
-    u8 *g = GameInfo;
+    GameState *g = GameInfo;
     s32 i;
     s32 k;
 
-    if (*(s32 *)(g + 0x6C) == 1) {
-        i = *(s16 *)(g + 0x48);
-        k = ((s8 *)(g + i))[0x54];
-        *(s16 *)(g + 0x44) = (s8)((u8)HeroSide[g[i + 0x4C]] | (u8)HeroSide[g[k + 0x4C]]);
-        i = *(s16 *)(g + 0x4A);
-        k = ((s8 *)(g + i))[0x54];
-        *(s16 *)(g + 0x46) = (s8)((u8)HeroSide[g[i + 0x4C]] | (u8)HeroSide[g[k + 0x4C]]);
+    if (g->teams == 1) {
+        i = g->teamLeader[0];
+        k = g->teammateChoice[i];
+        g->teamSide[0] = (s8)((u8)HeroSide[g->heroChoice[i]] | (u8)HeroSide[g->heroChoice[k]]);
+        i = g->teamLeader[1];
+        k = g->teammateChoice[i];
+        g->teamSide[1] = (s8)((u8)HeroSide[g->heroChoice[i]] | (u8)HeroSide[g->heroChoice[k]]);
         return;
     }
-    i = *(s16 *)(g + 0x48);
-    *(s16 *)(g + 0x44) = (s8)HeroSide[g[i + 0x4C]];
+    i = g->teamLeader[0];
+    g->teamSide[0] = (s8)HeroSide[g->heroChoice[i]];
 }
 
 void OptionsUpdate(void) {
@@ -2074,7 +2074,7 @@ s32 LevelListCount(s32 arg0) {
 
 s32 LevelListText(s32 a, s32 b) {
     s32 base = BattleArenas[a].unk0;
-    s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
+    s32 idx = *(s32 *)(FILE_AT(base, b << 4) + 4);
     s32 *row = LangLevelNames[GameLanguage];
     return row[idx];
 }

@@ -523,14 +523,14 @@ s32 SpinRankHeroes(void) {
             if (g->levelFlags & 0x40) {
                 if (h[g->adventure.unkA7[j]].hero_score > h[((u8 *)((k = j + 1) + (s32)g))[0xA7]].hero_score) {
                     a = g->adventure.unkA7[j];
-                    g->adventure.unkA7[j] = ((u8 *)(k + (s32)g))[0xA7];
-                    ((u8 *)(k + (s32)g))[0xA7] = a;
+                    g->adventure.unkA7[j] = g->adventure.unkA7[k];
+                    g->adventure.unkA7[k] = a;
                 }
             } else {
                 if (h[g->adventure.unkA7[j]].hero_score < h[((u8 *)((m = j + 1) + (s32)g))[0xA7]].hero_score) {
                     a = g->adventure.unkA7[j];
-                    g->adventure.unkA7[j] = ((u8 *)(m + (s32)g))[0xA7];
-                    ((u8 *)(m + (s32)g))[0xA7] = a;
+                    g->adventure.unkA7[j] = g->adventure.unkA7[m];
+                    g->adventure.unkA7[m] = a;
                 }
             }
             j++;

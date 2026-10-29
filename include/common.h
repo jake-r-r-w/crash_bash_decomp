@@ -21,6 +21,11 @@ typedef float f32;
 
 #define ARRAY_COUNT(arr) (s32)(sizeof(arr) / sizeof(arr[0]))
 
+/* BASE plus a byte offset OFF: where a file's header or a variable-size record puts its parts. And a
+ * self-relative entry: the word at P is the offset from P to what it names. */
+#define FILE_AT(base, off) ((u8 *)(base) + (off))
+#define SELF_REL(p) FILE_AT(p, *(p))
+
 /* Game-specific structs, globals and prototypes go in their own headers under include/,
  * included from here or from the .c files that need them. */
 

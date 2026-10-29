@@ -2157,7 +2157,7 @@ void HubDrawSparks(HubSparks *arg0, MATRIX *m) {
 
     set = &arg0->set;
     row = set->rows;
-    set = (HubSparkSet *)((u8 *)set + (FrameCount & 1) * 4);
+    set = (HubSparkSet *)FILE_AT(set, (FrameCount & 1) * 4);
     prim = set->src;
     gte_SetRotMatrix(m);
     gte_SetTransMatrix(m);
@@ -2359,7 +2359,7 @@ void PodiumSpawnHero(s32 arg0, HubSpawnEnt *arg1) {
                     s->entity = *(u16 *)(p + t);
                     s->flags |= 0x8000;
                     s = e->sub;
-                    s->unk08 = -*(s32 *)((u8 *)PodiumHeroX + t);
+                    s->unk08 = -*(s32 *)FILE_AT(PodiumHeroX, t);
                 }
             }
         }
@@ -2440,7 +2440,7 @@ void HubSaveMenuInput(void) {
         cur = s + i;
         j = HubNamePage * sizeof(HubEntry12);
         cur->unk7C = 0;
-        k = (HubKey *)((HubEntry12 *)((u8 *)HubNamePages + j))->unk0 + i;
+        k = (HubKey *)((HubEntry12 *)FILE_AT(HubNamePages, j))->unk0 + i;
         pad = (PadState *)Pads;
         if (pad->pressed & 0x80) {
             HubNameNext += k->unkA;
@@ -2729,16 +2729,16 @@ void HubSetDrawArea(s16 *a, void *b, s32 c, s32 d) {
     if (cdb == DrawBuffers) {
         r += 1;
     }
-    SetDrawArea((DRAWENV *)((u8 *)b + (FrameCount & 1) * 12), r);
+    SetDrawArea((DRAWENV *)FILE_AT(b, (FrameCount & 1) * 12), r);
     rc = (RECT *)a;
     rc->x += r->x;
     rc->y += r->y;
-    SetDrawArea((DRAWENV *)((u8 *)b + ((FrameCount & 1) * 12 + 0x18)), rc);
+    SetDrawArea((DRAWENV *)FILE_AT(b, (FrameCount & 1) * 12 + 0x18), rc);
     off = (FrameCount & 1) * 12;
     off2 = off + 0x18;
     p = (u32 *)(off + (s32)b);
     ((HubPTag *)&p[6])->addr = ((HubPTag *)&RenderState.ot[0x136])->addr;
-    ((HubPTag *)&RenderState.ot[0x136])->addr = (u32)((u8 *)b + off2);
+    ((HubPTag *)&RenderState.ot[0x136])->addr = (u32)FILE_AT(b, off2);
     ((HubPTag *)&p[0])->addr = ((HubPTag *)&RenderState.ot[2])->addr;
     ((HubPTag *)&RenderState.ot[2])->addr = (u32)p;
     q = ((u32 *)cdb) - (-c);

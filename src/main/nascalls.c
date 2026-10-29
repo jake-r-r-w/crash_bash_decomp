@@ -337,7 +337,7 @@ void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl) {
         if ((s32)have >= want) {
         r = n;
         if (total + 8 < (s32)have) {
-            n = (ExtBlk *)((u8 *)n + total);
+            n = (ExtBlk *)FILE_AT(n, total);
             p = b->next;
             if (p != NULL) {
                 p->prev = n;
@@ -1196,7 +1196,7 @@ void InitTriggers(void) {
     trig = HeadOfTriggers;
     for (i = 0; i < TriggerCount; i++, trig++) {
         src = (MapTrigRec *)(((u8 *)MapScene->triggers) + 4) + i;
-        info = (MapTrigInfo *)((u8 *)src + ((src->info & ~3) + 0xC));
+        info = (MapTrigInfo *)FILE_AT(src, (src->info & ~3) + 0xC);
         trig->InfoStruct = (MapTriggerInfo *)info;
         if (info->flags & 0x4000) {
             MapPoints[info->slot].pos = src->pos;
@@ -3421,7 +3421,7 @@ void texture_update_anims(obj_textureset *arg0) {
             }
         }
         if (d->subOff != 0) {
-            p = (s32 *)((u8 *)d + (d->subOff + 4));
+            p = (s32 *)FILE_AT(d, d->subOff + 4);
             r = (texture_scroll *)(p + 1);
             n = *p;
             if (--n != -1) {
@@ -3508,7 +3508,7 @@ void texture_init_mem_textureset(obj_textureset *arg0) {
         d->fC = t;
         d->pix = (s32)s - u;
         d++;
-        s = (TexImage *)((u8 *)s + (s->w * s->h * 2 + 0x14));
+        s = (TexImage *)FILE_AT(s, s->w * s->h * 2 + 0x14);
     }
     b = arg0->base;
     off = b->extra;
@@ -3614,7 +3614,7 @@ void textureset_upload(obj_textureset *arg0) {
     }
     p = arg0->anims;
     if (p != NULL && p->subOff != 0) {
-        Tex_UploadList((TexUploadList *)((u8 *)p + 4 + p->subOff), arg0);
+        Tex_UploadList((TexUploadList *)(FILE_AT(p, 4) + p->subOff), arg0);
     }
 }
 
@@ -3977,7 +3977,7 @@ void texture_scroll_step(TexFrameAnim *arg0, obj_textureset *arg1) {
     }
     idx = arg0->pos >> 8;
     if (idx != old) {
-        p = (s32 *)((u8 *)arg0 + arg0->frames + idx * 4);
+        p = (s32 *)(FILE_AT(arg0, arg0->frames) + idx * 4);
         LoadImage((RECT *)&rect->info.vramX, (u_long *)SELF_REL(p));
     }
 }

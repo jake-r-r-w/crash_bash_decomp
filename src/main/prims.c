@@ -124,7 +124,7 @@ void prims_update(void) {
     set = PrimSetList;
     prev = NULL;
     while (1) {
-        p = (PrimSet *) ((u8 *) set + off);
+        p = (PrimSet *)FILE_AT(set, off);
         if (set == NULL) {
             break;
         }
@@ -135,7 +135,7 @@ void prims_update(void) {
         } else {
             p->pairs[0].a.f0 = 0;
         }
-        p = (PrimSet *) ((u8 *) set + off);
+        p = (PrimSet *)FILE_AT(set, off);
         if (p->pairs[0].b.fC != NULL) {
             if (++p->pairs[0].b.f0 >= 16) {
                 PrimList_Flush(&p->pairs[0].b, set->mode);
@@ -143,7 +143,7 @@ void prims_update(void) {
         } else {
             p->pairs[0].b.f0 = 0;
         }
-        q = (PrimSet *) ((u8 *) set + off);
+        q = (PrimSet *)FILE_AT(set, off);
         q->pairs[0].a.f10 = NULL;
         q->pairs[0].b.f10 = NULL;
         q->pairs[0].a.fC = (s32 *) q->pairs[0].a.f4;
@@ -1273,22 +1273,22 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
             return;
         }
         e = (u8 *)&((FileEntry *)e)->mesh + ((FileEntry *)e)->mesh;
-        fr = (s32 *)((u8 *)anim + (frame * 16 + 4));
+        fr = (s32 *)FILE_AT(anim, frame * 16 + 4);
         if (c & 0x400000) {
             e = (u8 *)&((ModelFile *)set)->meshes[(d->unk8E & 0xFFF) - 1];
         }
         if (fr[0] == 0) {
             return;
         }
-        ia = (u8 *)fr + fr[0] + 0x14;
+        ia = SELF_REL(fr) + 0x14;
         if (anim[0] != 0) {
-            verts = (u8 *)anim + anim[0];
+            verts = SELF_REL(anim);
         } else {
             verts = (u8 *)&((ModelFile *)set)->verts + ((ModelFile *)set)->verts;
         }
         if (c < 0 && (n = d->u70.h.lo) != 0) {
             s32 off;
-            s32 *nx = (s32 *)((u8 *)anim + (frame * 16 + 0x14));
+            s32 *nx = (s32 *)FILE_AT(anim, frame * 16 + 0x14);
             s32 end = fr[6];
             s32 start = fr[2];
             s32 t;
@@ -1307,12 +1307,12 @@ void draw_object_model(s32 a, u8 *set, s32 c, subengine *d) {
             } else {
                 off = nx[0];
             }
-            p = (u8 *)nx + off;
+            p = FILE_AT(nx, off);
             morph_blend_verts(n, (MeshHeader *)e, (u16 *)ia,
-                          (u16 *)((u8 *)p + 0x14), (s16 (*)[3])verts);
+                          (u16 *)FILE_AT(p, 0x14), (s16 (*)[3])verts);
         } else if (fr[2] != 0) {
             morph_blend_verts(fr[2], (MeshHeader *)e, (u16 *)ia,
-                          (u16 *)((u8 *)(fr + 1) + fr[1] + 0x14), (s16 (*)[3])verts);
+                          (u16 *)(SELF_REL(fr + 1) + 0x14), (s16 (*)[3])verts);
         } else {
             morph_copy_verts((MeshHeader *)e, (u16 *)ia, verts, (u16 *)MorphVerts);
         }
@@ -2163,7 +2163,7 @@ void morph_copy_verts(MeshHeader *arg0, u16 *src, u8 *tab, u16 *dst) {
     u16 *e;
 
     s32 off = arg0->runs;
-    u8 *b = (u8 *)off + (s32)arg0;
+    u8 *b = FILE_AT(off, (s32)arg0);
     p = b + 0x15;
     for (;;) {
         c = *p;
@@ -3139,7 +3139,7 @@ s32 *path_get(u32 arg0) {
 loop:
     p++;
     if (i < n) {
-        if (*(s32 *)((u8 *)p + *p + 0xC) == arg0) {
+        if (*(s32 *)(SELF_REL(p) + 0xC) == arg0) {
             goto found;
         }
         i++;
@@ -3168,7 +3168,7 @@ s32 path_find(u32 arg0) {
 loop:
     p++;
     if (i < n) {
-        if (*(s32 *)((u8 *)p + *p + 0xC) == arg0) {
+        if (*(s32 *)(SELF_REL(p) + 0xC) == arg0) {
             return i;
         }
         i++;

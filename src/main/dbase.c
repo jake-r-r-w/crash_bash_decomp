@@ -417,7 +417,7 @@ obj_dbase *a;
             p = arg0->data;
             if (p != NULL && i < p->nMeshAnims) {
                 slot = (FileEntry *)((u8 *)&p->meshAnims + p->meshAnims);
-                slot = (FileEntry *)((u8 *)slot + off);
+                slot = (FileEntry *)FILE_AT(slot, off);
                 e = slot->block;
                 if (e != NULL) {
                     if (e->ptr != NULL) {

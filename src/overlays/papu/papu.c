@@ -587,8 +587,8 @@ void PapuShuffleDropPoints(void) {
         j = Random(16);
         in = Random(16);
         k = Random(16);
-        a = (PapuGridPos *)((u8 *)PapuDropPoints + (j * 8 + i * 128));
-        b = (PapuGridPos *)((u8 *)PapuDropPoints + (k * 8 + in * 128));
+        a = (PapuGridPos *)FILE_AT(PapuDropPoints, j * 8 + i * 128);
+        b = (PapuGridPos *)FILE_AT(PapuDropPoints, k * 8 + in * 128);
         x = a->x;
         y = a->y;
         a->x = b->x;

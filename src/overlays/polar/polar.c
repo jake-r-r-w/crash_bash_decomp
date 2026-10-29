@@ -12593,7 +12593,7 @@ void SetPolarHeroFootIdle(s32 player) {
 
     rnd = Random(6);
     off = player * sizeof(HeroInfo);
-    info = (HeroInfo *)((u8 *)Heroes + off);
+    info = (HeroInfo *)FILE_AT(Heroes, off);
     sfx = 0;
     info->hero_eng->sub->unk68 = 0;
     speed = 0;

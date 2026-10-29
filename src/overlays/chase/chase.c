@@ -3858,7 +3858,7 @@ void ChaseAimAt(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, ChaseOut *arg4) {
     arg4->unk0 = 2;
     n = ChaseHeroState[arg0][17];
     arg4->unk4 = (n / 2 + 0x400) / n;
-    arg4->unk8 = *(u32 *)((u8 *)DirPadBits + ((ang >> 7) & 0x1C));
+    arg4->unk8 = *(u32 *)FILE_AT(DirPadBits, (ang >> 7) & 0x1C);
     if (HeroesAllOut == 0) {
         Random(4);
     }

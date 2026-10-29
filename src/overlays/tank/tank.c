@@ -5998,7 +5998,7 @@ void InitTotemBit(NAS *nas, s32 id) {
         ext->TargetIndex = 0xD;
     }
     ext->TargetX = TotemTargets[ext->TargetIndex][0];
-    ext->TargetZ = *(s32 *)((u8 *)TotemTargets + ((ext->TargetIndex * 8) | 4));
+    ext->TargetZ = *(s32 *)FILE_AT(TotemTargets, (ext->TargetIndex * 8) | 4);
     if (nas->Failure != 0) {
         KillNAS(nas);
         return;
@@ -6184,7 +6184,7 @@ void PlotTotemBit(NAS *nas, s32 id) {
         nas->UserInfo.status = 0;
         ext->TargetIndex = (ext->TargetIndex + 1) & 0xF;
         ext->TargetX = TotemTargets[ext->TargetIndex][0];
-        ext->TargetZ = *(s32 *)((u8 *)TotemTargets + ((ext->TargetIndex * 8) | 4));
+        ext->TargetZ = *(s32 *)FILE_AT(TotemTargets, (ext->TargetIndex * 8) | 4);
         ext->SpeedX = (ext->TargetX - eng->unk10.x) / 31;
         ext->SpeedZ = (ext->TargetZ - eng->unk10.z) / 31;
         a = get_angle(ext->SpeedX, ext->SpeedZ) + 0x800;

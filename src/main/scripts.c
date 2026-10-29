@@ -1374,7 +1374,7 @@ s32 *find_range(s32 *arg0, s32 arg1, s32 arg2) {
         if (arg0[0] <= arg1 && arg1 < arg0[0] + arg0[1]) {
             return arg0;
         }
-        arg0 = (s32 *)((u8 *)arg0 + arg2);
+        arg0 = (s32 *)FILE_AT(arg0, arg2);
     }
     return arg0;
 }

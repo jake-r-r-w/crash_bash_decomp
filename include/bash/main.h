@@ -443,10 +443,6 @@ typedef struct mal {
 /* The same sums left to right (the pointer first), and back from a block's last word. */
 #define MAL_END(b, words) ((mal *)((u8 *)(b) + (words) * 4 + sizeof(mal)))
 #define MAL_OF_LAST(last, words) ((mal *)((u8 *)(last) - (words) * 4 - (sizeof(mal) - 4)))
-/* A file's byte offset OFF from BASE (the header fields that locate its parts), and a
- * self-relative entry: the word at P is the offset from P to what it names. */
-#define FILE_AT(base, off) ((u8 *)(base) + (off))
-#define SELF_REL(p) FILE_AT(p, *(p))
 
 /* Header of a pool entry; the data follows it. */
 typedef struct PoolNode {
