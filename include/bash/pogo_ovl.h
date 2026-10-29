@@ -24,25 +24,12 @@ typedef struct {
     /* 0x08 */ s32 unk8;
     /* 0x0C */ s32 z;
 } PogoCellPos;
-typedef struct {
-    HeroInfo *hero;
-    PogoCellPos *unk4;
-    u8 unk8[2];
-    s16 unkA;
-    u8 unkC[2];
-    u16 unkE;
-    u16 unk10;
-    s16 unk12;
-    s16 unk14;
-    s16 unk16;
-    u8 unk18[4];
-} PogoCell; /* size 0x1C */
 
-extern PogoCell PogoGrid[8][8];
+extern PogoSquare PogoGrid[8][8];
 /* The board cell at byte offset off from base (PogoGrid). */
-#define CELL_AT(off) ((PogoCell *)((off) + (u32)base))
+#define CELL_AT(off) ((PogoSquare *)((off) + (u32)base))
 /* The position a board cell's unk4 points to, as PlaySfx takes it. */
-#define CELL_POS(cx, cz) ((SLONG_XYZ *)&((PogoCell *)((cx) * sizeof(PogoGrid[0]) + (cz) * sizeof(PogoCell) + (u32)PogoGrid))->unk4->x)
+#define CELL_POS(cx, cz) ((SLONG_XYZ *)&((PogoSquare *)((cx) * sizeof(PogoGrid[0]) + (cz) * sizeof(PogoSquare) + (u32)PogoGrid))->sub->unk04)
 
 /* A scene object in the list at MapScene->subs (InitPogo_Tiles). */
 typedef struct PogoObj {
@@ -104,7 +91,7 @@ static inline void Pogo_PowerupAnim(s32 i, s32 anim) {
 }
 /* ZapArrow, inlined into Pickup_Claim. */
 static inline void Pogo_ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    NAS *nas = (NAS *)PogoGrid[arg0][arg1].hero;
+    NAS *nas = (NAS *)PogoGrid[arg0][arg1].pickup;
     s32 dir;
     s32 i;
     s32 dx;
@@ -220,20 +207,13 @@ extern s16 KerbTiles[][2];
 extern s32 KerbPathA[][4];
 extern s32 KerbPathB[][4];
 
-typedef struct {
-    s32 unk0;
-    s32 unk4;
-    s32 unk8;
-    s32 unkC;
-    s32 unk10;
-} PogoMove; /* size 0x14 */
 
 typedef struct {
     s32 x;
     s32 z;
 } PogoOffset;
 
-extern PogoMove PogoAIPlay[];
+extern PogoAIPlayer PogoAIPlay[];
 extern PogoOffset EncloseStepsOdd[];
 extern PogoOffset EncloseStepsEven[];
 
