@@ -281,7 +281,7 @@ s32 HubDistXZ(EXTengine *arg0, EXTengine *arg1);
 
 void HubGoToMode(s32 arg0);
 
-void HubCamFromPath(u8 *cam, s32 arg1);
+void HubCamFromPath(camera_info_tag *cam, s32 arg1);
 
 void HubHeroSetIdle(s32 arg0);
 

@@ -293,7 +293,7 @@ void MainMenuInit(void);
 
 void RenderTitlesBackdrop(void);
 
-void TitlesCamFromPath(u8 *cam, s32 arg1);
+void TitlesCamFromPath(camera_info_tag *cam, s32 arg1);
 
 void TitlesSetUp(void);
 

@@ -11313,7 +11313,7 @@ void PolarHeroRun(s32 player) {
 }
 
 void SetPolarHeroDazed(s32 player) {
-    s32 *ext;
+    PolarAi *ext;
     NAS *nas;
     s32 *fux;
     EXTengine *eng;
@@ -11354,7 +11354,7 @@ void SetPolarHeroDazed(s32 player) {
         if (ext != NULL) {
             if (GameMode != 0x16) {
                 eng = Heroes[player].hero_eng;
-                ext[0x98 / 4] = 0;
+                ext->unk98 = 0;
                 nas = CreateNAS(eng->XYZ.x, eng->XYZ.y, eng->XYZ.z, 0x1605, 0x11);
                 if (nas != NULL) {
                     nas->Engine->flags |= 0x200000;
@@ -11370,7 +11370,7 @@ void SetPolarHeroDazed(s32 player) {
                     nas->InitDelete(nas);
                 }
             }
-            ext[0x1C / 4] = 0;
+            ext->unk1C = 0;
             move = Heroes[player].hero_move;
             if (move != NULL) {
                 move->z_dir = 0;
@@ -11382,7 +11382,7 @@ void SetPolarHeroDazed(s32 player) {
             }
             Heroes[player].hero_eng->sub->otz = 0;
             if (Heroes[player].hero_name == 1) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     SetHeroSeq(player, 0x44);
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
@@ -11393,7 +11393,7 @@ void SetPolarHeroDazed(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 5) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                     SetHeroSeq(player, 0x44);
@@ -11404,7 +11404,7 @@ void SetPolarHeroDazed(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 6) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                     SetHeroSeq(player, 0x44);
@@ -11415,7 +11415,7 @@ void SetPolarHeroDazed(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 3) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                     SetHeroSeq(player, 0x44);
@@ -11426,7 +11426,7 @@ void SetPolarHeroDazed(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 2) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                     SetHeroSeq(player, 0x44);
@@ -11437,7 +11437,7 @@ void SetPolarHeroDazed(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 4) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2001;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                     SetHeroSeq(player, 0x44);
@@ -11448,7 +11448,7 @@ void SetPolarHeroDazed(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 7) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                     SetHeroSeq(player, 0x44);
@@ -11459,7 +11459,7 @@ void SetPolarHeroDazed(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 8) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                     SetHeroSeq(player, 0x44);
@@ -11475,8 +11475,8 @@ void SetPolarHeroDazed(s32 player) {
 
 void PolarHeroDazed(s32 player) {
     EXTheromove *move;
-    s32 *ext;
-    s32 *ext2;
+    PolarAi *ext;
+    PolarAi *ext2;
     s32 *p;
     NAS *nas;
     EXTengine *eng;
@@ -11516,8 +11516,8 @@ void PolarHeroDazed(s32 player) {
             if (Heroes[player].hero_name == 4) {
                 ProcessHeroAnim(player);
             }
-            if (ext[0x98 / 4]-- < 0) {
-                ext[0x98 / 4] = Random(8) + 0x18;
+            if (ext->unk98-- < 0) {
+                ext->unk98 = Random(8) + 0x18;
                 nas = CreateNAS(x + 0x60, y - 0x180, z, 0x1612, 0x11);
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
@@ -11552,7 +11552,7 @@ void PolarHeroDazed(s32 player) {
                 TestPolarHeroMelted(player);
                 PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
                 Heroes[player].hero_frozen = 2;
-                if (ext[0x24 / 4] == 0 && ext[0x1C / 4] >= 0x1F) {
+                if (ext->flag == 0 && ext->unk1C >= 0x1F) {
                     Heroes[player].hero_eng->xform.rot.vy += 0x10;
                     if (PolarRoundState != 0 && !(Heroes[player].hero_status & 0x200)) {
                         Heroes[player].hero_eng->sub->flags &= 0xFFFF7FFF;
@@ -11560,42 +11560,42 @@ void PolarHeroDazed(s32 player) {
                         SetHeroAction(player, 0x50);
                         return;
                     }
-                    if (Heroes[player].hero_name == 1 && ext[0x24 / 4] == 0) {
+                    if (Heroes[player].hero_name == 1 && ext->flag == 0) {
                         Heroes[player].hero_eng->sub->entity = 0x4100;
                     }
-                    if (Heroes[player].hero_name == 7 && ext[0x24 / 4] == 0) {
+                    if (Heroes[player].hero_name == 7 && ext->flag == 0) {
                         Heroes[player].hero_eng->sub->entity = 0x4000;
                     }
-                    if (Heroes[player].hero_name == 8 && ext[0x24 / 4] == 0) {
+                    if (Heroes[player].hero_name == 8 && ext->flag == 0) {
                         Heroes[player].hero_eng->sub->entity = 0x4000;
                     }
-                    if (Heroes[player].hero_name == 3 && ext[0x24 / 4] == 0) {
+                    if (Heroes[player].hero_name == 3 && ext->flag == 0) {
                         Heroes[player].hero_eng->sub->entity = 0x4100;
                     }
-                    if (Heroes[player].hero_name == 2 && ext[0x24 / 4] == 0) {
+                    if (Heroes[player].hero_name == 2 && ext->flag == 0) {
                         Heroes[player].hero_eng->sub->entity = 0x4000;
                     }
-                    if (Heroes[player].hero_name == 5 && ext[0x24 / 4] == 0) {
+                    if (Heroes[player].hero_name == 5 && ext->flag == 0) {
                         Heroes[player].hero_eng->sub->entity = 0x4000;
                     }
-                    if (Heroes[player].hero_name == 6 && ext[0x24 / 4] == 0) {
+                    if (Heroes[player].hero_name == 6 && ext->flag == 0) {
                         Heroes[player].hero_eng->sub->entity = 0x4000;
                     }
-                    if (Heroes[player].hero_name == 4 && ext[0x24 / 4] == 0) {
+                    if (Heroes[player].hero_name == 4 && ext->flag == 0) {
                         Heroes[player].hero_eng->sub->entity = 0x4080;
                     }
                 }
                 Heroes[player].hero_eng->xform.dirty = 1;
             }
-            if (ext[0x1C / 4]++ >= 0xB5) {
+            if (ext->unk1C++ >= 0xB5) {
                 ext2 = FindExtension(Heroes[player].hero, 0x20000000);
                 if (ext2 != NULL) {
                     ResetMass(player);
                     Heroes[player].hero_eng->sub->flags &= 0xFFBFFFFF;
-                    if (ext2[0x24 / 4] == 0) {
+                    if (ext2->flag == 0) {
                         SetHeroAction(player, 0x49);
                     }
-                    if (ext2[0x24 / 4] == 1) {
+                    if (ext2->flag == 1) {
                         SetHeroAction(player, 0x54);
                     }
                 }
@@ -11605,7 +11605,7 @@ void PolarHeroDazed(s32 player) {
 }
 
 void SetPolarHeroChallenge(s32 player) {
-    s32 *ext;
+    PolarAi *ext;
     s32 sfx;
 
     if (TestPolarHeroWon() == 0) {
@@ -11641,11 +11641,11 @@ void SetPolarHeroChallenge(s32 player) {
         }
         ext = FindExtension(Heroes[player].hero, 0x20000000);
         if (ext != NULL) {
-            ext[0x98 / 4] = 0;
+            ext->unk98 = 0;
             Heroes[player].hero_eng->sub->flags |= 0x400000;
-            ext[0x1C / 4] = 0;
+            ext->unk1C = 0;
             if (Heroes[player].hero_name == 1) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     SetHeroSeq(player, 0x44);
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
@@ -11655,7 +11655,7 @@ void SetPolarHeroChallenge(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 5) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                 } else {
@@ -11664,7 +11664,7 @@ void SetPolarHeroChallenge(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 6) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                 } else {
@@ -11673,7 +11673,7 @@ void SetPolarHeroChallenge(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 3) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                 } else {
@@ -11682,7 +11682,7 @@ void SetPolarHeroChallenge(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 2) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                 } else {
@@ -11691,7 +11691,7 @@ void SetPolarHeroChallenge(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 4) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2001;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                 } else {
@@ -11700,7 +11700,7 @@ void SetPolarHeroChallenge(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 7) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                 } else {
@@ -11709,7 +11709,7 @@ void SetPolarHeroChallenge(s32 player) {
                 }
             }
             if (Heroes[player].hero_name == 8) {
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                     Heroes[player].hero_eng->sub->flags |= 0x400000;
                 } else {
@@ -11717,28 +11717,28 @@ void SetPolarHeroChallenge(s32 player) {
                     Heroes[player].hero_eng->sub->flags2 = 0x2002;
                 }
             }
-            if (Heroes[player].hero_name == 1 && ext[0x24 / 4] == 0) {
+            if (Heroes[player].hero_name == 1 && ext->flag == 0) {
                 Heroes[player].hero_eng->sub->entity = 0x4100;
             }
-            if (Heroes[player].hero_name == 7 && ext[0x24 / 4] == 0) {
+            if (Heroes[player].hero_name == 7 && ext->flag == 0) {
                 Heroes[player].hero_eng->sub->entity = 0x4000;
             }
-            if (Heroes[player].hero_name == 8 && ext[0x24 / 4] == 0) {
+            if (Heroes[player].hero_name == 8 && ext->flag == 0) {
                 Heroes[player].hero_eng->sub->entity = 0x4000;
             }
-            if (Heroes[player].hero_name == 3 && ext[0x24 / 4] == 0) {
+            if (Heroes[player].hero_name == 3 && ext->flag == 0) {
                 Heroes[player].hero_eng->sub->entity = 0x4100;
             }
-            if (Heroes[player].hero_name == 2 && ext[0x24 / 4] == 0) {
+            if (Heroes[player].hero_name == 2 && ext->flag == 0) {
                 Heroes[player].hero_eng->sub->entity = 0x4000;
             }
-            if (Heroes[player].hero_name == 5 && ext[0x24 / 4] == 0) {
+            if (Heroes[player].hero_name == 5 && ext->flag == 0) {
                 Heroes[player].hero_eng->sub->entity = 0x4000;
             }
-            if (Heroes[player].hero_name == 6 && ext[0x24 / 4] == 0) {
+            if (Heroes[player].hero_name == 6 && ext->flag == 0) {
                 Heroes[player].hero_eng->sub->entity = 0x4000;
             }
-            if (Heroes[player].hero_name == 4 && ext[0x24 / 4] == 0) {
+            if (Heroes[player].hero_name == 4 && ext->flag == 0) {
                 Heroes[player].hero_eng->sub->entity = 0x4080;
             }
             Heroes[player].hero_eng->sub->otz = 0;
@@ -11748,8 +11748,8 @@ void SetPolarHeroChallenge(s32 player) {
 
 void PolarHeroChallenge(s32 player) {
     EXTheromove *move;
-    s32 *ext;
-    s32 *ext2;
+    PolarAi *ext;
+    PolarAi *ext2;
     s32 *p;
     NAS *nas;
     EXTengine *eng;
@@ -11765,8 +11765,8 @@ void PolarHeroChallenge(s32 player) {
             x = eng->XYZ.x;
             y = eng->XYZ.y;
             z = eng->XYZ.z;
-            if (ext[0x98 / 4]-- < 0) {
-                ext[0x98 / 4] = Random(0x14) + 1;
+            if (ext->unk98-- < 0) {
+                ext->unk98 = Random(0x14) + 1;
                 nas = CreateNAS(x + 0x60, y - 0x180, z, 0x1612, 0x11);
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
@@ -11801,20 +11801,20 @@ void PolarHeroChallenge(s32 player) {
                 TestPolarHeroMelted(player);
                 PolarIceHit(&Heroes[player].hero_eng->XYZ, player);
                 Heroes[player].hero_frozen = 2;
-                if (ext[0x24 / 4] == 0) {
+                if (ext->flag == 0) {
                     Heroes[player].hero_eng->xform.rot.vy += 0x10;
                 }
                 Heroes[player].hero_eng->xform.dirty = 1;
             }
-            if (ext[0x1C / 4]++ >= 0xB5) {
+            if (ext->unk1C++ >= 0xB5) {
                 ext2 = FindExtension(Heroes[player].hero, 0x20000000);
                 if (ext2 != NULL) {
                     ResetMass(player);
                     Heroes[player].hero_eng->sub->flags &= 0xFFBFFFFF;
-                    if (ext2[0x24 / 4] == 0) {
+                    if (ext2->flag == 0) {
                         SetHeroAction(player, 0x49);
                     }
-                    if (ext2[0x24 / 4] == 1) {
+                    if (ext2->flag == 1) {
                         SetHeroAction(player, 0x54);
                     }
                 }
@@ -12805,14 +12805,14 @@ void SetPolarHeroHit(s32 player) {
 void SetPolarHeroDead(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
-    s32 *ext;
+    PolarAi *ext;
     u16 status;
     EXTengine *eng;
 
     ext = FindExtension(h->hero, 0x20000000);
     if (ext != NULL) {
-        ext[0x9C / 4] = 0;
-        ext[0x98 / 4] = 0;
+        ext->deadTimer = 0;
+        ext->unk98 = 0;
         h->hero_eng->xform.order = 2;
         status = h->hero_status;
         if (!(status & 0x200)) {
@@ -12829,7 +12829,7 @@ void SetPolarHeroDead(s32 arg0) {
 void PolarHeroDead(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + player;
-    s32 *ext;
+    PolarAi *ext;
     s32 *p;
     EXTheromove *move;
     EXTengine *eng;
@@ -12848,23 +12848,23 @@ void PolarHeroDead(s32 player) {
             move->z_max = 0;
         }
         eng = h->hero_eng;
-        t = ext[0x9C / 4] + 1;
+        t = ext->deadTimer + 1;
         x = eng->XYZ.x;
         y = eng->XYZ.y;
         z = eng->XYZ.z;
-        ext[0x9C / 4] = t;
+        ext->deadTimer = t;
         if (t == 4) {
             CreateNAS(x - 0x80, y - 0x100, z, 0x1613, 0x11);
             CreateNAS(x, y - 0x100, z, 0x1614, 0x11);
         }
-        if (ext[0x9C / 4] == 2) {
+        if (ext->deadTimer == 2) {
             CreateNAS(x + 0x80, y - 0x180, z, 0x1613, 0x11);
         }
-        if (ext[0x9C / 4] == 0x3C) {
+        if (ext->deadTimer == 0x3C) {
             SetHeroAction(player, 0x50);
         }
-        if (--ext[0x98 / 4] < 0) {
-            ext[0x98 / 4] = Random(7) + 1;
+        if (--ext->unk98 < 0) {
+            ext->unk98 = Random(7) + 1;
             nas = CreateNAS(x + 0x40, y - 0x40, z, 0x1612, 0x11);
             if (nas != NULL) {
                 p = FindExtension(nas, 0x10000000);

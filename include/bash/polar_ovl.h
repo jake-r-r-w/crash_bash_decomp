@@ -1231,7 +1231,7 @@ typedef struct PolarAi {
     /* 0x28 */ s32 unk28;
     /* 0x2C */ u8 pad2C[0x98 - 0x2C];
     /* 0x98 */ s32 unk98;
-    /* 0x9C */ u8 pad9C[0xA0 - 0x9C];
+    /* 0x9C */ s32 deadTimer;     /* counts up in the dead state */
     /* 0xA0 */ s32 unkA0;
     /* 0xA4 */ s32 unkA4;
     /* 0xA8 */ s32 unkA8;
