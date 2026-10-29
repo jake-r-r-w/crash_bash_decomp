@@ -2835,8 +2835,8 @@ void Ark_HeroBot(u32 arg0) {
     s32 ang;
     s32 mate;
     EXTbotai *ai;
-    ArkenoidAiNode *n;
-    ArkenoidAiNode *node;
+    NAS *n;
+    NAS *node;
     EXTengine *e;
     EXTengine *obj;
     EXTengine *eng;
@@ -2890,9 +2890,9 @@ void Ark_HeroBot(u32 arg0) {
     }
     target = ai->TargetPlayer;
     k = (0x20 - AiPlayerSkill[arg0].level) << 4;
-    for (; n != NULL; n = n->next) {
-        e = n->eng;
-        if (e != NULL && (ext = (ArkenoidAiExt *)n->fux) != NULL && ext->unk1A == 1) {
+    for (; n != NULL; n = n->Group.Child) {
+        e = n->Engine;
+        if (e != NULL && (ext = (ArkenoidAiExt *)n->FUX) != NULL && ext->unk1A == 1) {
             x = FindExtension((NAS *)n, 0x800);
             if (x != NULL && ArkBotAimA(arg0, (ArkenoidPos *)&e->XYZ, &pos, x->unk16) != 0) {
                 dx = (e->XYZ.x + k) - (pos.x + k);
@@ -2942,9 +2942,9 @@ void Ark_HeroBot(u32 arg0) {
         if (k <= 0) {
             k = 1;
         }
-        for (node = HeadOfObjects; node != NULL; node = node->child) {
-            obj = node->eng;
-            if (obj != NULL && (ext = (ArkenoidAiExt *)node->fux) != NULL &&
+        for (node = HeadOfObjects; node != NULL; node = node->Object.Child) {
+            obj = node->Engine;
+            if (obj != NULL && (ext = (ArkenoidAiExt *)node->FUX) != NULL &&
                 ((ArkenoidAiFux *)ext)->unk24 == 0x12) {
                 eng = Heroes[arg0].hero_eng;
                 dx = eng->XYZ.x - obj->XYZ.x;
@@ -2975,12 +2975,12 @@ void Ark_HeroBot(u32 arg0) {
             ai->AItimer2 = 0;
         }
         if (ai->AItimer2 < 0x1E) {
-            for (node = HeadOfBalls; node != NULL; node = node->next) {
+            for (node = HeadOfBalls; node != NULL; node = node->Group.Child) {
                 ext = FindExtension((NAS *)node, 0x1000);
                 if (ext != NULL && ext->unk1A == 2 && arg0 == (s16)ext->unk16) {
                     target = ai->TargetPlayer;
                     if (target != -1) {
-                        obj = node->eng;
+                        obj = node->Engine;
                         if (obj != NULL) {
                             x = FindExtension((NAS *)node, 0x800);
                             if (x != NULL) {

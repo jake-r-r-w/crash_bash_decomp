@@ -2294,7 +2294,7 @@ void CoalFlameSpread(EXTengine *eng, CoalFlameFux *fux, s32 id) {
     cx = eng->XYZ.x;
     cz = eng->XYZ.z;
     for (;;) {
-        CoalFlameCell *cell;
+        NAS *cell;
         CoalFlamePos *pos;
         CoalFlameFux *cf;
         NAS *fire;
@@ -2310,16 +2310,16 @@ void CoalFlameSpread(EXTengine *eng, CoalFlameFux *fux, s32 id) {
         if (x >= -0x9FF) if (x < 0xA00) {
             z = cz + ofs->z;
             if (z >= -0x9FF) if (z < 0xA00) {
-                cell = (CoalFlameCell *)CircleFireGridCell(grid, x, z);
+                cell = (NAS *)CircleFireGridCell(grid, x, z);
                 if (cell != NULL) {
-                    pos = cell->pos;
-                    cf = cell->fux;
+                    pos = cell->Engine;
+                    cf = cell->FUX;
                     if (fux->unk1C < 0) {
                         fux->unk1C = 0;
                         fux->unk20 = pos->x;
                         fux->unk24 = pos->z;
                         fux->unk2C = cf->unk2C;
-                        s = ((cell->unk5C + 0xF) << 12) / 60;
+                        s = ((cell->UserInfo.status + 0xF) << 12) / 60;
                         if (s > 0x1000) {
                             s = 0x1000;
                         } else if (s < 0x258) {
@@ -2353,7 +2353,7 @@ void CoalFlameSpread(EXTengine *eng, CoalFlameFux *fux, s32 id) {
 }
 
 s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
-    CoalChainNAS *nas;
+    NAS *nas;
     EXTengine *eng;
     HeroInfo *h;
     s32 total;
@@ -2364,16 +2364,16 @@ s32 CoalChainHit(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
 
     total = 0;
     for (i = 0; i < 8; i++) {
-        nas = (CoalChainNAS *)ChaseBarrels[i];
-        if (nas == NULL || nas->unk5C == 1) {
+        nas = (NAS *)ChaseBarrels[i];
+        if (nas == NULL || nas->UserInfo.status == 1) {
             continue;
         }
-        eng = nas->eng;
+        eng = nas->Engine;
         d = eng->XYZ.x - x;
         if (-range < d && d < range) {
             d = eng->XYZ.z - z;
-            if (-range < d && d < range && nas->fux->unk30 != 1) {
-                nas->unk5C = 1;
+            if (-range < d && d < range && ((CoalChainFux *)nas->FUX)->unk30 != 1) {
+                nas->UserInfo.status = 1;
                 kind = eng->sub->entity;
                 total += 2;
                 if (kind == 0x2016) {
@@ -3461,24 +3461,24 @@ void InitCoalFlame(NAS *nas) {
     }
 }
 
-void PlotCoal(CoalNAS *nas) {
-    EXTengine *eng = nas->eng;
+void PlotCoal(NAS *nas) {
+    EXTengine *eng = nas->Engine;
 
-    if (nas->unk5E == 5) {
+    if (nas->UserInfo.flags == 5) {
         eng->xform.dirty = 1;
         eng->xform.rot.vx += 0x44;
-        nas->unk60 += 0xC;
-        eng->XYZ.y += nas->unk60;
+        nas->UserInfo.user1 += 0xC;
+        eng->XYZ.y += nas->UserInfo.user1;
         if (eng->XYZ.y > 0) {
             eng->XYZ.y = 0;
             eng->sub->entity = 0x2002;
             eng->xform.rot.vx = 0;
             eng->xform.dirty = 1;
-            nas->unk5E = 0;
+            nas->UserInfo.flags = 0;
         }
     }
-    nas->timer--;
-    if (nas->timer == 0) {
+    nas->UserInfo.status--;
+    if (nas->UserInfo.status == 0) {
         s32 xi = (eng->XYZ.x + 0xA00) >> 7;
         s32 zi = (eng->XYZ.z + 0xA00) >> 7;
         s32 idx = zi * 40 + xi;

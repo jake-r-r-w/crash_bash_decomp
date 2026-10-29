@@ -2094,10 +2094,10 @@ void InitLaserShoot(LaserShoot *arg0) {
     AddToGroup((NAS **)&NoxLasers, (NAS *)arg0);
 }
 
-void InitMineSFX(MineSFX *arg0) {
-    arg0->unk5C = Random(4);
-    arg0->unk64 = Random(0x1000);
-    arg0->unk60 = arg0->src->unk18;
+void InitMineSFX(NAS *arg0) {
+    arg0->UserInfo.status = Random(4);
+    arg0->UserInfo.user2 = Random(0x1000);
+    arg0->UserInfo.user1 = arg0->Engine->XYZ.z;
 }
 
 void NoxPathAngles(s32 *arg0, s32 flag, s32 *out) {

@@ -417,15 +417,6 @@ typedef struct ArkenoidAiExt {
     u16 unk1A;
 } ArkenoidAiExt;
 
-typedef struct ArkenoidAiNode {
-    u8 pad0[0x20];
-    struct ArkenoidAiNode *next;
-    u8 pad24[0x2C - 0x24];
-    struct ArkenoidAiNode *child;
-    u8 pad30[0x54 - 0x30];
-    EXTengine *eng;
-    ArkenoidAiFux *fux;
-} ArkenoidAiNode;
 
 extern s16 ArkBotWaits[];
 
