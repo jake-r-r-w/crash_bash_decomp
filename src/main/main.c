@@ -978,21 +978,21 @@ void mal_free_later(u8 *arg0, _mal_area *heap, s32 arg2) {
     heap->deferred = blk;
 }
 
-void *mal_alloc_owned_low(s32 arg0, void **arg1, s32 arg2, s32 arg3) {
+void *mal_alloc_owned_low(s32 bytes, void **owner, _mal_area *heap, s32 flags) {
     mal *blk;
     u8 *ret;
 
-    blk = mal_take_low(arg0, arg2);
+    blk = mal_take_low(bytes, heap);
     if (blk == NULL) {
-        blk = mal_take_low(arg0, arg2);
+        blk = mal_take_low(bytes, heap);
         if (blk == NULL) {
             return NULL;
         }
     }
     ret = (u8 *)MAL_DATA(blk);
-    blk->owner = arg1;
-    *arg1 = ret;
-    blk->flags = arg3;
+    blk->owner = owner;
+    *owner = ret;
+    blk->flags = flags;
     return ret;
 }
 
@@ -3521,16 +3521,16 @@ s32 fx_alloc_buffers(FxDef *def, subengine *sub) {
     fx->b = NULL;
     sub->u6C.ptr = NULL;
     fx->count = 0;
-    mal_alloc_owned_low(def->size, a, (s32)&MainHeap, 2);
+    mal_alloc_owned_low(def->size, a, &MainHeap, 2);
     if (fx->a == NULL) {
         var_v0 = 0;
     } else {
-        mal_alloc_owned_low(def->size, &((SubFx *)&sub->u6C)->b, (s32)&MainHeap, 3);
+        mal_alloc_owned_low(def->size, &((SubFx *)&sub->u6C)->b, &MainHeap, 3);
         if (fx->b == NULL) {
             mal_free(a, &MainHeap);
             var_v0 = 0;
         } else {
-            mal_alloc_owned_low(def->bufSize, &fx->buf, (s32)&MainHeap, 3);
+            mal_alloc_owned_low(def->bufSize, &fx->buf, &MainHeap, 3);
             fx->count = def->count;
             var_v0 = (s32)sub->u6C.ptr;
         }
@@ -3555,11 +3555,11 @@ s32 fx_alloc_buffers_b(FxDef *def, SubFx *fx) {
     fx->b = NULL;
     fx->buf = NULL;
     fx->count = 0;
-    mal_alloc_owned_low(def->size, a, (s32)&MainHeap, 2);
+    mal_alloc_owned_low(def->size, a, &MainHeap, 2);
     if (fx->a != NULL) {
-        mal_alloc_owned_low(def->size, &fx->b, (s32)&MainHeap, 3);
+        mal_alloc_owned_low(def->size, &fx->b, &MainHeap, 3);
         if (fx->b != NULL) {
-            mal_alloc_owned_low(def->bufSize, &fx->buf, (s32)&MainHeap, 3);
+            mal_alloc_owned_low(def->bufSize, &fx->buf, &MainHeap, 3);
             fx->count = def->count;
             return (s32)fx->buf;
         }

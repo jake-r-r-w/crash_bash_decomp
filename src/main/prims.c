@@ -522,7 +522,7 @@ FacePrim *face_prim_alloc(s32 arg0, PrimList *list, PrimList *pool, MeshHeader *
         }
         *node = list->f4;
         list->f4 = (s32)node;
-        mal_alloc_owned_low(faces->faces * 0x28, (void **)(node + 1), (s32)&MainHeap, ((FrameCount & 1)?3:2));
+        mal_alloc_owned_low(faces->faces * 0x28, (void **)(node + 1), &MainHeap, ((FrameCount & 1)?3:2));
         prim = (FacePrim *)node[1];
         prim_write_uvs(faces, prim);
         faces_write_colors(faces, prim);

@@ -1604,7 +1604,8 @@ typedef struct VelState {
 
 u8 *mal_trim(u8 *arg0, s32 arg1, _mal_area *arg2);
 
-void *mal_alloc_owned_low(s32 arg0, void * *arg1, s32 arg2, s32 arg3);
+/* Takes a low block for BYTES, records OWNER as its owner (*owner gets the data) and FLAGS. */
+void *mal_alloc_owned_low(s32 bytes, void **owner, _mal_area *heap, s32 flags);
 
 struct obj_textureset;
 

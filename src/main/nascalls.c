@@ -3933,8 +3933,8 @@ loop:
 
 void textureset_init(obj_textureset *set, u8 *file) {
     set->base = (TexFile *)file;
-    mal_alloc_owned_low(((TexFile *)file)->nTex * 0x38, (void **)&set->tex, (s32)&MainHeap, 0);
-    mal_alloc_owned_low(set->base->nClut * 0xC, (void **)&set->ent, (s32)&MainHeap, 0);
+    mal_alloc_owned_low(((TexFile *)file)->nTex * 0x38, (void **)&set->tex, &MainHeap, 0);
+    mal_alloc_owned_low(set->base->nClut * 0xC, (void **)&set->ent, &MainHeap, 0);
     set->nTex = set->base->nTex;
     set->nEnt = set->base->nClut;
     set->f14 = set->base->f14;

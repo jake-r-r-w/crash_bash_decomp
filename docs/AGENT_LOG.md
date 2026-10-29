@@ -132,10 +132,6 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
   where Sony's reorg differs from FSF 2.7.2's). With that flag on
   `8002e0f0`, `func_8002E25C` stops matching (structure 44/95), so whether
   both units had it is open.
-- Heap: `D_8004E0F0` is a `_mal_area`. Its +0x10 is the deferred-free list
-  (`func_80011578` pushes, `func_80011DB4` counts down); `mal.unk2` is the
-  countdown. `func_800115D8`'s prototype still takes `void **`, not
-  `_mal_area *`; retype it when its callers allow.
 - Prototype debug types: the fragment's bodiless structs the code shows are typed (2026-10-29).
   Left as word arrays: `script_key_anim.quat`/`quat_interp` (a quaternion and its slerp table:
   arrays are their shape) and Polar's `ang[2]` (struct ._23; nothing reads it).
@@ -481,6 +477,10 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-29 (ROADMAP-B 1.7 done):** `mal_alloc_owned_low` (the old `func_800115D8`) takes
+  `(s32 bytes, void **owner, _mal_area *heap, s32 flags)`. Its ten callers pass `&MainHeap`, not
+  `(s32)&MainHeap`.
 
 - **2026-10-29 (ROADMAP-B 1.6 done):** the fragment's bodiless structs the code reads have
   bodies: `script_key_frame`, `script_key_subscript`, the entity and camera thread parts.

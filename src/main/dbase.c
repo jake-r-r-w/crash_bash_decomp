@@ -142,7 +142,7 @@ void dbase_copy_block(FileEntry *e, s32 base) {
     e->block = node;
     size = e->end - e->start;
     mal_can_alloc(size);
-    mal_alloc_owned_low(size, (void **)node, (s32)&MainHeap, 0);
+    mal_alloc_owned_low(size, (void **)node, &MainHeap, 0);
     memcpy(node->ptr, FILE_AT(base, e->start), size);
 }
 

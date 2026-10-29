@@ -1225,7 +1225,7 @@ void init_emitter_thread(script_thread *def, script_control_info *ci, s32 num) {
             } while (q != NULL);
         }
         p->type.particle.mdata = NULL;
-        mal_alloc_owned_low(e->maxparticlecount * 0x28, (void **)&p->type.particle.mdata, (s32)&MainHeap, 0);
+        mal_alloc_owned_low(e->maxparticlecount * 0x28, (void **)&p->type.particle.mdata, &MainHeap, 0);
     }
 }
 

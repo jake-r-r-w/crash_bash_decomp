@@ -11,7 +11,6 @@ When a task is done, tick it (`[x]`), move its row to ROADMAP-A.md, and run
 
 | # | Task | Notes | Done |
 |---|------|-------|------|
-| 1.7 | `func_800115D8` takes `_mal_area *` | Not `void **`, once its callers allow | [ ] |
 | 1.8 | The overlays' byte-pointer reads | `raw_offsets.py --src src/overlays` finds 84 functions (375 lines) the progress check's typed test misses: `*(T *)(p + N)` and `p[N / 4]` on a byte or word pointer (Polar's hero states, `InitScriptFX`, the hub's and titles' camera paths, titles' menus, ...) | [ ] |
 
 ## Part 2 - Names and loose ends

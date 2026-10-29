@@ -552,3 +552,5 @@ The items done so far; what was left of the phase is Parts 1 to 5 of [ROADMAP-B.
 
   A quaternion and its slerp table stay word arrays, since that's their shape. Polar's
   `ang[2]` stays too: nothing reads it.
+- [x] `func_800115D8` takes `_mal_area *` (2026-10-29; ROADMAP-B's 1.7): `mal_alloc_owned_low(s32
+  bytes, void **owner, _mal_area *heap, s32 flags)`, its ten callers passing `&MainHeap`.
