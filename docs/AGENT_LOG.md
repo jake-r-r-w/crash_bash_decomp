@@ -57,10 +57,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-ROADMAP-B.md, Part 5 onwards:
+ROADMAP-B.md, Part 6:
 
 1. Done 2026-10-29: **the final test** (Part 4; 4.4 closed by decision).
-2. **Release** (Part 5), then **the PC port** (Part 6).
+2. Done 2026-10-29: **the release** (Part 5; the repo is public, listed through `.recomp.json`).
+3. **The PC port** (Part 6).
 
 A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
@@ -436,6 +437,11 @@ A retail-DAT reader for scratch scripts: `scratch/retail.py` (`each(fmt)`).
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-29 (ROADMAP-B Part 5 done):**
+  - The release checklist is done: the licence, the README (cut to the basics), the credits, and
+    the docs and history checks.
+  - `make split` is quiet, the repo is public, and `.recomp.json` is in place.
+  - The progress badges are gone. Only the PC port (Part 6) is left.
 - **2026-10-29 (ROADMAP-B Part 4 done):** 4.4 is closed by the user's decision (they watched the shifted
   build play and judged it the same game). The final test is complete; Part 5 (release) is next.
 - **2026-10-29 (ROADMAP-B 4.3 passes):**
