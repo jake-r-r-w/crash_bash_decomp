@@ -61,7 +61,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ROADMAP-B.md, Part 1 onwards. In rough order:
 
 1. Done 2026-10-29: **everything shifted at once** (`make shift-all`; it boots and plays).
-2. **Quality level 4**: the 113 untyped game functions (`progress`), the overlays' 136 views of
+2. **Quality level 4**: the 75 untyped game functions (`progress`; ROADMAP-B 1.1, 38 done 2026-10-29), the overlays' 136 views of
    engine globals (`decl_dups.py --views`: fold each into the one type), the exe's 69 raw-offset
    functions (mostly the heap's block arithmetic and `export_exe_functions`' slot offsets), and the
    `unkXX` fields (ASSETS.md, What isn't decoded, lists the file formats' ones).
@@ -481,6 +481,17 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-29 (ROADMAP-B 1.1, typing):** 38 of the 113 untyped functions typed with `retype.py`
+  (113 -> 75). These were the KeepInBounds hooks, the XZ helpers, the AST Init/Plot functions,
+  the object-list walks and `FindExtension` results (0x1000 is `EXTobject`, 0x800 `EXTmotion`),
+  and the track segment walks. `ChaseAiState` gains `unk28`/`unk2C` (0x30 bytes). Gotcha:
+  `retype.py` turned `*(s32 *)(nas + 0x54) + 0x94` into `nas->Engine + 0x94`, which is scaled by
+  the struct size. It now reports such lines (`test_retype.py`). Left as raw: N2OInitBoss's
+  `N2OHeroStarts + 0x2C` (an array read can't move past the struct store before it; a plain read
+  can), and the Bash tile index (typed, it CSEs differently). Most of the other 75 carry a comment
+  saying the byte form is what matches, or are the heap's block arithmetic or a file's
+  self-relative offsets.
 
 - **2026-10-29 (roadmap split):** ROADMAP.md is now two files. ROADMAP-A.md holds the finished
   work (Phases 1 to 5, and Phase 6's three done items). ROADMAP-B.md holds everything open, in
