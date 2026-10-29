@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/spin_ovl.h"
 #include "bash/spin.h"
 #include "bash/hero.h"
@@ -45,7 +46,7 @@ u16 SpinAiHumanTweak[10] = {
 shell_setup spin_shell_info = {
     0x2000, 0x10, 0x1000, 0xC8, 0x2BC, 0x200, VramAreas, VramNodePool, 0x20, 0x400,
 };
-SpinJumpEnt SpinJumpEnts[10] = {
+HeroJumpEnt SpinJumpEnts[10] = {
     { 0x88, 0x88, 9, 0xB },
     { 0x80, 0x80, 6, 0xB },
     { 0x80, 0x80, 6, 0xB },
@@ -230,7 +231,7 @@ void InitialiseSPINFirst() {
     HeroHooks.HeroExtraEffects = SpinHero_ExtraEffects;
     HeroHooks.HeroesTouched = SpinTouched;
     HeroHooks.CreateShadow = SpinCreateShadow;
-    HeroHooks.JumpEnts = (SpinJumpEnt *)SpinJumpEnts;
+    HeroHooks.JumpEnts = (HeroJumpEnt *)SpinJumpEnts;
     HeroActDead = 0x38;
     HeroActWinner = 0x36;
     HeroActLoser = 0x37;
@@ -240,7 +241,7 @@ void InitialiseSPINFirst() {
     AiHumanTweakTable = SpinAiHumanTweak;
     AiHumanRoundTweakTable = SpinAiHumanRoundTweak;
     q = &AiSkillTable;
-    if (GameTeams != 0) {
+    if (GameTeams[0] != 0) {
         p = SpinAiSkillAlt;
     } else {
         p = SpinAiSkill;
@@ -818,18 +819,18 @@ void SpinCountObjects(void) {
         z1 = 9 - ((e->unk10.z + 0x80) >> 8);
         if ((u32)x0 < 20) {
             if ((u32)z0 < 20) {
-                ArenaGrid[z0 * 20 + x0].unk0 |= t;
+                ArenaGrid[z0 * 20 + x0].flags |= t;
             }
             if ((u32)z1 < 20) {
-                ArenaGrid[z1 * 20 + x0].unk0 |= t;
+                ArenaGrid[z1 * 20 + x0].flags |= t;
             }
         }
         if ((u32)x1 < 20) {
             if ((u32)z0 < 20) {
-                ArenaGrid[z0 * 20 + x1].unk0 |= t;
+                ArenaGrid[z0 * 20 + x1].flags |= t;
             }
             if ((u32)z1 < 20) {
-                ArenaGrid[z1 * 20 + x1].unk0 |= t;
+                ArenaGrid[z1 * 20 + x1].flags |= t;
             }
         }
         if ((u16)(f->kind - 1) < 12) {
@@ -920,7 +921,7 @@ SpinPair *SpinFindDropPoint(u16 *head) {
     x = (p->x >> 8) + 10;
     z = 9 - (p->y >> 8);
     do {
-        while (ArenaGrid[z * 20 + x].unk0 != 0) {
+        while (ArenaGrid[z * 20 + x].flags != 0) {
             if (i == *head) {
                 goto fail;
             }
@@ -933,7 +934,7 @@ SpinPair *SpinFindDropPoint(u16 *head) {
         n = 0;
         for (a = x - 3; a < x + 3; a++) {
             for (b = z - 3; b < z + 3; b++) {
-                if ((u32)a < 20 && b >= 0 && b < 20 && ArenaGrid[b * 20 + a].unk0 != 0) {
+                if ((u32)a < 20 && b >= 0 && b < 20 && ArenaGrid[b * 20 + a].flags != 0) {
                     n++;
                 }
             }
@@ -2091,8 +2092,8 @@ void Spin_HeroBot(s32 arg0) {
                     ai->AIpad |= 0x8000;
                 }
             } else if (p != -1 && (Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
-                if (GameTeams == 0 || p != mate) {
-                    if (GameTeams != 0 && Heroes[p].hero_object != NULL) {
+                if (GameTeams[0] == 0 || p != mate) {
+                    if (GameTeams[0] != 0 && Heroes[p].hero_object != NULL) {
                         ai->AIpad |= 0x8000;
                     } else if (!(r & 0x10)) {
                         ai->AIpad |= 0x8000;
@@ -2151,7 +2152,7 @@ void Spin_HeroBot(s32 arg0) {
         if (SpinAlwaysZero(arg0) == 0) {
             p = HeroTestBox(arg0, 0x40);
             if (p != target && (Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
-                if (GameTeams == 0 || p != mate) {
+                if (GameTeams[0] == 0 || p != mate) {
                     if (Random(3) == 0) {
                         ai->AImode = 1;
                         ai->AIsleep = inv;
@@ -2287,7 +2288,7 @@ void SpinAI_ScanAhead(s32 arg0) {
     while ((u32)(lx + 0x7FF) < 0xFFF && lz < 0x800 && lz >= -0x7FF && i < 8) {
         gx = (lx >> 8) + 10;
         gz = 9 - (lz >> 8);
-        v = ArenaGrid[gz * 20 + gx].unk0;
+        v = ArenaGrid[gz * 20 + gx].flags;
         if ((v & 0xE0) == id) {
             v &= 0x1F;
         }
@@ -2303,7 +2304,7 @@ void SpinAI_ScanAhead(s32 arg0) {
     while ((u32)(rx + 0x7FF) < 0xFFF && rz < 0x800 && rz >= -0x7FF && i < 8) {
         gx = (rx >> 8) + 10;
         gz = 9 - (rz >> 8);
-        v = ArenaGrid[gz * 20 + gx].unk0;
+        v = ArenaGrid[gz * 20 + gx].flags;
         if ((v & 0xE0) == id) {
             v &= 0x1F;
         }
@@ -2498,7 +2499,7 @@ s32 SpinAI_PickPlayer(s32 arg0) {
     s32 r;
 
     other = -1;
-    if (GameTeams != 0) {
+    if (GameTeams[0] != 0) {
         other = arg0 ^ 1;
     }
     sum = 0;
@@ -2635,8 +2636,8 @@ void SpinInitASTIndices(void) {
     r = 0;
 found:
     SpinASTBase = r;
-    HitHooks[2] = 0;
-    HitHooks[3] = 0;
+    HitHooks.unk8 = 0;
+    HitHooks.unkC = 0;
 }
 
 s32 SPIN_KeepInBounds(EXTengine *eng) {

@@ -2035,10 +2035,10 @@ void SetHeroJump(s32 arg0) {
     if (GAME->heroOut[arg0] == 0) {
         idx = h->hero_name;
     }
-    h->hero_move->jump_vel = ((HeroJumpEnt *)HeroHooks.JumpEnts)[idx].vel;
-    h->hero_move->jump_max = ((HeroJumpEnt *)HeroHooks.JumpEnts)[idx].max;
-    h->hero_move->jump_acc = ((HeroJumpEnt *)HeroHooks.JumpEnts)[idx].acc;
-    h->hero_move->jump_dec = ((HeroJumpEnt *)HeroHooks.JumpEnts)[idx].dec;
+    h->hero_move->jump_vel = HeroHooks.JumpEnts[idx].vel;
+    h->hero_move->jump_max = HeroHooks.JumpEnts[idx].max;
+    h->hero_move->jump_acc = HeroHooks.JumpEnts[idx].acc;
+    h->hero_move->jump_dec = HeroHooks.JumpEnts[idx].dec;
     h->hero_move->jump_dir = -1;
     h->hero->Camera.look_ahead = 0x400;
 }
@@ -3973,8 +3973,8 @@ void PlotSparks(SparkObj *obj) {
 
     ss = &obj->set;
     n = ss->count;
-    p0 = ss->polys0;
-    p1 = ss->polys1;
+    p0 = ss->prims[0];
+    p1 = ss->prims[1];
     s = obj->set.sparks;
     tex = (SparkTex *)&HeroModelBank[DB_ArenaBossBearArena].textures.tex[50];
     if (GameMode == 0x22) {

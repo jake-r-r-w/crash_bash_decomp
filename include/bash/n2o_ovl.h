@@ -332,7 +332,6 @@ s32 N2OBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
 void N2OSpawnSlotMissile(s32 a);
 
-void N2OCameraFollow(void);
 
 void PlotN2OmissileExplode(NAS *nas);
 
@@ -397,22 +396,7 @@ extern s32 N2OBossClock;
 void InitBossHealthIcons(void);
 void ResetHeroGlobals(void);
 
-/* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
-typedef struct N2OHooks {
-    /* 0x00 */ s32 InitHero;
-    /* 0x04 */ u16 *HeroModels;
-    /* 0x08 */ u8 pad8[0xC];
-    /* 0x14 */ void *VictorySeqs;
-    /* 0x18 */ void *CreateShadow;
-    /* 0x1C */ void *UpdateShadow;
-    /* 0x20 */ void *PreMoveHero;
-    /* 0x24 */ void *MoveHero;
-    /* 0x28 */ u8 pad28[4];
-    /* 0x2C */ void *HeroFacing;
-    /* 0x30 */ u8 pad30[0x38];
-    /* 0x68 */ s32 (*KeepInBounds)(EXTengine *);
-} N2OHooks;
-extern N2OHooks HeroHooks;
+extern EngineHooks HeroHooks;
 extern void *AiSkillTable;
 extern s16 HeroActHit;
 extern s16 HeroActDead;

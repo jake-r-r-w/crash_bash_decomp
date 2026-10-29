@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/pogo_ovl.h"
 #include "bash/pogo.h"

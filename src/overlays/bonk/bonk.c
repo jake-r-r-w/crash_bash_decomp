@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/bonk_ovl.h"
 #include "bash/bonk.h"

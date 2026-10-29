@@ -356,8 +356,7 @@ typedef struct {
 
 typedef struct {
     Spark *sparks;
-    SparkPoly *polys0;
-    SparkPoly *polys1;
+    void *prims[2];     /* two frames' prims: SparkPoly for the engine's, Nox's SparkLine */
     s32 count;
 } SparkSet;
 

@@ -109,7 +109,6 @@ extern SpinSlot SpinSlots[10];
 #include "bash/main.h"
 
 extern s32 SpinASTBase;
-extern s32 HitHooks[];
 
 void InitialiseSPINFirst();
 
@@ -154,11 +153,7 @@ typedef struct SpinFux {
 /* balloon chance weights, indexed by score and 0x20 - score (SpinScoreBalloon) */
 extern u16 SpinBalloonWeights[];
 
-typedef struct {
-    u8 unk0;
-    u8 unk1;
-} SpinMapCell;
-extern SpinMapCell ArenaGrid[400];
+extern ArenaCell ArenaGrid[400];
 extern u16 PickupCounts[13];
 
 void SpinHitHeroes(EXTengine *eng, SpinHitMask *m, u32 flag, s32 hero);
@@ -174,7 +169,6 @@ typedef struct SpinGlow {
     /* 0x1E */ s16 unk1E;
 } SpinGlow;
 s32 GravitateNas(NAS *nas);
-void PlayHitEffect(s32 *arg0, void *arg1, s32 arg2);
 
 void SpinHeroFlip(s32 arg0);
 
@@ -207,7 +201,6 @@ static inline void SpinDropHazard(SpinFux *fux) {
         }
     }
 }
-extern s32 GameTeams;
 extern u16 CameraMode;
 FlagRecord *FindCollisionBox(EXTengine *eng, u32 flag);
 
@@ -290,37 +283,8 @@ void SetSpinHeroWinner(s32 arg0);
 void SetSpinHeroLose(s32 arg0);
 extern u8 GameInfo[];
 
-/* Hero jump parameters, 8 bytes per hero (HeroHooks.JumpEnts). */
-typedef struct SpinJumpEnt {
-    u16 vel, max, acc, dec;
-} SpinJumpEnt;
 
-typedef struct SpinHooks {
-    /* 0x00 */ u8 pad0[0x4];
-    /* 0x04 */ u16 *HeroModels;
-    /* 0x08 */ u8 pad8[0x4];
-    /* 0x0C */ u16 *RunSpeeds;
-    /* 0x10 */ SpinJumpEnt *JumpEnts;
-    /* 0x14 */ u8 pad14[4];
-    /* 0x18 */ void *CreateShadow;
-    /* 0x1C */ u8 pad1C[4];
-    /* 0x20 */ void *PreMoveHero;
-    /* 0x24 */ u8 pad24[0x14];
-    /* 0x38 */ void *HeroBot;
-    /* 0x3C */ void *TestAttack;
-    /* 0x40 */ u8 pad40[4];
-    /* 0x44 */ void *TestJump;
-    /* 0x48 */ u8 pad48[4];
-    /* 0x4C */ void *Hero2ObjectCollision;
-    /* 0x50 */ void *HeroGrabObject;
-    /* 0x54 */ void (*HeroKickCollision)();
-    /* 0x58 */ void (*HeroCarryCollision)(s32);
-    /* 0x5C */ void *HeroExtraEffects;
-    /* 0x60 */ void *HeroesTouched;
-    /* 0x64 */ void *ChooseWinner;
-    /* 0x68 */ s32 (*KeepInBounds)(EXTengine *);
-} SpinHooks;
-extern SpinHooks HeroHooks;
+extern EngineHooks HeroHooks;
 
 s32 SpinAI_NearestEnemy(s32 arg0);
 extern void *AiBotTweakTable;
@@ -338,7 +302,7 @@ extern u16 SpinAiTeamSkill[];
 extern u16 SpinAiHumanRoundTweak[];
 extern u16 SpinAiBotTweak[];
 extern u16 SpinAiHumanTweak[];
-extern SpinJumpEnt SpinJumpEnts[];
+extern HeroJumpEnt SpinJumpEnts[];
 extern u16 SpinRunSpeeds[];
 void SpinChooseWinner(s32 arg0, u16 arg1);
 void Spin_HeroBot();

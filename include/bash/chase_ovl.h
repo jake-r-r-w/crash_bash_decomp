@@ -10,8 +10,7 @@
 #include "bash/aiskill.h"
 #include "bash/core.h"   /* map_enviroment (MapScene) */
 
-typedef struct { s16 unk0; s16 unk2; } ChaseTrig;
-extern ChaseTrig rcossin_tbl[];
+extern TrigEntry rcossin_tbl[];
 
 extern NAS *ContourPlatform;
 extern s32 VelocityCalc;
@@ -69,19 +68,10 @@ typedef struct EggPuffExt {
     /* 0x28 */ s32 unk28;
 } EggPuffExt;
 
-/* PadState (Pads) as ChasePadHook reads it: flags at 0x54. */
-typedef struct ChasePad {
-    /* 0x00 */ s32 unk0;
-    /* 0x04 */ u8 pad4[0x34];
-    /* 0x38 */ u16 unk38;
-    /* 0x3A */ u8 pad3A[0x16];
-    /* 0x50 */ s32 unk50;
-    /* 0x54 */ s32 unk54;
-} ChasePad;
 extern u16 ChaseHeroShadowModels[];
 extern u16 ChaseHeroShadowSizes[];
 extern s32 ChaseFlameTimer[];
-extern ChasePad Pads[];
+extern PadState Pads[];
 
 typedef struct CoalPosInner {
     s32 pad0[4];
@@ -168,7 +158,6 @@ typedef struct ChaseObj {
 
 void ChaseUpdateStub(s32 *arg0);
 extern s32 ChaseUpdateState[];
-void texture_update_anims(void *arg0);
 void ChaseHeroJump(s32 arg0);
 void ChaseUnusedStub0(void);
 void ChaseUnusedStub1(void);
@@ -224,39 +213,8 @@ extern u8 GameInfo[];
 
 #define RANK68V ((GameState *)GameInfo)
 
-/* Hero jump parameters, 8 bytes per hero (HeroHooks.JumpEnts). */
-typedef struct ChaseJumpEnt {
-    u16 vel, max, acc, dec;
-} ChaseJumpEnt;
 
-/* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
-typedef struct ChaseHooks {
-    /* 0x00 */ void *InitHero;
-    /* 0x04 */ u16 *HeroModels;
-    /* 0x08 */ u8 pad8[0x4];
-    /* 0x0C */ u16 *RunSpeeds;
-    /* 0x10 */ ChaseJumpEnt *JumpEnts;
-    /* 0x14 */ void *VictorySeqs;
-    /* 0x18 */ u8 pad18[8];
-    /* 0x20 */ void *PreMoveHero;
-    /* 0x24 */ void *MoveHero;
-    /* 0x28 */ u8 pad28[4];
-    /* 0x2C */ void *HeroFacing;
-    /* 0x30 */ u8 pad30[8];
-    /* 0x38 */ void *HeroBot;
-    /* 0x3C */ u8 pad3C[4];
-    /* 0x40 */ void *TestRun;
-    /* 0x44 */ void *TestJump;
-    /* 0x48 */ void *TestKick;
-    /* 0x4C */ u8 pad4C[8];
-    /* 0x54 */ void *HeroKickCollision;
-    /* 0x58 */ u8 pad58[4];
-    /* 0x5C */ void *HeroExtraEffects;
-    /* 0x60 */ u8 pad60[4];
-    /* 0x64 */ void *ChooseWinner;
-    /* 0x68 */ void *KeepInBounds;
-} ChaseHooks;
-extern ChaseHooks HeroHooks;
+extern EngineHooks HeroHooks;
 extern void *AiBotTweakTable;
 extern void *AiHumanTweakTable;
 extern void *AiSkillTable;
@@ -265,7 +223,6 @@ extern void *AiHumanRoundTweakTable;
 extern s16 HeroActDead;
 extern s16 HeroActWinner;
 extern s16 HeroActLoser;
-extern s32 GameTeams;
 extern u16 ChaseHeroModels[];
 extern s32 ChaseVictorySeqs[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern u16 ChaseAiSkill[];
@@ -567,7 +524,6 @@ extern u16 ChaseRunSpeeds[];
 extern NAS *ChaseGenerator;
 extern NAS *ChaseGeneratorB;
 extern s32 PanelCtrl;
-extern u8 GameViewport[];
 extern camera_info_tag MainCamera;
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);

@@ -865,7 +865,6 @@ extern ScriptInit WalrusScriptInit;
 extern ScriptInit WalrusFishScriptInit;
 extern s32 WalrusState;
 
-s32 ArcUpdate(s32 *from, s32 *to, void *arc, s32 *pos);
 
 /* Big missile extension (id 0x10000000) as PlotBigMissile reads it: a ballistic
  * arc at 0xC (the same block as BigMissileExt, InitBigMissile's view). */
@@ -1355,37 +1354,7 @@ extern ScriptInit BearminatorScriptInit;
 
 
 
-/* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
-typedef struct PolarHooks {
-    /* 0x00 */ s32 InitHero;
-    /* 0x04 */ void *HeroModels;
-    /* 0x08 */ void *unk8;
-    /* 0x0C */ u16 *RunSpeeds;
-    /* 0x10 */ void *JumpEnts;
-    /* 0x14 */ void *VictorySeqs;
-    /* 0x18 */ void *CreateShadow;
-    /* 0x1C */ void *UpdateShadow;
-    /* 0x20 */ void *PreMoveHero;
-    /* 0x24 */ void *MoveHero;
-    /* 0x28 */ void *PostMoveHero;
-    /* 0x2C */ void (*HeroFacing)(void);
-    /* 0x30 */ void *HeroSetIdle;
-    /* 0x34 */ void *HeroTouched;
-    /* 0x38 */ void *HeroBot;
-    /* 0x3C */ void *TestAttack;
-    /* 0x40 */ void *TestRun;
-    /* 0x44 */ void *TestJump;
-    /* 0x48 */ void *TestKick;
-    /* 0x4C */ void *Hero2ObjectCollision;
-    /* 0x50 */ void *HeroGrabObject;
-    /* 0x54 */ void *HeroKickCollision;
-    /* 0x58 */ void *HeroCarryCollision;
-    /* 0x5C */ void *HeroExtraEffects;
-    /* 0x60 */ void *HeroesTouched;
-    /* 0x64 */ void *ChooseWinner;
-    /* 0x68 */ void *KeepInBounds;
-} PolarHooks;
-extern PolarHooks HeroHooks;
+extern EngineHooks HeroHooks;
 extern void *AiBotTweakTable;
 extern void *AiHumanTweakTable;
 extern void *AiSkillTable;

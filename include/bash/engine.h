@@ -308,7 +308,7 @@ extern PlaceRec *PauseRec;
 extern PlaceRec **PauseRecSet;
 extern s32 PauseRecIndex;
 
-/* Hero jump parameters, 8 bytes per hero (EngineHooks.unk10). */
+/* Hero jump parameters, 8 bytes per hero (EngineHooks.JumpEnts). */
 typedef struct HeroJumpEnt {
     u16 vel, max, acc, dec;
 } HeroJumpEnt;
@@ -319,7 +319,7 @@ typedef struct EngineHooks {
     /* 0x04 */ u16 *HeroModels;
     /* 0x08 */ void *unk8;
     /* 0x0C */ u16 *RunSpeeds;
-    /* 0x10 */ void *JumpEnts;
+    /* 0x10 */ HeroJumpEnt *JumpEnts;
     /* 0x14 */ void *VictorySeqs;     /* the victory sequences (VictorySeq, pause.h) */
     /* 0x18 */ void *CreateShadow;
     /* 0x1C */ void (*UpdateShadow)(void);

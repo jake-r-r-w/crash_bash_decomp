@@ -42,7 +42,6 @@ typedef struct MixObj {
 
 extern SetupCam NoxCamera;
 extern fade_info ScreenFade;
-extern u8 GameViewport[];
 
 typedef struct MineSrc {
     /* 0x00 */ u8 pad00[0x18];
@@ -575,27 +574,7 @@ typedef struct SparkLine {
     /* 0x10 */ s16 x1, y1;
 } SparkLine;
 
-typedef struct Spark {
-    /* 0x00 */ s16 x;
-    /* 0x02 */ s16 y;
-    /* 0x04 */ s16 z;
-    /* 0x06 */ s16 pad06;
-    /* 0x08 */ s16 x2;
-    /* 0x0A */ s16 y2;
-    /* 0x0C */ s16 z2;
-    /* 0x0E */ u8 pad0E[0xA];
-} Spark;
-
-typedef struct SparkSet {
-    /* 0x00 */ Spark *sparks;
-    /* 0x04 */ SparkLine *lines[2];
-    /* 0x0C */ s32 count;
-} SparkSet;
-
-typedef struct SparkObj {
-    /* 0x00 */ u8 pad00[0x6C];
-    /* 0x6C */ SparkSet set;
-} SparkObj;
+/* Spark, SparkSet and SparkObj: pause.h's (the engine's PlotSparks). */
 
 extern s32 NoxSparkAlpha;
 extern s32 NoxSparkScale;
@@ -629,7 +608,6 @@ typedef struct AsteroidExt {
 } AsteroidExt;
 
 
-s32 ArcUpdate(s32 *from, s32 *to, void *arc, s32 *pos);
 
 void NoxUpdate(void);
 

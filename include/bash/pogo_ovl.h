@@ -13,37 +13,7 @@ s32 HeroNoJump(s32 arg0);
 extern u16 PogoHeroModels[];
 extern u8 PogoHookTableC[];
 
-/* The engine callback table (EngineHooks in bash/engine.h). */
-typedef struct PogoHooks {
-    /* 0x00 */ s32 InitHero;
-    /* 0x04 */ void *HeroModels;
-    /* 0x08 */ void *unk8;
-    /* 0x0C */ void *RunSpeeds;
-    /* 0x10 */ void *JumpEnts;
-    /* 0x14 */ void *VictorySeqs;
-    /* 0x18 */ void *CreateShadow;
-    /* 0x1C */ void *UpdateShadow;
-    /* 0x20 */ void *PreMoveHero;
-    /* 0x24 */ void *MoveHero;
-    /* 0x28 */ void *PostMoveHero;
-    /* 0x2C */ void *HeroFacing;
-    /* 0x30 */ void *HeroSetIdle;
-    /* 0x34 */ void *HeroTouched;
-    /* 0x38 */ void *HeroBot;
-    /* 0x3C */ void *TestAttack;
-    /* 0x40 */ void *TestRun;
-    /* 0x44 */ void *TestJump;
-    /* 0x48 */ void *TestKick;
-    /* 0x4C */ void *Hero2ObjectCollision;
-    /* 0x50 */ void *HeroGrabObject;
-    /* 0x54 */ void *HeroKickCollision;
-    /* 0x58 */ void *HeroCarryCollision;
-    /* 0x5C */ void *HeroExtraEffects;
-    /* 0x60 */ void *HeroesTouched;
-    /* 0x64 */ void *ChooseWinner;
-    /* 0x68 */ void *KeepInBounds;
-} PogoHooks;
-extern PogoHooks HeroHooks;
+extern EngineHooks HeroHooks;
 extern process_info PogoProcess;
 extern process_control_info MenuProcessControl;
 

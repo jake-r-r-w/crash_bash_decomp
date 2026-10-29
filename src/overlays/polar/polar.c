@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/polar_ovl.h"
 #include "bash/polar.h"
@@ -1915,7 +1916,7 @@ const char PolarAnimWin[] = "WIN";
 const char PolarEmptyString[] = "";
 
 void InitialisePOLARFirst(void) {
-    PolarHooks *h;
+    EngineHooks *h;
     GameState *g;
     void **p;
     void **p2;

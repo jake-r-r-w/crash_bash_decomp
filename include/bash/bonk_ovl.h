@@ -109,30 +109,7 @@ extern s32 BonkStoolHeights[];
 extern s32 BonkStoolTable[];
 
 int BonkAI_Closest(int a0, int *out);
-/* HeroHooks (EngineHooks in bash/engine.h, which this unit does not include). */
-typedef struct BonkHooks {
-    /* 0x00 */ u8 pad0[4];
-    /* 0x04 */ void *HeroModels;
-    /* 0x08 */ u8 pad8[0x18];
-    /* 0x20 */ void *PreMoveHero;
-    /* 0x24 */ u8 pad24[4];
-    /* 0x28 */ void *PostMoveHero;
-    /* 0x2C */ void *HeroFacing;
-    /* 0x30 */ u8 pad30[8];
-    /* 0x38 */ void *HeroBot;
-    /* 0x3C */ void *TestAttack;
-    /* 0x40 */ s32 (*TestRun)(s32);
-    /* 0x44 */ void *TestJump;
-    /* 0x48 */ void *TestKick;
-    /* 0x4C */ u8 pad4C[8];
-    /* 0x54 */ void (*HeroKickCollision)();
-    /* 0x58 */ u8 pad58[4];
-    /* 0x5C */ void *HeroExtraEffects;
-    /* 0x60 */ u8 pad60[4];
-    /* 0x64 */ void *ChooseWinner;
-    /* 0x68 */ void *KeepInBounds;
-} BonkHooks;
-extern BonkHooks HeroHooks;
+extern EngineHooks HeroHooks;
 extern s16 HeroActHit;
 extern s16 HeroActWinner;
 extern s16 HeroActLoser;

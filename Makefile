@@ -14,6 +14,7 @@
 #   make progress        - dashboard (docs/index.html), docs/progress.json and docs/badges/
 #   make objdiff-config  - objdiff.json + the original (all-asm) object of every unit
 SHELL := /bin/bash -o pipefail
+.DELETE_ON_ERROR:
 .DEFAULT_GOAL := build
 
 CFG := configs/USA

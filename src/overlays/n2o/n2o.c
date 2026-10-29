@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/n2o_ovl.h"
 #include "bash/n2o.h"
@@ -3942,7 +3943,7 @@ void N2OShowPhaseObjects(u16 arg0) {
     }
 }
 
-void N2OCameraFollow(void) {
+void N2OCameraFollow(camera_info_tag *cam) {
     s32 *t;
     s32 z;
     camera_info_tag *cam;

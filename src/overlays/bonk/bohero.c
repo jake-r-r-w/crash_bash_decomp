@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/bonk_ovl.h"
 #include "bash/bonk_bohero.h"
@@ -109,7 +110,7 @@ void BonkHeroIdle(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
-    if (HeroCheckResult() == 0 && HeroTestActions(arg0) == 0 && BonkHeroTestRun(arg0) == 0) {
+    if (HeroCheckResult(arg0) == 0 && HeroTestActions(arg0) == 0 && BonkHeroTestRun(arg0) == 0) {
         ProcessHeroAnim(arg0);
         if (VelocityCalc < 4) {
             if (VelocityCalc >= 2) {
@@ -135,7 +136,7 @@ void BonkHeroRun(s32 arg0) {
     s32 id;
     s32 a0;
 
-    if (HeroCheckResult() == 0 && HeroTestActions(arg0) == 0) {
+    if (HeroCheckResult(arg0) == 0 && HeroTestActions(arg0) == 0) {
         if (BonkStopInline(arg0) == 0) {
             base = Heroes;
             h = base + arg0;
@@ -390,10 +391,10 @@ s32 BonkHeroKickCollision(s32 arg0) {
                                             eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
                                             hit = 1;
                                             if (self->hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&HeroHooks.pad60)(arg0, i);
+                                                (*(void (**)(s32, s32))&HeroHooks.HeroesTouched)(arg0, i);
                                             }
                                             if (other[i].hero_pu != 0) {
-                                                (*(void (**)(s32, s32))&HeroHooks.pad60)(i, arg0);
+                                                (*(void (**)(s32, s32))&HeroHooks.HeroesTouched)(i, arg0);
                                             }
                                         }
                                     }

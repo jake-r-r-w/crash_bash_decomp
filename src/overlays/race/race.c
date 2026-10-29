@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/race_ovl.h"
 #include "bash/race.h"
@@ -1066,7 +1067,7 @@ void RaceInitHeroAngle(s32 player) {
 }
 
 void InitialiseRACEFirst(void) {
-    RaceHooks *h;
+    EngineHooks *h;
     GameState *g;
     GameState *g2;
     u16 flags;

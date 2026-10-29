@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/chase_ovl.h"
 #include "bash/chase.h"
 #include "bash/pogo.h"
@@ -704,7 +705,7 @@ void InitialiseCHASEFirst(void) {
     AiBotTweakTable = ChaseAiBotTweak;
     AiHumanTweakTable = ChaseAiHumanTweak;
     AiHumanRoundTweakTable = ChaseAiHumanRoundTweak;
-    AiSkillTable = GameTeams != 0 ? ChaseAiSkillAlt : ChaseAiSkill;
+    AiSkillTable = GameTeams[0] != 0 ? ChaseAiSkillAlt : ChaseAiSkill;
     AiTeamSkillTable = ChaseAiTeamSkill;
 }
 
@@ -742,7 +743,7 @@ void InitialiseCHASE(void) {
     dbase_load_all_mesh_anims((s32 *)&HeroModelBank[DB_KegObjects]);
     dbase_load_all_mesh_anims((s32 *)(((u8 *)&HeroModelBank[DB_KegObjects]) - 0xF88));
     dbase_load_all_mesh_anims((s32 *)MapScene->dbase);
-    scr = (ChaseScreen *)GameViewport;
+    scr = (ChaseScreen *)&GameViewport;
     scr->unk10 = 0x140;
     scr->unk14 = 0x15E;
     cam = &MainCamera;
@@ -792,7 +793,7 @@ void InitialiseCHASE(void) {
             h->hero_score = v;
         }
         InitSharedScoreIcons();
-        if (GameTeams != 0) {
+        if (GameTeams[0] != 0) {
             PanelCtrl |= 0x2000;
         }
     }
@@ -899,8 +900,8 @@ void ChaseInitHero(s32 arg0) {
     u8 *p;
     NAS *nas;
 
-    Pads[arg0].unk50 = 0;
-    Pads[arg0].unk54 = 0;
+    Pads[arg0].dir = 0;
+    Pads[arg0].dirPressed = 0;
     b = Heroes;
     h = b + arg0;
     if (h->hero_name == 9) {
@@ -948,11 +949,11 @@ void ChaseInitHero(s32 arg0) {
 void ChasePreMoveHero(s32 arg0) {
     HeroInfo *hb;
     HeroInfo *hb2;
-    ChasePad *pb;
+    PadState *pb;
     HeroInfo *h;
     HeroInfo *h2;
     EXTheromove *m;
-    ChasePad *pad;
+    PadState *pad;
     u16 *row;
     u16 speed;
     u16 rw;
@@ -963,14 +964,14 @@ void ChasePreMoveHero(s32 arg0) {
     m = h->hero_move;
     m->forward_speed = 0;
     if (h->hero_frozen != 0) {
-        Pads[arg0].unk50 = 0;
-        Pads[arg0].unk54 = 0;
+        Pads[arg0].dir = 0;
+        Pads[arg0].dirPressed = 0;
     }
     pb = Pads;
     pad = pb + arg0;
-    if ((pad->unk0 & 1) || GameHeroOut != NULL) {
-        if (pad->unk50 & 0xF0) {
-            m->forward_angle = pad->unk38 + 0x800;
+    if ((pad->flags & 1) || GameHeroOut != NULL) {
+        if (pad->dir & 0xF0) {
+            m->forward_angle = pad->angle.lo + 0x800;
             if (m->velocity_enable != 0) {
                 rw = m->run_walk;
                 if (h->hero_object != NULL) {
@@ -1031,7 +1032,7 @@ void ChaseMoveHero(s32 arg0) {
     h->hero_immunity = 0;
     m = h->hero_move;
     e = e0;
-    if (Pads[arg0].unk50 & 0x8000) {
+    if (Pads[arg0].dir & 0x8000) {
         m->run_walk = 0;
     } else {
         m->run_walk = 1;
@@ -1121,7 +1122,7 @@ void ChaseMoveHero(s32 arg0) {
         }
         break;
     }
-    if ((Pads[arg0].unk50 & 0x8000) && e0->unk10.y >= -0x31) {
+    if ((Pads[arg0].dir & 0x8000) && e0->unk10.y >= -0x31) {
         ChaseHeroSpeed[arg0] = 0xF;
         e0 = Heroes[arg0].hero_eng;
         st = ChaseHeroState[arg0];
@@ -1139,7 +1140,7 @@ void ChaseMoveHero(s32 arg0) {
             ChaseFlameObj[arg0] = 0;
         }
     }
-    if ((Pads[arg0].unk50 & 0x2A00) && e0->unk10.y >= -0x31 && ChaseHeroState[arg0][0x14] != 0) {
+    if ((Pads[arg0].dir & 0x2A00) && e0->unk10.y >= -0x31 && ChaseHeroState[arg0][0x14] != 0) {
         v = &e0->unk10;
         PlaySfx(0x43A, NULL, v, 0x1000, 0x1E00, 0);
         ChaseHidePowerup(arg0);
@@ -1193,7 +1194,7 @@ s32 ChaseHeroTestDrop(s32 arg0) {
 }
 
 s32 ChaseHeroKickCollision(s32 arg0) {
-    ChaseTrig *tbl;
+    TrigEntry *tbl;
     VECTOR pos;
     NAS *own;
     EXTengine *obj;
@@ -1307,10 +1308,10 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                                             eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
                                             hit = 1;
                                             if (self->hero_pu != 0) {
-                                                (*(void (**)(s32, s32))HeroHooks.pad60)(arg0, i);
+                                                (*(void (**)(s32, s32))&HeroHooks.HeroesTouched)(arg0, i);
                                             }
                                             if (other[i].hero_pu != 0) {
-                                                (*(void (**)(s32, s32))HeroHooks.pad60)(i, arg0);
+                                                (*(void (**)(s32, s32))&HeroHooks.HeroesTouched)(i, arg0);
                                             }
                                         }
                                     }
@@ -1444,7 +1445,7 @@ static inline s32 Chk5CD0_A(s32 arg0) {
 static inline s32 Chk5CD0_B(s32 arg0) {
     s32 ret;
 
-    if (Pads[arg0].unk54 & 0x4000) {
+    if (Pads[arg0].dirPressed & 0x4000) {
         SetHeroAction(arg0, 0x78);
         ret = 1;
     } else {
@@ -1705,7 +1706,7 @@ static inline s32 Chk66A4_A(s32 arg0) {
 static inline s32 Chk66A4_B(s32 arg0) {
     s32 ret;
 
-    if (Pads[arg0].unk54 & 0x4000) {
+    if (Pads[arg0].dirPressed & 0x4000) {
         SetHeroAction(arg0, 0x78);
         ret = 1;
     } else {
@@ -1742,7 +1743,7 @@ void SetChaseHeroHit(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
-    pad_rumble_big(arg0, 0xA, 0xF0);
+    ((void (*)())pad_rumble_big)(arg0, 0xA, 0xF0);  /* matching: Chase called it unprototyped, so 0xF0 goes as an int, not the s8 -16 */
     ChaseHidePowerup(arg0);
     base = Heroes;
     h = &base[arg0];
@@ -2623,7 +2624,7 @@ void PlotEgg(NAS *nas) {
                     h = &hb[i];
                     if (h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
                         SetHeroAction(i, (u16)HeroActHit);
-                        pad_rumble_big(i, 0xA, 0xF0);
+                        ((void (*)())pad_rumble_big)(i, 0xA, 0xF0);  /* matching: Chase called it unprototyped, so 0xF0 goes as an int, not the s8 -16 */
                     }
                 }
                 if (GAME->heroOut[i] == 0) {
@@ -2648,7 +2649,7 @@ void PlotEgg(NAS *nas) {
                         if (d >= -0x280 && d <= lim && ChaseRoundOver == 0 && Heroes[i].hero_immunity == 0 &&
                             !(Heroes[i].hero_status & 0xFA00)) {
                             SetHeroAction(i, (u16)HeroActHit);
-                            pad_rumble_big(i, 0xA, 0xF0);
+                            ((void (*)())pad_rumble_big)(i, 0xA, 0xF0);  /* matching: Chase called it unprototyped, so 0xF0 goes as an int, not the s8 -16 */
                         }
                     }
                 }
@@ -3599,7 +3600,7 @@ s32 ChaseTestEnd(s32 arg0) {
 }
 
 s32 ChaseHeroTestJump(s32 arg0) {
-    if (!(Pads[arg0].unk54 & 0x4000)) {
+    if (!(Pads[arg0].dirPressed & 0x4000)) {
         return 0;
     }
     SetHeroAction(arg0, 0x78);
@@ -3647,7 +3648,7 @@ loop:
                 if (d >= neg && d <= range && ChaseRoundOver == 0 &&
                     h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
                     SetHeroAction(i, (u16)HeroActHit);
-                    pad_rumble_big(i, 0xA, 0xF0);
+                    ((void (*)())pad_rumble_big)(i, 0xA, 0xF0);  /* matching: Chase called it unprototyped, so 0xF0 goes as an int, not the s8 -16 */
                 }
             }
         }
@@ -3670,7 +3671,7 @@ void ChaseHitHero(s32 arg0)
     if ((h->hero_immunity == 0) && (!(h->hero_status & 0xFA00)))
     {
       SetHeroAction(arg0, (u16) HeroActHit);
-      pad_rumble_big(arg0, 0xA, 0xF0);
+      ((void (*)())pad_rumble_big)(arg0, 0xA, 0xF0);  /* matching: Chase called it unprototyped, so 0xF0 goes as an int, not the s8 -16 */
     }
   }
 }
@@ -3693,7 +3694,7 @@ s32 ChaseFindHero(s32 x, s32 z, s32 range) {
 }
 
 s32 ChasePadHook(s32 arg0) {
-    u32 m = Pads[arg0].unk54 & 0x2000;
+    u32 m = Pads[arg0].dirPressed & 0x2000;
     return m != 0;
 }
 

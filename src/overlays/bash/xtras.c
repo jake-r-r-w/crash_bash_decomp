@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/bash_ovl.h"
 #include "bash/bash_xtras.h"
 #include "bash/bash.h"

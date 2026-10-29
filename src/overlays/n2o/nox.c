@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/n2o_ovl.h"
 #include "bash/n2o_nox.h"
@@ -1764,8 +1765,7 @@ void PlotSpiralSat(NAS *nas) {
                     }
                 }
                 if ((((GameState *)GameInfo)->cheats & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x30) {
-                    extern int SetHeroAction();
-                    ((void (*)(s32, s32))SetHeroAction)(0, 0x30);
+                    ((s32 (*)(s32, s32))SetHeroAction)(0, 0x30);  /* matching: as an int function's call (the original declared it so here), jump2 doesn't merge it with the void calls */
                 }
                 goto kill;
             }
@@ -1959,8 +1959,8 @@ void NoxInitSparks(SparkObj *arg0) {
 
     NoxSparkScale = 0x100;
     NoxSparkAlpha = 0x100;
-    a = set->lines[0];
-    b = set->lines[1];
+    a = set->prims[0];
+    b = set->prims[1];
     if (n != 0) do {
         s->x = Random(0x2000) - Random(0x2000);
         s->y = Random(0x1000) - Random(0x1000);
@@ -1993,7 +1993,7 @@ void NoxInitSparks(SparkObj *arg0) {
 void NoxDrawSparks(SparkObj *arg0) {
     SparkSet *set = &arg0->set;
     Spark *s = set->sparks;
-    SparkLine *l = set->lines[FrameCount & 1];
+    SparkLine *l = set->prims[FrameCount & 1];
     Spark *v;
     s32 n;
 

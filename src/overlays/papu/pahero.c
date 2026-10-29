@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/papu_ovl.h"
 #include "bash/papu_pahero.h"
